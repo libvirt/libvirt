@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-06-27 06:24+0000\n"
+"POT-Creation-Date: 2022-07-26 08:13+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -11632,9 +11632,6 @@ msgstr ""
 msgid "Missing source channel attribute for char device"
 msgstr "Thiếu thuộc tính máy chủ nguồn cho thiết bị ký tự"
 
-msgid "Missing source element for nvram"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "Thiếu thuộc tính máy chủ nguồn cho thiết bị ký tự"
 
@@ -17285,10 +17282,6 @@ msgid "Unable to freeze filesystems"
 msgstr "Không thể pre-create tập tin chardev '%s'"
 
 #, fuzzy, c-format
-msgid "Unable to generate diffie-hellman parameters: %s"
-msgstr "Không thể lấy các thông số bộ nhớ"
-
-#, fuzzy, c-format
 msgid "Unable to get ACLs on %s"
 msgstr "Không thể mở %s"
 
@@ -17509,9 +17502,6 @@ msgstr "Thất bại khi lấy thông tin giao diện"
 msgid "Unable to get interface parameters"
 msgstr "Không thể lấy các thông số bộ nhớ"
 
-msgid "Unable to get key length for diffie-hellman parameters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "Không thể lấy các thông số bộ nhớ"
@@ -17684,10 +17674,6 @@ msgstr ""
 #, fuzzy
 msgid "Unable to initialize condition variable"
 msgstr "không thể khởi chạy biến số điều kiện"
-
-#, fuzzy, c-format
-msgid "Unable to initialize diffie-hellman parameters: %s"
-msgstr "Không thể khởi chạy lớp kiểm tra"
 
 #, fuzzy, c-format
 msgid "Unable to initialize lease %s"
@@ -22081,6 +22067,10 @@ msgstr "Hoàn nguyên một miền về một ảnh chụp"
 msgid "cannot migrate domain with I/O error"
 msgstr "di trú miền sang một máy chủ khác"
 
+#, c-format
+msgid "cannot migrate domain: %s"
+msgstr ""
+
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr ""
 
@@ -22792,6 +22782,11 @@ msgstr ""
 msgid "cannot use custom tap device in session mode"
 msgstr "không thể trở thành lãnh đạo phiên làm việc"
 
+msgid ""
+"cannot use feature-based firmware autoselection when firmware autoselection "
+"is disabled"
+msgstr ""
+
 #, fuzzy
 msgid "cannot use namespaces in session mode"
 msgstr "không thể trở thành lãnh đạo phiên làm việc"
@@ -22853,10 +22848,10 @@ msgstr "cd: %s: %s"
 msgid "cd: command valid only in interactive mode"
 msgstr "cd: lệnh chỉ hợp lệ trong chế độ tương tác"
 
-msgid "cdrom device without source path not supported"
+msgid "cdrom device with virtio bus isn't supported"
 msgstr ""
 
-msgid "cdrom/floppy device hotplug isn't supported"
+msgid "cdrom device without source path not supported"
 msgstr ""
 
 msgid "cell number must be non-negative integer or -1"
@@ -27261,6 +27256,15 @@ msgstr ""
 msgid "firmware auto selection not implemented for this driver"
 msgstr "virDirCreate không chấp nhận cho WIN32"
 
+msgid ""
+"firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
+"'secure-boot' is disabled"
+msgstr ""
+
+#, c-format
+msgid "firmware type '%s' does not support nvram"
+msgstr ""
+
 msgid "fixed audio settings requires mixing engine"
 msgstr ""
 
@@ -27280,6 +27284,9 @@ msgstr ""
 #, fuzzy
 msgid "floor attribute is not supported for this config"
 msgstr "Phương tiện tháo được không hỗ trợ cho thiết bị %s"
+
+msgid "floppy device hotplug isn't supported"
+msgstr ""
 
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr ""
@@ -27649,6 +27656,9 @@ msgstr "phản hồi di trú thông tin thiếu trạng thái trả về
 #, fuzzy
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "phản hồi di trú thông tin thiếu trạng thái trả về"
+
+msgid "guestReset is not supported with this version of QEMU"
+msgstr ""
 
 msgid "guestfwd channel does not define a target address"
 msgstr "kênh guestfwd không định nghĩa một địa chỉ đích"
@@ -28532,9 +28542,6 @@ msgstr "Giao thức không rõ '%s'"
 msgid "invalid backing protocol string '%s'"
 msgstr "con trỏ pool lưu trữ không hợp lệ trong %s"
 
-msgid "invalid cache size in query-migrate-cache-size reply"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "invalid capability_filters capability '%s'"
 msgstr "không có các khả năng thiết bị cho '%s'"
@@ -29066,6 +29073,10 @@ msgid "ioeventfd is not supported with vhostuser disk"
 msgstr ""
 
 msgid "iommu driver option is only supported for virtio devices"
+msgstr ""
+
+#, c-format
+msgid "iommu model '%s' can't have address"
 msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
@@ -29739,6 +29750,24 @@ msgstr ""
 #, fuzzy, c-format
 msgid "live update of device '%s' is not supported"
 msgstr "chế độ hostdev '%s' không được hỗ trợ"
+
+msgid ""
+"loader attribute 'readonly' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'secure' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'type' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid "loader path cannot be specified when firmware autoselection is enabled"
+msgstr ""
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
@@ -32691,6 +32720,9 @@ msgstr ""
 msgid "number of read operations:"
 msgstr "Hết thời gian trong khi thao tác"
 
+msgid "number of seconds the daemon will run without any active connection"
+msgstr ""
+
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr ""
 
@@ -32734,6 +32766,11 @@ msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr "SATA không được hỗ trợ với binary QEMU này"
 
 msgid "nvram address type must be spaprvio"
+msgstr ""
+
+msgid ""
+"nvram attribute 'template' cannot be specified when firmware autoselection "
+"is enabled"
 msgstr ""
 
 #, fuzzy
@@ -34417,7 +34454,8 @@ msgstr "số vCPU vượt quá lớn nhất: %d > %d"
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
 
-msgid "requested size must be smaller than or equal to @size"
+#, c-format
+msgid "requested size must be smaller than or equal to @size (%lluKiB)"
 msgstr ""
 
 msgid "requested size of the cache (in bytes) used for compression"
@@ -34922,6 +34960,9 @@ msgid "set server workerpool parameters"
 msgstr "hiện/đặt các thông số bộ lập lịch"
 
 msgid "set server's client-related configuration limits"
+msgstr ""
+
+msgid "set the auto shutdown timeout of the daemon"
 msgstr ""
 
 msgid "set the bandwidth limit in MiB/s"
@@ -35516,9 +35557,9 @@ msgstr "pool lưu trữ không hoạt động"
 msgid "storage pool only supports LUKS encrypted volumes"
 msgstr "pool lưu trữ không hỗ trợ các ổ đã mã hóa"
 
-#, fuzzy, c-format
-msgid "storage pool protocol ver '%s' is malformed"
-msgstr "pool lưu trữ '%s' đã hoạt động"
+#, c-format
+msgid "storage pool protocol ver '%s' must not contain ','"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
@@ -37760,10 +37801,6 @@ msgstr "kiểu thiết bị ký tự '%s' không rõ"
 msgid "unknown disk snapshot driver '%s'"
 msgstr "chế độ đệm đĩa không rõ '%s'"
 
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "kiểu đĩa không rõ '%s'"
-
 #, fuzzy, c-format
 msgid "unknown driver format value '%s'"
 msgstr "giá trị hiện tại của bộ đếm giờ không rõ '%s'"
@@ -39596,6 +39633,21 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <chuỗi>"
+
+#, fuzzy
+#~ msgid "Unable to generate diffie-hellman parameters: %s"
+#~ msgstr "Không thể lấy các thông số bộ nhớ"
+
+#, fuzzy
+#~ msgid "Unable to initialize diffie-hellman parameters: %s"
+#~ msgstr "Không thể khởi chạy lớp kiểm tra"
+
+#, fuzzy
+#~ msgid "storage pool protocol ver '%s' is malformed"
+#~ msgstr "pool lưu trữ '%s' đã hoạt động"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "kiểu đĩa không rõ '%s'"
 
 #, fuzzy
 #~ msgid "Could not find placement for v1 controller %s at %s"

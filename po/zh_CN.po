@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-06-27 06:24+0000\n"
+"POT-Creation-Date: 2022-07-26 08:13+0000\n"
 "PO-Revision-Date: 2021-02-21 08:40+0000\n"
 "Last-Translator: Pany <geekpany@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -11610,9 +11610,6 @@ msgstr "JSON 状态文件中缺少 socks 字段"
 msgid "Missing source channel attribute for char device"
 msgstr "字符设备缺少 source channel 属性"
 
-msgid "Missing source element for nvram"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "缺少字符设备的源主机属性"
 
@@ -17226,10 +17223,6 @@ msgstr "无法格式化时间"
 msgid "Unable to freeze filesystems"
 msgstr "无法打开文件系统 %s"
 
-#, c-format
-msgid "Unable to generate diffie-hellman parameters: %s"
-msgstr "无法生成 diffie-hellman 参数：%s"
-
 #, fuzzy, c-format
 msgid "Unable to get ACLs on %s"
 msgstr "无法为 %s 获取 LVM 密钥"
@@ -17441,9 +17434,6 @@ msgstr "无法在这个平台中获取接口索引"
 msgid "Unable to get interface parameters"
 msgstr "无法获取接口参数"
 
-msgid "Unable to get key length for diffie-hellman parameters"
-msgstr ""
-
 #, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "无法获取 kvm 描述符：%s"
@@ -17600,10 +17590,6 @@ msgstr ""
 #, fuzzy
 msgid "Unable to initialize condition variable"
 msgstr "无法初始化条件变量"
-
-#, c-format
-msgid "Unable to initialize diffie-hellman parameters: %s"
-msgstr "无法初始化 diffie-hellman 参数：%s"
 
 #, c-format
 msgid "Unable to initialize lease %s"
@@ -21919,6 +21905,10 @@ msgstr "无法使用 %d 快照迁移域"
 msgid "cannot migrate domain with I/O error"
 msgstr "无法迁移有 I/O 错误的域"
 
+#, c-format
+msgid "cannot migrate domain: %s"
+msgstr ""
+
 #, fuzzy
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr "无法使用 %d 快照迁移域"
@@ -22616,6 +22606,11 @@ msgstr "无法解析网络 '%s' 中的 MAC 地址 '%s'"
 msgid "cannot use custom tap device in session mode"
 msgstr "无法在绘画模式中使用虚拟网卡设备"
 
+msgid ""
+"cannot use feature-based firmware autoselection when firmware autoselection "
+"is disabled"
+msgstr ""
+
 #, fuzzy
 msgid "cannot use namespaces in session mode"
 msgstr "无法在绘画模式中使用虚拟网卡设备"
@@ -22677,12 +22672,11 @@ msgstr "cd: %s: %s"
 msgid "cd: command valid only in interactive mode"
 msgstr "cd：只在交互模式中可用"
 
+msgid "cdrom device with virtio bus isn't supported"
+msgstr ""
+
 msgid "cdrom device without source path not supported"
 msgstr "不支持没有源路径的 cdrom 设备"
-
-#, fuzzy
-msgid "cdrom/floppy device hotplug isn't supported"
-msgstr "不支持驱动器热插拔"
 
 #, fuzzy
 msgid "cell number must be non-negative integer or -1"
@@ -27018,6 +27012,15 @@ msgstr ""
 msgid "firmware auto selection not implemented for this driver"
 msgstr "在这个平台中未采用接口 stats"
 
+msgid ""
+"firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
+"'secure-boot' is disabled"
+msgstr ""
+
+#, c-format
+msgid "firmware type '%s' does not support nvram"
+msgstr ""
+
 msgid "fixed audio settings requires mixing engine"
 msgstr ""
 
@@ -27037,6 +27040,9 @@ msgstr ""
 #, fuzzy
 msgid "floor attribute is not supported for this config"
 msgstr "只有 qxl 类型支持 ram 属性"
+
+msgid "floppy device hotplug isn't supported"
+msgstr ""
 
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr ""
@@ -27401,6 +27407,9 @@ msgstr "guest-get-vcpus 回复缺少返回数据"
 
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "guest-get-vcpus 回复缺少返回数据"
+
+msgid "guestReset is not supported with this version of QEMU"
+msgstr ""
 
 msgid "guestfwd channel does not define a target address"
 msgstr "guestfwd 频道没有定义目标地址"
@@ -28268,9 +28277,6 @@ msgstr "未知的协议 '%s'"
 msgid "invalid backing protocol string '%s'"
 msgstr "%s 中无效的存储池指针"
 
-msgid "invalid cache size in query-migrate-cache-size reply"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "invalid capability_filters capability '%s'"
 msgstr "无效容量类型"
@@ -28794,6 +28800,10 @@ msgstr ""
 #, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "只有 scsi 主机设备支持 rawio"
+
+#, c-format
+msgid "iommu model '%s' can't have address"
+msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr ""
@@ -29442,6 +29452,24 @@ msgstr ""
 #, c-format
 msgid "live update of device '%s' is not supported"
 msgstr "不支持即时更新设备 '%s'"
+
+msgid ""
+"loader attribute 'readonly' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'secure' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'type' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid "loader path cannot be specified when firmware autoselection is enabled"
+msgstr ""
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
@@ -32347,6 +32375,9 @@ msgstr "共享内存服务进入睡眠状态前要扫描的页数"
 msgid "number of read operations:"
 msgstr "读取操作数："
 
+msgid "number of seconds the daemon will run without any active connection"
+msgstr ""
+
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr "在新连接的端口中 squelch 流量的秒数"
 
@@ -32391,6 +32422,11 @@ msgstr "这个 QEMU 二进制中不能使用共享内存"
 
 msgid "nvram address type must be spaprvio"
 msgstr "nvram 地址类型必须为 spaprvio"
+
+msgid ""
+"nvram attribute 'template' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 nvram 设备 "
@@ -34082,7 +34118,8 @@ msgstr "所需 cpu 量超过最大值（%d > %d）"
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
 
-msgid "requested size must be smaller than or equal to @size"
+#, c-format
+msgid "requested size must be smaller than or equal to @size (%lluKiB)"
 msgstr ""
 
 msgid "requested size of the cache (in bytes) used for compression"
@@ -34572,6 +34609,9 @@ msgstr "配置server中的worker线程池"
 
 msgid "set server's client-related configuration limits"
 msgstr "设置可接入到server的client的数量"
+
+msgid "set the auto shutdown timeout of the daemon"
+msgstr ""
 
 #, fuzzy
 msgid "set the bandwidth limit in MiB/s"
@@ -35168,9 +35208,9 @@ msgstr "缺少认证类型的存储池"
 msgid "storage pool only supports LUKS encrypted volumes"
 msgstr "存储池不支持加密卷"
 
-#, fuzzy, c-format
-msgid "storage pool protocol ver '%s' is malformed"
-msgstr "存储池 '%s' 已经激活"
+#, c-format
+msgid "storage pool protocol ver '%s' must not contain ','"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
@@ -37406,10 +37446,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "未知磁盘快照驱动程序 '%s'"
 
 #, c-format
-msgid "unknown disk type '%s'"
-msgstr "未知磁盘类型 '%s'"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "未知驱动程序格式值 '%s'"
 
@@ -39228,6 +39264,23 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <字符串>}..."
+
+#~ msgid "Unable to generate diffie-hellman parameters: %s"
+#~ msgstr "无法生成 diffie-hellman 参数：%s"
+
+#~ msgid "Unable to initialize diffie-hellman parameters: %s"
+#~ msgstr "无法初始化 diffie-hellman 参数：%s"
+
+#, fuzzy
+#~ msgid "cdrom/floppy device hotplug isn't supported"
+#~ msgstr "不支持驱动器热插拔"
+
+#, fuzzy
+#~ msgid "storage pool protocol ver '%s' is malformed"
+#~ msgstr "存储池 '%s' 已经激活"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "未知磁盘类型 '%s'"
 
 #~ msgid "'startupPolicy' is only valid for 'file' type volume"
 #~ msgstr "'startupPolicy' 只能用于 'file' 类型卷"

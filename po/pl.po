@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-06-27 06:24+0000\n"
+"POT-Creation-Date: 2022-07-26 08:13+0000\n"
 "PO-Revision-Date: 2022-07-09 08:46+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -11864,9 +11864,6 @@ msgstr ""
 msgid "Missing source channel attribute for char device"
 msgstr "Brak atrybutu źródłowego gospodarza dla urządzenia znakowego"
 
-msgid "Missing source element for nvram"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "Brak atrybutu źródłowego gospodarza dla urządzenia znakowego"
 
@@ -17591,10 +17588,6 @@ msgid "Unable to freeze filesystems"
 msgstr "Nie można zapisać %s"
 
 #, fuzzy, c-format
-msgid "Unable to generate diffie-hellman parameters: %s"
-msgstr "Nie można uzyskać parametrów pamięci"
-
-#, fuzzy, c-format
 msgid "Unable to get ACLs on %s"
 msgstr "Nie można otworzyć %s"
 
@@ -17813,9 +17806,6 @@ msgstr "Uzyskanie informacji o interfejsie się nie powiodło"
 msgid "Unable to get interface parameters"
 msgstr "Nie można uzyskać parametrów pamięci"
 
-msgid "Unable to get key length for diffie-hellman parameters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "Nie można uzyskać parametrów pamięci"
@@ -17987,10 +17977,6 @@ msgstr "Nie można zainicjować certyfikatu: %s\n"
 
 msgid "Unable to initialize condition variable"
 msgstr "Nie można zainicjować zmiennej warunkowej"
-
-#, fuzzy, c-format
-msgid "Unable to initialize diffie-hellman parameters: %s"
-msgstr "Nie można zainicjować warstwy audytu"
 
 #, fuzzy, c-format
 msgid "Unable to initialize lease %s"
@@ -22406,6 +22392,10 @@ msgstr "Przywraca domenę do migawki"
 msgid "cannot migrate domain with I/O error"
 msgstr "migruje domenę do innego gospodarza"
 
+#, c-format
+msgid "cannot migrate domain: %s"
+msgstr ""
+
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr ""
 
@@ -23120,6 +23110,11 @@ msgstr "Nie można przetworzyć adresu MAC „%s” w sieci „%s”"
 msgid "cannot use custom tap device in session mode"
 msgstr "nie można przełączyć na przywódcę sesji"
 
+msgid ""
+"cannot use feature-based firmware autoselection when firmware autoselection "
+"is disabled"
+msgstr ""
+
 #, fuzzy
 msgid "cannot use namespaces in session mode"
 msgstr "nie można przełączyć na przywódcę sesji"
@@ -23183,12 +23178,11 @@ msgstr "cd: %s: %s"
 msgid "cd: command valid only in interactive mode"
 msgstr "cd: polecenie jest prawidłowe tylko w trybie interaktywnym"
 
-#, fuzzy
-msgid "cdrom device without source path not supported"
-msgstr "przyłączanie napędu w czasie działania jest nieobsługiwane"
+msgid "cdrom device with virtio bus isn't supported"
+msgstr ""
 
 #, fuzzy
-msgid "cdrom/floppy device hotplug isn't supported"
+msgid "cdrom device without source path not supported"
 msgstr "przyłączanie napędu w czasie działania jest nieobsługiwane"
 
 #, fuzzy
@@ -27599,6 +27593,15 @@ msgstr ""
 msgid "firmware auto selection not implemented for this driver"
 msgstr "virDirCreate jest niezaimplementowane w systemach Win32"
 
+msgid ""
+"firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
+"'secure-boot' is disabled"
+msgstr ""
+
+#, c-format
+msgid "firmware type '%s' does not support nvram"
+msgstr ""
+
 msgid "fixed audio settings requires mixing engine"
 msgstr ""
 
@@ -27618,6 +27621,9 @@ msgstr ""
 #, fuzzy
 msgid "floor attribute is not supported for this config"
 msgstr "Nośniki wymienne nie są obsługiwane dla urządzenia %s"
+
+msgid "floppy device hotplug isn't supported"
+msgstr ""
 
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr ""
@@ -27988,6 +27994,9 @@ msgstr "brak zwrotnego stanu w odpowiedzi informacji o migracji"
 #, fuzzy
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "brak zwrotnego stanu w odpowiedzi informacji o migracji"
+
+msgid "guestReset is not supported with this version of QEMU"
+msgstr ""
 
 msgid "guestfwd channel does not define a target address"
 msgstr "kanał guestfwd nie określa adresu docelowego"
@@ -28871,9 +28880,6 @@ msgstr "Nieznany protokół „%s”"
 msgid "invalid backing protocol string '%s'"
 msgstr "nieprawidłowy wskaźnik puli pamięci masowej w %s"
 
-msgid "invalid cache size in query-migrate-cache-size reply"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "invalid capability_filters capability '%s'"
 msgstr "brak możliwości urządzenia „%s”"
@@ -29404,6 +29410,10 @@ msgstr ""
 #, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "vhost-net jest obsługiwane tylko dla interfejsów sieciowych virtio"
+
+#, c-format
+msgid "iommu model '%s' can't have address"
+msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr ""
@@ -30094,6 +30104,24 @@ msgstr ""
 #, fuzzy, c-format
 msgid "live update of device '%s' is not supported"
 msgstr "tryb „hostdev” „%s” jest nieobsługiwany"
+
+msgid ""
+"loader attribute 'readonly' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'secure' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'type' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid "loader path cannot be specified when firmware autoselection is enabled"
+msgstr ""
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
@@ -33068,6 +33096,9 @@ msgstr ""
 msgid "number of read operations:"
 msgstr "Przekroczono czas oczekiwania podczas działania"
 
+msgid "number of seconds the daemon will run without any active connection"
+msgstr ""
+
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr ""
 
@@ -33111,6 +33142,11 @@ msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
 
 msgid "nvram address type must be spaprvio"
+msgstr ""
+
+msgid ""
+"nvram attribute 'template' cannot be specified when firmware autoselection "
+"is enabled"
 msgstr ""
 
 #, fuzzy
@@ -34800,7 +34836,8 @@ msgstr "liczba wirtualnych procesorów przekracza maksimum: %d > %d"
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
 
-msgid "requested size must be smaller than or equal to @size"
+#, c-format
+msgid "requested size must be smaller than or equal to @size (%lluKiB)"
 msgstr ""
 
 msgid "requested size of the cache (in bytes) used for compression"
@@ -35317,6 +35354,9 @@ msgid "set server workerpool parameters"
 msgstr "Uzyskuje lub ustawia parametry blkio"
 
 msgid "set server's client-related configuration limits"
+msgstr ""
+
+msgid "set the auto shutdown timeout of the daemon"
 msgstr ""
 
 msgid "set the bandwidth limit in MiB/s"
@@ -35915,9 +35955,9 @@ msgstr "pula pamięci masowej jest nieaktywna"
 msgid "storage pool only supports LUKS encrypted volumes"
 msgstr "pula pamięci masowej nie obsługuje zaszyfrowanych woluminów"
 
-#, fuzzy, c-format
-msgid "storage pool protocol ver '%s' is malformed"
-msgstr "pula pamięci masowej „%s” jest już aktywna"
+#, c-format
+msgid "storage pool protocol ver '%s' must not contain ','"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
@@ -38163,10 +38203,6 @@ msgstr "nieznany typ urządzenia znakowego „%s”"
 msgid "unknown disk snapshot driver '%s'"
 msgstr "nieznany tryb wejścia/wyjścia dysku „%s”"
 
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "nieznany typ dysku „%s”"
-
 #, fuzzy, c-format
 msgid "unknown driver format value '%s'"
 msgstr "nieznana obecna wartość stopera „%s”"
@@ -40000,6 +40036,25 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <ciąg>}…"
+
+#, fuzzy
+#~ msgid "Unable to generate diffie-hellman parameters: %s"
+#~ msgstr "Nie można uzyskać parametrów pamięci"
+
+#, fuzzy
+#~ msgid "Unable to initialize diffie-hellman parameters: %s"
+#~ msgstr "Nie można zainicjować warstwy audytu"
+
+#, fuzzy
+#~ msgid "cdrom/floppy device hotplug isn't supported"
+#~ msgstr "przyłączanie napędu w czasie działania jest nieobsługiwane"
+
+#, fuzzy
+#~ msgid "storage pool protocol ver '%s' is malformed"
+#~ msgstr "pula pamięci masowej „%s” jest już aktywna"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "nieznany typ dysku „%s”"
 
 #, fuzzy
 #~ msgid "Could not find placement for v1 controller %s at %s"

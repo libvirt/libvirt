@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-05-25 19:40+0000\n"
+"POT-Creation-Date: 2022-07-26 08:13+0000\n"
 "PO-Revision-Date: 2022-07-23 07:19+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1386,9 +1386,6 @@ msgstr "attributet ”socket” är endast giltigt för lyssningstypen ”socket
 
 msgid "'ssh' protocol is not yet supported"
 msgstr "protokollet ”ssh” stödjs inte ännu"
-
-msgid "'startupPolicy' is only valid for 'file' type volume"
-msgstr "”startupPolicy” är endast giltigt för volymer av typen ”file”"
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr "”target” refererar till en NUMA-nod som inte finns"
@@ -4262,8 +4259,8 @@ msgid "Could not find physical NIC with name '%s'"
 msgstr "Kunde inte hitta en fysisk NIC med namnet ”%s”"
 
 #, c-format
-msgid "Could not find placement for v1 controller %s at %s"
-msgstr "Kunde inte hitta en placering av v1-styrenheten %s vid %s"
+msgid "Could not find placement for v1 controller %s"
+msgstr "Kunde inte hitta en placering av v1-styrenheten %s"
 
 msgid "Could not find placement for v2 controller"
 msgstr "Kunde inte hitta en placering av v2-styrenheten"
@@ -6949,6 +6946,11 @@ msgstr "Misslyckades med att skapa en tråd för att hantera att domäner dör"
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Misslyckades att skapa en tråd för att hantera avstängning av domänen"
 
+msgid "Failed to create thread to handle firewall reload/restart"
+msgstr ""
+"Misslyckades att skapa en tråd för att hantera omladdning/omstart av "
+"brandväggen"
+
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Misslyckades att skapa en tråd för att hantera uppdatering av poolen"
 
@@ -9186,6 +9188,14 @@ msgstr "Värd-CPU:n tillhandahåller förbjudna funktioner"
 msgid "Host SMBIOS information is not available"
 msgstr "Värd-SMBIOS-information är inte tillgänglig"
 
+msgid ""
+"Host not compatible with KVM; HW virtualization CPU features not found. Only "
+"emulated CPUs are available; performance will be significantly limited"
+msgstr ""
+"Värden är inte kompatibel med KVM; CPU-funktioner för hårdvaruvirtualisering "
+"finns inte. Endast emulerade CPU:er är tillgängliga; prestandan kommer att "
+"vara kraftigt begränsad"
+
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr "Extrahering av värdens sysinfo stödjs inte på denna plattform"
 
@@ -9772,6 +9782,9 @@ msgstr "Felaktig adress."
 
 msgid "Invalid argument"
 msgstr "Felaktigt argument"
+
+msgid "Invalid async job start"
+msgstr "Felaktig async-jobbstart"
 
 #, c-format
 msgid ""
@@ -10493,6 +10506,14 @@ msgid ""
 msgstr ""
 "Felaktigt värde på attributet ”%s” i elementet ”%s”: ”%s”. Ett icke-negativt "
 "heltalsvärde förväntades"
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
+"negative value"
+msgstr ""
+"Felaktigt värde på attributet ”%s” i elementet ”%s”: ”%s”. Ett icke-negativt "
+"värde förväntades"
 
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
@@ -11537,7 +11558,8 @@ msgid "Missing or invalid 'multicast-overflow' in query-rx-filter response"
 msgstr "Saknat eller felaktigt ”multicast-overflow” i query-rx-filter-svaret"
 
 msgid "Missing or invalid 'multicast-table' array in query-rx-filter response"
-msgstr "Saknad eller felaktig vektor ”multicast-table” i query-rx-filter-svaret"
+msgstr ""
+"Saknad eller felaktig vektor ”multicast-table” i query-rx-filter-svaret"
 
 msgid "Missing or invalid 'promiscuous' in query-rx-filter response"
 msgstr "Saknat eller felaktigt ”promiscuous” i query-rx-filter-svaret"
@@ -12652,6 +12674,9 @@ msgstr ""
 msgid "Not detaching active device %s"
 msgstr "avmontera diskenhet"
 
+msgid "Not enough arguments passed, nothing to set"
+msgstr ""
+
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
 msgstr ""
@@ -13591,6 +13616,9 @@ msgid ""
 "QEMU reports invalid default CPU model \"host\" for non-kvm domain virt type"
 msgstr ""
 
+msgid "QEMU reports migration is still running"
+msgstr ""
+
 #, c-format
 msgid "QEMU version >= %d.%d.%d is required, but %d.%d.%d found"
 msgstr ""
@@ -14471,13 +14499,6 @@ msgstr ""
 msgid "Setting different SELinux label on %s which is already in use"
 msgstr ""
 
-#, c-format
-msgid "Setting disk %s is not allowed for disk of network type"
-msgstr ""
-
-msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
-msgstr ""
-
 msgid "Setting disk block sizes is not supported by vz driver."
 msgstr ""
 
@@ -15098,19 +15119,11 @@ msgid "TPM 1.2 is not supported with the SPAPR device model"
 msgstr ""
 
 #, c-format
-msgid "TPM Proxy model %s is only available for PPC64 guests"
-msgstr ""
-
-#, c-format
 msgid "TPM Proxy model %s requires 'Passthrough' backend"
 msgstr ""
 
 #, c-format
 msgid "TPM device path %s is invalid"
-msgstr ""
-
-#, c-format
-msgid "TPM model '%s' is only available for x86 and aarch64 guests"
 msgstr ""
 
 msgid "Table row cannot be empty"
@@ -17251,10 +17264,6 @@ msgid "Unable to freeze filesystems"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "Unable to generate diffie-hellman parameters: %s"
-msgstr "Kan inte hämta parametrar för trådpoolen"
-
-#, fuzzy, c-format
 msgid "Unable to get ACLs on %s"
 msgstr "misslyckades att hämta domän '%s'"
 
@@ -17472,9 +17481,6 @@ msgstr "misslyckades att få gränssnittsinformation"
 msgid "Unable to get interface parameters"
 msgstr "Kan inte hämta parametrar för trådpoolen"
 
-msgid "Unable to get key length for diffie-hellman parameters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "Kan inte få fjärruttagets namn"
@@ -17645,10 +17651,6 @@ msgstr ""
 
 #, fuzzy
 msgid "Unable to initialize condition variable"
-msgstr "Kan inte initiera certifikat"
-
-#, fuzzy, c-format
-msgid "Unable to initialize diffie-hellman parameters: %s"
 msgstr "Kan inte initiera certifikat"
 
 #, c-format
@@ -20423,6 +20425,10 @@ msgstr "måltypen måste anges för %s-enhet"
 msgid "another backup job is already running"
 msgstr "Domänen kör redan"
 
+#, c-format
+msgid "another migration job is already running for domain '%s'"
+msgstr ""
+
 msgid "any configuration"
 msgstr "någon konfiguration"
 
@@ -20686,6 +20692,9 @@ msgstr ""
 msgid "backing store protocol '%s' is not yet supported"
 msgstr ""
 
+msgid "backingStore is not supported with NVRAM"
+msgstr ""
+
 msgid "backingStore is not supported with vhostuser disk"
 msgstr ""
 
@@ -20697,13 +20706,13 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup"
+msgstr ""
+
 msgid "backup TLS directory not configured"
 msgstr ""
 
 msgid "backup is not supported with this QEMU"
-msgstr ""
-
-msgid "backup job"
 msgstr ""
 
 msgid "backup job data missing"
@@ -21927,6 +21936,10 @@ msgstr "migrera domän till en annan värd"
 msgid "cannot migrate domain with I/O error"
 msgstr "migrera domän till en annan värd"
 
+#, c-format
+msgid "cannot migrate domain: %s"
+msgstr ""
+
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr ""
 
@@ -22160,6 +22173,10 @@ msgstr "Kan inte tolka styrenhetsindex %s"
 #, fuzzy, c-format
 msgid "cannot parse target for lunStr '%s'"
 msgstr "Kan inte tolka styrenhetsindex %s"
+
+#, c-format
+msgid "cannot parse thread pool size '%s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
@@ -22618,6 +22635,11 @@ msgstr ""
 msgid "cannot use custom tap device in session mode"
 msgstr ""
 
+msgid ""
+"cannot use feature-based firmware autoselection when firmware autoselection "
+"is disabled"
+msgstr ""
+
 msgid "cannot use namespaces in session mode"
 msgstr ""
 
@@ -22678,10 +22700,10 @@ msgstr "%s: %s"
 msgid "cd: command valid only in interactive mode"
 msgstr ""
 
-msgid "cdrom device without source path not supported"
+msgid "cdrom device with virtio bus isn't supported"
 msgstr ""
 
-msgid "cdrom/floppy device hotplug isn't supported"
+msgid "cdrom device without source path not supported"
 msgstr ""
 
 #, fuzzy
@@ -23770,6 +23792,9 @@ msgstr ""
 msgid "current bridge device name"
 msgstr ""
 
+msgid "current job is not outgoing migration in post-copy mode"
+msgstr ""
+
 msgid "current vcpu count must equal maximum"
 msgstr ""
 
@@ -24394,6 +24419,13 @@ msgid "disk source path is missing"
 msgstr "säkerhetsetikett saknas"
 
 #, c-format
+msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
+msgstr ""
+
+msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
+msgstr ""
+
+#, c-format
 msgid "disk target %s not found"
 msgstr ""
 
@@ -24588,7 +24620,7 @@ msgstr ""
 msgid "domain control interface state"
 msgstr "Misslyckades med att förstöra gränssnittet %s"
 
-msgid "domain core dump job"
+msgid "domain core dump"
 msgstr ""
 
 #, fuzzy
@@ -24709,9 +24741,8 @@ msgstr "domännamn eller uuid"
 msgid "domain name, id or uuid"
 msgstr "domännman, id eller uuid"
 
-#, fuzzy
-msgid "domain save job"
-msgstr "domäntillstånd"
+msgid "domain save"
+msgstr ""
 
 #, fuzzy
 msgid "domain snapshot XML"
@@ -25521,9 +25552,6 @@ msgstr ""
 msgid "failed Xen syscall %s"
 msgstr "det gick inte att skapa loggfilen %s"
 
-msgid "failed due to I/O error"
-msgstr ""
-
 #, fuzzy
 msgid "failed probing capabilities"
 msgstr "misslyckades att hämta kapabiliteter"
@@ -26312,6 +26340,9 @@ msgstr ""
 msgid "failed to parse port number '%s'"
 msgstr "Misslyckades med att tolka läget ”%s”"
 
+msgid "failed to parse pre-migration memlock limit"
+msgstr ""
+
 #, fuzzy
 msgid "failed to parse qemu capabilities cpus"
 msgstr "misslyckades att hämta kapabiliteter"
@@ -26992,6 +27023,15 @@ msgstr ""
 msgid "firmware auto selection not implemented for this driver"
 msgstr ""
 
+msgid ""
+"firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
+"'secure-boot' is disabled"
+msgstr ""
+
+#, c-format
+msgid "firmware type '%s' does not support nvram"
+msgstr ""
+
 msgid "fixed audio settings requires mixing engine"
 msgstr ""
 
@@ -27009,6 +27049,9 @@ msgid ""
 msgstr ""
 
 msgid "floor attribute is not supported for this config"
+msgstr ""
+
+msgid "floppy device hotplug isn't supported"
 msgstr ""
 
 msgid "fmode and dmode must be used with accessmode=mapped"
@@ -27370,6 +27413,9 @@ msgid "guest-get-users reply was missing return data"
 msgstr ""
 
 msgid "guest-get-vcpus reply was missing return data"
+msgstr ""
+
+msgid "guestReset is not supported with this version of QEMU"
 msgstr ""
 
 msgid "guestfwd channel does not define a target address"
@@ -27997,6 +28043,9 @@ msgstr ""
 msgid "internal use only"
 msgstr "internt fel"
 
+msgid "interrupt post-copy migration"
+msgstr ""
+
 msgid "intr:"
 msgstr ""
 
@@ -28229,9 +28278,6 @@ msgstr "Okänt protokoll ”%s”"
 #, fuzzy, c-format
 msgid "invalid backing protocol string '%s'"
 msgstr "ogiltig domänpekare i %s"
-
-msgid "invalid cache size in query-migrate-cache-size reply"
-msgstr ""
 
 #, c-format
 msgid "invalid capability_filters capability '%s'"
@@ -28760,6 +28806,10 @@ msgstr ""
 msgid "iommu driver option is only supported for virtio devices"
 msgstr ""
 
+#, c-format
+msgid "iommu model '%s' can't have address"
+msgstr ""
+
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr ""
 
@@ -28808,10 +28858,6 @@ msgstr "ipset-namnet innehåller ogiltiga tecken"
 msgid "ipset name is too long"
 msgstr "parametern profileid är för lång"
 
-#, fuzzy
-msgid "is not active"
-msgstr "inaktiv"
-
 msgid "isa-debug serial type only valid on x86 architecture"
 msgstr ""
 
@@ -28827,7 +28873,28 @@ msgstr ""
 msgid "ivshmem device is not supported with this QEMU binary"
 msgstr ""
 
-msgid "job"
+#, c-format
+msgid "job '%s' canceled by client"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed due to I/O error"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed in post-copy phase"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed: %s"
+msgstr ""
+
+#, c-format
+msgid "job '%s' is not active"
+msgstr ""
+
+#, c-format
+msgid "job '%s' unexpectedly failed"
 msgstr ""
 
 #, fuzzy, c-format
@@ -29395,6 +29462,24 @@ msgstr ""
 msgid "live update of device '%s' is not supported"
 msgstr ""
 
+msgid ""
+"loader attribute 'readonly' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'secure' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'type' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid "loader path cannot be specified when firmware autoselection is enabled"
+msgstr ""
+
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
 msgstr ""
@@ -29413,6 +29498,9 @@ msgid "logical volume '%s' is sparse, volume wipe not supported"
 msgstr ""
 
 msgid "loop until timeout or interrupt, rather than one-shot"
+msgstr ""
+
+msgid "lower boundary for worker thread pool"
 msgstr ""
 
 msgid "luks2 is currently not supported by the qemu encryption engine"
@@ -29980,9 +30068,8 @@ msgstr ""
 msgid "migration canceled"
 msgstr "migrationen avbruten"
 
-#, fuzzy
-msgid "migration in job"
-msgstr "live-migrering"
+msgid "migration in"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "migration of disk %s failed"
@@ -29992,12 +30079,20 @@ msgstr "operation misslyckades"
 msgid "migration of disk %s failed: %s"
 msgstr "operation misslyckades: %s"
 
+#, c-format
+msgid "migration of domain %s is being actively monitored by another thread"
+msgstr ""
+
+#, c-format
+msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
 "and this QEMU"
 msgstr ""
 
-msgid "migration out job"
+msgid "migration out"
 msgstr ""
 
 #, c-format
@@ -30030,9 +30125,6 @@ msgid "migration was active, but RAM 'total' data was missing"
 msgstr ""
 
 msgid "migration was active, but RAM 'transferred' data was missing"
-msgstr ""
-
-msgid "migration was active, but no RAM info was set"
 msgstr ""
 
 msgid "migration with legacy shmem device is not supported"
@@ -31075,6 +31167,9 @@ msgstr ""
 
 msgid "model type"
 msgstr "modelltyp"
+
+msgid "modern nvram specification is not supported by this qemu"
+msgstr ""
 
 msgid "modifies an existing IOThread of the guest domain"
 msgstr ""
@@ -32278,6 +32373,9 @@ msgstr ""
 msgid "number of read operations:"
 msgstr ""
 
+msgid "number of seconds the daemon will run without any active connection"
+msgstr ""
+
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr ""
 
@@ -32316,6 +32414,11 @@ msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr ""
 
 msgid "nvram address type must be spaprvio"
+msgstr ""
+
+msgid ""
+"nvram attribute 'template' cannot be specified when firmware autoselection "
+"is enabled"
 msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
@@ -32443,6 +32546,10 @@ msgid "only a single watchdog device is supported"
 msgstr ""
 
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
+msgstr ""
+
+#, c-format
+msgid "only bus 'virtio' is supported for input model '%s'"
 msgstr ""
 
 msgid "only can reboot running/paused domain"
@@ -33015,6 +33122,9 @@ msgstr ""
 msgid "persistent detach of device is not supported"
 msgstr ""
 
+msgid "persistent reservations are not supported with NVRAM"
+msgstr ""
+
 #, c-format
 msgid "persistent update of device '%s' is not supported"
 msgstr ""
@@ -33158,6 +33268,10 @@ msgid "post-copy migration bandwidth limit in MiB/s"
 msgstr ""
 
 msgid "post-copy migration is not supported with non-live or paused migration"
+msgstr ""
+
+#, c-format
+msgid "post-copy migration of domain %s has not failed"
 msgstr ""
 
 msgid "potentially unsafe disk format probing"
@@ -33936,7 +34050,8 @@ msgstr ""
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
 
-msgid "requested size must be smaller than or equal to @size"
+#, c-format
+msgid "requested size must be smaller than or equal to @size (%lluKiB)"
 msgstr ""
 
 msgid "requested size of the cache (in bytes) used for compression"
@@ -34004,6 +34119,9 @@ msgstr "mål för diskenhet"
 msgid "reset the domain after core dump"
 msgstr ""
 
+msgid "resetting of nvram is not supported with network backed nvram"
+msgstr ""
+
 msgid "resize a vol"
 msgstr ""
 
@@ -34040,6 +34158,9 @@ msgstr "nparams är för stor"
 msgid "resume a domain"
 msgstr "fortsätt en domän"
 
+msgid "resume failed post-copy migration"
+msgstr ""
+
 #, fuzzy
 msgid "resume operation failed"
 msgstr "operation misslyckades"
@@ -34048,6 +34169,16 @@ msgid "resuming after dump failed"
 msgstr ""
 
 msgid "resuming after snapshot failed"
+msgstr ""
+
+#, c-format
+msgid "resuming failed post-copy migration of domain %s already in progress"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires change protection"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires post-copy to be enabled"
 msgstr ""
 
 msgid "retrieve client's identity info from server"
@@ -34418,6 +34549,9 @@ msgstr "Kan inte hämta parametrar för trådpoolen"
 msgid "set server's client-related configuration limits"
 msgstr ""
 
+msgid "set the auto shutdown timeout of the daemon"
+msgstr ""
+
 msgid "set the bandwidth limit in MiB/s"
 msgstr ""
 
@@ -34432,7 +34566,7 @@ msgstr ""
 msgid "set the user password inside the domain"
 msgstr ""
 
-msgid "set the value for reduction of the IOThread polling time "
+msgid "set the value for reduction of the IOThread polling time"
 msgstr ""
 
 msgid "set the value to increase the IOThread polling time"
@@ -34678,6 +34812,12 @@ msgstr "absolut sökväg förväntas: %s"
 msgid "skipped restricted file"
 msgstr ""
 
+msgid "slices are not supported with NVRAM"
+msgstr ""
+
+msgid "snapshot"
+msgstr ""
+
 #, c-format
 msgid "snapshot %s disappeared from list"
 msgstr ""
@@ -34697,9 +34837,6 @@ msgstr ""
 #, fuzzy
 msgid "snapshot information"
 msgstr "nodinformation"
-
-msgid "snapshot job"
-msgstr ""
 
 msgid "snapshot name"
 msgstr ""
@@ -34847,6 +34984,9 @@ msgstr ""
 msgid "ssl verification setting is not supported by this QEMU binary"
 msgstr ""
 
+msgid "start"
+msgstr ""
+
 msgid "start a (previously defined) inactive domain"
 msgstr "starta en (tidigare definierad) inaktiv domän"
 
@@ -34864,9 +35004,6 @@ msgstr "starta ett fysiskt värdgränssnitt."
 
 #, c-format
 msgid "start cell %d out of range (0-%d)"
-msgstr ""
-
-msgid "start job"
 msgstr ""
 
 #, c-format
@@ -34997,7 +35134,7 @@ msgid "storage pool only supports LUKS encrypted volumes"
 msgstr "lagringspool stödjer inte skapande av volymer"
 
 #, c-format
-msgid "storage pool protocol ver '%s' is malformed"
+msgid "storage pool protocol ver '%s' must not contain ','"
 msgstr ""
 
 #, c-format
@@ -35533,6 +35670,36 @@ msgstr ""
 msgid "this storage volume exists already"
 msgstr "detta nätverk finns redan"
 
+#, c-format
+msgid "thread_pool_max (%d) must be a positive number or -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid "thread_pool_max must be a positive integer"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) can't be greater than thread_pool_max (%d)"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid ""
+"thread_pool_min and thread_pool_max is not supported by this QEMU binary"
+msgstr ""
+
+msgid "thread_pool_min must be smaller or equal to thread_pool_max"
+msgstr ""
+
 msgid "threshold as a scaled number (by default bytes)"
 msgstr ""
 
@@ -35952,6 +36119,9 @@ msgstr ""
 
 msgid "tty console"
 msgstr "tty-konsol"
+
+msgid "tunnelFD argument is required for tunnelled migration"
+msgstr ""
 
 #, fuzzy
 msgid "tunnelled migration"
@@ -36807,6 +36977,10 @@ msgstr "oväntade sysinfo typmodell %d"
 msgid "unexpected message type"
 msgstr "oväntad disktyp %s"
 
+#, c-format
+msgid "unexpected migration schema: %d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unexpected migration status in %s"
 msgstr "oväntad data '%s'"
@@ -37000,10 +37174,6 @@ msgstr "oväntade sysinfo typmodell %d"
 #, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr ""
-
-#, fuzzy
-msgid "unexpectedly failed"
-msgstr "oväntad disktyp %s"
 
 msgid "unfiltered sgio is no longer supported"
 msgstr ""
@@ -37854,6 +38024,10 @@ msgstr "ej stödd händelse-ID %d"
 msgid "unsupported numatune mode: '%d'"
 msgstr "ej stödd händelse-ID %d"
 
+#, c-format
+msgid "unsupported nvram disk type '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported nvram template format '%s'"
 msgstr "Konfigurationsformatet stödjs inte ”%s”"
@@ -37961,6 +38135,9 @@ msgstr ""
 msgid "upload file contents to a volume"
 msgstr ""
 
+msgid "upper boundary for worker thread pool"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "uptime file has unexpected format '%s'"
 msgstr "oväntad data '%s'"
@@ -38020,6 +38197,9 @@ msgid "use of host cdrom passthrough"
 msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
+msgstr ""
+
+msgid "use zero-copy mechanism for migrating memory pages"
 msgstr ""
 
 msgid "user"
@@ -38886,6 +39066,9 @@ msgstr ""
 msgid "with redefine, set current snapshot"
 msgstr ""
 
+msgid "wrap xpath results in an common root element"
+msgstr ""
+
 msgid "write I/O operations limit per second"
 msgstr ""
 
@@ -38934,6 +39117,9 @@ msgstr ""
 msgid "xml modification unsupported"
 msgstr ""
 
+msgid "xpath expression to filter the XML document"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "HostCpuIdInfo-register ”%s” har ett oväntat format"
@@ -38948,6 +39134,9 @@ msgstr "ja"
 msgid "zPCI %s %o is already reserved"
 msgstr ""
 
+msgid "zero-copy is only available for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "zone %s requested for network %s but firewalld is not active"
 msgstr ""
@@ -38956,221 +39145,38 @@ msgstr ""
 msgid "{[--%s] <string>}..."
 msgstr "--%s <sträng>"
 
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "okänd disktyp ”%s”"
+#~ msgid "'startupPolicy' is only valid for 'file' type volume"
+#~ msgstr "”startupPolicy” är endast giltigt för volymer av typen ”file”"
 
-#, c-format
-msgid "Could not find placement for v1 controller %s"
-msgstr "Kunde inte hitta en placering av v1-styrenheten %s"
+#~ msgid "Could not find placement for v1 controller %s at %s"
+#~ msgstr "Kunde inte hitta en placering av v1-styrenheten %s vid %s"
 
-msgid "Failed to create thread to handle firewall reload/restart"
-msgstr ""
-"Misslyckades att skapa en tråd för att hantera omladdning/omstart av "
-"brandväggen"
+#, fuzzy
+#~ msgid "Unable to generate diffie-hellman parameters: %s"
+#~ msgstr "Kan inte hämta parametrar för trådpoolen"
 
-msgid ""
-"Host not compatible with KVM; HW virtualization CPU features not found. Only "
-"emulated CPUs are available; performance will be significantly limited"
-msgstr ""
-"Värden är inte kompatibel med KVM; CPU-funktioner för hårdvaruvirtualisering "
-"finns inte. Endast emulerade CPU:er är tillgängliga; prestandan kommer att "
-"vara kraftigt begränsad"
+#, fuzzy
+#~ msgid "Unable to initialize diffie-hellman parameters: %s"
+#~ msgstr "Kan inte initiera certifikat"
 
-msgid "Invalid async job start"
-msgstr "Felaktig async-jobbstart"
+#, fuzzy
+#~ msgid "domain save job"
+#~ msgstr "domäntillstånd"
 
-#, c-format
-msgid ""
-"Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
-"negative value"
-msgstr ""
-"Felaktigt värde på attributet ”%s” i elementet ”%s”: ”%s”. Ett icke-negativt "
-"värde förväntades"
+#, fuzzy
+#~ msgid "is not active"
+#~ msgstr "inaktiv"
 
-msgid "Missing source element for nvram"
-msgstr ""
+#, fuzzy
+#~ msgid "migration in job"
+#~ msgstr "live-migrering"
 
-msgid "Not enough arguments passed, nothing to set"
-msgstr ""
+#, fuzzy
+#~ msgid "unexpectedly failed"
+#~ msgstr "oväntad disktyp %s"
 
-msgid "QEMU reports migration is still running"
-msgstr ""
-
-#, c-format
-msgid "another migration job is already running for domain '%s'"
-msgstr ""
-
-msgid "backingStore is not supported with NVRAM"
-msgstr ""
-
-msgid "backup"
-msgstr ""
-
-#, c-format
-msgid "cannot parse thread pool size '%s' for virtiofs"
-msgstr ""
-
-msgid "current job is not outgoing migration in post-copy mode"
-msgstr ""
-
-#, c-format
-msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
-msgstr ""
-
-msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
-msgstr ""
-
-msgid "domain core dump"
-msgstr ""
-
-msgid "domain save"
-msgstr ""
-
-msgid "failed to parse pre-migration memlock limit"
-msgstr ""
-
-msgid "interrupt post-copy migration"
-msgstr ""
-
-#, c-format
-msgid "job '%s' canceled by client"
-msgstr ""
-
-#, c-format
-msgid "job '%s' failed due to I/O error"
-msgstr ""
-
-#, c-format
-msgid "job '%s' failed in post-copy phase"
-msgstr ""
-
-#, c-format
-msgid "job '%s' failed: %s"
-msgstr ""
-
-#, c-format
-msgid "job '%s' is not active"
-msgstr ""
-
-#, c-format
-msgid "job '%s' unexpectedly failed"
-msgstr ""
-
-msgid "lower boundary for worker thread pool"
-msgstr ""
-
-msgid "migration in"
-msgstr ""
-
-#, c-format
-msgid "migration of domain %s is being actively monitored by another thread"
-msgstr ""
-
-#, c-format
-msgid "migration of domain %s is not in post-copy phase"
-msgstr ""
-
-msgid "migration out"
-msgstr ""
-
-msgid "modern nvram specification is not supported by this qemu"
-msgstr ""
-
-#, c-format
-msgid "only bus 'virtio' is supported for input model '%s'"
-msgstr ""
-
-msgid "persistent reservations are not supported with NVRAM"
-msgstr ""
-
-#, c-format
-msgid "post-copy migration of domain %s has not failed"
-msgstr ""
-
-msgid "resetting of nvram is not supported with network backed nvram"
-msgstr ""
-
-msgid "resume failed post-copy migration"
-msgstr ""
-
-#, c-format
-msgid "resuming failed post-copy migration of domain %s already in progress"
-msgstr ""
-
-msgid "resuming failed post-copy migration requires change protection"
-msgstr ""
-
-msgid "resuming failed post-copy migration requires post-copy to be enabled"
-msgstr ""
-
-msgid "set the value for reduction of the IOThread polling time"
-msgstr ""
-
-msgid "slices are not supported with NVRAM"
-msgstr ""
-
-msgid "snapshot"
-msgstr ""
-
-msgid "start"
-msgstr ""
-
-#, c-format
-msgid "thread_pool_max (%d) must be a positive number or -1"
-msgstr ""
-
-#, c-format
-msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
-msgstr ""
-
-msgid "thread_pool_max must be a positive integer"
-msgstr ""
-
-#, c-format
-msgid "thread_pool_min (%d) can't be greater than thread_pool_max (%d)"
-msgstr ""
-
-#, c-format
-msgid "thread_pool_min (%d) must be equal to or greater than -1"
-msgstr ""
-
-#, c-format
-msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
-msgstr ""
-
-msgid ""
-"thread_pool_min and thread_pool_max is not supported by this QEMU binary"
-msgstr ""
-
-msgid "thread_pool_min must be smaller or equal to thread_pool_max"
-msgstr ""
-
-msgid "tunnelFD argument is required for tunnelled migration"
-msgstr ""
-
-#, c-format
-msgid "unexpected migration schema: %d"
-msgstr ""
-
-#, c-format
-msgid "unsupported nvram disk type '%s'"
-msgstr ""
-
-msgid "upper boundary for worker thread pool"
-msgstr ""
-
-msgid "use zero-copy mechanism for migrating memory pages"
-msgstr ""
-
-msgid "wrap xpath results in an common root element"
-msgstr ""
-
-msgid "xpath expression to filter the XML document"
-msgstr ""
-
-msgid "zero-copy is only available for parallel migration"
-msgstr ""
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "okänd disktyp ”%s”"
 
 #~ msgid "%s: unable to determine access mode of fd %d"
 #~ msgstr "%s: kan inte avgöra åtkomsträttigheter på fb: %d"

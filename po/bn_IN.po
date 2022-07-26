@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-06-27 06:24+0000\n"
+"POT-Creation-Date: 2022-07-26 08:13+0000\n"
 "PO-Revision-Date: 2020-06-24 14:36+0000\n"
 "Last-Translator: Akarshan Biswas <akarshan.biswas@gmail.com>\n"
 "Language-Team: Bengali (India) <https://translate.fedoraproject.org/projects/"
@@ -11630,9 +11630,6 @@ msgstr ""
 msgid "Missing source channel attribute for char device"
 msgstr "ক্যারেক্টার ডিভাইসের ক্ষেত্রে সোর্স হোস্ট বৈশিষ্ট্য অনুপস্থিত"
 
-msgid "Missing source element for nvram"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "ক্যারেক্টার ডিভাইসের ক্ষেত্রে সোর্স হোস্ট বৈশিষ্ট্য অনুপস্থিত"
 
@@ -17295,10 +17292,6 @@ msgstr "guestfwd পোর্টের বিন্যাস নির্ধা�
 msgid "Unable to freeze filesystems"
 msgstr "সকেট নির্মাণ করতে ব্যর্থ"
 
-#, c-format
-msgid "Unable to generate diffie-hellman parameters: %s"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unable to get ACLs on %s"
 msgstr "%s খুলতে ব্যর্থ"
@@ -17519,9 +17512,6 @@ msgstr "ইন্টারফেস সংক্রান্ত সংক্র�
 msgid "Unable to get interface parameters"
 msgstr "ইন্টারফেস '%s' প্রাপ্ত করতে ব্যর্থ"
 
-msgid "Unable to get key length for diffie-hellman parameters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "%s PCI ডিভাইস পুনরায় নির্ধারণ করতে ব্যর্থ: %s"
@@ -17692,10 +17682,6 @@ msgstr ""
 #, fuzzy
 msgid "Unable to initialize condition variable"
 msgstr "কন্ডিশন ভেরিয়েবল আরম্ভ করতে ব্যর্থ"
-
-#, c-format
-msgid "Unable to initialize diffie-hellman parameters: %s"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to initialize lease %s"
@@ -22081,6 +22067,10 @@ msgstr "স্ন্যাপশটে অনুপস্থিত ডোমে�
 msgid "cannot migrate domain with I/O error"
 msgstr "ডোমেইন একটি পৃথক হোস্টে মাইগ্রেট করুন"
 
+#, c-format
+msgid "cannot migrate domain: %s"
+msgstr ""
+
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr ""
 
@@ -22792,6 +22782,11 @@ msgstr "MAC ঠিকানা '%s' নেটওয়ার্ক '%s' এ প�
 msgid "cannot use custom tap device in session mode"
 msgstr "সেশানের অধিকর্তা হতে ব্যর্থ"
 
+msgid ""
+"cannot use feature-based firmware autoselection when firmware autoselection "
+"is disabled"
+msgstr ""
+
 #, fuzzy
 msgid "cannot use namespaces in session mode"
 msgstr "সেশানের অধিকর্তা হতে ব্যর্থ"
@@ -22853,10 +22848,10 @@ msgstr "cd: %s: %s"
 msgid "cd: command valid only in interactive mode"
 msgstr "cd: শুধুমাত্র ইন্টারেক্টিভ মোডে ব্যবহারযোগ্য কমান্ড"
 
-msgid "cdrom device without source path not supported"
+msgid "cdrom device with virtio bus isn't supported"
 msgstr ""
 
-msgid "cdrom/floppy device hotplug isn't supported"
+msgid "cdrom device without source path not supported"
 msgstr ""
 
 #, fuzzy
@@ -27269,6 +27264,15 @@ msgstr ""
 msgid "firmware auto selection not implemented for this driver"
 msgstr ""
 
+msgid ""
+"firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
+"'secure-boot' is disabled"
+msgstr ""
+
+#, c-format
+msgid "firmware type '%s' does not support nvram"
+msgstr ""
+
 msgid "fixed audio settings requires mixing engine"
 msgstr ""
 
@@ -27288,6 +27292,9 @@ msgstr ""
 #, fuzzy
 msgid "floor attribute is not supported for this config"
 msgstr "ram অ্যাট্রিবিউট শুধুমাত্র qxl এর ধরনের জন্য সমর্থিত"
+
+msgid "floppy device hotplug isn't supported"
+msgstr ""
 
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr ""
@@ -27662,6 +27669,9 @@ msgstr "info মাইগ্রেশনের উত্তরের মধ্�
 #, fuzzy
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "info মাইগ্রেশনের উত্তরের মধ্যে প্রত্যুত্তরের অবস্থা অনুপস্থিত রয়েছে"
+
+msgid "guestReset is not supported with this version of QEMU"
+msgstr ""
 
 msgid "guestfwd channel does not define a target address"
 msgstr "guestfwd চ্যানেল দ্বারা কোনো টার্গেট ঠিকানা নির্ধারণ করা হয়নি"
@@ -28540,9 +28550,6 @@ msgstr "অজানা প্রোটোকল '%s'"
 msgid "invalid backing protocol string '%s'"
 msgstr "%s-র মধ্যে পুল সংক্রান্ত অবৈধ নির্দেশক"
 
-msgid "invalid cache size in query-migrate-cache-size reply"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "invalid capability_filters capability '%s'"
 msgstr "'%s'-র জন্য ডিভাইস সংক্রান্ত কোনো ক্ষমতা উপলব্ধ নেই"
@@ -29082,6 +29089,10 @@ msgstr ""
 #, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "sgio শুধুমাত্র scsi হোস্ট ডিভাইসের ক্ষেত্রে সমর্থিত"
+
+#, c-format
+msgid "iommu model '%s' can't have address"
+msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr ""
@@ -29746,6 +29757,24 @@ msgstr ""
 #, fuzzy, c-format
 msgid "live update of device '%s' is not supported"
 msgstr "hostdev মোড '%s' সমর্থিত নয়"
+
+msgid ""
+"loader attribute 'readonly' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'secure' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'type' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid "loader path cannot be specified when firmware autoselection is enabled"
+msgstr ""
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
@@ -32695,6 +32724,9 @@ msgstr ""
 msgid "number of read operations:"
 msgstr "কর্ম চলাকালীন সময়সীমার উত্তীর্ণ হয়েছে"
 
+msgid "number of seconds the daemon will run without any active connection"
+msgstr ""
+
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr ""
 
@@ -32738,6 +32770,11 @@ msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr "এই QEMU বাইনারি দ্বারা SATA সমর্থিত হয় না"
 
 msgid "nvram address type must be spaprvio"
+msgstr ""
+
+msgid ""
+"nvram attribute 'template' cannot be specified when firmware autoselection "
+"is enabled"
 msgstr ""
 
 #, fuzzy
@@ -34427,7 +34464,8 @@ msgstr "vCPU-র সংখ্যা সর্বাধিক সংখ্যা�
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
 
-msgid "requested size must be smaller than or equal to @size"
+#, c-format
+msgid "requested size must be smaller than or equal to @size (%lluKiB)"
 msgstr ""
 
 msgid "requested size of the cache (in bytes) used for compression"
@@ -34936,6 +34974,9 @@ msgid "set server workerpool parameters"
 msgstr "সময় নির্ধারণকারী সংক্রান্ত পরামিতি প্রদর্শন/স্থাপন"
 
 msgid "set server's client-related configuration limits"
+msgstr ""
+
+msgid "set the auto shutdown timeout of the daemon"
 msgstr ""
 
 msgid "set the bandwidth limit in MiB/s"
@@ -35535,9 +35576,9 @@ msgstr "স্টোরেজ পুলে ধরন অ্যাট্রিব
 msgid "storage pool only supports LUKS encrypted volumes"
 msgstr "সংগ্রহের পুল দ্বারা এনক্রিপ্ট করা ভলিউম সমর্থিত হয় ন"
 
-#, fuzzy, c-format
-msgid "storage pool protocol ver '%s' is malformed"
-msgstr "সংরক্ষণের পুল '%s' পূর্বেই সক্রিয় করা হয়েছে"
+#, c-format
+msgid "storage pool protocol ver '%s' must not contain ','"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
@@ -37800,10 +37841,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "অজানা ডিস্ক স্ন্যাপশট ড্রাইভার '%s'"
 
 #, c-format
-msgid "unknown disk type '%s'"
-msgstr "অজানা ধরনের ডিস্ক '%s'"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "অজানা ড্রাইভার ফর্ম্যাট মান '%s'"
 
@@ -39635,6 +39672,13 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s <string>]"
+
+#, fuzzy
+#~ msgid "storage pool protocol ver '%s' is malformed"
+#~ msgstr "সংরক্ষণের পুল '%s' পূর্বেই সক্রিয় করা হয়েছে"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "অজানা ধরনের ডিস্ক '%s'"
 
 #, fuzzy
 #~ msgid "'startupPolicy' is only valid for 'file' type volume"

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-06-27 06:24+0000\n"
+"POT-Creation-Date: 2022-07-26 08:13+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -11588,9 +11588,6 @@ msgstr "JSON స్థితి పత్రము నందు దొరకన�
 msgid "Missing source channel attribute for char device"
 msgstr "అక్షర పరికరము కొరకు మూలపు హోస్టు యాట్రిబ్యూట్‌ను తప్పిస్తున్నది"
 
-msgid "Missing source element for nvram"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "అక్షర పరికరము కొరకు మూలపు హోస్టు యాట్రిబ్యూట్‌ను తప్పిస్తున్నది"
 
@@ -17236,10 +17233,6 @@ msgstr "సమయం ఫార్మాట్ చేయలేదు"
 msgid "Unable to freeze filesystems"
 msgstr "ఫైల్‌సిస్టమ్ %s తెరువలేదు"
 
-#, c-format
-msgid "Unable to generate diffie-hellman parameters: %s"
-msgstr "డిఫైన్-హెల్‌మాన్ పారామితులను జనియింపచేయలేదు: %s"
-
 #, fuzzy, c-format
 msgid "Unable to get ACLs on %s"
 msgstr "%s కొరకు LVM కీ పొందలేదు"
@@ -17454,9 +17447,6 @@ msgstr "ఈ ప్లాట్‌ఫాం పైన ఇంటర్ఫేస్
 msgid "Unable to get interface parameters"
 msgstr "ఇంటర్ఫేస్ పారామితులను పొందలేదు"
 
-msgid "Unable to get key length for diffie-hellman parameters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "ఫైల్ వివరణి %d యాక్సెస్ చేయలేదు"
@@ -17614,10 +17604,6 @@ msgstr ""
 #, fuzzy
 msgid "Unable to initialize condition variable"
 msgstr "నియమ చరరాశిని సిద్దముచేయలేక పోయింది"
-
-#, c-format
-msgid "Unable to initialize diffie-hellman parameters: %s"
-msgstr "డిఫైన్-హెల్‌మాన్ పారామితులను సిద్దము చేయలేదు: %s"
 
 #, c-format
 msgid "Unable to initialize lease %s"
@@ -21940,6 +21926,10 @@ msgstr "%d స్నాప్‌షాట్లతో డొమైన్ మై�
 msgid "cannot migrate domain with I/O error"
 msgstr "I/O దోషంతో డొమైన్ మైగ్రేట్ చేయలేదు"
 
+#, c-format
+msgid "cannot migrate domain: %s"
+msgstr ""
+
 #, fuzzy
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr "%d స్నాప్‌షాట్లతో డొమైన్ మైగ్రేట్ చేయలేదు"
@@ -22639,6 +22629,11 @@ msgstr "MAC చిరునామా '%s' ను నెట్వర్కు '%s
 msgid "cannot use custom tap device in session mode"
 msgstr "సెషన్ లీడర్ అవ్వలేదు"
 
+msgid ""
+"cannot use feature-based firmware autoselection when firmware autoselection "
+"is disabled"
+msgstr ""
+
 #, fuzzy
 msgid "cannot use namespaces in session mode"
 msgstr "సెషన్ లీడర్ అవ్వలేదు"
@@ -22701,13 +22696,12 @@ msgstr "cd: %s: %s"
 msgid "cd: command valid only in interactive mode"
 msgstr "cd: ఇంటారాక్టివ్ రీతినందు మాత్రమే ఆదేశము చెల్లునది"
 
+msgid "cdrom device with virtio bus isn't supported"
+msgstr ""
+
 #, fuzzy
 msgid "cdrom device without source path not supported"
 msgstr "నెట్వర్కు పరికర రకం తోడ్పాటులేదు"
-
-#, fuzzy
-msgid "cdrom/floppy device hotplug isn't supported"
-msgstr "డ్రైవర్ హాట్‌ప్లగ్ తోడ్పాటునిచ్చుటలేదు"
 
 #, fuzzy
 msgid "cell number must be non-negative integer or -1"
@@ -27059,6 +27053,15 @@ msgstr ""
 msgid "firmware auto selection not implemented for this driver"
 msgstr "ఈ ప్లాట్‌ఫాం పైన ఇంటర్ఫేస్ గణాంకాలు ఇంప్లిమెంట్ కాలేదు"
 
+msgid ""
+"firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
+"'secure-boot' is disabled"
+msgstr ""
+
+#, c-format
+msgid "firmware type '%s' does not support nvram"
+msgstr ""
+
 msgid "fixed audio settings requires mixing engine"
 msgstr ""
 
@@ -27078,6 +27081,9 @@ msgstr ""
 #, fuzzy
 msgid "floor attribute is not supported for this config"
 msgstr "ram యాట్రిబ్యూట్ అనునది qxl రకంకు మాత్రమే తోడ్పాటునిచ్చును"
+
+msgid "floppy device hotplug isn't supported"
+msgstr ""
 
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr ""
@@ -27445,6 +27451,9 @@ msgstr "guest-get-vcpus ప్రత్యుత్తరంనందు రి�
 
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "guest-get-vcpus ప్రత్యుత్తరంనందు రిటర్న్ దత్తాంశం దొరకలేదు"
+
+msgid "guestReset is not supported with this version of QEMU"
+msgstr ""
 
 msgid "guestfwd channel does not define a target address"
 msgstr "guestfwd ఛానల్ లక్ష్యపు చిరునామాను నిర్వచించుటలేదు"
@@ -28317,9 +28326,6 @@ msgstr "తెలియని నిభందన(ప్రోటోకాల్)
 msgid "invalid backing protocol string '%s'"
 msgstr "%sనందు చెల్లని నిల్వ పూల్ సూచకి"
 
-msgid "invalid cache size in query-migrate-cache-size reply"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "invalid capability_filters capability '%s'"
 msgstr "చెల్లని సామర్ధ్యపు రకం"
@@ -28846,6 +28852,10 @@ msgstr ""
 #, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "vhost-net అనునది virtio నెట్వర్కు యింటర్ఫేసెస్ కొరకు మాత్రమే తోడ్పాటునిచ్చును"
+
+#, c-format
+msgid "iommu model '%s' can't have address"
+msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr ""
@@ -29498,6 +29508,24 @@ msgstr ""
 #, c-format
 msgid "live update of device '%s' is not supported"
 msgstr "పరికరం '%s' యొక్క లైవ్ నవీకరణ తోడ్పాటునీయదు"
+
+msgid ""
+"loader attribute 'readonly' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'secure' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'type' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid "loader path cannot be specified when firmware autoselection is enabled"
+msgstr ""
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
@@ -32427,6 +32455,9 @@ msgstr "భాగస్వామ్య మెమొరీ సేవ స్లీ
 msgid "number of read operations:"
 msgstr "చదువు ఆపరేషన్ల సంఖ్య:"
 
+msgid "number of seconds the daemon will run without any active connection"
+msgstr ""
+
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr "కొత్తగా అనుబందించిన పోర్ట్స్ పైన ట్రాఫిక్ ఏన్ని క్షణాలకు వచ్చిపడాలి"
 
@@ -32470,6 +32501,11 @@ msgstr "ఈ QEMU బైనరీ తో అచేతనమైన భాగస్
 
 msgid "nvram address type must be spaprvio"
 msgstr "nvram చిరునామా రకం తప్పక spaprvio కావాలి"
+
+msgid ""
+"nvram attribute 'template' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "ఈ QEMU బైనరీ చేత nvram పరికరం తోడ్పాటునీయదు"
@@ -34165,7 +34201,8 @@ msgstr "అభ్యర్దించిన cpu మొత్తం గరిష
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
 
-msgid "requested size must be smaller than or equal to @size"
+#, c-format
+msgid "requested size must be smaller than or equal to @size (%lluKiB)"
 msgstr ""
 
 msgid "requested size of the cache (in bytes) used for compression"
@@ -34654,6 +34691,9 @@ msgid "set server workerpool parameters"
 msgstr "blkio పారామితులు పొందు లేదా అమర్చు"
 
 msgid "set server's client-related configuration limits"
+msgstr ""
+
+msgid "set the auto shutdown timeout of the daemon"
 msgstr ""
 
 #, fuzzy
@@ -35257,9 +35297,9 @@ msgstr "నిల్వ పూల్ టైప్ యాట్రిబ్యూ
 msgid "storage pool only supports LUKS encrypted volumes"
 msgstr "నిల్వ పూల్ ఎన్క్రిప్టెడ్ వాల్యూములను మద్దతించదు"
 
-#, fuzzy, c-format
-msgid "storage pool protocol ver '%s' is malformed"
-msgstr "నిల్వ పూల్ '%s' యిప్పటికే క్రియాశీలముగా వుంది"
+#, c-format
+msgid "storage pool protocol ver '%s' must not contain ','"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
@@ -37511,10 +37551,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "తెలియని డిస్కు స్నాప్‌షాట్ డ్రైవర్ '%s'"
 
 #, c-format
-msgid "unknown disk type '%s'"
-msgstr "తెలియని డిస్కు రకము '%s'"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "తెలియని డ్రైవర్ ఫార్మాట్ విలువ '%s'"
 
@@ -39336,6 +39372,23 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Unable to generate diffie-hellman parameters: %s"
+#~ msgstr "డిఫైన్-హెల్‌మాన్ పారామితులను జనియింపచేయలేదు: %s"
+
+#~ msgid "Unable to initialize diffie-hellman parameters: %s"
+#~ msgstr "డిఫైన్-హెల్‌మాన్ పారామితులను సిద్దము చేయలేదు: %s"
+
+#, fuzzy
+#~ msgid "cdrom/floppy device hotplug isn't supported"
+#~ msgstr "డ్రైవర్ హాట్‌ప్లగ్ తోడ్పాటునిచ్చుటలేదు"
+
+#, fuzzy
+#~ msgid "storage pool protocol ver '%s' is malformed"
+#~ msgstr "నిల్వ పూల్ '%s' యిప్పటికే క్రియాశీలముగా వుంది"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "తెలియని డిస్కు రకము '%s'"
 
 #~ msgid "'startupPolicy' is only valid for 'file' type volume"
 #~ msgstr "'startupPolicy' అనునది 'file' రకం వాల్యూమ్ కొరకు మాత్రమే చెల్లునది"

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-06-27 06:24+0000\n"
+"POT-Creation-Date: 2022-07-26 08:13+0000\n"
 "PO-Revision-Date: 2015-03-03 06:01+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (Latin) (http://www.transifex.com/projects/p/fedora/"
@@ -11418,9 +11418,6 @@ msgstr ""
 msgid "Missing source channel attribute for char device"
 msgstr "Nedostaje osobina izvornog domaćina za znakovni uređaj"
 
-msgid "Missing source element for nvram"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "Nedostaje osobina izvornog domaćina za znakovni uređaj"
 
@@ -16967,10 +16964,6 @@ msgstr "ne mogu da generišem uuid"
 msgid "Unable to freeze filesystems"
 msgstr ""
 
-#, c-format
-msgid "Unable to generate diffie-hellman parameters: %s"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unable to get ACLs on %s"
 msgstr "neuspelo dobavljanje domena „%s“"
@@ -17181,9 +17174,6 @@ msgstr "Neuspelo dobavljanje podataka o sprezi"
 msgid "Unable to get interface parameters"
 msgstr "Neuspelo dobavljanje podataka o sprezi"
 
-msgid "Unable to get key length for diffie-hellman parameters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "neuspelo dobavljanje mreže „%s“"
@@ -17344,10 +17334,6 @@ msgstr ""
 #, fuzzy
 msgid "Unable to initialize condition variable"
 msgstr "neuspelo upisivanje datoteke podešavanja"
-
-#, c-format
-msgid "Unable to initialize diffie-hellman parameters: %s"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to initialize lease %s"
@@ -21614,6 +21600,10 @@ msgstr "preseli domen na drugog domaćina"
 msgid "cannot migrate domain with I/O error"
 msgstr "preseli domen na drugog domaćina"
 
+#, c-format
+msgid "cannot migrate domain: %s"
+msgstr ""
+
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr ""
 
@@ -22317,6 +22307,11 @@ msgstr ""
 msgid "cannot use custom tap device in session mode"
 msgstr ""
 
+msgid ""
+"cannot use feature-based firmware autoselection when firmware autoselection "
+"is disabled"
+msgstr ""
+
 msgid "cannot use namespaces in session mode"
 msgstr ""
 
@@ -22375,10 +22370,10 @@ msgstr ""
 msgid "cd: command valid only in interactive mode"
 msgstr ""
 
-msgid "cdrom device without source path not supported"
+msgid "cdrom device with virtio bus isn't supported"
 msgstr ""
 
-msgid "cdrom/floppy device hotplug isn't supported"
+msgid "cdrom device without source path not supported"
 msgstr ""
 
 msgid "cell number must be non-negative integer or -1"
@@ -26742,6 +26737,15 @@ msgstr ""
 msgid "firmware auto selection not implemented for this driver"
 msgstr ""
 
+msgid ""
+"firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
+"'secure-boot' is disabled"
+msgstr ""
+
+#, c-format
+msgid "firmware type '%s' does not support nvram"
+msgstr ""
+
 msgid "fixed audio settings requires mixing engine"
 msgstr ""
 
@@ -26759,6 +26763,9 @@ msgid ""
 msgstr ""
 
 msgid "floor attribute is not supported for this config"
+msgstr ""
+
+msgid "floppy device hotplug isn't supported"
 msgstr ""
 
 msgid "fmode and dmode must be used with accessmode=mapped"
@@ -27116,6 +27123,9 @@ msgid "guest-get-users reply was missing return data"
 msgstr ""
 
 msgid "guest-get-vcpus reply was missing return data"
+msgstr ""
+
+msgid "guestReset is not supported with this version of QEMU"
 msgstr ""
 
 msgid "guestfwd channel does not define a target address"
@@ -27978,9 +27988,6 @@ msgstr "neispravan pokazivač domena u %s"
 msgid "invalid backing protocol string '%s'"
 msgstr "neispravan pokazivač skladišta u %s"
 
-msgid "invalid cache size in query-migrate-cache-size reply"
-msgstr ""
-
 #, c-format
 msgid "invalid capability_filters capability '%s'"
 msgstr ""
@@ -28505,6 +28512,10 @@ msgid "ioeventfd is not supported with vhostuser disk"
 msgstr ""
 
 msgid "iommu driver option is only supported for virtio devices"
+msgstr ""
+
+#, c-format
+msgid "iommu model '%s' can't have address"
 msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
@@ -29156,6 +29167,24 @@ msgstr ""
 #, fuzzy, c-format
 msgid "live update of device '%s' is not supported"
 msgstr "Vrsta mreže %d nije podržana"
+
+msgid ""
+"loader attribute 'readonly' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'secure' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'type' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid "loader path cannot be specified when firmware autoselection is enabled"
+msgstr ""
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
@@ -32076,6 +32105,9 @@ msgstr ""
 msgid "number of read operations:"
 msgstr ""
 
+msgid "number of seconds the daemon will run without any active connection"
+msgstr ""
+
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr ""
 
@@ -32114,6 +32146,11 @@ msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr ""
 
 msgid "nvram address type must be spaprvio"
+msgstr ""
+
+msgid ""
+"nvram attribute 'template' cannot be specified when firmware autoselection "
+"is enabled"
 msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
@@ -33746,7 +33783,8 @@ msgstr "vCPU brojač je prešao svoj maksimum: %d > %d"
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
 
-msgid "requested size must be smaller than or equal to @size"
+#, c-format
+msgid "requested size must be smaller than or equal to @size (%lluKiB)"
 msgstr ""
 
 msgid "requested size of the cache (in bytes) used for compression"
@@ -34242,6 +34280,9 @@ msgid "set server workerpool parameters"
 msgstr "prikaži/podesi parametre planera"
 
 msgid "set server's client-related configuration limits"
+msgstr ""
+
+msgid "set the auto shutdown timeout of the daemon"
 msgstr ""
 
 msgid "set the bandwidth limit in MiB/s"
@@ -34837,7 +34878,7 @@ msgid "storage pool only supports LUKS encrypted volumes"
 msgstr "skladište ne podržava pravljenje diska"
 
 #, c-format
-msgid "storage pool protocol ver '%s' is malformed"
+msgid "storage pool protocol ver '%s' must not contain ','"
 msgstr ""
 
 #, c-format
@@ -37061,10 +37102,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "nepoznat „%s“ uređaj za pokretanje"
 
 #, fuzzy, c-format
-msgid "unknown disk type '%s'"
-msgstr "nepoznata vrsta „%s“"
-
-#, fuzzy, c-format
 msgid "unknown driver format value '%s'"
 msgstr "nepoznat „%s“ uređaj za pokretanje"
 
@@ -38871,6 +38908,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <niska>"
+
+#, fuzzy
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "nepoznata vrsta „%s“"
 
 #, fuzzy
 #~ msgid "domain save job"

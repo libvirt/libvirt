@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-06-27 06:24+0000\n"
+"POT-Creation-Date: 2022-07-26 08:13+0000\n"
 "PO-Revision-Date: 2015-02-27 07:08+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
@@ -11816,9 +11816,6 @@ msgstr "JSON ಸ್ಥಿತಿ ದಸ್ತಾವೇಜಿನಲ್ಲಿ socks
 msgid "Missing source channel attribute for char device"
 msgstr "char ಸಾಧನಕ್ಕಾಗಿನ ಮೂಲದ ಆತಿಥೇಯ ವೈಶಿಷ್ಟ್ಯವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
-msgid "Missing source element for nvram"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "char ಸಾಧನಕ್ಕಾಗಿನ ಮೂಲದ ಆತಿಥೇಯ ವೈಶಿಷ್ಟ್ಯವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
@@ -17581,10 +17578,6 @@ msgstr "ಸಮಯವನ್ನು ಫಾರ್ಮಾಟ್ ಮಾಡಲು ಸಾ
 msgid "Unable to freeze filesystems"
 msgstr "ಕಡತವ್ಯವಸ್ಥೆ %s ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#, c-format
-msgid "Unable to generate diffie-hellman parameters: %s"
-msgstr "diffie-hellman ನಿಯತಾಂಕಗಳನ್ನು ಉತ್ಪಾದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: %s"
-
 #, fuzzy, c-format
 msgid "Unable to get ACLs on %s"
 msgstr "%s ಗಾಗಿನ LVM ಕೀಲಿಯನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -17799,9 +17792,6 @@ msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ ಸಂಪರ�
 msgid "Unable to get interface parameters"
 msgstr "ಸಂಪರ್ಕಸಾಧನ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-msgid "Unable to get key length for diffie-hellman parameters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "ಕಡತ ವಿವರಣೆಗಾರ %d ಅನ್ನು ನಿಲುಕಿಸಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -17959,10 +17949,6 @@ msgstr ""
 #, fuzzy
 msgid "Unable to initialize condition variable"
 msgstr "ನಿಬಂಧನಾ ವೇರಿಯೇಬಲ್‌ ಅನ್ನು ಆರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
-
-#, c-format
-msgid "Unable to initialize diffie-hellman parameters: %s"
-msgstr "diffie-hellman ನಿಯತಾಂಕಗಳನ್ನು ಆರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: %s"
 
 #, c-format
 msgid "Unable to initialize lease %s"
@@ -22323,6 +22309,10 @@ msgstr "%d ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ಗಳೊಂದಿಗೆ �
 msgid "cannot migrate domain with I/O error"
 msgstr "I/O ದೋಷದೊಂದಿಗೆ ಡೊಮೇನ್‌ ಅನ್ನು ವರ್ಗಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
+#, c-format
+msgid "cannot migrate domain: %s"
+msgstr ""
+
 #, fuzzy
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr "%d ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ಗಳೊಂದಿಗೆ ಡೊಮೇನ್‌ ಅನ್ನು ವರ್ಗಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -23025,6 +23015,11 @@ msgstr "'%s' MAC ವಿಳಾಸವನ್ನು ('%s' ಜಾಲಬಂಧದಲ�
 msgid "cannot use custom tap device in session mode"
 msgstr "ಅಧಿವೇಶನದ ಮುಂದಾಳುವಾಗಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
+msgid ""
+"cannot use feature-based firmware autoselection when firmware autoselection "
+"is disabled"
+msgstr ""
+
 #, fuzzy
 msgid "cannot use namespaces in session mode"
 msgstr "ಅಧಿವೇಶನದ ಮುಂದಾಳುವಾಗಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -23087,13 +23082,12 @@ msgstr "cd: %s: %s"
 msgid "cd: command valid only in interactive mode"
 msgstr "cd: ಆದೇಶಯು ಕೇವಲ ಸಂವಾದಾತ್ಮಕ ಕ್ರಮದಲ್ಲಿ ಮಾತ್ರ ಮಾನ್ಯವಾಗಿರುತ್ತದೆ"
 
+msgid "cdrom device with virtio bus isn't supported"
+msgstr ""
+
 #, fuzzy
 msgid "cdrom device without source path not supported"
 msgstr "ಜಾಲಬಂಧ ಸಾಧನದ ಬಗೆಯು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
-
-#, fuzzy
-msgid "cdrom/floppy device hotplug isn't supported"
-msgstr "ಡ್ರೈವ್ ಹಾಟ್‌ಪ್ಲಗ್‌ಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 
 #, fuzzy
 msgid "cell number must be non-negative integer or -1"
@@ -27483,6 +27477,15 @@ msgstr ""
 msgid "firmware auto selection not implemented for this driver"
 msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ ಸಂಪರ್ಕಸಾಧನ ಅಂಕಿ ಅಂಶಗಳನ್ನು ಅನ್ವಯಿಸಲಾಗಿಲ್ಲ"
 
+msgid ""
+"firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
+"'secure-boot' is disabled"
+msgstr ""
+
+#, c-format
+msgid "firmware type '%s' does not support nvram"
+msgstr ""
+
 msgid "fixed audio settings requires mixing engine"
 msgstr ""
 
@@ -27503,6 +27506,9 @@ msgstr ""
 #, fuzzy
 msgid "floor attribute is not supported for this config"
 msgstr "ram ಗುಣವಿಶೇಷವನ್ನು ಕೇವಲ qxl ಬಗೆಗೆ ಮಾತ್ರ ಬೆಂಬಲಿಸಲಾಗುತ್ತದೆ"
+
+msgid "floppy device hotplug isn't supported"
+msgstr ""
 
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr ""
@@ -27873,6 +27879,9 @@ msgstr "ಮರಳಿಸಲಾದ ದತ್ತಾಂಶದಲ್ಲಿ guest-get-
 
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "ಮರಳಿಸಲಾದ ದತ್ತಾಂಶದಲ್ಲಿ guest-get-vcpus  ಪ್ರತ್ಯುತ್ತರವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+msgid "guestReset is not supported with this version of QEMU"
+msgstr ""
 
 msgid "guestfwd channel does not define a target address"
 msgstr "guestfwd ಚಾನಲ್ ಒಂದು ಗುರಿಯ ವಿಳಾಸವನ್ನು ಸೂಚಿಸುವುದಿಲ್ಲ"
@@ -28754,9 +28763,6 @@ msgstr "ಅಜ್ಞಾತ ಪ್ರೊಟೊಕಾಲ್ '%s'"
 msgid "invalid backing protocol string '%s'"
 msgstr "%s ನಲ್ಲಿ ಅಮಾನ್ಯವಾದ ಶೇಖರಣಾ ಪೂಲ್ ಸೂಚಕ"
 
-msgid "invalid cache size in query-migrate-cache-size reply"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "invalid capability_filters capability '%s'"
 msgstr "ಅಮಾನ್ಯವಾದ ಸಾಮರ್ಥ್ಯದ ಬಗೆ"
@@ -29288,6 +29294,10 @@ msgid "iommu driver option is only supported for virtio devices"
 msgstr ""
 "vhost-net ಎನ್ನುವುದು ಕೇವಲ virtio ಜಾಲಬಂಧದ ಸಂಪರ್ಕಸಾಧನಗಳಿಗಾಗಿ ಮಾತ್ರ "
 "ಬೆಂಬಲಿತವಾಗಿರುತ್ತದೆ"
+
+#, c-format
+msgid "iommu model '%s' can't have address"
+msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr ""
@@ -29948,6 +29958,24 @@ msgstr ""
 #, c-format
 msgid "live update of device '%s' is not supported"
 msgstr "'%s' ಸಾಧನದ ಲೈವ್ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಬೆಂಬಲವಿಲ್ಲ"
+
+msgid ""
+"loader attribute 'readonly' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'secure' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'type' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid "loader path cannot be specified when firmware autoselection is enabled"
+msgstr ""
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
@@ -32903,6 +32931,9 @@ msgstr "ಹಂಚಲಾದ ಮೆಮೊರಿಯ ಸೇವೆಯು ಜಡಗೊ
 msgid "number of read operations:"
 msgstr "ಓದುವ ಕಾರ್ಯಾಚರಣೆಯ ಸಂಖ್ಯೆ:"
 
+msgid "number of seconds the daemon will run without any active connection"
+msgstr ""
+
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr "ಹೊಸದಾಗಿ ಸಂಪರ್ಕಿತಗೊಂಡ squelch ಸಂಚಾರದಲ್ಲಿ ಸೆಕೆಂಡುಗಳ ಸಂಖ್ಯೆ"
 
@@ -32946,6 +32977,11 @@ msgstr "ಈ QEMU ಬೈನರಿಯೊಂದಿಗೆ ಹಂಚಲಾದ ಮೆ�
 
 msgid "nvram address type must be spaprvio"
 msgstr "nvram ವಿಳಾಸದ ಬಗೆಯು spaprvio ಆಗಿರಬೇಕು"
+
+msgid ""
+"nvram attribute 'template' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "ಈ QEMU ಬೈನರಿಯಿಂದ nvram ಸಾಧನಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ"
@@ -34647,7 +34683,8 @@ msgstr "ಮನವಿ ಮಾಡಲಾದ cpu ಮೊತ್ತವು ಗರಿಷ�
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
 
-msgid "requested size must be smaller than or equal to @size"
+#, c-format
+msgid "requested size must be smaller than or equal to @size (%lluKiB)"
 msgstr ""
 
 msgid "requested size of the cache (in bytes) used for compression"
@@ -35145,6 +35182,9 @@ msgid "set server workerpool parameters"
 msgstr "blkio ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆ ಅಥವ ಹೊಂದಿಸು"
 
 msgid "set server's client-related configuration limits"
+msgstr ""
+
+msgid "set the auto shutdown timeout of the daemon"
 msgstr ""
 
 #, fuzzy
@@ -35753,9 +35793,9 @@ msgstr "ಶೇಖರಣಾ ಪೂಲ್ ಬಗೆಯ ವೈಶಿಷ್ಟ್ಯ
 msgid "storage pool only supports LUKS encrypted volumes"
 msgstr "ಗೂಢಲಿಪೀಕರಣಗೊಂಡ ಪರಿಮಾಣಗಳನ್ನು ಶೇಖರಣಾ ಪೂಲ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
 
-#, fuzzy, c-format
-msgid "storage pool protocol ver '%s' is malformed"
-msgstr "'%s' ಶೇಖರಣಾ ಪೂಲ್ ಈಗಾಗಲೆ ಸಕ್ರಿಯವಾಗಿದೆ"
+#, c-format
+msgid "storage pool protocol ver '%s' must not contain ','"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
@@ -38022,10 +38062,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "ಅಜ್ಞಾತ ಡಿಸ್ಕಿನ ಸ್ನಾಪ್‌ಶಾಟ್ ಚಾಲಕ '%s'"
 
 #, c-format
-msgid "unknown disk type '%s'"
-msgstr "ಅಜ್ಞಾತ ಡಿಸ್ಕಿನ ಬಗೆ '%s'"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "ಅಜ್ಞಾತವಾದ ಚಾಲಕದ ವಿನ್ಯಾಸದ ಮೌಲ್ಯ '%s'"
 
@@ -39859,6 +39895,23 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Unable to generate diffie-hellman parameters: %s"
+#~ msgstr "diffie-hellman ನಿಯತಾಂಕಗಳನ್ನು ಉತ್ಪಾದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: %s"
+
+#~ msgid "Unable to initialize diffie-hellman parameters: %s"
+#~ msgstr "diffie-hellman ನಿಯತಾಂಕಗಳನ್ನು ಆರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: %s"
+
+#, fuzzy
+#~ msgid "cdrom/floppy device hotplug isn't supported"
+#~ msgstr "ಡ್ರೈವ್ ಹಾಟ್‌ಪ್ಲಗ್‌ಗೆ ಬೆಂಬಲವಿಲ್ಲ"
+
+#, fuzzy
+#~ msgid "storage pool protocol ver '%s' is malformed"
+#~ msgstr "'%s' ಶೇಖರಣಾ ಪೂಲ್ ಈಗಾಗಲೆ ಸಕ್ರಿಯವಾಗಿದೆ"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "ಅಜ್ಞಾತ ಡಿಸ್ಕಿನ ಬಗೆ '%s'"
 
 #~ msgid "'startupPolicy' is only valid for 'file' type volume"
 #~ msgstr ""

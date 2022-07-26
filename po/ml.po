@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-06-27 06:24+0000\n"
+"POT-Creation-Date: 2022-07-26 08:13+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -11701,9 +11701,6 @@ msgstr "JSON  അവസ്ഥയുടെ രേഖയില്‍ സോക്�
 msgid "Missing source channel attribute for char device"
 msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ ഹോസ്റ്റ് വിശേഷത"
 
-msgid "Missing source element for nvram"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ ഹോസ്റ്റ് വിശേഷത"
 
@@ -17421,10 +17418,6 @@ msgstr "സമയം ഫോര്‍മാറ്റ് ചെയ്യാന്�
 msgid "Unable to freeze filesystems"
 msgstr "%s ഫയല്‍സിസ്റ്റം തുറക്കുവാന്‍ സാധ്യമല്ല"
 
-#, c-format
-msgid "Unable to generate diffie-hellman parameters: %s"
-msgstr "diffie-hellman പരാമീറ്ററുകള്‍ ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല: %s"
-
 #, fuzzy, c-format
 msgid "Unable to get ACLs on %s"
 msgstr "%s-നുള്ള എല്‍വിഎം കീ കാണുന്നില്ല"
@@ -17639,9 +17632,6 @@ msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ സമ്പര്‍�
 msgid "Unable to get interface parameters"
 msgstr "ഇന്റെര്‍ഫേസ് പരാമീറ്റര്‍ കിട്ടുന്നില്ല"
 
-msgid "Unable to get key length for diffie-hellman parameters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "%d ഫയല്‍ വിവരണം ലഭ്യമാക്കുവന്‍ സാധ്യമല്ല"
@@ -17799,10 +17789,6 @@ msgstr ""
 #, fuzzy
 msgid "Unable to initialize condition variable"
 msgstr "കണ്ടീഷന്‍ വേരിയബിള്‍ ആരംഭിക്കുവാന്‍ സാധ്യമായില്ല"
-
-#, c-format
-msgid "Unable to initialize diffie-hellman parameters: %s"
-msgstr "diffie-hellman പരാമീറ്ററുകള്‍ ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല: %s"
 
 #, c-format
 msgid "Unable to initialize lease %s"
@@ -22145,6 +22131,10 @@ msgstr "%d സ്നാപ്പ്ഷോട്ടുകളുമായി ഡ�
 msgid "cannot migrate domain with I/O error"
 msgstr "ഐ/ഒ പിശകുള്ള ഡൊമെയിന്‍ നീക്കുവാന്‍ സാധ്യമല്ല"
 
+#, c-format
+msgid "cannot migrate domain: %s"
+msgstr ""
+
 #, fuzzy
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr "%d സ്നാപ്പ്ഷോട്ടുകളുമായി ഡൊമെയിന്‍ നീക്കുവാന്‍ സാധ്യമല്ല"
@@ -22850,6 +22840,11 @@ msgstr "മാക് വിലാസം '%s', നെറ്റ്‌വര്‍�
 msgid "cannot use custom tap device in session mode"
 msgstr "സെഷന്‍ ലീഡര്‍ ആകുവാന്‍ സാധ്യമല്ല"
 
+msgid ""
+"cannot use feature-based firmware autoselection when firmware autoselection "
+"is disabled"
+msgstr ""
+
 #, fuzzy
 msgid "cannot use namespaces in session mode"
 msgstr "സെഷന്‍ ലീഡര്‍ ആകുവാന്‍ സാധ്യമല്ല"
@@ -22912,13 +22907,12 @@ msgstr "cd: %s: %s"
 msgid "cd: command valid only in interactive mode"
 msgstr "cd: ഇന്ററാക്ടീവ് മോഡില്‍ മാത്രം കമാന്‍ഡ് പ്രവര്‍ത്തിക്കുന്നു"
 
+msgid "cdrom device with virtio bus isn't supported"
+msgstr ""
+
 #, fuzzy
 msgid "cdrom device without source path not supported"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് തരം പിന്തുണയ്ക്കുന്നില്ല"
-
-#, fuzzy
-msgid "cdrom/floppy device hotplug isn't supported"
-msgstr "ഡ്രൈവ് hotplug പിന്തുണയ്ക്കുന്നില്ല"
 
 #, fuzzy
 msgid "cell number must be non-negative integer or -1"
@@ -27289,6 +27283,15 @@ msgstr ""
 msgid "firmware auto selection not implemented for this driver"
 msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ ഇന്റര്‍ഫെയിസ് സ്റ്റാറ്റ്സ് ലഭ്യമല്ല"
 
+msgid ""
+"firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
+"'secure-boot' is disabled"
+msgstr ""
+
+#, c-format
+msgid "firmware type '%s' does not support nvram"
+msgstr ""
+
 msgid "fixed audio settings requires mixing engine"
 msgstr ""
 
@@ -27309,6 +27312,9 @@ msgstr ""
 #, fuzzy
 msgid "floor attribute is not supported for this config"
 msgstr "ram വിശേഷത qxl തരത്തിലുള്ളതിനു് മാത്രം പിന്തുണയ്ക്കുന്നു"
+
+msgid "floppy device hotplug isn't supported"
+msgstr ""
 
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr ""
@@ -27678,6 +27684,9 @@ msgstr "guest-get-vcpus മറുപടിയില്‍ തിരികെയ�
 
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "guest-get-vcpus മറുപടിയില്‍ തിരികെയുള്ള ഡേറ്റാ ലഭ്യമല്ല"
+
+msgid "guestReset is not supported with this version of QEMU"
+msgstr ""
 
 msgid "guestfwd channel does not define a target address"
 msgstr "guestfwd ചാനല്‍ ലക്ഷ്യ വിലാസം നിഷ്കര്‍ഷിച്ചിട്ടില്ല"
@@ -28554,9 +28563,6 @@ msgstr "അപരിചിതമായ പ്രോട്ടോക്കോള�
 msgid "invalid backing protocol string '%s'"
 msgstr "%s-ല്‍ തെറ്റായ സ്റ്റോറേജ് പൂള്‍ പോയിന്റര്‍"
 
-msgid "invalid cache size in query-migrate-cache-size reply"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "invalid capability_filters capability '%s'"
 msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷത"
@@ -29083,6 +29089,10 @@ msgstr ""
 #, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "virtio നെറ്റ്‌വര്‍ക്ക് ഇന്റര്‍ഫെയിസുകള്‍ക്കു് മാത്രമേ vhost-net പിന്തുണയ്ക്കുന്നുള്ളൂ"
+
+#, c-format
+msgid "iommu model '%s' can't have address"
+msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr ""
@@ -29735,6 +29745,24 @@ msgstr ""
 #, c-format
 msgid "live update of device '%s' is not supported"
 msgstr "'%s' ഡിവൈസിന്റെ ലൈവ് പരിഷ്കരണം പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid ""
+"loader attribute 'readonly' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'secure' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'type' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid "loader path cannot be specified when firmware autoselection is enabled"
+msgstr ""
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
@@ -32663,6 +32691,9 @@ msgstr "മെമ്മറി പങ്കിടല്‍ സേവനം സ്
 msgid "number of read operations:"
 msgstr "ലഭ്യമാക്കുവാനുള്ള പ്രക്രിയകളുടെ എണ്ണം:"
 
+msgid "number of seconds the daemon will run without any active connection"
+msgstr ""
+
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr "പുതിയതായി കണക്ട് ചെയ്യേണ്ട പോര്‍ട്ടിലേക്കുള്ള ട്രാഫിക്ക് സ്ക്വല്‍ച്ച് ചെയ്യേണ്ട സമയം"
 
@@ -32706,6 +32737,11 @@ msgstr "ഈ QEMU ലൈബ്രറിയില്‍ പങ്കിടുന�
 
 msgid "nvram address type must be spaprvio"
 msgstr "nvram വിലാസ തരം spaprvio ആയിരിയ്ക്കണം"
+
+msgid ""
+"nvram attribute 'template' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "ഈ ക്യൂഇഎംയു ബൈനറി nvram ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
@@ -34402,7 +34438,8 @@ msgstr "ആവശ്യപ്പെട്ട സിപിയു ഏറ്റവ�
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
 
-msgid "requested size must be smaller than or equal to @size"
+#, c-format
+msgid "requested size must be smaller than or equal to @size (%lluKiB)"
 msgstr ""
 
 msgid "requested size of the cache (in bytes) used for compression"
@@ -34896,6 +34933,9 @@ msgid "set server workerpool parameters"
 msgstr "blkio പാരമീറ്റര്‍ നോക്കുകയോ ക്രമീകരിക്കുകയോ ചെയ്യുക"
 
 msgid "set server's client-related configuration limits"
+msgstr ""
+
+msgid "set the auto shutdown timeout of the daemon"
 msgstr ""
 
 #, fuzzy
@@ -35502,9 +35542,9 @@ msgstr "സംഭരണ പൂള്‍ ലഭ്യമല്ലാത്ത ത
 msgid "storage pool only supports LUKS encrypted volumes"
 msgstr "സ്റ്റോറേജ് പൂള്‍ എന്‍ക്രിപ്റ്റ് ചെയ്ത ഡിവൈസുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#, fuzzy, c-format
-msgid "storage pool protocol ver '%s' is malformed"
-msgstr "സ്റ്റോറേജ് പൂള്‍ '%s' നിലിവില്‍ സജീവമാണു്"
+#, c-format
+msgid "storage pool protocol ver '%s' must not contain ','"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
@@ -37757,10 +37797,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "അപരിചിതമായ ഡിസ്ക് സ്നാപ്പ്ഷോട്ട് ഡ്രൈവര്‍ '%s'"
 
 #, c-format
-msgid "unknown disk type '%s'"
-msgstr "അപരിചിതമായ ഡിസ്ക് രീതി %s"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "അപരിചിതമായ ഡ്രൈവര്‍ ഫോര്‍മാറ്റ് മൂല്ല്യം '%s'"
 
@@ -39583,6 +39619,23 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Unable to generate diffie-hellman parameters: %s"
+#~ msgstr "diffie-hellman പരാമീറ്ററുകള്‍ ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല: %s"
+
+#~ msgid "Unable to initialize diffie-hellman parameters: %s"
+#~ msgstr "diffie-hellman പരാമീറ്ററുകള്‍ ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല: %s"
+
+#, fuzzy
+#~ msgid "cdrom/floppy device hotplug isn't supported"
+#~ msgstr "ഡ്രൈവ് hotplug പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy
+#~ msgid "storage pool protocol ver '%s' is malformed"
+#~ msgstr "സ്റ്റോറേജ് പൂള്‍ '%s' നിലിവില്‍ സജീവമാണു്"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "അപരിചിതമായ ഡിസ്ക് രീതി %s"
 
 #~ msgid "'startupPolicy' is only valid for 'file' type volume"
 #~ msgstr "'startupPolicy', 'file' തരത്തിലുള്ള വോള്യത്തില്‍ മാത്രം ശരിയാകുന്നു"

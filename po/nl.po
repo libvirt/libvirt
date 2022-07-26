@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-06-27 06:24+0000\n"
+"POT-Creation-Date: 2022-07-26 08:13+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -11725,9 +11725,6 @@ msgstr ""
 msgid "Missing source channel attribute for char device"
 msgstr "Ontbrekend bron host attribuut voor karakter apparaat"
 
-msgid "Missing source element for nvram"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "Ontbrekend bron host attribuut voor karakter apparaat"
 
@@ -17472,10 +17469,6 @@ msgid "Unable to freeze filesystems"
 msgstr "kan chardev bestand '%s' niet voor-aanmaken"
 
 #, fuzzy, c-format
-msgid "Unable to generate diffie-hellman parameters: %s"
-msgstr "Kan geheugen parameters niet verkrijgen"
-
-#, fuzzy, c-format
 msgid "Unable to get ACLs on %s"
 msgstr "Kan %s niet openen"
 
@@ -17696,9 +17689,6 @@ msgstr "Verkrijgen van interface informatie mislukte"
 msgid "Unable to get interface parameters"
 msgstr "Kan geheugen parameters niet verkrijgen"
 
-msgid "Unable to get key length for diffie-hellman parameters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "Kan geheugen parameters niet verkrijgen"
@@ -17872,10 +17862,6 @@ msgstr ""
 #, fuzzy
 msgid "Unable to initialize condition variable"
 msgstr "kan conditie variabele niet initialiseren"
-
-#, fuzzy, c-format
-msgid "Unable to initialize diffie-hellman parameters: %s"
-msgstr "kan audit laag niet initialiseren"
 
 #, fuzzy, c-format
 msgid "Unable to initialize lease %s"
@@ -22277,6 +22263,10 @@ msgstr "Keer een domein terug naar een snapshot"
 msgid "cannot migrate domain with I/O error"
 msgstr "migreer domein naar een andere host"
 
+#, c-format
+msgid "cannot migrate domain: %s"
+msgstr ""
+
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr ""
 
@@ -22988,6 +22978,11 @@ msgstr "Kan MAC adres '%s' in netwerk '%s' niet ontleden"
 msgid "cannot use custom tap device in session mode"
 msgstr "kan geen sessie leider worden"
 
+msgid ""
+"cannot use feature-based firmware autoselection when firmware autoselection "
+"is disabled"
+msgstr ""
+
 #, fuzzy
 msgid "cannot use namespaces in session mode"
 msgstr "kan geen sessie leider worden"
@@ -23049,12 +23044,11 @@ msgstr "cd: %s: %s"
 msgid "cd: command valid only in interactive mode"
 msgstr "cd: commando alleen geldig in interactieve mode"
 
-#, fuzzy
-msgid "cdrom device without source path not supported"
-msgstr "station hotplug wordt niet ondersteund"
+msgid "cdrom device with virtio bus isn't supported"
+msgstr ""
 
 #, fuzzy
-msgid "cdrom/floppy device hotplug isn't supported"
+msgid "cdrom device without source path not supported"
 msgstr "station hotplug wordt niet ondersteund"
 
 #, fuzzy
@@ -27456,6 +27450,15 @@ msgstr ""
 msgid "firmware auto selection not implemented for this driver"
 msgstr "virDirCreate is niet geïmplementeerd voor WIN32"
 
+msgid ""
+"firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
+"'secure-boot' is disabled"
+msgstr ""
+
+#, c-format
+msgid "firmware type '%s' does not support nvram"
+msgstr ""
+
 msgid "fixed audio settings requires mixing engine"
 msgstr ""
 
@@ -27475,6 +27478,9 @@ msgstr ""
 #, fuzzy
 msgid "floor attribute is not supported for this config"
 msgstr "Verwijderbare media niet ondersteund voor %s apparaat"
+
+msgid "floppy device hotplug isn't supported"
+msgstr ""
 
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr ""
@@ -27844,6 +27850,9 @@ msgstr "info migratie antwoord miste retour status"
 #, fuzzy
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "info migratie antwoord miste retour status"
+
+msgid "guestReset is not supported with this version of QEMU"
+msgstr ""
 
 msgid "guestfwd channel does not define a target address"
 msgstr "guestfwd kanaal definieert geen doel adres"
@@ -28726,9 +28735,6 @@ msgstr "Onbekend protocol '%s'"
 msgid "invalid backing protocol string '%s'"
 msgstr "ongeldige opslag pool aanwijzer in %s"
 
-msgid "invalid cache size in query-migrate-cache-size reply"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "invalid capability_filters capability '%s'"
 msgstr "geen apparaat mogelijkheden voor '%s'"
@@ -29259,6 +29265,10 @@ msgstr ""
 #, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "vhost-net wordt alleen ondersteund voor virtio netwerk interfaces"
+
+#, c-format
+msgid "iommu model '%s' can't have address"
+msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr ""
@@ -29936,6 +29946,24 @@ msgstr ""
 #, fuzzy, c-format
 msgid "live update of device '%s' is not supported"
 msgstr "hostdev mode '%s' niet ondersteund"
+
+msgid ""
+"loader attribute 'readonly' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'secure' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'type' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid "loader path cannot be specified when firmware autoselection is enabled"
+msgstr ""
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
@@ -32905,6 +32933,9 @@ msgstr ""
 msgid "number of read operations:"
 msgstr "Time-out tijdens het gebruik"
 
+msgid "number of seconds the daemon will run without any active connection"
+msgstr ""
+
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr ""
 
@@ -32948,6 +32979,11 @@ msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
 
 msgid "nvram address type must be spaprvio"
+msgstr ""
+
+msgid ""
+"nvram attribute 'template' cannot be specified when firmware autoselection "
+"is enabled"
 msgstr ""
 
 #, fuzzy
@@ -34637,7 +34673,8 @@ msgstr "vCPU aantal overschrijdt maximum: %d > %d"
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
 
-msgid "requested size must be smaller than or equal to @size"
+#, c-format
+msgid "requested size must be smaller than or equal to @size (%lluKiB)"
 msgstr ""
 
 msgid "requested size of the cache (in bytes) used for compression"
@@ -35147,6 +35184,9 @@ msgid "set server workerpool parameters"
 msgstr "Verkrijgen of instellen van geheugen parameters"
 
 msgid "set server's client-related configuration limits"
+msgstr ""
+
+msgid "set the auto shutdown timeout of the daemon"
 msgstr ""
 
 msgid "set the bandwidth limit in MiB/s"
@@ -35742,9 +35782,9 @@ msgstr "opslag pool is niet actief"
 msgid "storage pool only supports LUKS encrypted volumes"
 msgstr "opslag pool ondersteunt geen versleutelde volumes"
 
-#, fuzzy, c-format
-msgid "storage pool protocol ver '%s' is malformed"
-msgstr "opslag pool '%s' is al actief"
+#, c-format
+msgid "storage pool protocol ver '%s' must not contain ','"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
@@ -37988,10 +38028,6 @@ msgstr "onbekend chr apparaat type '%s'"
 msgid "unknown disk snapshot driver '%s'"
 msgstr "onbekende schijf io mode '%s'"
 
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "onbekend schijf type '%s'"
-
 #, fuzzy, c-format
 msgid "unknown driver format value '%s'"
 msgstr "onbekende timer present waarde '%s'"
@@ -39823,6 +39859,25 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <tekenreeks>"
+
+#, fuzzy
+#~ msgid "Unable to generate diffie-hellman parameters: %s"
+#~ msgstr "Kan geheugen parameters niet verkrijgen"
+
+#, fuzzy
+#~ msgid "Unable to initialize diffie-hellman parameters: %s"
+#~ msgstr "kan audit laag niet initialiseren"
+
+#, fuzzy
+#~ msgid "cdrom/floppy device hotplug isn't supported"
+#~ msgstr "station hotplug wordt niet ondersteund"
+
+#, fuzzy
+#~ msgid "storage pool protocol ver '%s' is malformed"
+#~ msgstr "opslag pool '%s' is al actief"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "onbekend schijf type '%s'"
 
 #, fuzzy
 #~ msgid "Could not find placement for v1 controller %s at %s"

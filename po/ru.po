@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-06-27 06:24+0000\n"
+"POT-Creation-Date: 2022-07-26 08:13+0000\n"
 "PO-Revision-Date: 2022-07-04 01:18+0000\n"
 "Last-Translator: Sergey A. <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1437,7 +1437,8 @@ msgid "'virtio-s390' addresses are no longer supported"
 msgstr ""
 
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
-msgstr "для адаптера типа «fc_host» необходимо указать атрибуты «wwnn» и «wwpn»"
+msgstr ""
+"для адаптера типа «fc_host» необходимо указать атрибуты «wwnn» и «wwpn»"
 
 msgid "(<null>)"
 msgstr ""
@@ -11855,9 +11856,6 @@ msgstr "Документ состояния JSON не содержит поле 
 msgid "Missing source channel attribute for char device"
 msgstr "Отсутствует атрибут исходного канала для символьного устройства"
 
-msgid "Missing source element for nvram"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "Отсутствует атрибут узла источника для символьного устройства"
 
@@ -17597,10 +17595,6 @@ msgid "Unable to freeze filesystems"
 msgstr "Не удалось заморозить файловые системы"
 
 #, c-format
-msgid "Unable to generate diffie-hellman parameters: %s"
-msgstr "Не удалось сгенерировать параметры Диффи — Хелмана: %s"
-
-#, c-format
 msgid "Unable to get ACLs on %s"
 msgstr "Не удалось получить ACL на %s"
 
@@ -17795,9 +17789,6 @@ msgstr "Не удалось получить индекс интерфейса �
 msgid "Unable to get interface parameters"
 msgstr "Не удалось получить параметры интерфейса"
 
-msgid "Unable to get key length for diffie-hellman parameters"
-msgstr ""
-
 #, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "Не удалось получить дескриптор kvm: %s"
@@ -17941,10 +17932,6 @@ msgstr ""
 
 msgid "Unable to initialize condition variable"
 msgstr "Не удалось инициализировать переменную условия"
-
-#, c-format
-msgid "Unable to initialize diffie-hellman parameters: %s"
-msgstr "Не удалось инициализировать параметры diffie-hellman: %s"
 
 #, c-format
 msgid "Unable to initialize lease %s"
@@ -22320,6 +22307,10 @@ msgstr "невозможно перенести домен со снимками
 msgid "cannot migrate domain with I/O error"
 msgstr "в случае ошибки ввода-вывода миграция домена не может быть выполнена"
 
+#, c-format
+msgid "cannot migrate domain: %s"
+msgstr ""
+
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr "невозможно перенести этот домен без поддержки dbus-vmstate"
 
@@ -23026,6 +23017,11 @@ msgstr ""
 msgid "cannot use custom tap device in session mode"
 msgstr "нельзя использовать пользовательское устройство tap в режиме сеанса"
 
+msgid ""
+"cannot use feature-based firmware autoselection when firmware autoselection "
+"is disabled"
+msgstr ""
+
 msgid "cannot use namespaces in session mode"
 msgstr "нельзя использовать пространства имён в режиме сеанса"
 
@@ -23089,11 +23085,11 @@ msgstr "cd: %s: %s"
 msgid "cd: command valid only in interactive mode"
 msgstr "команда cd доступна только в интерактивном режиме"
 
+msgid "cdrom device with virtio bus isn't supported"
+msgstr ""
+
 msgid "cdrom device without source path not supported"
 msgstr "устройство cdrom без пути к источнику не поддерживается"
-
-msgid "cdrom/floppy device hotplug isn't supported"
-msgstr "«горячее» подключение CD-привода или дисковода не поддерживается"
 
 msgid "cell number must be non-negative integer or -1"
 msgstr "номер ячейки не может быть меньше -1"
@@ -27341,6 +27337,15 @@ msgstr ""
 msgid "firmware auto selection not implemented for this driver"
 msgstr "для этого драйвера не реализован автоматический выбор микропрограммы"
 
+msgid ""
+"firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
+"'secure-boot' is disabled"
+msgstr ""
+
+#, c-format
+msgid "firmware type '%s' does not support nvram"
+msgstr ""
+
 msgid "fixed audio settings requires mixing engine"
 msgstr ""
 
@@ -27363,6 +27368,9 @@ msgstr ""
 
 msgid "floor attribute is not supported for this config"
 msgstr "атрибут floor не поддерживается для этой конфигурации"
+
+msgid "floppy device hotplug isn't supported"
+msgstr ""
 
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr ""
@@ -27758,6 +27766,9 @@ msgstr "Ответ guest-get-users не содержит данных."
 
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "Ответ guest-get-vcpus не содержит данных."
+
+msgid "guestReset is not supported with this version of QEMU"
+msgstr ""
 
 msgid "guestfwd channel does not define a target address"
 msgstr "канал guestfwd не определяет целевой адрес"
@@ -28666,9 +28677,6 @@ msgstr "недопустимый протокол резервного копи�
 msgid "invalid backing protocol string '%s'"
 msgstr "недопустимая строка протокола резервного копирования «%s»"
 
-msgid "invalid cache size in query-migrate-cache-size reply"
-msgstr "недопустимый размер кэша в ответе query-migrate-cache-size"
-
 #, c-format
 msgid "invalid capability_filters capability '%s'"
 msgstr "недопустимая возможность capability_filters «%s»"
@@ -29194,6 +29202,10 @@ msgstr ""
 
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "параметр драйвера iommu поддерживается только для устройств virtio"
+
+#, c-format
+msgid "iommu model '%s' can't have address"
+msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr "iommu: этот исполняемый файл QEMU не поддерживает aw_bits"
@@ -29819,6 +29831,24 @@ msgstr ""
 #, c-format
 msgid "live update of device '%s' is not supported"
 msgstr "динамическое обновление устройства «%s» не поддерживается"
+
+msgid ""
+"loader attribute 'readonly' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'secure' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'type' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid "loader path cannot be specified when firmware autoselection is enabled"
+msgstr ""
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
@@ -32724,6 +32754,9 @@ msgstr ""
 msgid "number of read operations:"
 msgstr "число операций чтения:"
 
+msgid "number of seconds the daemon will run without any active connection"
+msgstr ""
+
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr "количество секунд на подавление трафика новых подключённых портов"
 
@@ -32763,6 +32796,11 @@ msgstr "для этого исполняемого файла QEMU недост�
 
 msgid "nvram address type must be spaprvio"
 msgstr "адрес nvram должен иметь тип spaprvio"
+
+msgid ""
+"nvram attribute 'template' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "этот исполняемый файл QEMU не поддерживает устройство nvram"
@@ -34452,7 +34490,8 @@ msgstr ""
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
 
-msgid "requested size must be smaller than or equal to @size"
+#, c-format
+msgid "requested size must be smaller than or equal to @size (%lluKiB)"
 msgstr ""
 
 msgid "requested size of the cache (in bytes) used for compression"
@@ -34946,6 +34985,9 @@ msgstr "указать параметры workerpool сервера"
 
 msgid "set server's client-related configuration limits"
 msgstr "указать связанные с клиентом ограничения конфигурации сервера"
+
+msgid "set the auto shutdown timeout of the daemon"
+msgstr ""
 
 msgid "set the bandwidth limit in MiB/s"
 msgstr "ограничить пропускную способность (МиБ/с)"
@@ -35546,8 +35588,8 @@ msgid "storage pool only supports LUKS encrypted volumes"
 msgstr "пул носителей поддерживает только тома, зашифрованные с помощью LUKS"
 
 #, c-format
-msgid "storage pool protocol ver '%s' is malformed"
-msgstr "версия протокола пула хранилища «%s» неверно сформирована"
+msgid "storage pool protocol ver '%s' must not contain ','"
+msgstr ""
 
 #, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
@@ -37831,10 +37873,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "неизвестный драйвер снимка диска: «%s»"
 
 #, c-format
-msgid "unknown disk type '%s'"
-msgstr "неизвестный тип диска «%s»"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "неизвестный формат драйвера: «%s»"
 
@@ -39698,6 +39736,24 @@ msgstr "поступил запрос о зоне %s для сети %s, но fi
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <строка>}..."
+
+#~ msgid "Unable to generate diffie-hellman parameters: %s"
+#~ msgstr "Не удалось сгенерировать параметры Диффи — Хелмана: %s"
+
+#~ msgid "Unable to initialize diffie-hellman parameters: %s"
+#~ msgstr "Не удалось инициализировать параметры diffie-hellman: %s"
+
+#~ msgid "cdrom/floppy device hotplug isn't supported"
+#~ msgstr "«горячее» подключение CD-привода или дисковода не поддерживается"
+
+#~ msgid "invalid cache size in query-migrate-cache-size reply"
+#~ msgstr "недопустимый размер кэша в ответе query-migrate-cache-size"
+
+#~ msgid "storage pool protocol ver '%s' is malformed"
+#~ msgstr "версия протокола пула хранилища «%s» неверно сформирована"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "неизвестный тип диска «%s»"
 
 #~ msgid "'startupPolicy' is only valid for 'file' type volume"
 #~ msgstr "«startupPolicy» используется только для томов типа «file»"

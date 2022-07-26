@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-06-27 06:24+0000\n"
+"POT-Creation-Date: 2022-07-26 08:13+0000\n"
 "PO-Revision-Date: 2022-05-26 09:32+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -12097,9 +12097,6 @@ msgstr "У документі стану JSON не вистачає поля soc
 msgid "Missing source channel attribute for char device"
 msgstr "Немає атрибута channel у source для символьного пристрою"
 
-msgid "Missing source element for nvram"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "Відсутній атрибут host у source для символьного пристрою"
 
@@ -18089,10 +18086,6 @@ msgid "Unable to freeze filesystems"
 msgstr "Не вдалося заморозити файлові системи"
 
 #, c-format
-msgid "Unable to generate diffie-hellman parameters: %s"
-msgstr "Не вдалося визначити параметри Діфі-Гелмана: %s"
-
-#, c-format
 msgid "Unable to get ACLs on %s"
 msgstr "Не вдалося отримати ACL на %s"
 
@@ -18287,9 +18280,6 @@ msgstr "Неможливо отримати індекс інтерфейсу н
 msgid "Unable to get interface parameters"
 msgstr "Не вдалося отримати значення параметрів інтерфейсу"
 
-msgid "Unable to get key length for diffie-hellman parameters"
-msgstr "Не вдалося отримати довжину ключа для параметрів Діффі-Гелмена"
-
 #, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "Не вдалося отримати дескриптор kvm: %s"
@@ -18436,10 +18426,6 @@ msgstr "Не вдалося ініціалізувати сертифікат: %
 
 msgid "Unable to initialize condition variable"
 msgstr "Не вдалося ініціалізувати змінну умови"
-
-#, c-format
-msgid "Unable to initialize diffie-hellman parameters: %s"
-msgstr "Не вдалося ініціалізувати параметри Діфі-Гелмана: %s"
 
 #, c-format
 msgid "Unable to initialize lease %s"
@@ -22871,6 +22857,10 @@ msgstr "не вдалося перенести домен з %d знімками
 msgid "cannot migrate domain with I/O error"
 msgstr "не можна переносити домен з помилкою введення-виведення"
 
+#, c-format
+msgid "cannot migrate domain: %s"
+msgstr ""
+
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr "неможливо перенести цей домен без підтримки dbus-vmstate"
 
@@ -23587,6 +23577,11 @@ msgstr ""
 msgid "cannot use custom tap device in session mode"
 msgstr "не можна використовувати нетиповий пристрій tap у режимі сеансу"
 
+msgid ""
+"cannot use feature-based firmware autoselection when firmware autoselection "
+"is disabled"
+msgstr ""
+
 msgid "cannot use namespaces in session mode"
 msgstr "не можна використовувати простори назв у режимі сеансу"
 
@@ -23652,13 +23647,11 @@ msgstr "cd: %s: %s"
 msgid "cd: command valid only in interactive mode"
 msgstr "cd: командою можна скористатися лише у інтерактивному режимі"
 
+msgid "cdrom device with virtio bus isn't supported"
+msgstr ""
+
 msgid "cdrom device without source path not supported"
 msgstr "підтримки пристроїв cdrom без шляху до джерела не передбачено"
-
-msgid "cdrom/floppy device hotplug isn't supported"
-msgstr ""
-"підтримки з'єднання у «гарячому» режимі пристроїв для читання компакт-дисків "
-"і дискет не передбачено"
 
 msgid "cell number must be non-negative integer or -1"
 msgstr "кількість комірок має бути невід'ємною або рівною -1"
@@ -28010,6 +28003,15 @@ msgstr ""
 msgid "firmware auto selection not implemented for this driver"
 msgstr "для цього драйвера не реалізовано автоматичного вибору мікропрограми"
 
+msgid ""
+"firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
+"'secure-boot' is disabled"
+msgstr ""
+
+#, c-format
+msgid "firmware type '%s' does not support nvram"
+msgstr ""
+
 msgid "fixed audio settings requires mixing engine"
 msgstr "фіксовані параметри звуку потребують рушія мікшування"
 
@@ -28035,6 +28037,9 @@ msgstr ""
 
 msgid "floor attribute is not supported for this config"
 msgstr "підтримки атрибута floor для цієї конфігурації не передбачено"
+
+msgid "floppy device hotplug isn't supported"
+msgstr ""
 
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr "fmode і dmode слід використовувати разом із accessmode=mapped"
@@ -28440,6 +28445,9 @@ msgstr "у повернутих даних немає відповіді guest-g
 
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "у повернутих даних немає відповіді guest-get-vcpus"
+
+msgid "guestReset is not supported with this version of QEMU"
+msgstr ""
 
 msgid "guestfwd channel does not define a target address"
 msgstr "для каналу guestfwd не визначено адреси призначення"
@@ -29370,9 +29378,6 @@ msgstr "некоректний протокол резервного копію�
 msgid "invalid backing protocol string '%s'"
 msgstr "некоректний рядок протоколу резервування, «%s»"
 
-msgid "invalid cache size in query-migrate-cache-size reply"
-msgstr "некоректний розмір кешу у відповіді query-migrate-cache-size"
-
 #, c-format
 msgid "invalid capability_filters capability '%s'"
 msgstr "некоректна можливість capability_filters «%s»"
@@ -29901,6 +29906,10 @@ msgstr "підтримки ioeventfd для дисків vhostuser не пере
 msgid "iommu driver option is only supported for virtio devices"
 msgstr ""
 "підтримку параметра драйвера iommu передбачено лише для пристроїв virtio"
+
+#, c-format
+msgid "iommu model '%s' can't have address"
+msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr "iommu: підтримки aw_bits з цим виконуваним файлом QEMU не передбачено"
@@ -30544,6 +30553,24 @@ msgstr ""
 msgid "live update of device '%s' is not supported"
 msgstr ""
 "підтримки інтерактивного оновлення даних щодо пристрою «%s» не передбачено"
+
+msgid ""
+"loader attribute 'readonly' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'secure' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid ""
+"loader attribute 'type' cannot be specified when firmware autoselection is "
+"enabled"
+msgstr ""
+
+msgid "loader path cannot be specified when firmware autoselection is enabled"
+msgstr ""
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
@@ -33512,6 +33539,9 @@ msgstr ""
 msgid "number of read operations:"
 msgstr "кількість дій з читання:"
 
+msgid "number of seconds the daemon will run without any active connection"
+msgstr ""
+
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr "кількість секунд на придушення обміну даними на щойно з'єднаних портах"
 
@@ -33554,6 +33584,11 @@ msgstr ""
 
 msgid "nvram address type must be spaprvio"
 msgstr "адреса nvram має належати до типу spaprvio"
+
+msgid ""
+"nvram attribute 'template' cannot be specified when firmware autoselection "
+"is enabled"
+msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr ""
@@ -35297,8 +35332,9 @@ msgstr ""
 msgid "requested size must be an integer multiple of block size"
 msgstr "запитаний розмір має бути цілим числом, яке кратне розміру блоку"
 
-msgid "requested size must be smaller than or equal to @size"
-msgstr "запитаний розмір має бути меншим або рівним @size"
+#, c-format
+msgid "requested size must be smaller than or equal to @size (%lluKiB)"
+msgstr ""
 
 msgid "requested size of the cache (in bytes) used for compression"
 msgstr "бажаний розмір кешу стискання (у байтах)"
@@ -35794,6 +35830,9 @@ msgstr "встановити параметри workerpool сервера"
 
 msgid "set server's client-related configuration limits"
 msgstr "встановити обмеження налаштувань сервера, пов'язані із клієнтами"
+
+msgid "set the auto shutdown timeout of the daemon"
+msgstr ""
 
 msgid "set the bandwidth limit in MiB/s"
 msgstr "встановити обмеження ширини каналу у МіБ/с"
@@ -36423,9 +36462,8 @@ msgid "storage pool only supports LUKS encrypted volumes"
 msgstr "підтримку буфера сховища передбачено лише для шифрованих томах LUKS"
 
 #, c-format
-msgid "storage pool protocol ver '%s' is malformed"
+msgid "storage pool protocol ver '%s' must not contain ','"
 msgstr ""
-"помилкове форматування запису версії протоколу буфера сховища даних «%s»"
 
 #, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
@@ -38727,10 +38765,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "невідомий драйвер диска знімків, «%s»"
 
 #, c-format
-msgid "unknown disk type '%s'"
-msgstr "невідомий тип диска «%s»"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "невідоме значення формату драйвера, «%s»"
 
@@ -40619,6 +40653,33 @@ msgstr "надійшов запит щодо зони %s для мережі %s,
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <рядок>}..."
+
+#~ msgid "Unable to generate diffie-hellman parameters: %s"
+#~ msgstr "Не вдалося визначити параметри Діфі-Гелмана: %s"
+
+#~ msgid "Unable to get key length for diffie-hellman parameters"
+#~ msgstr "Не вдалося отримати довжину ключа для параметрів Діффі-Гелмена"
+
+#~ msgid "Unable to initialize diffie-hellman parameters: %s"
+#~ msgstr "Не вдалося ініціалізувати параметри Діфі-Гелмана: %s"
+
+#~ msgid "cdrom/floppy device hotplug isn't supported"
+#~ msgstr ""
+#~ "підтримки з'єднання у «гарячому» режимі пристроїв для читання компакт-"
+#~ "дисків і дискет не передбачено"
+
+#~ msgid "invalid cache size in query-migrate-cache-size reply"
+#~ msgstr "некоректний розмір кешу у відповіді query-migrate-cache-size"
+
+#~ msgid "requested size must be smaller than or equal to @size"
+#~ msgstr "запитаний розмір має бути меншим або рівним @size"
+
+#~ msgid "storage pool protocol ver '%s' is malformed"
+#~ msgstr ""
+#~ "помилкове форматування запису версії протоколу буфера сховища даних «%s»"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "невідомий тип диска «%s»"
 
 #~ msgid "'startupPolicy' is only valid for 'file' type volume"
 #~ msgstr "«startupPolicy» можна використовувати лише для томів типу «file»"
