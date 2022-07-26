@@ -6956,48 +6956,21 @@ qemuBuildNameCommandLine(virCommand *cmd,
     return 0;
 }
 
+
 static int
-qemuBuildMachineCommandLine(virCommand *cmd,
-                            virQEMUDriverConfig *cfg,
-                            const virDomainDef *def,
-                            virQEMUCaps *qemuCaps,
-                            qemuDomainObjPrivate *priv)
+qemuAppendDomainFeaturesMachineParam(virBuffer *buf,
+                                     const virDomainDef *def,
+                                     virQEMUCaps *qemuCaps)
 {
     virTristateSwitch vmport = def->features[VIR_DOMAIN_FEATURE_VMPORT];
     virTristateSwitch smm = def->features[VIR_DOMAIN_FEATURE_SMM];
-    virCPUDef *cpu = def->cpu;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    size_t i;
-
-    virCommandAddArg(cmd, "-machine");
-    virBufferAdd(&buf, def->os.machine, -1);
-
-    /* To avoid the collision of creating USB controllers when calling
-     * machine->init in QEMU, it needs to set usb=off
-     */
-    virBufferAddLit(&buf, ",usb=off");
 
     if (vmport != VIR_TRISTATE_SWITCH_ABSENT)
-        virBufferAsprintf(&buf, ",vmport=%s",
+        virBufferAsprintf(buf, ",vmport=%s",
                           virTristateSwitchTypeToString(vmport));
 
-    if (smm)
-        virBufferAsprintf(&buf, ",smm=%s", virTristateSwitchTypeToString(smm));
-
-    if (def->mem.dump_core) {
-        virBufferAsprintf(&buf, ",dump-guest-core=%s",
-                          virTristateSwitchTypeToString(def->mem.dump_core));
-    } else {
-        virBufferAsprintf(&buf, ",dump-guest-core=%s",
-                          cfg->dumpGuestCore ? "on" : "off");
-    }
-
-    if (def->mem.nosharepages)
-        virBufferAddLit(&buf, ",mem-merge=off");
-
-    if (def->keywrap &&
-        !qemuAppendKeyWrapMachineParms(&buf, qemuCaps, def->keywrap))
-        return -1;
+    if (smm != VIR_TRISTATE_SWITCH_ABSENT)
+        virBufferAsprintf(buf, ",smm=%s", virTristateSwitchTypeToString(smm));
 
     if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON) {
         bool hasGICVersionOption = virQEMUCapsGet(qemuCaps,
@@ -7025,7 +6998,7 @@ qemuBuildMachineCommandLine(virCommand *cmd,
                 return -1;
             }
 
-            virBufferAsprintf(&buf, ",gic-version=%s",
+            virBufferAsprintf(buf, ",gic-version=%s",
                               virGICVersionTypeToString(def->gic_version));
             break;
 
@@ -7035,6 +7008,107 @@ qemuBuildMachineCommandLine(virCommand *cmd,
             break;
         }
     }
+
+    if (def->features[VIR_DOMAIN_FEATURE_IOAPIC] != VIR_DOMAIN_IOAPIC_NONE) {
+        switch ((virDomainIOAPIC) def->features[VIR_DOMAIN_FEATURE_IOAPIC]) {
+        case VIR_DOMAIN_IOAPIC_QEMU:
+            virBufferAddLit(buf, ",kernel_irqchip=split");
+            break;
+        case VIR_DOMAIN_IOAPIC_KVM:
+            virBufferAddLit(buf, ",kernel_irqchip=on");
+            break;
+        case VIR_DOMAIN_IOAPIC_NONE:
+        case VIR_DOMAIN_IOAPIC_LAST:
+            break;
+        }
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_HPT] == VIR_TRISTATE_SWITCH_ON) {
+
+        if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE) {
+            virBufferAsprintf(buf, ",resize-hpt=%s",
+                              virDomainHPTResizingTypeToString(def->hpt_resizing));
+        }
+
+        if (def->hpt_maxpagesize > 0) {
+            virBufferAsprintf(buf, ",cap-hpt-max-page-size=%lluk",
+                              def->hpt_maxpagesize);
+        }
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_HTM] != VIR_TRISTATE_SWITCH_ABSENT) {
+        const char *str;
+        str = virTristateSwitchTypeToString(def->features[VIR_DOMAIN_FEATURE_HTM]);
+        virBufferAsprintf(buf, ",cap-htm=%s", str);
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_NESTED_HV] != VIR_TRISTATE_SWITCH_ABSENT) {
+        const char *str;
+        str = virTristateSwitchTypeToString(def->features[VIR_DOMAIN_FEATURE_NESTED_HV]);
+        virBufferAsprintf(buf, ",cap-nested-hv=%s", str);
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_CCF_ASSIST] != VIR_TRISTATE_SWITCH_ABSENT) {
+        const char *str;
+        str = virTristateSwitchTypeToString(def->features[VIR_DOMAIN_FEATURE_CCF_ASSIST]);
+        virBufferAsprintf(buf, ",cap-ccf-assist=%s", str);
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_CFPC] != VIR_DOMAIN_CFPC_NONE) {
+        const char *str = virDomainCFPCTypeToString(def->features[VIR_DOMAIN_FEATURE_CFPC]);
+        virBufferAsprintf(buf, ",cap-cfpc=%s", str);
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_SBBC] != VIR_DOMAIN_SBBC_NONE) {
+        const char *str = virDomainSBBCTypeToString(def->features[VIR_DOMAIN_FEATURE_SBBC]);
+        virBufferAsprintf(buf, ",cap-sbbc=%s", str);
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_IBS] != VIR_DOMAIN_IBS_NONE) {
+        const char *str = virDomainIBSTypeToString(def->features[VIR_DOMAIN_FEATURE_IBS]);
+        virBufferAsprintf(buf, ",cap-ibs=%s", str);
+    }
+
+    return 0;
+}
+
+
+static int
+qemuBuildMachineCommandLine(virCommand *cmd,
+                            virQEMUDriverConfig *cfg,
+                            const virDomainDef *def,
+                            virQEMUCaps *qemuCaps,
+                            qemuDomainObjPrivate *priv)
+{
+    virCPUDef *cpu = def->cpu;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    virCommandAddArg(cmd, "-machine");
+    virBufferAdd(&buf, def->os.machine, -1);
+
+    /* To avoid the collision of creating USB controllers when calling
+     * machine->init in QEMU, it needs to set usb=off
+     */
+    virBufferAddLit(&buf, ",usb=off");
+
+    if (def->mem.dump_core) {
+        virBufferAsprintf(&buf, ",dump-guest-core=%s",
+                          virTristateSwitchTypeToString(def->mem.dump_core));
+    } else {
+        virBufferAsprintf(&buf, ",dump-guest-core=%s",
+                          cfg->dumpGuestCore ? "on" : "off");
+    }
+
+    if (def->mem.nosharepages)
+        virBufferAddLit(&buf, ",mem-merge=off");
+
+    if (def->keywrap &&
+        !qemuAppendKeyWrapMachineParms(&buf, qemuCaps, def->keywrap))
+        return -1;
+
+    if (qemuAppendDomainFeaturesMachineParam(&buf, def, qemuCaps) < 0)
+        return -1;
 
     if (def->iommu) {
         switch (def->iommu->model) {
@@ -7059,66 +7133,6 @@ qemuBuildMachineCommandLine(virCommand *cmd,
             virBufferAddLit(&buf, ",nvdimm=on");
             break;
         }
-    }
-
-    if (def->features[VIR_DOMAIN_FEATURE_IOAPIC] != VIR_DOMAIN_IOAPIC_NONE) {
-        switch ((virDomainIOAPIC) def->features[VIR_DOMAIN_FEATURE_IOAPIC]) {
-        case VIR_DOMAIN_IOAPIC_QEMU:
-            virBufferAddLit(&buf, ",kernel_irqchip=split");
-            break;
-        case VIR_DOMAIN_IOAPIC_KVM:
-            virBufferAddLit(&buf, ",kernel_irqchip=on");
-            break;
-        case VIR_DOMAIN_IOAPIC_NONE:
-        case VIR_DOMAIN_IOAPIC_LAST:
-            break;
-        }
-    }
-
-    if (def->features[VIR_DOMAIN_FEATURE_HPT] == VIR_TRISTATE_SWITCH_ON) {
-
-        if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE) {
-            virBufferAsprintf(&buf, ",resize-hpt=%s",
-                              virDomainHPTResizingTypeToString(def->hpt_resizing));
-        }
-
-        if (def->hpt_maxpagesize > 0) {
-            virBufferAsprintf(&buf, ",cap-hpt-max-page-size=%lluk",
-                              def->hpt_maxpagesize);
-        }
-    }
-
-    if (def->features[VIR_DOMAIN_FEATURE_HTM] != VIR_TRISTATE_SWITCH_ABSENT) {
-        const char *str;
-        str = virTristateSwitchTypeToString(def->features[VIR_DOMAIN_FEATURE_HTM]);
-        virBufferAsprintf(&buf, ",cap-htm=%s", str);
-    }
-
-    if (def->features[VIR_DOMAIN_FEATURE_NESTED_HV] != VIR_TRISTATE_SWITCH_ABSENT) {
-        const char *str;
-        str = virTristateSwitchTypeToString(def->features[VIR_DOMAIN_FEATURE_NESTED_HV]);
-        virBufferAsprintf(&buf, ",cap-nested-hv=%s", str);
-    }
-
-    if (def->features[VIR_DOMAIN_FEATURE_CCF_ASSIST] != VIR_TRISTATE_SWITCH_ABSENT) {
-        const char *str;
-        str = virTristateSwitchTypeToString(def->features[VIR_DOMAIN_FEATURE_CCF_ASSIST]);
-        virBufferAsprintf(&buf, ",cap-ccf-assist=%s", str);
-    }
-
-    if (def->features[VIR_DOMAIN_FEATURE_CFPC] != VIR_DOMAIN_CFPC_NONE) {
-        const char *str = virDomainCFPCTypeToString(def->features[VIR_DOMAIN_FEATURE_CFPC]);
-        virBufferAsprintf(&buf, ",cap-cfpc=%s", str);
-    }
-
-    if (def->features[VIR_DOMAIN_FEATURE_SBBC] != VIR_DOMAIN_SBBC_NONE) {
-        const char *str = virDomainSBBCTypeToString(def->features[VIR_DOMAIN_FEATURE_SBBC]);
-        virBufferAsprintf(&buf, ",cap-sbbc=%s", str);
-    }
-
-    if (def->features[VIR_DOMAIN_FEATURE_IBS] != VIR_DOMAIN_IBS_NONE) {
-        const char *str = virDomainIBSTypeToString(def->features[VIR_DOMAIN_FEATURE_IBS]);
-        virBufferAsprintf(&buf, ",cap-ibs=%s", str);
     }
 
     if (cpu && cpu->model &&
