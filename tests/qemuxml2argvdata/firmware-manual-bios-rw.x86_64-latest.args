@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-test-bios/.config \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-test-bios/master-key.aes"}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/qemu/nvram/test-bios.fd","node-name":"libvirt-pflash0-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-pflash0-format","read-only":false,"driver":"raw","file":"libvirt-pflash0-storage"}' \
--machine pc,usb=off,dump-guest-core=off,pflash0=libvirt-pflash0-format,memory-backend=pc.ram \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,pflash0=libvirt-pflash0-format \
 -accel tcg \
 -cpu qemu64 \
 -m 1024 \

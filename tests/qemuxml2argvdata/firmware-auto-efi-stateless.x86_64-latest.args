@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-fedora/.config \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-fedora/master-key.aes"}' \
 -blockdev '{"driver":"file","filename":"/usr/share/OVMF/OVMF.sev.fd","node-name":"libvirt-pflash0-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,"driver":"raw","file":"libvirt-pflash0-storage"}' \
--machine pc-q35-4.0,usb=off,dump-guest-core=off,pflash0=libvirt-pflash0-format,memory-backend=pc.ram \
+-machine pc-q35-4.0,usb=off,dump-guest-core=off,memory-backend=pc.ram,pflash0=libvirt-pflash0-format \
 -accel kvm \
 -cpu qemu64 \
 -m 8 \

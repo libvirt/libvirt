@@ -11,7 +11,7 @@ QEMU_AUDIO_DRV=none \
 -name guest=aarch64test,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-aarch64test/master-key.aes \
--machine virt,usb=off,dump-guest-core=off,gic-version=2 \
+-machine virt,usb=off,gic-version=2,dump-guest-core=off \
 -accel kvm \
 -cpu host \
 -m 1024 \

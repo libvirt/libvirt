@@ -7074,6 +7074,54 @@ qemuAppendDomainFeaturesMachineParam(virBuffer *buf,
 
 
 static int
+qemuAppendDomainMemoryMachineParams(virBuffer *buf,
+                                    virQEMUDriverConfig *cfg,
+                                    const virDomainDef *def,
+                                    virQEMUCaps *qemuCaps)
+{
+    size_t i;
+
+    if (def->mem.dump_core) {
+        virBufferAsprintf(buf, ",dump-guest-core=%s",
+                          virTristateSwitchTypeToString(def->mem.dump_core));
+    } else {
+        virBufferAsprintf(buf, ",dump-guest-core=%s",
+                          cfg->dumpGuestCore ? "on" : "off");
+    }
+
+    if (def->mem.nosharepages)
+        virBufferAddLit(buf, ",mem-merge=off");
+
+    for (i = 0; i < def->nmems; i++) {
+        if (def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+            virBufferAddLit(buf, ",nvdimm=on");
+            break;
+        }
+    }
+
+    if (!virDomainNumaGetNodeCount(def->numa)) {
+        const char *defaultRAMid = NULL;
+
+        /* QEMU is obsoleting -mem-path and -mem-prealloc. That means we have
+         * to switch to memory-backend-* even for regular RAM and to keep
+         * domain migratable we have to set the same ID as older QEMUs would.
+         * If domain has no NUMA nodes and QEMU is new enough to expose ID of
+         * the default RAM we want to use it for default RAM (construct
+         * memory-backend-* with corresponding attributes instead of obsolete
+         * -mem-path and -mem-prealloc).
+         * This generates only reference for the memory-backend-* object added
+         * later in qemuBuildMemCommandLine() */
+        defaultRAMid = virQEMUCapsGetMachineDefaultRAMid(qemuCaps,
+                                                         def->virtType,
+                                                         def->os.machine);
+        if (defaultRAMid)
+            virBufferAsprintf(buf, ",memory-backend=%s", defaultRAMid);
+    }
+
+    return 0;
+}
+
+static int
 qemuBuildMachineCommandLine(virCommand *cmd,
                             virQEMUDriverConfig *cfg,
                             const virDomainDef *def,
@@ -7082,7 +7130,6 @@ qemuBuildMachineCommandLine(virCommand *cmd,
 {
     virCPUDef *cpu = def->cpu;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    size_t i;
 
     virCommandAddArg(cmd, "-machine");
     virBufferAdd(&buf, def->os.machine, -1);
@@ -7091,17 +7138,6 @@ qemuBuildMachineCommandLine(virCommand *cmd,
      * machine->init in QEMU, it needs to set usb=off
      */
     virBufferAddLit(&buf, ",usb=off");
-
-    if (def->mem.dump_core) {
-        virBufferAsprintf(&buf, ",dump-guest-core=%s",
-                          virTristateSwitchTypeToString(def->mem.dump_core));
-    } else {
-        virBufferAsprintf(&buf, ",dump-guest-core=%s",
-                          cfg->dumpGuestCore ? "on" : "off");
-    }
-
-    if (def->mem.nosharepages)
-        virBufferAddLit(&buf, ",mem-merge=off");
 
     if (def->keywrap &&
         !qemuAppendKeyWrapMachineParms(&buf, qemuCaps, def->keywrap))
@@ -7128,12 +7164,8 @@ qemuBuildMachineCommandLine(virCommand *cmd,
         }
     }
 
-    for (i = 0; i < def->nmems; i++) {
-        if (def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
-            virBufferAddLit(&buf, ",nvdimm=on");
-            break;
-        }
-    }
+    if (qemuAppendDomainMemoryMachineParams(&buf, cfg, def, qemuCaps) < 0)
+        return -1;
 
     if (cpu && cpu->model &&
         cpu->mode == VIR_CPU_MODE_HOST_MODEL &&
@@ -7173,25 +7205,6 @@ qemuBuildMachineCommandLine(virCommand *cmd,
 
     if (virDomainNumaHasHMAT(def->numa))
         virBufferAddLit(&buf, ",hmat=on");
-
-    if (!virDomainNumaGetNodeCount(def->numa)) {
-        const char *defaultRAMid = NULL;
-
-        /* QEMU is obsoleting -mem-path and -mem-prealloc. That means we have
-         * to switch to memory-backend-* even for regular RAM and to keep
-         * domain migratable we have to set the same ID as older QEMUs would.
-         * If domain has no NUMA nodes and QEMU is new enough to expose ID of
-         * the default RAM we want to use it for default RAM (construct
-         * memory-backend-* with corresponding attributes instead of obsolete
-         * -mem-path and -mem-prealloc).
-         * This generates only reference for the memory-backend-* object added
-         * later in qemuBuildMemCommandLine() */
-        defaultRAMid = virQEMUCapsGetMachineDefaultRAMid(qemuCaps,
-                                                         def->virtType,
-                                                         def->os.machine);
-        if (defaultRAMid)
-            virBufferAsprintf(&buf, ",memory-backend=%s", defaultRAMid);
-    }
 
     /* On x86 targets, graphics=off activates the serial console
      * output mode in the firmware. On non-x86 targets it has

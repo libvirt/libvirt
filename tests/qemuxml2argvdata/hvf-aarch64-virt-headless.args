@@ -11,7 +11,7 @@ QEMU_AUDIO_DRV=none \
 -name guest=test,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-test/master-key.aes \
--machine virt,usb=off,dump-guest-core=off,gic-version=2 \
+-machine virt,usb=off,gic-version=2,dump-guest-core=off \
 -accel hvf \
 -drive file=/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw,if=pflash,format=raw,unit=0,readonly=on \
 -drive file=/some/user/nvram/path/guest_VARS.fd,if=pflash,format=raw,unit=1 \

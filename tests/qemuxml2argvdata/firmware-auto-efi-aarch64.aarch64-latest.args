@@ -14,7 +14,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-aarch64test/.config \
 -blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,"driver":"raw","file":"libvirt-pflash0-storage"}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/qemu/nvram/aarch64test_VARS.fd","node-name":"libvirt-pflash1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-pflash1-format","read-only":false,"driver":"raw","file":"libvirt-pflash1-storage"}' \
--machine virt-4.0,usb=off,dump-guest-core=off,gic-version=2,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format,memory-backend=mach-virt.ram \
+-machine virt-4.0,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format \
 -accel tcg \
 -cpu cortex-a15 \
 -m 1024 \
