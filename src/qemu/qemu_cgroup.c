@@ -76,16 +76,12 @@ qemuCgroupAllowDevicesPaths(virDomainObj *vm,
     size_t i;
 
     for (i = 0; deviceACL[i] != NULL; i++) {
-        int rv;
-
         if (!virFileExists(deviceACL[i])) {
             VIR_DEBUG("Ignoring non-existent device %s", deviceACL[i]);
             continue;
         }
 
-        rv = qemuCgroupAllowDevicePath(vm, deviceACL[i], perms, ignoreEacces);
-        if (rv < 0 &&
-            !virLastErrorIsSystemErrno(ENOENT))
+        if (qemuCgroupAllowDevicePath(vm, deviceACL[i], perms, ignoreEacces) < 0)
             return -1;
     }
 
