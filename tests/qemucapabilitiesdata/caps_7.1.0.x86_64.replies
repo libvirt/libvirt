@@ -17,11 +17,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 50,
-      "minor": 0,
+      "micro": 0,
+      "minor": 1,
       "major": 7
     },
-    "package": "v7.0.0-2780-g5288bee45f"
+    "package": "v7.1.0"
   },
   "id": "libvirt-2"
 }
@@ -8030,6 +8030,9 @@
           "name": "shutdown"
         },
         {
+          "name": "exit-failure"
+        },
+        {
           "name": "none"
         }
       ],
@@ -8037,6 +8040,7 @@
       "values": [
         "pause",
         "shutdown",
+        "exit-failure",
         "none"
       ]
     },
@@ -34119,7 +34123,7 @@
         "md-clear": false,
         "misalignsse": true,
         "split-lock-detect": false,
-        "min-xlevel": 2147483679,
+        "min-xlevel": 2147483681,
         "bmi1": true,
         "bmi2": true,
         "kvm-pv-unhalt": true,
@@ -34471,7 +34475,7 @@
         "md-clear": false,
         "misalignsse": true,
         "split-lock-detect": false,
-        "min-xlevel": 2147483679,
+        "min-xlevel": 2147483681,
         "bmi1": true,
         "bmi2": true,
         "kvm-pv-unhalt": true,

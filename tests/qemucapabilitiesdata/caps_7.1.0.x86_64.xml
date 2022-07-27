@@ -222,10 +222,10 @@
   <flag name='usb-host.guest-resets-all'/>
   <flag name='migration.blocked-reasons'/>
   <flag name='query-stats'/>
-  <version>7000050</version>
+  <version>7001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>
-  <package>v7.0.0-2780-g5288bee45f</package>
+  <package>v7.1.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -494,7 +494,7 @@
     <property name='md-clear' type='boolean' value='false'/>
     <property name='misalignsse' type='boolean' value='true' migratable='yes'/>
     <property name='split-lock-detect' type='boolean' value='false'/>
-    <property name='min-xlevel' type='number' value='2147483679'/>
+    <property name='min-xlevel' type='number' value='2147483681'/>
     <property name='bmi1' type='boolean' value='true' migratable='yes'/>
     <property name='bmi2' type='boolean' value='true' migratable='yes'/>
     <property name='kvm-pv-unhalt' type='boolean' value='true' migratable='yes'/>
