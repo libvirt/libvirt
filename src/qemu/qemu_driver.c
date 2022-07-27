@@ -2656,7 +2656,7 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
         goto cleanup;
 
     if (!qemuMigrationSrcIsAllowed(driver, vm, false, VIR_ASYNC_JOB_SAVE, 0))
-        goto cleanup;
+        goto endjob;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
