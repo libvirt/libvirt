@@ -3382,9 +3382,6 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
                       QEMU_MIGRATION_COOKIE_CAPS;
     }
 
-    if (!qemuMigrationSrcIsAllowedHostdev(*def))
-        goto cleanup;
-
     /* Let migration hook filter domain XML */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
         g_autofree char *xml = NULL;
