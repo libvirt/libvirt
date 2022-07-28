@@ -1291,6 +1291,7 @@ qemuMigrationParamsReset(virQEMUDriver *driver,
 {
     virErrorPtr err;
     g_autoptr(virBitmap) clearCaps = NULL;
+    int rc;
 
     virErrorPreserveLast(&err);
 
@@ -1305,11 +1306,16 @@ qemuMigrationParamsReset(virQEMUDriver *driver,
 
     clearCaps = virBitmapNew(0);
 
-    if (qemuMigrationParamsApplyCaps(vm, clearCaps) == 0 &&
-        qemuMigrationParamsApplyValues(vm, origParams, false) == 0)
-        qemuMigrationParamsResetTLS(driver, vm, asyncJob, origParams, apiFlags);
+    rc = 0;
+    if (qemuMigrationParamsApplyCaps(vm, clearCaps) < 0 ||
+        qemuMigrationParamsApplyValues(vm, origParams, false) < 0)
+        rc = -1;
 
     qemuDomainObjExitMonitor(vm);
+    if (rc < 0)
+        goto cleanup;
+
+    qemuMigrationParamsResetTLS(driver, vm, asyncJob, origParams, apiFlags);
 
  cleanup:
     virErrorRestore(&err);
