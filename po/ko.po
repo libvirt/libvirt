@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-07-26 08:13+0000\n"
-"PO-Revision-Date: 2022-07-18 15:19+0000\n"
+"PO-Revision-Date: 2022-07-28 00:20+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -21720,7 +21720,7 @@ msgstr "입출력(I/O) 오류가 있는 도메인을 이전 할 수 없습니다
 
 #, c-format
 msgid "cannot migrate domain: %s"
-msgstr ""
+msgstr "도메인 이전을 할 수 없습니다: %s"
 
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr "dbus-vmstate 지원 없는 이 도메인은 이전 할 수 없습니다"
@@ -22415,7 +22415,8 @@ msgstr "세션 모드에서 사용자 정의 탭 장치를 사용할 수 없습�
 msgid ""
 "cannot use feature-based firmware autoselection when firmware autoselection "
 "is disabled"
-msgstr ""
+msgstr "펌웨어 자동선택이 비활성화 되었을 때에 기능-기반의 펌웨어 자동선택을 사용 할 "
+"수 없습니다"
 
 msgid "cannot use namespaces in session mode"
 msgstr "세션 모드에서 네임스페이스를 사용할 수 없습니다"
@@ -22478,7 +22479,7 @@ msgid "cd: command valid only in interactive mode"
 msgstr "cd: 명령어가 양방향 모드에서만 유효합니다"
 
 msgid "cdrom device with virtio bus isn't supported"
-msgstr ""
+msgstr "virtro 버스와 같은 cdrom 장치가 지원되지 않습니다"
 
 msgid "cdrom device without source path not supported"
 msgstr "원본 경로가 없는 CD-ROM 장치를 지원하지 않습니다"
@@ -26697,10 +26698,12 @@ msgid ""
 "firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
 "'secure-boot' is disabled"
 msgstr ""
+"펌웨어 기능 \"enrolled-keys\"는 펌웨어 기능 'secure-boot'가 비활성화 되었을 "
+"때에 활성화 할 수 없습니다"
 
 #, c-format
 msgid "firmware type '%s' does not support nvram"
-msgstr ""
+msgstr "펌웨어 유형 '%s'는 nvram을 지원하지 않습니다"
 
 msgid "fixed audio settings requires mixing engine"
 msgstr "고정 오디오 설정에는 믹싱 엔진이 필요합니다"
@@ -26727,7 +26730,7 @@ msgid "floor attribute is not supported for this config"
 msgstr "이 구성에는 floor 속성이 지원되지 않습니다"
 
 msgid "floppy device hotplug isn't supported"
-msgstr ""
+msgstr "플로피 장치 핫플러그는 지원되지 않습니다"
 
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr "fmode 및 dmode는 accessmode=mapped와 함께 사용해야 합니다"
@@ -27097,7 +27100,7 @@ msgid "guest-get-vcpus reply was missing return data"
 msgstr "guest-get-vcpus 응답에 반환 데이터가 누락되었습니다"
 
 msgid "guestReset is not supported with this version of QEMU"
-msgstr ""
+msgstr "guestReset는 이와 같은 QEMU 버전에서 지원되지 않습니다"
 
 msgid "guestfwd channel does not define a target address"
 msgstr "guestfwd 채널이 타겟 주소를 정의하지 않습니다"
@@ -28481,7 +28484,7 @@ msgstr "iommu 드라이버 옵션은 virtio 장치에만 지원됩니다"
 
 #, c-format
 msgid "iommu model '%s' can't have address"
-msgstr ""
+msgstr "iommu 모델 '%s'은 주소를 가질 수 없습니다"
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr "iommu: aw_bits는 이 QEMU 바이너리에서 지원되지 않습니다"
@@ -29094,20 +29097,21 @@ msgstr "장치 '%s'의 라이브 업데이트가 지원되지 않습니다"
 msgid ""
 "loader attribute 'readonly' cannot be specified when firmware autoselection "
 "is enabled"
-msgstr ""
+msgstr "로더 속성 '읽기전용'은 펌웨어가 자동선택이 활성화 되었을 때에 지정 될 수 "
+"없습니다"
 
 msgid ""
 "loader attribute 'secure' cannot be specified when firmware autoselection is "
 "enabled"
-msgstr ""
+msgstr "로더 속성 '보안'은 펌웨어 자동선택이 활성화 되었을 때에 지정 될 수 없습니다"
 
 msgid ""
 "loader attribute 'type' cannot be specified when firmware autoselection is "
 "enabled"
-msgstr ""
+msgstr "로더 속성 '유형'은 펌웨어가 자동선택이 활성화 되었을 때에 지정 될 수 없습니다"
 
 msgid "loader path cannot be specified when firmware autoselection is enabled"
-msgstr ""
+msgstr "로더 경로는 펌웨어 자동선택이 활성화 되었을 때에 지정 될 수 없습니다"
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
@@ -31912,7 +31916,7 @@ msgid "number of read operations:"
 msgstr "읽기 동작 수:"
 
 msgid "number of seconds the daemon will run without any active connection"
-msgstr ""
+msgstr "활성화된 연결 없이 데몬이 실행되는 시간(초)"
 
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr "새로 연결된 포트에서 트래픽을 억제하는 데 걸리는 시간(초)"
@@ -31957,7 +31961,8 @@ msgstr "nvram 주소 유형은 spaprvio여야 합니다"
 msgid ""
 "nvram attribute 'template' cannot be specified when firmware autoselection "
 "is enabled"
-msgstr ""
+msgstr "vnram 속성 '템플릿트'는 펌웨어 자동선택이 활성화 되었을 때에 지정 될 수 "
+"없습니다"
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "nvram 장치는 이 QEMU 바이너리에서 지원되지 않습니다"
@@ -33573,7 +33578,7 @@ msgstr "요청된 크기는 블록 크기의 정수 배수이여야 합니다"
 
 #, c-format
 msgid "requested size must be smaller than or equal to @size (%lluKiB)"
-msgstr ""
+msgstr "요청된 크기는 @size (%lluKiB)와 작거나 같아야만 합니다"
 
 msgid "requested size of the cache (in bytes) used for compression"
 msgstr "압축에 사용된 캐쉬의 요청된 크기(바이트)"
@@ -34050,7 +34055,7 @@ msgid "set server's client-related configuration limits"
 msgstr "서버의 클라이언트 관련 구성 제한 설정"
 
 msgid "set the auto shutdown timeout of the daemon"
-msgstr ""
+msgstr "데몬의 자동 종료 시간만료를 지정합니다"
 
 msgid "set the bandwidth limit in MiB/s"
 msgstr "대역폭 제한(MiB/s) 설정"
@@ -34640,7 +34645,7 @@ msgstr "저장소 풀은 LUKS 암호화 볼륨만 지원합니다"
 
 #, c-format
 msgid "storage pool protocol ver '%s' must not contain ','"
-msgstr ""
+msgstr "저장소 풀 통신규약 버전 '%s'가 포함되지 않아야만 합니다 ','"
 
 #, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
