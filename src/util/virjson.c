@@ -798,21 +798,21 @@ virJSONValueArrayConcat(virJSONValue *a,
 }
 
 
-int
+bool
 virJSONValueObjectHasKey(virJSONValue *object,
                          const char *key)
 {
     size_t i;
 
     if (object->type != VIR_JSON_TYPE_OBJECT)
-        return -1;
+        return false;
 
     for (i = 0; i < object->data.object.npairs; i++) {
         if (STREQ(object->data.object.pairs[i].key, key))
-            return 1;
+            return true;
     }
 
-    return 0;
+    return false;
 }
 
 

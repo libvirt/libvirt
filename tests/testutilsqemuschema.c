@@ -289,7 +289,7 @@ testQEMUSchemaValidateObjectMandatoryMember(size_t pos G_GNUC_UNUSED,
 {
     struct testQEMUSchemaValidateObjectMemberData *data = opaque;
 
-    if (virJSONValueObjectHasKey(item, "default") != 1) {
+    if (!virJSONValueObjectHasKey(item, "default")) {
         virBufferAsprintf(data->ctxt->debug, "ERROR: missing mandatory attribute '%s'\n",
                           NULLSTR(virJSONValueObjectGetString(item, "name")));
         data->missingMandatory = true;

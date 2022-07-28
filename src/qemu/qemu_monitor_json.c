@@ -203,14 +203,14 @@ qemuMonitorJSONIOProcessLine(qemuMonitor *mon,
         return -1;
     }
 
-    if (virJSONValueObjectHasKey(obj, "QMP") == 1) {
+    if (virJSONValueObjectHasKey(obj, "QMP")) {
         return 0;
-    } else if (virJSONValueObjectHasKey(obj, "event") == 1) {
+    } else if (virJSONValueObjectHasKey(obj, "event")) {
         PROBE(QEMU_MONITOR_RECV_EVENT,
               "mon=%p event=%s", mon, line);
         return qemuMonitorJSONIOProcessEvent(mon, obj);
-    } else if (virJSONValueObjectHasKey(obj, "error") == 1 ||
-               virJSONValueObjectHasKey(obj, "return") == 1) {
+    } else if (virJSONValueObjectHasKey(obj, "error") ||
+               virJSONValueObjectHasKey(obj, "return")) {
         PROBE(QEMU_MONITOR_RECV_REPLY,
               "mon=%p reply=%s", mon, line);
         if (msg) {
@@ -270,7 +270,7 @@ qemuMonitorJSONCommandWithFd(qemuMonitor *mon,
 
     memset(&msg, 0, sizeof(msg));
 
-    if (virJSONValueObjectHasKey(cmd, "execute") == 1) {
+    if (virJSONValueObjectHasKey(cmd, "execute")) {
         g_autofree char *id = qemuMonitorNextCommandID(mon);
 
         if (virJSONValueObjectAppendString(cmd, "id", id) < 0) {

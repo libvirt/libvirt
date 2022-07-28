@@ -88,7 +88,7 @@ int
 virJSONValueArrayConcat(virJSONValue *a,
                         virJSONValue *c);
 
-int
+bool
 virJSONValueObjectHasKey(virJSONValue *object,
                          const char *key);
 virJSONValue *
