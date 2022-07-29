@@ -366,6 +366,14 @@ qemuValidateDomainDefCpu(virQEMUDriver *driver,
                                virCPUMaxPhysAddrModeTypeToString(VIR_CPU_MAX_PHYS_ADDR_MODE_EMULATE));
                 return -1;
             }
+
+            if (driver->hostcpu &&
+                driver->hostcpu->addr &&
+                cpu->addr->bits > driver->hostcpu->addr->bits) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("The number of virtual CPU address bits cannot exceed the number supported by the host CPU"));
+                return -1;
+            }
             break;
 
         case VIR_CPU_MAX_PHYS_ADDR_MODE_LAST:

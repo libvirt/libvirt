@@ -6838,6 +6838,23 @@ qemuBuildCpuCommandLine(virCommand *cmd,
             virBufferAddLit(&buf, ",l3-cache=off");
     }
 
+    if (def->cpu && def->cpu->addr) {
+        virCPUMaxPhysAddrDef *addr = def->cpu->addr;
+
+        switch (addr->mode) {
+        case VIR_CPU_MAX_PHYS_ADDR_MODE_PASSTHROUGH:
+            virBufferAddLit(&buf, ",host-phys-bits=on");
+            break;
+
+        case VIR_CPU_MAX_PHYS_ADDR_MODE_EMULATE:
+            virBufferAsprintf(&buf, ",phys-bits=%d", addr->bits);
+            break;
+
+        case VIR_CPU_MAX_PHYS_ADDR_MODE_LAST:
+            break;
+        }
+    }
+
     cpu = virBufferContentAndReset(&cpu_buf);
     cpu_flags = virBufferContentAndReset(&buf);
 
