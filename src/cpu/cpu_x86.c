@@ -2738,6 +2738,7 @@ virCPUx86GetHost(virCPUDef *cpu,
                  virDomainCapsCPUModels *models)
 {
     g_autoptr(virCPUData) cpuData = NULL;
+    unsigned int addrsz;
     int ret;
 
     if (virCPUx86DriverInitialize() < 0)
@@ -2782,6 +2783,13 @@ virCPUx86GetHost(virCPUDef *cpu,
         cpu->tsc = virHostCPUGetTscInfo();
     } else {
         VIR_DEBUG("Host CPU does not support invariant TSC");
+    }
+
+    if (virHostCPUGetPhysAddrSize(&addrsz) == 0) {
+        virCPUMaxPhysAddrDef *addr = g_new0(virCPUMaxPhysAddrDef, 1);
+
+        addr->bits = addrsz;
+        cpu->addr = addr;
     }
 
     return ret;

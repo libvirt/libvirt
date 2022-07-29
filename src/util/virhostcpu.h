@@ -58,6 +58,7 @@ int virHostCPUGetInfo(virArch hostarch,
                       unsigned int *cores,
                       unsigned int *threads);
 
+
 int virHostCPUGetKVMMaxVCPUs(void) G_NO_INLINE;
 
 int virHostCPUStatsAssign(virNodeCPUStatsPtr param,
@@ -85,6 +86,8 @@ struct kvm_cpuid2 *virHostCPUGetCPUID(void);
 virHostCPUTscInfo *virHostCPUGetTscInfo(void);
 
 int virHostCPUGetSignature(char **signature);
+
+int virHostCPUGetPhysAddrSize(unsigned int *size);
 
 int virHostCPUGetHaltPollTime(pid_t pid,
                               unsigned long long *haltPollSuccess,

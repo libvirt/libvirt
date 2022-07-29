@@ -570,6 +570,38 @@ virHostCPUParseFrequency(FILE *cpuinfo,
 }
 
 
+static int
+virHostCPUParsePhysAddrSize(FILE *cpuinfo, unsigned int *addrsz)
+{
+    char line[1024];
+
+    while (fgets(line, sizeof(line), cpuinfo) != NULL) {
+        char *str;
+        char *endptr;
+
+        if (!(str = STRSKIP(line, "address sizes")))
+            continue;
+
+        /* Skip the colon. */
+        if ((str = strstr(str, ":")) == NULL)
+            goto error;
+        str++;
+
+        /* Parse the number of physical address bits */
+        if (virStrToLong_ui(str, &endptr, 10, addrsz) < 0)
+            goto error;
+
+        return 0;
+    }
+
+ error:
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Missing or invalid CPU address size in %s"),
+                   CPUINFO_PATH);
+    return -1;
+}
+
+
 int
 virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
                                virArch arch,
@@ -1616,12 +1648,32 @@ virHostCPUGetSignature(char **signature)
     return virHostCPUReadSignature(virArchFromHost(), cpuinfo, signature);
 }
 
+int
+virHostCPUGetPhysAddrSize(unsigned int *size)
+{
+    g_autoptr(FILE) cpuinfo = NULL;
+
+    if (!(cpuinfo = fopen(CPUINFO_PATH, "r"))) {
+        virReportSystemError(errno, _("Failed to open cpuinfo file '%s'"),
+                             CPUINFO_PATH);
+        return -1;
+    }
+
+    return virHostCPUParsePhysAddrSize(cpuinfo, size);
+}
+
 #else
 
 int
 virHostCPUGetSignature(char **signature)
 {
     *signature = NULL;
+    return 0;
+}
+
+int
+virHostCPUGetPhysAddrSize(unsigned int *size)
+{
     return 0;
 }
 

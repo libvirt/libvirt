@@ -2437,6 +2437,7 @@ virHostCPUGetMicrocodeVersion;
 virHostCPUGetMSR;
 virHostCPUGetOnline;
 virHostCPUGetOnlineBitmap;
+virHostCPUGetPhysAddrSize;
 virHostCPUGetPresentBitmap;
 virHostCPUGetSignature;
 virHostCPUGetStats;
