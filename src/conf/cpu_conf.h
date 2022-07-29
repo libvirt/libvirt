@@ -116,6 +116,22 @@ struct _virCPUCacheDef {
 };
 
 
+typedef enum {
+    VIR_CPU_MAX_PHYS_ADDR_MODE_EMULATE,
+    VIR_CPU_MAX_PHYS_ADDR_MODE_PASSTHROUGH,
+
+    VIR_CPU_MAX_PHYS_ADDR_MODE_LAST
+} virCPUMaxPhysAddrMode;
+
+VIR_ENUM_DECL(virCPUMaxPhysAddrMode);
+
+typedef struct _virCPUMaxPhysAddrDef virCPUMaxPhysAddrDef;
+struct _virCPUMaxPhysAddrDef {
+    int bits;           /* -1 for unspecified */
+    virCPUMaxPhysAddrMode mode;
+};
+
+
 typedef struct _virCPUDef virCPUDef;
 struct _virCPUDef {
     int refs;
@@ -140,6 +156,7 @@ struct _virCPUDef {
     size_t nfeatures_max;
     virCPUFeatureDef *features;
     virCPUCacheDef *cache;
+    virCPUMaxPhysAddrDef *addr;
     virHostCPUTscInfo *tsc;
     virTristateSwitch migratable; /* for host-passthrough mode */
 };

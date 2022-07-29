@@ -246,6 +246,8 @@ mymain(void)
 
     DO_TEST_BACKUP_FULL("backup-pull-internal-invalid", true);
 
+    DO_TEST("cpu-phys-bits-emulate");
+    DO_TEST("cpu-phys-bits-passthrough");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);

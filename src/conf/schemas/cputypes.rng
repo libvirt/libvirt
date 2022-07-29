@@ -305,6 +305,22 @@
     </element>
   </define>
 
+  <define name="cpuMaxPhysAddr">
+    <element name="maxphysaddr">
+      <attribute name="mode">
+        <choice>
+          <value>emulate</value>
+          <value>passthrough</value>
+        </choice>
+      </attribute>
+      <optional>
+        <attribute name="bits">
+          <ref name="unsignedInt"/>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+
   <define name="hostcpu">
     <element name="cpu">
       <element name="arch">
@@ -431,6 +447,9 @@
         </optional>
         <optional>
           <ref name="cpuCache"/>
+        </optional>
+        <optional>
+          <ref name="cpuMaxPhysAddr"/>
         </optional>
       </interleave>
     </element>

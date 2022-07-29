@@ -332,6 +332,47 @@ qemuValidateDomainDefCpu(virQEMUDriver *driver,
     if (!cpu)
         return 0;
 
+    if (cpu->addr) {
+        const virCPUMaxPhysAddrDef *addr = cpu->addr;
+
+        if (!ARCH_IS_X86(def->os.arch)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("CPU maximum physical address bits specification is not supported for '%s' architecture"),
+                           virArchToString(def->os.arch));
+            return -1;
+        }
+
+        switch (addr->mode) {
+        case VIR_CPU_MAX_PHYS_ADDR_MODE_PASSTHROUGH:
+            if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"),
+                               virCPUMaxPhysAddrModeTypeToString(addr->mode),
+                               virCPUModeTypeToString(VIR_CPU_MODE_HOST_PASSTHROUGH));
+                return -1;
+            }
+            if (addr->bits != -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("CPU maximum physical address bits number specification cannot be used with mode='%s'"),
+                               virCPUMaxPhysAddrModeTypeToString(VIR_CPU_MAX_PHYS_ADDR_MODE_PASSTHROUGH));
+                return -1;
+            }
+            break;
+
+        case VIR_CPU_MAX_PHYS_ADDR_MODE_EMULATE:
+            if (addr->bits == -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("if using CPU maximum physical address mode='%s', bits= must be specified too"),
+                               virCPUMaxPhysAddrModeTypeToString(VIR_CPU_MAX_PHYS_ADDR_MODE_EMULATE));
+                return -1;
+            }
+            break;
+
+        case VIR_CPU_MAX_PHYS_ADDR_MODE_LAST:
+            break;
+        }
+    }
+
     if (def->cpu->cache) {
         virCPUCacheDef *cache = def->cpu->cache;
 

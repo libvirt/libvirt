@@ -82,6 +82,12 @@ VIR_ENUM_IMPL(virCPUCacheMode,
               "disable",
 );
 
+VIR_ENUM_IMPL(virCPUMaxPhysAddrMode,
+              VIR_CPU_MAX_PHYS_ADDR_MODE_LAST,
+              "emulate",
+              "passthrough",
+);
+
 
 virCPUDef *virCPUDefNew(void)
 {
@@ -127,6 +133,7 @@ virCPUDefFree(virCPUDef *def)
     if (g_atomic_int_dec_and_test(&def->refs)) {
         virCPUDefFreeModel(def);
         g_free(def->cache);
+        g_free(def->addr);
         g_free(def->tsc);
         g_free(def);
     }
@@ -252,6 +259,11 @@ virCPUDefCopyWithoutModel(const virCPUDef *cpu)
         *copy->cache = *cpu->cache;
     }
 
+    if (cpu->addr) {
+        copy->addr = g_new0(virCPUMaxPhysAddrDef, 1);
+        *copy->addr = *cpu->addr;
+    }
+
     if (cpu->tsc) {
         copy->tsc = g_new0(virHostCPUTscInfo, 1);
         *copy->tsc = *cpu->tsc;
@@ -322,6 +334,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     g_autoptr(virCPUDef) def = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
     xmlNodePtr topology = NULL;
+    xmlNodePtr maxphysaddrNode = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int n;
     int rv;
@@ -644,6 +657,21 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
         def->cache->mode = mode;
     }
 
+    if ((maxphysaddrNode = virXPathNode("./maxphysaddr[1]", ctxt))) {
+        def->addr = g_new0(virCPUMaxPhysAddrDef, 1);
+
+        if (virXMLPropEnum(maxphysaddrNode, "mode",
+                           virCPUMaxPhysAddrModeTypeFromString,
+                           VIR_XML_PROP_REQUIRED,
+                           &def->addr->mode) < 0)
+            return -1;
+
+        if (virXMLPropInt(maxphysaddrNode, "bits", 10,
+                          VIR_XML_PROP_NONNEGATIVE,
+                          &def->addr->bits, -1) < 0)
+            return -1;
+    }
+
     *cpu = g_steal_pointer(&def);
     return 0;
 }
@@ -808,6 +836,15 @@ virCPUDefFormatBuf(virBuffer *buf,
             virBufferAsprintf(buf, "level='%d' ", def->cache->level);
         virBufferAsprintf(buf, "mode='%s'",
                           virCPUCacheModeTypeToString(def->cache->mode));
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    if (def->addr) {
+        virBufferAddLit(buf, "<maxphysaddr ");
+        virBufferAsprintf(buf, "mode='%s'",
+                          virCPUMaxPhysAddrModeTypeToString(def->addr->mode));
+        if (def->addr->bits != -1)
+            virBufferAsprintf(buf, " bits='%d'", def->addr->bits);
         virBufferAddLit(buf, "/>\n");
     }
 
@@ -1070,6 +1107,15 @@ virCPUDefIsEqual(virCPUDef *src,
     if (src->threads != dst->threads) {
         MISMATCH(_("Target CPU threads %d does not match source %d"),
                  dst->threads, src->threads);
+        return false;
+    }
+
+    if ((src->addr && !dst->addr) ||
+        (!src->addr && dst->addr) ||
+        (src->addr && dst->addr &&
+         (src->addr->mode != dst->addr->mode ||
+          src->addr->bits != dst->addr->bits))) {
+        MISMATCH("%s", _("Target CPU maxphysaddr does not match source"));
         return false;
     }
 
