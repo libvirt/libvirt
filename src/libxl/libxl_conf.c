@@ -1240,6 +1240,10 @@ libxlUpdateDiskDef(virDomainDiskDef *l_disk, libxl_device_disk *x_disk)
         driver = "phy";
         break;
     case LIBXL_DISK_BACKEND_UNKNOWN:
+#ifdef LIBXL_HAVE_DEVICE_DISK_SPECIFICATION
+    case LIBXL_DISK_BACKEND_STANDALONE:
+#endif
+    default:
         break;
     }
     if (driver)
