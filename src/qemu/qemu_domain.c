@@ -4373,62 +4373,6 @@ qemuDomainDefCPUPostParse(virDomainDef *def,
     if (!def->cpu)
         return 0;
 
-    if (def->cpu->cache) {
-        virCPUCacheDef *cache = def->cpu->cache;
-
-        if (!ARCH_IS_X86(def->os.arch)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("CPU cache specification is not supported "
-                             "for '%s' architecture"),
-                           virArchToString(def->os.arch));
-            return -1;
-        }
-
-        switch (cache->mode) {
-        case VIR_CPU_CACHE_MODE_EMULATE:
-            if (cache->level != 3) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("CPU cache mode '%s' can only be used with "
-                                 "level='3'"),
-                               virCPUCacheModeTypeToString(cache->mode));
-                return -1;
-            }
-            break;
-
-        case VIR_CPU_CACHE_MODE_PASSTHROUGH:
-            if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
-                def->cpu->mode != VIR_CPU_MODE_MAXIMUM) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("CPU cache mode '%s' can only be used with "
-                                 "'%s' / '%s' CPUs"),
-                               virCPUCacheModeTypeToString(cache->mode),
-                               virCPUModeTypeToString(VIR_CPU_MODE_HOST_PASSTHROUGH),
-                               virCPUModeTypeToString(VIR_CPU_MODE_MAXIMUM));
-                return -1;
-            }
-
-            if (cache->level != -1) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported CPU cache level for mode '%s'"),
-                               virCPUCacheModeTypeToString(cache->mode));
-                return -1;
-            }
-            break;
-
-        case VIR_CPU_CACHE_MODE_DISABLE:
-            if (cache->level != -1) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported CPU cache level for mode '%s'"),
-                               virCPUCacheModeTypeToString(cache->mode));
-                return -1;
-            }
-            break;
-
-        case VIR_CPU_CACHE_MODE_LAST:
-            break;
-        }
-    }
-
     for (i = 0; i < def->cpu->nfeatures; i++) {
         virCPUFeatureDef *feature = &def->cpu->features[i];
 

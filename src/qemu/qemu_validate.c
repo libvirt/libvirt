@@ -332,52 +332,101 @@ qemuValidateDomainDefCpu(virQEMUDriver *driver,
     if (!cpu)
         return 0;
 
-    if (!cpu->model && cpu->mode == VIR_CPU_MODE_CUSTOM)
-        return 0;
+    if (def->cpu->cache) {
+        virCPUCacheDef *cache = def->cpu->cache;
 
-    switch ((virCPUMode) cpu->mode) {
-    case VIR_CPU_MODE_HOST_PASSTHROUGH:
-        if (def->os.arch == VIR_ARCH_ARMV7L &&
-            driver->hostarch == VIR_ARCH_AARCH64) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_AARCH64_OFF)) {
+        if (!ARCH_IS_X86(def->os.arch)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("CPU cache specification is not supported for '%s' architecture"),
+                           virArchToString(def->os.arch));
+            return -1;
+        }
+
+        switch (cache->mode) {
+        case VIR_CPU_CACHE_MODE_EMULATE:
+            if (cache->level != 3) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("QEMU binary does not support CPU "
-                                 "host-passthrough for armv7l on "
-                                 "aarch64 host"));
+                               _("CPU cache mode '%s' can only be used with level='3'"),
+                               virCPUCacheModeTypeToString(cache->mode));
                 return -1;
             }
+            break;
+
+        case VIR_CPU_CACHE_MODE_PASSTHROUGH:
+            if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
+                def->cpu->mode != VIR_CPU_MODE_MAXIMUM) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("CPU cache mode '%s' can only be used with '%s' / '%s' CPUs"),
+                               virCPUCacheModeTypeToString(cache->mode),
+                               virCPUModeTypeToString(VIR_CPU_MODE_HOST_PASSTHROUGH),
+                               virCPUModeTypeToString(VIR_CPU_MODE_MAXIMUM));
+                return -1;
+            }
+
+            if (cache->level != -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported CPU cache level for mode '%s'"),
+                               virCPUCacheModeTypeToString(cache->mode));
+                return -1;
+            }
+            break;
+
+        case VIR_CPU_CACHE_MODE_DISABLE:
+            if (cache->level != -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported CPU cache level for mode '%s'"),
+                               virCPUCacheModeTypeToString(cache->mode));
+                return -1;
+            }
+            break;
+
+        case VIR_CPU_CACHE_MODE_LAST:
+            break;
         }
+    }
 
-        if (cpu->migratable &&
-            cpu->migratable != VIR_TRISTATE_SWITCH_OFF &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MIGRATABLE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Migratable attribute for host-passthrough "
-                             "CPU is not supported by this QEMU binary"));
-            return -1;
+    if (cpu->model || cpu->mode != VIR_CPU_MODE_CUSTOM) {
+        switch ((virCPUMode) cpu->mode) {
+        case VIR_CPU_MODE_HOST_PASSTHROUGH:
+            if (def->os.arch == VIR_ARCH_ARMV7L &&
+                driver->hostarch == VIR_ARCH_AARCH64) {
+                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_AARCH64_OFF)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("QEMU binary does not support CPU host-passthrough for armv7l on aarch64 host"));
+                    return -1;
+                }
+            }
+
+            if (cpu->migratable &&
+                cpu->migratable != VIR_TRISTATE_SWITCH_OFF &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MIGRATABLE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Migratable attribute for host-passthrough CPU is not supported by this QEMU binary"));
+                return -1;
+            }
+            break;
+
+        case VIR_CPU_MODE_HOST_MODEL:
+            /* qemu_command.c will error out if cpu->mode is HOST_MODEL for
+             * every arch but PPC64. However, we can't move this validation
+             * here because non-PPC64 archs will translate HOST_MODEL to
+             * something else during domain start, changing cpu->mode to
+             * CUSTOM.
+             */
+            break;
+
+        case VIR_CPU_MODE_MAXIMUM:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MAX)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("maximum CPU is not supported by QEMU binary"));
+                return -1;
+            }
+            break;
+
+        case VIR_CPU_MODE_CUSTOM:
+        case VIR_CPU_MODE_LAST:
+            break;
         }
-        break;
-
-    case VIR_CPU_MODE_HOST_MODEL:
-        /* qemu_command.c will error out if cpu->mode is HOST_MODEL for
-         * every arch but PPC64. However, we can't move this validation
-         * here because non-PPC64 archs will translate HOST_MODEL to
-         * something else during domain start, changing cpu->mode to
-         * CUSTOM.
-         */
-        break;
-
-    case VIR_CPU_MODE_MAXIMUM:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MAX)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("maximum CPU is not supported by QEMU binary"));
-            return -1;
-        }
-        break;
-
-    case VIR_CPU_MODE_CUSTOM:
-    case VIR_CPU_MODE_LAST:
-        break;
     }
 
     return 0;
