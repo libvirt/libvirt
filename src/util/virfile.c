@@ -71,7 +71,11 @@
 # endif
 # include <sys/ioctl.h>
 # include <linux/cdrom.h>
-# include <linux/fs.h>
+/* These come from linux/fs.h, but that header conflicts with
+ * sys/mount.h on glibc 2.36+ */
+# define FS_IOC_GETFLAGS _IOR('f', 1, long)
+# define FS_IOC_SETFLAGS _IOW('f', 2, long)
+# define FS_NOCOW_FL 0x00800000
 #endif
 
 #if WITH_LIBATTR
