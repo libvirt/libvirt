@@ -3255,6 +3255,7 @@ void virDomainTPMDefFree(virDomainTPMDef *def)
         virObjectUnref(def->data.emulator.source);
         g_free(def->data.emulator.storagepath);
         g_free(def->data.emulator.logfile);
+        virBitmapFree(def->data.emulator.activePcrBanks);
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
@@ -10442,6 +10443,8 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
 
         if ((nnodes = virXPathNodeSet("./backend/active_pcr_banks/*", ctxt, &nodes)) < 0)
             break;
+        if (nnodes > 0)
+            def->data.emulator.activePcrBanks = virBitmapNew(0);
         for (i = 0; i < nnodes; i++) {
             if ((bank = virDomainTPMPcrBankTypeFromString((const char *)nodes[i]->name)) < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -10449,7 +10452,7 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
                                nodes[i]->name);
                 goto error;
             }
-            def->data.emulator.activePcrBanks |= (1 << bank);
+            virBitmapSetBitExpand(def->data.emulator.activePcrBanks, bank);
         }
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
@@ -20671,7 +20674,8 @@ virDomainTPMDefCheckABIStability(virDomainTPMDef *src,
             return false;
         }
 
-        if (src->data.emulator.activePcrBanks != dst->data.emulator.activePcrBanks) {
+        if (!virBitmapEqual(src->data.emulator.activePcrBanks,
+                            dst->data.emulator.activePcrBanks)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Target active PCR banks doesn't match source"));
             return false;
@@ -24239,13 +24243,10 @@ virDomainTPMDefFormat(virBuffer *buf,
         }
         if (def->data.emulator.activePcrBanks) {
             g_auto(virBuffer) activePcrBanksBuf = VIR_BUFFER_INIT_CHILD(&backendChildBuf);
-            size_t i;
+            ssize_t bank = -1;
 
-            for (i = VIR_DOMAIN_TPM_PCR_BANK_SHA1; i < VIR_DOMAIN_TPM_PCR_BANK_LAST; i++) {
-                if ((def->data.emulator.activePcrBanks & (1 << i)))
-                    virBufferAsprintf(&activePcrBanksBuf, "<%s/>\n",
-                                      virDomainTPMPcrBankTypeToString(i));
-            }
+            while ((bank = virBitmapNextSetBit(def->data.emulator.activePcrBanks, bank)) > -1)
+                virBufferAsprintf(&activePcrBanksBuf, "<%s/>\n", virDomainTPMPcrBankTypeToString(bank));
 
             virXMLFormatElement(&backendChildBuf, "active_pcr_banks", NULL, &activePcrBanksBuf);
         }

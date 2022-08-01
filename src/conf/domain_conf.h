@@ -1451,7 +1451,7 @@ struct _virDomainTPMDef {
             unsigned char secretuuid[VIR_UUID_BUFLEN];
             bool hassecretuuid;
             bool persistent_state;
-            unsigned int activePcrBanks;
+            virBitmap *activePcrBanks;
         } emulator;
     } data;
 };

@@ -444,19 +444,16 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
 
 
 static char *
-qemuTPMPcrBankBitmapToStr(unsigned int pcrBanks)
+qemuTPMPcrBankBitmapToStr(virBitmap *activePcrBanks)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    const char *comma = "";
-    size_t i;
+    ssize_t bank = -1;
 
-    for (i = VIR_DOMAIN_TPM_PCR_BANK_SHA1; i < VIR_DOMAIN_TPM_PCR_BANK_LAST; i++) {
-        if (pcrBanks & (1 << i)) {
-            virBufferAsprintf(&buf, "%s%s",
-                              comma, virDomainTPMPcrBankTypeToString(i));
-            comma = ",";
-        }
-    }
+    while ((bank = virBitmapNextSetBit(activePcrBanks, bank)) > -1)
+        virBufferAsprintf(&buf, "%s,", virDomainTPMPcrBankTypeToString(bank));
+
+    virBufferTrim(&buf, ",");
+
     return virBufferContentAndReset(&buf);
 }
 
@@ -481,7 +478,7 @@ static int
 qemuTPMEmulatorReconfigure(const char *storagepath,
                            uid_t swtpm_user,
                            gid_t swtpm_group,
-                           unsigned int activePcrBanks,
+                           virBitmap *activePcrBanks,
                            const char *logfile,
                            const virDomainTPMVersion tpmversion,
                            const unsigned char *secretuuid)
