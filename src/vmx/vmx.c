@@ -3925,7 +3925,7 @@ virVMXFormatEthernet(virDomainNetDef *def, int controller,
 
     /* def:type, def:ifname -> vmx:connectionType */
     switch (def->type) {
-      case VIR_DOMAIN_NET_TYPE_BRIDGE:
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
         virBufferAsprintf(buffer, "ethernet%d.networkName = \"%s\"\n",
                           controller, def->data.bridge.brname);
 
@@ -3941,22 +3941,22 @@ virVMXFormatEthernet(virDomainNetDef *def, int controller,
 
         break;
 
-      case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_USER:
         virBufferAsprintf(buffer, "ethernet%d.connectionType = \"nat\"\n",
                           controller);
         break;
 
-      case VIR_DOMAIN_NET_TYPE_ETHERNET:
-      case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-      case VIR_DOMAIN_NET_TYPE_SERVER:
-      case VIR_DOMAIN_NET_TYPE_CLIENT:
-      case VIR_DOMAIN_NET_TYPE_MCAST:
-      case VIR_DOMAIN_NET_TYPE_NETWORK:
-      case VIR_DOMAIN_NET_TYPE_INTERNAL:
-      case VIR_DOMAIN_NET_TYPE_DIRECT:
-      case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-      case VIR_DOMAIN_NET_TYPE_UDP:
-      case VIR_DOMAIN_NET_TYPE_VDPA:
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_UDP:
+    case VIR_DOMAIN_NET_TYPE_VDPA:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Unsupported net type '%s'"),
                        virDomainNetTypeToString(def->type));
         return -1;
