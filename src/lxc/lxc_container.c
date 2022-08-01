@@ -33,9 +33,6 @@
 /* Yes, we want linux private one, for _syscall2() macro */
 #include <linux/unistd.h>
 
-/* For MS_MOVE */
-#include <linux/fs.h>
-
 #if WITH_CAPNG
 # include <cap-ng.h>
 #endif
