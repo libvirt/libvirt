@@ -6490,23 +6490,7 @@ static void
 virQEMUCapsFillDomainFeatureSEVCaps(virQEMUCaps *qemuCaps,
                                     virDomainCaps *domCaps)
 {
-    virSEVCapability *cap = qemuCaps->sevCapabilities;
-
-    if (!cap)
-        return;
-
-    domCaps->sev = g_new0(virSEVCapability, 1);
-
-    domCaps->sev->pdh = g_strdup(cap->pdh);
-    domCaps->sev->cert_chain = g_strdup(cap->cert_chain);
-    if (cap->cpu0_id != NULL) {
-        domCaps->sev->cpu0_id = g_strdup(cap->cpu0_id);
-    }
-
-    domCaps->sev->cbitpos = cap->cbitpos;
-    domCaps->sev->reduced_phys_bits = cap->reduced_phys_bits;
-    domCaps->sev->max_guests = cap->max_guests;
-    domCaps->sev->max_es_guests = cap->max_es_guests;
+    virQEMUCapsSEVInfoCopy(&domCaps->sev, qemuCaps->sevCapabilities);
 }
 
 
