@@ -223,12 +223,12 @@ qemuMonitorDispose(void *obj)
     g_free(mon->domainName);
 }
 
+#define QEMU_DEFAULT_MONITOR_WAIT 30
 
 static int
 qemuMonitorOpenUnix(const char *monitor,
                     pid_t cpid,
-                    bool retry,
-                    unsigned long long timeout)
+                    bool retry)
 {
     struct sockaddr_un addr;
     VIR_AUTOCLOSE monfd = -1;
@@ -250,7 +250,7 @@ qemuMonitorOpenUnix(const char *monitor,
     }
 
     if (retry) {
-        if (virTimeBackOffStart(&timebackoff, 1, timeout * 1000) < 0)
+        if (virTimeBackOffStart(&timebackoff, 1, QEMU_DEFAULT_MONITOR_WAIT * 1000) < 0)
             return -1;
         while (virTimeBackOffWait(&timebackoff)) {
             ret = connect(monfd, (struct sockaddr *)&addr, sizeof(addr));
@@ -694,20 +694,13 @@ qemuMonitorOpenInternal(virDomainObj *vm,
 }
 
 
-#define QEMU_DEFAULT_MONITOR_WAIT 30
-
 /**
  * qemuMonitorOpen:
  * @vm: domain object
  * @config: monitor configuration
- * @timeout: number of seconds to add to default timeout
  * @cb: monitor event handles
  *
- * Opens the monitor for running qemu. It may happen that it
- * takes some time for qemu to create the monitor socket (e.g.
- * because kernel is zeroing configured hugepages), therefore we
- * wait up to default + timeout seconds for the monitor to show
- * up after which a failure is claimed.
+ * Opens the monitor for running qemu.
  *
  * Returns monitor object, NULL on error.
  */
@@ -715,14 +708,11 @@ qemuMonitor *
 qemuMonitorOpen(virDomainObj *vm,
                 virDomainChrSourceDef *config,
                 bool retry,
-                unsigned long long timeout,
                 GMainContext *context,
                 qemuMonitorCallbacks *cb)
 {
     VIR_AUTOCLOSE fd = -1;
     qemuMonitor *ret = NULL;
-
-    timeout += QEMU_DEFAULT_MONITOR_WAIT;
 
     if (config->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -732,8 +722,7 @@ qemuMonitorOpen(virDomainObj *vm,
     }
 
     virObjectUnlock(vm);
-    fd = qemuMonitorOpenUnix(config->data.nix.path,
-                             vm->pid, retry, timeout);
+    fd = qemuMonitorOpenUnix(config->data.nix.path, vm->pid, retry);
     virObjectLock(vm);
 
     if (fd < 0)

@@ -1888,7 +1888,6 @@ qemuConnectMonitor(virQEMUDriver *driver,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuMonitor *mon = NULL;
-    unsigned long long timeout = 0;
 
     if (qemuSecuritySetDaemonSocketLabel(driver->securityManager, vm->def) < 0) {
         VIR_ERROR(_("Failed to set security context for monitor for %s"),
@@ -1896,18 +1895,11 @@ qemuConnectMonitor(virQEMUDriver *driver,
         return -1;
     }
 
-    /* When using hugepages, kernel zeroes them out before
-     * handing them over to qemu. This can be very time
-     * consuming. Therefore, add a second to timeout for each
-     * 1GiB of guest RAM. */
-    timeout = virDomainDefGetMemoryTotal(vm->def) / (1024 * 1024);
-
     ignore_value(virTimeMillisNow(&priv->monStart));
 
     mon = qemuMonitorOpen(vm,
                           priv->monConfig,
                           false,
-                          timeout,
                           virEventThreadGetContext(priv->eventThread),
                           &monitorCallbacks);
 
@@ -9501,7 +9493,7 @@ qemuProcessQMPConnectMonitor(qemuProcessQMP *proc)
 
     proc->vm->pid = proc->pid;
 
-    if (!(proc->mon = qemuMonitorOpen(proc->vm, &monConfig, true, 0,
+    if (!(proc->mon = qemuMonitorOpen(proc->vm, &monConfig, true,
                                       virEventThreadGetContext(proc->eventThread),
                                       &callbacks)))
         return -1;
