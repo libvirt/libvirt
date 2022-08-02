@@ -1883,7 +1883,6 @@ static int
 qemuConnectMonitor(virQEMUDriver *driver,
                    virDomainObj *vm,
                    int asyncJob,
-                   bool retry,
                    qemuDomainLogContext *logCtxt,
                    bool reconnect)
 {
@@ -1907,7 +1906,7 @@ qemuConnectMonitor(virQEMUDriver *driver,
 
     mon = qemuMonitorOpen(vm,
                           priv->monConfig,
-                          retry,
+                          false,
                           timeout,
                           virEventThreadGetContext(priv->eventThread),
                           &monitorCallbacks);
@@ -2345,12 +2344,10 @@ qemuProcessWaitForMonitor(virQEMUDriver *driver,
     int ret = -1;
     g_autoptr(GHashTable) info = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
-    bool retry = false;
 
-    VIR_DEBUG("Connect monitor to vm=%p name='%s' retry=%d",
-              vm, vm->def->name, retry);
+    VIR_DEBUG("Connect monitor to vm=%p name='%s'", vm, vm->def->name);
 
-    if (qemuConnectMonitor(driver, vm, asyncJob, retry, logCtxt, false) < 0)
+    if (qemuConnectMonitor(driver, vm, asyncJob, logCtxt, false) < 0)
         goto cleanup;
 
     /* Try to get the pty path mappings again via the monitor. This is much more
@@ -8877,7 +8874,6 @@ qemuProcessReconnect(void *opaque)
     size_t i;
     unsigned int stopFlags = 0;
     bool jobStarted = false;
-    bool retry = false;
     bool tryMonReconn = false;
 
     virIdentitySetCurrent(data->identity);
@@ -8916,13 +8912,12 @@ qemuProcessReconnect(void *opaque)
     if (qemuDomainObjStartWorker(obj) < 0)
         goto error;
 
-    VIR_DEBUG("Reconnect monitor to def=%p name='%s' retry=%d",
-              obj, obj->def->name, retry);
+    VIR_DEBUG("Reconnect monitor to def=%p name='%s'", obj, obj->def->name);
 
     tryMonReconn = true;
 
     /* XXX check PID liveliness & EXE path */
-    if (qemuConnectMonitor(driver, obj, VIR_ASYNC_JOB_NONE, retry, NULL, true) < 0)
+    if (qemuConnectMonitor(driver, obj, VIR_ASYNC_JOB_NONE, NULL, true) < 0)
         goto error;
 
     priv->machineName = qemuDomainGetMachineName(obj);
