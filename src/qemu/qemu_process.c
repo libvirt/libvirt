@@ -9493,7 +9493,7 @@ qemuProcessQMPConnectMonitor(qemuProcessQMP *proc)
 
     proc->vm->pid = proc->pid;
 
-    if (!(proc->mon = qemuMonitorOpen(proc->vm, &monConfig, true,
+    if (!(proc->mon = qemuMonitorOpen(proc->vm, &monConfig, false,
                                       virEventThreadGetContext(proc->eventThread),
                                       &callbacks)))
         return -1;
