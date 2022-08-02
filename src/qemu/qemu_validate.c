@@ -4843,8 +4843,19 @@ qemuValidateDomainDeviceDefTPM(virDomainTPMDef *tpm,
 {
     virDomainCapsDeviceTPM tpmCaps = { 0 };
 
+    virQEMUCapsFillDomainDeviceTPMCaps(qemuCaps, &tpmCaps);
+
     if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR) {
-        switch (tpm->data.emulator.version) {
+        const virDomainTPMVersion version = tpm->data.emulator.version;
+
+        if (!VIR_DOMAIN_CAPS_ENUM_IS_SET(tpmCaps.backendVersion, version)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("TPM version '%s' is not supported"),
+                           virDomainTPMVersionTypeToString(version));
+            return -1;
+        }
+
+        switch (version) {
         case VIR_DOMAIN_TPM_VERSION_1_2:
             /* TPM 1.2 + CRB do not work */
             if (tpm->model == VIR_DOMAIN_TPM_MODEL_CRB) {
@@ -4872,8 +4883,6 @@ qemuValidateDomainDeviceDefTPM(virDomainTPMDef *tpm,
             break;
         }
     }
-
-    virQEMUCapsFillDomainDeviceTPMCaps(qemuCaps, &tpmCaps);
 
     if (!VIR_DOMAIN_CAPS_ENUM_IS_SET(tpmCaps.backendModel, tpm->type)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
