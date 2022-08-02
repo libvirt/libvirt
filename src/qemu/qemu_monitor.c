@@ -245,8 +245,7 @@ qemuMonitorOpenUnix(const char *monitor)
         return -1;
     }
 
-    ret = connect(monfd, (struct sockaddr *) &addr, sizeof(addr));
-    if (ret < 0) {
+    if (connect(monfd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to connect to monitor socket"));
         return -1;
