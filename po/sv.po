@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-07-26 08:13+0000\n"
-"PO-Revision-Date: 2022-07-23 07:19+0000\n"
+"PO-Revision-Date: 2022-08-02 08:51+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -12662,135 +12662,140 @@ msgid "Normal pages:"
 msgstr "Normala sidor:"
 
 msgid "Not a download stream"
-msgstr ""
+msgstr "Inte en hämtningsström"
 
 msgid "Not all servers restored, cannot run server"
-msgstr ""
+msgstr "Alla servrar återställdes inte, kan inte köra servern"
 
 msgid "Not an upload stream"
-msgstr ""
+msgstr "Inte en uppsändningsström"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Not detaching active device %s"
-msgstr "avmontera diskenhet"
+msgstr "Kopplar inte ifrån den aktiva enheten %s"
 
 msgid "Not enough arguments passed, nothing to set"
-msgstr ""
+msgstr "Inte tillräckligt med argument skickade, inget att sätta"
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
-msgstr ""
+msgstr "Inte tillräckligt med fritt utrymme i poolen för volymen ”%s”"
 
 #, c-format
 msgid ""
 "Not enough room for allocation of %llu bytes for level %u cache %u scope "
 "type '%s'"
 msgstr ""
+"Inte tillräckligt med utrymme för allokering av %llu byte för nivå %u-cachen "
+"%u-räckvidden med typ ”%s”"
 
 msgid "Not enough space left in storage pool"
-msgstr ""
+msgstr "Inte tillräckligt med utrymme kvar i lagringspoolen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Not reattaching active device %s"
-msgstr "anslut diskenhet"
+msgstr "Kopplar inte om den aktiva enheten %s"
 
 #, c-format
 msgid "Not resetting active device %s"
-msgstr ""
+msgstr "Återställer inte den aktiva enheten %s"
 
 msgid "Not supported"
 msgstr "Stödjs inte"
 
-#, fuzzy
 msgid "Not supported on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Stödjs inte på denna plattform"
 
 #, sh-format
 msgid "Not suspending transient guests on URI: $uri: "
-msgstr ""
+msgstr "Söver inte transienta gäster på URI: $uri: "
 
 msgid "Now in mirroring phase"
-msgstr ""
+msgstr "Nu i speglingsfasen"
 
 msgid "Now in synchronized phase"
-msgstr ""
+msgstr "Nu i synkroniserad fas"
 
 msgid "Number of CPUs in <numa> exceeds the <vcpu> count"
-msgstr ""
+msgstr "Antals CPU:er i <numa> överskrider antalet <vcpu>"
 
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
 msgstr ""
+"Antalet CPU:er i <numa> överskridet det önskade maximala antalet vcpu:er"
 
 #, c-format
 msgid "Number of domain stats records is %d, which exceeds max limit: %d"
-msgstr ""
+msgstr "Antalet domänstatusposter är%d, vilket överskrider maxgränsen: %d"
 
 #, c-format
 msgid "Number of interfaces, %d exceeds the max limit: %d"
-msgstr ""
+msgstr "Antalet gränssnitt, %d överskrider maxgränsen: %d"
 
 #, c-format
 msgid "Number of keys %d, which exceeds max liit: %d"
-msgstr ""
+msgstr "Antalet nycklar %d, vilket överskrider maxgränsen: %d"
 
 #, c-format
 msgid "Number of leases is %d, which exceeds max limit: %d"
-msgstr ""
+msgstr "Antalet hyror är %d, vilket överskrider maxgränsen: %d"
 
 #, c-format
 msgid "Number of msgs %d, which exceeds max limit: %d"
-msgstr ""
+msgstr "Antalet meddelanden %d, vilket överskrider maxgränsen: %d"
 
 msgid "Number of shown CPUs at most"
-msgstr ""
+msgstr "Antalet visade CPU:er högst"
 
 #, c-format
 msgid "Number of stats entries is %d, which exceeds max limit: %d"
-msgstr ""
+msgstr "Antalet statusposter är %d, vilket överskrider maxgränsen: %d"
 
 msgid "Number of vCPUs should be >= 1"
-msgstr ""
+msgstr "Antalet vCPU:er skall vara ≥ 1"
 
 #, c-format
 msgid "Numeric value '%s' for <%s> option is malformed or out of range"
 msgstr ""
+"Det numeriska värdet ”%s” till alternativet <%s> är felformat eller utanför "
+"intervallet"
 
 #, c-format
 msgid "Numeric value '%u' for <%s> option is malformed or out of range"
 msgstr ""
+"Det numeriska värdet ”%u” till alternativet <%s> är felformat eller utanför "
+"intervallet"
 
 msgid "OS Type:"
 msgstr "OS-typ:"
 
 msgid "O_DIRECT read needs entire seekable file"
-msgstr ""
+msgstr "O_DIRECT-läsning behöver en hel sökbar fil"
 
-#, fuzzy
 msgid "O_DIRECT unsupported on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "O_DIRECT stödjs inte på denna plattform"
 
 msgid "O_DIRECT write needs empty seekable file"
-msgstr ""
+msgstr "O_DIRECT-skrivning behöver en tom sökbar fil"
 
 msgid "ObjectContent does not reference a virtual machine"
-msgstr ""
+msgstr "ObjectContent refererar inte en virtuell maskin"
 
 msgid "Offset must be zero for this lock manager"
-msgstr ""
+msgstr "Avståndet måste vara noll för denna låshanterare"
 
 msgid "One of options --enable or --disable is required by option --cpulist"
-msgstr ""
+msgstr "En av flaggorna --enable eller --disable krävs av flaggan --cpulist"
 
 msgid "One or more references were leaked after disconnect from the hypervisor"
-msgstr ""
+msgstr "En eller flera referenser läcktes efter frånkoppling från hypervisorn"
 
 #, c-format
 msgid "Only %d CPUs available to show\n"
-msgstr ""
+msgstr "Endast %d CPU:er är tillgängliga att visa\n"
 
 #, c-format
 msgid "Only '%s' filesystem type is supported"
-msgstr ""
+msgstr "Endast ”%s” filsystemtyper stödjs"
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr ""
