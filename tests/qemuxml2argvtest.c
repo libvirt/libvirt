@@ -2564,6 +2564,12 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("aarch64-tpm", "aarch64");
     DO_TEST_PARSE_ERROR_NOCAPS("aarch64-tpm-wrong-model");
 
+    g_setenv(TEST_TPM_ENV_VAR, TPM_VER_2_0, true);
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("tpm-emulator");
+    g_setenv(TEST_TPM_ENV_VAR, TPM_VER_1_2, true);
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("tpm-emulator-tpm2");
+    unsetenv(TEST_TPM_ENV_VAR);
+
     DO_TEST_PARSE_ERROR_NOCAPS("pci-domain-invalid");
     DO_TEST_PARSE_ERROR_NOCAPS("pci-bus-invalid");
     DO_TEST_PARSE_ERROR_NOCAPS("pci-slot-invalid");
