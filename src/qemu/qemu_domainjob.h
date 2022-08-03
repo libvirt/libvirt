@@ -131,8 +131,6 @@ int qemuDomainJobDataToParams(virDomainJobData *jobData,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
-bool qemuDomainTrackJob(virDomainJob job);
-
 int
 qemuDomainObjPrivateXMLFormatJob(virBuffer *buf,
                                  virDomainObj *vm);

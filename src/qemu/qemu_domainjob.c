@@ -185,13 +185,6 @@ qemuDomainObjRestoreAsyncJob(virDomainObj *vm,
 }
 
 
-bool
-qemuDomainTrackJob(virDomainJob job)
-{
-    return (VIR_DOMAIN_TRACK_JOBS & JOB_MASK(job)) != 0;
-}
-
-
 int
 qemuDomainJobDataUpdateTime(virDomainJobData *jobData)
 {
@@ -870,7 +863,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
         priv->job.agentStarted = now;
     }
 
-    if (qemuDomainTrackJob(job))
+    if (virDomainTrackJob(job))
         qemuDomainSaveStatus(obj);
 
     return 0;
@@ -1092,7 +1085,7 @@ qemuDomainObjEndJob(virDomainObj *obj)
               obj, obj->def->name);
 
     virDomainObjResetJob(&priv->job);
-    if (qemuDomainTrackJob(job))
+    if (virDomainTrackJob(job))
         qemuDomainSaveStatus(obj);
     /* We indeed need to wake up ALL threads waiting because
      * grabbing a job requires checking more variables. */
@@ -1156,7 +1149,7 @@ qemuDomainObjPrivateXMLFormatJob(virBuffer *buf,
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     virDomainJob job = priv->job.active;
 
-    if (!qemuDomainTrackJob(job))
+    if (!virDomainTrackJob(job))
         job = VIR_JOB_NONE;
 
     if (job == VIR_JOB_NONE &&

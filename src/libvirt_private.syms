@@ -1600,6 +1600,7 @@ virDomainObjPreserveJob;
 virDomainObjResetAgentJob;
 virDomainObjResetAsyncJob;
 virDomainObjResetJob;
+virDomainTrackJob;
 
 
 # hypervisor/virclosecallbacks.h

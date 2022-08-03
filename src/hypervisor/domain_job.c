@@ -220,3 +220,9 @@ virDomainObjClearJob(virDomainJobObj *job)
     if (job->cb)
         g_clear_pointer(&job->privateData, job->cb->freeJobPrivate);
 }
+
+bool
+virDomainTrackJob(virDomainJob job)
+{
+    return (VIR_DOMAIN_TRACK_JOBS & JOB_MASK(job)) != 0;
+}
