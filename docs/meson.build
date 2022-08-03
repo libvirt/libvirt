@@ -248,7 +248,8 @@ endforeach
 
 html_xslt_gen += {
   'name': 'acl',
-  'source': 'docs' / 'acl.html.in',
+  'file': docs_rst2html5_gen.process('acl.rst'),
+  'source': 'docs' / 'acl.rst',
   'depends': aclperms_gen,
 }
 

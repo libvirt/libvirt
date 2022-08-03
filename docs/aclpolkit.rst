@@ -26,7 +26,7 @@ the operations a user may perform on an object.
 Permission names
 ----------------
 
-The libvirt `object names and permission names <acl.html#perms>`__ are
+The libvirt `object names and permission names <acl.html#objects-and-permissions>`__ are
 mapped onto polkit action names using the simple pattern:
 
 ::
