@@ -1595,6 +1595,7 @@ virDomainJobStatusToType;
 virDomainJobTypeFromString;
 virDomainJobTypeToString;
 virDomainObjInitJob;
+virDomainObjPreserveJob;
 virDomainObjResetAgentJob;
 virDomainObjResetAsyncJob;
 virDomainObjResetJob;

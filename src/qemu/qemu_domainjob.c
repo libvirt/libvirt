@@ -150,39 +150,6 @@ qemuDomainEventEmitJobCompleted(virQEMUDriver *driver,
 }
 
 
-/**
- * qemuDomainObjPreserveJob
- * @param obj domain with a job that needs to be preserved
- * @param job structure where to store job details from @obj
- *
- * Saves the current job details from @obj to @job and resets the job in @obj.
- *
- * Returns 0 on success, -1 on failure.
- */
-int
-qemuDomainObjPreserveJob(virDomainJobObj *currJob,
-                         virDomainJobObj *job)
-{
-    memset(job, 0, sizeof(*job));
-    job->active = currJob->active;
-    job->owner = currJob->owner;
-    job->asyncJob = currJob->asyncJob;
-    job->asyncOwner = currJob->asyncOwner;
-    job->phase = currJob->phase;
-    job->privateData = g_steal_pointer(&currJob->privateData);
-    job->apiFlags = currJob->apiFlags;
-
-    if (currJob->cb &&
-        !(currJob->privateData = currJob->cb->allocJobPrivate()))
-        return -1;
-    job->cb = currJob->cb;
-
-    virDomainObjResetJob(currJob);
-    virDomainObjResetAsyncJob(currJob);
-    return 0;
-}
-
-
 void
 qemuDomainObjRestoreAsyncJob(virDomainObj *vm,
                              virDomainAsyncJob asyncJob,

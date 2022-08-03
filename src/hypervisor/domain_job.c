@@ -174,3 +174,35 @@ virDomainObjResetAsyncJob(virDomainJobObj *job)
     if (job->cb)
         job->cb->resetJobPrivate(job->privateData);
 }
+
+/**
+ * virDomainObjPreserveJob
+ * @param currJob structure is a job that needs to be preserved
+ * @param job structure where to store job details from @currJob
+ *
+ * Saves the current job details from @currJob to @job and resets the job in @currJob.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int
+virDomainObjPreserveJob(virDomainJobObj *currJob,
+                        virDomainJobObj *job)
+{
+    memset(job, 0, sizeof(*job));
+    job->active = currJob->active;
+    job->owner = currJob->owner;
+    job->asyncJob = currJob->asyncJob;
+    job->asyncOwner = currJob->asyncOwner;
+    job->phase = currJob->phase;
+    job->privateData = g_steal_pointer(&currJob->privateData);
+    job->apiFlags = currJob->apiFlags;
+
+    if (currJob->cb &&
+        !(currJob->privateData = currJob->cb->allocJobPrivate()))
+        return -1;
+    job->cb = currJob->cb;
+
+    virDomainObjResetJob(currJob);
+    virDomainObjResetAsyncJob(currJob);
+    return 0;
+}
