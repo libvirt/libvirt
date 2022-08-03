@@ -14,6 +14,7 @@ ask for Secure Boot to be enabled with
 
   <os firmware='efi'>
     <firmware>
+      <feature enabled='yes' name='secure-boot'/>
       <feature enabled='yes' name='enrolled-keys'/>
     </firmware>
   </os>
@@ -24,6 +25,7 @@ and for it to be disabled with
 
   <os firmware='efi'>
     <firmware>
+      <feature enabled='yes' name='secure-boot'/>
       <feature enabled='no' name='enrolled-keys'/>
     </firmware>
   </os>
@@ -44,6 +46,7 @@ snippet:
   <os firmware='efi'>
     <loader secure='yes'/>
     <firmware>
+      <feature enabled='yes' name='secure-boot'/>
       <feature enabled='yes' name='enrolled-keys'/>
     </firmware>
   </os>
