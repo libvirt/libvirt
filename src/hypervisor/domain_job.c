@@ -226,3 +226,11 @@ virDomainTrackJob(virDomainJob job)
 {
     return (VIR_DOMAIN_TRACK_JOBS & JOB_MASK(job)) != 0;
 }
+
+bool
+virDomainNestedJobAllowed(virDomainJobObj *jobs, virDomainJob newJob)
+{
+    return !jobs->asyncJob ||
+           newJob == VIR_JOB_NONE ||
+           (jobs->mask & JOB_MASK(newJob));
+}

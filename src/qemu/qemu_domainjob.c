@@ -698,14 +698,6 @@ qemuDomainObjReleaseAsyncJob(virDomainObj *obj)
 }
 
 static bool
-qemuDomainNestedJobAllowed(virDomainJobObj *jobs, virDomainJob newJob)
-{
-    return !jobs->asyncJob ||
-           newJob == VIR_JOB_NONE ||
-           (jobs->mask & JOB_MASK(newJob)) != 0;
-}
-
-static bool
 qemuDomainObjCanSetJob(virDomainJobObj *job,
                        virDomainJob newJob,
                        virDomainAgentJob newAgentJob)
@@ -787,7 +779,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
         goto error;
     }
 
-    while (!nested && !qemuDomainNestedJobAllowed(&priv->job, job)) {
+    while (!nested && !virDomainNestedJobAllowed(&priv->job, job)) {
         if (nowait)
             goto cleanup;
 
@@ -807,7 +799,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
 
     /* No job is active but a new async job could have been started while obj
      * was unlocked, so we need to recheck it. */
-    if (!nested && !qemuDomainNestedJobAllowed(&priv->job, job))
+    if (!nested && !virDomainNestedJobAllowed(&priv->job, job))
         goto retry;
 
     if (obj->removing) {
@@ -896,7 +888,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
              duration / 1000, agentDuration / 1000, asyncDuration / 1000);
 
     if (job) {
-        if (nested || qemuDomainNestedJobAllowed(&priv->job, job))
+        if (nested || virDomainNestedJobAllowed(&priv->job, job))
             blocker = priv->job.ownerAPI;
         else
             blocker = priv->job.asyncOwnerAPI;

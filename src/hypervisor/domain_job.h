@@ -222,3 +222,5 @@ void virDomainObjClearJob(virDomainJobObj *job);
 G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virDomainJobObj, virDomainObjClearJob);
 
 bool virDomainTrackJob(virDomainJob job);
+
+bool virDomainNestedJobAllowed(virDomainJobObj *jobs, virDomainJob newJob);
