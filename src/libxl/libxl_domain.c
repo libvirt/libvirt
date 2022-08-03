@@ -44,13 +44,6 @@
 VIR_LOG_INIT("libxl.libxl_domain");
 
 
-static void
-libxlDomainObjFreeJob(libxlDomainObjPrivate *priv)
-{
-    ignore_value(virCondDestroy(&priv->job.cond));
-    virDomainJobDataFree(priv->job.current);
-}
-
 /* Give up waiting for mutex after 30 seconds */
 #define LIBXL_JOB_WAIT_TIME (1000ull * 30)
 
@@ -185,7 +178,7 @@ libxlDomainObjPrivateFree(void *data)
     libxlDomainObjPrivate *priv = data;
 
     g_free(priv->lockState);
-    libxlDomainObjFreeJob(priv);
+    virDomainObjClearJob(&priv->job);
     virChrdevFree(priv->devs);
     g_free(priv);
 }
