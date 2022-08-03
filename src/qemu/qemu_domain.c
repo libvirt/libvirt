@@ -1705,6 +1705,9 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
         g_slist_free_full(g_steal_pointer(&priv->dbusVMStateIds), g_free);
 
     priv->dbusVMState = false;
+
+    priv->originalMemlock = 0;
+    priv->preMigrationMemlock = 0;
 }
 
 
