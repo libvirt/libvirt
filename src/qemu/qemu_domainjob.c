@@ -151,16 +151,6 @@ qemuDomainEventEmitJobCompleted(virQEMUDriver *driver,
 
 
 static void
-qemuDomainObjResetAgentJob(virDomainJobObj *job)
-{
-    job->agentActive = VIR_AGENT_JOB_NONE;
-    job->agentOwner = 0;
-    g_clear_pointer(&job->agentOwnerAPI, g_free);
-    job->agentStarted = 0;
-}
-
-
-static void
 qemuDomainObjResetAsyncJob(virDomainJobObj *job)
 {
     job->asyncJob = VIR_ASYNC_JOB_NONE;
@@ -936,7 +926,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
     }
 
     if (agentJob) {
-        qemuDomainObjResetAgentJob(&priv->job);
+        virDomainObjResetAgentJob(&priv->job);
 
         VIR_DEBUG("Started agent job: %s (vm=%p name=%s job=%s async=%s)",
                   virDomainAgentJobTypeToString(agentJob),
@@ -1191,7 +1181,7 @@ qemuDomainObjEndAgentJob(virDomainObj *obj)
               virDomainAsyncJobTypeToString(priv->job.asyncJob),
               obj, obj->def->name);
 
-    qemuDomainObjResetAgentJob(&priv->job);
+    virDomainObjResetAgentJob(&priv->job);
     /* We indeed need to wake up ALL threads waiting because
      * grabbing a job requires checking more variables. */
     virCondBroadcast(&priv->job.cond);

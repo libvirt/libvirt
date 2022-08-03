@@ -146,3 +146,12 @@ virDomainObjResetJob(virDomainJobObj *job)
     g_clear_pointer(&job->ownerAPI, g_free);
     job->started = 0;
 }
+
+void
+virDomainObjResetAgentJob(virDomainJobObj *job)
+{
+    job->agentActive = VIR_AGENT_JOB_NONE;
+    job->agentOwner = 0;
+    g_clear_pointer(&job->agentOwnerAPI, g_free);
+    job->agentStarted = 0;
+}

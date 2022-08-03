@@ -210,3 +210,5 @@ int virDomainObjInitJob(virDomainJobObj *job,
                         virDomainObjPrivateJobCallbacks *cb);
 
 void virDomainObjResetJob(virDomainJobObj *job);
+
+void virDomainObjResetAgentJob(virDomainJobObj *job);
