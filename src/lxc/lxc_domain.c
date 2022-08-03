@@ -35,11 +35,6 @@
 
 VIR_LOG_INIT("lxc.lxc_domain");
 
-static void
-virLXCDomainObjFreeJob(virLXCDomainObjPrivate *priv)
-{
-    ignore_value(virCondDestroy(&priv->job.cond));
-}
 
 /* Give up waiting for mutex after 30 seconds */
 #define LXC_JOB_WAIT_TIME (1000ull * 30)
@@ -142,7 +137,7 @@ virLXCDomainObjPrivateFree(void *data)
     virLXCDomainObjPrivate *priv = data;
 
     virCgroupFree(priv->cgroup);
-    virLXCDomainObjFreeJob(priv);
+    virDomainObjClearJob(&priv->job);
     g_free(priv);
 }
 
