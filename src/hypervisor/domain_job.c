@@ -234,3 +234,14 @@ virDomainNestedJobAllowed(virDomainJobObj *jobs, virDomainJob newJob)
            newJob == VIR_JOB_NONE ||
            (jobs->mask & JOB_MASK(newJob));
 }
+
+bool
+virDomainObjCanSetJob(virDomainJobObj *job,
+                      virDomainJob newJob,
+                      virDomainAgentJob newAgentJob)
+{
+    return ((newJob == VIR_JOB_NONE ||
+             job->active == VIR_JOB_NONE) &&
+            (newAgentJob == VIR_AGENT_JOB_NONE ||
+             job->agentActive == VIR_AGENT_JOB_NONE));
+}

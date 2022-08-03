@@ -697,17 +697,6 @@ qemuDomainObjReleaseAsyncJob(virDomainObj *obj)
     priv->job.asyncOwner = 0;
 }
 
-static bool
-qemuDomainObjCanSetJob(virDomainJobObj *job,
-                       virDomainJob newJob,
-                       virDomainAgentJob newAgentJob)
-{
-    return ((newJob == VIR_JOB_NONE ||
-             job->active == VIR_JOB_NONE) &&
-            (newAgentJob == VIR_AGENT_JOB_NONE ||
-             job->agentActive == VIR_AGENT_JOB_NONE));
-}
-
 /* Give up waiting for mutex after 30 seconds */
 #define QEMU_JOB_WAIT_TIME (1000ull * 30)
 
@@ -788,7 +777,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
             goto error;
     }
 
-    while (!qemuDomainObjCanSetJob(&priv->job, job, agentJob)) {
+    while (!virDomainObjCanSetJob(&priv->job, job, agentJob)) {
         if (nowait)
             goto cleanup;
 
