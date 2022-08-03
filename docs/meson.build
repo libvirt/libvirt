@@ -17,10 +17,6 @@ docs_assets = [
   'mstile-150x150.png',
 ]
 
-docs_html_in_files = [
-  'index',
-]
-
 docs_rst_files = [
   'aclpolkit',
   'advanced-tests',
@@ -84,6 +80,7 @@ docs_rst_files = [
   'governance',
   'hacking',
   'hooks',
+  'index',
   'issue-handling',
   'libvirt-go',
   'libvirt-go-xml',
@@ -229,13 +226,6 @@ html_xslt_gen = []
 #   file - input file (optional, 'name.html.in' assumed if missing)
 # source - source filename relative to repository root (optional, if there is no source)
 # depends - explicit dependency on other input (optional)
-
-foreach name : docs_html_in_files
-  html_xslt_gen += {
-    'name': name,
-    'source': 'docs' / name + '.html.in',
-  }
-endforeach
 
 foreach name : docs_rst_files
   rst_file = '@0@.rst'.format(name)
