@@ -206,3 +206,17 @@ virDomainObjPreserveJob(virDomainJobObj *currJob,
     virDomainObjResetAsyncJob(currJob);
     return 0;
 }
+
+void
+virDomainObjClearJob(virDomainJobObj *job)
+{
+    virDomainObjResetJob(job);
+    virDomainObjResetAsyncJob(job);
+    g_clear_pointer(&job->current, virDomainJobDataFree);
+    g_clear_pointer(&job->completed, virDomainJobDataFree);
+    virCondDestroy(&job->cond);
+    virCondDestroy(&job->asyncCond);
+
+    if (job->cb)
+        g_clear_pointer(&job->privateData, job->cb->freeJobPrivate);
+}

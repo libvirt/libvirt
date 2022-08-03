@@ -217,3 +217,6 @@ void virDomainObjResetAsyncJob(virDomainJobObj *job);
 
 int virDomainObjPreserveJob(virDomainJobObj *currJob,
                             virDomainJobObj *job);
+
+void virDomainObjClearJob(virDomainJobObj *job);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virDomainJobObj, virDomainObjClearJob);
