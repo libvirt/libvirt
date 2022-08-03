@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "domain_job.h"
+#include "viralloc.h"
 
 
 VIR_ENUM_IMPL(virDomainJob,
@@ -154,4 +155,22 @@ virDomainObjResetAgentJob(virDomainJobObj *job)
     job->agentOwner = 0;
     g_clear_pointer(&job->agentOwnerAPI, g_free);
     job->agentStarted = 0;
+}
+
+void
+virDomainObjResetAsyncJob(virDomainJobObj *job)
+{
+    job->asyncJob = VIR_ASYNC_JOB_NONE;
+    job->asyncOwner = 0;
+    g_clear_pointer(&job->asyncOwnerAPI, g_free);
+    job->asyncStarted = 0;
+    job->phase = 0;
+    job->mask = VIR_JOB_DEFAULT_MASK;
+    job->abortJob = false;
+    VIR_FREE(job->error);
+    g_clear_pointer(&job->current, virDomainJobDataFree);
+    job->apiFlags = 0;
+
+    if (job->cb)
+        job->cb->resetJobPrivate(job->privateData);
 }

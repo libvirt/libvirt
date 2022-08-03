@@ -212,3 +212,5 @@ int virDomainObjInitJob(virDomainJobObj *job,
 void virDomainObjResetJob(virDomainJobObj *job);
 
 void virDomainObjResetAgentJob(virDomainJobObj *job);
+
+void virDomainObjResetAsyncJob(virDomainJobObj *job);

@@ -150,25 +150,6 @@ qemuDomainEventEmitJobCompleted(virQEMUDriver *driver,
 }
 
 
-static void
-qemuDomainObjResetAsyncJob(virDomainJobObj *job)
-{
-    job->asyncJob = VIR_ASYNC_JOB_NONE;
-    job->asyncOwner = 0;
-    g_clear_pointer(&job->asyncOwnerAPI, g_free);
-    job->asyncStarted = 0;
-    job->phase = 0;
-    job->mask = VIR_JOB_DEFAULT_MASK;
-    job->abortJob = false;
-    VIR_FREE(job->error);
-    g_clear_pointer(&job->current, virDomainJobDataFree);
-    job->apiFlags = 0;
-
-    if (job->cb)
-        job->cb->resetJobPrivate(job->privateData);
-}
-
-
 /**
  * qemuDomainObjPreserveJob
  * @param obj domain with a job that needs to be preserved
@@ -200,7 +181,7 @@ qemuDomainObjPreserveJob(virDomainObj *obj,
     job->cb = priv->job.cb;
 
     virDomainObjResetJob(&priv->job);
-    qemuDomainObjResetAsyncJob(&priv->job);
+    virDomainObjResetAsyncJob(&priv->job);
     return 0;
 }
 
@@ -244,7 +225,7 @@ void
 qemuDomainObjClearJob(virDomainJobObj *job)
 {
     virDomainObjResetJob(job);
-    qemuDomainObjResetAsyncJob(job);
+    virDomainObjResetAsyncJob(job);
     g_clear_pointer(&job->current, virDomainJobDataFree);
     g_clear_pointer(&job->completed, virDomainJobDataFree);
     virCondDestroy(&job->cond);
@@ -753,7 +734,7 @@ qemuDomainObjDiscardAsyncJob(virDomainObj *obj)
 
     if (priv->job.active == VIR_JOB_ASYNC_NESTED)
         virDomainObjResetJob(&priv->job);
-    qemuDomainObjResetAsyncJob(&priv->job);
+    virDomainObjResetAsyncJob(&priv->job);
     qemuDomainSaveStatus(obj);
 }
 
@@ -914,7 +895,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
             VIR_DEBUG("Started async job: %s (vm=%p name=%s)",
                       virDomainAsyncJobTypeToString(asyncJob),
                       obj, obj->def->name);
-            qemuDomainObjResetAsyncJob(&priv->job);
+            virDomainObjResetAsyncJob(&priv->job);
             priv->job.current = virDomainJobDataInit(&qemuJobDataPrivateDataCallbacks);
             priv->job.current->status = VIR_DOMAIN_JOB_STATUS_ACTIVE;
             priv->job.asyncJob = asyncJob;
@@ -1198,7 +1179,7 @@ qemuDomainObjEndAsyncJob(virDomainObj *obj)
               virDomainAsyncJobTypeToString(priv->job.asyncJob),
               obj, obj->def->name);
 
-    qemuDomainObjResetAsyncJob(&priv->job);
+    virDomainObjResetAsyncJob(&priv->job);
     qemuDomainSaveStatus(obj);
     virCondBroadcast(&priv->job.asyncCond);
 }
