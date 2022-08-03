@@ -9405,6 +9405,10 @@ qemuDomainSetMaxMemLock(virDomainObj *vm,
 {
     unsigned long long current = 0;
 
+    /* nothing to do if the domain is not running */
+    if (vm->pid <= 0)
+        return 0;
+
     if (virProcessGetMaxMemLock(vm->pid, &current) < 0)
         return -1;
 
