@@ -160,28 +160,25 @@ qemuDomainEventEmitJobCompleted(virQEMUDriver *driver,
  * Returns 0 on success, -1 on failure.
  */
 int
-qemuDomainObjPreserveJob(virDomainObj *obj,
+qemuDomainObjPreserveJob(virDomainJobObj *currJob,
                          virDomainJobObj *job)
 {
-    qemuDomainObjPrivate *priv = obj->privateData;
-
     memset(job, 0, sizeof(*job));
-    job->active = priv->job.active;
-    job->owner = priv->job.owner;
-    job->asyncJob = priv->job.asyncJob;
-    job->asyncOwner = priv->job.asyncOwner;
-    job->asyncStarted = priv->job.asyncStarted;
-    job->phase = priv->job.phase;
-    job->privateData = g_steal_pointer(&priv->job.privateData);
-    job->apiFlags = priv->job.apiFlags;
+    job->active = currJob->active;
+    job->owner = currJob->owner;
+    job->asyncJob = currJob->asyncJob;
+    job->asyncOwner = currJob->asyncOwner;
+    job->phase = currJob->phase;
+    job->privateData = g_steal_pointer(&currJob->privateData);
+    job->apiFlags = currJob->apiFlags;
 
-    if (priv->job.cb &&
-        !(priv->job.privateData = priv->job.cb->allocJobPrivate()))
+    if (currJob->cb &&
+        !(currJob->privateData = currJob->cb->allocJobPrivate()))
         return -1;
-    job->cb = priv->job.cb;
+    job->cb = currJob->cb;
 
-    virDomainObjResetJob(&priv->job);
-    virDomainObjResetAsyncJob(&priv->job);
+    virDomainObjResetJob(currJob);
+    virDomainObjResetAsyncJob(currJob);
     return 0;
 }
 
