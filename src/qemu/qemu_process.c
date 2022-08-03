@@ -8265,6 +8265,9 @@ void qemuProcessStop(virQEMUDriver *driver,
                                  VIR_QEMU_PROCESS_KILL_FORCE|
                                  VIR_QEMU_PROCESS_KILL_NOCHECK));
 
+    /* Its namespace is also gone then. */
+    qemuDomainDestroyNamespace(driver, vm);
+
     qemuDomainCleanupRun(driver, vm);
 
     qemuExtDevicesStop(driver, vm);
