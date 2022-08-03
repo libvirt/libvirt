@@ -32,12 +32,6 @@
 
 VIR_LOG_INIT("ch.ch_domain");
 
-static void
-virCHDomainObjFreeJob(virCHDomainObjPrivate *priv)
-{
-    ignore_value(virCondDestroy(&priv->job.cond));
-}
-
 /*
  * obj must be locked before calling, virCHDriver must NOT be locked
  *
@@ -129,7 +123,7 @@ virCHDomainObjPrivateAlloc(void *opaque)
     }
 
     if (!(priv->chrdevs = virChrdevAlloc())) {
-        virCHDomainObjFreeJob(priv);
+        virDomainObjClearJob(&priv->job);
         g_free(priv);
         return NULL;
     }
@@ -144,7 +138,7 @@ virCHDomainObjPrivateFree(void *data)
     virCHDomainObjPrivate *priv = data;
 
     virChrdevFree(priv->chrdevs);
-    virCHDomainObjFreeJob(priv);
+    virDomainObjClearJob(&priv->job);
     g_free(priv->machineName);
     g_free(priv);
 }
