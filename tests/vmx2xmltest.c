@@ -236,6 +236,7 @@ mymain(void)
     DO_TEST("ethernet-static");
     DO_TEST("ethernet-vpx");
     DO_TEST("ethernet-other");
+    DO_TEST("ethernet-unmanaged-nodev");
 
     DO_TEST("serial-file");
     DO_TEST("serial-device");

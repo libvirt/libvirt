@@ -225,6 +225,8 @@ mymain(void)
     DO_TEST("ethernet-other", "ethernet-other", 4);
     DO_TEST("ethernet-mac-type", "ethernet-mac-type", 4);
 
+    DO_TEST("ethernet-unmanaged-nodev", "ethernet-unmanaged-nodev", 4);
+
     DO_TEST("serial-file", "serial-file", 4);
     DO_TEST("serial-device", "serial-device", 4);
     DO_TEST("serial-pipe", "serial-pipe", 4);

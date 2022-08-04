@@ -2826,7 +2826,7 @@ virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def)
         STRCASEEQ(connectionType, "bridged") ||
         STRCASEEQ(connectionType, "custom")) {
         if (virVMXGetConfigString(conf, networkName_name, &networkName,
-                                  false) < 0)
+                                  true) < 0)
             goto cleanup;
     }
 
@@ -2837,7 +2837,20 @@ virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def)
     }
 
     /* Setup virDomainNetDef */
-    if (connectionType == NULL || STRCASEEQ(connectionType, "bridged")) {
+    if (connectionType == NULL && networkName == NULL) {
+        /*
+         * Having neither a connectionType nor a network name can mean two
+         * things:
+         *
+         * 1) there is no connection of that nic
+         * 2) the nic is connected to VMWare Distributed Switch
+         *
+         * But we do not see any difference between these and hence we report
+         * the closest thing to at least make virt-v2v and others work when they
+         * read the domain XML.
+         */
+        (*def)->type = VIR_DOMAIN_NET_TYPE_DUMMY;
+    } else if (connectionType == NULL || STRCASEEQ(connectionType, "bridged")) {
         (*def)->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
         (*def)->data.bridge.brname = g_steal_pointer(&networkName);
     } else if (STRCASEEQ(connectionType, "hostonly")) {
@@ -3946,6 +3959,9 @@ virVMXFormatEthernet(virDomainNetDef *def, int controller,
                           controller);
         break;
 
+    case VIR_DOMAIN_NET_TYPE_DUMMY:
+        break;
+
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
     case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -3957,7 +3973,6 @@ virVMXFormatEthernet(virDomainNetDef *def, int controller,
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
     case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_VDPA:
-    case VIR_DOMAIN_NET_TYPE_DUMMY:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Unsupported net type '%s'"),
                        virDomainNetTypeToString(def->type));
         return -1;
