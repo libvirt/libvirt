@@ -1672,9 +1672,10 @@ virHostCPUGetSignature(char **signature)
 }
 
 int
-virHostCPUGetPhysAddrSize(unsigned int *size)
+virHostCPUGetPhysAddrSize(unsigned int *size G_GNUC_UNUSED)
 {
-    return 0;
+    errno = ENOSYS;
+    return -1;
 }
 
 #endif /* __linux__ */
