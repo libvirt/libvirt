@@ -678,6 +678,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "query-stats", /* QEMU_CAPS_QUERY_STATS */
               "query-stats-schemas", /* QEMU_CAPS_QUERY_STATS_SCHEMAS */
               "sgx-epc", /* QEMU_CAPS_SGX_EPC */
+              "thread-context", /* QEMU_CAPS_THREAD_CONTEXT */
     );
 
 
@@ -1384,6 +1385,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-mem-pci", QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI },
     { "virtio-iommu-pci", QEMU_CAPS_DEVICE_VIRTIO_IOMMU_PCI },
     { "sgx-epc", QEMU_CAPS_SGX_EPC },
+    { "thread-context", QEMU_CAPS_THREAD_CONTEXT },
 };
 
 
