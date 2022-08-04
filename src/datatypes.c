@@ -292,13 +292,11 @@ virGetDomain(virConnectPtr conn,
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    virCheckConnectGoto(conn, error);
-    virCheckNonNullArgGoto(name, error);
-    virCheckNonNullArgGoto(uuid, error);
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgReturn(name, NULL);
+    virCheckNonNullArgReturn(uuid, NULL);
 
-    if (!(ret = virObjectNew(virDomainClass)))
-        goto error;
-
+    ret = virObjectNew(virDomainClass);
     ret->name = g_strdup(name);
 
     ret->conn = virObjectRef(conn);
@@ -306,10 +304,6 @@ virGetDomain(virConnectPtr conn,
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
 
     return ret;
-
- error:
-    virObjectUnref(ret);
-    return NULL;
 }
 
 /**
