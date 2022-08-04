@@ -19,7 +19,17 @@ ask for Secure Boot to be enabled with
     </firmware>
   </os>
 
-and for it to be disabled with
+and for it to be disabled with either
+
+::
+
+  <os firmware='efi'>
+    <firmware>
+      <feature enabled='no' name='secure-boot'/>
+    </firmware>
+  </os>
+
+or
 
 ::
 
@@ -30,8 +40,10 @@ and for it to be disabled with
     </firmware>
   </os>
 
-These configuration will cause unsigned guest operating systems to
-be rejected and allowed respectively.
+The first configuration will cause unsigned guest operating systems
+to be rejected, while the remaining two will allow running them. See
+below for a more detailed explanation of how each knob affects the
+firmware selection process.
 
 
 Older libvirt versions
@@ -103,3 +115,16 @@ The opposite configuration, where the feature is explicitly disabled,
 will result in no keys being present in the NVRAM file. Unable to
 verify signatures, the firmware will allow even unsigned operating
 systems to run.
+
+If running unsigned code is desired, it's also possible to ask for
+the ``secure-boot`` feature to be disabled, which will cause libvirt
+to pick a build of EDKII that doesn't have Secure Boot support at
+all.
+
+The main difference between using a build of EDKII that has Secure
+Boot support but without keys enrolled and one that doesn't have
+Secure Boot support at all is that, with the former, you could enroll
+your own keys and securely run an operating system that you've built
+and signed yourself. If you are only planning to run existing,
+off-the-shelf operating system images, then the two configurations
+are functionally equivalent.
