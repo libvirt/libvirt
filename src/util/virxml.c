@@ -1567,19 +1567,15 @@ int
 virXMLValidateAgainstSchema(const char *schemafile,
                             xmlDocPtr doc)
 {
-    virXMLValidator *validator = NULL;
-    int ret = -1;
+    g_autoptr(virXMLValidator) validator = NULL;
 
     if (!(validator = virXMLValidatorInit(schemafile)))
         return -1;
 
     if (virXMLValidatorValidate(validator, doc) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virXMLValidatorFree(validator);
-    return ret;
+    return 0;
 }
 
 
