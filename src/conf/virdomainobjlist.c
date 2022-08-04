@@ -964,7 +964,7 @@ virDomainObjListFilter(virDomainObj ***list,
 }
 
 
-int
+void
 virDomainObjListCollect(virDomainObjList *domlist,
                         virConnectPtr conn,
                         virDomainObj ***vms,
@@ -974,8 +974,6 @@ virDomainObjListCollect(virDomainObjList *domlist,
 {
     virDomainObjListCollectAll(domlist, vms, nvms);
     virDomainObjListFilter(vms, nvms, conn, filter, flags);
-
-    return 0;
 }
 
 
@@ -1046,8 +1044,7 @@ virDomainObjListExport(virDomainObjList *domlist,
     size_t i;
     int ret = -1;
 
-    if (virDomainObjListCollect(domlist, conn, &vms, &nvms, filter, flags) < 0)
-        return -1;
+    virDomainObjListCollect(domlist, conn, &vms, &nvms, filter, flags);
 
     if (domains) {
         doms = g_new0(virDomainPtr, nvms + 1);

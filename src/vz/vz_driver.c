@@ -3771,10 +3771,9 @@ vzConnectGetAllDomainStats(virConnectPtr conn,
                                     lflags, true) < 0)
             return -1;
     } else {
-        if (virDomainObjListCollect(driver->domains, conn, &doms, &ndoms,
-                                    virConnectGetAllDomainStatsCheckACL,
-                                    lflags) < 0)
-            return -1;
+        virDomainObjListCollect(driver->domains, conn, &doms, &ndoms,
+                                virConnectGetAllDomainStatsCheckACL,
+                                lflags);
     }
 
     tmpstats = g_new0(virDomainStatsRecordPtr, ndoms + 1);

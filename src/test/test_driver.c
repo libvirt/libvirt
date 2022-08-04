@@ -9923,9 +9923,7 @@ testConnectGetAllDomainStats(virConnectPtr conn,
                                     &nvms, NULL, lflags, true) < 0)
             return -1;
     } else {
-        if (virDomainObjListCollect(driver->domains, conn, &vms, &nvms,
-                                    NULL, lflags) < 0)
-            return -1;
+        virDomainObjListCollect(driver->domains, conn, &vms, &nvms, NULL, lflags);
     }
 
     tmpstats = g_new0(virDomainStatsRecordPtr, nvms + 1);

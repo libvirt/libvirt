@@ -18666,10 +18666,9 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
                                     lflags, true) < 0)
             return -1;
     } else {
-        if (virDomainObjListCollect(driver->domains, conn, &vms, &nvms,
-                                    virConnectGetAllDomainStatsCheckACL,
-                                    lflags) < 0)
-            return -1;
+        virDomainObjListCollect(driver->domains, conn, &vms, &nvms,
+                                virConnectGetAllDomainStatsCheckACL,
+                                lflags);
     }
 
     tmpstats = g_new0(virDomainStatsRecordPtr, nvms + 1);

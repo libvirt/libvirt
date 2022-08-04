@@ -149,7 +149,7 @@ void
 virDomainObjListCollectAll(virDomainObjList *domlist,
                            virDomainObj ***vms,
                            size_t *nvms);
-int
+void
 virDomainObjListCollect(virDomainObjList *doms,
                         virConnectPtr conn,
                         virDomainObj ***vms,
