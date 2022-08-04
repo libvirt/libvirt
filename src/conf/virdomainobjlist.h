@@ -26,72 +26,85 @@
 
 typedef struct _virDomainObjList virDomainObjList;
 
-virDomainObjList *virDomainObjListNew(void);
+virDomainObjList *
+virDomainObjListNew(void);
 
-virDomainObj *virDomainObjListFindByID(virDomainObjList *doms,
-                                         int id);
-virDomainObj *virDomainObjListFindByUUID(virDomainObjList *doms,
-                                           const unsigned char *uuid);
-virDomainObj *virDomainObjListFindByName(virDomainObjList *doms,
-                                           const char *name);
+virDomainObj *
+virDomainObjListFindByID(virDomainObjList *doms,
+                         int id);
+virDomainObj *
+virDomainObjListFindByUUID(virDomainObjList *doms,
+                           const unsigned char *uuid);
+virDomainObj *
+virDomainObjListFindByName(virDomainObjList *doms,
+                           const char *name);
 
 enum {
     VIR_DOMAIN_OBJ_LIST_ADD_LIVE = (1 << 0),
     VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE = (1 << 1),
 };
-virDomainObj *virDomainObjListAdd(virDomainObjList *doms,
-                                  virDomainDef **def,
-                                  virDomainXMLOption *xmlopt,
-                                  unsigned int flags,
-                                  virDomainDef **oldDef);
+virDomainObj *
+virDomainObjListAdd(virDomainObjList *doms,
+                    virDomainDef **def,
+                    virDomainXMLOption *xmlopt,
+                    unsigned int flags,
+                    virDomainDef **oldDef);
 
 typedef int (*virDomainObjListRenameCallback)(virDomainObj *dom,
                                               const char *new_name,
                                               unsigned int flags,
                                               void *opaque);
-int virDomainObjListRename(virDomainObjList *doms,
-                           virDomainObj *dom,
-                           const char *new_name,
-                           unsigned int flags,
-                           virDomainObjListRenameCallback callback,
-                           void *opaque);
+int
+virDomainObjListRename(virDomainObjList *doms,
+                       virDomainObj *dom,
+                       const char *new_name,
+                       unsigned int flags,
+                       virDomainObjListRenameCallback callback,
+                       void *opaque);
 
-void virDomainObjListRemove(virDomainObjList *doms,
-                            virDomainObj *dom);
-void virDomainObjListRemoveLocked(virDomainObjList *doms,
-                                  virDomainObj *dom);
+void
+virDomainObjListRemove(virDomainObjList *doms,
+                       virDomainObj *dom);
+void
+virDomainObjListRemoveLocked(virDomainObjList *doms,
+                             virDomainObj *dom);
 
-int virDomainObjListLoadAllConfigs(virDomainObjList *doms,
-                                   const char *configDir,
-                                   const char *autostartDir,
-                                   bool liveStatus,
-                                   virDomainXMLOption *xmlopt,
-                                   virDomainLoadConfigNotify notify,
-                                   void *opaque);
+int
+virDomainObjListLoadAllConfigs(virDomainObjList *doms,
+                               const char *configDir,
+                               const char *autostartDir,
+                               bool liveStatus,
+                               virDomainXMLOption *xmlopt,
+                               virDomainLoadConfigNotify notify,
+                               void *opaque);
 
-int virDomainObjListNumOfDomains(virDomainObjList *doms,
-                                 bool active,
+int
+virDomainObjListNumOfDomains(virDomainObjList *doms,
+                             bool active,
+                             virDomainObjListACLFilter filter,
+                             virConnectPtr conn);
+
+int
+virDomainObjListGetActiveIDs(virDomainObjList *doms,
+                             int *ids,
+                             int maxids,
+                             virDomainObjListACLFilter filter,
+                             virConnectPtr conn);
+int
+virDomainObjListGetInactiveNames(virDomainObjList *doms,
+                                 char **const names,
+                                 int maxnames,
                                  virDomainObjListACLFilter filter,
                                  virConnectPtr conn);
-
-int virDomainObjListGetActiveIDs(virDomainObjList *doms,
-                                 int *ids,
-                                 int maxids,
-                                 virDomainObjListACLFilter filter,
-                                 virConnectPtr conn);
-int virDomainObjListGetInactiveNames(virDomainObjList *doms,
-                                     char **const names,
-                                     int maxnames,
-                                     virDomainObjListACLFilter filter,
-                                     virConnectPtr conn);
 
 typedef int (*virDomainObjListIterator)(virDomainObj *dom,
                                         void *opaque);
 
-int virDomainObjListForEach(virDomainObjList *doms,
-                            bool modify,
-                            virDomainObjListIterator callback,
-                            void *opaque);
+int
+virDomainObjListForEach(virDomainObjList *doms,
+                        bool modify,
+                        virDomainObjListIterator callback,
+                        void *opaque);
 
 #define VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE \
                 (VIR_CONNECT_LIST_DOMAINS_ACTIVE | \
@@ -132,23 +145,26 @@ int virDomainObjListForEach(virDomainObjList *doms,
                  VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT    | \
                  VIR_CONNECT_LIST_DOMAINS_FILTERS_CHECKPOINT)
 
-int virDomainObjListCollect(virDomainObjList *doms,
-                            virConnectPtr conn,
-                            virDomainObj ***vms,
-                            size_t *nvms,
-                            virDomainObjListACLFilter filter,
-                            unsigned int flags);
-int virDomainObjListExport(virDomainObjList *doms,
-                           virConnectPtr conn,
-                           virDomainPtr **domains,
-                           virDomainObjListACLFilter filter,
-                           unsigned int flags);
-int virDomainObjListConvert(virDomainObjList *domlist,
-                            virConnectPtr conn,
-                            virDomainPtr *doms,
-                            size_t ndoms,
-                            virDomainObj ***vms,
-                            size_t *nvms,
-                            virDomainObjListACLFilter filter,
-                            unsigned int flags,
-                            bool skip_missing);
+int
+virDomainObjListCollect(virDomainObjList *doms,
+                        virConnectPtr conn,
+                        virDomainObj ***vms,
+                        size_t *nvms,
+                        virDomainObjListACLFilter filter,
+                        unsigned int flags);
+int
+virDomainObjListExport(virDomainObjList *doms,
+                       virConnectPtr conn,
+                       virDomainPtr **domains,
+                       virDomainObjListACLFilter filter,
+                       unsigned int flags);
+int
+virDomainObjListConvert(virDomainObjList *domlist,
+                        virConnectPtr conn,
+                        virDomainPtr *doms,
+                        size_t ndoms,
+                        virDomainObj ***vms,
+                        size_t *nvms,
+                        virDomainObjListACLFilter filter,
+                        unsigned int flags,
+                        bool skip_missing);
