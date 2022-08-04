@@ -3317,6 +3317,7 @@ qemuProcessNotifyNets(virDomainDef *def)
         case VIR_DOMAIN_NET_TYPE_HOSTDEV:
         case VIR_DOMAIN_NET_TYPE_UDP:
         case VIR_DOMAIN_NET_TYPE_VDPA:
+        case VIR_DOMAIN_NET_TYPE_DUMMY:
         case VIR_DOMAIN_NET_TYPE_LAST:
             break;
         }
@@ -8343,6 +8344,7 @@ void qemuProcessStop(virQEMUDriver *driver,
         case VIR_DOMAIN_NET_TYPE_HOSTDEV:
         case VIR_DOMAIN_NET_TYPE_UDP:
         case VIR_DOMAIN_NET_TYPE_VDPA:
+        case VIR_DOMAIN_NET_TYPE_DUMMY:
         case VIR_DOMAIN_NET_TYPE_LAST:
             /* No special cleanup procedure for these types. */
             break;

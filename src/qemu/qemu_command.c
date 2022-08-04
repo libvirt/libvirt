@@ -4351,6 +4351,7 @@ qemuBuildHostNetProps(virDomainNetDef *net)
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
         /* Should have been handled earlier via PCI/USB hotplug code. */
+    case VIR_DOMAIN_NET_TYPE_DUMMY:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
     }
@@ -8834,6 +8835,7 @@ qemuBuildInterfaceConnect(virDomainObj *vm,
     case VIR_DOMAIN_NET_TYPE_MCAST:
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
     case VIR_DOMAIN_NET_TYPE_UDP:
+    case VIR_DOMAIN_NET_TYPE_DUMMY:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
     }
@@ -8931,6 +8933,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     case VIR_DOMAIN_NET_TYPE_MCAST:
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
     case VIR_DOMAIN_NET_TYPE_UDP:
+    case VIR_DOMAIN_NET_TYPE_DUMMY:
     case VIR_DOMAIN_NET_TYPE_LAST:
         /* nada */
         break;
@@ -8969,6 +8972,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
     case VIR_DOMAIN_NET_TYPE_VDPA:
+    case VIR_DOMAIN_NET_TYPE_DUMMY:
     case VIR_DOMAIN_NET_TYPE_LAST:
        /* These types don't use a network device on the host, but
         * instead use some other type of connection to the emulated

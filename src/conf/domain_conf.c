@@ -573,6 +573,7 @@ VIR_ENUM_IMPL(virDomainNet,
               "hostdev",
               "udp",
               "vdpa",
+              "dummy",
 );
 
 VIR_ENUM_IMPL(virDomainNetModel,
@@ -2495,6 +2496,7 @@ virDomainActualNetDefFree(virDomainActualNetDef *def)
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
     case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_VDPA:
+    case VIR_DOMAIN_NET_TYPE_DUMMY:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
     }
@@ -2621,6 +2623,7 @@ virDomainNetDefFree(virDomainNetDef *def)
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
     case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_DUMMY:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
     }
@@ -9312,6 +9315,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
     case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_DUMMY:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
     }
@@ -9490,6 +9494,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         case VIR_DOMAIN_NET_TYPE_DIRECT:
         case VIR_DOMAIN_NET_TYPE_HOSTDEV:
         case VIR_DOMAIN_NET_TYPE_UDP:
+        case VIR_DOMAIN_NET_TYPE_DUMMY:
         case VIR_DOMAIN_NET_TYPE_VDPA:
             break;
         case VIR_DOMAIN_NET_TYPE_LAST:
@@ -23681,6 +23686,7 @@ virDomainNetDefFormat(virBuffer *buf,
             break;
 
         case VIR_DOMAIN_NET_TYPE_USER:
+        case VIR_DOMAIN_NET_TYPE_DUMMY:
         case VIR_DOMAIN_NET_TYPE_LAST:
             break;
         }
@@ -28296,6 +28302,7 @@ virDomainNetGetActualVirtPortProfile(const virDomainNetDef *iface)
         case VIR_DOMAIN_NET_TYPE_INTERNAL:
         case VIR_DOMAIN_NET_TYPE_UDP:
         case VIR_DOMAIN_NET_TYPE_VDPA:
+        case VIR_DOMAIN_NET_TYPE_DUMMY:
         case VIR_DOMAIN_NET_TYPE_LAST:
             break;
         }
@@ -28309,6 +28316,7 @@ virDomainNetGetActualVirtPortProfile(const virDomainNetDef *iface)
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
     case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_VDPA:
+    case VIR_DOMAIN_NET_TYPE_DUMMY:
     case VIR_DOMAIN_NET_TYPE_LAST:
     default:
         return NULL;
@@ -29305,6 +29313,7 @@ virDomainNetTypeSharesHostView(const virDomainNetDef *net)
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
     case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_VDPA:
+    case VIR_DOMAIN_NET_TYPE_DUMMY:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
     }
@@ -29568,6 +29577,7 @@ virDomainNetDefActualToNetworkPort(virDomainDef *dom,
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
     case VIR_DOMAIN_NET_TYPE_VDPA:
+    case VIR_DOMAIN_NET_TYPE_DUMMY:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unexpected network port type %s"),
                        virDomainNetTypeToString(virDomainNetGetActualType(iface)));

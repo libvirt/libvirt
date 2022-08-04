@@ -5240,6 +5240,30 @@ which the UDP socket packets will originate from the QEMU host. :since:`Since
    </devices>
    ...
 
+Dummy network interface
+^^^^^^^^^^^^^^^^^^^^^^^
+
+An unconnected network interface sounds pretty pointless, but can show up for
+example with VMWare when libvirt does not have any more information to provide.
+Two such scenarios are currently known:
+
+1) network interface exists, but is not connected to any existing network
+2) the interface is connected to something known as VMWare Distributed Switch
+
+The difference between these two is not (yet?) discoverable by libvirt, so at
+least the information gathered from the hypervisor is provided in the
+element. :since:`Since 8.7.0`
+
+::
+
+   ...
+   <devices>
+     <interface type='dummy'>
+       <mac address='52:54:00:22:c9:42'/>
+     </interface>
+   </devices>
+   ...
+
 Setting the NIC model
 ^^^^^^^^^^^^^^^^^^^^^
 

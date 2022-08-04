@@ -3433,6 +3433,13 @@
           </interleave>
         </group>
 
+        <group>
+          <attribute name="type">
+            <value>dummy</value>
+          </attribute>
+          <ref name="interface-options"/>
+        </group>
+
       </choice>
       <optional>
         <attribute name="trustGuestRxFilters">
