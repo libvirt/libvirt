@@ -1504,7 +1504,7 @@ virXMLValidatorRNGErrorIgnore(void *ctx G_GNUC_UNUSED,
 virXMLValidator *
 virXMLValidatorInit(const char *schemafile)
 {
-    virXMLValidator *validator = NULL;
+    g_autoptr(virXMLValidator) validator = NULL;
 
     validator = g_new0(virXMLValidator, 1);
 
@@ -1515,7 +1515,7 @@ virXMLValidatorInit(const char *schemafile)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to create RNG parser for %s"),
                        validator->schemafile);
-        goto error;
+        return NULL;
     }
 
     xmlRelaxNGSetParserErrors(validator->rngParser,
@@ -1528,25 +1528,22 @@ virXMLValidatorInit(const char *schemafile)
                        _("Unable to parse RNG %s: %s"),
                        validator->schemafile,
                        virBufferCurrentContent(&validator->buf));
-        goto error;
+        return NULL;
     }
 
     if (!(validator->rngValid = xmlRelaxNGNewValidCtxt(validator->rng))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to create RNG validation context %s"),
                        validator->schemafile);
-        goto error;
+        return NULL;
     }
 
     xmlRelaxNGSetValidErrors(validator->rngValid,
                              virXMLValidatorRNGErrorCatch,
                              virXMLValidatorRNGErrorIgnore,
                              &validator->buf);
-    return validator;
 
- error:
-    virXMLValidatorFree(validator);
-    return NULL;
+    return g_steal_pointer(&validator);
 }
 
 
