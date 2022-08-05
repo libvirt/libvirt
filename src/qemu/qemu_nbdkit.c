@@ -312,11 +312,233 @@ virNbdkitCapsNewData(const char *binary,
 }
 
 
+static int
+qemuNbdkitCapsValidateBinary(qemuNbdkitCaps *nbdkitCaps,
+                             xmlXPathContextPtr ctxt)
+{
+    g_autofree char *str = NULL;
+
+    if (!(str = virXPathString("string(./path)", ctxt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing path in nbdkit capabilities cache"));
+        return -1;
+    }
+
+    if (STRNEQ(str, nbdkitCaps->path)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Expected caps for '%1$s' but saw '%2$s'"),
+                       nbdkitCaps->path, str);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuNbdkitCapsParseFlags(qemuNbdkitCaps *nbdkitCaps,
+                         xmlXPathContextPtr ctxt)
+{
+    g_autofree xmlNodePtr *nodes = NULL;
+    size_t i;
+    int n;
+
+    if ((n = virXPathNodeSet("./flag", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to parse qemu capabilities flags"));
+        return -1;
+    }
+
+    VIR_DEBUG("Got flags %d", n);
+    for (i = 0; i < n; i++) {
+        unsigned int flag;
+
+        if (virXMLPropEnum(nodes[i], "name", qemuNbdkitCapsTypeFromString,
+                           VIR_XML_PROP_REQUIRED, &flag) < 0)
+            return -1;
+
+        qemuNbdkitCapsSet(nbdkitCaps, flag);
+    }
+
+    return 0;
+}
+
+
+/*
+ * Parsing a doc that looks like
+ *
+ * <nbdkitCaps>
+ *   <path>/some/path</path>
+ *   <nbdkitctime>234235253</nbdkitctime>
+ *   <plugindirmtime>234235253</plugindirmtime>
+ *   <filterdirmtime>234235253</filterdirmtime>
+ *   <selfctime>234235253</selfctime>
+ *   <selfvers>1002016</selfvers>
+ *   <flag name='foo'/>
+ *   <flag name='bar'/>
+ *   ...
+ * </nbdkitCaps>
+ *
+ * Returns 0 on success, 1 if outdated, -1 on error
+ */
+static int
+qemuNbdkitCapsLoadCache(qemuNbdkitCaps *nbdkitCaps,
+                        const char *filename)
+{
+    g_autoptr(xmlDoc) doc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    long long int l;
+
+    if (!(doc = virXMLParse(filename, NULL, NULL, "nbdkitCaps", &ctxt, NULL, false)))
+        return -1;
+
+    if (virXPathLongLong("string(./selfctime)", ctxt, &l) < 0) {
+        VIR_DEBUG("missing selfctime in nbdkit capabilities XML");
+        return -1;
+    }
+    nbdkitCaps->libvirtCtime = (time_t)l;
+
+    nbdkitCaps->libvirtVersion = 0;
+    virXPathUInt("string(./selfvers)", ctxt, &nbdkitCaps->libvirtVersion);
+
+    if (nbdkitCaps->libvirtCtime != virGetSelfLastChanged() ||
+        nbdkitCaps->libvirtVersion != LIBVIR_VERSION_NUMBER) {
+        VIR_DEBUG("Outdated capabilities in %s: libvirt changed (%lld vs %lld, %lu vs %lu), stopping load",
+                  nbdkitCaps->path,
+                  (long long)nbdkitCaps->libvirtCtime,
+                  (long long)virGetSelfLastChanged(),
+                  (unsigned long)nbdkitCaps->libvirtVersion,
+                  (unsigned long)LIBVIR_VERSION_NUMBER);
+        return 1;
+    }
+
+    if (qemuNbdkitCapsValidateBinary(nbdkitCaps, ctxt) < 0)
+        return -1;
+
+    if (virXPathLongLong("string(./nbdkitctime)", ctxt, &l) < 0) {
+        VIR_DEBUG("missing nbdkitctime in nbdkit capabilities XML");
+        return -1;
+    }
+    nbdkitCaps->ctime = (time_t)l;
+
+    if (virXPathLongLong("string(./plugindirmtime)", ctxt, &l) < 0) {
+        VIR_DEBUG("missing plugindirmtime in nbdkit capabilities XML");
+        return -1;
+    }
+    nbdkitCaps->pluginDirMtime = (time_t)l;
+
+    if (virXPathLongLong("string(./filterdirmtime)", ctxt, &l) < 0) {
+        VIR_DEBUG("missing filterdirmtime in nbdkit capabilities XML");
+        return -1;
+    }
+    nbdkitCaps->filterDirMtime = (time_t)l;
+
+    if (qemuNbdkitCapsParseFlags(nbdkitCaps, ctxt) < 0)
+        return -1;
+
+    if ((nbdkitCaps->version = virXPathString("string(./version)", ctxt)) == NULL) {
+        VIR_DEBUG("missing version in nbdkit capabilities cache");
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static void*
+virNbdkitCapsLoadFile(const char *filename,
+                      const char *binary,
+                      void *privData G_GNUC_UNUSED,
+                      bool *outdated)
+{
+    g_autoptr(qemuNbdkitCaps) nbdkitCaps = qemuNbdkitCapsNew(binary);
+    int ret;
+
+    if (!nbdkitCaps)
+        return NULL;
+
+    ret = qemuNbdkitCapsLoadCache(nbdkitCaps, filename);
+    if (ret < 0)
+        return NULL;
+    if (ret == 1) {
+        *outdated = true;
+        return NULL;
+    }
+
+    return g_steal_pointer(&nbdkitCaps);
+}
+
+
+static char*
+qemuNbdkitCapsFormatCache(qemuNbdkitCaps *nbdkitCaps)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    virBufferAddLit(&buf, "<nbdkitCaps>\n");
+    virBufferAdjustIndent(&buf, 2);
+
+    virBufferEscapeString(&buf, "<path>%s</path>\n",
+                          nbdkitCaps->path);
+    virBufferAsprintf(&buf, "<nbdkitctime>%lu</nbdkitctime>\n",
+                      nbdkitCaps->ctime);
+    virBufferAsprintf(&buf, "<plugindirmtime>%lu</plugindirmtime>\n",
+                      nbdkitCaps->pluginDirMtime);
+    virBufferAsprintf(&buf, "<filterdirmtime>%lu</filterdirmtime>\n",
+                      nbdkitCaps->filterDirMtime);
+    virBufferAsprintf(&buf, "<selfctime>%lu</selfctime>\n",
+                      nbdkitCaps->libvirtCtime);
+    virBufferAsprintf(&buf, "<selfvers>%u</selfvers>\n",
+                      nbdkitCaps->libvirtVersion);
+
+    for (i = 0; i < QEMU_NBDKIT_CAPS_LAST; i++) {
+        if (qemuNbdkitCapsGet(nbdkitCaps, i)) {
+            virBufferAsprintf(&buf, "<flag name='%s'/>\n",
+                              qemuNbdkitCapsTypeToString(i));
+        }
+    }
+
+    virBufferAsprintf(&buf, "<version>%s</version>\n",
+                      nbdkitCaps->version);
+
+    virBufferAdjustIndent(&buf, -2);
+    virBufferAddLit(&buf, "</nbdkitCaps>\n");
+
+    return virBufferContentAndReset(&buf);
+}
+
+
+static int
+virNbdkitCapsSaveFile(void *data,
+                      const char *filename,
+                      void *privData G_GNUC_UNUSED)
+{
+    qemuNbdkitCaps *nbdkitCaps = data;
+    g_autofree char *xml = NULL;
+
+    xml = qemuNbdkitCapsFormatCache(nbdkitCaps);
+
+    if (virFileWriteStr(filename, xml, 0600) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to save '%1$s' for '%2$s'"),
+                             filename, nbdkitCaps->path);
+        return -1;
+    }
+
+    VIR_DEBUG("Saved caps '%s' for '%s' with (%lu, %lu)",
+              filename, nbdkitCaps->path,
+              nbdkitCaps->ctime,
+              nbdkitCaps->libvirtCtime);
+
+    return 0;
+}
+
+
 virFileCacheHandlers nbdkitCapsCacheHandlers = {
     .isValid = virNbdkitCapsIsValid,
     .newData = virNbdkitCapsNewData,
-    .loadFile = NULL,
-    .saveFile = NULL,
+    .loadFile = virNbdkitCapsLoadFile,
+    .saveFile = virNbdkitCapsSaveFile,
     .privFree = NULL,
 };
 
