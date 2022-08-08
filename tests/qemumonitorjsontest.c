@@ -1291,7 +1291,6 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUsEqual(struct qemuMonitorQueryCpusEntr
 static int
 testQEMUMonitorJSONqemuMonitorJSONQueryCPUsHelper(qemuMonitorTest *test,
                                                   struct qemuMonitorQueryCpusEntry *expect,
-                                                  bool fast,
                                                   size_t num)
 {
     struct qemuMonitorQueryCpusEntry *cpudata = NULL;
@@ -1300,7 +1299,7 @@ testQEMUMonitorJSONqemuMonitorJSONQueryCPUsHelper(qemuMonitorTest *test,
     int ret = -1;
 
     if (qemuMonitorJSONQueryCPUs(qemuMonitorTestGetMonitor(test),
-                                 &cpudata, &ncpudata, true, fast) < 0)
+                                 &cpudata, &ncpudata, true, true) < 0)
         goto cleanup;
 
     if (ncpudata != num) {
@@ -1323,72 +1322,6 @@ testQEMUMonitorJSONqemuMonitorJSONQueryCPUsHelper(qemuMonitorTest *test,
  cleanup:
     qemuMonitorQueryCpusFree(cpudata, ncpudata);
     return ret;
-}
-
-
-static int
-testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *opaque)
-{
-    const testGenericData *data = opaque;
-    virDomainXMLOption *xmlopt = data->xmlopt;
-    struct qemuMonitorQueryCpusEntry expect_slow[] = {
-            {0, 17622, (char *) "/machine/unattached/device[0]", true},
-            {1, 17624, (char *) "/machine/unattached/device[1]", true},
-            {2, 17626, (char *) "/machine/unattached/device[2]", true},
-            {3, 17628, NULL, true},
-    };
-    g_autoptr(qemuMonitorTest) test = NULL;
-
-    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
-        return -1;
-
-    qemuMonitorTestSkipDeprecatedValidation(test, true);
-
-    if (qemuMonitorTestAddItem(test, "query-cpus",
-                               "{"
-                               "    \"return\": ["
-                               "        {"
-                               "            \"current\": true,"
-                               "            \"CPU\": 0,"
-                               "            \"qom_path\": \"/machine/unattached/device[0]\","
-                               "            \"pc\": -2130530478,"
-                               "            \"halted\": true,"
-                               "            \"thread_id\": 17622"
-                               "        },"
-                               "        {"
-                               "            \"current\": false,"
-                               "            \"CPU\": 1,"
-                               "            \"qom_path\": \"/machine/unattached/device[1]\","
-                               "            \"pc\": -2130530478,"
-                               "            \"halted\": true,"
-                               "            \"thread_id\": 17624"
-                               "        },"
-                               "        {"
-                               "            \"current\": false,"
-                               "            \"CPU\": 2,"
-                               "            \"qom_path\": \"/machine/unattached/device[2]\","
-                               "            \"pc\": -2130530478,"
-                               "            \"halted\": true,"
-                               "            \"thread_id\": 17626"
-                               "        },"
-                               "        {"
-                               "            \"current\": false,"
-                               "            \"CPU\": 3,"
-                               "            \"pc\": -2130530478,"
-                               "            \"halted\": true,"
-                               "            \"thread_id\": 17628"
-                               "        }"
-                               "    ],"
-                               "    \"id\": \"libvirt-7\""
-                               "}") < 0)
-        return -1;
-
-    /* query-cpus */
-    if (testQEMUMonitorJSONqemuMonitorJSONQueryCPUsHelper(test, expect_slow,
-                                                          false, 4))
-        return -1;
-
-    return 0;
 }
 
 
@@ -1425,8 +1358,7 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUsFast(const void *opaque)
         return -1;
 
     /* query-cpus-fast */
-    if (testQEMUMonitorJSONqemuMonitorJSONQueryCPUsHelper(test, expect_fast,
-                                                          true, 2))
+    if (testQEMUMonitorJSONqemuMonitorJSONQueryCPUsHelper(test, expect_fast, 2))
         return -1;
 
     return 0;
@@ -2337,7 +2269,6 @@ struct testCPUInfoData {
     const char *name;
     size_t maxvcpus;
     virDomainXMLOption *xmlopt;
-    bool fast;
     GHashTable *schema;
 };
 
@@ -2416,7 +2347,6 @@ testQemuMonitorCPUInfo(const void *opaque)
     g_autofree char *queryCpusStr = NULL;
     g_autofree char *queryHotpluggableStr = NULL;
     g_autofree char *actual = NULL;
-    const char *queryCpusFunction;
     qemuMonitorCPUInfo *vcpus = NULL;
     int rc;
     int ret = -1;
@@ -2442,14 +2372,7 @@ testQemuMonitorCPUInfo(const void *opaque)
                                queryHotpluggableStr) < 0)
         goto cleanup;
 
-    if (data->fast) {
-        queryCpusFunction = "query-cpus-fast";
-    } else {
-        queryCpusFunction = "query-cpus";
-        qemuMonitorTestSkipDeprecatedValidation(test, true);
-    }
-
-    if (qemuMonitorTestAddItem(test, queryCpusFunction, queryCpusStr) < 0)
+    if (qemuMonitorTestAddItem(test, "query-cpus-fast", queryCpusStr) < 0)
         goto cleanup;
 
     vm = qemuMonitorTestGetDomainObj(test);
@@ -2457,7 +2380,7 @@ testQemuMonitorCPUInfo(const void *opaque)
         goto cleanup;
 
     rc = qemuMonitorGetCPUInfo(qemuMonitorTestGetMonitor(test),
-                               &vcpus, data->maxvcpus, true, data->fast);
+                               &vcpus, data->maxvcpus, true, true);
 
     if (rc < 0)
         goto cleanup;
@@ -3016,17 +2939,8 @@ mymain(void)
 
 #define DO_TEST_CPU_INFO(name, maxvcpus) \
     do { \
-        struct testCPUInfoData data = {name, maxvcpus, driver.xmlopt, false, \
+        struct testCPUInfoData data = {name, maxvcpus, driver.xmlopt, \
                                        qapiData.schema}; \
-        if (virTestRun("GetCPUInfo(" name ")", testQemuMonitorCPUInfo, \
-                       &data) < 0) \
-            ret = -1; \
-    } while (0)
-
-#define DO_TEST_CPU_INFO_FAST(name, maxvcpus) \
-    do { \
-        struct testCPUInfoData data = {name, maxvcpus, driver.xmlopt, true, \
-                                       qapiData.schema }; \
         if (virTestRun("GetCPUInfo(" name ")", testQemuMonitorCPUInfo, \
                        &data) < 0) \
             ret = -1; \
@@ -3103,7 +3017,6 @@ mymain(void)
     DO_TEST(qemuMonitorJSONSetBlockIoThrottle);
     DO_TEST(qemuMonitorJSONGetTargetArch);
     DO_TEST(qemuMonitorJSONGetMigrationCapabilities);
-    DO_TEST(qemuMonitorJSONQueryCPUs);
     DO_TEST(qemuMonitorJSONQueryCPUsFast);
     DO_TEST(qemuMonitorJSONSendKey);
     DO_TEST(qemuMonitorJSONGetDumpGuestMemoryCapability);
@@ -3114,18 +3027,18 @@ mymain(void)
     DO_TEST_CPU_DATA("full");
     DO_TEST_CPU_DATA("ecx");
 
-    DO_TEST_CPU_INFO_FAST("x86-basic-pluggable", 8);
-    DO_TEST_CPU_INFO_FAST("x86-full", 11);
-    DO_TEST_CPU_INFO_FAST("x86-node-full", 8);
-    DO_TEST_CPU_INFO_FAST("x86-dies", 16);
+    DO_TEST_CPU_INFO("x86-basic-pluggable", 8);
+    DO_TEST_CPU_INFO("x86-full", 11);
+    DO_TEST_CPU_INFO("x86-node-full", 8);
+    DO_TEST_CPU_INFO("x86-dies", 16);
 
-    DO_TEST_CPU_INFO_FAST("ppc64-basic", 24);
-    DO_TEST_CPU_INFO_FAST("ppc64-hotplug-1", 24);
-    DO_TEST_CPU_INFO_FAST("ppc64-hotplug-2", 24);
-    DO_TEST_CPU_INFO_FAST("ppc64-hotplug-4", 24);
-    DO_TEST_CPU_INFO_FAST("ppc64-no-threads", 16);
+    DO_TEST_CPU_INFO("ppc64-basic", 24);
+    DO_TEST_CPU_INFO("ppc64-hotplug-1", 24);
+    DO_TEST_CPU_INFO("ppc64-hotplug-2", 24);
+    DO_TEST_CPU_INFO("ppc64-hotplug-4", 24);
+    DO_TEST_CPU_INFO("ppc64-no-threads", 16);
 
-    DO_TEST_CPU_INFO_FAST("s390", 2);
+    DO_TEST_CPU_INFO("s390", 2);
 
 #define DO_TEST_BLOCK_NODE_DETECT(testname) \
     do { \
