@@ -3114,9 +3114,9 @@ mymain(void)
     DO_TEST_CPU_DATA("full");
     DO_TEST_CPU_DATA("ecx");
 
-    DO_TEST_CPU_INFO("x86-basic-pluggable", 8);
+    DO_TEST_CPU_INFO_FAST("x86-basic-pluggable", 8);
     DO_TEST_CPU_INFO_FAST("x86-full", 11);
-    DO_TEST_CPU_INFO("x86-node-full", 8);
+    DO_TEST_CPU_INFO_FAST("x86-node-full", 8);
     DO_TEST_CPU_INFO_FAST("x86-dies", 16);
 
     DO_TEST_CPU_INFO_FAST("ppc64-basic", 24);

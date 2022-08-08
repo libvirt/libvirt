@@ -3,47 +3,62 @@
     {
       "arch": "x86",
       "current": true,
-      "CPU": 0,
-      "qom_path": "/machine/unattached/device[0]",
-      "pc": -2130415978,
-      "halted": true,
-      "thread_id": 518291
+      "cpu-index": 0,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 0
+      },
+      "qom-path": "/machine/unattached/device[0]",
+      "thread-id": 518291
     },
     {
       "arch": "x86",
       "current": false,
-      "CPU": 1,
-      "qom_path": "/machine/unattached/device[2]",
-      "pc": -2130415978,
-      "halted": true,
-      "thread_id": 518292
+      "cpu-index": 1,
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "socket-id": 0
+      },
+      "qom-path": "/machine/unattached/device[2]",
+      "thread-id": 518292
     },
     {
       "arch": "x86",
       "current": false,
-      "CPU": 2,
-      "qom_path": "/machine/unattached/device[3]",
-      "pc": -2130415978,
-      "halted": true,
-      "thread_id": 518294
+      "cpu-index": 2,
+      "props": {
+        "core-id": 1,
+        "thread-id": 1,
+        "socket-id": 0
+      },
+      "qom-path": "/machine/unattached/device[3]",
+      "thread-id": 518294
     },
     {
       "arch": "x86",
       "current": false,
-      "CPU": 3,
-      "qom_path": "/machine/unattached/device[4]",
-      "pc": -2130415978,
-      "halted": true,
-      "thread_id": 518295
+      "cpu-index": 3,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 1
+      },
+      "qom-path": "/machine/unattached/device[4]",
+      "thread-id": 518295
     },
     {
       "arch": "x86",
       "current": false,
-      "CPU": 4,
-      "qom_path": "/machine/unattached/device[5]",
-      "pc": -2130415978,
-      "halted": true,
-      "thread_id": 518296
+      "cpu-index": 4,
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "socket-id": 1
+      },
+      "qom-path": "/machine/unattached/device[5]",
+      "thread-id": 518296
     }
   ],
   "id": "libvirt-22"
