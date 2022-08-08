@@ -3115,8 +3115,8 @@ mymain(void)
     DO_TEST_CPU_DATA("ecx");
 
     DO_TEST_CPU_INFO("x86-basic-pluggable", 8);
+    DO_TEST_CPU_INFO_FAST("x86-full", 11);
     DO_TEST_CPU_INFO("x86-node-full", 8);
-    DO_TEST_CPU_INFO_FAST("x86-full-fast", 11);
     DO_TEST_CPU_INFO_FAST("x86-dies", 16);
 
     DO_TEST_CPU_INFO("ppc64-basic", 24);
@@ -3125,7 +3125,7 @@ mymain(void)
     DO_TEST_CPU_INFO("ppc64-hotplug-4", 24);
     DO_TEST_CPU_INFO("ppc64-no-threads", 16);
 
-    DO_TEST_CPU_INFO_FAST("s390-fast", 2);
+    DO_TEST_CPU_INFO_FAST("s390", 2);
 
 #define DO_TEST_BLOCK_NODE_DETECT(testname) \
     do { \
