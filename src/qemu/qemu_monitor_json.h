@@ -66,8 +66,7 @@ int
 qemuMonitorJSONQueryCPUs(qemuMonitor *mon,
                          struct qemuMonitorQueryCpusEntry **entries,
                          size_t *nentries,
-                         bool force,
-                         bool fast);
+                         bool force);
 int
 qemuMonitorJSONUpdateVideoMemorySize(qemuMonitor *mon,
                                      virDomainVideoDef *video,

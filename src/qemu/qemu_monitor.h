@@ -644,11 +644,9 @@ void qemuMonitorCPUInfoFree(qemuMonitorCPUInfo *list,
 int qemuMonitorGetCPUInfo(qemuMonitor *mon,
                           qemuMonitorCPUInfo **vcpus,
                           size_t maxvcpus,
-                          bool hotplug,
-                          bool fast);
+                          bool hotplug);
 virBitmap *qemuMonitorGetCpuHalted(qemuMonitor *mon,
-                                     size_t maxvcpus,
-                                     bool fast);
+                                   size_t maxvcpus);
 
 int qemuMonitorGetBalloonInfo(qemuMonitor *mon,
                               unsigned long long *currmem);

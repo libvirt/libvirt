@@ -1299,7 +1299,7 @@ testQEMUMonitorJSONqemuMonitorJSONQueryCPUsHelper(qemuMonitorTest *test,
     int ret = -1;
 
     if (qemuMonitorJSONQueryCPUs(qemuMonitorTestGetMonitor(test),
-                                 &cpudata, &ncpudata, true, true) < 0)
+                                 &cpudata, &ncpudata, true) < 0)
         goto cleanup;
 
     if (ncpudata != num) {
@@ -2380,7 +2380,7 @@ testQemuMonitorCPUInfo(const void *opaque)
         goto cleanup;
 
     rc = qemuMonitorGetCPUInfo(qemuMonitorTestGetMonitor(test),
-                               &vcpus, data->maxvcpus, true, true);
+                               &vcpus, data->maxvcpus, true);
 
     if (rc < 0)
         goto cleanup;

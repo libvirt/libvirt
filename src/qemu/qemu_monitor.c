@@ -1565,16 +1565,16 @@ qemuMonitorGetCPUInfoLegacy(struct qemuMonitorQueryCpusEntry *cpuentries,
  *
  * This function stitches together data retrieved via query-hotpluggable-cpus
  * which returns entities on the hotpluggable level (which may describe more
- * than one guest logical vcpu) with the output of query-cpus (or
- * query-cpus-fast), having an entry per enabled guest logical vcpu.
+ * than one guest logical vcpu) with the output of query-cpus-fast,
+ * having an entry per enabled guest logical vcpu.
  *
  * query-hotpluggable-cpus conveys following information:
  * - topology information and number of logical vcpus this entry creates
  * - device type name of the entry that needs to be used when hotplugging
  * - qom path in qemu which can be used to map the entry against
- *   query-cpus[-fast]
+ *   query-cpus-fast
  *
- * query-cpus[-fast] conveys following information:
+ * query-cpus-fast conveys following information:
  * - thread id of a given guest logical vcpu
  * - order in which the vcpus were inserted
  * - qom path to allow mapping the two together
@@ -1609,7 +1609,7 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
     for (i = 0; i < nhotplugvcpus; i++)
         totalvcpus += hotplugvcpus[i].vcpus;
 
-    /* trim '/thread...' suffix from the data returned by query-cpus[-fast] */
+    /* trim '/thread...' suffix from the data returned by query-cpus-fast */
     for (i = 0; i < ncpuentries; i++) {
         if (cpuentries[i].qom_path &&
             (tmp = strstr(cpuentries[i].qom_path, "/thread")))
@@ -1622,7 +1622,7 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
     }
 
     /* Note the order in which the hotpluggable entities are inserted by
-     * matching them to the query-cpus[-fast] entries */
+     * matching them to the query-cpus-fast entries */
     for (i = 0; i < ncpuentries; i++) {
         for (j = 0; j < nhotplugvcpus; j++) {
             if (!cpuentries[i].qom_path ||
@@ -1679,7 +1679,7 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
         }
 
         if (anyvcpu == maxvcpus) {
-            VIR_DEBUG("too many query-cpus[-fast] entries for a given "
+            VIR_DEBUG("too many query-cpus-fast entries for a given "
                       "query-hotpluggable-cpus entry");
             return -1;
         }
@@ -1707,7 +1707,6 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
  * @vcpus: pointer filled by array of qemuMonitorCPUInfo structures
  * @maxvcpus: total possible number of vcpus
  * @hotplug: query data relevant for hotplug support
- * @fast: use QMP query-cpus-fast if supported
  *
  * Detects VCPU information. If qemu doesn't support or fails reporting
  * information this function will return success as other parts of libvirt
@@ -1720,8 +1719,7 @@ int
 qemuMonitorGetCPUInfo(qemuMonitor *mon,
                       qemuMonitorCPUInfo **vcpus,
                       size_t maxvcpus,
-                      bool hotplug,
-                      bool fast)
+                      bool hotplug)
 {
     struct qemuMonitorQueryHotpluggableCpusEntry *hotplugcpus = NULL;
     size_t nhotplugcpus = 0;
@@ -1742,8 +1740,7 @@ qemuMonitorGetCPUInfo(qemuMonitor *mon,
         (qemuMonitorJSONGetHotpluggableCPUs(mon, &hotplugcpus, &nhotplugcpus)) < 0)
         goto cleanup;
 
-    rc = qemuMonitorJSONQueryCPUs(mon, &cpuentries, &ncpuentries, hotplug,
-                                  fast);
+    rc = qemuMonitorJSONQueryCPUs(mon, &cpuentries, &ncpuentries, hotplug);
 
     if (rc < 0) {
         if (!hotplug && rc == -2) {
@@ -1779,12 +1776,11 @@ qemuMonitorGetCPUInfo(qemuMonitor *mon,
  * qemuMonitorGetCpuHalted:
  *
  * Returns a bitmap of vcpu id's that are halted. The id's correspond to the
- * 'CPU' field as reported by query-cpus[-fast]'.
+ * 'CPU' field as reported by query-cpus-fast'.
  */
 virBitmap *
 qemuMonitorGetCpuHalted(qemuMonitor *mon,
-                        size_t maxvcpus,
-                        bool fast)
+                        size_t maxvcpus)
 {
     struct qemuMonitorQueryCpusEntry *cpuentries = NULL;
     size_t ncpuentries = 0;
@@ -1794,8 +1790,7 @@ qemuMonitorGetCpuHalted(qemuMonitor *mon,
 
     QEMU_CHECK_MONITOR_NULL(mon);
 
-    rc = qemuMonitorJSONQueryCPUs(mon, &cpuentries, &ncpuentries, false,
-                                  fast);
+    rc = qemuMonitorJSONQueryCPUs(mon, &cpuentries, &ncpuentries, false);
 
     if (rc < 0)
         goto cleanup;

@@ -9618,22 +9618,18 @@ qemuDomainRefreshVcpuInfo(virQEMUDriver *driver,
     size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
     size_t i, j;
     bool hotplug;
-    bool fast;
     bool validTIDs = true;
     int rc;
     int ret = -1;
 
     hotplug = qemuDomainSupportsNewVcpuHotplug(vm);
-    fast = virQEMUCapsGet(QEMU_DOMAIN_PRIVATE(vm)->qemuCaps,
-                          QEMU_CAPS_QUERY_CPUS_FAST);
-
-    VIR_DEBUG("Maxvcpus %zu hotplug %d fast query %d", maxvcpus, hotplug, fast);
+    VIR_DEBUG("Maxvcpus %zu hotplug %d", maxvcpus, hotplug);
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
     rc = qemuMonitorGetCPUInfo(qemuDomainGetMonitor(vm), &info, maxvcpus,
-                               hotplug, fast);
+                               hotplug);
 
     qemuDomainObjExitMonitor(vm);
 
@@ -9641,7 +9637,7 @@ qemuDomainRefreshVcpuInfo(virQEMUDriver *driver,
         goto cleanup;
 
     /*
-     * The query-cpus[-fast] commands return information
+     * The query-cpus-fast commands return information
      * about the vCPUs, including the OS level PID that
      * is executing the vCPU.
      *
@@ -9766,7 +9762,6 @@ qemuDomainRefreshVcpuHalted(virQEMUDriver *driver,
     size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
     g_autoptr(virBitmap) haltedmap = NULL;
     size_t i;
-    bool fast;
 
     /* Not supported currently for TCG, see qemuDomainRefreshVcpuInfo */
     if (vm->def->virtType == VIR_DOMAIN_VIRT_QEMU)
@@ -9774,21 +9769,14 @@ qemuDomainRefreshVcpuHalted(virQEMUDriver *driver,
 
     /* The halted state is interesting only on s390(x). On other platforms
      * the data would be stale at the time when it would be used.
-     * Calling qemuMonitorGetCpuHalted() can adversely affect the running
-     * VM's performance unless QEMU supports query-cpus-fast.
      */
-    if (!ARCH_IS_S390(vm->def->os.arch) ||
-        !virQEMUCapsGet(QEMU_DOMAIN_PRIVATE(vm)->qemuCaps,
-                        QEMU_CAPS_QUERY_CPUS_FAST))
+    if (!ARCH_IS_S390(vm->def->os.arch))
         return 0;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    fast = virQEMUCapsGet(QEMU_DOMAIN_PRIVATE(vm)->qemuCaps,
-                          QEMU_CAPS_QUERY_CPUS_FAST);
-    haltedmap = qemuMonitorGetCpuHalted(qemuDomainGetMonitor(vm), maxvcpus,
-                                        fast);
+    haltedmap = qemuMonitorGetCpuHalted(qemuDomainGetMonitor(vm), maxvcpus);
     qemuDomainObjExitMonitor(vm);
 
     if (!haltedmap)
