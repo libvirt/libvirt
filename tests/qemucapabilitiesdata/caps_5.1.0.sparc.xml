@@ -40,7 +40,6 @@
   <flag name='isa-serial'/>
   <flag name='dump-completed'/>
   <flag name='qcow2-luks'/>
-  <flag name='query-cpus-fast'/>
   <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>
   <flag name='pr-manager-helper'/>

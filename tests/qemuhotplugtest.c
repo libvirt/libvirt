@@ -443,8 +443,6 @@ testQemuHotplugCpuPrepare(const char *test,
 
     priv = data->vm->privateData;
 
-    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_QUERY_CPUS_FAST);
-
     if (data->modern)
         virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
 

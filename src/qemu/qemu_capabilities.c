@@ -468,7 +468,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "qcow2-luks", /* QEMU_CAPS_QCOW2_LUKS */
               "pcie-pci-bridge", /* QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE */
               "seccomp-blacklist", /* X_QEMU_CAPS_SECCOMP_BLACKLIST */
-              "query-cpus-fast", /* QEMU_CAPS_QUERY_CPUS_FAST */
+              "query-cpus-fast", /* X_QEMU_CAPS_QUERY_CPUS_FAST */
               "disk-write-cache", /* QEMU_CAPS_DISK_WRITE_CACHE */
 
               /* 290 */
@@ -1212,7 +1212,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-cpu-model-expansion", QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION },
     { "query-cpu-definitions", QEMU_CAPS_QUERY_CPU_DEFINITIONS },
     { "query-named-block-nodes", QEMU_CAPS_QUERY_NAMED_BLOCK_NODES },
-    { "query-cpus-fast", QEMU_CAPS_QUERY_CPUS_FAST },
     { "qom-list-properties", QEMU_CAPS_QOM_LIST_PROPERTIES },
     { "blockdev-del", QEMU_CAPS_BLOCKDEV_DEL },
     { "query-current-machine", QEMU_CAPS_QUERY_CURRENT_MACHINE },
