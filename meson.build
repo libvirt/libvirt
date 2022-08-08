@@ -2161,22 +2161,15 @@ endforeach
 # generate dist files
 
 if git
-  spec_files = [
-    'libvirt.spec.in',
-    'mingw-libvirt.spec.in',
-  ]
-
   spec_conf = configuration_data({
     'VERSION': meson.project_version(),
   })
 
-  foreach file : spec_files
-    configure_file(
-      input: file,
-      output: '@BASENAME@',
-      configuration: spec_conf,
-    )
-  endforeach
+  configure_file(
+    input: 'libvirt.spec.in',
+    output: '@BASENAME@',
+    configuration: spec_conf,
+  )
 
   authors = run_command(python3_prog, meson_gen_authors_prog.path(),
                         env: runutf8, check: true)
