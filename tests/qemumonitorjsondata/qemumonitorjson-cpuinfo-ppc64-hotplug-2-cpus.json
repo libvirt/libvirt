@@ -3,218 +3,242 @@
     {
       "arch": "ppc",
       "current": true,
-      "CPU": 0,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/unattached/device[1]/thread[0]",
-      "halted": false,
-      "thread_id": 21925
+      "cpu-index": 0,
+      "props": {
+        "core-id": 0
+      },
+      "qom-path": "/machine/unattached/device[1]/thread[0]",
+      "thread-id": 21925
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 1,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/unattached/device[1]/thread[1]",
-      "halted": false,
-      "thread_id": 21926
+      "cpu-index": 1,
+      "props": {
+        "core-id": 0
+      },
+      "qom-path": "/machine/unattached/device[1]/thread[1]",
+      "thread-id": 21926
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 2,
-      "nip": -4611686018422360576,
-      "qom_path": "/machine/unattached/device[1]/thread[2]",
-      "halted": false,
-      "thread_id": 21927
+      "cpu-index": 2,
+      "props": {
+        "core-id": 0
+      },
+      "qom-path": "/machine/unattached/device[1]/thread[2]",
+      "thread-id": 21927
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 3,
-      "nip": -4611686018422360596,
-      "qom_path": "/machine/unattached/device[1]/thread[3]",
-      "halted": false,
-      "thread_id": 21928
+      "cpu-index": 3,
+      "props": {
+        "core-id": 0
+      },
+      "qom-path": "/machine/unattached/device[1]/thread[3]",
+      "thread-id": 21928
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 4,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/unattached/device[1]/thread[4]",
-      "halted": false,
-      "thread_id": 21930
+      "cpu-index": 4,
+      "props": {
+        "core-id": 0
+      },
+      "qom-path": "/machine/unattached/device[1]/thread[4]",
+      "thread-id": 21930
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 5,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/unattached/device[1]/thread[5]",
-      "halted": false,
-      "thread_id": 21931
+      "cpu-index": 5,
+      "props": {
+        "core-id": 0
+      },
+      "qom-path": "/machine/unattached/device[1]/thread[5]",
+      "thread-id": 21931
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 6,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/unattached/device[1]/thread[6]",
-      "halted": false,
-      "thread_id": 21932
+      "cpu-index": 6,
+      "props": {
+        "core-id": 0
+      },
+      "qom-path": "/machine/unattached/device[1]/thread[6]",
+      "thread-id": 21932
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 7,
-      "nip": -4611686018422360596,
-      "qom_path": "/machine/unattached/device[1]/thread[7]",
-      "halted": false,
-      "thread_id": 21933
+      "cpu-index": 7,
+      "props": {
+        "core-id": 0
+      },
+      "qom-path": "/machine/unattached/device[1]/thread[7]",
+      "thread-id": 21933
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 8,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu0/thread[0]",
-      "halted": false,
-      "thread_id": 22131
+      "cpu-index": 8,
+      "props": {
+        "core-id": 8
+      },
+      "qom-path": "/machine/peripheral/vcpu0/thread[0]",
+      "thread-id": 22131
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 9,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu0/thread[1]",
-      "halted": false,
-      "thread_id": 22132
+      "cpu-index": 9,
+      "props": {
+        "core-id": 8
+      },
+      "qom-path": "/machine/peripheral/vcpu0/thread[1]",
+      "thread-id": 22132
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 10,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu0/thread[2]",
-      "halted": false,
-      "thread_id": 22133
+      "cpu-index": 10,
+      "props": {
+        "core-id": 8
+      },
+      "qom-path": "/machine/peripheral/vcpu0/thread[2]",
+      "thread-id": 22133
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 11,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu0/thread[3]",
-      "halted": false,
-      "thread_id": 22134
+      "cpu-index": 11,
+      "props": {
+        "core-id": 8
+      },
+      "qom-path": "/machine/peripheral/vcpu0/thread[3]",
+      "thread-id": 22134
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 12,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu0/thread[4]",
-      "halted": false,
-      "thread_id": 22135
+      "cpu-index": 12,
+      "props": {
+        "core-id": 8
+      },
+      "qom-path": "/machine/peripheral/vcpu0/thread[4]",
+      "thread-id": 22135
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 13,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu0/thread[5]",
-      "halted": false,
-      "thread_id": 22136
+      "cpu-index": 13,
+      "props": {
+        "core-id": 8
+      },
+      "qom-path": "/machine/peripheral/vcpu0/thread[5]",
+      "thread-id": 22136
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 14,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu0/thread[6]",
-      "halted": false,
-      "thread_id": 22137
+      "cpu-index": 14,
+      "props": {
+        "core-id": 8
+      },
+      "qom-path": "/machine/peripheral/vcpu0/thread[6]",
+      "thread-id": 22137
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 15,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu0/thread[7]",
-      "halted": false,
-      "thread_id": 22138
+      "cpu-index": 15,
+      "props": {
+        "core-id": 8
+      },
+      "qom-path": "/machine/peripheral/vcpu0/thread[7]",
+      "thread-id": 22138
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 16,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu1/thread[0]",
-      "halted": false,
-      "thread_id": 22223
+      "cpu-index": 16,
+      "props": {
+        "core-id": 16
+      },
+      "qom-path": "/machine/peripheral/vcpu1/thread[0]",
+      "thread-id": 22223
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 17,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu1/thread[1]",
-      "halted": false,
-      "thread_id": 22224
+      "cpu-index": 17,
+      "props": {
+        "core-id": 16
+      },
+      "qom-path": "/machine/peripheral/vcpu1/thread[1]",
+      "thread-id": 22224
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 18,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu1/thread[2]",
-      "halted": false,
-      "thread_id": 22225
+      "cpu-index": 18,
+      "props": {
+        "core-id": 16
+      },
+      "qom-path": "/machine/peripheral/vcpu1/thread[2]",
+      "thread-id": 22225
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 19,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu1/thread[3]",
-      "halted": false,
-      "thread_id": 22226
+      "cpu-index": 19,
+      "props": {
+        "core-id": 16
+      },
+      "qom-path": "/machine/peripheral/vcpu1/thread[3]",
+      "thread-id": 22226
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 20,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu1/thread[4]",
-      "halted": false,
-      "thread_id": 22227
+      "cpu-index": 20,
+      "props": {
+        "core-id": 16
+      },
+      "qom-path": "/machine/peripheral/vcpu1/thread[4]",
+      "thread-id": 22227
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 21,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu1/thread[5]",
-      "halted": false,
-      "thread_id": 22228
+      "cpu-index": 21,
+      "props": {
+        "core-id": 16
+      },
+      "qom-path": "/machine/peripheral/vcpu1/thread[5]",
+      "thread-id": 22228
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 22,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu1/thread[6]",
-      "halted": false,
-      "thread_id": 22229
+      "cpu-index": 22,
+      "props": {
+        "core-id": 16
+      },
+      "qom-path": "/machine/peripheral/vcpu1/thread[6]",
+      "thread-id": 22229
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 23,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/peripheral/vcpu1/thread[7]",
-      "halted": false,
-      "thread_id": 22230
+      "cpu-index": 23,
+      "props": {
+        "core-id": 16
+      },
+      "qom-path": "/machine/peripheral/vcpu1/thread[7]",
+      "thread-id": 22230
     }
   ],
   "id": "libvirt-17"

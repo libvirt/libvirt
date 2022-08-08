@@ -3,74 +3,58 @@
     {
       "arch": "ppc",
       "current": true,
-      "CPU": 0,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/unattached/device[1]/thread[0]",
-      "halted": false,
-      "thread_id": 21925
+      "cpu-index": 0,
+      "qom-path": "/machine/unattached/device[1]/thread[0]",
+      "thread-id": 21925
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 1,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/unattached/device[1]/thread[1]",
-      "halted": false,
-      "thread_id": 21926
+      "cpu-index": 1,
+      "qom-path": "/machine/unattached/device[1]/thread[1]",
+      "thread-id": 21926
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 2,
-      "nip": -4611686018422360608,
-      "qom_path": "/machine/unattached/device[1]/thread[2]",
-      "halted": false,
-      "thread_id": 21927
+      "cpu-index": 2,
+      "qom-path": "/machine/unattached/device[1]/thread[2]",
+      "thread-id": 21927
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 3,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/unattached/device[1]/thread[3]",
-      "halted": false,
-      "thread_id": 21928
+      "cpu-index": 3,
+      "qom-path": "/machine/unattached/device[1]/thread[3]",
+      "thread-id": 21928
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 4,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/unattached/device[1]/thread[4]",
-      "halted": false,
-      "thread_id": 21930
+      "cpu-index": 4,
+      "qom-path": "/machine/unattached/device[1]/thread[4]",
+      "thread-id": 21930
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 5,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/unattached/device[1]/thread[5]",
-      "halted": false,
-      "thread_id": 21931
+      "cpu-index": 5,
+      "qom-path": "/machine/unattached/device[1]/thread[5]",
+      "thread-id": 21931
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 6,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/unattached/device[1]/thread[6]",
-      "halted": false,
-      "thread_id": 21932
+      "cpu-index": 6,
+      "qom-path": "/machine/unattached/device[1]/thread[6]",
+      "thread-id": 21932
     },
     {
       "arch": "ppc",
       "current": false,
-      "CPU": 7,
-      "nip": -4611686018426772172,
-      "qom_path": "/machine/unattached/device[1]/thread[7]",
-      "halted": false,
-      "thread_id": 21933
+      "cpu-index": 7,
+      "qom-path": "/machine/unattached/device[1]/thread[7]",
+      "thread-id": 21933
     }
   ],
   "id": "libvirt-12"

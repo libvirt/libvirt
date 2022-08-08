@@ -52,49 +52,41 @@
     alias='vcpu0'
     qom_path='/machine/peripheral/vcpu0'
     topology: core='8' vcpus='8'
-    halted
 [vcpu libvirt-id='9']
     online=yes
     hotpluggable=yes
     thread-id='23171'
     query-cpus-id='17'
-    halted
 [vcpu libvirt-id='10']
     online=yes
     hotpluggable=yes
     thread-id='23172'
     query-cpus-id='18'
-    halted
 [vcpu libvirt-id='11']
     online=yes
     hotpluggable=yes
     thread-id='23173'
     query-cpus-id='19'
-    halted
 [vcpu libvirt-id='12']
     online=yes
     hotpluggable=yes
     thread-id='23174'
     query-cpus-id='20'
-    halted
 [vcpu libvirt-id='13']
     online=yes
     hotpluggable=yes
     thread-id='23175'
     query-cpus-id='21'
-    halted
 [vcpu libvirt-id='14']
     online=yes
     hotpluggable=yes
     thread-id='23176'
     query-cpus-id='22'
-    halted
 [vcpu libvirt-id='15']
     online=yes
     hotpluggable=yes
     thread-id='23177'
     query-cpus-id='23'
-    halted
 [vcpu libvirt-id='16']
     online=yes
     hotpluggable=yes
