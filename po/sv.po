@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-07-26 08:13+0000\n"
-"PO-Revision-Date: 2022-08-02 08:51+0000\n"
+"PO-Revision-Date: 2022-08-09 11:53+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -1070,7 +1070,7 @@ msgstr "%s: oväntad URI-transport ”%s”\n"
 
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
-msgstr "%s: hypervisor-namn som ej stöds %s\n"
+msgstr "%s: hypervisor-namn som ej stödjs %s\n"
 
 #, c-format
 msgid "%s: value for '%s' parameter must be 0 or 1"
@@ -12798,199 +12798,198 @@ msgid "Only '%s' filesystem type is supported"
 msgstr "Endast ”%s” filsystemtyper stödjs"
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
-msgstr ""
+msgstr "Endast schemaläggarna ”credit” och ”credit2” stödjs"
 
-#, fuzzy
 msgid "Only 1 IDE controller is supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "Endast 1 IDE-styrenhet stödjs"
 
-#, fuzzy
 msgid "Only 1 die per socket is supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "Endast 1 chipp per sockel stödjs"
 
-#, fuzzy
 msgid "Only 1 fdc bus is supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "Endast 1 fdc-buss stödjs"
 
-#, fuzzy
 msgid "Only 1 fdc controller is supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "Endast 1 fdc-styrenhet stödjs"
 
-#, fuzzy
 msgid "Only 1 thread per core is supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "Endast 1 tråd per kärna stödjs"
 
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
-msgstr ""
+msgstr "Endast IPv4- eller IPv6-adresser kan användas med ett prefix"
 
 msgid "Only PCI device addresses with function=0 are supported"
-msgstr ""
+msgstr "Endast PCI-enhetsadresser med function=0 stödjs"
 
-#, fuzzy
 msgid "Only PTY console types are supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "Endast PTY-konsoltyper stödjs"
 
 msgid "Only VNC supported"
-msgstr ""
+msgstr "Endast VNC stödjs"
 
 msgid "Only a single IDE controller is supported for this machine type"
-msgstr ""
+msgstr "Endast en enda IDE-styrenhet stödjs för denna maskintyp"
 
 msgid "Only a single console can be configured for this domain"
-msgstr ""
+msgstr "Endast en enda konsol kan konfigureras för denna domän"
 
 msgid "Only a single console or serial can be configured for this domain"
-msgstr ""
+msgstr "Endast en enda konsol eller serieenhet kan konfigureras för denna domän"
 
 msgid "Only a single serial can be configured for this domain"
-msgstr ""
+msgstr "Endast en enda serieenhet kan konfigureras för denna domän"
 
 msgid "Only bridged veth devices can be detached"
-msgstr ""
+msgstr "Endast bryggade veth-enheter kan kopplas ifrån"
 
 msgid "Only disk and block storage types are supported by vz driver."
-msgstr ""
+msgstr "Endast diskar och blocklagringstyper stödjs av vz-drivrutinen."
 
 msgid "Only disk image supported for resize"
-msgstr ""
+msgstr "Endast diskavbilder stödjs för storleksändring"
 
 msgid ""
 "Only emulated CPUs are available, performance will be significantly limited"
 msgstr ""
+"Endast emulierade CPU:er är tillgängliga, prestanda kommer att vara klart "
+"begränsad"
 
 #, c-format
 msgid "Only end address '%s' specified in <nat> in <forward> in network '%s'"
 msgstr ""
+"Endast ändpunktsadressen ”%s” specificerad i <nat> i <forward> i nätverket "
+"”%s”"
 
 msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr ""
+"Endast filbaserade eller volymbaserade filsystem stödjs av vz-drivrutinen."
 
 msgid "Only hard disks and cdroms are supported by vz driver."
-msgstr ""
+msgstr "Endast hårddiskar och cdrom stödjs av vz-drivrutinen."
 
 msgid "Only ide and scsi disk support wwn"
-msgstr ""
+msgstr "Endast ide- och scsi-diskar stödjer wwn"
 
 msgid "Only luks encryption is supported for raw files"
-msgstr ""
+msgstr "Endast luks-kryptering stödjs för råa filer"
 
 msgid "Only mac option can be specified for virt-net"
-msgstr ""
+msgstr "Endast mac-alternativ kan anges till virt-net"
 
 msgid "Only native iomode is supported by vz driver."
-msgstr ""
+msgstr "Endast inbyggt iomode stödjs av vz-drivrutinen."
 
 #, c-format
 msgid ""
 "Only one <address> element is allowed in <nat> in <forward> in network %s"
 msgstr ""
+"Endast ett <address>-element är tillåtet i <nat> i <forward> i nätverket %s"
 
 #, c-format
 msgid "Only one <nat> element is allowed in <forward> of network %s"
-msgstr ""
+msgstr "Endast ett <nat>-element är tillåtet i <forward> i nätverket %s"
 
 #, c-format
 msgid "Only one <pf> element is allowed in <forward> of network %s"
-msgstr ""
+msgstr "Endast ett <pf>-element är tillåtet i <forward> i nätverket %s"
 
 #, c-format
 msgid "Only one <port> element is allowed in <nat> in <forward> in network %s"
 msgstr ""
+"Endast ett <port>-element är tillåtet i <nat> i <forward> i nätverket %s"
 
 msgid "Only one IPv4 address per interface is allowed"
-msgstr ""
+msgstr "Endast en IPv4-adress per gränssnitt är tillåtet"
 
 msgid "Only one IPv6 address per interface is allowed"
-msgstr ""
+msgstr "Endast en IPv6-adress per gränssnitt är tillåtet"
 
-#, fuzzy
 msgid "Only one acpi table is supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "Endast en acpi-tabell stödjs"
 
 msgid "Only one argument from --table and --uuid may be specified."
-msgstr ""
+msgstr "Endast ett argument från --table och --uuid kan anges."
 
 msgid "Only one argument from --table, --name and --uuid may be specified."
-msgstr ""
+msgstr "Endast ett argument från --table, --name och --uuid kan anges."
 
-#, fuzzy
 msgid "Only one boot device is supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "Endast en startenhet stödjs"
 
 msgid "Only one child <inbound> element allowed"
-msgstr ""
+msgstr "Endast ett barn-<inbound>-element är tillåtet"
 
 msgid "Only one child <outbound> element allowed"
-msgstr ""
+msgstr "Endast ett barn-<outbound>-element är tillåtet"
 
 msgid "Only one hostdev of model vfio-ap is supported"
-msgstr ""
+msgstr "Endast en hostdev av modell vfio-ap stödjs"
 
 msgid "Only one primary video device is supported"
-msgstr ""
+msgstr "Endast en primär videoenhet stödjs"
 
 msgid "Only one vgpu device can have 'ramfb' enabled"
-msgstr ""
+msgstr "Endast en vgpu-enhet får ha ”ramfb” aktiverat"
 
 msgid "Only ploop disk images are supported by vz driver."
-msgstr ""
+msgstr "Endast ploop-diskavbilder stödjs av vz-drivrutinen."
 
 msgid "Only ploop fs driver is supported by vz driver."
-msgstr ""
+msgstr "Endast ploop-fs-drivrutinen stödjs av vz-drivrutinen."
 
 msgid "Only read-only pflash is supported."
-msgstr ""
+msgstr "Endast pflash endast för läsning stödjs."
 
 msgid "Only scsi disk supports vendor and product"
-msgstr ""
+msgstr "Endast scsi-diskar stödjer leverantör och produkt"
 
 #, c-format
 msgid "Only start address '%s' specified in <nat> in <forward> in network '%s'"
 msgstr ""
+"Endast startadressen ”%s” specificerad i <nat> i <forward> i nätverket ”%s”"
 
-#, fuzzy
 msgid "Only tap devices supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "Endast tap-enheter stödjs"
 
 msgid ""
 "Only the PCI controller with index 0 can have target index 0, and vice versa"
-msgstr ""
+msgstr "Endast PCI-styrenheter med index 0 kan ha målindex 0, och vice versa"
 
 msgid "Only the first console can be a serial port"
-msgstr ""
+msgstr "Endast den första konsolen kan vara en serieport"
 
 msgid "Only the init process may be killed"
-msgstr ""
+msgstr "Endast init-processen kan dödas"
 
 #, c-format
 msgid "Only virtio bus types are supported for '%s'"
-msgstr ""
+msgstr "Endast virtio-busstyper stödjs för ”%s”"
 
-#, fuzzy
 msgid "Only vpxmigr:// migration URIs are supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "Endast vpxmigr://-migrerings-URI:er stödjs"
 
 msgid "Only x509 certificates are supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "Endast x509-certifikat stödjs"
 
 msgid "OpenRemoteSession/LaunchVMProcess failed, domain can't be started"
 msgstr ""
+"OpenRemoteSession/LaunchVMProcess misslyckades, domänen kan inte startas"
 
 msgid "OpenVZ control file /proc/vz does not exist"
-msgstr ""
+msgstr "OpenVZ-styrfilen /proc/vz finns inte"
 
 msgid "OpenVZ control file /proc/vz is not accessible"
-msgstr ""
+msgstr "OpenVZ-styrfilen /proc/vz är inte åtkomlig"
 
 msgid "Operation cancelled by client"
-msgstr ""
+msgstr "Åtgärden avbruten av klienten"
 
 msgid "Operation not supported"
-msgstr ""
+msgstr "Åtgärden stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Operation not supported: %s"
-msgstr "operation misslyckades: %s"
+msgstr "Åtgärden stödjs inte: %s"
 
 msgid "Operation:"
 msgstr "Åtgärd:"
@@ -13000,70 +12999,72 @@ msgid ""
 "Option '%s' has invalid value for PCI controller with index '%d', model '%s' "
 "and modelName '%s'"
 msgstr ""
+"Alternativet ”%s” har felaktigt värde som PCI-styrenhet med index ”%d”, "
+"modell ”%s” och modelName ”%s”"
 
 #, c-format
 msgid "Option '%s' is not supported by '%s' device with this QEMU binary"
-msgstr ""
+msgstr "Alternativet ”%s” stödjs inte av ”%s”-enheter med denna QEMU-binär"
 
 #, c-format
 msgid ""
 "Option '%s' is not valid for PCI controller with index '%d', model '%s' and "
 "modelName '%s'"
 msgstr ""
+"Alternativet ”%s” är inte en giltig PCI-styrenhet med index ”%d”, modell ”%s”"
+" och modelName ”%s”"
 
 #, c-format
 msgid "Option --%s is required by option --%s"
-msgstr ""
+msgstr "Flaggan --%s krävs av flaggan --%s"
 
 msgid "Option --all is incompatible with --inactive"
-msgstr ""
+msgstr "Flaggan --all är inkompatibel med --inactive"
 
 msgid "Option --file is required"
-msgstr ""
+msgstr "Flaggan --file krävs"
 
 msgid "Option --tree is incompatible with --cap and --inactive"
-msgstr ""
+msgstr "Flaggan --tree är inkompatibel med --cap och --inactive"
 
 msgid "Option argument is empty"
-msgstr ""
+msgstr "Flaggargumentet är tomt"
 
 msgid "Optional flags or --rawstats are not supported by the daemon"
-msgstr ""
+msgstr "Frivilliga flaggor eller --rawstats stödjs inte av demonen"
 
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
-msgstr ""
+msgstr "Flaggorna --%s och --%s är ömsesidigt uteslutande"
 
 msgid "Options:"
 msgstr "Alternativ:"
 
 msgid "Other tasks are pending for this domain"
-msgstr ""
+msgstr "Andra uppgifter väntar för denna domän"
 
 #, c-format
 msgid "Our own certificate %s failed validation against %s: %s"
-msgstr ""
+msgstr "Vårt eget certifikat %s klarade inte valideringen mot %s: %s"
 
 msgid "Out of memory"
 msgstr "Slut på minne"
 
 #, c-format
 msgid "Out of space while reading log output: %s"
-msgstr ""
+msgstr "Slut på utrymme vid läsning av loggutdata: %s"
 
-#, fuzzy
 msgid "Outgoing migration"
-msgstr "live-migrering"
+msgstr "Utgående migrering"
 
 msgid "Output a secret value"
-msgstr ""
+msgstr "Utmatning av ett hemligt värde"
 
 msgid "Output a secret value to stdout."
-msgstr ""
+msgstr "Utmatning av ett hemligt värde till standard ut."
 
-#, fuzzy
 msgid "Output attributes of a secret as an XML dump to stdout."
-msgstr "Skriv ut domäninformationen som en XML-dump till stdout."
+msgstr "Utmatningsattribut av en hemlighet som en XML-dump till standard ut."
 
 msgid "Output the IP address and port number for the VNC display."
 msgstr "Skriv ut IP-adress och portnummer för VNC-skärmen."
@@ -13086,14 +13087,14 @@ msgstr "Skriv ut nätverksinformationen som en XML-dump till stdout."
 msgid "Output the network port information as an XML dump to stdout."
 msgstr "Skriv ut nätverksportsinformationen som en XML-dump till standard ut."
 
-#, fuzzy
 msgid "Output the node device details as an XML dump to stdout."
-msgstr "Skriv ut nätverksinformationen som en XML-dump till stdout."
+msgstr "Utmatning av nodenhetens detaljer XML-dump till standard ut."
 
-#, fuzzy
 msgid ""
 "Output the physical host interface information as an XML dump to stdout."
-msgstr "Skriv ut domäninformationen som en XML-dump till stdout."
+msgstr ""
+"Utmatning av den fysiska värdens gränssnittsinformation som en XML-dump till "
+"standard ut."
 
 msgid "Output the pool information as an XML dump to stdout."
 msgstr "Skriv ut poolinformationen som en XML-dump till standard ut."
@@ -13102,95 +13103,106 @@ msgid "Output the vol information as an XML dump to stdout."
 msgstr "Skriv ut volyminformationen som en XML-dump till standard ut."
 
 msgid "Overlapping vcpus in resctrls"
-msgstr ""
+msgstr "Överlappande vcpu:er i resctrls"
 
 #, c-format
 msgid "Overlay file '%s' for transient disk '%s' already exists"
-msgstr ""
+msgstr "Överläggsfilen ”%s” för den transienta disken ”%s” finns redan"
 
 msgid "PASS"
-msgstr ""
+msgstr "GODKÄND"
 
 msgid "PCI VPD reporting not available on this platform"
-msgstr ""
+msgstr "PCI VDP-rapportering är inte tillgänglig på denna plattform"
 
 #, c-format
 msgid ""
 "PCI controller at index %d (0x%02x) has bus='0x%02x', but index must be "
 "larger than bus"
 msgstr ""
+"PCI-styrenheten vid index %d (0x%02x) har buss=”%02x”, men indexet måste "
+"vara större än bussen"
 
 #, c-format
 msgid "PCI controller busNr '%d' out of range - must be 1-254"
 msgstr ""
+"PCI-styrenheten busNr ”%d” är utanför intervallet – måste vara inom 1-254"
 
 #, c-format
 msgid "PCI controller chassis '%d' out of range - must be 0-255"
 msgstr ""
+"PCI-styrenhetens chassi ”%d” är utanför intervallet – måste vara inom 0-255"
 
 #, c-format
 msgid "PCI controller chassisNr '%d' out of range - must be 1-255"
 msgstr ""
+"PCI-styrenhetens chassisNr ”%d” är utanför intervallet – måste vara inom "
+"1-255"
 
 #, c-format
 msgid "PCI controller index %d too high, maximum is 255"
-msgstr ""
+msgstr "PCI-styrenhetens index %d är för högt, maximum är 255"
 
 msgid "PCI controller model was not set correctly"
-msgstr ""
+msgstr "PCI-styrenhetens modell var inte korrekt satt"
 
 #, c-format
 msgid "PCI controller port '%d' out of range - must be 0-255"
 msgstr ""
+"PCI-styrenhetens port ”%d” är utanför intervallet – måste vara inom 0-255"
 
 #, c-format
 msgid "PCI controller target index '%d' out of range - must be 0-30"
 msgstr ""
+"PCI-styrenhetens målindex ”%d” är utanför intervallet – måste vara inom 0-30"
 
 #, c-format
 msgid ""
 "PCI device %04x:%02x:%02x.%x allocated from network %s is already in use by "
 "domain %s"
 msgstr ""
+"PCI-enheten %04x:%02x:%02x.%x allokerad från nätverket %s används redan av "
+"domänen %s"
 
 #, c-format
 msgid "PCI device %s is in use"
-msgstr ""
+msgstr "PCI-enheten %s används"
 
 #, c-format
 msgid "PCI device %s is in use by driver %s, domain %s"
-msgstr ""
+msgstr "PCI-enheten %s används av drivrutinen %s, domänen %s"
 
 #, c-format
 msgid "PCI device %s is not assignable"
-msgstr ""
+msgstr "PCI-enheten %s går inte att tilldela"
 
 #, c-format
 msgid "PCI device '%04x:%02x:%02x.%x' can only be listed once in network %s"
 msgstr ""
+"PCI-enheten ”%04x:%02x:%02x.%x” kan endast listas en gång i nätverket %s"
 
 msgid "PCI host devices must use 'pci' or 'unassigned' address type"
-msgstr ""
+msgstr "PCI-värdenheter måste använda adresstypen ”pci” eller ”unassigned”"
 
 msgid "PID file (unless overridden by -p):"
-msgstr ""
+msgstr "PID-fil (om inte åsidosatt av -p):"
 
 msgid "PID namespace support is required"
-msgstr ""
+msgstr "Stöd för PID-namnrymder krävs"
 
 msgid "PIIX3 USB controller at index 0 must have PCI address 0:0:1.2"
-msgstr ""
+msgstr "PIIX3 USB-styrenheten på index 0 måste ha PCI-adressen 0:0:1.2"
 
 #, c-format
 msgid "PMSuspend type %d not supported by libxenlight driver"
-msgstr ""
+msgstr "PMSuspend-typen %d stödjs inte av drivrutinen libxenlight"
 
 msgid "PMSuspended"
 msgstr "PM-sövd"
 
 #, c-format
 msgid "PMU is always enabled for architecture '%s'"
-msgstr ""
+msgstr "PMU är alltid aktiverat för arkitekturen ”%s”"
 
 msgid "POST operation failed"
 msgstr "POST-operation misslyckades"
@@ -13202,13 +13214,13 @@ msgstr "POST-operation misslyckades: %s"
 #, c-format
 msgid ""
 "PTR domain for %s network with prefix %u cannot be automatically created"
-msgstr ""
+msgstr "PTR-domänen för nätverket %s med prefix %u kan inte skapas automatiskt"
 
 msgid "PTY device is not yet assigned"
-msgstr ""
+msgstr "PTY-enheten är inte tilldelad ännu"
 
 msgid "PVH guest os type not supported"
-msgstr ""
+msgstr "PVH-gäst-os-typen stödjs inte"
 
 msgid "Page size:"
 msgstr "Sidstorlek:"
@@ -13217,22 +13229,22 @@ msgid "Panicked"
 msgstr "Panikslagen"
 
 msgid "Parallel devices are not supported by libxl"
-msgstr ""
+msgstr "Parallellenheter stödjs inte av libxl"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Parallel port index %d out of [0..2] range"
-msgstr "värde på typeid är utanför intervallet"
+msgstr "Parallellportindexet %d utanför intervallet [0..2]"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Parameter '%s' is not a string"
-msgstr "nätverket %s är inte aktivt"
+msgstr "Parametern ”%s” är inte en sträng"
 
 #, c-format
 msgid "Parameter '%s' is not supported by this kernel"
-msgstr ""
+msgstr "Parametern ”%s” stödjs inte av denna kärna"
 
 msgid "Parameter 'min_guarantee' not supported by QEMU."
-msgstr ""
+msgstr "Parametern ”min_guarantee” stödjs inte av QEMU."
 
 msgid "Parent"
 msgstr "Förälder"
@@ -13242,41 +13254,43 @@ msgid ""
 "Parent attribute '%s' does not match parent '%s' determined for the '%s' "
 "wwnn/wwpn lookup."
 msgstr ""
+"Föräldraattributet ”%s” matchar inte föräldern ”%s” som bestämdes för wwnn/"
+"wwpn-uppslagningen ”%s”."
 
 #, c-format
 msgid "Parent device %s is not capable of vport operations"
-msgstr ""
+msgstr "Föräldraenheten %s klarar inte vport-åtgärder"
 
 msgid "Parent device's JSON object data is not an array"
-msgstr ""
+msgstr "Föräldraenhetens JSON-objektdata är inte en vektor"
 
 msgid "Parent:"
 msgstr "Förälder:"
 
 #, c-format
 msgid "Parsed JSON reply '%s' isn't an object"
-msgstr ""
+msgstr "Lolkat JSON-svar ”%s” är inte ett objekt"
 
 #, c-format
 msgid "Partition path '%s' must start with '/'"
-msgstr ""
+msgstr "Partitionssökvägen ”%s” måset inledas med ”/”"
 
 msgid "Passing secret value as command-line argument is insecure!"
-msgstr ""
+msgstr "Att skicka ett hemligt värde som ett kommandoradsargument är osäkert!"
 
 #, c-format
 msgid "Passphrase for key '%s'"
-msgstr ""
+msgstr "Lösenfras för nyckeln ”%s”"
 
 msgid "Password may not contain ',' character"
-msgstr ""
+msgstr "Lösenordet får inte innehålla tecknet ”,”"
 
 msgid "Password request failed"
-msgstr ""
+msgstr "Lösenordsbegäran misslyckades"
 
 #, c-format
 msgid "Password set successfully for %s in %s"
-msgstr ""
+msgstr "Lösenordet satt för %s i %s"
 
 msgid "Path"
 msgstr "Sökväg"
@@ -13287,30 +13301,30 @@ msgstr "Sökvägen %s är för lång för unix-uttag"
 
 #, c-format
 msgid "Path '%s' does not specify a compute resource"
-msgstr ""
+msgstr "Sökvägen ”%s” anger inte en beräkningsresurs"
 
 #, c-format
 msgid "Path '%s' does not specify a datacenter"
-msgstr ""
+msgstr "Sökvägen ”%s” anger inte ett datacenter"
 
 #, c-format
 msgid "Path '%s' does not specify a host system"
-msgstr ""
+msgstr "Sökvägen ”%s” anger inte ett värdsystem"
 
 #, c-format
 msgid "Path '%s' ends with an excess item"
-msgstr ""
+msgstr "Sökvägen ”%s” slutar med ett extra element"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Path '%s' is not accessible"
-msgstr "nätverket %s är inte aktivt"
+msgstr "Sökvägen ”%s” är inte åtkomlig"
 
 #, c-format
 msgid "Path '%s' must be a block device"
-msgstr ""
+msgstr "Sökvägen ”%s” måste vara en blockenhet"
 
 msgid "Path has to specify the datacenter and compute resource"
-msgstr ""
+msgstr "Sökvägen måste ange datacentret och beräkningsresursen"
 
 msgid "Paused"
 msgstr "Pausad"
@@ -13331,23 +13345,22 @@ msgstr ""
 "Väntande frågor förhindrar att den virtuella maskinen körs, frågan är ”%s”, "
 "möjligt svar är %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Pending question blocks virtual machine execution, question is '%s', "
 "possible answers are %s, but no default answer is specified"
 msgstr ""
-"Väntande frågor förhindrar att den virtuella maskinen körs, frågan är ”%s”, "
-"möjligt svar är %s"
+"En väntande fråga förhindrar att den virtuella maskinen körs, frågan är ”%s”"
+", möjligt svar är %s, men inget standardsvar angavs"
 
 msgid "Per-node binding is not compatible with automatic NUMA placement."
-msgstr ""
+msgstr "Per-nod-bindningar är inte kompatibelt med automatisk NUMA-placering."
 
 msgid "Per-node memory binding is not supported with this QEMU"
-msgstr ""
+msgstr "Per-nod-minnesbindning stödjs inte med denna QEMU"
 
-#, fuzzy
 msgid "Perf not supported on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Perf stödjs inte på denna plattform"
 
 msgid "Persistent"
 msgstr "Varaktig"
@@ -13372,14 +13385,14 @@ msgstr "Sätt fast domänemulatortrådar till värdens fysiska CPU:er."
 
 #, c-format
 msgid "Plugin %s not accessible"
-msgstr ""
+msgstr "Insticksmodulen %s är inte tillgänglig"
 
 #, c-format
 msgid "Policy kit denied action %s from <anonymous>"
-msgstr ""
+msgstr "Policy kit nekade ågärden %s från <anonym>"
 
 msgid "Polkit auth attempted, even though polkit is not available"
-msgstr ""
+msgstr "Polkit-autentisering försökt, trots att polkit inte är tillgängligt"
 
 #, c-format
 msgid "Pool %s XML configuration edited.\n"
@@ -13391,31 +13404,31 @@ msgstr "Poolen %s XML-konfiguration inte ändrad.\n"
 
 #, c-format
 msgid "Pool %s built\n"
-msgstr ""
+msgstr "Poolen %s byggd\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s created\n"
-msgstr "Domän %s skapad från %s\n"
+msgstr "Poolen %s skapad\n"
 
 #, c-format
 msgid "Pool %s created from %s\n"
 msgstr "Poolen %s skapad från %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s defined\n"
-msgstr "Pool %s har blivit odefinierad\n"
+msgstr "Poolen %s definierad\n"
 
 #, c-format
 msgid "Pool %s defined from %s\n"
 msgstr "Poolen %s definierad från %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s deleted\n"
-msgstr "Domän %s förstörd\n"
+msgstr "Poolen %s raderad\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s destroyed\n"
-msgstr "Domän %s förstörd\n"
+msgstr "Poolen %s förstörd\n"
 
 #, c-format
 msgid "Pool %s has been undefined\n"
@@ -13425,23 +13438,23 @@ msgstr "Pool %s har blivit odefinierad\n"
 msgid "Pool %s marked as autostarted\n"
 msgstr "Poolen %s markerad som autostartad\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s refreshed\n"
-msgstr "Domän %s fortsatt\n"
+msgstr "Poolen %s uppdaterad\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s started\n"
-msgstr "Domän %s startade\n"
+msgstr "Poolen %s startad\n"
 
 #, c-format
 msgid "Pool %s unmarked as autostarted\n"
 msgstr "Poolen %s avmarkerad som autostartad\n"
 
 msgid "Populate a disk from its backing image."
-msgstr ""
+msgstr "Skriv en disk från sin bakomliggande avbild."
 
 msgid "Port Dev"
-msgstr ""
+msgstr "Port Dev"
 
 #, c-format
 msgid "Port profile Associate failed for %s"
@@ -38043,11 +38056,11 @@ msgstr "flaggan '-%c' stöds ej. Se --help."
 
 #, c-format
 msgid "unsupported option '%s'. See --help."
-msgstr "flaggan ”%s” stöds inte. Se --help."
+msgstr "flaggan ”%s” stödjs inte. Se --help."
 
 #, c-format
 msgid "unsupported option '-%c'. See --help."
-msgstr "flaggan '-%c' stöds ej. Se --help."
+msgstr "flaggan '-%c' stödjs ej. Se --help."
 
 #, fuzzy, c-format
 msgid "unsupported pit tickpolicy '%s'"
@@ -38109,7 +38122,7 @@ msgid "unsupported usb model"
 msgstr "disktypen stödjs inte %s"
 
 msgid "unsupported value"
-msgstr "värde som ej stöds"
+msgstr "värde som ej stödjs"
 
 #, fuzzy, c-format
 msgid "unsupported volume encryption format %d"
