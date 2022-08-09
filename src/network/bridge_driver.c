@@ -484,9 +484,6 @@ networkUpdateState(virNetworkObj *obj,
         if (!(def->bridge && virNetDevExists(def->bridge) == 1))
             virNetworkObjSetActive(obj, false);
 
-        if (networkSetMacMap(driver, obj) < 0)
-            return -1;
-
         break;
 
     case VIR_NETWORK_FORWARD_BRIDGE:
@@ -520,6 +517,9 @@ networkUpdateState(virNetworkObj *obj,
     /* Try and read dnsmasq pids of active networks */
     if (virNetworkObjIsActive(obj) && def->ips && (def->nips > 0)) {
         pid_t dnsmasqPid;
+
+        if (networkSetMacMap(driver, obj) < 0)
+            return -1;
 
         ignore_value(virPidFileReadIfAlive(driver->pidDir,
                                            def->name,
@@ -1974,9 +1974,6 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
     if (virNetDevBridgeCreate(def->bridge, &def->mac) < 0)
         return -1;
 
-    if (networkSetMacMap(driver, obj) < 0)
-        goto error;
-
     /* Set bridge options */
 
     if (def->mtu && virNetDevSetMTU(def->bridge, def->mtu) < 0)
@@ -2056,6 +2053,9 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
 
     /* start dnsmasq if there are any IP addresses (v4 or v6) */
     if (v4present || v6present) {
+        if (networkSetMacMap(driver, obj) < 0)
+            goto error;
+
         if (networkStartDhcpDaemon(driver, obj) < 0)
             goto error;
 
