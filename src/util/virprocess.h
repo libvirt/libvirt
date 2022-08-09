@@ -195,6 +195,8 @@ typedef enum {
 int virProcessNamespaceAvailable(unsigned int ns);
 
 int virProcessGetStatInfo(unsigned long long *cpuTime,
+                          unsigned long long *userTime,
+                          unsigned long long *sysTime,
                           int *lastCpu,
                           long *vm_rss,
                           pid_t pid,

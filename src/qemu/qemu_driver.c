@@ -1360,6 +1360,7 @@ qemuDomainHelperGetVcpus(virDomainObj *vm,
             vcpuinfo->state = VIR_VCPU_RUNNING;
 
             if (virProcessGetStatInfo(&vcpuinfo->cpuTime,
+                                      NULL, NULL,
                                       &vcpuinfo->cpu, NULL,
                                       vm->pid, vcpupid) < 0) {
                 virReportSystemError(errno, "%s",
@@ -2516,6 +2517,7 @@ qemuDomainGetInfo(virDomainPtr dom,
 
     if (virDomainObjIsActive(vm)) {
         if (virProcessGetStatInfo(&(info->cpuTime), NULL, NULL,
+                                  NULL, NULL,
                                   vm->pid, 0) < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("cannot read cputime for domain"));
@@ -10676,7 +10678,7 @@ qemuDomainMemoryStatsInternal(virDomainObj *vm,
         ret = 0;
     }
 
-    if (virProcessGetStatInfo(NULL, NULL, &rss, vm->pid, 0) < 0) {
+    if (virProcessGetStatInfo(NULL, NULL, NULL, NULL, &rss, vm->pid, 0) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("cannot get RSS for domain"));
     } else {

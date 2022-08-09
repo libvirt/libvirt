@@ -1737,32 +1737,37 @@ virProcessGetStat(pid_t pid,
 #ifdef __linux__
 int
 virProcessGetStatInfo(unsigned long long *cpuTime,
+                      unsigned long long *userTime,
+                      unsigned long long *sysTime,
                       int *lastCpu,
                       long *vm_rss,
                       pid_t pid,
                       pid_t tid)
 {
     g_auto(GStrv) proc_stat = virProcessGetStat(pid, tid);
-    unsigned long long usertime = 0, systime = 0;
+    unsigned long long utime = 0;
+    unsigned long long stime = 0;
+    const unsigned long long jiff2nsec = 1000ull * 1000ull * 1000ull /
+                                         (unsigned long long) sysconf(_SC_CLK_TCK);
     long rss = 0;
     int cpu = 0;
 
     if (!proc_stat ||
-        virStrToLong_ullp(proc_stat[VIR_PROCESS_STAT_UTIME], NULL, 10, &usertime) < 0 ||
-        virStrToLong_ullp(proc_stat[VIR_PROCESS_STAT_STIME], NULL, 10, &systime) < 0 ||
+        virStrToLong_ullp(proc_stat[VIR_PROCESS_STAT_UTIME], NULL, 10, &utime) < 0 ||
+        virStrToLong_ullp(proc_stat[VIR_PROCESS_STAT_STIME], NULL, 10, &stime) < 0 ||
         virStrToLong_l(proc_stat[VIR_PROCESS_STAT_RSS], NULL, 10, &rss) < 0 ||
         virStrToLong_i(proc_stat[VIR_PROCESS_STAT_PROCESSOR], NULL, 10, &cpu) < 0) {
         VIR_WARN("cannot parse process status data");
     }
 
-    /* We got jiffies
-     * We want nanoseconds
-     * _SC_CLK_TCK is jiffies per second
-     * So calculate thus....
-     */
+    utime *= jiff2nsec;
+    stime *= jiff2nsec;
     if (cpuTime)
-        *cpuTime = 1000ull * 1000ull * 1000ull * (usertime + systime)
-            / (unsigned long long) sysconf(_SC_CLK_TCK);
+        *cpuTime = utime + stime;
+    if (userTime)
+        *userTime = utime;
+    if (sysTime)
+        *sysTime = stime;
     if (lastCpu)
         *lastCpu = cpu;
 
@@ -1771,7 +1776,7 @@ virProcessGetStatInfo(unsigned long long *cpuTime,
 
 
     VIR_DEBUG("Got status for %d/%d user=%llu sys=%llu cpu=%d rss=%ld",
-              (int) pid, tid, usertime, systime, cpu, rss);
+              (int) pid, tid, utime, stime, cpu, rss);
 
     return 0;
 }
@@ -1844,6 +1849,8 @@ virProcessGetSchedInfo(unsigned long long *cpuWait,
 #else
 int
 virProcessGetStatInfo(unsigned long long *cpuTime,
+                      unsigned long long *userTime,
+                      unsigned long long *sysTime,
                       int *lastCpu,
                       long *vm_rss,
                       pid_t pid G_GNUC_UNUSED,
@@ -1853,6 +1860,10 @@ virProcessGetStatInfo(unsigned long long *cpuTime,
      * platforms, so just report neutral values */
     if (cpuTime)
         *cpuTime = 0;
+    if (userTime)
+        *userTime = 0;
+    if (sysTime)
+        *sysTime = 0;
     if (lastCpu)
         *lastCpu = 0;
     if (vm_rss)
