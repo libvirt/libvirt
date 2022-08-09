@@ -450,7 +450,7 @@ networkUpdateState(virNetworkObj *obj,
     virNetworkDef *def;
     virNetworkDriverState *driver = opaque;
     g_autoptr(dnsmasqCaps) dnsmasq_caps = networkGetDnsmasqCaps(driver);
-    virMacMap *macmap;
+    g_autoptr(virMacMap) macmap = NULL;
     g_autofree char *macMapFile = NULL;
     VIR_LOCK_GUARD lock = virObjectLockGuard(obj);
 
@@ -476,6 +476,7 @@ networkUpdateState(virNetworkObj *obj,
             return -1;
 
         virNetworkObjSetMacMap(obj, macmap);
+        macmap = NULL;
 
         break;
 
@@ -1938,7 +1939,7 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
     virErrorPtr save_err = NULL;
     virNetworkIPDef *ipdef;
     virNetDevIPRoute *routedef;
-    virMacMap *macmap;
+    g_autoptr(virMacMap) macmap = NULL;
     g_autofree char *macMapFile = NULL;
     bool dnsmasqStarted = false;
     bool devOnline = false;
