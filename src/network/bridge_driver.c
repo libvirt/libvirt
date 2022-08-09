@@ -444,14 +444,30 @@ networkUpdatePort(virNetworkPortDef *port,
 }
 
 static int
+networkSetMacMap(virNetworkDriverState *driver,
+                 virNetworkObj *obj)
+{
+    virNetworkDef *def = virNetworkObjGetDef(obj);
+    g_autoptr(virMacMap) macmap = NULL;
+    g_autofree char *macMapFile = NULL;
+
+    if (!(macMapFile = virMacMapFileName(driver->dnsmasqStateDir,
+                                         def->bridge)))
+        return -1;
+    if (!(macmap = virMacMapNew(macMapFile)))
+        return -1;
+
+    virNetworkObjSetMacMap(obj, &macmap);
+    return 0;
+}
+
+static int
 networkUpdateState(virNetworkObj *obj,
                    void *opaque)
 {
     virNetworkDef *def;
     virNetworkDriverState *driver = opaque;
     g_autoptr(dnsmasqCaps) dnsmasq_caps = networkGetDnsmasqCaps(driver);
-    g_autoptr(virMacMap) macmap = NULL;
-    g_autofree char *macMapFile = NULL;
     VIR_LOCK_GUARD lock = virObjectLockGuard(obj);
 
     if (!virNetworkObjIsActive(obj))
@@ -468,14 +484,8 @@ networkUpdateState(virNetworkObj *obj,
         if (!(def->bridge && virNetDevExists(def->bridge) == 1))
             virNetworkObjSetActive(obj, false);
 
-        if (!(macMapFile = virMacMapFileName(driver->dnsmasqStateDir,
-                                             def->bridge)))
+        if (networkSetMacMap(driver, obj) < 0)
             return -1;
-
-        if (!(macmap = virMacMapNew(macMapFile)))
-            return -1;
-
-        virNetworkObjSetMacMap(obj, &macmap);
 
         break;
 
@@ -1938,8 +1948,6 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
     virErrorPtr save_err = NULL;
     virNetworkIPDef *ipdef;
     virNetDevIPRoute *routedef;
-    g_autoptr(virMacMap) macmap = NULL;
-    g_autofree char *macMapFile = NULL;
     bool dnsmasqStarted = false;
     bool devOnline = false;
     bool firewalRulesAdded = false;
@@ -1966,12 +1974,8 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
     if (virNetDevBridgeCreate(def->bridge, &def->mac) < 0)
         return -1;
 
-    if (!(macMapFile = virMacMapFileName(driver->dnsmasqStateDir,
-                                         def->bridge)) ||
-        !(macmap = virMacMapNew(macMapFile)))
+    if (networkSetMacMap(driver, obj) < 0)
         goto error;
-
-    virNetworkObjSetMacMap(obj, &macmap);
 
     /* Set bridge options */
 
