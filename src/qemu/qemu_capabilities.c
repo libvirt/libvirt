@@ -3284,7 +3284,7 @@ virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps)
 static int
 virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
-  return 0;
+    return 0;
 }
 #endif
 
