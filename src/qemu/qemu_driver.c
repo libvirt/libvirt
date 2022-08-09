@@ -17765,6 +17765,30 @@ qemuDomainGetStatsCpuCgroup(virDomainObj *dom,
     return 0;
 }
 
+
+static int
+qemuDomainGetStatsCpuProc(virDomainObj *vm,
+                          virTypedParamList *params)
+{
+    unsigned long long cpuTime = 0;
+    unsigned long long sysTime = 0;
+    unsigned long long userTime = 0;
+
+    if (virProcessGetStatInfo(&cpuTime, &sysTime, &userTime,
+                              NULL, NULL, vm->pid, 0) < 0) {
+        /* ignore error */
+        return 0;
+    }
+
+    if (virTypedParamListAddULLong(params, cpuTime, "cpu.time") < 0 ||
+        virTypedParamListAddULLong(params, userTime, "cpu.user") < 0 ||
+        virTypedParamListAddULLong(params, sysTime, "cpu.system") < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 qemuDomainGetStatsCpuHaltPollTimeFromStats(virDomainObj *dom,
                                            unsigned int privflags,
@@ -17860,8 +17884,15 @@ qemuDomainGetStatsCpu(virQEMUDriver *driver,
                       virTypedParamList *params,
                       unsigned int privflags)
 {
-    if (qemuDomainGetStatsCpuCgroup(dom, params) < 0)
-        return -1;
+    qemuDomainObjPrivate *priv = dom->privateData;
+
+    if (priv->cgroup) {
+        if (qemuDomainGetStatsCpuCgroup(dom, params) < 0)
+            return -1;
+    } else {
+        if (qemuDomainGetStatsCpuProc(dom, params) < 0)
+            return -1;
+    }
 
     if (qemuDomainGetStatsCpuCache(driver, dom, params) < 0)
         return -1;
