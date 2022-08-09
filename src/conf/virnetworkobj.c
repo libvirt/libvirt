@@ -240,9 +240,9 @@ virNetworkObjSetFloorSum(virNetworkObj *obj,
 
 void
 virNetworkObjSetMacMap(virNetworkObj *obj,
-                       virMacMap *macmap)
+                       virMacMap **macmap)
 {
-    obj->macmap = macmap;
+    obj->macmap = g_steal_pointer(macmap);
 }
 
 

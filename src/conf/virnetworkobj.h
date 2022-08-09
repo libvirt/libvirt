@@ -78,7 +78,7 @@ virNetworkObjSetFloorSum(virNetworkObj *obj,
 
 void
 virNetworkObjSetMacMap(virNetworkObj *obj,
-                       virMacMap *macmap);
+                       virMacMap **macmap);
 
 void
 virNetworkObjUnrefMacMap(virNetworkObj *obj);

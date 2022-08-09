@@ -475,8 +475,7 @@ networkUpdateState(virNetworkObj *obj,
         if (!(macmap = virMacMapNew(macMapFile)))
             return -1;
 
-        virNetworkObjSetMacMap(obj, macmap);
-        macmap = NULL;
+        virNetworkObjSetMacMap(obj, &macmap);
 
         break;
 
@@ -1972,8 +1971,7 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
         !(macmap = virMacMapNew(macMapFile)))
         goto error;
 
-    virNetworkObjSetMacMap(obj, macmap);
-    macmap = NULL;
+    virNetworkObjSetMacMap(obj, &macmap);
 
     /* Set bridge options */
 
