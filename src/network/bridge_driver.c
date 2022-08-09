@@ -2052,11 +2052,12 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
 
 
     /* start dnsmasq if there are any IP addresses (v4 or v6) */
-    if ((v4present || v6present) &&
-        networkStartDhcpDaemon(driver, obj) < 0)
-        goto error;
+    if (v4present || v6present) {
+        if (networkStartDhcpDaemon(driver, obj) < 0)
+            goto error;
 
-    dnsmasqStarted = true;
+        dnsmasqStarted = true;
+    }
 
     if (virNetDevBandwidthSet(def->bridge, def->bandwidth, true, true) < 0)
         goto error;
