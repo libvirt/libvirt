@@ -1758,6 +1758,7 @@ static void *
 qemuDomainObjPrivateAlloc(void *opaque)
 {
     g_autoptr(qemuDomainObjPrivate) priv = g_new0(qemuDomainObjPrivate, 1);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(opaque);
 
     if (virDomainObjInitJob(&priv->job, &qemuPrivateJobCallbacks) < 0) {
         virReportSystemError(errno, "%s",
@@ -1769,6 +1770,8 @@ qemuDomainObjPrivateAlloc(void *opaque)
         return NULL;
 
     priv->blockjobs = virHashNew(virObjectUnref);
+
+    priv->job.maxQueuedJobs = cfg->maxQueuedJobs;
 
     /* agent commands block by default, user can choose different behavior */
     priv->agentTimeout = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK;

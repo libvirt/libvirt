@@ -155,6 +155,7 @@ struct _virDomainJobObj {
     virCond cond;               /* Use to coordinate jobs */
 
     int jobsQueued;
+    unsigned int maxQueuedJobs;
 
     /* The following members are for VIR_JOB_* */
     virDomainJob active;        /* currently running job */

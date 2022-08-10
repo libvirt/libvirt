@@ -723,7 +723,7 @@ qemuDomainObjReleaseAsyncJob(virDomainObj *obj)
  *         -1 otherwise.
  */
 static int ATTRIBUTE_NONNULL(1)
-qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
+qemuDomainObjBeginJobInternal(virQEMUDriver *driver G_GNUC_UNUSED,
                               virDomainObj *obj,
                               virDomainJob job,
                               virDomainAgentJob agentJob,
@@ -734,7 +734,6 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
     unsigned long long now;
     unsigned long long then;
     bool nested = job == VIR_JOB_ASYNC_NESTED;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const char *blocker = NULL;
     const char *agentBlocker = NULL;
     int ret = -1;
@@ -763,8 +762,8 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
  retry:
     if (job != VIR_JOB_ASYNC &&
         job != VIR_JOB_DESTROY &&
-        cfg->maxQueuedJobs &&
-        priv->job.jobsQueued > cfg->maxQueuedJobs) {
+        priv->job.maxQueuedJobs &&
+        priv->job.jobsQueued > priv->job.maxQueuedJobs) {
         goto error;
     }
 
@@ -907,8 +906,8 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
                            _("cannot acquire state change lock"));
         }
         ret = -2;
-    } else if (cfg->maxQueuedJobs &&
-               priv->job.jobsQueued > cfg->maxQueuedJobs) {
+    } else if (priv->job.maxQueuedJobs &&
+               priv->job.jobsQueued > priv->job.maxQueuedJobs) {
         if (blocker && agentBlocker) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("cannot acquire state change "
