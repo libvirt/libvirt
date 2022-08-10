@@ -8130,6 +8130,7 @@ qemuProcessBeginStopJob(virDomainObj *vm,
         goto cleanup;
 
     /* Wake up anything waiting on domain condition */
+    VIR_DEBUG("waking up all jobs waiting on the domain condition");
     virDomainObjBroadcast(vm);
 
     if (qemuDomainObjBeginJob(vm, job) < 0)
