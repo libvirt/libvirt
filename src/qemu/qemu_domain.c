@@ -6081,8 +6081,7 @@ qemuDomainObjExitMonitor(virDomainObj *obj)
 
 void qemuDomainObjEnterMonitor(virDomainObj *obj)
 {
-    ignore_value(qemuDomainObjEnterMonitorInternal(obj,
-                                                   VIR_ASYNC_JOB_NONE));
+    ignore_value(qemuDomainObjEnterMonitorInternal(obj, VIR_ASYNC_JOB_NONE));
 }
 
 /*

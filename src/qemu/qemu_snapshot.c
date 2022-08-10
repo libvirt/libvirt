@@ -311,8 +311,7 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
         }
     }
 
-    if (qemuDomainObjEnterMonitorAsync(vm,
-                                       VIR_ASYNC_JOB_SNAPSHOT) < 0) {
+    if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_SNAPSHOT) < 0) {
         resume = false;
         goto cleanup;
     }

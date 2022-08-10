@@ -1904,8 +1904,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriver *driver,
         ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
     qemuDomainObjExitMonitor(vm);
     virErrorRestore(&orig_err);
-    qemuDomainDelTLSObjects(vm, VIR_ASYNC_JOB_NONE,
-                            secAlias, tlsAlias);
+    qemuDomainDelTLSObjects(vm, VIR_ASYNC_JOB_NONE, secAlias, tlsAlias);
     goto audit;
 }
 
@@ -2197,8 +2196,7 @@ qemuDomainAttachChrDevice(virQEMUDriver *driver,
     qemuDomainObjExitMonitor(vm);
     virErrorRestore(&orig_err);
 
-    qemuDomainDelTLSObjects(vm, VIR_ASYNC_JOB_NONE,
-                            secAlias, tlsAlias);
+    qemuDomainDelTLSObjects(vm, VIR_ASYNC_JOB_NONE, secAlias, tlsAlias);
     goto audit;
 }
 
@@ -2303,8 +2301,7 @@ qemuDomainAttachRNGDevice(virQEMUDriver *driver,
     qemuDomainObjExitMonitor(vm);
     virErrorRestore(&orig_err);
 
-    qemuDomainDelTLSObjects(vm, VIR_ASYNC_JOB_NONE,
-                            secAlias, tlsAlias);
+    qemuDomainDelTLSObjects(vm, VIR_ASYNC_JOB_NONE, secAlias, tlsAlias);
     goto audit;
 }
 
@@ -2405,8 +2402,7 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
     mem = NULL;
 
     /* this step is best effort, removing the device would be so much trouble */
-    ignore_value(qemuDomainUpdateMemoryDeviceInfo(vm,
-                                                  VIR_ASYNC_JOB_NONE));
+    ignore_value(qemuDomainUpdateMemoryDeviceInfo(vm, VIR_ASYNC_JOB_NONE));
 
     ret = 0;
 
