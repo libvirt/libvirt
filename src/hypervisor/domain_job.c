@@ -116,10 +116,12 @@ virDomainJobStatusToType(virDomainJobStatus status)
 
 int
 virDomainObjInitJob(virDomainJobObj *job,
-                    virDomainObjPrivateJobCallbacks *cb)
+                    virDomainObjPrivateJobCallbacks *cb,
+                    virDomainJobDataPrivateDataCallbacks *jobDataPrivateCb)
 {
     memset(job, 0, sizeof(*job));
     job->cb = cb;
+    job->jobDataPrivateCb = jobDataPrivateCb;
 
     if (virCondInit(&job->cond) < 0)
         return -1;

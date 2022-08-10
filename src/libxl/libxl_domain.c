@@ -161,7 +161,7 @@ libxlDomainObjPrivateAlloc(void *opaque G_GNUC_UNUSED)
         return NULL;
     }
 
-    if (virDomainObjInitJob(&priv->job, NULL) < 0) {
+    if (virDomainObjInitJob(&priv->job, NULL, NULL) < 0) {
         virChrdevFree(priv->devs);
         g_free(priv);
         return NULL;

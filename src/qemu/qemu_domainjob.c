@@ -817,7 +817,7 @@ qemuDomainObjBeginJobInternal(virDomainObj *obj,
                       virDomainAsyncJobTypeToString(asyncJob),
                       obj, obj->def->name);
             virDomainObjResetAsyncJob(&priv->job);
-            priv->job.current = virDomainJobDataInit(&qemuJobDataPrivateDataCallbacks);
+            priv->job.current = virDomainJobDataInit(priv->job.jobDataPrivateCb);
             priv->job.current->status = VIR_DOMAIN_JOB_STATUS_ACTIVE;
             priv->job.asyncJob = asyncJob;
             priv->job.asyncOwner = virThreadSelfID();

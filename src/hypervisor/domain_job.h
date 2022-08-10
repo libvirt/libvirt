@@ -185,6 +185,8 @@ struct _virDomainJobObj {
 
     void *privateData;                  /* job specific collection of data */
     virDomainObjPrivateJobCallbacks *cb;
+    virDomainJobDataPrivateDataCallbacks *jobDataPrivateCb; /* callbacks for privateData of
+                                                               virDomainJobData, can be NULL */
 };
 
 
@@ -210,7 +212,8 @@ struct _virDomainObjPrivateJobCallbacks {
 
 
 int virDomainObjInitJob(virDomainJobObj *job,
-                        virDomainObjPrivateJobCallbacks *cb);
+                        virDomainObjPrivateJobCallbacks *cb,
+                        virDomainJobDataPrivateDataCallbacks *jobDataPrivateCb);
 
 void virDomainObjResetJob(virDomainJobObj *job);
 

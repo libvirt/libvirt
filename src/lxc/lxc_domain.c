@@ -120,7 +120,7 @@ virLXCDomainObjPrivateAlloc(void *opaque)
 {
     virLXCDomainObjPrivate *priv = g_new0(virLXCDomainObjPrivate, 1);
 
-    if (virDomainObjInitJob(&priv->job, NULL) < 0) {
+    if (virDomainObjInitJob(&priv->job, NULL, NULL) < 0) {
         g_free(priv);
         return NULL;
     }

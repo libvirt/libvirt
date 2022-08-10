@@ -1760,7 +1760,8 @@ qemuDomainObjPrivateAlloc(void *opaque)
     g_autoptr(qemuDomainObjPrivate) priv = g_new0(qemuDomainObjPrivate, 1);
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(opaque);
 
-    if (virDomainObjInitJob(&priv->job, &qemuPrivateJobCallbacks) < 0) {
+    if (virDomainObjInitJob(&priv->job, &qemuPrivateJobCallbacks,
+                            &qemuJobDataPrivateDataCallbacks) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to init qemu driver mutexes"));
         return NULL;
