@@ -7479,6 +7479,9 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuProcessGenID(vm, flags) < 0)
         goto cleanup;
 
+    if (qemuDomainSchedCoreStart(cfg, vm) < 0)
+        goto cleanup;
+
     if (qemuExtDevicesStart(driver, vm, incoming != NULL) < 0)
         goto cleanup;
 
@@ -7751,6 +7754,7 @@ qemuProcessLaunch(virConnectPtr conn,
     ret = 0;
 
  cleanup:
+    qemuDomainSchedCoreStop(priv);
     qemuDomainSecretDestroy(vm);
     return ret;
 }

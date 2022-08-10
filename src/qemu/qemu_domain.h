@@ -244,6 +244,11 @@ struct _qemuDomainObjPrivate {
                                          * restore will be required later */
 
     GHashTable *statsSchema; /* (name, data) pair for stats */
+
+    /* Info on dummy process for schedCore. A short lived process used only
+     * briefly when starting a guest. Don't save/parse into XML. */
+    pid_t schedCoreChildPID;
+    pid_t schedCoreChildFD;
 };
 
 #define QEMU_DOMAIN_PRIVATE(vm) \
@@ -1108,3 +1113,10 @@ int
 qemuDomainSyncRxFilter(virDomainObj *vm,
                        virDomainNetDef *def,
                        virDomainAsyncJob asyncJob);
+
+int
+qemuDomainSchedCoreStart(virQEMUDriverConfig *cfg,
+                         virDomainObj *vm);
+
+void
+qemuDomainSchedCoreStop(qemuDomainObjPrivate *priv);

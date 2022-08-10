@@ -1783,6 +1783,8 @@ qemuDomainObjPrivateFree(void *data)
     if (priv->statsSchema)
         g_clear_pointer(&priv->statsSchema, g_hash_table_destroy);
 
+    qemuDomainSchedCoreStop(priv);
+
     g_free(priv);
 }
 
@@ -1805,6 +1807,9 @@ qemuDomainObjPrivateAlloc(void *opaque)
     priv->driver = opaque;
 
     priv->statsSchema = NULL;
+
+    priv->schedCoreChildPID = -1;
+    priv->schedCoreChildFD = -1;
 
     return g_steal_pointer(&priv);
 }
@@ -12069,4 +12074,104 @@ qemuDomainSyncRxFilter(virDomainObj *vm,
     }
 
     return 0;
+}
+
+
+int
+qemuDomainSchedCoreStart(virQEMUDriverConfig *cfg,
+                         virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    int waitfd[2] = { -1, -1 };
+    int syncfd[2] = { -1, -1 };
+    pid_t child = -1;
+
+    if (cfg->schedCore == QEMU_SCHED_CORE_NONE ||
+        cfg->schedCore == QEMU_SCHED_CORE_VCPUS) {
+        /* We don't need any dummy process for any of these two variants. */
+        return 0;
+    }
+
+    if (virPipe(waitfd) < 0 ||
+        virPipe(syncfd) < 0)
+        return -1;
+
+    if ((child = virFork()) < 0)
+        goto error;
+
+    if (child == 0) {
+        /* child */
+        int rc;
+        char c;
+
+        VIR_FORCE_CLOSE(waitfd[1]);
+        VIR_FORCE_CLOSE(syncfd[0]);
+
+        errno = 0;
+        rc = virProcessSchedCoreCreate();
+        c = errno;
+        ignore_value(safewrite(syncfd[1], &c, 1));
+        VIR_FORCE_CLOSE(syncfd[1]);
+
+        if (rc < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Unable to set SCHED_CORE"));
+            _exit(EXIT_FAILURE);
+        }
+
+        ignore_value(saferead(waitfd[0], &c, 1));
+        VIR_FORCE_CLOSE(waitfd[0]);
+        _exit(EXIT_SUCCESS);
+    } else {
+        /* parent */
+        char c = '\0';
+        VIR_FORCE_CLOSE(waitfd[0]);
+        VIR_FORCE_CLOSE(syncfd[1]);
+
+        if (saferead(syncfd[0], &c, 1) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("unable to read from pipe"));
+            goto error;
+        }
+        VIR_FORCE_CLOSE(syncfd[0]);
+
+        if (c != 0) {
+            virReportSystemError(c, "%s",
+                                 _("Unable to set SCHED_CORE"));
+            goto error;
+        }
+
+        VIR_DEBUG("Spawned dummy process for schedCore (%s) pid=%lld fd=%d",
+                  virQEMUSchedCoreTypeToString(cfg->schedCore),
+                  (long long) child, waitfd[1]);
+
+        priv->schedCoreChildPID = child;
+        priv->schedCoreChildFD = waitfd[1];
+    }
+
+    return 0;
+
+ error:
+    VIR_FORCE_CLOSE(waitfd[0]);
+    VIR_FORCE_CLOSE(waitfd[1]);
+    VIR_FORCE_CLOSE(syncfd[0]);
+    VIR_FORCE_CLOSE(syncfd[1]);
+    return -1;
+}
+
+
+void
+qemuDomainSchedCoreStop(qemuDomainObjPrivate *priv)
+{
+    if (priv->schedCoreChildFD != -1) {
+        ignore_value(safewrite(priv->schedCoreChildFD, "q", 1));
+        VIR_FORCE_CLOSE(priv->schedCoreChildFD);
+    }
+
+    if (priv->schedCoreChildPID != -1) {
+        VIR_DEBUG("Killing dummy procces for schedCore pid=%lld",
+                  (long long) priv->schedCoreChildPID);
+        virProcessAbort(priv->schedCoreChildPID);
+        priv->schedCoreChildPID = -1;
+    }
 }
