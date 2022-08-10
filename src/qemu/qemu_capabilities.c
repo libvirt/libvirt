@@ -3259,7 +3259,7 @@ virQEMUCapsProbeQMPKVMState(virQEMUCaps *qemuCaps,
 }
 
 #ifdef __APPLE__
-static int
+int
 virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps)
 {
     int hv_support = 0;
@@ -3281,7 +3281,7 @@ virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps)
     return 0;
 }
 #else
-static int
+int
 virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     return 0;
