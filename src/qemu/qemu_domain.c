@@ -11780,5 +11780,15 @@ qemuDomainRemoveLogs(virQEMUDriver *driver,
 int
 qemuDomainObjWait(virDomainObj *vm)
 {
-    return virDomainObjWait(vm);
+    qemuDomainObjPrivate *priv = vm->privateData;
+
+    if (virDomainObjWait(vm) < 0)
+        return -1;
+
+    if (priv->beingDestroyed) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s", _("domain is not running"));
+        return -1;
+    }
+
+    return 0;
 }

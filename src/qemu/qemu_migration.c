@@ -2078,7 +2078,7 @@ qemuMigrationSrcWaitForCompletion(virDomainObj *vm,
             return rv;
 
         if (qemuDomainObjWait(vm) < 0) {
-            if (virDomainObjIsActive(vm))
+            if (virDomainObjIsActive(vm) && !priv->beingDestroyed)
                 jobData->status = VIR_DOMAIN_JOB_STATUS_FAILED;
             return -2;
         }
