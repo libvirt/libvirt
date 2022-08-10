@@ -844,8 +844,8 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
         priv->job.agentStarted = now;
     }
 
-    if (virDomainTrackJob(job))
-        qemuDomainSaveStatus(obj);
+    if (virDomainTrackJob(job) && priv->job.cb)
+        priv->job.cb->saveStatusPrivate(obj);
 
     return 0;
 

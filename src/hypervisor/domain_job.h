@@ -196,6 +196,7 @@ typedef int (*virDomainObjPrivateJobFormat)(virBuffer *,
 typedef int (*virDomainObjPrivateJobParse)(xmlXPathContextPtr,
                                            virDomainJobObj *,
                                            virDomainObj *);
+typedef void (*virDomainObjPrivateSaveStatus)(virDomainObj *obj);
 
 struct _virDomainObjPrivateJobCallbacks {
    virDomainObjPrivateJobAlloc allocJobPrivate;
@@ -203,6 +204,7 @@ struct _virDomainObjPrivateJobCallbacks {
    virDomainObjPrivateJobReset resetJobPrivate;
    virDomainObjPrivateJobFormat formatJobPrivate;
    virDomainObjPrivateJobParse parseJobPrivate;
+   virDomainObjPrivateSaveStatus saveStatusPrivate;
 };
 
 

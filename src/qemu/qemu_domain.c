@@ -366,6 +366,7 @@ static virDomainObjPrivateJobCallbacks qemuPrivateJobCallbacks = {
     .resetJobPrivate = qemuJobResetPrivate,
     .formatJobPrivate = qemuDomainFormatJobPrivate,
     .parseJobPrivate = qemuDomainParseJobPrivate,
+    .saveStatusPrivate = qemuDomainSaveStatus,
 };
 
 /**
