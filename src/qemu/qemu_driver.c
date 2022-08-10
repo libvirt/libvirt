@@ -3020,7 +3020,7 @@ qemuDumpWaitForCompletion(virDomainObj *vm)
 
     VIR_DEBUG("Waiting for dump completion");
     while (!jobPriv->dumpCompleted && !priv->job.abortJob) {
-        if (virDomainObjWait(vm) < 0)
+        if (qemuDomainObjWait(vm) < 0)
             return -1;
     }
 
@@ -14650,7 +14650,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     if (!async) {
         qemuBlockJobUpdate(vm, job, VIR_ASYNC_JOB_NONE);
         while (qemuBlockJobIsRunning(job)) {
-            if (virDomainObjWait(vm) < 0) {
+            if (qemuDomainObjWait(vm) < 0) {
                 ret = -1;
                 goto endjob;
             }

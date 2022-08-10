@@ -2711,7 +2711,7 @@ qemuBlockStorageSourceCreateGeneric(virDomainObj *vm,
 
     qemuBlockJobUpdate(vm, job, asyncJob);
     while (qemuBlockJobIsRunning(job))  {
-        if (virDomainObjWait(vm) < 0)
+        if (qemuDomainObjWait(vm) < 0)
             goto cleanup;
         qemuBlockJobUpdate(vm, job, asyncJob);
     }

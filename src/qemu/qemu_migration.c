@@ -927,7 +927,7 @@ qemuMigrationSrcNBDCopyCancel(virDomainObj *vm,
         if (failed && !err)
             virErrorPreserveLast(&err);
 
-        if (virDomainObjWait(vm) < 0)
+        if (qemuDomainObjWait(vm) < 0)
             goto cleanup;
     }
 
@@ -1308,7 +1308,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriver *driver,
             return -1;
         }
 
-        if (virDomainObjWait(vm) < 0)
+        if (qemuDomainObjWait(vm) < 0)
             return -1;
     }
 
@@ -1784,7 +1784,7 @@ qemuMigrationSrcWaitForSpice(virDomainObj *vm)
 
     VIR_DEBUG("Waiting for SPICE to finish migration");
     while (!jobPriv->spiceMigrated && !priv->job.abortJob) {
-        if (virDomainObjWait(vm) < 0)
+        if (qemuDomainObjWait(vm) < 0)
             return -1;
     }
     return 0;
@@ -2077,7 +2077,7 @@ qemuMigrationSrcWaitForCompletion(virDomainObj *vm,
         if (rv < 0)
             return rv;
 
-        if (virDomainObjWait(vm) < 0) {
+        if (qemuDomainObjWait(vm) < 0) {
             if (virDomainObjIsActive(vm))
                 jobData->status = VIR_DOMAIN_JOB_STATUS_FAILED;
             return -2;
@@ -2114,7 +2114,7 @@ qemuMigrationDstWaitForCompletion(virDomainObj *vm,
         flags = QEMU_MIGRATION_COMPLETED_POSTCOPY;
 
     while ((rv = qemuMigrationAnyCompleted(vm, asyncJob, NULL, flags)) != 1) {
-        if (rv < 0 || virDomainObjWait(vm) < 0)
+        if (rv < 0 || qemuDomainObjWait(vm) < 0)
             return -1;
     }
 
@@ -4951,7 +4951,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
      */
     while (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         priv->signalStop = true;
-        rc = virDomainObjWait(vm);
+        rc = qemuDomainObjWait(vm);
         priv->signalStop = false;
         if (rc < 0)
             goto error;

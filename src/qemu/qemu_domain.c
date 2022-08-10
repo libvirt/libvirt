@@ -11775,3 +11775,10 @@ qemuDomainRemoveLogs(virQEMUDriver *driver,
 
     return 0;
 }
+
+
+int
+qemuDomainObjWait(virDomainObj *vm)
+{
+    return virDomainObjWait(vm);
+}
