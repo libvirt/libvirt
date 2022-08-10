@@ -486,8 +486,7 @@ qemuBlockJobRefreshJobsFindInactive(const void *payload,
 
 
 int
-qemuBlockJobRefreshJobs(virQEMUDriver *driver,
-                        virDomainObj *vm)
+qemuBlockJobRefreshJobs(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuMonitorJobInfo **jobinfo = NULL;
@@ -498,7 +497,7 @@ qemuBlockJobRefreshJobs(virQEMUDriver *driver,
     int ret = -1;
     int rc;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    qemuDomainObjEnterMonitor(vm);
 
     rc = qemuMonitorGetJobInfo(priv->mon, &jobinfo, &njobinfo);
 
@@ -520,7 +519,7 @@ qemuBlockJobRefreshJobs(virQEMUDriver *driver,
 
             qemuBlockJobMarkBroken(job);
 
-            qemuDomainObjEnterMonitor(driver, vm);
+            qemuDomainObjEnterMonitor(vm);
 
             rc = qemuMonitorBlockJobCancel(priv->mon, job->name, true);
             if (rc == -1 && jobinfo[i]->status == QEMU_MONITOR_JOB_STATUS_CONCLUDED)
@@ -760,7 +759,7 @@ qemuBlockJobEventProcessLegacyCompleted(virQEMUDriver *driver,
     disk->src->id = 0;
     virStorageSourceBackingStoreClear(disk->src);
     ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk, NULL, true));
-    ignore_value(qemuBlockNodeNamesDetect(driver, vm, asyncJob));
+    ignore_value(qemuBlockNodeNamesDetect(vm, asyncJob));
     qemuBlockJobUnregister(job, vm);
     qemuDomainSaveConfig(vm);
 }
@@ -845,7 +844,7 @@ qemuBlockJobEventProcessConcludedRemoveChain(virQEMUDriver *driver,
     if (!(data = qemuBlockStorageSourceChainDetachPrepareBlockdev(chain)))
         return;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return;
 
     qemuBlockStorageSourceChainDetach(qemuDomainGetMonitor(vm), data);
@@ -960,7 +959,7 @@ qemuBlockJobProcessEventCompletedPullBitmaps(virDomainObj *vm,
     if (!actions)
         return 0;
 
-    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     qemuMonitorTransaction(priv->mon, &actions);
@@ -1133,7 +1132,7 @@ qemuBlockJobProcessEventCompletedCommitBitmaps(virDomainObj *vm,
             return -1;
     }
 
-    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     qemuMonitorTransaction(priv->mon, &actions);
@@ -1350,7 +1349,7 @@ qemuBlockJobProcessEventCompletedCopyBitmaps(virDomainObj *vm,
     if (!actions)
         return 0;
 
-    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     qemuMonitorTransaction(priv->mon, &actions);
@@ -1446,7 +1445,7 @@ qemuBlockJobProcessEventFailedActiveCommit(virQEMUDriver *driver,
     if (!disk)
         return;
 
-    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return;
 
     qemuMonitorBitmapRemove(priv->mon,
@@ -1494,7 +1493,7 @@ qemuBlockJobProcessEventConcludedCreate(virQEMUDriver *driver,
         VIR_FREE(backend->encryptsecretAlias);
     }
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return;
 
     qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm), backend);
@@ -1523,7 +1522,7 @@ qemuBlockJobProcessEventConcludedBackup(virQEMUDriver *driver,
         !(backend = qemuBlockStorageSourceDetachPrepare(job->data.backup.store, NULL)))
         return;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return;
 
     if (backend)
@@ -1614,7 +1613,7 @@ qemuBlockJobEventProcessConcluded(qemuBlockJobData *job,
     unsigned long long progressCurrent = 0;
     unsigned long long progressTotal = 0;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         goto cleanup;
 
     /* we need to fetch the error state as the event does not propagate it */

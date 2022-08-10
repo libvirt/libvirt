@@ -474,7 +474,6 @@ qemuMigrationCookieAddNetwork(qemuMigrationCookie *mig,
 
 static int
 qemuMigrationCookieAddNBD(qemuMigrationCookie *mig,
-                          virQEMUDriver *driver,
                           virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -497,7 +496,7 @@ qemuMigrationCookieAddNBD(qemuMigrationCookie *mig,
     mig->nbd->disks = g_new0(struct qemuMigrationCookieNBDDisk, vm->def->ndisks);
     mig->nbd->ndisks = 0;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, priv->job.asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, priv->job.asyncJob) < 0)
         return -1;
     if (blockdev)
         rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, stats);
@@ -1465,7 +1464,7 @@ qemuMigrationCookieFormat(qemuMigrationCookie *mig,
     }
 
     if ((flags & QEMU_MIGRATION_COOKIE_NBD) &&
-        qemuMigrationCookieAddNBD(mig, driver, dom) < 0)
+        qemuMigrationCookieAddNBD(mig, dom) < 0)
         return -1;
 
     if (flags & QEMU_MIGRATION_COOKIE_STATS &&

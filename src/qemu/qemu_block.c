@@ -305,8 +305,7 @@ qemuBlockDiskDetectNodes(virDomainDiskDef *disk,
 
 
 int
-qemuBlockNodeNamesDetect(virQEMUDriver *driver,
-                         virDomainObj *vm,
+qemuBlockNodeNamesDetect(virDomainObj *vm,
                          virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -319,7 +318,7 @@ qemuBlockNodeNamesDetect(virQEMUDriver *driver,
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_NAMED_BLOCK_NODES))
         return 0;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     data = qemuMonitorQueryNamedBlockNodes(qemuDomainGetMonitor(vm));
@@ -2111,14 +2110,13 @@ qemuBlockStorageSourceChainDetach(qemuMonitor *mon,
  * monitor internally.
  */
 int
-qemuBlockStorageSourceDetachOneBlockdev(virQEMUDriver *driver,
-                                        virDomainObj *vm,
+qemuBlockStorageSourceDetachOneBlockdev(virDomainObj *vm,
                                         virDomainAsyncJob asyncJob,
                                         virStorageSource *src)
 {
     int ret;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     ret = qemuMonitorBlockdevDel(qemuDomainGetMonitor(vm), src->nodeformat);
@@ -2700,7 +2698,7 @@ qemuBlockStorageSourceCreateGeneric(virDomainObj *vm,
 
     qemuBlockJobSyncBegin(job);
 
-    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         goto cleanup;
 
     rc = qemuMonitorBlockdevCreate(priv->mon, job->name, &props);
@@ -2847,7 +2845,7 @@ qemuBlockStorageSourceCreate(virDomainObj *vm,
                                            false, true) < 0)
         return -1;
 
-    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         goto cleanup;
 
     rc = qemuBlockStorageSourceAttachApplyStorageDeps(priv->mon, data);
@@ -2859,7 +2857,7 @@ qemuBlockStorageSourceCreate(virDomainObj *vm,
     if (qemuBlockStorageSourceCreateStorage(vm, src, chain, asyncJob) < 0)
         goto cleanup;
 
-    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         goto cleanup;
 
     rc = qemuBlockStorageSourceAttachApplyStorage(priv->mon, data);
@@ -2881,7 +2879,7 @@ qemuBlockStorageSourceCreate(virDomainObj *vm,
                                            false, true) < 0)
         goto cleanup;
 
-    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         goto cleanup;
 
     rc = qemuBlockStorageSourceAttachApplyFormat(priv->mon, data);
@@ -2895,7 +2893,7 @@ qemuBlockStorageSourceCreate(virDomainObj *vm,
  cleanup:
     if (ret < 0 &&
         virDomainObjIsActive(vm) &&
-        qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) == 0) {
+        qemuDomainObjEnterMonitorAsync(vm, asyncJob) == 0) {
 
         qemuBlockStorageSourceAttachRollback(priv->mon, data);
         qemuDomainObjExitMonitor(vm);
@@ -3016,12 +3014,11 @@ qemuBlockGetNamedNodeData(virDomainObj *vm,
                           virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    virQEMUDriver *driver = priv->driver;
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
     bool supports_flat = virQEMUCapsGet(priv->qemuCaps,
                                         QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT);
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return NULL;
 
     blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon, supports_flat);
@@ -3368,7 +3365,6 @@ qemuBlockReopenFormat(virDomainObj *vm,
                       virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    virQEMUDriver *driver = priv->driver;
     int rc;
 
     /* If we are lacking the object here, qemu might have opened an image with
@@ -3379,7 +3375,7 @@ qemuBlockReopenFormat(virDomainObj *vm,
         return -1;
     }
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     rc = qemuBlockReopenFormatMon(priv->mon, src);

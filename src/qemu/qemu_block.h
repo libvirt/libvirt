@@ -44,8 +44,7 @@ qemuBlockNodeNameGetBackingChain(virJSONValue *namednodesdata,
                                  virJSONValue *blockstats);
 
 int
-qemuBlockNodeNamesDetect(virQEMUDriver *driver,
-                         virDomainObj *vm,
+qemuBlockNodeNamesDetect(virDomainObj *vm,
                          virDomainAsyncJob asyncJob);
 
 GHashTable *
@@ -140,8 +139,7 @@ qemuBlockStorageSourceAttachRollback(qemuMonitor *mon,
                                      qemuBlockStorageSourceAttachData *data);
 
 int
-qemuBlockStorageSourceDetachOneBlockdev(virQEMUDriver *driver,
-                                        virDomainObj *vm,
+qemuBlockStorageSourceDetachOneBlockdev(virDomainObj *vm,
                                         virDomainAsyncJob asyncJob,
                                         virStorageSource *src);
 

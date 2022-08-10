@@ -48,8 +48,7 @@ qemuBackupJobTerminate(virDomainObj *vm,
                        virDomainJobStatus jobstatus);
 
 int
-qemuBackupGetJobInfoStats(virQEMUDriver *driver,
-                          virDomainObj *vm,
+qemuBackupGetJobInfoStats(virDomainObj *vm,
                           virDomainJobData *jobData);
 
 /* exported for testing */

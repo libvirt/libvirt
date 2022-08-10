@@ -916,8 +916,7 @@ qemuMigrationParamsApplyValues(virDomainObj *vm,
  * Returns 0 on success, -1 on failure.
  */
 int
-qemuMigrationParamsApply(virQEMUDriver *driver,
-                         virDomainObj *vm,
+qemuMigrationParamsApply(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams *migParams,
                          unsigned long apiFlags)
@@ -925,7 +924,7 @@ qemuMigrationParamsApply(virQEMUDriver *driver,
     bool postcopyResume = !!(apiFlags & VIR_MIGRATE_POSTCOPY_RESUME);
     int ret = -1;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     /* Changing capabilities is only allowed before migration starts, we need
@@ -1047,9 +1046,9 @@ qemuMigrationParamsEnableTLS(virQEMUDriver *driver,
      * This should prevent any issues just in case some cleanup wasn't
      * properly completed (both src and dst use the same alias) or
      * some other error path between now and perform . */
-    qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, *tlsAlias);
+    qemuDomainDelTLSObjects(vm, asyncJob, secAlias, *tlsAlias);
 
-    if (qemuDomainAddTLSObjects(driver, vm, asyncJob, &secProps, &tlsProps) < 0)
+    if (qemuDomainAddTLSObjects(vm, asyncJob, &secProps, &tlsProps) < 0)
         return -1;
 
     if (qemuMigrationParamsSetString(migParams,
@@ -1116,8 +1115,7 @@ qemuMigrationParamsTLSHostnameIsSet(qemuMigrationParams *migParams)
  * security objects and free the secinfo
  */
 static void
-qemuMigrationParamsResetTLS(virQEMUDriver *driver,
-                            virDomainObj *vm,
+qemuMigrationParamsResetTLS(virDomainObj *vm,
                             int asyncJob,
                             qemuMigrationParams *origParams,
                             unsigned long apiFlags)
@@ -1134,14 +1132,13 @@ qemuMigrationParamsResetTLS(virQEMUDriver *driver,
     tlsAlias = qemuAliasTLSObjFromSrcAlias(QEMU_MIGRATION_TLS_ALIAS_BASE);
     secAlias = qemuAliasForSecret(QEMU_MIGRATION_TLS_ALIAS_BASE, NULL);
 
-    qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, tlsAlias);
+    qemuDomainDelTLSObjects(vm, asyncJob, secAlias, tlsAlias);
     g_clear_pointer(&QEMU_DOMAIN_PRIVATE(vm)->migSecinfo, qemuDomainSecretInfoFree);
 }
 
 
 int
-qemuMigrationParamsFetch(virQEMUDriver *driver,
-                         virDomainObj *vm,
+qemuMigrationParamsFetch(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams **migParams)
 {
@@ -1151,7 +1148,7 @@ qemuMigrationParamsFetch(virQEMUDriver *driver,
 
     *migParams = NULL;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     rc = qemuMonitorGetMigrationParams(priv->mon, &jsonParams);
@@ -1211,8 +1208,7 @@ qemuMigrationParamsGetULL(qemuMigrationParams *migParams,
  * are unsupported by QEMU.
  */
 int
-qemuMigrationParamsCheck(virQEMUDriver *driver,
-                         virDomainObj *vm,
+qemuMigrationParamsCheck(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams *migParams,
                          virBitmap *remoteCaps)
@@ -1272,7 +1268,7 @@ qemuMigrationParamsCheck(virQEMUDriver *driver,
      * to ask QEMU for their current settings.
      */
 
-    return qemuMigrationParamsFetch(driver, vm, asyncJob, &jobPriv->migParams);
+    return qemuMigrationParamsFetch(vm, asyncJob, &jobPriv->migParams);
 }
 
 
@@ -1283,8 +1279,7 @@ qemuMigrationParamsCheck(virQEMUDriver *driver,
  * migration (save, managedsave, snapshots, dump) will not try to use them.
  */
 void
-qemuMigrationParamsReset(virQEMUDriver *driver,
-                         virDomainObj *vm,
+qemuMigrationParamsReset(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams *origParams,
                          unsigned long apiFlags)
@@ -1301,7 +1296,7 @@ qemuMigrationParamsReset(virQEMUDriver *driver,
     if (!virDomainObjIsActive(vm) || !origParams)
         goto cleanup;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         goto cleanup;
 
     clearCaps = virBitmapNew(0);
@@ -1315,7 +1310,7 @@ qemuMigrationParamsReset(virQEMUDriver *driver,
     if (rc < 0)
         goto cleanup;
 
-    qemuMigrationParamsResetTLS(driver, vm, asyncJob, origParams, apiFlags);
+    qemuMigrationParamsResetTLS(vm, asyncJob, origParams, apiFlags);
 
  cleanup:
     virErrorRestore(&err);
@@ -1453,8 +1448,7 @@ qemuMigrationParamsParse(xmlXPathContextPtr ctxt,
 
 
 int
-qemuMigrationCapsCheck(virQEMUDriver *driver,
-                       virDomainObj *vm,
+qemuMigrationCapsCheck(virDomainObj *vm,
                        int asyncJob,
                        bool reconnect)
 {
@@ -1464,7 +1458,7 @@ qemuMigrationCapsCheck(virQEMUDriver *driver,
     char **capStr;
     int rc;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     rc = qemuMonitorGetMigrationCapabilities(priv->mon, &caps);
@@ -1497,7 +1491,7 @@ qemuMigrationCapsCheck(virQEMUDriver *driver,
         if (!(json = qemuMigrationCapsToJSON(migEvent, migEvent)))
             return -1;
 
-        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
             return -1;
 
         rc = qemuMonitorSetMigrationCapabilities(priv->mon, &json);

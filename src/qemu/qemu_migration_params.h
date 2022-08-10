@@ -95,8 +95,7 @@ qemuMigrationParamsFree(qemuMigrationParams *migParams);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMigrationParams, qemuMigrationParamsFree);
 
 int
-qemuMigrationParamsApply(virQEMUDriver *driver,
-                         virDomainObj *vm,
+qemuMigrationParamsApply(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams *migParams,
                          unsigned long apiFlags);
@@ -118,8 +117,7 @@ bool
 qemuMigrationParamsTLSHostnameIsSet(qemuMigrationParams *migParams);
 
 int
-qemuMigrationParamsFetch(virQEMUDriver *driver,
-                         virDomainObj *vm,
+qemuMigrationParamsFetch(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams **migParams);
 
@@ -138,15 +136,13 @@ qemuMigrationParamsSetBlockDirtyBitmapMapping(qemuMigrationParams *migParams,
                                               virJSONValue **params);
 
 int
-qemuMigrationParamsCheck(virQEMUDriver *driver,
-                         virDomainObj *vm,
+qemuMigrationParamsCheck(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams *migParams,
                          virBitmap *remoteCaps);
 
 void
-qemuMigrationParamsReset(virQEMUDriver *driver,
-                         virDomainObj *vm,
+qemuMigrationParamsReset(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams *origParams,
                          unsigned long apiFlags);
@@ -160,8 +156,7 @@ qemuMigrationParamsParse(xmlXPathContextPtr ctxt,
                          qemuMigrationParams **migParams);
 
 int
-qemuMigrationCapsCheck(virQEMUDriver *driver,
-                       virDomainObj *vm,
+qemuMigrationCapsCheck(virDomainObj *vm,
                        int asyncJob,
                        bool reconnect);
 

@@ -214,8 +214,7 @@ qemuBlockJobStartupFinalize(virDomainObj *vm,
                             qemuBlockJobData *job);
 
 int
-qemuBlockJobRefreshJobs(virQEMUDriver *driver,
-                        virDomainObj *vm);
+qemuBlockJobRefreshJobs(virDomainObj *vm);
 
 void
 qemuBlockJobUpdate(virDomainObj *vm,

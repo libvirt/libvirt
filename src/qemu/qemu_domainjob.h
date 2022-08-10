@@ -71,26 +71,21 @@ int qemuDomainAsyncJobPhaseFromString(virDomainAsyncJob job,
 void qemuDomainEventEmitJobCompleted(virQEMUDriver *driver,
                                      virDomainObj *vm);
 
-int qemuDomainObjBeginJob(virQEMUDriver *driver,
-                          virDomainObj *obj,
+int qemuDomainObjBeginJob(virDomainObj *obj,
                           virDomainJob job)
     G_GNUC_WARN_UNUSED_RESULT;
-int qemuDomainObjBeginAgentJob(virQEMUDriver *driver,
-                               virDomainObj *obj,
+int qemuDomainObjBeginAgentJob(virDomainObj *obj,
                                virDomainAgentJob agentJob)
     G_GNUC_WARN_UNUSED_RESULT;
-int qemuDomainObjBeginAsyncJob(virQEMUDriver *driver,
-                               virDomainObj *obj,
+int qemuDomainObjBeginAsyncJob(virDomainObj *obj,
                                virDomainAsyncJob asyncJob,
                                virDomainJobOperation operation,
                                unsigned long apiFlags)
     G_GNUC_WARN_UNUSED_RESULT;
-int qemuDomainObjBeginNestedJob(virQEMUDriver *driver,
-                                virDomainObj *obj,
+int qemuDomainObjBeginNestedJob(virDomainObj *obj,
                                 virDomainAsyncJob asyncJob)
     G_GNUC_WARN_UNUSED_RESULT;
-int qemuDomainObjBeginJobNowait(virQEMUDriver *driver,
-                                virDomainObj *obj,
+int qemuDomainObjBeginJobNowait(virDomainObj *obj,
                                 virDomainJob job)
     G_GNUC_WARN_UNUSED_RESULT;
 

@@ -135,10 +135,10 @@ testQemuHotplugAttach(virDomainObj *vm,
         ret = qemuDomainAttachChrDevice(&driver, vm, dev);
         break;
     case VIR_DOMAIN_DEVICE_SHMEM:
-        ret = qemuDomainAttachShmemDevice(&driver, vm, dev->data.shmem);
+        ret = qemuDomainAttachShmemDevice(vm, dev->data.shmem);
         break;
     case VIR_DOMAIN_DEVICE_WATCHDOG:
-        ret = qemuDomainAttachWatchdog(&driver, vm, dev->data.watchdog);
+        ret = qemuDomainAttachWatchdog(vm, dev->data.watchdog);
         break;
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         ret = qemuDomainAttachHostDevice(&driver, vm, dev->data.hostdev);
@@ -459,7 +459,7 @@ testQemuHotplugCpuPrepare(const char *test,
     priv->mon = qemuMonitorTestGetMonitor(data->mon);
     virObjectUnlock(priv->mon);
 
-    if (qemuDomainRefreshVcpuInfo(&driver, data->vm, 0, false) < 0)
+    if (qemuDomainRefreshVcpuInfo(data->vm, 0, false) < 0)
         goto error;
 
     return data;

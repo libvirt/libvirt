@@ -459,7 +459,7 @@ qemuProcessFakeReboot(void *opaque)
 
     VIR_DEBUG("vm=%p", vm);
     virObjectLock(vm);
-    if (qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
+    if (qemuDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
@@ -468,7 +468,7 @@ qemuProcessFakeReboot(void *opaque)
         goto endjob;
     }
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    qemuDomainObjEnterMonitor(vm);
     rc = qemuMonitorSystemReset(priv->mon);
 
     qemuDomainObjExitMonitor(vm);
@@ -1862,13 +1862,12 @@ qemuProcessMonitorLogFree(void *opaque)
 
 
 static int
-qemuProcessInitMonitor(virQEMUDriver *driver,
-                       virDomainObj *vm,
+qemuProcessInitMonitor(virDomainObj *vm,
                        virDomainAsyncJob asyncJob)
 {
     int ret;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     ret = qemuMonitorSetCapabilities(QEMU_DOMAIN_PRIVATE(vm)->mon);
@@ -1924,10 +1923,10 @@ qemuConnectMonitor(virQEMUDriver *driver,
         return -1;
     }
 
-    if (qemuProcessInitMonitor(driver, vm, asyncJob) < 0)
+    if (qemuProcessInitMonitor(vm, asyncJob) < 0)
         return -1;
 
-    if (qemuMigrationCapsCheck(driver, vm, asyncJob, reconnect) < 0)
+    if (qemuMigrationCapsCheck(vm, asyncJob, reconnect) < 0)
         return -1;
 
     return 0;
@@ -2156,7 +2155,7 @@ qemuRefreshVirtioChannelState(virQEMUDriver *driver,
     g_autoptr(GHashTable) info = NULL;
     int rc;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     rc = qemuMonitorGetChardevInfo(priv->mon, &info);
@@ -2197,8 +2196,7 @@ qemuProcessRefreshPRManagerState(virDomainObj *vm,
 
 
 static int
-qemuRefreshPRManagerState(virQEMUDriver *driver,
-                          virDomainObj *vm)
+qemuRefreshPRManagerState(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(GHashTable) info = NULL;
@@ -2208,7 +2206,7 @@ qemuRefreshPRManagerState(virQEMUDriver *driver,
         !qemuDomainDefHasManagedPR(vm))
         return 0;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    qemuDomainObjEnterMonitor(vm);
     rc = qemuMonitorGetPRManagerInfo(priv->mon, &info);
     qemuDomainObjExitMonitor(vm);
 
@@ -2232,7 +2230,7 @@ qemuProcessRefreshFdsetIndex(virDomainObj *vm)
     if (priv->fdsetindexParsed)
         return 0;
 
-    qemuDomainObjEnterMonitor(priv->driver, vm);
+    qemuDomainObjEnterMonitor(vm);
     rc = qemuMonitorQueryFdsets(priv->mon, &fdsets);
     qemuDomainObjExitMonitor(vm);
 
@@ -2249,8 +2247,7 @@ qemuProcessRefreshFdsetIndex(virDomainObj *vm)
 
 
 static void
-qemuRefreshRTC(virQEMUDriver *driver,
-               virDomainObj *vm)
+qemuRefreshRTC(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     time_t now, then;
@@ -2262,7 +2259,7 @@ qemuRefreshRTC(virQEMUDriver *driver,
         return;
 
     memset(&thenbits, 0, sizeof(thenbits));
-    qemuDomainObjEnterMonitor(driver, vm);
+    qemuDomainObjEnterMonitor(vm);
     now = time(NULL);
     rv = qemuMonitorGetRTCTime(priv->mon, &thenbits);
     qemuDomainObjExitMonitor(vm);
@@ -2285,8 +2282,7 @@ qemuRefreshRTC(virQEMUDriver *driver,
 }
 
 int
-qemuProcessRefreshBalloonState(virQEMUDriver *driver,
-                               virDomainObj *vm,
+qemuProcessRefreshBalloonState(virDomainObj *vm,
                                int asyncJob)
 {
     unsigned long long balloon;
@@ -2300,7 +2296,7 @@ qemuProcessRefreshBalloonState(virQEMUDriver *driver,
         return 0;
     }
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     rc = qemuMonitorGetBalloonInfo(qemuDomainGetMonitor(vm), &balloon);
@@ -2345,7 +2341,7 @@ qemuProcessWaitForMonitor(virQEMUDriver *driver,
      * reliable if it's available.
      * Note that the monitor itself can be on a pty, so we still need to try the
      * log output method. */
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         goto cleanup;
     ret = qemuMonitorGetChardevInfo(priv->mon, &info);
     VIR_DEBUG("qemuMonitorGetChardevInfo returned %i", ret);
@@ -2370,8 +2366,7 @@ qemuProcessWaitForMonitor(virQEMUDriver *driver,
 
 
 static int
-qemuProcessDetectIOThreadPIDs(virQEMUDriver *driver,
-                              virDomainObj *vm,
+qemuProcessDetectIOThreadPIDs(virDomainObj *vm,
                               int asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -2386,7 +2381,7 @@ qemuProcessDetectIOThreadPIDs(virQEMUDriver *driver,
     }
 
     /* Get the list of IOThreads from qemu */
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         goto cleanup;
     ret = qemuMonitorGetIOThreads(priv->mon, &iothreads, &niothreads);
     qemuDomainObjExitMonitor(vm);
@@ -2526,8 +2521,7 @@ qemuProcessInitCpuAffinity(virDomainObj *vm G_GNUC_UNUSED)
 
 /* set link states to down on interfaces at qemu start */
 static int
-qemuProcessSetLinkStates(virQEMUDriver *driver,
-                         virDomainObj *vm,
+qemuProcessSetLinkStates(virDomainObj *vm,
                          virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -2536,7 +2530,7 @@ qemuProcessSetLinkStates(virQEMUDriver *driver,
     int ret = -1;
     int rv;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     for (i = 0; i < def->nnets; i++) {
@@ -2980,13 +2974,13 @@ qemuProcessInitPasswords(virQEMUDriver *driver,
     for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDef *graphics = vm->def->graphics[i];
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-            ret = qemuDomainChangeGraphicsPasswords(driver, vm,
+            ret = qemuDomainChangeGraphicsPasswords(vm,
                                                     VIR_DOMAIN_GRAPHICS_TYPE_VNC,
                                                     &graphics->data.vnc.auth,
                                                     cfg->vncPassword,
                                                     asyncJob);
         } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-            ret = qemuDomainChangeGraphicsPasswords(driver, vm,
+            ret = qemuDomainChangeGraphicsPasswords(vm,
                                                     VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
                                                     &graphics->data.spice.auth,
                                                     cfg->spicePassword,
@@ -3036,7 +3030,7 @@ qemuProcessUpdateVideoRamSize(virQEMUDriver *driver,
     virDomainVideoDef *video = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     for (i = 0; i < vm->def->nvideos; i++) {
@@ -3216,7 +3210,7 @@ qemuProcessStartCPUs(virQEMUDriver *driver, virDomainObj *vm,
 
     priv->runningReason = reason;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         goto release;
 
     ret = qemuMonitorStartCPUs(priv->mon);
@@ -3253,7 +3247,7 @@ int qemuProcessStopCPUs(virQEMUDriver *driver,
 
     priv->pausedReason = reason;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         goto cleanup;
 
     ret = qemuMonitorStopCPUs(priv->mon);
@@ -3355,7 +3349,7 @@ qemuProcessFiltersInstantiate(virDomainDef *def)
 }
 
 static int
-qemuProcessUpdateState(virQEMUDriver *driver, virDomainObj *vm)
+qemuProcessUpdateState(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainState state;
@@ -3367,7 +3361,7 @@ qemuProcessUpdateState(virQEMUDriver *driver, virDomainObj *vm)
     g_autofree char *msg = NULL;
     int ret;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    qemuDomainObjEnterMonitor(vm);
     ret = qemuMonitorGetStatus(priv->mon, &running, &reason);
     qemuDomainObjExitMonitor(vm);
 
@@ -3592,7 +3586,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
          */
         VIR_DEBUG("Cancelling unfinished migration of domain %s",
                   vm->def->name);
-        if (qemuMigrationSrcCancel(driver, vm) < 0) {
+        if (qemuMigrationSrcCancel(vm) < 0) {
             VIR_WARN("Could not cancel ongoing migration of domain %s",
                      vm->def->name);
         }
@@ -3674,7 +3668,7 @@ qemuProcessRecoverMigration(virQEMUDriver *driver,
 
     state = virDomainObjGetState(vm, &reason);
 
-    qemuMigrationAnyRefreshStatus(driver, vm, VIR_ASYNC_JOB_NONE, &migStatus);
+    qemuMigrationAnyRefreshStatus(vm, VIR_ASYNC_JOB_NONE, &migStatus);
 
     if (job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT) {
         rc = qemuProcessRecoverMigrationOut(driver, vm, job, migStatus,
@@ -3715,7 +3709,7 @@ qemuProcessRecoverMigration(virQEMUDriver *driver,
         return 0;
     }
 
-    qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_NONE,
+    qemuMigrationParamsReset(vm, VIR_ASYNC_JOB_NONE,
                              jobPriv->migParams, job->apiFlags);
     qemuDomainSetMaxMemLock(vm, 0, &priv->preMigrationMemlock);
 
@@ -3752,7 +3746,7 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
     case VIR_ASYNC_JOB_SAVE:
     case VIR_ASYNC_JOB_DUMP:
     case VIR_ASYNC_JOB_SNAPSHOT:
-        qemuDomainObjEnterMonitor(driver, vm);
+        qemuDomainObjEnterMonitor(vm);
         ignore_value(qemuMonitorMigrateCancel(priv->mon));
         qemuDomainObjExitMonitor(vm);
         /* resume the domain but only if it was paused as a result of
@@ -3853,7 +3847,7 @@ qemuProcessUpdateDevices(virQEMUDriver *driver,
     g_auto(GStrv) old = g_steal_pointer(&priv->qemuDevices);
     GStrv tmp;
 
-    if (qemuDomainUpdateDeviceList(driver, vm, VIR_ASYNC_JOB_NONE) < 0)
+    if (qemuDomainUpdateDeviceList(vm, VIR_ASYNC_JOB_NONE) < 0)
         return -1;
 
     if (!old)
@@ -4372,8 +4366,7 @@ qemuProcessGetVCPUQOMPath(virDomainObj *vm)
 
 
 static int
-qemuProcessFetchGuestCPU(virQEMUDriver *driver,
-                         virDomainObj *vm,
+qemuProcessFetchGuestCPU(virDomainObj *vm,
                          virDomainAsyncJob asyncJob,
                          virCPUData **enabled,
                          virCPUData **disabled)
@@ -4393,7 +4386,7 @@ qemuProcessFetchGuestCPU(virQEMUDriver *driver,
     if (!generic && !ARCH_IS_X86(vm->def->os.arch))
         return 0;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     if (generic) {
@@ -4480,14 +4473,13 @@ qemuProcessUpdateLiveGuestCPU(virDomainObj *vm,
 
 
 static int
-qemuProcessUpdateAndVerifyCPU(virQEMUDriver *driver,
-                              virDomainObj *vm,
+qemuProcessUpdateAndVerifyCPU(virDomainObj *vm,
                               virDomainAsyncJob asyncJob)
 {
     g_autoptr(virCPUData) cpu = NULL;
     g_autoptr(virCPUData) disabled = NULL;
 
-    if (qemuProcessFetchGuestCPU(driver, vm, asyncJob, &cpu, &disabled) < 0)
+    if (qemuProcessFetchGuestCPU(vm, asyncJob, &cpu, &disabled) < 0)
         return -1;
 
     if (qemuProcessVerifyCPU(vm, cpu) < 0)
@@ -4501,8 +4493,7 @@ qemuProcessUpdateAndVerifyCPU(virQEMUDriver *driver,
 
 
 static int
-qemuProcessFetchCPUDefinitions(virQEMUDriver *driver,
-                               virDomainObj *vm,
+qemuProcessFetchCPUDefinitions(virDomainObj *vm,
                                virDomainAsyncJob asyncJob,
                                virDomainCapsCPUModels **cpuModels)
 {
@@ -4510,7 +4501,7 @@ qemuProcessFetchCPUDefinitions(virQEMUDriver *driver,
     g_autoptr(virDomainCapsCPUModels) models = NULL;
     int rc;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     rc = virQEMUCapsFetchCPUModels(priv->mon, vm->def->os.arch, &models);
@@ -4525,8 +4516,7 @@ qemuProcessFetchCPUDefinitions(virQEMUDriver *driver,
 
 
 static int
-qemuProcessUpdateCPU(virQEMUDriver *driver,
-                     virDomainObj *vm,
+qemuProcessUpdateCPU(virDomainObj *vm,
                      virDomainAsyncJob asyncJob)
 {
     g_autoptr(virCPUData) cpu = NULL;
@@ -4538,13 +4528,13 @@ qemuProcessUpdateCPU(virQEMUDriver *driver,
      */
     vm->def->cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
 
-    if (qemuProcessFetchGuestCPU(driver, vm, asyncJob, &cpu, &disabled) < 0)
+    if (qemuProcessFetchGuestCPU(vm, asyncJob, &cpu, &disabled) < 0)
         return -1;
 
     if (qemuProcessUpdateLiveGuestCPU(vm, cpu, disabled) < 0)
         return -1;
 
-    if (qemuProcessFetchCPUDefinitions(driver, vm, asyncJob, &models) < 0 ||
+    if (qemuProcessFetchCPUDefinitions(vm, asyncJob, &models) < 0 ||
         virCPUTranslate(vm->def->os.arch, vm->def->cpu, models) < 0)
         return -1;
 
@@ -4738,12 +4728,11 @@ qemuProcessIncomingDefNew(virQEMUCaps *qemuCaps,
  * parameter between qemuProcessBeginJob and qemuProcessEndJob.
  */
 int
-qemuProcessBeginJob(virQEMUDriver *driver,
-                    virDomainObj *vm,
+qemuProcessBeginJob(virDomainObj *vm,
                     virDomainJobOperation operation,
                     unsigned long apiFlags)
 {
-    if (qemuDomainObjBeginAsyncJob(driver, vm, VIR_ASYNC_JOB_START,
+    if (qemuDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_START,
                                    operation, apiFlags) < 0)
         return -1;
 
@@ -5237,8 +5226,7 @@ qemuProcessSetupRawIO(virDomainObj *vm,
 
 
 static int
-qemuProcessSetupBalloon(virQEMUDriver *driver,
-                        virDomainObj *vm,
+qemuProcessSetupBalloon(virDomainObj *vm,
                         virDomainAsyncJob asyncJob)
 {
     unsigned long long balloon = vm->def->mem.cur_balloon;
@@ -5248,7 +5236,7 @@ qemuProcessSetupBalloon(virQEMUDriver *driver,
     if (!virDomainDefHasMemballoon(vm->def))
         return 0;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     if (vm->def->memballoon->period)
@@ -6102,8 +6090,7 @@ qemuProcessVcpusSortOrder(const void *a,
 
 
 static int
-qemuProcessSetupHotpluggableVcpus(virQEMUDriver *driver,
-                                  virDomainObj *vm,
+qemuProcessSetupHotpluggableVcpus(virDomainObj *vm,
                                   virDomainAsyncJob asyncJob)
 {
     unsigned int maxvcpus = virDomainDefGetVcpusMax(vm->def);
@@ -6146,7 +6133,7 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriver *driver,
         if (!(vcpuprops = qemuBuildHotpluggableCPUProps(vcpu)))
             goto cleanup;
 
-        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
             goto cleanup;
 
         rc = qemuMonitorAddDeviceProps(qemuDomainGetMonitor(vm), &vcpuprops);
@@ -7271,8 +7258,7 @@ qemuProcessGenID(virDomainObj *vm,
  * Same hack is done in qemuDomainAttachDiskGeneric.
  */
 static int
-qemuProcessSetupDiskThrottlingBlockdev(virQEMUDriver *driver,
-                                       virDomainObj *vm,
+qemuProcessSetupDiskThrottlingBlockdev(virDomainObj *vm,
                                        virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -7284,7 +7270,7 @@ qemuProcessSetupDiskThrottlingBlockdev(virQEMUDriver *driver,
 
     VIR_DEBUG("Setting up disk throttling for -blockdev via block_set_io_throttle");
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     for (i = 0; i < vm->def->ndisks; i++) {
@@ -7414,7 +7400,7 @@ qemuProcessSetupDisksTransientHotplug(virDomainObj *vm,
             domdisk->transientShareBacking != VIR_TRISTATE_BOOL_YES)
             continue;
 
-        if (qemuDomainAttachDiskGeneric(priv->driver, vm, domdisk, asyncJob) < 0)
+        if (qemuDomainAttachDiskGeneric(vm, domdisk, asyncJob) < 0)
             return -1;
 
         hasHotpluggedDisk = true;
@@ -7425,7 +7411,7 @@ qemuProcessSetupDisksTransientHotplug(virDomainObj *vm,
     if (hasHotpluggedDisk) {
         int rc;
 
-        if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+        if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
             return -1;
 
         rc = qemuMonitorSystemReset(priv->mon);
@@ -7473,7 +7459,7 @@ qemuProcessSetupLifecycleActions(virDomainObj *vm,
     if (vm->def->onReboot != VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY)
         return 0;
 
-    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     rc = qemuMonitorSetAction(priv->mon,
@@ -7759,18 +7745,18 @@ qemuProcessLaunch(virConnectPtr conn,
 
     VIR_DEBUG("setting up hotpluggable cpus");
     if (qemuDomainHasHotpluggableStartupVcpus(vm->def)) {
-        if (qemuDomainRefreshVcpuInfo(driver, vm, asyncJob, false) < 0)
+        if (qemuDomainRefreshVcpuInfo(vm, asyncJob, false) < 0)
             goto cleanup;
 
         if (qemuProcessValidateHotpluggableVcpus(vm->def) < 0)
             goto cleanup;
 
-        if (qemuProcessSetupHotpluggableVcpus(driver, vm, asyncJob) < 0)
+        if (qemuProcessSetupHotpluggableVcpus(vm, asyncJob) < 0)
             goto cleanup;
     }
 
     VIR_DEBUG("Refreshing VCPU info");
-    if (qemuDomainRefreshVcpuInfo(driver, vm, asyncJob, false) < 0)
+    if (qemuDomainRefreshVcpuInfo(vm, asyncJob, false) < 0)
         goto cleanup;
 
     if (qemuDomainValidateVcpuInfo(vm) < 0)
@@ -7779,11 +7765,11 @@ qemuProcessLaunch(virConnectPtr conn,
     qemuDomainVcpuPersistOrder(vm->def);
 
     VIR_DEBUG("Verifying and updating provided guest CPU");
-    if (qemuProcessUpdateAndVerifyCPU(driver, vm, asyncJob) < 0)
+    if (qemuProcessUpdateAndVerifyCPU(vm, asyncJob) < 0)
         goto cleanup;
 
     VIR_DEBUG("Detecting IOThread PIDs");
-    if (qemuProcessDetectIOThreadPIDs(driver, vm, asyncJob) < 0)
+    if (qemuProcessDetectIOThreadPIDs(vm, asyncJob) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting global CPU cgroup (if required)");
@@ -7813,21 +7799,21 @@ qemuProcessLaunch(virConnectPtr conn,
     /* qemu doesn't support setting this on the command line, so
      * enter the monitor */
     VIR_DEBUG("Setting network link states");
-    if (qemuProcessSetLinkStates(driver, vm, asyncJob) < 0)
+    if (qemuProcessSetLinkStates(vm, asyncJob) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting initial memory amount");
-    if (qemuProcessSetupBalloon(driver, vm, asyncJob) < 0)
+    if (qemuProcessSetupBalloon(vm, asyncJob) < 0)
         goto cleanup;
 
-    if (qemuProcessSetupDiskThrottlingBlockdev(driver, vm, asyncJob) < 0)
+    if (qemuProcessSetupDiskThrottlingBlockdev(vm, asyncJob) < 0)
         goto cleanup;
 
     /* Since CPUs were not started yet, the balloon could not return the memory
      * to the host and thus cur_balloon needs to be updated so that GetXMLdesc
      * and friends return the correct size in case they can't grab the job */
     if (!incoming && !snapshot &&
-        qemuProcessRefreshBalloonState(driver, vm, asyncJob) < 0)
+        qemuProcessRefreshBalloonState(vm, asyncJob) < 0)
         goto cleanup;
 
     if (flags & VIR_QEMU_PROCESS_START_AUTODESTROY &&
@@ -7870,11 +7856,11 @@ qemuProcessRefreshState(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
 
     VIR_DEBUG("Fetching list of active devices");
-    if (qemuDomainUpdateDeviceList(driver, vm, asyncJob) < 0)
+    if (qemuDomainUpdateDeviceList(vm, asyncJob) < 0)
         return -1;
 
     VIR_DEBUG("Updating info of memory devices");
-    if (qemuDomainUpdateMemoryDeviceInfo(driver, vm, asyncJob) < 0)
+    if (qemuDomainUpdateMemoryDeviceInfo(vm, asyncJob) < 0)
         return -1;
 
     VIR_DEBUG("Detecting actual memory size for video device");
@@ -7882,10 +7868,10 @@ qemuProcessRefreshState(virQEMUDriver *driver,
         return -1;
 
     VIR_DEBUG("Updating disk data");
-    if (qemuProcessRefreshDisks(driver, vm, asyncJob) < 0)
+    if (qemuProcessRefreshDisks(vm, asyncJob) < 0)
         return -1;
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
-        qemuBlockNodeNamesDetect(driver, vm, asyncJob) < 0)
+        qemuBlockNodeNamesDetect(vm, asyncJob) < 0)
         return -1;
 
     return 0;
@@ -8004,7 +7990,7 @@ qemuProcessStart(virConnectPtr conn,
     relabel = true;
 
     if (incoming) {
-        if (qemuMigrationDstRun(driver, vm, incoming->uri, asyncJob) < 0)
+        if (qemuMigrationDstRun(vm, incoming->uri, asyncJob) < 0)
             goto stop;
     } else {
         /* Refresh state of devices from QEMU. During migration this happens
@@ -8126,8 +8112,7 @@ qemuProcessKill(virDomainObj *vm, unsigned int flags)
  * qemuProcessStop.
  */
 int
-qemuProcessBeginStopJob(virQEMUDriver *driver,
-                        virDomainObj *vm,
+qemuProcessBeginStopJob(virDomainObj *vm,
                         virDomainJob job,
                         bool forceKill)
 {
@@ -8147,7 +8132,7 @@ qemuProcessBeginStopJob(virQEMUDriver *driver,
     /* Wake up anything waiting on domain condition */
     virDomainObjBroadcast(vm);
 
-    if (qemuDomainObjBeginJob(driver, vm, job) < 0)
+    if (qemuDomainObjBeginJob(vm, job) < 0)
         goto cleanup;
 
     ret = 0;
@@ -8188,7 +8173,7 @@ void qemuProcessStop(virQEMUDriver *driver,
     virErrorPreserveLast(&orig_err);
 
     if (asyncJob != VIR_ASYNC_JOB_NONE) {
-        if (qemuDomainObjBeginNestedJob(driver, vm, asyncJob) < 0)
+        if (qemuDomainObjBeginNestedJob(vm, asyncJob) < 0)
             goto cleanup;
     } else if (priv->job.asyncJob != VIR_ASYNC_JOB_NONE &&
                priv->job.asyncOwner == virThreadSelfID() &&
@@ -8525,7 +8510,7 @@ qemuProcessAutoDestroy(virDomainObj *dom,
 
     VIR_DEBUG("Killing domain");
 
-    if (qemuProcessBeginStopJob(driver, dom, VIR_JOB_DESTROY, true) < 0)
+    if (qemuProcessBeginStopJob(dom, VIR_JOB_DESTROY, true) < 0)
         return;
 
     qemuProcessStop(driver, dom, VIR_DOMAIN_SHUTOFF_DESTROYED,
@@ -8571,8 +8556,7 @@ bool qemuProcessAutoDestroyActive(virQEMUDriver *driver,
 
 
 int
-qemuProcessRefreshDisks(virQEMUDriver *driver,
-                        virDomainObj *vm,
+qemuProcessRefreshDisks(virDomainObj *vm,
                         virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -8580,7 +8564,7 @@ qemuProcessRefreshDisks(virQEMUDriver *driver,
     g_autoptr(GHashTable) table = NULL;
     size_t i;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) == 0) {
         table = qemuMonitorGetBlockInfo(priv->mon);
         qemuDomainObjExitMonitor(vm);
     }
@@ -8622,8 +8606,7 @@ qemuProcessRefreshDisks(virQEMUDriver *driver,
 
 
 static int
-qemuProcessRefreshCPUMigratability(virQEMUDriver *driver,
-                                   virDomainObj *vm,
+qemuProcessRefreshCPUMigratability(virDomainObj *vm,
                                    virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -8644,7 +8627,7 @@ qemuProcessRefreshCPUMigratability(virQEMUDriver *driver,
     if (!ARCH_IS_X86(def->os.arch))
         return 0;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     rc = qemuMonitorGetCPUMigratable(priv->mon, cpuQOMPath, &migratable);
@@ -8685,7 +8668,7 @@ qemuProcessRefreshCPU(virQEMUDriver *driver,
     if (!vm->def->cpu)
         return 0;
 
-    if (qemuProcessRefreshCPUMigratability(driver, vm, VIR_ASYNC_JOB_NONE) < 0)
+    if (qemuProcessRefreshCPUMigratability(vm, VIR_ASYNC_JOB_NONE) < 0)
         return -1;
 
     if (!(host = virQEMUDriverGetHostCPU(driver))) {
@@ -8720,7 +8703,7 @@ qemuProcessRefreshCPU(virQEMUDriver *driver,
         if (virCPUUpdate(vm->def->os.arch, vm->def->cpu, cpu) < 0)
             return -1;
 
-        if (qemuProcessUpdateCPU(driver, vm, VIR_ASYNC_JOB_NONE) < 0)
+        if (qemuProcessUpdateCPU(vm, VIR_ASYNC_JOB_NONE) < 0)
             return -1;
     } else if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION)) {
         /* We only try to fix CPUs when the libvirt/QEMU combo used to start
@@ -8799,12 +8782,11 @@ qemuProcessRefreshLegacyBlockjob(void *payload,
 
 
 static int
-qemuProcessRefreshLegacyBlockjobs(virQEMUDriver *driver,
-                                  virDomainObj *vm)
+qemuProcessRefreshLegacyBlockjobs(virDomainObj *vm)
 {
     g_autoptr(GHashTable) blockJobs = NULL;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    qemuDomainObjEnterMonitor(vm);
     blockJobs = qemuMonitorGetAllBlockJobInfo(qemuDomainGetMonitor(vm), true);
     qemuDomainObjExitMonitor(vm);
 
@@ -8819,15 +8801,14 @@ qemuProcessRefreshLegacyBlockjobs(virQEMUDriver *driver,
 
 
 static int
-qemuProcessRefreshBlockjobs(virQEMUDriver *driver,
-                            virDomainObj *vm)
+qemuProcessRefreshBlockjobs(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
-        return qemuBlockJobRefreshJobs(driver, vm);
+        return qemuBlockJobRefreshJobs(vm);
 
-    return qemuProcessRefreshLegacyBlockjobs(driver, vm);
+    return qemuProcessRefreshLegacyBlockjobs(vm);
 }
 
 
@@ -8885,7 +8866,7 @@ qemuProcessReconnect(void *opaque)
     if (oldjob.asyncJob == VIR_ASYNC_JOB_BACKUP && priv->backup)
         priv->backup->apiFlags = oldjob.apiFlags;
 
-    if (qemuDomainObjBeginJob(driver, obj, VIR_JOB_MODIFY) < 0)
+    if (qemuDomainObjBeginJob(obj, VIR_JOB_MODIFY) < 0)
         goto error;
     jobStarted = true;
 
@@ -8956,7 +8937,7 @@ qemuProcessReconnect(void *opaque)
             goto error;
     }
 
-    if (qemuProcessUpdateState(driver, obj) < 0)
+    if (qemuProcessUpdateState(obj) < 0)
         goto error;
 
     state = virDomainObjGetState(obj, &reason);
@@ -9004,7 +8985,7 @@ qemuProcessReconnect(void *opaque)
     ignore_value(qemuSecurityCheckAllLabel(driver->securityManager,
                                            obj->def));
 
-    if (qemuDomainRefreshVcpuInfo(driver, obj, VIR_ASYNC_JOB_NONE, true) < 0)
+    if (qemuDomainRefreshVcpuInfo(obj, VIR_ASYNC_JOB_NONE, true) < 0)
         goto error;
 
     qemuDomainVcpuPersistOrder(obj->def);
@@ -9012,10 +8993,10 @@ qemuProcessReconnect(void *opaque)
     if (qemuProcessRefreshCPU(driver, obj) < 0)
         goto error;
 
-    if (qemuDomainUpdateMemoryDeviceInfo(driver, obj, VIR_ASYNC_JOB_NONE) < 0)
+    if (qemuDomainUpdateMemoryDeviceInfo(obj, VIR_ASYNC_JOB_NONE) < 0)
         goto error;
 
-    if (qemuProcessDetectIOThreadPIDs(driver, obj, VIR_ASYNC_JOB_NONE) < 0)
+    if (qemuProcessDetectIOThreadPIDs(obj, VIR_ASYNC_JOB_NONE) < 0)
         goto error;
 
     if (qemuSecurityReserveLabel(driver->securityManager, obj->def, obj->pid) < 0)
@@ -9025,7 +9006,7 @@ qemuProcessReconnect(void *opaque)
 
     qemuProcessFiltersInstantiate(obj->def);
 
-    if (qemuProcessRefreshDisks(driver, obj, VIR_ASYNC_JOB_NONE) < 0)
+    if (qemuProcessRefreshDisks(obj, VIR_ASYNC_JOB_NONE) < 0)
         goto error;
 
     /* At this point we've already checked that the startup of the VM was
@@ -9039,28 +9020,28 @@ qemuProcessReconnect(void *opaque)
     }
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
-        qemuBlockNodeNamesDetect(driver, obj, VIR_ASYNC_JOB_NONE) < 0)
+        qemuBlockNodeNamesDetect(obj, VIR_ASYNC_JOB_NONE) < 0)
         goto error;
 
     if (qemuRefreshVirtioChannelState(driver, obj, VIR_ASYNC_JOB_NONE) < 0)
         goto error;
 
     /* If querying of guest's RTC failed, report error, but do not kill the domain. */
-    qemuRefreshRTC(driver, obj);
+    qemuRefreshRTC(obj);
 
-    if (qemuProcessRefreshBalloonState(driver, obj, VIR_ASYNC_JOB_NONE) < 0)
+    if (qemuProcessRefreshBalloonState(obj, VIR_ASYNC_JOB_NONE) < 0)
         goto error;
 
     if (qemuProcessRecoverJob(driver, obj, &oldjob, &stopFlags) < 0)
         goto error;
 
-    if (qemuProcessRefreshBlockjobs(driver, obj) < 0)
+    if (qemuProcessRefreshBlockjobs(obj) < 0)
         goto error;
 
     if (qemuProcessUpdateDevices(driver, obj) < 0)
         goto error;
 
-    if (qemuRefreshPRManagerState(driver, obj) < 0)
+    if (qemuRefreshPRManagerState(obj) < 0)
         goto error;
 
     if (qemuProcessRefreshFdsetIndex(obj) < 0)

@@ -542,13 +542,11 @@ void qemuDomainEventFlush(int timer, void *opaque);
 
 qemuMonitor *qemuDomainGetMonitor(virDomainObj *vm)
     ATTRIBUTE_NONNULL(1);
-void qemuDomainObjEnterMonitor(virQEMUDriver *driver,
-                               virDomainObj *obj)
+void qemuDomainObjEnterMonitor(virDomainObj *obj)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 void qemuDomainObjExitMonitor(virDomainObj *obj)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-int qemuDomainObjEnterMonitorAsync(virQEMUDriver *driver,
-                                   virDomainObj *obj,
+int qemuDomainObjEnterMonitorAsync(virDomainObj *obj,
                                    virDomainAsyncJob asyncJob)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
@@ -782,11 +780,9 @@ extern virDomainDefParserConfig virQEMUDriverDomainDefParserConfig;
 extern virDomainABIStability virQEMUDriverDomainABIStability;
 extern virSaveCookieCallbacks virQEMUDriverDomainSaveCookie;
 
-int qemuDomainUpdateDeviceList(virQEMUDriver *driver,
-                               virDomainObj *vm, int asyncJob);
+int qemuDomainUpdateDeviceList(virDomainObj *vm, int asyncJob);
 
-int qemuDomainUpdateMemoryDeviceInfo(virQEMUDriver *driver,
-                                     virDomainObj *vm,
+int qemuDomainUpdateMemoryDeviceInfo(virDomainObj *vm,
                                      int asyncJob);
 
 bool qemuDomainDefCheckABIStability(virQEMUDriver *driver,
@@ -854,13 +850,11 @@ bool qemuDomainSupportsNewVcpuHotplug(virDomainObj *vm);
 bool qemuDomainHasVcpuPids(virDomainObj *vm);
 pid_t qemuDomainGetVcpuPid(virDomainObj *vm, unsigned int vcpuid);
 int qemuDomainValidateVcpuInfo(virDomainObj *vm);
-int qemuDomainRefreshVcpuInfo(virQEMUDriver *driver,
-                              virDomainObj *vm,
+int qemuDomainRefreshVcpuInfo(virDomainObj *vm,
                               int asyncJob,
                               bool state);
 bool qemuDomainGetVcpuHalted(virDomainObj *vm, unsigned int vcpu);
-int qemuDomainRefreshVcpuHalted(virQEMUDriver *driver,
-                                virDomainObj *vm,
+int qemuDomainRefreshVcpuHalted(virDomainObj *vm,
                                 int asyncJob);
 
 bool qemuDomainSupportsNicdev(virDomainDef *def,
@@ -948,8 +942,7 @@ bool qemuDomainVcpuHotplugIsInOrder(virDomainDef *def)
 void qemuDomainVcpuPersistOrder(virDomainDef *def)
     ATTRIBUTE_NONNULL(1);
 
-int qemuDomainCheckMonitor(virQEMUDriver *driver,
-                           virDomainObj *vm,
+int qemuDomainCheckMonitor(virDomainObj *vm,
                            virDomainAsyncJob asyncJob);
 
 bool qemuDomainSupportsVideoVga(const virDomainVideoDef *video,

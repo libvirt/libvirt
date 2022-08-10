@@ -702,7 +702,6 @@ qemuDomainObjReleaseAsyncJob(virDomainObj *obj)
 
 /**
  * qemuDomainObjBeginJobInternal:
- * @driver: qemu driver
  * @obj: domain object
  * @job: virDomainJob to start
  * @asyncJob: virDomainAsyncJob to start
@@ -723,8 +722,7 @@ qemuDomainObjReleaseAsyncJob(virDomainObj *obj)
  *         -1 otherwise.
  */
 static int ATTRIBUTE_NONNULL(1)
-qemuDomainObjBeginJobInternal(virQEMUDriver *driver G_GNUC_UNUSED,
-                              virDomainObj *obj,
+qemuDomainObjBeginJobInternal(virDomainObj *obj,
                               virDomainJob job,
                               virDomainAgentJob agentJob,
                               virDomainAsyncJob asyncJob,
@@ -949,11 +947,10 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver G_GNUC_UNUSED,
  *
  * Successful calls must be followed by EndJob eventually
  */
-int qemuDomainObjBeginJob(virQEMUDriver *driver,
-                          virDomainObj *obj,
+int qemuDomainObjBeginJob(virDomainObj *obj,
                           virDomainJob job)
 {
-    if (qemuDomainObjBeginJobInternal(driver, obj, job,
+    if (qemuDomainObjBeginJobInternal(obj, job,
                                       VIR_AGENT_JOB_NONE,
                                       VIR_ASYNC_JOB_NONE, false) < 0)
         return -1;
@@ -968,24 +965,22 @@ int qemuDomainObjBeginJob(virQEMUDriver *driver,
  * To end job call qemuDomainObjEndAgentJob.
  */
 int
-qemuDomainObjBeginAgentJob(virQEMUDriver *driver,
-                           virDomainObj *obj,
+qemuDomainObjBeginAgentJob(virDomainObj *obj,
                            virDomainAgentJob agentJob)
 {
-    return qemuDomainObjBeginJobInternal(driver, obj, VIR_JOB_NONE,
+    return qemuDomainObjBeginJobInternal(obj, VIR_JOB_NONE,
                                          agentJob,
                                          VIR_ASYNC_JOB_NONE, false);
 }
 
-int qemuDomainObjBeginAsyncJob(virQEMUDriver *driver,
-                               virDomainObj *obj,
+int qemuDomainObjBeginAsyncJob(virDomainObj *obj,
                                virDomainAsyncJob asyncJob,
                                virDomainJobOperation operation,
                                unsigned long apiFlags)
 {
     qemuDomainObjPrivate *priv;
 
-    if (qemuDomainObjBeginJobInternal(driver, obj, VIR_JOB_ASYNC,
+    if (qemuDomainObjBeginJobInternal(obj, VIR_JOB_ASYNC,
                                       VIR_AGENT_JOB_NONE,
                                       asyncJob, false) < 0)
         return -1;
@@ -997,8 +992,7 @@ int qemuDomainObjBeginAsyncJob(virQEMUDriver *driver,
 }
 
 int
-qemuDomainObjBeginNestedJob(virQEMUDriver *driver,
-                            virDomainObj *obj,
+qemuDomainObjBeginNestedJob(virDomainObj *obj,
                             virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
@@ -1015,7 +1009,7 @@ qemuDomainObjBeginNestedJob(virQEMUDriver *driver,
                  priv->job.asyncOwner);
     }
 
-    return qemuDomainObjBeginJobInternal(driver, obj,
+    return qemuDomainObjBeginJobInternal(obj,
                                          VIR_JOB_ASYNC_NESTED,
                                          VIR_AGENT_JOB_NONE,
                                          VIR_ASYNC_JOB_NONE,
@@ -1025,7 +1019,6 @@ qemuDomainObjBeginNestedJob(virQEMUDriver *driver,
 /**
  * qemuDomainObjBeginJobNowait:
  *
- * @driver: qemu driver
  * @obj: domain object
  * @job: virDomainJob to start
  *
@@ -1036,11 +1029,10 @@ qemuDomainObjBeginNestedJob(virQEMUDriver *driver,
  * Returns: see qemuDomainObjBeginJobInternal
  */
 int
-qemuDomainObjBeginJobNowait(virQEMUDriver *driver,
-                            virDomainObj *obj,
+qemuDomainObjBeginJobNowait(virDomainObj *obj,
                             virDomainJob job)
 {
-    return qemuDomainObjBeginJobInternal(driver, obj, job,
+    return qemuDomainObjBeginJobInternal(obj, job,
                                          VIR_AGENT_JOB_NONE,
                                          VIR_ASYNC_JOB_NONE, true);
 }

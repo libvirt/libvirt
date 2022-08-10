@@ -232,7 +232,7 @@ qemuCheckpointDiscardBitmaps(virDomainObj *vm,
         relabelimages = g_slist_prepend(relabelimages, src);
     }
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    qemuDomainObjEnterMonitor(vm);
     rc = qemuMonitorTransaction(priv->mon, &actions);
     qemuDomainObjExitMonitor(vm);
 
@@ -519,7 +519,7 @@ qemuCheckpointCreate(virQEMUDriver *driver,
     if (qemuCheckpointCreateCommon(driver, vm, def, &actions, &chk) < 0)
         return NULL;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    qemuDomainObjEnterMonitor(vm);
     rc = qemuMonitorTransaction(qemuDomainGetMonitor(vm), &actions);
     qemuDomainObjExitMonitor(vm);
     if (rc < 0) {
@@ -604,7 +604,7 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     /* Unlike snapshots, the RNG schema already ensured a sane filename. */
 
     /* We are going to modify the domain below. */
-    if (qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
+    if (qemuDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         return NULL;
 
     if (redefine) {
@@ -643,7 +643,6 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
                                    virDomainCheckpointDef *chkdef)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    virQEMUDriver *driver = priv->driver;
     g_autoptr(GHashTable) nodedataMerge = NULL;
     g_autoptr(GHashTable) nodedataStats = NULL;
     g_autofree struct qemuCheckpointDiskMap *diskmap = NULL;
@@ -655,7 +654,7 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
     size_t i;
     int ret = -1;
 
-    if (qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
+    if (qemuDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         return -1;
 
     if (virDomainObjCheckActive(vm) < 0)
@@ -725,7 +724,7 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
             goto endjob;
     }
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    qemuDomainObjEnterMonitor(vm);
 
     if (rc == 0 && recoveractions)
         rc = qemuMonitorTransaction(priv->mon, &recoveractions);
@@ -741,7 +740,7 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
     if (!(nodedataStats = qemuBlockGetNamedNodeData(vm, VIR_ASYNC_JOB_NONE)))
         goto endjob;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    qemuDomainObjEnterMonitor(vm);
 
     rc = qemuMonitorTransaction(priv->mon, &cleanupactions);
 
@@ -849,7 +848,7 @@ qemuCheckpointDelete(virDomainObj *vm,
                   VIR_DOMAIN_CHECKPOINT_DELETE_METADATA_ONLY |
                   VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY, -1);
 
-    if (qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
+    if (qemuDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         return -1;
 
     if (!metadata_only) {

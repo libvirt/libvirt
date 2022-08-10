@@ -311,7 +311,7 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
         }
     }
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm,
+    if (qemuDomainObjEnterMonitorAsync(vm,
                                        VIR_ASYNC_JOB_SNAPSHOT) < 0) {
         resume = false;
         goto cleanup;
@@ -876,7 +876,7 @@ qemuSnapshotDiskCleanup(qemuSnapshotDiskData *data,
          * be set to NULL by qemuSnapshotDiskUpdateSource */
         if (data[i].src) {
             if (data[i].blockdevadded) {
-                if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
+                if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) == 0) {
 
                     qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm),
                                                          data[i].crdata->srcdata[0]);
@@ -998,8 +998,7 @@ qemuSnapshotDiskBitmapsPropagate(qemuSnapshotDiskData *dd,
 
 
 static int
-qemuSnapshotDiskPrepareOneBlockdev(virQEMUDriver *driver,
-                                   virDomainObj *vm,
+qemuSnapshotDiskPrepareOneBlockdev(virDomainObj *vm,
                                    qemuSnapshotDiskData *dd,
                                    virQEMUDriverConfig *cfg,
                                    bool reuse,
@@ -1023,7 +1022,7 @@ qemuSnapshotDiskPrepareOneBlockdev(virQEMUDriver *driver,
         return -1;
 
     if (reuse) {
-        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
             return -1;
 
         rc = qemuBlockStorageSourceAttachApply(qemuDomainGetMonitor(vm),
@@ -1132,7 +1131,7 @@ qemuSnapshotDiskPrepareOne(qemuSnapshotDiskContext *snapctxt,
     dd->prepared = true;
 
     if (blockdev) {
-        if (qemuSnapshotDiskPrepareOneBlockdev(driver, vm, dd, snapctxt->cfg, reuse,
+        if (qemuSnapshotDiskPrepareOneBlockdev(vm, dd, snapctxt->cfg, reuse,
                                                blockNamedNodeData, snapctxt->asyncJob) < 0)
             return -1;
 
@@ -1281,7 +1280,7 @@ qemuSnapshotDiskCreate(qemuSnapshotDiskContext *snapctxt)
     if (snapctxt->ndd == 0)
         return 0;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, snapctxt->vm, snapctxt->asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(snapctxt->vm, snapctxt->asyncJob) < 0)
         return -1;
 
     rc = qemuMonitorTransaction(priv->mon, &snapctxt->actions);
@@ -1367,7 +1366,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) {
         int frozen;
 
-        if (qemuDomainObjBeginAgentJob(driver, vm, VIR_AGENT_JOB_MODIFY) < 0)
+        if (qemuDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_MODIFY) < 0)
             goto cleanup;
 
         if (virDomainObjCheckActive(vm) < 0) {
@@ -1513,7 +1512,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     }
 
     if (thaw &&
-        qemuDomainObjBeginAgentJob(driver, vm, VIR_AGENT_JOB_MODIFY) >= 0 &&
+        qemuDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_MODIFY) >= 0 &&
         virDomainObjIsActive(vm)) {
         /* report error only on an otherwise successful snapshot */
         if (qemuSnapshotFSThaw(vm, ret == 0) < 0)
@@ -1885,7 +1884,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
      * a regular job, so we need to set the job mask to disallow query as
      * 'savevm' blocks the monitor. External snapshot will then modify the
      * job mask appropriately. */
-    if (qemuDomainObjBeginAsyncJob(driver, vm, VIR_ASYNC_JOB_SNAPSHOT,
+    if (qemuDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_SNAPSHOT,
                                    VIR_DOMAIN_JOB_OPERATION_SNAPSHOT, flags) < 0)
         return NULL;
 
@@ -2278,7 +2277,7 @@ qemuSnapshotRevert(virDomainObj *vm,
         return -1;
     }
 
-    if (qemuProcessBeginJob(driver, vm,
+    if (qemuProcessBeginJob(vm,
                             VIR_DOMAIN_JOB_OPERATION_SNAPSHOT_REVERT,
                             flags) < 0)
         return -1;
@@ -2390,7 +2389,7 @@ qemuSnapshotDelete(virDomainObj *vm,
                   VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY |
                   VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY, -1);
 
-    if (qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
+    if (qemuDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         return -1;
 
     if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))

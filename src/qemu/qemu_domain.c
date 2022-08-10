@@ -6014,15 +6014,14 @@ qemuDomainSaveConfig(virDomainObj *obj)
  * To be followed with qemuDomainObjExitMonitor() once complete
  */
 static int
-qemuDomainObjEnterMonitorInternal(virQEMUDriver *driver,
-                                  virDomainObj *obj,
+qemuDomainObjEnterMonitorInternal(virDomainObj *obj,
                                   virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
 
     if (asyncJob != VIR_ASYNC_JOB_NONE) {
         int ret;
-        if ((ret = qemuDomainObjBeginNestedJob(driver, obj, asyncJob)) < 0)
+        if ((ret = qemuDomainObjBeginNestedJob(obj, asyncJob)) < 0)
             return ret;
         if (!virDomainObjIsActive(obj)) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -6080,10 +6079,9 @@ qemuDomainObjExitMonitor(virDomainObj *obj)
         qemuDomainObjEndJob(obj);
 }
 
-void qemuDomainObjEnterMonitor(virQEMUDriver *driver,
-                               virDomainObj *obj)
+void qemuDomainObjEnterMonitor(virDomainObj *obj)
 {
-    ignore_value(qemuDomainObjEnterMonitorInternal(driver, obj,
+    ignore_value(qemuDomainObjEnterMonitorInternal(obj,
                                                    VIR_ASYNC_JOB_NONE));
 }
 
@@ -6102,11 +6100,10 @@ void qemuDomainObjEnterMonitor(virQEMUDriver *driver,
  * in the meantime).
  */
 int
-qemuDomainObjEnterMonitorAsync(virQEMUDriver *driver,
-                               virDomainObj *obj,
+qemuDomainObjEnterMonitorAsync(virDomainObj *obj,
                                virDomainAsyncJob asyncJob)
 {
-    return qemuDomainObjEnterMonitorInternal(driver, obj, asyncJob);
+    return qemuDomainObjEnterMonitorInternal(obj, asyncJob);
 }
 
 
@@ -7143,7 +7140,7 @@ qemuDomainSnapshotDiscard(virQEMUDriver *driver,
                 return -1;
         } else {
             priv = vm->privateData;
-            qemuDomainObjEnterMonitor(driver, vm);
+            qemuDomainObjEnterMonitor(vm);
             /* we continue on even in the face of error */
             qemuMonitorDeleteSnapshot(priv->mon, snap->def->name);
             qemuDomainObjExitMonitor(vm);
@@ -7291,7 +7288,6 @@ qemuDomainRemoveInactiveLocked(virQEMUDriver *driver,
 
     virDomainObjListRemoveLocked(driver->domains, vm);
 }
-
 
 void
 qemuDomainSetFakeReboot(virDomainObj *vm,
@@ -8300,15 +8296,14 @@ qemuDomainHasBlockjob(virDomainObj *vm,
 
 
 int
-qemuDomainUpdateDeviceList(virQEMUDriver *driver,
-                           virDomainObj *vm,
+qemuDomainUpdateDeviceList(virDomainObj *vm,
                            int asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     char **aliases;
     int rc;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
     rc = qemuMonitorGetDeviceAliases(priv->mon, &aliases);
     qemuDomainObjExitMonitor(vm);
@@ -8322,8 +8317,7 @@ qemuDomainUpdateDeviceList(virQEMUDriver *driver,
 
 
 int
-qemuDomainUpdateMemoryDeviceInfo(virQEMUDriver *driver,
-                                 virDomainObj *vm,
+qemuDomainUpdateMemoryDeviceInfo(virDomainObj *vm,
                                  int asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -8334,7 +8328,7 @@ qemuDomainUpdateMemoryDeviceInfo(virQEMUDriver *driver,
     if (vm->def->nmems == 0)
         return 0;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     rc = qemuMonitorGetMemoryDeviceInfo(priv->mon, &meminfo);
@@ -9611,8 +9605,7 @@ qemuDomainSupportsNewVcpuHotplug(virDomainObj *vm)
  * Returns 0 on success and -1 on fatal error.
  */
 int
-qemuDomainRefreshVcpuInfo(virQEMUDriver *driver,
-                          virDomainObj *vm,
+qemuDomainRefreshVcpuInfo(virDomainObj *vm,
                           int asyncJob,
                           bool state)
 {
@@ -9629,7 +9622,7 @@ qemuDomainRefreshVcpuInfo(virQEMUDriver *driver,
     hotplug = qemuDomainSupportsNewVcpuHotplug(vm);
     VIR_DEBUG("Maxvcpus %zu hotplug %d", maxvcpus, hotplug);
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     rc = qemuMonitorGetCPUInfo(qemuDomainGetMonitor(vm), &info, maxvcpus,
@@ -9757,8 +9750,7 @@ qemuDomainGetVcpuHalted(virDomainObj *vm,
  * Returns 0 on success and -1 on error
  */
 int
-qemuDomainRefreshVcpuHalted(virQEMUDriver *driver,
-                            virDomainObj *vm,
+qemuDomainRefreshVcpuHalted(virDomainObj *vm,
                             int asyncJob)
 {
     virDomainVcpuDef *vcpu;
@@ -9777,7 +9769,7 @@ qemuDomainRefreshVcpuHalted(virQEMUDriver *driver,
     if (!ARCH_IS_S390(vm->def->os.arch))
         return 0;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     haltedmap = qemuMonitorGetCpuHalted(qemuDomainGetMonitor(vm), maxvcpus);
@@ -10201,14 +10193,13 @@ qemuDomainVcpuPersistOrder(virDomainDef *def)
 
 
 int
-qemuDomainCheckMonitor(virQEMUDriver *driver,
-                       virDomainObj *vm,
+qemuDomainCheckMonitor(virDomainObj *vm,
                        virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     int ret;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     ret = qemuMonitorCheck(priv->mon);

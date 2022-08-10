@@ -63,8 +63,7 @@ qemuProcessIncomingDef *qemuProcessIncomingDefNew(virQEMUCaps *qemuCaps,
                                                     const char *path);
 void qemuProcessIncomingDefFree(qemuProcessIncomingDef *inc);
 
-int qemuProcessBeginJob(virQEMUDriver *driver,
-                        virDomainObj *vm,
+int qemuProcessBeginJob(virDomainObj *vm,
                         virDomainJobOperation operation,
                         unsigned long apiFlags);
 void qemuProcessEndJob(virDomainObj *vm);
@@ -148,8 +147,7 @@ typedef enum {
     VIR_QEMU_PROCESS_STOP_NO_RELABEL    = 1 << 1,
 } qemuProcessStopFlags;
 
-int qemuProcessBeginStopJob(virQEMUDriver *driver,
-                            virDomainObj *vm,
+int qemuProcessBeginStopJob(virDomainObj *vm,
                             virDomainJob job,
                             bool forceKill);
 void qemuProcessStop(virQEMUDriver *driver,
@@ -197,12 +195,10 @@ int qemuRefreshVirtioChannelState(virQEMUDriver *driver,
                                   virDomainObj *vm,
                                   virDomainAsyncJob asyncJob);
 
-int qemuProcessRefreshBalloonState(virQEMUDriver *driver,
-                                   virDomainObj *vm,
+int qemuProcessRefreshBalloonState(virDomainObj *vm,
                                    int asyncJob);
 
-int qemuProcessRefreshDisks(virQEMUDriver *driver,
-                            virDomainObj *vm,
+int qemuProcessRefreshDisks(virDomainObj *vm,
                             virDomainAsyncJob asyncJob);
 
 int qemuProcessStartManagedPRDaemon(virDomainObj *vm) G_NO_INLINE;
