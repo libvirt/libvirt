@@ -3680,28 +3680,26 @@ qemuBuildNicDevProps(virDomainDef *def,
         unsigned long long vectors = 0;
         virTristateSwitch failover = VIR_TRISTATE_SWITCH_ABSENT;
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_TX_ALG)) {
-            switch (net->driver.virtio.txmode) {
-                case VIR_DOMAIN_NET_VIRTIO_TX_MODE_IOTHREAD:
-                    tx = "bh";
-                    break;
+        switch (net->driver.virtio.txmode) {
+        case VIR_DOMAIN_NET_VIRTIO_TX_MODE_IOTHREAD:
+            tx = "bh";
+            break;
 
-                case VIR_DOMAIN_NET_VIRTIO_TX_MODE_TIMER:
-                    tx = "timer";
-                    break;
+        case VIR_DOMAIN_NET_VIRTIO_TX_MODE_TIMER:
+            tx = "timer";
+            break;
 
-                case VIR_DOMAIN_NET_VIRTIO_TX_MODE_DEFAULT:
-                    break;
+        case VIR_DOMAIN_NET_VIRTIO_TX_MODE_DEFAULT:
+            break;
 
-                case VIR_DOMAIN_NET_VIRTIO_TX_MODE_LAST:
-                default:
-                    /* this should never happen, if it does, we need
-                     * to add another case to this switch.
-                     */
-                    virReportEnumRangeError(virDomainNetVirtioTxModeType,
-                                            net->driver.virtio.txmode);
-                    return NULL;
-            }
+        case VIR_DOMAIN_NET_VIRTIO_TX_MODE_LAST:
+        default:
+            /* this should never happen, if it does, we need
+             * to add another case to this switch.
+             */
+            virReportEnumRangeError(virDomainNetVirtioTxModeType,
+                                    net->driver.virtio.txmode);
+            return NULL;
         }
 
         if (net->driver.virtio.queues > 1) {

@@ -1529,8 +1529,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_FULL("net-user", "x86_64", ARG_FLAGS, FLAG_SLIRP_HELPER);
     DO_TEST_NOCAPS("net-user-addr");
     DO_TEST_NOCAPS("net-virtio");
-    DO_TEST("net-virtio-device",
-            QEMU_CAPS_VIRTIO_TX_ALG);
+    DO_TEST_NOCAPS("net-virtio-device");
     DO_TEST_NOCAPS("net-virtio-disable-offloads");
     DO_TEST_NOCAPS("net-virtio-netdev");
     DO_TEST("net-virtio-ccw", QEMU_CAPS_CCW);

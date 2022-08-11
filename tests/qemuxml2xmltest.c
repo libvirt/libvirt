@@ -464,7 +464,7 @@ mymain(void)
     DO_TEST_NOCAPS("net-user");
     DO_TEST_NOCAPS("net-user-addr");
     DO_TEST_NOCAPS("net-virtio");
-    DO_TEST("net-virtio-device", QEMU_CAPS_VIRTIO_TX_ALG);
+    DO_TEST_NOCAPS("net-virtio-device");
     DO_TEST_NOCAPS("net-virtio-disable-offloads");
     DO_TEST_NOCAPS("net-eth");
     DO_TEST_NOCAPS("net-eth-ifname");
