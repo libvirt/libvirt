@@ -5,7 +5,6 @@
   <selfvers>0</selfvers>
   <flag name='kvm'/>
   <flag name='sdl'/>
-  <flag name='virtio-tx-alg'/>
   <flag name='usb-redir'/>
   <flag name='virtio-blk-pci.scsi'/>
   <flag name='scsi-disk.channel'/>

@@ -122,7 +122,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 55 */
     X_QEMU_CAPS_DEVICE_SPICEVMC, /* older -device spicevmc */
-    QEMU_CAPS_VIRTIO_TX_ALG, /* -device virtio-net-pci,tx=string */
+    X_QEMU_CAPS_VIRTIO_TX_ALG, /* -device virtio-net-pci,tx=string */
     X_QEMU_CAPS_DEVICE_QXL_VGA, /* primary qxl device named qxl-vga? */
     X_QEMU_CAPS_PCI_MULTIFUNCTION, /* -device multifunction=on|off */
     X_QEMU_CAPS_VIRTIO_IOEVENTFD, /* virtio-{net|blk}-pci.ioeventfd=on */

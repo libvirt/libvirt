@@ -144,7 +144,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 55 */
               "device-spicevmc", /* X_QEMU_CAPS_DEVICE_SPICEVMC */
-              "virtio-tx-alg", /* QEMU_CAPS_VIRTIO_TX_ALG */
+              "virtio-tx-alg", /* X_QEMU_CAPS_VIRTIO_TX_ALG */
               "device-qxl-vga", /* X_QEMU_CAPS_DEVICE_QXL_VGA */
               "pci-multifunction", /* X_QEMU_CAPS_PCI_MULTIFUNCTION */
               "virtio-blk-pci.ioeventfd", /* X_QEMU_CAPS_VIRTIO_IOEVENTFD */
@@ -1439,7 +1439,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioNet[] = {
-    { "tx", QEMU_CAPS_VIRTIO_TX_ALG, NULL },
     { "rx_queue_size", QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE, NULL },
     { "tx_queue_size", QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE, NULL },
     { "host_mtu", QEMU_CAPS_VIRTIO_NET_HOST_MTU, NULL },
