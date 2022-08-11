@@ -7533,6 +7533,9 @@ qemuProcessLaunch(virConnectPtr conn,
         virCommandSetMaxProcesses(cmd, cfg->maxProcesses);
     if (cfg->maxFiles > 0)
         virCommandSetMaxFiles(cmd, cfg->maxFiles);
+    if (cfg->schedCore == QEMU_SCHED_CORE_EMULATOR ||
+        cfg->schedCore == QEMU_SCHED_CORE_FULL)
+        virCommandSetRunAmong(cmd, priv->schedCoreChildPID);
 
     /* In this case, however, zero means that core dumps should be
      * disabled, and so we always need to set the limit explicitly */
