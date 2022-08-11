@@ -1773,21 +1773,20 @@ qemuMigrationDstPostcopyFailed(virDomainObj *vm)
 }
 
 
-static int
+static void
 qemuMigrationSrcWaitForSpice(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobPrivate *jobPriv = priv->job.privateData;
 
     if (!jobPriv->spiceMigration)
-        return 0;
+        return;
 
     VIR_DEBUG("Waiting for SPICE to finish migration");
     while (!jobPriv->spiceMigrated && !priv->job.abortJob) {
         if (qemuDomainObjWait(vm) < 0)
-            return -1;
+            return;
     }
-    return 0;
 }
 
 
