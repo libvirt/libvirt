@@ -2848,6 +2848,15 @@ qemuProcessStartManagedPRDaemon(virDomainObj *vm)
      * qemu (so that it shares the same view of the system). */
     virCommandSetPreExecHook(cmd, qemuProcessStartPRDaemonHook, vm);
 
+    if (cfg->schedCore == QEMU_SCHED_CORE_FULL) {
+        pid_t cookie_pid = vm->pid;
+
+        if (cookie_pid <= 0)
+            cookie_pid = priv->schedCoreChildPID;
+
+        virCommandSetRunAmong(cmd, cookie_pid);
+    }
+
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 

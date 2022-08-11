@@ -178,6 +178,7 @@ qemuVirtioFSStart(virQEMUDriver *driver,
                   virDomainFSDef *fs)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *socket_path = NULL;
     g_autofree char *pidfile = NULL;
@@ -250,6 +251,16 @@ qemuVirtioFSStart(virQEMUDriver *driver,
     virCommandSetErrorFD(cmd, &logfd);
     virCommandNonblockingFDs(cmd);
     virCommandDaemonize(cmd);
+
+    if (cfg->schedCore == QEMU_SCHED_CORE_FULL) {
+        pid_t cookie_pid = vm->pid;
+
+        if (cookie_pid <= 0)
+            cookie_pid = priv->schedCoreChildPID;
+
+        virCommandSetRunAmong(cmd, cookie_pid);
+    }
+
 
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "virtiofsd") < 0)
         goto error;

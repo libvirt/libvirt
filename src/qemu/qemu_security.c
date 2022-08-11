@@ -683,6 +683,9 @@ qemuSecurityCommandRun(virQEMUDriver *driver,
                        int *exitstatus,
                        int *cmdret)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivate *priv = vm->privateData;
+
     if (virSecurityManagerSetChildProcessLabel(driver->securityManager,
                                                vm->def, cmd) < 0)
         return -1;
@@ -691,6 +694,14 @@ qemuSecurityCommandRun(virQEMUDriver *driver,
         virCommandSetUID(cmd, uid);
     if (gid != (gid_t) -1)
         virCommandSetGID(cmd, gid);
+    if (cfg->schedCore == QEMU_SCHED_CORE_FULL) {
+        pid_t pid = vm->pid;
+
+        if (pid <= 0)
+            pid = priv->schedCoreChildPID;
+
+        virCommandSetRunAmong(cmd, pid);
+    }
 
     if (virSecurityManagerPreFork(driver->securityManager) < 0)
         return -1;
