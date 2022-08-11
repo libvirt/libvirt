@@ -2798,13 +2798,11 @@ mymain(void)
     DO_TEST("hotplug-base",
             QEMU_CAPS_KVM, QEMU_CAPS_VIRTIO_SCSI);
 
-    DO_TEST("pcihole64", QEMU_CAPS_I440FX_PCI_HOLE64_SIZE);
-    DO_TEST_PARSE_ERROR_NOCAPS("pcihole64-none");
+    DO_TEST_NOCAPS("pcihole64");
     DO_TEST("pcihole64-q35",
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_Q35_PCI_HOLE64_SIZE);
+            QEMU_CAPS_DEVICE_QXL);
 
     DO_TEST_NOCAPS("arm-vexpressa9-nodevs");
     DO_TEST_NOCAPS("arm-vexpressa9-basic");

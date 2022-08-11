@@ -3984,13 +3984,6 @@ qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
                                  "supported for machine '%s'"), def->os.machine);
                 return -1;
             }
-
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_I440FX_PCI_HOLE64_SIZE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("64-bit PCI hole size setting is not supported "
-                                 "with this QEMU binary"));
-                return -1;
-            }
         }
         break;
 
@@ -4000,13 +3993,6 @@ qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Setting the 64-bit PCI hole size is not "
                                  "supported for machine '%s'"), def->os.machine);
-                return -1;
-            }
-
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_Q35_PCI_HOLE64_SIZE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("64-bit PCI hole size setting is not supported "
-                                 "with this QEMU binary"));
                 return -1;
             }
         }

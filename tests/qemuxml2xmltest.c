@@ -1027,14 +1027,12 @@ mymain(void)
     DO_TEST("s390-serial-2", QEMU_CAPS_CCW);
     DO_TEST("s390-serial-console", QEMU_CAPS_CCW);
 
-    DO_TEST("pcihole64", QEMU_CAPS_I440FX_PCI_HOLE64_SIZE);
-    DO_TEST("pcihole64-gib", QEMU_CAPS_I440FX_PCI_HOLE64_SIZE);
-    DO_TEST("pcihole64-none", QEMU_CAPS_I440FX_PCI_HOLE64_SIZE);
+    DO_TEST_NOCAPS("pcihole64");
+    DO_TEST_NOCAPS("pcihole64-gib");
     DO_TEST("pcihole64-q35",
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_Q35_PCI_HOLE64_SIZE);
+            QEMU_CAPS_DEVICE_QXL);
 
     DO_TEST("panic", QEMU_CAPS_DEVICE_PANIC);
     DO_TEST("panic-double", QEMU_CAPS_DEVICE_PANIC);
