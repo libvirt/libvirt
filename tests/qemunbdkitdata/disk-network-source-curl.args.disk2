@@ -4,4 +4,4 @@ nbdkit \
 --readonly curl \
 protocols=http,https \
 url=http://http.example.org:8080/path/to/disk2.iso \
-cookie=-781
+cookie=-783

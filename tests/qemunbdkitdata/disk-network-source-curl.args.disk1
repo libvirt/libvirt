@@ -3,5 +3,7 @@ nbdkit \
 --foreground curl \
 protocols=https \
 'url=https://https.example.org:8443/path/to/disk5.iso?foo=bar' \
-cookie=-779 \
+user=myname \
+password=-779 \
+cookie=-781 \
 sslverify=false

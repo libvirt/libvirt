@@ -32,9 +32,10 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -blockdev '{"driver":"https","url":"https://https.example.org:8443/path/to/disk1.iso","cookie-secret":"libvirt-5-storage-httpcookie-secret0","node-name":"libvirt-5-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-5-format","read-only":true,"driver":"raw","file":"libvirt-5-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x3","drive":"libvirt-5-format","id":"virtio-disk0","bootindex":1}' \
+-object '{"qom-type":"secret","id":"libvirt-4-storage-auth-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
 -object '{"qom-type":"secret","id":"libvirt-4-storage-httpcookie-secret0","data":"BUU0KmnWfonHdjzhYhwVQZ5iTI1KweTJ22q8XWUVoBCVu1z70reDuczPBIabZtC3","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
 -object '{"qom-type":"secret","id":"libvirt-4-format-encryption-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
--blockdev '{"driver":"https","url":"https://https.example.org:8443/path/to/disk5.iso?foo=bar","sslverify":false,"cookie-secret":"libvirt-4-storage-httpcookie-secret0","node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"https","url":"https://https.example.org:8443/path/to/disk5.iso?foo=bar","username":"myname","password-secret":"libvirt-4-storage-auth-secret0","sslverify":false,"cookie-secret":"libvirt-4-storage-httpcookie-secret0","node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"luks","key-secret":"libvirt-4-format-encryption-secret0","file":"libvirt-4-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x4","drive":"libvirt-4-format","id":"virtio-disk4"}' \
 -object '{"qom-type":"secret","id":"libvirt-3-storage-httpcookie-secret0","data":"BUU0KmnWfonHdjzhYhwVQZ5iTI1KweTJ22q8XWUVoBBv7TuTgTkyAyOPpC2P5qLbOIypLoHpppjz+u5O+X8oT+jA1m7q/OJQ8dk2EFD5c0A=","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \

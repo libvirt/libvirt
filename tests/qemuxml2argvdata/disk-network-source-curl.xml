@@ -59,6 +59,9 @@
         <encryption format='luks'>
           <secret type='passphrase' uuid='1148b693-0843-4cef-9f97-8feb4e1ae365'/>
         </encryption>
+        <auth username='myname'>
+          <secret type='iscsi' usage='mycluster_myname'/>
+        </auth>
       </source>
       <target dev='vde' bus='virtio'/>
     </disk>
