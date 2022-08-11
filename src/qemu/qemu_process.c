@@ -5855,8 +5855,43 @@ qemuProcessSetupVcpu(virDomainObj *vm,
 
 
 static int
+qemuProcessSetupAllVcpusSchedCoreHelper(pid_t ppid G_GNUC_UNUSED,
+                                        void *opaque)
+{
+    virDomainObj *vm = opaque;
+    size_t i;
+
+    /* Since we are setting all vCPU threads at once and from a forked off
+     * child, we don't need the dummy schedCoreChildPID and can create one on
+     * our own. */
+    if (virProcessSchedCoreCreate() < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to set SCHED_CORE"));
+
+        return -1;
+    }
+
+    for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
+        pid_t vcpupid = qemuDomainGetVcpuPid(vm, i);
+
+        if (vcpupid > 0 &&
+            virProcessSchedCoreShareTo(vcpupid) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to share scheduling cookie to %lld"),
+                                 (long long) vcpupid);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuProcessSetupVcpus(virDomainObj *vm)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     virDomainVcpuDef *vcpu;
     unsigned int maxvcpus = virDomainDefGetVcpusMax(vm->def);
     size_t i;
@@ -5898,6 +5933,10 @@ qemuProcessSetupVcpus(virDomainObj *vm)
         if (qemuProcessSetupVcpu(vm, i) < 0)
             return -1;
     }
+
+    if (cfg->schedCore == QEMU_SCHED_CORE_VCPUS &&
+        virProcessRunInFork(qemuProcessSetupAllVcpusSchedCoreHelper, vm) < 0)
+        return -1;
 
     return 0;
 }
