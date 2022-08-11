@@ -69,6 +69,9 @@ RUN dnf distro-sync -y && \
         polkit \
         python3 \
         python3-docutils \
+        python3-pip \
+        python3-setuptools \
+        python3-wheel \
         qemu-img \
         readline-devel \
         rpcgen \
@@ -87,6 +90,8 @@ RUN dnf distro-sync -y && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/clang && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/gcc
+
+RUN /usr/bin/pip3 install flake8
 
 ENV LANG "en_US.UTF-8"
 ENV MAKE "/usr/bin/make"
