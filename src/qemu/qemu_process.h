@@ -187,7 +187,8 @@ int qemuConnectAgent(virQEMUDriver *driver, virDomainObj *vm);
 
 
 int qemuProcessSetupVcpu(virDomainObj *vm,
-                         unsigned int vcpuid);
+                         unsigned int vcpuid,
+                         bool schedCore);
 int qemuProcessSetupIOThread(virDomainObj *vm,
                              virDomainIOThreadIDDef *iothread);
 

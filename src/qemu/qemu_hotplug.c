@@ -6246,7 +6246,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriver *driver,
         vcpuinfo->online = true;
 
         if (vcpupriv->tid > 0 &&
-            qemuProcessSetupVcpu(vm, i) < 0)
+            qemuProcessSetupVcpu(vm, i, true) < 0)
             return -1;
     }
 

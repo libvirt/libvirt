@@ -5797,10 +5797,40 @@ qemuProcessNetworkPrepareDevices(virQEMUDriver *driver,
 }
 
 
+struct qemuProcessSetupVcpuSchedCoreHelperData {
+    pid_t vcpupid;
+    pid_t dummypid;
+};
+
+static int
+qemuProcessSetupVcpuSchedCoreHelper(pid_t ppid G_GNUC_UNUSED,
+                                    void *opaque)
+{
+    struct qemuProcessSetupVcpuSchedCoreHelperData *data = opaque;
+
+    if (virProcessSchedCoreShareFrom(data->dummypid) < 0) {
+        virReportSystemError(errno,
+                             _("unable to share scheduling cookie from %lld"),
+                             (long long) data->dummypid);
+        return -1;
+    }
+
+    if (virProcessSchedCoreShareTo(data->vcpupid) < 0) {
+        virReportSystemError(errno,
+                             _("unable to share scheduling cookie to %lld"),
+                             (long long) data->vcpupid);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuProcessSetupVcpu:
  * @vm: domain object
  * @vcpuid: id of VCPU to set defaults
+ * @schedCore: whether to set scheduling group
  *
  * This function sets resource properties (cgroups, affinity, scheduler) for a
  * vCPU. This function expects that the vCPU is online and the vCPU pids were
@@ -5810,8 +5840,11 @@ qemuProcessNetworkPrepareDevices(virQEMUDriver *driver,
  */
 int
 qemuProcessSetupVcpu(virDomainObj *vm,
-                     unsigned int vcpuid)
+                     unsigned int vcpuid,
+                     bool schedCore)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     pid_t vcpupid = qemuDomainGetVcpuPid(vm, vcpuid);
     virDomainVcpuDef *vcpu = virDomainDefGetVcpu(vm->def, vcpuid);
     virDomainResctrlMonDef *mon = NULL;
@@ -5823,6 +5856,30 @@ qemuProcessSetupVcpu(virDomainObj *vm,
                             vm->def->cputune.quota,
                             &vcpu->sched) < 0)
         return -1;
+
+    if (schedCore &&
+        cfg->schedCore == QEMU_SCHED_CORE_VCPUS) {
+        struct qemuProcessSetupVcpuSchedCoreHelperData data = { .vcpupid = vcpupid,
+            .dummypid = -1 };
+
+        for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
+            pid_t temptid = qemuDomainGetVcpuPid(vm, i);
+
+            if (temptid > 0) {
+                data.dummypid = temptid;
+                break;
+            }
+        }
+
+        if (data.dummypid == -1) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to find a vCPU that is online"));
+            return -1;
+        }
+
+        if (virProcessRunInFork(qemuProcessSetupVcpuSchedCoreHelper, &data) < 0)
+            return -1;
+    }
 
     for (i = 0; i < vm->def->nresctrls; i++) {
         size_t j = 0;
@@ -5930,7 +5987,7 @@ qemuProcessSetupVcpus(virDomainObj *vm)
         if (!vcpu->online)
             continue;
 
-        if (qemuProcessSetupVcpu(vm, i) < 0)
+        if (qemuProcessSetupVcpu(vm, i, false) < 0)
             return -1;
     }
 
