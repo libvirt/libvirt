@@ -4,6 +4,7 @@
     <cpu>
       <arch>i686</arch>
       <vendor>Intel</vendor>
+      <maxphysaddr mode='emulate' bits='46'/>
       <features>
         <pae/>
         <nonpae/>

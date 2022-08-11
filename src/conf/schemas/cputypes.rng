@@ -389,6 +389,9 @@
         <optional>
           <ref name="cpuTopology"/>
         </optional>
+        <optional>
+          <ref name="cpuMaxPhysAddr"/>
+        </optional>
         <zeroOrMore>
           <element name="feature">
             <attribute name="name">
