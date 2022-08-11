@@ -449,6 +449,9 @@ qemuTPMPcrBankBitmapToStr(virBitmap *activePcrBanks)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     ssize_t bank = -1;
 
+    if (!activePcrBanks)
+        return NULL;
+
     while ((bank = virBitmapNextSetBit(activePcrBanks, bank)) > -1)
         virBufferAsprintf(&buf, "%s,", virDomainTPMPcrBankTypeToString(bank));
 
