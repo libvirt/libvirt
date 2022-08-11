@@ -77,8 +77,9 @@ struct _virNetDevVPortProfile {
 
 bool virNetDevVPortProfileEqual(const virNetDevVPortProfile *a,
                                 const virNetDevVPortProfile *b);
-int virNetDevVPortProfileCopy(virNetDevVPortProfile **dst,
-                              const virNetDevVPortProfile *src);
+
+virNetDevVPortProfile *
+virNetDevVPortProfileCopy(const virNetDevVPortProfile *src);
 
 int virNetDevVPortProfileCheckComplete(virNetDevVPortProfile *virtport,
                                        bool generateMissing);

@@ -29348,8 +29348,7 @@ virDomainNetDefToNetworkPort(virDomainDef *dom,
 
     memcpy(&port->mac, &iface->mac, VIR_MAC_BUFLEN);
 
-    if (virNetDevVPortProfileCopy(&port->virtPortProfile, iface->virtPortProfile) < 0)
-        return NULL;
+    port->virtPortProfile = virNetDevVPortProfileCopy(iface->virtPortProfile);
 
     if (virNetDevBandwidthCopy(&port->bandwidth, iface->bandwidth) < 0)
         return NULL;
@@ -29448,8 +29447,7 @@ virDomainNetDefActualFromNetworkPort(virDomainNetDef *iface,
         goto error;
     }
 
-    if (virNetDevVPortProfileCopy(&actual->virtPortProfile, port->virtPortProfile) < 0)
-        goto error;
+    actual->virtPortProfile = virNetDevVPortProfileCopy(port->virtPortProfile);
 
     if (virNetDevBandwidthCopy(&actual->bandwidth, port->bandwidth) < 0)
         goto error;
@@ -29589,8 +29587,7 @@ virDomainNetDefActualToNetworkPort(virDomainDef *dom,
         return NULL;
     }
 
-    if (virNetDevVPortProfileCopy(&port->virtPortProfile, actual->virtPortProfile) < 0)
-        return NULL;
+    port->virtPortProfile = virNetDevVPortProfileCopy(actual->virtPortProfile);
 
     if (virNetDevBandwidthCopy(&port->bandwidth, actual->bandwidth) < 0)
         return NULL;

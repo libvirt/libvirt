@@ -122,16 +122,18 @@ virNetDevVPortProfileEqual(const virNetDevVPortProfile *a, const virNetDevVPortP
 }
 
 
-int virNetDevVPortProfileCopy(virNetDevVPortProfile **dst, const virNetDevVPortProfile *src)
+virNetDevVPortProfile *
+virNetDevVPortProfileCopy(const virNetDevVPortProfile *src)
 {
-    if (!src) {
-        *dst = NULL;
-        return 0;
-    }
+    virNetDevVPortProfile *ret = NULL;
 
-    *dst = g_new0(virNetDevVPortProfile, 1);
-    memcpy(*dst, src, sizeof(*src));
-    return 0;
+    if (!src)
+        return NULL;
+
+    ret = g_new0(virNetDevVPortProfile, 1);
+    memcpy(ret, src, sizeof(*ret));
+
+    return ret;
 }
 
 
