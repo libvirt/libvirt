@@ -196,7 +196,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "ide-cd", /* X_QEMU_CAPS_IDE_CD */
               "no-user-config", /* X_QEMU_CAPS_NO_USER_CONFIG */
               "hda-micro", /* QEMU_CAPS_HDA_MICRO */
-              "dump-guest-memory", /* QEMU_CAPS_DUMP_GUEST_MEMORY */
+              "dump-guest-memory", /* X_QEMU_CAPS_DUMP_GUEST_MEMORY */
 
               /* 95 */
               "nec-usb-xhci", /* QEMU_CAPS_NEC_USB_XHCI */
@@ -1205,7 +1205,6 @@ struct virQEMUCapsStringFlags {
 
 
 struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
-    { "dump-guest-memory", QEMU_CAPS_DUMP_GUEST_MEMORY },
     { "query-spice", QEMU_CAPS_SPICE },
     { "query-vnc", QEMU_CAPS_VNC },
     { "nbd-server-start", QEMU_CAPS_NBD_SERVER },

@@ -174,7 +174,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_IDE_CD, /* -device ide-cd */
     X_QEMU_CAPS_NO_USER_CONFIG, /* -no-user-config */
     QEMU_CAPS_HDA_MICRO, /* -device hda-micro */
-    QEMU_CAPS_DUMP_GUEST_MEMORY, /* dump-guest-memory command */
+    X_QEMU_CAPS_DUMP_GUEST_MEMORY, /* dump-guest-memory command */
 
     /* 95 */
     QEMU_CAPS_NEC_USB_XHCI, /* -device nec-usb-xhci */

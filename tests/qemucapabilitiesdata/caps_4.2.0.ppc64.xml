@@ -18,7 +18,6 @@
   <flag name='scsi-disk.channel'/>
   <flag name='scsi-block'/>
   <flag name='hda-micro'/>
-  <flag name='dump-guest-memory'/>
   <flag name='nec-usb-xhci'/>
   <flag name='lsi'/>
   <flag name='virtio-scsi-pci'/>
