@@ -3052,12 +3052,6 @@ qemuDumpToFd(virQEMUDriver *driver,
     bool detach = false;
     int ret = -1;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DUMP_GUEST_MEMORY)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("dump-guest-memory is not supported"));
-        return -1;
-    }
-
     detach = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DUMP_COMPLETED);
 
     if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, fd) < 0)
