@@ -747,7 +747,7 @@ mymain(void)
     DO_TEST_NOCAPS("numad-auto-memory-vcpu-no-cpuset-and-placement");
     DO_TEST_NOCAPS("numad-auto-memory-vcpu-cpuset");
     DO_TEST_NOCAPS("usb-ich9-ehci-addr");
-    DO_TEST("disk-copy_on_read", QEMU_CAPS_VIRTIO_TX_ALG);
+    DO_TEST_NOCAPS("disk-copy_on_read");
     DO_TEST_CAPS_LATEST("tpm-passthrough");
     DO_TEST_CAPS_LATEST("tpm-passthrough-crb");
     DO_TEST_CAPS_LATEST("tpm-emulator");

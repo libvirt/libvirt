@@ -35,11 +35,6 @@
     </controller>
     <controller type='ide' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
-    <interface type='user'>
-      <mac address='52:54:00:e5:48:58'/>
-      <model type='virtio'/>
-      <driver name='vhost' txmode='iothread'/>
-    </interface>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <memballoon model='virtio'/>
