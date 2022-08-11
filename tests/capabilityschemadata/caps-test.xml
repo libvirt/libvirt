@@ -3,6 +3,7 @@
   <host>
     <cpu>
       <arch>i686</arch>
+      <vendor>Intel</vendor>
       <features>
         <pae/>
         <nonpae/>

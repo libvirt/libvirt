@@ -326,90 +326,92 @@
       <element name="arch">
         <ref name="archnames"/>
       </element>
-      <optional>
-        <element name="features">
-          <optional>
-            <element name="pae"><empty/></element>
-          </optional>
-          <optional>
-            <element name="nonpae"><empty/></element>
-          </optional>
-          <optional>
-            <element name="vmx"><empty/></element>
-          </optional>
-          <optional>
-            <element name="svm"><empty/></element>
-          </optional>
-        </element>
-      </optional>
-      <optional>
-        <element name="model">
-          <text/>
-        </element>
-      </optional>
-      <optional>
-        <element name="vendor">
-          <text/>
-        </element>
-      </optional>
-      <optional>
-        <element name="microcode">
-          <attribute name="version">
-            <ref name="positiveInteger"/>
-          </attribute>
-        </element>
-      </optional>
-      <optional>
-        <element name="signature">
-          <attribute name="family">
-            <ref name="positiveInteger"/>
-          </attribute>
-          <attribute name="model">
-            <ref name="unsignedInt"/>
-          </attribute>
-          <attribute name="stepping">
-            <ref name="unsignedInt"/>
-          </attribute>
-        </element>
-      </optional>
-      <optional>
-        <element name="counter">
-          <attribute name="name">
+      <interleave>
+        <optional>
+          <element name="features">
+            <optional>
+              <element name="pae"><empty/></element>
+            </optional>
+            <optional>
+              <element name="nonpae"><empty/></element>
+            </optional>
+            <optional>
+              <element name="vmx"><empty/></element>
+            </optional>
+            <optional>
+              <element name="svm"><empty/></element>
+            </optional>
+          </element>
+        </optional>
+        <optional>
+          <element name="model">
             <text/>
-          </attribute>
-          <attribute name="frequency">
-            <ref name="positiveInteger"/>
-          </attribute>
-          <attribute name="scaling">
-            <ref name="virYesNo"/>
-          </attribute>
-        </element>
-      </optional>
-      <optional>
-        <ref name="cpuTopology"/>
-      </optional>
-      <zeroOrMore>
-        <element name="feature">
-          <attribute name="name">
-            <data type="string">
-              <param name="pattern">[a-zA-Z0-9\-_]+</param>
-            </data>
-          </attribute>
-          <empty/>
-        </element>
-      </zeroOrMore>
-      <zeroOrMore>
-        <element name="pages">
-          <optional>
-            <attribute name="unit">
-              <ref name="unit"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="vendor">
+            <text/>
+          </element>
+        </optional>
+        <optional>
+          <element name="microcode">
+            <attribute name="version">
+              <ref name="positiveInteger"/>
             </attribute>
-          </optional>
-          <attribute name="size">
-            <ref name="unsignedInt"/>
-          </attribute>
-        </element>
-      </zeroOrMore>
+          </element>
+        </optional>
+        <optional>
+          <element name="signature">
+            <attribute name="family">
+              <ref name="positiveInteger"/>
+            </attribute>
+            <attribute name="model">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <attribute name="stepping">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </element>
+        </optional>
+        <optional>
+          <element name="counter">
+            <attribute name="name">
+              <text/>
+            </attribute>
+            <attribute name="frequency">
+              <ref name="positiveInteger"/>
+            </attribute>
+            <attribute name="scaling">
+              <ref name="virYesNo"/>
+            </attribute>
+          </element>
+        </optional>
+        <optional>
+          <ref name="cpuTopology"/>
+        </optional>
+        <zeroOrMore>
+          <element name="feature">
+            <attribute name="name">
+              <data type="string">
+                <param name="pattern">[a-zA-Z0-9\-_]+</param>
+              </data>
+            </attribute>
+            <empty/>
+          </element>
+        </zeroOrMore>
+        <zeroOrMore>
+          <element name="pages">
+            <optional>
+              <attribute name="unit">
+                <ref name="unit"/>
+              </attribute>
+            </optional>
+            <attribute name="size">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </element>
+        </zeroOrMore>
+      </interleave>
     </element>
   </define>
 
