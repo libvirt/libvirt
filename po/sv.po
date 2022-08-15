@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-07-26 08:13+0000\n"
-"PO-Revision-Date: 2022-08-09 11:53+0000\n"
+"PO-Revision-Date: 2022-08-15 08:19+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -13458,236 +13458,246 @@ msgstr "Port Dev"
 
 #, c-format
 msgid "Port profile Associate failed for %s"
-msgstr ""
+msgstr "Portprofilsassociering misslyckades för %s"
 
 msgid "Port reclaim not requested but plug type is not none"
-msgstr ""
+msgstr "Portåtervinning inte begärd men pluggtypen är inte none"
 
 msgid "Port reclaim requested but plug type is none"
-msgstr ""
+msgstr "Portåtervinning inte begärd men pluggtypen är none"
 
 msgid "Post-copy"
-msgstr ""
+msgstr "Postkopiering"
 
 msgid "Post-copy Error"
-msgstr ""
+msgstr "Postkopieringsfel"
 
 msgid "Postcopy requests:"
-msgstr ""
+msgstr "Postkopieringsbegäran:"
 
 msgid "PowerPC pseries machines do not support floppy device"
-msgstr ""
+msgstr "PowerPC pseries-maskiner stödjer inte en floppyenhet"
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
-msgstr ""
+msgstr "PrepareTunnel anropad men ingen flagga TUNNELLED satt"
 
 msgid "Primary IDE controller must have PCI address 0:0:1.1"
-msgstr ""
+msgstr "Den primära IDE-styrenheten måste ha PCI-adress 0:0:1.1"
 
 msgid "Primary SATA controller must have PCI address 0:0:1f.2"
-msgstr ""
+msgstr "Den primära SATA-styrenheten måste ha PCI-adress 0:0:1f.2"
 
 msgid "Print lease info for a given network"
-msgstr ""
+msgstr "Skriv ut hyresinformation för ett givet nätverk"
 
 msgid "Print the current directory."
 msgstr "Skriv ut aktuell katalog."
 
 msgid "Prints cpu stats of the node."
-msgstr ""
+msgstr "Skriver ut cpu-statistik för noden."
 
 msgid ""
 "Prints global help, command specific help, or help for a\n"
 "    group of related commands"
 msgstr ""
+"Skriver ut global hjälp, kommmandospecifik hjälp eller hjälp för en\n"
+"    grupp av relaterade kommandon"
 
 msgid ""
 "Prints global help, command specific help, or help for a group of related "
 "commands"
 msgstr ""
+"Skriver ut global hjälp, kommmandospecifik hjälp eller hjälp för en grupp av "
+"relaterade kommandon"
 
 msgid "Prints memory stats of the node."
-msgstr ""
+msgstr "Skriver minnesstatistik för noden."
 
 #, c-format
 msgid "Priority '%d' is outside valid range of [%d,%d]"
-msgstr ""
+msgstr "Prioriteten ”%d” är utanför det giltiga intervallet [%d,%d]"
 
-#, fuzzy
 msgid "Probing TSC is not supported on this platform"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "Avkänning av TSC stödjs inte på denna plattform"
 
-#, fuzzy
 msgid "Process CPU affinity is not supported on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Process-CPU-affinitet stödjs inte på denna plattform"
 
-#, fuzzy
 msgid "Process CPU scheduling is not supported on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Process-CPU-schemaläggning stödjs inte på denna plattform"
 
 msgid "Process exited prior to exec"
-msgstr ""
+msgstr "Processen avslutades före exec"
 
-#, fuzzy
 msgid "Process spawning is not supported on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Processavkomma stödjs inte på denna plattform"
 
 #, c-format
 msgid "Processes %d refused to die"
-msgstr ""
+msgstr "Processen %d vägrade att dö"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Processor mask of target NUMA node %zu doesn't match source"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Processormasken för mål-NUMA-noden %zu stämmer inte med källan"
 
 msgid "Profile of 0 size detected, will attempt to remove it"
-msgstr ""
+msgstr "En profil med storlek 0 upptäckt, kommer försöka ta bort den"
 
 msgid ""
 "Property 'guest-stats-polling-interval' not found on memory balloon driver."
 msgstr ""
+"Egenskapen ”guest-stats-polling-interval” finns inte på "
+"minnesballongdrivrutinen."
 
 msgid "Protocol"
 msgstr "Protokoll"
 
 #, c-format
 msgid "Protocol '%s' is not supported for tcp character device."
-msgstr ""
+msgstr "Protokollet ”%s” stödjs inte för tcp-teckenheter."
 
 msgid "Pull aborted"
-msgstr ""
+msgstr "Hämtningen avbruten"
 
-#, fuzzy
 msgid "Pull complete"
-msgstr "färdig"
+msgstr "Hämtningen färdig"
 
 msgid "Pull failed"
-msgstr ""
+msgstr "Hämtningen misslyckades"
 
 #, c-format
 msgid "QEMU '%s' does not support any CPU models for virttype '%s'"
-msgstr ""
+msgstr "QEMU ”%s” stödjer inte några CPU-modeller för virttypen ”%s”"
 
 #, c-format
 msgid "QEMU '%s' does not support reporting CPU model for virttype '%s'"
-msgstr ""
+msgstr "QEMU ”%s” stödjer inte att raportera CPU-modell för virttypen ”%s”"
 
 msgid "QEMU Attach"
-msgstr ""
+msgstr "QEMU-anslut"
 
 msgid "QEMU Guest Agent Command"
-msgstr ""
+msgstr "QEMU-gästagentkommando"
 
 msgid "QEMU Monitor Command"
-msgstr ""
+msgstr "QEMU-övervakningskommando"
 
 msgid "QEMU Monitor Events"
-msgstr ""
+msgstr "QEMU-övervakningshändelser"
 
 msgid "QEMU NBD server does not support TLS transport"
-msgstr ""
+msgstr "QEMU NBD-servern stödjer inte TLS-transporten"
 
 #, c-format
 msgid "QEMU binary %s is not executable"
-msgstr ""
+msgstr "QEMU-binären %s är inte körbar"
 
 msgid ""
 "QEMU binary does not support CPU host-passthrough for armv7l on aarch64 host"
 msgstr ""
+"QEMU-binären stödjer inte CPU-värdgenomgång för armv7l på en aarch64-värd"
 
 msgid "QEMU does not support SEV guest"
-msgstr ""
+msgstr "QEMU stödjer inte SEV-gäster"
 
 msgid "QEMU does not support calculating dirty page rate"
-msgstr ""
+msgstr "QEMU stödjer inte beräkning av hastigheten för smutsiga sidor"
 
 #, c-format
 msgid "QEMU does not support device assignment mode '%s'"
-msgstr ""
+msgstr "QEMU stödjer inte enhetstildelingsläget ”%s”"
 
 msgid "QEMU does not support dirty page rate calculation mode."
-msgstr ""
+msgstr "QEMU stödjer inte läget för hastighsetsberäkning av smutsiga sidor."
 
 msgid "QEMU does not support multiple listens for one graphics device."
-msgstr ""
+msgstr "QEMU stödjer inte multipla lyssningar för en grafikenhet."
 
 msgid "QEMU does not support setting a launch secret"
-msgstr ""
+msgstr "QEMU stödjer inte att ställa in en starthemlighet"
 
 msgid "QEMU guest agent is not available due to an error"
-msgstr ""
+msgstr "QEMU-gästagenten är inte tillgänglig på grund av ett fel"
 
 msgid "QEMU guest agent is not configured"
-msgstr ""
+msgstr "QEMU-gästagenten är inte konfigurerad"
 
 msgid "QEMU guest agent is not connected"
-msgstr ""
+msgstr "QEMU-gästagenten är inte ansluten"
 
 #, c-format
 msgid "QEMU monitor reply exceeds buffer size (%d bytes)"
-msgstr ""
+msgstr "QEMU-övervakningssvaret överskrider buffertstorleken (%d byte)"
 
 msgid "QEMU monitor was closed"
-msgstr ""
+msgstr "QEMU-övervakningen stängdes"
 
 msgid ""
 "QEMU reports invalid default CPU model \"host\" for non-kvm domain virt type"
 msgstr ""
+"QEMU rapporterar felaktig standard-CPU-modellen ”host” för icke-kvm-domän-"
+"virt-typ"
 
 msgid "QEMU reports migration is still running"
-msgstr ""
+msgstr "QEMU rapporterar att migreringen fortfarande pågår"
 
 #, c-format
 msgid "QEMU version >= %d.%d.%d is required, but %d.%d.%d found"
-msgstr ""
+msgstr "QEMU-versionen ≥ %d.%d.%d krävs, men %d.%d.%d finns"
 
 #, c-format
 msgid "QOM Object '%s' has no property 'ram_size'"
-msgstr ""
+msgstr "QOM-objektet ”%s” har ingen egenskap ”ram_size”"
 
 #, c-format
 msgid "QOM Object '%s' has no property 'vgamem_mb'"
-msgstr ""
+msgstr "QOM-objektet ”%s” har ingen egenskap ”vgamem_mb”"
 
 #, c-format
 msgid "QOM Object '%s' has no property 'vram64_size_mb'"
-msgstr ""
+msgstr "QOM-objektet ”%s” har ingen egenskap ”vram64_size_mb”"
 
 #, c-format
 msgid "QOM Object '%s' has no property 'vram_size'"
-msgstr ""
+msgstr "QOM-objektet ”%s” har ingen egenskap ”vram_size”"
 
 #, c-format
 msgid ""
 "Query parameter 'auto_answer' has unexpected value '%s' (should be 0 or 1)"
 msgstr ""
+"Frågeparametern ”auto_answer” har oväntat värde ”%s” (skulle vara 0 eller 1)"
 
 #, c-format
 msgid ""
 "Query parameter 'no_verify' has unexpected value '%s' (should be 0 or 1)"
 msgstr ""
+"Frågeparametern ”no_verify” har oväntat värde ”%s” (skulle vara 0 eller 1)"
 
 #, c-format
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
 "socks(|4|4a|5))"
 msgstr ""
+"Frågeparametern ”proxy” innehåller oväntad typ ”%s” (skulle vara "
+"(http|socks(|4|4a|5)))"
 
 msgid "Query parameter 'proxy' doesn't contain a hostname"
-msgstr ""
+msgstr "Frågeparametern ”proxy” innehåller inte ett värdnamn"
 
 #, c-format
 msgid ""
 "Query parameter 'proxy' has unexpected port value '%s' (should be [1..65535])"
 msgstr ""
+"Frågeparametern ”proxy” har oväntat portvärde ”%s” (skulle varit [1..65563])"
 
 #, c-format
 msgid ""
 "Query parameter 'transport' has unexpected value '%s' (should be http|https)"
 msgstr ""
+"Frågeparametern ”transport” har oväntat värde ”%s” (skulle vara http|https)"
 
 msgid "Query, adjust speed, or cancel active block operations."
-msgstr ""
+msgstr "Fråga, justera hastigheten eller avbryt aktiva blockåtgärder."
 
 #, c-format
 msgid "QueryPerf returned object with unexpected type '%s'"
@@ -13696,130 +13706,131 @@ msgstr "QueryPerf returnerade objektet med oväntade typ ”%s”"
 msgid ""
 "QueryVirtualDiskUuid not available, cannot lookup storage volume by UUID"
 msgstr ""
+"QueryVirtualDiskUuid är inte tillgängligt, kan inte slå upp lagringsvolymen "
+"via UUID"
 
 msgid "Querying migration downtime is not supported by QEMU binary"
-msgstr ""
+msgstr "Att fråga om migreringsnertid stödjs inte av QEMU-binären"
 
 #, c-format
 msgid ""
 "RBD image %s is old format. Does not support extended features and striping"
 msgstr ""
+"RBD-avbilden %s är i gammalt format. Stödjer inte utökade funktioner och "
+"strimling"
 
 msgid "RDT Memory Bandwidth allocation unsupported"
-msgstr ""
+msgstr "RDT-minnesbandbreddsallokering ej stött"
 
 msgid "RNG device is missing alias"
-msgstr ""
+msgstr "RNG-enheten saknar alias"
 
 msgid "ROM tuning is not supported when ROM is disabled"
-msgstr ""
+msgstr "ROM-trimning stödjs inte när ROM är avaktiverat"
 
 msgid "ROM tuning is only supported for PCI devices"
-msgstr ""
+msgstr "ROM-trimning stödjs endast för PCI-enheter"
 
 msgid "RPC error"
 msgstr "RPC-fel"
 
 msgid "Range exceeds available cells"
-msgstr ""
+msgstr "Intervallet överskrider tillgängliga celler"
 
 #, c-format
 msgid "Rate string '%s' has too many fields"
-msgstr ""
+msgstr "Hastighetssträngen ”%s” har för många fält"
 
-#, fuzzy
 msgid "Raw I/O is not supported on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Rå I/O stödjs inte på denna plattform"
 
 msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
-msgstr ""
+msgstr "Läs/skriv, exklusiv åtkomst, diskr fanns, men inga hyror angavs"
 
 msgid "Reading CPUID is not supported on this platform"
-msgstr ""
+msgstr "Att läsa CPUID stödjs inte på denna plattform"
 
-#, fuzzy
 msgid "Reading MSRs is not supported on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Att läsa MSR:er stödjs inte på denna plattform"
 
 msgid "Reattach node device to its device driver once released by the domain."
 msgstr ""
+"Återanslut nodenheten till sin enhetsdrivrutin när den släppts av domänen."
 
 #, c-format
 msgid "Received too many FDs %d, expected %d maximum"
-msgstr ""
+msgstr "Mottog för många FB:er %d, maximalt %d förväntades"
 
 msgid "Receiving file descriptors is not supported on this socket"
-msgstr ""
+msgstr "Att ta emot filbeskrivare stödjs inte på detta uttag"
 
 msgid "Reconnected to the admin server"
 msgstr "Återanslöt till administrationsservern"
 
-#, fuzzy
 msgid "Reconnected to the hypervisor"
-msgstr "(åter)anslut till hypervisor"
+msgstr "Återansluten till hypervisorn"
 
 #, c-format
 msgid "Redirection bus %s is not supported by QEMU"
-msgstr ""
+msgstr "Omdirigering av bussen %s stödjs inte av QEMU"
 
 msgid "Refresh a given pool."
-msgstr ""
+msgstr "Uppdatera en given pool."
 
 #, c-format
 msgid "Refusing to undefine while %d snapshots exist"
-msgstr ""
+msgstr "Vägrar att avdefiniera medan %d ögonblicksbilder finns"
 
 msgid "Refusing to undefine while domain managed save image exists"
-msgstr ""
+msgstr "Vägrar att avdefiniera medan domänhanterade sparade avbilder finns"
 
 msgid "Refusing to undefine while snapshots exist"
-msgstr ""
+msgstr "Vägrar att avdefiniera medan ögonblicksbilder finns"
 
 #, c-format
 msgid "Regular expression '%s' must have exactly 1 match group, not %d"
-msgstr ""
+msgstr "Det reguljära uttrycket ”%s” måste ha exakt 1 matchningsgrupp, inte %d"
 
 msgid "Relative backing during copy not supported yet"
-msgstr ""
+msgstr "Relativ backning under kopiering stödjs inte ännu"
 
 #, c-format
 msgid "Remote command terminated with non-zero code: %d"
-msgstr ""
+msgstr "Fjärrkommandot avslutade med nollskild kod: %d"
 
 #, c-format
 msgid "Remote program terminated with non-zero code: %d"
-msgstr ""
+msgstr "Fjärrprogrammet avslutade med nollskild kod: %d"
 
 #, c-format
 msgid "Removable media not supported for %s device"
-msgstr ""
+msgstr "Löstagbart medium stödjs inte för enheten %s"
 
 msgid "Remove an existing managed save state file from a domain"
-msgstr ""
+msgstr "Ta bort ett befintligt hanterat spartillstånd från en domän"
 
 msgid "Remove managed save of a domain"
-msgstr ""
+msgstr "Ta bort ett hanterat sparande av en domän"
 
 msgid "Removed"
 msgstr "Borttaget"
 
 #, c-format
 msgid "Removed managedsave image for domain '%s'"
-msgstr ""
+msgstr "Tog bort hanterad sparad avbild för domänen ”%s”"
 
 msgid "Renamed"
 msgstr "Namnändrad"
 
 msgid "Renaming domains on migration not supported"
-msgstr ""
+msgstr "Att byta namn på domäner vid migrering stödjs inte"
 
 msgid "Replace the domain XML associated with a managed save state file"
-msgstr ""
+msgstr "Ersätt domän-XML associerad med en hanterad tillståndsfil"
 
-#, fuzzy
 msgid "Replace the domain XML associated with a saved state file"
-msgstr "återställ en domän från ett sparat tillstånd i en fil"
+msgstr "Ersätt domän-XML:en associerad med en sparad tillståndsfil"
 
 #, c-format
 msgid ""
@@ -13827,17 +13838,21 @@ msgid ""
 "around host frequency %llu Hz and TSC scaling is not supported by the host "
 "CPU"
 msgstr ""
+"Den begärda TSC-frekvensen %llu Hz är utanför toleransintervallet ([%llu, "
+"%llu] Hz) runt värdfrekvensen %llu Hz och TSC-skalning stödjs inte av värd-"
+"CPU:n"
 
 #, c-format
 msgid "Requested data len %llu is larger than maximum %d"
-msgstr ""
+msgstr "Den begärda datalängden %llu är större än maximala %d"
 
 #, c-format
 msgid "Requested device '%s' is locked by lock file '%s' held by process %lld"
 msgstr ""
+"Den begärda enheten ”%s” är låst av låsfilen ”%s” som hålls av process %llu"
 
 msgid "Requested metadata element is not present"
-msgstr ""
+msgstr "Det begärda metadataelementet finns inte"
 
 #, c-format
 msgid ""
