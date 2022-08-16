@@ -50,6 +50,10 @@ qemuSnapshotRevert(virDomainObj *vm,
                    unsigned int flags);
 
 int
+qemuSnapshotDiscardAllMetadata(virQEMUDriver *driver,
+                               virDomainObj *vm);
+
+int
 qemuSnapshotDelete(virDomainObj *vm,
                    virDomainSnapshotPtr snapshot,
                    unsigned int flags);

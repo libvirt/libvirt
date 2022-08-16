@@ -31,6 +31,7 @@
 #include "qemu_migration_params.h"
 #include "qemu_security.h"
 #include "qemu_slirp.h"
+#include "qemu_snapshot.h"
 #include "qemu_extdevice.h"
 #include "qemu_blockjob.h"
 #include "qemu_checkpoint.h"
@@ -7140,81 +7141,6 @@ qemuDomainSnapshotForEachQcow2(virQEMUDriver *driver,
                                              op, try_all, def->ndisks);
 }
 
-/* Discard one snapshot (or its metadata), without reparenting any children.  */
-int
-qemuDomainSnapshotDiscard(virQEMUDriver *driver,
-                          virDomainObj *vm,
-                          virDomainMomentObj *snap,
-                          bool update_parent,
-                          bool metadata_only)
-{
-    g_autofree char *snapFile = NULL;
-    qemuDomainObjPrivate *priv;
-    virDomainMomentObj *parentsnap = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-
-    if (!metadata_only) {
-        if (!virDomainObjIsActive(vm)) {
-            size_t i;
-            /* Ignore any skipped disks */
-
-            /* Prefer action on the disks in use at the time the snapshot was
-             * created; but fall back to current definition if dealing with a
-             * snapshot created prior to libvirt 0.9.5.  */
-            virDomainDef *def = snap->def->dom;
-
-            if (!def)
-                def = vm->def;
-
-            for (i = 0; i < def->ndisks; i++) {
-                if (virDomainDiskTranslateSourcePool(def->disks[i]) < 0)
-                    return -1;
-            }
-
-            if (qemuDomainSnapshotForEachQcow2(driver, def, snap, "-d", true) < 0)
-                return -1;
-        } else {
-            priv = vm->privateData;
-            qemuDomainObjEnterMonitor(vm);
-            /* we continue on even in the face of error */
-            qemuMonitorDeleteSnapshot(priv->mon, snap->def->name);
-            qemuDomainObjExitMonitor(vm);
-        }
-    }
-
-    snapFile = g_strdup_printf("%s/%s/%s.xml", cfg->snapshotDir, vm->def->name,
-                               snap->def->name);
-
-    if (snap == virDomainSnapshotGetCurrent(vm->snapshots)) {
-        virDomainSnapshotSetCurrent(vm->snapshots, NULL);
-        if (update_parent && snap->def->parent_name) {
-            parentsnap = virDomainSnapshotFindByName(vm->snapshots,
-                                                     snap->def->parent_name);
-            if (!parentsnap) {
-                VIR_WARN("missing parent snapshot matching name '%s'",
-                         snap->def->parent_name);
-            } else {
-                virDomainSnapshotSetCurrent(vm->snapshots, parentsnap);
-                if (qemuDomainSnapshotWriteMetadata(vm, parentsnap,
-                                                    driver->xmlopt,
-                                                    cfg->snapshotDir) < 0) {
-                    VIR_WARN("failed to set parent snapshot '%s' as current",
-                             snap->def->parent_name);
-                    virDomainSnapshotSetCurrent(vm->snapshots, NULL);
-                }
-            }
-        }
-    }
-
-    if (unlink(snapFile) < 0)
-        VIR_WARN("Failed to unlink %s", snapFile);
-    if (update_parent)
-        virDomainMomentDropParent(snap);
-    virDomainSnapshotObjListRemove(vm->snapshots, snap);
-
-    return 0;
-}
-
 /* Hash iterator callback to discard multiple snapshots.  */
 int qemuDomainMomentDiscardAll(void *payload,
                                const char *name G_GNUC_UNUSED,
@@ -7233,23 +7159,6 @@ int qemuDomainMomentDiscardAll(void *payload,
     return 0;
 }
 
-int
-qemuDomainSnapshotDiscardAllMetadata(virQEMUDriver *driver,
-                                     virDomainObj *vm)
-{
-    virQEMUMomentRemove rem = {
-        .driver = driver,
-        .vm = vm,
-        .metadata_only = true,
-        .momentDiscard = qemuDomainSnapshotDiscard,
-    };
-
-    virDomainSnapshotForEach(vm->snapshots, qemuDomainMomentDiscardAll, &rem);
-    virDomainSnapshotObjListRemoveAll(vm->snapshots);
-
-    return rem.err;
-}
-
 
 static void
 qemuDomainRemoveInactiveCommon(virQEMUDriver *driver,
@@ -7262,7 +7171,7 @@ qemuDomainRemoveInactiveCommon(virQEMUDriver *driver,
     g_autofree char *chkDir = NULL;
 
     /* Remove any snapshot metadata prior to removing the domain */
-    if (qemuDomainSnapshotDiscardAllMetadata(driver, vm) < 0) {
+    if (qemuSnapshotDiscardAllMetadata(driver, vm) < 0) {
         VIR_WARN("unable to remove all snapshots for domain %s",
                  vm->def->name);
     } else {

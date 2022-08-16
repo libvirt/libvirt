@@ -681,12 +681,6 @@ int qemuDomainSnapshotForEachQcow2(virQEMUDriver *driver,
                                    const char *op,
                                    bool try_all);
 
-int qemuDomainSnapshotDiscard(virQEMUDriver *driver,
-                              virDomainObj *vm,
-                              virDomainMomentObj *snap,
-                              bool update_current,
-                              bool metadata_only);
-
 typedef struct _virQEMUMomentRemove virQEMUMomentRemove;
 struct _virQEMUMomentRemove {
     virQEMUDriver *driver;
@@ -702,9 +696,6 @@ struct _virQEMUMomentRemove {
 int qemuDomainMomentDiscardAll(void *payload,
                                const char *name,
                                void *data);
-
-int qemuDomainSnapshotDiscardAllMetadata(virQEMUDriver *driver,
-                                         virDomainObj *vm);
 
 void qemuDomainRemoveInactive(virQEMUDriver *driver,
                               virDomainObj *vm,

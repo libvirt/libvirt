@@ -6520,7 +6520,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
                            nsnapshots);
             goto endjob;
         }
-        if (qemuDomainSnapshotDiscardAllMetadata(driver, vm) < 0)
+        if (qemuSnapshotDiscardAllMetadata(driver, vm) < 0)
             goto endjob;
     }
     if (!virDomainObjIsActive(vm) &&
