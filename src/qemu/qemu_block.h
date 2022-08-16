@@ -285,3 +285,8 @@ qemuBlockCommit(virDomainObj *vm,
                 virStorageSource *top_parent,
                 unsigned long bandwidth,
                 unsigned int flags);
+
+int
+qemuBlockPivot(virDomainObj *vm,
+               qemuBlockJobData *job,
+               virDomainDiskDef *disk);

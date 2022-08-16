@@ -3373,3 +3373,124 @@ qemuBlockCommit(virDomainObj *vm,
 
     return ret;
 }
+
+
+/* Called while holding the VM job lock, to implement a block job
+ * abort with pivot; this updates the VM definition as appropriate, on
+ * either success or failure.  */
+int
+qemuBlockPivot(virDomainObj *vm,
+               qemuBlockJobData *job,
+               virDomainDiskDef *disk)
+{
+    g_autoptr(qemuBlockStorageSourceChainData) chainattachdata = NULL;
+    int ret = -1;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virJSONValue) bitmapactions = NULL;
+    g_autoptr(virJSONValue) reopenactions = NULL;
+    int rc = 0;
+
+    if (job->state != QEMU_BLOCKJOB_STATE_READY) {
+        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
+                       _("block job '%s' not ready for pivot yet"),
+                       job->name);
+        return -1;
+    }
+
+    switch ((qemuBlockJobType) job->type) {
+    case QEMU_BLOCKJOB_TYPE_NONE:
+    case QEMU_BLOCKJOB_TYPE_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid job type '%d'"), job->type);
+        return -1;
+
+    case QEMU_BLOCKJOB_TYPE_PULL:
+    case QEMU_BLOCKJOB_TYPE_COMMIT:
+    case QEMU_BLOCKJOB_TYPE_BACKUP:
+    case QEMU_BLOCKJOB_TYPE_INTERNAL:
+    case QEMU_BLOCKJOB_TYPE_CREATE:
+    case QEMU_BLOCKJOB_TYPE_BROKEN:
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("job type '%s' does not support pivot"),
+                       qemuBlockjobTypeToString(job->type));
+        return -1;
+
+    case QEMU_BLOCKJOB_TYPE_COPY:
+        if (!job->jobflagsmissing) {
+            bool shallow = job->jobflags & VIR_DOMAIN_BLOCK_COPY_SHALLOW;
+            bool reuse = job->jobflags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT;
+
+            bitmapactions = virJSONValueNewArray();
+
+            if (qemuMonitorTransactionBitmapAdd(bitmapactions,
+                                                disk->mirror->nodeformat,
+                                                "libvirt-tmp-activewrite",
+                                                false,
+                                                false,
+                                                0) < 0)
+                return -1;
+
+            /* Open and install the backing chain of 'mirror' late if we can use
+             * blockdev-snapshot to do it. This is to appease oVirt that wants
+             * to copy data into the backing chain while the top image is being
+             * copied shallow */
+            if (reuse && shallow &&
+                virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY) &&
+                virStorageSourceHasBacking(disk->mirror)) {
+
+                if (!(chainattachdata = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->mirror->backingStore)))
+                    return -1;
+
+                reopenactions = virJSONValueNewArray();
+
+                if (qemuMonitorTransactionSnapshotBlockdev(reopenactions,
+                                                           disk->mirror->backingStore->nodeformat,
+                                                           disk->mirror->nodeformat))
+                    return -1;
+            }
+
+        }
+        break;
+
+    case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
+        bitmapactions = virJSONValueNewArray();
+
+        if (qemuMonitorTransactionBitmapAdd(bitmapactions,
+                                            job->data.commit.base->nodeformat,
+                                            "libvirt-tmp-activewrite",
+                                            false,
+                                            false,
+                                            0) < 0)
+            return -1;
+
+        break;
+    }
+
+    qemuDomainObjEnterMonitor(vm);
+
+    if (chainattachdata) {
+        if ((rc = qemuBlockStorageSourceChainAttach(priv->mon, chainattachdata)) == 0) {
+            /* install backing images on success, or unplug them on failure */
+            if ((rc = qemuMonitorTransaction(priv->mon, &reopenactions)) != 0)
+                qemuBlockStorageSourceChainDetach(priv->mon, chainattachdata);
+        }
+    }
+
+    if (bitmapactions && rc == 0)
+        ignore_value(qemuMonitorTransaction(priv->mon, &bitmapactions));
+
+    if (rc == 0)
+        ret = qemuMonitorJobComplete(priv->mon, job->name);
+
+    qemuDomainObjExitMonitor(vm);
+
+    /* The pivot failed. The block job in QEMU remains in the synchronised state */
+    if (ret < 0)
+        return -1;
+
+    if (disk && disk->mirror)
+        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT;
+    job->state = QEMU_BLOCKJOB_STATE_PIVOTING;
+
+    return ret;
+}
