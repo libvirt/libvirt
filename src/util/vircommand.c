@@ -1417,6 +1417,8 @@ virCommandAddEnvPassCommon(virCommand *cmd)
 
     virCommandAddEnvPass(cmd, "LD_PRELOAD");
     virCommandAddEnvPass(cmd, "LD_LIBRARY_PATH");
+    virCommandAddEnvPass(cmd, "DYLD_INSERT_LIBRARIES");
+    virCommandAddEnvPass(cmd, "DYLD_FORCE_FLAT_NAMESPACE");
     virCommandAddEnvPass(cmd, "PATH");
     virCommandAddEnvPass(cmd, "HOME");
     virCommandAddEnvPass(cmd, "USER");
