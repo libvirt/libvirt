@@ -1336,7 +1336,7 @@ following collection of elements. :since:`Since 0.7.5`
      <vendor>Intel</vendor>
      <topology sockets='1' dies='1' cores='2' threads='1'/>
      <cache level='3' mode='emulate'/>
-     <maxphysaddr mode='emulate' bits='42'>
+     <maxphysaddr mode='emulate' bits='42'/>
      <feature policy='disable' name='lahf_lm'/>
    </cpu>
    ...
@@ -1353,7 +1353,7 @@ following collection of elements. :since:`Since 0.7.5`
 
    <cpu mode='host-passthrough' migratable='off'>
      <cache mode='passthrough'/>
-     <maxphysaddr mode='passthrough'>
+     <maxphysaddr mode='passthrough'/>
      <feature policy='disable' name='lahf_lm'/>
    ...
 
