@@ -5244,15 +5244,8 @@ Dummy network interface
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 An unconnected network interface sounds pretty pointless, but can show up for
-example with VMWare when libvirt does not have any more information to provide.
-Two such scenarios are currently known:
-
-1) network interface exists, but is not connected to any existing network
-2) the interface is connected to something known as VMWare Distributed Switch
-
-The difference between these two is not (yet?) discoverable by libvirt, so at
-least the information gathered from the hypervisor is provided in the
-element. :since:`Since 8.7.0`
+example with VMWare without any specified network to be connected to.
+:since:`Since 8.7.0`
 
 ::
 
@@ -5260,6 +5253,27 @@ element. :since:`Since 8.7.0`
    <devices>
      <interface type='dummy'>
        <mac address='52:54:00:22:c9:42'/>
+     </interface>
+   </devices>
+   ...
+
+VMWare Distributed Switch
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Interface can be connected to VMWare Distributed Switch, but since libvirt
+cannot provide information about that architecture, the information presented
+here is only what can be gathered from the VM configuration.  VMs with this
+interface type can be created, so that editing of the XML works properly,
+however libvirt cannot guarantee that any changes in these parameters will be
+valid in the hypervisor. :since:`Since 8.7.0`
+
+::
+
+   ...
+   <devices>
+     <interface type='vds'>
+       <mac address='52:54:00:22:c9:42'/>
+       <source switchid='12345678-1234-1234-1234-123456789abc' portid='6' portgroupid='pg-4321' connectionid='12345'/>
      </interface>
    </devices>
    ...

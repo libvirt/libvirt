@@ -574,6 +574,7 @@ VIR_ENUM_IMPL(virDomainNet,
               "udp",
               "vdpa",
               "dummy",
+              "vds",
 );
 
 VIR_ENUM_IMPL(virDomainNetModel,
@@ -2497,6 +2498,7 @@ virDomainActualNetDefFree(virDomainActualNetDef *def)
     case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_VDPA:
     case VIR_DOMAIN_NET_TYPE_DUMMY:
+    case VIR_DOMAIN_NET_TYPE_VDS:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
     }
@@ -2619,6 +2621,10 @@ virDomainNetDefFree(virDomainNetDef *def)
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
         virDomainHostdevDefClear(&def->data.hostdev.def);
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_VDS:
+        g_free(def->data.vds.portgroup_id);
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -8899,6 +8905,8 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *vhost_path = NULL;
     g_autofree char *tap = NULL;
     g_autofree char *vhost = NULL;
+    g_autofree char *switchid = NULL;
+    g_autofree char *connectionid = NULL;
     const char *prefix = xmlopt ? xmlopt->config.netPrefix : NULL;
 
     if (!(def = virDomainNetDefNew(xmlopt)))
@@ -8930,6 +8938,13 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
             portgroup = virXMLPropString(source_node, "portgroup");
             if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
                 portid = virXMLPropString(source_node, "portid");
+        }
+
+        if (def->type == VIR_DOMAIN_NET_TYPE_VDS) {
+            switchid = virXMLPropString(source_node, "switchid");
+            portid = virXMLPropString(source_node, "portid");
+            portgroup = virXMLPropString(source_node, "portgroupid");
+            connectionid = virXMLPropString(source_node, "connectionid");
         }
 
         if (def->type == VIR_DOMAIN_NET_TYPE_INTERNAL)
@@ -9313,6 +9328,36 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         }
         break;
 
+    case VIR_DOMAIN_NET_TYPE_VDS:
+        if (!switchid) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Missing source switchid for interface type '%s'"),
+                           virDomainNetTypeToString(def->type));
+            goto error;
+        }
+
+        if (virUUIDParse(switchid, def->data.vds.switch_id) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to parse switchid '%s'"), switchid);
+            goto error;
+        }
+
+        if (virStrToLong_ll(portid, NULL, 0, &def->data.vds.port_id) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to parse portid '%s'"), portid);
+            goto error;
+        }
+
+        if (virStrToLong_ll(connectionid, NULL, 0, &def->data.vds.connection_id) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to parse connectionid '%s'"), connectionid);
+            goto error;
+        }
+
+        def->data.vds.portgroup_id = g_steal_pointer(&portgroup);
+
+        break;
+
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_DUMMY:
@@ -9495,6 +9540,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         case VIR_DOMAIN_NET_TYPE_HOSTDEV:
         case VIR_DOMAIN_NET_TYPE_UDP:
         case VIR_DOMAIN_NET_TYPE_DUMMY:
+        case VIR_DOMAIN_NET_TYPE_VDS:
         case VIR_DOMAIN_NET_TYPE_VDPA:
             break;
         case VIR_DOMAIN_NET_TYPE_LAST:
@@ -23683,7 +23729,21 @@ virDomainNetDefFormat(virBuffer *buf,
                                      def->data.vdpa.devicepath);
                sourceLines++;
            }
+           break;
+
+        case VIR_DOMAIN_NET_TYPE_VDS: {
+            char switchidstr[VIR_UUID_STRING_BUFLEN];
+
+            virUUIDFormat(def->data.vds.switch_id, switchidstr);
+            virBufferEscapeString(buf, "<source switchid='%s'", switchidstr);
+            virBufferAsprintf(buf, " portid='%lld'", def->data.vds.port_id);
+            virBufferEscapeString(buf, " portgroupid='%s'", def->data.vds.portgroup_id);
+            virBufferAsprintf(buf, " connectionid='%lld'", def->data.vds.connection_id);
+
+            sourceLines++;
+
             break;
+        }
 
         case VIR_DOMAIN_NET_TYPE_USER:
         case VIR_DOMAIN_NET_TYPE_DUMMY:
@@ -28303,6 +28363,7 @@ virDomainNetGetActualVirtPortProfile(const virDomainNetDef *iface)
         case VIR_DOMAIN_NET_TYPE_UDP:
         case VIR_DOMAIN_NET_TYPE_VDPA:
         case VIR_DOMAIN_NET_TYPE_DUMMY:
+        case VIR_DOMAIN_NET_TYPE_VDS:
         case VIR_DOMAIN_NET_TYPE_LAST:
             break;
         }
@@ -28317,6 +28378,7 @@ virDomainNetGetActualVirtPortProfile(const virDomainNetDef *iface)
     case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_VDPA:
     case VIR_DOMAIN_NET_TYPE_DUMMY:
+    case VIR_DOMAIN_NET_TYPE_VDS:
     case VIR_DOMAIN_NET_TYPE_LAST:
     default:
         return NULL;
@@ -29314,6 +29376,7 @@ virDomainNetTypeSharesHostView(const virDomainNetDef *net)
     case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_VDPA:
     case VIR_DOMAIN_NET_TYPE_DUMMY:
+    case VIR_DOMAIN_NET_TYPE_VDS:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
     }
@@ -29576,6 +29639,7 @@ virDomainNetDefActualToNetworkPort(virDomainDef *dom,
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
     case VIR_DOMAIN_NET_TYPE_VDPA:
     case VIR_DOMAIN_NET_TYPE_DUMMY:
+    case VIR_DOMAIN_NET_TYPE_VDS:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unexpected network port type %s"),
                        virDomainNetTypeToString(virDomainNetGetActualType(iface)));

@@ -940,6 +940,7 @@ typedef enum {
     VIR_DOMAIN_NET_TYPE_UDP,
     VIR_DOMAIN_NET_TYPE_VDPA,
     VIR_DOMAIN_NET_TYPE_DUMMY,
+    VIR_DOMAIN_NET_TYPE_VDS,
 
     VIR_DOMAIN_NET_TYPE_LAST
 } virDomainNetType;
@@ -1133,6 +1134,12 @@ struct _virDomainNetDef {
         struct {
             virDomainHostdevDef def;
         } hostdev;
+        struct {
+            unsigned char switch_id[VIR_UUID_BUFLEN];
+            char *portgroup_id;
+            long long port_id;
+            long long connection_id;
+        } vds;
     } data;
     /* virtPortProfile is used by network/bridge/direct/hostdev */
     virNetDevVPortProfile *virtPortProfile;

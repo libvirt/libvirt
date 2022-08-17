@@ -3440,6 +3440,29 @@
           <ref name="interface-options"/>
         </group>
 
+        <group>
+          <attribute name="type">
+            <value>vds</value>
+          </attribute>
+          <interleave>
+            <element name="source">
+              <attribute name="switchid">
+                <ref name="UUID"/>
+              </attribute>
+              <attribute name="portid">
+                <data type="long"/>
+              </attribute>
+              <attribute name="portgroupid">
+                <data type="string"/>
+              </attribute>
+              <attribute name="connectionid">
+                <data type="long"/>
+              </attribute>
+            </element>
+            <ref name="interface-options"/>
+          </interleave>
+        </group>
+
       </choice>
       <optional>
         <attribute name="trustGuestRxFilters">
