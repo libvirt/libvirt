@@ -1,3 +1,5 @@
+.. role:: removed
+
 =======================
 RPM Deployment Guidance
 =======================
@@ -176,7 +178,9 @@ RPM packages
 * libvirt-daemon-driver-storage-sheepdog
 
   The dynamically loadable driver providing an implementation of the SheepDog
-  network storage pool type, for the storage pool management APIs.
+  network storage pool type, for the storage pool management APIs. This
+  sub-package was :removed:`removed in libvirt-8.8` as the sheepdog backend
+  driver was dropped from upstream.
 
 * libvirt-daemon-driver-storage-zfs
 

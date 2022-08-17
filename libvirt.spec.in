@@ -61,11 +61,6 @@
 
 # Then the secondary host drivers, which run inside libvirtd
 %define with_storage_rbd      0%{!?_without_storage_rbd:1}
-%if 0%{?fedora}
-    %define with_storage_sheepdog 0%{!?_without_storage_sheepdog:1}
-%else
-    %define with_storage_sheepdog 0
-%endif
 
 %define with_storage_gluster 0%{!?_without_storage_gluster:1}
 %if 0%{?rhel}
@@ -339,9 +334,6 @@ BuildRequires: librbd-devel
 BuildRequires: glusterfs-api-devel >= 3.4.1
 BuildRequires: glusterfs-devel >= 3.4.1
 %endif
-%if %{with_storage_sheepdog}
-BuildRequires: sheepdog
-%endif
 %if %{with_numactl}
 # For QEMU/LXC numa info
 BuildRequires: numactl-devel
@@ -584,6 +576,7 @@ Requires: /usr/bin/qemu-img
 %if !%{with_storage_rbd}
 Obsoletes: libvirt-daemon-driver-storage-rbd < %{version}-%{release}
 %endif
+Obsoletes: libvirt-daemon-driver-storage-sheepdog
 
 %description daemon-driver-storage-core
 The storage driver plugin for the libvirtd daemon, providing
@@ -687,19 +680,6 @@ volumes using the ceph protocol.
 %endif
 
 
-%if %{with_storage_sheepdog}
-%package daemon-driver-storage-sheepdog
-Summary: Storage driver plugin for sheepdog
-Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
-Requires: libvirt-libs = %{version}-%{release}
-Requires: sheepdog
-
-%description daemon-driver-storage-sheepdog
-The storage driver backend adding implementation of the storage APIs for
-sheepdog volumes using.
-%endif
-
-
 %if %{with_storage_zfs}
 %package daemon-driver-storage-zfs
 Summary: Storage driver plugin for ZFS
@@ -731,9 +711,6 @@ Requires: libvirt-daemon-driver-storage-gluster = %{version}-%{release}
 %endif
 %if %{with_storage_rbd}
 Requires: libvirt-daemon-driver-storage-rbd = %{version}-%{release}
-%endif
-%if %{with_storage_sheepdog}
-Requires: libvirt-daemon-driver-storage-sheepdog = %{version}-%{release}
 %endif
 %if %{with_storage_zfs}
 Requires: libvirt-daemon-driver-storage-zfs = %{version}-%{release}
@@ -1074,12 +1051,6 @@ exit 1
     %define arg_storage_rbd -Dstorage_rbd=disabled
 %endif
 
-%if %{with_storage_sheepdog}
-    %define arg_storage_sheepdog -Dstorage_sheepdog=enabled
-%else
-    %define arg_storage_sheepdog -Dstorage_sheepdog=disabled
-%endif
-
 %if %{with_storage_gluster}
     %define arg_storage_gluster -Dstorage_gluster=enabled -Dglusterfs=enabled
 %else
@@ -1199,7 +1170,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            -Dstorage_disk=enabled \
            -Dstorage_mpath=enabled \
            %{?arg_storage_rbd} \
-           %{?arg_storage_sheepdog} \
+           -Dstorage_sheepdog=disabled \
            %{?arg_storage_gluster} \
            %{?arg_storage_zfs} \
            -Dstorage_vstorage=disabled \
@@ -2025,11 +1996,6 @@ exit 0
 %if %{with_storage_rbd}
 %files daemon-driver-storage-rbd
 %{_libdir}/%{name}/storage-backend/libvirt_storage_backend_rbd.so
-%endif
-
-%if %{with_storage_sheepdog}
-%files daemon-driver-storage-sheepdog
-%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_sheepdog.so
 %endif
 
 %if %{with_storage_zfs}
