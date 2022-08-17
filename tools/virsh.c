@@ -579,9 +579,6 @@ virshShowVersion(vshControl *ctl G_GNUC_UNUSED)
 #ifdef WITH_STORAGE_RBD
     vshPrint(ctl, " RBD");
 #endif
-#ifdef WITH_STORAGE_SHEEPDOG
-    vshPrint(ctl, " Sheepdog");
-#endif
 #ifdef WITH_STORAGE_GLUSTER
     vshPrint(ctl, " Gluster");
 #endif

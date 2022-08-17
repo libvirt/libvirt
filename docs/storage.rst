@@ -1,4 +1,5 @@
 .. role:: since
+.. role:: removed
 
 ==================
 Storage Management
@@ -575,7 +576,7 @@ Sheepdog pool
 This provides a pool based on a Sheepdog Cluster. Sheepdog is a distributed
 storage system for QEMU/KVM. It provides highly available block level storage
 volumes that can be attached to QEMU/KVM virtual machines. The cluster must
-already be formatted. :since:`Since 0.9.13`
+already be formatted. :since:`Introduced in 0.9.13` :removed:`removed in 8.8.0.`
 
 Example Sheepdog pool input
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

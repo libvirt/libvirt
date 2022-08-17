@@ -1170,7 +1170,6 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            -Dstorage_disk=enabled \
            -Dstorage_mpath=enabled \
            %{?arg_storage_rbd} \
-           -Dstorage_sheepdog=disabled \
            %{?arg_storage_gluster} \
            %{?arg_storage_zfs} \
            -Dstorage_vstorage=disabled \
@@ -1282,7 +1281,6 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
   -Dstorage_mpath=disabled \
   -Dstorage_rbd=disabled \
   -Dstorage_scsi=disabled \
-  -Dstorage_sheepdog=disabled \
   -Dstorage_vstorage=disabled \
   -Dstorage_zfs=disabled \
   -Dsysctl_config=disabled \

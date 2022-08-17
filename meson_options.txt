@@ -88,7 +88,6 @@ option('storage_lvm', type: 'feature', value: 'auto', description: 'LVM backend 
 option('storage_mpath', type: 'feature', value: 'auto', description: 'mpath backend for the storage driver')
 option('storage_rbd', type: 'feature', value: 'auto', description: 'RADOS Block Device backend for the storage driver')
 option('storage_scsi', type: 'feature', value: 'auto', description: 'SCSI backend for the storage driver')
-option('storage_sheepdog', type: 'feature', value: 'auto', description: 'Sheepdog backend for the storage driver')
 option('storage_vstorage', type: 'feature', value: 'auto', description: 'Virtuozzo storage backend for the storage driver')
 option('storage_zfs', type: 'feature', value: 'auto', description: 'ZFS backend for the storage driver')
 

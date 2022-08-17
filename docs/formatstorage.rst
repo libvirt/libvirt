@@ -1,4 +1,5 @@
 .. role:: since
+.. role:: removed
 
 ==================================
 Storage pool and volume XML format
@@ -17,8 +18,9 @@ volume size, or placement.
 The top level tag for a storage pool document is 'pool'. It has a single
 attribute ``type``, which is one of ``dir``, ``fs``, ``netfs``, ``disk``,
 ``iscsi``, ``logical``, ``scsi`` (all :since:`since 0.4.1` ), ``mpath`` (
-:since:`since 0.7.1` ), ``rbd`` ( :since:`since 0.9.13` ), ``sheepdog`` (
-:since:`since 0.10.0` ), ``gluster`` ( :since:`since 1.2.0` ), ``zfs`` (
+:since:`since 0.7.1` ), ``rbd`` ( :since:`since 0.9.13` ),
+``sheepdog`` (:since:`since 0.10.0`, :removed:`removed in 8.8.0` ),
+``gluster`` ( :since:`since 1.2.0` ), ``zfs`` (
 :since:`since 1.2.8` ), ``vstorage`` ( :since:`since 3.1.0` ), or
 ``iscsi-direct`` ( :since:`since 4.7.0` ). This corresponds to the storage
 backend drivers listed further along in this document.

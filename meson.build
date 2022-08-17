@@ -1916,16 +1916,6 @@ if conf.has('WITH_LIBVIRTD')
     conf.set('WITH_STORAGE_SCSI', 1)
   endif
 
-  if not get_option('storage_sheepdog').disabled()
-    sheepdogcli_prog = find_program('dog', required: get_option('storage_sheepdog'), dirs: libvirt_sbin_path)
-
-    if sheepdogcli_prog.found()
-      use_storage = true
-      conf.set('WITH_STORAGE_SHEEPDOG', 1)
-      conf.set_quoted('SHEEPDOGCLI', sheepdogcli_prog.path())
-    endif
-  endif
-
   if not get_option('storage_vstorage').disabled()
     vstorage_enable = true
     if host_machine.system() != 'linux'
@@ -2251,7 +2241,6 @@ storagedriver_summary = {
   'mpath': conf.has('WITH_STORAGE_MPATH'),
   'Disk': conf.has('WITH_STORAGE_DISK'),
   'RBD': conf.has('WITH_STORAGE_RBD'),
-  'Sheepdog': conf.has('WITH_STORAGE_SHEEPDOG'),
   'Gluster': conf.has('WITH_STORAGE_GLUSTER'),
   'ZFS': conf.has('WITH_STORAGE_ZFS'),
   'Virtuozzo storage': conf.has('WITH_STORAGE_VSTORAGE'),
