@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-07-26 08:13+0000\n"
-"PO-Revision-Date: 2022-08-15 08:19+0000\n"
+"PO-Revision-Date: 2022-08-17 08:19+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -13866,69 +13866,74 @@ msgid "Requested number of virtual CPUs must at least be 1"
 msgstr "Det begärda antalet virtuella processorer måste vara minst 1"
 
 msgid "Requested operation is not valid"
-msgstr ""
+msgstr "Den begärda åtgärden är inte giltig"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Requested operation is not valid: %s"
-msgstr "operation misslyckades: %s"
+msgstr "Den begärda åtgärden är inte giltig: %s"
 
 #, c-format
 msgid "Requested volume '%s' is not in pool '%s'"
-msgstr ""
+msgstr "Den begärda volymen ”%s” finns inte i poolen ”%s”"
 
 #, c-format
 msgid ""
 "Required option '%s' is not set for PCI controller with index '%d', model "
 "'%s' and modelName '%s'"
 msgstr ""
+"Det begärda alternativet ”%s” är inte satt för PCI-styrenhet med index ”%d”, "
+"modell ”%s” och modelName ”%s”"
 
 #, c-format
 msgid ""
 "Resctrl ID must be set before determining resctrl parentpath='%s' prefix='%s'"
 msgstr ""
+"Rescrtrl-ID måste vara satt före man avgör rescrtrl parentpath=”%s” "
+"prefix=”%s”"
 
 #, c-format
 msgid "Resctrl allocation path is already set to '%s'"
-msgstr ""
+msgstr "Resctrl-allokeringssökvägen är redan satt till ”%s”"
 
 #, c-format
 msgid "Resctrl monitor path is already set to '%s'"
-msgstr ""
+msgstr "Resctrl-övervakningssökvägen är redan satt till ”%s”"
 
 msgid "Reset node device before or after assigning to a domain."
-msgstr ""
+msgstr "Återställ nodenheten före eller efter tilldelning til en domän."
 
 msgid "Reset the target domain as if by power button"
-msgstr ""
+msgstr "Återställ måldomänen som om med strömknappen"
 
-#, fuzzy
 msgid "Resize block device of domain."
-msgstr "Returnera lista på domäner"
+msgstr "Ändra storlek på blockenheten i domänen."
 
 msgid ""
 "Resizes a storage volume. This is safe only for storage volumes not in use "
 "by an active guest.\n"
 "See blockresize for live resizing."
 msgstr ""
+"Ändrar storlek på en lagringsvolym. Detta är endast säkert för "
+"lagringsvolymer som inte används av en aktiv gäst.\n"
+"Se blockresize för live-storleksändring."
 
 msgid "Resolved device mapper name too long"
-msgstr ""
+msgstr "Det upplösta namnet flr enhetsavbildaren (device mapper) är för långt"
 
-#, fuzzy
 msgid "Resource control is not supported on this host"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Resursstyrning stödjs inte på denna värd"
 
 #, c-format
 msgid "Resource lockspace '%s' exceeds %d characters"
-msgstr ""
+msgstr "Resurslåsrymden ”%s” överskrider %d tecken"
 
 #, c-format
 msgid "Resource name '%s' exceeds %d characters"
-msgstr ""
+msgstr "Resursnamnet ”%s” överskrider %d tecken"
 
 #, c-format
 msgid "Resource partition '%s' must start with '/'"
-msgstr ""
+msgstr "Resurspartitionen ”%s” måste börja med ”/”"
 
 msgid "Restore"
 msgstr "Återställ"
@@ -13941,57 +13946,54 @@ msgstr "Återställd"
 
 #, c-format
 msgid "Restoring of leases failed on interface '%s'"
-msgstr ""
+msgstr "Återställandet av hyran misslyckades för gränssnittet ”%s”"
 
 msgid "Resume a previously suspended domain."
 msgstr "Fortsätt en tidigare suspenderad domän."
 
-#, fuzzy
 msgid "Resume operation failed"
-msgstr "operation misslyckades"
+msgstr "Att återuppta åtgärden misslyckades"
 
 msgid "Resumed"
 msgstr "Återupptagen"
 
 msgid "Resuming after dump failed"
-msgstr ""
+msgstr "Att återuppta efter dumpen misslyckades"
 
 #, sh-format
 msgid "Resuming guest $name: "
-msgstr ""
+msgstr "Återupptar gästen $name: "
 
 #, sh-format
 msgid "Resuming guests on $uri URI..."
-msgstr ""
+msgstr "Återupptar gästen på URL:en $uri …"
 
 msgid "Retrieve identity details about <client> from <server>"
-msgstr ""
+msgstr "Hämta identetetsdetaljer om <klient> från <server>"
 
 msgid "Retrieve server's client-related configuration limits "
-msgstr ""
+msgstr "Hämta serverns klientrelaterade konfigurationsgränser "
 
 msgid "Retrieve threadpool attributes from a server. "
-msgstr ""
+msgstr "Hämta trådpoolsattribut från en server. "
 
 msgid "Return pool info in bytes"
-msgstr ""
+msgstr "Returnera poolinformation i byte"
 
 msgid "Returns XML <sources> document."
-msgstr ""
+msgstr "Returnera XML-<käll>-dokument."
 
-#, fuzzy
 msgid "Returns a list of secrets"
-msgstr "Returnera lista på nätverk."
+msgstr "Returnerar en lista över hemligheter"
 
 msgid "Returns basic SEV information about the node."
-msgstr ""
+msgstr "Returnerar grundläggande SEV-information om noden."
 
 msgid "Returns basic information about a checkpoint."
 msgstr "Returnerar grundinformation om en kontrollpunkt."
 
-#, fuzzy
 msgid "Returns basic information about a snapshot."
-msgstr "Returnerar grundinformation om noden."
+msgstr "Returnerar grundinformation om en ögonblicksbild."
 
 msgid "Returns basic information about the domain IOThreads."
 msgstr "Returnerar grundinformation om domänen-IOThreads."
@@ -14006,7 +14008,7 @@ msgid "Returns basic information about the network"
 msgstr "Returnerar grundinformation om nätverket"
 
 msgid "Returns basic information about the node device"
-msgstr ""
+msgstr "Returnerar grundinformation om nodenenheten"
 
 msgid "Returns basic information about the node."
 msgstr "Returnerar grundinformation om noden."
@@ -14017,34 +14019,29 @@ msgstr "Returnerar grundinformation om lagringspoolen."
 msgid "Returns basic information about the storage vol."
 msgstr "Returnerar grundinformation om lagringsvolymen."
 
-#, fuzzy
 msgid "Returns capabilities of emulator with respect to host and libvirt."
-msgstr "Returnera kapabiliteter för hypervisor/drivrutin."
+msgstr "Returnerar förmågor hos emulatorn med hänsyn till värd och ilbvirt."
 
 msgid "Returns capabilities of hypervisor/driver."
 msgstr "Returnera kapabiliteter för hypervisor/drivrutin."
 
-#, fuzzy
 msgid "Returns capabilities of storage pool support."
-msgstr "Returnera kapabiliteter för hypervisor/drivrutin."
+msgstr "Returnerar förmågor hos lagringspoolsstödet."
 
 msgid "Returns cpu stats of the node, in nanoseconds."
-msgstr ""
+msgstr "Returnerar cpu-statistik för noden, i nanosekunder."
 
-#, fuzzy
 msgid "Returns information about jobs running on a domain."
-msgstr "Returnerar grundinformation om domänen."
+msgstr "Returnerar information om jobb som kör i en domän."
 
 msgid "Returns list of domains."
 msgstr "Returnerar lista av domäner."
 
-#, fuzzy
 msgid "Returns list of network filter bindings."
-msgstr "Returnera lista på nätverk."
+msgstr "Returnerar en lista över nätverksfilterbindningar."
 
-#, fuzzy
 msgid "Returns list of network filters."
-msgstr "Returnera lista på nätverk."
+msgstr "Returnerar en lista över nätverksfilter."
 
 msgid "Returns list of network ports."
 msgstr "Returnerar en lista över nätverksportar."
@@ -14052,20 +14049,17 @@ msgstr "Returnerar en lista över nätverksportar."
 msgid "Returns list of networks."
 msgstr "Returnera lista på nätverk."
 
-#, fuzzy
 msgid "Returns list of physical host interfaces."
-msgstr "starta ett fysiskt värdgränssnitt."
+msgstr "Returnerar en lista över fysiska värdgränssnitt."
 
-#, fuzzy
 msgid "Returns list of pools."
-msgstr "Returnera lista på domäner"
+msgstr "Returnerar en lista över pooler."
 
-#, fuzzy
 msgid "Returns list of vols by pool."
-msgstr "Returnera lista på domäner"
+msgstr "Returnerar en lista över volymer per pool."
 
 msgid "Returns memory stats of the node, in kilobytes."
-msgstr ""
+msgstr "Returnerar minnesstatistik för noden, i kilobyte."
 
 #, fuzzy
 msgid "Returns state about a domain."
