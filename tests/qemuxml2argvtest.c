@@ -1053,6 +1053,8 @@ mymain(void)
     g_unsetenv("TMPDIR");
     g_unsetenv("LD_PRELOAD");
     g_unsetenv("LD_LIBRARY_PATH");
+    g_unsetenv("DYLD_INSERT_LIBRARIES");
+    g_unsetenv("DYLD_FORCE_FLAT_NAMESPACE");
     g_unsetenv("QEMU_AUDIO_DRV");
     g_unsetenv("SDL_AUDIODRIVER");
 
