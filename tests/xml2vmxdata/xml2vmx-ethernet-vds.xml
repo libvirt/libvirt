@@ -1,0 +1,15 @@
+<domain type='vmware'>
+  <name>ethernet-vpx</name>
+  <uuid>564d9bef-acd9-b4e0-c8f0-aea8b9103515</uuid>
+  <memory unit='KiB'>4096</memory>
+  <os>
+    <type>hvm</type>
+  </os>
+  <devices>
+    <interface type='vds'>
+      <mac address='00:50:56:87:65:43' type='generated'/>
+      <source switchid='503426b2-94e9-3b16-1d68-87bfff4a5440' portid='5' portgroupid='dvportgroup-1285' connectionid='408217997'/>
+      <model type='e1000e'/>
+    </interface>
+  </devices>
+</domain>

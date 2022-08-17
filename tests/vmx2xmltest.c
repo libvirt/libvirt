@@ -237,6 +237,7 @@ mymain(void)
     DO_TEST("ethernet-vpx");
     DO_TEST("ethernet-other");
     DO_TEST("ethernet-dummy");
+    DO_TEST("ethernet-vds");
 
     DO_TEST("serial-file");
     DO_TEST("serial-device");

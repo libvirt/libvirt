@@ -2700,6 +2700,13 @@ virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def)
     char networkName_name[48] = "";
     char *networkName = NULL;
 
+    char switchId_name[48] = "";
+    char *switchId = NULL;
+
+    char portId_name[48] = "";
+    char portgroupId_name[48] = "";
+    char connectionId_name[48] = "";
+
     int netmodel = VIR_DOMAIN_NET_MODEL_UNKNOWN;
 
     if (def == NULL || *def != NULL) {
@@ -2720,6 +2727,13 @@ virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def)
     VMX_BUILD_NAME(features);
     VMX_BUILD_NAME(networkName);
     VMX_BUILD_NAME(vnet);
+
+    g_snprintf(prefix, sizeof(prefix), "ethernet%d.dvs", controller);
+
+    VMX_BUILD_NAME(switchId);
+    VMX_BUILD_NAME(portId);
+    VMX_BUILD_NAME(portgroupId);
+    VMX_BUILD_NAME(connectionId);
 
     /* vmx:present */
     if (virVMXGetConfigBoolean(conf, present_name, &present, false, true) < 0)
@@ -2836,19 +2850,36 @@ virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def)
         goto cleanup;
     }
 
+    if (virVMXGetConfigString(conf, switchId_name, &switchId, true) < 0)
+        goto cleanup;
+
     /* Setup virDomainNetDef */
-    if (connectionType == NULL && networkName == NULL) {
-        /*
-         * Having neither a connectionType nor a network name can mean two
-         * things:
-         *
-         * 1) there is no connection of that nic
-         * 2) the nic is connected to VMWare Distributed Switch
-         *
-         * But we do not see any difference between these and hence we report
-         * the closest thing to at least make virt-v2v and others work when they
-         * read the domain XML.
-         */
+    if (switchId) {
+        (*def)->type = VIR_DOMAIN_NET_TYPE_VDS;
+
+        if (virUUIDParse(switchId, (*def)->data.vds.switch_id) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not parse UUID from string '%s'"),
+                           switchId);
+            goto cleanup;
+        }
+
+        if (virVMXGetConfigString(conf,
+                                  portgroupId_name,
+                                  &(*def)->data.vds.portgroup_id,
+                                  false) < 0 ||
+            virVMXGetConfigLong(conf,
+                                portId_name,
+                                &(*def)->data.vds.port_id,
+                                0,
+                                false) < 0 ||
+            virVMXGetConfigLong(conf,
+                                connectionId_name,
+                                &(*def)->data.vds.connection_id,
+                                0,
+                                false) < 0)
+            goto cleanup;
+    } else if (connectionType == NULL && networkName == NULL) {
         (*def)->type = VIR_DOMAIN_NET_TYPE_DUMMY;
     } else if (connectionType == NULL || STRCASEEQ(connectionType, "bridged")) {
         (*def)->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
@@ -3962,6 +3993,26 @@ virVMXFormatEthernet(virDomainNetDef *def, int controller,
     case VIR_DOMAIN_NET_TYPE_DUMMY:
         break;
 
+    case VIR_DOMAIN_NET_TYPE_VDS: {
+        unsigned char *uuid = def->data.vds.switch_id;
+
+        virBufferAsprintf(buffer, "ethernet%d.dvs.switchId = \"%02x %02x %02x %02x %02x "
+                          "%02x %02x %02x-%02x %02x %02x %02x %02x %02x %02x %02x\"\n",
+                          controller, uuid[0], uuid[1], uuid[2], uuid[3], uuid[4],
+                          uuid[5], uuid[6], uuid[7], uuid[8], uuid[9], uuid[10],
+                          uuid[11], uuid[12], uuid[13], uuid[14], uuid[15]);
+
+        virBufferAsprintf(buffer, "ethernet%d.dvs.portId = \"%lld\"\n",
+                          controller, def->data.vds.port_id);
+
+        virBufferAsprintf(buffer, "ethernet%d.dvs.", controller);
+        virBufferEscapeString(buffer, "portgroupId = \"%s\"\n", def->data.vds.portgroup_id);
+
+        virBufferAsprintf(buffer, "ethernet%d.dvs.connectionId = \"%lld\"\n",
+                          controller, def->data.vds.connection_id);
+        break;
+    }
+
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
     case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -3973,7 +4024,6 @@ virVMXFormatEthernet(virDomainNetDef *def, int controller,
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
     case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_VDPA:
-    case VIR_DOMAIN_NET_TYPE_VDS:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Unsupported net type '%s'"),
                        virDomainNetTypeToString(def->type));
         return -1;

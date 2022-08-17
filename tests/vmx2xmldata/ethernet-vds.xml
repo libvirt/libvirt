@@ -1,0 +1,24 @@
+<domain type='vmware'>
+  <name>test</name>
+  <uuid>00000000-0000-0000-0000-000000000000</uuid>
+  <memory unit='KiB'>32768</memory>
+  <currentMemory unit='KiB'>32768</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <interface type='vds'>
+      <mac address='00:50:56:87:65:43' type='generated'/>
+      <source switchid='503426b2-94e9-3b16-1d68-87bfff4a5440' portid='5' portgroupid='dvportgroup-1285' connectionid='408217997'/>
+      <model type='e1000e'/>
+    </interface>
+    <video>
+      <model type='vmvga' vram='4096' primary='yes'/>
+    </video>
+  </devices>
+</domain>
