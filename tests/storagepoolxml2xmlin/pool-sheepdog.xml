@@ -1,8 +1,0 @@
-<pool type='sheepdog'>
-  <source>
-    <name>sheepdog</name>
-    <host name='localhost' port='7000'/>
-  </source>
-  <uuid>65fcba04-5b13-bd93-cff3-52ce48e11ad7</uuid>
-  <name>sheepdog</name>
-</pool>

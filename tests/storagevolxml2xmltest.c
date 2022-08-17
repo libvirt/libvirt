@@ -92,7 +92,6 @@ mymain(void)
     DO_TEST("pool-disk", "vol-partition");
     DO_TEST("pool-logical", "vol-logical");
     DO_TEST("pool-logical", "vol-logical-backing");
-    DO_TEST("pool-sheepdog", "vol-sheepdog");
     DO_TEST("pool-gluster", "vol-gluster-dir");
     DO_TEST("pool-gluster", "vol-gluster-dir-neg-uid");
     DO_TEST_FULL("pool-dir", "vol-qcow2-nocapacity",

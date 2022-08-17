@@ -509,12 +509,6 @@ if conf.has('WITH_STORAGE_FS')
   ]
 endif
 
-if conf.has('WITH_STORAGE_SHEEPDOG')
-  tests += [
-    { 'name': 'storagebackendsheepdogtest', 'link_with': [ storage_driver_impl_lib, storage_backend_sheepdog_priv_lib ] },
-  ]
-endif
-
 if conf.has('WITH_VBOX')
   tests += [
     { 'name': 'vboxsnapshotxmltest', 'link_with': [ vbox_driver_impl ] },
