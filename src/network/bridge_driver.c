@@ -3051,7 +3051,7 @@ networkCreateXMLFlags(virConnectPtr conn,
                       unsigned int flags)
 {
     virNetworkDriverState *driver = networkGetDriver();
-    virNetworkDef *newDef;
+    g_autoptr(virNetworkDef) newDef = NULL;
     virNetworkObj *obj = NULL;
     virNetworkDef *def;
     virNetworkPtr net = NULL;
@@ -3077,6 +3077,7 @@ networkCreateXMLFlags(virConnectPtr conn,
                                        VIR_NETWORK_OBJ_LIST_ADD_LIVE |
                                        VIR_NETWORK_OBJ_LIST_ADD_CHECK_LIVE)))
         goto cleanup;
+
     newDef = NULL;
     def = virNetworkObjGetDef(obj);
 
@@ -3094,7 +3095,6 @@ networkCreateXMLFlags(virConnectPtr conn,
     net = virGetNetwork(conn, def->name, def->uuid);
 
  cleanup:
-    virNetworkDefFree(newDef);
     virObjectEventStateQueue(driver->networkEventState, event);
     virNetworkObjEndAPI(&obj);
     return net;
@@ -3115,8 +3115,8 @@ networkDefineXMLFlags(virConnectPtr conn,
                       unsigned int flags)
 {
     virNetworkDriverState *driver = networkGetDriver();
-    virNetworkDef *def = NULL;
-    bool freeDef = true;
+    g_autoptr(virNetworkDef) def = NULL;
+    virNetworkDef *defAlias;
     virNetworkObj *obj = NULL;
     virNetworkPtr net = NULL;
     virObjectEvent *event = NULL;
@@ -3127,6 +3127,8 @@ networkDefineXMLFlags(virConnectPtr conn,
                                          !!(flags & VIR_NETWORK_DEFINE_VALIDATE))))
         goto cleanup;
 
+    defAlias = def; /* so we can still ref the object after nullifying def */
+
     if (virNetworkDefineXMLFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
@@ -3136,11 +3138,11 @@ networkDefineXMLFlags(virConnectPtr conn,
     if (!(obj = virNetworkObjAssignDef(driver->networks, def, 0)))
         goto cleanup;
 
-    /* def was assigned to network object */
-    freeDef = false;
+    /* def was assigned to network object so don't autofree */
+    def = NULL;
 
     if (virNetworkSaveConfig(driver->networkConfigDir,
-                             def, network_driver->xmlopt) < 0) {
+                             defAlias, network_driver->xmlopt) < 0) {
         if (!virNetworkObjIsActive(obj)) {
             virNetworkObjRemoveInactive(driver->networks, obj);
             goto cleanup;
@@ -3153,17 +3155,15 @@ networkDefineXMLFlags(virConnectPtr conn,
         goto cleanup;
     }
 
-    event = virNetworkEventLifecycleNew(def->name, def->uuid,
+    event = virNetworkEventLifecycleNew(defAlias->name, defAlias->uuid,
                                         VIR_NETWORK_EVENT_DEFINED,
                                         0);
 
-    VIR_INFO("Defining network '%s'", def->name);
-    net = virGetNetwork(conn, def->name, def->uuid);
+    VIR_INFO("Defining network '%s'", defAlias->name);
+    net = virGetNetwork(conn, defAlias->name, defAlias->uuid);
 
  cleanup:
     virObjectEventStateQueue(driver->networkEventState, event);
-    if (freeDef)
-        virNetworkDefFree(def);
     virNetworkObjEndAPI(&obj);
     return net;
 }
