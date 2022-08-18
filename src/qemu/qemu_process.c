@@ -4828,7 +4828,7 @@ qemuProcessGetNetworkAddress(const char *netname,
     g_autoptr(virConnect) conn = NULL;
     int ret = -1;
     g_autoptr(virNetwork) net = NULL;
-    virNetworkDef *netdef = NULL;
+    g_autoptr(virNetworkDef) netdef = NULL;
     virNetworkIPDef *ipdef;
     virSocketAddr addr;
     virSocketAddr *addrptr = NULL;
@@ -4912,7 +4912,6 @@ qemuProcessGetNetworkAddress(const char *netname,
 
     ret = 0;
  cleanup:
-    virNetworkDefFree(netdef);
     return ret;
 }
 
