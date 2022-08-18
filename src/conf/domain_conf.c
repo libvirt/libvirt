@@ -29891,7 +29891,7 @@ virDomainNetBandwidthUpdate(virDomainNetDef *iface,
 int
 virDomainNetResolveActualType(virDomainNetDef *iface)
 {
-    virNetworkDef *def = NULL;
+    g_autoptr(virNetworkDef) def = NULL;
     int ret = -1;
     g_autofree char *xml = NULL;
     g_autoptr(virConnect) conn = NULL;
@@ -29961,7 +29961,6 @@ virDomainNetResolveActualType(virDomainNetDef *iface)
     }
 
  cleanup:
-    virNetworkDefFree(def);
     return ret;
 }
 

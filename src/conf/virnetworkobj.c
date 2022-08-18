@@ -843,7 +843,7 @@ virNetworkLoadState(virNetworkObjList *nets,
                     virNetworkXMLOption *xmlopt)
 {
     g_autofree char *configFile = NULL;
-    virNetworkDef *def = NULL;
+    g_autoptr(virNetworkDef) def = NULL;
     virNetworkObj *obj = NULL;
     g_autoptr(xmlDoc) xml = NULL;
     xmlNodePtr node = NULL;
@@ -929,6 +929,7 @@ virNetworkLoadState(virNetworkObjList *nets,
                                        VIR_NETWORK_OBJ_LIST_ADD_LIVE)))
         goto error;
     /* do not put any "goto error" below this comment */
+    def = NULL;
 
     /* assign status data stored in the network object */
     if (classIdMap) {
@@ -945,7 +946,6 @@ virNetworkLoadState(virNetworkObjList *nets,
     return obj;
 
  error:
-    virNetworkDefFree(def);
     return NULL;
 }
 
@@ -958,7 +958,7 @@ virNetworkLoadConfig(virNetworkObjList *nets,
                      virNetworkXMLOption *xmlopt)
 {
     char *configFile = NULL, *autostartLink = NULL;
-    virNetworkDef *def = NULL;
+    g_autoptr(virNetworkDef) def = NULL;
     virNetworkObj *obj;
     bool saveConfig = false;
     int autostart;
@@ -1026,6 +1026,8 @@ virNetworkLoadConfig(virNetworkObjList *nets,
     if (!(obj = virNetworkObjAssignDef(nets, def, 0)))
         goto error;
 
+    def = NULL;
+
     obj->autostart = (autostart == 1);
 
     VIR_FREE(configFile);
@@ -1036,7 +1038,6 @@ virNetworkLoadConfig(virNetworkObjList *nets,
  error:
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
-    virNetworkDefFree(def);
     return NULL;
 }
 
@@ -1213,15 +1214,15 @@ virNetworkObjUpdate(virNetworkObj *obj,
                     unsigned int flags)  /* virNetworkUpdateFlags */
 {
     int ret = -1;
-    virNetworkDef *livedef = NULL;
-    virNetworkDef *configdef = NULL;
+    g_autoptr(virNetworkDef) livedef = NULL;
+    g_autoptr(virNetworkDef) configdef = NULL;
 
     /* normalize config data, and check for common invalid requests. */
     if (virNetworkObjConfigChangeSetup(obj, xmlopt, flags) < 0)
        goto cleanup;
 
     if (flags & VIR_NETWORK_UPDATE_AFFECT_LIVE) {
-        virNetworkDef *checkdef;
+        g_autoptr(virNetworkDef) checkdef = NULL;
 
         /* work on a copy of the def */
         if (!(livedef = virNetworkDefCopy(obj->def, xmlopt, 0)))
@@ -1235,11 +1236,10 @@ virNetworkObjUpdate(virNetworkObj *obj,
          */
         if (!(checkdef = virNetworkDefCopy(livedef, xmlopt, 0)))
             goto cleanup;
-        virNetworkDefFree(checkdef);
     }
 
     if (flags & VIR_NETWORK_UPDATE_AFFECT_CONFIG) {
-        virNetworkDef *checkdef;
+        g_autoptr(virNetworkDef) checkdef = NULL;
 
         /* work on a copy of the def */
         if (!(configdef = virNetworkDefCopy(virNetworkObjGetPersistentDef(obj),
@@ -1256,7 +1256,6 @@ virNetworkObjUpdate(virNetworkObj *obj,
                                            VIR_NETWORK_XML_INACTIVE))) {
             goto cleanup;
         }
-        virNetworkDefFree(checkdef);
     }
 
     if (configdef) {
@@ -1273,8 +1272,6 @@ virNetworkObjUpdate(virNetworkObj *obj,
 
     ret = 0;
  cleanup:
-    virNetworkDefFree(livedef);
-    virNetworkDefFree(configdef);
     return ret;
 }
 
