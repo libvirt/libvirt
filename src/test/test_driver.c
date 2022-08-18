@@ -5561,7 +5561,7 @@ testNetworkCreateXMLFlags(virConnectPtr conn, const char *xml,
                           unsigned int flags)
 {
     testDriver *privconn = conn->privateData;
-    virNetworkDef *newDef;
+    g_autoptr(virNetworkDef) newDef = NULL;
     virNetworkObj *obj = NULL;
     virNetworkDef *def;
     virNetworkPtr net = NULL;
@@ -5588,7 +5588,6 @@ testNetworkCreateXMLFlags(virConnectPtr conn, const char *xml,
     net = virGetNetwork(conn, def->name, def->uuid);
 
  cleanup:
-    virNetworkDefFree(newDef);
     virObjectEventStateQueue(privconn->eventState, event);
     virNetworkObjEndAPI(&obj);
     return net;
@@ -5608,7 +5607,7 @@ testNetworkDefineXMLFlags(virConnectPtr conn,
                           unsigned int flags)
 {
     testDriver *privconn = conn->privateData;
-    virNetworkDef *newDef;
+    g_autoptr(virNetworkDef) newDef = NULL;
     virNetworkObj *obj = NULL;
     virNetworkDef *def;
     virNetworkPtr net = NULL;
@@ -5632,7 +5631,6 @@ testNetworkDefineXMLFlags(virConnectPtr conn,
     net = virGetNetwork(conn, def->name, def->uuid);
 
  cleanup:
-    virNetworkDefFree(newDef);
     virObjectEventStateQueue(privconn->eventState, event);
     virNetworkObjEndAPI(&obj);
     return net;
