@@ -787,26 +787,24 @@ qemuTPMEmulatorStop(const char *swtpmStateDir,
     g_autofree char *pathname = NULL;
     g_autofree char *errbuf = NULL;
     g_autofree char *swtpm_ioctl = virTPMGetSwtpmIoctl();
+    g_autofree char *pidfile = qemuTPMEmulatorPidFileBuildPath(swtpmStateDir,
+                                                               shortName);
+    if (swtpm_ioctl &&
+        (pathname = qemuTPMEmulatorSocketBuildPath(swtpmStateDir, shortName)) &&
+        virFileExists(pathname)) {
 
-    if (!swtpm_ioctl)
-        return;
+        cmd = virCommandNewArgList(swtpm_ioctl, "--unix", pathname, "-s", NULL);
 
-    if (!(pathname = qemuTPMEmulatorSocketBuildPath(swtpmStateDir, shortName)))
-        return;
+        virCommandSetErrorBuffer(cmd, &errbuf);
 
-    if (!virFileExists(pathname))
-        return;
+        ignore_value(virCommandRun(cmd, NULL));
 
-    cmd = virCommandNew(swtpm_ioctl);
+        /* clean up the socket */
+        unlink(pathname);
+    }
 
-    virCommandAddArgList(cmd, "--unix", pathname, "-s", NULL);
-
-    virCommandSetErrorBuffer(cmd, &errbuf);
-
-    ignore_value(virCommandRun(cmd, NULL));
-
-    /* clean up the socket */
-    unlink(pathname);
+    if (pidfile)
+        virPidFileForceCleanupPath(pidfile);
 }
 
 
