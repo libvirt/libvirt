@@ -277,7 +277,7 @@ esxNetworkDefineXMLFlags(virConnectPtr conn, const char *xml,
 {
     virNetworkPtr network = NULL;
     esxPrivate *priv = conn->privateData;
-    virNetworkDef *def = NULL;
+    g_autoptr(virNetworkDef) def = NULL;
     esxVI_HostVirtualSwitch *hostVirtualSwitch = NULL;
     esxVI_HostPortGroup *hostPortGroupList = NULL;
     esxVI_HostPortGroup *hostPortGroup = NULL;
@@ -483,7 +483,6 @@ esxNetworkDefineXMLFlags(virConnectPtr conn, const char *xml,
     network = virGetNetwork(conn, hostVirtualSwitch->name, md5);
 
  cleanup:
-    virNetworkDefFree(def);
     esxVI_HostVirtualSwitch_Free(&hostVirtualSwitch);
     esxVI_HostPortGroup_Free(&hostPortGroupList);
     esxVI_HostVirtualSwitchSpec_Free(&hostVirtualSwitchSpec);
@@ -658,7 +657,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
     esxVI_String *networkNameList = NULL;
     esxVI_String *hostPortGroupKey = NULL;
     esxVI_String *networkName = NULL;
-    virNetworkDef *def;
+    g_autoptr(virNetworkDef) def = NULL;
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return NULL;
@@ -812,7 +811,6 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&networkList);
     esxVI_String_Free(&networkNameList);
-    virNetworkDefFree(def);
 
     return xml;
 }
