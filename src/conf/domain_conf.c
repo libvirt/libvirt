@@ -29892,7 +29892,6 @@ int
 virDomainNetResolveActualType(virDomainNetDef *iface)
 {
     g_autoptr(virNetworkDef) def = NULL;
-    int ret = -1;
     g_autofree char *xml = NULL;
     g_autoptr(virConnect) conn = NULL;
     g_autoptr(virNetwork) net = NULL;
@@ -29907,13 +29906,13 @@ virDomainNetResolveActualType(virDomainNetDef *iface)
         return -1;
 
     if (!(net = virNetworkLookupByName(conn, iface->data.network.name)))
-        goto cleanup;
+        return -1;
 
     if (!(xml = virNetworkGetXMLDesc(net, 0)))
-        goto cleanup;
+        return -1;
 
     if (!(def = virNetworkDefParseString(xml, NULL, false)))
-        goto cleanup;
+        return -1;
 
     switch ((virNetworkForwardType) def->forward.type) {
     case VIR_NETWORK_FORWARD_NONE:
@@ -29924,11 +29923,11 @@ virDomainNetResolveActualType(virDomainNetDef *iface)
          * NETWORK; we just keep the info from the portgroup in
          * iface->data.network.actual
          */
-        ret = VIR_DOMAIN_NET_TYPE_NETWORK;
+        return VIR_DOMAIN_NET_TYPE_NETWORK;
         break;
 
     case VIR_NETWORK_FORWARD_HOSTDEV:
-        ret = VIR_DOMAIN_NET_TYPE_HOSTDEV;
+        return VIR_DOMAIN_NET_TYPE_HOSTDEV;
         break;
 
     case VIR_NETWORK_FORWARD_BRIDGE:
@@ -29936,7 +29935,7 @@ virDomainNetResolveActualType(virDomainNetDef *iface)
             /* <forward type='bridge'/> <bridge name='xxx'/>
              * is VIR_DOMAIN_NET_TYPE_BRIDGE
              */
-            ret = VIR_DOMAIN_NET_TYPE_BRIDGE;
+            return VIR_DOMAIN_NET_TYPE_BRIDGE;
             break;
         }
 
@@ -29951,17 +29950,19 @@ virDomainNetResolveActualType(virDomainNetDef *iface)
         /* <forward type='bridge|private|vepa|passthrough'> are all
          * VIR_DOMAIN_NET_TYPE_DIRECT.
          */
-        ret = VIR_DOMAIN_NET_TYPE_DIRECT;
+        return VIR_DOMAIN_NET_TYPE_DIRECT;
         break;
 
     case VIR_NETWORK_FORWARD_LAST:
     default:
         virReportEnumRangeError(virNetworkForwardType, def->forward.type);
-        goto cleanup;
+        return -1;
     }
 
- cleanup:
-    return ret;
+    /* this line is unreachable due to the preceding switch, but the compiler
+     * requires some kind of return at the end of the function.
+     */
+    return VIR_NETWORK_FORWARD_NONE;
 }
 
 
