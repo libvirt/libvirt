@@ -225,6 +225,7 @@
   <flag name='iothread.thread-pool-max'/>
   <flag name='usb-host.guest-resets-all'/>
   <flag name='migration.blocked-reasons'/>
+  <flag name='query-stats'/>
   <version>7000050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>

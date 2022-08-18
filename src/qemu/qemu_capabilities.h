@@ -653,6 +653,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_USB_HOST_GUESTS_RESETS_ALL, /* -device usb-host.guest-resets-all */
     QEMU_CAPS_MIGRATION_BLOCKED_REASONS, /* query-migrate returns 'blocked-reasons */
 
+    /* 435 */
+    QEMU_CAPS_QUERY_STATS,  /* accepts query-stats */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 
