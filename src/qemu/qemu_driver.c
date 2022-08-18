@@ -17770,14 +17770,85 @@ qemuDomainGetStatsCpuCgroup(virDomainObj *dom,
 }
 
 static int
+qemuDomainGetStatsCpuHaltPollTimeFromStats(virDomainObj *dom,
+                                           unsigned int privflags,
+                                           unsigned long long *haltPollSuccess,
+                                           unsigned long long *haltPollFail)
+{
+    qemuDomainObjPrivate *priv = dom->privateData;
+    qemuMonitorQueryStatsTargetType target = QEMU_MONITOR_QUERY_STATS_TARGET_VCPU;
+    qemuMonitorQueryStatsProvider *provider = NULL;
+    g_autoptr(GPtrArray) providers = NULL;
+    g_autoptr(virJSONValue) queried_stats = NULL;
+    const char *success_str = qemuMonitorQueryStatsNameTypeToString(QEMU_MONITOR_QUERY_STATS_NAME_HALT_POLL_SUCCESS_NS);
+    const char *fail_str = qemuMonitorQueryStatsNameTypeToString(QEMU_MONITOR_QUERY_STATS_NAME_HALT_POLL_FAIL_NS);
+    size_t i;
+
+    *haltPollFail = *haltPollSuccess = 0;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_STATS))
+        return -1;
+
+    if (!HAVE_JOB(privflags))
+        return -1;
+
+    provider = qemuMonitorQueryStatsProviderNew(
+        QEMU_MONITOR_QUERY_STATS_PROVIDER_KVM,
+        QEMU_MONITOR_QUERY_STATS_NAME_HALT_POLL_SUCCESS_NS,
+        QEMU_MONITOR_QUERY_STATS_NAME_HALT_POLL_FAIL_NS,
+        QEMU_MONITOR_QUERY_STATS_NAME_LAST);
+
+    providers = g_ptr_array_new_full(1, (GDestroyNotify) qemuMonitorQueryStatsProviderFree);
+    g_ptr_array_add(providers, provider);
+
+    qemuDomainObjEnterMonitor(dom);
+    queried_stats = qemuMonitorQueryStats(priv->mon, target, NULL, providers);
+    qemuDomainObjExitMonitor(dom);
+
+    if (!queried_stats)
+        return -1;
+
+    for (i = 0; i < virJSONValueArraySize(queried_stats); i++) {
+        unsigned long long curHaltPollSuccess, curHaltPollFail;
+        virJSONValue *success_obj, *fail_obj;
+        virJSONValue *obj = virJSONValueArrayGet(queried_stats, i);
+        g_autoptr(GHashTable) cur_table = qemuMonitorExtractQueryStats(obj);
+
+        if (!cur_table)
+            return -1;
+
+        success_obj = g_hash_table_lookup(cur_table, success_str);
+        fail_obj = g_hash_table_lookup(cur_table, fail_str);
+
+        if (!success_obj || !fail_obj)
+            return -1;
+
+        if (virJSONValueGetNumberUlong(success_obj, &curHaltPollSuccess) < 0 ||
+            virJSONValueGetNumberUlong(fail_obj, &curHaltPollFail) < 0)
+            return -1;
+
+        *haltPollSuccess += curHaltPollSuccess;
+        *haltPollFail += curHaltPollFail;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainGetStatsCpuHaltPollTime(virDomainObj *dom,
-                                  virTypedParamList *params)
+                                  virTypedParamList *params,
+                                  unsigned int privflags)
 {
     unsigned long long haltPollSuccess = 0;
     unsigned long long haltPollFail = 0;
-    pid_t pid = dom->pid;
 
-    if (virHostCPUGetHaltPollTime(pid, &haltPollSuccess, &haltPollFail) < 0)
+    if (!virDomainObjIsActive(dom))
+        return 0;
+
+    if (qemuDomainGetStatsCpuHaltPollTimeFromStats(dom, privflags,
+                                                   &haltPollSuccess, &haltPollFail) < 0 &&
+        virHostCPUGetHaltPollTime(dom->pid, &haltPollSuccess, &haltPollFail) < 0)
         return 0;
 
     if (virTypedParamListAddULLong(params, haltPollSuccess, "cpu.haltpoll.success.time") < 0 ||
@@ -17791,7 +17862,7 @@ static int
 qemuDomainGetStatsCpu(virQEMUDriver *driver,
                       virDomainObj *dom,
                       virTypedParamList *params,
-                      unsigned int privflags G_GNUC_UNUSED)
+                      unsigned int privflags)
 {
     if (qemuDomainGetStatsCpuCgroup(dom, params) < 0)
         return -1;
@@ -17799,7 +17870,7 @@ qemuDomainGetStatsCpu(virQEMUDriver *driver,
     if (qemuDomainGetStatsCpuCache(driver, dom, params) < 0)
         return -1;
 
-    if (qemuDomainGetStatsCpuHaltPollTime(dom, params) < 0)
+    if (qemuDomainGetStatsCpuHaltPollTime(dom, params, privflags) < 0)
         return -1;
 
     return 0;
@@ -18576,7 +18647,7 @@ static virQEMUCapsFlags queryDirtyRateRequired[] = {
 
 static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
     { qemuDomainGetStatsState, VIR_DOMAIN_STATS_STATE, false, NULL },
-    { qemuDomainGetStatsCpu, VIR_DOMAIN_STATS_CPU_TOTAL, false, NULL },
+    { qemuDomainGetStatsCpu, VIR_DOMAIN_STATS_CPU_TOTAL, true, NULL },
     { qemuDomainGetStatsBalloon, VIR_DOMAIN_STATS_BALLOON, true, NULL },
     { qemuDomainGetStatsVcpu, VIR_DOMAIN_STATS_VCPU, true, NULL },
     { qemuDomainGetStatsInterface, VIR_DOMAIN_STATS_INTERFACE, false, NULL },
