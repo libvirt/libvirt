@@ -4826,7 +4826,6 @@ qemuProcessGetNetworkAddress(const char *netname,
                              char **netaddr)
 {
     g_autoptr(virConnect) conn = NULL;
-    int ret = -1;
     g_autoptr(virNetwork) net = NULL;
     g_autoptr(virNetworkDef) netdef = NULL;
     virNetworkIPDef *ipdef;
@@ -4842,15 +4841,15 @@ qemuProcessGetNetworkAddress(const char *netname,
 
     net = virNetworkLookupByName(conn, netname);
     if (!net)
-        goto cleanup;
+        return -1;
 
     xml = virNetworkGetXMLDesc(net, 0);
     if (!xml)
-        goto cleanup;
+        return -1;
 
     netdef = virNetworkDefParseString(xml, NULL, false);
     if (!netdef)
-        goto cleanup;
+        return -1;
 
     switch ((virNetworkForwardType) netdef->forward.type) {
     case VIR_NETWORK_FORWARD_NONE:
@@ -4862,7 +4861,7 @@ qemuProcessGetNetworkAddress(const char *netname,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("network '%s' doesn't have an IP address"),
                            netdef->name);
-            goto cleanup;
+            return -1;
         }
         addrptr = &ipdef->address;
         break;
@@ -4886,7 +4885,7 @@ qemuProcessGetNetworkAddress(const char *netname,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("network '%s' has no associated interface or bridge"),
                            netdef->name);
-            goto cleanup;
+            return -1;
         }
         break;
 
@@ -4896,23 +4895,21 @@ qemuProcessGetNetworkAddress(const char *netname,
     case VIR_NETWORK_FORWARD_LAST:
     default:
         virReportEnumRangeError(virNetworkForwardType, netdef->forward.type);
-        goto cleanup;
+        return -1;
     }
 
     if (dev_name) {
         if (virNetDevIPAddrGet(dev_name, &addr) < 0)
-            goto cleanup;
+            return -1;
         addrptr = &addr;
     }
 
     if (!(addrptr &&
           (*netaddr = virSocketAddrFormat(addrptr)))) {
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
