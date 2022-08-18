@@ -2920,6 +2920,7 @@ virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def)
     VIR_FREE(address);
     VIR_FREE(virtualDev);
     VIR_FREE(vnet);
+    VIR_FREE(switchId);
 
     return result;
 }
