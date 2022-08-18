@@ -374,7 +374,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start,
     PRUnichar *networkNameUtf16 = NULL;
     char *networkNameUtf8 = NULL;
     IHostNetworkInterface *networkInterface = NULL;
-    virNetworkDef *def = NULL;
+    g_autoptr(virNetworkDef) def = NULL;
     virNetworkIPDef *ipdef = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     vboxIID vboxnetiid;
@@ -556,7 +556,6 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start,
     VBOX_UTF8_FREE(networkInterfaceNameUtf8);
     VBOX_UTF16_FREE(networkInterfaceNameUtf16);
     VBOX_RELEASE(host);
-    virNetworkDefFree(def);
     return ret;
 }
 
@@ -781,7 +780,7 @@ vboxSocketParseAddrUtf16(struct _vboxDriver *data, const PRUnichar *utf16,
 static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
 {
     struct _vboxDriver *data = network->conn->privateData;
-    virNetworkDef *def = NULL;
+    g_autoptr(virNetworkDef) def = NULL;
     virNetworkIPDef *ipdef = NULL;
     char *networkNameUtf8 = NULL;
     PRUnichar *networkInterfaceNameUtf16 = NULL;
@@ -926,7 +925,6 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
     VBOX_RELEASE(networkInterface);
     VBOX_UTF16_FREE(networkInterfaceNameUtf16);
     VBOX_RELEASE(host);
-    virNetworkDefFree(def);
     VIR_FREE(networkNameUtf8);
     VBOX_RELEASE(dhcpServer);
     return ret;
