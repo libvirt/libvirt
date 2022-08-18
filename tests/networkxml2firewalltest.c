@@ -90,17 +90,16 @@ static int testCompareXMLToArgvFiles(const char *xml,
     g_autofree char *actualargv = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virNetworkDef) def = NULL;
-    int ret = -1;
     char *actual;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     virCommandSetDryRun(dryRunToken, &buf, true, true, testCommandDryRun, NULL);
 
     if (!(def = virNetworkDefParseFile(xml, NULL)))
-        goto cleanup;
+        return -1;
 
     if (networkAddFirewallRules(def) < 0)
-        goto cleanup;
+        return -1;
 
     actual = actualargv = virBufferContentAndReset(&buf);
 
@@ -112,12 +111,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
         actual += strlen(baseargs);
 
     if (virTestCompareToFileFull(actual, cmdline, false) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 struct testInfo {

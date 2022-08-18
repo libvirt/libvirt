@@ -23,7 +23,7 @@ testCompareXMLToXMLFiles(const char *netxml, const char *updatexml,
     g_autoptr(virNetworkDef) def = NULL;
 
     if (virTestLoadFile(updatexml, &updateXmlData) < 0)
-        goto error;
+        return -1;
 
     if (!(def = virNetworkDefParseFile(netxml, NULL)))
         goto fail;
@@ -37,7 +37,7 @@ testCompareXMLToXMLFiles(const char *netxml, const char *updatexml,
 
     if (!expectFailure) {
         if (virTestCompareToFile(actual, outxml) < 0)
-            goto error;
+            return -1;
     }
 
     ret = 0;
@@ -52,7 +52,6 @@ testCompareXMLToXMLFiles(const char *netxml, const char *updatexml,
             ret = 0;
         }
     }
- error:
     return ret;
 }
 
