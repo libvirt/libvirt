@@ -24,7 +24,6 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "virpidfile.h"
-#include "virsecureerase.h"
 #include "virtime.h"
 #include "virutil.h"
 #include "qemu_block.h"
@@ -754,6 +753,29 @@ qemuNbdkitInitStorageSource(qemuNbdkitCaps *caps,
 
 
 static int
+qemuNbdkitCommandPassDataByPipe(virCommand *cmd,
+                                const char *argName,
+                                unsigned char **buf,
+                                size_t buflen)
+{
+    g_autofree char *fdfmt = NULL;
+    int fd = virCommandSetSendBuffer(cmd, buf, buflen);
+
+    if (fd < 0)
+        return -1;
+
+    /* some nbdkit arguments accept a variation where nbdkit will read the data
+     * from a file descriptor, e.g. password=-FD */
+    fdfmt = g_strdup_printf("-%i", fd);
+    virCommandAddArgPair(cmd, argName, fdfmt);
+
+    virCommandDoAsyncIO(cmd);
+
+    return 0;
+}
+
+
+static int
 qemuNbdkitProcessBuildCommandCurl(qemuNbdkitProcess *proc,
                                   virCommand *cmd)
 {
@@ -775,7 +797,6 @@ qemuNbdkitProcessBuildCommandCurl(qemuNbdkitProcess *proc,
         g_autoptr(virConnect) conn = virGetConnectSecret();
         g_autofree uint8_t *secret = NULL;
         size_t secretlen = 0;
-        g_autofree char *password = NULL;
         int secrettype;
         virStorageAuthDef *authdef = proc->source->auth;
 
@@ -799,26 +820,19 @@ qemuNbdkitProcessBuildCommandCurl(qemuNbdkitProcess *proc,
             return -1;
         }
 
-        /* ensure that the secret is a NULL-terminated string */
-        password = g_strndup((char*)secret, secretlen);
-        virSecureErase(secret, secretlen);
-
-        /* for now, just report an error rather than passing the password in
-         * cleartext on the commandline */
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Password not yet supported for nbdkit sources"));
-
-        virSecureEraseString(password);
-
-        return -1;
+        if (qemuNbdkitCommandPassDataByPipe(cmd, "password",
+                                            &secret, secretlen) < 0)
+            return -1;
     }
 
-    if (proc->source->ncookies > 0) {
-        /* for now, just report an error rather than passing cookies in
-         * cleartext on the commandline */
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cookies not yet supported for nbdkit sources"));
-        return -1;
+    /* Create a pipe to send the cookies to the nbdkit process. */
+    if (proc->source->ncookies) {
+        g_autofree char *cookies = qemuBlockStorageSourceGetCookieString(proc->source);
+
+        if (qemuNbdkitCommandPassDataByPipe(cmd, "cookie",
+                                            (unsigned char**)&cookies,
+                                            strlen(cookies)) < 0)
+            return -1;
     }
 
     if (proc->source->sslverify == VIR_TRISTATE_BOOL_NO) {
