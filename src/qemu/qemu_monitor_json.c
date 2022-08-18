@@ -8574,3 +8574,94 @@ qemuMonitorJSONMigrateRecover(qemuMonitor *mon,
 
     return qemuMonitorJSONCheckError(cmd, reply);
 }
+
+
+/**
+ * qemuMonitorJSONQueryStats:
+ * @mon: monitor object
+ * @target: the target type for the query
+ * @vcpus: a list of vCPU QOM paths for filtering the statistics
+ * @providers: an array of providers to filter statistics
+ *
+ * @vcpus is a NULL terminated array of strings. @providers is a GPtrArray
+ * for qemuMonitorQueryStatsProvider.
+ * @vcpus and @providers are optional and can be NULL.
+ *
+ * Queries for the @target based statistics.
+ * Returns NULL on failure.
+ */
+virJSONValue *
+qemuMonitorJSONQueryStats(qemuMonitor *mon,
+                          qemuMonitorQueryStatsTargetType target,
+                          char **vcpus,
+                          GPtrArray *providers)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) vcpu_list = NULL;
+    g_autoptr(virJSONValue) provider_list = NULL;
+
+    size_t i;
+
+    if (providers) {
+        provider_list = virJSONValueNewArray();
+
+        for (i = 0; i < providers->len; i++) {
+            g_autoptr(virJSONValue) provider_obj = virJSONValueNewObject();
+            qemuMonitorQueryStatsProvider *provider = providers->pdata[i];
+            const char *type_str = qemuMonitorQueryStatsProviderTypeToString(provider->type);
+            virBitmap *names = provider->names;
+            int rc;
+
+            rc = virJSONValueObjectAppendString(provider_obj, "provider", type_str);
+
+            if (rc < 0)
+                return NULL;
+
+            if (!virBitmapIsAllClear(names)) {
+                g_autoptr(virJSONValue) provider_names = virJSONValueNewArray();
+                ssize_t curBit = -1;
+
+                while ((curBit = virBitmapNextSetBit(names, curBit)) != -1) {
+                    const char *name = qemuMonitorQueryStatsNameTypeToString(curBit);
+
+                    if (virJSONValueArrayAppendString(provider_names, name) < 0)
+                        return NULL;
+                }
+
+                rc = virJSONValueObjectAppend(provider_obj, "names", &provider_names);
+
+                if (rc < 0)
+                    return NULL;
+            }
+
+            if (virJSONValueArrayAppend(provider_list, &provider_obj) < 0)
+                return NULL;
+        }
+    }
+
+    if (vcpus) {
+        vcpu_list = virJSONValueNewArray();
+
+        for (i = 0; vcpus[i]; i++)
+            if (virJSONValueArrayAppendString(vcpu_list, vcpus[i]) < 0)
+                return NULL;
+    }
+
+    cmd = qemuMonitorJSONMakeCommand("query-stats",
+                                     "s:target", qemuMonitorQueryStatsTargetTypeToString(target),
+                                     "A:vcpus", &vcpu_list,
+                                     "A:providers", &provider_list,
+                                     NULL);
+
+    if (!cmd)
+        return NULL;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return NULL;
+
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
+        return NULL;
+
+    return virJSONValueObjectStealArray(reply, "return");
+}

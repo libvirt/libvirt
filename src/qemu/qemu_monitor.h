@@ -1481,3 +1481,51 @@ qemuMonitorMigrateRecover(qemuMonitor *mon,
 int
 qemuMonitorGetMigrationBlockers(qemuMonitor *mon,
                                 char ***blockers);
+
+typedef enum {
+    QEMU_MONITOR_QUERY_STATS_TARGET_VM,
+    QEMU_MONITOR_QUERY_STATS_TARGET_VCPU,
+    QEMU_MONITOR_QUERY_STATS_TARGET_LAST,
+} qemuMonitorQueryStatsTargetType;
+
+VIR_ENUM_DECL(qemuMonitorQueryStatsTarget);
+
+typedef enum {
+    QEMU_MONITOR_QUERY_STATS_NAME_HALT_POLL_SUCCESS_NS,
+    QEMU_MONITOR_QUERY_STATS_NAME_HALT_POLL_FAIL_NS,
+    QEMU_MONITOR_QUERY_STATS_NAME_LAST,
+} qemuMonitorQueryStatsNameType;
+
+VIR_ENUM_DECL(qemuMonitorQueryStatsName);
+
+typedef enum {
+    QEMU_MONITOR_QUERY_STATS_PROVIDER_KVM,
+    QEMU_MONITOR_QUERY_STATS_PROVIDER_LAST,
+} qemuMonitorQueryStatsProviderType;
+
+VIR_ENUM_DECL(qemuMonitorQueryStatsProvider);
+
+typedef struct _qemuMonitorQueryStatsProvider qemuMonitorQueryStatsProvider;
+struct _qemuMonitorQueryStatsProvider {
+    qemuMonitorQueryStatsProviderType type;
+    virBitmap *names;
+};
+
+void
+qemuMonitorQueryStatsProviderFree(qemuMonitorQueryStatsProvider *provider);
+
+qemuMonitorQueryStatsProvider *
+qemuMonitorQueryStatsProviderNew(qemuMonitorQueryStatsProviderType provider_type,
+                                 ...);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMonitorQueryStatsProvider,
+                              qemuMonitorQueryStatsProviderFree);
+
+virJSONValue *
+qemuMonitorQueryStats(qemuMonitor *mon,
+                      qemuMonitorQueryStatsTargetType target,
+                      char **vcpus,
+                      GPtrArray *providers);
+
+GHashTable *
+qemuMonitorExtractQueryStats(virJSONValue *info);

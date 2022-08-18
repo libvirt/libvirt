@@ -812,3 +812,9 @@ qemuMonitorJSONChangeMemoryRequestedSize(qemuMonitor *mon,
 int
 qemuMonitorJSONMigrateRecover(qemuMonitor *mon,
                               const char *uri);
+
+virJSONValue *
+qemuMonitorJSONQueryStats(qemuMonitor *mon,
+                          qemuMonitorQueryStatsTargetType target,
+                          char **vcpus,
+                          GPtrArray *providers);

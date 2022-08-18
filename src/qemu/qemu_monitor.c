@@ -4297,3 +4297,123 @@ qemuMonitorGetMigrationBlockers(qemuMonitor *mon,
 
     return qemuMonitorJSONGetMigrationBlockers(mon, blockers);
 }
+
+
+VIR_ENUM_IMPL(qemuMonitorQueryStatsTarget,
+              QEMU_MONITOR_QUERY_STATS_TARGET_LAST,
+              "vm",
+              "vcpu",
+);
+
+
+VIR_ENUM_IMPL(qemuMonitorQueryStatsName,
+              QEMU_MONITOR_QUERY_STATS_NAME_LAST,
+              "halt_poll_success_ns",
+              "halt_poll_fail_ns",
+);
+
+
+VIR_ENUM_IMPL(qemuMonitorQueryStatsProvider,
+              QEMU_MONITOR_QUERY_STATS_PROVIDER_LAST,
+              "kvm",
+);
+
+
+void
+qemuMonitorQueryStatsProviderFree(qemuMonitorQueryStatsProvider *provider)
+{
+    virBitmapFree(provider->names);
+    g_free(provider);
+}
+
+
+qemuMonitorQueryStatsProvider *
+qemuMonitorQueryStatsProviderNew(qemuMonitorQueryStatsProviderType provider_type,
+                                 ...)
+{
+    qemuMonitorQueryStatsProvider *provider = g_new0(qemuMonitorQueryStatsProvider, 1);
+    qemuMonitorQueryStatsNameType stat;
+    va_list name_list;
+
+    /*
+     * This can be lowered later in case of the enum getting quite large, hence
+     *  the virBitmapSetExpand below which also incidently makes this function
+     *  non-fallible.
+     */
+    provider->names = virBitmapNew(QEMU_MONITOR_QUERY_STATS_NAME_LAST);
+    provider->type = provider_type;
+
+    va_start(name_list, provider_type);
+
+    while ((stat = va_arg(name_list, qemuMonitorQueryStatsNameType)) !=
+           QEMU_MONITOR_QUERY_STATS_NAME_LAST)
+        virBitmapSetBitExpand(provider->names, stat);
+
+    va_end(name_list);
+
+    return provider;
+}
+
+
+virJSONValue *
+qemuMonitorQueryStats(qemuMonitor *mon,
+                      qemuMonitorQueryStatsTargetType target,
+                      char **vcpus,
+                      GPtrArray *providers)
+{
+    VIR_DEBUG("target=%u vcpus=%p providers=%p", target, vcpus, providers);
+
+    QEMU_CHECK_MONITOR_NULL(mon);
+
+    if (target != QEMU_MONITOR_QUERY_STATS_TARGET_VCPU && vcpus)
+        return NULL;
+
+    return qemuMonitorJSONQueryStats(mon, target, vcpus, providers);
+}
+
+
+/**
+ * qemuMonitorExtractQueryStats:
+ * @info: One of the array members returned by qemuMonitorQueryStat
+ *
+ * Converts all the statistics into a GHashTable similar to virQEMU
+ * except only object with the key "value" is stored as the value i
+ *
+ * Returns NULL on failure.
+ */
+GHashTable *
+qemuMonitorExtractQueryStats(virJSONValue *info)
+{
+    g_autoptr(GHashTable) hash_table = NULL;
+    virJSONValue *stats = NULL;
+    size_t i;
+
+    if (!virJSONValueIsObject(info))
+        return NULL;
+
+    stats = virJSONValueObjectGetArray(info, "stats");
+    if (!stats)
+        return NULL;
+
+    hash_table = virHashNew(virJSONValueHashFree);
+
+    for (i = 0; i < virJSONValueArraySize(stats); i++) {
+        virJSONValue *stat = virJSONValueArrayGet(stats, i);
+        virJSONValue *value = NULL;
+        const char *name = NULL;
+
+        if (!virJSONValueIsObject(stat))
+            continue;
+
+        name = virJSONValueObjectGetString(stat, "name");
+        if (!name)
+            continue;
+
+        if (virJSONValueObjectRemoveKey(stat, "value", &value) < 0)
+            continue;
+
+        virHashAddEntry(hash_table, name, value);
+    }
+
+    return g_steal_pointer(&hash_table);
+}
