@@ -89,7 +89,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 {
     g_autofree char *actualargv = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virNetworkDef *def = NULL;
+    g_autoptr(virNetworkDef) def = NULL;
     int ret = -1;
     char *actual;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
@@ -117,7 +117,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     ret = 0;
 
  cleanup:
-    virNetworkDefFree(def);
     return ret;
 }
 
