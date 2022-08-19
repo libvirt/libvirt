@@ -277,7 +277,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 150 */
               "dmi-to-pci-bridge", /* QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE */
-              "i440fx-pci-hole64-size", /* QEMU_CAPS_I440FX_PCI_HOLE64_SIZE */
+              "i440fx-pci-hole64-size", /* X_QEMU_CAPS_I440FX_PCI_HOLE64_SIZE */
               "q35-pci-hole64-size", /* QEMU_CAPS_Q35_PCI_HOLE64_SIZE */
               "usb-storage", /* QEMU_CAPS_DEVICE_USB_STORAGE */
               "usb-storage.removable", /* QEMU_CAPS_USB_STORAGE_REMOVABLE */
@@ -1501,7 +1501,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBRedir[] = {
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsI440FXPCIHost[] = {
-    { "pci-hole64-size", QEMU_CAPS_I440FX_PCI_HOLE64_SIZE, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsQ35PCIHost[] = {

@@ -255,7 +255,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 150 */
     QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, /* -device i82801b11-bridge */
-    QEMU_CAPS_I440FX_PCI_HOLE64_SIZE, /* i440FX-pcihost.pci-hole64-size */
+    X_QEMU_CAPS_I440FX_PCI_HOLE64_SIZE, /* i440FX-pcihost.pci-hole64-size */
     QEMU_CAPS_Q35_PCI_HOLE64_SIZE, /* q35-pcihost.pci-hole64-size */
     QEMU_CAPS_DEVICE_USB_STORAGE, /* -device usb-storage */
     QEMU_CAPS_USB_STORAGE_REMOVABLE, /* usb-storage.removable */
