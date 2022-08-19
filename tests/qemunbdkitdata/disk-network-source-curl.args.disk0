@@ -1,0 +1,7 @@
+nbdkit \
+--unix /tmp/statedir-0/nbdkit-test-disk-0.socket \
+--foreground \
+--readonly curl \
+protocols=https \
+url=https://https.example.org:8443/path/to/disk1.iso \
+cookie=-777

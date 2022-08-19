@@ -1,0 +1,6 @@
+nbdkit \
+--unix /tmp/statedir-3/nbdkit-test-disk-3.socket \
+--foreground \
+--readonly curl \
+protocols=ftp \
+url=ftp://ftp.example.org:20/path/to/disk3.iso

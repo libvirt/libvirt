@@ -31,6 +31,8 @@
 #include "qemu_domain.h"
 #include "qemu_extdevice.h"
 #include "qemu_nbdkit.h"
+#define LIBVIRT_QEMU_NBDKITPRIV_H_ALLOW
+#include "qemu_nbdkitpriv.h"
 #include "qemu_security.h"
 
 #include <fcntl.h>
@@ -912,7 +914,7 @@ qemuNbdkitProcessBuildCommandSSH(qemuNbdkitProcess *proc,
 }
 
 
-static virCommand *
+virCommand *
 qemuNbdkitProcessBuildCommand(qemuNbdkitProcess *proc)
 {
     g_autoptr(virCommand) cmd = virCommandNewArgList(proc->caps->path,

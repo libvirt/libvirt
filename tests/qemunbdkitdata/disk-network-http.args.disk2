@@ -1,0 +1,6 @@
+nbdkit \
+--unix /tmp/statedir-2/nbdkit-test-disk-2.socket \
+--foreground curl \
+protocols=http,https \
+url=http://example.org:1234/test3.img \
+cookie=-777

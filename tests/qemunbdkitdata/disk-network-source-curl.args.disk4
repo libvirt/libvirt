@@ -1,0 +1,6 @@
+nbdkit \
+--unix /tmp/statedir-4/nbdkit-test-disk-4.socket \
+--foreground \
+--readonly curl \
+protocols=ftps \
+url=ftps://ftps.example.org:22/path/to/disk4.iso

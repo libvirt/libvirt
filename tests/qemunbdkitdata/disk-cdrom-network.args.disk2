@@ -1,0 +1,8 @@
+nbdkit \
+--unix /tmp/statedir-2/nbdkit-test-disk-2.socket \
+--foreground \
+--readonly curl \
+protocols=https \
+'url=https://host.name:443/url/path/file.iso?test=val' \
+user=testuser \
+password=-779

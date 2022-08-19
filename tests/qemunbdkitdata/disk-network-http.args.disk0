@@ -1,0 +1,6 @@
+nbdkit \
+--unix /tmp/statedir-0/nbdkit-test-disk-0.socket \
+--foreground curl \
+protocols=http,https \
+url=http://example.org:80/test.img \
+timeout=1234

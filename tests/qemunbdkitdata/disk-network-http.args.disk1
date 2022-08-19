@@ -1,0 +1,5 @@
+nbdkit \
+--unix /tmp/statedir-1/nbdkit-test-disk-1.socket \
+--foreground curl \
+protocols=https \
+url=https://example.org:443/test2.img

@@ -1,0 +1,8 @@
+nbdkit \
+--unix /tmp/statedir-1/nbdkit-test-disk-1.socket \
+--foreground \
+--readonly curl \
+protocols=ftps \
+url=ftps://host.name:990/url/path/file.iso \
+user=testuser \
+password=-777
