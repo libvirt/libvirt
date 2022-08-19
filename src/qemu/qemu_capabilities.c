@@ -1500,12 +1500,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBRedir[] = {
     { "filter", QEMU_CAPS_USB_REDIR_FILTER, NULL },
 };
 
-static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsI440FXPCIHost[] = {
-};
-
-static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsQ35PCIHost[] = {
-};
-
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBStorage[] = {
     { "removable", QEMU_CAPS_USB_STORAGE_REMOVABLE, NULL },
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
@@ -1663,12 +1657,6 @@ static virQEMUCapsDeviceTypeProps virQEMUCapsDeviceProps[] = {
     { "usb-redir", virQEMUCapsDevicePropsUSBRedir,
       G_N_ELEMENTS(virQEMUCapsDevicePropsUSBRedir),
       QEMU_CAPS_USB_REDIR },
-    { "i440FX-pcihost", virQEMUCapsDevicePropsI440FXPCIHost,
-      G_N_ELEMENTS(virQEMUCapsDevicePropsI440FXPCIHost),
-      -1 },
-    { "q35-pcihost", virQEMUCapsDevicePropsQ35PCIHost,
-      G_N_ELEMENTS(virQEMUCapsDevicePropsQ35PCIHost),
-      -1 },
     { "usb-storage", virQEMUCapsDevicePropsUSBStorage,
       G_N_ELEMENTS(virQEMUCapsDevicePropsUSBStorage),
       QEMU_CAPS_DEVICE_USB_STORAGE },

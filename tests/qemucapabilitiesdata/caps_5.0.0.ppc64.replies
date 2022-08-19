@@ -18683,41 +18683,9 @@
 {
   "execute": "device-list-properties",
   "arguments": {
-    "typename": "i440FX-pcihost"
-  },
-  "id": "libvirt-17"
-}
-
-{
-  "id": "libvirt-17",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'i440FX-pcihost' not found"
-  }
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
-    "typename": "q35-pcihost"
-  },
-  "id": "libvirt-18"
-}
-
-{
-  "id": "libvirt-18",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'q35-pcihost' not found"
-  }
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
     "typename": "usb-storage"
   },
-  "id": "libvirt-19"
+  "id": "libvirt-17"
 }
 
 {
@@ -18812,7 +18780,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-19"
+  "id": "libvirt-17"
 }
 
 {
@@ -18820,11 +18788,11 @@
   "arguments": {
     "typename": "kvm-pit"
   },
-  "id": "libvirt-20"
+  "id": "libvirt-18"
 }
 
 {
-  "id": "libvirt-20",
+  "id": "libvirt-18",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'kvm-pit' not found"
@@ -18836,7 +18804,7 @@
   "arguments": {
     "typename": "VGA"
   },
-  "id": "libvirt-21"
+  "id": "libvirt-19"
 }
 
 {
@@ -18931,7 +18899,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-21"
+  "id": "libvirt-19"
 }
 
 {
@@ -18939,7 +18907,7 @@
   "arguments": {
     "typename": "vmware-svga"
   },
-  "id": "libvirt-22"
+  "id": "libvirt-20"
 }
 
 {
@@ -18992,7 +18960,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-22"
+  "id": "libvirt-20"
 }
 
 {
@@ -19000,7 +18968,7 @@
   "arguments": {
     "typename": "virtio-gpu-pci"
   },
-  "id": "libvirt-23"
+  "id": "libvirt-21"
 }
 
 {
@@ -19206,7 +19174,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-23"
+  "id": "libvirt-21"
 }
 
 {
@@ -19214,7 +19182,7 @@
   "arguments": {
     "typename": "virtio-gpu-device"
   },
-  "id": "libvirt-24"
+  "id": "libvirt-22"
 }
 
 {
@@ -19292,7 +19260,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-24"
+  "id": "libvirt-22"
 }
 
 {
@@ -19300,11 +19268,11 @@
   "arguments": {
     "typename": "ICH9-LPC"
   },
-  "id": "libvirt-25"
+  "id": "libvirt-23"
 }
 
 {
-  "id": "libvirt-25",
+  "id": "libvirt-23",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'ICH9-LPC' not found"
@@ -19316,7 +19284,7 @@
   "arguments": {
     "typename": "virtio-balloon-pci"
   },
-  "id": "libvirt-26"
+  "id": "libvirt-24"
 }
 
 {
@@ -19519,7 +19487,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-26"
+  "id": "libvirt-24"
 }
 
 {
@@ -19527,11 +19495,11 @@
   "arguments": {
     "typename": "virtio-balloon-ccw"
   },
-  "id": "libvirt-27"
+  "id": "libvirt-25"
 }
 
 {
-  "id": "libvirt-27",
+  "id": "libvirt-25",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-balloon-ccw' not found"
@@ -19543,7 +19511,7 @@
   "arguments": {
     "typename": "virtio-balloon-device"
   },
-  "id": "libvirt-28"
+  "id": "libvirt-26"
 }
 
 {
@@ -19624,7 +19592,7 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-28"
+  "id": "libvirt-26"
 }
 
 {
@@ -19632,7 +19600,7 @@
   "arguments": {
     "typename": "nec-usb-xhci"
   },
-  "id": "libvirt-29"
+  "id": "libvirt-27"
 }
 
 {
@@ -19725,7 +19693,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-29"
+  "id": "libvirt-27"
 }
 
 {
@@ -19733,7 +19701,7 @@
   "arguments": {
     "typename": "spapr-pci-host-bridge"
   },
-  "id": "libvirt-30"
+  "id": "libvirt-28"
 }
 
 {
@@ -19814,7 +19782,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-30"
+  "id": "libvirt-28"
 }
 
 {
@@ -19822,7 +19790,7 @@
   "arguments": {
     "typename": "nvdimm"
   },
-  "id": "libvirt-31"
+  "id": "libvirt-29"
 }
 
 {
@@ -19864,7 +19832,7 @@
       "type": "uint64"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-29"
 }
 
 {
@@ -19872,7 +19840,7 @@
   "arguments": {
     "typename": "pcie-root-port"
   },
-  "id": "libvirt-32"
+  "id": "libvirt-30"
 }
 
 {
@@ -19993,7 +19961,7 @@
       "type": "PCIELinkSpeed"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-30"
 }
 
 {
@@ -20001,7 +19969,7 @@
   "arguments": {
     "typename": "usb-host"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-31"
 }
 
 {
@@ -20095,7 +20063,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-31"
 }
 
 {
@@ -20103,7 +20071,7 @@
   "arguments": {
     "typename": "vhost-user-fs-device"
   },
-  "id": "libvirt-34"
+  "id": "libvirt-32"
 }
 
 {
@@ -20179,7 +20147,7 @@
       "type": "uint16"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-32"
 }
 
 {
@@ -20187,7 +20155,7 @@
   "arguments": {
     "typename": "virtio-iommu-pci"
   },
-  "id": "libvirt-35"
+  "id": "libvirt-33"
 }
 
 {
@@ -20198,7 +20166,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-33"
 }
 
 {
@@ -20206,7 +20174,7 @@
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-36"
+  "id": "libvirt-34"
 }
 
 {
@@ -20276,7 +20244,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-34"
 }
 
 {
@@ -20284,7 +20252,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-37"
+  "id": "libvirt-35"
 }
 
 {
@@ -20353,12 +20321,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-35"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-38"
+  "id": "libvirt-36"
 }
 
 {
@@ -20628,7 +20596,7 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-36"
 }
 
 {
@@ -20636,7 +20604,7 @@
   "arguments": {
     "typename": "pseries-5.0-machine"
   },
-  "id": "libvirt-39"
+  "id": "libvirt-37"
 }
 
 {
@@ -20845,7 +20813,7 @@
       "type": "string"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-37"
 }
 
 {
@@ -20853,7 +20821,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-40"
+  "id": "libvirt-38"
 }
 
 {
@@ -20943,12 +20911,12 @@
       "type": "string"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-41"
+  "id": "libvirt-39"
 }
 
 {
@@ -23154,24 +23122,24 @@
       "static": false
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-42"
+  "id": "libvirt-40"
 }
 
 {
   "return": [
     "tpm-spapr"
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-43"
+  "id": "libvirt-41"
 }
 
 {
@@ -23179,12 +23147,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-44"
+  "id": "libvirt-42"
 }
 
 {
@@ -24321,12 +24289,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-45"
+  "id": "libvirt-43"
 }
 
 {
@@ -24404,7 +24372,7 @@
       "capability": "validate-uuid"
     }
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-43"
 }
 
 {
