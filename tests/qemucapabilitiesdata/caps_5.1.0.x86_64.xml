@@ -50,7 +50,6 @@
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
   <flag name='dmi-to-pci-bridge'/>
-  <flag name='q35-pci-hole64-size'/>
   <flag name='usb-storage'/>
   <flag name='usb-storage.removable'/>
   <flag name='virtio-mmio'/>
