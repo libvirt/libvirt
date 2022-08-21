@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-07-26 08:13+0000\n"
-"PO-Revision-Date: 2022-08-17 08:19+0000\n"
+"PO-Revision-Date: 2022-08-21 00:48+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -14061,88 +14061,83 @@ msgstr "Returnerar en lista över volymer per pool."
 msgid "Returns memory stats of the node, in kilobytes."
 msgstr "Returnerar minnesstatistik för noden, i kilobyte."
 
-#, fuzzy
 msgid "Returns state about a domain."
-msgstr "Returnera lista på domäner"
+msgstr "Returnerar tillståndet hos en domän."
 
-#, fuzzy
 msgid "Returns state of a control interface to the domain."
-msgstr "Returnerar grundinformation om domänen."
+msgstr "Returnerar tillståndet hos ett styrgränssnitt till domänen."
 
-#, fuzzy
 msgid "Returns the number of virtual CPUs used by the domain."
-msgstr "Det begärda antalet virtuella processorer måste vara minst 1"
+msgstr "Returnerar antalet virtuella CPU:er som används av domänen."
 
-#, fuzzy
 msgid "Revert a domain to a snapshot"
-msgstr "migrera domän till en annan värd"
+msgstr "Återställ en domän till en ögonblicksbild"
 
-#, fuzzy
 msgid "Revert domain to snapshot"
-msgstr "migrera domän till en annan värd"
+msgstr "Återställ domänen till en ögonblicksbild"
 
 msgid "Root element is not 'node'"
-msgstr ""
+msgstr "Rotelementet är inte ”node”"
 
 #, c-format
 msgid "Route address '%s' conflicts with IP address for '%s'"
-msgstr ""
+msgstr "Ruttadressen ”%s” står i konflikt med IP-adressen för ”%s”"
 
 msgid "Run a reboot command in the target domain."
 msgstr "Kör ett omstartskommando i måldomänen."
 
 msgid "Run an arbitrary command in a lxc guest namespace; use at your own risk"
-msgstr ""
+msgstr "Kör ett godtyckligt kommando i en lxc-gästnamnrymd, använd på egen risk"
 
 msgid "Run an arbitrary qemu guest agent command; use at your own risk"
-msgstr ""
+msgstr "Kör ett godtyckligt qemu-gästagentkommando, använd på egen risk"
 
 msgid "Run as a daemon & write PID file"
-msgstr ""
+msgstr "Kör som en demon och skriv en PID-fil"
 
 msgid "Run shutdown in the target domain."
 msgstr "Kör nedstängning i måldomänen."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Running against daemon: %d.%d.%d\n"
-msgstr "Kör hypervisor: %s %d.%d.%d\n"
+msgstr "Kör mot demonen: %d.%d.%d\n"
 
 #, sh-format
 msgid "Running guests on $uri URI: "
-msgstr ""
+msgstr "Kör gäster på URI:n $uri: "
 
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Kör hypervisor: %s %d.%d.%d\n"
 
 msgid "S3 state is disabled for this domain"
-msgstr ""
+msgstr "S3-tillståndet är avaktiverat för denna domän"
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
-msgstr ""
+msgstr "S390 PV-startsäkerhet stödjs inte med denna QEMU-binär"
 
 msgid "S4 state is disabled for this domain"
-msgstr ""
+msgstr "S4-tillståndet är avaktiverat för denna domän"
 
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
-msgstr ""
+msgstr "SASL-klientidentiteten ”%s” tillåts inte av ACL"
 
 #, c-format
 msgid "SASL data length %zu too long, max %zu"
-msgstr ""
+msgstr "SASL-datalängden %zu är för lång, max %zu"
 
 #, c-format
 msgid "SASL mechanism %s not supported by server"
-msgstr ""
+msgstr "SASL-mekanismen %s stödjs inte av servern"
 
 #, c-format
 msgid "SASL negotiation data too long: %zu bytes"
-msgstr ""
+msgstr "SASL-förhandlingsdata är för långt: %zu byte"
 
 #, c-format
 msgid "SATA controller index %d out of [0..3] range"
-msgstr ""
+msgstr "SATA-styrindex %d utanför intervallet [0..3]"
 
 msgid "SATA is not supported with this QEMU binary"
 msgstr "SATA stödjs inte av denna QEMU-binär"
