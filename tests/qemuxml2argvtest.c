@@ -1575,8 +1575,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_VFIO_PCI);
 
     DO_TEST("serial-file-log",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_CHARDEV_LOGFILE);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("serial-spiceport",
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_SPICE,
@@ -2823,7 +2822,6 @@ mymain(void)
                         QEMU_CAPS_KVM);
     DO_TEST("aarch64-pci-serial",
             QEMU_CAPS_DEVICE_PCI_SERIAL,
-            QEMU_CAPS_CHARDEV_LOGFILE,
             QEMU_CAPS_OBJECT_GPEX,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,

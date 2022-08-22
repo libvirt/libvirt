@@ -2230,14 +2230,6 @@ qemuValidateDomainChrSourceDef(const virDomainChrSourceDef *def,
         break;
     }
 
-    if (def->logfile) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_LOGFILE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("logfile not supported in this QEMU binary"));
-            return -1;
-        }
-    }
-
     return 0;
 }
 
