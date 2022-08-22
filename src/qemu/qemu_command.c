@@ -2497,8 +2497,7 @@ qemuValidateDomainDeviceDefControllerUSB(const virDomainControllerDef *def,
     }
 
     if (def->opts.usbopts.ports != -1) {
-        if ((def->model != VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI ||
-             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI_PORTS)) &&
+        if (def->model != VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI &&
             def->model != VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("usb controller type '%s' doesn't support 'ports' with this QEMU binary"),

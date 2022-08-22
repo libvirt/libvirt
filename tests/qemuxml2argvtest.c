@@ -1795,17 +1795,14 @@ mymain(void)
                     QEMU_CAPS_PIIX3_USB_UHCI);
     DO_TEST("usb-controller-xhci",
             QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_NEC_USB_XHCI,
-            QEMU_CAPS_NEC_USB_XHCI_PORTS);
+            QEMU_CAPS_NEC_USB_XHCI);
     DO_TEST("usb-xhci-autoassign",
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_NEC_USB_XHCI,
-            QEMU_CAPS_NEC_USB_XHCI_PORTS,
             QEMU_CAPS_USB_HUB);
     DO_TEST_PARSE_ERROR("usb-controller-xhci-limit",
             QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_NEC_USB_XHCI,
-            QEMU_CAPS_NEC_USB_XHCI_PORTS);
+            QEMU_CAPS_NEC_USB_XHCI);
     DO_TEST("usb-controller-qemu-xhci", QEMU_CAPS_DEVICE_QEMU_XHCI);
     DO_TEST_FAILURE_NOCAPS("usb-controller-qemu-xhci-unavailable");
     DO_TEST_PARSE_ERROR("usb-controller-qemu-xhci-limit",
