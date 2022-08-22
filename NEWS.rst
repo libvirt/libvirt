@@ -31,6 +31,13 @@ v8.7.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: increase memlock limit for a domain with multiple vfio/vdpa devices
+
+    When multiple vfio or vdpa devices are assigned to a domain, the locked
+    memory limit could be too low to map memory for all devices. The memlock
+    limit has been increased to be proportional to the number of vdpa/vfio
+    devices.
+
 
 v8.6.0 (2022-08-01)
 ===================
