@@ -280,6 +280,7 @@ static const struct testSchemaEntry schemaNetworkport[] = {
 
 static const struct testSchemaEntry schemaNodedev[] = {
     { .dir = "tests/nodedevschemadata" },
+    { .dir = "tests/nodedevxml2xmlout" },
     { .file = "examples/xml/test/testdev.xml" },
 };
 
