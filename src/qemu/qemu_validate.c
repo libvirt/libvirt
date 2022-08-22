@@ -2197,15 +2197,6 @@ qemuValidateDomainChrSourceDef(const virDomainChrSourceDef *def,
             return -1;
         break;
 
-    case VIR_DOMAIN_CHR_TYPE_FILE:
-        if (def->data.file.append != VIR_TRISTATE_SWITCH_ABSENT &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FILE_APPEND)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("append not supported in this QEMU binary"));
-            return -1;
-        }
-        break;
-
     case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_QEMU_VDAGENT)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -2229,6 +2220,7 @@ qemuValidateDomainChrSourceDef(const virDomainChrSourceDef *def,
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_UDP:

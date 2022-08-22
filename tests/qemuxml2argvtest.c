@@ -1575,7 +1575,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_VFIO_PCI);
 
     DO_TEST("serial-file-log",
-            QEMU_CAPS_CHARDEV_FILE_APPEND,
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_CHARDEV_LOGFILE);
     DO_TEST("serial-spiceport",
@@ -1597,8 +1596,7 @@ mymain(void)
     DO_TEST("serial-dev-chardev-iobase",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("serial-file-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_CHARDEV_FILE_APPEND);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("serial-unix-chardev",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_CAPS_LATEST("serial-file-log");

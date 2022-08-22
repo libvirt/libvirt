@@ -6568,10 +6568,7 @@ qemuProcessPrepareDomain(virQEMUDriver *driver,
 
     /* Whether we should use virtlogd as stdio handler for character
      * devices source backend. */
-    if (cfg->stdioLogD &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FILE_APPEND)) {
-        priv->chardevStdioLogd = true;
-    }
+    priv->chardevStdioLogd = cfg->stdioLogD;
 
     /* Track if this domain remembers original owner */
     priv->rememberOwner = cfg->rememberOwner;
