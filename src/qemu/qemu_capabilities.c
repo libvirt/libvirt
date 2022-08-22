@@ -374,7 +374,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "device-tray-moved-event", /* X_QEMU_CAPS_DEVICE_TRAY_MOVED */
 
               /* 220 */
-              "nec-usb-xhci-ports", /* QEMU_CAPS_NEC_USB_XHCI_PORTS */
+              "nec-usb-xhci-ports", /* X_QEMU_CAPS_NEC_USB_XHCI_PORTS */
               "virtio-scsi-pci.iothread", /* QEMU_CAPS_VIRTIO_SCSI_IOTHREAD */
               "name-guest", /* X_QEMU_CAPS_NAME_GUEST */
               "qxl.max_outputs", /* X_QEMU_CAPS_QXL_MAX_OUTPUTS */
@@ -1531,7 +1531,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsICH9[] = {
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBNECXHCI[] = {
-    { "p3", QEMU_CAPS_NEC_USB_XHCI_PORTS, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIntelIOMMU[] = {

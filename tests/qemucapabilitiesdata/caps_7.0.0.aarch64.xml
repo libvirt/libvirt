@@ -80,7 +80,6 @@
   <flag name='spice-gl'/>
   <flag name='pxb'/>
   <flag name='pxb-pcie'/>
-  <flag name='nec-usb-xhci-ports'/>
   <flag name='virtio-scsi-pci.iothread'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='virtio-net.rx_queue_size'/>
