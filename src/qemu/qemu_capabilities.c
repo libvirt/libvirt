@@ -364,7 +364,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "spice-gl", /* QEMU_CAPS_SPICE_GL */
               "qxl.vram64_size_mb", /* QEMU_CAPS_QXL_VRAM64 */
               "qxl-vga.vram64_size_mb", /* X_QEMU_CAPS_QXL_VGA_VRAM64 */
-              "chardev-logfile", /* QEMU_CAPS_CHARDEV_LOGFILE */
+              "chardev-logfile", /* X_QEMU_CAPS_CHARDEV_LOGFILE */
 
               /* 215 */
               "debug-threads", /* X_QEMU_CAPS_NAME_DEBUG_THREADS */
@@ -1576,7 +1576,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+nbd/tls-hostname", QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME },
     { "blockdev-snapshot/$allow-write-only-overlay", QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY },
     { "chardev-add/arg-type/backend/+socket/data/reconnect", QEMU_CAPS_CHARDEV_RECONNECT },
-    { "chardev-add/arg-type/backend/+file/data/logfile", QEMU_CAPS_CHARDEV_LOGFILE },
     { "device_add/$json-cli-hotplug", QEMU_CAPS_DEVICE_JSON },
     { "migrate-set-parameters/arg-type/block-bitmap-mapping/bitmaps/transform", QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING },
     { "nbd-server-start/arg-type/tls-creds", QEMU_CAPS_NBD_TLS },

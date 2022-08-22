@@ -72,7 +72,6 @@
   <flag name='vserport-change-event'/>
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
   <flag name='mptsas1068'/>
-  <flag name='chardev-logfile'/>
   <flag name='pxb'/>
   <flag name='pxb-pcie'/>
   <flag name='nec-usb-xhci-ports'/>

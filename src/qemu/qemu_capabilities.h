@@ -343,7 +343,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_SPICE_GL, /* -spice gl */
     QEMU_CAPS_QXL_VRAM64, /* -device qxl.vram64_size_mb */
     X_QEMU_CAPS_QXL_VGA_VRAM64, /* -device qxl-vga.vram64_size_mb */
-    QEMU_CAPS_CHARDEV_LOGFILE, /* -chardev logfile=xxxx */
+    X_QEMU_CAPS_CHARDEV_LOGFILE, /* -chardev logfile=xxxx */
 
     /* 215 */
     X_QEMU_CAPS_NAME_DEBUG_THREADS, /* Is -name debug-threads= available */
