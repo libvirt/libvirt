@@ -353,7 +353,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-input-host", /* QEMU_CAPS_VIRTIO_INPUT_HOST */
 
               /* 205 */
-              "chardev-file-append", /* QEMU_CAPS_CHARDEV_FILE_APPEND */
+              "chardev-file-append", /* X_QEMU_CAPS_CHARDEV_FILE_APPEND */
               "ich9-disable-s3", /* QEMU_CAPS_ICH9_DISABLE_S3 */
               "ich9-disable-s4", /* QEMU_CAPS_ICH9_DISABLE_S4 */
               "vserport-change-event", /* QEMU_CAPS_VSERPORT_CHANGE */
@@ -1577,7 +1577,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-snapshot/$allow-write-only-overlay", QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY },
     { "chardev-add/arg-type/backend/+socket/data/reconnect", QEMU_CAPS_CHARDEV_RECONNECT },
     { "chardev-add/arg-type/backend/+file/data/logfile", QEMU_CAPS_CHARDEV_LOGFILE },
-    { "chardev-add/arg-type/backend/+file/data/logappend", QEMU_CAPS_CHARDEV_FILE_APPEND },
     { "device_add/$json-cli-hotplug", QEMU_CAPS_DEVICE_JSON },
     { "migrate-set-parameters/arg-type/block-bitmap-mapping/bitmaps/transform", QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING },
     { "nbd-server-start/arg-type/tls-creds", QEMU_CAPS_NBD_TLS },
