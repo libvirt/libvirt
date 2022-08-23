@@ -27,7 +27,7 @@
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
-      <source protocol='sheepdog' name='image'>
+      <source protocol='nbd' name='image'>
         <host name='example.org' port='6000'/>
       </source>
       <target dev='vda' bus='virtio'/>
