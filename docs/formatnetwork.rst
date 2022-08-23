@@ -930,13 +930,13 @@ routing.
        <nat ipv6='yes'>
          <port start='1024' end='65535'/>
        </nat>
-
+     </forward>
      <ip address="192.168.122.1" netmask="255.255.255.0">
        <dhcp>
          <range start="192.168.122.2" end="192.168.122.254"/>
        </dhcp>
      </ip>
-     <ip family="ipv6" address="fdXX:XXXX:XXXX:NNNN:: prefix="64"/>
+     <ip family="ipv6" address="fdXX:XXXX:XXXX:NNNN::" prefix="64"/>
    </network>
 
 IPv6 NAT addressing has some caveats over the more straight forward IPv4 case.
