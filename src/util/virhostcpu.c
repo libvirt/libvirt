@@ -1287,25 +1287,22 @@ virHostCPUGetMSRFromKVM(unsigned long index,
                         uint64_t *result)
 {
     VIR_AUTOCLOSE fd = -1;
-    struct {
-        struct kvm_msrs header;
-        struct kvm_msr_entry entry;
-    } msr = {
-        .header = { .nmsrs = 1 },
-        .entry = { .index = index },
-    };
+    g_autofree struct kvm_msrs *msr = g_malloc0(sizeof(struct kvm_msrs) +
+                                                sizeof(struct kvm_msr_entry));
+    msr->nmsrs = 1;
+    msr->entries[0].index = index;
 
     if ((fd = open(KVM_DEVICE, O_RDONLY)) < 0) {
         virReportSystemError(errno, _("Unable to open %s"), KVM_DEVICE);
         return -1;
     }
 
-    if (ioctl(fd, KVM_GET_MSRS, &msr) < 0) {
+    if (ioctl(fd, KVM_GET_MSRS, msr) < 0) {
         VIR_DEBUG("Cannot get MSR 0x%lx from KVM", index);
         return 1;
     }
 
-    *result = msr.entry.data;
+    *result = msr->entries[0].data;
     return 0;
 }
 
