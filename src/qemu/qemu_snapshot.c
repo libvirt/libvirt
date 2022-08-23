@@ -100,21 +100,6 @@ qemuSnapObjFromSnapshot(virDomainObj *vm,
 }
 
 
-/* Count how many snapshots in a set are external snapshots.  */
-static int
-qemuSnapshotCountExternal(void *payload,
-                          const char *name G_GNUC_UNUSED,
-                          void *data)
-{
-    virDomainMomentObj *snap = payload;
-    int *count = data;
-
-    if (virDomainSnapshotIsExternal(snap))
-        (*count)++;
-    return 0;
-}
-
-
 int
 qemuSnapshotFSFreeze(virDomainObj *vm,
                      const char **mountpoints,
@@ -2482,26 +2467,60 @@ qemuSnapshotDeleteChildren(virDomainObj *vm,
 }
 
 
+typedef struct {
+    int external;
+    int internal;
+} qemuSnapshotCount;
+
+
+static int
+qemuSnapshotCountExternalInternal(void *payload,
+                                  const char *name G_GNUC_UNUSED,
+                                  void *data)
+{
+    virDomainMomentObj *snap = payload;
+    qemuSnapshotCount *count = data;
+
+    if (virDomainSnapshotIsExternal(snap)) {
+        count->external++;
+    } else {
+        count->internal++;
+    }
+
+    return 0;
+}
+
+
 static int
 qemuSnapshotDeleteValidate(virDomainMomentObj *snap,
                            unsigned int flags)
 {
-    int external = 0;
-
-    if (!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) &&
-        virDomainSnapshotIsExternal(snap))
-        external++;
 
     if (flags & (VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
-                 VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY))
-        virDomainMomentForEachDescendant(snap,
-                                         qemuSnapshotCountExternal,
-                                         &external);
+                 VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)) {
+        qemuSnapshotCount count = { 0 };
 
-    if (external) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("deletion of %d external disk snapshots not "
-                         "supported yet"), external);
+        virDomainMomentForEachDescendant(snap,
+                                         qemuSnapshotCountExternalInternal,
+                                         &count);
+
+        if (count.external > 0 && count.internal > 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("deletion of external and internal children disk snapshots not supported"));
+            return -1;
+        }
+
+        if (count.external > 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("deletion of external children disk snapshots not supported"));
+            return -1;
+        }
+    }
+
+    if (virDomainSnapshotIsExternal(snap) &&
+        !(flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("deletion of external disk snapshots not supported"));
         return -1;
     }
 
