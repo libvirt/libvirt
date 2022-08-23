@@ -131,6 +131,11 @@
           <xsl:value-of select="$token"/>
         </a>
       </xsl:when>
+      <xsl:when test="starts-with($token, 'https://')">
+        <a href="{$token}">
+          <xsl:value-of select="$token"/>
+        </a>
+      </xsl:when>
       <xsl:when test="starts-with($token, '&lt;http://') and contains($token, '&gt;')">
         <xsl:variable name="link"
                       select="substring(substring-before($token, '&gt;'), 2)"/>
