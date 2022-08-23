@@ -1058,7 +1058,7 @@ udevProcessMediatedDevice(struct udev_device *dev,
 
     linkpath = g_strdup_printf("%s/mdev_type", udev_device_get_syspath(dev));
 
-    if (virFileWaitForExists(linkpath, 1, 100) < 0) {
+    if (virFileWaitForExists(linkpath, 10, 100) < 0) {
         virReportSystemError(errno,
                              _("failed to wait for file '%s' to appear"),
                              linkpath);
