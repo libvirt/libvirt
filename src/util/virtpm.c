@@ -252,8 +252,7 @@ virTPMGetCaps(virTPMBinaryCapsParse capsParse,
 {
     g_autoptr(virCommand) cmd = NULL;
 
-    if (!(cmd = virCommandNew(exec)))
-        return NULL;
+    cmd = virCommandNew(exec);
 
     if (param1)
         virCommandAddArg(cmd, param1);

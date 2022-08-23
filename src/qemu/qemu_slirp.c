@@ -268,8 +268,7 @@ qemuSlirpStart(virDomainObj *vm,
     if (!(pidfile = qemuSlirpCreatePidFilename(cfg, vm->def, net->info.alias)))
         return -1;
 
-    if (!(cmd = virCommandNew(cfg->slirpHelperName)))
-        return -1;
+    cmd = virCommandNew(cfg->slirpHelperName);
 
     virCommandClearCaps(cmd);
     virCommandSetPidFile(cmd, pidfile);

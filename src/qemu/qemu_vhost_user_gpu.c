@@ -133,8 +133,6 @@ int qemuExtVhostUserGPUStart(virQEMUDriver *driver,
         goto error;
 
     cmd = virCommandNew(video->driver->vhost_user_binary);
-    if (!cmd)
-        goto error;
 
     virCommandClearCaps(cmd);
     virCommandSetPidFile(cmd, pidfile);

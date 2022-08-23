@@ -279,8 +279,6 @@ qemuTPMCreateConfigFiles(const char *swtpm_setup)
         return 0;
 
     cmd = virCommandNew(swtpm_setup);
-    if (!cmd)
-        return -1;
 
     virCommandAddArgList(cmd, "--create-config-files", "skip-if-exist", NULL);
     virCommandClearCaps(cmd);
@@ -388,8 +386,6 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
         return -1;
 
     cmd = virCommandNew(swtpm_setup);
-    if (!cmd)
-        return -1;
 
     virUUIDFormat(vmuuid, uuid);
     vmid = g_strdup_printf("%s:%s", vmname, uuid);
@@ -500,8 +496,6 @@ qemuTPMEmulatorReconfigure(const char *storagepath,
         return 0;
 
     cmd = virCommandNew(swtpm_setup);
-    if (!cmd)
-        return -1;
 
     virCommandSetUID(cmd, swtpm_user);
     virCommandSetGID(cmd, swtpm_group);
@@ -592,8 +586,6 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     unlink(tpm->data.emulator.source->data.nix.path);
 
     cmd = virCommandNew(swtpm);
-    if (!cmd)
-        goto error;
 
     virCommandClearCaps(cmd);
 
@@ -806,8 +798,6 @@ qemuTPMEmulatorStop(const char *swtpmStateDir,
         return;
 
     cmd = virCommandNew(swtpm_ioctl);
-    if (!cmd)
-        return;
 
     virCommandAddArgList(cmd, "--unix", pathname, "-s", NULL);
 

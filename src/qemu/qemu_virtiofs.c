@@ -132,8 +132,7 @@ qemuVirtioFSBuildCommandLine(virQEMUDriverConfig *cfg,
     g_autoptr(virCommand) cmd = NULL;
     g_auto(virBuffer) opts = VIR_BUFFER_INITIALIZER;
 
-    if (!(cmd = virCommandNew(fs->binary)))
-        return NULL;
+    cmd = virCommandNew(fs->binary);
 
     virCommandAddArgFormat(cmd, "--fd=%d", *fd);
     virCommandPassFD(cmd, *fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);

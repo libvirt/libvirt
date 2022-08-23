@@ -116,8 +116,7 @@ testCompareOutputLit(const char *expectData,
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *errbuf = NULL;
 
-    if (!(cmd = virCommandNewArgs(argv)))
-        return -1;
+    cmd = virCommandNewArgs(argv);
 
     virCommandAddEnvString(cmd, "LANG=C");
     virCommandSetInputBuffer(cmd, empty);
