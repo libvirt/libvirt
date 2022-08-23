@@ -2482,6 +2482,33 @@ qemuSnapshotDeleteChildren(virDomainObj *vm,
 }
 
 
+static int
+qemuSnapshotDeleteValidate(virDomainMomentObj *snap,
+                           unsigned int flags)
+{
+    int external = 0;
+
+    if (!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) &&
+        virDomainSnapshotIsExternal(snap))
+        external++;
+
+    if (flags & (VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
+                 VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY))
+        virDomainMomentForEachDescendant(snap,
+                                         qemuSnapshotCountExternal,
+                                         &external);
+
+    if (external) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("deletion of %d external disk snapshots not "
+                         "supported yet"), external);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 int
 qemuSnapshotDelete(virDomainObj *vm,
                    virDomainSnapshotPtr snapshot,
@@ -2490,7 +2517,6 @@ qemuSnapshotDelete(virDomainObj *vm,
     int ret = -1;
     virDomainMomentObj *snap = NULL;
     bool metadata_only = !!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY);
-    int external = 0;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
                   VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY |
@@ -2503,20 +2529,8 @@ qemuSnapshotDelete(virDomainObj *vm,
         goto endjob;
 
     if (!metadata_only) {
-        if (!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) &&
-            virDomainSnapshotIsExternal(snap))
-            external++;
-        if (flags & (VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
-                     VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY))
-            virDomainMomentForEachDescendant(snap,
-                                             qemuSnapshotCountExternal,
-                                             &external);
-        if (external) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("deletion of %d external disk snapshots not "
-                             "supported yet"), external);
+        if (qemuSnapshotDeleteValidate(snap, flags) < 0)
             goto endjob;
-        }
     }
 
     if (flags & (VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
