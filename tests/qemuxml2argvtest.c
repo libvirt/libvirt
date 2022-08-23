@@ -1077,24 +1077,20 @@ mymain(void)
     DO_TEST_NOCAPS("default-kvm-host-arch");
     DO_TEST_NOCAPS("default-qemu-host-arch");
     DO_TEST_CAPS_LATEST("x86-kvm-32-on-64");
-    DO_TEST_NOCAPS("boot-cdrom");
-    DO_TEST_NOCAPS("boot-network");
-    DO_TEST_NOCAPS("boot-floppy");
-    DO_TEST("boot-floppy-q35",
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI);
-    DO_TEST_NOCAPS("boot-multi");
-    DO_TEST_NOCAPS("boot-menu-enable");
-    DO_TEST_NOCAPS("boot-menu-enable-with-timeout");
-    DO_TEST_PARSE_ERROR_NOCAPS("boot-menu-enable-with-timeout-invalid");
-    DO_TEST_NOCAPS("boot-menu-disable");
-    DO_TEST_NOCAPS("boot-menu-disable-drive");
-    DO_TEST_PARSE_ERROR("boot-dev+order",
-            QEMU_CAPS_VIRTIO_BLK_SCSI);
-    DO_TEST("boot-order",
-            QEMU_CAPS_VIRTIO_BLK_SCSI);
-    DO_TEST("boot-complex",
-            QEMU_CAPS_VIRTIO_BLK_SCSI);
+    DO_TEST_CAPS_LATEST("boot-cdrom");
+    DO_TEST_CAPS_LATEST("boot-network");
+    DO_TEST_CAPS_LATEST("boot-floppy");
+    DO_TEST_CAPS_LATEST("boot-floppy-q35");
+    DO_TEST_CAPS_LATEST("boot-multi");
+    DO_TEST_CAPS_LATEST("boot-menu-enable");
+    DO_TEST_CAPS_LATEST("boot-menu-enable-with-timeout");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("boot-menu-enable-with-timeout-invalid");
+    DO_TEST_CAPS_LATEST("boot-menu-disable");
+    DO_TEST_CAPS_LATEST("boot-menu-disable-drive");
+
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("boot-dev+order");
+    DO_TEST_CAPS_LATEST("boot-order");
+    DO_TEST_CAPS_LATEST("boot-complex");
 
     DO_TEST_CAPS_LATEST("audio-none-minimal");
     DO_TEST_CAPS_LATEST("audio-alsa-minimal");
