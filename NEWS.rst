@@ -26,7 +26,7 @@ v8.7.0 (unreleased)
 
   * esx: Domain XMLs can now be dumped for VMs with two new interface types
 
-    One is when the interface is not connected anywhere `type='dummy'` and one
+    One is when the interface is not connected anywhere `type='null'` and one
     when it is connected to VMWare Distributed Switch `type='vds'`.
 
 * **Bug fixes**

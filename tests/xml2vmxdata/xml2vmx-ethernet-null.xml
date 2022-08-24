@@ -6,7 +6,7 @@
     <type>hvm</type>
   </os>
   <devices>
-    <interface type='dummy'>
+    <interface type='null'>
       <mac address='00:50:56:87:65:43'/>
     </interface>
   </devices>

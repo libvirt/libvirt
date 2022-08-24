@@ -12,7 +12,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-    <interface type='dummy'>
+    <interface type='null'>
       <mac address='00:50:56:87:65:43' type='generated'/>
       <model type='e1000e'/>
     </interface>

@@ -5240,7 +5240,7 @@ which the UDP socket packets will originate from the QEMU host. :since:`Since
    </devices>
    ...
 
-Dummy network interface
+Null network interface
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 An unconnected network interface sounds pretty pointless, but can show up for
@@ -5251,7 +5251,7 @@ example with VMWare without any specified network to be connected to.
 
    ...
    <devices>
-     <interface type='dummy'>
+     <interface type='null'>
        <mac address='52:54:00:22:c9:42'/>
      </interface>
    </devices>

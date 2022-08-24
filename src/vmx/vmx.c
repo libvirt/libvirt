@@ -2880,7 +2880,7 @@ virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def)
                                 false) < 0)
             goto cleanup;
     } else if (connectionType == NULL && networkName == NULL) {
-        (*def)->type = VIR_DOMAIN_NET_TYPE_DUMMY;
+        (*def)->type = VIR_DOMAIN_NET_TYPE_NULL;
     } else if (connectionType == NULL || STRCASEEQ(connectionType, "bridged")) {
         (*def)->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
         (*def)->data.bridge.brname = g_steal_pointer(&networkName);
@@ -3991,7 +3991,7 @@ virVMXFormatEthernet(virDomainNetDef *def, int controller,
                           controller);
         break;
 
-    case VIR_DOMAIN_NET_TYPE_DUMMY:
+    case VIR_DOMAIN_NET_TYPE_NULL:
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDS: {

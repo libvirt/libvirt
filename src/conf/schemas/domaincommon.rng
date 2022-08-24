@@ -3435,7 +3435,7 @@
 
         <group>
           <attribute name="type">
-            <value>dummy</value>
+            <value>null</value>
           </attribute>
           <ref name="interface-options"/>
         </group>
