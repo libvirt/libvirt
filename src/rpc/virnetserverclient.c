@@ -93,6 +93,9 @@ struct _virNetServerClient
      * throttling calculations */
     size_t nrequests;
     size_t nrequests_max;
+    /* True if we've warned about nrequests hittin
+     * the server limit already */
+    bool nrequests_warning;
     /* Zero or one messages being received. Zero if
      * nrequests >= max_clients and throttling */
     virNetMessage *rx;
@@ -1261,6 +1264,11 @@ static virNetMessage *virNetServerClientDispatchRead(virNetServerClient *client)
                 client->rx->buffer = g_new0(char, client->rx->bufferLength);
                 client->nrequests++;
             }
+        } else if (!client->nrequests_warning) {
+            client->nrequests_warning = true;
+            VIR_WARN("Client hit max requests limit %zd. This may result "
+                     "in keep-alive timeouts. Consider tuning the "
+                     "max_client_requests server parameter", client->nrequests);
         }
         virNetServerClientUpdateEvent(client);
 
