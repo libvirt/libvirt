@@ -1,0 +1,148 @@
+<domainsnapshot>
+  <name>test-snap</name>
+  <state>running</state>
+  <creationTime>1661417356</creationTime>
+  <memory snapshot='external' file='/tmp/ble.img'/>
+  <domain type='kvm'>
+    <name>snapshot-inactivedomain</name>
+    <uuid>14beef2c-8cae-4ea8-bf55-e48fe0cd4b73</uuid>
+    <memory unit='KiB'>1024000</memory>
+    <currentMemory unit='KiB'>1024000</currentMemory>
+    <vcpu placement='static' current='1'>8</vcpu>
+    <resource>
+      <partition>/machine</partition>
+    </resource>
+    <os>
+      <type arch='x86_64' machine='pc-i440fx-7.0'>hvm</type>
+      <boot dev='hd'/>
+    </os>
+    <features>
+      <acpi/>
+      <apic/>
+      <vmport state='off'/>
+    </features>
+    <cpu mode='custom' match='exact' check='none'>
+      <model fallback='forbid'>qemu64</model>
+    </cpu>
+    <clock offset='utc'/>
+    <on_poweroff>destroy</on_poweroff>
+    <on_reboot>restart</on_reboot>
+    <on_crash>restart</on_crash>
+    <pm>
+      <suspend-to-mem enabled='no'/>
+      <suspend-to-disk enabled='no'/>
+    </pm>
+    <devices>
+      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+      <controller type='usb' index='0' model='ich9-ehci1'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x7'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci1'>
+        <master startport='0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0' multifunction='on'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci2'>
+        <master startport='2'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x1'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci3'>
+        <master startport='4'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x2'/>
+      </controller>
+      <controller type='virtio-serial' index='0'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      </controller>
+      <controller type='ide' index='0'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+      </controller>
+      <controller type='scsi' index='0' model='virtio-scsi'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+      </controller>
+      <controller type='sata' index='0'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
+      </controller>
+      <controller type='pci' index='0' model='pci-root'/>
+      <input type='mouse' bus='ps2'/>
+      <input type='keyboard' bus='ps2'/>
+      <audio id='1' type='none'/>
+      <memballoon model='virtio'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      </memballoon>
+    </devices>
+    <seclabel type='dynamic' model='selinux' relabel='yes'/>
+  </domain>
+  <inactiveDomain type='kvm'>
+    <name>snapshot-inactivedomain</name>
+    <uuid>14beef2c-8cae-4ea8-bf55-e48fe0cd4b73</uuid>
+    <memory unit='KiB'>1024000</memory>
+    <currentMemory unit='KiB'>1024000</currentMemory>
+    <vcpu placement='static' current='1'>8</vcpu>
+    <os>
+      <type arch='x86_64' machine='pc-i440fx-7.0'>hvm</type>
+      <boot dev='hd'/>
+    </os>
+    <features>
+      <acpi/>
+      <apic/>
+      <vmport state='off'/>
+    </features>
+    <cpu mode='custom' match='exact' check='none'>
+      <model fallback='forbid'>qemu64</model>
+    </cpu>
+    <clock offset='utc'/>
+    <on_poweroff>destroy</on_poweroff>
+    <on_reboot>restart</on_reboot>
+    <on_crash>restart</on_crash>
+    <pm>
+      <suspend-to-mem enabled='no'/>
+      <suspend-to-disk enabled='no'/>
+    </pm>
+    <devices>
+      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+      <controller type='usb' index='0' model='ich9-ehci1'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x7'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci1'>
+        <master startport='0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0' multifunction='on'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci2'>
+        <master startport='2'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x1'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci3'>
+        <master startport='4'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x2'/>
+      </controller>
+      <controller type='pci' index='0' model='pci-root'/>
+      <controller type='virtio-serial' index='0'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      </controller>
+      <controller type='ide' index='0'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+      </controller>
+      <controller type='scsi' index='0' model='virtio-scsi'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+      </controller>
+      <controller type='sata' index='0'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
+      </controller>
+      <input type='mouse' bus='ps2'/>
+      <input type='keyboard' bus='ps2'/>
+      <audio id='1' type='none'/>
+      <memballoon model='virtio'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      </memballoon>
+    </devices>
+  </inactiveDomain>
+  <cookie>
+    <cpu mode='custom' match='exact' check='full'>
+      <model fallback='forbid'>qemu64</model>
+      <feature policy='require' name='x2apic'/>
+      <feature policy='require' name='hypervisor'/>
+      <feature policy='require' name='lahf_lm'/>
+      <feature policy='disable' name='svm'/>
+    </cpu>
+    <slirpHelper/>
+  </cookie>
+</domainsnapshot>
