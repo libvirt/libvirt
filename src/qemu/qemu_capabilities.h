@@ -550,7 +550,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 360 */
     QEMU_CAPS_FSDEV_MULTIDEVS, /* fsdev.multidevs */
-    QEMU_CAPS_VIRTIO_PACKED_QUEUES, /* virtio.packed */
+    X_QEMU_CAPS_VIRTIO_PACKED_QUEUES, /* virtio.packed */
     QEMU_CAPS_PCIE_ROOT_PORT_HOTPLUG, /* pcie-root-port.hotplug */
     QEMU_CAPS_AIO_IO_URING, /* -blockdev {...,"aio":"io_uring",...} */
     QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC, /* -machine pseries.cap-cfpc */

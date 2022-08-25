@@ -139,7 +139,6 @@
   <flag name='blockdev-snapshot.allow-write-only-overlay'/>
   <flag name='blockdev-reopen'/>
   <flag name='fsdev.multidevs'/>
-  <flag name='virtio.packed'/>
   <flag name='pcie-root-port.hotplug'/>
   <flag name='tcg'/>
   <flag name='virtio-blk-pci.scsi.default.disabled'/>

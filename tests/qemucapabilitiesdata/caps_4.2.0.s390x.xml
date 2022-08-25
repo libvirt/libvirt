@@ -92,7 +92,6 @@
   <flag name='virtio-net.failover'/>
   <flag name='vhost-user-fs'/>
   <flag name='fsdev.multidevs'/>
-  <flag name='virtio.packed'/>
   <flag name='tcg'/>
   <flag name='vhost-user-blk'/>
   <flag name='cpu-max'/>
