@@ -416,7 +416,7 @@
 
   <define name="capsvports">
     <attribute name="type">
-      <value>vports_ops</value>
+      <value>vport_ops</value>
     </attribute>
     <element name="max_vports">
       <ref name="unsignedInt"/>

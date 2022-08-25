@@ -250,7 +250,7 @@ Describes a SCSI host device. Sub-elements include:
    scsi_host adapter in a `Storage Pool <formatstorage.html>`__.
    :since:`Since 1.2.7`
 ``capability``
-   Current capabilities include "vports_ops" (indicates vport operations
+   Current capabilities include "vport_ops" (indicates vport operations
    are supported) and "fc_host". "vport_ops" could contain two optional
    sub-elements: ``vports``, and ``max_vports``. ``vports`` shows the
    number of vport in use. ``max_vports`` shows the maximum vports the HBA
