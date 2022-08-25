@@ -188,7 +188,7 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    features required by selected firmware. Accepted values are ``bios`` and
    ``efi``.
    The selection process scans for files describing installed firmware images in
-   specified location and uses the most specific one which fulfils domain
+   specified location and uses the most specific one which fulfills domain
    requirements. The locations in order of preference (from generic to most
    specific one) are:
 
@@ -1511,7 +1511,7 @@ In case no restrictions need to be put on CPU model and its features, a simpler
    rather then trying to mimic the host CPU model.
 
    If an application does not care about a specific CPU, just wants the
-   best featureset without a need for migration compatibility, the
+   best feature set without a need for migration compatibility, the
    ``maximum`` model is a good choice on hypervisors where it is available.
 
 ``model``
@@ -2148,7 +2148,7 @@ are:
 ``nested-hv``
    Configure nested HV availability for pSeries guests. This needs to be enabled
    from the host (L0) in order to be effective; having HV support in the (L1)
-   guest is very desiderable if it's planned to run nested (L2) guests inside
+   guest is very desirable if it's planned to run nested (L2) guests inside
    it, because it will result in those nested guests having much better
    performance than they would when using KVM PR or TCG. Possible values for the
    ``state`` attribute are ``on`` and ``off``. If the attribute is not defined,
@@ -2380,7 +2380,7 @@ event name                  Description                                         
 ``page_faults_min``         the count of minor page faults, that is, where the page was present in the page cache, and therefore the fault avoided loading it from storage, by applications running on the platform ``perf.page_faults_min``
 ``page_faults_maj``         the count of major page faults, that is, where the page was not present in the page cache, and therefore had to be fetched from storage, by applications running on the platform        ``perf.page_faults_maj``
 ``alignment_faults``        the count of alignment faults, that is when the load or store is not aligned properly, by applications running on the platform                                                          ``perf.alignment_faults``
-``emulation_faults``        the count of emulation faults, that is when the kernel traps on unimplemented instrucions and emulates them for user space, by applications running on the platform                     ``perf.emulation_faults``
+``emulation_faults``        the count of emulation faults, that is when the kernel traps on unimplemented instructions and emulates them for user space, by applications running on the platform                     ``perf.emulation_faults``
 =========================== ======================================================================================================================================================================================= ================================
 
 
@@ -3109,7 +3109,7 @@ paravirtualized driver is specified via the ``disk`` element.
       :since:`Throughput limits since 1.2.11 and QEMU 1.7`
 
    ``group_name``
-      The optional ``group_name`` provides the cability to share I/O throttling
+      The optional ``group_name`` provides the ability to share I/O throttling
       quota between multiple drives. This prevents end-users from circumventing
       a hosting provider's throttling policy by splitting 1 large drive in N
       small drives and getting N times the normal throttling quota. Any name may
@@ -5670,7 +5670,7 @@ be the "native" VLAN for this interface, and the ``nativeMode`` attribute
 determines whether or not traffic for that VLAN will be tagged.
 
 
-Isolating guests's network traffic from each other
+Isolating guests' network traffic from each other
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
@@ -8379,7 +8379,7 @@ spec <https://support.amd.com/TechDocs/55766_SEV-KM_API_Specification.pdf>`__
    capabilities.
 ``reducedPhysBits``
    The required ``reducedPhysBits`` element provides the physical address bit
-   reducation. Similar to ``cbitpos`` the value of ``reduced-phys-bit`` is
+   reduction. Similar to ``cbitpos`` the value of ``reduced-phys-bit`` is
    hypervisor dependent and can be obtained through the ``sev`` element from the
    domain capabilities.
 ``policy``
