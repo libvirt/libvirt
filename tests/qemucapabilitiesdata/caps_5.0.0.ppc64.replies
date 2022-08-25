@@ -19598,110 +19598,9 @@
 {
   "execute": "device-list-properties",
   "arguments": {
-    "typename": "nec-usb-xhci"
-  },
-  "id": "libvirt-27"
-}
-
-{
-  "return": [
-    {
-      "default-value": 1,
-      "name": "rombar",
-      "type": "uint32"
-    },
-    {
-      "default-value": true,
-      "name": "x-pcie-lnksta-dllla",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "default-value": false,
-      "name": "multifunction",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "name": "romfile",
-      "type": "str"
-    },
-    {
-      "default-value": true,
-      "name": "x-pcie-extcap-init",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "default-value": -1,
-      "name": "addr",
-      "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
-    },
-    {
-      "name": "failover_pair_id",
-      "type": "str"
-    },
-    {
-      "default-value": 4,
-      "name": "p3",
-      "type": "uint32"
-    },
-    {
-      "default-value": true,
-      "name": "streams",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "default-value": 4,
-      "name": "p2",
-      "type": "uint32"
-    },
-    {
-      "default-value": "auto",
-      "name": "msi",
-      "description": "on/off/auto",
-      "type": "OnOffAuto"
-    },
-    {
-      "default-value": 16,
-      "name": "intrs",
-      "type": "uint32"
-    },
-    {
-      "default-value": false,
-      "name": "force-pcie-endcap",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "default-value": 64,
-      "name": "slots",
-      "type": "uint32"
-    },
-    {
-      "default-value": "auto",
-      "name": "msix",
-      "description": "on/off/auto",
-      "type": "OnOffAuto"
-    },
-    {
-      "default-value": true,
-      "name": "superspeed-ports-first",
-      "description": "on/off",
-      "type": "bool"
-    }
-  ],
-  "id": "libvirt-27"
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
     "typename": "spapr-pci-host-bridge"
   },
-  "id": "libvirt-28"
+  "id": "libvirt-27"
 }
 
 {
@@ -19782,7 +19681,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-28"
+  "id": "libvirt-27"
 }
 
 {
@@ -19790,7 +19689,7 @@
   "arguments": {
     "typename": "nvdimm"
   },
-  "id": "libvirt-29"
+  "id": "libvirt-28"
 }
 
 {
@@ -19832,7 +19731,7 @@
       "type": "uint64"
     }
   ],
-  "id": "libvirt-29"
+  "id": "libvirt-28"
 }
 
 {
@@ -19840,7 +19739,7 @@
   "arguments": {
     "typename": "pcie-root-port"
   },
-  "id": "libvirt-30"
+  "id": "libvirt-29"
 }
 
 {
@@ -19961,7 +19860,7 @@
       "type": "PCIELinkSpeed"
     }
   ],
-  "id": "libvirt-30"
+  "id": "libvirt-29"
 }
 
 {
@@ -19969,7 +19868,7 @@
   "arguments": {
     "typename": "usb-host"
   },
-  "id": "libvirt-31"
+  "id": "libvirt-30"
 }
 
 {
@@ -20063,7 +19962,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-30"
 }
 
 {
@@ -20071,7 +19970,7 @@
   "arguments": {
     "typename": "vhost-user-fs-device"
   },
-  "id": "libvirt-32"
+  "id": "libvirt-31"
 }
 
 {
@@ -20147,7 +20046,7 @@
       "type": "uint16"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-31"
 }
 
 {
@@ -20155,7 +20054,7 @@
   "arguments": {
     "typename": "virtio-iommu-pci"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-32"
 }
 
 {
@@ -20166,7 +20065,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-32"
 }
 
 {
@@ -20174,7 +20073,7 @@
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-34"
+  "id": "libvirt-33"
 }
 
 {
@@ -20244,7 +20143,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-33"
 }
 
 {
@@ -20252,7 +20151,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-35"
+  "id": "libvirt-34"
 }
 
 {
@@ -20321,12 +20220,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-34"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-36"
+  "id": "libvirt-35"
 }
 
 {
@@ -20596,7 +20495,7 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-35"
 }
 
 {
@@ -20604,7 +20503,7 @@
   "arguments": {
     "typename": "pseries-5.0-machine"
   },
-  "id": "libvirt-37"
+  "id": "libvirt-36"
 }
 
 {
@@ -20813,7 +20712,7 @@
       "type": "string"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-36"
 }
 
 {
@@ -20821,7 +20720,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-38"
+  "id": "libvirt-37"
 }
 
 {
@@ -20911,12 +20810,12 @@
       "type": "string"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-39"
+  "id": "libvirt-38"
 }
 
 {
@@ -23122,24 +23021,24 @@
       "static": false
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-40"
+  "id": "libvirt-39"
 }
 
 {
   "return": [
     "tpm-spapr"
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-41"
+  "id": "libvirt-40"
 }
 
 {
@@ -23147,12 +23046,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-42"
+  "id": "libvirt-41"
 }
 
 {
@@ -24289,12 +24188,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-43"
+  "id": "libvirt-42"
 }
 
 {
@@ -24372,7 +24271,7 @@
       "capability": "validate-uuid"
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-42"
 }
 
 {

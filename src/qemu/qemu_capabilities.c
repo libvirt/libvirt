@@ -1524,9 +1524,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsICH9[] = {
     { "disable_s4", QEMU_CAPS_ICH9_DISABLE_S4, NULL },
 };
 
-static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBNECXHCI[] = {
-};
-
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIntelIOMMU[] = {
     { "intremap", QEMU_CAPS_INTEL_IOMMU_INTREMAP, NULL },
     { "caching-mode", QEMU_CAPS_INTEL_IOMMU_CACHING_MODE, NULL },
@@ -1676,9 +1673,6 @@ static virQEMUCapsDeviceTypeProps virQEMUCapsDeviceProps[] = {
     { "virtio-balloon-device", virQEMUCapsDevicePropsVirtioBalloon,
       G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioBalloon),
       -1 },
-    { "nec-usb-xhci", virQEMUCapsDevicePropsUSBNECXHCI,
-      G_N_ELEMENTS(virQEMUCapsDevicePropsUSBNECXHCI),
-      QEMU_CAPS_NEC_USB_XHCI },
     { "intel-iommu", virQEMUCapsDevicePropsIntelIOMMU,
       G_N_ELEMENTS(virQEMUCapsDevicePropsIntelIOMMU),
       QEMU_CAPS_DEVICE_INTEL_IOMMU },
