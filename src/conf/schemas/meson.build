@@ -8,6 +8,7 @@ schema_files = [
   'domaincheckpoint.rng',
   'domaincommon.rng',
   'domain.rng',
+  'domainoverrides.rng',
   'domainsnapshot.rng',
   'interface.rng',
   'networkcommon.rng',

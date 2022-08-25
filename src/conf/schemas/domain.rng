@@ -6,16 +6,6 @@
     <ref name="domain"/>
   </start>
 
-  <include href="domaincommon.rng"/>
-
-  <define name="storageStartupPolicy" combine="choice">
-    <!-- overrides the no-op version in storagecommon.rng -->
-    <ref name="startupPolicy"/>
-  </define>
-
-  <define name="storageSourceExtra" combine="choice">
-    <!-- overrides the no-op version in storagecommon.rng -->
-    <ref name="diskspec"/>
-  </define>
+  <include href="domainoverrides.rng"/>
 
 </grammar>
