@@ -1,0 +1,18 @@
+<device>
+  <name>scsi_host12</name>
+  <path>/sys/devices/pci0000:00/0000:00:03.2/0000:06:00.1/host12</path>
+  <parent>pci_0000_06_00_1</parent>
+  <capability type='scsi_host'>
+    <host>12</host>
+    <unique_id>12</unique_id>
+    <capability type='fc_host'>
+      <wwnn>2000f4e9d4eb02c9</wwnn>
+      <wwpn>2001f4e9d4eb02c9</wwpn>
+      <fabric_wwn>2001547feebe79c1</fabric_wwn>
+    </capability>
+    <capability type='vport_ops'>
+      <max_vports>0</max_vports>
+      <vports>0</vports>
+    </capability>
+  </capability>
+</device>
