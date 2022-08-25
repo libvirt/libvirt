@@ -1774,18 +1774,10 @@ qemuValidateNetSupportsCoalesce(virDomainNetType type)
 
 static int
 qemuValidateDomainVirtioOptions(const virDomainVirtioOptions *virtio,
-                                virQEMUCaps *qemuCaps)
+                                virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     if (!virtio)
         return 0;
-
-    if (virtio->packed != VIR_TRISTATE_SWITCH_ABSENT &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PACKED_QUEUES)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("the packed setting is not supported with this "
-                             "QEMU binary"));
-            return -1;
-        }
 
     return 0;
 }
