@@ -84,6 +84,11 @@
           </choice>
         </optional>
         <optional>
+          <grammar>
+            <include href="inactiveDomain.rng"/>
+          </grammar>
+        </optional>
+        <optional>
           <element name="parent">
             <element name="name">
               <text/>

@@ -10,6 +10,7 @@ schema_files = [
   'domain.rng',
   'domainoverrides.rng',
   'domainsnapshot.rng',
+  'inactiveDomain.rng',
   'interface.rng',
   'networkcommon.rng',
   'networkport.rng',

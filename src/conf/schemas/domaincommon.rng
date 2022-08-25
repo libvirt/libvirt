@@ -37,6 +37,13 @@
     </element>
   </define>
 
+  <!-- this element is used as a child of a snapshot definition -->
+  <define name="inactiveDomain">
+    <element name="inactiveDomain">
+      <ref name="domaincontents"/>
+    </element>
+  </define>
+
   <define name="domaincontents">
     <ref name="hvs"/>
     <interleave>
