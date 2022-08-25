@@ -471,7 +471,11 @@ Requires: dbus
 # For uid creation during pre
 Requires(pre): shadow-utils
 # Needed by /usr/libexec/libvirt-guests.sh script.
+%if 0%{?fedora} >= 37
+Requires: gettext-runtime
+%else
 Requires: gettext
+%endif
 
 # Ensure smooth upgrades
 Obsoletes: libvirt-admin < 7.3.0
