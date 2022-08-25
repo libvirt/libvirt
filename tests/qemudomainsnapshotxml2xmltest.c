@@ -30,7 +30,6 @@ testCompareXMLToXMLFiles(const char *inxml,
                          unsigned int flags)
 {
     g_autofree char *inXmlData = NULL;
-    g_autofree char *outXmlData = NULL;
     g_autofree char *actual = NULL;
     unsigned int parseflags = 0;
     unsigned int formatflags = VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE;
@@ -46,9 +45,6 @@ testCompareXMLToXMLFiles(const char *inxml,
         parseflags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
 
     if (virTestLoadFile(inxml, &inXmlData) < 0)
-        return -1;
-
-    if (virTestLoadFile(outxml, &outXmlData) < 0)
         return -1;
 
     if (!(def = virDomainSnapshotDefParseString(inXmlData,
@@ -71,10 +67,8 @@ testCompareXMLToXMLFiles(const char *inxml,
                                               formatflags)))
         return -1;
 
-    if (STRNEQ(outXmlData, actual)) {
-        virTestDifferenceFull(stderr, outXmlData, outxml, actual, inxml);
+    if (virTestCompareToFile(actual, outxml) < 0)
         return -1;
-    }
 
     return 0;
 }
