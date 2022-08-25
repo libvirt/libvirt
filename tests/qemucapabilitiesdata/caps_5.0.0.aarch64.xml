@@ -74,7 +74,6 @@
   <flag name='vserport-change-event'/>
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
   <flag name='mptsas1068'/>
-  <flag name='virtio-scsi-pci.iothread'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='virtio-net.rx_queue_size'/>
   <flag name='ivshmem-plain'/>

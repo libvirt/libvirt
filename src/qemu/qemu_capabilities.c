@@ -375,7 +375,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 220 */
               "nec-usb-xhci-ports", /* X_QEMU_CAPS_NEC_USB_XHCI_PORTS */
-              "virtio-scsi-pci.iothread", /* QEMU_CAPS_VIRTIO_SCSI_IOTHREAD */
+              "virtio-scsi-pci.iothread", /* X_QEMU_CAPS_VIRTIO_SCSI_IOTHREAD */
               "name-guest", /* X_QEMU_CAPS_NAME_GUEST */
               "qxl.max_outputs", /* X_QEMU_CAPS_QXL_MAX_OUTPUTS */
               "qxl-vga.max_outputs", /* X_QEMU_CAPS_QXL_VGA_MAX_OUTPUTS */
@@ -1463,7 +1463,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSpaprPCIHostBrid
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioSCSI[] = {
-    { "iothread", QEMU_CAPS_VIRTIO_SCSI_IOTHREAD, NULL },
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
     { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
 };

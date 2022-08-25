@@ -354,7 +354,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 220 */
     X_QEMU_CAPS_NEC_USB_XHCI_PORTS, /* -device nec-usb-xhci.p3 ports setting */
-    QEMU_CAPS_VIRTIO_SCSI_IOTHREAD, /* virtio-scsi-{pci,ccw}.iothread */
+    X_QEMU_CAPS_VIRTIO_SCSI_IOTHREAD, /* virtio-scsi-{pci,ccw}.iothread */
     X_QEMU_CAPS_NAME_GUEST, /* -name guest= */
     X_QEMU_CAPS_QXL_MAX_OUTPUTS, /* -device qxl,max-outputs= */
     X_QEMU_CAPS_QXL_VGA_MAX_OUTPUTS, /* -device qxl-vga,max-outputs= */

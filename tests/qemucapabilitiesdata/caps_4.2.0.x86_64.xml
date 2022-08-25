@@ -92,7 +92,6 @@
   <flag name='qxl.vram64_size_mb'/>
   <flag name='pxb'/>
   <flag name='pxb-pcie'/>
-  <flag name='virtio-scsi-pci.iothread'/>
   <flag name='intel-iommu'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='virtio-net.rx_queue_size'/>

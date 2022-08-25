@@ -74,7 +74,6 @@
   <flag name='mptsas1068'/>
   <flag name='pxb'/>
   <flag name='pxb-pcie'/>
-  <flag name='virtio-scsi-pci.iothread'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='virtio-net.rx_queue_size'/>
   <flag name='ivshmem-plain'/>
