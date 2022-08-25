@@ -2565,13 +2565,6 @@ mymain(void)
     /* verify that devices with pcie capability are assigned to a pcie slot */
     DO_TEST_CAPS_VER("q35-pcie", "4.2.0");
     DO_TEST_CAPS_LATEST("q35-pcie");
-    /* same XML as q35-pcie, but don't set
-     * QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, so virtio devices should
-     * be assigned to legacy pci slots. This doesn't apply to the 'real' caps
-     * tests as such configuration is not present in real life.
-     */
-    DO_TEST_CAPS_VER("q35-virtio-pci", "4.2.0");
-    DO_TEST_CAPS_LATEST("q35-virtio-pci");
     /* same as q35-pcie, but all PCI controllers are added automatically */
     DO_TEST_CAPS_VER("q35-pcie-autoadd", "4.2.0");
     DO_TEST_CAPS_LATEST("q35-pcie-autoadd");

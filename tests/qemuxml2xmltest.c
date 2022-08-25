@@ -822,25 +822,6 @@ mymain(void)
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_NEC_USB_XHCI);
-    /* same XML as q35-pcie, but don't set
-       QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY */
-    DO_TEST("q35-virtio-pci",
-            QEMU_CAPS_DEVICE_VIRTIO_RNG,
-            QEMU_CAPS_OBJECT_RNG_RANDOM,
-            QEMU_CAPS_DEVICE_VIRTIO_NET,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL,
-            QEMU_CAPS_VIRTIO_KEYBOARD,
-            QEMU_CAPS_VIRTIO_MOUSE,
-            QEMU_CAPS_VIRTIO_TABLET,
-            QEMU_CAPS_VIRTIO_INPUT_HOST,
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_ICH9_USB_EHCI1,
-            QEMU_CAPS_NEC_USB_XHCI);
     /* same as q35-pcie, but all PCI controllers are added automatically */
     DO_TEST("q35-pcie-autoadd",
             QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
