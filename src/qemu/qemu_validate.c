@@ -1772,17 +1772,6 @@ qemuValidateNetSupportsCoalesce(virDomainNetType type)
 }
 
 
-static int
-qemuValidateDomainVirtioOptions(const virDomainVirtioOptions *virtio,
-                                virQEMUCaps *qemuCaps G_GNUC_UNUSED)
-{
-    if (!virtio)
-        return 0;
-
-    return 0;
-}
-
-
 /**
  * qemuValidateDomainDefVhostUserRequireSharedMemory:
  * @def: VM definition
@@ -1973,9 +1962,6 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                              "QEMU binary"));
             return -1;
         }
-
-        if (qemuValidateDomainVirtioOptions(net->virtio, qemuCaps) < 0)
-            return -1;
     }
 
     if (net->mtu &&
@@ -2394,9 +2380,6 @@ qemuValidateDomainRNGDef(const virDomainRNGDef *def,
         return -1;
     }
 
-    if (qemuValidateDomainVirtioOptions(def->virtio, qemuCaps) < 0)
-        return -1;
-
     return 0;
 }
 
@@ -2806,9 +2789,6 @@ qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
             return -1;
         }
     }
-
-    if (qemuValidateDomainVirtioOptions(video->virtio, qemuCaps) < 0)
-        return -1;
 
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_RAMFB &&
         video->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
@@ -3367,11 +3347,6 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
             return -1;
     }
 
-    if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO &&
-        qemuValidateDomainVirtioOptions(disk->virtio, qemuCaps) < 0) {
-        return -1;
-    }
-
     if (disk->src->type == VIR_STORAGE_TYPE_VHOST_USER) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_USER_BLK)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -3658,8 +3633,7 @@ virValidateControllerPCIModelNameToQEMUCaps(int modelName)
 
 
 static int
-qemuValidateDomainDeviceDefControllerAttributes(const virDomainControllerDef *controller,
-                                                virQEMUCaps *qemuCaps)
+qemuValidateDomainDeviceDefControllerAttributes(const virDomainControllerDef *controller)
 {
     if (!(controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
           (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI ||
@@ -3690,13 +3664,6 @@ qemuValidateDomainDeviceDefControllerAttributes(const virDomainControllerDef *co
                            _("'iothread' is only supported for virtio-scsi controller"));
             return -1;
         }
-        if (qemuValidateDomainVirtioOptions(controller->virtio, qemuCaps) < 0)
-            return -1;
-    }
-
-    if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL &&
-        qemuValidateDomainVirtioOptions(controller->virtio, qemuCaps) < 0) {
-        return -1;
     }
 
     return 0;
@@ -4228,7 +4195,7 @@ qemuValidateDomainDeviceDefController(const virDomainControllerDef *controller,
         !qemuValidateCheckSCSIControllerModel(qemuCaps, controller->model))
         return -1;
 
-    if (qemuValidateDomainDeviceDefControllerAttributes(controller, qemuCaps) < 0)
+    if (qemuValidateDomainDeviceDefControllerAttributes(controller) < 0)
         return -1;
 
     switch ((virDomainControllerType)controller->type) {
@@ -4572,9 +4539,6 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
         return -1;
     }
 
-    if (qemuValidateDomainVirtioOptions(fs->virtio, qemuCaps) < 0)
-        return -1;
-
     return 0;
 }
 
@@ -4697,8 +4661,7 @@ qemuValidateDomainDeviceDefSound(virDomainSoundDef *sound,
 
 
 static int
-qemuValidateDomainDeviceDefVsock(const virDomainVsockDef *vsock,
-                                 virQEMUCaps *qemuCaps)
+qemuValidateDomainDeviceDefVsock(virQEMUCaps *qemuCaps)
 {
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_VSOCK)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4706,9 +4669,6 @@ qemuValidateDomainDeviceDefVsock(const virDomainVsockDef *vsock,
                          "with this QEMU binary"));
         return -1;
     }
-
-    if (qemuValidateDomainVirtioOptions(vsock->virtio, qemuCaps) < 0)
-        return -1;
 
     return 0;
 }
@@ -4884,9 +4844,6 @@ qemuValidateDomainDeviceDefInput(const virDomainInputDef *input,
         return -1;
     }
 
-    if (qemuValidateDomainVirtioOptions(input->virtio, qemuCaps) < 0)
-        return -1;
-
     return 0;
 }
 
@@ -4922,9 +4879,6 @@ qemuValidateDomainDeviceDefMemballoon(const virDomainMemballoonDef *memballoon,
                        _("freePageReporting is not supported by this QEMU binary"));
         return -1;
     }
-
-    if (qemuValidateDomainVirtioOptions(memballoon->virtio, qemuCaps) < 0)
-        return -1;
 
     return 0;
 }
@@ -5259,7 +5213,7 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
                                                     qemuCaps);
 
     case VIR_DOMAIN_DEVICE_VSOCK:
-        return qemuValidateDomainDeviceDefVsock(dev->data.vsock, qemuCaps);
+        return qemuValidateDomainDeviceDefVsock(qemuCaps);
 
     case VIR_DOMAIN_DEVICE_TPM:
         return qemuValidateDomainDeviceDefTPM(dev->data.tpm, def, qemuCaps);
