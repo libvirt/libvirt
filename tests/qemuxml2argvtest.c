@@ -2559,135 +2559,27 @@ mymain(void)
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_DEVICE_QXL);
 
+    /* Note: The real caps versions of the following tests based on qemu-4.2.0
+     * were added as a comparison point between fake caps testing and real caps
+     * testing and don't have any other specific purpose */
     /* verify that devices with pcie capability are assigned to a pcie slot */
-    DO_TEST("q35-pcie",
-            QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
-            QEMU_CAPS_DEVICE_VIRTIO_RNG,
-            QEMU_CAPS_OBJECT_RNG_RANDOM,
-            QEMU_CAPS_DEVICE_VIRTIO_NET,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL,
-            QEMU_CAPS_VIRTIO_KEYBOARD,
-            QEMU_CAPS_VIRTIO_MOUSE,
-            QEMU_CAPS_VIRTIO_TABLET,
-            QEMU_CAPS_VIRTIO_INPUT_HOST,
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_ICH9_USB_EHCI1,
-            QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST_CAPS_VER("q35-pcie", "4.2.0");
     DO_TEST_CAPS_LATEST("q35-pcie");
     /* same XML as q35-pcie, but don't set
      * QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, so virtio devices should
      * be assigned to legacy pci slots. This doesn't apply to the 'real' caps
      * tests as such configuration is not present in real life.
      */
-    DO_TEST("q35-virtio-pci",
-            QEMU_CAPS_DEVICE_VIRTIO_RNG,
-            QEMU_CAPS_OBJECT_RNG_RANDOM,
-            QEMU_CAPS_DEVICE_VIRTIO_NET,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL,
-            QEMU_CAPS_VIRTIO_KEYBOARD,
-            QEMU_CAPS_VIRTIO_MOUSE,
-            QEMU_CAPS_VIRTIO_TABLET,
-            QEMU_CAPS_VIRTIO_INPUT_HOST,
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_ICH9_USB_EHCI1,
-            QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST_CAPS_VER("q35-virtio-pci", "4.2.0");
     DO_TEST_CAPS_LATEST("q35-virtio-pci");
     /* same as q35-pcie, but all PCI controllers are added automatically */
-    DO_TEST("q35-pcie-autoadd",
-            QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
-            QEMU_CAPS_DEVICE_VIRTIO_RNG,
-            QEMU_CAPS_OBJECT_RNG_RANDOM,
-            QEMU_CAPS_DEVICE_VIRTIO_NET,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL,
-            QEMU_CAPS_VIRTIO_KEYBOARD,
-            QEMU_CAPS_VIRTIO_MOUSE,
-            QEMU_CAPS_VIRTIO_TABLET,
-            QEMU_CAPS_VIRTIO_INPUT_HOST,
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_ICH9_USB_EHCI1,
-            QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST_CAPS_VER("q35-pcie-autoadd", "4.2.0");
     DO_TEST_CAPS_LATEST("q35-pcie-autoadd");
-    DO_TEST("q35-default-devices-only",
-            QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
-            QEMU_CAPS_DEVICE_VIRTIO_RNG,
-            QEMU_CAPS_OBJECT_RNG_RANDOM,
-            QEMU_CAPS_DEVICE_VIRTIO_NET,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL,
-            QEMU_CAPS_VIRTIO_KEYBOARD,
-            QEMU_CAPS_VIRTIO_MOUSE,
-            QEMU_CAPS_VIRTIO_TABLET,
-            QEMU_CAPS_VIRTIO_INPUT_HOST,
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_ICH9_USB_EHCI1,
-            QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST_CAPS_VER("q35-default-devices-only", "4.2.0");
     DO_TEST_CAPS_LATEST("q35-default-devices-only");
-    DO_TEST("q35-multifunction",
-            QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
-            QEMU_CAPS_DEVICE_VIRTIO_RNG,
-            QEMU_CAPS_OBJECT_RNG_RANDOM,
-            QEMU_CAPS_DEVICE_VIRTIO_NET,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL,
-            QEMU_CAPS_VIRTIO_KEYBOARD,
-            QEMU_CAPS_VIRTIO_MOUSE,
-            QEMU_CAPS_VIRTIO_TABLET,
-            QEMU_CAPS_VIRTIO_INPUT_HOST,
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_ICH9_USB_EHCI1,
-            QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST_CAPS_VER("q35-multifunction", "4.2.0");
     DO_TEST_CAPS_LATEST("q35-multifunction");
-    DO_TEST("q35-virt-manager-basic",
-            QEMU_CAPS_KVM,
-            QEMU_CAPS_MACHINE_VMPORT_OPT,
-            QEMU_CAPS_ICH9_DISABLE_S3,
-            QEMU_CAPS_ICH9_DISABLE_S4,
-            QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
-            QEMU_CAPS_DEVICE_VIRTIO_RNG,
-            QEMU_CAPS_OBJECT_RNG_RANDOM,
-            QEMU_CAPS_DEVICE_VIRTIO_NET,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL,
-            QEMU_CAPS_VIRTIO_KEYBOARD,
-            QEMU_CAPS_VIRTIO_MOUSE,
-            QEMU_CAPS_VIRTIO_TABLET,
-            QEMU_CAPS_VIRTIO_INPUT_HOST,
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_ICH9_USB_EHCI1,
-            QEMU_CAPS_NEC_USB_XHCI,
-            QEMU_CAPS_DEVICE_ICH9_INTEL_HDA,
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_HDA_DUPLEX,
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_USB_REDIR);
+    DO_TEST_CAPS_VER("q35-virt-manager-basic", "4.2.0");
     DO_TEST_CAPS_LATEST("q35-virt-manager-basic");
 
     /* Test automatic and manual setting of pcie-root-port attributes */
@@ -2782,11 +2674,7 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_VHOST_SCSI);
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdev-scsi-vhost-scsi-pci-boot-fail");
-    DO_TEST("hostdev-scsi-vhost-scsi-pcie",
-            QEMU_CAPS_KVM,
-            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DEVICE_VHOST_SCSI,
-            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
-            QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY);
+    DO_TEST_CAPS_VER("hostdev-scsi-vhost-scsi-pcie", "4.2.0");
     DO_TEST_CAPS_LATEST("hostdev-scsi-vhost-scsi-pcie");
     DO_TEST_PARSE_ERROR("hostdev-scsi-duplicate",
                         QEMU_CAPS_VIRTIO_SCSI,
@@ -2828,15 +2716,7 @@ mymain(void)
        q35 style PCI controllers will be added if the binary supports it,
        but virtio-mmio is always used unless PCI addresses are manually
        specified. */
-    DO_TEST("aarch64-virtio-pci-default",
-            QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
-            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
-            QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM,
-            QEMU_CAPS_OBJECT_GPEX, QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_DEVICE_PL011,
-            QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_CAPS_ARCH_VER("aarch64-virtio-pci-default", "aarch64", "4.2.0");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virtio-pci-default", "aarch64");
     DO_TEST("aarch64-virt-2.6-virtio-pci-default",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
