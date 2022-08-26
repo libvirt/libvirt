@@ -22705,7 +22705,7 @@ virDomainControllerDefFormat(virBuffer *buf,
     if (model)
         virBufferEscapeString(&attrBuf, " model='%s'", model);
 
-    switch (def->type) {
+    switch ((virDomainControllerType) def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
         if (def->opts.vioserial.ports != -1) {
             virBufferAsprintf(&attrBuf, " ports='%d'",
@@ -22735,7 +22735,14 @@ virDomainControllerDefFormat(virBuffer *buf,
         }
         break;
 
-    default:
+    case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
+    case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
+    case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
+    case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
+    case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
+    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+    case VIR_DOMAIN_CONTROLLER_TYPE_ISA:
+    case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
         break;
     }
 
