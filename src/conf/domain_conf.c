@@ -22676,6 +22676,8 @@ virDomainControllerDefFormatPCI(virBuffer *buf,
                                 virDomainControllerDef *def,
                                 unsigned int flags)
 {
+    g_auto(virBuffer) targetAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) targetChildBuf = VIR_BUFFER_INIT_CHILD(buf);
     bool formatModelName = true;
 
     if (def->opts.pciopts.modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)
@@ -22710,45 +22712,25 @@ virDomainControllerDefFormatPCI(virBuffer *buf,
         virBufferAsprintf(buf, "<model name='%s'/>\n", modelName);
     }
 
-    if (def->opts.pciopts.chassisNr != -1 ||
-        def->opts.pciopts.chassis != -1 ||
-        def->opts.pciopts.port != -1 ||
-        def->opts.pciopts.busNr != -1 ||
-        def->opts.pciopts.targetIndex != -1 ||
-        def->opts.pciopts.numaNode != -1 ||
-        def->opts.pciopts.hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
-        virBufferAddLit(buf, "<target");
-        if (def->opts.pciopts.chassisNr != -1)
-            virBufferAsprintf(buf, " chassisNr='%d'",
-                              def->opts.pciopts.chassisNr);
-        if (def->opts.pciopts.chassis != -1)
-            virBufferAsprintf(buf, " chassis='%d'",
-                              def->opts.pciopts.chassis);
-        if (def->opts.pciopts.port != -1)
-            virBufferAsprintf(buf, " port='0x%x'",
-                              def->opts.pciopts.port);
-        if (def->opts.pciopts.busNr != -1)
-            virBufferAsprintf(buf, " busNr='%d'",
-                              def->opts.pciopts.busNr);
-        if (def->opts.pciopts.targetIndex != -1)
-            virBufferAsprintf(buf, " index='%d'",
-                              def->opts.pciopts.targetIndex);
-        if (def->opts.pciopts.hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAsprintf(buf, " hotplug='%s'",
-                              virTristateSwitchTypeToString(def->opts.pciopts.hotplug));
-        }
-        if (def->opts.pciopts.numaNode == -1) {
-            virBufferAddLit(buf, "/>\n");
-        } else {
-            virBufferAddLit(buf, ">\n");
-            virBufferAdjustIndent(buf, 2);
-            virBufferAsprintf(buf, "<node>%d</node>\n",
-                              def->opts.pciopts.numaNode);
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</target>\n");
-        }
+    if (def->opts.pciopts.chassisNr != -1)
+        virBufferAsprintf(&targetAttrBuf, " chassisNr='%d'", def->opts.pciopts.chassisNr);
+    if (def->opts.pciopts.chassis != -1)
+        virBufferAsprintf(&targetAttrBuf, " chassis='%d'", def->opts.pciopts.chassis);
+    if (def->opts.pciopts.port != -1)
+        virBufferAsprintf(&targetAttrBuf, " port='0x%x'", def->opts.pciopts.port);
+    if (def->opts.pciopts.busNr != -1)
+        virBufferAsprintf(&targetAttrBuf, " busNr='%d'", def->opts.pciopts.busNr);
+    if (def->opts.pciopts.targetIndex != -1)
+        virBufferAsprintf(&targetAttrBuf, " index='%d'", def->opts.pciopts.targetIndex);
+    if (def->opts.pciopts.hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(&targetAttrBuf, " hotplug='%s'",
+                          virTristateSwitchTypeToString(def->opts.pciopts.hotplug));
     }
 
+    if (def->opts.pciopts.numaNode != -1)
+        virBufferAsprintf(&targetChildBuf, "<node>%d</node>\n", def->opts.pciopts.numaNode);
+
+    virXMLFormatElement(buf, "target", &targetAttrBuf, &targetChildBuf);
     return 0;
 }
 
