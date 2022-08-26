@@ -1129,8 +1129,7 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
             controller->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
             if (controller->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("pci-root and pcie-root controllers "
-                                 "should not have an address"));
+                               _("pci-root and pcie-root controllers should not have an address"));
                 return -1;
             }
         }
@@ -1147,8 +1146,7 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
 
             if (opts->targetIndex < 0 || opts->targetIndex > 30) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("PCI controller target index '%d' out of "
-                                 "range - must be 0-30"),
+                               _("PCI controller target index '%d' out of range - must be 0-30"),
                                opts->targetIndex);
                 return -1;
             }
@@ -1156,8 +1154,7 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
             if ((controller->idx == 0 && opts->targetIndex != 0) ||
                 (controller->idx != 0 && opts->targetIndex == 0)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Only the PCI controller with index 0 can "
-                                 "have target index 0, and vice versa"));
+                               _("Only the PCI controller with index 0 can have target index 0, and vice versa"));
                 return -1;
             }
         }
@@ -1165,8 +1162,7 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
         if (opts->chassisNr != -1) {
             if (opts->chassisNr < 1 || opts->chassisNr > 255) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("PCI controller chassisNr '%d' out of range "
-                                 "- must be 1-255"),
+                               _("PCI controller chassisNr '%d' out of range - must be 1-255"),
                                opts->chassisNr);
                 return -1;
             }
@@ -1175,8 +1171,7 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
         if (opts->chassis != -1) {
             if (opts->chassis < 0 || opts->chassis > 255) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("PCI controller chassis '%d' out of range "
-                                 "- must be 0-255"),
+                               _("PCI controller chassis '%d' out of range - must be 0-255"),
                                opts->chassis);
                 return -1;
             }
@@ -1185,8 +1180,7 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
         if (opts->port != -1) {
             if (opts->port < 0 || opts->port > 255) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("PCI controller port '%d' out of range "
-                                 "- must be 0-255"),
+                               _("PCI controller port '%d' out of range - must be 0-255"),
                                opts->port);
                 return -1;
             }
@@ -1195,8 +1189,7 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
         if (opts->busNr != -1) {
             if (opts->busNr < 1 || opts->busNr > 254) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("PCI controller busNr '%d' out of range "
-                                 "- must be 1-254"),
+                               _("PCI controller busNr '%d' out of range - must be 1-254"),
                                opts->busNr);
                 return -1;
             }
@@ -1204,8 +1197,7 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
 
         if (opts->numaNode >= 0 && controller->idx == 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("The PCI controller with index=0 can't "
-                             "be associated with a NUMA node"));
+                           _("The PCI controller with index=0 can't be associated with a NUMA node"));
             return -1;
         }
     }
