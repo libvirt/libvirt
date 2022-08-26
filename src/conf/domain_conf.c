@@ -8181,7 +8181,12 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
             return NULL;
     }
 
-    nmodelNodes = virXPathNodeSet("./model", ctxt, &modelNodes);
+    if ((nmodelNodes = virXPathNodeSet("./model", ctxt, &modelNodes)) > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Multiple <model> elements in controller definition not allowed"));
+        return NULL;
+    }
+
     if (nmodelNodes == 1) {
         if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
             if (virXMLPropEnum(modelNodes[0], "name",
@@ -8190,14 +8195,14 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
                                &def->opts.pciopts.modelName) < 0)
                 return NULL;
         }
-    } else if (nmodelNodes > 1) {
+    }
+
+    if ((ntargetNodes = virXPathNodeSet("./target", ctxt, &targetNodes)) > 1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Multiple <model> elements in "
-                         "controller definition not allowed"));
+                       _("Multiple <target> elements in controller definition not allowed"));
         return NULL;
     }
 
-    ntargetNodes = virXPathNodeSet("./target", ctxt, &targetNodes);
     if (ntargetNodes == 1) {
         if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
             if (virXMLPropInt(targetNodes[0], "chassisNr", 0, VIR_XML_PROP_NONE,
@@ -8230,11 +8235,6 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
                               def->opts.pciopts.targetIndex) < 0)
                 return NULL;
         }
-    } else if (ntargetNodes > 1) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Multiple <target> elements in "
-                         "controller definition not allowed"));
-        return NULL;
     }
 
     /* node is parsed differently from target attributes because
