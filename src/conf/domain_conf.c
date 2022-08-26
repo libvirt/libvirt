@@ -8233,15 +8233,10 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
                                          &def->opts.pciopts.hotplug) < 0)
                 return NULL;
 
-            if ((rc = virXMLPropInt(targetNodes[0], "index", 0, VIR_XML_PROP_NONE,
-                                    &def->opts.pciopts.targetIndex,
-                                    def->opts.pciopts.targetIndex)) < 0)
+            if (virXMLPropInt(targetNodes[0], "index", 0, VIR_XML_PROP_NONNEGATIVE,
+                              &def->opts.pciopts.targetIndex,
+                              def->opts.pciopts.targetIndex) < 0)
                 return NULL;
-
-            if ((rc == 1) && def->opts.pciopts.targetIndex == -1)
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Invalid target index '%i' in PCI controller"),
-                               def->opts.pciopts.targetIndex);
         }
     } else if (ntargetNodes > 1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
