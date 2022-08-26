@@ -22672,13 +22672,94 @@ virDomainControllerDriverFormat(virBuffer *buf,
 
 
 static int
+virDomainControllerDefFormatPCI(virBuffer *buf,
+                                virDomainControllerDef *def,
+                                unsigned int flags)
+{
+    bool formatModelName = true;
+
+    if (def->opts.pciopts.modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)
+        formatModelName = false;
+
+    /* Historically, libvirt didn't support specifying a model name for
+     * pci-root controllers; starting from 3.6.0, however, pSeries guests
+     * use pci-root controllers with model name spapr-pci-host-bridge to
+     * represent all PHBs, including the default one.
+     *
+     * In order to allow migration of pSeries guests from older libvirt
+     * versions and back, we don't format the model name in the migratable
+     * XML if it's spapr-pci-host-bridge, thus making "no model name" and
+     * "spapr-pci-host-bridge model name" basically equivalent.
+     *
+     * The spapr-pci-host-bridge device is specific to pSeries.
+     */
+    if (def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
+        def->opts.pciopts.modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_SPAPR_PCI_HOST_BRIDGE &&
+        flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE) {
+        formatModelName = false;
+    }
+
+    if (formatModelName) {
+        const char *modelName = virDomainControllerPCIModelNameTypeToString(def->opts.pciopts.modelName);
+        if (!modelName) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected model name value %d"),
+                           def->opts.pciopts.modelName);
+            return -1;
+        }
+        virBufferAsprintf(buf, "<model name='%s'/>\n", modelName);
+    }
+
+    if (def->opts.pciopts.chassisNr != -1 ||
+        def->opts.pciopts.chassis != -1 ||
+        def->opts.pciopts.port != -1 ||
+        def->opts.pciopts.busNr != -1 ||
+        def->opts.pciopts.targetIndex != -1 ||
+        def->opts.pciopts.numaNode != -1 ||
+        def->opts.pciopts.hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAddLit(buf, "<target");
+        if (def->opts.pciopts.chassisNr != -1)
+            virBufferAsprintf(buf, " chassisNr='%d'",
+                              def->opts.pciopts.chassisNr);
+        if (def->opts.pciopts.chassis != -1)
+            virBufferAsprintf(buf, " chassis='%d'",
+                              def->opts.pciopts.chassis);
+        if (def->opts.pciopts.port != -1)
+            virBufferAsprintf(buf, " port='0x%x'",
+                              def->opts.pciopts.port);
+        if (def->opts.pciopts.busNr != -1)
+            virBufferAsprintf(buf, " busNr='%d'",
+                              def->opts.pciopts.busNr);
+        if (def->opts.pciopts.targetIndex != -1)
+            virBufferAsprintf(buf, " index='%d'",
+                              def->opts.pciopts.targetIndex);
+        if (def->opts.pciopts.hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(buf, " hotplug='%s'",
+                              virTristateSwitchTypeToString(def->opts.pciopts.hotplug));
+        }
+        if (def->opts.pciopts.numaNode == -1) {
+            virBufferAddLit(buf, "/>\n");
+        } else {
+            virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
+            virBufferAsprintf(buf, "<node>%d</node>\n",
+                              def->opts.pciopts.numaNode);
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</target>\n");
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainControllerDefFormat(virBuffer *buf,
                              virDomainControllerDef *def,
                              unsigned int flags)
 {
     const char *type = virDomainControllerTypeToString(def->type);
     const char *model = NULL;
-    const char *modelName = NULL;
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
@@ -22735,91 +22816,20 @@ virDomainControllerDefFormat(virBuffer *buf,
         }
         break;
 
+    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+        if (virDomainControllerDefFormatPCI(&childBuf, def, flags) < 0)
+            return -1;
+
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
     case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
-    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
     case VIR_DOMAIN_CONTROLLER_TYPE_ISA:
     case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
         break;
     }
 
-    if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-        bool formatModelName = true;
-
-        if (def->opts.pciopts.modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)
-            formatModelName = false;
-
-        /* Historically, libvirt didn't support specifying a model name for
-         * pci-root controllers; starting from 3.6.0, however, pSeries guests
-         * use pci-root controllers with model name spapr-pci-host-bridge to
-         * represent all PHBs, including the default one.
-         *
-         * In order to allow migration of pSeries guests from older libvirt
-         * versions and back, we don't format the model name in the migratable
-         * XML if it's spapr-pci-host-bridge, thus making "no model name" and
-         * "spapr-pci-host-bridge model name" basically equivalent.
-         *
-         * The spapr-pci-host-bridge device is specific to pSeries.
-         */
-        if (def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
-            def->opts.pciopts.modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_SPAPR_PCI_HOST_BRIDGE &&
-            flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE) {
-            formatModelName = false;
-        }
-
-        if (formatModelName) {
-            modelName = virDomainControllerPCIModelNameTypeToString(def->opts.pciopts.modelName);
-            if (!modelName) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected model name value %d"),
-                               def->opts.pciopts.modelName);
-                return -1;
-            }
-            virBufferAsprintf(&childBuf, "<model name='%s'/>\n", modelName);
-        }
-
-        if (def->opts.pciopts.chassisNr != -1 ||
-            def->opts.pciopts.chassis != -1 ||
-            def->opts.pciopts.port != -1 ||
-            def->opts.pciopts.busNr != -1 ||
-            def->opts.pciopts.targetIndex != -1 ||
-            def->opts.pciopts.numaNode != -1 ||
-            def->opts.pciopts.hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAddLit(&childBuf, "<target");
-            if (def->opts.pciopts.chassisNr != -1)
-                virBufferAsprintf(&childBuf, " chassisNr='%d'",
-                                  def->opts.pciopts.chassisNr);
-            if (def->opts.pciopts.chassis != -1)
-                virBufferAsprintf(&childBuf, " chassis='%d'",
-                                  def->opts.pciopts.chassis);
-            if (def->opts.pciopts.port != -1)
-                virBufferAsprintf(&childBuf, " port='0x%x'",
-                                  def->opts.pciopts.port);
-            if (def->opts.pciopts.busNr != -1)
-                virBufferAsprintf(&childBuf, " busNr='%d'",
-                                  def->opts.pciopts.busNr);
-            if (def->opts.pciopts.targetIndex != -1)
-                virBufferAsprintf(&childBuf, " index='%d'",
-                                  def->opts.pciopts.targetIndex);
-            if (def->opts.pciopts.hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
-                virBufferAsprintf(&childBuf, " hotplug='%s'",
-                                  virTristateSwitchTypeToString(def->opts.pciopts.hotplug));
-            }
-            if (def->opts.pciopts.numaNode == -1) {
-                virBufferAddLit(&childBuf, "/>\n");
-            } else {
-                virBufferAddLit(&childBuf, ">\n");
-                virBufferAdjustIndent(&childBuf, 2);
-                virBufferAsprintf(&childBuf, "<node>%d</node>\n",
-                                  def->opts.pciopts.numaNode);
-                virBufferAdjustIndent(&childBuf, -2);
-                virBufferAddLit(&childBuf, "</target>\n");
-            }
-        }
-    }
 
     virDomainControllerDriverFormat(&childBuf, def);
 
