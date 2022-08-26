@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-07-26 08:13+0000\n"
+"POT-Creation-Date: 2022-08-26 05:02+0000\n"
 "PO-Revision-Date: 2015-02-27 01:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1143,9 +1143,6 @@ msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr "'arch' एलिमेंटचा वापर 'cpu' एलिमेंट अंतर्गत 'match' गुणधर्मसह करणे अशक्य"
 
-msgid "'base' and 'baseNode' can't be used together"
-msgstr ""
-
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr ""
 
@@ -1204,9 +1201,6 @@ msgstr "फक्त virtio-scsi कंट्रोलरतर्फे 'queues
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "फक्त virtio-scsi कंट्रोलरतर्फे 'queues' समर्थीत आहे"
 
-msgid "'jack' audio backend is not supported with this QEMU"
-msgstr ""
-
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpusच्या प्रतिसादात 'logical-id' आढळले नाही"
 
@@ -1261,9 +1255,6 @@ msgstr ""
 msgid "'nfs' host must use TCP protocol"
 msgstr ""
 
-msgid "'nfs' protocol is not supported with this QEMU binary"
-msgstr ""
-
 msgid "'nfs' protocol requires the usage of exactly one host"
 msgstr ""
 
@@ -1310,10 +1301,6 @@ msgstr ""
 
 msgid "'socket' attribute is valid only for listen type 'socket'"
 msgstr ""
-
-#, fuzzy
-msgid "'ssh' protocol is not yet supported"
-msgstr "fs रूपण %s समर्थीत नाही"
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr ""
@@ -1558,9 +1545,6 @@ msgstr "/proc/net/dev: इंटरफेस आढळले नाही"
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64-बिट PCI होल सेटिंग फक्त रूट PCI कंट्रोलर्सकरिताच आहे"
 
-msgid "64-bit PCI hole size setting is not supported with this QEMU binary"
-msgstr "या QEMU बाइनरिसह 64-बिट PCI होल आकार सेटिंग समर्थीत नाही"
-
 #, c-format
 msgid "<%s>"
 msgstr "<%s>"
@@ -1568,6 +1552,10 @@ msgstr "<%s>"
 #, c-format
 msgid "<%s>..."
 msgstr "<%s>..."
+
+#, c-format
+msgid "<active_pcr_banks/> requires TPM version '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -2244,6 +2232,23 @@ msgstr "CPU वारंवारता:"
 
 msgid "CPU map:"
 msgstr "CPU मॅप:"
+
+#, c-format
+msgid ""
+"CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
+msgstr ""
+
+#, c-format
+msgid ""
+"CPU maximum physical address bits number specification cannot be used with "
+"mode='%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"CPU maximum physical address bits specification is not supported for '%s' "
+"architecture"
+msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -9338,10 +9343,6 @@ msgstr "अस्थीर SCSI कंट्रोलर मॉडल ('%s' '%s'
 msgid "Incorrect data type"
 msgstr "अयोग्य डाटा प्रकार"
 
-#, fuzzy
-msgid "Incorrect disk format"
-msgstr "डिस्क रूपण प्राप्ति अशक्य"
-
 msgid "Incorrect number of cells in a table row"
 msgstr ""
 
@@ -10509,10 +10510,6 @@ msgstr "शेवटच्या प्रवेशपासून सध्य�
 msgid "Known, but different label format present, requires build --overwrite"
 msgstr ""
 
-#, fuzzy
-msgid "LUKS encrypted QCOW2 images are not supported by this QEMU"
-msgstr "ह्या QEMU तर्फे vnc ग्राफिक्स् समर्थीत नाही"
-
 msgid "LXC Guest Enter Namespace"
 msgstr "LXC अतिथी प्रवेश नेमस्पेस"
 
@@ -11469,6 +11466,10 @@ msgstr "न आढळलेले किंवा अवैध vlan टॅग id
 msgid "Missing or invalid 'vlan-table' array in query-rx-filter response"
 msgstr ""
 
+#, c-format
+msgid "Missing or invalid CPU address size in %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Missing or invalid CPU frequency in %s"
 msgstr "CPU प्रतिकृती %sमध्ये न आढळलेले किंवा अवैध PVR मूल्य"
@@ -11640,6 +11641,10 @@ msgstr "char साधन करिता स्त्रोत मार्ग 
 msgid "Missing source service attribute for char device"
 msgstr "char साधन करिता स्त्रोत सेवा गुणविशेष आढळले नाही"
 
+#, c-format
+msgid "Missing source switchid for interface type '%s'"
+msgstr ""
+
 msgid "Missing storage block path"
 msgstr "स्टोरेज ब्लॉक मार्ग आढळले नाही"
 
@@ -11768,10 +11773,6 @@ msgstr "N/A"
 msgid "NBD URI must be supplied when migration URI uses UNIX transport method"
 msgstr ""
 
-#, fuzzy
-msgid "NBD migration with TLS is not supported"
-msgstr "cpu संबंध करिता समर्थन नाही"
-
 msgid "NBD migration with TLS is not supported over UNIX socket"
 msgstr ""
 
@@ -11894,6 +11895,12 @@ msgstr "QEMU बाइनरीसह SATA समर्थीत नाही"
 #, fuzzy
 msgid "NVMe namespace can't be zero"
 msgstr "ह्युजपेज आकार शून्य असू शकत नाही"
+
+msgid "NVRAM is not permitted when loader is stateless"
+msgstr ""
+
+msgid "NVRAM template is not permitted when loader is stateless"
+msgstr ""
 
 msgid "Name"
 msgstr "नाव"
@@ -12724,6 +12731,9 @@ msgstr "फक्त PTY कंसोर प्रकार समर्थी�
 msgid "Only 1 thread per core is supported"
 msgstr "फक्त एकच प्राथमिक व्हिडिओ साधन समर्थीत आहे"
 
+msgid "Only EFI firmware permits NVRAM"
+msgstr ""
+
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr ""
 
@@ -12843,6 +12853,9 @@ msgid "Only one primary video device is supported"
 msgstr "फक्त एकच प्राथमिक व्हिडिओ साधन समर्थीत आहे"
 
 msgid "Only one vgpu device can have 'ramfb' enabled"
+msgstr ""
+
+msgid "Only pflash loader type permits NVRAM"
 msgstr ""
 
 msgid "Only ploop disk images are supported by vz driver."
@@ -14316,10 +14329,6 @@ msgstr ""
 "%s येथे संकेतस्थळ पहा\n"
 "\n"
 
-#, fuzzy
-msgid "Selecting disks to migrate is not implemented for tunnelled migration"
-msgstr "टन्नल्ड् माइग्रेशनकरिता पाइप निर्माण करणे अशक्य"
-
 msgid "Send keycodes (integers or symbolic names) to the guest"
 msgstr "अतिथीकरिता किकोड्स् पाठवा (इंटिजर्स् किंवा सिम्बॉलिक नाव)"
 
@@ -15115,6 +15124,10 @@ msgstr ""
 msgid "TPM device path %s is invalid"
 msgstr "TPM साधन मार्ग %s अवैध आहे"
 
+#, c-format
+msgid "TPM version '%s' is not supported"
+msgstr ""
+
 #, fuzzy
 msgid "Table row cannot be empty"
 msgstr "%s रिकामे असणे अशक्य"
@@ -15160,6 +15173,9 @@ msgstr "लक्ष्य CPU गुणविशेष प्रमाण %zu �
 #, c-format
 msgid "Target CPU feature policy %s does not match source %s"
 msgstr "लक्ष्य CPU गुणविशेष करार %s, स्रोत %s सह जुळत नाही"
+
+msgid "Target CPU maxphysaddr does not match source"
+msgstr ""
 
 #, c-format
 msgid "Target CPU mode %s does not match source %s"
@@ -16034,6 +16050,11 @@ msgid "The machine has no snapshot and it should have it"
 msgstr "मशीनकडे स्नॅपशॉट आढळले नाही आणि उपलब्ध पाहिजे"
 
 msgid "The minimum lease time should be greater than 2 minutes"
+msgstr ""
+
+msgid ""
+"The number of virtual CPU address bits cannot exceed the number supported by "
+"the host CPU"
 msgstr ""
 
 msgid ""
@@ -17171,6 +17192,10 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr "स्नॅपशॉट %s शोधणे अशक्य"
 
 #, c-format
+msgid "Unable to find address for mdev parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to find address for parent device '%s'"
 msgstr ""
 
@@ -17829,6 +17854,10 @@ msgid "Unable to parse cloud-hypervisor version: %s"
 msgstr ""
 
 #, c-format
+msgid "Unable to parse connectionid '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "सध्याचे SELinux संदर्भ '%s' वाचण्यास अशक्य"
 
@@ -17863,6 +17892,10 @@ msgstr "vzlist आऊटपुट वाचण्यास अपयशी"
 msgid "Unable to parse port id '%s'"
 msgstr "क्लास id '%s' वाचणे अशक्य"
 
+#, c-format
+msgid "Unable to parse portid '%s'"
+msgstr ""
+
 msgid "Unable to parse quota"
 msgstr "कोट वाचणे अशक्य"
 
@@ -17880,6 +17913,10 @@ msgstr "क्लास id '%s' वाचणे अशक्य"
 
 msgid "Unable to parse string parameter"
 msgstr "स्ट्रिंग बाब वाचणे अशक्य"
+
+#, c-format
+msgid "Unable to parse switchid '%s'"
+msgstr ""
 
 msgid "Unable to parse the xml"
 msgstr "xml वाचणे अशक्य"
@@ -18782,10 +18819,6 @@ msgstr "अनपेक्षित संदेश प्रकार %d"
 msgid "Unexpected network port type %s"
 msgstr "असमर्थीत नेटवर्क प्रकार %s"
 
-#, fuzzy, c-format
-msgid "Unexpected network protocol '%s'"
-msgstr "अनपेक्षित रूल प्रोटोकॉल %d"
-
 msgid "Unexpected output of cloud-hypervisor binary"
 msgstr ""
 
@@ -18908,14 +18941,6 @@ msgstr "अपरिचीत कंट्रोलर प्रकार '%s'"
 #, c-format
 msgid "Unknown SCSI subsystem protocol '%s'"
 msgstr "अपरिचीत SCSI उपप्रणाली प्रोटोकॉल '%s'"
-
-#, c-format
-msgid "Unknown TPM backend type '%s'"
-msgstr "अपरिचीत TPM बॅकएंड प्रकार '%s'"
-
-#, c-format
-msgid "Unknown TPM frontend model '%s'"
-msgstr "अपरिचीत TPM फ्रंटएंड प्रतिकृती '%s'"
 
 #, fuzzy, c-format
 msgid "Unknown URI parameter '%s'"
@@ -19299,10 +19324,6 @@ msgid "Unsupported SMBIOS mode '%s'"
 msgstr "असमर्थीत SMBIOS मोड '%s'"
 
 #, fuzzy, c-format
-msgid "Unsupported TPM version '%s'"
-msgstr "असमर्थीत बस प्रकार '%s'"
-
-#, fuzzy, c-format
 msgid "Unsupported URI scheme '%s'"
 msgstr "असमर्थीत SMBIOS मोड '%s'"
 
@@ -19464,9 +19485,9 @@ msgstr "hostdev मोड %s असमर्थीत"
 msgid "Unsupported hostdev type %s"
 msgstr "hostdev प्रकार %s असमर्थीत"
 
-#, fuzzy, c-format
-msgid "Unsupported interface %s for TPM 1.2"
-msgstr "असमर्थीत संवाद प्रकार %s"
+#, c-format
+msgid "Unsupported interface '%s' for TPM 1.2"
+msgstr ""
 
 #, fuzzy
 msgid "Unsupported listen type"
@@ -19736,12 +19757,6 @@ msgstr "VFIO PCI साधन वाटप qemuच्या ह्या आव�
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "VFIO साधन वाटप आत्ता या प्रणालीवर समर्थीत नाही"
 
-msgid "VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES is not supported by this VM"
-msgstr ""
-
-msgid "VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES is not supported by this QEMU"
-msgstr ""
-
 msgid "VM is already active"
 msgstr "VM आधिपासूनच सक्रीय आहे"
 
@@ -19891,10 +19906,6 @@ msgstr "वॉल्युम मार्ग '%s' हे सॉकेट आह
 #, fuzzy
 msgid "VxHS protocol accepts only one host"
 msgstr "प्रोटोकॉल '%s' पक्त एकच यजमान स्वीकारते"
-
-#, fuzzy
-msgid "VxHS protocol does not support URI syntax"
-msgstr "पूल पूल नष्ट करणे यांस समर्थन पुरवत नाही"
 
 #, fuzzy
 msgid "VxHS protocol is not supported with this QEMU binary"
@@ -20164,9 +20175,6 @@ msgstr "प्रवेश नकारले: %s"
 
 msgid "active"
 msgstr "सक्रीय"
-
-msgid "active commit not supported with this QEMU binary"
-msgstr "या QEMU बाइनरिसह सक्रीय कमीट समर्थीत नाही"
 
 #, c-format
 msgid "active commit requested but '%s' is not active"
@@ -20639,10 +20647,6 @@ msgstr ""
 msgid "backingStore is not supported with vhostuser disk"
 msgstr ""
 
-#, fuzzy
-msgid "backingStore of mirror target is not supported by this qemu"
-msgstr "ह्या QEMU तर्फे ide डिस्ककरिता wwn ठरवणे समर्थीत नाही"
-
 msgid ""
 "backingStore of mirror without VIR_DOMAIN_BLOCK_COPY_SHALLOW doesn't make "
 "sense"
@@ -20652,9 +20656,6 @@ msgid "backup"
 msgstr ""
 
 msgid "backup TLS directory not configured"
-msgstr ""
-
-msgid "backup is not supported with this QEMU"
 msgstr ""
 
 msgid "backup job data missing"
@@ -23938,18 +23939,6 @@ msgid "delete the specified network port"
 msgstr ""
 
 #, c-format
-msgid "deleting %s drive failed: %s"
-msgstr "%s ड्राइव्ह नष्ट करणे अपयशी: %s"
-
-#, fuzzy
-msgid "deleting committed images is not supported by this VM"
-msgstr "ह्या QEMU तर्फे ide डिस्ककरिता wwn ठरवणे समर्थीत नाही"
-
-msgid ""
-"deleting drive is not supported.  This may leak data if disk is reassigned"
-msgstr "ड्राइव्हला नष्ट करणे समर्थीत नाही.  डिस्कचे पुनःवाटप केल्यास डाटा लिक होऊ शकतो"
-
-#, c-format
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr "%d बाहेरिल डिस्क स्नॅपशॉटला नष्ट करणे अजूनही समर्थीत नाही"
 
@@ -24015,10 +24004,6 @@ msgstr "सिरिअल कंसोलला विलग करणे स�
 
 msgid "detailed domain vcpu information"
 msgstr "तपाशीलमध्ये डोमेन vcpu माहिती"
-
-#, fuzzy
-msgid "detect_zeroes is not supported by this QEMU binary"
-msgstr "ह्या QEMU बाइनरितर्फे डिसकार्ड समर्थीत नाही"
 
 msgid "detect_zeroes is not supported with vhostuser disk"
 msgstr ""
@@ -24191,12 +24176,6 @@ msgstr ""
 #, fuzzy
 msgid "disabled"
 msgstr "अकार्यान्वीत करा"
-
-msgid "disabling audio mixing engine is not supported with this QEMU"
-msgstr ""
-
-msgid "discard is not supported by this QEMU binary"
-msgstr "ह्या QEMU बाइनरितर्फे डिसकार्ड समर्थीत नाही"
 
 #, c-format
 msgid "discard is not supported for model '%s'"
@@ -24813,9 +24792,6 @@ msgstr "पूर्ण झाले"
 msgid "download volume contents to a file"
 msgstr "फाइलमध्ये वॉल्युममधील अंतर्भुत माहिती डाउनलोड करा"
 
-msgid "drive hotplug is not supported"
-msgstr "ड्राइव्ह हॉटप्लग समर्थीत नाही"
-
 #, fuzzy, c-format
 msgid "driver does not support net model '%s'"
 msgstr "nbd ट्रांसपोर्ट '%s'करिता समर्थन पुरवत नाही"
@@ -24839,9 +24815,6 @@ msgstr ""
 
 msgid "dump the core of a domain to a file for analysis"
 msgstr "डोमेनची कोर मीमांसा  करण्यासाठी फाइलवर डम्प करा"
-
-msgid "dump-guest-memory is not supported"
-msgstr "dump-guest-memory समर्थीत नाही"
 
 #, c-format
 msgid "dumpformat '%d' is not supported"
@@ -25478,14 +25451,6 @@ msgstr "बाहेरिल"
 msgid "external active snapshots are not supported on '%s' disks"
 msgstr "बाहेरील सक्रीय स्नॅपशॉट्स '%s' डिस्क्सवरील समर्थीत नाही"
 
-#, c-format
-msgid ""
-"external active snapshots are not supported on 'network' disks using '%s' "
-"protocol"
-msgstr ""
-"बाहेरील सक्रीय स्नॅपशॉट्स, '%s' प्रोटोकॉलचा वापर करणाऱ्या 'network' डिस्क्सवरील "
-"समर्थीत नाही"
-
 msgid "external active snapshots are not supported on scsi passthrough devices"
 msgstr "बाहेरील सक्रीय स्नॅपशॉट्स scsi पासथ्रु साधनांवर समर्थीत नाही"
 
@@ -25517,10 +25482,6 @@ msgid ""
 "%s"
 msgstr ""
 "डिस्क %s करिता बाहेरिल स्नॅपशॉट फाइल आधिपासूनच अस्तित्वात आहे व ब्लॉक साधन नाही: %s"
-
-#, fuzzy, c-format
-msgid "external snapshot for readonly disk %s is not supported"
-msgstr "डिस्क %s करिता बाहेरिल स्नॅपशॉट रूपण असमर्थीत: %s"
 
 #, c-format
 msgid "external snapshot format for disk %s is unsupported: %s"
@@ -27593,10 +27554,6 @@ msgstr "साधन '%s'चे लाइव्ह अटॅच समर्थ�
 msgid "hpet timer is not supported"
 msgstr "hpet टाइमर समर्थीत नाही"
 
-#, fuzzy
-msgid "http cookies are not supported by this QEMU binary"
-msgstr "ह्या QEMU बाइनरितर्फे डिसकार्ड समर्थीत नाही"
-
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr ""
 
@@ -27670,6 +27627,11 @@ msgid "ids of vcpus to manipulate"
 msgstr ""
 
 msgid "if IOMMU is enabled by kernel"
+msgstr ""
+
+#, c-format
+msgid ""
+"if using CPU maximum physical address mode='%s', bits= must be specified too"
 msgstr ""
 
 #, c-format
@@ -28779,6 +28741,10 @@ msgstr "rawio हे फक्त scsi यजमान साधनकरित�
 
 #, c-format
 msgid "iommu model '%s' can't have address"
+msgstr ""
+
+#, c-format
+msgid "iommu model '%s' doesn't support additional attributes"
 msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
@@ -29953,9 +29919,6 @@ msgstr "कार्य असफल: %s"
 msgid "message"
 msgstr "संदेश"
 
-msgid "metadata cache max size control is not supported with this QEMU binary"
-msgstr ""
-
 msgid "metadata cache max size control is supported only with qcow2 images"
 msgstr ""
 
@@ -30371,9 +30334,6 @@ msgstr "QEMU क्षमता कॅशे अंतर्गत आर्क 
 msgid "missing TPM device backend"
 msgstr "TPM साधन बॅकएंड आढळले नाही"
 
-msgid "missing TPM device backend type"
-msgstr "TPM साधन बॅकएंड प्रकार आढळले नाही"
-
 #, fuzzy
 msgid "missing Xen migration stream version"
 msgstr "हरवलेली कार्यकारी प्रणाली माहिती"
@@ -30518,9 +30478,6 @@ msgstr "डिस्क बॅकिंग साठवणे स्रोत �
 #, c-format
 msgid "missing disk device alias name for %s"
 msgstr "%s करिता डिस्क उपकरण अलायस नाव आढळले नाही"
-
-msgid "missing disk source for 'sheepdog' protocol"
-msgstr "'sheepdog' प्रोटोकॉलकरिता डिस्क स्रोत आढळले नाही"
 
 #, fuzzy
 msgid "missing domain in checkpoint"
@@ -31119,9 +31076,6 @@ msgstr "ड्राइव्ह हॉटप्लग समर्थीत न
 msgid "model type"
 msgstr "मॉडल प्रकार"
 
-msgid "modern nvram specification is not supported by this qemu"
-msgstr ""
-
 #, fuzzy
 msgid "modifies an existing IOThread of the guest domain"
 msgstr "अतिथी डोमेनकरिता NMI अंतर्भुत करा."
@@ -31147,9 +31101,6 @@ msgstr "मॉनीटर मार्ग आढळला नाही"
 
 msgid "monitor must not be NULL"
 msgstr "मॉनिटर NULL नसावे"
-
-msgid "monitor socket did not show up"
-msgstr "मॉनीटर सॉकेट सक्रीय झाले नाही"
 
 #, c-format
 msgid "more than %d vCPUs are only supported on q35-based machine types"
@@ -31290,10 +31241,6 @@ msgstr "खंडाचे नाव"
 
 msgid "namespace key is required when modifying metadata"
 msgstr "मेटाडाटा संपादित करतेवेळी namespace कि आवश्यक आहे"
-
-#, c-format
-msgid "nbd does not support transport '%s'"
-msgstr "nbd ट्रांसपोर्ट '%s'करिता समर्थन पुरवत नाही"
 
 #, fuzzy
 msgid "nbd port must be in range 0-65535"
@@ -32245,9 +32192,6 @@ msgstr ""
 msgid "non unique alias detected: %s"
 msgstr ""
 
-msgid "non-file destination not supported yet"
-msgstr "विना-फाइल लक्ष्य अजूनही समर्थीत नाही"
-
 msgid "none"
 msgstr "काहिही नाही"
 
@@ -32563,9 +32507,6 @@ msgstr "फक्त एक RNG बॅकएंड समर्थीत आह�
 msgid "only one TPM backend is supported"
 msgstr "फक्त एक TPM बॅकएंड समर्थीत आहे"
 
-msgid "only one audio backend is supported with this QEMU binary"
-msgstr ""
-
 #, fuzzy
 msgid "only one backup job is supported"
 msgstr "फक्त एक RNG बॅकएंड समर्थीत आहे"
@@ -32657,9 +32598,6 @@ msgstr ""
 
 msgid "open an editor to modify the description"
 msgstr "वर्णन संपादित करण्यासाठी संपादक उघडा"
-
-msgid "open disk image file failed"
-msgstr "डिस्क प्रतिमा फाइल उघडण्यास अपयशी"
 
 #, c-format
 msgid "open(\"%s\")"
@@ -33449,9 +33387,6 @@ msgstr ""
 msgid "protocol '%s' accepts only one host"
 msgstr "प्रोटोकॉल '%s' पक्त एकच यजमान स्वीकारते"
 
-msgid "protocol 'sheepdog' accepts up to one host"
-msgstr "प्रोटोकॉल 'sheepdog' एक यजमानपर्यंत स्वीकारते"
-
 msgid "protocol misses the family attribute"
 msgstr "प्रोटोकॉलला फॅमिली गुणधर्म आढळले नाही"
 
@@ -33488,10 +33423,6 @@ msgstr ""
 
 msgid "qemu agent didn't return an array of keys"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "qemu block name '%s' doesn't match expected '%s'"
-msgstr "लक्ष्य डोमेन नाव '%s' स्रोत '%s' सह जुळत नाही"
 
 #, c-format
 msgid "qemu didn't report thread id for vcpu '%zu'"
@@ -33806,10 +33737,6 @@ msgstr "फक्त-वाचन जोडणी"
 
 msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
-
-#, fuzzy
-msgid "readahead setting is not supported with this QEMU binary"
-msgstr "QEMU बाइनरिसह vhost-net समर्थीत नाही"
 
 msgid "readonly ide disks are not supported"
 msgstr "फक्तवाचनीय ide डिस्क्स समर्थीत नाही"
@@ -34610,18 +34537,6 @@ msgstr "नेटवर्क प्रकार %d समर्थीत ना
 msgid "setting a launch secret is only supported in SEV-enabled domains"
 msgstr ""
 
-msgid "setting audio buffer count is not supported with this QEMU"
-msgstr ""
-
-msgid "setting audio buffer length is not supported with this QEMU"
-msgstr ""
-
-msgid "setting audio latency is not supported with this QEMU"
-msgstr ""
-
-msgid "setting audio stream name is not supported with this QEMU"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "setting bandwidth on interfaces of type '%s' is not implemented yet"
 msgstr "'%d' प्रकारच्या वर्णनचे प्रत अजूनही लागू केले नाही."
@@ -34870,9 +34785,6 @@ msgstr "डोमेन %s करिता स्नॅपशॉट्स्क�
 msgid "sndbuf must be a positive integer"
 msgstr "sndbuf पॉजिटिव्ह इंटिजर पाहिजे"
 
-msgid "socket attribute required for unix transport"
-msgstr "unix ट्रांसपोर्टकरिता सॉकेट गुणधर्म आवश्यक"
-
 msgid "socketpair failed"
 msgstr "socketpair अपयशी"
 
@@ -34998,10 +34910,6 @@ msgstr ""
 
 msgid "ssl verification is supported only with HTTPS/FTPS protocol"
 msgstr ""
-
-#, fuzzy
-msgid "ssl verification setting is not supported by this QEMU binary"
-msgstr "QEMU बाइनरिमार्फत splash वेळसमाप्ति समर्थीत नाही"
 
 msgid "start"
 msgstr ""
@@ -35159,10 +35067,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
 msgstr "अवैध प्रोटोकॉल ट्रांस्पोर्ट प्रकार '%s'"
-
-#, fuzzy
-msgid "storage slice is not supported by this QEMU binary"
-msgstr "nvram साधन ह्या QEMU बाइनरितर्फे समर्थीत नाही"
 
 #, fuzzy, c-format
 msgid "storage source pool '%s' volume '%s' is not translated"
@@ -35618,9 +35522,6 @@ msgstr "इतर ट्रांजॅक्शन सुरू आहे."
 msgid "there is no hub at port %u in USB address bus: %u port: %s"
 msgstr ""
 
-msgid "this QEMU binary doesn't support relative block pull/rebase"
-msgstr "ही QEMU बाइनरि संबंधित ब्लॉक pull/rebase करिता समर्थन पुरवत नाही"
-
 msgid "this QEMU binary lacks multiple smartcard support"
 msgstr "ह्या QEMU बाइनरिमध्ये एकापेक्षाजास्त स्मार्टकार्ड नाही"
 
@@ -35677,14 +35578,6 @@ msgstr "ह्या प्लॅटफॉर्ममध्ये dlopen आढ
 #, fuzzy
 msgid "this qemu does not support TLS transport for NBD"
 msgstr "nbd ट्रांसपोर्ट '%s'करिता समर्थन पुरवत नाही"
-
-#, fuzzy
-msgid "this qemu does not support setting device threshold"
-msgstr "ps2 बस %s इंपुट साधन करिता समर्थन पुरवित नाही"
-
-#, fuzzy
-msgid "this qemu doesn't support relative block commit"
-msgstr "ही QEMU बाइनरि संबंधित ब्लॉक pull/rebase करिता समर्थन पुरवत नाही"
 
 #, fuzzy
 msgid "this qemu doesn't support the memory-backend-file object"
@@ -35749,10 +35642,6 @@ msgstr ""
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "खंडाचे आकार, स्केल्ड् इंटिजर स्वरूपात (पूर्वनिर्धारित बाइट्स्)"
 
-#, fuzzy, c-format
-msgid "threshold currently can't be set for block device '%s'"
-msgstr "ब्लॉक साधन '%s' करिता बाइट आकडेवारि शोधणे अशक्य"
-
 msgid "time to set"
 msgstr "सेट करण्याजोगी वेळ"
 
@@ -35775,10 +35664,6 @@ msgstr "वेळसमाप्ति सेकंद"
 
 msgid "timeout seconds. must be positive."
 msgstr "वेळसमाप्ति सेकंद. पॉजिटिव्ह पाहिजे."
-
-#, fuzzy
-msgid "timeout setting is not supported with this QEMU binary"
-msgstr "QEMU बाइनरिसह vhost-net समर्थीत नाही"
 
 msgid "timeout, async and block options are exclusive"
 msgstr "वेळसमाप्ति, async व ब्लॉक पर्याय भिन्न आहेत"
@@ -36112,10 +35997,6 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "transient disk not supported by this QEMU binary (%s)"
-msgstr ""
-
-#, c-format
 msgid "transient disk supported only with 'disk' device (%s)"
 msgstr ""
 
@@ -36156,12 +36037,6 @@ msgstr "ट्रांजिएंट डिस्क्स् समर्थ�
 
 msgid "tray is only valid for cdrom and floppy"
 msgstr "ट्रे फक्त सिडिरॉम व फ्लॉपीकरिता वैध आहे"
-
-msgid "tray status 'open' is invalid for block type disk"
-msgstr "ब्लॉक टाइप डिस्ककरिता ट्रे स्टेटस 'open' अवैध आहे"
-
-msgid "tray status 'open' is invalid for block type volume"
-msgstr "ब्लॉक प्रकार वॉल्युमकरिता ट्रे स्थिती 'open' अवैध आहे"
 
 msgid "treat event as a regex rather than literal filter"
 msgstr "इव्हेंटला लिटरल फिल्टरऐवजी regex असे हाताळा"
@@ -36383,10 +36258,6 @@ msgstr "लोडर: %s करिता master var store शोधणे अश
 
 msgid "unable to find audio backend for sound device"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unable to find backing name for device %s"
-msgstr "'%s' करिता ब्लॉकिंग मोड ठरवणे अशक्य"
 
 #, fuzzy, c-format
 msgid "unable to find disk by target: %s"
@@ -38758,9 +38629,6 @@ msgstr ""
 msgid "virtio-net teaming transient interface must be type='hostdev', not '%s'"
 msgstr ""
 
-msgid "virtio-net-pci 'tx' option not supported in this QEMU binary"
-msgstr "virtio-net-pci 'tx' पर्याय ह्या QEMU बाइनरिमध्ये समर्थीत नाही"
-
 msgid "virtio-pmem does not support NUMA nodes"
 msgstr ""
 
@@ -39209,6 +39077,171 @@ msgstr "डिस्क %s करिता blockdev फ्लॅगसाठी 
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "'ssh' protocol is not yet supported"
+#~ msgstr "fs रूपण %s समर्थीत नाही"
+
+#~ msgid "64-bit PCI hole size setting is not supported with this QEMU binary"
+#~ msgstr "या QEMU बाइनरिसह 64-बिट PCI होल आकार सेटिंग समर्थीत नाही"
+
+#, fuzzy
+#~ msgid "Incorrect disk format"
+#~ msgstr "डिस्क रूपण प्राप्ति अशक्य"
+
+#, fuzzy
+#~ msgid "LUKS encrypted QCOW2 images are not supported by this QEMU"
+#~ msgstr "ह्या QEMU तर्फे vnc ग्राफिक्स् समर्थीत नाही"
+
+#, fuzzy
+#~ msgid "NBD migration with TLS is not supported"
+#~ msgstr "cpu संबंध करिता समर्थन नाही"
+
+#, fuzzy
+#~ msgid ""
+#~ "Selecting disks to migrate is not implemented for tunnelled migration"
+#~ msgstr "टन्नल्ड् माइग्रेशनकरिता पाइप निर्माण करणे अशक्य"
+
+#, fuzzy
+#~ msgid "Unexpected network protocol '%s'"
+#~ msgstr "अनपेक्षित रूल प्रोटोकॉल %d"
+
+#~ msgid "Unknown TPM backend type '%s'"
+#~ msgstr "अपरिचीत TPM बॅकएंड प्रकार '%s'"
+
+#~ msgid "Unknown TPM frontend model '%s'"
+#~ msgstr "अपरिचीत TPM फ्रंटएंड प्रतिकृती '%s'"
+
+#, fuzzy
+#~ msgid "Unsupported TPM version '%s'"
+#~ msgstr "असमर्थीत बस प्रकार '%s'"
+
+#, fuzzy
+#~ msgid "Unsupported interface %s for TPM 1.2"
+#~ msgstr "असमर्थीत संवाद प्रकार %s"
+
+#, fuzzy
+#~ msgid "VxHS protocol does not support URI syntax"
+#~ msgstr "पूल पूल नष्ट करणे यांस समर्थन पुरवत नाही"
+
+#~ msgid "active commit not supported with this QEMU binary"
+#~ msgstr "या QEMU बाइनरिसह सक्रीय कमीट समर्थीत नाही"
+
+#, fuzzy
+#~ msgid "backingStore of mirror target is not supported by this qemu"
+#~ msgstr "ह्या QEMU तर्फे ide डिस्ककरिता wwn ठरवणे समर्थीत नाही"
+
+#~ msgid "deleting %s drive failed: %s"
+#~ msgstr "%s ड्राइव्ह नष्ट करणे अपयशी: %s"
+
+#, fuzzy
+#~ msgid "deleting committed images is not supported by this VM"
+#~ msgstr "ह्या QEMU तर्फे ide डिस्ककरिता wwn ठरवणे समर्थीत नाही"
+
+#~ msgid ""
+#~ "deleting drive is not supported.  This may leak data if disk is reassigned"
+#~ msgstr ""
+#~ "ड्राइव्हला नष्ट करणे समर्थीत नाही.  डिस्कचे पुनःवाटप केल्यास डाटा लिक होऊ शकतो"
+
+#, fuzzy
+#~ msgid "detect_zeroes is not supported by this QEMU binary"
+#~ msgstr "ह्या QEMU बाइनरितर्फे डिसकार्ड समर्थीत नाही"
+
+#~ msgid "discard is not supported by this QEMU binary"
+#~ msgstr "ह्या QEMU बाइनरितर्फे डिसकार्ड समर्थीत नाही"
+
+#~ msgid "drive hotplug is not supported"
+#~ msgstr "ड्राइव्ह हॉटप्लग समर्थीत नाही"
+
+#~ msgid "dump-guest-memory is not supported"
+#~ msgstr "dump-guest-memory समर्थीत नाही"
+
+#~ msgid ""
+#~ "external active snapshots are not supported on 'network' disks using '%s' "
+#~ "protocol"
+#~ msgstr ""
+#~ "बाहेरील सक्रीय स्नॅपशॉट्स, '%s' प्रोटोकॉलचा वापर करणाऱ्या 'network' डिस्क्सवरील "
+#~ "समर्थीत नाही"
+
+#, fuzzy
+#~ msgid "external snapshot for readonly disk %s is not supported"
+#~ msgstr "डिस्क %s करिता बाहेरिल स्नॅपशॉट रूपण असमर्थीत: %s"
+
+#, fuzzy
+#~ msgid "http cookies are not supported by this QEMU binary"
+#~ msgstr "ह्या QEMU बाइनरितर्फे डिसकार्ड समर्थीत नाही"
+
+#~ msgid "missing TPM device backend type"
+#~ msgstr "TPM साधन बॅकएंड प्रकार आढळले नाही"
+
+#~ msgid "missing disk source for 'sheepdog' protocol"
+#~ msgstr "'sheepdog' प्रोटोकॉलकरिता डिस्क स्रोत आढळले नाही"
+
+#~ msgid "monitor socket did not show up"
+#~ msgstr "मॉनीटर सॉकेट सक्रीय झाले नाही"
+
+#~ msgid "nbd does not support transport '%s'"
+#~ msgstr "nbd ट्रांसपोर्ट '%s'करिता समर्थन पुरवत नाही"
+
+#~ msgid "non-file destination not supported yet"
+#~ msgstr "विना-फाइल लक्ष्य अजूनही समर्थीत नाही"
+
+#~ msgid "open disk image file failed"
+#~ msgstr "डिस्क प्रतिमा फाइल उघडण्यास अपयशी"
+
+#~ msgid "protocol 'sheepdog' accepts up to one host"
+#~ msgstr "प्रोटोकॉल 'sheepdog' एक यजमानपर्यंत स्वीकारते"
+
+#, fuzzy
+#~ msgid "qemu block name '%s' doesn't match expected '%s'"
+#~ msgstr "लक्ष्य डोमेन नाव '%s' स्रोत '%s' सह जुळत नाही"
+
+#, fuzzy
+#~ msgid "readahead setting is not supported with this QEMU binary"
+#~ msgstr "QEMU बाइनरिसह vhost-net समर्थीत नाही"
+
+#~ msgid "socket attribute required for unix transport"
+#~ msgstr "unix ट्रांसपोर्टकरिता सॉकेट गुणधर्म आवश्यक"
+
+#, fuzzy
+#~ msgid "ssl verification setting is not supported by this QEMU binary"
+#~ msgstr "QEMU बाइनरिमार्फत splash वेळसमाप्ति समर्थीत नाही"
+
+#, fuzzy
+#~ msgid "storage slice is not supported by this QEMU binary"
+#~ msgstr "nvram साधन ह्या QEMU बाइनरितर्फे समर्थीत नाही"
+
+#~ msgid "this QEMU binary doesn't support relative block pull/rebase"
+#~ msgstr "ही QEMU बाइनरि संबंधित ब्लॉक pull/rebase करिता समर्थन पुरवत नाही"
+
+#, fuzzy
+#~ msgid "this qemu does not support setting device threshold"
+#~ msgstr "ps2 बस %s इंपुट साधन करिता समर्थन पुरवित नाही"
+
+#, fuzzy
+#~ msgid "this qemu doesn't support relative block commit"
+#~ msgstr "ही QEMU बाइनरि संबंधित ब्लॉक pull/rebase करिता समर्थन पुरवत नाही"
+
+#, fuzzy
+#~ msgid "threshold currently can't be set for block device '%s'"
+#~ msgstr "ब्लॉक साधन '%s' करिता बाइट आकडेवारि शोधणे अशक्य"
+
+#, fuzzy
+#~ msgid "timeout setting is not supported with this QEMU binary"
+#~ msgstr "QEMU बाइनरिसह vhost-net समर्थीत नाही"
+
+#~ msgid "tray status 'open' is invalid for block type disk"
+#~ msgstr "ब्लॉक टाइप डिस्ककरिता ट्रे स्टेटस 'open' अवैध आहे"
+
+#~ msgid "tray status 'open' is invalid for block type volume"
+#~ msgstr "ब्लॉक प्रकार वॉल्युमकरिता ट्रे स्थिती 'open' अवैध आहे"
+
+#, fuzzy
+#~ msgid "unable to find backing name for device %s"
+#~ msgstr "'%s' करिता ब्लॉकिंग मोड ठरवणे अशक्य"
+
+#~ msgid "virtio-net-pci 'tx' option not supported in this QEMU binary"
+#~ msgstr "virtio-net-pci 'tx' पर्याय ह्या QEMU बाइनरिमध्ये समर्थीत नाही"
 
 #~ msgid "Unable to generate diffie-hellman parameters: %s"
 #~ msgstr "diffie-hellman घटक: %s निर्माण करण्यास अशक्य"

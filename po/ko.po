@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-07-26 08:13+0000\n"
+"POT-Creation-Date: 2022-08-26 05:02+0000\n"
 "PO-Revision-Date: 2022-07-28 00:20+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1202,9 +1202,6 @@ msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr "'arch' 요소는 'match' 속성'에 'cpu' 요소안에서 사용 될 수 없습니다"
 
-msgid "'base' and 'baseNode' can't be used together"
-msgstr "'base' 와 'baseNode'는 함께 사용 될 수 없습니다"
-
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'캐쉬'는 존재하지 않는 NUMA 노드 캐쉬를 나타냅니다"
 
@@ -1260,9 +1257,6 @@ msgstr "virtio scisi 제어기를 위해 'iothread' 속성만 지원함"
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "'iothread'는 virtio-scsi 제어기에서만 지원됩니다"
 
-msgid "'jack' audio backend is not supported with this QEMU"
-msgstr "'jack' 오디오 백엔드는 이 QEMU를 지원하지 않습니다"
-
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus의 응답에서 'logical-id'가 누락"
 
@@ -1310,9 +1304,6 @@ msgstr "'network' 속성은 응답 형태 'network'을 위하여만 유효합니
 
 msgid "'nfs' host must use TCP protocol"
 msgstr "'nfs' 호스트는 TCP 통신규약을 사용해야 합니다"
-
-msgid "'nfs' protocol is not supported with this QEMU binary"
-msgstr "'nfs' 통신규약은 이 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "'nfs' protocol requires the usage of exactly one host"
 msgstr "'nfs' 통신규약은 오직 하나의 호스트만 사용해야 합니다"
@@ -1364,9 +1355,6 @@ msgstr ""
 
 msgid "'socket' attribute is valid only for listen type 'socket'"
 msgstr "'socket' 요소는 오직 듣기(listen)상태에 있는 소켓에만 유효합니다"
-
-msgid "'ssh' protocol is not yet supported"
-msgstr "'ssh' 통신규약은 아직 지원되지 않습니다"
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr "'target'은 존재하지 않는 NUMA 노드를 의미합니다"
@@ -1608,9 +1596,6 @@ msgstr "/proce/net/dev: 인터페이스를 찾을 수 없음"
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64-비트 PCI 슬롯 환경설정은 오직 root PCI 조종장비에서만 가능합니다"
 
-msgid "64-bit PCI hole size setting is not supported with this QEMU binary"
-msgstr "64 비트 PCI 구멍 크기 설정은 이 QEMU 바이너리에서는 지원되지 않습니다"
-
 #, c-format
 msgid "<%s>"
 msgstr "<%s>"
@@ -1618,6 +1603,10 @@ msgstr "<%s>"
 #, c-format
 msgid "<%s>..."
 msgstr "<%s>..."
+
+#, c-format
+msgid "<active_pcr_banks/> requires TPM version '%s'"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -2313,6 +2302,23 @@ msgstr "CPU 주파수:"
 
 msgid "CPU map:"
 msgstr "CPU 지도:"
+
+#, c-format
+msgid ""
+"CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
+msgstr ""
+
+#, c-format
+msgid ""
+"CPU maximum physical address bits number specification cannot be used with "
+"mode='%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"CPU maximum physical address bits specification is not supported for '%s' "
+"architecture"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -9349,9 +9355,6 @@ msgstr ""
 msgid "Incorrect data type"
 msgstr "잘못된 데이터 유형"
 
-msgid "Incorrect disk format"
-msgstr "잘못된 디스크 유형"
-
 msgid "Incorrect number of cells in a table row"
 msgstr "테이블 행의 잘못된 셀(cell) 갯수"
 
@@ -10528,9 +10531,6 @@ msgstr ""
 "이미 알려져 있지만, 다른 레이블 형식이 있으므로 build --overwrite를 만드는것"
 "이 필요합니다"
 
-msgid "LUKS encrypted QCOW2 images are not supported by this QEMU"
-msgstr "LUKS 암호화된 QCOW2 이미지는 이 QEMU에서 지원되지 않습니다"
-
 msgid "LXC Guest Enter Namespace"
 msgstr "LXC 게스트 네임스페이스 입력"
 
@@ -11440,6 +11440,10 @@ msgid "Missing or invalid 'vlan-table' array in query-rx-filter response"
 msgstr "query-rx-filter 응답에서 누락되거나 잘못된 'vlan-table' 배열"
 
 #, c-format
+msgid "Missing or invalid CPU address size in %s"
+msgstr ""
+
+#, c-format
 msgid "Missing or invalid CPU frequency in %s"
 msgstr "%s에서 누락되었거나 잘못된 CPU 주파수"
 
@@ -11611,6 +11615,10 @@ msgstr "캐릭터 장치에 대한 소스 경로 특성 빠짐"
 msgid "Missing source service attribute for char device"
 msgstr "캐릭터 장치에 대한 소스 서비스 특성 빠짐"
 
+#, c-format
+msgid "Missing source switchid for interface type '%s'"
+msgstr ""
+
 msgid "Missing storage block path"
 msgstr "저장소 블록 경로가 누락되어 있습니다"
 
@@ -11738,9 +11746,6 @@ msgid "NBD URI must be supplied when migration URI uses UNIX transport method"
 msgstr ""
 "NBD URI는 이전 URI가 유닉스 전송 방법을 사용하는 경우에 제공되어야 합니다"
 
-msgid "NBD migration with TLS is not supported"
-msgstr "TLS를 사용한 NBD 이전은 지원되지 않습니다"
-
 msgid "NBD migration with TLS is not supported over UNIX socket"
 msgstr "TLS를 사용한 NBD 이전은 유닉스 소켓을 통해 지원되지 않습니다"
 
@@ -11856,6 +11861,12 @@ msgstr "NVMe 디스크는 이 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "NVMe namespace can't be zero"
 msgstr "NVMe 네임스페이스는 0일 수 없습니다"
+
+msgid "NVRAM is not permitted when loader is stateless"
+msgstr ""
+
+msgid "NVRAM template is not permitted when loader is stateless"
+msgstr ""
 
 msgid "Name"
 msgstr "이름"
@@ -12659,6 +12670,9 @@ msgstr "1개의 fdc 컨트롤러만 지원됩니다"
 msgid "Only 1 thread per core is supported"
 msgstr "코어당 1개의 스레드만 지원됩니다"
 
+msgid "Only EFI firmware permits NVRAM"
+msgstr ""
+
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr "IPv4 또는 IPv6 주소만 접두사로 사용 될 수 있습니다"
 
@@ -12769,6 +12783,9 @@ msgstr "하나의 주요 비디오 장치만 지원됨"
 
 msgid "Only one vgpu device can have 'ramfb' enabled"
 msgstr "하나의 vgpu 장치만 'ramfb'를 활성화 할 수 있습니다"
+
+msgid "Only pflash loader type permits NVRAM"
+msgstr ""
 
 msgid "Only ploop disk images are supported by vz driver."
 msgstr "vz 드라이버는 오직 루프 디스크 이미지만 지원합니다."
@@ -14249,9 +14266,6 @@ msgstr ""
 "%s의 웹사이트를 참조하십시오\n"
 "\n"
 
-msgid "Selecting disks to migrate is not implemented for tunnelled migration"
-msgstr "이전하는 디스크 선택은 터널링된 이전을 위해서는 구현되지 않았습니다"
-
 msgid "Send keycodes (integers or symbolic names) to the guest"
 msgstr "게스트에게 키코드(정수 또는 기호 이름) 보내기"
 
@@ -15013,6 +15027,10 @@ msgstr "TPM 프락시 모델 %s에는 '통과' 백엔드가 필요합니다"
 msgid "TPM device path %s is invalid"
 msgstr "TPM 장치 경로 %s가 잘못되었습니다"
 
+#, c-format
+msgid "TPM version '%s' is not supported"
+msgstr ""
+
 msgid "Table row cannot be empty"
 msgstr "테이블 행은 비워 둘 수 없습니다"
 
@@ -15056,6 +15074,9 @@ msgstr "대상 CPU 기능 카운트 %zu는 소스 %zu와 일치하지 않습니�
 #, c-format
 msgid "Target CPU feature policy %s does not match source %s"
 msgstr "대상 CPU 기능 정책 %s은 소스 %s와 일치하지 않습니다"
+
+msgid "Target CPU maxphysaddr does not match source"
+msgstr ""
 
 #, c-format
 msgid "Target CPU mode %s does not match source %s"
@@ -15964,6 +15985,11 @@ msgstr "머신에는 현재 스냅샷이 없으며, 스냅샷이 필요합니다
 
 msgid "The minimum lease time should be greater than 2 minutes"
 msgstr "최소 임대 시간은 2분 이상이어야 합니다"
+
+msgid ""
+"The number of virtual CPU address bits cannot exceed the number supported by "
+"the host CPU"
+msgstr ""
 
 msgid ""
 "The overall maximum number of clients must be greater than the maximum "
@@ -17081,6 +17107,10 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr "만족스러운 virtiofsd를 찾을 수 없습니다"
 
 #, c-format
+msgid "Unable to find address for mdev parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to find address for parent device '%s'"
 msgstr "상위 장치 '%s'의 주소를 찾을 수 없습니다"
 
@@ -17716,6 +17746,10 @@ msgid "Unable to parse cloud-hypervisor version: %s"
 msgstr "클라우드 하이퍼바이저 버전을 구문 분석할 수 없음: %s"
 
 #, c-format
+msgid "Unable to parse connectionid '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "현재 SELinux 문맥 '%s'를 구문 분석할 수 없음"
 
@@ -17748,6 +17782,10 @@ msgstr "ovs-vsctl 출력을 구문 분석할 수 없습니다"
 msgid "Unable to parse port id '%s'"
 msgstr "포트 id '%s'를 구문 분석 할 수 없습니다"
 
+#, c-format
+msgid "Unable to parse portid '%s'"
+msgstr ""
+
 msgid "Unable to parse quota"
 msgstr "쿼타를 구문 분석할 수 없습니다"
 
@@ -17765,6 +17803,10 @@ msgstr "비밀 uuid '%s'를 구문 분석 할 수 없습니다"
 
 msgid "Unable to parse string parameter"
 msgstr "문자열 매개 변수를 구문 분석 할 수 없음"
+
+#, c-format
+msgid "Unable to parse switchid '%s'"
+msgstr ""
 
 msgid "Unable to parse the xml"
 msgstr "xml을 구문 분석할 수 없습니다"
@@ -18641,10 +18683,6 @@ msgstr "예기치 않은 메시지 유형: %d"
 msgid "Unexpected network port type %s"
 msgstr "예상치 못한 네트워크 포트 유형 %s"
 
-#, c-format
-msgid "Unexpected network protocol '%s'"
-msgstr "알려지지 않은 프로토콜 '%s'"
-
 msgid "Unexpected output of cloud-hypervisor binary"
 msgstr "클라우드 하이퍼바이저 바이너리의 예기치 않은 출력"
 
@@ -18765,14 +18803,6 @@ msgstr "알 수 없는 SCSI 컨트롤러 모델 %s"
 #, c-format
 msgid "Unknown SCSI subsystem protocol '%s'"
 msgstr "알 수 없는 SCSI 하위 시스템 프로토콜 '%s'"
-
-#, c-format
-msgid "Unknown TPM backend type '%s'"
-msgstr "알 수 없는 TPM 백엔드 유형 '%s'"
-
-#, c-format
-msgid "Unknown TPM frontend model '%s'"
-msgstr "알 수 없는 TPM 프론트엔드 모델 '%s'"
 
 #, c-format
 msgid "Unknown URI parameter '%s'"
@@ -19154,10 +19184,6 @@ msgid "Unsupported SMBIOS mode '%s'"
 msgstr "지원되지 않는 SMBIOS 모드 '%s'"
 
 #, c-format
-msgid "Unsupported TPM version '%s'"
-msgstr "지원되지 않는 TPM 버전 '%s'"
-
-#, c-format
 msgid "Unsupported URI scheme '%s'"
 msgstr "지원되지 않는 URI 체계 '%s'"
 
@@ -19317,8 +19343,8 @@ msgid "Unsupported hostdev type %s"
 msgstr "지원되지 않는 호스트 개발 유형 %s"
 
 #, c-format
-msgid "Unsupported interface %s for TPM 1.2"
-msgstr "TPM 1.2를 위한 지원하지 않는 연결장치 %s"
+msgid "Unsupported interface '%s' for TPM 1.2"
+msgstr ""
 
 msgid "Unsupported listen type"
 msgstr "지원되지 않는 청취 유형"
@@ -19600,13 +19626,6 @@ msgstr "VFIO PCI 장치의 할당은 이 QEMU의 버전에서 지원하지 않�
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "VFIO 장치 할당은 현재 이 시스템에서 지원되지 않습니다"
 
-msgid "VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES is not supported by this VM"
-msgstr "VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES는 이 VM에서 지원되지 않습니다"
-
-msgid "VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES is not supported by this QEMU"
-msgstr ""
-"VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES는 이 QEMU에서 지원되지 않습니다"
-
 msgid "VM is already active"
 msgstr "VM이 이미 실행중입니다"
 
@@ -19754,9 +19773,6 @@ msgstr "볼륨 경로 '%s'은(는) 소켓입니다"
 
 msgid "VxHS protocol accepts only one host"
 msgstr "VxHS 프로토콜은 하나의 호스트만 허용합니다"
-
-msgid "VxHS protocol does not support URI syntax"
-msgstr "VxHS 프로토콜은 URI 구문을 지원하지 않습니다"
 
 msgid "VxHS protocol is not supported with this QEMU binary"
 msgstr "VxHS 프로토콜은 이 QEMU 바이너리에서 지원되지 않습니다"
@@ -20021,9 +20037,6 @@ msgstr "접근 거부됨: %s"
 
 msgid "active"
 msgstr "활성화"
-
-msgid "active commit not supported with this QEMU binary"
-msgstr "이 QEMU 바이너리에서는 활성 커밋이 지원되지 않습니다"
 
 #, c-format
 msgid "active commit requested but '%s' is not active"
@@ -20478,9 +20491,6 @@ msgstr "백업저장소는 NVRAM에서 지원하지 않습니다"
 msgid "backingStore is not supported with vhostuser disk"
 msgstr "backingStore는 vhostuser 디스크에서 지원되지 않습니다"
 
-msgid "backingStore of mirror target is not supported by this qemu"
-msgstr "미러 대상의 백업 저장소는 이 qemu에서 지원되지 않습니다"
-
 msgid ""
 "backingStore of mirror without VIR_DOMAIN_BLOCK_COPY_SHALLOW doesn't make "
 "sense"
@@ -20491,9 +20501,6 @@ msgstr "백업"
 
 msgid "backup TLS directory not configured"
 msgstr "백업 TLS 디렉토리가 구성되지 않았습니다"
-
-msgid "backup is not supported with this QEMU"
-msgstr "이 QEMU에서는 백업이 지원되지 않습니다"
 
 msgid "backup job data missing"
 msgstr "백업 작업 데이터 누락"
@@ -22415,7 +22422,8 @@ msgstr "세션 모드에서 사용자 정의 탭 장치를 사용할 수 없습�
 msgid ""
 "cannot use feature-based firmware autoselection when firmware autoselection "
 "is disabled"
-msgstr "펌웨어 자동선택이 비활성화 되었을 때에 기능-기반의 펌웨어 자동선택을 사용 할 "
+msgstr ""
+"펌웨어 자동선택이 비활성화 되었을 때에 기능-기반의 펌웨어 자동선택을 사용 할 "
 "수 없습니다"
 
 msgid "cannot use namespaces in session mode"
@@ -23729,19 +23737,6 @@ msgid "delete the specified network port"
 msgstr "지정된 네트워크 포트를 삭제하세요"
 
 #, c-format
-msgid "deleting %s drive failed: %s"
-msgstr "%s 드라이브 삭제 실패: %s"
-
-msgid "deleting committed images is not supported by this VM"
-msgstr "커밋된 이미지 삭제는 이 VM에서 지원되지 않습니다"
-
-msgid ""
-"deleting drive is not supported.  This may leak data if disk is reassigned"
-msgstr ""
-"드라이브 삭제는 지원되지 않습니다. 디스크가 재할당되면 데이터가 누출될 수 있"
-"습니다"
-
-#, c-format
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr "%d개의 외부 디스크 스냅샷 삭제는 아직 지원되지 않습니다"
 
@@ -23803,9 +23798,6 @@ msgstr "직렬 콘솔 분리는 지원되지 않습니다"
 
 msgid "detailed domain vcpu information"
 msgstr "자세한 도메인 vcpu 정보"
-
-msgid "detect_zeroes is not supported by this QEMU binary"
-msgstr "이 QEMU 바이너리는 detect_zeroes를 지원하지 않습니다"
 
 msgid "detect_zeroes is not supported with vhostuser disk"
 msgstr "detect_zeroes는 vhostuser 디스크에서 지원되지 않습니다"
@@ -23977,12 +23969,6 @@ msgstr "cpumap에 의해 지정된 CPU 비활성화"
 
 msgid "disabled"
 msgstr "사용 않음"
-
-msgid "disabling audio mixing engine is not supported with this QEMU"
-msgstr "이 QEMU에서는 오디오 믹싱 엔진 비활성화가 지원되지 않습니다"
-
-msgid "discard is not supported by this QEMU binary"
-msgstr "이 QEMU 바이너리는 폐기를 지원하지 않습니다"
 
 #, c-format
 msgid "discard is not supported for model '%s'"
@@ -24576,9 +24562,6 @@ msgstr "완료"
 msgid "download volume contents to a file"
 msgstr "파일에 볼륨 내용을 내려받기 함"
 
-msgid "drive hotplug is not supported"
-msgstr "드라이브 핫플러그는 지원되지 않습니다"
-
 #, c-format
 msgid "driver does not support net model '%s'"
 msgstr "드라이버가 네트 모델 '%s'을(를) 지원하지 않습니다"
@@ -24602,9 +24585,6 @@ msgstr "덤프 쿼리 실패, 상태=%d"
 
 msgid "dump the core of a domain to a file for analysis"
 msgstr "도메인을 파일에 코어 덤프하여 분석"
-
-msgid "dump-guest-memory is not supported"
-msgstr "덤프 게스트 메모리는 지원되지 않습니다"
 
 #, c-format
 msgid "dumpformat '%d' is not supported"
@@ -25232,14 +25212,6 @@ msgstr "외부"
 msgid "external active snapshots are not supported on '%s' disks"
 msgstr "외부 활성 스냅샷은 '%s' 디스크에서 지원되지 않습니다"
 
-#, c-format
-msgid ""
-"external active snapshots are not supported on 'network' disks using '%s' "
-"protocol"
-msgstr ""
-"외부 활성 스냅샷은 '%s' 프로토콜을 사용하는 '네트워크' 디스크에서 지원되지 않"
-"습니다"
-
 msgid "external active snapshots are not supported on scsi passthrough devices"
 msgstr "외부 활성 스냅샷은 scsi 패스스루 장치에서 지원되지 않습니다"
 
@@ -25270,10 +25242,6 @@ msgid ""
 "%s"
 msgstr ""
 "디스크 %s에 대한 외부 스냅샷 파일이 이미 존재하며 블록 장치가 아닙니다. %s"
-
-#, c-format
-msgid "external snapshot for readonly disk %s is not supported"
-msgstr "읽기 전용 디스크 %s에 대한 외부 스냅샷은 지원되지 않습니다"
 
 #, c-format
 msgid "external snapshot format for disk %s is unsupported: %s"
@@ -27299,9 +27267,6 @@ msgstr "%s 모델의 watchdog 핫플러그가 지원되지 않습니다"
 msgid "hpet timer is not supported"
 msgstr "hpet 타이머는 지원되지 않습니다"
 
-msgid "http cookies are not supported by this QEMU binary"
-msgstr "이 QEMU 바이너리는 http 쿠키를 지원하지 않습니다"
-
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr "http 쿠키는 HTTP(S) 프로토콜에서만 지원됩니다"
 
@@ -27374,6 +27339,11 @@ msgstr "조작할 vcpus의 ID"
 
 msgid "if IOMMU is enabled by kernel"
 msgstr "IOMMU가 커널에 의해 활성화된 경우"
+
+#, c-format
+msgid ""
+"if using CPU maximum physical address mode='%s', bits= must be specified too"
+msgstr ""
 
 #, c-format
 msgid "ifkey \"%s\" has no req"
@@ -28486,6 +28456,10 @@ msgstr "iommu 드라이버 옵션은 virtio 장치에만 지원됩니다"
 msgid "iommu model '%s' can't have address"
 msgstr "iommu 모델 '%s'은 주소를 가질 수 없습니다"
 
+#, c-format
+msgid "iommu model '%s' doesn't support additional attributes"
+msgstr ""
+
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr "iommu: aw_bits는 이 QEMU 바이너리에서 지원되지 않습니다"
 
@@ -29097,18 +29071,21 @@ msgstr "장치 '%s'의 라이브 업데이트가 지원되지 않습니다"
 msgid ""
 "loader attribute 'readonly' cannot be specified when firmware autoselection "
 "is enabled"
-msgstr "로더 속성 '읽기전용'은 펌웨어가 자동선택이 활성화 되었을 때에 지정 될 수 "
-"없습니다"
+msgstr ""
+"로더 속성 '읽기전용'은 펌웨어가 자동선택이 활성화 되었을 때에 지정 될 수 없습"
+"니다"
 
 msgid ""
 "loader attribute 'secure' cannot be specified when firmware autoselection is "
 "enabled"
-msgstr "로더 속성 '보안'은 펌웨어 자동선택이 활성화 되었을 때에 지정 될 수 없습니다"
+msgstr ""
+"로더 속성 '보안'은 펌웨어 자동선택이 활성화 되었을 때에 지정 될 수 없습니다"
 
 msgid ""
 "loader attribute 'type' cannot be specified when firmware autoselection is "
 "enabled"
-msgstr "로더 속성 '유형'은 펌웨어가 자동선택이 활성화 되었을 때에 지정 될 수 없습니다"
+msgstr ""
+"로더 속성 '유형'은 펌웨어가 자동선택이 활성화 되었을 때에 지정 될 수 없습니다"
 
 msgid "loader path cannot be specified when firmware autoselection is enabled"
 msgstr "로더 경로는 펌웨어 자동선택이 활성화 되었을 때에 지정 될 수 없습니다"
@@ -29613,10 +29590,6 @@ msgstr "메모리 전용 덤프 실패: %s"
 msgid "message"
 msgstr "메세지"
 
-msgid "metadata cache max size control is not supported with this QEMU binary"
-msgstr ""
-"이 QEMU 바이너리에서는 메타데이터 캐시 최대 크기 제어가 지원되지 않습니다"
-
 msgid "metadata cache max size control is supported only with qcow2 images"
 msgstr "메타데이터 캐시 최대 크기 제어는 qcow2 이미지에서만 지원됩니다"
 
@@ -30014,9 +29987,6 @@ msgstr "QEMU 기능 캐시에서 누락된 SEV 플랫폼 데이터"
 msgid "missing TPM device backend"
 msgstr "TPM 장치 백엔드가 누락되어 있음"
 
-msgid "missing TPM device backend type"
-msgstr "TPM 장치 백엔드 유형이 누락되어 있음"
-
 msgid "missing Xen migration stream version"
 msgstr "Xen 이전 스트림 버전이 누락됨"
 
@@ -30152,9 +30122,6 @@ msgstr "누락된 디스크 백업 저장소 원천"
 #, c-format
 msgid "missing disk device alias name for %s"
 msgstr "%s에 대한 디스크 장치 별칭이 빠짐"
-
-msgid "missing disk source for 'sheepdog' protocol"
-msgstr "'쉽독' 통신규약에 대한 디스크 원천 누락"
 
 msgid "missing domain in checkpoint"
 msgstr "체크포인트에서 누락된 도메인"
@@ -30716,9 +30683,6 @@ msgstr "모델 해상도가 지원되지 않습니다"
 msgid "model type"
 msgstr "모델 유형"
 
-msgid "modern nvram specification is not supported by this qemu"
-msgstr "최신 nvram 규격은 이와 같은 qemu에서 지원하지 않습니다"
-
 msgid "modifies an existing IOThread of the guest domain"
 msgstr "게스트 도메인의 기존 IOThread를 수정합니다"
 
@@ -30742,9 +30706,6 @@ msgstr "모니터 실패"
 
 msgid "monitor must not be NULL"
 msgstr "모니터는 NULL이 아니어야 합니다"
-
-msgid "monitor socket did not show up"
-msgstr "모니터 소켓이 나타나지 않았습니다"
 
 #, c-format
 msgid "more than %d vCPUs are only supported on q35-based machine types"
@@ -30886,10 +30847,6 @@ msgstr "볼륨의 이름"
 
 msgid "namespace key is required when modifying metadata"
 msgstr "메타데이터를 수정할 때 네임스페이스 키가 필요합니다"
-
-#, c-format
-msgid "nbd does not support transport '%s'"
-msgstr "nbd는 '%s' 전송을 지원하지 않습니다"
 
 msgid "nbd port must be in range 0-65535"
 msgstr "nbd 포트는 0-65535 범위에 있어야 합니다"
@@ -31825,9 +31782,6 @@ msgstr ""
 msgid "non unique alias detected: %s"
 msgstr "고유하지 않은 별칭이 감지됨: %s"
 
-msgid "non-file destination not supported yet"
-msgstr "파일이 아닌 대상은 아직 지원되지 않습니다"
-
 msgid "none"
 msgstr "없음"
 
@@ -31961,8 +31915,9 @@ msgstr "nvram 주소 유형은 spaprvio여야 합니다"
 msgid ""
 "nvram attribute 'template' cannot be specified when firmware autoselection "
 "is enabled"
-msgstr "vnram 속성 '템플릿트'는 펌웨어 자동선택이 활성화 되었을 때에 지정 될 수 "
-"없습니다"
+msgstr ""
+"vnram 속성 '템플릿트'는 펌웨어 자동선택이 활성화 되었을 때에 지정 될 수 없습"
+"니다"
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "nvram 장치는 이 QEMU 바이너리에서 지원되지 않습니다"
@@ -32133,9 +32088,6 @@ msgstr "단일 RNG 백엔드만이 지원됨"
 msgid "only one TPM backend is supported"
 msgstr "단일 TPM 백엔드만 지원됨"
 
-msgid "only one audio backend is supported with this QEMU binary"
-msgstr "이 QEMU 바이너리에서는 하나의 오디오 백엔드만 지원됩니다"
-
 msgid "only one backup job is supported"
 msgstr "하나의 백업 작업만 지원됩니다"
 
@@ -32217,9 +32169,6 @@ msgstr "virtiofs 파일 시스템만 핫플러그 할 수 있습니다"
 
 msgid "open an editor to modify the description"
 msgstr "설명을 수정하기 위해 편집기 열기"
-
-msgid "open disk image file failed"
-msgstr "디스크 이미지 파일 열기 실패"
 
 #, c-format
 msgid "open(\"%s\")"
@@ -32982,9 +32931,6 @@ msgstr "이름 'id'를 갖는 특성은 재지정 할 수 없습니다"
 msgid "protocol '%s' accepts only one host"
 msgstr "프로토콜 '%s'는 하나의 호스트만 허용합니다"
 
-msgid "protocol 'sheepdog' accepts up to one host"
-msgstr "프로토콜 'sheepdog'은 최대 하나의 호스트를 허용합니다"
-
 msgid "protocol misses the family attribute"
 msgstr "프로토콜에 패밀리 특성이 빠졌습니다"
 
@@ -33025,10 +32971,6 @@ msgstr "qemu 에이전트가 인터페이스 배열을 반환하지 않았습니
 
 msgid "qemu agent didn't return an array of keys"
 msgstr "qemu 에이전트가 키 배열을 반환하지 않았습니다"
-
-#, c-format
-msgid "qemu block name '%s' doesn't match expected '%s'"
-msgstr "qemu 블록 이름 '%s'가 예상되는 '%s'와 일치하지 않습니다"
 
 #, c-format
 msgid "qemu didn't report thread id for vcpu '%zu'"
@@ -33330,9 +33272,6 @@ msgstr "읽기 전용 연결"
 
 msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr "미리 읽기는 HTTP(S)/FTP(s) 프로토콜에서만 지원됩니다"
-
-msgid "readahead setting is not supported with this QEMU binary"
-msgstr "이 QEMU 바이너리에서는 미리 읽기 설정이 지원되지 않습니다"
 
 msgid "readonly ide disks are not supported"
 msgstr "읽기 전용 IDE 디스크는 지원되지 않습니다"
@@ -34107,18 +34046,6 @@ msgstr "인터페이스 유형 %s에 대한 MTU 설정은 아직 지원되지 �
 msgid "setting a launch secret is only supported in SEV-enabled domains"
 msgstr "시작 비밀번호 설정은 SEV-활성화된 도메인에서만 지원됩니다"
 
-msgid "setting audio buffer count is not supported with this QEMU"
-msgstr "이 QEMU에서는 오디오 버퍼 수 설정이 지원되지 않습니다"
-
-msgid "setting audio buffer length is not supported with this QEMU"
-msgstr "이 QEMU에서는 오디오 버퍼 길이 설정이 지원되지 않습니다"
-
-msgid "setting audio latency is not supported with this QEMU"
-msgstr "이 QEMU에서는 오디오 대기 시간 설정이 지원되지 않습니다"
-
-msgid "setting audio stream name is not supported with this QEMU"
-msgstr "이 QEMU에서는 오디오 스트림 이름 설정이 지원되지 않습니다"
-
 #, c-format
 msgid "setting bandwidth on interfaces of type '%s' is not implemented yet"
 msgstr "'%s' 유형의 인터페이스에 대한 대역폭 설정은 아직 구현되지 않았습니다"
@@ -34363,9 +34290,6 @@ msgstr "스냅샷의 관계가 일치하지 않습니다"
 msgid "sndbuf must be a positive integer"
 msgstr "sndbuf는 양의 정수여야 합니다"
 
-msgid "socket attribute required for unix transport"
-msgstr "유닉스 전송에 필요한 소켓 속성"
-
 msgid "socketpair failed"
 msgstr "socketpair가 실패했습니다"
 
@@ -34494,9 +34418,6 @@ msgstr "ssh 프로토콜은 하나의 호스트만 허용합니다"
 
 msgid "ssl verification is supported only with HTTPS/FTPS protocol"
 msgstr "SSL 확인은 HTTPS/FTPS 프로토콜에서만 지원됩니다"
-
-msgid "ssl verification setting is not supported by this QEMU binary"
-msgstr "이 QEMU 바이너리는 SSL 확인 설정을 지원하지 않습니다"
 
 msgid "start"
 msgstr "시작"
@@ -34650,9 +34571,6 @@ msgstr "저장소 풀 통신규약 버전 '%s'가 포함되지 않아야만 합�
 #, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
 msgstr "풀 유형 '%s'에 대해 저장소 풀 통신규약 버전이 지원되지 않습니다"
-
-msgid "storage slice is not supported by this QEMU binary"
-msgstr "이 QEMU 바이너리는 저장소 슬라이스를 지원하지 않습니다"
 
 #, c-format
 msgid "storage source pool '%s' volume '%s' is not translated"
@@ -35102,9 +35020,6 @@ msgstr "다른 트랜잭션이 실행 중입니다."
 msgid "there is no hub at port %u in USB address bus: %u port: %s"
 msgstr "USB 주소 버스의 %u 포트에 허브가 없습니다: %u 포트: %s"
 
-msgid "this QEMU binary doesn't support relative block pull/rebase"
-msgstr "이 QEMU 바이너리는 상대 블록 풀/리베이스를 지원하지 않습니다"
-
 msgid "this QEMU binary lacks multiple smartcard support"
 msgstr "이 QEMU 바이너리에는 여러 스마트 카드 지원이 없습니다"
 
@@ -35156,12 +35071,6 @@ msgstr "이와 같은 기술환경은 dlopen이 누락되어 있습니다"
 
 msgid "this qemu does not support TLS transport for NBD"
 msgstr "이 qemu는 NBD에 대한 TLS 전송을 지원하지 않습니다"
-
-msgid "this qemu does not support setting device threshold"
-msgstr "이 qumu는 장치 threshold 설정을 지원하지 않습니다"
-
-msgid "this qemu doesn't support relative block commit"
-msgstr "이 qemu는 상대 블록 커밋을 지원하지 않습니다"
 
 msgid "this qemu doesn't support the memory-backend-file object"
 msgstr "이 qemu는 메모리 백엔드 파일 개체를 지원하지 않습니다"
@@ -35222,10 +35131,6 @@ msgstr "thread_pool_min은 thread_pool_max 보다 작거나 동일해야 합니�
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "스케일된 숫자로서의 임계값(기본적으로 바이트)"
 
-#, c-format
-msgid "threshold currently can't be set for block device '%s'"
-msgstr "현재 블록 장치 '%s'에 대한 임계값을 설정할 수 없습니다"
-
 msgid "time to set"
 msgstr "설정할 시간"
 
@@ -35247,9 +35152,6 @@ msgstr "시간 초과 (초)."
 
 msgid "timeout seconds. must be positive."
 msgstr "시간 초과 초. 긍정적이어야 합니다."
-
-msgid "timeout setting is not supported with this QEMU binary"
-msgstr "이 QEMU 바이너리에서는 시간 초과 설정이 지원되지 않습니다"
 
 msgid "timeout, async and block options are exclusive"
 msgstr "시간 초과, 비동기 및 차단 옵션은 배타적입니다"
@@ -35632,10 +35534,6 @@ msgstr ""
 "에서 지원되지 않습니다"
 
 #, c-format
-msgid "transient disk not supported by this QEMU binary (%s)"
-msgstr "이 QEMU 바이너리(%s)에서 임시 디스크를 지원하지 않습니다"
-
-#, c-format
 msgid "transient disk supported only with 'disk' device (%s)"
 msgstr "임시 디스크는 '디스크' 장치(%s)에서만 지원됩니다"
 
@@ -35677,12 +35575,6 @@ msgstr "<서버>에 대해 전송 rdma가 지원되지 않습니다"
 
 msgid "tray is only valid for cdrom and floppy"
 msgstr "트레이는 cdrom과 플로피에만 유효합니다"
-
-msgid "tray status 'open' is invalid for block type disk"
-msgstr "블록 유형 디스크에 대해 트레이 상태 '열림'이 잘못되었습니다"
-
-msgid "tray status 'open' is invalid for block type volume"
-msgstr "블록 유형 볼륨에 대해 트레이 상태 '열림'이 잘못되었습니다"
 
 msgid "treat event as a regex rather than literal filter"
 msgstr "이벤트를 리터럴 필터가 아닌 정규식으로 처리"
@@ -35900,10 +35792,6 @@ msgstr "로더에 대한 마스터 var 저장소를 찾을 수 없음: %s"
 
 msgid "unable to find audio backend for sound device"
 msgstr "사운드 장치에 대한 오디오 백엔드를 찾을 수 없습니다"
-
-#, c-format
-msgid "unable to find backing name for device %s"
-msgstr "장치 %s 를 위해 되돌린 이름을 찾을 수 없습니다"
 
 #, c-format
 msgid "unable to find disk by target: %s"
@@ -38257,9 +38145,6 @@ msgstr ""
 "virtio-net 팀 구성 임시 인터페이스는 '%s'가 아니라 'hostdev' 유형이어야 합니"
 "다"
 
-msgid "virtio-net-pci 'tx' option not supported in this QEMU binary"
-msgstr "virtio-net-pci 'tx' 옵션은 이 QEMU 바이너리에서 지원되지 않습니다"
-
 msgid "virtio-pmem does not support NUMA nodes"
 msgstr "virtio-pmem은 NUMA 노드를 지원하지 않습니다"
 
@@ -38696,6 +38581,200 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "'base' and 'baseNode' can't be used together"
+#~ msgstr "'base' 와 'baseNode'는 함께 사용 될 수 없습니다"
+
+#~ msgid "'jack' audio backend is not supported with this QEMU"
+#~ msgstr "'jack' 오디오 백엔드는 이 QEMU를 지원하지 않습니다"
+
+#~ msgid "'nfs' protocol is not supported with this QEMU binary"
+#~ msgstr "'nfs' 통신규약은 이 QEMU 바이너리에서 지원되지 않습니다"
+
+#~ msgid "'ssh' protocol is not yet supported"
+#~ msgstr "'ssh' 통신규약은 아직 지원되지 않습니다"
+
+#~ msgid "64-bit PCI hole size setting is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "64 비트 PCI 구멍 크기 설정은 이 QEMU 바이너리에서는 지원되지 않습니다"
+
+#~ msgid "Incorrect disk format"
+#~ msgstr "잘못된 디스크 유형"
+
+#~ msgid "LUKS encrypted QCOW2 images are not supported by this QEMU"
+#~ msgstr "LUKS 암호화된 QCOW2 이미지는 이 QEMU에서 지원되지 않습니다"
+
+#~ msgid "NBD migration with TLS is not supported"
+#~ msgstr "TLS를 사용한 NBD 이전은 지원되지 않습니다"
+
+#~ msgid ""
+#~ "Selecting disks to migrate is not implemented for tunnelled migration"
+#~ msgstr "이전하는 디스크 선택은 터널링된 이전을 위해서는 구현되지 않았습니다"
+
+#~ msgid "Unexpected network protocol '%s'"
+#~ msgstr "알려지지 않은 프로토콜 '%s'"
+
+#~ msgid "Unknown TPM backend type '%s'"
+#~ msgstr "알 수 없는 TPM 백엔드 유형 '%s'"
+
+#~ msgid "Unknown TPM frontend model '%s'"
+#~ msgstr "알 수 없는 TPM 프론트엔드 모델 '%s'"
+
+#~ msgid "Unsupported TPM version '%s'"
+#~ msgstr "지원되지 않는 TPM 버전 '%s'"
+
+#~ msgid "Unsupported interface %s for TPM 1.2"
+#~ msgstr "TPM 1.2를 위한 지원하지 않는 연결장치 %s"
+
+#~ msgid "VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES is not supported by this VM"
+#~ msgstr ""
+#~ "VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES는 이 VM에서 지원되지 않습니다"
+
+#~ msgid ""
+#~ "VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES is not supported by this QEMU"
+#~ msgstr ""
+#~ "VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES는 이 QEMU에서 지원되지 않습니다"
+
+#~ msgid "VxHS protocol does not support URI syntax"
+#~ msgstr "VxHS 프로토콜은 URI 구문을 지원하지 않습니다"
+
+#~ msgid "active commit not supported with this QEMU binary"
+#~ msgstr "이 QEMU 바이너리에서는 활성 커밋이 지원되지 않습니다"
+
+#~ msgid "backingStore of mirror target is not supported by this qemu"
+#~ msgstr "미러 대상의 백업 저장소는 이 qemu에서 지원되지 않습니다"
+
+#~ msgid "backup is not supported with this QEMU"
+#~ msgstr "이 QEMU에서는 백업이 지원되지 않습니다"
+
+#~ msgid "deleting %s drive failed: %s"
+#~ msgstr "%s 드라이브 삭제 실패: %s"
+
+#~ msgid "deleting committed images is not supported by this VM"
+#~ msgstr "커밋된 이미지 삭제는 이 VM에서 지원되지 않습니다"
+
+#~ msgid ""
+#~ "deleting drive is not supported.  This may leak data if disk is reassigned"
+#~ msgstr ""
+#~ "드라이브 삭제는 지원되지 않습니다. 디스크가 재할당되면 데이터가 누출될 수 "
+#~ "있습니다"
+
+#~ msgid "detect_zeroes is not supported by this QEMU binary"
+#~ msgstr "이 QEMU 바이너리는 detect_zeroes를 지원하지 않습니다"
+
+#~ msgid "disabling audio mixing engine is not supported with this QEMU"
+#~ msgstr "이 QEMU에서는 오디오 믹싱 엔진 비활성화가 지원되지 않습니다"
+
+#~ msgid "discard is not supported by this QEMU binary"
+#~ msgstr "이 QEMU 바이너리는 폐기를 지원하지 않습니다"
+
+#~ msgid "drive hotplug is not supported"
+#~ msgstr "드라이브 핫플러그는 지원되지 않습니다"
+
+#~ msgid "dump-guest-memory is not supported"
+#~ msgstr "덤프 게스트 메모리는 지원되지 않습니다"
+
+#~ msgid ""
+#~ "external active snapshots are not supported on 'network' disks using '%s' "
+#~ "protocol"
+#~ msgstr ""
+#~ "외부 활성 스냅샷은 '%s' 프로토콜을 사용하는 '네트워크' 디스크에서 지원되"
+#~ "지 않습니다"
+
+#~ msgid "external snapshot for readonly disk %s is not supported"
+#~ msgstr "읽기 전용 디스크 %s에 대한 외부 스냅샷은 지원되지 않습니다"
+
+#~ msgid "http cookies are not supported by this QEMU binary"
+#~ msgstr "이 QEMU 바이너리는 http 쿠키를 지원하지 않습니다"
+
+#~ msgid ""
+#~ "metadata cache max size control is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "이 QEMU 바이너리에서는 메타데이터 캐시 최대 크기 제어가 지원되지 않습니다"
+
+#~ msgid "missing TPM device backend type"
+#~ msgstr "TPM 장치 백엔드 유형이 누락되어 있음"
+
+#~ msgid "missing disk source for 'sheepdog' protocol"
+#~ msgstr "'쉽독' 통신규약에 대한 디스크 원천 누락"
+
+#~ msgid "modern nvram specification is not supported by this qemu"
+#~ msgstr "최신 nvram 규격은 이와 같은 qemu에서 지원하지 않습니다"
+
+#~ msgid "monitor socket did not show up"
+#~ msgstr "모니터 소켓이 나타나지 않았습니다"
+
+#~ msgid "nbd does not support transport '%s'"
+#~ msgstr "nbd는 '%s' 전송을 지원하지 않습니다"
+
+#~ msgid "non-file destination not supported yet"
+#~ msgstr "파일이 아닌 대상은 아직 지원되지 않습니다"
+
+#~ msgid "only one audio backend is supported with this QEMU binary"
+#~ msgstr "이 QEMU 바이너리에서는 하나의 오디오 백엔드만 지원됩니다"
+
+#~ msgid "open disk image file failed"
+#~ msgstr "디스크 이미지 파일 열기 실패"
+
+#~ msgid "protocol 'sheepdog' accepts up to one host"
+#~ msgstr "프로토콜 'sheepdog'은 최대 하나의 호스트를 허용합니다"
+
+#~ msgid "qemu block name '%s' doesn't match expected '%s'"
+#~ msgstr "qemu 블록 이름 '%s'가 예상되는 '%s'와 일치하지 않습니다"
+
+#~ msgid "readahead setting is not supported with this QEMU binary"
+#~ msgstr "이 QEMU 바이너리에서는 미리 읽기 설정이 지원되지 않습니다"
+
+#~ msgid "setting audio buffer count is not supported with this QEMU"
+#~ msgstr "이 QEMU에서는 오디오 버퍼 수 설정이 지원되지 않습니다"
+
+#~ msgid "setting audio buffer length is not supported with this QEMU"
+#~ msgstr "이 QEMU에서는 오디오 버퍼 길이 설정이 지원되지 않습니다"
+
+#~ msgid "setting audio latency is not supported with this QEMU"
+#~ msgstr "이 QEMU에서는 오디오 대기 시간 설정이 지원되지 않습니다"
+
+#~ msgid "setting audio stream name is not supported with this QEMU"
+#~ msgstr "이 QEMU에서는 오디오 스트림 이름 설정이 지원되지 않습니다"
+
+#~ msgid "socket attribute required for unix transport"
+#~ msgstr "유닉스 전송에 필요한 소켓 속성"
+
+#~ msgid "ssl verification setting is not supported by this QEMU binary"
+#~ msgstr "이 QEMU 바이너리는 SSL 확인 설정을 지원하지 않습니다"
+
+#~ msgid "storage slice is not supported by this QEMU binary"
+#~ msgstr "이 QEMU 바이너리는 저장소 슬라이스를 지원하지 않습니다"
+
+#~ msgid "this QEMU binary doesn't support relative block pull/rebase"
+#~ msgstr "이 QEMU 바이너리는 상대 블록 풀/리베이스를 지원하지 않습니다"
+
+#~ msgid "this qemu does not support setting device threshold"
+#~ msgstr "이 qumu는 장치 threshold 설정을 지원하지 않습니다"
+
+#~ msgid "this qemu doesn't support relative block commit"
+#~ msgstr "이 qemu는 상대 블록 커밋을 지원하지 않습니다"
+
+#~ msgid "threshold currently can't be set for block device '%s'"
+#~ msgstr "현재 블록 장치 '%s'에 대한 임계값을 설정할 수 없습니다"
+
+#~ msgid "timeout setting is not supported with this QEMU binary"
+#~ msgstr "이 QEMU 바이너리에서는 시간 초과 설정이 지원되지 않습니다"
+
+#~ msgid "transient disk not supported by this QEMU binary (%s)"
+#~ msgstr "이 QEMU 바이너리(%s)에서 임시 디스크를 지원하지 않습니다"
+
+#~ msgid "tray status 'open' is invalid for block type disk"
+#~ msgstr "블록 유형 디스크에 대해 트레이 상태 '열림'이 잘못되었습니다"
+
+#~ msgid "tray status 'open' is invalid for block type volume"
+#~ msgstr "블록 유형 볼륨에 대해 트레이 상태 '열림'이 잘못되었습니다"
+
+#~ msgid "unable to find backing name for device %s"
+#~ msgstr "장치 %s 를 위해 되돌린 이름을 찾을 수 없습니다"
+
+#~ msgid "virtio-net-pci 'tx' option not supported in this QEMU binary"
+#~ msgstr "virtio-net-pci 'tx' 옵션은 이 QEMU 바이너리에서 지원되지 않습니다"
 
 #~ msgid "Missing source element for nvram"
 #~ msgstr "nvram을 위해 누락된 원천 요소"

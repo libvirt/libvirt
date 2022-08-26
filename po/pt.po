@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-07-26 08:13+0000\n"
+"POT-Creation-Date: 2022-08-26 05:02+0000\n"
 "PO-Revision-Date: 2015-02-24 02:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Portuguese <trans-pt@lists.fedoraproject.org>\n"
@@ -1004,9 +1004,6 @@ msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
 
-msgid "'base' and 'baseNode' can't be used together"
-msgstr ""
-
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr ""
 
@@ -1058,9 +1055,6 @@ msgstr ""
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr ""
 
-msgid "'jack' audio backend is not supported with this QEMU"
-msgstr ""
-
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr ""
 
@@ -1109,9 +1103,6 @@ msgstr ""
 msgid "'nfs' host must use TCP protocol"
 msgstr ""
 
-msgid "'nfs' protocol is not supported with this QEMU binary"
-msgstr ""
-
 msgid "'nfs' protocol requires the usage of exactly one host"
 msgstr ""
 
@@ -1154,9 +1145,6 @@ msgid "'sibling_id %d' does not refer to a valid cell within NUMA 'cell id %d'"
 msgstr ""
 
 msgid "'socket' attribute is valid only for listen type 'socket'"
-msgstr ""
-
-msgid "'ssh' protocol is not yet supported"
 msgstr ""
 
 msgid "'target' refers to a non-existent NUMA node"
@@ -1391,15 +1379,16 @@ msgstr ""
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr ""
 
-msgid "64-bit PCI hole size setting is not supported with this QEMU binary"
-msgstr ""
-
 #, c-format
 msgid "<%s>"
 msgstr ""
 
 #, c-format
 msgid "<%s>..."
+msgstr ""
+
+#, c-format
+msgid "<active_pcr_banks/> requires TPM version '%s'"
 msgstr ""
 
 #, c-format
@@ -2046,6 +2035,23 @@ msgstr "Frequência do CPU:"
 #, fuzzy
 msgid "CPU map:"
 msgstr "Tempo de CPU:"
+
+#, c-format
+msgid ""
+"CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
+msgstr ""
+
+#, c-format
+msgid ""
+"CPU maximum physical address bits number specification cannot be used with "
+"mode='%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"CPU maximum physical address bits specification is not supported for '%s' "
+"architecture"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -9089,9 +9095,6 @@ msgstr ""
 msgid "Incorrect data type"
 msgstr ""
 
-msgid "Incorrect disk format"
-msgstr ""
-
 msgid "Incorrect number of cells in a table row"
 msgstr ""
 
@@ -10237,9 +10240,6 @@ msgstr ""
 msgid "Known, but different label format present, requires build --overwrite"
 msgstr ""
 
-msgid "LUKS encrypted QCOW2 images are not supported by this QEMU"
-msgstr ""
-
 msgid "LXC Guest Enter Namespace"
 msgstr ""
 
@@ -11152,6 +11152,10 @@ msgid "Missing or invalid 'vlan-table' array in query-rx-filter response"
 msgstr ""
 
 #, c-format
+msgid "Missing or invalid CPU address size in %s"
+msgstr ""
+
+#, c-format
 msgid "Missing or invalid CPU frequency in %s"
 msgstr ""
 
@@ -11326,6 +11330,10 @@ msgstr "falta a informação de origem do dispositivo"
 msgid "Missing source service attribute for char device"
 msgstr "falta a informação de origem do dispositivo"
 
+#, c-format
+msgid "Missing source switchid for interface type '%s'"
+msgstr ""
+
 msgid "Missing storage block path"
 msgstr ""
 
@@ -11445,9 +11453,6 @@ msgstr ""
 msgid "NBD URI must be supplied when migration URI uses UNIX transport method"
 msgstr ""
 
-msgid "NBD migration with TLS is not supported"
-msgstr ""
-
 msgid "NBD migration with TLS is not supported over UNIX socket"
 msgstr ""
 
@@ -11560,6 +11565,12 @@ msgid "NVMe disks are not supported with this QEMU binary"
 msgstr ""
 
 msgid "NVMe namespace can't be zero"
+msgstr ""
+
+msgid "NVRAM is not permitted when loader is stateless"
+msgstr ""
+
+msgid "NVRAM template is not permitted when loader is stateless"
 msgstr ""
 
 msgid "Name"
@@ -12361,6 +12372,9 @@ msgstr ""
 msgid "Only 1 thread per core is supported"
 msgstr ""
 
+msgid "Only EFI firmware permits NVRAM"
+msgstr ""
+
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr ""
 
@@ -12468,6 +12482,9 @@ msgid "Only one primary video device is supported"
 msgstr ""
 
 msgid "Only one vgpu device can have 'ramfb' enabled"
+msgstr ""
+
+msgid "Only pflash loader type permits NVRAM"
 msgstr ""
 
 msgid "Only ploop disk images are supported by vz driver."
@@ -13920,9 +13937,6 @@ msgid ""
 "\n"
 msgstr ""
 
-msgid "Selecting disks to migrate is not implemented for tunnelled migration"
-msgstr ""
-
 msgid "Send keycodes (integers or symbolic names) to the guest"
 msgstr ""
 
@@ -14669,6 +14683,10 @@ msgstr ""
 msgid "TPM device path %s is invalid"
 msgstr ""
 
+#, c-format
+msgid "TPM version '%s' is not supported"
+msgstr ""
+
 msgid "Table row cannot be empty"
 msgstr ""
 
@@ -14711,6 +14729,9 @@ msgstr ""
 
 #, c-format
 msgid "Target CPU feature policy %s does not match source %s"
+msgstr ""
+
+msgid "Target CPU maxphysaddr does not match source"
 msgstr ""
 
 #, c-format
@@ -15573,6 +15594,11 @@ msgid "The machine has no snapshot and it should have it"
 msgstr ""
 
 msgid "The minimum lease time should be greater than 2 minutes"
+msgstr ""
+
+msgid ""
+"The number of virtual CPU address bits cannot exceed the number supported by "
+"the host CPU"
 msgstr ""
 
 msgid ""
@@ -16706,6 +16732,10 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr ""
 
 #, c-format
+msgid "Unable to find address for mdev parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to find address for parent device '%s'"
 msgstr ""
 
@@ -17379,6 +17409,10 @@ msgid "Unable to parse cloud-hypervisor version: %s"
 msgstr ""
 
 #, c-format
+msgid "Unable to parse connectionid '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr ""
 
@@ -17411,6 +17445,10 @@ msgstr ""
 msgid "Unable to parse port id '%s'"
 msgstr "não foi possível processar o ficheiro de configuração %s"
 
+#, c-format
+msgid "Unable to parse portid '%s'"
+msgstr ""
+
 msgid "Unable to parse quota"
 msgstr ""
 
@@ -17427,6 +17465,10 @@ msgid "Unable to parse secret uuid '%s'"
 msgstr "não foi possível processar o ficheiro de configuração %s"
 
 msgid "Unable to parse string parameter"
+msgstr ""
+
+#, c-format
+msgid "Unable to parse switchid '%s'"
 msgstr ""
 
 msgid "Unable to parse the xml"
@@ -18316,10 +18358,6 @@ msgstr ""
 msgid "Unexpected network port type %s"
 msgstr "ponteiro de rede inválido em %s"
 
-#, fuzzy, c-format
-msgid "Unexpected network protocol '%s'"
-msgstr "Protocolo desconhecido '%s'"
-
 msgid "Unexpected output of cloud-hypervisor binary"
 msgstr ""
 
@@ -18441,14 +18479,6 @@ msgstr "Protocolo desconhecido '%s'"
 
 #, fuzzy, c-format
 msgid "Unknown SCSI subsystem protocol '%s'"
-msgstr "Protocolo desconhecido '%s'"
-
-#, fuzzy, c-format
-msgid "Unknown TPM backend type '%s'"
-msgstr "tipo de SO desconhecido %s"
-
-#, fuzzy, c-format
-msgid "Unknown TPM frontend model '%s'"
 msgstr "Protocolo desconhecido '%s'"
 
 #, fuzzy, c-format
@@ -18833,10 +18863,6 @@ msgid "Unsupported SMBIOS mode '%s'"
 msgstr ""
 
 #, c-format
-msgid "Unsupported TPM version '%s'"
-msgstr ""
-
-#, c-format
 msgid "Unsupported URI scheme '%s'"
 msgstr ""
 
@@ -18998,7 +19024,7 @@ msgid "Unsupported hostdev type %s"
 msgstr ""
 
 #, c-format
-msgid "Unsupported interface %s for TPM 1.2"
+msgid "Unsupported interface '%s' for TPM 1.2"
 msgstr ""
 
 msgid "Unsupported listen type"
@@ -19257,12 +19283,6 @@ msgstr ""
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr ""
 
-msgid "VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES is not supported by this VM"
-msgstr ""
-
-msgid "VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES is not supported by this QEMU"
-msgstr ""
-
 #, fuzzy
 msgid "VM is already active"
 msgstr "O domínio já está activo"
@@ -19409,9 +19429,6 @@ msgid "Volume path '%s' is a socket"
 msgstr ""
 
 msgid "VxHS protocol accepts only one host"
-msgstr ""
-
-msgid "VxHS protocol does not support URI syntax"
 msgstr ""
 
 msgid "VxHS protocol is not supported with this QEMU binary"
@@ -19671,9 +19688,6 @@ msgstr ""
 
 msgid "active"
 msgstr "activo"
-
-msgid "active commit not supported with this QEMU binary"
-msgstr ""
 
 #, c-format
 msgid "active commit requested but '%s' is not active"
@@ -20133,9 +20147,6 @@ msgstr ""
 msgid "backingStore is not supported with vhostuser disk"
 msgstr ""
 
-msgid "backingStore of mirror target is not supported by this qemu"
-msgstr ""
-
 msgid ""
 "backingStore of mirror without VIR_DOMAIN_BLOCK_COPY_SHALLOW doesn't make "
 "sense"
@@ -20145,9 +20156,6 @@ msgid "backup"
 msgstr ""
 
 msgid "backup TLS directory not configured"
-msgstr ""
-
-msgid "backup is not supported with this QEMU"
 msgstr ""
 
 msgid "backup job data missing"
@@ -23374,17 +23382,6 @@ msgstr ""
 msgid "delete the specified network port"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "deleting %s drive failed: %s"
-msgstr "a operação falhou: %s"
-
-msgid "deleting committed images is not supported by this VM"
-msgstr ""
-
-msgid ""
-"deleting drive is not supported.  This may leak data if disk is reassigned"
-msgstr ""
-
 #, c-format
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr ""
@@ -23453,9 +23450,6 @@ msgstr ""
 #, fuzzy
 msgid "detailed domain vcpu information"
 msgstr "informação do domínio"
-
-msgid "detect_zeroes is not supported by this QEMU binary"
-msgstr ""
 
 msgid "detect_zeroes is not supported with vhostuser disk"
 msgstr ""
@@ -23620,12 +23614,6 @@ msgid "disable cpus specified by cpumap"
 msgstr ""
 
 msgid "disabled"
-msgstr ""
-
-msgid "disabling audio mixing engine is not supported with this QEMU"
-msgstr ""
-
-msgid "discard is not supported by this QEMU binary"
 msgstr ""
 
 #, c-format
@@ -24246,9 +24234,6 @@ msgstr ""
 msgid "download volume contents to a file"
 msgstr ""
 
-msgid "drive hotplug is not supported"
-msgstr ""
-
 #, c-format
 msgid "driver does not support net model '%s'"
 msgstr ""
@@ -24272,9 +24257,6 @@ msgstr ""
 
 msgid "dump the core of a domain to a file for analysis"
 msgstr "colocar o núcleo de um domínio num ficheiro para análise"
-
-msgid "dump-guest-memory is not supported"
-msgstr ""
 
 #, c-format
 msgid "dumpformat '%d' is not supported"
@@ -24905,12 +24887,6 @@ msgstr ""
 msgid "external active snapshots are not supported on '%s' disks"
 msgstr ""
 
-#, c-format
-msgid ""
-"external active snapshots are not supported on 'network' disks using '%s' "
-"protocol"
-msgstr ""
-
 msgid "external active snapshots are not supported on scsi passthrough devices"
 msgstr ""
 
@@ -24937,10 +24913,6 @@ msgstr ""
 msgid ""
 "external snapshot file for disk %s already exists and is not a block device: "
 "%s"
-msgstr ""
-
-#, c-format
-msgid "external snapshot for readonly disk %s is not supported"
 msgstr ""
 
 #, c-format
@@ -27045,9 +27017,6 @@ msgstr ""
 msgid "hpet timer is not supported"
 msgstr ""
 
-msgid "http cookies are not supported by this QEMU binary"
-msgstr ""
-
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr ""
 
@@ -27118,6 +27087,11 @@ msgid "ids of vcpus to manipulate"
 msgstr ""
 
 msgid "if IOMMU is enabled by kernel"
+msgstr ""
+
+#, c-format
+msgid ""
+"if using CPU maximum physical address mode='%s', bits= must be specified too"
 msgstr ""
 
 #, c-format
@@ -28217,6 +28191,10 @@ msgstr ""
 
 #, c-format
 msgid "iommu model '%s' can't have address"
+msgstr ""
+
+#, c-format
+msgid "iommu model '%s' doesn't support additional attributes"
 msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
@@ -29380,9 +29358,6 @@ msgstr "a operação falhou: %s"
 msgid "message"
 msgstr ""
 
-msgid "metadata cache max size control is not supported with this QEMU binary"
-msgstr ""
-
 msgid "metadata cache max size control is supported only with qcow2 images"
 msgstr ""
 
@@ -29780,9 +29755,6 @@ msgstr ""
 msgid "missing TPM device backend"
 msgstr "falta a informação dos dispositivos"
 
-msgid "missing TPM device backend type"
-msgstr ""
-
 #, fuzzy
 msgid "missing Xen migration stream version"
 msgstr "falta a informação do sistema operativo"
@@ -29930,9 +29902,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "missing disk device alias name for %s"
 msgstr "falta a informação dos dispositivos em %s"
-
-msgid "missing disk source for 'sheepdog' protocol"
-msgstr ""
 
 msgid "missing domain in checkpoint"
 msgstr ""
@@ -30531,9 +30500,6 @@ msgstr ""
 msgid "model type"
 msgstr ""
 
-msgid "modern nvram specification is not supported by this qemu"
-msgstr ""
-
 msgid "modifies an existing IOThread of the guest domain"
 msgstr ""
 
@@ -30557,9 +30523,6 @@ msgid "monitor failure"
 msgstr ""
 
 msgid "monitor must not be NULL"
-msgstr ""
-
-msgid "monitor socket did not show up"
 msgstr ""
 
 #, c-format
@@ -30695,10 +30658,6 @@ msgstr "nome do domínio inactivo"
 
 msgid "namespace key is required when modifying metadata"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "nbd does not support transport '%s'"
-msgstr "o comando '%s' não suporta a opção --%s"
 
 msgid "nbd port must be in range 0-65535"
 msgstr ""
@@ -31637,9 +31596,6 @@ msgstr ""
 msgid "non unique alias detected: %s"
 msgstr ""
 
-msgid "non-file destination not supported yet"
-msgstr ""
-
 msgid "none"
 msgstr ""
 
@@ -31938,9 +31894,6 @@ msgstr ""
 msgid "only one TPM backend is supported"
 msgstr ""
 
-msgid "only one audio backend is supported with this QEMU binary"
-msgstr ""
-
 msgid "only one backup job is supported"
 msgstr ""
 
@@ -32021,9 +31974,6 @@ msgid "only virtiofs filesystems can be hotplugged"
 msgstr ""
 
 msgid "open an editor to modify the description"
-msgstr ""
-
-msgid "open disk image file failed"
 msgstr ""
 
 #, c-format
@@ -32797,9 +32747,6 @@ msgstr ""
 msgid "protocol '%s' accepts only one host"
 msgstr ""
 
-msgid "protocol 'sheepdog' accepts up to one host"
-msgstr ""
-
 msgid "protocol misses the family attribute"
 msgstr ""
 
@@ -32835,10 +32782,6 @@ msgid "qemu agent didn't return an array of interfaces"
 msgstr ""
 
 msgid "qemu agent didn't return an array of keys"
-msgstr ""
-
-#, c-format
-msgid "qemu block name '%s' doesn't match expected '%s'"
 msgstr ""
 
 #, c-format
@@ -33132,9 +33075,6 @@ msgid "read-only connection"
 msgstr "ligação apenas para leitura"
 
 msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
-msgstr ""
-
-msgid "readahead setting is not supported with this QEMU binary"
 msgstr ""
 
 msgid "readonly ide disks are not supported"
@@ -33920,18 +33860,6 @@ msgstr ""
 msgid "setting a launch secret is only supported in SEV-enabled domains"
 msgstr ""
 
-msgid "setting audio buffer count is not supported with this QEMU"
-msgstr ""
-
-msgid "setting audio buffer length is not supported with this QEMU"
-msgstr ""
-
-msgid "setting audio latency is not supported with this QEMU"
-msgstr ""
-
-msgid "setting audio stream name is not supported with this QEMU"
-msgstr ""
-
 #, c-format
 msgid "setting bandwidth on interfaces of type '%s' is not implemented yet"
 msgstr ""
@@ -34176,9 +34104,6 @@ msgstr ""
 msgid "sndbuf must be a positive integer"
 msgstr ""
 
-msgid "socket attribute required for unix transport"
-msgstr ""
-
 #, fuzzy
 msgid "socketpair failed"
 msgstr "a operação falhou"
@@ -34299,9 +34224,6 @@ msgid "ssh protocol accepts only one host"
 msgstr ""
 
 msgid "ssl verification is supported only with HTTPS/FTPS protocol"
-msgstr ""
-
-msgid "ssl verification setting is not supported by this QEMU binary"
 msgstr ""
 
 msgid "start"
@@ -34457,9 +34379,6 @@ msgstr ""
 
 #, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
-msgstr ""
-
-msgid "storage slice is not supported by this QEMU binary"
 msgstr ""
 
 #, c-format
@@ -34897,9 +34816,6 @@ msgstr ""
 msgid "there is no hub at port %u in USB address bus: %u port: %s"
 msgstr ""
 
-msgid "this QEMU binary doesn't support relative block pull/rebase"
-msgstr ""
-
 msgid "this QEMU binary lacks multiple smartcard support"
 msgstr ""
 
@@ -34951,12 +34867,6 @@ msgid "this platform is missing dlopen"
 msgstr ""
 
 msgid "this qemu does not support TLS transport for NBD"
-msgstr ""
-
-msgid "this qemu does not support setting device threshold"
-msgstr ""
-
-msgid "this qemu doesn't support relative block commit"
 msgstr ""
 
 msgid "this qemu doesn't support the memory-backend-file object"
@@ -35017,10 +34927,6 @@ msgstr ""
 msgid "threshold as a scaled number (by default bytes)"
 msgstr ""
 
-#, c-format
-msgid "threshold currently can't be set for block device '%s'"
-msgstr ""
-
 msgid "time to set"
 msgstr ""
 
@@ -35041,9 +34947,6 @@ msgid "timeout seconds."
 msgstr ""
 
 msgid "timeout seconds. must be positive."
-msgstr ""
-
-msgid "timeout setting is not supported with this QEMU binary"
 msgstr ""
 
 msgid "timeout, async and block options are exclusive"
@@ -35367,10 +35270,6 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "transient disk not supported by this QEMU binary (%s)"
-msgstr ""
-
-#, c-format
 msgid "transient disk supported only with 'disk' device (%s)"
 msgstr ""
 
@@ -35409,12 +35308,6 @@ msgid "transport rdma is not supported for <server>"
 msgstr ""
 
 msgid "tray is only valid for cdrom and floppy"
-msgstr ""
-
-msgid "tray status 'open' is invalid for block type disk"
-msgstr ""
-
-msgid "tray status 'open' is invalid for block type volume"
 msgstr ""
 
 msgid "treat event as a regex rather than literal filter"
@@ -35634,10 +35527,6 @@ msgid "unable to find any master var store for loader: %s"
 msgstr ""
 
 msgid "unable to find audio backend for sound device"
-msgstr ""
-
-#, c-format
-msgid "unable to find backing name for device %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -37997,9 +37886,6 @@ msgstr ""
 msgid "virtio-net teaming transient interface must be type='hostdev', not '%s'"
 msgstr ""
 
-msgid "virtio-net-pci 'tx' option not supported in this QEMU binary"
-msgstr ""
-
 msgid "virtio-pmem does not support NUMA nodes"
 msgstr ""
 
@@ -38430,6 +38316,26 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <texto>"
+
+#, fuzzy
+#~ msgid "Unexpected network protocol '%s'"
+#~ msgstr "Protocolo desconhecido '%s'"
+
+#, fuzzy
+#~ msgid "Unknown TPM backend type '%s'"
+#~ msgstr "tipo de SO desconhecido %s"
+
+#, fuzzy
+#~ msgid "Unknown TPM frontend model '%s'"
+#~ msgstr "Protocolo desconhecido '%s'"
+
+#, fuzzy
+#~ msgid "deleting %s drive failed: %s"
+#~ msgstr "a operação falhou: %s"
+
+#, fuzzy
+#~ msgid "nbd does not support transport '%s'"
+#~ msgstr "o comando '%s' não suporta a opção --%s"
 
 #, fuzzy
 #~ msgid "unknown disk type '%s'"
