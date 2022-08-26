@@ -8263,27 +8263,15 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
         return NULL;
     }
 
-    if ((rc = virXMLPropInt(node, "ports", 10, VIR_XML_PROP_NONE, &ports, -1)) < 0)
+    if (virXMLPropInt(node, "ports", 10, VIR_XML_PROP_NONNEGATIVE, &ports, -1) < 0)
         return NULL;
-    if ((rc == 1) && ports < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid ports: %i"), ports);
-        return NULL;
-    }
 
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL: {
-        if ((rc = virXMLPropInt(node, "vectors", 10, VIR_XML_PROP_NONE,
-                                &def->opts.vioserial.vectors,
-                                def->opts.vioserial.vectors)) < 0)
+        if (virXMLPropInt(node, "vectors", 10, VIR_XML_PROP_NONNEGATIVE,
+                          &def->opts.vioserial.vectors,
+                          def->opts.vioserial.vectors) < 0)
             return NULL;
-
-        if ((rc == 1) && def->opts.vioserial.vectors < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid vectors: %i"),
-                           def->opts.vioserial.vectors);
-            return NULL;
-        }
 
         def->opts.vioserial.ports = ports;
         break;
@@ -8345,29 +8333,15 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
 
         break;
     case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS: {
-        if ((rc = virXMLPropInt(node, "maxGrantFrames", 10, VIR_XML_PROP_NONE,
-                                &def->opts.xenbusopts.maxGrantFrames,
-                                def->opts.xenbusopts.maxGrantFrames)) < 0)
+        if (virXMLPropInt(node, "maxGrantFrames", 10, VIR_XML_PROP_NONNEGATIVE,
+                          &def->opts.xenbusopts.maxGrantFrames,
+                          def->opts.xenbusopts.maxGrantFrames) < 0)
             return NULL;
 
-        if ((rc == 1) && def->opts.xenbusopts.maxGrantFrames < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid maxGrantFrames: %i"),
-                           def->opts.xenbusopts.maxGrantFrames);
+        if (virXMLPropInt(node, "maxEventChannels", 10, VIR_XML_PROP_NONNEGATIVE,
+                          &def->opts.xenbusopts.maxEventChannels,
+                          def->opts.xenbusopts.maxEventChannels) < 0)
             return NULL;
-        }
-
-        if ((rc = virXMLPropInt(node, "maxEventChannels", 10, VIR_XML_PROP_NONE,
-                                &def->opts.xenbusopts.maxEventChannels,
-                                def->opts.xenbusopts.maxEventChannels)) < 0)
-            return NULL;
-
-        if ((rc == 1) && def->opts.xenbusopts.maxEventChannels < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid maxEventChannels: %i"),
-                           def->opts.xenbusopts.maxEventChannels);
-            return NULL;
-        }
         break;
     }
 
