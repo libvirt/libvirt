@@ -8132,7 +8132,6 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
     int ports;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int rc;
-    g_autofree char *idx = NULL;
     g_autofree char *model = NULL;
 
     ctxt->node = node;
@@ -8152,16 +8151,9 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
         }
     }
 
-    idx = virXMLPropString(node, "index");
-    if (idx) {
-        unsigned int idxVal;
-        if (virStrToLong_ui(idx, NULL, 10, &idxVal) < 0 || idxVal > INT_MAX) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot parse controller index %s"), idx);
-            return NULL;
-        }
-        def->idx = idxVal;
-    }
+    if (virXMLPropInt(node, "index", 10, VIR_XML_PROP_NONNEGATIVE,
+                      &def->idx, def->idx) < 0)
+        return NULL;
 
     if ((driver = virXPathNode("./driver", ctxt))) {
         if (virXMLPropUInt(driver, "queues", 10, VIR_XML_PROP_NONE,
