@@ -8205,22 +8205,22 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
 
     if (ntargetNodes == 1) {
         if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-            if (virXMLPropInt(targetNodes[0], "chassisNr", 0, VIR_XML_PROP_NONE,
+            if (virXMLPropInt(targetNodes[0], "chassisNr", 0, VIR_XML_PROP_NONNEGATIVE,
                               &def->opts.pciopts.chassisNr,
                               def->opts.pciopts.chassisNr) < 0)
                 return NULL;
 
-            if (virXMLPropInt(targetNodes[0], "chassis", 0, VIR_XML_PROP_NONE,
+            if (virXMLPropInt(targetNodes[0], "chassis", 0, VIR_XML_PROP_NONNEGATIVE,
                               &def->opts.pciopts.chassis,
                               def->opts.pciopts.chassis) < 0)
                 return NULL;
 
-            if (virXMLPropInt(targetNodes[0], "port", 0, VIR_XML_PROP_NONE,
+            if (virXMLPropInt(targetNodes[0], "port", 0, VIR_XML_PROP_NONNEGATIVE,
                               &def->opts.pciopts.port,
                               def->opts.pciopts.port) < 0)
                 return NULL;
 
-            if (virXMLPropInt(targetNodes[0], "busNr", 0, VIR_XML_PROP_NONE,
+            if (virXMLPropInt(targetNodes[0], "busNr", 0, VIR_XML_PROP_NONNEGATIVE,
                               &def->opts.pciopts.busNr,
                               def->opts.pciopts.busNr) < 0)
                 return NULL;
