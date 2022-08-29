@@ -314,9 +314,6 @@ struct _virQEMUDriver {
     /* Immutable pointer. lockless access */
     virLockManagerPlugin *lockManager;
 
-    /* Immutable pointer, self-clocking APIs */
-    virCloseCallbacks *closeCallbacks;
-
     /* Immutable pointer, self-locking APIs */
     virHashAtomic *migrationErrors;
 };

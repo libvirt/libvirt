@@ -168,15 +168,8 @@ int qemuProcessKill(virDomainObj *vm, unsigned int flags);
 
 void qemuProcessShutdownOrReboot(virDomainObj *vm);
 
-int qemuProcessAutoDestroyInit(virQEMUDriver *driver);
-void qemuProcessAutoDestroyShutdown(virQEMUDriver *driver);
-int qemuProcessAutoDestroyAdd(virQEMUDriver *driver,
-                              virDomainObj *vm,
-                              virConnectPtr conn);
-int qemuProcessAutoDestroyRemove(virQEMUDriver *driver,
-                                 virDomainObj *vm);
-bool qemuProcessAutoDestroyActive(virQEMUDriver *driver,
-                                  virDomainObj *vm);
+void qemuProcessAutoDestroy(virDomainObj *dom,
+                            virConnectPtr conn);
 
 int qemuProcessSetSchedParams(int id, pid_t pid, size_t nsp,
                               virDomainThreadSchedParam *sp);

@@ -7901,9 +7901,8 @@ qemuProcessLaunch(virConnectPtr conn,
         qemuProcessRefreshBalloonState(vm, asyncJob) < 0)
         goto cleanup;
 
-    if (flags & VIR_QEMU_PROCESS_START_AUTODESTROY &&
-        qemuProcessAutoDestroyAdd(driver, vm, conn) < 0)
-        goto cleanup;
+    if (flags & VIR_QEMU_PROCESS_START_AUTODESTROY)
+        virCloseCallbacksDomainAdd(vm, conn, qemuProcessAutoDestroy);
 
     if (!incoming && !snapshot) {
         VIR_DEBUG("Setting up transient disk");
@@ -8381,7 +8380,7 @@ void qemuProcessStop(virQEMUDriver *driver,
     virFileDeleteTree(priv->channelTargetDir);
 
     /* Stop autodestroy in case guest is restarted */
-    qemuProcessAutoDestroyRemove(driver, vm);
+    virCloseCallbacksDomainRemove(vm, NULL, qemuProcessAutoDestroy);
 
     /* now that we know it's stopped call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
@@ -8601,7 +8600,7 @@ void qemuProcessStop(virQEMUDriver *driver,
 }
 
 
-static void
+void
 qemuProcessAutoDestroy(virDomainObj *dom,
                        virConnectPtr conn)
 {
@@ -8639,32 +8638,6 @@ qemuProcessAutoDestroy(virDomainObj *dom,
     virDomainObjEndJob(dom);
 
     virObjectEventStateQueue(driver->domainEventState, event);
-}
-
-int qemuProcessAutoDestroyAdd(virQEMUDriver *driver,
-                              virDomainObj *vm,
-                              virConnectPtr conn)
-{
-    VIR_DEBUG("vm=%s, conn=%p", vm->def->name, conn);
-    return virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
-                                qemuProcessAutoDestroy);
-}
-
-int qemuProcessAutoDestroyRemove(virQEMUDriver *driver,
-                                 virDomainObj *vm)
-{
-    VIR_DEBUG("vm=%s", vm->def->name);
-    return virCloseCallbacksUnset(driver->closeCallbacks, vm,
-                                  qemuProcessAutoDestroy);
-}
-
-bool qemuProcessAutoDestroyActive(virQEMUDriver *driver,
-                                  virDomainObj *vm)
-{
-    virCloseCallback cb;
-    VIR_DEBUG("vm=%s", vm->def->name);
-    cb = virCloseCallbacksGet(driver->closeCallbacks, vm, NULL);
-    return cb == qemuProcessAutoDestroy;
 }
 
 

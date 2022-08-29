@@ -846,9 +846,6 @@ qemuStateInitialize(bool privileged,
                           0, S_IXGRP | S_IXOTH) < 0)
         goto error;
 
-    if (!(qemu_driver->closeCallbacks = virCloseCallbacksNew()))
-        goto error;
-
     /* Get all the running persistent or transient configs first */
     if (virDomainObjListLoadAllConfigs(qemu_driver->domains,
                                        cfg->stateDir,
@@ -1053,7 +1050,6 @@ qemuStateCleanup(void)
         return -1;
 
     virObjectUnref(qemu_driver->migrationErrors);
-    virObjectUnref(qemu_driver->closeCallbacks);
     virLockManagerPluginUnref(qemu_driver->lockManager);
     virSysinfoDefFree(qemu_driver->hostsysinfo);
     virPortAllocatorRangeFree(qemu_driver->migrationPorts);
@@ -1146,9 +1142,7 @@ static int qemuConnectClose(virConnectPtr conn)
 {
     virQEMUDriver *driver = conn->privateData;
 
-    /* Get rid of callbacks registered for this conn */
-    virCloseCallbacksRun(driver->closeCallbacks, conn, driver->domains);
-
+    virCloseCallbacksDomainRunForConn(driver->domains, conn);
     conn->privateData = NULL;
 
     return 0;

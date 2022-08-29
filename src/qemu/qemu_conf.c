@@ -1311,17 +1311,22 @@ virQEMUDriverCreateXMLConf(virQEMUDriver *driver,
                            const char *defsecmodel)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    virDomainXMLOption *ret = NULL;
 
     virQEMUDriverDomainDefParserConfig.priv = driver;
     virQEMUDriverDomainDefParserConfig.defSecModel = defsecmodel;
     virQEMUDriverDomainJobConfig.maxQueuedJobs = cfg->maxQueuedJobs;
 
-    return virDomainXMLOptionNew(&virQEMUDriverDomainDefParserConfig,
-                                 &virQEMUDriverPrivateDataCallbacks,
-                                 &virQEMUDriverDomainXMLNamespace,
-                                 &virQEMUDriverDomainABIStability,
-                                 &virQEMUDriverDomainSaveCookie,
-                                 &virQEMUDriverDomainJobConfig);
+    ret = virDomainXMLOptionNew(&virQEMUDriverDomainDefParserConfig,
+                                &virQEMUDriverPrivateDataCallbacks,
+                                &virQEMUDriverDomainXMLNamespace,
+                                &virQEMUDriverDomainABIStability,
+                                &virQEMUDriverDomainSaveCookie,
+                                &virQEMUDriverDomainJobConfig);
+
+    virDomainXMLOptionSetCloseCallbackAlloc(ret, virCloseCallbacksDomainAlloc);
+
+    return ret;
 }
 
 
