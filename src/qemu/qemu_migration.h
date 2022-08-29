@@ -226,8 +226,7 @@ qemuMigrationProcessUnattended(virQEMUDriver *driver,
                                qemuMonitorMigrationStatus status);
 
 bool
-qemuMigrationSrcIsAllowed(virQEMUDriver *driver,
-                          virDomainObj *vm,
+qemuMigrationSrcIsAllowed(virDomainObj *vm,
                           bool remote,
                           int asyncJob,
                           unsigned int flags);

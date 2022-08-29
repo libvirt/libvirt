@@ -1358,7 +1358,6 @@ qemuDomainGetMigrationBlockers(virDomainObj *vm,
 
 /**
  * qemuMigrationSrcIsAllowed:
- * @driver: qemu driver struct
  * @vm: domain object
  * @remote: migration is remote
  * @flags: migration flags (see struct virDomainMigrateFlags)
@@ -1371,8 +1370,7 @@ qemuDomainGetMigrationBlockers(virDomainObj *vm,
  * false otherwise.
  */
 bool
-qemuMigrationSrcIsAllowed(virQEMUDriver *driver G_GNUC_UNUSED,
-                          virDomainObj *vm,
+qemuMigrationSrcIsAllowed(virDomainObj *vm,
                           bool remote,
                           int asyncJob,
                           unsigned int flags)
@@ -2546,7 +2544,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
         qemuMigrationJobStartPhase(vm, QEMU_MIGRATION_PHASE_BEGIN3) < 0)
         return NULL;
 
-    if (!qemuMigrationSrcIsAllowed(driver, vm, true, vm->job->asyncJob, flags))
+    if (!qemuMigrationSrcIsAllowed(vm, true, vm->job->asyncJob, flags))
         return NULL;
 
     if (!(flags & (VIR_MIGRATE_UNSAFE | VIR_MIGRATE_OFFLINE)) &&
@@ -6034,7 +6032,7 @@ qemuMigrationSrcPerformJob(virQEMUDriver *driver,
         if (!(flags & VIR_MIGRATE_OFFLINE) && virDomainObjCheckActive(vm) < 0)
             goto endjob;
 
-        if (!qemuMigrationSrcIsAllowed(driver, vm, true, VIR_ASYNC_JOB_MIGRATION_OUT, flags))
+        if (!qemuMigrationSrcIsAllowed(vm, true, VIR_ASYNC_JOB_MIGRATION_OUT, flags))
             goto endjob;
 
         if (!(flags & (VIR_MIGRATE_UNSAFE | VIR_MIGRATE_OFFLINE)) &&

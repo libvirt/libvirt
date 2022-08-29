@@ -2624,7 +2624,7 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
                                   VIR_DOMAIN_JOB_OPERATION_SAVE, flags) < 0)
         goto cleanup;
 
-    if (!qemuMigrationSrcIsAllowed(driver, vm, false, VIR_ASYNC_JOB_SAVE, 0))
+    if (!qemuMigrationSrcIsAllowed(vm, false, VIR_ASYNC_JOB_SAVE, 0))
         goto endjob;
 
     if (!virDomainObjIsActive(vm)) {
@@ -3129,7 +3129,7 @@ doCoreDump(virQEMUDriver *driver,
             goto cleanup;
         }
 
-        if (!qemuMigrationSrcIsAllowed(driver, vm, false, VIR_ASYNC_JOB_DUMP, 0))
+        if (!qemuMigrationSrcIsAllowed(vm, false, VIR_ASYNC_JOB_DUMP, 0))
             goto cleanup;
 
         if (qemuMigrationSrcToFile(driver, vm, fd, compressor,
