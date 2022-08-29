@@ -2733,7 +2733,6 @@ qemuMigrationSrcBeginResume(virDomainObj *vm,
 
 static char *
 qemuMigrationSrcBeginResumePhase(virConnectPtr conn,
-                                 virQEMUDriver *driver G_GNUC_UNUSED,
                                  virDomainObj *vm,
                                  const char *xmlin,
                                  char **cookieout,
@@ -2792,7 +2791,7 @@ qemuMigrationSrcBegin(virConnectPtr conn,
     }
 
     if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
-        ret = qemuMigrationSrcBeginResumePhase(conn, driver, vm, xmlin,
+        ret = qemuMigrationSrcBeginResumePhase(conn, vm, xmlin,
                                                cookieout, cookieoutlen, flags);
         goto cleanup;
     }
