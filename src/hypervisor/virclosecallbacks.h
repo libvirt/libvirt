@@ -22,35 +22,8 @@
 
 #include "conf/virdomainobjlist.h"
 
-typedef struct _virCloseCallbacks virCloseCallbacks;
-
 typedef void (*virCloseCallback)(virDomainObj *vm,
                                  virConnectPtr conn);
-
-virCloseCallbacks *
-virCloseCallbacksNew(void);
-
-int
-virCloseCallbacksSet(virCloseCallbacks *closeCallbacks,
-                     virDomainObj *vm,
-                     virConnectPtr conn,
-                     virCloseCallback cb);
-int
-virCloseCallbacksUnset(virCloseCallbacks *closeCallbacks,
-                       virDomainObj *vm,
-                       virCloseCallback cb);
-
-virCloseCallback
-virCloseCallbacksGet(virCloseCallbacks *closeCallbacks,
-                     virDomainObj *vm,
-                     virConnectPtr conn);
-
-void
-virCloseCallbacksRun(virCloseCallbacks *closeCallbacks,
-                     virConnectPtr conn,
-                     virDomainObjList *domains);
-
-/* ---- */
 
 virObject *
 virCloseCallbacksDomainAlloc(void);

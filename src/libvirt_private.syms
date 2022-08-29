@@ -1612,11 +1612,6 @@ virCloseCallbacksDomainAlloc;
 virCloseCallbacksDomainIsRegistered;
 virCloseCallbacksDomainRemove;
 virCloseCallbacksDomainRunForConn;
-virCloseCallbacksGet;
-virCloseCallbacksNew;
-virCloseCallbacksRun;
-virCloseCallbacksSet;
-virCloseCallbacksUnset;
 
 
 # hypervisor/virhostdev.h

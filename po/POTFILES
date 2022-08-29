@@ -91,7 +91,6 @@ src/hyperv/hyperv_util.c
 src/hyperv/hyperv_wmi.c
 src/hypervisor/domain_cgroup.c
 src/hypervisor/domain_driver.c
-src/hypervisor/virclosecallbacks.c
 src/hypervisor/virhostdev.c
 src/interface/interface_backend_netcf.c
 src/interface/interface_backend_udev.c
