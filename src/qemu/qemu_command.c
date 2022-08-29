@@ -1295,12 +1295,16 @@ qemuBuildChardevStr(const virDomainChrSourceDef *dev,
         virBufferAsprintf(&buf, "pty,id=%s", charAlias);
         break;
 
-    case VIR_DOMAIN_CHR_TYPE_DEV:
-        virBufferAsprintf(&buf, "%s,id=%s,path=",
-                          STRPREFIX(charAlias, "charparallel") ? "parport" : "tty",
-                          charAlias);
+    case VIR_DOMAIN_CHR_TYPE_DEV: {
+        const char *backend = "serial";
+
+        if (STRPREFIX(charAlias, "charparallel"))
+            backend = "parallel";
+
+        virBufferAsprintf(&buf, "%s,id=%s,path=", backend, charAlias);
         virQEMUBuildBufferEscapeComma(&buf, dev->data.file.path);
         break;
+    }
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
         virBufferAsprintf(&buf, "file,id=%s", charAlias);

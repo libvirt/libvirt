@@ -33,7 +33,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-foo=1,bar=2/.config \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-1-storage"}' \
 -device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-format","id":"ide0-0-0","bootindex":1,"write-cache":"on"}' \
 -device '{"driver":"ccid-card-emulated","backend":"certificates","cert1":"cert1,foo","cert2":"cert2","cert3":"cert3","db":"/etc/pki/nssdb,foo","id":"smartcard0","bus":"ccid0.0"}' \
--chardev tty,id=charserial0,path=/dev/ttyS2,,foo \
+-chardev serial,id=charserial0,path=/dev/ttyS2,,foo \
 -device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0","index":1}' \
 -add-fd set=0,fd=1750,opaque=serial1-source \
 -chardev file,id=charserial1,path=/dev/fdset/0,append=on \
