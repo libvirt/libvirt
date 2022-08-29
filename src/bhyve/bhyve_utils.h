@@ -59,8 +59,6 @@ struct _bhyveConn {
 
     virObjectEventState *domainEventState;
 
-    virCloseCallbacks *closeCallbacks;
-
     virPortAllocatorRange *remotePorts;
 
     unsigned bhyvecaps;

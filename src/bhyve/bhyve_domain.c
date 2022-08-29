@@ -217,11 +217,18 @@ bhyveDomainDefAssignAddresses(virDomainDef *def,
 virDomainXMLOption *
 virBhyveDriverCreateXMLConf(struct _bhyveConn *driver)
 {
+    virDomainXMLOption *ret = NULL;
+
     virBhyveDriverDomainDefParserConfig.priv = driver;
-    return virDomainXMLOptionNew(&virBhyveDriverDomainDefParserConfig,
-                                 &virBhyveDriverPrivateDataCallbacks,
-                                 &virBhyveDriverDomainXMLNamespace,
-                                 NULL, NULL, NULL);
+
+    ret = virDomainXMLOptionNew(&virBhyveDriverDomainDefParserConfig,
+                                &virBhyveDriverPrivateDataCallbacks,
+                                &virBhyveDriverDomainXMLNamespace,
+                                NULL, NULL, NULL);
+
+    virDomainXMLOptionSetCloseCallbackAlloc(ret, virCloseCallbacksDomainAlloc);
+
+    return ret;
 }
 
 

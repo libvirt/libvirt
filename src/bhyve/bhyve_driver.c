@@ -207,7 +207,7 @@ bhyveConnectClose(virConnectPtr conn)
 {
     struct _bhyveConn *privconn = conn->privateData;
 
-    virCloseCallbacksRun(privconn->closeCallbacks, conn, privconn->domains);
+    virCloseCallbacksDomainRunForConn(privconn->domains, conn);
     conn->privateData = NULL;
 
     return 0;
@@ -1161,7 +1161,6 @@ bhyveStateCleanup(void)
     virObjectUnref(bhyve_driver->caps);
     virObjectUnref(bhyve_driver->xmlopt);
     virSysinfoDefFree(bhyve_driver->hostsysinfo);
-    virObjectUnref(bhyve_driver->closeCallbacks);
     virObjectUnref(bhyve_driver->domainEventState);
     virObjectUnref(bhyve_driver->config);
     virPortAllocatorRangeFree(bhyve_driver->remotePorts);
@@ -1202,9 +1201,6 @@ bhyveStateInitialize(bool privileged,
         VIR_FREE(bhyve_driver);
         return VIR_DRV_STATE_INIT_ERROR;
     }
-
-    if (!(bhyve_driver->closeCallbacks = virCloseCallbacksNew()))
-        goto cleanup;
 
     if (!(bhyve_driver->caps = virBhyveCapsBuild()))
         goto cleanup;

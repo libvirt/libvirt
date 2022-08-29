@@ -268,10 +268,8 @@ virBhyveProcessStart(virConnectPtr conn,
     if (bhyveProcessStartHook(vm, VIR_HOOK_BHYVE_OP_PREPARE) < 0)
         return -1;
 
-    if (flags & VIR_BHYVE_PROCESS_START_AUTODESTROY &&
-        virCloseCallbacksSet(driver->closeCallbacks, vm,
-                             conn, bhyveProcessAutoDestroy) < 0)
-        return -1;
+    if (flags & VIR_BHYVE_PROCESS_START_AUTODESTROY)
+        virCloseCallbacksDomainAdd(vm, conn, bhyveProcessAutoDestroy);
 
     if (bhyveProcessPrepareDomain(driver, vm, flags) < 0)
         return -1;
@@ -325,8 +323,7 @@ virBhyveProcessStop(struct _bhyveConn *driver,
 
     ret = 0;
 
-    virCloseCallbacksUnset(driver->closeCallbacks, vm,
-                           bhyveProcessAutoDestroy);
+    virCloseCallbacksDomainRemove(vm, NULL, bhyveProcessAutoDestroy);
 
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     vm->pid = 0;
