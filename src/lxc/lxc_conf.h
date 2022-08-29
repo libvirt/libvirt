@@ -93,9 +93,6 @@ struct _virLXCDriver {
 
     /* Immutable pointer. self-locking APIs */
     virSecurityManager *securityManager;
-
-    /* Immutable pointer, self-locking APIs */
-    virCloseCallbacks *closeCallbacks;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virLXCDriverConfig, virObjectUnref);

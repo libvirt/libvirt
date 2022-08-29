@@ -161,7 +161,8 @@ static int lxcConnectClose(virConnectPtr conn)
 {
     virLXCDriver *driver = conn->privateData;
 
-    virCloseCallbacksRun(driver->closeCallbacks, conn, driver->domains);
+    virCloseCallbacksDomainRunForConn(driver->domains, conn);
+
     conn->privateData = NULL;
     return 0;
 }
@@ -1496,9 +1497,6 @@ static int lxcStateInitialize(bool privileged,
     if (!(lxc_driver->xmlopt = lxcDomainXMLConfInit(lxc_driver, defsecmodel)))
         goto cleanup;
 
-    if (!(lxc_driver->closeCallbacks = virCloseCallbacksNew()))
-        goto cleanup;
-
     if (g_mkdir_with_parents(cfg->stateDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("Failed to mkdir %s"),
@@ -1585,8 +1583,6 @@ static int lxcStateCleanup(void)
 
     virObjectUnref(lxc_driver->domains);
     virObjectUnref(lxc_driver->domainEventState);
-
-    virObjectUnref(lxc_driver->closeCallbacks);
 
     virSysinfoDefFree(lxc_driver->hostsysinfo);
 

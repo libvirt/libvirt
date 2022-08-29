@@ -184,12 +184,19 @@ virCaps *virLXCDriverGetCapabilities(virLXCDriver *driver,
 virDomainXMLOption *
 lxcDomainXMLConfInit(virLXCDriver *driver, const char *defsecmodel)
 {
+    virDomainXMLOption *ret = NULL;
+
     virLXCDriverDomainDefParserConfig.priv = driver;
     virLXCDriverDomainDefParserConfig.defSecModel = defsecmodel;
-    return virDomainXMLOptionNew(&virLXCDriverDomainDefParserConfig,
-                                 &virLXCDriverPrivateDataCallbacks,
-                                 &virLXCDriverDomainXMLNamespace,
-                                 NULL, NULL, NULL);
+
+    ret = virDomainXMLOptionNew(&virLXCDriverDomainDefParserConfig,
+                                &virLXCDriverPrivateDataCallbacks,
+                                &virLXCDriverDomainXMLNamespace,
+                                NULL, NULL, NULL);
+
+    virDomainXMLOptionSetCloseCallbackAlloc(ret, virCloseCallbacksDomainAlloc);
+
+    return ret;
 }
 
 

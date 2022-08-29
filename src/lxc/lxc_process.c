@@ -188,7 +188,7 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
 
     /* Stop autodestroy in case guest is restarted */
     if (flags & VIR_LXC_PROCESS_CLEANUP_AUTODESTROY) {
-        virCloseCallbacksUnset(driver->closeCallbacks, vm, lxcProcessAutoDestroy);
+        virCloseCallbacksDomainRemove(vm, NULL, lxcProcessAutoDestroy);
     }
 
     if (priv->monitor) {
@@ -1504,10 +1504,8 @@ int virLXCProcessStart(virLXCDriver * driver,
         goto cleanup;
     }
 
-    if (autoDestroyConn &&
-        virCloseCallbacksSet(driver->closeCallbacks, vm,
-                             autoDestroyConn, lxcProcessAutoDestroy) < 0)
-        goto cleanup;
+    if (autoDestroyConn)
+        virCloseCallbacksDomainAdd(vm, autoDestroyConn, lxcProcessAutoDestroy);
 
     /* We don't need the temporary NIC names anymore, clear them */
     virLXCProcessCleanInterfaces(vm->def);
