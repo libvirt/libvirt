@@ -15,6 +15,11 @@ v8.7.0 (unreleased)
 
 * **Removed features**
 
+  * qemu: Remove support for QEMU < 4.2
+
+    In accordance with our platform support policy, the oldest supported QEMU
+    version is now bumped from 3.1 to 4.2.
+
 * **New features**
 
   * qemu: Add support for specifying vCPU physical address size in bits
