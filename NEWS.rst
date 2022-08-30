@@ -25,7 +25,7 @@ v8.7.0 (unreleased)
   * qemu: Add support for specifying vCPU physical address size in bits
 
     Users can now specify the number of vCPU physical address bits with
-    the `<maxphysaddr>` subelment of the `<cpu>` element.
+    the `<maxphysaddr>` subelement of the `<cpu>` element.
 
 * **Improvements**
 
