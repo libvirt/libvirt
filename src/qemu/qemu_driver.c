@@ -12810,17 +12810,10 @@ qemuDomainGetJobStats(virDomainPtr dom,
 static int
 qemuDomainAbortJobMigration(virDomainObj *vm)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
-    int ret;
-
     VIR_DEBUG("Cancelling migration job at client request");
 
     qemuDomainObjAbortAsyncJob(vm);
-    qemuDomainObjEnterMonitor(vm);
-    ret = qemuMonitorMigrateCancel(priv->mon);
-    qemuDomainObjExitMonitor(vm);
-
-    return ret;
+    return qemuMigrationSrcCancel(vm, VIR_ASYNC_JOB_NONE);
 }
 
 

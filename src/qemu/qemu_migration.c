@@ -4611,6 +4611,32 @@ qemuMigrationSrcStart(virDomainObj *vm,
 }
 
 
+/**
+ * Requests outgoing migration to be canceled.
+ *
+ * The thread (the caller itself in most cases) which is watching the migration
+ * will do all the cleanup once migration is canceled. If no thread is watching
+ * the migration, use qemuMigrationSrcCancelUnattended instead.
+ */
+int
+qemuMigrationSrcCancel(virDomainObj *vm,
+                       virDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    int rc;
+
+    VIR_DEBUG("Cancelling outgoing migration of domain %s", vm->def->name);
+
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
+        return -1;
+
+    rc = qemuMonitorMigrateCancel(priv->mon);
+    qemuDomainObjExitMonitor(vm);
+
+    return rc;
+}
+
+
 static int
 qemuMigrationSrcRun(virQEMUDriver *driver,
                     virDomainObj *vm,
@@ -4952,11 +4978,8 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
         }
 
         if (cancel &&
-            priv->job.current->status != VIR_DOMAIN_JOB_STATUS_HYPERVISOR_COMPLETED &&
-            qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_MIGRATION_OUT) == 0) {
-            qemuMonitorMigrateCancel(priv->mon);
-            qemuDomainObjExitMonitor(vm);
-        }
+            priv->job.current->status != VIR_DOMAIN_JOB_STATUS_HYPERVISOR_COMPLETED)
+            qemuMigrationSrcCancel(vm, VIR_ASYNC_JOB_MIGRATION_OUT);
 
         /* cancel any outstanding NBD jobs */
         if (mig && mig->nbd)
@@ -6900,11 +6923,8 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
         if (rc == -2) {
             virErrorPreserveLast(&orig_err);
             virCommandAbort(compressor);
-            if (virDomainObjIsActive(vm) &&
-                qemuDomainObjEnterMonitorAsync(vm, asyncJob) == 0) {
-                qemuMonitorMigrateCancel(priv->mon);
-                qemuDomainObjExitMonitor(vm);
-            }
+            if (virDomainObjIsActive(vm))
+                qemuMigrationSrcCancel(vm, asyncJob);
         }
         goto cleanup;
     }
@@ -6949,16 +6969,13 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
 int
 qemuMigrationSrcCancelUnattended(virDomainObj *vm)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     bool storage = false;
     size_t i;
 
     VIR_DEBUG("Canceling unfinished outgoing migration of domain %s",
               vm->def->name);
 
-    qemuDomainObjEnterMonitor(vm);
-    ignore_value(qemuMonitorMigrateCancel(priv->mon));
-    qemuDomainObjExitMonitor(vm);
+    qemuMigrationSrcCancel(vm, VIR_ASYNC_JOB_NONE);
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *disk = vm->def->disks[i];

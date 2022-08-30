@@ -244,6 +244,10 @@ int
 qemuMigrationSrcCancelUnattended(virDomainObj *vm);
 
 int
+qemuMigrationSrcCancel(virDomainObj *vm,
+                       virDomainAsyncJob asyncJob);
+
+int
 qemuMigrationAnyFetchStats(virDomainObj *vm,
                            virDomainAsyncJob asyncJob,
                            virDomainJobData *jobData,
