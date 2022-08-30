@@ -3537,7 +3537,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
          */
         VIR_DEBUG("Cancelling unfinished migration of domain %s",
                   vm->def->name);
-        if (qemuMigrationSrcCancel(vm) < 0) {
+        if (qemuMigrationSrcCancelUnattended(vm) < 0) {
             VIR_WARN("Could not cancel ongoing migration of domain %s",
                      vm->def->name);
         }

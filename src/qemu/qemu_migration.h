@@ -241,7 +241,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 int
-qemuMigrationSrcCancel(virDomainObj *vm);
+qemuMigrationSrcCancelUnattended(virDomainObj *vm);
 
 int
 qemuMigrationAnyFetchStats(virDomainObj *vm,

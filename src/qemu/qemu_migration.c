@@ -6942,8 +6942,12 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
 }
 
 
+/**
+ * This function is supposed to be used only when no other thread is watching
+ * the migration.
+ */
 int
-qemuMigrationSrcCancel(virDomainObj *vm)
+qemuMigrationSrcCancelUnattended(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     bool storage = false;
