@@ -9336,6 +9336,27 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
             goto error;
         }
 
+        if (!portid) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Missing source portid for interface type '%s'"),
+                           virDomainNetTypeToString(def->type));
+            goto error;
+        }
+
+        if (!connectionid) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Missing source connectionid for interface type '%s'"),
+                           virDomainNetTypeToString(def->type));
+            goto error;
+        }
+
+        if (!portgroup) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Missing source portgroup for interface type '%s'"),
+                           virDomainNetTypeToString(def->type));
+            goto error;
+        }
+
         if (virUUIDParse(switchid, def->data.vds.switch_id) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to parse switchid '%s'"), switchid);
