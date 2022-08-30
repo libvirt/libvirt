@@ -1,9 +1,50 @@
 <capabilities>
 
   <host>
+    <uuid>a25c794c-34ad-11b2-a85c-b030533115b8</uuid>
     <cpu>
       <arch>x86_64</arch>
+      <model>Haswell-noTSX</model>
+      <vendor>Intel</vendor>
+      <microcode version='45'/>
+      <counter name='tsc' frequency='2596991000' scaling='no'/>
+      <topology sockets='1' dies='1' cores='8' threads='1'/>
+      <maxphysaddr mode='emulate' bits='39'/>
+      <feature name='vme'/>
+      <feature name='ds'/>
+      <feature name='acpi'/>
+      <feature name='ss'/>
+      <feature name='ht'/>
+      <feature name='tm'/>
+      <feature name='pbe'/>
+      <feature name='dtes64'/>
+      <feature name='ds_cpl'/>
+      <feature name='vmx'/>
+      <feature name='smx'/>
+      <feature name='est'/>
+      <feature name='tm2'/>
+      <feature name='xtpr'/>
+      <feature name='pdcm'/>
+      <feature name='dca'/>
+      <feature name='osxsave'/>
+      <feature name='f16c'/>
+      <feature name='rdrand'/>
+      <feature name='arat'/>
+      <feature name='tsc_adjust'/>
+      <feature name='cmt'/>
+      <feature name='xsaveopt'/>
+      <feature name='pdpe1gb'/>
+      <feature name='abm'/>
+      <feature name='invtsc'/>
+      <pages unit='KiB' size='4'/>
+      <pages unit='KiB' size='2048'/>
+      <pages unit='KiB' size='1048576'/>
     </cpu>
+    <power_management>
+      <suspend_mem/>
+      <suspend_disk/>
+      <suspend_hybrid/>
+    </power_management>
     <migration_features>
       <live/>
       <uri_transports>
@@ -12,22 +53,64 @@
       </uri_transports>
     </migration_features>
     <topology>
-      <cells num='1'>
+      <cells num='2'>
         <cell id='0'>
-          <cpus num='4'>
-            <cpu id='0'/>
-            <cpu id='1'/>
-            <cpu id='2'/>
-            <cpu id='3'/>
+          <memory unit='KiB'>16175540</memory>
+          <pages unit='KiB' size='4'>4043885</pages>
+          <pages unit='KiB' size='2048'>0</pages>
+          <pages unit='KiB' size='1048576'>0</pages>
+          <distances>
+            <sibling id='0' value='10'/>
+            <sibling id='1' value='21'/>
+          </distances>
+          <cpus num='8'>
+            <cpu id='0' socket_id='0' die_id='0' core_id='0' siblings='0'/>
+            <cpu id='2' socket_id='0' die_id='0' core_id='1' siblings='2'/>
+            <cpu id='4' socket_id='0' die_id='0' core_id='2' siblings='4'/>
+            <cpu id='6' socket_id='0' die_id='0' core_id='3' siblings='6'/>
+            <cpu id='8' socket_id='0' die_id='0' core_id='4' siblings='8'/>
+            <cpu id='10' socket_id='0' die_id='0' core_id='5' siblings='10'/>
+            <cpu id='12' socket_id='0' die_id='0' core_id='6' siblings='12'/>
+            <cpu id='14' socket_id='0' die_id='0' core_id='7' siblings='14'/>
+          </cpus>
+        </cell>
+        <cell id='1'>
+          <memory unit='KiB'>16510060</memory>
+          <pages unit='KiB' size='4'>4127515</pages>
+          <pages unit='KiB' size='2048'>0</pages>
+          <pages unit='KiB' size='1048576'>0</pages>
+          <distances>
+            <sibling id='0' value='21'/>
+            <sibling id='1' value='10'/>
+          </distances>
+          <cpus num='8'>
+            <cpu id='1' socket_id='1' die_id='0' core_id='0' siblings='1'/>
+            <cpu id='3' socket_id='1' die_id='0' core_id='1' siblings='3'/>
+            <cpu id='5' socket_id='1' die_id='0' core_id='2' siblings='5'/>
+            <cpu id='7' socket_id='1' die_id='0' core_id='3' siblings='7'/>
+            <cpu id='9' socket_id='1' die_id='0' core_id='4' siblings='9'/>
+            <cpu id='11' socket_id='1' die_id='0' core_id='5' siblings='11'/>
+            <cpu id='13' socket_id='1' die_id='0' core_id='6' siblings='13'/>
+            <cpu id='15' socket_id='1' die_id='0' core_id='7' siblings='15'/>
           </cpus>
         </cell>
       </cells>
     </topology>
+    <cache>
+      <bank id='0' level='3' type='both' size='20' unit='MiB' cpus='0,2,4,6,8,10,12,14'/>
+      <bank id='1' level='3' type='both' size='20' unit='MiB' cpus='1,3,5,7,9,11,13,15'/>
+    </cache>
     <secmodel>
       <model>selinux</model>
       <doi>0</doi>
       <baselabel type='kvm'>system_u:system_r:svirt_t:s0</baselabel>
       <baselabel type='qemu'>system_u:system_r:svirt_tcg_t:s0</baselabel>
+    </secmodel>
+    <secmodel>
+      <model>dac</model>
+      <doi>0</doi>
+      <baselabel type='kvm'>+107:+107</baselabel>
+      <baselabel type='qemu'>+107:+107</baselabel>
     </secmodel>
   </host>
 
