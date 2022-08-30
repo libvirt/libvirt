@@ -6333,6 +6333,21 @@ virQEMUCapsFillDomainDeviceTPMCaps(virQEMUCaps *qemuCaps,
 }
 
 
+void
+virQEMUCapsFillDomainDeviceRedirdevCaps(virQEMUCaps *qemuCaps,
+                                        virDomainCapsDeviceRedirdev *redirdev)
+{
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR)) {
+        redirdev->supported = VIR_TRISTATE_BOOL_YES;
+        redirdev->bus.report = true;
+        VIR_DOMAIN_CAPS_ENUM_SET(redirdev->bus, VIR_DOMAIN_REDIRDEV_BUS_USB);
+    } else {
+        redirdev->supported = VIR_TRISTATE_BOOL_NO;
+    }
+}
+
+
+
 /**
  * virQEMUCapsSupportsGICVersion:
  * @qemuCaps: QEMU capabilities
@@ -6468,6 +6483,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virDomainCapsDeviceRNG *rng = &domCaps->rng;
     virDomainCapsDeviceFilesystem *filesystem = &domCaps->filesystem;
     virDomainCapsDeviceTPM *tpm = &domCaps->tpm;
+    virDomainCapsDeviceRedirdev *redirdev = &domCaps->redirdev;
     virDomainCapsMemoryBacking *memoryBacking = &domCaps->memoryBacking;
 
     virQEMUCapsFillDomainFeaturesFromQEMUCaps(qemuCaps, domCaps);
@@ -6500,6 +6516,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virQEMUCapsFillDomainDeviceRNGCaps(qemuCaps, rng);
     virQEMUCapsFillDomainDeviceFSCaps(qemuCaps, filesystem);
     virQEMUCapsFillDomainDeviceTPMCaps(qemuCaps, tpm);
+    virQEMUCapsFillDomainDeviceRedirdevCaps(qemuCaps, redirdev);
     virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureSEVCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureS390PVCaps(qemuCaps, domCaps);

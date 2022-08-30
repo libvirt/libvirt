@@ -240,6 +240,11 @@
       </enum>
     </filesystem>
     <tpm supported='no'/>
+    <redirdev supported='yes'>
+      <enum name='bus'>
+        <value>usb</value>
+      </enum>
+    </redirdev>
   </devices>
   <features>
     <gic supported='no'/>

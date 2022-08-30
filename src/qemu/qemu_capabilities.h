@@ -830,6 +830,9 @@ void virQEMUCapsFillDomainDeviceFSCaps(virQEMUCaps *qemuCaps,
 void virQEMUCapsFillDomainDeviceTPMCaps(virQEMUCaps *qemuCaps,
                                         virDomainCapsDeviceTPM *tpm);
 
+void virQEMUCapsFillDomainDeviceRedirdevCaps(virQEMUCaps *qemuCaps,
+                                             virDomainCapsDeviceRedirdev *redirdev);
+
 bool virQEMUCapsGuestIsNative(virArch host,
                               virArch guest);
 

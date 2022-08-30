@@ -198,6 +198,9 @@
       <optional>
         <ref name="tpm"/>
       </optional>
+      <optional>
+        <ref name="redirdev"/>
+      </optional>
     </element>
   </define>
 
@@ -245,6 +248,13 @@
 
   <define name="tpm">
     <element name="tpm">
+      <ref name="supported"/>
+      <ref name="enum"/>
+    </element>
+  </define>
+
+  <define name="redirdev">
+    <element name="redirdev">
       <ref name="supported"/>
       <ref name="enum"/>
     </element>

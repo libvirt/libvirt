@@ -165,6 +165,7 @@
       </enum>
     </filesystem>
     <tpm supported='no'/>
+    <redirdev supported='no'/>
   </devices>
   <features>
     <gic supported='yes'>

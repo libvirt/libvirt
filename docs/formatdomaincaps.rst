@@ -543,6 +543,28 @@ TPM device capabilities are exposed under the ``tpm`` element. For instance:
 ``backendVersion``
    Options for the ``version`` attribute of the ``<tpm><backend/>`` element.
 
+USB redirect device
+^^^^^^^^^^^^^^^^^^^
+
+USB redirdev device capabilities are exposed under the ``redirdev`` element. For instance:
+
+::
+
+  <domainCapabilities>
+    ...
+    <devices>
+      <redirdev supported='yes'>
+        <enum name='bus'>
+          <value>usb</value>
+        </enum>
+      </redirdev>
+      ...
+    </devices>
+  </domainCapabilities>
+
+``bus``
+   Options for the ``bus`` attribute of the ``<redirdev/>`` element.
+
 Features
 ~~~~~~~~
 

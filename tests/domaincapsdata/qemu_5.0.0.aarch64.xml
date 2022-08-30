@@ -175,6 +175,7 @@
         <value>1.2</value>
       </enum>
     </tpm>
+    <redirdev supported='no'/>
   </devices>
   <features>
     <gic supported='no'/>

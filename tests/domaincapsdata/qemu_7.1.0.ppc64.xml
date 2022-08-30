@@ -135,6 +135,11 @@
         <value>2.0</value>
       </enum>
     </tpm>
+    <redirdev supported='yes'>
+      <enum name='bus'>
+        <value>usb</value>
+      </enum>
+    </redirdev>
   </devices>
   <features>
     <gic supported='no'/>
