@@ -60,6 +60,20 @@ unit files must be masked:
    $ systemctl mask virtxend.socket virtxend-ro.socket \
       virtxend-admin.socket
 
+If using libvirt-guests service then the ordering for that service needs to be
+adapted so that it is ordered after the service unit instead of the socket unit.
+Since dependencies and ordering cannot be changed with drop-in overrides, the
+whole libvirt-guests unit file needs to be changed.  In order to preserve such
+change copy the installed ``/usr/lib/systemd/system/libvirt-guests.service`` to
+``/etc/systemd/system/libvirt-guests.service`` and make the change there,
+specifically make sure the ``After=`` ordering mentions ``virtxend.service`` and
+not ``virtxend.socket``:
+
+::
+
+   [Unit]
+   After=virtxend.service
+
 
 OPTIONS
 =======
