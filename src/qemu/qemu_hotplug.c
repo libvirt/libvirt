@@ -93,6 +93,8 @@ qemuDomainResetDeviceRemoval(virDomainObj *vm);
  *
  * Returns: 0 on success,
  *         -1 otherwise.
+ *         -2 device does not exist in qemu, but it still
+ *            exists in libvirt
  */
 static int
 qemuDomainDeleteDevice(virDomainObj *vm,
@@ -124,7 +126,6 @@ qemuDomainDeleteDevice(virDomainObj *vm,
              * domain XML is queried right after detach API the
              * device would still be there.  */
             VIR_DEBUG("Detaching of device %s failed and no event arrived", alias);
-            rc = 0;
         }
     }
 
@@ -5864,6 +5865,7 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
     virDomainDeviceDef detach = { .type = match->type };
     virDomainDeviceInfo *info = NULL;
     int ret = -1;
+    int rc;
 
     switch ((virDomainDeviceType)match->type) {
         /*
@@ -6053,7 +6055,10 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
     if (!async)
         qemuDomainMarkDeviceForRemoval(vm, info);
 
-    if (qemuDomainDeleteDevice(vm, info->alias) < 0) {
+    rc = qemuDomainDeleteDevice(vm, info->alias);
+    if (rc < 0) {
+        if (rc == -2)
+            ret = qemuDomainRemoveDevice(driver, vm, &detach);
         if (virDomainObjIsActive(vm))
             qemuDomainRemoveAuditDevice(vm, &detach, false);
         goto cleanup;
