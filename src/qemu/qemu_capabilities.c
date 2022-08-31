@@ -1205,7 +1205,6 @@ struct virQEMUCapsStringFlags {
 
 
 struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
-    { "query-spice", QEMU_CAPS_SPICE },
     { "query-vnc", QEMU_CAPS_VNC },
     { "rtc-reset-reinjection", QEMU_CAPS_RTC_RESET_REINJECTION },
     { "query-hotpluggable-cpus", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS },
@@ -3264,6 +3263,7 @@ struct virQEMUCapsCommandLineProps {
 static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },
     { "sandbox", NULL, QEMU_CAPS_SECCOMP_SANDBOX },
+    { "spice", NULL, QEMU_CAPS_SPICE },
     { "spice", "gl", QEMU_CAPS_SPICE_GL },
     { "spice", "rendernode", QEMU_CAPS_SPICE_RENDERNODE },
     { "vnc", "power-control", QEMU_CAPS_VNC_POWER_CONTROL },
