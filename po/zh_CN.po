@@ -20,7 +20,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-08-26 05:02+0000\n"
-"PO-Revision-Date: 2022-08-23 13:11+0000\n"
+"PO-Revision-Date: 2022-08-31 12:19+0000\n"
 "Last-Translator: Ludek Janda <ljanda@redhat.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
@@ -29,7 +29,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.13\n"
+"X-Generator: Weblate 4.14\n"
 
 msgid ""
 "\n"
@@ -454,7 +454,7 @@ msgstr ""
 " - lxc \n"
 " - bhyve \n"
 " - ch \n"
-"Options: \n"
+"选项: \n"
 " -h, --help 显示命令行帮助 \n"
 " -v, --version 显示命令版本 \n"
 " -q, --quiet 不显示进度信息\n"
@@ -732,8 +732,7 @@ msgstr "%s uri uuid 动作\n"
 msgid ""
 "%s with index %d is configured for a NUMA node (%d) not present in the "
 "domain's <cpu><numa> array (%zu)"
-msgstr ""
-"为 NUMA 节点(%d)配置的带有 %d 的 %s 在域的 <cpu><numa> 数组(%zu)中不存在"
+msgstr "为 NUMA 节点(%d)配置的索引为 %d 的 %s 在域的 <cpu><numa> 数组(%zu)中不存在"
 
 #, c-format
 msgid ""
@@ -1103,7 +1102,7 @@ msgstr "'%s'"
 
 #, c-format
 msgid "'%s' D-Bus address is not handled"
-msgstr ""
+msgstr "'%s' D-Bus 地址没有被处理"
 
 #, c-format
 msgid "'%s' architecture is not supported by CPU driver"
@@ -1291,7 +1290,7 @@ msgid "'netns' namespace source can only be used with sharenet"
 msgstr "'netns' 命名空间源只能与 sharenet 一起使用"
 
 msgid "'network' attribute is required for listen type 'network'"
-msgstr ""
+msgstr "对于侦听类型 'network' 需要 'network' 属性"
 
 msgid "'network' attribute is valid only for listen type 'network'"
 msgstr "'network' 属性只适用于侦听类型 'network'"
@@ -1659,7 +1658,7 @@ msgstr "<virtualport> 元素不支持 <interface type='%s'>"
 msgid ""
 "<virtualport> element unsupported for type='%s' in interface's <actual> "
 "element"
-msgstr "<virtualport> 元素不支持接口 <actual> 元素中的 type='%s'"
+msgstr "<virtualport> 元素不支持接口的 <actual> 元素中的 type='%s'"
 
 #, c-format
 msgid ""
@@ -2139,7 +2138,7 @@ msgstr "只能为 'ide' 总线而不是 '%s' 设置 CHS 转换模式"
 
 #, c-format
 msgid "CPU %d in cpulist '%s' exceed the maxcpu %d"
-msgstr "cpulist '%s' 中的 CPU %d 超出 maxcpu %d"
+msgstr "cpulist '%s' 中的 CPU %d 超出了 maxcpu %d"
 
 msgid "CPU Affinity"
 msgstr "CPU 亲和性"
@@ -2387,8 +2386,7 @@ msgid ""
 "proper to be migrated out or not.\n"
 "The calculated dirty rate information is available by calling 'domstats --"
 "dirtyrate'."
-msgstr ""
-"计算域的内存脏速率，以确定是否适合迁移出去。通过调用 'domstats --dirtyrate' "
+msgstr "计算域的内存脏率，以确定是否适合迁出。通过调用 'domstats --dirtyrate' "
 "可得到计算的脏率信息。"
 
 #, c-format
@@ -2420,7 +2418,7 @@ msgstr "无法修改磁盘配额"
 
 #, c-format
 msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"
-msgstr ""
+msgstr "只能打开 VNC、SPICE 或 D-Bus p2p 图形后端，但不能打开 %s"
 
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr "无法添加 USB 集线器：这个域禁用了 USB"
@@ -3130,9 +3128,8 @@ msgstr ""
 msgid ""
 "Cannot plug '%s' interface into '%s' because new combined inbound floor=%llu "
 "would overcommit peak=%llu on network '%s'"
-msgstr ""
-"无法将 '%s' 接口插入 '%s'，因为新的 combined inbound floor=%llu 将在网络 "
-"'%s' 上过度承诺 peak=%llu"
+msgstr "无法将 '%s' 接口插入 '%s'，因为新合并的入站 floor=%llu 将在网络 '%s' "
+"上过度承诺 peak=%llu"
 
 #, c-format
 msgid "Cannot print data type %x"
@@ -3238,7 +3235,7 @@ msgstr "无法在 '%s' 中设定接口标签"
 
 #, c-format
 msgid "Cannot set interface vlanid to %d for ifname %s vf %d"
-msgstr "无法为 ifname %s vf %d 将接口 vlanid 设为 %d"
+msgstr "无法为 ifname %s vf %d 将接口 vlanid 设为%d"
 
 msgid "Cannot set memory higher than max memory"
 msgstr "无法将内存设置为高于最大内存"
@@ -4005,7 +4002,7 @@ msgstr "无法找到 Msvm_DiskDrive 对象"
 msgid ""
 "Could not find PCI controller with index '%u' required for device at address "
 "'%s'"
-msgstr "无法找到地址 '%s' 处的设备所需的索引为 '%u' 的 PCI 控制器。"
+msgstr "无法为地址 '%s' 处的设备找到所需的索引为 '%u' 的 PCI 控制器。"
 
 #, c-format
 msgid "Could not find PhysicalNic with key '%s'"
@@ -4095,7 +4092,7 @@ msgstr "无法找到名为 '%s' 的物理 NIC"
 
 #, c-format
 msgid "Could not find placement for v1 controller %s"
-msgstr ""
+msgstr "无法找到 v1 控制器 %s 的位置"
 
 msgid "Could not find placement for v2 controller"
 msgstr "无法找到 v2 控制器的位置"
@@ -4929,10 +4926,10 @@ msgid "Custom loader requires explicit %s configuration"
 msgstr "自定义负载程序需要显式 %s 配置"
 
 msgid "D-Bus audio is not supported with this QEMU"
-msgstr ""
+msgstr "这个 QEMU 不支持 D-Bus 音频"
 
 msgid "D-Bus p2p with an address is not supported"
-msgstr ""
+msgstr "不支持带有地址的 D-Bus p2p"
 
 msgid "DAC imagelabel couldn't be determined"
 msgstr "无法确定 DAC imagelabel"
@@ -5339,7 +5336,7 @@ msgstr "显示该节点的 CPU 总数，在线 CPU 数以及在线 CPU 列表。
 #, c-format
 msgid ""
 "Distance value %d under node %zu is LOCAL_DISTANCE and should be set to 10"
-msgstr "节点 %zu 下的距离值 %d 是 LOCAL_DISTANCE，应该被设为 10"
+msgstr "节点 %zu 下的距离值 %d 为 LOCAL_DISTANCE，应该被设为 10"
 
 #, c-format
 msgid "Distance value of %d is not in valid range"
@@ -6684,7 +6681,7 @@ msgid "Failed to create thread to handle domain shutdown"
 msgstr "创建处理域关闭的线程失败"
 
 msgid "Failed to create thread to handle firewall reload/restart"
-msgstr ""
+msgstr "创建处理防火墙重新加载/重新启动的线程失败"
 
 msgid "Failed to create thread to handle pool refresh"
 msgstr "创建线程以处理池刷新失败"
@@ -7491,7 +7488,7 @@ msgstr "解析 %s 失败：仅支持 com1 和 com2。"
 
 #, c-format
 msgid "Failed to parse CCW address '%s'"
-msgstr ""
+msgstr "解析 CCW 地址 '%s' 失败"
 
 #, c-format
 msgid "Failed to parse MAC address from '%s'"
@@ -7932,7 +7929,7 @@ msgstr "将域 '%s' 保存为 %s 失败"
 
 #, c-format
 msgid "Failed to seek to %llu bytes to the end in volume with path '%s'"
-msgstr "在路径为 '%s' 的卷中查找最后的 %llu 字节失败"
+msgstr "在路径为 '%s' 的卷中查找距离末尾的 %llu 字节失败"
 
 #, c-format
 msgid "Failed to seek to the start in volume with path '%s'"
@@ -8854,7 +8851,8 @@ msgstr "主机 SMBIOS 信息不可用"
 msgid ""
 "Host not compatible with KVM; HW virtualization CPU features not found. Only "
 "emulated CPUs are available; performance will be significantly limited"
-msgstr ""
+msgstr "主机与 KVM 不兼容 ; 未找到 HW 虚拟化 CPU 功能。只有仿真的 CPU "
+"可用，性能将受到很大限制"
 
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr "这个平台不支持主机系统信息提取"
@@ -9419,7 +9417,7 @@ msgid "Invalid argument"
 msgstr "无效的参数"
 
 msgid "Invalid async job start"
-msgstr ""
+msgstr "无效的异步作业启动"
 
 #, c-format
 msgid ""
@@ -9900,7 +9898,7 @@ msgstr "传递给 free 的无效的参数类型"
 
 #, c-format
 msgid "Invalid parameters macaddr=%p allowRetry=%p"
-msgstr ""
+msgstr "无效的参数 macaddr=%p allowRetry=%p"
 
 msgid "Invalid partial specification for virtio ccw address"
 msgstr "irtio ccw 地址的无效说明"
@@ -10093,19 +10091,19 @@ msgstr "元素 '%s' 中属性 '%s' 的无效值: '%s'"
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
-msgstr "元素 '%s' 中属性 '%s' 的无效值: '%s' 。预期为整数值"
+msgstr "元素 '%s' 中属性 '%s' 的无效值: '%s' 。期望为整数值"
 
 #, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative integer value"
-msgstr "元素 '%s' 中属性 '%s' 的无效值: '%s'。 预期为非负整数值"
+msgstr "元素 '%s' 中属性 '%s' 的无效值: '%s'。 期望为非负整数值"
 
 #, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative value"
-msgstr ""
+msgstr "元素 '%s' 中的属性 '%s' 的无效值：'%s'。期望为非负值"
 
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
@@ -10113,23 +10111,23 @@ msgstr "元素 '%s' 中属性 '%s' 的无效值：不允许为 0"
 
 #, c-format
 msgid "Invalid value for field '%s': expected double"
-msgstr "字段 '%s' 的无效值：应为 double"
+msgstr "字段 '%s' 的无效值：期望为 double"
 
 #, c-format
 msgid "Invalid value for field '%s': expected int"
-msgstr "字段 '%s' 的无效值：应为 int"
+msgstr "字段 '%s' 的无效值：期望为 int"
 
 #, c-format
 msgid "Invalid value for field '%s': expected long long"
-msgstr "字段 '%s' 的无效值：应为 long long"
+msgstr "字段 '%s' 的无效值：期望为 long long"
 
 #, c-format
 msgid "Invalid value for field '%s': expected unsigned int"
-msgstr "字段 '%s' 的无效值：应为未签署的 int"
+msgstr "字段 '%s' 的无效值：期望为未签署的 int"
 
 #, c-format
 msgid "Invalid value for field '%s': expected unsigned long long"
-msgstr "字段 '%s' 的无效值：应为未签名的 long long"
+msgstr "字段 '%s' 的无效值：期望为未签名的 long long"
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "要显示 CPU 数的无效值"
@@ -11105,8 +11103,7 @@ msgstr "在 query-rx-filter 响应中缺少或无效的 'broadcast-allowed'"
 msgid ""
 "Missing or invalid 'end' attribute in <port> in <nat> in <forward> in "
 "network %s"
-msgstr ""
-"在网络 %s 中的 <forward> 中的 <nat> 中的<port> 中缺少或者无效的 'end' 属性"
+msgstr "在网络 %s 中 <forward> 中 <nat> 中的<port> 中缺少或者无效的 'end' 属性"
 
 msgid "Missing or invalid 'main-mac' in query-rx-filter response"
 msgstr "在 query-rx-filter 响应中缺少或无效的 'main-mac'"
@@ -11127,8 +11124,7 @@ msgstr "在 query-rx-filter 响应中缺少或无效的 'promiscuous'"
 msgid ""
 "Missing or invalid 'start' attribute in <port> in <nat> in <forward> in "
 "network %s"
-msgstr ""
-"在网络 %s 中的 <forward> 中的 <nat> 中的 <port> 中缺少或者无效的 'start' 属性"
+msgstr "在网络 %s 中 <forward> 中 <nat> 中的 <port> 中缺少或者无效的 'start' 属性"
 
 msgid "Missing or invalid 'unicast' in query-rx-filter response"
 msgstr "在 query-rx-filter 响应中缺少或无效的 'unicast'"
@@ -11236,11 +11232,11 @@ msgstr "在元素 '%s' 缺少所需的属性 '%s'"
 #, c-format
 msgid ""
 "Missing required dev attribute in <forward> <interface> element of network %s"
-msgstr "网络 %s 中的 <forward> <interface> 元素中缺少所需的 dev 属性"
+msgstr "网络 %s 的 <forward> <interface> 元素中缺少所需的 dev 属性"
 
 #, c-format
 msgid "Missing required dev attribute in <pf> element of network '%s'"
-msgstr "网络 '%s' 中的 <pf> 元素中缺少所需的 dev 属性"
+msgstr "网络 '%s' 的 <pf> 元素中缺少所需的 dev 属性"
 
 msgid "Missing required name attribute in portgroup"
 msgstr "portgroup 中缺少所需 name 属性"
@@ -11764,7 +11760,7 @@ msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
 msgstr "<source> 'dev' 属性中未指定任何 <interface type='direct'/>"
 
 msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
-msgstr "没有使用 <interface type='vdpa'/><source> 指定的 'dev' 属性"
+msgstr "没有使用 <interface type='vdpa'/> 指定的 'dev' 属性"
 
 msgid ""
 "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
@@ -11780,7 +11776,7 @@ msgstr "没有使用 <interface type='network'/> 指定的 <source>‘networking
 
 msgid ""
 "No <source> 'path' attribute specified with <interface type='vhostuser'/>"
-msgstr "没有使用 <interface type='vhostuser'/> 指定的 <source> 'path' 属性"
+msgstr "没有使用 <interface type='vhostuser'/> 指定的<source> 'path' 属性"
 
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr "没有使用套接字接口指定的 <source>‘port’属性"
@@ -12214,7 +12210,7 @@ msgid "Not detaching active device %s"
 msgstr "不要分离活跃的设备 %s"
 
 msgid "Not enough arguments passed, nothing to set"
-msgstr ""
+msgstr "未传递足够的参数，没有设置任何内容"
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -12389,7 +12385,7 @@ msgstr "只有模拟的 CPU，性能会受到很大限制。"
 
 #, c-format
 msgid "Only end address '%s' specified in <nat> in <forward> in network '%s'"
-msgstr "仅在网络 '%s' 中的 <forward> 中的 <nat> 中指定结束地址 '%s'"
+msgstr "仅在网络 '%s' 中 <forward> 中的 <nat> 中指定结束地址 '%s'"
 
 msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr "vz 驱动程序仅支持基于文件或基于卷的文件系统。"
@@ -12412,19 +12408,19 @@ msgstr "vz 驱动程序只支持原生 iomode。"
 #, c-format
 msgid ""
 "Only one <address> element is allowed in <nat> in <forward> in network %s"
-msgstr "网络 %s 中的 <forward> 中的 <nat> 中只允许使用一个 <address> 元素"
+msgstr "网络 %s 中 <forward> 中的 <nat> 中只允许使用一个 <address> 元素"
 
 #, c-format
 msgid "Only one <nat> element is allowed in <forward> of network %s"
-msgstr "网络 %s 中的 <forward> 中只允许使用一个 <nat> 元素"
+msgstr "网络 %s 的 <forward> 中只允许使用一个 <nat> 元素"
 
 #, c-format
 msgid "Only one <pf> element is allowed in <forward> of network %s"
-msgstr "网络 %s 中的 <forward> 中只允许使用一个 <pf> 元素"
+msgstr "网络 %s 的 <forward> 中只允许使用一个 <pf> 元素"
 
 #, c-format
 msgid "Only one <port> element is allowed in <nat> in <forward> in network %s"
-msgstr "网络 %s 中的 <forward> 中的 <nat> 中只允许使用一个 <port> 元素"
+msgstr "网络 %s 中 <forward> 中的 <nat> 中只允许使用一个 <port> 元素"
 
 msgid "Only one IPv4 address per interface is allowed"
 msgstr "每个接口只允许一个 IPv4 地址"
@@ -12457,7 +12453,7 @@ msgid "Only one primary video device is supported"
 msgstr "只支持一个主视频设备"
 
 msgid "Only one vgpu device can have 'ramfb' enabled"
-msgstr ""
+msgstr "只有一个 vgpu 设备启用了 'ramfb'"
 
 msgid "Only pflash loader type permits NVRAM"
 msgstr ""
@@ -12476,7 +12472,7 @@ msgstr "只有 scsi 磁盘支持 vendor 和 product"
 
 #, c-format
 msgid "Only start address '%s' specified in <nat> in <forward> in network '%s'"
-msgstr "仅在网络 '%s' 中的 <forward> 中的 <nat> 中指定起始地址 '%s'"
+msgstr "仅在网络 '%s' 中 <forward> 中的 <nat> 中指定起始地址 '%s'"
 
 msgid "Only tap devices supported"
 msgstr "只支持 tap 设备"
@@ -13140,7 +13136,7 @@ msgid ""
 msgstr "QEMU 报告非 kvm 域 virt 类型的无效的默认 CPU 型号 \"host\""
 
 msgid "QEMU reports migration is still running"
-msgstr ""
+msgstr "QEMU 报告迁移仍在运行"
 
 #, c-format
 msgid "QEMU version >= %d.%d.%d is required, but %d.%d.%d found"
@@ -13787,7 +13783,7 @@ msgstr ""
 msgid ""
 "Scaled numeric value '%s' for <--bandwidth> option is malformed or out of "
 "range"
-msgstr "<--bandwidth> 选项的缩放数值 '%s' 格式错误或超出了范围"
+msgstr "<--bandwidth> 选项的扩展数值 '%s' 格式错误或超出了范围"
 
 msgid "Scheduler"
 msgstr "调度程序"
@@ -14287,7 +14283,7 @@ msgid "Specifying mount point is not supported for now"
 msgstr "现在还不支持指定挂载点"
 
 msgid "Spice audio is not supported without spice graphics"
-msgstr ""
+msgstr "在没有 spice 图形的情况下不支持 spice 音频"
 
 msgid "Start"
 msgstr "启动"
@@ -15439,7 +15435,7 @@ msgid "The XML configuration was changed by another user."
 msgstr "另一个用户更改了 XML 配置。"
 
 msgid "The associated audio is not of 'dbus' kind."
-msgstr ""
+msgstr "相关的音频不是 'dbus' 类型。"
 
 #, c-format
 msgid "The certificate %s basic constraints do not show a CA"
@@ -15777,7 +15773,7 @@ msgstr "客户端数量 '%d' 已超过限制 '%d'"
 
 #, c-format
 msgid "Too many disks in fsinfo: %zd for limit %d"
-msgstr "对于限制 %d ，fsinfo 中有太多的磁盘：%zd"
+msgstr "fsinfo 中有太多的磁盘：对于限制 %d 来说为 %zd"
 
 msgid "Too many domain elements in migration cookie"
 msgstr "迁移 cookie 中有太多的域元素"
@@ -18665,12 +18661,11 @@ msgstr "不安全的迁移:%s"
 msgid ""
 "Unsupported <bandwidth> element in network '%s' in portgroup '%s' with "
 "forward mode='%s'"
-msgstr ""
-"在 forward mode='%s' 的端口组 '%s' 中的网络 %s 中不支持的 <bandwidth> 元素"
+msgstr "在 forward mode='%s' 的端口组 '%s' 中的网络 '%s' 中不支持的 <bandwidth> 元素"
 
 #, c-format
 msgid "Unsupported <dns> element in network %s with forward mode='%s'"
-msgstr "在 forward mode='%s' 的网络 %s 中不支持的 <dns> 元素"
+msgstr "在 forward mode='%s' 的网络 %s 中不支持的<dns> 元素"
 
 #, c-format
 msgid "Unsupported <domain> element in network %s with forward mode='%s'"
@@ -18682,7 +18677,7 @@ msgstr "在 forward mode='%s' 的网络 %s 中不支持的 <ip> 元素"
 
 #, c-format
 msgid "Unsupported <mac> element in network %s with forward mode='%s'"
-msgstr "在 forward mode='%s' 的网络 %s 中不支持的 <mac> 元素"
+msgstr "在 forward mode='%s' 的网络 %s 中不支持的<mac> 元素"
 
 #, c-format
 msgid "Unsupported <tftp> element in an IPv6 element in network '%s'"
@@ -19041,7 +19036,8 @@ msgstr ""
 "从 PEM  证书中提取可分辨的名称。输出用于 libvirtd.conf 文件中的 "
 "tls_allowed_dn_list 配置选项。\n"
 " FILE 要从中提取DN 的证书文件 \n"
-"选项： -h | --help 显示此帮助并退出\n"
+"选项：\n"
+" -h | --help 显示此帮助并退出\n"
 " -v | --version 输出版本信息并退出\n"
 
 #, sh-format
@@ -19739,7 +19735,7 @@ msgstr "另一个备份作业已经运行"
 
 #, c-format
 msgid "another migration job is already running for domain '%s'"
-msgstr ""
+msgstr "另一个迁移作业已为域 '%s' 运行。"
 
 msgid "any configuration"
 msgstr "任何配置"
@@ -19925,10 +19921,10 @@ msgstr "验证失败: %s"
 
 #, c-format
 msgid "authentication is not supported for protocol '%s'"
-msgstr ""
+msgstr "协议 '%s' 不支持身份验证。"
 
 msgid "authentication is supported only for network backed disks"
-msgstr ""
+msgstr "身份验证只支持网络支持的磁盘"
 
 msgid "authentication required"
 msgstr "需要验证"
@@ -20004,7 +20000,7 @@ msgid "backing store protocol '%s' is not yet supported"
 msgstr "目前还不支持后备存储协议 '%s'"
 
 msgid "backingStore is not supported with NVRAM"
-msgstr ""
+msgstr "NVRAM 不支持 BackingStore"
 
 msgid "backingStore is not supported with vhostuser disk"
 msgstr "vhostuser 磁盘不支持 BackingStore"
@@ -20015,7 +20011,7 @@ msgid ""
 msgstr "没有 VIR_DOMAIN_BLOCK_COPY_SHALLOW 的镜像的 backingStore 没有意义"
 
 msgid "backup"
-msgstr ""
+msgstr "备份"
 
 msgid "backup TLS directory not configured"
 msgstr "未配置备份 TLS 目录"
@@ -21220,7 +21216,7 @@ msgstr "无法迁移有 I/O 错误的域"
 
 #, c-format
 msgid "cannot migrate domain: %s"
-msgstr ""
+msgstr "无法迁移域：%s"
 
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr "无法迁移没有 dbus-vmstate 支持的这个域"
@@ -21455,7 +21451,7 @@ msgstr "无法解析 lunStr '%s' 的目标"
 
 #, c-format
 msgid "cannot parse thread pool size '%s' for virtiofs"
-msgstr ""
+msgstr "无法解析 virtiofs 的线程池大小 '%s'"
 
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
@@ -21906,7 +21902,7 @@ msgstr "无法在绘画模式中使用虚拟网卡设备"
 msgid ""
 "cannot use feature-based firmware autoselection when firmware autoselection "
 "is disabled"
-msgstr ""
+msgstr "当固件自动选择禁用时，无法使用基于功能的固件自动选择"
 
 msgid "cannot use namespaces in session mode"
 msgstr "无法在会话模式下使用命名空间"
@@ -21967,7 +21963,7 @@ msgid "cd: command valid only in interactive mode"
 msgstr "cd：只在交互模式中可用"
 
 msgid "cdrom device with virtio bus isn't supported"
-msgstr ""
+msgstr "不支持带有 virtio 总线的 cdrom 设备"
 
 msgid "cdrom device without source path not supported"
 msgstr "不支持没有源路径的 cdrom 设备"
@@ -22103,11 +22099,11 @@ msgstr "字符设备名称"
 
 #, c-format
 msgid "chardev '%s' not supported in this QEMU binary"
-msgstr ""
+msgstr "这个 QEMU 二进制文件不支持 chardev '%s'"
 
 #, c-format
 msgid "chardev '%s' not supported without spice graphics"
-msgstr ""
+msgstr "在没有 spice 图形的情况下不支持 chardev '%s'"
 
 msgid "chardev already exists"
 msgstr "chardev 已存在"
@@ -22598,7 +22594,7 @@ msgstr "无法决定该域的最大 vcpu"
 
 #, c-format
 msgid "could not find backing store index '%u' in chain for '%s'"
-msgstr "无法在链中找到 '%s' 的后备存储索引 '%u'"
+msgstr "无法在 '%s' 的链中找到后备存储索引 '%u'"
 
 #, c-format
 msgid "could not find base image in chain for '%s'"
@@ -22890,7 +22886,7 @@ msgstr "无法更新 dhcp host 条目 - <ip> 元素未出现在索引 %d 网络 
 
 #, c-format
 msgid "couldn't update dhcp host entry - no <ip> element found in network '%s'"
-msgstr "无法更新 dhcp host 条目 - 网络 '%s' 中没有找到 <ip> 元素"
+msgstr "无法更新 dhcp host 条目 - 在网络 '%s' 中没有找到 <ip> 元素"
 
 #, c-format
 msgid "couldn't write dnsmasq config file '%s'"
@@ -23034,7 +23030,7 @@ msgid "current bridge device name"
 msgstr "当前桥接设备名称"
 
 msgid "current job is not outgoing migration in post-copy mode"
-msgstr ""
+msgstr "当前作业不是 post-copy 模式下的出站迁移"
 
 msgid "current vcpu count must equal maximum"
 msgstr "当前 vcpu 计数必须等于最大值"
@@ -23627,10 +23623,10 @@ msgstr "缺少磁盘源"
 
 #, c-format
 msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
-msgstr ""
+msgstr "对于 '%s' 类型的磁盘，不允许磁盘 startupPolicy '%s'"
 
 msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
-msgstr ""
+msgstr "只对 cdrom 或 floppy 允许磁盘 startupPolicy 'requisite'"
 
 #, c-format
 msgid "disk target %s not found"
@@ -23821,7 +23817,7 @@ msgid "domain control interface state"
 msgstr "域控制接口状态"
 
 msgid "domain core dump"
-msgstr ""
+msgstr "域核转储"
 
 msgid "domain display connection URI"
 msgstr "域显示连接 URI"
@@ -23930,7 +23926,7 @@ msgid "domain name, id or uuid"
 msgstr "域名，id 或 uuid"
 
 msgid "domain save"
-msgstr ""
+msgstr "域保存"
 
 msgid "domain snapshot XML"
 msgstr "域快照 XML"
@@ -24224,11 +24220,11 @@ msgid "encryption is not supported with vhostuser disk"
 msgstr "vhostuser 磁盘不支持加密"
 
 msgid "encryption is supported only with 'raw' and 'qcow2' image format"
-msgstr ""
+msgstr "加密仅支持 'raw' 和 'qcow2' 镜像格式"
 
 #, c-format
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
-msgstr "在网络 %s/%d 中范围 %s - %s 的末尾是广播地址"
+msgstr "网络 %s/%d 中范围 %s - %s 的末尾是广播地址"
 
 msgid "enforce requested stats parameters"
 msgstr "强制请求的 stats 参数"
@@ -24690,7 +24686,7 @@ msgstr "磁盘 %s 不支持的外部快照：%s"
 
 #, c-format
 msgid "extra %s unsupported in <virtualport type='%s'>"
-msgstr "<virtualport type='%s'> 中不支持附加的 %s"
+msgstr "<virtualport type='%s'> 中不支持额外的 %s"
 
 msgid "extract the value of the 'return' key from the returned string"
 msgstr "从返回的字符串中提取 'return' 键的值"
@@ -25442,14 +25438,14 @@ msgid "failed to parse node name index"
 msgstr "无法解析节点名称索引"
 
 msgid "failed to parse original memlock size"
-msgstr ""
+msgstr "无法解析原始的 memlock 大小"
 
 #, c-format
 msgid "failed to parse port number '%s'"
 msgstr "无法解析端口号 '%s'"
 
 msgid "failed to parse pre-migration memlock limit"
-msgstr ""
+msgstr "无法解析预迁移 memlock 限制"
 
 msgid "failed to parse qemu capabilities cpus"
 msgstr "无法解析 qemu 功能 cpus"
@@ -25901,7 +25897,7 @@ msgstr "这个连接不支持 fd 传送"
 
 #, c-format
 msgid "fdset '%u' is already in use by qemu"
-msgstr ""
+msgstr "fdset '%u' 已被 qemu 使用"
 
 msgid "fetch or set the currently defined set of logging filters on daemon"
 msgstr "查询或设置守护进程对日志进行过滤的规则"
@@ -26094,11 +26090,11 @@ msgstr "没有针对这个驱动程序实现固件自动选择"
 msgid ""
 "firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
 "'secure-boot' is disabled"
-msgstr ""
+msgstr "当固件功能 'secure-boot' 禁用时，无法启用固件功能 'enrolled-keys'"
 
 #, c-format
 msgid "firmware type '%s' does not support nvram"
-msgstr ""
+msgstr "固件类型 '%s' 不支持 nvram"
 
 msgid "fixed audio settings requires mixing engine"
 msgstr "固定的音频设置需要混合引擎"
@@ -26123,7 +26119,7 @@ msgid "floor attribute is not supported for this config"
 msgstr "此配置不支持 floor 属性"
 
 msgid "floppy device hotplug isn't supported"
-msgstr ""
+msgstr "不支持软盘设备热插拔"
 
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr "fmode 和 dmode 必须与 accessmode=mapped 一起使用"
@@ -26483,7 +26479,7 @@ msgid "guest-get-vcpus reply was missing return data"
 msgstr "guest-get-vcpus 回复缺少返回数据"
 
 msgid "guestReset is not supported with this version of QEMU"
-msgstr ""
+msgstr "这个版本的 QEMU 不支持 guestReset"
 
 msgid "guestfwd channel does not define a target address"
 msgstr "guestfwd 频道没有定义目标地址"
@@ -27094,7 +27090,7 @@ msgid "internal use only"
 msgstr "仅内部使用"
 
 msgid "interrupt post-copy migration"
-msgstr ""
+msgstr "中断 post-copy 迁移"
 
 msgid "intr:"
 msgstr "intr:"
@@ -27107,7 +27103,7 @@ msgstr "<vlan> 中无效的 \"trunk='%s'\" -- 必须是 yes 或 no"
 msgid ""
 "invalid \"trunk='%s'\" in <vlan> - trunk='yes' is required for more than one "
 "vlan tag"
-msgstr "<vlan> 中无效的 \"trunk='%s'\" -- 有一个以上 vlan 标签要求 trunk='yes'"
+msgstr "<vlan> 中无效的 \"trunk='%s'\" -- 有一个以上的 vlan 标签要求 trunk='yes'"
 
 #, c-format
 msgid "invalid %s value: '%s'"
@@ -27835,7 +27831,7 @@ msgstr "iommu 驱动程序选项只支持 virtio 设备"
 
 #, c-format
 msgid "iommu model '%s' can't have address"
-msgstr ""
+msgstr "iommu 型号 '%s' 不能有地址"
 
 #, c-format
 msgid "iommu model '%s' doesn't support additional attributes"
@@ -27905,27 +27901,27 @@ msgstr "此 QEMU 二进制文件不支持 ivshmem 设备"
 
 #, c-format
 msgid "job '%s' canceled by client"
-msgstr ""
+msgstr "作业 '%s' 被客户端取消了"
 
 #, c-format
 msgid "job '%s' failed due to I/O error"
-msgstr ""
+msgstr "作业 '%s' 失败，因为 I/O 错误"
 
 #, c-format
 msgid "job '%s' failed in post-copy phase"
-msgstr ""
+msgstr "作业 '%s' 在 post-copy 阶段失败"
 
 #, c-format
 msgid "job '%s' failed: %s"
-msgstr ""
+msgstr "作业 '%s' 失败：%s"
 
 #, c-format
 msgid "job '%s' is not active"
-msgstr ""
+msgstr "作业 '%s' 未处于活动状态"
 
 #, c-format
 msgid "job '%s' unexpectedly failed"
-msgstr ""
+msgstr "作业 '%s' 意外失败"
 
 #, c-format
 msgid "job type '%s' does not support pivot"
@@ -28008,7 +28004,7 @@ msgid "librbd encryption is not supported by this QEMU binary"
 msgstr "此 QEMU 二进制文件不支持 librbd 加密"
 
 msgid "librbd encryption is supported only with RBD backed disks"
-msgstr ""
+msgstr "只有 RBD 支持的磁盘才支持 librbd 加密"
 
 msgid "libssh transport error"
 msgstr "libssh 传输错误"
@@ -28450,20 +28446,20 @@ msgstr "不支持即时更新设备 '%s'"
 msgid ""
 "loader attribute 'readonly' cannot be specified when firmware autoselection "
 "is enabled"
-msgstr ""
+msgstr "当启用固件自动选择时，无法指定加载程序属性 'readonly'"
 
 msgid ""
 "loader attribute 'secure' cannot be specified when firmware autoselection is "
 "enabled"
-msgstr ""
+msgstr "当启用固件自动选择时，无法指定加载程序属性 'secure'"
 
 msgid ""
 "loader attribute 'type' cannot be specified when firmware autoselection is "
 "enabled"
-msgstr ""
+msgstr "当启用固件自动选择时，无法指定加载程序属性 'type'"
 
 msgid "loader path cannot be specified when firmware autoselection is enabled"
-msgstr ""
+msgstr "当启用固件自动选择时，无法指定加载程序路径"
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
@@ -28486,7 +28482,7 @@ msgid "loop until timeout or interrupt, rather than one-shot"
 msgstr "循环直到超时或中断，不是一次执行"
 
 msgid "lower boundary for worker thread pool"
-msgstr ""
+msgstr "worker 线程池的下限"
 
 msgid "luks2 is currently not supported by the qemu encryption engine"
 msgstr "qemu 加密引擎目前不支持 luks2"
@@ -29028,7 +29024,7 @@ msgid "migration canceled"
 msgstr "取消迁移"
 
 msgid "migration in"
-msgstr ""
+msgstr "中的迁移"
 
 #, c-format
 msgid "migration of disk %s failed"
@@ -29040,11 +29036,11 @@ msgstr "磁盘 %s 的迁移失败：%s"
 
 #, c-format
 msgid "migration of domain %s is being actively monitored by another thread"
-msgstr ""
+msgstr "另一个线程正在积极监视域 %s 的迁移"
 
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
-msgstr ""
+msgstr "域 %s 的迁移不在 post-copy 阶段"
 
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
@@ -29052,7 +29048,7 @@ msgid ""
 msgstr "隧道化迁移和此 QEMU 不支持迁移非共享存储的迁移"
 
 msgid "migration out"
-msgstr ""
+msgstr "迁出"
 
 #, c-format
 msgid "migration parameter '%s' must be less than %llu"
@@ -29249,7 +29245,7 @@ msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr "NFS 卷的 JSON 后备定义中缺少 'server' 属性"
 
 msgid "missing 'start' attribute for clock with offset='absolute'"
-msgstr ""
+msgstr "offset='absolute' 的时钟缺少 'start' 属性"
 
 #, c-format
 msgid ""
@@ -29727,7 +29723,7 @@ msgid "missing path for <reservations/>"
 msgstr "缺少 <reservations/> 的路径"
 
 msgid "missing path to restore from"
-msgstr ""
+msgstr "缺少从中恢复的路径"
 
 msgid "missing per-device path"
 msgstr "缺少各个设备路径"
@@ -31200,7 +31196,7 @@ msgid "number of read operations:"
 msgstr "读取操作数："
 
 msgid "number of seconds the daemon will run without any active connection"
-msgstr ""
+msgstr "守护进程在没有任何活跃连接的情况下将运行的秒数"
 
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr "在新连接的端口中 squelch 流量的秒数"
@@ -31245,7 +31241,7 @@ msgstr "nvram 地址类型必须为 spaprvio"
 msgid ""
 "nvram attribute 'template' cannot be specified when firmware autoselection "
 "is enabled"
-msgstr ""
+msgstr "固件自动选择启用时，无法指定 nvram 属性 'template'"
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 nvram 设备"
@@ -31326,7 +31322,7 @@ msgstr "'pci' 地址只支持 virtio-pmem 设备"
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
 "supported"
-msgstr ""
+msgstr "仅支持每种类型（sdl、vnc、spice、headless、dbus）的 1 个图形设备"
 
 msgid "only JSON objects can be top level"
 msgstr "只有 JSON 对象可以位于顶级"
@@ -31372,7 +31368,7 @@ msgstr "总线 'virtio' 只支持对于 'passthrough' 输入设备"
 
 #, c-format
 msgid "only bus 'virtio' is supported for input model '%s'"
-msgstr ""
+msgstr "总线 'virtio' 只支持输入型号 '%s'"
 
 msgid "only can reboot running/paused domain"
 msgstr "只能重启正在运行的/暂停的域"
@@ -31925,7 +31921,7 @@ msgid "persistent detach of device is not supported"
 msgstr "不支持持久附分离设备"
 
 msgid "persistent reservations are not supported with NVRAM"
-msgstr ""
+msgstr "NVRAM 不支持持久性保留"
 
 #, c-format
 msgid "persistent update of device '%s' is not supported"
@@ -32070,7 +32066,7 @@ msgstr "非实时或暂停的迁移不支持 post-copy 迁移"
 
 #, c-format
 msgid "post-copy migration of domain %s has not failed"
-msgstr ""
+msgstr "域 %s 的 post-copy 迁移没有失败"
 
 msgid "potentially unsafe disk format probing"
 msgstr "可能不安全的磁盘格式探测"
@@ -32184,7 +32180,7 @@ msgid "print statistics for any kind of job (even failed ones)"
 msgstr "打印任何类型的作业的统计信息（甚至失败的作业）"
 
 msgid "print the XML used to start the copy job instead of starting the job"
-msgstr ""
+msgstr "打印用于启动复制作业的 XML，而不是启动作业"
 
 msgid "print the admin server URI"
 msgstr "显示指向admin server的URI"
@@ -32826,7 +32822,7 @@ msgstr "请求的大小必须是块大小的整数倍"
 
 #, c-format
 msgid "requested size must be smaller than or equal to @size (%lluKiB)"
-msgstr ""
+msgstr "请求的大小必须小于或等于 @size (%lluKiB)"
 
 msgid "requested size of the cache (in bytes) used for compression"
 msgstr "压缩中所需缓存大小（单位：字节）"
@@ -32884,7 +32880,7 @@ msgid "reset the domain after core dump"
 msgstr "core 转储后重新设定该域"
 
 msgid "resetting of nvram is not supported with network backed nvram"
-msgstr ""
+msgstr "网络支持的 nvram 不支持 nvram 的重置"
 
 msgid "resize a vol"
 msgstr "创新定义卷大小"
@@ -32922,7 +32918,7 @@ msgid "resume a domain"
 msgstr "重新恢复一个域"
 
 msgid "resume failed post-copy migration"
-msgstr ""
+msgstr "恢复失败的 post-copy 迁移"
 
 msgid "resume operation failed"
 msgstr "恢复操作失败"
@@ -32935,13 +32931,13 @@ msgstr "快照失败后恢复"
 
 #, c-format
 msgid "resuming failed post-copy migration of domain %s already in progress"
-msgstr ""
+msgstr "恢复失败的域 %s 的 post-copy 迁移已在进行中"
 
 msgid "resuming failed post-copy migration requires change protection"
-msgstr ""
+msgstr "恢复失败的 post-copy 迁移需要更改保护"
 
 msgid "resuming failed post-copy migration requires post-copy to be enabled"
-msgstr ""
+msgstr "恢复失败的 post-copy 迁移需要启用 post-copy"
 
 msgid "retrieve client's identity info from server"
 msgstr "从指定server中获取指定client的信息"
@@ -33221,7 +33217,7 @@ msgstr "安全性模式超过最大的 %d 字节"
 msgid ""
 "select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
 "\")"
-msgstr ""
+msgstr "选择特定的图形显示（例如：\"vnc\", \"spice\", \"rdp\", \"dbus\"）"
 
 msgid "send handler failed"
 msgstr "发送处理程序失败"
@@ -33300,7 +33296,7 @@ msgid "set server's client-related configuration limits"
 msgstr "设置可接入到server的client的数量"
 
 msgid "set the auto shutdown timeout of the daemon"
-msgstr ""
+msgstr "设置守护进程的自动关闭超时时间"
 
 msgid "set the bandwidth limit in MiB/s"
 msgstr "以 MiB/s 为单位设置带宽限制"
@@ -33317,7 +33313,7 @@ msgid "set the user password inside the domain"
 msgstr "设置域中用户的密码"
 
 msgid "set the value for reduction of the IOThread polling time"
-msgstr ""
+msgstr "设置减少 IOThread 轮询时间的值"
 
 msgid "set the value to increase the IOThread polling time"
 msgstr "设置增加 IOThread 轮询时间的值"
@@ -33546,10 +33542,10 @@ msgid "skipped restricted file"
 msgstr "跳过限制的文件"
 
 msgid "slices are not supported with NVRAM"
-msgstr ""
+msgstr "NVRAM 不支持片"
 
 msgid "snapshot"
-msgstr ""
+msgstr "快照"
 
 #, c-format
 msgid "snapshot %s disappeared from list"
@@ -33706,13 +33702,13 @@ msgid "ssl verification is supported only with HTTPS/FTPS protocol"
 msgstr "仅 HTTPS/FTPS 协议支持 ssl 验证"
 
 msgid "start"
-msgstr ""
+msgstr "启动"
 
 msgid "start a (previously defined) inactive domain"
-msgstr "开始一个（以前定义的）非活跃的域"
+msgstr "启动一个（以前定义的）非活跃的域"
 
 msgid "start a (previously defined) inactive network"
-msgstr "开始一个(以前定义的)不活跃的网络"
+msgstr "启动一个(以前定义的)不活跃的网络"
 
 msgid "start a (previously defined) inactive pool"
 msgstr "启动一个（以前定义的）非活跃的池"
@@ -33850,7 +33846,7 @@ msgstr "存储池只支持 LUKS 加密的卷"
 
 #, c-format
 msgid "storage pool protocol ver '%s' must not contain ','"
-msgstr ""
+msgstr "存储池协议 ver '%s' 不得包含 ','"
 
 #, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
@@ -34130,8 +34126,8 @@ msgstr "testOpen：提供一个路径或者默认使用 test:///"
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %s"
-msgstr ""
-"当<address> 或者 <pf> 子元素在网络 %s 中存在时，不能使用 <forward> 'dev' 属性"
+msgstr "当 <address> 或者 <pf> 子元素在网络 %s 中存在时，不能使用 <forward> 'dev' "
+"属性"
 
 msgid "the CPU is incompatible with host CPU"
 msgstr "CPU 与主机 CPU 不兼容"
@@ -34367,33 +34363,33 @@ msgstr "这个存储卷已存在"
 
 #, c-format
 msgid "thread_pool_max (%d) must be a positive number or -1"
-msgstr ""
+msgstr "thread_pool_max(%d)必须是正数或 -1"
 
 #, c-format
 msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
-msgstr ""
+msgstr "对于实时更改，thread_pool_max(%d)必须等于或大于 0"
 
 msgid "thread_pool_max must be a positive integer"
-msgstr ""
+msgstr "thread_pool_max 必须是正整数"
 
 #, c-format
 msgid "thread_pool_min (%d) can't be greater than thread_pool_max (%d)"
-msgstr ""
+msgstr "thread_pool_min(%d)不能大于 thread_pool_max(%d)"
 
 #, c-format
 msgid "thread_pool_min (%d) must be equal to or greater than -1"
-msgstr ""
+msgstr "thread_pool_min(%d)必须等于或大于 -1"
 
 #, c-format
 msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
-msgstr ""
+msgstr "对于实时更改，thread_pool_min(%d)必须等于或大于 0"
 
 msgid ""
 "thread_pool_min and thread_pool_max is not supported by this QEMU binary"
-msgstr ""
+msgstr "这个 QEMU 二进制文件不支持 thread_pool_min 和 thread_pool_max"
 
 msgid "thread_pool_min must be smaller or equal to thread_pool_max"
-msgstr ""
+msgstr "thread_pool_min 必须变小或等于 thread_pool_max"
 
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "阈值作为扩展的数字（默认为字节数）"
@@ -34826,7 +34822,7 @@ msgid "tty console"
 msgstr "tty 控制台"
 
 msgid "tunnelFD argument is required for tunnelled migration"
-msgstr ""
+msgstr "隧道迁移需要 tunnelFD 参数"
 
 msgid "tunnelled migration"
 msgstr "管道迁移"
@@ -34978,7 +34974,7 @@ msgstr "无法删除网络 '%s' 中的接口 '%s'。它目前由 %d 域使用。
 
 #, c-format
 msgid "unable to determine access mode of %s"
-msgstr ""
+msgstr "无法确定 %s 的访问模式"
 
 msgid "unable to determine if checkpoint has parent"
 msgstr "无法确定检查点是否有父级"
@@ -35339,7 +35335,7 @@ msgstr "无法声明块复制目标 '%s'"
 
 #, c-format
 msgid "unable to stat file descriptor %d path %s"
-msgstr ""
+msgstr "无法统计文件描述符 %d 路径 %s"
 
 #, c-format
 msgid "unable to stat for disk %s: %s"
@@ -35642,7 +35638,7 @@ msgstr "意外的信息类型"
 
 #, c-format
 msgid "unexpected migration schema: %d"
-msgstr ""
+msgstr "意外的迁移模式：%d"
 
 #, c-format
 msgid "unexpected migration status in %s"
@@ -35956,7 +35952,7 @@ msgstr "未知的绑定模式类型 %s"
 
 #, c-format
 msgid "unknown capability type '%d' for '%s'"
-msgstr "未知的 '%s' 的能力类型 '%d'"
+msgstr "'%s' 的未知的能力类型 '%d'"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -36673,7 +36669,7 @@ msgstr "不支持的 numatune 模式: '%d'"
 
 #, c-format
 msgid "unsupported nvram disk type '%s'"
-msgstr ""
+msgstr "不支持 nvram 磁盘类型 '%s'"
 
 #, c-format
 msgid "unsupported nvram template format '%s'"
@@ -36780,7 +36776,7 @@ msgid "upload file contents to a volume"
 msgstr "将文件内容上传到卷"
 
 msgid "upper boundary for worker thread pool"
-msgstr ""
+msgstr "worker 线程池的上限"
 
 #, c-format
 msgid "uptime file has unexpected format '%s'"
@@ -36842,7 +36838,7 @@ msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr "使用 virDomainMigrateToURI3 进行点对点迁移"
 
 msgid "use zero-copy mechanism for migrating memory pages"
-msgstr ""
+msgstr "使用 zero-copy 机制来迁移内存页"
 
 msgid "user"
 msgstr "用户"
@@ -37207,7 +37203,7 @@ msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "使用 secure 标签的 virDomainSnapshotGetXMLDesc"
 
 msgid "virFileDiskCopy unsupported on this platform"
-msgstr ""
+msgstr "这个平台上不支持 virFileDiskCopy"
 
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "没有为 WIN32 采用virFileOpenAs"
@@ -37700,7 +37696,7 @@ msgid "with redefine, set current snapshot"
 msgstr "使用 redefice 设定当前快照"
 
 msgid "wrap xpath results in an common root element"
-msgstr ""
+msgstr "wrap xpath 导致一个常见的 root 元素"
 
 msgid "write I/O operations limit per second"
 msgstr "每秒 I/O 写入操作数上限"
@@ -37750,7 +37746,7 @@ msgid "xml modification unsupported"
 msgstr "不支持 xml 修改"
 
 msgid "xpath expression to filter the XML document"
-msgstr ""
+msgstr "过滤 XML 文档的 xpath 表达式"
 
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
@@ -37767,7 +37763,7 @@ msgid "zPCI %s %o is already reserved"
 msgstr "zPCI %s %o 已保留"
 
 msgid "zero-copy is only available for parallel migration"
-msgstr ""
+msgstr "zero-copy 仅适用于并行迁移"
 
 #, c-format
 msgid "zone %s requested for network %s but firewalld is not active"

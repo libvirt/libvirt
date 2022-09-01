@@ -19,7 +19,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-08-26 05:02+0000\n"
-"PO-Revision-Date: 2022-08-08 15:01+0000\n"
+"PO-Revision-Date: 2022-09-01 08:44+0000\n"
 "Last-Translator: Ludek Janda <ljanda@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ja/>\n"
@@ -28,7 +28,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.13\n"
+"X-Generator: Weblate 4.14\n"
 
 msgid ""
 "\n"
@@ -1141,7 +1141,7 @@ msgstr "'%s'"
 
 #, c-format
 msgid "'%s' D-Bus address is not handled"
-msgstr ""
+msgstr "'%s' D-Bus アドレスが処理されていません"
 
 #, c-format
 msgid "'%s' architecture is not supported by CPU driver"
@@ -1335,7 +1335,7 @@ msgid "'netns' namespace source can only be used with sharenet"
 msgstr "'netns' 名前空間ソースは sharenet でのみ使用できます"
 
 msgid "'network' attribute is required for listen type 'network'"
-msgstr ""
+msgstr "'network' 属性が、リッスンタイプ 'network' に対して必要です"
 
 msgid "'network' attribute is valid only for listen type 'network'"
 msgstr "'network' 属性は、リッスンタイプ 'network' に対してのみ有効です"
@@ -1648,9 +1648,8 @@ msgstr ""
 msgid ""
 "<address>, <interface>, and <pf> elements of <forward> in network %s are "
 "mutually exclusive"
-msgstr ""
-"ネットワーク %s における <forward> の <address>、<interface>、および <pf> の"
-"要素は、相互に排他的です"
+msgstr "ネットワーク <forward> における %s の <address>、<interface>、および <pf> "
+"の要素は、相互に排他的です"
 
 msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr "<config> 要素は現在、'rbd' ディスクでのみサポートされます"
@@ -2550,7 +2549,8 @@ msgstr "ディスククォータのみを変更できません"
 
 #, c-format
 msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"
-msgstr ""
+msgstr "VNC、SPICE、または D-Bus p2p グラフィックバックエンドのみ開けます。%s "
+"はできません"
 
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr "USB ハブを追加できません: このドメインの USB が無効化されています"
@@ -3380,7 +3380,7 @@ msgstr "'%s' においてインターフェイスの MAC アドレスを設定�
 
 #, c-format
 msgid "Cannot set interface MAC to %s for ifname %s vf %d"
-msgstr "ifname %s vf %d の %s にインターフェイス MAC を設定できません"
+msgstr "ifname %s vf %d の %s  にインターフェイス MAC を設定できません"
 
 #, c-format
 msgid "Cannot set interface MAC to %s on '%s'"
@@ -4289,7 +4289,7 @@ msgstr "名前 '%s' を持つ物理 NIC を見つけられませんでした"
 
 #, c-format
 msgid "Could not find placement for v1 controller %s"
-msgstr ""
+msgstr "v1 コントローラー %s の配置が見つかりませんでした"
 
 msgid "Could not find placement for v2 controller"
 msgstr "v2 コントローラーの配置が見つかりませんでした"
@@ -5145,10 +5145,10 @@ msgid "Custom loader requires explicit %s configuration"
 msgstr "カスタムローダーには明示的な %s 設定が必要です"
 
 msgid "D-Bus audio is not supported with this QEMU"
-msgstr ""
+msgstr "この QEMU では、D-Bus オーディオはサポートされません"
 
 msgid "D-Bus p2p with an address is not supported"
-msgstr ""
+msgstr "アドレス指定による D-Bus p2p はサポートされていません"
 
 msgid "DAC imagelabel couldn't be determined"
 msgstr "DAC imagelabel を判別できませんでした"
@@ -5414,8 +5414,7 @@ msgstr ""
 msgid ""
 "Device alias was not set for PCI controller with index '%u' required for "
 "device at address '%s'"
-msgstr ""
-"デバイスエイリアスは、アドレス '%s' のデバイスに必要なインデックス '%u' の "
+msgstr "デバイスエイリアスは、アドレス '%u' のデバイスに必要なインデックス '%s' の "
 "PCI コントローラー用に設定されませんでした"
 
 msgid "Device attached successfully\n"
@@ -7000,7 +6999,7 @@ msgid "Failed to create thread to handle domain shutdown"
 msgstr "ドメインのシャットダウンを処理するスレッドの作成に失敗しました"
 
 msgid "Failed to create thread to handle firewall reload/restart"
-msgstr ""
+msgstr "ファイアウォールの再読み込み/再起動を処理するスレッドの作成に失敗しました"
 
 msgid "Failed to create thread to handle pool refresh"
 msgstr "プールの更新を処理するスレッドの作成に失敗しました"
@@ -7828,7 +7827,7 @@ msgstr "%s の解析に失敗しました: com1 と com2 のみがサポート�
 
 #, c-format
 msgid "Failed to parse CCW address '%s'"
-msgstr ""
+msgstr "CCW アドレス '%s' の解析に失敗しました。"
 
 #, c-format
 msgid "Failed to parse MAC address from '%s'"
@@ -9250,6 +9249,8 @@ msgid ""
 "Host not compatible with KVM; HW virtualization CPU features not found. Only "
 "emulated CPUs are available; performance will be significantly limited"
 msgstr ""
+"ホストが KVM と互換性がありません。HW 仮想化 CPU 機能が見つかりません。"
+"エミュレートされた CPU のみ使用可能、性能は大幅に制限されます"
 
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr ""
@@ -9854,7 +9855,7 @@ msgid "Invalid argument"
 msgstr "不正な引数"
 
 msgid "Invalid async job start"
-msgstr ""
+msgstr "無効な非同期ジョブ開始"
 
 #, c-format
 msgid ""
@@ -10365,7 +10366,7 @@ msgstr "free に渡された無効なパラメータータイプ"
 
 #, c-format
 msgid "Invalid parameters macaddr=%p allowRetry=%p"
-msgstr ""
+msgstr "無効なパラメーター macaddr=%p allowRetry=%p"
 
 msgid "Invalid partial specification for virtio ccw address"
 msgstr "virtio ccw アドレスに対する無効な部分指定"
@@ -10580,7 +10581,7 @@ msgstr ""
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative value"
-msgstr ""
+msgstr "要素 '%s': '%s' の属性 '%s' の無効な値。負ではない値が予想されていました"
 
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
@@ -11376,8 +11377,7 @@ msgstr "hostdev デバイス に <source> 要素がありません"
 
 msgid ""
 "Missing <source> element with bridge name in interface's <actual> element"
-msgstr ""
-"インターフェイスの <actual> 要素にブリッジ名を持つ <source>　要素がありません"
+msgstr "インターフェイスの <actual> 要素にブリッジ名を持つ <source> 要素がありません"
 
 msgid "Missing CPU architecture"
 msgstr "CPU アーキテクチャーがありません"
@@ -11647,9 +11647,8 @@ msgstr "query-rx-filter の応答に 'promiscuous' がないか無効です"
 msgid ""
 "Missing or invalid 'start' attribute in <port> in <nat> in <forward> in "
 "network %s"
-msgstr ""
-"ネットワーク %s において <forward> にある <nat> の中で、<port> に 'start' 属"
-"性がありません、または無効です"
+msgstr "ネットワーク %s の <forward> にある <nat> の中で、<port> に 'start' "
+"属性がありません、または無効です"
 
 msgid "Missing or invalid 'unicast' in query-rx-filter response"
 msgstr "query-rx-filter の応答に 'unicast' がないか無効です"
@@ -12311,13 +12310,11 @@ msgstr ""
 "せん"
 
 msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
-msgstr ""
-"<interface type='direct'/> とともに <source> の 'dev' 属性が指定されていませ"
-"ん"
+msgstr "<source> とともに <interface type='direct'/> の 'dev' "
+"属性が指定されていません"
 
 msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
-msgstr ""
-"<interface type='vdpa'/> とともに <source> の 'dev' 属性が指定されていません"
+msgstr "<source> とともに <interface type='vdpa'/> の 'dev' 属性が指定されていません"
 
 msgid ""
 "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
@@ -12787,7 +12784,7 @@ msgid "Not detaching active device %s"
 msgstr "動作中のデバイス %s を切断しません"
 
 msgid "Not enough arguments passed, nothing to set"
-msgstr ""
+msgstr "十分な引数がわたされていません。設定するものがありません"
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13047,7 +13044,7 @@ msgid "Only one primary video device is supported"
 msgstr "主ビデオデバイスが 1 つのみサポートされます"
 
 msgid "Only one vgpu device can have 'ramfb' enabled"
-msgstr ""
+msgstr "1 つの vgpu デバイスだけが 'ramfb' を有効にすることができます"
 
 msgid "Only pflash loader type permits NVRAM"
 msgstr ""
@@ -13778,7 +13775,7 @@ msgstr ""
 "レポートします"
 
 msgid "QEMU reports migration is still running"
-msgstr ""
+msgstr "QEMU はマイグレーションがまだ実行されていることを報告します"
 
 #, c-format
 msgid "QEMU version >= %d.%d.%d is required, but %d.%d.%d found"
@@ -15004,7 +15001,7 @@ msgid "Specifying mount point is not supported for now"
 msgstr "マウントポイントの指定が今のところサポートされません"
 
 msgid "Spice audio is not supported without spice graphics"
-msgstr ""
+msgstr "SPICE オーディオは SPICE グラフィックスがない場合はサポートされません"
 
 msgid "Start"
 msgstr "起動"
@@ -16243,7 +16240,7 @@ msgid "The XML configuration was changed by another user."
 msgstr "XML 設定が他のユーザーにより変更されました。"
 
 msgid "The associated audio is not of 'dbus' kind."
-msgstr ""
+msgstr "関連するオーディオは 'dbus' の種類ではありません。"
 
 #, c-format
 msgid "The certificate %s basic constraints do not show a CA"
@@ -20673,7 +20670,7 @@ msgstr "別のバックアップジョブがすでに実行されています"
 
 #, c-format
 msgid "another migration job is already running for domain '%s'"
-msgstr ""
+msgstr "ドメイン '%s' に対して別の移行ジョブがすでに実行されています"
 
 msgid "any configuration"
 msgstr "任意の設定"
@@ -20696,9 +20693,8 @@ msgstr "アーキテクチャー"
 
 #, c-format
 msgid "architecture from emulator '%s' doesn't match given architecture '%s'"
-msgstr ""
-"エミュレーター '%s' からのアーキテクチャーは、指定のアーキテクチャーと一致し"
-"ません"
+msgstr "エミュレーター '%s' からのアーキテクチャーは、指定のアーキテクチャー '%s' "
+"と一致しません"
 
 #, c-format
 msgid "argument key '%s' is too short or malformed"
@@ -20727,7 +20723,7 @@ msgstr "エコーする引数"
 
 #, c-format
 msgid "array element '%zd' of '%zd' missing in guest-get-fsinfo 'disk' data"
-msgstr "guest-get-fsinfo 'disk' データに '%zd' の配列要素がありません"
+msgstr "guest-get-fsinfo 'disk' データに '%zd' の配列要素 '%zd' がありません"
 
 #, c-format
 msgid "array element '%zd' of '%zd' missing in guest-get-fsinfo return data"
@@ -20869,10 +20865,10 @@ msgstr "認証に失敗しました: %s"
 
 #, c-format
 msgid "authentication is not supported for protocol '%s'"
-msgstr ""
+msgstr "認証は、プロトコル '%s' に対してサポートされていません"
 
 msgid "authentication is supported only for network backed disks"
-msgstr ""
+msgstr "認証はネットワークバックアップされたディスクにのみサポートされています"
 
 msgid "authentication required"
 msgstr "認証が必要です"
@@ -20952,7 +20948,7 @@ msgid "backing store protocol '%s' is not yet supported"
 msgstr "バッキングストアプロトコル '%s' は、まだサポートされていません"
 
 msgid "backingStore is not supported with NVRAM"
-msgstr ""
+msgstr "NVRAM では backingStore はサポートされていません"
 
 msgid "backingStore is not supported with vhostuser disk"
 msgstr "backingStore は vhostuser ディスクではサポートされません"
@@ -20964,7 +20960,7 @@ msgstr ""
 "VIR_DOMAIN_BLOCK_COPY_SHALLOW のないミラーの backingStore は意味がありません"
 
 msgid "backup"
-msgstr ""
+msgstr "バックアップ"
 
 msgid "backup TLS directory not configured"
 msgstr "バックアップ TLS ディレクトリーが設定されていません"
@@ -22218,7 +22214,7 @@ msgstr "I/O エラーのあるドメインは移行できません"
 
 #, c-format
 msgid "cannot migrate domain: %s"
-msgstr ""
+msgstr "以下のドメインを移行できません: %s"
 
 msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr "dbus-vmstate のサポートなしでこのドメインを移行することはできません"
@@ -22454,7 +22450,7 @@ msgstr "lunStr '%s' のターゲットを解析できません"
 
 #, c-format
 msgid "cannot parse thread pool size '%s' for virtiofs"
-msgstr ""
+msgstr "virtiofs のスレッドプールサイズ '%s' をパースできません"
 
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
@@ -22917,7 +22913,8 @@ msgstr "セッションモードでカスタムタップデバイスを使用す
 msgid ""
 "cannot use feature-based firmware autoselection when firmware autoselection "
 "is disabled"
-msgstr ""
+msgstr "ファームウェア自動選択機能が無効の場合は、機能ベースのファームウェア自動選択"
+"機能を使用できません"
 
 msgid "cannot use namespaces in session mode"
 msgstr "セッションモードで名前空間を使用することはできません"
@@ -22983,7 +22980,7 @@ msgid "cd: command valid only in interactive mode"
 msgstr "cd: コマンドは対話モードにおいてのみ有効です"
 
 msgid "cdrom device with virtio bus isn't supported"
-msgstr ""
+msgstr "virtio バス搭載の cdrom デバイスはサポートされていません"
 
 msgid "cdrom device without source path not supported"
 msgstr "ソースパスのない cdrom デバイスはサポートされていません"
@@ -23121,11 +23118,11 @@ msgstr "キャラクターデバイス名"
 
 #, c-format
 msgid "chardev '%s' not supported in this QEMU binary"
-msgstr ""
+msgstr "chardev '%s' この QEMU バイナリーではサポートされていません"
 
 #, c-format
 msgid "chardev '%s' not supported without spice graphics"
-msgstr ""
+msgstr "chardev '%s' SPICE グラフィックスがないとサポートされません"
 
 msgid "chardev already exists"
 msgstr "キャラクターデバイスがすでに存在します"
@@ -24080,7 +24077,8 @@ msgid "current bridge device name"
 msgstr "現在のブリッジデバイス名"
 
 msgid "current job is not outgoing migration in post-copy mode"
-msgstr ""
+msgstr "現在のジョブはポストコピーモードでアウトゴーイングマイグレーションではありま"
+"せん。"
 
 msgid "current vcpu count must equal maximum"
 msgstr "カレント仮想 CPU 数は最大値と同じでなければいけません"
@@ -24701,10 +24699,11 @@ msgstr "ディスクソースパスがありません"
 
 #, c-format
 msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
-msgstr ""
+msgstr "ディスク startupPolicy '%s' は、'%s' タイプのディスクに許可されていません"
 
 msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
-msgstr ""
+msgstr "ディスク startupPolicy 'requisite' は、cdrom または floppy "
+"に対してのみ許可されます"
 
 #, c-format
 msgid "disk target %s not found"
@@ -24902,7 +24901,7 @@ msgid "domain control interface state"
 msgstr "ドメイン制御インターフェイス状態"
 
 msgid "domain core dump"
-msgstr ""
+msgstr "ドメインコアダンプ"
 
 msgid "domain display connection URI"
 msgstr "ドメインのディスプレイ接続 URI"
@@ -25016,7 +25015,7 @@ msgid "domain name, id or uuid"
 msgstr "ドメイン名、ID または uuid"
 
 msgid "domain save"
-msgstr ""
+msgstr "ドメイン保存"
 
 msgid "domain snapshot XML"
 msgstr "ドメインのスナップショットの XML"
@@ -25315,7 +25314,7 @@ msgid "encryption is not supported with vhostuser disk"
 msgstr "暗号化は vhostuser ディスクではサポートされません"
 
 msgid "encryption is supported only with 'raw' and 'qcow2' image format"
-msgstr ""
+msgstr "暗号化は 'raw' と 'qcow2' イメージフォーマットでのみサポートされています"
 
 #, c-format
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
@@ -26568,14 +26567,14 @@ msgid "failed to parse node name index"
 msgstr "ノード名インデックスの解析に失敗しました"
 
 msgid "failed to parse original memlock size"
-msgstr ""
+msgstr "オリジナルメムロックのサイズの解析に失敗しました"
 
 #, c-format
 msgid "failed to parse port number '%s'"
 msgstr "ポート番号 '%s' の解析に失敗しました"
 
 msgid "failed to parse pre-migration memlock limit"
-msgstr ""
+msgstr "移行前メムロック制限の解析に失敗しました"
 
 msgid "failed to parse qemu capabilities cpus"
 msgstr "qemu ケイパビリティー cpus の解析に失敗しました"
@@ -27036,7 +27035,7 @@ msgstr "fd の受け渡しはこの接続ではサポートされていません
 
 #, c-format
 msgid "fdset '%u' is already in use by qemu"
-msgstr ""
+msgstr "fdset '%u' は既に qemu によって使用されています"
 
 msgid "fetch or set the currently defined set of logging filters on daemon"
 msgstr ""
@@ -27235,11 +27234,12 @@ msgstr "このドライバーにはファームウェアの自動選択が実装
 msgid ""
 "firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
 "'secure-boot' is disabled"
-msgstr ""
+msgstr "ファームウェア機能 'enrolled-keys'が無効な場合は、ファームウェア機能 'secure-"
+"boot' を有効にすることができません"
 
 #, c-format
 msgid "firmware type '%s' does not support nvram"
-msgstr ""
+msgstr "ファームウェアタイプ '%s' は、nvram をサポートしていません"
 
 msgid "fixed audio settings requires mixing engine"
 msgstr "固定オーディオ設定には、ミキシングエンジンが必要です"
@@ -27267,7 +27267,7 @@ msgid "floor attribute is not supported for this config"
 msgstr "この設定では floor 属性はサポートされていません"
 
 msgid "floppy device hotplug isn't supported"
-msgstr ""
+msgstr "フロッピーデバイスのホットプラグがサポートされていません"
 
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr "fmode および dmode は、accessmode=mapped で使用する必要があります"
@@ -27641,7 +27641,7 @@ msgid "guest-get-vcpus reply was missing return data"
 msgstr "guest-get-vcpus からの応答に返り値がありませんでした"
 
 msgid "guestReset is not supported with this version of QEMU"
-msgstr ""
+msgstr "guestReset は、このバージョンの QEMU ではサポートされていません"
 
 msgid "guestfwd channel does not define a target address"
 msgstr "guestfwd チャネルがターゲットアドレスを定義していません"
@@ -28291,7 +28291,7 @@ msgid "internal use only"
 msgstr "内部でのみ使用します"
 
 msgid "interrupt post-copy migration"
-msgstr ""
+msgstr "コピー後の移行を中断"
 
 msgid "intr:"
 msgstr "intr:"
@@ -28304,9 +28304,8 @@ msgstr "<vlan> の無効な \"trunk='%s'\" - yes または no である必要が
 msgid ""
 "invalid \"trunk='%s'\" in <vlan> - trunk='yes' is required for more than one "
 "vlan tag"
-msgstr ""
-"<vlan> の無効な \"trunk='%s'\" - 二つ以上の VLAN タグに対して trunk='yes' が"
-"必要です"
+msgstr "<vlan> の無効な \"trunk='%s'\" - 2 つ以上の VLAN タグに対して trunk='yes' "
+"が必要です"
 
 #, c-format
 msgid "invalid %s value: '%s'"
@@ -28357,7 +28356,7 @@ msgstr "無効な <port> 要素がネットワーク %s の <forward> に見つ�
 
 #, c-format
 msgid "invalid <srv> element found in <dns> of network %s"
-msgstr "無効な  <srv> 要素がネットワーク %s の <dns> に見つかりました"
+msgstr "無効な <srv> 要素がネットワーク %s の <dns> に見つかりました"
 
 #, c-format
 msgid "invalid <txt> element found in <dns> of network %s"
@@ -28705,7 +28704,7 @@ msgstr ""
 
 #, c-format
 msgid "invalid keycode %u of %s codeset"
-msgstr "%s コードセットの無効なキーコード"
+msgstr "%s コードセットの無効なキーコード %u"
 
 #, c-format
 msgid "invalid keycode: '%s'"
@@ -29058,7 +29057,7 @@ msgstr ""
 
 #, c-format
 msgid "iommu model '%s' can't have address"
-msgstr ""
+msgstr "iommu モデル '%s' は、アドレスを指定できません"
 
 #, c-format
 msgid "iommu model '%s' doesn't support additional attributes"
@@ -29129,27 +29128,27 @@ msgstr "この QEMU バイナリーでは、ivshmem デバイスはサポート�
 
 #, c-format
 msgid "job '%s' canceled by client"
-msgstr ""
+msgstr "ジョブ '%s' クライアントによってキャンセルされました"
 
 #, c-format
 msgid "job '%s' failed due to I/O error"
-msgstr ""
+msgstr "ジョブ '%s' は I/O エラーが原因で失敗しました"
 
 #, c-format
 msgid "job '%s' failed in post-copy phase"
-msgstr ""
+msgstr "ジョブ '%s' ポストコピーフェーズに失敗しました"
 
 #, c-format
 msgid "job '%s' failed: %s"
-msgstr ""
+msgstr "ジョブ '%s' は失敗しました: %s"
 
 #, c-format
 msgid "job '%s' is not active"
-msgstr ""
+msgstr "ジョブ '%s' はアクティブではありません"
 
 #, c-format
 msgid "job '%s' unexpectedly failed"
-msgstr ""
+msgstr "ジョブ '%s' は予期せず失敗しました"
 
 #, c-format
 msgid "job type '%s' does not support pivot"
@@ -29232,7 +29231,7 @@ msgid "librbd encryption is not supported by this QEMU binary"
 msgstr "この QEMU バイナリーでは、librbd 暗号化はサポートされません"
 
 msgid "librbd encryption is supported only with RBD backed disks"
-msgstr ""
+msgstr "librbd の暗号化は RBD でバックアップされたディスクでのみサポートされています"
 
 msgid "libssh transport error"
 msgstr "libssh トランスポートエラー"
@@ -29686,20 +29685,24 @@ msgstr "デバイス '%s' の動的更新はサポートされません"
 msgid ""
 "loader attribute 'readonly' cannot be specified when firmware autoselection "
 "is enabled"
-msgstr ""
+msgstr "ファームウェアの自動選択が有効な場合、loader 属性に 'readonly' "
+"を指定できません"
 
 msgid ""
 "loader attribute 'secure' cannot be specified when firmware autoselection is "
 "enabled"
-msgstr ""
+msgstr "ファームウェアの自動選択機能が有効な場合は、loader 属性に 'secure' "
+"を指定できません"
 
 msgid ""
 "loader attribute 'type' cannot be specified when firmware autoselection is "
 "enabled"
-msgstr ""
+msgstr "ファームウェアの自動選択が有効な場合は、ローダー属性の 'type' "
+"が指定できません"
 
 msgid "loader path cannot be specified when firmware autoselection is enabled"
-msgstr ""
+msgstr "ファームウェアの自動選択機能が有効な場合は、ローダーパスを指定することはでき"
+"ません"
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
@@ -29723,7 +29726,7 @@ msgid "loop until timeout or interrupt, rather than one-shot"
 msgstr "ワンショットではなく、タイムアウトまたは割り込みまでループします"
 
 msgid "lower boundary for worker thread pool"
-msgstr ""
+msgstr "ワーカスレッドプールの下限値"
 
 msgid "luks2 is currently not supported by the qemu encryption engine"
 msgstr "luks2 は現在、qemu 暗号化エンジンではサポートされていません"
@@ -30285,7 +30288,7 @@ msgid "migration canceled"
 msgstr "マイグレーションが取り消されました"
 
 msgid "migration in"
-msgstr ""
+msgstr "以下の移行"
 
 #, c-format
 msgid "migration of disk %s failed"
@@ -30297,11 +30300,11 @@ msgstr "ディスク %s のマイグレーションが失敗しました: %s"
 
 #, c-format
 msgid "migration of domain %s is being actively monitored by another thread"
-msgstr ""
+msgstr "ドメイン %s の移行は、別のスレッドで活発に監視されています"
 
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
-msgstr ""
+msgstr "ドメイン移動 %s はコピー後のフェーズではありません"
 
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
@@ -30311,7 +30314,7 @@ msgstr ""
 "QEMU ではサポートされません"
 
 msgid "migration out"
-msgstr ""
+msgstr "マイグレーションアウト"
 
 #, c-format
 msgid "migration parameter '%s' must be less than %llu"
@@ -30521,7 +30524,7 @@ msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr "NFS ボリュームの JSON バッキング定義に 'server' 属性がありません"
 
 msgid "missing 'start' attribute for clock with offset='absolute'"
-msgstr ""
+msgstr "offset='absolute' のクロックに 'start' 属性がありません"
 
 #, c-format
 msgid ""
@@ -31021,7 +31024,7 @@ msgid "missing path for <reservations/>"
 msgstr "<reservations/> のパスがありません"
 
 msgid "missing path to restore from"
-msgstr ""
+msgstr "復元するパスが欠落しています"
 
 msgid "missing per-device path"
 msgstr "デバイスごとのパスがありません"
@@ -32559,7 +32562,7 @@ msgid "number of read operations:"
 msgstr "読み込み回数:"
 
 msgid "number of seconds the daemon will run without any active connection"
-msgstr ""
+msgstr "アクティブな接続がない状態でデーモンが実行される秒数"
 
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr "新規接続ポートにおいてトラフィックを抑える秒数"
@@ -32605,7 +32608,8 @@ msgstr "nvram アドレスタイプは spaprvio である必要があります"
 msgid ""
 "nvram attribute 'template' cannot be specified when firmware autoselection "
 "is enabled"
-msgstr ""
+msgstr "ファームウェアの自動選択が有効な場合、nvram "
+"属性のテンプレートが指定できません"
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "nvram デバイスは、この QEMU バイナリーにおいてサポートされません"
@@ -32691,7 +32695,8 @@ msgstr "virtio-pmem デバイスでサポートされるのは 'pci' アドレ�
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
 "supported"
-msgstr ""
+msgstr "各タイプ (SDL、VNC、Spice、Headless、Dbus) のグラフィックスデバイスは 1 "
+"つだけサポートされています"
 
 msgid "only JSON objects can be top level"
 msgstr "JSON オブジェクトのみが最上位レベルになります"
@@ -32738,7 +32743,7 @@ msgstr "'passthrough' 入力デバイスでサポートされるのはバス 'vi
 
 #, c-format
 msgid "only bus 'virtio' is supported for input model '%s'"
-msgstr ""
+msgstr "入力モデル %s については、バス virtio のみがサポートされています。"
 
 msgid "only can reboot running/paused domain"
 msgstr "実行中/一時停止したドメインのみを再起動できます"
@@ -33325,7 +33330,7 @@ msgid "persistent detach of device is not supported"
 msgstr "デバイスの永続的な切断はサポートされません"
 
 msgid "persistent reservations are not supported with NVRAM"
-msgstr ""
+msgstr "NVRAM では永続的な予約はサポートされていません"
 
 #, c-format
 msgid "persistent update of device '%s' is not supported"
@@ -33472,7 +33477,7 @@ msgstr ""
 
 #, c-format
 msgid "post-copy migration of domain %s has not failed"
-msgstr ""
+msgstr "ドメイン %s のポストコピー移行は失敗していません"
 
 msgid "potentially unsafe disk format probing"
 msgstr "安全でない可能性のあるディスクフォーマットのプロービング"
@@ -33589,7 +33594,7 @@ msgid "print statistics for any kind of job (even failed ones)"
 msgstr "あらゆる種類のジョブ (失敗したジョブも含む) の統計を出力します"
 
 msgid "print the XML used to start the copy job instead of starting the job"
-msgstr ""
+msgstr "ジョブを開始する代わりに、コピージョブの開始に使用した XML を表示します"
 
 msgid "print the admin server URI"
 msgstr "管理サーバーの URI を出力します"
@@ -34257,7 +34262,7 @@ msgstr "要求サイズは、ブロックサイズの整数倍である必要が
 
 #, c-format
 msgid "requested size must be smaller than or equal to @size (%lluKiB)"
-msgstr ""
+msgstr "要求サイズは @size 以下である必要があります (%lluKiB)"
 
 msgid "requested size of the cache (in bytes) used for compression"
 msgstr "圧縮のために使用されるキャッシュの要求サイズ (バイト単位)"
@@ -34320,7 +34325,8 @@ msgid "reset the domain after core dump"
 msgstr "コアダンプ後にドメインをリセットします"
 
 msgid "resetting of nvram is not supported with network backed nvram"
-msgstr ""
+msgstr "ネットワークバックアップされた nvram では、nvram "
+"のリセットはサポートされていません"
 
 msgid "resize a vol"
 msgstr "ボリュームのサイズを変更する"
@@ -34358,7 +34364,7 @@ msgid "resume a domain"
 msgstr "ドメインを再開します"
 
 msgid "resume failed post-copy migration"
-msgstr ""
+msgstr "レジュームポストコピーのマイグレーションに失敗"
 
 msgid "resume operation failed"
 msgstr "レジューム操作は失敗しました"
@@ -34371,13 +34377,14 @@ msgstr "スナップショット失敗後に再開中"
 
 #, c-format
 msgid "resuming failed post-copy migration of domain %s already in progress"
-msgstr ""
+msgstr "既に進行中のドメイン %s の失敗したポストコピー移行を再開します"
 
 msgid "resuming failed post-copy migration requires change protection"
-msgstr ""
+msgstr "失敗したコピー後の移行を再開するには、変更保護が必要です"
 
 msgid "resuming failed post-copy migration requires post-copy to be enabled"
-msgstr ""
+msgstr "失敗したポストコピーの移行を再開するには、ポストコピーを有効にする必要があり"
+"ます"
 
 msgid "retrieve client's identity info from server"
 msgstr "サーバーからクライアントの ID 情報を取得します"
@@ -34659,7 +34666,7 @@ msgstr "セキュリティモデルの文字列が最大値 %d バイトを超�
 msgid ""
 "select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
 "\")"
-msgstr ""
+msgstr "特定のグラフ表示の選択 (例: \"vnc\"、\"spice\"、\"rdp\"、\"dbus\")"
 
 msgid "send handler failed"
 msgstr "ハンドラーの送信に失敗しました"
@@ -34740,7 +34747,7 @@ msgid "set server's client-related configuration limits"
 msgstr "サーバーのクライアント関連の設定制限を設定します"
 
 msgid "set the auto shutdown timeout of the daemon"
-msgstr ""
+msgstr "デーモンの自動シャットダウンのタイムアウトを設定します"
 
 msgid "set the bandwidth limit in MiB/s"
 msgstr "MiB/s で帯域幅制限を設定します"
@@ -34759,7 +34766,7 @@ msgid "set the user password inside the domain"
 msgstr "ドメイン内でユーザーパスワードを設定します"
 
 msgid "set the value for reduction of the IOThread polling time"
-msgstr ""
+msgstr "IOThread のポーリング時間を短縮するための値を設定します"
 
 msgid "set the value to increase the IOThread polling time"
 msgstr "IOThread のポーリング時間を増やす値を設定します"
@@ -35010,10 +35017,10 @@ msgid "skipped restricted file"
 msgstr "制限されたファイルをスキップしました"
 
 msgid "slices are not supported with NVRAM"
-msgstr ""
+msgstr "スライスは、NVRAM ではサポートされていません"
 
 msgid "snapshot"
-msgstr ""
+msgstr "スナップショット"
 
 #, c-format
 msgid "snapshot %s disappeared from list"
@@ -35186,7 +35193,7 @@ msgid "ssl verification is supported only with HTTPS/FTPS protocol"
 msgstr "SSL 検証は、HTTPS/FTPS プロトコルでのみサポートされます"
 
 msgid "start"
-msgstr ""
+msgstr "起動"
 
 msgid "start a (previously defined) inactive domain"
 msgstr "(以前に定義された) 非アクティブなドメインを開始します"
@@ -35336,7 +35343,7 @@ msgstr "ストレージプールは LUKS 暗号化ボリュームのみをサポ
 
 #, c-format
 msgid "storage pool protocol ver '%s' must not contain ','"
-msgstr ""
+msgstr "ストレージプールプロトコルバージョン '%s' は ',' を含んではなりません"
 
 #, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
@@ -35608,8 +35615,8 @@ msgstr "テンプレートが存在しません"
 
 #, c-format
 msgid "terminal QAPI query component '%s' of '%s' must not have followers"
-msgstr ""
-"'%s' のターミナル QAPI クエリーコンポーネントにフォロワーがいてはなりません"
+msgstr "'%s' の '%s' のターミナル QAPI "
+"クエリーコンポーネントにフォロワーがいてはなりません"
 
 msgid "terminate gracefully"
 msgstr "穏やかに終了します"
@@ -35884,33 +35891,34 @@ msgstr "このストレージボリュームはすでに存在します"
 
 #, c-format
 msgid "thread_pool_max (%d) must be a positive number or -1"
-msgstr ""
+msgstr "thread_pool_max (%d) は正数または -1 でなければなりません"
 
 #, c-format
 msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
-msgstr ""
+msgstr "thread_pool_max (%d) をライブで変更する場合は、0 以上にする必要があります"
 
 msgid "thread_pool_max must be a positive integer"
-msgstr ""
+msgstr "thread_pool_max は正の整数でなければならなりません"
 
 #, c-format
 msgid "thread_pool_min (%d) can't be greater than thread_pool_max (%d)"
-msgstr ""
+msgstr "thread_pool_min (%d) は thread_pool_max (%d) よりも大きくてはならない"
 
 #, c-format
 msgid "thread_pool_min (%d) must be equal to or greater than -1"
-msgstr ""
+msgstr "thread_pool_min (%d) は -1 以上でなければなりません"
 
 #, c-format
 msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
-msgstr ""
+msgstr "thread_pool_min (%d) をライブで変更する場合は 0 以上にする必要があります"
 
 msgid ""
 "thread_pool_min and thread_pool_max is not supported by this QEMU binary"
-msgstr ""
+msgstr "thread_pool_min と thread_pool_max は、この QEMU "
+"バイナリーではサポートされていません"
 
 msgid "thread_pool_min must be smaller or equal to thread_pool_max"
-msgstr ""
+msgstr "thread_pool_min は thread_pool_max よりも小さいか等しくなければなりません"
 
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "スケーリングされた数値としてのしきい値 (デフォルトではバイト)"
@@ -36377,7 +36385,7 @@ msgid "tty console"
 msgstr "TTY コンソール"
 
 msgid "tunnelFD argument is required for tunnelled migration"
-msgstr ""
+msgstr "tunnelFD 引数は、トンネル型マイグレーションに必要です"
 
 msgid "tunnelled migration"
 msgstr "トンネルマイグレーション"
@@ -36532,7 +36540,7 @@ msgstr ""
 
 #, c-format
 msgid "unable to determine access mode of %s"
-msgstr ""
+msgstr "%s のアクセスモードが決まりません"
 
 msgid "unable to determine if checkpoint has parent"
 msgstr "チェックポイントに親があるかどうかを判断できません"
@@ -36896,7 +36904,7 @@ msgstr "ブロックコピーターゲット '%s' の統計を取得できませ
 
 #, c-format
 msgid "unable to stat file descriptor %d path %s"
-msgstr ""
+msgstr "ファイル記述子 %d パス %s にアクセスできません"
 
 #, c-format
 msgid "unable to stat for disk %s: %s"
@@ -37202,7 +37210,7 @@ msgstr "予期しないメッセージタイプ"
 
 #, c-format
 msgid "unexpected migration schema: %d"
-msgstr ""
+msgstr "予期しないマイグレーションスキーマ: %d"
 
 #, c-format
 msgid "unexpected migration status in %s"
@@ -37978,8 +37986,8 @@ msgid ""
 "unsupported <bandwidth> element in <portgroup name='%s'> of network '%s' "
 "with forward mode='%s'"
 msgstr ""
-"ネットワーク '%s' の<portgroup name='%s'> における <bandwidth> 要素が転送モー"
-"ド='%s' でサポートされません"
+"ネットワーク '%s' の <portgroup name='%s'> における <bandwidth> "
+"要素が転送モード='%s' でサポートされません"
 
 #, c-format
 msgid "unsupported CPU cache level for mode '%s'"
@@ -38242,7 +38250,7 @@ msgstr "サポートされない numatune モード: '%d'"
 
 #, c-format
 msgid "unsupported nvram disk type '%s'"
-msgstr ""
+msgstr "サポートされない nvram ディスクタイプ '%s'"
 
 #, c-format
 msgid "unsupported nvram template format '%s'"
@@ -38308,7 +38316,7 @@ msgstr "サポートされないタイマータイプ (名前) '%s'"
 
 #, c-format
 msgid "unsupported type '%s' in interface's <actual> element"
-msgstr "インターフェイスの <actual> 要素のサポートされない タイプ '%s'"
+msgstr "インターフェイスの <actual> 要素のサポートされないタイプ '%s'"
 
 #, c-format
 msgid "unsupported type='%s' to model 'none'"
@@ -38350,7 +38358,7 @@ msgid "upload file contents to a volume"
 msgstr "ファイル内容のボリュームへのアップロード"
 
 msgid "upper boundary for worker thread pool"
-msgstr ""
+msgstr "ワーカスレッドプールの上限値"
 
 #, c-format
 msgid "uptime file has unexpected format '%s'"
@@ -38414,7 +38422,7 @@ msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr "ピアツーピアの移行に virDomainMigrateToURI3 を使用します"
 
 msgid "use zero-copy mechanism for migrating memory pages"
-msgstr ""
+msgstr "メモリーページの移行にゼロコピー機構を使用します"
 
 msgid "user"
 msgstr "user"
@@ -38794,7 +38802,7 @@ msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "secure フラグのある virDomainSnapshotGetXMLDesc"
 
 msgid "virFileDiskCopy unsupported on this platform"
-msgstr ""
+msgstr "virFileDiskCopy はこのプラットフォームではサポートされていません。"
 
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs は WIN32 に対して実装されていません"
@@ -39333,7 +39341,7 @@ msgid "with redefine, set current snapshot"
 msgstr "--redefine と併用して、カレントスナップショットに設定"
 
 msgid "wrap xpath results in an common root element"
-msgstr ""
+msgstr "xpath の結果を共通のルート要素でラップ"
 
 msgid "write I/O operations limit per second"
 msgstr "秒あたりの書き込み I/O 回数制限"
@@ -39387,7 +39395,7 @@ msgid "xml modification unsupported"
 msgstr "XML 修正はサポートされません"
 
 msgid "xpath expression to filter the XML document"
-msgstr ""
+msgstr "XML 文書をフィルタリングするための xpath 式"
 
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
@@ -39404,7 +39412,7 @@ msgid "zPCI %s %o is already reserved"
 msgstr "zPCI %s %o はすでに予約されています"
 
 msgid "zero-copy is only available for parallel migration"
-msgstr ""
+msgstr "ゼロコピーはパラレルマイグレーションでのみ利用可能です"
 
 #, c-format
 msgid "zone %s requested for network %s but firewalld is not active"
