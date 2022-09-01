@@ -88,7 +88,6 @@ exec "$@"' > /usr/bin/nosync && \
         sanlock-devel \
         scrub \
         sed \
-        sheepdog \
         systemd-devel \
         systemtap-sdt-devel \
         wireshark-devel \

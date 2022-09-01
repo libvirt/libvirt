@@ -54,8 +54,7 @@ exec "$@"' > /usr/bin/nosync && \
         rpcgen \
         rpm-build \
         scrub \
-        sed \
-        sheepdog && \
+        sed && \
     nosync dnf autoremove -y && \
     nosync dnf clean all -y
 
