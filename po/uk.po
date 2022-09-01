@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-08-26 05:02+0000\n"
-"PO-Revision-Date: 2022-07-28 00:20+0000\n"
+"PO-Revision-Date: 2022-08-31 12:19+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.13\n"
+"X-Generator: Weblate 4.14\n"
 
 msgid ""
 "\n"
@@ -1661,7 +1661,7 @@ msgstr "<%s>..."
 
 #, c-format
 msgid "<active_pcr_banks/> requires TPM version '%s'"
-msgstr ""
+msgstr "<active_pcr_banks/> потребує версії TPM «%s»"
 
 #, c-format
 msgid ""
@@ -2389,18 +2389,24 @@ msgstr "Карта процесорів:"
 msgid ""
 "CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
 msgstr ""
+"Режим максимального розміру фізичної адреси процесора «%s» можна "
+"використовувати лише з процесорами «%s»"
 
 #, c-format
 msgid ""
 "CPU maximum physical address bits number specification cannot be used with "
 "mode='%s'"
 msgstr ""
+"Специфікацію із числами максимального розміру фізичної адреси процесора не "
+"можна використовувати з режимом «%s»"
 
 #, c-format
 msgid ""
 "CPU maximum physical address bits specification is not supported for '%s' "
 "architecture"
 msgstr ""
+"Підтримки специфікації із числами максимального розміру фізичної адреси "
+"процесора для архітектури «%s» не передбачено"
 
 #, c-format
 msgid ""
@@ -11927,7 +11933,7 @@ msgstr ""
 
 #, c-format
 msgid "Missing or invalid CPU address size in %s"
-msgstr ""
+msgstr "Пропущений або некоректний розмір адреси процесора у %s"
 
 #, c-format
 msgid "Missing or invalid CPU frequency in %s"
@@ -12114,7 +12120,7 @@ msgstr "Відсутній атрибут service у source для символ�
 
 #, c-format
 msgid "Missing source switchid for interface type '%s'"
-msgstr ""
+msgstr "Пропущено switchid джерела для типу інтерфейсу «%s»"
 
 msgid "Missing storage block path"
 msgstr "Не вказано шлях до блокового пристрою зберігання даних"
@@ -12375,9 +12381,11 @@ msgstr "Простір назв NVMe не може бути нульовим"
 
 msgid "NVRAM is not permitted when loader is stateless"
 msgstr ""
+"NVRAM не можна використовувати, якщо для завантажувача не визначено станів"
 
 msgid "NVRAM template is not permitted when loader is stateless"
 msgstr ""
+"Не можна використовувати NVRAM, якщо для завантажувача не визначено станів"
 
 msgid "Name"
 msgstr "Назва"
@@ -13223,7 +13231,7 @@ msgid "Only 1 thread per core is supported"
 msgstr "Передбачено підтримку лише одного потоку обробки на ядро"
 
 msgid "Only EFI firmware permits NVRAM"
-msgstr ""
+msgstr "NVRAM дозволено лише для мікропрограм EFI"
 
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr "З префіксом можна використовувати лише адреси IPv4 або IPv6"
@@ -13349,7 +13357,7 @@ msgid "Only one vgpu device can have 'ramfb' enabled"
 msgstr "«rambf» може бути увімкнено лише для одного пристрою vgpu"
 
 msgid "Only pflash loader type permits NVRAM"
-msgstr ""
+msgstr "NVRAM дозволено лише для завантажувачів типу pflash"
 
 msgid "Only ploop disk images are supported by vz driver."
 msgstr "У драйвері vz передбачено підтримку лише образів дисків ploop."
@@ -15751,7 +15759,7 @@ msgstr "Некоректний шлях до пристрою TPM %s"
 
 #, c-format
 msgid "TPM version '%s' is not supported"
-msgstr ""
+msgstr "Підтримки версії TPM «%s» не передбачено"
 
 msgid "Table row cannot be empty"
 msgstr "Рядок таблиці не може бути порожнім"
@@ -15806,7 +15814,7 @@ msgstr ""
 "%s"
 
 msgid "Target CPU maxphysaddr does not match source"
-msgstr ""
+msgstr "maxphysaddr процесора цілі не збігається із значенням для джерела"
 
 #, c-format
 msgid "Target CPU mode %s does not match source %s"
@@ -16886,6 +16894,8 @@ msgid ""
 "The number of virtual CPU address bits cannot exceed the number supported by "
 "the host CPU"
 msgstr ""
+"Кількість бітів в адресі віртуального процесора не може перевищувати "
+"кількість, підтримку якої передбачено у процесорі основної системи"
 
 msgid ""
 "The overall maximum number of clients must be greater than the maximum "
@@ -18042,7 +18052,7 @@ msgstr "Не вдалося знайти задовільного virtiofsd"
 
 #, c-format
 msgid "Unable to find address for mdev parent device '%s'"
-msgstr ""
+msgstr "Не вдалося знайти адресу для батьківського пристрою mdev «%s»"
 
 #, c-format
 msgid "Unable to find address for parent device '%s'"
@@ -18693,7 +18703,7 @@ msgstr "Не вдалося обробити значення версії cloud
 
 #, c-format
 msgid "Unable to parse connectionid '%s'"
-msgstr ""
+msgstr "Не вдалося обробити connectionid «%s»"
 
 #, c-format
 msgid "Unable to parse current SELinux context '%s'"
@@ -18730,7 +18740,7 @@ msgstr "Не вдалося обробити запис ідентифікато
 
 #, c-format
 msgid "Unable to parse portid '%s'"
-msgstr ""
+msgstr "Не вдалося обробити portid «%s»"
 
 msgid "Unable to parse quota"
 msgstr "Не вдалося обробити дані щодо квоти"
@@ -18752,7 +18762,7 @@ msgstr "Не вдалося обробити рядковий параметр"
 
 #, c-format
 msgid "Unable to parse switchid '%s'"
-msgstr ""
+msgstr "Не вдалося обробити switchid «%s»"
 
 msgid "Unable to parse the xml"
 msgstr "Не вдалося обробити xml"
@@ -20322,7 +20332,7 @@ msgstr "Непідтримуваний тип пристрою основної 
 
 #, c-format
 msgid "Unsupported interface '%s' for TPM 1.2"
-msgstr ""
+msgstr "Непідтримуваний інтерфейс «%s» для TPM 1.2"
 
 msgid "Unsupported listen type"
 msgstr "Непідтримуваний тип очікування (listen)"
@@ -28725,6 +28735,8 @@ msgstr "якщо IOMMU увімкнено ядром"
 msgid ""
 "if using CPU maximum physical address mode='%s', bits= must be specified too"
 msgstr ""
+"Якщо використано mode='%s' для максимальної фізичної адреси процесора, має "
+"бути також вказано bits="
 
 #, c-format
 msgid "ifkey \"%s\" has no req"
@@ -29877,7 +29889,7 @@ msgstr "модель iommu %s» не може мати адреси"
 
 #, c-format
 msgid "iommu model '%s' doesn't support additional attributes"
-msgstr ""
+msgstr "у моделі iommu «%s» не передбачено підтримки додаткових атрибутів"
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr "iommu: підтримки aw_bits з цим виконуваним файлом QEMU не передбачено"
