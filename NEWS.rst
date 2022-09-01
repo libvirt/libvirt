@@ -15,6 +15,12 @@ v8.8.0 (unreleased)
 
 * **Removed features**
 
+  * storage: Remove 'sheepdog' storage driver backend
+
+    The 'sheepdog' project is no longer maintained and upstream bug reports
+    are unaddressed. Libvirt thus removed the support for the sheepdog storage
+    driver backend, following qemu's removal of sheepdog support in qemu-6.1.
+
 * **New features**
 
 * **Improvements**
