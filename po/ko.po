@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-08-26 05:02+0000\n"
-"PO-Revision-Date: 2022-07-28 00:20+0000\n"
+"PO-Revision-Date: 2022-08-31 12:19+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -25,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.13\n"
+"X-Generator: Weblate 4.14\n"
 
 msgid ""
 "\n"
@@ -1606,7 +1606,7 @@ msgstr "<%s>..."
 
 #, c-format
 msgid "<active_pcr_banks/> requires TPM version '%s'"
-msgstr ""
+msgstr "<active_pcr_banks/> TPM 버전이 필요합니다 '%s'"
 
 #, c-format
 msgid ""
@@ -2306,19 +2306,19 @@ msgstr "CPU 지도:"
 #, c-format
 msgid ""
 "CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
-msgstr ""
+msgstr "CPU 최대 물리적인 주소 비트 방식 '%s'는 '%s' CPUs에서만 사용 될 수 있습니다"
 
 #, c-format
 msgid ""
 "CPU maximum physical address bits number specification cannot be used with "
 "mode='%s'"
-msgstr ""
+msgstr "CPU 최대 물리적인 주소 비트 수 상세는 mode='%s'로 사용 될 수 없습니다"
 
 #, c-format
 msgid ""
 "CPU maximum physical address bits specification is not supported for '%s' "
 "architecture"
-msgstr ""
+msgstr "CPU 최대 물리적인 주소 비트 상세는 '%s 구조를 지원하지 않습니다"
 
 #, c-format
 msgid ""
@@ -11441,7 +11441,7 @@ msgstr "query-rx-filter 응답에서 누락되거나 잘못된 'vlan-table' 배�
 
 #, c-format
 msgid "Missing or invalid CPU address size in %s"
-msgstr ""
+msgstr "%s에 누락되었거나 잘못된 CPU 주소 크기"
 
 #, c-format
 msgid "Missing or invalid CPU frequency in %s"
@@ -11617,7 +11617,7 @@ msgstr "캐릭터 장치에 대한 소스 서비스 특성 빠짐"
 
 #, c-format
 msgid "Missing source switchid for interface type '%s'"
-msgstr ""
+msgstr "연결장치 유형 '%s'을 위한 누락된 원천 switchid"
 
 msgid "Missing storage block path"
 msgstr "저장소 블록 경로가 누락되어 있습니다"
@@ -11863,10 +11863,10 @@ msgid "NVMe namespace can't be zero"
 msgstr "NVMe 네임스페이스는 0일 수 없습니다"
 
 msgid "NVRAM is not permitted when loader is stateless"
-msgstr ""
+msgstr "NVRAM은 로더가 위치 할 수 없을 때에 허용되지 않습니다"
 
 msgid "NVRAM template is not permitted when loader is stateless"
-msgstr ""
+msgstr "NVRAM 템플릿트는 로더가 위치 할 수 없을 때에 허용되지 않습니다"
 
 msgid "Name"
 msgstr "이름"
@@ -12671,7 +12671,7 @@ msgid "Only 1 thread per core is supported"
 msgstr "코어당 1개의 스레드만 지원됩니다"
 
 msgid "Only EFI firmware permits NVRAM"
-msgstr ""
+msgstr "EFI 펌웨어만 NVRAM을 허용합니다"
 
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr "IPv4 또는 IPv6 주소만 접두사로 사용 될 수 있습니다"
@@ -12785,7 +12785,7 @@ msgid "Only one vgpu device can have 'ramfb' enabled"
 msgstr "하나의 vgpu 장치만 'ramfb'를 활성화 할 수 있습니다"
 
 msgid "Only pflash loader type permits NVRAM"
-msgstr ""
+msgstr "pflash 로더 유형만 NVRAM을 허용합니다"
 
 msgid "Only ploop disk images are supported by vz driver."
 msgstr "vz 드라이버는 오직 루프 디스크 이미지만 지원합니다."
@@ -15029,7 +15029,7 @@ msgstr "TPM 장치 경로 %s가 잘못되었습니다"
 
 #, c-format
 msgid "TPM version '%s' is not supported"
-msgstr ""
+msgstr "TPM 버전 '%s'은 지원되지 않습니다"
 
 msgid "Table row cannot be empty"
 msgstr "테이블 행은 비워 둘 수 없습니다"
@@ -15076,7 +15076,7 @@ msgid "Target CPU feature policy %s does not match source %s"
 msgstr "대상 CPU 기능 정책 %s은 소스 %s와 일치하지 않습니다"
 
 msgid "Target CPU maxphysaddr does not match source"
-msgstr ""
+msgstr "대상 CPU 최대물리주소는 원천과 일치하지 않습니다"
 
 #, c-format
 msgid "Target CPU mode %s does not match source %s"
@@ -15989,7 +15989,7 @@ msgstr "최소 임대 시간은 2분 이상이어야 합니다"
 msgid ""
 "The number of virtual CPU address bits cannot exceed the number supported by "
 "the host CPU"
-msgstr ""
+msgstr "가상 CPU 주소 비트의 수는 호스트 CPU에 의해 지원되는 수를 초과 할 수 없습니다"
 
 msgid ""
 "The overall maximum number of clients must be greater than the maximum "
@@ -17108,7 +17108,7 @@ msgstr "만족스러운 virtiofsd를 찾을 수 없습니다"
 
 #, c-format
 msgid "Unable to find address for mdev parent device '%s'"
-msgstr ""
+msgstr "mdev 상위 장치 '%s'를 위한 주소를 찾을 수 없음"
 
 #, c-format
 msgid "Unable to find address for parent device '%s'"
@@ -17747,7 +17747,7 @@ msgstr "클라우드 하이퍼바이저 버전을 구문 분석할 수 없음: %
 
 #, c-format
 msgid "Unable to parse connectionid '%s'"
-msgstr ""
+msgstr "connectionid '%s'를 구문 분석 할 수 없음"
 
 #, c-format
 msgid "Unable to parse current SELinux context '%s'"
@@ -17784,7 +17784,7 @@ msgstr "포트 id '%s'를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Unable to parse portid '%s'"
-msgstr ""
+msgstr "portid '%s'를 구문 분석 할 수 없음"
 
 msgid "Unable to parse quota"
 msgstr "쿼타를 구문 분석할 수 없습니다"
@@ -17806,7 +17806,7 @@ msgstr "문자열 매개 변수를 구문 분석 할 수 없음"
 
 #, c-format
 msgid "Unable to parse switchid '%s'"
-msgstr ""
+msgstr "switchid '%s'를 구문 분석 할 수 없음"
 
 msgid "Unable to parse the xml"
 msgstr "xml을 구문 분석할 수 없습니다"
@@ -19344,7 +19344,7 @@ msgstr "지원되지 않는 호스트 개발 유형 %s"
 
 #, c-format
 msgid "Unsupported interface '%s' for TPM 1.2"
-msgstr ""
+msgstr "TPM 1.2를 지원하지 않는 연결장치 '%s'"
 
 msgid "Unsupported listen type"
 msgstr "지원되지 않는 청취 유형"
@@ -27343,7 +27343,7 @@ msgstr "IOMMU가 커널에 의해 활성화된 경우"
 #, c-format
 msgid ""
 "if using CPU maximum physical address mode='%s', bits= must be specified too"
-msgstr ""
+msgstr "만약 CPU를 사용하는 경우 최대 물리적 주소 mode='%s', bits= 도 지정해야 합니다"
 
 #, c-format
 msgid "ifkey \"%s\" has no req"
@@ -28458,7 +28458,7 @@ msgstr "iommu 모델 '%s'은 주소를 가질 수 없습니다"
 
 #, c-format
 msgid "iommu model '%s' doesn't support additional attributes"
-msgstr ""
+msgstr "iommu 모델 '%s'는 추가 속성을 지원하지 않습니다"
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr "iommu: aw_bits는 이 QEMU 바이너리에서 지원되지 않습니다"
