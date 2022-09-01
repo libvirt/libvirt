@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-08-26 05:02+0000\n"
-"PO-Revision-Date: 2022-08-21 00:48+0000\n"
+"PO-Revision-Date: 2022-09-01 08:44+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.13\n"
+"X-Generator: Weblate 4.14\n"
 
 msgid ""
 "\n"
@@ -1618,7 +1618,7 @@ msgstr "<%s>…"
 
 #, c-format
 msgid "<active_pcr_banks/> requires TPM version '%s'"
-msgstr ""
+msgstr "<active_pcr_banks/> behöver TPM version ”%s”"
 
 #, c-format
 msgid ""
@@ -2312,18 +2312,23 @@ msgstr "CPU-avbildning:"
 msgid ""
 "CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
 msgstr ""
+"Maximalt fysiskt CPU-adressbitsläge ”%s” kan endast användas med ”%s”-CPU:er"
 
 #, c-format
 msgid ""
 "CPU maximum physical address bits number specification cannot be used with "
 "mode='%s'"
 msgstr ""
+"Specifikation av maximalt fysiskt CPU-adressbitsantal kan inte användas med "
+"läge=”%s”"
 
 #, c-format
 msgid ""
 "CPU maximum physical address bits specification is not supported for '%s' "
 "architecture"
 msgstr ""
+"Specifikation av maximalt fysiskt CPU-adressbitsantal stödjs inte för "
+"arkitekturen ”%s”"
 
 #, c-format
 msgid ""
@@ -11589,7 +11594,7 @@ msgstr "Saknad eller felaktig vektor ”vlan-table” i query-rx-filter-svaret"
 
 #, c-format
 msgid "Missing or invalid CPU address size in %s"
-msgstr ""
+msgstr "Saknad eller felaktig CPU-adresstorlek i %s"
 
 #, c-format
 msgid "Missing or invalid CPU frequency in %s"
@@ -11768,7 +11773,7 @@ msgstr "Källtjänstattribut saknas för teckenenhet"
 
 #, c-format
 msgid "Missing source switchid for interface type '%s'"
-msgstr ""
+msgstr "Saknat käll-switchid för ett gränssnitt av typen ”%s”"
 
 msgid "Missing storage block path"
 msgstr "Saknad lagringsblockssökväg"
@@ -12012,10 +12017,10 @@ msgid "NVMe namespace can't be zero"
 msgstr "NVMe-namnrymden kan inte vara noll"
 
 msgid "NVRAM is not permitted when loader is stateless"
-msgstr ""
+msgstr "NVRAM är inte tillåtet när laddaren är tillståndslös"
 
 msgid "NVRAM template is not permitted when loader is stateless"
-msgstr ""
+msgstr "En NVRAM-mall är inte tillåten när laddaren är tillståndslös"
 
 msgid "Name"
 msgstr "Namn"
@@ -12827,7 +12832,7 @@ msgid "Only 1 thread per core is supported"
 msgstr "Endast 1 tråd per kärna stödjs"
 
 msgid "Only EFI firmware permits NVRAM"
-msgstr ""
+msgstr "Endast fast programvara EFI tillåter NVRAM"
 
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr "Endast IPv4- eller IPv6-adresser kan användas med ett prefix"
@@ -12947,7 +12952,7 @@ msgid "Only one vgpu device can have 'ramfb' enabled"
 msgstr "Endast en vgpu-enhet får ha ”ramfb” aktiverat"
 
 msgid "Only pflash loader type permits NVRAM"
-msgstr ""
+msgstr "Endast pflash-laddartypen tillåter NVRAM"
 
 msgid "Only ploop disk images are supported by vz driver."
 msgstr "Endast ploop-diskavbilder stödjs av vz-drivrutinen."
@@ -14163,125 +14168,131 @@ msgstr "SATA stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "SATA unit index %d out of [0..29] range"
-msgstr ""
+msgstr "SATA-enhetsindex %d är utanför intervallet [0..29]"
 
 #, c-format
 msgid "SCSI bus index %d out of [0] range"
-msgstr ""
+msgstr "SCSI-bussindex %d utnför intervallet [0]"
 
 #, c-format
 msgid "SCSI controller index %d out of [0..3] range"
-msgstr ""
+msgstr "SCSI-styrindex %d utanför intervallet [0..3]"
 
 msgid "SCSI controller only supports 1 bus"
-msgstr ""
+msgstr "SCSI-styrenheten stödjer endast 1 buss"
 
 #, c-format
 msgid "SCSI device %s is already in use by other domain(s) as '%s'"
-msgstr ""
+msgstr "SCSI-enhet %s används redan av andra domäner som ”%s”"
 
 #, c-format
 msgid "SCSI device '%s': could not access %s"
-msgstr ""
+msgstr "SCSI-enhet ”%s”: kunde inte komma åt %s"
 
 #, c-format
 msgid "SCSI disk index (parsed from '%s') is too large"
-msgstr ""
+msgstr "SCSI-diskindexet (tolkat från ”%s”) är för stort"
 
 #, c-format
 msgid ""
 "SCSI host address controller='%u' bus='%u' target='%u' unit='%u' in use by a "
 "SCSI disk"
 msgstr ""
+"SCSI-värdadresstyrenhet=”%u” buss=”%u” mål=”%u” enhet=”%u” används av en "
+"SCSI-disk"
 
 #, c-format
 msgid ""
 "SCSI host address controller='%u' bus='%u' target='%u' unit='%u' in use by "
 "another SCSI disk"
 msgstr ""
+"SCSI-värdadresstyrenhet=”%u” buss=”%u” mål=”%u” enhet=”%u” används av en "
+"annan SCSI-disk"
 
 #, c-format
 msgid ""
 "SCSI host address controller='%u' bus='%u' target='%u' unit='%u' in use by "
 "another SCSI host device"
 msgstr ""
+"SCSI-värdadresstyrenhet=”%u” buss=”%u” mål=”%u” enhet=”%u” används av en "
+"annan SCSI-värdenhet"
 
 msgid "SCSI host device doesn't support managed mode"
-msgstr ""
+msgstr "SCSI-värdenheten stödjer inte hanterat läge"
 
 msgid "SCSI host device must use 'drive' address type"
-msgstr ""
+msgstr "SCSI-värdenheten måste använda adresstypen ”drive”"
 
 #, c-format
 msgid "SCSI unit index %d out of [0..6,8..%u] range"
-msgstr ""
+msgstr "SCSI-enhetsindex %d är utanför intervallet [0..6,8..%u]"
 
 #, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
-msgstr ""
+msgstr "SCSI-enhetsindex %d är utanför intervallet [0..6,8..15]"
 
 msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
-msgstr ""
+msgstr "SCSI_host-värdenheten måste använda adresstypen ”pci” eller ”ccw”"
 
 msgid "SEV launch security is not supported with this QEMU binary"
-msgstr ""
+msgstr "SEV-startsäkerhet stödjs inte med denna QEMU-binär"
 
 msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
-msgstr ""
+msgstr "SEV-measured direkt kärnstart stödjs inte med denna QEMU-binär"
 
 msgid "SHUTDOWN_TIMEOUT must be equal or greater than 0"
-msgstr ""
+msgstr "SHUTDOWN_TIMEOUT måste vara lika med eller större än 0"
 
 #, c-format
 msgid "SMM TSEG differs: source: %s, destination: '%s'"
-msgstr ""
+msgstr "SMM TSEG skiljer: källa: %s, destination: ”%s”"
 
 msgid "SMM TSEG is only supported with q35 machine type"
-msgstr ""
+msgstr "SMM TSEG stödjs endast med maskintypen q35"
 
 msgid "SMM TSEG size must be divisible by 1 MiB"
-msgstr ""
+msgstr "SMM TSEG-storleken måste vara delbar med 1 MiB"
 
 #, c-format
 msgid "SOAP fault during %s: code '%s', subcode '%s', reason '%s', detail '%s'"
-msgstr ""
+msgstr "SOAP-fel under %s: kod ”%s”, underkod ”%s”, orsak ”%s”, detalj ”%s”"
 
 msgid "SSH Agent did not provide any authentication identity"
-msgstr ""
+msgstr "SSH-agenten tillhandahöll inte någon autenticeringsidentitet"
 
 #, c-format
 msgid "SSH host key for '%s' (%s) was not accepted"
-msgstr ""
+msgstr "SSH-värdnyckeln för ”%s” (%s) accepterades inte"
 
 #, c-format
 msgid "SSH session handshake failed: %s"
-msgstr ""
+msgstr "SSH-sessionshandskakningen misslyckades: %s"
 
 msgid "SSH transport error"
-msgstr ""
+msgstr "SSH-transportfel"
 
 #, c-format
 msgid "SSH transport error: %s"
-msgstr ""
+msgstr "SSH-transportfel: %s"
 
 #, c-format
 msgid ""
 "STP filtering in %s direction with source MAC address set is not supported"
-msgstr ""
+msgstr "STP-filtrering i riktningen %s med käll-MAC-adress satt stödjs inte"
 
 msgid "SVE disabled, but SVE vector lengths provided"
-msgstr ""
+msgstr "SVE avaktiverat, men SVE-vektorlängder angivna"
 
 #, c-format
 msgid "Sanlock helper arguments are longer than %d: '%s'"
-msgstr ""
+msgstr "Argumenten till Sanlock-hjälparen är längre än %d: ”%s”"
 
 #, c-format
 msgid "Sanlock helper path is longer than %d: '%s'"
-msgstr ""
+msgstr "Sökvägen till Sanlock-hjälparen är längre än %d: ”%s”"
 
 msgid "Sanlock plugin is not initialized"
-msgstr ""
+msgstr "Sanlock-insticksmodulen är inte initierad"
 
 msgid "Save"
 msgstr "Spara"
@@ -14292,196 +14303,203 @@ msgid ""
 "    command is next run for the domain, it will automatically\n"
 "    be started from this saved state."
 msgstr ""
+"Spara och förstör en körande domän, så att den kan startas om från\n"
+"    samma tillstånd vid en senare tidpunkt. När virsh-kommandot ”start”\n"
+"    körs nästa gång för domänen kommer den automatiskt att startas\n"
+"    från detta sparade tillstånd."
 
-#, fuzzy
 msgid "Save the RAM state of a running domain."
-msgstr "Hämta statistik för nätverksgränssnitt för en köranade domän."
+msgstr "Spara RAM-tillståndet för en köranade domän."
 
 msgid "Saved"
 msgstr "Sparad"
 
 #, c-format
 msgid "Saved image %s XML configuration not changed.\n"
-msgstr ""
+msgstr "Den sparade avbilden %s XML-konfiguration inte ändrad.\n"
 
 #, c-format
 msgid "Scaled numeric value '%s' for <%s> option is malformed or out of range"
 msgstr ""
+"Det skalade numeriska värdet ”%s” till alternativet <%s> är felformaterat "
+"eller utanför intervallet"
 
 #, c-format
 msgid ""
 "Scaled numeric value '%s' for <--bandwidth> option is malformed or out of "
 "range"
 msgstr ""
+"Det skalade numeriska värdet ”%s” till alternativet <--bandwidth> är "
+"felformaterat eller utanför intervallet"
 
 msgid "Scheduler"
 msgstr "Schemaläggare"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Scheduler '%s' is not supported on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Schemaläggaren ”%s” stödjs inte på denna plattform"
 
 #, c-format
 msgid "Scheduler priority %d out of range [%d, %d]"
-msgstr ""
+msgstr "Schemaläggarprioriteten %d är utanför intervallet [%d, %d]"
 
 msgid "Screen cannot be selected"
-msgstr ""
+msgstr "Skärmen kan inte väljas"
 
 msgid "Screenshot feature is unsupported"
-msgstr ""
+msgstr "Skärmbildsfunktionen stödjs inte"
 
 #, c-format
 msgid "Screenshot saved to %s, with type of %s"
-msgstr ""
+msgstr "Skärmbilden sparad till %s, med typen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Secret %s created\n"
-msgstr "Nätverk %s skapat från %s\n"
+msgstr "Hemligheten %s skapad\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Secret %s deleted\n"
-msgstr "Gränssnittet %s förstört\n"
+msgstr "Hemligheten %s raderad\n"
 
 msgid "Secret Events"
-msgstr ""
+msgstr "Hemlighetshändelser"
 
-#, fuzzy
 msgid "Secret not found"
-msgstr "Nätverk hittades inte"
+msgstr "Hemligheten finns inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Secret not found: %s"
-msgstr "Nätverk hittades inte: %s"
+msgstr "Hemligheten finns inte: %s"
 
 msgid "Secret value set\n"
-msgstr ""
+msgstr "Hemlighethens värde satt\n"
 
 msgid "Secure boot is not supported on Xen"
-msgstr ""
+msgstr "Säker start stödjs inte på Xen"
 
 msgid "Secure boot is supported for x86_64 architecture only"
-msgstr ""
+msgstr "Säker start stödjs endast för arkitekturen x86_64"
 
 msgid "Secure boot is supported with q35 machine types only"
-msgstr ""
+msgstr "Säker start stödjs endast med maskintyperna q35"
 
 msgid "Secure boot requires SMM feature enabled"
-msgstr ""
+msgstr "Säker start kräver att funktionen SMM är aktiverad"
 
 msgid "Security DOI:"
-msgstr ""
+msgstr "Säkerhets-DOI:"
 
 msgid "Security driver \"none\" cannot create confined guests"
-msgstr ""
+msgstr "Säkerhetsdrivrutinen ”none” kan inte skapa begränsade gäster"
 
 #, c-format
 msgid "Security driver %s not enabled"
-msgstr ""
+msgstr "Säkerhetsdrivrutinen %s är inte aktiverad"
 
 #, c-format
 msgid "Security driver %s not found"
-msgstr ""
+msgstr "Säkerhetsdrivrutinen %s finns inte"
 
 #, c-format
 msgid "Security driver model '%s' is not available"
-msgstr ""
+msgstr "Säkerhetsdrivrutinsmodellen ”%s” är inte tillgänglig"
 
 msgid "Security label:"
 msgstr "Säkerhetsetikett:"
 
 #, c-format
 msgid "Security model %s cannot be entered"
-msgstr ""
+msgstr "Säkerhetsmodellen %s går inte att gå in i"
 
-#, fuzzy
 msgid "Security model not found"
-msgstr "Nätverk hittades inte"
+msgstr "Säkerhetsmodellen finns inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Security model not found: %s"
-msgstr "Nätverk hittades inte: %s"
+msgstr "Säkerhetsmodellen finns inte: %s"
 
 msgid "Security model:"
-msgstr ""
+msgstr "Säkerhetsmodell:"
 
 msgid "Security warning: VNC auth is not supported."
-msgstr ""
+msgstr "Säkerhetsvarning: VNC-autenticering stödjs inte."
 
 msgid "Security warning: VNC is used without authentication."
-msgstr ""
+msgstr "Säkerhetsvarning: VNC används utan autenticering."
 
 #, c-format
 msgid ""
 "See web site at %s\n"
 "\n"
 msgstr ""
+"Se webbsajten på %s\n"
+"\n"
 
 msgid "Send keycodes (integers or symbolic names) to the guest"
-msgstr ""
+msgstr "Skicka tangentkoder (heltal eller symboliska namn) till gästen"
 
 msgid "Send keycodes to the guest"
-msgstr ""
+msgstr "Skicka tangentkoder till gästen"
 
 msgid "Send signals to processes"
-msgstr ""
+msgstr "Skicka signaler till processer"
 
 msgid "Send signals to processes in the guest"
-msgstr ""
+msgstr "Skicka signaler till preocesser i gästen"
 
 msgid "Sending file descriptors is not supported on this socket"
-msgstr ""
+msgstr "Att skicka filbeskrivare stödjs inte på detta uttag"
 
 msgid "Serial can only be enabled for a PTY"
-msgstr ""
+msgstr "Seriellt kan endast aktiveras för en PTY"
 
 #, c-format
 msgid ""
 "Serial device with target type '%s' and target model '%s' not compatible "
 "with guest architecture or machine type"
 msgstr ""
+"Sereienheter med måltypen ”%s” och målmodellen ”%s” är inte kompatibla med "
+"gästarkitekturen eller maskintypen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Serial port index %d out of [0..3] range"
-msgstr "värde på typeid är utanför intervallet"
+msgstr "Serieportindexet %d utanför intervallet [0..3]"
 
 #, c-format
 msgid "Serial property not supported for drive bus '%s'"
-msgstr ""
+msgstr "Serieegenskapen stödjs inte för drivbussen ”%s”"
 
 msgid "Server certificate:"
-msgstr ""
+msgstr "Servercertifikat:"
 
 #, c-format
 msgid "Server count %zd greater than default name count %zu"
-msgstr ""
+msgstr "Serverantal %zd är större än standard namnantal %zu"
 
-#, fuzzy
 msgid "Server not found"
-msgstr "Nätverk hittades inte"
+msgstr "Servern finns inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Server not found: %s"
-msgstr "Nätverk hittades inte: %s"
+msgstr "Servern finns inte: %s"
 
 msgid "Server private key:"
-msgstr ""
+msgstr "Serverns privata nyckel:"
 
 msgid "Server to alter the client-related configuration limits on."
-msgstr ""
+msgstr "Server att ändra de klientrelaterade konfigurationsgränserna på."
 
 msgid "Server to alter threadpool attributes on."
-msgstr ""
+msgstr "Server att ändra trådpoolsattribut på."
 
 msgid "Server to retrieve the client limits from."
-msgstr ""
+msgstr "Server att hämta klientgränserna från."
 
-#, fuzzy
 msgid "Server to retrieve threadpool attributes from."
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Server att hämta trådpoolsattribut från."
 
 msgid "Set a secret in the guest domain's memory"
-msgstr ""
+msgstr "Sätt en hemlighet i gästdomänens minne"
 
 msgid "Set a secret value."
 msgstr ""
