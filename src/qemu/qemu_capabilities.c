@@ -6347,6 +6347,19 @@ virQEMUCapsFillDomainDeviceRedirdevCaps(virQEMUCaps *qemuCaps,
 }
 
 
+void
+virQEMUCapsFillDomainDeviceChannelCaps(virQEMUCaps *qemuCaps,
+                                       virDomainCapsDeviceChannel *channel)
+{
+    channel->supported = VIR_TRISTATE_BOOL_YES;
+    channel->type.report = true;
+    VIR_DOMAIN_CAPS_ENUM_SET(channel->type,
+                             VIR_DOMAIN_CHR_TYPE_PTY, VIR_DOMAIN_CHR_TYPE_UNIX);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE))
+        VIR_DOMAIN_CAPS_ENUM_SET(channel->type, VIR_DOMAIN_CHR_TYPE_SPICEVMC);
+}
+
 
 /**
  * virQEMUCapsSupportsGICVersion:
@@ -6484,6 +6497,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virDomainCapsDeviceFilesystem *filesystem = &domCaps->filesystem;
     virDomainCapsDeviceTPM *tpm = &domCaps->tpm;
     virDomainCapsDeviceRedirdev *redirdev = &domCaps->redirdev;
+    virDomainCapsDeviceChannel *channel = &domCaps->channel;
     virDomainCapsMemoryBacking *memoryBacking = &domCaps->memoryBacking;
 
     virQEMUCapsFillDomainFeaturesFromQEMUCaps(qemuCaps, domCaps);
@@ -6517,6 +6531,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virQEMUCapsFillDomainDeviceFSCaps(qemuCaps, filesystem);
     virQEMUCapsFillDomainDeviceTPMCaps(qemuCaps, tpm);
     virQEMUCapsFillDomainDeviceRedirdevCaps(qemuCaps, redirdev);
+    virQEMUCapsFillDomainDeviceChannelCaps(qemuCaps, channel);
     virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureSEVCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureS390PVCaps(qemuCaps, domCaps);

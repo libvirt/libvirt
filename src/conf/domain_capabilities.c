@@ -574,6 +574,18 @@ virDomainCapsDeviceRedirdevFormat(virBuffer *buf,
 }
 
 
+static void
+virDomainCapsDeviceChannelFormat(virBuffer *buf,
+                                 const virDomainCapsDeviceChannel *channel)
+{
+    FORMAT_PROLOGUE(channel);
+
+    ENUM_PROCESS(channel, type, virDomainChrTypeToString);
+
+    FORMAT_EPILOGUE(channel);
+}
+
+
 /**
  * virDomainCapsFeatureGICFormat:
  * @buf: target buffer
@@ -688,6 +700,7 @@ virDomainCapsFormat(const virDomainCaps *caps)
     virDomainCapsDeviceFilesystemFormat(&buf, &caps->filesystem);
     virDomainCapsDeviceTPMFormat(&buf, &caps->tpm);
     virDomainCapsDeviceRedirdevFormat(&buf, &caps->redirdev);
+    virDomainCapsDeviceChannelFormat(&buf, &caps->channel);
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</devices>\n");

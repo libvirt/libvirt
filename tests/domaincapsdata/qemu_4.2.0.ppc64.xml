@@ -137,6 +137,12 @@
       </enum>
     </tpm>
     <redirdev supported='no'/>
+    <channel supported='yes'>
+      <enum name='type'>
+        <value>pty</value>
+        <value>unix</value>
+      </enum>
+    </channel>
   </devices>
   <features>
     <gic supported='no'/>

@@ -137,6 +137,13 @@ struct _virDomainCapsDeviceRedirdev {
     virDomainCapsEnum bus;   /* virDomainRedirdevBus */
 };
 
+STATIC_ASSERT_ENUM(VIR_DOMAIN_CHR_TYPE_LAST);
+typedef struct _virDomainCapsDeviceChannel virDomainCapsDeviceChannel;
+struct _virDomainCapsDeviceChannel {
+    virTristateBool supported;
+    virDomainCapsEnum type;   /* virDomainChrType */
+};
+
 STATIC_ASSERT_ENUM(VIR_DOMAIN_FS_DRIVER_TYPE_LAST);
 typedef struct _virDomainCapsDeviceFilesystem virDomainCapsDeviceFilesystem;
 struct _virDomainCapsDeviceFilesystem {
@@ -234,6 +241,7 @@ struct _virDomainCaps {
     virDomainCapsDeviceFilesystem filesystem;
     virDomainCapsDeviceTPM tpm;
     virDomainCapsDeviceRedirdev redirdev;
+    virDomainCapsDeviceChannel channel;
     /* add new domain devices here */
 
     virDomainCapsFeatureGIC gic;

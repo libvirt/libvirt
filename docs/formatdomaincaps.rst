@@ -565,6 +565,30 @@ USB redirdev device capabilities are exposed under the ``redirdev`` element. For
 ``bus``
    Options for the ``bus`` attribute of the ``<redirdev/>`` element.
 
+Channel device
+^^^^^^^^^^^^^^
+
+Channel device capabilities are exposed under the ``channel`` element. For instance:
+
+::
+
+  <domainCapabilities>
+    ...
+    <devices>
+      <channel supported='yes'>
+        <enum name='type'>
+          <value>pty</value>
+          <value>unix</value>
+          <value>spicevmc</value>
+        </enum>
+      </channel
+      ...
+    </devices>
+  </domainCapabilities>
+
+``type``
+   Options for the ``type`` attribute of the ``<channel/>`` element.
+
 Features
 ~~~~~~~~
 
