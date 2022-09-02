@@ -1,0 +1,6 @@
+<cpus>
+  <model name='a64fx'>
+    <vendor name='Fujitsu'/>
+    <pvr value='0x001'/>
+  </model>
+</cpus>

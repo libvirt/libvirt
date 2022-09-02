@@ -3,6 +3,7 @@
   <vendor name='Broadcom' value='0x42'/>
   <vendor name='Cavium' value='0x43'/>
   <vendor name='DigitalEquipment' value='0x44'/>
+  <vendor name='Fujitsu' value='0x46'/>
   <vendor name='HiSilicon' value='0x48'/>
   <vendor name='Infineon' value='0x49'/>
   <vendor name='Freescale' value='0x4D'/>

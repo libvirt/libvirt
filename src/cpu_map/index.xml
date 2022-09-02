@@ -104,6 +104,9 @@
     <!-- Cavium-based CPU models -->
     <include filename='arm_ThunderX299xx.xml'/>
 
+    <!-- Fujitsu-based CPU models -->
+    <include filename='arm_a64fx.xml'/>
+
     <!-- Hisilicon-based CPU models -->
     <include filename='arm_Kunpeng-920.xml'/>
 
