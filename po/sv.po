@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-08-26 05:02+0000\n"
-"PO-Revision-Date: 2022-09-01 08:44+0000\n"
+"PO-Revision-Date: 2022-09-04 19:19+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -14502,40 +14502,46 @@ msgid "Set a secret in the guest domain's memory"
 msgstr "Sätt en hemlighet i gästdomänens minne"
 
 msgid "Set a secret value."
-msgstr ""
+msgstr "Sätt ett hemligt värde."
 
 msgid "Set domain launch security state"
-msgstr ""
+msgstr "Sätt säkerhetstillståndet för domänstart"
 
 msgid ""
 "Set link state of a domain's virtual interface. This command wraps usage of "
 "update-device command."
 msgstr ""
+"Sätt länktillstånd för en domäns virtuella gränssnitt. Detta kommando slår "
+"in användningen av kommandot update-device."
 
 msgid ""
 "Set maximum tolerable downtime of a domain which is being live-migrated to "
 "another host."
 msgstr ""
+"Sätt maximalt tolererbar nertid för en domän som live-migreras till en annan "
+"värd."
 
 msgid "Set or query a block device I/O tuning parameters."
-msgstr ""
+msgstr "Sätt eller fråga en blockenhets I/O-trimningsparametrar."
 
 msgid "Set or query disk I/O parameters such as block throttling."
-msgstr ""
+msgstr "Sätt eller fråga disk-I/O-parametrar såsom blockstrypning."
 
 msgid "Set the guest agent timeout"
-msgstr ""
+msgstr "Sätt tidsgränsen för gästagenten"
 
 msgid "Set the maximum migration bandwidth"
-msgstr ""
+msgstr "Sätt den maximala migrationsbandbredden"
 
 msgid ""
 "Set the maximum migration bandwidth (in MiB/s) for a domain which is being "
 "migrated to another host."
 msgstr ""
+"Sätt den maximala migreringsbandbredden (i MiB/s) för en domä som migreras "
+"till en annan värd."
 
 msgid "Set the number of seconds to wait for a response from the guest agent."
-msgstr ""
+msgstr "Sätt antalet sekunder att vänta på ett svar från gästagenten."
 
 msgid "Setting TSEG size is not supported with this QEMU binary"
 msgstr "Att ställa in TSEG-storlek stödjs inte av denna QEMU-binär"
@@ -14543,99 +14549,105 @@ msgstr "Att ställa in TSEG-storlek stödjs inte av denna QEMU-binär"
 msgid ""
 "Setting device info for character devices is not supported by vz driver."
 msgstr ""
+"Att sätta enhetsinformation för teckenenheter stödjs inte av vz-drivrutinen."
 
 msgid "Setting device info for network devices is not supported by vz driver."
 msgstr ""
+"Att sätta enhetsinformation för nätverksenheter stödjs inte av vz-"
+"drivrutinen."
 
 #, c-format
 msgid "Setting different DAC user or group on %s which is already in use"
-msgstr ""
+msgstr "Sätter olika DAC-användare eller -grupp på %s vilken redan används"
 
 #, c-format
 msgid "Setting different SELinux label on %s which is already in use"
-msgstr ""
+msgstr "Sätter andra SELinux-etikett på %s vilken redan används"
 
 msgid "Setting disk block sizes is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta diskblocksstorlekar stödjs inte av vz-drivrutinen."
 
 msgid "Setting disk error policy is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta diskfelspolicy stödjs inte av vz-drivrutinen."
 
 msgid "Setting disk io limits is not supported by vz driver yet."
-msgstr ""
+msgstr "Att sätta disk-io-gränser stödjs inte av vz-drivrutinen ännu."
 
 msgid "Setting disk product id is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta diskprodukt-id stödjs inte av vz-drivrutinen."
 
 msgid "Setting disk serial number is supported only for disk devices."
-msgstr ""
+msgstr "Att sätta diskens serienummer stödjs endast för diskenheter."
 
 msgid "Setting disk vendor is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta diskleverantör stödjs inte av vz-drivrutinen."
 
 msgid "Setting disk wwn id is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta disk-wwn-id stödjs inte av vz-drivrutinen."
 
 msgid "Setting fs quotas is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta fs-kvoter stödjs inte av vz-drivrutinen."
 
 msgid "Setting guest interface name is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta gästgränssnittsnamn stödjs inte av vz-drivrutinen."
 
 msgid "Setting interface script is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta gränssnittsskript stödjs inte av vz-drivrutinen."
 
 msgid "Setting interface sndbuf is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta gränssnitts-sndbuf stödjs inte av vz-drivrutinen."
 
 msgid "Setting network bandwidth is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta nätverksbandbredd stödjs inte av vz-drivrutinen."
 
 msgid "Setting network filter is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta nätverksfilter stödjs inte av vz-drivrutinen."
 
 msgid "Setting readonly for filesystems is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta filsystem endast läsbara stödjs inte av vz-drivrutinen."
 
 #, c-format
 msgid ""
 "Setting security context '%s' on '%s' not supported. Consider setting "
 "virt_use_nfs"
 msgstr ""
+"Att sätta säkerhetskontexten ”%s” på ”%s” stödjs inte. Överväg att sätta "
+"virt_use_nfs"
 
 msgid "Setting security labels is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta säkerhetsetiketter stödjs inte av vz-drivrutinen."
 
 msgid "Setting startupPolicy is only allowed for USB devices"
-msgstr ""
+msgstr "Att sätta startupPolicy är endast tillåtet för USB-enheter"
 
 #, c-format
 msgid "Setting the 64-bit PCI hole size is not supported for machine '%s'"
-msgstr ""
+msgstr "Att sätta 64-bitars PCI-hålsstorlek stödjs inte för maskinen ”%s”"
 
 msgid "Setting up disk discard parameter is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta diskens discard-parameter stödjs inte av vz-drivrutinen."
 
 msgid "Setting up disk io thread # is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta disk-io-trådnummer stödjs inte av vz-drivrutinen."
 
 msgid "Setting up disk startup policy is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta diskstartsspolicy stödjs inte av vz-drivrutinen."
 
 msgid "Setting up vlans is not supported by vz driver."
-msgstr ""
+msgstr "Att sätta upp vlan stödjs inte av vz-drivrutinen."
 
 msgid "Setting vendor or product for scsi disk is not supported by this QEMU"
 msgstr ""
+"Att sätta leverantör eller produkt för en scsi-disk stödjs inte av denna QEMU"
 
 msgid "Setting vendor or product is not supported for lun device"
-msgstr ""
+msgstr "Att sätta leverantör eller produkt stödjs inte för lun-enheter"
 
 msgid "Setting wwn for ide disk is not supported by this QEMU"
-msgstr ""
+msgstr "Att sätta wwn för ide-diskar stödjs inte av denna QEMU"
 
 msgid "Setting wwn for scsi disk is not supported by this QEMU"
-msgstr ""
+msgstr "Att sätta wwn för scsi-diskar stödjs inte av denna QEMU"
 
 msgid "Setting wwn is not supported for lun device"
 msgstr ""
