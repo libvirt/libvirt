@@ -84,7 +84,6 @@ int qemuDomainObjBeginJobNowait(virDomainObj *obj,
                                 virDomainJob job)
     G_GNUC_WARN_UNUSED_RESULT;
 
-void qemuDomainObjEndJob(virDomainObj *obj);
 void qemuDomainObjEndAgentJob(virDomainObj *obj);
 void qemuDomainObjEndAsyncJob(virDomainObj *obj);
 void qemuDomainObjAbortAsyncJob(virDomainObj *obj);

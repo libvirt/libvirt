@@ -1191,6 +1191,7 @@ virDomainObjBeginJob;
 virDomainObjBeginJobInternal;
 virDomainObjCanSetJob;
 virDomainObjClearJob;
+virDomainObjEndJob;
 virDomainObjInitJob;
 virDomainObjPreserveJob;
 virDomainObjResetAgentJob;

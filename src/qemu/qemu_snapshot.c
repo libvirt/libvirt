@@ -2373,7 +2373,7 @@ qemuSnapshotDelete(virDomainObj *vm,
     }
 
  endjob:
-    qemuDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
 
     return ret;
 }

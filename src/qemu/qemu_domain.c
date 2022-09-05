@@ -5973,7 +5973,7 @@ qemuDomainObjEnterMonitorInternal(virDomainObj *obj,
         if (!virDomainObjIsActive(obj)) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("domain is no longer running"));
-            qemuDomainObjEndJob(obj);
+            virDomainObjEndJob(obj);
             return -1;
         }
     } else if (obj->job->asyncOwner == virThreadSelfID()) {
@@ -6023,7 +6023,7 @@ qemuDomainObjExitMonitor(virDomainObj *obj)
         priv->mon = NULL;
 
     if (obj->job->active == VIR_JOB_ASYNC_NESTED)
-        qemuDomainObjEndJob(obj);
+        virDomainObjEndJob(obj);
 }
 
 void qemuDomainObjEnterMonitor(virDomainObj *obj)

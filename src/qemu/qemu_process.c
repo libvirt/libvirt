@@ -492,7 +492,7 @@ qemuProcessFakeReboot(void *opaque)
     ret = 0;
 
  endjob:
-    qemuDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     priv->pausedShutdown = false;
@@ -8389,7 +8389,7 @@ void qemuProcessStop(virQEMUDriver *driver,
 
  endjob:
     if (asyncJob != VIR_ASYNC_JOB_NONE)
-        qemuDomainObjEndJob(vm);
+        virDomainObjEndJob(vm);
 
  cleanup:
     virErrorRestore(&orig_err);
@@ -8431,7 +8431,7 @@ qemuProcessAutoDestroy(virDomainObj *dom,
 
     qemuDomainRemoveInactive(driver, dom);
 
-    qemuDomainObjEndJob(dom);
+    virDomainObjEndJob(dom);
 
     virObjectEventStateQueue(driver->domainEventState, event);
 }
@@ -8893,7 +8893,7 @@ qemuProcessReconnect(void *opaque)
 
  cleanup:
     if (jobStarted)
-        qemuDomainObjEndJob(obj);
+        virDomainObjEndJob(obj);
     if (!virDomainObjIsActive(obj))
         qemuDomainRemoveInactive(driver, obj);
     virDomainObjEndAPI(&obj);

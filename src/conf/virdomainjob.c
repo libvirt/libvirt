@@ -527,3 +527,31 @@ int virDomainObjBeginJob(virDomainObj *obj,
         return -1;
     return 0;
 }
+
+/*
+ * obj must be locked and have a reference before calling
+ *
+ * To be called after completing the work associated with the
+ * earlier virDomainBeginJob() call
+ */
+void
+virDomainObjEndJob(virDomainObj *obj)
+{
+    virDomainJob job = obj->job->active;
+
+    obj->job->jobsQueued--;
+
+    VIR_DEBUG("Stopping job: %s (async=%s vm=%p name=%s)",
+              virDomainJobTypeToString(job),
+              virDomainAsyncJobTypeToString(obj->job->asyncJob),
+              obj, obj->def->name);
+
+    virDomainObjResetJob(obj->job);
+
+    if (virDomainTrackJob(job) &&
+        obj->job->cb->saveStatusPrivate)
+        obj->job->cb->saveStatusPrivate(obj);
+    /* We indeed need to wake up ALL threads waiting because
+     * grabbing a job requires checking more variables. */
+    virCondBroadcast(&obj->job->cond);
+}

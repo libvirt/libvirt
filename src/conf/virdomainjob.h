@@ -249,3 +249,5 @@ int virDomainObjBeginJobInternal(virDomainObj *obj,
 int virDomainObjBeginJob(virDomainObj *obj,
                          virDomainJob job)
     G_GNUC_WARN_UNUSED_RESULT;
+
+void virDomainObjEndJob(virDomainObj *obj);

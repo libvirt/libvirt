@@ -123,7 +123,7 @@ To acquire the normal job condition
       isn't
     - Sets ``job.active`` to the job type
 
-  ``qemuDomainObjEndJob()``
+  ``virDomainObjEndJob()``
     - Sets job.active to 0
     - Signals on job.cond condition
 
@@ -218,7 +218,7 @@ Design patterns
 
      ...do work...
 
-     qemuDomainObjEndJob(obj);
+     virDomainObjEndJob(obj);
 
      virDomainObjEndAPI(&obj);
 
@@ -242,7 +242,7 @@ Design patterns
 
      ...do final work...
 
-     qemuDomainObjEndJob(obj);
+     virDomainObjEndJob(obj);
      virDomainObjEndAPI(&obj);
 
 

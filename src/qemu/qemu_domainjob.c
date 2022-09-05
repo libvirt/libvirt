@@ -730,32 +730,6 @@ qemuDomainObjBeginJobNowait(virDomainObj *obj,
                                         VIR_ASYNC_JOB_NONE, true);
 }
 
-/*
- * obj must be locked and have a reference before calling
- *
- * To be called after completing the work associated with the
- * earlier qemuDomainBeginJob() call
- */
-void
-qemuDomainObjEndJob(virDomainObj *obj)
-{
-    virDomainJob job = obj->job->active;
-
-    obj->job->jobsQueued--;
-
-    VIR_DEBUG("Stopping job: %s (async=%s vm=%p name=%s)",
-              virDomainJobTypeToString(job),
-              virDomainAsyncJobTypeToString(obj->job->asyncJob),
-              obj, obj->def->name);
-
-    virDomainObjResetJob(obj->job);
-    if (virDomainTrackJob(job))
-        qemuDomainSaveStatus(obj);
-    /* We indeed need to wake up ALL threads waiting because
-     * grabbing a job requires checking more variables. */
-    virCondBroadcast(&obj->job->cond);
-}
-
 void
 qemuDomainObjEndAgentJob(virDomainObj *obj)
 {

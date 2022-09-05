@@ -626,7 +626,7 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     checkpoint = virGetDomainCheckpoint(domain, chk->def->name);
 
  endjob:
-    qemuDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
 
     return checkpoint;
 }
@@ -764,7 +764,7 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
     ret = 0;
 
  endjob:
-    qemuDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
     return ret;
 }
 
@@ -917,6 +917,6 @@ qemuCheckpointDelete(virDomainObj *vm,
     }
 
  endjob:
-    qemuDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
     return ret;
 }

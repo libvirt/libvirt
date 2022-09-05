@@ -2844,7 +2844,7 @@ qemuMigrationSrcBegin(virConnectPtr conn,
         else
             qemuMigrationJobFinish(vm);
     } else {
-        qemuDomainObjEndJob(vm);
+        virDomainObjEndJob(vm);
     }
 
  cleanup:
