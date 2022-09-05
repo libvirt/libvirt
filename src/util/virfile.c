@@ -3324,17 +3324,27 @@ virFileRemoveLastComponent(char *path)
 
 # define PROC_MOUNTS "/proc/mounts"
 
+
+struct virFileSharedFsData {
+    const char *mnttype;
+    unsigned int fstype;
+};
+
+static const struct virFileSharedFsData virFileSharedFsFUSE[] = {
+    { .mnttype = "fuse.glusterfs", .fstype = VIR_FILE_SHFS_GFS2 },
+    { .mnttype = "fuse.quobyte", .fstype = VIR_FILE_SHFS_QB },
+};
+
 static int
-virFileIsSharedFixFUSE(const char *path,
-                       long long *f_type)
+virFileIsSharedFsFUSE(const char *path,
+                      unsigned int fstypes)
 {
     FILE *f = NULL;
     struct mntent mb;
     char mntbuf[1024];
-    char *mntDir = NULL;
-    char *mntType = NULL;
     g_autofree char *canonPath = NULL;
     size_t maxMatching = 0;
+    bool isShared = false;
 
     if (!(canonPath = virFileCanonicalizePath(path))) {
         virReportSystemError(errno, _("unable to canonicalize %s"), path);
@@ -3359,28 +3369,30 @@ virFileIsSharedFixFUSE(const char *path,
             continue;
 
         if (len > maxMatching) {
+            size_t i;
+            bool found = false;
+
+            for (i = 0; i < G_N_ELEMENTS(virFileSharedFsFUSE); i++) {
+                if (STREQ_NULLABLE(mb.mnt_type, virFileSharedFsFUSE[i].mnttype) &&
+                    (fstypes & virFileSharedFsFUSE[i].fstype) > 0) {
+                    found = true;
+                    break;
+                }
+            }
+
+            VIR_DEBUG("Updating shared='%d' for mountpoint '%s' type '%s'",
+                      found, p, mb.mnt_type);
+
+            isShared = found;
             maxMatching = len;
-            VIR_FREE(mntType);
-            VIR_FREE(mntDir);
-            mntDir = g_strdup(mb.mnt_dir);
-            mntType = g_strdup(mb.mnt_type);
         }
     }
 
     endmntent(f);
 
-    if (STREQ_NULLABLE(mntType, "fuse.glusterfs")) {
-        VIR_DEBUG("Found gluster FUSE mountpoint=%s for path=%s. "
-                  "Fixing shared FS type", mntDir, canonPath);
-        *f_type = GFS2_MAGIC;
-    } else if (STREQ_NULLABLE(mntType, "fuse.quobyte")) {
-        VIR_DEBUG("Found Quobyte FUSE mountpoint=%s for path=%s. "
-                  "Fixing shared FS type", mntDir, canonPath);
-        *f_type = QB_MAGIC;
-    }
+    if (isShared)
+        return 1;
 
-    VIR_FREE(mntType);
-    VIR_FREE(mntDir);
     return 0;
 }
 
@@ -3432,8 +3444,8 @@ virFileIsSharedFSType(const char *path,
     f_type = sb.f_type;
 
     if (f_type == FUSE_SUPER_MAGIC) {
-        VIR_DEBUG("Found FUSE mount for path=%s. Trying to fix it", path);
-        virFileIsSharedFixFUSE(path, &f_type);
+        VIR_DEBUG("Found FUSE mount for path=%s", path);
+        return virFileIsSharedFsFUSE(path, fstypes);
     }
 
     VIR_DEBUG("Check if path %s with FS magic %lld is shared",
