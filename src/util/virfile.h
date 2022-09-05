@@ -213,15 +213,15 @@ bool virFileIsRegular(const char *file) ATTRIBUTE_NONNULL(1);
 
 enum {
     VIR_FILE_SHFS_NFS = (1 << 0),
-    VIR_FILE_SHFS_GFS2 = (1 << 1),
-    VIR_FILE_SHFS_OCFS = (1 << 2),
-    VIR_FILE_SHFS_AFS = (1 << 3),
-    VIR_FILE_SHFS_SMB = (1 << 4),
-    VIR_FILE_SHFS_CIFS = (1 << 5),
+    VIR_FILE_SHFS_GFS2 = (1 << 1), /* Global File System 2 */
+    VIR_FILE_SHFS_OCFS = (1 << 2), /* Oracle Cluster FS (2) */
+    VIR_FILE_SHFS_AFS = (1 << 3), /* Andrew File System */
+    VIR_FILE_SHFS_SMB = (1 << 4), /* Server message block - windows shares */
+    VIR_FILE_SHFS_CIFS = (1 << 5), /* Common Internet File System - windows shares */
     VIR_FILE_SHFS_CEPH = (1 << 6),
-    VIR_FILE_SHFS_GPFS = (1 << 7),
-    VIR_FILE_SHFS_QB = (1 << 8),
-    VIR_FILE_SHFS_ACFS = (1 << 9),
+    VIR_FILE_SHFS_GPFS = (1 << 7), /* General Parallel File System/IBM Spectrum Scale */
+    VIR_FILE_SHFS_QB = (1 << 8), /* Quobyte shared filesystem */
+    VIR_FILE_SHFS_ACFS = (1 << 9), /* Oracle ASM Cluster File System */
 };
 
 int virFileIsSharedFSType(const char *path, unsigned int fstypes) ATTRIBUTE_NONNULL(1);
