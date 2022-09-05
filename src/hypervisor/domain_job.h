@@ -234,3 +234,11 @@ bool virDomainNestedJobAllowed(virDomainJobObj *jobs, virDomainJob newJob);
 bool virDomainObjCanSetJob(virDomainJobObj *job,
                            virDomainJob newJob,
                            virDomainAgentJob newAgentJob);
+
+int virDomainObjBeginJobInternal(virDomainObj *obj,
+                                 virDomainJobObj *jobObj,
+                                 virDomainJob job,
+                                 virDomainAgentJob agentJob,
+                                 virDomainAsyncJob asyncJob,
+                                 bool nowait)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);

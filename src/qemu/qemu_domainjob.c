@@ -697,248 +697,6 @@ qemuDomainObjReleaseAsyncJob(virDomainObj *obj)
     priv->job.asyncOwner = 0;
 }
 
-/* Give up waiting for mutex after 30 seconds */
-#define QEMU_JOB_WAIT_TIME (1000ull * 30)
-
-/**
- * qemuDomainObjBeginJobInternal:
- * @obj: domain object
- * @job: virDomainJob to start
- * @asyncJob: virDomainAsyncJob to start
- * @nowait: don't wait trying to acquire @job
- *
- * Acquires job for a domain object which must be locked before
- * calling. If there's already a job running waits up to
- * QEMU_JOB_WAIT_TIME after which the functions fails reporting
- * an error unless @nowait is set.
- *
- * If @nowait is true this function tries to acquire job and if
- * it fails, then it returns immediately without waiting. No
- * error is reported in this case.
- *
- * Returns: 0 on success,
- *         -2 if unable to start job because of timeout or
- *            maxQueuedJobs limit,
- *         -1 otherwise.
- */
-static int ATTRIBUTE_NONNULL(1)
-qemuDomainObjBeginJobInternal(virDomainObj *obj,
-                              virDomainJob job,
-                              virDomainAgentJob agentJob,
-                              virDomainAsyncJob asyncJob,
-                              bool nowait)
-{
-    qemuDomainObjPrivate *priv = obj->privateData;
-    unsigned long long now;
-    unsigned long long then;
-    bool nested = job == VIR_JOB_ASYNC_NESTED;
-    const char *blocker = NULL;
-    const char *agentBlocker = NULL;
-    int ret = -1;
-    unsigned long long duration = 0;
-    unsigned long long agentDuration = 0;
-    unsigned long long asyncDuration = 0;
-    const char *currentAPI = virThreadJobGet();
-
-    VIR_DEBUG("Starting job: API=%s job=%s agentJob=%s asyncJob=%s "
-              "(vm=%p name=%s, current job=%s agentJob=%s async=%s)",
-              NULLSTR(currentAPI),
-              virDomainJobTypeToString(job),
-              virDomainAgentJobTypeToString(agentJob),
-              virDomainAsyncJobTypeToString(asyncJob),
-              obj, obj->def->name,
-              virDomainJobTypeToString(priv->job.active),
-              virDomainAgentJobTypeToString(priv->job.agentActive),
-              virDomainAsyncJobTypeToString(priv->job.asyncJob));
-
-    if (virTimeMillisNow(&now) < 0)
-        return -1;
-
-    priv->job.jobsQueued++;
-    then = now + QEMU_JOB_WAIT_TIME;
-
- retry:
-    if (job != VIR_JOB_ASYNC &&
-        job != VIR_JOB_DESTROY &&
-        priv->job.maxQueuedJobs &&
-        priv->job.jobsQueued > priv->job.maxQueuedJobs) {
-        goto error;
-    }
-
-    while (!nested && !virDomainNestedJobAllowed(&priv->job, job)) {
-        if (nowait)
-            goto cleanup;
-
-        VIR_DEBUG("Waiting for async job (vm=%p name=%s)", obj, obj->def->name);
-        if (virCondWaitUntil(&priv->job.asyncCond, &obj->parent.lock, then) < 0)
-            goto error;
-    }
-
-    while (!virDomainObjCanSetJob(&priv->job, job, agentJob)) {
-        if (nowait)
-            goto cleanup;
-
-        VIR_DEBUG("Waiting for job (vm=%p name=%s)", obj, obj->def->name);
-        if (virCondWaitUntil(&priv->job.cond, &obj->parent.lock, then) < 0)
-            goto error;
-    }
-
-    /* No job is active but a new async job could have been started while obj
-     * was unlocked, so we need to recheck it. */
-    if (!nested && !virDomainNestedJobAllowed(&priv->job, job))
-        goto retry;
-
-    if (obj->removing) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-        virUUIDFormat(obj->def->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s' (%s)"),
-                       uuidstr, obj->def->name);
-        goto cleanup;
-    }
-
-    ignore_value(virTimeMillisNow(&now));
-
-    if (job) {
-        virDomainObjResetJob(&priv->job);
-
-        if (job != VIR_JOB_ASYNC) {
-            VIR_DEBUG("Started job: %s (async=%s vm=%p name=%s)",
-                      virDomainJobTypeToString(job),
-                      virDomainAsyncJobTypeToString(priv->job.asyncJob),
-                      obj, obj->def->name);
-            priv->job.active = job;
-            priv->job.owner = virThreadSelfID();
-            priv->job.ownerAPI = g_strdup(virThreadJobGet());
-            priv->job.started = now;
-        } else {
-            VIR_DEBUG("Started async job: %s (vm=%p name=%s)",
-                      virDomainAsyncJobTypeToString(asyncJob),
-                      obj, obj->def->name);
-            virDomainObjResetAsyncJob(&priv->job);
-            priv->job.current = virDomainJobDataInit(priv->job.jobDataPrivateCb);
-            priv->job.current->status = VIR_DOMAIN_JOB_STATUS_ACTIVE;
-            priv->job.asyncJob = asyncJob;
-            priv->job.asyncOwner = virThreadSelfID();
-            priv->job.asyncOwnerAPI = g_strdup(virThreadJobGet());
-            priv->job.asyncStarted = now;
-            priv->job.current->started = now;
-        }
-    }
-
-    if (agentJob) {
-        virDomainObjResetAgentJob(&priv->job);
-
-        VIR_DEBUG("Started agent job: %s (vm=%p name=%s job=%s async=%s)",
-                  virDomainAgentJobTypeToString(agentJob),
-                  obj, obj->def->name,
-                  virDomainJobTypeToString(priv->job.active),
-                  virDomainAsyncJobTypeToString(priv->job.asyncJob));
-        priv->job.agentActive = agentJob;
-        priv->job.agentOwner = virThreadSelfID();
-        priv->job.agentOwnerAPI = g_strdup(virThreadJobGet());
-        priv->job.agentStarted = now;
-    }
-
-    if (virDomainTrackJob(job) && priv->job.cb)
-        priv->job.cb->saveStatusPrivate(obj);
-
-    return 0;
-
- error:
-    ignore_value(virTimeMillisNow(&now));
-    if (priv->job.active && priv->job.started)
-        duration = now - priv->job.started;
-    if (priv->job.agentActive && priv->job.agentStarted)
-        agentDuration = now - priv->job.agentStarted;
-    if (priv->job.asyncJob && priv->job.asyncStarted)
-        asyncDuration = now - priv->job.asyncStarted;
-
-    VIR_WARN("Cannot start job (%s, %s, %s) in API %s for domain %s; "
-             "current job is (%s, %s, %s) "
-             "owned by (%llu %s, %llu %s, %llu %s (flags=0x%lx)) "
-             "for (%llus, %llus, %llus)",
-             virDomainJobTypeToString(job),
-             virDomainAgentJobTypeToString(agentJob),
-             virDomainAsyncJobTypeToString(asyncJob),
-             NULLSTR(currentAPI),
-             obj->def->name,
-             virDomainJobTypeToString(priv->job.active),
-             virDomainAgentJobTypeToString(priv->job.agentActive),
-             virDomainAsyncJobTypeToString(priv->job.asyncJob),
-             priv->job.owner, NULLSTR(priv->job.ownerAPI),
-             priv->job.agentOwner, NULLSTR(priv->job.agentOwnerAPI),
-             priv->job.asyncOwner, NULLSTR(priv->job.asyncOwnerAPI),
-             priv->job.apiFlags,
-             duration / 1000, agentDuration / 1000, asyncDuration / 1000);
-
-    if (job) {
-        if (nested || virDomainNestedJobAllowed(&priv->job, job))
-            blocker = priv->job.ownerAPI;
-        else
-            blocker = priv->job.asyncOwnerAPI;
-    }
-
-    if (agentJob)
-        agentBlocker = priv->job.agentOwnerAPI;
-
-    if (errno == ETIMEDOUT) {
-        if (blocker && agentBlocker) {
-            virReportError(VIR_ERR_OPERATION_TIMEOUT,
-                           _("cannot acquire state change "
-                             "lock (held by monitor=%s agent=%s)"),
-                           blocker, agentBlocker);
-        } else if (blocker) {
-            virReportError(VIR_ERR_OPERATION_TIMEOUT,
-                           _("cannot acquire state change "
-                             "lock (held by monitor=%s)"),
-                           blocker);
-        } else if (agentBlocker) {
-            virReportError(VIR_ERR_OPERATION_TIMEOUT,
-                           _("cannot acquire state change "
-                             "lock (held by agent=%s)"),
-                           agentBlocker);
-        } else {
-            virReportError(VIR_ERR_OPERATION_TIMEOUT, "%s",
-                           _("cannot acquire state change lock"));
-        }
-        ret = -2;
-    } else if (priv->job.maxQueuedJobs &&
-               priv->job.jobsQueued > priv->job.maxQueuedJobs) {
-        if (blocker && agentBlocker) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("cannot acquire state change "
-                             "lock (held by monitor=%s agent=%s) "
-                             "due to max_queued limit"),
-                           blocker, agentBlocker);
-        } else if (blocker) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("cannot acquire state change "
-                             "lock (held by monitor=%s) "
-                             "due to max_queued limit"),
-                           blocker);
-        } else if (agentBlocker) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("cannot acquire state change "
-                             "lock (held by agent=%s) "
-                             "due to max_queued limit"),
-                           agentBlocker);
-        } else {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("cannot acquire state change lock "
-                             "due to max_queued limit"));
-        }
-        ret = -2;
-    } else {
-        virReportSystemError(errno, "%s", _("cannot acquire job mutex"));
-    }
-
- cleanup:
-    priv->job.jobsQueued--;
-    return ret;
-}
-
 /*
  * obj must be locked before calling
  *
@@ -950,9 +708,11 @@ qemuDomainObjBeginJobInternal(virDomainObj *obj,
 int qemuDomainObjBeginJob(virDomainObj *obj,
                           virDomainJob job)
 {
-    if (qemuDomainObjBeginJobInternal(obj, job,
-                                      VIR_AGENT_JOB_NONE,
-                                      VIR_ASYNC_JOB_NONE, false) < 0)
+    qemuDomainObjPrivate *priv = obj->privateData;
+
+    if (virDomainObjBeginJobInternal(obj, &priv->job, job,
+                                     VIR_AGENT_JOB_NONE,
+                                     VIR_ASYNC_JOB_NONE, false) < 0)
         return -1;
     return 0;
 }
@@ -968,9 +728,11 @@ int
 qemuDomainObjBeginAgentJob(virDomainObj *obj,
                            virDomainAgentJob agentJob)
 {
-    return qemuDomainObjBeginJobInternal(obj, VIR_JOB_NONE,
-                                         agentJob,
-                                         VIR_ASYNC_JOB_NONE, false);
+    qemuDomainObjPrivate *priv = obj->privateData;
+
+    return virDomainObjBeginJobInternal(obj, &priv->job, VIR_JOB_NONE,
+                                        agentJob,
+                                        VIR_ASYNC_JOB_NONE, false);
 }
 
 int qemuDomainObjBeginAsyncJob(virDomainObj *obj,
@@ -978,11 +740,11 @@ int qemuDomainObjBeginAsyncJob(virDomainObj *obj,
                                virDomainJobOperation operation,
                                unsigned long apiFlags)
 {
-    qemuDomainObjPrivate *priv;
+    qemuDomainObjPrivate *priv = obj->privateData;
 
-    if (qemuDomainObjBeginJobInternal(obj, VIR_JOB_ASYNC,
-                                      VIR_AGENT_JOB_NONE,
-                                      asyncJob, false) < 0)
+    if (virDomainObjBeginJobInternal(obj, &priv->job, VIR_JOB_ASYNC,
+                                     VIR_AGENT_JOB_NONE,
+                                     asyncJob, false) < 0)
         return -1;
 
     priv = obj->privateData;
@@ -1009,11 +771,11 @@ qemuDomainObjBeginNestedJob(virDomainObj *obj,
                  priv->job.asyncOwner);
     }
 
-    return qemuDomainObjBeginJobInternal(obj,
-                                         VIR_JOB_ASYNC_NESTED,
-                                         VIR_AGENT_JOB_NONE,
-                                         VIR_ASYNC_JOB_NONE,
-                                         false);
+    return virDomainObjBeginJobInternal(obj, &priv->job,
+                                        VIR_JOB_ASYNC_NESTED,
+                                        VIR_AGENT_JOB_NONE,
+                                        VIR_ASYNC_JOB_NONE,
+                                        false);
 }
 
 /**
@@ -1032,9 +794,11 @@ int
 qemuDomainObjBeginJobNowait(virDomainObj *obj,
                             virDomainJob job)
 {
-    return qemuDomainObjBeginJobInternal(obj, job,
-                                         VIR_AGENT_JOB_NONE,
-                                         VIR_ASYNC_JOB_NONE, true);
+    qemuDomainObjPrivate *priv = obj->privateData;
+
+    return virDomainObjBeginJobInternal(obj, &priv->job, job,
+                                        VIR_AGENT_JOB_NONE,
+                                        VIR_ASYNC_JOB_NONE, true);
 }
 
 /*

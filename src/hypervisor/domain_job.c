@@ -10,6 +10,13 @@
 
 #include "domain_job.h"
 #include "viralloc.h"
+#include "virthreadjob.h"
+#include "virlog.h"
+#include "virtime.h"
+
+#define VIR_FROM_THIS VIR_FROM_NONE
+
+VIR_LOG_INIT("hypervisor.domain_job");
 
 
 VIR_ENUM_IMPL(virDomainJob,
@@ -246,4 +253,248 @@ virDomainObjCanSetJob(virDomainJobObj *job,
              job->active == VIR_JOB_NONE) &&
             (newAgentJob == VIR_AGENT_JOB_NONE ||
              job->agentActive == VIR_AGENT_JOB_NONE));
+}
+
+/* Give up waiting for mutex after 30 seconds */
+#define VIR_JOB_WAIT_TIME (1000ull * 30)
+
+/**
+ * virDomainObjBeginJobInternal:
+ * @obj: virDomainObj = domain object
+ * @jobObj: virDomainJobObj = domain job object
+ * @job: virDomainJob to start
+ * @agentJob: virDomainAgentJob to start
+ * @asyncJob: virDomainAsyncJob to start
+ * @nowait: don't wait trying to acquire @job
+ *
+ * Acquires job for a domain object which must be locked before
+ * calling. If there's already a job running waits up to
+ * VIR_JOB_WAIT_TIME after which the functions fails reporting
+ * an error unless @nowait is set.
+ *
+ * If @nowait is true this function tries to acquire job and if
+ * it fails, then it returns immediately without waiting. No
+ * error is reported in this case.
+ *
+ * Returns: 0 on success,
+ *         -2 if unable to start job because of timeout or
+ *            maxQueuedJobs limit,
+ *         -1 otherwise.
+ */
+int
+virDomainObjBeginJobInternal(virDomainObj *obj,
+                             virDomainJobObj *jobObj,
+                             virDomainJob job,
+                             virDomainAgentJob agentJob,
+                             virDomainAsyncJob asyncJob,
+                             bool nowait)
+{
+    unsigned long long now = 0;
+    unsigned long long then = 0;
+    bool nested = job == VIR_JOB_ASYNC_NESTED;
+    const char *blocker = NULL;
+    const char *agentBlocker = NULL;
+    int ret = -1;
+    unsigned long long duration = 0;
+    unsigned long long agentDuration = 0;
+    unsigned long long asyncDuration = 0;
+    const char *currentAPI = virThreadJobGet();
+
+    VIR_DEBUG("Starting job: API=%s job=%s agentJob=%s asyncJob=%s "
+              "(vm=%p name=%s, current job=%s agentJob=%s async=%s)",
+              NULLSTR(currentAPI),
+              virDomainJobTypeToString(job),
+              virDomainAgentJobTypeToString(agentJob),
+              virDomainAsyncJobTypeToString(asyncJob),
+              obj, obj->def->name,
+              virDomainJobTypeToString(jobObj->active),
+              virDomainAgentJobTypeToString(jobObj->agentActive),
+              virDomainAsyncJobTypeToString(jobObj->asyncJob));
+
+    if (virTimeMillisNow(&now) < 0)
+        return -1;
+
+    jobObj->jobsQueued++;
+    then = now + VIR_JOB_WAIT_TIME;
+
+ retry:
+    if (job != VIR_JOB_ASYNC &&
+        job != VIR_JOB_DESTROY &&
+        jobObj->maxQueuedJobs &&
+        jobObj->jobsQueued > jobObj->maxQueuedJobs) {
+        goto error;
+    }
+
+    while (!nested && !virDomainNestedJobAllowed(jobObj, job)) {
+        if (nowait)
+            goto cleanup;
+
+        VIR_DEBUG("Waiting for async job (vm=%p name=%s)", obj, obj->def->name);
+        if (virCondWaitUntil(&jobObj->asyncCond, &obj->parent.lock, then) < 0)
+            goto error;
+    }
+
+    while (!virDomainObjCanSetJob(jobObj, job, agentJob)) {
+        if (nowait)
+            goto cleanup;
+
+        VIR_DEBUG("Waiting for job (vm=%p name=%s)", obj, obj->def->name);
+        if (virCondWaitUntil(&jobObj->cond, &obj->parent.lock, then) < 0)
+            goto error;
+    }
+
+    /* No job is active but a new async job could have been started while obj
+     * was unlocked, so we need to recheck it. */
+    if (!nested && !virDomainNestedJobAllowed(jobObj, job))
+        goto retry;
+
+    if (obj->removing) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(obj->def->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s' (%s)"),
+                       uuidstr, obj->def->name);
+        goto cleanup;
+    }
+
+    ignore_value(virTimeMillisNow(&now));
+
+    if (job) {
+        virDomainObjResetJob(jobObj);
+
+        if (job != VIR_JOB_ASYNC) {
+            VIR_DEBUG("Started job: %s (async=%s vm=%p name=%s)",
+                      virDomainJobTypeToString(job),
+                      virDomainAsyncJobTypeToString(jobObj->asyncJob),
+                      obj, obj->def->name);
+            jobObj->active = job;
+            jobObj->owner = virThreadSelfID();
+            jobObj->ownerAPI = g_strdup(virThreadJobGet());
+            jobObj->started = now;
+        } else {
+            VIR_DEBUG("Started async job: %s (vm=%p name=%s)",
+                      virDomainAsyncJobTypeToString(asyncJob),
+                      obj, obj->def->name);
+            virDomainObjResetAsyncJob(jobObj);
+            jobObj->current = virDomainJobDataInit(jobObj->jobDataPrivateCb);
+            jobObj->current->status = VIR_DOMAIN_JOB_STATUS_ACTIVE;
+            jobObj->asyncJob = asyncJob;
+            jobObj->asyncOwner = virThreadSelfID();
+            jobObj->asyncOwnerAPI = g_strdup(virThreadJobGet());
+            jobObj->asyncStarted = now;
+            jobObj->current->started = now;
+        }
+    }
+
+    if (agentJob) {
+        virDomainObjResetAgentJob(jobObj);
+        VIR_DEBUG("Started agent job: %s (vm=%p name=%s job=%s async=%s)",
+                  virDomainAgentJobTypeToString(agentJob),
+                  obj, obj->def->name,
+                  virDomainJobTypeToString(jobObj->active),
+                  virDomainAsyncJobTypeToString(jobObj->asyncJob));
+        jobObj->agentActive = agentJob;
+        jobObj->agentOwner = virThreadSelfID();
+        jobObj->agentOwnerAPI = g_strdup(virThreadJobGet());
+        jobObj->agentStarted = now;
+    }
+
+    if (virDomainTrackJob(job) && jobObj->cb &&
+        jobObj->cb->saveStatusPrivate)
+        jobObj->cb->saveStatusPrivate(obj);
+
+    return 0;
+
+ error:
+    ignore_value(virTimeMillisNow(&now));
+    if (jobObj->active && jobObj->started)
+        duration = now - jobObj->started;
+    if (jobObj->agentActive && jobObj->agentStarted)
+        agentDuration = now - jobObj->agentStarted;
+    if (jobObj->asyncJob && jobObj->asyncStarted)
+        asyncDuration = now - jobObj->asyncStarted;
+
+    VIR_WARN("Cannot start job (%s, %s, %s) in API %s for domain %s; "
+             "current job is (%s, %s, %s) "
+             "owned by (%llu %s, %llu %s, %llu %s (flags=0x%lx)) "
+             "for (%llus, %llus, %llus)",
+             virDomainJobTypeToString(job),
+             virDomainAgentJobTypeToString(agentJob),
+             virDomainAsyncJobTypeToString(asyncJob),
+             NULLSTR(currentAPI),
+             obj->def->name,
+             virDomainJobTypeToString(jobObj->active),
+             virDomainAgentJobTypeToString(jobObj->agentActive),
+             virDomainAsyncJobTypeToString(jobObj->asyncJob),
+             jobObj->owner, NULLSTR(jobObj->ownerAPI),
+             jobObj->agentOwner, NULLSTR(jobObj->agentOwnerAPI),
+             jobObj->asyncOwner, NULLSTR(jobObj->asyncOwnerAPI),
+             jobObj->apiFlags,
+             duration / 1000, agentDuration / 1000, asyncDuration / 1000);
+
+    if (job) {
+        if (nested || virDomainNestedJobAllowed(jobObj, job))
+            blocker = jobObj->ownerAPI;
+        else
+            blocker = jobObj->asyncOwnerAPI;
+    }
+
+    if (agentJob)
+        agentBlocker = jobObj->agentOwnerAPI;
+
+    if (errno == ETIMEDOUT) {
+        if (blocker && agentBlocker) {
+            virReportError(VIR_ERR_OPERATION_TIMEOUT,
+                           _("cannot acquire state change "
+                             "lock (held by monitor=%s agent=%s)"),
+                           blocker, agentBlocker);
+        } else if (blocker) {
+            virReportError(VIR_ERR_OPERATION_TIMEOUT,
+                           _("cannot acquire state change "
+                             "lock (held by monitor=%s)"),
+                           blocker);
+        } else if (agentBlocker) {
+            virReportError(VIR_ERR_OPERATION_TIMEOUT,
+                           _("cannot acquire state change "
+                             "lock (held by agent=%s)"),
+                           agentBlocker);
+        } else {
+            virReportError(VIR_ERR_OPERATION_TIMEOUT, "%s",
+                           _("cannot acquire state change lock"));
+        }
+        ret = -2;
+    } else if (jobObj->maxQueuedJobs &&
+               jobObj->jobsQueued > jobObj->maxQueuedJobs) {
+        if (blocker && agentBlocker) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("cannot acquire state change "
+                             "lock (held by monitor=%s agent=%s) "
+                             "due to max_queued limit"),
+                           blocker, agentBlocker);
+        } else if (blocker) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("cannot acquire state change "
+                             "lock (held by monitor=%s) "
+                             "due to max_queued limit"),
+                           blocker);
+        } else if (agentBlocker) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("cannot acquire state change "
+                             "lock (held by agent=%s) "
+                             "due to max_queued limit"),
+                           agentBlocker);
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("cannot acquire state change lock "
+                             "due to max_queued limit"));
+        }
+        ret = -2;
+    } else {
+        virReportSystemError(errno, "%s", _("cannot acquire job mutex"));
+    }
+
+ cleanup:
+    jobObj->jobsQueued--;
+    return ret;
 }
