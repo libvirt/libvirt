@@ -154,22 +154,21 @@ static bool
 remoteRelayDomainEventCheckACL(virNetServerClient *client,
                                virConnectPtr conn, virDomainPtr dom)
 {
-    virDomainDef def;
+    g_autofree virDomainDef *def = g_new0(virDomainDef, 1);
     g_autoptr(virIdentity) identity = NULL;
     bool ret = false;
 
     /* For now, we just create a virDomainDef with enough contents to
      * satisfy what viraccessdriverpolkit.c references.  This is a bit
      * fragile, but I don't know of anything better.  */
-    memset(&def, 0, sizeof(def));
-    def.name = dom->name;
-    memcpy(def.uuid, dom->uuid, VIR_UUID_BUFLEN);
+    def->name = dom->name;
+    memcpy(def->uuid, dom->uuid, VIR_UUID_BUFLEN);
 
     if (!(identity = virNetServerClientGetIdentity(client)))
         goto cleanup;
     if (virIdentitySetCurrent(identity) < 0)
         goto cleanup;
-    ret = virConnectDomainEventRegisterAnyCheckACL(conn, &def);
+    ret = virConnectDomainEventRegisterAnyCheckACL(conn, def);
 
  cleanup:
     ignore_value(virIdentitySetCurrent(NULL));
@@ -284,21 +283,21 @@ static bool
 remoteRelayDomainQemuMonitorEventCheckACL(virNetServerClient *client,
                                           virConnectPtr conn, virDomainPtr dom)
 {
-    virDomainDef def;
+    g_autofree virDomainDef *def = g_new0(virDomainDef, 1);
     g_autoptr(virIdentity) identity = NULL;
     bool ret = false;
 
     /* For now, we just create a virDomainDef with enough contents to
      * satisfy what viraccessdriverpolkit.c references.  This is a bit
      * fragile, but I don't know of anything better.  */
-    def.name = dom->name;
-    memcpy(def.uuid, dom->uuid, VIR_UUID_BUFLEN);
+    def->name = dom->name;
+    memcpy(def->uuid, dom->uuid, VIR_UUID_BUFLEN);
 
     if (!(identity = virNetServerClientGetIdentity(client)))
         goto cleanup;
     if (virIdentitySetCurrent(identity) < 0)
         goto cleanup;
-    ret = virConnectDomainQemuMonitorEventRegisterCheckACL(conn, &def);
+    ret = virConnectDomainQemuMonitorEventRegisterCheckACL(conn, def);
 
  cleanup:
     ignore_value(virIdentitySetCurrent(NULL));
