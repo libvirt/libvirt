@@ -1187,6 +1187,7 @@ virDomainJobStatusToType;
 virDomainJobTypeFromString;
 virDomainJobTypeToString;
 virDomainNestedJobAllowed;
+virDomainObjBeginJob;
 virDomainObjBeginJobInternal;
 virDomainObjCanSetJob;
 virDomainObjClearJob;

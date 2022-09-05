@@ -2299,7 +2299,7 @@ qemuSnapshotDelete(virDomainObj *vm,
                   VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY |
                   VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY, -1);
 
-    if (qemuDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         return -1;
 
     if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))

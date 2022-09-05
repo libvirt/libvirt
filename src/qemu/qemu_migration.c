@@ -2803,7 +2803,7 @@ qemuMigrationSrcBegin(virConnectPtr conn,
         if (!qemuMigrationJobIsAllowed(vm))
             goto cleanup;
 
-        if (qemuDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+        if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
             goto cleanup;
         asyncJob = VIR_ASYNC_JOB_NONE;
     }

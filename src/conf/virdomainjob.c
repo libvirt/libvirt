@@ -509,3 +509,21 @@ virDomainObjBeginJobInternal(virDomainObj *obj,
     jobObj->jobsQueued--;
     return ret;
 }
+
+/*
+ * obj must be locked before calling
+ *
+ * This must be called by anything that will change the VM state
+ * in any way, or anything that will use the Hypervisor monitor.
+ *
+ * Successful calls must be followed by EndJob eventually
+ */
+int virDomainObjBeginJob(virDomainObj *obj,
+                         virDomainJob job)
+{
+    if (virDomainObjBeginJobInternal(obj, obj->job, job,
+                                     VIR_AGENT_JOB_NONE,
+                                     VIR_ASYNC_JOB_NONE, false) < 0)
+        return -1;
+    return 0;
+}

@@ -5954,7 +5954,7 @@ qemuDomainSaveConfig(virDomainObj *obj)
  * obj must be locked before calling
  *
  * To be called immediately before any QEMU monitor API call
- * Must have already called qemuDomainObjBeginJob() and checked
+ * Must have already called virDomainObjBeginJob() and checked
  * that the VM is still active; may not be used for nested async
  * jobs.
  *
@@ -6035,7 +6035,7 @@ void qemuDomainObjEnterMonitor(virDomainObj *obj)
  * obj must be locked before calling
  *
  * To be called immediately before any QEMU monitor API call.
- * Must have already either called qemuDomainObjBeginJob()
+ * Must have already either called virDomainObjBeginJob()
  * and checked that the VM is still active, with asyncJob of
  * VIR_ASYNC_JOB_NONE; or already called qemuDomainObjBeginAsyncJob,
  * with the same asyncJob.

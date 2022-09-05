@@ -69,9 +69,6 @@ int qemuDomainAsyncJobPhaseFromString(virDomainAsyncJob job,
 void qemuDomainEventEmitJobCompleted(virQEMUDriver *driver,
                                      virDomainObj *vm);
 
-int qemuDomainObjBeginJob(virDomainObj *obj,
-                          virDomainJob job)
-    G_GNUC_WARN_UNUSED_RESULT;
 int qemuDomainObjBeginAgentJob(virDomainObj *obj,
                                virDomainAgentJob agentJob)
     G_GNUC_WARN_UNUSED_RESULT;

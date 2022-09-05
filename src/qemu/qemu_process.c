@@ -459,7 +459,7 @@ qemuProcessFakeReboot(void *opaque)
 
     VIR_DEBUG("vm=%p", vm);
     virObjectLock(vm);
-    if (qemuDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
@@ -8039,7 +8039,7 @@ qemuProcessBeginStopJob(virDomainObj *vm,
     VIR_DEBUG("waking up all jobs waiting on the domain condition");
     virDomainObjBroadcast(vm);
 
-    if (qemuDomainObjBeginJob(vm, job) < 0)
+    if (virDomainObjBeginJob(vm, job) < 0)
         goto cleanup;
 
     ret = 0;
@@ -8680,7 +8680,7 @@ qemuProcessReconnect(void *opaque)
     if (oldjob.asyncJob == VIR_ASYNC_JOB_BACKUP && priv->backup)
         priv->backup->apiFlags = oldjob.apiFlags;
 
-    if (qemuDomainObjBeginJob(obj, VIR_JOB_MODIFY) < 0)
+    if (virDomainObjBeginJob(obj, VIR_JOB_MODIFY) < 0)
         goto error;
     jobStarted = true;
 

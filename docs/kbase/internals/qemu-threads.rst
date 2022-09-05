@@ -62,7 +62,7 @@ There are a number of locks on various objects
 
     Agent job condition is then used when thread wishes to talk to qemu
     agent monitor. It is possible to acquire just agent job
-    (``qemuDomainObjBeginAgentJob``), or only normal job (``qemuDomainObjBeginJob``)
+    (``qemuDomainObjBeginAgentJob``), or only normal job (``virDomainObjBeginJob``)
     but not both at the same time. Holding an agent job and a normal job would
     allow an unresponsive or malicious agent to block normal libvirt API and
     potentially result in a denial of service. Which type of job to grab
@@ -114,7 +114,7 @@ To lock the ``virDomainObj``
 
 To acquire the normal job condition
 
-  ``qemuDomainObjBeginJob()``
+  ``virDomainObjBeginJob()``
     - Waits until the job is compatible with current async job or no
       async job is running
     - Waits for ``job.cond`` condition ``job.active != 0`` using ``virDomainObj``
@@ -214,7 +214,7 @@ Design patterns
 
      obj = qemuDomObjFromDomain(dom);
 
-     qemuDomainObjBeginJob(obj, VIR_JOB_TYPE);
+     virDomainObjBeginJob(obj, VIR_JOB_TYPE);
 
      ...do work...
 
@@ -230,7 +230,7 @@ Design patterns
 
      obj = qemuDomObjFromDomain(dom);
 
-     qemuDomainObjBeginJob(obj, VIR_JOB_TYPE);
+     virDomainObjBeginJob(obj, VIR_JOB_TYPE);
 
      ...do prep work...
 

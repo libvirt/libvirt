@@ -604,7 +604,7 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     /* Unlike snapshots, the RNG schema already ensured a sane filename. */
 
     /* We are going to modify the domain below. */
-    if (qemuDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         return NULL;
 
     if (redefine) {
@@ -654,7 +654,7 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
     size_t i;
     int ret = -1;
 
-    if (qemuDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         return -1;
 
     if (virDomainObjCheckActive(vm) < 0)
@@ -848,7 +848,7 @@ qemuCheckpointDelete(virDomainObj *vm,
                   VIR_DOMAIN_CHECKPOINT_DELETE_METADATA_ONLY |
                   VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY, -1);
 
-    if (qemuDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         return -1;
 
     if (!metadata_only) {
