@@ -49,12 +49,6 @@ extern const struct libxl_event_hooks ev_hooks;
 int
 libxlDomainObjPrivateInitCtx(virDomainObj *vm);
 
-int
-libxlDomainObjBeginJob(libxlDriverPrivate *driver,
-                       virDomainObj *obj,
-                       virDomainJob job)
-    G_GNUC_WARN_UNUSED_RESULT;
-
 void
 libxlDomainObjEndJob(libxlDriverPrivate *driver,
                      virDomainObj *obj);

@@ -383,7 +383,7 @@ libxlDomainMigrationSrcBegin(virConnectPtr conn,
      * terminated in the confirm phase. Errors in the begin or perform
      * phase will also terminate the job.
      */
-    if (libxlDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (!(mig = libxlMigrationCookieNew(vm)))
@@ -553,7 +553,7 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
      * Unless an error is encountered in this function, the job will
      * be terminated in the finish phase.
      */
-    if (libxlDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto error;
 
     priv = vm->privateData;
@@ -662,7 +662,7 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
      * Unless an error is encountered in this function, the job will
      * be terminated in the finish phase.
      */
-    if (libxlDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto error;
 
     priv = vm->privateData;

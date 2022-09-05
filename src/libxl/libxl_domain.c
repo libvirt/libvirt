@@ -43,64 +43,6 @@
 VIR_LOG_INIT("libxl.libxl_domain");
 
 
-/* Give up waiting for mutex after 30 seconds */
-#define LIBXL_JOB_WAIT_TIME (1000ull * 30)
-
-/*
- * obj must be locked before calling, libxlDriverPrivate *must NOT be locked
- *
- * This must be called by anything that will change the VM state
- * in any way
- *
- * Upon successful return, the object will have its ref count increased,
- * successful calls must be followed by EndJob eventually
- */
-int
-libxlDomainObjBeginJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
-                       virDomainObj *obj,
-                       virDomainJob job)
-{
-    unsigned long long now;
-    unsigned long long then;
-
-    if (virTimeMillisNow(&now) < 0)
-        return -1;
-    then = now + LIBXL_JOB_WAIT_TIME;
-
-    while (obj->job->active) {
-        VIR_DEBUG("Wait normal job condition for starting job: %s",
-                  virDomainJobTypeToString(job));
-        if (virCondWaitUntil(&obj->job->cond, &obj->parent.lock, then) < 0)
-            goto error;
-    }
-
-    virDomainObjResetJob(obj->job);
-
-    VIR_DEBUG("Starting job: %s", virDomainJobTypeToString(job));
-    obj->job->active = job;
-    obj->job->owner = virThreadSelfID();
-    obj->job->started = now;
-
-    return 0;
-
- error:
-    VIR_WARN("Cannot start job (%s) for domain %s;"
-             " current job is (%s) owned by (%llu)",
-             virDomainJobTypeToString(job),
-             obj->def->name,
-             virDomainJobTypeToString(obj->job->active),
-             obj->job->owner);
-
-    if (errno == ETIMEDOUT)
-        virReportError(VIR_ERR_OPERATION_TIMEOUT,
-                       "%s", _("cannot acquire state change lock"));
-    else
-        virReportSystemError(errno,
-                             "%s", _("cannot acquire job mutex"));
-
-    return -1;
-}
-
 /*
  * obj must be locked before calling
  *
@@ -460,7 +402,7 @@ libxlDomainShutdownThread(void *opaque)
         goto cleanup;
     }
 
-    if (libxlDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (xl_reason == LIBXL_SHUTDOWN_REASON_POWEROFF) {
@@ -589,7 +531,7 @@ libxlDomainDeathThread(void *opaque)
         goto cleanup;
     }
 
-    if (libxlDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_DESTROYED);
