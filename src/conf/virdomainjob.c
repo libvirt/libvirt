@@ -559,6 +559,50 @@ int virDomainObjBeginAsyncJob(virDomainObj *obj,
     return 0;
 }
 
+int
+virDomainObjBeginNestedJob(virDomainObj *obj,
+                            virDomainAsyncJob asyncJob)
+{
+    if (asyncJob != obj->job->asyncJob) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected async job %d type expected %d"),
+                       asyncJob, obj->job->asyncJob);
+        return -1;
+    }
+
+    if (obj->job->asyncOwner != virThreadSelfID()) {
+        VIR_WARN("This thread doesn't seem to be the async job owner: %llu",
+                 obj->job->asyncOwner);
+    }
+
+    return virDomainObjBeginJobInternal(obj, obj->job,
+                                        VIR_JOB_ASYNC_NESTED,
+                                        VIR_AGENT_JOB_NONE,
+                                        VIR_ASYNC_JOB_NONE,
+                                        false);
+}
+
+/**
+ * virDomainObjBeginJobNowait:
+ *
+ * @obj: domain object
+ * @job: virDomainJob to start
+ *
+ * Acquires job for a domain object which must be locked before
+ * calling. If there's already a job running it returns
+ * immediately without any error reported.
+ *
+ * Returns: see virDomainObjBeginJobInternal
+ */
+int
+virDomainObjBeginJobNowait(virDomainObj *obj,
+                           virDomainJob job)
+{
+    return virDomainObjBeginJobInternal(obj, obj->job, job,
+                                        VIR_AGENT_JOB_NONE,
+                                        VIR_ASYNC_JOB_NONE, true);
+}
+
 /*
  * obj must be locked and have a reference before calling
  *

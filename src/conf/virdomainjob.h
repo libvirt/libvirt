@@ -257,6 +257,12 @@ int virDomainObjBeginAsyncJob(virDomainObj *obj,
                               virDomainJobOperation operation,
                               unsigned long apiFlags)
     G_GNUC_WARN_UNUSED_RESULT;
+int virDomainObjBeginNestedJob(virDomainObj *obj,
+                               virDomainAsyncJob asyncJob)
+    G_GNUC_WARN_UNUSED_RESULT;
+int virDomainObjBeginJobNowait(virDomainObj *obj,
+                               virDomainJob job)
+    G_GNUC_WARN_UNUSED_RESULT;
 
 void virDomainObjEndJob(virDomainObj *obj);
 void virDomainObjEndAgentJob(virDomainObj *obj);

@@ -18834,7 +18834,7 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
             int rv;
 
             if (flags & VIR_CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT)
-                rv = qemuDomainObjBeginJobNowait(vm, VIR_JOB_QUERY);
+                rv = virDomainObjBeginJobNowait(vm, VIR_JOB_QUERY);
             else
                 rv = virDomainObjBeginJob(vm, VIR_JOB_QUERY);
 

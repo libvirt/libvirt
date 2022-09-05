@@ -8080,7 +8080,7 @@ void qemuProcessStop(virQEMUDriver *driver,
     virErrorPreserveLast(&orig_err);
 
     if (asyncJob != VIR_ASYNC_JOB_NONE) {
-        if (qemuDomainObjBeginNestedJob(vm, asyncJob) < 0)
+        if (virDomainObjBeginNestedJob(vm, asyncJob) < 0)
             goto cleanup;
     } else if (vm->job->asyncJob != VIR_ASYNC_JOB_NONE &&
                vm->job->asyncOwner == virThreadSelfID() &&

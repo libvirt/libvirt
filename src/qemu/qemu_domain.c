@@ -5968,7 +5968,7 @@ qemuDomainObjEnterMonitorInternal(virDomainObj *obj,
 
     if (asyncJob != VIR_ASYNC_JOB_NONE) {
         int ret;
-        if ((ret = qemuDomainObjBeginNestedJob(obj, asyncJob)) < 0)
+        if ((ret = virDomainObjBeginNestedJob(obj, asyncJob)) < 0)
             return ret;
         if (!virDomainObjIsActive(obj)) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
