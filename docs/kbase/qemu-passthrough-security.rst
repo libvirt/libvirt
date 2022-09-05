@@ -156,3 +156,25 @@ will affect all virtual machines. These settings are all made in
 
 * Cgroups - set ``cgroup_device_acl`` to include the desired device node, or
   ``cgroup_controllers = [...]`` to exclude the ``devices`` controller.
+
+Private monunt namespace
+----------------------------
+
+As mentioned above, libvirt launches each QEMU process in its own ``mount``
+namespace. It's recommended that all mount points are set up prior starting any
+guest. For cases when that can't be assured, mount points in the namespace are
+marked as slave so that mount events happening in the parent namespace are
+propagated into this child namespace. But this may require an additional step:
+mounts in the parent namespace need to be marked as shared (if the distribution
+doesn't do that by default). This can be achieved by running the following
+command before any guest is started:
+
+::
+
+  # mount --make-rshared /
+
+Another requirement for dynamic mount point propagation is to  not place
+``hugetlbfs`` mount points under ``/dev`` because these won't be propagated as
+corresponding directories do not exist in the private namespace. Or just use
+``memfd`` memory backend instead which does not require ``hugetlbfs`` mount
+points.
