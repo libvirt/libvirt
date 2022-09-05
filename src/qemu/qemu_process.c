@@ -3880,8 +3880,18 @@ qemuProcessNeedHugepagesPath(virDomainDef *def,
     const long system_pagesize = virGetSystemPageSizeKB();
     size_t i;
 
-    if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE)
+    switch ((virDomainMemorySource)def->mem.source) {
+    case VIR_DOMAIN_MEMORY_SOURCE_FILE:
+        /* This needs a hugetlbfs mount. */
         return true;
+    case VIR_DOMAIN_MEMORY_SOURCE_MEMFD:
+        /* memfd works without a hugetlbfs mount */
+        return false;
+    case VIR_DOMAIN_MEMORY_SOURCE_NONE:
+    case VIR_DOMAIN_MEMORY_SOURCE_ANONYMOUS:
+    case VIR_DOMAIN_MEMORY_SOURCE_LAST:
+        break;
+    }
 
     for (i = 0; i < def->mem.nhugepages; i++) {
         if (def->mem.hugepages[i].size != system_pagesize)
