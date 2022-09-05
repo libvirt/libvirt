@@ -138,7 +138,7 @@ virDomainObjInitJob(virDomainJobObj *job,
         return -1;
     }
 
-    if (job->cb &&
+    if (job->cb && job->cb->allocJobPrivate &&
         !(job->privateData = job->cb->allocJobPrivate())) {
         virCondDestroy(&job->cond);
         virCondDestroy(&job->asyncCond);
@@ -180,7 +180,7 @@ virDomainObjResetAsyncJob(virDomainJobObj *job)
     g_clear_pointer(&job->current, virDomainJobDataFree);
     job->apiFlags = 0;
 
-    if (job->cb)
+    if (job->cb && job->cb->resetJobPrivate)
         job->cb->resetJobPrivate(job->privateData);
 }
 
@@ -206,7 +206,7 @@ virDomainObjPreserveJob(virDomainJobObj *currJob,
     job->privateData = g_steal_pointer(&currJob->privateData);
     job->apiFlags = currJob->apiFlags;
 
-    if (currJob->cb &&
+    if (currJob->cb && currJob->cb->allocJobPrivate &&
         !(currJob->privateData = currJob->cb->allocJobPrivate()))
         return -1;
     job->cb = currJob->cb;
@@ -226,7 +226,7 @@ virDomainObjClearJob(virDomainJobObj *job)
     virCondDestroy(&job->cond);
     virCondDestroy(&job->asyncCond);
 
-    if (job->cb)
+    if (job->cb && job->cb->freeJobPrivate)
         g_clear_pointer(&job->privateData, job->cb->freeJobPrivate);
 }
 
