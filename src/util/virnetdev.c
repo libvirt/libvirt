@@ -3210,7 +3210,7 @@ virNetDevSwitchdevFeature(const char *ifname,
     struct nl_msg *nl_msg = NULL;
     g_autofree struct nlmsghdr *resp = NULL;
     unsigned int recvbuflen;
-    struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {NULL, };
+    g_autofree struct nlattr **tb = g_new0(struct nlattr *, DEVLINK_ATTR_MAX + 1);
     g_autoptr(virPCIDevice) pci_device_ptr = NULL;
     struct genlmsghdr gmsgh = {
         .cmd = DEVLINK_CMD_ESWITCH_GET,
