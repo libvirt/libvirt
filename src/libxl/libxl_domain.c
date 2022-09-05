@@ -43,29 +43,6 @@
 VIR_LOG_INIT("libxl.libxl_domain");
 
 
-/*
- * obj must be locked before calling
- *
- * To be called after completing the work associated with the
- * earlier libxlDomainBeginJob() call
- *
- * Returns true if the remaining reference count on obj is
- * non-zero, false if the reference count has dropped to zero
- * and obj is disposed.
- */
-void
-libxlDomainObjEndJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
-                     virDomainObj *obj)
-{
-    virDomainJob job = obj->job->active;
-
-    VIR_DEBUG("Stopping job: %s",
-              virDomainJobTypeToString(job));
-
-    virDomainObjResetJob(obj->job);
-    virCondSignal(&obj->job->cond);
-}
-
 int
 libxlDomainJobGetTimeElapsed(virDomainJobObj *job, unsigned long long *timeElapsed)
 {
@@ -505,7 +482,7 @@ libxlDomainShutdownThread(void *opaque)
     }
 
  endjob:
-    libxlDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -541,7 +518,7 @@ libxlDomainDeathThread(void *opaque)
     libxlDomainCleanup(driver, vm);
     if (!vm->persistent)
         virDomainObjListRemove(driver->domains, vm);
-    libxlDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
     virObjectEventStateQueue(driver->domainEventState, dom_event);
 
  cleanup:

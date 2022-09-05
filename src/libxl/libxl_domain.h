@@ -49,10 +49,6 @@ extern const struct libxl_event_hooks ev_hooks;
 int
 libxlDomainObjPrivateInitCtx(virDomainObj *vm);
 
-void
-libxlDomainObjEndJob(libxlDriverPrivate *driver,
-                     virDomainObj *obj);
-
 int
 libxlDomainJobGetTimeElapsed(virDomainJobObj *job,
                              unsigned long long *timeElapsed);
