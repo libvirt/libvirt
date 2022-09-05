@@ -72,12 +72,6 @@ extern virXMLNamespace virLXCDriverDomainXMLNamespace;
 extern virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks;
 extern virDomainDefParserConfig virLXCDriverDomainDefParserConfig;
 
-int
-virLXCDomainObjBeginJob(virLXCDriver *driver,
-                       virDomainObj *obj,
-                       virDomainJob job)
-    G_GNUC_WARN_UNUSED_RESULT;
-
 void
 virLXCDomainObjEndJob(virLXCDriver *driver,
                      virDomainObj *obj);

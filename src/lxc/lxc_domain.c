@@ -35,63 +35,6 @@
 VIR_LOG_INIT("lxc.lxc_domain");
 
 
-/* Give up waiting for mutex after 30 seconds */
-#define LXC_JOB_WAIT_TIME (1000ull * 30)
-
-/*
- * obj must be locked before calling, virLXCDriver *must NOT be locked
- *
- * This must be called by anything that will change the VM state
- * in any way
- *
- * Upon successful return, the object will have its ref count increased.
- * Successful calls must be followed by EndJob eventually.
- */
-int
-virLXCDomainObjBeginJob(virLXCDriver *driver G_GNUC_UNUSED,
-                       virDomainObj *obj,
-                       virDomainJob job)
-{
-    unsigned long long now;
-    unsigned long long then;
-
-    if (virTimeMillisNow(&now) < 0)
-        return -1;
-    then = now + LXC_JOB_WAIT_TIME;
-
-    while (obj->job->active) {
-        VIR_DEBUG("Wait normal job condition for starting job: %s",
-                  virDomainJobTypeToString(job));
-        if (virCondWaitUntil(&obj->job->cond, &obj->parent.lock, then) < 0)
-            goto error;
-    }
-
-    virDomainObjResetJob(obj->job);
-
-    VIR_DEBUG("Starting job: %s", virDomainJobTypeToString(job));
-    obj->job->active = job;
-    obj->job->owner = virThreadSelfID();
-
-    return 0;
-
- error:
-    VIR_WARN("Cannot start job (%s) for domain %s;"
-             " current job is (%s) owned by (%llu)",
-             virDomainJobTypeToString(job),
-             obj->def->name,
-             virDomainJobTypeToString(obj->job->active),
-             obj->job->owner);
-
-    if (errno == ETIMEDOUT)
-        virReportError(VIR_ERR_OPERATION_TIMEOUT,
-                       "%s", _("cannot acquire state change lock"));
-    else
-        virReportSystemError(errno,
-                             "%s", _("cannot acquire job mutex"));
-    return -1;
-}
-
-
 /*
  * obj must be locked and have a reference before calling
  *
