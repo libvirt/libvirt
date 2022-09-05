@@ -1,5 +1,5 @@
 /*
- * domain_job.c: job functions shared between hypervisor drivers
+ * virdomainjob.c: job functions shared between hypervisor drivers
  *
  * Copyright (C) 2022 Red Hat, Inc.
  * SPDX-License-Identifier: LGPL-2.1-or-later
@@ -8,7 +8,7 @@
 #include <config.h>
 #include <string.h>
 
-#include "domain_job.h"
+#include "virdomainjob.h"
 #include "viralloc.h"
 #include "virthreadjob.h"
 #include "virlog.h"
@@ -16,7 +16,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-VIR_LOG_INIT("hypervisor.domain_job");
+VIR_LOG_INIT("conf.virdomainjob");
 
 
 VIR_ENUM_IMPL(virDomainJob,

@@ -24,7 +24,7 @@
 #include "ch_monitor.h"
 #include "virchrdev.h"
 #include "vircgroup.h"
-#include "domain_job.h"
+#include "virdomainjob.h"
 
 /* Give up waiting for mutex after 30 seconds */
 #define CH_JOB_WAIT_TIME (1000ull * 30)

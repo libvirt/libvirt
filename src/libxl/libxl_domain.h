@@ -24,7 +24,7 @@
 
 #include "libxl_conf.h"
 #include "virchrdev.h"
-#include "domain_job.h"
+#include "virdomainjob.h"
 
 
 typedef struct _libxlDomainObjPrivate libxlDomainObjPrivate;

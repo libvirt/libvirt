@@ -20,6 +20,7 @@ domain_conf_sources = [
   'numa_conf.c',
   'snapshot_conf.c',
   'virdomaincheckpointobjlist.c',
+  'virdomainjob.c',
   'virdomainmomentobjlist.c',
   'virdomainobjlist.c',
   'virdomainsnapshotobjlist.c',

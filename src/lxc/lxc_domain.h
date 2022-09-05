@@ -25,7 +25,7 @@
 #include "lxc_conf.h"
 #include "lxc_monitor.h"
 #include "virenum.h"
-#include "domain_job.h"
+#include "virdomainjob.h"
 
 
 typedef enum {

@@ -20,7 +20,7 @@
 
 #include <glib-object.h>
 #include "qemu_monitor.h"
-#include "domain_job.h"
+#include "virdomainjob.h"
 
 
 typedef enum {

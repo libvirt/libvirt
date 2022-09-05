@@ -29,7 +29,6 @@
 #include "virsystemd.h"
 #include "virinitctl.h"
 #include "domain_driver.h"
-#include "domain_job.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

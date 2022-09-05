@@ -1175,6 +1175,28 @@ virDomainCheckpointUpdateRelations;
 virDomainListCheckpoints;
 
 
+#conf/virdomainjob.h
+virDomainAgentJobTypeToString;
+virDomainAsyncJobTypeFromString;
+virDomainAsyncJobTypeToString;
+virDomainJobDataCopy;
+virDomainJobDataFree;
+virDomainJobDataInit;
+virDomainJobStatusToType;
+virDomainJobTypeFromString;
+virDomainJobTypeToString;
+virDomainNestedJobAllowed;
+virDomainObjBeginJobInternal;
+virDomainObjCanSetJob;
+virDomainObjClearJob;
+virDomainObjInitJob;
+virDomainObjPreserveJob;
+virDomainObjResetAgentJob;
+virDomainObjResetAsyncJob;
+virDomainObjResetJob;
+virDomainTrackJob;
+
+
 # conf/virdomainmomentobjlist.h
 virDomainMomentDropChildren;
 virDomainMomentDropParent;
@@ -1583,28 +1605,6 @@ virDomainDriverNodeDeviceReAttach;
 virDomainDriverNodeDeviceReset;
 virDomainDriverParseBlkioDeviceStr;
 virDomainDriverSetupPersistentDefBlkioParams;
-
-
-# hypervisor/domain_job.h
-virDomainAgentJobTypeToString;
-virDomainAsyncJobTypeFromString;
-virDomainAsyncJobTypeToString;
-virDomainJobDataCopy;
-virDomainJobDataFree;
-virDomainJobDataInit;
-virDomainJobStatusToType;
-virDomainJobTypeFromString;
-virDomainJobTypeToString;
-virDomainNestedJobAllowed;
-virDomainObjBeginJobInternal;
-virDomainObjCanSetJob;
-virDomainObjClearJob;
-virDomainObjInitJob;
-virDomainObjPreserveJob;
-virDomainObjResetAgentJob;
-virDomainObjResetAsyncJob;
-virDomainObjResetJob;
-virDomainTrackJob;
 
 
 # hypervisor/virclosecallbacks.h
