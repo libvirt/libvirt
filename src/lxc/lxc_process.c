@@ -1076,8 +1076,7 @@ virLXCProcessReadLogOutput(virDomainObj *vm,
                            char *buf,
                            size_t buflen)
 {
-    int fd = -1;
-    int ret;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = open(logfile, O_RDONLY)) < 0) {
         virReportSystemError(errno,
@@ -1090,17 +1089,10 @@ virLXCProcessReadLogOutput(virDomainObj *vm,
         virReportSystemError(errno,
                              _("Unable to seek log file %s to %llu"),
                              logfile, (unsigned long long)pos);
-        VIR_FORCE_CLOSE(fd);
         return -1;
     }
 
-    ret = virLXCProcessReadLogOutputData(vm,
-                                         fd,
-                                         buf,
-                                         buflen);
-
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return virLXCProcessReadLogOutputData(vm, fd, buf, buflen);
 }
 
 
