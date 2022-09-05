@@ -146,7 +146,8 @@ testQemuMigrationCookieParse(const void *opaque)
                                                   priv,
                                                   data->xmlstr,
                                                   data->xmlstrlen,
-                                                  data->cookieParseFlags))) {
+                                                  data->cookieParseFlags,
+                                                  data->vm))) {
         VIR_TEST_DEBUG("\nfailed to parse qemu migration cookie:\n%s\n", data->xmlstr);
         return -1;
     }

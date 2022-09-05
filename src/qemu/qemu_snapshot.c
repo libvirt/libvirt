@@ -1334,7 +1334,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
         if (!qemuMigrationSrcIsAllowed(driver, vm, false, VIR_ASYNC_JOB_SNAPSHOT, 0))
             goto cleanup;
 
-        qemuDomainJobSetStatsType(priv->job.current,
+        qemuDomainJobSetStatsType(vm->job->current,
                                   QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP);
 
         /* allow the migration job to be cancelled or the domain to be paused */

@@ -60,7 +60,6 @@ libxlDomainObjBeginJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
                        virDomainObj *obj,
                        virDomainJob job)
 {
-    libxlDomainObjPrivate *priv = obj->privateData;
     unsigned long long now;
     unsigned long long then;
 
@@ -68,19 +67,19 @@ libxlDomainObjBeginJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
         return -1;
     then = now + LIBXL_JOB_WAIT_TIME;
 
-    while (priv->job.active) {
+    while (obj->job->active) {
         VIR_DEBUG("Wait normal job condition for starting job: %s",
                   virDomainJobTypeToString(job));
-        if (virCondWaitUntil(&priv->job.cond, &obj->parent.lock, then) < 0)
+        if (virCondWaitUntil(&obj->job->cond, &obj->parent.lock, then) < 0)
             goto error;
     }
 
-    virDomainObjResetJob(&priv->job);
+    virDomainObjResetJob(obj->job);
 
     VIR_DEBUG("Starting job: %s", virDomainJobTypeToString(job));
-    priv->job.active = job;
-    priv->job.owner = virThreadSelfID();
-    priv->job.started = now;
+    obj->job->active = job;
+    obj->job->owner = virThreadSelfID();
+    obj->job->started = now;
 
     return 0;
 
@@ -89,8 +88,8 @@ libxlDomainObjBeginJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
              " current job is (%s) owned by (%llu)",
              virDomainJobTypeToString(job),
              obj->def->name,
-             virDomainJobTypeToString(priv->job.active),
-             priv->job.owner);
+             virDomainJobTypeToString(obj->job->active),
+             obj->job->owner);
 
     if (errno == ETIMEDOUT)
         virReportError(VIR_ERR_OPERATION_TIMEOUT,
@@ -116,14 +115,13 @@ void
 libxlDomainObjEndJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
                      virDomainObj *obj)
 {
-    libxlDomainObjPrivate *priv = obj->privateData;
-    virDomainJob job = priv->job.active;
+    virDomainJob job = obj->job->active;
 
     VIR_DEBUG("Stopping job: %s",
               virDomainJobTypeToString(job));
 
-    virDomainObjResetJob(&priv->job);
-    virCondSignal(&priv->job.cond);
+    virDomainObjResetJob(obj->job);
+    virCondSignal(&obj->job->cond);
 }
 
 int
@@ -158,12 +156,6 @@ libxlDomainObjPrivateAlloc(void *opaque G_GNUC_UNUSED)
         return NULL;
     }
 
-    if (virDomainObjInitJob(&priv->job, NULL, NULL) < 0) {
-        virChrdevFree(priv->devs);
-        g_free(priv);
-        return NULL;
-    }
-
     return priv;
 }
 
@@ -173,7 +165,6 @@ libxlDomainObjPrivateFree(void *data)
     libxlDomainObjPrivate *priv = data;
 
     g_free(priv->lockState);
-    virDomainObjClearJob(&priv->job);
     virChrdevFree(priv->devs);
     g_free(priv);
 }

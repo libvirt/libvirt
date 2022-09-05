@@ -66,8 +66,6 @@ struct _virLXCDomainObjPrivate {
 
     virCgroup *cgroup;
     char *machineName;
-
-    virDomainJobObj job;
 };
 
 extern virXMLNamespace virLXCDriverDomainXMLNamespace;

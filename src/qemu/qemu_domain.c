@@ -278,7 +278,7 @@ qemuDomainObjPrivateXMLParseJobNBD(virDomainObj *vm,
         return -1;
 
     if (n > 0) {
-        if (priv->job.asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT) {
+        if (vm->job->asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT) {
             VIR_WARN("Found disks marked for migration but we were not "
                      "migrating");
             n = 0;
@@ -359,14 +359,46 @@ qemuDomainParseJobPrivate(xmlXPathContextPtr ctxt,
     return 0;
 }
 
+static void *
+qemuJobDataAllocPrivateData(void)
+{
+    return g_new0(qemuDomainJobDataPrivate, 1);
+}
 
-static virDomainObjPrivateJobCallbacks qemuPrivateJobCallbacks = {
-    .allocJobPrivate = qemuJobAllocPrivate,
-    .freeJobPrivate = qemuJobFreePrivate,
-    .resetJobPrivate = qemuJobResetPrivate,
-    .formatJobPrivate = qemuDomainFormatJobPrivate,
-    .parseJobPrivate = qemuDomainParseJobPrivate,
-    .saveStatusPrivate = qemuDomainSaveStatus,
+
+static void *
+qemuJobDataCopyPrivateData(void *data)
+{
+    qemuDomainJobDataPrivate *ret = g_new0(qemuDomainJobDataPrivate, 1);
+
+    memcpy(ret, data, sizeof(qemuDomainJobDataPrivate));
+
+    return ret;
+}
+
+
+static void
+qemuJobDataFreePrivateData(void *data)
+{
+    g_free(data);
+}
+
+
+virDomainJobObjConfig virQEMUDriverDomainJobConfig = {
+    .cb = {
+        .allocJobPrivate = qemuJobAllocPrivate,
+        .freeJobPrivate = qemuJobFreePrivate,
+        .resetJobPrivate = qemuJobResetPrivate,
+        .formatJobPrivate = qemuDomainFormatJobPrivate,
+        .parseJobPrivate = qemuDomainParseJobPrivate,
+        .saveStatusPrivate = qemuDomainSaveStatus,
+    },
+    .jobDataPrivateCb = {
+        .allocPrivateData = qemuJobDataAllocPrivateData,
+        .copyPrivateData = qemuJobDataCopyPrivateData,
+        .freePrivateData = qemuJobDataFreePrivateData,
+    },
+    .maxQueuedJobs = 0,
 };
 
 /**
@@ -1719,7 +1751,6 @@ qemuDomainObjPrivateFree(void *data)
     qemuDomainObjPrivateDataClear(priv);
 
     virObjectUnref(priv->monConfig);
-    virDomainObjClearJob(&priv->job);
     g_free(priv->lockState);
     g_free(priv->origname);
 
@@ -1757,21 +1788,11 @@ static void *
 qemuDomainObjPrivateAlloc(void *opaque)
 {
     g_autoptr(qemuDomainObjPrivate) priv = g_new0(qemuDomainObjPrivate, 1);
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(opaque);
-
-    if (virDomainObjInitJob(&priv->job, &qemuPrivateJobCallbacks,
-                            &qemuJobDataPrivateDataCallbacks) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to init qemu driver mutexes"));
-        return NULL;
-    }
 
     if (!(priv->devs = virChrdevAlloc()))
         return NULL;
 
     priv->blockjobs = virHashNew(virObjectUnref);
-
-    priv->job.maxQueuedJobs = cfg->maxQueuedJobs;
 
     /* agent commands block by default, user can choose different behavior */
     priv->agentTimeout = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK;
@@ -5955,14 +5976,14 @@ qemuDomainObjEnterMonitorInternal(virDomainObj *obj,
             qemuDomainObjEndJob(obj);
             return -1;
         }
-    } else if (priv->job.asyncOwner == virThreadSelfID()) {
+    } else if (obj->job->asyncOwner == virThreadSelfID()) {
         VIR_WARN("This thread seems to be the async job owner; entering"
                  " monitor without asking for a nested job is dangerous");
-    } else if (priv->job.owner != virThreadSelfID()) {
+    } else if (obj->job->owner != virThreadSelfID()) {
         VIR_WARN("Entering a monitor without owning a job. "
                  "Job %s owner %s (%llu)",
-                 virDomainJobTypeToString(priv->job.active),
-                 priv->job.ownerAPI, priv->job.owner);
+                 virDomainJobTypeToString(obj->job->active),
+                 obj->job->ownerAPI, obj->job->owner);
     }
 
     VIR_DEBUG("Entering monitor (mon=%p vm=%p name=%s)",
@@ -6001,7 +6022,7 @@ qemuDomainObjExitMonitor(virDomainObj *obj)
     if (!hasRefs)
         priv->mon = NULL;
 
-    if (priv->job.active == VIR_JOB_ASYNC_NESTED)
+    if (obj->job->active == VIR_JOB_ASYNC_NESTED)
         qemuDomainObjEndJob(obj);
 }
 

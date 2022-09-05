@@ -58,8 +58,6 @@ struct _qemuDomainJobDataPrivate {
     qemuDomainMirrorStats mirrorStats;
 };
 
-extern virDomainJobDataPrivateDataCallbacks qemuJobDataPrivateDataCallbacks;
-
 void qemuDomainJobSetStatsType(virDomainJobData *jobData,
                                qemuDomainJobStatsType type);
 

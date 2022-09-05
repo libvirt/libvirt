@@ -52,7 +52,6 @@ virLXCDomainObjBeginJob(virLXCDriver *driver G_GNUC_UNUSED,
                        virDomainObj *obj,
                        virDomainJob job)
 {
-    virLXCDomainObjPrivate *priv = obj->privateData;
     unsigned long long now;
     unsigned long long then;
 
@@ -60,18 +59,18 @@ virLXCDomainObjBeginJob(virLXCDriver *driver G_GNUC_UNUSED,
         return -1;
     then = now + LXC_JOB_WAIT_TIME;
 
-    while (priv->job.active) {
+    while (obj->job->active) {
         VIR_DEBUG("Wait normal job condition for starting job: %s",
                   virDomainJobTypeToString(job));
-        if (virCondWaitUntil(&priv->job.cond, &obj->parent.lock, then) < 0)
+        if (virCondWaitUntil(&obj->job->cond, &obj->parent.lock, then) < 0)
             goto error;
     }
 
-    virDomainObjResetJob(&priv->job);
+    virDomainObjResetJob(obj->job);
 
     VIR_DEBUG("Starting job: %s", virDomainJobTypeToString(job));
-    priv->job.active = job;
-    priv->job.owner = virThreadSelfID();
+    obj->job->active = job;
+    obj->job->owner = virThreadSelfID();
 
     return 0;
 
@@ -80,8 +79,8 @@ virLXCDomainObjBeginJob(virLXCDriver *driver G_GNUC_UNUSED,
              " current job is (%s) owned by (%llu)",
              virDomainJobTypeToString(job),
              obj->def->name,
-             virDomainJobTypeToString(priv->job.active),
-             priv->job.owner);
+             virDomainJobTypeToString(obj->job->active),
+             obj->job->owner);
 
     if (errno == ETIMEDOUT)
         virReportError(VIR_ERR_OPERATION_TIMEOUT,
@@ -103,14 +102,13 @@ void
 virLXCDomainObjEndJob(virLXCDriver *driver G_GNUC_UNUSED,
                      virDomainObj *obj)
 {
-    virLXCDomainObjPrivate *priv = obj->privateData;
-    virDomainJob job = priv->job.active;
+    virDomainJob job = obj->job->active;
 
     VIR_DEBUG("Stopping job: %s",
               virDomainJobTypeToString(job));
 
-    virDomainObjResetJob(&priv->job);
-    virCondSignal(&priv->job.cond);
+    virDomainObjResetJob(obj->job);
+    virCondSignal(&obj->job->cond);
 }
 
 
@@ -118,11 +116,6 @@ static void *
 virLXCDomainObjPrivateAlloc(void *opaque)
 {
     virLXCDomainObjPrivate *priv = g_new0(virLXCDomainObjPrivate, 1);
-
-    if (virDomainObjInitJob(&priv->job, NULL, NULL) < 0) {
-        g_free(priv);
-        return NULL;
-    }
 
     priv->driver = opaque;
 
@@ -136,7 +129,6 @@ virLXCDomainObjPrivateFree(void *data)
     virLXCDomainObjPrivate *priv = data;
 
     virCgroupFree(priv->cgroup);
-    virDomainObjClearJob(&priv->job);
     g_free(priv);
 }
 

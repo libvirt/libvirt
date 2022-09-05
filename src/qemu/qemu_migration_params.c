@@ -1005,7 +1005,7 @@ qemuMigrationParamsEnableTLS(virQEMUDriver *driver,
                              qemuMigrationParams *migParams)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
+    qemuDomainJobPrivate *jobPriv = vm->job->privateData;
     g_autoptr(virJSONValue) tlsProps = NULL;
     g_autoptr(virJSONValue) secProps = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -1080,8 +1080,7 @@ int
 qemuMigrationParamsDisableTLS(virDomainObj *vm,
                               qemuMigrationParams *migParams)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
+    qemuDomainJobPrivate *jobPriv = vm->job->privateData;
 
     if (!jobPriv->migParams->params[QEMU_MIGRATION_PARAM_TLS_CREDS].set)
         return 0;
@@ -1213,8 +1212,7 @@ qemuMigrationParamsCheck(virDomainObj *vm,
                          qemuMigrationParams *migParams,
                          virBitmap *remoteCaps)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
+    qemuDomainJobPrivate *jobPriv = vm->job->privateData;
     qemuMigrationCapability cap;
     qemuMigrationParty party;
     size_t i;

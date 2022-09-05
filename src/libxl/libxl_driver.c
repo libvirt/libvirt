@@ -5204,7 +5204,6 @@ static int
 libxlDomainGetJobInfo(virDomainPtr dom,
                       virDomainJobInfoPtr info)
 {
-    libxlDomainObjPrivate *priv;
     virDomainObj *vm;
     int ret = -1;
     unsigned long long timeElapsed = 0;
@@ -5215,8 +5214,7 @@ libxlDomainGetJobInfo(virDomainPtr dom,
     if (virDomainGetJobInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    priv = vm->privateData;
-    if (!priv->job.active) {
+    if (!vm->job->active) {
         memset(info, 0, sizeof(*info));
         info->type = VIR_DOMAIN_JOB_NONE;
         ret = 0;
@@ -5226,7 +5224,7 @@ libxlDomainGetJobInfo(virDomainPtr dom,
     /* In libxl we don't have an estimated completion time
      * thus we always set to unbounded and update time
      * for the active job. */
-    if (libxlDomainJobGetTimeElapsed(&priv->job, &timeElapsed) < 0)
+    if (libxlDomainJobGetTimeElapsed(vm->job, &timeElapsed) < 0)
         goto cleanup;
 
     /* setting only these two attributes is enough because libxl never sets
@@ -5248,7 +5246,6 @@ libxlDomainGetJobStats(virDomainPtr dom,
                        int *nparams,
                        unsigned int flags)
 {
-    libxlDomainObjPrivate *priv;
     virDomainObj *vm;
     int ret = -1;
     int maxparams = 0;
@@ -5263,8 +5260,7 @@ libxlDomainGetJobStats(virDomainPtr dom,
     if (virDomainGetJobStatsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    priv = vm->privateData;
-    if (!priv->job.active) {
+    if (!vm->job->active) {
         *type = VIR_DOMAIN_JOB_NONE;
         *params = NULL;
         *nparams = 0;
@@ -5275,7 +5271,7 @@ libxlDomainGetJobStats(virDomainPtr dom,
     /* In libxl we don't have an estimated completion time
      * thus we always set to unbounded and update time
      * for the active job. */
-    if (libxlDomainJobGetTimeElapsed(&priv->job, &timeElapsed) < 0)
+    if (libxlDomainJobGetTimeElapsed(vm->job, &timeElapsed) < 0)
         goto cleanup;
 
     if (virTypedParamsAddULLong(params, nparams, &maxparams,

@@ -648,8 +648,8 @@ qemuProcessHandleStop(qemuMonitor *mon G_GNUC_UNUSED,
      * reveal it in domain state nor sent events */
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING &&
         !priv->pausedShutdown) {
-        if (priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT) {
-            if (priv->job.current->status == VIR_DOMAIN_JOB_STATUS_POSTCOPY)
+        if (vm->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT) {
+            if (vm->job->current->status == VIR_DOMAIN_JOB_STATUS_POSTCOPY)
                 reason = VIR_DOMAIN_PAUSED_POSTCOPY;
             else
                 reason = VIR_DOMAIN_PAUSED_MIGRATION;
@@ -661,8 +661,8 @@ qemuProcessHandleStop(qemuMonitor *mon G_GNUC_UNUSED,
                   vm->def->name, virDomainPausedReasonTypeToString(reason),
                   detail);
 
-        if (priv->job.current)
-            ignore_value(virTimeMillisNow(&priv->job.current->stopped));
+        if (vm->job->current)
+            ignore_value(virTimeMillisNow(&vm->job->current->stopped));
 
         if (priv->signalStop)
             virDomainObjBroadcast(vm);
@@ -1390,7 +1390,6 @@ static void
 qemuProcessHandleSpiceMigrated(qemuMonitor *mon G_GNUC_UNUSED,
                                virDomainObj *vm)
 {
-    qemuDomainObjPrivate *priv;
     qemuDomainJobPrivate *jobPriv;
 
     virObjectLock(vm);
@@ -1398,9 +1397,8 @@ qemuProcessHandleSpiceMigrated(qemuMonitor *mon G_GNUC_UNUSED,
     VIR_DEBUG("Spice migration completed for domain %p %s",
               vm, vm->def->name);
 
-    priv = vm->privateData;
-    jobPriv = priv->job.privateData;
-    if (priv->job.asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT) {
+    jobPriv = vm->job->privateData;
+    if (vm->job->asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT) {
         VIR_DEBUG("got SPICE_MIGRATE_COMPLETED event without a migration job");
         goto cleanup;
     }
@@ -1434,12 +1432,12 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
     priv = vm->privateData;
     driver = priv->driver;
 
-    if (priv->job.asyncJob == VIR_ASYNC_JOB_NONE) {
+    if (vm->job->asyncJob == VIR_ASYNC_JOB_NONE) {
         VIR_DEBUG("got MIGRATION event without a migration job");
         goto cleanup;
     }
 
-    privJob = priv->job.current->privateData;
+    privJob = vm->job->current->privateData;
 
     privJob->stats.mig.status = status;
     virDomainObjBroadcast(vm);
@@ -1448,7 +1446,7 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
 
     switch ((qemuMonitorMigrationStatus) status) {
     case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY:
-        if (priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT &&
+        if (vm->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT &&
             state == VIR_DOMAIN_PAUSED &&
             reason == VIR_DOMAIN_PAUSED_MIGRATION) {
             VIR_DEBUG("Correcting paused state reason for domain %s to %s",
@@ -1464,7 +1462,7 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_PAUSED:
-        if (priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT &&
+        if (vm->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT &&
             state == VIR_DOMAIN_PAUSED) {
             /* At this point no thread is watching the migration progress on
              * the source as it is just waiting for the Finish phase to end.
@@ -1505,11 +1503,11 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
          * watching it in any thread. Let's make sure the migration is properly
          * finished in case we get a "completed" event.
          */
-        if (virDomainObjIsPostcopy(vm, priv->job.current->operation) &&
-            priv->job.phase == QEMU_MIGRATION_PHASE_POSTCOPY_FAILED &&
-            priv->job.asyncOwner == 0) {
+        if (virDomainObjIsPostcopy(vm, vm->job->current->operation) &&
+            vm->job->phase == QEMU_MIGRATION_PHASE_POSTCOPY_FAILED &&
+            vm->job->asyncOwner == 0) {
             qemuProcessEventSubmit(vm, QEMU_PROCESS_EVENT_UNATTENDED_MIGRATION,
-                                   priv->job.asyncJob, status, NULL);
+                                   vm->job->asyncJob, status, NULL);
         }
         break;
 
@@ -1546,7 +1544,7 @@ qemuProcessHandleMigrationPass(qemuMonitor *mon G_GNUC_UNUSED,
               vm, vm->def->name, pass);
 
     priv = vm->privateData;
-    if (priv->job.asyncJob == VIR_ASYNC_JOB_NONE) {
+    if (vm->job->asyncJob == VIR_ASYNC_JOB_NONE) {
         VIR_DEBUG("got MIGRATION_PASS event without a migration job");
         goto cleanup;
     }
@@ -1566,7 +1564,6 @@ qemuProcessHandleDumpCompleted(qemuMonitor *mon G_GNUC_UNUSED,
                                qemuMonitorDumpStats *stats,
                                const char *error)
 {
-    qemuDomainObjPrivate *priv;
     qemuDomainJobPrivate *jobPriv;
     qemuDomainJobDataPrivate *privJobCurrent = NULL;
 
@@ -1575,20 +1572,19 @@ qemuProcessHandleDumpCompleted(qemuMonitor *mon G_GNUC_UNUSED,
     VIR_DEBUG("Dump completed for domain %p %s with stats=%p error='%s'",
               vm, vm->def->name, stats, NULLSTR(error));
 
-    priv = vm->privateData;
-    jobPriv = priv->job.privateData;
-    privJobCurrent = priv->job.current->privateData;
-    if (priv->job.asyncJob == VIR_ASYNC_JOB_NONE) {
+    jobPriv = vm->job->privateData;
+    privJobCurrent = vm->job->current->privateData;
+    if (vm->job->asyncJob == VIR_ASYNC_JOB_NONE) {
         VIR_DEBUG("got DUMP_COMPLETED event without a dump_completed job");
         goto cleanup;
     }
     jobPriv->dumpCompleted = true;
     privJobCurrent->stats.dump = *stats;
-    priv->job.error = g_strdup(error);
+    vm->job->error = g_strdup(error);
 
     /* Force error if extracting the DUMP_COMPLETED status failed */
     if (!error && status < 0) {
-        priv->job.error = g_strdup(virGetLastErrorMessage());
+        vm->job->error = g_strdup(virGetLastErrorMessage());
         privJobCurrent->stats.dump.status = QEMU_MONITOR_DUMP_STATUS_FAILED;
     }
 
@@ -3209,8 +3205,8 @@ int qemuProcessStopCPUs(virQEMUDriver *driver,
     /* de-activate netdevs after stopping CPUs */
     ignore_value(qemuInterfaceStopDevices(vm->def));
 
-    if (priv->job.current)
-        ignore_value(virTimeMillisNow(&priv->job.current->stopped));
+    if (vm->job->current)
+        ignore_value(virTimeMillisNow(&vm->job->current->stopped));
 
     /* The STOP event handler will change the domain state with the reason
      * saved in priv->pausedReason and it will also emit corresponding domain
@@ -3375,12 +3371,12 @@ qemuProcessCleanupMigrationJob(virQEMUDriver *driver,
 
     VIR_DEBUG("driver=%p, vm=%s, asyncJob=%s, state=%s, reason=%s",
               driver, vm->def->name,
-              virDomainAsyncJobTypeToString(priv->job.asyncJob),
+              virDomainAsyncJobTypeToString(vm->job->asyncJob),
               virDomainStateTypeToString(state),
               virDomainStateReasonToString(state, reason));
 
-    if (priv->job.asyncJob != VIR_ASYNC_JOB_MIGRATION_IN &&
-        priv->job.asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT)
+    if (vm->job->asyncJob != VIR_ASYNC_JOB_MIGRATION_IN &&
+        vm->job->asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT)
         return;
 
     virPortAllocatorRelease(priv->migrationPort);
@@ -3393,7 +3389,6 @@ static void
 qemuProcessRestoreMigrationJob(virDomainObj *vm,
                                virDomainJobObj *job)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobPrivate *jobPriv = job->privateData;
     virDomainJobOperation op;
     unsigned long long allowedJobs;
@@ -3413,9 +3408,9 @@ qemuProcessRestoreMigrationJob(virDomainObj *vm,
                                  VIR_DOMAIN_JOB_STATUS_PAUSED,
                                  allowedJobs);
 
-    job->privateData = g_steal_pointer(&priv->job.privateData);
-    priv->job.privateData = jobPriv;
-    priv->job.apiFlags = job->apiFlags;
+    job->privateData = g_steal_pointer(&vm->job->privateData);
+    vm->job->privateData = jobPriv;
+    vm->job->apiFlags = job->apiFlags;
 
     qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
 }
@@ -8087,9 +8082,9 @@ void qemuProcessStop(virQEMUDriver *driver,
     if (asyncJob != VIR_ASYNC_JOB_NONE) {
         if (qemuDomainObjBeginNestedJob(vm, asyncJob) < 0)
             goto cleanup;
-    } else if (priv->job.asyncJob != VIR_ASYNC_JOB_NONE &&
-               priv->job.asyncOwner == virThreadSelfID() &&
-               priv->job.active != VIR_JOB_ASYNC_NESTED) {
+    } else if (vm->job->asyncJob != VIR_ASYNC_JOB_NONE &&
+               vm->job->asyncOwner == virThreadSelfID() &&
+               vm->job->active != VIR_JOB_ASYNC_NESTED) {
         VIR_WARN("qemuProcessStop called without a nested job (async=%s)",
                  virDomainAsyncJobTypeToString(asyncJob));
     }
@@ -8412,10 +8407,10 @@ qemuProcessAutoDestroy(virDomainObj *dom,
 
     VIR_DEBUG("vm=%s, conn=%p", dom->def->name, conn);
 
-    if (priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_IN)
+    if (dom->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_IN)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
 
-    if (priv->job.asyncJob) {
+    if (dom->job->asyncJob) {
         VIR_DEBUG("vm=%s has long-term job active, cancelling",
                   dom->def->name);
         qemuDomainObjDiscardAsyncJob(dom);
@@ -8679,7 +8674,7 @@ qemuProcessReconnect(void *opaque)
     cfg = virQEMUDriverGetConfig(driver);
     priv = obj->privateData;
 
-    virDomainObjPreserveJob(&priv->job, &oldjob);
+    virDomainObjPreserveJob(obj->job, &oldjob);
     if (oldjob.asyncJob == VIR_ASYNC_JOB_MIGRATION_IN)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
     if (oldjob.asyncJob == VIR_ASYNC_JOB_BACKUP && priv->backup)

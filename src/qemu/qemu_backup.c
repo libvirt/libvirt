@@ -594,30 +594,30 @@ qemuBackupJobTerminate(virDomainObj *vm,
         }
     }
 
-    if (priv->job.current) {
+    if (vm->job->current) {
         qemuDomainJobDataPrivate *privData = NULL;
 
-        qemuDomainJobDataUpdateTime(priv->job.current);
+        qemuDomainJobDataUpdateTime(vm->job->current);
 
-        g_clear_pointer(&priv->job.completed, virDomainJobDataFree);
-        priv->job.completed = virDomainJobDataCopy(priv->job.current);
+        g_clear_pointer(&vm->job->completed, virDomainJobDataFree);
+        vm->job->completed = virDomainJobDataCopy(vm->job->current);
 
-        privData = priv->job.completed->privateData;
+        privData = vm->job->completed->privateData;
 
         privData->stats.backup.total = priv->backup->push_total;
         privData->stats.backup.transferred = priv->backup->push_transferred;
         privData->stats.backup.tmp_used = priv->backup->pull_tmp_used;
         privData->stats.backup.tmp_total = priv->backup->pull_tmp_total;
 
-        priv->job.completed->status = jobstatus;
-        priv->job.completed->errmsg = g_strdup(priv->backup->errmsg);
+        vm->job->completed->status = jobstatus;
+        vm->job->completed->errmsg = g_strdup(priv->backup->errmsg);
 
         qemuDomainEventEmitJobCompleted(priv->driver, vm);
     }
 
     g_clear_pointer(&priv->backup, virDomainBackupDefFree);
 
-    if (priv->job.asyncJob == VIR_ASYNC_JOB_BACKUP)
+    if (vm->job->asyncJob == VIR_ASYNC_JOB_BACKUP)
         qemuDomainObjEndAsyncJob(vm);
 }
 
@@ -793,7 +793,7 @@ qemuBackupBegin(virDomainObj *vm,
     qemuDomainObjSetAsyncJobMask(vm, (VIR_JOB_DEFAULT_MASK |
                                       JOB_MASK(VIR_JOB_SUSPEND) |
                                       JOB_MASK(VIR_JOB_MODIFY)));
-    qemuDomainJobSetStatsType(priv->job.current,
+    qemuDomainJobSetStatsType(vm->job->current,
                               QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP);
 
     if (!virDomainObjIsActive(vm)) {

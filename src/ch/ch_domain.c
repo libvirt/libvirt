@@ -44,7 +44,6 @@ VIR_LOG_INIT("ch.ch_domain");
 int
 virCHDomainObjBeginJob(virDomainObj *obj, virDomainJob job)
 {
-    virCHDomainObjPrivate *priv = obj->privateData;
     unsigned long long now;
     unsigned long long then;
 
@@ -52,16 +51,16 @@ virCHDomainObjBeginJob(virDomainObj *obj, virDomainJob job)
         return -1;
     then = now + CH_JOB_WAIT_TIME;
 
-    while (priv->job.active) {
+    while (obj->job->active) {
         VIR_DEBUG("Wait normal job condition for starting job: %s",
                   virDomainJobTypeToString(job));
-        if (virCondWaitUntil(&priv->job.cond, &obj->parent.lock, then) < 0) {
+        if (virCondWaitUntil(&obj->job->cond, &obj->parent.lock, then) < 0) {
             VIR_WARN("Cannot start job (%s) for domain %s;"
                      " current job is (%s) owned by (%llu)",
                      virDomainJobTypeToString(job),
                      obj->def->name,
-                     virDomainJobTypeToString(priv->job.active),
-                     priv->job.owner);
+                     virDomainJobTypeToString(obj->job->active),
+                     obj->job->owner);
 
             if (errno == ETIMEDOUT)
                 virReportError(VIR_ERR_OPERATION_TIMEOUT,
@@ -73,11 +72,11 @@ virCHDomainObjBeginJob(virDomainObj *obj, virDomainJob job)
         }
     }
 
-    virDomainObjResetJob(&priv->job);
+    virDomainObjResetJob(obj->job);
 
     VIR_DEBUG("Starting job: %s", virDomainJobTypeToString(job));
-    priv->job.active = job;
-    priv->job.owner = virThreadSelfID();
+    obj->job->active = job;
+    obj->job->owner = virThreadSelfID();
 
     return 0;
 }
@@ -91,14 +90,13 @@ virCHDomainObjBeginJob(virDomainObj *obj, virDomainJob job)
 void
 virCHDomainObjEndJob(virDomainObj *obj)
 {
-    virCHDomainObjPrivate *priv = obj->privateData;
-    virDomainJob job = priv->job.active;
+    virDomainJob job = obj->job->active;
 
     VIR_DEBUG("Stopping job: %s",
               virDomainJobTypeToString(job));
 
-    virDomainObjResetJob(&priv->job);
-    virCondSignal(&priv->job.cond);
+    virDomainObjResetJob(obj->job);
+    virCondSignal(&obj->job->cond);
 }
 
 void
@@ -117,13 +115,7 @@ virCHDomainObjPrivateAlloc(void *opaque)
 
     priv = g_new0(virCHDomainObjPrivate, 1);
 
-    if (virDomainObjInitJob(&priv->job, NULL, NULL) < 0) {
-        g_free(priv);
-        return NULL;
-    }
-
     if (!(priv->chrdevs = virChrdevAlloc())) {
-        virDomainObjClearJob(&priv->job);
         g_free(priv);
         return NULL;
     }
@@ -138,7 +130,6 @@ virCHDomainObjPrivateFree(void *data)
     virCHDomainObjPrivate *priv = data;
 
     virChrdevFree(priv->chrdevs);
-    virDomainObjClearJob(&priv->job);
     g_free(priv->machineName);
     g_free(priv);
 }

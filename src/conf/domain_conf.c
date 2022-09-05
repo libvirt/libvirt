@@ -61,6 +61,7 @@
 #include "virdomaincheckpointobjlist.h"
 #include "virutil.h"
 #include "virsecureerase.h"
+#include "virdomainjob.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 

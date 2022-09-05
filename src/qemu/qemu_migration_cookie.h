@@ -194,7 +194,8 @@ qemuMigrationCookieParse(virQEMUDriver *driver,
                         qemuDomainObjPrivate *priv,
                         const char *cookiein,
                         int cookieinlen,
-                        unsigned int flags);
+                        unsigned int flags,
+                        virDomainObj *vm);
 
 void
 qemuMigrationCookieFree(qemuMigrationCookie *mig);

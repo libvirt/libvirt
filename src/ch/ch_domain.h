@@ -32,8 +32,6 @@
 
 typedef struct _virCHDomainObjPrivate virCHDomainObjPrivate;
 struct _virCHDomainObjPrivate {
-    virDomainJobObj job;
-
     virChrdevs *chrdevs;
     virCHDriver *driver;
     virCHMonitor *monitor;

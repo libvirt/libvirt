@@ -495,7 +495,7 @@ qemuMigrationCookieAddNBD(qemuMigrationCookie *mig,
     mig->nbd->disks = g_new0(struct qemuMigrationCookieNBDDisk, vm->def->ndisks);
     mig->nbd->ndisks = 0;
 
-    if (qemuDomainObjEnterMonitorAsync(vm, priv->job.asyncJob) < 0)
+    if (qemuDomainObjEnterMonitorAsync(vm, vm->job->asyncJob) < 0)
         return -1;
 
     rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, stats);
@@ -525,13 +525,11 @@ static int
 qemuMigrationCookieAddStatistics(qemuMigrationCookie *mig,
                                  virDomainObj *vm)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (!priv->job.completed)
+    if (!vm->job->completed)
         return 0;
 
     g_clear_pointer(&mig->jobData, virDomainJobDataFree);
-    mig->jobData = virDomainJobDataCopy(priv->job.completed);
+    mig->jobData = virDomainJobDataCopy(vm->job->completed);
 
     mig->flags |= QEMU_MIGRATION_COOKIE_STATS;
 
@@ -1042,7 +1040,7 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
     if (!(ctxt->node = virXPathNode("./statistics", ctxt)))
         return NULL;
 
-    jobData = virDomainJobDataInit(&qemuJobDataPrivateDataCallbacks);
+    jobData = virDomainJobDataInit(&virQEMUDriverDomainJobConfig.jobDataPrivateCb);
     priv = jobData->privateData;
     stats = &priv->stats.mig;
     jobData->status = VIR_DOMAIN_JOB_STATUS_COMPLETED;
@@ -1497,7 +1495,8 @@ qemuMigrationCookieParse(virQEMUDriver *driver,
                          qemuDomainObjPrivate *priv,
                          const char *cookiein,
                          int cookieinlen,
-                         unsigned int flags)
+                         unsigned int flags,
+                         virDomainObj *vm)
 {
     g_autoptr(qemuMigrationCookie) mig = NULL;
 
@@ -1547,8 +1546,8 @@ qemuMigrationCookieParse(virQEMUDriver *driver,
         }
     }
 
-    if (flags & QEMU_MIGRATION_COOKIE_STATS && mig->jobData && priv->job.current)
-        mig->jobData->operation = priv->job.current->operation;
+    if (vm && flags & QEMU_MIGRATION_COOKIE_STATS && mig->jobData && vm->job->current)
+        mig->jobData->operation = vm->job->current->operation;
 
     return g_steal_pointer(&mig);
 }

@@ -99,8 +99,6 @@ typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
 struct _qemuDomainObjPrivate {
     virQEMUDriver *driver;
 
-    virDomainJobObj job;
-
     virBitmap *namespaces;
 
     virEventThread *eventThread;
@@ -775,6 +773,7 @@ extern virXMLNamespace virQEMUDriverDomainXMLNamespace;
 extern virDomainDefParserConfig virQEMUDriverDomainDefParserConfig;
 extern virDomainABIStability virQEMUDriverDomainABIStability;
 extern virSaveCookieCallbacks virQEMUDriverDomainSaveCookie;
+extern virDomainJobObjConfig virQEMUDriverDomainJobConfig;
 
 int qemuDomainUpdateDeviceList(virDomainObj *vm, int asyncJob);
 

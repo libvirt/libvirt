@@ -1671,7 +1671,6 @@ static int qemuDomainSuspend(virDomainPtr dom)
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
     int ret = -1;
-    qemuDomainObjPrivate *priv;
     virDomainPausedReason reason;
     int state;
 
@@ -1681,17 +1680,15 @@ static int qemuDomainSuspend(virDomainPtr dom)
     if (virDomainSuspendEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    priv = vm->privateData;
-
     if (qemuDomainObjBeginJob(vm, VIR_JOB_SUSPEND) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT)
+    if (vm->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT)
         reason = VIR_DOMAIN_PAUSED_MIGRATION;
-    else if (priv->job.asyncJob == VIR_ASYNC_JOB_SNAPSHOT)
+    else if (vm->job->asyncJob == VIR_ASYNC_JOB_SNAPSHOT)
         reason = VIR_DOMAIN_PAUSED_SNAPSHOT;
     else
         reason = VIR_DOMAIN_PAUSED_USER;
@@ -2102,7 +2099,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
 
     qemuDomainSetFakeReboot(vm, false);
 
-    if (priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_IN)
+    if (vm->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_IN)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
 
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED,
@@ -2589,12 +2586,12 @@ qemuDomainGetControlInfo(virDomainPtr dom,
     if (priv->monError) {
         info->state = VIR_DOMAIN_CONTROL_ERROR;
         info->details = VIR_DOMAIN_CONTROL_ERROR_REASON_MONITOR;
-    } else if (priv->job.active) {
+    } else if (vm->job->active) {
         if (virTimeMillisNow(&info->stateTime) < 0)
             goto cleanup;
-        if (priv->job.current) {
+        if (vm->job->current) {
             info->state = VIR_DOMAIN_CONTROL_JOB;
-            info->stateTime -= priv->job.current->started;
+            info->stateTime -= vm->job->current->started;
         } else {
             if (priv->monStart > 0) {
                 info->state = VIR_DOMAIN_CONTROL_OCCUPIED;
@@ -2653,7 +2650,7 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
         goto endjob;
     }
 
-    qemuDomainJobSetStatsType(priv->job.current,
+    qemuDomainJobSetStatsType(vm->job->current,
                               QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP);
 
     /* Pause */
@@ -3016,28 +3013,27 @@ qemuDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 static int
 qemuDumpWaitForCompletion(virDomainObj *vm)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
-    qemuDomainJobDataPrivate *privJobCurrent = priv->job.current->privateData;
+    qemuDomainJobPrivate *jobPriv = vm->job->privateData;
+    qemuDomainJobDataPrivate *privJobCurrent = vm->job->current->privateData;
 
     VIR_DEBUG("Waiting for dump completion");
-    while (!jobPriv->dumpCompleted && !priv->job.abortJob) {
+    while (!jobPriv->dumpCompleted && !vm->job->abortJob) {
         if (qemuDomainObjWait(vm) < 0)
             return -1;
     }
 
     if (privJobCurrent->stats.dump.status == QEMU_MONITOR_DUMP_STATUS_FAILED) {
-        if (priv->job.error)
+        if (vm->job->error)
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("memory-only dump failed: %s"),
-                           priv->job.error);
+                           vm->job->error);
         else
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("memory-only dump failed for unknown reason"));
 
         return -1;
     }
-    qemuDomainJobDataUpdateTime(priv->job.current);
+    qemuDomainJobDataUpdateTime(vm->job->current);
 
     return 0;
 }
@@ -3060,10 +3056,10 @@ qemuDumpToFd(virQEMUDriver *driver,
         return -1;
 
     if (detach) {
-        qemuDomainJobSetStatsType(priv->job.current,
+        qemuDomainJobSetStatsType(vm->job->current,
                                   QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP);
     } else {
-        g_clear_pointer(&priv->job.current, virDomainJobDataFree);
+        g_clear_pointer(&vm->job->current, virDomainJobDataFree);
     }
 
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
@@ -3222,7 +3218,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
         goto endjob;
 
     priv = vm->privateData;
-    qemuDomainJobSetStatsType(priv->job.current,
+    qemuDomainJobSetStatsType(vm->job->current,
                               QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP);
 
     /* Migrate will always stop the VM, so the resume condition is
@@ -4058,7 +4054,7 @@ processMonitorEOFEvent(virQEMUDriver *driver,
         auditReason = "failed";
     }
 
-    if (priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_IN) {
+    if (vm->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_IN) {
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
         qemuMigrationDstErrorSave(driver, vm->def->name,
                                   qemuMonitorLastError(priv->mon));
@@ -6507,7 +6503,6 @@ qemuDomainObjStart(virConnectPtr conn,
     bool force_boot = (flags & VIR_DOMAIN_START_FORCE_BOOT) != 0;
     bool reset_nvram = (flags & VIR_DOMAIN_START_RESET_NVRAM) != 0;
     unsigned int start_flags = VIR_QEMU_PROCESS_START_COLD;
-    qemuDomainObjPrivate *priv = vm->privateData;
 
     start_flags |= start_paused ? VIR_QEMU_PROCESS_START_PAUSED : 0;
     start_flags |= autodestroy ? VIR_QEMU_PROCESS_START_AUTODESTROY : 0;
@@ -6529,8 +6524,8 @@ qemuDomainObjStart(virConnectPtr conn,
             }
             vm->hasManagedSave = false;
         } else {
-            virDomainJobOperation op = priv->job.current->operation;
-            priv->job.current->operation = VIR_DOMAIN_JOB_OPERATION_RESTORE;
+            virDomainJobOperation op = vm->job->current->operation;
+            vm->job->current->operation = VIR_DOMAIN_JOB_OPERATION_RESTORE;
 
             ret = qemuDomainObjRestore(conn, driver, vm, managed_save,
                                        start_paused, bypass_cache,
@@ -6549,7 +6544,7 @@ qemuDomainObjStart(virConnectPtr conn,
                 return ret;
             } else {
                 VIR_WARN("Ignoring incomplete managed state %s", managed_save);
-                priv->job.current->operation = op;
+                vm->job->current->operation = op;
                 vm->hasManagedSave = false;
             }
         }
@@ -12665,20 +12660,19 @@ qemuDomainGetJobStatsInternal(virDomainObj *vm,
                               bool completed,
                               virDomainJobData **jobData)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobDataPrivate *privStats = NULL;
     int ret = -1;
 
     *jobData = NULL;
 
     if (completed) {
-        if (priv->job.completed && !priv->job.current)
-            *jobData = virDomainJobDataCopy(priv->job.completed);
+        if (vm->job->completed && !vm->job->current)
+            *jobData = virDomainJobDataCopy(vm->job->completed);
 
         return 0;
     }
 
-    if (priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_IN) {
+    if (vm->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_IN) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                _("migration statistics are available only on "
                  "the source host"));
@@ -12691,11 +12685,11 @@ qemuDomainGetJobStatsInternal(virDomainObj *vm,
     if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
 
-    if (!priv->job.current) {
+    if (!vm->job->current) {
         ret = 0;
         goto cleanup;
     }
-    *jobData = virDomainJobDataCopy(priv->job.current);
+    *jobData = virDomainJobDataCopy(vm->job->current);
 
     privStats = (*jobData)->privateData;
 
@@ -12769,7 +12763,6 @@ qemuDomainGetJobStats(virDomainPtr dom,
                       unsigned int flags)
 {
     virDomainObj *vm;
-    qemuDomainObjPrivate *priv;
     g_autoptr(virDomainJobData) jobData = NULL;
     bool completed = !!(flags & VIR_DOMAIN_JOB_STATS_COMPLETED);
     int ret = -1;
@@ -12783,7 +12776,6 @@ qemuDomainGetJobStats(virDomainPtr dom,
     if (virDomainGetJobStatsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    priv = vm->privateData;
     if (qemuDomainGetJobStatsInternal(vm, completed, &jobData) < 0)
         goto cleanup;
 
@@ -12799,7 +12791,7 @@ qemuDomainGetJobStats(virDomainPtr dom,
     ret = qemuDomainJobDataToParams(jobData, type, params, nparams);
 
     if (completed && ret == 0 && !(flags & VIR_DOMAIN_JOB_STATS_KEEP_COMPLETED))
-        g_clear_pointer(&priv->job.completed, virDomainJobDataFree);
+        g_clear_pointer(&vm->job->completed, virDomainJobDataFree);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -12868,14 +12860,14 @@ qemuDomainAbortJobFlags(virDomainPtr dom,
     priv = vm->privateData;
 
     if (flags & VIR_DOMAIN_ABORT_JOB_POSTCOPY &&
-        (priv->job.asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT ||
+        (vm->job->asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT ||
          !virDomainObjIsPostcopy(vm, VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT))) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("current job is not outgoing migration in post-copy mode"));
         goto endjob;
     }
 
-    switch (priv->job.asyncJob) {
+    switch (vm->job->asyncJob) {
     case VIR_ASYNC_JOB_NONE:
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("no job is active on the domain"));
@@ -12905,7 +12897,7 @@ qemuDomainAbortJobFlags(virDomainPtr dom,
         break;
 
     case VIR_ASYNC_JOB_DUMP:
-        if (priv->job.apiFlags & VIR_DUMP_MEMORY_ONLY) {
+        if (vm->job->apiFlags & VIR_DUMP_MEMORY_ONLY) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("cannot abort memory-only dump"));
             goto endjob;
@@ -12925,7 +12917,7 @@ qemuDomainAbortJobFlags(virDomainPtr dom,
 
     case VIR_ASYNC_JOB_LAST:
     default:
-        virReportEnumRangeError(virDomainAsyncJob, priv->job.asyncJob);
+        virReportEnumRangeError(virDomainAsyncJob, vm->job->asyncJob);
         break;
     }
 
@@ -13334,14 +13326,14 @@ qemuDomainMigrateStartPostCopy(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (priv->job.asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT) {
+    if (vm->job->asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("post-copy can only be started while "
                          "outgoing migration is in progress"));
         goto endjob;
     }
 
-    if (!(priv->job.apiFlags & VIR_MIGRATE_POSTCOPY)) {
+    if (!(vm->job->apiFlags & VIR_MIGRATE_POSTCOPY)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("switching to post-copy requires migration to be "
                          "started with VIR_MIGRATE_POSTCOPY flag"));
