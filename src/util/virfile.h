@@ -224,7 +224,7 @@ enum {
     VIR_FILE_SHFS_ACFS = (1 << 9),
 };
 
-int virFileIsSharedFSType(const char *path, int fstypes) ATTRIBUTE_NONNULL(1);
+int virFileIsSharedFSType(const char *path, unsigned int fstypes) ATTRIBUTE_NONNULL(1);
 int virFileIsSharedFS(const char *path) ATTRIBUTE_NONNULL(1);
 int virFileIsClusterFS(const char *path) ATTRIBUTE_NONNULL(1);
 int virFileIsMountPoint(const char *file) ATTRIBUTE_NONNULL(1);

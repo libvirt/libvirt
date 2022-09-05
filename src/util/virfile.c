@@ -3394,7 +3394,7 @@ virFileIsSharedFixFUSE(const char *path,
 
 int
 virFileIsSharedFSType(const char *path,
-                      int fstypes)
+                      unsigned int fstypes)
 {
     g_autofree char *dirpath = NULL;
     char *p = NULL;
@@ -3601,7 +3601,7 @@ virFileFindHugeTLBFS(virHugeTLBFS **ret_fs,
 #else /* defined __linux__ */
 
 int virFileIsSharedFSType(const char *path G_GNUC_UNUSED,
-                          int fstypes G_GNUC_UNUSED)
+                          unsigned int fstypes G_GNUC_UNUSED)
 {
     /* XXX implement me :-) */
     return 0;
