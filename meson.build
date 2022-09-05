@@ -248,7 +248,7 @@ alloc_max = run_command(
 )
 
 # sanitizer instrumentation may enlarge stack frames
-stack_frame_size = get_option('b_sanitize') == 'none' ? 4096 : 32768
+stack_frame_size = get_option('b_sanitize') == 'none' ? 2048 : 32768
 
 # array_bounds=2 check triggers false positive on some GCC
 # versions when using sanitizers. Seen on Fedora 34 with
