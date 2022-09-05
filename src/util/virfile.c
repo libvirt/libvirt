@@ -3331,7 +3331,7 @@ struct virFileSharedFsData {
 };
 
 static const struct virFileSharedFsData virFileSharedFsFUSE[] = {
-    { .mnttype = "fuse.glusterfs", .fstype = VIR_FILE_SHFS_GFS2 },
+    { .mnttype = "fuse.glusterfs", .fstype = VIR_FILE_SHFS_GLUSTERFS },
     { .mnttype = "fuse.quobyte", .fstype = VIR_FILE_SHFS_QB },
 };
 
@@ -3668,7 +3668,8 @@ int virFileIsSharedFS(const char *path)
                                  VIR_FILE_SHFS_CEPH |
                                  VIR_FILE_SHFS_GPFS|
                                  VIR_FILE_SHFS_QB |
-                                 VIR_FILE_SHFS_ACFS);
+                                 VIR_FILE_SHFS_ACFS |
+                                 VIR_FILE_SHFS_GLUSTERFS);
 }
 
 
@@ -3681,7 +3682,8 @@ virFileIsClusterFS(const char *path)
     return virFileIsSharedFSType(path,
                                  VIR_FILE_SHFS_GFS2 |
                                  VIR_FILE_SHFS_OCFS |
-                                 VIR_FILE_SHFS_CEPH);
+                                 VIR_FILE_SHFS_CEPH |
+                                 VIR_FILE_SHFS_GLUSTERFS);
 }
 
 
