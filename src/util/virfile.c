@@ -3316,9 +3316,6 @@ virFileRemoveLastComponent(char *path)
 # ifndef GPFS_SUPER_MAGIC
 #  define GPFS_SUPER_MAGIC 0x47504653
 # endif
-# ifndef QB_MAGIC
-#  define QB_MAGIC 0x51626d6e
-# endif
 
 # define VIR_ACFS_MAGIC 0x61636673
 
@@ -3475,9 +3472,6 @@ virFileIsSharedFSType(const char *path,
         return 1;
     if ((fstypes & VIR_FILE_SHFS_GPFS) &&
         (f_type == GPFS_SUPER_MAGIC))
-        return 1;
-    if ((fstypes & VIR_FILE_SHFS_QB) &&
-        (f_type == QB_MAGIC))
         return 1;
     if ((fstypes & VIR_FILE_SHFS_ACFS) &&
         (f_type == VIR_ACFS_MAGIC))
