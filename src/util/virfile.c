@@ -3324,6 +3324,7 @@ virFileRemoveLastComponent(char *path)
 
 struct virFileSharedFsData {
     const char *mnttype;
+    unsigned int magic;
     unsigned int fstype;
 };
 
@@ -3394,6 +3395,19 @@ virFileIsSharedFsFUSE(const char *path,
 }
 
 
+static const struct virFileSharedFsData virFileSharedFs[] = {
+    { .fstype = VIR_FILE_SHFS_NFS, .magic = NFS_SUPER_MAGIC },
+    { .fstype = VIR_FILE_SHFS_GFS2, .magic = GFS2_MAGIC },
+    { .fstype = VIR_FILE_SHFS_OCFS, .magic = OCFS2_SUPER_MAGIC },
+    { .fstype = VIR_FILE_SHFS_AFS, .magic = AFS_FS_MAGIC },
+    { .fstype = VIR_FILE_SHFS_SMB, .magic = SMB_SUPER_MAGIC },
+    { .fstype = VIR_FILE_SHFS_CIFS, .magic = CIFS_SUPER_MAGIC },
+    { .fstype = VIR_FILE_SHFS_CEPH, .magic = CEPH_SUPER_MAGIC },
+    { .fstype = VIR_FILE_SHFS_GPFS, .magic = GPFS_SUPER_MAGIC },
+    { .fstype = VIR_FILE_SHFS_ACFS, .magic = VIR_ACFS_MAGIC },
+};
+
+
 int
 virFileIsSharedFSType(const char *path,
                       unsigned int fstypes)
@@ -3403,6 +3417,7 @@ virFileIsSharedFSType(const char *path,
     struct statfs sb;
     int statfs_ret;
     long long f_type = 0;
+    size_t i;
 
     dirpath = g_strdup(path);
 
@@ -3448,34 +3463,11 @@ virFileIsSharedFSType(const char *path,
     VIR_DEBUG("Check if path %s with FS magic %lld is shared",
               path, f_type);
 
-    if ((fstypes & VIR_FILE_SHFS_NFS) &&
-        (f_type == NFS_SUPER_MAGIC))
-        return 1;
-
-    if ((fstypes & VIR_FILE_SHFS_GFS2) &&
-        (f_type == GFS2_MAGIC))
-        return 1;
-    if ((fstypes & VIR_FILE_SHFS_OCFS) &&
-        (f_type == OCFS2_SUPER_MAGIC))
-        return 1;
-    if ((fstypes & VIR_FILE_SHFS_AFS) &&
-        (f_type == AFS_FS_MAGIC))
-        return 1;
-    if ((fstypes & VIR_FILE_SHFS_SMB) &&
-        (f_type == SMB_SUPER_MAGIC))
-        return 1;
-    if ((fstypes & VIR_FILE_SHFS_CIFS) &&
-        (f_type == CIFS_SUPER_MAGIC))
-        return 1;
-    if ((fstypes & VIR_FILE_SHFS_CEPH) &&
-        (f_type == CEPH_SUPER_MAGIC))
-        return 1;
-    if ((fstypes & VIR_FILE_SHFS_GPFS) &&
-        (f_type == GPFS_SUPER_MAGIC))
-        return 1;
-    if ((fstypes & VIR_FILE_SHFS_ACFS) &&
-        (f_type == VIR_ACFS_MAGIC))
-        return 1;
+    for (i = 0; i < G_N_ELEMENTS(virFileSharedFs); i++) {
+        if (f_type == virFileSharedFs[i].magic &&
+            (fstypes & virFileSharedFs[i].fstype) > 0)
+            return 1;
+    }
 
     return 0;
 }
