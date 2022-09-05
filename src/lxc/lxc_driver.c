@@ -709,7 +709,7 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     ret = 0;
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -793,7 +793,7 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
     ret = 0;
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -1005,7 +1005,7 @@ static int lxcDomainCreateWithFiles(virDomainPtr dom,
     }
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -1114,7 +1114,7 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
     if (virLXCProcessStart(driver, vm, nfiles, files, autoDestroyConn,
                            VIR_DOMAIN_RUNNING_BOOTED) < 0) {
         virDomainAuditStart(vm, "booted", false);
-        virLXCDomainObjEndJob(driver, vm);
+        virDomainObjEndJob(vm);
         if (!vm->persistent)
             virDomainObjListRemove(driver->domains, vm);
         goto cleanup;
@@ -1127,7 +1127,7 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -1365,7 +1365,7 @@ lxcDomainDestroyFlags(virDomainPtr dom,
     virDomainAuditStop(vm, "destroyed");
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
     if (!vm->persistent)
         virDomainObjListRemove(driver->domains, vm);
 
@@ -1896,7 +1896,7 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
     ret = 0;
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -2021,7 +2021,6 @@ lxcDomainBlockStats(virDomainPtr dom,
                     const char *path,
                     virDomainBlockStatsPtr stats)
 {
-    virLXCDriver *driver = dom->conn->privateData;
     int ret = -1;
     virDomainObj *vm;
     virDomainDiskDef *disk = NULL;
@@ -2077,7 +2076,7 @@ lxcDomainBlockStats(virDomainPtr dom,
                                             &stats->wr_req);
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -2092,7 +2091,6 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
                          int * nparams,
                          unsigned int flags)
 {
-    virLXCDriver *driver = dom->conn->privateData;
     int tmp, ret = -1;
     virDomainObj *vm;
     virDomainDiskDef *disk = NULL;
@@ -2205,7 +2203,7 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
     *nparams = tmp;
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -2285,7 +2283,7 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
     }
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -2387,7 +2385,6 @@ lxcDomainInterfaceStats(virDomainPtr dom,
 {
     virDomainObj *vm;
     int ret = -1;
-    virLXCDriver *driver = dom->conn->privateData;
     virDomainNetDef *net = NULL;
 
     if (!(vm = lxcDomObjFromDomain(dom)))
@@ -2412,7 +2409,7 @@ lxcDomainInterfaceStats(virDomainPtr dom,
     ret = 0;
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -2508,7 +2505,7 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
     ret = 0;
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -2631,7 +2628,7 @@ static int lxcDomainSuspend(virDomainPtr dom)
     ret = 0;
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virObjectEventStateQueue(driver->domainEventState, event);
@@ -2687,7 +2684,7 @@ static int lxcDomainResume(virDomainPtr dom)
     ret = 0;
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virObjectEventStateQueue(driver->domainEventState, event);
@@ -2763,7 +2760,6 @@ lxcDomainSendProcessSignal(virDomainPtr dom,
                            unsigned int signum,
                            unsigned int flags)
 {
-    virLXCDriver *driver = dom->conn->privateData;
     virDomainObj *vm = NULL;
     virLXCDomainObjPrivate *priv;
     pid_t victim;
@@ -2825,7 +2821,7 @@ lxcDomainSendProcessSignal(virDomainPtr dom,
     ret = 0;
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -2854,7 +2850,6 @@ static int
 lxcDomainShutdownFlags(virDomainPtr dom,
                        unsigned int flags)
 {
-    virLXCDriver *driver = dom->conn->privateData;
     virLXCDomainObjPrivate *priv;
     virDomainObj *vm;
     int ret = -1;
@@ -2912,7 +2907,7 @@ lxcDomainShutdownFlags(virDomainPtr dom,
     ret = 0;
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -2930,7 +2925,6 @@ static int
 lxcDomainReboot(virDomainPtr dom,
                 unsigned int flags)
 {
-    virLXCDriver *driver = dom->conn->privateData;
     virLXCDomainObjPrivate *priv;
     virDomainObj *vm;
     int ret = -1;
@@ -2988,7 +2982,7 @@ lxcDomainReboot(virDomainPtr dom,
     ret = 0;
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -4344,7 +4338,7 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
     }
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     if (dev != dev_copy)
@@ -4415,7 +4409,7 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
     ret = 0;
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainDeviceDefFree(dev);
@@ -4506,7 +4500,7 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
     }
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     if (dev != dev_copy)
@@ -4529,7 +4523,6 @@ static int lxcDomainLxcOpenNamespace(virDomainPtr dom,
                                      int **fdlist,
                                      unsigned int flags)
 {
-    virLXCDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
     virLXCDomainObjPrivate *priv;
     int ret = -1;
@@ -4564,7 +4557,7 @@ static int lxcDomainLxcOpenNamespace(virDomainPtr dom,
     ret = nfds;
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -4617,7 +4610,6 @@ lxcDomainMemoryStats(virDomainPtr dom,
     virLXCDomainObjPrivate *priv;
     unsigned long long swap_usage;
     unsigned long mem_usage;
-    virLXCDriver *driver = dom->conn->privateData;
 
     virCheckFlags(0, -1);
 
@@ -4659,7 +4651,7 @@ lxcDomainMemoryStats(virDomainPtr dom,
     }
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -4812,7 +4804,7 @@ lxcDomainSetMetadata(virDomainPtr dom,
         virObjectEventStateQueue(driver->domainEventState, ev);
     }
 
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -4890,7 +4882,6 @@ static char *
 lxcDomainGetHostname(virDomainPtr dom,
                      unsigned int flags)
 {
-    virLXCDriver *driver = dom->conn->privateData;
     virDomainObj *vm = NULL;
     char macaddr[VIR_MAC_STRING_BUFLEN];
     g_autoptr(virConnect) conn = NULL;
@@ -4954,7 +4945,7 @@ lxcDomainGetHostname(virDomainPtr dom,
     }
 
  endjob:
-    virLXCDomainObjEndJob(driver, vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);

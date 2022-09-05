@@ -35,26 +35,6 @@
 VIR_LOG_INIT("lxc.lxc_domain");
 
 
-/*
- * obj must be locked and have a reference before calling
- *
- * To be called after completing the work associated with the
- * earlier virLXCDomainBeginJob() call
- */
-void
-virLXCDomainObjEndJob(virLXCDriver *driver G_GNUC_UNUSED,
-                     virDomainObj *obj)
-{
-    virDomainJob job = obj->job->active;
-
-    VIR_DEBUG("Stopping job: %s",
-              virDomainJobTypeToString(job));
-
-    virDomainObjResetJob(obj->job);
-    virCondSignal(&obj->job->cond);
-}
-
-
 static void *
 virLXCDomainObjPrivateAlloc(void *opaque)
 {

@@ -72,10 +72,6 @@ extern virXMLNamespace virLXCDriverDomainXMLNamespace;
 extern virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks;
 extern virDomainDefParserConfig virLXCDriverDomainDefParserConfig;
 
-void
-virLXCDomainObjEndJob(virLXCDriver *driver,
-                     virDomainObj *obj);
-
 
 char *
 virLXCDomainGetMachineName(virDomainDef *def, pid_t pid);
