@@ -26,9 +26,6 @@
 #include "vircgroup.h"
 #include "virdomainjob.h"
 
-/* Give up waiting for mutex after 30 seconds */
-#define CH_JOB_WAIT_TIME (1000ull * 30)
-
 
 typedef struct _virCHDomainObjPrivate virCHDomainObjPrivate;
 struct _virCHDomainObjPrivate {
@@ -59,10 +56,6 @@ struct _virCHDomainVcpuPrivate {
 
 extern virDomainXMLPrivateDataCallbacks virCHDriverPrivateDataCallbacks;
 extern virDomainDefParserConfig virCHDriverDomainDefParserConfig;
-
-int
-virCHDomainObjBeginJob(virDomainObj *obj, virDomainJob job)
-    G_GNUC_WARN_UNUSED_RESULT;
 
 void
 virCHDomainObjEndJob(virDomainObj *obj);
