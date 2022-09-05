@@ -226,7 +226,7 @@ chDomainCreateXML(virConnectPtr conn,
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
  endjob:
-    virCHDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     if (vm && !dom) {
@@ -256,7 +256,7 @@ chDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 
     ret = virCHProcessStart(driver, vm, VIR_DOMAIN_RUNNING_BOOTED);
 
-    virCHDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -414,7 +414,7 @@ chDomainShutdownFlags(virDomainPtr dom,
     ret = 0;
 
  endjob:
-    virCHDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -473,7 +473,7 @@ chDomainReboot(virDomainPtr dom, unsigned int flags)
     ret = 0;
 
  endjob:
-    virCHDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -518,7 +518,7 @@ chDomainSuspend(virDomainPtr dom)
     ret = 0;
 
  endjob:
-    virCHDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -563,7 +563,7 @@ chDomainResume(virDomainPtr dom)
     ret = 0;
 
  endjob:
-    virCHDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -607,7 +607,7 @@ chDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
     ret = 0;
 
  endjob:
-    virCHDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -1254,7 +1254,7 @@ chDomainPinVcpuFlags(virDomainPtr dom,
     ret = 0;
 
  endjob:
-    virCHDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -1418,7 +1418,7 @@ chDomainPinEmulator(virDomainPtr dom,
     ret = 0;
 
  endjob:
-    virCHDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -1680,7 +1680,7 @@ chDomainSetNumaParameters(virDomainPtr dom,
     ret = 0;
 
  endjob:
-    virCHDomainObjEndJob(vm);
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);

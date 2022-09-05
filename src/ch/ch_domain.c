@@ -32,24 +32,6 @@
 
 VIR_LOG_INIT("ch.ch_domain");
 
-/*
- * obj must be locked and have a reference before calling
- *
- * To be called after completing the work associated with the
- * earlier virDomainObjBeginJob() call
- */
-void
-virCHDomainObjEndJob(virDomainObj *obj)
-{
-    virDomainJob job = obj->job->active;
-
-    VIR_DEBUG("Stopping job: %s",
-              virDomainJobTypeToString(job));
-
-    virDomainObjResetJob(obj->job);
-    virCondSignal(&obj->job->cond);
-}
-
 void
 virCHDomainRemoveInactive(virCHDriver *driver,
                           virDomainObj *vm)

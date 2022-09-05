@@ -58,9 +58,6 @@ extern virDomainXMLPrivateDataCallbacks virCHDriverPrivateDataCallbacks;
 extern virDomainDefParserConfig virCHDriverDomainDefParserConfig;
 
 void
-virCHDomainObjEndJob(virDomainObj *obj);
-
-void
 virCHDomainRemoveInactive(virCHDriver *driver,
                           virDomainObj *vm);
 
