@@ -1794,7 +1794,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
      * a regular job, so we need to set the job mask to disallow query as
      * 'savevm' blocks the monitor. External snapshot will then modify the
      * job mask appropriately. */
-    if (qemuDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_SNAPSHOT,
+    if (virDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_SNAPSHOT,
                                    VIR_DOMAIN_JOB_OPERATION_SNAPSHOT, flags) < 0)
         return NULL;
 
@@ -1806,7 +1806,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
         snapshot = qemuSnapshotCreate(vm, domain, def, driver, cfg, flags);
     }
 
-    qemuDomainObjEndAsyncJob(vm);
+    virDomainObjEndAsyncJob(vm);
 
     return snapshot;
 }

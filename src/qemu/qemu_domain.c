@@ -6037,7 +6037,7 @@ void qemuDomainObjEnterMonitor(virDomainObj *obj)
  * To be called immediately before any QEMU monitor API call.
  * Must have already either called virDomainObjBeginJob()
  * and checked that the VM is still active, with asyncJob of
- * VIR_ASYNC_JOB_NONE; or already called qemuDomainObjBeginAsyncJob,
+ * VIR_ASYNC_JOB_NONE; or already called virDomainObjBeginAsyncJob,
  * with the same asyncJob.
  *
  * Returns 0 if job was started, in which case this must be followed with

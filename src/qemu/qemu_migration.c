@@ -120,7 +120,7 @@ qemuMigrationJobStart(virDomainObj *vm,
     }
     mask |= JOB_MASK(VIR_JOB_MODIFY_MIGRATION_SAFE);
 
-    if (qemuDomainObjBeginAsyncJob(vm, job, op, apiFlags) < 0)
+    if (virDomainObjBeginAsyncJob(vm, job, op, apiFlags) < 0)
         return -1;
 
     qemuDomainJobSetStatsType(vm->job->current,
@@ -203,7 +203,7 @@ qemuMigrationJobIsActive(virDomainObj *vm,
 static void ATTRIBUTE_NONNULL(1)
 qemuMigrationJobFinish(virDomainObj *vm)
 {
-    qemuDomainObjEndAsyncJob(vm);
+    virDomainObjEndAsyncJob(vm);
 }
 
 

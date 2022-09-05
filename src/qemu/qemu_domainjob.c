@@ -655,21 +655,6 @@ qemuDomainObjReleaseAsyncJob(virDomainObj *obj)
     obj->job->asyncOwner = 0;
 }
 
-int qemuDomainObjBeginAsyncJob(virDomainObj *obj,
-                               virDomainAsyncJob asyncJob,
-                               virDomainJobOperation operation,
-                               unsigned long apiFlags)
-{
-    if (virDomainObjBeginJobInternal(obj, obj->job, VIR_JOB_ASYNC,
-                                     VIR_AGENT_JOB_NONE,
-                                     asyncJob, false) < 0)
-        return -1;
-
-    obj->job->current->operation = operation;
-    obj->job->apiFlags = apiFlags;
-    return 0;
-}
-
 int
 qemuDomainObjBeginNestedJob(virDomainObj *obj,
                             virDomainAsyncJob asyncJob)
@@ -712,20 +697,6 @@ qemuDomainObjBeginJobNowait(virDomainObj *obj,
     return virDomainObjBeginJobInternal(obj, obj->job, job,
                                         VIR_AGENT_JOB_NONE,
                                         VIR_ASYNC_JOB_NONE, true);
-}
-
-void
-qemuDomainObjEndAsyncJob(virDomainObj *obj)
-{
-    obj->job->jobsQueued--;
-
-    VIR_DEBUG("Stopping async job: %s (vm=%p name=%s)",
-              virDomainAsyncJobTypeToString(obj->job->asyncJob),
-              obj, obj->def->name);
-
-    virDomainObjResetAsyncJob(obj->job);
-    qemuDomainSaveStatus(obj);
-    virCondBroadcast(&obj->job->asyncCond);
 }
 
 void

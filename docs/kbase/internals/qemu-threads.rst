@@ -141,7 +141,7 @@ To acquire the agent job condition
 
 To acquire the asynchronous job condition
 
-  ``qemuDomainObjBeginAsyncJob()``
+  ``virDomainObjBeginAsyncJob()``
     - Waits until no async job is running
     - Waits for ``job.cond`` condition ``job.active != 0`` using ``virDomainObj``
       mutex
@@ -149,7 +149,7 @@ To acquire the asynchronous job condition
       and repeats waiting in that case
     - Sets ``job.asyncJob`` to the asynchronous job type
 
-  ``qemuDomainObjEndAsyncJob()``
+  ``virDomainObjEndAsyncJob()``
     - Sets ``job.asyncJob`` to 0
     - Broadcasts on ``job.asyncCond`` condition
 
@@ -277,7 +277,7 @@ Design patterns
 
      obj = qemuDomObjFromDomain(dom);
 
-     qemuDomainObjBeginAsyncJob(obj, VIR_ASYNC_JOB_TYPE);
+     virDomainObjBeginAsyncJob(obj, VIR_ASYNC_JOB_TYPE);
      qemuDomainObjSetAsyncJobMask(obj, allowedJobs);
 
      ...do prep work...
@@ -306,7 +306,7 @@ Design patterns
 
      ...do final work...
 
-     qemuDomainObjEndAsyncJob(obj);
+     virDomainObjEndAsyncJob(obj);
      virDomainObjEndAPI(&obj);
 
 
@@ -317,7 +317,7 @@ Design patterns
 
      obj = qemuDomObjFromDomain(dom);
 
-     qemuDomainObjBeginAsyncJob(obj, VIR_ASYNC_JOB_TYPE);
+     virDomainObjBeginAsyncJob(obj, VIR_ASYNC_JOB_TYPE);
 
      ...do prep work...
 
@@ -334,5 +334,5 @@ Design patterns
 
      ...do final work...
 
-     qemuDomainObjEndAsyncJob(obj);
+     virDomainObjEndAsyncJob(obj);
      virDomainObjEndAPI(&obj);

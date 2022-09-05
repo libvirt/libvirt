@@ -2637,8 +2637,8 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
     virQEMUSaveData *data = NULL;
     g_autoptr(qemuDomainSaveCookie) cookie = NULL;
 
-    if (qemuDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_SAVE,
-                                   VIR_DOMAIN_JOB_OPERATION_SAVE, flags) < 0)
+    if (virDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_SAVE,
+                                  VIR_DOMAIN_JOB_OPERATION_SAVE, flags) < 0)
         goto cleanup;
 
     if (!qemuMigrationSrcIsAllowed(driver, vm, false, VIR_ASYNC_JOB_SAVE, 0))
@@ -2735,7 +2735,7 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
             virErrorRestore(&save_err);
         }
     }
-    qemuDomainObjEndAsyncJob(vm);
+    virDomainObjEndAsyncJob(vm);
     if (ret == 0)
         qemuDomainRemoveInactive(driver, vm);
 
@@ -3209,7 +3209,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
     if (virDomainCoreDumpWithFormatEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (qemuDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_DUMP,
+    if (virDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_DUMP,
                                    VIR_DOMAIN_JOB_OPERATION_DUMP,
                                    flags) < 0)
         goto cleanup;
@@ -3275,7 +3275,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
         }
     }
 
-    qemuDomainObjEndAsyncJob(vm);
+    virDomainObjEndAsyncJob(vm);
     if (ret == 0 && flags & VIR_DUMP_CRASH)
         qemuDomainRemoveInactive(driver, vm);
 
@@ -3447,7 +3447,7 @@ processWatchdogEvent(virQEMUDriver *driver,
 
     switch (action) {
     case VIR_DOMAIN_WATCHDOG_ACTION_DUMP:
-        if (qemuDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_DUMP,
+        if (virDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_DUMP,
                                        VIR_DOMAIN_JOB_OPERATION_DUMP,
                                        flags) < 0) {
             return;
@@ -3475,7 +3475,7 @@ processWatchdogEvent(virQEMUDriver *driver,
     }
 
  endjob:
-    qemuDomainObjEndAsyncJob(vm);
+    virDomainObjEndAsyncJob(vm);
 }
 
 static int
@@ -3523,7 +3523,7 @@ processGuestPanicEvent(virQEMUDriver *driver,
     bool removeInactive = false;
     unsigned long flags = VIR_DUMP_MEMORY_ONLY;
 
-    if (qemuDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_DUMP,
+    if (virDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_DUMP,
                                    VIR_DOMAIN_JOB_OPERATION_DUMP, flags) < 0)
         return;
 
@@ -3587,7 +3587,7 @@ processGuestPanicEvent(virQEMUDriver *driver,
     }
 
  endjob:
-    qemuDomainObjEndAsyncJob(vm);
+    virDomainObjEndAsyncJob(vm);
     if (removeInactive)
         qemuDomainRemoveInactive(driver, vm);
 }

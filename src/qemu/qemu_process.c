@@ -4675,7 +4675,7 @@ qemuProcessBeginJob(virDomainObj *vm,
                     virDomainJobOperation operation,
                     unsigned long apiFlags)
 {
-    if (qemuDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_START,
+    if (virDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_START,
                                    operation, apiFlags) < 0)
         return -1;
 
@@ -4687,7 +4687,7 @@ qemuProcessBeginJob(virDomainObj *vm,
 void
 qemuProcessEndJob(virDomainObj *vm)
 {
-    qemuDomainObjEndAsyncJob(vm);
+    virDomainObjEndAsyncJob(vm);
 }
 
 

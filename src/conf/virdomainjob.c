@@ -544,6 +544,21 @@ virDomainObjBeginAgentJob(virDomainObj *obj,
                                         VIR_ASYNC_JOB_NONE, false);
 }
 
+int virDomainObjBeginAsyncJob(virDomainObj *obj,
+                              virDomainAsyncJob asyncJob,
+                              virDomainJobOperation operation,
+                              unsigned long apiFlags)
+{
+    if (virDomainObjBeginJobInternal(obj, obj->job, VIR_JOB_ASYNC,
+                                     VIR_AGENT_JOB_NONE,
+                                     asyncJob, false) < 0)
+        return -1;
+
+    obj->job->current->operation = operation;
+    obj->job->apiFlags = apiFlags;
+    return 0;
+}
+
 /*
  * obj must be locked and have a reference before calling
  *
@@ -588,4 +603,19 @@ virDomainObjEndAgentJob(virDomainObj *obj)
     /* We indeed need to wake up ALL threads waiting because
      * grabbing a job requires checking more variables. */
     virCondBroadcast(&obj->job->cond);
+}
+
+void
+virDomainObjEndAsyncJob(virDomainObj *obj)
+{
+    obj->job->jobsQueued--;
+
+    VIR_DEBUG("Stopping async job: %s (vm=%p name=%s)",
+              virDomainAsyncJobTypeToString(obj->job->asyncJob),
+              obj, obj->def->name);
+
+    virDomainObjResetAsyncJob(obj->job);
+    if (obj->job->cb->saveStatusPrivate)
+        obj->job->cb->saveStatusPrivate(obj);
+    virCondBroadcast(&obj->job->asyncCond);
 }

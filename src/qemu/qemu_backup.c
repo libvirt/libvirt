@@ -618,7 +618,7 @@ qemuBackupJobTerminate(virDomainObj *vm,
     g_clear_pointer(&priv->backup, virDomainBackupDefFree);
 
     if (vm->job->asyncJob == VIR_ASYNC_JOB_BACKUP)
-        qemuDomainObjEndAsyncJob(vm);
+        virDomainObjEndAsyncJob(vm);
 }
 
 
@@ -786,7 +786,7 @@ qemuBackupBegin(virDomainObj *vm,
      * infrastructure for async jobs. We'll allow standard modify-type jobs
      * as the interlocking of conflicting operations is handled on the block
      * job level */
-    if (qemuDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_BACKUP,
+    if (virDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_BACKUP,
                                    VIR_DOMAIN_JOB_OPERATION_BACKUP, flags) < 0)
         return -1;
 
@@ -937,7 +937,7 @@ qemuBackupBegin(virDomainObj *vm,
     if (ret == 0)
         qemuDomainObjReleaseAsyncJob(vm);
     else
-        qemuDomainObjEndAsyncJob(vm);
+        virDomainObjEndAsyncJob(vm);
 
     return ret;
 }
