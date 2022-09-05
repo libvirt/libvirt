@@ -1277,16 +1277,16 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) {
         int frozen;
 
-        if (qemuDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_MODIFY) < 0)
+        if (virDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_MODIFY) < 0)
             goto cleanup;
 
         if (virDomainObjCheckActive(vm) < 0) {
-            qemuDomainObjEndAgentJob(vm);
+            virDomainObjEndAgentJob(vm);
             goto cleanup;
         }
 
         frozen = qemuSnapshotFSFreeze(vm, NULL, 0);
-        qemuDomainObjEndAgentJob(vm);
+        virDomainObjEndAgentJob(vm);
 
         if (frozen < 0)
             goto cleanup;
@@ -1422,13 +1422,13 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     }
 
     if (thaw &&
-        qemuDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_MODIFY) >= 0 &&
+        virDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_MODIFY) >= 0 &&
         virDomainObjIsActive(vm)) {
         /* report error only on an otherwise successful snapshot */
         if (qemuSnapshotFSThaw(vm, ret == 0) < 0)
             ret = -1;
 
-        qemuDomainObjEndAgentJob(vm);
+        virDomainObjEndAgentJob(vm);
     }
 
     virQEMUSaveDataFree(data);

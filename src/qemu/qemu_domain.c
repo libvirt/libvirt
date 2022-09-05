@@ -6057,7 +6057,7 @@ qemuDomainObjEnterMonitorAsync(virDomainObj *obj,
  * obj must be locked before calling
  *
  * To be called immediately before any QEMU agent API call.
- * Must have already called qemuDomainObjBeginAgentJob() and
+ * Must have already called virDomainObjBeginAgentJob() and
  * checked that the VM is still active.
  *
  * To be followed with qemuDomainObjExitAgent() once complete

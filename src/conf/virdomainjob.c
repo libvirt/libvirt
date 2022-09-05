@@ -528,6 +528,22 @@ int virDomainObjBeginJob(virDomainObj *obj,
     return 0;
 }
 
+/**
+ * virDomainObjBeginAgentJob:
+ *
+ * Grabs agent type of job. Use if caller talks to guest agent only.
+ *
+ * To end job call virDomainObjEndAgentJob.
+ */
+int
+virDomainObjBeginAgentJob(virDomainObj *obj,
+                          virDomainAgentJob agentJob)
+{
+    return virDomainObjBeginJobInternal(obj, obj->job, VIR_JOB_NONE,
+                                        agentJob,
+                                        VIR_ASYNC_JOB_NONE, false);
+}
+
 /*
  * obj must be locked and have a reference before calling
  *
@@ -551,6 +567,24 @@ virDomainObjEndJob(virDomainObj *obj)
     if (virDomainTrackJob(job) &&
         obj->job->cb->saveStatusPrivate)
         obj->job->cb->saveStatusPrivate(obj);
+    /* We indeed need to wake up ALL threads waiting because
+     * grabbing a job requires checking more variables. */
+    virCondBroadcast(&obj->job->cond);
+}
+
+void
+virDomainObjEndAgentJob(virDomainObj *obj)
+{
+    virDomainAgentJob agentJob = obj->job->agentActive;
+
+    obj->job->jobsQueued--;
+
+    VIR_DEBUG("Stopping agent job: %s (async=%s vm=%p name=%s)",
+              virDomainAgentJobTypeToString(agentJob),
+              virDomainAsyncJobTypeToString(obj->job->asyncJob),
+              obj, obj->def->name);
+
+    virDomainObjResetAgentJob(obj->job);
     /* We indeed need to wake up ALL threads waiting because
      * grabbing a job requires checking more variables. */
     virCondBroadcast(&obj->job->cond);
