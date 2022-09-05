@@ -632,7 +632,7 @@ get_definition(vahControl * ctl, const char *xmlStr)
     }
 
     if (!(ctl->xmlopt = virDomainXMLOptionNew(&virAAHelperDomainDefParserConfig,
-                                              NULL, NULL, NULL, NULL))) {
+                                              NULL, NULL, NULL, NULL, NULL))) {
         vah_error(ctl, 0, _("Failed to create XML config object"));
         return -1;
     }

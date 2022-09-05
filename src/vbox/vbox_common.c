@@ -143,7 +143,7 @@ vboxDriverObjNew(void)
 
     if (!(driver->caps = vboxCapsInit()) ||
         !(driver->xmlopt = virDomainXMLOptionNew(&vboxDomainDefParserConfig,
-                                                 NULL, NULL, NULL, NULL)))
+                                                 NULL, NULL, NULL, NULL, NULL)))
         goto cleanup;
 
     return driver;

@@ -1605,7 +1605,8 @@ virDomainXMLOptionNew(virDomainDefParserConfig *config,
                       virDomainXMLPrivateDataCallbacks *priv,
                       virXMLNamespace *xmlns,
                       virDomainABIStability *abi,
-                      virSaveCookieCallbacks *saveCookie)
+                      virSaveCookieCallbacks *saveCookie,
+                      virDomainJobObjConfig *jobConfig)
 {
     virDomainXMLOption *xmlopt;
 
@@ -1629,6 +1630,9 @@ virDomainXMLOptionNew(virDomainDefParserConfig *config,
 
     if (saveCookie)
         xmlopt->saveCookie = *saveCookie;
+
+    if (jobConfig)
+        xmlopt->jobObjConfig = *jobConfig;
 
     /* Technically this forbids to use one of Xerox's MAC address prefixes in
      * our hypervisor drivers. This shouldn't ever be a problem.
@@ -3858,6 +3862,7 @@ static void virDomainObjDispose(void *obj)
     virDomainObjDeprecationFree(dom);
     virDomainSnapshotObjListFree(dom->snapshots);
     virDomainCheckpointObjListFree(dom->checkpoints);
+    virDomainJobObjFree(dom->job);
 }
 
 virDomainObj *
@@ -3888,6 +3893,12 @@ virDomainObjNew(virDomainXMLOption *xmlopt)
         goto error;
 
     if (!(domain->checkpoints = virDomainCheckpointObjListNew()))
+        goto error;
+
+    domain->job = g_new0(virDomainJobObj, 1);
+    if (virDomainObjInitJob(domain->job,
+                            &xmlopt->jobObjConfig.cb,
+                            &xmlopt->jobObjConfig.jobDataPrivateCb) < 0)
         goto error;
 
     virObjectLock(domain);

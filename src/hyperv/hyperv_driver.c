@@ -1766,7 +1766,7 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
         goto cleanup;
 
     /* init xmlopt for domain XML */
-    priv->xmlopt = virDomainXMLOptionNew(&hypervDomainDefParserConfig, NULL, NULL, NULL, NULL);
+    priv->xmlopt = virDomainXMLOptionNew(&hypervDomainDefParserConfig, NULL, NULL, NULL, NULL, NULL);
 
     if (hypervGetOperatingSystem(priv, &os) < 0)
         goto cleanup;

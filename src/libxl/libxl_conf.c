@@ -2486,5 +2486,5 @@ libxlCreateXMLConf(libxlDriverPrivate *driver)
     return virDomainXMLOptionNew(&libxlDomainDefParserConfig,
                                  &libxlDomainXMLPrivateDataCallbacks,
                                  &libxlDriverDomainXMLNamespace,
-                                 NULL, NULL);
+                                 NULL, NULL, NULL);
 }

@@ -150,6 +150,8 @@ typedef struct _virDomainIdMapEntry virDomainIdMapEntry;
 
 typedef struct _virDomainInputDef virDomainInputDef;
 
+typedef struct _virDomainJobObjConfig virDomainJobObjConfig;
+
 typedef struct _virDomainKeyWrapDef virDomainKeyWrapDef;
 
 typedef struct _virDomainLeaseDef virDomainLeaseDef;

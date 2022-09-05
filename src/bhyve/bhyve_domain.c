@@ -221,7 +221,7 @@ virBhyveDriverCreateXMLConf(struct _bhyveConn *driver)
     return virDomainXMLOptionNew(&virBhyveDriverDomainDefParserConfig,
                                  &virBhyveDriverPrivateDataCallbacks,
                                  &virBhyveDriverDomainXMLNamespace,
-                                 NULL, NULL);
+                                 NULL, NULL, NULL);
 }
 
 

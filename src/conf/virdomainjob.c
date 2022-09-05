@@ -13,6 +13,7 @@
 #include "virthreadjob.h"
 #include "virlog.h"
 #include "virtime.h"
+#include "domain_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -228,6 +229,16 @@ virDomainObjClearJob(virDomainJobObj *job)
 
     if (job->cb && job->cb->freeJobPrivate)
         g_clear_pointer(&job->privateData, job->cb->freeJobPrivate);
+}
+
+void
+virDomainJobObjFree(virDomainJobObj *job)
+{
+    if (!job)
+        return;
+
+    virDomainObjClearJob(job);
+    g_free(job);
 }
 
 bool

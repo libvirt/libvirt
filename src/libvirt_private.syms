@@ -1182,6 +1182,7 @@ virDomainAsyncJobTypeToString;
 virDomainJobDataCopy;
 virDomainJobDataFree;
 virDomainJobDataInit;
+virDomainJobObjFree;
 virDomainJobStatusToType;
 virDomainJobTypeFromString;
 virDomainJobTypeToString;

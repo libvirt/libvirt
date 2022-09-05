@@ -113,7 +113,7 @@ mymain(void)
     if ((driver.caps = virBhyveCapsBuild()) == NULL)
         return EXIT_FAILURE;
 
-    if ((driver.xmlopt = virDomainXMLOptionNew(NULL, NULL,
+    if ((driver.xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL,
                                                NULL, NULL, NULL)) == NULL)
         return EXIT_FAILURE;
 

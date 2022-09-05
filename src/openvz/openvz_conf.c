@@ -1062,5 +1062,5 @@ virDomainXMLOption *openvzXMLOption(struct openvz_driver *driver)
 {
     openvzDomainDefParserConfig.priv = driver;
     return virDomainXMLOptionNew(&openvzDomainDefParserConfig,
-                                 NULL, NULL, NULL, NULL);
+                                 NULL, NULL, NULL, NULL, NULL);
 }

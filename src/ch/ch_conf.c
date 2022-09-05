@@ -110,7 +110,7 @@ chDomainXMLConfInit(virCHDriver *driver)
     virCHDriverDomainDefParserConfig.priv = driver;
     return virDomainXMLOptionNew(&virCHDriverDomainDefParserConfig,
                                  &virCHDriverPrivateDataCallbacks,
-                                 NULL, NULL, NULL);
+                                 NULL, NULL, NULL, NULL);
 }
 
 virCHDriverConfig *

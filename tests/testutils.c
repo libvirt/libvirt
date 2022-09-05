@@ -989,7 +989,7 @@ static virDomainDefParserConfig virTestGenericDomainDefParserConfig = {
 virDomainXMLOption *virTestGenericDomainXMLConfInit(void)
 {
     return virDomainXMLOptionNew(&virTestGenericDomainDefParserConfig,
-                                 NULL, NULL, NULL, NULL);
+                                 NULL, NULL, NULL, NULL, NULL);
 }
 
 

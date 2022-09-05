@@ -139,7 +139,7 @@ vmwareDomainXMLConfigInit(struct vmware_driver *driver)
                                               .free = vmwareDataFreeFunc };
     vmwareDomainDefParserConfig.priv = driver;
     return virDomainXMLOptionNew(&vmwareDomainDefParserConfig, &priv,
-                                 NULL, NULL, NULL);
+                                 NULL, NULL, NULL, NULL);
 }
 
 static virDrvOpenStatus

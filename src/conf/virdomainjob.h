@@ -11,7 +11,8 @@
 #include "virenum.h"
 #include "virthread.h"
 #include "virbuffer.h"
-#include "domain_conf.h"
+#include "virconftypes.h"
+#include "virxml.h"
 
 #define JOB_MASK(job)                  (job == 0 ? 0 : 1 << (job - 1))
 #define VIR_JOB_DEFAULT_MASK \
@@ -226,6 +227,8 @@ int virDomainObjPreserveJob(virDomainJobObj *currJob,
 
 void virDomainObjClearJob(virDomainJobObj *job);
 G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virDomainJobObj, virDomainObjClearJob);
+
+void virDomainJobObjFree(virDomainJobObj *job);
 
 bool virDomainTrackJob(virDomainJob job);
 

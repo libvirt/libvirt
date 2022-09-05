@@ -189,7 +189,7 @@ lxcDomainXMLConfInit(virLXCDriver *driver, const char *defsecmodel)
     return virDomainXMLOptionNew(&virLXCDriverDomainDefParserConfig,
                                  &virLXCDriverPrivateDataCallbacks,
                                  &virLXCDriverDomainXMLNamespace,
-                                 NULL, NULL);
+                                 NULL, NULL, NULL);
 }
 
 

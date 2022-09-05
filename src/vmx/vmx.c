@@ -696,7 +696,7 @@ virVMXDomainXMLConfInit(virCaps *caps)
 {
     virVMXDomainDefParserConfig.priv = caps;
     return virDomainXMLOptionNew(&virVMXDomainDefParserConfig, NULL,
-                                 &virVMXDomainXMLNamespace, NULL, NULL);
+                                 &virVMXDomainXMLNamespace, NULL, NULL, NULL);
 }
 
 char *

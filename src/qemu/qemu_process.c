@@ -9273,7 +9273,7 @@ qemuProcessQMPConnectMonitor(qemuProcessQMP *proc)
     monConfig.data.nix.path = proc->monpath;
     monConfig.data.nix.listen = false;
 
-    if (!(xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL, NULL, NULL)) ||
+    if (!(xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL, NULL, NULL, NULL)) ||
         !(proc->vm = virDomainObjNew(xmlopt)) ||
         !(proc->vm->def = virDomainDefNew(xmlopt)))
         return -1;

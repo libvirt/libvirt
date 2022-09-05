@@ -1278,7 +1278,8 @@ virQEMUDriverCreateXMLConf(virQEMUDriver *driver,
                                  &virQEMUDriverPrivateDataCallbacks,
                                  &virQEMUDriverDomainXMLNamespace,
                                  &virQEMUDriverDomainABIStability,
-                                 &virQEMUDriverDomainSaveCookie);
+                                 &virQEMUDriverDomainSaveCookie,
+                                 NULL);
 }
 
 

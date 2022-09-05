@@ -56,6 +56,7 @@
 #include "virsavecookie.h"
 #include "virresctrl.h"
 #include "virenum.h"
+#include "virdomainjob.h"
 
 /* Flags for the 'type' field in virDomainDeviceDef */
 typedef enum {
@@ -3093,6 +3094,8 @@ struct _virDomainObj {
     virObjectLockable parent;
     virCond cond;
 
+    virDomainJobObj *job;
+
     pid_t pid; /* 0 for no PID, avoid negative values like -1 */
     virDomainStateReason state;
 
@@ -3277,11 +3280,19 @@ struct _virDomainABIStability {
     virDomainABIStabilityDomain domain;
 };
 
+
+struct _virDomainJobObjConfig {
+    virDomainObjPrivateJobCallbacks cb;
+    virDomainJobDataPrivateDataCallbacks jobDataPrivateCb;
+    unsigned int maxQueuedJobs;
+};
+
 virDomainXMLOption *virDomainXMLOptionNew(virDomainDefParserConfig *config,
                                           virDomainXMLPrivateDataCallbacks *priv,
                                           virXMLNamespace *xmlns,
                                           virDomainABIStability *abi,
-                                          virSaveCookieCallbacks *saveCookie);
+                                          virSaveCookieCallbacks *saveCookie,
+                                          virDomainJobObjConfig *jobConfig);
 
 virSaveCookieCallbacks *
 virDomainXMLOptionGetSaveCookie(virDomainXMLOption *xmlopt);
@@ -3321,6 +3332,9 @@ struct _virDomainXMLOption {
 
     /* Snapshot postparse callbacks */
     virDomainMomentPostParseCallback momentPostParse;
+
+    /* virDomainJobObj callbacks, private data callbacks and defaults */
+    virDomainJobObjConfig jobObjConfig;
 };
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainXMLOption, virObjectUnref);
 

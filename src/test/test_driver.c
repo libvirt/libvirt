@@ -460,7 +460,7 @@ testDriverNew(void)
     if (!(ret = virObjectLockableNew(testDriverClass)))
         return NULL;
 
-    if (!(ret->xmlopt = virDomainXMLOptionNew(&config, &privatecb, &ns, NULL, NULL)) ||
+    if (!(ret->xmlopt = virDomainXMLOptionNew(&config, &privatecb, &ns, NULL, NULL, NULL)) ||
         !(ret->eventState = virObjectEventStateNew()) ||
         !(ret->ifaces = virInterfaceObjListNew()) ||
         !(ret->domains = virDomainObjListNew()) ||
