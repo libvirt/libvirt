@@ -62,8 +62,8 @@ libxlDomainObjEndJob(libxlDriverPrivate *driver,
                      virDomainObj *obj);
 
 int
-libxlDomainJobUpdateTime(virDomainJobObj *job)
-    G_GNUC_WARN_UNUSED_RESULT;
+libxlDomainJobGetTimeElapsed(virDomainJobObj *job,
+                             unsigned long long *timeElapsed);
 
 char *
 libxlDomainManagedSavePath(libxlDriverPrivate *driver,

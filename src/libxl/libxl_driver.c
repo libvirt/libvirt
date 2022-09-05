@@ -5207,6 +5207,7 @@ libxlDomainGetJobInfo(virDomainPtr dom,
     libxlDomainObjPrivate *priv;
     virDomainObj *vm;
     int ret = -1;
+    unsigned long long timeElapsed = 0;
 
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
@@ -5225,14 +5226,14 @@ libxlDomainGetJobInfo(virDomainPtr dom,
     /* In libxl we don't have an estimated completion time
      * thus we always set to unbounded and update time
      * for the active job. */
-    if (libxlDomainJobUpdateTime(&priv->job) < 0)
+    if (libxlDomainJobGetTimeElapsed(&priv->job, &timeElapsed) < 0)
         goto cleanup;
 
     /* setting only these two attributes is enough because libxl never sets
      * anything else */
     memset(info, 0, sizeof(*info));
-    info->type = priv->job.current->jobType;
-    info->timeElapsed = priv->job.current->timeElapsed;
+    info->type = VIR_DOMAIN_JOB_UNBOUNDED;
+    info->timeElapsed = timeElapsed;
     ret = 0;
 
  cleanup:
@@ -5249,9 +5250,9 @@ libxlDomainGetJobStats(virDomainPtr dom,
 {
     libxlDomainObjPrivate *priv;
     virDomainObj *vm;
-    virDomainJobData *jobData;
     int ret = -1;
     int maxparams = 0;
+    unsigned long long timeElapsed = 0;
 
     /* VIR_DOMAIN_JOB_STATS_COMPLETED not supported yet */
     virCheckFlags(0, -1);
@@ -5263,7 +5264,6 @@ libxlDomainGetJobStats(virDomainPtr dom,
         goto cleanup;
 
     priv = vm->privateData;
-    jobData = priv->job.current;
     if (!priv->job.active) {
         *type = VIR_DOMAIN_JOB_NONE;
         *params = NULL;
@@ -5275,15 +5275,15 @@ libxlDomainGetJobStats(virDomainPtr dom,
     /* In libxl we don't have an estimated completion time
      * thus we always set to unbounded and update time
      * for the active job. */
-    if (libxlDomainJobUpdateTime(&priv->job) < 0)
+    if (libxlDomainJobGetTimeElapsed(&priv->job, &timeElapsed) < 0)
         goto cleanup;
 
     if (virTypedParamsAddULLong(params, nparams, &maxparams,
                                 VIR_DOMAIN_JOB_TIME_ELAPSED,
-                                jobData->timeElapsed) < 0)
+                                timeElapsed) < 0)
         goto cleanup;
 
-    *type = jobData->jobType;
+    *type = VIR_DOMAIN_JOB_UNBOUNDED;
     ret = 0;
 
  cleanup:
