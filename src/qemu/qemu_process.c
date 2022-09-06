@@ -3696,7 +3696,7 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
     case VIR_ASYNC_JOB_SAVE:
     case VIR_ASYNC_JOB_DUMP:
     case VIR_ASYNC_JOB_SNAPSHOT:
-        qemuMigrationSrcCancel(vm, VIR_ASYNC_JOB_NONE);
+        qemuMigrationSrcCancel(vm, VIR_ASYNC_JOB_NONE, true);
         /* resume the domain but only if it was paused as a result of
          * running a migration-to-file operation.  Although we are
          * recovering an async job, this function is run at startup

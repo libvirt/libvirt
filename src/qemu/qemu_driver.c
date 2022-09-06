@@ -12813,7 +12813,7 @@ qemuDomainAbortJobMigration(virDomainObj *vm)
     VIR_DEBUG("Cancelling migration job at client request");
 
     qemuDomainObjAbortAsyncJob(vm);
-    return qemuMigrationSrcCancel(vm, VIR_ASYNC_JOB_NONE);
+    return qemuMigrationSrcCancel(vm, VIR_ASYNC_JOB_NONE, false);
 }
 
 
