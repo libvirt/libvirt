@@ -99,7 +99,7 @@ struct daemonConfig {
 };
 
 
-int daemonConfigFilePath(bool privileged, char **configfile);
+void daemonConfigFilePath(bool privileged, char **configfile);
 struct daemonConfig* daemonConfigNew(bool privileged);
 void daemonConfigFree(struct daemonConfig *data);
 int daemonConfigLoadFile(struct daemonConfig *data,
