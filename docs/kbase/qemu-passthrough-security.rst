@@ -172,9 +172,3 @@ command before any guest is started:
 ::
 
   # mount --make-rshared /
-
-Another requirement for dynamic mount point propagation is to  not place
-``hugetlbfs`` mount points under ``/dev`` because these won't be propagated as
-corresponding directories do not exist in the private namespace. Or just use
-``memfd`` memory backend instead which does not require ``hugetlbfs`` mount
-points.

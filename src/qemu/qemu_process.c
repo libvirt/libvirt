@@ -3976,6 +3976,9 @@ qemuProcessBuildDestroyMemoryPathsImpl(virQEMUDriver *driver,
             return -1;
         }
 
+        if (qemuDomainNamespaceSetupPath(vm, path, NULL) < 0)
+            return -1;
+
         if (qemuSecurityDomainSetPathLabel(driver, vm, path, true) < 0)
             return -1;
     } else {
