@@ -1040,8 +1040,7 @@ qemuNamespaceMknodOne(qemuNamespaceMknodItem *data)
         goto cleanup;
     }
 
-    /* Symlinks don't have ACLs. */
-    if (!isLink &&
+    if (data->acl &&
         virFileSetACLs(data->file, data->acl) < 0 &&
         errno != ENOTSUP) {
         virReportSystemError(errno,
