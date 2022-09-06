@@ -17771,10 +17771,10 @@ qemuDomainGetStatsCpuProc(virDomainObj *vm,
                           virTypedParamList *params)
 {
     unsigned long long cpuTime = 0;
-    unsigned long long sysTime = 0;
     unsigned long long userTime = 0;
+    unsigned long long sysTime = 0;
 
-    if (virProcessGetStatInfo(&cpuTime, &sysTime, &userTime,
+    if (virProcessGetStatInfo(&cpuTime, &userTime, &sysTime,
                               NULL, NULL, vm->pid, 0) < 0) {
         /* ignore error */
         return 0;
