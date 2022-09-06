@@ -48,6 +48,10 @@ void qemuDomainDestroyNamespace(virQEMUDriver *driver,
 
 bool qemuDomainNamespaceAvailable(qemuDomainNamespace ns);
 
+int qemuDomainNamespaceSetupPath(virDomainObj *vm,
+                                 const char *path,
+                                 bool *created);
+
 int qemuDomainNamespaceSetupDisk(virDomainObj *vm,
                                  virStorageSource *src,
                                  bool *created);

@@ -1425,6 +1425,25 @@ qemuNamespaceUnlinkPaths(virDomainObj *vm,
 
 
 int
+qemuDomainNamespaceSetupPath(virDomainObj *vm,
+                             const char *path,
+                             bool *created)
+{
+    g_autoptr(virGSListString) paths = NULL;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
+    paths = g_slist_prepend(paths, g_strdup(path));
+
+    if (qemuNamespaceMknodPaths(vm, paths, created) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int
 qemuDomainNamespaceSetupDisk(virDomainObj *vm,
                              virStorageSource *src,
                              bool *created)
