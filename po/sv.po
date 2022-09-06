@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-08-26 05:02+0000\n"
-"PO-Revision-Date: 2022-09-04 19:19+0000\n"
+"PO-Revision-Date: 2022-09-06 19:19+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -14650,89 +14650,89 @@ msgid "Setting wwn for scsi disk is not supported by this QEMU"
 msgstr "Att sätta wwn för scsi-diskar stödjs inte av denna QEMU"
 
 msgid "Setting wwn is not supported for lun device"
-msgstr ""
+msgstr "Att sätta wwn stödjs inte för lun-enheten"
 
-#, fuzzy
 msgid "Setup time:"
-msgstr "CPU-tid:"
+msgstr "Uppsättningstid:"
 
 msgid "Shared memory mapping is not supported with this QEMU"
-msgstr ""
+msgstr "Delat-minnes-avbildning stödjs inte med denan QEMU"
 
 msgid "Shared memory:\n"
 msgstr "Delat minne:\n"
 
 #, c-format
 msgid "Shell '%s' should have absolute path"
-msgstr ""
+msgstr "Skalet ”%s” skall ha en absolut sökväg"
 
 msgid "Should define both master and slave path attributes for nmdm device"
 msgstr ""
+"Man skall definiera både master- och slave-sökvägsattribut för nmdmm-enheter"
 
-#, fuzzy
 msgid "Show block device errors"
-msgstr "blockenhet"
+msgstr "Visa blockenhetsfel"
 
-#, fuzzy
 msgid "Show errors on block devices"
-msgstr "blockenhet"
+msgstr "Visa fel på blockenheter"
 
 msgid "Show features that are part of the CPU model type"
-msgstr ""
+msgstr "Visa funktioner som är en del av CPU-modelltypen"
 
 msgid "Show maximum number of virtual CPUs for guests on this connection."
 msgstr ""
 "Visa maximala antalet virtuella processorer för gästerna på denna anslutning."
 
 msgid "Show statistics from this CPU"
-msgstr ""
+msgstr "Visa statistik från denna CPU"
 
 msgid "Show total statistics only"
-msgstr ""
+msgstr "Visa endast total statistik"
 
 msgid "Show/Set scheduler parameters."
 msgstr "Visa/sätt parametrar för schemaläggare."
 
 msgid "Shows or modifies the XML metadata of a domain."
-msgstr ""
+msgstr "Visar eller ändrar XML-metadatan för en domän."
 
 msgid "Shutdown"
 msgstr "Stäng av"
 
 #, sh-format
 msgid "Shutdown of guest $name complete."
-msgstr ""
+msgstr "Stäng av gästen $name fullständigt."
 
 #, sh-format
 msgid "Shutdown of guest $name failed to complete in time."
-msgstr ""
+msgstr "Avstängningen av gästen $name kunde inte fullbordas i tid."
 
 #, sh-format
 msgid "Shutting down guests on $uri URI..."
-msgstr ""
+msgstr "Stänger av gästen på URI:n $uri …"
 
 msgid "Signal handling not available on this platform"
-msgstr ""
+msgstr "Signalhantering är inte tillgängliget på denna plattform"
 
 #, c-format
 msgid ""
 "Size of SMM TSEG size differs: source: '%llu %s', destination: '%llu %s'"
 msgstr ""
+"Storleken på SMM TSEG-storlek skiljer: källa: ”%llu %s”, destination: ”%llu "
+"%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Size of target NUMA node %zu (%llu) doesn't match source (%llu)"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Storlek på mål-NUMA-noden %zu (%llu) stämmer inte med källan (%%llu)"
 
 #, c-format
 msgid "Size of volume '%s' successfully changed by %s\n"
-msgstr ""
+msgstr "Storleken på volumen ”%s” ändrad med %s\n"
 
 #, c-format
 msgid "Size of volume '%s' successfully changed to %s\n"
-msgstr ""
+msgstr "Storleken på volumen ”%s” ändrad till %s\n"
 
 msgid "Skipping is not supported with this stream"
-msgstr ""
+msgstr "Att hoppa över stödjs inte med denna ström"
 
 msgid "Snapshot"
 msgstr "Ögonblicksbild"
