@@ -109,6 +109,8 @@ qemuDomainGetPreservedMountPath(virQEMUDriverConfig *cfg,
  * b) generate backup path for all the entries in a)
  *
  * Any of the return pointers can be NULL. Both arrays are NULL-terminated.
+ * Get the mount table either from @vm's PID (if running), or from the
+ * namespace we're in (if @vm's not running).
  *
  * Returns 0 on success, -1 otherwise (with error reported)
  */
@@ -123,12 +125,18 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfig *cfg,
     size_t nmounts = 0;
     g_auto(GStrv) paths = NULL;
     g_auto(GStrv) savePaths = NULL;
+    g_autofree char *mountsPath = NULL;
     size_t i;
 
     if (ndevPath)
         *ndevPath = 0;
 
-    if (virFileGetMountSubtree(QEMU_PROC_MOUNTS, "/dev", &mounts, &nmounts) < 0)
+    if (vm->pid > 0)
+        mountsPath = g_strdup_printf("/proc/%lld/mounts", (long long) vm->pid);
+    else
+        mountsPath = g_strdup(QEMU_PROC_MOUNTS);
+
+    if (virFileGetMountSubtree(mountsPath, "/dev", &mounts, &nmounts) < 0)
         return -1;
 
     if (nmounts == 0)
