@@ -26194,7 +26194,7 @@ virDomainMemorytuneDefFormat(virBuffer *buf,
                                      &childrenBuf) < 0)
         return -1;
 
-    for (i = 0; i< resctrl->nmonitors; i++) {
+    for (i = 0; i < resctrl->nmonitors; i++) {
         if (virDomainResctrlMonDefFormatHelper(resctrl->monitors[i],
                                                VIR_RESCTRL_MONITOR_TYPE_MEMBW,
                                                &childrenBuf) < 0)

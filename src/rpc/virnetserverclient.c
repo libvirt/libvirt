@@ -416,15 +416,15 @@ virNetServerClientNewInternal(unsigned long long id,
 
 
 virNetServerClient *virNetServerClientNew(unsigned long long id,
-                                            virNetSocket *sock,
-                                            int auth,
-                                            bool readonly,
-                                            size_t nrequests_max,
-                                            virNetTLSContext *tls,
-                                            virNetServerClientPrivNew privNew,
-                                            virNetServerClientPrivPreExecRestart privPreExecRestart,
-                                            virFreeCallback privFree,
-                                            void *privOpaque)
+                                          virNetSocket *sock,
+                                          int auth,
+                                          bool readonly,
+                                          size_t nrequests_max,
+                                          virNetTLSContext *tls,
+                                          virNetServerClientPrivNew privNew,
+                                          virNetServerClientPrivPreExecRestart privPreExecRestart,
+                                          virFreeCallback privFree,
+                                          void *privOpaque)
 {
     virNetServerClient *client;
     time_t now;
@@ -454,11 +454,11 @@ virNetServerClient *virNetServerClientNew(unsigned long long id,
 
 
 virNetServerClient *virNetServerClientNewPostExecRestart(virNetServer *srv,
-                                                           virJSONValue *object,
-                                                           virNetServerClientPrivNewPostExecRestart privNew,
-                                                           virNetServerClientPrivPreExecRestart privPreExecRestart,
-                                                           virFreeCallback privFree,
-                                                           void *privOpaque)
+                                                         virJSONValue *object,
+                                                         virNetServerClientPrivNewPostExecRestart privNew,
+                                                         virNetServerClientPrivPreExecRestart privPreExecRestart,
+                                                         virFreeCallback privFree,
+                                                         void *privOpaque)
 {
     virJSONValue *child;
     virNetServerClient *client = NULL;
