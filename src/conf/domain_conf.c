@@ -60,6 +60,7 @@
 #include "virdomainsnapshotobjlist.h"
 #include "virdomaincheckpointobjlist.h"
 #include "virutil.h"
+#include "virsecureerase.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -10849,6 +10850,7 @@ virDomainGraphicsAuthDefParseXML(xmlNodePtr node,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot parse password validity time '%s', expect YYYY-MM-DDTHH:MM:SS"),
                            validTo);
+            virSecureEraseString(def->passwd);
             VIR_FREE(def->passwd);
             return -1;
         }
