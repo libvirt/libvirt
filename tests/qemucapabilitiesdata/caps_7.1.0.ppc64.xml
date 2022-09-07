@@ -184,6 +184,7 @@
   <flag name='usb-host.guest-resets-all'/>
   <flag name='migration.blocked-reasons'/>
   <flag name='query-stats'/>
+  <flag name='query-stats-schemas'/>
   <version>7001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900244</microcodeVersion>

@@ -676,6 +676,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 435 */
               "query-stats", /* QEMU_CAPS_QUERY_STATS */
+              "query-stats-schemas", /* QEMU_CAPS_QUERY_STATS_SCHEMAS */
     );
 
 
@@ -1224,6 +1225,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "sev-inject-launch-secret", QEMU_CAPS_SEV_INJECT_LAUNCH_SECRET },
     { "calc-dirty-rate", QEMU_CAPS_CALC_DIRTY_RATE },
     { "query-stats", QEMU_CAPS_QUERY_STATS },
+    { "query-stats-schemas", QEMU_CAPS_QUERY_STATS_SCHEMAS },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
