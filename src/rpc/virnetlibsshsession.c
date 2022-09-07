@@ -39,12 +39,6 @@ VIR_LOG_INIT("rpc.netlibsshsession");
 
 #define VIR_NET_LIBSSH_BUFFER_SIZE  1024
 
-#if LIBSSH_VERSION_INT < SSH_VERSION_INT(0, 8, 1)
-# define VIR_SSH_HOSTKEY_HASH SSH_PUBLICKEY_HASH_SHA1
-#else
-# define VIR_SSH_HOSTKEY_HASH SSH_PUBLICKEY_HASH_SHA256
-#endif
-
 /* TRACE_LIBSSH=<level> enables tracing in libssh itself.
  * The meaning of <level> is described here:
  * https://api.libssh.org/master/group__libssh__log.html
@@ -212,7 +206,7 @@ virLibsshServerKeyAsString(virNetLibsshSession *sess)
     /* calculate remote key hash, using SHA256 algorithm that is
      * the default in modern OpenSSH, fallback to SHA1 for older
      * libssh. The returned value must be freed */
-    ret = ssh_get_publickey_hash(key, VIR_SSH_HOSTKEY_HASH,
+    ret = ssh_get_publickey_hash(key, SSH_PUBLICKEY_HASH_SHA256,
                                  &keyhash, &keyhashlen);
     ssh_key_free(key);
     if (ret < 0) {

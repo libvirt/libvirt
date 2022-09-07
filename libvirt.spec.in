@@ -378,7 +378,7 @@ BuildRequires: wireshark-devel
 %endif
 
 %if %{with_libssh}
-BuildRequires: libssh-devel >= 0.7.0
+BuildRequires: libssh-devel >= 0.8.1
 %endif
 
 BuildRequires: rpcgen

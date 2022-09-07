@@ -1025,24 +1025,11 @@ else
   libpcap_dep = dependency('', required: false)
 endif
 
-libssh_version = '0.7'
+libssh_version = '0.8.1'
 if conf.has('WITH_REMOTE')
   libssh_dep = dependency('libssh', version: '>=' + libssh_version, required: get_option('libssh'))
   if libssh_dep.found()
     conf.set('WITH_LIBSSH', 1)
-
-    # Check if new functions exists, if not redefine them with old deprecated ones.
-    # List of [ new_function, deprecated_function ].
-    functions = [
-      [ 'ssh_get_server_publickey', 'ssh_get_publickey' ],
-      [ 'ssh_session_is_known_server', 'ssh_is_server_known' ],
-      [ 'ssh_session_update_known_hosts', 'ssh_write_knownhost' ],
-    ]
-    foreach name : functions
-      if not cc.has_function(name[0], dependencies: libssh_dep)
-        conf.set(name[0], name[1])
-      endif
-    endforeach
   endif
 else
   libssh_dep = dependency('', required: false)
