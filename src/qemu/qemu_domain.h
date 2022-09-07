@@ -242,6 +242,8 @@ struct _qemuDomainObjPrivate {
 
     unsigned long long originalMemlock; /* Original RLIMIT_MEMLOCK, zero if no
                                          * restore will be required later */
+
+    GHashTable *statsSchema; /* (name, data) pair for stats */
 };
 
 #define QEMU_DOMAIN_PRIVATE(vm) \
@@ -1098,3 +1100,6 @@ qemuDomainRemoveLogs(virQEMUDriver *driver,
 
 int
 qemuDomainObjWait(virDomainObj *vm);
+
+int
+qemuDomainRefreshStatsSchema(virDomainObj *dom);

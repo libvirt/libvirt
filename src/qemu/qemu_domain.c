@@ -1740,6 +1740,8 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
 
     priv->originalMemlock = 0;
     priv->preMigrationMemlock = 0;
+
+    virHashRemoveAll(priv->statsSchema);
 }
 
 
@@ -1778,6 +1780,9 @@ qemuDomainObjPrivateFree(void *data)
         g_object_unref(priv->eventThread);
     }
 
+    if (priv->statsSchema)
+        g_clear_pointer(&priv->statsSchema, g_hash_table_destroy);
+
     g_free(priv);
 }
 
@@ -1798,6 +1803,8 @@ qemuDomainObjPrivateAlloc(void *opaque)
     priv->agentTimeout = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK;
     priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
     priv->driver = opaque;
+
+    priv->statsSchema = NULL;
 
     return g_steal_pointer(&priv);
 }
@@ -11771,6 +11778,41 @@ qemuDomainObjWait(virDomainObj *vm)
         virReportError(VIR_ERR_OPERATION_FAILED, "%s", _("domain is not running"));
         return -1;
     }
+
+    return 0;
+}
+
+
+/**
+ * virDomainRefreshStatsSchema:
+ * @driver: qemu driver data
+ * @vm: Pointer to the vm object
+ *
+ * Load data into dom->privateData->statsSchema if not stored
+ *
+ * Returns -1 on failure, 0 otherwise.
+ */
+int
+qemuDomainRefreshStatsSchema(virDomainObj *dom)
+{
+    qemuDomainObjPrivate *priv = dom->privateData;
+    GHashTable *schema = priv->statsSchema;
+
+    if (schema && g_hash_table_size(schema) > 0)
+        return 0;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_STATS_SCHEMAS))
+        return -1;
+
+    qemuDomainObjEnterMonitor(dom);
+    schema = qemuMonitorQueryStatsSchema(priv->mon, QEMU_MONITOR_QUERY_STATS_PROVIDER_LAST);
+    qemuDomainObjExitMonitor(dom);
+
+    if (!schema)
+        return -1;
+
+    g_hash_table_unref(priv->statsSchema);
+    priv->statsSchema = schema;
 
     return 0;
 }
