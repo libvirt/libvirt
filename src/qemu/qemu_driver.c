@@ -18709,6 +18709,41 @@ qemuDomainGetStatsDirtyRate(virQEMUDriver *driver G_GNUC_UNUSED,
     return 0;
 }
 
+
+static int
+qemuDomainGetStatsVm(virQEMUDriver *driver G_GNUC_UNUSED,
+                     virDomainObj *dom,
+                     virTypedParamList *params,
+                     unsigned int privflags)
+{
+    qemuDomainObjPrivate *priv = dom->privateData;
+    g_autoptr(virJSONValue) queried_stats = NULL;
+    g_autoptr(GHashTable) stats = NULL;
+    virJSONValue *stats_obj = NULL;
+
+    if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
+        return 0;
+
+    if (qemuDomainRefreshStatsSchema(dom) < 0)
+        return 0;
+
+    qemuDomainObjEnterMonitor(dom);
+    queried_stats = qemuMonitorQueryStats(priv->mon,
+                                          QEMU_MONITOR_QUERY_STATS_TARGET_VM,
+                                          NULL, NULL);
+    qemuDomainObjExitMonitor(dom);
+
+    if (!queried_stats || virJSONValueArraySize(queried_stats) != 1)
+        return 0;
+
+    stats_obj = virJSONValueArrayGet(queried_stats, 0);
+    stats = qemuMonitorExtractQueryStats(stats_obj);
+
+    qemuDomainAddStatsFromHashTable(stats, priv->statsSchema, "vm", params);
+
+    return 0;
+}
+
 typedef int
 (*qemuDomainGetStatsFunc)(virQEMUDriver *driver,
                           virDomainObj *dom,
@@ -18733,6 +18768,11 @@ static virQEMUCapsFlags queryDirtyRateRequired[] = {
     QEMU_CAPS_LAST
 };
 
+static virQEMUCapsFlags queryVmRequired[] = {
+    QEMU_CAPS_QUERY_STATS,
+    QEMU_CAPS_LAST
+};
+
 static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
     { qemuDomainGetStatsState, VIR_DOMAIN_STATS_STATE, false, NULL },
     { qemuDomainGetStatsCpu, VIR_DOMAIN_STATS_CPU_TOTAL, true, NULL },
@@ -18744,6 +18784,7 @@ static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
     { qemuDomainGetStatsIOThread, VIR_DOMAIN_STATS_IOTHREAD, true, queryIOThreadRequired },
     { qemuDomainGetStatsMemory, VIR_DOMAIN_STATS_MEMORY, false, NULL },
     { qemuDomainGetStatsDirtyRate, VIR_DOMAIN_STATS_DIRTYRATE, true, queryDirtyRateRequired },
+    { qemuDomainGetStatsVm, VIR_DOMAIN_STATS_VM, true, queryVmRequired },
     { NULL, 0, false, NULL }
 };
 

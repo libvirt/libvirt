@@ -2065,6 +2065,10 @@ static const vshCmdOptDef opts_domstats[] = {
      .type = VSH_OT_BOOL,
      .help = N_("report domain dirty rate information"),
     },
+    {.name = "vm",
+     .type = VSH_OT_BOOL,
+     .help = N_("report fd-based VM statistics by KVM"),
+    },
     {.name = "list-active",
      .type = VSH_OT_BOOL,
      .help = N_("list only active domains"),
@@ -2185,6 +2189,9 @@ cmdDomstats(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "dirtyrate"))
         stats |= VIR_DOMAIN_STATS_DIRTYRATE;
+
+    if (vshCommandOptBool(cmd, "vm"))
+        stats |= VIR_DOMAIN_STATS_VM;
 
     if (vshCommandOptBool(cmd, "list-active"))
         flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE;

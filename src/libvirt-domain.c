@@ -12481,6 +12481,9 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *                                                   rate for a virtual cpu as
  *                                                   unsigned long long.
  *
+ * VIR_DOMAIN_STATS_VM:
+ *     Return fd-based KVM statistics for the target VM
+ *
  * Note that entire stats groups or individual stat fields may be missing from
  * the output in case they are not supported by the given hypervisor, are not
  * applicable for the current state of the guest domain, or their retrieval
