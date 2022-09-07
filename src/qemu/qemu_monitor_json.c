@@ -8567,6 +8567,104 @@ qemuMonitorJSONMigrateRecover(qemuMonitor *mon,
     return qemuMonitorJSONCheckError(cmd, reply);
 }
 
+static GHashTable *
+qemuMonitorJSONExtractQueryStatsSchema(virJSONValue *json)
+{
+    g_autoptr(GHashTable) schema = virHashNew(g_free);
+    size_t i;
+
+    for (i = 0; i < virJSONValueArraySize(json); i++) {
+        virJSONValue *obj, *stats;
+        const char *target_str;
+        int target;
+        size_t j;
+
+        obj = virJSONValueArrayGet(json, i);
+
+        if (!virJSONValueIsObject(obj))
+            continue;
+
+        stats = virJSONValueObjectGetArray(obj, "stats");
+
+        if (!virJSONValueIsArray(stats))
+            continue;
+
+        target_str = virJSONValueObjectGetString(obj, "target");
+        target = qemuMonitorQueryStatsTargetTypeFromString(target_str);
+
+        for (j = 0; j < virJSONValueArraySize(stats); j++) {
+            virJSONValue *stat = virJSONValueArrayGet(stats, j);
+            const char *name = NULL;
+            const char *tmp = NULL;
+            qemuMonitorQueryStatsSchemaData *data = NULL;
+            int type = -1;
+            int unit = -1;
+
+            if (!virJSONValueIsObject(stat))
+                continue;
+
+            name = virJSONValueObjectGetString(stat, "name");
+            if (!name)
+                continue;
+
+            tmp = virJSONValueObjectGetString(stat, "type");
+            type = qemuMonitorQueryStatsTypeTypeFromString(tmp);
+
+            tmp = virJSONValueObjectGetString(stat, "unit");
+            unit = qemuMonitorQueryStatsUnitTypeFromString(tmp);
+
+            data = g_new0(qemuMonitorQueryStatsSchemaData, 1);
+            data->target = (target == -1) ? QEMU_MONITOR_QUERY_STATS_TARGET_LAST : target;
+            data->type = (type == -1) ? QEMU_MONITOR_QUERY_STATS_TYPE_LAST : type;
+            data->unit = (unit == -1) ? QEMU_MONITOR_QUERY_STATS_UNIT_LAST : unit;
+
+            if (virJSONValueObjectGetNumberInt(stat, "base", &data->base) < 0 ||
+                virJSONValueObjectGetNumberInt(stat, "exponent", &data->exponent) < 0) {
+                /*
+                 * Base of zero means that there is simply no scale, data->exponent
+                 * is set to 0 just for safety measures
+                 */
+                data->base = 0;
+                data->exponent = 0;
+            }
+
+            if (data->type == QEMU_MONITOR_QUERY_STATS_TYPE_LINEAR_HISTOGRAM &&
+                virJSONValueObjectGetNumberUint(stat, "bucket-size", &data->bucket_size) < 0)
+                data->bucket_size = 0;
+
+            virHashAddEntry(schema, name, data);
+        }
+    }
+
+    return g_steal_pointer(&schema);
+}
+
+GHashTable *
+qemuMonitorJSONQueryStatsSchema(qemuMonitor *mon,
+                                qemuMonitorQueryStatsProviderType provider_type)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    virJSONValue *ret;
+
+    const char *type_str = qemuMonitorQueryStatsProviderTypeToString(provider_type);
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-stats-schemas",
+                                           "S:provider", type_str,
+                                           NULL)))
+        return NULL;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return NULL;
+
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
+        return NULL;
+
+    ret = virJSONValueObjectGetArray(reply, "return");
+
+    return qemuMonitorJSONExtractQueryStatsSchema(ret);
+}
+
 
 /**
  * qemuMonitorJSONQueryStats:

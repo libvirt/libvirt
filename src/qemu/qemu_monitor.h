@@ -1517,6 +1517,43 @@ qemuMonitorQueryStatsProviderNew(qemuMonitorQueryStatsProviderType provider_type
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMonitorQueryStatsProvider,
                               qemuMonitorQueryStatsProviderFree);
 
+typedef enum {
+    QEMU_MONITOR_QUERY_STATS_UNIT_BYTES,
+    QEMU_MONITOR_QUERY_STATS_UNIT_SECONDS,
+    QEMU_MONITOR_QUERY_STATS_UNIT_CYCLES,
+    QEMU_MONITOR_QUERY_STATS_UNIT_BOOLEAN,
+
+    QEMU_MONITOR_QUERY_STATS_UNIT_LAST
+} qemuMonitorQueryStatsUnitType;
+
+VIR_ENUM_DECL(qemuMonitorQueryStatsUnit);
+
+typedef enum {
+    QEMU_MONITOR_QUERY_STATS_TYPE_CUMULATIVE,
+    QEMU_MONITOR_QUERY_STATS_TYPE_INSTANT,
+    QEMU_MONITOR_QUERY_STATS_TYPE_PEAK,
+    QEMU_MONITOR_QUERY_STATS_TYPE_LINEAR_HISTOGRAM,
+    QEMU_MONITOR_QUERY_STATS_TYPE_LOG2_HISTOGRAM,
+
+    QEMU_MONITOR_QUERY_STATS_TYPE_LAST
+} qemuMonitorQueryStatsTypeType;
+
+VIR_ENUM_DECL(qemuMonitorQueryStatsType);
+
+typedef struct _qemuMonitorQueryStatsSchemaData qemuMonitorQueryStatsSchemaData;
+struct _qemuMonitorQueryStatsSchemaData {
+    qemuMonitorQueryStatsTargetType target;
+    qemuMonitorQueryStatsUnitType unit;
+    qemuMonitorQueryStatsTypeType type;
+    unsigned int bucket_size;
+    int base;
+    int exponent;
+};
+
+GHashTable *
+qemuMonitorQueryStatsSchema(qemuMonitor *mon,
+                            qemuMonitorQueryStatsProviderType provider_type);
+
 virJSONValue *
 qemuMonitorQueryStats(qemuMonitor *mon,
                       qemuMonitorQueryStatsTargetType target,

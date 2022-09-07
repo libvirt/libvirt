@@ -4354,6 +4354,35 @@ qemuMonitorQueryStatsProviderNew(qemuMonitorQueryStatsProviderType provider_type
 }
 
 
+VIR_ENUM_IMPL(qemuMonitorQueryStatsUnit,
+              QEMU_MONITOR_QUERY_STATS_UNIT_LAST,
+              "bytes",
+              "seconds",
+              "cycles",
+              "boolean",
+);
+
+
+VIR_ENUM_IMPL(qemuMonitorQueryStatsType,
+              QEMU_MONITOR_QUERY_STATS_TYPE_LAST,
+              "cumulative",
+              "instant",
+              "peak",
+              "linear-histogram",
+              "log2-histogram",
+);
+
+
+GHashTable *
+qemuMonitorQueryStatsSchema(qemuMonitor *mon,
+                            qemuMonitorQueryStatsProviderType provider_type)
+{
+    QEMU_CHECK_MONITOR_NULL(mon);
+
+    return qemuMonitorJSONQueryStatsSchema(mon, provider_type);
+}
+
+
 virJSONValue *
 qemuMonitorQueryStats(qemuMonitor *mon,
                       qemuMonitorQueryStatsTargetType target,

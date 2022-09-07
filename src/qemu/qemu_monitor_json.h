@@ -812,6 +812,10 @@ int
 qemuMonitorJSONMigrateRecover(qemuMonitor *mon,
                               const char *uri);
 
+GHashTable *
+qemuMonitorJSONQueryStatsSchema(qemuMonitor *mon,
+                                qemuMonitorQueryStatsProviderType provider_type);
+
 virJSONValue *
 qemuMonitorJSONQueryStats(qemuMonitor *mon,
                           qemuMonitorQueryStatsTargetType target,
