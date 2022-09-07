@@ -1537,6 +1537,7 @@ qemuMonitorGetCPUInfoLegacy(struct qemuMonitorQueryCpusEntry *cpuentries,
             vcpus[i].tid = cpuentries[i].tid;
             vcpus[i].halted = cpuentries[i].halted;
             vcpus[i].qemu_id = cpuentries[i].qemu_id;
+            vcpus[i].qom_path = g_strdup(cpuentries[i].qom_path);
         }
 
         /* for legacy hotplug to work we need to fake the vcpu count added by
@@ -4444,4 +4445,40 @@ qemuMonitorExtractQueryStats(virJSONValue *info)
     }
 
     return g_steal_pointer(&hash_table);
+}
+
+
+/**
+ * qemuMonitorStatsSchemaByQOMPath:
+ * @arr: Array of objects returned by qemuMonitorQueryStats
+ *
+ * Returns the object which matches the QOM path of the vCPU
+ *
+ * Returns NULL on failure.
+ */
+virJSONValue *
+qemuMonitorGetStatsByQOMPath(virJSONValue *arr,
+                             char *qom_path)
+{
+    size_t i;
+
+    if (!virJSONValueIsArray(arr) || !qom_path)
+        return NULL;
+
+    for (i = 0; i < virJSONValueArraySize(arr); i++) {
+        virJSONValue *obj = virJSONValueArrayGet(arr, i);
+        const char *test_qom_path = NULL;
+
+        if (!obj)
+            return NULL;
+
+        test_qom_path = virJSONValueObjectGetString(obj, "qom-path");
+        if (!test_qom_path)
+            return NULL;
+
+        if (STRCASEEQ(qom_path, test_qom_path))
+            return obj;
+    }
+
+    return NULL;
 }

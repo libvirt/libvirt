@@ -1562,3 +1562,7 @@ qemuMonitorQueryStats(qemuMonitor *mon,
 
 GHashTable *
 qemuMonitorExtractQueryStats(virJSONValue *info);
+
+virJSONValue *
+qemuMonitorGetStatsByQOMPath(virJSONValue *arr,
+                             char *qom_path);
