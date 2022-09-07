@@ -17951,6 +17951,67 @@ qemuDomainGetStatsBalloon(virQEMUDriver *driver G_GNUC_UNUSED,
 }
 
 
+static void
+qemuDomainAddStatsFromHashTable(GHashTable *stats,
+                                GHashTable *schema,
+                                const char *prefix,
+                                virTypedParamList *params)
+{
+    GHashTableIter iter;
+    virJSONValue *value;
+    const char *key;
+
+    if (!stats || !schema)
+        return;
+
+    g_hash_table_iter_init(&iter, stats);
+
+    while (g_hash_table_iter_next(&iter, (gpointer *)&key, (gpointer *)&value)) {
+        qemuMonitorQueryStatsSchemaData *data = g_hash_table_lookup(schema, key);
+        const char *type = NULL;
+
+        if (!data)
+            continue;
+
+        switch (data->type) {
+        case QEMU_MONITOR_QUERY_STATS_TYPE_CUMULATIVE:
+            type = "sum";
+            break;
+        case QEMU_MONITOR_QUERY_STATS_TYPE_INSTANT:
+            type = "cur";
+            break;
+
+        case QEMU_MONITOR_QUERY_STATS_TYPE_PEAK:
+            type = "max";
+            break;
+
+        case QEMU_MONITOR_QUERY_STATS_TYPE_LOG2_HISTOGRAM:
+        case QEMU_MONITOR_QUERY_STATS_TYPE_LINEAR_HISTOGRAM:
+        case QEMU_MONITOR_QUERY_STATS_TYPE_LAST:
+            continue;
+        }
+
+        if (data->unit == QEMU_MONITOR_QUERY_STATS_UNIT_BOOLEAN) {
+            bool stat;
+
+            if (virJSONValueGetBoolean(value, &stat) < 0)
+                continue;
+
+            ignore_value(virTypedParamListAddBoolean(params, stat, "%s.%s.%s",
+                                                     prefix, key, type));
+        } else {
+            unsigned long long stat;
+
+            if (virJSONValueGetNumberUlong(value, &stat) < 0)
+                continue;
+
+            ignore_value(virTypedParamListAddULLong(params, stat, "%s.%s.%s",
+                                                    prefix, key, type));
+        }
+    }
+}
+
+
 static int
 qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
                        virDomainObj *dom,
@@ -17964,6 +18025,8 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
     virVcpuInfoPtr cpuinfo = NULL;
     g_autofree unsigned long long *cpuwait = NULL;
     g_autofree unsigned long long *cpudelay = NULL;
+    qemuDomainObjPrivate *priv = dom->privateData;
+    g_autoptr(virJSONValue) queried_stats = NULL;
 
     if (virTypedParamListAddUInt(params, virDomainDefGetVcpus(dom->def),
                                  "vcpu.current") < 0)
@@ -17992,7 +18055,19 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
         goto cleanup;
     }
 
+    if (HAVE_JOB(privflags) && qemuDomainRefreshStatsSchema(dom) == 0) {
+        qemuDomainObjEnterMonitor(dom);
+        queried_stats = qemuMonitorQueryStats(priv->mon,
+                                              QEMU_MONITOR_QUERY_STATS_TARGET_VCPU,
+                                              NULL, NULL);
+        qemuDomainObjExitMonitor(dom);
+    }
+
     for (i = 0; i < virDomainDefGetVcpus(dom->def); i++) {
+        virJSONValue *stat_obj = NULL;
+        g_autoptr(GHashTable) stats = NULL;
+        g_autofree char *prefix = g_strdup_printf("vcpu.%u", cpuinfo[i].number);
+
         if (virTypedParamListAddInt(params, cpuinfo[i].state,
                                     "vcpu.%u.state", cpuinfo[i].number) < 0)
             goto cleanup;
@@ -18026,6 +18101,14 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
                                             cpuinfo[i].number) < 0)
                 goto cleanup;
         }
+
+        if (!queried_stats)
+            continue;
+
+        stat_obj = qemuMonitorGetStatsByQOMPath(queried_stats, vcpupriv->qomPath);
+        stats = qemuMonitorExtractQueryStats(stat_obj);
+
+        qemuDomainAddStatsFromHashTable(stats, priv->statsSchema, prefix, params);
     }
 
     ret = 0;
