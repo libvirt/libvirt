@@ -8606,11 +8606,8 @@ qemuMonitorJSONQueryStats(qemuMonitor *mon,
             qemuMonitorQueryStatsProvider *provider = providers->pdata[i];
             const char *type_str = qemuMonitorQueryStatsProviderTypeToString(provider->type);
             virBitmap *names = provider->names;
-            int rc;
 
-            rc = virJSONValueObjectAppendString(provider_obj, "provider", type_str);
-
-            if (rc < 0)
+            if (virJSONValueObjectAppendString(provider_obj, "provider", type_str) < 0)
                 return NULL;
 
             if (!virBitmapIsAllClear(names)) {
@@ -8624,9 +8621,7 @@ qemuMonitorJSONQueryStats(qemuMonitor *mon,
                         return NULL;
                 }
 
-                rc = virJSONValueObjectAppend(provider_obj, "names", &provider_names);
-
-                if (rc < 0)
+                if (virJSONValueObjectAppend(provider_obj, "names", &provider_names) < 0)
                     return NULL;
             }
 
