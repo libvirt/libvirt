@@ -3147,8 +3147,7 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
         goto error;
 
     if (mig->nbd &&
-        flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER)) {
+        flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)) {
         const char *nbdTLSAlias = NULL;
 
         if (flags & VIR_MIGRATE_TLS) {
@@ -3356,8 +3355,7 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
         }
 
         if (mig->nbd &&
-            flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
-            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER))
+            flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC))
             cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
     }
 
