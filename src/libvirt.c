@@ -940,14 +940,12 @@ virConnectOpenInternal(const char *name,
             goto failed;
 
         if (alias) {
-            VIR_FREE(uristr);
-            uristr = alias;
+            g_free(uristr);
+            uristr = g_steal_pointer(&alias);
         }
 
-        if (!(ret->uri = virURIParse(uristr))) {
-            VIR_FREE(alias);
+        if (!(ret->uri = virURIParse(uristr)))
             goto failed;
-        }
 
         /* Avoid need for drivers to worry about NULLs, as
          * no one needs to distinguish "" vs NULL */
