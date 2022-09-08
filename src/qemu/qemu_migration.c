@@ -4678,7 +4678,6 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
                     const char *nbdURI)
 {
     int ret = -1;
-    unsigned int migrate_flags = QEMU_MONITOR_MIGRATE_BACKGROUND;
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(qemuMigrationCookie) mig = NULL;
     g_autofree char *tlsAlias = NULL;
@@ -4867,7 +4866,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
         goto exit_monitor;
     }
 
-    rc = qemuMigrationSrcStart(vm, spec, migrate_flags, &fd);
+    rc = qemuMigrationSrcStart(vm, spec, 0, &fd);
 
     qemuDomainObjExitMonitor(vm);
     if (rc < 0)
@@ -5033,8 +5032,6 @@ qemuMigrationSrcResume(virDomainObj *vm,
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
     g_autoptr(qemuMigrationCookie) mig = NULL;
-    unsigned int migrateFlags = QEMU_MONITOR_MIGRATE_BACKGROUND |
-                                QEMU_MONITOR_MIGRATE_RESUME;
     int rc;
 
     VIR_DEBUG("vm=%p", vm);
@@ -5053,7 +5050,7 @@ qemuMigrationSrcResume(virDomainObj *vm,
                                        VIR_ASYNC_JOB_MIGRATION_OUT) < 0)
         return -1;
 
-    rc = qemuMigrationSrcStart(vm, spec, migrateFlags, NULL);
+    rc = qemuMigrationSrcStart(vm, spec, QEMU_MONITOR_MIGRATE_RESUME, NULL);
 
     qemuDomainObjExitMonitor(vm);
     if (rc < 0)
@@ -6902,9 +6899,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
         goto cleanup;
 
     if (!compressor) {
-        rc = qemuMonitorMigrateToFd(priv->mon,
-                                    QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                    fd);
+        rc = qemuMonitorMigrateToFd(priv->mon, 0, fd);
     } else {
         virCommandSetInputFD(compressor, pipeFD[0]);
         virCommandSetOutputFD(compressor, &fd);
@@ -6920,9 +6915,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
             qemuDomainObjExitMonitor(vm);
             goto cleanup;
         }
-        rc = qemuMonitorMigrateToFd(priv->mon,
-                                    QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                    pipeFD[1]);
+        rc = qemuMonitorMigrateToFd(priv->mon, 0, pipeFD[1]);
         if (VIR_CLOSE(pipeFD[0]) < 0 ||
             VIR_CLOSE(pipeFD[1]) < 0)
             VIR_WARN("failed to close intermediate pipe");

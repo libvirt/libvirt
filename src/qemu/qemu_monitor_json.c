@@ -3109,10 +3109,9 @@ int qemuMonitorJSONMigrate(qemuMonitor *mon,
                            unsigned int flags,
                            const char *uri)
 {
-    bool detach = !!(flags & QEMU_MONITOR_MIGRATE_BACKGROUND);
     bool resume = !!(flags & QEMU_MONITOR_MIGRATE_RESUME);
     g_autoptr(virJSONValue) cmd = qemuMonitorJSONMakeCommand("migrate",
-                                                             "b:detach", detach,
+                                                             "b:detach", true,
                                                              "b:resume", resume,
                                                              "s:uri", uri,
                                                              NULL);
