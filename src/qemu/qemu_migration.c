@@ -4817,35 +4817,28 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     }
 
     if (storageMigration) {
-        if (mig->nbd) {
-            const char *host = "";
-            const char *tlsHostname = qemuMigrationParamsGetTLSHostname(migParams);
+        const char *host = "";
+        const char *tlsHostname = qemuMigrationParamsGetTLSHostname(migParams);
 
-            if (spec->destType == MIGRATION_DEST_HOST ||
-                spec->destType == MIGRATION_DEST_CONNECT_HOST) {
-                host = spec->dest.host.name;
-            }
+        if (!mig->nbd) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("migration of non-shared disks requested but NBD is not set up"));
+            goto error;
+        }
 
-            if (qemuMigrationSrcNBDStorageCopy(driver, vm, mig,
-                                               host,
-                                               priv->migMaxBandwidth,
-                                               nmigrate_disks,
-                                               migrate_disks,
-                                               dconn, tlsAlias, tlsHostname,
-                                               nbdURI, flags) < 0) {
-                goto error;
-            }
-        } else {
-            /* Destination doesn't support NBD server.
-             * Fall back to previous implementation. */
-            VIR_DEBUG("Destination doesn't support NBD server "
-                      "Falling back to previous implementation.");
+        if (spec->destType == MIGRATION_DEST_HOST ||
+            spec->destType == MIGRATION_DEST_CONNECT_HOST) {
+            host = spec->dest.host.name;
+        }
 
-            if (flags & VIR_MIGRATE_NON_SHARED_DISK)
-                migrate_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_DISK;
-
-            if (flags & VIR_MIGRATE_NON_SHARED_INC)
-                migrate_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
+        if (qemuMigrationSrcNBDStorageCopy(driver, vm, mig,
+                                           host,
+                                           priv->migMaxBandwidth,
+                                           nmigrate_disks,
+                                           migrate_disks,
+                                           dconn, tlsAlias, tlsHostname,
+                                           nbdURI, flags) < 0) {
+            goto error;
         }
     }
 
