@@ -27,6 +27,12 @@ v8.8.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: Fix non-shared storage migration setup
+
+    This release fixes a bug in setup of a migration with non-shared storage
+    ( ``virsh migrate --copy-storage-all``) which was broken by a refactor of
+    the code in libvirt-8.7.
+
 
 v8.7.0 (2022-09-01)
 ===================
