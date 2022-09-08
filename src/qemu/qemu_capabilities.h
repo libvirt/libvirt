@@ -220,7 +220,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 125 */
     X_QEMU_CAPS_ADD_FD, /* -add-fd */
-    QEMU_CAPS_NBD_SERVER, /* nbd-server-start QMP command */
+    X_QEMU_CAPS_NBD_SERVER, /* nbd-server-start QMP command */
     QEMU_CAPS_DEVICE_VIRTIO_RNG, /* virtio-rng device */
     QEMU_CAPS_OBJECT_RNG_RANDOM, /* the rng-random backend for virtio rng */
     QEMU_CAPS_OBJECT_RNG_EGD, /* EGD protocol daemon for rng */

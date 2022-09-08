@@ -242,7 +242,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 125 */
               "add-fd", /* X_QEMU_CAPS_ADD_FD */
-              "nbd-server", /* QEMU_CAPS_NBD_SERVER */
+              "nbd-server", /* X_QEMU_CAPS_NBD_SERVER */
               "virtio-rng", /* QEMU_CAPS_DEVICE_VIRTIO_RNG */
               "rng-random", /* QEMU_CAPS_OBJECT_RNG_RANDOM */
               "rng-egd", /* QEMU_CAPS_OBJECT_RNG_EGD */
@@ -1207,7 +1207,6 @@ struct virQEMUCapsStringFlags {
 struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-spice", QEMU_CAPS_SPICE },
     { "query-vnc", QEMU_CAPS_VNC },
-    { "nbd-server-start", QEMU_CAPS_NBD_SERVER },
     { "rtc-reset-reinjection", QEMU_CAPS_RTC_RESET_REINJECTION },
     { "query-hotpluggable-cpus", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS },
     { "query-cpu-model-expansion", QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION },

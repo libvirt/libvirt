@@ -12,7 +12,6 @@
   <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>
   <flag name='vnc'/>
-  <flag name='nbd-server'/>
   <flag name='rng-random'/>
   <flag name='rng-egd'/>
   <flag name='enable-fips'/>
