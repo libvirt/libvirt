@@ -2609,14 +2609,14 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
                     return NULL;
                 }
             }
-
-            priv->nbdPort = 0;
-
-            if (qemuMigrationHasAnyStorageMigrationDisks(vm->def,
-                                                         migrate_disks,
-                                                         nmigrate_disks))
-                cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
         }
+
+        priv->nbdPort = 0;
+
+        if (qemuMigrationHasAnyStorageMigrationDisks(vm->def,
+                                                     migrate_disks,
+                                                     nmigrate_disks))
+            cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
     }
 
     if (virDomainDefHasMemoryHotplug(vm->def) ||
