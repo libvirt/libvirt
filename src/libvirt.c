@@ -892,7 +892,7 @@ virConnectOpenInternal(const char *name,
         return NULL;
 
     if (virConfLoadConfig(&conf, "libvirt.conf") < 0)
-        goto failed;
+        return NULL;
 
     if (name && name[0] == '\0')
         name = NULL;
@@ -916,14 +916,14 @@ virConnectOpenInternal(const char *name,
         uristr = g_strdup(name);
     } else {
         if (virConnectGetDefaultURI(conf, &uristr) < 0)
-            goto failed;
+            return NULL;
 
         if (uristr == NULL) {
             VIR_DEBUG("Trying to probe for default URI");
             for (i = 0; i < virConnectDriverTabCount && uristr == NULL; i++) {
                 if (virConnectDriverTab[i]->hypervisorDriver->connectURIProbe) {
                     if (virConnectDriverTab[i]->hypervisorDriver->connectURIProbe(&uristr) < 0)
-                        goto failed;
+                        return NULL;
                     VIR_DEBUG("%s driver URI probe returned '%s'",
                               virConnectDriverTab[i]->hypervisorDriver->name,
                               NULLSTR(uristr));
@@ -937,7 +937,7 @@ virConnectOpenInternal(const char *name,
 
         if (!(flags & VIR_CONNECT_NO_ALIASES) &&
             virURIResolveAlias(conf, uristr, &alias) < 0)
-            goto failed;
+            return NULL;
 
         if (alias) {
             g_free(uristr);
@@ -945,7 +945,7 @@ virConnectOpenInternal(const char *name,
         }
 
         if (!(ret->uri = virURIParse(uristr)))
-            goto failed;
+            return NULL;
 
         /* Avoid need for drivers to worry about NULLs, as
          * no one needs to distinguish "" vs NULL */
@@ -967,12 +967,12 @@ virConnectOpenInternal(const char *name,
             virReportError(VIR_ERR_NO_CONNECT,
                            _("URI '%s' does not include a driver name"),
                            name);
-            goto failed;
+            return NULL;
         }
 
         if (virConnectCheckURIMissingSlash(uristr,
                                            ret->uri) < 0) {
-            goto failed;
+            return NULL;
         }
 
         if (STREQ(ret->uri->path, "/embed")) {
@@ -985,26 +985,26 @@ virConnectOpenInternal(const char *name,
                 virReportError(VIR_ERR_NO_CONNECT,
                                _("URI scheme '%s' for embedded driver is not valid"),
                                ret->uri->scheme);
-                goto failed;
+                return NULL;
             }
 
             root = virURIGetParam(ret->uri, "root");
             if (!root)
-                goto failed;
+                return NULL;
 
             if (!g_path_is_absolute(root)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("root path must be absolute"));
-                goto failed;
+                return NULL;
             }
 
             if (virEventRequireImpl() < 0)
-                goto failed;
+                return NULL;
 
             regMethod = g_strdup_printf("%sRegister", ret->uri->scheme);
 
             if (virDriverLoadModule(ret->uri->scheme, regMethod, false) < 0)
-                goto failed;
+                return NULL;
 
             if (virAccessManagerGetDefault() == NULL) {
                 virAccessManager *acl;
@@ -1012,12 +1012,12 @@ virConnectOpenInternal(const char *name,
                 virResetLastError();
 
                 if (!(acl = virAccessManagerNew("none")))
-                    goto failed;
+                    return NULL;
                 virAccessManagerSetDefault(acl);
             }
 
             if (virStateInitialize(geteuid() == 0, true, root, NULL, NULL) < 0)
-                goto failed;
+                return NULL;
 
             embed = true;
         }
@@ -1055,7 +1055,7 @@ virConnectOpenInternal(const char *name,
                                  __FILE__, __FUNCTION__, __LINE__,
                                  _("libvirt was built without the '%s' driver"),
                                  ret->uri->scheme);
-            goto failed;
+            return NULL;
         }
 
         VIR_DEBUG("trying driver %zu (%s) ...",
@@ -1105,13 +1105,13 @@ virConnectOpenInternal(const char *name,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Driver %s cannot be used in embedded mode"),
                            virConnectDriverTab[i]->hypervisorDriver->name);
-            goto failed;
+            return NULL;
         }
         /* before starting the new connection, check if the driver only works
          * with a server, and so return an error if the server is missing */
         if (virConnectDriverTab[i]->remoteOnly && ret->uri && !ret->uri->server) {
             virReportError(VIR_ERR_INVALID_ARG, "%s", _("URI is missing the server part"));
-            goto failed;
+            return NULL;
         }
 
         ret->driver = virConnectDriverTab[i]->hypervisorDriver;
@@ -1141,20 +1141,17 @@ virConnectOpenInternal(const char *name,
             ret->storageDriver = NULL;
 
             if (res == VIR_DRV_OPEN_ERROR)
-                goto failed;
+                return NULL;
         }
     }
 
     if (!ret->driver) {
         /* If we reach here, then all drivers declined the connection. */
         virReportError(VIR_ERR_NO_CONNECT, "%s", NULLSTR(name));
-        goto failed;
+        return NULL;
     }
 
     return g_steal_pointer(&ret);
-
- failed:
-    return NULL;
 }
 
 
