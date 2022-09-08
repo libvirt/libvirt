@@ -1789,6 +1789,7 @@ remoteOpenConn(const char *uri,
 {
     g_autoptr(virTypedParamList) identparams = NULL;
     g_autoptr(virConnect) newconn = NULL;
+    unsigned int connectFlags = 0;
 
     VIR_DEBUG("Getting secondary uri=%s readonly=%d preserveIdent=%d conn=%p",
               NULLSTR(uri), readonly, preserveIdentity, conn);
@@ -1813,11 +1814,9 @@ remoteOpenConn(const char *uri,
 
     VIR_DEBUG("Opening driver %s", uri);
     if (readonly)
-        newconn = virConnectOpenReadOnly(uri);
-    else
-        newconn = virConnectOpen(uri);
+        connectFlags |= VIR_CONNECT_RO;
 
-    if (!newconn)
+    if (!(newconn = virConnectOpenAuth(uri, NULL, connectFlags)))
         return -1;
 
     VIR_DEBUG("Opened driver %p", newconn);
