@@ -3196,3 +3196,180 @@ qemuBlockExportAddNBD(virDomainObj *vm,
 
     return qemuMonitorBlockExportAdd(priv->mon, &nbdprops);
 }
+
+
+int
+qemuBlockCommit(virDomainObj *vm,
+                virDomainDiskDef *disk,
+                virStorageSource *baseSource,
+                virStorageSource *topSource,
+                virStorageSource *top_parent,
+                unsigned long bandwidth,
+                unsigned int flags)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    int ret = -1;
+    bool clean_access = false;
+    g_autofree char *backingPath = NULL;
+    qemuBlockJobData *job = NULL;
+    g_autoptr(virStorageSource) mirror = NULL;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        return -1;
+
+    /* Convert bandwidth MiB to bytes, if necessary */
+    if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_BANDWIDTH_BYTES)) {
+        if (bandwidth > LLONG_MAX >> 20) {
+            virReportError(VIR_ERR_OVERFLOW,
+                           _("bandwidth must be less than %llu"),
+                           LLONG_MAX >> 20);
+            return -1;
+        }
+        bandwidth <<= 20;
+    }
+
+    if (!qemuDomainDiskBlockJobIsSupported(disk))
+        return -1;
+
+    if (virStorageSourceIsEmpty(disk->src)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("disk %s has no source file to be committed"),
+                       disk->dst);
+        return -1;
+    }
+
+    if (qemuDomainDiskBlockJobIsActive(disk))
+        return -1;
+
+    if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
+        return -1;
+
+    if (topSource == disk->src) {
+        /* XXX Should we auto-pivot when COMMIT_ACTIVE is not specified? */
+        if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_ACTIVE)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("commit of '%s' active layer requires active flag"),
+                           disk->dst);
+            return -1;
+        }
+    } else if (flags & VIR_DOMAIN_BLOCK_COMMIT_ACTIVE) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("active commit requested but '%s' is not active"),
+                       topSource->path);
+        return -1;
+    }
+
+    if (!virStorageSourceHasBacking(topSource)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("top '%s' in chain for '%s' has no backing file"),
+                       topSource->path, disk->src->path);
+        return -1;
+    }
+
+    if ((flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW) &&
+        baseSource != topSource->backingStore) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("base '%s' is not immediately below '%s' in chain "
+                         "for '%s'"),
+                       baseSource->path, topSource->path, disk->src->path);
+        return -1;
+    }
+
+    /* For an active commit, clone enough of the base to act as the mirror */
+    if (topSource == disk->src) {
+        if (!(mirror = virStorageSourceCopy(baseSource, false)))
+            return -1;
+        if (virStorageSourceInitChainElement(mirror,
+                                             disk->src,
+                                             true) < 0)
+            return -1;
+    }
+
+    if (flags & VIR_DOMAIN_BLOCK_COMMIT_RELATIVE &&
+        topSource != disk->src) {
+        if (top_parent &&
+            qemuBlockUpdateRelativeBacking(vm, top_parent, disk->src) < 0)
+            return -1;
+
+        if (virStorageSourceGetRelativeBackingPath(topSource, baseSource,
+                                                   &backingPath) < 0)
+            return -1;
+
+        if (!backingPath) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("can't keep relative backing relationship"));
+            return -1;
+        }
+    }
+
+    /* For the commit to succeed, we must allow qemu to open both the
+     * 'base' image and the parent of 'top' as read/write; 'top' might
+     * not have a parent, or might already be read-write.  XXX It
+     * would also be nice to revert 'base' to read-only, as well as
+     * revoke access to files removed from the chain, when the commit
+     * operation succeeds, but doing that requires tracking the
+     * operation in XML across libvirtd restarts.  */
+    clean_access = true;
+    if (qemuDomainStorageSourceAccessAllow(driver, vm, baseSource,
+                                           false, false, false) < 0)
+        goto cleanup;
+
+    if (top_parent && top_parent != disk->src) {
+        /* While top_parent is topmost image, we don't need to remember its
+         * owner as it will be overwritten upon finishing the commit. Hence,
+         * pass chainTop = false. */
+        if (qemuDomainStorageSourceAccessAllow(driver, vm, top_parent,
+                                               false, false, false) < 0)
+            goto cleanup;
+    }
+
+    if (!(job = qemuBlockJobDiskNewCommit(vm, disk, top_parent, topSource,
+                                          baseSource,
+                                          flags & VIR_DOMAIN_BLOCK_COMMIT_DELETE,
+                                          flags)))
+        goto cleanup;
+
+    disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+
+    if (!backingPath && top_parent &&
+        !(backingPath = qemuBlockGetBackingStoreString(baseSource, false)))
+        goto cleanup;
+
+    qemuDomainObjEnterMonitor(vm);
+
+    ret = qemuMonitorBlockCommit(priv->mon,
+                                 qemuDomainDiskGetTopNodename(disk),
+                                 job->name,
+                                 topSource->nodeformat,
+                                 baseSource->nodeformat,
+                                 backingPath, bandwidth);
+
+    qemuDomainObjExitMonitor(vm);
+
+    if (ret < 0)
+        goto cleanup;
+
+    if (mirror) {
+        disk->mirror = g_steal_pointer(&mirror);
+        disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT;
+    }
+    qemuBlockJobStarted(job, vm);
+
+ cleanup:
+    if (ret < 0 && clean_access) {
+        virErrorPtr orig_err;
+        virErrorPreserveLast(&orig_err);
+        /* Revert access to read-only, if possible.  */
+        qemuDomainStorageSourceAccessAllow(driver, vm, baseSource,
+                                           true, false, false);
+        if (top_parent && top_parent != disk->src)
+            qemuDomainStorageSourceAccessAllow(driver, vm, top_parent,
+                                               true, false, false);
+
+        virErrorRestore(&orig_err);
+    }
+    qemuBlockJobStartupFinalize(vm, job);
+
+    return ret;
+}

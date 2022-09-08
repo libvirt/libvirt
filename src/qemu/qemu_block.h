@@ -276,3 +276,12 @@ qemuBlockExportAddNBD(virDomainObj *vm,
                       const char *exportname,
                       bool writable,
                       const char *bitmap);
+
+int
+qemuBlockCommit(virDomainObj *vm,
+                virDomainDiskDef *disk,
+                virStorageSource *baseSource,
+                virStorageSource *topSource,
+                virStorageSource *top_parent,
+                unsigned long bandwidth,
+                unsigned int flags);
