@@ -344,13 +344,6 @@ qemuValidateDomainDefCpu(virQEMUDriver *driver,
 
         switch (addr->mode) {
         case VIR_CPU_MAX_PHYS_ADDR_MODE_PASSTHROUGH:
-            if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"),
-                               virCPUMaxPhysAddrModeTypeToString(addr->mode),
-                               virCPUModeTypeToString(VIR_CPU_MODE_HOST_PASSTHROUGH));
-                return -1;
-            }
             if (addr->bits != -1) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("CPU maximum physical address bits number specification cannot be used with mode='%s'"),

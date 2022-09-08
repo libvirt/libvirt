@@ -8,8 +8,8 @@
     <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='hd'/>
   </os>
-  <cpu mode='host-model'>
-    <maxphysaddr mode='passthrough'/>
+  <cpu mode='host-passthrough'>
+    <maxphysaddr mode='passthrough' bits='42'/>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
