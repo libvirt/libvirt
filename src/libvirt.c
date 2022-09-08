@@ -882,9 +882,9 @@ virConnectOpenInternal(const char *name,
 {
     size_t i;
     int res;
-    virConnectPtr ret;
+    g_autoptr(virConnect) ret = NULL;
     g_autoptr(virConf) conf = NULL;
-    char *uristr = NULL;
+    g_autofree char *uristr = NULL;
     bool embed = false;
 
     ret = virGetConnect();
@@ -1151,14 +1151,9 @@ virConnectOpenInternal(const char *name,
         goto failed;
     }
 
-    VIR_FREE(uristr);
-
-    return ret;
+    return g_steal_pointer(&ret);
 
  failed:
-    VIR_FREE(uristr);
-    virObjectUnref(ret);
-
     return NULL;
 }
 
