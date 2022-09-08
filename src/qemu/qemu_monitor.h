@@ -825,7 +825,7 @@ int qemuMonitorGetSEVCapabilities(qemuMonitor *mon,
                                   virSEVCapability **capabilities);
 
 typedef enum {
-  QEMU_MONITOR_MIGRATE_RESUME           = 1 << 3, /* resume failed post-copy migration */
+  QEMU_MONITOR_MIGRATE_RESUME           = 1 << 0, /* resume failed post-copy migration */
   QEMU_MONITOR_MIGRATION_FLAGS_LAST
 } QEMU_MONITOR_MIGRATE;
 
