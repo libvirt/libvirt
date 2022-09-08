@@ -1228,23 +1228,20 @@ remoteConnectOpen(virConnectPtr conn,
     struct private_data *priv;
     int ret = VIR_DRV_OPEN_ERROR;
     unsigned int rflags = 0;
-    char *driver = NULL;
+    g_autofree char *driver = NULL;
     remoteDriverTransport transport;
 
     if (conn->uri) {
         if (remoteSplitURIScheme(conn->uri, &driver, &transport) < 0)
-            goto cleanup;
+            return VIR_DRV_OPEN_ERROR;
     } else {
         /* No URI, then must be probing so use UNIX socket */
         transport = REMOTE_DRIVER_TRANSPORT_UNIX;
     }
 
-
     if (inside_daemon) {
-        if (!conn->uri) {
-            ret = VIR_DRV_OPEN_DECLINED;
-            goto cleanup;
-        }
+        if (!conn->uri)
+            return VIR_DRV_OPEN_DECLINED;
 
         /* If there's a driver registered we must defer to that.
          * If there isn't a driver, we must connect in "direct"
@@ -1254,15 +1251,12 @@ remoteConnectOpen(virConnectPtr conn,
          * host */
         if (!conn->uri->server &&
             virHasDriverForURIScheme(driver) &&
-            !virURICheckUnixSocket(conn->uri)) {
-            ret = VIR_DRV_OPEN_DECLINED;
-            goto cleanup;
-        }
+            !virURICheckUnixSocket(conn->uri))
+            return VIR_DRV_OPEN_DECLINED;
     }
 
     if (!(priv = remoteAllocPrivateData()))
-        goto cleanup;
-
+        return VIR_DRV_OPEN_ERROR;
 
     remoteGetURIDaemonInfo(conn->uri, transport, &rflags);
     if (flags & VIR_CONNECT_RO)
@@ -1278,8 +1272,6 @@ remoteConnectOpen(virConnectPtr conn,
         remoteDriverUnlock(priv);
     }
 
- cleanup:
-    VIR_FREE(driver);
     return ret;
 }
 
