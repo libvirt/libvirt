@@ -73,6 +73,7 @@ VIR_LOG_INIT("remote.remote_driver");
 #endif
 
 static bool inside_daemon;
+static bool monolithic_daemon;
 
 struct private_data {
     virMutex lock;
@@ -168,7 +169,7 @@ static void make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapsho
 static int
 remoteStateInitialize(bool privileged G_GNUC_UNUSED,
                       const char *root G_GNUC_UNUSED,
-                      bool monolithic G_GNUC_UNUSED,
+                      bool monolithic,
                       virStateInhibitCallback callback G_GNUC_UNUSED,
                       void *opaque G_GNUC_UNUSED)
 {
@@ -176,6 +177,7 @@ remoteStateInitialize(bool privileged G_GNUC_UNUSED,
      * re-entering ourselves
      */
     inside_daemon = true;
+    monolithic_daemon = monolithic;
     return VIR_DRV_STATE_INIT_COMPLETE;
 }
 
@@ -1244,16 +1246,22 @@ remoteConnectOpen(virConnectPtr conn,
         if (!conn->uri)
             return VIR_DRV_OPEN_DECLINED;
 
-        /* If there's a driver registered we must defer to that.
-         * If there isn't a driver, we must connect in "direct"
-         * mode - see doRemoteOpen.
-         * One exception is if we are trying to connect to an
-         * unknown socket path as that might be proxied to remote
-         * host */
-        if (!conn->uri->server &&
-            virHasDriverForURIScheme(driver) &&
-            !virURICheckUnixSocket(conn->uri))
-            return VIR_DRV_OPEN_DECLINED;
+        /* Handle deferring to local drivers if we are dealing with a default
+         * local URI. (Unknown local socket paths may be proxied to a remote
+         * host so they are treated as remote too).
+         *
+         * Deferring to a local driver is needed if:
+         * - the driver is registered in the current daemon
+         * - if we are running monolithic libvirtd, in which case we consider
+         *   even un-registered drivers as local
+         */
+        if (!conn->uri->server && !virURICheckUnixSocket(conn->uri)) {
+            if (virHasDriverForURIScheme(driver))
+                return VIR_DRV_OPEN_DECLINED;
+
+            if (monolithic_daemon)
+                return VIR_DRV_OPEN_DECLINED;
+        }
     }
 
     if (!(priv = remoteAllocPrivateData()))
