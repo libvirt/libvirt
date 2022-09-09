@@ -24,24 +24,47 @@ allow installing the most recent versions of virtualization packages:
    The ``app-emulation/libvirt`` is regularly updated, but newest versions are
    usually marked as testing by the ``~*`` keyword.
 
-Compiling a release tarball
----------------------------
+Preparing sources
+-----------------
 
-libvirt uses the standard setup/build/install steps and mandates that
-the build directory is different from the source directory:
+Libvirt can be built both from release tarballs and from a git checkout using
+the same steps once the source code is prepared. Note that the build system
+requires that the build directory is separate from the top level source
+directory.
+
+By default further steps will build libvirt inside a subdirectory of the source
+tree named ``build``.
+
+Refer to the `downloads page <downloads.html>`__ for official tarballs and the
+git repository.
+
+Unpacking a source tarball
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Download a source tarball of the version you want to compile and unpack it
+using the following commands:
 
 ::
 
    $ xz -dc libvirt-x.x.x.tar.xz | tar xvf -
    $ cd libvirt-x.x.x
-   $ meson build
 
-The *meson* script can be given options to change its default behaviour.
+Git checkout
+~~~~~~~~~~~~
 
-**Note:** Please ensure that you have the appropriate minimal ``meson`` version
-installed in your build environment. The minimal version for a specific package
-can be checked in the top level ``meson.build`` file in the ``meson_version``
-field.
+A git checkout/clone is already in correct state for next steps. Just change
+your working directory to the checkout.
+
+Configuring the project
+-----------------------
+
+The libvirt build process uses the **Meson** build system. To configure for a
+build use the following command. Note that the ``build`` argument is the name
+of the build directory which will be created.
+
+::
+
+   $ meson build [options]
 
 To get the complete list of the options run the following command:
 
@@ -49,43 +72,41 @@ To get the complete list of the options run the following command:
 
    $ meson configure
 
-When you have determined which options you want to use (if any),
-continue the process.
-
-::
-
-   $ meson build [possible options]
-   $ ninja -C build
-
-The ``build`` directory now contains the built binaries.
-
-Building from a GIT checkout
-----------------------------
-
-The libvirt build process uses Meson build system. By default when the
-``meson`` is run from within a GIT checkout, it will turn on -Werror for
-builds. This can be disabled with --werror=false, but this is not
-recommended.
-
-To build & install libvirt to your home directory the following commands
-can be run:
-
-::
-
-   $ meson build --prefix=$HOME/usr
-   $ ninja -C build
-
-Be aware though, that binaries built with a custom prefix will not
-interoperate with OS vendor provided binaries, since the UNIX socket
-paths will all be different. To produce a build that is compatible with
+Be aware that by default the build is configured with a local ``prefix`` path
+which will not interoperate with OS vendor provided binaries, since the UNIX
+socket paths will all be different. To produce a build that is compatible with
 normal OS vendor prefixes, use
 
 ::
 
    $ meson build -Dsystem=true
+
+By default when the ``meson`` is run from within a GIT checkout, it will turn
+on -Werror for builds. This can be disabled with --werror=false, but this is
+not recommended.
+
+Please ensure that you have the appropriate minimal ``meson`` version installed
+in your build environment. The minimal version for a specific package can be
+checked in the top level ``meson.build`` file in the ``meson_version`` field.
+
+
+Compiling the sources
+---------------------
+
+To build the configured project run (note that ``-C build`` is a path to the
+build directory):
+
+::
+
    $ ninja -C build
 
 The ``build`` directory now contains the built binaries.
+
+Additionally you can also run the test suite:
+
+::
+
+   $ ninja -C build test
 
 Running compiled binaries from build directory
 ----------------------------------------------
