@@ -98,10 +98,12 @@ normal OS vendor prefixes, use
    $ ninja -C build
 
 
-When doing this for day-to-day development purposes, it is recommended
-not to install over the OS vendor provided binaries. Instead simply run
-libvirt directly from the source tree. For example to run a privileged
-libvirtd instance
+Running compiled binaries from build directory
+----------------------------------------------
+
+For testing or development purposes it's usually not necessary to install the
+built binaries into your system. Instead simply run libvirt directly from the
+source tree. For example to run a privileged libvirtd instance
 
 ::
 
