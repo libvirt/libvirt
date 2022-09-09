@@ -81,6 +81,25 @@ normal OS vendor prefixes, use
 
    $ meson build -Dsystem=true
 
+Explicitly enabling required functionality
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default each module of functionality of libvirtd is optionally enabled,
+meaning it will be enabled if the build environment contains the required
+dependencies.
+
+To ensure that your build contains the required functionality it's recommended
+to explicitly enable given modules, in which case the configure step will end
+with an error if dependencies are not present. **Example:** to build the
+libvirt project with support for the **qemu** driver use the following options:
+
+::
+
+   $ meson build -Dsystem=true -Ddriver_qemu=enabled
+
+Notes:
+~~~~~~
+
 By default when the ``meson`` is run from within a GIT checkout, it will turn
 on -Werror for builds. This can be disabled with --werror=false, but this is
 not recommended.
