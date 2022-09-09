@@ -9,8 +9,8 @@ Installing from distribution repositories
 
 This is the recommended option to install libvirt. Libvirt is present in the
 package repositories of all major distributions. Installing a package from the
-package manager ensures that it's properly compiled, installed, and updated
-during the lifecycle of the distribution.
+package manager ensures that it's properly compiled, installed, started, and
+updated during the lifecycle of the distribution.
 
 For users who wish to use the most recent version, certain distributions also
 allow installing the most recent versions of virtualization packages:
@@ -150,6 +150,10 @@ It is also possible to run virsh directly from the build tree using the
    /home/to/your/checkout/build
    $ ./run ./tools/virsh ....
 
+**Note:** The libvirt project provides `multiple daemons <daemons.html>`__ and
+the above steps may replace only some of them with the custom compiled instances.
+In most cases this should work but keep that fact in mind.
+
 Installing compiled binaries
 ----------------------------
 
@@ -178,3 +182,8 @@ putting **sudo** before it.
 After installation you you **may** have to run ``ldconfig`` or a similar
 utility to update your list of installed shared libs, or adjust the paths where
 the system looks for binaries and shared libraries.
+
+The libvirt project provides `multiple daemons <daemons.html>`__ based on your
+configuration. You have to ensure that you start the appropriate processes for
+the freshly installed libvirt to be usable (e.g. even monolithic ``libvirtd``
+requires in most configurations that ``virtlogd`` is started).
