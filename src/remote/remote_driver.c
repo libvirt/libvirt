@@ -1225,7 +1225,7 @@ remoteConnectOpen(virConnectPtr conn,
                   virConf *conf,
                   unsigned int flags)
 {
-    struct private_data *priv;
+    g_autofree struct private_data *priv = NULL;
     int ret = VIR_DRV_OPEN_ERROR;
     unsigned int rflags = 0;
     g_autofree char *driver = NULL;
@@ -1263,14 +1263,12 @@ remoteConnectOpen(virConnectPtr conn,
         rflags |= REMOTE_DRIVER_OPEN_RO;
 
     ret = doRemoteOpen(conn, priv, driver, transport, auth, conf, rflags);
-    if (ret != VIR_DRV_OPEN_SUCCESS) {
+    remoteDriverUnlock(priv);
+
+    if (ret != VIR_DRV_OPEN_SUCCESS)
         conn->privateData = NULL;
-        remoteDriverUnlock(priv);
-        VIR_FREE(priv);
-    } else {
-        conn->privateData = priv;
-        remoteDriverUnlock(priv);
-    }
+    else
+        conn->privateData = g_steal_pointer(&priv);
 
     return ret;
 }
