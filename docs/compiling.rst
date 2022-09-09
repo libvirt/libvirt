@@ -4,6 +4,26 @@ libvirt Installation
 
 .. contents::
 
+Installing from distribution repositories
+-----------------------------------------
+
+This is the recommended option to install libvirt. Libvirt is present in the
+package repositories of all major distributions. Installing a package from the
+package manager ensures that it's properly compiled, installed, and updated
+during the lifecycle of the distribution.
+
+For users who wish to use the most recent version, certain distributions also
+allow installing the most recent versions of virtualization packages:
+
+  **Fedora**
+
+    Refer to https://fedoraproject.org/wiki/Virtualization_Preview_Repository
+
+  **Gentoo**
+
+   The ``app-emulation/libvirt`` is regularly updated, but newest versions are
+   usually marked as testing by the ``~*`` keyword.
+
 Compiling a release tarball
 ---------------------------
 
