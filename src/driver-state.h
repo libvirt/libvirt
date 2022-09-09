@@ -33,6 +33,7 @@ typedef enum {
 typedef virDrvStateInitResult
 (*virDrvStateInitialize)(bool privileged,
                          const char *root,
+                         bool monolithic,
                          virStateInhibitCallback callback,
                          void *opaque);
 

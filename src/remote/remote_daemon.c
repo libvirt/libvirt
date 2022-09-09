@@ -591,6 +591,11 @@ static void daemonRunStateInit(void *opaque)
 #else /* ! MODULE_NAME */
     bool mandatory = false;
 #endif /* ! MODULE_NAME */
+#ifdef LIBVIRTD
+    bool monolithic = true;
+#else /* ! LIBVIRTD */
+    bool monolithic = false;
+#endif /* ! LIBVIRTD */
 
     virIdentitySetCurrent(sysident);
 
@@ -605,6 +610,7 @@ static void daemonRunStateInit(void *opaque)
     if (virStateInitialize(virNetDaemonIsPrivileged(dmn),
                            mandatory,
                            NULL,
+                           monolithic,
                            daemonInhibitCallback,
                            dmn) < 0) {
         VIR_ERROR(_("Driver state initialization failed"));

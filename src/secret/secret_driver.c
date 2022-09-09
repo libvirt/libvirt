@@ -462,6 +462,7 @@ secretStateCleanup(void)
 static int
 secretStateInitialize(bool privileged,
                       const char *root,
+                      bool monolithic G_GNUC_UNUSED,
                       virStateInhibitCallback callback G_GNUC_UNUSED,
                       void *opaque G_GNUC_UNUSED)
 {

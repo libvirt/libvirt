@@ -168,6 +168,7 @@ static void make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapsho
 static int
 remoteStateInitialize(bool privileged G_GNUC_UNUSED,
                       const char *root G_GNUC_UNUSED,
+                      bool monolithic G_GNUC_UNUSED,
                       virStateInhibitCallback callback G_GNUC_UNUSED,
                       void *opaque G_GNUC_UNUSED)
 {

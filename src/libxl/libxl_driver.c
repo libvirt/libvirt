@@ -648,6 +648,7 @@ libxlAddDom0(libxlDriverPrivate *driver)
 static int
 libxlStateInitialize(bool privileged,
                      const char *root,
+                     bool monolithic G_GNUC_UNUSED,
                      virStateInhibitCallback callback,
                      void *opaque)
 {

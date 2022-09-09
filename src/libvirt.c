@@ -604,6 +604,7 @@ virRegisterStateDriver(virStateDriver *driver)
  * @privileged: set to true if running with root privilege, false otherwise
  * @mandatory: set to true if all drivers must report success, not skipped
  * @root: directory to use for embedded mode
+ * @monolithic: set to true if running in monolithic mode (daemon is libvirtd)
  * @callback: callback to invoke to inhibit shutdown of the daemon
  * @opaque: data to pass to @callback
  *
@@ -633,6 +634,7 @@ int
 virStateInitialize(bool privileged,
                    bool mandatory,
                    const char *root,
+                   bool monolithic,
                    virStateInhibitCallback callback,
                    void *opaque)
 {
@@ -650,6 +652,7 @@ virStateInitialize(bool privileged,
             virStateDriverTab[i]->initialized = true;
             ret = virStateDriverTab[i]->stateInitialize(privileged,
                                                         root,
+                                                        monolithic,
                                                         callback,
                                                         opaque);
             VIR_DEBUG("State init result %d (mandatory=%d)", ret, mandatory);
@@ -1016,7 +1019,7 @@ virConnectOpenInternal(const char *name,
                 virAccessManagerSetDefault(acl);
             }
 
-            if (virStateInitialize(geteuid() == 0, true, root, NULL, NULL) < 0)
+            if (virStateInitialize(geteuid() == 0, true, root, false, NULL, NULL) < 0)
                 return NULL;
 
             embed = true;

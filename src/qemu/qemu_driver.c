@@ -549,6 +549,7 @@ qemuDomainFindMaxID(virDomainObj *vm,
 static int
 qemuStateInitialize(bool privileged,
                     const char *root,
+                    bool monolithic G_GNUC_UNUSED,
                     virStateInhibitCallback callback,
                     void *opaque)
 {
