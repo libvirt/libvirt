@@ -79,10 +79,6 @@ VIR_LOG_INIT("lxc.lxc_driver");
 #define LXC_NB_DOMAIN_BLOCK_STAT_PARAM 4
 
 
-static int lxcStateInitialize(bool privileged,
-                              const char *root,
-                              virStateInhibitCallback callback,
-                              void *opaque);
 static int lxcStateCleanup(void);
 virLXCDriver *lxc_driver = NULL;
 
