@@ -52,23 +52,12 @@ To get the complete list of the options run the following command:
 When you have determined which options you want to use (if any),
 continue the process.
 
-Note the use of **sudo** with the *ninja install* command below. Using
-sudo is only required when installing to a location your user does not
-have write access to. Installing to a system location is a good example
-of this.
-
-If you are installing to a location that your user *does* have write
-access to, then you can instead run the *ninja install* command without
-putting **sudo** before it.
-
 ::
 
    $ meson build [possible options]
    $ ninja -C build
-   $ sudo ninja -C build install
 
-At this point you **may** have to run ldconfig or a similar utility to
-update your list of installed shared libs.
+The ``build`` directory now contains the built binaries.
 
 Building from a GIT checkout
 ----------------------------
@@ -85,7 +74,6 @@ can be run:
 
    $ meson build --prefix=$HOME/usr
    $ ninja -C build
-   $ sudo ninja -C build install
 
 Be aware though, that binaries built with a custom prefix will not
 interoperate with OS vendor provided binaries, since the UNIX socket
@@ -97,6 +85,7 @@ normal OS vendor prefixes, use
    $ meson build -Dsystem=true
    $ ninja -C build
 
+The ``build`` directory now contains the built binaries.
 
 Running compiled binaries from build directory
 ----------------------------------------------
@@ -120,3 +109,32 @@ It is also possible to run virsh directly from the build tree using the
    $ pwd
    /home/to/your/checkout/build
    $ ./run ./tools/virsh ....
+
+Installing compiled binaries
+----------------------------
+
+**Important:** Manual installation of libvirt is generally not recommended and
+you should prefer installation from your operating system's package repository
+or from manually built packages which are then installed using the package
+manager. Overwriting an installation of libvirt from the package manager by a
+manually compiled installation may not work properly.
+
+Installing the compiled binaries into the appropriate location (based on
+how the build was configured) is done by the following command:
+
+::
+
+   $ sudo ninja -C build install
+
+Note the use of **sudo** with the *ninja install* command. Using
+sudo is only required when installing to a location your user does not
+have write access to. Installing to a system location is a good example
+of this.
+
+If you are installing to a location that your user *does* have write
+access to, then you can instead run the *ninja install* command without
+putting **sudo** before it.
+
+After installation you you **may** have to run ``ldconfig`` or a similar
+utility to update your list of installed shared libs, or adjust the paths where
+the system looks for binaries and shared libraries.
