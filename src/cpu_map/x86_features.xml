@@ -347,6 +347,15 @@
   <feature name='pconfig'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00040000'/>
   </feature>
+  <feature name='amx-bf16'>
+    <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00400000'/>
+  </feature>
+  <feature name='amx-tile'>
+    <cpuid eax_in='0x07' ecx_in='0x00' edx='0x01000000'/>
+  </feature>
+  <feature name='amx-int8'>
+    <cpuid eax_in='0x07' ecx_in='0x00' edx='0x02000000'/>
+  </feature>
   <feature name='spec-ctrl'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x04000000'/>
   </feature>
