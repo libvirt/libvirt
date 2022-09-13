@@ -9,10 +9,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-ppc64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--machine pseries,usb=off,dump-guest-core=off \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
+-machine pseries,usb=off,dump-guest-core=off,memory-backend=ppc_spapr.ram \
 -accel tcg \
+-cpu POWER9 \
 -m 512 \
+-object '{"qom-type":"memory-backend-ram","id":"ppc_spapr.ram","size":536870912}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 2754dd7b-ac8a-4850-aec0-1f3fcd43235b \
@@ -24,15 +26,16 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device spapr-vscsi,id=scsi0,reg=8192 \
--device spapr-vscsi,id=scsi1,reg=12288 \
--usb \
+-device '{"driver":"pci-ohci","id":"usb","bus":"pci.0","addr":"0x1"}' \
+-device '{"driver":"spapr-vscsi","id":"scsi0","reg":8192}' \
+-device '{"driver":"spapr-vscsi","id":"scsi1","reg":12288}' \
 -blockdev '{"driver":"file","filename":"/tmp/scsidisk.img","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device scsi-hd,bus=scsi1.0,channel=0,scsi-id=0,lun=0,device_id=drive-scsi1-0-0-0,drive=libvirt-1-format,id=scsi1-0-0-0,bootindex=1 \
+-device '{"driver":"scsi-hd","bus":"scsi1.0","channel":0,"scsi-id":0,"lun":0,"device_id":"drive-scsi1-0-0-0","drive":"libvirt-1-format","id":"scsi1-0-0-0","bootindex":1}' \
 -chardev pty,id=charserial0 \
--device spapr-vty,chardev=charserial0,id=serial0,reg=805306368 \
+-device '{"driver":"spapr-vty","chardev":"charserial0","id":"serial0","reg":805306368}' \
 -chardev pty,id=charserial1 \
--device spapr-vty,chardev=charserial1,id=serial1,reg=805310464 \
+-device '{"driver":"spapr-vty","chardev":"charserial1","id":"serial1","reg":805310464}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

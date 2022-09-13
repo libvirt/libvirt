@@ -2084,45 +2084,20 @@ mymain(void)
     DO_TEST_PARSE_ERROR_NOCAPS("seclabel-multiple");
     DO_TEST_PARSE_ERROR_NOCAPS("seclabel-device-duplicates");
 
-    DO_TEST("pseries-basic",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY);
-    DO_TEST("pseries-vio",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY);
-    DO_TEST("pseries-usb-default",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY,
-            QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_PCI_OHCI);
-    DO_TEST("pseries-usb-multi",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY,
-            QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_PCI_OHCI);
-    DO_TEST("pseries-vio-user-assigned",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY);
-    DO_TEST_PARSE_ERROR_NOCAPS("pseries-vio-address-clash");
-    DO_TEST("pseries-nvram",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_NVRAM);
-    DO_TEST("pseries-usb-kbd", QEMU_CAPS_PCI_OHCI,
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_USB_KBD,
-            QEMU_CAPS_DEVICE_SPAPR_VTY);
-    DO_TEST("pseries-cpu-exact",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY);
+    DO_TEST_CAPS_LATEST_PPC64("pseries-basic");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-vio");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-usb-default");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-usb-multi");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-vio-user-assigned");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-nvram");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-usb-kbd");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-cpu-exact");
     DO_TEST_PARSE_ERROR_NOCAPS("pseries-no-parallel");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-cpu-le");
 
     qemuTestSetHostArch(&driver, VIR_ARCH_PPC64);
-    DO_TEST("pseries-cpu-compat", QEMU_CAPS_KVM,
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY);
-    DO_TEST("pseries-cpu-le", QEMU_CAPS_KVM,
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY);
+    DO_TEST_CAPS_LATEST_PPC64_HOSTCPU("pseries-cpu-compat",
+                                      QEMU_CPU_DEF_POWER9);
     DO_TEST_CAPS_LATEST_PPC64_HOSTCPU_FAILURE("pseries-cpu-compat-power9",
                                               QEMU_CPU_DEF_POWER8);
     DO_TEST_CAPS_LATEST_PPC64_HOSTCPU("pseries-cpu-compat-power9",
@@ -2134,64 +2109,27 @@ mymain(void)
 
     qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 
-    DO_TEST("pseries-panic-missing",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY);
-    DO_TEST("pseries-panic-no-address",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY);
-    DO_TEST_PARSE_ERROR("pseries-panic-address",
-                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
+    DO_TEST_CAPS_LATEST_PPC64("pseries-panic-missing");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-panic-no-address");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("pseries-panic-address", "ppc64");
 
-    DO_TEST("pseries-phb-simple",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
-    DO_TEST("pseries-phb-default-missing",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
-    DO_TEST("pseries-phb-numa-node",
-            QEMU_CAPS_NUMA,
-            QEMU_CAPS_OBJECT_MEMORY_RAM,
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE);
-    DO_TEST_PARSE_ERROR("pseries-default-phb-numa-node",
-                        QEMU_CAPS_NUMA,
-                        QEMU_CAPS_OBJECT_MEMORY_RAM,
-                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                        QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE);
+    DO_TEST_CAPS_LATEST_PPC64("pseries-phb-simple");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-phb-default-missing");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-phb-numa-node");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("pseries-default-phb-numa-node",
+                                         "ppc64");
     DO_TEST_PARSE_ERROR_NOCAPS("pseries-phb-invalid-target-index-1");
     DO_TEST_PARSE_ERROR_NOCAPS("pseries-phb-invalid-target-index-2");
     DO_TEST_PARSE_ERROR_NOCAPS("pseries-phb-invalid-target-index-3");
 
-    DO_TEST("pseries-many-devices",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("pseries-many-buses-1",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("pseries-many-buses-2",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("pseries-hostdevs-1",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("pseries-hostdevs-2",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("pseries-hostdevs-3",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST_CAPS_LATEST_PPC64("pseries-many-devices");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-many-buses-1");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-many-buses-2");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-hostdevs-1");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-hostdevs-2");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-hostdevs-3");
 
-    DO_TEST("pseries-features",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
-            QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
-            QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV,
-            QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST,
-            QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC,
-            QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC,
-            QEMU_CAPS_MACHINE_PSERIES_CAP_IBS);
+    DO_TEST_CAPS_LATEST_PPC64("pseries-features");
 
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE */
     DO_TEST_PARSE_ERROR("pseries-features-hpt-pagesize",
@@ -2265,27 +2203,13 @@ mymain(void)
 
     DO_TEST_PARSE_ERROR_NOCAPS("pseries-features-invalid-machine");
 
-    DO_TEST("pseries-serial-native",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY);
-    DO_TEST("pseries-serial+console-native",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY);
-    DO_TEST("pseries-serial-compat",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY);
-    DO_TEST("pseries-serial-pci",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_PCI_SERIAL);
-    DO_TEST("pseries-serial-usb",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_QEMU_XHCI,
-            QEMU_CAPS_DEVICE_USB_SERIAL);
-    DO_TEST("pseries-console-native",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY);
-    DO_TEST("pseries-console-virtio",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
+    DO_TEST_CAPS_LATEST_PPC64("pseries-serial-native");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-serial+console-native");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-serial-compat");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-serial-pci");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-serial-usb");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-console-native");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-console-virtio");
     DO_TEST_PARSE_ERROR_NOCAPS("pseries-serial-invalid-machine");
     DO_TEST_PARSE_ERROR_NOCAPS("pseries-spaprvio-invalid");
 

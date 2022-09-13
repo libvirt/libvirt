@@ -9,15 +9,16 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-ppc64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pseries,usb=off,dump-guest-core=off \
 -accel tcg \
+-cpu POWER9 \
 -m 2048 \
 -overcommit mem-lock=off \
--smp 8,sockets=2,cores=1,threads=4 \
--object memory-backend-ram,id=ram-node0,size=1073741824,host-nodes=1,policy=bind \
+-smp 8,sockets=2,dies=1,cores=1,threads=4 \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node0","size":1073741824,"host-nodes":[1],"policy":"bind"}' \
 -numa node,nodeid=0,cpus=0-3,memdev=ram-node0 \
--object memory-backend-ram,id=ram-node1,size=1073741824,host-nodes=2,policy=bind \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node1","size":1073741824,"host-nodes":[2],"policy":"bind"}' \
 -numa node,nodeid=1,cpus=4-7,memdev=ram-node1 \
 -uuid 87eedafe-eedc-4336-8130-ed9fe5dc90c8 \
 -display none \
@@ -28,8 +29,9 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device spapr-pci-host-bridge,index=1,id=pci.1,numa_node=1 \
--device spapr-pci-host-bridge,index=2,id=pci.2 \
--device spapr-pci-host-bridge,index=3,id=pci.3,numa_node=0 \
+-device '{"driver":"spapr-pci-host-bridge","index":1,"id":"pci.1","numa_node":1}' \
+-device '{"driver":"spapr-pci-host-bridge","index":2,"id":"pci.2"}' \
+-device '{"driver":"spapr-pci-host-bridge","index":3,"id":"pci.3","numa_node":0}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
