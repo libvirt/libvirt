@@ -2132,74 +2132,19 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PPC64("pseries-features");
 
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE */
-    DO_TEST_PARSE_ERROR("pseries-features-hpt-pagesize",
-                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_IBS);
-
+    DO_TEST_PARSE_ERROR_NOCAPS("pseries-features-hpt-pagesize");
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CAP_HTM */
-    DO_TEST_PARSE_ERROR("pseries-features-htm",
-                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_IBS);
-
+    DO_TEST_PARSE_ERROR_NOCAPS("pseries-features-htm");
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV */
-    DO_TEST_PARSE_ERROR("pseries-features-nested-hv",
-                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_IBS);
-
+    DO_TEST_PARSE_ERROR_NOCAPS("pseries-features-nested-hv");
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST */
-    DO_TEST_PARSE_ERROR("pseries-features-ccf",
-                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_IBS);
-
+    DO_TEST_PARSE_ERROR_NOCAPS("pseries-features-ccf");
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CFPC */
-    DO_TEST_PARSE_ERROR("pseries-features-cfpc",
-                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_IBS);
-
+    DO_TEST_PARSE_ERROR_NOCAPS("pseries-features-cfpc");
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_SBBC */
-    DO_TEST_PARSE_ERROR("pseries-features-sbbc",
-                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_IBS);
-
+    DO_TEST_PARSE_ERROR_NOCAPS("pseries-features-sbbc");
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_IBS */
-    DO_TEST_PARSE_ERROR("pseries-features-ibs",
-                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC,
-                        QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC);
+    DO_TEST_PARSE_ERROR_NOCAPS("pseries-features-ibs");
 
     DO_TEST_PARSE_ERROR_NOCAPS("pseries-features-invalid-machine");
 

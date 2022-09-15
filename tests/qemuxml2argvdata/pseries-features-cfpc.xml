@@ -1,1 +1,14 @@
-pseries-features.xml
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory unit='KiB'>524288</memory>
+  <os>
+    <type arch='ppc64' machine='pseries'>hvm</type>
+  </os>
+  <features>
+    <cfpc value='fixed'/>
+  </features>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+  </devices>
+</domain>
