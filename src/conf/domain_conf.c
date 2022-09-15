@@ -6216,31 +6216,32 @@ virDomainNetIPInfoParseXML(const char *source,
                            xmlXPathContextPtr ctxt,
                            virNetDevIPInfo *def)
 {
-    int nnodes;
     int ret = -1;
     size_t i;
-    g_autofree xmlNodePtr *nodes = NULL;
+    g_autofree xmlNodePtr *ipNodes = NULL;
+    int nipNodes;
+    g_autofree xmlNodePtr *routeNodes = NULL;
+    int nrouteNodes;
 
-    if ((nnodes = virXPathNodeSet("./ip", ctxt, &nodes)) < 0)
+    if ((nipNodes = virXPathNodeSet("./ip", ctxt, &ipNodes)) < 0)
         goto cleanup;
 
-    for (i = 0; i < nnodes; i++) {
+    for (i = 0; i < nipNodes; i++) {
         virNetDevIPAddr *ip = NULL;
 
-        if (!(ip = virDomainNetIPParseXML(nodes[i])))
+        if (!(ip = virDomainNetIPParseXML(ipNodes[i])))
             goto cleanup;
 
         VIR_APPEND_ELEMENT(def->ips, def->nips, ip);
     }
-    VIR_FREE(nodes);
 
-    if ((nnodes = virXPathNodeSet("./route", ctxt, &nodes)) < 0)
+    if ((nrouteNodes = virXPathNodeSet("./route", ctxt, &routeNodes)) < 0)
         goto cleanup;
 
-    for (i = 0; i < nnodes; i++) {
+    for (i = 0; i < nrouteNodes; i++) {
         virNetDevIPRoute *route = NULL;
 
-        if (!(route = virNetDevIPRouteParseXML(source, nodes[i], ctxt)))
+        if (!(route = virNetDevIPRouteParseXML(source, routeNodes[i], ctxt)))
             goto cleanup;
 
         VIR_APPEND_ELEMENT(def->routes, def->nroutes, route);
