@@ -6216,42 +6216,38 @@ virDomainNetIPInfoParseXML(const char *source,
                            xmlXPathContextPtr ctxt,
                            virNetDevIPInfo *def)
 {
-    int ret = -1;
     size_t i;
     g_autofree xmlNodePtr *ipNodes = NULL;
     int nipNodes;
     g_autofree xmlNodePtr *routeNodes = NULL;
     int nrouteNodes;
 
-    if ((nipNodes = virXPathNodeSet("./ip", ctxt, &ipNodes)) < 0)
-        goto cleanup;
+    if ((nipNodes = virXPathNodeSet("./ip", ctxt, &ipNodes)) < 0 ||
+        (nrouteNodes = virXPathNodeSet("./route", ctxt, &routeNodes)) < 0)
+        return -1;
 
     for (i = 0; i < nipNodes; i++) {
         virNetDevIPAddr *ip = NULL;
 
         if (!(ip = virDomainNetIPParseXML(ipNodes[i])))
-            goto cleanup;
+            goto error;
 
         VIR_APPEND_ELEMENT(def->ips, def->nips, ip);
     }
-
-    if ((nrouteNodes = virXPathNodeSet("./route", ctxt, &routeNodes)) < 0)
-        goto cleanup;
 
     for (i = 0; i < nrouteNodes; i++) {
         virNetDevIPRoute *route = NULL;
 
         if (!(route = virNetDevIPRouteParseXML(source, routeNodes[i], ctxt)))
-            goto cleanup;
+            goto error;
 
         VIR_APPEND_ELEMENT(def->routes, def->nroutes, route);
     }
 
-    ret = 0;
- cleanup:
-    if (ret < 0)
-        virNetDevIPInfoClear(def);
-    return ret;
+    return 0;
+ error:
+    virNetDevIPInfoClear(def);
+    return -1;
 }
 
 
