@@ -9017,32 +9017,47 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     if ((source_node = virXPathNode("./source", ctxt))) {
         if (virDomainNetIPInfoParseXML(_("interface host IP"), source_node, ctxt, &def->hostIP) < 0)
             return NULL;
+    }
 
-        if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+    switch (def->type) {
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+        if (source_node) {
             network = virXMLPropString(source_node, "network");
             portgroup = virXMLPropString(source_node, "portgroup");
             if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
                 portid = virXMLPropString(source_node, "portid");
         }
+        break;
 
-        if (def->type == VIR_DOMAIN_NET_TYPE_VDS) {
+    case VIR_DOMAIN_NET_TYPE_VDS:
+        if (source_node) {
             switchid = virXMLPropString(source_node, "switchid");
             portid = virXMLPropString(source_node, "portid");
             portgroup = virXMLPropString(source_node, "portgroupid");
             connectionid = virXMLPropString(source_node, "connectionid");
         }
+        break;
 
-        if (def->type == VIR_DOMAIN_NET_TYPE_INTERNAL)
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        if (source_node) {
             internal = virXMLPropString(source_node, "name");
+        }
+        break;
 
-        if (def->type == VIR_DOMAIN_NET_TYPE_BRIDGE)
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        if (source_node) {
             bridge = virXMLPropString(source_node, "bridge");
+        }
+        break;
 
-        if (def->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+        if (source_node) {
             dev = virXMLPropString(source_node, "dev");
             mode = virXMLPropString(source_node, "mode");
         }
+        break;
 
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
         /* This clause is only necessary because from 2010 to 2016 it was
          * possible (but never documented) to configure the name of the
          * guest-side interface of an openvz domain with <source dev='blah'/>.
@@ -9051,33 +9066,40 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
          * need to generate an error. If the openvz driver is ever
          * deprecated, this clause can be removed from here.
          */
-        if (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
-            (dev = virXMLPropString(source_node, "dev"))) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid attempt to set <interface type='ethernet'> "
-                             "device name with <source dev='%s'/>. "
-                             "Use <target dev='%s'/> (for host-side) "
-                             "or <guest dev='%s'/> (for guest-side) instead."),
-                           dev, dev, dev);
-            return NULL;
+        if (source_node) {
+            if ((dev = virXMLPropString(source_node, "dev"))) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Invalid attempt to set <interface type='ethernet'> "
+                                 "device name with <source dev='%s'/>. "
+                                 "Use <target dev='%s'/> (for host-side) "
+                                 "or <guest dev='%s'/> (for guest-side) instead."),
+                               dev, dev, dev);
+                return NULL;
+            }
         }
+        break;
 
-        if (def->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        if (source_node) {
             vhostuser_type = virXMLPropString(source_node, "type");
             vhostuser_path = virXMLPropString(source_node, "path");
             vhostuser_mode = virXMLPropString(source_node, "mode");
             if (virDomainChrSourceReconnectDefParseXML(&reconnect, source_node, ctxt) < 0)
                 return NULL;
         }
+        break;
 
-        if (def->type == VIR_DOMAIN_NET_TYPE_VDPA)
+    case VIR_DOMAIN_NET_TYPE_VDPA:
+        if (source_node) {
             dev = virXMLPropString(source_node, "dev");
+        }
+        break;
 
-        if (def->type == VIR_DOMAIN_NET_TYPE_SERVER ||
-            def->type == VIR_DOMAIN_NET_TYPE_CLIENT ||
-            def->type == VIR_DOMAIN_NET_TYPE_MCAST ||
-            def->type == VIR_DOMAIN_NET_TYPE_UDP) {
-
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_UDP:
+        if (source_node) {
             address = virXMLPropString(source_node, "address");
             port = virXMLPropString(source_node, "port");
             if (def->type == VIR_DOMAIN_NET_TYPE_UDP) {
@@ -9090,6 +9112,13 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                 ctxt->node = tmp_node;
             }
         }
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_NULL:
+    case VIR_DOMAIN_NET_TYPE_LAST:
+        break;
     }
 
     if ((virtualport_node = virXPathNode("./virtualport", ctxt))) {
