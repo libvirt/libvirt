@@ -8833,7 +8833,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                         xmlXPathContextPtr ctxt,
                         unsigned int flags)
 {
-    virDomainNetDef *def;
+    g_autoptr(virDomainNetDef) def = NULL;
     virDomainHostdevDef *hostdev;
     xmlNodePtr source_node = NULL;
     xmlNodePtr virtualport_node = NULL;
@@ -8845,7 +8845,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     xmlNodePtr tmpNode;
     xmlNodePtr mac_node = NULL;
     g_autoptr(GHashTable) filterparams = NULL;
-    virDomainActualNetDef *actual = NULL;
+    g_autoptr(virDomainActualNetDef) actual = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virDomainChrSourceReconnectDef reconnect = {0};
     int rv, val;
@@ -9571,13 +9571,10 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     if (virNetworkPortOptionsParseXML(ctxt, &def->isolatedPort) < 0)
         goto error;
 
- cleanup:
-    virDomainActualNetDefFree(actual);
-    return def;
+    return g_steal_pointer(&def);
 
  error:
-    g_clear_pointer(&def, virDomainNetDefFree);
-    goto cleanup;
+    return NULL;
 }
 
 static int
