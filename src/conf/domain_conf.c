@@ -8827,6 +8827,130 @@ virDomainNetTeamingInfoParseXML(xmlXPathContextPtr ctxt,
 }
 
 
+static int
+virDomainNetDefParseXMLDriver(virDomainNetDef *def,
+                              xmlXPathContextPtr ctxt)
+{
+    xmlNodePtr driver_node;
+
+    if ((driver_node = virXPathNode("./driver", ctxt)) &&
+        (virDomainVirtioOptionsParseXML(driver_node, &def->virtio) < 0))
+        return -1;
+
+    if (def->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+        virDomainNetIsVirtioModel(def)) {
+        xmlNodePtr hostNode;
+        xmlNodePtr guestNode;
+
+        if (virXMLPropEnum(driver_node, "name",
+                           virDomainNetBackendTypeFromString,
+                           VIR_XML_PROP_NONZERO,
+                           &def->driver.virtio.name) < 0)
+            return -1;
+
+        if (virXMLPropEnum(driver_node, "txmode",
+                           virDomainNetVirtioTxModeTypeFromString,
+                           VIR_XML_PROP_NONZERO,
+                           &def->driver.virtio.txmode) < 0)
+            return -1;
+
+        if (virXMLPropTristateSwitch(driver_node, "ioeventfd",
+                                     VIR_XML_PROP_NONE,
+                                     &def->driver.virtio.ioeventfd) < 0)
+            return -1;
+
+        if (virXMLPropTristateSwitch(driver_node, "event_idx",
+                                     VIR_XML_PROP_NONE,
+                                     &def->driver.virtio.event_idx) < 0)
+            return -1;
+
+        if (virXMLPropUInt(driver_node, "queues", 10,
+                           VIR_XML_PROP_NONE,
+                           &def->driver.virtio.queues) < 0)
+            return -1;
+
+        /* There's always at least one TX/RX queue. */
+        if (def->driver.virtio.queues == 1)
+            def->driver.virtio.queues = 0;
+
+        if (virXMLPropUInt(driver_node, "rx_queue_size", 10,
+                           VIR_XML_PROP_NONE,
+                           &def->driver.virtio.rx_queue_size) < 0)
+            return -1;
+
+        if (virXMLPropUInt(driver_node, "tx_queue_size", 10,
+                           VIR_XML_PROP_NONE,
+                           &def->driver.virtio.tx_queue_size) < 0)
+            return -1;
+
+        if (virXMLPropTristateSwitch(driver_node, "rss",
+                                     VIR_XML_PROP_NONE,
+                                     &def->driver.virtio.rss) < 0)
+            return -1;
+
+        if (virXMLPropTristateSwitch(driver_node, "rss_hash_report",
+                                     VIR_XML_PROP_NONE,
+                                     &def->driver.virtio.rss_hash_report) < 0)
+            return -1;
+
+        if ((hostNode = virXPathNode("./driver/host", ctxt))) {
+            if (virXMLPropTristateSwitch(hostNode, "csum", VIR_XML_PROP_NONE,
+                                         &def->driver.virtio.host.csum) < 0)
+                return -1;
+
+            if (virXMLPropTristateSwitch(hostNode, "gso", VIR_XML_PROP_NONE,
+                                         &def->driver.virtio.host.gso) < 0)
+                return -1;
+
+            if (virXMLPropTristateSwitch(hostNode, "tso4", VIR_XML_PROP_NONE,
+                                         &def->driver.virtio.host.tso4) < 0)
+                return -1;
+
+            if (virXMLPropTristateSwitch(hostNode, "tso6", VIR_XML_PROP_NONE,
+                                         &def->driver.virtio.host.tso6) < 0)
+                return -1;
+
+            if (virXMLPropTristateSwitch(hostNode, "ecn", VIR_XML_PROP_NONE,
+                                         &def->driver.virtio.host.ecn) < 0)
+                return -1;
+
+            if (virXMLPropTristateSwitch(hostNode, "ufo", VIR_XML_PROP_NONE,
+                                         &def->driver.virtio.host.ufo) < 0)
+                return -1;
+
+            if (virXMLPropTristateSwitch(hostNode, "mrg_rxbuf",
+                                         VIR_XML_PROP_NONE,
+                                         &def->driver.virtio.host.mrg_rxbuf) < 0)
+                return -1;
+        }
+
+        if ((guestNode = virXPathNode("./driver/guest", ctxt))) {
+            if (virXMLPropTristateSwitch(guestNode, "csum", VIR_XML_PROP_NONE,
+                                         &def->driver.virtio.guest.csum) < 0)
+                return -1;
+
+            if (virXMLPropTristateSwitch(guestNode, "tso4", VIR_XML_PROP_NONE,
+                                         &def->driver.virtio.guest.tso4) < 0)
+                return -1;
+
+            if (virXMLPropTristateSwitch(guestNode, "tso6", VIR_XML_PROP_NONE,
+                                         &def->driver.virtio.guest.tso6) < 0)
+                return -1;
+
+            if (virXMLPropTristateSwitch(guestNode, "ecn", VIR_XML_PROP_NONE,
+                                         &def->driver.virtio.guest.ecn) < 0)
+                return -1;
+
+            if (virXMLPropTristateSwitch(guestNode, "ufo", VIR_XML_PROP_NONE,
+                                         &def->driver.virtio.guest.ufo) < 0)
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 static virDomainNetDef *
 virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                         xmlNodePtr node,
@@ -8837,7 +8961,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     virDomainHostdevDef *hostdev;
     xmlNodePtr source_node = NULL;
     xmlNodePtr virtualport_node = NULL;
-    xmlNodePtr driver_node = NULL;
     xmlNodePtr filterref_node = NULL;
     xmlNodePtr actual_node = NULL;
     xmlNodePtr vlan_node = NULL;
@@ -9008,10 +9131,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     def->downscript = virXPathString("string(./downscript/@path)", ctxt);
     def->domain_name = virXPathString("string(./backenddomain/@name)", ctxt);
     model = virXPathString("string(./model/@type)", ctxt);
-
-    if ((driver_node = virXPathNode("./driver", ctxt)) &&
-        (virDomainVirtioOptionsParseXML(driver_node, &def->virtio) < 0))
-        return NULL;
 
     if ((filterref_node = virXPathNode("./filterref", ctxt))) {
         filter = virXMLPropString(filterref_node, "filter");
@@ -9373,113 +9492,8 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         g_clear_pointer(&def->ifname, g_free);
     }
 
-    if (def->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-        virDomainNetIsVirtioModel(def)) {
-
-        if (virXMLPropEnum(driver_node, "name",
-                           virDomainNetBackendTypeFromString,
-                           VIR_XML_PROP_NONZERO,
-                           &def->driver.virtio.name) < 0)
-            return NULL;
-
-        if (virXMLPropEnum(driver_node, "txmode",
-                           virDomainNetVirtioTxModeTypeFromString,
-                           VIR_XML_PROP_NONZERO,
-                           &def->driver.virtio.txmode) < 0)
-            return NULL;
-
-        if (virXMLPropTristateSwitch(driver_node, "ioeventfd",
-                                     VIR_XML_PROP_NONE,
-                                     &def->driver.virtio.ioeventfd) < 0)
-            return NULL;
-
-        if (virXMLPropTristateSwitch(driver_node, "event_idx",
-                                     VIR_XML_PROP_NONE,
-                                     &def->driver.virtio.event_idx) < 0)
-            return NULL;
-
-        if (virXMLPropUInt(driver_node, "queues", 10,
-                           VIR_XML_PROP_NONE,
-                           &def->driver.virtio.queues) < 0)
-            return NULL;
-
-        /* There's always at least one TX/RX queue. */
-        if (def->driver.virtio.queues == 1)
-            def->driver.virtio.queues = 0;
-
-        if (virXMLPropUInt(driver_node, "rx_queue_size", 10,
-                           VIR_XML_PROP_NONE,
-                           &def->driver.virtio.rx_queue_size) < 0)
-            return NULL;
-
-        if (virXMLPropUInt(driver_node, "tx_queue_size", 10,
-                           VIR_XML_PROP_NONE,
-                           &def->driver.virtio.tx_queue_size) < 0)
-            return NULL;
-
-        if (virXMLPropTristateSwitch(driver_node, "rss",
-                                     VIR_XML_PROP_NONE,
-                                     &def->driver.virtio.rss) < 0)
-            return NULL;
-
-        if (virXMLPropTristateSwitch(driver_node, "rss_hash_report",
-                                     VIR_XML_PROP_NONE,
-                                     &def->driver.virtio.rss_hash_report) < 0)
-            return NULL;
-
-        if ((tmpNode = virXPathNode("./driver/host", ctxt))) {
-            if (virXMLPropTristateSwitch(tmpNode, "csum", VIR_XML_PROP_NONE,
-                                         &def->driver.virtio.host.csum) < 0)
-                return NULL;
-
-            if (virXMLPropTristateSwitch(tmpNode, "gso", VIR_XML_PROP_NONE,
-                                         &def->driver.virtio.host.gso) < 0)
-                return NULL;
-
-            if (virXMLPropTristateSwitch(tmpNode, "tso4", VIR_XML_PROP_NONE,
-                                         &def->driver.virtio.host.tso4) < 0)
-                return NULL;
-
-            if (virXMLPropTristateSwitch(tmpNode, "tso6", VIR_XML_PROP_NONE,
-                                         &def->driver.virtio.host.tso6) < 0)
-                return NULL;
-
-            if (virXMLPropTristateSwitch(tmpNode, "ecn", VIR_XML_PROP_NONE,
-                                         &def->driver.virtio.host.ecn) < 0)
-                return NULL;
-
-            if (virXMLPropTristateSwitch(tmpNode, "ufo", VIR_XML_PROP_NONE,
-                                         &def->driver.virtio.host.ufo) < 0)
-                return NULL;
-
-            if (virXMLPropTristateSwitch(tmpNode, "mrg_rxbuf",
-                                         VIR_XML_PROP_NONE,
-                                         &def->driver.virtio.host.mrg_rxbuf) < 0)
-                return NULL;
-        }
-
-        if ((tmpNode = virXPathNode("./driver/guest", ctxt))) {
-            if (virXMLPropTristateSwitch(tmpNode, "csum", VIR_XML_PROP_NONE,
-                                         &def->driver.virtio.guest.csum) < 0)
-                return NULL;
-
-            if (virXMLPropTristateSwitch(tmpNode, "tso4", VIR_XML_PROP_NONE,
-                                         &def->driver.virtio.guest.tso4) < 0)
-                return NULL;
-
-            if (virXMLPropTristateSwitch(tmpNode, "tso6", VIR_XML_PROP_NONE,
-                                         &def->driver.virtio.guest.tso6) < 0)
-                return NULL;
-
-            if (virXMLPropTristateSwitch(tmpNode, "ecn", VIR_XML_PROP_NONE,
-                                         &def->driver.virtio.guest.ecn) < 0)
-                return NULL;
-
-            if (virXMLPropTristateSwitch(tmpNode, "ufo", VIR_XML_PROP_NONE,
-                                         &def->driver.virtio.guest.ufo) < 0)
-                return NULL;
-        }
-    }
+    if (virDomainNetDefParseXMLDriver(def, ctxt) < 0)
+        return NULL;
 
     if (def->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
         virDomainNetIsVirtioModel(def)) {
