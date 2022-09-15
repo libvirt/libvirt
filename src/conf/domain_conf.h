@@ -3416,6 +3416,7 @@ bool virDomainControllerIsPSeriesPHB(const virDomainControllerDef *cont);
 virDomainFSDef *virDomainFSDefNew(virDomainXMLOption *xmlopt);
 void virDomainFSDefFree(virDomainFSDef *def);
 void virDomainActualNetDefFree(virDomainActualNetDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainActualNetDef, virDomainActualNetDefFree);
 virDomainIOMMUDef *virDomainIOMMUDefNew(void);
 void virDomainIOMMUDefFree(virDomainIOMMUDef *iommu);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainIOMMUDef, virDomainIOMMUDefFree);
