@@ -8855,12 +8855,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *portid = NULL;
     g_autofree char *bridge = NULL;
     g_autofree char *dev = NULL;
-    g_autofree char *ifname = NULL;
     g_autofree char *managed_tap = NULL;
-    g_autofree char *ifname_guest = NULL;
-    g_autofree char *ifname_guest_actual = NULL;
-    g_autofree char *script = NULL;
-    g_autofree char *downscript = NULL;
     g_autofree char *address = NULL;
     g_autofree char *port = NULL;
     g_autofree char *localaddr = NULL;
@@ -8871,7 +8866,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *mode = NULL;
     g_autofree char *linkstate = NULL;
     g_autofree char *addrtype = NULL;
-    g_autofree char *domain_name = NULL;
     g_autofree char *vhostuser_mode = NULL;
     g_autofree char *vhostuser_path = NULL;
     g_autofree char *vhostuser_type = NULL;
@@ -9005,16 +8999,16 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         }
     }
 
-    ifname = virXPathString("string(./target/@dev)", ctxt);
+    def->ifname = virXPathString("string(./target/@dev)", ctxt);
     managed_tap = virXPathString("string(./target/@managed)", ctxt);
 
-    ifname_guest = virXPathString("string(./guest/@dev)", ctxt);
-    ifname_guest_actual = virXPathString("string(./guest/@actual)", ctxt);
+    def->ifname_guest = virXPathString("string(./guest/@dev)", ctxt);
+    def->ifname_guest_actual = virXPathString("string(./guest/@actual)", ctxt);
 
     linkstate = virXPathString("string(./link/@state)", ctxt);
-    script = virXPathString("string(./script/@path)", ctxt);
-    downscript = virXPathString("string(./downscript/@path)", ctxt);
-    domain_name = virXPathString("string(./backenddomain/@name)", ctxt);
+    def->script = virXPathString("string(./script/@path)", ctxt);
+    def->downscript = virXPathString("string(./downscript/@path)", ctxt);
+    def->domain_name = virXPathString("string(./backenddomain/@name)", ctxt);
     model = virXPathString("string(./model/@type)", ctxt);
 
     if ((driver_node = virXPathNode("./driver", ctxt)) &&
@@ -9374,28 +9368,15 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         def->managed_tap = virTristateBoolFromBool(state);
     }
 
-    if (def->managed_tap != VIR_TRISTATE_BOOL_NO && ifname &&
+    if (def->managed_tap != VIR_TRISTATE_BOOL_NO && def->ifname &&
         (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
-        (STRPREFIX(ifname, VIR_NET_GENERATED_VNET_PREFIX) ||
-         STRPREFIX(ifname, VIR_NET_GENERATED_MACVTAP_PREFIX) ||
-         STRPREFIX(ifname, VIR_NET_GENERATED_MACVLAN_PREFIX) ||
-         (prefix && STRPREFIX(ifname, prefix)))) {
+        (STRPREFIX(def->ifname, VIR_NET_GENERATED_VNET_PREFIX) ||
+         STRPREFIX(def->ifname, VIR_NET_GENERATED_MACVTAP_PREFIX) ||
+         STRPREFIX(def->ifname, VIR_NET_GENERATED_MACVLAN_PREFIX) ||
+         (prefix && STRPREFIX(def->ifname, prefix)))) {
         /* An auto-generated target name, blank it out */
-        VIR_FREE(ifname);
+        g_clear_pointer(&def->ifname, g_free);
     }
-
-    if (script != NULL)
-        def->script = g_steal_pointer(&script);
-    if (downscript != NULL)
-        def->downscript = g_steal_pointer(&downscript);
-    if (domain_name != NULL)
-        def->domain_name = g_steal_pointer(&domain_name);
-    if (ifname != NULL)
-        def->ifname = g_steal_pointer(&ifname);
-    if (ifname_guest != NULL)
-        def->ifname_guest = g_steal_pointer(&ifname_guest);
-    if (ifname_guest_actual != NULL)
-        def->ifname_guest_actual = g_steal_pointer(&ifname_guest_actual);
 
     if (def->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
         virDomainNetIsVirtioModel(def)) {
