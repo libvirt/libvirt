@@ -8869,9 +8869,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *vhostuser_mode = NULL;
     g_autofree char *vhostuser_path = NULL;
     g_autofree char *vhostuser_type = NULL;
-    g_autofree char *vhost_path = NULL;
     g_autofree char *tap = NULL;
-    g_autofree char *vhost = NULL;
     g_autofree char *switchid = NULL;
     g_autofree char *connectionid = NULL;
     const char *prefix = xmlopt ? xmlopt->config.netPrefix : NULL;
@@ -9038,9 +9036,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
 
     if ((tap = virXPathString("string(./backend/@tap)", ctxt)))
         def->backend.tap = virFileSanitizePath(tap);
-
-    if ((vhost = virXPathString("string(./backend/@vhost)", ctxt)))
-        vhost_path = virFileSanitizePath(vhost);
 
     mac_node = virXPathNode("./mac", ctxt);
 
@@ -9484,7 +9479,14 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                                          &def->driver.virtio.guest.ufo) < 0)
                 return NULL;
         }
-        def->backend.vhost = g_steal_pointer(&vhost_path);
+    }
+
+    if (def->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+        virDomainNetIsVirtioModel(def)) {
+        g_autofree char *vhost = virXPathString("string(./backend/@vhost)", ctxt);
+
+        if (vhost)
+            def->backend.vhost = virFileSanitizePath(vhost);
     }
 
     def->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DEFAULT;
