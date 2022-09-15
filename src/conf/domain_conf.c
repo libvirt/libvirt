@@ -6213,14 +6213,19 @@ virDomainNetIPParseXML(xmlNodePtr node)
  */
 static int
 virDomainNetIPInfoParseXML(const char *source,
+                           xmlNodePtr node,
                            xmlXPathContextPtr ctxt,
                            virNetDevIPInfo *def)
 {
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     size_t i;
     g_autofree xmlNodePtr *ipNodes = NULL;
     int nipNodes;
     g_autofree xmlNodePtr *routeNodes = NULL;
     int nrouteNodes;
+
+    if (node)
+        ctxt->node = node;
 
     if ((nipNodes = virXPathNodeSet("./ip", ctxt, &ipNodes)) < 0 ||
         (nrouteNodes = virXPathNodeSet("./route", ctxt, &routeNodes)) < 0)
@@ -6368,7 +6373,7 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node G_GNUC_UNUSED,
                            _("Missing <interface> element in hostdev net device"));
             return -1;
         }
-        if (virDomainNetIPInfoParseXML(_("Domain hostdev device"),
+        if (virDomainNetIPInfoParseXML(_("Domain hostdev device"), NULL,
                                        ctxt, &def->source.caps.u.net.ip) < 0)
             return -1;
         break;
@@ -9010,12 +9015,8 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         return NULL;
 
     if ((source_node = virXPathNode("./source", ctxt))) {
-        xmlNodePtr tmpnode = ctxt->node;
-
-        ctxt->node = source_node;
-        if (virDomainNetIPInfoParseXML(_("interface host IP"), ctxt, &def->hostIP) < 0)
+        if (virDomainNetIPInfoParseXML(_("interface host IP"), source_node, ctxt, &def->hostIP) < 0)
             return NULL;
-        ctxt->node = tmpnode;
 
         if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             network = virXMLPropString(source_node, "network");
@@ -9463,7 +9464,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         break;
     }
 
-    if (virDomainNetIPInfoParseXML(_("guest interface"),
+    if (virDomainNetIPInfoParseXML(_("guest interface"), node,
                                    ctxt, &def->guestIP) < 0)
         return NULL;
 
