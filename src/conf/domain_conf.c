@@ -9002,12 +9002,9 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
 
     ctxt->node = node;
 
-    if ((rv = virXMLPropEnum(node, "type", virDomainNetTypeFromString,
-                             VIR_XML_PROP_NONE, &def->type)) < 0)
+    if (virXMLPropEnumDefault(node, "type", virDomainNetTypeFromString,
+                              VIR_XML_PROP_NONE, &def->type, VIR_DOMAIN_NET_TYPE_USER) < 0)
         return NULL;
-
-    if (rv == 0)
-        def->type = VIR_DOMAIN_NET_TYPE_USER;
 
     if (virXMLPropTristateBool(node, "trustGuestRxFilters", VIR_XML_PROP_NONE,
                                &def->trustGuestRxFilters) < 0)
