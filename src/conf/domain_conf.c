@@ -6216,17 +6216,17 @@ virDomainNetIPInfoParseXML(const char *source,
                            xmlXPathContextPtr ctxt,
                            virNetDevIPInfo *def)
 {
-    g_autoptr(virNetDevIPRoute) route = NULL;
     int nnodes;
     int ret = -1;
     size_t i;
     g_autofree xmlNodePtr *nodes = NULL;
-    g_autofree virNetDevIPAddr *ip = NULL;
 
     if ((nnodes = virXPathNodeSet("./ip", ctxt, &nodes)) < 0)
         goto cleanup;
 
     for (i = 0; i < nnodes; i++) {
+        virNetDevIPAddr *ip = NULL;
+
         if (!(ip = virDomainNetIPParseXML(nodes[i])))
             goto cleanup;
 
@@ -6238,6 +6238,8 @@ virDomainNetIPInfoParseXML(const char *source,
         goto cleanup;
 
     for (i = 0; i < nnodes; i++) {
+        virNetDevIPRoute *route = NULL;
+
         if (!(route = virNetDevIPRouteParseXML(source, nodes[i], ctxt)))
             goto cleanup;
 
