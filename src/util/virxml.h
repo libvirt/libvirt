@@ -97,6 +97,10 @@ char *
 virXMLPropString(xmlNodePtr node,
                  const char *name);
 char *
+virXMLPropStringRequired(xmlNodePtr node,
+                         const char *name);
+
+char *
 virXMLNodeContentString(xmlNodePtr node);
 
 int

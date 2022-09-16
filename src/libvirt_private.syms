@@ -3683,6 +3683,7 @@ virXMLPropEnum;
 virXMLPropEnumDefault;
 virXMLPropInt;
 virXMLPropString;
+virXMLPropStringRequired;
 virXMLPropTristateBool;
 virXMLPropTristateBoolAllowDefault;
 virXMLPropTristateSwitch;

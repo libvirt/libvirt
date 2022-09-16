@@ -456,6 +456,33 @@ virXMLPropString(xmlNodePtr node,
 
 
 /**
+ * virXMLPropStringRequired:
+ * @node: XML dom node pointer
+ * @name: Name of the property (attribute) to get
+ *
+ * Convenience function to return copy of an mandatoryu attribute value of an
+ * XML node.
+ *
+ * Returns the property (attribute) value as string or NULL and if the attribute
+ * is not present (libvirt error reported).
+ * The caller is responsible for freeing the returned buffer.
+ */
+char *
+virXMLPropStringRequired(xmlNodePtr node,
+                         const char *name)
+{
+    char *ret = virXMLPropString(node, name);
+
+     if (!(*ret))
+         virReportError(VIR_ERR_XML_ERROR,
+                        _("Missing required attribute '%s' in element '%s'"),
+                        name, node->name);
+
+     return ret;
+}
+
+
+/**
  * virXMLNodeContentString:
  * @node: XML dom node pointer
  *
