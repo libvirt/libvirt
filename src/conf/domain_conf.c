@@ -9004,6 +9004,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *filter = NULL;
     g_autofree char *linkstate = NULL;
     g_autofree char *tap = NULL;
+    unsigned int virtualport_flags = 0;
     const char *prefix = xmlopt ? xmlopt->config.netPrefix : NULL;
 
     if (!(def = virDomainNetDefNew(xmlopt)))
@@ -9053,6 +9054,8 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                                                flags, xmlopt) < 0))
                 return NULL;
         }
+
+        virtualport_flags = VIR_VPORT_XML_GENERATE_MISSING_DEFAULTS;
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDS:
@@ -9090,6 +9093,10 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
 
         if (!(def->data.bridge.brname = virXMLPropStringRequired(source_node, "bridge")))
             return NULL;
+
+        virtualport_flags = VIR_VPORT_XML_GENERATE_MISSING_DEFAULTS |
+                            VIR_VPORT_XML_REQUIRE_ALL_ATTRIBUTES |
+                            VIR_VPORT_XML_REQUIRE_TYPE;
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
@@ -9105,6 +9112,10 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                                   &def->data.direct.mode,
                                   VIR_NETDEV_MACVLAN_MODE_VEPA) < 0)
             return NULL;
+
+        virtualport_flags = VIR_VPORT_XML_GENERATE_MISSING_DEFAULTS |
+                            VIR_VPORT_XML_REQUIRE_ALL_ATTRIBUTES |
+                            VIR_VPORT_XML_REQUIRE_TYPE;
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -9245,6 +9256,10 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                                               &def->data.hostdev.def,
                                               flags, xmlopt) < 0)
             return NULL;
+
+        virtualport_flags = VIR_VPORT_XML_GENERATE_MISSING_DEFAULTS |
+                            VIR_VPORT_XML_REQUIRE_ALL_ATTRIBUTES |
+                            VIR_VPORT_XML_REQUIRE_TYPE;
     }
         break;
 
@@ -9255,28 +9270,16 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     }
 
     if ((virtualport_node = virXPathNode("./virtualport", ctxt))) {
-        if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-            if (!(def->virtPortProfile
-                  = virNetDevVPortProfileParse(virtualport_node,
-                                               VIR_VPORT_XML_GENERATE_MISSING_DEFAULTS))) {
-                return NULL;
-            }
-        } else if (def->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-                   def->type == VIR_DOMAIN_NET_TYPE_DIRECT ||
-                   def->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-            if (!(def->virtPortProfile
-                  = virNetDevVPortProfileParse(virtualport_node, VIR_VPORT_XML_GENERATE_MISSING_DEFAULTS|
-                                               VIR_VPORT_XML_REQUIRE_ALL_ATTRIBUTES|
-                                               VIR_VPORT_XML_REQUIRE_TYPE))) {
-                return NULL;
-            }
-        } else {
+        if (virtualport_flags == 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("<virtualport> element unsupported for"
-                             " <interface type='%s'>"),
-                             virDomainNetTypeToString(def->type));
+                           _("<virtualport> element unsupported for <interface type='%s'>"),
+                           virDomainNetTypeToString(def->type));
             return NULL;
         }
+
+        if (!(def->virtPortProfile = virNetDevVPortProfileParse(virtualport_node,
+                                                                virtualport_flags)))
+            return NULL;
     }
 
     def->ifname = virXPathString("string(./target/@dev)", ctxt);
