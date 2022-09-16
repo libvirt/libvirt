@@ -9344,44 +9344,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         return NULL;
     }
 
-    switch (def->type) {
-    case VIR_DOMAIN_NET_TYPE_NETWORK:
-        break;
-
-    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-        if (!virDomainNetIsVirtioModel(def)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Wrong or no <model> 'type' attribute "
-                             "specified with <interface type='vhostuser'/>. "
-                             "vhostuser requires the virtio-net* frontend"));
-            return NULL;
-        }
-
-        if (def->data.vhostuser->data.nix.listen &&
-            def->data.vhostuser->data.nix.reconnect.enabled == VIR_TRISTATE_BOOL_YES) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'reconnect' attribute unsupported 'server' mode for <interface type='vhostuser'>"));
-            return NULL;
-        }
-        break;
-
-    case VIR_DOMAIN_NET_TYPE_VDPA:
-    case VIR_DOMAIN_NET_TYPE_BRIDGE:
-    case VIR_DOMAIN_NET_TYPE_CLIENT:
-    case VIR_DOMAIN_NET_TYPE_SERVER:
-    case VIR_DOMAIN_NET_TYPE_MCAST:
-    case VIR_DOMAIN_NET_TYPE_UDP:
-    case VIR_DOMAIN_NET_TYPE_INTERNAL:
-    case VIR_DOMAIN_NET_TYPE_DIRECT:
-    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-    case VIR_DOMAIN_NET_TYPE_VDS:
-    case VIR_DOMAIN_NET_TYPE_ETHERNET:
-    case VIR_DOMAIN_NET_TYPE_USER:
-    case VIR_DOMAIN_NET_TYPE_NULL:
-    case VIR_DOMAIN_NET_TYPE_LAST:
-        break;
-    }
-
     if (virDomainNetIPInfoParseXML(_("guest interface"), node,
                                    ctxt, &def->guestIP) < 0)
         return NULL;
