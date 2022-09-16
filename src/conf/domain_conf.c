@@ -9321,36 +9321,36 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     if ((tap = virXPathString("string(./backend/@tap)", ctxt)))
         def->backend.tap = virFileSanitizePath(tap);
 
-    mac_node = virXPathNode("./mac", ctxt);
+    if ((mac_node = virXPathNode("./mac", ctxt))) {
+        if ((macaddr = virXMLPropString(mac_node, "address"))) {
+            if (virMacAddrParse((const char *)macaddr, &def->mac) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("unable to parse mac address '%s'"),
+                               (const char *)macaddr);
+                return NULL;
+            }
+            if (virMacAddrIsMulticast(&def->mac)) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("expected unicast mac address, found multicast '%s'"),
+                               (const char *)macaddr);
+                return NULL;
+            }
+        }
 
-    if ((macaddr = virXMLPropString(mac_node, "address"))) {
-        if (virMacAddrParse((const char *)macaddr, &def->mac) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unable to parse mac address '%s'"),
-                           (const char *)macaddr);
+        if (virXMLPropEnum(mac_node, "type",
+                           virDomainNetMacTypeTypeFromString,
+                           VIR_XML_PROP_NONZERO, &def->mac_type) < 0)
             return NULL;
-        }
-        if (virMacAddrIsMulticast(&def->mac)) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("expected unicast mac address, found multicast '%s'"),
-                           (const char *)macaddr);
+
+        if (virXMLPropTristateBool(mac_node, "check", VIR_XML_PROP_NONE,
+                                   &def->mac_check) < 0)
             return NULL;
-        }
-    } else {
+    }
+
+    if (!macaddr) {
         virDomainNetGenerateMAC(xmlopt, &def->mac);
         def->mac_generated = true;
     }
-
-    if (virXMLPropEnum(mac_node, "type",
-                       virDomainNetMacTypeTypeFromString,
-                       VIR_XML_PROP_NONZERO,
-                       &def->mac_type) < 0)
-        return NULL;
-
-    if (virXMLPropTristateBool(mac_node, "check",
-                               VIR_XML_PROP_NONE,
-                               &def->mac_check) < 0)
-        return NULL;
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info,
                                     flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT
