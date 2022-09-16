@@ -8998,7 +8998,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int rv;
     g_autofree char *macaddr = NULL;
-    g_autofree char *dev = NULL;
     g_autofree char *model = NULL;
     g_autofree char *linkstate = NULL;
     g_autofree char *tap = NULL;
@@ -9120,25 +9119,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        /* This clause is only necessary because from 2010 to 2016 it was
-         * possible (but never documented) to configure the name of the
-         * guest-side interface of an openvz domain with <source dev='blah'/>.
-         * That was blatant misuse of <source>, so was likely (hopefully)
-         * never used, but just in case there was somebody using it, we
-         * need to generate an error. If the openvz driver is ever
-         * deprecated, this clause can be removed from here.
-         */
-        if (source_node) {
-            if ((dev = virXMLPropString(source_node, "dev"))) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Invalid attempt to set <interface type='ethernet'> "
-                                 "device name with <source dev='%s'/>. "
-                                 "Use <target dev='%s'/> (for host-side) "
-                                 "or <guest dev='%s'/> (for guest-side) instead."),
-                               dev, dev, dev);
-                return NULL;
-            }
-        }
         parse_filterref = true;
         break;
 
