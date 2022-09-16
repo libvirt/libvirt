@@ -1130,7 +1130,7 @@ struct _virDomainNetDef {
         } internal;
         struct {
             char *linkdev;
-            int mode; /* enum virMacvtapMode from util/macvtap.h */
+            virNetDevMacVLanMode mode;
         } direct;
         struct {
             virDomainHostdevDef def;
