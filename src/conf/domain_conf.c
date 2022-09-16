@@ -1481,7 +1481,27 @@ virDomainChrSourceDefFormat(virBuffer *buf,
 static int
 virDomainChrSourceReconnectDefParseXML(virDomainChrSourceReconnectDef *def,
                                        xmlNodePtr node,
-                                       xmlXPathContextPtr ctxt);
+                                       xmlXPathContextPtr ctxt)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+    xmlNodePtr cur;
+
+    ctxt->node = node;
+
+    if ((cur = virXPathNode("./reconnect", ctxt))) {
+        if (virXMLPropTristateBool(cur, "enabled", VIR_XML_PROP_NONE,
+                                   &def->enabled) < 0)
+            return -1;
+
+        if (def->enabled == VIR_TRISTATE_BOOL_YES) {
+            if (virXMLPropUInt(cur, "timeout", 10, VIR_XML_PROP_REQUIRED,
+                               &def->timeout) < 0)
+                return -1;
+        }
+    }
+
+    return 0;
+}
 
 
 static int virDomainObjOnceInit(void)
@@ -8774,32 +8794,6 @@ virDomainNetAppendIPAddress(virDomainNetDef *def,
  error:
     VIR_FREE(ipDef);
     return -1;
-}
-
-
-static int
-virDomainChrSourceReconnectDefParseXML(virDomainChrSourceReconnectDef *def,
-                                       xmlNodePtr node,
-                                       xmlXPathContextPtr ctxt)
-{
-    VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    xmlNodePtr cur;
-
-    ctxt->node = node;
-
-    if ((cur = virXPathNode("./reconnect", ctxt))) {
-        if (virXMLPropTristateBool(cur, "enabled", VIR_XML_PROP_NONE,
-                                   &def->enabled) < 0)
-            return -1;
-
-        if (def->enabled == VIR_TRISTATE_BOOL_YES) {
-            if (virXMLPropUInt(cur, "timeout", 10, VIR_XML_PROP_REQUIRED,
-                               &def->timeout) < 0)
-                return -1;
-        }
-    }
-
-    return 0;
 }
 
 
