@@ -8964,6 +8964,23 @@ virDomainNetDefParseXMLRequireSource(virDomainNetDef *def,
 }
 
 
+typedef enum {
+    VIR_DOMAIN_NET_VHOSTUSER_MODE_NONE,
+    VIR_DOMAIN_NET_VHOSTUSER_MODE_CLIENT,
+    VIR_DOMAIN_NET_VHOSTUSER_MODE_SERVER,
+
+    VIR_DOMAIN_NET_VHOSTUSER_MODE_LAST
+} virDomainNetVhostuserMode;
+
+VIR_ENUM_DECL(virDomainNetVhostuserMode);
+VIR_ENUM_IMPL(virDomainNetVhostuserMode,
+              VIR_DOMAIN_NET_VHOSTUSER_MODE_LAST,
+              "",
+              "client",
+              "server",
+);
+
+
 static virDomainNetDef *
 virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                         xmlNodePtr node,
@@ -8981,7 +8998,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     xmlNodePtr mac_node = NULL;
     g_autoptr(GHashTable) filterparams = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    virDomainChrSourceReconnectDef reconnect = {0};
     int rv;
     g_autofree char *macaddr = NULL;
     g_autofree char *dev = NULL;
@@ -8994,9 +9010,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *filter = NULL;
     g_autofree char *linkstate = NULL;
     g_autofree char *addrtype = NULL;
-    g_autofree char *vhostuser_mode = NULL;
-    g_autofree char *vhostuser_path = NULL;
-    g_autofree char *vhostuser_type = NULL;
     g_autofree char *tap = NULL;
     const char *prefix = xmlopt ? xmlopt->config.netPrefix : NULL;
 
@@ -9123,14 +9136,55 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         }
         break;
 
-    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-        if (source_node) {
-            vhostuser_type = virXMLPropString(source_node, "type");
-            vhostuser_path = virXMLPropString(source_node, "path");
-            vhostuser_mode = virXMLPropString(source_node, "mode");
-            if (virDomainChrSourceReconnectDefParseXML(&reconnect, source_node, ctxt) < 0)
-                return NULL;
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER: {
+        g_autofree char *vhostuser_type = NULL;
+        virDomainNetVhostuserMode vhostuser_mode;
+
+        if (virDomainNetDefParseXMLRequireSource(def, source_node) < 0)
+            return NULL;
+
+        if (!(vhostuser_type = virXMLPropStringRequired(source_node, "type")))
+            return NULL;
+
+        if (STRNEQ_NULLABLE(vhostuser_type, "unix")) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Type='%s' unsupported for <interface type='vhostuser'>"),
+                           vhostuser_type);
+            return NULL;
         }
+
+        if (!(def->data.vhostuser = virDomainChrSourceDefNew(xmlopt)))
+            return NULL;
+
+        def->data.vhostuser->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+
+        if (!(def->data.vhostuser->data.nix.path = virXMLPropStringRequired(source_node, "path")))
+            return NULL;
+
+        if (virXMLPropEnum(source_node, "mode",
+                           virDomainNetVhostuserModeTypeFromString,
+                           VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                           &vhostuser_mode) < 0)
+            return NULL;
+
+        switch (vhostuser_mode) {
+        case VIR_DOMAIN_NET_VHOSTUSER_MODE_CLIENT:
+            def->data.vhostuser->data.nix.listen = false;
+            break;
+
+        case VIR_DOMAIN_NET_VHOSTUSER_MODE_SERVER:
+            def->data.vhostuser->data.nix.listen = true;
+            break;
+
+        case VIR_DOMAIN_NET_VHOSTUSER_MODE_NONE:
+        case VIR_DOMAIN_NET_VHOSTUSER_MODE_LAST:
+            break;
+        }
+
+        if (virDomainChrSourceReconnectDefParseXML(&def->data.vhostuser->data.nix.reconnect,
+                                                   source_node, ctxt) < 0)
+            return NULL;
+    }
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDPA:
@@ -9268,58 +9322,10 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
             return NULL;
         }
 
-        if (STRNEQ_NULLABLE(vhostuser_type, "unix")) {
-            if (vhostuser_type)
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Type='%s' unsupported for"
-                                 " <interface type='vhostuser'>"),
-                               vhostuser_type);
-            else
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("No <source> 'type' attribute "
-                                 "specified for <interface "
-                                 "type='vhostuser'>"));
-            return NULL;
-        }
-
-        if (vhostuser_path == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No <source> 'path' attribute "
-                             "specified with <interface "
-                             "type='vhostuser'/>"));
-            return NULL;
-        }
-
-        if (vhostuser_mode == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No <source> 'mode' attribute "
-                             "specified with <interface "
-                             "type='vhostuser'/>"));
-            return NULL;
-        }
-
-        if (!(def->data.vhostuser = virDomainChrSourceDefNew(xmlopt)))
-            return NULL;
-
-        def->data.vhostuser->type = VIR_DOMAIN_CHR_TYPE_UNIX;
-        def->data.vhostuser->data.nix.path = g_steal_pointer(&vhostuser_path);
-
-        if (STREQ(vhostuser_mode, "server")) {
-            def->data.vhostuser->data.nix.listen = true;
-            if (reconnect.enabled == VIR_TRISTATE_BOOL_YES) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("'reconnect' attribute  unsupported "
-                                 "'server' mode for <interface type='vhostuser'>"));
-                return NULL;
-           }
-        } else if (STREQ(vhostuser_mode, "client")) {
-            def->data.vhostuser->data.nix.listen = false;
-            def->data.vhostuser->data.nix.reconnect = reconnect;
-        } else {
+        if (def->data.vhostuser->data.nix.listen &&
+            def->data.vhostuser->data.nix.reconnect.enabled == VIR_TRISTATE_BOOL_YES) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Wrong <source> 'mode' attribute "
-                             "specified with <interface "
-                             "type='vhostuser'/>"));
+                           _("'reconnect' attribute unsupported 'server' mode for <interface type='vhostuser'>"));
             return NULL;
         }
         break;
