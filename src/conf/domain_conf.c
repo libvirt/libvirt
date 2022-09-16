@@ -8990,7 +8990,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     virDomainChrSourceReconnectDef reconnect = {0};
     int rv, val;
     g_autofree char *macaddr = NULL;
-    g_autofree char *bridge = NULL;
     g_autofree char *dev = NULL;
     g_autofree char *managed_tap = NULL;
     g_autofree char *address = NULL;
@@ -9083,9 +9082,11 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (source_node) {
-            bridge = virXMLPropString(source_node, "bridge");
-        }
+        if (virDomainNetDefParseXMLRequireSource(def, source_node) < 0)
+            return NULL;
+
+        if (!(def->data.bridge.brname = virXMLPropStringRequired(source_node, "bridge")))
+            return NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
@@ -9334,13 +9335,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (bridge == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No <source> 'bridge' attribute "
-                             "specified with <interface type='bridge'/>"));
-            return NULL;
-        }
-        def->data.bridge.brname = g_steal_pointer(&bridge);
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
