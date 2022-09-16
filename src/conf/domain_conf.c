@@ -8990,8 +8990,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     virDomainChrSourceReconnectDef reconnect = {0};
     int rv, val;
     g_autofree char *macaddr = NULL;
-    g_autofree char *portgroup = NULL;
-    g_autofree char *portid = NULL;
     g_autofree char *bridge = NULL;
     g_autofree char *dev = NULL;
     g_autofree char *managed_tap = NULL;
@@ -9009,8 +9007,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *vhostuser_path = NULL;
     g_autofree char *vhostuser_type = NULL;
     g_autofree char *tap = NULL;
-    g_autofree char *switchid = NULL;
-    g_autofree char *connectionid = NULL;
     const char *prefix = xmlopt ? xmlopt->config.netPrefix : NULL;
 
     if (!(def = virDomainNetDefNew(xmlopt)))
@@ -9059,12 +9055,24 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDS:
-        if (source_node) {
-            switchid = virXMLPropString(source_node, "switchid");
-            portid = virXMLPropString(source_node, "portid");
-            portgroup = virXMLPropString(source_node, "portgroupid");
-            connectionid = virXMLPropString(source_node, "connectionid");
-        }
+        if (virDomainNetDefParseXMLRequireSource(def, source_node) < 0)
+            return NULL;
+
+        if (virXMLPropUUID(source_node, "switchid", VIR_XML_PROP_REQUIRED,
+                           def->data.vds.switch_id) < 0)
+            return NULL;
+
+        if (virXMLPropLongLong(source_node, "portid", 0, VIR_XML_PROP_REQUIRED,
+                               &def->data.vds.port_id, def->data.vds.port_id) < 0)
+            return NULL;
+
+        if (!(def->data.vds.portgroup_id = virXMLPropStringRequired(source_node, "portgroupid")))
+            return NULL;
+
+        if (virXMLPropLongLong(source_node, "connectionid", 0, VIR_XML_PROP_REQUIRED,
+                               &def->data.vds.connection_id, def->data.vds.connection_id) < 0)
+            return NULL;
+
         break;
 
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
@@ -9442,56 +9450,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDS:
-        if (!switchid) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Missing source switchid for interface type '%s'"),
-                           virDomainNetTypeToString(def->type));
-            return NULL;
-        }
-
-        if (!portid) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Missing source portid for interface type '%s'"),
-                           virDomainNetTypeToString(def->type));
-            return NULL;
-        }
-
-        if (!connectionid) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Missing source connectionid for interface type '%s'"),
-                           virDomainNetTypeToString(def->type));
-            return NULL;
-        }
-
-        if (!portgroup) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Missing source portgroup for interface type '%s'"),
-                           virDomainNetTypeToString(def->type));
-            return NULL;
-        }
-
-        if (virUUIDParse(switchid, def->data.vds.switch_id) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to parse switchid '%s'"), switchid);
-            return NULL;
-        }
-
-        if (virStrToLong_ll(portid, NULL, 0, &def->data.vds.port_id) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to parse portid '%s'"), portid);
-            return NULL;
-        }
-
-        if (virStrToLong_ll(connectionid, NULL, 0, &def->data.vds.connection_id) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to parse connectionid '%s'"), connectionid);
-            return NULL;
-        }
-
-        def->data.vds.portgroup_id = g_steal_pointer(&portgroup);
-
-        break;
-
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_NULL:
