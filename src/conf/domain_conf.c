@@ -8994,7 +8994,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     xmlNodePtr filterref_node = NULL;
     xmlNodePtr vlan_node = NULL;
     xmlNodePtr bandwidth_node = NULL;
-    xmlNodePtr tmpNode;
     xmlNodePtr mac_node = NULL;
     g_autoptr(GHashTable) filterparams = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
@@ -9002,10 +9001,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *macaddr = NULL;
     g_autofree char *dev = NULL;
     g_autofree char *managed_tap = NULL;
-    g_autofree char *address = NULL;
-    g_autofree char *port = NULL;
-    g_autofree char *localaddr = NULL;
-    g_autofree char *localport = NULL;
     g_autofree char *model = NULL;
     g_autofree char *filter = NULL;
     g_autofree char *linkstate = NULL;
@@ -9199,18 +9194,38 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_MCAST:
     case VIR_DOMAIN_NET_TYPE_UDP:
-        if (source_node) {
-            address = virXMLPropString(source_node, "address");
-            port = virXMLPropString(source_node, "port");
-            if (def->type == VIR_DOMAIN_NET_TYPE_UDP) {
-                xmlNodePtr tmp_node = ctxt->node;
-                ctxt->node = source_node;
-                if ((tmpNode = virXPathNode("./local", ctxt))) {
-                    localaddr = virXMLPropString(tmpNode, "address");
-                    localport = virXMLPropString(tmpNode, "port");
-                }
-                ctxt->node = tmp_node;
+        if (virDomainNetDefParseXMLRequireSource(def, source_node) < 0)
+            return NULL;
+
+        if (def->type != VIR_DOMAIN_NET_TYPE_SERVER) {
+            if (!(def->data.socket.address = virXMLPropStringRequired(source_node, "address")))
+                return NULL;
+        } else {
+            def->data.socket.address = virXMLPropString(source_node, "address");
+        }
+
+        if (virXMLPropInt(source_node, "port", 10, VIR_XML_PROP_REQUIRED,
+                          &def->data.socket.port, def->data.socket.port) < 0)
+            return NULL;
+
+        if (def->type == VIR_DOMAIN_NET_TYPE_UDP) {
+            VIR_XPATH_NODE_AUTORESTORE_NAME(localCtxt, ctxt)
+            xmlNodePtr local_node;
+
+            ctxt->node = source_node;
+
+            if (!(local_node = virXPathNode("./local", ctxt))) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("'<local>' element missing for 'udp' socket interface"));
+                return NULL;
             }
+
+            if (!(def->data.socket.localaddr = virXMLPropStringRequired(local_node, "address")))
+                return NULL;
+
+            if (virXMLPropInt(local_node, "port", 10, VIR_XML_PROP_REQUIRED,
+                              &def->data.socket.localport, def->data.socket.localport) < 0)
+                return NULL;
         }
         break;
 
@@ -9334,64 +9349,10 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
 
     case VIR_DOMAIN_NET_TYPE_VDPA:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        break;
-
     case VIR_DOMAIN_NET_TYPE_CLIENT:
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_MCAST:
     case VIR_DOMAIN_NET_TYPE_UDP:
-        if (port == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No <source> 'port' attribute "
-                             "specified with socket interface"));
-            return NULL;
-        }
-        if (virStrToLong_i(port, NULL, 10, &def->data.socket.port) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Cannot parse <source> 'port' attribute "
-                             "with socket interface"));
-            return NULL;
-        }
-
-        if (address == NULL) {
-            if (def->type == VIR_DOMAIN_NET_TYPE_CLIENT ||
-                def->type == VIR_DOMAIN_NET_TYPE_MCAST ||
-                def->type == VIR_DOMAIN_NET_TYPE_UDP) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("No <source> 'address' attribute "
-                                 "specified with socket interface"));
-                return NULL;
-            }
-        } else {
-            def->data.socket.address = g_steal_pointer(&address);
-        }
-
-        if (def->type != VIR_DOMAIN_NET_TYPE_UDP)
-            break;
-
-        if (localport == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No <local> 'port' attribute "
-                             "specified with socket interface"));
-            return NULL;
-        }
-        if (virStrToLong_i(localport, NULL, 10, &def->data.socket.localport) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Cannot parse <local> 'port' attribute "
-                             "with socket interface"));
-            return NULL;
-        }
-
-        if (localaddr == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No <local> 'address' attribute "
-                             "specified with socket interface"));
-            return NULL;
-        } else {
-            def->data.socket.localaddr = g_steal_pointer(&localaddr);
-        }
-        break;
-
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
         break;
