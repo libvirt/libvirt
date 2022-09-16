@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-08-26 05:02+0000\n"
-"PO-Revision-Date: 2022-09-06 19:19+0000\n"
+"PO-Revision-Date: 2022-09-16 21:19+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -14743,38 +14743,37 @@ msgstr "Ögonblicsbilden %s XML-konfiguration inte ändrad.\n"
 
 #, c-format
 msgid "Snapshot %s cloned to %s.\n"
-msgstr ""
+msgstr "Ögonblicksbilden %s klonad till %s.\n"
 
 #, c-format
 msgid "Snapshot %s edited.\n"
-msgstr ""
+msgstr "Ögonblicksbilden %s redigerad.\n"
 
 #, c-format
 msgid "Snapshot %s set as current"
-msgstr ""
+msgstr "Ögonblicksbilden %s satt som aktuell"
 
 #, c-format
 msgid "Snapshot '%s' already exists"
 msgstr "Ögonblicksbilden ”%s” finns redan"
 
 msgid "Snapshot Delete"
-msgstr ""
+msgstr "Radera ögonblicksbild"
 
 msgid "Snapshot Dump XML"
-msgstr ""
+msgstr "Ögonblicksbildsdump XML"
 
 msgid "Snapshot List"
-msgstr ""
+msgstr "Ögonblicsbildslista"
 
 msgid "Snapshot is Null"
-msgstr ""
+msgstr "Ögonblicsbilden är null"
 
 msgid "Snapshot revert"
-msgstr ""
+msgstr "Återställ ögonblicksbild"
 
-#, fuzzy
 msgid "Snapshots are not yet supported with 'pool' volumes"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Ögonblicksbilder stödjs inte ännu med ”pool”-volymer"
 
 #, c-format
 msgid "Snapshots have inconsistent relations for domain %s"
@@ -14782,168 +14781,183 @@ msgstr "Ögonblicksbilder har inkonsekventa relationer för domänen %s"
 
 #, c-format
 msgid "Socket path %s too big for destination"
-msgstr ""
+msgstr "Uttagssökvägen %s är för stor för målet"
 
 msgid "Sockets:"
 msgstr "Uttag:"
 
 msgid "Some activation file descriptors are unclaimed"
-msgstr ""
+msgstr "Några aktiveringsfilbeskrivare är inte ianspråkstagna"
 
 #, c-format
 msgid "Some features cannot be reliably used with this QEMU: %s"
-msgstr ""
+msgstr "Några funktioner kan inte pålitligt användas med denna QEMU: %s"
 
 msgid "Some parameters are not supported by migration protocol 2"
-msgstr ""
+msgstr "Några parametrar stödjs inte av migrationsprotokoll 2"
 
 msgid "Some parameters are not supported by migration protocol 3"
-msgstr ""
+msgstr "Några parametrar stödjs inte av migrationsprotokoll 3"
 
 msgid "Some processes refused to die"
-msgstr ""
+msgstr "Några processer vägrade att dö"
 
 msgid "Sound device model is not supported"
-msgstr ""
+msgstr "Ljudenhetsmodellen stödjs inte"
 
 msgid "Sound devices emulation is not supported by given bhyve binary"
-msgstr ""
+msgstr "Ljudenhetsemulering stödjs inte av den givna bhyve-binären"
 
 msgid "Source"
 msgstr "Källa"
 
 #, c-format
 msgid "Source device does not exist when formatting pool '%s'"
-msgstr ""
+msgstr "Källenheten finns inte när poolen formaterades ”%s”"
 
 #, c-format
 msgid "Source host lock driver %s different from target %s"
-msgstr ""
+msgstr "Källvärdens låsdrivrutin %s skiljer från målet %s"
 
 msgid "Specified both --storage and --remove-all-storage"
-msgstr ""
+msgstr "Angav både --storage och --remove-all-storage"
 
 msgid "Specified character device source type is not supported by vz driver."
-msgstr ""
+msgstr "Den angivna teckenhetens källtyp stödjs inte av vz-drivrutinen."
 
 msgid "Specified character device target type is not supported by vz driver."
-msgstr ""
+msgstr "Den angivna teckenenhetens måltyp stödjs inte av vz-drivrutinen."
 
 msgid "Specified character device type is not supported by vz driver."
-msgstr ""
+msgstr "Den angivna teckenenhetens typ stödjs inte av vz-drivrutinen."
 
 msgid "Specified disk bus is not supported by vz driver."
-msgstr ""
+msgstr "Den angivna diskbussen stödjs inte av vz-drivrutinen."
 
 msgid "Specified network adapter model is not supported by vz driver."
-msgstr ""
+msgstr "Den angivna nätverksadapterns modell stödjs inte av vz-drivrutinen."
 
 msgid "Specified network adapter type is not supported by vz driver."
-msgstr ""
+msgstr "Den angivna nätverksadapterns typ stödjs inte av vz-drivrutinen."
 
 msgid "Specifies if pages from different numa nodes can be merged"
-msgstr ""
+msgstr "Anger om sidor från olika numa-noder kan slås samman"
 
 msgid "Specifying mount point is not supported for now"
-msgstr ""
+msgstr "Att ange om monteringspunkter stödjs inte för närvarande"
 
 msgid "Spice audio is not supported without spice graphics"
-msgstr ""
+msgstr "Spice-audio stödjs inte utan spice-grafik"
 
 msgid "Start"
 msgstr "Starta"
 
 msgid "Start a block commit operation."
-msgstr ""
+msgstr "Starta en blockfastställandeåtgärd."
 
 msgid "Start a block copy operation."
-msgstr ""
+msgstr "Starta en blockkopieringsåtgärd."
 
 msgid "Start a disk backup of a live domain"
-msgstr ""
+msgstr "Starta en disksäkerhetskopiering av en live-domän"
 
 msgid ""
 "Start a domain, either from the last managedsave\n"
 "    state, or via a fresh boot if no managedsave state\n"
 "    is present."
 msgstr ""
+"Starta en domän, antingen från det senaste managedsave-\n"
+"    tillståndet, eller via en fräsch uppstart om inget managedsave-\n"
+"    tillstånd finns."
 
 msgid "Start a network."
 msgstr "Starta ett nätverk."
 
-#, fuzzy
 msgid "Start a pool."
-msgstr "Starta ett nätverk."
+msgstr "Starta en pool."
 
 msgid "Start an inactive node device"
-msgstr ""
+msgstr "Starta en inaktiv nodenhet"
 
 msgid "Start to calculate domain's memory dirty rate successfully.\n"
-msgstr ""
+msgstr "Starta beräkningen av en domäns minnes nedsmutsningshastighet.\n"
 
 msgid "Started"
 msgstr "Startad"
 
 #, sh-format
 msgid "Starting shutdown on guest: $name"
-msgstr ""
+msgstr "Startar avstängningen av gästen: $name"
 
 msgid "Starts an inactive node device that was previously defined"
-msgstr ""
+msgstr "Startar en inaktiv nodenhet som definierades tidigare"
 
 msgid "State"
 msgstr "Tillstånd"
 
 #, c-format
 msgid "State file %s edited.\n"
-msgstr ""
+msgstr "Tillståndsfilen %s redigerad.\n"
 
 #, c-format
 msgid "State file %s updated.\n"
-msgstr ""
+msgstr "Tillståndsfilen %s uppdaterad.\n"
 
 #, c-format
 msgid ""
 "State of HyperV enlightenment feature '%s' differs: source: '%s', "
 "destination: '%s'"
 msgstr ""
+"Tillstånden hos HyperV enlightenment-funktionen ”%s” skiljer: källa: ”%s”, "
+"destination: ”%s”"
 
 #, c-format
 msgid ""
 "State of HyperV stimer direct feature differs: source: '%s', destination: "
 "'%s'"
 msgstr ""
+"Tillstånden hos HyperV-funktionen stimer direct skiljer: källa: ”%s”, "
+"destination: ”%s”"
 
 #, c-format
 msgid "State of KVM feature '%s' differs: source: '%s', destination: '%s'"
 msgstr ""
+"Tillståndet hos KVM-funktionen ”%s” skiljer: källa: ”%s”, destination: ”%s”"
 
 #, c-format
 msgid "State of Xen feature '%s' differs: source: '%s', destination: '%s'"
 msgstr ""
+"Tillståndet hos Xen-funktionen ”%s” skiljer: källa: ”%s”, destination: ”%s”"
 
 #, c-format
 msgid "State of feature '%s' differs: source: '%s', destination: '%s'"
-msgstr ""
+msgstr "Tillståndet hos funktionen ”%s” skiljer: källa: ”%s”, destination: ”%s”"
 
 #, c-format
 msgid ""
 "State of feature '%s' differs: source: '%s,%s=%s', destination: '%s,%s=%s'"
 msgstr ""
+"Tillståndet hos funktionen ”%s” skiljer: källa: ”%s,%s=%s”, destination: "
+"”%s,%s=%s”"
 
 #, c-format
 msgid ""
 "State of feature '%s' differs: source: '%s,%s=%s,%s=%llu', destination: '%s,"
 "%s=%s,%s=%llu'"
 msgstr ""
+"Tillståndet hos funktionen ”%s” skiljer: källa: ”%s,%s=%s,%s=%llu”, "
+"destination: ”%s,%s=%s,%s=%llu”"
 
 #, c-format
 msgid "State of feature '%s' differs: source: '%s=%s', destination: '%s=%s'"
 msgstr ""
+"Tillståndet hos funktionen ”%s” skiljer: källa: ”%s=%s”, destination: ”%s=%s”"
 
 #, c-format
 msgid "State of vCPU '%zu' differs between source and destination definitions"
 msgstr ""
+"Tillståndet hos vCPU ”%zu” skiljer mellan käll- och "
+"destinationsdefinitionerna"
 
 msgid "State:"
 msgstr "Tillstånd:"
@@ -14952,23 +14966,27 @@ msgstr "Tillstånd:"
 msgid ""
 "Static host definition in IPv4 network '%s' must have mac or name attribute"
 msgstr ""
+"Statisk värddefinition i IPv4-nätverket ”%s” måste ha attributet mac eller "
+"name"
 
 #, c-format
 msgid ""
 "Static host definition in IPv6 network '%s' must have id or name attribute"
 msgstr ""
+"Statisk värddefinition i IPv6-nätverket ”%s” måste ha attributet id eller "
+"name"
 
 #, c-format
 msgid "Stats %s too big for destination"
 msgstr "Statusen %s är för stor för destinationen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Stats types bits 0x%x are not supported by this daemon"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Stats-typbitar 0x%x stödjs inte av denna demon"
 
 #, c-format
 msgid "Stats types bits 0x%x are not supported by this daemon or QEMU"
-msgstr ""
+msgstr "Stats-typbitar 0x%x stödjs inte av denna demon eller QEMU"
 
 msgid "Status is unknown"
 msgstr "Okänd status"
@@ -14977,236 +14995,239 @@ msgid "Stopped"
 msgstr "Stoppad"
 
 msgid "Storage Pool Events"
-msgstr ""
+msgstr "Lagringspoolhändelser"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Storage pool '%s' for volume '%s' not found."
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "Lagringspool ”%s” för volymen ”%s” finns inte"
 
-#, fuzzy
 msgid "Storage pool already built"
-msgstr "lagringsvolymen finns redan"
+msgstr "Lagringspoolen är redan byggd"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Storage pool already built: %s"
-msgstr "lagringsvolymen finns redan"
+msgstr "Lagringspoolen är redan byggd: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Storage pool config filename '%s' does not match pool name '%s'"
-msgstr "nätverkfiltrets konfigurationsfilnamn ”%s” matchar inte namnet ”%s”"
+msgstr "Lagringspoolens konfigurationsfilnamn ”%s” matchar inte poolnamnet ”%s”"
 
-#, fuzzy
 msgid "Storage pool not found"
-msgstr "Nätverk hittades inte"
+msgstr "Lagringspoolen finns inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Storage pool not found: %s"
-msgstr "Nätverk hittades inte: %s"
+msgstr "Lagringspoolen finns inte: %s"
 
 msgid "Storage pool probe failed"
-msgstr ""
+msgstr "Lagringspoolsavkänning misslyckades"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Storage pool probe failed: %s"
-msgstr "POST-operation misslyckades: %s"
+msgstr "Lagringspoolsavkänning misslyckades: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Storage pool state file '%s' does not match pool name '%s'"
-msgstr "nätverkfiltrets konfigurationsfilnamn ”%s” matchar inte namnet ”%s”"
+msgstr "Lagringspoolens tillståndsfil ”%s” matchar inte poolnamnet ”%s”"
 
 #, c-format
 msgid "Storage source %s must be a block device"
-msgstr ""
+msgstr "Lagringskällan %s måste vara en blockenhet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Storage source %s must be a character device"
-msgstr "Källvärdsattribut saknas för teckenenhet"
+msgstr "Lagringskällan %s måste vara en teckenenhet"
 
 #, c-format
 msgid "Storage source conflict with pool: '%s'"
-msgstr ""
+msgstr "Lagringskällan står i konflikt med poolen: ”%s”"
 
 #, c-format
 msgid ""
 "Storage volume '%s'(%s) is not managed by libvirt. Remove it manually.\n"
 msgstr ""
+"Lagringsvolymen ”%s” (%s) hanteras inte av libvirt. Ta bort den manuellt.\n"
 
 msgid "Storage volume deletion is supported only on stopped domains"
-msgstr ""
+msgstr "Att radera lagringsvolymer stödjs endast för stoppade domäner"
 
-#, fuzzy
 msgid "Storage volume not found"
-msgstr "Nätverk hittades inte"
+msgstr "Lagringsvolymen finns inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Storage volume not found: %s"
-msgstr "Nätverk hittades inte: %s"
+msgstr "Lagringsvolymen finns inte: %s"
 
 #, c-format
 msgid "Stream data too long to send (%zu bytes needed, %zu bytes available)"
 msgstr ""
+"Strömdata är för långa för att skicka (%zu byte behövs, %zu byte "
+"tillgängliga)"
 
 msgid "Stream has untransferred data left"
-msgstr ""
+msgstr "Strömmen har oskickade data kvar"
 
 msgid "Stream is not open"
-msgstr ""
+msgstr "Strömmen är inte öppen"
 
 msgid "Successfully copied"
-msgstr ""
+msgstr "Kopierades"
 
 msgid "Successfully ejected media."
-msgstr ""
+msgstr "Matade ut medium."
 
 msgid "Successfully inserted media."
-msgstr ""
+msgstr "Satte in medium."
 
 msgid "Successfully pivoted"
-msgstr ""
+msgstr "Pivoterade"
 
 msgid "Successfully updated media."
-msgstr ""
+msgstr "Uppdaterade medium."
 
 #, c-format
 msgid "Sum of %srequest stat overflows"
-msgstr ""
+msgstr "Statistik för summan av %sbegäranden flödar över"
 
 #, c-format
 msgid "Sum of byte %sstat overflows"
-msgstr ""
+msgstr "Statistik för summan av byte %s flödar över"
 
 #, c-format
 msgid "Sum of byte '%s' stat overflows"
-msgstr ""
+msgstr "Statistik för summan av byte ”%s” flödar över"
 
 msgid "Support for AppArmor is not enabled"
-msgstr ""
+msgstr "Stöd för AppArmor är inte aktiverat"
 
 msgid "Support for SELinux is not enabled"
-msgstr ""
+msgstr "Stöd för SELinux är inte aktiverat"
 
 msgid "Support only default gateway"
-msgstr ""
+msgstr "Stödj endast standard-gateway"
 
 msgid "Support only one IPv4 default gateway"
-msgstr ""
+msgstr "Stödj endast en IPv4-standard-gateway"
 
 msgid "Support only one IPv6 default gateway"
-msgstr ""
+msgstr "Stödj endast en IPv6-standard-gateway"
 
 msgid "Suspend a running domain."
 msgstr "Suspendera en körande domän."
 
 msgid "Suspend duration in seconds, at least 60"
-msgstr ""
+msgstr "Sovlängd i sekunder, åtminstone 60"
 
 #, c-format
 msgid "Suspend duration is too short, must be at least %u seconds"
-msgstr ""
+msgstr "Sovlängden är för kort, måste vara åtminstone %u sekunder"
 
 msgid "Suspend operation already in progress"
-msgstr ""
+msgstr "Sovåtgärd är redan på gång"
 
-#, fuzzy
 msgid "Suspend operation failed"
-msgstr "POST-operation misslyckades"
+msgstr "Sovåtgärden misslyckades"
 
 msgid ""
 "Suspend the host node for a given time duration and attempt to resume "
 "thereafter."
-msgstr ""
+msgstr "Söv värdnoden under en angiven tidslängd och försök återuppta därefter."
 
 msgid "Suspend-to-Disk"
-msgstr ""
+msgstr "Söv-till-disk"
 
 msgid "Suspend-to-RAM"
-msgstr ""
+msgstr "Söv-till-RAM"
 
 msgid "Suspended"
 msgstr "Sövd"
 
 #, sh-format
 msgid "Suspending $name: "
-msgstr ""
+msgstr "Söver $name: "
 
 #, sh-format
 msgid "Suspending guests on $uri URI..."
-msgstr ""
+msgstr "Söv gäster på URI:n $uri …"
 
 msgid ""
 "Suspends a running domain using guest OS's power management. (Note: This "
 "requires a guest agent configured and running in the guest OS)."
 msgstr ""
+"Söver en körande domän använder gäst-OS:ets strömhantering. (Observera: "
+"detta förutsätter en gästagent konfigurerad och körandes i gäst-OS:et)."
 
 msgid "Switch running migration from pre-copy to post-copy"
-msgstr ""
+msgstr "Byt till att köra migreringen från förkopierng till efterkopiering"
 
 msgid ""
 "Switch running migration from pre-copy to post-copy. The migration must have "
 "been started with --postcopy option."
 msgstr ""
+"Byt till att köra migreringen från en förkopiering till efterkopiering. "
+"Migreringen måste ha startats med flaggan --postcopy."
 
 msgid "System is in use"
-msgstr ""
+msgstr "Systemet används"
 
 msgid "System is not available"
-msgstr ""
+msgstr "Systemet är inte tillgängligt"
 
 msgid "System lacks NETNS support"
-msgstr ""
+msgstr "Systemet saknar stöd för NETNS"
 
 #, c-format
 msgid "System token in %s was corrupt"
-msgstr ""
+msgstr "Systempoletten i %s var trasig"
 
 #, c-format
 msgid "TCG features are incompatible with domain type '%s'"
-msgstr ""
+msgstr "TCG-funktioner är inkompatibla med domäntypen ”%s”"
 
 #, c-format
 msgid "TLS handshake failed %s"
-msgstr ""
+msgstr "TLS-handskakningenmisslyckades %s"
 
 msgid "TLS migration is not supported with this QEMU binary"
-msgstr ""
+msgstr "TLS-migrering stödjs inte med denna QEMU-binär"
 
 #, c-format
 msgid "TLS transport is not supported for disk protocol '%s'"
-msgstr ""
+msgstr "TLS-transport stödjs inte för diskprotokollet ”%s”"
 
 msgid "TLS usage specified, but name is missing"
 msgstr "TLS-användning angiven, men namn saknas"
 
 msgid "TLS:"
-msgstr ""
+msgstr "TLS:"
 
 msgid "TPM 1.2 is not supported on ARM"
-msgstr ""
+msgstr "TPM 1.2 stödjs inte på ARM"
 
 msgid "TPM 1.2 is not supported with the SPAPR device model"
-msgstr ""
+msgstr "TPM 1.2 stödjs inte med enhetsmodellen SPAPR"
 
 #, c-format
 msgid "TPM Proxy model %s requires 'Passthrough' backend"
-msgstr ""
+msgstr "TPM-proxy-modellen %s kräver bakänden ”Passthrough”"
 
 #, c-format
 msgid "TPM device path %s is invalid"
-msgstr ""
+msgstr "TPM-enhetssökvägen %s är felaktig"
 
 #, c-format
 msgid "TPM version '%s' is not supported"
-msgstr ""
+msgstr "TPM-version ”%s” stödjs inte"
 
 msgid "Table row cannot be empty"
-msgstr ""
+msgstr "Tabellrader kan inte vara tomma"
 
 msgid "Target"
 msgstr "Mål"
 
 #, c-format
 msgid "Target ACPI index '%u' does not match source '%u'"
-msgstr ""
+msgstr "Mål-ACPI-index ”%u” stämmer inte med källan ”%u”"
 
 #, c-format
 msgid "Target CPU arch %s does not match source %s"
@@ -15243,7 +15264,7 @@ msgid "Target CPU feature policy %s does not match source %s"
 msgstr "Mål-CPU-funktionspolicyn %s stämmer inte med källan %s"
 
 msgid "Target CPU maxphysaddr does not match source"
-msgstr ""
+msgstr "Mål-CPU-maxphysaddr stämmer inte med källan"
 
 #, c-format
 msgid "Target CPU mode %s does not match source %s"
@@ -15273,53 +15294,53 @@ msgstr "Mål-CPU-tillverkaren %s stämmer inte med källan %s"
 msgid "Target CPU vendor id %s does not match source %s"
 msgstr "Mål-CPU-tillverkar-id %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target NUMA distance from %zu to %zu doesn't match source"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Mål-NUMA-avståndet från %zu till %zu stämmer inte med källan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target NUMA node count '%zu' doesn't match source '%zu'"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Mål-NUMA-nodantalet ”%zu” stämmer inte med källan ”%zu”"
 
 msgid "Target NVDIMM UUID doesn't match source NVDIMM"
-msgstr ""
+msgstr "Mål-NVIDIMM UUID stämmer inte med käll-NVDIMM"
 
 #, c-format
 msgid ""
 "Target NVDIMM alignment '%llu' doesn't match source NVDIMM alignment '%llu'"
 msgstr ""
+"Mål-NVDIMM-justeringen ”%llu” stämmer inte med käll-NVDIMM-justeringen ”%llu”"
 
 #, c-format
 msgid ""
 "Target NVDIMM label size '%llu' doesn't match source NVDIMM label size '%llu'"
 msgstr ""
+"Mål-NVDIMM-etikettstorleken ”%llu” stämmer inte med käll-NVDIMM-"
+"etikettstorleken ”%llu”"
 
-#, fuzzy
 msgid "Target NVDIMM pmem flag doesn't match source NVDIMM pmem flag"
-msgstr "Mål-CPU-typen %s stämmer inte med källan %s"
+msgstr "Mål-NVDIMM-pmem-flaggan stämmer inte med käll-NVDIMM-pmem-flaggan"
 
-#, fuzzy
 msgid "Target NVDIMM readonly flag doesn't match source NVDIMM readonly flag"
-msgstr "Mål-CPU-trådar %d stämmer inte med källan %d"
+msgstr ""
+"Mål-NVDIMM-readonly-flaggan stämmer inte med käll-NVDIMM-readonly-flaggan"
 
 #, c-format
 msgid "Target RNG model '%s' does not match source '%s'"
 msgstr "Mål-RNG-modellen %s stämmer inte med källan ”%s”"
 
-#, fuzzy
 msgid "Target TPM device model doesn't match source"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Modellen för mål-TPM-enheten stämmer inte med källan"
 
-#, fuzzy
 msgid "Target TPM device type doesn't match source"
-msgstr "Mål-CPU-typen %s stämmer inte med källan %s"
+msgstr "Typen för mål-TPM-enheten stämmer inte med källan"
 
 msgid "Target TPM version doesn't match source"
 msgstr "Mål-TPM-version stämmer inte med källan"
 
 #, c-format
 msgid "Target TSC frequency %llu does not match source %llu"
-msgstr ""
+msgstr "Mål-TSC-frekvensen %llu stämmer inte med källan %llu"
 
 #, c-format
 msgid "Target TSC mode %s does not match source %s"
@@ -15335,9 +15356,10 @@ msgstr "Mål-USB:n tillåter ”%s” stämmer inte med källan ”%s”"
 msgid "Target USB product ID does not match source"
 msgstr "Mål-USB-produkt-ID stämmer inte med källan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target USB redirection filter rule count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr ""
+"Antalet filterregler för mål-USB-omdirigering %zu stämmer inte med källan %zu"
 
 msgid "Target USB vendor ID does not match source"
 msgstr "Mål-USB-tillverkar-ID stämmer inte med källan"
@@ -15346,29 +15368,32 @@ msgid "Target USB version does not match source"
 msgstr "Mål-USB-version stämmer inte med källan"
 
 msgid "Target active PCR banks doesn't match source"
-msgstr ""
+msgstr "Målets aktiva PCR-bankar stämmer inte med källan"
 
 msgid "Target already exists"
 msgstr "Målet finns redan"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Target balloon autodeflate attribute value '%s' does not match source '%s'"
-msgstr "Mål-CPU-funktionen %s stämmer inte med källan %s"
+msgstr ""
+"Attributvärdet för målets ballong-autodeflat ”%s” stämmer inte med källan "
+"”%s”"
 
 #, c-format
 msgid ""
 "Target balloon freePageReporting attribute value '%s' does not match source "
 "'%s'"
 msgstr ""
+"Attributvärdet för målets ballong-freePageReporting ”%s” stämmer inte med "
+"källan ”%s”"
 
 #, c-format
 msgid "Target balloon model %s does not match source %s"
 msgstr "Målballongmodellen %s stämmer inte med källan %s"
 
-#, fuzzy
 msgid "Target base board does not match source"
-msgstr "Mål-sysinfo matchar inte källan"
+msgstr "Målbaskortet stämmer inte med källan"
 
 #, c-format
 msgid "Target channel addr %s does not match source %s"
@@ -15409,45 +15434,44 @@ msgstr "Målstyrenhetstypen %s stämmer inte med källan %s"
 msgid "Target controller vectors %d does not match source %d"
 msgstr "Målstyrenhetsvektorerna %d stämmer inte med källan %d"
 
-#, fuzzy
 msgid "Target device PCI address "
-msgstr "målenhetstyp"
+msgstr "Målenhetens PCI-adress "
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target device address type %s does not match source %s"
-msgstr "Mål-CPU-typen %s stämmer inte med källan %s"
+msgstr "Typen för målets enhetsadress %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target device ats option '%s' does not match source '%s'"
-msgstr "Mål-sysinfo %s matchar inte källan %s"
+msgstr "Målenhetens ats-flagga ”%s” stämmer inte med källan ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target device ccid address %d:%d does not match source %d:%d"
-msgstr "Mål-CPU-kärnor %d stämmer inte med källan %d"
+msgstr "Målenhetens ccid-adress %d:%d stämmer inte med källan %d:%d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target device dimm base address '%llx' does not match source '%llx'"
-msgstr "Mål-CPU-funktionen %s stämmer inte med källan %s"
+msgstr "Målenhetens dimm-basadress ”%llu” stämmer inte med källan ”%llu”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target device dimm slot %u does not match source %u"
-msgstr "Mål-CPU-tillverkaren %s stämmer inte med källan %s"
+msgstr "Målenhetens dimm-fack %u stämmer inte med källan %u"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target device drive address %d:%d:%d does not match source %d:%d:%d"
-msgstr "Mål-CPU-trådar %d stämmer inte med källan %d"
+msgstr "Målenhetens disadress %d:%d:%d stämmer inte med källan %d:%d:%d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target device iommu option '%s' does not match source '%s'"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Målenhetens iommu-flagga ”%s” stämmer inte med källan ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target device isa address %d:%d does not match source %d:%d"
-msgstr "Mål-CPU-kärnor %d stämmer inte med källan %d"
+msgstr "Målenhetens isa-adress %d:%d stämmer inte med källan %d:%d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target device packed option '%s' does not match source '%s'"
-msgstr "Mål-CPU-tillverkaren %s stämmer inte med källan %s"
+msgstr "Målenhetens packed-flagga ”%s” stämmer inte med källan ”%s”"
 
 #, c-format
 msgid "Target device page_per_vq option '%s' does not match source '%s'"
