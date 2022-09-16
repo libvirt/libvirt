@@ -8994,6 +8994,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     xmlNodePtr bandwidth_node = NULL;
     xmlNodePtr mac_node = NULL;
     xmlNodePtr target_node = NULL;
+    xmlNodePtr coalesce_node = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int rv;
     g_autofree char *macaddr = NULL;
@@ -9410,9 +9411,8 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         return NULL;
     }
 
-    node = virXPathNode("./coalesce", ctxt);
-    if (node) {
-        if (virDomainNetDefCoalesceParseXML(node, ctxt, &def->coalesce) < 0)
+    if ((coalesce_node = virXPathNode("./coalesce", ctxt))) {
+        if (virDomainNetDefCoalesceParseXML(coalesce_node, ctxt, &def->coalesce) < 0)
             return NULL;
     }
 
