@@ -3682,6 +3682,7 @@ virXMLPickShellSafeComment;
 virXMLPropEnum;
 virXMLPropEnumDefault;
 virXMLPropInt;
+virXMLPropLongLong;
 virXMLPropString;
 virXMLPropStringRequired;
 virXMLPropTristateBool;

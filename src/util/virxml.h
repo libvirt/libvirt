@@ -142,6 +142,15 @@ virXMLPropUInt(xmlNodePtr node,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 
 int
+virXMLPropLongLong(xmlNodePtr node,
+                   const char *name,
+                   int base,
+                   virXMLPropFlags flags,
+                   long long *result,
+                   long long defaultResult)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
+
+int
 virXMLPropULongLong(xmlNodePtr node,
                     const char* name,
                     int base,
