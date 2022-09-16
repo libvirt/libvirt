@@ -1152,7 +1152,7 @@ struct _virDomainNetDef {
     char *downscript;
     char *domain_name; /* backend domain name */
     char *ifname; /* interface name on the host (<target dev='x'/>) */
-    int managed_tap; /* enum virTristateBool - ABSENT == YES */
+    virTristateBool managed_tap;
     virNetDevIPInfo hostIP;
     char *ifname_guest_actual;
     char *ifname_guest;
