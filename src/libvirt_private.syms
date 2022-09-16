@@ -3688,6 +3688,7 @@ virXMLPropTristateBoolAllowDefault;
 virXMLPropTristateSwitch;
 virXMLPropUInt;
 virXMLPropULongLong;
+virXMLPropUUID;
 virXMLSaveFile;
 virXMLValidateAgainstSchema;
 virXMLValidatorFree;

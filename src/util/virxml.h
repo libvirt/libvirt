@@ -155,6 +155,13 @@ virXMLPropEnum(xmlNodePtr node,
     ATTRIBUTE_NONNULL(5);
 
 int
+virXMLPropUUID(xmlNodePtr node,
+               const char *name,
+               virXMLPropFlags flags,
+               unsigned char *result)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
+
+int
 virXMLPropEnumDefault(xmlNodePtr node,
                       const char* name,
                       int (*strToInt)(const char*),

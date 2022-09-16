@@ -33,6 +33,7 @@
 #include "virfile.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "viruuid.h"
 #include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_XML
@@ -805,6 +806,50 @@ virXMLPropEnumDefault(xmlNodePtr node,
                       unsigned int defaultResult)
 {
     return virXMLPropEnumInternal(node, name, strToInt, flags, result, defaultResult);
+}
+
+
+/**
+ * virXMLPropUUID:
+ * @node: XML dom node pointer
+ * @name: Name of the property (attribute) to get
+ * @flags: Bitwise-OR of virXMLPropFlags
+ * @result: Array of VIR_UUID_BUFLEN bytes to store the raw UUID
+ *
+ * Convenience function to fetch an XML property as a UUID.
+ *
+ * Returns 1 in case of success in which case @result is set,
+ *         or 0 if the attribute is not present,
+ *         or -1 and reports an error on failure.
+ */
+int
+virXMLPropUUID(xmlNodePtr node,
+               const char* name,
+               virXMLPropFlags flags,
+               unsigned char *result)
+{
+    g_autofree char *tmp = NULL;
+    unsigned char val[VIR_UUID_BUFLEN];
+
+    if (!(tmp = virXMLPropString(node, name))) {
+        if (!(flags & VIR_XML_PROP_REQUIRED))
+            return 0;
+
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Missing required attribute '%s' in element '%s'"),
+                       name, node->name);
+        return -1;
+    }
+
+    if (virUUIDParse(tmp, val) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"),
+                       name, node->name, tmp);
+        return -1;
+    }
+
+    memcpy(result, val, VIR_UUID_BUFLEN);
+    return 1;
 }
 
 
