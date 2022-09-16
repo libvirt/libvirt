@@ -8955,6 +8955,21 @@ virDomainNetDefParseXMLDriver(virDomainNetDef *def,
 }
 
 
+static int
+virDomainNetDefParseXMLRequireSource(virDomainNetDef *def,
+                                     xmlNodePtr source_node)
+{
+    if (!source_node) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("interface type='%s' requires a 'source' element"),
+                       virDomainNetTypeToString(def->type));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static virDomainNetDef *
 virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                         xmlNodePtr node,
@@ -8966,18 +8981,15 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     xmlNodePtr source_node = NULL;
     xmlNodePtr virtualport_node = NULL;
     xmlNodePtr filterref_node = NULL;
-    xmlNodePtr actual_node = NULL;
     xmlNodePtr vlan_node = NULL;
     xmlNodePtr bandwidth_node = NULL;
     xmlNodePtr tmpNode;
     xmlNodePtr mac_node = NULL;
     g_autoptr(GHashTable) filterparams = NULL;
-    g_autoptr(virDomainActualNetDef) actual = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virDomainChrSourceReconnectDef reconnect = {0};
     int rv, val;
     g_autofree char *macaddr = NULL;
-    g_autofree char *network = NULL;
     g_autofree char *portgroup = NULL;
     g_autofree char *portid = NULL;
     g_autofree char *bridge = NULL;
@@ -9021,11 +9033,28 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
-        if (source_node) {
-            network = virXMLPropString(source_node, "network");
-            portgroup = virXMLPropString(source_node, "portgroup");
-            if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
-                portid = virXMLPropString(source_node, "portid");
+        if (virDomainNetDefParseXMLRequireSource(def, source_node) < 0)
+            return NULL;
+
+        if (!(def->data.network.name = virXMLPropStringRequired(source_node, "network")))
+            return NULL;
+
+        def->data.network.portgroup = virXMLPropString(source_node, "portgroup");
+
+        if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
+            if (virXMLPropUUID(source_node, "portid", VIR_XML_PROP_NONE,
+                               def->data.network.portid) < 0)
+                return NULL;
+        }
+
+        if ((flags & VIR_DOMAIN_DEF_PARSE_ACTUAL_NET)) {
+            xmlNodePtr actual_node = NULL;
+
+            if ((actual_node = virXPathNode("./actual", ctxt)) &&
+                (virDomainActualNetDefParseXML(actual_node, ctxt, def,
+                                               &def->data.network.actual,
+                                               flags, xmlopt) < 0))
+                return NULL;
         }
         break;
 
@@ -9163,13 +9192,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         filterparams = virNWFilterParseParamAttributes(filterref_node);
     }
 
-    if ((flags & VIR_DOMAIN_DEF_PARSE_ACTUAL_NET) &&
-        def->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
-        (actual_node = virXPathNode("./actual", ctxt)) &&
-        (virDomainActualNetDefParseXML(actual_node, ctxt, def,
-                                      &actual, flags, xmlopt) < 0))
-        return NULL;
-
     if ((bandwidth_node = virXPathNode("./bandwidth", ctxt)) &&
         (virNetDevBandwidthParse(&def->bandwidth, NULL, bandwidth_node,
                                  def->type == VIR_DOMAIN_NET_TYPE_NETWORK) < 0))
@@ -9225,22 +9247,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
-        if (network == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No <source> 'network' attribute "
-                             "specified with <interface type='network'/>"));
-            return NULL;
-        }
-        if (portid &&
-            virUUIDParse(portid, def->data.network.portid) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to parse port id '%s'"), portid);
-            return NULL;
-        }
-
-        def->data.network.name = g_steal_pointer(&network);
-        def->data.network.portgroup = g_steal_pointer(&portgroup);
-        def->data.network.actual = g_steal_pointer(&actual);
         break;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
