@@ -9019,6 +9019,10 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                                &def->trustGuestRxFilters) < 0)
         return NULL;
 
+    if ((model = virXPathString("string(./model/@type)", ctxt)) &&
+        virDomainNetSetModelString(def, model) < 0)
+        return NULL;
+
     if ((source_node = virXPathNode("./source", ctxt))) {
         if (virDomainNetIPInfoParseXML(_("interface host IP"), source_node, ctxt, &def->hostIP) < 0)
             return NULL;
@@ -9202,7 +9206,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     def->script = virXPathString("string(./script/@path)", ctxt);
     def->downscript = virXPathString("string(./downscript/@path)", ctxt);
     def->domain_name = virXPathString("string(./backenddomain/@name)", ctxt);
-    model = virXPathString("string(./model/@type)", ctxt);
 
     if ((filterref_node = virXPathNode("./filterref", ctxt))) {
         filter = virXMLPropString(filterref_node, "filter");
@@ -9257,10 +9260,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                                     | VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) < 0) {
         return NULL;
     }
-
-    if (model != NULL &&
-        virDomainNetSetModelString(def, model) < 0)
-        return NULL;
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
