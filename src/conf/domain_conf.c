@@ -9188,9 +9188,11 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDPA:
-        if (source_node) {
-            dev = virXMLPropString(source_node, "dev");
-        }
+        if (virDomainNetDefParseXMLRequireSource(def, source_node) < 0)
+            return NULL;
+
+        if (!(def->data.vdpa.devicepath = virXMLPropStringRequired(source_node, "dev")))
+            return NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
@@ -9331,15 +9333,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDPA:
-        if (dev == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No <source> 'dev' attribute "
-                             "specified with <interface type='vdpa'/>"));
-            return NULL;
-        }
-        def->data.vdpa.devicepath = g_steal_pointer(&dev);
-        break;
-
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         break;
 
