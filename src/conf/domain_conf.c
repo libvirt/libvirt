@@ -8988,7 +8988,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                         unsigned int flags)
 {
     g_autoptr(virDomainNetDef) def = NULL;
-    virDomainHostdevDef *hostdev;
     xmlNodePtr source_node = NULL;
     xmlNodePtr virtualport_node = NULL;
     xmlNodePtr filterref_node = NULL;
@@ -9004,7 +9003,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *model = NULL;
     g_autofree char *filter = NULL;
     g_autofree char *linkstate = NULL;
-    g_autofree char *addrtype = NULL;
     g_autofree char *tap = NULL;
     const char *prefix = xmlopt ? xmlopt->config.netPrefix : NULL;
 
@@ -9229,7 +9227,27 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         }
         break;
 
-    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV: {
+        g_autofree char *addrtype = virXPathString("string(./source/address/@type)", ctxt);
+
+        def->data.hostdev.def.parentnet = def;
+        def->data.hostdev.def.info = &def->info;
+        def->data.hostdev.def.mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
+
+        /* if not explicitly stated, source/vendor implies usb device */
+        if (!addrtype && virXPathNode("./source/vendor", ctxt))
+            addrtype = g_strdup("usb");
+
+        /* The helper function expects type to already be found and
+         * passed in as a string, since it is in a different place in
+         * NetDef vs HostdevDef. */
+        if (virDomainHostdevDefParseXMLSubsys(node, ctxt, addrtype,
+                                              &def->data.hostdev.def,
+                                              flags, xmlopt) < 0)
+            return NULL;
+    }
+        break;
+
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_NULL:
     case VIR_DOMAIN_NET_TYPE_LAST:
@@ -9355,27 +9373,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        break;
-
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-        hostdev = &def->data.hostdev.def;
-        hostdev->parentnet = def;
-        hostdev->info = &def->info;
-        /* The helper function expects type to already be found and
-         * passed in as a string, since it is in a different place in
-         * NetDef vs HostdevDef.
-         */
-        addrtype = virXPathString("string(./source/address/@type)", ctxt);
-        /* if not explicitly stated, source/vendor implies usb device */
-        if (!addrtype && virXPathNode("./source/vendor", ctxt))
-            addrtype = g_strdup("usb");
-        hostdev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
-        if (virDomainHostdevDefParseXMLSubsys(node, ctxt, addrtype,
-                                              hostdev, flags, xmlopt) < 0) {
-            return NULL;
-        }
-        break;
-
     case VIR_DOMAIN_NET_TYPE_VDS:
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
     case VIR_DOMAIN_NET_TYPE_USER:
