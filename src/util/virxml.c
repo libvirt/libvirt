@@ -443,7 +443,8 @@ virXMLCheckIllegalChars(const char *nodeName,
  *
  * Convenience function to return copy of an attribute value of a XML node.
  *
- * Returns the property (attribute) value as string or NULL in case of failure.
+ * Returns the property (attribute) value as string or NULL if the attribute
+ * is not present (no error is reported).
  * The caller is responsible for freeing the returned buffer.
  */
 char *
