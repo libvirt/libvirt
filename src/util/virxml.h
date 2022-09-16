@@ -380,6 +380,20 @@ virXPathContextNodeRestore(virXPathContextNodeSave *save);
 G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virXPathContextNodeSave, virXPathContextNodeRestore);
 
 /**
+ * VIR_XPATH_NODE_AUTORESTORE_NAME:
+ * @name: name of the temporary variable used to save @ctxt
+ * @ctxt: XML XPath context pointer
+ *
+ * This macro ensures that when the scope where it's used ends, @ctxt's current
+ * node pointer is reset to the original value when this macro was used. The
+ * context is saved into a variable named @name;
+ */
+#define VIR_XPATH_NODE_AUTORESTORE_NAME(_name, _ctxt) \
+    VIR_WARNINGS_NO_UNUSED_VARIABLE \
+    g_auto(virXPathContextNodeSave) _name = { .ctxt = _ctxt,\
+                                              .node = _ctxt->node}; \
+    VIR_WARNINGS_RESET
+/**
  * VIR_XPATH_NODE_AUTORESTORE:
  * @ctxt: XML XPath context pointer
  *
@@ -387,10 +401,7 @@ G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virXPathContextNodeSave, virXPathContextNodeRes
  * node pointer is reset to the original value when this macro was used.
  */
 #define VIR_XPATH_NODE_AUTORESTORE(_ctxt) \
-    VIR_WARNINGS_NO_UNUSED_VARIABLE \
-    g_auto(virXPathContextNodeSave) _ctxt ## CtxtSave = { .ctxt = _ctxt,\
-                                                          .node = _ctxt->node}; \
-    VIR_WARNINGS_RESET
+    VIR_XPATH_NODE_AUTORESTORE_NAME(_ctxt ## CtxtSave, _ctxt)
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(xmlDoc, xmlFreeDoc);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(xmlXPathContext, xmlXPathFreeContext);
