@@ -8999,7 +8999,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *localport = NULL;
     g_autofree char *model = NULL;
     g_autofree char *filter = NULL;
-    g_autofree char *internal = NULL;
     g_autofree char *mode = NULL;
     g_autofree char *linkstate = NULL;
     g_autofree char *addrtype = NULL;
@@ -9076,9 +9075,11 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        if (source_node) {
-            internal = virXMLPropString(source_node, "name");
-        }
+        if (virDomainNetDefParseXMLRequireSource(def, source_node) < 0)
+            return NULL;
+
+        if (!(def->data.internal.name = virXMLPropStringRequired(source_node, "name")))
+            return NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
@@ -9399,13 +9400,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        if (internal == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No <source> 'name' attribute specified "
-                             "with <interface type='internal'/>"));
-            return NULL;
-        }
-        def->data.internal.name = g_steal_pointer(&internal);
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
