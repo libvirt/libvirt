@@ -8988,7 +8988,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autoptr(GHashTable) filterparams = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virDomainChrSourceReconnectDef reconnect = {0};
-    int rv, val;
+    int rv;
     g_autofree char *macaddr = NULL;
     g_autofree char *dev = NULL;
     g_autofree char *managed_tap = NULL;
@@ -8998,7 +8998,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *localport = NULL;
     g_autofree char *model = NULL;
     g_autofree char *filter = NULL;
-    g_autofree char *mode = NULL;
     g_autofree char *linkstate = NULL;
     g_autofree char *addrtype = NULL;
     g_autofree char *vhostuser_mode = NULL;
@@ -9090,10 +9089,18 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        if (source_node) {
-            dev = virXMLPropString(source_node, "dev");
-            mode = virXMLPropString(source_node, "mode");
-        }
+        if (virDomainNetDefParseXMLRequireSource(def, source_node) < 0)
+            return NULL;
+
+        if (!(def->data.direct.linkdev = virXMLPropStringRequired(source_node, "dev")))
+            return NULL;
+
+        if (virXMLPropEnumDefault(source_node, "mode",
+                                  virNetDevMacVLanModeTypeFromString,
+                                  VIR_XML_PROP_NONE,
+                                  &def->data.direct.mode,
+                                  VIR_NETDEV_MACVLAN_MODE_VEPA) < 0)
+            return NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -9394,28 +9401,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        break;
-
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        if (dev == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No <source> 'dev' attribute specified "
-                             "with <interface type='direct'/>"));
-            return NULL;
-        }
-
-        if (mode != NULL) {
-            if ((val = virNetDevMacVLanModeTypeFromString(mode)) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Unknown mode has been specified"));
-                return NULL;
-            }
-            def->data.direct.mode = val;
-        } else {
-            def->data.direct.mode = VIR_NETDEV_MACVLAN_MODE_VEPA;
-        }
-
-        def->data.direct.linkdev = g_steal_pointer(&dev);
         break;
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
