@@ -8994,12 +8994,12 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     xmlNodePtr vlan_node = NULL;
     xmlNodePtr bandwidth_node = NULL;
     xmlNodePtr mac_node = NULL;
+    xmlNodePtr target_node = NULL;
     g_autoptr(GHashTable) filterparams = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int rv;
     g_autofree char *macaddr = NULL;
     g_autofree char *dev = NULL;
-    g_autofree char *managed_tap = NULL;
     g_autofree char *model = NULL;
     g_autofree char *filter = NULL;
     g_autofree char *linkstate = NULL;
@@ -9282,8 +9282,13 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
             return NULL;
     }
 
-    def->ifname = virXPathString("string(./target/@dev)", ctxt);
-    managed_tap = virXPathString("string(./target/@managed)", ctxt);
+    if ((target_node = virXPathNode("./target", ctxt))) {
+        def->ifname = virXMLPropString(target_node, "dev");
+
+        if (virXMLPropTristateBool(target_node, "managed", VIR_XML_PROP_NONE,
+                                   &def->managed_tap) < 0)
+            return NULL;
+    }
 
     def->ifname_guest = virXPathString("string(./guest/@dev)", ctxt);
     def->ifname_guest_actual = virXPathString("string(./guest/@actual)", ctxt);
@@ -9350,17 +9355,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     if (virDomainNetIPInfoParseXML(_("guest interface"), node,
                                    ctxt, &def->guestIP) < 0)
         return NULL;
-
-    if (managed_tap) {
-        bool state = false;
-        if (virStringParseYesNo(managed_tap, &state) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid 'managed' value '%s'"),
-                           managed_tap);
-            return NULL;
-        }
-        def->managed_tap = virTristateBoolFromBool(state);
-    }
 
     if (def->managed_tap != VIR_TRISTATE_BOOL_NO && def->ifname &&
         (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
