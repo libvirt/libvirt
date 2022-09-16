@@ -8990,21 +8990,19 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autoptr(virDomainNetDef) def = NULL;
     xmlNodePtr source_node = NULL;
     xmlNodePtr virtualport_node = NULL;
-    xmlNodePtr filterref_node = NULL;
     xmlNodePtr vlan_node = NULL;
     xmlNodePtr bandwidth_node = NULL;
     xmlNodePtr mac_node = NULL;
     xmlNodePtr target_node = NULL;
-    g_autoptr(GHashTable) filterparams = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int rv;
     g_autofree char *macaddr = NULL;
     g_autofree char *dev = NULL;
     g_autofree char *model = NULL;
-    g_autofree char *filter = NULL;
     g_autofree char *linkstate = NULL;
     g_autofree char *tap = NULL;
     unsigned int virtualport_flags = 0;
+    bool parse_filterref = false;
     const char *prefix = xmlopt ? xmlopt->config.netPrefix : NULL;
 
     if (!(def = virDomainNetDefNew(xmlopt)))
@@ -9056,6 +9054,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         }
 
         virtualport_flags = VIR_VPORT_XML_GENERATE_MISSING_DEFAULTS;
+        parse_filterref = true;
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDS:
@@ -9097,6 +9096,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         virtualport_flags = VIR_VPORT_XML_GENERATE_MISSING_DEFAULTS |
                             VIR_VPORT_XML_REQUIRE_ALL_ATTRIBUTES |
                             VIR_VPORT_XML_REQUIRE_TYPE;
+        parse_filterref = true;
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
@@ -9138,6 +9138,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                 return NULL;
             }
         }
+        parse_filterref = true;
         break;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER: {
@@ -9298,9 +9299,13 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     def->downscript = virXPathString("string(./downscript/@path)", ctxt);
     def->domain_name = virXPathString("string(./backenddomain/@name)", ctxt);
 
-    if ((filterref_node = virXPathNode("./filterref", ctxt))) {
-        filter = virXMLPropString(filterref_node, "filter");
-        filterparams = virNWFilterParseParamAttributes(filterref_node);
+    if (parse_filterref) {
+        xmlNodePtr filterref_node = virXPathNode("./filterref", ctxt);
+
+        if (filterref_node) {
+            def->filter = virXMLPropString(filterref_node, "filter");
+            def->filterparams = virNWFilterParseParamAttributes(filterref_node);
+        }
     }
 
     if ((bandwidth_node = virXPathNode("./bandwidth", ctxt)) &&
@@ -9383,34 +9388,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown interface link state '%s'"),
                            linkstate);
-            return NULL;
-        }
-    }
-
-    if (filter != NULL) {
-        switch (def->type) {
-        case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        case VIR_DOMAIN_NET_TYPE_NETWORK:
-        case VIR_DOMAIN_NET_TYPE_BRIDGE:
-            def->filter = g_steal_pointer(&filter);
-            def->filterparams = g_steal_pointer(&filterparams);
-            break;
-        case VIR_DOMAIN_NET_TYPE_USER:
-        case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-        case VIR_DOMAIN_NET_TYPE_SERVER:
-        case VIR_DOMAIN_NET_TYPE_CLIENT:
-        case VIR_DOMAIN_NET_TYPE_MCAST:
-        case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        case VIR_DOMAIN_NET_TYPE_DIRECT:
-        case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-        case VIR_DOMAIN_NET_TYPE_UDP:
-        case VIR_DOMAIN_NET_TYPE_NULL:
-        case VIR_DOMAIN_NET_TYPE_VDS:
-        case VIR_DOMAIN_NET_TYPE_VDPA:
-            break;
-        case VIR_DOMAIN_NET_TYPE_LAST:
-        default:
-            virReportEnumRangeError(virDomainNetType, def->type);
             return NULL;
         }
     }
