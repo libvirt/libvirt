@@ -128,8 +128,8 @@ virDomainObjInitJob(virDomainJobObj *job,
                     virDomainJobDataPrivateDataCallbacks *jobDataPrivateCb)
 {
     memset(job, 0, sizeof(*job));
-    job->cb = cb;
-    job->jobDataPrivateCb = jobDataPrivateCb;
+    job->cb = g_memdup(cb, sizeof(*cb));
+    job->jobDataPrivateCb = g_memdup(jobDataPrivateCb, sizeof(*jobDataPrivateCb));
 
     if (virCondInit(&job->cond) < 0)
         return -1;
@@ -229,6 +229,9 @@ virDomainObjClearJob(virDomainJobObj *job)
 
     if (job->cb && job->cb->freeJobPrivate)
         g_clear_pointer(&job->privateData, job->cb->freeJobPrivate);
+
+    g_clear_pointer(&job->cb, g_free);
+    g_clear_pointer(&job->jobDataPrivateCb, g_free);
 }
 
 void
