@@ -49,24 +49,24 @@ int virHostValidateBhyve(void)
 {
     int ret = 0;
     int fileid = 0;
-    struct kld_file_stat stat;
+    g_autofree struct kld_file_stat *stat = g_new0(struct kld_file_stat, 1);
     bool vmm_loaded = false;
     bool if_tap_loaded = false;
     bool if_bridge_loaded = false;
     bool nmdm_loaded = false;
 
     for (fileid = kldnext(0); fileid > 0; fileid = kldnext(fileid)) {
-        stat.version = sizeof(struct kld_file_stat);
-        if (kldstat(fileid, &stat) < 0)
+        stat->version = sizeof(struct kld_file_stat);
+        if (kldstat(fileid, stat) < 0)
             continue;
 
-        if (STREQ(stat.name, "vmm.ko"))
+        if (STREQ(stat->name, "vmm.ko"))
             vmm_loaded = true;
-        else if (STREQ(stat.name, "if_tap.ko"))
+        else if (STREQ(stat->name, "if_tap.ko"))
             if_tap_loaded = true;
-        else if (STREQ(stat.name, "if_bridge.ko"))
+        else if (STREQ(stat->name, "if_bridge.ko"))
             if_bridge_loaded = true;
-        else if (STREQ(stat.name, "nmdm.ko"))
+        else if (STREQ(stat->name, "nmdm.ko"))
             nmdm_loaded = true;
     }
 
