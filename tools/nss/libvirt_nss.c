@@ -470,58 +470,73 @@ aiforaf(const char *name,
         struct addrinfo **aip)
 {
     struct hostent resolved;
-    char buf[1024] = { 0 };
     int err;
-    int herr;
-    struct addrinfo hints;
-    struct addrinfo *res0;
-    struct addrinfo *res;
     char **addrList;
 
-    if (NSS_NAME(gethostbyname2)(name, af, &resolved,
-                                 buf, sizeof(buf),
-                                 &err, &herr) != NS_SUCCESS)
-        return;
+    /* Note: The do-while blocks in this function are used to scope off large
+     * stack allocated buffers, which are not needed at the same time */
+    do {
+        char buf[1024] = { 0 };
+        int herr;
+
+        if (NSS_NAME(gethostbyname2)(name, af, &resolved,
+                                     buf, sizeof(buf),
+                                     &err, &herr) != NS_SUCCESS)
+            return;
+    } while (false);
 
     addrList = resolved.h_addr_list;
     while (*addrList) {
-        union {
-            struct sockaddr sa;
-            struct sockaddr_in sin;
-            struct sockaddr_in6 sin6;
-        } sa = { 0 };
-        socklen_t salen;
         void *address = *addrList;
         char host[NI_MAXHOST];
+        struct addrinfo *res0;
+        struct addrinfo *res;
 
-        if (resolved.h_addrtype == AF_INET) {
-            sa.sin.sin_family = AF_INET;
-            memcpy(&sa.sin.sin_addr.s_addr,
-                   address,
-                   FAMILY_ADDRESS_SIZE(AF_INET));
-            salen = sizeof(sa.sin);
-        } else {
-            sa.sin6.sin6_family = AF_INET6;
-            memcpy(&sa.sin6.sin6_addr.s6_addr,
-                   address,
-                   FAMILY_ADDRESS_SIZE(AF_INET6));
-            salen = sizeof(sa.sin6);
-        }
+        do  {
+            union {
+                struct sockaddr sa;
+                struct sockaddr_in sin;
+                struct sockaddr_in6 sin6;
+            } sa = { 0 };
+            socklen_t salen;
 
-        if ((err = getnameinfo(&sa.sa, salen,
-                               host, sizeof(host),
-                               NULL, 0,
-                               NI_NUMERICHOST | NI_NUMERICSERV)) != 0) {
+            if (resolved.h_addrtype == AF_INET) {
+                sa.sin.sin_family = AF_INET;
+                memcpy(&sa.sin.sin_addr.s_addr,
+                       address,
+                       FAMILY_ADDRESS_SIZE(AF_INET));
+                salen = sizeof(sa.sin);
+            } else {
+                sa.sin6.sin6_family = AF_INET6;
+                memcpy(&sa.sin6.sin6_addr.s6_addr,
+                       address,
+                       FAMILY_ADDRESS_SIZE(AF_INET6));
+                salen = sizeof(sa.sin6);
+            }
+
+            err = getnameinfo(&sa.sa, salen,
+                              host, sizeof(host),
+                              NULL, 0,
+                              NI_NUMERICHOST | NI_NUMERICSERV);
+        } while (false);
+
+        if (err != 0) {
             ERROR("Cannot convert socket address to string: %s",
                   gai_strerror(err));
             continue;
         }
 
-        hints = *pai;
-        hints.ai_flags = AI_NUMERICHOST;
-        hints.ai_family = af;
+        do {
+            struct addrinfo hints;
 
-        if (getaddrinfo(host, NULL, &hints, &res0)) {
+            hints = *pai;
+            hints.ai_flags = AI_NUMERICHOST;
+            hints.ai_family = af;
+
+            err = getaddrinfo(host, NULL, &hints, &res0);
+        } while (false);
+
+        if (err != 0) {
             addrList++;
             continue;
         }
