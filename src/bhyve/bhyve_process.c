@@ -380,7 +380,7 @@ virBhyveGetDomainTotalCpuStats(virDomainObj *vm,
 {
     struct kinfo_proc *kp;
     kvm_t *kd;
-    char errbuf[_POSIX2_LINE_MAX];
+    g_autofree char *errbuf = g_new0(char, _POSIX2_LINE_MAX);
     int nprocs;
     int ret = -1;
 
@@ -481,7 +481,7 @@ virBhyveProcessReconnectAll(struct _bhyveConn *driver)
 {
     kvm_t *kd;
     struct bhyveProcessReconnectData data;
-    char errbuf[_POSIX2_LINE_MAX];
+    g_autofree char *errbuf = g_new0(char, _POSIX2_LINE_MAX);
 
     if ((kd = kvm_openfiles(NULL, NULL, NULL, O_RDONLY, errbuf)) == NULL) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
