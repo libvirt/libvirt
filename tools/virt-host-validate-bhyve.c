@@ -50,8 +50,10 @@ int virHostValidateBhyve(void)
     int ret = 0;
     int fileid = 0;
     struct kld_file_stat stat;
-    bool vmm_loaded = false, if_tap_loaded = false;
-    bool if_bridge_loaded = false, nmdm_loaded = false;
+    bool vmm_loaded = false;
+    bool if_tap_loaded = false;
+    bool if_bridge_loaded = false;
+    bool nmdm_loaded = false;
 
     for (fileid = kldnext(0); fileid > 0; fileid = kldnext(fileid)) {
         stat.version = sizeof(struct kld_file_stat);
