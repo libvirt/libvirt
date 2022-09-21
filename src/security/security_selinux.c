@@ -1818,7 +1818,11 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManager *mgr,
     const char *path = src->path;
     int ret;
 
-    if (!src->path || !virStorageSourceIsLocalStorage(src))
+    /* Special case NVMe. Per virStorageSourceIsLocalStorage() it's
+     * considered not local, but we still want the code below to set
+     * label on VFIO group. */
+    if (src->type != VIR_STORAGE_TYPE_NVME &&
+        (!src->path || !virStorageSourceIsLocalStorage(src)))
         return 0;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
