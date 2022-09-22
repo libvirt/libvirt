@@ -26,6 +26,7 @@
 #include "virobject.h"
 
 typedef struct _virNWFilterBindingObj virNWFilterBindingObj;
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNWFilterBindingObj, virObjectUnref);
 
 virNWFilterBindingObj *
 virNWFilterBindingObjNew(void);
