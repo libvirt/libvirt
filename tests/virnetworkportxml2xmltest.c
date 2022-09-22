@@ -38,7 +38,7 @@ testCompareXMLToXMLFiles(const char *expected)
     g_autofree char *actual = NULL;
     g_autoptr(virNetworkPortDef) dev = NULL;
 
-    if (!(dev = virNetworkPortDefParseFile(expected)))
+    if (!(dev = virNetworkPortDefParse(NULL, expected, 0)))
         return -1;
 
     if (!(actual = virNetworkPortDefFormat(dev)))

@@ -4844,7 +4844,7 @@ networkPortCreateXML(virNetworkPtr net,
 
     def = virNetworkObjGetDef(obj);
 
-    if (!(portdef = virNetworkPortDefParseString(xmldesc, flags)))
+    if (!(portdef = virNetworkPortDefParse(xmldesc, NULL, flags)))
         goto cleanup;
 
     if (virNetworkPortCreateXMLEnsureACL(net->conn, def, portdef) < 0)

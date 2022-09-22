@@ -251,7 +251,7 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
 }
 
 
-static virNetworkPortDef *
+virNetworkPortDef *
 virNetworkPortDefParse(const char *xmlStr,
                        const char *filename,
                        unsigned int flags)
@@ -265,21 +265,6 @@ virNetworkPortDefParse(const char *xmlStr,
         return NULL;
 
     return virNetworkPortDefParseXML(ctxt);
-}
-
-
-virNetworkPortDef *
-virNetworkPortDefParseString(const char *xmlStr,
-                             unsigned int flags)
-{
-    return virNetworkPortDefParse(xmlStr, NULL, flags);
-}
-
-
-virNetworkPortDef *
-virNetworkPortDefParseFile(const char *filename)
-{
-    return virNetworkPortDefParse(NULL, filename, 0);
 }
 
 

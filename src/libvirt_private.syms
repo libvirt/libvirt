@@ -1326,8 +1326,7 @@ virNetworkObjUpdateAssignDef;
 virNetworkPortDefFormat;
 virNetworkPortDefFormatBuf;
 virNetworkPortDefFree;
-virNetworkPortDefParseFile;
-virNetworkPortDefParseString;
+virNetworkPortDefParse;
 virNetworkPortDefSaveStatus;
 
 

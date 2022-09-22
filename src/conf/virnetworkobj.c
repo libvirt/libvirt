@@ -1833,7 +1833,7 @@ virNetworkObjLoadAllPorts(virNetworkObj *net,
 
         file = g_strdup_printf("%s/%s.xml", dir, de->d_name);
 
-        portdef = virNetworkPortDefParseFile(file);
+        portdef = virNetworkPortDefParse(NULL, file, 0);
         if (!portdef) {
             VIR_WARN("Cannot parse port %s", file);
             continue;

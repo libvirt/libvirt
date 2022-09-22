@@ -29537,7 +29537,7 @@ virDomainNetCreatePort(virConnectPtr conn,
     VIR_FREE(portxml);
 
     if (!(portxml = virNetworkPortGetXMLDesc(port, 0)) ||
-        !(portdef = virNetworkPortDefParseString(portxml, 0)) ||
+        !(portdef = virNetworkPortDefParse(portxml, NULL, 0)) ||
         virDomainNetDefActualFromNetworkPort(iface, portdef) < 0) {
         virErrorPreserveLast(&save_err);
         virNetworkPortDelete(port, 0);
