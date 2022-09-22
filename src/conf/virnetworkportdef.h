@@ -81,10 +81,6 @@ virNetworkPortDefFree(virNetworkPortDef *port);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetworkPortDef, virNetworkPortDefFree);
 
 virNetworkPortDef *
-virNetworkPortDefParseNode(xmlDocPtr xml,
-                           xmlNodePtr root);
-
-virNetworkPortDef *
 virNetworkPortDefParseString(const char *xml,
                              unsigned int flags);
 

@@ -251,42 +251,20 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
 }
 
 
-virNetworkPortDef *
-virNetworkPortDefParseNode(xmlDocPtr xml,
-                           xmlNodePtr root)
-{
-    g_autoptr(xmlXPathContext) ctxt = NULL;
-
-    if (STRNEQ((const char *)root->name, "networkport")) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s",
-                       _("unknown root element for network port"));
-        return NULL;
-    }
-
-    if (!(ctxt = virXMLXPathContextNew(xml)))
-        return NULL;
-
-    ctxt->node = root;
-    return virNetworkPortDefParseXML(ctxt);
-}
-
-
 static virNetworkPortDef *
 virNetworkPortDefParse(const char *xmlStr,
                        const char *filename,
                        unsigned int flags)
 {
-    virNetworkPortDef *def = NULL;
     g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     bool validate = flags & VIR_NETWORK_PORT_CREATE_VALIDATE;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(networkport_definition)"),
-                           NULL, NULL, "networkport.rng", validate))) {
-        def = virNetworkPortDefParseNode(xml, xmlDocGetRootElement(xml));
-    }
+    if (!(xml = virXMLParse(filename, xmlStr, _("(networkport_definition)"),
+                            "networkport", &ctxt, "networkport.rng", validate)))
+        return NULL;
 
-    return def;
+    return virNetworkPortDefParseXML(ctxt);
 }
 
 
