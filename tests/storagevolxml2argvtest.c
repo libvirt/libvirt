@@ -65,11 +65,11 @@ testCompareXMLToArgvFiles(bool shouldFail,
     if (inputvolxml)
         parse_flags |= VIR_VOL_XML_PARSE_NO_CAPACITY;
 
-    if (!(vol = virStorageVolDefParseFile(def, volxml, parse_flags)))
+    if (!(vol = virStorageVolDefParse(def, NULL, volxml, parse_flags)))
         goto cleanup;
 
     if (inputvolxml &&
-        !(inputvol = virStorageVolDefParseFile(inputpool, inputvolxml, 0)))
+        !(inputvol = virStorageVolDefParse(inputpool, NULL, inputvolxml, 0)))
         goto cleanup;
 
     testSetVolumeType(vol, def);

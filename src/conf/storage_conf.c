@@ -1401,7 +1401,7 @@ virStorageVolDefParseXML(virStoragePoolDef *pool,
 }
 
 
-static virStorageVolDef *
+virStorageVolDef *
 virStorageVolDefParse(virStoragePoolDef *pool,
                       const char *xmlStr,
                       const char *filename,
@@ -1415,24 +1415,6 @@ virStorageVolDefParse(virStoragePoolDef *pool,
         return NULL;
 
     return virStorageVolDefParseXML(pool, ctxt, flags);
-}
-
-
-virStorageVolDef *
-virStorageVolDefParseString(virStoragePoolDef *pool,
-                            const char *xmlStr,
-                            unsigned int flags)
-{
-    return virStorageVolDefParse(pool, xmlStr, NULL, flags);
-}
-
-
-virStorageVolDef *
-virStorageVolDefParseFile(virStoragePoolDef *pool,
-                          const char *filename,
-                          unsigned int flags)
-{
-    return virStorageVolDefParse(pool, NULL, filename, flags);
 }
 
 

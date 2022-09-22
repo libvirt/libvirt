@@ -7198,7 +7198,7 @@ testStorageVolCreateXML(virStoragePoolPtr pool,
         return NULL;
     def = virStoragePoolObjGetDef(obj);
 
-    privvol = virStorageVolDefParseString(def, xmldesc, 0);
+    privvol = virStorageVolDefParse(def, xmldesc, NULL, 0);
     if (privvol == NULL)
         goto cleanup;
 
@@ -7257,7 +7257,7 @@ testStorageVolCreateXMLFrom(virStoragePoolPtr pool,
         return NULL;
     def = virStoragePoolObjGetDef(obj);
 
-    privvol = virStorageVolDefParseString(def, xmldesc, 0);
+    privvol = virStorageVolDefParse(def, xmldesc, NULL, 0);
     if (privvol == NULL)
         goto cleanup;
 

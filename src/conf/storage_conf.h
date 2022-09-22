@@ -287,14 +287,10 @@ typedef enum {
 } virStorageVolDefParseFlags;
 
 virStorageVolDef *
-virStorageVolDefParseString(virStoragePoolDef *pool,
-                            const char *xml,
-                            unsigned int flags);
-
-virStorageVolDef *
-virStorageVolDefParseFile(virStoragePoolDef *pool,
-                          const char *filename,
-                          unsigned int flags);
+virStorageVolDefParse(virStoragePoolDef *pool,
+                      const char *xmlStr,
+                      const char *filename,
+                      unsigned int flags);
 
 virStorageVolDef *
 virStorageVolDefParseXML(virStoragePoolDef *pool,
