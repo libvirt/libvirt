@@ -279,10 +279,10 @@ virNetworkPortDefParse(const char *xmlStr,
 {
     virNetworkPortDef *def = NULL;
     g_autoptr(xmlDoc) xml = NULL;
+    bool validate = flags & VIR_NETWORK_PORT_CREATE_VALIDATE;
 
     if ((xml = virXMLParse(filename, xmlStr, _("(networkport_definition)"),
-                           "networkport.rng",
-                           flags & VIR_NETWORK_PORT_CREATE_VALIDATE))) {
+                           NULL, NULL, "networkport.rng", validate))) {
         def = virNetworkPortDefParseNode(xml, xmlDocGetRootElement(xml));
     }
 

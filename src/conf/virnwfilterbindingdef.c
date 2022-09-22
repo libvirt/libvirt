@@ -182,10 +182,10 @@ virNWFilterBindingDefParse(const char *xmlStr,
 {
     virNWFilterBindingDef *def = NULL;
     g_autoptr(xmlDoc) xml = NULL;
+    bool validate = flags & VIR_NWFILTER_BINDING_CREATE_VALIDATE;
 
     if ((xml = virXMLParse(filename, xmlStr, _("(nwfilterbinding_definition)"),
-                           "nwfilterbinding.rng",
-                           flags & VIR_NWFILTER_BINDING_CREATE_VALIDATE))) {
+                           NULL, NULL, "nwfilterbinding.rng", validate))) {
         def = virNWFilterBindingDefParseNode(xml, xmlDocGetRootElement(xml));
     }
 

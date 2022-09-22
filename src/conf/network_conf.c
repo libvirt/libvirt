@@ -2036,7 +2036,7 @@ virNetworkDefParse(const char *xmlStr,
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
     if ((xml = virXMLParse(filename, xmlStr, _("(network_definition)"),
-                           "network.rng", validate)))
+                           NULL, NULL, "network.rng", validate)))
         def = virNetworkDefParseNode(xml, xmlDocGetRootElement(xml), xmlopt);
 
     xmlKeepBlanksDefault(keepBlanksDefault);

@@ -2508,7 +2508,8 @@ virNodeDeviceDefParse(const char *str,
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(virNodeDeviceDef) def = NULL;
 
-    if (!(xml = virXMLParse(filename, str, _("(node_device_definition)"), NULL, false)) ||
+    if (!(xml = virXMLParse(filename, str, _("(node_device_definition)"),
+                            NULL, NULL, NULL, false)) ||
         !(def = virNodeDeviceDefParseNode(xml, xmlDocGetRootElement(xml),
                                           create, virt_type)))
         return NULL;

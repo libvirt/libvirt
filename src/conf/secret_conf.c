@@ -193,9 +193,10 @@ virSecretDefParse(const char *xmlStr,
 {
     g_autoptr(xmlDoc) xml = NULL;
     virSecretDef *ret = NULL;
+    bool validate = flags & VIR_SECRET_DEFINE_VALIDATE;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(definition_of_secret)"), "secret.rng",
-                           flags & VIR_SECRET_DEFINE_VALIDATE))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(definition_of_secret)"),
+                           NULL, NULL, "secret.rng", validate))) {
         ret = secretXMLParseNode(xml, xmlDocGetRootElement(xml));
     }
 

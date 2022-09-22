@@ -4581,7 +4581,8 @@ prlsdkParseSnapshotTree(const char *treexml)
     if (*treexml == '\0')
         return snapshots;
 
-    if (!(xml = virXMLParse(NULL, treexml, _("(snapshot_tree)"), NULL, false)))
+    if (!(xml = virXMLParse(NULL, treexml, _("(snapshot_tree)"),
+                            NULL, NULL, NULL, false)))
         goto cleanup;
 
     root = xmlDocGetRootElement(xml);

@@ -257,7 +257,8 @@ virNWFilterBindingObjParse(const char *xmlStr,
     virNWFilterBindingObj *obj = NULL;
     g_autoptr(xmlDoc) xml = NULL;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(nwfilterbinding_status)"), NULL, false))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(nwfilterbinding_status)"),
+                           NULL, NULL, NULL, false))) {
         obj = virNWFilterBindingObjParseNode(xml, xmlDocGetRootElement(xml));
     }
 

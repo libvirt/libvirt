@@ -204,13 +204,17 @@ virXMLPickShellSafeComment(const char *str1,
  * @filename: file to parse, or NULL for string parsing
  * @xmlStr: if @filename is NULL, a string to parse
  * @url: if @filename is NULL, an optional filename to attribute the parse to
+ * @rootelement: if non-NULL, validate that the root element name equals to this parameter
+ * @ctxt: if non-NULL, filled with a new XPath context including populating the root node
+ * @schemafile: name of the appropriate schema file for the parsed XML for validation (may be NULL)
+ * @validate: if true and @schemafile is non-NULL, validate the XML against @schemafile
  *
  * Parse xml from either a file or a string.
  *
  * Return the parsed document object, or NULL on failure.
  */
-#define virXMLParse(filename, xmlStr, url, schemafile, validate) \
-    virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, NULL, NULL, schemafile, validate)
+#define virXMLParse(filename, xmlStr, url, rootelement, ctxt, schemafile, validate) \
+    virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, rootelement, ctxt, schemafile, validate)
 
 /**
  * virXMLParseString:

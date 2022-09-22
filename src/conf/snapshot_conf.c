@@ -421,9 +421,10 @@ virDomainSnapshotDefParseString(const char *xmlStr,
     virDomainSnapshotDef *ret = NULL;
     g_autoptr(xmlDoc) xml = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
+    bool validate = flags & VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
 
-    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_snapshot)"), "domainsnapshot.rng",
-                           flags & VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE))) {
+    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_snapshot)"),
+                           NULL, NULL, "domainsnapshot.rng", validate))) {
         xmlKeepBlanksDefault(keepBlanksDefault);
         ret = virDomainSnapshotDefParseNode(xml, xmlDocGetRootElement(xml),
                                             xmlopt, parseOpaque,

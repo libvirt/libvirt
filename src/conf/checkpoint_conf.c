@@ -212,7 +212,7 @@ virDomainCheckpointDefParseString(const char *xmlStr,
     g_autoptr(xmlDoc) xml = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
-    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_checkpoint)"),
+    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_checkpoint)"), NULL, NULL,
                            "domaincheckpoint.rng", true))) {
         xmlKeepBlanksDefault(keepBlanksDefault);
         ret = virDomainCheckpointDefParseNode(xml, xmlDocGetRootElement(xml),

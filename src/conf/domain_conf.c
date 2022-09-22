@@ -19083,8 +19083,10 @@ virDomainDefParse(const char *xmlStr,
     virDomainDef *def = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
     xmlNodePtr root;
-    if (!(xml = virXMLParse(filename, xmlStr, _("(domain_definition)"), "domain.rng",
-                            flags & VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA)))
+    bool validate = flags & VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
+
+    if (!(xml = virXMLParse(filename, xmlStr, _("(domain_definition)"),
+                            NULL, NULL, "domain.rng", validate)))
         goto cleanup;
 
     root = xmlDocGetRootElement(xml);

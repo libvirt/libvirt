@@ -2713,9 +2713,10 @@ virNWFilterDefParse(const char *xmlStr,
 {
     virNWFilterDef *def = NULL;
     g_autoptr(xmlDoc) xml = NULL;
+    bool validate = flags & VIR_NWFILTER_DEFINE_VALIDATE;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(nwfilter_definition)"), "nwfilter.rng",
-                           flags & VIR_NWFILTER_DEFINE_VALIDATE))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(nwfilter_definition)"),
+                           NULL, NULL, "nwfilter.rng", validate))) {
         def = virNWFilterDefParseNode(xml, xmlDocGetRootElement(xml));
     }
 

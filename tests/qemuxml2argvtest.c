@@ -672,7 +672,8 @@ testCompareXMLToArgv(const void *data)
     if (testCheckExclusiveFlags(info->flags) < 0)
         goto cleanup;
 
-    if (!(xml = virXMLParse(info->infile, NULL, "(domain_definition)", NULL, false)))
+    if (!(xml = virXMLParse(info->infile, NULL, "(domain_definition)",
+                            NULL, NULL, NULL, false)))
         goto cleanup;
 
     root = xmlDocGetRootElement(xml);

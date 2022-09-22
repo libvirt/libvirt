@@ -700,9 +700,10 @@ virInterfaceDefParse(const char *xmlStr,
                      unsigned int flags)
 {
     g_autoptr(xmlDoc) xml = NULL;
+    bool validate = flags & VIR_INTERFACE_DEFINE_VALIDATE;
 
     xml = virXMLParse(filename, xmlStr, _("(interface_definition)"),
-                      "interface.rng", flags & VIR_INTERFACE_DEFINE_VALIDATE);
+                      NULL, NULL, "interface.rng", validate);
     if (!xml)
         return NULL;
 

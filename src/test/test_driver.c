@@ -851,7 +851,7 @@ testParseXMLDocFromFile(xmlNodePtr node, const char *file, const char *type)
     if ((relFile = virXMLPropString(node, "file"))) {
         absFile = testBuildFilename(file, relFile);
 
-        if (!(doc = virXMLParse(absFile, NULL, type, NULL, false)))
+        if (!(doc = virXMLParse(absFile, NULL, type, NULL, NULL, NULL, false)))
             return NULL;
 
         ret = xmlCopyNode(xmlDocGetRootElement(doc), 1);
