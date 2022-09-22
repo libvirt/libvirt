@@ -857,8 +857,17 @@ int networkAddFirewallRules(virNetworkDef *def)
              * nftables + default zone means that traffic cannot be
              * forwarded (and even DHCP and DNS from guest to host
              * will probably no be permitted by the default zone
+             *
+             * Routed networks use a different zone and policy which we also
+             * need to verify exist. Probing for the policy guarantees the
+             * running firewalld has support for policies (firewalld >= 0.9.0).
              */
-            if (virFirewallDZoneExists("libvirt")) {
+            if (def->forward.type == VIR_NETWORK_FORWARD_ROUTE &&
+                virFirewallDPolicyExists("libvirt-routed-out") &&
+                virFirewallDZoneExists("libvirt-routed")) {
+                if (virFirewallDInterfaceSetZone(def->bridge, "libvirt-routed") < 0)
+                    return -1;
+            } else if (virFirewallDZoneExists("libvirt")) {
                 if (virFirewallDInterfaceSetZone(def->bridge, "libvirt") < 0)
                     return -1;
             } else {
