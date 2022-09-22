@@ -102,12 +102,13 @@ virDomainSnapshotDef *virDomainSnapshotDefParseString(const char *xmlStr,
                                                       void *parseOpaque,
                                                       bool *current,
                                                       unsigned int flags);
-virDomainSnapshotDef *virDomainSnapshotDefParseNode(xmlDocPtr xml,
-                                                    xmlNodePtr root,
-                                                    virDomainXMLOption *xmlopt,
-                                                    void *parseOpaque,
-                                                    bool *current,
-                                                    unsigned int flags);
+virDomainSnapshotDef *
+virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
+                          virDomainXMLOption *xmlopt,
+                          void *parseOpaque,
+                          bool *current,
+                          unsigned int flags);
+
 virDomainSnapshotDef *virDomainSnapshotDefNew(void);
 char *virDomainSnapshotDefFormat(const char *uuidstr,
                                  virDomainSnapshotDef *def,

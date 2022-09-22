@@ -961,25 +961,23 @@ testParseDomainSnapshots(testDriver *privconn,
                          const char *file,
                          xmlXPathContextPtr ctxt)
 {
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     size_t i;
     testDomainNamespaceDef *nsdata = domobj->def->namespaceData;
     xmlNodePtr *nodes = nsdata->snap_nodes;
-    bool cur;
 
     for (i = 0; i < nsdata->num_snap_nodes; i++) {
         virDomainMomentObj *snap;
         g_autoptr(virDomainSnapshotDef) def = NULL;
-        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file);
-        if (!node)
+        unsigned int parseFlags = VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL |
+                                  VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
+        bool cur;
+
+        if (!(ctxt->node = testParseXMLDocFromFile(nodes[i], file)))
             return -1;
 
-        def = virDomainSnapshotDefParseNode(ctxt->doc, node,
-                                            privconn->xmlopt,
-                                            NULL,
-                                            &cur,
-                                            VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL |
-                                            VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE);
-        if (!def)
+        if (!(def = virDomainSnapshotDefParse(ctxt, privconn->xmlopt, NULL,
+                                              &cur, parseFlags)))
             return -1;
 
         if (!(snap = virDomainSnapshotAssignDef(domobj->snapshots, &def)))

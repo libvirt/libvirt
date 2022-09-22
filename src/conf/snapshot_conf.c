@@ -197,7 +197,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
  * If flags does not include
  * VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL, then current is ignored.
  */
-static virDomainSnapshotDef *
+virDomainSnapshotDef *
 virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                           virDomainXMLOption *xmlopt,
                           void *parseOpaque,
@@ -389,27 +389,6 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     return g_steal_pointer(&def);
 }
 
-virDomainSnapshotDef *
-virDomainSnapshotDefParseNode(xmlDocPtr xml,
-                              xmlNodePtr root,
-                              virDomainXMLOption *xmlopt,
-                              void *parseOpaque,
-                              bool *current,
-                              unsigned int flags)
-{
-    g_autoptr(xmlXPathContext) ctxt = NULL;
-
-    if (!virXMLNodeNameEqual(root, "domainsnapshot")) {
-        virReportError(VIR_ERR_XML_ERROR, "%s", _("domainsnapshot"));
-        return NULL;
-    }
-
-    if (!(ctxt = virXMLXPathContextNew(xml)))
-        return NULL;
-
-    ctxt->node = root;
-    return virDomainSnapshotDefParse(ctxt, xmlopt, parseOpaque, current, flags);
-}
 
 virDomainSnapshotDef *
 virDomainSnapshotDefParseString(const char *xmlStr,
@@ -418,21 +397,20 @@ virDomainSnapshotDefParseString(const char *xmlStr,
                                 bool *current,
                                 unsigned int flags)
 {
-    virDomainSnapshotDef *ret = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(xmlDoc) xml = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
     bool validate = flags & VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
 
-    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_snapshot)"),
-                           NULL, NULL, "domainsnapshot.rng", validate))) {
-        xmlKeepBlanksDefault(keepBlanksDefault);
-        ret = virDomainSnapshotDefParseNode(xml, xmlDocGetRootElement(xml),
-                                            xmlopt, parseOpaque,
-                                            current, flags);
-    }
+    xml = virXMLParse(NULL, xmlStr, _("(domain_snapshot)"),
+                      "domainsnapshot", &ctxt, "domainsnapshot.rng", validate);
+
     xmlKeepBlanksDefault(keepBlanksDefault);
 
-    return ret;
+    if (!xml)
+        return NULL;
+
+    return virDomainSnapshotDefParse(ctxt, xmlopt, parseOpaque, current, flags);
 }
 
 
