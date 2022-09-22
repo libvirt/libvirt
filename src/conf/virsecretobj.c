@@ -870,7 +870,7 @@ virSecretLoad(virSecretObjList *secrets,
     virSecretDef *def = NULL;
     virSecretObj *obj = NULL;
 
-    if (!(def = virSecretDefParseFile(path)))
+    if (!(def = virSecretDefParse(NULL, path, 0)))
         goto cleanup;
 
     if (virSecretLoadValidateUUID(def, file) < 0)

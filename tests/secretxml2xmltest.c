@@ -13,7 +13,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
     g_autofree char *actual = NULL;
     g_autoptr(virSecretDef) secret = NULL;
 
-    if (!(secret = virSecretDefParseFile(inxml)))
+    if (!(secret = virSecretDefParse(NULL, inxml, 0)))
         return -1;
 
     if (!(actual = virSecretDefFormat(secret)))

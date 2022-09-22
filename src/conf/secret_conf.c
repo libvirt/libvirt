@@ -174,7 +174,7 @@ virSecretParseXML(xmlXPathContext *ctxt)
 }
 
 
-static virSecretDef *
+virSecretDef *
 virSecretDefParse(const char *xmlStr,
                   const char *filename,
                   unsigned int flags)
@@ -190,18 +190,6 @@ virSecretDefParse(const char *xmlStr,
     return virSecretParseXML(ctxt);
 }
 
-virSecretDef *
-virSecretDefParseString(const char *xmlStr,
-                        unsigned int flags)
-{
-    return virSecretDefParse(xmlStr, NULL, flags);
-}
-
-virSecretDef *
-virSecretDefParseFile(const char *filename)
-{
-    return virSecretDefParse(NULL, filename, 0);
-}
 
 static int
 virSecretDefFormatUsage(virBuffer *buf,

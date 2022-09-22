@@ -1010,8 +1010,7 @@ virObjectEventStateQueue;
 # conf/secret_conf.h
 virSecretDefFormat;
 virSecretDefFree;
-virSecretDefParseFile;
-virSecretDefParseString;
+virSecretDefParse;
 virSecretUsageTypeFromString;
 virSecretUsageTypeToString;
 

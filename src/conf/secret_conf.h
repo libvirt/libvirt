@@ -35,8 +35,11 @@ struct _virSecretDef {
 void virSecretDefFree(virSecretDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSecretDef, virSecretDefFree);
 
-virSecretDef *virSecretDefParseString(const char *xml, unsigned int flags);
-virSecretDef *virSecretDefParseFile(const char *filename);
+virSecretDef *
+virSecretDefParse(const char *xmlStr,
+                  const char *filename,
+                  unsigned int flags);
+
 char *virSecretDefFormat(const virSecretDef *def);
 
 #define VIR_CONNECT_LIST_SECRETS_FILTERS_EPHEMERAL \
