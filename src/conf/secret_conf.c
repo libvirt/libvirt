@@ -123,27 +123,14 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
     return 0;
 }
 
+
 static virSecretDef *
-secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
+virSecretParseXML(xmlXPathContext *ctxt)
 {
-    g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(virSecretDef) def = NULL;
     g_autofree char *ephemeralstr = NULL;
     g_autofree char *privatestr = NULL;
     g_autofree char *uuidstr = NULL;
-
-    if (!virXMLNodeNameEqual(root, "secret")) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unexpected root element <%s>, "
-                         "expecting <secret>"),
-                       root->name);
-        return NULL;
-    }
-
-    if (!(ctxt = virXMLXPathContextNew(xml)))
-        return NULL;
-
-    ctxt->node = root;
 
     def = g_new0(virSecretDef, 1);
 
@@ -186,21 +173,21 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
     return g_steal_pointer(&def);
 }
 
+
 static virSecretDef *
 virSecretDefParse(const char *xmlStr,
                   const char *filename,
                   unsigned int flags)
 {
     g_autoptr(xmlDoc) xml = NULL;
-    virSecretDef *ret = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     bool validate = flags & VIR_SECRET_DEFINE_VALIDATE;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(definition_of_secret)"),
-                           NULL, NULL, "secret.rng", validate))) {
-        ret = secretXMLParseNode(xml, xmlDocGetRootElement(xml));
-    }
+    if (!(xml = virXMLParse(filename, xmlStr, _("(definition_of_secret)"),
+                            "secret", &ctxt, "secret.rng", validate)))
+        return NULL;
 
-    return ret;
+    return virSecretParseXML(ctxt);
 }
 
 virSecretDef *
