@@ -106,15 +106,15 @@ typedef enum {
 } virDomainBackupParseFlags;
 
 virDomainBackupDef *
+virDomainBackupDefParseXML(xmlXPathContextPtr ctxt,
+                           virDomainXMLOption *xmlopt,
+                           unsigned int flags);
+
+virDomainBackupDef *
 virDomainBackupDefParseString(const char *xmlStr,
                               virDomainXMLOption *xmlopt,
                               unsigned int flags);
 
-virDomainBackupDef *
-virDomainBackupDefParseNode(xmlDocPtr xml,
-                            xmlNodePtr root,
-                            virDomainXMLOption *xmlopt,
-                            unsigned int flags);
 void
 virDomainBackupDefFree(virDomainBackupDef *def);
 

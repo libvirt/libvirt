@@ -46,8 +46,8 @@ virAccessPermStorageVolTypeToString;
 virDomainBackupAlignDisks;
 virDomainBackupDefFormat;
 virDomainBackupDefFree;
-virDomainBackupDefParseNode;
 virDomainBackupDefParseString;
+virDomainBackupDefParseXML;
 
 
 # conf/capabilities.h

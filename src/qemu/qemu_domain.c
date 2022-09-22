@@ -2860,6 +2860,7 @@ static int
 qemuDomainObjPrivateXMLParseBackups(qemuDomainObjPrivate *priv,
                                     xmlXPathContextPtr ctxt)
 {
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree xmlNodePtr *nodes = NULL;
     ssize_t nnodes = 0;
 
@@ -2875,9 +2876,11 @@ qemuDomainObjPrivateXMLParseBackups(qemuDomainObjPrivate *priv,
     if (nnodes == 0)
         return 0;
 
-    if (!(priv->backup = virDomainBackupDefParseNode(ctxt->doc, nodes[0],
-                                                     priv->driver->xmlopt,
-                                                     VIR_DOMAIN_BACKUP_PARSE_INTERNAL)))
+    ctxt->node = nodes[0];
+
+    if (!(priv->backup = virDomainBackupDefParseXML(ctxt,
+                                                    priv->driver->xmlopt,
+                                                    VIR_DOMAIN_BACKUP_PARSE_INTERNAL)))
         return -1;
 
     return 0;
