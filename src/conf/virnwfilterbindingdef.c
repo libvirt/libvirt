@@ -71,7 +71,7 @@ virNWFilterBindingDefCopy(virNWFilterBindingDef *src)
 }
 
 
-static virNWFilterBindingDef *
+virNWFilterBindingDef *
 virNWFilterBindingDefParseXML(xmlXPathContextPtr ctxt)
 {
     virNWFilterBindingDef *ret;
@@ -154,42 +154,20 @@ virNWFilterBindingDefParseXML(xmlXPathContextPtr ctxt)
 }
 
 
-virNWFilterBindingDef *
-virNWFilterBindingDefParseNode(xmlDocPtr xml,
-                               xmlNodePtr root)
-{
-    g_autoptr(xmlXPathContext) ctxt = NULL;
-
-    if (STRNEQ((const char *)root->name, "filterbinding")) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s",
-                       _("unknown root element for nwfilter binding"));
-        return NULL;
-    }
-
-    if (!(ctxt = virXMLXPathContextNew(xml)))
-        return NULL;
-
-    ctxt->node = root;
-    return virNWFilterBindingDefParseXML(ctxt);
-}
-
-
 static virNWFilterBindingDef *
 virNWFilterBindingDefParse(const char *xmlStr,
                            const char *filename,
                            unsigned int flags)
 {
-    virNWFilterBindingDef *def = NULL;
     g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     bool validate = flags & VIR_NWFILTER_BINDING_CREATE_VALIDATE;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(nwfilterbinding_definition)"),
-                           NULL, NULL, "nwfilterbinding.rng", validate))) {
-        def = virNWFilterBindingDefParseNode(xml, xmlDocGetRootElement(xml));
-    }
+    if (!(xml = virXMLParse(filename, xmlStr, _("(nwfilterbinding_definition)"),
+                            "filterbinding", &ctxt, "nwfilterbinding.rng", validate)))
+        return NULL;
 
-    return def;
+    return virNWFilterBindingDefParseXML(ctxt);
 }
 
 

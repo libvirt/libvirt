@@ -223,7 +223,9 @@ virNWFilterBindingObjParse(const char *filename)
         return NULL;
     }
 
-    if (!(ret->def = virNWFilterBindingDefParseNode(xml, node)))
+    ctxt->node = node;
+
+    if (!(ret->def = virNWFilterBindingDefParseXML(ctxt)))
         return NULL;
 
     return g_steal_pointer(&ret);

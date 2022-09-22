@@ -1365,8 +1365,8 @@ virNWFilterBindingDefFormat;
 virNWFilterBindingDefFormatBuf;
 virNWFilterBindingDefFree;
 virNWFilterBindingDefParseFile;
-virNWFilterBindingDefParseNode;
 virNWFilterBindingDefParseString;
+virNWFilterBindingDefParseXML;
 
 
 # conf/virnwfilterbindingobj.h

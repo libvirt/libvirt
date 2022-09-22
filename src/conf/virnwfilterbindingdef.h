@@ -47,8 +47,7 @@ virNWFilterBindingDef *
 virNWFilterBindingDefCopy(virNWFilterBindingDef *src);
 
 virNWFilterBindingDef *
-virNWFilterBindingDefParseNode(xmlDocPtr xml,
-                               xmlNodePtr root);
+virNWFilterBindingDefParseXML(xmlXPathContextPtr ctxt);
 
 virNWFilterBindingDef *
 virNWFilterBindingDefParseString(const char *xml,
