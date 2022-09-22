@@ -181,26 +181,6 @@ virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
     return ret;
 }
 
-static virDomainCheckpointDef *
-virDomainCheckpointDefParseNode(xmlDocPtr xml,
-                                xmlNodePtr root,
-                                virDomainXMLOption *xmlopt,
-                                void *parseOpaque,
-                                unsigned int flags)
-{
-    g_autoptr(xmlXPathContext) ctxt = NULL;
-
-    if (!virXMLNodeNameEqual(root, "domaincheckpoint")) {
-        virReportError(VIR_ERR_XML_ERROR, "%s", _("domaincheckpoint"));
-        return NULL;
-    }
-
-    if (!(ctxt = virXMLXPathContextNew(xml)))
-        return NULL;
-
-    ctxt->node = root;
-    return virDomainCheckpointDefParse(ctxt, xmlopt, parseOpaque, flags);
-}
 
 virDomainCheckpointDef *
 virDomainCheckpointDefParseString(const char *xmlStr,
@@ -208,19 +188,19 @@ virDomainCheckpointDefParseString(const char *xmlStr,
                                   void *parseOpaque,
                                   unsigned int flags)
 {
-    virDomainCheckpointDef *ret = NULL;
     g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
-    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_checkpoint)"), NULL, NULL,
-                           "domaincheckpoint.rng", true))) {
-        xmlKeepBlanksDefault(keepBlanksDefault);
-        ret = virDomainCheckpointDefParseNode(xml, xmlDocGetRootElement(xml),
-                                              xmlopt, parseOpaque, flags);
-    }
+    xml = virXMLParse(NULL, xmlStr, _("(domain_checkpoint)"),
+                      "domaincheckpoint", &ctxt, "domaincheckpoint.rng", true);
+
     xmlKeepBlanksDefault(keepBlanksDefault);
 
-    return ret;
+    if (!xml)
+        return NULL;
+
+    return virDomainCheckpointDefParse(ctxt, xmlopt, parseOpaque, flags);
 }
 
 
