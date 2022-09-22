@@ -1147,6 +1147,7 @@ testOpenVolumesForPool(const char *file,
                        xmlXPathContextPtr ctxt,
                        virStoragePoolObj *obj)
 {
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virStoragePoolDef *def = virStoragePoolObjGetDef(obj);
     size_t i;
     int num;
@@ -1158,11 +1159,10 @@ testOpenVolumesForPool(const char *file,
         return -1;
 
     for (i = 0; i < num; i++) {
-        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file);
-        if (!node)
+        if (!(ctxt->node = testParseXMLDocFromFile(nodes[i], file)))
             return -1;
 
-        if (!(volDef = virStorageVolDefParseNode(def, ctxt->doc, node, 0)))
+        if (!(volDef = virStorageVolDefParseXML(def, ctxt, 0)))
             return -1;
 
         if (!volDef->target.path) {

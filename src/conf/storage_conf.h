@@ -297,10 +297,9 @@ virStorageVolDefParseFile(virStoragePoolDef *pool,
                           unsigned int flags);
 
 virStorageVolDef *
-virStorageVolDefParseNode(virStoragePoolDef *pool,
-                          xmlDocPtr xml,
-                          xmlNodePtr root,
-                          unsigned int flags);
+virStorageVolDefParseXML(virStoragePoolDef *pool,
+                         xmlXPathContextPtr ctxt,
+                         unsigned int flags);
 
 char *
 virStorageVolDefFormat(virStoragePoolDef *pool,
