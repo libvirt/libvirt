@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<zone>
+  <short>libvirt-routed</short>
+
+  <description>
+    This zone is intended to be used only by routed libvirt virtual networks -
+    libvirt will add the bridge devices for all new virtual networks to this
+    zone by default.
+  </description>
+</zone>

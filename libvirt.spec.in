@@ -1914,6 +1914,7 @@ exit 0
 
 %if %{with_firewalld_zone}
 %{_prefix}/lib/firewalld/zones/libvirt.xml
+%{_prefix}/lib/firewalld/zones/libvirt-routed.xml
 %endif
 
 %files daemon-driver-nodedev

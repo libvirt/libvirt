@@ -101,5 +101,10 @@ if conf.has('WITH_NETWORK')
       install_dir: prefix / 'lib' / 'firewalld' / 'zones',
       rename: [ 'libvirt.xml' ],
     )
+    install_data(
+      'libvirt-routed.zone',
+      install_dir: prefix / 'lib' / 'firewalld' / 'zones',
+      rename: [ 'libvirt-routed.xml' ],
+    )
   endif
 endif
