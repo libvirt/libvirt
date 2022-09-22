@@ -29914,7 +29914,7 @@ virDomainStorageSourceTranslateSourcePool(virStorageSource *src,
     if (!(poolxml = virStoragePoolGetXMLDesc(pool, 0)))
         return -1;
 
-    if (!(pooldef = virStoragePoolDefParseString(poolxml, 0)))
+    if (!(pooldef = virStoragePoolDefParse(poolxml, NULL, 0)))
         return -1;
 
     src->srcpool->pooltype = pooldef->type;

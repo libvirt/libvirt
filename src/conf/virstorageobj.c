@@ -1579,7 +1579,7 @@ virStoragePoolObjLoad(virStoragePoolObjList *pools,
 
     VIR_DEBUG("loading storage pool config XML '%s'", path);
 
-    if (!(def = virStoragePoolDefParseFile(path)))
+    if (!(def = virStoragePoolDefParse(NULL, path, 0)))
         return NULL;
 
     if (!virStringMatchesNameSuffix(file, def->name, ".xml")) {

@@ -19,7 +19,7 @@ testCompareXMLToXMLFiles(const char *poolxml, const char *inxml,
     g_autoptr(virStoragePoolDef) pool = NULL;
     g_autoptr(virStorageVolDef) dev = NULL;
 
-    if (!(pool = virStoragePoolDefParseFile(poolxml)))
+    if (!(pool = virStoragePoolDefParse(NULL, poolxml, 0)))
         return -1;
 
     if (!(dev = virStorageVolDefParseFile(pool, inxml, flags)))

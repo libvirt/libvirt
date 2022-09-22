@@ -6631,7 +6631,7 @@ testStoragePoolCreateXML(virConnectPtr conn,
     virCheckFlags(0, NULL);
 
     virObjectLock(privconn);
-    if (!(newDef = virStoragePoolDefParseString(xml, 0)))
+    if (!(newDef = virStoragePoolDefParse(xml, NULL, 0)))
         goto cleanup;
 
     if (!(obj = virStoragePoolObjListAdd(privconn->pools, &newDef,
@@ -6693,7 +6693,7 @@ testStoragePoolDefineXML(virConnectPtr conn,
     virCheckFlags(VIR_STORAGE_POOL_DEFINE_VALIDATE, NULL);
 
     virObjectLock(privconn);
-    if (!(newDef = virStoragePoolDefParseString(xml, flags)))
+    if (!(newDef = virStoragePoolDefParse(xml, NULL, flags)))
         goto cleanup;
 
     newDef->capacity = defaultPoolCap;

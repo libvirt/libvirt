@@ -27,7 +27,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
     g_autofree char *src = NULL;
     g_autoptr(virCommand) cmd = NULL;
 
-    if (!(def = virStoragePoolDefParseFile(poolxml)))
+    if (!(def = virStoragePoolDefParse(NULL, poolxml, 0)))
         goto cleanup;
     defTypeStr = virStoragePoolTypeToString(def->type);
 

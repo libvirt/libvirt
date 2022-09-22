@@ -972,7 +972,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
 }
 
 
-static virStoragePoolDef *
+virStoragePoolDef *
 virStoragePoolDefParse(const char *xmlStr,
                        const char *filename,
                        unsigned int flags)
@@ -987,21 +987,6 @@ virStoragePoolDefParse(const char *xmlStr,
         return NULL;
 
     return virStoragePoolDefParseXML(ctxt);
-}
-
-
-virStoragePoolDef *
-virStoragePoolDefParseString(const char *xmlStr,
-                             unsigned int flags)
-{
-    return virStoragePoolDefParse(xmlStr, NULL, flags);
-}
-
-
-virStoragePoolDef *
-virStoragePoolDefParseFile(const char *filename)
-{
-    return virStoragePoolDefParse(NULL, filename, 0);
 }
 
 
