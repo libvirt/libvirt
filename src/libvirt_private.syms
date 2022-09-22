@@ -1054,7 +1054,6 @@ virStoragePartedFsTypeToString;
 virStoragePoolDefFormat;
 virStoragePoolDefFree;
 virStoragePoolDefParseFile;
-virStoragePoolDefParseNode;
 virStoragePoolDefParseSourceString;
 virStoragePoolDefParseString;
 virStoragePoolFormatDiskTypeFromString;

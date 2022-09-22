@@ -278,10 +278,6 @@ virStoragePoolDefParseString(const char *xml,
 virStoragePoolDef *
 virStoragePoolDefParseFile(const char *filename);
 
-virStoragePoolDef *
-virStoragePoolDefParseNode(xmlDocPtr xml,
-                           xmlNodePtr root);
-
 char *
 virStoragePoolDefFormat(virStoragePoolDef *def);
 

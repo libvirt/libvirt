@@ -972,43 +972,21 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
 }
 
 
-virStoragePoolDef *
-virStoragePoolDefParseNode(xmlDocPtr xml,
-                           xmlNodePtr root)
-{
-    g_autoptr(xmlXPathContext) ctxt = NULL;
-
-    if (!virXMLNodeNameEqual(root, "pool")) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unexpected root element <%s>, "
-                         "expecting <pool>"),
-                       root->name);
-        return NULL;
-    }
-
-    if (!(ctxt = virXMLXPathContextNew(xml)))
-        return NULL;
-
-    ctxt->node = root;
-    return virStoragePoolDefParseXML(ctxt);
-}
-
-
 static virStoragePoolDef *
 virStoragePoolDefParse(const char *xmlStr,
                        const char *filename,
                        unsigned int flags)
 {
-    virStoragePoolDef *ret = NULL;
     g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     bool validate = flags & VIR_STORAGE_POOL_DEFINE_VALIDATE;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(storage_pool_definition)"),
-                           NULL, NULL, "storagepool.rng", validate))) {
-        ret = virStoragePoolDefParseNode(xml, xmlDocGetRootElement(xml));
-    }
 
-    return ret;
+    if (!(xml = virXMLParse(filename, xmlStr, _("(storage_pool_definition)"),
+                            "pool", &ctxt, "storagepool.rng", validate)))
+        return NULL;
+
+    return virStoragePoolDefParseXML(ctxt);
 }
 
 

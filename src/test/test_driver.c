@@ -1145,20 +1145,15 @@ testParseInterfaces(testDriver *privconn,
 static int
 testOpenVolumesForPool(const char *file,
                        xmlXPathContextPtr ctxt,
-                       virStoragePoolObj *obj,
-                       int objidx)
+                       virStoragePoolObj *obj)
 {
     virStoragePoolDef *def = virStoragePoolObjGetDef(obj);
     size_t i;
     int num;
-    g_autofree char *vol_xpath = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
     g_autoptr(virStorageVolDef) volDef = NULL;
 
-    /* Find storage volumes */
-    vol_xpath = g_strdup_printf("/node/pool[%d]/volume", objidx);
-
-    num = virXPathNodeSet(vol_xpath, ctxt, &nodes);
+    num = virXPathNodeSet("/pool/volume", ctxt, &nodes);
     if (num < 0)
         return -1;
 
@@ -1195,6 +1190,7 @@ testParseStorage(testDriver *privconn,
                  const char *file,
                  xmlXPathContextPtr ctxt)
 {
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int num;
     size_t i;
     virStoragePoolObj *obj;
@@ -1206,12 +1202,11 @@ testParseStorage(testDriver *privconn,
 
     for (i = 0; i < num; i++) {
         virStoragePoolDef *def;
-        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file);
-        if (!node)
+
+        if (!(ctxt->node = testParseXMLDocFromFile(nodes[i], file)))
             return -1;
 
-        def = virStoragePoolDefParseNode(ctxt->doc, node);
-        if (!def)
+        if (!(def = virStoragePoolDefParseXML(ctxt)))
             return -1;
 
         if (!(obj = virStoragePoolObjListAdd(privconn->pools, &def, 0))) {
@@ -1226,7 +1221,7 @@ testParseStorage(testDriver *privconn,
         virStoragePoolObjSetActive(obj, true);
 
         /* Find storage volumes */
-        if (testOpenVolumesForPool(file, ctxt, obj, i+1) < 0) {
+        if (testOpenVolumesForPool(file, ctxt, obj) < 0) {
             virStoragePoolObjEndAPI(&obj);
             return -1;
         }
