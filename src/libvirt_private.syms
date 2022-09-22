@@ -2365,6 +2365,7 @@ virFirewallDGetVersion;
 virFirewallDGetZones;
 virFirewallDInterfaceSetZone;
 virFirewallDIsRegistered;
+virFirewallDPolicyExists;
 virFirewallDSynchronize;
 virFirewallDZoneExists;
 

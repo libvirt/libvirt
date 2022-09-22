@@ -35,6 +35,7 @@ int virFirewallDIsRegistered(void);
 int virFirewallDGetZones(char ***zones, size_t *nzones);
 int virFirewallDGetPolicies(char ***policies, size_t *npolicies);
 bool virFirewallDZoneExists(const char *match);
+bool virFirewallDPolicyExists(const char *match);
 int virFirewallDApplyRule(virFirewallLayer layer,
                           char **args, size_t argsLen,
                           bool ignoreErrors,

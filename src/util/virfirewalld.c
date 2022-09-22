@@ -297,6 +297,37 @@ virFirewallDZoneExists(const char *match)
 
 
 /**
+ * virFirewallDPolicyExists:
+ * @match: name of policy to look for
+ *
+ * Returns true if the requested policy exists, or false if it doesn't exist
+ */
+bool
+virFirewallDPolicyExists(const char *match)
+{
+    size_t npolicies = 0, i;
+    char **policies = NULL;
+    bool result = false;
+
+    if (virFirewallDGetPolicies(&policies, &npolicies) < 0)
+        goto cleanup;
+
+    for (i = 0; i < npolicies; i++) {
+        if (STREQ_NULLABLE(policies[i], match))
+            result = true;
+    }
+
+ cleanup:
+    VIR_DEBUG("Requested policy '%s' %s exist",
+              match, result ? "does" : "doesn't");
+    for (i = 0; i < npolicies; i++)
+       VIR_FREE(policies[i]);
+    VIR_FREE(policies);
+    return result;
+}
+
+
+/**
  * virFirewallDApplyRule:
  * @layer:        which layer to apply the rule to
  * @args:         list of args to send to this layer's passthrough command.
