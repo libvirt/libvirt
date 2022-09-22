@@ -4566,7 +4566,6 @@ prlsdkParseSnapshotTree(const char *treexml)
     virDomainSnapshotObjList *ret = NULL;
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    xmlNodePtr root;
     xmlNodePtr *nodes = NULL;
     virDomainSnapshotDef *def = NULL;
     virDomainMomentObj *snapshot;
@@ -4582,20 +4581,8 @@ prlsdkParseSnapshotTree(const char *treexml)
         return snapshots;
 
     if (!(xml = virXMLParse(NULL, treexml, _("(snapshot_tree)"),
-                            NULL, NULL, NULL, false)))
+                            "ParallelsSavedStates", &ctxt, NULL, false)))
         goto cleanup;
-
-    root = xmlDocGetRootElement(xml);
-    if (!virXMLNodeNameEqual(root, "ParallelsSavedStates")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected root element: '%s'"), root->name);
-        goto cleanup;
-    }
-
-    if (!(ctxt = virXMLXPathContextNew(xml)))
-        goto cleanup;
-
-    ctxt->node = root;
 
     if ((n = virXPathNodeSet("//SavedStateItem", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4604,7 +4591,7 @@ prlsdkParseSnapshotTree(const char *treexml)
     }
 
     for (i = 0; i < n; i++) {
-        if (nodes[i]->parent == root)
+        if (nodes[i]->parent == xmlDocGetRootElement(xml))
             continue;
 
         def = g_new0(virDomainSnapshotDef, 1);
