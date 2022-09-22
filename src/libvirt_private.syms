@@ -1364,8 +1364,7 @@ virNWFilterBindingDefCopy;
 virNWFilterBindingDefFormat;
 virNWFilterBindingDefFormatBuf;
 virNWFilterBindingDefFree;
-virNWFilterBindingDefParseFile;
-virNWFilterBindingDefParseString;
+virNWFilterBindingDefParse;
 virNWFilterBindingDefParseXML;
 
 

@@ -154,7 +154,7 @@ virNWFilterBindingDefParseXML(xmlXPathContextPtr ctxt)
 }
 
 
-static virNWFilterBindingDef *
+virNWFilterBindingDef *
 virNWFilterBindingDefParse(const char *xmlStr,
                            const char *filename,
                            unsigned int flags)
@@ -168,21 +168,6 @@ virNWFilterBindingDefParse(const char *xmlStr,
         return NULL;
 
     return virNWFilterBindingDefParseXML(ctxt);
-}
-
-
-virNWFilterBindingDef *
-virNWFilterBindingDefParseString(const char *xmlStr,
-                                 unsigned int flags)
-{
-    return virNWFilterBindingDefParse(xmlStr, NULL, flags);
-}
-
-
-virNWFilterBindingDef *
-virNWFilterBindingDefParseFile(const char *filename)
-{
-    return virNWFilterBindingDefParse(NULL, filename, 0);
 }
 
 

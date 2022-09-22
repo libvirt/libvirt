@@ -739,7 +739,7 @@ nwfilterBindingCreateXML(virConnectPtr conn,
         return NULL;
     }
 
-    def = virNWFilterBindingDefParseString(xml, flags);
+    def = virNWFilterBindingDefParse(xml, NULL, flags);
     if (!def)
         return NULL;
 
