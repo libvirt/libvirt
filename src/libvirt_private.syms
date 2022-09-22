@@ -2360,6 +2360,7 @@ virFirewallStartTransaction;
 # util/virfirewalld.h
 virFirewallDApplyRule;
 virFirewallDGetBackend;
+virFirewallDGetPolicies;
 virFirewallDGetVersion;
 virFirewallDGetZones;
 virFirewallDInterfaceSetZone;

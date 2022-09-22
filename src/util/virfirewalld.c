@@ -223,6 +223,47 @@ virFirewallDGetZones(char ***zones, size_t *nzones)
     return 0;
 }
 
+/**
+ * virFirewallDGetPolicies:
+ * @policies: array of char *, each entry is a null-terminated policy name
+ * @npolicies: number of entries in @policies
+ *
+ * Get the number of currently active firewalld policies, and their names
+ * in an array of null-terminated strings. The memory pointed to by
+ * @policies will belong to the caller, and must be freed.
+ *
+ * Returns 0 on success, -1 (and failure logged) on error
+ */
+int
+virFirewallDGetPolicies(char ***policies, size_t *npolicies)
+{
+    GDBusConnection *sysbus = virGDBusGetSystemBus();
+    g_autoptr(GVariant) reply = NULL;
+    g_autoptr(GVariant) array = NULL;
+
+    *npolicies = 0;
+    *policies = NULL;
+
+    if (!sysbus)
+        return -1;
+
+    if (virGDBusCallMethod(sysbus,
+                           &reply,
+                           G_VARIANT_TYPE("(as)"),
+                           NULL,
+                           VIR_FIREWALL_FIREWALLD_SERVICE,
+                           "/org/fedoraproject/FirewallD1",
+                           "org.fedoraproject.FirewallD1.policy",
+                           "getPolicies",
+                           NULL) < 0)
+        return -1;
+
+    g_variant_get(reply, "(@as)", &array);
+    *policies = g_variant_dup_strv(array, npolicies);
+
+    return 0;
+}
+
 
 /**
  * virFirewallDZoneExists:
