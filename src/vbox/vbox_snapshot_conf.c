@@ -584,15 +584,12 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
 
     machineDescription = g_new0(virVBoxSnapshotConfMachine, 1);
 
-    xml = virXMLParse(filePath, NULL, NULL, NULL, NULL, NULL, false);
+    xml = virXMLParse(filePath, NULL, NULL, NULL, &xPathContext, NULL, false);
     if (xml == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Unable to parse the xml"));
         goto cleanup;
     }
-    if (!(xPathContext = virXMLXPathContextNew(xml)))
-        goto cleanup;
-
     if (xmlXPathRegisterNs(xPathContext,
                            BAD_CAST "vbox",
                            BAD_CAST VBOX_SETTINGS_NS) < 0) {
@@ -603,8 +600,6 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
     }
 
     /* Retrieve MachineNode */
-    cur = xmlDocGetRootElement(xml);
-    xPathContext->node = cur;
     machineNode = virXPathNode("./vbox:Machine", xPathContext);
     if (machineNode == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -1214,17 +1209,13 @@ virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(const char *filePath,
                        _("filePath is null"));
         goto cleanup;
     }
-    xml = virXMLParse(filePath, NULL, NULL, NULL, NULL, NULL, false);
+    xml = virXMLParse(filePath, NULL, NULL, NULL, &xPathContext, NULL, false);
     if (xml == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Unable to parse the xml"));
         goto cleanup;
     }
 
-    if (!(xPathContext = virXMLXPathContextNew(xml)))
-        goto cleanup;
-
-    xPathContext->node = xmlDocGetRootElement(xml);
     if ((nodeSize = virXPathNodeSet("/domainsnapshot/disks/disk",
                                     xPathContext, &nodes)) < 0)
         goto cleanup;
@@ -1271,17 +1262,13 @@ virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(const char *filePath,
                        _("filePath is null"));
         goto cleanup;
     }
-    xml = virXMLParse(filePath, NULL, NULL, NULL, NULL, NULL, false);
+    xml = virXMLParse(filePath, NULL, NULL, NULL, &xPathContext, NULL, false);
     if (xml == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Unable to parse the xml"));
         goto cleanup;
     }
 
-    if (!(xPathContext = virXMLXPathContextNew(xml)))
-        goto cleanup;
-
-    xPathContext->node = xmlDocGetRootElement(xml);
     if ((nodeSize = virXPathNodeSet("/domainsnapshot/domain/devices/disk",
                                     xPathContext,
                                     &nodes)) < 0)
