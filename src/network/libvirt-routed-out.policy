@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy target="ACCEPT">
+  <short>libvirt-routed-out</short>
+
+  <description>
+    This policy is used to allow routed virtual machine traffic to the rest of
+    the network.
+  </description>
+
+  <ingress-zone name="libvirt-routed" />
+  <egress-zone name="ANY" />
+</policy>

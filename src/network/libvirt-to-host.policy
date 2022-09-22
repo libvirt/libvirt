@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy target="REJECT">
+  <short>libvirt-to-host</short>
+
+  <description>
+    This policy is used to filter traffic from virtual machines to the
+    host.
+  </description>
+
+  <ingress-zone name="libvirt-routed" />
+  <egress-zone name="HOST" />
+
+  <protocol value='icmp'/>
+  <protocol value='ipv6-icmp'/>
+  <service name='dhcp'/>
+  <service name='dhcpv6'/>
+  <service name='dns'/>
+  <service name='ssh'/>
+  <service name='tftp'/>
+</policy>

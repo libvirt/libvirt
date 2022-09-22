@@ -106,5 +106,20 @@ if conf.has('WITH_NETWORK')
       install_dir: prefix / 'lib' / 'firewalld' / 'zones',
       rename: [ 'libvirt-routed.xml' ],
     )
+    install_data(
+      'libvirt-to-host.policy',
+      install_dir: prefix / 'lib' / 'firewalld' / 'policies',
+      rename: [ 'libvirt-to-host.xml' ],
+    )
+    install_data(
+      'libvirt-routed-out.policy',
+      install_dir: prefix / 'lib' / 'firewalld' / 'policies',
+      rename: [ 'libvirt-routed-out.xml' ],
+    )
+    install_data(
+      'libvirt-routed-in.policy',
+      install_dir: prefix / 'lib' / 'firewalld' / 'policies',
+      rename: [ 'libvirt-routed-in.xml' ],
+    )
   endif
 endif
