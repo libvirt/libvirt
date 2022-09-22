@@ -841,32 +841,34 @@ testDomainObjCheckTaint(virDomainObj *obj)
 }
 
 static xmlNodePtr
-testParseXMLDocFromFile(xmlNodePtr node, const char *file, const char *type)
+testParseXMLDocFromFile(xmlNodePtr node,
+                        const char *file,
+                        const char *type)
 {
-    xmlNodePtr ret = NULL;
     g_autoptr(xmlDoc) doc = NULL;
-    g_autofree char *absFile = NULL;
     g_autofree char *relFile = NULL;
 
     if ((relFile = virXMLPropString(node, "file"))) {
-        absFile = testBuildFilename(file, relFile);
+        g_autofree char *absFile = testBuildFilename(file, relFile);
+        xmlNodePtr newnode = NULL;
 
         if (!(doc = virXMLParse(absFile, NULL, type, NULL, NULL, NULL, false)))
             return NULL;
 
-        ret = xmlCopyNode(xmlDocGetRootElement(doc), 1);
-        if (!ret) {
+        if (!(newnode = xmlCopyNode(xmlDocGetRootElement(doc), 1))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Failed to copy XML node"));
             return NULL;
         }
-        xmlReplaceNode(node, ret);
+
+        /* place 'newnode' in place of 'node' in the original XML document object */
+        xmlReplaceNode(node, newnode);
+        /* free the original node */
         xmlFreeNode(node);
-    } else {
-        ret = node;
+        return newnode;
     }
 
-    return ret;
+    return node;
 }
 
 static int
