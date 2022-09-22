@@ -626,7 +626,6 @@ testCompareXMLToArgv(const void *data)
     qemuDomainObjPrivate *priv = NULL;
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    xmlNodePtr root;
     g_autofree char *archstr = NULL;
     virArch arch = VIR_ARCH_NONE;
     g_autoptr(virIdentity) sysident = virIdentityGetSystem();
@@ -673,20 +672,8 @@ testCompareXMLToArgv(const void *data)
         goto cleanup;
 
     if (!(xml = virXMLParse(info->infile, NULL, "(domain_definition)",
-                            NULL, NULL, NULL, false)))
+                            "domain", &ctxt, NULL, false)))
         goto cleanup;
-
-    root = xmlDocGetRootElement(xml);
-    if (!virXMLNodeNameEqual(root, "domain")) {
-        VIR_TEST_VERBOSE("unexpected root element <%s>, expecting <domain>",
-                         root->name);
-        goto cleanup;
-    }
-
-    if (!(ctxt = virXMLXPathContextNew(xml)))
-        goto cleanup;
-
-    ctxt->node = root;
 
     if ((archstr = virXPathString("string(./os/type[1]/@arch)", ctxt)))
         arch = virArchFromString(archstr);
@@ -722,7 +709,7 @@ testCompareXMLToArgv(const void *data)
 
     parseFlags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
-    if (!(vm->def = virDomainDefParseNode(xml, root, driver.xmlopt, NULL,
+    if (!(vm->def = virDomainDefParseNode(xml, ctxt->node, driver.xmlopt, NULL,
                                           parseFlags))) {
         err = virGetLastError();
         if (!err) {
