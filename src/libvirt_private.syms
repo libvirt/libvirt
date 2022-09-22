@@ -1377,7 +1377,7 @@ virNWFilterBindingObjFormat;
 virNWFilterBindingObjGetDef;
 virNWFilterBindingObjGetRemoving;
 virNWFilterBindingObjNew;
-virNWFilterBindingObjParseFile;
+virNWFilterBindingObjParse;
 virNWFilterBindingObjSave;
 virNWFilterBindingObjSetDef;
 virNWFilterBindingObjSetRemoving;

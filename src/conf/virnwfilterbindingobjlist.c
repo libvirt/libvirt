@@ -266,7 +266,7 @@ virNWFilterBindingObjListLoadStatus(virNWFilterBindingObjList *bindings,
     if ((statusFile = virNWFilterBindingObjConfigFile(statusDir, name)) == NULL)
         goto error;
 
-    if (!(obj = virNWFilterBindingObjParseFile(statusFile)))
+    if (!(obj = virNWFilterBindingObjParse(statusFile)))
         goto error;
 
     def = virNWFilterBindingObjGetDef(obj);

@@ -64,7 +64,7 @@ virNWFilterBindingObjDelete(const virNWFilterBindingObj *obj,
                             const char *statusDir);
 
 virNWFilterBindingObj *
-virNWFilterBindingObjParseFile(const char *filename);
+virNWFilterBindingObjParse(const char *filename);
 
 char *
 virNWFilterBindingObjFormat(const virNWFilterBindingObj *obj);
