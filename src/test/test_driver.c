@@ -842,8 +842,7 @@ testDomainObjCheckTaint(virDomainObj *obj)
 
 static xmlNodePtr
 testParseXMLDocFromFile(xmlNodePtr node,
-                        const char *file,
-                        const char *type)
+                        const char *file)
 {
     g_autoptr(xmlDoc) doc = NULL;
     g_autofree char *relFile = NULL;
@@ -852,7 +851,7 @@ testParseXMLDocFromFile(xmlNodePtr node,
         g_autofree char *absFile = testBuildFilename(file, relFile);
         xmlNodePtr newnode = NULL;
 
-        if (!(doc = virXMLParse(absFile, NULL, type, NULL, NULL, NULL, false)))
+        if (!(doc = virXMLParse(absFile, NULL, NULL, NULL, NULL, NULL, false)))
             return NULL;
 
         if (!(newnode = xmlCopyNode(xmlDocGetRootElement(doc), 1))) {
@@ -969,8 +968,7 @@ testParseDomainSnapshots(testDriver *privconn,
     for (i = 0; i < nsdata->num_snap_nodes; i++) {
         virDomainMomentObj *snap;
         g_autoptr(virDomainSnapshotDef) def = NULL;
-        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
-                                                  "domainsnapshot");
+        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file);
         if (!node)
             return -1;
 
@@ -1024,7 +1022,7 @@ testParseDomains(testDriver *privconn,
     for (i = 0; i < num; i++) {
         g_autoptr(virDomainDef) def = NULL;
         testDomainNamespaceDef *nsdata;
-        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file, "domain");
+        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file);
         if (!node)
             goto error;
 
@@ -1088,7 +1086,7 @@ testParseNetworks(testDriver *privconn,
 
     for (i = 0; i < num; i++) {
         g_autoptr(virNetworkDef) def = NULL;
-        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file, "network");
+        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file);
         if (!node)
             return -1;
 
@@ -1124,8 +1122,7 @@ testParseInterfaces(testDriver *privconn,
 
     for (i = 0; i < num; i++) {
         g_autoptr(virInterfaceDef) def = NULL;
-        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
-                                                   "interface");
+        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file);
         if (!node)
             return -1;
 
@@ -1165,8 +1162,7 @@ testOpenVolumesForPool(const char *file,
         return -1;
 
     for (i = 0; i < num; i++) {
-        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
-                                                   "volume");
+        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file);
         if (!node)
             return -1;
 
@@ -1209,8 +1205,7 @@ testParseStorage(testDriver *privconn,
 
     for (i = 0; i < num; i++) {
         virStoragePoolDef *def;
-        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
-                                                   "pool");
+        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file);
         if (!node)
             return -1;
 
@@ -1258,8 +1253,8 @@ testParseNodedevs(testDriver *privconn,
 
     for (i = 0; i < num; i++) {
         virNodeDeviceDef *def;
-        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
-                                                  "nodedev");
+        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file);
+
         if (!node)
             return -1;
 
