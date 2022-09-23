@@ -51,7 +51,7 @@ testSchemaValidateXML(const void *args)
     bool shouldFail = virStringHasSuffix(data->xml_path, "-invalid.xml");
     g_autoptr(xmlDoc) xml = NULL;
 
-    if (!(xml = virXMLParseFile(data->xml_path)))
+    if (!(xml = virXMLParseFileCtxt(data->xml_path, NULL)))
         return -1;
 
     if ((virXMLValidatorValidate(data->validator, xml) < 0) != shouldFail)
