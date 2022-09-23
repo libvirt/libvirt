@@ -3617,10 +3617,6 @@ virDomainDef *virDomainDefParseNode(xmlDocPtr doc,
                                     virDomainXMLOption *xmlopt,
                                     void *parseOpaque,
                                     unsigned int flags);
-virDomainObj *virDomainObjParseNode(xmlDocPtr xml,
-                                    xmlNodePtr root,
-                                    virDomainXMLOption *xmlopt,
-                                    unsigned int flags);
 virDomainObj *virDomainObjParseFile(const char *filename,
                                     virDomainXMLOption *xmlopt,
                                     unsigned int flags);

@@ -19155,45 +19155,21 @@ virDomainDefParseNode(xmlDocPtr xml,
 
 
 virDomainObj *
-virDomainObjParseNode(xmlDocPtr xml,
-                      xmlNodePtr root,
-                      virDomainXMLOption *xmlopt,
-                      unsigned int flags)
-{
-    g_autoptr(xmlXPathContext) ctxt = NULL;
-
-    if (!virXMLNodeNameEqual(root, "domstatus")) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unexpected root element <%s>, "
-                         "expecting <domstatus>"),
-                       root->name);
-        return NULL;
-    }
-
-    if (!(ctxt = virXMLXPathContextNew(xml)))
-        return NULL;
-
-    ctxt->node = root;
-    return virDomainObjParseXML(ctxt, xmlopt, flags);
-}
-
-
-virDomainObj *
 virDomainObjParseFile(const char *filename,
                       virDomainXMLOption *xmlopt,
                       unsigned int flags)
 {
     g_autoptr(xmlDoc) xml = NULL;
-    virDomainObj *obj = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
-    if ((xml = virXMLParseFile(filename))) {
-        obj = virDomainObjParseNode(xml, xmlDocGetRootElement(xml),
-                                    xmlopt, flags);
-    }
-
+    xml = virXMLParse(filename, NULL, NULL, "domstatus", &ctxt, NULL, false);
     xmlKeepBlanksDefault(keepBlanksDefault);
-    return obj;
+
+    if (!xml)
+        return NULL;
+
+    return virDomainObjParseXML(ctxt, xmlopt, flags);
 }
 
 
