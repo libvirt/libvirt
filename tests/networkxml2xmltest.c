@@ -33,7 +33,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
     if (!(xmlopt = networkDnsmasqCreateXMLConf()))
         goto cleanup;
 
-    if (!(dev = virNetworkDefParseFile(inxml, xmlopt))) {
+    if (!(dev = virNetworkDefParse(NULL, inxml, xmlopt, false))) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE;
         goto cleanup;
     }

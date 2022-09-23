@@ -4852,7 +4852,7 @@ qemuProcessGetNetworkAddress(const char *netname,
     if (!xml)
         return -1;
 
-    netdef = virNetworkDefParseString(xml, NULL, false);
+    netdef = virNetworkDefParse(xml, NULL, NULL, false);
     if (!netdef)
         return -1;
 

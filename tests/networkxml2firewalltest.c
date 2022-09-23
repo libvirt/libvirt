@@ -95,7 +95,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     virCommandSetDryRun(dryRunToken, &buf, true, true, testCommandDryRun, NULL);
 
-    if (!(def = virNetworkDefParseFile(xml, NULL)))
+    if (!(def = virNetworkDefParse(NULL, xml, NULL, false)))
         return -1;
 
     if (networkAddFirewallRules(def) < 0)

@@ -29728,7 +29728,7 @@ virDomainNetResolveActualType(virDomainNetDef *iface)
     if (!(xml = virNetworkGetXMLDesc(net, 0)))
         return -1;
 
-    if (!(def = virNetworkDefParseString(xml, NULL, false)))
+    if (!(def = virNetworkDefParse(xml, NULL, NULL, false)))
         return -1;
 
     switch ((virNetworkForwardType) def->forward.type) {

@@ -967,7 +967,7 @@ virNetworkLoadConfig(virNetworkObjList *nets,
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
         goto error;
 
-    if (!(def = virNetworkDefParseFile(configFile, xmlopt)))
+    if (!(def = virNetworkDefParse(NULL, configFile, xmlopt, false)))
         goto error;
 
     if (STRNEQ(name, def->name)) {

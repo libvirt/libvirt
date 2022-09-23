@@ -3017,8 +3017,8 @@ networkCreateXMLFlags(virConnectPtr conn,
 
     virCheckFlags(VIR_NETWORK_CREATE_VALIDATE, NULL);
 
-    if (!(newDef = virNetworkDefParseString(xml, network_driver->xmlopt,
-                                            !!(flags & VIR_NETWORK_CREATE_VALIDATE))))
+    if (!(newDef = virNetworkDefParse(xml, NULL, network_driver->xmlopt,
+                                      !!(flags & VIR_NETWORK_CREATE_VALIDATE))))
         goto cleanup;
 
     if (virNetworkCreateXMLFlagsEnsureACL(conn, newDef) < 0)
@@ -3082,8 +3082,8 @@ networkDefineXMLFlags(virConnectPtr conn,
 
     virCheckFlags(VIR_NETWORK_DEFINE_VALIDATE, NULL);
 
-    if (!(def = virNetworkDefParseString(xml, network_driver->xmlopt,
-                                         !!(flags & VIR_NETWORK_DEFINE_VALIDATE))))
+    if (!(def = virNetworkDefParse(xml, NULL, network_driver->xmlopt,
+                                   !!(flags & VIR_NETWORK_DEFINE_VALIDATE))))
         goto cleanup;
 
     defAlias = def; /* so we can still ref the object after nullifying def */

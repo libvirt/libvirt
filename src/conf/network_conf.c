@@ -315,7 +315,7 @@ virNetworkDefCopy(virNetworkDef *def,
     if (!(xml = virNetworkDefFormat(def, xmlopt, flags)))
        return NULL;
 
-    return virNetworkDefParseString(xml, xmlopt, false);
+    return virNetworkDefParse(xml, NULL, xmlopt, false);
 }
 
 
@@ -2025,7 +2025,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
 }
 
 
-static virNetworkDef *
+virNetworkDef *
 virNetworkDefParse(const char *xmlStr,
                    const char *filename,
                    virNetworkXMLOption *xmlopt,
@@ -2043,23 +2043,6 @@ virNetworkDefParse(const char *xmlStr,
         return NULL;
 
     return virNetworkDefParseXML(ctxt, xmlopt);
-}
-
-
-virNetworkDef *
-virNetworkDefParseString(const char *xmlStr,
-                         virNetworkXMLOption *xmlopt,
-                         bool validate)
-{
-    return virNetworkDefParse(xmlStr, NULL, xmlopt, validate);
-}
-
-
-virNetworkDef *
-virNetworkDefParseFile(const char *filename,
-                       virNetworkXMLOption *xmlopt)
-{
-    return virNetworkDefParse(NULL, filename, xmlopt, false);
 }
 
 
