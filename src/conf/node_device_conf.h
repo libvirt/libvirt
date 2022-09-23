@@ -377,18 +377,12 @@ typedef struct _virNodeDeviceDefParserCallbacks {
 } virNodeDeviceDefParserCallbacks;
 
 virNodeDeviceDef *
-virNodeDeviceDefParseString(const char *str,
-                            int create,
-                            const char *virt_type,
-                            virNodeDeviceDefParserCallbacks *callbacks,
-                            void *opaque);
-
-virNodeDeviceDef *
-virNodeDeviceDefParseFile(const char *filename,
-                          int create,
-                          const char *virt_type,
-                          virNodeDeviceDefParserCallbacks *callbacks,
-                          void *opaque);
+virNodeDeviceDefParse(const char *str,
+                      const char *filename,
+                      int create,
+                      const char *virt_type,
+                      virNodeDeviceDefParserCallbacks *parserCallbacks,
+                      void *opaque);
 
 virNodeDeviceDef *
 virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,

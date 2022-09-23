@@ -884,8 +884,8 @@ nodeDeviceCreateXML(virConnectPtr conn,
 
     virt_type  = virConnectGetType(conn);
 
-    if (!(def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, virt_type,
-                                            &driver->parserCallbacks, NULL)))
+    if (!(def = virNodeDeviceDefParse(xmlDesc, NULL, CREATE_DEVICE, virt_type,
+                                      &driver->parserCallbacks, NULL)))
         return NULL;
 
     if (virNodeDeviceCreateXMLEnsureACL(conn, def) < 0)
@@ -1405,8 +1405,8 @@ nodeDeviceDefineXML(virConnect *conn,
 
     virt_type  = virConnectGetType(conn);
 
-    if (!(def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, virt_type,
-                                            &driver->parserCallbacks, NULL)))
+    if (!(def = virNodeDeviceDefParse(xmlDesc, NULL, CREATE_DEVICE, virt_type,
+                                      &driver->parserCallbacks, NULL)))
         return NULL;
 
     if (virNodeDeviceDefineXMLEnsureACL(conn, def) < 0)

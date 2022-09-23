@@ -2473,7 +2473,7 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
 }
 
 
-static virNodeDeviceDef *
+virNodeDeviceDef *
 virNodeDeviceDefParse(const char *str,
                       const char *filename,
                       int create,
@@ -2510,28 +2510,6 @@ virNodeDeviceDefParse(const char *str,
     }
 
     return g_steal_pointer(&def);
-}
-
-
-virNodeDeviceDef *
-virNodeDeviceDefParseString(const char *str,
-                            int create,
-                            const char *virt_type,
-                            virNodeDeviceDefParserCallbacks *parserCallbacks,
-                            void *opaque)
-{
-    return virNodeDeviceDefParse(str, NULL, create, virt_type, parserCallbacks, opaque);
-}
-
-
-virNodeDeviceDef *
-virNodeDeviceDefParseFile(const char *filename,
-                          int create,
-                          const char *virt_type,
-                          virNodeDeviceDefParserCallbacks *parserCallbacks,
-                          void *opaque)
-{
-    return virNodeDeviceDefParse(NULL, filename, create, virt_type, parserCallbacks, opaque);
 }
 
 

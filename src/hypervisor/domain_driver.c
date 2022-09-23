@@ -395,8 +395,7 @@ virDomainDriverNodeDeviceReset(virNodeDevicePtr dev,
     if (!xml)
         return -1;
 
-    def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL,
-                                      NULL, NULL);
+    def = virNodeDeviceDefParse(xml, NULL, EXISTING_DEVICE, NULL, NULL, NULL);
     if (!def)
         return -1;
 
@@ -441,7 +440,7 @@ virDomainDriverNodeDeviceReAttach(virNodeDevicePtr dev,
     if (!xml)
         return -1;
 
-    def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL, NULL, NULL);
+    def = virNodeDeviceDefParse(xml, NULL, EXISTING_DEVICE, NULL, NULL, NULL);
     if (!def)
         return -1;
 
@@ -489,7 +488,7 @@ virDomainDriverNodeDeviceDetachFlags(virNodeDevicePtr dev,
     if (!xml)
         return -1;
 
-    def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL, NULL, NULL);
+    def = virNodeDeviceDefParse(xml, NULL, EXISTING_DEVICE, NULL, NULL, NULL);
     if (!def)
         return -1;
 

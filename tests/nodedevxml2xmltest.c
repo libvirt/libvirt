@@ -23,8 +23,7 @@ testCompareXMLToXMLFiles(const char *xml, const char *outfile)
     if (virTestLoadFile(xml, &xmlData) < 0)
         goto fail;
 
-    if (!(dev = virNodeDeviceDefParseString(xmlData, EXISTING_DEVICE, NULL,
-                                            NULL, NULL)))
+    if (!(dev = virNodeDeviceDefParse(xmlData, NULL, EXISTING_DEVICE, NULL, NULL, NULL)))
         goto fail;
 
     /* Calculate some things that are not read in */
