@@ -13655,7 +13655,8 @@ virDomainDiskDefParse(const char *xmlStr,
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
 
-    if (!(xml = virXMLParseStringCtxtRoot(xmlStr, _("(disk_definition)"), "disk", &ctxt)))
+    if (!(xml = virXMLParse(NULL, xmlStr, _("(disk_definition)"),
+                            "disk", &ctxt, NULL, false)))
         return NULL;
 
     return virDomainDiskDefParseXML(xmlopt, ctxt->node, ctxt, flags);
@@ -13672,7 +13673,8 @@ virDomainDiskDefParseSource(const char *xmlStr,
     g_autoptr(virStorageSource) src = NULL;
     xmlNodePtr driverNode;
 
-    if (!(xml = virXMLParseStringCtxtRoot(xmlStr, _("(disk_definition)"), "disk", &ctxt)))
+    if (!(xml = virXMLParse(NULL, xmlStr, _("(disk_definition)"),
+                            "disk", &ctxt, NULL, false)))
         return NULL;
 
     if (!(src = virDomainDiskDefParseSourceXML(xmlopt, ctxt->node, ctxt, flags)))

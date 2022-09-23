@@ -667,10 +667,8 @@ virStoragePoolDefParseSourceString(const char *srcSpec,
     g_autoptr(xmlXPathContext) xpath_ctxt = NULL;
     g_autoptr(virStoragePoolSource) def = NULL;
 
-    if (!(doc = virXMLParseStringCtxtRoot(srcSpec,
-                                          _("(storage_source_specification)"),
-                                          "source",
-                                          &xpath_ctxt)))
+    if (!(doc = virXMLParse(NULL, srcSpec, _("(storage_source_specification)"),
+                            "source", &xpath_ctxt, NULL, false)))
         return NULL;
 
     def = g_new0(virStoragePoolSource, 1);
