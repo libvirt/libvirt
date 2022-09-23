@@ -32,26 +32,6 @@
 VIR_LOG_INIT("conf.savecookie");
 
 
-static int
-virSaveCookieParseNode(xmlXPathContextPtr ctxt,
-                       virObject **obj,
-                       virSaveCookieCallbacks *saveCookie)
-{
-    *obj = NULL;
-
-    if (!virXMLNodeNameEqual(ctxt->node, "cookie")) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("XML does not contain expected 'cookie' element"));
-        return -1;
-    }
-
-    if (!saveCookie || !saveCookie->parse)
-        return 0;
-
-    return saveCookie->parse(ctxt, obj);
-}
-
-
 int
 virSaveCookieParse(xmlXPathContextPtr ctxt,
                    virObject **obj,
@@ -64,7 +44,10 @@ virSaveCookieParse(xmlXPathContextPtr ctxt,
     if (!(ctxt->node = virXPathNode("./cookie", ctxt)))
         return 0;
 
-    return virSaveCookieParseNode(ctxt, obj, saveCookie);
+    if (!saveCookie || !saveCookie->parse)
+        return 0;
+
+    return saveCookie->parse(ctxt, obj);
 }
 
 
@@ -78,13 +61,13 @@ virSaveCookieParseString(const char *xml,
 
     *obj = NULL;
 
-    if (!xml)
+    if (!xml || !saveCookie || !saveCookie->parse)
         return 0;
 
-    if (!(doc = virXMLParseStringCtxt(xml, _("(save cookie)"), &ctxt)))
+    if (!(doc = virXMLParse(NULL, xml, _("(save cookie)"), "cookie", &ctxt, NULL, false)))
         return -1;
 
-    return virSaveCookieParseNode(ctxt, obj, saveCookie);
+    return saveCookie->parse(ctxt, obj);
 }
 
 
