@@ -2685,7 +2685,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
 }
 
 
-static virNWFilterDef *
+virNWFilterDef *
 virNWFilterDefParse(const char *xmlStr,
                     const char *filename,
                     unsigned int flags)
@@ -2699,21 +2699,6 @@ virNWFilterDefParse(const char *xmlStr,
         return NULL;
 
     return virNWFilterDefParseXML(ctxt);
-}
-
-
-virNWFilterDef *
-virNWFilterDefParseString(const char *xmlStr,
-                          unsigned int flags)
-{
-    return virNWFilterDefParse(xmlStr, NULL, flags);
-}
-
-
-virNWFilterDef *
-virNWFilterDefParseFile(const char *filename)
-{
-    return virNWFilterDefParse(NULL, filename, 0);
 }
 
 

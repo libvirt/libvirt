@@ -545,7 +545,7 @@ nwfilterDefineXMLFlags(virConnectPtr conn,
         return NULL;
     }
 
-    if (!(def = virNWFilterDefParseString(xml, flags)))
+    if (!(def = virNWFilterDefParse(xml, NULL, flags)))
         goto cleanup;
 
     if (virNWFilterDefineXMLFlagsEnsureACL(conn, def) < 0)
