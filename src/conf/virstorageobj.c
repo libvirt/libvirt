@@ -1622,7 +1622,7 @@ virStoragePoolObjLoadState(virStoragePoolObjList *pools,
 
     VIR_DEBUG("loading storage pool state XML '%s'", stateFile);
 
-    if (!(xml = virXMLParseCtxt(stateFile, NULL, _("(pool state)"), &ctxt)))
+    if (!(xml = virXMLParseFileCtxt(stateFile, &ctxt)))
         return NULL;
 
     if (!(node = virXPathNode("//pool", ctxt))) {

@@ -858,7 +858,7 @@ virNetworkLoadState(virNetworkObjList *nets,
     if ((configFile = virNetworkConfigFile(stateDir, name)) == NULL)
         return NULL;
 
-    if (!(xml = virXMLParseCtxt(configFile, NULL, _("(network status)"), &ctxt)))
+    if (!(xml = virXMLParseFileCtxt(configFile, &ctxt)))
         return NULL;
 
     if (!(node = virXPathNode("//network", ctxt))) {

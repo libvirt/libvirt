@@ -217,21 +217,6 @@ virXMLPickShellSafeComment(const char *str1,
     virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, rootelement, ctxt, schemafile, validate)
 
 /**
- * virXMLParseCtxt:
- * @filename: file to parse, or NULL for string parsing
- * @xmlStr: if @filename is NULL, a string to parse
- * @url: if @filename is NULL, an optional filename to attribute the parse to
- * @pctxt: if non-NULL, populate with a new context object on success,
- * with (*pctxt)->node pre-set to the root node
- *
- * Parse xml from either a file or a string.
- *
- * Return the parsed document object, or NULL on failure.
- */
-#define virXMLParseCtxt(filename, xmlStr, url, pctxt) \
-    virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, NULL, pctxt, NULL, false)
-
-/**
  * virXMLParseStringCtxt:
  * @xmlStr: a string to parse
  * @url: an optional filename to attribute the parse to
