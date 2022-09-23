@@ -19080,29 +19080,19 @@ virDomainDefParse(const char *xmlStr,
                   unsigned int flags)
 {
     g_autoptr(xmlDoc) xml = NULL;
-    virDomainDef *def = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
-    xmlNodePtr root;
     bool validate = flags & VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
-    if (!(xml = virXMLParse(filename, xmlStr, _("(domain_definition)"),
-                            NULL, NULL, "domain.rng", validate)))
-        goto cleanup;
+    xml = virXMLParse(filename, xmlStr, _("(domain_definition)"),
+                      "domain", &ctxt, "domain.rng", validate);
 
-    root = xmlDocGetRootElement(xml);
-    if (!virXMLNodeNameEqual(root, "domain")) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unexpected root element <%s>, "
-                         "expecting <domain>"),
-                       root->name);
-        goto cleanup;
-    }
-
-    def = virDomainDefParseNode(xml, root, xmlopt, parseOpaque, flags);
-
- cleanup:
     xmlKeepBlanksDefault(keepBlanksDefault);
-    return def;
+
+    if (!xml)
+        return NULL;
+
+    return virDomainDefParseNode(xml, ctxt->node, xmlopt, parseOpaque, flags);
 }
 
 virDomainDef *
