@@ -4351,21 +4351,8 @@ virQEMUCapsLoadCache(virArch hostArch,
     long long int l;
     unsigned long lu;
 
-    if (!(doc = virXMLParseFile(filename)))
+    if (!(doc = virXMLParse(filename, NULL, NULL, "qemuCaps", &ctxt, NULL, false)))
         return -1;
-
-    if (!(ctxt = virXMLXPathContextNew(doc)))
-        return -1;
-
-    ctxt->node = xmlDocGetRootElement(doc);
-
-    if (STRNEQ((const char *)ctxt->node->name, "qemuCaps")) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unexpected root element <%s>, "
-                         "expecting <qemuCaps>"),
-                       ctxt->node->name);
-        return -1;
-    }
 
     if (virXPathLongLong("string(./selfctime)", ctxt, &l) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
