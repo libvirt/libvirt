@@ -217,18 +217,6 @@ virXMLPickShellSafeComment(const char *str1,
     virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, rootelement, ctxt, schemafile, validate)
 
 /**
- * virXMLParseString:
- * @xmlStr: a string to parse
- * @url: an optional filename to attribute the parse to
- *
- * Parse xml from a string.
- *
- * Return the parsed document object, or NULL on failure.
- */
-#define virXMLParseString(xmlStr, url) \
-    virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, NULL, NULL, NULL, false)
-
-/**
  * virXMLParseFile:
  * @filename: file to parse
  *

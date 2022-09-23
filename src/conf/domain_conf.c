@@ -28851,7 +28851,7 @@ virDomainDefSetMetadata(virDomainDef *def,
         if (metadata) {
 
             /* parse and modify the xml from the user */
-            if (!(doc = virXMLParseString(metadata, _("(metadata_xml)"))))
+            if (!(doc = virXMLParseStringCtxt(metadata, _("(metadata_xml)"), NULL)))
                 return -1;
 
             if (virXMLInjectNamespace(doc->children, uri, key) < 0)
