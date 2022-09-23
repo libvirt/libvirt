@@ -573,13 +573,8 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
     g_autoptr(xmlXPathContext) ctxt = NULL;
     char *arch;
 
-    if (!(xml = virXMLParseStringCtxt(xmlStr, _("(domain_definition)"),
-                                      &ctxt))) {
-        return -1;
-    }
-
-    if (!virXMLNodeNameEqual(ctxt->node, "domain")) {
-        vah_error(NULL, 0, _("unexpected root element, expecting <domain>"));
+    if (!(xml = virXMLParse(NULL, xmlStr, _("(domain_definition)"),
+                            "domain", &ctxt, NULL, false))) {
         return -1;
     }
 
