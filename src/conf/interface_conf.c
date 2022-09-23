@@ -33,9 +33,6 @@ VIR_ENUM_IMPL(virInterface,
               "ethernet", "bridge", "bond", "vlan",
 );
 
-static virInterfaceDef *
-virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType);
-
 static int
 virInterfaceDefDevFormat(virBuffer *buf, const virInterfaceDef *def,
                          virInterfaceType parentIfType);
@@ -565,7 +562,7 @@ virInterfaceDefParseVlan(virInterfaceDef *def,
 }
 
 
-static virInterfaceDef *
+virInterfaceDef *
 virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
                         int parentIfType)
 {
@@ -672,42 +669,20 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
 }
 
 
-virInterfaceDef *
-virInterfaceDefParseNode(xmlDocPtr xml,
-                         xmlNodePtr root)
-{
-    g_autoptr(xmlXPathContext) ctxt = NULL;
-
-    if (!virXMLNodeNameEqual(root, "interface")) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unexpected root element <%s>, "
-                         "expecting <interface>"),
-                       root->name);
-        return NULL;
-    }
-
-    if (!(ctxt = virXMLXPathContextNew(xml)))
-        return NULL;
-
-    ctxt->node = root;
-    return virInterfaceDefParseXML(ctxt, VIR_INTERFACE_TYPE_LAST);
-}
-
-
 static virInterfaceDef *
 virInterfaceDefParse(const char *xmlStr,
                      const char *filename,
                      unsigned int flags)
 {
     g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     bool validate = flags & VIR_INTERFACE_DEFINE_VALIDATE;
 
-    xml = virXMLParse(filename, xmlStr, _("(interface_definition)"),
-                      NULL, NULL, "interface.rng", validate);
-    if (!xml)
+    if (!(xml = virXMLParse(filename, xmlStr, _("(interface_definition)"),
+                            "interface", &ctxt, "interface.rng", validate)))
         return NULL;
 
-    return virInterfaceDefParseNode(xml, xmlDocGetRootElement(xml));
+    return virInterfaceDefParseXML(ctxt, VIR_INTERFACE_TYPE_LAST);
 }
 
 

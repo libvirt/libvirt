@@ -1110,6 +1110,7 @@ testParseInterfaces(testDriver *privconn,
                     const char *file,
                     xmlXPathContextPtr ctxt)
 {
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int num;
     size_t i;
     virInterfaceObj *obj;
@@ -1121,12 +1122,11 @@ testParseInterfaces(testDriver *privconn,
 
     for (i = 0; i < num; i++) {
         g_autoptr(virInterfaceDef) def = NULL;
-        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file);
-        if (!node)
+
+        if (!(ctxt->node = testParseXMLDocFromFile(nodes[i], file)))
             return -1;
 
-        def = virInterfaceDefParseNode(ctxt->doc, node);
-        if (!def)
+        if (!(def = virInterfaceDefParseXML(ctxt, VIR_INTERFACE_TYPE_LAST)))
             return -1;
 
         if (!(obj = virInterfaceObjListAssignDef(privconn->ifaces, &def)))

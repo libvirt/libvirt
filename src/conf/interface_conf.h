@@ -162,8 +162,8 @@ virInterfaceDef *
 virInterfaceDefParseFile(const char *filename);
 
 virInterfaceDef *
-virInterfaceDefParseNode(xmlDocPtr xml,
-                         xmlNodePtr root);
+virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
+                        int parentIfType);
 
 char *
 virInterfaceDefFormat(const virInterfaceDef *def);

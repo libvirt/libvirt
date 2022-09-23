@@ -793,8 +793,8 @@ virDomainDiskDefValidateStartupPolicy;
 virInterfaceDefFormat;
 virInterfaceDefFree;
 virInterfaceDefParseFile;
-virInterfaceDefParseNode;
 virInterfaceDefParseString;
+virInterfaceDefParseXML;
 
 
 # conf/netdev_bandwidth_conf.h
