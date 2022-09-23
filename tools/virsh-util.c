@@ -457,12 +457,9 @@ virshDumpXML(vshControl *ctl,
     }
 
     oldblanks = xmlKeepBlanksDefault(0);
-    doc = virXMLParseString(xml, url);
+    doc = virXMLParseStringCtxt(xml, url, &ctxt);
     xmlKeepBlanksDefault(oldblanks);
     if (!doc)
-        return false;
-
-    if (!(ctxt = virXMLXPathContextNew(doc)))
         return false;
 
     if ((nnodes = virXPathNodeSet(xpath, ctxt, &nodes)) < 0) {
