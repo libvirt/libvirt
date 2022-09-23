@@ -1306,12 +1306,6 @@ testOpenParse(testDriver *privconn,
               const char *file,
               xmlXPathContextPtr ctxt)
 {
-    if (!virXMLNodeNameEqual(ctxt->node, "node")) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Root element is not 'node'"));
-        return -1;
-    }
-
     if (testParseNodeInfo(&privconn->nodeInfo, ctxt) < 0)
         return -1;
     if (testParseDomains(privconn, file, ctxt) < 0)
@@ -1348,7 +1342,7 @@ testOpenFromFile(virConnectPtr conn, const char *file)
     if (!(privconn->caps = testBuildCapabilities(conn)))
         goto error;
 
-    if (!(doc = virXMLParseFileCtxt(file, &ctxt)))
+    if (!(doc = virXMLParse(file, NULL, NULL, "node", &ctxt, NULL, false)))
         goto error;
 
     privconn->numCells = 0;
@@ -1411,8 +1405,8 @@ testOpenDefault(virConnectPtr conn)
     if (!(privconn->caps = testBuildCapabilities(conn)))
         goto error;
 
-    if (!(doc = virXMLParseStringCtxt(defaultConnXML,
-                                      _("(test driver)"), &ctxt)))
+    if (!(doc = virXMLParse(NULL, defaultConnXML, _("(test driver)"),
+                            "node", &ctxt, NULL, false)))
         goto error;
 
     if (testOpenParse(privconn, NULL, ctxt) < 0)
