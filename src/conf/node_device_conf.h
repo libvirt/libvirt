@@ -391,10 +391,9 @@ virNodeDeviceDefParseFile(const char *filename,
                           void *opaque);
 
 virNodeDeviceDef *
-virNodeDeviceDefParseNode(xmlDocPtr xml,
-                          xmlNodePtr root,
-                          int create,
-                          const char *virt_type);
+virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
+                         int create,
+                         const char *virt_type);
 
 int
 virNodeDeviceGetWWNs(virNodeDeviceDef *def,

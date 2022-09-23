@@ -1236,6 +1236,7 @@ testParseNodedevs(testDriver *privconn,
                   const char *file,
                   xmlXPathContextPtr ctxt)
 {
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int num;
     size_t i;
     virNodeDeviceObj *obj;
@@ -1247,13 +1248,11 @@ testParseNodedevs(testDriver *privconn,
 
     for (i = 0; i < num; i++) {
         virNodeDeviceDef *def;
-        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file);
 
-        if (!node)
+        if (!(ctxt->node = testParseXMLDocFromFile(nodes[i], file)))
             return -1;
 
-        def = virNodeDeviceDefParseNode(ctxt->doc, node, 0, NULL);
-        if (!def)
+        if (!(def = virNodeDeviceDefParseXML(ctxt, 0, NULL)))
             return -1;
 
         if (!(obj = virNodeDeviceObjListAssignDef(privconn->devs, def))) {

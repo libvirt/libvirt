@@ -2370,7 +2370,7 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
 }
 
 
-static virNodeDeviceDef *
+virNodeDeviceDef *
 virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
                          int create,
                          const char *virt_type)
@@ -2473,30 +2473,6 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
 }
 
 
-virNodeDeviceDef *
-virNodeDeviceDefParseNode(xmlDocPtr xml,
-                          xmlNodePtr root,
-                          int create,
-                          const char *virt_type)
-{
-    g_autoptr(xmlXPathContext) ctxt = NULL;
-
-    if (!virXMLNodeNameEqual(root, "device")) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unexpected root element <%s> "
-                         "expecting <device>"),
-                       root->name);
-        return NULL;
-    }
-
-    if (!(ctxt = virXMLXPathContextNew(xml)))
-        return NULL;
-
-    ctxt->node = root;
-    return virNodeDeviceDefParseXML(ctxt, create, virt_type);
-}
-
-
 static virNodeDeviceDef *
 virNodeDeviceDefParse(const char *str,
                       const char *filename,
@@ -2506,12 +2482,14 @@ virNodeDeviceDefParse(const char *str,
                       void *opaque)
 {
     g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(virNodeDeviceDef) def = NULL;
 
     if (!(xml = virXMLParse(filename, str, _("(node_device_definition)"),
-                            NULL, NULL, NULL, false)) ||
-        !(def = virNodeDeviceDefParseNode(xml, xmlDocGetRootElement(xml),
-                                          create, virt_type)))
+                            "device", &ctxt, NULL, false)))
+        return NULL;
+
+    if (!(def = virNodeDeviceDefParseXML(ctxt, create, virt_type)))
         return NULL;
 
     if (parserCallbacks) {
