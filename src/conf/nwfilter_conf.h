@@ -533,10 +533,6 @@ int
 virNWFilterDeleteDef(const char *configDir,
                      virNWFilterDef *def);
 
-virNWFilterDef *
-virNWFilterDefParseNode(xmlDocPtr xml,
-                        xmlNodePtr root);
-
 char *
 virNWFilterDefFormat(const virNWFilterDef *def);
 
