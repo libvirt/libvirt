@@ -792,7 +792,6 @@ virDomainDiskDefValidateStartupPolicy;
 # conf/interface_conf.h
 virInterfaceDefFormat;
 virInterfaceDefFree;
-virInterfaceDefParseFile;
 virInterfaceDefParseString;
 virInterfaceDefParseXML;
 

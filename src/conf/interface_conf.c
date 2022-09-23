@@ -669,35 +669,19 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
 }
 
 
-static virInterfaceDef *
-virInterfaceDefParse(const char *xmlStr,
-                     const char *filename,
-                     unsigned int flags)
+virInterfaceDef *
+virInterfaceDefParseString(const char *xmlStr,
+                           unsigned int flags)
 {
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     bool validate = flags & VIR_INTERFACE_DEFINE_VALIDATE;
 
-    if (!(xml = virXMLParse(filename, xmlStr, _("(interface_definition)"),
+    if (!(xml = virXMLParse(NULL, xmlStr, _("(interface_definition)"),
                             "interface", &ctxt, "interface.rng", validate)))
         return NULL;
 
     return virInterfaceDefParseXML(ctxt, VIR_INTERFACE_TYPE_LAST);
-}
-
-
-virInterfaceDef *
-virInterfaceDefParseString(const char *xmlStr,
-                           unsigned int flags)
-{
-    return virInterfaceDefParse(xmlStr, NULL, flags);
-}
-
-
-virInterfaceDef *
-virInterfaceDefParseFile(const char *filename)
-{
-    return virInterfaceDefParse(NULL, filename, 0);
 }
 
 

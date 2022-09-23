@@ -159,9 +159,6 @@ virInterfaceDefParseString(const char *xmlStr,
                            unsigned int flags);
 
 virInterfaceDef *
-virInterfaceDefParseFile(const char *filename);
-
-virInterfaceDef *
 virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
                         int parentIfType);
 
