@@ -2032,15 +2032,17 @@ virNetworkDefParse(const char *xmlStr,
                    bool validate)
 {
     g_autoptr(xmlDoc) xml = NULL;
-    virNetworkDef *def = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(network_definition)"),
-                           NULL, NULL, "network.rng", validate)))
-        def = virNetworkDefParseNode(xml, xmlDocGetRootElement(xml), xmlopt);
-
+    xml = virXMLParse(filename, xmlStr, _("(network_definition)"),
+                      "network", &ctxt, "network.rng", validate);
     xmlKeepBlanksDefault(keepBlanksDefault);
-    return def;
+
+    if (!xml)
+        return NULL;
+
+    return virNetworkDefParseXML(ctxt, xmlopt);
 }
 
 
@@ -2058,29 +2060,6 @@ virNetworkDefParseFile(const char *filename,
                        virNetworkXMLOption *xmlopt)
 {
     return virNetworkDefParse(NULL, filename, xmlopt, false);
-}
-
-
-virNetworkDef *
-virNetworkDefParseNode(xmlDocPtr xml,
-                       xmlNodePtr root,
-                       virNetworkXMLOption *xmlopt)
-{
-    g_autoptr(xmlXPathContext) ctxt = NULL;
-
-    if (!virXMLNodeNameEqual(root, "network")) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unexpected root element <%s>, "
-                         "expecting <network>"),
-                       root->name);
-        return NULL;
-    }
-
-    if (!(ctxt = virXMLXPathContextNew(xml)))
-        return NULL;
-
-    ctxt->node = root;
-    return virNetworkDefParseXML(ctxt, xmlopt);
 }
 
 

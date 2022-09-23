@@ -333,11 +333,6 @@ virNetworkDef *
 virNetworkDefParseFile(const char *filename,
                        virNetworkXMLOption *xmlopt);
 
-virNetworkDef *
-virNetworkDefParseNode(xmlDocPtr xml,
-                       xmlNodePtr root,
-                       virNetworkXMLOption *xmlopt);
-
 char *
 virNetworkDefFormat(const virNetworkDef *def,
                     virNetworkXMLOption *xmlopt,

@@ -1074,6 +1074,7 @@ testParseNetworks(testDriver *privconn,
                   const char *file,
                   xmlXPathContextPtr ctxt)
 {
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int num;
     size_t i;
     virNetworkObj *obj;
@@ -1085,12 +1086,11 @@ testParseNetworks(testDriver *privconn,
 
     for (i = 0; i < num; i++) {
         g_autoptr(virNetworkDef) def = NULL;
-        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file);
-        if (!node)
+
+        if (!(ctxt->node = testParseXMLDocFromFile(nodes[i], file)))
             return -1;
 
-        def = virNetworkDefParseNode(ctxt->doc, node, NULL);
-        if (!def)
+        if (!(def = virNetworkDefParseXML(ctxt, NULL)))
             return -1;
 
         if (!(obj = virNetworkObjAssignDef(privconn->networks, def, 0)))

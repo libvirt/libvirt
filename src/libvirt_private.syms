@@ -829,7 +829,6 @@ virNetworkDefFree;
 virNetworkDefGetIPByIndex;
 virNetworkDefGetRouteByIndex;
 virNetworkDefParseFile;
-virNetworkDefParseNode;
 virNetworkDefParseString;
 virNetworkDefParseXML;
 virNetworkDefUpdateSection;
