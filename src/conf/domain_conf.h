@@ -3612,8 +3612,7 @@ virDomainDef *virDomainDefParseFile(const char *filename,
                                     virDomainXMLOption *xmlopt,
                                     void *parseOpaque,
                                     unsigned int flags);
-virDomainDef *virDomainDefParseNode(xmlDocPtr doc,
-                                    xmlNodePtr root,
+virDomainDef *virDomainDefParseNode(xmlXPathContext *ctxt,
                                     virDomainXMLOption *xmlopt,
                                     void *parseOpaque,
                                     unsigned int flags);

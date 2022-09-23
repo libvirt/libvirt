@@ -1261,7 +1261,6 @@ static int
 qemuMigrationCookieXMLParse(qemuMigrationCookie *mig,
                             virQEMUDriver *driver,
                             virQEMUCaps *qemuCaps,
-                            xmlDocPtr doc,
                             xmlXPathContextPtr ctxt,
                             unsigned int flags)
 {
@@ -1356,6 +1355,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookie *mig,
 
     if ((flags & QEMU_MIGRATION_COOKIE_PERSISTENT) &&
         virXPathBoolean("count(./domain) > 0", ctxt)) {
+        VIR_XPATH_NODE_AUTORESTORE(ctxt)
         g_autofree xmlNodePtr *nodes = NULL;
 
         if ((virXPathNodeSet("./domain", ctxt, &nodes)) != 1) {
@@ -1363,8 +1363,10 @@ qemuMigrationCookieXMLParse(qemuMigrationCookie *mig,
                            _("Too many domain elements in migration cookie"));
             return -1;
         }
-        mig->persistent = virDomainDefParseNode(doc, nodes[0],
-                                                driver->xmlopt, qemuCaps,
+
+        ctxt->node = nodes[0];
+
+        mig->persistent = virDomainDefParseNode(ctxt, driver->xmlopt, qemuCaps,
                                                 VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                                 VIR_DOMAIN_DEF_PARSE_ABI_UPDATE_MIGRATION |
                                                 VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
@@ -1420,7 +1422,7 @@ qemuMigrationCookieXMLParseStr(qemuMigrationCookie *mig,
     if (!(doc = virXMLParseStringCtxt(xml, _("(qemu_migration_cookie)"), &ctxt)))
         return -1;
 
-    return qemuMigrationCookieXMLParse(mig, driver, qemuCaps, doc, ctxt, flags);
+    return qemuMigrationCookieXMLParse(mig, driver, qemuCaps, ctxt, flags);
 }
 
 

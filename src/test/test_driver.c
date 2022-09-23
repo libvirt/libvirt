@@ -1019,14 +1019,14 @@ testParseDomains(testDriver *privconn,
         return -1;
 
     for (i = 0; i < num; i++) {
+        VIR_XPATH_NODE_AUTORESTORE(ctxt)
         g_autoptr(virDomainDef) def = NULL;
         testDomainNamespaceDef *nsdata;
-        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file);
-        if (!node)
+
+        if (!(ctxt->node = testParseXMLDocFromFile(nodes[i], file)))
             goto error;
 
-        def = virDomainDefParseNode(ctxt->doc, node,
-                                    privconn->xmlopt, NULL,
+        def = virDomainDefParseNode(ctxt, privconn->xmlopt, NULL,
                                     VIR_DOMAIN_DEF_PARSE_INACTIVE);
         if (!def)
             goto error;

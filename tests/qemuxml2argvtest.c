@@ -709,8 +709,7 @@ testCompareXMLToArgv(const void *data)
 
     parseFlags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
-    if (!(vm->def = virDomainDefParseNode(xml, ctxt->node, driver.xmlopt, NULL,
-                                          parseFlags))) {
+    if (!(vm->def = virDomainDefParseNode(ctxt, driver.xmlopt, NULL, parseFlags))) {
         err = virGetLastError();
         if (!err) {
             VIR_TEST_DEBUG("no error was reported for expected parse error");

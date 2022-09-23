@@ -19092,7 +19092,7 @@ virDomainDefParse(const char *xmlStr,
     if (!xml)
         return NULL;
 
-    return virDomainDefParseNode(xml, ctxt->node, xmlopt, parseOpaque, flags);
+    return virDomainDefParseNode(ctxt, xmlopt, parseOpaque, flags);
 }
 
 virDomainDef *
@@ -19115,19 +19115,12 @@ virDomainDefParseFile(const char *filename,
 
 
 virDomainDef *
-virDomainDefParseNode(xmlDocPtr xml,
-                      xmlNodePtr root,
+virDomainDefParseNode(xmlXPathContext *ctxt,
                       virDomainXMLOption *xmlopt,
                       void *parseOpaque,
                       unsigned int flags)
 {
-    g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(virDomainDef) def = NULL;
-
-    if (!(ctxt = virXMLXPathContextNew(xml)))
-        return NULL;
-
-    ctxt->node = root;
 
     if (!(def = virDomainDefParseXML(ctxt, xmlopt, flags)))
         return NULL;

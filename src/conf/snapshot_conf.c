@@ -266,15 +266,15 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
          * clients will have to decide between best effort
          * initialization or outright failure.  */
         if ((domtype = virXPathString("string(./domain/@type)", ctxt))) {
-            xmlNodePtr domainNode = virXPathNode("./domain", ctxt);
+            VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
-            if (!domainNode) {
+            if (!(ctxt->node = virXPathNode("./domain", ctxt))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("missing domain in snapshot"));
                 return NULL;
             }
-            def->parent.dom = virDomainDefParseNode(ctxt->node->doc, domainNode,
-                                                    xmlopt, parseOpaque,
+
+            def->parent.dom = virDomainDefParseNode(ctxt, xmlopt, parseOpaque,
                                                     domainflags);
             if (!def->parent.dom)
                 return NULL;
@@ -286,8 +286,12 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
          * VM. In case of absent, leave parent.inactiveDom NULL and use
          * parent.dom for config and live XML. */
         if ((inactiveDomNode = virXPathNode("./inactiveDomain", ctxt))) {
-            def->parent.inactiveDom = virDomainDefParseNode(ctxt->node->doc, inactiveDomNode,
-                                                            xmlopt, NULL, domainflags);
+            VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+            ctxt->node = inactiveDomNode;
+
+            def->parent.inactiveDom = virDomainDefParseNode(ctxt, xmlopt, NULL,
+                                                            domainflags);
             if (!def->parent.inactiveDom)
                 return NULL;
         }
