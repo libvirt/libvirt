@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-08-26 05:02+0000\n"
-"PO-Revision-Date: 2022-09-16 21:19+0000\n"
+"PO-Revision-Date: 2022-09-25 12:19+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14\n"
+"X-Generator: Weblate 4.14.1\n"
 
 msgid ""
 "\n"
@@ -15459,7 +15459,7 @@ msgstr "Målenhetens dimm-fack %u stämmer inte med källan %u"
 
 #, c-format
 msgid "Target device drive address %d:%d:%d does not match source %d:%d:%d"
-msgstr "Målenhetens disadress %d:%d:%d stämmer inte med källan %d:%d:%d"
+msgstr "Målenhetens diskadress %d:%d:%d stämmer inte med källan %d:%d:%d"
 
 #, c-format
 msgid "Target device iommu option '%s' does not match source '%s'"
@@ -15475,23 +15475,23 @@ msgstr "Målenhetens packed-flagga ”%s” stämmer inte med källan ”%s”"
 
 #, c-format
 msgid "Target device page_per_vq option '%s' does not match source '%s'"
-msgstr ""
+msgstr "Målenhetens flagga page_per_vq ”%s” stämmer inte med källan ”%s”"
 
 msgid "Target device virtio options don't match the source"
-msgstr ""
+msgstr "Målenhetens flagga virtio stämmer inte med källan"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Target device virtio serial address %d:%d:%d does not match source %d:%d:%d"
-msgstr "Mål-CPU-trådar %d stämmer inte med källan %d"
+msgstr ""
+"Målenhetens virtio-serieadress %d:%d:%d stämmer inte med källan %d:%d:%d"
 
 #, c-format
 msgid "Target disk %s does not match source %s"
 msgstr "Måldisken %s matchar inte källan %s"
 
-#, fuzzy
 msgid "Target disk access mode does not match source"
-msgstr "Mål-sysinfo matchar inte källan"
+msgstr "Målenhetens diskåtkomstläge stämmer inte med källan"
 
 #, c-format
 msgid "Target disk bus %s does not match source %s"
@@ -15507,15 +15507,17 @@ msgstr "Måldiskmodellen %s stämmer inte med källan %s"
 
 #, c-format
 msgid "Target disk queue count %u does not match source %u"
-msgstr ""
+msgstr "Målenhetens diskköantal %u stämmer inte med källan %u"
 
 #, c-format
 msgid "Target disk queue size %u does not match source %u"
-msgstr ""
+msgstr "Målnehetes diskköstorlek %u stämmer inte med källan %u"
 
 #, c-format
 msgid "Target disk rotation rate %u RPM does not match source %u RPM"
 msgstr ""
+"Målenhetens diskrotationshastighet %u varv/min stämmer inte med källan %u "
+"varv/min"
 
 #, c-format
 msgid "Target disk serial %s does not match source %s"
@@ -15529,39 +15531,41 @@ msgstr "Måldisk-wwn ”%s” matchar inte källan ”%s”"
 msgid ""
 "Target domain IOMMU device aw_bits value '%d' does not match source '%d'"
 msgstr ""
+"Måldomänens IOMMU-enhets aw_bits-värde ”%d” stämmer inte med källan ”%d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr ""
+"Måldomänens IOMMU-enhets cachningsläge ”%s” stämmer inte med källan ”%s”"
 
-#, fuzzy
 msgid "Target domain IOMMU device count does not match source"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens IOMMU-enhetsantal stämmer inte med källan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain IOMMU device eim value '%s' does not match source '%s'"
-msgstr "Mål-CPU-funktionen %s stämmer inte med källan %s"
+msgstr "Måldomänens IOMMU-enhets eim-värde ”%s” stämmer inte med källan ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Target domain IOMMU device intremap value '%s' does not match source '%s'"
-msgstr "Mål-CPU-tillverkaren %s stämmer inte med källan %s"
+msgstr ""
+"Måldomänens IOMMU-enhets intremap-värde ”%s” stämmer inte med källan ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain IOMMU device iotlb value '%s' does not match source '%s'"
-msgstr "Mål-CPU-funktionen %s stämmer inte med källan %s"
+msgstr "Måldomänens IOMMU-enhets iotlb-värde ”%s” stämmer inte med källan ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain IOMMU device model '%s' does not match source '%s'"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Måldomänens IOMMU-enhetsmodell ”%s” stämmer inte med källan ”%s”"
 
 #, c-format
 msgid "Target domain OS type %s does not match source %s"
 msgstr "Måldomän-OS-typen %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain RNG device count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens RNG-enhetsantal %zu stämmer inte med källan %zu"
 
 #, c-format
 msgid "Target domain SMBIOS mode %s does not match source %s"
@@ -15569,162 +15573,157 @@ msgstr "Måldomän-SMBIOS-läget %s stämmer inte med källan %s"
 
 #, c-format
 msgid "Target domain TPM device count %zu does not match source %zu"
-msgstr ""
+msgstr "Måldomänens TPM-enhetsantal %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens USB-omdirigeringsfilterantal %d stämmer inte med källan %d"
 
 #, c-format
 msgid "Target domain architecture %s does not match source %s"
 msgstr "Måldomänarkitekturen %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain channel count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens kanalantal %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain console count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens konsolantal %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain controller count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens styrenhetsantal %zu stämmer inte med källan %zu"
 
 msgid "Target domain count of sysinfo does not match source"
-msgstr ""
+msgstr "Måldomänens antal sysinfo stämmer inte med källan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain current memory %lld does not match source %lld"
-msgstr "Mål-CPU-kärnor %d stämmer inte med källan %d"
+msgstr "Måldomänens aktuella minne %lld stämmer inte med källan %lld"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain disk count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens diskantal %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain filesystem count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens filsystemantal %zu stämmer inte med källan %zu"
 
 #, c-format
 msgid "Target domain genid %s does not match source %s"
 msgstr "Måldomän-genid %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain host device count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens vardenhetsantal %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain hub device count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens navenhetsantal %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain input device count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens inmatningsenhetsantal %zu stämmer inte med källan %zu"
 
 #, c-format
 msgid "Target domain machine type %s does not match source %s"
 msgstr "Måldomänmaskintypen %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain max memory %lld does not match source %lld"
-msgstr "Mål-CPU-kärnor %d stämmer inte med källan %d"
+msgstr "Måldomänens maximala minne %lld stämmer inte med källan %lld"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain memory balloon count %d does not match source %d"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens minnesballongsantal %d stämmer inte med källan %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain memory device count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens minnesenhetsantal %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain memory slots count '%u' doesn't match source '%u'"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens minnesfacksantal ”%u” stämmer inte med källan ”%u”"
 
 #, c-format
 msgid "Target domain name '%s' does not match source '%s'"
 msgstr "Måldomännamnet ”%s” stämmer inte med källan ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain net card count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens nätverkskortsantal %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain panic device count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens panikenhetsantal %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain parallel port count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens parallellportsantal %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain redirected devices count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens antal omdirigerade enheter %zu stämmer inte med källan %zu"
 
-#, fuzzy
 msgid "Target domain requested genid does not match source"
-msgstr "Mål-CPU-kärnor %d stämmer inte med källan %d"
+msgstr "Måldomänens begärda genid stämmer inte med källan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain serial port count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens serieportsantal %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain shared memory device count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens antal delade minnes-enheter %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain smartcard count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens smartkortsantal %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain sound card count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens ljudkortsantal %zu stämmer inte med källan %zu"
 
-#, fuzzy
 msgid "Target domain timers do not match source"
-msgstr "Mål-CPU stämmer inte med källan"
+msgstr "Måldomänens tidtagara stämmer inte med källan"
 
 #, c-format
 msgid "Target domain uuid %s does not match source %s"
 msgstr "Måldomän-uuid %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain vCPU max %zu does not match source %zu"
-msgstr "Mål-CPU-arkitekturen %s stämmer inte med källan %s"
+msgstr "Måldomänens vCPU-max %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain video card count %zu does not match source %zu"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Måldomänens videokortsantal %zu stämmer inte med källan %zu"
 
 #, c-format
 msgid "Target domain virt type %s does not match source %s"
 msgstr "Måldomänvirtualiseringstypen %s stämmer inte med källan %s"
 
-#, fuzzy
 msgid "Target domain vsock device count does not match source"
-msgstr "Mål-CPU-sockeln %d stämmer inte med källan %d"
+msgstr "Måldomänens vsock-enhetsantal stämmer inte med källan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain vsock device model '%s' does not match source '%s'"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Måldomänens vsock-enhetsmodell ”%s” stämmer inte med källan ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain watchdog count %d does not match source %d"
-msgstr "Mål-CPU-sockeln %d stämmer inte med källan %d"
+msgstr "Måldomänens vakthundsantal %d stämmer inte med källan %d"
 
-#, fuzzy
 msgid "Target filesystem access mode does not match source"
-msgstr "Mål-sysinfo matchar inte källan"
+msgstr "Målfilsystemets åtkomstläge stämmer inte med källan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target filesystem guest target %s does not match source %s"
-msgstr "Mål-CPU-funktionen %s stämmer inte med källan %s"
+msgstr "Målfilsystemets gästmål %s stämmer inte med källan %s"
 
-#, fuzzy
 msgid "Target filesystem model does not match source"
-msgstr "Mål-sysinfo matchar inte källan"
+msgstr "Målfilsystemets modell stämmer inte med källan"
 
 #, c-format
 msgid "Target host device mode %s does not match source %s"
@@ -15750,50 +15749,59 @@ msgstr "Målinmatningsenhetstypen %s stämmer inte med källan %s"
 msgid "Target input model %s does not match source %s"
 msgstr "Målinmatningsmodellen %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target maximum memory size '%llu' doesn't match source '%llu'"
-msgstr "Mål-CPU-kärnor %d stämmer inte med källan %d"
+msgstr "Målets maximala minnesstorlek ”%llu” stämmer inte med källan ”%llu”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target memory device alias '%s' doesn't match source alias '%s'"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Målminnesenhetens alias ”%s” stämmer inte med källan ”%s”"
 
 #, c-format
 msgid ""
 "Target memory device block size '%llu' doesn't match source memory device "
 "block size '%llu'"
 msgstr ""
+"Målminnesenhetens blockstorlek ”%llu” stämmer inte med källans minnesenhets "
+"blockstorlek ”%llu”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target memory device model '%s' doesn't match source model '%s'"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Målminnesenhetens modell ”%s” stämmer inte med källans modell ”%s”"
 
 #, c-format
 msgid ""
 "Target memory device requested size '%llu' doesn't match source memory "
 "device requested size '%llu'"
 msgstr ""
+"Målminnesenhetens begäransstorlek ”%llu” stämmer inte med källans "
+"minnesenhets begäransstorlek ”%llu”"
 
 #, c-format
 msgid ""
 "Target memory device size '%llu' doesn't match source memory device size "
 "'%llu'"
 msgstr ""
+"Målminnets enhetsstorlek ”%llu” stämmer inte med källans minnes "
+"enhetsstorlek ”%llu”"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Target memory device targetNode '%d' doesn't match source targetNode '%d'"
-msgstr "Mål-CPU-trådar %d stämmer inte med källan %d"
+msgstr ""
+"Målminnesenhetens targetNode ”%d” stämmer inte med källans targetNode ”%d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Target memoryBacking source '%s' doesn't match source memoryBacking "
 "source'%s'"
-msgstr "Mål-sysinfo %s %s matchar inte källan %s"
+msgstr ""
+"Målets memoryBacking-källa ”%s” stämmer inte med källans memoryBackingkälla "
+"”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target model '%s' requires target type '%s'"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Målmodellen ”%s” förutsätter måltypen ”%s”"
 
 #, c-format
 msgid "Target network card MTU %d does not match source %d"
@@ -15807,9 +15815,8 @@ msgstr "Målnätverkskorts-mac %s stämmer inte med källan %s"
 msgid "Target network card model %s does not match source %s"
 msgstr "Målnätverkskortsmodellen %s stämmer inte med källan %s"
 
-#, fuzzy
 msgid "Target not found"
-msgstr "Nätverk hittades inte"
+msgstr "Nätverket finns inte"
 
 #, c-format
 msgid "Target panic model '%s' does not match source '%s'"
@@ -15823,15 +15830,17 @@ msgstr "Målparallellporten %d stämmer inte med källan %d"
 msgid "Target redirected device bus %s does not match source %s"
 msgstr "Målets omdirigerade enhetsbuss %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Target redirected device source type %s does not match source device source "
 "type %s"
-msgstr "Mål-CPU-typen %s stämmer inte med källan %s"
+msgstr ""
+"Målets omdirigerade enhetskälltyp %s stämmer inte med källans enhetskälltyp "
+"%s"
 
 #, c-format
 msgid "Target serial model %s does not match source %s"
-msgstr ""
+msgstr "Målets seriemodell %s stämmer inte med källan %s"
 
 #, c-format
 msgid "Target serial port %d does not match source %d"
@@ -15841,25 +15850,24 @@ msgstr "Målserieport %d stämmer inte med källan %d"
 msgid "Target serial type %s does not match source %s"
 msgstr "Målserietypen %s stämmer inte med källan %s"
 
-#, fuzzy
 msgid "Target shared memory MSI configuration doesn't match source"
-msgstr "Mål-sysinfo matchar inte källan"
+msgstr "Målets delat minnes MSI-konfiguration stämmer inte med källan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target shared memory model '%s' does not match source model '%s'"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Målets delat-minnes-modell ”%s” stämmer inte med källans modell ”%s”"
 
 #, c-format
 msgid "Target shared memory role '%s' does not match source role '%s'"
-msgstr ""
+msgstr "Målets delat-minnes-roll ”%s” stämmer inte med källans roll ”%s”"
 
-#, fuzzy
 msgid "Target shared memory server usage doesn't match source"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Målets delat-minnes-serveranvändning stämmer inte med källan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target shared memory size '%llu' does not match source size '%llu'"
-msgstr "Mål-sysinfo %s matchar inte källan %s"
+msgstr ""
+"Målets delat-minnes-storlek ”%llu” stämmer inte med källans storlek ”%llu”"
 
 #, c-format
 msgid "Target sound card model %s does not match source %s"
@@ -15873,9 +15881,9 @@ msgstr "Mål-sysinfo %s %s matchar inte källan %s"
 msgid "Target sysinfo %s does not match source %s"
 msgstr "Mål-sysinfo %s matchar inte källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target sysinfo base board count '%zu' does not match source '%zu'"
-msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+msgstr "Målets sysinfo-baskortsantal ”%zu” stämmer inte med källan ”%zu”"
 
 msgid "Target sysinfo does not match source"
 msgstr "Mål-sysinfo matchar inte källan"
@@ -15886,15 +15894,15 @@ msgstr "Måltimern %s matchar inte källan %s"
 
 #, c-format
 msgid "Target timer presence '%s' does not match source '%s'"
-msgstr ""
+msgstr "Målets tidtagarnärvaro ”%s” stämmer inte med källan ”%s”"
 
 #, c-format
 msgid "Target type '%s' cannot have an associated address"
-msgstr ""
+msgstr "Måltypen ”%s” kan inte ha en associerad adress"
 
 #, c-format
 msgid "Target type '%s' requires address type '%s'"
-msgstr ""
+msgstr "Måltypen ”%s” förutsätter adresstypen ”%s”"
 
 #, c-format
 msgid "Target video card 2d accel %u does not match source %u"
@@ -15904,9 +15912,8 @@ msgstr "Målvideokortets 2d-acceleration %u stämmer inte med källan %u"
 msgid "Target video card 3d accel %u does not match source %u"
 msgstr "Målvideokortets 3d-acceleration %u stämmer inte med källan %u"
 
-#, fuzzy
 msgid "Target video card acceleration does not match source"
-msgstr "Mål-sysinfo matchar inte källan"
+msgstr "Målets videokortsacceleration stämmer inte med källan"
 
 #, c-format
 msgid "Target video card heads %u does not match source %u"
@@ -15937,277 +15944,304 @@ msgid "Target watchdog model %s does not match source %s"
 msgstr "Målvakthundsmodellen %s stämmer inte med källan %s"
 
 msgid "Temporary disk space total:"
-msgstr ""
+msgstr "Tillfälligt diskutrymme totalt:"
 
 msgid "Temporary disk space use:"
-msgstr ""
+msgstr "Tillfälligt diskutrymmesanvändning:"
 
 msgid "That firmware name is reserved"
-msgstr ""
+msgstr "Det namnet på fast programvara är reserverat"
 
 msgid "Thaw domain's mounted filesystems."
-msgstr ""
+msgstr "Töa domänens monterade filsystem."
 
 #, c-format
 msgid "Thawed %d filesystem(s)\n"
-msgstr ""
+msgstr "Töade %d filsystem\n"
 
 #, c-format
 msgid "The '%s' device is not supported by this QEMU binary"
-msgstr ""
+msgstr "Enheten ”%s” stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid ""
 "The '%s' feature is not supported for architecture '%s' or machine type '%s'"
 msgstr ""
+"Funktionen ”%s” stödjs inte för arkitekturen ”%s” eller maskintypen ”%s”"
 
 #, c-format
 msgid "The '%s' timer can't be disabled"
-msgstr ""
+msgstr "Tidtagaren ”%s” kan inte avaktiveras"
 
-#, fuzzy, c-format
+#, c-format
 msgid "The '%s' timer does not support tickpolicy '%s'"
-msgstr "kommandot '%s' stöder inte flaggan --%s"
+msgstr "Tidtagaren '%s' stöder inte tickpolicyn ”%s”"
 
 #, c-format
 msgid ""
 "The 'eoi' attribute of the '%s' feature is not supported for architecture "
 "'%s' or machine type '%s'"
 msgstr ""
+"Attributet ”eoi” hos funktionen ”%s” stödjs inte för arkitekturen ”%s” eller "
+"maskintypen ”%s”"
 
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
 "%s"
 msgstr ""
+"Elementet <nat> kan endast användas när <forward> ”mode” är ”nat” i "
+"nätverket %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "The CA certificate %s has expired"
-msgstr "Endast x509-certifikat stöds"
+msgstr "CA-certifikatet %s har gått ut"
 
-#, fuzzy, c-format
+#, c-format
 msgid "The CA certificate %s is not yet active"
-msgstr "nätverket %s är inte aktivt"
+msgstr "CA-certifikatet %s är inte aktivt ännu"
 
 #, c-format
 msgid "The CCW devno '%s' is in use already"
-msgstr ""
+msgstr "CCW-devno ”%s” används redan"
 
 #, c-format
 msgid ""
 "The CPU provided by hypervisor on the host is a superset of CPU described in "
 "%s\n"
 msgstr ""
+"CPU:n som tillhandahålls av hypervisor:n på värden är en övermängd av CPU:n "
+"som beskrivs i %s\n"
 
 #, c-format
 msgid ""
 "The PCI controller with index='0' must be model='pci-root' for this machine "
 "type, but model='%s' was found instead"
 msgstr ""
+"PCI-styrenheten med index=”0” måste ha model=”pci-root” för denna maskintyp, "
+"med model=”%s” fanns istället"
 
 #, c-format
 msgid ""
 "The PCI controller with index='0' must be model='pcie-root' for this machine "
 "type, but model='%s' was found instead"
 msgstr ""
+"PCI-styrenheten med index=”0” måste ha model=”pcie-root” för denna "
+"maskintyp, med model=”%s” fanns istället"
 
 msgid "The PCI controller with index=0 can't be associated with a NUMA node"
-msgstr ""
+msgstr "PCI-styrenheten med index=0 kan inte associeras med en NUMA-nod"
 
 #, c-format
 msgid "The PF device for VF %s has no network device name"
-msgstr ""
+msgstr "PF-enheten för VF %s har inget nätverksenhetsnamn"
 
 #, c-format
 msgid ""
 "The PF device for VF %s has no network device name, cannot get virtual "
 "function info"
 msgstr ""
+"PF-enheten för VF %s har inget nätverksenhetsnamn, kan inte få virtuell-"
+"funktions-information"
 
 #, c-format
 msgid "The QEMU executable %s does not support TPM backend type %s"
-msgstr ""
+msgstr "Den QEMU-körbara %s stödjer inte TPM-bakänden av typ %s"
 
 #, c-format
 msgid "The QEMU executable %s does not support TPM model %s"
-msgstr ""
+msgstr "Den QEMU-körbara %s stödjer inte TPM-modellen %s"
 
 msgid "The XML configuration was changed by another user."
-msgstr ""
+msgstr "XML-konfigurationen ändrades av en annan användare."
 
 msgid "The associated audio is not of 'dbus' kind."
-msgstr ""
+msgstr "Den associerade audion är inte av sorten ”dbus”."
 
 #, c-format
 msgid "The certificate %s basic constraints do not show a CA"
-msgstr ""
+msgstr "Certifikatet %s grundbegränsningar visar inte en CA"
 
 #, c-format
 msgid ""
 "The certificate %s basic constraints show a CA, but we need one for a client"
 msgstr ""
+"Certifikatet %s grundbegränsningar visar en CA, men vi behöver ett för en "
+"klient"
 
 #, c-format
 msgid ""
 "The certificate %s basic constraints show a CA, but we need one for a server"
 msgstr ""
+"Certifikatet %s grundbegränsningar visar en CA, men vi behöver ett för en "
+"server"
 
 #, c-format
 msgid "The certificate %s is missing basic constraints for a CA"
-msgstr ""
+msgstr "Certifikatet %s saknar grundläggande begränsningar för en CA"
 
 msgid "The certificate has been revoked."
-msgstr ""
+msgstr "Certifikatet har återkallats."
 
 msgid "The certificate has no peers"
-msgstr ""
+msgstr "Certifikatet har inga motparter"
 
 msgid "The certificate hasn't got a known issuer."
-msgstr ""
+msgstr "Certifkatet har inte fått någon känd utgivare."
 
 msgid "The certificate is not trusted."
-msgstr ""
+msgstr "Certifikatet är inte betrott."
 
 msgid "The certificate uses an insecure algorithm"
-msgstr ""
+msgstr "Certifikatet har en osäker algoritm"
 
 #, c-format
 msgid "The client certificate %s has expired"
-msgstr ""
+msgstr "Klientcertifikatet %s har gått ut"
 
 #, c-format
 msgid "The client certificate %s is not yet active"
-msgstr ""
+msgstr "Klientcertifikatet %s är inte aktivt ännu"
 
 #, c-format
 msgid "The device at %s has no network device name"
-msgstr ""
+msgstr "Enheten vid %s har inget nätverksenhetsnamn"
 
 #, c-format
 msgid ""
 "The device at PCI address %s cannot be plugged into the PCI controller with "
 "index='%d'. It requires a controller that accepts a %s."
 msgstr ""
+"Enheten på PCI-adressen %s kan inte pluggas in i PCI-styrenheten med "
+"index=”%d”. Det kräver en styrenhet som accepterar en %s."
 
 #, c-format
 msgid ""
 "The device at PCI address %s has unrecognized connection type flags 0x%.2x"
-msgstr ""
+msgstr "Enheten på PCI-adressen %s har okända anslutningstypflaggor 0x%.2x"
 
 #, c-format
 msgid "The device at PCI address %s needs to be an integrated device (bus=0)"
-msgstr ""
+msgstr "Enheten på PCI-adressen %s behöver vara en integrerad enhet (bus=0)"
 
 #, c-format
 msgid ""
 "The device at PCI address %s requires hotplug capability, but the PCI "
 "controller with index='%d' doesn't support hotplug"
 msgstr ""
+"Enheten på PCI-adressen %s kräver hotplug-förmåga, men PCI-styrenheten med "
+"index=”%d” stödjer inte hotplug"
 
 #, c-format
 msgid ""
 "The device at PCI address %s was auto-assigned this address, but the PCI "
 "controller with index='%d' doesn't allow auto-assignment"
 msgstr ""
+"Enheten på PCI-adressen %s tilldelades automatiskt denna adress, men PCI-"
+"styrenheten med index=”%d” tillåter inte automatisk tilldelning"
 
 #, c-format
 msgid "The disk device '%s' already has media"
-msgstr ""
+msgstr "Diskenheten ”%s” har redan ett medium"
 
 #, c-format
 msgid "The disk device '%s' doesn't have media"
-msgstr ""
+msgstr "Diskenheten ”%s” har inte något medium"
 
 #, c-format
 msgid "The disk device '%s' is not removable"
-msgstr ""
+msgstr "Diskenheten ”%s” är inte löstagbar"
 
-#, fuzzy
 msgid "The domain is not running"
-msgstr "Domänen kör redan"
+msgstr "Domänen kör inte"
 
 msgid "The host was not suspended"
-msgstr ""
+msgstr "Värden var inte sövd"
 
 msgid ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
-msgstr ""
+msgstr "Audiostyrenheten ich9-intel-hda stödjs inte i denna QEMU-binär"
 
 msgid "The keyword is not comprised only of uppercase ASCII letters or digits"
-msgstr ""
+msgstr "Nyckelordet består inte endast av versala ASCII-bokstäver eller siffror"
 
 #, c-format
 msgid "The keyword length is not 2 bytes: %s"
-msgstr ""
+msgstr "Nyckelordslängden är inte 2 byte: %s"
 
 msgid "The machine has no snapshot and it should have it"
-msgstr ""
+msgstr "Maskinen har ingen ögonblicksbild och borde ha det"
 
 msgid "The minimum lease time should be greater than 2 minutes"
-msgstr ""
+msgstr "Minimal hyrestid skall vara större än 2 minuter"
 
 msgid ""
 "The number of virtual CPU address bits cannot exceed the number supported by "
 "the host CPU"
 msgstr ""
+"Antalet virtuella CPU-adressbitar får inte överskrida antalet som stödjs av "
+"värd-CPU:n"
 
 msgid ""
 "The overall maximum number of clients must be greater than the maximum "
 "number of clients waiting for authentication"
 msgstr ""
+"Det övergripande maximala antalet klienter måste vara större än det maximala "
+"antalet klienter som väntarpå autentisering"
 
 msgid "The read only disk has no parent"
-msgstr ""
+msgstr "Den endast läsbara disken har ingen förälder"
 
 msgid ""
 "The read only disk number must be greater or equal to the  read write disk "
 "number"
 msgstr ""
+"Numret på den endast läsbara disken måste vara större eller lika med numret "
+"på en läs-och-skrivbar disk"
 
 #, c-format
 msgid "The server certificate %s has expired"
-msgstr ""
+msgstr "Servercertifikatet %s har gått ut"
 
 #, c-format
 msgid "The server certificate %s is not yet active"
-msgstr ""
+msgstr "Servercertifikatet %s är inte aktivt ännu"
 
 #, c-format
 msgid "The server redirects from '%s' to '%s'"
-msgstr ""
+msgstr "Servern omdirigerar från ”%s” till ”%s”"
 
-#, fuzzy
 msgid "The slirp-helper doesn't support migration"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "Slirp-hjälparen stödjer inte migration"
 
 msgid "The string resource has invalid characters in its value"
-msgstr ""
+msgstr "Strängresursen har ogiltiga tecken i sitt värde"
 
 #, c-format
 msgid "The vbox driver does not support %s SCSI controller model"
-msgstr ""
+msgstr "Vbox-drivrutinen stödjer inte SCSI-styrenhetsmodellen %s"
 
 #, c-format
 msgid "The vbox driver does not support %s bus type"
-msgstr ""
+msgstr "Vbox-drivrutinen stödjer inte busstypen %s"
 
 #, c-format
 msgid "The vbox driver does not support %s controller type"
-msgstr ""
+msgstr "Vbox-drivrutinen stödjer inte styrenhetstypen %s"
 
 #, c-format
 msgid "The vbox driver does not support %s disk device"
-msgstr ""
+msgstr "Vbox-drivrutinen stödjer inte diskenheten %s"
 
 msgid "There are no more free CCW devnos."
-msgstr ""
+msgstr "Det finns inga fler fria CCW-enhetsnummer."
 
 #, c-format
 msgid "There is no more free %s."
-msgstr ""
+msgstr "Det finns inga fler fria %s."
 
 msgid "This QEMU binary doesn't support zPCI"
-msgstr ""
+msgstr "Denna QEMU-binär stödjer inte zPCI"
 
 msgid "This QEMU doesn't support '-device usb-storage'"
 msgstr ""
