@@ -15,13 +15,14 @@
 # Di Wei <dwlinux@outlook.com>, 2019
 # Pany <geekpany@gmail.com>, 2021.
 # Ludek Janda <ljanda@redhat.com>, 2022.
+# zhanchun li <lzc777@126.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-08-26 05:02+0000\n"
-"PO-Revision-Date: 2022-08-31 12:19+0000\n"
-"Last-Translator: Ludek Janda <ljanda@redhat.com>\n"
+"PO-Revision-Date: 2022-09-25 12:19+0000\n"
+"Last-Translator: zhanchun li <lzc777@126.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -29,7 +30,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14\n"
+"X-Generator: Weblate 4.14.1\n"
 
 msgid ""
 "\n"
@@ -31250,7 +31251,7 @@ msgid "nvram device is only supported for PPC64"
 msgstr "只为 PPC64 支持 nvram 设备"
 
 msgid "nwfilter is in use"
-msgstr "nwfilter 未使用"
+msgstr "nwfilter 使用中"
 
 msgid "nwfilter state driver is not active"
 msgstr "nwfilter 状态驱动程序未处于活动状态"
