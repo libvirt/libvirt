@@ -5078,7 +5078,7 @@ remoteDomainBuildEventCallbackTunable(virNetClientProgram *prog G_GNUC_UNUSED,
         return;
     }
 
-    event = virDomainEventTunableNewFromDom(dom, params, nparams);
+    event = virDomainEventTunableNewFromDom(dom, &params, nparams);
 
     virObjectUnref(dom);
 

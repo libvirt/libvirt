@@ -195,11 +195,11 @@ virDomainEventDeviceRemovalFailedNewFromDom(virDomainPtr dom,
 
 virObjectEvent *
 virDomainEventTunableNewFromObj(virDomainObj *obj,
-                                virTypedParameterPtr params,
+                                virTypedParameterPtr *params,
                                 int nparams);
 virObjectEvent *
 virDomainEventTunableNewFromDom(virDomainPtr dom,
-                                virTypedParameterPtr params,
+                                virTypedParameterPtr *params,
                                 int nparams);
 
 virObjectEvent *

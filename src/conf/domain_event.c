@@ -1495,7 +1495,7 @@ static virObjectEvent *
 virDomainEventTunableNew(int id,
                          const char *name,
                          unsigned char *uuid,
-                         virTypedParameterPtr params,
+                         virTypedParameterPtr *params,
                          int nparams)
 {
     virDomainEventTunable *ev;
@@ -1508,19 +1508,19 @@ virDomainEventTunableNew(int id,
                                  id, name, uuid)))
         goto error;
 
-    ev->params = params;
+    ev->params = *params;
     ev->nparams = nparams;
-
+    *params = NULL;
     return (virObjectEvent *)ev;
 
  error:
-    virTypedParamsFree(params, nparams);
+    virTypedParamsFree(*params, nparams);
     return NULL;
 }
 
 virObjectEvent *
 virDomainEventTunableNewFromObj(virDomainObj *obj,
-                                virTypedParameterPtr params,
+                                virTypedParameterPtr *params,
                                 int nparams)
 {
     return virDomainEventTunableNew(obj->def->id,
@@ -1532,7 +1532,7 @@ virDomainEventTunableNewFromObj(virDomainObj *obj,
 
 virObjectEvent *
 virDomainEventTunableNewFromDom(virDomainPtr dom,
-                                virTypedParameterPtr params,
+                                virTypedParameterPtr *params,
                                 int nparams)
 {
     return virDomainEventTunableNew(dom->id,

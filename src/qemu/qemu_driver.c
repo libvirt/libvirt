@@ -4472,12 +4472,12 @@ qemuDomainPinVcpuLive(virDomainObj *vm,
                                 &eventMaxparams, paramField, str) < 0)
         goto cleanup;
 
-    event = virDomainEventTunableNewFromObj(vm, eventParams, eventNparams);
-
+    event = virDomainEventTunableNewFromObj(vm, &eventParams, eventNparams);
     ret = 0;
 
  cleanup:
     virObjectEventStateQueue(driver->domainEventState, event);
+    virTypedParamsFree(eventParams, eventNparams);
     return ret;
 }
 
@@ -4681,7 +4681,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
                                     str) < 0)
             goto endjob;
 
-        event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
+        event = virDomainEventTunableNewFromDom(dom, &eventParams, eventNparams);
     }
 
     if (persistentDef) {
@@ -4700,6 +4700,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
  cleanup:
     virObjectEventStateQueue(driver->domainEventState, event);
     virDomainObjEndAPI(&vm);
+    virTypedParamsFree(eventParams, eventNparams);
     return ret;
 }
 
@@ -5078,7 +5079,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
                                     &eventMaxparams, paramField, str) < 0)
             goto endjob;
 
-        event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
+        event = virDomainEventTunableNewFromDom(dom, &eventParams, eventNparams);
     }
 
     if (persistentDef) {
@@ -5106,6 +5107,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
  cleanup:
     virObjectEventStateQueue(driver->domainEventState, event);
     virDomainObjEndAPI(&vm);
+    virTypedParamsFree(eventParams, eventNparams);
     return ret;
 }
 
@@ -9633,8 +9635,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
     qemuDomainSaveStatus(vm);
 
     if (eventNparams) {
-        event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
-        eventNparams = 0;
+        event = virDomainEventTunableNewFromDom(dom, &eventParams, eventNparams);
         virObjectEventStateQueue(driver->domainEventState, event);
     }
 
@@ -9654,8 +9655,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    if (eventNparams)
-        virTypedParamsFree(eventParams, eventNparams);
+    virTypedParamsFree(eventParams, eventNparams);
     return ret;
 }
 #undef SCHED_RANGE_CHECK
@@ -16159,8 +16159,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         qemuDomainSaveStatus(vm);
 
         if (eventNparams) {
-            event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
-            eventNparams = 0;
+            event = virDomainEventTunableNewFromDom(dom, &eventParams, eventNparams);
             virObjectEventStateQueue(driver->domainEventState, event);
         }
     }
@@ -16202,8 +16201,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     VIR_FREE(info.group_name);
     VIR_FREE(conf_info.group_name);
     virDomainObjEndAPI(&vm);
-    if (eventNparams)
-        virTypedParamsFree(eventParams, eventNparams);
+    virTypedParamsFree(eventParams, eventNparams);
     return ret;
 }
 
