@@ -79,6 +79,7 @@ RUN zypper dist-upgrade -y && \
            sanlock-devel \
            scrub \
            sed \
+           systemd-rpm-macros \
            systemtap-sdt-devel \
            wireshark-devel \
            xen-devel && \

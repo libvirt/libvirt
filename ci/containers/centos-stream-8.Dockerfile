@@ -82,6 +82,7 @@ RUN dnf distro-sync -y && \
         scrub \
         sed \
         systemd-devel \
+        systemd-rpm-macros \
         systemtap-sdt-devel \
         wireshark-devel \
         yajl-devel && \

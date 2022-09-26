@@ -89,6 +89,7 @@ exec "$@"' > /usr/bin/nosync && \
         scrub \
         sed \
         systemd-devel \
+        systemd-rpm-macros \
         systemtap-sdt-devel \
         wireshark-devel \
         xen-devel \
