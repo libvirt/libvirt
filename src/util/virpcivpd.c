@@ -62,12 +62,11 @@ virPCIVPDResourceGetKeywordPrefix(const char *keyword)
 
     /* Keywords must have a length of 2 bytes. */
     if (strlen(keyword) != 2) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("The keyword length is not 2 bytes: %s"), keyword);
+        VIR_INFO("The keyword length is not 2 bytes: %s", keyword);
         return NULL;
     } else if (!(virPCIVPDResourceIsUpperOrNumber(keyword[0]) &&
                  virPCIVPDResourceIsUpperOrNumber(keyword[1]))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("The keyword is not comprised only of uppercase ASCII letters or digits"));
+        VIR_INFO("The keyword is not comprised only of uppercase ASCII letters or digits");
         return NULL;
     }
     /* Special-case the system-specific keywords since they share the "Y" prefix with "YA". */
@@ -328,19 +327,16 @@ virPCIVPDResourceUpdateKeyword(virPCIVPDResource *res, const bool readOnly,
                                const char *const keyword, const char *const value)
 {
     if (!res) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot update the resource: a NULL resource pointer has been provided."));
+        VIR_INFO("Cannot update the resource: a NULL resource pointer has been provided.");
         return false;
     } else if (!keyword) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot update the resource: a NULL keyword pointer has been provided."));
+        VIR_INFO("Cannot update the resource: a NULL keyword pointer has been provided.");
         return false;
     }
 
     if (readOnly) {
         if (!res->ro) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Cannot update the read-only keyword: RO section not initialized."));
+            VIR_INFO("Cannot update the read-only keyword: RO section not initialized.");
             return false;
         }
 
@@ -375,9 +371,7 @@ virPCIVPDResourceUpdateKeyword(virPCIVPDResource *res, const bool readOnly,
 
     } else {
         if (!res->rw) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _
-                           ("Cannot update the read-write keyword: read-write section not initialized."));
+            VIR_INFO("Cannot update the read-write keyword: read-write section not initialized.");
             return false;
         }
 
@@ -476,8 +470,7 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
         if (virPCIVPDReadVPDBytes(vpdFileFd, buf, 3, fieldPos, csum) != 3) {
             /* Invalid field encountered which means the resource itself is invalid too. Report
              * That VPD has invalid format and bail. */
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Could not read a resource field header - VPD has invalid format"));
+            VIR_INFO("Could not read a resource field header - VPD has invalid format");
             return false;
         }
         fieldDataLen = buf[2];
@@ -488,12 +481,10 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
 
         /* Handle special cases first */
         if (!readOnly && fieldFormat == VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RESVD) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unexpected RV keyword in the read-write section."));
+            VIR_INFO("Unexpected RV keyword in the read-write section.");
             return false;
         } else if (readOnly && fieldFormat == VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RDWR) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unexpected RW keyword in the read-only section."));
+            VIR_INFO("Unexpected RW keyword in the read-only section.");
             return false;
         }
 
@@ -517,21 +508,18 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
                 bytesToRead = fieldDataLen;
                 break;
             default:
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Unexpected field value format encountered."));
+                VIR_INFO("Unexpected field value format encountered.");
                 return false;
         }
 
         if (resPos + resDataLen < fieldPos + fieldDataLen) {
             /* In this case the field cannot simply be skipped since the position of the
              * next field is determined based on the length of a previous field. */
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("A field data length violates the resource length boundary."));
+            VIR_INFO("A field data length violates the resource length boundary.");
             return false;
         }
         if (virPCIVPDReadVPDBytes(vpdFileFd, buf, bytesToRead, fieldPos, csum) != bytesToRead) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Could not parse a resource field data - VPD has invalid format"));
+            VIR_INFO("Could not parse a resource field data - VPD has invalid format");
             return false;
         }
         /* Advance the position to the first byte of the next field. */
@@ -552,7 +540,7 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
         } else if (fieldFormat == VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RESVD) {
             if (*csum) {
                 /* All bytes up to and including the checksum byte should add up to 0. */
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Checksum validation has failed"));
+                VIR_INFO("Checksum validation has failed");
                 return false;
             }
             hasChecksum = true;
@@ -578,8 +566,7 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
         }
         /* The field format, keyword and value are determined. Attempt to update the resource. */
         if (!virPCIVPDResourceUpdateKeyword(res, readOnly, fieldKeyword, fieldValue)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not update the VPD resource keyword: %s"), fieldKeyword);
+            VIR_INFO("Could not update the VPD resource keyword: %s", fieldKeyword);
             return false;
         }
     }
@@ -627,14 +614,12 @@ virPCIVPDParseVPDLargeResourceString(int vpdFileFd, uint16_t resPos,
     g_autofree char *buf = g_malloc0(resDataLen + 1);
 
     if (virPCIVPDReadVPDBytes(vpdFileFd, (uint8_t *)buf, resDataLen, resPos, csum) != resDataLen) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not read a part of a resource - VPD has invalid format"));
+        VIR_INFO("Could not read a part of a resource - VPD has invalid format");
         return false;
     }
     resValue = g_strdup(g_strstrip(buf));
     if (!virPCIVPDResourceIsValidTextValue(resValue)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("The string resource has invalid characters in its value"));
+        VIR_INFO("The string resource has invalid characters in its value");
         return false;
     }
     res->name = g_steal_pointer(&resValue);
