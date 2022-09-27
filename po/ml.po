@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-08-26 05:02+0000\n"
+"POT-Creation-Date: 2022-09-27 08:07+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -3096,10 +3096,6 @@ msgstr "%s-ല്‍ വിഭാഗം പാഴ്സ് ചെയ്യുവ
 #, fuzzy
 msgid "Cannot parse cbm_mask from resctrl cache info"
 msgstr "മോഡ് സ്ട്രിങ് പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "Cannot parse controller index %s"
-msgstr "കണ്ട്രോളര്‍ സൂചിക %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 msgid "Cannot parse mode string"
 msgstr "മോഡ് സ്ട്രിങ് പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
@@ -9282,10 +9278,6 @@ msgstr ""
 msgid "IOThread to be used by supported device"
 msgstr "ഡിവൈസിനു് പ്രക്രിയ പിന്തുണയ്ക്കുന്നില്ല: %s"
 
-#, fuzzy
-msgid "IOThreads for virtio-scsi not supported for this QEMU"
-msgstr "ഒരു ഐഡിഇ ഡിസ്കിനു് wwn സജ്ജമാക്കുന്നതു് ഈ QEMU പിന്തുണയ്ക്കുന്നില്ല"
-
 #, fuzzy, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr "ഈ ഹോസ്റ്റില്‍ numad ലഭ്യമല്ല"
@@ -10074,14 +10066,6 @@ msgid "Invalid match string '%s'"
 msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷത %s"
 
 #, c-format
-msgid "Invalid maxEventChannels: %i"
-msgstr ""
-
-#, c-format
-msgid "Invalid maxGrantFrames: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
 msgstr ""
 
@@ -10235,10 +10219,6 @@ msgid "Invalid port range '%u-%u'."
 msgstr "തെറ്റായ പോര്‍ട്ട് പരിധി '%u-%u'."
 
 #, c-format
-msgid "Invalid ports: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "തെറ്റായ പ്രിഫിക്സ് അല്ലെങ്കില്‍ '%s'-നുള്ള നെറ്റ്മാസ്ക്"
 
@@ -10333,10 +10313,6 @@ msgstr "തെറ്റായ ടാര്‍ഗറ്റ്"
 #, fuzzy, c-format
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
 msgstr "ഡൊമെയിന്‍ സ്നാപ്പ്ഷോട്ട് എക്സ്എംഎലില്‍ തെറ്റായ അവസ്ഥ '%s'"
-
-#, c-format
-msgid "Invalid target index '%i' in PCI controller"
-msgstr ""
 
 #, fuzzy
 msgid "Invalid target model for serial device"
@@ -10472,10 +10448,6 @@ msgstr "'ephemeral' മൂല്ല്യം തെറ്റാണ്"
 #, fuzzy, c-format
 msgid "Invalid value of 'nodeset': %s"
 msgstr "'ephemeral' മൂല്ല്യം തെറ്റാണ്"
-
-#, c-format
-msgid "Invalid vectors: %i"
-msgstr ""
 
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
@@ -11359,9 +11331,6 @@ msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ�
 msgid "Missing disk file path in domain"
 msgstr ""
 
-msgid "Missing disk info when adding volume"
-msgstr ""
-
 #, fuzzy
 msgid "Missing disk source file path"
 msgstr "സോഴ്സ് പാഥ് ലഭ്യമല്ല"
@@ -11702,11 +11671,23 @@ msgstr "JSON  അവസ്ഥയുടെ രേഖയില്‍ സോക്�
 msgid "Missing source channel attribute for char device"
 msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ ഹോസ്റ്റ് വിശേഷത"
 
+#, c-format
+msgid "Missing source connectionid for interface type '%s'"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ ഹോസ്റ്റ് വിശേഷത"
 
 msgid "Missing source path attribute for char device"
 msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ പാഥ് വിശേഷത"
+
+#, c-format
+msgid "Missing source portgroup for interface type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Missing source portid for interface type '%s'"
+msgstr ""
 
 msgid "Missing source service attribute for char device"
 msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ സേവന വിശേഷത"
@@ -14152,6 +14133,9 @@ msgstr "ഹൈപ്പര്‍വൈസറ്‍ പ്രവര്‍ത്�
 
 msgid "S3 state is disabled for this domain"
 msgstr "ഈ ഡൊമെയിനു് S3 അവസ്ഥ പ്രവര്‍ത്തന രഹിതമാക്കിയിരിയ്ക്കുന്നു"
+
+msgid "S390 PV launch security is not supported by this host or kernel"
+msgstr ""
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr ""
@@ -17794,9 +17778,6 @@ msgstr "സര്‍വര്‍ സമ്മതപത്രം %s ഇംപോ�
 msgid "Unable to init device stream mutex"
 msgstr "ഡിവൈസ് സ്ട്രീം mutex init ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-msgid "Unable to init qemu driver mutexes"
-msgstr "qemu ഡ്രൈവര്‍ mutex init ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
 #, fuzzy
 msgid "Unable to initialize RW lock"
 msgstr "സോക്ക്സ്പെയിസ് %s ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല"
@@ -20590,10 +20571,6 @@ msgstr ""
 
 msgid "apparmor_parser exited with error"
 msgstr "പിശകോടെ apparmor_parser പുറത്തു് കടന്നിരിയ്ക്കുന്നു"
-
-#, fuzzy
-msgid "append not supported in this QEMU binary"
-msgstr "ഈ QEMU ബൈനറിയില്‍ %s പിന്തുണയ്ക്കുന്നില്ല"
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr "applyDHCPOnlyRules പരാജയപ്പെട്ടു  - സ്പൂഫിങ്ങില്‍ നിന്ന് സംരക്ഷിക്കപ്പെട്ടിട്ടില്ല !"
@@ -27614,6 +27591,13 @@ msgstr ""
 msgid "guest failed to start: %s"
 msgstr "ഗസ്റ്റ് ആരംഭിയ്ക്കുന്നതില്‍ പരാജയം: %s"
 
+msgid "guest failed to start: terminated abnormally"
+msgstr ""
+
+#, c-format
+msgid "guest failed to start: unexpected exit status %d"
+msgstr ""
+
 #, fuzzy
 msgid "guest interface"
 msgstr "ഇപ്പോഴത്തെ ഇന്റര്‍ഫെയിസ് നാമം"
@@ -29741,10 +29725,6 @@ msgstr "ലോക്ക് മാനേജര്‍ കണക്ഷന്‍ ന
 msgid "lock owner details have not been registered"
 msgstr "ലോക്ക് ഉടമസ്ഥന്‍ വിവരങ്ങള്‍ രജിസ്ടര്‍ ചെയ്തിട്ടില്ല"
 
-#, fuzzy
-msgid "logfile not supported in this QEMU binary"
-msgstr "ഈ QEMU ബൈനറിയില്‍ %s പിന്തുണയ്ക്കുന്നില്ല"
-
 #, fuzzy, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
 msgstr "%s വോള്യങ്ങള്‍ തയ്യാറാക്കുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
@@ -30335,6 +30315,9 @@ msgstr ""
 
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
+msgid "migration of non-shared disks requested but NBD is not set up"
 msgstr ""
 
 msgid ""
@@ -35731,10 +35714,6 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr "നന്നായി അവസാനിപ്പിക്കുക"
 
-#, fuzzy
-msgid "terminated abnormally"
-msgstr "നന്നായി അവസാനിപ്പിക്കുക"
-
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: ഒരു പാഥ് നല്‍കുക അല്ലെങ്കില്‍ test:///default ഉപയോഗിക്കുക"
 
@@ -35825,10 +35804,6 @@ msgstr "ഡൊമെയിനിന് സ്നാപ്ഷോട്ടുക�
 
 msgid "the new password"
 msgstr ""
-
-#, fuzzy
-msgid "the packed setting is not supported with this QEMU binary"
-msgstr "64-ബിറ്റ് പിസിഐ ഹോള്‍ വ്യാപ്തി സജ്ജീകരണം ഈ ക്യൂഇഎംയു ബൈനറിയില്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
 #, fuzzy
 msgid "the password is already encrypted"
@@ -37227,10 +37202,6 @@ msgstr ""
 
 msgid "unexpected encryption format"
 msgstr "അപ്രതീക്ഷിതമായ എന്‍ക്രിപ്ഷന്‍ മാതൃക"
-
-#, fuzzy, c-format
-msgid "unexpected exit status %d"
-msgstr "അപ്രതീക്ഷിതമായ സന്ദേശ അവസ്ഥ %d"
 
 #, fuzzy, c-format
 msgid "unexpected feature '%s'"
@@ -39206,9 +39177,6 @@ msgstr "വോള്യം '%s' ഇപ്പോഴും ലഭ്യമാക�
 msgid "volume '%s' is still in use."
 msgstr "വോള്യം '%s' ഇപ്പോഴും ലഭ്യമാക്കുന്നു."
 
-msgid "volume capacity required for this pool"
-msgstr ""
-
 #, fuzzy
 msgid "volume capacity required for this storage pool"
 msgstr "സംഭരണ പൂളില്‍ ഒരു ഹോസ്റ്റ് പ്രതീക്ഷിച്ചു"
@@ -39486,6 +39454,36 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Cannot parse controller index %s"
+#~ msgstr "കണ്ട്രോളര്‍ സൂചിക %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "IOThreads for virtio-scsi not supported for this QEMU"
+#~ msgstr "ഒരു ഐഡിഇ ഡിസ്കിനു് wwn സജ്ജമാക്കുന്നതു് ഈ QEMU പിന്തുണയ്ക്കുന്നില്ല"
+
+#~ msgid "Unable to init qemu driver mutexes"
+#~ msgstr "qemu ഡ്രൈവര്‍ mutex init ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "append not supported in this QEMU binary"
+#~ msgstr "ഈ QEMU ബൈനറിയില്‍ %s പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy
+#~ msgid "logfile not supported in this QEMU binary"
+#~ msgstr "ഈ QEMU ബൈനറിയില്‍ %s പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy
+#~ msgid "terminated abnormally"
+#~ msgstr "നന്നായി അവസാനിപ്പിക്കുക"
+
+#, fuzzy
+#~ msgid "the packed setting is not supported with this QEMU binary"
+#~ msgstr "64-ബിറ്റ് പിസിഐ ഹോള്‍ വ്യാപ്തി സജ്ജീകരണം ഈ ക്യൂഇഎംയു ബൈനറിയില്‍ പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy
+#~ msgid "unexpected exit status %d"
+#~ msgstr "അപ്രതീക്ഷിതമായ സന്ദേശ അവസ്ഥ %d"
 
 #, fuzzy
 #~ msgid "'ssh' protocol is not yet supported"

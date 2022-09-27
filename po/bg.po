@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-08-26 05:02+0000\n"
+"POT-Creation-Date: 2022-09-27 08:07+0000\n"
 "PO-Revision-Date: 2021-01-04 08:47+0000\n"
 "Last-Translator: Nickys Music Group <nickys.music.group@gmail.com>\n"
 "Language-Team: Bulgarian <https://translate.fedoraproject.org/projects/"
@@ -2906,10 +2906,6 @@ msgid "Cannot parse category in %s"
 msgstr ""
 
 msgid "Cannot parse cbm_mask from resctrl cache info"
-msgstr ""
-
-#, c-format
-msgid "Cannot parse controller index %s"
 msgstr ""
 
 msgid "Cannot parse mode string"
@@ -8993,9 +8989,6 @@ msgstr ""
 msgid "IOThread to be used by supported device"
 msgstr ""
 
-msgid "IOThreads for virtio-scsi not supported for this QEMU"
-msgstr ""
-
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr ""
@@ -9762,14 +9755,6 @@ msgid "Invalid match string '%s'"
 msgstr "невалиден указател за домейн в %s"
 
 #, c-format
-msgid "Invalid maxEventChannels: %i"
-msgstr ""
-
-#, c-format
-msgid "Invalid maxGrantFrames: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
 msgstr ""
 
@@ -9919,10 +9904,6 @@ msgid "Invalid port range '%u-%u'."
 msgstr ""
 
 #, c-format
-msgid "Invalid ports: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr ""
 
@@ -10012,10 +9993,6 @@ msgstr ""
 
 #, c-format
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
-msgstr ""
-
-#, c-format
-msgid "Invalid target index '%i' in PCI controller"
 msgstr ""
 
 #, fuzzy
@@ -10146,10 +10123,6 @@ msgstr ""
 
 #, c-format
 msgid "Invalid value of 'nodeset': %s"
-msgstr ""
-
-#, c-format
-msgid "Invalid vectors: %i"
 msgstr ""
 
 #, c-format
@@ -10984,9 +10957,6 @@ msgstr "липсва информация за устройство"
 msgid "Missing disk file path in domain"
 msgstr ""
 
-msgid "Missing disk info when adding volume"
-msgstr ""
-
 msgid "Missing disk source file path"
 msgstr ""
 
@@ -11316,6 +11286,10 @@ msgstr ""
 msgid "Missing source channel attribute for char device"
 msgstr "липсва информация за източника на устройство"
 
+#, c-format
+msgid "Missing source connectionid for interface type '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "Missing source host attribute for char device"
 msgstr "липсва информация за източника на устройство"
@@ -11323,6 +11297,14 @@ msgstr "липсва информация за източника на устр�
 #, fuzzy
 msgid "Missing source path attribute for char device"
 msgstr "липсва информация за източника на устройство"
+
+#, c-format
+msgid "Missing source portgroup for interface type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Missing source portid for interface type '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Missing source service attribute for char device"
@@ -13648,6 +13630,9 @@ msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Работещ хипервайзор: %s %d.%d.%d\n"
 
 msgid "S3 state is disabled for this domain"
+msgstr ""
+
+msgid "S390 PV launch security is not supported by this host or kernel"
 msgstr ""
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
@@ -17145,9 +17130,6 @@ msgstr ""
 msgid "Unable to init device stream mutex"
 msgstr ""
 
-msgid "Unable to init qemu driver mutexes"
-msgstr ""
-
 msgid "Unable to initialize RW lock"
 msgstr ""
 
@@ -19878,9 +19860,6 @@ msgid "ap-domain value '%s' is out of range for '%s'"
 msgstr ""
 
 msgid "apparmor_parser exited with error"
-msgstr ""
-
-msgid "append not supported in this QEMU binary"
 msgstr ""
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
@@ -26777,6 +26756,13 @@ msgstr ""
 msgid "guest failed to start: %s"
 msgstr "Неуспешно стартиране на домейн %s"
 
+msgid "guest failed to start: terminated abnormally"
+msgstr ""
+
+#, c-format
+msgid "guest failed to start: unexpected exit status %d"
+msgstr ""
+
 #, fuzzy
 msgid "guest interface"
 msgstr "тип на интерфейса на мрежата"
@@ -28856,9 +28842,6 @@ msgstr ""
 msgid "lock owner details have not been registered"
 msgstr ""
 
-msgid "logfile not supported in this QEMU binary"
-msgstr ""
-
 #, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
 msgstr ""
@@ -29434,6 +29417,9 @@ msgstr ""
 
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
+msgid "migration of non-shared disks requested but NBD is not set up"
 msgstr ""
 
 msgid ""
@@ -34633,10 +34619,6 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr ""
 
-#, fuzzy
-msgid "terminated abnormally"
-msgstr "незавършено число"
-
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: задайте път или ползвайте test:///default"
 
@@ -34720,9 +34702,6 @@ msgid "the machine has no snapshot"
 msgstr ""
 
 msgid "the new password"
-msgstr ""
-
-msgid "the packed setting is not supported with this QEMU binary"
 msgstr ""
 
 msgid "the password is already encrypted"
@@ -36079,10 +36058,6 @@ msgstr ""
 
 msgid "unexpected encryption format"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unexpected exit status %d"
-msgstr "неочаквани данни '%s'"
 
 #, fuzzy, c-format
 msgid "unexpected feature '%s'"
@@ -38026,9 +38001,6 @@ msgstr ""
 msgid "volume '%s' is still in use."
 msgstr ""
 
-msgid "volume capacity required for this pool"
-msgstr ""
-
 msgid "volume capacity required for this storage pool"
 msgstr ""
 
@@ -38300,6 +38272,14 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <низ>"
+
+#, fuzzy
+#~ msgid "terminated abnormally"
+#~ msgstr "незавършено число"
+
+#, fuzzy
+#~ msgid "unexpected exit status %d"
+#~ msgstr "неочаквани данни '%s'"
 
 #, fuzzy
 #~ msgid "Unexpected network protocol '%s'"

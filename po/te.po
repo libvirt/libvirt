@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-08-26 05:02+0000\n"
+"POT-Creation-Date: 2022-09-27 08:07+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -3072,10 +3072,6 @@ msgstr "వర్గమును %s నందు పార్శ్ చేయల
 #, fuzzy
 msgid "Cannot parse cbm_mask from resctrl cache info"
 msgstr "మోడ్ స్ట్రింగ్ పార్స్ చేయలేదు"
-
-#, c-format
-msgid "Cannot parse controller index %s"
-msgstr "Cannot parse controller index %s"
 
 msgid "Cannot parse mode string"
 msgstr "మోడ్ స్ట్రింగ్ పార్స్ చేయలేదు"
@@ -9188,10 +9184,6 @@ msgstr ""
 msgid "IOThread to be used by supported device"
 msgstr "ఆపరేషన్ అనునది పరికరం కొరకు తోడ్పాటునీయదు: %s"
 
-#, fuzzy
-msgid "IOThreads for virtio-scsi not supported for this QEMU"
-msgstr "ide డిస్కు కొరకు wwn ను అమర్చుట ఈ QEMU చేత తోడ్పాటునీయబడదు"
-
 #, fuzzy, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr "ఈ అతిధేయపై నమ్‌పాడ్ అందుబాటులోలేదు"
@@ -9970,14 +9962,6 @@ msgid "Invalid match string '%s'"
 msgstr "చెల్లని మోడ్ యాట్రిబ్యూట్ '%s'"
 
 #, c-format
-msgid "Invalid maxEventChannels: %i"
-msgstr ""
-
-#, c-format
-msgid "Invalid maxGrantFrames: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
 msgstr ""
 
@@ -10127,10 +10111,6 @@ msgid "Invalid port range '%u-%u'."
 msgstr "చెల్లని పోర్ట్ విస్తృతి '%u-%u'."
 
 #, c-format
-msgid "Invalid ports: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "చెల్లని ప్రిఫిక్స్ లేదా '%s' కొరకు నెట్‌మాస్క్"
 
@@ -10225,10 +10205,6 @@ msgstr "చెల్లని లక్ష్యము"
 #, fuzzy, c-format
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
 msgstr "డొమైన్ స్నాప్‌షాట్ XML నందు చెల్లని స్థితి '%s'"
-
-#, c-format
-msgid "Invalid target index '%i' in PCI controller"
-msgstr ""
 
 #, fuzzy
 msgid "Invalid target model for serial device"
@@ -10363,10 +10339,6 @@ msgstr "'ephemeral' యొక్క చెల్లని విలువ"
 #, fuzzy, c-format
 msgid "Invalid value of 'nodeset': %s"
 msgstr "'ephemeral' యొక్క చెల్లని విలువ"
-
-#, c-format
-msgid "Invalid vectors: %i"
-msgstr ""
 
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
@@ -11243,9 +11215,6 @@ msgstr "అక్షర పరికరము కొరకు మూలపు �
 msgid "Missing disk file path in domain"
 msgstr ""
 
-msgid "Missing disk info when adding volume"
-msgstr ""
-
 #, fuzzy
 msgid "Missing disk source file path"
 msgstr "మూలపు పాత్ తప్పిపోయినది"
@@ -11588,11 +11557,23 @@ msgstr "JSON స్థితి పత్రము నందు దొరకన�
 msgid "Missing source channel attribute for char device"
 msgstr "అక్షర పరికరము కొరకు మూలపు హోస్టు యాట్రిబ్యూట్‌ను తప్పిస్తున్నది"
 
+#, c-format
+msgid "Missing source connectionid for interface type '%s'"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "అక్షర పరికరము కొరకు మూలపు హోస్టు యాట్రిబ్యూట్‌ను తప్పిస్తున్నది"
 
 msgid "Missing source path attribute for char device"
 msgstr "మూలపు పాత్ యాట్రిబ్యూట్‌ను అక్షర పరికరము కొరకు తప్పిస్తున్నది"
+
+#, c-format
+msgid "Missing source portgroup for interface type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Missing source portid for interface type '%s'"
+msgstr ""
 
 msgid "Missing source service attribute for char device"
 msgstr "అక్షర పరికరము కొరకు మూలపు సేవ యాట్రిబ్యూట్‌ను తప్పిస్తున్నది"
@@ -14003,6 +13984,9 @@ msgstr "నడుస్తున్న అధివిశోర్: %s %d.%d.%d\
 
 msgid "S3 state is disabled for this domain"
 msgstr "S3 స్థితి ఈ డొమైన్ కొరకు అచేతనంచేయబడెను"
+
+msgid "S390 PV launch security is not supported by this host or kernel"
+msgstr ""
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr ""
@@ -17608,9 +17592,6 @@ msgstr "సేవిక ధృవీకరణపత్రం %s దిగుమ�
 msgid "Unable to init device stream mutex"
 msgstr "పరికర స్ట్రీమ్ మ్యూటెక్స్ సిద్దపరచలేదు"
 
-msgid "Unable to init qemu driver mutexes"
-msgstr "qemu డ్రైవర్ మ్యూటెక్సెస్ సిద్దపరచలేదు"
-
 #, fuzzy
 msgid "Unable to initialize RW lock"
 msgstr "లాక్‌స్పేస్ %s ను సిద్దీకరించలేక పోయింది"
@@ -20395,10 +20376,6 @@ msgstr ""
 
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser దోషంతో నిష్క్రమించెను"
-
-#, fuzzy
-msgid "append not supported in this QEMU binary"
-msgstr "ఈ QEMU బైనరీ చేత %s తోడ్పాటునీయబడదు"
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr "applyDHCPOnlyRules విఫలమైంది - స్నూఫింగ్ రక్షితం కాదు!"
@@ -27380,6 +27357,13 @@ msgstr ""
 msgid "guest failed to start: %s"
 msgstr "అతిథి ప్రారంభించుటలో విఫలమైంది: %s"
 
+msgid "guest failed to start: terminated abnormally"
+msgstr ""
+
+#, c-format
+msgid "guest failed to start: unexpected exit status %d"
+msgstr ""
+
 #, fuzzy
 msgid "guest interface"
 msgstr "ఇప్పటికేవున్న యింటర్ఫేస్ పేరు"
@@ -29503,10 +29487,6 @@ msgstr "లాక్ నిర్వాహిక అనుసంధానం న
 msgid "lock owner details have not been registered"
 msgstr "లాక్ వోనర్ వివరాలు నమోదు కాలేదు"
 
-#, fuzzy
-msgid "logfile not supported in this QEMU binary"
-msgstr "ఈ QEMU బైనరీ చేత %s తోడ్పాటునీయబడదు"
-
 #, fuzzy, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
 msgstr "%s వాల్యూమ్ల సృష్టీకరణ తోడ్పాటులేదు"
@@ -30107,6 +30087,9 @@ msgstr ""
 
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
+msgid "migration of non-shared disks requested but NBD is not set up"
 msgstr ""
 
 msgid ""
@@ -35485,10 +35468,6 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr "సఫలవంతంగా అంతంచేయి"
 
-#, fuzzy
-msgid "terminated abnormally"
-msgstr "సఫలవంతంగా అంతంచేయి"
-
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: పాత్ ను సమకూర్చండి లేదా test:///default ఉపయోగించండి"
 
@@ -35580,10 +35559,6 @@ msgstr "డొమైన్ ఏ స్నాప్‌షాట్లను కల
 
 msgid "the new password"
 msgstr ""
-
-#, fuzzy
-msgid "the packed setting is not supported with this QEMU binary"
-msgstr "vhost-net అనునది ఈ QEMU బైనరీతో తోడ్పాటునీయదు"
 
 #, fuzzy
 msgid "the password is already encrypted"
@@ -36979,10 +36954,6 @@ msgstr ""
 
 msgid "unexpected encryption format"
 msgstr "అనుకోని ఎన్క్రిప్షన్ ఫార్మాట్"
-
-#, fuzzy, c-format
-msgid "unexpected exit status %d"
-msgstr "అనుకోని సందేశ స్థితి %d"
 
 #, fuzzy, c-format
 msgid "unexpected feature '%s'"
@@ -38958,9 +38929,6 @@ msgstr "వాల్యూమ్ '%s' యిప్పటికి కేటా�
 msgid "volume '%s' is still in use."
 msgstr "వాల్యూమ్ '%s' యిప్పటికి కేటాయించబడివుంది."
 
-msgid "volume capacity required for this pool"
-msgstr ""
-
 #, fuzzy
 msgid "volume capacity required for this storage pool"
 msgstr "నిల్వ పూల్ కొరకు ఖచ్చితంగా 1 అతిధేయ అనుకొంది"
@@ -39238,6 +39206,36 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Cannot parse controller index %s"
+#~ msgstr "Cannot parse controller index %s"
+
+#, fuzzy
+#~ msgid "IOThreads for virtio-scsi not supported for this QEMU"
+#~ msgstr "ide డిస్కు కొరకు wwn ను అమర్చుట ఈ QEMU చేత తోడ్పాటునీయబడదు"
+
+#~ msgid "Unable to init qemu driver mutexes"
+#~ msgstr "qemu డ్రైవర్ మ్యూటెక్సెస్ సిద్దపరచలేదు"
+
+#, fuzzy
+#~ msgid "append not supported in this QEMU binary"
+#~ msgstr "ఈ QEMU బైనరీ చేత %s తోడ్పాటునీయబడదు"
+
+#, fuzzy
+#~ msgid "logfile not supported in this QEMU binary"
+#~ msgstr "ఈ QEMU బైనరీ చేత %s తోడ్పాటునీయబడదు"
+
+#, fuzzy
+#~ msgid "terminated abnormally"
+#~ msgstr "సఫలవంతంగా అంతంచేయి"
+
+#, fuzzy
+#~ msgid "the packed setting is not supported with this QEMU binary"
+#~ msgstr "vhost-net అనునది ఈ QEMU బైనరీతో తోడ్పాటునీయదు"
+
+#, fuzzy
+#~ msgid "unexpected exit status %d"
+#~ msgstr "అనుకోని సందేశ స్థితి %d"
 
 #, fuzzy
 #~ msgid "'ssh' protocol is not yet supported"

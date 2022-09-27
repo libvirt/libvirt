@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-08-26 05:02+0000\n"
+"POT-Creation-Date: 2022-09-27 08:07+0000\n"
 "PO-Revision-Date: 2020-06-24 14:36+0000\n"
 "Last-Translator: Akarshan Biswas <akarshan.biswas@gmail.com>\n"
 "Language-Team: Bengali (India) <https://translate.fedoraproject.org/projects/"
@@ -3017,10 +3017,6 @@ msgstr "কনট্রোলারের ইন্ডেক্স %s পার�
 
 msgid "Cannot parse cbm_mask from resctrl cache info"
 msgstr ""
-
-#, c-format
-msgid "Cannot parse controller index %s"
-msgstr "কনট্রোলারের ইন্ডেক্স %s পার্স করতে ব্যর্থ"
 
 #, fuzzy
 msgid "Cannot parse mode string"
@@ -9229,10 +9225,6 @@ msgstr ""
 msgid "IOThread to be used by supported device"
 msgstr "%s ডিভাইসের জন্য অপসারণযোগ্য মিডিয়া সমর্থিত নয়"
 
-#, fuzzy
-msgid "IOThreads for virtio-scsi not supported for this QEMU"
-msgstr "এই QEMU বাইনারি দ্বারা SATA সমর্থিত হয় না"
-
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr ""
@@ -10017,14 +10009,6 @@ msgid "Invalid match string '%s'"
 msgstr "অবৈধ মোড অ্যাট্রিবিউট '%s'"
 
 #, c-format
-msgid "Invalid maxEventChannels: %i"
-msgstr ""
-
-#, c-format
-msgid "Invalid maxGrantFrames: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
 msgstr ""
 
@@ -10177,10 +10161,6 @@ msgstr "অবৈধ পোর্ট সংখ্যা: %s"
 msgid "Invalid port range '%u-%u'."
 msgstr "অবৈধ পোর্ট সংখ্যা: %s"
 
-#, c-format
-msgid "Invalid ports: %i"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "IPv4 প্রেফিক্স '%lu' অবৈধ, '%s' নেটওয়ার্কে"
@@ -10277,10 +10257,6 @@ msgstr "অবৈধ আর্গুমেন্ট"
 #, fuzzy, c-format
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
 msgstr "অবৈধ স্টেট '%s', XML ডোমেন স্ন্যাপশটে"
-
-#, c-format
-msgid "Invalid target index '%i' in PCI controller"
-msgstr ""
 
 #, fuzzy
 msgid "Invalid target model for serial device"
@@ -10413,10 +10389,6 @@ msgstr "'ephemeral'-র মান বৈধ নয়"
 #, fuzzy, c-format
 msgid "Invalid value of 'nodeset': %s"
 msgstr "'ephemeral'-র মান বৈধ নয়"
-
-#, c-format
-msgid "Invalid vectors: %i"
-msgstr ""
 
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
@@ -11283,9 +11255,6 @@ msgstr "ক্যারেক্টার ডিভাইসের ক্ষে�
 msgid "Missing disk file path in domain"
 msgstr ""
 
-msgid "Missing disk info when adding volume"
-msgstr ""
-
 #, fuzzy
 msgid "Missing disk source file path"
 msgstr "উৎসের পাথ অনুপস্থিত"
@@ -11632,11 +11601,23 @@ msgstr ""
 msgid "Missing source channel attribute for char device"
 msgstr "ক্যারেক্টার ডিভাইসের ক্ষেত্রে সোর্স হোস্ট বৈশিষ্ট্য অনুপস্থিত"
 
+#, c-format
+msgid "Missing source connectionid for interface type '%s'"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "ক্যারেক্টার ডিভাইসের ক্ষেত্রে সোর্স হোস্ট বৈশিষ্ট্য অনুপস্থিত"
 
 msgid "Missing source path attribute for char device"
 msgstr "ক্যারেক্টার ডিভাইসের ক্ষেত্রে সোর্স পাথ বৈশিষ্ট্য অনুপস্থিত"
+
+#, c-format
+msgid "Missing source portgroup for interface type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Missing source portid for interface type '%s'"
+msgstr ""
 
 msgid "Missing source service attribute for char device"
 msgstr "ক্যারেক্টার ডিভাইসের ক্ষেত্রে সোর্স পরিসেবা বৈশিষ্ট্য অনুপস্থিত"
@@ -14039,6 +14020,9 @@ msgstr "চলমান হাইপার-ভাইসর: %s %d.%d.%d\n"
 #, fuzzy
 msgid "S3 state is disabled for this domain"
 msgstr "USB হাব যোগ করা যাবে না: এই ডোমেনের জন্য USB নিষ্ক্রিয়"
+
+msgid "S390 PV launch security is not supported by this host or kernel"
+msgstr ""
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr ""
@@ -17687,10 +17671,6 @@ msgid "Unable to init device stream mutex"
 msgstr "ডিভাইস স্ট্রীম mutex init করতে ব্যর্থ"
 
 #, fuzzy
-msgid "Unable to init qemu driver mutexes"
-msgstr "ডিভাইস স্ট্রীম mutex init করতে ব্যর্থ"
-
-#, fuzzy
 msgid "Unable to initialize RW lock"
 msgstr "VirtualBox ড্রাইভার API আরম্ভ করতে ব্যর্থ"
 
@@ -20528,10 +20508,6 @@ msgstr ""
 
 msgid "apparmor_parser exited with error"
 msgstr ""
-
-#, fuzzy
-msgid "append not supported in this QEMU binary"
-msgstr "এই QEMU বাইনারি দ্বারা SATA সমর্থিত হয় না"
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr ""
@@ -27596,6 +27572,13 @@ msgstr ""
 msgid "guest failed to start: %s"
 msgstr "পুল %s আরম্ভ করতে ব্যর্থ"
 
+msgid "guest failed to start: terminated abnormally"
+msgstr ""
+
+#, c-format
+msgid "guest failed to start: unexpected exit status %d"
+msgstr ""
+
 #, fuzzy
 msgid "guest interface"
 msgstr "নেটওয়ার্ক ইন্টারফেসের ধরন"
@@ -29752,10 +29735,6 @@ msgstr ""
 msgid "lock owner details have not been registered"
 msgstr ""
 
-#, fuzzy
-msgid "logfile not supported in this QEMU binary"
-msgstr "এই QEMU বাইনারি দ্বারা SATA সমর্থিত হয় না"
-
 #, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
 msgstr ""
@@ -30364,6 +30343,9 @@ msgstr ""
 
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
+msgid "migration of non-shared disks requested but NBD is not set up"
 msgstr ""
 
 msgid ""
@@ -35764,10 +35746,6 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr ""
 
-#, fuzzy
-msgid "terminated abnormally"
-msgstr "অসমাপ্ত সংখ্যা"
-
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: একটি পাথ লিখুন অথবা test:///default ব্যবহার করুন"
 
@@ -35859,10 +35837,6 @@ msgstr "ইন্টারফেসের কোনো নাম উপস্থ
 
 msgid "the new password"
 msgstr ""
-
-#, fuzzy
-msgid "the packed setting is not supported with this QEMU binary"
-msgstr "এই QEMU বাইনারি দ্বারা SATA সমর্থিত হয় না"
 
 #, fuzzy
 msgid "the password is already encrypted"
@@ -37269,10 +37243,6 @@ msgstr ""
 
 msgid "unexpected encryption format"
 msgstr "অপ্রত্যাশিত এনক্রিপশনের বিন্যাস"
-
-#, fuzzy, c-format
-msgid "unexpected exit status %d"
-msgstr "অপ্রত্যাশিত ডিস্ক বাস %d"
 
 #, fuzzy, c-format
 msgid "unexpected feature '%s'"
@@ -39258,9 +39228,6 @@ msgstr "ভলিউম '%s' এখনো বরাদ্দ করা হচ্
 msgid "volume '%s' is still in use."
 msgstr "ভলিউম '%s' এখনো বরাদ্দ করা হচ্ছে।"
 
-msgid "volume capacity required for this pool"
-msgstr ""
-
 msgid "volume capacity required for this storage pool"
 msgstr ""
 
@@ -39538,6 +39505,37 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s <string>]"
+
+#~ msgid "Cannot parse controller index %s"
+#~ msgstr "কনট্রোলারের ইন্ডেক্স %s পার্স করতে ব্যর্থ"
+
+#, fuzzy
+#~ msgid "IOThreads for virtio-scsi not supported for this QEMU"
+#~ msgstr "এই QEMU বাইনারি দ্বারা SATA সমর্থিত হয় না"
+
+#, fuzzy
+#~ msgid "Unable to init qemu driver mutexes"
+#~ msgstr "ডিভাইস স্ট্রীম mutex init করতে ব্যর্থ"
+
+#, fuzzy
+#~ msgid "append not supported in this QEMU binary"
+#~ msgstr "এই QEMU বাইনারি দ্বারা SATA সমর্থিত হয় না"
+
+#, fuzzy
+#~ msgid "logfile not supported in this QEMU binary"
+#~ msgstr "এই QEMU বাইনারি দ্বারা SATA সমর্থিত হয় না"
+
+#, fuzzy
+#~ msgid "terminated abnormally"
+#~ msgstr "অসমাপ্ত সংখ্যা"
+
+#, fuzzy
+#~ msgid "the packed setting is not supported with this QEMU binary"
+#~ msgstr "এই QEMU বাইনারি দ্বারা SATA সমর্থিত হয় না"
+
+#, fuzzy
+#~ msgid "unexpected exit status %d"
+#~ msgstr "অপ্রত্যাশিত ডিস্ক বাস %d"
 
 #, fuzzy
 #~ msgid "'ssh' protocol is not yet supported"

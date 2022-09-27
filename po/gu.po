@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-08-26 05:02+0000\n"
+"POT-Creation-Date: 2022-09-27 08:07+0000\n"
 "PO-Revision-Date: 2015-02-23 06:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Gujarati (http://www.transifex.com/projects/p/libvirt/"
@@ -3076,10 +3076,6 @@ msgstr "%s માં વર્ગનુ પદચ્છેદન કરી શ�
 #, fuzzy
 msgid "Cannot parse cbm_mask from resctrl cache info"
 msgstr "શબ્દમાળાનું પદચ્છેદન કરી શકાતુ નથી"
-
-#, c-format
-msgid "Cannot parse controller index %s"
-msgstr "નિયંત્રક અનુક્રમણિકા %s નું પદચ્છેદન કરી શકાતુ નથી"
 
 msgid "Cannot parse mode string"
 msgstr "શબ્દમાળાનું પદચ્છેદન કરી શકાતુ નથી"
@@ -9213,10 +9209,6 @@ msgstr ""
 msgid "IOThread to be used by supported device"
 msgstr "ક્રિયા ઉપકરણ માટે આધારભૂત નથી: %s"
 
-#, fuzzy
-msgid "IOThreads for virtio-scsi not supported for this QEMU"
-msgstr "ide ડિસ્ક માટે wwn નું સુયોજન આ QEMU દ્દારા આધારભૂત નથી"
-
 #, fuzzy, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr "numad આ યજમાન પર ઉપલબ્ધ નથી"
@@ -10002,14 +9994,6 @@ msgid "Invalid match string '%s'"
 msgstr "અમાન્ય સ્થિતિ ગુણધર્મ '%s'"
 
 #, c-format
-msgid "Invalid maxEventChannels: %i"
-msgstr ""
-
-#, c-format
-msgid "Invalid maxGrantFrames: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
 msgstr ""
 
@@ -10160,10 +10144,6 @@ msgid "Invalid port range '%u-%u'."
 msgstr "અયોગ્ય પોર્ટ સીમા '%u-%u'."
 
 #, c-format
-msgid "Invalid ports: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "અયોગ્ય ઉપસર્ગ અથવા '%s' માટે નેટમાસ્ક"
 
@@ -10258,10 +10238,6 @@ msgstr "અમાન્ય લક્ષ્ય"
 #, fuzzy, c-format
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
 msgstr "ડોમેઇન સ્નેપશોટ XML માં અયોગ્ય સ્થિતિ '%s'"
-
-#, c-format
-msgid "Invalid target index '%i' in PCI controller"
-msgstr ""
 
 #, fuzzy
 msgid "Invalid target model for serial device"
@@ -10396,10 +10372,6 @@ msgstr "'ephemeral' ની અયોગ્ય કિંમત"
 #, fuzzy, c-format
 msgid "Invalid value of 'nodeset': %s"
 msgstr "'%s' માટે અયોગ્ય કિંમત '%s'"
-
-#, c-format
-msgid "Invalid vectors: %i"
-msgstr ""
 
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
@@ -11275,9 +11247,6 @@ msgstr "અક્ષર ઉપકરણ માટે ગુમ થયેલ સ�
 msgid "Missing disk file path in domain"
 msgstr ""
 
-msgid "Missing disk info when adding volume"
-msgstr "ગુમ થયેલ ડિસ્ક જાણકારી જ્યારે વોલ્યુમને ઉમેરી રહ્યા હોય"
-
 #, fuzzy
 msgid "Missing disk source file path"
 msgstr "ગુમ થયેલ સ્રોત પાથ"
@@ -11616,11 +11585,23 @@ msgstr "JSON દસ્તાવેજ સ્થિતિમાં ગુમ થ�
 msgid "Missing source channel attribute for char device"
 msgstr "અક્ષર ઉપકરણ માટે ગુમ થયેલ સ્રોત યજમાન ગુણધર્મ"
 
+#, c-format
+msgid "Missing source connectionid for interface type '%s'"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "અક્ષર ઉપકરણ માટે ગુમ થયેલ સ્રોત યજમાન ગુણધર્મ"
 
 msgid "Missing source path attribute for char device"
 msgstr "અક્ષર ઉપકરણ માટે ગેરહાજર સ્ત્રોત પાથ ગુણધર્મ"
+
+#, c-format
+msgid "Missing source portgroup for interface type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Missing source portid for interface type '%s'"
+msgstr ""
 
 msgid "Missing source service attribute for char device"
 msgstr "અક્ષર ઉપકરણ માટે ગુમ થયેલ સ્રોત સેવા ગુણધર્મ"
@@ -14031,6 +14012,9 @@ msgstr "હાયપરવિઝર ચલાવી રહ્યા છીએ: %
 
 msgid "S3 state is disabled for this domain"
 msgstr "S3 સ્થિતિ આ ડોમેઇન માટે નિષ્ક્રિય થયેલ છે"
+
+msgid "S390 PV launch security is not supported by this host or kernel"
+msgstr ""
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr ""
@@ -17637,9 +17621,6 @@ msgstr "સર્વર પ્રમાણપત્ર %s ને આયાત �
 msgid "Unable to init device stream mutex"
 msgstr "ઉપકરણ સ્ટ્રીન મ્યુટેક્ષને init કરવાનું અસમર્થ"
 
-msgid "Unable to init qemu driver mutexes"
-msgstr "qemu ડ્રાઇવર મ્યુટેક્ષને init કરવાનું અસમર્થ"
-
 #, fuzzy
 msgid "Unable to initialize RW lock"
 msgstr "lockspace %s ને પ્રારંભ કરવાનુ અસમર્થ"
@@ -20419,10 +20400,6 @@ msgstr ""
 
 msgid "apparmor_parser exited with error"
 msgstr "ભૂલ સાથે apparmor_parser બહાર નીકળ્યુ"
-
-#, fuzzy
-msgid "append not supported in this QEMU binary"
-msgstr "QEMU બાઇનરી માં %s આધારભૂત નથી"
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr "applyDHCPOnlyRules નિષ્ફળ - સ્પુફીંગ સુરક્ષિત નથી!"
@@ -27412,6 +27389,13 @@ msgstr ""
 msgid "guest failed to start: %s"
 msgstr "શરૂ કરવા માટે મહેમાન નિષ્ફળ: %s"
 
+msgid "guest failed to start: terminated abnormally"
+msgstr ""
+
+#, c-format
+msgid "guest failed to start: unexpected exit status %d"
+msgstr ""
+
 #, fuzzy
 msgid "guest interface"
 msgstr "હાલનું ઇન્ટરફેસ નામ"
@@ -29530,10 +29514,6 @@ msgstr "તાળુ સંચાલક જોડાણને મર્યાદ
 msgid "lock owner details have not been registered"
 msgstr "તાળુ માલિક વિગતોને રજીસ્ટર કરી દેવામાં આવી છે"
 
-#, fuzzy
-msgid "logfile not supported in this QEMU binary"
-msgstr "QEMU બાઇનરી માં %s આધારભૂત નથી"
-
 #, fuzzy, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
 msgstr "%s વોલ્યુમોને બનાવવાનું આધારભૂત નથી"
@@ -30123,6 +30103,9 @@ msgstr ""
 
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
+msgid "migration of non-shared disks requested but NBD is not set up"
 msgstr ""
 
 msgid ""
@@ -35494,10 +35477,6 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr "પ્રભાવશીલ રીતે બંધ કરો"
 
-#, fuzzy
-msgid "terminated abnormally"
-msgstr "પ્રભાવશીલ રીતે બંધ કરો"
-
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: પાથ પૂરો પાડો અથવા test:///default વાપરો"
 
@@ -35588,10 +35567,6 @@ msgstr "ડોમેઇન પાસે સ્નેપશોટ નથી"
 
 msgid "the new password"
 msgstr ""
-
-#, fuzzy
-msgid "the packed setting is not supported with this QEMU binary"
-msgstr "64-બીટ PCI હોલ માપ સુયોજનો આ QEMU બાઇનરી સાથે આધારભૂત નથી"
 
 #, fuzzy
 msgid "the password is already encrypted"
@@ -36992,10 +36967,6 @@ msgstr ""
 
 msgid "unexpected encryption format"
 msgstr "અનિચ્છનીય એનક્રિપ્શન બંધારણ"
-
-#, fuzzy, c-format
-msgid "unexpected exit status %d"
-msgstr "અનિચ્છનીય સંદેશો પરિસ્થિતિ %d"
 
 #, fuzzy, c-format
 msgid "unexpected feature '%s'"
@@ -38969,9 +38940,6 @@ msgstr "વોલ્યુમ '%s' હજુ પણ ફાળવેલ છે."
 msgid "volume '%s' is still in use."
 msgstr "વોલ્યુમ '%s' એ હજુ વપરાશમાં છે."
 
-msgid "volume capacity required for this pool"
-msgstr ""
-
 #, fuzzy
 msgid "volume capacity required for this storage pool"
 msgstr "સંગ્રહ પુલ માટે ઇચ્છિક ફક્ત ૧ યજમાન"
@@ -39249,6 +39217,39 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Cannot parse controller index %s"
+#~ msgstr "નિયંત્રક અનુક્રમણિકા %s નું પદચ્છેદન કરી શકાતુ નથી"
+
+#, fuzzy
+#~ msgid "IOThreads for virtio-scsi not supported for this QEMU"
+#~ msgstr "ide ડિસ્ક માટે wwn નું સુયોજન આ QEMU દ્દારા આધારભૂત નથી"
+
+#~ msgid "Missing disk info when adding volume"
+#~ msgstr "ગુમ થયેલ ડિસ્ક જાણકારી જ્યારે વોલ્યુમને ઉમેરી રહ્યા હોય"
+
+#~ msgid "Unable to init qemu driver mutexes"
+#~ msgstr "qemu ડ્રાઇવર મ્યુટેક્ષને init કરવાનું અસમર્થ"
+
+#, fuzzy
+#~ msgid "append not supported in this QEMU binary"
+#~ msgstr "QEMU બાઇનરી માં %s આધારભૂત નથી"
+
+#, fuzzy
+#~ msgid "logfile not supported in this QEMU binary"
+#~ msgstr "QEMU બાઇનરી માં %s આધારભૂત નથી"
+
+#, fuzzy
+#~ msgid "terminated abnormally"
+#~ msgstr "પ્રભાવશીલ રીતે બંધ કરો"
+
+#, fuzzy
+#~ msgid "the packed setting is not supported with this QEMU binary"
+#~ msgstr "64-બીટ PCI હોલ માપ સુયોજનો આ QEMU બાઇનરી સાથે આધારભૂત નથી"
+
+#, fuzzy
+#~ msgid "unexpected exit status %d"
+#~ msgstr "અનિચ્છનીય સંદેશો પરિસ્થિતિ %d"
 
 #, fuzzy
 #~ msgid "'ssh' protocol is not yet supported"

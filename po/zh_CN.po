@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-08-26 05:02+0000\n"
+"POT-Creation-Date: 2022-09-27 08:07+0000\n"
 "PO-Revision-Date: 2022-09-25 12:19+0000\n"
 "Last-Translator: zhanchun li <lzc777@126.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -733,7 +733,8 @@ msgstr "%s uri uuid 动作\n"
 msgid ""
 "%s with index %d is configured for a NUMA node (%d) not present in the "
 "domain's <cpu><numa> array (%zu)"
-msgstr "为 NUMA 节点(%d)配置的索引为 %d 的 %s 在域的 <cpu><numa> 数组(%zu)中不存在"
+msgstr ""
+"为 NUMA 节点(%d)配置的索引为 %d 的 %s 在域的 <cpu><numa> 数组(%zu)中不存在"
 
 #, c-format
 msgid ""
@@ -2387,8 +2388,9 @@ msgid ""
 "proper to be migrated out or not.\n"
 "The calculated dirty rate information is available by calling 'domstats --"
 "dirtyrate'."
-msgstr "计算域的内存脏率，以确定是否适合迁出。通过调用 'domstats --dirtyrate' "
-"可得到计算的脏率信息。"
+msgstr ""
+"计算域的内存脏率，以确定是否适合迁出。通过调用 'domstats --dirtyrate' 可得到"
+"计算的脏率信息。"
 
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
@@ -3083,10 +3085,6 @@ msgstr "无法解析 %s 中的类别"
 msgid "Cannot parse cbm_mask from resctrl cache info"
 msgstr "无法从 resctrl 缓存信息中解析 cbm_mask"
 
-#, c-format
-msgid "Cannot parse controller index %s"
-msgstr "无法解析控制器索引 %s"
-
 msgid "Cannot parse mode string"
 msgstr "无法解析模式字符串"
 
@@ -3129,8 +3127,9 @@ msgstr ""
 msgid ""
 "Cannot plug '%s' interface into '%s' because new combined inbound floor=%llu "
 "would overcommit peak=%llu on network '%s'"
-msgstr "无法将 '%s' 接口插入 '%s'，因为新合并的入站 floor=%llu 将在网络 '%s' "
-"上过度承诺 peak=%llu"
+msgstr ""
+"无法将 '%s' 接口插入 '%s'，因为新合并的入站 floor=%llu 将在网络 '%s' 上过度承"
+"诺 peak=%llu"
 
 #, c-format
 msgid "Cannot print data type %x"
@@ -8852,8 +8851,9 @@ msgstr "主机 SMBIOS 信息不可用"
 msgid ""
 "Host not compatible with KVM; HW virtualization CPU features not found. Only "
 "emulated CPUs are available; performance will be significantly limited"
-msgstr "主机与 KVM 不兼容 ; 未找到 HW 虚拟化 CPU 功能。只有仿真的 CPU "
-"可用，性能将受到很大限制"
+msgstr ""
+"主机与 KVM 不兼容 ; 未找到 HW 虚拟化 CPU 功能。只有仿真的 CPU 可用，性能将受"
+"到很大限制"
 
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr "这个平台不支持主机系统信息提取"
@@ -9013,9 +9013,6 @@ msgstr "IOThread ID 号"
 
 msgid "IOThread to be used by supported device"
 msgstr "支持的设备使用的 IOThread"
-
-msgid "IOThreads for virtio-scsi not supported for this QEMU"
-msgstr "此 QEMU 不支持 virtio-scsi 的 IOThreads"
 
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
@@ -9778,14 +9775,6 @@ msgid "Invalid match string '%s'"
 msgstr "无效的匹配字符串 '%s'"
 
 #, c-format
-msgid "Invalid maxEventChannels: %i"
-msgstr "无效的 maxEventChannels: %i"
-
-#, c-format
-msgid "Invalid maxGrantFrames: %i"
-msgstr "无效的 maxGrantFrames：%i"
-
-#, c-format
 msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
 msgstr "无效的消息 prog=%d type=%d serial=%u proc=%d"
 
@@ -9931,10 +9920,6 @@ msgid "Invalid port range '%u-%u'."
 msgstr "无效端口范围 '%u-%u'。"
 
 #, c-format
-msgid "Invalid ports: %i"
-msgstr "无效的端口：%i"
-
-#, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "无效的 '%s' 前缀或者掩码"
 
@@ -10023,10 +10008,6 @@ msgstr "无效目标"
 #, c-format
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
 msgstr "无效的目标域状态 '%s'。拒绝快照恢复"
-
-#, c-format
-msgid "Invalid target index '%i' in PCI controller"
-msgstr "PCI 控制器中无效的目标索引 '%i'"
 
 msgid "Invalid target model for serial device"
 msgstr "串行设备的无效的目标型号"
@@ -10158,10 +10139,6 @@ msgstr "'nodemask' 的无效值：%s"
 #, c-format
 msgid "Invalid value of 'nodeset': %s"
 msgstr "'nodeset' 的无效值：%s"
-
-#, c-format
-msgid "Invalid vectors: %i"
-msgstr "无效的向量：%i"
 
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
@@ -10981,9 +10958,6 @@ msgstr "缺少容器端 veth 的设备名称"
 msgid "Missing disk file path in domain"
 msgstr "在域中缺少磁盘文件路径"
 
-msgid "Missing disk info when adding volume"
-msgstr "添加卷时缺少磁盘信息"
-
 msgid "Missing disk source file path"
 msgstr "缺少磁盘源文件路径"
 
@@ -11125,7 +11099,8 @@ msgstr "在 query-rx-filter 响应中缺少或无效的 'promiscuous'"
 msgid ""
 "Missing or invalid 'start' attribute in <port> in <nat> in <forward> in "
 "network %s"
-msgstr "在网络 %s 中 <forward> 中 <nat> 中的 <port> 中缺少或者无效的 'start' 属性"
+msgstr ""
+"在网络 %s 中 <forward> 中 <nat> 中的 <port> 中缺少或者无效的 'start' 属性"
 
 msgid "Missing or invalid 'unicast' in query-rx-filter response"
 msgstr "在 query-rx-filter 响应中缺少或无效的 'unicast'"
@@ -11304,11 +11279,23 @@ msgstr "JSON 状态文件中缺少 socks 字段"
 msgid "Missing source channel attribute for char device"
 msgstr "字符设备缺少 source channel 属性"
 
+#, c-format
+msgid "Missing source connectionid for interface type '%s'"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "缺少字符设备的源主机属性"
 
 msgid "Missing source path attribute for char device"
 msgstr "缺少字符设备的源路径属性"
+
+#, c-format
+msgid "Missing source portgroup for interface type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Missing source portid for interface type '%s'"
+msgstr ""
 
 msgid "Missing source service attribute for char device"
 msgstr "缺少字符设备的源服务属性"
@@ -13593,6 +13580,9 @@ msgstr "运行管理程序: %s %d.%d.%d\n"
 
 msgid "S3 state is disabled for this domain"
 msgstr "这个域禁用了 S3 状态"
+
+msgid "S390 PV launch security is not supported by this host or kernel"
+msgstr ""
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 S390 PV 启动安全性"
@@ -17043,9 +17033,6 @@ msgstr "无法导入服务器证书 %s"
 msgid "Unable to init device stream mutex"
 msgstr "无法初始化设备流互斥"
 
-msgid "Unable to init qemu driver mutexes"
-msgstr "无法初始化 qemu 驱动程序互斥器"
-
 msgid "Unable to initialize RW lock"
 msgstr "无法初始化 RW 锁"
 
@@ -18662,7 +18649,8 @@ msgstr "不安全的迁移:%s"
 msgid ""
 "Unsupported <bandwidth> element in network '%s' in portgroup '%s' with "
 "forward mode='%s'"
-msgstr "在 forward mode='%s' 的端口组 '%s' 中的网络 '%s' 中不支持的 <bandwidth> 元素"
+msgstr ""
+"在 forward mode='%s' 的端口组 '%s' 中的网络 '%s' 中不支持的 <bandwidth> 元素"
 
 #, c-format
 msgid "Unsupported <dns> element in network %s with forward mode='%s'"
@@ -19747,9 +19735,6 @@ msgstr "ap-domain 值 '%s' 超出了 '%s' 范围。"
 
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser 出错并退出"
-
-msgid "append not supported in this QEMU binary"
-msgstr "在此 QEMU 二进制文件中不支持追加"
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr "applyDHCPOnlyRules 设备 - 模仿不受保护！"
@@ -26451,6 +26436,13 @@ msgstr "在连接客户机代理时，客户机崩溃"
 msgid "guest failed to start: %s"
 msgstr "客户机无法启动：%s"
 
+msgid "guest failed to start: terminated abnormally"
+msgstr ""
+
+#, c-format
+msgid "guest failed to start: unexpected exit status %d"
+msgstr ""
+
 msgid "guest interface"
 msgstr "客户机接口"
 
@@ -27104,7 +27096,8 @@ msgstr "<vlan> 中无效的 \"trunk='%s'\" -- 必须是 yes 或 no"
 msgid ""
 "invalid \"trunk='%s'\" in <vlan> - trunk='yes' is required for more than one "
 "vlan tag"
-msgstr "<vlan> 中无效的 \"trunk='%s'\" -- 有一个以上的 vlan 标签要求 trunk='yes'"
+msgstr ""
+"<vlan> 中无效的 \"trunk='%s'\" -- 有一个以上的 vlan 标签要求 trunk='yes'"
 
 #, c-format
 msgid "invalid %s value: '%s'"
@@ -28472,9 +28465,6 @@ msgstr "已限制锁定管理程序连接"
 msgid "lock owner details have not been registered"
 msgstr "未注册锁拥有者详情"
 
-msgid "logfile not supported in this QEMU binary"
-msgstr "此 QEMU 二进制文件不支持日志文件"
-
 #, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
 msgstr "逻辑卷 '%s' 是稀疏的，不支持卷清除"
@@ -29042,6 +29032,9 @@ msgstr "另一个线程正在积极监视域 %s 的迁移"
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
 msgstr "域 %s 的迁移不在 post-copy 阶段"
+
+msgid "migration of non-shared disks requested but NBD is not set up"
+msgstr ""
 
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
@@ -34117,9 +34110,6 @@ msgstr "查询 '%s' 的组件 '%s' 的终端 QAPI 不能有追随者"
 msgid "terminate gracefully"
 msgstr "优雅地终止"
 
-msgid "terminated abnormally"
-msgstr "非正常终止"
-
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen：提供一个路径或者默认使用 test:///"
 
@@ -34127,8 +34117,9 @@ msgstr "testOpen：提供一个路径或者默认使用 test:///"
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %s"
-msgstr "当 <address> 或者 <pf> 子元素在网络 %s 中存在时，不能使用 <forward> 'dev' "
-"属性"
+msgstr ""
+"当 <address> 或者 <pf> 子元素在网络 %s 中存在时，不能使用 <forward> 'dev' 属"
+"性"
 
 msgid "the CPU is incompatible with host CPU"
 msgstr "CPU 与主机 CPU 不兼容"
@@ -34204,9 +34195,6 @@ msgstr "机器没有快照"
 
 msgid "the new password"
 msgstr "新密码"
-
-msgid "the packed setting is not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制文件不支持打包的设置"
 
 msgid "the password is already encrypted"
 msgstr "密码已被加密"
@@ -35573,10 +35561,6 @@ msgstr "意外的加密引擎"
 
 msgid "unexpected encryption format"
 msgstr "意外的加密格式"
-
-#, c-format
-msgid "unexpected exit status %d"
-msgstr "意外的退出状态 %d"
 
 #, c-format
 msgid "unexpected feature '%s'"
@@ -37502,9 +37486,6 @@ msgstr "卷 '%s' 仍在分配中。"
 msgid "volume '%s' is still in use."
 msgstr "卷 '%s' 仍在使用中。"
 
-msgid "volume capacity required for this pool"
-msgstr "这个池所需的卷容量"
-
 msgid "volume capacity required for this storage pool"
 msgstr "这个存储池所需的卷容量"
 
@@ -37773,6 +37754,51 @@ msgstr "请求网络 %s 的区 %s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Cannot parse controller index %s"
+#~ msgstr "无法解析控制器索引 %s"
+
+#~ msgid "IOThreads for virtio-scsi not supported for this QEMU"
+#~ msgstr "此 QEMU 不支持 virtio-scsi 的 IOThreads"
+
+#~ msgid "Invalid maxEventChannels: %i"
+#~ msgstr "无效的 maxEventChannels: %i"
+
+#~ msgid "Invalid maxGrantFrames: %i"
+#~ msgstr "无效的 maxGrantFrames：%i"
+
+#~ msgid "Invalid ports: %i"
+#~ msgstr "无效的端口：%i"
+
+#~ msgid "Invalid target index '%i' in PCI controller"
+#~ msgstr "PCI 控制器中无效的目标索引 '%i'"
+
+#~ msgid "Invalid vectors: %i"
+#~ msgstr "无效的向量：%i"
+
+#~ msgid "Missing disk info when adding volume"
+#~ msgstr "添加卷时缺少磁盘信息"
+
+#~ msgid "Unable to init qemu driver mutexes"
+#~ msgstr "无法初始化 qemu 驱动程序互斥器"
+
+#~ msgid "append not supported in this QEMU binary"
+#~ msgstr "在此 QEMU 二进制文件中不支持追加"
+
+#~ msgid "logfile not supported in this QEMU binary"
+#~ msgstr "此 QEMU 二进制文件不支持日志文件"
+
+#~ msgid "terminated abnormally"
+#~ msgstr "非正常终止"
+
+#~ msgid "the packed setting is not supported with this QEMU binary"
+#~ msgstr "这个 QEMU 二进制文件不支持打包的设置"
+
+#~ msgid "unexpected exit status %d"
+#~ msgstr "意外的退出状态 %d"
+
+#~ msgid "volume capacity required for this pool"
+#~ msgstr "这个池所需的卷容量"
 
 #~ msgid "'base' and 'baseNode' can't be used together"
 #~ msgstr "'base' 和 'baseNode' 不能一起使用"

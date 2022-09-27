@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-08-26 05:02+0000\n"
+"POT-Creation-Date: 2022-09-27 08:07+0000\n"
 "PO-Revision-Date: 2021-06-28 06:04+0000\n"
 "Last-Translator: Nathan <nathan95@live.it>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3051,10 +3051,6 @@ msgstr "Errore nel parsing del controller indice %s"
 
 msgid "Cannot parse cbm_mask from resctrl cache info"
 msgstr ""
-
-#, c-format
-msgid "Cannot parse controller index %s"
-msgstr "Errore nel parsing del controller indice %s"
 
 #, fuzzy
 msgid "Cannot parse mode string"
@@ -9250,10 +9246,6 @@ msgstr ""
 msgid "IOThread to be used by supported device"
 msgstr "Supporto rimovibile non supportato per il dispositivo %s"
 
-#, fuzzy
-msgid "IOThreads for virtio-scsi not supported for this QEMU"
-msgstr "grafiche spice non supportate con questo QEMU"
-
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr ""
@@ -10041,14 +10033,6 @@ msgid "Invalid match string '%s'"
 msgstr "'%s' stringa del rivenditore della CPU non valida"
 
 #, c-format
-msgid "Invalid maxEventChannels: %i"
-msgstr ""
-
-#, c-format
-msgid "Invalid maxGrantFrames: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
 msgstr ""
 
@@ -10198,10 +10182,6 @@ msgid "Invalid port range '%u-%u'."
 msgstr "Intervallo di porte '%u-%u' non valido"
 
 #, c-format
-msgid "Invalid ports: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "Prefisso o maschera di rete non validi per '%s'"
 
@@ -10297,10 +10277,6 @@ msgstr "Argomento non valido"
 #, fuzzy, c-format
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
 msgstr "Stato '%s' non valido nell'XML dello snapshot di dominio"
-
-#, c-format
-msgid "Invalid target index '%i' in PCI controller"
-msgstr ""
 
 #, fuzzy
 msgid "Invalid target model for serial device"
@@ -10433,10 +10409,6 @@ msgstr "Valore non valido per 'nodemask': %s"
 #, c-format
 msgid "Invalid value of 'nodeset': %s"
 msgstr "Valore non valido per 'nodeset': %s"
-
-#, c-format
-msgid "Invalid vectors: %i"
-msgstr ""
 
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
@@ -11312,9 +11284,6 @@ msgstr "Attributo servizio sergente mancante per il dispositivo a caratteri"
 msgid "Missing disk file path in domain"
 msgstr ""
 
-msgid "Missing disk info when adding volume"
-msgstr ""
-
 #, fuzzy
 msgid "Missing disk source file path"
 msgstr "percorso sorgente mancante"
@@ -11653,11 +11622,23 @@ msgstr ""
 msgid "Missing source channel attribute for char device"
 msgstr "Attributo host sorgente mancante per il dispositivo a caratteri"
 
+#, c-format
+msgid "Missing source connectionid for interface type '%s'"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "Attributo host sorgente mancante per il dispositivo a caratteri"
 
 msgid "Missing source path attribute for char device"
 msgstr "Attributo percorso sorgente mancante per il dispositivo a caratteri"
+
+#, c-format
+msgid "Missing source portgroup for interface type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Missing source portid for interface type '%s'"
+msgstr ""
 
 msgid "Missing source service attribute for char device"
 msgstr "Attributo servizio sorgente mancante per il dispositivo a caratteri"
@@ -14079,6 +14060,9 @@ msgstr "Hypervisor in esecuzione: %s %d.%d.%d\n"
 #, fuzzy
 msgid "S3 state is disabled for this domain"
 msgstr "Ci sono altri task sospesi per questo dominio"
+
+msgid "S390 PV launch security is not supported by this host or kernel"
+msgstr ""
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr ""
@@ -17743,10 +17727,6 @@ msgid "Unable to init device stream mutex"
 msgstr "Impossibile inizializzare il mutex"
 
 #, fuzzy
-msgid "Unable to init qemu driver mutexes"
-msgstr "Impossibile inizializzare il mutex"
-
-#, fuzzy
 msgid "Unable to initialize RW lock"
 msgstr "Impossibile inizializzare il mutex"
 
@@ -20586,10 +20566,6 @@ msgstr ""
 
 msgid "apparmor_parser exited with error"
 msgstr ""
-
-#, fuzzy
-msgid "append not supported in this QEMU binary"
-msgstr "SATA non è supportata con questo binario di QEMU"
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr ""
@@ -27672,6 +27648,13 @@ msgstr ""
 msgid "guest failed to start: %s"
 msgstr "Impossibile avviare il pool %s"
 
+msgid "guest failed to start: terminated abnormally"
+msgstr ""
+
+#, c-format
+msgid "guest failed to start: unexpected exit status %d"
+msgstr ""
+
 #, fuzzy
 msgid "guest interface"
 msgstr "tipo di interfaccia di rete"
@@ -29829,10 +29812,6 @@ msgstr ""
 msgid "lock owner details have not been registered"
 msgstr ""
 
-#, fuzzy
-msgid "logfile not supported in this QEMU binary"
-msgstr "SATA non è supportata con questo binario di QEMU"
-
 #, fuzzy, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
 msgstr "La creazione di volumi %s non è supportata"
@@ -30446,6 +30425,9 @@ msgstr ""
 
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
+msgid "migration of non-shared disks requested but NBD is not set up"
 msgstr ""
 
 msgid ""
@@ -35834,10 +35816,6 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr ""
 
-#, fuzzy
-msgid "terminated abnormally"
-msgstr "numero non terminato"
-
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: fornire un percorso o usare test:///default"
 
@@ -35924,10 +35902,6 @@ msgstr "Il dominio non ha uno snapshot corrente"
 
 msgid "the new password"
 msgstr ""
-
-#, fuzzy
-msgid "the packed setting is not supported with this QEMU binary"
-msgstr "vhost-net non è supportato con questo binario di QEMU"
 
 #, fuzzy
 msgid "the password is already encrypted"
@@ -37319,10 +37293,6 @@ msgstr ""
 
 msgid "unexpected encryption format"
 msgstr "formato di cifratura non previsto"
-
-#, fuzzy, c-format
-msgid "unexpected exit status %d"
-msgstr "bus del disco %d inaspettato"
 
 #, fuzzy, c-format
 msgid "unexpected feature '%s'"
@@ -39297,9 +39267,6 @@ msgstr ""
 msgid "volume '%s' is still in use."
 msgstr "Il filtro '%s' è in uso."
 
-msgid "volume capacity required for this pool"
-msgstr ""
-
 msgid "volume capacity required for this storage pool"
 msgstr ""
 
@@ -39581,6 +39548,37 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s <string>]"
+
+#~ msgid "Cannot parse controller index %s"
+#~ msgstr "Errore nel parsing del controller indice %s"
+
+#, fuzzy
+#~ msgid "IOThreads for virtio-scsi not supported for this QEMU"
+#~ msgstr "grafiche spice non supportate con questo QEMU"
+
+#, fuzzy
+#~ msgid "Unable to init qemu driver mutexes"
+#~ msgstr "Impossibile inizializzare il mutex"
+
+#, fuzzy
+#~ msgid "append not supported in this QEMU binary"
+#~ msgstr "SATA non è supportata con questo binario di QEMU"
+
+#, fuzzy
+#~ msgid "logfile not supported in this QEMU binary"
+#~ msgstr "SATA non è supportata con questo binario di QEMU"
+
+#, fuzzy
+#~ msgid "terminated abnormally"
+#~ msgstr "numero non terminato"
+
+#, fuzzy
+#~ msgid "the packed setting is not supported with this QEMU binary"
+#~ msgstr "vhost-net non è supportato con questo binario di QEMU"
+
+#, fuzzy
+#~ msgid "unexpected exit status %d"
+#~ msgstr "bus del disco %d inaspettato"
 
 #~ msgid "'base' and 'baseNode' can't be used together"
 #~ msgstr "'base' e 'baseNode' non possono essere usati allo stesso tempo"

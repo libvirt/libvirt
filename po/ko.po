@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-08-26 05:02+0000\n"
+"POT-Creation-Date: 2022-09-27 08:07+0000\n"
 "PO-Revision-Date: 2022-08-31 12:19+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -2306,7 +2306,8 @@ msgstr "CPU 지도:"
 #, c-format
 msgid ""
 "CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
-msgstr "CPU 최대 물리적인 주소 비트 방식 '%s'는 '%s' CPUs에서만 사용 될 수 있습니다"
+msgstr ""
+"CPU 최대 물리적인 주소 비트 방식 '%s'는 '%s' CPUs에서만 사용 될 수 있습니다"
 
 #, c-format
 msgid ""
@@ -3182,10 +3183,6 @@ msgstr "%s에 있는 범주를 구문 분석할 수 없습니다"
 
 msgid "Cannot parse cbm_mask from resctrl cache info"
 msgstr "rectrl 캐쉬 정보에서 cbm_mask를 구문 분석 할 수 없습니다"
-
-#, c-format
-msgid "Cannot parse controller index %s"
-msgstr "제어 개요 %s를 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse mode string"
 msgstr "방법 문자열을 구문 분석 할 수 없습니다"
@@ -9248,9 +9245,6 @@ msgstr "IO쓰레드 식별번호"
 msgid "IOThread to be used by supported device"
 msgstr "지원되는 장치에서 사용할 IOThread"
 
-msgid "IOThreads for virtio-scsi not supported for this QEMU"
-msgstr "이 QEMU에 virtio-scsi에 대한 IOThreads가 지원하지 않음"
-
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr "IOThreads는 버스 %s 대상 %s에 사용할 수 없습니다"
@@ -10044,14 +10038,6 @@ msgid "Invalid match string '%s'"
 msgstr "잘못된 일치 문자열 '%s'"
 
 #, c-format
-msgid "Invalid maxEventChannels: %i"
-msgstr "잘못된 maxEventChannels: %i"
-
-#, c-format
-msgid "Invalid maxGrantFrames: %i"
-msgstr "잘못된 maxGrantFrames: %i"
-
-#, c-format
 msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
 msgstr "잘못된 메시지 프로그램=%d 유형=%d 직렬=%u 프로세스=%d"
 
@@ -10201,10 +10187,6 @@ msgid "Invalid port range '%u-%u'."
 msgstr "잘못된 포트 범위 '%u-%u'."
 
 #, c-format
-msgid "Invalid ports: %i"
-msgstr "잘못된 포트: %i"
-
-#, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "'%s'를 위해 잘못된 프리픽스 또는 넷마스크"
 
@@ -10294,10 +10276,6 @@ msgstr "잘못된 대상"
 #, c-format
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
 msgstr "대상 도메인 상태 '%s'이(가) 잘못되었습니다. 스냅샷 되돌리기 거부"
-
-#, c-format
-msgid "Invalid target index '%i' in PCI controller"
-msgstr "PCI 컨트롤러의 잘못된 대상 인덱스 '%i'"
 
 msgid "Invalid target model for serial device"
 msgstr "직렬 장치에 대한 잘못된 대상 모델"
@@ -10436,10 +10414,6 @@ msgstr "'nodemask'의 잘못된 값: %s"
 #, c-format
 msgid "Invalid value of 'nodeset': %s"
 msgstr "'nodeset'의 잘못된 값: %s"
-
-#, c-format
-msgid "Invalid vectors: %i"
-msgstr "잘못된 벡터: %i"
 
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
@@ -11274,9 +11248,6 @@ msgstr "컨테이너 측 veth에 대한 장치 이름 누락"
 msgid "Missing disk file path in domain"
 msgstr "도메인에 디스크 파일 경로가 없습니다"
 
-msgid "Missing disk info when adding volume"
-msgstr "볼륨 추가 시 디스크 정보 누락"
-
 msgid "Missing disk source file path"
 msgstr "누락된 디스크 소스 파일 경로"
 
@@ -11606,11 +11577,23 @@ msgstr "JSON 상태 문서에서 sock 부분이 누락"
 msgid "Missing source channel attribute for char device"
 msgstr "문자 장치에 대한 소스 채널 속성이 누락되었습니다"
 
+#, c-format
+msgid "Missing source connectionid for interface type '%s'"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "캐릭터 장치에 대한 소스 호스트 특성 빠짐"
 
 msgid "Missing source path attribute for char device"
 msgstr "캐릭터 장치에 대한 소스 경로 특성 빠짐"
+
+#, c-format
+msgid "Missing source portgroup for interface type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Missing source portid for interface type '%s'"
+msgstr ""
 
 msgid "Missing source service attribute for char device"
 msgstr "캐릭터 장치에 대한 소스 서비스 특성 빠짐"
@@ -13968,6 +13951,9 @@ msgstr "실행중인 하이퍼바이저: %s %d.%d.%d\n"
 msgid "S3 state is disabled for this domain"
 msgstr "이 도메인에 대해 S3 상태가 비활성화되었습니다"
 
+msgid "S390 PV launch security is not supported by this host or kernel"
+msgstr ""
+
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr "이 QEMU 바이너리에서는 S390 PV 실행 보안이 지원되지 않습니다"
 
@@ -15989,7 +15975,8 @@ msgstr "최소 임대 시간은 2분 이상이어야 합니다"
 msgid ""
 "The number of virtual CPU address bits cannot exceed the number supported by "
 "the host CPU"
-msgstr "가상 CPU 주소 비트의 수는 호스트 CPU에 의해 지원되는 수를 초과 할 수 없습니다"
+msgstr ""
+"가상 CPU 주소 비트의 수는 호스트 CPU에 의해 지원되는 수를 초과 할 수 없습니다"
 
 msgid ""
 "The overall maximum number of clients must be greater than the maximum "
@@ -17493,9 +17480,6 @@ msgstr "서버 인증서 %s을(를) 가져올 수 없습니다"
 
 msgid "Unable to init device stream mutex"
 msgstr "장치 스트림 뮤텍스를 초기화 할 수 없습니다"
-
-msgid "Unable to init qemu driver mutexes"
-msgstr "qemu 드라이버 뮤텍스를 초기화 할 수 없습니다"
 
 msgid "Unable to initialize RW lock"
 msgstr "읽기쓰기 잠감을 초기화 할 수 없습니다"
@@ -20228,9 +20212,6 @@ msgstr "ap-도메인 값 '%s'가 '%s'의 범위를 벗어났습니다"
 
 msgid "apparmor_parser exited with error"
 msgstr "AppArmor_구문분석기가 오류로 종료되었습니다"
-
-msgid "append not supported in this QEMU binary"
-msgstr "append는 이 QEMU 바이너리에서 지원되지 않음"
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr "applyDHCPOnlyRules 실패 - 스푸핑으로부터 보호되지 않습니다!"
@@ -27039,6 +27020,13 @@ msgstr "게스트 에이전트에 연결하는 동안 게스트가 충돌했습�
 msgid "guest failed to start: %s"
 msgstr "게스트 시작 실패: %s"
 
+msgid "guest failed to start: terminated abnormally"
+msgstr ""
+
+#, c-format
+msgid "guest failed to start: unexpected exit status %d"
+msgstr ""
+
 msgid "guest interface"
 msgstr "게스트 인터페이스"
 
@@ -27343,7 +27331,8 @@ msgstr "IOMMU가 커널에 의해 활성화된 경우"
 #, c-format
 msgid ""
 "if using CPU maximum physical address mode='%s', bits= must be specified too"
-msgstr "만약 CPU를 사용하는 경우 최대 물리적 주소 mode='%s', bits= 도 지정해야 합니다"
+msgstr ""
+"만약 CPU를 사용하는 경우 최대 물리적 주소 mode='%s', bits= 도 지정해야 합니다"
 
 #, c-format
 msgid "ifkey \"%s\" has no req"
@@ -29100,9 +29089,6 @@ msgstr "잠금 관리자 연결이 제한되어 있습니다"
 msgid "lock owner details have not been registered"
 msgstr "잠금 소유자 상세정보는 등록되어 있지 않습니다"
 
-msgid "logfile not supported in this QEMU binary"
-msgstr "로그파일은 이 QEMU 바이너리에서 지원되지 않음"
-
 #, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
 msgstr "논리 볼륨 '%s'가 희소합니다. 볼륨 지우기가 지원되지 않습니다"
@@ -29676,6 +29662,9 @@ msgstr "도메인 %s의 이전이 다른 쓰레드에서 활동적으로 관리�
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
 msgstr "도메인 %s의 이전은 복사-후 단계가 아닙니다"
+
+msgid "migration of non-shared disks requested but NBD is not set up"
+msgstr ""
 
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
@@ -34838,9 +34827,6 @@ msgstr "터미널 QAPI 쿼리 구성 요소 '%s'의 '%s'에는 팔로어가 없�
 msgid "terminate gracefully"
 msgstr "정상적으로 종료"
 
-msgid "terminated abnormally"
-msgstr "비정상 종료"
-
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: 경로를 지정하거나 test:///default 사용"
 
@@ -34929,9 +34915,6 @@ msgstr "머신에 스냅샷이 없습니다"
 
 msgid "the new password"
 msgstr "새 비밀번호"
-
-msgid "the packed setting is not supported with this QEMU binary"
-msgstr "이 QEMU 바이너리에서는 압축 설정이 지원되지 않습니다"
 
 msgid "the password is already encrypted"
 msgstr "암호는 이미 암호화되어 있습니다"
@@ -36346,10 +36329,6 @@ msgstr "예상치 못한 암호화 엔진"
 
 msgid "unexpected encryption format"
 msgstr "예기치 못한 암호화 형식"
-
-#, c-format
-msgid "unexpected exit status %d"
-msgstr "예기치 않은 종료 상태 %d"
 
 #, c-format
 msgid "unexpected feature '%s'"
@@ -38308,9 +38287,6 @@ msgstr "볼륨 '%s'의 할당이 아직도 진행중입니다."
 msgid "volume '%s' is still in use."
 msgstr "볼륨 '%s'가 아직 사용 중입니다."
 
-msgid "volume capacity required for this pool"
-msgstr "이 풀에 필요한 볼륨 용량"
-
 msgid "volume capacity required for this storage pool"
 msgstr "이 저장소 풀에 필요한 볼륨 용량"
 
@@ -38581,6 +38557,51 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Cannot parse controller index %s"
+#~ msgstr "제어 개요 %s를 구문 분석 할 수 없습니다"
+
+#~ msgid "IOThreads for virtio-scsi not supported for this QEMU"
+#~ msgstr "이 QEMU에 virtio-scsi에 대한 IOThreads가 지원하지 않음"
+
+#~ msgid "Invalid maxEventChannels: %i"
+#~ msgstr "잘못된 maxEventChannels: %i"
+
+#~ msgid "Invalid maxGrantFrames: %i"
+#~ msgstr "잘못된 maxGrantFrames: %i"
+
+#~ msgid "Invalid ports: %i"
+#~ msgstr "잘못된 포트: %i"
+
+#~ msgid "Invalid target index '%i' in PCI controller"
+#~ msgstr "PCI 컨트롤러의 잘못된 대상 인덱스 '%i'"
+
+#~ msgid "Invalid vectors: %i"
+#~ msgstr "잘못된 벡터: %i"
+
+#~ msgid "Missing disk info when adding volume"
+#~ msgstr "볼륨 추가 시 디스크 정보 누락"
+
+#~ msgid "Unable to init qemu driver mutexes"
+#~ msgstr "qemu 드라이버 뮤텍스를 초기화 할 수 없습니다"
+
+#~ msgid "append not supported in this QEMU binary"
+#~ msgstr "append는 이 QEMU 바이너리에서 지원되지 않음"
+
+#~ msgid "logfile not supported in this QEMU binary"
+#~ msgstr "로그파일은 이 QEMU 바이너리에서 지원되지 않음"
+
+#~ msgid "terminated abnormally"
+#~ msgstr "비정상 종료"
+
+#~ msgid "the packed setting is not supported with this QEMU binary"
+#~ msgstr "이 QEMU 바이너리에서는 압축 설정이 지원되지 않습니다"
+
+#~ msgid "unexpected exit status %d"
+#~ msgstr "예기치 않은 종료 상태 %d"
+
+#~ msgid "volume capacity required for this pool"
+#~ msgstr "이 풀에 필요한 볼륨 용량"
 
 #~ msgid "'base' and 'baseNode' can't be used together"
 #~ msgstr "'base' 와 'baseNode'는 함께 사용 될 수 없습니다"

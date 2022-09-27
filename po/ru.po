@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-08-26 05:02+0000\n"
+"POT-Creation-Date: 2022-09-27 08:07+0000\n"
 "PO-Revision-Date: 2022-07-04 01:18+0000\n"
 "Last-Translator: Sergey A. <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3257,10 +3257,6 @@ msgstr "Не удалось разобрать категорию в %s"
 
 msgid "Cannot parse cbm_mask from resctrl cache info"
 msgstr "Не удалось разобрать cbm_mask в данных кэша resctrl"
-
-#, c-format
-msgid "Cannot parse controller index %s"
-msgstr "Не удалось разобрать индекс контроллера %s"
 
 msgid "Cannot parse mode string"
 msgstr "Не удалось обработать строку режима"
@@ -9420,11 +9416,6 @@ msgstr "Количество идентификаторов IOThread"
 msgid "IOThread to be used by supported device"
 msgstr "Поток ввода-вывода для сопоставления устройству"
 
-msgid "IOThreads for virtio-scsi not supported for this QEMU"
-msgstr ""
-"Для этого QEMU не предусмотрена поддержка потоков ввода-вывода для virtio-"
-"scsi"
-
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr "Потоки ввода-вывода недоступны для шины %s назначения %s"
@@ -10231,14 +10222,6 @@ msgid "Invalid match string '%s'"
 msgstr "Недопустимая строка соответствия «%s»"
 
 #, c-format
-msgid "Invalid maxEventChannels: %i"
-msgstr ""
-
-#, c-format
-msgid "Invalid maxGrantFrames: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
 msgstr "Некорректное сообщение: прог.=%d, тип=%d, посл.=%u, проц.=%d"
 
@@ -10387,10 +10370,6 @@ msgid "Invalid port range '%u-%u'."
 msgstr "Недопустимый диапазон портов «%u — %u»"
 
 #, c-format
-msgid "Invalid ports: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "Недопустимый префикс или маска сети для «%s»"
 
@@ -10480,10 +10459,6 @@ msgstr "Недопустимое значение аргумента target"
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
 msgstr ""
 "Недопустимое состояние домена назначения «%s». Отказ в восстановлении снимка."
-
-#, c-format
-msgid "Invalid target index '%i' in PCI controller"
-msgstr ""
 
 msgid "Invalid target model for serial device"
 msgstr "Недопустимая модель назначения для последовательного устройства"
@@ -10623,10 +10598,6 @@ msgstr "Недопустимое значение «nodemask»: %s"
 #, c-format
 msgid "Invalid value of 'nodeset': %s"
 msgstr "Недопустимое значение параметра «nodeset»: %s"
-
-#, c-format
-msgid "Invalid vectors: %i"
-msgstr ""
 
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
@@ -11495,9 +11466,6 @@ msgstr "Отсутствует имя устройства для veth на ст
 msgid "Missing disk file path in domain"
 msgstr ""
 
-msgid "Missing disk info when adding volume"
-msgstr "Отсутствуют данные о диске при добавлении тома"
-
 msgid "Missing disk source file path"
 msgstr "Отсутствует путь к файлу источника диска"
 
@@ -11859,11 +11827,23 @@ msgstr "Документ состояния JSON не содержит поле 
 msgid "Missing source channel attribute for char device"
 msgstr "Отсутствует атрибут исходного канала для символьного устройства"
 
+#, c-format
+msgid "Missing source connectionid for interface type '%s'"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "Отсутствует атрибут узла источника для символьного устройства"
 
 msgid "Missing source path attribute for char device"
 msgstr "Отсутствует атрибут пути к источнику для символьного устройства"
+
+#, c-format
+msgid "Missing source portgroup for interface type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Missing source portid for interface type '%s'"
+msgstr ""
 
 msgid "Missing source service attribute for char device"
 msgstr "Отсутствует атрибут исходной службы для символьного устройства"
@@ -14287,6 +14267,9 @@ msgstr "Гипервизор: %s %d.%d.%d\n"
 
 msgid "S3 state is disabled for this domain"
 msgstr "Состояние S3 для этого домена отключено. "
+
+msgid "S390 PV launch security is not supported by this host or kernel"
+msgstr ""
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr ""
@@ -17943,9 +17926,6 @@ msgstr "Не удалось импортировать сертификат се
 msgid "Unable to init device stream mutex"
 msgstr "Не удалось инициализировать мьютекс устройства поточной обработки"
 
-msgid "Unable to init qemu driver mutexes"
-msgstr "Не удалось инициализировать мьютексы драйвера QEMU"
-
 msgid "Unable to initialize RW lock"
 msgstr "Не удалось инициализировать блокировку RW"
 
@@ -20729,9 +20709,6 @@ msgstr ""
 
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser вернул ошибку"
-
-msgid "append not supported in this QEMU binary"
-msgstr "этот исполняемый файл QEMU не поддерживает добавление"
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr "Ошибка applyDHCPOnlyRules: нет защиты от подмены адреса!"
@@ -27705,6 +27682,13 @@ msgstr ""
 msgid "guest failed to start: %s"
 msgstr "не удалось запустить гостевую систему: %s"
 
+msgid "guest failed to start: terminated abnormally"
+msgstr ""
+
+#, c-format
+msgid "guest failed to start: unexpected exit status %d"
+msgstr ""
+
 msgid "guest interface"
 msgstr "интерфейс гостевой системы"
 
@@ -29832,9 +29816,6 @@ msgstr "соединение с управлением блокировкой б
 msgid "lock owner details have not been registered"
 msgstr "данные владельца блокировки не зарегистрированы"
 
-msgid "logfile not supported in this QEMU binary"
-msgstr "этот исполняемый файл QEMU не поддерживает файл журнала"
-
 #, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
 msgstr ""
@@ -30452,6 +30433,9 @@ msgstr ""
 
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
+msgid "migration of non-shared disks requested but NBD is not set up"
 msgstr ""
 
 msgid ""
@@ -35783,9 +35767,6 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr "плавно остановить работу домена"
 
-msgid "terminated abnormally"
-msgstr "завершено аварийно"
-
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: укажите путь или используйте test:///default"
 
@@ -35879,9 +35860,6 @@ msgstr "у этой машины нет снимков"
 
 msgid "the new password"
 msgstr "новый пароль"
-
-msgid "the packed setting is not supported with this QEMU binary"
-msgstr "этот исполняемый файл QEMU не поддерживает указание packed"
 
 msgid "the password is already encrypted"
 msgstr "пароль уже зашифрован"
@@ -37316,10 +37294,6 @@ msgstr ""
 
 msgid "unexpected encryption format"
 msgstr "непредвиденный формат шифрования"
-
-#, c-format
-msgid "unexpected exit status %d"
-msgstr "непредвиденное состояние выхода %d"
 
 #, c-format
 msgid "unexpected feature '%s'"
@@ -39324,9 +39298,6 @@ msgstr "Том «%s» в процессе распределения."
 msgid "volume '%s' is still in use."
 msgstr "том «%s» всё ещё используется."
 
-msgid "volume capacity required for this pool"
-msgstr "для этого пула следует указать ёмкость тома"
-
 msgid "volume capacity required for this storage pool"
 msgstr "для этого пула носителей следует указать ёмкость тома"
 
@@ -39610,6 +39581,38 @@ msgstr "поступил запрос о зоне %s для сети %s, но fi
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <строка>}..."
+
+#~ msgid "Cannot parse controller index %s"
+#~ msgstr "Не удалось разобрать индекс контроллера %s"
+
+#~ msgid "IOThreads for virtio-scsi not supported for this QEMU"
+#~ msgstr ""
+#~ "Для этого QEMU не предусмотрена поддержка потоков ввода-вывода для virtio-"
+#~ "scsi"
+
+#~ msgid "Missing disk info when adding volume"
+#~ msgstr "Отсутствуют данные о диске при добавлении тома"
+
+#~ msgid "Unable to init qemu driver mutexes"
+#~ msgstr "Не удалось инициализировать мьютексы драйвера QEMU"
+
+#~ msgid "append not supported in this QEMU binary"
+#~ msgstr "этот исполняемый файл QEMU не поддерживает добавление"
+
+#~ msgid "logfile not supported in this QEMU binary"
+#~ msgstr "этот исполняемый файл QEMU не поддерживает файл журнала"
+
+#~ msgid "terminated abnormally"
+#~ msgstr "завершено аварийно"
+
+#~ msgid "the packed setting is not supported with this QEMU binary"
+#~ msgstr "этот исполняемый файл QEMU не поддерживает указание packed"
+
+#~ msgid "unexpected exit status %d"
+#~ msgstr "непредвиденное состояние выхода %d"
+
+#~ msgid "volume capacity required for this pool"
+#~ msgstr "для этого пула следует указать ёмкость тома"
 
 #~ msgid "'base' and 'baseNode' can't be used together"
 #~ msgstr "«base» и «baseNode» нельзя использовать одновременно"

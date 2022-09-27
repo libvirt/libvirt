@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 7.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-08-26 05:02+0000\n"
+"POT-Creation-Date: 2022-09-27 08:07+0000\n"
 "PO-Revision-Date: 2021-01-19 12:15+0000\n"
 "Last-Translator: Muha Aliss <muhaaliss@gmail.com>\n"
 "Language-Team: Turkish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -2891,10 +2891,6 @@ msgid "Cannot parse category in %s"
 msgstr ""
 
 msgid "Cannot parse cbm_mask from resctrl cache info"
-msgstr ""
-
-#, c-format
-msgid "Cannot parse controller index %s"
 msgstr ""
 
 msgid "Cannot parse mode string"
@@ -8752,9 +8748,6 @@ msgstr ""
 msgid "IOThread to be used by supported device"
 msgstr ""
 
-msgid "IOThreads for virtio-scsi not supported for this QEMU"
-msgstr ""
-
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr ""
@@ -9511,14 +9504,6 @@ msgid "Invalid match string '%s'"
 msgstr ""
 
 #, c-format
-msgid "Invalid maxEventChannels: %i"
-msgstr ""
-
-#, c-format
-msgid "Invalid maxGrantFrames: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
 msgstr ""
 
@@ -9664,10 +9649,6 @@ msgid "Invalid port range '%u-%u'."
 msgstr ""
 
 #, c-format
-msgid "Invalid ports: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr ""
 
@@ -9755,10 +9736,6 @@ msgstr ""
 
 #, c-format
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
-msgstr ""
-
-#, c-format
-msgid "Invalid target index '%i' in PCI controller"
 msgstr ""
 
 msgid "Invalid target model for serial device"
@@ -9888,10 +9865,6 @@ msgstr ""
 
 #, c-format
 msgid "Invalid value of 'nodeset': %s"
-msgstr ""
-
-#, c-format
-msgid "Invalid vectors: %i"
 msgstr ""
 
 #, c-format
@@ -10711,9 +10684,6 @@ msgstr ""
 msgid "Missing disk file path in domain"
 msgstr ""
 
-msgid "Missing disk info when adding volume"
-msgstr ""
-
 msgid "Missing disk source file path"
 msgstr ""
 
@@ -11034,10 +11004,22 @@ msgstr ""
 msgid "Missing source channel attribute for char device"
 msgstr ""
 
+#, c-format
+msgid "Missing source connectionid for interface type '%s'"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr ""
 
 msgid "Missing source path attribute for char device"
+msgstr ""
+
+#, c-format
+msgid "Missing source portgroup for interface type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Missing source portid for interface type '%s'"
 msgstr ""
 
 msgid "Missing source service attribute for char device"
@@ -13306,6 +13288,9 @@ msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr ""
 
 msgid "S3 state is disabled for this domain"
+msgstr ""
+
+msgid "S390 PV launch security is not supported by this host or kernel"
 msgstr ""
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
@@ -16719,9 +16704,6 @@ msgstr ""
 msgid "Unable to init device stream mutex"
 msgstr ""
 
-msgid "Unable to init qemu driver mutexes"
-msgstr ""
-
 msgid "Unable to initialize RW lock"
 msgstr ""
 
@@ -19399,9 +19381,6 @@ msgid "ap-domain value '%s' is out of range for '%s'"
 msgstr ""
 
 msgid "apparmor_parser exited with error"
-msgstr ""
-
-msgid "append not supported in this QEMU binary"
 msgstr ""
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
@@ -26069,6 +26048,13 @@ msgstr ""
 msgid "guest failed to start: %s"
 msgstr ""
 
+msgid "guest failed to start: terminated abnormally"
+msgstr ""
+
+#, c-format
+msgid "guest failed to start: unexpected exit status %d"
+msgstr ""
+
 msgid "guest interface"
 msgstr ""
 
@@ -28086,9 +28072,6 @@ msgstr ""
 msgid "lock owner details have not been registered"
 msgstr ""
 
-msgid "logfile not supported in this QEMU binary"
-msgstr ""
-
 #, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
 msgstr ""
@@ -28655,6 +28638,9 @@ msgstr ""
 
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
+msgid "migration of non-shared disks requested but NBD is not set up"
 msgstr ""
 
 msgid ""
@@ -33709,9 +33695,6 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr ""
 
-msgid "terminated abnormally"
-msgstr ""
-
 msgid "testOpen: supply a path or use test:///default"
 msgstr ""
 
@@ -33794,9 +33777,6 @@ msgid "the machine has no snapshot"
 msgstr ""
 
 msgid "the new password"
-msgstr ""
-
-msgid "the packed setting is not supported with this QEMU binary"
 msgstr ""
 
 msgid "the password is already encrypted"
@@ -35128,10 +35108,6 @@ msgid "unexpected encryption engine"
 msgstr ""
 
 msgid "unexpected encryption format"
-msgstr ""
-
-#, c-format
-msgid "unexpected exit status %d"
 msgstr ""
 
 #, c-format
@@ -37051,9 +37027,6 @@ msgstr ""
 
 #, c-format
 msgid "volume '%s' is still in use."
-msgstr ""
-
-msgid "volume capacity required for this pool"
 msgstr ""
 
 msgid "volume capacity required for this storage pool"

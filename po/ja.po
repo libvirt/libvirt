@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-08-26 05:02+0000\n"
+"POT-Creation-Date: 2022-09-27 08:07+0000\n"
 "PO-Revision-Date: 2022-09-01 08:44+0000\n"
 "Last-Translator: Ludek Janda <ljanda@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -1648,8 +1648,9 @@ msgstr ""
 msgid ""
 "<address>, <interface>, and <pf> elements of <forward> in network %s are "
 "mutually exclusive"
-msgstr "ネットワーク <forward> における %s の <address>、<interface>、および <pf> "
-"の要素は、相互に排他的です"
+msgstr ""
+"ネットワーク <forward> における %s の <address>、<interface>、および <pf> の"
+"要素は、相互に排他的です"
 
 msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr "<config> 要素は現在、'rbd' ディスクでのみサポートされます"
@@ -2549,8 +2550,9 @@ msgstr "ディスククォータのみを変更できません"
 
 #, c-format
 msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"
-msgstr "VNC、SPICE、または D-Bus p2p グラフィックバックエンドのみ開けます。%s "
-"はできません"
+msgstr ""
+"VNC、SPICE、または D-Bus p2p グラフィックバックエンドのみ開けます。%s はでき"
+"ません"
 
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr "USB ハブを追加できません: このドメインの USB が無効化されています"
@@ -3235,10 +3237,6 @@ msgstr "%s のカテゴリーを解析できません"
 
 msgid "Cannot parse cbm_mask from resctrl cache info"
 msgstr "resctrl キャッシュ情報から cbm_mask を解析できません"
-
-#, c-format
-msgid "Cannot parse controller index %s"
-msgstr "コントローラーのインデックス %s を解析できません"
 
 msgid "Cannot parse mode string"
 msgstr "mode 文字列を解析できません"
@@ -5414,7 +5412,8 @@ msgstr ""
 msgid ""
 "Device alias was not set for PCI controller with index '%u' required for "
 "device at address '%s'"
-msgstr "デバイスエイリアスは、アドレス '%u' のデバイスに必要なインデックス '%s' の "
+msgstr ""
+"デバイスエイリアスは、アドレス '%u' のデバイスに必要なインデックス '%s' の "
 "PCI コントローラー用に設定されませんでした"
 
 msgid "Device attached successfully\n"
@@ -6999,7 +6998,8 @@ msgid "Failed to create thread to handle domain shutdown"
 msgstr "ドメインのシャットダウンを処理するスレッドの作成に失敗しました"
 
 msgid "Failed to create thread to handle firewall reload/restart"
-msgstr "ファイアウォールの再読み込み/再起動を処理するスレッドの作成に失敗しました"
+msgstr ""
+"ファイアウォールの再読み込み/再起動を処理するスレッドの作成に失敗しました"
 
 msgid "Failed to create thread to handle pool refresh"
 msgstr "プールの更新を処理するスレッドの作成に失敗しました"
@@ -9249,8 +9249,8 @@ msgid ""
 "Host not compatible with KVM; HW virtualization CPU features not found. Only "
 "emulated CPUs are available; performance will be significantly limited"
 msgstr ""
-"ホストが KVM と互換性がありません。HW 仮想化 CPU 機能が見つかりません。"
-"エミュレートされた CPU のみ使用可能、性能は大幅に制限されます"
+"ホストが KVM と互換性がありません。HW 仮想化 CPU 機能が見つかりません。エミュ"
+"レートされた CPU のみ使用可能、性能は大幅に制限されます"
 
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr ""
@@ -9421,9 +9421,6 @@ msgstr "IOThread ID 番号"
 
 msgid "IOThread to be used by supported device"
 msgstr "サポートされるデバイスで使用される IOThread"
-
-msgid "IOThreads for virtio-scsi not supported for this QEMU"
-msgstr "この QEMU では、virtio-scsi の IOThreads はサポートされません"
 
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
@@ -10241,14 +10238,6 @@ msgid "Invalid match string '%s'"
 msgstr "無効なマッチする文字列 '%s'"
 
 #, c-format
-msgid "Invalid maxEventChannels: %i"
-msgstr "無効な maxEventChannels: %i"
-
-#, c-format
-msgid "Invalid maxGrantFrames: %i"
-msgstr "無効な maxGrantFrames: %i"
-
-#, c-format
 msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
 msgstr "無効なメッセージ prog=%d type=%d serial=%u proc=%d"
 
@@ -10398,10 +10387,6 @@ msgid "Invalid port range '%u-%u'."
 msgstr "無効なポート範囲 '%u-%u'。"
 
 #, c-format
-msgid "Invalid ports: %i"
-msgstr "無効なポート: %i"
-
-#, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "'%s' に対する無効なプレフィックスまたはネットマスク"
 
@@ -10493,10 +10478,6 @@ msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
 msgstr ""
 "無効なターゲットドメインの状態 '%s'。スナップショットの復元を拒否します"
 
-#, c-format
-msgid "Invalid target index '%i' in PCI controller"
-msgstr "PCI コントローラーの無効なターゲットインデックス '%i'"
-
 msgid "Invalid target model for serial device"
 msgstr "シリアルデバイスの無効なターゲットモデル"
 
@@ -10581,7 +10562,8 @@ msgstr ""
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative value"
-msgstr "要素 '%s': '%s' の属性 '%s' の無効な値。負ではない値が予想されていました"
+msgstr ""
+"要素 '%s': '%s' の属性 '%s' の無効な値。負ではない値が予想されていました"
 
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
@@ -10635,10 +10617,6 @@ msgstr "'nodemask' の無効な値: %s"
 #, c-format
 msgid "Invalid value of 'nodeset': %s"
 msgstr "'nodeset' の無効な値: %s"
-
-#, c-format
-msgid "Invalid vectors: %i"
-msgstr "無効なベクトル: %i"
 
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
@@ -11377,7 +11355,8 @@ msgstr "hostdev デバイス に <source> 要素がありません"
 
 msgid ""
 "Missing <source> element with bridge name in interface's <actual> element"
-msgstr "インターフェイスの <actual> 要素にブリッジ名を持つ <source> 要素がありません"
+msgstr ""
+"インターフェイスの <actual> 要素にブリッジ名を持つ <source> 要素がありません"
 
 msgid "Missing CPU architecture"
 msgstr "CPU アーキテクチャーがありません"
@@ -11499,9 +11478,6 @@ msgstr "コンテナー側の veth のデバイス名がありません"
 
 msgid "Missing disk file path in domain"
 msgstr "ドメインにディスクファイルパスがありません"
-
-msgid "Missing disk info when adding volume"
-msgstr "ボリュームを追加するときにディスク情報がありません"
 
 msgid "Missing disk source file path"
 msgstr "ディスクソースファイルのパスがありません"
@@ -11647,8 +11623,9 @@ msgstr "query-rx-filter の応答に 'promiscuous' がないか無効です"
 msgid ""
 "Missing or invalid 'start' attribute in <port> in <nat> in <forward> in "
 "network %s"
-msgstr "ネットワーク %s の <forward> にある <nat> の中で、<port> に 'start' "
-"属性がありません、または無効です"
+msgstr ""
+"ネットワーク %s の <forward> にある <nat> の中で、<port> に 'start' 属性があ"
+"りません、または無効です"
 
 msgid "Missing or invalid 'unicast' in query-rx-filter response"
 msgstr "query-rx-filter の応答に 'unicast' がないか無効です"
@@ -11830,11 +11807,23 @@ msgstr "JSON 状態ドキュメントに socks 項目がありません"
 msgid "Missing source channel attribute for char device"
 msgstr "char デバイスのソースチャネル属性がありません"
 
+#, c-format
+msgid "Missing source connectionid for interface type '%s'"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "char デバイスのソースホスト属性がありません"
 
 msgid "Missing source path attribute for char device"
 msgstr "char デバイス用のソースパス属性がありません"
+
+#, c-format
+msgid "Missing source portgroup for interface type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Missing source portid for interface type '%s'"
+msgstr ""
 
 msgid "Missing source service attribute for char device"
 msgstr "char デバイスのソースサービス属性がありません"
@@ -12310,11 +12299,13 @@ msgstr ""
 "せん"
 
 msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
-msgstr "<source> とともに <interface type='direct'/> の 'dev' "
-"属性が指定されていません"
+msgstr ""
+"<source> とともに <interface type='direct'/> の 'dev' 属性が指定されていませ"
+"ん"
 
 msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
-msgstr "<source> とともに <interface type='vdpa'/> の 'dev' 属性が指定されていません"
+msgstr ""
+"<source> とともに <interface type='vdpa'/> の 'dev' 属性が指定されていません"
 
 msgid ""
 "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
@@ -14256,6 +14247,9 @@ msgstr "実行中のハイパーバイザー: %s %d.%d.%d\n"
 
 msgid "S3 state is disabled for this domain"
 msgstr "このドメインに対して S3 状態が無効化されています"
+
+msgid "S390 PV launch security is not supported by this host or kernel"
+msgstr ""
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr ""
@@ -17898,9 +17892,6 @@ msgstr "サーバー証明書 %s をインポートできません"
 msgid "Unable to init device stream mutex"
 msgstr "デバイスストリームミューテックスを初期化できません"
 
-msgid "Unable to init qemu driver mutexes"
-msgstr "QEMU ドライバーのミューテックスを初期化できません"
-
 msgid "Unable to initialize RW lock"
 msgstr "RW ロックを初期化できません"
 
@@ -20682,9 +20673,6 @@ msgstr "ap-domain 値 '%s' は '%s' の範囲外にあります"
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser がエラー終了しました"
 
-msgid "append not supported in this QEMU binary"
-msgstr "この QEMU バイナリーでは、追加はサポートされません"
-
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr "applyDHCPOnlyRules 失敗しました - スプーフィングは保護されません !"
 
@@ -20693,8 +20681,9 @@ msgstr "アーキテクチャー"
 
 #, c-format
 msgid "architecture from emulator '%s' doesn't match given architecture '%s'"
-msgstr "エミュレーター '%s' からのアーキテクチャーは、指定のアーキテクチャー '%s' "
-"と一致しません"
+msgstr ""
+"エミュレーター '%s' からのアーキテクチャーは、指定のアーキテクチャー '%s' と"
+"一致しません"
 
 #, c-format
 msgid "argument key '%s' is too short or malformed"
@@ -22913,7 +22902,8 @@ msgstr "セッションモードでカスタムタップデバイスを使用す
 msgid ""
 "cannot use feature-based firmware autoselection when firmware autoselection "
 "is disabled"
-msgstr "ファームウェア自動選択機能が無効の場合は、機能ベースのファームウェア自動選択"
+msgstr ""
+"ファームウェア自動選択機能が無効の場合は、機能ベースのファームウェア自動選択"
 "機能を使用できません"
 
 msgid "cannot use namespaces in session mode"
@@ -24077,7 +24067,8 @@ msgid "current bridge device name"
 msgstr "現在のブリッジデバイス名"
 
 msgid "current job is not outgoing migration in post-copy mode"
-msgstr "現在のジョブはポストコピーモードでアウトゴーイングマイグレーションではありま"
+msgstr ""
+"現在のジョブはポストコピーモードでアウトゴーイングマイグレーションではありま"
 "せん。"
 
 msgid "current vcpu count must equal maximum"
@@ -24699,11 +24690,13 @@ msgstr "ディスクソースパスがありません"
 
 #, c-format
 msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
-msgstr "ディスク startupPolicy '%s' は、'%s' タイプのディスクに許可されていません"
+msgstr ""
+"ディスク startupPolicy '%s' は、'%s' タイプのディスクに許可されていません"
 
 msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
-msgstr "ディスク startupPolicy 'requisite' は、cdrom または floppy "
-"に対してのみ許可されます"
+msgstr ""
+"ディスク startupPolicy 'requisite' は、cdrom または floppy に対してのみ許可さ"
+"れます"
 
 #, c-format
 msgid "disk target %s not found"
@@ -25314,7 +25307,8 @@ msgid "encryption is not supported with vhostuser disk"
 msgstr "暗号化は vhostuser ディスクではサポートされません"
 
 msgid "encryption is supported only with 'raw' and 'qcow2' image format"
-msgstr "暗号化は 'raw' と 'qcow2' イメージフォーマットでのみサポートされています"
+msgstr ""
+"暗号化は 'raw' と 'qcow2' イメージフォーマットでのみサポートされています"
 
 #, c-format
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
@@ -27234,7 +27228,8 @@ msgstr "このドライバーにはファームウェアの自動選択が実装
 msgid ""
 "firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
 "'secure-boot' is disabled"
-msgstr "ファームウェア機能 'enrolled-keys'が無効な場合は、ファームウェア機能 'secure-"
+msgstr ""
+"ファームウェア機能 'enrolled-keys'が無効な場合は、ファームウェア機能 'secure-"
 "boot' を有効にすることができません"
 
 #, c-format
@@ -27611,6 +27606,13 @@ msgstr "ゲストエージェントへの接続中にゲストがクラッシュ
 #, c-format
 msgid "guest failed to start: %s"
 msgstr "ゲストの開始に失敗しました: %s"
+
+msgid "guest failed to start: terminated abnormally"
+msgstr ""
+
+#, c-format
+msgid "guest failed to start: unexpected exit status %d"
+msgstr ""
 
 msgid "guest interface"
 msgstr "ゲストインターフェイス"
@@ -28304,8 +28306,9 @@ msgstr "<vlan> の無効な \"trunk='%s'\" - yes または no である必要が
 msgid ""
 "invalid \"trunk='%s'\" in <vlan> - trunk='yes' is required for more than one "
 "vlan tag"
-msgstr "<vlan> の無効な \"trunk='%s'\" - 2 つ以上の VLAN タグに対して trunk='yes' "
-"が必要です"
+msgstr ""
+"<vlan> の無効な \"trunk='%s'\" - 2 つ以上の VLAN タグに対して trunk='yes' が"
+"必要です"
 
 #, c-format
 msgid "invalid %s value: '%s'"
@@ -29231,7 +29234,8 @@ msgid "librbd encryption is not supported by this QEMU binary"
 msgstr "この QEMU バイナリーでは、librbd 暗号化はサポートされません"
 
 msgid "librbd encryption is supported only with RBD backed disks"
-msgstr "librbd の暗号化は RBD でバックアップされたディスクでのみサポートされています"
+msgstr ""
+"librbd の暗号化は RBD でバックアップされたディスクでのみサポートされています"
 
 msgid "libssh transport error"
 msgstr "libssh トランスポートエラー"
@@ -29685,23 +29689,27 @@ msgstr "デバイス '%s' の動的更新はサポートされません"
 msgid ""
 "loader attribute 'readonly' cannot be specified when firmware autoselection "
 "is enabled"
-msgstr "ファームウェアの自動選択が有効な場合、loader 属性に 'readonly' "
-"を指定できません"
+msgstr ""
+"ファームウェアの自動選択が有効な場合、loader 属性に 'readonly' を指定できませ"
+"ん"
 
 msgid ""
 "loader attribute 'secure' cannot be specified when firmware autoselection is "
 "enabled"
-msgstr "ファームウェアの自動選択機能が有効な場合は、loader 属性に 'secure' "
-"を指定できません"
+msgstr ""
+"ファームウェアの自動選択機能が有効な場合は、loader 属性に 'secure' を指定でき"
+"ません"
 
 msgid ""
 "loader attribute 'type' cannot be specified when firmware autoselection is "
 "enabled"
-msgstr "ファームウェアの自動選択が有効な場合は、ローダー属性の 'type' "
-"が指定できません"
+msgstr ""
+"ファームウェアの自動選択が有効な場合は、ローダー属性の 'type' が指定できませ"
+"ん"
 
 msgid "loader path cannot be specified when firmware autoselection is enabled"
-msgstr "ファームウェアの自動選択機能が有効な場合は、ローダーパスを指定することはでき"
+msgstr ""
+"ファームウェアの自動選択機能が有効な場合は、ローダーパスを指定することはでき"
 "ません"
 
 #, c-format
@@ -29713,9 +29721,6 @@ msgstr "ロックマネージャーの接続が制限されました"
 
 msgid "lock owner details have not been registered"
 msgstr "ロックオーナーの詳細が登録されていませんでした"
-
-msgid "logfile not supported in this QEMU binary"
-msgstr "この QEMU バイナリーでは、ログファイルはサポートされません"
 
 #, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
@@ -30305,6 +30310,9 @@ msgstr "ドメイン %s の移行は、別のスレッドで活発に監視さ�
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
 msgstr "ドメイン移動 %s はコピー後のフェーズではありません"
+
+msgid "migration of non-shared disks requested but NBD is not set up"
+msgstr ""
 
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
@@ -32608,8 +32616,9 @@ msgstr "nvram アドレスタイプは spaprvio である必要があります"
 msgid ""
 "nvram attribute 'template' cannot be specified when firmware autoselection "
 "is enabled"
-msgstr "ファームウェアの自動選択が有効な場合、nvram "
-"属性のテンプレートが指定できません"
+msgstr ""
+"ファームウェアの自動選択が有効な場合、nvram 属性のテンプレートが指定できませ"
+"ん"
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "nvram デバイスは、この QEMU バイナリーにおいてサポートされません"
@@ -32695,8 +32704,9 @@ msgstr "virtio-pmem デバイスでサポートされるのは 'pci' アドレ�
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
 "supported"
-msgstr "各タイプ (SDL、VNC、Spice、Headless、Dbus) のグラフィックスデバイスは 1 "
-"つだけサポートされています"
+msgstr ""
+"各タイプ (SDL、VNC、Spice、Headless、Dbus) のグラフィックスデバイスは 1 つだ"
+"けサポートされています"
 
 msgid "only JSON objects can be top level"
 msgstr "JSON オブジェクトのみが最上位レベルになります"
@@ -33594,7 +33604,8 @@ msgid "print statistics for any kind of job (even failed ones)"
 msgstr "あらゆる種類のジョブ (失敗したジョブも含む) の統計を出力します"
 
 msgid "print the XML used to start the copy job instead of starting the job"
-msgstr "ジョブを開始する代わりに、コピージョブの開始に使用した XML を表示します"
+msgstr ""
+"ジョブを開始する代わりに、コピージョブの開始に使用した XML を表示します"
 
 msgid "print the admin server URI"
 msgstr "管理サーバーの URI を出力します"
@@ -34325,8 +34336,9 @@ msgid "reset the domain after core dump"
 msgstr "コアダンプ後にドメインをリセットします"
 
 msgid "resetting of nvram is not supported with network backed nvram"
-msgstr "ネットワークバックアップされた nvram では、nvram "
-"のリセットはサポートされていません"
+msgstr ""
+"ネットワークバックアップされた nvram では、nvram のリセットはサポートされてい"
+"ません"
 
 msgid "resize a vol"
 msgstr "ボリュームのサイズを変更する"
@@ -34383,7 +34395,8 @@ msgid "resuming failed post-copy migration requires change protection"
 msgstr "失敗したコピー後の移行を再開するには、変更保護が必要です"
 
 msgid "resuming failed post-copy migration requires post-copy to be enabled"
-msgstr "失敗したポストコピーの移行を再開するには、ポストコピーを有効にする必要があり"
+msgstr ""
+"失敗したポストコピーの移行を再開するには、ポストコピーを有効にする必要があり"
 "ます"
 
 msgid "retrieve client's identity info from server"
@@ -35615,14 +35628,12 @@ msgstr "テンプレートが存在しません"
 
 #, c-format
 msgid "terminal QAPI query component '%s' of '%s' must not have followers"
-msgstr "'%s' の '%s' のターミナル QAPI "
-"クエリーコンポーネントにフォロワーがいてはなりません"
+msgstr ""
+"'%s' の '%s' のターミナル QAPI クエリーコンポーネントにフォロワーがいてはなり"
+"ません"
 
 msgid "terminate gracefully"
 msgstr "穏やかに終了します"
-
-msgid "terminated abnormally"
-msgstr "異常終了"
 
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: パスを指定します、または test:///default を使用します"
@@ -35717,9 +35728,6 @@ msgstr "マシンにはスナップショットがありません"
 
 msgid "the new password"
 msgstr "新しいパスワード"
-
-msgid "the packed setting is not supported with this QEMU binary"
-msgstr "この QEMU バイナリーでは、packed 設定はサポートされません"
 
 msgid "the password is already encrypted"
 msgstr "パスワードはすでに暗号化されています"
@@ -35895,7 +35903,8 @@ msgstr "thread_pool_max (%d) は正数または -1 でなければなりませ�
 
 #, c-format
 msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
-msgstr "thread_pool_max (%d) をライブで変更する場合は、0 以上にする必要があります"
+msgstr ""
+"thread_pool_max (%d) をライブで変更する場合は、0 以上にする必要があります"
 
 msgid "thread_pool_max must be a positive integer"
 msgstr "thread_pool_max は正の整数でなければならなりません"
@@ -35910,15 +35919,18 @@ msgstr "thread_pool_min (%d) は -1 以上でなければなりません"
 
 #, c-format
 msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
-msgstr "thread_pool_min (%d) をライブで変更する場合は 0 以上にする必要があります"
+msgstr ""
+"thread_pool_min (%d) をライブで変更する場合は 0 以上にする必要があります"
 
 msgid ""
 "thread_pool_min and thread_pool_max is not supported by this QEMU binary"
-msgstr "thread_pool_min と thread_pool_max は、この QEMU "
-"バイナリーではサポートされていません"
+msgstr ""
+"thread_pool_min と thread_pool_max は、この QEMU バイナリーではサポートされて"
+"いません"
 
 msgid "thread_pool_min must be smaller or equal to thread_pool_max"
-msgstr "thread_pool_min は thread_pool_max よりも小さいか等しくなければなりません"
+msgstr ""
+"thread_pool_min は thread_pool_max よりも小さいか等しくなければなりません"
 
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "スケーリングされた数値としてのしきい値 (デフォルトではバイト)"
@@ -37146,10 +37158,6 @@ msgid "unexpected encryption format"
 msgstr "予期しない暗号化フォーマット"
 
 #, c-format
-msgid "unexpected exit status %d"
-msgstr "予期しない終了ステータス %d"
-
-#, c-format
 msgid "unexpected feature '%s'"
 msgstr "予期しない機能 '%s'"
 
@@ -37986,8 +37994,8 @@ msgid ""
 "unsupported <bandwidth> element in <portgroup name='%s'> of network '%s' "
 "with forward mode='%s'"
 msgstr ""
-"ネットワーク '%s' の <portgroup name='%s'> における <bandwidth> "
-"要素が転送モード='%s' でサポートされません"
+"ネットワーク '%s' の <portgroup name='%s'> における <bandwidth> 要素が転送"
+"モード='%s' でサポートされません"
 
 #, c-format
 msgid "unsupported CPU cache level for mode '%s'"
@@ -39134,9 +39142,6 @@ msgstr "ボリューム '%s' はまだ割り当てられています"
 msgid "volume '%s' is still in use."
 msgstr "ボリューム '%s' はまだ使用中です。"
 
-msgid "volume capacity required for this pool"
-msgstr "このプールに必要なボリューム容量"
-
 msgid "volume capacity required for this storage pool"
 msgstr "このストレージプールに必要なボリューム容量"
 
@@ -39423,6 +39428,51 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Cannot parse controller index %s"
+#~ msgstr "コントローラーのインデックス %s を解析できません"
+
+#~ msgid "IOThreads for virtio-scsi not supported for this QEMU"
+#~ msgstr "この QEMU では、virtio-scsi の IOThreads はサポートされません"
+
+#~ msgid "Invalid maxEventChannels: %i"
+#~ msgstr "無効な maxEventChannels: %i"
+
+#~ msgid "Invalid maxGrantFrames: %i"
+#~ msgstr "無効な maxGrantFrames: %i"
+
+#~ msgid "Invalid ports: %i"
+#~ msgstr "無効なポート: %i"
+
+#~ msgid "Invalid target index '%i' in PCI controller"
+#~ msgstr "PCI コントローラーの無効なターゲットインデックス '%i'"
+
+#~ msgid "Invalid vectors: %i"
+#~ msgstr "無効なベクトル: %i"
+
+#~ msgid "Missing disk info when adding volume"
+#~ msgstr "ボリュームを追加するときにディスク情報がありません"
+
+#~ msgid "Unable to init qemu driver mutexes"
+#~ msgstr "QEMU ドライバーのミューテックスを初期化できません"
+
+#~ msgid "append not supported in this QEMU binary"
+#~ msgstr "この QEMU バイナリーでは、追加はサポートされません"
+
+#~ msgid "logfile not supported in this QEMU binary"
+#~ msgstr "この QEMU バイナリーでは、ログファイルはサポートされません"
+
+#~ msgid "terminated abnormally"
+#~ msgstr "異常終了"
+
+#~ msgid "the packed setting is not supported with this QEMU binary"
+#~ msgstr "この QEMU バイナリーでは、packed 設定はサポートされません"
+
+#~ msgid "unexpected exit status %d"
+#~ msgstr "予期しない終了ステータス %d"
+
+#~ msgid "volume capacity required for this pool"
+#~ msgstr "このプールに必要なボリューム容量"
 
 #~ msgid "'base' and 'baseNode' can't be used together"
 #~ msgstr "'base' と 'baseNode' は一緒に使うことができません"

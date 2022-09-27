@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-08-26 05:02+0000\n"
+"POT-Creation-Date: 2022-09-27 08:07+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -2990,10 +2990,6 @@ msgstr "Không thể phân tích chỉ mục bộ điều khiển %s"
 
 msgid "Cannot parse cbm_mask from resctrl cache info"
 msgstr ""
-
-#, c-format
-msgid "Cannot parse controller index %s"
-msgstr "Không thể phân tích chỉ mục bộ điều khiển %s"
 
 #, fuzzy
 msgid "Cannot parse mode string"
@@ -9236,10 +9232,6 @@ msgstr ""
 msgid "IOThread to be used by supported device"
 msgstr "Phương tiện tháo được không hỗ trợ cho thiết bị %s"
 
-#, fuzzy
-msgid "IOThreads for virtio-scsi not supported for this QEMU"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
-
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr ""
@@ -10028,14 +10020,6 @@ msgid "Invalid match string '%s'"
 msgstr "Chuỗi nhà cung cấp CPU không hợp lệ '%s'"
 
 #, c-format
-msgid "Invalid maxEventChannels: %i"
-msgstr ""
-
-#, c-format
-msgid "Invalid maxGrantFrames: %i"
-msgstr ""
-
-#, c-format
 msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
 msgstr ""
 
@@ -10185,10 +10169,6 @@ msgstr "Số cổng không hợp lệ: %s"
 msgid "Invalid port range '%u-%u'."
 msgstr "Số cổng không hợp lệ: %s"
 
-#, c-format
-msgid "Invalid ports: %i"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "Tìm kiếm không hợp lệ của '%s' từ '%s'"
@@ -10285,10 +10265,6 @@ msgstr "Tham số không hợp lệ"
 #, fuzzy, c-format
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
 msgstr "Trạng thái '%s' không hợp lệ trong XML chụp nhanh miền"
-
-#, c-format
-msgid "Invalid target index '%i' in PCI controller"
-msgstr ""
 
 #, fuzzy
 msgid "Invalid target model for serial device"
@@ -10422,10 +10398,6 @@ msgstr "giá trị không hợp lệ của 'ephemeral'"
 #, fuzzy, c-format
 msgid "Invalid value of 'nodeset': %s"
 msgstr "giá trị không hợp lệ của 'ephemeral'"
-
-#, c-format
-msgid "Invalid vectors: %i"
-msgstr ""
 
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
@@ -11293,9 +11265,6 @@ msgstr "Thiếu thuộc tính dịch vụ nguồn cho thiết bị ký tự"
 msgid "Missing disk file path in domain"
 msgstr ""
 
-msgid "Missing disk info when adding volume"
-msgstr ""
-
 #, fuzzy
 msgid "Missing disk source file path"
 msgstr "thiếu đường dẫn nguồn"
@@ -11634,11 +11603,23 @@ msgstr ""
 msgid "Missing source channel attribute for char device"
 msgstr "Thiếu thuộc tính máy chủ nguồn cho thiết bị ký tự"
 
+#, c-format
+msgid "Missing source connectionid for interface type '%s'"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "Thiếu thuộc tính máy chủ nguồn cho thiết bị ký tự"
 
 msgid "Missing source path attribute for char device"
 msgstr "Thiếu thuộc tính đường dẫn nguồn cho thiết bị ký tự"
+
+#, c-format
+msgid "Missing source portgroup for interface type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Missing source portid for interface type '%s'"
+msgstr ""
 
 msgid "Missing source service attribute for char device"
 msgstr "Thiếu thuộc tính dịch vụ nguồn cho thiết bị ký tự"
@@ -14044,6 +14025,9 @@ msgstr "Đang chạy trình quản lý máy ảo: %s %d.%d.%d\n"
 #, fuzzy
 msgid "S3 state is disabled for this domain"
 msgstr "Các tác vụ khác đang chờ cho miền này"
+
+msgid "S390 PV launch security is not supported by this host or kernel"
+msgstr ""
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr ""
@@ -17681,10 +17665,6 @@ msgid "Unable to init device stream mutex"
 msgstr "Không thể khởi chạy lớp kiểm tra"
 
 #, fuzzy
-msgid "Unable to init qemu driver mutexes"
-msgstr "Không thể lấy các thông số bộ nhớ"
-
-#, fuzzy
 msgid "Unable to initialize RW lock"
 msgstr "Không thể khởi chạy lớp kiểm tra"
 
@@ -20529,10 +20509,6 @@ msgstr ""
 
 msgid "apparmor_parser exited with error"
 msgstr ""
-
-#, fuzzy
-msgid "append not supported in this QEMU binary"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr ""
@@ -27584,6 +27560,13 @@ msgstr ""
 msgid "guest failed to start: %s"
 msgstr "Thất bại khi bắt đầu pool %s"
 
+msgid "guest failed to start: terminated abnormally"
+msgstr ""
+
+#, c-format
+msgid "guest failed to start: unexpected exit status %d"
+msgstr ""
+
 #, fuzzy
 msgid "guest interface"
 msgstr "kiểu giao diện mạng"
@@ -29745,10 +29728,6 @@ msgstr ""
 msgid "lock owner details have not been registered"
 msgstr ""
 
-#, fuzzy
-msgid "logfile not supported in this QEMU binary"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
-
 #, fuzzy, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
 msgstr "Tạo các ổ %s không được hỗ trợ"
@@ -30354,6 +30333,9 @@ msgstr ""
 
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
+msgid "migration of non-shared disks requested but NBD is not set up"
 msgstr ""
 
 msgid ""
@@ -35749,10 +35731,6 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr ""
 
-#, fuzzy
-msgid "terminated abnormally"
-msgstr "số không kết thúc"
-
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: cung cấp một đường dẫn hoặc sử dụng test:///default"
 
@@ -35841,10 +35819,6 @@ msgstr "miền không có ảnh chụp"
 
 msgid "the new password"
 msgstr ""
-
-#, fuzzy
-msgid "the packed setting is not supported with this QEMU binary"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
 
 #, fuzzy
 msgid "the password is already encrypted"
@@ -37229,10 +37203,6 @@ msgstr ""
 
 msgid "unexpected encryption format"
 msgstr "định dạng mã hóa không mong đợi"
-
-#, fuzzy, c-format
-msgid "unexpected exit status %d"
-msgstr "tuyến đĩa không mong đợi %d"
 
 #, fuzzy, c-format
 msgid "unexpected feature '%s'"
@@ -39220,9 +39190,6 @@ msgstr "ổ '%s' vẫn đang được cấp phát"
 msgid "volume '%s' is still in use."
 msgstr "ổ '%s' vẫn đang được cấp phát"
 
-msgid "volume capacity required for this pool"
-msgstr ""
-
 msgid "volume capacity required for this storage pool"
 msgstr ""
 
@@ -39499,6 +39466,37 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <chuỗi>"
+
+#~ msgid "Cannot parse controller index %s"
+#~ msgstr "Không thể phân tích chỉ mục bộ điều khiển %s"
+
+#, fuzzy
+#~ msgid "IOThreads for virtio-scsi not supported for this QEMU"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "Unable to init qemu driver mutexes"
+#~ msgstr "Không thể lấy các thông số bộ nhớ"
+
+#, fuzzy
+#~ msgid "append not supported in this QEMU binary"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "logfile not supported in this QEMU binary"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "terminated abnormally"
+#~ msgstr "số không kết thúc"
+
+#, fuzzy
+#~ msgid "the packed setting is not supported with this QEMU binary"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "unexpected exit status %d"
+#~ msgstr "tuyến đĩa không mong đợi %d"
 
 #, fuzzy
 #~ msgid "'ssh' protocol is not yet supported"
