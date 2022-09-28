@@ -1293,6 +1293,9 @@ qemuNamespaceMknodPaths(virDomainObj *vm,
             goto cleanup;
     }
 
+    if (data.nitems == 0)
+        return 0;
+
     for (i = 0; i < data.nitems; i++) {
         qemuNamespaceMknodItem *item = &data.items[i];
         if (item->target &&
