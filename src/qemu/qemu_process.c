@@ -8785,9 +8785,6 @@ qemuProcessReconnect(void *opaque)
         goto cleanup;
     }
 
-    if (qemuProcessBuildDestroyMemoryPaths(driver, obj, NULL, true) < 0)
-        goto error;
-
     if ((qemuDomainAssignAddresses(obj->def, priv->qemuCaps,
                                    driver, obj, false)) < 0) {
         goto error;
