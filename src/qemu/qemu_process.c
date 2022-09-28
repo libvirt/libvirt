@@ -8760,6 +8760,11 @@ qemuProcessReconnect(void *opaque)
         goto error;
     }
 
+    if (qemuDomainAssignAddresses(obj->def, priv->qemuCaps,
+                                  driver, obj, false) < 0) {
+        goto error;
+    }
+
     /* In case the domain shutdown or fake reboot while we were not running,
      * we need to finish the shutdown or fake reboot process. And we need to
      * do it after we have virQEMUCaps filled in.
@@ -8773,11 +8778,6 @@ qemuProcessReconnect(void *opaque)
                   obj->def->name);
         qemuProcessShutdownOrReboot(obj);
         goto cleanup;
-    }
-
-    if ((qemuDomainAssignAddresses(obj->def, priv->qemuCaps,
-                                   driver, obj, false)) < 0) {
-        goto error;
     }
 
     /* if domain requests security driver we haven't loaded, report error, but
