@@ -957,10 +957,9 @@ qemuNamespaceMknodOne(qemuNamespaceMknodItem *data)
     }
 
     if (isLink) {
-        g_autoptr(GError) gerr = NULL;
         g_autofree char *target = NULL;
 
-        if ((target = g_file_read_link(data->file, &gerr)) &&
+        if ((target = g_file_read_link(data->file, NULL)) &&
             STREQ(target, data->target)) {
             VIR_DEBUG("Skipping symlink %s -> %s which exists and points to correct target",
                       data->file, data->target);
