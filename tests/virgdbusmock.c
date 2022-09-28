@@ -68,6 +68,7 @@ VIR_MOCK_LINK_RET_ARGS(g_dbus_connection_call_sync,
                        GCancellable *, cancellable,
                        GError **, error)
 
+#ifdef G_OS_UNIX
 VIR_MOCK_LINK_RET_ARGS(g_dbus_connection_call_with_unix_fd_list_sync,
                        GVariant *,
                        GDBusConnection *, connection,
@@ -83,3 +84,4 @@ VIR_MOCK_LINK_RET_ARGS(g_dbus_connection_call_with_unix_fd_list_sync,
                        GUnixFDList **, out_fd_list,
                        GCancellable *, cancellable,
                        GError **, error)
+#endif /* G_OS_UNIX */
