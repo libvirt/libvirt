@@ -923,6 +923,31 @@ virCPUGetModels(virArch arch, char ***models)
 }
 
 
+/** virCPUGetVendorForModel:
+ *
+ * @arch: CPU architecture
+ * @model: CPU model to be checked
+ *
+ * Returns @model's vendor or NULL if the vendor is unknown.
+ */
+const char *
+virCPUGetVendorForModel(virArch arch,
+                        const char *model)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("arch=%s", virArchToString(arch));
+
+    if (!(driver = cpuGetSubDriver(arch)))
+        return NULL;
+
+    if (!driver->getVendorForModel)
+        return NULL;
+
+    return driver->getVendorForModel(model);
+}
+
+
 /**
  * virCPUTranslate:
  *

@@ -2175,9 +2175,11 @@ virQEMUCapsAddCPUDefinitions(virQEMUCaps *qemuCaps,
 
 
 static virDomainCapsCPUModels *
-virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefs *defs,
+virQEMUCapsCPUDefsToModels(virArch arch,
+                           qemuMonitorCPUDefs *defs,
                            const char **modelAllowed,
-                           const char **modelForbidden)
+                           const char **modelForbidden,
+                           bool vendors)
 {
     virDomainCapsCPUModels *cpuModels = NULL;
     size_t i;
@@ -2187,6 +2189,7 @@ virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefs *defs,
 
     for (i = 0; i < defs->ncpus; i++) {
         qemuMonitorCPUDefInfo *cpu = defs->cpus + i;
+        char *vendor = NULL;
 
         if (modelAllowed && !g_strv_contains(modelAllowed, cpu->name))
             continue;
@@ -2194,8 +2197,11 @@ virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefs *defs,
         if (modelForbidden && g_strv_contains(modelForbidden, cpu->name))
             continue;
 
+        if (vendors)
+            vendor = g_strdup(virCPUGetVendorForModel(arch, cpu->name));
+
         virDomainCapsCPUModelsAdd(cpuModels, cpu->name, cpu->usable,
-                                  cpu->blockers, cpu->deprecated, NULL);
+                                  cpu->blockers, cpu->deprecated, vendor);
     }
 
     return cpuModels;
@@ -2213,7 +2219,8 @@ virQEMUCapsGetCPUModels(virQEMUCaps *qemuCaps,
     if (!(defs = virQEMUCapsGetAccel(qemuCaps, type)->cpuModels))
         return NULL;
 
-    return virQEMUCapsCPUDefsToModels(defs, modelAllowed, modelForbidden);
+    return virQEMUCapsCPUDefsToModels(qemuCaps->arch, defs,
+                                      modelAllowed, modelForbidden, true);
 }
 
 
@@ -2946,7 +2953,8 @@ virQEMUCapsFetchCPUModels(qemuMonitor *mon,
     if (virQEMUCapsFetchCPUDefinitions(mon, arch, &defs) < 0)
         return -1;
 
-    if (defs && !(*cpuModels = virQEMUCapsCPUDefsToModels(defs, NULL, NULL)))
+    if (defs &&
+        !(*cpuModels = virQEMUCapsCPUDefsToModels(arch, defs, NULL, NULL, false)))
         return -1;
 
     return 0;

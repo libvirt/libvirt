@@ -1500,6 +1500,7 @@ virCPUExpandFeatures;
 virCPUGetHost;
 virCPUGetHostIsSupported;
 virCPUGetModels;
+virCPUGetVendorForModel;
 virCPUProbeHost;
 virCPUTranslate;
 virCPUUpdate;
