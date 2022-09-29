@@ -97,6 +97,9 @@
     <include filename='arm_cortex-a53.xml'/>
     <include filename='arm_cortex-a57.xml'/>
     <include filename='arm_cortex-a72.xml'/>
+    <include filename='arm_Neoverse-N1.xml'/>
+    <include filename='arm_Neoverse-N2.xml'/>
+    <include filename='arm_Neoverse-V1.xml'/>
 
     <!-- Qualcomm-based CPU models -->
     <include filename='arm_Falkor.xml'/>

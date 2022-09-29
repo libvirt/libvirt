@@ -1,0 +1,6 @@
+<cpus>
+  <model name='Neoverse-V1'>
+    <vendor name='ARM'/>
+    <pvr value='0xd40'/>
+  </model>
+</cpus>
