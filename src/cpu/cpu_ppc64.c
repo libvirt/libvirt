@@ -780,6 +780,25 @@ virCPUppc64DriverGetModels(char ***models)
     return map->nmodels;
 }
 
+
+static const char *
+virCPUppc64GetVendorForModel(const char *modelName)
+{
+    virCPUppc64Map *map = NULL;
+    virCPUppc64Model *model;
+
+    if (!(map = virCPUppc64GetMap()))
+        return NULL;
+
+    model = ppc64ModelFind(map, modelName);
+
+    if (!model || !model->vendor)
+        return NULL;
+
+    return model->vendor->name;
+}
+
+
 struct cpuArchDriver cpuDriverPPC64 = {
     .name       = "ppc64",
     .arch       = archs,
@@ -793,6 +812,7 @@ struct cpuArchDriver cpuDriverPPC64 = {
     .baseline   = virCPUppc64Baseline,
     .update     = virCPUppc64Update,
     .getModels  = virCPUppc64DriverGetModels,
+    .getVendorForModel = virCPUppc64GetVendorForModel,
     .convertLegacy = virCPUppc64ConvertLegacy,
     .dataIsIdentical = virCPUppc64DataIsIdentical,
 };
