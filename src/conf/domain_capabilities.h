@@ -244,11 +244,12 @@ virDomainCaps *virDomainCapsNew(const char *path,
 
 virDomainCapsCPUModels *virDomainCapsCPUModelsNew(size_t nmodels);
 virDomainCapsCPUModels *virDomainCapsCPUModelsCopy(virDomainCapsCPUModels *old);
-int virDomainCapsCPUModelsAdd(virDomainCapsCPUModels *cpuModels,
-                              const char *name,
-                              virDomainCapsCPUUsable usable,
-                              char **blockers,
-                              bool deprecated);
+void
+virDomainCapsCPUModelsAdd(virDomainCapsCPUModels *cpuModels,
+                          const char *name,
+                          virDomainCapsCPUUsable usable,
+                          char **blockers,
+                          bool deprecated);
 virDomainCapsCPUModel *
 virDomainCapsCPUModelsGet(virDomainCapsCPUModels *cpuModels,
                           const char *name);

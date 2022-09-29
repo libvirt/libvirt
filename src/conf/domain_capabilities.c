@@ -155,36 +155,32 @@ virDomainCapsCPUModelsNew(size_t nmodels)
 virDomainCapsCPUModels *
 virDomainCapsCPUModelsCopy(virDomainCapsCPUModels *old)
 {
-    g_autoptr(virDomainCapsCPUModels) cpuModels = NULL;
+    virDomainCapsCPUModels *cpuModels = NULL;
     size_t i;
 
     if (!(cpuModels = virDomainCapsCPUModelsNew(old->nmodels)))
         return NULL;
 
     for (i = 0; i < old->nmodels; i++) {
-        if (virDomainCapsCPUModelsAdd(cpuModels,
-                                      old->models[i].name,
-                                      old->models[i].usable,
-                                      old->models[i].blockers,
-                                      old->models[i].deprecated) < 0)
-            return NULL;
+        virDomainCapsCPUModelsAdd(cpuModels,
+                                  old->models[i].name,
+                                  old->models[i].usable,
+                                  old->models[i].blockers,
+                                  old->models[i].deprecated);
     }
 
-    return g_steal_pointer(&cpuModels);
+    return cpuModels;
 }
 
 
-int
+void
 virDomainCapsCPUModelsAdd(virDomainCapsCPUModels *cpuModels,
                           const char *name,
                           virDomainCapsCPUUsable usable,
                           char **blockers,
                           bool deprecated)
 {
-    g_autofree char * nameCopy = NULL;
     virDomainCapsCPUModel *cpu;
-
-    nameCopy = g_strdup(name);
 
     VIR_RESIZE_N(cpuModels->models, cpuModels->nmodels_max,
                  cpuModels->nmodels, 1);
@@ -193,11 +189,9 @@ virDomainCapsCPUModelsAdd(virDomainCapsCPUModels *cpuModels,
     cpuModels->nmodels++;
 
     cpu->usable = usable;
-    cpu->name = g_steal_pointer(&nameCopy);
+    cpu->name = g_strdup(name);
     cpu->blockers = g_strdupv(blockers);
     cpu->deprecated = deprecated;
-
-    return 0;
 }
 
 

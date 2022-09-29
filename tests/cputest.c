@@ -823,9 +823,8 @@ cpuTestUpdateLive(const void *arg)
             usable = hvModel->usable;
         }
 
-        if (virDomainCapsCPUModelsAdd(models, expected->model,
-                                      usable, blockers, false) < 0)
-            return -1;
+        virDomainCapsCPUModelsAdd(models, expected->model,
+                                  usable, blockers, false);
 
         cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
         ignore_value(virCPUTranslate(data->arch, cpu, models));
@@ -902,16 +901,11 @@ cpuTestInitModels(const char **list)
         return NULL;
 
     for (model = list; *model; model++) {
-        if (virDomainCapsCPUModelsAdd(cpus, *model,
-                                      VIR_DOMCAPS_CPU_USABLE_UNKNOWN, NULL, false) < 0)
-            goto error;
+        virDomainCapsCPUModelsAdd(cpus, *model,
+                                  VIR_DOMCAPS_CPU_USABLE_UNKNOWN, NULL, false);
     }
 
     return cpus;
-
- error:
-    virObjectUnref(cpus);
-    return NULL;
 }
 
 

@@ -2179,7 +2179,7 @@ virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefs *defs,
                            const char **modelAllowed,
                            const char **modelForbidden)
 {
-    g_autoptr(virDomainCapsCPUModels) cpuModels = NULL;
+    virDomainCapsCPUModels *cpuModels = NULL;
     size_t i;
 
     if (!(cpuModels = virDomainCapsCPUModelsNew(defs->ncpus)))
@@ -2194,12 +2194,11 @@ virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefs *defs,
         if (modelForbidden && g_strv_contains(modelForbidden, cpu->name))
             continue;
 
-        if (virDomainCapsCPUModelsAdd(cpuModels, cpu->name, cpu->usable,
-                                      cpu->blockers, cpu->deprecated) < 0)
-            return NULL;
+        virDomainCapsCPUModelsAdd(cpuModels, cpu->name, cpu->usable,
+                                  cpu->blockers, cpu->deprecated);
     }
 
-    return g_steal_pointer(&cpuModels);
+    return cpuModels;
 }
 
 
