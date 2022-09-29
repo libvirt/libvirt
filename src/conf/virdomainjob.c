@@ -210,7 +210,7 @@ virDomainObjPreserveJob(virDomainJobObj *currJob,
     if (currJob->cb && currJob->cb->allocJobPrivate &&
         !(currJob->privateData = currJob->cb->allocJobPrivate()))
         return -1;
-    job->cb = currJob->cb;
+    job->cb = g_memdup(currJob->cb, sizeof(*currJob->cb));
 
     virDomainObjResetJob(currJob);
     virDomainObjResetAsyncJob(currJob);
