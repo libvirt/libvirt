@@ -24,6 +24,10 @@ allow installing the most recent versions of virtualization packages:
    The ``app-emulation/libvirt`` is regularly updated, but newest versions are
    usually marked as testing by the ``~*`` keyword.
 
+  **openSUSE**
+
+    Refer to https://build.opensuse.org/package/show/Virtualization/libvirt
+
 Preparing sources
 -----------------
 
