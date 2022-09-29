@@ -714,6 +714,7 @@ struct cpuArchDriver cpuDriverArm = {
 #endif
     .decode = NULL,
     .encode = NULL,
+    .getVendorForModel = NULL,
     .dataCopyNew = virCPUarmDataCopyNew,
     .dataFree = virCPUarmDataFree,
     .baseline = virCPUarmBaseline,
