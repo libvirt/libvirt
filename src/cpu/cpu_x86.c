@@ -3137,6 +3137,24 @@ virCPUx86GetModels(char ***models)
 }
 
 
+static const char *
+virCPUx86GetVendorForModel(const char *modelName)
+{
+    virCPUx86Map *map;
+    virCPUx86Model *model;
+
+    if (!(map = virCPUx86GetMap()))
+        return NULL;
+
+    model = x86ModelFind(map, modelName);
+
+    if (!model || !model->vendor)
+        return NULL;
+
+    return model->vendor->name;
+}
+
+
 static int
 virCPUx86Translate(virCPUDef *cpu,
                    virDomainCapsCPUModels *models)
@@ -3539,6 +3557,7 @@ struct cpuArchDriver cpuDriverX86 = {
     .dataFormat = virCPUx86DataFormat,
     .dataParse  = virCPUx86DataParse,
     .getModels  = virCPUx86GetModels,
+    .getVendorForModel = virCPUx86GetVendorForModel,
     .translate  = virCPUx86Translate,
     .expandFeatures = virCPUx86ExpandFeatures,
     .copyMigratable = virCPUx86CopyMigratable,
