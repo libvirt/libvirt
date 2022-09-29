@@ -24,6 +24,14 @@
 #include "internal.h"
 #include "virbuffer.h"
 
+typedef struct _virCommandSendBuffer virCommandSendBuffer;
+struct _virCommandSendBuffer {
+    int fd;
+    unsigned char *buffer;
+    size_t buflen;
+    off_t offset;
+};
+
 typedef struct _virCommand virCommand;
 
 /* This will execute in the context of the first child

@@ -2119,6 +2119,7 @@ virCommandNewArgs;
 virCommandNewVAList;
 virCommandNonblockingFDs;
 virCommandPassFD;
+virCommandPeekSendBuffers;
 virCommandRawStatus;
 virCommandRequireHandshake;
 virCommandRun;

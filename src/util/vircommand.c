@@ -78,14 +78,6 @@ struct _virCommandFD {
     unsigned int flags;
 };
 
-typedef struct _virCommandSendBuffer virCommandSendBuffer;
-struct _virCommandSendBuffer {
-    int fd;
-    unsigned char *buffer;
-    size_t buflen;
-    off_t offset;
-};
-
 struct _virCommand {
     int has_error; /* 0 on success, -1 on error  */
 
@@ -3513,4 +3505,13 @@ virCommandSetRunAmong(virCommand *cmd,
     }
 
     cmd->schedCore = pid;
+}
+
+void
+virCommandPeekSendBuffers(virCommand *cmd,
+                          virCommandSendBuffer **buffers,
+                          int *nbuffers)
+{
+    *buffers = cmd->sendBuffers;
+    *nbuffers = cmd->numSendBuffers;
 }
