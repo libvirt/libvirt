@@ -159,6 +159,9 @@
               <ref name="virYesNo"/>
             </attribute>
           </optional>
+          <attribute name='vendor'>
+            <text/>
+          </attribute>
           <text/>
         </element>
       </zeroOrMore>

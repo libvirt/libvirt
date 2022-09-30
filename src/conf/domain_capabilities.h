@@ -159,6 +159,7 @@ struct _virDomainCapsCPUModel {
     virDomainCapsCPUUsable usable;
     char **blockers; /* NULL-terminated list of usability blockers */
     bool deprecated;
+    char *vendor;
 };
 
 typedef struct _virDomainCapsCPUModels virDomainCapsCPUModels;
@@ -249,7 +250,8 @@ virDomainCapsCPUModelsAdd(virDomainCapsCPUModels *cpuModels,
                           const char *name,
                           virDomainCapsCPUUsable usable,
                           char **blockers,
-                          bool deprecated);
+                          bool deprecated,
+                          const char *vendor);
 virDomainCapsCPUModel *
 virDomainCapsCPUModelsGet(virDomainCapsCPUModels *cpuModels,
                           const char *name);

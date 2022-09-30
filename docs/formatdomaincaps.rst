@@ -191,9 +191,10 @@ CPUs <formatdomain.html#cpu-model-and-topology>`__.
          <feature policy='require' name='vmx'/>
        </mode>
        <mode name='custom' supported='yes'>
-         <model usable='no' deprecated='no'>Broadwell</model>
-         <model usable='yes' deprecated='no'>Broadwell-noTSX</model>
-         <model usable='no' deprecated='yes'>Haswell</model>
+         <model usable='no' deprecated='no' vendor='Intel'>Broadwell</model>
+         <model usable='yes' deprecated='no' vendor='Intel'>Broadwell-noTSX</model>
+         <model usable='no' deprecated='yes' vendor='Intel'>Haswell</model>
+         <model usable='no' deprecated='no' vendor='AMD'>EPYC-Milan</model>
          ...
        </mode>
      </cpu>
@@ -226,7 +227,10 @@ more details about it:
    CPU of such model is expected to have. A special value ``unknown`` indicates
    libvirt does not have enough information to provide the usability data. The
    ``deprecated`` attribute reflects the hypervisor's policy on usage of this
-   model :since:`(since 7.1.0)` .
+   model :since:`(since 7.1.0)`. The ``vendor`` attribute :since:`(since 8.9.0)`
+   contains the vendor of the CPU model for users who want to use CPU models
+   with specific vendors only. CPU models with undefined vendor will be listed
+   with ``vendor='unkwnown'``.
 
 I/O Threads
 ~~~~~~~~~~~

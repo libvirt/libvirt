@@ -2195,7 +2195,7 @@ virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefs *defs,
             continue;
 
         virDomainCapsCPUModelsAdd(cpuModels, cpu->name, cpu->usable,
-                                  cpu->blockers, cpu->deprecated);
+                                  cpu->blockers, cpu->deprecated, NULL);
     }
 
     return cpuModels;

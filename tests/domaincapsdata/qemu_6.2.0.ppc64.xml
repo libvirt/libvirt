@@ -40,10 +40,10 @@
       <model fallback='allow'>POWER8</model>
     </mode>
     <mode name='custom' supported='yes'>
-      <model usable='unknown'>POWER10</model>
-      <model usable='unknown'>POWER9</model>
-      <model usable='unknown'>POWER8</model>
-      <model usable='unknown'>POWER7</model>
+      <model usable='unknown' vendor='unknown'>POWER10</model>
+      <model usable='unknown' vendor='unknown'>POWER9</model>
+      <model usable='unknown' vendor='unknown'>POWER8</model>
+      <model usable='unknown' vendor='unknown'>POWER7</model>
     </mode>
   </cpu>
   <memoryBacking supported='yes'>

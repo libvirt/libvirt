@@ -105,6 +105,7 @@ virDomainCapsCPUModelsDispose(void *obj)
     for (i = 0; i < cpuModels->nmodels; i++) {
         g_free(cpuModels->models[i].name);
         g_strfreev(cpuModels->models[i].blockers);
+        g_free(cpuModels->models[i].vendor);
     }
 
     g_free(cpuModels->models);
@@ -166,7 +167,8 @@ virDomainCapsCPUModelsCopy(virDomainCapsCPUModels *old)
                                   old->models[i].name,
                                   old->models[i].usable,
                                   old->models[i].blockers,
-                                  old->models[i].deprecated);
+                                  old->models[i].deprecated,
+                                  old->models[i].vendor);
     }
 
     return cpuModels;
@@ -178,7 +180,8 @@ virDomainCapsCPUModelsAdd(virDomainCapsCPUModels *cpuModels,
                           const char *name,
                           virDomainCapsCPUUsable usable,
                           char **blockers,
-                          bool deprecated)
+                          bool deprecated,
+                          const char *vendor)
 {
     virDomainCapsCPUModel *cpu;
 
@@ -192,6 +195,7 @@ virDomainCapsCPUModelsAdd(virDomainCapsCPUModels *cpuModels,
     cpu->name = g_strdup(name);
     cpu->blockers = g_strdupv(blockers);
     cpu->deprecated = deprecated;
+    cpu->vendor = g_strdup(vendor);
 }
 
 
@@ -376,6 +380,11 @@ virDomainCapsCPUCustomFormat(virBuffer *buf,
 
         if (model->deprecated)
             virBufferAddLit(buf, " deprecated='yes'");
+
+        if (model->vendor)
+            virBufferAsprintf(buf, " vendor='%s'", model->vendor);
+        else
+            virBufferAddLit(buf, " vendor='unknown'");
 
         virBufferAsprintf(buf, ">%s</model>\n", model->name);
     }
