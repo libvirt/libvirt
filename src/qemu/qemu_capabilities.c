@@ -5242,13 +5242,6 @@ virQEMUCapsInitProcessCaps(virQEMUCaps *qemuCaps)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_CACHE);
     }
 
-    if (ARCH_IS_S390(qemuCaps->arch)) {
-        /* Legacy assurance for QEMU_CAPS_CCW */
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_CCW))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_CCW);
-    }
-
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_UNAVAILABLE_FEATURES))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CANONICAL_CPU_FEATURES);
 

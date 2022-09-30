@@ -1655,12 +1655,6 @@ qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
             return -1;
         }
 
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("CCW address type is not supported by this QEMU"));
-            return -1;
-        }
-
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:

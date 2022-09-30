@@ -242,7 +242,7 @@ mymain(void)
     DO_TEST_NOCAPS("machine-core-off");
     DO_TEST_CAPS_LATEST("machine-smm-on");
     DO_TEST_CAPS_LATEST("machine-smm-off");
-    DO_TEST("machine-loadparm-multiple-disks-nets-s390", QEMU_CAPS_CCW);
+    DO_TEST_NOCAPS("machine-loadparm-multiple-disks-nets-s390");
     DO_TEST_NOCAPS("default-kvm-host-arch");
     DO_TEST_NOCAPS("default-qemu-host-arch");
     DO_TEST_NOCAPS("boot-cdrom");
@@ -358,8 +358,7 @@ mymain(void)
             QEMU_CAPS_SCSI_BLOCK);
     DO_TEST("controller-virtio-scsi", QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-virtio-s390-zpci",
-            QEMU_CAPS_DEVICE_ZPCI,
-            QEMU_CAPS_CCW);
+            QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST_NOCAPS("disk-mirror-old");
     DO_TEST_NOCAPS("disk-mirror");
     DO_TEST_NOCAPS("disk-active-commit");
@@ -532,8 +531,7 @@ mymain(void)
     DO_TEST("hostdev-vfio", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-vfio-zpci",
             QEMU_CAPS_DEVICE_VFIO_PCI,
-            QEMU_CAPS_DEVICE_ZPCI,
-            QEMU_CAPS_CCW);
+            QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST("hostdev-vfio-zpci-multidomain-many",
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
@@ -552,7 +550,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST("hostdev-vfio-zpci-ccw-memballoon",
-            QEMU_CAPS_CCW,
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST("hostdev-mdev-precreated", QEMU_CAPS_DEVICE_VFIO_PCI);
@@ -597,11 +594,11 @@ mymain(void)
     DO_TEST_NOCAPS("iothreads-ids-partial");
     DO_TEST_NOCAPS("cputune-iothreads");
     DO_TEST_NOCAPS("iothreads-disk");
-    DO_TEST("iothreads-disk-virtio-ccw", QEMU_CAPS_CCW);
+    DO_TEST_NOCAPS("iothreads-disk-virtio-ccw");
     DO_TEST("iothreads-virtio-scsi-pci",
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("iothreads-virtio-scsi-ccw",
-            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_CCW);
+            QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST_NOCAPS("lease");
     DO_TEST_NOCAPS("event_idx");
     DO_TEST_NOCAPS("vhost_queues");
@@ -867,8 +864,7 @@ mymain(void)
             QEMU_CAPS_HDA_DUPLEX);
 
     DO_TEST("hostdev-scsi-vhost-scsi-ccw",
-            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DEVICE_VHOST_SCSI,
-            QEMU_CAPS_CCW);
+            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DEVICE_VHOST_SCSI);
     DO_TEST("hostdev-scsi-vhost-scsi-pci",
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_VHOST_SCSI);
@@ -892,21 +888,19 @@ mymain(void)
             QEMU_CAPS_SCSI_LSI);
 
     DO_TEST("hostdev-subsys-mdev-vfio-ccw",
-            QEMU_CAPS_CCW,
             QEMU_CAPS_DEVICE_VFIO_CCW);
     DO_TEST_CAPS_ARCH_LATEST("hostdev-subsys-mdev-vfio-ccw-boot",
                              "s390x");
     DO_TEST("hostdev-subsys-mdev-vfio-ap",
-            QEMU_CAPS_CCW,
             QEMU_CAPS_DEVICE_VFIO_AP);
 
     DO_TEST_CAPS_ARCH_LATEST("s390-defaultconsole", "s390x");
-    DO_TEST("s390-panic", QEMU_CAPS_CCW);
-    DO_TEST("s390-panic-missing", QEMU_CAPS_CCW);
-    DO_TEST("s390-panic-no-address", QEMU_CAPS_CCW);
-    DO_TEST("s390-serial", QEMU_CAPS_CCW);
-    DO_TEST("s390-serial-2", QEMU_CAPS_CCW);
-    DO_TEST("s390-serial-console", QEMU_CAPS_CCW);
+    DO_TEST_NOCAPS("s390-panic");
+    DO_TEST_NOCAPS("s390-panic-missing");
+    DO_TEST_NOCAPS("s390-panic-no-address");
+    DO_TEST_NOCAPS("s390-serial");
+    DO_TEST_NOCAPS("s390-serial-2");
+    DO_TEST_NOCAPS("s390-serial-console");
 
     DO_TEST_NOCAPS("pcihole64");
     DO_TEST_NOCAPS("pcihole64-gib");
@@ -1122,12 +1116,10 @@ mymain(void)
     DO_TEST("video-qxl-resolution", QEMU_CAPS_DEVICE_QXL);
     DO_TEST("video-virtio-gpu-secondary", QEMU_CAPS_DEVICE_VIRTIO_GPU);
     DO_TEST("video-virtio-gpu-ccw",
-            QEMU_CAPS_CCW,
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
             QEMU_CAPS_VNC,
             QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW);
     DO_TEST("video-virtio-gpu-ccw-auto",
-            QEMU_CAPS_CCW,
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
             QEMU_CAPS_VNC,
             QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW);
@@ -1170,7 +1162,6 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("user-aliases");
     DO_TEST("input-virtio-ccw",
-            QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_KEYBOARD,
             QEMU_CAPS_VIRTIO_MOUSE,
             QEMU_CAPS_VIRTIO_TABLET,
@@ -1182,10 +1173,8 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("vhost-vsock");
     DO_TEST_CAPS_LATEST("vhost-vsock-auto");
-    DO_TEST("vhost-vsock-ccw", QEMU_CAPS_DEVICE_VHOST_VSOCK,
-            QEMU_CAPS_CCW);
-    DO_TEST("vhost-vsock-ccw-auto", QEMU_CAPS_DEVICE_VHOST_VSOCK,
-            QEMU_CAPS_CCW);
+    DO_TEST("vhost-vsock-ccw", QEMU_CAPS_DEVICE_VHOST_VSOCK);
+    DO_TEST("vhost-vsock-ccw-auto", QEMU_CAPS_DEVICE_VHOST_VSOCK);
     DO_TEST_CAPS_ARCH_LATEST("vhost-vsock-ccw-iommu", "s390x");
 
 

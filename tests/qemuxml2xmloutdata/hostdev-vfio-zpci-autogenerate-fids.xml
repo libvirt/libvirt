@@ -35,9 +35,7 @@
       </address>
     </hostdev>
     <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'>
-        <zpci uid='0x0002' fid='0x00000002'/>
-      </address>
+      <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0000'/>
     </memballoon>
     <panic model='s390'/>
   </devices>
