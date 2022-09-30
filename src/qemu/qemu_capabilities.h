@@ -845,6 +845,10 @@ const char *
 virQEMUCapsCPUFeatureFromQEMU(virArch arch,
                               const char *feature);
 
+void
+virQEMUCapsCPUFeatureFromQEMUInPlace(virArch arch,
+                                     char **feature);
+
 virSEVCapability *
 virQEMUCapsGetSEVCapabilities(virQEMUCaps *qemuCaps);
 

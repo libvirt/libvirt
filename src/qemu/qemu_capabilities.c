@@ -2936,6 +2936,17 @@ virQEMUCapsFetchCPUDefinitions(qemuMonitor *mon,
         }
     }
 
+    for (i = 0; i < defs->ncpus; i++) {
+        qemuMonitorCPUDefInfo *cpu = &defs->cpus[i];
+        char **blocker;
+
+        if (!cpu->blockers)
+            continue;
+
+        for (blocker = cpu->blockers; *blocker; blocker++)
+            virQEMUCapsCPUFeatureFromQEMUInPlace(arch, blocker);
+    }
+
     *cpuDefs = g_steal_pointer(&defs);
     return 0;
 }
@@ -3483,6 +3494,19 @@ virQEMUCapsCPUFeatureFromQEMU(virArch arch,
 }
 
 
+void
+virQEMUCapsCPUFeatureFromQEMUInPlace(virArch arch,
+                                     char **feature)
+{
+    const char *tmp = virQEMUCapsCPUFeatureFromQEMU(arch, *feature);
+
+    if (tmp != *feature) {
+        VIR_FREE(*feature);
+        *feature = g_strdup(tmp);
+    }
+}
+
+
 /**
  * Returns  0 when host CPU model provided by QEMU was filled in qemuCaps,
  *          1 when the caller should fall back to using virCaps *->host.cpu,
@@ -3907,7 +3931,8 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
 
 
 static int
-virQEMUCapsLoadCPUModels(virQEMUCapsAccel *caps,
+virQEMUCapsLoadCPUModels(virArch arch,
+                         virQEMUCapsAccel *caps,
                          xmlXPathContextPtr ctxt,
                          const char *typeStr)
 {
@@ -3978,6 +4003,8 @@ virQEMUCapsLoadCPUModels(virQEMUCapsAccel *caps,
                                      "capabilities cache"));
                     return -1;
                 }
+
+                virQEMUCapsCPUFeatureFromQEMUInPlace(arch, &cpu->blockers[j]);
             }
         }
 
@@ -4072,7 +4099,7 @@ virQEMUCapsLoadAccel(virQEMUCaps *qemuCaps,
     if (virQEMUCapsLoadHostCPUModelInfo(caps, ctxt, typeStr) < 0)
         return -1;
 
-    if (virQEMUCapsLoadCPUModels(caps, ctxt, typeStr) < 0)
+    if (virQEMUCapsLoadCPUModels(qemuCaps->arch, caps, ctxt, typeStr) < 0)
         return -1;
 
     if (virQEMUCapsLoadMachines(caps, ctxt, typeStr) < 0)
@@ -4534,7 +4561,8 @@ virQEMUCapsFormatHostCPUModelInfo(virQEMUCapsAccel *caps,
 
 
 static void
-virQEMUCapsFormatCPUModels(virQEMUCapsAccel *caps,
+virQEMUCapsFormatCPUModels(virArch arch,
+                           virQEMUCapsAccel *caps,
                            virBuffer *buf,
                            const char *typeStr)
 {
@@ -4563,8 +4591,10 @@ virQEMUCapsFormatCPUModels(virQEMUCapsAccel *caps,
             virBufferAddLit(buf, ">\n");
             virBufferAdjustIndent(buf, 2);
 
-            for (j = 0; cpu->blockers[j]; j++)
-                virBufferAsprintf(buf, "<blocker name='%s'/>\n", cpu->blockers[j]);
+            for (j = 0; cpu->blockers[j]; j++) {
+                virBufferAsprintf(buf, "<blocker name='%s'/>\n",
+                                  virQEMUCapsCPUFeatureToQEMU(arch, cpu->blockers[j]));
+            }
 
             virBufferAdjustIndent(buf, -2);
             virBufferAddLit(buf, "</cpu>\n");
@@ -4616,7 +4646,7 @@ virQEMUCapsFormatAccel(virQEMUCaps *qemuCaps,
     const char *typeStr = virQEMUCapsAccelStr(type);
 
     virQEMUCapsFormatHostCPUModelInfo(caps, buf, typeStr);
-    virQEMUCapsFormatCPUModels(caps, buf, typeStr);
+    virQEMUCapsFormatCPUModels(qemuCaps->arch, caps, buf, typeStr);
     virQEMUCapsFormatMachines(caps, buf, typeStr);
 
 }
