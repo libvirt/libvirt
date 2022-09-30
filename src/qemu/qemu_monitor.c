@@ -3633,12 +3633,11 @@ qemuMonitorGetGuestCPU(qemuMonitor *mon,
                        virArch arch,
                        const char *cpuQOMPath,
                        qemuMonitorCPUFeatureTranslationCallback translate,
-                       void *opaque,
                        virCPUData **enabled,
                        virCPUData **disabled)
 {
-    VIR_DEBUG("arch=%s cpuQOMPath=%s translate=%p opaque=%p enabled=%p disabled=%p",
-              virArchToString(arch), cpuQOMPath, translate, opaque, enabled, disabled);
+    VIR_DEBUG("arch=%s cpuQOMPath=%s translate=%p enabled=%p disabled=%p",
+              virArchToString(arch), cpuQOMPath, translate, enabled, disabled);
 
     QEMU_CHECK_MONITOR(mon);
 
@@ -3646,7 +3645,7 @@ qemuMonitorGetGuestCPU(qemuMonitor *mon,
     if (disabled)
         *disabled = NULL;
 
-    return qemuMonitorJSONGetGuestCPU(mon, arch, cpuQOMPath, translate, opaque,
+    return qemuMonitorJSONGetGuestCPU(mon, arch, cpuQOMPath, translate,
                                       enabled, disabled);
 }
 

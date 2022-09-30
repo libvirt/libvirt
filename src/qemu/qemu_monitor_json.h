@@ -605,7 +605,6 @@ qemuMonitorJSONGetGuestCPU(qemuMonitor *mon,
                            virArch arch,
                            const char *cpuQOMPath,
                            qemuMonitorCPUFeatureTranslationCallback translate,
-                           void *opaque,
                            virCPUData **enabled,
                            virCPUData **disabled);
 

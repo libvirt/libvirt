@@ -4295,16 +4295,6 @@ qemuProcessVerifyCPUFeatures(virDomainDef *def,
 }
 
 
-static const char *
-qemuProcessTranslateCPUFeatures(const char *name,
-                                void *opaque)
-{
-    virQEMUCaps *qemuCaps = opaque;
-
-    return virQEMUCapsCPUFeatureFromQEMU(qemuCaps, name);
-}
-
-
 /* returns the QOM path to the first vcpu */
 static const char *
 qemuProcessGetVCPUQOMPath(virDomainObj *vm)
@@ -4349,7 +4339,7 @@ qemuProcessFetchGuestCPU(virDomainObj *vm,
         rc = qemuMonitorGetGuestCPU(priv->mon,
                                     vm->def->os.arch,
                                     cpuQOMPath,
-                                    qemuProcessTranslateCPUFeatures, priv->qemuCaps,
+                                    virQEMUCapsCPUFeatureFromQEMU,
                                     &dataEnabled, &dataDisabled);
     } else {
         rc = qemuMonitorGetGuestCPUx86(priv->mon, cpuQOMPath, &dataEnabled, &dataDisabled);

@@ -6111,7 +6111,7 @@ qemuBuildCpuModelArgStr(virQEMUDriver *driver,
 
     for (i = 0; i < cpu->nfeatures; i++) {
         const char *featname =
-            virQEMUCapsCPUFeatureToQEMU(qemuCaps, cpu->features[i].name);
+            virQEMUCapsCPUFeatureToQEMU(def->os.arch, cpu->features[i].name);
         switch ((virCPUFeaturePolicy) cpu->features[i].policy) {
         case VIR_CPU_FEATURE_FORCE:
         case VIR_CPU_FEATURE_REQUIRE:

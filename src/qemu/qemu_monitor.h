@@ -1219,14 +1219,13 @@ int qemuMonitorGetGuestCPUx86(qemuMonitor *mon,
                               virCPUData **data,
                               virCPUData **disabled);
 
-typedef const char *(*qemuMonitorCPUFeatureTranslationCallback)(const char *name,
-                                                                void *opaque);
+typedef const char *(*qemuMonitorCPUFeatureTranslationCallback)(virArch arch,
+                                                                const char *name);
 
 int qemuMonitorGetGuestCPU(qemuMonitor *mon,
                            virArch arch,
                            const char *cpuQOMPath,
                            qemuMonitorCPUFeatureTranslationCallback translate,
-                           void *opaque,
                            virCPUData **enabled,
                            virCPUData **disabled);
 

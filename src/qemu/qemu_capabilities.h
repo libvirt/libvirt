@@ -838,11 +838,11 @@ bool virQEMUCapsCPUFilterFeatures(const char *name,
                                   void *opaque);
 
 const char *
-virQEMUCapsCPUFeatureToQEMU(virQEMUCaps *qemuCaps,
+virQEMUCapsCPUFeatureToQEMU(virArch arch,
                             const char *feature);
 
 const char *
-virQEMUCapsCPUFeatureFromQEMU(virQEMUCaps *qemuCaps,
+virQEMUCapsCPUFeatureFromQEMU(virArch arch,
                               const char *feature);
 
 virSEVCapability *

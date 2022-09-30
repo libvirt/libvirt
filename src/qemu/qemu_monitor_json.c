@@ -6781,7 +6781,6 @@ static int
 qemuMonitorJSONGetCPUData(qemuMonitor *mon,
                           const char *cpuQOMPath,
                           qemuMonitorCPUFeatureTranslationCallback translate,
-                          void *opaque,
                           virCPUData *data)
 {
     qemuMonitorJSONObjectProperty prop = { .type = QEMU_MONITOR_OBJECT_PROPERTY_BOOLEAN };
@@ -6801,7 +6800,7 @@ qemuMonitorJSONGetCPUData(qemuMonitor *mon,
             continue;
 
         if (translate)
-            name = translate(name, opaque);
+            name = translate(data->arch, name);
 
         if (virCPUDataAddFeature(data, name) < 0)
             return -1;
@@ -6815,7 +6814,6 @@ static int
 qemuMonitorJSONGetCPUDataDisabled(qemuMonitor *mon,
                                   const char *cpuQOMPath,
                                   qemuMonitorCPUFeatureTranslationCallback translate,
-                                  void *opaque,
                                   virCPUData *data)
 {
     g_auto(GStrv) props = NULL;
@@ -6829,7 +6827,7 @@ qemuMonitorJSONGetCPUDataDisabled(qemuMonitor *mon,
         const char *name = *p;
 
         if (translate)
-            name = translate(name, opaque);
+            name = translate(data->arch, name);
 
         if (virCPUDataAddFeature(data, name) < 0)
             return -1;
@@ -6859,7 +6857,6 @@ qemuMonitorJSONGetGuestCPU(qemuMonitor *mon,
                            virArch arch,
                            const char *cpuQOMPath,
                            qemuMonitorCPUFeatureTranslationCallback translate,
-                           void *opaque,
                            virCPUData **enabled,
                            virCPUData **disabled)
 {
@@ -6870,11 +6867,11 @@ qemuMonitorJSONGetGuestCPU(qemuMonitor *mon,
         !(cpuDisabled = virCPUDataNew(arch)))
         return -1;
 
-    if (qemuMonitorJSONGetCPUData(mon, cpuQOMPath, translate, opaque, cpuEnabled) < 0)
+    if (qemuMonitorJSONGetCPUData(mon, cpuQOMPath, translate, cpuEnabled) < 0)
         return -1;
 
     if (disabled &&
-        qemuMonitorJSONGetCPUDataDisabled(mon, cpuQOMPath, translate, opaque, cpuDisabled) < 0)
+        qemuMonitorJSONGetCPUDataDisabled(mon, cpuQOMPath, translate, cpuDisabled) < 0)
         return -1;
 
     *enabled = g_steal_pointer(&cpuEnabled);

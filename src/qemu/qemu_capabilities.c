@@ -3108,7 +3108,7 @@ virQEMUCapsGetCPUFeatures(virQEMUCaps *qemuCaps,
         if (migratable && prop->migratable == VIR_TRISTATE_BOOL_NO)
             continue;
 
-        list[n++] = g_strdup(virQEMUCapsCPUFeatureFromQEMU(qemuCaps, prop->name));
+        list[n++] = g_strdup(virQEMUCapsCPUFeatureFromQEMU(qemuCaps->arch, prop->name));
     }
 
     *features = g_steal_pointer(&list);
@@ -3434,14 +3434,14 @@ virQEMUCapsCPUFeatureTranslationTable virQEMUCapsCPUFeaturesX86[] = {
 
 
 static const char *
-virQEMUCapsCPUFeatureTranslate(virQEMUCaps *qemuCaps,
+virQEMUCapsCPUFeatureTranslate(virArch arch,
                                const char *feature,
                                bool reversed)
 {
     virQEMUCapsCPUFeatureTranslationTable *table = NULL;
     virQEMUCapsCPUFeatureTranslationTable *entry;
 
-    if (ARCH_IS_X86(qemuCaps->arch))
+    if (ARCH_IS_X86(arch))
         table = virQEMUCapsCPUFeaturesX86;
 
     if (!table ||
@@ -3460,18 +3460,18 @@ virQEMUCapsCPUFeatureTranslate(virQEMUCaps *qemuCaps,
 
 
 const char *
-virQEMUCapsCPUFeatureToQEMU(virQEMUCaps *qemuCaps,
+virQEMUCapsCPUFeatureToQEMU(virArch arch,
                             const char *feature)
 {
-    return virQEMUCapsCPUFeatureTranslate(qemuCaps, feature, false);
+    return virQEMUCapsCPUFeatureTranslate(arch, feature, false);
 }
 
 
 const char *
-virQEMUCapsCPUFeatureFromQEMU(virQEMUCaps *qemuCaps,
+virQEMUCapsCPUFeatureFromQEMU(virArch arch,
                               const char *feature)
 {
-    return virQEMUCapsCPUFeatureTranslate(qemuCaps, feature, true);
+    return virQEMUCapsCPUFeatureTranslate(arch, feature, true);
 }
 
 
@@ -3510,7 +3510,7 @@ virQEMUCapsInitCPUModelS390(virQEMUCaps *qemuCaps,
     for (i = 0; i < modelInfo->nprops; i++) {
         virCPUFeatureDef *feature = cpu->features + cpu->nfeatures;
         qemuMonitorCPUProperty *prop = modelInfo->props + i;
-        const char *name = virQEMUCapsCPUFeatureFromQEMU(qemuCaps, prop->name);
+        const char *name = virQEMUCapsCPUFeatureFromQEMU(qemuCaps->arch, prop->name);
 
         if (prop->type != QEMU_MONITOR_CPU_PROPERTY_BOOLEAN)
             continue;
@@ -3545,7 +3545,7 @@ virQEMUCapsGetCPUModelX86Data(virQEMUCaps *qemuCaps,
 
     for (i = 0; i < model->nprops; i++) {
         qemuMonitorCPUProperty *prop = model->props + i;
-        const char *name = virQEMUCapsCPUFeatureFromQEMU(qemuCaps, prop->name);
+        const char *name = virQEMUCapsCPUFeatureFromQEMU(qemuCaps->arch, prop->name);
 
         switch (prop->type) {
         case QEMU_MONITOR_CPU_PROPERTY_BOOLEAN:
