@@ -19,8 +19,30 @@ v8.9.0 (unreleased)
 
 * **Improvements**
 
+  * Add ``vendor`` attribute for CPU models in domain capabilities
+
+    Users can now see the vendor of each CPU model in domain capabilities and
+    use it, e.g., for filtering usable CPU models based on host CPU vendor.
+
+  * virsh: Add ``--model`` option for ``hypervisor-cpu-baseline``
+
+    This is a shortcut for calling ``hypervisor-cpu-baseline`` with a single
+    CPU model and no additional features. It can be used for determining which
+    features block a particular CPU model from being usable.
+
+  * Improved documentation of CPU ``usable`` attribute in domain capabilities
+
 * **Bug fixes**
 
+  * qemu: Disable all blocker features in CPU baseline
+
+    Three years ago QEMU renamed some CPU features (mostly those containing
+    an underscore). When such renamed feature was reported by QEMU as blocking
+    usability of a CPU model, we would fail to explicitly disable it when
+    creating a baseline CPU definition using this model. This bug did not have
+    any functional impact when the default ``check='partial'`` attribute was
+    used for guest CPU definition in domain XML, but it could have caused
+    failures to start a domain with ``check='full'`` in some cases.
 
 v8.8.0 (2022-10-03)
 ===================
