@@ -11,52 +11,52 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y eatmydata && \
     eatmydata apt-get dist-upgrade -y && \
     eatmydata apt-get install --no-install-recommends -y \
-            augeas-lenses \
-            augeas-tools \
-            bash-completion \
-            ca-certificates \
-            ccache \
-            codespell \
-            cpp \
-            diffutils \
-            dwarves \
-            ebtables \
-            flake8 \
-            gettext \
-            git \
-            grep \
-            iproute2 \
-            iptables \
-            kmod \
-            libc-dev-bin \
-            libxml2-utils \
-            locales \
-            lvm2 \
-            make \
-            meson \
-            nfs-common \
-            ninja-build \
-            numad \
-            open-iscsi \
-            perl-base \
-            pkgconf \
-            policykit-1 \
-            python3 \
-            python3-docutils \
-            qemu-utils \
-            scrub \
-            sed \
-            xsltproc && \
+                      augeas-lenses \
+                      augeas-tools \
+                      bash-completion \
+                      ca-certificates \
+                      ccache \
+                      codespell \
+                      cpp \
+                      diffutils \
+                      dwarves \
+                      ebtables \
+                      flake8 \
+                      gettext \
+                      git \
+                      grep \
+                      iproute2 \
+                      iptables \
+                      kmod \
+                      libc-dev-bin \
+                      libxml2-utils \
+                      locales \
+                      lvm2 \
+                      make \
+                      meson \
+                      nfs-common \
+                      ninja-build \
+                      numad \
+                      open-iscsi \
+                      perl-base \
+                      pkgconf \
+                      policykit-1 \
+                      python3 \
+                      python3-docutils \
+                      qemu-utils \
+                      scrub \
+                      sed \
+                      xsltproc && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \
     sed -Ei 's,^# (en_US\.UTF-8 .*)$,\1,' /etc/locale.gen && \
     dpkg-reconfigure locales
 
+ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 ENV LANG "en_US.UTF-8"
 ENV MAKE "/usr/bin/make"
 ENV NINJA "/usr/bin/ninja"
 ENV PYTHON "/usr/bin/python3"
-ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     dpkg --add-architecture mipsel && \
@@ -64,39 +64,39 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     eatmydata apt-get dist-upgrade -y && \
     eatmydata apt-get install --no-install-recommends -y dpkg-dev && \
     eatmydata apt-get install --no-install-recommends -y \
-            gcc-mipsel-linux-gnu \
-            libacl1-dev:mipsel \
-            libapparmor-dev:mipsel \
-            libattr1-dev:mipsel \
-            libaudit-dev:mipsel \
-            libblkid-dev:mipsel \
-            libc6-dev:mipsel \
-            libcap-ng-dev:mipsel \
-            libcurl4-gnutls-dev:mipsel \
-            libdevmapper-dev:mipsel \
-            libfuse-dev:mipsel \
-            libglib2.0-dev:mipsel \
-            libglusterfs-dev:mipsel \
-            libgnutls28-dev:mipsel \
-            libiscsi-dev:mipsel \
-            libnl-3-dev:mipsel \
-            libnl-route-3-dev:mipsel \
-            libnuma-dev:mipsel \
-            libparted-dev:mipsel \
-            libpcap0.8-dev:mipsel \
-            libpciaccess-dev:mipsel \
-            librbd-dev:mipsel \
-            libreadline-dev:mipsel \
-            libsanlock-dev:mipsel \
-            libsasl2-dev:mipsel \
-            libselinux1-dev:mipsel \
-            libssh-gcrypt-dev:mipsel \
-            libssh2-1-dev:mipsel \
-            libtirpc-dev:mipsel \
-            libudev-dev:mipsel \
-            libxml2-dev:mipsel \
-            libyajl-dev:mipsel \
-            systemtap-sdt-dev:mipsel && \
+                      gcc-mipsel-linux-gnu \
+                      libacl1-dev:mipsel \
+                      libapparmor-dev:mipsel \
+                      libattr1-dev:mipsel \
+                      libaudit-dev:mipsel \
+                      libblkid-dev:mipsel \
+                      libc6-dev:mipsel \
+                      libcap-ng-dev:mipsel \
+                      libcurl4-gnutls-dev:mipsel \
+                      libdevmapper-dev:mipsel \
+                      libfuse-dev:mipsel \
+                      libglib2.0-dev:mipsel \
+                      libglusterfs-dev:mipsel \
+                      libgnutls28-dev:mipsel \
+                      libiscsi-dev:mipsel \
+                      libnl-3-dev:mipsel \
+                      libnl-route-3-dev:mipsel \
+                      libnuma-dev:mipsel \
+                      libparted-dev:mipsel \
+                      libpcap0.8-dev:mipsel \
+                      libpciaccess-dev:mipsel \
+                      librbd-dev:mipsel \
+                      libreadline-dev:mipsel \
+                      libsanlock-dev:mipsel \
+                      libsasl2-dev:mipsel \
+                      libselinux1-dev:mipsel \
+                      libssh-gcrypt-dev:mipsel \
+                      libssh2-1-dev:mipsel \
+                      libtirpc-dev:mipsel \
+                      libudev-dev:mipsel \
+                      libxml2-dev:mipsel \
+                      libyajl-dev:mipsel \
+                      systemtap-sdt-dev:mipsel && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \
     mkdir -p /usr/local/share/meson/cross && \

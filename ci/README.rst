@@ -6,6 +6,13 @@ This document provides some information related to the CI capabilities for the
 libvirt project.
 
 
+GitLab CI tuning
+================
+
+The behaviour of GitLab CI can be tuned through a number of variables
+which can be set at push time, or through the UI. See ``ci/gitlab.yml``
+for further details.
+
 Cirrus CI integration
 =====================
 

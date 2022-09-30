@@ -8,23 +8,71 @@
 # Variables that can be set to control the behaviour of
 # pipelines that are run
 #
-#  - RUN_ALL_CONTAINERS - build all containers
-#    even if they don't have any changes detected
+#  - RUN_PIPELINE - force creation of a CI pipeline when
+#    pushing to a branch in a forked repository. Official
+#    CI pipelines are triggered when merge requests are
+#    created/updated. Setting this variable to a non-empty
+#    value allows CI testing prior to opening a merge request.
+#
+#  - RUN_CONTAINER_BUILDS - CI pipelines in upstream only
+#    publish containers if CI file changes are detected.
+#    Setting this variable to a non-empty value will force
+#    re-publishing, even when no file changes are detected.
+#    Typically to use from a scheduled job once a month.
+#
+#  - RUN_UPSTREAM_NAMESPACE - the upstream namespace is
+#    configured to default to 'libvirt'. When testing
+#    changes to CI it might be useful to use a different
+#    upstream. Setting this variable will override the
+#    namespace considered to be upstream.
 #
 # These can be set as git push options
 #
-#  $ git push -o ci.variable=RUN_ALL_CONTAINERS=1
+#  $ git push -o ci.variable=RUN_PIPELINE=1
 #
 # Aliases can be set for common usage
 #
-#  $ git config --local alias.push-all-ctr "push -o ci.variable=RUN_ALL_CONTAINERS=1"
+#  $ git config --local alias.push-ci "push -o ci.variable=RUN_PIPELINE=1"
 #
 # Allowing the less verbose invocation
 #
-#  $ git push-all-ctr
+#  $ git push-ci
 #
 # Pipeline variables can also be set in the repository
 # pipeline config globally, or set against scheduled pipelines
+
+
+variables:
+  RUN_UPSTREAM_NAMESPACE: libvirt
+
+
+workflow:
+  rules:
+    # upstream+forks: Avoid duplicate pipelines on pushes, if a MR is open
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_OPEN_MERGE_REQUESTS'
+      when: never
+
+    # upstream+forks: Avoid pipelines on tag pushes
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_TAG'
+      when: never
+
+    # upstream+forks: Allow pipelines in scenarios we've figured out job rules
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|merge_request_event|api|web|schedule)$/'
+      when: always
+
+    # upstream+forks: Avoid all other pipelines
+    - when: never
+
+
+debug:
+  image: docker.io/library/alpine:3
+  stage: sanity_checks
+  needs: []
+  script:
+    - printenv | sort
+  rules:
+    - if: '$RUN_DEBUG'
+      when: always
 
 include:
   - local: '/ci/gitlab/container-templates.yml'

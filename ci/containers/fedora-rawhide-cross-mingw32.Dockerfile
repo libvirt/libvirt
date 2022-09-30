@@ -19,66 +19,66 @@ exec "$@"' > /usr/bin/nosync && \
     chmod +x /usr/bin/nosync && \
     nosync dnf distro-sync -y && \
     nosync dnf install -y \
-        augeas \
-        bash-completion \
-        ca-certificates \
-        ccache \
-        codespell \
-        cpp \
-        cppi \
-        diffutils \
-        dwarves \
-        ebtables \
-        firewalld-filesystem \
-        git \
-        glibc-langpack-en \
-        grep \
-        iproute \
-        iproute-tc \
-        iptables \
-        iscsi-initiator-utils \
-        kmod \
-        libxml2 \
-        libxslt \
-        lvm2 \
-        make \
-        meson \
-        nfs-utils \
-        ninja-build \
-        numad \
-        perl-base \
-        polkit \
-        python3 \
-        python3-docutils \
-        python3-flake8 \
-        qemu-img \
-        rpcgen \
-        rpm-build \
-        scrub \
-        sed \
-        systemd-rpm-macros && \
+               augeas \
+               bash-completion \
+               ca-certificates \
+               ccache \
+               codespell \
+               cpp \
+               cppi \
+               diffutils \
+               dwarves \
+               ebtables \
+               firewalld-filesystem \
+               git \
+               glibc-langpack-en \
+               grep \
+               iproute \
+               iproute-tc \
+               iptables \
+               iscsi-initiator-utils \
+               kmod \
+               libxml2 \
+               libxslt \
+               lvm2 \
+               make \
+               meson \
+               nfs-utils \
+               ninja-build \
+               numad \
+               perl-base \
+               polkit \
+               python3 \
+               python3-docutils \
+               python3-flake8 \
+               qemu-img \
+               rpcgen \
+               rpm-build \
+               scrub \
+               sed \
+               systemd-rpm-macros && \
     nosync dnf autoremove -y && \
     nosync dnf clean all -y
 
+ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 ENV LANG "en_US.UTF-8"
 ENV MAKE "/usr/bin/make"
 ENV NINJA "/usr/bin/ninja"
 ENV PYTHON "/usr/bin/python3"
-ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 
 RUN nosync dnf install -y \
-        mingw32-curl \
-        mingw32-dlfcn \
-        mingw32-gcc \
-        mingw32-gettext \
-        mingw32-glib2 \
-        mingw32-gnutls \
-        mingw32-headers \
-        mingw32-libssh2 \
-        mingw32-libxml2 \
-        mingw32-pkg-config \
-        mingw32-portablexdr \
-        mingw32-readline && \
+               mingw32-curl \
+               mingw32-dlfcn \
+               mingw32-gcc \
+               mingw32-gettext \
+               mingw32-glib2 \
+               mingw32-gnutls \
+               mingw32-headers \
+               mingw32-libssh2 \
+               mingw32-libxml2 \
+               mingw32-pkg-config \
+               mingw32-portablexdr \
+               mingw32-readline && \
     nosync dnf clean all -y && \
     rpm -qa | sort > /packages.txt && \
     mkdir -p /usr/libexec/ccache-wrappers && \

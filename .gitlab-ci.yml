@@ -20,15 +20,12 @@ include:
   - '/ci/integration.yml'
 
 .native_build_job:
-  extends: .gitlab_native_build_job
   cache:
     paths:
       - ccache/
     key: "$CI_JOB_NAME"
-  before_script:
-    - *script_variables
-    - cat /packages.txt
   script:
+    - *script_variables
     - meson setup build --werror $MESON_ARGS || (cat build/meson-logs/meson-log.txt && exit 1)
     - meson dist -C build --no-tests
     - if test -x /usr/bin/rpmbuild && test "$RPM" != "skip";
@@ -40,33 +37,44 @@ include:
         meson test -C build --no-suite syntax-check --print-errorlogs;
       fi
 
+.native_build_job_prebuilt_env:
+  extends:
+    - .native_build_job
+    - .gitlab_native_build_job_prebuilt_env
+
+.native_build_job_local_env:
+  extends:
+    - .native_build_job
+    - .gitlab_native_build_job_local_env
+
 .cross_build_job:
-  extends: .gitlab_cross_build_job
   cache:
     paths:
       - ccache/
     key: "$CI_JOB_NAME"
-  before_script:
-    - *script_variables
-    - cat /packages.txt
   script:
+    - *script_variables
     - meson setup build --werror $MESON_OPTS || (cat build/meson-logs/meson-log.txt && exit 1)
     - meson compile -C build
     - if test "$CROSS" = "i686" ; then meson test -C build --no-suite syntax-check --print-errorlogs ; fi
+
+.cross_build_job_prebuilt_env:
+  extends:
+    - .cross_build_job
+    - .gitlab_cross_build_job_prebuilt_env
+
+.cross_build_job_local_env:
+  extends:
+    - .cross_build_job
+    - .gitlab_cross_build_job_local_env
 
 
 # This artifact published by this job is downloaded by libvirt.org to
 # be deployed to the web root:
 #    https://gitlab.com/libvirt/libvirt/-/jobs/artifacts/master/download?job=website
-website:
-  stage: builds
-  image: $CI_REGISTRY_IMAGE/ci-almalinux-8:latest
-  needs:
-    - job: x86_64-almalinux-8-container
-      optional: true
-  before_script:
-    - *script_variables
+.website_job:
   script:
+    - *script_variables
     - meson setup build --werror -Dsystem=true || (cat build/meson-logs/meson-log.txt && exit 1)
     - DESTDIR=$(pwd)/install ninja -C build install-web
     - mv install/usr/share/doc/libvirt/html/ website
@@ -78,32 +86,67 @@ website:
     paths:
       - website
 
-
-codestyle:
-  stage: sanity_checks
-  image: $CI_REGISTRY_IMAGE/ci-opensuse-leap-153:latest
+website_prebuilt_env:
+  extends:
+    - .website_job
+    - .gitlab_native_build_job_prebuilt_env
   needs:
-    - job: x86_64-opensuse-leap-153-container
+    - job: x86_64-almalinux-8-container
       optional: true
-  before_script:
-    - *script_variables
+  variables:
+    NAME: almalinux-8
+
+website_local_env:
+  extends:
+    - .website_job
+    - .gitlab_native_build_job_local_env
+  variables:
+    IMAGE: docker.io/library/almalinux:8
+    NAME: almalinux-8
+
+
+.codestyle_job:
+  stage: sanity_checks
   script:
+    - *script_variables
     - meson setup build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
     - ninja -C build libvirt-pot-dep
     - meson test -C build --suite syntax-check --no-rebuild --print-errorlogs
+
+codestyle_prebuilt_env:
+  extends:
+    - .codestyle_job
+    - .gitlab_native_build_job_prebuilt_env
+  needs:
+    - job: x86_64-opensuse-leap-153-container
+      optional: true
+  variables:
+    NAME: opensuse-leap-153
+
+codestyle_local_env:
+  extends:
+    - .codestyle_job
+    - .gitlab_native_build_job_local_env
+  variables:
+    IMAGE: registry.opensuse.org/opensuse/leap:15.3
+    NAME: opensuse-leap-153
 
 
 # This artifact published by this job is downloaded to push to Weblate
 # for translation usage:
 #    https://gitlab.com/libvirt/libvirt/-/jobs/artifacts/master/download?job=potfile
 potfile:
+  image: $CI_REGISTRY/$RUN_UPSTREAM_NAMESPACE/libvirt/ci-$NAME:latest
   stage: builds
-  image: $CI_REGISTRY_IMAGE/ci-almalinux-8:latest
+  before_script:
+    - cat /packages.txt
   needs:
     - job: x86_64-almalinux-8-container
       optional: true
   rules:
-    - if: "$CI_COMMIT_BRANCH == 'master'"
+    - if: '$CI_PROJECT_NAMESPACE == $RUN_UPSTREAM_NAMESPACE && $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: on_success
+    - when: never
   before_script:
     - *script_variables
   script:
@@ -121,11 +164,13 @@ potfile:
 
 # Coverity job that is run only by schedules
 coverity:
-  image: $CI_REGISTRY_IMAGE/ci-almalinux-8:latest
+  image: $CI_REGISTRY/$RUN_UPSTREAM_NAMESPACE/libvirt/ci-$NAME:latest
+  stage: builds
   needs:
     - job: x86_64-almalinux-8-container
       optional: true
-  stage: builds
+  before_script:
+    - cat /packages.txt
   script:
     - curl https://scan.coverity.com/download/linux64 --form project=$COVERITY_SCAN_PROJECT_NAME --form token=$COVERITY_SCAN_TOKEN -o /tmp/cov-analysis-linux64.tgz
     - tar xfz /tmp/cov-analysis-linux64.tgz
@@ -133,5 +178,11 @@ coverity:
     - cov-analysis-linux64-*/bin/cov-build --dir cov-int meson compile -C build
     - tar cfz cov-int.tar.gz cov-int
     - curl https://scan.coverity.com/builds?project=$COVERITY_SCAN_PROJECT_NAME --form token=$COVERITY_SCAN_TOKEN --form email=$GITLAB_USER_EMAIL --form file=@cov-int.tar.gz --form version="$(git describe --tags)" --form description="$(git describe --tags) / $CI_COMMIT_TITLE / $CI_COMMIT_REF_NAME:$CI_PIPELINE_ID"
+  variables:
+    NAME: almalinux-8
   rules:
-    - if: "$CI_PIPELINE_SOURCE == 'schedule' && $COVERITY_SCAN_PROJECT_NAME && $COVERITY_SCAN_TOKEN"
+    - if: '$COVERITY_SCAN_PROJECT_NAME == null || $COVERITY_SCAN_TOKEN == null'
+      when: never
+    - if: '$CI_PROJECT_NAMESPACE == $RUN_UPSTREAM_NAMESPACE && $CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH'
+      when: on_success
+    - when: never

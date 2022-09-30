@@ -5,17 +5,13 @@
 # https://gitlab.com/libvirt/libvirt-ci
 
 
-# For upstream
+# We want to publish containers with tag 'latest':
 #
-#   - Push to default branch:
-#       -> rebuild if dockerfile changed, no cache
-#   - Otherwise
-#       -> rebuild if RUN_ALL_CONTAINERS=1, no cache,
-#          to pick up new published distro packages or
-#          recover from deleted tag
+#  - In upstream, for push to default branch with CI changes.
+#  - In upstream, on request, for scheduled/manual pipelines
+#    against default branch
 #
-# For forks
-#   - Always rebuild, with cache
+# Note: never publish from merge requests since they have non-committed code
 #
 .container_job:
   image: docker:stable
@@ -25,33 +21,24 @@
     - docker:dind
   before_script:
     - export TAG="$CI_REGISTRY_IMAGE/ci-$NAME:latest"
-    - export COMMON_TAG="$CI_REGISTRY/libvirt/libvirt/ci-$NAME:latest"
     - docker info
     - docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
   script:
-    - if test $CI_PROJECT_NAMESPACE = "libvirt";
-      then
-        docker build --tag "$TAG" -f "ci/containers/$NAME.Dockerfile" ci/containers ;
-      else
-        docker pull "$TAG" || docker pull "$COMMON_TAG" || true ;
-        docker build --cache-from "$TAG" --cache-from "$COMMON_TAG" --tag "$TAG" -f "ci/containers/$NAME.Dockerfile" ci/containers ;
-      fi
+    - docker build --tag "$TAG" -f "ci/containers/$NAME.Dockerfile" ci/containers ;
     - docker push "$TAG"
   after_script:
     - docker logout
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - if: '$CI_PROJECT_NAMESPACE == "libvirt" && $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    # upstream: publish containers if there were CI changes on the default branch
+    - if: '$CI_PROJECT_NAMESPACE == $RUN_UPSTREAM_NAMESPACE && $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       when: on_success
       changes:
-       - ci/gitlab/container-templates.yml
-       - ci/containers/$NAME.Dockerfile
-    - if: '$CI_PROJECT_NAMESPACE == "libvirt" && $RUN_ALL_CONTAINERS == "1"'
+        - ci/gitlab/container-templates.yml
+        - ci/containers/$NAME.Dockerfile
+
+    # upstream: allow force re-publishing containers on default branch for web/api/scheduled pipelines
+    - if: '$CI_PROJECT_NAMESPACE == $RUN_UPSTREAM_NAMESPACE && $CI_PIPELINE_SOURCE =~ /(web|api|schedule)/ && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $RUN_CONTAINER_BUILDS == "1"'
       when: on_success
-    - if: '$CI_PROJECT_NAMESPACE == "libvirt"'
-      when: never
-    - if: '$JOB_OPTIONAL'
-      when: manual
-      allow_failure: true
-    - when: on_success
+
+    # upstream+forks: that's all folks
+    - when: never

@@ -11,52 +11,52 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y eatmydata && \
     eatmydata apt-get dist-upgrade -y && \
     eatmydata apt-get install --no-install-recommends -y \
-            augeas-lenses \
-            augeas-tools \
-            bash-completion \
-            ca-certificates \
-            ccache \
-            codespell \
-            cpp \
-            diffutils \
-            dwarves \
-            ebtables \
-            flake8 \
-            gettext \
-            git \
-            grep \
-            iproute2 \
-            iptables \
-            kmod \
-            libc-dev-bin \
-            libxml2-utils \
-            locales \
-            lvm2 \
-            make \
-            meson \
-            nfs-common \
-            ninja-build \
-            numad \
-            open-iscsi \
-            perl-base \
-            pkgconf \
-            policykit-1 \
-            python3 \
-            python3-docutils \
-            qemu-utils \
-            scrub \
-            sed \
-            xsltproc && \
+                      augeas-lenses \
+                      augeas-tools \
+                      bash-completion \
+                      ca-certificates \
+                      ccache \
+                      codespell \
+                      cpp \
+                      diffutils \
+                      dwarves \
+                      ebtables \
+                      flake8 \
+                      gettext \
+                      git \
+                      grep \
+                      iproute2 \
+                      iptables \
+                      kmod \
+                      libc-dev-bin \
+                      libxml2-utils \
+                      locales \
+                      lvm2 \
+                      make \
+                      meson \
+                      nfs-common \
+                      ninja-build \
+                      numad \
+                      open-iscsi \
+                      perl-base \
+                      pkgconf \
+                      policykit-1 \
+                      python3 \
+                      python3-docutils \
+                      qemu-utils \
+                      scrub \
+                      sed \
+                      xsltproc && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \
     sed -Ei 's,^# (en_US\.UTF-8 .*)$,\1,' /etc/locale.gen && \
     dpkg-reconfigure locales
 
+ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 ENV LANG "en_US.UTF-8"
 ENV MAKE "/usr/bin/make"
 ENV NINJA "/usr/bin/ninja"
 ENV PYTHON "/usr/bin/python3"
-ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     dpkg --add-architecture armhf && \
@@ -64,40 +64,40 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     eatmydata apt-get dist-upgrade -y && \
     eatmydata apt-get install --no-install-recommends -y dpkg-dev && \
     eatmydata apt-get install --no-install-recommends -y \
-            gcc-arm-linux-gnueabihf \
-            libacl1-dev:armhf \
-            libapparmor-dev:armhf \
-            libattr1-dev:armhf \
-            libaudit-dev:armhf \
-            libblkid-dev:armhf \
-            libc6-dev:armhf \
-            libcap-ng-dev:armhf \
-            libcurl4-gnutls-dev:armhf \
-            libdevmapper-dev:armhf \
-            libfuse-dev:armhf \
-            libglib2.0-dev:armhf \
-            libglusterfs-dev:armhf \
-            libgnutls28-dev:armhf \
-            libiscsi-dev:armhf \
-            libnl-3-dev:armhf \
-            libnl-route-3-dev:armhf \
-            libnuma-dev:armhf \
-            libparted-dev:armhf \
-            libpcap0.8-dev:armhf \
-            libpciaccess-dev:armhf \
-            librbd-dev:armhf \
-            libreadline-dev:armhf \
-            libsanlock-dev:armhf \
-            libsasl2-dev:armhf \
-            libselinux1-dev:armhf \
-            libssh-gcrypt-dev:armhf \
-            libssh2-1-dev:armhf \
-            libtirpc-dev:armhf \
-            libudev-dev:armhf \
-            libxen-dev:armhf \
-            libxml2-dev:armhf \
-            libyajl-dev:armhf \
-            systemtap-sdt-dev:armhf && \
+                      gcc-arm-linux-gnueabihf \
+                      libacl1-dev:armhf \
+                      libapparmor-dev:armhf \
+                      libattr1-dev:armhf \
+                      libaudit-dev:armhf \
+                      libblkid-dev:armhf \
+                      libc6-dev:armhf \
+                      libcap-ng-dev:armhf \
+                      libcurl4-gnutls-dev:armhf \
+                      libdevmapper-dev:armhf \
+                      libfuse-dev:armhf \
+                      libglib2.0-dev:armhf \
+                      libglusterfs-dev:armhf \
+                      libgnutls28-dev:armhf \
+                      libiscsi-dev:armhf \
+                      libnl-3-dev:armhf \
+                      libnl-route-3-dev:armhf \
+                      libnuma-dev:armhf \
+                      libparted-dev:armhf \
+                      libpcap0.8-dev:armhf \
+                      libpciaccess-dev:armhf \
+                      librbd-dev:armhf \
+                      libreadline-dev:armhf \
+                      libsanlock-dev:armhf \
+                      libsasl2-dev:armhf \
+                      libselinux1-dev:armhf \
+                      libssh-gcrypt-dev:armhf \
+                      libssh2-1-dev:armhf \
+                      libtirpc-dev:armhf \
+                      libudev-dev:armhf \
+                      libxen-dev:armhf \
+                      libxml2-dev:armhf \
+                      libyajl-dev:armhf \
+                      systemtap-sdt-dev:armhf && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \
     mkdir -p /usr/local/share/meson/cross && \

@@ -10,9 +10,17 @@ check-dco:
   needs: []
   image: registry.gitlab.com/libvirt/libvirt-ci/check-dco:master
   script:
-    - /check-dco libvirt
-  except:
-    variables:
-      - $CI_PROJECT_NAMESPACE == 'libvirt'
+    - /check-dco "$RUN_UPSTREAM_NAMESPACE"
+  rules:
+    # upstream+forks: Run pipelines on MR
+    - if: '$CI_PIPELINE_SOURCE =~ "merge_request_event"'
+      when: on_success
+
+    # forks: pushes to branches with pipeline requested
+    - if: '$CI_PROJECT_NAMESPACE != $RUN_UPSTREAM_NAMESPACE && $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $RUN_PIPELINE'
+      when: on_success
+
+    # upstream+forks: that's all folks
+    - when: never
   variables:
     GIT_DEPTH: 1000

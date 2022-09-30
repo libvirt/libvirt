@@ -71,7 +71,7 @@ RUN zypper dist-upgrade -y && \
            polkit \
            python3-base \
            python3-docutils \
-           python3-flake8 \
+           python39-flake8 \
            qemu-tools \
            readline-devel \
            rpcgen \
@@ -90,8 +90,8 @@ RUN zypper dist-upgrade -y && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/clang && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/gcc
 
+ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 ENV LANG "en_US.UTF-8"
 ENV MAKE "/usr/bin/make"
 ENV NINJA "/usr/bin/ninja"
 ENV PYTHON "/usr/bin/python3"
-ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
