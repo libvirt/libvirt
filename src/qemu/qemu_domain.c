@@ -11816,3 +11816,254 @@ qemuDomainRefreshStatsSchema(virDomainObj *dom)
 
     return 0;
 }
+
+
+static void
+syncNicRxFilterMacAddr(char *ifname, virNetDevRxFilter *guestFilter,
+                       virNetDevRxFilter *hostFilter)
+{
+    char newMacStr[VIR_MAC_STRING_BUFLEN];
+
+    if (virMacAddrCmp(&hostFilter->mac, &guestFilter->mac)) {
+        virMacAddrFormat(&guestFilter->mac, newMacStr);
+
+        /* set new MAC address from guest to associated macvtap device */
+        if (virNetDevSetMAC(ifname, &guestFilter->mac) < 0) {
+            VIR_WARN("Couldn't set new MAC address %s to device %s "
+                     "while responding to NIC_RX_FILTER_CHANGED",
+                     newMacStr, ifname);
+        } else {
+            VIR_DEBUG("device %s MAC address set to %s", ifname, newMacStr);
+        }
+    }
+}
+
+
+static void
+syncNicRxFilterGuestMulticast(char *ifname, virNetDevRxFilter *guestFilter,
+                              virNetDevRxFilter *hostFilter)
+{
+    size_t i, j;
+    bool found;
+    char macstr[VIR_MAC_STRING_BUFLEN];
+
+    for (i = 0; i < guestFilter->multicast.nTable; i++) {
+        found = false;
+
+        for (j = 0; j < hostFilter->multicast.nTable; j++) {
+            if (virMacAddrCmp(&guestFilter->multicast.table[i],
+                              &hostFilter->multicast.table[j]) == 0) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            virMacAddrFormat(&guestFilter->multicast.table[i], macstr);
+
+            if (virNetDevAddMulti(ifname, &guestFilter->multicast.table[i]) < 0) {
+                VIR_WARN("Couldn't add new multicast MAC address %s to "
+                         "device %s while responding to NIC_RX_FILTER_CHANGED",
+                         macstr, ifname);
+            } else {
+                VIR_DEBUG("Added multicast MAC %s to %s interface",
+                          macstr, ifname);
+            }
+        }
+    }
+}
+
+
+static void
+syncNicRxFilterHostMulticast(char *ifname, virNetDevRxFilter *guestFilter,
+                             virNetDevRxFilter *hostFilter)
+{
+    size_t i, j;
+    bool found;
+    char macstr[VIR_MAC_STRING_BUFLEN];
+
+    for (i = 0; i < hostFilter->multicast.nTable; i++) {
+        found = false;
+
+        for (j = 0; j < guestFilter->multicast.nTable; j++) {
+            if (virMacAddrCmp(&hostFilter->multicast.table[i],
+                              &guestFilter->multicast.table[j]) == 0) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            virMacAddrFormat(&hostFilter->multicast.table[i], macstr);
+
+            if (virNetDevDelMulti(ifname, &hostFilter->multicast.table[i]) < 0) {
+                VIR_WARN("Couldn't delete multicast MAC address %s from "
+                         "device %s while responding to NIC_RX_FILTER_CHANGED",
+                         macstr, ifname);
+            } else {
+                VIR_DEBUG("Deleted multicast MAC %s from %s interface",
+                          macstr, ifname);
+            }
+        }
+    }
+}
+
+
+static void
+syncNicRxFilterPromiscMode(char *ifname,
+                           virNetDevRxFilter *guestFilter,
+                           virNetDevRxFilter *hostFilter)
+{
+    bool promisc;
+    bool setpromisc = false;
+
+    /* Set macvtap promisc mode to true if the guest has vlans defined */
+    /* or synchronize the macvtap promisc mode if different from guest */
+    if (guestFilter->vlan.nTable > 0) {
+        if (!hostFilter->promiscuous) {
+            setpromisc = true;
+            promisc = true;
+        }
+    } else if (hostFilter->promiscuous != guestFilter->promiscuous) {
+        setpromisc = true;
+        promisc = guestFilter->promiscuous;
+    }
+
+    if (setpromisc) {
+        if (virNetDevSetPromiscuous(ifname, promisc) < 0) {
+            VIR_WARN("Couldn't set PROMISC flag to %s for device %s "
+                     "while responding to NIC_RX_FILTER_CHANGED",
+                     promisc ? "true" : "false", ifname);
+        }
+    }
+}
+
+
+static void
+syncNicRxFilterMultiMode(char *ifname, virNetDevRxFilter *guestFilter,
+                         virNetDevRxFilter *hostFilter)
+{
+    if (hostFilter->multicast.mode != guestFilter->multicast.mode ||
+        (guestFilter->multicast.overflow &&
+         guestFilter->multicast.mode == VIR_NETDEV_RX_FILTER_MODE_NORMAL)) {
+        switch (guestFilter->multicast.mode) {
+        case VIR_NETDEV_RX_FILTER_MODE_ALL:
+            if (virNetDevSetRcvAllMulti(ifname, true) < 0) {
+                VIR_WARN("Couldn't set allmulticast flag to 'on' for "
+                         "device %s while responding to "
+                         "NIC_RX_FILTER_CHANGED", ifname);
+            }
+            break;
+
+        case VIR_NETDEV_RX_FILTER_MODE_NORMAL:
+            if (guestFilter->multicast.overflow &&
+                (hostFilter->multicast.mode == VIR_NETDEV_RX_FILTER_MODE_ALL)) {
+                break;
+            }
+
+            if (virNetDevSetRcvMulti(ifname, true) < 0) {
+                VIR_WARN("Couldn't set multicast flag to 'on' for "
+                         "device %s while responding to "
+                         "NIC_RX_FILTER_CHANGED", ifname);
+            }
+
+            if (virNetDevSetRcvAllMulti(ifname,
+                                        guestFilter->multicast.overflow) < 0) {
+                VIR_WARN("Couldn't set allmulticast flag to '%s' for "
+                         "device %s while responding to "
+                         "NIC_RX_FILTER_CHANGED",
+                         virTristateSwitchTypeToString(virTristateSwitchFromBool(guestFilter->multicast.overflow)),
+                         ifname);
+            }
+            break;
+
+        case VIR_NETDEV_RX_FILTER_MODE_NONE:
+            if (virNetDevSetRcvAllMulti(ifname, false) < 0) {
+                VIR_WARN("Couldn't set allmulticast flag to 'off' for "
+                         "device %s while responding to "
+                         "NIC_RX_FILTER_CHANGED", ifname);
+            }
+
+            if (virNetDevSetRcvMulti(ifname, false) < 0) {
+                VIR_WARN("Couldn't set multicast flag to 'off' for "
+                         "device %s while responding to "
+                         "NIC_RX_FILTER_CHANGED",
+                         ifname);
+            }
+            break;
+        }
+    }
+}
+
+
+static void
+syncNicRxFilterDeviceOptions(char *ifname, virNetDevRxFilter *guestFilter,
+                           virNetDevRxFilter *hostFilter)
+{
+    syncNicRxFilterPromiscMode(ifname, guestFilter, hostFilter);
+    syncNicRxFilterMultiMode(ifname, guestFilter, hostFilter);
+}
+
+
+static void
+syncNicRxFilterMulticast(char *ifname,
+                         virNetDevRxFilter *guestFilter,
+                         virNetDevRxFilter *hostFilter)
+{
+    syncNicRxFilterGuestMulticast(ifname, guestFilter, hostFilter);
+    syncNicRxFilterHostMulticast(ifname, guestFilter, hostFilter);
+}
+
+
+int
+qemuDomainSyncRxFilter(virDomainObj *vm,
+                       virDomainNetDef *def)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virNetDevRxFilter) guestFilter = NULL;
+    g_autoptr(virNetDevRxFilter) hostFilter = NULL;
+    int rc;
+
+    qemuDomainObjEnterMonitor(vm);
+    rc = qemuMonitorQueryRxFilter(priv->mon, def->info.alias, &guestFilter);
+    qemuDomainObjExitMonitor(vm);
+    if (rc < 0)
+        return -1;
+
+    if (virDomainNetGetActualType(def) == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        if (virNetDevGetRxFilter(def->ifname, &hostFilter)) {
+            VIR_WARN("Couldn't get current RX filter for device %s while responding to NIC_RX_FILTER_CHANGED",
+                     def->ifname);
+            return -1;
+        }
+
+        /* For macvtap connections, set the following macvtap network device
+         * attributes to match those of the guest network device:
+         * - MAC address
+         * - Multicast MAC address table
+         * - Device options:
+         *   - PROMISC
+         *   - MULTICAST
+         *   - ALLMULTI
+         */
+        syncNicRxFilterMacAddr(def->ifname, guestFilter, hostFilter);
+        syncNicRxFilterMulticast(def->ifname, guestFilter, hostFilter);
+        syncNicRxFilterDeviceOptions(def->ifname, guestFilter, hostFilter);
+    }
+
+    if (virDomainNetGetActualType(def) == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        const char *brname = virDomainNetGetActualBridgeName(def);
+
+        /* For libivrt network connections, set the following TUN/TAP network
+         * device attributes to match those of the guest network device:
+         * - QoS filters (which are based on MAC address)
+         */
+        if (virDomainNetGetActualBandwidth(def) &&
+            def->data.network.actual &&
+            virNetDevBandwidthUpdateFilter(brname, &guestFilter->mac,
+                                           def->data.network.actual->class_id) < 0)
+            return -1;
+    }
+
+    return 0;
+}

@@ -1103,3 +1103,7 @@ qemuDomainObjWait(virDomainObj *vm);
 
 int
 qemuDomainRefreshStatsSchema(virDomainObj *dom);
+
+int
+qemuDomainSyncRxFilter(virDomainObj *vm,
+                       virDomainNetDef *def);
