@@ -7756,6 +7756,26 @@ qemuProcessLaunch(virConnectPtr conn,
 }
 
 
+static int
+qemuProcessRefreshRxFilters(virDomainObj *vm,
+                            virDomainAsyncJob asyncJob)
+{
+    size_t i;
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        virDomainNetDef *def = vm->def->nets[i];
+
+        if (!virDomainNetGetActualTrustGuestRxFilters(def))
+            continue;
+
+        if (qemuDomainSyncRxFilter(vm, def, asyncJob) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuProcessRefreshState:
  * @driver: qemu driver data
@@ -7785,6 +7805,10 @@ qemuProcessRefreshState(virQEMUDriver *driver,
 
     VIR_DEBUG("Updating disk data");
     if (qemuProcessRefreshDisks(vm, asyncJob) < 0)
+        return -1;
+
+    VIR_DEBUG("Updating rx-filter data");
+    if (qemuProcessRefreshRxFilters(vm, asyncJob) < 0)
         return -1;
 
     return 0;
@@ -8805,6 +8829,9 @@ qemuProcessReconnect(void *opaque)
         goto error;
 
     if (qemuSecurityReserveLabel(driver->securityManager, obj->def, obj->pid) < 0)
+        goto error;
+
+    if (qemuProcessRefreshRxFilters(obj, VIR_ASYNC_JOB_NONE) < 0)
         goto error;
 
     qemuProcessNotifyNets(obj->def);

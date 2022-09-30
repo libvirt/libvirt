@@ -12017,14 +12017,17 @@ syncNicRxFilterMulticast(char *ifname,
 
 int
 qemuDomainSyncRxFilter(virDomainObj *vm,
-                       virDomainNetDef *def)
+                       virDomainNetDef *def,
+                       virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virNetDevRxFilter) guestFilter = NULL;
     g_autoptr(virNetDevRxFilter) hostFilter = NULL;
     int rc;
 
-    qemuDomainObjEnterMonitor(vm);
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
+        return -1;
+
     rc = qemuMonitorQueryRxFilter(priv->mon, def->info.alias, &guestFilter);
     qemuDomainObjExitMonitor(vm);
     if (rc < 0)
@@ -12032,7 +12035,7 @@ qemuDomainSyncRxFilter(virDomainObj *vm,
 
     if (virDomainNetGetActualType(def) == VIR_DOMAIN_NET_TYPE_DIRECT) {
         if (virNetDevGetRxFilter(def->ifname, &hostFilter)) {
-            VIR_WARN("Couldn't get current RX filter for device %s while responding to NIC_RX_FILTER_CHANGED",
+            VIR_WARN("Couldn't get current RX filter for device %s",
                      def->ifname);
             return -1;
         }

@@ -1106,4 +1106,5 @@ qemuDomainRefreshStatsSchema(virDomainObj *dom);
 
 int
 qemuDomainSyncRxFilter(virDomainObj *vm,
-                       virDomainNetDef *def);
+                       virDomainNetDef *def,
+                       virDomainAsyncJob asyncJob);

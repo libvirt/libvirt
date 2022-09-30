@@ -3662,7 +3662,7 @@ processNicRxFilterChangedEvent(virDomainObj *vm,
     VIR_DEBUG("process NIC_RX_FILTER_CHANGED event for network "
               "device %s in domain %s", def->info.alias, vm->def->name);
 
-    if (qemuDomainSyncRxFilter(vm, def) < 0)
+    if (qemuDomainSyncRxFilter(vm, def, VIR_ASYNC_JOB_NONE) < 0)
         goto endjob;
 
  endjob:
