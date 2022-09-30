@@ -53,6 +53,12 @@ struct _ppc64_map {
     struct _ppc64_model **models;
 };
 
+static virCPUppc64Map *cpuMap;
+
+int virCPUppc64DriverOnceInit(void);
+VIR_ONCE_GLOBAL_INIT(virCPUppc64Driver);
+
+
 /* Convert a legacy CPU definition by transforming
  * model names to generation names:
  *   POWER7_v2.1  => POWER7
@@ -365,8 +371,8 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
 }
 
 
-static struct _ppc64_map *
-ppc64LoadMap(void)
+static virCPUppc64Map *
+virCPUppc64LoadMap(void)
 {
     g_autoptr(virCPUppc64Map) map = NULL;
 
@@ -378,12 +384,33 @@ ppc64LoadMap(void)
     return g_steal_pointer(&map);
 }
 
+
+int
+virCPUppc64DriverOnceInit(void)
+{
+    if (!(cpuMap = virCPUppc64LoadMap()))
+        return -1;
+
+    return 0;
+}
+
+
+static virCPUppc64Map *
+virCPUppc64GetMap(void)
+{
+    if (virCPUppc64DriverInitialize() < 0)
+        return NULL;
+
+    return cpuMap;
+}
+
+
 static virCPUCompareResult
 ppc64Compute(virCPUDef *host,
              const virCPUDef *other,
              char **message)
 {
-    g_autoptr(virCPUppc64Map) map = NULL;
+    virCPUppc64Map *map = NULL;
     g_autoptr(virCPUppc64Model) host_model = NULL;
     g_autoptr(virCPUppc64Model) guest_model = NULL;
     g_autoptr(virCPUDef) cpu = NULL;
@@ -428,7 +455,7 @@ ppc64Compute(virCPUDef *host,
         return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
 
-    if (!(map = ppc64LoadMap()))
+    if (!(map = virCPUppc64GetMap()))
         return VIR_CPU_COMPARE_ERROR;
 
     /* Host CPU information */
@@ -526,10 +553,10 @@ ppc64DriverDecode(virCPUDef *cpu,
                   const virCPUData *data,
                   virDomainCapsCPUModels *models)
 {
-    g_autoptr(virCPUppc64Map) map = NULL;
+    virCPUppc64Map *map = NULL;
     const virCPUppc64Model *model;
 
-    if (!data || !(map = ppc64LoadMap()))
+    if (!data || !(map = virCPUppc64GetMap()))
         return -1;
 
     if (!(model = ppc64ModelFindPVR(map, data->data.ppc64.pvr[0].value))) {
@@ -656,13 +683,13 @@ virCPUppc64Baseline(virCPUDef **cpus,
                     const char **features G_GNUC_UNUSED,
                     bool migratable G_GNUC_UNUSED)
 {
-    g_autoptr(virCPUppc64Map) map = NULL;
+    virCPUppc64Map *map = NULL;
     const virCPUppc64Model *model;
     const virCPUppc64Vendor *vendor = NULL;
     g_autoptr(virCPUDef) cpu = NULL;
     size_t i;
 
-    if (!(map = ppc64LoadMap()))
+    if (!(map = virCPUppc64GetMap()))
         return NULL;
 
     if (!(model = ppc64ModelFind(map, cpus[0]->model))) {
@@ -737,10 +764,10 @@ virCPUppc64Baseline(virCPUDef **cpus,
 static int
 virCPUppc64DriverGetModels(char ***models)
 {
-    g_autoptr(virCPUppc64Map) map = NULL;
+    virCPUppc64Map *map = NULL;
     size_t i;
 
-    if (!(map = ppc64LoadMap()))
+    if (!(map = virCPUppc64GetMap()))
         return -1;
 
     if (models) {
