@@ -626,7 +626,7 @@ virDomainObjEndJob(virDomainObj *obj)
 
     virDomainObjResetJob(obj->job);
 
-    if (virDomainTrackJob(job) &&
+    if (virDomainTrackJob(job) && obj->job->cb &&
         obj->job->cb->saveStatusPrivate)
         obj->job->cb->saveStatusPrivate(obj);
     /* We indeed need to wake up ALL threads waiting because
@@ -662,7 +662,7 @@ virDomainObjEndAsyncJob(virDomainObj *obj)
               obj, obj->def->name);
 
     virDomainObjResetAsyncJob(obj->job);
-    if (obj->job->cb->saveStatusPrivate)
+    if (obj->job->cb && obj->job->cb->saveStatusPrivate)
         obj->job->cb->saveStatusPrivate(obj);
     virCondBroadcast(&obj->job->asyncCond);
 }
