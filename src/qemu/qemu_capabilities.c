@@ -5247,8 +5247,6 @@ virQEMUCapsInitProcessCaps(virQEMUCaps *qemuCaps)
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW) &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_CCW))
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_CCW);
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW_CSSID_UNRESTRICTED))
-            virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_VFIO_CCW);
     }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_UNAVAILABLE_FEATURES))

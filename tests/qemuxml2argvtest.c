@@ -1904,15 +1904,12 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("hostdev-subsys-mdev-vfio-ccw-boot",
                              "s390x");
     DO_TEST_PARSE_ERROR("hostdev-subsys-mdev-vfio-ccw",
-                        QEMU_CAPS_CCW,
-                        QEMU_CAPS_CCW_CSSID_UNRESTRICTED);
+                        QEMU_CAPS_CCW);
     DO_TEST_PARSE_ERROR("hostdev-subsys-mdev-vfio-ccw-duplicate-address",
             QEMU_CAPS_CCW,
-            QEMU_CAPS_CCW_CSSID_UNRESTRICTED,
             QEMU_CAPS_DEVICE_VFIO_CCW);
     DO_TEST_PARSE_ERROR("hostdev-subsys-mdev-vfio-ccw-invalid-address",
             QEMU_CAPS_CCW,
-            QEMU_CAPS_CCW_CSSID_UNRESTRICTED,
             QEMU_CAPS_DEVICE_VFIO_CCW);
 
     DO_TEST_CAPS_ARCH_LATEST("hostdev-subsys-mdev-vfio-ap",
