@@ -931,6 +931,8 @@ void virNetServerClientDispose(void *obj)
     PROBE(RPC_SERVER_CLIENT_DISPOSE,
           "client=%p", client);
 
+    if (client->rx)
+        virNetMessageFree(client->rx);
     if (client->privateData)
         client->privateDataFreeFunc(client->privateData);
 

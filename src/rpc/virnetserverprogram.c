@@ -368,7 +368,7 @@ virNetServerProgramDispatchCall(virNetServerProgram *prog,
     g_autofree char *arg = NULL;
     g_autofree char *ret = NULL;
     int rv = -1;
-    virNetServerProgramProc *dispatcher;
+    virNetServerProgramProc *dispatcher = NULL;
     virNetMessageError rerr;
     size_t i;
     g_autoptr(virIdentity) identity = NULL;
@@ -446,8 +446,6 @@ virNetServerProgramDispatchCall(virNetServerProgram *prog,
         msg->nfds = 0;
     }
 
-    xdr_free(dispatcher->arg_filter, arg);
-
     if (rv < 0)
         goto error;
 
@@ -460,28 +458,28 @@ virNetServerProgramDispatchCall(virNetServerProgram *prog,
     /*msg->header.serial = msg->header.serial;*/
     msg->header.status = VIR_NET_OK;
 
-    if (virNetMessageEncodeHeader(msg) < 0) {
-        xdr_free(dispatcher->ret_filter, ret);
+    if (virNetMessageEncodeHeader(msg) < 0)
         goto error;
-    }
 
     if (msg->nfds &&
-        virNetMessageEncodeNumFDs(msg) < 0) {
-        xdr_free(dispatcher->ret_filter, ret);
+        virNetMessageEncodeNumFDs(msg) < 0)
         goto error;
-    }
 
-    if (virNetMessageEncodePayload(msg, dispatcher->ret_filter, ret) < 0) {
-        xdr_free(dispatcher->ret_filter, ret);
+    if (virNetMessageEncodePayload(msg, dispatcher->ret_filter, ret) < 0)
         goto error;
-    }
 
+    xdr_free(dispatcher->arg_filter, arg);
     xdr_free(dispatcher->ret_filter, ret);
 
     /* Put reply on end of tx queue to send out  */
     return virNetServerClientSendMessage(client, msg);
 
  error:
+    if (dispatcher) {
+        xdr_free(dispatcher->arg_filter, arg);
+        xdr_free(dispatcher->ret_filter, ret);
+    }
+
     /* Bad stuff (de-)serializing message, but we have an
      * RPC error message we can send back to the client */
     rv = virNetServerProgramSendReplyError(prog, client, msg, &rerr, &msg->header);
