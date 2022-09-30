@@ -1875,22 +1875,11 @@ mymain(void)
             QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-autogenerate-fids",
                         QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-invalid-uid-valid-fid",
-                        QEMU_CAPS_DEVICE_VFIO_PCI,
-                        QEMU_CAPS_DEVICE_ZPCI);
-    DO_TEST("hostdev-vfio-zpci-multidomain-many",
-            QEMU_CAPS_DEVICE_VFIO_PCI,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_ZPCI);
-    DO_TEST("hostdev-vfio-zpci-autogenerate",
-            QEMU_CAPS_DEVICE_VFIO_PCI,
-            QEMU_CAPS_DEVICE_ZPCI);
-    DO_TEST("hostdev-vfio-zpci-autogenerate-uids",
-            QEMU_CAPS_DEVICE_VFIO_PCI,
-            QEMU_CAPS_DEVICE_ZPCI);
-    DO_TEST("hostdev-vfio-zpci-autogenerate-fids",
-            QEMU_CAPS_DEVICE_VFIO_PCI,
-            QEMU_CAPS_DEVICE_ZPCI);
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("hostdev-vfio-zpci-invalid-uid-valid-fid", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("hostdev-vfio-zpci-multidomain-many", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("hostdev-vfio-zpci-autogenerate", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("hostdev-vfio-zpci-autogenerate-uids", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("hostdev-vfio-zpci-autogenerate-fids", "s390x");
     DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-uid-set-zero",
                         QEMU_CAPS_DEVICE_VFIO_PCI,
                         QEMU_CAPS_DEVICE_ZPCI);
