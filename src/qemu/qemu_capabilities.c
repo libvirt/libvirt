@@ -480,7 +480,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 295 */
               "virtual-css-bridge", /* QEMU_CAPS_CCW */
-              "virtual-css-bridge.cssid-unrestricted", /* QEMU_CAPS_CCW_CSSID_UNRESTRICTED */
+              "virtual-css-bridge.cssid-unrestricted", /* X_QEMU_CAPS_CCW_CSSID_UNRESTRICTED */
               "vfio-ccw", /* QEMU_CAPS_DEVICE_VFIO_CCW */
               "sdl-gl", /* X_QEMU_CAPS_SDL_GL */
               "screendump_device", /* QEMU_CAPS_SCREENDUMP_DEVICE */
@@ -1532,7 +1532,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIntelIOMMU[] = {
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsObjectPropsVirtualCSSBridge[] = {
-    { "cssid-unrestricted", QEMU_CAPS_CCW_CSSID_UNRESTRICTED, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsMCH[] = {
