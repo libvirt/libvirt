@@ -25,6 +25,11 @@ v8.8.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Implement VIR_DOMAIN_STATS_CPU_TOTAL for qemu:///session
+
+    Users can now query VIR_DOMAIN_STATS_CPU_TOTAL (also known as cpu.time)
+    statistics for session domains.
+
 * **Bug fixes**
 
   * qemu: Fix non-shared storage migration setup
@@ -32,6 +37,26 @@ v8.8.0 (unreleased)
     This release fixes a bug in setup of a migration with non-shared storage
     ( ``virsh migrate --copy-storage-all``) which was broken by a refactor of
     the code in libvirt-8.7.
+
+  * selinux: Don't ignore NVMe disks when setting image label
+
+    Libvirt did not set any SELinux label on NVMe disks and relied only on the
+    default SELinux policy. This turned out to cause problem when using
+    namespace or altered policy and thus is fixed now.
+
+  * qemu: Fix a deadlock when setting up namespace
+
+    When starting a domain, libvirt creates a mount namespace and manages
+    private /dev with only a handful nodes exposed. But when creating those a
+    deadlock inside glib might have occurred. The code was changed so that
+    libvirt does not tickle the glib bug.
+
+  * qemu: Don't build memory paths on daemon restart
+
+    When the daemon is restarted it tried to create domain private paths for
+    each mounted hugetlbfs. When this failed, the corresponding domain was
+    killed. This operation is now performed during domain startup and memory
+    hotplug and no longer leads to sudden kill of the domain.
 
 
 v8.7.0 (2022-09-01)
