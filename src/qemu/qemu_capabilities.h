@@ -458,7 +458,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD, /* -object memory-backend-file,discard-data */
 
     /* 295 */
-    QEMU_CAPS_CCW, /* -device virtual-css-bridge */
+    X_QEMU_CAPS_CCW, /* -device virtual-css-bridge */
     X_QEMU_CAPS_CCW_CSSID_UNRESTRICTED, /* virtual-css-bridge.cssid-unrestricted= */
     QEMU_CAPS_DEVICE_VFIO_CCW, /* -device vfio-ccw */
     X_QEMU_CAPS_SDL_GL, /* -sdl gl */

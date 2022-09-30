@@ -479,7 +479,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "memory-backend-file.discard-data", /* QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD */
 
               /* 295 */
-              "virtual-css-bridge", /* QEMU_CAPS_CCW */
+              "virtual-css-bridge", /* X_QEMU_CAPS_CCW */
               "virtual-css-bridge.cssid-unrestricted", /* X_QEMU_CAPS_CCW_CSSID_UNRESTRICTED */
               "vfio-ccw", /* QEMU_CAPS_DEVICE_VFIO_CCW */
               "sdl-gl", /* X_QEMU_CAPS_SDL_GL */
@@ -1328,7 +1328,6 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-tablet-ccw", QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW },
     { "pcie-pci-bridge", QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE },
     { "pr-manager-helper", QEMU_CAPS_PR_MANAGER_HELPER },
-    { "virtual-css-bridge", QEMU_CAPS_CCW },
     { "vfio-ccw", QEMU_CAPS_DEVICE_VFIO_CCW },
     { "hda-output", QEMU_CAPS_HDA_OUTPUT },
     { "vmgenid", QEMU_CAPS_DEVICE_VMGENID },
@@ -1531,9 +1530,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIntelIOMMU[] = {
     { "aw-bits", QEMU_CAPS_INTEL_IOMMU_AW_BITS, NULL },
 };
 
-static struct virQEMUCapsDevicePropsFlags virQEMUCapsObjectPropsVirtualCSSBridge[] = {
-};
-
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsMCH[] = {
     { "extended-tseg-mbytes", QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES, NULL },
 };
@@ -1680,9 +1676,6 @@ static virQEMUCapsDeviceTypeProps virQEMUCapsDeviceProps[] = {
     { "virtio-gpu-ccw", virQEMUCapsDevicePropsVirtioGpu,
       G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioGpu),
       QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW },
-    { "virtual-css-bridge", virQEMUCapsObjectPropsVirtualCSSBridge,
-      G_N_ELEMENTS(virQEMUCapsObjectPropsVirtualCSSBridge),
-      QEMU_CAPS_CCW },
     { "mch", virQEMUCapsDevicePropsMCH,
       G_N_ELEMENTS(virQEMUCapsDevicePropsMCH),
       QEMU_CAPS_DEVICE_MCH },

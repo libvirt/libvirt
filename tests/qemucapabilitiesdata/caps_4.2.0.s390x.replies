@@ -16878,32 +16878,9 @@
 {
   "execute": "device-list-properties",
   "arguments": {
-    "typename": "virtual-css-bridge"
-  },
-  "id": "libvirt-27"
-}
-
-{
-  "return": [
-    {
-      "name": "cssid-unrestricted",
-      "description": "A css device can use any cssid, regardless whether virtual or not (read only, always true)",
-      "type": "bool"
-    },
-    {
-      "name": "css_dev_path",
-      "type": "bool"
-    }
-  ],
-  "id": "libvirt-27"
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
     "typename": "usb-host"
   },
-  "id": "libvirt-28"
+  "id": "libvirt-27"
 }
 
 {
@@ -16992,7 +16969,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-28"
+  "id": "libvirt-27"
 }
 
 {
@@ -17000,7 +16977,7 @@
   "arguments": {
     "typename": "vhost-user-fs-device"
   },
-  "id": "libvirt-29"
+  "id": "libvirt-28"
 }
 
 {
@@ -17071,7 +17048,7 @@
       "type": "uint16"
     }
   ],
-  "id": "libvirt-29"
+  "id": "libvirt-28"
 }
 
 {
@@ -17079,7 +17056,7 @@
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-30"
+  "id": "libvirt-29"
 }
 
 {
@@ -17144,7 +17121,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-30"
+  "id": "libvirt-29"
 }
 
 {
@@ -17152,7 +17129,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-31"
+  "id": "libvirt-30"
 }
 
 {
@@ -17216,12 +17193,12 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-30"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-32"
+  "id": "libvirt-31"
 }
 
 {
@@ -17348,7 +17325,7 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-31"
 }
 
 {
@@ -17356,7 +17333,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-32"
 }
 
 {
@@ -17461,12 +17438,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-32"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-34"
+  "id": "libvirt-33"
 }
 
 {
@@ -18073,34 +18050,34 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-33"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-35"
+  "id": "libvirt-34"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-34"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-36"
+  "id": "libvirt-35"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-35"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-37"
+  "id": "libvirt-36"
 }
 
 {
@@ -19247,12 +19224,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-38"
+  "id": "libvirt-37"
 }
 
 {
@@ -19330,7 +19307,7 @@
       "capability": "validate-uuid"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-37"
 }
 
 {
@@ -19341,7 +19318,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-39"
+  "id": "libvirt-38"
 }
 
 {
@@ -19395,7 +19372,7 @@
       }
     }
   },
-  "id": "libvirt-39"
+  "id": "libvirt-38"
 }
 
 {
