@@ -3817,8 +3817,8 @@ processNicRxFilterChangedEvent(virDomainObj *vm,
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDeviceDef dev;
     virDomainNetDef *def;
-    virNetDevRxFilter *guestFilter = NULL;
-    virNetDevRxFilter *hostFilter = NULL;
+    g_autoptr(virNetDevRxFilter) guestFilter = NULL;
+    g_autoptr(virNetDevRxFilter) hostFilter = NULL;
     int ret;
 
     VIR_DEBUG("Received NIC_RX_FILTER_CHANGED event for device %s "
@@ -3826,7 +3826,7 @@ processNicRxFilterChangedEvent(virDomainObj *vm,
               devAlias, vm, vm->def->name);
 
     if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
-        goto cleanup;
+        return;
 
     if (!virDomainObjIsActive(vm)) {
         VIR_DEBUG("Domain is not running");
@@ -3907,10 +3907,6 @@ processNicRxFilterChangedEvent(virDomainObj *vm,
 
  endjob:
     virDomainObjEndJob(vm);
-
- cleanup:
-    virNetDevRxFilterFree(hostFilter);
-    virNetDevRxFilterFree(guestFilter);
 }
 
 
