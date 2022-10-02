@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-09-27 08:07+0000\n"
-"PO-Revision-Date: 2022-09-25 12:19+0000\n"
+"PO-Revision-Date: 2022-10-02 12:19+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -11734,7 +11734,7 @@ msgstr "Saknat källkanalsattribut för teckenenhet"
 
 #, c-format
 msgid "Missing source connectionid for interface type '%s'"
-msgstr ""
+msgstr "Saknat källanslutnings-id för ett gränssnitt av typen ”%s”"
 
 msgid "Missing source host attribute for char device"
 msgstr "Källvärdsattribut saknas för teckenenhet"
@@ -11744,11 +11744,11 @@ msgstr "Källsökvägsattribut saknas för teckenenhet"
 
 #, c-format
 msgid "Missing source portgroup for interface type '%s'"
-msgstr ""
+msgstr "Saknat källportgrupp för ett gränssnitt av typen ”%s”"
 
 #, c-format
 msgid "Missing source portid for interface type '%s'"
-msgstr ""
+msgstr "Saknat källport-id för ett gränssnitt av typen ”%s”"
 
 msgid "Missing source service attribute for char device"
 msgstr "Källtjänstattribut saknas för teckenenhet"
@@ -14120,7 +14120,7 @@ msgid "S3 state is disabled for this domain"
 msgstr "S3-tillståndet är avaktiverat för denna domän"
 
 msgid "S390 PV launch security is not supported by this host or kernel"
-msgstr ""
+msgstr "S390 PV startsäkerhet stödjs inte av denna värd eller kärna"
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr "S390 PV-startsäkerhet stödjs inte med denna QEMU-binär"
@@ -16234,78 +16234,82 @@ msgid "This QEMU binary doesn't support zPCI"
 msgstr "Denna QEMU-binär stödjer inte zPCI"
 
 msgid "This QEMU doesn't support '-device usb-storage'"
-msgstr ""
+msgstr "Denna QEMU stödjer inte ”-device usb-storage”"
 
 msgid ""
 "This QEMU doesn't support OpenGL rendernode with egl-headless graphics type"
-msgstr ""
+msgstr "Denna QEMU stödjer inte OpenGLs rendernode med grafiktypen egl-headless"
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
-msgstr ""
+msgstr "Denna QEMU stödjer inte scsi-block för lun-genomgång"
 
 msgid ""
 "This QEMU doesn't support setting the removable flag of USB storage devices"
 msgstr ""
+"Denna QEMU stödjer inte att sätta flaggan borttagbar på USB-lagringsenheter"
 
 msgid "This QEMU doesn't support spice OpenGL"
-msgstr ""
+msgstr "Denna QEMU stödjer inte spice-OpenGL"
 
 msgid "This QEMU doesn't support spice OpenGL rendernode"
-msgstr ""
+msgstr "Denna QEMU stödjer inte spice-OpenGLs rendernode"
 
 msgid "This QEMU doesn't support target greater than 7"
-msgstr ""
+msgstr "Denna QEMU stödjer inte mål större än 7"
 
 msgid "This QEMU doesn't support the AM53C974 (ESP) controller"
-msgstr ""
+msgstr "Denna QEMU stödjer inte styrenheten AM53C974 (ESP)"
 
 msgid "This QEMU doesn't support the DC390 (ESP) controller"
-msgstr ""
+msgstr "Denna QEMU stödjer inte styrenheten DC390 (ESP)"
 
 msgid "This QEMU doesn't support the LSI 53C895A SCSI controller"
-msgstr ""
+msgstr "Denna QEMU stödjer inte SCSI-styrenheten LSI 53C895A"
 
 msgid "This QEMU doesn't support the LSI SAS1068 (MPT Fusion) controller"
-msgstr ""
+msgstr "Denna QEMU stödjer inte (MPT Fusion)-styrenheten LSI SAS1068"
 
 msgid "This QEMU doesn't support the LSI SAS1078 (MegaRAID) controller"
-msgstr ""
+msgstr "Denna QEMU stödjer inte (MegaRAID)-styrenheten LSI SAS1078"
 
 msgid "This QEMU doesn't support the NCR53C90 (ESP) controller"
-msgstr ""
+msgstr "Denna QEMU stödjer inte styrenheten NCR53C90 (ESP)"
 
 msgid ""
 "This QEMU doesn't support the pvscsi (VMware paravirtual SCSI) controller"
-msgstr ""
+msgstr "Denna QEMU stödjer inte styrenheten pvscsi (VMware paravirtuell SCSI)"
 
 msgid "This QEMU doesn't support vhost-scsi devices"
-msgstr ""
+msgstr "Denna QEMU stödjer inte vhost-scsi-enheter"
 
 msgid "This QEMU doesn't support virtio scsi controller"
-msgstr ""
+msgstr "Denna QEMU stödjer inte scsi-styrenheten virtio"
 
 msgid "This QEMU only supports both bus and unit equal to 0"
-msgstr ""
+msgstr "Denna QEMU stödjer endast både buss och enhet lika med 0"
 
 msgid ""
 "This command is intended to be used by libvirtd and not used directly.\n"
 msgstr ""
+"Detta kommando är avsett att användas av libvirtd och inte att användas "
+"direkt.\n"
 
-#, fuzzy
 msgid "This function is not supported on WIN32 platform"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "Denna funktion stödjs inte på plattformen WIN32"
 
 #, c-format
 msgid ""
 "This host is managed by a vCenter with IP address %s, but a mismatching "
 "vCenter '%s' (%s) has been specified"
 msgstr ""
+"Denna värd hanteras av ett vCenter med IP-adress %s, men ett vCenter som "
+"inte stämmer ”%s” (%s) har angivits"
 
 msgid "This host is not managed by a vCenter"
-msgstr ""
+msgstr "Denna värd hanteras inte av ett vCenter"
 
 msgid "This snapshot has children, please delete these snapshots before"
-msgstr ""
+msgstr "Denna ögonblicksbid har barn, radera dessa ögonblicksbilder först"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Denna typ av disk kan inte tas bort under drift"
@@ -16315,98 +16319,95 @@ msgstr "Trådar per kärna:"
 
 #, c-format
 msgid "Time '%lld' is too big for guest agent"
-msgstr ""
+msgstr "Tiden ”%lld” är för stor för gästagenter"
 
 msgid "Time elapsed w/o network:"
-msgstr ""
+msgstr "Förfluten tid utan nätverk:"
 
 msgid "Time elapsed:"
-msgstr ""
+msgstr "Förfluten tid:"
 
 msgid "Time remaining:"
-msgstr ""
+msgstr "Återstående tid:"
 
 #, c-format
 msgid "Time: %lld"
-msgstr ""
+msgstr "Tid: %lld"
 
 #, c-format
 msgid "Time: %s"
 msgstr "Tid: %s"
 
-#, fuzzy
 msgid "Timed out during operation"
-msgstr "Misslyckades att få diskinformation"
+msgstr "Tiden gick ut under åtgärden"
 
 #, c-format
 msgid "Timed out during operation: %s"
-msgstr ""
+msgstr "Tiden gick ut under åtgärden: %s"
 
 #, c-format
 msgid "Timed out while reading log output: %s"
-msgstr ""
+msgstr "Tiden gick ut när loggutdata lästes: %s"
 
 msgid "Timeout"
 msgstr "Tidsgräns"
 
 #, sh-format
 msgid "Timeout expired while shutting down domains"
-msgstr ""
+msgstr "Tiden gick ut när domäner stängdes av"
 
 msgid "Timeout parameter not supported"
-msgstr ""
+msgstr "Tidsgränsparameter stödjs inte"
 
 #, c-format
 msgid "Timeout waiting for %s invocation"
-msgstr ""
+msgstr "Tidsgräns i väntan på anrop av %s"
 
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #, c-format
 msgid "To enable ip%stables filtering for the VM do 'echo 1 > %s'"
-msgstr ""
+msgstr "För att aktivera filtrering med ip%stables för VM:en kör ”echo 1 > %s”"
 
 msgid "Too long bridge device name"
-msgstr ""
+msgstr "För långt bryggenhetsnamn"
 
-#, fuzzy
 msgid "Too long network device name"
-msgstr "nätverksnamn"
+msgstr "För långt nätverksenhetsnamn"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many CPU models '%d' for limit '%d'"
-msgstr "För många klienter ”%d” för gränsen ”%d”"
+msgstr "För många CPU-modeller ”%d” för gränsen ”%d”"
 
 #, c-format
 msgid "Too many FDs to send %d, expected %d maximum"
-msgstr ""
+msgstr "För många FB:er att skicka %d, maximalt %d förväntades"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many IOThreads in info: %d for limit %d"
-msgstr "För många servrar ”%d” för gränsen ”%d”"
+msgstr "För många IO-trådar i informationen: %d för gränsen %d"
 
 msgid "Too many bytes to read from stream"
 msgstr "För många byte att läsa från strömmen"
 
-#, fuzzy
 msgid "Too many bytes to write to stream"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "För många byte att skriva till strömmen"
 
 #, c-format
 msgid "Too many clients '%d' for limit '%d'"
 msgstr "För många klienter ”%d” för gränsen ”%d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many disks in fsinfo: %zd for limit %d"
-msgstr "För många klienter ”%d” för gränsen ”%d”"
+msgstr "För många diskar i fsinfo: %zd för gränsen %d"
 
 msgid "Too many domain elements in migration cookie"
-msgstr ""
+msgstr "För många domänelement i migreringskakan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many domain_checkpoints '%d' for limit '%d'"
-msgstr "För många klienter ”%d” för gränsen ”%d”"
+msgstr "För många domänkontrollpunkter ”%d” för gränsen ”%d”"
 
 #, c-format
 msgid "Too many domain_snapshots '%d' for limit '%d'"
@@ -16416,24 +16417,24 @@ msgstr "För många domänögonblicksbilder ”%d” för gränsen ”%d”"
 msgid "Too many domains '%d' for limit '%d'"
 msgstr "För många domäner ”%d” för gränsen ”%d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many drivers, cannot register %s"
-msgstr "för många drivrutiner registrerade i %s"
+msgstr "För många drivrutiner, kan inte registrera %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many drivers, cannot register storage backend '%s'"
-msgstr "för många drivrutiner registrerade i %s"
+msgstr "För många drivrutiner, kan inte registrera lagringsbakänden ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many drivers, cannot register storage file backend '%s'"
-msgstr "för många drivrutiner registrerade i %s"
+msgstr "För många drivrutiner, kan inte registrera lagringsfilbakänden ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many filesystems detected for %s"
-msgstr "för många drivrutiner registrerade i %s"
+msgstr "För många filsystems upptäckta för %s"
 
 msgid "Too many id mappings defined."
-msgstr ""
+msgstr "För många id-avbildningar definierade."
 
 #, c-format
 msgid "Too many interfaces '%d' for limit '%d'"
@@ -16441,19 +16442,19 @@ msgstr "För många gränssnitt ”%d” för gränsen ”%d”"
 
 #, c-format
 msgid "Too many levels of symbolic links: %s"
-msgstr ""
+msgstr "För många nivåer av symboliska länkar: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many migration parameters '%d' for limit '%d'"
-msgstr "För många servrar ”%d” för gränsen ”%d”"
+msgstr "För många migreringsparametrar ”%d” för gränsen ”%d”"
 
 #, c-format
 msgid "Too many model names '%d' for limit '%d'"
 msgstr "För många modellnamn ”%d” för gränsen ”%d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many mountpoints in fsinfo: %d for limit %d"
-msgstr "För många klienter ”%d” för gränsen ”%d”"
+msgstr "För många monteringspunkter i fsinfo: %d för gränsen %d"
 
 #, c-format
 msgid "Too many network_ports '%d' for limit '%d'"
@@ -16475,9 +16476,9 @@ msgstr "För många nwfilter-bindningar ”%d” för gränsen ”%d”"
 msgid "Too many nwfilters '%d' for limit '%d'"
 msgstr "För många nwfilter ”%d” för gränsen ”%d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many resources %d for object"
-msgstr "För många servrar ”%d” för gränsen ”%d”"
+msgstr "För många resurser %d för objektet"
 
 #, c-format
 msgid "Too many secrets '%d' for limit '%d'"
@@ -16490,6 +16491,8 @@ msgstr "För många servrar ”%d” för gränsen ”%d”"
 #, c-format
 msgid "Too many snapshots claiming to be current for domain %s"
 msgstr ""
+"För många ögonblicksbilder som gör anspråk på att vara aktuella för domänen "
+"%s"
 
 #, c-format
 msgid "Too many storage_pools '%d' for limit '%d'"
@@ -16503,88 +16506,91 @@ msgid "Total"
 msgstr "Totalt"
 
 msgid "Total downtime:"
-msgstr ""
+msgstr "Total nertid:"
 
 msgid "Total size of memory devices exceeds the total memory size"
 msgstr ""
+"Totala storleken på minnesenheter överskrider den totala minnesstorleken"
 
 msgid "Total:\n"
 msgstr "Totalt:\n"
 
 msgid "Transient disks are not supported by vz driver."
-msgstr ""
+msgstr "Transienta diskar stödjs inte av vz-drivrutinen."
 
-#, fuzzy
 msgid "Transition started"
-msgstr "inget tillstånd"
+msgstr "Övergången startad"
 
-#, fuzzy
 msgid "Transport"
-msgstr "rapportera"
+msgstr "Transport"
 
 #, c-format
 msgid "Transport error during %s: %s (%d)"
-msgstr ""
+msgstr "Transportfel under %s: %s (%d)"
 
 msgid "Tried to write socket in error state"
-msgstr ""
+msgstr "Försökte skriva till uttag i feltillstånd"
 
 msgid "Try again?"
 msgstr "Försök igen?"
 
 msgid "Trying to free MultiCURL object that is still in use"
-msgstr ""
+msgstr "Försöker att frigöra ett MultiCURL-objekt som fortfarande används"
 
 msgid "Trying to free SharedCURL object that is still in use"
-msgstr ""
+msgstr "Försöker att frigöra ett SharedCURL-objekt som fortfarande används"
 
 #, c-format
 msgid "Trying to lock unknown SharedCURL lock %d"
-msgstr ""
+msgstr "Försöker låsa ett okänt SharedCURL-lås %d"
 
 #, c-format
 msgid "Trying to remove mismatching close callback for domain %s"
 msgstr ""
+"Försöker att ta bort ett stängningsåteranrop som inte stämmer för domänen %s"
 
 #, c-format
 msgid "Trying to unlock unknown SharedCURL lock %d"
-msgstr ""
+msgstr "Försöker låsa upp ett okänt SharedCURL-lås %d"
 
 msgid ""
 "Tune server's client-related configuration limits. See OPTIONS for currently "
 "supported attributes."
 msgstr ""
+"Trimma serverns klientrelaterade konfigurationsgränser. Se FLAGGOR för "
+"attribut som stödjs för närvarande."
 
 msgid ""
 "Tune threadpool attributes on a server. See OPTIONS for currently supported "
 "attributes."
 msgstr ""
+"Trimma trådpoolsattribut på en server. Se FLAGGOR för attributen som stödjs "
+"för närvarande."
 
 msgid "Tunnelled migration requested but invalid RPC method called"
-msgstr ""
+msgstr "Tunnlad migrering begärd men en felaktig RPC-metod anropad"
 
-#, fuzzy
 msgid "Tunnelling sockets not supported on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Att tunnla uttag stödjs inte på denna plattform"
 
 msgid "Turn auto convergence on to tune it"
-msgstr ""
+msgstr "Slå på autokonvergens för att trimma den"
 
 msgid "Turn multithread compression on to tune it"
-msgstr ""
+msgstr "Slå på multitrådad komprimering för att trimma den"
 
 msgid "Turn parallel migration on to tune it"
-msgstr ""
+msgstr "Slå på parallell migrering för att trimma den"
 
 msgid "Turn xbzrle compression on to tune it"
-msgstr ""
+msgstr "Slå på xbzrle-komprimering för att trimma den"
 
 msgid "Type"
 msgstr "Typ"
 
 #, c-format
 msgid "Type mismatch for '%s' migration parameter"
-msgstr ""
+msgstr "Typen stämmer inte för migreringsparametern ”%s”"
 
 msgid "Type:"
 msgstr "Typ:"
@@ -16600,7 +16606,7 @@ msgstr ""
 
 #, c-format
 msgid "Type='%s' unsupported for <interface type='vhostuser'>"
-msgstr ""
+msgstr "Type=”%s” stödjs inte för <interface type='vhostuser'>"
 
 msgid "UEFI requires ACPI on this architecture"
 msgstr "UEFI kräver ACPI på denna arkitektur"
