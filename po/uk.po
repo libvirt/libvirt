@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-09-27 08:07+0000\n"
-"PO-Revision-Date: 2022-08-31 12:19+0000\n"
+"PO-Revision-Date: 2022-10-02 12:19+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14\n"
+"X-Generator: Weblate 4.14.1\n"
 
 msgid ""
 "\n"
@@ -12081,7 +12081,7 @@ msgstr "Немає атрибута channel у source для символьно�
 
 #, c-format
 msgid "Missing source connectionid for interface type '%s'"
-msgstr ""
+msgstr "Пропущено connectionid джерела для типу інтерфейсу «%s»"
 
 msgid "Missing source host attribute for char device"
 msgstr "Відсутній атрибут host у source для символьного пристрою"
@@ -12091,11 +12091,11 @@ msgstr "Немає атрибута path у source для символьного
 
 #, c-format
 msgid "Missing source portgroup for interface type '%s'"
-msgstr ""
+msgstr "Пропущено portgroup джерела для типу інтерфейсу «%s»"
 
 #, c-format
 msgid "Missing source portid for interface type '%s'"
-msgstr ""
+msgstr "Пропущено portid джерела для типу інтерфейсу «%s»"
 
 msgid "Missing source service attribute for char device"
 msgstr "Відсутній атрибут service у source для символьного пристрою"
@@ -14584,6 +14584,8 @@ msgstr "на цьому домені стан S3 вимкнено"
 
 msgid "S390 PV launch security is not supported by this host or kernel"
 msgstr ""
+"Підтримки захисту запуску S390 PV не передбачено у цій основній системі або "
+"ядрі"
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr ""
@@ -28368,11 +28370,11 @@ msgid "guest failed to start: %s"
 msgstr "не вдалося запустити гостьову систему: %s"
 
 msgid "guest failed to start: terminated abnormally"
-msgstr ""
+msgstr "не вдалося запустити гостьову систему: нештатне переривання роботи"
 
 #, c-format
 msgid "guest failed to start: unexpected exit status %d"
-msgstr ""
+msgstr "не вдалося запустити гостьову систему: неочікуваний стан виходу %d"
 
 msgid "guest interface"
 msgstr "гостьовий інтерфейс"
@@ -31190,6 +31192,8 @@ msgstr "перенесення домену %s не перебуває на фа
 
 msgid "migration of non-shared disks requested but NBD is not set up"
 msgstr ""
+"надіслано запит щодо перенесення дисків, які не є спільними, але не "
+"налаштовано NBD"
 
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
