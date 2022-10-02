@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-09-27 08:07+0000\n"
-"PO-Revision-Date: 2022-08-31 12:19+0000\n"
+"PO-Revision-Date: 2022-10-02 12:19+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -25,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14\n"
+"X-Generator: Weblate 4.14.1\n"
 
 msgid ""
 "\n"
@@ -11579,7 +11579,7 @@ msgstr "문자 장치에 대한 소스 채널 속성이 누락되었습니다"
 
 #, c-format
 msgid "Missing source connectionid for interface type '%s'"
-msgstr ""
+msgstr "연결장치 유형 '%s'을 위한 누락된 원천 연결id"
 
 msgid "Missing source host attribute for char device"
 msgstr "캐릭터 장치에 대한 소스 호스트 특성 빠짐"
@@ -11589,11 +11589,11 @@ msgstr "캐릭터 장치에 대한 소스 경로 특성 빠짐"
 
 #, c-format
 msgid "Missing source portgroup for interface type '%s'"
-msgstr ""
+msgstr "연결장치 유형 '%s'을 위한 누락된 원천 포트그룹"
 
 #, c-format
 msgid "Missing source portid for interface type '%s'"
-msgstr ""
+msgstr "연결장치 유형 '%s'을 위한 누락된 원천 포트id"
 
 msgid "Missing source service attribute for char device"
 msgstr "캐릭터 장치에 대한 소스 서비스 특성 빠짐"
@@ -13952,7 +13952,7 @@ msgid "S3 state is disabled for this domain"
 msgstr "이 도메인에 대해 S3 상태가 비활성화되었습니다"
 
 msgid "S390 PV launch security is not supported by this host or kernel"
-msgstr ""
+msgstr "이와 같은 호스트 또는 커널에 의해 S390 PV 보안 실행은 지원되지 않습니다"
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr "이 QEMU 바이너리에서는 S390 PV 실행 보안이 지원되지 않습니다"
@@ -27021,11 +27021,11 @@ msgid "guest failed to start: %s"
 msgstr "게스트 시작 실패: %s"
 
 msgid "guest failed to start: terminated abnormally"
-msgstr ""
+msgstr "게스트 시작에 실패: 비정상적으로 종료됨"
 
 #, c-format
 msgid "guest failed to start: unexpected exit status %d"
-msgstr ""
+msgstr "게스트 시작에 실패: 예상치 않은 종료 상태 %d"
 
 msgid "guest interface"
 msgstr "게스트 인터페이스"
@@ -29664,7 +29664,7 @@ msgid "migration of domain %s is not in post-copy phase"
 msgstr "도메인 %s의 이전은 복사-후 단계가 아닙니다"
 
 msgid "migration of non-shared disks requested but NBD is not set up"
-msgstr ""
+msgstr "비-공유된 디스크의 이전아 요청되었지만 NBD가 설정되지 않았습니다"
 
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
