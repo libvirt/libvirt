@@ -135,7 +135,7 @@ virXMLPropInt(xmlNodePtr node,
 
 int
 virXMLPropUInt(xmlNodePtr node,
-               const char* name,
+               const char *name,
                int base,
                virXMLPropFlags flags,
                unsigned int *result)
@@ -152,7 +152,7 @@ virXMLPropLongLong(xmlNodePtr node,
 
 int
 virXMLPropULongLong(xmlNodePtr node,
-                    const char* name,
+                    const char *name,
                     int base,
                     virXMLPropFlags flags,
                     unsigned long long *result)
@@ -160,8 +160,8 @@ virXMLPropULongLong(xmlNodePtr node,
 
 int
 virXMLPropEnum(xmlNodePtr node,
-               const char* name,
-               int (*strToInt)(const char*),
+               const char *name,
+               int (*strToInt)(const char *),
                virXMLPropFlags flags,
                unsigned int *result)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
@@ -176,8 +176,8 @@ virXMLPropUUID(xmlNodePtr node,
 
 int
 virXMLPropEnumDefault(xmlNodePtr node,
-                      const char* name,
-                      int (*strToInt)(const char*),
+                      const char *name,
+                      int (*strToInt)(const char *),
                       virXMLPropFlags flags,
                       unsigned int *result,
                       unsigned int defaultResult)
