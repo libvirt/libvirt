@@ -8,10 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v8.8.0 (unreleased)
+v8.8.0 (2022-10-03)
 ===================
-
-* **Security**
 
 * **Removed features**
 
@@ -20,8 +18,6 @@ v8.8.0 (unreleased)
     The 'sheepdog' project is no longer maintained and upstream bug reports
     are unaddressed. Libvirt thus removed the support for the sheepdog storage
     driver backend, following qemu's removal of sheepdog support in qemu-6.1.
-
-* **New features**
 
 * **Improvements**
 
