@@ -557,7 +557,7 @@ virXMLPropEnumInternal(xmlNodePtr node,
  * virXMLPropTristateBool:
  * @node: XML dom node pointer
  * @name: Name of the property (attribute) to get
- * @flags: Bitwise or of virXMLPropFlags
+ * @flags: Bitwise-OR of virXMLPropFlags
  * @result: The returned value
  *
  * Convenience function to return value of a yes / no attribute.
@@ -603,7 +603,7 @@ virXMLPropTristateBoolAllowDefault(xmlNodePtr node,
  * virXMLPropTristateSwitch:
  * @node: XML dom node pointer
  * @name: Name of the property (attribute) to get
- * @flags: Bitwise or of virXMLPropFlags
+ * @flags: Bitwise-OR of virXMLPropFlags
  * @result: The returned value
  *
  * Convenience function to return value of an on / off attribute.
@@ -632,7 +632,7 @@ virXMLPropTristateSwitch(xmlNodePtr node,
  * @node: XML dom node pointer
  * @name: Name of the property (attribute) to get
  * @base: Number base, see strtol
- * @flags: Bitwise or of virXMLPropFlags
+ * @flags: Bitwise-OR of virXMLPropFlags
  * @result: The returned value
  * @defaultResult: default value of @result in case the property is not found
  *
@@ -696,7 +696,7 @@ virXMLPropInt(xmlNodePtr node,
  * @node: XML dom node pointer
  * @name: Name of the property (attribute) to get
  * @base: Number base, see strtol
- * @flags: Bitwise or of virXMLPropFlags
+ * @flags: Bitwise-OR of virXMLPropFlags
  * @result: The returned value
  *
  * Convenience function to return value of an unsigned integer attribute.
@@ -819,7 +819,7 @@ virXMLPropLongLong(xmlNodePtr node,
  * @node: XML dom node pointer
  * @name: Name of the property (attribute) to get
  * @base: Number base, see strtol
- * @flags: Bitwise or of virXMLPropFlags
+ * @flags: Bitwise-OR of virXMLPropFlags
  * @result: The returned value
  *
  * Convenience function to return value of an unsigned long long attribute.
@@ -879,7 +879,7 @@ virXMLPropULongLong(xmlNodePtr node,
  * @name: Name of the property (attribute) to get
  * @strToInt: Conversion function to turn enum name to value. Expected to
  *            return negative value on failure.
- * @flags: Bitwise or of virXMLPropFlags
+ * @flags: Bitwise-OR of virXMLPropFlags
  * @result: The returned value
  * @defaultResult: default value set to @result in case the property is missing
  *
@@ -951,7 +951,7 @@ virXMLPropUUID(xmlNodePtr node,
  * @name: Name of the property (attribute) to get
  * @strToInt: Conversion function to turn enum name to value. Expected to
  *            return negative value on failure.
- * @flags: Bitwise or of virXMLPropFlags
+ * @flags: Bitwise-OR of virXMLPropFlags
  * @result: The returned value
  *
  * Convenience function to return value of an enum attribute.
