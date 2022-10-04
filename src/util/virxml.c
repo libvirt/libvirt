@@ -121,6 +121,7 @@ virXPathLongBase(const char *xpath,
     return ret;
 }
 
+
 /**
  * virXPathInt:
  * @xpath: the XPath string to evaluate
@@ -150,6 +151,7 @@ virXPathInt(const char *xpath,
     return 0;
 }
 
+
 /**
  * virXPathLong:
  * @xpath: the XPath string to evaluate
@@ -169,6 +171,7 @@ virXPathLong(const char *xpath,
 {
     return virXPathLongBase(xpath, ctxt, 10, value);
 }
+
 
 /**
  * virXPathLongHex:
@@ -190,6 +193,7 @@ virXPathLongHex(const char *xpath,
 {
     return virXPathLongBase(xpath, ctxt, 16, value);
 }
+
 
 static int
 virXPathULongBase(const char *xpath,
@@ -222,6 +226,7 @@ virXPathULongBase(const char *xpath,
     return ret;
 }
 
+
 /**
  * virXPathUInt:
  * @xpath: the XPath string to evaluate
@@ -251,6 +256,7 @@ virXPathUInt(const char *xpath,
     return 0;
 }
 
+
 /**
  * virXPathULong:
  * @xpath: the XPath string to evaluate
@@ -270,6 +276,7 @@ virXPathULong(const char *xpath,
 {
     return virXPathULongBase(xpath, ctxt, 10, value);
 }
+
 
 /**
  * virXPathUHex:
@@ -291,6 +298,7 @@ virXPathULongHex(const char *xpath,
 {
     return virXPathULongBase(xpath, ctxt, 16, value);
 }
+
 
 /**
  * virXPathULongLong:
@@ -333,6 +341,7 @@ virXPathULongLong(const char *xpath,
 
     return ret;
 }
+
 
 /**
  * virXPathLongLong:
@@ -481,6 +490,7 @@ virXMLNodeContentString(xmlNodePtr node)
 
     return ret;
 }
+
 
 static int
 virXMLPropEnumInternal(xmlNodePtr node,
@@ -967,6 +977,7 @@ virXPathBoolean(const char *xpath,
     return obj->boolval;
 }
 
+
 /**
  * virXPathNode:
  * @xpath: the XPath string to evaluate
@@ -997,6 +1008,7 @@ virXPathNode(const char *xpath,
 
     return obj->nodesetval->nodeTab[0];
 }
+
 
 /**
  * virXPathNodeSet:
@@ -1133,6 +1145,7 @@ catchXMLError(void *ctx, const char *msg G_GNUC_UNUSED, ...)
     }
 }
 
+
 /**
  * virXMLParseHelper:
  * @domcode: error domain of the caller, usually VIR_FROM_THIS
@@ -1238,7 +1251,10 @@ virXMLParseHelper(int domcode,
     return g_steal_pointer(&xml);
 }
 
-const char *virXMLPickShellSafeComment(const char *str1, const char *str2)
+
+const char *
+virXMLPickShellSafeComment(const char *str1,
+                           const char *str2)
 {
     if (str1 && !strpbrk(str1, "\r\t\n !\"#$&'()*;<>?[\\]^`{|}~") &&
         !strstr(str1, "--"))
@@ -1249,9 +1265,11 @@ const char *virXMLPickShellSafeComment(const char *str1, const char *str2)
     return NULL;
 }
 
-static int virXMLEmitWarning(int fd,
-                             const char *name,
-                             const char *cmd)
+
+static int
+virXMLEmitWarning(int fd,
+                  const char *name,
+                  const char *cmd)
 {
     size_t len;
     const char *prologue =
@@ -1300,6 +1318,7 @@ struct virXMLRewriteFileData {
     const char *xml;
 };
 
+
 static int
 virXMLRewriteFile(int fd,
                   const char *path,
@@ -1325,6 +1344,7 @@ virXMLRewriteFile(int fd,
     return 0;
 }
 
+
 int
 virXMLSaveFile(const char *path,
                const char *warnName,
@@ -1336,6 +1356,7 @@ virXMLSaveFile(const char *path,
     return virFileRewrite(path, S_IRUSR | S_IWUSR, -1, -1,
                           virXMLRewriteFile, &data);
 }
+
 
 /**
  * virXMLNodeToString: convert an XML node ptr to an XML string
@@ -1586,9 +1607,10 @@ virXMLNodeSanitizeNamespaces(xmlNodePtr node)
 }
 
 
-static void catchRNGError(void *ctx,
-                          const char *msg,
-                          ...)
+static void
+catchRNGError(void *ctx,
+              const char *msg,
+              ...)
 {
     virBuffer *buf = ctx;
     va_list args;
@@ -1601,9 +1623,10 @@ static void catchRNGError(void *ctx,
 }
 
 
-static void ignoreRNGError(void *ctx G_GNUC_UNUSED,
-                           const char *msg G_GNUC_UNUSED,
-                           ...)
+static void
+ignoreRNGError(void *ctx G_GNUC_UNUSED,
+               const char *msg G_GNUC_UNUSED,
+               ...)
 {}
 
 
@@ -1771,6 +1794,7 @@ virXMLFormatElementInternal(virBuffer *buf,
     virBufferFreeAndReset(attrBuf);
     virBufferFreeAndReset(childBuf);
 }
+
 
 /* same as virXMLFormatElement but outputs an empty element if @attrBuf and
  * @childBuf are both empty */
