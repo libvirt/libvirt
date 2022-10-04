@@ -720,7 +720,7 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
         perms->uid = (uid_t) -1;
     } else {
         /* We previously could output -1, so continue to parse it */
-        if (virXPathLongLong("number(./owner)", ctxt, &val) < 0 ||
+        if (virXPathLongLong("string(./owner)", ctxt, &val) < 0 ||
             ((uid_t)val != val &&
              val != -1)) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -735,7 +735,7 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
         perms->gid = (gid_t) -1;
     } else {
         /* We previously could output -1, so continue to parse it */
-        if (virXPathLongLong("number(./group)", ctxt, &val) < 0 ||
+        if (virXPathLongLong("string(./group)", ctxt, &val) < 0 ||
             ((gid_t) val != val &&
              val != -1)) {
             virReportError(VIR_ERR_XML_ERROR, "%s",

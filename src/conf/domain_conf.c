@@ -18103,10 +18103,10 @@ virDomainDefClockParse(virDomainDef *def,
         break;
 
     case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
-        if (virXPathLongLong("number(./clock/@adjustment)", ctxt,
+        if (virXPathLongLong("string(./clock/@adjustment)", ctxt,
                              &def->clock.data.variable.adjustment) < 0)
             def->clock.data.variable.adjustment = 0;
-        if (virXPathLongLong("number(./clock/@adjustment0)", ctxt,
+        if (virXPathLongLong("string(./clock/@adjustment0)", ctxt,
                              &def->clock.data.variable.adjustment0) < 0)
             def->clock.data.variable.adjustment0 = 0;
         tmp = virXPathString("string(./clock/@basis)", ctxt);
@@ -18132,7 +18132,7 @@ virDomainDefClockParse(virDomainDef *def,
         break;
 
     case VIR_DOMAIN_CLOCK_OFFSET_ABSOLUTE:
-        if (virXPathULongLong("number(./clock/@start)", ctxt,
+        if (virXPathULongLong("string(./clock/@start)", ctxt,
                               &def->clock.data.starttime) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing 'start' attribute for clock with offset='absolute'"));

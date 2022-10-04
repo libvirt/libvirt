@@ -1463,7 +1463,7 @@ virNodeDevCapStorageParseXML(xmlXPathContextPtr ctxt,
             storage->media_label = virXPathString("string(./media_label[1])", ctxt);
 
             val = 0;
-            if (virNodeDevCapsDefParseULongLong("number(./media_size[1])", ctxt, &val, def,
+            if (virNodeDevCapsDefParseULongLong("string(./media_size[1])", ctxt, &val, def,
                                                 _("no removable media size supplied for '%s'"),
                                                 _("invalid removable media size supplied for '%s'")) < 0) {
                 return -1;
@@ -1481,7 +1481,7 @@ virNodeDevCapStorageParseXML(xmlXPathContextPtr ctxt,
 
     if (!(storage->flags & VIR_NODE_DEV_CAP_STORAGE_REMOVABLE)) {
         val = 0;
-        if (virNodeDevCapsDefParseULongLong("number(./size[1])", ctxt, &val, def,
+        if (virNodeDevCapsDefParseULongLong("string(./size[1])", ctxt, &val, def,
                                             _("no size supplied for '%s'"),
                                             _("invalid size supplied for '%s'")) < 0)
             return -1;
