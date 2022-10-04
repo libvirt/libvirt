@@ -48,7 +48,7 @@ struct virParserData {
 };
 
 
-xmlXPathContextPtr
+static xmlXPathContextPtr
 virXMLXPathContextNew(xmlDocPtr xml)
 {
     xmlXPathContextPtr ctxt;

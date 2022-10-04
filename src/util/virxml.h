@@ -30,10 +30,6 @@
 #include "virbuffer.h"
 #include "virenum.h"
 
-xmlXPathContextPtr virXMLXPathContextNew(xmlDocPtr xml)
-    G_GNUC_WARN_UNUSED_RESULT;
-
-
 typedef enum {
     VIR_XML_PROP_NONE = 0,
     VIR_XML_PROP_REQUIRED = 1 << 0, /* Attribute may not be absent */
