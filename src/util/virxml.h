@@ -51,10 +51,6 @@ char *
 virXPathString(const char *xpath,
                xmlXPathContextPtr ctxt);
 int
-virXPathNumber(const char *xpath,
-               xmlXPathContextPtr ctxt,
-               double *value);
-int
 virXPathInt(const char *xpath,
             xmlXPathContextPtr ctxt,
             int *value);

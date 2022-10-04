@@ -90,39 +90,6 @@ virXPathString(const char *xpath,
 }
 
 
-/**
- * virXPathNumber:
- * @xpath: the XPath string to evaluate
- * @ctxt: an XPath context
- * @value: the returned double value
- *
- * Convenience function to evaluate an XPath number
- *
- * Returns 0 in case of success in which case @value is set,
- *         or -1 if the evaluation failed.
- */
-int
-virXPathNumber(const char *xpath,
-               xmlXPathContextPtr ctxt,
-               double *value)
-{
-    g_autoptr(xmlXPathObject) obj = NULL;
-
-    if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Invalid parameter to virXPathNumber()"));
-        return -1;
-    }
-    obj = xmlXPathEval(BAD_CAST xpath, ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
-        (isnan(obj->floatval))) {
-        return -1;
-    }
-
-    *value = obj->floatval;
-    return 0;
-}
-
 static int
 virXPathLongBase(const char *xpath,
                  xmlXPathContextPtr ctxt,

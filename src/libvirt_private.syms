@@ -3699,7 +3699,6 @@ virXPathLongHex;
 virXPathLongLong;
 virXPathNode;
 virXPathNodeSet;
-virXPathNumber;
 virXPathString;
 virXPathUInt;
 virXPathULong;
