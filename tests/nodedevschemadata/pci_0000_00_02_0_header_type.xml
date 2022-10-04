@@ -4,7 +4,7 @@
   <capability type='pci'>
     <class>0xffffff</class>
     <domain>0</domain>
-    <bus>0</bus>
+    <bus>4294967295</bus>
     <slot>2</slot>
     <function>0</function>
     <product id='0x0416'>4th Gen Core Processor Integrated Graphics Controller</product>

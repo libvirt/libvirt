@@ -323,10 +323,10 @@ virNodeDeviceCapPCIDefFormat(virBuffer *buf,
         virBufferAsprintf(buf, "<class>0x%.6x</class>\n", data->pci_dev.klass);
     virBufferAsprintf(buf, "<domain>%d</domain>\n",
                       data->pci_dev.domain);
-    virBufferAsprintf(buf, "<bus>%d</bus>\n", data->pci_dev.bus);
-    virBufferAsprintf(buf, "<slot>%d</slot>\n",
+    virBufferAsprintf(buf, "<bus>%u</bus>\n", data->pci_dev.bus);
+    virBufferAsprintf(buf, "<slot>%u</slot>\n",
                       data->pci_dev.slot);
-    virBufferAsprintf(buf, "<function>%d</function>\n",
+    virBufferAsprintf(buf, "<function>%u</function>\n",
                       data->pci_dev.function);
     virBufferAsprintf(buf, "<product id='0x%04x'",
                       data->pci_dev.product);
