@@ -1608,9 +1608,9 @@ virXMLNodeSanitizeNamespaces(xmlNodePtr node)
 
 
 static void
-catchRNGError(void *ctx,
-              const char *msg,
-              ...)
+virXMLValidatorRNGErrorCatch(void *ctx,
+                             const char *msg,
+                             ...)
 {
     virBuffer *buf = ctx;
     va_list args;
@@ -1624,9 +1624,9 @@ catchRNGError(void *ctx,
 
 
 static void
-ignoreRNGError(void *ctx G_GNUC_UNUSED,
-               const char *msg G_GNUC_UNUSED,
-               ...)
+virXMLValidatorRNGErrorIgnore(void *ctx G_GNUC_UNUSED,
+                              const char *msg G_GNUC_UNUSED,
+                              ...)
 {}
 
 
@@ -1648,8 +1648,8 @@ virXMLValidatorInit(const char *schemafile)
     }
 
     xmlRelaxNGSetParserErrors(validator->rngParser,
-                              catchRNGError,
-                              ignoreRNGError,
+                              virXMLValidatorRNGErrorCatch,
+                              virXMLValidatorRNGErrorIgnore,
                               &validator->buf);
 
     if (!(validator->rng = xmlRelaxNGParse(validator->rngParser))) {
@@ -1668,8 +1668,8 @@ virXMLValidatorInit(const char *schemafile)
     }
 
     xmlRelaxNGSetValidErrors(validator->rngValid,
-                             catchRNGError,
-                             ignoreRNGError,
+                             virXMLValidatorRNGErrorCatch,
+                             virXMLValidatorRNGErrorIgnore,
                              &validator->buf);
     return validator;
 
