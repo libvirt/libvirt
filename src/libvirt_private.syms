@@ -3694,7 +3694,6 @@ virXPathBoolean;
 virXPathContextNodeRestore;
 virXPathInt;
 virXPathLong;
-virXPathLongHex;
 virXPathLongLong;
 virXPathNode;
 virXPathNodeSet;

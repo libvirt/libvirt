@@ -173,28 +173,6 @@ virXPathLong(const char *xpath,
 }
 
 
-/**
- * virXPathLongHex:
- * @xpath: the XPath string to evaluate
- * @ctxt: an XPath context
- * @value: the returned long value
- *
- * Convenience function to evaluate an XPath number
- * according to a base of 16
- *
- * Returns 0 in case of success in which case @value is set,
- *         or -1 if the XPath evaluation failed or -2 if the
- *         value doesn't have a long format.
- */
-int
-virXPathLongHex(const char *xpath,
-                xmlXPathContextPtr ctxt,
-                long *value)
-{
-    return virXPathLongBase(xpath, ctxt, 16, value);
-}
-
-
 static int
 virXPathULongBase(const char *xpath,
                   xmlXPathContextPtr ctxt,

@@ -71,10 +71,6 @@ virXPathLongLong(const char *xpath,
                  xmlXPathContextPtr ctxt,
                  long long *value);
 int
-virXPathLongHex(const char *xpath,
-                xmlXPathContextPtr ctxt,
-                long *value);
-int
 virXPathULongHex(const char *xpath,
                  xmlXPathContextPtr ctxt,
                  unsigned long *value);
