@@ -681,7 +681,8 @@ int qemuDomainSnapshotDiscardAllMetadata(virQEMUDriver *driver,
                                          virDomainObj *vm);
 
 void qemuDomainRemoveInactive(virQEMUDriver *driver,
-                              virDomainObj *vm);
+                              virDomainObj *vm,
+                              virDomainUndefineFlagsValues flags);
 
 void
 qemuDomainRemoveInactiveLocked(virQEMUDriver *driver,

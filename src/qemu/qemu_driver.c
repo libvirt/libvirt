@@ -1626,7 +1626,7 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
         goto cleanup;
 
     if (qemuProcessBeginJob(vm, VIR_DOMAIN_JOB_OPERATION_START, flags) < 0) {
-        qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactive(driver, vm, 0);
         goto cleanup;
     }
 
@@ -1635,7 +1635,7 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
                          VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                          start_flags) < 0) {
         virDomainAuditStart(vm, "booted", false);
-        qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactive(driver, vm, 0);
         qemuProcessEndJob(vm);
         goto cleanup;
     }
@@ -2118,7 +2118,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
     ret = 0;
  endjob:
     if (ret == 0)
-        qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactive(driver, vm, 0);
     virDomainObjEndJob(vm);
 
  cleanup:
@@ -2738,7 +2738,7 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
     }
     virDomainObjEndAsyncJob(vm);
     if (ret == 0)
-        qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactive(driver, vm, 0);
 
  cleanup:
     virQEMUSaveDataFree(data);
@@ -3278,7 +3278,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
 
     virDomainObjEndAsyncJob(vm);
     if (ret == 0 && flags & VIR_DUMP_CRASH)
-        qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactive(driver, vm, 0);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -3590,7 +3590,7 @@ processGuestPanicEvent(virQEMUDriver *driver,
  endjob:
     virDomainObjEndAsyncJob(vm);
     if (removeInactive)
-        qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactive(driver, vm, 0);
 }
 
 
@@ -4068,7 +4068,7 @@ processMonitorEOFEvent(virQEMUDriver *driver,
     virObjectEventStateQueue(driver->domainEventState, event);
 
  endjob:
-    qemuDomainRemoveInactive(driver, vm);
+    qemuDomainRemoveInactive(driver, vm, 0);
     virDomainObjEndJob(vm);
 }
 
@@ -6000,7 +6000,7 @@ qemuDomainRestoreInternal(virConnectPtr conn,
     virFileWrapperFdFree(wrapperFd);
     virQEMUSaveDataFree(data);
     if (vm && ret < 0)
-        qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactive(driver, vm, 0);
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -6690,7 +6690,7 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
         } else {
             /* Brand new domain. Remove it */
             VIR_INFO("Deleting domain '%s'", vm->def->name);
-            qemuDomainRemoveInactive(driver, vm);
+            qemuDomainRemoveInactive(driver, vm, 0);
         }
     }
 
@@ -6723,12 +6723,21 @@ qemuDomainUndefineFlags(virDomainPtr dom,
                   VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA |
                   VIR_DOMAIN_UNDEFINE_CHECKPOINTS_METADATA |
                   VIR_DOMAIN_UNDEFINE_NVRAM |
-                  VIR_DOMAIN_UNDEFINE_KEEP_NVRAM, -1);
+                  VIR_DOMAIN_UNDEFINE_KEEP_NVRAM |
+                  VIR_DOMAIN_UNDEFINE_TPM |
+                  VIR_DOMAIN_UNDEFINE_KEEP_TPM, -1);
 
     if ((flags & VIR_DOMAIN_UNDEFINE_NVRAM) &&
         (flags & VIR_DOMAIN_UNDEFINE_KEEP_NVRAM)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("cannot both keep and delete nvram"));
+        return -1;
+    }
+
+    if ((flags & VIR_DOMAIN_UNDEFINE_TPM) &&
+        (flags & VIR_DOMAIN_UNDEFINE_KEEP_TPM)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("cannot both keep and delete TPM"));
         return -1;
     }
 
@@ -6830,7 +6839,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
      */
     vm->persistent = 0;
     if (!virDomainObjIsActive(vm))
-        qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactive(driver, vm, flags);
 
     ret = 0;
  endjob:

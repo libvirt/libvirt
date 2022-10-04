@@ -151,7 +151,8 @@ qemuExtDevicesPrepareHost(virQEMUDriver *driver,
 
 void
 qemuExtDevicesCleanupHost(virQEMUDriver *driver,
-                          virDomainDef *def)
+                          virDomainDef *def,
+                          virDomainUndefineFlagsValues flags)
 {
     size_t i;
 
@@ -159,7 +160,7 @@ qemuExtDevicesCleanupHost(virQEMUDriver *driver,
         return;
 
     for (i = 0; i < def->ntpms; i++) {
-        qemuExtTPMCleanupHost(def->tpms[i]);
+        qemuExtTPMCleanupHost(def->tpms[i], flags);
     }
 }
 

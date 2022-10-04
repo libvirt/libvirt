@@ -2267,6 +2267,10 @@ typedef enum {
     VIR_DOMAIN_UNDEFINE_CHECKPOINTS_METADATA = (1 << 4), /* If last use of domain,
                                                             then also remove any
                                                             checkpoint metadata (Since: 5.6.0) */
+    VIR_DOMAIN_UNDEFINE_TPM                = (1 << 5), /* Also remove any
+                                                          TPM state (Since: 8.9.0) */
+    VIR_DOMAIN_UNDEFINE_KEEP_TPM           = (1 << 6), /* Keep TPM state (Since: 8.9.0) */
+    /* Future undefine control flags should come here. */
 } virDomainUndefineFlagsValues;
 
 

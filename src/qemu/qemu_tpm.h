@@ -35,7 +35,8 @@ int qemuExtTPMPrepareHost(virQEMUDriver *driver,
     ATTRIBUTE_NONNULL(3)
     G_GNUC_WARN_UNUSED_RESULT;
 
-void qemuExtTPMCleanupHost(virDomainTPMDef *tpm)
+void qemuExtTPMCleanupHost(virDomainTPMDef *tpm,
+                           virDomainUndefineFlagsValues flags)
     ATTRIBUTE_NONNULL(1);
 
 int qemuExtTPMStart(virQEMUDriver *driver,

@@ -4486,6 +4486,7 @@ undefine
       [--checkpoints-metadata] [--nvram] [--keep-nvram]
       [ {--storage volumes | --remove-all-storage
          [--delete-storage-volume-snapshots]} --wipe-storage]
+      [--tpm] [--keep-tpm]
 
 Undefine a domain. If the domain is running, this converts it to a
 transient domain, without stopping it. If the domain is inactive,
@@ -4536,6 +4537,11 @@ failure.
 
 The flag *--wipe-storage* specifies that the storage volumes should be
 wiped before removal.
+
+*--tpm* and *--keep-tpm* specify accordingly to delete or keep a TPM's
+persistent state directory structure and files. If the flags are omitted
+then the persistent_state attribute in the TPM emulator definition in the
+domain XML determines whether the TPM state is kept.
 
 NOTE: For an inactive domain, the domain name or UUID must be used as the
 *domain*.

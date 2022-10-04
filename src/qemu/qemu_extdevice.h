@@ -41,7 +41,8 @@ int qemuExtDevicesPrepareHost(virQEMUDriver *driver,
     G_GNUC_WARN_UNUSED_RESULT;
 
 void qemuExtDevicesCleanupHost(virQEMUDriver *driver,
-                               virDomainDef *def)
+                               virDomainDef *def,
+                               virDomainUndefineFlagsValues flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuExtDevicesStart(virQEMUDriver *driver,

@@ -693,14 +693,23 @@ qemuTPMEmulatorInitPaths(virDomainTPMDef *tpm,
 /**
  * qemuTPMEmulatorCleanupHost:
  * @tpm: TPM definition
+ * @flags: flags indicating whether to keep or remove TPM persistent state
  *
  * Clean up persistent storage for the swtpm.
  */
 static void
-qemuTPMEmulatorCleanupHost(virDomainTPMDef *tpm)
+qemuTPMEmulatorCleanupHost(virDomainTPMDef *tpm,
+                           virDomainUndefineFlagsValues flags)
 {
-    if (!tpm->data.emulator.persistent_state)
+    /*
+     * remove TPM state if:
+     * - persistent_state flag is set and the UNDEFINE_TPM flag is set
+     * - persistent_state flag is not set and the KEEP_TPM flag is not set
+     */
+    if ((tpm->data.emulator.persistent_state && (flags & VIR_DOMAIN_UNDEFINE_TPM)) ||
+        (!tpm->data.emulator.persistent_state && !(flags & VIR_DOMAIN_UNDEFINE_KEEP_TPM))) {
         qemuTPMEmulatorDeleteStorage(tpm);
+    }
 }
 
 
@@ -991,9 +1000,10 @@ qemuExtTPMPrepareHost(virQEMUDriver *driver,
 
 
 void
-qemuExtTPMCleanupHost(virDomainTPMDef *tpm)
+qemuExtTPMCleanupHost(virDomainTPMDef *tpm,
+                      virDomainUndefineFlagsValues flags)
 {
-    qemuTPMEmulatorCleanupHost(tpm);
+    qemuTPMEmulatorCleanupHost(tpm, flags);
 }
 
 

@@ -3650,6 +3650,14 @@ static const vshCmdOptDef opts_undefine[] = {
      .type = VSH_OT_BOOL,
      .help = N_("keep nvram file")
     },
+    {.name = "tpm",
+     .type = VSH_OT_BOOL,
+     .help = N_("remove TPM state")
+    },
+    {.name = "keep-tpm",
+     .type = VSH_OT_BOOL,
+     .help = N_("keep TPM state")
+    },
     {.name = NULL}
 };
 
@@ -3677,6 +3685,8 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     bool delete_snapshots = vshCommandOptBool(cmd, "delete-storage-volume-snapshots");
     bool nvram = vshCommandOptBool(cmd, "nvram");
     bool keep_nvram = vshCommandOptBool(cmd, "keep-nvram");
+    bool tpm = vshCommandOptBool(cmd, "tpm");
+    bool keep_tpm = vshCommandOptBool(cmd, "keep-tpm");
     /* Positive if these items exist.  */
     int has_managed_save = 0;
     int has_snapshots_metadata = 0;
@@ -3702,6 +3712,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
     VSH_REQUIRE_OPTION("delete-storage-volume-snapshots", "remove-all-storage");
     VSH_EXCLUSIVE_OPTIONS("nvram", "keep-nvram");
+    VSH_EXCLUSIVE_OPTIONS("tpm", "keep-tpm");
 
     ignore_value(vshCommandOptStringQuiet(ctl, cmd, "storage", &vol_string));
 
@@ -3729,6 +3740,10 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_UNDEFINE_NVRAM;
     if (keep_nvram)
         flags |= VIR_DOMAIN_UNDEFINE_KEEP_NVRAM;
+    if (tpm)
+        flags |= VIR_DOMAIN_UNDEFINE_TPM;
+    if (keep_tpm)
+        flags |= VIR_DOMAIN_UNDEFINE_KEEP_TPM;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, &name)))
         return false;

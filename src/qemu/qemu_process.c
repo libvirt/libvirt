@@ -8442,7 +8442,7 @@ qemuProcessAutoDestroy(virDomainObj *dom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
-    qemuDomainRemoveInactive(driver, dom);
+    qemuDomainRemoveInactive(driver, dom, 0);
 
     virDomainObjEndJob(dom);
 
@@ -8905,7 +8905,7 @@ qemuProcessReconnect(void *opaque)
     if (jobStarted)
         virDomainObjEndJob(obj);
     if (!virDomainObjIsActive(obj))
-        qemuDomainRemoveInactive(driver, obj);
+        qemuDomainRemoveInactive(driver, obj, 0);
     virDomainObjEndAPI(&obj);
     virIdentitySetCurrent(NULL);
     return;
