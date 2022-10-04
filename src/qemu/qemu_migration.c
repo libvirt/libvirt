@@ -4036,7 +4036,7 @@ qemuMigrationSrcConfirm(virQEMUDriver *driver,
             virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm);
             vm->persistent = 0;
         }
-        qemuDomainRemoveInactive(driver, vm, 0);
+        qemuDomainRemoveInactive(driver, vm, VIR_DOMAIN_UNDEFINE_TPM);
     }
 
  cleanup:
@@ -6702,7 +6702,7 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
     }
 
     if (!virDomainObjIsActive(vm))
-        qemuDomainRemoveInactive(driver, vm, 0);
+        qemuDomainRemoveInactive(driver, vm, VIR_DOMAIN_UNDEFINE_TPM);
 
     virErrorRestore(&orig_err);
     return NULL;
