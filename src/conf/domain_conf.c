@@ -13178,14 +13178,13 @@ static int
 virDomainSEVDefParseXML(virDomainSEVDef *def,
                         xmlXPathContextPtr ctxt)
 {
-    unsigned long policy;
     int rc;
 
     if (virXMLPropTristateBool(ctxt->node, "kernelHashes", VIR_XML_PROP_NONE,
                                &def->kernel_hashes) < 0)
         return -1;
 
-    if (virXPathULongHex("string(./policy)", ctxt, &policy) < 0) {
+    if (virXPathUIntBase("string(./policy)", ctxt, 16, &def->policy) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("failed to get launch security policy"));
         return -1;
@@ -13214,7 +13213,6 @@ virDomainSEVDefParseXML(virDomainSEVDef *def,
         return -1;
     }
 
-    def->policy = policy;
     def->dh_cert = virXPathString("string(./dhCert)", ctxt);
     def->session = virXPathString("string(./session)", ctxt);
 
