@@ -312,6 +312,34 @@ virCPUDefParseXMLString(const char *xml,
 }
 
 
+static int
+virCPUDefParseXMLCache(virCPUDef *def,
+                       xmlNodePtr node)
+{
+    int rc;
+
+    def->cache = g_new0(virCPUCacheDef, 1);
+
+    if ((rc = virXMLPropInt(node, "level", 10, VIR_XML_PROP_NONNEGATIVE,
+                            &def->cache->level, -1)) < 0)
+        return -1;
+
+    if (rc == 1) {
+        if (def->cache->level < 1 || def->cache->level > 3) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("invalid CPU cache level, must be in range [1,3]"));
+            return -1;
+        }
+    }
+
+    if (virXMLPropEnum(node, "mode", virCPUCacheModeTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &def->cache->mode) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /*
  * Parses CPU definition XML from a node pointed to by @xpath. If @xpath is
  * NULL, the current node of @ctxt is used (i.e., it is a shortcut to ".").
@@ -335,6 +363,8 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     g_autofree xmlNodePtr *nodes = NULL;
     xmlNodePtr topology = NULL;
     xmlNodePtr maxphysaddrNode = NULL;
+    g_autofree xmlNodePtr *cacheNodes = NULL;
+    ssize_t ncacheNodes = 0;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int n;
     int rv;
@@ -626,35 +656,15 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
         def->features[i].policy = policy;
     }
 
-    if (virXPathInt("count(./cache)", ctxt, &n) < 0) {
-        return -1;
-    } else if (n > 1) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("at most one CPU cache element may be specified"));
-        return -1;
-    } else if (n == 1) {
-        int level = -1;
-        g_autofree char *strmode = NULL;
-        int mode;
-
-        if (virXPathBoolean("boolean(./cache[1]/@level)", ctxt) == 1 &&
-            (virXPathInt("string(./cache[1]/@level)", ctxt, &level) < 0 ||
-             level < 1 || level > 3)) {
+    if ((ncacheNodes = virXPathNodeSet("./cache", ctxt, &cacheNodes)) > 0) {
+        if (ncacheNodes > 1) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("invalid CPU cache level, must be in range [1,3]"));
+                           _("at most one CPU cache element may be specified"));
             return -1;
         }
 
-        if (!(strmode = virXPathString("string(./cache[1]/@mode)", ctxt)) ||
-            (mode = virCPUCacheModeTypeFromString(strmode)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("missing or invalid CPU cache mode"));
+        if (virCPUDefParseXMLCache(def, cacheNodes[0]) < 0)
             return -1;
-        }
-
-        def->cache = g_new0(virCPUCacheDef, 1);
-        def->cache->level = level;
-        def->cache->mode = mode;
     }
 
     if ((maxphysaddrNode = virXPathNode("./maxphysaddr[1]", ctxt))) {
