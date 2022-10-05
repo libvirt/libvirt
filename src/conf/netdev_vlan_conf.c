@@ -35,7 +35,6 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
     int ret = -1;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     char *trunk = NULL;
-    char *nativeMode = NULL;
     xmlNodePtr *tagNodes = NULL;
     int nTags;
     size_t i;
@@ -57,37 +56,34 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
     def->nativeMode = 0;
     def->nativeTag = 0;
     for (i = 0; i < nTags; i++) {
-        unsigned long id;
+        unsigned int nativeMode = 0;
+        int rc;
 
-        ctxt->node = tagNodes[i];
-        if (virXPathULong("string(./@id)", ctxt, &id) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("missing or invalid vlan tag id attribute"));
+        if (virXMLPropUInt(tagNodes[i], "id", 10, VIR_XML_PROP_REQUIRED,
+                           &def->tag[i]) < 0)
             goto cleanup;
-        }
-        if (id > 4095) {
+
+        if (def->tag[i] > 4095) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("vlan tag id %lu too large (maximum 4095)"), id);
+                           _("vlan tag id %u too large (maximum 4095)"), def->tag[i]);
             goto cleanup;
         }
-        if ((nativeMode = virXPathString("string(./@nativeMode)", ctxt))) {
+
+        if ((rc = virXMLPropEnum(tagNodes[i], "nativeMode",
+                                 virNativeVlanModeTypeFromString,
+                                 VIR_XML_PROP_NONZERO, &nativeMode)) < 0)
+            return -1;
+
+        if (rc == 1) {
             if (def->nativeMode != 0) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("duplicate native vlan setting"));
                 goto cleanup;
             }
-            if ((def->nativeMode
-                 = virNativeVlanModeTypeFromString(nativeMode)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Invalid \"nativeMode='%s'\" "
-                                 "in vlan <tag> element"),
-                               nativeMode);
-                goto cleanup;
-            }
-            VIR_FREE(nativeMode);
-            def->nativeTag = id;
+
+            def->nativeMode = nativeMode;
+            def->nativeTag = def->tag[i];
         }
-        def->tag[i] = id;
     }
 
     def->nTags = nTags;
@@ -128,7 +124,6 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
  cleanup:
     VIR_FREE(tagNodes);
     VIR_FREE(trunk);
-    VIR_FREE(nativeMode);
     if (ret < 0)
         virNetDevVlanClear(def);
     return ret;
