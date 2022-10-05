@@ -142,38 +142,6 @@ virXPathInt(const char *xpath,
 }
 
 
-static int
-virXPathULongBase(const char *xpath,
-                  xmlXPathContextPtr ctxt,
-                  int base,
-                  unsigned long *value)
-{
-    g_autoptr(xmlXPathObject) obj = NULL;
-    int ret = 0;
-
-    if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Invalid parameter to virXPathULong()"));
-        return -1;
-    }
-    obj = xmlXPathEval(BAD_CAST xpath, ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        if (virStrToLong_ul((char *) obj->stringval, NULL, base, value) < 0)
-            ret = -2;
-    } else if ((obj != NULL) && (obj->type == XPATH_NUMBER) &&
-               (!(isnan(obj->floatval)))) {
-        *value = (unsigned long) obj->floatval;
-        if (*value != obj->floatval)
-            ret = -2;
-    } else {
-        ret = -1;
-    }
-
-    return ret;
-}
-
-
 /**
  * virXPathUIntBase:
  * @xpath: the XPath string to evaluate
@@ -213,49 +181,6 @@ virXPathUInt(const char *xpath,
              unsigned int *value)
 {
     return virXPathUIntBase(xpath, ctxt, 10, value);
-}
-
-
-/**
- * virXPathULong:
- * @xpath: the XPath string to evaluate
- * @ctxt: an XPath context
- * @value: the returned long value
- *
- * Convenience function to evaluate an XPath number
- *
- * Returns 0 in case of success in which case @value is set,
- *         or -1 if the XPath evaluation failed or -2 if the
- *         value doesn't have a long format.
- */
-int
-virXPathULong(const char *xpath,
-              xmlXPathContextPtr ctxt,
-              unsigned long *value)
-{
-    return virXPathULongBase(xpath, ctxt, 10, value);
-}
-
-
-/**
- * virXPathUHex:
- * @xpath: the XPath string to evaluate
- * @ctxt: an XPath context
- * @value: the returned long value
- *
- * Convenience function to evaluate an XPath number
- * according to base of 16
- *
- * Returns 0 in case of success in which case @value is set,
- *         or -1 if the XPath evaluation failed or -2 if the
- *         value doesn't have a long format.
- */
-int
-virXPathULongHex(const char *xpath,
-                 xmlXPathContextPtr ctxt,
-                 unsigned long *value)
-{
-    return virXPathULongBase(xpath, ctxt, 16, value);
 }
 
 
