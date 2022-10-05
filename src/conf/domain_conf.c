@@ -9376,7 +9376,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     if (virDomainNetTeamingInfoParseXML(ctxt, &def->teaming) < 0)
         return NULL;
 
-    rv = virXPathULong("string(./tune/sndbuf)", ctxt, &def->tune.sndbuf);
+    rv = virXPathULongLong("string(./tune/sndbuf)", ctxt, &def->tune.sndbuf);
     if (rv >= 0) {
         def->tune.sndbuf_specified = true;
     } else if (rv == -2) {
@@ -23585,7 +23585,7 @@ virDomainNetDefFormat(virBuffer *buf,
     if (def->tune.sndbuf_specified) {
         virBufferAddLit(buf,   "<tune>\n");
         virBufferAdjustIndent(buf, 2);
-        virBufferAsprintf(buf, "<sndbuf>%lu</sndbuf>\n", def->tune.sndbuf);
+        virBufferAsprintf(buf, "<sndbuf>%llu</sndbuf>\n", def->tune.sndbuf);
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf,   "</tune>\n");
     }

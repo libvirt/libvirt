@@ -1146,7 +1146,7 @@ struct _virDomainNetDef {
     virNetDevVPortProfile *virtPortProfile;
     struct {
         bool sndbuf_specified;
-        unsigned long sndbuf;
+        unsigned long long sndbuf;
     } tune;
     char *script;
     char *downscript;
