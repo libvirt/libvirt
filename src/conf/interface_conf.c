@@ -113,17 +113,15 @@ static int
 virInterfaceDefParseMtu(virInterfaceDef *def,
                         xmlXPathContextPtr ctxt)
 {
-    unsigned long mtu;
-    int ret;
-
-    ret = virXPathULong("string(./mtu/@size)", ctxt, &mtu);
-    if ((ret == -2) || ((ret == 0) && (mtu > 100000))) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("interface mtu value is improper"));
+    if (virXPathUInt("string(./mtu/@size)", ctxt, &def->mtu) == -2)
         return -1;
-    } else if (ret == 0) {
-        def->mtu = (unsigned int) mtu;
+
+    if (def->mtu > 100000) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("value of the 'size' attribute of 'mtu' element must be at most 100000"));
+        return -1;
     }
+
     return 0;
 }
 
