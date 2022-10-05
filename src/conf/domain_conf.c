@@ -17420,13 +17420,15 @@ virDomainDefParseIDs(virDomainDef *def,
 {
     g_autofree xmlNodePtr *nodes = NULL;
     g_autofree char *tmp = NULL;
-    long id = -1;
     int n;
 
-    if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
-        if (virXPathLong("string(./@id)", ctxt, &id) < 0)
-            id = -1;
-    def->id = (int)id;
+    def->id = -1;
+
+    if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
+        if (virXMLPropInt(ctxt->node, "id", 10, VIR_XML_PROP_NONNEGATIVE,
+                          &def->id, -1) < 0)
+            return -1;
+    }
 
     /* Extract domain name */
     if (!(def->name = virXPathString("string(./name[1])", ctxt))) {
@@ -18983,7 +18985,7 @@ virDomainObjParseXML(xmlXPathContextPtr ctxt,
                      virDomainXMLOption *xmlopt,
                      unsigned int flags)
 {
-    long val;
+    long long vmpid;
     xmlNodePtr config;
     xmlNodePtr oldnode;
     g_autoptr(virDomainObj) obj = NULL;
@@ -19026,12 +19028,11 @@ virDomainObjParseXML(xmlXPathContextPtr ctxt,
 
     virDomainObjSetState(obj, state, reason);
 
-    if (virXPathLong("string(./@pid)", ctxt, &val) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("invalid pid"));
+    if (virXMLPropLongLong(ctxt->node, "pid", 10, VIR_XML_PROP_REQUIRED,
+                           &vmpid, 0) < 0)
         return NULL;
-    }
-    obj->pid = (pid_t)val;
+
+    obj->pid = (pid_t) vmpid;
 
     if ((n = virXPathNodeSet("./taint", ctxt, &taintNodes)) < 0)
         return NULL;
