@@ -4385,7 +4385,6 @@ virQEMUCapsLoadCache(virArch hostArch,
     g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     long long int l;
-    unsigned long lu;
 
     if (!(doc = virXMLParse(filename, NULL, NULL, "qemuCaps", &ctxt, NULL, false)))
         return -1;
@@ -4397,9 +4396,9 @@ virQEMUCapsLoadCache(virArch hostArch,
     }
     qemuCaps->libvirtCtime = (time_t)l;
 
-    qemuCaps->libvirtVersion = 0;
-    if (virXPathULong("string(./selfvers)", ctxt, &lu) == 0)
-        qemuCaps->libvirtVersion = lu;
+    if (virXMLPropUInt(ctxt->node, "selfvers", 10, VIR_XML_PROP_NONE,
+                       &qemuCaps->libvirtVersion) < 0)
+        return -1;
 
     if (!skipInvalidation &&
         (qemuCaps->libvirtCtime != virGetSelfLastChanged() ||
