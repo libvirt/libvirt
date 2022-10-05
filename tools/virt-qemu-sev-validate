@@ -39,8 +39,13 @@ from base64 import b64decode
 from hashlib import sha256
 import hmac
 import logging
+import re
+import socket
 import sys
 import traceback
+
+from lxml import etree
+import libvirt
 
 log = logging.getLogger()
 
@@ -50,6 +55,18 @@ class AttestationFailedException(Exception):
 
 
 class UnsupportedUsageException(Exception):
+    pass
+
+
+class InsecureUsageException(Exception):
+    pass
+
+
+class IncorrectConfigException(Exception):
+    pass
+
+
+class InvalidStateException(Exception):
     pass
 
 
@@ -159,6 +176,108 @@ class ConfidentialVM(object):
                 "Measurement does not match, VM is not trustworthy")
 
 
+class LibvirtConfidentialVM(ConfidentialVM):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.conn = None
+        self.dom = None
+
+    def check_domain(self, doc, secure):
+        ls = doc.xpath("/domain/launchSecurity[@type='sev']")
+        if len(ls) != 1:
+            raise IncorrectConfigException(
+                "Domain is not configured with SEV launch security")
+
+        dh = doc.xpath("/domain/launchSecurity[@type='sev']/dhCert")
+        if len(dh) != 1:
+            raise IncorrectConfigException(
+                "Domain must have SEV owner cert to validate measurement")
+
+        session = doc.xpath("/domain/launchSecurity[@type='sev']/session")
+        if len(session) != 1:
+            raise IncorrectConfigException(
+                "Domain must have SEV session data to validate measurement")
+
+        nvramnodes = doc.xpath("/domain/os/nvram")
+        if len(nvramnodes) != 0 and secure:
+            raise InsecureUsageException(
+                "Domain firmware with NVRAM cannot be securely measured")
+
+        loadernodes = doc.xpath("/domain/os/loader")
+        if len(loadernodes) != 1:
+            raise IncorrectConfigException(
+                "Domain must have one firmware path")
+
+    def load_domain(self, uri, id_name_uuid, secure, ignore_config):
+        self.conn = libvirt.open(uri)
+
+        remote = socket.gethostname() != self.conn.getHostname()
+        if not remote and secure:
+            raise InsecureUsageException(
+                "running locally on the hypervisor host is not secure")
+
+        if re.match(r'^\d+$', id_name_uuid):
+            self.dom = self.conn.lookupByID(int(id_name_uuid))
+        elif re.match(r'^[-a-f0-9]+$', id_name_uuid):
+            self.dom = self.conn.lookupByUUIDString(id_name_uuid)
+        else:
+            self.dom = self.conn.lookupByName(id_name_uuid)
+
+        log.debug("VM: id=%d name=%s uuid=%s",
+            self.dom.ID(), self.dom.name(), self.dom.UUIDString())
+
+        if not self.dom.isActive():
+            raise InvalidStateException(
+                "Domain must be running to validate measurement")
+
+        state = self.dom.info()[0]
+        if state != libvirt.VIR_DOMAIN_PAUSED and secure:
+            raise InvalidStateException(
+                "Domain must be paused to validate measurement")
+
+        xml = self.dom.XMLDesc()
+
+        doc = etree.fromstring(xml)
+        if not ignore_config:
+            self.check_domain(doc, secure)
+
+        # See comments at top of file wrt why we are OK to trust the
+        # sev-api-major, sev-api-minor, sev-build-id and sev-policy data
+        # reported by the host
+        sevinfo = self.dom.launchSecurityInfo()
+
+        if "sev-api-major" not in sevinfo:
+            raise UnsupportedUsageException(
+                "'api-major' not reported in domain launch security info")
+
+        if self.measurement is None:
+            self.measurement = sevinfo["sev-measurement"]
+        if self.api_major is None:
+            self.api_major = sevinfo["sev-api-major"]
+        if self.api_minor is None:
+            self.api_minor = sevinfo["sev-api-minor"]
+        if self.build_id is None:
+            self.build_id = sevinfo["sev-build-id"]
+        if self.policy is None:
+            self.policy = sevinfo["sev-policy"]
+
+        if self.firmware is None:
+            if remote:
+                raise UnsupportedUsageException(
+                    "Cannot access firmware path remotely")
+            if secure:
+                raise InsecureUsageException(
+                    "Using firmware path from XML is not secure")
+
+            loadernodes = doc.xpath("/domain/os/loader")
+            if len(loadernodes) == 0:
+                raise UnsupportedUsageException(
+                    "--firmware not specified and no firmware path found")
+
+            self.load_firmware(loadernodes[0].text)
+
+
 def parse_command_line():
     parser = argparse.ArgumentParser(
         description='Validate guest AMD SEV launch measurement')
@@ -169,20 +288,20 @@ def parse_command_line():
 
     # Arguments related to the state of the launched guest
     vmstate = parser.add_argument_group("Virtual machine launch state")
-    vmstate.add_argument('--measurement', '-m', required=True,
+    vmstate.add_argument('--measurement', '-m',
                          help='Measurement for the running domain')
-    vmstate.add_argument('--api-major', type=int, required=True,
+    vmstate.add_argument('--api-major', type=int,
                          help='SEV API major version for the running domain')
-    vmstate.add_argument('--api-minor', type=int, required=True,
+    vmstate.add_argument('--api-minor', type=int,
                          help='SEV API minor version for the running domain')
-    vmstate.add_argument('--build-id', type=int, required=True,
+    vmstate.add_argument('--build-id', type=int,
                          help='SEV build ID for the running domain')
-    vmstate.add_argument('--policy', type=int, required=True,
+    vmstate.add_argument('--policy', type=int,
                          help='SEV policy for the running domain')
 
     # Arguments related to calculation of the expected launch measurement
     vmconfig = parser.add_argument_group("Virtual machine config")
-    vmconfig.add_argument('--firmware', '-f', required=True,
+    vmconfig.add_argument('--firmware', '-f',
                           help='Path to the firmware binary')
     vmconfig.add_argument('--tik',
                           help='TIK file for domain')
@@ -190,6 +309,17 @@ def parse_command_line():
                           help='TEK file for domain')
     vmconfig.add_argument('--tk',
                           help='TEK/TIK combined file for domain')
+
+    # Arguments related to the connection to libvirt
+    vmconn = parser.add_argument_group("Libvirt guest connection")
+    vmconn.add_argument('--connect', '-c', default="qemu:///system",
+                        help='libvirt connection URI')
+    vmconn.add_argument('--domain', '-o',
+                        help='domain ID / Name / UUID')
+    vmconn.add_argument('--insecure', '-i', action='store_true',
+                        help='Proceed even if usage scenario is insecure')
+    vmconn.add_argument('--ignore-config', '-g', action='store_true',
+                        help='Do not attempt to sanity check the guest config')
 
     return parser.parse_args()
 
@@ -206,20 +336,59 @@ def check_usage(args):
             raise UnsupportedUsageException(
                 "Either --tk or both of --tek/--tik are required")
 
+    if args.domain is None:
+        if args.measurement is None:
+            raise UnsupportedUsageException(
+                "Either --measurement or --domain is required")
+
+        if args.api_major is None:
+            raise UnsupportedUsageException(
+                "Either --api-major or --domain is required")
+
+        if args.api_minor is None:
+            raise UnsupportedUsageException(
+                "Either --api-minor or --domain is required")
+
+        if args.build_id is None:
+            raise UnsupportedUsageException(
+                "Either --build-id or --domain is required")
+
+        if args.policy is None:
+            raise UnsupportedUsageException(
+                "Either --policy or --domain is required")
+
+        if args.firmware is None:
+            raise UnsupportedUsageException(
+                "Either --firmware or --domain is required")
+
 
 def attest(args):
-    cvm = ConfidentialVM(measurement=args.measurement,
-                         api_major=args.api_major,
-                         api_minor=args.api_minor,
-                         build_id=args.build_id,
-                         policy=args.policy)
+    if args.domain is None:
+        cvm = ConfidentialVM(measurement=args.measurement,
+                             api_major=args.api_major,
+                             api_minor=args.api_minor,
+                             build_id=args.build_id,
+                             policy=args.policy)
+    else:
+        cvm = LibvirtConfidentialVM(measurement=args.measurement,
+                                    api_major=args.api_major,
+                                    api_minor=args.api_minor,
+                                    build_id=args.build_id,
+                                    policy=args.policy)
 
-    cvm.load_firmware(args.firmware)
+    if args.firmware is not None:
+        cvm.load_firmware(args.firmware)
 
     if args.tk is not None:
         cvm.load_tk(args.tk)
     else:
         cvm.load_tik_tek(args.tik, args.tek)
+
+    if args.domain is not None:
+        cvm.load_domain(args.connect,
+                        args.domain,
+                        not args.insecure,
+                        args.ignore_config)
 
     cvm.attest()
 
@@ -252,12 +421,24 @@ def main():
         if not args.quiet:
             print("ERROR: %s" % e, file=sys.stderr)
         sys.exit(2)
+    except InsecureUsageException as e:
+        if not args.quiet:
+            print("ERROR: %s" % e, file=sys.stderr)
+        sys.exit(3)
+    except IncorrectConfigException as e:
+        if not args.quiet:
+            print("ERROR: %s" % e, file=sys.stderr)
+        sys.exit(4)
+    except InvalidStateException as e:
+        if not args.quiet:
+            print("ERROR: %s" % e, file=sys.stderr)
+        sys.exit(5)
     except Exception as e:
         if args.debug:
             traceback.print_tb(e.__traceback__)
         if not args.quiet:
             print("ERROR: %s" % e, file=sys.stderr)
-        sys.exit(3)
+        sys.exit(6)
 
 if __name__ == "__main__":
     main()
