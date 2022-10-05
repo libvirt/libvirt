@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-09-27 08:07+0000\n"
-"PO-Revision-Date: 2022-10-02 12:19+0000\n"
+"PO-Revision-Date: 2022-10-05 09:19+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -16612,14 +16612,14 @@ msgid "UEFI requires ACPI on this architecture"
 msgstr "UEFI kräver ACPI på denna arkitektur"
 
 msgid "UNIX disks URI does not include path"
-msgstr ""
+msgstr "UNIX-disk-URI:n innehåller ingen sökväg"
 
 msgid "UNIX socket address is required"
-msgstr ""
+msgstr "En UNIX-uttagsadress krävs"
 
 #, c-format
 msgid "UNIX socket path '%s' too long"
-msgstr ""
+msgstr "UNIX-uttagssökvägen ”%s” är för lång"
 
 msgid "UNIX sockets are not supported on this platform"
 msgstr "UNIX-uttag stödjs inte på denna plattform"
@@ -16629,42 +16629,42 @@ msgstr "UNIX-uttag stödjs inte på denna plattform"
 
 #, c-format
 msgid "URI '%s' does not include a driver name"
-msgstr ""
+msgstr "URI:n ”%s” innehåller inte ett drivrutinsnamn"
 
 msgid "URI is missing the server part"
-msgstr ""
+msgstr "URI:n saknar serverdelen"
 
 msgid "URI must be qemu:///embed"
-msgstr ""
+msgstr "URI:n måste vara qemu:///embed"
 
 msgid "URI must be secret:///embed"
-msgstr ""
+msgstr "URI:n måste vara secret:///embed"
 
 msgid "URI of the namespace"
-msgstr ""
+msgstr "URI för namnrymden"
 
 #, c-format
 msgid "URI scheme '%s' for embedded driver is not valid"
-msgstr ""
+msgstr "URI-schemat ”%s” för en inbyggd drivruting är inte giltig"
 
 msgid "URI to use for disks migration (overrides --disks-port)"
-msgstr ""
+msgstr "URI att använda för diskmigrering (åsidosätter --disks-port)"
 
 #, c-format
 msgid "URI with tcp scheme did not provide a server part: %s"
-msgstr ""
+msgstr "URI med tcp-schema angav inte en serverdel: %s"
 
 #, c-format
 msgid "USB bus %u requested but no controller with that index is present"
-msgstr ""
+msgstr "USB-buss %u begärd men ingen styrenhet med det indexet finns"
 
 #, c-format
 msgid "USB controller model '%s' not supported in this QEMU binary"
-msgstr ""
+msgstr "USB-styrmodellen ”%s” stödjs inte i denna QEMU-binär"
 
 #, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %s"
-msgstr ""
+msgstr "USB-styrmodelltypen ”qusb1” eller ”qusb2” stödjs inte i %s"
 
 #, c-format
 msgid "USB device %s is already in use"
@@ -16672,25 +16672,25 @@ msgstr "USB-enheten %s används redan"
 
 #, c-format
 msgid "USB device %s is in use by driver %s, domain %s"
-msgstr ""
+msgstr "USB-enheten %s används av drivrutinen %s, domänen %s"
 
-#, fuzzy
 msgid "USB host device is missing bus/device information"
-msgstr "saknar enhetsinformation"
+msgstr "USB-värdenheten saknar buss-/enhetsinformation"
 
 msgid "USB host device must use 'usb' address type"
-msgstr ""
+msgstr "USB-värdenheten måste använda adresstypen ”usb”"
 
 msgid ""
 "USB is disabled for this domain, but USB devices are present in the domain "
 "XML"
 msgstr ""
+"USB är avaktiverat för denna domän, men USB-enheter finns i domän-XML:en"
 
 msgid "USB redirection filter is not supported by this version of QEMU"
-msgstr ""
+msgstr "USB-omdirigeringsfilter stödjs inte av denna version av QEMU"
 
 msgid "USB redirection is not supported by this version of QEMU"
-msgstr ""
+msgstr "USB-omdirigering stödjs inte av denna version av QEMU"
 
 #, c-format
 msgid "USB source %s was not a character device"
