@@ -42,8 +42,7 @@ virNetDevIPRouteCreate(const char *networkName,
 
 virNetDevIPRoute *
 virNetDevIPRouteParseXML(const char *networkName,
-                         xmlNodePtr node,
-                         xmlXPathContextPtr ctxt);
+                         xmlNodePtr node);
 int
 virNetDevIPRouteFormat(virBuffer *buf,
                        const virNetDevIPRoute *def);

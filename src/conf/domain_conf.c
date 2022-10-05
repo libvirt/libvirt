@@ -6263,7 +6263,7 @@ virDomainNetIPInfoParseXML(const char *source,
     for (i = 0; i < nrouteNodes; i++) {
         virNetDevIPRoute *route = NULL;
 
-        if (!(route = virNetDevIPRouteParseXML(source, routeNodes[i], ctxt)))
+        if (!(route = virNetDevIPRouteParseXML(source, routeNodes[i])))
             goto error;
 
         VIR_APPEND_ELEMENT(def->routes, def->nroutes, route);

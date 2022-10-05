@@ -1824,9 +1824,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
         for (i = 0; i < nRoutes; i++) {
             virNetDevIPRoute *route = NULL;
 
-            if (!(route = virNetDevIPRouteParseXML(def->name,
-                                                   routeNodes[i],
-                                                   ctxt)))
+            if (!(route = virNetDevIPRouteParseXML(def->name, routeNodes[i])))
                 return NULL;
             def->routes[i] = route;
             def->nroutes++;

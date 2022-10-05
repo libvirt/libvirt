@@ -211,58 +211,29 @@ virNetDevIPRouteCreate(const char *errorDetail,
 
 virNetDevIPRoute *
 virNetDevIPRouteParseXML(const char *errorDetail,
-                         xmlNodePtr node,
-                         xmlXPathContextPtr ctxt)
+                         xmlNodePtr node)
 {
-    /*
-     * virNetDevIPRoute object is already allocated as part
-     * of an array.  On failure clear: it out, but don't free it.
-     */
-
-    VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    g_autofree char *family = NULL;
-    g_autofree char *address = NULL;
-    g_autofree char *netmask = NULL;
-    g_autofree char *gateway = NULL;
-    unsigned long prefix = 0, metric = 0;
-    int prefixRc, metricRc;
+    g_autofree char *family = virXMLPropString(node, "family");
+    g_autofree char *address = virXMLPropString(node, "address");
+    g_autofree char *netmask = virXMLPropString(node, "netmask");
+    g_autofree char *gateway = virXMLPropString(node, "gateway");
+    unsigned int prefix = 0;
+    unsigned int metric = 0;
     bool hasPrefix = false;
     bool hasMetric = false;
+    int rc;
 
-    ctxt->node = node;
+    if ((rc = virXMLPropUInt(node, "prefix", 10, VIR_XML_PROP_NONE, &prefix)) < 0)
+        return NULL;
 
-    /* grab raw data from XML */
-    family = virXPathString("string(./@family)", ctxt);
-    address = virXPathString("string(./@address)", ctxt);
-    netmask = virXPathString("string(./@netmask)", ctxt);
-    gateway = virXPathString("string(./@gateway)", ctxt);
-    prefixRc = virXPathULong("string(./@prefix)", ctxt, &prefix);
-    if (prefixRc == -2) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("%s: Invalid prefix specified "
-                         "in route definition"),
-                       errorDetail);
+    if (rc == 1)
+        hasPrefix = true;
+
+    if ((rc = virXMLPropUInt(node, "metric", 10, VIR_XML_PROP_NONZERO, &metric)) < 0)
         return NULL;
-    }
-    hasPrefix = (prefixRc == 0);
-    metricRc = virXPathULong("string(./@metric)", ctxt, &metric);
-    if (metricRc == -2) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("%s: Invalid metric specified "
-                         "in route definition"),
-                       errorDetail);
-        return NULL;
-    }
-    if (metricRc == 0) {
+
+    if (rc == 1)
         hasMetric = true;
-        if (metric == 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("%s: Invalid metric value, must be > 0 "
-                             "in route definition"),
-                           errorDetail);
-            return NULL;
-        }
-    }
 
     return virNetDevIPRouteCreate(errorDetail, family, address, netmask,
                                   gateway, prefix, hasPrefix, metric,
