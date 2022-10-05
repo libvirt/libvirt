@@ -42,6 +42,7 @@ import hmac
 import logging
 import re
 import socket
+from struct import pack
 import sys
 import traceback
 from uuid import UUID
@@ -70,6 +71,427 @@ class IncorrectConfigException(Exception):
 
 class InvalidStateException(Exception):
     pass
+
+
+class Field(object):
+    U8 = 0
+    U16 = 2
+    U32 = 4
+    U64 = 8
+
+    SCALAR = 0
+    BITMASK = 1
+    ARRAY = 2
+
+    def __init__(self, name, size, fmt, value, order):
+        self.name = name
+        self.size = size
+        self.value = value
+        self.fmt = fmt
+        self.order = order
+
+
+class Struct(object):
+    def __init__(self, size):
+        self._fields = {}
+        self.size = size
+
+    def register_field(self, name, size, fmt=Field.SCALAR, defvalue=0):
+        self._fields[name] = Field(name, size, fmt,
+                                   defvalue, len(self.fields))
+
+    @property
+    def fields(self):
+        return sorted(self._fields.values(), key=lambda f: f.order)
+
+    def __getattr__(self, name):
+        return self._fields[name]
+
+    def __setattr__(self, name, value):
+        if name in ["_fields", "size"]:
+            super().__setattr__(name, value)
+        else:
+            self._fields[name].value = value
+
+    def binary_format(self):
+        fmt = ["<"]
+        datalen = 0
+        for field in self.fields:
+            if field.size == Field.U8:
+                if field.fmt == Field.ARRAY:
+                    datalen += len(field.value)
+                    fmt += ["%dB" % len(field.value)]
+                else:
+                    datalen += 1
+                    fmt += ["B"]
+            elif field.size == Field.U16:
+                datalen += 2
+                fmt += ["H"]
+            elif field.size == Field.U32:
+                datalen += 4
+                fmt += ["L"]
+            elif field.size == Field.U64:
+                datalen += 8
+                fmt += ["Q"]
+
+        pad = self.size - datalen
+        assert self.size >= 1
+        fmt += ["%dB" % pad]
+
+        return "".join(fmt), pad
+
+    def pack(self):
+        fmt, pad = self.binary_format()
+
+        values = []
+        for field in self.fields:
+            if field.size == Field.U8 and field.fmt == Field.ARRAY:
+                for _, k in enumerate(field.value):
+                    values.append(k)
+            else:
+                values.append(field.value)
+        values.extend([0] * pad)
+
+        return pack(fmt, *values)
+
+
+class VMSA(Struct):
+    ATTR_G_SHIFT = 23
+    ATTR_G_MASK = (1 << ATTR_G_SHIFT)
+    ATTR_B_SHIFT = 22
+    ATTR_B_MASK = (1 << ATTR_B_SHIFT)
+    ATTR_L_SHIFT = 21
+    ATTR_L_MASK = (1 << ATTR_L_SHIFT)
+    ATTR_AVL_SHIFT = 20
+    ATTR_AVL_MASK = (1 << ATTR_AVL_SHIFT)
+    ATTR_P_SHIFT = 15
+    ATTR_P_MASK = (1 << ATTR_P_SHIFT)
+    ATTR_DPL_SHIFT = 13
+    ATTR_DPL_MASK = (3 << ATTR_DPL_SHIFT)
+    ATTR_S_SHIFT = 12
+    ATTR_S_MASK = (1 << ATTR_S_SHIFT)
+    ATTR_TYPE_SHIFT = 8
+    ATTR_TYPE_MASK = (15 << ATTR_TYPE_SHIFT)
+    ATTR_A_MASK = (1 << 8)
+
+    ATTR_CS_MASK = (1 << 11)
+    ATTR_C_MASK = (1 << 10)
+    ATTR_R_MASK = (1 << 9)
+
+    ATTR_E_MASK = (1 << 10)
+    ATTR_W_MASK = (1 << 9)
+
+    def __init__(self):
+        super().__init__(4096)
+
+        # From Linux arch/x86/include/asm/svm.h, we're unpacking the
+        # struct vmcb_save_area
+
+        self.register_field("es_selector", Field.U16)
+        self.register_field("es_attrib", Field.U16, Field.BITMASK)
+        self.register_field("es_limit", Field.U32)
+        self.register_field("es_base", Field.U64)
+
+        self.register_field("cs_selector", Field.U16)
+        self.register_field("cs_attrib", Field.U16, Field.BITMASK)
+        self.register_field("cs_limit", Field.U32)
+        self.register_field("cs_base", Field.U64)
+
+        self.register_field("ss_selector", Field.U16)
+        self.register_field("ss_attrib", Field.U16, Field.BITMASK)
+        self.register_field("ss_limit", Field.U32)
+        self.register_field("ss_base", Field.U64)
+
+        self.register_field("ds_selector", Field.U16)
+        self.register_field("ds_attrib", Field.U16, Field.BITMASK)
+        self.register_field("ds_limit", Field.U32)
+        self.register_field("ds_base", Field.U64)
+
+        self.register_field("fs_selector", Field.U16)
+        self.register_field("fs_attrib", Field.U16, Field.BITMASK)
+        self.register_field("fs_limit", Field.U32)
+        self.register_field("fs_base", Field.U64)
+
+        self.register_field("gs_selector", Field.U16)
+        self.register_field("gs_attrib", Field.U16, Field.BITMASK)
+        self.register_field("gs_limit", Field.U32)
+        self.register_field("gs_base", Field.U64)
+
+        self.register_field("gdtr_selector", Field.U16)
+        self.register_field("gdtr_attrib", Field.U16, Field.BITMASK)
+        self.register_field("gdtr_limit", Field.U32)
+        self.register_field("gdtr_base", Field.U64)
+
+        self.register_field("ldtr_selector", Field.U16)
+        self.register_field("ldtr_attrib", Field.U16, Field.BITMASK)
+        self.register_field("ldtr_limit", Field.U32)
+        self.register_field("ldtr_base", Field.U64)
+
+        self.register_field("idtr_selector", Field.U16)
+        self.register_field("idtr_attrib", Field.U16, Field.BITMASK)
+        self.register_field("idtr_limit", Field.U32)
+        self.register_field("idtr_base", Field.U64)
+
+        self.register_field("tr_selector", Field.U16)
+        self.register_field("tr_attrib", Field.U16, Field.BITMASK)
+        self.register_field("tr_limit", Field.U32)
+        self.register_field("tr_base", Field.U64)
+
+        self.register_field("reserved_1",
+                            Field.U8, Field.ARRAY, bytearray([0] * 43))
+
+        self.register_field("cpl", Field.U8)
+
+        self.register_field("reserved_2",
+                            Field.U8, Field.ARRAY, bytearray([0] * 4))
+
+        self.register_field("efer", Field.U64)
+
+        self.register_field("reserved_3",
+                            Field.U8, Field.ARRAY, bytearray([0] * 104))
+
+        self.register_field("xss", Field.U64)
+        self.register_field("cr4", Field.U64)
+        self.register_field("cr3", Field.U64)
+        self.register_field("cr0", Field.U64)
+        self.register_field("dr7", Field.U64)
+        self.register_field("dr6", Field.U64)
+        self.register_field("rflags", Field.U64)
+        self.register_field("rip", Field.U64)
+
+        self.register_field("reserved_4",
+                            Field.U8, Field.ARRAY, bytearray([0] * 88))
+
+        self.register_field("rsp", Field.U64)
+
+        self.register_field("reserved_5",
+                            Field.U8, Field.ARRAY, bytearray([0] * 24))
+
+        self.register_field("rax", Field.U64)
+        self.register_field("star", Field.U64)
+        self.register_field("lstar", Field.U64)
+        self.register_field("cstar", Field.U64)
+        self.register_field("sfmask", Field.U64)
+        self.register_field("kernel_gs_base", Field.U64)
+        self.register_field("sysenter_cs", Field.U64)
+        self.register_field("sysenter_esp", Field.U64)
+        self.register_field("sysenter_eip", Field.U64)
+        self.register_field("cr2", Field.U64)
+
+        self.register_field("reserved_6",
+                            Field.U8, Field.ARRAY, bytearray([0] * 32))
+
+        self.register_field("g_pat", Field.U64)
+        self.register_field("dbgctl", Field.U64)
+        self.register_field("br_from", Field.U64)
+        self.register_field("br_to", Field.U64)
+        self.register_field("last_excp_from", Field.U64)
+        self.register_field("last_excp_to", Field.U64)
+
+        self.register_field("reserved_7",
+                            Field.U8, Field.ARRAY, bytearray([0] * 72))
+
+        self.register_field("spec_ctrl", Field.U32)
+
+        self.register_field("reserved_7b",
+                            Field.U8, Field.ARRAY, bytearray([0] * 4))
+
+        self.register_field("pkru", Field.U32)
+
+        self.register_field("reserved_7a",
+                            Field.U8, Field.ARRAY, bytearray([0] * 20))
+
+        self.register_field("reserved_8", Field.U64)  # rax duplicate
+
+        self.register_field("rcx", Field.U64)
+        self.register_field("rdx", Field.U64, Field.BITMASK)
+        self.register_field("rbx", Field.U64)
+
+        self.register_field("reserved_9", Field.U64)  # rsp duplicate
+
+        self.register_field("rbp", Field.U64)
+        self.register_field("rsi", Field.U64)
+        self.register_field("rdi", Field.U64)
+        self.register_field("r8", Field.U64)
+        self.register_field("r9", Field.U64)
+        self.register_field("r10", Field.U64)
+        self.register_field("r11", Field.U64)
+        self.register_field("r12", Field.U64)
+        self.register_field("r13", Field.U64)
+        self.register_field("r14", Field.U64)
+        self.register_field("r15", Field.U64)
+
+        self.register_field("reserved_10",
+                            Field.U8, Field.ARRAY, bytearray([0] * 16))
+
+        self.register_field("sw_exit_code", Field.U64)
+        self.register_field("sw_exit_info_1", Field.U64)
+        self.register_field("sw_exit_info_2", Field.U64)
+        self.register_field("sw_scratch", Field.U64)
+
+        self.register_field("reserved_11",
+                            Field.U8, Field.ARRAY, bytearray([0] * 56))
+
+        self.register_field("xcr0", Field.U64)
+        self.register_field("valid_bitmap",
+                            Field.U8, Field.ARRAY, bytearray([0] * 16))
+        self.register_field("x87_state_gpa",
+                            Field.U64)
+
+    def amd64_cpu_init(self):
+        # AMD64 Architecture Programmer’s Manual
+        # Volume 2: System Programming.
+        #
+        # 14.1.3 Processor Initialization State
+        #
+        # Values after INIT
+
+        self.cr0 = (1 << 4)
+        self.rip = 0xfff0
+
+        self.cs_selector = 0xf000
+        self.cs_base = 0xffff0000
+        self.cs_limit = 0xffff
+
+        self.ds_limit = 0xffff
+
+        self.es_limit = 0xffff
+        self.fs_limit = 0xffff
+        self.gs_limit = 0xffff
+        self.ss_limit = 0xffff
+
+        self.gdtr_limit = 0xffff
+        self.idtr_limit = 0xffff
+
+        self.ldtr_limit = 0xffff
+        self.tr_limit = 0xffff
+
+        self.dr6 = 0xffff0ff0
+        self.dr7 = 0x0400
+        self.rflags = 0x2
+        self.xcr0 = 0x1
+
+    def kvm_cpu_init(self):
+        # svm_set_cr4() sets guest X86_CR4_MCE bit if host
+        # has X86_CR4_MCE enabled
+        self.cr4 = 0x40
+
+        # svm_set_efer sets guest EFER_SVME (Secure Virtual Machine enable)
+        self.efer = 0x1000
+
+        # init_vmcb + init_sys_seg() sets
+        # SVM_SELECTOR_P_MASK | SEG_TYPE_LDT
+        self.ldtr_attrib = 0x0082
+
+        # init_vmcb + init_sys_seg() sets
+        # SVM_SELECTOR_P_MASK | SEG_TYPE_BUSY_TSS16
+        self.tr_attrib = 0x0083
+
+        # kvm_arch_vcpu_create() in arch/x86/kvm/x86.c
+        self.g_pat = 0x0007040600070406
+
+    def qemu_cpu_init(self):
+        # Based on logic in  x86_cpu_reset()
+        #
+        # file target/i386/cpu.c
+
+        def attr(mask):
+            return (mask >> VMSA.ATTR_TYPE_SHIFT)
+
+        self.ldtr_attrib = attr(VMSA.ATTR_P_MASK |
+                                (2 << VMSA.ATTR_TYPE_SHIFT))
+        self.tr_attrib = attr(VMSA.ATTR_P_MASK |
+                              (11 << VMSA.ATTR_TYPE_SHIFT))
+        self.cs_attrib = attr(VMSA.ATTR_P_MASK |
+                              VMSA.ATTR_S_MASK |
+                              VMSA.ATTR_CS_MASK |
+                              VMSA.ATTR_R_MASK |
+                              VMSA.ATTR_A_MASK)
+        self.ds_attrib = attr(VMSA.ATTR_P_MASK |
+                              VMSA.ATTR_S_MASK |
+                              VMSA.ATTR_W_MASK |
+                              VMSA.ATTR_A_MASK)
+        self.es_attrib = attr(VMSA.ATTR_P_MASK |
+                              VMSA.ATTR_S_MASK |
+                              VMSA.ATTR_W_MASK |
+                              VMSA.ATTR_A_MASK)
+        self.ss_attrib = attr(VMSA.ATTR_P_MASK |
+                              VMSA.ATTR_S_MASK |
+                              VMSA.ATTR_W_MASK |
+                              VMSA.ATTR_A_MASK)
+        self.fs_attrib = attr(VMSA.ATTR_P_MASK |
+                              VMSA.ATTR_S_MASK |
+                              VMSA.ATTR_W_MASK |
+                              VMSA.ATTR_A_MASK)
+        self.gs_attrib = attr(VMSA.ATTR_P_MASK |
+                              VMSA.ATTR_S_MASK |
+                              VMSA.ATTR_W_MASK |
+                              VMSA.ATTR_A_MASK)
+
+        self.g_pat = 0x0007040600070406
+
+    def cpu_sku(self, family, model, stepping):
+        stepping &= 0xf
+        model &= 0xff
+        family &= 0xfff
+
+        self.rdx.value = stepping
+
+        if family > 0xf:
+            self.rdx.value |= 0xf00 | ((family - 0x0f) << 20)
+        else:
+            self.rdx.value |= family << 8
+
+        self.rdx.value |= ((model & 0xf) << 4) | ((model >> 4) << 16)
+
+    def reset_addr(self, reset_addr):
+        reset_cs = reset_addr & 0xffff0000
+        reset_ip = reset_addr & 0x0000ffff
+
+        self.rip.value = reset_ip
+        self.cs_base.value = reset_cs
+
+
+class OVMF(object):
+
+    OVMF_TABLE_FOOTER_GUID = UUID("96b582de-1fb2-45f7-baea-a366c55a082d")
+    SEV_INFO_BLOCK_GUID = UUID("00f771de-1a7e-4fcb-890e-68c77e2fb44e")
+
+    def __init__(self):
+        self.entries = {}
+
+    def load(self, content):
+        expect = OVMF.OVMF_TABLE_FOOTER_GUID.bytes_le
+        actual = content[-48:-32]
+        if expect != actual:
+            raise Exception("OVMF footer GUID not found")
+
+        tablelen = int.from_bytes(content[-50:-48], byteorder='little')
+
+        if tablelen == 0:
+            raise Exception("OVMF tables zero length")
+
+        table = content[-(32 + tablelen):-50]
+
+        self.parse_table(table)
+
+    def parse_table(self, data):
+        while len(data) > 0:
+            entryuuid = UUID(bytes_le=data[-16:])
+            entrylen = int.from_bytes(data[-18:-16], byteorder='little')
+            entrydata = data[-entrylen:-18]
+
+            self.entries[str(entryuuid)] = entrydata
+
+            data = data[0:-entrylen]
+
+    def reset_addr(self):
+        if str(OVMF.SEV_INFO_BLOCK_GUID) not in self.entries:
+            raise Exception("SEV info block GUID not found")
+
+        reset_addr = int.from_bytes(
+            self.entries[str(OVMF.SEV_INFO_BLOCK_GUID)], "little")
+        return reset_addr
 
 
 class GUIDTable(abc.ABC):
@@ -239,6 +661,26 @@ class ConfidentialVM(object):
 
     def load_vmsa_cpu1(self, path):
         self.vmsa_cpu1 = self._load_vmsa(path)
+        log.debug("VMSA CPU 1(sha256): %s",
+                  sha256(self.vmsa_cpu1).hexdigest())
+
+    def build_vmsas(self, family, model, stepping):
+        ovmf = OVMF()
+        ovmf.load(self.firmware)
+
+        vmsa = VMSA()
+        vmsa.amd64_cpu_init()
+        vmsa.kvm_cpu_init()
+        vmsa.qemu_cpu_init()
+
+        vmsa.cpu_sku(family, model, stepping)
+
+        self.vmsa_cpu0 = vmsa.pack()
+        log.debug("VMSA CPU 0(sha256): %s",
+                  sha256(self.vmsa_cpu0).hexdigest())
+
+        vmsa.reset_addr(ovmf.reset_addr())
+        self.vmsa_cpu1 = vmsa.pack()
         log.debug("VMSA CPU 1(sha256): %s",
                   sha256(self.vmsa_cpu1).hexdigest())
 
@@ -514,6 +956,12 @@ def parse_command_line():
                           help='VMSA state for the boot CPU')
     vmconfig.add_argument('--vmsa-cpu1', '-1',
                           help='VMSA state for the additional CPUs')
+    vmconfig.add_argument('--cpu-family', type=int,
+                          help='Hypervisor host CPU family number')
+    vmconfig.add_argument('--cpu-model', type=int,
+                          help='Hypervisor host CPU model number')
+    vmconfig.add_argument('--cpu-stepping', type=int,
+                          help='Hypervisor host CPU stepping number')
     vmconfig.add_argument('--tik',
                           help='TIK file for domain')
     vmconfig.add_argument('--tek',
@@ -577,6 +1025,20 @@ def check_usage(args):
             raise UnsupportedUsageException(
                 "--initrd/--cmdline require --kernel")
 
+    sku = [args.cpu_family, args.cpu_model, args.cpu_stepping]
+    if sku.count(None) == len(sku):
+        if args.vmsa_cpu1 is not None and args.vmsa_cpu0 is None:
+            raise UnsupportedUsageException(
+                "VMSA for additional CPU also requires VMSA for boot CPU")
+    else:
+        if args.vmsa_cpu0 is not None or args.vmsa_cpu1 is not None:
+            raise UnsupportedUsageException(
+                "VMSA files are mutually exclusive with CPU SKU")
+
+        if sku.count(None) != 0:
+            raise UnsupportedUsageException(
+                "CPU SKU needs family, model and stepping for SEV-ES domain")
+
 
 def attest(args):
     if args.domain is None:
@@ -616,6 +1078,11 @@ def attest(args):
 
     if args.vmsa_cpu1 is not None:
         cvm.load_vmsa_cpu1(args.vmsa_cpu1)
+
+    if args.cpu_family is not None:
+        cvm.build_vmsas(args.cpu_family,
+                        args.cpu_model,
+                        args.cpu_stepping)
 
     if args.domain is not None:
         cvm.load_domain(args.connect,

@@ -245,6 +245,24 @@ Validate the measurement of a SEV-ES SMP guest booting from disk:
        --build-id 13 \
        --policy 7
 
+Validate the measurement of a SEV-ES SMP guest booting from disk, with
+automatically constructed VMSA:
+
+::
+
+   # virt-dom-sev-validate \
+       --firmware OVMF.sev.fd \
+       --num-cpus 2 \
+       --cpu-family 23 \
+       --cpu-model 49 \
+       --cpu-stepping 0 \
+       --tk this-guest-tk.bin \
+       --measurement Zs2pf19ubFSafpZ2WKkwquXvACx9Wt/BV+eJwQ/taO8jhyIj/F8swFrybR1fZ2ID \
+       --api-major 0 \
+       --api-minor 24 \
+       --build-id 13 \
+       --policy 7
+
 Fetch from remote libvirt
 -------------------------
 
@@ -291,6 +309,20 @@ Validate the measurement of a SEV-ES SMP guest booting from disk:
        --tk this-guest-tk.bin \
        --domain fedora34x86_64
 
+Validate the measurement of a SEV-ES SMP guest booting from disk, with
+automatically constructed VMSA:
+
+::
+
+   # virt-dom-sev-validate \
+       --connect qemu+ssh://root@some.remote.host/system \
+       --firmware OVMF.sev.fd \
+       --cpu-family 23 \
+       --cpu-model 49 \
+       --cpu-stepping 0 \
+       --tk this-guest-tk.bin \
+       --domain fedora34x86_64
+
 Fetch from local libvirt
 ------------------------
 
@@ -329,6 +361,19 @@ Validate the measurement of a SEV-ES SMP guest booting from disk:
        --num-cpus 2 \
        --vmsa-cpu0 vmsa0.bin \
        --vmsa-cpu1 vmsa1.bin \
+       --tk this-guest-tk.bin \
+       --domain fedora34x86_64
+
+Validate the measurement of a SEV-ES SMP guest booting from disk, with
+automatically constructed VMSA:
+
+::
+
+   # virt-dom-sev-validate \
+       --insecure \
+       --cpu-family 23 \
+       --cpu-model 49 \
+       --cpu-stepping 0 \
        --tk this-guest-tk.bin \
        --domain fedora34x86_64
 
