@@ -228,9 +228,10 @@ virXPathULongBase(const char *xpath,
 
 
 /**
- * virXPathUInt:
+ * virXPathUIntBase:
  * @xpath: the XPath string to evaluate
  * @ctxt: an XPath context
+ * @base: base of the number to fetch @value as
  * @value: the returned unsigned int value
  *
  * Convenience function to evaluate an XPath number. The @xpath expression
@@ -242,19 +243,29 @@ virXPathULongBase(const char *xpath,
  *         value doesn't have an unsigned int format.
  */
 int
-virXPathUInt(const char *xpath,
-             xmlXPathContextPtr ctxt,
-             unsigned int *value)
+virXPathUIntBase(const char *xpath,
+                 xmlXPathContextPtr ctxt,
+                 unsigned int base,
+                 unsigned int *value)
 {
     g_autoptr(xmlXPathObject) obj = NULL;
 
     if (!(obj = virXPathEvalString(xpath, ctxt)))
         return -1;
 
-    if (virStrToLong_ui((char *) obj->stringval, NULL, 10, value) < 0)
+    if (virStrToLong_ui((char *) obj->stringval, NULL, base, value) < 0)
         return -2;
 
     return 0;
+}
+
+
+int
+virXPathUInt(const char *xpath,
+             xmlXPathContextPtr ctxt,
+             unsigned int *value)
+{
+    return virXPathUIntBase(xpath, ctxt, 10, value);
 }
 
 
@@ -302,9 +313,10 @@ virXPathULongHex(const char *xpath,
 
 
 /**
- * virXPathULongLong:
+ * virXPathULongLongBase:
  * @xpath: the XPath string to evaluate
  * @ctxt: an XPath context
+ * @base: base of the number to fetch @value as
  * @value: the returned unsigned long long value
  *
  * Convenience function to evaluate an XPath number. The @xpath expression
@@ -316,19 +328,29 @@ virXPathULongHex(const char *xpath,
  *         value doesn't have a unsigned long long format.
  */
 int
-virXPathULongLong(const char *xpath,
-                  xmlXPathContextPtr ctxt,
-                  unsigned long long *value)
+virXPathULongLongBase(const char *xpath,
+                      xmlXPathContextPtr ctxt,
+                      unsigned int base,
+                      unsigned long long *value)
 {
     g_autoptr(xmlXPathObject) obj = NULL;
 
     if (!(obj = virXPathEvalString(xpath, ctxt)))
         return -1;
 
-    if (virStrToLong_ullp((char *) obj->stringval, NULL, 10, value) < 0)
+    if (virStrToLong_ullp((char *) obj->stringval, NULL, base, value) < 0)
         return -2;
 
     return 0;
+}
+
+
+int
+virXPathULongLong(const char *xpath,
+                  xmlXPathContextPtr ctxt,
+                  unsigned long long *value)
+{
+    return virXPathULongLongBase(xpath, ctxt, 10, value);
 }
 
 

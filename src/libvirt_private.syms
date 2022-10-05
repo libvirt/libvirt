@@ -3699,9 +3699,11 @@ virXPathNode;
 virXPathNodeSet;
 virXPathString;
 virXPathUInt;
+virXPathUIntBase;
 virXPathULong;
 virXPathULongHex;
 virXPathULongLong;
+virXPathULongLongBase;
 
 
 # Let emacs know we want case-insensitive sorting

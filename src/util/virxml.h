@@ -51,6 +51,11 @@ virXPathInt(const char *xpath,
             xmlXPathContextPtr ctxt,
             int *value);
 int
+virXPathUIntBase(const char *xpath,
+                 xmlXPathContextPtr ctxt,
+                 unsigned int base,
+                 unsigned int *value);
+int
 virXPathUInt(const char *xpath,
              xmlXPathContextPtr ctxt,
              unsigned int *value);
@@ -62,6 +67,11 @@ int
 virXPathULong(const char *xpath,
               xmlXPathContextPtr ctxt,
               unsigned long *value);
+int
+virXPathULongLongBase(const char *xpath,
+                      xmlXPathContextPtr ctxt,
+                      unsigned int base,
+                      unsigned long long *value);
 int
 virXPathULongLong(const char *xpath,
                   xmlXPathContextPtr ctxt,
