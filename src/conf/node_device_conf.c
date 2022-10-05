@@ -1808,15 +1808,14 @@ virNodeDevCapUSBInterfaceParseXML(xmlXPathContextPtr ctxt,
 static int
 virNodeDevCapsDefParseHexId(const char *xpath,
                             xmlXPathContextPtr ctxt,
-                            unsigned *value,
+                            unsigned int *value,
                             virNodeDeviceDef *def,
                             const char *missing_error_fmt,
                             const char *invalid_error_fmt)
 {
     int ret;
-    unsigned long val;
 
-    ret = virXPathULongHex(xpath, ctxt, &val);
+    ret = virXPathUIntBase(xpath, ctxt, 16, value);
     if (ret < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        ret == -1 ? missing_error_fmt : invalid_error_fmt,
@@ -1824,7 +1823,6 @@ virNodeDevCapsDefParseHexId(const char *xpath,
         return -1;
     }
 
-    *value = val;
     return 0;
 }
 
