@@ -942,7 +942,7 @@ virNodeDevCapMdevTypesParseXML(xmlXPathContextPtr ctxt,
             goto cleanup;
         }
 
-        if (virXPathUInt("number(./availableInstances)", ctxt,
+        if (virXPathUInt("string(./availableInstances)", ctxt,
                          &type->available_instances) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("missing number of available instances for "
@@ -2257,7 +2257,7 @@ virNodeDevCapMdevParseXML(xmlXPathContextPtr ctxt,
 
     /* 'iommuGroup' is optional, only report an error if the supplied value is
      * invalid (-2), not if it's missing (-1) */
-    if (virXPathUInt("number(./iommuGroup[1]/@number)",
+    if (virXPathUInt("string(./iommuGroup[1]/@number)",
                      ctxt, &mdev->iommuGroupNumber) < -1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid iommuGroup number attribute for '%s'"),
