@@ -60,6 +60,34 @@ virXMLXPathContextNew(xmlDocPtr xml)
 }
 
 
+static xmlXPathObject *
+virXPathEvalString(const char *xpath,
+                   xmlXPathContextPtr ctxt)
+{
+    g_autoptr(xmlXPathObject) obj = NULL;
+
+    if (!xpath) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Missing XPath expression"));
+        return NULL;
+    }
+
+    if (!ctxt) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Missing XPath context"));
+        return NULL;
+    }
+
+    if (!(obj = xmlXPathEval(BAD_CAST xpath, ctxt)))
+        return NULL;
+
+    if (obj->type != XPATH_STRING ||
+        !obj->stringval ||
+        obj->stringval[0] == '\0')
+        return NULL;
+
+    return g_steal_pointer(&obj);
+}
+
+
 /**
  * virXPathString:
  * @xpath: the XPath string to evaluate
@@ -76,16 +104,9 @@ virXPathString(const char *xpath,
 {
     g_autoptr(xmlXPathObject) obj = NULL;
 
-    if ((ctxt == NULL) || (xpath == NULL)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Invalid parameter to virXPathString()"));
+    if (!(obj = virXPathEvalString(xpath, ctxt)))
         return NULL;
-    }
-    obj = xmlXPathEval(BAD_CAST xpath, ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
-        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        return NULL;
-    }
+
     return g_strdup((char *)obj->stringval);
 }
 
