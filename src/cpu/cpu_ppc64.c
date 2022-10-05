@@ -305,7 +305,6 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
     g_autoptr(virCPUppc64Model) model = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
     g_autofree char *vendor = NULL;
-    unsigned long pvr;
     size_t i;
     int n;
 
@@ -346,23 +345,13 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
     model->data.len = n;
 
     for (i = 0; i < n; i++) {
-        ctxt->node = nodes[i];
-
-        if (virXPathULongHex("string(./@value)", ctxt, &pvr) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Missing or invalid PVR value in CPU model %s"),
-                           model->name);
+        if (virXMLPropUInt(nodes[i], "value", 16, VIR_XML_PROP_REQUIRED,
+                           &model->data.pvr[i].value) < 0)
             return -1;
-        }
-        model->data.pvr[i].value = pvr;
 
-        if (virXPathULongHex("string(./@mask)", ctxt, &pvr) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Missing or invalid PVR mask in CPU model %s"),
-                           model->name);
+        if (virXMLPropUInt(nodes[i], "mask", 16, VIR_XML_PROP_REQUIRED,
+                           &model->data.pvr[i].mask) < 0)
             return -1;
-        }
-        model->data.pvr[i].mask = pvr;
     }
 
     VIR_APPEND_ELEMENT(map->models, map->nmodels, model);
