@@ -2764,7 +2764,6 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObj *vm,
     int newstate = -1;
     bool invalidData = false;
     xmlNodePtr tmp;
-    unsigned long jobflags = 0;
 
     ctxt->node = node;
 
@@ -2804,7 +2803,8 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObj *vm,
         STRNEQ(mirror, "yes"))
         invalidData = true;
 
-    if (virXPathULongHex("string(./@jobflags)", ctxt, &jobflags) != 0)
+    if (virXMLPropUInt(ctxt->node, "jobflags", 16, VIR_XML_PROP_NONE,
+                       &job->jobflags) != 1)
         job->jobflagsmissing = true;
 
     if (!disk && !invalidData) {
@@ -2826,7 +2826,6 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObj *vm,
 
     job->state = state;
     job->newstate = newstate;
-    job->jobflags = jobflags;
     job->errmsg = virXPathString("string(./errmsg)", ctxt);
     job->invalidData = invalidData;
     job->disk = disk;
