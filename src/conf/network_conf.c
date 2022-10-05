@@ -1057,8 +1057,6 @@ virNetworkIPDefParseXML(const char *networkName,
     xmlNodePtr dhcp;
     g_autofree char *address = NULL;
     g_autofree char *netmask = NULL;
-    unsigned long prefix = 0;
-    int prefixRc;
     int ret = -1;
 
     ctxt->node = node;
@@ -1089,17 +1087,8 @@ virNetworkIPDefParseXML(const char *networkName,
         goto cleanup;
     }
 
-    prefixRc = virXPathULong("string(./@prefix)", ctxt, &prefix);
-    if (prefixRc == -2) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid ULong value specified for prefix in definition of network '%s'"),
-                       networkName);
+    if (virXMLPropUInt(node, "prefix", 10, VIR_XML_PROP_NONE, &def->prefix) < 0)
         goto cleanup;
-    }
-    if (prefixRc < 0)
-        def->prefix = 0;
-    else
-        def->prefix = prefix;
 
     if (virXMLPropTristateBool(node, "localPtr",
                                VIR_XML_PROP_NONE,
@@ -1131,8 +1120,8 @@ virNetworkIPDefParseXML(const char *networkName,
             }
         } else if (def->prefix > 32) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Invalid IPv4 prefix '%lu' in network '%s'"),
-                           prefix, networkName);
+                           _("Invalid IPv4 prefix '%u' in network '%s'"),
+                           def->prefix, networkName);
             goto cleanup;
         }
     } else if (STREQ(def->family, "ipv6")) {
@@ -1150,8 +1139,8 @@ virNetworkIPDefParseXML(const char *networkName,
         }
         if (def->prefix > 128) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Invalid IPv6 prefix '%lu' in network '%s'"),
-                           prefix, networkName);
+                           _("Invalid IPv6 prefix '%u' in network '%s'"),
+                           def->prefix, networkName);
             goto cleanup;
         }
     } else {
