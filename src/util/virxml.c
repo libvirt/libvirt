@@ -253,7 +253,7 @@ virXPathUIntBase(const char *xpath,
     if (!(obj = virXPathEvalString(xpath, ctxt)))
         return -1;
 
-    if (virStrToLong_ui((char *) obj->stringval, NULL, base, value) < 0)
+    if (virStrToLong_uip((char *) obj->stringval, NULL, base, value) < 0)
         return -2;
 
     return 0;
