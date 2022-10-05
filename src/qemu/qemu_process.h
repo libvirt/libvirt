@@ -237,3 +237,6 @@ void qemuProcessRefreshDiskProps(virDomainDiskDef *disk,
                                  struct qemuDomainDiskInfo *info);
 
 int qemuProcessSetupEmulator(virDomainObj *vm);
+
+void qemuProcessHandleNbdkitExit(qemuNbdkitProcess *nbdkit,
+                                 virDomainObj *vm);

@@ -456,8 +456,12 @@ if conf.has('WITH_QEMU')
     { 'name': 'qemuvhostusertest', 'link_with': [ test_qemu_driver_lib ], 'link_whole': [ test_file_wrapper_lib ] },
     { 'name': 'qemuxml2argvtest', 'link_with': [ test_qemu_driver_lib, test_utils_qemu_monitor_lib ], 'link_whole': [ test_utils_qemu_lib, test_file_wrapper_lib ] },
     { 'name': 'qemuxml2xmltest', 'link_with': [ test_qemu_driver_lib ], 'link_whole': [ test_utils_qemu_lib, test_file_wrapper_lib ] },
-    { 'name': 'qemunbdkittest', 'link_with': [ test_qemu_driver_lib ], 'link_whole': [ test_utils_qemu_lib, test_file_wrapper_lib ] },
   ]
+  if conf.has('WITH_NBDKIT')
+    tests += [
+      { 'name': 'qemunbdkittest', 'link_with': [ test_qemu_driver_lib ], 'link_whole': [ test_utils_qemu_lib, test_file_wrapper_lib ] },
+    ]
+  endif
 endif
 
 if conf.has('WITH_REMOTE')

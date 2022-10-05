@@ -4033,6 +4033,20 @@ processResetEvent(virQEMUDriver *driver,
 }
 
 
+static void
+processNbdkitExitedEvent(virDomainObj *vm,
+                         qemuNbdkitProcess *nbdkit)
+{
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+        return;
+
+    if (qemuNbdkitProcessRestart(nbdkit, vm) < 0)
+        virDomainObjTaint(vm, VIR_DOMAIN_TAINT_NBDKIT_RESTART);
+
+    virDomainObjEndJob(vm);
+}
+
+
 static void qemuProcessEventHandler(void *data, void *opaque)
 {
     struct qemuProcessEvent *processEvent = data;
@@ -4089,6 +4103,9 @@ static void qemuProcessEventHandler(void *data, void *opaque)
         break;
     case QEMU_PROCESS_EVENT_RESET:
         processResetEvent(driver, vm);
+        break;
+    case QEMU_PROCESS_EVENT_NBDKIT_EXITED:
+        processNbdkitExitedEvent(vm, processEvent->data);
         break;
     case QEMU_PROCESS_EVENT_LAST:
         break;

@@ -68,8 +68,9 @@ qemuNbdkitStartStorageSource(virQEMUDriver *driver,
 void
 qemuNbdkitStopStorageSource(virStorageSource *src);
 
-void
-qemuNbdkitStorageSourceManageProcess(virStorageSource *src);
+int
+qemuNbdkitStorageSourceManageProcess(virStorageSource *src,
+                                     virDomainObj *vm);
 
 bool
 qemuNbdkitCapsGet(qemuNbdkitCaps *nbdkitCaps,
@@ -91,12 +92,17 @@ struct _qemuNbdkitProcess {
     uid_t user;
     gid_t group;
     pid_t pid;
+    int eventwatch;
 };
 
 int
 qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
                        virDomainObj *vm,
                        virQEMUDriver *driver);
+
+int
+qemuNbdkitProcessRestart(qemuNbdkitProcess *proc,
+                         virDomainObj *vm);
 
 int
 qemuNbdkitProcessStop(qemuNbdkitProcess *proc);

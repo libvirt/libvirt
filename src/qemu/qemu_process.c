@@ -9055,10 +9055,12 @@ qemuProcessReconnect(void *opaque)
     }
 
     for (i = 0; i < obj->def->ndisks; i++)
-        qemuNbdkitStorageSourceManageProcess(obj->def->disks[i]->src);
+        if (qemuNbdkitStorageSourceManageProcess(obj->def->disks[i]->src, obj) < 0)
+            goto error;
 
     if (obj->def->os.loader && obj->def->os.loader->nvram)
-        qemuNbdkitStorageSourceManageProcess(obj->def->os.loader->nvram);
+        if (qemuNbdkitStorageSourceManageProcess(obj->def->os.loader->nvram, obj) < 0)
+            goto error;
 
     /* update domain state XML with possibly updated state in virDomainObj */
     if (virDomainObjSave(obj, driver->xmlopt, cfg->stateDir) < 0)
@@ -9511,4 +9513,15 @@ qemuProcessQMPStart(qemuProcessQMP *proc)
         return -1;
 
     return 0;
+}
+
+
+void
+qemuProcessHandleNbdkitExit(qemuNbdkitProcess *nbdkit,
+                            virDomainObj *vm)
+{
+    virObjectLock(vm);
+    VIR_DEBUG("nbdkit process %i died", nbdkit->pid);
+    qemuProcessEventSubmit(vm, QEMU_PROCESS_EVENT_NBDKIT_EXITED, 0, 0, nbdkit);
+    virObjectUnlock(vm);
 }

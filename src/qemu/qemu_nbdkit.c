@@ -19,6 +19,7 @@
 
 #include <config.h>
 #include <glib.h>
+#include <sys/syscall.h>
 
 #include "vircommand.h"
 #include "virerror.h"
@@ -33,6 +34,7 @@
 #include "qemu_nbdkit.h"
 #define LIBVIRT_QEMU_NBDKITPRIV_H_ALLOW
 #include "qemu_nbdkitpriv.h"
+#include "qemu_process.h"
 #include "qemu_security.h"
 
 #include <fcntl.h>
@@ -40,6 +42,12 @@
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 VIR_LOG_INIT("qemu.nbdkit");
+
+#if WITH_NBDKIT
+# define WITHOUT_NBDKIT_UNUSED
+#else
+# define WITHOUT_NBDKIT_UNUSED G_GNUC_UNUSED
+#endif
 
 VIR_ENUM_IMPL(qemuNbdkitCaps,
     QEMU_NBDKIT_CAPS_LAST,
@@ -611,6 +619,113 @@ qemuNbdkitCapsCacheNew(const char *cachedir)
 }
 
 
+int
+qemuNbdkitProcessRestart(qemuNbdkitProcess *proc,
+                         virDomainObj *vm)
+{
+    qemuDomainObjPrivate *vmpriv = vm->privateData;
+    virQEMUDriver *driver = vmpriv->driver;
+
+    /* clean up resources associated with process */
+    qemuNbdkitProcessStop(proc);
+
+    return qemuNbdkitProcessStart(proc, vm, driver);
+}
+
+
+#if WITH_NBDKIT
+typedef struct {
+    qemuNbdkitProcess *proc;
+    virDomainObj *vm;
+} qemuNbdkitProcessEventData;
+
+
+static qemuNbdkitProcessEventData*
+qemuNbdkitProcessEventDataNew(qemuNbdkitProcess *proc,
+                              virDomainObj *vm)
+{
+    qemuNbdkitProcessEventData *d = g_new(qemuNbdkitProcessEventData, 1);
+    d->proc = proc;
+    d->vm = virObjectRef(vm);
+    return d;
+}
+
+
+static void
+qemuNbdkitProcessEventDataFree(qemuNbdkitProcessEventData *d)
+{
+    virObjectUnref(d->vm);
+    g_free(d);
+}
+
+
+static void
+qemuNbdkitProcessPidfdCb(int watch G_GNUC_UNUSED,
+                         int fd,
+                         int events G_GNUC_UNUSED,
+                         void *opaque)
+{
+    qemuNbdkitProcessEventData *d = opaque;
+
+    VIR_FORCE_CLOSE(fd);
+    /* submit an event so that it is handled in the per-vm event thread */
+    qemuProcessHandleNbdkitExit(d->proc, d->vm);
+}
+#endif /* WITH_NBDKIT */
+
+
+static int
+qemuNbdkitProcessStartMonitor(qemuNbdkitProcess *proc WITHOUT_NBDKIT_UNUSED,
+                              virDomainObj *vm WITHOUT_NBDKIT_UNUSED)
+{
+#if WITH_NBDKIT
+    int pidfd;
+    qemuNbdkitProcessEventData *data;
+
+    pidfd = syscall(SYS_pidfd_open, proc->pid, 0);
+    if (pidfd < 0) {
+        virReportSystemError(errno, _("pidfd_open failed for %1$i"), proc->pid);
+        return -1;
+    }
+
+    data = qemuNbdkitProcessEventDataNew(proc, vm);
+    if ((proc->eventwatch = virEventAddHandle(pidfd,
+                                              VIR_EVENT_HANDLE_READABLE,
+                                              qemuNbdkitProcessPidfdCb,
+                                              data,
+                                              (virFreeCallback)qemuNbdkitProcessEventDataFree)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to monitor nbdkit process %1$i"),
+                       proc->pid);
+        VIR_FORCE_CLOSE(pidfd);
+        qemuNbdkitProcessEventDataFree(data);
+        return -1;
+    }
+
+    VIR_DEBUG("Monitoring nbdkit process %i for exit", proc->pid);
+
+    return 0;
+#else
+    /* This should not be reachable */
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("nbdkit support is not enabled"));
+    return -1;
+#endif /* WITH_NBDKIT */
+}
+
+
+static void
+qemuNbdkitProcessStopMonitor(qemuNbdkitProcess *proc WITHOUT_NBDKIT_UNUSED)
+{
+#if WITH_NBDKIT
+    if (proc->eventwatch > 0) {
+        virEventRemoveHandle(proc->eventwatch);
+        proc->eventwatch = 0;
+    }
+#endif /* WITH_NBDKIT */
+}
+
+
 static qemuNbdkitProcess *
 qemuNbdkitProcessNew(virStorageSource *source,
                      const char *pidfile,
@@ -657,29 +772,40 @@ qemuNbdkitReconnectStorageSource(virStorageSource *source,
 }
 
 
-static void
-qemuNbdkitStorageSourceManageProcessOne(virStorageSource *source)
+static int
+qemuNbdkitStorageSourceManageProcessOne(virStorageSource *source,
+                                        virDomainObj *vm)
 {
     qemuDomainStorageSourcePrivate *srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(source);
+    qemuDomainObjPrivate *vmpriv = vm->privateData;
     qemuNbdkitProcess *proc;
 
     if (!srcpriv)
-        return;
+        return 0;
 
     proc = srcpriv->nbdkitProcess;
 
     if (!proc)
-        return;
+        return 0;
+
+    if (!proc->caps)
+        proc->caps = qemuGetNbdkitCaps(vmpriv->driver);
 
     if (proc->pid <= 0) {
         if (virPidFileReadPath(proc->pidfile, &proc->pid) < 0) {
-            VIR_WARN("Unable to read pidfile '%s'", proc->pidfile);
-            return;
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to read pidfile '%1$s'"),
+                           proc->pidfile);
+            return -1;
         }
     }
 
-    if (virProcessKill(proc->pid, 0) < 0)
-        VIR_WARN("nbdkit process %i is not alive", proc->pid);
+    if (virProcessKill(proc->pid, 0) < 0) {
+        VIR_DEBUG("nbdkit process %i is not alive", proc->pid);
+        return qemuNbdkitProcessRestart(proc, vm);
+    }
+
+    return qemuNbdkitProcessStartMonitor(proc, vm);
 }
 
 /**
@@ -691,23 +817,32 @@ qemuNbdkitStorageSourceManageProcessOne(virStorageSource *source)
  * @source. It is intended to be called after libvirt restarts and has loaded its current state from
  * disk and is attempting to re-connect to active domains.
  */
-void
-qemuNbdkitStorageSourceManageProcess(virStorageSource *source)
+int
+qemuNbdkitStorageSourceManageProcess(virStorageSource *source,
+                                     virDomainObj *vm)
 {
     virStorageSource *backing;
     for (backing = source; backing != NULL; backing = backing->backingStore)
-        qemuNbdkitStorageSourceManageProcessOne(backing);
+        if (qemuNbdkitStorageSourceManageProcessOne(backing, vm) < 0)
+            return -1;
+
+    return 0;
 }
 
 
 bool
-qemuNbdkitInitStorageSource(qemuNbdkitCaps *caps,
-                            virStorageSource *source,
-                            char *statedir,
-                            const char *alias,
-                            uid_t user,
-                            gid_t group)
+qemuNbdkitInitStorageSource(qemuNbdkitCaps *caps WITHOUT_NBDKIT_UNUSED,
+                            virStorageSource *source WITHOUT_NBDKIT_UNUSED,
+                            char *statedir WITHOUT_NBDKIT_UNUSED,
+                            const char *alias WITHOUT_NBDKIT_UNUSED,
+                            uid_t user WITHOUT_NBDKIT_UNUSED,
+                            gid_t group WITHOUT_NBDKIT_UNUSED)
 {
+#if !WITH_NBDKIT
+    /* if nbdkit support is not enabled, don't construct the object so the
+     * calling function will fall back to qemu storage drivers */
+    return false;
+#else
     qemuDomainStorageSourcePrivate *srcPriv = qemuDomainStorageSourcePrivateFetch(source);
     g_autofree char *pidname = g_strdup_printf("nbdkit-%s.pid", alias);
     g_autofree char *socketname = g_strdup_printf("nbdkit-%s.socket", alias);
@@ -751,6 +886,7 @@ qemuNbdkitInitStorageSource(qemuNbdkitCaps *caps,
     srcPriv->nbdkitProcess = proc;
 
     return true;
+#endif /* WITH_NBDKIT */
 }
 
 
@@ -968,6 +1104,8 @@ qemuNbdkitProcessBuildCommand(qemuNbdkitProcess *proc)
 void
 qemuNbdkitProcessFree(qemuNbdkitProcess *proc)
 {
+    qemuNbdkitProcessStopMonitor(proc);
+
     g_clear_pointer(&proc->pidfile, g_free);
     g_clear_pointer(&proc->socketfile, g_free);
     g_clear_object(&proc->caps);
@@ -1037,8 +1175,11 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
         goto error;
 
     while (virTimeBackOffWait(&timebackoff)) {
-        if (virFileExists(proc->socketfile))
+        if (virFileExists(proc->socketfile)) {
+            if (qemuNbdkitProcessStartMonitor(proc, vm) < 0)
+                goto error;
             return 0;
+        }
 
         if (virProcessKill(proc->pid, 0) == 0)
             continue;
@@ -1069,6 +1210,8 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
 int
 qemuNbdkitProcessStop(qemuNbdkitProcess *proc)
 {
+    qemuNbdkitProcessStopMonitor(proc);
+
     if (proc->pid < 0)
         return 0;
 
