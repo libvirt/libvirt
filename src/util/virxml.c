@@ -111,38 +111,6 @@ virXPathString(const char *xpath,
 }
 
 
-static int
-virXPathLongBase(const char *xpath,
-                 xmlXPathContextPtr ctxt,
-                 int base,
-                 long *value)
-{
-    g_autoptr(xmlXPathObject) obj = NULL;
-    int ret = 0;
-
-    if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Invalid parameter to virXPathLong()"));
-        return -1;
-    }
-    obj = xmlXPathEval(BAD_CAST xpath, ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        if (virStrToLong_l((char *) obj->stringval, NULL, base, value) < 0)
-            ret = -2;
-    } else if ((obj != NULL) && (obj->type == XPATH_NUMBER) &&
-               (!(isnan(obj->floatval)))) {
-        *value = (long) obj->floatval;
-        if (*value != obj->floatval)
-            ret = -2;
-    } else {
-        ret = -1;
-    }
-
-    return ret;
-}
-
-
 /**
  * virXPathInt:
  * @xpath: the XPath string to evaluate
@@ -171,27 +139,6 @@ virXPathInt(const char *xpath,
         return -2;
 
     return 0;
-}
-
-
-/**
- * virXPathLong:
- * @xpath: the XPath string to evaluate
- * @ctxt: an XPath context
- * @value: the returned long value
- *
- * Convenience function to evaluate an XPath number
- *
- * Returns 0 in case of success in which case @value is set,
- *         or -1 if the XPath evaluation failed or -2 if the
- *         value doesn't have a long format.
- */
-int
-virXPathLong(const char *xpath,
-             xmlXPathContextPtr ctxt,
-             long *value)
-{
-    return virXPathLongBase(xpath, ctxt, 10, value);
 }
 
 

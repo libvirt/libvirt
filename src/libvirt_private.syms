@@ -3693,7 +3693,6 @@ virXMLValidatorValidate;
 virXPathBoolean;
 virXPathContextNodeRestore;
 virXPathInt;
-virXPathLong;
 virXPathLongLong;
 virXPathNode;
 virXPathNodeSet;
