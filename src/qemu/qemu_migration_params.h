@@ -98,7 +98,7 @@ int
 qemuMigrationParamsApply(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams *migParams,
-                         unsigned long apiFlags);
+                         unsigned int apiFlags);
 
 int
 qemuMigrationParamsEnableTLS(virQEMUDriver *driver,
@@ -145,7 +145,7 @@ void
 qemuMigrationParamsReset(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams *origParams,
-                         unsigned long apiFlags);
+                         unsigned int apiFlags);
 
 void
 qemuMigrationParamsFormat(virBuffer *buf,

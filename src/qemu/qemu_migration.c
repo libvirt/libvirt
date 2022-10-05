@@ -101,7 +101,7 @@ qemuMigrationJobIsAllowed(virDomainObj *vm)
 static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT
 qemuMigrationJobStart(virDomainObj *vm,
                       virDomainAsyncJob job,
-                      unsigned long apiFlags)
+                      unsigned int apiFlags)
 {
     virDomainJobOperation op;
     unsigned long long mask;

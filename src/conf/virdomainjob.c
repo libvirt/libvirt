@@ -431,7 +431,7 @@ virDomainObjBeginJobInternal(virDomainObj *obj,
 
     VIR_WARN("Cannot start job (%s, %s, %s) in API %s for domain %s; "
              "current job is (%s, %s, %s) "
-             "owned by (%llu %s, %llu %s, %llu %s (flags=0x%lx)) "
+             "owned by (%llu %s, %llu %s, %llu %s (flags=0x%x)) "
              "for (%llus, %llus, %llus)",
              virDomainJobTypeToString(job),
              virDomainAgentJobTypeToString(agentJob),
@@ -550,7 +550,7 @@ virDomainObjBeginAgentJob(virDomainObj *obj,
 int virDomainObjBeginAsyncJob(virDomainObj *obj,
                               virDomainAsyncJob asyncJob,
                               virDomainJobOperation operation,
-                              unsigned long apiFlags)
+                              unsigned int apiFlags)
 {
     if (virDomainObjBeginJobInternal(obj, obj->job, VIR_JOB_ASYNC,
                                      VIR_AGENT_JOB_NONE,

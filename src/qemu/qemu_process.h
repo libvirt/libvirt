@@ -65,7 +65,7 @@ void qemuProcessIncomingDefFree(qemuProcessIncomingDef *inc);
 
 int qemuProcessBeginJob(virDomainObj *vm,
                         virDomainJobOperation operation,
-                        unsigned long apiFlags);
+                        unsigned int apiFlags);
 void qemuProcessEndJob(virDomainObj *vm);
 
 typedef enum {

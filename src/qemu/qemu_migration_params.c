@@ -919,7 +919,7 @@ int
 qemuMigrationParamsApply(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams *migParams,
-                         unsigned long apiFlags)
+                         unsigned int apiFlags)
 {
     bool postcopyResume = !!(apiFlags & VIR_MIGRATE_POSTCOPY_RESUME);
     int ret = -1;
@@ -1117,7 +1117,7 @@ static void
 qemuMigrationParamsResetTLS(virDomainObj *vm,
                             int asyncJob,
                             qemuMigrationParams *origParams,
-                            unsigned long apiFlags)
+                            unsigned int apiFlags)
 {
     g_autofree char *tlsAlias = NULL;
     g_autofree char *secAlias = NULL;
@@ -1280,7 +1280,7 @@ void
 qemuMigrationParamsReset(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams *origParams,
-                         unsigned long apiFlags)
+                         unsigned int apiFlags)
 {
     virErrorPtr err;
     g_autoptr(virBitmap) clearCaps = NULL;
@@ -1288,7 +1288,7 @@ qemuMigrationParamsReset(virDomainObj *vm,
 
     virErrorPreserveLast(&err);
 
-    VIR_DEBUG("Resetting migration parameters %p, flags 0x%lx",
+    VIR_DEBUG("Resetting migration parameters %p, flags 0x%x",
               origParams, apiFlags);
 
     if (!virDomainObjIsActive(vm) || !origParams)

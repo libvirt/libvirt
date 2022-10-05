@@ -692,7 +692,7 @@ qemuDomainObjPrivateXMLFormatJob(virBuffer *buf,
     }
 
     if (vm->job->asyncJob != VIR_ASYNC_JOB_NONE) {
-        virBufferAsprintf(&attrBuf, " flags='0x%lx'", vm->job->apiFlags);
+        virBufferAsprintf(&attrBuf, " flags='0x%x'", vm->job->apiFlags);
         virBufferAsprintf(&attrBuf, " asyncStarted='%llu'", vm->job->asyncStarted);
     }
 
@@ -758,10 +758,9 @@ qemuDomainObjPrivateXMLParseJob(virDomainObj *vm,
         }
     }
 
-    if (virXPathULongHex("string(@flags)", ctxt, &vm->job->apiFlags) == -2) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid job flags"));
+    if (virXMLPropUInt(ctxt->node, "flags", 16, VIR_XML_PROP_NONE,
+                       &vm->job->apiFlags) < 0)
         return -1;
-    }
 
     if (vm->job->cb &&
         vm->job->cb->parseJobPrivate(ctxt, job, vm) < 0)

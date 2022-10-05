@@ -4689,7 +4689,7 @@ qemuProcessIncomingDefNew(virQEMUCaps *qemuCaps,
 int
 qemuProcessBeginJob(virDomainObj *vm,
                     virDomainJobOperation operation,
-                    unsigned long apiFlags)
+                    unsigned int apiFlags)
 {
     if (virDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_START,
                                    operation, apiFlags) < 0)

@@ -182,7 +182,7 @@ struct _virDomainJobObj {
     virDomainJobData *completed;     /* statistics data of a recently completed job */
     bool abortJob;                      /* abort of the job requested */
     char *error;                        /* job event completion error */
-    unsigned long apiFlags; /* flags passed to the API which started the async job */
+    unsigned int apiFlags; /* flags passed to the API which started the async job */
 
     void *privateData;                  /* job specific collection of data */
     virDomainObjPrivateJobCallbacks *cb;
@@ -255,7 +255,7 @@ int virDomainObjBeginAgentJob(virDomainObj *obj,
 int virDomainObjBeginAsyncJob(virDomainObj *obj,
                               virDomainAsyncJob asyncJob,
                               virDomainJobOperation operation,
-                              unsigned long apiFlags)
+                              unsigned int apiFlags)
     G_GNUC_WARN_UNUSED_RESULT;
 int virDomainObjBeginNestedJob(virDomainObj *obj,
                                virDomainAsyncJob asyncJob)
