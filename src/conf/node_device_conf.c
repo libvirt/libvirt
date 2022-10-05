@@ -1502,25 +1502,25 @@ virNodeDevCapSCSIParseXML(xmlXPathContextPtr ctxt,
 
     ctxt->node = node;
 
-    if (virNodeDevCapsDefParseUInt("number(./host[1])", ctxt,
+    if (virNodeDevCapsDefParseUInt("string(./host[1])", ctxt,
                                    &scsi->host, def,
                                    _("no SCSI host ID supplied for '%s'"),
                                    _("invalid SCSI host ID supplied for '%s'")) < 0)
         return -1;
 
-    if (virNodeDevCapsDefParseUInt("number(./bus[1])", ctxt,
+    if (virNodeDevCapsDefParseUInt("string(./bus[1])", ctxt,
                                    &scsi->bus, def,
                                    _("no SCSI bus ID supplied for '%s'"),
                                    _("invalid SCSI bus ID supplied for '%s'")) < 0)
         return -1;
 
-    if (virNodeDevCapsDefParseUInt("number(./target[1])", ctxt,
+    if (virNodeDevCapsDefParseUInt("string(./target[1])", ctxt,
                                    &scsi->target, def,
                                    _("no SCSI target ID supplied for '%s'"),
                                    _("invalid SCSI target ID supplied for '%s'")) < 0)
         return -1;
 
-    if (virNodeDevCapsDefParseUInt("number(./lun[1])", ctxt,
+    if (virNodeDevCapsDefParseUInt("string(./lun[1])", ctxt,
                                    &scsi->lun, def,
                                    _("no SCSI LUN ID supplied for '%s'"),
                                    _("invalid SCSI LUN ID supplied for '%s'")) < 0)
@@ -1615,7 +1615,7 @@ virNodeDevCapSCSIHostParseXML(xmlXPathContextPtr ctxt,
     ctxt->node = node;
 
     if (create == EXISTING_DEVICE) {
-        if (virNodeDevCapsDefParseUInt("number(./host[1])", ctxt,
+        if (virNodeDevCapsDefParseUInt("string(./host[1])", ctxt,
                                        &scsi_host->host, def,
                                        _("no SCSI host ID supplied for '%s'"),
                                        _("invalid SCSI host ID supplied for '%s'")) < 0) {
@@ -1775,25 +1775,25 @@ virNodeDevCapUSBInterfaceParseXML(xmlXPathContextPtr ctxt,
 
     ctxt->node = node;
 
-    if (virNodeDevCapsDefParseUInt("number(./number[1])", ctxt,
+    if (virNodeDevCapsDefParseUInt("string(./number[1])", ctxt,
                                    &usb_if->number, def,
                                    _("no USB interface number supplied for '%s'"),
                                    _("invalid USB interface number supplied for '%s'")) < 0)
         return -1;
 
-    if (virNodeDevCapsDefParseUInt("number(./class[1])", ctxt,
+    if (virNodeDevCapsDefParseUInt("string(./class[1])", ctxt,
                                    &usb_if->klass, def,
                                    _("no USB interface class supplied for '%s'"),
                                    _("invalid USB interface class supplied for '%s'")) < 0)
         return -1;
 
-    if (virNodeDevCapsDefParseUInt("number(./subclass[1])", ctxt,
+    if (virNodeDevCapsDefParseUInt("string(./subclass[1])", ctxt,
                                    &usb_if->subclass, def,
                                    _("no USB interface subclass supplied for '%s'"),
                                    _("invalid USB interface subclass supplied for '%s'")) < 0)
         return -1;
 
-    if (virNodeDevCapsDefParseUInt("number(./protocol[1])", ctxt,
+    if (virNodeDevCapsDefParseUInt("string(./protocol[1])", ctxt,
                                    &usb_if->protocol, def,
                                    _("no USB interface protocol supplied for '%s'"),
                                    _("invalid USB interface protocol supplied for '%s'")) < 0)
@@ -1839,13 +1839,13 @@ virNodeDevCapUSBDevParseXML(xmlXPathContextPtr ctxt,
 
     ctxt->node = node;
 
-    if (virNodeDevCapsDefParseUInt("number(./bus[1])", ctxt,
+    if (virNodeDevCapsDefParseUInt("string(./bus[1])", ctxt,
                                    &usb_dev->bus, def,
                                    _("no USB bus number supplied for '%s'"),
                                    _("invalid USB bus number supplied for '%s'")) < 0)
         return -1;
 
-    if (virNodeDevCapsDefParseUInt("number(./device[1])", ctxt,
+    if (virNodeDevCapsDefParseUInt("string(./device[1])", ctxt,
                                    &usb_dev->device, def,
                                    _("no USB device number supplied for '%s'"),
                                    _("invalid USB device number supplied for '%s'")) < 0)
@@ -2084,25 +2084,25 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
         pci_dev->klass = -1;
     }
 
-    if (virNodeDevCapsDefParseUInt("number(./domain[1])", ctxt,
+    if (virNodeDevCapsDefParseUInt("string(./domain[1])", ctxt,
                                    &pci_dev->domain, def,
                                    _("no PCI domain ID supplied for '%s'"),
                                    _("invalid PCI domain ID supplied for '%s'")) < 0)
         goto out;
 
-    if (virNodeDevCapsDefParseUInt("number(./bus[1])", ctxt,
+    if (virNodeDevCapsDefParseUInt("string(./bus[1])", ctxt,
                                    &pci_dev->bus, def,
                                    _("no PCI bus ID supplied for '%s'"),
                                    _("invalid PCI bus ID supplied for '%s'")) < 0)
         goto out;
 
-    if (virNodeDevCapsDefParseUInt("number(./slot[1])", ctxt,
+    if (virNodeDevCapsDefParseUInt("string(./slot[1])", ctxt,
                                    &pci_dev->slot, def,
                                    _("no PCI slot ID supplied for '%s'"),
                                    _("invalid PCI slot ID supplied for '%s'")) < 0)
         goto out;
 
-    if (virNodeDevCapsDefParseUInt("number(./function[1])", ctxt,
+    if (virNodeDevCapsDefParseUInt("string(./function[1])", ctxt,
                                    &pci_dev->function, def,
                                    _("no PCI function ID supplied for '%s'"),
                                    _("invalid PCI function ID supplied for '%s'")) < 0)
