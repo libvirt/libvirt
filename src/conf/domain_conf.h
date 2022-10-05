@@ -2466,9 +2466,9 @@ struct _virDomainThreadSchedParam {
 };
 
 struct _virDomainTimerCatchupDef {
-    unsigned long threshold;
-    unsigned long slew;
-    unsigned long limit;
+    unsigned long long threshold;
+    unsigned long long slew;
+    unsigned long long limit;
 };
 
 struct _virDomainTimerDef {

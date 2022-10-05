@@ -10610,33 +10610,17 @@ virDomainTimerDefParseXML(xmlNodePtr node,
 
     catchup = virXPathNode("./catchup", ctxt);
     if (catchup != NULL) {
-        ret = virXPathULong("string(./catchup/@threshold)", ctxt,
-                            &def->catchup.threshold);
-        if (ret == -1) {
-            def->catchup.threshold = 0;
-        } else if (ret < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("invalid catchup threshold"));
+        if (virXMLPropULongLong(catchup, "threshold", 10, VIR_XML_PROP_NONE,
+                                &def->catchup.threshold) < 0)
             goto error;
-        }
 
-        ret = virXPathULong("string(./catchup/@slew)", ctxt, &def->catchup.slew);
-        if (ret == -1) {
-            def->catchup.slew = 0;
-        } else if (ret < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("invalid catchup slew"));
+        if (virXMLPropULongLong(catchup, "slew", 10, VIR_XML_PROP_NONE,
+                                &def->catchup.slew) < 0)
             goto error;
-        }
 
-        ret = virXPathULong("string(./catchup/@limit)", ctxt, &def->catchup.limit);
-        if (ret == -1) {
-            def->catchup.limit = 0;
-        } else if (ret < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("invalid catchup limit"));
+        if (virXMLPropULongLong(catchup, "limit", 10, VIR_XML_PROP_NONE,
+                                &def->catchup.limit) < 0)
             goto error;
-        }
     }
 
     return def;
@@ -24896,11 +24880,11 @@ virDomainTimerDefFormat(virBuffer *buf,
     }
 
     if (def->catchup.threshold > 0)
-        virBufferAsprintf(&catchupAttr, " threshold='%lu'", def->catchup.threshold);
+        virBufferAsprintf(&catchupAttr, " threshold='%llu'", def->catchup.threshold);
     if (def->catchup.slew > 0)
-        virBufferAsprintf(&catchupAttr, " slew='%lu'", def->catchup.slew);
+        virBufferAsprintf(&catchupAttr, " slew='%llu'", def->catchup.slew);
     if (def->catchup.limit > 0)
-        virBufferAsprintf(&catchupAttr, " limit='%lu'", def->catchup.limit);
+        virBufferAsprintf(&catchupAttr, " limit='%llu'", def->catchup.limit);
 
     virXMLFormatElement(&timerChld, "catchup", &catchupAttr, NULL);
     virXMLFormatElement(buf, "timer", &timerAttr, &timerChld);
