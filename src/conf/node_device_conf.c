@@ -1623,7 +1623,7 @@ virNodeDevCapSCSIHostParseXML(xmlXPathContextPtr ctxt,
         }
         /* Optional unique_id value */
         scsi_host->unique_id = -1;
-        if (virNodeDevCapsDefParseIntOptional("number(./unique_id[1])", ctxt,
+        if (virNodeDevCapsDefParseIntOptional("string(./unique_id[1])", ctxt,
                                               &scsi_host->unique_id, def,
                                               _("invalid unique_id supplied for '%s'")) < 0) {
             return -1;
@@ -2140,7 +2140,7 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
 
     /* The default value is -1 since zero is valid NUMA node number */
     pci_dev->numa_node = -1;
-    if (virNodeDevCapsDefParseIntOptional("number(./numa[1]/@node)", ctxt,
+    if (virNodeDevCapsDefParseIntOptional("string(./numa[1]/@node)", ctxt,
                                           &pci_dev->numa_node, def,
                                           _("invalid NUMA node ID supplied for '%s'")) < 0)
         goto out;
