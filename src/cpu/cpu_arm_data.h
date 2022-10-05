@@ -25,7 +25,7 @@
 
 typedef struct _virCPUarmData virCPUarmData;
 struct _virCPUarmData {
-    unsigned long vendor_id;
-    unsigned long pvr;
+    unsigned long long vendor_id;
+    unsigned long long pvr;
     char **features;
 };

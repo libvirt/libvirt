@@ -57,7 +57,7 @@ static const virArch archs[] = {
 typedef struct _virCPUarmVendor virCPUarmVendor;
 struct _virCPUarmVendor {
     char *name;
-    unsigned long value;
+    unsigned long long value;
 };
 
 typedef struct _virCPUarmModel virCPUarmModel;
@@ -266,7 +266,7 @@ virCPUarmMapFeatureParse(xmlXPathContextPtr ctxt G_GNUC_UNUSED,
 
 static virCPUarmVendor *
 virCPUarmVendorFindByID(virCPUarmMap *map,
-                        unsigned long vendor_id)
+                        unsigned long long vendor_id)
 {
     size_t i;
 
@@ -312,15 +312,13 @@ virCPUarmVendorParse(xmlXPathContextPtr ctxt,
         return -1;
     }
 
-    if (virXPathULongHex("string(@value)", ctxt, &vendor->value) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Missing CPU vendor value"));
+    if (virXMLPropULongLong(ctxt->node, "value", 16, VIR_XML_PROP_REQUIRED,
+                            &vendor->value) < 0)
         return -1;
-    }
 
     if (virCPUarmVendorFindByID(map, vendor->value)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("CPU vendor value 0x%2lx already defined"),
+                       _("CPU vendor value 0x%2llx already defined"),
                        vendor->value);
         return -1;
     }
@@ -347,7 +345,7 @@ virCPUarmModelFind(virCPUarmMap *map,
 #if defined(__aarch64__)
 static virCPUarmModel *
 virCPUarmModelFindByPVR(virCPUarmMap *map,
-                        unsigned long pvr)
+                        unsigned long long pvr)
 {
     size_t i;
 
@@ -367,7 +365,8 @@ virCPUarmModelParse(xmlXPathContextPtr ctxt,
 {
     virCPUarmMap *map = data;
     g_autoptr(virCPUarmModel) model = NULL;
-    g_autofree char *vendor = NULL;
+    xmlNodePtr vendorNode = NULL;
+    xmlNodePtr pvrNode = NULL;
 
     model = g_new0(virCPUarmModel, 1);
     model->name = g_strdup(name);
@@ -379,14 +378,11 @@ virCPUarmModelParse(xmlXPathContextPtr ctxt,
         return -1;
     }
 
-    if (virXPathBoolean("boolean(./vendor)", ctxt)) {
-        vendor = virXPathString("string(./vendor/@name)", ctxt);
-        if (!vendor) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid vendor element in CPU model %s"),
-                           model->name);
+    if ((vendorNode = virXPathNode("./vendor", ctxt))) {
+        g_autofree char *vendor = NULL;
+
+        if (!(vendor = virXMLPropStringRequired(vendorNode, "name")))
             return -1;
-        }
 
         if (!(model->vendor = virCPUarmVendorFindByName(map, vendor))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -396,19 +392,16 @@ virCPUarmModelParse(xmlXPathContextPtr ctxt,
         }
     }
 
-    if (!virXPathBoolean("boolean(./pvr)", ctxt)) {
+    if (!(pvrNode = virXPathNode("./pvr", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing PVR information for CPU model %s"),
                        model->name);
         return -1;
     }
 
-    if (virXPathULongHex("string(./pvr/@value)", ctxt, &model->data.pvr) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing or invalid PVR value in CPU model %s"),
-                       model->name);
+    if (virXMLPropULongLong(pvrNode, "value", 16, VIR_XML_PROP_REQUIRED,
+                            &model->data.pvr) < 0)
         return -1;
-    }
 
     VIR_APPEND_ELEMENT(map->models, map->nmodels, model);
 
