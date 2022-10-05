@@ -149,7 +149,9 @@ virXPathLongBase(const char *xpath,
  * @ctxt: an XPath context
  * @value: the returned int value
  *
- * Convenience function to evaluate an XPath number
+ * Convenience function to evaluate an XPath number. The @xpath expression
+ * must ensure that the evaluated value is returned as a string (use the
+ * 'string()' conversion in the expression).
  *
  * Returns 0 in case of success in which case @value is set,
  *         or -1 if the XPath evaluation failed or -2 if the
@@ -160,15 +162,14 @@ virXPathInt(const char *xpath,
             xmlXPathContextPtr ctxt,
             int *value)
 {
-    long tmp;
-    int ret;
+    g_autoptr(xmlXPathObject) obj = NULL;
 
-    ret = virXPathLongBase(xpath, ctxt, 10, &tmp);
-    if (ret < 0)
-        return ret;
-    if ((int) tmp != tmp)
+    if (!(obj = virXPathEvalString(xpath, ctxt)))
+        return -1;
+
+    if (virStrToLong_i((char *) obj->stringval, NULL, 10, value) < 0)
         return -2;
-    *value = tmp;
+
     return 0;
 }
 
@@ -230,28 +231,29 @@ virXPathULongBase(const char *xpath,
  * virXPathUInt:
  * @xpath: the XPath string to evaluate
  * @ctxt: an XPath context
- * @value: the returned int value
+ * @value: the returned unsigned int value
  *
- * Convenience function to evaluate an XPath number
+ * Convenience function to evaluate an XPath number. The @xpath expression
+ * must ensure that the evaluated value is returned as a string (use the
+ * 'string()' conversion in the expression).
  *
  * Returns 0 in case of success in which case @value is set,
  *         or -1 if the XPath evaluation failed or -2 if the
- *         value doesn't have an int format.
+ *         value doesn't have an unsigned int format.
  */
 int
 virXPathUInt(const char *xpath,
              xmlXPathContextPtr ctxt,
              unsigned int *value)
 {
-    unsigned long tmp;
-    int ret;
+    g_autoptr(xmlXPathObject) obj = NULL;
 
-    ret = virXPathULongBase(xpath, ctxt, 10, &tmp);
-    if (ret < 0)
-        return ret;
-    if ((unsigned int) tmp != tmp)
+    if (!(obj = virXPathEvalString(xpath, ctxt)))
+        return -1;
+
+    if (virStrToLong_ui((char *) obj->stringval, NULL, 10, value) < 0)
         return -2;
-    *value = tmp;
+
     return 0;
 }
 
