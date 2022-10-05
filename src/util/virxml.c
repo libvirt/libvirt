@@ -323,7 +323,7 @@ virXPathULongLong(const char *xpath,
     if (!(obj = virXPathEvalString(xpath, ctxt)))
         return -1;
 
-    if (virStrToLong_ull((char *) obj->stringval, NULL, 10, value) < 0)
+    if (virStrToLong_ullp((char *) obj->stringval, NULL, 10, value) < 0)
         return -2;
 
     return 0;
