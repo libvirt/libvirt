@@ -147,6 +147,7 @@ void virSysinfoSystemDefFree(virSysinfoSystemDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSysinfoSystemDef, virSysinfoSystemDefFree);
 void virSysinfoBaseBoardDefClear(virSysinfoBaseBoardDef *def);
 void virSysinfoChassisDefFree(virSysinfoChassisDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSysinfoChassisDef, virSysinfoChassisDefFree);
 void virSysinfoOEMStringsDefFree(virSysinfoOEMStringsDef *def);
 void virSysinfoDefFree(virSysinfoDef *def);
 

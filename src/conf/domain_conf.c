@@ -12267,18 +12267,15 @@ virSysinfoChassisParseXML(xmlNodePtr node,
                          virSysinfoChassisDef **chassisdef)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    int ret = -1;
-    virSysinfoChassisDef *def;
+    g_autoptr(virSysinfoChassisDef) def = g_new0(virSysinfoChassisDef, 1);
 
     ctxt->node = node;
 
     if (!xmlStrEqual(node->name, BAD_CAST "chassis")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("XML does not contain expected 'chassis' element"));
-        return ret;
+        return -1;
     }
-
-    def = g_new0(virSysinfoChassisDef, 1);
 
     def->manufacturer = virXPathString("string(entry[@name='manufacturer'])", ctxt);
     def->version = virXPathString("string(entry[@name='version'])", ctxt);
@@ -12287,14 +12284,11 @@ virSysinfoChassisParseXML(xmlNodePtr node,
     def->sku = virXPathString("string(entry[@name='sku'])", ctxt);
 
     if (!def->manufacturer && !def->version &&
-        !def->serial && !def->asset && !def->sku) {
-        g_clear_pointer(&def, virSysinfoChassisDefFree);
-    }
+        !def->serial && !def->asset && !def->sku)
+        return 0;
 
     *chassisdef = g_steal_pointer(&def);
-    ret = 0;
-    virSysinfoChassisDefFree(def);
-    return ret;
+    return 0;
 }
 
 
