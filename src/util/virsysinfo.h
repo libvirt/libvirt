@@ -142,6 +142,7 @@ struct _virSysinfoDef {
 virSysinfoDef *virSysinfoRead(void);
 
 void virSysinfoBIOSDefFree(virSysinfoBIOSDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSysinfoBIOSDef, virSysinfoBIOSDefFree);
 void virSysinfoSystemDefFree(virSysinfoSystemDef *def);
 void virSysinfoBaseBoardDefClear(virSysinfoBaseBoardDef *def);
 void virSysinfoChassisDefFree(virSysinfoChassisDef *def);

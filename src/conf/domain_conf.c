@@ -12080,18 +12080,15 @@ virSysinfoBIOSParseXML(xmlNodePtr node,
                        virSysinfoBIOSDef **bios)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    int ret = -1;
-    virSysinfoBIOSDef *def;
+    g_autoptr(virSysinfoBIOSDef) def = g_new0(virSysinfoBIOSDef, 1);
 
     ctxt->node = node;
 
     if (!virXMLNodeNameEqual(node, "bios")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("XML does not contain expected 'bios' element"));
-        return ret;
+        return -1;
     }
-
-    def = g_new0(virSysinfoBIOSDef, 1);
 
     def->vendor = virXPathString("string(entry[@name='vendor'])", ctxt);
     def->version = virXPathString("string(entry[@name='version'])", ctxt);
@@ -12117,20 +12114,16 @@ virSysinfoBIOSParseXML(xmlNodePtr node,
             (year < 0 || (year >= 100 && year < 1900))) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("Invalid BIOS 'date' format"));
-            goto cleanup;
+            return -1;
         }
     }
 
     if (!def->vendor && !def->version &&
-        !def->date && !def->release) {
-        g_clear_pointer(&def, virSysinfoBIOSDefFree);
-    }
+        !def->date && !def->release)
+        return 0;
 
     *bios = g_steal_pointer(&def);
-    ret = 0;
- cleanup:
-    virSysinfoBIOSDefFree(def);
-    return ret;
+    return 0;
 }
 
 static int
