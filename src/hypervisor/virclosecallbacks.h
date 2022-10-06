@@ -49,3 +49,27 @@ void
 virCloseCallbacksRun(virCloseCallbacks *closeCallbacks,
                      virConnectPtr conn,
                      virDomainObjList *domains);
+
+/* ---- */
+
+virObject *
+virCloseCallbacksDomainAlloc(void);
+
+void
+virCloseCallbacksDomainAdd(virDomainObj *vm,
+                           virConnectPtr conn,
+                           virCloseCallback cb);
+
+void
+virCloseCallbacksDomainRemove(virDomainObj *vm,
+                              virConnectPtr conn,
+                              virCloseCallback cb);
+
+bool
+virCloseCallbacksDomainIsRegistered(virDomainObj *vm,
+                                    virConnectPtr conn,
+                                    virCloseCallback cb);
+
+void
+virCloseCallbacksDomainRunForConn(virDomainObjList *domains,
+                                  virConnectPtr conn);

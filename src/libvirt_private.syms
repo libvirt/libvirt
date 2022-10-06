@@ -1607,6 +1607,11 @@ virDomainDriverSetupPersistentDefBlkioParams;
 
 
 # hypervisor/virclosecallbacks.h
+virCloseCallbacksDomainAdd;
+virCloseCallbacksDomainAlloc;
+virCloseCallbacksDomainIsRegistered;
+virCloseCallbacksDomainRemove;
+virCloseCallbacksDomainRunForConn;
 virCloseCallbacksGet;
 virCloseCallbacksNew;
 virCloseCallbacksRun;
