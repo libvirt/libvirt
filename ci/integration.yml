@@ -6,7 +6,7 @@ centos-stream-8-tests:
   needs:
     - x86_64-centos-stream-8
     - project: libvirt/libvirt-perl
-      job: x86_64-centos-stream-8
+      job: x86_64-centos-stream-8-prebuilt-env
       ref: master
       artifacts: true
   variables:
@@ -22,7 +22,7 @@ centos-stream-9-tests:
   needs:
     - x86_64-centos-stream-9
     - project: libvirt/libvirt-perl
-      job: x86_64-centos-stream-9
+      job: x86_64-centos-stream-9-prebuilt-env
       ref: master
       artifacts: true
   variables:
@@ -38,7 +38,7 @@ fedora-35-tests:
   needs:
     - x86_64-fedora-35
     - project: libvirt/libvirt-perl
-      job: x86_64-fedora-35
+      job: x86_64-fedora-35-prebuilt-env
       ref: master
       artifacts: true
   variables:
@@ -54,7 +54,7 @@ fedora-36-tests:
   needs:
     - x86_64-fedora-36
     - project: libvirt/libvirt-perl
-      job: x86_64-fedora-36
+      job: x86_64-fedora-36-prebuilt-env
       ref: master
       artifacts: true
   variables:
@@ -70,7 +70,7 @@ fedora-36-upstream-qemu-tests:
   needs:
     - x86_64-fedora-36
     - project: libvirt/libvirt-perl
-      job: x86_64-fedora-36
+      job: x86_64-fedora-36-prebuilt-env
       ref: master
       artifacts: true
   variables:
