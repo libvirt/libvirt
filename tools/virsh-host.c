@@ -1719,6 +1719,7 @@ static const vshCmdOptDef opts_hypervisor_cpu_baseline[] = {
     },
     {.name = "model",
      .type = VSH_OT_STRING,
+     .completer = virshCPUModelCompleter,
      .help = N_("Shortcut for calling the command with a single CPU model "
                 "and no additional features")
     },

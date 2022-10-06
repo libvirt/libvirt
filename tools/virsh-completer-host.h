@@ -51,3 +51,8 @@ char **
 virshArchCompleter(vshControl *ctl,
                    const vshCmd *cmd,
                    unsigned int flags);
+
+char **
+virshCPUModelCompleter(vshControl *ctl,
+                       const vshCmd *cmd,
+                       unsigned int flags);

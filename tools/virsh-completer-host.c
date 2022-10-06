@@ -205,3 +205,53 @@ virshArchCompleter(vshControl *ctl G_GNUC_UNUSED,
     return virshEnumComplete(VIR_ARCH_LAST,
                              (const char *(*)(int))virArchToString);
 }
+
+
+char **
+virshCPUModelCompleter(vshControl *ctl,
+                       const vshCmd *cmd,
+                       unsigned int flags)
+{
+    virshControl *priv = ctl->privData;
+    const char *virttype = NULL;
+    const char *emulator = NULL;
+    const char *arch = NULL;
+    const char *machine = NULL;
+    g_autofree char *domcaps = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
+    g_auto(GStrv) models = NULL;
+    int nmodels = 0;
+    size_t i;
+
+    virCheckFlags(0, NULL);
+
+    if (vshCommandOptStringReq(ctl, cmd, "virttype", &virttype) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "emulator", &emulator) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "arch", &arch) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "machine", &machine) < 0)
+        return NULL;
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if (!(domcaps = virConnectGetDomainCapabilities(priv->conn, emulator, arch,
+                                                    machine, virttype, 0)))
+        return NULL;
+
+    if (!(xml = virXMLParseStringCtxt(domcaps, _("domain capabilities"), &ctxt)))
+        return NULL;
+
+    nmodels = virXPathNodeSet("/domainCapabilities/cpu/mode[@name='custom']/model",
+                              ctxt, &nodes);
+    if (nmodels <= 0)
+        return NULL;
+
+    models = g_new0(char *, nmodels + 1);
+
+    for (i = 0; i < nmodels; i++)
+        models[i] = virXMLNodeContentString(nodes[i]);
+
+    return g_steal_pointer(&models);
+}
