@@ -300,6 +300,35 @@ class LibvirtConfidentialVM(ConfidentialVM):
             raise IncorrectConfigException(
                 "Domain must have one firmware path")
 
+        measure_kernel_nodes = doc.xpath(
+            "/domain/launchSecurity[@type='sev']/@kernelHashes")
+        measure_kernel = False
+        if len(measure_kernel_nodes) == 1:
+            if measure_kernel_nodes[0] == "yes":
+                measure_kernel = True
+
+        xp_kernel = "/domain/os/kernel"
+        xp_initrd = "/domain/os/initrd"
+        xp_cmdline = "/domain/os/cmdline"
+        kern_nodes = (doc.xpath(xp_kernel) +
+                      doc.xpath(xp_initrd) +
+                      doc.xpath(xp_cmdline))
+        if not measure_kernel:
+            if len(self.kernel_table.entries()) != 0:
+                raise UnsupportedUsageException(
+                    "kernel/initrd/cmdline provided but kernel "
+                    "measurement not enabled")
+
+            # Check for an insecure scenario
+            if len(kern_nodes) != 0 and secure:
+                raise InsecureUsageException(
+                    "direct kernel boot present without measurement")
+        else:
+            if len(kern_nodes) == 0:
+                raise IncorrectConfigException(
+                    "kernel/initrd/cmdline not provided but kernel "
+                    "measurement is enabled")
+
     def load_domain(self, uri, id_name_uuid, secure, ignore_config):
         self.conn = libvirt.open(uri)
 
@@ -367,6 +396,36 @@ class LibvirtConfidentialVM(ConfidentialVM):
                     "--firmware not specified and no firmware path found")
 
             self.load_firmware(loadernodes[0].text)
+
+        if self.kernel_table.kernel is None:
+            kernelnodes = doc.xpath("/domain/os/kernel")
+            if len(kernelnodes) != 0:
+                if remote:
+                    raise UnsupportedUsageException(
+                        "Cannot access kernel path remotely")
+                if secure:
+                    raise InsecureUsageException(
+                        "Using kernel path from XML is not secure")
+                self.kernel_table.load_kernel(kernelnodes[0].text)
+
+        if self.kernel_table.initrd is None:
+            initrdnodes = doc.xpath("/domain/os/initrd")
+            if len(initrdnodes) != 0:
+                if remote:
+                    raise UnsupportedUsageException(
+                        "Cannot access initrd path remotely")
+                if secure:
+                    raise InsecureUsageException(
+                        "Using initrd path from XML is not secure")
+                self.kernel_table.load_initrd(initrdnodes[0].text)
+
+        if self.kernel_table.cmdline is None:
+            cmdlinenodes = doc.xpath("/domain/os/cmdline")
+            if len(cmdlinenodes) != 0:
+                if secure:
+                    raise InsecureUsageException(
+                        "Using cmdline string from XML is not secure")
+                self.kernel_table.load_cmdline(cmdlinenodes[0].text)
 
 
 def parse_command_line():

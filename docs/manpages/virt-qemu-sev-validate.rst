@@ -265,6 +265,15 @@ Validate the measurement of a SEV guest booting from disk:
        --tk this-guest-tk.bin \
        --domain fedora34x86_64
 
+Validate the measurement of a SEV guest with direct kernel boot:
+
+::
+
+   # virt-dom-sev-validate \
+       --insecure \
+       --tk this-guest-tk.bin \
+       --domain fedora34x86_64
+
 EXIT STATUS
 ===========
 
