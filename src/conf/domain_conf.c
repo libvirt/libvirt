@@ -12084,12 +12084,6 @@ virSysinfoBIOSParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (!virXMLNodeNameEqual(node, "bios")) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("XML does not contain expected 'bios' element"));
-        return -1;
-    }
-
     def->vendor = virXPathString("string(entry[@name='vendor'])", ctxt);
     def->version = virXPathString("string(entry[@name='version'])", ctxt);
     def->date = virXPathString("string(entry[@name='date'])", ctxt);
