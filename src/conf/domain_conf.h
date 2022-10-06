@@ -167,28 +167,14 @@ typedef enum {
 } virDomainHyperVMode;
 VIR_ENUM_DECL(virDomainHyperVMode);
 
-struct _virDomainHostdevOrigStates {
-    union {
-        struct {
-            /* Does the device need to unbind from stub when
-             * reattaching to host?
-             */
-            bool unbind_from_stub;
+typedef enum {
+    VIR_DOMAIN_HOSTDEV_PCI_ORIGSTATE_UNBIND = 0, /* device needs to unbind from stub when reattaching */
+    VIR_DOMAIN_HOSTDEV_PCI_ORIGSTATE_REMOVESLOT, /* use remove_slot when reattaching */
+    VIR_DOMAIN_HOSTDEV_PCI_ORIGSTATE_REPROBE, /* reprobe driver for device when reattaching */
 
-            /* Does it need to use remove_slot when reattaching
-             * the device to host?
-             */
-            bool remove_slot;
-
-            /* Does it need to reprobe driver for the device when
-             * reattaching to host?
-             */
-            bool reprobe;
-        } pci;
-
-        /* Perhaps 'usb' in future */
-    } states;
-};
+    VIR_DOMAIN_HOSTDEV_PCI_ORIGSTATE_LAST
+} virDomainHostdevPCIOrigstate;
+VIR_ENUM_DECL(virDomainHostdevPCIOrigstate);
 
 struct _virDomainLeaseDef {
     char *lockspace;
@@ -262,6 +248,8 @@ struct _virDomainHostdevSubsysUSB {
 struct _virDomainHostdevSubsysPCI {
     virPCIDeviceAddress addr; /* host address */
     virDomainHostdevSubsysPCIBackendType backend;
+
+    virBitmap *origstates;
 };
 
 struct _virDomainHostdevSubsysSCSIHost {
@@ -394,7 +382,6 @@ struct _virDomainHostdevDef {
         virDomainHostdevSubsys subsys;
         virDomainHostdevCaps caps;
     } source;
-    virDomainHostdevOrigStates origstates;
     virDomainNetTeamingInfo *teaming;
     virDomainDeviceInfo *info; /* Guest address */
 };

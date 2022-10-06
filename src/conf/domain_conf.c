@@ -1061,6 +1061,14 @@ VIR_ENUM_IMPL(virDomainHostdevSubsysSCSIProtocol,
               "iscsi",
 );
 
+
+VIR_ENUM_IMPL(virDomainHostdevPCIOrigstate,
+              VIR_DOMAIN_HOSTDEV_PCI_ORIGSTATE_LAST,
+              "unbind",
+              "removeslot",
+              "reprobe",
+);
+
 VIR_ENUM_IMPL(virDomainHostdevSubsysUSBGuestReset,
               VIR_DOMAIN_HOSTDEV_USB_GUEST_RESET_LAST,
               "default",
@@ -3365,8 +3373,10 @@ void virDomainHostdevDefClear(virDomainHostdevDef *def)
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
             VIR_FREE(def->source.subsys.u.scsi_host.wwpn);
             break;
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+            virBitmapFree(def->source.subsys.u.pci.origstates);
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
             break;
@@ -5731,41 +5741,6 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
     return 0;
 }
 
-/* The internal XML for host PCI device's original states:
- *
- * <origstates>
- *   <unbind/>
- *   <removeslot/>
- *   <reprobe/>
- * </origstates>
- */
-static int
-virDomainHostdevSubsysPCIOrigStatesDefParseXML(xmlNodePtr node,
-                                               virDomainHostdevOrigStates *def)
-{
-    xmlNodePtr cur;
-    cur = node->children;
-
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (virXMLNodeNameEqual(cur, "unbind")) {
-                def->states.pci.unbind_from_stub = true;
-            } else if (virXMLNodeNameEqual(cur, "removeslot")) {
-                def->states.pci.remove_slot = true;
-            } else if (virXMLNodeNameEqual(cur, "reprobe")) {
-                def->states.pci.reprobe = true;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unsupported element '%s' of 'origstates'"),
-                               cur->name);
-                return -1;
-            }
-        }
-        cur = cur->next;
-    }
-
-    return 0;
-}
 
 static int
 virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
@@ -5774,7 +5749,6 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
                                      unsigned int flags)
 {
     xmlNodePtr address = NULL;
-    xmlNodePtr origstates = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = node;
@@ -5788,10 +5762,35 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
         virPCIDeviceAddressParseXML(address, &def->source.subsys.u.pci.addr) < 0)
         return -1;
 
-    if ((flags & VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES) &&
-        (origstates = virXPathNode("./origstates", ctxt)) &&
-        virDomainHostdevSubsysPCIOrigStatesDefParseXML(origstates, &def->origstates) < 0)
-        return -1;
+    if ((flags & VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES)) {
+        virDomainHostdevSubsysPCI *pcisrc = &def->source.subsys.u.pci;
+        g_autofree xmlNodePtr *nodes = NULL;
+        ssize_t nnodes;
+        size_t i;
+
+        if ((nnodes = virXPathNodeSet("./origstates/*", ctxt, &nodes)) < 0)
+            return -1;
+
+        if (nnodes > 0) {
+            if (!pcisrc->origstates)
+                pcisrc->origstates = virBitmapNew(VIR_DOMAIN_HOSTDEV_PCI_ORIGSTATE_LAST);
+            else
+                virBitmapClearAll(pcisrc->origstates);
+
+            for (i = 0; i < nnodes; i++) {
+                int state;
+
+                if ((state = virDomainHostdevPCIOrigstateTypeFromString((const char *) nodes[i]->name)) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("unsupported element '%s' of 'origstates'"),
+                                   (const char *) nodes[i]->name);
+                    return -1;
+                }
+
+                virBitmapSetBitExpand(pcisrc->origstates, state);
+            }
+        }
+    }
 
     return 0;
 }
@@ -23154,7 +23153,6 @@ virDomainHostdevDefFormatSubsysPCI(virBuffer *buf,
 {
     g_auto(virBuffer) sourceAttrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INIT_CHILD(buf);
-    g_auto(virBuffer) origstatesChildBuf = VIR_BUFFER_INIT_CHILD(&sourceChildBuf);
     virDomainHostdevSubsysPCI *pcisrc = &def->source.subsys.u.pci;
 
     if (def->writeFiltering != VIR_TRISTATE_BOOL_ABSENT)
@@ -23176,15 +23174,14 @@ virDomainHostdevDefFormatSubsysPCI(virBuffer *buf,
 
     virPCIDeviceAddressFormat(&sourceChildBuf, pcisrc->addr, includeTypeInAddr);
 
-    if ((flags & VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES)) {
-        if (def->origstates.states.pci.unbind_from_stub)
-            virBufferAddLit(&origstatesChildBuf, "<unbind/>\n");
+    if (pcisrc->origstates &&
+        (flags & VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES)) {
+        g_auto(virBuffer) origstatesChildBuf = VIR_BUFFER_INIT_CHILD(&sourceChildBuf);
+        ssize_t n = -1;
 
-        if (def->origstates.states.pci.remove_slot)
-            virBufferAddLit(&origstatesChildBuf, "<removeslot/>\n");
-
-        if (def->origstates.states.pci.reprobe)
-            virBufferAddLit(&origstatesChildBuf, "<reprobe/>\n");
+        while ((n = virBitmapNextSetBit(pcisrc->origstates, n)) >= 0)
+            virBufferAsprintf(&origstatesChildBuf, "<%s/>\n",
+                              virDomainHostdevPCIOrigstateTypeToString(n));
 
         virXMLFormatElement(&sourceChildBuf, "origstates", NULL, &origstatesChildBuf);
     }

@@ -873,12 +873,18 @@ virHostdevPreparePCIDevicesImpl(virHostdevManager *mgr,
         if (actual) {
             VIR_DEBUG("Saving network configuration of PCI device %s",
                       virPCIDeviceGetName(actual));
-            hostdev->origstates.states.pci.unbind_from_stub =
-                virPCIDeviceGetUnbindFromStub(actual);
-            hostdev->origstates.states.pci.remove_slot =
-                virPCIDeviceGetRemoveSlot(actual);
-            hostdev->origstates.states.pci.reprobe =
-                virPCIDeviceGetReprobe(actual);
+
+            if (!pcisrc->origstates)
+                pcisrc->origstates = virBitmapNew(VIR_DOMAIN_HOSTDEV_PCI_ORIGSTATE_LAST);
+            else
+                virBitmapClearAll(pcisrc->origstates);
+
+            if (virPCIDeviceGetUnbindFromStub(actual))
+                virBitmapSetBitExpand(pcisrc->origstates, VIR_DOMAIN_HOSTDEV_PCI_ORIGSTATE_UNBIND);
+            if (virPCIDeviceGetRemoveSlot(actual))
+                virBitmapSetBitExpand(pcisrc->origstates, VIR_DOMAIN_HOSTDEV_PCI_ORIGSTATE_REMOVESLOT);
+            if (virPCIDeviceGetReprobe(actual))
+                virBitmapSetBitExpand(pcisrc->origstates, VIR_DOMAIN_HOSTDEV_PCI_ORIGSTATE_REPROBE);
         }
     }
 
@@ -1132,6 +1138,7 @@ virHostdevUpdateActivePCIDevices(virHostdevManager *mgr,
     for (i = 0; i < nhostdevs; i++) {
         const virDomainHostdevDef *hostdev = hostdevs[i];
         g_autoptr(virPCIDevice) actual = NULL;
+        virBitmap *orig = hostdev->source.subsys.u.pci.origstates;
 
         if (virHostdevGetPCIHostDevice(hostdev, &actual) < 0)
             goto cleanup;
@@ -1143,9 +1150,9 @@ virHostdevUpdateActivePCIDevices(virHostdevManager *mgr,
             goto cleanup;
 
         /* Setup the original states for the PCI device */
-        virPCIDeviceSetUnbindFromStub(actual, hostdev->origstates.states.pci.unbind_from_stub);
-        virPCIDeviceSetRemoveSlot(actual, hostdev->origstates.states.pci.remove_slot);
-        virPCIDeviceSetReprobe(actual, hostdev->origstates.states.pci.reprobe);
+        virPCIDeviceSetUnbindFromStub(actual, virBitmapIsBitSet(orig, VIR_DOMAIN_HOSTDEV_PCI_ORIGSTATE_UNBIND));
+        virPCIDeviceSetRemoveSlot(actual, virBitmapIsBitSet(orig, VIR_DOMAIN_HOSTDEV_PCI_ORIGSTATE_REMOVESLOT));
+        virPCIDeviceSetReprobe(actual, virBitmapIsBitSet(orig, VIR_DOMAIN_HOSTDEV_PCI_ORIGSTATE_REPROBE));
 
         if (virPCIDeviceListAdd(mgr->activePCIHostdevs, actual) < 0)
             goto cleanup;
