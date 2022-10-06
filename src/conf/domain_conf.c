@@ -12142,14 +12142,10 @@ virSysinfoSystemParseXML(xmlNodePtr node,
 
     def = g_new0(virSysinfoSystemDef, 1);
 
-    def->manufacturer =
-        virXPathString("string(entry[@name='manufacturer'])", ctxt);
-    def->product =
-        virXPathString("string(entry[@name='product'])", ctxt);
-    def->version =
-        virXPathString("string(entry[@name='version'])", ctxt);
-    def->serial =
-        virXPathString("string(entry[@name='serial'])", ctxt);
+    def->manufacturer = virXPathString("string(entry[@name='manufacturer'])", ctxt);
+    def->product = virXPathString("string(entry[@name='product'])", ctxt);
+    def->version = virXPathString("string(entry[@name='version'])", ctxt);
+    def->serial = virXPathString("string(entry[@name='serial'])", ctxt);
     tmpUUID = virXPathString("string(entry[@name='uuid'])", ctxt);
     if (tmpUUID) {
         unsigned char uuidbuf[VIR_UUID_BUFLEN];
@@ -12176,10 +12172,8 @@ virSysinfoSystemParseXML(xmlNodePtr node,
         virUUIDFormat(uuidbuf, uuidstr);
         def->uuid = g_strdup(uuidstr);
     }
-    def->sku =
-        virXPathString("string(entry[@name='sku'])", ctxt);
-    def->family =
-        virXPathString("string(entry[@name='family'])", ctxt);
+    def->sku = virXPathString("string(entry[@name='sku'])", ctxt);
+    def->family = virXPathString("string(entry[@name='family'])", ctxt);
 
     if (!def->manufacturer && !def->product && !def->version &&
         !def->serial && !def->uuid && !def->sku && !def->family) {
