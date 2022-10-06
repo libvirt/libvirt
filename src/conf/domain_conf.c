@@ -12128,8 +12128,7 @@ virSysinfoSystemParseXML(xmlNodePtr node,
                          bool uuid_generated)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    int ret = -1;
-    virSysinfoSystemDef *def;
+    g_autoptr(virSysinfoSystemDef) def = g_new0(virSysinfoSystemDef, 1);
     g_autofree char *tmpUUID = NULL;
 
     ctxt->node = node;
@@ -12137,10 +12136,8 @@ virSysinfoSystemParseXML(xmlNodePtr node,
     if (!virXMLNodeNameEqual(node, "system")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("XML does not contain expected 'system' element"));
-        return ret;
+        return -1;
     }
-
-    def = g_new0(virSysinfoSystemDef, 1);
 
     def->manufacturer = virXPathString("string(entry[@name='manufacturer'])", ctxt);
     def->product = virXPathString("string(entry[@name='product'])", ctxt);
@@ -12153,15 +12150,14 @@ virSysinfoSystemParseXML(xmlNodePtr node,
         if (virUUIDParse(tmpUUID, uuidbuf) < 0) {
             virReportError(VIR_ERR_XML_DETAIL,
                            "%s", _("malformed <sysinfo> uuid element"));
-            goto cleanup;
+            return -1;
         }
         if (uuid_generated) {
             memcpy(domUUID, uuidbuf, VIR_UUID_BUFLEN);
         } else if (memcmp(domUUID, uuidbuf, VIR_UUID_BUFLEN) != 0) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("UUID mismatch between <uuid> and "
-                             "<sysinfo>"));
-            goto cleanup;
+                           _("UUID mismatch between <uuid> and <sysinfo>"));
+            return -1;
         }
         /* Although we've validated the UUID as good, virUUIDParse() is
          * lax with respect to allowing extraneous "-" and " ", but the
@@ -12176,15 +12172,11 @@ virSysinfoSystemParseXML(xmlNodePtr node,
     def->family = virXPathString("string(entry[@name='family'])", ctxt);
 
     if (!def->manufacturer && !def->product && !def->version &&
-        !def->serial && !def->uuid && !def->sku && !def->family) {
-        g_clear_pointer(&def, virSysinfoSystemDefFree);
-    }
+        !def->serial && !def->uuid && !def->sku && !def->family)
+        return 0;
 
     *sysdef = g_steal_pointer(&def);
-    ret = 0;
- cleanup:
-    virSysinfoSystemDefFree(def);
-    return ret;
+    return 0;
 }
 
 static int
