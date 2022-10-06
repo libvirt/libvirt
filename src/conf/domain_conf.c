@@ -12280,16 +12280,11 @@ virSysinfoChassisParseXML(xmlNodePtr node,
 
     def = g_new0(virSysinfoChassisDef, 1);
 
-    def->manufacturer =
-        virXPathString("string(entry[@name='manufacturer'])", ctxt);
-    def->version =
-        virXPathString("string(entry[@name='version'])", ctxt);
-    def->serial =
-        virXPathString("string(entry[@name='serial'])", ctxt);
-    def->asset =
-        virXPathString("string(entry[@name='asset'])", ctxt);
-    def->sku =
-        virXPathString("string(entry[@name='sku'])", ctxt);
+    def->manufacturer = virXPathString("string(entry[@name='manufacturer'])", ctxt);
+    def->version = virXPathString("string(entry[@name='version'])", ctxt);
+    def->serial = virXPathString("string(entry[@name='serial'])", ctxt);
+    def->asset = virXPathString("string(entry[@name='asset'])", ctxt);
+    def->sku = virXPathString("string(entry[@name='sku'])", ctxt);
 
     if (!def->manufacturer && !def->version &&
         !def->serial && !def->asset && !def->sku) {
