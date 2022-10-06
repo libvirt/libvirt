@@ -1689,7 +1689,8 @@ static const vshCmdInfo info_hypervisor_cpu_baseline[] = {
 };
 
 static const vshCmdOptDef opts_hypervisor_cpu_baseline[] = {
-    VIRSH_COMMON_OPT_FILE(N_("file containing XML CPU descriptions")),
+    VIRSH_COMMON_OPT_FILE_FULL(N_("file containing XML CPU descriptions"),
+                               false),
     {.name = "virttype",
      .type = VSH_OT_STRING,
      .completer = virshDomainVirtTypeCompleter,
@@ -1716,6 +1717,11 @@ static const vshCmdOptDef opts_hypervisor_cpu_baseline[] = {
      .type = VSH_OT_BOOL,
      .help = N_("Do not include features that block migration")
     },
+    {.name = "model",
+     .type = VSH_OT_STRING,
+     .help = N_("Shortcut for calling the command with a single CPU model "
+                "and no additional features")
+    },
     {.name = NULL}
 };
 
@@ -1728,6 +1734,7 @@ cmdHypervisorCPUBaseline(vshControl *ctl,
     const char *emulator = NULL;
     const char *arch = NULL;
     const char *machine = NULL;
+    const char *model = NULL;
     bool ret = false;
     g_autofree char *result = NULL;
     g_auto(GStrv) list = NULL;
@@ -1743,11 +1750,19 @@ cmdHypervisorCPUBaseline(vshControl *ctl,
         vshCommandOptStringReq(ctl, cmd, "virttype", &virttype) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "emulator", &emulator) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "arch", &arch) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "machine", &machine) < 0)
+        vshCommandOptStringReq(ctl, cmd, "machine", &machine) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "model", &model) < 0)
         return false;
 
-    if (!(list = vshExtractCPUDefXMLs(ctl, from)))
-        return false;
+    VSH_ALTERNATIVE_OPTIONS_EXPR("file", from, "model", model);
+
+    if (from) {
+        if (!(list = vshExtractCPUDefXMLs(ctl, from)))
+            return false;
+    } else {
+        list = g_new0(char *, 2);
+        list[0] = g_strdup_printf("<cpu><model>%s</model></cpu>", model);
+    }
 
     result = virConnectBaselineHypervisorCPU(priv->conn, emulator, arch,
                                              machine, virttype,

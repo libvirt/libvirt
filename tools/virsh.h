@@ -96,9 +96,12 @@
 
 /* Use this only for files which are existing and used locally by virsh */
 #define VIRSH_COMMON_OPT_FILE(_helpstr) \
+    VIRSH_COMMON_OPT_FILE_FULL(_helpstr, true)
+
+#define VIRSH_COMMON_OPT_FILE_FULL(_helpstr, required) \
     {.name = "file", \
-     .type = VSH_OT_DATA, \
-     .flags = VSH_OFLAG_REQ, \
+     .type = required ? VSH_OT_DATA : VSH_OT_STRING, \
+     .flags = required ? VSH_OFLAG_REQ : VSH_OFLAG_NONE, \
      .completer = virshCompletePathLocalExisting, \
      .help = _helpstr \
     }
