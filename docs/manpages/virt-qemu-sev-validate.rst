@@ -358,7 +358,6 @@ Validate the measurement of a SEV-ES SMP guest booting from disk:
 
    # virt-dom-sev-validate \
        --insecure \
-       --num-cpus 2 \
        --vmsa-cpu0 vmsa0.bin \
        --vmsa-cpu1 vmsa1.bin \
        --tk this-guest-tk.bin \
@@ -371,9 +370,6 @@ automatically constructed VMSA:
 
    # virt-dom-sev-validate \
        --insecure \
-       --cpu-family 23 \
-       --cpu-model 49 \
-       --cpu-stepping 0 \
        --tk this-guest-tk.bin \
        --domain fedora34x86_64
 

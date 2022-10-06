@@ -873,6 +873,14 @@ class LibvirtConfidentialVM(ConfidentialVM):
         if self.policy is None:
             self.policy = sevinfo["sev-policy"]
 
+        if self.is_sev_es() and self.num_cpus is None:
+            if secure:
+                raise InsecureUsageException(
+                    "Using CPU count from guest is not secure")
+
+            info = self.dom.info()
+            self.num_cpus = info[3]
+
         if self.firmware is None:
             if remote:
                 raise UnsupportedUsageException(
@@ -917,6 +925,24 @@ class LibvirtConfidentialVM(ConfidentialVM):
                     raise InsecureUsageException(
                         "Using cmdline string from XML is not secure")
                 self.kernel_table.load_cmdline(cmdlinenodes[0].text)
+
+        capsxml = self.conn.getCapabilities()
+        capsdoc = etree.fromstring(capsxml)
+
+        if self.is_sev_es() and self.vmsa_cpu0 is None:
+            if secure:
+                raise InsecureUsageException(
+                    "Using CPU SKU from capabilities is not secure")
+
+            sig = capsdoc.xpath("/capabilities/host/cpu/signature")
+            if len(sig) != 1:
+                raise UnsupportedUsageException(
+                    "Libvirt is too old to report host CPU signature")
+
+            cpu_family = int(sig[0].get("family"))
+            cpu_model = int(sig[0].get("model"))
+            cpu_stepping = int(sig[0].get("stepping"))
+            self.build_vmsas(cpu_family, cpu_model, cpu_stepping)
 
 
 def parse_command_line():
