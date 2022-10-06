@@ -12133,12 +12133,6 @@ virSysinfoSystemParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (!virXMLNodeNameEqual(node, "system")) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("XML does not contain expected 'system' element"));
-        return -1;
-    }
-
     def->manufacturer = virXPathString("string(entry[@name='manufacturer'])", ctxt);
     def->product = virXPathString("string(entry[@name='product'])", ctxt);
     def->version = virXPathString("string(entry[@name='version'])", ctxt);
