@@ -12394,7 +12394,7 @@ virSysinfoParseXML(xmlNodePtr node,
                    bool uuid_generated)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    virSysinfoDef *def;
+    g_autoptr(virSysinfoDef) def = g_new0(virSysinfoDef, 1);
 
     ctxt->node = node;
 
@@ -12404,32 +12404,26 @@ virSysinfoParseXML(xmlNodePtr node,
         return NULL;
     }
 
-    def = g_new0(virSysinfoDef, 1);
-
     if (virXMLPropEnum(node, "type", virSysinfoTypeFromString,
                        VIR_XML_PROP_REQUIRED, &def->type) < 0)
-        goto error;
+        return NULL;
 
     switch (def->type) {
     case VIR_SYSINFO_SMBIOS:
         if (virSysinfoParseSMBIOSDef(def, ctxt, domUUID, uuid_generated) < 0)
-            goto error;
+            return NULL;
         break;
 
     case VIR_SYSINFO_FWCFG:
         if (virSysinfoParseFWCfgDef(def, node, ctxt) < 0)
-            goto error;
+            return NULL;
         break;
 
     case VIR_SYSINFO_LAST:
         break;
     }
 
-    return def;
-
- error:
-    virSysinfoDefFree(def);
-    return NULL;
+    return g_steal_pointer(&def);
 }
 
 unsigned int
