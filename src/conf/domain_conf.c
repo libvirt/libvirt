@@ -12271,12 +12271,6 @@ virSysinfoChassisParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (!xmlStrEqual(node->name, BAD_CAST "chassis")) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("XML does not contain expected 'chassis' element"));
-        return -1;
-    }
-
     def->manufacturer = virXPathString("string(entry[@name='manufacturer'])", ctxt);
     def->version = virXPathString("string(entry[@name='version'])", ctxt);
     def->serial = virXPathString("string(entry[@name='serial'])", ctxt);
