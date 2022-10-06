@@ -12398,12 +12398,6 @@ virSysinfoParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (!virXMLNodeNameEqual(node, "sysinfo")) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("XML does not contain expected 'sysinfo' element"));
-        return NULL;
-    }
-
     if (virXMLPropEnum(node, "type", virSysinfoTypeFromString,
                        VIR_XML_PROP_REQUIRED, &def->type) < 0)
         return NULL;
