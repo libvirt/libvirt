@@ -12395,8 +12395,6 @@ virSysinfoParseXML(xmlNodePtr node,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virSysinfoDef *def;
-    g_autofree char *typeStr = NULL;
-    int type;
 
     ctxt->node = node;
 
@@ -12408,18 +12406,9 @@ virSysinfoParseXML(xmlNodePtr node,
 
     def = g_new0(virSysinfoDef, 1);
 
-    typeStr = virXMLPropString(node, "type");
-    if (typeStr == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("sysinfo must contain a type attribute"));
+    if (virXMLPropEnum(node, "type", virSysinfoTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &def->type) < 0)
         goto error;
-    }
-    if ((type = virSysinfoTypeFromString(typeStr)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown sysinfo type '%s'"), typeStr);
-        goto error;
-    }
-    def->type = type;
 
     switch (def->type) {
     case VIR_SYSINFO_SMBIOS:
