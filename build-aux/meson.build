@@ -1,6 +1,6 @@
 flake8_path = ''
 if flake8_prog.found()
-  flake8_path = flake8_prog.path()
+  flake8_path = flake8_prog.full_path()
 endif
 
 if host_machine.system() == 'freebsd' or host_machine.system() == 'darwin'
@@ -33,10 +33,10 @@ syntax_check_conf = configuration_data({
   'top_builddir': meson.project_build_root(),
   'flake8_path': flake8_path,
   'runutf8': ' '.join(runutf8),
-  'PYTHON3': python3_prog.path(),
-  'GREP': grep_prog.path(),
-  'SED': sed_prog.path(),
-  'AWK': awk_prog.path(),
+  'PYTHON3': python3_prog.full_path(),
+  'GREP': grep_prog.full_path(),
+  'SED': sed_prog.full_path(),
+  'AWK': awk_prog.full_path(),
 })
 
 configure_file(

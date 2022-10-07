@@ -700,7 +700,7 @@ testenv += 'VIR_TEST_FILE_ACCESS=1'
 add_test_setup(
   'access',
   env: testenv,
-  exe_wrapper: [ python3_prog, check_file_access_prog.path() ],
+  exe_wrapper: [ python3_prog, check_file_access_prog.full_path() ],
 )
 
 add_test_setup(

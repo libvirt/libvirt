@@ -129,7 +129,7 @@ aclperms_gen = custom_target(
 )
 
 docs_timestamp = run_command(
-  python3_prog, meson_timestamp_prog.path(), env: runutf8, check: true,
+  python3_prog, meson_timestamp_prog.full_path(), env: runutf8, check: true,
 ).stdout().strip()
 
 site_xsl = files('site.xsl')
@@ -175,7 +175,7 @@ docs_programs_groups = [
 foreach item : docs_programs_groups
   prog = find_program(item.get('prog'), dirs: libvirt_sbin_path)
   varname = item.get('name').underscorify()
-  conf.set_quoted(varname.to_upper(), prog.path())
+  conf.set_quoted(varname.to_upper(), prog.full_path())
   set_variable('@0@_prog'.format(varname), prog)
 endforeach
 
@@ -348,7 +348,7 @@ endforeach
 run_target(
   'install-web',
   command: [
-    meson_python_prog, python3_prog.path(), meson_install_web_prog.path(),
+    meson_python_prog, python3_prog.full_path(), meson_install_web_prog.full_path(),
     install_web_files,
   ],
   depends: install_web_deps,
@@ -358,7 +358,7 @@ test(
   'check-html-references',
   python3_prog,
   args: [
-    check_html_references_prog.path(),
+    check_html_references_prog.full_path(),
     '--prefix',
     meson.project_build_root() / 'docs'
   ],

@@ -909,7 +909,7 @@ virt_install_dirs += [
 ]
 
 meson.add_install_script(
-  meson_python_prog.path(), python3_prog.path(), meson_install_dirs_prog.path(),
+  meson_python_prog.full_path(), python3_prog.full_path(), meson_install_dirs_prog.full_path(),
   virt_install_dirs,
 )
 
@@ -920,7 +920,7 @@ if host_machine.system() == 'linux'
   test(
     'check-symfile',
     python3_prog,
-    args: [ check_symfile_prog.path(), libvirt_syms, libvirt_lib ],
+    args: [ check_symfile_prog.full_path(), libvirt_syms, libvirt_lib ],
     env: runutf8,
   )
 
@@ -928,7 +928,7 @@ if host_machine.system() == 'linux'
     test(
       'check-admin-symfile',
       python3_prog,
-      args: [ check_symfile_prog.path(), libvirt_admin_syms, libvirt_admin_lib ],
+      args: [ check_symfile_prog.full_path(), libvirt_admin_syms, libvirt_admin_lib ],
       env: runutf8,
     )
   endif
@@ -938,7 +938,7 @@ test(
   'check-symsorting',
   python3_prog,
   args: [
-    check_symsorting_prog.path(),
+    check_symsorting_prog.full_path(),
     meson.current_source_dir(),
     files(sym_files, used_sym_files),
   ],
@@ -949,7 +949,7 @@ test(
   'check-admin-symsorting',
   python3_prog,
   args: [
-    check_symsorting_prog.path(),
+    check_symsorting_prog.full_path(),
     meson.current_source_dir(),
     libvirt_admin_private_syms,
   ],
@@ -960,7 +960,7 @@ test(
   'check-drivername',
   python3_prog,
   args: [
-    check_drivername_prog.path(), files(driver_headers),
+    check_drivername_prog.full_path(), files(driver_headers),
     files('libvirt_public.syms'), libvirt_qemu_syms, libvirt_lxc_syms,
   ],
   env: runutf8,
@@ -970,7 +970,7 @@ test(
   'check-admin-drivername',
   python3_prog,
   args: [
-    check_drivername_prog.path(), libvirt_admin_public_syms,
+    check_drivername_prog.full_path(), libvirt_admin_public_syms,
   ],
   env: runutf8,
 )
@@ -978,14 +978,14 @@ test(
 test(
   'check-driverimpls',
   python3_prog,
-  args: [ check_driverimpls_prog.path(), driver_source_files ],
+  args: [ check_driverimpls_prog.full_path(), driver_source_files ],
   env: runutf8,
 )
 
 test(
   'check-aclrules',
   python3_prog,
-  args: [ check_aclrules_prog.path(), files('remote/remote_protocol.x'), stateful_driver_source_files ],
+  args: [ check_aclrules_prog.full_path(), files('remote/remote_protocol.x'), stateful_driver_source_files ],
   env: runutf8,
 )
 
@@ -1010,11 +1010,11 @@ if pdwtags_prog.found() and cc.get_id() != 'clang'
       'check-@0@'.format(proto['name']),
       python3_prog,
       args: [
-        check_remote_protocol_prog.path(),
+        check_remote_protocol_prog.full_path(),
         proto['name'],
         lib.name(),
         lib.full_path(),
-        pdwtags_prog.path(),
+        pdwtags_prog.full_path(),
         files('@0@-structs'.format(proto['name'])),
       ],
       env: runutf8,

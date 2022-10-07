@@ -798,14 +798,14 @@ endif
 foreach name : required_programs
   prog = find_program(name, dirs: libvirt_sbin_path)
   varname = name.underscorify()
-  conf.set_quoted(varname.to_upper(), prog.path())
+  conf.set_quoted(varname.to_upper(), prog.full_path())
   set_variable('@0@_prog'.format(varname), prog)
 endforeach
 
 foreach item : required_programs_groups
   prog = find_program(item.get('prog'), dirs: libvirt_sbin_path)
   varname = item.get('name').underscorify()
-  conf.set_quoted(varname.to_upper(), prog.path())
+  conf.set_quoted(varname.to_upper(), prog.full_path())
   set_variable('@0@_prog'.format(varname), prog)
 endforeach
 
@@ -835,7 +835,7 @@ foreach name : optional_programs
   prog = find_program(name, required: false, dirs: libvirt_sbin_path)
   varname = name.underscorify()
   if prog.found()
-    prog_path = prog.path()
+    prog_path = prog.full_path()
   else
     prog_path = name
   endif
@@ -1446,9 +1446,9 @@ if not get_option('driver_bhyve').disabled() and host_machine.system() == 'freeb
 
   if bhyve_prog.found() and bhyvectl_prog.found() and bhyveload_prog.found()
     conf.set('WITH_BHYVE', 1)
-    conf.set_quoted('BHYVE', bhyve_prog.path())
-    conf.set_quoted('BHYVECTL', bhyvectl_prog.path())
-    conf.set_quoted('BHYVELOAD', bhyveload_prog.path())
+    conf.set_quoted('BHYVE', bhyve_prog.full_path())
+    conf.set_quoted('BHYVECTL', bhyvectl_prog.full_path())
+    conf.set_quoted('BHYVELOAD', bhyveload_prog.full_path())
   endif
 elif get_option('driver_bhyve').enabled()
   error('The bhyve driver cannot be enabled')
@@ -1690,7 +1690,7 @@ if not get_option('driver_qemu').disabled()
       required: false
     )
     if qemu_bridge_prog.found()
-      qemu_bridge_path = qemu_bridge_prog.path()
+      qemu_bridge_path = qemu_bridge_prog.full_path()
     else
       qemu_bridge_path = '/usr/libexec/qemu-bridge-helper'
     endif
@@ -1702,7 +1702,7 @@ if not get_option('driver_qemu').disabled()
       required: false
     )
     if qemu_pr_prog.found()
-      qemu_pr_path = qemu_pr_prog.path()
+      qemu_pr_path = qemu_pr_prog.full_path()
     else
       qemu_pr_path = '/usr/bin/qemu-pr-helper'
     endif
@@ -1714,7 +1714,7 @@ if not get_option('driver_qemu').disabled()
       required: false
     )
     if qemu_slirp_prog.found()
-      qemu_slirp_path = qemu_slirp_prog.path()
+      qemu_slirp_path = qemu_slirp_prog.full_path()
     else
       qemu_slirp_path = '/usr/bin/slirp-helper'
     endif
@@ -1726,7 +1726,7 @@ if not get_option('driver_qemu').disabled()
       required: false
     )
     if qemu_dbus_daemon_prog.found()
-      qemu_dbus_daemon_path = qemu_dbus_daemon_prog.path()
+      qemu_dbus_daemon_path = qemu_dbus_daemon_prog.full_path()
     else
       qemu_dbus_daemon_path = '/usr/bin/dbus-daemon'
     endif
@@ -1822,14 +1822,14 @@ if conf.has('WITH_LIBVIRTD')
       use_storage = true
 
       conf.set('WITH_STORAGE_FS', 1)
-      conf.set_quoted('MOUNT', mount_prog.path())
-      conf.set_quoted('UMOUNT', umount_prog.path())
-      conf.set_quoted('MKFS', mkfs_prog.path())
+      conf.set_quoted('MOUNT', mount_prog.full_path())
+      conf.set_quoted('UMOUNT', umount_prog.full_path())
+      conf.set_quoted('MKFS', mkfs_prog.full_path())
 
       showmount_prog = find_program('showmount', required: false, dirs: libvirt_sbin_path)
       showmount_path = ''
       if showmount_prog.found()
-        showmount_path = showmount_prog.path()
+        showmount_path = showmount_prog.full_path()
       endif
       conf.set_quoted('SHOWMOUNT', showmount_path)
     endif
@@ -1879,7 +1879,7 @@ if conf.has('WITH_LIBVIRTD')
       conf.set('WITH_STORAGE_LVM', 1)
 
       foreach name : lvm_progs
-        conf.set_quoted(name.to_upper(), get_variable('@0@_prog'.format(name)).path())
+        conf.set_quoted(name.to_upper(), get_variable('@0@_prog'.format(name)).full_path())
       endforeach
     endif
   endif
@@ -2033,7 +2033,7 @@ if not get_option('numad').disabled() and numactl_dep.found()
   numad_prog = find_program('numad', required: get_option('numad'), dirs: libvirt_sbin_path)
   if numad_prog.found()
     conf.set('WITH_NUMAD', 1)
-    conf.set_quoted('NUMAD', numad_prog.path())
+    conf.set_quoted('NUMAD', numad_prog.full_path())
   endif
 elif get_option('numad').enabled()
   error('You must have numactl enabled for numad support.')
@@ -2148,7 +2148,7 @@ if git
     configuration: spec_conf,
   )
 
-  authors = run_command(python3_prog, meson_gen_authors_prog.path(),
+  authors = run_command(python3_prog, meson_gen_authors_prog.full_path(),
                         env: runutf8, check: true)
   authors_file = 'AUTHORS.rst.in'
 
@@ -2170,7 +2170,7 @@ if git
 
   foreach file : dist_files
     meson.add_dist_script(
-      meson_python_prog.path(), python3_prog.path(), meson_dist_prog.path(),
+      meson_python_prog.full_path(), python3_prog.full_path(), meson_dist_prog.full_path(),
       meson.project_build_root(), file
     )
   endforeach
