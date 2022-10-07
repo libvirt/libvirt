@@ -29,7 +29,7 @@ endif
 awk_prog = find_program('awk')
 
 syntax_check_conf = configuration_data({
-  'top_srcdir': meson.source_root(),
+  'top_srcdir': meson.project_source_root(),
   'top_builddir': meson.project_build_root(),
   'flake8_path': flake8_path,
   'runutf8': ' '.join(runutf8),

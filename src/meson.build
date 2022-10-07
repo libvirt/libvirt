@@ -4,7 +4,7 @@ src_dep = declare_dependency(
   compile_args: [
     '-DIN_LIBVIRT',
     '-Dabs_top_builddir="@0@"'.format(meson.project_build_root()),
-    '-Dabs_top_srcdir="@0@"'.format(meson.source_root()),
+    '-Dabs_top_srcdir="@0@"'.format(meson.project_source_root()),
   ] + coverage_flags + win32_flags,
   dependencies: [
     glib_dep,
@@ -1033,7 +1033,7 @@ run_pkg_config_files = [
 run_pkg_config_conf = configuration_data({
   'VERSION': meson.project_version(),
   'abs_top_builddir': meson.project_build_root(),
-  'abs_top_srcdir': meson.source_root(),
+  'abs_top_srcdir': meson.project_source_root(),
 })
 
 foreach file : run_pkg_config_files

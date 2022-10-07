@@ -11,7 +11,7 @@ access_polkit_sources = [
 
 access_perm_h = files('viraccessperm.h')
 
-remote_path = meson.source_root() / 'src' / 'remote'
+remote_path = meson.project_source_root() / 'src' / 'remote'
 
 access_gen_headers = []
 access_gen_sources = []

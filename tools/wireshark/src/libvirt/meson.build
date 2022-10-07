@@ -1,10 +1,10 @@
 wireshark_protocol = custom_target(
   'protocol.h',
   input: [
-    meson.source_root() / 'src' / 'remote' / 'remote_protocol.x',
-    meson.source_root() / 'src' / 'remote' / 'qemu_protocol.x',
-    meson.source_root() / 'src' / 'remote' / 'lxc_protocol.x',
-    meson.source_root() / 'src' / 'rpc' / 'virkeepaliveprotocol.x',
+    meson.project_source_root() / 'src' / 'remote' / 'remote_protocol.x',
+    meson.project_source_root() / 'src' / 'remote' / 'qemu_protocol.x',
+    meson.project_source_root() / 'src' / 'remote' / 'lxc_protocol.x',
+    meson.project_source_root() / 'src' / 'rpc' / 'virkeepaliveprotocol.x',
   ],
   output: [
     'protocol.h',

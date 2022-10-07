@@ -7,7 +7,7 @@ i18n.gettext(
     '--keyword=_',
     '--keyword=N_',
     '--add-comments=TRANSLATORS:',
-    '--directory=@0@'.format(meson.source_root()),
+    '--directory=@0@'.format(meson.project_source_root()),
     '--directory=@0@'.format(meson.project_build_root()),
     '--files-from=@0@'.format(meson.current_source_dir() / 'POTFILES'),
     '--msgid-bugs-address=https://libvirt.org/bugs.html',

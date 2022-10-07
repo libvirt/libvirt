@@ -263,7 +263,7 @@ hvsupport_html_in = custom_target(
     meson_python_prog,
     python3_prog,
     hvsupport_prog,
-    meson.source_root(),
+    meson.project_source_root(),
     meson.project_build_root(),
   ],
   capture: true,
@@ -282,7 +282,7 @@ html_xslt_gen += {
   'file': hvsupport_html_in,
 }
 
-news_html_in = docs_rst2html5_gen.process(meson.source_root() / 'NEWS.rst')
+news_html_in = docs_rst2html5_gen.process(meson.project_source_root() / 'NEWS.rst')
 html_xslt_gen += {
   'name': 'news',
   'file': news_html_in,
