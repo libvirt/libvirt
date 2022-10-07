@@ -1267,10 +1267,10 @@ endif
 if wireshark_dep.found()
   wireshark_plugindir = get_option('wireshark_plugindir')
   if wireshark_plugindir == ''
-    wireshark_plugindir = wireshark_dep.get_pkgconfig_variable('plugindir')
+    wireshark_plugindir = wireshark_dep.get_variable(pkgconfig : 'plugindir')
   endif
 
-  wireshark_prefix = wireshark_dep.get_pkgconfig_variable('prefix')
+  wireshark_prefix = wireshark_dep.get_variable(pkgconfig : 'prefix')
   if wireshark_prefix == ''
     # If wireshark's prefix cannot be retrieved from pkg-config,
     # this is our best bet.
@@ -1318,7 +1318,7 @@ if yajl_dep.found()
   #
   # [1] https://github.com/Homebrew/homebrew-core/pull/74516
   if host_machine.system() != 'linux'
-    yajl_includedir = yajl_dep.get_pkgconfig_variable('includedir')
+    yajl_includedir = yajl_dep.get_variable(pkgconfig : 'includedir')
     if yajl_includedir.contains('include/yajl')
       rc = run_command(
         'python3', '-c',
@@ -1351,8 +1351,8 @@ endif
 if bash_completion_dep.found()
   bash_completion_dir = get_option('bash_completion_dir')
   if bash_completion_dir == ''
-    bash_completion_dir = bash_completion_dep.get_pkgconfig_variable('completionsdir')
-    bash_completion_prefix = bash_completion_dep.get_pkgconfig_variable('prefix')
+    bash_completion_dir = bash_completion_dep.get_variable(pkgconfig : 'completionsdir')
+    bash_completion_prefix = bash_completion_dep.get_variable(pkgconfig : 'prefix')
     rc = run_command(
       'python3', '-c',
       'print("@0@".replace("@1@", "@2@"))'.format(
@@ -1478,8 +1478,8 @@ if not get_option('driver_libxl').disabled() and conf.has('WITH_LIBVIRTD')
   libxl_dep = dependency('xenlight', version: '>=' + libxl_version, required: get_option('driver_libxl'))
 
   if libxl_dep.found()
-    libxl_firmware_dir = libxl_dep.get_pkgconfig_variable('xenfirmwaredir')
-    libxl_execbin = libxl_dep.get_pkgconfig_variable('libexec_bin')
+    libxl_firmware_dir = libxl_dep.get_variable(pkgconfig : 'xenfirmwaredir')
+    libxl_execbin = libxl_dep.get_variable(pkgconfig : 'libexec_bin')
     if libxl_firmware_dir != ''
       conf.set_quoted('LIBXL_FIRMWARE_DIR', libxl_firmware_dir)
     endif
