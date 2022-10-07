@@ -222,10 +222,20 @@ more details about it:
 ``custom``
    The ``mode`` element contains a list of supported CPU models, each described
    by a dedicated ``model`` element. The ``usable`` attribute specifies whether
-   the model can be used directly on the host. When usable='no' the
-   corresponding model cannot be used without disabling some features that the
-   CPU of such model is expected to have. A special value ``unknown`` indicates
-   libvirt does not have enough information to provide the usability data. The
+   the model can be used directly on the host. A special value ``unknown``
+   indicates libvirt does not have enough information to provide the usability
+   data. When ``usable='no'`` the corresponding model cannot be used without
+   disabling some features that the CPU of such model is expected to have. The
+   list of features blocking usability of a particular CPU model is returned
+   as disabled features in the result of ``virConnectBaselineHypervisorCPU``
+   API (or ``virsh hypervisor-cpu-baseline``) when called on a CPU definition
+   using the CPU model and no additional feature elements. Models marked as
+   usable (``usable='yes'``) can be safely used in domain XMLs with
+   ``check='none'`` as the hypervisor guarantees the model can be used on the
+   current host and additional checks done by libvirt are redundant. In fact,
+   disabling libvirt checks via ``check='none'`` for such models is recommended
+   to avoid needless issues with starting domains when libvirt's definition of
+   a particular model differs from hypervisor's definition. The
    ``deprecated`` attribute reflects the hypervisor's policy on usage of this
    model :since:`(since 7.1.0)`. The ``vendor`` attribute :since:`(since 8.9.0)`
    contains the vendor of the CPU model for users who want to use CPU models
