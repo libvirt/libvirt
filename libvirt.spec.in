@@ -271,7 +271,7 @@ Requires: libvirt-libs = %{version}-%{release}
 # listed against each sub-RPM
 BuildRequires: python3-docutils
 BuildRequires: gcc
-BuildRequires: meson >= 0.54.0
+BuildRequires: meson >= 0.56.0
 BuildRequires: ninja-build
 BuildRequires: git
 BuildRequires: perl-interpreter

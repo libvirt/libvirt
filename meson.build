@@ -2,7 +2,7 @@ project(
   'libvirt', 'c',
   version: '8.9.0',
   license: 'LGPLv2+',
-  meson_version: '>= 0.54.0',
+  meson_version: '>= 0.56.0',
   default_options: [
     'buildtype=debugoptimized',
     'b_pie=true',
