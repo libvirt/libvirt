@@ -456,6 +456,122 @@ inject a disk password on success:
        --domain fedora34x86_64 \
        --disk-password passwd.txt
 
+COMMON MISTAKES CHECKLIST
+=========================
+
+The complexity of configuring a guest and validating its boot measurement
+means it is very likely to see the failure::
+
+   ERROR: Measurement does not match, VM is not trustworthy
+
+This error message assumes the worst, but in most cases will failure will be
+a result of either mis-configuring the guest, or passing the wrong information
+when trying to validate it. The following information is a guide for what
+items to check in order to stand the best chance of diagnosing the problem
+
+* Check the VM configuration for the DH certificate and session
+  blob in the libvirt guest XML.
+
+  The content for these fields should be in base64 format, which is
+  what ``sevctl session`` generates. Other tools may generate the files
+  in binary format, so ensure it has been correctly converted to base64.
+
+* Check the VM configuration policy value matches the session blob
+
+  The ``<policy>`` value in libvirt guest XML has to match the value
+  passed to the ``sevctl session`` command. If this is mismatched
+  then the guest will not even start, and QEMU will show an error
+  such as::
+
+   sev_launch_start: LAUNCH_START ret=1 fw_error=11 'Bad measurement'
+
+* Check the correct TIK/TEK keypair are passed
+
+  The TIK/TEK keypair are uniquely tied to each DH cert and session
+  blob. Make sure that the TIK/TEK keypair passed to this program
+  the ones matched to the DH cert and session blob configured for
+  the libvirt guest XML. This is one of the most common mistakes.
+  Further ensure that the TIK and TEK files are not swapped.
+
+* Check the firmware binary matches the one used to boot
+
+  The firmware binary content is part of the data covered by the
+  launch measurement. Ensure that the firmware binary passed to
+  this program matches the one used to launch the guest. The
+  hypervisor host will periodically get software updates which
+  introduce a new firmware binary version.
+
+* Check the kernel, initrd and cmdline match the one used to boot
+
+  If the guest is configured to use direct kernel boot, check that
+  the kernel, initrd and cmdline passed to this program match the
+  ones used to boot the guest. In the kernel cmdline whitespace
+  must be preserved exactly, including any leading or trailing
+  spaces.
+
+* Check whether the kernel hash measurement is enabled
+
+  The ``kernelHashes`` property in the libvirt guest XML controls
+  whether hashes of the kernel, initrd and cmdline content are
+  covered by the boot measurement. If enabled, then the matching
+  content must be passed to this program. UIf disabled, then
+  the content must **NOT** be passed.
+
+* Check that the correct measurement hash is passed
+
+  The measurement hash includes a nonce, so it will be different
+  on every boot attempt. Thus when validating the measuremnt it
+  is important ensure the most recent measurement is used.
+
+* Check the correct VMSA blobs / CPU SKU values for the host are used
+
+  The VMSA blobs provide the initial register state for the
+  boot CPU and any additional CPUs. One of the registers
+  encodes the CPU SKU (family, model, stepping) of the physical
+  host CPU. Make sure that the VMSA blob used for validation
+  is one that matches the SKU of the host the guest is booted
+  on. Passing the CPU SKU values directly to the tool can
+  reduce the likelihood of using the wrong ones.
+
+* Check the CPU count is correct
+
+  When passing VMSA blobs for SEV-ES guests, the number of CPUs
+  present will influence the measurement result. Ensure that the
+  correct vCPU count is used corresponding to the guest boot
+  attempt.
+
+
+Best practice is to run this tool in completely offline mode and pass
+all information as explicit command line parameters. When debugging
+failures, however, it can be useful to tell it to connect to libvirt
+and fetch information. If connecting to a remote libvirt instance,
+it will fetch any information that can be trusted, which is the basic
+VM launch state data. It will also sanity check the XML configuration
+to identify some common mistakes. If the ``--insecure`` flag is passed
+it can extract some configuration information and use that for the
+attestation process.
+
+If the mistake still can't be identified, then this tool can be run
+on the virtualization host. In that scenario the only three command
+line parameters required are for the TIK, TEK and libvirt domain
+name. It should be able to automatically determine all the other
+information required. If it still reports a failure, this points
+very strongly to the TIK/TEK pair not maching the configured
+DH certificate and session blob.
+
+The ``--debug`` flag will display hashes and/or hex dumps for various
+pieces of information used in the attestation process. Comparing the
+``--debug`` output from running on the hypervisor host, against that
+obtained when running in offline mode can give further guidance to
+which parameter is inconsistent.
+
+As mentioned earlier in this document, bear in mind that in general
+any attestation answers obtained from running on the hypervisor host
+should not be trusted. So if a configuration mistake is identified
+it is strongly recommended to re-run the attestation in offline mode
+on a trusted machine.
+
+
 EXIT STATUS
 ===========
 
