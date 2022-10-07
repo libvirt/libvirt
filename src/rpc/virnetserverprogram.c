@@ -475,10 +475,10 @@ virNetServerProgramDispatchCall(virNetServerProgram *prog,
     return virNetServerClientSendMessage(client, msg);
 
  error:
-    if (dispatcher) {
+    if (arg)
         xdr_free(dispatcher->arg_filter, arg);
+    if (ret)
         xdr_free(dispatcher->ret_filter, ret);
-    }
 
     /* Bad stuff (de-)serializing message, but we have an
      * RPC error message we can send back to the client */
