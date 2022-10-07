@@ -26,7 +26,7 @@ endif
 conf = configuration_data()
 
 conf.set('_GNU_SOURCE', 1)
-conf.set_quoted('abs_top_builddir', meson.build_root())
+conf.set_quoted('abs_top_builddir', meson.project_build_root())
 conf.set_quoted('abs_top_srcdir', meson.source_root())
 conf.set_quoted('PACKAGE', meson.project_name())
 conf.set_quoted('PACKAGE_NAME', meson.project_name())
@@ -2171,7 +2171,7 @@ if git
   foreach file : dist_files
     meson.add_dist_script(
       meson_python_prog.path(), python3_prog.path(), meson_dist_prog.path(),
-      meson.build_root(), file
+      meson.project_build_root(), file
     )
   endforeach
 endif
@@ -2183,8 +2183,8 @@ configure_file(output: 'meson-config.h', configuration: conf)
 
 # generate run helper
 run_conf = configuration_data({
-  'abs_builddir': meson.build_root(),
-  'abs_top_builddir': meson.build_root(),
+  'abs_builddir': meson.project_build_root(),
+  'abs_top_builddir': meson.project_build_root(),
 })
 
 configure_file(

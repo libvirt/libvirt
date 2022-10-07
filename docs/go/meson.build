@@ -31,7 +31,7 @@ foreach data : html_xslt_gen
     command: [
       xsltproc_prog,
       '--stringparam', 'pagesrc', data.get('source', ''),
-      '--stringparam', 'builddir', meson.build_root(),
+      '--stringparam', 'builddir', meson.project_build_root(),
       '--stringparam', 'timestamp', docs_timestamp,
       '--stringparam', 'href_base', data.get('href_base', ''),
       '--nonet',

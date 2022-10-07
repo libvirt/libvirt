@@ -39,7 +39,7 @@ index_api_gen = custom_target(
   ],
   command: [
     xsltproc_prog, '--nonet', '-o', docs_builddir,
-    '--stringparam', 'builddir', meson.build_root(),
+    '--stringparam', 'builddir', meson.project_build_root(),
     '--stringparam', 'timestamp', docs_timestamp,
     '@INPUT@',
   ],
@@ -66,7 +66,7 @@ foreach name : [ 'admin', 'lxc', 'qemu' ]
     ],
     command: [
       xsltproc_prog, '--nonet', '-o', docs_builddir,
-      '--stringparam', 'builddir', meson.build_root(),
+      '--stringparam', 'builddir', meson.project_build_root(),
       '--stringparam', 'timestamp', docs_timestamp,
       '--stringparam', 'indexfile', 'index-@0@.html'.format(name),
       '@INPUT@',

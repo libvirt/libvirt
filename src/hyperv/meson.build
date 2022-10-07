@@ -19,7 +19,7 @@ hyperv_gen_sources = custom_target(
   command: [
     meson_python_prog, python3_prog, hyperv_wmi_generator_prog,
     meson.source_root() / 'src',
-    meson.build_root() / 'src',
+    meson.project_build_root() / 'src',
   ],
 )
 

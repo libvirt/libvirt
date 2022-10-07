@@ -1,7 +1,7 @@
 tests_dep = declare_dependency(
   compile_args: [
     '-Dabs_builddir="@0@"'.format(meson.current_build_dir()),
-    '-Dabs_top_builddir="@0@"'.format(meson.build_root()),
+    '-Dabs_top_builddir="@0@"'.format(meson.project_build_root()),
     '-Dabs_srcdir="@0@"'.format(meson.current_source_dir()),
     '-Dabs_top_srcdir="@0@"'.format(meson.source_root()),
   ] + coverage_flags + cc_flags_relaxed_frame_limit,
@@ -36,7 +36,7 @@ tests_dep = declare_dependency(
 tests_env = [
   'abs_builddir=@0@'.format(meson.current_build_dir()),
   'abs_srcdir=@0@'.format(meson.current_source_dir()),
-  'abs_top_builddir=@0@'.format(meson.build_root()),
+  'abs_top_builddir=@0@'.format(meson.project_build_root()),
   'abs_top_srcdir=@0@'.format(meson.source_root()),
   'LC_ALL=C',
   'LIBVIRT_AUTOSTART=0',

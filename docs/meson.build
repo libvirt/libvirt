@@ -264,7 +264,7 @@ hvsupport_html_in = custom_target(
     python3_prog,
     hvsupport_prog,
     meson.source_root(),
-    meson.build_root(),
+    meson.project_build_root(),
   ],
   capture: true,
   depend_files: [
@@ -305,7 +305,7 @@ foreach data : html_xslt_gen
     command: [
       xsltproc_prog,
       '--stringparam', 'pagesrc', data.get('source', ''),
-      '--stringparam', 'builddir', meson.build_root(),
+      '--stringparam', 'builddir', meson.project_build_root(),
       '--stringparam', 'timestamp', docs_timestamp,
       '--stringparam', 'href_base', data.get('href_base', ''),
       '--nonet',
@@ -360,7 +360,7 @@ test(
   args: [
     check_html_references_prog.path(),
     '--prefix',
-    meson.build_root() / 'docs'
+    meson.project_build_root() / 'docs'
   ],
   env: runutf8,
 )
