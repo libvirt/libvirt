@@ -3625,7 +3625,7 @@ processNicRxFilterChangedEvent(virDomainObj *vm,
               "from domain %p %s",
               devAlias, vm, vm->def->name);
 
-    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+    if (virDomainObjBeginJob(vm, VIR_JOB_QUERY) < 0)
         return;
 
     if (!virDomainObjIsActive(vm)) {
