@@ -1319,6 +1319,15 @@ virConnectBaselineCPU(virConnectPtr conn,
  * This is different from virConnectBaselineCPU() which doesn't consider any
  * hypervisor abilities when computing the best CPU.
  *
+ * If @ncpus == 1, the result will be the first (and only) CPU in @xmlCPUs
+ * tailored to what the hypervisor can support on the current host.
+ * Specifically if this single CPU definition contains no feature elements and
+ * a CPU model listed as usable='no' in domain capabilities XML, the result
+ * will contain a list usability blockers, i.e., a list of features that would
+ * need to be disabled to for the model to be usable on this host. This list
+ * may contain more features than what the hypervisor reports as blockers in
+ * case the CPU model definition in libvirt differs from QEMU definition.
+ *
  * If @flags includes VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES then libvirt
  * will explicitly list all CPU features that are part of the computed CPU,
  * without this flag features that are part of the CPU model will not be
