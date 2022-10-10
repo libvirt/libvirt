@@ -2189,7 +2189,7 @@ virQEMUCapsCPUDefsToModels(virArch arch,
 
     for (i = 0; i < defs->ncpus; i++) {
         qemuMonitorCPUDefInfo *cpu = defs->cpus + i;
-        char *vendor = NULL;
+        const char *vendor = NULL;
 
         if (modelAllowed && !g_strv_contains(modelAllowed, cpu->name))
             continue;
@@ -2198,7 +2198,7 @@ virQEMUCapsCPUDefsToModels(virArch arch,
             continue;
 
         if (vendors)
-            vendor = g_strdup(virCPUGetVendorForModel(arch, cpu->name));
+            vendor = virCPUGetVendorForModel(arch, cpu->name);
 
         virDomainCapsCPUModelsAdd(cpuModels, cpu->name, cpu->usable,
                                   cpu->blockers, cpu->deprecated, vendor);
