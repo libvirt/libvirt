@@ -2191,6 +2191,7 @@ virCapabilitiesInitCaches(virCaps *caps)
             g_autofree char *type = NULL;
             int kernel_type;
             unsigned int level;
+            int ret;
 
             if (!STRPREFIX(ent->d_name, "index"))
                 continue;
@@ -2206,29 +2207,54 @@ virCapabilitiesInitCaches(virCaps *caps)
             bank = g_new0(virCapsHostCacheBank, 1);
             bank->level = level;
 
-            if (virFileReadValueUint(&bank->id,
-                                     "%s/cpu/cpu%zd/cache/%s/id",
-                                     SYSFS_SYSTEM_PATH, pos, ent->d_name) < 0)
+            ret = virFileReadValueUint(&bank->id,
+                                       "%s/cpu/cpu%zd/cache/%s/id",
+                                       SYSFS_SYSTEM_PATH, pos, ent->d_name);
+            if (ret == -2) {
+                VIR_DEBUG("CPU %zd cache %s 'id' missing", pos, ent->d_name);
+                continue;
+            }
+            if (ret < 0)
                 return -1;
 
-            if (virFileReadValueUint(&bank->level,
-                                     "%s/cpu/cpu%zd/cache/%s/level",
-                                     SYSFS_SYSTEM_PATH, pos, ent->d_name) < 0)
+            ret = virFileReadValueUint(&bank->level,
+                                       "%s/cpu/cpu%zd/cache/%s/level",
+                                       SYSFS_SYSTEM_PATH, pos, ent->d_name);
+            if (ret == -2) {
+                VIR_DEBUG("CPU %zd cache %s 'level' missing", pos, ent->d_name);
+                continue;
+            }
+            if (ret < 0)
                 return -1;
 
-            if (virFileReadValueString(&type,
-                                       "%s/cpu/cpu%zd/cache/%s/type",
-                                       SYSFS_SYSTEM_PATH, pos, ent->d_name) < 0)
+            ret = virFileReadValueString(&type,
+                                         "%s/cpu/cpu%zd/cache/%s/type",
+                                         SYSFS_SYSTEM_PATH, pos, ent->d_name);
+            if (ret == -2) {
+                VIR_DEBUG("CPU %zd cache %s 'type' missing", pos, ent->d_name);
+                continue;
+            }
+            if (ret < 0)
                 return -1;
 
-            if (virFileReadValueScaledInt(&bank->size,
-                                          "%s/cpu/cpu%zd/cache/%s/size",
-                                          SYSFS_SYSTEM_PATH, pos, ent->d_name) < 0)
+            ret = virFileReadValueScaledInt(&bank->size,
+                                            "%s/cpu/cpu%zd/cache/%s/size",
+                                            SYSFS_SYSTEM_PATH, pos, ent->d_name);
+            if (ret == -2) {
+                VIR_DEBUG("CPU %zd cache %s 'size' missing", pos, ent->d_name);
+                continue;
+            }
+            if (ret < 0)
                 return -1;
 
-            if (virFileReadValueBitmap(&bank->cpus,
-                                       "%s/cpu/cpu%zd/cache/%s/shared_cpu_list",
-                                       SYSFS_SYSTEM_PATH, pos, ent->d_name) < 0)
+            ret = virFileReadValueBitmap(&bank->cpus,
+                                         "%s/cpu/cpu%zd/cache/%s/shared_cpu_list",
+                                         SYSFS_SYSTEM_PATH, pos, ent->d_name);
+            if (ret == -2) {
+                VIR_DEBUG("CPU %zd cache %s 'shared_cpu_list' missing", pos, ent->d_name);
+                continue;
+            }
+            if (ret < 0)
                 return -1;
 
             kernel_type = virCacheKernelTypeFromString(type);
