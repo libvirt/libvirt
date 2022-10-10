@@ -25,7 +25,7 @@
 
 
 .install-deps: &install-deps
-  - sudo dnf install -y libvirt-rpms/* libvirt-perl-rpms/*
+  - sudo dnf install -y libvirt-rpms/* libvirt-perl-rpms/* libvirt-python-rpms/*
   - sudo pip3 install --prefix=/usr avocado-framework
 
 

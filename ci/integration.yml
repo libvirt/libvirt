@@ -20,6 +20,10 @@ centos-stream-8-tests-prebuilt-env:
       job: x86_64-centos-stream-8-prebuilt-env
       ref: master
       artifacts: true
+    - project: libvirt/libvirt-python
+      job: x86_64-centos-stream-8-prebuilt-env
+      ref: master
+      artifacts: true
 
 centos-stream-8-tests-local-env:
   extends:
@@ -28,6 +32,10 @@ centos-stream-8-tests-local-env:
   needs:
     - x86_64-centos-stream-8-local-env
     - project: libvirt/libvirt-perl
+      job: x86_64-centos-stream-8-prebuilt-env
+      ref: master
+      artifacts: true
+    - project: libvirt/libvirt-python
       job: x86_64-centos-stream-8-prebuilt-env
       ref: master
       artifacts: true
@@ -52,6 +60,10 @@ centos-stream-9-tests-prebuilt-env:
       job: x86_64-centos-stream-9-prebuilt-env
       ref: master
       artifacts: true
+    - project: libvirt/libvirt-python
+      job: x86_64-centos-stream-9-prebuilt-env
+      ref: master
+      artifacts: true
 
 centos-stream-9-tests-local-env:
   extends:
@@ -60,6 +72,10 @@ centos-stream-9-tests-local-env:
   needs:
     - x86_64-centos-stream-9-local-env
     - project: libvirt/libvirt-perl
+      job: x86_64-centos-stream-9-prebuilt-env
+      ref: master
+      artifacts: true
+    - project: libvirt/libvirt-python
       job: x86_64-centos-stream-9-prebuilt-env
       ref: master
       artifacts: true
@@ -84,6 +100,10 @@ fedora-35-tests-prebuilt-env:
       job: x86_64-fedora-35-prebuilt-env
       ref: master
       artifacts: true
+    - project: libvirt/libvirt-python
+      job: x86_64-fedora-35-prebuilt-env
+      ref: master
+      artifacts: true
 
 fedora-35-tests-local-env:
   extends:
@@ -92,6 +112,10 @@ fedora-35-tests-local-env:
   needs:
     - x86_64-fedora-35-local-env
     - project: libvirt/libvirt-perl
+      job: x86_64-fedora-35-prebuilt-env
+      ref: master
+      artifacts: true
+    - project: libvirt/libvirt-python
       job: x86_64-fedora-35-prebuilt-env
       ref: master
       artifacts: true
@@ -116,6 +140,10 @@ fedora-36-tests-prebuilt-env:
       job: x86_64-fedora-36-prebuilt-env
       ref: master
       artifacts: true
+    - project: libvirt/libvirt-python
+      job: x86_64-fedora-36-prebuilt-env
+      ref: master
+      artifacts: true
 
 fedora-36-tests-local-env:
   extends:
@@ -124,6 +152,10 @@ fedora-36-tests-local-env:
   needs:
     - x86_64-fedora-36-local-env
     - project: libvirt/libvirt-perl
+      job: x86_64-fedora-36-prebuilt-env
+      ref: master
+      artifacts: true
+    - project: libvirt/libvirt-python
       job: x86_64-fedora-36-prebuilt-env
       ref: master
       artifacts: true
@@ -148,6 +180,10 @@ fedora-36-upstream-qemu-tests-prebuilt-env:
       job: x86_64-fedora-36-prebuilt-env
       ref: master
       artifacts: true
+    - project: libvirt/libvirt-python
+      job: x86_64-fedora-36-prebuilt-env
+      ref: master
+      artifacts: true
 
 fedora-36-upstream-qemu-tests-local-env:
   extends:
@@ -156,6 +192,10 @@ fedora-36-upstream-qemu-tests-local-env:
   needs:
     - x86_64-fedora-36-local-env
     - project: libvirt/libvirt-perl
+      job: x86_64-fedora-36-prebuilt-env
+      ref: master
+      artifacts: true
+    - project: libvirt/libvirt-python
       job: x86_64-fedora-36-prebuilt-env
       ref: master
       artifacts: true
