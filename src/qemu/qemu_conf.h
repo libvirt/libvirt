@@ -359,3 +359,6 @@ int qemuGetMemoryBackingPath(virQEMUDriver *driver,
                              const virDomainDef *def,
                              const char *alias,
                              char **memPath);
+
+int qemuHugepageMakeBasedir(virQEMUDriver *driver,
+                            virHugeTLBFS *hugepage);

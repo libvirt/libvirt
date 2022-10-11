@@ -1576,3 +1576,30 @@ qemuGetMemoryBackingPath(virQEMUDriver *driver,
     *memPath = g_strdup_printf("%s/%s", domainPath, alias);
     return 0;
 }
+
+
+int
+qemuHugepageMakeBasedir(virQEMUDriver *driver,
+                        virHugeTLBFS *hugepage)
+{
+
+    g_autofree char *hugepagePath = NULL;
+
+    hugepagePath = qemuGetBaseHugepagePath(driver, hugepage);
+
+    if (!hugepagePath)
+        return -1;
+
+    if (g_mkdir_with_parents(hugepagePath, 0777) < 0) {
+        virReportSystemError(errno,
+                             _("unable to create hugepage path %s"),
+                             hugepagePath);
+        return -1;
+    }
+
+    if (driver->privileged &&
+        virFileUpdatePerm(hugepage->mnt_dir, 0, S_IXGRP | S_IXOTH) < 0)
+        return -1;
+
+    return 0;
+}

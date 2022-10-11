@@ -837,22 +837,7 @@ qemuStateInitialize(bool privileged,
      * it, since we can't assume the root mount point has permissions that
      * will let our spawned QEMU instances use it. */
     for (i = 0; i < cfg->nhugetlbfs; i++) {
-        g_autofree char *hugepagePath = NULL;
-
-        hugepagePath = qemuGetBaseHugepagePath(qemu_driver, &cfg->hugetlbfs[i]);
-
-        if (!hugepagePath)
-            goto error;
-
-        if (g_mkdir_with_parents(hugepagePath, 0777) < 0) {
-            virReportSystemError(errno,
-                                 _("unable to create hugepage path %s"),
-                                 hugepagePath);
-            goto error;
-        }
-        if (privileged &&
-            virFileUpdatePerm(cfg->hugetlbfs[i].mnt_dir,
-                              0, S_IXGRP | S_IXOTH) < 0)
+        if (qemuHugepageMakeBasedir(qemu_driver, &cfg->hugetlbfs[i]) < 0)
             goto error;
     }
 
