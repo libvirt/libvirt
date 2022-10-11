@@ -52,6 +52,7 @@ typedef enum {
     ARG_CAPS_VER,
     ARG_CAPS_HOST_CPU_MODEL,
     ARG_HOST_OS,
+    ARG_FD_GROUP, /* name, nfds, fd[0], ... fd[n-1] */
     ARG_END,
 } testQemuInfoArgName;
 
@@ -87,6 +88,7 @@ struct testQemuArgs {
     qemuTestCPUDef capsHostCPUModel;
     int gic;
     testQemuHostOS hostOS;
+    GHashTable *fds;
     bool invalidarg;
 };
 

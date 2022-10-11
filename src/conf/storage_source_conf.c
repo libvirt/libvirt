@@ -1384,6 +1384,7 @@ virStorageSourceFDTupleFinalize(GObject *object)
         VIR_FORCE_CLOSE(fdt->fds[i]);
 
     g_free(fdt->fds);
+    g_free(fdt->testfds);
     G_OBJECT_CLASS(vir_storage_source_fd_tuple_parent_class)->finalize(object);
 }
 

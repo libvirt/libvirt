@@ -932,6 +932,38 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
             info->args.hostOS = va_arg(argptr, int);
             break;
 
+        case ARG_FD_GROUP: {
+            virStorageSourceFDTuple *new = virStorageSourceFDTupleNew();
+            const char *fdname = va_arg(argptr, char *);
+            VIR_AUTOCLOSE fakefd = open("/dev/zero", O_RDWR);
+            size_t i;
+
+            new->nfds = va_arg(argptr, unsigned int);
+            new->fds = g_new0(int, new->nfds);
+            new->testfds = g_new0(int, new->nfds);
+
+            for (i = 0; i < new->nfds; i++) {
+                new->testfds[i] = va_arg(argptr, unsigned int);
+
+                if (fcntl(new->testfds[i], F_GETFD) != -1) {
+                    fprintf(stderr, "fd '%d' is already in use\n", new->fds[i]);
+                    abort();
+                }
+
+                if ((new->fds[i] = dup(fakefd)) < 0) {
+                    fprintf(stderr, "failed to duplicate fake fd: %s",
+                            g_strerror(errno));
+                    abort();
+                }
+            }
+
+            if (!info->args.fds)
+                info->args.fds = virHashNew(g_object_unref);
+
+            g_hash_table_insert(info->args.fds, g_strdup(fdname), new);
+            break;
+        }
+
         case ARG_END:
         default:
             info->args.invalidarg = true;
@@ -1037,6 +1069,7 @@ testQemuInfoClear(struct testQemuInfo *info)
     VIR_FREE(info->errfile);
     virObjectUnref(info->qemuCaps);
     g_clear_pointer(&info->args.fakeCaps, virObjectUnref);
+    g_clear_pointer(&info->args.fds, g_hash_table_unref);
 }
 
 

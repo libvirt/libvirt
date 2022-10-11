@@ -705,6 +705,11 @@ testCompareXMLToArgv(const void *data)
     }
     priv = vm->privateData;
 
+    if (info->args.fds) {
+        g_clear_pointer(&priv->fds, g_hash_table_unref);
+        priv->fds = g_steal_pointer(&info->args.fds);
+    }
+
     if (virBitmapParse("0-3", &priv->autoNodeset, 4) < 0)
         goto cleanup;
 

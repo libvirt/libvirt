@@ -262,6 +262,7 @@ struct _virStorageSourceFDTuple {
     GObject parent;
     int *fds;
     size_t nfds;
+    int *testfds; /* populated by tests to ensure stable FDs */
 
     bool writable;
     bool tryRestoreLabel;
