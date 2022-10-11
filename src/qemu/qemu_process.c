@@ -4015,6 +4015,10 @@ qemuProcessBuildDestroyMemoryPaths(virQEMUDriver *driver,
             if (!path)
                 return -1;
 
+            if (build &&
+                qemuHugepageMakeBasedir(driver, &cfg->hugetlbfs[i]) < 0)
+                return -1;
+
             if (qemuProcessBuildDestroyMemoryPathsImpl(driver, vm,
                                                        path, build) < 0)
                 return -1;
