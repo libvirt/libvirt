@@ -2323,6 +2323,25 @@ qemuSnapshotDiscard(virQEMUDriver *driver,
         }
     }
 
+    if (update_parent) {
+        if (snap->nchildren) {
+            virQEMUMomentReparent rep;
+
+            rep.dir = cfg->snapshotDir;
+            rep.parent = snap->parent;
+            rep.vm = vm;
+            rep.err = 0;
+            rep.xmlopt = driver->xmlopt;
+            rep.writeMetadata = qemuDomainSnapshotWriteMetadata;
+            virDomainMomentForEachChild(snap,
+                                        qemuSnapshotChildrenReparent,
+                                        &rep);
+            if (rep.err < 0)
+                return -1;
+            virDomainMomentMoveChildren(snap, snap->parent);
+        }
+    }
+
     snapFile = g_strdup_printf("%s/%s/%s.xml", cfg->snapshotDir, vm->def->name,
                                snap->def->name);
 
@@ -2382,24 +2401,6 @@ qemuSnapshotDeleteSingle(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-
-    if (snap->nchildren) {
-        virQEMUMomentReparent rep;
-
-        rep.dir = cfg->snapshotDir;
-        rep.parent = snap->parent;
-        rep.vm = vm;
-        rep.err = 0;
-        rep.xmlopt = driver->xmlopt;
-        rep.writeMetadata = qemuDomainSnapshotWriteMetadata;
-        virDomainMomentForEachChild(snap,
-                                    qemuSnapshotChildrenReparent,
-                                    &rep);
-        if (rep.err < 0)
-            return -1;
-        virDomainMomentMoveChildren(snap, snap->parent);
-    }
 
     return qemuSnapshotDiscard(driver, vm, snap, true, metadata_only);
 }
