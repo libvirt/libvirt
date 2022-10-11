@@ -137,6 +137,9 @@ struct _virCapsHostCacheBank {
     virResctrlInfoPerCache **controls;
 };
 
+void virCapsHostCacheBankFree(virCapsHostCacheBank *ptr);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCapsHostCacheBank, virCapsHostCacheBankFree);
+
 struct _virCapsHostCache {
     size_t nbanks;
     virCapsHostCacheBank **banks;

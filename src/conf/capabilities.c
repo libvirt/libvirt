@@ -2158,9 +2158,7 @@ virCapabilitiesInitCaches(virCaps *caps)
     size_t i = 0;
     g_autoptr(virBitmap) cpus = NULL;
     ssize_t pos = -1;
-    int ret = -1;
     struct dirent *ent = NULL;
-    virCapsHostCacheBank *bank = NULL;
     const virResctrlMonitorType montype = VIR_RESCTRL_MONITOR_TYPE_CACHE;
     const char *prefix = virResctrlMonitorPrefixTypeToString(montype);
 
@@ -2180,10 +2178,11 @@ virCapabilitiesInitCaches(virCaps *caps)
         int rv = -1;
         g_autoptr(DIR) dirp = NULL;
         g_autofree char *path = g_strdup_printf("%s/cpu/cpu%zd/cache/", SYSFS_SYSTEM_PATH, pos);
+        g_autoptr(virCapsHostCacheBank) bank = NULL;
 
         rv = virDirOpenIfExists(&dirp, path);
         if (rv < 0)
-            goto cleanup;
+            return -1;
 
         if (!dirp)
             continue;
@@ -2199,7 +2198,7 @@ virCapabilitiesInitCaches(virCaps *caps)
             if (virFileReadValueUint(&level,
                                      "%s/cpu/cpu%zd/cache/%s/level",
                                      SYSFS_SYSTEM_PATH, pos, ent->d_name) < 0)
-                goto cleanup;
+                return -1;
 
             if (level < cache_min_level)
                 continue;
@@ -2210,33 +2209,33 @@ virCapabilitiesInitCaches(virCaps *caps)
             if (virFileReadValueUint(&bank->id,
                                      "%s/cpu/cpu%zd/cache/%s/id",
                                      SYSFS_SYSTEM_PATH, pos, ent->d_name) < 0)
-                goto cleanup;
+                return -1;
 
             if (virFileReadValueUint(&bank->level,
                                      "%s/cpu/cpu%zd/cache/%s/level",
                                      SYSFS_SYSTEM_PATH, pos, ent->d_name) < 0)
-                goto cleanup;
+                return -1;
 
             if (virFileReadValueString(&type,
                                        "%s/cpu/cpu%zd/cache/%s/type",
                                        SYSFS_SYSTEM_PATH, pos, ent->d_name) < 0)
-                goto cleanup;
+                return -1;
 
             if (virFileReadValueScaledInt(&bank->size,
                                           "%s/cpu/cpu%zd/cache/%s/size",
                                           SYSFS_SYSTEM_PATH, pos, ent->d_name) < 0)
-                goto cleanup;
+                return -1;
 
             if (virFileReadValueBitmap(&bank->cpus,
                                        "%s/cpu/cpu%zd/cache/%s/shared_cpu_list",
                                        SYSFS_SYSTEM_PATH, pos, ent->d_name) < 0)
-                goto cleanup;
+                return -1;
 
             kernel_type = virCacheKernelTypeFromString(type);
             if (kernel_type < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unknown cache type '%s'"), type);
-                goto cleanup;
+                return -1;
             }
 
             bank->type = kernel_type;
@@ -2252,15 +2251,13 @@ virCapabilitiesInitCaches(virCaps *caps)
                                            bank->size,
                                            &bank->ncontrols,
                                            &bank->controls) < 0)
-                    goto cleanup;
+                    return -1;
 
                 VIR_APPEND_ELEMENT(caps->host.cache.banks, caps->host.cache.nbanks, bank);
             }
-
-            g_clear_pointer(&bank, virCapsHostCacheBankFree);
         }
         if (rv < 0)
-            goto cleanup;
+            return -1;
     }
 
     /* Sort the array in order for the tests to be predictable.  This way we can
@@ -2272,16 +2269,13 @@ virCapabilitiesInitCaches(virCaps *caps)
     }
 
     if (virCapabilitiesInitResctrlMemory(caps) < 0)
-        goto cleanup;
+        return -1;
 
     if (virResctrlInfoGetMonitorPrefix(caps->host.resctrl, prefix,
                                        &caps->host.cache.monitor) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virCapsHostCacheBankFree(bank);
-    return ret;
+    return 0;
 }
 
 
