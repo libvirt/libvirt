@@ -4597,21 +4597,30 @@ static bool
 qemuMigrationSrcIsCanceled(virDomainObj *vm)
 {
     virDomainJobData *jobData = vm->job->current;
+    qemuDomainJobDataPrivate *priv = jobData->privateData;
+    qemuMonitorMigrationStatus status = priv->stats.mig.status;
 
-    qemuMigrationUpdateJobType(jobData);
-    switch (jobData->status) {
-    case VIR_DOMAIN_JOB_STATUS_FAILED:
-    case VIR_DOMAIN_JOB_STATUS_CANCELED:
-    case VIR_DOMAIN_JOB_STATUS_COMPLETED:
-    case VIR_DOMAIN_JOB_STATUS_NONE:
+    switch (status) {
+    case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
+    case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
+    case QEMU_MONITOR_MIGRATION_STATUS_CANCELLED:
+    case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
+        VIR_DEBUG("QEMU migration status: %s; waiting finished",
+                  qemuMonitorMigrationStatusTypeToString(status));
         return true;
 
-    case VIR_DOMAIN_JOB_STATUS_MIGRATING:
-    case VIR_DOMAIN_JOB_STATUS_POSTCOPY:
-    case VIR_DOMAIN_JOB_STATUS_PAUSED:
-    case VIR_DOMAIN_JOB_STATUS_HYPERVISOR_COMPLETED:
-    case VIR_DOMAIN_JOB_STATUS_POSTCOPY_PAUSED:
-    case VIR_DOMAIN_JOB_STATUS_ACTIVE:
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY:
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_RECOVER:
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_PAUSED:
+    case QEMU_MONITOR_MIGRATION_STATUS_PRE_SWITCHOVER:
+    case QEMU_MONITOR_MIGRATION_STATUS_DEVICE:
+    case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
+    case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
+    case QEMU_MONITOR_MIGRATION_STATUS_CANCELLING:
+    case QEMU_MONITOR_MIGRATION_STATUS_WAIT_UNPLUG:
+    case QEMU_MONITOR_MIGRATION_STATUS_LAST:
+        VIR_DEBUG("QEMU migration status: %s; still waiting",
+                  qemuMonitorMigrationStatusTypeToString(status));
         break;
     }
 
