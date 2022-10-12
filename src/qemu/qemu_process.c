@@ -3541,7 +3541,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
          */
         VIR_DEBUG("Cancelling unfinished migration of domain %s",
                   vm->def->name);
-        if (qemuMigrationSrcCancelUnattended(vm) < 0) {
+        if (qemuMigrationSrcCancelUnattended(vm, job) < 0) {
             VIR_WARN("Could not cancel ongoing migration of domain %s",
                      vm->def->name);
         }
@@ -3700,7 +3700,7 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
     case VIR_ASYNC_JOB_SAVE:
     case VIR_ASYNC_JOB_DUMP:
     case VIR_ASYNC_JOB_SNAPSHOT:
-        qemuMigrationSrcCancel(vm, VIR_ASYNC_JOB_NONE, true);
+        qemuMigrationSrcCancel(vm, VIR_ASYNC_JOB_NONE, false);
         /* resume the domain but only if it was paused as a result of
          * running a migration-to-file operation.  Although we are
          * recovering an async job, this function is run at startup
