@@ -2281,47 +2281,15 @@ qemuSnapshotChildrenReparent(void *payload,
 }
 
 
-/* Discard one snapshot (or its metadata), without reparenting any children.  */
 static int
-qemuSnapshotDiscard(virQEMUDriver *driver,
-                    virDomainObj *vm,
-                    virDomainMomentObj *snap,
-                    bool update_parent,
-                    bool metadata_only)
+qemuSnapshotDiscardMetadata(virDomainObj *vm,
+                            virDomainMomentObj *snap,
+                            bool update_parent)
 {
-    g_autofree char *snapFile = NULL;
-    qemuDomainObjPrivate *priv;
-    virDomainMomentObj *parentsnap = NULL;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-
-    if (!metadata_only) {
-        if (!virDomainObjIsActive(vm)) {
-            size_t i;
-            /* Ignore any skipped disks */
-
-            /* Prefer action on the disks in use at the time the snapshot was
-             * created; but fall back to current definition if dealing with a
-             * snapshot created prior to libvirt 0.9.5.  */
-            virDomainDef *def = snap->def->dom;
-
-            if (!def)
-                def = vm->def;
-
-            for (i = 0; i < def->ndisks; i++) {
-                if (virDomainDiskTranslateSourcePool(def->disks[i]) < 0)
-                    return -1;
-            }
-
-            if (qemuDomainSnapshotForEachQcow2(driver, def, snap, "-d", true) < 0)
-                return -1;
-        } else {
-            priv = vm->privateData;
-            qemuDomainObjEnterMonitor(vm);
-            /* we continue on even in the face of error */
-            qemuMonitorDeleteSnapshot(priv->mon, snap->def->name);
-            qemuDomainObjExitMonitor(vm);
-        }
-    }
+    g_autofree char *snapFile = NULL;
 
     if (update_parent) {
         if (snap->nchildren) {
@@ -2348,6 +2316,7 @@ qemuSnapshotDiscard(virQEMUDriver *driver,
     if (snap == virDomainSnapshotGetCurrent(vm->snapshots)) {
         virDomainSnapshotSetCurrent(vm->snapshots, NULL);
         if (update_parent && snap->def->parent_name) {
+            virDomainMomentObj *parentsnap = NULL;
             parentsnap = virDomainSnapshotFindByName(vm->snapshots,
                                                      snap->def->parent_name);
             if (!parentsnap) {
@@ -2371,6 +2340,49 @@ qemuSnapshotDiscard(virQEMUDriver *driver,
     if (update_parent)
         virDomainMomentDropParent(snap);
     virDomainSnapshotObjListRemove(vm->snapshots, snap);
+
+    return 0;
+}
+
+
+/* Discard one snapshot (or its metadata), without reparenting any children.  */
+static int
+qemuSnapshotDiscard(virQEMUDriver *driver,
+                    virDomainObj *vm,
+                    virDomainMomentObj *snap,
+                    bool update_parent,
+                    bool metadata_only)
+{
+    if (!metadata_only) {
+        if (!virDomainObjIsActive(vm)) {
+            size_t i;
+            /* Ignore any skipped disks */
+
+            /* Prefer action on the disks in use at the time the snapshot was
+             * created; but fall back to current definition if dealing with a
+             * snapshot created prior to libvirt 0.9.5.  */
+            virDomainDef *def = snap->def->dom;
+
+            if (!def)
+                def = vm->def;
+
+            for (i = 0; i < def->ndisks; i++) {
+                if (virDomainDiskTranslateSourcePool(def->disks[i]) < 0)
+                    return -1;
+            }
+
+            if (qemuDomainSnapshotForEachQcow2(driver, def, snap, "-d", true) < 0)
+                return -1;
+        } else {
+            qemuDomainObjEnterMonitor(vm);
+            /* we continue on even in the face of error */
+            qemuMonitorDeleteSnapshot(qemuDomainGetMonitor(vm), snap->def->name);
+            qemuDomainObjExitMonitor(vm);
+        }
+    }
+
+    if (qemuSnapshotDiscardMetadata(vm, snap, update_parent) < 0)
+        return -1;
 
     return 0;
 }
