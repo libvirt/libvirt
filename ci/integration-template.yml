@@ -39,9 +39,9 @@
   - if test "$ID" = "centos" && test "$VERSION_ID" -lt 9 ||
        test "$ID" = "fedora" && test "$VERSION_ID" -lt 35;
     then
-      DAEMONS="libvirtd virtlogd virtlockd";
+      DAEMONS="libvirtd virtlockd virtlogd";
     else
-      DAEMONS="virtproxyd virtqemud virtinterfaced virtsecretd virtstoraged virtnwfilterd virtnodedevd virtlogd virtlockd";
+      DAEMONS="virtinterfaced virtlockd virtlogd virtnetworkd virtnodedevd virtnwfilterd virtproxyd virtqemud virtsecretd virtstoraged";
     fi
   - for daemon in $DAEMONS;
     do
