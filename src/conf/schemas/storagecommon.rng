@@ -28,12 +28,14 @@
         <interleave>
           <ref name="secret"/>
           <optional>
-            <element name="cipher">
-              <ref name="keycipher"/>
-            </element>
-            <element name="ivgen">
-              <ref name="keyivgen"/>
-            </element>
+            <interleave>
+              <element name="cipher">
+                <ref name="keycipher"/>
+              </element>
+              <element name="ivgen">
+                <ref name="keyivgen"/>
+              </element>
+            </interleave>
           </optional>
         </interleave>
       </optional>
