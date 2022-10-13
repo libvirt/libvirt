@@ -4716,82 +4716,85 @@
       <ref name="qemucdevSrcTypeChoice"/>
     </attribute>
   </define>
+
   <define name="qemucdevSrcDef">
-    <zeroOrMore>
-      <element name="source">
-        <optional>
-          <attribute name="mode"/>
-        </optional>
-        <optional>
-          <attribute name="path"/>
-        </optional>
-        <optional>
-          <attribute name="host"/>
-        </optional>
-        <optional>
-          <attribute name="service"/>
-        </optional>
-        <optional>
-          <attribute name="channel"/>
-        </optional>
-        <optional>
-          <attribute name="master"/>
-        </optional>
-        <optional>
-          <attribute name="slave"/>
-        </optional>
-        <optional>
-          <attribute name="append">
-            <ref name="virOnOff"/>
-          </attribute>
-        </optional>
-        <optional>
-          <attribute name="tls">
-            <ref name="virYesNo"/>
-          </attribute>
-        </optional>
-        <optional>
-          <ref name="reconnect"/>
-        </optional>
-        <interleave>
-          <zeroOrMore>
-            <ref name="devSeclabel"/>
-          </zeroOrMore>
+    <interleave>
+      <zeroOrMore>
+        <element name="source">
           <optional>
-            <ref name="clipboard"/>
+            <attribute name="mode"/>
           </optional>
           <optional>
-            <ref name="mousemode"/>
+            <attribute name="path"/>
           </optional>
-        </interleave>
-      </element>
-    </zeroOrMore>
-    <optional>
-      <element name="protocol">
-        <optional>
-          <attribute name="type">
-            <choice>
-              <value>raw</value>
-              <value>telnet</value>
-              <value>telnets</value>
-              <value>tls</value>
-            </choice>
+          <optional>
+            <attribute name="host"/>
+          </optional>
+          <optional>
+            <attribute name="service"/>
+          </optional>
+          <optional>
+            <attribute name="channel"/>
+          </optional>
+          <optional>
+            <attribute name="master"/>
+          </optional>
+          <optional>
+            <attribute name="slave"/>
+          </optional>
+          <optional>
+            <attribute name="append">
+              <ref name="virOnOff"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="tls">
+              <ref name="virYesNo"/>
+            </attribute>
+          </optional>
+          <optional>
+            <ref name="reconnect"/>
+          </optional>
+          <interleave>
+            <zeroOrMore>
+              <ref name="devSeclabel"/>
+            </zeroOrMore>
+            <optional>
+              <ref name="clipboard"/>
+            </optional>
+            <optional>
+              <ref name="mousemode"/>
+            </optional>
+          </interleave>
+        </element>
+      </zeroOrMore>
+      <optional>
+        <element name="protocol">
+          <optional>
+            <attribute name="type">
+              <choice>
+                <value>raw</value>
+                <value>telnet</value>
+                <value>telnets</value>
+                <value>tls</value>
+              </choice>
+            </attribute>
+          </optional>
+        </element>
+      </optional>
+      <optional>
+        <element name="log">
+          <attribute name="file">
+            <ref name="absFilePath"/>
           </attribute>
-        </optional>
-      </element>
-    </optional>
-    <optional>
-      <element name="log">
-        <attribute name="file">
-          <ref name="absFilePath"/>
-        </attribute>
-        <optional>
-          <attribute name="append">
-            <ref name="virOnOff"/>
-          </attribute>
-        </optional>
-      </element>
-    </optional>
+          <optional>
+            <attribute name="append">
+              <ref name="virOnOff"/>
+            </attribute>
+          </optional>
+        </element>
+      </optional>
+    </interleave>
   </define>
   <!--
       The description for a console
