@@ -438,15 +438,15 @@
 
   <define name="osexe">
     <element name="os">
-      <element name="type">
-        <optional>
-          <attribute name="arch">
-            <ref name="archnames"/>
-          </attribute>
-        </optional>
-        <value>exe</value>
-      </element>
       <interleave>
+        <element name="type">
+          <optional>
+            <attribute name="arch">
+              <ref name="archnames"/>
+            </attribute>
+          </optional>
+          <value>exe</value>
+        </element>
         <optional>
           <element name="init">
             <ref name="absFilePath"/>
