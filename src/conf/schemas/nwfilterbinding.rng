@@ -12,12 +12,14 @@
     <element name="filterbinding">
       <interleave>
         <element name="owner">
-          <element name="name">
-            <text/>
-          </element>
-          <element name="uuid">
-            <ref name="UUID"/>
-          </element>
+          <interleave>
+            <element name="name">
+              <text/>
+            </element>
+            <element name="uuid">
+              <ref name="UUID"/>
+            </element>
+          </interleave>
         </element>
 
         <element name="portdev">
