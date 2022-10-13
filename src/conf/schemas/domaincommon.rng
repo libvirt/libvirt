@@ -487,12 +487,14 @@
           </element>
         </optional>
         <optional>
-          <element name="inituser">
-            <ref name="genericName"/>
-          </element>
-          <element name="initgroup">
-            <ref name="genericName"/>
-          </element>
+          <interleave>
+            <element name="inituser">
+              <ref name="genericName"/>
+            </element>
+            <element name="initgroup">
+              <ref name="genericName"/>
+            </element>
+          </interleave>
         </optional>
       </interleave>
     </element>
