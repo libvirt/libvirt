@@ -7141,57 +7141,60 @@
 
   <define name="diskMirror">
     <element name="mirror">
-      <choice>
-        <group> <!-- old format, for block copy back-compat -->
-          <attribute name="file">
-            <ref name="absFilePath"/>
-          </attribute>
-          <optional>
-            <attribute name="format">
-              <ref name="storageFormat"/>
+      <interleave>
+        <choice>
+          <group> <!-- old format, for block copy back-compat -->
+            <attribute name="file">
+              <ref name="absFilePath"/>
             </attribute>
-          </optional>
-          <optional>
+            <optional>
+              <attribute name="format">
+                <ref name="storageFormat"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="job">
+                <value>copy</value>
+              </attribute>
+            </optional>
+            <optional>
+              <interleave>
+                <ref name="diskSourceFile"/>
+                <optional>
+                  <ref name="diskFormat"/>
+                </optional>
+              </interleave>
+            </optional>
+          </group>
+          <group> <!-- preferred format -->
             <attribute name="job">
-              <value>copy</value>
+              <choice>
+                <value>copy</value>
+                <value>active-commit</value>
+              </choice>
             </attribute>
-          </optional>
-          <optional>
             <interleave>
-              <ref name="diskSourceFile"/>
+              <ref name="diskSource"/>
               <optional>
                 <ref name="diskFormat"/>
               </optional>
             </interleave>
-          </optional>
-        </group>
-        <group> <!-- preferred format -->
-          <attribute name="job">
+          </group>
+        </choice>
+        <optional>
+          <attribute name="ready">
             <choice>
-              <value>copy</value>
-              <value>active-commit</value>
+              <value>yes</value>
+              <value>abort</value>
+              <value>pivot</value>
             </choice>
           </attribute>
-          <interleave>
-            <ref name="diskSource"/>
-            <optional>
-              <ref name="diskFormat"/>
-            </optional>
-          </interleave>
-        </group>
-      </choice>
-      <optional>
-        <attribute name="ready">
-          <choice>
-            <value>yes</value>
-            <value>abort</value>
-            <value>pivot</value>
-          </choice>
-        </attribute>
-      </optional>
-      <ref name="diskBackingChain"/>
+        </optional>
+        <ref name="diskBackingChain"/>
+      </interleave>
     </element>
   </define>
+
   <define name="diskAuth">
     <element name="auth">
       <attribute name="username">
