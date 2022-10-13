@@ -44,12 +44,14 @@
 
   <define name="owner">
     <element name="owner">
-      <element name="name">
-        <text/>
-      </element>
-      <element name="uuid">
-        <ref name="UUID"/>
-      </element>
+      <interleave>
+        <element name="name">
+          <text/>
+        </element>
+        <element name="uuid">
+          <ref name="UUID"/>
+        </element>
+      </interleave>
     </element>
   </define>
 
