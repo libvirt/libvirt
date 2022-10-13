@@ -323,10 +323,10 @@
 
   <define name="hostcpu">
     <element name="cpu">
-      <element name="arch">
-        <ref name="archnames"/>
-      </element>
       <interleave>
+        <element name="arch">
+          <ref name="archnames"/>
+        </element>
         <optional>
           <element name="features">
             <optional>
