@@ -5535,13 +5535,15 @@
           </choice>
         </attribute>
       </optional>
-      <ref name="tpm-backend"/>
-      <optional>
-        <ref name="alias"/>
-      </optional>
-      <optional>
-        <ref name="address"/>
-      </optional>
+      <interleave>
+        <ref name="tpm-backend"/>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+      </interleave>
     </element>
   </define>
 
@@ -5556,10 +5558,12 @@
         </group>
         <group>
           <attribute name="type">
-             <value>emulator</value>
+            <value>emulator</value>
           </attribute>
-          <ref name="tpm-backend-emulator-encryption"/>
-          <ref name="tpm-backend-emulator-active-pcr-banks"/>
+          <interleave>
+            <ref name="tpm-backend-emulator-encryption"/>
+            <ref name="tpm-backend-emulator-active-pcr-banks"/>
+          </interleave>
           <optional>
             <attribute name="persistent_state">
               <ref name="virYesNo"/>
