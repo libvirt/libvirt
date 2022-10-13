@@ -5264,35 +5264,37 @@
   </define>
   <define name="watchdog">
     <element name="watchdog">
-      <attribute name="model">
-        <choice>
-          <value>i6300esb</value>
-          <value>ib700</value>
-          <value>diag288</value>
-        </choice>
-      </attribute>
-      <optional>
-        <attribute name="action">
+      <interleave>
+        <attribute name="model">
           <choice>
-            <value>reset</value>
-            <value>shutdown</value>
-            <value>poweroff</value>
-            <value>pause</value>
-            <value>none</value>
-            <value>dump</value>
-            <value>inject-nmi</value>
+            <value>i6300esb</value>
+            <value>ib700</value>
+            <value>diag288</value>
           </choice>
         </attribute>
-      </optional>
-      <optional>
-        <ref name="alias"/>
-      </optional>
-      <optional>
-        <ref name="acpi"/>
-      </optional>
-      <optional>
-        <ref name="address"/>
-      </optional>
+        <optional>
+          <attribute name="action">
+            <choice>
+              <value>reset</value>
+              <value>shutdown</value>
+              <value>poweroff</value>
+              <value>pause</value>
+              <value>none</value>
+              <value>dump</value>
+              <value>inject-nmi</value>
+            </choice>
+          </attribute>
+        </optional>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="acpi"/>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+      </interleave>
     </element>
   </define>
   <define name="nvram">
