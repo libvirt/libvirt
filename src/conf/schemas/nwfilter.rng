@@ -7,20 +7,21 @@
   </start>
   <define name="filter">
     <element name="filter">
-      <ref name="filter-node-attributes"/>
-      <optional>
-        <element name="uuid">
-          <ref name="UUID"/>
-        </element>
-      </optional>
-      <zeroOrMore>
-        <choice>
-          <element name="filterref">
-            <ref name="filterref-node-attributes"/>
+      <interleave>
+        <ref name="filter-node-attributes"/>
+        <optional>
+          <element name="uuid">
+            <ref name="UUID"/>
           </element>
-          <element name="rule">
-            <ref name="rule-node-attributes"/>
-            <choice>
+        </optional>
+        <zeroOrMore>
+          <choice>
+            <element name="filterref">
+              <ref name="filterref-node-attributes"/>
+            </element>
+            <element name="rule">
+              <ref name="rule-node-attributes"/>
+              <choice>
                 <empty/>
                 <element name="mac">
                   <ref name="match-attribute"/>
@@ -199,10 +200,11 @@
                   <ref name="common-ipv6-attributes-p2"/>
                   <ref name="comment-attribute"/>
                 </element>
-            </choice>
-          </element>
-        </choice>
-      </zeroOrMore>
+              </choice>
+            </element>
+          </choice>
+        </zeroOrMore>
+      </interleave>
     </element>
   </define>
 
