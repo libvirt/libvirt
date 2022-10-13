@@ -5559,49 +5559,57 @@
       </interleave>
     </element>
   </define>
+
   <define name="smartcard">
     <element name="smartcard">
-      <choice>
-        <group>
-          <attribute name="mode">
-            <value>host</value>
-          </attribute>
-          <!-- might need to add optional database element here later -->
-        </group>
-        <group>
-          <attribute name="mode">
-            <value>host-certificates</value>
-          </attribute>
-          <ref name="certificate"/>
-          <ref name="certificate"/>
-          <ref name="certificate"/>
-          <optional>
-            <element name="database">
-              <ref name="absDirPath"/>
-            </element>
-          </optional>
-        </group>
-        <group>
-          <attribute name="mode">
-            <value>passthrough</value>
-          </attribute>
-          <ref name="qemucdevSrcType"/>
-          <interleave>
-            <ref name="qemucdevSrcDef"/>
-            <optional>
-              <ref name="qemucdevTgtDef"/>
-            </optional>
-          </interleave>
-        </group>
-      </choice>
-      <optional>
-        <ref name="acpi"/>
-      </optional>
-      <optional>
-        <ref name="address"/>
-      </optional>
+      <interleave>
+        <choice>
+          <group>
+            <attribute name="mode">
+              <value>host</value>
+            </attribute>
+            <!-- might need to add optional database element here later -->
+          </group>
+          <group>
+            <interleave>
+              <attribute name="mode">
+                <value>host-certificates</value>
+              </attribute>
+              <group>
+                <ref name="certificate"/>
+                <ref name="certificate"/>
+                <ref name="certificate"/>
+              </group>
+              <optional>
+                <element name="database">
+                  <ref name="absDirPath"/>
+                </element>
+              </optional>
+            </interleave>
+          </group>
+          <group>
+            <attribute name="mode">
+              <value>passthrough</value>
+            </attribute>
+            <ref name="qemucdevSrcType"/>
+            <interleave>
+              <ref name="qemucdevSrcDef"/>
+              <optional>
+                <ref name="qemucdevTgtDef"/>
+              </optional>
+            </interleave>
+          </group>
+        </choice>
+        <optional>
+          <ref name="acpi"/>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+      </interleave>
     </element>
   </define>
+
   <define name="certificate">
     <element name="certificate">
       <text/>
