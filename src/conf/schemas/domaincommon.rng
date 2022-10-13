@@ -956,30 +956,32 @@
   <!-- All the memory/swap related tunables would go in the memtune -->
   <define name="memtune">
     <element name="memtune">
-      <!-- Maximum memory the VM can use -->
-      <optional>
-        <element name="hard_limit">
-          <ref name="scaledInteger"/>
-        </element>
-      </optional>
-      <!-- Minimum memory ascertained for the VM during contention -->
-      <optional>
-        <element name="soft_limit">
-          <ref name="scaledInteger"/>
-        </element>
-      </optional>
-      <!-- Minimum amount of memory required to start the VM -->
-      <optional>
-        <element name="min_guarantee">
-          <ref name="scaledInteger"/>
-        </element>
-      </optional>
-      <!-- Maximum swap area the VM can use -->
-      <optional>
-        <element name="swap_hard_limit">
-          <ref name="scaledInteger"/>
-        </element>
-      </optional>
+      <interleave>
+        <!-- Maximum memory the VM can use -->
+        <optional>
+          <element name="hard_limit">
+            <ref name="scaledInteger"/>
+          </element>
+        </optional>
+        <!-- Minimum memory ascertained for the VM during contention -->
+        <optional>
+          <element name="soft_limit">
+            <ref name="scaledInteger"/>
+          </element>
+        </optional>
+        <!-- Minimum amount of memory required to start the VM -->
+        <optional>
+          <element name="min_guarantee">
+            <ref name="scaledInteger"/>
+          </element>
+        </optional>
+        <!-- Maximum swap area the VM can use -->
+        <optional>
+          <element name="swap_hard_limit">
+            <ref name="scaledInteger"/>
+          </element>
+        </optional>
+      </interleave>
     </element>
   </define>
 
