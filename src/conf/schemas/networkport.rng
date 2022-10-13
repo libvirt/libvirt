@@ -143,20 +143,22 @@
         <ref name="virYesNo"/>
       </attribute>
     </optional>
-    <optional>
-      <element name="driver">
-        <attribute name="name">
-          <choice>
-            <value>kvm</value>
-            <value>vfio</value>
-          </choice>
-        </attribute>
-        <empty/>
+    <interleave>
+      <optional>
+        <element name="driver">
+          <attribute name="name">
+            <choice>
+              <value>kvm</value>
+              <value>vfio</value>
+            </choice>
+          </attribute>
+          <empty/>
+        </element>
+      </optional>
+      <element name="address">
+        <ref name="pciaddress"/>
       </element>
-    </optional>
-    <element name="address">
-      <ref name="pciaddress"/>
-    </element>
+    </interleave>
   </define>
 
 </grammar>
