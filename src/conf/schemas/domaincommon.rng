@@ -281,116 +281,119 @@
     </choice>
   </define>
   <define name="oshvm">
-    <optional>
-      <ref name="bootloader"/>
-    </optional>
-    <element name="os">
-      <interleave>
-        <optional>
-          <attribute name="firmware">
-            <choice>
-              <value>bios</value>
-              <value>efi</value>
-            </choice>
-          </attribute>
-        </optional>
-        <ref name="ostypehvm"/>
-        <optional>
-          <element name="firmware">
-            <oneOrMore>
-              <element name="feature">
-                <attribute name="enabled">
+    <interleave>
+      <optional>
+        <ref name="bootloader"/>
+      </optional>
+      <element name="os">
+        <interleave>
+          <optional>
+            <attribute name="firmware">
+              <choice>
+                <value>bios</value>
+                <value>efi</value>
+              </choice>
+            </attribute>
+          </optional>
+          <ref name="ostypehvm"/>
+          <optional>
+            <element name="firmware">
+              <oneOrMore>
+                <element name="feature">
+                  <attribute name="enabled">
+                    <ref name="virYesNo"/>
+                  </attribute>
+                  <attribute name="name">
+                    <choice>
+                      <value>enrolled-keys</value>
+                      <value>secure-boot</value>
+                    </choice>
+                  </attribute>
+                </element>
+              </oneOrMore>
+            </element>
+          </optional>
+          <optional>
+            <element name="loader">
+              <optional>
+                <attribute name="readonly">
                   <ref name="virYesNo"/>
                 </attribute>
-                <attribute name="name">
+              </optional>
+              <optional>
+                <attribute name="secure">
+                  <ref name="virYesNo"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="type">
                   <choice>
-                    <value>enrolled-keys</value>
-                    <value>secure-boot</value>
+                    <value>rom</value>
+                    <value>pflash</value>
                   </choice>
                 </attribute>
-              </element>
-            </oneOrMore>
-          </element>
-        </optional>
-        <optional>
-          <element name="loader">
-            <optional>
-              <attribute name="readonly">
-                <ref name="virYesNo"/>
-              </attribute>
-            </optional>
-            <optional>
-              <attribute name="secure">
-                <ref name="virYesNo"/>
-              </attribute>
-            </optional>
-            <optional>
-              <attribute name="type">
-                <choice>
-                  <value>rom</value>
-                  <value>pflash</value>
-                </choice>
-              </attribute>
-            </optional>
-            <optional>
-              <attribute name="stateless">
-                <ref name="virYesNo"/>
-              </attribute>
-            </optional>
-            <optional>
-              <ref name="absFilePath"/>
-            </optional>
-          </element>
-        </optional>
-        <optional>
-          <element name="nvram">
-            <optional>
-              <attribute name="template">
+              </optional>
+              <optional>
+                <attribute name="stateless">
+                  <ref name="virYesNo"/>
+                </attribute>
+              </optional>
+              <optional>
                 <ref name="absFilePath"/>
-              </attribute>
-            </optional>
-            <optional>
-              <choice>
-                <group>
+              </optional>
+            </element>
+          </optional>
+          <optional>
+            <element name="nvram">
+              <optional>
+                <attribute name="template">
                   <ref name="absFilePath"/>
-                </group>
-                <group>
-                  <ref name="diskSource"/>
-                </group>
-              </choice>
-            </optional>
-          </element>
-        </optional>
-        <optional>
-          <ref name="osbootkernel"/>
-        </optional>
-        <zeroOrMore>
-          <ref name="osbootdev"/>
-        </zeroOrMore>
-        <optional>
-          <element name="bootmenu">
-            <attribute name="enable">
-              <ref name="virYesNo"/>
-            </attribute>
-            <optional>
-              <attribute name="timeout">
-                <ref name="unsignedShort"/>
+                </attribute>
+              </optional>
+              <optional>
+                <choice>
+                  <group>
+                    <ref name="absFilePath"/>
+                  </group>
+                  <group>
+                    <ref name="diskSource"/>
+                  </group>
+                </choice>
+              </optional>
+            </element>
+          </optional>
+          <optional>
+            <ref name="osbootkernel"/>
+          </optional>
+          <zeroOrMore>
+            <ref name="osbootdev"/>
+          </zeroOrMore>
+          <optional>
+            <element name="bootmenu">
+              <attribute name="enable">
+                <ref name="virYesNo"/>
               </attribute>
-            </optional>
-          </element>
-        </optional>
-        <optional>
-          <ref name="smbios"/>
-        </optional>
-        <optional>
-          <ref name="bios"/>
-        </optional>
-        <optional>
-          <ref name="acpiTable"/>
-        </optional>
-      </interleave>
-    </element>
+              <optional>
+                <attribute name="timeout">
+                  <ref name="unsignedShort"/>
+                </attribute>
+              </optional>
+            </element>
+          </optional>
+          <optional>
+            <ref name="smbios"/>
+          </optional>
+          <optional>
+            <ref name="bios"/>
+          </optional>
+          <optional>
+            <ref name="acpiTable"/>
+          </optional>
+        </interleave>
+      </element>
+    </interleave>
   </define>
+
   <define name="ostypexen">
     <element name="type">
       <optional>
