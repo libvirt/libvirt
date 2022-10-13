@@ -69,10 +69,10 @@
       <ref name="features"/>
       <ref name="sourcenetfs"/>
       <ref name="target"/>
+      <optional>
+        <ref name="fs_mount_opts"/>
+      </optional>
     </interleave>
-    <optional>
-      <ref name="fs_mount_opts"/>
-    </optional>
   </define>
 
   <define name="poollogical">
@@ -166,10 +166,10 @@
       <ref name="features"/>
       <ref name="sourcerbd"/>
       <ref name="refresh"/>
+      <optional>
+        <ref name="rbd_config_opts"/>
+      </optional>
     </interleave>
-    <optional>
-      <ref name="rbd_config_opts"/>
-    </optional>
   </define>
 
   <define name="poolsheepdog">
