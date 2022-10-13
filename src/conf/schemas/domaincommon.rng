@@ -257,30 +257,40 @@
       <ref name="osexe"/>
     </choice>
   </define>
+
   <define name="osxen">
     <choice>
       <group>
-        <optional>
-          <ref name="bootloader"/>
-        </optional>
-        <element name="os">
-          <ref name="ostypexen"/>
-          <ref name="osbootkernel"/>
-        </element>
+        <interleave>
+          <optional>
+            <ref name="bootloader"/>
+          </optional>
+          <element name="os">
+            <interleave>
+              <ref name="ostypexen"/>
+              <ref name="osbootkernel"/>
+            </interleave>
+          </element>
+        </interleave>
       </group>
       <group>
-        <ref name="bootloader"/>
-        <optional>
-          <element name="os">
-            <ref name="ostypexen"/>
-            <optional>
-              <ref name="osbootkernel"/>
-            </optional>
-          </element>
-        </optional>
+        <interleave>
+          <ref name="bootloader"/>
+          <optional>
+            <element name="os">
+              <interleave>
+                <ref name="ostypexen"/>
+                <optional>
+                  <ref name="osbootkernel"/>
+                </optional>
+              </interleave>
+            </element>
+          </optional>
+        </interleave>
       </group>
     </choice>
   </define>
+
   <define name="oshvm">
     <interleave>
       <optional>
