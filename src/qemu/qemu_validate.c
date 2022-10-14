@@ -2765,15 +2765,20 @@ qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
             return -1;
         }
     } else if (video->accel) {
-        if (video->accel->accel3d == VIR_TRISTATE_BOOL_YES &&
-            (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO ||
-             !(virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_VIRGL) ||
-               virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI) ||
-               virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_VGA_GL)))) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("%s 3d acceleration is not supported"),
-                           virDomainVideoTypeToString(video->type));
-            return -1;
+        if (video->accel->accel3d == VIR_TRISTATE_BOOL_YES) {
+            if (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("3d acceleration is supported only with 'virtio' video device"));
+                return -1;
+            }
+
+            if (!(virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_VIRGL) ||
+                  virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI) ||
+                  virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_VGA_GL))) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("3d acceleration is not supported by this QEMU binary"));
+                return -1;
+            }
         }
     }
 
