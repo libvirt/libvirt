@@ -57,7 +57,7 @@
 .collect-logs: &collect-logs
   - set +e
   - mkdir logs
-  - test -d "$SCRATCH_DIR"/avocado && sudo mv "$SCRATCH_DIR"/avocado/latest/test-results logs/avocado;
+  - test -d "$SCRATCH_DIR"/avocado && mkdir logs/avocado
   - sudo coredumpctl &>/dev/null && sudo coredumpctl info --no-pager > logs/coredumpctl.txt
   - sudo mv /var/log/libvirt logs/libvirt
   - sudo chown -R $(whoami):$(whoami) logs
