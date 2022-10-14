@@ -98,10 +98,12 @@
   </feature>
 
   <!-- standard features, ECX -->
-  <feature name='pni'> <!-- sse3 -->
+  <feature name='pni'>
+    <alias name='sse3' source='qemu'/>
     <cpuid eax_in='0x01' ecx='0x00000001'/>
   </feature>
-  <feature name='pclmuldq'> <!-- pclmulqdq -->
+  <feature name='pclmuldq'>
+    <alias name='pclmulqdq' source='qemu'/>
     <cpuid eax_in='0x01' ecx='0x00000002'/>
   </feature>
   <feature name='dtes64'>
@@ -110,7 +112,8 @@
   <feature name='monitor'>
     <cpuid eax_in='0x01' ecx='0x00000008'/>
   </feature>
-  <feature name='ds_cpl'> <!-- ds-cpl -->
+  <feature name='ds_cpl'>
+    <alias name='ds-cpl' source='qemu'/>
     <cpuid eax_in='0x01' ecx='0x00000010'/>
   </feature>
   <feature name='vmx'>
@@ -149,10 +152,14 @@
   <feature name='dca'>
     <cpuid eax_in='0x01' ecx='0x00040000'/>
   </feature>
-  <feature name='sse4.1'> <!-- sse4-1, sse4_1 -->
+  <feature name='sse4.1'>
+    <alias name='sse4-1' source='qemu'/>
+    <alias name='sse4_1' source='qemu'/>
     <cpuid eax_in='0x01' ecx='0x00080000'/>
   </feature>
-  <feature name='sse4.2'> <!-- sse4-2, sse4_2 -->
+  <feature name='sse4.2'>
+    <alias name='sse4-2' source='qemu'/>
+    <alias name='sse4_2' source='qemu'/>
     <cpuid eax_in='0x01' ecx='0x00100000'/>
   </feature>
   <feature name='x2apic'>
@@ -198,7 +205,8 @@
   <feature name='fsgsbase'>
     <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x00000001'/>
   </feature>
-  <feature name='tsc_adjust'> <!-- tsc-adjust -->
+  <feature name='tsc_adjust'>
+    <alias name='tsc-adjust' source='qemu'/>
     <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x00000002'/>
   </feature>
   <feature name='bmi1'>
@@ -225,7 +233,8 @@
   <feature name='rtm'>
     <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x00000800'/>
   </feature>
-  <feature name='cmt'> <!-- cqm -->
+  <feature name='cmt'>
+    <alias name='cqm' source='linux'/>
     <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x00001000'/>
   </feature>
   <feature name='mpx'>
@@ -341,7 +350,8 @@
   <feature name='fsrm'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00000010'/>
   </feature>
-  <feature name='md-clear'> <!-- md_clear -->
+  <feature name='md-clear'>
+    <alias name='md_clear' source='linux'/>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00000400'/>
   </feature>
   <feature name='pconfig'>
@@ -362,7 +372,8 @@
   <feature name='stibp'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x08000000'/>
   </feature>
-  <feature name='arch-capabilities'> <!-- arch_capabilities, arch-facilities -->
+  <feature name='arch-capabilities'>
+    <alias name='arch_capabilities' source='linux'/>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x20000000'/>
   </feature>
   <feature name='core-capability'>
@@ -405,13 +416,16 @@
   <feature name='syscall'>
     <cpuid eax_in='0x80000001' edx='0x00000800'/>
   </feature>
-  <feature name='nx'> <!-- xd -->
+  <feature name='nx'>
+    <alias name='xd' source='qemu'/>
     <cpuid eax_in='0x80000001' edx='0x00100000'/>
   </feature>
   <feature name='mmxext'>
     <cpuid eax_in='0x80000001' edx='0x00400000'/>
   </feature>
-  <feature name='fxsr_opt'> <!-- ffxsr, fxsr-opt -->
+  <feature name='fxsr_opt'>
+    <alias name='ffxsr' source='qemu'/>
+    <alias name='fxsr-opt' source='qemu'/>
     <cpuid eax_in='0x80000001' edx='0x02000000'/>
   </feature>
   <feature name='pdpe1gb'>
@@ -420,7 +434,8 @@
   <feature name='rdtscp'>
     <cpuid eax_in='0x80000001' edx='0x08000000'/>
   </feature>
-  <feature name='lm'> <!-- i64 -->
+  <feature name='lm'>
+    <alias name='i64' source='qemu'/>
     <cpuid eax_in='0x80000001' edx='0x20000000'/>
   </feature>
   <feature name='3dnowext'>
@@ -431,10 +446,12 @@
   </feature>
 
   <!-- extended features, ECX -->
-  <feature name='lahf_lm'> <!-- lahf-lm -->
+  <feature name='lahf_lm'>
+    <alias name='lahf-lm' source='qemu'/>
     <cpuid eax_in='0x80000001' ecx='0x00000001'/>
   </feature>
-  <feature name='cmp_legacy'> <!-- cmp-legacy -->
+  <feature name='cmp_legacy'>
+    <alias name='cmp-legacy' source='qemu'/>
     <cpuid eax_in='0x80000001' ecx='0x00000002'/>
   </feature>
   <feature name='svm'>
@@ -485,7 +502,8 @@
   <feature name='cvt16'>
     <cpuid eax_in='0x80000001' ecx='0x00040000'/>
   </feature>
-  <feature name='nodeid_msr'> <!-- nodeid-msr -->
+  <feature name='nodeid_msr'>
+    <alias name='nodeid-msr' source='qemu'/>
     <cpuid eax_in='0x80000001' ecx='0x00080000'/>
   </feature>
   <feature name='tbm'>
@@ -494,10 +512,12 @@
   <feature name='topoext'>
     <cpuid eax_in='0x80000001' ecx='0x00400000'/>
   </feature>
-  <feature name='perfctr_core'> <!-- perfctr-core -->
+  <feature name='perfctr_core'>
+    <alias name='perfctr-core' source='qemu'/>
     <cpuid eax_in='0x80000001' ecx='0x00800000'/>
   </feature>
-  <feature name='perfctr_nb'> <!-- perfctr-nb -->
+  <feature name='perfctr_nb'>
+    <alias name='perfctr-nb' source='qemu'/>
     <cpuid eax_in='0x80000001' ecx='0x01000000'/>
   </feature>
 
