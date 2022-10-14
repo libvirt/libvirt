@@ -49,6 +49,11 @@ v8.9.0 (unreleased)
     used for guest CPU definition in domain XML, but it could have caused
     failures to start a domain with ``check='full'`` in some cases.
 
+  * qemu: Do not crash after restart with active migration
+
+    In 8.8.0 release libvirt daemon would crash after it was restarted during
+    an active outgoing migration.
+
 v8.8.0 (2022-10-03)
 ===================
 
