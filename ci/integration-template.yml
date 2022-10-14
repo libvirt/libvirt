@@ -55,6 +55,7 @@
 
 
 .collect-logs: &collect-logs
+  - set +e
   - mkdir logs
   - test -d "$SCRATCH_DIR"/avocado && sudo mv "$SCRATCH_DIR"/avocado/latest/test-results logs/avocado;
   - sudo coredumpctl &>/dev/null && sudo coredumpctl info --no-pager > logs/coredumpctl.txt
