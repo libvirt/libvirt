@@ -57,7 +57,7 @@
 .collect-logs: &collect-logs
   - mkdir logs
   - test -d "$SCRATCH_DIR"/avocado && sudo mv "$SCRATCH_DIR"/avocado/latest/test-results logs/avocado;
-  - sudo coredumpctl info --no-pager > logs/coredumpctl.txt
+  - sudo coredumpctl &>/dev/null && sudo coredumpctl info --no-pager > logs/coredumpctl.txt
   - sudo mv /var/log/libvirt logs/libvirt
   - sudo chown -R $(whoami):$(whoami) logs
     # rename all Avocado stderr/stdout logs to *.log so that GitLab's web UI doesn't mangle the MIME type
