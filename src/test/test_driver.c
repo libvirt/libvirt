@@ -1152,7 +1152,7 @@ testOpenVolumesForPool(const char *file,
     g_autofree xmlNodePtr *nodes = NULL;
     g_autoptr(virStorageVolDef) volDef = NULL;
 
-    num = virXPathNodeSet("/pool/volume", ctxt, &nodes);
+    num = virXPathNodeSet("./volume", ctxt, &nodes);
     if (num < 0)
         return -1;
 
