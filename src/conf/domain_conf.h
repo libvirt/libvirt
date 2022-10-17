@@ -2619,6 +2619,7 @@ struct _virDomainMemoryDef {
     virDomainDeviceInfo info;
 };
 
+virDomainMemoryDef *virDomainMemoryDefNew(virDomainMemoryModel model);
 void virDomainMemoryDefFree(virDomainMemoryDef *def);
 
 struct _virDomainIdMapEntry {

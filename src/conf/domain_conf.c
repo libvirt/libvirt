@@ -13088,9 +13088,6 @@ virDomainMemoryTargetDefParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    /* initialize to value which marks that the user didn't specify it */
-    def->targetNode = -1;
-
     if ((rv = virXPathInt("string(./node)", ctxt, &def->targetNode)) == -2 ||
         (rv == 0 && def->targetNode < 0)) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -13226,6 +13223,20 @@ virDomainSecDefParseXML(xmlNodePtr lsecNode,
 }
 
 
+virDomainMemoryDef *
+virDomainMemoryDefNew(virDomainMemoryModel model)
+{
+    virDomainMemoryDef *def = NULL;
+
+    def = g_new0(virDomainMemoryDef, 1);
+    def->model = model;
+    /* initialize to value which marks that the user didn't specify it */
+    def->targetNode = -1;
+
+    return def;
+}
+
+
 static virDomainMemoryDef *
 virDomainMemoryDefParseXML(virDomainXMLOption *xmlopt,
                            xmlNodePtr memdevNode,
@@ -13234,17 +13245,18 @@ virDomainMemoryDefParseXML(virDomainXMLOption *xmlopt,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr node;
-    virDomainMemoryDef *def;
+    virDomainMemoryDef *def = NULL;
+    virDomainMemoryModel model;
     g_autofree char *tmp = NULL;
-
-    def = g_new0(virDomainMemoryDef, 1);
 
     ctxt->node = memdevNode;
 
     if (virXMLPropEnum(memdevNode, "model", virDomainMemoryModelTypeFromString,
                        VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
-                       &def->model) < 0)
+                       &model) < 0)
         goto error;
+
+    def = virDomainMemoryDefNew(model);
 
     if (virXMLPropEnum(memdevNode, "access", virDomainMemoryAccessTypeFromString,
                        VIR_XML_PROP_NONZERO, &def->access) < 0)
