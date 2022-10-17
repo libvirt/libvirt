@@ -1324,19 +1324,19 @@ virVMXConfigScanResultsCollector(const char* name,
     const char *suffix = NULL;
 
     if ((suffix = STRCASESKIP(name, "ethernet"))) {
-        unsigned int idx;
+        int idx;
         char *p;
 
-        if (virStrToLong_uip(suffix, &p, 10, &idx) < 0 ||
-            *p != '.') {
+        if (virStrToLong_i(suffix, &p, 10, &idx) < 0 ||
+            *p != '.' || idx < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("failed to parse the index of the VMX key '%s'"),
                            name);
             return -1;
         }
 
-        if ((int)idx > results->networks_max_index)
-            results->networks_max_index = (int)idx;
+        if (idx > results->networks_max_index)
+            results->networks_max_index = idx;
     }
 
     return 0;
