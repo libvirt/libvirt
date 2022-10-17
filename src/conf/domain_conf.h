@@ -2621,6 +2621,7 @@ struct _virDomainMemoryDef {
 
 virDomainMemoryDef *virDomainMemoryDefNew(virDomainMemoryModel model);
 void virDomainMemoryDefFree(virDomainMemoryDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainMemoryDef, virDomainMemoryDefFree);
 
 struct _virDomainIdMapEntry {
     unsigned int start;

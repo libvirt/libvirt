@@ -13245,7 +13245,7 @@ virDomainMemoryDefParseXML(virDomainXMLOption *xmlopt,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr node;
-    virDomainMemoryDef *def = NULL;
+    g_autoptr(virDomainMemoryDef) def = NULL;
     virDomainMemoryModel model;
     g_autofree char *tmp = NULL;
 
@@ -13254,17 +13254,17 @@ virDomainMemoryDefParseXML(virDomainXMLOption *xmlopt,
     if (virXMLPropEnum(memdevNode, "model", virDomainMemoryModelTypeFromString,
                        VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
                        &model) < 0)
-        goto error;
+        return NULL;
 
     def = virDomainMemoryDefNew(model);
 
     if (virXMLPropEnum(memdevNode, "access", virDomainMemoryAccessTypeFromString,
                        VIR_XML_PROP_NONZERO, &def->access) < 0)
-        goto error;
+        return NULL;
 
     if (virXMLPropTristateBool(memdevNode, "discard", VIR_XML_PROP_NONE,
                                &def->discard) < 0)
-        goto error;
+        return NULL;
 
     /* Extract NVDIMM UUID. */
     if (def->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
@@ -13274,34 +13274,30 @@ virDomainMemoryDefParseXML(virDomainXMLOption *xmlopt,
         if (virUUIDParse(tmp, def->uuid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("malformed uuid element"));
-            goto error;
+            return NULL;
         }
     }
 
     /* source */
     if ((node = virXPathNode("./source", ctxt)) &&
         virDomainMemorySourceDefParseXML(node, ctxt, def) < 0)
-        goto error;
+        return NULL;
 
     /* target */
     if (!(node = virXPathNode("./target", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing <target> element for <memory> device"));
-        goto error;
+        return NULL;
     }
 
     if (virDomainMemoryTargetDefParseXML(node, ctxt, def) < 0)
-        goto error;
+        return NULL;
 
     if (virDomainDeviceInfoParseXML(xmlopt, memdevNode, ctxt,
                                     &def->info, flags) < 0)
-        goto error;
+        return NULL;
 
-    return def;
-
- error:
-    virDomainMemoryDefFree(def);
-    return NULL;
+    return g_steal_pointer(&def);
 }
 
 
