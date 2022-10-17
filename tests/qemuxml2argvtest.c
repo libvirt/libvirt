@@ -2222,6 +2222,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PPC64("tpm-emulator-spapr");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-tpm", "aarch64");
     DO_TEST_PARSE_ERROR_NOCAPS("aarch64-tpm-wrong-model");
+    DO_TEST_CAPS_LATEST("tpm-external");
 
     g_setenv(TEST_TPM_ENV_VAR, TPM_VER_2_0, true);
     DO_TEST_CAPS_LATEST_PARSE_ERROR("tpm-emulator");

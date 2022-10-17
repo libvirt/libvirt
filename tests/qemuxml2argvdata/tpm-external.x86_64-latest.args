@@ -1,0 +1,36 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-TPM-VM \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-TPM-VM/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-TPM-VM/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-TPM-VM/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=TPM-VM,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-TPM-VM/master-key.aes"}' \
+-machine pc-i440fx-2.12,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-accel tcg \
+-cpu qemu64 \
+-m 2048 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":2147483648}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 11d7cd22-da89-3094-6212-079a48a309a1 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot menu=on,strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-chardev socket,id=chrtpm,path=/tmp/path.sock \
+-tpmdev emulator,id=tpm-tpm0,chardev=chrtpm \
+-device '{"driver":"tpm-tis","tpmdev":"tpm-tpm0","id":"tpm0"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on
