@@ -32,6 +32,11 @@ v8.9.0 (unreleased)
 
   * Improved documentation of CPU ``usable`` attribute in domain capabilities
 
+  * Report ``channel`` and ``redirdev`` devices in domain capabilities
+
+    The channel and redirect devices supported by the hypervisor are now
+    reported in domain capabilities.
+
 * **Bug fixes**
 
   * qemu: Disable all blocker features in CPU baseline
