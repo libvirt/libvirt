@@ -86,7 +86,8 @@
       <console tty="/dev/pts/5"/>
     </devices>
   </domain>
-  <domain type='test'>
+  <domain type='test' xmlns:test='http://libvirt.org/schemas/domain/test/1.0'>
+    <test:runstate>3</test:runstate>  <!-- paused -->
     <name>fc5</name>
     <uuid>08721f993d1d4aec96eb97803297bb36</uuid>
     <cpu mode='custom'>
