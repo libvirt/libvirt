@@ -213,7 +213,7 @@ qemuTPMEmulatorCreateStorage(virDomainTPMDef *tpm,
 static void
 qemuTPMEmulatorDeleteStorage(virDomainTPMDef *tpm)
 {
-    g_autofree char *path =  g_path_get_dirname(tpm->data.emulator.storagepath);
+    g_autofree char *path = g_path_get_dirname(tpm->data.emulator.storagepath);
 
     ignore_value(virFileDeleteTree(path));
 }
