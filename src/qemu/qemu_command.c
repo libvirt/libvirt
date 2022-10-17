@@ -9241,7 +9241,10 @@ qemuBuildTPMBackendStr(virDomainTPMDef *tpm,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, "%s", virDomainTPMBackendTypeToString(tpm->type));
+    if (tpm->type == VIR_DOMAIN_TPM_TYPE_EXTERNAL)
+        virBufferAddLit(&buf, "emulator");
+    else
+        virBufferAsprintf(&buf, "%s", virDomainTPMBackendTypeToString(tpm->type));
     virBufferAsprintf(&buf, ",id=tpm-%s", tpm->info.alias);
 
     switch (tpm->type) {
@@ -9253,6 +9256,7 @@ qemuBuildTPMBackendStr(virDomainTPMDef *tpm,
         virQEMUBuildBufferEscapeComma(&buf, qemuFDPassGetPath(passcancel));
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+    case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
         virBufferAddLit(&buf, ",chardev=chrtpm");
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
@@ -9292,6 +9296,11 @@ qemuBuildTPMCommandLine(virCommand *cmd,
 
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         if (qemuBuildChardevCommand(cmd, tpm->data.emulator.source, "chrtpm", priv->qemuCaps) < 0)
+            return -1;
+        break;
+
+    case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
+        if (qemuBuildChardevCommand(cmd, tpm->data.external.source, "chrtpm", priv->qemuCaps) < 0)
             return -1;
         break;
 

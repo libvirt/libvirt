@@ -137,6 +137,7 @@
       <enum name='backendModel'>
         <value>passthrough</value>
         <value>emulator</value>
+        <value>external</value>
       </enum>
       <enum name='backendVersion'>
         <value>1.2</value>

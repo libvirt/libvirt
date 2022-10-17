@@ -1699,6 +1699,7 @@ virSecurityDACSetTPMFileLabel(virSecurityManager *mgr,
                                                   tpm->data.emulator.source,
                                                   false, false);
         break;
+    case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
@@ -1722,6 +1723,7 @@ virSecurityDACRestoreTPMFileLabel(virSecurityManager *mgr,
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         /* swtpm will have removed the Unix socket upon termination */
+    case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }

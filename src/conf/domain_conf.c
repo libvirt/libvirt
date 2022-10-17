@@ -1281,6 +1281,7 @@ VIR_ENUM_IMPL(virDomainTPMBackend,
               VIR_DOMAIN_TPM_TYPE_LAST,
               "passthrough",
               "emulator",
+              "external",
 );
 
 VIR_ENUM_IMPL(virDomainTPMVersion,
@@ -3308,6 +3309,9 @@ void virDomainTPMDefFree(virDomainTPMDef *def)
         g_free(def->data.emulator.storagepath);
         g_free(def->data.emulator.logfile);
         virBitmapFree(def->data.emulator.activePcrBanks);
+        break;
+    case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
+        virObjectUnref(def->data.external.source);
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
@@ -10257,6 +10261,7 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *persistent_state = NULL;
     g_autofree xmlNodePtr *backends = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
+    g_autofree char *type = NULL;
     int bank;
 
     if (!(def = virDomainTPMDefNew(xmlopt)))
@@ -10343,6 +10348,28 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
             }
             virBitmapSetBitExpand(def->data.emulator.activePcrBanks, bank);
         }
+        break;
+    case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
+        if (!(type = virXPathString("string(./backend/source/@type)", ctxt))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing external TPM backend type"));
+            goto error;
+        }
+
+        if (!(def->data.external.source = virDomainChrSourceDefNew(xmlopt)))
+            goto error;
+
+        def->data.external.source->type = virDomainChrTypeFromString(type);
+        if (def->data.external.source->type < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown backend type '%s' for external TPM"),
+                           type);
+            goto error;
+        }
+
+        if (virDomainChrSourceDefParseXML(def->data.external.source,
+                                          backends[0], flags, NULL, ctxt) < 0)
+            goto error;
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         goto error;
@@ -20443,6 +20470,7 @@ virDomainTPMDefCheckABIStability(virDomainTPMDef *src,
         break;
 
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
@@ -24045,6 +24073,13 @@ virDomainTPMDefFormat(virBuffer *buf,
                 virBufferAsprintf(&activePcrBanksBuf, "<%s/>\n", virDomainTPMPcrBankTypeToString(bank));
 
             virXMLFormatElement(&backendChildBuf, "active_pcr_banks", NULL, &activePcrBanksBuf);
+        }
+        break;
+    case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
+        if (def->data.external.source->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
+            virBufferAddLit(&backendChildBuf, "<source type='unix' mode='connect'");
+            virBufferEscapeString(&backendChildBuf, " path='%s'/>\n",
+                                  def->data.external.source->data.nix.path);
         }
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:

@@ -1660,6 +1660,7 @@ virSecuritySELinuxSetTPMFileLabel(virSecurityManager *mgr,
         if (rc < 0)
             return -1;
         break;
+    case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
@@ -1695,6 +1696,7 @@ virSecuritySELinuxRestoreTPMFileLabelInt(virSecurityManager *mgr,
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         /* swtpm will have removed the Unix socket upon termination */
+    case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }

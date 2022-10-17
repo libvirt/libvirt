@@ -1201,6 +1201,7 @@ qemuDomainTPMPrivateFormat(const virDomainTPMDef *tpm,
         break;
 
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
@@ -11752,6 +11753,9 @@ qemuDomainDeviceBackendChardevForeachOne(virDomainDeviceDef *dev,
 
         case VIR_DOMAIN_TPM_TYPE_EMULATOR:
             return cb(dev, dev->data.tpm->data.emulator.source, opaque);
+
+        case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
+            return cb(dev, dev->data.tpm->data.external.source, opaque);
 
         case VIR_DOMAIN_TPM_TYPE_LAST:
             return 0;

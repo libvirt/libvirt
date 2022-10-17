@@ -1421,6 +1421,7 @@ typedef enum {
 typedef enum {
     VIR_DOMAIN_TPM_TYPE_PASSTHROUGH,
     VIR_DOMAIN_TPM_TYPE_EMULATOR,
+    VIR_DOMAIN_TPM_TYPE_EXTERNAL,
 
     VIR_DOMAIN_TPM_TYPE_LAST
 } virDomainTPMBackendType;
@@ -1464,6 +1465,9 @@ struct _virDomainTPMDef {
             bool persistent_state;
             virBitmap *activePcrBanks;
         } emulator;
+        struct {
+            virDomainChrSourceDef *source;
+        } external;
     } data;
 };
 

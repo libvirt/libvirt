@@ -2727,6 +2727,24 @@ virDomainTPMDevValidate(const virDomainTPMDef *tpm)
         break;
 
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        break;
+
+    case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
+        if (tpm->data.external.source->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("only source type 'unix' is supported for external TPM device"));
+            return -1;
+        }
+        if (tpm->data.external.source->data.nix.listen) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("only 'client' mode is supported for external TPM device"));
+            return -1;
+        }
+        if (tpm->data.external.source->data.nix.path == NULL) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing socket path for external TPM device"));
+            return -1;
+        }
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }

@@ -5583,6 +5583,12 @@
             </attribute>
           </optional>
         </group>
+        <group>
+          <attribute name="type">
+            <value>external</value>
+          </attribute>
+          <ref name="tpm-external-source"/>
+        </group>
       </choice>
       <optional>
         <attribute name="version">
@@ -5603,6 +5609,22 @@
             <ref name="filePath"/>
           </attribute>
         </optional>
+      </element>
+    </optional>
+  </define>
+
+  <define name="tpm-external-source">
+    <optional>
+      <element name="source">
+        <attribute name="type">
+          <value>unix</value>
+        </attribute>
+        <attribute name="path">
+          <ref name="filePath"/>
+        </attribute>
+        <attribute name="mode">
+          <value>connect</value>
+        </attribute>
       </element>
     </optional>
   </define>

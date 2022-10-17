@@ -556,6 +556,17 @@ virDomainAuditTPM(virDomainObj *vm, virDomainTPMDef *tpm,
                   "virt=%s resrc=tpm-emulator reason=%s %s uuid=%s %s",
                   virt, reason, vmname, uuidstr, device);
         break;
+    case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
+        path = tpm->data.external.source->data.nix.path;
+        if (!(device = virAuditEncode("device", VIR_AUDIT_STR(path)))) {
+            VIR_WARN("OOM while encoding audit message");
+            goto cleanup;
+        }
+
+        VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+                  "virt=%s resrc=tpm-external reason=%s %s uuid=%s %s",
+                  virt, reason, vmname, uuidstr, device);
+        break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
     default:
         break;
