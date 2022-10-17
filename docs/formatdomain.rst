@@ -7784,7 +7784,7 @@ Example: usage of the TPM Emulator
    active PCR banks upon VM start but leave them at their last configuration.
    This attribute requires that swtpm_setup v0.7 or later is installed
    and may not have any effect otherwise. The selection of PCR banks only works
-   with the ``emulator`` backend. since:`Since 7.10.0`
+   with the ``emulator`` backend. :since:`Since 7.10.0`
 
 ``encryption``
    The ``encryption`` element allows the state of a TPM emulator to be
