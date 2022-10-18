@@ -284,6 +284,8 @@ typedef enum {
     VIR_VOL_XML_PARSE_NO_CAPACITY  = 1 << 0,
     /* do not require volume capacity if the volume has a backing store */
     VIR_VOL_XML_PARSE_OPT_CAPACITY = 1 << 1,
+    /* validate the XML against the RNG schema */
+    VIR_VOL_XML_PARSE_VALIDATE = 1 << 2,
 } virStorageVolDefParseFlags;
 
 virStorageVolDef *

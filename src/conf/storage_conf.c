@@ -1407,9 +1407,10 @@ virStorageVolDefParse(virStoragePoolDef *pool,
 {
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
+    bool validate = flags & VIR_VOL_XML_PARSE_VALIDATE;
 
     if (!(xml = virXMLParse(filename, xmlStr, _("(storage_volume_definition)"),
-                            "volume", &ctxt, NULL, false)))
+                            "volume", &ctxt, "storagevol.rng", validate)))
         return NULL;
 
     return virStorageVolDefParseXML(pool, ctxt, flags);
