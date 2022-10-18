@@ -672,6 +672,8 @@ qemuSaveImageStartVM(virConnectPtr conn,
                                      VIR_DOMAIN_EVENT_STARTED_RESTORED);
     virObjectEventStateQueue(driver->domainEventState, event);
 
+    if (qemuProcessRefreshState(driver, vm, asyncJob) < 0)
+        goto cleanup;
 
     /* If it was running before, resume it now unless caller requested pause. */
     if (header->was_running && !start_paused) {
