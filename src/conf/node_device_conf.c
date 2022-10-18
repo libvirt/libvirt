@@ -2479,14 +2479,15 @@ virNodeDeviceDefParse(const char *str,
                       int create,
                       const char *virt_type,
                       virNodeDeviceDefParserCallbacks *parserCallbacks,
-                      void *opaque)
+                      void *opaque,
+                      bool validate)
 {
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(virNodeDeviceDef) def = NULL;
 
     if (!(xml = virXMLParse(filename, str, _("(node_device_definition)"),
-                            "device", &ctxt, NULL, false)))
+                            "device", &ctxt, "nodedev.rng", validate)))
         return NULL;
 
     if (!(def = virNodeDeviceDefParseXML(ctxt, create, virt_type)))

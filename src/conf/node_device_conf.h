@@ -382,7 +382,8 @@ virNodeDeviceDefParse(const char *str,
                       int create,
                       const char *virt_type,
                       virNodeDeviceDefParserCallbacks *parserCallbacks,
-                      void *opaque);
+                      void *opaque,
+                      bool validate);
 
 virNodeDeviceDef *
 virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,

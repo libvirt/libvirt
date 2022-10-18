@@ -7629,7 +7629,7 @@ testNodeDeviceMockCreateVport(testDriver *driver,
     if (!xml)
         goto cleanup;
 
-    if (!(def = virNodeDeviceDefParse(xml, NULL, EXISTING_DEVICE, NULL, NULL, NULL)))
+    if (!(def = virNodeDeviceDefParse(xml, NULL, EXISTING_DEVICE, NULL, NULL, NULL, false)))
         goto cleanup;
 
     VIR_FREE(def->name);
@@ -7691,7 +7691,7 @@ testNodeDeviceCreateXML(virConnectPtr conn,
 
     virCheckFlags(0, NULL);
 
-    if (!(def = virNodeDeviceDefParse(xmlDesc, NULL, CREATE_DEVICE, NULL, NULL, NULL)))
+    if (!(def = virNodeDeviceDefParse(xmlDesc, NULL, CREATE_DEVICE, NULL, NULL, NULL, false)))
         goto cleanup;
 
     /* We run this simply for validation - it essentially validates that

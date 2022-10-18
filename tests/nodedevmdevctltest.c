@@ -71,7 +71,7 @@ testMdevctlCmd(virMdevctlCommand cmd_type,
     }
 
     if (!(def = virNodeDeviceDefParse(NULL, mdevxml, create, VIRT_TYPE,
-                                      &parser_callbacks, NULL)))
+                                      &parser_callbacks, NULL, false)))
         return -1;
 
     /* this function will set a stdin buffer containing the json configuration
@@ -143,7 +143,7 @@ testMdevctlAutostart(const void *data G_GNUC_UNUSED)
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     if (!(def = virNodeDeviceDefParse(NULL, mdevxml, CREATE_DEVICE, VIRT_TYPE,
-                                      &parser_callbacks, NULL)))
+                                      &parser_callbacks, NULL, false)))
         return -1;
 
     virCommandSetDryRun(dryRunToken, &buf, true, true, NULL, NULL);
