@@ -6574,7 +6574,7 @@ vol-create
 
 ::
 
-   vol-create pool-or-uuid FILE [--prealloc-metadata]
+   vol-create pool-or-uuid FILE [--prealloc-metadata] [--validate]
 
 Create a volume from an XML <file>.
 
@@ -6588,6 +6588,9 @@ pre-existing volume.
 support full allocation). This option creates a sparse image file with metadata,
 resulting in higher performance compared to images with no preallocation and
 only slightly higher initial disk space usage.
+
+If *--validate* is specified, validates the format of the XML document against
+an internal RNG schema.
 
 **Example:**
 
@@ -6606,7 +6609,7 @@ vol-create-from
 ::
 
    vol-create-from pool-or-uuid FILE vol-name-or-key-or-path
-      [--inputpool pool-or-uuid]  [--prealloc-metadata] [--reflink]
+      [--inputpool pool-or-uuid]  [--prealloc-metadata] [--reflink] [--validate]
 
 Create a volume, using another volume as input.
 
@@ -6628,6 +6631,8 @@ When *--reflink* is specified, perform a COW lightweight copy,
 where the data blocks are copied only when modified.
 If this is not possible, the copy fails.
 
+If *--validate* is specified, validates the format of the XML document against
+an internal RNG schema.
 
 vol-create-as
 -------------

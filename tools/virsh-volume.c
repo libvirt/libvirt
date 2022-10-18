@@ -380,6 +380,10 @@ static const vshCmdOptDef opts_vol_create[] = {
      .type = VSH_OT_BOOL,
      .help = N_("preallocate metadata (for qcow2 instead of full allocation)")
     },
+    {.name = "validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("validate the XML against the schema")
+    },
     {.name = NULL}
 };
 
@@ -394,6 +398,9 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "prealloc-metadata"))
         flags |= VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
+
+    if (vshCommandOptBool(cmd, "validate"))
+        flags |= VIR_STORAGE_VOL_CREATE_VALIDATE;
 
     if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
         return false;
@@ -446,6 +453,10 @@ static const vshCmdOptDef opts_vol_create_from[] = {
      .type = VSH_OT_BOOL,
      .help = N_("use btrfs COW lightweight copy")
     },
+    {.name = "validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("validate the XML against the schema")
+    },
     {.name = NULL}
 };
 
@@ -467,6 +478,9 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "reflink"))
         flags |= VIR_STORAGE_VOL_CREATE_REFLINK;
+
+    if (vshCommandOptBool(cmd, "validate"))
+        flags |= VIR_STORAGE_VOL_CREATE_VALIDATE;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;

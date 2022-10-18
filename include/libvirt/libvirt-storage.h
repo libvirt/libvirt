@@ -437,6 +437,7 @@ const char*             virStorageVolGetKey             (virStorageVolPtr vol);
 typedef enum {
     VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA = 1 << 0, /* (Since: 1.0.1) */
     VIR_STORAGE_VOL_CREATE_REFLINK = 1 << 1, /* perform a btrfs lightweight copy (Since: 1.2.13) */
+    VIR_STORAGE_VOL_CREATE_VALIDATE = 1 << 2, /* Validate the XML document against schema (Since: 8.10.0) */
 } virStorageVolCreateFlags;
 
 virStorageVolPtr        virStorageVolCreateXML          (virStoragePoolPtr pool,
