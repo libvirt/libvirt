@@ -694,7 +694,7 @@ virNodeDeviceReset(virNodeDevicePtr dev)
  * virNodeDeviceCreateXML:
  * @conn: pointer to the hypervisor connection
  * @xmlDesc: string containing an XML description of the device to be created
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of supported virNodeDeviceCreateXMLFlags
  *
  * Create a new device on the VM host machine, for example, virtual
  * HBAs created using vport_create.
@@ -778,7 +778,7 @@ virNodeDeviceDestroy(virNodeDevicePtr dev)
  * virNodeDeviceDefineXML:
  * @conn: pointer to the hypervisor connection
  * @xmlDesc: string containing an XML description of the device to be defined
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of supported virNodeDeviceDefineXMLFlags
  *
  * Define a new device on the VM host machine, for example, a mediated device
  *

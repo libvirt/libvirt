@@ -50,6 +50,10 @@ static const vshCmdInfo info_node_device_create[] = {
 static const vshCmdOptDef opts_node_device_create[] = {
     VIRSH_COMMON_OPT_FILE(N_("file containing an XML description "
                              "of the device")),
+    {.name = "validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("validate the XML against the schema")
+    },
     {.name = NULL}
 };
 
@@ -60,6 +64,7 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     g_autofree char *buffer = NULL;
     virshControl *priv = ctl->privData;
+    unsigned int flags = 0;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -67,7 +72,10 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    if (!(dev = virNodeDeviceCreateXML(priv->conn, buffer, 0))) {
+    if (vshCommandOptBool(cmd, "validate"))
+        flags |= VIR_NODE_DEVICE_CREATE_XML_VALIDATE;
+
+    if (!(dev = virNodeDeviceCreateXML(priv->conn, buffer, flags))) {
         vshError(ctl, _("Failed to create node device from %s"), from);
         return false;
     }
@@ -1058,6 +1066,10 @@ static const vshCmdInfo info_node_device_define[] = {
 static const vshCmdOptDef opts_node_device_define[] = {
     VIRSH_COMMON_OPT_FILE(N_("file containing an XML description "
                              "of the device")),
+    {.name = "validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("validate the XML against the schema")
+    },
     {.name = NULL}
 };
 
@@ -1068,6 +1080,7 @@ cmdNodeDeviceDefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     const char *from = NULL;
     g_autofree char *buffer = NULL;
     virshControl *priv = ctl->privData;
+    unsigned int flags = 0;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -1075,7 +1088,10 @@ cmdNodeDeviceDefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    if (!(dev = virNodeDeviceDefineXML(priv->conn, buffer, 0))) {
+    if (vshCommandOptBool(cmd, "validate"))
+        flags |= VIR_NODE_DEVICE_DEFINE_XML_VALIDATE;
+
+    if (!(dev = virNodeDeviceDefineXML(priv->conn, buffer, flags))) {
         vshError(ctl, _("Failed to define node device from '%s'"), from);
         return false;
     }

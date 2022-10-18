@@ -5235,13 +5235,16 @@ nodedev-create
 
 ::
 
-   nodedev-create FILE
+   nodedev-create FILE [--validate]
 
 Create a device on the host node that can then be assigned to virtual
 machines. Normally, libvirt is able to automatically determine which
 host nodes are available for use, but this allows registration of
 host hardware that libvirt did not automatically detect.  *file*
 contains xml for a top-level <device> description of a node device.
+
+If *--validate* is specified, validates the format of the XML document against
+an internal RNG schema.
 
 
 nodedev-destroy
@@ -5266,10 +5269,13 @@ nodedev-define
 
 ::
 
-   nodedev-define FILE
+   nodedev-define FILE [--validate]
 
 Define an inactive persistent device or modify an existing persistent one from
 the XML *FILE*.
+
+If *--validate* is specified, validates the format of the XML document against
+an internal RNG schema.
 
 
 nodedev-undefine

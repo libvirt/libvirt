@@ -130,11 +130,30 @@ int                     virNodeDeviceDetachFlags(virNodeDevicePtr dev,
 int                     virNodeDeviceReAttach   (virNodeDevicePtr dev);
 int                     virNodeDeviceReset      (virNodeDevicePtr dev);
 
+/**
+ * virNodeDeviceCreateXMLFlags:
+ *
+ * Since: 8.10.0
+ */
+typedef enum {
+    VIR_NODE_DEVICE_CREATE_XML_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: 8.10.0) */
+} virNodeDeviceCreateXMLFlags;
+
 virNodeDevicePtr        virNodeDeviceCreateXML  (virConnectPtr conn,
                                                  const char *xmlDesc,
                                                  unsigned int flags);
 
 int                     virNodeDeviceDestroy    (virNodeDevicePtr dev);
+
+
+/**
+ * virNodeDeviceDefineXMLFlags:
+ *
+ * Since: 8.10.0
+ */
+typedef enum {
+    VIR_NODE_DEVICE_DEFINE_XML_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: 8.10.0) */
+} virNodeDeviceDefineXMLFlags;
 
 virNodeDevicePtr virNodeDeviceDefineXML(virConnectPtr conn,
                                         const char *xmlDesc,
