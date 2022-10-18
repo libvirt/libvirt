@@ -7182,14 +7182,18 @@ testStorageVolCreateXML(virStoragePoolPtr pool,
     virStoragePoolDef *def;
     virStorageVolPtr ret = NULL;
     g_autoptr(virStorageVolDef) privvol = NULL;
+    unsigned int parseFlags = 0;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_VALIDATE, NULL);
+
+    if (flags & VIR_STORAGE_VOL_CREATE_VALIDATE)
+        parseFlags |= VIR_VOL_XML_PARSE_VALIDATE;
 
     if (!(obj = testStoragePoolObjFindActiveByName(privconn, pool->name)))
         return NULL;
     def = virStoragePoolObjGetDef(obj);
 
-    privvol = virStorageVolDefParse(def, xmldesc, NULL, 0);
+    privvol = virStorageVolDefParse(def, xmldesc, NULL, parseFlags);
     if (privvol == NULL)
         goto cleanup;
 
@@ -7241,14 +7245,18 @@ testStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     virStorageVolDef *origvol = NULL;
     virStorageVolPtr ret = NULL;
     g_autoptr(virStorageVolDef) privvol = NULL;
+    unsigned int parseFlags = 0;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_VALIDATE, NULL);
+
+    if (flags & VIR_STORAGE_VOL_CREATE_VALIDATE)
+        parseFlags |= VIR_VOL_XML_PARSE_VALIDATE;
 
     if (!(obj = testStoragePoolObjFindActiveByName(privconn, pool->name)))
         return NULL;
     def = virStoragePoolObjGetDef(obj);
 
-    privvol = virStorageVolDefParse(def, xmldesc, NULL, 0);
+    privvol = virStorageVolDefParse(def, xmldesc, NULL, parseFlags);
     if (privvol == NULL)
         goto cleanup;
 

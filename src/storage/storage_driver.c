@@ -1877,8 +1877,13 @@ storageVolCreateXML(virStoragePoolPtr pool,
     virStorageBackend *backend;
     virStorageVolPtr vol = NULL, newvol = NULL;
     g_autoptr(virStorageVolDef) voldef = NULL;
+    unsigned int parseFlags = VIR_VOL_XML_PARSE_OPT_CAPACITY;
 
-    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA |
+                  VIR_STORAGE_VOL_CREATE_VALIDATE, NULL);
+
+    if (flags & VIR_STORAGE_VOL_CREATE_VALIDATE)
+        parseFlags |= VIR_VOL_XML_PARSE_VALIDATE;
 
     if (!(obj = virStoragePoolObjFromStoragePool(pool)))
         return NULL;
@@ -1893,7 +1898,7 @@ storageVolCreateXML(virStoragePoolPtr pool,
     if ((backend = virStorageBackendForType(def->type)) == NULL)
         goto cleanup;
 
-    voldef = virStorageVolDefParse(def, xmldesc, NULL, VIR_VOL_XML_PARSE_OPT_CAPACITY);
+    voldef = virStorageVolDefParse(def, xmldesc, NULL, parseFlags);
     if (voldef == NULL)
         goto cleanup;
 
@@ -2012,10 +2017,15 @@ storageVolCreateXMLFrom(virStoragePoolPtr pool,
     virStorageVolPtr vol = NULL;
     int buildret;
     g_autoptr(virStorageVolDef) voldef = NULL;
+    unsigned int parseFlags = VIR_VOL_XML_PARSE_NO_CAPACITY;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA |
-                  VIR_STORAGE_VOL_CREATE_REFLINK,
+                  VIR_STORAGE_VOL_CREATE_REFLINK |
+                  VIR_STORAGE_VOL_CREATE_VALIDATE,
                   NULL);
+
+    if (flags & VIR_STORAGE_VOL_CREATE_VALIDATE)
+        parseFlags |= VIR_VOL_XML_PARSE_VALIDATE;
 
     obj = virStoragePoolObjFindByUUID(driver->pools, pool->uuid);
     if (obj && STRNEQ(pool->name, volsrc->pool)) {
@@ -2066,7 +2076,7 @@ storageVolCreateXMLFrom(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    voldef = virStorageVolDefParse(def, xmldesc, NULL, VIR_VOL_XML_PARSE_NO_CAPACITY);
+    voldef = virStorageVolDefParse(def, xmldesc, NULL, parseFlags);
     if (voldef == NULL)
         goto cleanup;
 
