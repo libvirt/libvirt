@@ -12472,12 +12472,12 @@ virshDomainDetachInterface(char *doc,
                            bool printxml)
 {
     g_autoptr(xmlDoc) xml = NULL;
-    g_autoptr(xmlXPathObject) obj = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    xmlNodePtr cur = NULL, matchNode = NULL;
     g_autofree char *detach_xml = NULL;
-    char buf[64];
-    int diff_mac = -1;
+    g_autofree char *xpath = g_strdup_printf("/domain/devices/interface[@type='%s']", type);
+    g_autofree xmlNodePtr *nodes = NULL;
+    ssize_t nnodes;
+    xmlNodePtr matchNode = NULL;
     size_t i;
 
     if (!(xml = virXMLParseStringCtxt(doc, _("(domain_definition)"), &ctxt))) {
@@ -12485,34 +12485,20 @@ virshDomainDetachInterface(char *doc,
         return false;
     }
 
-    g_snprintf(buf, sizeof(buf), "/domain/devices/interface[@type='%s']", type);
-    obj = xmlXPathEval(BAD_CAST buf, ctxt);
-    if (obj == NULL || obj->type != XPATH_NODESET ||
-        obj->nodesetval == NULL || obj->nodesetval->nodeNr == 0) {
+    if ((nnodes = virXPathNodeSet(xpath, ctxt, &nodes)) <= 0) {
         vshError(ctl, _("No interface found whose type is %s"), type);
         return false;
     }
 
-    if (!mac && obj->nodesetval->nodeNr > 1) {
-        vshError(ctl, _("Domain has %d interfaces. Please specify which one "
-                        "to detach using --mac"), obj->nodesetval->nodeNr);
-        return false;
-    }
+    if (mac) {
+        for (i = 0; i < nnodes; i++) {
+            g_autofree char *tmp_mac = NULL;
 
-    if (!mac) {
-        matchNode = obj->nodesetval->nodeTab[0];
-        goto hit;
-    }
+            ctxt->node = nodes[i];
 
-    /* multiple possibilities, so search for matching mac */
-    for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-        cur = obj->nodesetval->nodeTab[i]->children;
-        while (cur != NULL) {
-            if (cur->type == XML_ELEMENT_NODE &&
-                virXMLNodeNameEqual(cur, "mac")) {
-                g_autofree char *tmp_mac = virXMLPropString(cur, "address");
-                diff_mac = virMacAddrCompare(tmp_mac, mac);
-                if (!diff_mac) {
+            if ((tmp_mac = virXPathString("string(./mac/@address)", ctxt))) {
+
+                if (virMacAddrCompare(tmp_mac, mac) == 0) {
                     if (matchNode) {
                         /* this is the 2nd match, so it's ambiguous */
                         vshError(ctl, _("Domain has multiple interfaces matching "
@@ -12521,18 +12507,26 @@ virshDomainDetachInterface(char *doc,
                                  mac);
                         return false;
                     }
-                    matchNode = obj->nodesetval->nodeTab[i];
+
+                    matchNode = nodes[i];
                 }
             }
-            cur = cur->next;
         }
+    } else {
+        if (nnodes > 1) {
+            vshError(ctl, _("Domain has %zd interfaces. Please specify which one to detach using --mac"),
+                     nnodes);
+            return false;
+        }
+
+        matchNode = nodes[0];
     }
+
     if (!matchNode) {
         vshError(ctl, _("No interface with MAC address %s was found"), mac);
         return false;
     }
 
- hit:
     if (!(detach_xml = virXMLNodeToString(xml, matchNode))) {
         vshSaveLibvirtError();
         return false;
