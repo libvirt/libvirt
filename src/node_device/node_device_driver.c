@@ -879,8 +879,9 @@ nodeDeviceCreateXML(virConnectPtr conn,
     g_autofree char *wwpn = NULL;
     virNodeDevicePtr device = NULL;
     const char *virt_type = NULL;
+    bool validate = flags & VIR_NODE_DEVICE_CREATE_XML_VALIDATE;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_NODE_DEVICE_CREATE_XML_VALIDATE, NULL);
 
     if (nodeDeviceInitWait() < 0)
         return NULL;
@@ -888,7 +889,7 @@ nodeDeviceCreateXML(virConnectPtr conn,
     virt_type  = virConnectGetType(conn);
 
     if (!(def = virNodeDeviceDefParse(xmlDesc, NULL, CREATE_DEVICE, virt_type,
-                                      &driver->parserCallbacks, NULL, false)))
+                                      &driver->parserCallbacks, NULL, validate)))
         return NULL;
 
     if (virNodeDeviceCreateXMLEnsureACL(conn, def) < 0)
@@ -1400,8 +1401,9 @@ nodeDeviceDefineXML(virConnect *conn,
     const char *virt_type = NULL;
     g_autofree char *uuid = NULL;
     g_autofree char *name = NULL;
+    bool validate = flags & VIR_NODE_DEVICE_DEFINE_XML_VALIDATE;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_NODE_DEVICE_DEFINE_XML_VALIDATE, NULL);
 
     if (nodeDeviceInitWait() < 0)
         return NULL;
@@ -1409,7 +1411,7 @@ nodeDeviceDefineXML(virConnect *conn,
     virt_type  = virConnectGetType(conn);
 
     if (!(def = virNodeDeviceDefParse(xmlDesc, NULL, CREATE_DEVICE, virt_type,
-                                      &driver->parserCallbacks, NULL, false)))
+                                      &driver->parserCallbacks, NULL, validate)))
         return NULL;
 
     if (virNodeDeviceDefineXMLEnsureACL(conn, def) < 0)
