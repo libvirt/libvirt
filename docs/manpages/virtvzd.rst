@@ -39,40 +39,25 @@ during startup. None the less it is recommended to avoid restarting with
 running guests whenever practical.
 
 
-SYSTEM SOCKET ACTIVATION
-========================
+DAEMON STARTUP MODES
+====================
 
 The ``virtvzd`` daemon is capable of starting in two modes.
 
-In the traditional mode, it will create and listen on UNIX sockets itself.
 
-In socket activation mode, it will rely on systemd to create and listen
-on the UNIX sockets and pass them as pre-opened file descriptors. In this
-mode most of the socket related config options in
+Socket activation mode
+----------------------
+
+On hosts with systemd it is started in socket activation mode and it will rely
+on systemd to create and listen on the UNIX sockets and pass them as pre-opened
+file descriptors. In this mode most of the socket related config options in
 ``/etc/libvirt/virtvzd.conf`` will no longer have any effect.
 
-Socket activation mode is generally the default when running on a host
-OS that uses systemd. To revert to the traditional mode, all the socket
-unit files must be masked:
 
-::
+Traditional service mode
+------------------------
 
-   $ systemctl mask virtvzd.socket virtvzd-ro.socket \
-      virtvzd-admin.socket
-
-If using libvirt-guests service then the ordering for that service needs to be
-adapted so that it is ordered after the service unit instead of the socket unit.
-Since dependencies and ordering cannot be changed with drop-in overrides, the
-whole libvirt-guests unit file needs to be changed.  In order to preserve such
-change copy the installed ``/usr/lib/systemd/system/libvirt-guests.service`` to
-``/etc/systemd/system/libvirt-guests.service`` and make the change there,
-specifically make sure the ``After=`` ordering mentions ``virtvzd.service`` and
-not ``virtvzd.socket``:
-
-::
-
-   [Unit]
-   After=virtvzd.service
+On hosts without systemd, it will create and listen on UNIX sockets itself.
 
 
 OPTIONS
