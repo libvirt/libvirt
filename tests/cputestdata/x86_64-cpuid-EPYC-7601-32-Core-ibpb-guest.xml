@@ -27,5 +27,6 @@
   <feature policy='require' name='pause-filter'/>
   <feature policy='require' name='pfthreshold'/>
   <feature policy='require' name='avic'/>
+  <feature policy='require' name='v-vmsave-vmload'/>
   <feature policy='disable' name='rdtscp'/>
 </cpu>

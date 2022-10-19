@@ -29,6 +29,7 @@
   <feature name='pause-filter'/>
   <feature name='pfthreshold'/>
   <feature name='avic'/>
+  <feature name='v-vmsave-vmload'/>
   <feature name='rdctl-no'/>
   <feature name='skip-l1dfl-vmentry'/>
   <feature name='mds-no'/>

@@ -29,4 +29,5 @@
   <feature name='pause-filter'/>
   <feature name='pfthreshold'/>
   <feature name='avic'/>
+  <feature name='v-vmsave-vmload'/>
 </cpu>

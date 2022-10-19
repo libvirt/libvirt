@@ -658,6 +658,9 @@
   <feature name='avic'>
     <cpuid eax_in='0x8000000a' edx='0x00002000'/>
   </feature>
+  <feature name='v-vmsave-vmload'>
+    <cpuid eax_in='0x8000000a' edx='0x00008000'/>
+  </feature>
   <feature name='svme-addr-chk'>
     <cpuid eax_in='0x8000000a' edx='0x10000000'/>
   </feature>

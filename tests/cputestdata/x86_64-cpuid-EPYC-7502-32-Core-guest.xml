@@ -28,6 +28,7 @@
   <feature policy='require' name='pause-filter'/>
   <feature policy='require' name='pfthreshold'/>
   <feature policy='require' name='avic'/>
+  <feature policy='require' name='v-vmsave-vmload'/>
   <feature policy='require' name='rdctl-no'/>
   <feature policy='require' name='skip-l1dfl-vmentry'/>
   <feature policy='require' name='mds-no'/>
