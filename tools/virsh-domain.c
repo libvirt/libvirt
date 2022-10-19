@@ -12639,8 +12639,9 @@ virshFindDisk(const char *doc,
               int type)
 {
     g_autoptr(xmlDoc) xml = NULL;
-    g_autoptr(xmlXPathObject) obj = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
+    ssize_t nnodes;
     xmlNodePtr cur = NULL;
     size_t i;
 
@@ -12650,21 +12651,17 @@ virshFindDisk(const char *doc,
         return NULL;
     }
 
-    obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);
-    if (obj == NULL ||
-        obj->type != XPATH_NODESET ||
-        obj->nodesetval == NULL ||
-        obj->nodesetval->nodeNr == 0) {
+    if ((nnodes = virXPathNodeSet("/domain/devices/disk", ctxt, &nodes)) <= 0) {
         vshError(NULL, "%s", _("Failed to get disk information"));
         return NULL;
     }
 
     /* search disk using @path */
-    for (i = 0; i < obj->nodesetval->nodeNr; i++) {
+    for (i = 0; i < nnodes; i++) {
         bool is_supported = true;
 
         if (type == VIRSH_FIND_DISK_CHANGEABLE) {
-            xmlNodePtr n = obj->nodesetval->nodeTab[i];
+            xmlNodePtr n = nodes[i];
             is_supported = false;
 
             /* Check if the disk is CDROM or floppy disk */
@@ -12680,7 +12677,7 @@ virshFindDisk(const char *doc,
                 continue;
         }
 
-        cur = obj->nodesetval->nodeTab[i]->children;
+        cur = nodes[i]->children;
         while (cur != NULL) {
             if (cur->type == XML_ELEMENT_NODE) {
                 g_autofree char *tmp = NULL;
@@ -12696,7 +12693,7 @@ virshFindDisk(const char *doc,
                 }
 
                 if (STREQ_NULLABLE(tmp, path)) {
-                    xmlNodePtr ret = xmlCopyNode(obj->nodesetval->nodeTab[i], 1);
+                    xmlNodePtr ret = xmlCopyNode(nodes[i], 1);
                     /* drop backing store since they are not needed here */
                     virshDiskDropBackingStore(ret);
                     return ret;
