@@ -23,6 +23,7 @@
   <feature name='sgx'/>
   <feature name='clflushopt'/>
   <feature name='intel-pt'/>
+  <feature name='sgxlc'/>
   <feature name='stibp'/>
   <feature name='ssbd'/>
   <feature name='xsaves'/>

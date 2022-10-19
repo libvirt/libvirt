@@ -21,6 +21,7 @@
   <feature policy='require' name='sgx'/>
   <feature policy='require' name='clflushopt'/>
   <feature policy='require' name='intel-pt'/>
+  <feature policy='require' name='sgxlc'/>
   <feature policy='require' name='stibp'/>
   <feature policy='require' name='ssbd'/>
   <feature policy='require' name='xsaves'/>

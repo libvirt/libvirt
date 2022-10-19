@@ -28,6 +28,7 @@
   <feature name='sha-ni'/>
   <feature name='ospke'/>
   <feature name='rdpid'/>
+  <feature name='sgxlc'/>
   <feature name='fsrm'/>
   <feature name='stibp'/>
   <feature name='arch-capabilities'/>
