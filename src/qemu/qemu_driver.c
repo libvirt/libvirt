@@ -17979,9 +17979,9 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
 
     if (HAVE_JOB(privflags) && virDomainObjIsActive(dom) &&
         qemuDomainRefreshVcpuHalted(dom, VIR_ASYNC_JOB_NONE) < 0) {
-            /* it's ok to be silent and go ahead, because halted vcpu info
-             * wasn't here from the beginning */
-            virResetLastError();
+        /* it's ok to be silent and go ahead, because halted vcpu info
+         * wasn't here from the beginning */
+        virResetLastError();
     }
 
     if (qemuDomainHelperGetVcpus(dom, cpuinfo, cpuwait, cpudelay,
