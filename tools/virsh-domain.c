@@ -12658,22 +12658,13 @@ virshFindDisk(const char *doc,
 
     /* search disk using @path */
     for (i = 0; i < nnodes; i++) {
-        bool is_supported = true;
-
         if (type == VIRSH_FIND_DISK_CHANGEABLE) {
-            xmlNodePtr n = nodes[i];
-            is_supported = false;
+            g_autofree char *device = virXMLPropString(nodes[i], "device");
 
             /* Check if the disk is CDROM or floppy disk */
-            if (virXMLNodeNameEqual(n, "disk")) {
-                g_autofree char *device_value = virXMLPropString(n, "device");
-
-                if (STREQ(device_value, "cdrom") ||
-                    STREQ(device_value, "floppy"))
-                    is_supported = true;
-            }
-
-            if (!is_supported)
+            if (device &&
+                STRNEQ(device, "cdrom") &&
+                STRNEQ(device, "floppy"))
                 continue;
         }
 
