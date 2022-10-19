@@ -17,6 +17,7 @@
   <feature policy='require' name='pdcm'/>
   <feature policy='require' name='osxsave'/>
   <feature policy='require' name='tsc_adjust'/>
+  <feature policy='require' name='sgx'/>
   <feature policy='require' name='clflushopt'/>
   <feature policy='require' name='intel-pt'/>
   <feature policy='require' name='md-clear'/>

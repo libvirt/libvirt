@@ -209,6 +209,9 @@
     <alias name='tsc-adjust' source='qemu'/>
     <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x00000002'/>
   </feature>
+  <feature name='sgx'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x00000004'/>
+  </feature>
   <feature name='bmi1'>
     <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x00000008'/>
   </feature>

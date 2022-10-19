@@ -21,6 +21,7 @@
   <feature name='dca'/>
   <feature name='osxsave'/>
   <feature name='tsc_adjust'/>
+  <feature name='sgx'/>
   <feature name='cmt'/>
   <feature name='avx512ifma'/>
   <feature name='intel-pt'/>
