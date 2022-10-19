@@ -419,6 +419,10 @@
   </feature>
 
   <!-- cpuid level 0x00000012 ecx 0x0 features -->
+  <feature name='sgx1'>
+    <cpuid eax_in='0x12' ecx_in='0x00' eax='0x00000001'/>
+  </feature>
+
   <feature name='sgx-exinfo'>
     <cpuid eax_in='0x12' ecx_in='0x00' ebx='0x00000001'/>
   </feature>
