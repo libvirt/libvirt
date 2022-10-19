@@ -430,6 +430,9 @@
   <feature name='xsaves' migratable='no'>
     <cpuid eax_in='0x0d' ecx_in='0x01' eax='0x00000008'/>
   </feature>
+  <feature name='xfd'>
+    <cpuid eax_in='0x0d' ecx_in='0x01' eax='0x00000010'/>
+  </feature>
 
   <!-- cpuid level 0x0000000f:1 (edx) -->
   <feature name='mbm_total'>
