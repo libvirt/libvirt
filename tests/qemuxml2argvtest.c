@@ -548,17 +548,11 @@ testCompareXMLToArgvValidateSchemaCommand(GStrv args,
 
 
 static int
-testCompareXMLToArgvValidateSchema(virQEMUDriver *drv,
-                                   const char *migrateURI,
-                                   struct testQemuInfo *info,
-                                   unsigned int flags)
+testCompareXMLToArgvValidateSchema(virCommand *cmd,
+                                   struct testQemuInfo *info)
 {
     g_auto(GStrv) args = NULL;
-    g_autoptr(virDomainObj) vm = NULL;
-    qemuDomainObjPrivate *priv = NULL;
     GHashTable *schema = NULL;
-    g_autoptr(virCommand) cmd = NULL;
-    unsigned int parseFlags = info->parseFlags;
 
     /* comment out with line comment to enable schema checking for non _CAPS tests
     if (!info->schemafile)
@@ -579,23 +573,6 @@ testCompareXMLToArgvValidateSchema(virQEMUDriver *drv,
 
     if (!schema)
         return 0;
-
-    if (!(vm = virDomainObjNew(driver.xmlopt)))
-        return -1;
-
-    parseFlags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
-    if (!(vm->def = virDomainDefParseFile(info->infile,
-                                          driver.xmlopt,
-                                          NULL, parseFlags)))
-        return -1;
-
-    priv = vm->privateData;
-
-    if (virBitmapParse("0-3", &priv->autoNodeset, 4) < 0)
-        return -1;
-
-    if (!(cmd = testCompareXMLToArgvCreateArgs(drv, vm, migrateURI, info, flags)))
-        return -1;
 
     if (virCommandGetArgList(cmd, &args) < 0)
         return -1;
@@ -762,7 +739,7 @@ testCompareXMLToArgv(const void *data)
         goto cleanup;
     }
 
-    if (testCompareXMLToArgvValidateSchema(&driver, migrateURI, info, flags) < 0)
+    if (testCompareXMLToArgvValidateSchema(cmd, info) < 0)
         goto cleanup;
 
     if (virCommandToStringBuf(cmd, &actualBuf, true, false) < 0)
