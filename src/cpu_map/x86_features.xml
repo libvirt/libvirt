@@ -369,6 +369,9 @@
     <alias name='md_clear' source='linux'/>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00000400'/>
   </feature>
+  <feature name='serialize'>
+    <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00004000'/>
+  </feature>
   <feature name='pconfig'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00040000'/>
   </feature>
