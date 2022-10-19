@@ -1024,7 +1024,20 @@ virCgroupNewNested(virCgroup *parent,
 int
 virCgroupNewSelf(virCgroup **group)
 {
-    return virCgroupNewDetect(-1, -1, group);
+    g_autoptr(virCgroup) newGroup = NULL;
+    g_autoptr(virCgroup) nested = NULL;
+
+    if (virCgroupNewDetect(-1, -1, &newGroup) < 0)
+        return -1;
+
+    if (virCgroupNewNested(newGroup, -1, false, -1, &nested) < 0)
+        return -1;
+
+    if (virCgroupExists(nested))
+        newGroup->nested = g_steal_pointer(&nested);
+
+    *group = g_steal_pointer(&newGroup);
+    return 0;
 }
 
 
