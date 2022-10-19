@@ -28,6 +28,7 @@
   <feature name='decodeassists'/>
   <feature name='pause-filter'/>
   <feature name='pfthreshold'/>
+  <feature name='avic'/>
   <feature name='rdctl-no'/>
   <feature name='skip-l1dfl-vmentry'/>
   <feature name='mds-no'/>

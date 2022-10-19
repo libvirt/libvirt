@@ -28,4 +28,5 @@
   <feature name='decodeassists'/>
   <feature name='pause-filter'/>
   <feature name='pfthreshold'/>
+  <feature name='avic'/>
 </cpu>

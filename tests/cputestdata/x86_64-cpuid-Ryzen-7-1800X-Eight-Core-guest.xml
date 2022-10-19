@@ -26,4 +26,5 @@
   <feature policy='require' name='decodeassists'/>
   <feature policy='require' name='pause-filter'/>
   <feature policy='require' name='pfthreshold'/>
+  <feature policy='require' name='avic'/>
 </cpu>
