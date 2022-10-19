@@ -378,6 +378,9 @@
   <feature name='pconfig'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00040000'/>
   </feature>
+  <feature name='arch-lbr'>
+    <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00080000'/>
+  </feature>
   <feature name='amx-bf16'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00400000'/>
   </feature>
