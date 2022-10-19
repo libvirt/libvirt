@@ -3133,18 +3133,17 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshDomain) dom = NULL;
     const char *iface;
     const char *state;
-    virMacAddr macaddr;
-    const char *element;
-    const char *attr;
-    bool config;
     unsigned int flags = 0;
     unsigned int xmlflags = 0;
     size_t i;
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    g_autoptr(xmlXPathObject) obj = NULL;
-    xmlNodePtr cur = NULL;
     g_autofree char *xml_buf = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
+    ssize_t nnodes;
+    xmlNodePtr ifaceNode = NULL;
+    xmlNodePtr linkNode = NULL;
+    xmlAttrPtr stateAttr;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -3153,14 +3152,12 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "state", &state) < 0)
         return false;
 
-    config = vshCommandOptBool(cmd, "config");
-
     if (STRNEQ(state, "up") && STRNEQ(state, "down")) {
         vshError(ctl, _("invalid link state '%s'"), state);
         return false;
     }
 
-    if (config) {
+    if (vshCommandOptBool(cmd, "config")) {
         flags = VIR_DOMAIN_AFFECT_CONFIG;
         xmlflags |= VIR_DOMAIN_XML_INACTIVE;
     } else {
@@ -3173,70 +3170,56 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     if (virshDomainGetXMLFromDom(ctl, dom, xmlflags, &xml, &ctxt) < 0)
         return false;
 
-    obj = xmlXPathEval(BAD_CAST "/domain/devices/interface", ctxt);
-    if (obj == NULL || obj->type != XPATH_NODESET ||
-        obj->nodesetval == NULL || obj->nodesetval->nodeNr == 0) {
+    if ((nnodes = virXPathNodeSet("/domain/devices/interface", ctxt, &nodes)) <= 0) {
         vshError(ctl, _("Failed to extract interface information or no interfaces found"));
         return false;
     }
 
-    if (virMacAddrParse(iface, &macaddr) == 0) {
-        element = "mac";
-        attr = "address";
-    } else {
-        element = "target";
-        attr = "dev";
-    }
+    for (i = 0; i < nnodes; i++) {
+        g_autofree char *macaddr = NULL;
+        g_autofree char *target = NULL;
 
-    /* find interface with matching mac addr */
-    for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-        cur = obj->nodesetval->nodeTab[i]->children;
+        ctxt->node = nodes[i];
 
-        while (cur) {
-            if (cur->type == XML_ELEMENT_NODE &&
-                virXMLNodeNameEqual(cur, element)) {
-                g_autofree char *value = virXMLPropString(cur, attr);
-
-                if (STRCASEEQ(value, iface))
-                    goto hit;
-            }
-            cur = cur->next;
-        }
-    }
-
-    vshError(ctl, _("interface (%s: %s) not found"), element, iface);
-    return false;
-
- hit:
-    /* find and modify/add link state node */
-    /* try to find <link> element */
-    cur = obj->nodesetval->nodeTab[i]->children;
-
-    while (cur) {
-        if (cur->type == XML_ELEMENT_NODE &&
-            virXMLNodeNameEqual(cur, "link")) {
-            /* found, just modify the property */
-            xmlSetProp(cur, BAD_CAST "state", BAD_CAST state);
-
+        if ((macaddr = virXPathString("string(./mac/@address)", ctxt)) &&
+            STRCASEEQ(macaddr, iface)) {
+            ifaceNode = nodes[i];
             break;
         }
-        cur = cur->next;
+
+        if ((target = virXPathString("string(./target/@dev)", ctxt)) &&
+            STRCASEEQ(target, iface)) {
+            ifaceNode = nodes[i];
+            break;
+        }
     }
 
-    if (!cur) {
-        /* element <link> not found, add one */
-        cur = xmlNewChild(obj->nodesetval->nodeTab[i],
-                          NULL,
-                          BAD_CAST "link",
-                          NULL);
-        if (!cur)
-            return false;
-
-        if (xmlNewProp(cur, BAD_CAST "state", BAD_CAST state) == NULL)
-            return false;
+    if (!ifaceNode) {
+        vshError(ctl, _("interface '%s' not found"), iface);
+        return false;
     }
 
-    if (!(xml_buf = virXMLNodeToString(xml, obj->nodesetval->nodeTab[i]))) {
+    ctxt->node = ifaceNode;
+
+    /* try to find <link> element or create new one */
+    if (!(linkNode = virXPathNode("./link", ctxt))) {
+        if (!(linkNode = xmlNewChild(ifaceNode, NULL, BAD_CAST "link", NULL))) {
+            vshError(ctl, _("failed to create XML node"));
+            return false;
+        }
+    }
+
+    if (xmlHasProp(linkNode, BAD_CAST "link"))
+        stateAttr = xmlSetProp(linkNode, BAD_CAST "state", BAD_CAST state);
+    else
+        stateAttr = xmlNewProp(linkNode, BAD_CAST "state", BAD_CAST state);
+
+    if (!stateAttr) {
+        vshError(ctl, _("Failed to create or modify the state XML attribute"));
+        return false;
+    }
+
+    if (!(xml_buf = virXMLNodeToString(xml, ifaceNode))) {
         vshSaveLibvirtError();
         vshError(ctl, _("Failed to create XML"));
         return false;
