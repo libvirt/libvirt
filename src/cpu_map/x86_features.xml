@@ -334,6 +334,9 @@
   <feature name='rdpid'>
     <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00400000'/>
   </feature>
+  <feature name='bus-lock-detect'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x01000000'/>
+  </feature>
   <feature name='cldemote'>
     <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x02000000'/>
   </feature>
