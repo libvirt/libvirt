@@ -317,7 +317,7 @@ static int make_controller(const char *path, mode_t mode)
             unified = true;
         } else if (STREQ(mock, "hybrid")) {
             hybrid = true;
-        } else {
+        } else if (STRNEQ(mock, "legacy")) {
             fprintf(stderr, "invalid mode '%s'\n", mock);
             abort();
         }
@@ -355,7 +355,7 @@ static void init_sysfs(void)
             unified = true;
         } else if (STREQ(mock, "hybrid")) {
             hybrid = true;
-        } else {
+        } else if (STRNEQ(mock, "legacy")) {
             fprintf(stderr, "invalid mode '%s'\n", mock);
             abort();
         }
