@@ -375,6 +375,9 @@
   <feature name='amx-bf16'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00400000'/>
   </feature>
+  <feature name='avx512-fp16'>
+    <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00800000'/>
+  </feature>
   <feature name='amx-tile'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x01000000'/>
   </feature>
