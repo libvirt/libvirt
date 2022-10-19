@@ -6625,15 +6625,13 @@ qemuAppendDomainMemoryMachineParams(virBuffer *buf,
                                     const virDomainDef *def,
                                     virQEMUCaps *qemuCaps)
 {
+    virTristateSwitch dump = def->mem.dump_core;
     size_t i;
 
-    if (def->mem.dump_core) {
-        virBufferAsprintf(buf, ",dump-guest-core=%s",
-                          virTristateSwitchTypeToString(def->mem.dump_core));
-    } else {
-        virBufferAsprintf(buf, ",dump-guest-core=%s",
-                          cfg->dumpGuestCore ? "on" : "off");
-    }
+    if (dump == VIR_TRISTATE_SWITCH_ABSENT)
+        dump = virTristateSwitchFromBool(cfg->dumpGuestCore);
+
+    virBufferAsprintf(buf, ",dump-guest-core=%s", virTristateSwitchTypeToString(dump));
 
     if (def->mem.nosharepages)
         virBufferAddLit(buf, ",mem-merge=off");
