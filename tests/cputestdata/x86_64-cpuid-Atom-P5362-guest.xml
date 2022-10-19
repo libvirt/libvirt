@@ -27,6 +27,7 @@
   <feature policy='require' name='xsaves'/>
   <feature policy='require' name='mbm_total'/>
   <feature policy='require' name='mbm_local'/>
+  <feature policy='require' name='intel-pt-lip'/>
   <feature policy='require' name='invtsc'/>
   <feature policy='require' name='rdctl-no'/>
   <feature policy='require' name='ibrs-all'/>
