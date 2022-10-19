@@ -12642,7 +12642,6 @@ virshFindDisk(const char *doc,
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
     ssize_t nnodes;
-    xmlNodePtr cur = NULL;
     size_t i;
 
     xml = virXMLParseStringCtxt(doc, _("(domain_definition)"), &ctxt);
@@ -12658,6 +12657,13 @@ virshFindDisk(const char *doc,
 
     /* search disk using @path */
     for (i = 0; i < nnodes; i++) {
+        xmlNodePtr sourceNode;
+        g_autofree char *sourceFile = NULL;
+        g_autofree char *sourceDev = NULL;
+        g_autofree char *sourceDir = NULL;
+        g_autofree char *sourceName = NULL;
+        g_autofree char *targetDev = NULL;
+
         if (type == VIRSH_FIND_DISK_CHANGEABLE) {
             g_autofree char *device = virXMLPropString(nodes[i], "device");
 
@@ -12668,29 +12674,25 @@ virshFindDisk(const char *doc,
                 continue;
         }
 
-        cur = nodes[i]->children;
-        while (cur != NULL) {
-            if (cur->type == XML_ELEMENT_NODE) {
-                g_autofree char *tmp = NULL;
+        if ((sourceNode = virXMLNodeGetSubelement(nodes[i], "source"))) {
+            sourceFile = virXMLPropString(sourceNode, "file");
+            sourceDev = virXMLPropString(sourceNode, "dev");
+            sourceDir = virXMLPropString(sourceNode, "dir");
+            sourceName = virXMLPropString(sourceNode, "name");
+        }
 
-                if (virXMLNodeNameEqual(cur, "source")) {
-                    if ((tmp = virXMLPropString(cur, "file")) ||
-                        (tmp = virXMLPropString(cur, "dev")) ||
-                        (tmp = virXMLPropString(cur, "dir")) ||
-                        (tmp = virXMLPropString(cur, "name"))) {
-                    }
-                } else if (virXMLNodeNameEqual(cur, "target")) {
-                    tmp = virXMLPropString(cur, "dev");
-                }
+        ctxt->node = nodes[i];
+        targetDev = virXPathString("string(./target/@dev)", ctxt);
 
-                if (STREQ_NULLABLE(tmp, path)) {
-                    xmlNodePtr ret = xmlCopyNode(nodes[i], 1);
-                    /* drop backing store since they are not needed here */
-                    virshDiskDropBackingStore(ret);
-                    return ret;
-                }
-            }
-            cur = cur->next;
+        if (STREQ_NULLABLE(targetDev, path) ||
+            STREQ_NULLABLE(sourceFile, path) ||
+            STREQ_NULLABLE(sourceDev, path) ||
+            STREQ_NULLABLE(sourceDir, path) ||
+            STREQ_NULLABLE(sourceName, path)) {
+            xmlNodePtr ret = xmlCopyNode(nodes[i], 1);
+            /* drop backing store since they are not needed here */
+            virshDiskDropBackingStore(ret);
+            return ret;
         }
     }
 
