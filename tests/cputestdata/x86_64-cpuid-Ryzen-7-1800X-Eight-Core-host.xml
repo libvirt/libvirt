@@ -30,4 +30,5 @@
   <feature name='pfthreshold'/>
   <feature name='avic'/>
   <feature name='v-vmsave-vmload'/>
+  <feature name='vgif'/>
 </cpu>

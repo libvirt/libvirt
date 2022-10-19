@@ -28,4 +28,5 @@
   <feature policy='require' name='pfthreshold'/>
   <feature policy='require' name='avic'/>
   <feature policy='require' name='v-vmsave-vmload'/>
+  <feature policy='require' name='vgif'/>
 </cpu>
