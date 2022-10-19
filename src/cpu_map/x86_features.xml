@@ -563,15 +563,19 @@
     <cpuid eax_in='0x8000000a' edx='0x00000002'/>
   </feature>
   <feature name='svm-lock'>
+    <alias name='svm_lock' source='qemu'/>
     <cpuid eax_in='0x8000000a' edx='0x00000004'/>
   </feature>
   <feature name='nrip-save'>
+    <alias name='nrip_save' source='qemu'/>
     <cpuid eax_in='0x8000000a' edx='0x00000008'/>
   </feature>
   <feature name='tsc-scale'>
+    <alias name='tsc_scale' source='qemu'/>
     <cpuid eax_in='0x8000000a' edx='0x00000010'/>
   </feature>
   <feature name='vmcb-clean'>
+    <alias name='vmcb_clean' source='qemu'/>
     <cpuid eax_in='0x8000000a' edx='0x00000020'/>
   </feature>
   <feature name='flushbyasid'>
@@ -581,6 +585,7 @@
     <cpuid eax_in='0x8000000a' edx='0x00000080'/>
   </feature>
   <feature name='pause-filter'>
+    <alias name='pause_filter' source='qemu'/>
     <cpuid eax_in='0x8000000a' edx='0x00000400'/>
   </feature>
   <feature name='pfthreshold'>
