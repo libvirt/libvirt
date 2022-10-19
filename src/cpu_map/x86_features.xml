@@ -430,6 +430,23 @@
     <cpuid eax_in='0x12' ecx_in='0x00' ebx='0x00000001'/>
   </feature>
 
+  <!-- cpuid level 0x00000012 ecx 0x1 features -->
+  <feature name='sgx-debug'>
+    <cpuid eax_in='0x12' ecx_in='0x01' eax='0x00000002'/>
+  </feature>
+  <feature name='sgx-mode64'>
+    <cpuid eax_in='0x12' ecx_in='0x01' eax='0x00000004'/>
+  </feature>
+  <feature name='sgx-provisionkey'>
+    <cpuid eax_in='0x12' ecx_in='0x01' eax='0x00000010'/>
+  </feature>
+  <feature name='sgx-tokenkey'>
+    <cpuid eax_in='0x12' ecx_in='0x01' eax='0x00000020'/>
+  </feature>
+  <feature name='sgx-kss'>
+    <cpuid eax_in='0x12' ecx_in='0x01' eax='0x00000080'/>
+  </feature>
+
   <!-- extended features, EDX -->
   <feature name='syscall'>
     <cpuid eax_in='0x80000001' edx='0x00000800'/>
