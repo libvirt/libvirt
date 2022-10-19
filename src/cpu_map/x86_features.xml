@@ -349,6 +349,9 @@
   <feature name='sgxlc'>
     <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x40000000'/>
   </feature>
+  <feature name='pks'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x80000000'/>
+  </feature>
 
   <feature name='avx512-4vnniw'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00000004'/>

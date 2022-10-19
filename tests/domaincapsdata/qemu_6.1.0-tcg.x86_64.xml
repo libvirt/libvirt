@@ -64,6 +64,7 @@
       <feature policy='require' name='clwb'/>
       <feature policy='require' name='pku'/>
       <feature policy='require' name='la57'/>
+      <feature policy='require' name='pks'/>
       <feature policy='require' name='xsaveopt'/>
       <feature policy='require' name='xgetbv1'/>
       <feature policy='require' name='mmxext'/>
