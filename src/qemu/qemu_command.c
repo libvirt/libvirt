@@ -9717,7 +9717,8 @@ qemuBuildVsockCommandLine(virCommand *cmd,
     if (!(devprops = qemuBuildVsockDevProps(def, vsock, qemuCaps, "")))
         return -1;
 
-    virCommandPassFD(cmd, priv->vhostfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+    if (priv->vhostfd != -1)
+        virCommandPassFD(cmd, priv->vhostfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
     priv->vhostfd = -1;
 
     if (qemuCommandAddExtDevice(cmd, &vsock->info, def, qemuCaps) < 0)
