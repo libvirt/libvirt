@@ -1511,7 +1511,7 @@
       <optional>
         <ref name="diskAuth"/>
       </optional>
-      <ref name="target"/>
+      <ref name="diskTarget"/>
       <optional>
         <ref name="deviceBoot"/>
       </optional>
@@ -2348,15 +2348,16 @@
     </element>
   </define>
 
-  <define name="diskTarget">
+  <define name="diskTargetDev">
     <data type="string">
       <param name="pattern">(ioemu:)?(fd|hd|sd|vd|xvd|ubd)[a-zA-Z0-9_]+</param>
     </data>
   </define>
-  <define name="target">
+
+  <define name="diskTarget">
     <element name="target">
       <attribute name="dev">
-        <ref name="diskTarget"/>
+        <ref name="diskTargetDev"/>
       </attribute>
       <optional>
         <attribute name="bus">

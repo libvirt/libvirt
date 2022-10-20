@@ -55,7 +55,7 @@
     <element name="disk">
       <attribute name="name">
         <choice>
-          <ref name="diskTarget"/>
+          <ref name="diskTargetDev"/>
           <ref name="absFilePath"/>
         </choice>
       </attribute>

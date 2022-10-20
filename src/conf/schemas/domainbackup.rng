@@ -157,7 +157,7 @@
         <oneOrMore>
           <element name="disk">
             <attribute name="name">
-              <ref name="diskTarget"/>
+              <ref name="diskTargetDev"/>
             </attribute>
             <ref name="backupDiskMode"/>
             <choice>
@@ -227,7 +227,7 @@
         <oneOrMore>
           <element name="disk">
             <attribute name="name">
-              <ref name="diskTarget"/>
+              <ref name="diskTargetDev"/>
             </attribute>
             <ref name="backupDiskMode"/>
             <optional>
