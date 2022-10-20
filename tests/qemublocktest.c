@@ -1211,7 +1211,7 @@ mymain(void)
 
     TEST_IMAGE_CREATE("network-gluster-qcow2", NULL);
     TEST_IMAGE_CREATE("network-rbd-qcow2", NULL);
-    TEST_IMAGE_CREATE("network-ssh-qcow2", NULL);
+    TEST_IMAGE_CREATE("network-ssh-qcow2-invalid", NULL);
 
 #define TEST_BITMAP_DETECT(testname) \
     do { \
