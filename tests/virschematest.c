@@ -151,13 +151,10 @@ testSchemaGrammarReport(const void *opaque)
 static virXMLValidator *
 testSchemaGrammarLoad(const char *schema)
 {
-    g_autofree char *schema_path = NULL;
     g_autofree char *testname = NULL;
     virXMLValidator *ret;
 
-    schema_path = g_strdup_printf("%s/%s", abs_top_srcdir, schema);
-
-    ret = virXMLValidatorInit(schema_path);
+    ret = virXMLValidatorInit(schema);
 
     testname = g_strdup_printf("test schema grammar file: '%s'", schema);
 
@@ -335,7 +332,7 @@ mymain(void)
 {
     int ret = 0;
 
-#define SCHEMAS_PATH "src/conf/schemas/"
+#define SCHEMAS_PATH abs_top_srcdir "/src/conf/schemas/"
 
 #define DO_TEST(sch, ent) \
     if (testSchemaEntries((sch), (ent), G_N_ELEMENTS(ent)) < 0) \
