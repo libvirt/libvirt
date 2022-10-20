@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <include href="privatedata.rng"/>
+  <include href="@SCHEMADIR@/domainoverrides.rng"/>
+
+  <!-- This schema file describes a singular device. -->
+
+  <!-- allow also disk definitions without 'target' as they are used in some tests -->
+  <define name="diskTarget" combine="choice">
+    <optional>
+      <element name="target">
+        <empty/>
+      </element>
+    </optional>
+  </define>
+
+  <start>
+    <choice>
+      <ref name="disk"/>
+      <ref name="controller"/>
+      <ref name="lease"/>
+      <ref name="filesystem"/>
+      <ref name="interface"/>
+      <ref name="input"/>
+      <ref name="sound"/>
+      <ref name="audio"/>
+      <ref name="hostdev"/>
+      <ref name="graphic"/>
+      <ref name="video"/>
+      <ref name="console"/>
+      <ref name="parallel"/>
+      <ref name="serial"/>
+      <ref name="channel"/>
+      <ref name="smartcard"/>
+      <ref name="hub"/>
+      <ref name="redirdev"/>
+      <ref name="redirfilter"/>
+      <ref name="rng"/>
+      <ref name="tpm"/>
+      <ref name="shmem"/>
+      <ref name="memorydev"/>
+      <ref name="watchdog"/>
+      <ref name="memballoon"/>
+      <ref name="nvram"/>
+      <ref name="panic"/>
+      <ref name="iommu"/>
+      <ref name="vsock"/>
+    </choice>
+  </start>
+
+</grammar>

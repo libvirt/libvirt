@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+  <define name="privateDataStorageSource" combine="choice">
+    <optional>
+      <element name="privateData">
+        <interleave>
+          <optional>
+            <ref name="privateDataStorageSourceNodenames"/>
+          </optional>
+          <optional>
+            <ref name="privateDataStorageSourceReservations"/>
+          </optional>
+          <optional>
+            <ref name="privateDataStorageSourceObjects"/>
+          </optional>
+        </interleave>
+      </element>
+    </optional>
+  </define>
+
+  <define name="privateDataDeviceDisk" combine="choice">
+    <optional>
+      <element name="privateData">
+        <notAllowed/>
+      </element>
+    </optional>
+  </define>
+
+  <define name="privateDataStorageSourceNodenames">
+    <element name="nodenames">
+      <oneOrMore>
+        <ref name="nodename"/>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="nodename">
+    <element name="nodename">
+      <attribute name="type">
+        <choice>
+          <value>storage</value>
+          <value>format</value>
+        </choice>
+      </attribute>
+      <attribute name="name"/>
+    </element>
+  </define>
+
+  <define name="privateDataStorageSourceReservations">
+    <element name="reservations">
+      <attribute name="mgralias"/>
+    </element>
+  </define>
+
+  <define name="privateDataStorageSourceObjects">
+    <element name="objects">
+      <interleave>
+        <optional>
+          <element name="TLSx509">
+            <attribute name="alias"/>
+          </element>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+</grammar>

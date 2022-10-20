@@ -5,6 +5,8 @@ virschematest_test_schemas_conf = configuration_data({
 
 virschematest_schemas = [
   'cpu-baseline.rng.in',
+  'device.rng.in',
+  'privatedata.rng.in',
 ]
 
 foreach file : virschematest_schemas

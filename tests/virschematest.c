@@ -322,6 +322,12 @@ static const struct testSchemaEntry testsCpuBaseline[] = {
     { . dir = "tests/cputestdata" },
 };
 
+static const struct testSchemaEntry testDevice[] = {
+    { .dir = "tests/qemuhotplugtestdevices" },
+    { .dir = "tests/qemublocktestdata/imagecreate" },
+    { .dir = "tests/qemublocktestdata/xml2json" },
+};
+
 static int
 mymain(void)
 {
@@ -352,6 +358,7 @@ mymain(void)
     DO_TEST(SCHEMAS_PATH "storagevol.rng", schemaStorageVol);
 
     DO_TEST(INTERNAL_SCHEMAS_PATH "cpu-baseline.rng", testsCpuBaseline);
+    DO_TEST(INTERNAL_SCHEMAS_PATH "device.rng", testDevice);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
