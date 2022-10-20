@@ -1,4 +1,4 @@
-<disk device='disk' name='vda'>
+<disk device='disk'>
   <driver type='raw'/>
   <source file='/var/lib/libvirt/images/i.img'>
     <slices>

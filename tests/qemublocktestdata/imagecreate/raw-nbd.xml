@@ -1,4 +1,4 @@
-<disk device='disk' name='vda' type='network'>
+<disk device='disk' type='network'>
   <driver type='raw'/>
   <source protocol='nbd'>
     <host name='example.com' port='1234'/>

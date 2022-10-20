@@ -1,4 +1,4 @@
-<disk device='disk' name='vda' type='network'>
+<disk device='disk' type='network'>
   <driver type='qcow2'/>
   <source protocol='gluster' name='asdf/i.qcow2'>
     <host name='example.com' port='1234'/>

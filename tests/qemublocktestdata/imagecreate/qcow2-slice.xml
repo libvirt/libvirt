@@ -1,4 +1,4 @@
-<disk device='disk' name='vda'>
+<disk device='disk'>
   <driver type='qcow2'/>
   <source file='/var/lib/libvirt/images/i.qcow2'>
     <slices>
