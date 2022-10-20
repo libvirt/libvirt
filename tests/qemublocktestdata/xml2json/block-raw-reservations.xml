@@ -1,7 +1,7 @@
 <disk device='disk' type='block'>
   <driver name='qemu' type='raw'/>
   <source dev='/dev/blah'>
-    <reservations enabled='yes' managed='yes'/>
+    <reservations managed='yes'/>
     <privateData>
       <nodenames>
         <nodename type='storage' name='node-a-st'/>
