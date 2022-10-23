@@ -75,22 +75,10 @@ virCgroupV2Available(void)
         if (STRNEQ(entry.mnt_type, "cgroup2"))
             continue;
 
-        /* Systemd uses cgroup v2 for process tracking but no controller is
-         * available. We should consider this configuration as cgroup v2 is
-         * not available. */
-        contFile = g_strdup_printf("%s/cgroup.controllers", entry.mnt_dir);
-
-        if (virFileReadAll(contFile, 1024 * 1024, &contStr) < 0)
-            goto cleanup;
-
-        if (STREQ(contStr, ""))
-            continue;
-
         ret = true;
         break;
     }
 
- cleanup:
     VIR_FORCE_FCLOSE(mounts);
     return ret;
 }

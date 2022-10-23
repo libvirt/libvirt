@@ -2921,10 +2921,12 @@ int
 virCgroupBindMount(virCgroup *group, const char *oldroot,
                    const char *mountopts)
 {
-    size_t i;
+    ssize_t i;
     virCgroup *parent = virCgroupGetNested(group);
 
-    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+    /* In hybrid environments, V2 may be mounted over V1.
+     * Mount the backends in reverse order. */
+    for (i = VIR_CGROUP_BACKEND_TYPE_LAST - 1; i >= 0; i--) {
         if (parent->backends[i] &&
             parent->backends[i]->bindMount(parent, oldroot, mountopts) < 0) {
             return -1;
