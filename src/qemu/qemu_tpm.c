@@ -932,10 +932,19 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
     virCommandSetPidFile(cmd, pidfile);
     virCommandSetErrorFD(cmd, &errfd);
 
-    if (qemuSecurityStartTPMEmulator(driver, vm, cmd,
-                                     cfg->swtpm_user, cfg->swtpm_group,
-                                     NULL, &cmdret) < 0)
-        return -1;
+    if (incomingMigration &&
+        virFileIsSharedFS(tpm->data.emulator.storagepath) == 1) {
+        /* security labels must have been set up on source already */
+        if (qemuSecurityCommandRun(driver, vm, cmd,
+                                   cfg->swtpm_user, cfg->swtpm_group,
+                                   NULL, &cmdret) < 0) {
+            goto error;
+        }
+    } else if (qemuSecurityStartTPMEmulator(driver, vm, cmd,
+                                            cfg->swtpm_user, cfg->swtpm_group,
+                                            NULL, &cmdret) < 0) {
+        goto error;
+    }
 
     if (cmdret < 0) {
         /* virCommandRun() hidden in qemuSecurityStartTPMEmulator()
