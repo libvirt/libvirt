@@ -9686,7 +9686,7 @@ qemuBuildVsockDevProps(virDomainDef *def,
 {
     qemuDomainVsockPrivate *priv = (qemuDomainVsockPrivate *)vsock->privateData;
     g_autoptr(virJSONValue) props = NULL;
-    g_autofree char *vhostfd = g_strdup_printf("%s%u", fdprefix, priv->vhostfd);
+    g_autofree char *vhostfd = g_strdup_printf("%s%d", fdprefix, priv->vhostfd);
 
     if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_VSOCK, vsock, qemuCaps)))
         return NULL;
