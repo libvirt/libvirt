@@ -14,12 +14,12 @@ with minimal back-and-forth.
    (60 characters is typical), followed by a blank line, followed
    by any longer description of why your patch makes sense. If the
    patch fixes a regression, and you know what commit introduced
-   the problem, mentioning that is useful. If the patch resolves a
-   upstream bug reported in GitLab, put "Fixes: #NNN" in the commit
-   message. For a downstream bug, mention the URL of the bug instead.
-   In both cases also summarize the issue rather than making all
-   readers follow the link. You can use 'git shortlog -30' to get
-   an idea of typical summary lines.
+   the problem, mentioning that is useful. If the patch resolves
+   an upstream bug reported in GitLab, or downstream bug, put
+   "Resolves: $fullURL" of the bug. In both cases also summarize
+   the issue rather than making all readers follow the link. You
+   can use 'git shortlog -30' to get an idea of typical summary
+   lines.
 
 -  Split large changes into a series of smaller patches,
    self-contained if possible, with an explanation of each patch
