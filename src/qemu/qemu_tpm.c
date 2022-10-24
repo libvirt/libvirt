@@ -556,11 +556,20 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     int pwdfile_fd = -1;
     int migpwdfile_fd = -1;
     const unsigned char *secretuuid = NULL;
+    bool create_storage = true;
 
     if (!swtpm)
         return NULL;
 
-    if (qemuTPMEmulatorCreateStorage(tpm, &created, swtpm_user, swtpm_group) < 0)
+    /* Do not create storage and run swtpm_setup on incoming migration over
+     * shared storage
+     */
+    if (incomingMigration &&
+        virFileIsSharedFS(tpm->data.emulator.storagepath) == 1)
+        create_storage = false;
+
+    if (create_storage &&
+        qemuTPMEmulatorCreateStorage(tpm, &created, swtpm_user, swtpm_group) < 0)
         return NULL;
 
     if (tpm->data.emulator.hassecretuuid)
