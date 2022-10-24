@@ -728,13 +728,22 @@ qemuTPMEmulatorInitPaths(virDomainTPMDef *tpm,
  * qemuTPMEmulatorCleanupHost:
  * @tpm: TPM definition
  * @flags: flags indicating whether to keep or remove TPM persistent state
+ * @outgoingMigration: whether cleanup is due to an outgoing migration
  *
  * Clean up persistent storage for the swtpm.
  */
 static void
 qemuTPMEmulatorCleanupHost(virDomainTPMDef *tpm,
-                           virDomainUndefineFlagsValues flags)
+                           virDomainUndefineFlagsValues flags,
+                           bool outgoingMigration)
 {
+    /* Never remove the state in case of outgoing migration with shared
+     * storage.
+     */
+    if (outgoingMigration &&
+        virFileIsSharedFS(tpm->data.emulator.storagepath) == 1)
+        return;
+
     /*
      * remove TPM state if:
      * - persistent_state flag is set and the UNDEFINE_TPM flag is set
@@ -1082,9 +1091,10 @@ qemuExtTPMPrepareHost(virQEMUDriver *driver,
 
 void
 qemuExtTPMCleanupHost(virDomainTPMDef *tpm,
-                      virDomainUndefineFlagsValues flags)
+                      virDomainUndefineFlagsValues flags,
+                      bool outgoingMigration)
 {
-    qemuTPMEmulatorCleanupHost(tpm, flags);
+    qemuTPMEmulatorCleanupHost(tpm, flags, outgoingMigration);
 }
 
 
@@ -1105,7 +1115,8 @@ qemuExtTPMStart(virQEMUDriver *driver,
 
 void
 qemuExtTPMStop(virQEMUDriver *driver,
-               virDomainObj *vm)
+               virDomainObj *vm,
+               bool outgoingMigration)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortName = virDomainDefGetShortName(vm->def);
@@ -1114,7 +1125,8 @@ qemuExtTPMStop(virQEMUDriver *driver,
         return;
 
     qemuTPMEmulatorStop(cfg->swtpmStateDir, shortName);
-    qemuSecurityCleanupTPMEmulator(driver, vm);
+    if (!(outgoingMigration && qemuTPMHasSharedStorage(vm->def)))
+        qemuSecurityCleanupTPMEmulator(driver, vm);
 }
 
 

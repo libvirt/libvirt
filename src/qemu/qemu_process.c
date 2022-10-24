@@ -8207,6 +8207,7 @@ void qemuProcessStop(virQEMUDriver *driver,
     g_autofree char *timestamp = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virConnect) conn = NULL;
+    bool outgoingMigration;
 
     VIR_DEBUG("Shutting down vm=%p name=%s id=%d pid=%lld, "
               "reason=%s, asyncJob=%s, flags=0x%x",
@@ -8304,7 +8305,9 @@ void qemuProcessStop(virQEMUDriver *driver,
 
     qemuDomainCleanupRun(driver, vm);
 
-    qemuExtDevicesStop(driver, vm);
+    outgoingMigration = (flags & VIR_QEMU_PROCESS_STOP_MIGRATED) &&
+        (asyncJob != VIR_ASYNC_JOB_MIGRATION_IN);
+    qemuExtDevicesStop(driver, vm, outgoingMigration);
 
     qemuDBusStop(driver, vm);
 
@@ -8570,7 +8573,7 @@ qemuProcessAutoDestroy(virDomainObj *dom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
-    qemuDomainRemoveInactive(driver, dom, 0);
+    qemuDomainRemoveInactive(driver, dom, 0, false);
 
     virDomainObjEndJob(dom);
 
@@ -9036,7 +9039,7 @@ qemuProcessReconnect(void *opaque)
     if (jobStarted)
         virDomainObjEndJob(obj);
     if (!virDomainObjIsActive(obj))
-        qemuDomainRemoveInactive(driver, obj, 0);
+        qemuDomainRemoveInactive(driver, obj, 0, false);
     virDomainObjEndAPI(&obj);
     virIdentitySetCurrent(NULL);
     return;

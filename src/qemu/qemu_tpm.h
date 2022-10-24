@@ -36,7 +36,8 @@ int qemuExtTPMPrepareHost(virQEMUDriver *driver,
     G_GNUC_WARN_UNUSED_RESULT;
 
 void qemuExtTPMCleanupHost(virDomainTPMDef *tpm,
-                           virDomainUndefineFlagsValues flags)
+                           virDomainUndefineFlagsValues flags,
+                           bool outgoingMigration)
     ATTRIBUTE_NONNULL(1);
 
 int qemuExtTPMStart(virQEMUDriver *driver,
@@ -48,7 +49,8 @@ int qemuExtTPMStart(virQEMUDriver *driver,
     G_GNUC_WARN_UNUSED_RESULT;
 
 void qemuExtTPMStop(virQEMUDriver *driver,
-                    virDomainObj *vm)
+                    virDomainObj *vm,
+                    bool outgoingMigration)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuExtTPMSetupCgroup(virQEMUDriver *driver,

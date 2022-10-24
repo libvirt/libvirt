@@ -2103,7 +2103,7 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
     }
 
     if (qemuSnapshotInternalRevertInactive(driver, vm, snap) < 0) {
-        qemuDomainRemoveInactive(driver, vm, 0);
+        qemuDomainRemoveInactive(driver, vm, 0, false);
         return -1;
     }
 
@@ -2125,7 +2125,7 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
                               start_flags);
         virDomainAuditStart(vm, "from-snapshot", rc >= 0);
         if (rc < 0) {
-            qemuDomainRemoveInactive(driver, vm, 0);
+            qemuDomainRemoveInactive(driver, vm, 0, false);
             return -1;
         }
         detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
