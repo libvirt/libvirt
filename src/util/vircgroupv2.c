@@ -69,9 +69,6 @@ virCgroupV2Available(void)
         return false;
 
     while (getmntent_r(mounts, &entry, buf, sizeof(buf)) != NULL) {
-        g_autofree char *contFile = NULL;
-        g_autofree char *contStr = NULL;
-
         if (STRNEQ(entry.mnt_type, "cgroup2"))
             continue;
 
