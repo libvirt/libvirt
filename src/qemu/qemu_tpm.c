@@ -954,6 +954,26 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
 }
 
 
+bool
+qemuTPMHasSharedStorage(virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->ntpms; i++) {
+        virDomainTPMDef *tpm = def->tpms[i];
+
+        switch (tpm->type) {
+        case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+            return virFileIsSharedFS(tpm->data.emulator.storagepath) == 1;
+        case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        case VIR_DOMAIN_TPM_TYPE_LAST:
+        }
+    }
+
+    return false;
+}
+
+
 /* ---------------------
  *  Module entry points
  * ---------------------

@@ -38,6 +38,7 @@
 #include "qemu_security.h"
 #include "qemu_slirp.h"
 #include "qemu_block.h"
+#include "qemu_tpm.h"
 
 #include "domain_audit.h"
 #include "virlog.h"
