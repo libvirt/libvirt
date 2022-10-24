@@ -10545,7 +10545,6 @@ virDomainTimerDefParseXML(xmlNodePtr node,
     g_autofree virDomainTimerDef *def = g_new0(virDomainTimerDef, 1);
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr catchup;
-    int ret;
 
     ctxt->node = node;
 
@@ -10566,15 +10565,8 @@ virDomainTimerDefParseXML(xmlNodePtr node,
                        VIR_XML_PROP_NONZERO, &def->track) < 0)
         return NULL;
 
-
-    ret = virXPathULongLong("string(./@frequency)", ctxt, &def->frequency);
-    if (ret == -1) {
-        def->frequency = 0;
-    } else if (ret < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("invalid timer frequency"));
+    if (virXMLPropULongLong(node, "frequency", 10, VIR_XML_PROP_NONE, &def->frequency) < 0)
         return NULL;
-    }
 
     if (virXMLPropEnum(node, "mode", virDomainTimerModeTypeFromString,
                        VIR_XML_PROP_NONZERO, &def->mode) < 0)
