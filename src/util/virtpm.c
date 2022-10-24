@@ -39,6 +39,7 @@ VIR_LOG_INIT("util.tpm");
 VIR_ENUM_IMPL(virTPMSwtpmFeature,
               VIR_TPM_SWTPM_FEATURE_LAST,
               "cmdarg-pwd-fd",
+              "cmdarg-migration",
 );
 
 VIR_ENUM_IMPL(virTPMSwtpmSetupFeature,

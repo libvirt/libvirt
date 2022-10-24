@@ -30,6 +30,7 @@ bool virTPMHasSwtpm(void);
 
 typedef enum {
     VIR_TPM_SWTPM_FEATURE_CMDARG_PWD_FD,
+    VIR_TPM_SWTPM_FEATURE_CMDARG_MIGRATION,
 
     VIR_TPM_SWTPM_FEATURE_LAST
 } virTPMSwtpmFeature;
