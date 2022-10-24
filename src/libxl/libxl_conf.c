@@ -409,8 +409,12 @@ libxlMakeDomBuildInfo(virDomainDef *def,
             case VIR_DOMAIN_TIMER_MODE_EMULATE:
                 b_info->tsc_mode = LIBXL_TSC_MODE_ALWAYS_EMULATE;
                 break;
-            default:
+            case VIR_DOMAIN_TIMER_MODE_NONE:
+            case VIR_DOMAIN_TIMER_MODE_AUTO:
+            case VIR_DOMAIN_TIMER_MODE_SMPSAFE:
                 b_info->tsc_mode = LIBXL_TSC_MODE_DEFAULT;
+            case VIR_DOMAIN_TIMER_MODE_LAST:
+                break;
             }
             break;
 

@@ -10546,7 +10546,6 @@ virDomainTimerDefParseXML(xmlNodePtr node,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr catchup;
     int ret;
-    g_autofree char *mode = NULL;
 
     ctxt->node = node;
 
@@ -10577,14 +10576,9 @@ virDomainTimerDefParseXML(xmlNodePtr node,
         return NULL;
     }
 
-    mode = virXMLPropString(node, "mode");
-    if (mode != NULL) {
-        if ((def->mode = virDomainTimerModeTypeFromString(mode)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown timer mode '%s'"), mode);
-            return NULL;
-        }
-    }
+    if (virXMLPropEnum(node, "mode", virDomainTimerModeTypeFromString,
+                       VIR_XML_PROP_NONZERO, &def->mode) < 0)
+        return NULL;
 
     catchup = virXPathNode("./catchup", ctxt);
     if (catchup != NULL) {

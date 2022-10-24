@@ -2102,9 +2102,13 @@ xenFormatHypervisorFeatures(virConf *conf, virDomainDef *def)
                 if (xenConfigSetString(conf, "tsc_mode", "always_emulate") < 0)
                     return -1;
                 break;
-            default:
+            case VIR_DOMAIN_TIMER_MODE_NONE:
+            case VIR_DOMAIN_TIMER_MODE_AUTO:
+            case VIR_DOMAIN_TIMER_MODE_SMPSAFE:
                 if (xenConfigSetString(conf, "tsc_mode", "default") < 0)
                     return -1;
+            case VIR_DOMAIN_TIMER_MODE_LAST:
+                break;
             }
             break;
 

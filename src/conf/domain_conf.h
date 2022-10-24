@@ -2483,7 +2483,7 @@ struct _virDomainTimerDef {
 
     /* frequency & mode are only valid for name='tsc' */
     unsigned long long frequency; /* in Hz, unspecified = 0 */
-    int mode;   /* enum virDomainTimerModeType */
+    virDomainTimerModeType mode;
 };
 
 typedef enum {
