@@ -5747,6 +5747,8 @@ qemuBuildClockArgStr(virDomainClockDef *def)
             case VIR_DOMAIN_TIMER_TICKPOLICY_MERGE:
             case VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD:
                 return NULL;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_LAST:
+                break;
             }
             break; /* no need to check other timers - there is only one rtc */
         }
@@ -5818,6 +5820,8 @@ qemuBuildClockCommandLine(virCommand *cmd,
             case VIR_DOMAIN_TIMER_TICKPOLICY_MERGE:
                 /* no way to support this mode for pit in qemu */
                 return -1;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_LAST:
+                break;
             }
             break;
 
@@ -6201,6 +6205,7 @@ qemuBuildCpuCommandLine(virCommand *cmd,
             case VIR_DOMAIN_TIMER_TICKPOLICY_NONE:
             case VIR_DOMAIN_TIMER_TICKPOLICY_CATCHUP:
             case VIR_DOMAIN_TIMER_TICKPOLICY_MERGE:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_LAST:
                 break;
             }
             break;

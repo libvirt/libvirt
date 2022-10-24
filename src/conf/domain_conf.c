@@ -10546,7 +10546,6 @@ virDomainTimerDefParseXML(xmlNodePtr node,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr catchup;
     int ret;
-    g_autofree char *tickpolicy = NULL;
     g_autofree char *track = NULL;
     g_autofree char *mode = NULL;
 
@@ -10561,14 +10560,9 @@ virDomainTimerDefParseXML(xmlNodePtr node,
                                &def->present) < 0)
         return NULL;
 
-    tickpolicy = virXMLPropString(node, "tickpolicy");
-    if (tickpolicy != NULL) {
-        if ((def->tickpolicy = virDomainTimerTickpolicyTypeFromString(tickpolicy)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown timer tickpolicy '%s'"), tickpolicy);
-            return NULL;
-        }
-    }
+    if (virXMLPropEnum(node, "tickpolicy", virDomainTimerTickpolicyTypeFromString,
+                       VIR_XML_PROP_NONZERO, &def->tickpolicy) < 0)
+        return NULL;
 
     track = virXMLPropString(node, "track");
     if (track != NULL) {

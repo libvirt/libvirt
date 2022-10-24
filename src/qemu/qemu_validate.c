@@ -572,6 +572,8 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
                                virDomainTimerTickpolicyTypeToString(
                                    timer->tickpolicy));
                 return -1;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_LAST:
+                break;
             }
             break;
 
@@ -598,6 +600,8 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
                                virDomainTimerTickpolicyTypeToString(
                                    timer->tickpolicy));
                 return -1;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_LAST:
+                break;
             }
             break;
 
@@ -650,6 +654,8 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
                                virDomainTimerNameTypeToString(timer->name),
                                virDomainTimerTickpolicyTypeToString(timer->tickpolicy));
                 return -1;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_LAST:
+                break;
             }
             break;
         }
