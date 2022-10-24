@@ -2479,7 +2479,7 @@ struct _virDomainTimerDef {
     virDomainTimerCatchupDef catchup;
 
     /* track is only valid for name='platform|rtc' */
-    int track;  /* enum virDomainTimerTrackType */
+    virDomainTimerTrackType track;
 
     /* frequency & mode are only valid for name='tsc' */
     unsigned long long frequency; /* in Hz, unspecified = 0 */

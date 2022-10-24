@@ -554,6 +554,8 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
                                _("unsupported rtc timer track '%s'"),
                                virDomainTimerTrackTypeToString(timer->track));
                 return -1;
+            case VIR_DOMAIN_TIMER_TRACK_LAST:
+                break;
             }
 
             switch (timer->tickpolicy) {

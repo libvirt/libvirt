@@ -10546,7 +10546,6 @@ virDomainTimerDefParseXML(xmlNodePtr node,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr catchup;
     int ret;
-    g_autofree char *track = NULL;
     g_autofree char *mode = NULL;
 
     ctxt->node = node;
@@ -10564,14 +10563,10 @@ virDomainTimerDefParseXML(xmlNodePtr node,
                        VIR_XML_PROP_NONZERO, &def->tickpolicy) < 0)
         return NULL;
 
-    track = virXMLPropString(node, "track");
-    if (track != NULL) {
-        if ((def->track = virDomainTimerTrackTypeFromString(track)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown timer track '%s'"), track);
-            return NULL;
-        }
-    }
+    if (virXMLPropEnum(node, "track", virDomainTimerTrackTypeFromString,
+                       VIR_XML_PROP_NONZERO, &def->track) < 0)
+        return NULL;
+
 
     ret = virXPathULongLong("string(./@frequency)", ctxt, &def->frequency);
     if (ret == -1) {
