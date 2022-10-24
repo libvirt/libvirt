@@ -10542,7 +10542,7 @@ static virDomainTimerDef *
 virDomainTimerDefParseXML(xmlNodePtr node,
                           xmlXPathContextPtr ctxt)
 {
-    virDomainTimerDef *def;
+    g_autofree virDomainTimerDef *def = g_new0(virDomainTimerDef, 1);
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr catchup;
     int ret;
@@ -10551,33 +10551,31 @@ virDomainTimerDefParseXML(xmlNodePtr node,
     g_autofree char *track = NULL;
     g_autofree char *mode = NULL;
 
-    def = g_new0(virDomainTimerDef, 1);
-
     ctxt->node = node;
 
     name = virXMLPropString(node, "name");
     if (name == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing timer name"));
-        goto error;
+        return NULL;
     }
     if ((def->name = virDomainTimerNameTypeFromString(name)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown timer name '%s'"), name);
-        goto error;
+        return NULL;
     }
 
     if (virXMLPropTristateBool(node, "present",
                                VIR_XML_PROP_NONE,
                                &def->present) < 0)
-        goto error;
+        return NULL;
 
     tickpolicy = virXMLPropString(node, "tickpolicy");
     if (tickpolicy != NULL) {
         if ((def->tickpolicy = virDomainTimerTickpolicyTypeFromString(tickpolicy)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown timer tickpolicy '%s'"), tickpolicy);
-            goto error;
+            return NULL;
         }
     }
 
@@ -10586,7 +10584,7 @@ virDomainTimerDefParseXML(xmlNodePtr node,
         if ((def->track = virDomainTimerTrackTypeFromString(track)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown timer track '%s'"), track);
-            goto error;
+            return NULL;
         }
     }
 
@@ -10596,7 +10594,7 @@ virDomainTimerDefParseXML(xmlNodePtr node,
     } else if (ret < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("invalid timer frequency"));
-        goto error;
+        return NULL;
     }
 
     mode = virXMLPropString(node, "mode");
@@ -10604,7 +10602,7 @@ virDomainTimerDefParseXML(xmlNodePtr node,
         if ((def->mode = virDomainTimerModeTypeFromString(mode)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown timer mode '%s'"), mode);
-            goto error;
+            return NULL;
         }
     }
 
@@ -10612,22 +10610,18 @@ virDomainTimerDefParseXML(xmlNodePtr node,
     if (catchup != NULL) {
         if (virXMLPropULongLong(catchup, "threshold", 10, VIR_XML_PROP_NONE,
                                 &def->catchup.threshold) < 0)
-            goto error;
+            return NULL;
 
         if (virXMLPropULongLong(catchup, "slew", 10, VIR_XML_PROP_NONE,
                                 &def->catchup.slew) < 0)
-            goto error;
+            return NULL;
 
         if (virXMLPropULongLong(catchup, "limit", 10, VIR_XML_PROP_NONE,
                                 &def->catchup.limit) < 0)
-            goto error;
+            return NULL;
     }
 
-    return def;
-
- error:
-    VIR_FREE(def);
-    return def;
+    return g_steal_pointer(&def);
 }
 
 
