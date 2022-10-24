@@ -3276,6 +3276,22 @@ void virDomainHostdevDefClear(virDomainHostdevDef *def)
     }
 }
 
+static virDomainTPMDef *
+virDomainTPMDefNew(virDomainXMLOption *xmlopt)
+{
+    virDomainTPMDef *def;
+
+    def = g_new0(virDomainTPMDef, 1);
+
+    if (xmlopt && xmlopt->privateData.tpmNew &&
+        !(def->privateData = xmlopt->privateData.tpmNew())) {
+        VIR_FREE(def);
+        return NULL;
+    }
+
+    return def;
+}
+
 void virDomainTPMDefFree(virDomainTPMDef *def)
 {
     if (!def)
@@ -3296,6 +3312,7 @@ void virDomainTPMDefFree(virDomainTPMDef *def)
     }
 
     virDomainDeviceInfoClear(&def->info);
+    virObjectUnref(def->privateData);
     g_free(def);
 }
 
@@ -10240,7 +10257,8 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree xmlNodePtr *nodes = NULL;
     int bank;
 
-    def = g_new0(virDomainTPMDef, 1);
+    if (!(def = virDomainTPMDefNew(xmlopt)))
+        return NULL;
 
     if (virXMLPropEnum(node, "model",
                        virDomainTPMModelTypeFromString,
@@ -10330,6 +10348,14 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info, flags) < 0)
         goto error;
+
+    if (flags & VIR_DOMAIN_DEF_PARSE_STATUS &&
+        xmlopt && xmlopt->privateData.tpmParse) {
+        if ((ctxt->node = virXPathNode("./privateData", ctxt))) {
+            if (xmlopt->privateData.tpmParse(ctxt, def) < 0)
+                goto error;
+        }
+    }
 
     return def;
 
@@ -23921,10 +23947,32 @@ virDomainSoundCodecDefFormat(virBuffer *buf,
     return 0;
 }
 
-static void
+static int
+virDomainTPMDefFormatPrivateData(virBuffer *buf,
+                                 const virDomainTPMDef *tpm,
+                                 unsigned int flags,
+                                 virDomainXMLOption *xmlopt)
+{
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+    if (!(flags & VIR_DOMAIN_DEF_FORMAT_STATUS) ||
+        !xmlopt ||
+        !xmlopt->privateData.tpmFormat)
+        return 0;
+
+    if (xmlopt->privateData.tpmFormat(tpm, &childBuf) < 0)
+        return -1;
+
+    virXMLFormatElement(buf, "privateData", NULL, &childBuf);
+    return 0;
+}
+
+
+static int
 virDomainTPMDefFormat(virBuffer *buf,
                       const virDomainTPMDef *def,
-                      unsigned int flags)
+                      unsigned int flags,
+                      virDomainXMLOption *xmlopt)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
@@ -23973,8 +24021,12 @@ virDomainTPMDefFormat(virBuffer *buf,
 
     virXMLFormatElement(&childBuf, "backend", &backendAttrBuf, &backendChildBuf);
     virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
+    if (virDomainTPMDefFormatPrivateData(&childBuf, def, flags, xmlopt) < 0)
+        return -1;
 
     virXMLFormatElement(buf, "tpm", &attrBuf, &childBuf);
+
+    return 0;
 }
 
 
@@ -27060,7 +27112,8 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     }
 
     for (n = 0; n < def->ntpms; n++) {
-        virDomainTPMDefFormat(buf, def->tpms[n], flags);
+        if (virDomainTPMDefFormat(buf, def->tpms[n], flags, xmlopt) < 0)
+            return -1;
     }
 
     for (n = 0; n < def->ngraphics; n++) {
@@ -28326,7 +28379,7 @@ virDomainDeviceDefCopy(virDomainDeviceDef *src,
         rc = virDomainChrDefFormat(&buf, src->data.chr, flags);
         break;
     case VIR_DOMAIN_DEVICE_TPM:
-        virDomainTPMDefFormat(&buf, src->data.tpm, flags);
+        virDomainTPMDefFormat(&buf, src->data.tpm, flags, xmlopt);
         rc = 0;
         break;
     case VIR_DOMAIN_DEVICE_PANIC:

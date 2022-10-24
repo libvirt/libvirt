@@ -1445,6 +1445,8 @@ typedef enum {
 #define VIR_DOMAIN_TPM_DEFAULT_DEVICE "/dev/tpm0"
 
 struct _virDomainTPMDef {
+    virObject *privateData;
+
     virDomainTPMModel model;
     virDomainTPMBackendType type;
     virDomainDeviceInfo info;
@@ -3248,6 +3250,10 @@ typedef int (*virDomainXMLPrivateDataStorageSourceParseFunc)(xmlXPathContextPtr 
 typedef int (*virDomainXMLPrivateDataStorageSourceFormatFunc)(virStorageSource *src,
                                                               virBuffer *buf);
 
+typedef int (*virDomainXMLPrivateDataTPMParseFunc)(xmlXPathContextPtr ctxt,
+                                                   virDomainTPMDef *disk);
+typedef int (*virDomainXMLPrivateDataTPMFormatFunc)(const virDomainTPMDef *tpm,
+                                                    virBuffer *buf);
 
 struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataAllocFunc  alloc;
@@ -3264,6 +3270,9 @@ struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataNewFunc    networkNew;
     virDomainXMLPrivateDataNewFunc    videoNew;
     virDomainXMLPrivateDataNewFunc    fsNew;
+    virDomainXMLPrivateDataTPMParseFunc tpmParse;
+    virDomainXMLPrivateDataTPMFormatFunc tpmFormat;
+    virDomainXMLPrivateDataNewFunc    tpmNew;
     virDomainXMLPrivateDataFormatFunc format;
     virDomainXMLPrivateDataParseFunc  parse;
     /* following function shall return a pointer which will be used as the

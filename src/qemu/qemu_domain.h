@@ -414,6 +414,20 @@ struct _qemuDomainNetworkPrivate {
     qemuFDPass *vdpafd;
 };
 
+
+#define QEMU_DOMAIN_TPM_PRIVATE(dev) \
+    ((qemuDomainTPMPrivate *) (dev)->privateData)
+
+typedef struct _qemuDomainTPMPrivate qemuDomainTPMPrivate;
+struct _qemuDomainTPMPrivate {
+    virObject parent;
+
+    struct {
+        bool can_migrate_shared_storage;
+    } swtpm;
+};
+
+
 void
 qemuDomainNetworkPrivateClearFDs(qemuDomainNetworkPrivate *priv);
 

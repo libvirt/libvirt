@@ -1138,6 +1138,76 @@ qemuDomainVideoPrivateDispose(void *obj)
 }
 
 
+static virClass *qemuDomainTPMPrivateClass;
+static void qemuDomainTPMPrivateDispose(void *obj);
+
+
+static int
+qemuDomainTPMPrivateOnceInit(void)
+{
+    if (!VIR_CLASS_NEW(qemuDomainTPMPrivate, virClassForObject()))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(qemuDomainTPMPrivate);
+
+
+static virObject *
+qemuDomainTPMPrivateNew(void)
+{
+    qemuDomainTPMPrivate *priv;
+
+    if (qemuDomainTPMPrivateInitialize() < 0)
+        return NULL;
+
+    if (!(priv = virObjectNew(qemuDomainTPMPrivateClass)))
+        return NULL;
+
+    return (virObject *) priv;
+}
+
+
+static void
+qemuDomainTPMPrivateDispose(void *obj G_GNUC_UNUSED)
+{
+}
+
+
+static int
+qemuDomainTPMPrivateParse(xmlXPathContextPtr ctxt,
+                          virDomainTPMDef *tpm)
+{
+    qemuDomainTPMPrivate *priv = QEMU_DOMAIN_TPM_PRIVATE(tpm);
+
+    priv->swtpm.can_migrate_shared_storage =
+        virXPathBoolean("string(./swtpm/@can_migrate_shared_storage)", ctxt);
+
+    return 0;
+}
+
+
+static int
+qemuDomainTPMPrivateFormat(const virDomainTPMDef *tpm,
+                           virBuffer *buf)
+{
+    qemuDomainTPMPrivate *priv = QEMU_DOMAIN_TPM_PRIVATE(tpm);
+
+    switch (tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        if (priv->swtpm.can_migrate_shared_storage)
+            virBufferAddLit(buf, "<swtpm can_migrate_shared_storage='yes'/>\n");
+        break;
+
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+    }
+
+    return 0;
+}
+
+
 /* qemuDomainSecretInfoSetup:
  * @priv: pointer to domain private object
  * @alias: alias of the secret
@@ -3212,6 +3282,9 @@ virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
     .graphicsNew = qemuDomainGraphicsPrivateNew,
     .networkNew = qemuDomainNetworkPrivateNew,
     .videoNew = qemuDomainVideoPrivateNew,
+    .tpmNew = qemuDomainTPMPrivateNew,
+    .tpmParse = qemuDomainTPMPrivateParse,
+    .tpmFormat = qemuDomainTPMPrivateFormat,
     .parse = qemuDomainObjPrivateXMLParse,
     .format = qemuDomainObjPrivateXMLFormat,
     .getParseOpaque = qemuDomainObjPrivateXMLGetParseOpaque,
