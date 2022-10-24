@@ -2472,7 +2472,7 @@ struct _virDomainTimerCatchupDef {
 };
 
 struct _virDomainTimerDef {
-    int name;
+    virDomainTimerNameType name;
     virTristateBool present;
     int tickpolicy; /* enum virDomainTimerTickpolicyType */
 

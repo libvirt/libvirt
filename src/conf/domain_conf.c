@@ -10546,24 +10546,15 @@ virDomainTimerDefParseXML(xmlNodePtr node,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr catchup;
     int ret;
-    g_autofree char *name = NULL;
     g_autofree char *tickpolicy = NULL;
     g_autofree char *track = NULL;
     g_autofree char *mode = NULL;
 
     ctxt->node = node;
 
-    name = virXMLPropString(node, "name");
-    if (name == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("missing timer name"));
+    if (virXMLPropEnum(node, "name", virDomainTimerNameTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &def->name) < 0)
         return NULL;
-    }
-    if ((def->name = virDomainTimerNameTypeFromString(name)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown timer name '%s'"), name);
-        return NULL;
-    }
 
     if (virXMLPropTristateBool(node, "present",
                                VIR_XML_PROP_NONE,
