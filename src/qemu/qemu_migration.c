@@ -1555,6 +1555,13 @@ qemuMigrationSrcIsAllowed(virQEMUDriver *driver,
                 return false;
             }
         }
+
+        if (qemuTPMHasSharedStorage(vm->def)&&
+            !qemuTPMCanMigrateSharedStorage(vm->def)) {
+            virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                           _("the running swtpm does not support migration with shared storage"));
+            return false;
+        }
     }
 
     return true;

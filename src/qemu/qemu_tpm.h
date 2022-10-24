@@ -60,3 +60,6 @@ int qemuExtTPMSetupCgroup(virQEMUDriver *driver,
 bool qemuTPMHasSharedStorage(virDomainDef *def)
     ATTRIBUTE_NONNULL(1)
     G_GNUC_WARN_UNUSED_RESULT;
+
+bool qemuTPMCanMigrateSharedStorage(virDomainDef *def)
+    ATTRIBUTE_NONNULL(1);

@@ -557,6 +557,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     int migpwdfile_fd = -1;
     const unsigned char *secretuuid = NULL;
     bool create_storage = true;
+    bool on_shared_storage;
 
     if (!swtpm)
         return NULL;
@@ -564,8 +565,8 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     /* Do not create storage and run swtpm_setup on incoming migration over
      * shared storage
      */
-    if (incomingMigration &&
-        virFileIsSharedFS(tpm->data.emulator.storagepath) == 1)
+    on_shared_storage = virFileIsSharedFS(tpm->data.emulator.storagepath) == 1;
+    if (incomingMigration && on_shared_storage)
         create_storage = false;
 
     if (create_storage &&
@@ -641,6 +642,30 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
 
         virCommandAddArg(cmd, "--migration-key");
         virCommandAddArgFormat(cmd, "pwdfd=%d,mode=aes-256-cbc", migpwdfile_fd);
+    }
+
+    /* If swtpm supports it and the TPM state is stored on shared storage,
+     * start swtpm with --migration release-lock-outgoing so it can migrate
+     * across shared storage if needed.
+     */
+    QEMU_DOMAIN_TPM_PRIVATE(tpm)->swtpm.can_migrate_shared_storage = false;
+    if (on_shared_storage &&
+        virTPMSwtpmCapsGet(VIR_TPM_SWTPM_FEATURE_CMDARG_MIGRATION)) {
+
+        virCommandAddArg(cmd, "--migration");
+        virCommandAddArgFormat(cmd, "release-lock-outgoing%s",
+                               incomingMigration ? ",incoming": "");
+        QEMU_DOMAIN_TPM_PRIVATE(tpm)->swtpm.can_migrate_shared_storage = true;
+    } else {
+        /* Report an error if there's an incoming migration across shared
+         * storage and swtpm does not support the --migration option.
+         */
+        if (incomingMigration && on_shared_storage) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                _("%s (on destination side) does not support the --migration option needed for migration with shared storage"),
+                   swtpm);
+            goto error;
+        }
     }
 
     return g_steal_pointer(&cmd);
@@ -980,6 +1005,24 @@ qemuTPMHasSharedStorage(virDomainDef *def)
     }
 
     return false;
+}
+
+
+bool
+qemuTPMCanMigrateSharedStorage(virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->ntpms; i++) {
+        virDomainTPMDef *tpm = def->tpms[i];
+        switch (tpm->type) {
+        case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+            return QEMU_DOMAIN_TPM_PRIVATE(tpm)->swtpm.can_migrate_shared_storage;
+        case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        case VIR_DOMAIN_TPM_TYPE_LAST:
+        }
+    }
+    return true;
 }
 
 
