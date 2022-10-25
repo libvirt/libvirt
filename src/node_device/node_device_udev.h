@@ -19,3 +19,6 @@
  */
 
 #pragma once
+
+int
+udevNodeRegister(void);

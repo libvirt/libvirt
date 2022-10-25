@@ -28,12 +28,6 @@
 
 #define LINUX_NEW_DEVICE_WAIT_TIME 60
 
-#ifdef WITH_UDEV
-int
-udevNodeRegister(void);
-#endif
-
-
 typedef enum {
     MDEVCTL_CMD_START,
     MDEVCTL_CMD_STOP,

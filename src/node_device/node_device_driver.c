@@ -35,6 +35,9 @@
 #include "node_device_conf.h"
 #include "node_device_event.h"
 #include "node_device_driver.h"
+#if WITH_UDEV
+# include "node_device_udev.h"
+#endif
 #include "virvhba.h"
 #include "viraccessapicheck.h"
 #include "virutil.h"
