@@ -46,12 +46,6 @@ typedef enum {
 VIR_ENUM_DECL(virMdevctlCommand);
 
 
-void
-nodeDeviceLock(void);
-
-void
-nodeDeviceUnlock(void);
-
 extern virNodeDeviceDriverState *driver;
 
 int
