@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-09-27 08:07+0000\n"
+"POT-Creation-Date: 2022-10-25 07:42+0000\n"
 "PO-Revision-Date: 2022-09-01 08:44+0000\n"
 "Last-Translator: Ludek Janda <ljanda@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -538,10 +538,6 @@ msgstr ""
 #, c-format
 msgid "%s (out of %d)"
 msgstr "%s/%d"
-
-#, c-format
-msgid "%s 3d acceleration is not supported"
-msgstr "%s 3D アクセラレーションはサポートされていません"
 
 #, c-format
 msgid "%s array element does not contain a string"
@@ -1225,6 +1221,9 @@ msgstr ""
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "':' が RBD ソースボリューム名 '%s' において許可されません"
 
+msgid "'<local>' element missing for 'udp' socket interface"
+msgstr ""
+
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr "scsi hostdev ソースには、'adapter' 名を指定する必要があります"
 
@@ -1374,11 +1373,9 @@ msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "'queues' は virtio-scsi のみによりサポートされます"
 
 msgid ""
-"'reconnect' attribute  unsupported 'server' mode for <interface "
+"'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
 msgstr ""
-"'reconnect' 属性  <interface type='vhostuser'> のサポートされない 'server' "
-"モード"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1488,9 +1485,6 @@ msgstr "(libxl_migration_cookie)"
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
 
-msgid "(network status)"
-msgstr "(ネットワークステータス)"
-
 msgid "(network_definition)"
 msgstr "(ネットワーク定義)"
 
@@ -1511,9 +1505,6 @@ msgstr "(ネットワークフィルターバインディング定義)"
 
 msgid "(nwfilterbinding_status)"
 msgstr "(ネットワークフィルターバインディングステータス)"
-
-msgid "(pool state)"
-msgstr "(プール状態)"
 
 msgid "(qemu_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
@@ -1628,6 +1619,12 @@ msgstr ""
 
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev: インターフェイスが見つかりません"
+
+msgid "3d acceleration is not supported by this QEMU binary"
+msgstr ""
+
+msgid "3d acceleration is supported only with 'virtio' video device"
+msgstr ""
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64 ビット PCI 全体の設定は root PCI コントローラーに対してのみです"
@@ -1753,9 +1750,6 @@ msgstr "他のコールバックが要求されました"
 #, c-format
 msgid "A domain definition can have no more than one cipher node with name %s"
 msgstr "ドメイン定義は、名前 %s を持つ暗号ノードを 1 つだけ持つことができます"
-
-msgid "A field data length violates the resource length boundary."
-msgstr "フィールドデータの長さがリソースの長さの境界に違反しています。"
 
 msgid "A interface driver is already registered"
 msgstr "インターフェイスドライバーがすでに登録されています"
@@ -2239,9 +2233,6 @@ msgstr "ビジー"
 msgid "CA certificate:"
 msgstr "CA 証明書:"
 
-msgid "CCW address type is not supported by this QEMU"
-msgstr "この QEMU では、CCW アドレスタイプはサポートされません"
-
 #, c-format
 msgid "CHS geometry can not be set for '%s' bus"
 msgstr "CHS ジオメトリーを '%s' に設定することはできません"
@@ -2339,11 +2330,6 @@ msgstr "CPU 周波数:"
 
 msgid "CPU map:"
 msgstr "CPU マップ:"
-
-#, c-format
-msgid ""
-"CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -3201,12 +3187,6 @@ msgstr "<VirtualBox> <Machine> ノードを解析できません"
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "<address> 'port' 属性を解析できません"
 
-msgid "Cannot parse <local> 'port' attribute with socket interface"
-msgstr "ソケットインターフェイスで <local> 'port' 属性を解析できません"
-
-msgid "Cannot parse <source> 'port' attribute with socket interface"
-msgstr "ソケットインターフェイスで <source> 'port' 属性を解析できません"
-
 #, c-format
 msgid "Cannot parse MAC address '%s' in network '%s'"
 msgstr "MAC アドレス '%s' をネットワーク '%s' において解析できません"
@@ -3449,22 +3429,6 @@ msgstr "マウントの名前空間の共有解除できません"
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "初期化していない CURL ハンドルを共有解除できません"
 
-msgid "Cannot update the read-only keyword: RO section not initialized."
-msgstr ""
-"読み取り専用キーワードを更新できません: RO セクションが初期化されていません。"
-
-msgid ""
-"Cannot update the read-write keyword: read-write section not initialized."
-msgstr ""
-"読み取り/書き込みキーワードを更新できません: 読み取り/書き込みセクションが初"
-"期化されていません。"
-
-msgid "Cannot update the resource: a NULL keyword pointer has been provided."
-msgstr "リソースを更新できません: NULL キーワードポインターが提供されました。"
-
-msgid "Cannot update the resource: a NULL resource pointer has been provided."
-msgstr "リソースを更新できません: NULL リソースポインターが提供されました。"
-
 #, c-format
 msgid "Cannot use direct socket mode for %s transport"
 msgstr "%s トランスポートにダイレクトソケットモードは使用できません"
@@ -3676,9 +3640,6 @@ msgstr "チェックポイントのリスト"
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr "ドメイン %s に対するチェックポイントの関係は一貫性がありません"
-
-msgid "Checksum validation has failed"
-msgstr "チェックサムの検証に失敗しました"
 
 #, c-format
 msgid "Child process (%lld) unexpected %s"
@@ -4738,9 +4699,6 @@ msgstr "VI API バージョン '%s' を解析できませんでした"
 msgid "Could not parse VPS ID %s"
 msgstr "VPS ID %s をパースできません"
 
-msgid "Could not parse a resource field data - VPD has invalid format"
-msgstr "リソースフィールドデータを解析できませんでした (VPD の形式が無効です)"
-
 #, c-format
 msgid "Could not parse barrier and limit of '%s' from config for container %d"
 msgstr "'%s' の制限をコンテナー %d の設定から解析できませんでした"
@@ -4803,13 +4761,6 @@ msgstr "コンテナー %d の設定から 'VE_PRIVATE' を読み込めません
 
 msgid "Could not read a device name from the <name> element"
 msgstr "<name> 要素からデバイス名を読み取れませんでした"
-
-msgid "Could not read a part of a resource - VPD has invalid format"
-msgstr "リソースの一部を読み取れませんでした (VPD の形式が無効です)"
-
-msgid "Could not read a resource field header - VPD has invalid format"
-msgstr ""
-"リソースフィールドヘッダーを読み取れませんでした (VPD の形式が無効です)"
 
 #, c-format
 msgid "Could not read config for container %d"
@@ -5015,10 +4966,6 @@ msgstr "データを転送できませんでした: %s (%d)"
 
 msgid "Could not translate keycode"
 msgstr "キーコードを変換できませんでした"
-
-#, c-format
-msgid "Could not update the VPD resource keyword: %s"
-msgstr "VPD リソースキーワードを更新できませんでした: %s"
 
 msgid "Could not verify disk address"
 msgstr "ディスクアドレスを検証できませんでした"
@@ -6034,6 +5981,10 @@ msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr ""
 "'scsi_host' アダプターには 'name' または 'parent' のいずれかを指定する必要が"
 "あります"
+
+#, c-format
+msgid "Either --%s or --%s must be provided"
+msgstr ""
 
 msgid "Eject the media"
 msgstr "メディアの取り出し"
@@ -9862,16 +9813,6 @@ msgstr ""
 "PCI デバイス %s をリセットしようとする無効な試み。リセットできるのは PCI エン"
 "ドポイントデバイスのみです"
 
-#, c-format
-msgid ""
-"Invalid attempt to set <interface type='ethernet'> device name with <source "
-"dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest dev='%s'/> (for "
-"guest-side) instead."
-msgstr ""
-"<interface type='ethernet'> デバイス名を <source dev='%s'/> で設定しようとす"
-"る無効な試み。代わりに <target dev='%s'/> (ホスト側) または<guest dev='%s'/> "
-"(ゲスト側) を使用してください。"
-
 msgid ""
 "Invalid attempt to set network interface guest-side IP route and/or address "
 "info, not supported by QEMU"
@@ -10546,10 +10487,20 @@ msgid "Invalid value for attribute '%s' in element '%s': '%s'."
 msgstr "要素 '%s': '%s' の属性 '%s' の無効な値。"
 
 #, c-format
+msgid "Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"
+msgstr ""
+
+#, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
 msgstr "要素 '%s': '%s' の属性 '%s' の無効な値。整数値が予想されていました"
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
+"integer value"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -11807,30 +11758,14 @@ msgstr "JSON 状態ドキュメントに socks 項目がありません"
 msgid "Missing source channel attribute for char device"
 msgstr "char デバイスのソースチャネル属性がありません"
 
-#, c-format
-msgid "Missing source connectionid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "char デバイスのソースホスト属性がありません"
 
 msgid "Missing source path attribute for char device"
 msgstr "char デバイス用のソースパス属性がありません"
 
-#, c-format
-msgid "Missing source portgroup for interface type '%s'"
-msgstr ""
-
-#, c-format
-msgid "Missing source portid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source service attribute for char device"
 msgstr "char デバイスのソースサービス属性がありません"
-
-#, c-format
-msgid "Missing source switchid for interface type '%s'"
-msgstr ""
 
 msgid "Missing storage block path"
 msgstr "ストレージブロックパスがありません"
@@ -12277,68 +12212,6 @@ msgstr "ブロックデバイスの新しい容量、単位付き整数 (初期�
 
 msgid "Nicdev support unavailable"
 msgstr "Nicdev サポートは利用できません"
-
-msgid "No <local> 'address' attribute specified with socket interface"
-msgstr ""
-"ソケットインターフェイスとともに <local> の 'address' 属性が指定されていませ"
-"ん"
-
-msgid "No <local> 'port' attribute specified with socket interface"
-msgstr ""
-"ソケットインターフェイスとともに <local> の 'port' 属性が指定されていません"
-
-msgid "No <source> 'address' attribute specified with socket interface"
-msgstr ""
-"ソケットインターフェイスとともに <source> の 'address' 属性が指定されていませ"
-"ん"
-
-msgid ""
-"No <source> 'bridge' attribute specified with <interface type='bridge'/>"
-msgstr ""
-"<interface type='bridge'/> とともに <source> の 'bridge' 属性が指定されていま"
-"せん"
-
-msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
-msgstr ""
-"<source> とともに <interface type='direct'/> の 'dev' 属性が指定されていませ"
-"ん"
-
-msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
-msgstr ""
-"<source> とともに <interface type='vdpa'/> の 'dev' 属性が指定されていません"
-
-msgid ""
-"No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"<interface type='vhostuser'/> とともに <source> の 'mode' 属性が指定されてい"
-"ません"
-
-msgid ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
-msgstr ""
-"<interface type='internal'/> とともに <source> の 'name' 属性が指定されていま"
-"せん"
-
-msgid ""
-"No <source> 'network' attribute specified with <interface type='network'/>"
-msgstr ""
-"<interface type='network'/> とともに <source> の 'network' 属性が指定されてい"
-"ません"
-
-msgid ""
-"No <source> 'path' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"<interface type='vhostuser'/> とともに <source> の 'path' 属性が指定されてい"
-"ません"
-
-msgid "No <source> 'port' attribute specified with socket interface"
-msgstr ""
-"ソケットインターフェイスとともに <source> の 'port' 属性が指定されていません"
-
-msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
-msgstr ""
-"<interface type='vhostuser'> とともに <source> の 'type' 属性が指定されていま"
-"せん"
 
 msgid "No CA certificate path set to match server key/cert"
 msgstr ""
@@ -14210,9 +14083,6 @@ msgstr "ドメインのスナップショットへの復帰"
 msgid "Revert domain to snapshot"
 msgstr "ドメインをスナップショットに復帰します"
 
-msgid "Root element is not 'node'"
-msgstr "Root エレメントは 'node' ではありません"
-
 #, c-format
 msgid "Route address '%s' conflicts with IP address for '%s'"
 msgstr "ルートアドレス '%s' は、'%s' の IP アドレスと競合します"
@@ -14284,6 +14154,9 @@ msgstr "SATA はこの QEMU バイナリーでサポートされません"
 #, c-format
 msgid "SATA unit index %d out of [0..29] range"
 msgstr "SATA ユニットインデックス %d は [0..29] の範囲外にあります"
+
+msgid "SCHED_CORE not supported by kernel"
+msgstr ""
 
 #, c-format
 msgid "SCSI bus index %d out of [0] range"
@@ -14802,6 +14675,11 @@ msgstr "共有メモリー:\n"
 #, c-format
 msgid "Shell '%s' should have absolute path"
 msgstr "シェル '%s' は絶対パスを持つ必要があります"
+
+msgid ""
+"Shortcut for calling the command with a single CPU model and no additional "
+"features"
+msgstr ""
 
 msgid "Should define both master and slave path attributes for nmdm device"
 msgstr ""
@@ -16341,13 +16219,6 @@ msgstr ""
 "この QEMU バイナリーでは、ich9-intel-hda オーディオコントローラーはサポートさ"
 "れません"
 
-msgid "The keyword is not comprised only of uppercase ASCII letters or digits"
-msgstr "キーワードは大文字の ASCII 文字または数字だけで設定されていません"
-
-#, c-format
-msgid "The keyword length is not 2 bytes: %s"
-msgstr "キーワードの長さは 2 バイトではありません: %s"
-
 msgid "The machine has no snapshot and it should have it"
 msgstr "マシンにはスナップショットがありませんが、必要です"
 
@@ -16390,9 +16261,6 @@ msgstr "サーバーが '%s' から '%s' にリダイレクトされました"
 
 msgid "The slirp-helper doesn't support migration"
 msgstr "slirp-helper はマイグレーションをサポートしません"
-
-msgid "The string resource has invalid characters in its value"
-msgstr "文字列リソースの値に無効な文字が含まれています"
 
 #, c-format
 msgid "The vbox driver does not support %s SCSI controller model"
@@ -17391,6 +17259,9 @@ msgstr "'%s' を強制停止できません: %s"
 msgid "Unable to destroy '%s': device in use"
 msgstr "'%s' を強制停止できません: デバイスは使用中です"
 
+msgid "Unable to detect SCHED_CORE"
+msgstr ""
+
 #, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "%s のファイルシステムを検知できません"
@@ -17501,6 +17372,9 @@ msgstr "満足のいく vhost-user-gpu を見つけることができません"
 
 msgid "Unable to find a satisfying virtiofsd"
 msgstr "満足のいく virtiofsd を見つけることができません"
+
+msgid "Unable to find a vCPU that is online"
+msgstr ""
 
 #, c-format
 msgid "Unable to find address for mdev parent device '%s'"
@@ -18141,10 +18015,6 @@ msgid "Unable to parse cloud-hypervisor version: %s"
 msgstr "cloud-hypervisor バージョンを解析できません: %s"
 
 #, c-format
-msgid "Unable to parse connectionid '%s'"
-msgstr ""
-
-#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "現在の SELinux コンテキスト '%s' を解析できません"
 
@@ -18173,14 +18043,6 @@ msgstr "ロック状態 %s を解析できません: %s"
 msgid "Unable to parse ovs-vsctl output"
 msgstr "ovs-vsctl 出力を解析できません"
 
-#, c-format
-msgid "Unable to parse port id '%s'"
-msgstr "ポート ID '%s' を解析できません"
-
-#, c-format
-msgid "Unable to parse portid '%s'"
-msgstr ""
-
 msgid "Unable to parse quota"
 msgstr "クォータを解析できません"
 
@@ -18198,10 +18060,6 @@ msgstr "シークレット uuid '%s' を解析できません"
 
 msgid "Unable to parse string parameter"
 msgstr "文字列パラメーターを解析できません"
-
-#, c-format
-msgid "Unable to parse switchid '%s'"
-msgstr ""
 
 msgid "Unable to parse the xml"
 msgstr "xml を解析できません"
@@ -18478,6 +18336,10 @@ msgid "Unable to retrieve threadpool parameters"
 msgstr "スレッドプールパラメーターを取得できません"
 
 #, c-format
+msgid "Unable to run among %llu"
+msgstr ""
+
+#, c-format
 msgid "Unable to run command to get OVS master for interface %s"
 msgstr "インターフェイス %s の OVS マスターを取得するコマンドを実行できません"
 
@@ -18582,6 +18444,9 @@ msgstr "ファイル記述子 %d をブロックに設定できません"
 
 msgid "Unable to set IPV6_V6ONLY flag"
 msgstr "IPV6_V6ONLY フラグを設定できません"
+
+msgid "Unable to set SCHED_CORE"
+msgstr ""
 
 #, c-format
 msgid "Unable to set SELinux context MCS '%s'"
@@ -18979,12 +18844,6 @@ msgstr "予期しない QEMU エージェントがドメインの削除中にま
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "予期しない QEMU モニターがドメインの削除中にまだアクティブです"
 
-msgid "Unexpected RV keyword in the read-write section."
-msgstr "読み取り/書き込みセクションの予期しない RV キーワード。"
-
-msgid "Unexpected RW keyword in the read-only section."
-msgstr "読み取り専用セクションの予期しない RW キーワード。"
-
 #, c-format
 msgid "Unexpected SCSI controller model %d"
 msgstr "予期しない SCSI コントローラーモデル %d"
@@ -19032,9 +18891,6 @@ msgid "Unexpected event thread still active during domain deletion"
 msgstr ""
 "予期しないイベントスレッドが、ドメインの削除中も引き続きアクティブとなってい"
 "ます"
-
-msgid "Unexpected field value format encountered."
-msgstr "予期しないフィールド値の形式が検出されました。"
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -19375,9 +19231,6 @@ msgstr ""
 "不明モード %s 値、'acpi'、'agent'、'initctl'、'signal' または 'paravirt' が予"
 "想されます"
 
-msgid "Unknown mode has been specified"
-msgstr "不明なモードが指定されました"
-
 #, c-format
 msgid "Unknown model type '%s'"
 msgstr "不明なモデルタイプ '%s'"
@@ -19411,6 +19264,10 @@ msgstr "不明なリモートモード '%s'"
 
 msgid "Unknown return code"
 msgstr "不明なリターンコード"
+
+#, c-format
+msgid "Unknown sched_core value %s"
+msgstr ""
 
 #, c-format
 msgid "Unknown scsi_host subsystem protocol '%s'"
@@ -20272,12 +20129,6 @@ msgstr "vport の作成/削除の間に'%s' の '%s' への書き込みに失敗
 msgid "Write to '%s' to trigger host scan failed"
 msgstr "ホストスキャンを引き起こす為の '%s' への書き込み失敗"
 
-msgid ""
-"Wrong <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"<interface type='vhostuser'/> で 間違った <source> 'mode' 属性が指定されてい"
-"ます"
-
 msgid "Wrong MAC address"
 msgstr "MAC アドレスが違います"
 
@@ -20329,9 +20180,6 @@ msgstr "XML には予期される 'bios' 要素が含まれていません"
 
 msgid "XML does not contain expected 'chassis' element"
 msgstr "XML には予期される 'chassis' 要素が含まれていません"
-
-msgid "XML does not contain expected 'cookie' element"
-msgstr "XML には予期される 'cookie' 要素が含まれていません"
 
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML には予期される 'cpu' 要素が含まれていません"
@@ -21557,6 +21405,9 @@ msgstr "セッションのリーダーになれません"
 
 msgid "cannot block signals"
 msgstr "信号をブロックできません"
+
+msgid "cannot both keep and delete TPM"
+msgstr ""
 
 msgid "cannot both keep and delete nvram"
 msgstr "nvram の保持と削除の両方はできません"
@@ -25057,17 +24908,8 @@ msgstr "domainMigratePrepare2 は uri をセットしませんでした"
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare3 が URI を設定していません"
 
-msgid "domainbackup"
-msgstr "domainbackup"
-
-msgid "domaincheckpoint"
-msgstr "domaincheckpoint"
-
 msgid "domains in 'doms' array must belong to a single connection"
 msgstr "'doms' 配列のドメインは、単一の接続に属している必要があります"
-
-msgid "domainsnapshot"
-msgstr "ドメインスナップショット"
 
 #, c-format
 msgid "doms array in %s must contain at least one domain"
@@ -28230,6 +28072,10 @@ msgstr "インターフェイス状態ドライバーがアクティブではあ
 msgid "interface stats not implemented on this platform"
 msgstr "インターフェイスの統計はこのプラットフォームにおいてサポートされません"
 
+#, c-format
+msgid "interface type='%s' requires a 'source' element"
+msgstr ""
+
 msgid "internal"
 msgstr "内部"
 
@@ -28321,10 +28167,6 @@ msgstr "無効な %s: '%s'"
 #, c-format
 msgid "invalid '=' after option --%s"
 msgstr "オプション --%s の後に無効な '=' があります"
-
-#, c-format
-msgid "invalid 'managed' value '%s'"
-msgstr "無効な 'managed' 値 '%s'"
 
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr "vhostuser ディスクソースの無効な 'type' 属性"
@@ -29162,6 +29004,9 @@ msgstr "kdump-compressed 形式はここではサポートされません"
 
 msgid "kdump-compressed format is only supported with memory-only dump"
 msgstr "kdump-compressed 形式は、メモリーのみのダンプでのみサポートされます"
+
+msgid "keep TPM state"
+msgstr ""
 
 msgid "keep nvram file"
 msgstr "nvram ファイルを保持する"
@@ -34126,6 +33971,9 @@ msgstr ""
 msgid "removable is only valid for usb disks"
 msgstr "USB ディスクのみがリムーバブルをサポートします"
 
+msgid "remove TPM state"
+msgstr ""
+
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "すべての関連するストレージボリュームの削除 (使用注意)"
 
@@ -34233,6 +34081,9 @@ msgstr "ドメイン仮想 cpu 情報を報告します"
 
 msgid "report error if CPUs are incompatible"
 msgstr "CPU に互換性がない場合はエラーを報告します"
+
+msgid "report fd-based VM statistics by KVM"
+msgstr ""
 
 msgid "report filesystem information"
 msgstr "レポートファイルシステム情報"
@@ -36807,6 +36658,9 @@ msgstr "子標準出力を読み取れません"
 msgid "unable to read domain master key file"
 msgstr "ドメインマスターキーファイルを読み取れません"
 
+msgid "unable to read from pipe"
+msgstr ""
+
 #, c-format
 msgid "unable to read server cert %s"
 msgstr "サーバー証明書 %s を読み取れません"
@@ -36905,6 +36759,14 @@ msgstr "ユーザーとグループを '%ld:%ld' ('%s') に設定できません
 
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "macvtap で vnet またはマルチキューフラグを設定できません"
+
+#, c-format
+msgid "unable to share scheduling cookie from %lld"
+msgstr ""
+
+#, c-format
+msgid "unable to share scheduling cookie to %lld"
+msgstr ""
 
 #, c-format
 msgid "unable to stat %s"
@@ -37278,49 +37140,6 @@ msgstr "スナップショットの XML 読み込み中に予期しない問題�
 
 msgid "unexpected protocol type"
 msgstr "予期しないプロトコルタイプ"
-
-#, c-format
-msgid "unexpected root element <%s> expecting <device>"
-msgstr "予期しない root 要素 <%s> です、<device> が期待されます"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domain>"
-msgstr "予期しない root 要素 <%s> です、<domain> が期待されます"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domstatus>"
-msgstr "予期しない root 要素 <%s> です、<domstatus> が期待されます"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <interface>"
-msgstr "予期しない root 要素 <%s> です、<interface> が期待されます"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <network>"
-msgstr "予期しない root 要素 <%s> です、<network> が期待されます"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <pool>"
-msgstr "予期しない root 要素 <%s> です、<pool> が期待されます"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <qemuCaps>"
-msgstr "予期しない root 要素 <%s> です、<qemuCaps> が期待されます"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <secret>"
-msgstr "予期しない root 要素 <%s> です、<secret> が期待されます"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <volume>"
-msgstr "予期しない root 要素 <%s> です、<volume> が期待されます"
-
-msgid "unexpected root element, expecting <domain>"
-msgstr "期待されないルート要素です、<domain> が期待されます"
-
-#, c-format
-msgid "unexpected root element: '%s'"
-msgstr "予期しない root 要素: '%s'"
 
 #, c-format
 msgid "unexpected secret usage type %d"
@@ -37769,19 +37588,6 @@ msgstr "不明な redirdev キャラクターデバイスタイプ '%s' です"
 
 msgid "unknown rng-random backend"
 msgstr "不明な rng-random バックエンド"
-
-#, c-format
-msgid "unknown root element '%s' for filter binding"
-msgstr "フィルターバインディングの不明な root 要素 '%s'"
-
-msgid "unknown root element for network port"
-msgstr "ネットワークポートの不明な root 要素"
-
-msgid "unknown root element for nw filter"
-msgstr "ネットワークフィルターに対する不明な root 要素です"
-
-msgid "unknown root element for nwfilter binding"
-msgstr "nwfilter バインディングの不明な root 要素"
 
 msgid "unknown rule action attribute value"
 msgstr "不明なルール action 属性値"
@@ -39428,6 +39234,242 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "%s 3d acceleration is not supported"
+#~ msgstr "%s 3D アクセラレーションはサポートされていません"
+
+#~ msgid ""
+#~ "'reconnect' attribute  unsupported 'server' mode for <interface "
+#~ "type='vhostuser'>"
+#~ msgstr ""
+#~ "'reconnect' 属性  <interface type='vhostuser'> のサポートされない "
+#~ "'server' モード"
+
+#~ msgid "(network status)"
+#~ msgstr "(ネットワークステータス)"
+
+#~ msgid "(pool state)"
+#~ msgstr "(プール状態)"
+
+#~ msgid "A field data length violates the resource length boundary."
+#~ msgstr "フィールドデータの長さがリソースの長さの境界に違反しています。"
+
+#~ msgid "CCW address type is not supported by this QEMU"
+#~ msgstr "この QEMU では、CCW アドレスタイプはサポートされません"
+
+#~ msgid "Cannot parse <local> 'port' attribute with socket interface"
+#~ msgstr "ソケットインターフェイスで <local> 'port' 属性を解析できません"
+
+#~ msgid "Cannot parse <source> 'port' attribute with socket interface"
+#~ msgstr "ソケットインターフェイスで <source> 'port' 属性を解析できません"
+
+#~ msgid "Cannot update the read-only keyword: RO section not initialized."
+#~ msgstr ""
+#~ "読み取り専用キーワードを更新できません: RO セクションが初期化されていませ"
+#~ "ん。"
+
+#~ msgid ""
+#~ "Cannot update the read-write keyword: read-write section not initialized."
+#~ msgstr ""
+#~ "読み取り/書き込みキーワードを更新できません: 読み取り/書き込みセクションが"
+#~ "初期化されていません。"
+
+#~ msgid ""
+#~ "Cannot update the resource: a NULL keyword pointer has been provided."
+#~ msgstr ""
+#~ "リソースを更新できません: NULL キーワードポインターが提供されました。"
+
+#~ msgid ""
+#~ "Cannot update the resource: a NULL resource pointer has been provided."
+#~ msgstr "リソースを更新できません: NULL リソースポインターが提供されました。"
+
+#~ msgid "Checksum validation has failed"
+#~ msgstr "チェックサムの検証に失敗しました"
+
+#~ msgid "Could not parse a resource field data - VPD has invalid format"
+#~ msgstr ""
+#~ "リソースフィールドデータを解析できませんでした (VPD の形式が無効です)"
+
+#~ msgid "Could not read a part of a resource - VPD has invalid format"
+#~ msgstr "リソースの一部を読み取れませんでした (VPD の形式が無効です)"
+
+#~ msgid "Could not read a resource field header - VPD has invalid format"
+#~ msgstr ""
+#~ "リソースフィールドヘッダーを読み取れませんでした (VPD の形式が無効です)"
+
+#~ msgid "Could not update the VPD resource keyword: %s"
+#~ msgstr "VPD リソースキーワードを更新できませんでした: %s"
+
+#~ msgid ""
+#~ "Invalid attempt to set <interface type='ethernet'> device name with "
+#~ "<source dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest "
+#~ "dev='%s'/> (for guest-side) instead."
+#~ msgstr ""
+#~ "<interface type='ethernet'> デバイス名を <source dev='%s'/> で設定しようと"
+#~ "する無効な試み。代わりに <target dev='%s'/> (ホスト側) または<guest "
+#~ "dev='%s'/> (ゲスト側) を使用してください。"
+
+#~ msgid "No <local> 'address' attribute specified with socket interface"
+#~ msgstr ""
+#~ "ソケットインターフェイスとともに <local> の 'address' 属性が指定されていま"
+#~ "せん"
+
+#~ msgid "No <local> 'port' attribute specified with socket interface"
+#~ msgstr ""
+#~ "ソケットインターフェイスとともに <local> の 'port' 属性が指定されていませ"
+#~ "ん"
+
+#~ msgid "No <source> 'address' attribute specified with socket interface"
+#~ msgstr ""
+#~ "ソケットインターフェイスとともに <source> の 'address' 属性が指定されてい"
+#~ "ません"
+
+#~ msgid ""
+#~ "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
+#~ msgstr ""
+#~ "<interface type='bridge'/> とともに <source> の 'bridge' 属性が指定されて"
+#~ "いません"
+
+#~ msgid ""
+#~ "No <source> 'dev' attribute specified with <interface type='direct'/>"
+#~ msgstr ""
+#~ "<source> とともに <interface type='direct'/> の 'dev' 属性が指定されていま"
+#~ "せん"
+
+#~ msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
+#~ msgstr ""
+#~ "<source> とともに <interface type='vdpa'/> の 'dev' 属性が指定されていませ"
+#~ "ん"
+
+#~ msgid ""
+#~ "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "<interface type='vhostuser'/> とともに <source> の 'mode' 属性が指定されて"
+#~ "いません"
+
+#~ msgid ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+#~ msgstr ""
+#~ "<interface type='internal'/> とともに <source> の 'name' 属性が指定されて"
+#~ "いません"
+
+#~ msgid ""
+#~ "No <source> 'network' attribute specified with <interface type='network'/>"
+#~ msgstr ""
+#~ "<interface type='network'/> とともに <source> の 'network' 属性が指定され"
+#~ "ていません"
+
+#~ msgid ""
+#~ "No <source> 'path' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "<interface type='vhostuser'/> とともに <source> の 'path' 属性が指定されて"
+#~ "いません"
+
+#~ msgid "No <source> 'port' attribute specified with socket interface"
+#~ msgstr ""
+#~ "ソケットインターフェイスとともに <source> の 'port' 属性が指定されていませ"
+#~ "ん"
+
+#~ msgid ""
+#~ "No <source> 'type' attribute specified for <interface type='vhostuser'>"
+#~ msgstr ""
+#~ "<interface type='vhostuser'> とともに <source> の 'type' 属性が指定されて"
+#~ "いません"
+
+#~ msgid "Root element is not 'node'"
+#~ msgstr "Root エレメントは 'node' ではありません"
+
+#~ msgid ""
+#~ "The keyword is not comprised only of uppercase ASCII letters or digits"
+#~ msgstr "キーワードは大文字の ASCII 文字または数字だけで設定されていません"
+
+#~ msgid "The keyword length is not 2 bytes: %s"
+#~ msgstr "キーワードの長さは 2 バイトではありません: %s"
+
+#~ msgid "The string resource has invalid characters in its value"
+#~ msgstr "文字列リソースの値に無効な文字が含まれています"
+
+#~ msgid "Unable to parse port id '%s'"
+#~ msgstr "ポート ID '%s' を解析できません"
+
+#~ msgid "Unexpected RV keyword in the read-write section."
+#~ msgstr "読み取り/書き込みセクションの予期しない RV キーワード。"
+
+#~ msgid "Unexpected RW keyword in the read-only section."
+#~ msgstr "読み取り専用セクションの予期しない RW キーワード。"
+
+#~ msgid "Unexpected field value format encountered."
+#~ msgstr "予期しないフィールド値の形式が検出されました。"
+
+#~ msgid "Unknown mode has been specified"
+#~ msgstr "不明なモードが指定されました"
+
+#~ msgid ""
+#~ "Wrong <source> 'mode' attribute specified with <interface "
+#~ "type='vhostuser'/>"
+#~ msgstr ""
+#~ "<interface type='vhostuser'/> で 間違った <source> 'mode' 属性が指定されて"
+#~ "います"
+
+#~ msgid "XML does not contain expected 'cookie' element"
+#~ msgstr "XML には予期される 'cookie' 要素が含まれていません"
+
+#~ msgid "domainbackup"
+#~ msgstr "domainbackup"
+
+#~ msgid "domaincheckpoint"
+#~ msgstr "domaincheckpoint"
+
+#~ msgid "domainsnapshot"
+#~ msgstr "ドメインスナップショット"
+
+#~ msgid "invalid 'managed' value '%s'"
+#~ msgstr "無効な 'managed' 値 '%s'"
+
+#~ msgid "unexpected root element <%s> expecting <device>"
+#~ msgstr "予期しない root 要素 <%s> です、<device> が期待されます"
+
+#~ msgid "unexpected root element <%s>, expecting <domain>"
+#~ msgstr "予期しない root 要素 <%s> です、<domain> が期待されます"
+
+#~ msgid "unexpected root element <%s>, expecting <domstatus>"
+#~ msgstr "予期しない root 要素 <%s> です、<domstatus> が期待されます"
+
+#~ msgid "unexpected root element <%s>, expecting <interface>"
+#~ msgstr "予期しない root 要素 <%s> です、<interface> が期待されます"
+
+#~ msgid "unexpected root element <%s>, expecting <network>"
+#~ msgstr "予期しない root 要素 <%s> です、<network> が期待されます"
+
+#~ msgid "unexpected root element <%s>, expecting <pool>"
+#~ msgstr "予期しない root 要素 <%s> です、<pool> が期待されます"
+
+#~ msgid "unexpected root element <%s>, expecting <qemuCaps>"
+#~ msgstr "予期しない root 要素 <%s> です、<qemuCaps> が期待されます"
+
+#~ msgid "unexpected root element <%s>, expecting <secret>"
+#~ msgstr "予期しない root 要素 <%s> です、<secret> が期待されます"
+
+#~ msgid "unexpected root element <%s>, expecting <volume>"
+#~ msgstr "予期しない root 要素 <%s> です、<volume> が期待されます"
+
+#~ msgid "unexpected root element, expecting <domain>"
+#~ msgstr "期待されないルート要素です、<domain> が期待されます"
+
+#~ msgid "unexpected root element: '%s'"
+#~ msgstr "予期しない root 要素: '%s'"
+
+#~ msgid "unknown root element '%s' for filter binding"
+#~ msgstr "フィルターバインディングの不明な root 要素 '%s'"
+
+#~ msgid "unknown root element for network port"
+#~ msgstr "ネットワークポートの不明な root 要素"
+
+#~ msgid "unknown root element for nw filter"
+#~ msgstr "ネットワークフィルターに対する不明な root 要素です"
+
+#~ msgid "unknown root element for nwfilter binding"
+#~ msgstr "nwfilter バインディングの不明な root 要素"
 
 #~ msgid "Cannot parse controller index %s"
 #~ msgstr "コントローラーのインデックス %s を解析できません"

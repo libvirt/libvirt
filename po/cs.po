@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-09-27 08:07+0000\n"
+"POT-Creation-Date: 2022-10-25 07:42+0000\n"
 "PO-Revision-Date: 2021-07-21 11:38+0000\n"
 "Last-Translator: Matej Cepl <mcepl@cepl.eu>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -496,10 +496,6 @@ msgstr "%s %s „%s“ má nepodporovaný typ „%s“ – očekáváno „%s“
 #, c-format
 msgid "%s (out of %d)"
 msgstr "%s (z %d)"
-
-#, c-format
-msgid "%s 3d acceleration is not supported"
-msgstr "3d akcelerace %s není podporována"
 
 #, c-format
 msgid "%s array element does not contain a string"
@@ -1170,6 +1166,9 @@ msgstr ""
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "„:“ není dovoleno v názvu RBD zdrojového svazku „%s“"
 
+msgid "'<local>' element missing for 'udp' socket interface"
+msgstr ""
+
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr ""
 
@@ -1318,11 +1317,9 @@ msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "'queues' (fronty) jsou podporované pouze řadičem virtio-scsi"
 
 msgid ""
-"'reconnect' attribute  unsupported 'server' mode for <interface "
+"'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
 msgstr ""
-"atribut 'reconnect' nepodporovaný 'server' režim pro <interface "
-"type='vhostuser'>"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1431,9 +1428,6 @@ msgstr "(_cookie_stehovani)"
 msgid "(metadata_xml)"
 msgstr "(xml_metadata)"
 
-msgid "(network status)"
-msgstr "(stav sítě)"
-
 msgid "(network_definition)"
 msgstr "(definice_sítě)"
 
@@ -1457,9 +1451,6 @@ msgstr "(definice_nwfiltru)"
 #, fuzzy
 msgid "(nwfilterbinding_status)"
 msgstr "(definice_nwfiltru)"
-
-msgid "(pool state)"
-msgstr "(stav fondu)"
 
 msgid "(qemu_migration_cookie)"
 msgstr "(qemu_cookie_stehování)"
@@ -1573,6 +1564,12 @@ msgstr ""
 
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev: Rozhraní nenalezeno"
+
+msgid "3d acceleration is not supported by this QEMU binary"
+msgstr ""
+
+msgid "3d acceleration is supported only with 'virtio' video device"
+msgstr ""
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr ""
@@ -1696,9 +1693,6 @@ msgstr "Bylo vyžádáno různé zpětné volání"
 #, c-format
 msgid "A domain definition can have no more than one cipher node with name %s"
 msgstr "Definice domény nemůže mít více než jeden uzel cihper s názvem %s"
-
-msgid "A field data length violates the resource length boundary."
-msgstr ""
 
 msgid "A interface driver is already registered"
 msgstr "Ovladač zařízení už je zaregistrován"
@@ -2169,9 +2163,6 @@ msgstr "Zaneprázdněno"
 msgid "CA certificate:"
 msgstr "Certifikát cert. autority"
 
-msgid "CCW address type is not supported by this QEMU"
-msgstr "adresa typu CCW není tímto QEMU podporována"
-
 #, c-format
 msgid "CHS geometry can not be set for '%s' bus"
 msgstr ""
@@ -2276,11 +2267,6 @@ msgstr "frekvence procesoru:"
 
 msgid "CPU map:"
 msgstr "Mapa procesoru:"
-
-#, c-format
-msgid ""
-"CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -3144,12 +3130,6 @@ msgstr "Nedaří se zpracovat uzel <VirtualBox> <Machine>"
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "Nedaří se zpracovat <address> atribut 'irg'"
 
-msgid "Cannot parse <local> 'port' attribute with socket interface"
-msgstr "Nedaří se zpracovat <local> atribut 'port' se socket rozhraním"
-
-msgid "Cannot parse <source> 'port' attribute with socket interface"
-msgstr "Nedaří se zpracovat <source> atribut 'port' se socket rozhraním"
-
 #, c-format
 msgid "Cannot parse MAC address '%s' in network '%s'"
 msgstr "Nedaří se zpracovat MAC adresu „%s“ v síti „%s“"
@@ -3395,19 +3375,6 @@ msgstr "Není možné zrušit sdílení jmenného prostoru připojení (mount)"
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "Není možné zrušit sdílení neinicializované obsluhy CURL"
 
-msgid "Cannot update the read-only keyword: RO section not initialized."
-msgstr ""
-
-msgid ""
-"Cannot update the read-write keyword: read-write section not initialized."
-msgstr ""
-
-msgid "Cannot update the resource: a NULL keyword pointer has been provided."
-msgstr ""
-
-msgid "Cannot update the resource: a NULL resource pointer has been provided."
-msgstr ""
-
 #, c-format
 msgid "Cannot use direct socket mode for %s transport"
 msgstr "Pro transport %s není možné použít režim přímého soketu"
@@ -3618,9 +3585,6 @@ msgstr "Seznam kontrolních bodů"
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr "Kontrolní body mají nejednotné vztahy pro doménu %s"
-
-msgid "Checksum validation has failed"
-msgstr ""
 
 #, c-format
 msgid "Child process (%lld) unexpected %s"
@@ -4673,9 +4637,6 @@ msgstr "Nedaří se vyhodnotit VI API verze „%s“"
 msgid "Could not parse VPS ID %s"
 msgstr "Nedaří se zpracovat identifikátor VPS %s"
 
-msgid "Could not parse a resource field data - VPD has invalid format"
-msgstr ""
-
 #, c-format
 msgid "Could not parse barrier and limit of '%s' from config for container %d"
 msgstr ""
@@ -4738,12 +4699,6 @@ msgid "Could not read 'VE_PRIVATE' from config for container %d"
 msgstr "Nedaří se číst 'VE_PRIVATE' z nastavení pro kontejner %d"
 
 msgid "Could not read a device name from the <name> element"
-msgstr ""
-
-msgid "Could not read a part of a resource - VPD has invalid format"
-msgstr ""
-
-msgid "Could not read a resource field header - VPD has invalid format"
 msgstr ""
 
 #, c-format
@@ -4945,10 +4900,6 @@ msgstr "Nedaří se přenést data: %s (%d)"
 
 msgid "Could not translate keycode"
 msgstr "Nedaří se přeložit kód klávesy"
-
-#, c-format
-msgid "Could not update the VPD resource keyword: %s"
-msgstr ""
 
 msgid "Could not verify disk address"
 msgstr "Nedaří se ověřit adresu disku"
@@ -5966,6 +5917,10 @@ msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr ""
 "Pro adaptér 'scsi_host' je třeba, aby bylo zadáno buď 'name' (název), nebo "
 "'parent' (nadřazené)"
+
+#, c-format
+msgid "Either --%s or --%s must be provided"
+msgstr ""
 
 msgid "Eject the media"
 msgstr "Vysunout médium"
@@ -9757,16 +9712,6 @@ msgstr ""
 "Neplatný pokus o resetování PCI zařízení %s. Resetovat je možné pouze "
 "zařízení koncových bodů PCI"
 
-#, c-format
-msgid ""
-"Invalid attempt to set <interface type='ethernet'> device name with <source "
-"dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest dev='%s'/> (for "
-"guest-side) instead."
-msgstr ""
-"Neplatný pokus o nastavení <interface type='ethernet'> názvu zařízení s "
-"<source dev='%s'/>. Namísto toho použijte <target dev='%s'/> (pro stranu "
-"hostitele) nebo <guest dev='%s'/> (pro stranu hosta)."
-
 msgid ""
 "Invalid attempt to set network interface guest-side IP route and/or address "
 "info, not supported by QEMU"
@@ -10437,9 +10382,19 @@ msgid "Invalid value for attribute '%s' in element '%s': '%s'."
 msgstr ""
 
 #, c-format
+msgid "Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"
+msgstr ""
+
+#, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
+"integer value"
 msgstr ""
 
 #, c-format
@@ -11701,30 +11656,14 @@ msgstr "V JSON stavovém dokumentu chybí kolonka socks"
 msgid "Missing source channel attribute for char device"
 msgstr "Chybí atribut zdrojový kanál pro znakové zařízení"
 
-#, c-format
-msgid "Missing source connectionid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "Chybí atribut zdrojového hostitele pro znakové zařízení"
 
 msgid "Missing source path attribute for char device"
 msgstr "Chybí atribut zdrojový popis umístění pro znakové zařízení"
 
-#, c-format
-msgid "Missing source portgroup for interface type '%s'"
-msgstr ""
-
-#, c-format
-msgid "Missing source portid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source service attribute for char device"
 msgstr "Chybí atribut zdrojové služby pro znakové zařízení"
-
-#, c-format
-msgid "Missing source switchid for interface type '%s'"
-msgstr ""
 
 msgid "Missing storage block path"
 msgstr "Chybí popis umístění úložného bloku"
@@ -12169,55 +12108,6 @@ msgstr ""
 
 msgid "Nicdev support unavailable"
 msgstr "Podpora pro nicdev (síťové zařízení) není k dispozici"
-
-msgid "No <local> 'address' attribute specified with socket interface"
-msgstr "Nezadán žádný <local> atribut 'address' se socket rozhraním"
-
-msgid "No <local> 'port' attribute specified with socket interface"
-msgstr "Nezadán žádný <local> atribut 'port' se socket rozhraním"
-
-msgid "No <source> 'address' attribute specified with socket interface"
-msgstr "Nezadán žádný <source> atribut 'address' se socket rozhraním"
-
-msgid ""
-"No <source> 'bridge' attribute specified with <interface type='bridge'/>"
-msgstr ""
-"Pro <interface type='bridge'/> nezadán žádný <source> atribut 'bridge' (most)"
-
-msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
-msgstr "Nezadán žádný <source> atribut 'dev' s <interface type='internal'/>"
-
-msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
-msgstr ""
-
-msgid ""
-"No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"Pro <interface type='vhostuser'/> nezadán žádný <source> atribut "
-"'mode' (režim)"
-
-msgid ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
-msgstr "Nezadán žádný <source> atribut 'name' s <interface type='internal'/>"
-
-msgid ""
-"No <source> 'network' attribute specified with <interface type='network'/>"
-msgstr ""
-"Nezadán žádný atribut <source> (zdroj) 'network' (síť) s <interface "
-"type='network'/>"
-
-msgid ""
-"No <source> 'path' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"Pro <interface type='vhostuser'/> nezadán žádný <source> atribut "
-"'path' (popis umístění)"
-
-msgid "No <source> 'port' attribute specified with socket interface"
-msgstr "Nezadán žádný <source> atribut 'port' se socket rozhraním"
-
-msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
-msgstr ""
-"Pro <interface type='vhostuser'> nezadán žádný <source> atribut 'type' (typ)"
 
 msgid "No CA certificate path set to match server key/cert"
 msgstr ""
@@ -14074,9 +13964,6 @@ msgstr "Obnovit doménu ze zachyceného stavu"
 msgid "Revert domain to snapshot"
 msgstr "Obnovit doménu ze zachyceného stavu"
 
-msgid "Root element is not 'node'"
-msgstr "Kořenový prvek není „node“"
-
 #, c-format
 msgid "Route address '%s' conflicts with IP address for '%s'"
 msgstr "Adresa trasy „%s“ je v konfliktu s IP adresou pro „%s“"
@@ -14149,6 +14036,9 @@ msgstr "SATA není touto binárkou QEMU podporováno"
 
 #, c-format
 msgid "SATA unit index %d out of [0..29] range"
+msgstr ""
+
+msgid "SCHED_CORE not supported by kernel"
 msgstr ""
 
 #, c-format
@@ -14657,6 +14547,11 @@ msgstr "Sdílená paměť: \n"
 #, c-format
 msgid "Shell '%s' should have absolute path"
 msgstr "Shell „%s“ by měl mít absolutní popis umístění"
+
+msgid ""
+"Shortcut for calling the command with a single CPU model and no additional "
+"features"
+msgstr ""
 
 msgid "Should define both master and slave path attributes for nmdm device"
 msgstr ""
@@ -16163,13 +16058,6 @@ msgid ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
 msgstr "v tomto sestavení QEMU není řadič zvuku ich9-intel-hd_audio podporován"
 
-msgid "The keyword is not comprised only of uppercase ASCII letters or digits"
-msgstr ""
-
-#, c-format
-msgid "The keyword length is not 2 bytes: %s"
-msgstr ""
-
 msgid "The machine has no snapshot and it should have it"
 msgstr "Stroj nemá žádné zachycené stavy a přitom by měl mít"
 
@@ -16213,9 +16101,6 @@ msgstr "Server přesměrovává z „%s“ na „%s“"
 #, fuzzy
 msgid "The slirp-helper doesn't support migration"
 msgstr "slirp-helper není možné přestěhovat"
-
-msgid "The string resource has invalid characters in its value"
-msgstr ""
 
 #, c-format
 msgid "The vbox driver does not support %s SCSI controller model"
@@ -17208,6 +17093,9 @@ msgstr ""
 msgid "Unable to destroy '%s': device in use"
 msgstr ""
 
+msgid "Unable to detect SCHED_CORE"
+msgstr ""
+
 #, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "Nedaří se zjistit souborové systémy na %s"
@@ -17322,6 +17210,9 @@ msgstr "Nedaří se najít zachycený stav %s"
 #, fuzzy
 msgid "Unable to find a satisfying virtiofsd"
 msgstr "Nedaří se najít volný virtio-serial prot"
+
+msgid "Unable to find a vCPU that is online"
+msgstr ""
 
 #, c-format
 msgid "Unable to find address for mdev parent device '%s'"
@@ -17967,10 +17858,6 @@ msgid "Unable to parse cloud-hypervisor version: %s"
 msgstr ""
 
 #, c-format
-msgid "Unable to parse connectionid '%s'"
-msgstr ""
-
-#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "Nedaří se zpracovat stávající SELinux kontext „%s“"
 
@@ -17999,14 +17886,6 @@ msgstr "Nedaří se zpracovat stav zámku %s: %s"
 msgid "Unable to parse ovs-vsctl output"
 msgstr "Nedaří se zpracovat výstup z ovs-vsctl"
 
-#, c-format
-msgid "Unable to parse port id '%s'"
-msgstr "Nedaří se zpracovat číslo portu „%s“"
-
-#, c-format
-msgid "Unable to parse portid '%s'"
-msgstr ""
-
 msgid "Unable to parse quota"
 msgstr "Nedaří se zpracovat kvótu"
 
@@ -18025,10 +17904,6 @@ msgstr ""
 
 msgid "Unable to parse string parameter"
 msgstr "Nedaří se zpracovat parametr řetězec"
-
-#, c-format
-msgid "Unable to parse switchid '%s'"
-msgstr ""
 
 msgid "Unable to parse the xml"
 msgstr "Nedaří se zpracovat xml"
@@ -18311,6 +18186,10 @@ msgid "Unable to retrieve threadpool parameters"
 msgstr "Nedaří se číst parametry podprocesu"
 
 #, c-format
+msgid "Unable to run among %llu"
+msgstr ""
+
+#, c-format
 msgid "Unable to run command to get OVS master for interface %s"
 msgstr "Nedaří se spustit příkaz pro získání OVS hlavního pro rozhraní %s"
 
@@ -18412,6 +18291,9 @@ msgstr "Není možné nastavit blokování popisovače souborů %d"
 
 msgid "Unable to set IPV6_V6ONLY flag"
 msgstr "Nedaří se nastavit příznak IPV6_V6ONLY"
+
+msgid "Unable to set SCHED_CORE"
+msgstr ""
 
 #, c-format
 msgid "Unable to set SELinux context MCS '%s'"
@@ -18823,12 +18705,6 @@ msgstr ""
 "V průběhu mazání domény neočekávaně přišlo k tomu, že QEMU monitor je stále "
 "ještě aktivní"
 
-msgid "Unexpected RV keyword in the read-write section."
-msgstr ""
-
-msgid "Unexpected RW keyword in the read-only section."
-msgstr ""
-
 #, c-format
 msgid "Unexpected SCSI controller model %d"
 msgstr "Neočekávaný model SCSI řadiče %d"
@@ -18877,9 +18753,6 @@ msgid "Unexpected event thread still active during domain deletion"
 msgstr ""
 "V průběhu mazání domény neočekávaně přišlo k tomu, že QEMU agent je stále "
 "ještě aktivní"
-
-msgid "Unexpected field value format encountered."
-msgstr ""
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -19219,9 +19092,6 @@ msgstr ""
 "Neznámá hodnota režimu %s, očekáváno 'acpi', 'agent', 'initctl', 'signal', "
 "nebo 'paravirt'"
 
-msgid "Unknown mode has been specified"
-msgstr "Byl zadán neznámý režim"
-
 #, c-format
 msgid "Unknown model type '%s'"
 msgstr "Neznámý typ modelu „%s“"
@@ -19255,6 +19125,10 @@ msgstr ""
 
 msgid "Unknown return code"
 msgstr "Neznámý návratový kód"
+
+#, c-format
+msgid "Unknown sched_core value %s"
+msgstr ""
 
 #, c-format
 msgid "Unknown scsi_host subsystem protocol '%s'"
@@ -20075,11 +19949,6 @@ msgstr "Zápis „%s“ na „%s“ při vport vytvořit/smazat se nezdařil"
 msgid "Write to '%s' to trigger host scan failed"
 msgstr "Zápis do „%s“ pro spuštění skenu hostitele se nezdařil"
 
-msgid ""
-"Wrong <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"Zadán nesprávný <source> atribut 'mode' s <interface type='vhostuser'/>"
-
 msgid "Wrong MAC address"
 msgstr "Chybná MAC adresa"
 
@@ -20130,9 +19999,6 @@ msgstr "XML neobsahuje očekávaný prvek 'bios'"
 
 msgid "XML does not contain expected 'chassis' element"
 msgstr "XML neobsahuje očekávaný prvek 'chassis' (skříň)"
-
-msgid "XML does not contain expected 'cookie' element"
-msgstr "XML neobsahuje očekávaný prvek 'cookie'"
 
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML neobsahuje očekávaný prvek „cpu“ (procesor)"
@@ -21367,6 +21233,9 @@ msgstr "nedaří se stát vedoucím relace"
 
 msgid "cannot block signals"
 msgstr "nedaří se blokovat signály"
+
+msgid "cannot both keep and delete TPM"
+msgstr ""
 
 msgid "cannot both keep and delete nvram"
 msgstr "není možné nvram ponechat a zároveň smazat"
@@ -24880,20 +24749,8 @@ msgstr "domainMigratePrepare2 nenastavilo uri"
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare3 nenastavilo uri"
 
-#, fuzzy
-msgid "domainbackup"
-msgstr "typ domény"
-
-#, fuzzy
-msgid "domaincheckpoint"
-msgstr "(kontrolni_bod_domeny)"
-
 msgid "domains in 'doms' array must belong to a single connection"
 msgstr "je třeba, aby domény v poli 'doms' náležely do stejného spojení"
-
-#, fuzzy
-msgid "domainsnapshot"
-msgstr "(zachyceny_stav_domeny)"
 
 #, c-format
 msgid "doms array in %s must contain at least one domain"
@@ -28065,6 +27922,10 @@ msgstr "ovladač stavu zařízení není aktivní"
 msgid "interface stats not implemented on this platform"
 msgstr "statistiky rozhraní nejsou na této platformě implementovány"
 
+#, c-format
+msgid "interface type='%s' requires a 'source' element"
+msgstr ""
+
 msgid "internal"
 msgstr "interní"
 
@@ -28153,10 +28014,6 @@ msgstr "neplatné %s: „%s“"
 #, c-format
 msgid "invalid '=' after option --%s"
 msgstr "neplatné „=“ po volbě --%s"
-
-#, c-format
-msgid "invalid 'managed' value '%s'"
-msgstr "neplatná „managed“ (spravováno) hodnota „%s“"
 
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr ""
@@ -28999,6 +28856,9 @@ msgstr "formát kdump-compressed zde není podporován"
 
 msgid "kdump-compressed format is only supported with memory-only dump"
 msgstr "kdump komprimovaný formát je podporován pouze pro výpis pouze paměti"
+
+msgid "keep TPM state"
+msgstr ""
 
 msgid "keep nvram file"
 msgstr ""
@@ -33983,6 +33843,9 @@ msgstr ""
 msgid "removable is only valid for usb disks"
 msgstr "vyjímatelné je platné pouze pro usb disky"
 
+msgid "remove TPM state"
+msgstr ""
+
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "odebrat všechny související svazky úložiště (použijte obezřetně)"
 
@@ -34090,6 +33953,9 @@ msgstr "hlásit informace o virtuálním procesoru domény"
 
 msgid "report error if CPUs are incompatible"
 msgstr "hlásit chybu pokud procesory nejsou kompatibilní"
+
+msgid "report fd-based VM statistics by KVM"
+msgstr ""
 
 msgid "report filesystem information"
 msgstr "hlásit informace o souborovém systému"
@@ -36642,6 +36508,9 @@ msgstr "nedaří se číst standardní výstup podřízeného"
 msgid "unable to read domain master key file"
 msgstr "nedaří se číst soubor s hlavním klíčem domény"
 
+msgid "unable to read from pipe"
+msgstr ""
+
 #, c-format
 msgid "unable to read server cert %s"
 msgstr "nedaří se číst certifikát serveru %s"
@@ -36740,6 +36609,14 @@ msgstr "nedaří se nastavit kontext zabezpečení „%s“ na „%s“"
 
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "na macvtap se nedaří nastavit příznaky vnet nebo multiqeue"
+
+#, c-format
+msgid "unable to share scheduling cookie from %lld"
+msgstr ""
+
+#, c-format
+msgid "unable to share scheduling cookie to %lld"
+msgstr ""
 
 #, c-format
 msgid "unable to stat %s"
@@ -37113,49 +36990,6 @@ msgstr "neočekávaný problém při čtení xml zachyceného stavu"
 
 msgid "unexpected protocol type"
 msgstr "neočekávaný typ protokolu"
-
-#, c-format
-msgid "unexpected root element <%s> expecting <device>"
-msgstr "neočekávaný kořenový prvek <%s>, očekáváno <device>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domain>"
-msgstr "neočekávaný kořenový prvek <%s>, očekáváno <domain> (doména)"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domstatus>"
-msgstr "neočekávaný kořenový prvek <%s>, očekáváno <domstatus> (stav domény)"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <interface>"
-msgstr "neočekávaný kořenový prvek <%s>, očekáváno <interface>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <network>"
-msgstr "neočekávaný kořenový prvek <%s>, očekáváno <network>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <pool>"
-msgstr "neočekávaný kořenový prvek <%s>, očekáváno <pool>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <qemuCaps>"
-msgstr "neočekávaný kořenový prvek <%s>, očekává se <qemuCaps>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <secret>"
-msgstr "neočekávaný kořenový prvek <%s>, očekáváno <secret>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <volume>"
-msgstr "neočekávaný kořenový prvek <%s>, očekáváno <volume>"
-
-msgid "unexpected root element, expecting <domain>"
-msgstr "neočekávaný kořenový prvek, očekáváno <domain>"
-
-#, c-format
-msgid "unexpected root element: '%s'"
-msgstr "neočekávaný kořenový prvek: „%s“"
 
 #, c-format
 msgid "unexpected secret usage type %d"
@@ -37605,21 +37439,6 @@ msgstr "neznámý typ znakového zařízení pro přesměrování „%s“"
 
 msgid "unknown rng-random backend"
 msgstr "neznámá podpůrná vrstva pro rng-random"
-
-#, fuzzy, c-format
-msgid "unknown root element '%s' for filter binding"
-msgstr "neznámý kořenový prvek pro nw filtr"
-
-#, fuzzy
-msgid "unknown root element for network port"
-msgstr "neznámý kořenový prvek pro nw filtr"
-
-msgid "unknown root element for nw filter"
-msgstr "neznámý kořenový prvek pro nw filtr"
-
-#, fuzzy
-msgid "unknown root element for nwfilter binding"
-msgstr "neznámý kořenový prvek pro nw filtr"
 
 msgid "unknown rule action attribute value"
 msgstr "neznámá hodnota atributu akce pravidla"
@@ -39256,6 +39075,173 @@ msgstr "zóna %s vyžadována pro sít %s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <řetězec>}…"
+
+#~ msgid "%s 3d acceleration is not supported"
+#~ msgstr "3d akcelerace %s není podporována"
+
+#~ msgid ""
+#~ "'reconnect' attribute  unsupported 'server' mode for <interface "
+#~ "type='vhostuser'>"
+#~ msgstr ""
+#~ "atribut 'reconnect' nepodporovaný 'server' režim pro <interface "
+#~ "type='vhostuser'>"
+
+#~ msgid "(network status)"
+#~ msgstr "(stav sítě)"
+
+#~ msgid "(pool state)"
+#~ msgstr "(stav fondu)"
+
+#~ msgid "CCW address type is not supported by this QEMU"
+#~ msgstr "adresa typu CCW není tímto QEMU podporována"
+
+#~ msgid "Cannot parse <local> 'port' attribute with socket interface"
+#~ msgstr "Nedaří se zpracovat <local> atribut 'port' se socket rozhraním"
+
+#~ msgid "Cannot parse <source> 'port' attribute with socket interface"
+#~ msgstr "Nedaří se zpracovat <source> atribut 'port' se socket rozhraním"
+
+#~ msgid ""
+#~ "Invalid attempt to set <interface type='ethernet'> device name with "
+#~ "<source dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest "
+#~ "dev='%s'/> (for guest-side) instead."
+#~ msgstr ""
+#~ "Neplatný pokus o nastavení <interface type='ethernet'> názvu zařízení s "
+#~ "<source dev='%s'/>. Namísto toho použijte <target dev='%s'/> (pro stranu "
+#~ "hostitele) nebo <guest dev='%s'/> (pro stranu hosta)."
+
+#~ msgid "No <local> 'address' attribute specified with socket interface"
+#~ msgstr "Nezadán žádný <local> atribut 'address' se socket rozhraním"
+
+#~ msgid "No <local> 'port' attribute specified with socket interface"
+#~ msgstr "Nezadán žádný <local> atribut 'port' se socket rozhraním"
+
+#~ msgid "No <source> 'address' attribute specified with socket interface"
+#~ msgstr "Nezadán žádný <source> atribut 'address' se socket rozhraním"
+
+#~ msgid ""
+#~ "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
+#~ msgstr ""
+#~ "Pro <interface type='bridge'/> nezadán žádný <source> atribut "
+#~ "'bridge' (most)"
+
+#~ msgid ""
+#~ "No <source> 'dev' attribute specified with <interface type='direct'/>"
+#~ msgstr "Nezadán žádný <source> atribut 'dev' s <interface type='internal'/>"
+
+#~ msgid ""
+#~ "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "Pro <interface type='vhostuser'/> nezadán žádný <source> atribut "
+#~ "'mode' (režim)"
+
+#~ msgid ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+#~ msgstr ""
+#~ "Nezadán žádný <source> atribut 'name' s <interface type='internal'/>"
+
+#~ msgid ""
+#~ "No <source> 'network' attribute specified with <interface type='network'/>"
+#~ msgstr ""
+#~ "Nezadán žádný atribut <source> (zdroj) 'network' (síť) s <interface "
+#~ "type='network'/>"
+
+#~ msgid ""
+#~ "No <source> 'path' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "Pro <interface type='vhostuser'/> nezadán žádný <source> atribut "
+#~ "'path' (popis umístění)"
+
+#~ msgid "No <source> 'port' attribute specified with socket interface"
+#~ msgstr "Nezadán žádný <source> atribut 'port' se socket rozhraním"
+
+#~ msgid ""
+#~ "No <source> 'type' attribute specified for <interface type='vhostuser'>"
+#~ msgstr ""
+#~ "Pro <interface type='vhostuser'> nezadán žádný <source> atribut "
+#~ "'type' (typ)"
+
+#~ msgid "Root element is not 'node'"
+#~ msgstr "Kořenový prvek není „node“"
+
+#~ msgid "Unable to parse port id '%s'"
+#~ msgstr "Nedaří se zpracovat číslo portu „%s“"
+
+#~ msgid "Unknown mode has been specified"
+#~ msgstr "Byl zadán neznámý režim"
+
+#~ msgid ""
+#~ "Wrong <source> 'mode' attribute specified with <interface "
+#~ "type='vhostuser'/>"
+#~ msgstr ""
+#~ "Zadán nesprávný <source> atribut 'mode' s <interface type='vhostuser'/>"
+
+#~ msgid "XML does not contain expected 'cookie' element"
+#~ msgstr "XML neobsahuje očekávaný prvek 'cookie'"
+
+#, fuzzy
+#~ msgid "domainbackup"
+#~ msgstr "typ domény"
+
+#, fuzzy
+#~ msgid "domaincheckpoint"
+#~ msgstr "(kontrolni_bod_domeny)"
+
+#, fuzzy
+#~ msgid "domainsnapshot"
+#~ msgstr "(zachyceny_stav_domeny)"
+
+#~ msgid "invalid 'managed' value '%s'"
+#~ msgstr "neplatná „managed“ (spravováno) hodnota „%s“"
+
+#~ msgid "unexpected root element <%s> expecting <device>"
+#~ msgstr "neočekávaný kořenový prvek <%s>, očekáváno <device>"
+
+#~ msgid "unexpected root element <%s>, expecting <domain>"
+#~ msgstr "neočekávaný kořenový prvek <%s>, očekáváno <domain> (doména)"
+
+#~ msgid "unexpected root element <%s>, expecting <domstatus>"
+#~ msgstr ""
+#~ "neočekávaný kořenový prvek <%s>, očekáváno <domstatus> (stav domény)"
+
+#~ msgid "unexpected root element <%s>, expecting <interface>"
+#~ msgstr "neočekávaný kořenový prvek <%s>, očekáváno <interface>"
+
+#~ msgid "unexpected root element <%s>, expecting <network>"
+#~ msgstr "neočekávaný kořenový prvek <%s>, očekáváno <network>"
+
+#~ msgid "unexpected root element <%s>, expecting <pool>"
+#~ msgstr "neočekávaný kořenový prvek <%s>, očekáváno <pool>"
+
+#~ msgid "unexpected root element <%s>, expecting <qemuCaps>"
+#~ msgstr "neočekávaný kořenový prvek <%s>, očekává se <qemuCaps>"
+
+#~ msgid "unexpected root element <%s>, expecting <secret>"
+#~ msgstr "neočekávaný kořenový prvek <%s>, očekáváno <secret>"
+
+#~ msgid "unexpected root element <%s>, expecting <volume>"
+#~ msgstr "neočekávaný kořenový prvek <%s>, očekáváno <volume>"
+
+#~ msgid "unexpected root element, expecting <domain>"
+#~ msgstr "neočekávaný kořenový prvek, očekáváno <domain>"
+
+#~ msgid "unexpected root element: '%s'"
+#~ msgstr "neočekávaný kořenový prvek: „%s“"
+
+#, fuzzy
+#~ msgid "unknown root element '%s' for filter binding"
+#~ msgstr "neznámý kořenový prvek pro nw filtr"
+
+#, fuzzy
+#~ msgid "unknown root element for network port"
+#~ msgstr "neznámý kořenový prvek pro nw filtr"
+
+#~ msgid "unknown root element for nw filter"
+#~ msgstr "neznámý kořenový prvek pro nw filtr"
+
+#, fuzzy
+#~ msgid "unknown root element for nwfilter binding"
+#~ msgstr "neznámý kořenový prvek pro nw filtr"
 
 #~ msgid "Cannot parse controller index %s"
 #~ msgstr "Nedaří se zpracovat pořadové číslo (index) %s řadiče"

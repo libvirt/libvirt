@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-09-27 08:07+0000\n"
+"POT-Creation-Date: 2022-10-25 07:42+0000\n"
 "PO-Revision-Date: 2022-09-25 12:19+0000\n"
 "Last-Translator: zhanchun li <lzc777@126.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -536,10 +536,6 @@ msgstr "%s %s '%s' 不支持 '%s' 类型，应为 '%s' 或者 '%s'"
 #, c-format
 msgid "%s (out of %d)"
 msgstr "%s （%d 中的）"
-
-#, c-format
-msgid "%s 3d acceleration is not supported"
-msgstr "%s 不支持 3d 加速"
 
 #, c-format
 msgid "%s array element does not contain a string"
@@ -1186,6 +1182,9 @@ msgstr "'-wipe-storage' 需要 '--storage <string>' 或 '--remove-all-storage'"
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "RBD 源卷名称 '%s' 中部允许使用 ':'"
 
+msgid "'<local>' element missing for 'udp' socket interface"
+msgstr ""
+
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr "必须为 scsi hostdev 源指定\"adapter\"名称"
 
@@ -1328,9 +1327,9 @@ msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "只有 virtio-scsi 支持 'queues'"
 
 msgid ""
-"'reconnect' attribute  unsupported 'server' mode for <interface "
+"'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
-msgstr "'reconnect' 属性不支持 <interface type='vhostuser'> 的 'server' 模式"
+msgstr ""
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1436,9 +1435,6 @@ msgstr "(libxl_migration_cookie)"
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
 
-msgid "(network status)"
-msgstr "（网络状态）"
-
 msgid "(network_definition)"
 msgstr "(network_definition)"
 
@@ -1459,9 +1455,6 @@ msgstr "(nwfilterbinding_definition)"
 
 msgid "(nwfilterbinding_status)"
 msgstr "(nwfilterbinding_status)"
-
-msgid "(pool state)"
-msgstr "（池状态）"
 
 msgid "(qemu_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
@@ -1569,6 +1562,12 @@ msgstr ""
 
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev：未找到接口"
+
+msgid "3d acceleration is not supported by this QEMU binary"
+msgstr ""
+
+msgid "3d acceleration is supported only with 'virtio' video device"
+msgstr ""
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64 位 PCI hole 设置仅适用于 root PCI 控制器"
@@ -1680,9 +1679,6 @@ msgstr "要求使用不同的 callback"
 #, c-format
 msgid "A domain definition can have no more than one cipher node with name %s"
 msgstr "域定义不能有多个具有名称 %s 的密码节点"
-
-msgid "A field data length violates the resource length boundary."
-msgstr "字段数据长度违反了资源长度边界。"
 
 msgid "A interface driver is already registered"
 msgstr "接口驱动程序已注册"
@@ -2127,9 +2123,6 @@ msgstr "忙碌"
 msgid "CA certificate:"
 msgstr "CA 证书："
 
-msgid "CCW address type is not supported by this QEMU"
-msgstr "此 QEMU 不支持 CCW 地址类型"
-
 #, c-format
 msgid "CHS geometry can not be set for '%s' bus"
 msgstr "不能为 '%s' 总线设置 CHS 几何图形"
@@ -2222,11 +2215,6 @@ msgstr "CPU 频率："
 
 msgid "CPU map:"
 msgstr "CPU 映射："
-
-#, c-format
-msgid ""
-"CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -3048,12 +3036,6 @@ msgstr "无法解析 <VirtualBox> <Machine> 节点"
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "无法解析 <address> 'port' 属性"
 
-msgid "Cannot parse <local> 'port' attribute with socket interface"
-msgstr "无法解析带套接自接口的 <local> 'port' 属性"
-
-msgid "Cannot parse <source> 'port' attribute with socket interface"
-msgstr "无法解析带套接自接口的 <source> 'port' 属性"
-
 #, c-format
 msgid "Cannot parse MAC address '%s' in network '%s'"
 msgstr "无法解析网络 '%s' 中的 MAC 地址 '%s'"
@@ -3290,19 +3272,6 @@ msgstr "无法取消共享挂载名称空间"
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "无法取消共享未初始化的 CRUL 句柄"
 
-msgid "Cannot update the read-only keyword: RO section not initialized."
-msgstr "无法更新只读关键字：RO 部分未被初始化。"
-
-msgid ""
-"Cannot update the read-write keyword: read-write section not initialized."
-msgstr "无法更新 read-write 关键字：读写部分未被初始化。"
-
-msgid "Cannot update the resource: a NULL keyword pointer has been provided."
-msgstr "无法更新资源：已提供了一个 NULL 关键字指针。"
-
-msgid "Cannot update the resource: a NULL resource pointer has been provided."
-msgstr "无法更新资源：已提供了一个 NULL 资源指针。"
-
 #, c-format
 msgid "Cannot use direct socket mode for %s transport"
 msgstr "无法对 %s 传输直接使用套接字模式"
@@ -3501,9 +3470,6 @@ msgstr "检查点列表"
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr "域 %s 的检查点关系不一致"
-
-msgid "Checksum validation has failed"
-msgstr "校验和验证失败"
 
 #, c-format
 msgid "Child process (%lld) unexpected %s"
@@ -4529,9 +4495,6 @@ msgstr "无法解析 VI API 版本 '%s'"
 msgid "Could not parse VPS ID %s"
 msgstr "无法解析 VPS ID %s"
 
-msgid "Could not parse a resource field data - VPD has invalid format"
-msgstr "无法解析资源字段数据 - VPD 具有无效的格式"
-
 #, c-format
 msgid "Could not parse barrier and limit of '%s' from config for container %d"
 msgstr "'%s' 屏障和限制无法从 config 中为容器 %d 解析"
@@ -4594,12 +4557,6 @@ msgstr "无法为容器 %d 在 config 中读取 'VE_PRIVATE'"
 
 msgid "Could not read a device name from the <name> element"
 msgstr "无法从 <name> 元素读取设备名称"
-
-msgid "Could not read a part of a resource - VPD has invalid format"
-msgstr "无法读取资源的一部分 - VPD 具有无效的格式"
-
-msgid "Could not read a resource field header - VPD has invalid format"
-msgstr "无法读取资源字段标头 - VPD 具有无效的格式"
 
 #, c-format
 msgid "Could not read config for container %d"
@@ -4800,10 +4757,6 @@ msgstr "无法传输数据：%s (%d)"
 
 msgid "Could not translate keycode"
 msgstr "无法转换 keycode"
-
-#, c-format
-msgid "Could not update the VPD resource keyword: %s"
-msgstr "无法更新 VPD 资源关键字：%s"
 
 msgid "Could not verify disk address"
 msgstr "无法确认磁盘地址"
@@ -5776,6 +5729,10 @@ msgstr "为命名快照编辑域快照 XML"
 
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "必须为 'scsi_host' 适配器指定 'name' 或者 'parent"
+
+#, c-format
+msgid "Either --%s or --%s must be provided"
+msgstr ""
 
 msgid "Eject the media"
 msgstr "弹出介质"
@@ -9423,15 +9380,6 @@ msgid ""
 "reset"
 msgstr "尝试重置 PCI 设备 %s 无效。只有 PCI 端点设备才能被重置"
 
-#, c-format
-msgid ""
-"Invalid attempt to set <interface type='ethernet'> device name with <source "
-"dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest dev='%s'/> (for "
-"guest-side) instead."
-msgstr ""
-"尝试使用 <source dev='%s'/> 设置 <interface type='ethernet'> 设备名称无效。请"
-"使用 <target dev='%s'/> （对于主机端）或 <guest dev='%s'/> （对于客户机端）。"
-
 msgid ""
 "Invalid attempt to set network interface guest-side IP route and/or address "
 "info, not supported by QEMU"
@@ -10070,10 +10018,20 @@ msgid "Invalid value for attribute '%s' in element '%s': '%s'."
 msgstr "元素 '%s' 中属性 '%s' 的无效值: '%s'"
 
 #, c-format
+msgid "Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"
+msgstr ""
+
+#, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
 msgstr "元素 '%s' 中属性 '%s' 的无效值: '%s' 。期望为整数值"
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
+"integer value"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -11279,30 +11237,14 @@ msgstr "JSON 状态文件中缺少 socks 字段"
 msgid "Missing source channel attribute for char device"
 msgstr "字符设备缺少 source channel 属性"
 
-#, c-format
-msgid "Missing source connectionid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "缺少字符设备的源主机属性"
 
 msgid "Missing source path attribute for char device"
 msgstr "缺少字符设备的源路径属性"
 
-#, c-format
-msgid "Missing source portgroup for interface type '%s'"
-msgstr ""
-
-#, c-format
-msgid "Missing source portid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source service attribute for char device"
 msgstr "缺少字符设备的源服务属性"
-
-#, c-format
-msgid "Missing source switchid for interface type '%s'"
-msgstr ""
 
 msgid "Missing storage block path"
 msgstr "缺少存储块路径"
@@ -11730,47 +11672,6 @@ msgstr "新块设备大小，以整数计（默认为 KiB）"
 
 msgid "Nicdev support unavailable"
 msgstr "Nicdev 支持不可用"
-
-msgid "No <local> 'address' attribute specified with socket interface"
-msgstr "没有使用套接自接口指定的 <local> 'address' 属性"
-
-msgid "No <local> 'port' attribute specified with socket interface"
-msgstr "没有使用套接字接口指定的 <local>‘port’属性"
-
-msgid "No <source> 'address' attribute specified with socket interface"
-msgstr "没有使用套接自接口指定的 <source> 'address' 属性"
-
-msgid ""
-"No <source> 'bridge' attribute specified with <interface type='bridge'/>"
-msgstr "没有<source> <interface type='bridge'/> 指定的 'bridge' 属性"
-
-msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
-msgstr "<source> 'dev' 属性中未指定任何 <interface type='direct'/>"
-
-msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
-msgstr "没有使用 <interface type='vdpa'/> 指定的 'dev' 属性"
-
-msgid ""
-"No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr "没有使用 <interface type='vhostuser'/> 指定 的 <source> 'mode' 属性"
-
-msgid ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
-msgstr "没有使用 <interface type='internal'/> 指定的 <source> 'name' 属性"
-
-msgid ""
-"No <source> 'network' attribute specified with <interface type='network'/>"
-msgstr "没有使用 <interface type='network'/> 指定的 <source>‘networking’属性"
-
-msgid ""
-"No <source> 'path' attribute specified with <interface type='vhostuser'/>"
-msgstr "没有使用 <interface type='vhostuser'/> 指定的<source> 'path' 属性"
-
-msgid "No <source> 'port' attribute specified with socket interface"
-msgstr "没有使用套接字接口指定的 <source>‘port’属性"
-
-msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
-msgstr "没有为 <interface type='vhostuser'> 指定 <source> 'type' 属性"
 
 msgid "No CA certificate path set to match server key/cert"
 msgstr "没有设置为与服务器密钥/证书匹配的 CA 证书路径"
@@ -13544,9 +13445,6 @@ msgstr "将域转换为快照"
 msgid "Revert domain to snapshot"
 msgstr "将域转换为快照"
 
-msgid "Root element is not 'node'"
-msgstr "根元素不是 'node'"
-
 #, c-format
 msgid "Route address '%s' conflicts with IP address for '%s'"
 msgstr "路由地址 '%s' 与 '%s' 的 IP 地址冲突"
@@ -13616,6 +13514,9 @@ msgstr "这个 QEMU 二进制中不支持 SATA"
 #, c-format
 msgid "SATA unit index %d out of [0..29] range"
 msgstr "SATA 单元索引 %d 超出 [0..29] 范围"
+
+msgid "SCHED_CORE not supported by kernel"
+msgstr ""
 
 #, c-format
 msgid "SCSI bus index %d out of [0] range"
@@ -14095,6 +13996,11 @@ msgstr "共享内存：\n"
 #, c-format
 msgid "Shell '%s' should have absolute path"
 msgstr "应该以绝对路径方式运行shell '%s'"
+
+msgid ""
+"Shortcut for calling the command with a single CPU model and no additional "
+"features"
+msgstr ""
 
 msgid "Should define both master and slave path attributes for nmdm device"
 msgstr "应该为 nmdm 设备定义主和从路径属性"
@@ -15526,13 +15432,6 @@ msgid ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 ich9-intel-hda 音频控制器"
 
-msgid "The keyword is not comprised only of uppercase ASCII letters or digits"
-msgstr "关键字不能仅包含大写 ASCII 字母或数字"
-
-#, c-format
-msgid "The keyword length is not 2 bytes: %s"
-msgstr "关键字长度不是 2 字节：%s"
-
 msgid "The machine has no snapshot and it should have it"
 msgstr "机器没有快照，但应该有"
 
@@ -15571,9 +15470,6 @@ msgstr "从 '%s' 重新指向 '%s' 的服务器"
 
 msgid "The slirp-helper doesn't support migration"
 msgstr "slirp-helper 不支持迁移"
-
-msgid "The string resource has invalid characters in its value"
-msgstr "字符串资源在其值中有无效的字符"
 
 #, c-format
 msgid "The vbox driver does not support %s SCSI controller model"
@@ -16534,6 +16430,9 @@ msgstr "无法销毁 '%s'：%s"
 msgid "Unable to destroy '%s': device in use"
 msgstr "无法销毁 '%s': 设备在使用"
 
+msgid "Unable to detect SCHED_CORE"
+msgstr ""
+
 #, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "无法为 %s 探测文件系统"
@@ -16644,6 +16543,9 @@ msgstr "无法找到一个满意的 vhost-user-gpu"
 
 msgid "Unable to find a satisfying virtiofsd"
 msgstr "无法找到一个满意的 virtiofsd"
+
+msgid "Unable to find a vCPU that is online"
+msgstr ""
 
 #, c-format
 msgid "Unable to find address for mdev parent device '%s'"
@@ -17282,10 +17184,6 @@ msgid "Unable to parse cloud-hypervisor version: %s"
 msgstr "无法解析 cloud-hypervisor 版本：%s"
 
 #, c-format
-msgid "Unable to parse connectionid '%s'"
-msgstr ""
-
-#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "无法解析当前进程上下文 '%s'"
 
@@ -17314,14 +17212,6 @@ msgstr "无法解析锁状态 %s: %s"
 msgid "Unable to parse ovs-vsctl output"
 msgstr "无法解析 ovs-vsctl 输出"
 
-#, c-format
-msgid "Unable to parse port id '%s'"
-msgstr "无法解析端口 id '%s'"
-
-#, c-format
-msgid "Unable to parse portid '%s'"
-msgstr ""
-
 msgid "Unable to parse quota"
 msgstr "无法解析配额"
 
@@ -17339,10 +17229,6 @@ msgstr "无法解析 secret uuid '%s'"
 
 msgid "Unable to parse string parameter"
 msgstr "无法解析字符串参数"
-
-#, c-format
-msgid "Unable to parse switchid '%s'"
-msgstr ""
 
 msgid "Unable to parse the xml"
 msgstr "无法解析 xml"
@@ -17618,6 +17504,10 @@ msgid "Unable to retrieve threadpool parameters"
 msgstr "无法检索 threadpool 参数"
 
 #, c-format
+msgid "Unable to run among %llu"
+msgstr ""
+
+#, c-format
 msgid "Unable to run command to get OVS master for interface %s"
 msgstr "无法运行命令来获取接口 %s 的主 OVS"
 
@@ -17719,6 +17609,9 @@ msgstr "无法设置 FD %d 阻断"
 
 msgid "Unable to set IPV6_V6ONLY flag"
 msgstr "无法设置 IPV6_V6ONLY 标记"
+
+msgid "Unable to set SCHED_CORE"
+msgstr ""
 
 #, c-format
 msgid "Unable to set SELinux context MCS '%s'"
@@ -18113,12 +18006,6 @@ msgstr "删除域的过程中意外 QEMU 代理仍活跃"
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "删除域的过程中 QEMU 监控器仍活跃"
 
-msgid "Unexpected RV keyword in the read-write section."
-msgstr "读-写部分中意外的 RV 关键字。"
-
-msgid "Unexpected RW keyword in the read-only section."
-msgstr "只读部分中意外的 RW 关键字。"
-
 #, c-format
 msgid "Unexpected SCSI controller model %d"
 msgstr "意外的 SCSI 控制器型号 %d"
@@ -18164,9 +18051,6 @@ msgstr "CPU 图 '%s' 中意外的元素 '%s'"
 
 msgid "Unexpected event thread still active during domain deletion"
 msgstr "在删除域的过程中，意外的事件线程仍然活跃"
-
-msgid "Unexpected field value format encountered."
-msgstr "遇到了意外的字段值格式。"
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -18504,9 +18388,6 @@ msgid ""
 msgstr ""
 "未知的模式 %s 值、预期为 'acpi'、'agent'、'initctl'、'signal' 或 'paravirt'"
 
-msgid "Unknown mode has been specified"
-msgstr "指定了未知模式"
-
 #, c-format
 msgid "Unknown model type '%s'"
 msgstr "位置型号类型 '%s'"
@@ -18540,6 +18421,10 @@ msgstr "未知的远程模式 '%s'"
 
 msgid "Unknown return code"
 msgstr "未知的返回代码"
+
+#, c-format
+msgid "Unknown sched_core value %s"
+msgstr ""
 
 #, c-format
 msgid "Unknown scsi_host subsystem protocol '%s'"
@@ -19352,10 +19237,6 @@ msgstr "在创建/删除 vport 过程中将 '%s' 写入 '%s' 失败"
 msgid "Write to '%s' to trigger host scan failed"
 msgstr "写入 '%s' 激活主机扫描失败"
 
-msgid ""
-"Wrong <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr "使用 <interface type='vhostuser'/> 指定的错误的 <source> 'mode' 属性"
-
 msgid "Wrong MAC address"
 msgstr "错误 MAC 地址"
 
@@ -19406,9 +19287,6 @@ msgstr "XML 不包含预期的 'bios' 元素"
 
 msgid "XML does not contain expected 'chassis' element"
 msgstr "XML 不包含预期的 'chassis' 元素"
-
-msgid "XML does not contain expected 'cookie' element"
-msgstr "XML 不包含预期的 'cookie' 元素"
 
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML 不包含预期的‘cpu’ 元素"
@@ -20568,6 +20446,9 @@ msgstr "无法成为会话领导者"
 
 msgid "cannot block signals"
 msgstr "无法阻断信号"
+
+msgid "cannot both keep and delete TPM"
+msgstr ""
 
 msgid "cannot both keep and delete nvram"
 msgstr "无法保留和删除 nvram"
@@ -23960,17 +23841,8 @@ msgstr "domainMigratePrepare2 没有设定 uri"
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare3 没有设定 uri"
 
-msgid "domainbackup"
-msgstr "domainbackup"
-
-msgid "domaincheckpoint"
-msgstr "domaincheckpoint"
-
 msgid "domains in 'doms' array must belong to a single connection"
 msgstr "'doms' 数组中的域必须属于一个连接"
-
-msgid "domainsnapshot"
-msgstr "域快照"
 
 #, c-format
 msgid "doms array in %s must contain at least one domain"
@@ -27032,6 +26904,10 @@ msgstr "接口状态驱动程序没有处于活动状态"
 msgid "interface stats not implemented on this platform"
 msgstr "在这个平台中未采用接口 stats"
 
+#, c-format
+msgid "interface type='%s' requires a 'source' element"
+msgstr ""
+
 msgid "internal"
 msgstr "内部"
 
@@ -27110,10 +26986,6 @@ msgstr "无效的%s: '%s'"
 #, c-format
 msgid "invalid '=' after option --%s"
 msgstr "选项 --%s 后面不需要'='"
-
-#, c-format
-msgid "invalid 'managed' value '%s'"
-msgstr "无效的 'managed' 值 '%s'"
 
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr "vhostuser 磁盘源的无效的 'type' 属性"
@@ -27926,6 +27798,9 @@ msgstr "这里不支持 kdump 压缩格式"
 
 msgid "kdump-compressed format is only supported with memory-only dump"
 msgstr "kdump 压缩格式只支持内存转储"
+
+msgid "keep TPM state"
+msgstr ""
 
 msgid "keep nvram file"
 msgstr "保持 nvram 文件"
@@ -32676,6 +32551,9 @@ msgstr ""
 msgid "removable is only valid for usb disks"
 msgstr "removable 只能用于 usb 磁盘"
 
+msgid "remove TPM state"
+msgstr ""
+
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "删除关联的存储卷（小心使用）"
 
@@ -32776,6 +32654,9 @@ msgstr "报告域虚拟 CPU 信息"
 
 msgid "report error if CPUs are incompatible"
 msgstr "如果 CPU 不兼容，则报告错误"
+
+msgid "report fd-based VM statistics by KVM"
+msgstr ""
 
 msgid "report filesystem information"
 msgstr "报告文件系统信息"
@@ -35215,6 +35096,9 @@ msgstr "无法读取子标准输出"
 msgid "unable to read domain master key file"
 msgstr "无法读取域主密钥文件"
 
+msgid "unable to read from pipe"
+msgstr ""
+
 #, c-format
 msgid "unable to read server cert %s"
 msgstr "无法读取服务器证书 %s"
@@ -35313,6 +35197,14 @@ msgstr "无法在 中将用户和组设定为 '%ld:%ld' '%s'"
 
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "无法在 macvtap 上设置 vnet 或 multiqueue 标志"
+
+#, c-format
+msgid "unable to share scheduling cookie from %lld"
+msgstr ""
+
+#, c-format
+msgid "unable to share scheduling cookie to %lld"
+msgstr ""
 
 #, c-format
 msgid "unable to stat %s"
@@ -35683,49 +35575,6 @@ msgstr "读取快照 xml 时的意外问题"
 
 msgid "unexpected protocol type"
 msgstr "意外规则协议"
-
-#, c-format
-msgid "unexpected root element <%s> expecting <device>"
-msgstr "意外的 root 元素 <%s>，应为 <device>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domain>"
-msgstr "意外的 root 元素 <%s>，应为 <domain>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domstatus>"
-msgstr "意外的 root 元素 <%s>，应为 <domstatus>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <interface>"
-msgstr "意外的 root 元素 <%s>，应为 <interface>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <network>"
-msgstr "意外的 root 元素 <%s>，应为 <network>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <pool>"
-msgstr "错误的 root 元素 <%s>，应为 <pool>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <qemuCaps>"
-msgstr "意外的 root 元素 <%s>，应为 <qemuCaps>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <secret>"
-msgstr "意外的 root 元素 <%s>，应为 <secret>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <volume>"
-msgstr "错误的 root 元素 <%s>，应为 <volume>"
-
-msgid "unexpected root element, expecting <domain>"
-msgstr "意外的 root 元素，应为 <domain>"
-
-#, c-format
-msgid "unexpected root element: '%s'"
-msgstr "意外的 root 元素：'%s'"
 
 #, c-format
 msgid "unexpected secret usage type %d"
@@ -36173,19 +36022,6 @@ msgstr "未知的 redirdev 字符设备类型 '%s'"
 
 msgid "unknown rng-random backend"
 msgstr "未知的 rng-random 后端"
-
-#, c-format
-msgid "unknown root element '%s' for filter binding"
-msgstr "未知的过滤绑定的 root元素 '%s'"
-
-msgid "unknown root element for network port"
-msgstr "未知的网络端口的 root 元素"
-
-msgid "unknown root element for nw filter"
-msgstr "未知的 nw 过滤器的 root 元素"
-
-msgid "unknown root element for nwfilter binding"
-msgstr "未知的 nwfilter 绑定的 root 元素"
 
 msgid "unknown rule action attribute value"
 msgstr "未知的规则 action 属性值"
@@ -37754,6 +37590,210 @@ msgstr "请求网络 %s 的区 %s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "%s 3d acceleration is not supported"
+#~ msgstr "%s 不支持 3d 加速"
+
+#~ msgid ""
+#~ "'reconnect' attribute  unsupported 'server' mode for <interface "
+#~ "type='vhostuser'>"
+#~ msgstr ""
+#~ "'reconnect' 属性不支持 <interface type='vhostuser'> 的 'server' 模式"
+
+#~ msgid "(network status)"
+#~ msgstr "（网络状态）"
+
+#~ msgid "(pool state)"
+#~ msgstr "（池状态）"
+
+#~ msgid "A field data length violates the resource length boundary."
+#~ msgstr "字段数据长度违反了资源长度边界。"
+
+#~ msgid "CCW address type is not supported by this QEMU"
+#~ msgstr "此 QEMU 不支持 CCW 地址类型"
+
+#~ msgid "Cannot parse <local> 'port' attribute with socket interface"
+#~ msgstr "无法解析带套接自接口的 <local> 'port' 属性"
+
+#~ msgid "Cannot parse <source> 'port' attribute with socket interface"
+#~ msgstr "无法解析带套接自接口的 <source> 'port' 属性"
+
+#~ msgid "Cannot update the read-only keyword: RO section not initialized."
+#~ msgstr "无法更新只读关键字：RO 部分未被初始化。"
+
+#~ msgid ""
+#~ "Cannot update the read-write keyword: read-write section not initialized."
+#~ msgstr "无法更新 read-write 关键字：读写部分未被初始化。"
+
+#~ msgid ""
+#~ "Cannot update the resource: a NULL keyword pointer has been provided."
+#~ msgstr "无法更新资源：已提供了一个 NULL 关键字指针。"
+
+#~ msgid ""
+#~ "Cannot update the resource: a NULL resource pointer has been provided."
+#~ msgstr "无法更新资源：已提供了一个 NULL 资源指针。"
+
+#~ msgid "Checksum validation has failed"
+#~ msgstr "校验和验证失败"
+
+#~ msgid "Could not parse a resource field data - VPD has invalid format"
+#~ msgstr "无法解析资源字段数据 - VPD 具有无效的格式"
+
+#~ msgid "Could not read a part of a resource - VPD has invalid format"
+#~ msgstr "无法读取资源的一部分 - VPD 具有无效的格式"
+
+#~ msgid "Could not read a resource field header - VPD has invalid format"
+#~ msgstr "无法读取资源字段标头 - VPD 具有无效的格式"
+
+#~ msgid "Could not update the VPD resource keyword: %s"
+#~ msgstr "无法更新 VPD 资源关键字：%s"
+
+#~ msgid ""
+#~ "Invalid attempt to set <interface type='ethernet'> device name with "
+#~ "<source dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest "
+#~ "dev='%s'/> (for guest-side) instead."
+#~ msgstr ""
+#~ "尝试使用 <source dev='%s'/> 设置 <interface type='ethernet'> 设备名称无"
+#~ "效。请使用 <target dev='%s'/> （对于主机端）或 <guest dev='%s'/> （对于客"
+#~ "户机端）。"
+
+#~ msgid "No <local> 'address' attribute specified with socket interface"
+#~ msgstr "没有使用套接自接口指定的 <local> 'address' 属性"
+
+#~ msgid "No <local> 'port' attribute specified with socket interface"
+#~ msgstr "没有使用套接字接口指定的 <local>‘port’属性"
+
+#~ msgid "No <source> 'address' attribute specified with socket interface"
+#~ msgstr "没有使用套接自接口指定的 <source> 'address' 属性"
+
+#~ msgid ""
+#~ "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
+#~ msgstr "没有<source> <interface type='bridge'/> 指定的 'bridge' 属性"
+
+#~ msgid ""
+#~ "No <source> 'dev' attribute specified with <interface type='direct'/>"
+#~ msgstr "<source> 'dev' 属性中未指定任何 <interface type='direct'/>"
+
+#~ msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
+#~ msgstr "没有使用 <interface type='vdpa'/> 指定的 'dev' 属性"
+
+#~ msgid ""
+#~ "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr "没有使用 <interface type='vhostuser'/> 指定 的 <source> 'mode' 属性"
+
+#~ msgid ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+#~ msgstr "没有使用 <interface type='internal'/> 指定的 <source> 'name' 属性"
+
+#~ msgid ""
+#~ "No <source> 'network' attribute specified with <interface type='network'/>"
+#~ msgstr ""
+#~ "没有使用 <interface type='network'/> 指定的 <source>‘networking’属性"
+
+#~ msgid ""
+#~ "No <source> 'path' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr "没有使用 <interface type='vhostuser'/> 指定的<source> 'path' 属性"
+
+#~ msgid "No <source> 'port' attribute specified with socket interface"
+#~ msgstr "没有使用套接字接口指定的 <source>‘port’属性"
+
+#~ msgid ""
+#~ "No <source> 'type' attribute specified for <interface type='vhostuser'>"
+#~ msgstr "没有为 <interface type='vhostuser'> 指定 <source> 'type' 属性"
+
+#~ msgid "Root element is not 'node'"
+#~ msgstr "根元素不是 'node'"
+
+#~ msgid ""
+#~ "The keyword is not comprised only of uppercase ASCII letters or digits"
+#~ msgstr "关键字不能仅包含大写 ASCII 字母或数字"
+
+#~ msgid "The keyword length is not 2 bytes: %s"
+#~ msgstr "关键字长度不是 2 字节：%s"
+
+#~ msgid "The string resource has invalid characters in its value"
+#~ msgstr "字符串资源在其值中有无效的字符"
+
+#~ msgid "Unable to parse port id '%s'"
+#~ msgstr "无法解析端口 id '%s'"
+
+#~ msgid "Unexpected RV keyword in the read-write section."
+#~ msgstr "读-写部分中意外的 RV 关键字。"
+
+#~ msgid "Unexpected RW keyword in the read-only section."
+#~ msgstr "只读部分中意外的 RW 关键字。"
+
+#~ msgid "Unexpected field value format encountered."
+#~ msgstr "遇到了意外的字段值格式。"
+
+#~ msgid "Unknown mode has been specified"
+#~ msgstr "指定了未知模式"
+
+#~ msgid ""
+#~ "Wrong <source> 'mode' attribute specified with <interface "
+#~ "type='vhostuser'/>"
+#~ msgstr ""
+#~ "使用 <interface type='vhostuser'/> 指定的错误的 <source> 'mode' 属性"
+
+#~ msgid "XML does not contain expected 'cookie' element"
+#~ msgstr "XML 不包含预期的 'cookie' 元素"
+
+#~ msgid "domainbackup"
+#~ msgstr "domainbackup"
+
+#~ msgid "domaincheckpoint"
+#~ msgstr "domaincheckpoint"
+
+#~ msgid "domainsnapshot"
+#~ msgstr "域快照"
+
+#~ msgid "invalid 'managed' value '%s'"
+#~ msgstr "无效的 'managed' 值 '%s'"
+
+#~ msgid "unexpected root element <%s> expecting <device>"
+#~ msgstr "意外的 root 元素 <%s>，应为 <device>"
+
+#~ msgid "unexpected root element <%s>, expecting <domain>"
+#~ msgstr "意外的 root 元素 <%s>，应为 <domain>"
+
+#~ msgid "unexpected root element <%s>, expecting <domstatus>"
+#~ msgstr "意外的 root 元素 <%s>，应为 <domstatus>"
+
+#~ msgid "unexpected root element <%s>, expecting <interface>"
+#~ msgstr "意外的 root 元素 <%s>，应为 <interface>"
+
+#~ msgid "unexpected root element <%s>, expecting <network>"
+#~ msgstr "意外的 root 元素 <%s>，应为 <network>"
+
+#~ msgid "unexpected root element <%s>, expecting <pool>"
+#~ msgstr "错误的 root 元素 <%s>，应为 <pool>"
+
+#~ msgid "unexpected root element <%s>, expecting <qemuCaps>"
+#~ msgstr "意外的 root 元素 <%s>，应为 <qemuCaps>"
+
+#~ msgid "unexpected root element <%s>, expecting <secret>"
+#~ msgstr "意外的 root 元素 <%s>，应为 <secret>"
+
+#~ msgid "unexpected root element <%s>, expecting <volume>"
+#~ msgstr "错误的 root 元素 <%s>，应为 <volume>"
+
+#~ msgid "unexpected root element, expecting <domain>"
+#~ msgstr "意外的 root 元素，应为 <domain>"
+
+#~ msgid "unexpected root element: '%s'"
+#~ msgstr "意外的 root 元素：'%s'"
+
+#~ msgid "unknown root element '%s' for filter binding"
+#~ msgstr "未知的过滤绑定的 root元素 '%s'"
+
+#~ msgid "unknown root element for network port"
+#~ msgstr "未知的网络端口的 root 元素"
+
+#~ msgid "unknown root element for nw filter"
+#~ msgstr "未知的 nw 过滤器的 root 元素"
+
+#~ msgid "unknown root element for nwfilter binding"
+#~ msgstr "未知的 nwfilter 绑定的 root 元素"
 
 #~ msgid "Cannot parse controller index %s"
 #~ msgstr "无法解析控制器索引 %s"

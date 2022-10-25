@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-09-27 08:07+0000\n"
+"POT-Creation-Date: 2022-10-25 07:42+0000\n"
 "PO-Revision-Date: 2022-10-05 09:19+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -533,10 +533,6 @@ msgstr ""
 #, c-format
 msgid "%s (out of %d)"
 msgstr "%s (av %d)"
-
-#, c-format
-msgid "%s 3d acceleration is not supported"
-msgstr "%s 3d-acceleration stödjs inte"
 
 #, c-format
 msgid "%s array element does not contain a string"
@@ -1205,6 +1201,9 @@ msgstr ""
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "”:” är inte tillåtet i RBD-källvolymnamnet ”%s”"
 
+msgid "'<local>' element missing for 'udp' socket interface"
+msgstr ""
+
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr "”adapter”-namnet måste anges för scsi-värdenhetskällan"
 
@@ -1354,11 +1353,9 @@ msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "”queues” stödjs endast av styrenheten virtio-scsi"
 
 msgid ""
-"'reconnect' attribute  unsupported 'server' mode for <interface "
+"'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
 msgstr ""
-"attributet ”reconnect” ej stött ”server”-läge för <interface "
-"type='vhostuser'>"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1466,9 +1463,6 @@ msgstr "(libxl_migrationskaka)"
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
 
-msgid "(network status)"
-msgstr "(nätverksstatus)"
-
 msgid "(network_definition)"
 msgstr "(nätverksdefinition)"
 
@@ -1489,9 +1483,6 @@ msgstr "(nwfilterbinding_definition)"
 
 msgid "(nwfilterbinding_status)"
 msgstr "(nwfilterbinding_status)"
-
-msgid "(pool state)"
-msgstr "(pooltillstånd)"
 
 msgid "(qemu_migration_cookie)"
 msgstr "(qemu_migrationskaka)"
@@ -1604,6 +1595,12 @@ msgstr ""
 
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev: gränssnittet finns inte"
+
+msgid "3d acceleration is not supported by this QEMU binary"
+msgstr ""
+
+msgid "3d acceleration is supported only with 'virtio' video device"
+msgstr ""
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64-bitars PCI-hålsinställning är endast för rot-PCI-styrenheter"
@@ -1729,9 +1726,6 @@ msgstr "Ett annat återanrop begärdes"
 #, c-format
 msgid "A domain definition can have no more than one cipher node with name %s"
 msgstr "En domändefinition kan inte ha mer än en chiffernod med namnet %s"
-
-msgid "A field data length violates the resource length boundary."
-msgstr "En fältdatlängd strider mot gränsen för resurslängd."
 
 msgid "A interface driver is already registered"
 msgstr "En gränssnittsdrivrutin är redan registrerad"
@@ -2207,9 +2201,6 @@ msgstr "Upptagen"
 msgid "CA certificate:"
 msgstr "CA-certifikat:"
 
-msgid "CCW address type is not supported by this QEMU"
-msgstr "CCW-adresstypen stödjs inte av denna QEMU"
-
 #, c-format
 msgid "CHS geometry can not be set for '%s' bus"
 msgstr "CHS-geometrin kan inte anges för bussen ”%s”"
@@ -2307,12 +2298,6 @@ msgstr "CPU-frekvens:"
 
 msgid "CPU map:"
 msgstr "CPU-avbildning:"
-
-#, c-format
-msgid ""
-"CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
-msgstr ""
-"Maximalt fysiskt CPU-adressbitsläge ”%s” kan endast användas med ”%s”-CPU:er"
 
 #, c-format
 msgid ""
@@ -3176,12 +3161,6 @@ msgstr "Kan inte tolka noden <VirtualBox> <Machine>"
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "Kan inte tolka <address> ”port”-attribut"
 
-msgid "Cannot parse <local> 'port' attribute with socket interface"
-msgstr "Kan inte tolka <local> ”port”-attribut med uttagsgränssnitt"
-
-msgid "Cannot parse <source> 'port' attribute with socket interface"
-msgstr "Kan inte tolka <source> ”port”-attribut med uttagsgränssnitt"
-
 #, c-format
 msgid "Cannot parse MAC address '%s' in network '%s'"
 msgstr "Kan inte tolka MAC-adressen ”%s” i nätverket ”%s”"
@@ -3423,24 +3402,6 @@ msgstr "Det går inte att sluta dela en monteringsnamnrymd"
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "Det går inte att sluta dela ett oinitierat CURL-handtag"
 
-msgid "Cannot update the read-only keyword: RO section not initialized."
-msgstr ""
-"Det går inte att uppdatera det endast läsbara nyckalordet: RO-avsnittet är "
-"inte initierat."
-
-msgid ""
-"Cannot update the read-write keyword: read-write section not initialized."
-msgstr ""
-"Det går inte att uppdatera det endast läsbara nyckelordet: läs-skriv-"
-"avsnittet är inte initierat."
-
-msgid "Cannot update the resource: a NULL keyword pointer has been provided."
-msgstr ""
-"Det går inte att uppdatera resursen: en NULL-nyckelordspekare har givits."
-
-msgid "Cannot update the resource: a NULL resource pointer has been provided."
-msgstr "Det går inte att uppdatera resursen: en NULL-resurspekare har givits."
-
 #, c-format
 msgid "Cannot use direct socket mode for %s transport"
 msgstr "Det går inte att använda direkt uttags-läge för %s-transport"
@@ -3655,9 +3616,6 @@ msgstr "Kontrollpunkt lista"
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr "Kontrollpunkter har inkonsekventa relationer för domänen %s"
-
-msgid "Checksum validation has failed"
-msgstr "Kontrollsummevalideringen misslyckades"
 
 #, c-format
 msgid "Child process (%lld) unexpected %s"
@@ -4718,9 +4676,6 @@ msgstr "Kunde inte tolka VI API-version ”%s”"
 msgid "Could not parse VPS ID %s"
 msgstr "Kunde inte tolka VPS ID %s"
 
-msgid "Could not parse a resource field data - VPD has invalid format"
-msgstr "Kunde inte tolka data i ett resursfält – VPD har felaktigt format"
-
 #, c-format
 msgid "Could not parse barrier and limit of '%s' from config for container %d"
 msgstr ""
@@ -4785,12 +4740,6 @@ msgstr "Kunde inte läsa ”VE_PRIVATE” från konfigurationen för behållare 
 
 msgid "Could not read a device name from the <name> element"
 msgstr "Kunde inte läsa ett enhetsnamn från elementet <name>"
-
-msgid "Could not read a part of a resource - VPD has invalid format"
-msgstr "Kunde inte läsa en del av resursen – VPD har felaktigt format"
-
-msgid "Could not read a resource field header - VPD has invalid format"
-msgstr "Kunde inte läsa huvudet i ett resursfält – VPD har felaktigt format"
 
 #, c-format
 msgid "Could not read config for container %d"
@@ -4996,10 +4945,6 @@ msgstr "Kunde inte överföra data: %s (%d)"
 
 msgid "Could not translate keycode"
 msgstr "Kunde inte översätta nyckelkoden"
-
-#, c-format
-msgid "Could not update the VPD resource keyword: %s"
-msgstr "Kunde inte uppdatera VPD-resursnyckelordet: %s"
 
 msgid "Could not verify disk address"
 msgstr "Kunde inte verifiera diskadressen"
@@ -6009,6 +5954,10 @@ msgstr "Redigera domänögonblicsbilds-XML för en namngiven ögonblicksbild"
 
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "Antingen ”name” eller ”parent” måste anges för adaptern ”scsi_host”"
+
+#, c-format
+msgid "Either --%s or --%s must be provided"
+msgstr ""
 
 msgid "Eject the media"
 msgstr "Mata ut mediumet"
@@ -9795,16 +9744,6 @@ msgstr ""
 "Felaktigt försök att återställa PCI-enheten %s. Endast PCI-ändpunktsenheter "
 "kan återställas"
 
-#, c-format
-msgid ""
-"Invalid attempt to set <interface type='ethernet'> device name with <source "
-"dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest dev='%s'/> (for "
-"guest-side) instead."
-msgstr ""
-"Felaktigt försök att sätta enhetsnamnet för <interface type='ethernet'> med "
-"<source dev='%s'/>. Använd <target dev='%s'/> (för värdsidan) eller <guest "
-"dev='%s'/> (för gästsidan) istället."
-
 msgid ""
 "Invalid attempt to set network interface guest-side IP route and/or address "
 "info, not supported by QEMU"
@@ -10477,12 +10416,22 @@ msgid "Invalid value for attribute '%s' in element '%s': '%s'."
 msgstr "Felaktigt värde på attributet ”%s” i elementet ”%s”: ”%s”."
 
 #, c-format
+msgid "Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"
+msgstr ""
+
+#, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
 msgstr ""
 "Felaktigt värde på attributet ”%s” i elementet ”%s”: ”%s”. Ett heltalsvärde "
 "förväntades"
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
+"integer value"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -11732,30 +11681,14 @@ msgstr "Saknat socks-fält i JSON-tillståndsdokumentet"
 msgid "Missing source channel attribute for char device"
 msgstr "Saknat källkanalsattribut för teckenenhet"
 
-#, c-format
-msgid "Missing source connectionid for interface type '%s'"
-msgstr "Saknat källanslutnings-id för ett gränssnitt av typen ”%s”"
-
 msgid "Missing source host attribute for char device"
 msgstr "Källvärdsattribut saknas för teckenenhet"
 
 msgid "Missing source path attribute for char device"
 msgstr "Källsökvägsattribut saknas för teckenenhet"
 
-#, c-format
-msgid "Missing source portgroup for interface type '%s'"
-msgstr "Saknat källportgrupp för ett gränssnitt av typen ”%s”"
-
-#, c-format
-msgid "Missing source portid for interface type '%s'"
-msgstr "Saknat källport-id för ett gränssnitt av typen ”%s”"
-
 msgid "Missing source service attribute for char device"
 msgstr "Källtjänstattribut saknas för teckenenhet"
-
-#, c-format
-msgid "Missing source switchid for interface type '%s'"
-msgstr "Saknat käll-switchid för ett gränssnitt av typen ”%s”"
 
 msgid "Missing storage block path"
 msgstr "Saknad lagringsblockssökväg"
@@ -12190,53 +12123,6 @@ msgstr "Ny storlek på blockenheten, som ett skalat heltal (standard KiB)"
 
 msgid "Nicdev support unavailable"
 msgstr "Nicdev-stöd är inte tillgängligt"
-
-msgid "No <local> 'address' attribute specified with socket interface"
-msgstr "Inget <local> ”adress”-attribut angivet med uttagsgränssnitt"
-
-msgid "No <local> 'port' attribute specified with socket interface"
-msgstr "Inget <local> ”port”-attribut angivet med uttagsgränssnitt"
-
-msgid "No <source> 'address' attribute specified with socket interface"
-msgstr "Inget <source> ”adress”-attribut angivet uttagsgränssnitt"
-
-msgid ""
-"No <source> 'bridge' attribute specified with <interface type='bridge'/>"
-msgstr ""
-"Inget <source> ”bridge”-attribut angivet med <interface type='bridge'/>"
-
-msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
-msgstr "Inga <source> ”dev”-attribut angivet med <interface type='direct'/>"
-
-msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
-msgstr "Inget <source> ”dev”-attribut angivet med <interface type='vdpa'/>"
-
-msgid ""
-"No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"Inget <source> ”mode”-attribut angivet med <interface type='vhostuser'/>"
-
-msgid ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
-msgstr ""
-"Inget <source> ”name”-attribut angivet med <interface type='internal'/>"
-
-msgid ""
-"No <source> 'network' attribute specified with <interface type='network'/>"
-msgstr ""
-"Inget <source> ”network”-attribut angivet med <interface type='network'/>"
-
-msgid ""
-"No <source> 'path' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"Inget <source> ”path”-attribut angivet med <interface type='vhostuser'/>"
-
-msgid "No <source> 'port' attribute specified with socket interface"
-msgstr "Inget <source> ”port”-attribut angivet med uttagsgränssnitt"
-
-msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
-msgstr ""
-"Inget <source> ”type”-attribut angivet för <interface type='vhostuser'/>"
 
 msgid "No CA certificate path set to match server key/cert"
 msgstr "Ingen CA-certifikatsväg angiven till att matcha servernyckel/-cert"
@@ -14081,9 +13967,6 @@ msgstr "Återställ en domän till en ögonblicksbild"
 msgid "Revert domain to snapshot"
 msgstr "Återställ domänen till en ögonblicksbild"
 
-msgid "Root element is not 'node'"
-msgstr "Rotelementet är inte ”node”"
-
 #, c-format
 msgid "Route address '%s' conflicts with IP address for '%s'"
 msgstr "Ruttadressen ”%s” står i konflikt med IP-adressen för ”%s”"
@@ -14154,6 +14037,9 @@ msgstr "SATA stödjs inte av denna QEMU-binär"
 #, c-format
 msgid "SATA unit index %d out of [0..29] range"
 msgstr "SATA-enhetsindex %d är utanför intervallet [0..29]"
+
+msgid "SCHED_CORE not supported by kernel"
+msgstr ""
 
 #, c-format
 msgid "SCSI bus index %d out of [0] range"
@@ -14649,6 +14535,11 @@ msgstr "Delat minne:\n"
 #, c-format
 msgid "Shell '%s' should have absolute path"
 msgstr "Skalet ”%s” skall ha en absolut sökväg"
+
+msgid ""
+"Shortcut for calling the command with a single CPU model and no additional "
+"features"
+msgstr ""
 
 msgid "Should define both master and slave path attributes for nmdm device"
 msgstr ""
@@ -16151,14 +16042,6 @@ msgid ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
 msgstr "Audiostyrenheten ich9-intel-hda stödjs inte i denna QEMU-binär"
 
-msgid "The keyword is not comprised only of uppercase ASCII letters or digits"
-msgstr ""
-"Nyckelordet består inte endast av versala ASCII-bokstäver eller siffror"
-
-#, c-format
-msgid "The keyword length is not 2 bytes: %s"
-msgstr "Nyckelordslängden är inte 2 byte: %s"
-
 msgid "The machine has no snapshot and it should have it"
 msgstr "Maskinen har ingen ögonblicksbild och borde ha det"
 
@@ -16204,9 +16087,6 @@ msgstr "Servern omdirigerar från ”%s” till ”%s”"
 msgid "The slirp-helper doesn't support migration"
 msgstr "Slirp-hjälparen stödjer inte migration"
 
-msgid "The string resource has invalid characters in its value"
-msgstr "Strängresursen har ogiltiga tecken i sitt värde"
-
 #, c-format
 msgid "The vbox driver does not support %s SCSI controller model"
 msgstr "Vbox-drivrutinen stödjer inte SCSI-styrenhetsmodellen %s"
@@ -16238,7 +16118,8 @@ msgstr "Denna QEMU stödjer inte ”-device usb-storage”"
 
 msgid ""
 "This QEMU doesn't support OpenGL rendernode with egl-headless graphics type"
-msgstr "Denna QEMU stödjer inte OpenGLs rendernode med grafiktypen egl-headless"
+msgstr ""
+"Denna QEMU stödjer inte OpenGLs rendernode med grafiktypen egl-headless"
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "Denna QEMU stödjer inte scsi-block för lun-genomgång"
@@ -17210,6 +17091,9 @@ msgstr ""
 msgid "Unable to destroy '%s': device in use"
 msgstr ""
 
+msgid "Unable to detect SCHED_CORE"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "Misslyckades att avmontera enheten från %s"
@@ -17323,6 +17207,9 @@ msgid "Unable to find a satisfying vhost-user-gpu"
 msgstr ""
 
 msgid "Unable to find a satisfying virtiofsd"
+msgstr ""
+
+msgid "Unable to find a vCPU that is online"
 msgstr ""
 
 #, c-format
@@ -18036,10 +17923,6 @@ msgstr "kan inte tolka mac-adressen ”%s”"
 msgid "Unable to parse cloud-hypervisor version: %s"
 msgstr ""
 
-#, c-format
-msgid "Unable to parse connectionid '%s'"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "kan inte tolka mac-adressen ”%s”"
@@ -18071,14 +17954,6 @@ msgstr "Misslyckades att hämta block statistik %sl %s"
 msgid "Unable to parse ovs-vsctl output"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to parse port id '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
-
-#, c-format
-msgid "Unable to parse portid '%s'"
-msgstr ""
-
 #, fuzzy
 msgid "Unable to parse quota"
 msgstr "Kan inte fråga kqueue"
@@ -18098,10 +17973,6 @@ msgstr "kan inte tolka mac-adressen ”%s”"
 #, fuzzy
 msgid "Unable to parse string parameter"
 msgstr "Kan inte hämta parametrar för trådpoolen"
-
-#, c-format
-msgid "Unable to parse switchid '%s'"
-msgstr ""
 
 #, fuzzy
 msgid "Unable to parse the xml"
@@ -18395,6 +18266,10 @@ msgstr ""
 msgid "Unable to retrieve threadpool parameters"
 msgstr "Kan inte hämta parametrar för trådpoolen"
 
+#, c-format
+msgid "Unable to run among %llu"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to run command to get OVS master for interface %s"
 msgstr "Misslyckades med att förstöra gränssnittet %s"
@@ -18501,6 +18376,9 @@ msgid "Unable to set FD %d blocking"
 msgstr "Kan inte få lokalt uttagsnamn"
 
 msgid "Unable to set IPV6_V6ONLY flag"
+msgstr ""
+
+msgid "Unable to set SCHED_CORE"
 msgstr ""
 
 #, c-format
@@ -18921,12 +18799,6 @@ msgstr ""
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr ""
 
-msgid "Unexpected RV keyword in the read-write section."
-msgstr ""
-
-msgid "Unexpected RW keyword in the read-only section."
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unexpected SCSI controller model %d"
 msgstr "oväntade sysinfo typmodell %d"
@@ -18971,9 +18843,6 @@ msgid "Unexpected element '%s' in CPU map '%s'"
 msgstr ""
 
 msgid "Unexpected event thread still active during domain deletion"
-msgstr ""
-
-msgid "Unexpected field value format encountered."
 msgstr ""
 
 #, fuzzy, c-format
@@ -19316,10 +19185,6 @@ msgid ""
 "'paravirt'"
 msgstr ""
 
-#, fuzzy
-msgid "Unknown mode has been specified"
-msgstr "Okänt gränssnitt <driver txmode='%s'> har specificerats"
-
 #, c-format
 msgid "Unknown model type '%s'"
 msgstr "Okänd modelltyp ”%s”"
@@ -19354,6 +19219,10 @@ msgstr ""
 #, fuzzy
 msgid "Unknown return code"
 msgstr "Okänt fel"
+
+#, c-format
+msgid "Unknown sched_core value %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unknown scsi_host subsystem protocol '%s'"
@@ -20166,10 +20035,6 @@ msgstr ""
 msgid "Write to '%s' to trigger host scan failed"
 msgstr ""
 
-msgid ""
-"Wrong <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr "Fel <source> ”mode”-attribut angivet med <interface type='vhostuser'/>"
-
 msgid "Wrong MAC address"
 msgstr ""
 
@@ -20218,9 +20083,6 @@ msgstr "XML innehåller inte ett förväntat ”bios”-element"
 
 msgid "XML does not contain expected 'chassis' element"
 msgstr "XML innehåller inte ett förväntat ”chassis”-element"
-
-msgid "XML does not contain expected 'cookie' element"
-msgstr "XML innehåller inte ett förväntat ”cookie”-element"
 
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML innehåller inte ett förväntat ”cpu”-element"
@@ -21394,6 +21256,9 @@ msgid "cannot become session leader"
 msgstr ""
 
 msgid "cannot block signals"
+msgstr ""
+
+msgid "cannot both keep and delete TPM"
 msgstr ""
 
 msgid "cannot both keep and delete nvram"
@@ -24880,17 +24745,8 @@ msgstr ""
 msgid "domainMigratePrepare3 did not set uri"
 msgstr ""
 
-msgid "domainbackup"
-msgstr "domänsäkerhetskopia"
-
-msgid "domaincheckpoint"
-msgstr "domäncheckpunkt"
-
 msgid "domains in 'doms' array must belong to a single connection"
 msgstr ""
-
-msgid "domainsnapshot"
-msgstr "domänögonblicksbild"
 
 #, c-format
 msgid "doms array in %s must contain at least one domain"
@@ -28069,6 +27925,10 @@ msgstr "nätverket %s är inte aktivt"
 msgid "interface stats not implemented on this platform"
 msgstr "Extrahering av värdend stödjs inte på denna plattform"
 
+#, c-format
+msgid "interface type='%s' requires a 'source' element"
+msgstr ""
+
 #, fuzzy
 msgid "internal"
 msgstr "internt fel"
@@ -28149,10 +28009,6 @@ msgstr "Ogiltiga portar: %s"
 #, fuzzy, c-format
 msgid "invalid '=' after option --%s"
 msgstr "ogiltig domänpekare i %s"
-
-#, c-format
-msgid "invalid 'managed' value '%s'"
-msgstr ""
 
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr ""
@@ -28990,6 +28846,9 @@ msgstr ""
 #, fuzzy
 msgid "kdump-compressed format is only supported with memory-only dump"
 msgstr "--format fungerar endast med --memory-only"
+
+msgid "keep TPM state"
+msgstr ""
 
 msgid "keep nvram file"
 msgstr ""
@@ -33948,6 +33807,9 @@ msgstr ""
 msgid "removable is only valid for usb disks"
 msgstr ""
 
+msgid "remove TPM state"
+msgstr ""
+
 msgid "remove all associated storage volumes (use with caution)"
 msgstr ""
 
@@ -34052,6 +33914,9 @@ msgid "report domain virtual cpu information"
 msgstr "domäninformation"
 
 msgid "report error if CPUs are incompatible"
+msgstr ""
+
+msgid "report fd-based VM statistics by KVM"
 msgstr ""
 
 #, fuzzy
@@ -36533,6 +36398,9 @@ msgstr "Kan inte läsa från övervakaren"
 msgid "unable to read domain master key file"
 msgstr "spara ett domäntillstånd till en fil"
 
+msgid "unable to read from pipe"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unable to read server cert %s"
 msgstr "kan inte ansluta till servern på ”%s:%s”"
@@ -36636,6 +36504,14 @@ msgid "unable to set user and group to '%ld:%ld' on '%s'"
 msgstr ""
 
 msgid "unable to set vnet or multiqueue flags on macvtap"
+msgstr ""
+
+#, c-format
+msgid "unable to share scheduling cookie from %lld"
+msgstr ""
+
+#, c-format
+msgid "unable to share scheduling cookie to %lld"
 msgstr ""
 
 #, c-format
@@ -37023,49 +36899,6 @@ msgstr ""
 #, fuzzy
 msgid "unexpected protocol type"
 msgstr "oväntad disktyp %s"
-
-#, c-format
-msgid "unexpected root element <%s> expecting <device>"
-msgstr ""
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domain>"
-msgstr ""
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domstatus>"
-msgstr ""
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <interface>"
-msgstr ""
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <network>"
-msgstr ""
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <pool>"
-msgstr ""
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <qemuCaps>"
-msgstr ""
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <secret>"
-msgstr ""
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <volume>"
-msgstr ""
-
-msgid "unexpected root element, expecting <domain>"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "unexpected root element: '%s'"
-msgstr "oväntad data '%s'"
 
 #, fuzzy, c-format
 msgid "unexpected secret usage type %d"
@@ -37518,21 +37351,6 @@ msgstr "okänd teckenenhetstyp: %s"
 
 msgid "unknown rng-random backend"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unknown root element '%s' for filter binding"
-msgstr "okänt rotelement för nw-filter"
-
-#, fuzzy
-msgid "unknown root element for network port"
-msgstr "okänt rotelement för nw-filter"
-
-msgid "unknown root element for nw filter"
-msgstr "okänt rotelement för nw-filter"
-
-#, fuzzy
-msgid "unknown root element for nwfilter binding"
-msgstr "okänt rotelement för nw-filter"
 
 msgid "unknown rule action attribute value"
 msgstr ""
@@ -39120,6 +38938,206 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <sträng>"
+
+#~ msgid "%s 3d acceleration is not supported"
+#~ msgstr "%s 3d-acceleration stödjs inte"
+
+#~ msgid ""
+#~ "'reconnect' attribute  unsupported 'server' mode for <interface "
+#~ "type='vhostuser'>"
+#~ msgstr ""
+#~ "attributet ”reconnect” ej stött ”server”-läge för <interface "
+#~ "type='vhostuser'>"
+
+#~ msgid "(network status)"
+#~ msgstr "(nätverksstatus)"
+
+#~ msgid "(pool state)"
+#~ msgstr "(pooltillstånd)"
+
+#~ msgid "A field data length violates the resource length boundary."
+#~ msgstr "En fältdatlängd strider mot gränsen för resurslängd."
+
+#~ msgid "CCW address type is not supported by this QEMU"
+#~ msgstr "CCW-adresstypen stödjs inte av denna QEMU"
+
+#~ msgid ""
+#~ "CPU maximum physical address bits mode '%s' can only be used with '%s' "
+#~ "CPUs"
+#~ msgstr ""
+#~ "Maximalt fysiskt CPU-adressbitsläge ”%s” kan endast användas med ”%s”-CPU:"
+#~ "er"
+
+#~ msgid "Cannot parse <local> 'port' attribute with socket interface"
+#~ msgstr "Kan inte tolka <local> ”port”-attribut med uttagsgränssnitt"
+
+#~ msgid "Cannot parse <source> 'port' attribute with socket interface"
+#~ msgstr "Kan inte tolka <source> ”port”-attribut med uttagsgränssnitt"
+
+#~ msgid "Cannot update the read-only keyword: RO section not initialized."
+#~ msgstr ""
+#~ "Det går inte att uppdatera det endast läsbara nyckalordet: RO-avsnittet "
+#~ "är inte initierat."
+
+#~ msgid ""
+#~ "Cannot update the read-write keyword: read-write section not initialized."
+#~ msgstr ""
+#~ "Det går inte att uppdatera det endast läsbara nyckelordet: läs-skriv-"
+#~ "avsnittet är inte initierat."
+
+#~ msgid ""
+#~ "Cannot update the resource: a NULL keyword pointer has been provided."
+#~ msgstr ""
+#~ "Det går inte att uppdatera resursen: en NULL-nyckelordspekare har givits."
+
+#~ msgid ""
+#~ "Cannot update the resource: a NULL resource pointer has been provided."
+#~ msgstr ""
+#~ "Det går inte att uppdatera resursen: en NULL-resurspekare har givits."
+
+#~ msgid "Checksum validation has failed"
+#~ msgstr "Kontrollsummevalideringen misslyckades"
+
+#~ msgid "Could not parse a resource field data - VPD has invalid format"
+#~ msgstr "Kunde inte tolka data i ett resursfält – VPD har felaktigt format"
+
+#~ msgid "Could not read a part of a resource - VPD has invalid format"
+#~ msgstr "Kunde inte läsa en del av resursen – VPD har felaktigt format"
+
+#~ msgid "Could not read a resource field header - VPD has invalid format"
+#~ msgstr "Kunde inte läsa huvudet i ett resursfält – VPD har felaktigt format"
+
+#~ msgid "Could not update the VPD resource keyword: %s"
+#~ msgstr "Kunde inte uppdatera VPD-resursnyckelordet: %s"
+
+#~ msgid ""
+#~ "Invalid attempt to set <interface type='ethernet'> device name with "
+#~ "<source dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest "
+#~ "dev='%s'/> (for guest-side) instead."
+#~ msgstr ""
+#~ "Felaktigt försök att sätta enhetsnamnet för <interface type='ethernet'> "
+#~ "med <source dev='%s'/>. Använd <target dev='%s'/> (för värdsidan) eller "
+#~ "<guest dev='%s'/> (för gästsidan) istället."
+
+#~ msgid "Missing source connectionid for interface type '%s'"
+#~ msgstr "Saknat källanslutnings-id för ett gränssnitt av typen ”%s”"
+
+#~ msgid "Missing source portgroup for interface type '%s'"
+#~ msgstr "Saknat källportgrupp för ett gränssnitt av typen ”%s”"
+
+#~ msgid "Missing source portid for interface type '%s'"
+#~ msgstr "Saknat källport-id för ett gränssnitt av typen ”%s”"
+
+#~ msgid "Missing source switchid for interface type '%s'"
+#~ msgstr "Saknat käll-switchid för ett gränssnitt av typen ”%s”"
+
+#~ msgid "No <local> 'address' attribute specified with socket interface"
+#~ msgstr "Inget <local> ”adress”-attribut angivet med uttagsgränssnitt"
+
+#~ msgid "No <local> 'port' attribute specified with socket interface"
+#~ msgstr "Inget <local> ”port”-attribut angivet med uttagsgränssnitt"
+
+#~ msgid "No <source> 'address' attribute specified with socket interface"
+#~ msgstr "Inget <source> ”adress”-attribut angivet uttagsgränssnitt"
+
+#~ msgid ""
+#~ "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
+#~ msgstr ""
+#~ "Inget <source> ”bridge”-attribut angivet med <interface type='bridge'/>"
+
+#~ msgid ""
+#~ "No <source> 'dev' attribute specified with <interface type='direct'/>"
+#~ msgstr "Inga <source> ”dev”-attribut angivet med <interface type='direct'/>"
+
+#~ msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
+#~ msgstr "Inget <source> ”dev”-attribut angivet med <interface type='vdpa'/>"
+
+#~ msgid ""
+#~ "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "Inget <source> ”mode”-attribut angivet med <interface type='vhostuser'/>"
+
+#~ msgid ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+#~ msgstr ""
+#~ "Inget <source> ”name”-attribut angivet med <interface type='internal'/>"
+
+#~ msgid ""
+#~ "No <source> 'network' attribute specified with <interface type='network'/>"
+#~ msgstr ""
+#~ "Inget <source> ”network”-attribut angivet med <interface type='network'/>"
+
+#~ msgid ""
+#~ "No <source> 'path' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "Inget <source> ”path”-attribut angivet med <interface type='vhostuser'/>"
+
+#~ msgid "No <source> 'port' attribute specified with socket interface"
+#~ msgstr "Inget <source> ”port”-attribut angivet med uttagsgränssnitt"
+
+#~ msgid ""
+#~ "No <source> 'type' attribute specified for <interface type='vhostuser'>"
+#~ msgstr ""
+#~ "Inget <source> ”type”-attribut angivet för <interface type='vhostuser'/>"
+
+#~ msgid "Root element is not 'node'"
+#~ msgstr "Rotelementet är inte ”node”"
+
+#~ msgid ""
+#~ "The keyword is not comprised only of uppercase ASCII letters or digits"
+#~ msgstr ""
+#~ "Nyckelordet består inte endast av versala ASCII-bokstäver eller siffror"
+
+#~ msgid "The keyword length is not 2 bytes: %s"
+#~ msgstr "Nyckelordslängden är inte 2 byte: %s"
+
+#~ msgid "The string resource has invalid characters in its value"
+#~ msgstr "Strängresursen har ogiltiga tecken i sitt värde"
+
+#, fuzzy
+#~ msgid "Unable to parse port id '%s'"
+#~ msgstr "Misslyckades med att tolka läget ”%s”"
+
+#, fuzzy
+#~ msgid "Unknown mode has been specified"
+#~ msgstr "Okänt gränssnitt <driver txmode='%s'> har specificerats"
+
+#~ msgid ""
+#~ "Wrong <source> 'mode' attribute specified with <interface "
+#~ "type='vhostuser'/>"
+#~ msgstr ""
+#~ "Fel <source> ”mode”-attribut angivet med <interface type='vhostuser'/>"
+
+#~ msgid "XML does not contain expected 'cookie' element"
+#~ msgstr "XML innehåller inte ett förväntat ”cookie”-element"
+
+#~ msgid "domainbackup"
+#~ msgstr "domänsäkerhetskopia"
+
+#~ msgid "domaincheckpoint"
+#~ msgstr "domäncheckpunkt"
+
+#~ msgid "domainsnapshot"
+#~ msgstr "domänögonblicksbild"
+
+#, fuzzy
+#~ msgid "unexpected root element: '%s'"
+#~ msgstr "oväntad data '%s'"
+
+#, fuzzy
+#~ msgid "unknown root element '%s' for filter binding"
+#~ msgstr "okänt rotelement för nw-filter"
+
+#, fuzzy
+#~ msgid "unknown root element for network port"
+#~ msgstr "okänt rotelement för nw-filter"
+
+#~ msgid "unknown root element for nw filter"
+#~ msgstr "okänt rotelement för nw-filter"
+
+#, fuzzy
+#~ msgid "unknown root element for nwfilter binding"
+#~ msgstr "okänt rotelement för nw-filter"
 
 #~ msgid "Cannot parse controller index %s"
 #~ msgstr "Kan inte tolka styrenhetsindex %s"

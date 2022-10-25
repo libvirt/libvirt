@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-09-27 08:07+0000\n"
+"POT-Creation-Date: 2022-10-25 07:42+0000\n"
 "PO-Revision-Date: 2015-02-24 06:05+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/"
@@ -407,10 +407,6 @@ msgstr "%s %s '%s' has unsupported type '%s', expecting '%s' or '%s'"
 #, c-format
 msgid "%s (out of %d)"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "%s 3d acceleration is not supported"
-msgstr "Operation not supported"
 
 #, c-format
 msgid "%s array element does not contain a string"
@@ -1060,6 +1056,9 @@ msgstr "Specified both --storage and --remove-all-storage"
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "':' not allowed in RBD source volume name '%s'"
 
+msgid "'<local>' element missing for 'udp' socket interface"
+msgstr ""
+
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr ""
 
@@ -1216,11 +1215,10 @@ msgstr "'pool' and 'volume' must be specified together for 'pool' type source"
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "'queues' is only supported by virtio-scsi controller"
 
-#, fuzzy
 msgid ""
-"'reconnect' attribute  unsupported 'server' mode for <interface "
+"'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
-msgstr "<virtualport> element unsupported for <interface type='%s'>"
+msgstr ""
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1336,9 +1334,6 @@ msgstr "(qemu_migration_cookie)"
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
 
-msgid "(network status)"
-msgstr "(network status)"
-
 msgid "(network_definition)"
 msgstr "(network_definition)"
 
@@ -1362,10 +1357,6 @@ msgstr "(nwfilter_definition)"
 #, fuzzy
 msgid "(nwfilterbinding_status)"
 msgstr "(nwfilter_definition)"
-
-#, fuzzy
-msgid "(pool state)"
-msgstr "no state"
 
 msgid "(qemu_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
@@ -1474,6 +1465,12 @@ msgstr ""
 
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev: Interface not found"
+
+msgid "3d acceleration is not supported by this QEMU binary"
+msgstr ""
+
+msgid "3d acceleration is supported only with 'virtio' video device"
+msgstr ""
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64-bit PCI hole setting is only for root PCI controllers"
@@ -1595,9 +1592,6 @@ msgstr "A different callback was requested"
 
 #, c-format
 msgid "A domain definition can have no more than one cipher node with name %s"
-msgstr ""
-
-msgid "A field data length violates the resource length boundary."
 msgstr ""
 
 #, fuzzy
@@ -2074,10 +2068,6 @@ msgstr "Busy"
 msgid "CA certificate:"
 msgstr "Invalid certificate"
 
-#, fuzzy
-msgid "CCW address type is not supported by this QEMU"
-msgstr "reboot timeout is not supported by this QEMU binary"
-
 #, c-format
 msgid "CHS geometry can not be set for '%s' bus"
 msgstr ""
@@ -2172,11 +2162,6 @@ msgstr "CPU frequency:"
 
 msgid "CPU map:"
 msgstr "CPU map:"
-
-#, c-format
-msgid ""
-"CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -3051,13 +3036,6 @@ msgstr ""
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "Cannot parse <address> 'port' attribute"
 
-#, fuzzy
-msgid "Cannot parse <local> 'port' attribute with socket interface"
-msgstr "Cannot parse <source> 'port' attribute with socket interface"
-
-msgid "Cannot parse <source> 'port' attribute with socket interface"
-msgstr "Cannot parse <source> 'port' attribute with socket interface"
-
 #, c-format
 msgid "Cannot parse MAC address '%s' in network '%s'"
 msgstr "Cannot parse MAC address '%s' in network '%s'"
@@ -3295,19 +3273,6 @@ msgstr "Cannot unshare mount namespace"
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "Cannot unshare uninitialised CURL handle"
 
-msgid "Cannot update the read-only keyword: RO section not initialized."
-msgstr ""
-
-msgid ""
-"Cannot update the read-write keyword: read-write section not initialized."
-msgstr ""
-
-msgid "Cannot update the resource: a NULL keyword pointer has been provided."
-msgstr ""
-
-msgid "Cannot update the resource: a NULL resource pointer has been provided."
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Cannot use direct socket mode for %s transport"
 msgstr "Cannot convert socket address to string: %s"
@@ -3518,9 +3483,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr "Snapshots have inconsistent relations for domain %s"
-
-msgid "Checksum validation has failed"
-msgstr ""
 
 #, c-format
 msgid "Child process (%lld) unexpected %s"
@@ -4593,9 +4555,6 @@ msgstr "Could not parse UUID from '%s'"
 msgid "Could not parse VPS ID %s"
 msgstr "Could not parse VPS ID %s"
 
-msgid "Could not parse a resource field data - VPD has invalid format"
-msgstr ""
-
 #, c-format
 msgid "Could not parse barrier and limit of '%s' from config for container %d"
 msgstr "Could not parse barrier and limit of '%s' from config for container %d"
@@ -4657,12 +4616,6 @@ msgid "Could not read 'VE_PRIVATE' from config for container %d"
 msgstr "Could not read 'VE_PRIVATE' from config for container %d"
 
 msgid "Could not read a device name from the <name> element"
-msgstr ""
-
-msgid "Could not read a part of a resource - VPD has invalid format"
-msgstr ""
-
-msgid "Could not read a resource field header - VPD has invalid format"
 msgstr ""
 
 #, c-format
@@ -4867,10 +4820,6 @@ msgstr "Could not start domain: %s"
 #, fuzzy
 msgid "Could not translate keycode"
 msgstr "could not allocate memory"
-
-#, c-format
-msgid "Could not update the VPD resource keyword: %s"
-msgstr ""
 
 msgid "Could not verify disk address"
 msgstr "Could not verify disk address"
@@ -5896,6 +5845,10 @@ msgstr "Edit the domain snapshot XML for a named snapshot"
 #, fuzzy
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "'adapter' and 'address' must be specified for scsi hostdev source"
+
+#, c-format
+msgid "Either --%s or --%s must be provided"
+msgstr ""
 
 msgid "Eject the media"
 msgstr "Eject the media"
@@ -9675,13 +9628,6 @@ msgid ""
 "reset"
 msgstr ""
 
-#, c-format
-msgid ""
-"Invalid attempt to set <interface type='ethernet'> device name with <source "
-"dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest dev='%s'/> (for "
-"guest-side) instead."
-msgstr ""
-
 msgid ""
 "Invalid attempt to set network interface guest-side IP route and/or address "
 "info, not supported by QEMU"
@@ -10344,9 +10290,19 @@ msgid "Invalid value for attribute '%s' in element '%s': '%s'."
 msgstr ""
 
 #, c-format
+msgid "Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"
+msgstr ""
+
+#, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
+"integer value"
 msgstr ""
 
 #, c-format
@@ -11634,30 +11590,14 @@ msgstr "Missing socks field in JSON state document"
 msgid "Missing source channel attribute for char device"
 msgstr "Missing source host attribute for char device"
 
-#, c-format
-msgid "Missing source connectionid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "Missing source host attribute for char device"
 
 msgid "Missing source path attribute for char device"
 msgstr "Missing source path attribute for char device"
 
-#, c-format
-msgid "Missing source portgroup for interface type '%s'"
-msgstr ""
-
-#, c-format
-msgid "Missing source portid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source service attribute for char device"
 msgstr "Missing source service attribute for char device"
-
-#, c-format
-msgid "Missing source switchid for interface type '%s'"
-msgstr ""
 
 msgid "Missing storage block path"
 msgstr "Missing storage block path"
@@ -12109,58 +12049,6 @@ msgstr "New size of the block device, as scaled integer (default KiB)"
 #, fuzzy
 msgid "Nicdev support unavailable"
 msgstr "System is not available"
-
-#, fuzzy
-msgid "No <local> 'address' attribute specified with socket interface"
-msgstr "No <source> 'address' attribute specified with socket interface"
-
-#, fuzzy
-msgid "No <local> 'port' attribute specified with socket interface"
-msgstr "No <source> 'port' attribute specified with socket interface"
-
-msgid "No <source> 'address' attribute specified with socket interface"
-msgstr "No <source> 'address' attribute specified with socket interface"
-
-msgid ""
-"No <source> 'bridge' attribute specified with <interface type='bridge'/>"
-msgstr ""
-"No <source> 'bridge' attribute specified with <interface type='bridge'/>"
-
-msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
-msgstr "No <source> 'dev' attribute specified with <interface type='direct'/>"
-
-msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
-msgstr ""
-
-#, fuzzy
-msgid ""
-"No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
-
-msgid ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
-msgstr ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
-
-msgid ""
-"No <source> 'network' attribute specified with <interface type='network'/>"
-msgstr ""
-"No <source> 'network' attribute specified with <interface type='network'/>"
-
-#, fuzzy
-msgid ""
-"No <source> 'path' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
-
-msgid "No <source> 'port' attribute specified with socket interface"
-msgstr "No <source> 'port' attribute specified with socket interface"
-
-#, fuzzy
-msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
-msgstr ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
 
 msgid "No CA certificate path set to match server key/cert"
 msgstr ""
@@ -14054,9 +13942,6 @@ msgstr "Revert a domain to a snapshot"
 msgid "Revert domain to snapshot"
 msgstr "Revert domain to snapshot"
 
-msgid "Root element is not 'node'"
-msgstr "Root element is not 'node'"
-
 #, c-format
 msgid "Route address '%s' conflicts with IP address for '%s'"
 msgstr ""
@@ -14126,6 +14011,9 @@ msgstr "SATA is not supported with this QEMU binary"
 
 #, c-format
 msgid "SATA unit index %d out of [0..29] range"
+msgstr ""
+
+msgid "SCHED_CORE not supported by kernel"
 msgstr ""
 
 #, c-format
@@ -14642,6 +14530,11 @@ msgstr "Shared memory:\n"
 
 #, c-format
 msgid "Shell '%s' should have absolute path"
+msgstr ""
+
+msgid ""
+"Shortcut for calling the command with a single CPU model and no additional "
+"features"
 msgstr ""
 
 msgid "Should define both master and slave path attributes for nmdm device"
@@ -16140,13 +16033,6 @@ msgid ""
 msgstr ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
 
-msgid "The keyword is not comprised only of uppercase ASCII letters or digits"
-msgstr ""
-
-#, c-format
-msgid "The keyword length is not 2 bytes: %s"
-msgstr ""
-
 #, fuzzy
 msgid "The machine has no snapshot and it should have it"
 msgstr "domain %s has no snapshots with name %s"
@@ -16188,9 +16074,6 @@ msgstr "The server redirects from '%s' to '%s'"
 #, fuzzy
 msgid "The slirp-helper doesn't support migration"
 msgstr "storage pool does not support volume creation"
-
-msgid "The string resource has invalid characters in its value"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "The vbox driver does not support %s SCSI controller model"
@@ -17196,6 +17079,9 @@ msgstr ""
 msgid "Unable to destroy '%s': device in use"
 msgstr ""
 
+msgid "Unable to detect SCHED_CORE"
+msgstr ""
+
 #, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "Unable to detect filesystem for %s"
@@ -17311,6 +17197,9 @@ msgstr ""
 #, fuzzy
 msgid "Unable to find a satisfying virtiofsd"
 msgstr "Unable to bind to port"
+
+msgid "Unable to find a vCPU that is online"
+msgstr ""
 
 #, c-format
 msgid "Unable to find address for mdev parent device '%s'"
@@ -17992,10 +17881,6 @@ msgid "Unable to parse cloud-hypervisor version: %s"
 msgstr ""
 
 #, c-format
-msgid "Unable to parse connectionid '%s'"
-msgstr ""
-
-#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "Unable to parse current SELinux context '%s'"
 
@@ -18026,14 +17911,6 @@ msgstr "Unable to parse lock state %s"
 msgid "Unable to parse ovs-vsctl output"
 msgstr "Failed to parse vzlist output"
 
-#, fuzzy, c-format
-msgid "Unable to parse port id '%s'"
-msgstr "Unable to parse class id '%s'"
-
-#, c-format
-msgid "Unable to parse portid '%s'"
-msgstr ""
-
 msgid "Unable to parse quota"
 msgstr "Unable to parse quota"
 
@@ -18051,10 +17928,6 @@ msgstr "Unable to parse class id '%s'"
 
 msgid "Unable to parse string parameter"
 msgstr "Unable to parse string parameter"
-
-#, c-format
-msgid "Unable to parse switchid '%s'"
-msgstr ""
 
 #, fuzzy
 msgid "Unable to parse the xml"
@@ -18343,6 +18216,10 @@ msgstr ""
 msgid "Unable to retrieve threadpool parameters"
 msgstr "Unable to get memory parameters"
 
+#, c-format
+msgid "Unable to run among %llu"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to run command to get OVS master for interface %s"
 msgstr "Unable to run command to get OVS port data for interface %s"
@@ -18453,6 +18330,9 @@ msgstr "Unable to set FD %d blocking"
 #, fuzzy
 msgid "Unable to set IPV6_V6ONLY flag"
 msgstr "Unable to set cloexec flag"
+
+msgid "Unable to set SCHED_CORE"
+msgstr ""
 
 #, c-format
 msgid "Unable to set SELinux context MCS '%s'"
@@ -18866,12 +18746,6 @@ msgstr "Unexpected QEMU agent still active during domain deletion"
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "Unexpected QEMU monitor still active during domain deletion"
 
-msgid "Unexpected RV keyword in the read-write section."
-msgstr ""
-
-msgid "Unexpected RW keyword in the read-only section."
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unexpected SCSI controller model %d"
 msgstr "unexpected controller type %d"
@@ -18918,9 +18792,6 @@ msgstr "Unexpected signature '%s'"
 #, fuzzy
 msgid "Unexpected event thread still active during domain deletion"
 msgstr "Unexpected QEMU agent still active during domain deletion"
-
-msgid "Unexpected field value format encountered."
-msgstr ""
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -19260,9 +19131,6 @@ msgid ""
 "'paravirt'"
 msgstr ""
 
-msgid "Unknown mode has been specified"
-msgstr "Unknown mode has been specified"
-
 #, c-format
 msgid "Unknown model type '%s'"
 msgstr "Unknown model type '%s'"
@@ -19297,6 +19165,10 @@ msgstr ""
 
 msgid "Unknown return code"
 msgstr "Unknown return code"
+
+#, c-format
+msgid "Unknown sched_core value %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unknown scsi_host subsystem protocol '%s'"
@@ -20116,12 +19988,6 @@ msgstr "Write of '%s' to '%s' during vport create/delete failed"
 msgid "Write to '%s' to trigger host scan failed"
 msgstr "Write to '%s' to trigger host scan failed"
 
-#, fuzzy
-msgid ""
-"Wrong <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
-
 msgid "Wrong MAC address"
 msgstr "Wrong MAC address"
 
@@ -20173,10 +20039,6 @@ msgstr "XML does not contain expected 'sysinfo' element"
 #, fuzzy
 msgid "XML does not contain expected 'chassis' element"
 msgstr "XML does not contain expected 'sysinfo' element"
-
-#, fuzzy
-msgid "XML does not contain expected 'cookie' element"
-msgstr "XML does not contain expected 'cpu' element"
 
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML does not contain expected 'cpu' element"
@@ -21387,6 +21249,9 @@ msgstr "cannot become session leader"
 
 msgid "cannot block signals"
 msgstr "cannot block signals"
+
+msgid "cannot both keep and delete TPM"
+msgstr ""
 
 msgid "cannot both keep and delete nvram"
 msgstr ""
@@ -24938,19 +24803,8 @@ msgstr "domainMigratePrepare2 did not set uri"
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare3 did not set uri"
 
-#, fuzzy
-msgid "domainbackup"
-msgstr "domainsnapshot"
-
-#, fuzzy
-msgid "domaincheckpoint"
-msgstr "domain vcpu counts"
-
 msgid "domains in 'doms' array must belong to a single connection"
 msgstr ""
-
-msgid "domainsnapshot"
-msgstr "domainsnapshot"
 
 #, c-format
 msgid "doms array in %s must contain at least one domain"
@@ -28145,6 +27999,10 @@ msgstr "lxc state driver is not active"
 msgid "interface stats not implemented on this platform"
 msgstr "interface stats not implemented on this platform"
 
+#, c-format
+msgid "interface type='%s' requires a 'source' element"
+msgstr ""
+
 msgid "internal"
 msgstr "internal"
 
@@ -28228,10 +28086,6 @@ msgstr "invalid keycode: '%s'"
 #, c-format
 msgid "invalid '=' after option --%s"
 msgstr "invalid '=' after option --%s"
-
-#, fuzzy, c-format
-msgid "invalid 'managed' value '%s'"
-msgstr "invalid translation value '%s'"
 
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr ""
@@ -29073,6 +28927,9 @@ msgid "kdump-compressed format is not supported here"
 msgstr "disk format %s is not supported"
 
 msgid "kdump-compressed format is only supported with memory-only dump"
+msgstr ""
+
+msgid "keep TPM state"
 msgstr ""
 
 msgid "keep nvram file"
@@ -34124,6 +33981,9 @@ msgstr ""
 msgid "removable is only valid for usb disks"
 msgstr "removable is only valid for usb disks"
 
+msgid "remove TPM state"
+msgstr ""
+
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "remove all associated storage volumes (use with caution)"
 
@@ -34238,6 +34098,9 @@ msgstr "detailed domain vcpu information"
 #, fuzzy
 msgid "report error if CPUs are incompatible"
 msgstr "CPUs are incompatible"
+
+msgid "report fd-based VM statistics by KVM"
+msgstr ""
 
 #, fuzzy
 msgid "report filesystem information"
@@ -36780,6 +36643,9 @@ msgstr "unable to read child stdout"
 msgid "unable to read domain master key file"
 msgstr "unable to read vmware log file"
 
+msgid "unable to read from pipe"
+msgstr ""
+
 #, c-format
 msgid "unable to read server cert %s"
 msgstr "unable to read server cert %s"
@@ -36883,6 +36749,14 @@ msgstr "unable to set user and group to '%ld:%ld' on '%s'"
 #, fuzzy
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "cannot get feature flags on macvtap tap"
+
+#, c-format
+msgid "unable to share scheduling cookie from %lld"
+msgstr ""
+
+#, c-format
+msgid "unable to share scheduling cookie to %lld"
+msgstr ""
 
 #, c-format
 msgid "unable to stat %s"
@@ -37261,49 +37135,6 @@ msgstr "unexpected problem reading snapshot xml"
 #, fuzzy
 msgid "unexpected protocol type"
 msgstr "unexpected pool type"
-
-#, c-format
-msgid "unexpected root element <%s> expecting <device>"
-msgstr "unexpected root element <%s> expecting <device>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domain>"
-msgstr "unexpected root element <%s>, expecting <domain>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domstatus>"
-msgstr "unexpected root element <%s>, expecting <domstatus>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <interface>"
-msgstr "unexpected root element <%s>, expecting <interface>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <network>"
-msgstr "unexpected root element <%s>, expecting <network>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <pool>"
-msgstr "unexpected root element <%s>, expecting <pool>"
-
-#, fuzzy, c-format
-msgid "unexpected root element <%s>, expecting <qemuCaps>"
-msgstr "unexpected root element <%s>, expecting <domain>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <secret>"
-msgstr "unexpected root element <%s>, expecting <secret>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <volume>"
-msgstr "unexpected root element <%s>, expecting <volume>"
-
-msgid "unexpected root element, expecting <domain>"
-msgstr "unexpected root element, expecting <domain>"
-
-#, fuzzy, c-format
-msgid "unexpected root element: '%s'"
-msgstr "unexpected data '%s'"
 
 #, c-format
 msgid "unexpected secret usage type %d"
@@ -37755,21 +37586,6 @@ msgstr "unknown redirdev character device type '%s'"
 
 msgid "unknown rng-random backend"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unknown root element '%s' for filter binding"
-msgstr "unknown root element for nw filter"
-
-#, fuzzy
-msgid "unknown root element for network port"
-msgstr "unknown root element for nw filter"
-
-msgid "unknown root element for nw filter"
-msgstr "unknown root element for nw filter"
-
-#, fuzzy
-msgid "unknown root element for nwfilter binding"
-msgstr "unknown root element for nw filter"
 
 msgid "unknown rule action attribute value"
 msgstr "unknown rule action attribute value"
@@ -39388,6 +39204,172 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "%s 3d acceleration is not supported"
+#~ msgstr "Operation not supported"
+
+#, fuzzy
+#~ msgid ""
+#~ "'reconnect' attribute  unsupported 'server' mode for <interface "
+#~ "type='vhostuser'>"
+#~ msgstr "<virtualport> element unsupported for <interface type='%s'>"
+
+#~ msgid "(network status)"
+#~ msgstr "(network status)"
+
+#, fuzzy
+#~ msgid "(pool state)"
+#~ msgstr "no state"
+
+#, fuzzy
+#~ msgid "CCW address type is not supported by this QEMU"
+#~ msgstr "reboot timeout is not supported by this QEMU binary"
+
+#, fuzzy
+#~ msgid "Cannot parse <local> 'port' attribute with socket interface"
+#~ msgstr "Cannot parse <source> 'port' attribute with socket interface"
+
+#~ msgid "Cannot parse <source> 'port' attribute with socket interface"
+#~ msgstr "Cannot parse <source> 'port' attribute with socket interface"
+
+#, fuzzy
+#~ msgid "No <local> 'address' attribute specified with socket interface"
+#~ msgstr "No <source> 'address' attribute specified with socket interface"
+
+#, fuzzy
+#~ msgid "No <local> 'port' attribute specified with socket interface"
+#~ msgstr "No <source> 'port' attribute specified with socket interface"
+
+#~ msgid "No <source> 'address' attribute specified with socket interface"
+#~ msgstr "No <source> 'address' attribute specified with socket interface"
+
+#~ msgid ""
+#~ "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
+#~ msgstr ""
+#~ "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
+
+#~ msgid ""
+#~ "No <source> 'dev' attribute specified with <interface type='direct'/>"
+#~ msgstr ""
+#~ "No <source> 'dev' attribute specified with <interface type='direct'/>"
+
+#, fuzzy
+#~ msgid ""
+#~ "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+
+#~ msgid ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+#~ msgstr ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+
+#~ msgid ""
+#~ "No <source> 'network' attribute specified with <interface type='network'/>"
+#~ msgstr ""
+#~ "No <source> 'network' attribute specified with <interface type='network'/>"
+
+#, fuzzy
+#~ msgid ""
+#~ "No <source> 'path' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+
+#~ msgid "No <source> 'port' attribute specified with socket interface"
+#~ msgstr "No <source> 'port' attribute specified with socket interface"
+
+#, fuzzy
+#~ msgid ""
+#~ "No <source> 'type' attribute specified for <interface type='vhostuser'>"
+#~ msgstr ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+
+#~ msgid "Root element is not 'node'"
+#~ msgstr "Root element is not 'node'"
+
+#, fuzzy
+#~ msgid "Unable to parse port id '%s'"
+#~ msgstr "Unable to parse class id '%s'"
+
+#~ msgid "Unknown mode has been specified"
+#~ msgstr "Unknown mode has been specified"
+
+#, fuzzy
+#~ msgid ""
+#~ "Wrong <source> 'mode' attribute specified with <interface "
+#~ "type='vhostuser'/>"
+#~ msgstr ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'cookie' element"
+#~ msgstr "XML does not contain expected 'cpu' element"
+
+#, fuzzy
+#~ msgid "domainbackup"
+#~ msgstr "domainsnapshot"
+
+#, fuzzy
+#~ msgid "domaincheckpoint"
+#~ msgstr "domain vcpu counts"
+
+#~ msgid "domainsnapshot"
+#~ msgstr "domainsnapshot"
+
+#, fuzzy
+#~ msgid "invalid 'managed' value '%s'"
+#~ msgstr "invalid translation value '%s'"
+
+#~ msgid "unexpected root element <%s> expecting <device>"
+#~ msgstr "unexpected root element <%s> expecting <device>"
+
+#~ msgid "unexpected root element <%s>, expecting <domain>"
+#~ msgstr "unexpected root element <%s>, expecting <domain>"
+
+#~ msgid "unexpected root element <%s>, expecting <domstatus>"
+#~ msgstr "unexpected root element <%s>, expecting <domstatus>"
+
+#~ msgid "unexpected root element <%s>, expecting <interface>"
+#~ msgstr "unexpected root element <%s>, expecting <interface>"
+
+#~ msgid "unexpected root element <%s>, expecting <network>"
+#~ msgstr "unexpected root element <%s>, expecting <network>"
+
+#~ msgid "unexpected root element <%s>, expecting <pool>"
+#~ msgstr "unexpected root element <%s>, expecting <pool>"
+
+#, fuzzy
+#~ msgid "unexpected root element <%s>, expecting <qemuCaps>"
+#~ msgstr "unexpected root element <%s>, expecting <domain>"
+
+#~ msgid "unexpected root element <%s>, expecting <secret>"
+#~ msgstr "unexpected root element <%s>, expecting <secret>"
+
+#~ msgid "unexpected root element <%s>, expecting <volume>"
+#~ msgstr "unexpected root element <%s>, expecting <volume>"
+
+#~ msgid "unexpected root element, expecting <domain>"
+#~ msgstr "unexpected root element, expecting <domain>"
+
+#, fuzzy
+#~ msgid "unexpected root element: '%s'"
+#~ msgstr "unexpected data '%s'"
+
+#, fuzzy
+#~ msgid "unknown root element '%s' for filter binding"
+#~ msgstr "unknown root element for nw filter"
+
+#, fuzzy
+#~ msgid "unknown root element for network port"
+#~ msgstr "unknown root element for nw filter"
+
+#~ msgid "unknown root element for nw filter"
+#~ msgstr "unknown root element for nw filter"
+
+#, fuzzy
+#~ msgid "unknown root element for nwfilter binding"
+#~ msgstr "unknown root element for nw filter"
 
 #~ msgid "Cannot parse controller index %s"
 #~ msgstr "Cannot parse controller index %s"

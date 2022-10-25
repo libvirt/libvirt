@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-09-27 08:07+0000\n"
+"POT-Creation-Date: 2022-10-25 07:42+0000\n"
 "PO-Revision-Date: 2022-10-02 12:19+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -528,10 +528,6 @@ msgstr ""
 #, c-format
 msgid "%s (out of %d)"
 msgstr "%s (%d 의 밖에)"
-
-#, c-format
-msgid "%s 3d acceleration is not supported"
-msgstr "%s 3d 가속은 지원되지 않습니다"
 
 #, c-format
 msgid "%s array element does not contain a string"
@@ -1189,6 +1185,9 @@ msgstr ""
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "';'는 RDB 원천 볼륨 이름 '%s'에서 허용되지 않습니다"
 
+msgid "'<local>' element missing for 'udp' socket interface"
+msgstr ""
+
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr "'adapter' 이름은 scsi hostdev 원천을 위해 지정되어야 합니다"
 
@@ -1335,11 +1334,9 @@ msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "'queues'는 virtio-scsi 제어기에서만 지원됩니다"
 
 msgid ""
-"'reconnect' attribute  unsupported 'server' mode for <interface "
+"'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
 msgstr ""
-"'server'모드의 <interface type='vhostuser'>에서 'reconnect'(재접속) 속성은 지"
-"원되지 않습니다"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1448,9 +1445,6 @@ msgstr "(libxl_migration_cookie)"
 msgid "(metadata_xml)"
 msgstr "(메타자료_xml)"
 
-msgid "(network status)"
-msgstr "(네트워크가 상태)"
-
 msgid "(network_definition)"
 msgstr "(네트워크 정의)"
 
@@ -1471,9 +1465,6 @@ msgstr "(nwfilterbinding_정의)"
 
 msgid "(nwfilterbinding_status)"
 msgstr "(nwfilter_정의)"
-
-msgid "(pool state)"
-msgstr "(풀 상태)"
 
 msgid "(qemu_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
@@ -1592,6 +1583,12 @@ msgstr ""
 
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proce/net/dev: 인터페이스를 찾을 수 없음"
+
+msgid "3d acceleration is not supported by this QEMU binary"
+msgstr ""
+
+msgid "3d acceleration is supported only with 'virtio' video device"
+msgstr ""
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64-비트 PCI 슬롯 환경설정은 오직 root PCI 조종장비에서만 가능합니다"
@@ -1721,9 +1718,6 @@ msgstr "다른 콜백이 요청되었습니다"
 #, c-format
 msgid "A domain definition can have no more than one cipher node with name %s"
 msgstr "영역정의는 한개이상의 이름이 %s인 글자 노드를 가질수 없습니다"
-
-msgid "A field data length violates the resource length boundary."
-msgstr "필드 자료 길이가 자원 범위 경계를 위반합니다."
 
 msgid "A interface driver is already registered"
 msgstr "이미 접속장비 드라이버가 등록되어있습니다"
@@ -2200,9 +2194,6 @@ msgstr "바쁨"
 msgid "CA certificate:"
 msgstr "인증서:"
 
-msgid "CCW address type is not supported by this QEMU"
-msgstr "CCW 주소 유형은 QEMU에서 지원하지 않습니다"
-
 #, c-format
 msgid "CHS geometry can not be set for '%s' bus"
 msgstr ""
@@ -2302,12 +2293,6 @@ msgstr "CPU 주파수:"
 
 msgid "CPU map:"
 msgstr "CPU 지도:"
-
-#, c-format
-msgid ""
-"CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
-msgstr ""
-"CPU 최대 물리적인 주소 비트 방식 '%s'는 '%s' CPUs에서만 사용 될 수 있습니다"
 
 #, c-format
 msgid ""
@@ -3147,12 +3132,6 @@ msgstr "<버츄얼박스><장비>노드에서 구문 분석을 할 수 없습니
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "<address> '포트' 속성을 구문 분석할 수 없습니다"
 
-msgid "Cannot parse <local> 'port' attribute with socket interface"
-msgstr "소켓 연결장치와 함께 <로컬>'포트'를 구문 분석 할 수 없습니다"
-
-msgid "Cannot parse <source> 'port' attribute with socket interface"
-msgstr "소켓 인터페이스에 지정된 <source> '포트'를 구문 분석 할 수 없습니다"
-
 #, c-format
 msgid "Cannot parse MAC address '%s' in network '%s'"
 msgstr "네트워크 '%s'에서 MAC 주소 '%s'를 구문 분석할 수 없습니다"
@@ -3392,22 +3371,6 @@ msgstr "마운트 이름공간을 공유 해제 할 수 없음"
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "초기화하지 않은 CURL 핸들을 공유 해제할 수 없습니다"
 
-msgid "Cannot update the read-only keyword: RO section not initialized."
-msgstr ""
-"핵심용어 읽기-전용을 최신화 할 수 없습니다: RO 부분은 초기화 되지 않았습니다."
-
-msgid ""
-"Cannot update the read-write keyword: read-write section not initialized."
-msgstr ""
-"핵심용어 읽기-쓰기를 최신화 할 수 없습니다: 읽기-쓰기 부분은 초기화 되지 않았"
-"습니다."
-
-msgid "Cannot update the resource: a NULL keyword pointer has been provided."
-msgstr "자원을 최신화 할 수 없습니다: NULL 핵심용어 포인터가 제공되었습니다."
-
-msgid "Cannot update the resource: a NULL resource pointer has been provided."
-msgstr "자원을 최신화 할 수 없습니다: NULL 자원 포인터가 제공되었습니다."
-
 #, c-format
 msgid "Cannot use direct socket mode for %s transport"
 msgstr "%s 전송을 위한 다이렉트 소켓 모드를 사용 할 수 없습니다"
@@ -3612,9 +3575,6 @@ msgstr "체크포인트 목록"
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr "점검점 %s 도메인에 대한 관계가 일관되지 않습니다"
-
-msgid "Checksum validation has failed"
-msgstr "체크썸 유효성이 실패하였습니다"
 
 #, c-format
 msgid "Child process (%lld) unexpected %s"
@@ -4653,9 +4613,6 @@ msgstr "VI API 버전 '%s'를 구문 분석할 수 없습니다"
 msgid "Could not parse VPS ID %s"
 msgstr "VPS ID %s를 구문분석 할 수 없음"
 
-msgid "Could not parse a resource field data - VPD has invalid format"
-msgstr "자원 부분 자료를 구문 분석 할 수 없습니다 - VPD는 잘못된 형식입니다"
-
 #, c-format
 msgid "Could not parse barrier and limit of '%s' from config for container %d"
 msgstr ""
@@ -4719,12 +4676,6 @@ msgstr "컨테이너 %d에 대해 config에서 'VE_PRIVATE'를 읽을 수 없음
 
 msgid "Could not read a device name from the <name> element"
 msgstr "<name> 요소에서 장치 이름을 읽을 수 없습니다"
-
-msgid "Could not read a part of a resource - VPD has invalid format"
-msgstr "자원의 일부를 읽을 수 없습니다 - VPD는 잘못된 형식입니다"
-
-msgid "Could not read a resource field header - VPD has invalid format"
-msgstr "자원 부분 헤더를 읽을 수 없습니다 - VPS는 잘못된 형식입니다"
 
 #, c-format
 msgid "Could not read config for container %d"
@@ -4930,10 +4881,6 @@ msgstr "자료를 전송 할 수 없습니다: %s (%d)"
 
 msgid "Could not translate keycode"
 msgstr "키코드를 번역 할 수 없습니다"
-
-#, c-format
-msgid "Could not update the VPD resource keyword: %s"
-msgstr "VPD 자원 핵심용어를 최신화 할 수 없습니다: %s"
 
 msgid "Could not verify disk address"
 msgstr "디스크 주소를 확인할 수 없습니다"
@@ -5931,6 +5878,10 @@ msgstr "이름이 지정된 스냅샷의 도메인 스냅샷 XML 편집"
 
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "'scsi_host' 어댑터에 대해 'name' 또는 'parent'를 지정해야 합니다"
+
+#, c-format
+msgid "Either --%s or --%s must be provided"
+msgstr ""
 
 msgid "Eject the media"
 msgstr "미디어 꺼내기"
@@ -9667,16 +9618,6 @@ msgstr ""
 "PCI 장치 %s를 재설정하려는 시도가 잘못되었습니다. PCI 끝점 장치만 재설정할 "
 "수 있습니다"
 
-#, c-format
-msgid ""
-"Invalid attempt to set <interface type='ethernet'> device name with <source "
-"dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest dev='%s'/> (for "
-"guest-side) instead."
-msgstr ""
-"<source dev='%s'/>로 <interface type='ethernet'> 장치 이름을 설정하려는 시도"
-"가 잘못되었습니다. 대신 <target dev='%s'/>(호스트 측의 경우) 또는 <guest "
-"dev='%s'/>(게스트 측의 경우)를 사용하십시오."
-
 msgid ""
 "Invalid attempt to set network interface guest-side IP route and/or address "
 "info, not supported by QEMU"
@@ -10343,10 +10284,20 @@ msgid "Invalid value for attribute '%s' in element '%s': '%s'."
 msgstr "요소 '%s'의 특성 '%s'에 대한 잘못된 값: '%s'."
 
 #, c-format
+msgid "Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"
+msgstr ""
+
+#, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
 msgstr "요소 '%s'의 특성 '%s'에 대한 잘못된 값: '%s'. 예상 정수 값"
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
+"integer value"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -11577,30 +11528,14 @@ msgstr "JSON 상태 문서에서 sock 부분이 누락"
 msgid "Missing source channel attribute for char device"
 msgstr "문자 장치에 대한 소스 채널 속성이 누락되었습니다"
 
-#, c-format
-msgid "Missing source connectionid for interface type '%s'"
-msgstr "연결장치 유형 '%s'을 위한 누락된 원천 연결id"
-
 msgid "Missing source host attribute for char device"
 msgstr "캐릭터 장치에 대한 소스 호스트 특성 빠짐"
 
 msgid "Missing source path attribute for char device"
 msgstr "캐릭터 장치에 대한 소스 경로 특성 빠짐"
 
-#, c-format
-msgid "Missing source portgroup for interface type '%s'"
-msgstr "연결장치 유형 '%s'을 위한 누락된 원천 포트그룹"
-
-#, c-format
-msgid "Missing source portid for interface type '%s'"
-msgstr "연결장치 유형 '%s'을 위한 누락된 원천 포트id"
-
 msgid "Missing source service attribute for char device"
 msgstr "캐릭터 장치에 대한 소스 서비스 특성 빠짐"
-
-#, c-format
-msgid "Missing source switchid for interface type '%s'"
-msgstr "연결장치 유형 '%s'을 위한 누락된 원천 switchid"
 
 msgid "Missing storage block path"
 msgstr "저장소 블록 경로가 누락되어 있습니다"
@@ -12038,53 +11973,6 @@ msgstr "스케일된 정수로 블록 장치의 새 크기(기본 KiB)"
 
 msgid "Nicdev support unavailable"
 msgstr "Nicdev는 지원 할 수 없습니다"
-
-msgid "No <local> 'address' attribute specified with socket interface"
-msgstr "소켓 연결장치에 지정된 <local> 'address' 속성이 없습니다"
-
-msgid "No <local> 'port' attribute specified with socket interface"
-msgstr "<source> 'port' 속성이 소켓 인터페이스로 지정되지 않았습니다"
-
-msgid "No <source> 'address' attribute specified with socket interface"
-msgstr "소켓 인터페이스에 지정된 <source> 'address'를 구문 분석 할 수 없습니다"
-
-msgid ""
-"No <source> 'bridge' attribute specified with <interface type='bridge'/>"
-msgstr ""
-"<source> 'bridge' 속성이 <interface type='bridge'/>로 지정되지 않았습니다"
-
-msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
-msgstr "<source> 'dev' 속성이 <interface type='direct'/>로 지정되지 않았습니다"
-
-msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
-msgstr "<interface type='vdpa'/>와 함께 지정된 <source> 'dev' 속성이 없습니다"
-
-msgid ""
-"No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"<source> 'name' 속성이 <interface type='internal'/>로 지정되지 않았습니다"
-
-msgid ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
-msgstr ""
-"<source> 'name' 속성이 <interface type='internal'/>로 지정되지 않았습니다"
-
-msgid ""
-"No <source> 'network' attribute specified with <interface type='network'/>"
-msgstr ""
-"<source> 'network' 속성이 <interface type='network'/>로 지정되지 않았습니다"
-
-msgid ""
-"No <source> 'path' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"<source> 'name' 속성이 <interface type='internal'/>로 지정되지 않았습니다"
-
-msgid "No <source> 'port' attribute specified with socket interface"
-msgstr "소켓 연결장치로 지정된 <source> 'port' 속성이 아닙니다"
-
-msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
-msgstr ""
-"<source> 'name' 속성이 <interface type='internal'/>로 지정되지 않았습니다"
 
 msgid "No CA certificate path set to match server key/cert"
 msgstr "서버 키/인증서와 일치하도록 설정된 CA 인증서 경로가 없습니다"
@@ -13911,9 +13799,6 @@ msgstr "도메인을 스냅샷으로 되돌리기"
 msgid "Revert domain to snapshot"
 msgstr "도메인을 스냅샷으로 되돌리기"
 
-msgid "Root element is not 'node'"
-msgstr "루트 요소가 'node'가 아닙니다"
-
 #, c-format
 msgid "Route address '%s' conflicts with IP address for '%s'"
 msgstr "경로 주소 '%s'가 '%s'의 IP 주소와 충돌합니다"
@@ -13952,7 +13837,8 @@ msgid "S3 state is disabled for this domain"
 msgstr "이 도메인에 대해 S3 상태가 비활성화되었습니다"
 
 msgid "S390 PV launch security is not supported by this host or kernel"
-msgstr "이와 같은 호스트 또는 커널에 의해 S390 PV 보안 실행은 지원되지 않습니다"
+msgstr ""
+"이와 같은 호스트 또는 커널에 의해 S390 PV 보안 실행은 지원되지 않습니다"
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr "이 QEMU 바이너리에서는 S390 PV 실행 보안이 지원되지 않습니다"
@@ -13986,6 +13872,9 @@ msgstr "이 QEMU 바이너리에서는 SATA를 지원하지 않습니다"
 #, c-format
 msgid "SATA unit index %d out of [0..29] range"
 msgstr "SATA 장치 인덱스 %d가 [0..29] 범위를 벗어났습니다"
+
+msgid "SCHED_CORE not supported by kernel"
+msgstr ""
 
 #, c-format
 msgid "SCSI bus index %d out of [0] range"
@@ -14477,6 +14366,11 @@ msgstr "공유된 메모리:\n"
 #, c-format
 msgid "Shell '%s' should have absolute path"
 msgstr "셸 '%s'에는 절대 경로가 있어야 합니다"
+
+msgid ""
+"Shortcut for calling the command with a single CPU model and no additional "
+"features"
+msgstr ""
 
 msgid "Should define both master and slave path attributes for nmdm device"
 msgstr "nmdm 장치에 대한 마스터 및 슬레이브 경로 속성을 모두 정의해야 합니다"
@@ -15959,13 +15853,6 @@ msgid ""
 msgstr ""
 "ich9-intel-hda 오디어 제어기는 이 QEMU 바이너리에서는 지원되지 않습니다"
 
-msgid "The keyword is not comprised only of uppercase ASCII letters or digits"
-msgstr "핵심용어는 대문자 ASCII 문자 또는 숫자로만 구성되지 않습니다"
-
-#, c-format
-msgid "The keyword length is not 2 bytes: %s"
-msgstr "핵심용어 길이는 2바이트가 아닙니다: %s"
-
 msgid "The machine has no snapshot and it should have it"
 msgstr "머신에는 현재 스냅샷이 없으며, 스냅샷이 필요합니다"
 
@@ -16006,9 +15893,6 @@ msgstr "서버가 '%s'에서 '%s'로 리디렉션되었습니다"
 
 msgid "The slirp-helper doesn't support migration"
 msgstr "slirp-helper는 이전을 지원하지 않습니다"
-
-msgid "The string resource has invalid characters in its value"
-msgstr "문자열 자원은 이 값에서 잘못된 문자를 갖습니다"
 
 #, c-format
 msgid "The vbox driver does not support %s SCSI controller model"
@@ -16982,6 +16866,9 @@ msgstr "'%s'를 제거할 수 없음: %s"
 msgid "Unable to destroy '%s': device in use"
 msgstr "'%s'를 제거 할 수 없습니다: 현재 사용 중인 장치입니다"
 
+msgid "Unable to detect SCHED_CORE"
+msgstr ""
+
 #, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "%s의 파일 시스템을 감지 할 수 없습니다"
@@ -17092,6 +16979,9 @@ msgstr "만족스러운 vhost-user-gpu를 찾을 수 없음"
 
 msgid "Unable to find a satisfying virtiofsd"
 msgstr "만족스러운 virtiofsd를 찾을 수 없습니다"
+
+msgid "Unable to find a vCPU that is online"
+msgstr ""
 
 #, c-format
 msgid "Unable to find address for mdev parent device '%s'"
@@ -17730,10 +17620,6 @@ msgid "Unable to parse cloud-hypervisor version: %s"
 msgstr "클라우드 하이퍼바이저 버전을 구문 분석할 수 없음: %s"
 
 #, c-format
-msgid "Unable to parse connectionid '%s'"
-msgstr "connectionid '%s'를 구문 분석 할 수 없음"
-
-#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "현재 SELinux 문맥 '%s'를 구문 분석할 수 없음"
 
@@ -17762,14 +17648,6 @@ msgstr "잠금 상태 %s: %s를 구문 분석 할 수 없습니다"
 msgid "Unable to parse ovs-vsctl output"
 msgstr "ovs-vsctl 출력을 구문 분석할 수 없습니다"
 
-#, c-format
-msgid "Unable to parse port id '%s'"
-msgstr "포트 id '%s'를 구문 분석 할 수 없습니다"
-
-#, c-format
-msgid "Unable to parse portid '%s'"
-msgstr "portid '%s'를 구문 분석 할 수 없음"
-
 msgid "Unable to parse quota"
 msgstr "쿼타를 구문 분석할 수 없습니다"
 
@@ -17787,10 +17665,6 @@ msgstr "비밀 uuid '%s'를 구문 분석 할 수 없습니다"
 
 msgid "Unable to parse string parameter"
 msgstr "문자열 매개 변수를 구문 분석 할 수 없음"
-
-#, c-format
-msgid "Unable to parse switchid '%s'"
-msgstr "switchid '%s'를 구문 분석 할 수 없음"
 
 msgid "Unable to parse the xml"
 msgstr "xml을 구문 분석할 수 없습니다"
@@ -18067,6 +17941,10 @@ msgid "Unable to retrieve threadpool parameters"
 msgstr "스레드 풀 매개변수를 검색할 수 없습니다"
 
 #, c-format
+msgid "Unable to run among %llu"
+msgstr ""
+
+#, c-format
 msgid "Unable to run command to get OVS master for interface %s"
 msgstr "인터페이스 %s에 대한 OVS 마스터를 가져오는 명령을 실행할 수 없습니다"
 
@@ -18168,6 +18046,9 @@ msgstr "FD %d 차단을 설정 할 수 없습니다"
 
 msgid "Unable to set IPV6_V6ONLY flag"
 msgstr "IPV6_V6ONLY 플래그를 설정할 수 없습니다"
+
+msgid "Unable to set SCHED_CORE"
+msgstr ""
 
 #, c-format
 msgid "Unable to set SELinux context MCS '%s'"
@@ -18566,12 +18447,6 @@ msgstr "도메인 삭제 중에 예기치 않은 QEMU 에이전트가 여전히 
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "도메인 삭제 중에 예기치 않은 QEMU 모니터가 여전히 활성화 상태임"
 
-msgid "Unexpected RV keyword in the read-write section."
-msgstr "읽기-쓰기 부분에서 예상하지 못한 핵심용어."
-
-msgid "Unexpected RW keyword in the read-only section."
-msgstr "읽기-전용 부분에서 예상하지 못한 RW 핵심용어."
-
 #, c-format
 msgid "Unexpected SCSI controller model %d"
 msgstr "예기치 않은 SCSI 컨트롤러 모델 %d"
@@ -18617,9 +18492,6 @@ msgstr "CPU 맵 '%s'에서 예상치 못한 요소 '%s'"
 
 msgid "Unexpected event thread still active during domain deletion"
 msgstr "도메인 삭제 중에 예기치 않은 이벤트 쓰레드가 계속 활성화 상태입니다"
-
-msgid "Unexpected field value format encountered."
-msgstr "예상치 못한 입력부분 값 형식이 발생하였습니다."
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -18959,9 +18831,6 @@ msgstr ""
 "알 수 없는 모드 %s 값, 'acpi', 'agent', 'initctl', 'signal' 또는 "
 "'paravirt'가 필요합니다"
 
-msgid "Unknown mode has been specified"
-msgstr "알 수 없는 모드가 지정되었습니다"
-
 #, c-format
 msgid "Unknown model type '%s'"
 msgstr "알 수 없는 모델 유형 '%s'"
@@ -18995,6 +18864,10 @@ msgstr "알 수 없는 원격 모드 '%s'"
 
 msgid "Unknown return code"
 msgstr "알 수 없는 반환 코드"
+
+#, c-format
+msgid "Unknown sched_core value %s"
+msgstr ""
 
 #, c-format
 msgid "Unknown scsi_host subsystem protocol '%s'"
@@ -19822,11 +19695,6 @@ msgstr "vport 생성/삭제 중 '%s'를 '%s'에 쓰기가 실패했습니다"
 msgid "Write to '%s' to trigger host scan failed"
 msgstr "호스트 스캔을 시작하게 하려고 '%s'를 쓰는 것에 실패했습니다"
 
-msgid ""
-"Wrong <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"잘못된 <source> 'name' 속성이 <interface type='internal'/>로 지정되었습니다"
-
 msgid "Wrong MAC address"
 msgstr "잘못된 MAC 주소"
 
@@ -19877,9 +19745,6 @@ msgstr "XML는 예상되는 'bios' 요소가 포함되어 있지 않습니다"
 
 msgid "XML does not contain expected 'chassis' element"
 msgstr "XML는 예상되는 'chassis' 요소가 포함되지 않습니다"
-
-msgid "XML does not contain expected 'cookie' element"
-msgstr "XML는 예상되는 '쿠키' 요소를 포함하지 않습니다"
 
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML에는 예상되는 'cpu' 요소가 들어 있지 않습니다"
@@ -21071,6 +20936,9 @@ msgstr "세션 리더가 되는 데 실패"
 
 msgid "cannot block signals"
 msgstr "시그널을 블럭할 수 없음"
+
+msgid "cannot both keep and delete TPM"
+msgstr ""
 
 msgid "cannot both keep and delete nvram"
 msgstr "nvram을 유지하고 지울 수 없습니다"
@@ -24508,17 +24376,8 @@ msgstr "domainMigratePrepare2가 uri를 설정하지 않았음"
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare3가 uri를 설정하지 않습니다"
 
-msgid "domainbackup"
-msgstr "도메인 백업"
-
-msgid "domaincheckpoint"
-msgstr "도메인 체크포인트"
-
 msgid "domains in 'doms' array must belong to a single connection"
 msgstr "'doms' 배열의 도메인은 단일 연결에 속해야 합니다"
-
-msgid "domainsnapshot"
-msgstr "도메인 스냅샷"
 
 #, c-format
 msgid "doms array in %s must contain at least one domain"
@@ -27636,6 +27495,10 @@ msgstr "접속기 상태 드라이버가 활성화되지 않았습니다"
 msgid "interface stats not implemented on this platform"
 msgstr "이 플랫폼에서 구현되지 않은 접속기 통계"
 
+#, c-format
+msgid "interface type='%s' requires a 'source' element"
+msgstr ""
+
 msgid "internal"
 msgstr "내부"
 
@@ -27718,10 +27581,6 @@ msgstr "잘못된 %s: '%s'"
 #, c-format
 msgid "invalid '=' after option --%s"
 msgstr "--%s 옵션 뒤의 잘못된 '='"
-
-#, c-format
-msgid "invalid 'managed' value '%s'"
-msgstr "잘못된 '관리' 값 '%s'"
 
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr "vhostuser 디스크 소스에 대한 잘못된 '유형' 속성"
@@ -28544,6 +28403,9 @@ msgstr "kdump 압축 형식은 여기에서 지원되지 않습니다"
 
 msgid "kdump-compressed format is only supported with memory-only dump"
 msgstr "kdump 압축 형식은 메모리 전용 덤프에서만 지원됩니다"
+
+msgid "keep TPM state"
+msgstr ""
 
 msgid "keep nvram file"
 msgstr "nvram 파일을 유지합니다"
@@ -33364,6 +33226,9 @@ msgstr ""
 msgid "removable is only valid for usb disks"
 msgstr "이동식 USB 디스크에만 유효합니다"
 
+msgid "remove TPM state"
+msgstr ""
+
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "연결된 모든 저장소 볼륨 제거(주의해서 사용)"
 
@@ -33466,6 +33331,9 @@ msgstr "도메인 가상 CPU 정보 보고"
 
 msgid "report error if CPUs are incompatible"
 msgstr "CPU가 호환되지 않는 경우 오류 보고"
+
+msgid "report fd-based VM statistics by KVM"
+msgstr ""
 
 msgid "report filesystem information"
 msgstr "파일 시스템 정보 보고"
@@ -35983,6 +35851,9 @@ msgstr "자식 stdout을 읽을 수 없습니다"
 msgid "unable to read domain master key file"
 msgstr "도메인 마스터 키 파일을 읽을 수 없습니다"
 
+msgid "unable to read from pipe"
+msgstr ""
+
 #, c-format
 msgid "unable to read server cert %s"
 msgstr "서버 인증서 %s를 읽을 수 없음"
@@ -36081,6 +35952,14 @@ msgstr "사용자와 그룹을 '%ld:%ld'로('%s'에서 ) 설정 할 수 없습�
 
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "macvtap에서 vnet 또는 multiqueue 플래그를 설정할 수 없습니다"
+
+#, c-format
+msgid "unable to share scheduling cookie from %lld"
+msgstr ""
+
+#, c-format
+msgid "unable to share scheduling cookie to %lld"
+msgstr ""
 
 #, c-format
 msgid "unable to stat %s"
@@ -36451,49 +36330,6 @@ msgstr "스냅샷 xml을 읽는 동안 예기치 않은 문제가 발생했습�
 
 msgid "unexpected protocol type"
 msgstr "예기치 않은 프로토콜 유형"
-
-#, c-format
-msgid "unexpected root element <%s> expecting <device>"
-msgstr "예상치 않은 root 요소 <%s>, <device>이 필요함"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domain>"
-msgstr "예상치 못한 root 요소 <%s>, <domain> 필요"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domstatus>"
-msgstr "예상치 못한 root 요소 <%s>, <domstatus> 필요"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <interface>"
-msgstr "예상치 않은 root 요소 <%s>, <interface>이 필요함"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <network>"
-msgstr "예상치 못한 root 요소 <%s>, <network> 필요"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <pool>"
-msgstr "예상치 않은 root 요소 <%s>, <pool>이 필요함"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <qemuCaps>"
-msgstr "예상치 못한 root 요소 <%s>, <qemuCaps> 예상하기"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <secret>"
-msgstr "예상치 않은 root 요소 <%s>, <secret>이 필요함"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <volume>"
-msgstr "예상치 않은 root 요소 <%s>, <volume>이 필요함"
-
-msgid "unexpected root element, expecting <domain>"
-msgstr "예상치 못한 root 요소, <domain> 예상하기"
-
-#, c-format
-msgid "unexpected root element: '%s'"
-msgstr "예기치 않은 루트 요소: '%s'"
 
 #, c-format
 msgid "unexpected secret usage type %d"
@@ -36941,19 +36777,6 @@ msgstr "알 수 없는 redirdev 문자 장치 유형 '%s'"
 
 msgid "unknown rng-random backend"
 msgstr "알 수 없는 rng 무작위 백엔드"
-
-#, c-format
-msgid "unknown root element '%s' for filter binding"
-msgstr "필터 바인딩에 대한 알 수 없는 루트 요소 '%s'"
-
-msgid "unknown root element for network port"
-msgstr "네트워크 포트에 대한 알 수 없는 루트 요소"
-
-msgid "unknown root element for nw filter"
-msgstr "nw 필터에 대해 알 수 없는 root 요소"
-
-msgid "unknown root element for nwfilter binding"
-msgstr "nwfilter 바인딩에 대한 알 수 없는 루트 요소"
 
 msgid "unknown rule action attribute value"
 msgstr "알 수 없는 규칙 작업 속성 값"
@@ -38557,6 +38380,254 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "%s 3d acceleration is not supported"
+#~ msgstr "%s 3d 가속은 지원되지 않습니다"
+
+#~ msgid ""
+#~ "'reconnect' attribute  unsupported 'server' mode for <interface "
+#~ "type='vhostuser'>"
+#~ msgstr ""
+#~ "'server'모드의 <interface type='vhostuser'>에서 'reconnect'(재접속) 속성"
+#~ "은 지원되지 않습니다"
+
+#~ msgid "(network status)"
+#~ msgstr "(네트워크가 상태)"
+
+#~ msgid "(pool state)"
+#~ msgstr "(풀 상태)"
+
+#~ msgid "A field data length violates the resource length boundary."
+#~ msgstr "필드 자료 길이가 자원 범위 경계를 위반합니다."
+
+#~ msgid "CCW address type is not supported by this QEMU"
+#~ msgstr "CCW 주소 유형은 QEMU에서 지원하지 않습니다"
+
+#~ msgid ""
+#~ "CPU maximum physical address bits mode '%s' can only be used with '%s' "
+#~ "CPUs"
+#~ msgstr ""
+#~ "CPU 최대 물리적인 주소 비트 방식 '%s'는 '%s' CPUs에서만 사용 될 수 있습니"
+#~ "다"
+
+#~ msgid "Cannot parse <local> 'port' attribute with socket interface"
+#~ msgstr "소켓 연결장치와 함께 <로컬>'포트'를 구문 분석 할 수 없습니다"
+
+#~ msgid "Cannot parse <source> 'port' attribute with socket interface"
+#~ msgstr "소켓 인터페이스에 지정된 <source> '포트'를 구문 분석 할 수 없습니다"
+
+#~ msgid "Cannot update the read-only keyword: RO section not initialized."
+#~ msgstr ""
+#~ "핵심용어 읽기-전용을 최신화 할 수 없습니다: RO 부분은 초기화 되지 않았습니"
+#~ "다."
+
+#~ msgid ""
+#~ "Cannot update the read-write keyword: read-write section not initialized."
+#~ msgstr ""
+#~ "핵심용어 읽기-쓰기를 최신화 할 수 없습니다: 읽기-쓰기 부분은 초기화 되지 "
+#~ "않았습니다."
+
+#~ msgid ""
+#~ "Cannot update the resource: a NULL keyword pointer has been provided."
+#~ msgstr ""
+#~ "자원을 최신화 할 수 없습니다: NULL 핵심용어 포인터가 제공되었습니다."
+
+#~ msgid ""
+#~ "Cannot update the resource: a NULL resource pointer has been provided."
+#~ msgstr "자원을 최신화 할 수 없습니다: NULL 자원 포인터가 제공되었습니다."
+
+#~ msgid "Checksum validation has failed"
+#~ msgstr "체크썸 유효성이 실패하였습니다"
+
+#~ msgid "Could not parse a resource field data - VPD has invalid format"
+#~ msgstr "자원 부분 자료를 구문 분석 할 수 없습니다 - VPD는 잘못된 형식입니다"
+
+#~ msgid "Could not read a part of a resource - VPD has invalid format"
+#~ msgstr "자원의 일부를 읽을 수 없습니다 - VPD는 잘못된 형식입니다"
+
+#~ msgid "Could not read a resource field header - VPD has invalid format"
+#~ msgstr "자원 부분 헤더를 읽을 수 없습니다 - VPS는 잘못된 형식입니다"
+
+#~ msgid "Could not update the VPD resource keyword: %s"
+#~ msgstr "VPD 자원 핵심용어를 최신화 할 수 없습니다: %s"
+
+#~ msgid ""
+#~ "Invalid attempt to set <interface type='ethernet'> device name with "
+#~ "<source dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest "
+#~ "dev='%s'/> (for guest-side) instead."
+#~ msgstr ""
+#~ "<source dev='%s'/>로 <interface type='ethernet'> 장치 이름을 설정하려는 시"
+#~ "도가 잘못되었습니다. 대신 <target dev='%s'/>(호스트 측의 경우) 또는 "
+#~ "<guest dev='%s'/>(게스트 측의 경우)를 사용하십시오."
+
+#~ msgid "Missing source connectionid for interface type '%s'"
+#~ msgstr "연결장치 유형 '%s'을 위한 누락된 원천 연결id"
+
+#~ msgid "Missing source portgroup for interface type '%s'"
+#~ msgstr "연결장치 유형 '%s'을 위한 누락된 원천 포트그룹"
+
+#~ msgid "Missing source portid for interface type '%s'"
+#~ msgstr "연결장치 유형 '%s'을 위한 누락된 원천 포트id"
+
+#~ msgid "Missing source switchid for interface type '%s'"
+#~ msgstr "연결장치 유형 '%s'을 위한 누락된 원천 switchid"
+
+#~ msgid "No <local> 'address' attribute specified with socket interface"
+#~ msgstr "소켓 연결장치에 지정된 <local> 'address' 속성이 없습니다"
+
+#~ msgid "No <local> 'port' attribute specified with socket interface"
+#~ msgstr "<source> 'port' 속성이 소켓 인터페이스로 지정되지 않았습니다"
+
+#~ msgid "No <source> 'address' attribute specified with socket interface"
+#~ msgstr ""
+#~ "소켓 인터페이스에 지정된 <source> 'address'를 구문 분석 할 수 없습니다"
+
+#~ msgid ""
+#~ "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
+#~ msgstr ""
+#~ "<source> 'bridge' 속성이 <interface type='bridge'/>로 지정되지 않았습니다"
+
+#~ msgid ""
+#~ "No <source> 'dev' attribute specified with <interface type='direct'/>"
+#~ msgstr ""
+#~ "<source> 'dev' 속성이 <interface type='direct'/>로 지정되지 않았습니다"
+
+#~ msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
+#~ msgstr ""
+#~ "<interface type='vdpa'/>와 함께 지정된 <source> 'dev' 속성이 없습니다"
+
+#~ msgid ""
+#~ "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "<source> 'name' 속성이 <interface type='internal'/>로 지정되지 않았습니다"
+
+#~ msgid ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+#~ msgstr ""
+#~ "<source> 'name' 속성이 <interface type='internal'/>로 지정되지 않았습니다"
+
+#~ msgid ""
+#~ "No <source> 'network' attribute specified with <interface type='network'/>"
+#~ msgstr ""
+#~ "<source> 'network' 속성이 <interface type='network'/>로 지정되지 않았습니"
+#~ "다"
+
+#~ msgid ""
+#~ "No <source> 'path' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "<source> 'name' 속성이 <interface type='internal'/>로 지정되지 않았습니다"
+
+#~ msgid "No <source> 'port' attribute specified with socket interface"
+#~ msgstr "소켓 연결장치로 지정된 <source> 'port' 속성이 아닙니다"
+
+#~ msgid ""
+#~ "No <source> 'type' attribute specified for <interface type='vhostuser'>"
+#~ msgstr ""
+#~ "<source> 'name' 속성이 <interface type='internal'/>로 지정되지 않았습니다"
+
+#~ msgid "Root element is not 'node'"
+#~ msgstr "루트 요소가 'node'가 아닙니다"
+
+#~ msgid ""
+#~ "The keyword is not comprised only of uppercase ASCII letters or digits"
+#~ msgstr "핵심용어는 대문자 ASCII 문자 또는 숫자로만 구성되지 않습니다"
+
+#~ msgid "The keyword length is not 2 bytes: %s"
+#~ msgstr "핵심용어 길이는 2바이트가 아닙니다: %s"
+
+#~ msgid "The string resource has invalid characters in its value"
+#~ msgstr "문자열 자원은 이 값에서 잘못된 문자를 갖습니다"
+
+#~ msgid "Unable to parse connectionid '%s'"
+#~ msgstr "connectionid '%s'를 구문 분석 할 수 없음"
+
+#~ msgid "Unable to parse port id '%s'"
+#~ msgstr "포트 id '%s'를 구문 분석 할 수 없습니다"
+
+#~ msgid "Unable to parse portid '%s'"
+#~ msgstr "portid '%s'를 구문 분석 할 수 없음"
+
+#~ msgid "Unable to parse switchid '%s'"
+#~ msgstr "switchid '%s'를 구문 분석 할 수 없음"
+
+#~ msgid "Unexpected RV keyword in the read-write section."
+#~ msgstr "읽기-쓰기 부분에서 예상하지 못한 핵심용어."
+
+#~ msgid "Unexpected RW keyword in the read-only section."
+#~ msgstr "읽기-전용 부분에서 예상하지 못한 RW 핵심용어."
+
+#~ msgid "Unexpected field value format encountered."
+#~ msgstr "예상치 못한 입력부분 값 형식이 발생하였습니다."
+
+#~ msgid "Unknown mode has been specified"
+#~ msgstr "알 수 없는 모드가 지정되었습니다"
+
+#~ msgid ""
+#~ "Wrong <source> 'mode' attribute specified with <interface "
+#~ "type='vhostuser'/>"
+#~ msgstr ""
+#~ "잘못된 <source> 'name' 속성이 <interface type='internal'/>로 지정되었습니"
+#~ "다"
+
+#~ msgid "XML does not contain expected 'cookie' element"
+#~ msgstr "XML는 예상되는 '쿠키' 요소를 포함하지 않습니다"
+
+#~ msgid "domainbackup"
+#~ msgstr "도메인 백업"
+
+#~ msgid "domaincheckpoint"
+#~ msgstr "도메인 체크포인트"
+
+#~ msgid "domainsnapshot"
+#~ msgstr "도메인 스냅샷"
+
+#~ msgid "invalid 'managed' value '%s'"
+#~ msgstr "잘못된 '관리' 값 '%s'"
+
+#~ msgid "unexpected root element <%s> expecting <device>"
+#~ msgstr "예상치 않은 root 요소 <%s>, <device>이 필요함"
+
+#~ msgid "unexpected root element <%s>, expecting <domain>"
+#~ msgstr "예상치 못한 root 요소 <%s>, <domain> 필요"
+
+#~ msgid "unexpected root element <%s>, expecting <domstatus>"
+#~ msgstr "예상치 못한 root 요소 <%s>, <domstatus> 필요"
+
+#~ msgid "unexpected root element <%s>, expecting <interface>"
+#~ msgstr "예상치 않은 root 요소 <%s>, <interface>이 필요함"
+
+#~ msgid "unexpected root element <%s>, expecting <network>"
+#~ msgstr "예상치 못한 root 요소 <%s>, <network> 필요"
+
+#~ msgid "unexpected root element <%s>, expecting <pool>"
+#~ msgstr "예상치 않은 root 요소 <%s>, <pool>이 필요함"
+
+#~ msgid "unexpected root element <%s>, expecting <qemuCaps>"
+#~ msgstr "예상치 못한 root 요소 <%s>, <qemuCaps> 예상하기"
+
+#~ msgid "unexpected root element <%s>, expecting <secret>"
+#~ msgstr "예상치 않은 root 요소 <%s>, <secret>이 필요함"
+
+#~ msgid "unexpected root element <%s>, expecting <volume>"
+#~ msgstr "예상치 않은 root 요소 <%s>, <volume>이 필요함"
+
+#~ msgid "unexpected root element, expecting <domain>"
+#~ msgstr "예상치 못한 root 요소, <domain> 예상하기"
+
+#~ msgid "unexpected root element: '%s'"
+#~ msgstr "예기치 않은 루트 요소: '%s'"
+
+#~ msgid "unknown root element '%s' for filter binding"
+#~ msgstr "필터 바인딩에 대한 알 수 없는 루트 요소 '%s'"
+
+#~ msgid "unknown root element for network port"
+#~ msgstr "네트워크 포트에 대한 알 수 없는 루트 요소"
+
+#~ msgid "unknown root element for nw filter"
+#~ msgstr "nw 필터에 대해 알 수 없는 root 요소"
+
+#~ msgid "unknown root element for nwfilter binding"
+#~ msgstr "nwfilter 바인딩에 대한 알 수 없는 루트 요소"
 
 #~ msgid "Cannot parse controller index %s"
 #~ msgstr "제어 개요 %s를 구문 분석 할 수 없습니다"

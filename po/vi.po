@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-09-27 08:07+0000\n"
+"POT-Creation-Date: 2022-10-25 07:42+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -354,10 +354,6 @@ msgstr "Đĩa mềm '%s' có kiểu không hỗ trợ '%s', mong đợi '%s' ho�
 #, c-format
 msgid "%s (out of %d)"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "%s 3d acceleration is not supported"
-msgstr "kiểu thao tác %d không hỗ trợ"
 
 #, c-format
 msgid "%s array element does not contain a string"
@@ -995,6 +991,9 @@ msgstr ""
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr ""
 
+msgid "'<local>' element missing for 'udp' socket interface"
+msgstr ""
+
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr ""
 
@@ -1140,7 +1139,7 @@ msgid "'queues' is only supported by virtio-scsi controller"
 msgstr ""
 
 msgid ""
-"'reconnect' attribute  unsupported 'server' mode for <interface "
+"'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
 msgstr ""
 
@@ -1256,10 +1255,6 @@ msgstr ""
 msgid "(metadata_xml)"
 msgstr ""
 
-#, fuzzy
-msgid "(network status)"
-msgstr "tên mạng"
-
 msgid "(network_definition)"
 msgstr ""
 
@@ -1282,10 +1277,6 @@ msgstr ""
 #, fuzzy
 msgid "(nwfilterbinding_status)"
 msgstr "nwfilter đang được dùng"
-
-#, fuzzy
-msgid "(pool state)"
-msgstr "không trạng thái"
 
 msgid "(qemu_migration_cookie)"
 msgstr ""
@@ -1394,6 +1385,12 @@ msgstr ""
 #, fuzzy
 msgid "/proc/net/dev: Interface not found"
 msgstr "Giao diện không tìm thấy"
+
+msgid "3d acceleration is not supported by this QEMU binary"
+msgstr ""
+
+msgid "3d acceleration is supported only with 'virtio' video device"
+msgstr ""
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr ""
@@ -1505,9 +1502,6 @@ msgstr "callback sự kiện đã được theo dõi"
 
 #, c-format
 msgid "A domain definition can have no more than one cipher node with name %s"
-msgstr ""
-
-msgid "A field data length violates the resource length boundary."
 msgstr ""
 
 #, fuzzy
@@ -1973,10 +1967,6 @@ msgstr ""
 msgid "CA certificate:"
 msgstr "Chứng thực không hợp lệ"
 
-#, fuzzy
-msgid "CCW address type is not supported by this QEMU"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
-
 #, c-format
 msgid "CHS geometry can not be set for '%s' bus"
 msgstr ""
@@ -2071,11 +2061,6 @@ msgstr "Tần số CPU:"
 #, fuzzy
 msgid "CPU map:"
 msgstr "Thời gian CPU:"
-
-#, c-format
-msgid ""
-"CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -2953,13 +2938,6 @@ msgstr ""
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "Không thể phân tích thuộc tính <address> 'port'"
 
-#, fuzzy
-msgid "Cannot parse <local> 'port' attribute with socket interface"
-msgstr "Không thể phân tích thuộc tính <source> 'port' với giao diện socket"
-
-msgid "Cannot parse <source> 'port' attribute with socket interface"
-msgstr "Không thể phân tích thuộc tính <source> 'port' với giao diện socket"
-
 #, fuzzy, c-format
 msgid "Cannot parse MAC address '%s' in network '%s'"
 msgstr "Không thể phân tích địa chỉ socket '%s': %s"
@@ -3201,19 +3179,6 @@ msgstr "Không thể tắt chia sẻ không gian tên lắp"
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "Không thể tắt chia sẻ không gian tên lắp"
 
-msgid "Cannot update the read-only keyword: RO section not initialized."
-msgstr ""
-
-msgid ""
-"Cannot update the read-write keyword: read-write section not initialized."
-msgstr ""
-
-msgid "Cannot update the resource: a NULL keyword pointer has been provided."
-msgstr ""
-
-msgid "Cannot update the resource: a NULL resource pointer has been provided."
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Cannot use direct socket mode for %s transport"
 msgstr "Không thể chuyển đổi địa chỉ socket sang chuỗi: %s"
@@ -3420,9 +3385,6 @@ msgstr ""
 
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %s"
-msgstr ""
-
-msgid "Checksum validation has failed"
 msgstr ""
 
 #, c-format
@@ -4509,9 +4471,6 @@ msgstr "Không thể phân tích UUID từ chuỗi '%s'"
 msgid "Could not parse VPS ID %s"
 msgstr "Không thể phân tích ID VPS %s"
 
-msgid "Could not parse a resource field data - VPD has invalid format"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Could not parse barrier and limit of '%s' from config for container %d"
 msgstr "Không thể đọc 'NET_IF' từ cấu hình cho bộ chứa %d"
@@ -4573,12 +4532,6 @@ msgid "Could not read 'VE_PRIVATE' from config for container %d"
 msgstr "Không thể đọc 'VE_PRIVATE' từ cấu hình cho bộ chứa %d"
 
 msgid "Could not read a device name from the <name> element"
-msgstr ""
-
-msgid "Could not read a part of a resource - VPD has invalid format"
-msgstr ""
-
-msgid "Could not read a resource field header - VPD has invalid format"
 msgstr ""
 
 #, c-format
@@ -4787,10 +4740,6 @@ msgstr "Không thể đọc cấu hình cho bộ chứa %d"
 #, fuzzy
 msgid "Could not translate keycode"
 msgstr "Không thể đọc cấu hình bộ chứa"
-
-#, c-format
-msgid "Could not update the VPD resource keyword: %s"
-msgstr ""
 
 msgid "Could not verify disk address"
 msgstr "Không thể kiểm tra địa chỉ đĩa"
@@ -5816,6 +5765,10 @@ msgid "Edit the domain snapshot XML for a named snapshot"
 msgstr "miền không có ảnh chụp hiện tại"
 
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
+msgstr ""
+
+#, c-format
+msgid "Either --%s or --%s must be provided"
 msgstr ""
 
 msgid "Eject the media"
@@ -9662,13 +9615,6 @@ msgid ""
 "reset"
 msgstr ""
 
-#, c-format
-msgid ""
-"Invalid attempt to set <interface type='ethernet'> device name with <source "
-"dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest dev='%s'/> (for "
-"guest-side) instead."
-msgstr ""
-
 msgid ""
 "Invalid attempt to set network interface guest-side IP route and/or address "
 "info, not supported by QEMU"
@@ -10326,9 +10272,19 @@ msgid "Invalid value for attribute '%s' in element '%s': '%s'."
 msgstr ""
 
 #, c-format
+msgid "Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"
+msgstr ""
+
+#, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
+"integer value"
 msgstr ""
 
 #, c-format
@@ -11603,30 +11559,14 @@ msgstr ""
 msgid "Missing source channel attribute for char device"
 msgstr "Thiếu thuộc tính máy chủ nguồn cho thiết bị ký tự"
 
-#, c-format
-msgid "Missing source connectionid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "Thiếu thuộc tính máy chủ nguồn cho thiết bị ký tự"
 
 msgid "Missing source path attribute for char device"
 msgstr "Thiếu thuộc tính đường dẫn nguồn cho thiết bị ký tự"
 
-#, c-format
-msgid "Missing source portgroup for interface type '%s'"
-msgstr ""
-
-#, c-format
-msgid "Missing source portid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source service attribute for char device"
 msgstr "Thiếu thuộc tính dịch vụ nguồn cho thiết bị ký tự"
-
-#, c-format
-msgid "Missing source switchid for interface type '%s'"
-msgstr ""
 
 #, fuzzy
 msgid "Missing storage block path"
@@ -12069,60 +12009,6 @@ msgstr ""
 
 msgid "Nicdev support unavailable"
 msgstr ""
-
-#, fuzzy
-msgid "No <local> 'address' attribute specified with socket interface"
-msgstr "Không có thuộc tính <source> 'address' chỉ định với giao diện socket"
-
-#, fuzzy
-msgid "No <local> 'port' attribute specified with socket interface"
-msgstr "Không có thuộc tính <source> 'port' chỉ định với giao diện socket"
-
-msgid "No <source> 'address' attribute specified with socket interface"
-msgstr "Không có thuộc tính <source> 'address' chỉ định với giao diện socket"
-
-msgid ""
-"No <source> 'bridge' attribute specified with <interface type='bridge'/>"
-msgstr ""
-"Không có thuộc tính <source> 'bridge' chỉ định với <interface type='bridge'/>"
-
-msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
-msgstr ""
-"Không có thuộc tính <source> 'dev' chỉ định với <interface type='direct'/>"
-
-msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
-msgstr ""
-
-#, fuzzy
-msgid ""
-"No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"Không có thuộc tính <source> 'name' chỉ định với <interface type='internal'/>"
-
-msgid ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
-msgstr ""
-"Không có thuộc tính <source> 'name' chỉ định với <interface type='internal'/>"
-
-msgid ""
-"No <source> 'network' attribute specified with <interface type='network'/>"
-msgstr ""
-"Không có thuộc tính <source> 'network' chỉ định với <interface "
-"type='network'/>"
-
-#, fuzzy
-msgid ""
-"No <source> 'path' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"Không có thuộc tính <source> 'name' chỉ định với <interface type='internal'/>"
-
-msgid "No <source> 'port' attribute specified with socket interface"
-msgstr "Không có thuộc tính <source> 'port' chỉ định với giao diện socket"
-
-#, fuzzy
-msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
-msgstr ""
-"Không có thuộc tính <source> 'name' chỉ định với <interface type='internal'/>"
 
 msgid "No CA certificate path set to match server key/cert"
 msgstr ""
@@ -13988,9 +13874,6 @@ msgstr "Hoàn nguyên một miền về một ảnh chụp"
 msgid "Revert domain to snapshot"
 msgstr "Hoàn nguyên miền về ảnh chụp"
 
-msgid "Root element is not 'node'"
-msgstr "Thành phần gốc không phải 'node'"
-
 #, c-format
 msgid "Route address '%s' conflicts with IP address for '%s'"
 msgstr ""
@@ -14061,6 +13944,9 @@ msgstr "SATA không được hỗ trợ với binary QEMU này"
 
 #, c-format
 msgid "SATA unit index %d out of [0..29] range"
+msgstr ""
+
+msgid "SCHED_CORE not supported by kernel"
 msgstr ""
 
 #, c-format
@@ -14564,6 +14450,11 @@ msgstr "Bộ nhớ đã dùng:"
 
 #, c-format
 msgid "Shell '%s' should have absolute path"
+msgstr ""
+
+msgid ""
+"Shortcut for calling the command with a single CPU model and no additional "
+"features"
 msgstr ""
 
 msgid "Should define both master and slave path attributes for nmdm device"
@@ -16019,13 +15910,6 @@ msgid ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
 msgstr "SATA không được hỗ trợ với binary QEMU này"
 
-msgid "The keyword is not comprised only of uppercase ASCII letters or digits"
-msgstr ""
-
-#, c-format
-msgid "The keyword length is not 2 bytes: %s"
-msgstr ""
-
 #, fuzzy
 msgid "The machine has no snapshot and it should have it"
 msgstr "miền %s không có ảnh chụp với tên %s"
@@ -16066,9 +15950,6 @@ msgstr "Máy phục vụ điều hướng từ '%s' sang '%s'"
 #, fuzzy
 msgid "The slirp-helper doesn't support migration"
 msgstr "pool lưu trữ không hỗ trợ tạo ổ"
-
-msgid "The string resource has invalid characters in its value"
-msgstr ""
 
 #, c-format
 msgid "The vbox driver does not support %s SCSI controller model"
@@ -17094,6 +16975,9 @@ msgstr ""
 msgid "Unable to destroy '%s': device in use"
 msgstr ""
 
+msgid "Unable to detect SCHED_CORE"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "không thể quyết định hệ thống tập tin cho '%s'"
@@ -17214,6 +17098,9 @@ msgid "Unable to find a satisfying vhost-user-gpu"
 msgstr ""
 
 msgid "Unable to find a satisfying virtiofsd"
+msgstr ""
+
+msgid "Unable to find a vCPU that is online"
 msgstr ""
 
 #, c-format
@@ -17938,10 +17825,6 @@ msgstr "không thể phân tích địa chỉ mac '%s'"
 msgid "Unable to parse cloud-hypervisor version: %s"
 msgstr ""
 
-#, c-format
-msgid "Unable to parse connectionid '%s'"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "không thể lấy ngữ cảnh tiến trình hiện tại '%s'"
@@ -17974,14 +17857,6 @@ msgstr "Thất bại khi lấy thống kê khối %s %s"
 msgid "Unable to parse ovs-vsctl output"
 msgstr "Thất bại khi phân tích đầu ra vzlist"
 
-#, fuzzy, c-format
-msgid "Unable to parse port id '%s'"
-msgstr "Thất bại khi phân tích chế độ '%s'"
-
-#, c-format
-msgid "Unable to parse portid '%s'"
-msgstr ""
-
 #, fuzzy
 msgid "Unable to parse quota"
 msgstr "Không thể mở %s"
@@ -18001,10 +17876,6 @@ msgstr "không thể phân tích địa chỉ mac '%s'"
 #, fuzzy
 msgid "Unable to parse string parameter"
 msgstr "Không thể lấy các thông số bộ nhớ"
-
-#, c-format
-msgid "Unable to parse switchid '%s'"
-msgstr ""
 
 #, fuzzy
 msgid "Unable to parse the xml"
@@ -18302,6 +18173,10 @@ msgstr ""
 msgid "Unable to retrieve threadpool parameters"
 msgstr "Không thể lấy các thông số bộ nhớ"
 
+#, c-format
+msgid "Unable to run among %llu"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to run command to get OVS master for interface %s"
 msgstr "Thất bại khi chạy lệnh '%s' để tạo giao diện iscsi mới"
@@ -18409,6 +18284,9 @@ msgid "Unable to set FD %d blocking"
 msgstr "Không thể lấy trạng thái miền"
 
 msgid "Unable to set IPV6_V6ONLY flag"
+msgstr ""
+
+msgid "Unable to set SCHED_CORE"
 msgstr ""
 
 #, fuzzy, c-format
@@ -18834,12 +18712,6 @@ msgstr "Bộ quản lý QEMU không mong đợi vẫn còn hoạt động trong 
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "Bộ quản lý QEMU không mong đợi vẫn còn hoạt động trong khi xóa miền"
 
-msgid "Unexpected RV keyword in the read-write section."
-msgstr ""
-
-msgid "Unexpected RW keyword in the read-only section."
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unexpected SCSI controller model %d"
 msgstr "kiểu bộ điều khiển không mong đợi %d"
@@ -18886,9 +18758,6 @@ msgstr ""
 #, fuzzy
 msgid "Unexpected event thread still active during domain deletion"
 msgstr "Bộ quản lý QEMU không mong đợi vẫn còn hoạt động trong khi xóa miền"
-
-msgid "Unexpected field value format encountered."
-msgstr ""
 
 #, fuzzy, c-format
 msgid "Unexpected filesystem type %s"
@@ -19234,10 +19103,6 @@ msgid ""
 "'paravirt'"
 msgstr ""
 
-#, fuzzy
-msgid "Unknown mode has been specified"
-msgstr "Miền %s đã được xóa\n"
-
 #, c-format
 msgid "Unknown model type '%s'"
 msgstr "Kiểu mẫu không rõ '%s'"
@@ -19273,6 +19138,10 @@ msgstr ""
 #, fuzzy
 msgid "Unknown return code"
 msgstr "Chế độ nguồn không rõ '%s'"
+
+#, c-format
+msgid "Unknown sched_core value %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unknown scsi_host subsystem protocol '%s'"
@@ -20097,12 +19966,6 @@ msgstr "Ghi '%s' vào '%s' trong khi tạo/xóa vport thất bại"
 msgid "Write to '%s' to trigger host scan failed"
 msgstr "Ghi vào '%s' để bật quét máy chủ thất bại"
 
-#, fuzzy
-msgid ""
-"Wrong <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"Không có thuộc tính <source> 'name' chỉ định với <interface type='internal'/>"
-
 msgid "Wrong MAC address"
 msgstr "Địa chỉ MAC sai"
 
@@ -20158,10 +20021,6 @@ msgstr "XML không chứ thành phần 'cpu' mong đợi"
 
 #, fuzzy
 msgid "XML does not contain expected 'chassis' element"
-msgstr "XML không chứ thành phần 'cpu' mong đợi"
-
-#, fuzzy
-msgid "XML does not contain expected 'cookie' element"
 msgstr "XML không chứ thành phần 'cpu' mong đợi"
 
 msgid "XML does not contain expected 'cpu' element"
@@ -21366,6 +21225,9 @@ msgstr "không thể trở thành lãnh đạo phiên làm việc"
 
 msgid "cannot block signals"
 msgstr "không thể chặn tín hiệu"
+
+msgid "cannot both keep and delete TPM"
+msgstr ""
 
 msgid "cannot both keep and delete nvram"
 msgstr ""
@@ -24957,19 +24819,8 @@ msgstr "domainMigratePrepare2 đã không đặt uri"
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare đã không đặt uri"
 
-#, fuzzy
-msgid "domainbackup"
-msgstr "ảnh chụp nhanh miền"
-
-#, fuzzy
-msgid "domaincheckpoint"
-msgstr "số vcpu miền"
-
 msgid "domains in 'doms' array must belong to a single connection"
 msgstr ""
-
-msgid "domainsnapshot"
-msgstr "ảnh chụp nhanh miền"
 
 #, c-format
 msgid "doms array in %s must contain at least one domain"
@@ -28193,6 +28044,10 @@ msgstr "trình điều khiển trạng thái lxc không hoạt động"
 msgid "interface stats not implemented on this platform"
 msgstr "thông tin nút không thực hiện trên nền tảng này"
 
+#, c-format
+msgid "interface type='%s' requires a 'source' element"
+msgstr ""
+
 #, fuzzy
 msgid "internal"
 msgstr "lỗi nội bộ"
@@ -28273,10 +28128,6 @@ msgstr "đường dẫn không hợp lý: %s"
 #, c-format
 msgid "invalid '=' after option --%s"
 msgstr "'=' không hợp lệ sau tùy chọn --%s"
-
-#, fuzzy, c-format
-msgid "invalid 'managed' value '%s'"
-msgstr "trạng thái miền không hợp lệ '%s'"
 
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr ""
@@ -29129,6 +28980,9 @@ msgid "kdump-compressed format is not supported here"
 msgstr ""
 
 msgid "kdump-compressed format is only supported with memory-only dump"
+msgstr ""
+
+msgid "keep TPM state"
 msgstr ""
 
 msgid "keep nvram file"
@@ -34210,6 +34064,9 @@ msgstr ""
 msgid "removable is only valid for usb disks"
 msgstr ""
 
+msgid "remove TPM state"
+msgstr ""
+
 msgid "remove all associated storage volumes (use with caution)"
 msgstr ""
 
@@ -34319,6 +34176,9 @@ msgstr "thông tin vcpu miền chi tiết"
 #, fuzzy
 msgid "report error if CPUs are incompatible"
 msgstr "Các CPU không tương thích"
+
+msgid "report fd-based VM statistics by KVM"
+msgstr ""
 
 #, fuzzy
 msgid "report filesystem information"
@@ -36844,6 +36704,9 @@ msgstr "Thất bại khi đọc tập tin '%s'"
 msgid "unable to read domain master key file"
 msgstr "Thất bại khi tạo tập tin lưu miền '%s'"
 
+msgid "unable to read from pipe"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unable to read server cert %s"
 msgstr "không thể đặt ngữ cảnh bảo mật '%s'"
@@ -36948,6 +36811,14 @@ msgstr "không thể đặt ngữ cảnh bảo mật '%s' trên '%s'"
 #, fuzzy
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "không thể lấy cờ giao diện trên tap của macvtap"
+
+#, c-format
+msgid "unable to share scheduling cookie from %lld"
+msgstr ""
+
+#, c-format
+msgid "unable to share scheduling cookie to %lld"
+msgstr ""
 
 #, c-format
 msgid "unable to stat %s"
@@ -37330,50 +37201,6 @@ msgstr "số ảnh chụp không mong muốn < %u"
 #, fuzzy
 msgid "unexpected protocol type"
 msgstr "kiểu pool không rõ"
-
-#, c-format
-msgid "unexpected root element <%s> expecting <device>"
-msgstr ""
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domain>"
-msgstr ""
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domstatus>"
-msgstr ""
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <interface>"
-msgstr ""
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <network>"
-msgstr ""
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <pool>"
-msgstr ""
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <qemuCaps>"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "unexpected root element <%s>, expecting <secret>"
-msgstr "kiểu bí mật mã hóa ổ không mong đợi"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <volume>"
-msgstr ""
-
-#, fuzzy
-msgid "unexpected root element, expecting <domain>"
-msgstr "kiểu thiết bị khởi động không mong đợi %d"
-
-#, fuzzy, c-format
-msgid "unexpected root element: '%s'"
-msgstr "dữ liệu không mong đợi '%s'"
 
 #, c-format
 msgid "unexpected secret usage type %d"
@@ -37828,22 +37655,6 @@ msgstr "kiểu thiết bị ký tự không rõ: %s"
 
 msgid "unknown rng-random backend"
 msgstr ""
-
-#, c-format
-msgid "unknown root element '%s' for filter binding"
-msgstr ""
-
-#, fuzzy
-msgid "unknown root element for network port"
-msgstr "số định dạng ổ không rõ %d"
-
-#, fuzzy
-msgid "unknown root element for nw filter"
-msgstr "số định dạng ổ không rõ %d"
-
-#, fuzzy
-msgid "unknown root element for nwfilter binding"
-msgstr "số định dạng ổ không rõ %d"
 
 msgid "unknown rule action attribute value"
 msgstr "giá trị thuộc tính hành động quy tắc không rõ"
@@ -39466,6 +39277,151 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <chuỗi>"
+
+#, fuzzy
+#~ msgid "%s 3d acceleration is not supported"
+#~ msgstr "kiểu thao tác %d không hỗ trợ"
+
+#, fuzzy
+#~ msgid "(network status)"
+#~ msgstr "tên mạng"
+
+#, fuzzy
+#~ msgid "(pool state)"
+#~ msgstr "không trạng thái"
+
+#, fuzzy
+#~ msgid "CCW address type is not supported by this QEMU"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "Cannot parse <local> 'port' attribute with socket interface"
+#~ msgstr "Không thể phân tích thuộc tính <source> 'port' với giao diện socket"
+
+#~ msgid "Cannot parse <source> 'port' attribute with socket interface"
+#~ msgstr "Không thể phân tích thuộc tính <source> 'port' với giao diện socket"
+
+#, fuzzy
+#~ msgid "No <local> 'address' attribute specified with socket interface"
+#~ msgstr ""
+#~ "Không có thuộc tính <source> 'address' chỉ định với giao diện socket"
+
+#, fuzzy
+#~ msgid "No <local> 'port' attribute specified with socket interface"
+#~ msgstr "Không có thuộc tính <source> 'port' chỉ định với giao diện socket"
+
+#~ msgid "No <source> 'address' attribute specified with socket interface"
+#~ msgstr ""
+#~ "Không có thuộc tính <source> 'address' chỉ định với giao diện socket"
+
+#~ msgid ""
+#~ "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
+#~ msgstr ""
+#~ "Không có thuộc tính <source> 'bridge' chỉ định với <interface "
+#~ "type='bridge'/>"
+
+#~ msgid ""
+#~ "No <source> 'dev' attribute specified with <interface type='direct'/>"
+#~ msgstr ""
+#~ "Không có thuộc tính <source> 'dev' chỉ định với <interface type='direct'/>"
+
+#, fuzzy
+#~ msgid ""
+#~ "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "Không có thuộc tính <source> 'name' chỉ định với <interface "
+#~ "type='internal'/>"
+
+#~ msgid ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+#~ msgstr ""
+#~ "Không có thuộc tính <source> 'name' chỉ định với <interface "
+#~ "type='internal'/>"
+
+#~ msgid ""
+#~ "No <source> 'network' attribute specified with <interface type='network'/>"
+#~ msgstr ""
+#~ "Không có thuộc tính <source> 'network' chỉ định với <interface "
+#~ "type='network'/>"
+
+#, fuzzy
+#~ msgid ""
+#~ "No <source> 'path' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "Không có thuộc tính <source> 'name' chỉ định với <interface "
+#~ "type='internal'/>"
+
+#~ msgid "No <source> 'port' attribute specified with socket interface"
+#~ msgstr "Không có thuộc tính <source> 'port' chỉ định với giao diện socket"
+
+#, fuzzy
+#~ msgid ""
+#~ "No <source> 'type' attribute specified for <interface type='vhostuser'>"
+#~ msgstr ""
+#~ "Không có thuộc tính <source> 'name' chỉ định với <interface "
+#~ "type='internal'/>"
+
+#~ msgid "Root element is not 'node'"
+#~ msgstr "Thành phần gốc không phải 'node'"
+
+#, fuzzy
+#~ msgid "Unable to parse port id '%s'"
+#~ msgstr "Thất bại khi phân tích chế độ '%s'"
+
+#, fuzzy
+#~ msgid "Unknown mode has been specified"
+#~ msgstr "Miền %s đã được xóa\n"
+
+#, fuzzy
+#~ msgid ""
+#~ "Wrong <source> 'mode' attribute specified with <interface "
+#~ "type='vhostuser'/>"
+#~ msgstr ""
+#~ "Không có thuộc tính <source> 'name' chỉ định với <interface "
+#~ "type='internal'/>"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'cookie' element"
+#~ msgstr "XML không chứ thành phần 'cpu' mong đợi"
+
+#, fuzzy
+#~ msgid "domainbackup"
+#~ msgstr "ảnh chụp nhanh miền"
+
+#, fuzzy
+#~ msgid "domaincheckpoint"
+#~ msgstr "số vcpu miền"
+
+#~ msgid "domainsnapshot"
+#~ msgstr "ảnh chụp nhanh miền"
+
+#, fuzzy
+#~ msgid "invalid 'managed' value '%s'"
+#~ msgstr "trạng thái miền không hợp lệ '%s'"
+
+#, fuzzy
+#~ msgid "unexpected root element <%s>, expecting <secret>"
+#~ msgstr "kiểu bí mật mã hóa ổ không mong đợi"
+
+#, fuzzy
+#~ msgid "unexpected root element, expecting <domain>"
+#~ msgstr "kiểu thiết bị khởi động không mong đợi %d"
+
+#, fuzzy
+#~ msgid "unexpected root element: '%s'"
+#~ msgstr "dữ liệu không mong đợi '%s'"
+
+#, fuzzy
+#~ msgid "unknown root element for network port"
+#~ msgstr "số định dạng ổ không rõ %d"
+
+#, fuzzy
+#~ msgid "unknown root element for nw filter"
+#~ msgstr "số định dạng ổ không rõ %d"
+
+#, fuzzy
+#~ msgid "unknown root element for nwfilter binding"
+#~ msgstr "số định dạng ổ không rõ %d"
 
 #~ msgid "Cannot parse controller index %s"
 #~ msgstr "Không thể phân tích chỉ mục bộ điều khiển %s"

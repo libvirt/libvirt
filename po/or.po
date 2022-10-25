@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-09-27 08:07+0000\n"
+"POT-Creation-Date: 2022-10-25 07:42+0000\n"
 "PO-Revision-Date: 2015-02-27 04:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -475,10 +475,6 @@ msgstr ""
 #, c-format
 msgid "%s (out of %d)"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "%s 3d acceleration is not supported"
-msgstr "ପ୍ରୟୋଗ ସମର୍ଥିତ ନୁହଁ"
 
 #, c-format
 msgid "%s array element does not contain a string"
@@ -1134,6 +1130,9 @@ msgstr "ଉଭୟ --storage ଏବଂ --remove-all-storage କୁ ଉଲ୍ଲ�
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "ଅପ୍ରତ୍ୟାଶିତ iscsi ଭଲ୍ୟୁମ ନାମ '%s'"
 
+msgid "'<local>' element missing for 'udp' socket interface"
+msgstr ""
+
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr ""
 
@@ -1286,11 +1285,10 @@ msgstr "'ପୁଲ' ପ୍ରକାରର ଉତ୍ସ ପାଇଁ 'ପୁଲ' 
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "ଏହି QEMU virtio scsi ନିୟନ୍ତ୍ରକକୁ ସହାୟତା କରିନଥାଏ"
 
-#, fuzzy
 msgid ""
-"'reconnect' attribute  unsupported 'server' mode for <interface "
+"'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
-msgstr "ପ୍ରକାର='%s' ଟି <interface type='vhostuser'> ପାଇଁ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
+msgstr ""
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1404,9 +1402,6 @@ msgstr "(qemu_migration_cookie)"
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
 
-msgid "(network status)"
-msgstr "(ନେଟୱର୍କ ସ୍ଥିତି)"
-
 msgid "(network_definition)"
 msgstr "(network_definition)"
 
@@ -1430,10 +1425,6 @@ msgstr "(nwfilter_definition)"
 #, fuzzy
 msgid "(nwfilterbinding_status)"
 msgstr "(nwfilter_definition)"
-
-#, fuzzy
-msgid "(pool state)"
-msgstr "କୌଣସି ଅବସ୍ଥା ନାହିଁ"
 
 msgid "(qemu_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
@@ -1542,6 +1533,12 @@ msgstr ""
 
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev:ଅନ୍ତରାପୃଷ୍ଠ ମିଳିଲା ନାହିଁ"
+
+msgid "3d acceleration is not supported by this QEMU binary"
+msgstr ""
+
+msgid "3d acceleration is supported only with 'virtio' video device"
+msgstr ""
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr ""
@@ -1655,9 +1652,6 @@ msgstr "ଡମେନ ଘଟଣା କଲବ୍ୟାକ %d ପଞ୍ଜିକୃ
 
 #, c-format
 msgid "A domain definition can have no more than one cipher node with name %s"
-msgstr ""
-
-msgid "A field data length violates the resource length boundary."
 msgstr ""
 
 #, fuzzy
@@ -2127,10 +2121,6 @@ msgstr "ବ୍ଯସ୍ତ"
 msgid "CA certificate:"
 msgstr "ଅବୈଧ ପ୍ରମାଣପତ୍ର"
 
-#, fuzzy
-msgid "CCW address type is not supported by this QEMU"
-msgstr "ଏହି QEMU ବାଇନାରୀ ଦ୍ୱାରା ପୁନଚାଳନ ସମୟ ସମାପ୍ତି ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
-
 #, c-format
 msgid "CHS geometry can not be set for '%s' bus"
 msgstr ""
@@ -2224,11 +2214,6 @@ msgstr "CPU ଆବୃତ୍ତି:"
 
 msgid "CPU map:"
 msgstr "CPU ମେଳକ:"
-
-#, c-format
-msgid ""
-"CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -3086,15 +3071,6 @@ msgstr "<VirtualBox> <Machine> ନୋଡକୁ ବିଶ୍ଳେଷଣ କର�
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "<address> 'port' ଗୁଣକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
 
-#, fuzzy
-msgid "Cannot parse <local> 'port' attribute with socket interface"
-msgstr ""
-"<source> ସକେଟ ଅନ୍ତରାପୃଷ୍ଠ ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା 'port' ଗୁଣକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
-
-msgid "Cannot parse <source> 'port' attribute with socket interface"
-msgstr ""
-"<source> ସକେଟ ଅନ୍ତରାପୃଷ୍ଠ ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା 'port' ଗୁଣକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
-
 #, c-format
 msgid "Cannot parse MAC address '%s' in network '%s'"
 msgstr "MAC ଠିକଣା '%s'କୁ ନେଟୱର୍କ '%s' ରେ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
@@ -3334,19 +3310,6 @@ msgstr "namespace ସ୍ଥାପନାକୁ ସହଭାଗ ନକରି ର�
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "ଆରମ୍ଭ ହୋଇନଥିବା CURL ନିୟନ୍ତ୍ରଣକୁ ସହଭାଗ କରିପାରିବେ ନାହିଁ"
 
-msgid "Cannot update the read-only keyword: RO section not initialized."
-msgstr ""
-
-msgid ""
-"Cannot update the read-write keyword: read-write section not initialized."
-msgstr ""
-
-msgid "Cannot update the resource: a NULL keyword pointer has been provided."
-msgstr ""
-
-msgid "Cannot update the resource: a NULL resource pointer has been provided."
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Cannot use direct socket mode for %s transport"
 msgstr "unix ପରିବହନ ପାଇଁ ସକେଟ ଅନୁପସ୍ଥିତ"
@@ -3554,9 +3517,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr "ଡମେନ  %s ପାଇଁ ଆଶୁଚିତ୍ରଗୁଡ଼ିକରେ ଅସ୍ଥାୟୀ ସମ୍ପର୍କଗୁଡ଼ିକ ଅଛି"
-
-msgid "Checksum validation has failed"
-msgstr ""
 
 #, c-format
 msgid "Child process (%lld) unexpected %s"
@@ -4624,9 +4584,6 @@ msgstr "UUID କୁ  '%s' ରୁ ବିଶ୍ଳେଷଣ କରିପାରି�
 msgid "Could not parse VPS ID %s"
 msgstr "VPS ID %s କୁ ବିଶ୍ଳେଷଣ କରିପାରିଲା ନାହିଁ"
 
-msgid "Could not parse a resource field data - VPD has invalid format"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Could not parse barrier and limit of '%s' from config for container %d"
 msgstr "'%s' କୁ ସଂରଚନାରୁ ଧାରଣ ପାତ୍ର %d ପାଇଁ ପଢ଼ିପାରିଲା ନାହିଁ"
@@ -4688,12 +4645,6 @@ msgid "Could not read 'VE_PRIVATE' from config for container %d"
 msgstr "ଧାରଣ ପାତ୍ର %d ପାଇଁ configରୁ 'VE_PRIVATE' କୁ ପଢ଼ିପାରିଲା ନାହିଁ"
 
 msgid "Could not read a device name from the <name> element"
-msgstr ""
-
-msgid "Could not read a part of a resource - VPD has invalid format"
-msgstr ""
-
-msgid "Could not read a resource field header - VPD has invalid format"
 msgstr ""
 
 #, c-format
@@ -4897,10 +4848,6 @@ msgstr "ଡମେନକୁ ଆରମ୍ଭ କରିପାରିଲି ନାହ
 #, fuzzy
 msgid "Could not translate keycode"
 msgstr "ସ୍ମୃତି ସ୍ଥାନ ଯୋଗାଇ ହେଲା ନାହିଁ"
-
-#, c-format
-msgid "Could not update the VPD resource keyword: %s"
-msgstr ""
 
 msgid "Could not verify disk address"
 msgstr "ଡିସ୍କ ଠିକଣାକୁ ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ"
@@ -5919,6 +5866,10 @@ msgstr "ଡମେନ ଆଶୁଚିତ୍ର XML କୁ ଏକ ନାମକର�
 #, fuzzy
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "'ଏଡପଟର' ଏବଂ 'ଠିକଣା' କୁ ନିଶ୍ଚିତ ଭାବରେ scsi ହୋଷ୍ଟ ଉପକରଣ ଉତ୍ସ ପାଇଁ ଉଲ୍ଲେଖ କରିବା ଉଚିତ"
+
+#, c-format
+msgid "Either --%s or --%s must be provided"
+msgstr ""
 
 msgid "Eject the media"
 msgstr "ମେଡିଆକୁ ବାହାର କରନ୍ତୁ"
@@ -9657,13 +9608,6 @@ msgid ""
 "reset"
 msgstr ""
 
-#, c-format
-msgid ""
-"Invalid attempt to set <interface type='ethernet'> device name with <source "
-"dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest dev='%s'/> (for "
-"guest-side) instead."
-msgstr ""
-
 msgid ""
 "Invalid attempt to set network interface guest-side IP route and/or address "
 "info, not supported by QEMU"
@@ -10324,9 +10268,19 @@ msgid "Invalid value for attribute '%s' in element '%s': '%s'."
 msgstr ""
 
 #, c-format
+msgid "Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"
+msgstr ""
+
+#, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
+"integer value"
 msgstr ""
 
 #, c-format
@@ -11608,30 +11562,14 @@ msgstr "JSON ଦଲିଲରେ socks ସ୍ଥାନ ଅନୁପସ୍ଥି�
 msgid "Missing source channel attribute for char device"
 msgstr "char ଉପକରଣ ପାଇଁ ଅନୁପସ୍ଥିତ ଉତ୍ସ ଚ୍ୟାନେଲ ଗୁଣ"
 
-#, c-format
-msgid "Missing source connectionid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "char ଉପକରଣ ପାଇଁ ଅନୁପସ୍ଥିତ ଆଧାର ପଥ ଗୁଣ"
 
 msgid "Missing source path attribute for char device"
 msgstr "char ଉପକରଣ ପାଇଁ ଅନୁପସ୍ଥିତ ଉତ୍ସ ପଥ ଗୁଣ"
 
-#, c-format
-msgid "Missing source portgroup for interface type '%s'"
-msgstr ""
-
-#, c-format
-msgid "Missing source portid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source service attribute for char device"
 msgstr "char ଉପକରଣ ପାଇଁ ଅନୁପସ୍ଥିତ ଉତ୍ସ ସର୍ଭିସ ଗୁଣ"
-
-#, c-format
-msgid "Missing source switchid for interface type '%s'"
-msgstr ""
 
 msgid "Missing storage block path"
 msgstr "ଅନୁପସ୍ଥିତ ସଂରକ୍ଷଣ ବ୍ଲକ ପଥ"
@@ -12079,57 +12017,6 @@ msgstr "ବ୍ଲକ ଉପକରଣର ନୂତନ ଆକାର, ମପାଯ�
 #, fuzzy
 msgid "Nicdev support unavailable"
 msgstr "ତନ୍ତ୍ରଟି ଉପଲବ୍ଧ ନାହିଁ"
-
-#, fuzzy
-msgid "No <local> 'address' attribute specified with socket interface"
-msgstr "<source> ସକେଟ ଅନ୍ତରାପୃଷ୍ଠ ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'ଠିକଣା' ଗୁଣ ନାହିଁ"
-
-#, fuzzy
-msgid "No <local> 'port' attribute specified with socket interface"
-msgstr "<source> ସକେଟ ଅନ୍ତରାପୃଷ୍ଠ ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'port' ଗୁଣ ନାହିଁ"
-
-msgid "No <source> 'address' attribute specified with socket interface"
-msgstr "<source> ସକେଟ ଅନ୍ତରାପୃଷ୍ଠ ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'ଠିକଣା' ଗୁଣ ନାହିଁ"
-
-msgid ""
-"No <source> 'bridge' attribute specified with <interface type='bridge'/>"
-msgstr ""
-"<source> <interface type='bridge'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'bridge' ଗୁଣ ନାହିଁ"
-
-msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
-msgstr "କୌଣସି <source> 'dev' ଗୁଣ <interface type='direct'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇନାହିଁ"
-
-msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
-msgstr ""
-
-msgid ""
-"No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"କୌଣସି <source> 'mode' ଗୁଣ <interface type='vhostuser'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇନାହିଁ"
-
-msgid ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
-msgstr ""
-"<source> <interface type='internal'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'ନାମ' ଗୁଣ ନାହିଁ"
-
-msgid ""
-"No <source> 'network' attribute specified with <interface type='network'/>"
-msgstr ""
-"<source> <interface type='network'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'network' ଗୁଣ "
-"ନାହିଁ"
-
-msgid ""
-"No <source> 'path' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"କୌଣସି <source> 'path' ଗୁଣ <interface type='vhostuser'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇନାହିଁ"
-
-msgid "No <source> 'port' attribute specified with socket interface"
-msgstr "<source> ସକେଟ ଅନ୍ତରାପୃଷ୍ଠ ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'port' ଗୁଣ ନାହିଁ"
-
-#, fuzzy
-msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
-msgstr ""
-"କୌଣସି <source> 'mode' ଗୁଣ <interface type='vhostuser'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇନାହିଁ"
 
 msgid "No CA certificate path set to match server key/cert"
 msgstr ""
@@ -13993,9 +13880,6 @@ msgstr "ଅନ୍ଯ ଗୋଟିଏ ଆଧାରକୁ ଆଶୁଚିତ୍ର
 msgid "Revert domain to snapshot"
 msgstr "ଅନ୍ଯ ଗୋଟିଏ ଆଧାରକୁ ଆଶୁଚିତ୍ରକୁ ସ୍ଥାନାନ୍ତରଣ କରନ୍ତୁ"
 
-msgid "Root element is not 'node'"
-msgstr "ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନଟି 'node' ନୁହଁ"
-
 #, c-format
 msgid "Route address '%s' conflicts with IP address for '%s'"
 msgstr ""
@@ -14064,6 +13948,9 @@ msgstr "SATA ଏହି QEMU ଦ୍ୱିମିକ ସହିତ ସମର୍ଥ�
 
 #, c-format
 msgid "SATA unit index %d out of [0..29] range"
+msgstr ""
+
+msgid "SCHED_CORE not supported by kernel"
 msgstr ""
 
 #, c-format
@@ -14575,6 +14462,11 @@ msgstr "ସହଭାଗୀ ସ୍ମୃତି:\n"
 
 #, c-format
 msgid "Shell '%s' should have absolute path"
+msgstr ""
+
+msgid ""
+"Shortcut for calling the command with a single CPU model and no additional "
+"features"
 msgstr ""
 
 msgid "Should define both master and slave path attributes for nmdm device"
@@ -16044,13 +15936,6 @@ msgid ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
 msgstr "nvram ଉପକରଣ ଏହି QEMU ବାଇନାରୀ ଦ୍ୱାରା ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
-msgid "The keyword is not comprised only of uppercase ASCII letters or digits"
-msgstr ""
-
-#, c-format
-msgid "The keyword length is not 2 bytes: %s"
-msgstr ""
-
 msgid "The machine has no snapshot and it should have it"
 msgstr "ମେସିନରେ କୌଣସି ଆଶୁଚିତ୍ର ନାହିଁ ଏବଂ ଏଥିରେ ତାହା ଥିବା ଉଚିତ"
 
@@ -16090,9 +15975,6 @@ msgstr "ସର୍ଭର '%s' ରୁ '%s' କୁ ଦିଗ ପରିବର୍ତ�
 #, fuzzy
 msgid "The slirp-helper doesn't support migration"
 msgstr "ଭଣ୍ଡାର ପୁଲ ଆକାର ନିର୍ମାଣକୁ ସମର୍ଥନ କରେନାହିଁ"
-
-msgid "The string resource has invalid characters in its value"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "The vbox driver does not support %s SCSI controller model"
@@ -17095,6 +16977,9 @@ msgstr ""
 msgid "Unable to destroy '%s': device in use"
 msgstr ""
 
+msgid "Unable to detect SCHED_CORE"
+msgstr ""
+
 #, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "%s ପାଇଁ  ଫାଇଲତନ୍ତ୍ରକୁ ଚିହ୍ନିବାରେ ଅସମର୍ଥ"
@@ -17216,6 +17101,9 @@ msgstr "ଆଶୁଚିତ୍ର %s କୁ ଖୋଜିବାରେ ଅସମର
 #, fuzzy
 msgid "Unable to find a satisfying virtiofsd"
 msgstr "ଆଶୁଚିତ୍ର %s କୁ ଖୋଜିବାରେ ଅସମର୍ଥ"
+
+msgid "Unable to find a vCPU that is online"
+msgstr ""
 
 #, c-format
 msgid "Unable to find address for mdev parent device '%s'"
@@ -17888,10 +17776,6 @@ msgid "Unable to parse cloud-hypervisor version: %s"
 msgstr ""
 
 #, c-format
-msgid "Unable to parse connectionid '%s'"
-msgstr ""
-
-#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "ପ୍ରଚଳିତ SELinux ପ୍ରସଙ୍ଗ '%s' କୁ ବିଶ୍ଳେଷଣ କରିବାରେ ଅସମର୍ଥ"
 
@@ -17922,14 +17806,6 @@ msgstr "ଲକ ସ୍ଥିତି %s କୁ ବିଶ୍ଳେଷଣ କରି�
 msgid "Unable to parse ovs-vsctl output"
 msgstr "vzlist ଫଳାଫଳକୁ ବିଶ୍ଳେଷଣ କରିବାରେ ବିଫଳ"
 
-#, fuzzy, c-format
-msgid "Unable to parse port id '%s'"
-msgstr "ଶ୍ରେଣୀ id '%s' କୁ ବିଶ୍ଳେଷଣରେ ଅସମର୍ଥ"
-
-#, c-format
-msgid "Unable to parse portid '%s'"
-msgstr ""
-
 msgid "Unable to parse quota"
 msgstr "କୋଟାକୁ ବିଶ୍ଳେଷଣ କରିବାରେ ଅସମର୍ଥ"
 
@@ -17947,10 +17823,6 @@ msgstr "ଶ୍ରେଣୀ id '%s' କୁ ବିଶ୍ଳେଷଣରେ ଅସ�
 
 msgid "Unable to parse string parameter"
 msgstr "ବାକ୍ୟଖଣ୍ଡ ପ୍ରାଚଳକୁ ବିଶ୍ଳେଷଣ କରିବାରେ ଅସମର୍ଥ"
-
-#, c-format
-msgid "Unable to parse switchid '%s'"
-msgstr ""
 
 msgid "Unable to parse the xml"
 msgstr "xml ଫାଇଲକୁ ବିଶ୍ଳେଷଣ କରିବାରେ ଅସମର୍ଥ"
@@ -18242,6 +18114,10 @@ msgstr ""
 msgid "Unable to retrieve threadpool parameters"
 msgstr "ସ୍ମୃତିସ୍ଥାନ ପ୍ରାଚଳକୁ ପାଇବାରେ ଅସମର୍ଥ"
 
+#, c-format
+msgid "Unable to run among %llu"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to run command to get OVS master for interface %s"
 msgstr "ଅନ୍ତରାପୃଷ୍ଠ %s ପାଇଁ OVS ପୋର୍ଟ ତଥ୍ଯ ପାଇବାକୁ ନିର୍ଦ୍ଦେଶ ଚଲାଇବାରେ ଅସମର୍ଥ"
@@ -18349,6 +18225,9 @@ msgstr "FD %d ବ୍ଲକିଙ୍ଗକୁ ସେଟ କରିବାରେ ଅ
 
 msgid "Unable to set IPV6_V6ONLY flag"
 msgstr "IPV6_V6ONLY ସୂଚକ ସେଟ କରିବାରେ ଅସମର୍ଥ"
+
+msgid "Unable to set SCHED_CORE"
+msgstr ""
 
 #, c-format
 msgid "Unable to set SELinux context MCS '%s'"
@@ -18763,12 +18642,6 @@ msgstr "ଡମେନ ଅପସାରଣ ସମୟରେ ଅପ୍ରତ୍ୟା
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "ଡମେନ ଅପସାରଣ ସମୟରେ ଅପ୍ରତ୍ୟାଶିତ QEMU ମନିଟର ସକ୍ରିୟ ଅଛି"
 
-msgid "Unexpected RV keyword in the read-write section."
-msgstr ""
-
-msgid "Unexpected RW keyword in the read-only section."
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unexpected SCSI controller model %d"
 msgstr "ଅପ୍ରତ୍ୟାଶିତ ନିୟନ୍ତ୍ରକ ପ୍ରକାର %d"
@@ -18816,9 +18689,6 @@ msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପା
 #, fuzzy
 msgid "Unexpected event thread still active during domain deletion"
 msgstr "ଡମେନ ଅପସାରଣ ସମୟରେ ଅପ୍ରତ୍ୟାଶିତ QEMU ସଦସ୍ୟ ସକ୍ରିୟ ଅଛି"
-
-msgid "Unexpected field value format encountered."
-msgstr ""
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -19158,9 +19028,6 @@ msgid ""
 "'paravirt'"
 msgstr ""
 
-msgid "Unknown mode has been specified"
-msgstr "ଅଜଣା ଧାରାକୁ ଉଲ୍ଲେଖ କରାଯାଇଛି"
-
 #, c-format
 msgid "Unknown model type '%s'"
 msgstr "ଅଜଣା ମଡେଲ ପ୍ରକାର '%s'"
@@ -19195,6 +19062,10 @@ msgstr ""
 
 msgid "Unknown return code"
 msgstr "ଅଜଣା ଫେରିବା ସଂକେତ"
+
+#, c-format
+msgid "Unknown sched_core value %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unknown scsi_host subsystem protocol '%s'"
@@ -20011,11 +19882,6 @@ msgstr "vport ନିର୍ମାଣ/ଅପସାରଣ ସମୟରେ '%s' ର�
 msgid "Write to '%s' to trigger host scan failed"
 msgstr "ବିଫଳ ହୋଇଥିବା ଆଧାର କ୍ରମବୀକ୍ଷଣକୁ ଆରମ୍ଭ କରିବା ପାଇଁ '%s' କୁ ଲେଖନ୍ତୁ"
 
-msgid ""
-"Wrong <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"ଭୁଲ <source> 'mode' ଗୁଣ <interface type='vhostuser'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇନାହିଁ"
-
 msgid "Wrong MAC address"
 msgstr "ଭୁଲ MAC ଠିକଣା"
 
@@ -20069,10 +19935,6 @@ msgstr "XML ରେ ଆଶାକରାଯାଉଥିବା 'sysinfo' ଉପା�
 #, fuzzy
 msgid "XML does not contain expected 'chassis' element"
 msgstr "XML ରେ ଆଶାକରାଯାଉଥିବା 'sysinfo' ଉପାଦାନ ନାହିଁ"
-
-#, fuzzy
-msgid "XML does not contain expected 'cookie' element"
-msgstr "XML ରେ ଆଶାକରାଯାଉଥିବା 'cpu' ଉପାଦାନ ନାହିଁ"
 
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML ରେ ଆଶାକରାଯାଉଥିବା 'cpu' ଉପାଦାନ ନାହିଁ"
@@ -21281,6 +21143,9 @@ msgstr "ଅଧିବେଶନ ପ୍ରତିନିଧି ହୋଇ ପାରି
 
 msgid "cannot block signals"
 msgstr "ସଂକେତକୁ ଅଟକାଇପାରିବେ ନାହିଁ"
+
+msgid "cannot both keep and delete TPM"
+msgstr ""
 
 msgid "cannot both keep and delete nvram"
 msgstr ""
@@ -24802,19 +24667,8 @@ msgstr "domainMigratePrepare2 uri ସେଟ କରିନଥିଲେ"
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare3 uri ବିନ୍ୟାସ କରିନାହିଁ"
 
-#, fuzzy
-msgid "domainbackup"
-msgstr "domainsnapshot"
-
-#, fuzzy
-msgid "domaincheckpoint"
-msgstr "ଡମେନ vcpu ସଂଖ୍ୟା"
-
 msgid "domains in 'doms' array must belong to a single connection"
 msgstr ""
-
-msgid "domainsnapshot"
-msgstr "domainsnapshot"
 
 #, c-format
 msgid "doms array in %s must contain at least one domain"
@@ -28000,6 +27854,10 @@ msgstr "lxc ଅବସ୍ଥା ଡ୍ରାଇଭରଟି ସକ୍ରିୟ �
 msgid "interface stats not implemented on this platform"
 msgstr "ଏହି ପ୍ଲାଟଫର୍ମରେ ଅନ୍ତରାପୃଷ୍ଠ ସ୍ଥିତିକୁ କାର୍ଯ୍ୟକାରୀ କରାହୋଇନାହିଁ"
 
+#, c-format
+msgid "interface type='%s' requires a 'source' element"
+msgstr ""
+
 msgid "internal"
 msgstr "ଆଭ୍ଯନ୍ତରୀଣ"
 
@@ -28081,10 +27939,6 @@ msgstr "ଅବୈଧ %s ମୂଲ୍ୟ: '%s'"
 #, c-format
 msgid "invalid '=' after option --%s"
 msgstr "ଅବୈଧ '=' ବିକଳ୍ପ --%s ପରେ"
-
-#, fuzzy, c-format
-msgid "invalid 'managed' value '%s'"
-msgstr "ଅବୈଧ %s ମୂଲ୍ୟ: '%s'"
 
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr ""
@@ -28925,6 +28779,9 @@ msgid "kdump-compressed format is not supported here"
 msgstr "ଡିସ୍କ ଶୈଳୀ %s ସମର୍ଥିତ ନୁହଁ"
 
 msgid "kdump-compressed format is only supported with memory-only dump"
+msgstr ""
+
+msgid "keep TPM state"
 msgstr ""
 
 msgid "keep nvram file"
@@ -33941,6 +33798,9 @@ msgstr ""
 msgid "removable is only valid for usb disks"
 msgstr "ଗୁଣଧର୍ମ ଧାରା କେବଳ ଅତିଥି CPU ପାଇଁ ଅନୁମତିପ୍ରାପ୍ତ"
 
+msgid "remove TPM state"
+msgstr ""
+
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "ସମସ୍ତ ସମ୍ପୃକ୍ତ ସଂରକ୍ଷଣ ଭଲ୍ୟୁମଗୁଡ଼ିକୁ ବାହାର କରନ୍ତୁ (ସାବଧାନତାର ସହିତ ବ୍ୟବହାର କରନ୍ତୁ)"
 
@@ -34053,6 +33913,9 @@ msgstr "ବିସ୍ତୃତ ଡମେନ vcpu ସୂଚନା"
 #, fuzzy
 msgid "report error if CPUs are incompatible"
 msgstr "CPU ଗୁଡ଼ିକ ଅସଙ୍ଗତ"
+
+msgid "report fd-based VM statistics by KVM"
+msgstr ""
 
 #, fuzzy
 msgid "report filesystem information"
@@ -36565,6 +36428,9 @@ msgstr "ନିମ୍ନସ୍ତର stdout କୁ ପଢ଼ିବାରେ ଅ�
 msgid "unable to read domain master key file"
 msgstr "vmware ଲଗ ଫାଇଲକୁ ପଢ଼ିବାରେ ଅସମର୍ଥ"
 
+msgid "unable to read from pipe"
+msgstr ""
+
 #, c-format
 msgid "unable to read server cert %s"
 msgstr "ସର୍ଭର ପ୍ରମାଣପତ୍ର %s କୁ ପଢ଼ିବାରେ ବିଫଳ"
@@ -36668,6 +36534,14 @@ msgstr "ସୁରକ୍ଷା ପ୍ରସଙ୍ଗ '%s' କୁ '%s' ଉପର�
 #, fuzzy
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "macvtap ଟ୍ୟାପରେ ବିଶେଷତା ସୂଚକଗୁଡ଼ିକୁ ପାଇବେ ନାହିଁ"
+
+#, c-format
+msgid "unable to share scheduling cookie from %lld"
+msgstr ""
+
+#, c-format
+msgid "unable to share scheduling cookie to %lld"
+msgstr ""
 
 #, c-format
 msgid "unable to stat %s"
@@ -37046,49 +36920,6 @@ msgstr "ଆଶୁଚିତ୍ର xml କୁ ପଢ଼ିବା ସମୟରେ �
 
 msgid "unexpected protocol type"
 msgstr "ଅପ୍ରତ୍ୟାଶିତ ପ୍ରଟୋକଲ ପ୍ରକାର"
-
-#, c-format
-msgid "unexpected root element <%s> expecting <device>"
-msgstr "ଅପ୍ରତ୍ଯାଶିତ  ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ <%s> <device> ଆଶାକରୁଅଛି"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domain>"
-msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ <%s>, <domain> ଆଶାକରୁଅଛି"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domstatus>"
-msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ <%s>, <domstatus> ଆଶାକରୁଅଛି"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <interface>"
-msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ <%s>, <interface> ଆଶାକରୁଅଛି"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <network>"
-msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ<%s>, <network> ଆଶାକରୁଅଛି"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <pool>"
-msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ<%s>, <pool> ଆଶାକରୁଅଛି"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <qemuCaps>"
-msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ<%s>, <qemuCaps> ଆଶାକରୁଅଛି"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <secret>"
-msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ<%s>, <secret> ଆଶାକରୁଅଛି"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <volume>"
-msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ<%s>, <volume> ଆଶାକରୁଅଛି"
-
-msgid "unexpected root element, expecting <domain>"
-msgstr "ଅପ୍ରତ୍ଯାଶିତ  ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ, <domain> ଆଶାକରୁଅଛି"
-
-#, fuzzy, c-format
-msgid "unexpected root element: '%s'"
-msgstr "ଅପ୍ରତ୍ଯାଶିତ ତଥ୍ଯ '%s'"
 
 #, c-format
 msgid "unexpected secret usage type %d"
@@ -37540,21 +37371,6 @@ msgstr "ଅଜଣା redirdev ଅକ୍ଷର ଉପକରଣ ପ୍ରକାର
 
 msgid "unknown rng-random backend"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unknown root element '%s' for filter binding"
-msgstr "nw ଛାଣକ ପାଇଁ ଅଜଣା ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ"
-
-#, fuzzy
-msgid "unknown root element for network port"
-msgstr "nw ଛାଣକ ପାଇଁ ଅଜଣା ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ"
-
-msgid "unknown root element for nw filter"
-msgstr "nw ଛାଣକ ପାଇଁ ଅଜଣା ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ"
-
-#, fuzzy
-msgid "unknown root element for nwfilter binding"
-msgstr "nw ଛାଣକ ପାଇଁ ଅଜଣା ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ"
 
 msgid "unknown rule action attribute value"
 msgstr "ଅଜଣା ନିୟମ କାର୍ଯ୍ୟ ଗୁଣ ମୂଲ୍ୟ"
@@ -39168,6 +38984,173 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "%s 3d acceleration is not supported"
+#~ msgstr "ପ୍ରୟୋଗ ସମର୍ଥିତ ନୁହଁ"
+
+#, fuzzy
+#~ msgid ""
+#~ "'reconnect' attribute  unsupported 'server' mode for <interface "
+#~ "type='vhostuser'>"
+#~ msgstr "ପ୍ରକାର='%s' ଟି <interface type='vhostuser'> ପାଇଁ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
+
+#~ msgid "(network status)"
+#~ msgstr "(ନେଟୱର୍କ ସ୍ଥିତି)"
+
+#, fuzzy
+#~ msgid "(pool state)"
+#~ msgstr "କୌଣସି ଅବସ୍ଥା ନାହିଁ"
+
+#, fuzzy
+#~ msgid "CCW address type is not supported by this QEMU"
+#~ msgstr "ଏହି QEMU ବାଇନାରୀ ଦ୍ୱାରା ପୁନଚାଳନ ସମୟ ସମାପ୍ତି ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
+
+#, fuzzy
+#~ msgid "Cannot parse <local> 'port' attribute with socket interface"
+#~ msgstr ""
+#~ "<source> ସକେଟ ଅନ୍ତରାପୃଷ୍ଠ ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା 'port' ଗୁଣକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
+
+#~ msgid "Cannot parse <source> 'port' attribute with socket interface"
+#~ msgstr ""
+#~ "<source> ସକେଟ ଅନ୍ତରାପୃଷ୍ଠ ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା 'port' ଗୁଣକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
+
+#, fuzzy
+#~ msgid "No <local> 'address' attribute specified with socket interface"
+#~ msgstr "<source> ସକେଟ ଅନ୍ତରାପୃଷ୍ଠ ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'ଠିକଣା' ଗୁଣ ନାହିଁ"
+
+#, fuzzy
+#~ msgid "No <local> 'port' attribute specified with socket interface"
+#~ msgstr "<source> ସକେଟ ଅନ୍ତରାପୃଷ୍ଠ ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'port' ଗୁଣ ନାହିଁ"
+
+#~ msgid "No <source> 'address' attribute specified with socket interface"
+#~ msgstr "<source> ସକେଟ ଅନ୍ତରାପୃଷ୍ଠ ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'ଠିକଣା' ଗୁଣ ନାହିଁ"
+
+#~ msgid ""
+#~ "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
+#~ msgstr ""
+#~ "<source> <interface type='bridge'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'bridge' ଗୁଣ "
+#~ "ନାହିଁ"
+
+#~ msgid ""
+#~ "No <source> 'dev' attribute specified with <interface type='direct'/>"
+#~ msgstr ""
+#~ "କୌଣସି <source> 'dev' ଗୁଣ <interface type='direct'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇନାହିଁ"
+
+#~ msgid ""
+#~ "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "କୌଣସି <source> 'mode' ଗୁଣ <interface type='vhostuser'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇନାହିଁ"
+
+#~ msgid ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+#~ msgstr ""
+#~ "<source> <interface type='internal'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'ନାମ' ଗୁଣ "
+#~ "ନାହିଁ"
+
+#~ msgid ""
+#~ "No <source> 'network' attribute specified with <interface type='network'/>"
+#~ msgstr ""
+#~ "<source> <interface type='network'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'network' "
+#~ "ଗୁଣ ନାହିଁ"
+
+#~ msgid ""
+#~ "No <source> 'path' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "କୌଣସି <source> 'path' ଗୁଣ <interface type='vhostuser'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇନାହିଁ"
+
+#~ msgid "No <source> 'port' attribute specified with socket interface"
+#~ msgstr "<source> ସକେଟ ଅନ୍ତରାପୃଷ୍ଠ ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'port' ଗୁଣ ନାହିଁ"
+
+#, fuzzy
+#~ msgid ""
+#~ "No <source> 'type' attribute specified for <interface type='vhostuser'>"
+#~ msgstr ""
+#~ "କୌଣସି <source> 'mode' ଗୁଣ <interface type='vhostuser'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇନାହିଁ"
+
+#~ msgid "Root element is not 'node'"
+#~ msgstr "ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନଟି 'node' ନୁହଁ"
+
+#, fuzzy
+#~ msgid "Unable to parse port id '%s'"
+#~ msgstr "ଶ୍ରେଣୀ id '%s' କୁ ବିଶ୍ଳେଷଣରେ ଅସମର୍ଥ"
+
+#~ msgid "Unknown mode has been specified"
+#~ msgstr "ଅଜଣା ଧାରାକୁ ଉଲ୍ଲେଖ କରାଯାଇଛି"
+
+#~ msgid ""
+#~ "Wrong <source> 'mode' attribute specified with <interface "
+#~ "type='vhostuser'/>"
+#~ msgstr ""
+#~ "ଭୁଲ <source> 'mode' ଗୁଣ <interface type='vhostuser'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇନାହିଁ"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'cookie' element"
+#~ msgstr "XML ରେ ଆଶାକରାଯାଉଥିବା 'cpu' ଉପାଦାନ ନାହିଁ"
+
+#, fuzzy
+#~ msgid "domainbackup"
+#~ msgstr "domainsnapshot"
+
+#, fuzzy
+#~ msgid "domaincheckpoint"
+#~ msgstr "ଡମେନ vcpu ସଂଖ୍ୟା"
+
+#~ msgid "domainsnapshot"
+#~ msgstr "domainsnapshot"
+
+#, fuzzy
+#~ msgid "invalid 'managed' value '%s'"
+#~ msgstr "ଅବୈଧ %s ମୂଲ୍ୟ: '%s'"
+
+#~ msgid "unexpected root element <%s> expecting <device>"
+#~ msgstr "ଅପ୍ରତ୍ଯାଶିତ  ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ <%s> <device> ଆଶାକରୁଅଛି"
+
+#~ msgid "unexpected root element <%s>, expecting <domain>"
+#~ msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ <%s>, <domain> ଆଶାକରୁଅଛି"
+
+#~ msgid "unexpected root element <%s>, expecting <domstatus>"
+#~ msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ <%s>, <domstatus> ଆଶାକରୁଅଛି"
+
+#~ msgid "unexpected root element <%s>, expecting <interface>"
+#~ msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ <%s>, <interface> ଆଶାକରୁଅଛି"
+
+#~ msgid "unexpected root element <%s>, expecting <network>"
+#~ msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ<%s>, <network> ଆଶାକରୁଅଛି"
+
+#~ msgid "unexpected root element <%s>, expecting <pool>"
+#~ msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ<%s>, <pool> ଆଶାକରୁଅଛି"
+
+#~ msgid "unexpected root element <%s>, expecting <qemuCaps>"
+#~ msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ<%s>, <qemuCaps> ଆଶାକରୁଅଛି"
+
+#~ msgid "unexpected root element <%s>, expecting <secret>"
+#~ msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ<%s>, <secret> ଆଶାକରୁଅଛି"
+
+#~ msgid "unexpected root element <%s>, expecting <volume>"
+#~ msgstr "ଅପ୍ରତ୍ଯାଶିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ<%s>, <volume> ଆଶାକରୁଅଛି"
+
+#~ msgid "unexpected root element, expecting <domain>"
+#~ msgstr "ଅପ୍ରତ୍ଯାଶିତ  ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ, <domain> ଆଶାକରୁଅଛି"
+
+#, fuzzy
+#~ msgid "unexpected root element: '%s'"
+#~ msgstr "ଅପ୍ରତ୍ଯାଶିତ ତଥ୍ଯ '%s'"
+
+#, fuzzy
+#~ msgid "unknown root element '%s' for filter binding"
+#~ msgstr "nw ଛାଣକ ପାଇଁ ଅଜଣା ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ"
+
+#, fuzzy
+#~ msgid "unknown root element for network port"
+#~ msgstr "nw ଛାଣକ ପାଇଁ ଅଜଣା ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ"
+
+#~ msgid "unknown root element for nw filter"
+#~ msgstr "nw ଛାଣକ ପାଇଁ ଅଜଣା ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ"
+
+#, fuzzy
+#~ msgid "unknown root element for nwfilter binding"
+#~ msgstr "nw ଛାଣକ ପାଇଁ ଅଜଣା ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ"
 
 #~ msgid "Cannot parse controller index %s"
 #~ msgstr "ନିୟନ୍ତ୍ରକ ଅନୁକ୍ରମଣିକା %s କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"

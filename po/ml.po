@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-09-27 08:07+0000\n"
+"POT-Creation-Date: 2022-10-25 07:42+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -414,10 +414,6 @@ msgstr ""
 #, c-format
 msgid "%s (out of %d)"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "%s 3d acceleration is not supported"
-msgstr "ഓപ്പറേഷനു് പിന്തുണയില്ല"
 
 #, c-format
 msgid "%s array element does not contain a string"
@@ -1069,6 +1065,9 @@ msgstr "--storage ഉം --remove-all-storage ഉം ഒരുമിച്ച്
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "':'  ആര്‍ബിഡി സോഴ്സ് വോള്യം നാമം '%s'-ല്‍ അനുവദിയ്ക്കുന്നില്ല"
 
+msgid "'<local>' element missing for 'udp' socket interface"
+msgstr ""
+
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr ""
 
@@ -1222,11 +1221,10 @@ msgstr "'pool', 'volume' എന്നിവ ഒന്നിച്ചു് 'pool
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "virtio-scsi കണ്ട്രോളറിനു് മാത്രമേ 'queues' പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
-#, fuzzy
 msgid ""
-"'reconnect' attribute  unsupported 'server' mode for <interface "
+"'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
-msgstr "<virtualport> എലമെന്റില്‍ <interface type='%s'>-നുള്ള പിന്തുണ ലഭ്യമല്ല"
+msgstr ""
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1343,9 +1341,6 @@ msgstr "(qemu_migration_cookie)"
 msgid "(metadata_xml)"
 msgstr "മെറ്റാ-വിവരം:"
 
-msgid "(network status)"
-msgstr "(നെറ്റ്‌വര്‍ക്ക് അവസ്ഥ)"
-
 msgid "(network_definition)"
 msgstr "(network_definition)"
 
@@ -1369,10 +1364,6 @@ msgstr "(nwfilter_definition)"
 #, fuzzy
 msgid "(nwfilterbinding_status)"
 msgstr "(nwfilter_definition)"
-
-#, fuzzy
-msgid "(pool state)"
-msgstr "അവസ്ഥയില്ല"
 
 msgid "(qemu_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
@@ -1481,6 +1472,12 @@ msgstr ""
 
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev: സമ്പര്‍ക്കമുഖം കണ്ടില്ല"
+
+msgid "3d acceleration is not supported by this QEMU binary"
+msgstr ""
+
+msgid "3d acceleration is supported only with 'virtio' video device"
+msgstr ""
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64-ബിറ്റ് പിസിഐ ഹോള്‍ സജ്ജീകരണം റൂട്ട് പിസിഐ കണ്ട്രോളറുകള്‍ക്കു് മാത്രമുള്ളതാകുന്നു"
@@ -1598,9 +1595,6 @@ msgstr "മറ്റൊരു കോള്‍ബാക്ക് ആവശ്യ�
 
 #, c-format
 msgid "A domain definition can have no more than one cipher node with name %s"
-msgstr ""
-
-msgid "A field data length violates the resource length boundary."
 msgstr ""
 
 #, fuzzy
@@ -2080,10 +2074,6 @@ msgstr "തിരക്കില്‍"
 msgid "CA certificate:"
 msgstr "തെറ്റായ സര്‍ട്ടിഫീക്കേറ്റ്"
 
-#, fuzzy
-msgid "CCW address type is not supported by this QEMU"
-msgstr "ഈ QEMU ബൈനറി റീബൂട്ട് ടൈമൗട്ട് പിന്തുണക്കില്ല "
-
 #, c-format
 msgid "CHS geometry can not be set for '%s' bus"
 msgstr ""
@@ -2178,11 +2168,6 @@ msgstr "സിപിയു ഫ്രീക്വന്‍സി:"
 
 msgid "CPU map:"
 msgstr "സിപിയു മാപ്പ്:"
-
-#, c-format
-msgid ""
-"CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -3058,13 +3043,6 @@ msgstr ""
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "<address> 'port' സവിശേഷത പാഴ്സ് ചെയ്യാന്‍ കഴിയുന്നില്ല"
 
-#, fuzzy
-msgid "Cannot parse <local> 'port' attribute with socket interface"
-msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില്‍  <source> 'port' വിശേഷത പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-msgid "Cannot parse <source> 'port' attribute with socket interface"
-msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില്‍  <source> 'port' വിശേഷത പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
 #, c-format
 msgid "Cannot parse MAC address '%s' in network '%s'"
 msgstr "മാക് വിലാസം '%s', നെറ്റ്‌വര്‍ക്ക് '%s'-ല്‍ പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
@@ -3303,19 +3281,6 @@ msgstr "മൌണ്ട് namespace അണ്‍ഷെയര്‍ ചെയ്
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "ആരംഭിയ്ക്കാത്ത CURL ഹാന്‍ഡിലിന്റെ പങ്കു് മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-msgid "Cannot update the read-only keyword: RO section not initialized."
-msgstr ""
-
-msgid ""
-"Cannot update the read-write keyword: read-write section not initialized."
-msgstr ""
-
-msgid "Cannot update the resource: a NULL keyword pointer has been provided."
-msgstr ""
-
-msgid "Cannot update the resource: a NULL resource pointer has been provided."
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Cannot use direct socket mode for %s transport"
 msgstr "സോക്കറ്റ് വിലാസം വാചകമായി മാറ്റാന്‍ സാധ്യമല്ല: %s"
@@ -3523,9 +3488,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr "ഡൊമെയിന്‍ %s-നു് സ്നാപ്പ്ഷോട്ടുകള്‍ക്കു് അസ്ഥിരമായ ബന്ധം"
-
-msgid "Checksum validation has failed"
-msgstr ""
 
 #, c-format
 msgid "Child process (%lld) unexpected %s"
@@ -4596,9 +4558,6 @@ msgstr "'%s'-ല്‍ നിന്നും യുയുഐഡി പാഴ്�
 msgid "Could not parse VPS ID %s"
 msgstr "VPS ID %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-msgid "Could not parse a resource field data - VPD has invalid format"
-msgstr ""
-
 #, c-format
 msgid "Could not parse barrier and limit of '%s' from config for container %d"
 msgstr ""
@@ -4663,12 +4622,6 @@ msgid "Could not read 'VE_PRIVATE' from config for container %d"
 msgstr "ക്രമീകരണത്തില്‍ നിന്നും കണ്ടെയിനര്‍ %d-നുള്ളകുള്ള 'VE_PRIVATE' ലഭ്യമല്ല"
 
 msgid "Could not read a device name from the <name> element"
-msgstr ""
-
-msgid "Could not read a part of a resource - VPD has invalid format"
-msgstr ""
-
-msgid "Could not read a resource field header - VPD has invalid format"
 msgstr ""
 
 #, c-format
@@ -4874,10 +4827,6 @@ msgstr "ഡൊമെയിന്‍ ആരംഭിയ്ക്കുവാന�
 #, fuzzy
 msgid "Could not translate keycode"
 msgstr "മെമ്മറി അനുവദിക്കുവാന്‍ സാധ്യമായില്ല"
-
-#, c-format
-msgid "Could not update the VPD resource keyword: %s"
-msgstr ""
 
 msgid "Could not verify disk address"
 msgstr "ഡിസ്ക് വിലാസം ഉറപ്പാക്കുവാന്‍ സാധ്യമല്ല"
@@ -5902,6 +5851,10 @@ msgstr "പേരുള്ള ഒരു സ്നാപ്പ്ഷോട്ട�
 #, fuzzy
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "scsi hostdev ശ്രോതസ്സിനു് 'adapter' , 'address' നല്‍കിയിരിയ്ക്കണം"
+
+#, c-format
+msgid "Either --%s or --%s must be provided"
+msgstr ""
 
 msgid "Eject the media"
 msgstr "സി.ഡി പുറത്തെടുക്കുക"
@@ -9711,13 +9664,6 @@ msgid ""
 "reset"
 msgstr ""
 
-#, c-format
-msgid ""
-"Invalid attempt to set <interface type='ethernet'> device name with <source "
-"dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest dev='%s'/> (for "
-"guest-side) instead."
-msgstr ""
-
 msgid ""
 "Invalid attempt to set network interface guest-side IP route and/or address "
 "info, not supported by QEMU"
@@ -10379,9 +10325,19 @@ msgid "Invalid value for attribute '%s' in element '%s': '%s'."
 msgstr ""
 
 #, c-format
+msgid "Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"
+msgstr ""
+
+#, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
+"integer value"
 msgstr ""
 
 #, c-format
@@ -11671,30 +11627,14 @@ msgstr "JSON  അവസ്ഥയുടെ രേഖയില്‍ സോക്�
 msgid "Missing source channel attribute for char device"
 msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ ഹോസ്റ്റ് വിശേഷത"
 
-#, c-format
-msgid "Missing source connectionid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ ഹോസ്റ്റ് വിശേഷത"
 
 msgid "Missing source path attribute for char device"
 msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ പാഥ് വിശേഷത"
 
-#, c-format
-msgid "Missing source portgroup for interface type '%s'"
-msgstr ""
-
-#, c-format
-msgid "Missing source portid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source service attribute for char device"
 msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ സേവന വിശേഷത"
-
-#, c-format
-msgid "Missing source switchid for interface type '%s'"
-msgstr ""
 
 msgid "Missing storage block path"
 msgstr "സംഭരണ ബ്ലോക്ക് പാഥ് ലഭ്യമല്ല"
@@ -12148,53 +12088,6 @@ msgstr "ബ്ലോക്ക് ഡിവൈസിന്റെ പുതിയ 
 #, fuzzy
 msgid "Nicdev support unavailable"
 msgstr "സിസ്റ്റം ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "No <local> 'address' attribute specified with socket interface"
-msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില്‍  <source> 'address' വിശേഷത നല്‍കിയിട്ടില്ല"
-
-#, fuzzy
-msgid "No <local> 'port' attribute specified with socket interface"
-msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില്‍  <source> 'port' വിശേഷത നല്‍കിയിട്ടില്ല"
-
-msgid "No <source> 'address' attribute specified with socket interface"
-msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില്‍  <source> 'address' വിശേഷത നല്‍കിയിട്ടില്ല"
-
-msgid ""
-"No <source> 'bridge' attribute specified with <interface type='bridge'/>"
-msgstr " <interface type='bridge'/>-നൊപ്പം <source> 'bridge' വിശേഷത നല്‍കിയിട്ടില്ല"
-
-msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
-msgstr ""
-"<source> 'dev' വിശേഷത <interface type='direct'/>-നൊപ്പം വ്യക്തമാക്കിയിട്ടില്ല"
-
-msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
-msgstr ""
-
-#, fuzzy
-msgid ""
-"No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr " <interface type='internal'/>-നൊപ്പം <source> 'name' വിശേഷത നല്‍കിയിട്ടില്ല"
-
-msgid ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
-msgstr " <interface type='internal'/>-നൊപ്പം <source> 'name' വിശേഷത നല്‍കിയിട്ടില്ല"
-
-msgid ""
-"No <source> 'network' attribute specified with <interface type='network'/>"
-msgstr "<interface type='network'/>-നൊപ്പം <source> 'network'വിശേഷത നല്‍കിയിട്ടില്ല"
-
-#, fuzzy
-msgid ""
-"No <source> 'path' attribute specified with <interface type='vhostuser'/>"
-msgstr " <interface type='internal'/>-നൊപ്പം <source> 'name' വിശേഷത നല്‍കിയിട്ടില്ല"
-
-msgid "No <source> 'port' attribute specified with socket interface"
-msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില്‍  <source> 'port' വിശേഷത നല്‍കിയിട്ടില്ല"
-
-#, fuzzy
-msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
-msgstr " <interface type='internal'/>-നൊപ്പം <source> 'name' വിശേഷത നല്‍കിയിട്ടില്ല"
 
 msgid "No CA certificate path set to match server key/cert"
 msgstr ""
@@ -14092,9 +13985,6 @@ msgstr "ഡൊമൈന്‍ സ്നാപ്പ്ഷോട്ടിലേ�
 msgid "Revert domain to snapshot"
 msgstr "ഡൊമൈന്‍ സ്നാപ്പ്ഷോട്ടിലേക്ക് തിരികെ പോകുക"
 
-msgid "Root element is not 'node'"
-msgstr "റൂട്ട് എലമെന്റ് 'node'-നുള്ളതല്ല"
-
 #, c-format
 msgid "Route address '%s' conflicts with IP address for '%s'"
 msgstr ""
@@ -14168,6 +14058,9 @@ msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക�
 
 #, c-format
 msgid "SATA unit index %d out of [0..29] range"
+msgstr ""
+
+msgid "SCHED_CORE not supported by kernel"
 msgstr ""
 
 #, c-format
@@ -14682,6 +14575,11 @@ msgstr "പങ്കിട്ട മെമ്മറി:\n"
 
 #, c-format
 msgid "Shell '%s' should have absolute path"
+msgstr ""
+
+msgid ""
+"Shortcut for calling the command with a single CPU model and no additional "
+"features"
 msgstr ""
 
 msgid "Should define both master and slave path attributes for nmdm device"
@@ -16177,13 +16075,6 @@ msgid ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
 msgstr "ഈ ക്യൂഇഎംയു ബൈനറി nvram ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
 
-msgid "The keyword is not comprised only of uppercase ASCII letters or digits"
-msgstr ""
-
-#, c-format
-msgid "The keyword length is not 2 bytes: %s"
-msgstr ""
-
 #, fuzzy
 msgid "The machine has no snapshot and it should have it"
 msgstr "ഡൊമെയിന്‍ %s നു %s എന്ന പേരില്‍ ഒരു സ്നാപ്ഷോട്ട് ലഭ്യമല്ല"
@@ -16225,9 +16116,6 @@ msgstr "'%s'-ല്‍ നിന്നും '%s'-ലേക്കു് സര�
 #, fuzzy
 msgid "The slirp-helper doesn't support migration"
 msgstr "സ്റ്റോറേജ് പൂള്‍ വോള്യം ഉണ്ടാക്കുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
-
-msgid "The string resource has invalid characters in its value"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "The vbox driver does not support %s SCSI controller model"
@@ -17237,6 +17125,9 @@ msgstr ""
 msgid "Unable to destroy '%s': device in use"
 msgstr ""
 
+msgid "Unable to detect SCHED_CORE"
+msgstr ""
+
 #, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "%s-നുള്ള ഫയല്‍സിസ്റ്റം കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
@@ -17352,6 +17243,9 @@ msgstr ""
 #, fuzzy
 msgid "Unable to find a satisfying virtiofsd"
 msgstr "പോര്‍ട്ടിലേക്കു് ബൈന്‍ഡ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+msgid "Unable to find a vCPU that is online"
+msgstr ""
 
 #, c-format
 msgid "Unable to find address for mdev parent device '%s'"
@@ -18035,10 +17929,6 @@ msgid "Unable to parse cloud-hypervisor version: %s"
 msgstr ""
 
 #, c-format
-msgid "Unable to parse connectionid '%s'"
-msgstr ""
-
-#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "നിലവിലുള്ള SELinux കോണ്ടെക്സ്റ്റ് '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
@@ -18069,14 +17959,6 @@ msgstr "%s-ന്റെ പൂട്ടിയ അവസ്ഥ പാഴ്സ്
 msgid "Unable to parse ovs-vsctl output"
 msgstr "vzlist ഔട്ട്പുട്ട് പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#, fuzzy, c-format
-msgid "Unable to parse port id '%s'"
-msgstr "ക്ലാസ്സ് ഐഡി '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "Unable to parse portid '%s'"
-msgstr ""
-
 msgid "Unable to parse quota"
 msgstr "കോട്ടാ പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
@@ -18094,10 +17976,6 @@ msgstr "ക്ലാസ്സ് ഐഡി '%s' പാഴ്സ് ചെയ്�
 
 msgid "Unable to parse string parameter"
 msgstr "സ്റ്റ്രിംഗ് പരാമീറ്റര്‍ പാഴ്സ് ചെയ്യുവാന്‍ പറ്റുന്നില്ല"
-
-#, c-format
-msgid "Unable to parse switchid '%s'"
-msgstr ""
 
 #, fuzzy
 msgid "Unable to parse the xml"
@@ -18386,6 +18264,10 @@ msgstr ""
 msgid "Unable to retrieve threadpool parameters"
 msgstr "മെമ്മറി പരാമീറ്റര്‍ കിട്ടുന്നില്ല"
 
+#, c-format
+msgid "Unable to run among %llu"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to run command to get OVS master for interface %s"
 msgstr ""
@@ -18502,6 +18384,9 @@ msgstr "FD %d ബ്ലോക്കിങ് സജ്ജമാക്കുവ�
 #, fuzzy
 msgid "Unable to set IPV6_V6ONLY flag"
 msgstr "cloexec ഫ്ലാഗ് സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+msgid "Unable to set SCHED_CORE"
+msgstr ""
 
 #, c-format
 msgid "Unable to set SELinux context MCS '%s'"
@@ -18916,12 +18801,6 @@ msgstr "ഡൊമെയിന്‍ വെട്ടി നീക്കുന്�
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "ഡൊമെയിന്‍ വെട്ടി നീക്കുന്ന സമയത്തു്, അപ്രതീക്ഷിതമായ QEMU മോണിറ്റര്‍ സജീവം"
 
-msgid "Unexpected RV keyword in the read-write section."
-msgstr ""
-
-msgid "Unexpected RW keyword in the read-only section."
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unexpected SCSI controller model %d"
 msgstr "അപ്രതീക്ഷിതമായ കണ്ട്രോളര്‍ തരം %d"
@@ -18968,9 +18847,6 @@ msgstr "അപ്രതീക്ഷിതമായ ഒപ്പു് '%s'"
 #, fuzzy
 msgid "Unexpected event thread still active during domain deletion"
 msgstr "ഡൊമെയിന്‍ വെട്ടി നീക്കുന്ന സമയത്തു്, അപ്രതീക്ഷിതമായ QEMU ഏജന്റ് സജീവം"
-
-msgid "Unexpected field value format encountered."
-msgstr ""
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -19310,9 +19186,6 @@ msgid ""
 "'paravirt'"
 msgstr ""
 
-msgid "Unknown mode has been specified"
-msgstr "അപരിചിതമായ മോഡ് നല്‍കിയിരിയ്ക്കുന്നു"
-
 #, c-format
 msgid "Unknown model type '%s'"
 msgstr "അപരിചിതമായ മോഡല്‍ തരം '%s'"
@@ -19347,6 +19220,10 @@ msgstr ""
 
 msgid "Unknown return code"
 msgstr "അപരിചിതമായ തിരികെയുള്ള കോഡ്"
+
+#, c-format
+msgid "Unknown sched_core value %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unknown scsi_host subsystem protocol '%s'"
@@ -20166,11 +20043,6 @@ msgstr "vport തയ്യാറാക്കല്‍/വെട്ടി നീ�
 msgid "Write to '%s' to trigger host scan failed"
 msgstr "ഹോസ്റ്റ് പരിശോധന ട്രിഗ്ഗര്‍ ചെയ്യുന്നതിനു് '%s'-ലേക്കു് എഴുതുന്നതു് പരാജയപ്പെട്ടു"
 
-#, fuzzy
-msgid ""
-"Wrong <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr " <interface type='internal'/>-നൊപ്പം <source> 'name' വിശേഷത നല്‍കിയിട്ടില്ല"
-
 msgid "Wrong MAC address"
 msgstr "തെറ്റായ MAC വിലാസം"
 
@@ -20222,10 +20094,6 @@ msgstr "എക്സ്എംഎലില്‍ പ്രതീക്ഷിച�
 #, fuzzy
 msgid "XML does not contain expected 'chassis' element"
 msgstr "എക്സ്എംഎലില്‍ പ്രതീക്ഷിച്ച 'sysinfo' എലമെന്റ് ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "XML does not contain expected 'cookie' element"
-msgstr "എക്സ്എംഎലില്‍ പ്രതീക്ഷിച്ച 'cpu' എലമെന്റ് ലഭ്യമല്ല"
 
 msgid "XML does not contain expected 'cpu' element"
 msgstr "എക്സ്എംഎലില്‍ പ്രതീക്ഷിച്ച 'cpu' എലമെന്റ് ലഭ്യമല്ല"
@@ -21443,6 +21311,9 @@ msgstr "സെഷന്‍ ലീഡര്‍ ആകുവാന്‍ സാധ
 
 msgid "cannot block signals"
 msgstr "സിഗ്നലുകള്‍ ബ്ലോക്ക് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+msgid "cannot both keep and delete TPM"
+msgstr ""
 
 msgid "cannot both keep and delete nvram"
 msgstr ""
@@ -25005,19 +24876,8 @@ msgstr "domainMigratePrepare2 uri ക്രമീകരിക്കുന്ന�
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare3 യുആര്‍ഐ സജ്ജമാക്കിയിട്ടില്ല"
 
-#, fuzzy
-msgid "domainbackup"
-msgstr "domainsnapshot"
-
-#, fuzzy
-msgid "domaincheckpoint"
-msgstr "‌ഡൊമയിന്റെ vcpu എണ്ണം"
-
 msgid "domains in 'doms' array must belong to a single connection"
 msgstr ""
-
-msgid "domainsnapshot"
-msgstr "domainsnapshot"
 
 #, c-format
 msgid "doms array in %s must contain at least one domain"
@@ -28217,6 +28077,10 @@ msgstr "lxc സ്റ്റേറ്റ് ഡ്രൈവര്‍ സജീവ
 msgid "interface stats not implemented on this platform"
 msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ ഇന്റര്‍ഫെയിസ് സ്റ്റാറ്റ്സ് ലഭ്യമല്ല"
 
+#, c-format
+msgid "interface type='%s' requires a 'source' element"
+msgstr ""
+
 msgid "internal"
 msgstr "ആന്തരികം"
 
@@ -28301,10 +28165,6 @@ msgstr "അസാധുവായ കീ കോഡ്: '%s'"
 #, c-format
 msgid "invalid '=' after option --%s"
 msgstr "--%s ഐച്ഛികത്തിനു് ശേഷം തെറ്റായ '='"
-
-#, fuzzy, c-format
-msgid "invalid 'managed' value '%s'"
-msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
 
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr ""
@@ -29146,6 +29006,9 @@ msgid "kdump-compressed format is not supported here"
 msgstr "ഡിസ്ക് ശൈലി %s പിന്തുണയ്ക്കുന്നില്ല"
 
 msgid "kdump-compressed format is only supported with memory-only dump"
+msgstr ""
+
+msgid "keep TPM state"
 msgstr ""
 
 msgid "keep nvram file"
@@ -34194,6 +34057,9 @@ msgstr ""
 msgid "removable is only valid for usb disks"
 msgstr "ആട്ട്രിബ്യൂട്ട് മോഡ് ഗസ്റ്റ്‌ സി.പി.യു.-വിനു മാത്രമേ "
 
+msgid "remove TPM state"
+msgstr ""
+
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "എല്ലാ ബന്ധപ്പെട്ട സ്റ്റോറേജ് വോള്യത്തിനെയും മാറ്റുക. (സൂക്ഷിച്ച് ഉപയോഗിക്കുക)"
 
@@ -34306,6 +34172,9 @@ msgstr "വിശദമായ ഡൊമൈന്‍ vpcu വിവരം"
 #, fuzzy
 msgid "report error if CPUs are incompatible"
 msgstr "സിപിയുകള്‍ പൊരുത്തപ്പെടുന്നില്ല"
+
+msgid "report fd-based VM statistics by KVM"
+msgstr ""
 
 #, fuzzy
 msgid "report filesystem information"
@@ -36847,6 +36716,9 @@ msgstr "ചൈള്‍ഡ് stdout ലഭ്യമാക്കുവാന്�
 msgid "unable to read domain master key file"
 msgstr "vmware ലോഗ് ഫയല്‍ ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
+msgid "unable to read from pipe"
+msgstr ""
+
 #, c-format
 msgid "unable to read server cert %s"
 msgstr "സര്‍വര്‍ സര്‍ട്ട് %s ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
@@ -36950,6 +36822,14 @@ msgstr "'%ld:%ld'-നു് '%s'-ല്‍, ഉപയോക്താവും �
 #, fuzzy
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "macvtap റ്റാപ്പില്‍ വിശേഷത ഫ്ലാഗുകള്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+msgid "unable to share scheduling cookie from %lld"
+msgstr ""
+
+#, c-format
+msgid "unable to share scheduling cookie to %lld"
+msgstr ""
 
 #, c-format
 msgid "unable to stat %s"
@@ -37328,49 +37208,6 @@ msgstr "സ്നാപ്ഷോട്ട് xml വായിക്കുന്�
 #, fuzzy
 msgid "unexpected protocol type"
 msgstr "അപ്രതീക്ഷിതമായ പൂള്‍ രീതി"
-
-#, c-format
-msgid "unexpected root element <%s> expecting <device>"
-msgstr "അപ്രതീക്ഷിതമായ മൂല ഘടകം <%s>, പ്രതീക്ഷിക്കുന്നത് <device>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domain>"
-msgstr "അപ്രതീക്ഷിതമായ റൂട്ട് എലമെന്റ് <%s>, പ്രതീക്ഷിച്ചതു് <domain>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domstatus>"
-msgstr "പ്രതീക്ഷിക്കാത്ത റൂട്ട് എലമെന്റ് <%s>, <domstatus> പ്രതീക്ഷിക്കുന്നു"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <interface>"
-msgstr "അപ്രതീക്ഷിതമായ റൂട്ട് എലമെന്റ് <%s>, <interface> പ്രതീക്ഷിച്ചതു്"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <network>"
-msgstr "അപ്രതീക്ഷിതമായ മൂല ഘടകം <%s>, പ്രതീക്ഷിക്കുന്നത് <നെറ്റ്‌‌വര്‍ക്ക്>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <pool>"
-msgstr "അപ്രതീക്ഷിതമായ റൂട്ട് എലമെന്റ് <%s>, <pool> പ്രതീക്ഷിയ്ക്കുന്നു"
-
-#, fuzzy, c-format
-msgid "unexpected root element <%s>, expecting <qemuCaps>"
-msgstr "അപ്രതീക്ഷിതമായ റൂട്ട് എലമെന്റ് <%s>, പ്രതീക്ഷിച്ചതു് <domain>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <secret>"
-msgstr "അപ്രതീക്ഷിതമായ റൂട്ട് എലമെന്റ് <%s>, പ്രതീക്ഷിയ്ക്കുന്നതു് <secret>"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <volume>"
-msgstr "അപ്രതീക്ഷിതമായ റൂട്ട് എലമെന്റ് <%s>, <volume> പ്രതീക്ഷിയ്ക്കുന്നു"
-
-msgid "unexpected root element, expecting <domain>"
-msgstr "അപ്രതീക്ഷിതമായ റൂട്ട് എലമെന്റ്, <domain> പ്രതീക്ഷിയ്ക്കുന്നു"
-
-#, fuzzy, c-format
-msgid "unexpected root element: '%s'"
-msgstr "അപ്രതീക്ഷിതമായ ഡേറ്റാ '%s'"
 
 #, c-format
 msgid "unexpected secret usage type %d"
@@ -37822,21 +37659,6 @@ msgstr "അപരിചിതമായ redirdev ക്യാരക്ടര്�
 
 msgid "unknown rng-random backend"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unknown root element '%s' for filter binding"
-msgstr "nw അരിപ്പയില്‍ അജ്ഞാതമായ മൂല ഘടകം"
-
-#, fuzzy
-msgid "unknown root element for network port"
-msgstr "nw അരിപ്പയില്‍ അജ്ഞാതമായ മൂല ഘടകം"
-
-msgid "unknown root element for nw filter"
-msgstr "nw അരിപ്പയില്‍ അജ്ഞാതമായ മൂല ഘടകം"
-
-#, fuzzy
-msgid "unknown root element for nwfilter binding"
-msgstr "nw അരിപ്പയില്‍ അജ്ഞാതമായ മൂല ഘടകം"
 
 msgid "unknown rule action attribute value"
 msgstr "അജ്ഞാതമായ നിയമ നടപടി സവിശേഷതാ മൂല്യം"
@@ -39454,6 +39276,172 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "%s 3d acceleration is not supported"
+#~ msgstr "ഓപ്പറേഷനു് പിന്തുണയില്ല"
+
+#, fuzzy
+#~ msgid ""
+#~ "'reconnect' attribute  unsupported 'server' mode for <interface "
+#~ "type='vhostuser'>"
+#~ msgstr "<virtualport> എലമെന്റില്‍ <interface type='%s'>-നുള്ള പിന്തുണ ലഭ്യമല്ല"
+
+#~ msgid "(network status)"
+#~ msgstr "(നെറ്റ്‌വര്‍ക്ക് അവസ്ഥ)"
+
+#, fuzzy
+#~ msgid "(pool state)"
+#~ msgstr "അവസ്ഥയില്ല"
+
+#, fuzzy
+#~ msgid "CCW address type is not supported by this QEMU"
+#~ msgstr "ഈ QEMU ബൈനറി റീബൂട്ട് ടൈമൗട്ട് പിന്തുണക്കില്ല "
+
+#, fuzzy
+#~ msgid "Cannot parse <local> 'port' attribute with socket interface"
+#~ msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില്‍  <source> 'port' വിശേഷത പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Cannot parse <source> 'port' attribute with socket interface"
+#~ msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില്‍  <source> 'port' വിശേഷത പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "No <local> 'address' attribute specified with socket interface"
+#~ msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില്‍  <source> 'address' വിശേഷത നല്‍കിയിട്ടില്ല"
+
+#, fuzzy
+#~ msgid "No <local> 'port' attribute specified with socket interface"
+#~ msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില്‍  <source> 'port' വിശേഷത നല്‍കിയിട്ടില്ല"
+
+#~ msgid "No <source> 'address' attribute specified with socket interface"
+#~ msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില്‍  <source> 'address' വിശേഷത നല്‍കിയിട്ടില്ല"
+
+#~ msgid ""
+#~ "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
+#~ msgstr ""
+#~ " <interface type='bridge'/>-നൊപ്പം <source> 'bridge' വിശേഷത നല്‍കിയിട്ടില്ല"
+
+#~ msgid ""
+#~ "No <source> 'dev' attribute specified with <interface type='direct'/>"
+#~ msgstr ""
+#~ "<source> 'dev' വിശേഷത <interface type='direct'/>-നൊപ്പം വ്യക്തമാക്കിയിട്ടില്ല"
+
+#, fuzzy
+#~ msgid ""
+#~ "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ " <interface type='internal'/>-നൊപ്പം <source> 'name' വിശേഷത നല്‍കിയിട്ടില്ല"
+
+#~ msgid ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+#~ msgstr ""
+#~ " <interface type='internal'/>-നൊപ്പം <source> 'name' വിശേഷത നല്‍കിയിട്ടില്ല"
+
+#~ msgid ""
+#~ "No <source> 'network' attribute specified with <interface type='network'/>"
+#~ msgstr ""
+#~ "<interface type='network'/>-നൊപ്പം <source> 'network'വിശേഷത നല്‍കിയിട്ടില്ല"
+
+#, fuzzy
+#~ msgid ""
+#~ "No <source> 'path' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ " <interface type='internal'/>-നൊപ്പം <source> 'name' വിശേഷത നല്‍കിയിട്ടില്ല"
+
+#~ msgid "No <source> 'port' attribute specified with socket interface"
+#~ msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില്‍  <source> 'port' വിശേഷത നല്‍കിയിട്ടില്ല"
+
+#, fuzzy
+#~ msgid ""
+#~ "No <source> 'type' attribute specified for <interface type='vhostuser'>"
+#~ msgstr ""
+#~ " <interface type='internal'/>-നൊപ്പം <source> 'name' വിശേഷത നല്‍കിയിട്ടില്ല"
+
+#~ msgid "Root element is not 'node'"
+#~ msgstr "റൂട്ട് എലമെന്റ് 'node'-നുള്ളതല്ല"
+
+#, fuzzy
+#~ msgid "Unable to parse port id '%s'"
+#~ msgstr "ക്ലാസ്സ് ഐഡി '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Unknown mode has been specified"
+#~ msgstr "അപരിചിതമായ മോഡ് നല്‍കിയിരിയ്ക്കുന്നു"
+
+#, fuzzy
+#~ msgid ""
+#~ "Wrong <source> 'mode' attribute specified with <interface "
+#~ "type='vhostuser'/>"
+#~ msgstr ""
+#~ " <interface type='internal'/>-നൊപ്പം <source> 'name' വിശേഷത നല്‍കിയിട്ടില്ല"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'cookie' element"
+#~ msgstr "എക്സ്എംഎലില്‍ പ്രതീക്ഷിച്ച 'cpu' എലമെന്റ് ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "domainbackup"
+#~ msgstr "domainsnapshot"
+
+#, fuzzy
+#~ msgid "domaincheckpoint"
+#~ msgstr "‌ഡൊമയിന്റെ vcpu എണ്ണം"
+
+#~ msgid "domainsnapshot"
+#~ msgstr "domainsnapshot"
+
+#, fuzzy
+#~ msgid "invalid 'managed' value '%s'"
+#~ msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
+
+#~ msgid "unexpected root element <%s> expecting <device>"
+#~ msgstr "അപ്രതീക്ഷിതമായ മൂല ഘടകം <%s>, പ്രതീക്ഷിക്കുന്നത് <device>"
+
+#~ msgid "unexpected root element <%s>, expecting <domain>"
+#~ msgstr "അപ്രതീക്ഷിതമായ റൂട്ട് എലമെന്റ് <%s>, പ്രതീക്ഷിച്ചതു് <domain>"
+
+#~ msgid "unexpected root element <%s>, expecting <domstatus>"
+#~ msgstr "പ്രതീക്ഷിക്കാത്ത റൂട്ട് എലമെന്റ് <%s>, <domstatus> പ്രതീക്ഷിക്കുന്നു"
+
+#~ msgid "unexpected root element <%s>, expecting <interface>"
+#~ msgstr "അപ്രതീക്ഷിതമായ റൂട്ട് എലമെന്റ് <%s>, <interface> പ്രതീക്ഷിച്ചതു്"
+
+#~ msgid "unexpected root element <%s>, expecting <network>"
+#~ msgstr "അപ്രതീക്ഷിതമായ മൂല ഘടകം <%s>, പ്രതീക്ഷിക്കുന്നത് <നെറ്റ്‌‌വര്‍ക്ക്>"
+
+#~ msgid "unexpected root element <%s>, expecting <pool>"
+#~ msgstr "അപ്രതീക്ഷിതമായ റൂട്ട് എലമെന്റ് <%s>, <pool> പ്രതീക്ഷിയ്ക്കുന്നു"
+
+#, fuzzy
+#~ msgid "unexpected root element <%s>, expecting <qemuCaps>"
+#~ msgstr "അപ്രതീക്ഷിതമായ റൂട്ട് എലമെന്റ് <%s>, പ്രതീക്ഷിച്ചതു് <domain>"
+
+#~ msgid "unexpected root element <%s>, expecting <secret>"
+#~ msgstr "അപ്രതീക്ഷിതമായ റൂട്ട് എലമെന്റ് <%s>, പ്രതീക്ഷിയ്ക്കുന്നതു് <secret>"
+
+#~ msgid "unexpected root element <%s>, expecting <volume>"
+#~ msgstr "അപ്രതീക്ഷിതമായ റൂട്ട് എലമെന്റ് <%s>, <volume> പ്രതീക്ഷിയ്ക്കുന്നു"
+
+#~ msgid "unexpected root element, expecting <domain>"
+#~ msgstr "അപ്രതീക്ഷിതമായ റൂട്ട് എലമെന്റ്, <domain> പ്രതീക്ഷിയ്ക്കുന്നു"
+
+#, fuzzy
+#~ msgid "unexpected root element: '%s'"
+#~ msgstr "അപ്രതീക്ഷിതമായ ഡേറ്റാ '%s'"
+
+#, fuzzy
+#~ msgid "unknown root element '%s' for filter binding"
+#~ msgstr "nw അരിപ്പയില്‍ അജ്ഞാതമായ മൂല ഘടകം"
+
+#, fuzzy
+#~ msgid "unknown root element for network port"
+#~ msgstr "nw അരിപ്പയില്‍ അജ്ഞാതമായ മൂല ഘടകം"
+
+#~ msgid "unknown root element for nw filter"
+#~ msgstr "nw അരിപ്പയില്‍ അജ്ഞാതമായ മൂല ഘടകം"
+
+#, fuzzy
+#~ msgid "unknown root element for nwfilter binding"
+#~ msgstr "nw അരിപ്പയില്‍ അജ്ഞാതമായ മൂല ഘടകം"
 
 #~ msgid "Cannot parse controller index %s"
 #~ msgstr "കണ്ട്രോളര്‍ സൂചിക %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"

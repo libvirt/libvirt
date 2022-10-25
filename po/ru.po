@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-09-27 08:07+0000\n"
+"POT-Creation-Date: 2022-10-25 07:42+0000\n"
 "PO-Revision-Date: 2022-10-02 12:19+0000\n"
 "Last-Translator: Sergey A. <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -524,11 +524,6 @@ msgstr "%s %s «%s» имеет недопустимый тип «%s» (ожид
 #, c-format
 msgid "%s (out of %d)"
 msgstr "%s (из %d)"
-
-#, c-format
-msgid "%s 3d acceleration is not supported"
-msgstr ""
-"поддержка ускорения обработки пространственных фигур %s не предусмотрена"
 
 #, c-format
 msgid "%s array element does not contain a string"
@@ -1220,6 +1215,9 @@ msgstr ""
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "имя источника для тома RBD «%s» не может содержать «:»"
 
+msgid "'<local>' element missing for 'udp' socket interface"
+msgstr ""
+
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr ""
 "секция source в определении hostdev SCSI-устройства должна содержать имя "
@@ -1373,11 +1371,9 @@ msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "«queues» поддерживается только контроллером virtio-scsi"
 
 msgid ""
-"'reconnect' attribute  unsupported 'server' mode for <interface "
+"'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
 msgstr ""
-"атрибут «reconnect», неподдерживаемый режим «server» для <interface "
-"type='vhostuser'>"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1485,9 +1481,6 @@ msgstr "(cookie_миграции_libxl)"
 msgid "(metadata_xml)"
 msgstr "(xml_метаданных)"
 
-msgid "(network status)"
-msgstr "(состояние сети)"
-
 msgid "(network_definition)"
 msgstr "(определение_сети)"
 
@@ -1508,9 +1501,6 @@ msgstr "(определение_привязки_nwfilter)"
 
 msgid "(nwfilterbinding_status)"
 msgstr "(состояние_привязки_nwfilter)"
-
-msgid "(pool state)"
-msgstr "(состояние пула)"
 
 msgid "(qemu_migration_cookie)"
 msgstr "(cookie_миграции_qemu)"
@@ -1625,6 +1615,12 @@ msgstr ""
 
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev: интерфейс не найден"
+
+msgid "3d acceleration is not supported by this QEMU binary"
+msgstr ""
+
+msgid "3d acceleration is supported only with 'virtio' video device"
+msgstr ""
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr ""
@@ -1751,9 +1747,6 @@ msgstr "Запрошен другой обратный вызов"
 msgid "A domain definition can have no more than one cipher node with name %s"
 msgstr ""
 "В определении домена не может быть более одного узла шифрования с именем %s"
-
-msgid "A field data length violates the resource length boundary."
-msgstr ""
 
 msgid "A interface driver is already registered"
 msgstr "Драйвер интерфейса уже зарегистрирован"
@@ -2241,9 +2234,6 @@ msgstr "Занято"
 msgid "CA certificate:"
 msgstr "Сертификат ЦС:"
 
-msgid "CCW address type is not supported by this QEMU"
-msgstr "Этот QEMU не поддерживает тип адреса CCW"
-
 #, c-format
 msgid "CHS geometry can not be set for '%s' bus"
 msgstr "для шины «%s» нельзя указать геометрию CHS"
@@ -2345,11 +2335,6 @@ msgstr "Частота процессора:"
 
 msgid "CPU map:"
 msgstr "Карта:"
-
-#, c-format
-msgid ""
-"CPU maximum physical address bits mode '%s' can only be used with '%s' CPUs"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -3217,16 +3202,6 @@ msgstr "Не удалось обработать узел <VirtualBox> <Machine>
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "Не удалось разобрать атрибут «port» для <address>"
 
-msgid "Cannot parse <local> 'port' attribute with socket interface"
-msgstr ""
-"Не удалось разобрать атрибут «port» для <local>, указанный с интерфейсом "
-"сокета"
-
-msgid "Cannot parse <source> 'port' attribute with socket interface"
-msgstr ""
-"Не удалось разобрать атрибут «port» для <source>, указанный с интерфейсом "
-"сокета"
-
 #, c-format
 msgid "Cannot parse MAC address '%s' in network '%s'"
 msgstr "Не удалось разобрать MAC-адрес «%s» в сети «%s»"
@@ -3474,19 +3449,6 @@ msgid "Cannot unshare uninitialized CURL handle"
 msgstr ""
 "Общий доступ к неиницализированному дескриптору CURL не может быть закрыт"
 
-msgid "Cannot update the read-only keyword: RO section not initialized."
-msgstr ""
-
-msgid ""
-"Cannot update the read-write keyword: read-write section not initialized."
-msgstr ""
-
-msgid "Cannot update the resource: a NULL keyword pointer has been provided."
-msgstr ""
-
-msgid "Cannot update the resource: a NULL resource pointer has been provided."
-msgstr ""
-
 #, c-format
 msgid "Cannot use direct socket mode for %s transport"
 msgstr ""
@@ -3711,9 +3673,6 @@ msgstr "Список контрольных точек"
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr "Некорректные взаимосвязи между контрольными точками домена %s"
-
-msgid "Checksum validation has failed"
-msgstr ""
 
 #, c-format
 msgid "Child process (%lld) unexpected %s"
@@ -4759,9 +4718,6 @@ msgstr "Не удалось обработать версию VI API «%s»"
 msgid "Could not parse VPS ID %s"
 msgstr "Ошибка разбора VPS ID %s"
 
-msgid "Could not parse a resource field data - VPD has invalid format"
-msgstr ""
-
 #, c-format
 msgid "Could not parse barrier and limit of '%s' from config for container %d"
 msgstr ""
@@ -4824,12 +4780,6 @@ msgid "Could not read 'VE_PRIVATE' from config for container %d"
 msgstr "Ошибка чтения VE_PRIVATE в конфигурации контейнера %d"
 
 msgid "Could not read a device name from the <name> element"
-msgstr ""
-
-msgid "Could not read a part of a resource - VPD has invalid format"
-msgstr ""
-
-msgid "Could not read a resource field header - VPD has invalid format"
 msgstr ""
 
 #, c-format
@@ -5032,10 +4982,6 @@ msgstr "Не удалось передать данные: %s (%d)"
 
 msgid "Could not translate keycode"
 msgstr "Не удалось перевести код клавиши"
-
-#, c-format
-msgid "Could not update the VPD resource keyword: %s"
-msgstr ""
 
 msgid "Could not verify disk address"
 msgstr "Не удалось проверить адрес диска"
@@ -6051,6 +5997,10 @@ msgstr "Редактировать XML заданного снимка"
 
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "Для адаптера «scsi_host» следует указать «name» или «parent»"
+
+#, c-format
+msgid "Either --%s or --%s must be provided"
+msgstr ""
 
 msgid "Eject the media"
 msgstr "извлечь носитель"
@@ -9843,17 +9793,6 @@ msgstr ""
 "Некорректная попытка сброса состояния устройства PCI %s. Сброс состояния "
 "возможен только для концевых устройств PCI"
 
-#, c-format
-msgid ""
-"Invalid attempt to set <interface type='ethernet'> device name with <source "
-"dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest dev='%s'/> (for "
-"guest-side) instead."
-msgstr ""
-"Некорректная попытка указать название устройства <interface type='ethernet'> "
-"с помощью <source dev='%s'/>. Используйте <target dev='%s'/> (для указания "
-"на стороне основной системы) или <guest dev='%s'/> (для указания на стороне "
-"гостевой системы)."
-
 msgid ""
 "Invalid attempt to set network interface guest-side IP route and/or address "
 "info, not supported by QEMU"
@@ -10528,9 +10467,19 @@ msgid "Invalid value for attribute '%s' in element '%s': '%s'."
 msgstr ""
 
 #, c-format
+msgid "Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"
+msgstr ""
+
+#, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
+"integer value"
 msgstr ""
 
 #, c-format
@@ -11827,30 +11776,14 @@ msgstr "Документ состояния JSON не содержит поле 
 msgid "Missing source channel attribute for char device"
 msgstr "Отсутствует атрибут исходного канала для символьного устройства"
 
-#, c-format
-msgid "Missing source connectionid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source host attribute for char device"
 msgstr "Отсутствует атрибут узла источника для символьного устройства"
 
 msgid "Missing source path attribute for char device"
 msgstr "Отсутствует атрибут пути к источнику для символьного устройства"
 
-#, c-format
-msgid "Missing source portgroup for interface type '%s'"
-msgstr ""
-
-#, c-format
-msgid "Missing source portid for interface type '%s'"
-msgstr ""
-
 msgid "Missing source service attribute for char device"
 msgstr "Отсутствует атрибут исходной службы для символьного устройства"
-
-#, c-format
-msgid "Missing source switchid for interface type '%s'"
-msgstr ""
 
 msgid "Missing storage block path"
 msgstr "Отсутствует путь к блочному устройству хранения"
@@ -12295,49 +12228,6 @@ msgstr ""
 
 msgid "Nicdev support unavailable"
 msgstr "Поддержка nicdev недоступна"
-
-msgid "No <local> 'address' attribute specified with socket interface"
-msgstr "С интерфейсом сокета не указан атрибут «address» для <local>"
-
-msgid "No <local> 'port' attribute specified with socket interface"
-msgstr "С интерфейсом сокета не указан атрибут «port» для <local>"
-
-msgid "No <source> 'address' attribute specified with socket interface"
-msgstr "С интерфейсом сокета не указан атрибут «address» для <source>"
-
-msgid ""
-"No <source> 'bridge' attribute specified with <interface type='bridge'/>"
-msgstr "Не задан атрибут «bridge» для <source> (в <interface type='bridge'/>)"
-
-msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
-msgstr "Не задан атрибут «dev» для <source> (в <interface type='direct'/>)"
-
-msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
-msgstr ""
-
-msgid ""
-"No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr "Не задан атрибут «mode» для <source> (в <interface type='vhostuser'/>)"
-
-msgid ""
-"No <source> 'name' attribute specified with <interface type='internal'/>"
-msgstr "Не задан атрибут «name» для <source> (в <interface type='internal'/>)"
-
-msgid ""
-"No <source> 'network' attribute specified with <interface type='network'/>"
-msgstr ""
-"Не задан атрибут «network» для <source> (в <interface type='network'/>)"
-
-msgid ""
-"No <source> 'path' attribute specified with <interface type='vhostuser'/>"
-msgstr "Не задан атрибут «path» для <source> (в <interface type='vhostuser'/>)"
-
-msgid "No <source> 'port' attribute specified with socket interface"
-msgstr "С интерфейсом сокета не указан атрибут «port» для <source>"
-
-msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
-msgstr ""
-"Для <interface type='vhostuser'> не указан атрибут «type» элемента <source>"
 
 msgid "No CA certificate path set to match server key/cert"
 msgstr ""
@@ -14227,9 +14117,6 @@ msgstr "Восстановить домен из снимка"
 msgid "Revert domain to snapshot"
 msgstr "Восстановить домен из снимка"
 
-msgid "Root element is not 'node'"
-msgstr "Корневой элемент не является узлом"
-
 #, c-format
 msgid "Route address '%s' conflicts with IP address for '%s'"
 msgstr "Адрес маршрута «%s» конфликтует с IP-адресом для «%s»"
@@ -14302,6 +14189,9 @@ msgstr "Этот исполняемый файл QEMU не поддержива�
 
 #, c-format
 msgid "SATA unit index %d out of [0..29] range"
+msgstr ""
+
+msgid "SCHED_CORE not supported by kernel"
 msgstr ""
 
 #, c-format
@@ -14818,6 +14708,11 @@ msgstr "Совместно используемая память:\n"
 #, c-format
 msgid "Shell '%s' should have absolute path"
 msgstr "К оболочке «%s» должен быть абсолютный путь"
+
+msgid ""
+"Shortcut for calling the command with a single CPU model and no additional "
+"features"
+msgstr ""
 
 msgid "Should define both master and slave path attributes for nmdm device"
 msgstr ""
@@ -16374,13 +16269,6 @@ msgid ""
 msgstr ""
 "Этот исполняемый файл QEMU не поддерживает аудиоконтроллер ich9-intel-hda"
 
-msgid "The keyword is not comprised only of uppercase ASCII letters or digits"
-msgstr ""
-
-#, c-format
-msgid "The keyword length is not 2 bytes: %s"
-msgstr ""
-
 msgid "The machine has no snapshot and it should have it"
 msgstr "Нет снимков — у этой машины должен быть снимок"
 
@@ -16423,9 +16311,6 @@ msgstr "Сервер выполняет перенаправление с «%s»
 
 msgid "The slirp-helper doesn't support migration"
 msgstr "slirp-helper не поддерживает миграцию"
-
-msgid "The string resource has invalid characters in its value"
-msgstr ""
 
 #, c-format
 msgid "The vbox driver does not support %s SCSI controller model"
@@ -17420,6 +17305,9 @@ msgstr ""
 msgid "Unable to destroy '%s': device in use"
 msgstr ""
 
+msgid "Unable to detect SCHED_CORE"
+msgstr ""
+
 #, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "Не удалось определить файловую систему для %s"
@@ -17530,6 +17418,9 @@ msgstr "Не удалось найти подходящий vhost-user-gpu"
 
 msgid "Unable to find a satisfying virtiofsd"
 msgstr "Не удалось найти подходящий virtiofsd"
+
+msgid "Unable to find a vCPU that is online"
+msgstr ""
 
 #, c-format
 msgid "Unable to find address for mdev parent device '%s'"
@@ -18175,10 +18066,6 @@ msgid "Unable to parse cloud-hypervisor version: %s"
 msgstr ""
 
 #, c-format
-msgid "Unable to parse connectionid '%s'"
-msgstr ""
-
-#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "Не удалось разобрать текущий контекст SELinux «%s»"
 
@@ -18207,14 +18094,6 @@ msgstr "Не удалось разобрать состояние блокиро
 msgid "Unable to parse ovs-vsctl output"
 msgstr "Не удалось разобрать вывод ovs-vsctl"
 
-#, c-format
-msgid "Unable to parse port id '%s'"
-msgstr "Не удалось разобрать идентификатор порта «%s»"
-
-#, c-format
-msgid "Unable to parse portid '%s'"
-msgstr ""
-
 msgid "Unable to parse quota"
 msgstr "Не удалось обработать квоту"
 
@@ -18232,10 +18111,6 @@ msgstr "Не удалось разобрать UUID секрета «%s»"
 
 msgid "Unable to parse string parameter"
 msgstr "Не удалось разобрать строковой параметр"
-
-#, c-format
-msgid "Unable to parse switchid '%s'"
-msgstr ""
 
 msgid "Unable to parse the xml"
 msgstr "Не удалось обработать XML"
@@ -18519,6 +18394,10 @@ msgid "Unable to retrieve threadpool parameters"
 msgstr "Не удалось получить параметры threadpool"
 
 #, c-format
+msgid "Unable to run among %llu"
+msgstr ""
+
+#, c-format
 msgid "Unable to run command to get OVS master for interface %s"
 msgstr "Не удалось выполнить команду получения OVS master для интерфейса %s"
 
@@ -18621,6 +18500,9 @@ msgstr "Не удалось установить блокировку дескр
 
 msgid "Unable to set IPV6_V6ONLY flag"
 msgstr "Не удалось установить флаг IPV6_V6ONLY"
+
+msgid "Unable to set SCHED_CORE"
+msgstr ""
 
 #, c-format
 msgid "Unable to set SELinux context MCS '%s'"
@@ -19025,12 +18907,6 @@ msgstr "Агент QEMU всё ещё активен во время удале�
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "Непредвиденный монитор QEMU всё ещё активен во время удаления домена"
 
-msgid "Unexpected RV keyword in the read-write section."
-msgstr ""
-
-msgid "Unexpected RW keyword in the read-only section."
-msgstr ""
-
 #, c-format
 msgid "Unexpected SCSI controller model %d"
 msgstr "Непредвиденная модель контроллера SCSI %d"
@@ -19079,9 +18955,6 @@ msgstr "Непредвиденный элемент «%s» в карте про�
 
 msgid "Unexpected event thread still active during domain deletion"
 msgstr "Непредвиденный поток событий всё ещё активен во время удаления домена"
-
-msgid "Unexpected field value format encountered."
-msgstr ""
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -19423,9 +19296,6 @@ msgstr ""
 "Неизвестный режим %s. Возможные значения: acpi, agent, initctl, signal, "
 "paravirt"
 
-msgid "Unknown mode has been specified"
-msgstr "Неизвестный режим"
-
 #, c-format
 msgid "Unknown model type '%s'"
 msgstr "Неизвестный тип модели «%s»"
@@ -19459,6 +19329,10 @@ msgstr "Неизвестный удалённый режим «%s»"
 
 msgid "Unknown return code"
 msgstr "Неизвестный код возврата"
+
+#, c-format
+msgid "Unknown sched_core value %s"
+msgstr ""
 
 #, c-format
 msgid "Unknown scsi_host subsystem protocol '%s'"
@@ -20301,11 +20175,6 @@ msgstr ""
 msgid "Write to '%s' to trigger host scan failed"
 msgstr "Не удалось выполнить запись в «%s» для активации проверки узла"
 
-msgid ""
-"Wrong <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"Задан неверный атрибут «mode» для <source> (в <interface type='vhostuser'/>)"
-
 msgid "Wrong MAC address"
 msgstr "Неверный MAC-адрес"
 
@@ -20356,9 +20225,6 @@ msgstr "XML не содержит ожидаемый элемент «bios»"
 
 msgid "XML does not contain expected 'chassis' element"
 msgstr "XML не содержит ожидаемый элемент «chassis»"
-
-msgid "XML does not contain expected 'cookie' element"
-msgstr "XML не содержит ожидаемый элемент «cookie»"
 
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML не содержит ожидаемый элемент «cpu»"
@@ -21621,6 +21487,9 @@ msgstr "не удалось стать владельцем сеанса"
 
 msgid "cannot block signals"
 msgstr "Не удалось заблокировать сигналы"
+
+msgid "cannot both keep and delete TPM"
+msgstr ""
 
 msgid "cannot both keep and delete nvram"
 msgstr "нельзя одновременно сохранить и удалить nvram"
@@ -25141,17 +25010,8 @@ msgstr "domainMigratePrepare2 не задал URI"
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare3 не определяет URI"
 
-msgid "domainbackup"
-msgstr "domainbackup"
-
-msgid "domaincheckpoint"
-msgstr "domaincheckpoint"
-
 msgid "domains in 'doms' array must belong to a single connection"
 msgstr "домены в массиве «doms» должны принадлежать к одному подключению"
-
-msgid "domainsnapshot"
-msgstr "domainsnapshot"
 
 #, c-format
 msgid "doms array in %s must contain at least one domain"
@@ -28333,6 +28193,10 @@ msgstr "драйвер состояния интерфейса не активе
 msgid "interface stats not implemented on this platform"
 msgstr "на этой платформе статистика интерфейса не реализована"
 
+#, c-format
+msgid "interface type='%s' requires a 'source' element"
+msgstr ""
+
 msgid "internal"
 msgstr "внутренний"
 
@@ -28421,10 +28285,6 @@ msgstr "недопустимое %s: «%s»"
 #, c-format
 msgid "invalid '=' after option --%s"
 msgstr "За параметром --%s не должен следовать знак равенства"
-
-#, c-format
-msgid "invalid 'managed' value '%s'"
-msgstr "недопустимое значение «managed» «%s»"
 
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr ""
@@ -29262,6 +29122,9 @@ msgid "kdump-compressed format is only supported with memory-only dump"
 msgstr ""
 "сжатый формат kdump поддерживается только для дампов, которые сохраняются "
 "только в памяти"
+
+msgid "keep TPM state"
+msgstr ""
 
 msgid "keep nvram file"
 msgstr ""
@@ -34261,6 +34124,9 @@ msgstr ""
 msgid "removable is only valid for usb disks"
 msgstr "съёмными могут быть только диски USB"
 
+msgid "remove TPM state"
+msgstr ""
+
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "удалить все принадлежащие домену тома хранения данных"
 
@@ -34368,6 +34234,9 @@ msgstr "получить информацию о виртуальных проц
 
 msgid "report error if CPUs are incompatible"
 msgstr "показать сообщение об ошибке, если процессоры несовместимы"
+
+msgid "report fd-based VM statistics by KVM"
+msgstr ""
 
 msgid "report filesystem information"
 msgstr "сообщить информацию о файловой системе"
@@ -36943,6 +36812,9 @@ msgstr "не удалось выполнить чтение stdout дочерн�
 msgid "unable to read domain master key file"
 msgstr "не удалось выполнить чтение файла основного ключа домена"
 
+msgid "unable to read from pipe"
+msgstr ""
+
 #, c-format
 msgid "unable to read server cert %s"
 msgstr "не удалось выполнить чтение сертификата сервера %s"
@@ -37042,6 +36914,14 @@ msgstr ""
 
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "не удалось указать флаг vnet или multiqueue на macvtap"
+
+#, c-format
+msgid "unable to share scheduling cookie from %lld"
+msgstr ""
+
+#, c-format
+msgid "unable to share scheduling cookie to %lld"
+msgstr ""
 
 #, c-format
 msgid "unable to stat %s"
@@ -37417,49 +37297,6 @@ msgstr "непредвиденная ошибка при чтении XML сни
 
 msgid "unexpected protocol type"
 msgstr "непредвиденный тип протокола"
-
-#, c-format
-msgid "unexpected root element <%s> expecting <device>"
-msgstr "недопустимый корневой элемент <%s> (ожидается <device>)"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domain>"
-msgstr "недопустимый корневой элемент <%s> (ожидается <domain>)"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <domstatus>"
-msgstr "недопустимый корневой элемент <%s> (ожидается <domstatus>)"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <interface>"
-msgstr "недопустимый корневой элемент <%s> (ожидается <interface>)"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <network>"
-msgstr "недопустимый корневой элемент <%s> (ожидается <network>)"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <pool>"
-msgstr "недопустимый корневой элемент <%s> (ожидается <pool>)"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <qemuCaps>"
-msgstr "недопустимый корневой элемент <%s> (ожидается <qemuCaps>)"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <secret>"
-msgstr "недопустимый корневой элемент <%s> (ожидается <secret>)"
-
-#, c-format
-msgid "unexpected root element <%s>, expecting <volume>"
-msgstr "недопустимый корневой элемент <%s> (ожидается <volume>)"
-
-msgid "unexpected root element, expecting <domain>"
-msgstr "недопустимый корневой элемент  (ожидается <domain>)"
-
-#, c-format
-msgid "unexpected root element: '%s'"
-msgstr "непредвиденный корневой элемент: «%s»"
 
 #, c-format
 msgid "unexpected secret usage type %d"
@@ -37907,19 +37744,6 @@ msgstr "неизвестный тип устройства в <redirdev>: «%s»
 
 msgid "unknown rng-random backend"
 msgstr "неизвестный модуль rng-random"
-
-#, c-format
-msgid "unknown root element '%s' for filter binding"
-msgstr "неизвестный корневой элемент «%s» для привязки фильтра"
-
-msgid "unknown root element for network port"
-msgstr "неизвестный корневой элемент для сетевого порта"
-
-msgid "unknown root element for nw filter"
-msgstr "неизвестный корневой элемент сетевого фильтра"
-
-msgid "unknown root element for nwfilter binding"
-msgstr "неизвестный корневой элемент для привязки nwfilter"
 
 msgid "unknown rule action attribute value"
 msgstr "неизвестный атрибут действия правила"
@@ -39581,6 +39405,169 @@ msgstr "поступил запрос о зоне %s для сети %s, но fi
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <строка>}..."
+
+#~ msgid "%s 3d acceleration is not supported"
+#~ msgstr ""
+#~ "поддержка ускорения обработки пространственных фигур %s не предусмотрена"
+
+#~ msgid ""
+#~ "'reconnect' attribute  unsupported 'server' mode for <interface "
+#~ "type='vhostuser'>"
+#~ msgstr ""
+#~ "атрибут «reconnect», неподдерживаемый режим «server» для <interface "
+#~ "type='vhostuser'>"
+
+#~ msgid "(network status)"
+#~ msgstr "(состояние сети)"
+
+#~ msgid "(pool state)"
+#~ msgstr "(состояние пула)"
+
+#~ msgid "CCW address type is not supported by this QEMU"
+#~ msgstr "Этот QEMU не поддерживает тип адреса CCW"
+
+#~ msgid "Cannot parse <local> 'port' attribute with socket interface"
+#~ msgstr ""
+#~ "Не удалось разобрать атрибут «port» для <local>, указанный с интерфейсом "
+#~ "сокета"
+
+#~ msgid "Cannot parse <source> 'port' attribute with socket interface"
+#~ msgstr ""
+#~ "Не удалось разобрать атрибут «port» для <source>, указанный с интерфейсом "
+#~ "сокета"
+
+#~ msgid ""
+#~ "Invalid attempt to set <interface type='ethernet'> device name with "
+#~ "<source dev='%s'/>. Use <target dev='%s'/> (for host-side) or <guest "
+#~ "dev='%s'/> (for guest-side) instead."
+#~ msgstr ""
+#~ "Некорректная попытка указать название устройства <interface "
+#~ "type='ethernet'> с помощью <source dev='%s'/>. Используйте <target "
+#~ "dev='%s'/> (для указания на стороне основной системы) или <guest dev='%s'/"
+#~ "> (для указания на стороне гостевой системы)."
+
+#~ msgid "No <local> 'address' attribute specified with socket interface"
+#~ msgstr "С интерфейсом сокета не указан атрибут «address» для <local>"
+
+#~ msgid "No <local> 'port' attribute specified with socket interface"
+#~ msgstr "С интерфейсом сокета не указан атрибут «port» для <local>"
+
+#~ msgid "No <source> 'address' attribute specified with socket interface"
+#~ msgstr "С интерфейсом сокета не указан атрибут «address» для <source>"
+
+#~ msgid ""
+#~ "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
+#~ msgstr ""
+#~ "Не задан атрибут «bridge» для <source> (в <interface type='bridge'/>)"
+
+#~ msgid ""
+#~ "No <source> 'dev' attribute specified with <interface type='direct'/>"
+#~ msgstr "Не задан атрибут «dev» для <source> (в <interface type='direct'/>)"
+
+#~ msgid ""
+#~ "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "Не задан атрибут «mode» для <source> (в <interface type='vhostuser'/>)"
+
+#~ msgid ""
+#~ "No <source> 'name' attribute specified with <interface type='internal'/>"
+#~ msgstr ""
+#~ "Не задан атрибут «name» для <source> (в <interface type='internal'/>)"
+
+#~ msgid ""
+#~ "No <source> 'network' attribute specified with <interface type='network'/>"
+#~ msgstr ""
+#~ "Не задан атрибут «network» для <source> (в <interface type='network'/>)"
+
+#~ msgid ""
+#~ "No <source> 'path' attribute specified with <interface type='vhostuser'/>"
+#~ msgstr ""
+#~ "Не задан атрибут «path» для <source> (в <interface type='vhostuser'/>)"
+
+#~ msgid "No <source> 'port' attribute specified with socket interface"
+#~ msgstr "С интерфейсом сокета не указан атрибут «port» для <source>"
+
+#~ msgid ""
+#~ "No <source> 'type' attribute specified for <interface type='vhostuser'>"
+#~ msgstr ""
+#~ "Для <interface type='vhostuser'> не указан атрибут «type» элемента "
+#~ "<source>"
+
+#~ msgid "Root element is not 'node'"
+#~ msgstr "Корневой элемент не является узлом"
+
+#~ msgid "Unable to parse port id '%s'"
+#~ msgstr "Не удалось разобрать идентификатор порта «%s»"
+
+#~ msgid "Unknown mode has been specified"
+#~ msgstr "Неизвестный режим"
+
+#~ msgid ""
+#~ "Wrong <source> 'mode' attribute specified with <interface "
+#~ "type='vhostuser'/>"
+#~ msgstr ""
+#~ "Задан неверный атрибут «mode» для <source> (в <interface type='vhostuser'/"
+#~ ">)"
+
+#~ msgid "XML does not contain expected 'cookie' element"
+#~ msgstr "XML не содержит ожидаемый элемент «cookie»"
+
+#~ msgid "domainbackup"
+#~ msgstr "domainbackup"
+
+#~ msgid "domaincheckpoint"
+#~ msgstr "domaincheckpoint"
+
+#~ msgid "domainsnapshot"
+#~ msgstr "domainsnapshot"
+
+#~ msgid "invalid 'managed' value '%s'"
+#~ msgstr "недопустимое значение «managed» «%s»"
+
+#~ msgid "unexpected root element <%s> expecting <device>"
+#~ msgstr "недопустимый корневой элемент <%s> (ожидается <device>)"
+
+#~ msgid "unexpected root element <%s>, expecting <domain>"
+#~ msgstr "недопустимый корневой элемент <%s> (ожидается <domain>)"
+
+#~ msgid "unexpected root element <%s>, expecting <domstatus>"
+#~ msgstr "недопустимый корневой элемент <%s> (ожидается <domstatus>)"
+
+#~ msgid "unexpected root element <%s>, expecting <interface>"
+#~ msgstr "недопустимый корневой элемент <%s> (ожидается <interface>)"
+
+#~ msgid "unexpected root element <%s>, expecting <network>"
+#~ msgstr "недопустимый корневой элемент <%s> (ожидается <network>)"
+
+#~ msgid "unexpected root element <%s>, expecting <pool>"
+#~ msgstr "недопустимый корневой элемент <%s> (ожидается <pool>)"
+
+#~ msgid "unexpected root element <%s>, expecting <qemuCaps>"
+#~ msgstr "недопустимый корневой элемент <%s> (ожидается <qemuCaps>)"
+
+#~ msgid "unexpected root element <%s>, expecting <secret>"
+#~ msgstr "недопустимый корневой элемент <%s> (ожидается <secret>)"
+
+#~ msgid "unexpected root element <%s>, expecting <volume>"
+#~ msgstr "недопустимый корневой элемент <%s> (ожидается <volume>)"
+
+#~ msgid "unexpected root element, expecting <domain>"
+#~ msgstr "недопустимый корневой элемент  (ожидается <domain>)"
+
+#~ msgid "unexpected root element: '%s'"
+#~ msgstr "непредвиденный корневой элемент: «%s»"
+
+#~ msgid "unknown root element '%s' for filter binding"
+#~ msgstr "неизвестный корневой элемент «%s» для привязки фильтра"
+
+#~ msgid "unknown root element for network port"
+#~ msgstr "неизвестный корневой элемент для сетевого порта"
+
+#~ msgid "unknown root element for nw filter"
+#~ msgstr "неизвестный корневой элемент сетевого фильтра"
+
+#~ msgid "unknown root element for nwfilter binding"
+#~ msgstr "неизвестный корневой элемент для привязки nwfilter"
 
 #~ msgid "Cannot parse controller index %s"
 #~ msgstr "Не удалось разобрать индекс контроллера %s"
