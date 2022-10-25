@@ -21,5 +21,3 @@
 #pragma once
 
 #include <libudev.h>
-
-#define DMI_DEVPATH "/sys/devices/virtual/dmi/id"

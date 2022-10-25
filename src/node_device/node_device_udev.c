@@ -52,6 +52,8 @@ VIR_LOG_INIT("node_device.node_device_udev");
 # define TYPE_RAID 12
 #endif
 
+#define DMI_DEVPATH "/sys/devices/virtual/dmi/id"
+
 typedef struct _udevEventData udevEventData;
 struct _udevEventData {
     virObjectLockable parent;
