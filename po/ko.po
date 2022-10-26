@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-10-25 07:42+0000\n"
-"PO-Revision-Date: 2022-10-02 12:19+0000\n"
+"PO-Revision-Date: 2022-10-26 23:20+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -1186,7 +1186,7 @@ msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "';'는 RDB 원천 볼륨 이름 '%s'에서 허용되지 않습니다"
 
 msgid "'<local>' element missing for 'udp' socket interface"
-msgstr ""
+msgstr "'udp' 소켓 연결장치에 '<local>' 요소가 누락됨"
 
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr "'adapter' 이름은 scsi hostdev 원천을 위해 지정되어야 합니다"
@@ -1336,7 +1336,7 @@ msgstr "'queues'는 virtio-scsi 제어기에서만 지원됩니다"
 msgid ""
 "'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
-msgstr ""
+msgstr "<interface type='vhostuser'>를 위해 '재연결' 속성이 지원되지 않는 '서버' 방식"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1585,10 +1585,10 @@ msgid "/proc/net/dev: Interface not found"
 msgstr "/proce/net/dev: 인터페이스를 찾을 수 없음"
 
 msgid "3d acceleration is not supported by this QEMU binary"
-msgstr ""
+msgstr "3d 가속은 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "3d acceleration is supported only with 'virtio' video device"
-msgstr ""
+msgstr "3d 가속은 'virtio' 비디오 장치에서만 지원됩니다"
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64-비트 PCI 슬롯 환경설정은 오직 root PCI 조종장비에서만 가능합니다"
@@ -5881,7 +5881,7 @@ msgstr "'scsi_host' 어댑터에 대해 'name' 또는 'parent'를 지정해야 �
 
 #, c-format
 msgid "Either --%s or --%s must be provided"
-msgstr ""
+msgstr "--%s 또는--%s 중에 하나가 제공되어야 합니다"
 
 msgid "Eject the media"
 msgstr "미디어 꺼내기"
@@ -10285,7 +10285,7 @@ msgstr "요소 '%s'의 특성 '%s'에 대한 잘못된 값: '%s'."
 
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"
-msgstr ""
+msgstr "속성 '%s'를 위해 잘못된 값(요소 '%s': '%s' 중에서). 예상된 UUID"
 
 #, c-format
 msgid ""
@@ -10297,7 +10297,8 @@ msgstr "요소 '%s'의 특성 '%s'에 대한 잘못된 값: '%s'. 예상 정수 
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
 "integer value"
-msgstr ""
+msgstr "속성 '%s'를 위해 잘못된 값(요소 '%s': '%s' 중에서). 예상된 long long integer "
+"값"
 
 #, c-format
 msgid ""
@@ -13874,7 +13875,7 @@ msgid "SATA unit index %d out of [0..29] range"
 msgstr "SATA 장치 인덱스 %d가 [0..29] 범위를 벗어났습니다"
 
 msgid "SCHED_CORE not supported by kernel"
-msgstr ""
+msgstr "SCHED_CORE는 커널에서 지원되지 않습니다"
 
 #, c-format
 msgid "SCSI bus index %d out of [0] range"
@@ -14370,7 +14371,7 @@ msgstr "셸 '%s'에는 절대 경로가 있어야 합니다"
 msgid ""
 "Shortcut for calling the command with a single CPU model and no additional "
 "features"
-msgstr ""
+msgstr "단일 CPU 모델과 추가적인 기능이 없는 명령을 호출하기 위해 바로 가기"
 
 msgid "Should define both master and slave path attributes for nmdm device"
 msgstr "nmdm 장치에 대한 마스터 및 슬레이브 경로 속성을 모두 정의해야 합니다"
@@ -16867,7 +16868,7 @@ msgid "Unable to destroy '%s': device in use"
 msgstr "'%s'를 제거 할 수 없습니다: 현재 사용 중인 장치입니다"
 
 msgid "Unable to detect SCHED_CORE"
-msgstr ""
+msgstr "SCHED_CORE를 탐지 할 수 없음"
 
 #, c-format
 msgid "Unable to detect filesystem for %s"
@@ -16981,7 +16982,7 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr "만족스러운 virtiofsd를 찾을 수 없습니다"
 
 msgid "Unable to find a vCPU that is online"
-msgstr ""
+msgstr "온라인 상태에 있는 vCPU를 찾을 수 없음"
 
 #, c-format
 msgid "Unable to find address for mdev parent device '%s'"
@@ -17942,7 +17943,7 @@ msgstr "스레드 풀 매개변수를 검색할 수 없습니다"
 
 #, c-format
 msgid "Unable to run among %llu"
-msgstr ""
+msgstr "%llu 사이에서 실행 할 수 없음"
 
 #, c-format
 msgid "Unable to run command to get OVS master for interface %s"
@@ -18048,7 +18049,7 @@ msgid "Unable to set IPV6_V6ONLY flag"
 msgstr "IPV6_V6ONLY 플래그를 설정할 수 없습니다"
 
 msgid "Unable to set SCHED_CORE"
-msgstr ""
+msgstr "SCHED_CORE를 설정 할 수 없음"
 
 #, c-format
 msgid "Unable to set SELinux context MCS '%s'"
@@ -18867,7 +18868,7 @@ msgstr "알 수 없는 반환 코드"
 
 #, c-format
 msgid "Unknown sched_core value %s"
-msgstr ""
+msgstr "알지 못하는 sched_core 값 %s"
 
 #, c-format
 msgid "Unknown scsi_host subsystem protocol '%s'"
@@ -20938,7 +20939,7 @@ msgid "cannot block signals"
 msgstr "시그널을 블럭할 수 없음"
 
 msgid "cannot both keep and delete TPM"
-msgstr ""
+msgstr "TPM 유지와 삭제를 모두 할 수 없습니다"
 
 msgid "cannot both keep and delete nvram"
 msgstr "nvram을 유지하고 지울 수 없습니다"
@@ -27497,7 +27498,7 @@ msgstr "이 플랫폼에서 구현되지 않은 접속기 통계"
 
 #, c-format
 msgid "interface type='%s' requires a 'source' element"
-msgstr ""
+msgstr "연결장치 유형='%s은 '원천' 요소가 필요합니다"
 
 msgid "internal"
 msgstr "내부"
@@ -28405,7 +28406,7 @@ msgid "kdump-compressed format is only supported with memory-only dump"
 msgstr "kdump 압축 형식은 메모리 전용 덤프에서만 지원됩니다"
 
 msgid "keep TPM state"
-msgstr ""
+msgstr "TPM 상태를 유지합니다"
 
 msgid "keep nvram file"
 msgstr "nvram 파일을 유지합니다"
@@ -33227,7 +33228,7 @@ msgid "removable is only valid for usb disks"
 msgstr "이동식 USB 디스크에만 유효합니다"
 
 msgid "remove TPM state"
-msgstr ""
+msgstr "TPM 상태를 제거합니다"
 
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "연결된 모든 저장소 볼륨 제거(주의해서 사용)"
@@ -33333,7 +33334,7 @@ msgid "report error if CPUs are incompatible"
 msgstr "CPU가 호환되지 않는 경우 오류 보고"
 
 msgid "report fd-based VM statistics by KVM"
-msgstr ""
+msgstr "KVM에 의해 fd-기반 VM 통계를 보고합니다"
 
 msgid "report filesystem information"
 msgstr "파일 시스템 정보 보고"
@@ -35852,7 +35853,7 @@ msgid "unable to read domain master key file"
 msgstr "도메인 마스터 키 파일을 읽을 수 없습니다"
 
 msgid "unable to read from pipe"
-msgstr ""
+msgstr "pipe에서 읽을 수 없음"
 
 #, c-format
 msgid "unable to read server cert %s"
@@ -35955,11 +35956,11 @@ msgstr "macvtap에서 vnet 또는 multiqueue 플래그를 설정할 수 없습�
 
 #, c-format
 msgid "unable to share scheduling cookie from %lld"
-msgstr ""
+msgstr "%lld에서 예정된 쿠키를 공유 할 수 없음"
 
 #, c-format
 msgid "unable to share scheduling cookie to %lld"
-msgstr ""
+msgstr "에정된 쿠키를 %lld와 공유 할 수 없음"
 
 #, c-format
 msgid "unable to stat %s"
