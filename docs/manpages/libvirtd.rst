@@ -79,6 +79,9 @@ unit files must be masked:
    $ systemctl mask libvirtd.socket libvirtd-ro.socket \
       libvirtd-admin.socket libvirtd-tls.socket libvirtd-tcp.socket
 
+On top of that make sure that the --timeout argument is not used for the daemon
+since it would not be started upon any later connection.
+
 If using libvirt-guests service then the ordering for that service needs to be
 adapted so that it is ordered after the service unit instead of the socket unit.
 Since dependencies and ordering cannot be changed with drop-in overrides, the
