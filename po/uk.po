@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-10-25 07:42+0000\n"
-"PO-Revision-Date: 2022-10-02 12:19+0000\n"
+"PO-Revision-Date: 2022-10-26 23:20+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -1238,7 +1238,7 @@ msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "Не можна використовувати «:» у назви тому джерела RBD «%s»"
 
 msgid "'<local>' element missing for 'udp' socket interface"
-msgstr ""
+msgstr "не вказано елемента «<local>» для інтерфейсу сокета «udp»"
 
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr "для джерела scsi слід вказати елемент назви «adapter»"
@@ -1395,6 +1395,8 @@ msgid ""
 "'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
 msgstr ""
+"непідтримуваний режим «server» для атрибута «reconnect» та для <interface "
+"type='vhostuser'>"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1639,9 +1641,13 @@ msgstr "/proc/net/dev: не знайдено інтерфейсу"
 
 msgid "3d acceleration is not supported by this QEMU binary"
 msgstr ""
+"Підтримки прискорення обробки просторових об'єктів не передбачено у цьому "
+"виконуваному файлі QEMU"
 
 msgid "3d acceleration is supported only with 'virtio' video device"
 msgstr ""
+"Підтримку прискорення обробки просторових об'єктів передбачено лише для "
+"відеопристроїв «virtio»"
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr ""
@@ -6145,7 +6151,7 @@ msgstr "Для адаптера «scsi_host» слід вказати «name» �
 
 #, c-format
 msgid "Either --%s or --%s must be provided"
-msgstr ""
+msgstr "Слід вказати --%s або --%s"
 
 msgid "Eject the media"
 msgstr "Виштовхнути носій даних"
@@ -10690,6 +10696,8 @@ msgstr "Некоректне значення атрибута «%s» в еле�
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"
 msgstr ""
+"Некоректне значення для атрибуту «%s» в елементі «%s»: «%s». Мало бути "
+"вказано UUID"
 
 #, c-format
 msgid ""
@@ -10704,6 +10712,8 @@ msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
 "integer value"
 msgstr ""
+"Некоректне значення атрибуту «%s» в елементі «%s»: «%s». Мало бути "
+"цілочисельне значення long long"
 
 #, c-format
 msgid ""
@@ -14493,7 +14503,7 @@ msgid "SATA unit index %d out of [0..29] range"
 msgstr "Індекс модуля SATA %d не належить діапазону [0..29]"
 
 msgid "SCHED_CORE not supported by kernel"
-msgstr ""
+msgstr "У ядрі не передбачено підтримки SCHED_CORE"
 
 #, c-format
 msgid "SCSI bus index %d out of [0] range"
@@ -15044,6 +15054,8 @@ msgid ""
 "Shortcut for calling the command with a single CPU model and no additional "
 "features"
 msgstr ""
+"Скорочення для виклику команди із моделлю одного процесора і без додаткових "
+"можливостей"
 
 msgid "Should define both master and slave path attributes for nmdm device"
 msgstr "Для пристрою nmdm слід визначити атрибути основного і підлеглого шляху"
@@ -17793,7 +17805,7 @@ msgid "Unable to destroy '%s': device in use"
 msgstr "Не вдалося знищити «%s»: пристрій використано"
 
 msgid "Unable to detect SCHED_CORE"
-msgstr ""
+msgstr "Не вдалося виявити SCHED_CORE"
 
 #, c-format
 msgid "Unable to detect filesystem for %s"
@@ -17909,7 +17921,7 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr "Не вдалося знайти задовільного virtiofsd"
 
 msgid "Unable to find a vCPU that is online"
-msgstr ""
+msgstr "Не вдалося виявити активного віртуального процесора"
 
 #, c-format
 msgid "Unable to find address for mdev parent device '%s'"
@@ -18887,7 +18899,7 @@ msgstr "Не вдалося отримати параметри threadpool"
 
 #, c-format
 msgid "Unable to run among %llu"
-msgstr ""
+msgstr "Не вдалося запустити серед %llu"
 
 #, c-format
 msgid "Unable to run command to get OVS master for interface %s"
@@ -18997,7 +19009,7 @@ msgid "Unable to set IPV6_V6ONLY flag"
 msgstr "Не вдалося встановити прапорець IPV6_V6ONLY"
 
 msgid "Unable to set SCHED_CORE"
-msgstr ""
+msgstr "Не вдалося встановити SCHED_CORE"
 
 #, c-format
 msgid "Unable to set SELinux context MCS '%s'"
@@ -19832,7 +19844,7 @@ msgstr "Невідомий код результату"
 
 #, c-format
 msgid "Unknown sched_core value %s"
-msgstr ""
+msgstr "Невідоме значення sched_core %s"
 
 #, c-format
 msgid "Unknown scsi_host subsystem protocol '%s'"
@@ -22028,7 +22040,7 @@ msgid "cannot block signals"
 msgstr "не вдалося заблокувати сигнали"
 
 msgid "cannot both keep and delete TPM"
-msgstr ""
+msgstr "не можна одночасно зберігати і вилучати TPM"
 
 msgid "cannot both keep and delete nvram"
 msgstr "не можна одночасно зберігати і вилучати nvram"
@@ -28891,7 +28903,7 @@ msgstr "на цій платформі інформацію щодо інтер�
 
 #, c-format
 msgid "interface type='%s' requires a 'source' element"
-msgstr ""
+msgstr "для значення type='%s' інтерфейсу потрібен елемент «source»"
 
 msgid "internal"
 msgstr "внутрішнє"
@@ -29828,7 +29840,7 @@ msgstr ""
 "лише у пам'яті"
 
 msgid "keep TPM state"
-msgstr ""
+msgstr "зберегти стан TPM"
 
 msgid "keep nvram file"
 msgstr "зберегти файл nvram"
@@ -34976,7 +34988,7 @@ msgid "removable is only valid for usb disks"
 msgstr "портативними можуть бути лише диски USB"
 
 msgid "remove TPM state"
-msgstr ""
+msgstr "вилучити стан TPM"
 
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "вилучити всі пов'язані томи сховища даних (будьте обережні)"
@@ -35085,6 +35097,8 @@ msgstr "повідомити про помилку, якщо процесори 
 
 msgid "report fd-based VM statistics by KVM"
 msgstr ""
+"вивести статистичні дані від KVM для віртуальної машини на основі "
+"дескрипторів файлів"
 
 msgid "report filesystem information"
 msgstr "вивести відомості щодо файлової системи"
@@ -37705,7 +37719,7 @@ msgid "unable to read domain master key file"
 msgstr "не вдалося прочитати файл основного ключа домену"
 
 msgid "unable to read from pipe"
-msgstr ""
+msgstr "не вдалося прочитати дані з каналу"
 
 #, c-format
 msgid "unable to read server cert %s"
@@ -37808,11 +37822,11 @@ msgstr "не вдалося встановити прапорці vnet або mu
 
 #, c-format
 msgid "unable to share scheduling cookie from %lld"
-msgstr ""
+msgstr "не вдалося поділитися кукою планування від %lld"
 
 #, c-format
 msgid "unable to share scheduling cookie to %lld"
-msgstr ""
+msgstr "не вдалося поділитися кукою планування до %lld"
 
 #, c-format
 msgid "unable to stat %s"
