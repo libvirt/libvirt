@@ -17,6 +17,14 @@ v8.9.0 (unreleased)
 
 * **New features**
 
+  * qemu: Core Scheduling support
+
+    To avoid side channel attacks, the Linux kernel allows creating groups of
+    processes that trust each other and thus can be scheduled to run on
+    hyperthreads of a CPU core at the same time. This is now implemented for
+    QEMU domains too (see ``sched_core`` knob in qemu.conf), although not
+    enabled by default, just yet.
+
 * **Improvements**
 
   * Add ``vendor`` attribute for CPU models in domain capabilities
@@ -37,6 +45,12 @@ v8.9.0 (unreleased)
     The channel and redirect devices supported by the hypervisor are now
     reported in domain capabilities.
 
+  * meson: Bump minimal required meson version
+
+    Newer meson versions deprecate some functions used. These were replaced
+    with their newer counterparts and the minimal required mesion version was
+    bumped to 0.56.0.
+
 * **Bug fixes**
 
   * qemu: Disable all blocker features in CPU baseline
@@ -53,6 +67,14 @@ v8.9.0 (unreleased)
 
     In 8.8.0 release libvirt daemon would crash after it was restarted during
     an active outgoing migration.
+
+  * qemu: Refresh state after restore from a save image
+
+    When a domain is restored from a saved image, libvirt now queries QEMU for
+    those parts of runtime information that were not part of the save image.
+    For instance: MAC address of a macvtap NICs, tray state of CD-ROMs,
+    allocated size of virtio-mem, and others.
+
 
 v8.8.0 (2022-10-03)
 ===================
