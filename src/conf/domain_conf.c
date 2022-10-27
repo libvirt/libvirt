@@ -604,8 +604,8 @@ VIR_ENUM_IMPL(virDomainNetModel,
               "82543GC",
 );
 
-VIR_ENUM_IMPL(virDomainNetBackend,
-              VIR_DOMAIN_NET_BACKEND_TYPE_LAST,
+VIR_ENUM_IMPL(virDomainNetDriver,
+              VIR_DOMAIN_NET_DRIVER_TYPE_LAST,
               "default",
               "qemu",
               "vhost",
@@ -8880,7 +8880,7 @@ virDomainNetDefParseXMLDriver(virDomainNetDef *def,
         xmlNodePtr guestNode;
 
         if (virXMLPropEnum(driver_node, "name",
-                           virDomainNetBackendTypeFromString,
+                           virDomainNetDriverTypeFromString,
                            VIR_XML_PROP_NONZERO,
                            &def->driver.virtio.name) < 0)
             return -1;
@@ -23233,7 +23233,7 @@ virDomainVirtioNetDriverFormat(virBuffer *buf,
 {
     if (def->driver.virtio.name) {
         virBufferAsprintf(buf, " name='%s'",
-                          virDomainNetBackendTypeToString(def->driver.virtio.name));
+                          virDomainNetDriverTypeToString(def->driver.virtio.name));
     }
     if (def->driver.virtio.txmode) {
         virBufferAsprintf(buf, " txmode='%s'",

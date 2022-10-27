@@ -1283,7 +1283,7 @@ get_files(vahControl * ctl)
         for (i = 0; i < ctl->def->nnets; i++) {
             virDomainNetDef *net = ctl->def->nets[i];
             if (net && virDomainNetGetModelString(net)) {
-                if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_QEMU)
+                if (net->driver.virtio.name == VIR_DOMAIN_NET_DRIVER_TYPE_QEMU)
                     continue;
                 if (!virDomainNetIsVirtioModel(net))
                     continue;

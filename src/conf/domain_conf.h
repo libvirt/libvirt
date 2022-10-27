@@ -975,12 +975,12 @@ typedef enum {
 
 /* the backend driver used for virtio interfaces */
 typedef enum {
-    VIR_DOMAIN_NET_BACKEND_TYPE_DEFAULT = 0, /* prefer kernel, fall back to user */
-    VIR_DOMAIN_NET_BACKEND_TYPE_QEMU,    /* userland */
-    VIR_DOMAIN_NET_BACKEND_TYPE_VHOST,   /* kernel */
+    VIR_DOMAIN_NET_DRIVER_TYPE_DEFAULT = 0, /* prefer kernel, fall back to user */
+    VIR_DOMAIN_NET_DRIVER_TYPE_QEMU,    /* userland */
+    VIR_DOMAIN_NET_DRIVER_TYPE_VHOST,   /* kernel */
 
-    VIR_DOMAIN_NET_BACKEND_TYPE_LAST
-} virDomainNetBackendType;
+    VIR_DOMAIN_NET_DRIVER_TYPE_LAST
+} virDomainNetDriverType;
 
 /* the TX algorithm used for virtio interfaces */
 typedef enum {
@@ -1062,7 +1062,7 @@ struct _virDomainNetDef {
     char *modelstr;
     union {
         struct {
-            virDomainNetBackendType name; /* which driver backend to use */
+            virDomainNetDriverType name;
             virDomainNetVirtioTxModeType txmode;
             virTristateSwitch ioeventfd;
             virTristateSwitch event_idx;
@@ -4051,7 +4051,7 @@ VIR_ENUM_DECL(virDomainFSModel);
 VIR_ENUM_DECL(virDomainFSCacheMode);
 VIR_ENUM_DECL(virDomainFSSandboxMode);
 VIR_ENUM_DECL(virDomainNet);
-VIR_ENUM_DECL(virDomainNetBackend);
+VIR_ENUM_DECL(virDomainNetDriver);
 VIR_ENUM_DECL(virDomainNetVirtioTxMode);
 VIR_ENUM_DECL(virDomainNetMacType);
 VIR_ENUM_DECL(virDomainNetTeaming);
