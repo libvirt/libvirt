@@ -8989,6 +8989,26 @@ virDomainNetDefParseXMLDriver(virDomainNetDef *def,
 
 
 static int
+virDomainNetBackendParseXML(xmlNodePtr node,
+                            virDomainNetDef *def)
+{
+    g_autofree char *tap = virXMLPropString(node, "tap");
+    g_autofree char *vhost = virXMLPropString(node, "vhost");
+
+    if (tap)
+        def->backend.tap = virFileSanitizePath(tap);
+
+    if (vhost &&
+        def->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+        virDomainNetIsVirtioModel(def)) {
+        def->backend.vhost = virFileSanitizePath(vhost);
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainNetDefParseXMLRequireSource(virDomainNetDef *def,
                                      xmlNodePtr source_node)
 {
@@ -9034,12 +9054,12 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     xmlNodePtr mac_node = NULL;
     xmlNodePtr target_node = NULL;
     xmlNodePtr coalesce_node = NULL;
+    xmlNodePtr backend_node = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int rv;
     g_autofree char *macaddr = NULL;
     g_autofree char *model = NULL;
     g_autofree char *linkstate = NULL;
-    g_autofree char *tap = NULL;
     unsigned int virtualport_flags = 0;
     bool parse_filterref = false;
     const char *prefix = xmlopt ? xmlopt->config.netPrefix : NULL;
@@ -9337,9 +9357,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         (virNetDevVlanParse(vlan_node, ctxt, &def->vlan) < 0))
         return NULL;
 
-    if ((tap = virXPathString("string(./backend/@tap)", ctxt)))
-        def->backend.tap = virFileSanitizePath(tap);
-
     if ((mac_node = virXPathNode("./mac", ctxt))) {
         if ((macaddr = virXMLPropString(mac_node, "address"))) {
             if (virMacAddrParse((const char *)macaddr, &def->mac) < 0) {
@@ -9394,12 +9411,9 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     if (virDomainNetDefParseXMLDriver(def, ctxt) < 0)
         return NULL;
 
-    if (def->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-        virDomainNetIsVirtioModel(def)) {
-        g_autofree char *vhost = virXPathString("string(./backend/@vhost)", ctxt);
-
-        if (vhost)
-            def->backend.vhost = virFileSanitizePath(vhost);
+    if ((backend_node = virXPathNode("./backend", ctxt)) &&
+        virDomainNetBackendParseXML(backend_node, def) < 0) {
+        return NULL;
     }
 
     def->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DEFAULT;
@@ -23298,6 +23312,21 @@ virDomainNetTeamingInfoFormat(virDomainNetTeamingInfo *teaming,
 }
 
 
+static void
+virDomainNetBackendFormat(virBuffer *buf,
+                          virDomainNetBackend *backend)
+{
+
+    if (!(backend->tap || backend->vhost))
+        return;
+
+    virBufferAddLit(buf, "<backend");
+    virBufferEscapeString(buf, " tap='%s'", backend->tap);
+    virBufferEscapeString(buf, " vhost='%s'", backend->vhost);
+    virBufferAddLit(buf, "/>\n");
+}
+
+
 int
 virDomainNetDefFormat(virBuffer *buf,
                       virDomainNetDef *def,
@@ -23598,12 +23627,9 @@ virDomainNetDefFormat(virBuffer *buf,
             virXMLFormatElement(buf, "driver", &driverAttrBuf, &driverChildBuf);
         }
     }
-    if (def->backend.tap || def->backend.vhost) {
-        virBufferAddLit(buf, "<backend");
-        virBufferEscapeString(buf, " tap='%s'", def->backend.tap);
-        virBufferEscapeString(buf, " vhost='%s'", def->backend.vhost);
-        virBufferAddLit(buf, "/>\n");
-    }
+
+    virDomainNetBackendFormat(buf, &def->backend);
+
     if (def->filter) {
         if (virNWFilterFormatParamAttributes(buf, def->filterparams,
                                              def->filter) < 0)
