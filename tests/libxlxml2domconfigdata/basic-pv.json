@@ -14,7 +14,7 @@
         ],
         "max_memkb": 524288,
         "target_memkb": 524288,
-        "shadow_memkb": 8192,
+        "shadow_memkb": 1234,
         "sched_params": {
 
         },

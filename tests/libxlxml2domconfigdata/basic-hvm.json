@@ -15,7 +15,7 @@
         "max_memkb": 1048576,
         "target_memkb": 1048576,
         "video_memkb": 8192,
-        "shadow_memkb": 12288,
+        "shadow_memkb": 1234,
         "device_model_version": "qemu_xen",
         "device_model": "/bin/true",
         "sched_params": {

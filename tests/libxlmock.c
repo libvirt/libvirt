@@ -109,6 +109,17 @@ VIR_MOCK_STUB_RET_ARGS(bind,
                        const struct sockaddr *, addr,
                        socklen_t, addrlen)
 
+VIR_MOCK_IMPL_RET_ARGS(libxl_get_required_shadow_memory,
+                       unsigned long,
+                       unsigned long, maxmem_kb,
+                       unsigned int, smp_cpus)
+{
+    /* silence gcc warning about unused function */
+    if (0)
+        real_libxl_get_required_shadow_memory(maxmem_kb, smp_cpus);
+    return 1234;
+}
+
 VIR_MOCK_IMPL_RET_ARGS(__xstat, int,
                        int, ver,
                        const char *, path,
