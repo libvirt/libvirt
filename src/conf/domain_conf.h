@@ -1051,6 +1051,11 @@ struct _virDomainActualNetDef {
     unsigned int class_id; /* class ID for bandwidth 'floor' */
 };
 
+struct _virDomainNetBackend {
+    char *tap;
+    char *vhost;
+};
+
 /* Stores the virtual network interface configuration */
 struct _virDomainNetDef {
     virDomainNetType type;
@@ -1089,10 +1094,7 @@ struct _virDomainNetDef {
             virTristateSwitch rss_hash_report;
         } virtio;
     } driver;
-    struct {
-        char *tap;
-        char *vhost;
-    } backend;
+    virDomainNetBackend backend;
     virDomainNetTeamingInfo *teaming;
     union {
         virDomainChrSourceDef *vhostuser;

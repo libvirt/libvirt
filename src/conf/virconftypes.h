@@ -172,6 +172,8 @@ typedef struct _virDomainMomentObjList virDomainMomentObjList;
 
 typedef struct _virDomainNVRAMDef virDomainNVRAMDef;
 
+typedef struct _virDomainNetBackend virDomainNetBackend;
+
 typedef struct _virDomainNetDef virDomainNetDef;
 
 typedef struct _virDomainNetTeamingInfo virDomainNetTeamingInfo;
