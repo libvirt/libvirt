@@ -154,6 +154,17 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfig *cfg,
     for (i = 1; i < nmounts; i++) {
         size_t j = i + 1;
 
+        /* If we looked into mount table of already running VM,
+         * we might have found /dev twice. Remove the other
+         * occurrence as it would jeopardize the rest of the prune
+         * algorithm.
+         */
+        if (STREQ(mounts[i], "/dev")) {
+            VIR_FREE(mounts[i]);
+            VIR_DELETE_ELEMENT_INPLACE(mounts, i, nmounts);
+            continue;
+        }
+
         while (j < nmounts) {
             char *c = STRSKIP(mounts[j], mounts[i]);
 
