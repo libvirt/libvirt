@@ -17,6 +17,16 @@ v8.9.0 (unreleased)
 
 * **New features**
 
+  * Add ``virt-qemu-qmp-proxy`` for emulating a QMP socket for libvirt managed VMs
+
+    ``virt-qemu-qmp-proxy`` tool provides a way to expose an emulated QMP server
+    socket for a VM managed by libvirt. This allows existing QMP-only clients
+    to work with libvirt managed VMs.
+
+    **Note:** libvirt is not interpreting the communication between the tool
+    using the proxy and qemu itself, so any state-changing commands may
+    desynchronize libvirt. Use at your own risk.
+
   * qemu: Core Scheduling support
 
     To avoid side channel attacks, the Linux kernel allows creating groups of
