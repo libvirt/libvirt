@@ -2710,7 +2710,7 @@ typedef enum {
     VIR_DOMAIN_STATS_IOTHREAD = (1 << 7), /* return iothread poll info (Since: 4.10.0) */
     VIR_DOMAIN_STATS_MEMORY = (1 << 8), /* return domain memory info (Since: 6.0.0) */
     VIR_DOMAIN_STATS_DIRTYRATE = (1 << 9), /* return domain dirty rate info (Since: 7.2.0) */
-    VIR_DOMAIN_STATS_VM = (1 << 10), /* return vm info (Since: 8.6.0) */
+    VIR_DOMAIN_STATS_VM = (1 << 10), /* return vm info (Since: 8.9.0) */
 } virDomainStatsTypes;
 
 /**
