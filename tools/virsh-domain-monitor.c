@@ -2067,7 +2067,7 @@ static const vshCmdOptDef opts_domstats[] = {
     },
     {.name = "vm",
      .type = VSH_OT_BOOL,
-     .help = N_("report fd-based VM statistics by KVM"),
+     .help = N_("report hypervisor-specific statistics"),
     },
     {.name = "list-active",
      .type = VSH_OT_BOOL,

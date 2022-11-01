@@ -2297,7 +2297,7 @@ domstats
 
    domstats [--raw] [--enforce] [--backing] [--nowait] [--state]
       [--cpu-total] [--balloon] [--vcpu] [--interface]
-      [--block] [--perf] [--iothread] [--memory] [--dirtyrate]
+      [--block] [--perf] [--iothread] [--memory] [--dirtyrate] [--vm]
       [[--list-active] [--list-inactive]
        [--list-persistent] [--list-transient] [--list-running]y
        [--list-paused] [--list-shutoff] [--list-other]] | [domain ...]
@@ -2317,7 +2317,7 @@ The individual statistics groups are selectable via specific flags. By
 default all supported statistics groups are returned. Supported
 statistics groups flags are: *--state*, *--cpu-total*, *--balloon*,
 *--vcpu*, *--interface*, *--block*, *--perf*, *--iothread*, *--memory*,
-*--dirtyrate*.
+*--dirtyrate*, *--vm*.
 
 Note that - depending on the hypervisor type and version or the domain state
 - not all of the following statistics may be returned.
@@ -2533,6 +2533,38 @@ not available for statistical purposes.
 * ``dirtyrate.vcpu.<num>.megabytes_per_second`` - the calculated memory dirty
   rate for a virtual cpu in MiB/s
 
+*--vm* returns:
+
+The *--vm* option enables reporting of hypervisor-specific statistics. Naming
+and meaning of the fields is entirely hypervisor dependent.
+
+The statistics in this group have the following naming scheme:
+
+ ``vm.$NAME.$TYPE``
+
+ ``$NAME``
+   name of the statistics field provided by the hypervisor
+
+ ``$TYPE``
+   Type of the value. The following types are returned:
+
+   ``cur``
+     current instant value
+   ``sum``
+     aggregate value
+   ``max``
+     peak value
+
+ The returned value may be either an unsigned long long or a boolean.
+
+ **WARNING**: The stats reported in this group are runtime-collected and
+ hypervisor originated, thus fall outside of the usual stable API
+ policies of libvirt.
+
+ Libvirt can't guarantee that the statistics reported from the outside
+ source will be present in further versions of the hypervisor, or that
+ naming or meaning will stay consistent. Changes to existing fields,
+ however, are expected to be rare.
 
 Selecting a specific statistics groups doesn't guarantee that the
 daemon supports the selected group of stats. Flag *--enforce*
