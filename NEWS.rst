@@ -51,6 +51,13 @@ v8.9.0 (unreleased)
     with their newer counterparts and the minimal required mesion version was
     bumped to 0.56.0.
 
+  * qemu: Add flags to keep or remove TPM state for ``virDomainUndefineFlags``
+
+    ``VIR_DOMAIN_UNDEFINE_TPM`` and ``VIR_DOMAIN_UNDEFINE_KEEP_TPM`` specify
+    accordingly to delete or keep a TPM's persistent state directory structure
+    and files when undefining a domain. In virsh the flags are exposed as
+    ``--tpm`` and ``--keep-tpm`` for the sub-command ``undefine``.
+
 * **Bug fixes**
 
   * qemu: Disable all blocker features in CPU baseline
