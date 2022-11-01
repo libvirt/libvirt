@@ -37,6 +37,12 @@ v8.9.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Add hypervisor-specific statistics to ``virConnectGetAllDomainStats``
+
+    The new stats group ``VIR_DOMAIN_STATS_VM`` of
+    ``virConnectGetAllDomainStats``, also exposed as ``virsh domstats --vm``,
+    returns hypervisor-specific stats fields for given VM.
+
   * Add ``vendor`` attribute for CPU models in domain capabilities
 
     Users can now see the vendor of each CPU model in domain capabilities and
