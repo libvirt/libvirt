@@ -8831,8 +8831,10 @@ virDomainNetDefParseXMLDriver(virDomainNetDef *def,
 {
     xmlNodePtr driver_node;
 
-    if ((driver_node = virXPathNode("./driver", ctxt)) &&
-        (virDomainVirtioOptionsParseXML(driver_node, &def->virtio) < 0))
+    if (!(driver_node = virXPathNode("./driver", ctxt)))
+        return 0;
+
+    if (virDomainVirtioOptionsParseXML(driver_node, &def->virtio) < 0)
         return -1;
 
     if (def->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
