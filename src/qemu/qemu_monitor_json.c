@@ -8596,7 +8596,7 @@ qemuMonitorJSONExtractQueryStatsSchema(virJSONValue *json)
             virJSONValue *stat = virJSONValueArrayGet(stats, j);
             const char *name = NULL;
             const char *tmp = NULL;
-            qemuMonitorQueryStatsSchemaData *data = NULL;
+            g_autofree qemuMonitorQueryStatsSchemaData *data = NULL;
             int type = -1;
             int unit = -1;
 
@@ -8632,7 +8632,9 @@ qemuMonitorJSONExtractQueryStatsSchema(virJSONValue *json)
                 virJSONValueObjectGetNumberUint(stat, "bucket-size", &data->bucket_size) < 0)
                 data->bucket_size = 0;
 
-            virHashAddEntry(schema, name, data);
+            if (virHashAddEntry(schema, name, data) < 0)
+                return NULL;
+            data = NULL;
         }
     }
 
