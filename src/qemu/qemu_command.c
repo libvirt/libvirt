@@ -3603,6 +3603,53 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
 }
 
 
+int
+qemuBuildThreadContextProps(virJSONValue **tcProps,
+                            virJSONValue **memProps,
+                            qemuDomainObjPrivate *priv)
+{
+    g_autoptr(virJSONValue) props = NULL;
+    virJSONValue *nodemask = NULL;
+    g_autoptr(virJSONValue) nodemaskCopy = NULL;
+    g_autofree char *tcAlias = NULL;
+    const char *memalias = NULL;
+
+    *tcProps = NULL;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_THREAD_CONTEXT))
+        return 0;
+
+    nodemask = virJSONValueObjectGetArray(*memProps, "host-nodes");
+    if (!nodemask)
+        return 0;
+
+    memalias = virJSONValueObjectGetString(*memProps, "id");
+    if (!memalias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("memory device alias is not assigned"));
+        return -1;
+    }
+
+    tcAlias = g_strdup_printf("tc-%s", memalias);
+    nodemaskCopy = virJSONValueCopy(nodemask);
+
+    if (virJSONValueObjectAdd(&props,
+                              "s:qom-type", "thread-context",
+                              "s:id", tcAlias,
+                              "a:node-affinity", &nodemaskCopy,
+                              NULL) < 0)
+        return -1;
+
+    if (virJSONValueObjectAdd(memProps,
+                              "s:prealloc-context", tcAlias,
+                              NULL) < 0)
+        return -1;
+
+    *tcProps = g_steal_pointer(&props);
+    return 0;
+}
+
+
 static char *
 qemuBuildLegacyNicStr(virDomainNetDef *net)
 {

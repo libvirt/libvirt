@@ -147,6 +147,11 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
                            const virDomainDef *def,
                            const virDomainMemoryDef *mem);
 
+int
+qemuBuildThreadContextProps(virJSONValue **tcProps,
+                            virJSONValue **memProps,
+                            qemuDomainObjPrivate *priv);
+
 /* Current, best practice */
 virJSONValue *
 qemuBuildPCIHostdevDevProps(const virDomainDef *def,
