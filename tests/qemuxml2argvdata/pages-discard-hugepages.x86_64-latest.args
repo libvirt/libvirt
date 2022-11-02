@@ -6,19 +6,20 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-SomeDummyHugepagesGu/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-SomeDummyHugepagesGu/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-SomeDummyHugepagesGu/.config \
-/usr/bin/qemu-system-i386 \
+/usr/bin/qemu-system-x86_64 \
 -name guest=SomeDummyHugepagesGuest,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-SomeDummyHugepagesGu/master-key.aes \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-SomeDummyHugepagesGu/master-key.aes"}' \
 -machine pc,usb=off,dump-guest-core=off \
 -accel tcg \
+-cpu qemu64 \
 -m 1024 \
 -overcommit mem-lock=off \
 -smp 2,sockets=2,cores=1,threads=1 \
--mem-prealloc \
--mem-path /dev/hugepages2M/libvirt/qemu/-1-SomeDummyHugepagesGu \
--numa node,nodeid=0,cpus=0,mem=256 \
--numa node,nodeid=1,cpus=1,mem=768 \
+-object '{"qom-type":"memory-backend-file","id":"ram-node0","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-SomeDummyHugepagesGu","prealloc":true,"size":268435456}' \
+-numa node,nodeid=0,cpus=0,memdev=ram-node0 \
+-object '{"qom-type":"memory-backend-file","id":"ram-node1","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-SomeDummyHugepagesGu","discard-data":true,"prealloc":true,"size":805306368}' \
+-numa node,nodeid=1,cpus=1,memdev=ram-node1 \
 -uuid ef1bdff4-27f3-4e85-a807-5fb4d58463cc \
 -display none \
 -no-user-config \
@@ -29,6 +30,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-SomeDummyHugepagesGu/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--usb \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
