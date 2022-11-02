@@ -30,7 +30,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-instance-00000092/.config \
 -no-acpi \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--object '{"qom-type":"memory-backend-file","id":"memnvdimm0","mem-path":"/tmp/nvdimm","share":true,"prealloc":true,"prealloc-threads":8,"size":536870912,"host-nodes":[3],"policy":"preferred"}' \
+-object '{"qom-type":"thread-context","id":"tc-memnvdimm0","node-affinity":[3]}' \
+-object '{"qom-type":"memory-backend-file","id":"memnvdimm0","mem-path":"/tmp/nvdimm","share":true,"prealloc":true,"prealloc-threads":8,"size":536870912,"host-nodes":[3],"policy":"preferred","prealloc-context":"tc-memnvdimm0"}' \
 -device '{"driver":"nvdimm","node":0,"memdev":"memnvdimm0","id":"nvdimm0","slot":0}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \

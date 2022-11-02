@@ -3503,6 +3503,7 @@ qemuBuildMemoryDimmBackendStr(virCommand *cmd,
                               qemuDomainObjPrivate *priv)
 {
     g_autoptr(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) tcProps = NULL;
     g_autofree char *alias = NULL;
 
     if (!mem->info.alias) {
@@ -3515,6 +3516,14 @@ qemuBuildMemoryDimmBackendStr(virCommand *cmd,
 
     if (qemuBuildMemoryBackendProps(&props, alias, cfg,
                                     priv, def, mem, true, false) < 0)
+        return -1;
+
+    if (qemuBuildThreadContextProps(&tcProps, &props, priv) < 0)
+        return -1;
+
+    if (tcProps &&
+        qemuBuildObjectCommandlineFromJSON(cmd, tcProps,
+                                           priv->qemuCaps) < 0)
         return -1;
 
     if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)

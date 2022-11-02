@@ -29,7 +29,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-acpi \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--object '{"qom-type":"memory-backend-file","id":"memdimm0","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1","prealloc":true,"size":536870912,"host-nodes":[1,2,3],"policy":"bind"}' \
+-object '{"qom-type":"thread-context","id":"tc-memdimm0","node-affinity":[1,2,3]}' \
+-object '{"qom-type":"memory-backend-file","id":"memdimm0","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1","prealloc":true,"size":536870912,"host-nodes":[1,2,3],"policy":"bind","prealloc-context":"tc-memdimm0"}' \
 -device '{"driver":"pc-dimm","node":0,"memdev":"memdimm0","id":"dimm0","slot":0,"addr":4294967296}' \
 -object '{"qom-type":"memory-backend-ram","id":"memdimm2","size":536870912}' \
 -device '{"driver":"pc-dimm","node":0,"memdev":"memdimm2","id":"dimm2","slot":2}' \

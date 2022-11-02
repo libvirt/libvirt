@@ -39,7 +39,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-acpi \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--object '{"qom-type":"memory-backend-file","id":"memdimm0","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1","share":true,"prealloc":true,"size":536870912,"host-nodes":[0,1,2,3],"policy":"bind"}' \
+-object '{"qom-type":"thread-context","id":"tc-memdimm0","node-affinity":[0,1,2,3]}' \
+-object '{"qom-type":"memory-backend-file","id":"memdimm0","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1","share":true,"prealloc":true,"size":536870912,"host-nodes":[0,1,2,3],"policy":"bind","prealloc-context":"tc-memdimm0"}' \
 -device '{"driver":"pc-dimm","node":1,"memdev":"memdimm0","id":"dimm0","slot":0,"addr":4294967296}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
