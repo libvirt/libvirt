@@ -2492,9 +2492,31 @@ qemuSnapshotCountExternalInternal(void *payload,
 
 
 static int
-qemuSnapshotDeleteValidate(virDomainMomentObj *snap,
+qemuSnapshotDeleteValidate(virDomainObj *vm,
+                           virDomainMomentObj *snap,
                            unsigned int flags)
 {
+    if (!virDomainSnapshotIsExternal(snap) &&
+        virDomainObjIsActive(vm)) {
+        ssize_t i;
+        virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
+
+        for (i = 0; i < snapdef->ndisks; i++) {
+            virDomainSnapshotDiskDef *snapDisk = &(snapdef->disks[i]);
+            virDomainDiskDef *vmdisk = NULL;
+            virDomainDiskDef *disk = NULL;
+
+            vmdisk = qemuDomainDiskByName(vm->def, snapDisk->name);
+            disk = qemuDomainDiskByName(snapdef->parent.dom, snapDisk->name);
+
+            if (!virStorageSourceIsSameLocation(vmdisk->src, disk->src)) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                               _("disk image '%s' for internal snapshot '%s' is not the same as disk image currently used by VM"),
+                               snapDisk->name, snap->def->name);
+                return -1;
+            }
+        }
+    }
 
     if (flags & (VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
                  VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)) {
@@ -2548,7 +2570,7 @@ qemuSnapshotDelete(virDomainObj *vm,
         goto endjob;
 
     if (!metadata_only) {
-        if (qemuSnapshotDeleteValidate(snap, flags) < 0)
+        if (qemuSnapshotDeleteValidate(vm, snap, flags) < 0)
             goto endjob;
     }
 
