@@ -1515,6 +1515,7 @@ virDomainEventTunableNew(int id,
 
  error:
     virTypedParamsFree(*params, nparams);
+    *params = NULL;
     return NULL;
 }
 
