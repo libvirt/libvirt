@@ -7324,6 +7324,16 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
         ssize_t initiator = virDomainNumaGetNodeInitiator(def->numa, i);
 
         if (needBackend) {
+            g_autoptr(virJSONValue) tcProps = NULL;
+
+            if (qemuBuildThreadContextProps(&tcProps, &nodeBackends[i], priv) < 0)
+                goto cleanup;
+
+            if (tcProps &&
+                qemuBuildObjectCommandlineFromJSON(cmd, tcProps,
+                                                   priv->qemuCaps) < 0)
+                goto cleanup;
+
             if (qemuBuildObjectCommandlineFromJSON(cmd, nodeBackends[i],
                                                    priv->qemuCaps) < 0)
                 goto cleanup;

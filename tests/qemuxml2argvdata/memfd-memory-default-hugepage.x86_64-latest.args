@@ -16,7 +16,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-instance-00000092/.config \
 -m 14336 \
 -overcommit mem-lock=off \
 -smp 8,sockets=1,dies=1,cores=8,threads=1 \
--object '{"qom-type":"memory-backend-memfd","id":"ram-node0","hugetlb":true,"hugetlbsize":2097152,"share":true,"prealloc":true,"size":15032385536,"host-nodes":[3],"policy":"preferred"}' \
+-object '{"qom-type":"thread-context","id":"tc-ram-node0","node-affinity":[3]}' \
+-object '{"qom-type":"memory-backend-memfd","id":"ram-node0","hugetlb":true,"hugetlbsize":2097152,"share":true,"prealloc":true,"size":15032385536,"host-nodes":[3],"policy":"preferred","prealloc-context":"tc-ram-node0"}' \
 -numa node,nodeid=0,cpus=0-7,memdev=ram-node0 \
 -uuid 126f2720-6f8e-45ab-a886-ec9277079a67 \
 -display none \
