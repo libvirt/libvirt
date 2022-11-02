@@ -7008,6 +7008,7 @@ qemuBuildMemCommandLineMemoryDefaultBackend(virCommand *cmd,
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     g_autoptr(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) tcProps = NULL;
     virDomainMemoryDef mem = { 0 };
 
     mem.size = virDomainDefGetMemoryInitial(def);
@@ -7016,6 +7017,14 @@ qemuBuildMemCommandLineMemoryDefaultBackend(virCommand *cmd,
 
     if (qemuBuildMemoryBackendProps(&props, defaultRAMid, cfg,
                                     priv, def, &mem, false, true) < 0)
+        return -1;
+
+    if (qemuBuildThreadContextProps(&tcProps, &props, priv) < 0)
+        return -1;
+
+    if (tcProps &&
+        qemuBuildObjectCommandlineFromJSON(cmd, tcProps,
+                                           priv->qemuCaps) < 0)
         return -1;
 
     if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
