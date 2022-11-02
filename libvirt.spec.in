@@ -906,7 +906,7 @@ capabilities of recent versions of Linux (and other OSes).
 %package client-qemu
 Summary: Additional client side utilities for QEMU
 Requires: %{name}-libs = %{version}-%{release}
-Requires: python3-libvirt >= %{version}-%{release}
+Requires: python3-libvirt >= 3.7.0
 
 %description client-qemu
 The additional client binaries are used to interact
