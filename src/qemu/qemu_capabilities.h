@@ -282,7 +282,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_NUMA, /* newer -numa handling with disjoint cpu ranges */
 
     /* 170 */
-    QEMU_CAPS_OBJECT_MEMORY_FILE, /* -object memory-backend-file */
+    X_QEMU_CAPS_OBJECT_MEMORY_FILE, /* -object memory-backend-file */
     QEMU_CAPS_OBJECT_USB_AUDIO, /* usb-audio device support */
     QEMU_CAPS_RTC_RESET_REINJECTION, /* rtc-reset-reinjection monitor command */
     X_QEMU_CAPS_SPLASH_TIMEOUT, /* -boot splash-time */

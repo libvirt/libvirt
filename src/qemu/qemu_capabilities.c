@@ -304,7 +304,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "numa", /* QEMU_CAPS_NUMA */
 
               /* 170 */
-              "memory-backend-file", /* QEMU_CAPS_OBJECT_MEMORY_FILE */
+              "memory-backend-file", /* X_QEMU_CAPS_OBJECT_MEMORY_FILE */
               "usb-audio", /* QEMU_CAPS_OBJECT_USB_AUDIO */
               "rtc-reset-reinjection", /* QEMU_CAPS_RTC_RESET_REINJECTION */
               "splash-timeout", /* X_QEMU_CAPS_SPLASH_TIMEOUT */
