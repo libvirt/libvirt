@@ -72,9 +72,9 @@ Application development
    `secret <html/libvirt-libvirt-secret.html>`__,
    `storage <html/libvirt-libvirt-storage.html>`__,
    `stream <html/libvirt-libvirt-stream.html>`__ and
-   `admin <html/index-admin.html>`__,
-   `QEMU <html/index-qemu.html>`__,
-   `LXC <html/index-lxc.html>`__ libs
+   `admin <html/libvirt-libvirt-admin.html>`__,
+   `QEMU <html/libvirt-libvirt-qemu.html>`__,
+   `LXC <html/libvirt-libvirt-lxc.html>`__ libs
 
 `Language bindings and API modules <bindings.html>`__
    Bindings of the libvirt API for
