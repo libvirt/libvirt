@@ -105,7 +105,6 @@
   <flag name='iothread.poll-max-ns'/>
   <flag name='machine.pseries.cap-nested-hv'/>
   <flag name='egl-headless.rendernode'/>
-  <flag name='memory-backend-file.align'/>
   <flag name='memory-backend-file.pmem'/>
   <flag name='nvdimm.unarmed'/>
   <flag name='virtio-pci-non-transitional'/>
