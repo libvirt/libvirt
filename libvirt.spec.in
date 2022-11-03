@@ -441,6 +441,12 @@ Summary: Server side daemon and supporting files for libvirt library
 # The client side, i.e. shared libs are in a subpackage
 Requires: %{name}-libs = %{version}-%{release}
 
+# The libvirt-guests.sh script requires virsh from libvirt-client subpackage,
+# but not every deployment wants to use libvirt-guests service. Using
+# Recommends here will install libvirt-client by default (if available), but
+# RPM won't complain if the package is unavailable, masked, or removed later.
+Recommends: %{name}-client = %{version}-%{release}
+
 # netcat is needed on the server side so that clients that have
 # libvirt < 6.9.0 can connect, but newer versions will prefer
 # virt-ssh-helper. Making this a Recommends means that it gets
