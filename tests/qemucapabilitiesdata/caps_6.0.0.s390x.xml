@@ -57,7 +57,6 @@
   <flag name='nbd-tls'/>
   <flag name='pr-manager-helper'/>
   <flag name='qom-list-properties'/>
-  <flag name='memory-backend-file.discard-data'/>
   <flag name='vfio-ccw'/>
   <flag name='screendump_device'/>
   <flag name='vhost-vsock'/>

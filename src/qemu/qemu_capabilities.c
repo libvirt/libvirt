@@ -1699,7 +1699,6 @@ static virQEMUCapsDeviceTypeProps virQEMUCapsDeviceProps[] = {
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] = {
-    { "discard-data", QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD },
     { "align", QEMU_CAPS_OBJECT_MEMORY_FILE_ALIGN },
     { "pmem", QEMU_CAPS_OBJECT_MEMORY_FILE_PMEM },
     /* As of QEMU commit 8db0b20415c129cf5e577a593a4a0372d90b7cc9 the
