@@ -516,7 +516,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 320 */
               "machine.pseries.cap-nested-hv", /* QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV */
               "egl-headless.rendernode", /* QEMU_CAPS_EGL_HEADLESS_RENDERNODE */
-              "memory-backend-file.align", /* QEMU_CAPS_OBJECT_MEMORY_FILE_ALIGN */
+              "memory-backend-file.align", /* X_QEMU_CAPS_OBJECT_MEMORY_FILE_ALIGN */
               "memory-backend-file.pmem", /* QEMU_CAPS_OBJECT_MEMORY_FILE_PMEM */
               "nvdimm.unarmed", /* QEMU_CAPS_DEVICE_NVDIMM_UNARMED */
 
