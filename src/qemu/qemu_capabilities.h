@@ -455,7 +455,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_TPM_CRB, /* -device tpm-crb */
     QEMU_CAPS_PR_MANAGER_HELPER, /* -object pr-manager-helper */
     QEMU_CAPS_QOM_LIST_PROPERTIES, /* qom-list-properties monitor command */
-    QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD, /* -object memory-backend-file,discard-data */
+    X_QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD, /* -object memory-backend-file,discard-data */
 
     /* 295 */
     X_QEMU_CAPS_CCW, /* -device virtual-css-bridge */

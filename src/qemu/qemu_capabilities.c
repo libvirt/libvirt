@@ -476,7 +476,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "tpm-crb", /* QEMU_CAPS_DEVICE_TPM_CRB */
               "pr-manager-helper", /* QEMU_CAPS_PR_MANAGER_HELPER */
               "qom-list-properties", /* QEMU_CAPS_QOM_LIST_PROPERTIES */
-              "memory-backend-file.discard-data", /* QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD */
+              "memory-backend-file.discard-data", /* X_QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD */
 
               /* 295 */
               "virtual-css-bridge", /* X_QEMU_CAPS_CCW */
