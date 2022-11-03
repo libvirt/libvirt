@@ -22,7 +22,7 @@
   <!-- Build keys for all symbols -->
   <xsl:key name="symbols" match="/api/symbols/*" use="@name"/>
 
-  <xsl:param name="indexfile" select="'index.html'"/>
+  <xsl:param name="indexfile" select="''"/>
 
   <!-- the target directory for the HTML output -->
   <xsl:variable name="htmldir">html</xsl:variable>
@@ -823,18 +823,20 @@
 
   <xsl:template match="/">
     <!-- Save the main index.html as well as a couple of copies -->
-    <xsl:variable name="mainpage">
-      <xsl:call-template name="mainpage"/>
-    </xsl:variable>
-    <xsl:document
-      href="{concat($htmldir, '/', $indexfile)}"
-      method="xml"
-      indent="yes"
-      encoding="UTF-8">
-      <xsl:apply-templates select="exsl:node-set($mainpage)" mode="page">
-        <xsl:with-param name="timestamp" select="$timestamp"/>
-      </xsl:apply-templates>
-    </xsl:document>
+    <xsl:if test="$indexfile != ''">
+      <xsl:variable name="mainpage">
+        <xsl:call-template name="mainpage"/>
+      </xsl:variable>
+      <xsl:document
+        href="{concat($htmldir, '/', $indexfile)}"
+        method="xml"
+        indent="yes"
+        encoding="UTF-8">
+        <xsl:apply-templates select="exsl:node-set($mainpage)" mode="page">
+          <xsl:with-param name="timestamp" select="$timestamp"/>
+        </xsl:apply-templates>
+      </xsl:document>
+    </xsl:if>
 
     <xsl:for-each select="/api/files/file">
       <xsl:variable name="subpage">
