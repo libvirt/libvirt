@@ -721,6 +721,14 @@ class CParser:
                 item = m.group(1)
                 line = m.group(2).lstrip()
 
+            # don't include the Copyright in the last 'item'
+            if line.startswith("Copyright (C)"):
+                # truncate any whitespace originating from newlines
+                # before the Copyright
+                if item:
+                    res[item] = res[item].rstrip()
+                break
+
             if item:
                 if item in res:
                     res[item] = res[item] + " " + line
