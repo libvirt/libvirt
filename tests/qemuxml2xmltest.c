@@ -295,24 +295,21 @@ mymain(void)
     DO_TEST_NOCAPS("pmu-feature-off");
 
     DO_TEST_NOCAPS("pages-discard");
-    DO_TEST("pages-discard-hugepages", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("pages-dimm-discard", QEMU_CAPS_DEVICE_PC_DIMM);
-    DO_TEST("hugepages-default", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-default-2M", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-default-system-size", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-nodeset", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-numa-default-2M", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-numa-default-dimm", QEMU_CAPS_DEVICE_PC_DIMM,
-            QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-numa-nodeset", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-numa-nodeset-part", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-shared", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-memaccess", QEMU_CAPS_DEVICE_PC_DIMM,
-            QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-memaccess2", QEMU_CAPS_DEVICE_PC_DIMM,
-            QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-nvdimm", QEMU_CAPS_DEVICE_NVDIMM,
-            QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST_CAPS_LATEST("pages-discard-hugepages");
+    DO_TEST_CAPS_LATEST("pages-dimm-discard");
+    DO_TEST_CAPS_LATEST("hugepages-default");
+    DO_TEST_CAPS_LATEST("hugepages-default-2M");
+    DO_TEST_CAPS_LATEST("hugepages-default-system-size");
+    DO_TEST_CAPS_LATEST("hugepages-nodeset");
+    DO_TEST_CAPS_LATEST("hugepages-numa-default-2M");
+    DO_TEST_CAPS_LATEST("hugepages-numa-default-dimm");
+    DO_TEST_CAPS_LATEST("hugepages-numa-nodeset");
+    DO_TEST_CAPS_LATEST("hugepages-numa-nodeset-part");
+    DO_TEST_CAPS_LATEST("hugepages-shared");
+    DO_TEST_CAPS_LATEST("hugepages-memaccess");
+    DO_TEST_CAPS_LATEST("hugepages-memaccess2");
+    DO_TEST_CAPS_LATEST("hugepages-memaccess3");
+    DO_TEST_CAPS_LATEST("hugepages-nvdimm");
     DO_TEST_NOCAPS("nosharepages");
     DO_TEST_NOCAPS("restore-v2");
     DO_TEST_NOCAPS("migrate");

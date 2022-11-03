@@ -12,7 +12,8 @@
     <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='hd'/>
   </os>
-  <cpu>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
     <numa>
       <cell id='0' cpus='0-1' memory='1048576' unit='KiB'/>
     </numa>
@@ -23,7 +24,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
-    <controller type='usb' index='0'>
+    <controller type='usb' index='0' model='piix3-uhci'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
