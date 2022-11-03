@@ -22,7 +22,6 @@
   <flag name='virtio-ccw'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
-  <flag name='memory-backend-ram'/>
   <flag name='numa'/>
   <flag name='memory-backend-file'/>
   <flag name='iothread'/>

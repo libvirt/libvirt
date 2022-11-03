@@ -23,7 +23,6 @@
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
   <flag name='enable-fips'/>
-  <flag name='memory-backend-ram'/>
   <flag name='numa'/>
   <flag name='memory-backend-file'/>
   <flag name='iothread'/>

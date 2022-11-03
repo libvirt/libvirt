@@ -49,7 +49,6 @@
   <flag name='usb-storage.removable'/>
   <flag name='ich9-intel-hda'/>
   <flag name='usb-kbd'/>
-  <flag name='memory-backend-ram'/>
   <flag name='numa'/>
   <flag name='memory-backend-file'/>
   <flag name='usb-audio'/>
