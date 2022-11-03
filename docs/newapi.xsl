@@ -756,18 +756,22 @@
             </xsl:apply-templates>
           </pre>
         </xsl:if>
-        <h3><a href="#types">Types</a></h3>
-        <pre class="api">
-          <xsl:apply-templates select="exports[@type='typedef']" mode="toc">
-            <xsl:sort select='@symbol'/>
-          </xsl:apply-templates>
-        </pre>
-        <h3><a href="#functions">Functions</a></h3>
-        <pre class="api">
-          <xsl:apply-templates select="exports[@type='function']" mode="toc">
-            <xsl:sort select='@symbol'/>
-          </xsl:apply-templates>
-        </pre>
+        <xsl:if test="count(exports[@type='typedef']) > 0">
+          <h3><a href="#types">Types</a></h3>
+          <pre class="api">
+            <xsl:apply-templates select="exports[@type='typedef']" mode="toc">
+              <xsl:sort select='@symbol'/>
+            </xsl:apply-templates>
+          </pre>
+        </xsl:if>
+        <xsl:if test="count(exports[@type='function']) > 0">
+          <h3><a href="#functions">Functions</a></h3>
+          <pre class="api">
+            <xsl:apply-templates select="exports[@type='function']" mode="toc">
+              <xsl:sort select='@symbol'/>
+            </xsl:apply-templates>
+          </pre>
+        </xsl:if>
 
         <h2>Description</h2>
 
@@ -777,14 +781,18 @@
             <xsl:sort select='@symbol'/>
           </xsl:apply-templates>
         </xsl:if>
-        <h3><a id="types">Types</a></h3>
-        <xsl:apply-templates select="exports[@type='typedef']">
-          <xsl:sort select='@symbol'/>
-        </xsl:apply-templates>
-        <h3><a id="functions">Functions</a></h3>
-        <xsl:apply-templates select="exports[@type='function']">
-          <xsl:sort select='@symbol'/>
-        </xsl:apply-templates>
+        <xsl:if test="count(exports[@type='typedef']) > 0">
+          <h3><a id="types">Types</a></h3>
+          <xsl:apply-templates select="exports[@type='typedef']">
+            <xsl:sort select='@symbol'/>
+          </xsl:apply-templates>
+        </xsl:if>
+        <xsl:if test="count(exports[@type='function']) > 0">
+          <h3><a id="functions">Functions</a></h3>
+          <xsl:apply-templates select="exports[@type='function']">
+            <xsl:sort select='@symbol'/>
+          </xsl:apply-templates>
+        </xsl:if>
       </body>
     </html>
   </xsl:template>
