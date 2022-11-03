@@ -56,7 +56,6 @@
   <flag name='pvpanic'/>
   <flag name='usb-kbd'/>
   <flag name='numa'/>
-  <flag name='memory-backend-file'/>
   <flag name='usb-audio'/>
   <flag name='rtc-reset-reinjection'/>
   <flag name='iothread'/>

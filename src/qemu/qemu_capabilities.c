@@ -1280,7 +1280,6 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "ich9-intel-hda", QEMU_CAPS_DEVICE_ICH9_INTEL_HDA },
     { "pvpanic", QEMU_CAPS_DEVICE_PANIC },
     { "usb-kbd", QEMU_CAPS_DEVICE_USB_KBD },
-    { "memory-backend-file", QEMU_CAPS_OBJECT_MEMORY_FILE },
     { "usb-audio", QEMU_CAPS_OBJECT_USB_AUDIO },
     { "iothread", QEMU_CAPS_OBJECT_IOTHREAD},
     { "ivshmem", QEMU_CAPS_DEVICE_IVSHMEM },

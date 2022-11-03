@@ -24,7 +24,6 @@
   <flag name='vfio-pci'/>
   <flag name='enable-fips'/>
   <flag name='numa'/>
-  <flag name='memory-backend-file'/>
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>
   <flag name='aes-key-wrap'/>

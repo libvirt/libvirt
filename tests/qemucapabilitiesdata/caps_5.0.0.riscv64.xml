@@ -48,7 +48,6 @@
   <flag name='enable-fips'/>
   <flag name='usb-kbd'/>
   <flag name='numa'/>
-  <flag name='memory-backend-file'/>
   <flag name='usb-audio'/>
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>
