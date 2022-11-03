@@ -983,18 +983,8 @@ static int
 qemuValidateDomainDefNuma(const virDomainDef *def,
                           virQEMUCaps *qemuCaps)
 {
-    const long system_page_size = virGetSystemPageSizeKB();
     size_t ncells = virDomainNumaGetNodeCount(def->numa);
     size_t i;
-
-    if (def->mem.nhugepages &&
-        def->mem.hugepages[0].size != system_page_size &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("huge pages per NUMA node are not "
-                         "supported with this QEMU"));
-        return -1;
-    }
 
     for (i = 0; i < ncells; i++) {
         virBitmap *cpumask = virDomainNumaGetNodeCpumask(def->numa, i);

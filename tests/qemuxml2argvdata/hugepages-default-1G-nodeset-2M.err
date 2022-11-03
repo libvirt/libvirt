@@ -1,1 +1,1 @@
-unsupported configuration: huge pages per NUMA node are not supported with this QEMU
+two master hugepages detected: 2048 and 1048576

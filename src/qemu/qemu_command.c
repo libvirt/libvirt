@@ -3472,17 +3472,10 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
         rc = 1;
     } else {
         /* otherwise check the required capability */
-        if (STREQ(backendType, "memory-backend-file") &&
-            !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
+        if (STREQ(backendType, "memory-backend-memfd") &&
+            !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this qemu doesn't support the "
-                             "memory-backend-file object"));
-            return -1;
-        } else if (STREQ(backendType, "memory-backend-memfd") &&
-                   !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this qemu doesn't support the "
-                             "memory-backend-memfd object"));
+                           _("this qemu doesn't support the memory-backend-memfd object"));
             return -1;
         }
 

@@ -1725,7 +1725,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMaxCPU[] = {
 static virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
     { "memory-backend-file", virQEMUCapsObjectPropsMemoryBackendFile,
       G_N_ELEMENTS(virQEMUCapsObjectPropsMemoryBackendFile),
-      QEMU_CAPS_OBJECT_MEMORY_FILE },
+      -1 },
     { "memory-backend-memfd", virQEMUCapsObjectPropsMemoryBackendMemfd,
       G_N_ELEMENTS(virQEMUCapsObjectPropsMemoryBackendMemfd),
       QEMU_CAPS_OBJECT_MEMORY_MEMFD },
@@ -6096,12 +6096,9 @@ virQEMUCapsFillDomainMemoryBackingCaps(virQEMUCaps *qemuCaps,
         VIR_DOMAIN_CAPS_ENUM_SET(memoryBacking->sourceType,
                                  VIR_DOMAIN_MEMORY_SOURCE_MEMFD);
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE))
-        VIR_DOMAIN_CAPS_ENUM_SET(memoryBacking->sourceType,
-                                 VIR_DOMAIN_MEMORY_SOURCE_FILE);
-
     VIR_DOMAIN_CAPS_ENUM_SET(memoryBacking->sourceType,
-                             VIR_DOMAIN_MEMORY_SOURCE_ANONYMOUS);
+                             VIR_DOMAIN_MEMORY_SOURCE_ANONYMOUS,
+                             VIR_DOMAIN_MEMORY_SOURCE_FILE);
 }
 
 

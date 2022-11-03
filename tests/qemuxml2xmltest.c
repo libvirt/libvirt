@@ -657,7 +657,6 @@ mymain(void)
     DO_TEST_NOCAPS("seclabel-device-multiple");
     DO_TEST_FULL("seclabel-dynamic-none-relabel", "", WHEN_INACTIVE,
                  ARG_QEMU_CAPS, QEMU_CAPS_DEVICE_CIRRUS_VGA,
-                 QEMU_CAPS_OBJECT_MEMORY_FILE,
                  QEMU_CAPS_SPICE, QEMU_CAPS_LAST,
                  ARG_END);
     DO_TEST_NOCAPS("numad-static-vcpu-no-numatune");
@@ -926,11 +925,11 @@ mymain(void)
     DO_TEST_NOCAPS("cpu-numa-no-memory-element");
     DO_TEST_NOCAPS("cpu-numa-disordered");
     DO_TEST("cpu-numa-disjoint", QEMU_CAPS_NUMA);
-    DO_TEST("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST_NOCAPS("cpu-numa-memshared");
 
     DO_TEST_NOCAPS("numatune-auto-prefer");
-    DO_TEST("numatune-memnode", QEMU_CAPS_NUMA, QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("numatune-memnode-no-memory", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("numatune-memnode", QEMU_CAPS_NUMA);
+    DO_TEST_NOCAPS("numatune-memnode-no-memory");
     DO_TEST("numatune-distances", QEMU_CAPS_NUMA);
     DO_TEST("numatune-no-vcpu", QEMU_CAPS_NUMA);
     DO_TEST("numatune-hmat", QEMU_CAPS_NUMA_HMAT);
@@ -1025,14 +1024,13 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("aarch64-features-sve", "aarch64");
 
     DO_TEST("memory-hotplug-ppc64-nonuma", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA,
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_OBJECT_MEMORY_FILE);
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST_FULL("memory-hotplug-ppc64-nonuma-abi-update", "", WHEN_BOTH,
                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                  ARG_QEMU_CAPS,
                  QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM,
                  QEMU_CAPS_NUMA, QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                 QEMU_CAPS_OBJECT_MEMORY_FILE, QEMU_CAPS_LAST, ARG_END);
+                 QEMU_CAPS_LAST, ARG_END);
     DO_TEST_NOCAPS("memory-hotplug");
     DO_TEST("memory-hotplug-dimm", QEMU_CAPS_DEVICE_PC_DIMM);
     DO_TEST_CAPS_LATEST("memory-hotplug-dimm-addr");
@@ -1044,13 +1042,11 @@ mymain(void)
     DO_TEST("memory-hotplug-nvdimm-readonly", QEMU_CAPS_DEVICE_NVDIMM,
                                               QEMU_CAPS_DEVICE_NVDIMM_UNARMED);
     DO_TEST("memory-hotplug-nvdimm-ppc64", QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                                           QEMU_CAPS_OBJECT_MEMORY_FILE,
                                            QEMU_CAPS_DEVICE_NVDIMM);
     DO_TEST_FULL("memory-hotplug-nvdimm-ppc64-abi-update", "", WHEN_BOTH,
                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                  ARG_QEMU_CAPS,
                  QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                 QEMU_CAPS_OBJECT_MEMORY_FILE,
                  QEMU_CAPS_DEVICE_NVDIMM,
                  QEMU_CAPS_LAST, ARG_END);
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-pmem");
@@ -1087,16 +1083,12 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("virtio-options");
 
-    DO_TEST("fd-memory-numa-topology", QEMU_CAPS_OBJECT_MEMORY_FILE,
-            QEMU_CAPS_KVM);
-    DO_TEST("fd-memory-numa-topology2", QEMU_CAPS_OBJECT_MEMORY_FILE,
-            QEMU_CAPS_KVM);
-    DO_TEST("fd-memory-numa-topology3", QEMU_CAPS_OBJECT_MEMORY_FILE,
-            QEMU_CAPS_KVM);
+    DO_TEST("fd-memory-numa-topology", QEMU_CAPS_KVM);
+    DO_TEST("fd-memory-numa-topology2", QEMU_CAPS_KVM);
+    DO_TEST("fd-memory-numa-topology3", QEMU_CAPS_KVM);
     DO_TEST_CAPS_LATEST("fd-memory-numa-topology4");
 
-    DO_TEST("fd-memory-no-numa-topology", QEMU_CAPS_OBJECT_MEMORY_FILE,
-            QEMU_CAPS_KVM);
+    DO_TEST("fd-memory-no-numa-topology", QEMU_CAPS_KVM);
 
     DO_TEST_CAPS_LATEST("memfd-memory-numa");
     DO_TEST_CAPS_LATEST("memfd-memory-default-hugepage");
