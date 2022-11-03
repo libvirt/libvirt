@@ -3351,17 +3351,10 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
             return -1;
 
         if (!mem->nvdimmPath &&
-            discard == VIR_TRISTATE_BOOL_YES) {
-            if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("this QEMU doesn't support memory discard"));
-                return -1;
-            }
-
-            if (virJSONValueObjectAdd(&props,
-                                      "B:discard-data", true,
-                                      NULL) < 0)
-                return -1;
+            virJSONValueObjectAdd(&props,
+                                  "T:discard-data", discard,
+                                  NULL) < 0) {
+            return -1;
         }
 
         if (qemuBuildMemoryBackendPropsShare(props, memAccess) < 0)
