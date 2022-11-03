@@ -3410,16 +3410,8 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
     if (virJSONValueObjectAdd(&props, "U:size", mem->size * 1024, NULL) < 0)
         return -1;
 
-    if (mem->alignsize) {
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE_ALIGN)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("nvdimm align property is not available "
-                             "with this QEMU binary"));
-            return -1;
-        }
-        if (virJSONValueObjectAdd(&props, "U:align", mem->alignsize * 1024, NULL) < 0)
-            return -1;
-    }
+    if (virJSONValueObjectAdd(&props, "P:align", mem->alignsize * 1024, NULL) < 0)
+        return -1;
 
     if (mem->nvdimmPmem) {
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE_PMEM)) {
