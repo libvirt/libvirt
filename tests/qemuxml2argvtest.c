@@ -1235,7 +1235,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hugepages-memaccess");
     DO_TEST_CAPS_LATEST("hugepages-memaccess2");
     DO_TEST_PARSE_ERROR("hugepages-memaccess3",
-                        QEMU_CAPS_OBJECT_MEMORY_RAM,
                         QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST_CAPS_LATEST("hugepages-memaccess3");
     DO_TEST_CAPS_LATEST("hugepages-nvdimm");
@@ -1869,7 +1868,6 @@ mymain(void)
                  ARG_MIGRATE_FD, 7,
                  ARG_QEMU_CAPS,
                  QEMU_CAPS_NUMA,
-                 QEMU_CAPS_OBJECT_MEMORY_RAM,
                  QEMU_CAPS_LAST,
                  ARG_END);
 
@@ -1909,7 +1907,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR_NOCAPS("cpu-numa3");
     DO_TEST_PARSE_ERROR_NOCAPS("cpu-numa-disjoint");
     DO_TEST("cpu-numa-disjoint", QEMU_CAPS_NUMA);
-    DO_TEST_FAILURE("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_RAM);
+    DO_TEST_FAILURE_NOCAPS("cpu-numa-memshared");
     DO_TEST("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("cpu-host-model",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
@@ -1968,7 +1966,6 @@ mymain(void)
     DO_TEST("cputune-numatune",
             QEMU_CAPS_KVM,
             QEMU_CAPS_OBJECT_IOTHREAD,
-            QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("vcpu-placement-static",
             QEMU_CAPS_KVM,
@@ -1978,8 +1975,7 @@ mymain(void)
     DO_TEST_NOCAPS("numatune-memory");
     DO_TEST_PARSE_ERROR_NOCAPS("numatune-memory-invalid-nodeset");
     DO_TEST("numatune-memnode",
-            QEMU_CAPS_NUMA,
-            QEMU_CAPS_OBJECT_MEMORY_RAM);
+            QEMU_CAPS_NUMA);
     DO_TEST_PARSE_ERROR_NOCAPS("numatune-memnode");
     DO_TEST_CAPS_VER("numatune-memnode", "5.2.0");
     DO_TEST_CAPS_LATEST("numatune-memnode");
@@ -1988,19 +1984,16 @@ mymain(void)
     DO_TEST_CAPS_LATEST("numatune-system-memory");
 
     DO_TEST("numatune-memnode-no-memory",
-            QEMU_CAPS_NUMA,
-            QEMU_CAPS_OBJECT_MEMORY_RAM);
-    DO_TEST_PARSE_ERROR_NOCAPS("numatune-memnode-no-memory");
+            QEMU_CAPS_NUMA);
 
     DO_TEST("numatune-distances", QEMU_CAPS_NUMA);
     DO_TEST_NOCAPS("numatune-no-vcpu");
     DO_TEST_CAPS_LATEST("numatune-hmat");
 
     DO_TEST_NOCAPS("numatune-auto-nodeset-invalid");
-    DO_TEST("numatune-auto-prefer", QEMU_CAPS_OBJECT_MEMORY_RAM,
+    DO_TEST("numatune-auto-prefer",
             QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST_FAILURE("numatune-static-nodeset-exceed-hostnode",
-                    QEMU_CAPS_OBJECT_MEMORY_RAM);
+    DO_TEST_FAILURE_NOCAPS("numatune-static-nodeset-exceed-hostnode");
     DO_TEST_PARSE_ERROR_NOCAPS("numatune-memnode-nocpu");
     DO_TEST_PARSE_ERROR_NOCAPS("numatune-memnodes-problematic");
     DO_TEST_NOCAPS("numad");
@@ -2645,17 +2638,16 @@ mymain(void)
     DO_TEST_NOCAPS("memory-hotplug");
     DO_TEST("memory-hotplug", QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA);
     DO_TEST("memory-hotplug-dimm", QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA,
-            QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST_CAPS_LATEST("memory-hotplug-dimm-addr");
     DO_TEST("memory-hotplug-ppc64-nonuma", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST_FULL("memory-hotplug-ppc64-nonuma-abi-update", "",
                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                  ARG_QEMU_CAPS,
                  QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM,
                  QEMU_CAPS_NUMA, QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                 QEMU_CAPS_OBJECT_MEMORY_RAM,
                  QEMU_CAPS_OBJECT_MEMORY_FILE,
                  QEMU_CAPS_LAST,
                  ARG_END);

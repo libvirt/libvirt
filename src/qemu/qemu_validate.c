@@ -986,17 +986,6 @@ qemuValidateDomainDefNuma(const virDomainDef *def,
     const long system_page_size = virGetSystemPageSizeKB();
     size_t ncells = virDomainNumaGetNodeCount(def->numa);
     size_t i;
-    bool hasMemoryCap = virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
-                        virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE) ||
-                        virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD);
-    bool needBacking = false;
-
-    if (virDomainNumatuneHasPerNodeBinding(def->numa) && !hasMemoryCap) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Per-node memory binding is not supported "
-                         "with this QEMU"));
-        return -1;
-    }
 
     if (def->mem.nhugepages &&
         def->mem.hugepages[0].size != system_page_size &&
@@ -1009,14 +998,6 @@ qemuValidateDomainDefNuma(const virDomainDef *def,
 
     for (i = 0; i < ncells; i++) {
         virBitmap *cpumask = virDomainNumaGetNodeCpumask(def->numa, i);
-
-        if (!hasMemoryCap &&
-            virDomainNumaGetNodeMemoryAccessMode(def->numa, i)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Shared memory mapping is not supported "
-                             "with this QEMU"));
-            return -1;
-        }
 
         if (cpumask) {
             g_autofree char * cpumaskStr = NULL;
@@ -1033,27 +1014,12 @@ qemuValidateDomainDefNuma(const virDomainDef *def,
         }
     }
 
-    if (!virQEMUCapsGetMachineNumaMemSupported(qemuCaps,
-                                               def->virtType,
-                                               def->os.machine)) {
-        needBacking = true;
-    }
-
     if (virDomainNumaHasHMAT(def->numa)) {
-        needBacking = true;
-
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA_HMAT)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("HMAT is not supported with this QEMU"));
             return -1;
         }
-    }
-
-    if (needBacking && !hasMemoryCap) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("NUMA without specified memory backing is not "
-                         "supported with this QEMU binary"));
-        return -1;
     }
 
     return 0;

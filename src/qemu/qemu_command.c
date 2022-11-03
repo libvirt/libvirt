@@ -3478,12 +3478,6 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
                            _("this qemu doesn't support the "
                              "memory-backend-file object"));
             return -1;
-        } else if (STREQ(backendType, "memory-backend-ram") &&
-                   !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this qemu doesn't support the "
-                             "memory-backend-ram object"));
-            return -1;
         } else if (STREQ(backendType, "memory-backend-memfd") &&
                    !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -7223,6 +7217,7 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
     int ret = -1;
     size_t ncells = virDomainNumaGetNodeCount(def->numa);
     ssize_t masterInitiator = -1;
+    int rc;
 
     if (!virDomainNumatuneNodesetIsAvailable(def->numa, priv->autoNodeset))
         goto cleanup;
@@ -7239,21 +7234,13 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
 
     nodeBackends = g_new0(virJSONValue *, ncells);
 
-    /* using of -numa memdev= cannot be combined with -numa mem=, thus we
-     * need to check which approach to use */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE) ||
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD)) {
-        int rc;
+    for (i = 0; i < ncells; i++) {
+        if ((rc = qemuBuildMemoryCellBackendProps(def, cfg, i, priv,
+                                                  &nodeBackends[i])) < 0)
+            goto cleanup;
 
-        for (i = 0; i < ncells; i++) {
-            if ((rc = qemuBuildMemoryCellBackendProps(def, cfg, i, priv,
-                                                      &nodeBackends[i])) < 0)
-                goto cleanup;
-
-            if (rc == 0)
-                needBackend = true;
-        }
+        if (rc == 0)
+            needBackend = true;
     }
 
     if (!needBackend &&
