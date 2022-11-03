@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-10-25 07:42+0000\n"
-"PO-Revision-Date: 2022-10-26 23:20+0000\n"
+"PO-Revision-Date: 2022-11-03 04:19+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -4976,7 +4976,7 @@ msgid "Create a vol."
 msgstr "볼륨을 생성합니다."
 
 msgid "Created"
-msgstr "생성됨"
+msgstr "생성일"
 
 #, c-format
 msgid "Created bridge %s with attached device %s\n"
@@ -6357,7 +6357,7 @@ msgid "Fail to create socket for incoming migration"
 msgstr "들어오는 이전을 위한 소켓 생성에 실패"
 
 msgid "Failed"
-msgstr "실패"
+msgstr "실패함"
 
 msgid "Failed disable mount propagation out of the root filesystem"
 msgstr "루트 파일 시스템에서 마운트 전파를 비활성화하지 못했습니다"
@@ -8488,7 +8488,7 @@ msgid "Failed! Volume not removed."
 msgstr "실패하였습니다! 볼륨은 제거되었습니다."
 
 msgid "Failed."
-msgstr "실패."
+msgstr "실패함."
 
 #, c-format
 msgid "Failure action %s is not supported by sanlock"
@@ -20683,13 +20683,13 @@ msgid "build the pool as normal"
 msgstr "평소와 같이 수영장을 구축"
 
 msgid "building"
-msgstr "만드는중"
+msgstr "만드는 중"
 
 msgid "bus must be 0 for sata controller"
-msgstr "버스는 sata 컨트롤러에 대해 0이어야 합니다"
+msgstr "버스는 sata 제어기를 위해 0이어야 합니다"
 
 msgid "bypass cache unsupported by this system"
-msgstr "이 시스템에서 지원하지 않는 캐시 우회"
+msgstr "이 시스템에서 지원하지 않는 캐쉬 우회"
 
 msgid "bytes"
 msgstr "바이트"
@@ -33135,7 +33135,7 @@ msgid "readonly sata disks are not supported"
 msgstr "읽기 전용 sata 디스크는 지원되지 않습니다"
 
 msgid "ready"
-msgstr "준비됨"
+msgstr "준비"
 
 msgid "reattach node device to its device driver"
 msgstr "장치 드라이버에 노드 장치를 재부착"
