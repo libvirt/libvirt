@@ -663,6 +663,23 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
         }
     }
 
+    switch ((virDomainClockOffsetType) def->clock.offset) {
+    case VIR_DOMAIN_CLOCK_OFFSET_ABSOLUTE:
+        /* maximum timestamp glib can convert is 9999-12-31T23:59:59 */
+        if (def->clock.data.starttime > 253402300799) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("The maximum 'start' value for <clock offset='absolute'> is 253402300799"));
+            return -1;
+        }
+
+    case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+    case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+    case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
+    case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
+    case VIR_DOMAIN_CLOCK_OFFSET_LAST:
+        break;
+    }
+
     return 0;
 }
 

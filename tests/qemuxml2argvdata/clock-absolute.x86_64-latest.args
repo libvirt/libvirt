@@ -23,7 +23,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -nodefaults \
 -chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
--rtc base=1970-01-01T00:20:34 \
+-rtc base=9999-12-31T23:59:59 \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \

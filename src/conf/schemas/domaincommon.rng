@@ -1312,7 +1312,7 @@
               <value>absolute</value>
             </attribute>
             <attribute name="start">
-              <ref name="unsignedInt"/>
+              <ref name="unsignedLong"/>
             </attribute>
           </group>
         </choice>

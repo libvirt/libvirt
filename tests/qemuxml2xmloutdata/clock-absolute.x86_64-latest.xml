@@ -11,7 +11,7 @@
   <cpu mode='custom' match='exact' check='none'>
     <model fallback='forbid'>qemu64</model>
   </cpu>
-  <clock offset='absolute' start='1234'/>
+  <clock offset='absolute' start='253402300799'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
