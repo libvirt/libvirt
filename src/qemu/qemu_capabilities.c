@@ -300,7 +300,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "msg-timestamp", /* X_QEMU_CAPS_MSG_TIMESTAMP */
               "active-commit", /* X_QEMU_CAPS_ACTIVE_COMMIT */
               "change-backing-file", /* X_QEMU_CAPS_CHANGE_BACKING_FILE */
-              "memory-backend-ram", /* QEMU_CAPS_OBJECT_MEMORY_RAM */
+              "memory-backend-ram", /* X_QEMU_CAPS_OBJECT_MEMORY_RAM */
               "numa", /* QEMU_CAPS_NUMA */
 
               /* 170 */
