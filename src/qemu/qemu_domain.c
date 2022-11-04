@@ -103,9 +103,8 @@ qemuJobFreePrivate(void *opaque)
         return;
 
     qemuMigrationParamsFree(priv->migParams);
-    if (priv->migTempBitmaps)
-        g_slist_free_full(priv->migTempBitmaps,
-                          (GDestroyNotify) qemuDomainJobPrivateMigrateTempBitmapFree);
+    g_slist_free_full(priv->migTempBitmaps,
+                      (GDestroyNotify) qemuDomainJobPrivateMigrateTempBitmapFree);
     g_free(priv);
 }
 
@@ -1733,8 +1732,7 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
 
     priv->dbusDaemonRunning = false;
 
-    if (priv->dbusVMStateIds)
-        g_slist_free_full(g_steal_pointer(&priv->dbusVMStateIds), g_free);
+    g_slist_free_full(g_steal_pointer(&priv->dbusVMStateIds), g_free);
 
     priv->dbusVMState = false;
 

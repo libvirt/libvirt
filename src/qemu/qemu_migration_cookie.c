@@ -139,9 +139,8 @@ qemuMigrationBlockDirtyBitmapsDiskFree(qemuMigrationBlockDirtyBitmapsDisk *dsk)
         return;
 
     g_free(dsk->target);
-    if (dsk->bitmaps)
-        g_slist_free_full(dsk->bitmaps,
-                          (GDestroyNotify) qemuMigrationBlockDirtyBitmapsDiskBitmapFree);
+    g_slist_free_full(dsk->bitmaps,
+                      (GDestroyNotify) qemuMigrationBlockDirtyBitmapsDiskBitmapFree);
     g_free(dsk);
 }
 
@@ -168,9 +167,8 @@ qemuMigrationCookieFree(qemuMigrationCookie *mig)
     g_clear_pointer(&mig->jobData, virDomainJobDataFree);
     virCPUDefFree(mig->cpu);
     qemuMigrationCookieCapsFree(mig->caps);
-    if (mig->blockDirtyBitmaps)
-        g_slist_free_full(mig->blockDirtyBitmaps,
-                          (GDestroyNotify) qemuMigrationBlockDirtyBitmapsDiskFree);
+    g_slist_free_full(mig->blockDirtyBitmaps,
+                      (GDestroyNotify) qemuMigrationBlockDirtyBitmapsDiskFree);
     g_free(mig);
 }
 
