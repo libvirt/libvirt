@@ -123,6 +123,8 @@ int qemuProcessPrepareHost(virQEMUDriver *driver,
                            virDomainObj *vm,
                            unsigned int flags);
 
+int qemuProcessDeleteThreadContext(virDomainObj *vm);
+
 int qemuProcessLaunch(virConnectPtr conn,
                       virQEMUDriver *driver,
                       virDomainObj *vm,

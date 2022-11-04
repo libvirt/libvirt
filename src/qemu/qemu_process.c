@@ -7500,6 +7500,50 @@ qemuProcessSetupLifecycleActions(virDomainObj *vm,
 }
 
 
+int
+qemuProcessDeleteThreadContext(virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    GSList *next = priv->threadContextAliases;
+    int ret = -1;
+
+    if (!next)
+        return 0;
+
+    for (; next; next = next->next) {
+        if (qemuMonitorDelObject(priv->mon, next->data, true) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    g_slist_free_full(g_steal_pointer(&priv->threadContextAliases), g_free);
+    return ret;
+}
+
+
+static int
+qemuProcessDeleteThreadContextHelper(virDomainObj *vm,
+                                     virDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    int ret = -1;
+
+    if (!priv->threadContextAliases)
+        return 0;
+
+    VIR_DEBUG("Deleting thread context objects");
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
+        return -1;
+
+    ret = qemuProcessDeleteThreadContext(vm);
+
+    qemuDomainObjExitMonitor(vm);
+
+    return ret;
+}
+
+
 /**
  * qemuProcessLaunch:
  *
@@ -7858,6 +7902,9 @@ qemuProcessLaunch(virConnectPtr conn,
 
     VIR_DEBUG("Setting handling of lifecycle actions");
     if (qemuProcessSetupLifecycleActions(vm, asyncJob) < 0)
+        goto cleanup;
+
+    if (qemuProcessDeleteThreadContextHelper(vm, asyncJob) < 0)
         goto cleanup;
 
     ret = 0;

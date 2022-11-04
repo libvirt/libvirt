@@ -251,6 +251,8 @@ struct _qemuDomainObjPrivate {
      * briefly when starting a guest. Don't save/parse into XML. */
     pid_t schedCoreChildPID;
     pid_t schedCoreChildFD;
+
+    GSList *threadContextAliases; /* List of IDs of thread-context objects */
 };
 
 #define QEMU_DOMAIN_PRIVATE(vm) \

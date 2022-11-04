@@ -3613,6 +3613,7 @@ qemuBuildThreadContextProps(virJSONValue **tcProps,
     g_autoptr(virJSONValue) nodemaskCopy = NULL;
     g_autofree char *tcAlias = NULL;
     const char *memalias = NULL;
+    bool prealloc = false;
 
     *tcProps = NULL;
 
@@ -3644,6 +3645,12 @@ qemuBuildThreadContextProps(virJSONValue **tcProps,
                               "s:prealloc-context", tcAlias,
                               NULL) < 0)
         return -1;
+
+    if (virJSONValueObjectGetBoolean(*memProps, "prealloc", &prealloc) >= 0 &&
+        prealloc) {
+        priv->threadContextAliases = g_slist_prepend(priv->threadContextAliases,
+                                                     g_steal_pointer(&tcAlias));
+    }
 
     *tcProps = g_steal_pointer(&props);
     return 0;
