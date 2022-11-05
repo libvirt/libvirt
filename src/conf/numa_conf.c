@@ -1765,7 +1765,7 @@ virNumaCacheFormat(virBuffer *buf,
         }
 
         virBufferAsprintf(&childBuf,
-                          "<size value='%u' unit='KiB'/>\n",
+                          "<size value='%llu' unit='KiB'/>\n",
                           cache->size);
 
         if (cache->line) {

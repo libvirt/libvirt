@@ -1549,13 +1549,35 @@ virCapabilitiesGetNUMAPagesInfo(int node,
 
 
 static int
-virCapabilitiesGetNodeCacheReadFile(const char *prefix,
-                                    const char *dir,
-                                    const char *file,
-                                    unsigned int *value)
+virCapabilitiesGetNodeCacheReadFileUint(const char *prefix,
+                                        const char *dir,
+                                        const char *file,
+                                        unsigned int *value)
 {
     g_autofree char *path = g_build_filename(prefix, dir, file, NULL);
     int rv = virFileReadValueUint(value, "%s", path);
+
+    if (rv < 0) {
+        if (rv == -2) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("File '%s' does not exist"),
+                           path);
+        }
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virCapabilitiesGetNodeCacheReadFileUllong(const char *prefix,
+                                          const char *dir,
+                                          const char *file,
+                                          unsigned long long *value)
+{
+    g_autofree char *path = g_build_filename(prefix, dir, file, NULL);
+    int rv = virFileReadValueUllong(value, "%s", path);
 
     if (rv < 0) {
         if (rv == -2) {
@@ -1612,18 +1634,18 @@ virCapabilitiesGetNodeCache(int node,
             return -1;
         }
 
-        if (virCapabilitiesGetNodeCacheReadFile(path, entry->d_name,
-                                                "size", &cache.size) < 0)
+        if (virCapabilitiesGetNodeCacheReadFileUllong(path, entry->d_name,
+                                                      "size", &cache.size) < 0)
             return -1;
 
         cache.size >>= 10; /* read in bytes but stored in kibibytes */
 
-        if (virCapabilitiesGetNodeCacheReadFile(path, entry->d_name,
-                                                "line_size", &cache.line) < 0)
+        if (virCapabilitiesGetNodeCacheReadFileUint(path, entry->d_name,
+                                                    "line_size", &cache.line) < 0)
             return -1;
 
-        if (virCapabilitiesGetNodeCacheReadFile(path, entry->d_name,
-                                                "indexing", &indexing) < 0)
+        if (virCapabilitiesGetNodeCacheReadFileUint(path, entry->d_name,
+                                                    "indexing", &indexing) < 0)
             return -1;
 
         /* see enum cache_indexing in kernel */
@@ -1638,8 +1660,8 @@ virCapabilitiesGetNodeCache(int node,
                 return -1;
         }
 
-        if (virCapabilitiesGetNodeCacheReadFile(path, entry->d_name,
-                                                "write_policy", &write_policy) < 0)
+        if (virCapabilitiesGetNodeCacheReadFileUint(path, entry->d_name,
+                                                    "write_policy", &write_policy) < 0)
             return -1;
 
         /* see enum cache_write_policy in kernel */
@@ -1793,26 +1815,26 @@ virCapabilitiesHostNUMAInitInterconnectsNode(GArray *interconnects,
     if (!virFileExists(path))
         return 0;
 
-    if (virCapabilitiesGetNodeCacheReadFile(path, "initiators",
-                                            "read_bandwidth",
-                                            &read_bandwidth) < 0)
+    if (virCapabilitiesGetNodeCacheReadFileUint(path, "initiators",
+                                                "read_bandwidth",
+                                                &read_bandwidth) < 0)
         return -1;
-    if (virCapabilitiesGetNodeCacheReadFile(path, "initiators",
-                                            "write_bandwidth",
-                                            &write_bandwidth) < 0)
+    if (virCapabilitiesGetNodeCacheReadFileUint(path, "initiators",
+                                                "write_bandwidth",
+                                                &write_bandwidth) < 0)
         return -1;
 
     /* Bandwidths are read in MiB but stored in KiB */
     read_bandwidth <<= 10;
     write_bandwidth <<= 10;
 
-    if (virCapabilitiesGetNodeCacheReadFile(path, "initiators",
-                                            "read_latency",
-                                            &read_latency) < 0)
+    if (virCapabilitiesGetNodeCacheReadFileUint(path, "initiators",
+                                                "read_latency",
+                                                &read_latency) < 0)
         return -1;
-    if (virCapabilitiesGetNodeCacheReadFile(path, "initiators",
-                                            "write_latency",
-                                            &write_latency) < 0)
+    if (virCapabilitiesGetNodeCacheReadFileUint(path, "initiators",
+                                                "write_latency",
+                                                &write_latency) < 0)
         return -1;
 
     initPath = g_strdup_printf("%s/initiators", path);
