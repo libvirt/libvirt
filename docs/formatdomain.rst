@@ -6533,9 +6533,9 @@ with the ``isa-serial`` target type); ``usb-serial`` (usable with the
 target type); ``spapr-vty`` (usable with the ``spapr-vio-serial`` target type);
 ``pl011`` and, :since:`since 4.7.0` , ``16550a`` (usable with the
 ``system-serial`` target type); ``sclpconsole`` and ``sclplmconsole`` (usable
-with the ``sclp-serial`` target type). ``isa-debugcon`` (usable with the
-``isa-debug`` target type); provides a virtual console for receiving debug
-messages from the firmware on x86 platforms. :since:`Since: 8.1.0`.
+with the ``sclp-serial`` target type). :since:`Since: 8.1.0`, ``isa-debugcon``
+(usable with the ``isa-debug`` target type); provides a virtual console for
+receiving debug messages from the firmware on x86 platforms.
 Providing a target model is usually unnecessary: libvirt will automatically
 pick one that's suitable for the chosen target type, and overriding that
 value is generally not recommended.
