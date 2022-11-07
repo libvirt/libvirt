@@ -214,8 +214,7 @@ qemuConnectAgent(virQEMUDriver *driver, virDomainObj *vm)
     if (priv->agent)
         return 0;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VSERPORT_CHANGE) &&
-        config->state != VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED) {
+    if (config->state != VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED) {
         VIR_DEBUG("Deferring connecting to guest agent");
         return 0;
     }
@@ -230,7 +229,7 @@ qemuConnectAgent(virQEMUDriver *driver, virDomainObj *vm)
                           config->source,
                           virEventThreadGetContext(priv->eventThread),
                           &agentCallbacks,
-                          virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VSERPORT_CHANGE));
+                          true);
 
     if (!virDomainObjIsActive(vm)) {
         qemuAgentClose(agent);
