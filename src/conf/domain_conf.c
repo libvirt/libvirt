@@ -12910,8 +12910,6 @@ virDomainVideoDefParseXML(virDomainXMLOption *xmlopt,
                            _("unknown video model '%s'"), type);
             return NULL;
         }
-    } else {
-        def->type = VIR_DOMAIN_VIDEO_TYPE_DEFAULT;
     }
 
     if ((ram = virXPathString("string(./model/@ram)", ctxt))) {
@@ -21833,7 +21831,6 @@ virDomainDefAddImplicitVideo(virDomainDef *def, virDomainXMLOption *xmlopt)
 
     if (!(video = virDomainVideoDefNew(xmlopt)))
         return -1;
-    video->type = VIR_DOMAIN_VIDEO_TYPE_DEFAULT;
     VIR_APPEND_ELEMENT(def->videos, def->nvideos, video);
 
     return 0;
