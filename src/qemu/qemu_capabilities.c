@@ -391,7 +391,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "smm", /* X_QEMU_CAPS_MACHINE_SMM_OPT */
               "virtio-pci-disable-legacy", /* X_QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY */
               "query-hotpluggable-cpus", /* QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS */
-              "virtio-net.rx_queue_size", /* QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE */
+              "virtio-net.rx_queue_size", /* X_QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE */
               "machine-iommu", /* X_QEMU_CAPS_MACHINE_IOMMU */
 
               /* 235 */
