@@ -5227,13 +5227,6 @@ virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps)
 static void
 virQEMUCapsInitProcessCaps(virQEMUCaps *qemuCaps)
 {
-    /* versions prior to the introduction of 'query-display-options' had SDL
-     * mostly compiled in */
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_DISPLAY_OPTIONS)) {
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL);
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_EGL_HEADLESS);
-    }
-
     if (ARCH_IS_X86(qemuCaps->arch) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION)) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_CACHE);
