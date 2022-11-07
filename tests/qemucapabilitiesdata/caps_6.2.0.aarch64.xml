@@ -80,7 +80,6 @@
   <flag name='ivshmem-doorbell'/>
   <flag name='vhost-scsi'/>
   <flag name='query-cpu-model-expansion'/>
-  <flag name='virtio-net.host_mtu'/>
   <flag name='spice-rendernode'/>
   <flag name='nvdimm'/>
   <flag name='pcie-root-port'/>

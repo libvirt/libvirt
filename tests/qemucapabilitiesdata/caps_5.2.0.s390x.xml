@@ -37,7 +37,6 @@
   <flag name='query-hotpluggable-cpus'/>
   <flag name='vhost-scsi'/>
   <flag name='query-cpu-model-expansion'/>
-  <flag name='virtio-net.host_mtu'/>
   <flag name='query-cpu-definitions'/>
   <flag name='loadparm'/>
   <flag name='chardev-reconnect'/>

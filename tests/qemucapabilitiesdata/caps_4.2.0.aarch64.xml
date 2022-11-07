@@ -72,7 +72,6 @@
   <flag name='ivshmem-doorbell'/>
   <flag name='vhost-scsi'/>
   <flag name='query-cpu-model-expansion'/>
-  <flag name='virtio-net.host_mtu'/>
   <flag name='pcie-root-port'/>
   <flag name='query-cpu-definitions'/>
   <flag name='qemu-xhci'/>
