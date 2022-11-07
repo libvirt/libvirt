@@ -458,7 +458,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "machine.pseries.max-cpu-compat", /* X_QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT */
 
               /* 280 */
-              "dump-completed", /* QEMU_CAPS_DUMP_COMPLETED */
+              "dump-completed", /* X_QEMU_CAPS_DUMP_COMPLETED */
               "virtio-gpu-ccw", /* QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW */
               "virtio-keyboard-ccw", /* QEMU_CAPS_DEVICE_VIRTIO_KEYBOARD_CCW */
               "virtio-mouse-ccw", /* QEMU_CAPS_DEVICE_VIRTIO_MOUSE_CCW */

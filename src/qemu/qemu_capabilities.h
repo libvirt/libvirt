@@ -437,7 +437,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT, /* -machine pseries,max-cpu-compat= */
 
     /* 280 */
-    QEMU_CAPS_DUMP_COMPLETED, /* DUMP_COMPLETED event */
+    X_QEMU_CAPS_DUMP_COMPLETED, /* DUMP_COMPLETED event */
     QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW, /* -device virtio-gpu-ccw */
     QEMU_CAPS_DEVICE_VIRTIO_KEYBOARD_CCW, /* -device virtio-keyboard-ccw */
     QEMU_CAPS_DEVICE_VIRTIO_MOUSE_CCW, /* -device virtio-mouse-ccw */
