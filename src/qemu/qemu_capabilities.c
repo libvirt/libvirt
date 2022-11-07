@@ -524,7 +524,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "scsi-disk.device_id", /* X_QEMU_CAPS_SCSI_DISK_DEVICE_ID */
               "virtio-pci-non-transitional", /* QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL */
               "overcommit", /* X_QEMU_CAPS_OVERCOMMIT */
-              "query-current-machine", /* QEMU_CAPS_QUERY_CURRENT_MACHINE */
+              "query-current-machine", /* X_QEMU_CAPS_QUERY_CURRENT_MACHINE */
               "machine.virt.iommu", /* QEMU_CAPS_MACHINE_VIRT_IOMMU */
 
               /* 330 */
