@@ -56,14 +56,8 @@ testQemuAgentSSHKeys(const void *data)
                                "}}") < 0)
         return -1;
 
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        return -1;
-
     if (qemuMonitorTestAddItem(test, "guest-ssh-add-authorized-keys",
                                "{ \"return\" : {} }") < 0)
-        return -1;
-
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
         return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-ssh-remove-authorized-keys",
@@ -121,9 +115,6 @@ testQemuAgentFSFreeze(const void *data)
                                "{ \"return\" : 5 }") < 0)
         return -1;
 
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        return -1;
-
     if (qemuMonitorTestAddItem(test, "guest-fsfreeze-freeze",
                                "{ \"return\" : 7 }") < 0)
         return -1;
@@ -166,9 +157,6 @@ testQemuAgentFSThaw(const void *data)
 
     if (qemuMonitorTestAddItem(test, "guest-fsfreeze-thaw",
                                "{ \"return\" : 5 }") < 0)
-        return -1;
-
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
         return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-fsfreeze-thaw",
@@ -358,9 +346,6 @@ testQemuAgentGetFSInfo(const void *data)
         goto cleanup;
     }
 
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
-
     if (qemuMonitorTestAddItem(test, "guest-get-fsinfo",
                                "{\"error\":"
                                "    {\"class\":\"CommandDisabled\","
@@ -404,14 +389,8 @@ testQemuAgentSuspend(const void *data)
                                "{ \"return\" : {} }") < 0)
         return -1;
 
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        return -1;
-
     if (qemuMonitorTestAddItem(test, "guest-suspend-disk",
                                "{ \"return\" : {} }") < 0)
-        return -1;
-
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
         return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-suspend-hybrid",
@@ -505,9 +484,6 @@ testQemuAgentShutdown(const void *data)
                           QEMU_AGENT_SHUTDOWN_HALT) < 0)
         return -1;
 
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        return -1;
-
     priv.event = QEMU_AGENT_EVENT_SHUTDOWN;
     priv.mode = "powerdown";
 
@@ -518,9 +494,6 @@ testQemuAgentShutdown(const void *data)
 
     if (qemuAgentShutdown(qemuMonitorTestGetAgent(test),
                           QEMU_AGENT_SHUTDOWN_POWERDOWN) < 0)
-        return -1;
-
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
         return -1;
 
     priv.event = QEMU_AGENT_EVENT_RESET;
@@ -538,9 +511,6 @@ testQemuAgentShutdown(const void *data)
 
     /* check negative response, so that we can verify that the agent breaks
      * out from sleep */
-
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-shutdown",
                                "{\"error\":"
@@ -628,9 +598,6 @@ testQemuAgentCPU(const void *data)
     if (qemuAgentUpdateCPUInfo(2, cpuinfo, nvcpus) < 0)
         return -1;
 
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        return -1;
-
     if (qemuMonitorTestAddItemParams(test, "guest-set-vcpus",
                                      "{ \"return\" : 1 }",
                                      "vcpus", testQemuAgentCPUArguments1,
@@ -641,16 +608,10 @@ testQemuAgentCPU(const void *data)
         return -1;
 
     /* try to hotplug two, second one will fail */
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        return -1;
-
     if (qemuMonitorTestAddItemParams(test, "guest-set-vcpus",
                                      "{ \"return\" : 1 }",
                                      "vcpus", testQemuAgentCPUArguments2,
                                      NULL) < 0)
-        return -1;
-
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
         return -1;
 
     if (qemuMonitorTestAddItemParams(test, "guest-set-vcpus",
@@ -1171,9 +1132,6 @@ testQemuAgentUsers(const void *data)
         checkUserInfo(params, nparams, 1, "test2", NULL, 1561739229190) < 0)
         goto cleanup;
 
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
-
     if (qemuMonitorTestAddItem(test, "guest-get-users",
                                testQemuAgentUsersResponse2) < 0)
         goto cleanup;
@@ -1290,9 +1248,6 @@ testQemuAgentOSInfo(const void *data)
     nparams = 0;
     maxparams = 0;
 
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
-
     if (qemuMonitorTestAddItem(test, "guest-get-osinfo",
                                testQemuAgentOSInfoResponse2) < 0)
         goto cleanup;
@@ -1347,13 +1302,14 @@ testQemuAgentTimezone(const void *data)
     if (!test)
         return -1;
 
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
 #define VALIDATE_TIMEZONE(response_, expected_name_, expected_offset_) \
     do { \
         int maxparams_ = 0; \
         const char *name_ = NULL; \
         int offset_; \
-        if (qemuMonitorTestAddAgentSyncResponse(test) < 0) \
-            goto cleanup; \
         if (qemuMonitorTestAddItem(test, "guest-get-timezone", \
                                    response_) < 0) \
             goto cleanup; \
