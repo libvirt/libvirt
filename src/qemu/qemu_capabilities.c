@@ -634,7 +634,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 405 */
               "confidential-guest-support", /* QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT */
-              "query-display-options", /* QEMU_CAPS_QUERY_DISPLAY_OPTIONS */
+              "query-display-options", /* X_QEMU_CAPS_QUERY_DISPLAY_OPTIONS */
               "s390-pv-guest", /* QEMU_CAPS_S390_PV_GUEST */
               "set-action", /* QEMU_CAPS_SET_ACTION */
               "virtio-blk.queue-size", /* QEMU_CAPS_VIRTIO_BLK_QUEUE_SIZE */

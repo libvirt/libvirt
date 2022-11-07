@@ -613,7 +613,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 405 */
     QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT, /* -machine confidential-guest-support */
-    QEMU_CAPS_QUERY_DISPLAY_OPTIONS, /* 'query-display-options' qmp command present */
+    X_QEMU_CAPS_QUERY_DISPLAY_OPTIONS, /* 'query-display-options' qmp command present */
     QEMU_CAPS_S390_PV_GUEST, /* -object s390-pv-guest,... */
     QEMU_CAPS_SET_ACTION, /* 'set-action' QMP command */
     QEMU_CAPS_VIRTIO_BLK_QUEUE_SIZE, /* virtio-blk-*.queue-size */
