@@ -558,7 +558,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 350 */
               "i8042", /* QEMU_CAPS_DEVICE_I8042 */
               "rng-builtin", /* QEMU_CAPS_OBJECT_RNG_BUILTIN */
-              "virtio-net.failover", /* QEMU_CAPS_VIRTIO_NET_FAILOVER */
+              "virtio-net.failover", /* X_QEMU_CAPS_VIRTIO_NET_FAILOVER */
               "tpm-spapr", /* QEMU_CAPS_DEVICE_TPM_SPAPR */
               "cpu.kvm-no-adjvtime", /* QEMU_CAPS_CPU_KVM_NO_ADJVTIME */
 
