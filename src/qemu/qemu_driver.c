@@ -16323,7 +16323,7 @@ qemuDomainQueryWakeupSuspendSupport(virDomainObj *vm,
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CURRENT_MACHINE))
         return -1;
 
-    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+    if (virDomainObjBeginJob(vm, VIR_JOB_QUERY) < 0)
         return -1;
 
     if ((ret = virDomainObjCheckActive(vm)) < 0)
