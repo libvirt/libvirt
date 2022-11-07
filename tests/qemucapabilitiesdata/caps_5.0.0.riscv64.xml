@@ -83,7 +83,6 @@
   <flag name='vxhs'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='disk-share-rw'/>
-  <flag name='dump-completed'/>
   <flag name='pcie-pci-bridge'/>
   <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>

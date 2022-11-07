@@ -46,7 +46,6 @@
   <flag name='virtio-blk.num-queues'/>
   <flag name='sclplmconsole'/>
   <flag name='disk-share-rw'/>
-  <flag name='dump-completed'/>
   <flag name='virtio-gpu-ccw'/>
   <flag name='virtio-keyboard-ccw'/>
   <flag name='virtio-mouse-ccw'/>

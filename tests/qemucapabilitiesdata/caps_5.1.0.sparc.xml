@@ -23,7 +23,6 @@
   <flag name='chardev-reconnect'/>
   <flag name='disk-share-rw'/>
   <flag name='isa-serial'/>
-  <flag name='dump-completed'/>
   <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>
   <flag name='pr-manager-helper'/>

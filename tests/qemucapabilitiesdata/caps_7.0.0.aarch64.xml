@@ -93,7 +93,6 @@
   <flag name='vmcoreinfo'/>
   <flag name='disk-share-rw'/>
   <flag name='pl011'/>
-  <flag name='dump-completed'/>
   <flag name='pcie-pci-bridge'/>
   <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>

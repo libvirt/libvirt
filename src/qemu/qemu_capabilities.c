@@ -1231,11 +1231,6 @@ struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
     { "rdma-pin-all", QEMU_CAPS_MIGRATE_RDMA },
 };
 
-/* Use virQEMUCapsQMPSchemaQueries for querying parameters of events */
-struct virQEMUCapsStringFlags virQEMUCapsEvents[] = {
-    { "DUMP_COMPLETED", QEMU_CAPS_DUMP_COMPLETED },
-};
-
 struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "hda-duplex", QEMU_CAPS_HDA_DUPLEX },
     { "hda-micro", QEMU_CAPS_HDA_MICRO },
@@ -5286,14 +5281,6 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCaps *qemuCaps,
 
     for (i = 0; i < G_N_ELEMENTS(virQEMUCapsQMPSchemaQueries); i++) {
         entry = virQEMUCapsQMPSchemaQueries + i;
-
-        if (virQEMUQAPISchemaPathExists(entry->value, schema))
-            virQEMUCapsSet(qemuCaps, entry->flag);
-    }
-
-    /* probe also for basic event support */
-    for (i = 0; i < G_N_ELEMENTS(virQEMUCapsEvents); i++) {
-        entry = virQEMUCapsEvents + i;
 
         if (virQEMUQAPISchemaPathExists(entry->value, schema))
             virQEMUCapsSet(qemuCaps, entry->flag);
