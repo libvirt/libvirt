@@ -16307,11 +16307,7 @@ static int
 qemuDomainQueryWakeupSuspendSupport(virDomainObj *vm,
                                     bool *wakeupSupported)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     int ret = -1;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CURRENT_MACHINE))
-        return -1;
 
     if (virDomainObjBeginJob(vm, VIR_JOB_QUERY) < 0)
         return -1;
@@ -16389,19 +16385,13 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
     if (!qemuDomainAgentAvailable(vm, true))
         goto cleanup;
 
-    /*
-     * The case we want to handle here is when QEMU has the API (i.e.
-     * QEMU_CAPS_QUERY_CURRENT_MACHINE is set). Otherwise, do not interfere
-     * with the suspend process. This means that existing running domains,
-     * that don't know about this cap, will keep their old behavior of
-     * suspending 'in the dark'.
-     */
-    if (qemuDomainQueryWakeupSuspendSupport(vm, &wakeupSupported) == 0) {
-        if (!wakeupSupported) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("Domain does not have suspend support"));
-            goto cleanup;
-        }
+    if (qemuDomainQueryWakeupSuspendSupport(vm, &wakeupSupported) < 0)
+        goto cleanup;
+
+    if (!wakeupSupported) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("Domain does not have suspend support"));
+        goto cleanup;
     }
 
     if (vm->def->pm.s3 || vm->def->pm.s4) {
