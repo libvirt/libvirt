@@ -90,7 +90,6 @@ struct _qemuAgent {
     GSource *watch;
 
     bool running;
-    bool singleSync;
     bool inSync;
 
     virDomainObj *vm;
@@ -587,8 +586,7 @@ qemuAgent *
 qemuAgentOpen(virDomainObj *vm,
               const virDomainChrSourceDef *config,
               GMainContext *context,
-              qemuAgentCallbacks *cb,
-              bool singleSync)
+              qemuAgentCallbacks *cb)
 {
     qemuAgent *agent;
     g_autoptr(GError) gerr = NULL;
@@ -615,7 +613,6 @@ qemuAgentOpen(virDomainObj *vm,
     }
     agent->vm = virObjectRef(vm);
     agent->cb = cb;
-    agent->singleSync = singleSync;
 
     if (config->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -857,7 +854,7 @@ qemuAgentGuestSync(qemuAgent *agent)
     int timeout = VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT;
     int rc;
 
-    if (agent->singleSync && agent->inSync)
+    if (agent->inSync)
         return 0;
 
     /* if user specified a custom agent timeout that is lower than the
