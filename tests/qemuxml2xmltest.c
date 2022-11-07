@@ -468,7 +468,6 @@ mymain(void)
     DO_TEST_NOCAPS("net-eth-unmanaged-tap");
     DO_TEST_NOCAPS("net-virtio-network-portgroup");
     DO_TEST("net-virtio-rxtxqueuesize",
-            QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE,
             QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE);
     DO_TEST("net-virtio-teaming",
             QEMU_CAPS_VIRTIO_NET_FAILOVER,
