@@ -3033,28 +3033,21 @@ qemuDumpToFd(virQEMUDriver *driver,
              const char *dumpformat)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    bool detach = false;
-    int ret = -1;
-
-    detach = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DUMP_COMPLETED);
+    int rc = -1;
 
     if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, fd) < 0)
         return -1;
 
-    if (detach) {
-        qemuDomainJobSetStatsType(vm->job->current,
-                                  QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP);
-    } else {
-        g_clear_pointer(&vm->job->current, virDomainJobDataFree);
-    }
+    qemuDomainJobSetStatsType(vm->job->current,
+                              QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP);
 
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
     if (dumpformat) {
-        ret = qemuMonitorGetDumpGuestMemoryCapability(priv->mon, dumpformat);
+        rc = qemuMonitorGetDumpGuestMemoryCapability(priv->mon, dumpformat);
 
-        if (ret <= 0) {
+        if (rc <= 0) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("unsupported dumpformat '%s' "
                              "for this QEMU binary"),
@@ -3064,16 +3057,13 @@ qemuDumpToFd(virQEMUDriver *driver,
         }
     }
 
-    ret = qemuMonitorDumpToFd(priv->mon, fd, dumpformat, detach);
+    rc = qemuMonitorDumpToFd(priv->mon, fd, dumpformat, true);
 
     qemuDomainObjExitMonitor(vm);
-    if (ret < 0)
+    if (rc < 0)
         return -1;
 
-    if (detach)
-        ret = qemuDumpWaitForCompletion(vm);
-
-    return ret;
+    return qemuDumpWaitForCompletion(vm);
 }
 
 
