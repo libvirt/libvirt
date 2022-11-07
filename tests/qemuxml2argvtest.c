@@ -1468,11 +1468,8 @@ mymain(void)
     DO_TEST_NOCAPS("net-virtio-rxtxqueuesize");
     DO_TEST_PARSE_ERROR_NOCAPS("net-virtio-rxqueuesize-invalid-size");
     DO_TEST("net-virtio-teaming",
-            QEMU_CAPS_VIRTIO_NET_FAILOVER,
             QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST_PARSE_ERROR_NOCAPS("net-virtio-teaming");
     DO_TEST("net-virtio-teaming-hostdev",
-            QEMU_CAPS_VIRTIO_NET_FAILOVER,
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_NOCAPS("net-eth");
     DO_TEST_NOCAPS("net-eth-ifname");

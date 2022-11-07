@@ -1900,12 +1900,6 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
     }
 
     if (net->teaming) {
-        if (net->teaming->type != VIR_DOMAIN_NET_TEAMING_TYPE_NONE &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_FAILOVER)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtio-net failover (teaming) is not supported with this QEMU binary"));
-            return -1;
-        }
         if (net->teaming->type == VIR_DOMAIN_NET_TEAMING_TYPE_PERSISTENT
             && !virDomainNetIsVirtioModel(net)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
