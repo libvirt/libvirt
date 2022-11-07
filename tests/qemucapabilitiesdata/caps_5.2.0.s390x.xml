@@ -40,7 +40,6 @@
   <flag name='virtio-net.host_mtu'/>
   <flag name='query-cpu-definitions'/>
   <flag name='loadparm'/>
-  <flag name='virtio-net.tx_queue_size'/>
   <flag name='chardev-reconnect'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='sclplmconsole'/>

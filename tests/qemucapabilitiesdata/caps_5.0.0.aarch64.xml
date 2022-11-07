@@ -78,7 +78,6 @@
   <flag name='pcie-root-port'/>
   <flag name='query-cpu-definitions'/>
   <flag name='qemu-xhci'/>
-  <flag name='virtio-net.tx_queue_size'/>
   <flag name='chardev-reconnect'/>
   <flag name='vxhs'/>
   <flag name='virtio-blk.num-queues'/>

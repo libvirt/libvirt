@@ -105,7 +105,6 @@
   <flag name='intel-iommu.caching-mode'/>
   <flag name='intel-iommu.eim'/>
   <flag name='intel-iommu.device-iotlb'/>
-  <flag name='virtio-net.tx_queue_size'/>
   <flag name='chardev-reconnect'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='vmcoreinfo'/>

@@ -81,7 +81,6 @@
   <flag name='qemu-xhci'/>
   <flag name='spapr-pci-host-bridge'/>
   <flag name='spapr-pci-host-bridge.numa_node'/>
-  <flag name='virtio-net.tx_queue_size'/>
   <flag name='chardev-reconnect'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='spapr-vty'/>
