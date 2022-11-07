@@ -869,16 +869,20 @@ qemuAgentGuestSync(qemuAgent *agent)
         return -1;
 
     /* successfully sync'd */
-    if (rc == 1)
+    if (rc == 1) {
+        agent->inSync = true;
         return 0;
+    }
 
     /* send another sync */
     if ((rc = qemuAgentGuestSyncSend(agent, timeout, false)) < 0)
         return -1;
 
     /* successfully sync'd */
-    if (rc == 1)
+    if (rc == 1) {
+        agent->inSync = true;
         return 0;
+    }
 
     if (agent->running)
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
