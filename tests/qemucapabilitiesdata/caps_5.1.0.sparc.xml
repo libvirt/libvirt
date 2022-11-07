@@ -17,7 +17,6 @@
   <flag name='enable-fips'/>
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>
-  <flag name='vserport-change-event'/>
   <flag name='spice-gl'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='spice-rendernode'/>

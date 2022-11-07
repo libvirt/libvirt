@@ -65,7 +65,6 @@
   <flag name='virtio-mouse'/>
   <flag name='virtio-tablet'/>
   <flag name='virtio-input-host'/>
-  <flag name='vserport-change-event'/>
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
   <flag name='mptsas1068'/>
   <flag name='spice-gl'/>

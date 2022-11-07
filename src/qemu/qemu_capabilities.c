@@ -1233,7 +1233,6 @@ struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
 
 /* Use virQEMUCapsQMPSchemaQueries for querying parameters of events */
 struct virQEMUCapsStringFlags virQEMUCapsEvents[] = {
-    { "VSERPORT_CHANGE", QEMU_CAPS_VSERPORT_CHANGE },
     { "DUMP_COMPLETED", QEMU_CAPS_DUMP_COMPLETED },
 };
 
