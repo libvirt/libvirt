@@ -19,6 +19,7 @@ schema_files = [
   'nwfilterbinding.rng',
   'nwfilter_params.rng',
   'nwfilter.rng',
+  'privatedata.rng',
   'secret.rng',
   'storagecommon.rng',
   'storagepoolcaps.rng',
