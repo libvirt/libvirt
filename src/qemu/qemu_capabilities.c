@@ -2634,9 +2634,6 @@ virQEMUCapsProbeQMPObjectProperties(virQEMUCaps *qemuCaps,
 {
     size_t i;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QOM_LIST_PROPERTIES))
-        return 0;
-
     for (i = 0; i < G_N_ELEMENTS(virQEMUCapsObjectProps); i++) {
         virQEMUCapsObjectTypeProps *props = virQEMUCapsObjectProps + i;
         g_auto(GStrv) values = NULL;
@@ -2858,9 +2855,6 @@ virQEMUCapsProbeQMPMachineProps(virQEMUCaps *qemuCaps,
                                 qemuMonitor *mon)
 {
     size_t i;
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QOM_LIST_PROPERTIES))
-        return 0;
 
     for (i = 0; i < G_N_ELEMENTS(virQEMUCapsMachineProps); i++) {
         virQEMUCapsObjectTypeProps props = virQEMUCapsMachineProps[i];
