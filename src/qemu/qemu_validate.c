@@ -1889,14 +1889,6 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                            _("virtio rss hash report is not supported with this QEMU binary"));
             return -1;
         }
-
-        if (net->mtu &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_HOST_MTU)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("setting MTU is not supported with this "
-                             "QEMU binary"));
-            return -1;
-        }
     }
 
     if (net->mtu &&
