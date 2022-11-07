@@ -69,7 +69,6 @@
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
   <flag name='mptsas1068'/>
   <flag name='query-hotpluggable-cpus'/>
-  <flag name='virtio-net.rx_queue_size'/>
   <flag name='ivshmem-plain'/>
   <flag name='ivshmem-doorbell'/>
   <flag name='vhost-scsi'/>

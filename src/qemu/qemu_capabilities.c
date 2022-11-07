@@ -1424,7 +1424,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioNet[] = {
-    { "rx_queue_size", QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE, NULL },
     { "tx_queue_size", QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE, NULL },
     { "host_mtu", QEMU_CAPS_VIRTIO_NET_HOST_MTU, NULL },
     { "failover", QEMU_CAPS_VIRTIO_NET_FAILOVER, NULL },
