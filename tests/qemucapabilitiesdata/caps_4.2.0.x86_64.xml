@@ -162,7 +162,6 @@
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
   <flag name='rotation-rate'/>
   <flag name='input-linux'/>
-  <flag name='query-display-options'/>
   <flag name='virtio-blk.queue-size'/>
   <flag name='usb-host.guest-resets-all'/>
   <version>4002000</version>

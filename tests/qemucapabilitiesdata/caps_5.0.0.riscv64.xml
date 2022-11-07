@@ -123,7 +123,6 @@
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
   <flag name='rotation-rate'/>
   <flag name='input-linux'/>
-  <flag name='query-display-options'/>
   <flag name='virtio-blk.queue-size'/>
   <flag name='memory-backend-file.prealloc-threads'/>
   <flag name='virtio-iommu-pci'/>

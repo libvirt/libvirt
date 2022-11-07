@@ -98,7 +98,6 @@
   <flag name='acpi-index'/>
   <flag name='input-linux'/>
   <flag name='confidential-guest-support'/>
-  <flag name='query-display-options'/>
   <flag name='s390-pv-guest'/>
   <flag name='set-action'/>
   <flag name='virtio-blk.queue-size'/>
