@@ -437,7 +437,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "vnc-multi-servers", /* X_QEMU_CAPS_VNC_MULTI_SERVERS */
 
               /* 265 */
-              "virtio-net.tx_queue_size", /* QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE */
+              "virtio-net.tx_queue_size", /* X_QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE */
               "chardev-reconnect", /* QEMU_CAPS_CHARDEV_RECONNECT */
               "virtio-gpu.max_outputs", /* X_QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS */
               "vxhs", /* QEMU_CAPS_VXHS */
