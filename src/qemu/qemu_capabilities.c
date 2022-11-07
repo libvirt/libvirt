@@ -356,7 +356,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "chardev-file-append", /* X_QEMU_CAPS_CHARDEV_FILE_APPEND */
               "ich9-disable-s3", /* QEMU_CAPS_ICH9_DISABLE_S3 */
               "ich9-disable-s4", /* QEMU_CAPS_ICH9_DISABLE_S4 */
-              "vserport-change-event", /* QEMU_CAPS_VSERPORT_CHANGE */
+              "vserport-change-event", /* X_QEMU_CAPS_VSERPORT_CHANGE */
               "virtio-balloon-pci.deflate-on-oom", /* QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE */
 
               /* 210 */
