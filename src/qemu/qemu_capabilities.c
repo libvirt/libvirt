@@ -528,7 +528,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "machine.virt.iommu", /* QEMU_CAPS_MACHINE_VIRT_IOMMU */
 
               /* 330 */
-              "bitmap-merge", /* QEMU_CAPS_BITMAP_MERGE */
+              "bitmap-merge", /* X_QEMU_CAPS_BITMAP_MERGE */
               "nbd-bitmap", /* QEMU_CAPS_NBD_BITMAP */
               "x86-max-cpu", /* QEMU_CAPS_X86_MAX_CPU */
               "cpu-unavailable-features", /* QEMU_CAPS_CPU_UNAVAILABLE_FEATURES */
