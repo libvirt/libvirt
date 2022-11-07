@@ -16313,7 +16313,6 @@ qemuDomainProbeQMPCurrentMachine(virDomainObj *vm,
 }
 
 
-/* returns -1 on error, or if query is not supported, 0 if query was successful */
 static int
 qemuDomainQueryWakeupSuspendSupport(virDomainObj *vm,
                                     bool *wakeupSupported)
