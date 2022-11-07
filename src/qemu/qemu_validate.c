@@ -983,27 +983,6 @@ static int
 qemuValidateDomainDefNuma(const virDomainDef *def,
                           virQEMUCaps *qemuCaps)
 {
-    size_t ncells = virDomainNumaGetNodeCount(def->numa);
-    size_t i;
-
-    for (i = 0; i < ncells; i++) {
-        virBitmap *cpumask = virDomainNumaGetNodeCpumask(def->numa, i);
-
-        if (cpumask) {
-            g_autofree char * cpumaskStr = NULL;
-            if (!(cpumaskStr = virBitmapFormat(cpumask)))
-                return -1;
-
-            if (strchr(cpumaskStr, ',') &&
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("disjoint NUMA cpu ranges are not supported "
-                                 "with this QEMU"));
-                return -1;
-            }
-        }
-    }
-
     if (virDomainNumaHasHMAT(def->numa)) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA_HMAT)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

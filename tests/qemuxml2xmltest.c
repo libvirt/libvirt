@@ -924,14 +924,14 @@ mymain(void)
     DO_TEST_NOCAPS("cpu-numa2");
     DO_TEST_NOCAPS("cpu-numa-no-memory-element");
     DO_TEST_NOCAPS("cpu-numa-disordered");
-    DO_TEST("cpu-numa-disjoint", QEMU_CAPS_NUMA);
+    DO_TEST_NOCAPS("cpu-numa-disjoint");
     DO_TEST_NOCAPS("cpu-numa-memshared");
 
     DO_TEST_NOCAPS("numatune-auto-prefer");
-    DO_TEST("numatune-memnode", QEMU_CAPS_NUMA);
+    DO_TEST_NOCAPS("numatune-memnode");
     DO_TEST_NOCAPS("numatune-memnode-no-memory");
-    DO_TEST("numatune-distances", QEMU_CAPS_NUMA);
-    DO_TEST("numatune-no-vcpu", QEMU_CAPS_NUMA);
+    DO_TEST_NOCAPS("numatune-distances");
+    DO_TEST_NOCAPS("numatune-no-vcpu");
     DO_TEST("numatune-hmat", QEMU_CAPS_NUMA_HMAT);
     DO_TEST_CAPS_LATEST("numatune-memnode-restrictive-mode");
 
@@ -1023,13 +1023,13 @@ mymain(void)
     /* SVE aarch64 CPU features work on modern QEMU */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-features-sve", "aarch64");
 
-    DO_TEST("memory-hotplug-ppc64-nonuma", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA,
+    DO_TEST("memory-hotplug-ppc64-nonuma", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST_FULL("memory-hotplug-ppc64-nonuma-abi-update", "", WHEN_BOTH,
                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                  ARG_QEMU_CAPS,
                  QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM,
-                 QEMU_CAPS_NUMA, QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
+                 QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                  QEMU_CAPS_LAST, ARG_END);
     DO_TEST_NOCAPS("memory-hotplug");
     DO_TEST("memory-hotplug-dimm", QEMU_CAPS_DEVICE_PC_DIMM);

@@ -16,7 +16,7 @@
   <cpu>
     <topology sockets='1' dies='1' cores='24' threads='1'/>
     <numa>
-      <cell id='0' cpus='0-1' memory='14680064' unit='KiB'/>
+      <cell id='0' cpus='0-1,6-31' memory='14680064' unit='KiB'/>
       <cell id='1' cpus='2-3' memory='14680064' unit='KiB' memAccess='shared'/>
       <cell id='2' cpus='4-5' memory='14680064' unit='KiB' memAccess='private'/>
     </numa>

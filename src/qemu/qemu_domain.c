@@ -4531,16 +4531,12 @@ qemuDomainDefTsegPostParse(virDomainDef *def,
  * Returns: 0 on success, -1 on error
  */
 int
-qemuDomainDefNumaCPUsRectify(virDomainDef *def, virQEMUCaps *qemuCaps)
+qemuDomainDefNumaCPUsRectify(virDomainDef *def,
+                             virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     unsigned int vcpusMax, numacpus;
 
-    /* QEMU_CAPS_NUMA tells us if QEMU is able to handle disjointed
-     * NUMA CPU ranges. The filling process will create a disjointed
-     * setup in node0 most of the time. Do not proceed if QEMU
-     * can't handle it.*/
-    if (virDomainNumaGetNodeCount(def->numa) == 0 ||
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA))
+    if (virDomainNumaGetNodeCount(def->numa) == 0)
         return 0;
 
     vcpusMax = virDomainDefGetVcpusMax(def);
