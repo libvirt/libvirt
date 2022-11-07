@@ -1465,8 +1465,7 @@ mymain(void)
     DO_TEST_NOCAPS("net-virtio-disable-offloads");
     DO_TEST_NOCAPS("net-virtio-netdev");
     DO_TEST_CAPS_ARCH_LATEST("net-virtio-ccw", "s390x");
-    DO_TEST("net-virtio-rxtxqueuesize",
-            QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE);
+    DO_TEST_NOCAPS("net-virtio-rxtxqueuesize");
     DO_TEST_PARSE_ERROR_NOCAPS("net-virtio-rxqueuesize-invalid-size");
     DO_TEST("net-virtio-teaming",
             QEMU_CAPS_VIRTIO_NET_FAILOVER,

@@ -1874,12 +1874,6 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                                _("tx_queue_size has to be a power of two"));
                 return -1;
             }
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("virtio tx_queue_size option is not supported "
-                                 "with this QEMU binary"));
-                return -1;
-            }
         }
 
         if (net->driver.virtio.rss &&
