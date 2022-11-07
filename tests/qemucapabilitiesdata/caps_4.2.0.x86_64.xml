@@ -144,7 +144,6 @@
   <flag name='smp-dies'/>
   <flag name='i8042'/>
   <flag name='rng-builtin'/>
-  <flag name='virtio-net.failover'/>
   <flag name='vhost-user-fs'/>
   <flag name='fsdev.multidevs'/>
   <flag name='tcg'/>

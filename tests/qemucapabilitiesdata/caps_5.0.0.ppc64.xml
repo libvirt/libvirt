@@ -112,7 +112,6 @@
   <flag name='smp-dies'/>
   <flag name='i8042'/>
   <flag name='rng-builtin'/>
-  <flag name='virtio-net.failover'/>
   <flag name='tpm-spapr'/>
   <flag name='vhost-user-fs'/>
   <flag name='query-named-block-nodes.flat'/>

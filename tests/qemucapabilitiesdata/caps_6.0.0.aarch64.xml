@@ -110,7 +110,6 @@
   <flag name='drive-nvme'/>
   <flag name='smp-dies'/>
   <flag name='rng-builtin'/>
-  <flag name='virtio-net.failover'/>
   <flag name='cpu.kvm-no-adjvtime'/>
   <flag name='vhost-user-fs'/>
   <flag name='query-named-block-nodes.flat'/>
