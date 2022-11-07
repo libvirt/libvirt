@@ -406,7 +406,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "vhost-scsi", /* QEMU_CAPS_DEVICE_VHOST_SCSI */
               "drive-iotune-group", /* X_QEMU_CAPS_DRIVE_IOTUNE_GROUP */
               "query-cpu-model-expansion", /* QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION */
-              "virtio-net.host_mtu", /* QEMU_CAPS_VIRTIO_NET_HOST_MTU */
+              "virtio-net.host_mtu", /* X_QEMU_CAPS_VIRTIO_NET_HOST_MTU */
 
               /* 245 */
               "spice-rendernode", /* QEMU_CAPS_SPICE_RENDERNODE */
