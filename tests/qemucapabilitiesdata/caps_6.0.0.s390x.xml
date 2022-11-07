@@ -22,7 +22,6 @@
   <flag name='virtio-ccw'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
-  <flag name='numa'/>
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>
   <flag name='aes-key-wrap'/>

@@ -1219,7 +1219,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "block-export-add", QEMU_CAPS_BLOCK_EXPORT_ADD },
     { "query-display-options", QEMU_CAPS_QUERY_DISPLAY_OPTIONS },
     { "blockdev-reopen", QEMU_CAPS_BLOCKDEV_REOPEN },
-    { "set-numa-node", QEMU_CAPS_NUMA },
     { "set-action", QEMU_CAPS_SET_ACTION },
     { "query-dirty-rate", QEMU_CAPS_QUERY_DIRTY_RATE },
     { "sev-inject-launch-secret", QEMU_CAPS_SEV_INJECT_LAUNCH_SECRET },

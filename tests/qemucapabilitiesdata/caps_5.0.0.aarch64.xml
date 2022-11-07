@@ -46,7 +46,6 @@
   <flag name='ich9-intel-hda'/>
   <flag name='enable-fips'/>
   <flag name='usb-kbd'/>
-  <flag name='numa'/>
   <flag name='usb-audio'/>
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>

@@ -15,7 +15,6 @@
   <flag name='rng-random'/>
   <flag name='rng-egd'/>
   <flag name='enable-fips'/>
-  <flag name='numa'/>
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>
   <flag name='vserport-change-event'/>
