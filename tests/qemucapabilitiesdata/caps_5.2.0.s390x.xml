@@ -66,7 +66,6 @@
   <flag name='egl-headless.rendernode'/>
   <flag name='memory-backend-file.pmem'/>
   <flag name='virtio-pci-non-transitional'/>
-  <flag name='query-current-machine'/>
   <flag name='bitmap-merge'/>
   <flag name='nbd-bitmap'/>
   <flag name='migration-file-drop-cache'/>

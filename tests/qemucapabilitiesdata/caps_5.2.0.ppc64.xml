@@ -102,7 +102,6 @@
   <flag name='memory-backend-file.pmem'/>
   <flag name='nvdimm.unarmed'/>
   <flag name='virtio-pci-non-transitional'/>
-  <flag name='query-current-machine'/>
   <flag name='bitmap-merge'/>
   <flag name='nbd-bitmap'/>
   <flag name='bochs-display'/>

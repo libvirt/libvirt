@@ -33,7 +33,6 @@
   <flag name='iothread.poll-max-ns'/>
   <flag name='egl-headless.rendernode'/>
   <flag name='memory-backend-file.pmem'/>
-  <flag name='query-current-machine'/>
   <flag name='bitmap-merge'/>
   <flag name='nbd-bitmap'/>
   <flag name='migration-file-drop-cache'/>
