@@ -65,7 +65,6 @@
   <flag name='iothread.poll-max-ns'/>
   <flag name='egl-headless.rendernode'/>
   <flag name='virtio-pci-non-transitional'/>
-  <flag name='bitmap-merge'/>
   <flag name='nbd-bitmap'/>
   <flag name='migration-file-drop-cache'/>
   <flag name='dbus-vmstate'/>
