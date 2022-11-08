@@ -561,11 +561,38 @@ virXMLPropUInt(xmlNodePtr node,
                virXMLPropFlags flags,
                unsigned int *result)
 {
+    return virXMLPropUIntDefault(node, name, base, flags, result, 0);
+}
+
+
+/**
+ * virXMLPropUIntDefault:
+ * @node: XML dom node pointer
+ * @name: Name of the property (attribute) to get
+ * @base: Number base, see strtol
+ * @flags: Bitwise-OR of virXMLPropFlags
+ * @result: The returned value
+ * @defaultResult: Default value of @result in case the property is not found
+ *
+ * Convenience function to return value of an unsigned integer attribute.
+ *
+ * Returns 1 in case of success in which case @result is set,
+ *         or 0 if the attribute is not present,
+ *         or -1 and reports an error on failure.
+ */
+int
+virXMLPropUIntDefault(xmlNodePtr node,
+                      const char *name,
+                      int base,
+                      virXMLPropFlags flags,
+                      unsigned int *result,
+                      unsigned int defaultResult)
+{
     g_autofree char *tmp = NULL;
     int ret;
     unsigned int val;
 
-    *result = 0;
+    *result = defaultResult;
 
     if (!(tmp = virXMLPropString(node, name))) {
         if (!(flags & VIR_XML_PROP_REQUIRED))

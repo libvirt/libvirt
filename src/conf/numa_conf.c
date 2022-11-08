@@ -916,15 +916,10 @@ virDomainNumaDefParseXML(virDomainNuma *def,
     for (i = 0; i < n; i++) {
         VIR_XPATH_NODE_AUTORESTORE(ctxt)
         g_autofree char *tmp = NULL;
-        int rc;
         unsigned int cur_cell;
 
-        if ((rc = virXMLPropUInt(cell[i], "id", 10, VIR_XML_PROP_NONE,
-                                 &cur_cell)) < 0)
+        if (virXMLPropUIntDefault(cell[i], "id", 10, VIR_XML_PROP_NONE, &cur_cell, i) < 0)
             return -1;
-
-        if (rc == 0)
-            cur_cell = i;
 
         /* cells are in order of parsing or explicitly numbered */
         if (cur_cell >= n) {

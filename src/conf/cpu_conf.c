@@ -561,7 +561,6 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     }
 
     if ((topology = virXPathNode("./topology[1]", ctxt))) {
-        int rc;
 
         if (virXMLPropUInt(topology, "sockets", 10,
                            VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
@@ -569,12 +568,10 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
             return -1;
         }
 
-        if ((rc = virXMLPropUInt(topology, "dies", 10,
-                                 VIR_XML_PROP_NONZERO,
-                                 &def->dies)) < 0) {
+        if (virXMLPropUIntDefault(topology, "dies", 10,
+                                  VIR_XML_PROP_NONZERO,
+                                  &def->dies, 1) < 0) {
             return -1;
-        } else if (rc == 0) {
-            def->dies = 1;
         }
 
         if (virXMLPropUInt(topology, "cores", 10,

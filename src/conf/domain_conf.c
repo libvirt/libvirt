@@ -17085,7 +17085,6 @@ virDomainVcpuParse(virDomainDef *def,
     unsigned int vcpus;
     g_autofree char *tmp = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
-    int rc;
 
     vcpus = maxvcpus = 1;
 
@@ -17100,11 +17099,8 @@ virDomainVcpuParse(virDomainDef *def,
         }
         VIR_FREE(tmp);
 
-        if ((rc = virXMLPropUInt(vcpuNode, "current", 10, VIR_XML_PROP_NONE, &vcpus)) < 0) {
+        if (virXMLPropUIntDefault(vcpuNode, "current", 10, VIR_XML_PROP_NONE, &vcpus, maxvcpus) < 0)
             return -1;
-        } else if (rc == 0) {
-            vcpus = maxvcpus;
-        }
 
         if (virXMLPropEnumDefault(vcpuNode, "placement",
                                   virDomainCpuPlacementModeTypeFromString,
