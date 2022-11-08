@@ -451,7 +451,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "numa.dist", /* X_QEMU_CAPS_NUMA_DIST */
 
               /* 275 */
-              "disk-share-rw", /* QEMU_CAPS_DISK_SHARE_RW */
+              "disk-share-rw", /* X_QEMU_CAPS_DISK_SHARE_RW */
               "iscsi.password-secret", /* X_QEMU_CAPS_ISCSI_PASSWORD_SECRET */
               "isa-serial", /* QEMU_CAPS_DEVICE_ISA_SERIAL */
               "pl011", /* QEMU_CAPS_DEVICE_PL011 */

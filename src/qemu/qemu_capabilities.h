@@ -430,7 +430,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_NUMA_DIST, /* -numa dist */
 
     /* 275 */
-    QEMU_CAPS_DISK_SHARE_RW, /* share-rw=on for concurrent disk access */
+    X_QEMU_CAPS_DISK_SHARE_RW, /* share-rw=on for concurrent disk access */
     X_QEMU_CAPS_ISCSI_PASSWORD_SECRET, /* -drive file.driver=iscsi,...,password-secret= */
     QEMU_CAPS_DEVICE_ISA_SERIAL, /* -device isa-serial */
     QEMU_CAPS_DEVICE_PL011, /* -device pl011 (not user-instantiable) */
