@@ -469,7 +469,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "pcie-pci-bridge", /* QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE */
               "seccomp-blacklist", /* X_QEMU_CAPS_SECCOMP_BLACKLIST */
               "query-cpus-fast", /* X_QEMU_CAPS_QUERY_CPUS_FAST */
-              "disk-write-cache", /* QEMU_CAPS_DISK_WRITE_CACHE */
+              "disk-write-cache", /* X_QEMU_CAPS_DISK_WRITE_CACHE */
 
               /* 290 */
               "nbd-tls", /* QEMU_CAPS_NBD_TLS */
