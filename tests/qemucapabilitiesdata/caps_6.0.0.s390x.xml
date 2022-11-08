@@ -10,7 +10,6 @@
   <flag name='scsi-disk.channel'/>
   <flag name='scsi-block'/>
   <flag name='virtio-scsi-pci'/>
-  <flag name='blockio'/>
   <flag name='usb-redir.filter'/>
   <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>

@@ -24,7 +24,6 @@
   <flag name='nec-usb-xhci'/>
   <flag name='lsi'/>
   <flag name='virtio-scsi-pci'/>
-  <flag name='blockio'/>
   <flag name='usb-redir.filter'/>
   <flag name='ide-drive.wwn'/>
   <flag name='scsi-disk.wwn'/>
