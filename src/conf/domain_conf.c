@@ -26492,8 +26492,7 @@ virDomainDefFormatFeatures(virBuffer *buf,
 
                 virBufferAsprintf(&childBuf, "<%s state='%s'",
                                   virDomainHypervTypeToString(j),
-                                  virTristateSwitchTypeToString(
-                                      def->hyperv_features[j]));
+                                  virTristateSwitchTypeToString(def->hyperv_features[j]));
 
                 switch ((virDomainHyperv) j) {
                 case VIR_DOMAIN_HYPERV_RELAXED:
