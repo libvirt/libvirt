@@ -1415,7 +1415,6 @@ virQEMUCapsDevicePropsVirtioBlkSCSIDefault(virJSONValue *props,
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
     { "scsi", QEMU_CAPS_VIRTIO_BLK_SCSI, virQEMUCapsDevicePropsVirtioBlkSCSIDefault },
-    { "num-queues", QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES, NULL },
     { "queue-size", QEMU_CAPS_VIRTIO_BLK_QUEUE_SIZE, NULL },
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },

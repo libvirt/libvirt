@@ -75,7 +75,6 @@
   <flag name='pcie-root-port'/>
   <flag name='qemu-xhci'/>
   <flag name='chardev-reconnect'/>
-  <flag name='virtio-blk.num-queues'/>
   <flag name='disk-share-rw'/>
   <flag name='pcie-pci-bridge'/>
   <flag name='disk-write-cache'/>

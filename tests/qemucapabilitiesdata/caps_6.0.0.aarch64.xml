@@ -78,7 +78,6 @@
   <flag name='query-cpu-definitions'/>
   <flag name='qemu-xhci'/>
   <flag name='chardev-reconnect'/>
-  <flag name='virtio-blk.num-queues'/>
   <flag name='vmcoreinfo'/>
   <flag name='disk-share-rw'/>
   <flag name='pl011'/>

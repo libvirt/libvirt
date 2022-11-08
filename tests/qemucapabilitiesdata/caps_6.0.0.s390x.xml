@@ -39,7 +39,6 @@
   <flag name='query-cpu-definitions'/>
   <flag name='loadparm'/>
   <flag name='chardev-reconnect'/>
-  <flag name='virtio-blk.num-queues'/>
   <flag name='sclplmconsole'/>
   <flag name='disk-share-rw'/>
   <flag name='virtio-gpu-ccw'/>

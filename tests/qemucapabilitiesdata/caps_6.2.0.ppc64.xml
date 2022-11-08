@@ -74,7 +74,6 @@
   <flag name='spapr-pci-host-bridge'/>
   <flag name='spapr-pci-host-bridge.numa_node'/>
   <flag name='chardev-reconnect'/>
-  <flag name='virtio-blk.num-queues'/>
   <flag name='spapr-vty'/>
   <flag name='disk-share-rw'/>
   <flag name='isa-serial'/>

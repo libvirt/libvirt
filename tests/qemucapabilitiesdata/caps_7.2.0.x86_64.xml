@@ -102,7 +102,6 @@
   <flag name='intel-iommu.eim'/>
   <flag name='intel-iommu.device-iotlb'/>
   <flag name='chardev-reconnect'/>
-  <flag name='virtio-blk.num-queues'/>
   <flag name='vmcoreinfo'/>
   <flag name='disk-share-rw'/>
   <flag name='isa-serial'/>
