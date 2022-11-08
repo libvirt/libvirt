@@ -1871,8 +1871,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     if (qemuBuildDeviceAddressProps(props, def, &disk->info) < 0)
         return NULL;
 
-    if (disk->src->shared &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISK_SHARE_RW))
+    if (disk->src->shared)
         shareRW = VIR_TRISTATE_SWITCH_ON;
 
     if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
