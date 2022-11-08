@@ -1416,7 +1416,6 @@ virQEMUCapsDevicePropsVirtioBlkSCSIDefault(virJSONValue *props,
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
     { "scsi", QEMU_CAPS_VIRTIO_BLK_SCSI, virQEMUCapsDevicePropsVirtioBlkSCSIDefault },
     { "queue-size", QEMU_CAPS_VIRTIO_BLK_QUEUE_SIZE, NULL },
-    { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
     { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
 };
@@ -1450,14 +1449,12 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVfioPCI[] = {
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIDisk[] = {
     { "channel", QEMU_CAPS_SCSI_DISK_CHANNEL, NULL },
     { "wwn", QEMU_CAPS_SCSI_DISK_WWN, NULL },
-    { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
     { "rotation_rate", QEMU_CAPS_ROTATION_RATE, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIDEDrive[] = {
     { "wwn", QEMU_CAPS_IDE_DRIVE_WWN, NULL },
-    { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
 };
 
@@ -1473,7 +1470,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBRedir[] = {
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBStorage[] = {
     { "removable", QEMU_CAPS_USB_STORAGE_REMOVABLE, NULL },
-    { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
 };
 

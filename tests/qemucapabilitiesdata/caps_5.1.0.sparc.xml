@@ -21,7 +21,6 @@
   <flag name='query-hotpluggable-cpus'/>
   <flag name='spice-rendernode'/>
   <flag name='chardev-reconnect'/>
-  <flag name='disk-share-rw'/>
   <flag name='isa-serial'/>
   <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>

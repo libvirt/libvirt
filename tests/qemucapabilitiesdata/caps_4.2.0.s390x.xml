@@ -42,7 +42,6 @@
   <flag name='chardev-reconnect'/>
   <flag name='vxhs'/>
   <flag name='sclplmconsole'/>
-  <flag name='disk-share-rw'/>
   <flag name='virtio-gpu-ccw'/>
   <flag name='virtio-keyboard-ccw'/>
   <flag name='virtio-mouse-ccw'/>

@@ -79,7 +79,6 @@
   <flag name='qemu-xhci'/>
   <flag name='chardev-reconnect'/>
   <flag name='vmcoreinfo'/>
-  <flag name='disk-share-rw'/>
   <flag name='pl011'/>
   <flag name='pcie-pci-bridge'/>
   <flag name='disk-write-cache'/>

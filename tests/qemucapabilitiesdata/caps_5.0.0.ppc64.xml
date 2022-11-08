@@ -77,7 +77,6 @@
   <flag name='chardev-reconnect'/>
   <flag name='vxhs'/>
   <flag name='spapr-vty'/>
-  <flag name='disk-share-rw'/>
   <flag name='isa-serial'/>
   <flag name='pcie-pci-bridge'/>
   <flag name='disk-write-cache'/>

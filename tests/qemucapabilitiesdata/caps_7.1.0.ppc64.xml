@@ -80,7 +80,6 @@
   <flag name='spapr-pci-host-bridge.numa_node'/>
   <flag name='chardev-reconnect'/>
   <flag name='spapr-vty'/>
-  <flag name='disk-share-rw'/>
   <flag name='isa-serial'/>
   <flag name='pcie-pci-bridge'/>
   <flag name='disk-write-cache'/>
