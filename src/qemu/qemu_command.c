@@ -1751,8 +1751,8 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     g_autofree char *chardev = NULL;
     g_autofree char *drive = NULL;
     unsigned int bootindex = 0;
-    unsigned int logical_block_size = 0;
-    unsigned int physical_block_size = 0;
+    unsigned int logical_block_size = disk->blockio.logical_block_size;
+    unsigned int physical_block_size = disk->blockio.physical_block_size;
     g_autoptr(virJSONValue) wwn = NULL;
     g_autofree char *serial = NULL;
     virTristateSwitch removable = VIR_TRISTATE_SWITCH_ABSENT;
@@ -1885,11 +1885,6 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     /* bootindex for floppies is configured via the fdc controller */
     if (disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY)
         bootindex = disk->info.effectiveBootIndex;
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKIO)) {
-        logical_block_size = disk->blockio.logical_block_size;
-        physical_block_size = disk->blockio.physical_block_size;
-    }
 
     if (disk->wwn) {
         unsigned long long w = 0;
