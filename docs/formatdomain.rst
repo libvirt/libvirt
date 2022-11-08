@@ -2016,6 +2016,7 @@ are:
    tlbflush        Enable PV TLB flush support                                            on, off                                      :since:`4.7.0 (QEMU 3.0)`
    ipi             Enable PV IPI support                                                  on, off                                      :since:`4.10.0 (QEMU 3.1)`
    evmcs           Enable Enlightened VMCS                                                on, off                                      :since:`4.10.0 (QEMU 3.1)`
+   avic            Enable use Hyper-V SynIC with hardware APICv/AVIC                      on, off                                      :since:`8.10.0 (QEMU 6.2)`
    =============== ====================================================================== ============================================ =======================================================
 
    :since:`Since 8.0.0` , the hypervisor can be configured further by setting

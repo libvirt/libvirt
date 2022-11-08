@@ -7461,6 +7461,11 @@
                 <ref name="featurestate"/>
               </element>
             </optional>
+            <optional>
+              <element name="avic">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
           </interleave>
         </group>
       </choice>

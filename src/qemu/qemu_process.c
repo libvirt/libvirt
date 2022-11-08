@@ -4243,6 +4243,7 @@ qemuProcessVerifyHypervFeatures(virDomainDef *def,
         case VIR_DOMAIN_HYPERV_TLBFLUSH:
         case VIR_DOMAIN_HYPERV_IPI:
         case VIR_DOMAIN_HYPERV_EVMCS:
+        case VIR_DOMAIN_HYPERV_AVIC:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("host doesn't support hyperv '%s' feature"),
                            virDomainHypervTypeToString(i));

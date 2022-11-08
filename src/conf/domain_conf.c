@@ -206,6 +206,7 @@ VIR_ENUM_IMPL(virDomainHyperv,
               "tlbflush",
               "ipi",
               "evmcs",
+              "avic",
 );
 
 VIR_ENUM_IMPL(virDomainKVM,
@@ -15840,6 +15841,7 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
         case VIR_DOMAIN_HYPERV_TLBFLUSH:
         case VIR_DOMAIN_HYPERV_IPI:
         case VIR_DOMAIN_HYPERV_EVMCS:
+        case VIR_DOMAIN_HYPERV_AVIC:
             break;
 
         case VIR_DOMAIN_HYPERV_STIMER:
@@ -20160,6 +20162,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
             case VIR_DOMAIN_HYPERV_TLBFLUSH:
             case VIR_DOMAIN_HYPERV_IPI:
             case VIR_DOMAIN_HYPERV_EVMCS:
+            case VIR_DOMAIN_HYPERV_AVIC:
                 if (src->hyperv_features[i] != dst->hyperv_features[i]) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("State of HyperV enlightenment "
@@ -26506,6 +26509,7 @@ virDomainDefFormatFeatures(virBuffer *buf,
                 case VIR_DOMAIN_HYPERV_TLBFLUSH:
                 case VIR_DOMAIN_HYPERV_IPI:
                 case VIR_DOMAIN_HYPERV_EVMCS:
+                case VIR_DOMAIN_HYPERV_AVIC:
                     virBufferAddLit(&childBuf, "/>\n");
                     break;
 
