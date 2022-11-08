@@ -2926,15 +2926,9 @@ qemuDomainAttachWatchdog(virDomainObj *vm,
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_WATCHDOG, { .watchdog = watchdog } };
     g_autoptr(virJSONValue) props = NULL;
     bool releaseAddress = false;
-    int rv;
+    int rv = 0;
 
-    if (vm->def->watchdog) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain already has a watchdog"));
-        return -1;
-    }
-
-    qemuAssignDeviceWatchdogAlias(watchdog);
+    qemuAssignDeviceWatchdogAlias(vm->def, watchdog, -1);
 
     if (watchdog->model != VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
@@ -2952,10 +2946,13 @@ qemuDomainAttachWatchdog(virDomainObj *vm,
 
     qemuDomainObjEnterMonitor(vm);
 
-    /* QEMU doesn't have a 'dump' action; we tell qemu to 'pause', then
-       libvirt listens for the watchdog event, and we perform the dump
-       ourselves. so convert 'dump' to 'pause' for the qemu cli */
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION)) {
+    if (vm->def->nwatchdogs) {
+        /* Domain already has a watchdog and all must have the same action. */
+        rv = 0;
+    } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION)) {
+        /* QEMU doesn't have a 'dump' action; we tell qemu to 'pause', then
+           libvirt listens for the watchdog event, and we perform the dump
+           ourselves. so convert 'dump' to 'pause' for the qemu cli */
         qemuMonitorActionWatchdog watchdogaction = QEMU_MONITOR_ACTION_WATCHDOG_KEEP;
 
         switch (watchdog->action) {
@@ -3013,7 +3010,7 @@ qemuDomainAttachWatchdog(virDomainObj *vm,
         goto cleanup;
 
     releaseAddress = false;
-    vm->def->watchdog = watchdog;
+    VIR_APPEND_ELEMENT_COPY(vm->def->watchdogs, vm->def->nwatchdogs, watchdog);
     ret = 0;
 
  cleanup:
@@ -4846,11 +4843,20 @@ static int
 qemuDomainRemoveWatchdog(virDomainObj *vm,
                          virDomainWatchdogDef *watchdog)
 {
+    size_t i = 0;
+
     VIR_DEBUG("Removing watchdog %s from domain %p %s",
               watchdog->info.alias, vm, vm->def->name);
 
+    for (i = 0; i < vm->def->nwatchdogs; i++) {
+        if (vm->def->watchdogs[i] == watchdog)
+            break;
+    }
+
     qemuDomainReleaseDeviceAddress(vm, &watchdog->info);
-    g_clear_pointer(&vm->def->watchdog, virDomainWatchdogDefFree);
+    virDomainWatchdogDefFree(watchdog);
+    VIR_DELETE_ELEMENT(vm->def->watchdogs, i, vm->def->nwatchdogs);
+
     return 0;
 }
 
@@ -5603,33 +5609,20 @@ qemuDomainDetachPrepWatchdog(virDomainObj *vm,
                              virDomainWatchdogDef *match,
                              virDomainWatchdogDef **detach)
 {
-    virDomainWatchdogDef *watchdog;
+    ssize_t idx = virDomainWatchdogDefFind(vm->def, match);
 
-    *detach = watchdog = vm->def->watchdog;
-
-    if (!watchdog) {
-        virReportError(VIR_ERR_DEVICE_MISSING, "%s",
-                       _("watchdog device not present in domain configuration"));
+    if (idx < 0) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("no matching watchdog was found"));
         return -1;
     }
 
-    /* While domains can have up to one watchdog, the one supplied by the user
-     * doesn't necessarily match the one domain has. Refuse to detach in such
-     * case. */
-    if (!(watchdog->model == match->model &&
-          watchdog->action == match->action &&
-          virDomainDeviceInfoAddressIsEqual(&match->info, &watchdog->info))) {
-        virReportError(VIR_ERR_DEVICE_MISSING,
-                       _("model '%s' watchdog device not present "
-                         "in domain configuration"),
-                       virDomainWatchdogModelTypeToString(watchdog->model));
-        return -1;
-    }
+    *detach = vm->def->watchdogs[idx];
 
-    if (watchdog->model != VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB) {
+    if ((*detach)->model != VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("hot unplug of watchdog of model %s is not supported"),
-                       virDomainWatchdogModelTypeToString(watchdog->model));
+                       virDomainWatchdogModelTypeToString((*detach)->model));
         return -1;
     }
 

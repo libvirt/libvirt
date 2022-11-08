@@ -1188,6 +1188,28 @@ qemuValidateDomainDefTPMs(const virDomainDef *def)
 }
 
 
+static int
+qemuValidateDomainDefWatchdogs(const virDomainDef *def)
+{
+    ssize_t i = 0;
+
+    for (i = 1; i < def->nwatchdogs; i++) {
+        /* We could theoretically support different watchdogs having dump and
+         * pause, but let's be honest, we support multiple watchdogs only
+         * because we need to be able to add a second, implicit one, not because
+         * it is a brilliant idea to have multiple watchdogs. */
+        if (def->watchdogs[i]->action != def->watchdogs[0]->action) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("watchdogs with different actions are not supported "
+                             "with this QEMU binary"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 int
 qemuValidateLifecycleAction(virDomainLifecycleAction onPoweroff,
                             virDomainLifecycleAction onReboot,
@@ -1386,6 +1408,9 @@ qemuValidateDomainDef(const virDomainDef *def,
         return -1;
 
     if (qemuValidateDomainDefTPMs(def) < 0)
+        return -1;
+
+    if (qemuValidateDomainDefWatchdogs(def) < 0)
         return -1;
 
     if (def->sec) {

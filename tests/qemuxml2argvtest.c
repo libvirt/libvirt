@@ -1756,6 +1756,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("watchdog-device");
     DO_TEST_CAPS_LATEST("watchdog-dump");
     DO_TEST_CAPS_LATEST("watchdog-injectnmi");
+    DO_TEST_CAPS_LATEST("watchdog-q35-multiple");
     DO_TEST_CAPS_ARCH_LATEST("watchdog-diag288", "s390x");
     DO_TEST_NOCAPS("balloon-device");
     DO_TEST("balloon-device-deflate",

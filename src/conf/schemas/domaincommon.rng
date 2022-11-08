@@ -6429,9 +6429,9 @@
             <ref name="crypto"/>
           </choice>
         </zeroOrMore>
-        <optional>
+        <zeroOrMore>
           <ref name="watchdog"/>
-        </optional>
+        </zeroOrMore>
         <optional>
           <ref name="memballoon"/>
         </optional>

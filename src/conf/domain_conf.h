@@ -3092,15 +3092,18 @@ struct _virDomainDef {
     size_t nsysinfo;
     virSysinfoDef **sysinfo;
 
+
     size_t ncryptos;
     virDomainCryptoDef **cryptos;
+
+    size_t nwatchdogs;
+    virDomainWatchdogDef **watchdogs;
 
     /* At maximum 2 TPMs on the domain if a TPM Proxy is present. */
     size_t ntpms;
     virDomainTPMDef **tpms;
 
     /* Only 1 */
-    virDomainWatchdogDef *watchdog;
     virDomainMemballoonDef *memballoon;
     virDomainNVRAMDef *nvram;
     virCPUDef *cpu;
@@ -3562,6 +3565,10 @@ virDomainSoundDef *virDomainSoundDefRemove(virDomainDef *def, size_t idx);
 void virDomainAudioDefFree(virDomainAudioDef *def);
 void virDomainMemballoonDefFree(virDomainMemballoonDef *def);
 void virDomainNVRAMDefFree(virDomainNVRAMDef *def);
+ssize_t
+virDomainWatchdogDefFind(const virDomainDef *def,
+                         const virDomainWatchdogDef *watchdog)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 void virDomainWatchdogDefFree(virDomainWatchdogDef *def);
 virDomainVideoDef *virDomainVideoDefNew(virDomainXMLOption *xmlopt);
 void virDomainVideoDefFree(virDomainVideoDef *def);

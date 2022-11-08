@@ -555,12 +555,26 @@ qemuAssignDeviceShmemAlias(virDomainDef *def,
 
 
 void
-qemuAssignDeviceWatchdogAlias(virDomainWatchdogDef *watchdog)
+qemuAssignDeviceWatchdogAlias(virDomainDef *def,
+                              virDomainWatchdogDef *watchdog,
+                              int idx)
 {
-    /* Currently, there's just one watchdog per domain */
+    ssize_t i = 0;
 
-    if (!watchdog->info.alias)
-        watchdog->info.alias = g_strdup("watchdog0");
+    if (watchdog->info.alias)
+        return;
+
+    if (idx == -1) {
+        for (i = 0; i < def->nwatchdogs; i++) {
+            int cur_idx = qemuDomainDeviceAliasIndex(&def->watchdogs[i]->info, "watchdog");
+            if (cur_idx > idx)
+                idx = cur_idx;
+        }
+
+        idx++;
+    }
+
+    watchdog->info.alias = g_strdup_printf("watchdog%d", idx);
 }
 
 
@@ -686,8 +700,8 @@ qemuAssignDeviceAliases(virDomainDef *def)
     for (i = 0; i < def->nsmartcards; i++) {
         qemuAssignDeviceSmartcardAlias(def->smartcards[i], i);
     }
-    if (def->watchdog) {
-        qemuAssignDeviceWatchdogAlias(def->watchdog);
+    for (i = 0; i < def->nwatchdogs; i++) {
+        qemuAssignDeviceWatchdogAlias(def, def->watchdogs[i], i);
     }
     if (def->memballoon &&
         def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {

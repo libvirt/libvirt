@@ -61,7 +61,10 @@ void qemuAssignDeviceShmemAlias(virDomainDef *def,
                                 virDomainShmemDef *shmem,
                                 int idx);
 
-void qemuAssignDeviceWatchdogAlias(virDomainWatchdogDef *watchdog);
+void
+qemuAssignDeviceWatchdogAlias(virDomainDef *def,
+                              virDomainWatchdogDef *watchdog,
+                              int idx);
 
 void qemuAssignDeviceInputAlias(virDomainDef *def,
                                 virDomainInputDef *input,

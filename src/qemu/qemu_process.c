@@ -804,7 +804,8 @@ qemuProcessHandleWatchdog(qemuMonitor *mon G_GNUC_UNUSED,
         qemuDomainSaveStatus(vm);
     }
 
-    if (vm->def->watchdog->action == VIR_DOMAIN_WATCHDOG_ACTION_DUMP) {
+    if (vm->def->nwatchdogs &&
+        vm->def->watchdogs[0]->action == VIR_DOMAIN_WATCHDOG_ACTION_DUMP) {
         qemuProcessEventSubmit(vm, QEMU_PROCESS_EVENT_WATCHDOG,
                                VIR_DOMAIN_WATCHDOG_ACTION_DUMP, 0, NULL);
     }

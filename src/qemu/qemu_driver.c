@@ -7260,12 +7260,13 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
         break;
 
     case VIR_DOMAIN_DEVICE_WATCHDOG:
-        if (vmdef->watchdog) {
+        if (virDomainWatchdogDefFind(vmdef, dev->data.watchdog) >= 0) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("domain already has a watchdog"));
+                           _("device is already in the domain configuration"));
             return -1;
         }
-        vmdef->watchdog = g_steal_pointer(&dev->data.watchdog);
+
+        VIR_APPEND_ELEMENT(vmdef->watchdogs, vmdef->nwatchdogs, dev->data.watchdog);
         break;
 
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -7460,12 +7461,13 @@ qemuDomainDetachDeviceConfig(virDomainDef *vmdef,
 
 
     case VIR_DOMAIN_DEVICE_WATCHDOG:
-        if (!vmdef->watchdog) {
+        idx = virDomainWatchdogDefFind(vmdef, dev->data.watchdog);
+        if (idx < 0) {
             virReportError(VIR_ERR_DEVICE_MISSING, "%s",
-                           _("domain has no watchdog"));
+                           _("no matching watchdog was found"));
             return -1;
         }
-        g_clear_pointer(&vmdef->watchdog, virDomainWatchdogDefFree);
+        VIR_DELETE_ELEMENT(vmdef->watchdogs, idx, vmdef->nwatchdogs);
         break;
 
     case VIR_DOMAIN_DEVICE_INPUT:

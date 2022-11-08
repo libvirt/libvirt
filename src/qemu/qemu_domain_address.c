@@ -2342,10 +2342,10 @@ qemuDomainAssignDevicePCISlots(virDomainDef *def,
     }
 
     /* A watchdog - check if it is a PCI device */
-    if (def->watchdog &&
-        def->watchdog->model == VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB &&
-        virDeviceInfoPCIAddressIsWanted(&def->watchdog->info)) {
-        if (qemuDomainPCIAddressReserveNextAddr(addrs, &def->watchdog->info) < 0)
+    for (i = 0; i < def->nwatchdogs; i++) {
+        if (def->watchdogs[i]->model == VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB &&
+            virDeviceInfoPCIAddressIsWanted(&def->watchdogs[i]->info) &&
+            qemuDomainPCIAddressReserveNextAddr(addrs, &def->watchdogs[i]->info) < 0)
             return -1;
     }
 

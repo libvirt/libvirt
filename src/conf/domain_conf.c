@@ -3899,7 +3899,9 @@ void virDomainDefFree(virDomainDef *def)
                              def->blkio.ndevices);
     g_free(def->blkio.devices);
 
-    virDomainWatchdogDefFree(def->watchdog);
+    for (i = 0; i < def->nwatchdogs; i++)
+        virDomainWatchdogDefFree(def->watchdogs[i]);
+    g_free(def->watchdogs);
 
     virDomainMemballoonDefFree(def->memballoon);
     virDomainNVRAMDefFree(def->nvram);
@@ -4676,10 +4678,10 @@ virDomainDeviceInfoIterateFlags(virDomainDef *def,
         if ((rc = cb(def, &device, &def->fss[i]->info, opaque)) != 0)
             return rc;
     }
-    if (def->watchdog) {
-        device.type = VIR_DOMAIN_DEVICE_WATCHDOG;
-        device.data.watchdog = def->watchdog;
-        if ((rc = cb(def, &device, &def->watchdog->info, opaque)) != 0)
+    device.type = VIR_DOMAIN_DEVICE_WATCHDOG;
+    for (i = 0; i < def->nwatchdogs; i++) {
+        device.data.watchdog = def->watchdogs[i];
+        if ((rc = cb(def, &device, &def->watchdogs[i]->info, opaque)) != 0)
             return rc;
     }
     if (def->memballoon) {
@@ -18909,24 +18911,21 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     VIR_FREE(nodes);
 
     /* analysis of the watchdog devices */
-    def->watchdog = NULL;
-    if ((n = virXPathNodeSet("./devices/watchdog", ctxt, &nodes)) < 0)
+    n = virXPathNodeSet("./devices/watchdog", ctxt, &nodes);
+    if (n < 0)
         return NULL;
-    if (n > 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("only a single watchdog device is supported"));
-        return NULL;
-    }
-    if (n > 0) {
+    if (n)
+        def->watchdogs = g_new0(virDomainWatchdogDef *, n);
+    for (i = 0; i < n; i++) {
         virDomainWatchdogDef *watchdog;
 
-        watchdog = virDomainWatchdogDefParseXML(xmlopt, nodes[0], ctxt, flags);
+        watchdog = virDomainWatchdogDefParseXML(xmlopt, nodes[i], ctxt, flags);
         if (!watchdog)
             return NULL;
 
-        def->watchdog = watchdog;
-        VIR_FREE(nodes);
+        def->watchdogs[def->nwatchdogs++] = watchdog;
     }
+    VIR_FREE(nodes);
 
     /* analysis of the memballoon devices */
     def->memballoon = NULL;
@@ -21370,18 +21369,18 @@ virDomainDefCheckABIStabilityFlags(virDomainDef *src,
                                                   dst->redirfilter))
         goto error;
 
-    if ((!src->watchdog && dst->watchdog) ||
-        (src->watchdog && !dst->watchdog)) {
+
+    if (src->nwatchdogs != dst->nwatchdogs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain watchdog count %d "
-                         "does not match source %d"),
-                       dst->watchdog ? 1 : 0, src->watchdog ? 1 : 0);
+                       _("Target domain watchdog device count %zu does not match source %zu"),
+                       dst->nwatchdogs, src->nwatchdogs);
         goto error;
     }
 
-    if (src->watchdog &&
-        !virDomainWatchdogDefCheckABIStability(src->watchdog, dst->watchdog))
-        goto error;
+    for (i = 0; i < src->nwatchdogs; i++) {
+        if (!virDomainWatchdogDefCheckABIStability(src->watchdogs[i], dst->watchdogs[i]))
+            goto error;
+    }
 
     if ((!src->memballoon && dst->memballoon) ||
         (src->memballoon && !dst->memballoon)) {
@@ -27672,8 +27671,8 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
             return -1;
     }
 
-    if (def->watchdog)
-        virDomainWatchdogDefFormat(buf, def->watchdog, flags);
+    for (n = 0; n < def->nwatchdogs; n++)
+        virDomainWatchdogDefFormat(buf, def->watchdogs[n], flags);
 
     if (def->memballoon)
         virDomainMemballoonDefFormat(buf, def->memballoon, flags);
@@ -30735,4 +30734,34 @@ virDomainDefHasSpiceGraphics(const virDomainDef *def)
     }
 
     return false;
+}
+
+
+ssize_t
+virDomainWatchdogDefFind(const virDomainDef *def,
+                         const virDomainWatchdogDef *watchdog)
+{
+    size_t i;
+
+    for (i = 0; i < def->nwatchdogs; i++) {
+        const virDomainWatchdogDef *tmp = def->watchdogs[i];
+
+        if (tmp->model != watchdog->model)
+            continue;
+
+        if (tmp->action != watchdog->action)
+            continue;
+
+        if (watchdog->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+            !virDomainDeviceInfoAddressIsEqual(&watchdog->info, &tmp->info))
+            continue;
+
+        if (watchdog->info.alias &&
+            STRNEQ_NULLABLE(watchdog->info.alias, tmp->info.alias))
+            continue;
+
+        return i;
+    }
+
+    return -1;
 }

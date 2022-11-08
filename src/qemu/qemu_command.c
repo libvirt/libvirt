@@ -4050,26 +4050,34 @@ qemuBuildWatchdogCommandLine(virCommand *cmd,
                              const virDomainDef *def,
                              virQEMUCaps *qemuCaps)
 {
-    virDomainWatchdogDef *watchdog = def->watchdog;
-    g_autoptr(virJSONValue) props = NULL;
+    virDomainWatchdogDef *watchdog = NULL;
     const char *action;
     int actualAction;
+    ssize_t i = 0;
 
-    if (!def->watchdog)
+    if (def->nwatchdogs == 0)
         return 0;
 
-    if (qemuCommandAddExtDevice(cmd, &def->watchdog->info, def, qemuCaps) < 0)
-        return -1;
+    for (i = 0; i < def->nwatchdogs; i++) {
+        g_autoptr(virJSONValue) props = NULL;
 
-    if (!(props = qemuBuildWatchdogDevProps(def, watchdog)))
-        return -1;
+        watchdog = def->watchdogs[i];
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps))
-        return -1;
+        if (qemuCommandAddExtDevice(cmd, &watchdog->info, def, qemuCaps) < 0)
+            return -1;
+
+        if (!(props = qemuBuildWatchdogDevProps(def, watchdog)))
+            return -1;
+
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps))
+            return -1;
+    }
 
     /* qemu doesn't have a 'dump' action; we tell qemu to 'pause', then
        libvirt listens for the watchdog event, and we perform the dump
-       ourselves. so convert 'dump' to 'pause' for the qemu cli */
+       ourselves. so convert 'dump' to 'pause' for the qemu cli. The
+       validator already checked that all watchdogs have the same action.
+    */
     actualAction = watchdog->action;
     if (watchdog->action == VIR_DOMAIN_WATCHDOG_ACTION_DUMP)
         actualAction = VIR_DOMAIN_WATCHDOG_ACTION_PAUSE;

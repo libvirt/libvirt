@@ -489,6 +489,7 @@ mymain(void)
             QEMU_CAPS_HDA_DUPLEX,
             QEMU_CAPS_HDA_OUTPUT);
     DO_TEST_NOCAPS("watchdog");
+    DO_TEST_CAPS_LATEST("watchdog-q35-multiple");
     DO_TEST("net-bandwidth", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_VNC);
     DO_TEST("net-bandwidth2", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_VNC);
     DO_TEST_NOCAPS("net-mtu");
