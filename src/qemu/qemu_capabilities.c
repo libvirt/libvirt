@@ -441,7 +441,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "chardev-reconnect", /* QEMU_CAPS_CHARDEV_RECONNECT */
               "virtio-gpu.max_outputs", /* X_QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS */
               "vxhs", /* QEMU_CAPS_VXHS */
-              "virtio-blk.num-queues", /* QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES */
+              "virtio-blk.num-queues", /* X_QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES */
 
               /* 270 */
               "machine.pseries.resize-hpt", /* X_QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT */
