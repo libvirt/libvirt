@@ -50,14 +50,16 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf,
 
     /* Any changes to this function ^^ should be reflected here too. */
 #ifndef __linux__
-    char * tmp;
+    {
+        char * tmp;
 
-    if (!(tmp = virStringReplace(confactual,
-                                 "except-interface=lo0\n",
-                                 "except-interface=lo\n")))
-        goto fail;
-    VIR_FREE(confactual);
-    confactual = g_steal_pointer(&tmp);
+        if (!(tmp = virStringReplace(confactual,
+                                     "except-interface=lo0\n",
+                                     "except-interface=lo\n")))
+            goto fail;
+        VIR_FREE(confactual);
+        confactual = g_steal_pointer(&tmp);
+    }
 #endif
 
     if (virTestCompareToFile(confactual, outconf) < 0)

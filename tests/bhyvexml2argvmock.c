@@ -25,9 +25,9 @@ init_syms(void)
 DIR *
 opendir(const char *path)
 {
-    init_syms();
-
     g_autofree char *path_override = NULL;
+
+    init_syms();
 
     if (STREQ(path, "fakefirmwaredir")) {
         path_override = g_strdup(FAKEFIRMWAREDIR);

@@ -36,11 +36,13 @@ bhyveCollectPCIAddress(virDomainDef *def G_GNUC_UNUSED,
                        virDomainDeviceInfo *info,
                        void *opaque)
 {
+    virDomainPCIAddressSet *addrs = NULL;
+    virPCIDeviceAddress *addr = NULL;
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
         return 0;
 
-    virDomainPCIAddressSet *addrs = opaque;
-    virPCIDeviceAddress *addr = &info->addr.pci;
+    addrs = opaque;
+    addr = &info->addr.pci;
 
     if (addr->domain == 0 && addr->bus == 0 && addr->slot == 0) {
             return 0;

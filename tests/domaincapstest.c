@@ -397,8 +397,9 @@ mymain(void)
 #define DO_TEST_BHYVE(Name, Emulator, BhyveCaps, Type) \
     do { \
         g_autofree char *name = NULL; \
+        struct testData data; \
         name = g_strdup_printf("bhyve_%s.x86_64", Name); \
-        struct testData data = { \
+        data = (struct testData) { \
             .name = name, \
             .emulator = Emulator, \
             .arch = "x86_64", \
