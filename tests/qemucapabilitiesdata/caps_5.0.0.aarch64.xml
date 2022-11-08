@@ -81,7 +81,6 @@
   <flag name='vmcoreinfo'/>
   <flag name='pl011'/>
   <flag name='pcie-pci-bridge'/>
-  <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>
   <flag name='pr-manager-helper'/>
   <flag name='screendump_device'/>

@@ -22,7 +22,6 @@
   <flag name='spice-rendernode'/>
   <flag name='chardev-reconnect'/>
   <flag name='isa-serial'/>
-  <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>
   <flag name='pr-manager-helper'/>
   <flag name='screendump_device'/>

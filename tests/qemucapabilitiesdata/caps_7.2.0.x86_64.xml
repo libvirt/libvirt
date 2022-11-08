@@ -105,7 +105,6 @@
   <flag name='vmcoreinfo'/>
   <flag name='isa-serial'/>
   <flag name='pcie-pci-bridge'/>
-  <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>
   <flag name='tpm-crb'/>
   <flag name='pr-manager-helper'/>

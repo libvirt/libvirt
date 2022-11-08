@@ -76,7 +76,6 @@
   <flag name='qemu-xhci'/>
   <flag name='chardev-reconnect'/>
   <flag name='pcie-pci-bridge'/>
-  <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>
   <flag name='pr-manager-helper'/>
   <flag name='screendump_device'/>
