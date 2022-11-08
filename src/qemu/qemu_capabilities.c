@@ -207,7 +207,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 100 */
               "virtio-scsi-pci", /* QEMU_CAPS_VIRTIO_SCSI */
-              "blockio", /* QEMU_CAPS_BLOCKIO */
+              "blockio", /* X_QEMU_CAPS_BLOCKIO */
               "disable-s3", /* QEMU_CAPS_PIIX_DISABLE_S3 */
               "disable-s4", /* QEMU_CAPS_PIIX_DISABLE_S4 */
               "usb-redir.filter", /* QEMU_CAPS_USB_REDIR_FILTER */
