@@ -111,14 +111,11 @@ bool virBitmapIsAllSet(virBitmap *bitmap)
 bool virBitmapIsAllClear(virBitmap *bitmap)
     ATTRIBUTE_NONNULL(1);
 
-ssize_t virBitmapNextSetBit(virBitmap *bitmap, ssize_t pos)
-    ATTRIBUTE_NONNULL(1);
+ssize_t virBitmapNextSetBit(virBitmap *bitmap, ssize_t pos);
 
-ssize_t virBitmapLastSetBit(virBitmap *bitmap)
-    ATTRIBUTE_NONNULL(1);
+ssize_t virBitmapLastSetBit(virBitmap *bitmap);
 
-ssize_t virBitmapNextClearBit(virBitmap *bitmap, ssize_t pos)
-    ATTRIBUTE_NONNULL(1);
+ssize_t virBitmapNextClearBit(virBitmap *bitmap, ssize_t pos);
 
 size_t virBitmapCountBits(virBitmap *bitmap)
     ATTRIBUTE_NONNULL(1);

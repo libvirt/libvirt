@@ -824,6 +824,9 @@ virBitmapNextSetBit(virBitmap *bitmap,
     size_t nb;
     unsigned long bits;
 
+    if (!bitmap)
+        return -1;
+
     if (pos < 0)
         pos = -1;
 
@@ -862,6 +865,9 @@ virBitmapLastSetBit(virBitmap *bitmap)
     int unusedBits;
     ssize_t sz;
     unsigned long bits;
+
+    if (!bitmap)
+        return -1;
 
     /* If bitmap is empty then there is no set bit */
     if (bitmap->map_len == 0)
@@ -915,6 +921,9 @@ virBitmapNextClearBit(virBitmap *bitmap,
     size_t nl;
     size_t nb;
     unsigned long bits;
+
+    if (!bitmap)
+        return -1;
 
     if (pos < 0)
         pos = -1;
