@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-10-25 07:42+0000\n"
-"PO-Revision-Date: 2022-10-05 09:19+0000\n"
+"PO-Revision-Date: 2022-11-09 13:19+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.14.2\n"
 
 msgid ""
 "\n"
@@ -1202,7 +1202,7 @@ msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "”:” är inte tillåtet i RBD-källvolymnamnet ”%s”"
 
 msgid "'<local>' element missing for 'udp' socket interface"
-msgstr ""
+msgstr "Elementet ”<local>” saknas för ”udp”-uttagsgränssnitt"
 
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr "”adapter”-namnet måste anges för scsi-värdenhetskällan"
@@ -1356,6 +1356,8 @@ msgid ""
 "'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
 msgstr ""
+"Attributet ”reconnect” ej stött läge ”server” för <interface "
+"type='vhostuser'>"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1597,10 +1599,10 @@ msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev: gränssnittet finns inte"
 
 msgid "3d acceleration is not supported by this QEMU binary"
-msgstr ""
+msgstr "3d-acceleration stödjs inte av denna QEMU-binär"
 
 msgid "3d acceleration is supported only with 'virtio' video device"
-msgstr ""
+msgstr "3d-acceleration stödjs endast med videoenheten ”virtio”"
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64-bitars PCI-hålsinställning är endast för rot-PCI-styrenheter"
@@ -5957,7 +5959,7 @@ msgstr "Antingen ”name” eller ”parent” måste anges för adaptern ”scs
 
 #, c-format
 msgid "Either --%s or --%s must be provided"
-msgstr ""
+msgstr "Antingen --%s eller --%s måste anges"
 
 msgid "Eject the media"
 msgstr "Mata ut mediumet"
@@ -10418,6 +10420,8 @@ msgstr "Felaktigt värde på attributet ”%s” i elementet ”%s”: ”%s”.
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"
 msgstr ""
+"Felaktigt värde på attributet ”%s” i elementet ”%s”: ”%s”. Ett UUID "
+"förväntades"
 
 #, c-format
 msgid ""
@@ -10432,6 +10436,8 @@ msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
 "integer value"
 msgstr ""
+"Felaktigt värde på attributet ”%s” i elementet ”%s”: ”%s”. Ett long long "
+"heltalsvärde förväntades"
 
 #, c-format
 msgid ""
@@ -14039,7 +14045,7 @@ msgid "SATA unit index %d out of [0..29] range"
 msgstr "SATA-enhetsindex %d är utanför intervallet [0..29]"
 
 msgid "SCHED_CORE not supported by kernel"
-msgstr ""
+msgstr "SCHED_CORE stödjs inte av kärnan"
 
 #, c-format
 msgid "SCSI bus index %d out of [0] range"
@@ -14540,6 +14546,8 @@ msgid ""
 "Shortcut for calling the command with a single CPU model and no additional "
 "features"
 msgstr ""
+"Genväg för att anropa kommandot med en enda CPU-modell och inga ytterligare "
+"funktioner"
 
 msgid "Should define both master and slave path attributes for nmdm device"
 msgstr ""
@@ -16575,124 +16583,124 @@ msgstr "USB-omdirigering stödjs inte av denna version av QEMU"
 
 #, c-format
 msgid "USB source %s was not a character device"
-msgstr ""
+msgstr "USB-källan %s var inte en teckenenhet"
 
 msgid "UTS namespace support is required"
-msgstr ""
+msgstr "Stöd för UTS-namnrymder krävs"
 
 msgid "UUID"
 msgstr "UUID"
 
-#, fuzzy
 msgid "UUID in config file malformed"
-msgstr "ingen konfigurationsfil för %s"
+msgstr "UUID i konfigurationsfilen är felformaterat"
 
 msgid "UUID is not supported for NVDIMM device"
-msgstr ""
+msgstr "UUID stödjs inte för en NVDIMM-enhet"
 
 msgid "UUID mismatch between <uuid> and <sysinfo>"
-msgstr ""
+msgstr "UUID stämmer inte mellan <uuid> och <sysinfo>"
 
 msgid "UUID:"
 msgstr "UUID:"
 
-#, fuzzy
 msgid "Unable to accept client"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte acceptera en klient"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to access %s"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte komma åt %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to access cache '%s' for '%s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte komma åt cachen ”%s” för ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to access config file %s"
-msgstr "kunde inte analysera konfigurationsfilen %s"
+msgstr "Kan inte komma åt konfigurationsfilen %s"
 
 #, c-format
 msgid "Unable to access file descriptor %d"
-msgstr ""
+msgstr "Kan inte komma åt filbeskrivaren %d"
 
 msgid "Unable to access kernel32.dll"
-msgstr ""
+msgstr "Kan inte komma åt kernel32.dll"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to access stream for '%s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte komma åt strömmen för ”%s”"
 
 #, c-format
 msgid ""
 "Unable to acquire PID file: %s\n"
 " errno=%d"
 msgstr ""
+"Kan inte få tag i PID-filen: %s\n"
+" errno=%d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to acquire lock on '%s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte ta ett lås av ”%s”"
 
 msgid "Unable to add address to interface multicast list on this platform"
 msgstr ""
+"Kan inte lägga till adressen till gränssnittet för multicast-listan på denna "
+"plattform"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to add bridge %s port %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte lägga till bryggan %s porten %s"
 
-#, fuzzy
 msgid "Unable to add epoll fd"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte lägga till epoll-fb"
 
-#, fuzzy
 msgid "Unable to add extra data"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte lägga till extra data"
 
 msgid "Unable to add hard disk to media Registry"
-msgstr ""
+msgstr "Kan inte lägga till en hårddisk till mediaregistret"
 
 msgid "Unable to add hard disk to media registry"
-msgstr ""
+msgstr "Kan inte lägga till en hårddisk till mediaregistret"
 
 msgid "Unable to add hard disk to the media registry"
-msgstr ""
+msgstr "Kan inte lägga till en hårddisk till mediaregistret"
 
 msgid "Unable to add hardware machine"
-msgstr ""
+msgstr "Kan inte lägga till en hårdvarumaskin"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to add lockspace %s"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte lägga till låsutrymmet %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to add lockspace %s: %s"
-msgstr "Misslyckades att hämta block statistik %sl %s"
+msgstr "Kan inte lägga till låsutrymmet %s: %s"
 
 msgid "Unable to add media registry other media"
-msgstr ""
+msgstr "Kan inte lägga till mediaregistret för andra media"
 
 #, c-format
 msgid "Unable to add port %s to OVS bridge %s"
-msgstr ""
+msgstr "Kan inte lägga till porten %s till OVS-bryggan %s"
 
-#, fuzzy
 msgid "Unable to add storage controller"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte lägga till lagringsstyrenhet"
 
-#, fuzzy
 msgid "Unable to add the snapshot hardware"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Kan inte lägga till ögonblicksbildshårdvara"
 
 msgid "Unable to add the snapshot storageController"
-msgstr ""
+msgstr "Kan inte lägga till ögonblicksbildens storageController"
 
 msgid "Unable to add the snapshot to the machine description"
-msgstr ""
+msgstr "Kan inte lägga till ögonblicksbilden till maskinbeskrivningen"
 
 msgid ""
 "Unable to add this snapshot, there is already a snapshot linked to the "
 "machine"
 msgstr ""
+"Kan inte lägga till denna ögonblicksbild, det finns redan en ögonblicksbild "
+"länkad till maskinen"
 
 msgid "Unable to add/delete fdb entries on this platform"
 msgstr ""
