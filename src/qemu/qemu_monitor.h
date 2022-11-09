@@ -712,8 +712,7 @@ struct _qemuBlockNamedNodeData {
 };
 
 GHashTable *
-qemuMonitorBlockGetNamedNodeData(qemuMonitor *mon,
-                                 bool supports_flat);
+qemuMonitorBlockGetNamedNodeData(qemuMonitor *mon);
 
 int qemuMonitorBlockResize(qemuMonitor *mon,
                            const char *device,

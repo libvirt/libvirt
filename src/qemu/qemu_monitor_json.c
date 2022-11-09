@@ -2037,14 +2037,13 @@ qemuMonitorJSONSetDBusVMStateIdList(qemuMonitor *mon,
  * Returns: NULL on error, reply on success
  */
 static virJSONValue *
-qemuMonitorJSONQueryNamedBlockNodes(qemuMonitor *mon,
-                                    bool flat)
+qemuMonitorJSONQueryNamedBlockNodes(qemuMonitor *mon)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-named-block-nodes",
-                                           "B:flat", flat,
+                                           "B:flat", mon->queryNamedBlockNodesFlat,
                                            NULL)))
         return NULL;
 
@@ -2503,7 +2502,7 @@ qemuMonitorJSONBlockStatsUpdateCapacityBlockdev(qemuMonitor *mon,
 {
     g_autoptr(virJSONValue) nodes = NULL;
 
-    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon, mon->queryNamedBlockNodesFlat)))
+    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon)))
         return -1;
 
     if (virJSONValueArrayForeachSteal(nodes,
@@ -2669,12 +2668,11 @@ qemuMonitorJSONBlockGetNamedNodeDataJSON(virJSONValue *nodes)
 
 
 GHashTable *
-qemuMonitorJSONBlockGetNamedNodeData(qemuMonitor *mon,
-                                     bool supports_flat)
+qemuMonitorJSONBlockGetNamedNodeData(qemuMonitor *mon)
 {
     g_autoptr(virJSONValue) nodes = NULL;
 
-    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon, supports_flat)))
+    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon)))
         return NULL;
 
     return qemuMonitorJSONBlockGetNamedNodeDataJSON(nodes);

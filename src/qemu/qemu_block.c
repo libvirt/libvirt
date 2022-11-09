@@ -2611,13 +2611,11 @@ qemuBlockGetNamedNodeData(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     GHashTable *blockNamedNodeData = NULL;
-    bool supports_flat = virQEMUCapsGet(priv->qemuCaps,
-                                        QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT);
 
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return NULL;
 
-    blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon, supports_flat);
+    blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon);
 
     qemuDomainObjExitMonitor(vm);
 
