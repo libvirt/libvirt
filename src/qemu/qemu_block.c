@@ -2610,7 +2610,7 @@ qemuBlockGetNamedNodeData(virDomainObj *vm,
                           virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    g_autoptr(GHashTable) blockNamedNodeData = NULL;
+    GHashTable *blockNamedNodeData = NULL;
     bool supports_flat = virQEMUCapsGet(priv->qemuCaps,
                                         QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT);
 
@@ -2621,10 +2621,7 @@ qemuBlockGetNamedNodeData(virDomainObj *vm,
 
     qemuDomainObjExitMonitor(vm);
 
-    if (!blockNamedNodeData)
-        return NULL;
-
-    return g_steal_pointer(&blockNamedNodeData);
+    return blockNamedNodeData;
 }
 
 
