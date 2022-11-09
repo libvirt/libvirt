@@ -90,6 +90,8 @@ struct _qemuMonitor {
 
     /* true if qemu no longer wants 'props' sub-object of object-add */
     bool objectAddNoWrap;
+    /* query-named-block-nodes supports the 'flat' option */
+    bool queryNamedBlockNodesFlat;
 };
 
 

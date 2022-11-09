@@ -622,8 +622,10 @@ qemuMonitorOpenInternal(virDomainObj *vm,
     mon->waitGreeting = true;
     mon->cb = cb;
 
-    if (priv)
+    if (priv) {
         mon->objectAddNoWrap = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_JSON);
+        mon->queryNamedBlockNodesFlat = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT);
+    }
 
     if (virSetCloseExec(mon->fd) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
