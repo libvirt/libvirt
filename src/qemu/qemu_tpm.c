@@ -1019,6 +1019,7 @@ qemuTPMHasSharedStorage(virDomainDef *def)
             return virFileIsSharedFS(tpm->data.emulator.storagepath) == 1;
         case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
         case VIR_DOMAIN_TPM_TYPE_LAST:
+            break;
         }
     }
 
@@ -1038,6 +1039,7 @@ qemuTPMCanMigrateSharedStorage(virDomainDef *def)
             return QEMU_DOMAIN_TPM_PRIVATE(tpm)->swtpm.can_migrate_shared_storage;
         case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
         case VIR_DOMAIN_TPM_TYPE_LAST:
+            break;
         }
     }
     return true;

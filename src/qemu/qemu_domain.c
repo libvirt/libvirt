@@ -1202,6 +1202,7 @@ qemuDomainTPMPrivateFormat(const virDomainTPMDef *tpm,
 
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
     case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
     }
 
     return 0;
