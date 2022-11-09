@@ -2503,7 +2503,7 @@ qemuMonitorJSONBlockStatsUpdateCapacityBlockdev(qemuMonitor *mon,
 {
     g_autoptr(virJSONValue) nodes = NULL;
 
-    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon, false)))
+    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon, mon->queryNamedBlockNodesFlat)))
         return -1;
 
     if (virJSONValueArrayForeachSteal(nodes,
