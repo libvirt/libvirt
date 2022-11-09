@@ -44,7 +44,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -device '{"driver":"virtio-blk-pci-non-transitional","bus":"pci.5","addr":"0x0","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \
 -fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/fs1 \
 -device '{"driver":"virtio-9p-pci-non-transitional","id":"fs0","fsdev":"fsdev-fs0","mount_tag":"fs1","bus":"pci.1","addr":"0x0"}' \
--netdev user,id=hostnet0 \
+-netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci-non-transitional","netdev":"hostnet0","id":"net0","mac":"00:11:22:33:44:55","bus":"pci.2","addr":"0x0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"vhost-scsi-pci-non-transitional","wwpn":"naa.5123456789abcde0","vhostfd":"3","id":"hostdev0","bus":"pci.6","addr":"0x0"}' \

@@ -37,7 +37,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -device '{"driver":"virtio-9p-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"fs0","fsdev":"fsdev-fs0","mount_tag":"fs1","bus":"pci.0","addr":"0x3"}' \
 -fsdev local,security_model=mapped,writeout=immediate,id=fsdev-fs1,path=/export/fs2 \
 -device '{"driver":"virtio-9p-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"fs1","fsdev":"fsdev-fs1","mount_tag":"fs2","bus":"pci.0","addr":"0x4"}' \
--netdev user,id=hostnet0 \
+-netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"rss":true,"hash":true,"netdev":"hostnet0","id":"net0","mac":"52:54:56:58:5a:5c","bus":"pci.0","addr":"0x6"}' \
 -device '{"driver":"virtio-mouse-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"input0","bus":"pci.0","addr":"0xe"}' \
 -device '{"driver":"virtio-keyboard-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"input1","bus":"pci.0","addr":"0x10"}' \

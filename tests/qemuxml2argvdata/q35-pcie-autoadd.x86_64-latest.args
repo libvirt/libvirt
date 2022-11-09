@@ -49,9 +49,9 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-q35-test/.config \
 -device '{"driver":"virtio-blk-pci","bus":"pci.7","addr":"0x0","drive":"libvirt-1-format","id":"virtio-disk1","bootindex":1}' \
 -fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/to/guest \
 -device '{"driver":"virtio-9p-pci","id":"fs0","fsdev":"fsdev-fs0","mount_tag":"/import/from/host","bus":"pci.1","addr":"0x0"}' \
--netdev user,id=hostnet0 \
+-netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"00:11:22:33:44:55","bus":"pci.2","addr":"0x0"}' \
--netdev user,id=hostnet1 \
+-netdev '{"type":"user","id":"hostnet1"}' \
 -device '{"driver":"e1000e","netdev":"hostnet1","id":"net1","mac":"00:11:22:33:44:66","bus":"pci.3","addr":"0x0"}' \
 -device '{"driver":"virtio-input-host-pci","id":"input0","evdev":"/dev/input/event1234","bus":"pci.10","addr":"0x0"}' \
 -device '{"driver":"virtio-mouse-pci","id":"input1","bus":"pci.11","addr":"0x0"}' \

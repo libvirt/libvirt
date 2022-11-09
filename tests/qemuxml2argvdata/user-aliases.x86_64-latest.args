@@ -51,11 +51,11 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-gentoo/.config \
 -blockdev '{"driver":"file","filename":"/home/zippy/tmp/install-amd64-minimal-20140619.iso","node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":true,"cache":{"direct":true,"no-flush":false},"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"ide-cd","bus":"ide.1","unit":0,"share-rw":true,"drive":"libvirt-1-format","id":"ua-WhatAnAwesomeCDROM","bootindex":2,"write-cache":"on"}' \
--netdev tap,fd=3,vhost=on,vhostfd=44,id=hostua-CheckoutThisNIC \
+-netdev '{"type":"tap","fd":"3","vhost":true,"vhostfd":"44","id":"hostua-CheckoutThisNIC"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostua-CheckoutThisNIC","id":"ua-CheckoutThisNIC","mac":"52:54:00:d6:c0:0b","bus":"pci.0","addr":"0x3"}' \
--netdev socket,listen=127.0.0.1:1234,id=hostua-WeCanAlsoDoServerMode \
+-netdev '{"type":"socket","listen":"127.0.0.1:1234","id":"hostua-WeCanAlsoDoServerMode"}' \
 -device '{"driver":"rtl8139","netdev":"hostua-WeCanAlsoDoServerMode","id":"ua-WeCanAlsoDoServerMode","mac":"52:54:00:22:c9:42","bus":"pci.0","addr":"0x9"}' \
--netdev socket,connect=127.0.0.1:1234,id=hostua-AndAlsoClientMode \
+-netdev '{"type":"socket","connect":"127.0.0.1:1234","id":"hostua-AndAlsoClientMode"}' \
 -device '{"driver":"rtl8139","netdev":"hostua-AndAlsoClientMode","id":"ua-AndAlsoClientMode","mac":"52:54:00:8c:b1:f8","bus":"pci.0","addr":"0xa"}' \
 -device '{"driver":"ccid-card-emulated","backend":"nss-emulated","id":"smartcard0","bus":"ua-myCCID.0"}' \
 -chardev pty,id=charserial0 \

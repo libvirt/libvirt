@@ -1539,6 +1539,8 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "nbd-server-start/arg-type/tls-creds", QEMU_CAPS_NBD_TLS },
     { "nbd-server-add/arg-type/bitmap", QEMU_CAPS_NBD_BITMAP },
     { "netdev_add/arg-type/+vhost-vdpa", QEMU_CAPS_NETDEV_VHOST_VDPA },
+    /* JSON support for -netdev was introduced for the 'dgram' netdev type */
+    { "netdev_add/arg-type/type/^dgram", QEMU_CAPS_NETDEV_JSON },
     { "object-add/arg-type/qom-type/^secret", QEMU_CAPS_OBJECT_JSON },
     { "query-display-options/ret-type/+egl-headless/rendernode", QEMU_CAPS_EGL_HEADLESS_RENDERNODE },
     { "query-display-options/ret-type/+sdl", QEMU_CAPS_SDL },

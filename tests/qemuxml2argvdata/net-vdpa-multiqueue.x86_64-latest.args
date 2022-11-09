@@ -29,7 +29,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -add-fd set=0,fd=1732,opaque=net0-vdpa \
--netdev vhost-vdpa,vhostdev=/dev/fdset/0,queues=2,id=hostnet0 \
+-netdev '{"type":"vhost-vdpa","vhostdev":"/dev/fdset/0","queues":2,"id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","mq":true,"vectors":6,"netdev":"hostnet0","id":"net0","mac":"52:54:00:95:db:c0","bus":"pci.0","addr":"0x2"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \

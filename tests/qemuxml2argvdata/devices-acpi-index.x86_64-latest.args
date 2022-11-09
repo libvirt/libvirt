@@ -33,11 +33,11 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-fdr-br/.config \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/test1.img","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x4","acpi-index":42,"drive":"libvirt-1-format","id":"virtio-disk1"}' \
--netdev user,id=hostnet0 \
+-netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"00:11:22:33:44:55","bus":"pci.0","addr":"0x5","acpi-index":100}' \
--netdev user,id=hostnet1 \
+-netdev '{"type":"user","id":"hostnet1"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet1","id":"net1","mac":"00:11:22:33:44:55","bus":"pci.0","addr":"0x7","acpi-index":200}' \
--netdev user,id=hostnet2 \
+-netdev '{"type":"user","id":"hostnet2"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet2","id":"net2","mac":"00:11:22:33:44:55","bus":"pci.0","addr":"0x8","acpi-index":300}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"cirrus-vga","id":"video0","bus":"pci.0","addr":"0x2","acpi-index":1729}' \

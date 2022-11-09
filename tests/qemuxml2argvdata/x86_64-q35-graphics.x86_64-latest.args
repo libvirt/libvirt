@@ -41,7 +41,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/guest.qcow2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.4","addr":"0x0","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \
--netdev user,id=hostnet0 \
+-netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"52:54:00:d2:70:0b","bus":"pci.1","addr":"0x0"}' \
 -chardev pty,id=charserial0 \
 -device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0","index":0}' \

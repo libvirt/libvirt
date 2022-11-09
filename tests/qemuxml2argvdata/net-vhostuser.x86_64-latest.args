@@ -29,12 +29,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -chardev socket,id=charnet0,path=/tmp/vhost0.sock,server=on \
--netdev vhost-user,chardev=charnet0,id=hostnet0 \
+-netdev '{"type":"vhost-user","chardev":"charnet0","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"52:54:00:ee:96:6b","bus":"pci.0","addr":"0x2"}' \
 -chardev socket,id=charnet1,path=/tmp/vhost1.sock \
--netdev vhost-user,chardev=charnet1,id=hostnet1 \
+-netdev '{"type":"vhost-user","chardev":"charnet1","id":"hostnet1"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet1","id":"net1","mac":"52:54:00:ee:96:6c","bus":"pci.0","addr":"0x3"}' \
--netdev socket,listen=:2015,id=hostnet2 \
+-netdev '{"type":"socket","listen":":2015","id":"hostnet2"}' \
 -device '{"driver":"rtl8139","netdev":"hostnet2","id":"net2","mac":"52:54:00:95:db:c0","bus":"pci.0","addr":"0x4"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
