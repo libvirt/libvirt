@@ -61,7 +61,7 @@ void virBitmapClearBitExpand(virBitmap *bitmap, size_t b)
  * Get bit @b in @bitmap. Returns false if b is out of range.
  */
 bool virBitmapIsBitSet(virBitmap *bitmap, size_t b)
-    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
+    G_GNUC_WARN_UNUSED_RESULT;
 /*
  * Get setting of bit position @b in @bitmap and store in @result
  */

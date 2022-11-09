@@ -216,7 +216,7 @@ virBitmapIsSet(virBitmap *bitmap, size_t b)
 
 /**
  * virBitmapIsBitSet:
- * @bitmap: Pointer to bitmap
+ * @bitmap: Pointer to bitmap (May be NULL)
  * @b: bit position to get
  *
  * Get setting of bit position @b in @bitmap.
@@ -228,7 +228,7 @@ bool
 virBitmapIsBitSet(virBitmap *bitmap,
                   size_t b)
 {
-    if (bitmap->nbits <= b)
+    if (!bitmap || bitmap->nbits <= b)
         return false;
 
     return virBitmapIsSet(bitmap, b);
