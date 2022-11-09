@@ -8828,35 +8828,31 @@ qemuMonitorJSONQueryStats(qemuMonitor *mon,
     g_autoptr(virJSONValue) reply = NULL;
     g_autoptr(virJSONValue) vcpu_list = NULL;
     g_autoptr(virJSONValue) provider_list = NULL;
-
     size_t i;
 
     if (providers) {
         provider_list = virJSONValueNewArray();
 
         for (i = 0; i < providers->len; i++) {
-            g_autoptr(virJSONValue) provider_obj = virJSONValueNewObject();
             qemuMonitorQueryStatsProvider *provider = providers->pdata[i];
-            const char *type_str = qemuMonitorQueryStatsProviderTypeToString(provider->type);
-            virBitmap *names = provider->names;
+            g_autoptr(virJSONValue) provider_obj = NULL;
+            g_autoptr(virJSONValue) provider_names = NULL;
+            ssize_t curBit = -1;
 
-            if (virJSONValueObjectAppendString(provider_obj, "provider", type_str) < 0)
-                return NULL;
+            while ((curBit = virBitmapNextSetBit(provider->names, curBit)) != -1) {
+                if (!provider_names)
+                    provider_names = virJSONValueNewArray();
 
-            if (!virBitmapIsAllClear(names)) {
-                g_autoptr(virJSONValue) provider_names = virJSONValueNewArray();
-                ssize_t curBit = -1;
-
-                while ((curBit = virBitmapNextSetBit(names, curBit)) != -1) {
-                    const char *name = qemuMonitorQueryStatsNameTypeToString(curBit);
-
-                    if (virJSONValueArrayAppendString(provider_names, name) < 0)
-                        return NULL;
-                }
-
-                if (virJSONValueObjectAppend(provider_obj, "names", &provider_names) < 0)
+                if (virJSONValueArrayAppendString(provider_names,
+                                                  qemuMonitorQueryStatsNameTypeToString(curBit)) < 0)
                     return NULL;
             }
+
+            if (virJSONValueObjectAdd(&provider_obj,
+                                      "s:provider", qemuMonitorQueryStatsProviderTypeToString(provider->type),
+                                      "A:names", &provider_names,
+                                      NULL) < 0)
+                return NULL;
 
             if (virJSONValueArrayAppend(provider_list, &provider_obj) < 0)
                 return NULL;
