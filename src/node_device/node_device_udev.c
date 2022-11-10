@@ -1865,10 +1865,12 @@ udevEventHandleThread(void *opaque G_GNUC_UNUSED)
             }
 
             /* POSIX allows both EAGAIN and EWOULDBLOCK to be used
-             * interchangeably when the read would block or timeout was fired
+             * interchangeably when the read would block or timeout was fired.
+             * EINVAL might happen on too large udev entries, ignore those for
+             * the robustness of udevEventHandleThread.
              */
             VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
-            if (errno != EAGAIN && errno != EWOULDBLOCK) {
+            if (errno != EAGAIN && errno != EWOULDBLOCK && errno != EINVAL) {
             VIR_WARNINGS_RESET
                 virReportSystemError(errno, "%s",
                                      _("failed to receive device from udev "
