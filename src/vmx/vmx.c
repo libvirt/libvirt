@@ -1321,12 +1321,13 @@ virVMXConfigScanResultsCollector(const char* name,
                                  void *opaque)
 {
     struct virVMXConfigScanResults *results = opaque;
+    const char *suffix = NULL;
 
-    if (STRCASEPREFIX(name, "ethernet")) {
+    if ((suffix = STRCASESKIP(name, "ethernet"))) {
         unsigned int idx;
         char *p;
 
-        if (virStrToLong_uip(name + 8, &p, 10, &idx) < 0 ||
+        if (virStrToLong_uip(suffix, &p, 10, &idx) < 0 ||
             *p != '.') {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("failed to parse the index of the VMX key '%s'"),
