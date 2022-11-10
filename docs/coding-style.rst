@@ -735,6 +735,21 @@ use one of the following semantically named macros
 
      STRPREFIX(a, b)
 
+-  For case insensitive equality of a prefix:
+
+   ::
+
+     STRCASEPREFIX(a, b)
+
+-  For skipping prefix:
+
+   ::
+
+     /* Instead of:
+      *   STRPREFIX(a, b) ? a + strlen(b) : NULL
+      * use: */
+     STRSKIP(a, b)
+
 -  To avoid having to check if a or b are NULL:
 
    ::
