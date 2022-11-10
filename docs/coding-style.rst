@@ -750,6 +750,15 @@ use one of the following semantically named macros
       * use: */
      STRSKIP(a, b)
 
+-  For skipping prefix case insensitively:
+
+   ::
+
+     /* Instead of:
+      *   STRCASEPREFIX(a, b) ? a + strlen(b) : NULL
+      * use: */
+     STRCASESKIP(a, b)
+
 -  To avoid having to check if a or b are NULL:
 
    ::

@@ -87,6 +87,8 @@
 #define STRPREFIX(a, b) (strncmp(a, b, strlen(b)) == 0)
 #define STRCASEPREFIX(a, b) (g_ascii_strncasecmp(a, b, strlen(b)) == 0)
 #define STRSKIP(a, b) (STRPREFIX(a, b) ? (a) + strlen(b) : NULL)
+#define STRCASESKIP(a, b) (STRCASEPREFIX(a, b) ? (a) + strlen(b) : NULL)
+
 /**
  * STRLIM
  * @str: pointer to a string (evaluated once)
