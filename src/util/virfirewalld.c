@@ -240,6 +240,7 @@ virFirewallDGetPolicies(char ***policies, size_t *npolicies)
     GDBusConnection *sysbus = virGDBusGetSystemBus();
     g_autoptr(GVariant) reply = NULL;
     g_autoptr(GVariant) array = NULL;
+    g_autoptr(virError) error = NULL;
 
     *npolicies = 0;
     *policies = NULL;
@@ -247,16 +248,24 @@ virFirewallDGetPolicies(char ***policies, size_t *npolicies)
     if (!sysbus)
         return -1;
 
+    error = g_new0(virError, 1);
+
     if (virGDBusCallMethod(sysbus,
                            &reply,
                            G_VARIANT_TYPE("(as)"),
-                           NULL,
+                           error,
                            VIR_FIREWALL_FIREWALLD_SERVICE,
                            "/org/fedoraproject/FirewallD1",
                            "org.fedoraproject.FirewallD1.policy",
                            "getPolicies",
                            NULL) < 0)
         return -1;
+
+    if (error->level == VIR_ERR_ERROR) {
+        if (!virGDBusErrorIsUnknownMethod(error))
+            virReportErrorObject(error);
+        return -1;
+    }
 
     g_variant_get(reply, "(@as)", &array);
     *policies = g_variant_dup_strv(array, npolicies);
