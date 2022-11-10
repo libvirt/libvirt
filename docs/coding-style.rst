@@ -705,35 +705,35 @@ use one of the following semantically named macros
 
    ::
 
-     STREQ(a,b)
-     STRNEQ(a,b)
+     STREQ(a, b)
+     STRNEQ(a, b)
 
 -  For case insensitive equality:
 
    ::
 
-     STRCASEEQ(a,b)
-     STRCASENEQ(a,b)
+     STRCASEEQ(a, b)
+     STRCASENEQ(a, b)
 
 -  For strict equality of a substring:
 
    ::
 
-     STREQLEN(a,b,n)
-     STRNEQLEN(a,b,n)
+     STREQLEN(a, b, n)
+     STRNEQLEN(a, b, n)
 
 -  For case insensitive equality of a substring:
 
    ::
 
-     STRCASEEQLEN(a,b,n)
-     STRCASENEQLEN(a,b,n)
+     STRCASEEQLEN(a, b, n)
+     STRCASENEQLEN(a, b, n)
 
 -  For strict equality of a prefix:
 
    ::
 
-     STRPREFIX(a,b)
+     STRPREFIX(a, b)
 
 -  To avoid having to check if a or b are NULL:
 
