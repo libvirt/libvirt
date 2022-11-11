@@ -3258,8 +3258,7 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
         return NULL;
     }
 
-    if (virTypedParamsCopy(&tmp, params, nparams) < 0)
-        return NULL;
+    virTypedParamsCopy(&tmp, params, nparams);
     params = tmp;
 
     ret = VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,

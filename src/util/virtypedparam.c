@@ -347,7 +347,7 @@ virTypedParamsReplaceString(virTypedParameterPtr *params,
 }
 
 
-int
+void
 virTypedParamsCopy(virTypedParameterPtr *dst,
                    virTypedParameterPtr src,
                    int nparams)
@@ -356,7 +356,7 @@ virTypedParamsCopy(virTypedParameterPtr *dst,
 
     *dst = NULL;
     if (!src || nparams <= 0)
-        return 0;
+        return;
 
     *dst = g_new0(virTypedParameter, nparams);
 
@@ -369,8 +369,6 @@ virTypedParamsCopy(virTypedParameterPtr *dst,
             (*dst)[i].value = src[i].value;
         }
     }
-
-    return 0;
 }
 
 

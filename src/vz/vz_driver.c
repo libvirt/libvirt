@@ -3144,8 +3144,7 @@ vzDomainMigratePerformP2P(virDomainObj *dom,
     int ret = -1;
     int maxparams = nparams;
 
-    if (virTypedParamsCopy(&params, orig_params, nparams) < 0)
-        return -1;
+    virTypedParamsCopy(&params, orig_params, nparams);
 
     if (!(dconn = virConnectOpen(dconnuri)))
         goto done;

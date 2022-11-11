@@ -420,8 +420,7 @@ virIdentity *virIdentityNewCopy(virIdentity *src)
 {
     g_autoptr(virIdentity) ident = virIdentityNew();
 
-    if (virTypedParamsCopy(&ident->params, src->params, src->nparams) < 0)
-        return NULL;
+    virTypedParamsCopy(&ident->params, src->params, src->nparams);
     ident->nparams = src->nparams;
     ident->maxparams = src->nparams;
 
@@ -826,8 +825,8 @@ int virIdentitySetParameters(virIdentity *ident,
     ident->params = NULL;
     ident->nparams = 0;
     ident->maxparams = 0;
-    if (virTypedParamsCopy(&ident->params, params, nparams) < 0)
-        return -1;
+
+    virTypedParamsCopy(&ident->params, params, nparams);
     ident->nparams = nparams;
     ident->maxparams = nparams;
 
@@ -839,8 +838,7 @@ virTypedParamList *virIdentityGetParameters(virIdentity *ident)
 {
     virTypedParameter *tmp = NULL;
 
-    if (virTypedParamsCopy(&tmp, ident->params, ident->nparams) < 0)
-        return NULL;
+    virTypedParamsCopy(&tmp, ident->params, ident->nparams);
 
     return virTypedParamListFromParams(&tmp, ident->nparams);
 }
