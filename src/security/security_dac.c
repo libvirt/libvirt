@@ -48,6 +48,8 @@ VIR_LOG_INIT("security.security_dac");
 
 #define SECURITY_DAC_NAME "dac"
 #define DEV_SEV "/dev/sev"
+#define DEV_SGX_VEPC "/dev/sgx_vepc"
+#define DEV_SGX_PROVISION "/dev/sgx_provision"
 
 typedef struct _virSecurityDACData virSecurityDACData;
 struct _virSecurityDACData {
@@ -1843,24 +1845,24 @@ virSecurityDACRestoreMemoryLabel(virSecurityManager *mgr,
                                  virDomainDef *def G_GNUC_UNUSED,
                                  virDomainMemoryDef *mem)
 {
-    int ret = -1;
-
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        ret = virSecurityDACRestoreFileLabel(mgr, mem->nvdimmPath);
+        return virSecurityDACRestoreFileLabel(mgr, mem->nvdimmPath);
+
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        /* We set label on SGX /dev nodes iff running with namespaces, so we
+         * don't need to restore anything. */
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
-        ret = 0;
         break;
     }
 
-    return ret;
+    return 0;
 }
 
 
@@ -2020,35 +2022,43 @@ virSecurityDACSetMemoryLabel(virSecurityManager *mgr,
 {
     virSecurityDACData *priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDef *seclabel;
-    int ret = -1;
     uid_t user;
     gid_t group;
+
+    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
+    if (seclabel && !seclabel->relabel)
+        return 0;
+
+    if (virSecurityDACGetIds(seclabel, priv, &user, &group, NULL, NULL) < 0)
+        return -1;
 
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
-        if (seclabel && !seclabel->relabel)
-            return 0;
+        return virSecurityDACSetOwnership(mgr, NULL,
+                                          mem->nvdimmPath,
+                                          user, group, true);
 
-        if (virSecurityDACGetIds(seclabel, priv, &user, &group, NULL, NULL) < 0)
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        /* Skip chowning SGX if namespaces are disabled. */
+        if (priv->mountNamespace &&
+            (virSecurityDACSetOwnership(mgr, NULL,
+                                        DEV_SGX_VEPC,
+                                        user, group, true) < 0 ||
+             virSecurityDACSetOwnership(mgr, NULL,
+                                        DEV_SGX_PROVISION,
+                                        user, group, true) < 0))
             return -1;
-
-        ret = virSecurityDACSetOwnership(mgr, NULL,
-                                         mem->nvdimmPath,
-                                         user, group, true);
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
-        ret = 0;
         break;
     }
 
-    return ret;
+    return 0;
 }
 
 
