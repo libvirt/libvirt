@@ -7357,14 +7357,11 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
                                 virStorageSource *src,
                                 unsigned int flags)
 {
-    virStorageNetProtocol protocol;
     xmlNodePtr tmpnode;
 
     if (virXMLPropEnum(node, "protocol", virStorageNetProtocolTypeFromString,
-                       VIR_XML_PROP_REQUIRED, &protocol) < 0)
+                       VIR_XML_PROP_REQUIRED, &src->protocol) < 0)
         return -1;
-
-    src->protocol = protocol;
 
     if (!(src->path = virXMLPropString(node, "name")) &&
         src->protocol != VIR_STORAGE_NET_PROTOCOL_NBD) {

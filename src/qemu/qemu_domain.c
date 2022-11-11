@@ -8952,7 +8952,7 @@ qemuDomainPrepareStorageSourceTLS(virStorageSource *src,
     if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_NETWORK)
         return 0;
 
-    switch ((virStorageNetProtocol) src->protocol) {
+    switch (src->protocol) {
     case VIR_STORAGE_NET_PROTOCOL_VXHS:
         /* vxhs is no longer supported */
         break;

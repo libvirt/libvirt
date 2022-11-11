@@ -1046,13 +1046,12 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
             break;
         }
 
-        switch ((virStorageNetProtocol) src->protocol) {
+        switch (src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
             driver = "gluster";
             if (!(fileprops = qemuBlockStorageSourceGetGlusterProps(src, onlytarget)))
                 return NULL;
             break;
-
 
         case VIR_STORAGE_NET_PROTOCOL_HTTP:
         case VIR_STORAGE_NET_PROTOCOL_HTTPS:
@@ -1969,7 +1968,7 @@ qemuBlockGetBackingStoreString(virStorageSource *src,
             src->readahead == 0 &&
             src->reconnectDelay == 0) {
 
-            switch ((virStorageNetProtocol) src->protocol) {
+            switch (src->protocol) {
             case VIR_STORAGE_NET_PROTOCOL_NBD:
             case VIR_STORAGE_NET_PROTOCOL_HTTP:
             case VIR_STORAGE_NET_PROTOCOL_HTTPS:
@@ -2352,7 +2351,7 @@ qemuBlockStorageSourceCreateGetStorageProps(virStorageSource *src,
         break;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch ((virStorageNetProtocol) src->protocol) {
+        switch (src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
             driver = "gluster";
             if (!(location = qemuBlockStorageSourceGetGlusterProps(src, false)))

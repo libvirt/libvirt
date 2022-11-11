@@ -658,7 +658,7 @@ qemuSnapshotPrepareDiskExternalInactive(virDomainSnapshotDiskDef *snapdisk,
         break;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch ((virStorageNetProtocol) domdisk->src->protocol) {
+        switch (domdisk->src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_NBD:
         case VIR_STORAGE_NET_PROTOCOL_RBD:
@@ -883,7 +883,7 @@ qemuSnapshotPrepareDiskInternal(virDomainDiskDef *disk,
         return 0;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch ((virStorageNetProtocol) disk->src->protocol) {
+        switch (disk->src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_NBD:
         case VIR_STORAGE_NET_PROTOCOL_RBD:

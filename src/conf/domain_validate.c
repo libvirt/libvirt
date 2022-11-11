@@ -494,7 +494,7 @@ virDomainDiskDefValidateSourceChainOne(const virStorageSource *src)
             return -1;
         }
 
-        switch ((virStorageNetProtocol) src->protocol) {
+        switch (src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_ISCSI:
         case VIR_STORAGE_NET_PROTOCOL_HTTP:
         case VIR_STORAGE_NET_PROTOCOL_HTTPS:

@@ -44,6 +44,7 @@ virStorageSourceParseBackingURI(virStorageSource *src,
     const char *path = NULL;
     int transport = 0;
     g_auto(GStrv) scheme = NULL;
+    int protocol;
 
     if (!(uri = virURIParse(uristr))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -59,12 +60,13 @@ virStorageSourceParseBackingURI(virStorageSource *src,
         return -1;
 
     if (!scheme[0] ||
-        (src->protocol = virStorageNetProtocolTypeFromString(scheme[0])) < 0) {
+        (protocol = virStorageNetProtocolTypeFromString(scheme[0])) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid backing protocol '%1$s'"),
                        NULLSTR(scheme[0]));
         return -1;
     }
+    src->protocol = protocol;
 
     if (scheme[1]) {
         if ((transport = virStorageNetHostTransportTypeFromString(scheme[1])) < 0) {
@@ -370,7 +372,8 @@ virStorageSourceParseBackingColon(virStorageSource *src,
                                   const char *path)
 {
     const char *p;
-    g_autofree char *protocol = NULL;
+    g_autofree char *protocol_str = NULL;
+    int protocol;
 
     if (!(p = strchr(path, ':'))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -379,16 +382,18 @@ virStorageSourceParseBackingColon(virStorageSource *src,
         return -1;
     }
 
-    protocol = g_strndup(path, p - path);
+    protocol_str = g_strndup(path, p - path);
 
-    if ((src->protocol = virStorageNetProtocolTypeFromString(protocol)) < 0) {
+    if ((protocol = virStorageNetProtocolTypeFromString(protocol_str)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid backing protocol '%1$s'"),
-                       protocol);
+                       protocol_str);
         return -1;
     }
 
-    switch ((virStorageNetProtocol) src->protocol) {
+    src->protocol = protocol;
+
+    switch (src->protocol) {
     case VIR_STORAGE_NET_PROTOCOL_NBD:
         if (virStorageSourceParseNBDColonString(path, src) < 0)
             return -1;
@@ -404,7 +409,7 @@ virStorageSourceParseBackingColon(virStorageSource *src,
     case VIR_STORAGE_NET_PROTOCOL_NONE:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("backing store parser is not implemented for protocol %1$s"),
-                       protocol);
+                       protocol_str);
         return -1;
 
     case VIR_STORAGE_NET_PROTOCOL_HTTP:
@@ -419,7 +424,7 @@ virStorageSourceParseBackingColon(virStorageSource *src,
     case VIR_STORAGE_NET_PROTOCOL_NFS:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("malformed backing store path for protocol %1$s"),
-                       protocol);
+                       protocol_str);
         return -1;
     }
 

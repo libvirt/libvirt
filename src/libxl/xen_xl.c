@@ -1448,7 +1448,7 @@ xenFormatXLDiskSrcNet(virStorageSource *src)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    switch ((virStorageNetProtocol) src->protocol) {
+    switch (src->protocol) {
     case VIR_STORAGE_NET_PROTOCOL_NBD:
     case VIR_STORAGE_NET_PROTOCOL_HTTP:
     case VIR_STORAGE_NET_PROTOCOL_HTTPS:
