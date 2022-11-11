@@ -6025,6 +6025,119 @@ qemuMonitorJSONGetSEVCapabilities(qemuMonitor *mon,
     return 1;
 }
 
+
+/**
+ * qemuMonitorJSONGetSGXCapabilities:
+ * @mon: qemu monitor object
+ * @capabilities: pointer to pointer to a SGX capability structure to be filled
+ *
+ * This function queries and fills in INTEL's SGX platform-specific data.
+ * Note that from QEMU's POV both -object sgx-epc and query-sgx-capabilities
+ * can be present even if SGX is not available, which basically leaves us with
+ * checking for JSON "GenericError" in order to differentiate between compiled-in
+ * support and actual SGX support on the platform.
+ *
+ * Returns: -1 on error,
+ *           0 if SGX is not supported, and
+ *           1 if SGX is supported on the platform.
+ */
+int
+qemuMonitorJSONGetSGXCapabilities(qemuMonitor *mon,
+                                  virSGXCapability **capabilities)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virSGXCapability) capability = NULL;
+    unsigned long long section_size_sum = 0;
+    virJSONValue *sgxSections = NULL;
+    virJSONValue *caps;
+    size_t i;
+
+    *capabilities = NULL;
+    capability = g_new0(virSGXCapability, 1);
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-sgx-capabilities", NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    /* QEMU has only compiled-in support of SGX */
+    if (qemuMonitorJSONHasError(reply, "GenericError"))
+        return 0;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    caps = virJSONValueObjectGetObject(reply, "return");
+
+    if (virJSONValueObjectGetBoolean(caps, "flc", &capability->flc) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-sgx-capabilities reply was missing 'flc' field"));
+        return -1;
+    }
+
+    if (virJSONValueObjectGetBoolean(caps, "sgx1", &capability->sgx1) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-sgx-capabilities reply was missing 'sgx1' field"));
+        return -1;
+    }
+
+    if (virJSONValueObjectGetBoolean(caps, "sgx2", &capability->sgx2) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-sgx-capabilities reply was missing 'sgx2' field"));
+        return -1;
+    }
+
+    if ((sgxSections = virJSONValueObjectGetArray(caps, "sections"))) {
+        /* SGX EPC sections info was added since QEMU 7.0.0 */
+        unsigned long long size;
+
+        capability->nSgxSections = virJSONValueArraySize(sgxSections);
+        capability->sgxSections = g_new0(virSGXSection, capability->nSgxSections);
+
+        for (i = 0; i < capability->nSgxSections; i++) {
+            virJSONValue *elem = virJSONValueArrayGet(sgxSections, i);
+
+            if (virJSONValueObjectGetNumberUlong(elem, "size", &size) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("query-sgx-capabilities reply was missing 'size' field"));
+                return -1;
+            }
+            capability->sgxSections[i].size = size / 1024;
+            section_size_sum += capability->sgxSections[i].size;
+
+            if (virJSONValueObjectGetNumberUint(elem, "node",
+                                               &capability->sgxSections[i].node) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("query-sgx-capabilities reply was missing 'node' field"));
+                return -1;
+            }
+        }
+    } else {
+        /* no support for QEMU version older than 7.0.0 */
+        return 0;
+    }
+
+    if (virJSONValueObjectHasKey(caps, "section-size")) {
+        unsigned long long section_size = 0;
+
+        if (virJSONValueObjectGetNumberUlong(caps, "section-size", &section_size) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-sgx-capabilities reply was missing 'section-size' field"));
+            return -1;
+        }
+        capability->section_size = section_size / 1024;
+    } else {
+        /* QEMU no longer reports deprecated attribute. */
+        capability->section_size = section_size_sum;
+    }
+
+    *capabilities = g_steal_pointer(&capability);
+    return 1;
+}
+
+
 static virJSONValue *
 qemuMonitorJSONBuildInetSocketAddress(const char *host,
                                       const char *port)
