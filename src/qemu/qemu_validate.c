@@ -5047,7 +5047,7 @@ qemuValidateDomainDeviceDefMemory(virDomainMemoryDef *mem,
             while ((node = virBitmapNextSetBit(mem->sourceNodes, node)) >= 0) {
                 if (mem->size > sgxCaps->sgxSections[node].size) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("sgx epc size %lld on host node %ld is less than requested size %lld"),
+                                   _("sgx epc size %lld on host node %zd is less than requested size %lld"),
                                    sgxCaps->sgxSections[node].size, node, mem->size);
                     return -1;
                 }
