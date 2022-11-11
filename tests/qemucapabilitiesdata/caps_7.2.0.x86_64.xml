@@ -200,10 +200,10 @@
   <flag name='query-stats'/>
   <flag name='query-stats-schemas'/>
   <flag name='thread-context'/>
-  <version>7001050</version>
+  <version>7001091</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100245</microcodeVersion>
-  <package>v7.1.0-1579-g5107fd3eff</package>
+  <package>v7.2.0-rc1</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
