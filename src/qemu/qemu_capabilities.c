@@ -677,6 +677,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 435 */
               "query-stats", /* QEMU_CAPS_QUERY_STATS */
               "query-stats-schemas", /* QEMU_CAPS_QUERY_STATS_SCHEMAS */
+              "sgx-epc", /* QEMU_CAPS_SGX_EPC */
     );
 
 
@@ -757,6 +758,8 @@ struct _virQEMUCaps {
     virGICCapability *gicCapabilities;
 
     virSEVCapability *sevCapabilities;
+
+    virSGXCapability *sgxCapabilities;
 
     /* Capabilities which may differ depending on the accelerator. */
     virQEMUCapsAccel kvm;
@@ -1380,6 +1383,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "s390-pv-guest", QEMU_CAPS_S390_PV_GUEST },
     { "virtio-mem-pci", QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI },
     { "virtio-iommu-pci", QEMU_CAPS_DEVICE_VIRTIO_IOMMU_PCI },
+    { "sgx-epc", QEMU_CAPS_SGX_EPC },
 };
 
 
@@ -1891,6 +1895,36 @@ virQEMUCapsSEVInfoCopy(virSEVCapability **dst,
 }
 
 
+static int
+virQEMUCapsSGXInfoCopy(virSGXCapability **dst,
+                       virSGXCapability *src)
+{
+    g_autoptr(virSGXCapability) tmp = NULL;
+
+    if (!src) {
+        *dst = NULL;
+        return 0;
+    }
+
+    tmp = g_new0(virSGXCapability, 1);
+
+    tmp->flc = src->flc;
+    tmp->sgx1 = src->sgx1;
+    tmp->sgx2 = src->sgx2;
+    tmp->section_size = src->section_size;
+
+    if (src->nSgxSections > 0) {
+        tmp->sgxSections = g_new0(virSGXSection, src->nSgxSections);
+        memcpy(tmp->sgxSections, src->sgxSections,
+               src->nSgxSections * sizeof(*tmp->sgxSections));
+        tmp->nSgxSections = src->nSgxSections;
+    }
+
+    *dst = g_steal_pointer(&tmp);
+    return 0;
+}
+
+
 static void
 virQEMUCapsAccelCopyMachineTypes(virQEMUCapsAccel *dst,
                                  virQEMUCapsAccel *src)
@@ -1972,6 +2006,12 @@ virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps)
                                qemuCaps->sevCapabilities) < 0)
         return NULL;
 
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SGX_EPC) &&
+        virQEMUCapsSGXInfoCopy(&ret->sgxCapabilities,
+                               qemuCaps->sgxCapabilities) < 0)
+        return NULL;
+
     return g_steal_pointer(&ret);
 }
 
@@ -2010,6 +2050,7 @@ void virQEMUCapsDispose(void *obj)
     virCPUDataFree(qemuCaps->cpuData);
 
     virSEVCapabilitiesFree(qemuCaps->sevCapabilities);
+    virSGXCapabilitiesFree(qemuCaps->sgxCapabilities);
 
     virQEMUCapsAccelClear(&qemuCaps->kvm);
     virQEMUCapsAccelClear(&qemuCaps->hvf);
@@ -2538,6 +2579,13 @@ virSEVCapability *
 virQEMUCapsGetSEVCapabilities(virQEMUCaps *qemuCaps)
 {
     return qemuCaps->sevCapabilities;
+}
+
+
+virSGXCapability *
+virQEMUCapsGetSGXCapabilities(virQEMUCaps *qemuCaps)
+{
+    return qemuCaps->sgxCapabilities;
 }
 
 
@@ -3373,6 +3421,31 @@ virQEMUCapsProbeQMPSEVCapabilities(virQEMUCaps *qemuCaps,
 }
 
 
+static int
+virQEMUCapsProbeQMPSGXCapabilities(virQEMUCaps *qemuCaps,
+                                   qemuMonitor *mon)
+{
+    int rc = -1;
+    virSGXCapability *caps = NULL;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SGX_EPC))
+        return 0;
+
+    if ((rc = qemuMonitorGetSGXCapabilities(mon, &caps)) < 0)
+        return -1;
+
+    /* SGX isn't actually supported */
+    if (rc == 0) {
+        virQEMUCapsClear(qemuCaps, QEMU_CAPS_SGX_EPC);
+        return 0;
+    }
+
+    virSGXCapabilitiesFree(qemuCaps->sgxCapabilities);
+    qemuCaps->sgxCapabilities = caps;
+    return 0;
+}
+
+
 /*
  * Filter for features which should never be passed to QEMU. Either because
  * QEMU never supported them or they were dropped as they never did anything
@@ -4168,6 +4241,97 @@ virQEMUCapsParseSEVInfo(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
 
 
 static int
+virQEMUCapsParseSGXInfo(virQEMUCaps *qemuCaps,
+                        xmlXPathContextPtr ctxt)
+{
+    g_autoptr(virSGXCapability) sgx = NULL;
+    xmlNodePtr sgxSections = NULL;
+    g_autofree char *flc = NULL;
+    g_autofree char *sgx1 = NULL;
+    g_autofree char *sgx2 = NULL;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SGX_EPC))
+        return 0;
+
+    if (virXPathBoolean("boolean(./sgx)", ctxt) == 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing SGX platform data in QEMU capabilities cache"));
+        return -1;
+    }
+
+    sgx = g_new0(virSGXCapability, 1);
+
+    if ((!(flc = virXPathString("string(./sgx/flc)", ctxt))) ||
+        virStringParseYesNo(flc, &sgx->flc) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing or invalid SGX platform flc in QEMU capabilities cache"));
+        return -1;
+    }
+
+    if ((!(sgx1 = virXPathString("string(./sgx/sgx1)", ctxt))) ||
+        virStringParseYesNo(sgx1, &sgx->sgx1) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing or invalid SGX platform sgx1 in QEMU capabilities cache"));
+        return -1;
+    }
+
+    if ((!(sgx2 = virXPathString("string(./sgx/sgx2)", ctxt))) ||
+        virStringParseYesNo(sgx2, &sgx->sgx2) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing or invalid SGX platform sgx2 in QEMU capabilities cache"));
+        return -1;
+    }
+
+    if (virXPathULongLong("string(./sgx/section_size)", ctxt,
+                          &sgx->section_size) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing or malformed SGX platform section_size in QEMU capabilities cache"));
+        return -1;
+    }
+
+    if ((sgxSections = virXPathNode("./sgx/sections", ctxt))) {
+        g_autofree xmlNodePtr *sectionNodes = NULL;
+        int nSgxSections = 0;
+        size_t i;
+        VIR_XPATH_NODE_AUTORESTORE(ctxt);
+
+        ctxt->node = sgxSections;
+        nSgxSections = virXPathNodeSet("./section", ctxt, &sectionNodes);
+
+        if (nSgxSections < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to parse SGX sections in QEMU capabilities cache"));
+            return -1;
+        }
+
+        sgx->nSgxSections = nSgxSections;
+        sgx->sgxSections = g_new0(virSGXSection, nSgxSections);
+
+        for (i = 0; i < nSgxSections; i++) {
+            if (virXMLPropUInt(sectionNodes[i], "node", 10,
+                              VIR_XML_PROP_REQUIRED,
+                              &(sgx->sgxSections[i].node)) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing node name in QEMU capabilities cache"));
+                return -1;
+            }
+
+            if (virXMLPropULongLong(sectionNodes[i], "size", 10,
+                                   VIR_XML_PROP_REQUIRED,
+                                   &(sgx->sgxSections[i].size)) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing size name in QEMU capabilities cache"));
+                return -1;
+            }
+        }
+    }
+
+    qemuCaps->sgxCapabilities = g_steal_pointer(&sgx);
+    return 0;
+}
+
+
+static int
 virQEMUCapsParseFlags(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
 {
     g_autofree xmlNodePtr *nodes = NULL;
@@ -4455,6 +4619,9 @@ virQEMUCapsLoadCache(virArch hostArch,
     if (virQEMUCapsParseSEVInfo(qemuCaps, ctxt) < 0)
         return -1;
 
+    if (virQEMUCapsParseSGXInfo(qemuCaps, ctxt) < 0)
+        return -1;
+
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
         virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_KVM);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_HVF))
@@ -4643,6 +4810,38 @@ virQEMUCapsFormatSEVInfo(virQEMUCaps *qemuCaps, virBuffer *buf)
 }
 
 
+static void
+virQEMUCapsFormatSGXInfo(virQEMUCaps *qemuCaps,
+                         virBuffer *buf)
+{
+    virSGXCapability *sgx = virQEMUCapsGetSGXCapabilities(qemuCaps);
+
+    virBufferAddLit(buf, "<sgx supported='yes'>\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferAsprintf(buf, "<flc>%s</flc>\n", sgx->flc ? "yes" : "no");
+    virBufferAsprintf(buf, "<sgx1>%s</sgx1>\n", sgx->sgx1 ? "yes" : "no");
+    virBufferAsprintf(buf, "<sgx2>%s</sgx2>\n", sgx->sgx2 ? "yes" : "no");
+    virBufferAsprintf(buf, "<section_size unit='KiB'>%llu</section_size>\n", sgx->section_size);
+
+    if (sgx->nSgxSections > 0) {
+        size_t i;
+        virBufferAddLit(buf, "<sections>\n");
+
+        for (i = 0; i < sgx->nSgxSections; i++) {
+            virBufferAdjustIndent(buf, 2);
+            virBufferAsprintf(buf, "<section node='%u' ", sgx->sgxSections[i].node);
+            virBufferAsprintf(buf, "size='%llu' ", sgx->sgxSections[i].size);
+            virBufferAddLit(buf, "unit='KiB'/>\n");
+            virBufferAdjustIndent(buf, -2);
+        }
+        virBufferAddLit(buf, "</sections>\n");
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</sgx>\n");
+}
+
+
 char *
 virQEMUCapsFormatCache(virQEMUCaps *qemuCaps)
 {
@@ -4723,6 +4922,9 @@ virQEMUCapsFormatCache(virQEMUCaps *qemuCaps)
 
     if (qemuCaps->sevCapabilities)
         virQEMUCapsFormatSEVInfo(qemuCaps, &buf);
+
+    if (qemuCaps->sgxCapabilities)
+        virQEMUCapsFormatSGXInfo(qemuCaps, &buf);
 
     if (qemuCaps->kvmSupportsNesting)
         virBufferAddLit(&buf, "<kvmSupportsNesting/>\n");
@@ -5352,6 +5554,8 @@ virQEMUCapsInitQMPMonitor(virQEMUCaps *qemuCaps,
     if (virQEMUCapsProbeQMPGICCapabilities(qemuCaps, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPSEVCapabilities(qemuCaps, mon) < 0)
+        return -1;
+    if (virQEMUCapsProbeQMPSGXCapabilities(qemuCaps, mon) < 0)
         return -1;
 
     virQEMUCapsInitProcessCaps(qemuCaps);

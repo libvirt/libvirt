@@ -195,6 +195,7 @@
   <flag name='display-dbus'/>
   <flag name='usb-host.guest-resets-all'/>
   <flag name='migration.blocked-reasons'/>
+  <flag name='sgx-epc'/>
   <version>7000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
@@ -3723,4 +3724,14 @@
   <machine type='tcg' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
+  <sgx supported='yes'>
+    <flc>no</flc>
+    <sgx1>yes</sgx1>
+    <sgx2>no</sgx2>
+    <section_size unit='KiB'>524288</section_size>
+    <sections>
+      <section node='0' size='262144' unit='KiB'/>
+      <section node='1' size='262144' unit='KiB'/>
+    </sections>
+  </sgx>
 </qemuCaps>

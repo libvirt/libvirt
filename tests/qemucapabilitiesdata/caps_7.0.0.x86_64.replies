@@ -33030,6 +33030,32 @@
 }
 
 {
+  "execute": "query-sgx-capabilities",
+  "id": "libvirt-48"
+}
+
+{
+  "return": {
+    "sgx": true,
+    "flc": false,
+    "sgx1": true,
+    "sgx2": false,
+    "section-size": 536870912,
+    "sections": [
+      {
+        "node": 0,
+        "size": 268435456
+      },
+      {
+        "node": 1,
+        "size": 268435456
+      }
+    ]
+  },
+  "id": "libvirt-48"
+}
+
+{
   "execute": "query-cpu-model-expansion",
   "arguments": {
     "type": "static",
@@ -33037,7 +33063,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
@@ -33374,7 +33400,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
@@ -33388,7 +33414,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-50"
 }
 
 {
@@ -33725,7 +33751,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-50"
 }
 
 {

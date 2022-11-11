@@ -656,6 +656,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 435 */
     QEMU_CAPS_QUERY_STATS,  /* accepts query-stats */
     QEMU_CAPS_QUERY_STATS_SCHEMAS,  /* accepts query-stats-schemas */
+    QEMU_CAPS_SGX_EPC, /* -object sgx-epc,... */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
@@ -858,6 +859,9 @@ virQEMUCapsCPUFeatureFromQEMUInPlace(virArch arch,
 
 virSEVCapability *
 virQEMUCapsGetSEVCapabilities(virQEMUCaps *qemuCaps);
+
+virSGXCapability *
+virQEMUCapsGetSGXCapabilities(virQEMUCaps *qemuCaps);
 
 bool
 virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps) G_NO_INLINE;
