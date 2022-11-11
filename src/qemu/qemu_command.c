@@ -3307,7 +3307,11 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
 
     props = virJSONValueNewObject();
 
-    if (!mem->nvdimmPath &&
+    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_SGX_EPC) {
+        backendType = "memory-backend-epc";
+        if (!priv->memPrealloc)
+            prealloc = true;
+    } else if (!mem->nvdimmPath &&
         def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_MEMFD) {
         backendType = "memory-backend-memfd";
 
@@ -3322,7 +3326,6 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
 
         if (systemMemory)
             disableCanonicalPath = true;
-
     } else if (useHugepage || mem->nvdimmPath || memAccess ||
         def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
 
@@ -6600,6 +6603,8 @@ qemuAppendDomainMemoryMachineParams(virBuffer *buf,
                                     virQEMUCaps *qemuCaps)
 {
     virTristateSwitch dump = def->mem.dump_core;
+    bool nvdimmAdded = false;
+    int epcNum = 0;
     size_t i;
 
     if (dump == VIR_TRISTATE_SWITCH_ABSENT)
@@ -6611,8 +6616,36 @@ qemuAppendDomainMemoryMachineParams(virBuffer *buf,
         virBufferAddLit(buf, ",mem-merge=off");
 
     for (i = 0; i < def->nmems; i++) {
-        if (def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
-            virBufferAddLit(buf, ",nvdimm=on");
+        int targetNode = def->mems[i]->targetNode;
+
+        switch (def->mems[i]->model) {
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+            if (!nvdimmAdded) {
+                virBufferAddLit(buf, ",nvdimm=on");
+                nvdimmAdded = true;
+            }
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+            /* add sgx epc memory to -machine parameter */
+
+            if (targetNode < 0) {
+                /* set NUMA target node to 0 by default if user doesn't
+                 * specify it. */
+                targetNode = 0;
+            }
+
+            virBufferAsprintf(buf, ",sgx-epc.%d.memdev=mem%s,sgx-epc.%d.node=%d",
+                              epcNum, def->mems[i]->info.alias, epcNum, targetNode);
+
+            epcNum++;
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        case VIR_DOMAIN_MEMORY_MODEL_NONE:
+        case VIR_DOMAIN_MEMORY_MODEL_LAST:
             break;
         }
     }
@@ -7322,11 +7355,27 @@ qemuBuildMemoryDeviceCommandLine(virCommand *cmd,
         if (qemuBuildMemoryDimmBackendStr(cmd, def->mems[i], def, cfg, priv) < 0)
             return -1;
 
-        if (!(props = qemuBuildMemoryDeviceProps(cfg, priv, def, def->mems[i])))
-            return -1;
+        switch (def->mems[i]->model) {
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+            if (!(props = qemuBuildMemoryDeviceProps(cfg, priv, def, def->mems[i])))
+                return -1;
 
-        if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, priv->qemuCaps) < 0)
-            return -1;
+            if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, priv->qemuCaps) < 0)
+                return -1;
+
+            break;
+
+        /* sgx epc memory will be added to -machine parameter, so skip here */
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_NONE:
+        case VIR_DOMAIN_MEMORY_MODEL_LAST:
+            break;
+        }
     }
 
     return 0;

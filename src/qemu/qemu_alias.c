@@ -464,7 +464,8 @@ qemuDeviceMemoryGetAliasID(virDomainDef *def,
      * valid */
     if (!oldAlias &&
         mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM &&
-        mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM)
+        mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM &&
+        mem->model != VIR_DOMAIN_MEMORY_MODEL_SGX_EPC)
         return mem->info.addr.dimm.slot;
 
     for (i = 0; i < def->nmems; i++) {

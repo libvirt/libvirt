@@ -1,0 +1,40 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-QEMUGuest1 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=QEMUGuest1,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
+-machine pc-q35-7.0,usb=off,dump-guest-core=off,sgx-epc.0.memdev=memepc0,sgx-epc.0.node=0,sgx-epc.1.memdev=memepc1,sgx-epc.1.node=1 \
+-accel tcg \
+-cpu qemu64 \
+-m size=1048576k,slots=16,maxmem=1130496k \
+-overcommit mem-lock=off \
+-smp 2,sockets=2,cores=1,threads=1 \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node0","size":536870912}' \
+-numa node,nodeid=0,cpus=0,memdev=ram-node0 \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node1","size":536870912}' \
+-numa node,nodeid=1,cpus=1,memdev=ram-node1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-no-acpi \
+-boot strict=on \
+-device '{"driver":"pcie-root-port","port":8,"chassis":1,"id":"pci.1","bus":"pcie.0","multifunction":true,"addr":"0x1"}' \
+-device '{"driver":"pcie-root-port","port":9,"chassis":2,"id":"pci.2","bus":"pcie.0","addr":"0x1.0x1"}' \
+-object '{"qom-type":"memory-backend-epc","id":"memepc0","prealloc":true,"size":67108864,"host-nodes":[0,1],"policy":"bind"}' \
+-object '{"qom-type":"memory-backend-epc","id":"memepc1","prealloc":true,"size":16777216,"host-nodes":[0,1],"policy":"bind"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.1","addr":"0x0"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

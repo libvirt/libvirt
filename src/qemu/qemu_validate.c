@@ -4984,6 +4984,9 @@ static int
 qemuValidateDomainDeviceDefMemory(virDomainMemoryDef *mem,
                                   virQEMUCaps *qemuCaps)
 {
+    virSGXCapability *sgxCaps;
+    ssize_t node = -1;
+
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PC_DIMM)) {
@@ -5031,6 +5034,35 @@ qemuValidateDomainDeviceDefMemory(virDomainMemoryDef *mem,
                            _("sgx epc isn't supported by this QEMU binary"));
             return -1;
         }
+
+        sgxCaps = virQEMUCapsGetSGXCapabilities(qemuCaps);
+
+        if (sgxCaps->nSgxSections == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this QEMU version didn't provide SGX EPC NUMA info"));
+            return -1;
+        }
+
+        if (mem->sourceNodes) {
+            while ((node = virBitmapNextSetBit(mem->sourceNodes, node)) >= 0) {
+                if (mem->size > sgxCaps->sgxSections[node].size) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("sgx epc size %lld on host node %ld is less than requested size %lld"),
+                                   sgxCaps->sgxSections[node].size, node, mem->size);
+                    return -1;
+                }
+            }
+        } else {
+            /* allocate epc from host node 0 by default if user doesn't
+             * specify it. */
+            if (mem->size > sgxCaps->sgxSections[0].size) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("sgx epc size %lld on host node %d is less than requested size %lld"),
+                               sgxCaps->sgxSections[0].size, 0, mem->size);
+                return -1;
+            }
+        }
+
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NONE:

@@ -7208,13 +7208,25 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
             return -1;
         }
 
-        /* While 'id' attribute is marked as optional in QEMU's QAPI
-         * specification, Libvirt always sets it. Thus we can fail if not
-         * present. */
-        if (!(devalias = virJSONValueObjectGetString(dimminfo, "id"))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("dimm memory info data is missing 'id'"));
-            return -1;
+        if (STREQ(type, "dimm") || STREQ(type, "nvdimm") || STREQ(type, "virtio-mem")) {
+            /* While 'id' attribute is marked as optional in QEMU's QAPI
+            * specification, Libvirt always sets it. Thus we can fail if not
+            * present. */
+            if (!(devalias = virJSONValueObjectGetString(dimminfo, "id"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("dimm memory info data is missing 'id'"));
+                return -1;
+            }
+        } else if (STREQ(type, "sgx-epc")) {
+            if (!(devalias = virJSONValueObjectGetString(dimminfo, "memdev"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("sgx-epc memory info data is missing 'memdev'"));
+                return -1;
+            }
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("%s memory device info is not handled yet"), type);
+                return -1;
         }
 
         meminfo = g_new0(qemuMonitorMemoryDeviceInfo, 1);
@@ -7256,6 +7268,21 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
                                                  &meminfo->size) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("malformed/missing size in virtio memory info"));
+                return -1;
+            }
+        } else if (STREQ(type, "sgx-epc")) {
+            /* sgx-epc memory devices */
+            if (virJSONValueObjectGetNumberUlong(dimminfo, "memaddr",
+                                                 &meminfo->address) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("malformed/missing memaddr in sgx-epc memory info"));
+                return -1;
+            }
+
+            if (virJSONValueObjectGetNumberUlong(dimminfo, "size",
+                                                 &meminfo->size) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("malformed/missing size in sgx-epc memory info"));
                 return -1;
             }
         } else {

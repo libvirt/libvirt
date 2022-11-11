@@ -2967,6 +2967,8 @@ mymain(void)
     DO_TEST_PARSE_ERROR("cpu-phys-bits-emulate3", QEMU_CAPS_KVM);
     DO_TEST_PARSE_ERROR("cpu-phys-bits-passthrough2", QEMU_CAPS_KVM);
 
+    DO_TEST_CAPS_VER("sgx-epc", "7.0.0");
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
