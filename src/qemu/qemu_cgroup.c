@@ -121,6 +121,28 @@ qemuCgroupDenyDevicePath(virDomainObj *vm,
 
 
 static int
+qemuCgroupDenyDevicesPaths(virDomainObj *vm,
+                           const char *const *paths,
+                           int perms,
+                           bool ignoreEacces)
+{
+    size_t i;
+
+    for (i = 0; paths[i] != NULL; i++) {
+        if (!virFileExists(paths[i])) {
+            VIR_DEBUG("Ignoring non-existent device %s", paths[i]);
+            continue;
+        }
+
+        if (qemuCgroupDenyDevicePath(vm, paths[i], perms, ignoreEacces) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuSetupImagePathCgroup(virDomainObj *vm,
                          const char *path,
                          bool readonly)
@@ -520,16 +542,32 @@ qemuSetupMemoryDevicesCgroup(virDomainObj *vm,
                              virDomainMemoryDef *mem)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-        mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM)
-        return 0;
+    const char *const sgxPaths[] = { QEMU_DEV_SGX_VEPVC,
+                                     QEMU_DEV_SGX_PROVISION, NULL };
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
-    return qemuCgroupAllowDevicePath(vm, mem->nvdimmPath,
-                                     VIR_CGROUP_DEVICE_RW, false);
+    switch (mem->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        if (qemuCgroupAllowDevicePath(vm, mem->nvdimmPath,
+                                      VIR_CGROUP_DEVICE_RW, false) < 0)
+            return -1;
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        if (qemuCgroupAllowDevicesPaths(vm, sgxPaths,
+                                        VIR_CGROUP_DEVICE_RW, false) < 0)
+            return -1;
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        break;
+    }
+
+    return 0;
 }
 
 
@@ -538,16 +576,32 @@ qemuTeardownMemoryDevicesCgroup(virDomainObj *vm,
                                 virDomainMemoryDef *mem)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-        mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM)
-        return 0;
+    const char *const sgxPaths[] = { QEMU_DEV_SGX_VEPVC,
+                                     QEMU_DEV_SGX_PROVISION, NULL };
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
-    return qemuCgroupDenyDevicePath(vm, mem->nvdimmPath,
-                                    VIR_CGROUP_DEVICE_RWM, false);
+    switch (mem->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        if (qemuCgroupDenyDevicePath(vm, mem->nvdimmPath,
+                                     VIR_CGROUP_DEVICE_RWM, false) < 0)
+            return -1;
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        if (qemuCgroupDenyDevicesPaths(vm, sgxPaths,
+                                       VIR_CGROUP_DEVICE_RW, false) < 0)
+            return -1;
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        break;
+    }
+
+    return 0;
 }
 
 
