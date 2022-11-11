@@ -3584,6 +3584,7 @@
         </element>
       </optional>
       <ref name="interface-ip-info"/>
+      <ref name="interface-port-forwards"/>
       <optional>
         <element name="script">
           <attribute name="path">
@@ -3621,6 +3622,13 @@
       <optional>
         <element name="backend">
           <optional>
+            <attribute name="type">
+              <choice>
+                <value>passt</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
             <attribute name="tap">
               <ref name="absFilePath"/>
             </attribute>
@@ -3628,6 +3636,16 @@
           <optional>
             <attribute name="vhost">
               <ref name="absFilePath"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="logFile">
+              <ref name="absFilePath"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="upstream">
+              <ref name="deviceName"/>
             </attribute>
           </optional>
         </element>
@@ -3844,6 +3862,53 @@
         <ref name="route"/>
       </zeroOrMore>
     </interleave>
+  </define>
+
+  <define name="interface-port-forwards">
+    <zeroOrMore>
+      <element name="portForward">
+        <attribute name="proto">
+          <choice>
+            <value>tcp</value>
+            <value>udp</value>
+          </choice>
+        </attribute>
+        <optional>
+          <attribute name="address">
+            <ref name="ipAddr"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="dev">
+            <ref name="deviceName"/>
+          </attribute>
+        </optional>
+        <interleave>
+          <zeroOrMore>
+            <element name="range">
+              <attribute name="start">
+                <ref name="PortNumber"/>
+              </attribute>
+              <optional>
+                <attribute name="end">
+                  <ref name="PortNumber"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="to">
+                  <ref name="PortNumber"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="exclude">
+                  <ref name="virYesNo"/>
+                </attribute>
+              </optional>
+            </element>
+          </zeroOrMore>
+        </interleave>
+      </element>
+    </zeroOrMore>
   </define>
 
   <define name="teaming">
