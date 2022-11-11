@@ -2360,6 +2360,15 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        if (mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("memory device address is not supported for model '%s'"),
+                           virDomainMemoryModelTypeToString(mem->model));
+            return -1;
+        }
+        break;
+
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
     default:

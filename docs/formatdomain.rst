@@ -8002,6 +8002,20 @@ Example: usage of the memory devices
          <current unit='KiB'>524288</current>
        </target>
      </memory>
+     <memory model='sgx-epc'>
+       <source>
+         <nodemask>0-1</nodemask>
+       </source>
+       <target>
+         <size unit='KiB'>16384</size>
+         <node>0</node>
+       </target>
+     </memory>
+     <memory model='sgx-epc'>
+       <target>
+         <size unit='KiB'>16384</size>
+       </target>
+     </memory>
    </devices>
    ...
 
@@ -8010,7 +8024,9 @@ Example: usage of the memory devices
    1.2.14` Provide ``nvdimm`` model that adds a Non-Volatile DIMM module.
    :since:`Since 3.2.0` Provide ``virtio-pmem`` model to add a paravirtualized
    persistent memory device. :since:`Since 7.1.0` Provide ``virtio-mem`` model
-   to add paravirtualized memory device. :since:`Since 7.9.0`
+   to add paravirtualized memory device. :since:`Since 7.9.0` Provide
+   ``sgx-epc`` model to add a SGX enclave page cache (EPC) memory to the guest.
+   :since:`Since 8.10.0 and QEMU 7.0.0`
 
 ``access``
    An optional attribute ``access`` ( :since:`since 3.2.0` ) that provides
@@ -8069,6 +8085,13 @@ Example: usage of the memory devices
    ``path``
      Represents a path in the host that backs the virtio memory module in the
      guest. It is mandatory.
+
+   For model ``sgx-epc`` this element is optional. The following optional
+   elements may be used:
+
+   ``nodemask``
+      This element can be used to override the default set of NUMA nodes where
+      the memory would be allocated. :since:`Since 8.10.0 and QEMU 7.0.0`
 
 ``target``
    The mandatory ``target`` element configures the placement and sizing of the

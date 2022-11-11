@@ -8383,6 +8383,7 @@ qemuDomainUpdateMemoryDeviceInfo(virDomainObj *vm,
             break;
 
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
         case VIR_DOMAIN_MEMORY_MODEL_NONE:
         case VIR_DOMAIN_MEMORY_MODEL_LAST:
             break;
@@ -9064,6 +9065,12 @@ qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
         }
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("hotplug is not supported for the %s device"),
+                       virDomainMemoryModelTypeToString(mem->model));
+            return -1;
+
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         return -1;
@@ -9148,10 +9155,23 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
     for (i = 0; i < def->nmems; i++) {
         hotplugMemory += def->mems[i]->size;
 
-        /* already existing devices don't need to be checked on hotplug */
-        if (!mem &&
-            qemuDomainDefValidateMemoryHotplugDevice(def->mems[i], def) < 0)
-            return -1;
+        switch (def->mems[i]->model) {
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+            /* already existing devices don't need to be checked on hotplug */
+            if (!mem &&
+                qemuDomainDefValidateMemoryHotplugDevice(def->mems[i], def) < 0)
+                return -1;
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+            /* sgx epc memory does not support hotplug, skip this check */
+        case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        case VIR_DOMAIN_MEMORY_MODEL_NONE:
+            break;
+        }
     }
 
     if (hotplugMemory > hotplugSpace) {

@@ -6831,6 +6831,7 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("cannot modify memory of model '%s'"),

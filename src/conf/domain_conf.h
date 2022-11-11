@@ -2585,6 +2585,7 @@ typedef enum {
     VIR_DOMAIN_MEMORY_MODEL_NVDIMM, /* nvdimm memory device */
     VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM, /* virtio-pmem memory device */
     VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM, /* virtio-mem memory device */
+    VIR_DOMAIN_MEMORY_MODEL_SGX_EPC, /* SGX enclave page cache */
 
     VIR_DOMAIN_MEMORY_MODEL_LAST
 } virDomainMemoryModel;

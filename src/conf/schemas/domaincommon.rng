@@ -6909,6 +6909,7 @@
           <value>nvdimm</value>
           <value>virtio-pmem</value>
           <value>virtio-mem</value>
+          <value>sgx-epc</value>
         </choice>
       </attribute>
       <optional>

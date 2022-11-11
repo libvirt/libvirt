@@ -5025,6 +5025,14 @@ qemuValidateDomainDeviceDefMemory(virDomainMemoryDef *mem,
         }
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SGX_EPC)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("sgx epc isn't supported by this QEMU binary"));
+            return -1;
+        }
+        break;
+
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         break;
