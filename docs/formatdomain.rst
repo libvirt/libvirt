@@ -4775,19 +4775,25 @@ to the interface.
    </devices>
    ...
 
-Userspace SLIRP stack
-^^^^^^^^^^^^^^^^^^^^^
+Userspace (SLIRP or passt) connection
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Provides a virtual LAN with NAT to the outside world. The virtual network has
-DHCP & DNS services and will give the guest VM addresses starting from
-``10.0.2.15``. The default router will be ``10.0.2.2`` and the DNS server will
-be ``10.0.2.3``. This networking is the only option for unprivileged users who
-need their VMs to have outgoing access. :since:`Since 3.8.0` it is possible to
-override the default network address by including an ``ip`` element specifying
-an IPv4 address in its one mandatory attribute, ``address``. Optionally, a
-second ``ip`` element with a ``family`` attribute set to "ipv6" can be specified
-to add an IPv6 address to the interface. ``address``. Optionally, address
-``prefix`` can be specified.
+The ``user`` type connects the guest interface to the outside via a
+transparent userspace proxy that doesn't require any special system
+privileges, making it usable in cases when libvirt itself is running
+with no privileges (e.g. libvirt's "session mode" daemon, or when
+libvirt is run inside an unprivileged container).
+
+By default, this user proxy is done with QEMU's internal SLIRP driver
+which has DHCP & DNS services that give the guest IP addresses
+starting from ``10.0.2.15``, a default route of ``10.0.2.2`` and DNS
+server of ``10.0.2.3``. :since:`Since 3.8.0` it is possible to override
+the default network address by including an ``ip`` element specifying
+an IPv4 address in its one mandatory attribute,
+``address``. Optionally, a second ``ip`` element with a ``family``
+attribute set to "ipv6" can be specified to add an IPv6 address to the
+interface. ``address``. Optionally, address ``prefix`` can be
+specified.
 
 ::
 
@@ -4799,6 +4805,71 @@ to add an IPv6 address to the interface. ``address``. Optionally, address
        <mac address="00:11:22:33:44:55"/>
        <ip family='ipv4' address='172.17.2.0' prefix='24'/>
        <ip family='ipv6' address='2001:db8:ac10:fd01::' prefix='64'/>
+     </interface>
+   </devices>
+   ...
+
+:since:`Since 9.0.0` an alternate backend implementation of the
+``user`` interface type can be selected by setting the interface's
+``<backend>`` subelement ``type`` attribute to ``passt``. In this
+case, the passt transport (https://passt.top) is used. Similar to
+SLIRP, passt has an internal DHCP server that provides a requesting
+guest with one ipv4 and one ipv6 address; it then uses userspace
+proxies and a separate network namespace to provide outgoing
+UDP/TCP/ICMP sessions, and optionally redirect incoming traffic
+destined for the host toward the guest instead.
+
+When the passt backend is used, the ``<backend>`` attribute
+``logFile`` can be used to tell the passt process for this interface
+where to write its message log, and the ``<backend>`` attribute
+``upstream`` can tell it to restrict upstream traffic to a particular
+host interface.
+
+Additionally, when passt is used, multiple ``<portForward>`` elements
+can be added to forward incoming network traffic for the host to this
+guest interface. Each ``<portForward>`` must have a ``proto``
+attribute (set to ``tcp`` or ``udp``) and optional original
+``address`` (if not specified, then all incoming sessions to any host
+IP for the given proto/port(s) will be forwarded to the guest).
+
+The decision of which ports to forward is described with zero or more
+``<range>`` subelements of ``<portForward>`` (if there is no
+``<range>`` then **all** ports for the given proto/address will be
+forwarded). Each ``<range>`` has a ``start`` and optional ``end``
+attribute. If ``end`` is omitted then a single port will be forwarded,
+otherwise all ports between ``start`` and ``end`` (inclusive) will be
+forwarded. If the port number(s) should remain unmodified as the
+session is forwarded, no further options are needed, but if the guest
+is expecting the sessions on a different port, then this should be
+specified with the ``to`` attribute of ``<range>`` - the port number
+of each forwarded session in the range will be offeset by "``to`` -
+``start``".  A ``<range>`` element can also be used to specify a range
+of ports that should **not** be forwarded. This is done by setting the
+range's ``exclude`` attribute to ``yes``. This may not seem very
+useful, but can be when it is desirable to forward a long range of
+ports **with the exception of some subset**.
+
+::
+
+   ...
+   <devices>
+     ...
+     <interface type='user'>
+       <backend type='passt' logFile='/var/log/passt.log' upstream='eth0'/>
+       <mac address="00:11:22:33:44:55"/>
+       <ip family='ipv4' address='172.17.2.0' prefix='24'/>
+       <ip family='ipv6' address='2001:db8:ac10:fd01::' prefix='64'/>
+       <portForward proto='tcp' address='2001:db8:ac10:fd01::1:10' start='2022'>
+         <port start='22'/>
+       </portForward>
+       <portForward proto='udp' address='1.2.3.4' start='5000' end='5020'>
+         <port start='6000' end='6020'/>
+       </portForward>
+       <portForward exclude='yes' proto='tcp' address='1.2.3.4' start='5010' end='5015'/>
+       <portForward proto='tcp' start='80'/>
+       <portForward proto='tcp' start='443'>
+         <port start='344'/>
+       </portForward>
      </interface>
    </devices>
    ...

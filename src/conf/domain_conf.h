@@ -1023,6 +1023,21 @@ typedef enum {
         VIR_DOMAIN_NET_INTERFACE_LINK_STATE_LAST
 } virDomainNetInterfaceLinkState;
 
+typedef enum {
+    VIR_DOMAIN_NET_BACKEND_DEFAULT = 0,
+    VIR_DOMAIN_NET_BACKEND_PASST,
+
+    VIR_DOMAIN_NET_BACKEND_LAST
+} virDomainNetBackendType;
+
+typedef enum {
+    VIR_DOMAIN_NET_PROTO_NONE = 0,
+    VIR_DOMAIN_NET_PROTO_TCP,
+    VIR_DOMAIN_NET_PROTO_UDP,
+
+    VIR_DOMAIN_NET_PROTO_LAST
+} virDomainNetProto;
+
 /* Config that was actually used to bring up interface, after
  * resolving network reference. This is private data, only used within
  * libvirt, but still must maintain backward compatibility, because
@@ -1052,8 +1067,27 @@ struct _virDomainActualNetDef {
 };
 
 struct _virDomainNetBackend {
+    virDomainNetBackendType type;
     char *tap;
     char *vhost;
+    /* The following are currently only valid/used when backend type='passt' */
+    char *logFile;  /* path to logfile used by passt process */
+    char *upstream; /* host interface to use for traffic egress */
+};
+
+struct _virDomainNetPortForwardRange {
+    unsigned int start;         /* original dst port range start */
+    unsigned int end;           /* range end (0 for "single port") */
+    unsigned int to;            /* start of range to forward to (0 for "unchanged") */
+    virTristateBool exclude;    /* true if this is a range to *not* forward */
+};
+
+struct _virDomainNetPortForward {
+    char *dev;                  /* host interface of incoming traffic */
+    virDomainNetProto proto;    /* tcp/udp */
+    virSocketAddr address;      /* original dst address (empty = wildcard) */
+    size_t nRanges;
+    virDomainNetPortForwardRange **ranges; /* list of ranges to forward */
 };
 
 /* Stores the virtual network interface configuration */
@@ -1159,6 +1193,8 @@ struct _virDomainNetDef {
     char *ifname_guest_actual;
     char *ifname_guest;
     virNetDevIPInfo guestIP;
+    size_t nPortForwards;
+    virDomainNetPortForward **portForwards;
     virDomainDeviceInfo info;
     char *filter;
     GHashTable *filterparams;
@@ -3470,6 +3506,8 @@ void virDomainVsockDefFree(virDomainVsockDef *vsock);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainVsockDef, virDomainVsockDefFree);
 void virDomainNetTeamingInfoFree(virDomainNetTeamingInfo *teaming);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainNetTeamingInfo, virDomainNetTeamingInfoFree);
+void virDomainNetPortForwardFree(virDomainNetPortForward *pf);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainNetPortForward, virDomainNetPortForwardFree);
 void virDomainNetDefFree(virDomainNetDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainNetDef, virDomainNetDefFree);
 void virDomainSmartcardDefFree(virDomainSmartcardDef *def);
@@ -4058,6 +4096,8 @@ VIR_ENUM_DECL(virDomainNetVirtioTxMode);
 VIR_ENUM_DECL(virDomainNetMacType);
 VIR_ENUM_DECL(virDomainNetTeaming);
 VIR_ENUM_DECL(virDomainNetInterfaceLinkState);
+VIR_ENUM_DECL(virDomainNetBackend);
+VIR_ENUM_DECL(virDomainNetProto);
 VIR_ENUM_DECL(virDomainNetModel);
 VIR_ENUM_DECL(virDomainChrDevice);
 VIR_ENUM_DECL(virDomainChrChannelTarget);

@@ -551,6 +551,7 @@ virDomainNetIsVirtioModel;
 virDomainNetModelTypeFromString;
 virDomainNetModelTypeToString;
 virDomainNetNotifyActualDevice;
+virDomainNetPortForwardFree;
 virDomainNetReleaseActualDevice;
 virDomainNetRemove;
 virDomainNetRemoveByObj;

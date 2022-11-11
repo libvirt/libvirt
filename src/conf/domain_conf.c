@@ -632,6 +632,19 @@ VIR_ENUM_IMPL(virDomainNetInterfaceLinkState,
               "down",
 );
 
+VIR_ENUM_IMPL(virDomainNetBackend,
+              VIR_DOMAIN_NET_BACKEND_LAST,
+              "default",
+              "passt",
+);
+
+VIR_ENUM_IMPL(virDomainNetProto,
+              VIR_DOMAIN_NET_PROTO_LAST,
+              "none",
+              "tcp",
+              "udp",
+);
+
 VIR_ENUM_IMPL(virDomainChrDeviceState,
               VIR_DOMAIN_CHR_DEVICE_STATE_LAST,
               "default",
@@ -2611,10 +2624,26 @@ virDomainNetTeamingInfoFree(virDomainNetTeamingInfo *teaming)
     g_free(teaming);
 }
 
+void
+virDomainNetPortForwardFree(virDomainNetPortForward *pf)
+{
+    size_t i;
+
+    if (pf)
+        g_free(pf->dev);
+
+    for (i = 0; i < pf->nRanges; i++)
+        g_free(pf->ranges[i]);
+
+    g_free(pf->ranges);
+    g_free(pf);
+}
 
 void
 virDomainNetDefFree(virDomainNetDef *def)
 {
+    size_t i;
+
     if (!def)
         return;
 
@@ -2672,6 +2701,8 @@ virDomainNetDefFree(virDomainNetDef *def)
 
     g_free(def->backend.tap);
     g_free(def->backend.vhost);
+    g_free(def->backend.logFile);
+    g_free(def->backend.upstream);
     virDomainNetTeamingInfoFree(def->teaming);
     g_free(def->virtPortProfile);
     g_free(def->script);
@@ -2692,6 +2723,10 @@ virDomainNetDefFree(virDomainNetDef *def)
 
     virNetDevBandwidthFree(def->bandwidth);
     virNetDevVlanClear(&def->vlan);
+
+    for (i = 0; i < def->nPortForwards; i++)
+        virDomainNetPortForwardFree(def->portForwards[i]);
+    g_free(def->portForwards);
 
     virObjectUnref(def->privateData);
     g_free(def);
@@ -8995,6 +9030,14 @@ virDomainNetBackendParseXML(xmlNodePtr node,
     g_autofree char *tap = virXMLPropString(node, "tap");
     g_autofree char *vhost = virXMLPropString(node, "vhost");
 
+    if (virXMLPropEnum(node, "type", virDomainNetBackendTypeFromString,
+                       VIR_XML_PROP_NONZERO, &def->backend.type) < 0) {
+        return -1;
+    }
+
+    def->backend.logFile = virXMLPropString(node, "logFile");
+    def->backend.upstream = virXMLPropString(node, "upstream");
+
     if (tap)
         def->backend.tap = virFileSanitizePath(tap);
 
@@ -9004,6 +9047,120 @@ virDomainNetBackendParseXML(xmlNodePtr node,
         def->backend.vhost = virFileSanitizePath(vhost);
     }
 
+    return 0;
+}
+
+
+static virDomainNetPortForwardRange *
+virDomainNetPortForwardRangeParseXML(xmlNodePtr node,
+                                     xmlXPathContextPtr ctxt)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+    g_autofree virDomainNetPortForwardRange *def = g_new0(virDomainNetPortForwardRange, 1);
+
+    ctxt->node = node;
+
+    if (virXMLPropUInt(node, "start", 10,
+                       VIR_XML_PROP_NONZERO, &def->start) < 0) {
+        return NULL;
+    }
+    if (virXMLPropUInt(node, "end", 10,
+                       VIR_XML_PROP_NONZERO, &def->end) < 0) {
+        return NULL;
+    }
+    if (virXMLPropUInt(node, "to", 10,
+                       VIR_XML_PROP_NONZERO, &def->to) < 0) {
+        return NULL;
+    }
+    if (virXMLPropTristateBool(node, "exclude", VIR_XML_PROP_NONE,
+                               &def->exclude) < 0) {
+        return NULL;
+    }
+
+    return g_steal_pointer(&def);
+}
+
+
+static int
+virDomainNetPortForwardRangesParseXML(virDomainNetPortForward *def,
+                                      xmlXPathContextPtr ctxt)
+{
+    int nRanges;
+    g_autofree xmlNodePtr *ranges = NULL;
+    size_t i;
+
+    if ((nRanges = virXPathNodeSet("./range", ctxt, &ranges)) <= 0)
+        return nRanges;
+
+    def->ranges = g_new0(virDomainNetPortForwardRange *, nRanges);
+
+    for (i = 0; i < nRanges; i++) {
+        g_autofree virDomainNetPortForwardRange *range = NULL;
+
+        if (!(range = virDomainNetPortForwardRangeParseXML(ranges[i], ctxt)))
+            return -1;
+
+        def->ranges[def->nRanges++] = g_steal_pointer(&range);
+    }
+    return 0;
+}
+
+
+static virDomainNetPortForward *
+virDomainNetPortForwardDefParseXML(xmlNodePtr node,
+                                   xmlXPathContextPtr ctxt)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+    g_autofree char *address = NULL;
+    g_autoptr(virDomainNetPortForward) def = g_new0(virDomainNetPortForward, 1);
+
+    ctxt->node = node;
+
+    if (virXMLPropEnum(node, "proto", virDomainNetProtoTypeFromString,
+                       VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                       &def->proto) < 0) {
+        return NULL;
+    }
+
+    address = virXMLPropString(node, "address");
+    if (address && virSocketAddrParse(&def->address, address, AF_UNSPEC) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid address '%s' in <portForward>"), address);
+        return NULL;
+    }
+
+    def->dev = virXMLPropString(node, "dev");
+
+    if (virDomainNetPortForwardRangesParseXML(def, ctxt) < 0)
+        return NULL;
+
+    return g_steal_pointer(&def);
+}
+
+
+static int
+virDomainNetPortForwardsParseXML(virDomainNetDef *def,
+                                 xmlXPathContextPtr ctxt)
+{
+    int nPortForwards;
+    g_autofree xmlNodePtr *portForwards = NULL;
+    size_t i;
+
+    if ((nPortForwards = virXPathNodeSet("./portForward",
+                                         ctxt, &portForwards)) <= 0) {
+        return nPortForwards;
+    }
+
+    def->portForwards = g_new0(virDomainNetPortForward *, nPortForwards);
+
+    for (i = 0; i < nPortForwards; i++) {
+        g_autoptr(virDomainNetPortForward) pf = NULL;
+
+        if (!(pf = virDomainNetPortForwardDefParseXML(portForwards[i], ctxt)))
+            return -1;
+
+        def->portForwards[def->nPortForwards++] = g_steal_pointer(&pf);
+    }
     return 0;
 }
 
@@ -9396,6 +9553,9 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
 
     if (virDomainNetIPInfoParseXML(_("guest interface"), node,
                                    ctxt, &def->guestIP) < 0)
+        return NULL;
+
+    if (virDomainNetPortForwardsParseXML(def, ctxt) < 0)
         return NULL;
 
     if (def->managed_tap != VIR_TRISTATE_BOOL_NO && def->ifname &&
@@ -23316,14 +23476,78 @@ static void
 virDomainNetBackendFormat(virBuffer *buf,
                           virDomainNetBackend *backend)
 {
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
 
-    if (!(backend->tap || backend->vhost))
-        return;
+    if (backend->type) {
+        virBufferAsprintf(&attrBuf, " type='%s'",
+                          virDomainNetBackendTypeToString(backend->type));
+    }
+    virBufferEscapeString(&attrBuf, " tap='%s'", backend->tap);
+    virBufferEscapeString(&attrBuf, " vhost='%s'", backend->vhost);
+    virBufferEscapeString(&attrBuf, " logFile='%s'", backend->logFile);
+    virBufferEscapeString(&attrBuf, " upstream='%s'", backend->upstream);
+    virXMLFormatElement(buf, "backend", &attrBuf, NULL);
+}
 
-    virBufferAddLit(buf, "<backend");
-    virBufferEscapeString(buf, " tap='%s'", backend->tap);
-    virBufferEscapeString(buf, " vhost='%s'", backend->vhost);
-    virBufferAddLit(buf, "/>\n");
+
+static void
+virDomainNetPortForwardRangesFormat(virBuffer *buf,
+                                    virDomainNetPortForward *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nRanges; i++) {
+        virDomainNetPortForwardRange *range = def->ranges[i];
+        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+
+        if (range->start) {
+            virBufferAsprintf(&attrBuf, " start='%u'", range->start);
+            if (range->end)
+                virBufferAsprintf(&attrBuf, " end='%u'", range->end);
+            if (range->to)
+                virBufferAsprintf(&attrBuf, " to='%u'", range->to);
+        }
+
+        if (range->exclude) {
+            virBufferAsprintf(&attrBuf, " exclude='%s'",
+                              virTristateBoolTypeToString(range->exclude));
+        }
+        virXMLFormatElement(buf, "range", &attrBuf, NULL);
+    }
+}
+
+
+static int
+virDomainNetPortForwardsFormat(virBuffer *buf,
+                               virDomainNetDef *def)
+{
+    size_t i;
+
+    if (!def->nPortForwards)
+        return 0;
+
+    for (i = 0; i < def->nPortForwards; i++) {
+        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+        virDomainNetPortForward *pf = def->portForwards[i];
+
+        virBufferAsprintf(&attrBuf, " proto='%s'",
+                          virDomainNetProtoTypeToString(pf->proto));
+        if (VIR_SOCKET_ADDR_VALID(&pf->address)) {
+            g_autofree char *ipStr = virSocketAddrFormat(&pf->address);
+
+            if (!ipStr)
+                return -1;
+
+            virBufferAsprintf(&attrBuf, " address='%s'", ipStr);
+        }
+        virBufferEscapeString(&attrBuf, " dev='%s'", pf->dev);
+
+        virDomainNetPortForwardRangesFormat(&childBuf, pf);
+        virXMLFormatElementEmpty(buf, "portForward", &attrBuf, &childBuf);
+    }
+
+    return 0;
 }
 
 
@@ -23573,6 +23797,9 @@ virDomainNetDefFormat(virBuffer *buf,
     }
 
     if (virDomainNetIPInfoFormat(buf, &def->guestIP) < 0)
+        return -1;
+
+    if (virDomainNetPortForwardsFormat(buf, def) < 0)
         return -1;
 
     virBufferEscapeString(buf, "<script path='%s'/>\n",
