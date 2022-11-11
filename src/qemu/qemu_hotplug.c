@@ -6088,37 +6088,36 @@ qemuDomainRemoveVcpu(virDomainObj *vm,
     qemuDomainVcpuPrivate *vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpuinfo);
     int oldvcpus = virDomainDefGetVcpus(vm->def);
     unsigned int nvcpus = vcpupriv->vcpus;
-    virErrorPtr save_error = NULL;
     size_t i;
+    ssize_t offlineVcpuWithTid = -1;
 
     if (qemuDomainRefreshVcpuInfo(vm, VIR_ASYNC_JOB_NONE, false) < 0)
         return -1;
 
-    /* validation requires us to set the expected state prior to calling it */
     for (i = vcpu; i < vcpu + nvcpus; i++) {
         vcpuinfo = virDomainDefGetVcpu(vm->def, i);
-        vcpuinfo->online = false;
+        vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpuinfo);
+
+        if (vcpupriv->tid == 0) {
+            vcpuinfo->online = false;
+            /* Clear the alias as VCPU is now unplugged */
+            VIR_FREE(vcpupriv->alias);
+            ignore_value(virCgroupDelThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i));
+        } else {
+            if (offlineVcpuWithTid == -1)
+                offlineVcpuWithTid = i;
+        }
     }
 
-    if (qemuDomainValidateVcpuInfo(vm) < 0) {
-        /* rollback vcpu count if the setting has failed */
+    if (offlineVcpuWithTid != -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("qemu reported thread id for inactive vcpu '%zu'"),
+                       offlineVcpuWithTid);
         virDomainAuditVcpu(vm, oldvcpus, oldvcpus - nvcpus, "update", false);
-
-        for (i = vcpu; i < vcpu + nvcpus; i++) {
-            vcpuinfo = virDomainDefGetVcpu(vm->def, i);
-            vcpuinfo->online = true;
-        }
         return -1;
     }
 
     virDomainAuditVcpu(vm, oldvcpus, oldvcpus - nvcpus, "update", true);
-
-    virErrorPreserveLast(&save_error);
-
-    for (i = vcpu; i < vcpu + nvcpus; i++)
-        ignore_value(virCgroupDelThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i));
-
-    virErrorRestore(&save_error);
 
     return 0;
 }
@@ -6141,6 +6140,9 @@ qemuDomainRemoveVcpuAlias(virDomainObj *vm,
             return;
         }
     }
+
+    VIR_DEBUG("vcpu '%s' not found in vcpulist of domain '%s'",
+              alias, vm->def->name);
 }
 
 
@@ -6209,6 +6211,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriver *driver,
     int rc;
     int oldvcpus = virDomainDefGetVcpus(vm->def);
     size_t i;
+    bool vcpuTidMissing = false;
 
     if (!qemuDomainSupportsNewVcpuHotplug(vm)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -6238,20 +6241,26 @@ qemuDomainHotplugAddVcpu(virQEMUDriver *driver,
     if (qemuDomainRefreshVcpuInfo(vm, VIR_ASYNC_JOB_NONE, false) < 0)
         return -1;
 
-    /* validation requires us to set the expected state prior to calling it */
     for (i = vcpu; i < vcpu + nvcpus; i++) {
         vcpuinfo = virDomainDefGetVcpu(vm->def, i);
         vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpuinfo);
 
         vcpuinfo->online = true;
 
-        if (vcpupriv->tid > 0 &&
-            qemuProcessSetupVcpu(vm, i, true) < 0)
-            return -1;
+        if (vcpupriv->tid > 0) {
+            if (qemuProcessSetupVcpu(vm, i, true) < 0) {
+                return -1;
+            }
+        } else {
+            vcpuTidMissing = true;
+        }
     }
 
-    if (qemuDomainValidateVcpuInfo(vm) < 0)
+    if (vcpuTidMissing && qemuDomainHasVcpuPids(vm)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("qemu didn't report thread id for vcpu '%zu'"), i);
         return -1;
+    }
 
     qemuDomainVcpuPersistOrder(vm->def);
 

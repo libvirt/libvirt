@@ -9799,8 +9799,10 @@ qemuDomainRefreshVcpuInfo(virDomainObj *vm,
         vcpupriv->vcpus = info[i].vcpus;
         VIR_FREE(vcpupriv->type);
         vcpupriv->type = g_steal_pointer(&info[i].type);
-        VIR_FREE(vcpupriv->alias);
-        vcpupriv->alias = g_steal_pointer(&info[i].alias);
+        if (info[i].alias) {
+            VIR_FREE(vcpupriv->alias);
+            vcpupriv->alias = g_steal_pointer(&info[i].alias);
+        }
         virJSONValueFree(vcpupriv->props);
         vcpupriv->props = g_steal_pointer(&info[i].props);
         vcpupriv->enable_id = info[i].id;
