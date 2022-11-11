@@ -70,6 +70,21 @@ VIR_MOCK_IMPL_RET_ARGS(libxl_get_version_info,
     return &info;
 }
 
+VIR_MOCK_IMPL_RET_ARGS(libxl_get_physinfo,
+                       int,
+                       libxl_ctx *, ctx,
+                       libxl_physinfo *, physinfo)
+{
+    memset(physinfo, 0, sizeof(*physinfo));
+    physinfo->nr_nodes = 6;
+
+    /* silence gcc warning about unused function */
+    if (0)
+        real_libxl_get_physinfo(ctx, physinfo);
+
+    return 0;
+}
+
 VIR_MOCK_STUB_RET_ARGS(libxl_get_free_memory,
                        int, 0,
                        libxl_ctx *, ctx,
