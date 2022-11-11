@@ -370,11 +370,23 @@ static int
 qemuDomainSetupMemory(virDomainMemoryDef *mem,
                       GSList **paths)
 {
-    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-        mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM)
-        return 0;
+    switch (mem->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        *paths = g_slist_prepend(*paths, g_strdup(mem->nvdimmPath));
+        break;
 
-    *paths = g_slist_prepend(*paths, g_strdup(mem->nvdimmPath));
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        *paths = g_slist_prepend(*paths, g_strdup(QEMU_DEV_SGX_VEPVC));
+        *paths = g_slist_prepend(*paths, g_strdup(QEMU_DEV_SGX_PROVISION));
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        break;
+    }
 
     return 0;
 }
