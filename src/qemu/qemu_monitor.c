@@ -4346,7 +4346,7 @@ qemuMonitorQueryStatsProviderNew(qemuMonitorQueryStatsProviderType provider_type
 
     /*
      * This can be lowered later in case of the enum getting quite large, hence
-     *  the virBitmapSetExpand below which also incidently makes this function
+     *  the virBitmapSetExpand below which also incidentally makes this function
      *  non-fallible.
      */
     provider->names = virBitmapNew(QEMU_MONITOR_QUERY_STATS_NAME_LAST);

@@ -218,7 +218,7 @@ v8.5.0 (2022-07-01)
   * qemu: Add support for zero-copy migration
 
     With QEMU 7.1.0, libvirt can enable zerocopy for parallel migration. This
-    is implmented by adding a new ``VIR_MIGRATE_ZEROCOPY`` flag(``virsh migrate
+    is implemented by adding a new ``VIR_MIGRATE_ZEROCOPY`` flag(``virsh migrate
     --zerocopy``).
 
   * Introduce thread_pool_min and thread_pool_max attributes to IOThread

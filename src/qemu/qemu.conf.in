@@ -963,7 +963,7 @@
 # "vcpus"    - only QEMU vCPU threads are placed into a separate scheduling group,
 #              emulator threads and helper processes remain outside of the group
 # "emulator" - only QEMU and its threads (emulator + vCPUs) are placed into
-#              separate scheduling group, helper proccesses remain outside of
+#              separate scheduling group, helper processes remain outside of
 #              the group
 # "full"    -  both QEMU and its helper processes are placed into separate
 #              scheduling group
