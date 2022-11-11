@@ -1476,7 +1476,7 @@ xenFormatXLDiskSrcNet(virStorageSource *src)
             return NULL;
         }
 
-        virBufferStrcat(&buf, "rbd:", src->volume, "/", src->path, NULL);
+        virBufferStrcat(&buf, "rbd:", src->path, NULL);
 
         virBufferAddLit(&buf, ":auth_supported=none");
 

@@ -392,8 +392,6 @@ virStorageSourceNewFromBackingRelative(virStorageSource *parent,
 
             def->nhosts = parent->nhosts;
         }
-
-        def->volume = g_strdup(parent->volume);
     } else {
         /* set the type to _FILE, the caller shall update it to the actual type */
         def->type = VIR_STORAGE_TYPE_FILE;

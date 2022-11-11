@@ -37,6 +37,7 @@ VIR_LOG_INIT("storage.storage_file_gluster");
 typedef struct _virStorageFileBackendGlusterPriv virStorageFileBackendGlusterPriv;
 struct _virStorageFileBackendGlusterPriv {
     glfs_t *vol;
+    char *image;
 };
 
 static void
@@ -45,12 +46,13 @@ virStorageFileBackendGlusterDeinit(virStorageSource *src)
     virStorageDriverData *drv = src->drv;
     virStorageFileBackendGlusterPriv *priv = drv->priv;
 
-    VIR_DEBUG("deinitializing gluster storage file %p (gluster://%s:%u/%s%s)",
-              src, src->hosts->name, src->hosts->port, src->volume, src->path);
+    VIR_DEBUG("deinitializing gluster storage file %p (gluster://%s:%u/%s)",
+              src, src->hosts->name, src->hosts->port, src->path);
 
     if (priv->vol)
         glfs_fini(priv->vol);
 
+    VIR_FREE(priv->image);
     VIR_FREE(priv);
     drv->priv = NULL;
 }
@@ -98,25 +100,25 @@ virStorageFileBackendGlusterInit(virStorageSource *src)
 {
     virStorageDriverData *drv = src->drv;
     g_autofree virStorageFileBackendGlusterPriv *priv = NULL;
+    g_autofree char *volume = NULL;
+    g_autofree char *image = NULL;
     size_t i;
 
-    if (!src->volume) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing gluster volume name for path '%1$s'"),
-                       src->path);
+    if (virStorageSourceNetworkProtocolPathSplit(src->path,
+                                                 VIR_STORAGE_NET_PROTOCOL_GLUSTER,
+                                                 &volume, &image) < 0)
         return -1;
-    }
 
     priv = g_new0(virStorageFileBackendGlusterPriv, 1);
 
     VIR_DEBUG("initializing gluster storage file %p "
               "(priv='%p' volume='%s' path='%s') as [%u:%u]",
-              src, priv, src->volume, src->path,
+              src, priv, volume, image,
               (unsigned int)drv->uid, (unsigned int)drv->gid);
 
-    if (!(priv->vol = glfs_new(src->volume))) {
+    if (!(priv->vol = glfs_new(volume))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to create glfs object for '%1$s'"), src->volume);
+                       _("failed to create glfs object for '%1$s'"), volume);
         return -1;
     }
 
@@ -135,6 +137,7 @@ virStorageFileBackendGlusterInit(virStorageSource *src)
         return -1;
     }
 
+    priv->image = g_steal_pointer(&image);
     drv->priv = g_steal_pointer(&priv);
 
     return 0;
@@ -148,7 +151,7 @@ virStorageFileBackendGlusterCreate(virStorageSource *src)
     virStorageFileBackendGlusterPriv *priv = drv->priv;
     glfs_fd_t *fd = NULL;
 
-    if (!(fd = glfs_creat(priv->vol, src->path,
+    if (!(fd = glfs_creat(priv->vol, priv->image,
                           O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR)))
         return -1;
 
@@ -163,7 +166,7 @@ virStorageFileBackendGlusterUnlink(virStorageSource *src)
     virStorageDriverData *drv = src->drv;
     virStorageFileBackendGlusterPriv *priv = drv->priv;
 
-    return glfs_unlink(priv->vol, src->path);
+    return glfs_unlink(priv->vol, priv->image);
 }
 
 
@@ -174,7 +177,7 @@ virStorageFileBackendGlusterStat(virStorageSource *src,
     virStorageDriverData *drv = src->drv;
     virStorageFileBackendGlusterPriv *priv = drv->priv;
 
-    return glfs_stat(priv->vol, src->path, st);
+    return glfs_stat(priv->vol, priv->image, st);
 }
 
 
@@ -193,15 +196,15 @@ virStorageFileBackendGlusterRead(virStorageSource *src,
 
     *buf = NULL;
 
-    if (!(fd = glfs_open(priv->vol, src->path, O_RDONLY))) {
+    if (!(fd = glfs_open(priv->vol, priv->image, O_RDONLY))) {
         virReportSystemError(errno, _("Failed to open file '%1$s'"),
-                             src->path);
+                             priv->image);
         return -1;
     }
 
     if (offset > 0) {
         if (glfs_lseek(fd, offset, SEEK_SET) == (off_t) -1) {
-            virReportSystemError(errno, _("cannot seek into '%1$s'"), src->path);
+            virReportSystemError(errno, _("cannot seek into '%1$s'"), priv->image);
             goto cleanup;
         }
     }
@@ -216,7 +219,7 @@ virStorageFileBackendGlusterRead(virStorageSource *src,
             continue;
         if (r < 0) {
             VIR_FREE(*buf);
-            virReportSystemError(errno, _("unable to read '%1$s'"), src->path);
+            virReportSystemError(errno, _("unable to read '%1$s'"), priv->image);
             return r;
         }
         if (r == 0)
@@ -243,7 +246,7 @@ virStorageFileBackendGlusterAccess(virStorageSource *src,
     virStorageDriverData *drv = src->drv;
     virStorageFileBackendGlusterPriv *priv = drv->priv;
 
-    return glfs_access(priv->vol, src->path, mode);
+    return glfs_access(priv->vol, priv->image, mode);
 }
 
 static int
@@ -254,7 +257,7 @@ virStorageFileBackendGlusterChown(const virStorageSource *src,
     virStorageDriverData *drv = src->drv;
     virStorageFileBackendGlusterPriv *priv = drv->priv;
 
-    return glfs_chown(priv->vol, src->path, uid, gid);
+    return glfs_chown(priv->vol, priv->image, uid, gid);
 }
 
 

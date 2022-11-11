@@ -820,7 +820,6 @@ virStorageSourceCopy(const virStorageSource *src,
 
     def->path = g_strdup(src->path);
     def->fdgroup = g_strdup(src->fdgroup);
-    def->volume = g_strdup(src->volume);
     def->relPath = g_strdup(src->relPath);
     def->backingStoreRaw = g_strdup(src->backingStoreRaw);
     def->backingStoreRawFormat = src->backingStoreRawFormat;
@@ -946,7 +945,6 @@ virStorageSourceIsSameLocation(virStorageSource *a,
         return false;
 
     if (STRNEQ_NULLABLE(a->path, b->path) ||
-        STRNEQ_NULLABLE(a->volume, b->volume) ||
         STRNEQ_NULLABLE(a->snapshot, b->snapshot))
         return false;
 
@@ -1153,7 +1151,6 @@ virStorageSourceClear(virStorageSource *def)
 
     VIR_FREE(def->path);
     VIR_FREE(def->fdgroup);
-    VIR_FREE(def->volume);
     VIR_FREE(def->vdpadev);
     VIR_FREE(def->snapshot);
     VIR_FREE(def->configFile);
@@ -1446,4 +1443,57 @@ virStorageSourceFDTuple *
 virStorageSourceFDTupleNew(void)
 {
     return g_object_new(vir_storage_source_fd_tuple_get_type(), NULL);
+}
+
+
+/**
+ * virStorageSourceNetworkProtocolPathSplit:
+ * @path: path to split
+ * @protocol: protocol
+ * @pool: filled with pool name (may be NULL)
+ * @image: filled with image name (may be NULL)
+ *
+ * Historically libvirt accepted the specification of Gluster's volume and
+ * RBD's pool as part of the 'path' field, but internally many places require
+ * individual components.
+ *
+ * This helper validates and splits the path as appropriate for given protocol.
+ * It's useful for 'gluster' and 'rbd' protocol but for validation can be called
+ * with any protocol.
+ */
+int
+virStorageSourceNetworkProtocolPathSplit(const char *path,
+                                         virStorageNetProtocol protocol,
+                                         char **pool,
+                                         char **image)
+{
+
+    g_autofree char *pathcopy = g_strdup(path);
+    char *tmp;
+
+    if (protocol != VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
+        protocol != VIR_STORAGE_NET_PROTOCOL_RBD) {
+
+        if (image)
+            *image = g_steal_pointer(&pathcopy);
+
+        return 0;
+    }
+
+    if (!(tmp = strchr(pathcopy, '/')) || tmp == pathcopy) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("can't split path '%1$s' into pool name and image name"),
+                       pathcopy);
+        return -1;
+    }
+
+    tmp[0] = '\0';
+
+    if (pool)
+        *pool = g_steal_pointer(&pathcopy);
+
+    if (image)
+        *image = g_strdup(tmp + 1);
+
+    return 0;
 }

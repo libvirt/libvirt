@@ -302,7 +302,6 @@ struct _virStorageSource {
     char *path;
     char *fdgroup; /* name of group of file descriptors the user wishes to use instead of 'path' */
     virStorageNetProtocol protocol;
-    char *volume; /* volume name for remote storage */
     char *snapshot; /* for storage systems supporting internal snapshots */
     char *configFile; /* some storage systems use config file as part of
                          the source definition */
@@ -598,3 +597,9 @@ void
 virStorageSourceInitiatorClear(virStorageSourceInitiatorDef *initiator);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageAuthDef, virStorageAuthDefFree);
+
+int
+virStorageSourceNetworkProtocolPathSplit(const char *path,
+                                         virStorageNetProtocol protocol,
+                                         char **pool,
+                                         char **image);

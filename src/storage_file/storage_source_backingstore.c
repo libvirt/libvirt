@@ -108,27 +108,9 @@ virStorageSourceParseBackingURI(virStorageSource *src,
     src->path = g_strdup(path);
 
     if (src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER) {
-        char *tmp;
-
-        if (!src->path) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("missing volume name and path for gluster volume"));
+        if (virStorageSourceNetworkProtocolPathSplit(src->path, src->protocol,
+                                                     NULL, NULL) < 0)
             return -1;
-        }
-
-        if (!(tmp = strchr(src->path, '/')) ||
-            tmp == src->path) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("missing volume name or file name in gluster source path '%1$s'"),
-                           src->path);
-            return -1;
-        }
-
-        src->volume = src->path;
-
-        src->path = g_strdup(tmp + 1);
-
-        tmp[0] = '\0';
     }
 
     src->hosts->port = uri->port;
@@ -208,13 +190,6 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
     /* snapshot name */
     if ((p = strchr(src->path, '@'))) {
         src->snapshot = g_strdup(p + 1);
-        *p = '\0';
-    }
-
-    /* pool vs. image name */
-    if ((p = strchr(src->path, '/'))) {
-        src->volume = g_steal_pointer(&src->path);
-        src->path = g_strdup(p + 1);
         *p = '\0';
     }
 
@@ -703,8 +678,7 @@ virStorageSourceParseBackingJSONGluster(virStorageSource *src,
     src->type = VIR_STORAGE_TYPE_NETWORK;
     src->protocol = VIR_STORAGE_NET_PROTOCOL_GLUSTER;
 
-    src->volume = g_strdup(volume);
-    src->path = g_strdup(path);
+    src->path = g_strdup_printf("%s/%s", volume, path);
 
     nservers = virJSONValueArraySize(server);
     if (nservers == 0) {
@@ -959,8 +933,7 @@ virStorageSourceParseBackingJSONRBD(virStorageSource *src,
         return -1;
     }
 
-    src->volume = g_strdup(pool);
-    src->path = g_strdup(image);
+    src->path = g_strdup_printf("%s/%s", pool, image);
     src->snapshot = g_strdup(snapshot);
     src->configFile = g_strdup(conf);
 

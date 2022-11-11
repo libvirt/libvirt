@@ -7370,6 +7370,9 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
         return -1;
     }
 
+    if (virStorageSourceNetworkProtocolPathSplit(src->path, src->protocol, NULL, NULL) < 0)
+        return -1;
+
     if (virXMLPropTristateBool(node, "tls", VIR_XML_PROP_NONE,
                                &src->haveTLS) < 0)
         return -1;
@@ -7391,27 +7394,6 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
                                &src->reconnectDelay) < 0)
                 return -1;
         }
-    }
-
-    /* for historical reasons we store the volume and image name in one XML
-     * element although it complicates thing when attempting to access them. */
-    if (src->path &&
-        (src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER ||
-         src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)) {
-        char *tmp;
-        if (!(tmp = strchr(src->path, '/')) ||
-            tmp == src->path) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("can't split path '%1$s' into pool name and image name"),
-                           src->path);
-            return -1;
-        }
-
-        src->volume = src->path;
-
-        src->path = g_strdup(tmp + 1);
-
-        tmp[0] = '\0';
     }
 
     /* snapshot currently works only for remote disks */
@@ -23155,15 +23137,11 @@ virDomainDiskSourceFormatNetwork(virBuffer *attrBuf,
                                  unsigned int flags)
 {
     size_t n;
-    g_autofree char *path = NULL;
 
     virBufferAsprintf(attrBuf, " protocol='%s'",
                       virStorageNetProtocolTypeToString(src->protocol));
 
-    if (src->volume)
-        path = g_strdup_printf("%s/%s", src->volume, src->path);
-
-    virBufferEscapeString(attrBuf, " name='%s'", path ? path : src->path);
+    virBufferEscapeString(attrBuf, " name='%s'", src->path);
     virBufferEscapeString(attrBuf, " query='%s'", src->query);
 
     if (src->haveTLS != VIR_TRISTATE_BOOL_ABSENT &&

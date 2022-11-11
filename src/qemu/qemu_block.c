@@ -213,13 +213,9 @@ qemuBlockStorageSourceGetURI(virStorageSource *src)
     }
 
     if (src->path) {
-        if (src->volume) {
-            uri->path = g_strdup_printf("/%s/%s", src->volume, src->path);
-        } else {
-            uri->path = g_strdup_printf("%s%s",
-                                        g_path_is_absolute(src->path) ? "" : "/",
-                                        src->path);
-        }
+        uri->path = g_strdup_printf("%s%s",
+                                    g_path_is_absolute(src->path) ? "" : "/",
+                                    src->path);
     }
 
     uri->query = g_strdup(src->query);
@@ -401,8 +397,15 @@ qemuBlockStorageSourceGetGlusterProps(virStorageSource *src,
 {
     g_autoptr(virJSONValue) servers = NULL;
     g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *volume = NULL;
+    g_autofree char *path = NULL;
 
     if (!(servers = qemuBlockStorageSourceBuildHostsJSONSocketAddress(src)))
+        return NULL;
+
+    if (virStorageSourceNetworkProtocolPathSplit(src->path,
+                                                 VIR_STORAGE_NET_PROTOCOL_GLUSTER,
+                                                 &volume, &path) < 0)
         return NULL;
 
      /* { driver:"gluster",
@@ -412,8 +415,8 @@ qemuBlockStorageSourceGetGlusterProps(virStorageSource *src,
       *            {type:"unix", socket:"/tmp/glusterd.socket"}, ...]}
       */
     if (virJSONValueObjectAdd(&props,
-                              "s:volume", src->volume,
-                              "s:path", src->path,
+                              "s:volume", volume,
+                              "s:path", path,
                               "a:server", &servers, NULL) < 0)
         return NULL;
 
@@ -662,6 +665,13 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
     const char *username = NULL;
     g_autoptr(virJSONValue) authmodes = NULL;
     const char *keysecret = NULL;
+    g_autofree char *pool = NULL;
+    g_autofree char *image = NULL;
+
+    if (virStorageSourceNetworkProtocolPathSplit(src->path,
+                                                 VIR_STORAGE_NET_PROTOCOL_RBD,
+                                                 &pool, &image) < 0)
+        return NULL;
 
     if (src->nhosts > 0 &&
         !(servers = qemuBlockStorageSourceBuildHostsJSONInetSocketAddress(src)))
@@ -715,8 +725,8 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
     }
 
     if (virJSONValueObjectAdd(&ret,
-                              "s:pool", src->volume,
-                              "s:image", src->path,
+                              "s:pool", pool,
+                              "s:image", image,
                               "S:snapshot", src->snapshot,
                               "S:conf", src->configFile,
                               "A:server", &servers,

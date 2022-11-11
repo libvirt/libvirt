@@ -1096,7 +1096,7 @@ libxlMakeNetworkDiskSrcStr(virStorageSource *src,
             return NULL;
         }
 
-        virBufferStrcat(&buf, "rbd:", src->volume, "/", src->path, NULL);
+        virBufferStrcat(&buf, "rbd:", src->path, NULL);
 
         if (username) {
             virBufferEscape(&buf, '\\', ":", ":id=%s", username);
