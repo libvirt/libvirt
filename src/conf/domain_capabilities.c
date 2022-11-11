@@ -99,6 +99,7 @@ virDomainCapsDispose(void *obj)
     virObjectUnref(caps->cpu.custom);
     virCPUDefFree(caps->cpu.hostModel);
     virSEVCapabilitiesFree(caps->sev);
+    virSGXCapabilitiesFree(caps->sgx);
 
     values = &caps->os.loader.values;
     for (i = 0; i < values->nvalues; i++)
@@ -648,6 +649,40 @@ virDomainCapsFeatureSEVFormat(virBuffer *buf,
     virBufferAddLit(buf, "</sev>\n");
 }
 
+static void
+virDomainCapsFeatureSGXFormat(virBuffer *buf,
+                              const virSGXCapability *sgx)
+{
+    if (!sgx) {
+        virBufferAddLit(buf, "<sgx supported='no'/>\n");
+        return;
+    }
+
+    virBufferAddLit(buf, "<sgx supported='yes'>\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferAsprintf(buf, "<flc>%s</flc>\n", sgx->flc ? "yes" : "no");
+    virBufferAsprintf(buf, "<sgx1>%s</sgx1>\n", sgx->sgx1 ? "yes" : "no");
+    virBufferAsprintf(buf, "<sgx2>%s</sgx2>\n", sgx->sgx2 ? "yes" : "no");
+    virBufferAsprintf(buf, "<section_size unit='KiB'>%llu</section_size>\n", sgx->section_size);
+
+    if (sgx->nSgxSections > 0) {
+        size_t i;
+
+        virBufferAddLit(buf, "<sections>\n");
+
+        for (i = 0; i < sgx->nSgxSections; i++) {
+            virBufferAdjustIndent(buf, 2);
+            virBufferAsprintf(buf, "<section node='%d' ", sgx->sgxSections[i].node);
+            virBufferAsprintf(buf, "size='%llu' ", sgx->sgxSections[i].size);
+            virBufferAddLit(buf, "unit='KiB'/>\n");
+            virBufferAdjustIndent(buf, -2);
+        }
+        virBufferAddLit(buf, "</sections>\n");
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</sgx>\n");
+}
 
 static void
 virDomainCapsFormatFeatures(const virDomainCaps *caps,
@@ -668,6 +703,7 @@ virDomainCapsFormatFeatures(const virDomainCaps *caps,
     }
 
     virDomainCapsFeatureSEVFormat(&childBuf, caps->sev);
+    virDomainCapsFeatureSGXFormat(&childBuf, caps->sgx);
 
     virXMLFormatElement(buf, "features", NULL, &childBuf);
 }

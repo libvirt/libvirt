@@ -293,6 +293,9 @@
       <optional>
         <ref name="sev"/>
       </optional>
+      <optional>
+        <ref name="sgx"/>
+      </optional>
     </element>
   </define>
 
@@ -349,6 +352,46 @@
         <element name="maxESGuests">
           <data type="unsignedInt"/>
         </element>
+      </optional>
+    </element>
+  </define>
+
+  <define name="sgx">
+    <element name="sgx">
+      <ref name="supported"/>
+      <optional>
+        <element name="flc">
+          <ref name="virYesNo"/>
+        </element>
+        <element name="sgx1">
+          <ref name="virYesNo"/>
+        </element>
+        <element name="sgx2">
+          <ref name="virYesNo"/>
+        </element>
+        <element name="section_size">
+          <attribute name="unit">
+            <value>KiB</value>
+          </attribute>
+          <data type="unsignedLong"/>
+        </element>
+        <optional>
+          <element name="sections">
+            <zeroOrMore>
+              <element name="section">
+                <attribute name="node">
+                  <data type="unsignedInt"/>
+                </attribute>
+                <attribute name="size">
+                  <data type="unsignedLong"/>
+                </attribute>
+                <attribute name="unit">
+                  <value>KiB</value>
+                </attribute>
+              </element>
+            </zeroOrMore>
+          </element>
+        </optional>
       </optional>
     </element>
   </define>

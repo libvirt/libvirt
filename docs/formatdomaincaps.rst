@@ -614,6 +614,16 @@ capabilities. All features occur as children of the main ``features`` element.
          <cbitpos>47</cbitpos>
          <reduced-phys-bits>1</reduced-phys-bits>
        </sev>
+       <sgx supported='yes'>
+         <flc>no</flc>
+         <sgx1>yes</sgx1>
+         <sgx2>no</sgx2>
+         <section_size unit='KiB'>524288</section_size>
+         <sections>
+           <section node='0' size='262144' unit='KiB'/>
+           <section node='1' size='262144' unit='KiB'/>
+         </sections>
+       </sgx>
      </features>
    </domainCapabilities>
 
@@ -693,3 +703,33 @@ in domain XML <formatdomain.html#launch-security>`__
 ``maxESGuests``
    The maximum number of SEV-ES guests that can be launched on the host. This
    value may be configurable in the firmware for some hosts.
+
+SGX capabilities
+^^^^^^^^^^^^^^^^
+
+Intel Software Guard Extensions (Intel SGX) capabilities are exposed under the
+``sgx`` element.
+
+Intel SGX helps protect data in use via unique application isolation technology.
+Protect selected code and data from modification using hardened enclaves with
+Intel SGX.
+
+For more details on the SGX feature, please follow resources in the SGX developer's
+document store. In order to use SGX with libvirt have a look at `SGX in domain XML
+<formatdomain.html#memory-devices>`__
+
+``flc``
+   FLC (Flexible Launch Control), not strictly part of SGX2, but was not part of
+   original SGX hardware either.
+
+``sgx1``
+   the sgx version 1.
+
+``sgx2``
+   The sgx version 2.
+
+``section_size``
+   The size of the SGX enclave page cache (called EPC).
+
+``sections``
+   The sections of the SGX enclave page cache (called EPC).

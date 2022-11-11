@@ -260,5 +260,6 @@
     <backup supported='no'/>
     <s390-pv supported='no'/>
     <sev supported='no'/>
+    <sgx supported='no'/>
   </features>
 </domainCapabilities>
