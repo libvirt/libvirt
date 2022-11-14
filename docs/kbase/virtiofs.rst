@@ -31,7 +31,7 @@ Sharing a host directory with a guest
        <devices>
          ...
          <filesystem type='mount' accessmode='passthrough'>
-           <driver type='virtiofs'/>
+           <driver type='virtiofs' queue='1024'/>
            <source dir='/path'/>
            <target dir='mount_tag'/>
          </filesystem>
