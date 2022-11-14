@@ -9,6 +9,7 @@ check-dco:
   stage: sanity_checks
   needs: []
   image: registry.gitlab.com/libvirt/libvirt-ci/check-dco:master
+  interruptible: true
   script:
     - /check-dco "$RUN_UPSTREAM_NAMESPACE"
   rules:

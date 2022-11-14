@@ -860,14 +860,14 @@ x86_64-freebsd-13:
     UPGRADE_COMMAND: pkg upgrade -y
 
 
-x86_64-macos-12:
+aarch64-macos-12:
   extends: .cirrus_build_job
   needs: []
   allow_failure: false
   variables:
-    CIRRUS_VM_IMAGE_NAME: monterey-base
+    CIRRUS_VM_IMAGE_NAME: ghcr.io/cirruslabs/macos-monterey-base:latest
     CIRRUS_VM_IMAGE_SELECTOR: image
-    CIRRUS_VM_INSTANCE_TYPE: osx_instance
+    CIRRUS_VM_INSTANCE_TYPE: macos_instance
     INSTALL_COMMAND: brew install
     NAME: macos-12
     PATH_EXTRA: /usr/local/opt/ccache/libexec:/usr/local/opt/gettext/bin:/usr/local/opt/libpcap/bin:/usr/local/opt/libxslt/bin:/usr/local/opt/rpcgen/bin

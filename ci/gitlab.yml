@@ -67,6 +67,7 @@ workflow:
 debug:
   image: docker.io/library/alpine:3
   stage: sanity_checks
+  interruptible: true
   needs: []
   script:
     - printenv | sort
