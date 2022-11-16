@@ -70,6 +70,9 @@ virsh
    Virt-Lightning uses libvirt, cloud-init and libguestfs to allow
    anyone to quickly start a new VM. Very much like a container CLI, but
    with a virtual machine.
+`vms <https://github.com/cbosdo/vms>`__
+   vms is a tool wrapping around the libvirt API to manage multiple virtual
+   machines at once with name patterns.
 
 Configuration Management
 ------------------------
