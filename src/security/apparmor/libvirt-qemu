@@ -42,6 +42,7 @@
 
   # For hostdev access. The actual devices will be added dynamically
   /sys/bus/usb/devices/ r,
+  /sys/bus/usb/devices/* r,
   /sys/devices/**/usb[0-9]*/** r,
   # libusb needs udev data about usb devices (~equal to content of lsusb -v)
   /run/udev/data/+usb* r,
