@@ -639,7 +639,7 @@ virCPUarmDecode(virCPUDef *cpu,
 
     if (!(model = virCPUarmModelFindByPVR(map, cpuData->pvr))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Cannot find CPU model with PVR 0x%03lx"),
+                       _("Cannot find CPU model with PVR 0x%03llx"),
                        cpuData->pvr);
         return -1;
     }
@@ -656,7 +656,7 @@ virCPUarmDecode(virCPUDef *cpu,
     if (cpuData->vendor_id &&
         !(vendor = virCPUarmVendorFindByID(map, cpuData->vendor_id))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Cannot find CPU vendor with vendor id 0x%02lx"),
+                       _("Cannot find CPU vendor with vendor id 0x%02llx"),
                        cpuData->vendor_id);
         return -1;
     }
