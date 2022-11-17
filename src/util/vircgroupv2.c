@@ -1611,7 +1611,7 @@ virCgroupV2SetCpuCfsQuota(virCgroup *group,
         return -1;
     }
 
-    if (cfs_quota == VIR_CGROUP_CPU_QUOTA_MAX) {
+    if (cfs_quota < 0 || cfs_quota == VIR_CGROUP_CPU_QUOTA_MAX) {
         return virCgroupSetValueStr(group,
                                     VIR_CGROUP_CONTROLLER_CPU,
                                     "cpu.max", "max");
