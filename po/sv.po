@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-10-25 07:42+0000\n"
-"PO-Revision-Date: 2022-11-09 13:19+0000\n"
+"PO-Revision-Date: 2022-11-17 07:30+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -16703,228 +16703,211 @@ msgstr ""
 "länkad till maskinen"
 
 msgid "Unable to add/delete fdb entries on this platform"
-msgstr ""
+msgstr "Kan inte lägga till/ta bort fdb-poster på denna plattform"
 
 #, c-format
 msgid "Unable to allocate %llu pages. Allocated only %llu"
-msgstr ""
+msgstr "Kan inte allokera %llu sidor. Allokerade bara %llu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to allocate lease %s"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte allokera hyran %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to allocate lockspace %s"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte allokera låsutrymmet %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to allocate x509 credentials: %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte allokera x509-kreditiv: %s"
 
-#, fuzzy
 msgid "Unable to append command 'id' string"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte lägga till kommando-”id”-sträng"
 
-#, fuzzy
 msgid "Unable to associate TAP device"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte associera TAP-enhet"
 
 #, c-format
 msgid "Unable to associate device %s with blkid library"
-msgstr ""
+msgstr "Kan inte associera enheten %s med blkid-biblioteket"
 
 #, c-format
 msgid "Unable to associate file %s with NBD device"
-msgstr ""
+msgstr "Kan inte associera filen %s med NBD-enheten"
 
 #, c-format
 msgid "Unable to associate file %s with loop device"
-msgstr ""
+msgstr "Kan inte associera filen %s med slingenheten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to attach %s to loop device"
-msgstr "Misslyckades att ansluta enhet från %s"
+msgstr "Kan inte ansluta %s till slingenheten"
 
-#, fuzzy
 msgid "Unable to become session leader"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte bli sessionsledare"
 
 #, c-format
 msgid "Unable to bind port %s to the virtual port %s"
-msgstr ""
+msgstr "Kan inte binda porten %s till den virtuella porten %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to bind to UNIX socket path '%s'"
-msgstr "Misslyckades att binda uttag till ”%s”"
+msgstr "Kan inte binda till UNIX-uttagssökvägen ”%s”"
 
-#, fuzzy
 msgid "Unable to bind to port"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte binda till porten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to bind to port %d"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte binda till port %d"
 
 msgid "Unable to change MaxMemorySize"
 msgstr "Kan inte ändra MaxMemorySize"
 
-#, fuzzy
 msgid "Unable to change balloon collection period."
-msgstr "Kan inte ändra MaxMemorySize"
+msgstr "Kan inte ändra ballonginsamlingsperioden."
 
-#, fuzzy
 msgid "Unable to change blkio parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte ändra blkio-parametrar"
 
-#, fuzzy
 msgid "Unable to change block I/O throttle"
-msgstr "Kan inte ändra MaxMemorySize"
+msgstr "Kan inte ändra block-I/O-strypningen"
 
-#, fuzzy
 msgid "Unable to change daemon logging settings"
-msgstr "Kan inte ändra MaxMemorySize"
+msgstr "Kan inte ändra demonloggningsinställningarna"
 
-#, fuzzy
 msgid "Unable to change lifecycle action."
-msgstr "Kan inte ändra MaxMemorySize"
+msgstr "Kan inte ändra livscykelåtgärd."
 
 msgid ""
 "Unable to change memory of active domain without the balloon device and "
 "guest OS balloon driver"
 msgstr ""
+"Kan inte ändra minnet på en aktiv domän utan att ballongenheten och gäst-OS-"
+"ballongdrivrutinen"
 
-#, fuzzy
 msgid "Unable to change memory parameters"
-msgstr "Kan inte ändra MaxMemorySize"
+msgstr "Kan inte ändra minnesparametrar"
 
-#, fuzzy
 msgid "Unable to change numa parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte ändra numa-parametrar"
 
-#, fuzzy
 msgid "Unable to change server workerpool parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte ändra serverarbetspoolsparametrar"
 
 msgid "Unable to change server's client-related configuration limits"
-msgstr ""
+msgstr "Kan inte ändra serverns klienrelaterade konfigurationsgränser"
 
 msgid "Unable to change target guest XML during migration"
-msgstr ""
+msgstr "Kan inte ändra målgäst-XML under migreringen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to change to %s"
-msgstr "Kan inte ändra MaxMemorySize"
+msgstr "Kan inte ändra till %s"
 
-#, fuzzy
 msgid "Unable to change to root dir"
-msgstr "Kan inte ändra MaxMemorySize"
+msgstr "Kan inte byta till rotkatalogen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to chdir(%s)"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte göra chdir(%s)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to check interface %s"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "Kan inte kontrollera gränssnittet %s"
 
 msgid "Unable to check interface config on this platform"
-msgstr ""
+msgstr "Kan inte kontrollera gränssnittskonfigurationen på denna plattform"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to check interface flags for %s"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "Kan inte kontrollera gränssnittsflaggorna för %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to check status of pid file '%s'"
-msgstr "det gick inte att skapa loggfilen %s"
+msgstr "Kan inte kontrollera status för pid-filen ”%s”"
 
 msgid "Unable to check virtual function status on this platform"
-msgstr ""
+msgstr "Kan inte kontrollera virtuella funktioners status på denna plattform"
 
-#, fuzzy
 msgid "Unable to clear thread local variable"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte tömma en trådlokal variabel"
 
 msgid "Unable to clone to check reboot support"
-msgstr ""
+msgstr "Kan inte klona för att kontroller stöd för omstart"
 
-#, fuzzy
 msgid "Unable to close"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte stänga"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to close %s"
-msgstr "det gick inte att skapa loggfilen %s"
+msgstr "Kan inte stänga %s"
 
 #, c-format
 msgid "Unable to close HardDisk, rc=%08x"
-msgstr ""
+msgstr "Kan inte stänga hårddisken, rk=%08x"
 
-#, fuzzy
 msgid "Unable to close disk children"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte stänga diskbarnen"
 
 msgid "Unable to close recursively all disks"
-msgstr ""
+msgstr "Kan inte rekursivt stänga alla diskar"
 
 #, c-format
 msgid "Unable to close the VPD file, fd: %d"
-msgstr ""
+msgstr "Kan inte stänga VPD-filen, fb: %d"
 
 #, c-format
 msgid "Unable to close the new medium, rc=%08x"
-msgstr ""
+msgstr "Kan inte stänga det nya mediumet, rk=%08x"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to compute hash of data: %s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Kan inte beräkna hash:en av datat: %s"
 
 #, c-format
 msgid ""
 "Unable to configure VF %d of PF '%s' because the PF is not online. Please "
 "change host network config to put the PF online."
 msgstr ""
+"Kan inte konfigurera VF %d av PF ”%s” för att PF:en inte är uppkopplad. "
+"Ändra värdnätverkskonfigurationen till att koppla upp PF:en."
 
 msgid "Unable to configure libxl's memory management parameters"
-msgstr ""
+msgstr "Kan inte konfigurera libxl:s minneshanteringsparametrar"
 
-#, fuzzy
 msgid "Unable to construct table of device aliases"
-msgstr "kan inte ansluta till servern på ”%s:%s”"
+msgstr "Kan inte konstruera en tabell med enhetsalias"
 
 #, c-format
 msgid "Unable to convert lease expiry time to long long: %s"
-msgstr ""
+msgstr "Kan inte konvertera hyrans utgångstid till long long: %s"
 
-#, fuzzy
 msgid "Unable to convert time"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte konvertera tiden"
 
-#, fuzzy
 msgid "Unable to copy socket file handle"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte kopiera uttagsfilhandtaget"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte skapa %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create HardDisk, rc=%08x"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte skapa HardDisk, rk=%08x"
 
-#, fuzzy
 msgid "Unable to create JSON formatter"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte skapa en JSON-formaterare"
 
-#, fuzzy
 msgid "Unable to create JSON parser"
-msgstr "kan inte skapa uttagspar"
+msgstr "Kan inte skapa en JSON-tolk"
 
 msgid "Unable to create KVM VM for TSC probing"
-msgstr ""
+msgstr "Kan inte skap en KVM VM för TSC-avkänning"
 
 msgid "Unable to create KVM vCPU for TSC probing"
-msgstr ""
+msgstr "Kan inte skapa en KVM vCPU för TSC-avkänning"
 
 #, c-format
 msgid "Unable to create RNG parser for %s"
@@ -16934,20 +16917,18 @@ msgstr "Kan inte skap RNG-tolk för %s"
 msgid "Unable to create RNG validation context %s"
 msgstr "Kan inte skapa RNG-valideringskontext %s"
 
-#, fuzzy
 msgid "Unable to create TAP devices on this platform"
-msgstr "kan inte skapa uttagspar"
+msgstr "Kan inte skapa TAP-enheter på denna plattform"
 
 msgid "Unable to create UNIX socket"
 msgstr "Kan inte skapa ett UNIX-uttag"
 
 #, c-format
 msgid "Unable to create and set qos configuration on port %s"
-msgstr ""
+msgstr "Kan inte skapa och sätta qos-konfigurationen på port %s"
 
-#, fuzzy
 msgid "Unable to create blkid library handle"
-msgstr "kan inte skapa uttagspar"
+msgstr "Kan inte skapa blkid-bibliotekhandtag"
 
 #, c-format
 msgid "Unable to create bridge %s"
@@ -16960,66 +16941,62 @@ msgstr "Kan inte skapa bryggenheten"
 msgid "Unable to create device %s"
 msgstr "Kan inte skapa enheten %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create directory %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte skapa katalogen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create directory '%s'"
-msgstr "kan inte skapa konfigurationskatalogen ”%s”"
+msgstr "Kan inte skapa katalogen ”%s”"
 
-#, fuzzy
 msgid "Unable to create epoll fd"
-msgstr "misslyckats med att skapa profil"
+msgstr "Kan inte skapa en epoll-fb"
 
-#, fuzzy
 msgid "Unable to create kqueue"
-msgstr "Kan inte fråga kqueue"
+msgstr "Kan inte skapa en kqueue"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create lock '%s'"
-msgstr "kan inte skapa uttagspar"
+msgstr "Kan inte skapa låset ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create lockspace %s"
-msgstr "kan inte skapa uttagspar"
+msgstr "Kan inte skapa låsrymden %s"
 
 #, c-format
 msgid ""
 "Unable to create lockspace %s: parent directory does not exist or is not a "
 "directory"
 msgstr ""
+"Kan inte skapa låsrymden %s: förädrakatalogen finns inte eller är inte en "
+"katalog"
 
-#, fuzzy
 msgid "Unable to create media registry"
-msgstr "kan inte skapa uttagspar"
+msgstr "Kan inte skapa ett mediaregister"
 
 #, c-format
 msgid "Unable to create mediated device: %s"
-msgstr ""
+msgstr "Kan inte skapa en medierad enhet: %s"
 
-#, fuzzy
 msgid "Unable to create migration thread"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte skapa en migrationstråd"
 
-#, fuzzy
 msgid "Unable to create pipes"
-msgstr "misslyckats med att skapa profil"
+msgstr "Kan inte skapa rör"
 
-#, fuzzy
 msgid "Unable to create rule"
-msgstr "misslyckats med att skapa profil"
+msgstr "Kan inte skapa en regel"
 
 msgid "Unable to create socket"
 msgstr "Kunde inte skapa uttag"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create socket object: %s"
-msgstr "kan inte skapa uttagspar"
+msgstr "Kan inte skapa ett uttagsobjekt: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create symlink %s (pointing to %s)"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte skapa symlänken %s (skall peka på %s)"
 
 msgid "Unable to create tap device"
 msgstr "Kan inte skapa tap-enheten"
@@ -17028,22 +17005,22 @@ msgstr "Kan inte skapa tap-enheten"
 msgid "Unable to create tap device %s"
 msgstr "Kan inte skapa tap-enheten %s"
 
-#, fuzzy
 msgid "Unable to create thread to process command's IO"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte skapa en tråd för att bearbeta kommandonts IO"
 
-#, fuzzy
 msgid "Unable to create tunnel migration thread"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte skapa en tunnelmigrationstråd"
 
 #, c-format
 msgid ""
 "Unable to create: %s\n"
 " errno=%d"
 msgstr ""
+"Kan inte skapa: %s\n"
+" errno=%d"
 
 msgid "Unable to decode header until len is received"
-msgstr ""
+msgstr "Kan inte avkoda huvudet förrän längden är mottagen"
 
 msgid "Unable to decode message header"
 msgstr "Kan inte avkoda meddelandehuvudet"
@@ -17055,21 +17032,23 @@ msgid "Unable to decode message payload"
 msgstr "Kan inte avkoda meddelandelasten"
 
 msgid "Unable to decode number of FDs"
-msgstr ""
+msgstr "Kan inte avkoda antalet FB:ar"
 
 #, c-format
 msgid "Unable to define mediated device: %s"
-msgstr ""
+msgstr "Kan inte defineria en medierad enhet: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to delete %s"
-msgstr "Kan inte fråga kqueue"
+msgstr "Kan inte radera %s"
 
 msgid "Unable to delete TAP devices on this platform"
-msgstr ""
+msgstr "Kan inte radera TAP-enheter på denna plattform"
 
 msgid "Unable to delete address from interface multicast list on this platform"
 msgstr ""
+"Kan inte radera enadress från ett gränssnitts multicast-lista på denna "
+"plattform"
 
 #, c-format
 msgid "Unable to delete bridge %s"
@@ -17079,76 +17058,73 @@ msgstr "Kan inte radera bryggan %s"
 msgid "Unable to delete file %s"
 msgstr "Kan inte radera filen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to delete lockspace resource %s"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte radera låsutrymmesresursen %s"
 
 #, c-format
 msgid "Unable to delete medium, rc=%08x"
-msgstr ""
+msgstr "Kan inte radera mediumet, rk=%08x"
 
 #, c-format
 msgid "Unable to delete port %s from OVS"
-msgstr ""
+msgstr "Kan inte radera port %s från OVS"
 
 #, c-format
 msgid "Unable to destroy '%s': %s"
-msgstr ""
+msgstr "Kan inte förstöra ”%s”: %s"
 
 #, c-format
 msgid "Unable to destroy '%s': device in use"
-msgstr ""
+msgstr "Kan inte förstöra ”%s”: enheten används"
 
 msgid "Unable to detect SCHED_CORE"
-msgstr ""
+msgstr "Kan inte detektera SCHED_CORE"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to detect filesystem for %s"
-msgstr "Misslyckades att avmontera enheten från %s"
+msgstr "Kan inte detektera filsystemet för %s"
 
 msgid "Unable to determine Partition Type, requires build --overwrite"
-msgstr ""
+msgstr "Kan inte avgöra partitionstyp, förutsätter bygge --overwrite"
 
 #, c-format
 msgid "Unable to determine current file inode: %s"
 msgstr "Kan inte avgöra aktuell fil-inod: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to determine current file offset: %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte avgöra aktuellt filavstånd: %s"
 
 #, c-format
 msgid "Unable to determine model for SCSI controller idx=%d"
-msgstr ""
+msgstr "Kan inte avgöra modellen för SCSI-styrenheten idx=%d"
 
-#, fuzzy
 msgid "Unable to determine mount table on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Kan inte avgöra monteringstabellen på denna plattform"
 
-#, fuzzy
 msgid "Unable to disable nagle algorithm"
-msgstr "Kan inte ändra MaxMemorySize"
+msgstr "Kan inte avaktivera nagle-algoritmen"
 
-#, fuzzy
 msgid "Unable to dump link info on this platform"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte dumpa länkinformationen på denna plattform"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to duplicate FD %d"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte duplicera FB %d"
 
 msgid "Unable to enable keepalives without async IO support"
-msgstr ""
+msgstr "Kan inte aktivera keepalive utan stöd för async-IO"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to enable namespace: %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte aktivera namnrymden: %s"
 
 msgid "Unable to enable non-blocking flag"
-msgstr ""
+msgstr "Kan inte aktivera flaggan för ickeblockerande"
 
 msgid "Unable to enable/disable perf events"
-msgstr ""
+msgstr "Kan inte aktivera/avaktivera perf-händelser"
 
 msgid "Unable to encode message header"
 msgstr "Kan inte koda meddelandehuvudet"
@@ -17160,225 +17136,215 @@ msgid "Unable to encode message payload"
 msgstr "Kan inte koda meddelandelasten"
 
 msgid "Unable to encode number of FDs"
-msgstr ""
+msgstr "Kan inte koda antalet FB:ar"
 
-#, fuzzy
 msgid "Unable to enter mount namespace"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte gå in i monteringsnamnrymden"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to exec shell %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte göra exec på skalet %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to find '%s' binary in $PATH"
-msgstr "Kunde inte hitta sökvägen till binären %s"
+msgstr "Kan inte hitta binären ”%s” i $PATH"
 
 #, c-format
 msgid "Unable to find '%s' limit for block device '%s'"
-msgstr ""
+msgstr "Kan inte hitta ”%s”-gränsen för blockenheten ”%s”"
 
 msgid "Unable to find 'cpuacct' cgroups controller mount"
-msgstr ""
+msgstr "Kan inte hitta cgroups-styrningsmonteringen för ”cpuacct”"
 
 msgid "Unable to find 'devices' cgroups controller mount"
-msgstr ""
+msgstr "Kan inte hitta cgroups-styrningsmonteringen för ”devices”"
 
 msgid "Unable to find 'dnsmasq' binary in $PATH"
-msgstr ""
+msgstr "Kan inte hitta binären ”dnsmasq” i $PATH"
 
 msgid "Unable to find 'memory' cgroups controller mount"
-msgstr ""
+msgstr "Kan inte hitta cgroups-styrningsmonteringen för ”memory”"
 
 msgid "Unable to find 'qemu-nbd' binary in $PATH"
-msgstr ""
+msgstr "Kan inte hitta binären ”qemu-nbd” i $PATH"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to find UUID %s"
-msgstr "ogiltiga värd-UUID: %s"
+msgstr "Kan inte UUID %s"
 
 #, c-format
 msgid "Unable to find UUID for location %s"
-msgstr ""
+msgstr "Kan inte hitta UUID för platsen %s"
 
 msgid "Unable to find a free loop device in /dev"
-msgstr ""
+msgstr "Kan inte hitta en ledig slingenhet i /dev"
 
 #, c-format
 msgid "Unable to find a free port on virtio-serial controller %u"
-msgstr ""
+msgstr "Kan inte hitta en ledig port på virtio-serial-styrenheten %u"
 
 msgid "Unable to find a free virtio-serial port"
-msgstr ""
+msgstr "Kan inte hitta en ledig virtio-serial-port"
 
 msgid "Unable to find a satisfying vhost-user-gpu"
-msgstr ""
+msgstr "Kan inte hitta en tillfredsställande vhost-user-gpu"
 
 msgid "Unable to find a satisfying virtiofsd"
-msgstr ""
+msgstr "Kan inte hitta en tillfredsställande vritiofsd"
 
 msgid "Unable to find a vCPU that is online"
-msgstr ""
+msgstr "Kan inte hitta en vCPU som är inkopplad"
 
 #, c-format
 msgid "Unable to find address for mdev parent device '%s'"
-msgstr ""
+msgstr "Kan inte hitta adressen till mdev-föräldraenheten ”%s”"
 
 #, c-format
 msgid "Unable to find address for parent device '%s'"
-msgstr ""
+msgstr "Kan inte hitta adressen till föräldraenheten ”%s”"
 
 #, c-format
 msgid "Unable to find an unused port in range '%s' (%d-%d)"
-msgstr ""
+msgstr "Kan inte hitta en oanvänd port i intervallet ”%s” (%d-%d)"
 
-#, fuzzy
 msgid "Unable to find any /dev mount"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte hitta någon /dev-montering"
 
 #, c-format
 msgid "Unable to find any firmware to satisfy '%s'"
-msgstr ""
+msgstr "Kan inte hitta någon fast programvara för att tillgodose ”%s”"
 
 #, c-format
 msgid "Unable to find any usable hugetlbfs mount for %llu KiB"
-msgstr ""
+msgstr "Kan inte hitta någon användbar hugetlbfs-montering för %llu KiB"
 
 #, c-format
 msgid "Unable to find correct value in 'bonding/arp_validate' for '%s'"
-msgstr ""
+msgstr "Kan inte hitta det rätta värdet i ”bonding/arp_validate” för ”%s”"
 
 #, c-format
 msgid "Unable to find correct value in 'bonding/mode' for '%s'"
-msgstr ""
+msgstr "Kan inte hitta det rätta värdet i ”bonding/mode” för ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to find filesystem type for %s"
-msgstr "okänd filsystemstyp ”%s”"
+msgstr "Kan inte hitta filsystemstypen för ”%s”"
 
 #, c-format
 msgid "Unable to find major for %s"
-msgstr ""
+msgstr "Kan inte hitta övre enhetsnummer för %s"
 
 #, c-format
 msgid "Unable to find the hard disk with uuid %s"
-msgstr ""
+msgstr "Kan inte hitta hårddisken med uuid %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to find the snapshot %s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Kan inte hitta ögonblicksbilden %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to find the snapshot with name %s"
-msgstr "Kunde inte hitta %s med namnet ”%s”"
+msgstr "Kan inte hitta ögonblicksbilden med namnet %s"
 
-#, fuzzy
 msgid "Unable to force bind to IPv6 only"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte tvinga fram bindning endast till IPv6"
 
 msgid "Unable to format NUMA node cache"
-msgstr ""
+msgstr "Kan inte formatera NUMA-nodcachen"
 
 msgid "Unable to format SELinux context"
-msgstr ""
+msgstr "Kan inte formatera SELinux-kontexten"
 
-#, fuzzy
 msgid "Unable to format guestfwd port"
-msgstr "kan inte skapa uttagspar"
+msgstr "Kan inte formatera guestfwd-porten"
 
 msgid "Unable to format metadata element"
-msgstr ""
+msgstr "Kan inte formatera metadata-elementet"
 
-#, fuzzy
 msgid "Unable to format time"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte formatera tiden"
 
 msgid "Unable to freeze filesystems"
-msgstr ""
+msgstr "Kan inte frysa filsystem"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get ACLs on %s"
-msgstr "misslyckades att hämta domän '%s'"
+msgstr "Kan inte hämta ACL:er på %s"
 
 msgid "Unable to get Capabilities"
 msgstr "Kan inte hämta förmågor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get Console object for domain %s"
-msgstr "Misslyckades att starta om domän %s"
+msgstr "Kan inte hämta konsolobjektet för domänen %s"
 
-#, fuzzy
 msgid "Unable to get IP address on this platform"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte hämta IP-adressen på denna plattform"
 
 #, c-format
 msgid "Unable to get IPv4 address for interface %s via ioctl"
-msgstr ""
+msgstr "Kan inte hämta IPv4-adressen för gränssnittet %s via ioctl"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get Keyboard object for domain %s"
-msgstr "Misslyckades att starta om domän %s"
+msgstr "Kan inte hämta tangentbordsobjektet för domänen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get LVM key for %s"
-msgstr "misslyckades att hämta nätverk '%s'"
+msgstr "Kan inte hämta LVM-nyckeln för %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get SCSI key for %s"
-msgstr "misslyckades att hämta nätverk '%s'"
+msgstr "Kan inte hämta SCSI-nyckeln för %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get SELinux label from %s"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte hämta SELinux-etiketten från %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get STP delay on %s on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Kan inte hämta STP-fördröjningen på %s på denna plattform"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get STP on %s on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Kan inte hämta STP på %s på denna plattform"
 
 msgid "Unable to get VF net device stats on this platform"
-msgstr ""
+msgstr "Kan inte hämta VF-nätenhetens statistik på denna plattform"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get VLAN for interface %s"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "Kan inte hämta VLAN för gränssnittet %s"
 
-#, fuzzy
 msgid "Unable to get VLAN on this platform"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte VLAN:et på denna plattform"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get XATTR %s on %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte hämta XATTR %s på %s"
 
-#, fuzzy
 msgid "Unable to get XML Desc of snapshot"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte hämta XML-beskrivningen för ögonblicksbilden"
 
 msgid "Unable to get a virDomainSnapshotDef *"
-msgstr ""
+msgstr "Kan inte hämta en virDomainSnapshotDef *"
 
 msgid "Unable to get any controller"
-msgstr ""
+msgstr "Kan inte hämta någon styrenhet"
 
-#, fuzzy
 msgid "Unable to get blkio parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte hämta blkio-parametrar"
 
-#, fuzzy
 msgid "Unable to get block I/O throttle parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte hämta block-I/O-strypningsparametrar"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get bridge %s %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte hämta bryggan %s %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get bridge %s port %s %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte hämta bryggan %s port %s %s"
 
 #, fuzzy
 msgid "Unable to get bridge port isolated on this platform"
