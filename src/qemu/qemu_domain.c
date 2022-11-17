@@ -9470,10 +9470,14 @@ qemuDomainGetMemLockLimitBytes(virDomainDef *def,
          */
         int factor = nvdpa;
 
-        if (def->iommu)
-            factor += nvfio;
+        if (nvfio || forceVFIO) {
+            if (nvfio && def->iommu)
+                factor += nvfio;
+            else
+                factor += 1;
+        }
 
-        memKB = MAX(factor, 1) * virDomainDefGetMemoryTotal(def) + 1024 * 1024;
+        memKB = factor * virDomainDefGetMemoryTotal(def) + 1024 * 1024;
     }
 
     return memKB << 10;
