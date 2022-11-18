@@ -54,6 +54,10 @@
  * Unfortunately, because we are trying to mock replace the C library,
  * we need to know about this internal impl detail.
  *
+ * Furthermore, support for 64-bit time can be enabled, which on 32-bit
+ * systems with glibc overwrites stat64() to __stat64_time64() and lstat64()
+ * to __lstat64_time64().
+ *
  * On macOS stat() and lstat() are resolved to _stat$INODE64 and
  * _lstat$INODE64, respectively. stat(2) man page also declares that
  * stat64(), lstat64() and fstat64() are deprecated, and when
@@ -168,7 +172,11 @@ static void virMockStatInit(void)
     fdebug("real stat %p\n", real_stat);
 #endif
 #ifdef MOCK_STAT64
+# if defined(__GLIBC__) && defined(_TIME_BITS) && _TIME_BITS == 64
+    VIR_MOCK_REAL_INIT_ALIASED(stat64, "__stat64_time64");
+# else
     VIR_MOCK_REAL_INIT(stat64);
+# endif
     fdebug("real stat64 %p\n", real_stat64);
 #endif
 #ifdef MOCK___XSTAT
@@ -188,7 +196,11 @@ static void virMockStatInit(void)
     fdebug("real lstat %p\n", real_lstat);
 #endif
 #ifdef MOCK_LSTAT64
+# if defined(__GLIBC__) && defined(_TIME_BITS) && _TIME_BITS == 64
+    VIR_MOCK_REAL_INIT_ALIASED(lstat64, "__lstat64_time64");
+# else
     VIR_MOCK_REAL_INIT(lstat64);
+# endif
     fdebug("real lstat64 %p\n", real_lstat64);
 #endif
 #ifdef MOCK___LXSTAT
