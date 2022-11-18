@@ -3901,6 +3901,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
     g_autoptr(qemuMigrationCookie) mig = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobPrivate *jobPriv = vm->job->privateData;
+    qemuDomainJobDataPrivate *currentData = vm->job->current->privateData;
     virDomainJobData *jobData = NULL;
     qemuMigrationJobPhase phase;
 
@@ -3910,6 +3911,13 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
               flags, retcode);
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
+
+    if (retcode != 0 &&
+        virDomainObjIsPostcopy(vm, VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT) &&
+        currentData->stats.mig.status == QEMU_MONITOR_MIGRATION_STATUS_COMPLETED) {
+        VIR_DEBUG("Finish phase failed, but QEMU reports post-copy migration is completed; forcing success");
+        retcode = 0;
+    }
 
     if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
         phase = QEMU_MIGRATION_PHASE_CONFIRM_RESUME;
