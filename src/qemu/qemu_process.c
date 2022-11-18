@@ -3635,11 +3635,14 @@ qemuProcessRecoverMigration(virQEMUDriver *driver,
 
     if (rc > 0) {
         job->phase = QEMU_MIGRATION_PHASE_POSTCOPY_FAILED;
+        /* Even though we restore the migration async job here, the APIs below
+         * use VIR_ASYNC_JOB_NONE because we're already in a MODIFY job started
+         * before we reconnected to the domain. */
+        qemuProcessRestoreMigrationJob(vm, job);
 
         if (migStatus == VIR_DOMAIN_JOB_STATUS_POSTCOPY) {
             VIR_DEBUG("Post-copy migration of domain %s still running, it will be handled as unattended",
                       vm->def->name);
-            qemuProcessRestoreMigrationJob(vm, job);
             return 0;
         }
 
@@ -3648,17 +3651,19 @@ qemuProcessRecoverMigration(virQEMUDriver *driver,
                 qemuMigrationSrcPostcopyFailed(vm);
             else
                 qemuMigrationDstPostcopyFailed(vm);
-
-            qemuProcessRestoreMigrationJob(vm, job);
             return 0;
         }
 
         VIR_DEBUG("Post-copy migration of domain %s already finished",
                   vm->def->name);
-        if (job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT)
+        if (job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT) {
             qemuMigrationSrcComplete(driver, vm, VIR_ASYNC_JOB_NONE);
-        else
+            /* No need to stop the restored job as the domain has just been
+             * destroyed. */
+        } else {
             qemuMigrationDstComplete(driver, vm, true, VIR_ASYNC_JOB_NONE, job);
+            virDomainObjEndAsyncJob(vm);
+        }
         return 0;
     }
 
