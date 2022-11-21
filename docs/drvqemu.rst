@@ -727,10 +727,6 @@ The properties of a device can be queried directly in qemu (e.g. for the
 
   # qemu-system-x86_64 -device virtio-blk-pci,?
 
-Configuring override for a device alias which is not used or attempting to
-remove a device property which is not formatted by libvirt will cause failure
-to startup the VM.
-
 *Note:* The libvirt project doesn't guarantee any form of compatibility and
 stability of devices with overridden properties. The domain is tainted when
 such configuration is used.
