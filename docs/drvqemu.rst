@@ -722,6 +722,11 @@ attribute are:
 The overrides are applied only to initial device configuration passed to QEMU
 via the commandline. Later hotplug operations will not apply any modifications.
 
+The properties of a device can be queried directly in qemu (e.g. for the
+``virtio-blk-pci`` device) via ::
+
+  # qemu-system-x86_64 -device virtio-blk-pci,?
+
 Configuring override for a device alias which is not used or attempting to
 remove a device property which is not formatted by libvirt will cause failure
 to startup the VM.
