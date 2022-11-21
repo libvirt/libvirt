@@ -688,10 +688,36 @@ The individual properties are overridden by a ``<qemu:property>`` element. The
 ``name`` specifies the name of the property to override. In case when libvirt
 doesn't configure the property a property with the name is added to the
 commandline. The ``type`` attribute specifies a type of the argument used. The
-type must correspond with the type that is expected by QEMU. Supported values
-for the type attribute are: ``string``, ``number``, ``bool`` (allowed values for
-``bool`` are ``true`` and ``false``) and ``remove``. The ``remove`` type is
-special and instructs libvirt to remove the property without replacement.
+type must correspond semantically (e.g use a numeric type when qemu expects a
+number) with the type that is expected by QEMU. Supported values for the ``type``
+attribute are:
+
+  ``string``
+    Used to override ``qemu`` properties of ``str`` type as well as any
+    enumeration type (e.g. ``OnOffAuto`` in which case the value can be one of
+    ``on``, ``off``, or ``auto``).
+
+  ``unsigned``
+    Used to override numeric properties with an non-negative value. Note that
+    this can be used to also override signed values in qemu.
+
+    Used for any numeric type of a ``qemu`` property such as ``uint32``,
+    ``int32``, ``size``, etc.
+
+    The value is interpreted as a base 10 number, make sure to convert numbers
+    if needed.
+
+  ``signed``
+    Same semantics as ``unsigned`` above but used when a negative value is
+    needed.
+
+  ``bool``
+    Used to override ``qemu`` properties of ``bool`` type. Allowed values for
+    are ``true`` and ``false``.
+
+  ``remove``.
+    The ``remove`` type is special and instructs libvirt to remove the property
+    without replacement.
 
 The overrides are applied only to initial device configuration passed to QEMU
 via the commandline. Later hotplug operations will not apply any modifications.
