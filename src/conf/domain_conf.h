@@ -3471,10 +3471,6 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainShmemDef, virDomainShmemDefFree);
 void virDomainDeviceDefFree(virDomainDeviceDef *def);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainDeviceDef, virDomainDeviceDefFree);
-virDomainDeviceDef *virDomainDeviceDefCopy(virDomainDeviceDef *src,
-                                           const virDomainDef *def,
-                                           virDomainXMLOption *xmlopt,
-                                           void *parseOpaque);
 virDomainDeviceInfo *virDomainDeviceGetInfo(const virDomainDeviceDef *device);
 void virDomainDeviceSetData(virDomainDeviceDef *device,
                             void *devicedata);
