@@ -7869,7 +7869,6 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriver *driver,
     g_autoptr(virDomainDeviceDef) dev_live = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
     g_autoptr(virDomainDef) vmdef = NULL;
-    int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -7883,35 +7882,35 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriver *driver,
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         if (!(dev_config = virDomainDeviceDefParse(xml, vm->def, driver->xmlopt,
                                                    priv->qemuCaps, parse_flags)))
-            goto cleanup;
+            return -1;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!(dev_live = virDomainDeviceDefParse(xml, vm->def, driver->xmlopt,
                                                  priv->qemuCaps, parse_flags)))
-            goto cleanup;
+            return -1;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         /* Make a copy for updated domain. */
         vmdef = virDomainObjCopyPersistentDef(vm, driver->xmlopt, priv->qemuCaps);
         if (!vmdef)
-            goto cleanup;
+            return -1;
 
         if (qemuDomainDetachDeviceConfig(vmdef, dev_config, priv->qemuCaps,
                                          parse_flags,
                                          driver->xmlopt) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         int rc;
 
         if ((rc = qemuDomainDetachDeviceLive(vm, dev_live, driver, false)) < 0)
-            goto cleanup;
+            return -1;
 
         if (rc == 0 && qemuDomainUpdateDeviceList(vm, VIR_ASYNC_JOB_NONE) < 0)
-            goto cleanup;
+            return -1;
 
         qemuDomainSaveStatus(vm);
     }
@@ -7919,15 +7918,12 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriver *driver,
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         if (virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir) < 0)
-            goto cleanup;
+            return -1;
 
         virDomainObjAssignDef(vm, &vmdef, false, NULL);
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
