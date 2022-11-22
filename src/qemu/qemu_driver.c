@@ -7757,16 +7757,19 @@ qemuDomainAttachDeviceFlags(virDomainPtr dom,
     return ret;
 }
 
-static int qemuDomainAttachDevice(virDomainPtr dom, const char *xml)
+
+static int
+qemuDomainAttachDevice(virDomainPtr dom,
+                       const char *xml)
 {
-    return qemuDomainAttachDeviceFlags(dom, xml,
-                                       VIR_DOMAIN_AFFECT_LIVE);
+    return qemuDomainAttachDeviceFlags(dom, xml, VIR_DOMAIN_AFFECT_LIVE);
 }
 
 
-static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
-                                       const char *xml,
-                                       unsigned int flags)
+static int
+qemuDomainUpdateDeviceFlags(virDomainPtr dom,
+                            const char *xml,
+                            unsigned int flags)
 {
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm = NULL;
