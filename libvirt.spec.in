@@ -862,9 +862,7 @@ capabilities of LXC
 Summary: Server side daemon & driver required to run XEN guests
 
 Requires: libvirt-daemon = %{version}-%{release}
-    %if %{with_libxl}
 Requires: libvirt-daemon-driver-libxl = %{version}-%{release}
-    %endif
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
 Requires: libvirt-daemon-driver-nodedev = %{version}-%{release}
