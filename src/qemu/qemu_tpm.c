@@ -224,20 +224,25 @@ qemuTPMEmulatorDeleteStorage(virDomainTPMDef *tpm)
  *
  * @secretuuid: The UUID with the secret holding passphrase
  * @cmd: the virCommand to transfer the secret to
+ * @fd: returned read-end of the pipe
  *
- * Returns file descriptor representing the read-end of a pipe.
- * The passphrase can be read from this pipe. Returns < 0 in case
- * of error.
+ * Sets @fd to a file descriptor representing the read-end of a
+ * pipe. The passphrase can be read from this pipe.
  *
  * This function reads the passphrase and writes it into the
  * write-end of a pipe so that the read-end of the pipe can be
  * passed to the emulator for reading the passphrase from.
  *
- * Note that the returned FD is owned by @cmd.
+ * Note that the returned @fd is owned by @cmd and thus should
+ * only be used to append an argument onto emulator cmdline.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise (with proper error reported).
  */
 static int
 qemuTPMSetupEncryption(const unsigned char *secretuuid,
-                       virCommand *cmd)
+                       virCommand *cmd,
+                       int *fd)
 {
     g_autoptr(virConnect) conn = NULL;
     g_autofree uint8_t *secret = NULL;
@@ -260,7 +265,8 @@ qemuTPMSetupEncryption(const unsigned char *secretuuid,
                                  &secret, &secret_len) < 0)
         return -1;
 
-    return virCommandSetSendBuffer(cmd, g_steal_pointer(&secret), secret_len);
+    *fd = virCommandSetSendBuffer(cmd, g_steal_pointer(&secret), secret_len);
+    return 0;
 }
 
 
@@ -322,7 +328,7 @@ qemuTPMVirCommandAddEncryption(virCommand *cmd,
         return -1;
     }
 
-    if ((pwdfile_fd = qemuTPMSetupEncryption(secretuuid, cmd)) < 0)
+    if (qemuTPMSetupEncryption(secretuuid, cmd, &pwdfile_fd) < 0)
         return -1;
 
     virCommandAddArg(cmd, "--pwdfile-fd");
@@ -634,8 +640,13 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
             goto error;
         }
 
-        pwdfile_fd = qemuTPMSetupEncryption(tpm->data.emulator.secretuuid, cmd);
-        migpwdfile_fd = qemuTPMSetupEncryption(tpm->data.emulator.secretuuid, cmd);
+        if (qemuTPMSetupEncryption(tpm->data.emulator.secretuuid,
+                                   cmd, &pwdfile_fd) < 0)
+            goto error;
+
+        if (qemuTPMSetupEncryption(tpm->data.emulator.secretuuid,
+                                   cmd, &migpwdfile_fd) < 0)
+            goto error;
 
         virCommandAddArg(cmd, "--key");
         virCommandAddArgFormat(cmd, "pwdfd=%d,mode=aes-256-cbc", pwdfile_fd);
