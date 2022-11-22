@@ -329,7 +329,7 @@ libxlMigrateDstReceive(virNetSocket *sock,
 static int
 libxlDoMigrateSrcSend(libxlDriverPrivate *driver,
                       virDomainObj *vm,
-                      unsigned long flags,
+                      unsigned int flags,
                       int sockfd)
 {
     libxlDriverConfig *cfg = libxlDriverConfigGet(driver);
@@ -877,7 +877,7 @@ struct libxlTunnelControl {
 static int
 libxlMigrationSrcStartTunnel(libxlDriverPrivate *driver,
                              virDomainObj *vm,
-                             unsigned long flags,
+                             unsigned int flags,
                              virStreamPtr st,
                              struct libxlTunnelControl **tnl)
 {
