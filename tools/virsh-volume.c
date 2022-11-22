@@ -236,7 +236,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     const char *snapshotStrVol = NULL, *snapshotStrFormat = NULL;
     unsigned long long capacity, allocation = 0;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    unsigned long flags = 0;
+    unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
     if (vshCommandOptBool(cmd, "prealloc-metadata"))
