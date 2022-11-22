@@ -7775,8 +7775,8 @@ qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     virDomainObj *vm = NULL;
     qemuDomainObjPrivate *priv;
     g_autoptr(virDomainDef) vmdef = NULL;
-    g_autoptr(virDomainDeviceDef) dev = NULL;
-    virDomainDeviceDef *dev_copy = NULL;
+    g_autoptr(virDomainDeviceDef) dev_config = NULL;
+    g_autoptr(virDomainDeviceDef) dev_live = NULL;
     bool force = (flags & VIR_DOMAIN_DEVICE_MODIFY_FORCE) != 0;
     int ret = -1;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
@@ -7806,21 +7806,15 @@ qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         !(flags & VIR_DOMAIN_AFFECT_LIVE))
         parse_flags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
-    dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
-                                             driver->xmlopt, priv->qemuCaps,
-                                             parse_flags);
-    if (dev == NULL)
-        goto endjob;
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!(dev_config = virDomainDeviceDefParse(xml, vm->def, driver->xmlopt,
+                                                   priv->qemuCaps, parse_flags)))
+            goto endjob;
+    }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
-        flags & VIR_DOMAIN_AFFECT_LIVE) {
-        /* If we are affecting both CONFIG and LIVE
-         * create a deep copy of device as adding
-         * to CONFIG takes one instance.
-         */
-        dev_copy = virDomainDeviceDefCopy(dev, vm->def,
-                                          driver->xmlopt, priv->qemuCaps);
-        if (!dev_copy)
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (!(dev_live = virDomainDeviceDefParse(xml, vm->def, driver->xmlopt,
+                                                 priv->qemuCaps, parse_flags)))
             goto endjob;
     }
 
@@ -7833,7 +7827,7 @@ qemuDomainUpdateDeviceFlags(virDomainPtr dom,
 
         /* virDomainDefCompatibleDevice call is delayed until we know the
          * device we're going to update. */
-        if ((ret = qemuDomainUpdateDeviceConfig(vmdef, dev_copy, priv->qemuCaps,
+        if ((ret = qemuDomainUpdateDeviceConfig(vmdef, dev_config, priv->qemuCaps,
                                                 parse_flags,
                                                 driver->xmlopt)) < 0)
             goto endjob;
@@ -7842,7 +7836,7 @@ qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         /* virDomainDefCompatibleDevice call is delayed until we know the
          * device we're going to update. */
-        if ((ret = qemuDomainUpdateDeviceLive(vm, dev, dom, force)) < 0)
+        if ((ret = qemuDomainUpdateDeviceLive(vm, dev_live, dom, force)) < 0)
             goto endjob;
 
         qemuDomainSaveStatus(vm);
@@ -7859,8 +7853,6 @@ qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     virDomainObjEndJob(vm);
 
  cleanup:
-    if (dev != dev_copy)
-        virDomainDeviceDefFree(dev_copy);
     virDomainObjEndAPI(&vm);
     return ret;
 }
