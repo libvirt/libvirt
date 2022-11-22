@@ -2471,7 +2471,7 @@ qemuMigrationSrcBeginXML(virDomainObj *vm,
                          unsigned int cookieFlags,
                          const char **migrate_disks,
                          size_t nmigrate_disks,
-                         unsigned long flags)
+                         unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
@@ -2527,14 +2527,14 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
                            int *cookieoutlen,
                            size_t nmigrate_disks,
                            const char **migrate_disks,
-                           unsigned long flags)
+                           unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     unsigned int cookieFlags = QEMU_MIGRATION_COOKIE_LOCKSTATE;
 
     VIR_DEBUG("driver=%p, vm=%p, xmlin=%s, dname=%s,"
               " cookieout=%p, cookieoutlen=%p,"
-              " nmigrate_disks=%zu, migrate_disks=%p, flags=0x%lx",
+              " nmigrate_disks=%zu, migrate_disks=%p, flags=0x%x",
               driver, vm, NULLSTR(xmlin), NULLSTR(dname),
               cookieout, cookieoutlen, nmigrate_disks,
               migrate_disks, flags);
@@ -2647,10 +2647,10 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
 static bool
 qemuMigrationAnyCanResume(virDomainObj *vm,
                           virDomainAsyncJob job,
-                          unsigned long flags,
+                          unsigned int flags,
                           qemuMigrationJobPhase expectedPhase)
 {
-    VIR_DEBUG("vm=%p, job=%s, flags=0x%lx, expectedPhase=%s",
+    VIR_DEBUG("vm=%p, job=%s, flags=0x%x, expectedPhase=%s",
               vm, virDomainAsyncJobTypeToString(job), flags,
               qemuDomainAsyncJobPhaseToString(VIR_ASYNC_JOB_MIGRATION_OUT,
                                               expectedPhase));
@@ -2715,7 +2715,7 @@ qemuMigrationSrcBeginResume(virDomainObj *vm,
                             const char *xmlin,
                             char **cookieout,
                             int *cookieoutlen,
-                            unsigned long flags)
+                            unsigned int flags)
 {
     virDomainJobStatus status;
 
@@ -2741,7 +2741,7 @@ qemuMigrationSrcBeginResumePhase(virConnectPtr conn,
                                  const char *xmlin,
                                  char **cookieout,
                                  int *cookieoutlen,
-                                 unsigned long flags)
+                                 unsigned int flags)
 {
     g_autofree char *xml = NULL;
 
@@ -2781,7 +2781,7 @@ qemuMigrationSrcBegin(virConnectPtr conn,
                       int *cookieoutlen,
                       size_t nmigrate_disks,
                       const char **migrate_disks,
-                      unsigned long flags)
+                      unsigned int flags)
 {
     virQEMUDriver *driver = conn->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -3050,7 +3050,7 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
                               int nbdPort,
                               const char *nbdURI,
                               qemuMigrationParams *migParams,
-                              unsigned long flags)
+                              unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobPrivate *jobPriv = vm->job->privateData;
@@ -3249,7 +3249,7 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
                              int nbdPort,
                              const char *nbdURI,
                              qemuMigrationParams *migParams,
-                             unsigned long flags)
+                             unsigned int flags)
 {
     virDomainObj *vm = NULL;
     virErrorPtr origErr;
@@ -3261,7 +3261,7 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
     bool taint_hook = false;
 
     VIR_DEBUG("name=%s, origname=%s, protocol=%s, port=%hu, "
-              "listenAddress=%s, nbdPort=%d, nbdURI=%s, flags=0x%lx",
+              "listenAddress=%s, nbdPort=%d, nbdURI=%s, flags=0x%x",
               (*def)->name, NULLSTR(origname), protocol, port,
               listenAddress, nbdPort, NULLSTR(nbdURI), flags);
 
@@ -3423,7 +3423,7 @@ qemuMigrationDstPrepareResume(virQEMUDriver *driver,
                               unsigned short port,
                               bool autoPort,
                               const char *listenAddress,
-                              unsigned long flags)
+                              unsigned int flags)
 {
     g_autoptr(qemuMigrationCookie) mig = NULL;
     qemuProcessIncomingDef *incoming = NULL;
@@ -3433,7 +3433,7 @@ qemuMigrationDstPrepareResume(virQEMUDriver *driver,
     int ret = -1;
 
     VIR_DEBUG("name=%s, origname=%s, protocol=%s, port=%hu, "
-              "listenAddress=%s, flags=0x%lx",
+              "listenAddress=%s, flags=0x%x",
               def->name, NULLSTR(origname), protocol, port,
               NULLSTR(listenAddress), flags);
 
@@ -3528,7 +3528,7 @@ qemuMigrationDstPrepareAny(virQEMUDriver *driver,
                            int nbdPort,
                            const char *nbdURI,
                            qemuMigrationParams *migParams,
-                           unsigned long flags)
+                           unsigned int flags)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
@@ -3607,11 +3607,11 @@ qemuMigrationDstPrepareTunnel(virQEMUDriver *driver,
                               virDomainDef **def,
                               const char *origname,
                               qemuMigrationParams *migParams,
-                              unsigned long flags)
+                              unsigned int flags)
 {
     VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, st=%p, def=%p, "
-              "origname=%s, flags=0x%lx",
+              "origname=%s, flags=0x%x",
               driver, dconn, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, st, *def, origname, flags);
 
@@ -3667,7 +3667,7 @@ qemuMigrationDstPrepareDirect(virQEMUDriver *driver,
                               int nbdPort,
                               const char *nbdURI,
                               qemuMigrationParams *migParams,
-                              unsigned long flags)
+                              unsigned int flags)
 {
     unsigned short port = 0;
     bool autoPort = true;
@@ -3681,7 +3681,7 @@ qemuMigrationDstPrepareDirect(virQEMUDriver *driver,
               "cookieout=%p, cookieoutlen=%p, uri_in=%s, uri_out=%p, "
               "def=%p, origname=%s, listenAddress=%s, "
               "nmigrate_disks=%zu, migrate_disks=%p, nbdPort=%d, "
-              "nbdURI=%s, flags=0x%lx",
+              "nbdURI=%s, flags=0x%x",
               driver, dconn, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, NULLSTR(uri_in), uri_out,
               *def, origname, NULLSTR(listenAddress),
@@ -4691,7 +4691,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
                     int cookieinlen,
                     char **cookieout,
                     int *cookieoutlen,
-                    unsigned long flags,
+                    unsigned int flags,
                     unsigned long resource,
                     qemuMigrationSpec *spec,
                     virConnectPtr dconn,
@@ -4721,7 +4721,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
         priv->migMaxBandwidth = resource;
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
-              "cookieout=%p, cookieoutlen=%p, flags=0x%lx, resource=%lu, "
+              "cookieout=%p, cookieoutlen=%p, flags=0x%x, resource=%lu, "
               "spec=%p (dest=%d, fwd=%d), dconn=%p, graphicsuri=%s, "
               "nmigrate_disks=%zu, migrate_disks=%p",
               driver, vm, NULLSTR(cookiein), cookieinlen,
@@ -5051,7 +5051,7 @@ qemuMigrationSrcResume(virDomainObj *vm,
                        char **cookieout,
                        int *cookieoutlen,
                        qemuMigrationSpec *spec,
-                       unsigned long flags)
+                       unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
@@ -5104,7 +5104,7 @@ qemuMigrationSrcPerformNative(virQEMUDriver *driver,
                               int cookieinlen,
                               char **cookieout,
                               int *cookieoutlen,
-                              unsigned long flags,
+                              unsigned int flags,
                               unsigned long resource,
                               virConnectPtr dconn,
                               const char *graphicsuri,
@@ -5119,7 +5119,7 @@ qemuMigrationSrcPerformNative(virQEMUDriver *driver,
     qemuMigrationSpec spec;
 
     VIR_DEBUG("driver=%p, vm=%p, uri=%s, cookiein=%s, cookieinlen=%d, "
-              "cookieout=%p, cookieoutlen=%p, flags=0x%lx, resource=%lu, "
+              "cookieout=%p, cookieoutlen=%p, flags=0x%x, resource=%lu, "
               "graphicsuri=%s, nmigrate_disks=%zu migrate_disks=%p",
               driver, vm, uri, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, resource,
@@ -5209,7 +5209,7 @@ qemuMigrationSrcPerformTunnel(virQEMUDriver *driver,
                               int cookieinlen,
                               char **cookieout,
                               int *cookieoutlen,
-                              unsigned long flags,
+                              unsigned int flags,
                               unsigned long resource,
                               virConnectPtr dconn,
                               const char *graphicsuri,
@@ -5222,7 +5222,7 @@ qemuMigrationSrcPerformTunnel(virQEMUDriver *driver,
     int fds[2] = { -1, -1 };
 
     VIR_DEBUG("driver=%p, vm=%p, st=%p, cookiein=%s, cookieinlen=%d, "
-              "cookieout=%p, cookieoutlen=%p, flags=0x%lx, resource=%lu, "
+              "cookieout=%p, cookieoutlen=%p, flags=0x%x, resource=%lu, "
               "graphicsuri=%s, nmigrate_disks=%zu, migrate_disks=%p",
               driver, vm, st, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, resource,
@@ -5273,7 +5273,7 @@ qemuMigrationSrcPerformPeer2Peer2(virQEMUDriver *driver,
                                   virConnectPtr dconn,
                                   virDomainObj *vm,
                                   const char *dconnuri,
-                                  unsigned long flags,
+                                  unsigned int flags,
                                   const char *dname,
                                   unsigned long resource,
                                   qemuMigrationParams *migParams)
@@ -5289,7 +5289,7 @@ qemuMigrationSrcPerformPeer2Peer2(virQEMUDriver *driver,
     unsigned long destflags;
 
     VIR_DEBUG("driver=%p, sconn=%p, dconn=%p, vm=%p, dconnuri=%s, "
-              "flags=0x%lx, dname=%s, resource=%lu",
+              "flags=0x%x, dname=%s, resource=%lu",
               driver, sconn, dconn, vm, NULLSTR(dconnuri),
               flags, NULLSTR(dname), resource);
 
@@ -5428,7 +5428,7 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriver *driver,
                                   qemuMigrationParams *migParams,
                                   unsigned long long bandwidth,
                                   bool useParams,
-                                  unsigned long flags)
+                                  unsigned int flags)
 {
     virDomainPtr ddomain = NULL;
     char *uri_out = NULL;
@@ -5451,7 +5451,7 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriver *driver,
     VIR_DEBUG("driver=%p, sconn=%p, dconn=%p, dconnuri=%s, vm=%p, xmlin=%s, "
               "dname=%s, uri=%s, graphicsuri=%s, listenAddress=%s, "
               "nmigrate_disks=%zu, migrate_disks=%p, nbdPort=%d, nbdURI=%s, "
-              "bandwidth=%llu, useParams=%d, flags=0x%lx",
+              "bandwidth=%llu, useParams=%d, flags=0x%x",
               driver, sconn, dconn, NULLSTR(dconnuri), vm, NULLSTR(xmlin),
               NULLSTR(dname), NULLSTR(uri), NULLSTR(graphicsuri),
               NULLSTR(listenAddress), nmigrate_disks, migrate_disks, nbdPort,
@@ -5793,7 +5793,7 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriver *driver,
                                  int nbdPort,
                                  const char *nbdURI,
                                  qemuMigrationParams *migParams,
-                                 unsigned long flags,
+                                 unsigned int flags,
                                  const char *dname,
                                  unsigned long resource,
                                  bool *v3proto)
@@ -5810,7 +5810,7 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriver *driver,
 
     VIR_DEBUG("driver=%p, sconn=%p, vm=%p, xmlin=%s, dconnuri=%s, uri=%s, "
               "graphicsuri=%s, listenAddress=%s, nmigrate_disks=%zu, "
-              "migrate_disks=%p, nbdPort=%d, nbdURI=%s, flags=0x%lx, "
+              "migrate_disks=%p, nbdPort=%d, nbdURI=%s, flags=0x%x, "
               "dname=%s, resource=%lu",
               driver, sconn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
               NULLSTR(uri), NULLSTR(graphicsuri), NULLSTR(listenAddress),
@@ -5964,7 +5964,7 @@ qemuMigrationSrcPerformJob(virQEMUDriver *driver,
                            int cookieinlen,
                            char **cookieout,
                            int *cookieoutlen,
-                           unsigned long flags,
+                           unsigned int flags,
                            const char *dname,
                            unsigned long resource,
                            bool v3proto)
@@ -6085,7 +6085,7 @@ qemuMigrationSrcPerformResume(virQEMUDriver *driver,
                               int cookieinlen,
                               char **cookieout,
                               int *cookieoutlen,
-                              unsigned long flags)
+                              unsigned int flags)
 {
     int ret;
 
@@ -6136,7 +6136,7 @@ qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
                              int cookieinlen,
                              char **cookieout,
                              int *cookieoutlen,
-                             unsigned long flags,
+                             unsigned int flags,
                              unsigned long resource,
                              const char *nbdURI)
 {
@@ -6215,7 +6215,7 @@ qemuMigrationSrcPerform(virQEMUDriver *driver,
                         int cookieinlen,
                         char **cookieout,
                         int *cookieoutlen,
-                        unsigned long flags,
+                        unsigned int flags,
                         const char *dname,
                         unsigned long resource,
                         bool v3proto)
@@ -6227,7 +6227,7 @@ qemuMigrationSrcPerform(virQEMUDriver *driver,
               "nmigrate_disks=%zu, migrate_disks=%p, nbdPort=%d, "
               "nbdURI=%s, "
               "cookiein=%s, cookieinlen=%d, cookieout=%p, cookieoutlen=%p, "
-              "flags=0x%lx, dname=%s, resource=%lu, v3proto=%d",
+              "flags=0x%x, dname=%s, resource=%lu, v3proto=%d",
               driver, conn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
               NULLSTR(uri), NULLSTR(graphicsuri), NULLSTR(listenAddress),
               nmigrate_disks, migrate_disks, nbdPort, NULLSTR(nbdURI),
@@ -6488,7 +6488,7 @@ static int
 qemuMigrationDstFinishFresh(virQEMUDriver *driver,
                             virDomainObj *vm,
                             qemuMigrationCookie *mig,
-                            unsigned long flags,
+                            unsigned int flags,
                             bool v3proto,
                             unsigned long long timeReceived,
                             bool *doKill,
@@ -6637,7 +6637,7 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
                              int cookieinlen,
                              char **cookieout,
                              int *cookieoutlen,
-                             unsigned long flags,
+                             unsigned int flags,
                              int retcode,
                              bool v3proto,
                              unsigned long long timeReceived,
@@ -6653,7 +6653,7 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
     bool doKill = vm->job->phase != QEMU_MIGRATION_PHASE_FINISH_RESUME;
     int rc;
 
-    VIR_DEBUG("vm=%p, flags=0x%lx, retcode=%d",
+    VIR_DEBUG("vm=%p, flags=0x%x, retcode=%d",
               vm, flags, retcode);
 
     if (!(mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname,
@@ -6744,7 +6744,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
                        int cookieinlen,
                        char **cookieout,
                        int *cookieoutlen,
-                       unsigned long flags,
+                       unsigned int flags,
                        int retcode,
                        bool v3proto)
 {
@@ -6757,7 +6757,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
                         : QEMU_MIGRATION_PHASE_FINISH2;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
-              "cookieout=%p, cookieoutlen=%p, flags=0x%lx, retcode=%d",
+              "cookieout=%p, cookieoutlen=%p, flags=0x%x, retcode=%d",
               driver, dconn, vm, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, retcode);
 

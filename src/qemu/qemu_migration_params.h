@@ -77,7 +77,7 @@ qemuMigrationParamsGetAlwaysOnCaps(qemuMigrationParty party);
 qemuMigrationParams *
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
-                             unsigned long flags,
+                             unsigned int flags,
                              qemuMigrationParty party);
 
 int
@@ -85,7 +85,7 @@ qemuMigrationParamsDump(qemuMigrationParams *migParams,
                         virTypedParameterPtr *params,
                         int *nparams,
                         int *maxparams,
-                        unsigned long *flags);
+                        unsigned int *flags);
 
 qemuMigrationParams *
 qemuMigrationParamsNew(void);

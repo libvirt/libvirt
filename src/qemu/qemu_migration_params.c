@@ -509,7 +509,7 @@ qemuMigrationParamsSetTPString(qemuMigrationParams *migParams,
 static int
 qemuMigrationParamsSetCompression(virTypedParameterPtr params,
                                   int nparams,
-                                  unsigned long flags,
+                                  unsigned int flags,
                                   qemuMigrationParams *migParams)
 {
     size_t i;
@@ -596,7 +596,7 @@ qemuMigrationParamsSetBlockDirtyBitmapMapping(qemuMigrationParams *migParams,
 qemuMigrationParams *
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
-                             unsigned long flags,
+                             unsigned int flags,
                              qemuMigrationParty party)
 {
     g_autoptr(qemuMigrationParams) migParams = NULL;
@@ -681,7 +681,7 @@ qemuMigrationParamsDump(qemuMigrationParams *migParams,
                         virTypedParameterPtr *params,
                         int *nparams,
                         int *maxparams,
-                        unsigned long *flags)
+                        unsigned int *flags)
 {
     size_t i;
 
