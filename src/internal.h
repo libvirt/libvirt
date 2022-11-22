@@ -269,10 +269,17 @@
  */
 #define virCheckFlags(supported, retval) \
     do { \
-        unsigned long __unsuppflags = flags & ~(supported); \
+        unsigned int __uiflags = flags; \
+        unsigned int __unsuppflags = flags & ~(supported); \
+        if (__uiflags != flags) { \
+            virReportInvalidArg(flags, \
+                                _("unsupported use of long flags in function %s"), \
+                                __FUNCTION__); \
+            return retval; \
+        } \
         if (__unsuppflags) { \
             virReportInvalidArg(flags, \
-                                _("unsupported flags (0x%lx) in function %s"), \
+                                _("unsupported flags (0x%x) in function %s"), \
                                 __unsuppflags, __FUNCTION__); \
             return retval; \
         } \
@@ -291,10 +298,17 @@
  */
 #define virCheckFlagsGoto(supported, label) \
     do { \
-        unsigned long __unsuppflags = flags & ~(supported); \
+        unsigned int __uiflags = flags; \
+        unsigned int __unsuppflags = flags & ~(supported); \
+        if (__uiflags != flags) { \
+            virReportInvalidArg(flags, \
+                                _("unsupported use of long flags in function %s"), \
+                                __FUNCTION__); \
+            goto label; \
+        } \
         if (__unsuppflags) { \
             virReportInvalidArg(flags, \
-                                _("unsupported flags (0x%lx) in function %s"), \
+                                _("unsupported flags (0x%x) in function %s"), \
                                 __unsuppflags, __FUNCTION__); \
             goto label; \
         } \
