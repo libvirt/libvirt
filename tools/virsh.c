@@ -638,18 +638,18 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
     int longindex = -1;
     virshControl *priv = ctl->privData;
     struct option opt[] = {
-        {"connect", required_argument, NULL, 'c'},
-        {"debug", required_argument, NULL, 'd'},
-        {"escape", required_argument, NULL, 'e'},
-        {"help", no_argument, NULL, 'h'},
-        {"keepalive-interval", required_argument, NULL, 'k'},
-        {"keepalive-count", required_argument, NULL, 'K'},
-        {"log", required_argument, NULL, 'l'},
-        {"quiet", no_argument, NULL, 'q'},
-        {"readonly", no_argument, NULL, 'r'},
-        {"timing", no_argument, NULL, 't'},
-        {"version", optional_argument, NULL, 'v'},
-        {NULL, 0, NULL, 0}
+        { "connect", required_argument, NULL, 'c' },
+        { "debug", required_argument, NULL, 'd' },
+        { "escape", required_argument, NULL, 'e' },
+        { "help", no_argument, NULL, 'h' },
+        { "keepalive-interval", required_argument, NULL, 'k' },
+        { "keepalive-count", required_argument, NULL, 'K' },
+        { "log", required_argument, NULL, 'l' },
+        { "quiet", no_argument, NULL, 'q' },
+        { "readonly", no_argument, NULL, 'r' },
+        { "timing", no_argument, NULL, 't' },
+        { "version", optional_argument, NULL, 'v' },
+        { NULL, 0, NULL, 0 },
     };
 
     /* Standard (non-command) options. The leading + ensures that no

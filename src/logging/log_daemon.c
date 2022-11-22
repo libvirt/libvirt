@@ -613,14 +613,14 @@ int main(int argc, char **argv) {
     int rv;
 
     struct option opts[] = {
-        { "verbose", no_argument, &verbose, 'v'},
-        { "daemon", no_argument, &godaemon, 'd'},
-        { "config", required_argument, NULL, 'f'},
-        { "timeout", required_argument, NULL, 't'},
-        { "pid-file", required_argument, NULL, 'p'},
+        { "verbose", no_argument, &verbose, 'v' },
+        { "daemon", no_argument, &godaemon, 'd' },
+        { "config", required_argument, NULL, 'f' },
+        { "timeout", required_argument, NULL, 't' },
+        { "pid-file", required_argument, NULL, 'p' },
         { "version", no_argument, NULL, 'V' },
         { "help", no_argument, NULL, 'h' },
-        {0, 0, 0, 0}
+        { 0, 0, 0, 0 },
     };
 
     privileged = geteuid() == 0;

@@ -1337,17 +1337,17 @@ vahParseArgv(vahControl * ctl, int argc, char **argv)
 {
     int arg, idx = 0;
     struct option opt[] = {
-        {"add", 0, 0, 'a'},
-        {"create", 0, 0, 'c'},
-        {"dryrun", 0, 0, 'd'},
-        {"delete", 0, 0, 'D'},
-        {"add-file", 0, 0, 'f'},
-        {"append-file", 0, 0, 'F'},
-        {"help", 0, 0, 'h'},
-        {"replace", 0, 0, 'r'},
-        {"remove", 0, 0, 'R'},
-        {"uuid", 1, 0, 'u'},
-        {0, 0, 0, 0}
+        { "add", 0, 0, 'a' },
+        { "create", 0, 0, 'c' },
+        { "dryrun", 0, 0, 'd' },
+        { "delete", 0, 0, 'D' },
+        { "add-file", 0, 0, 'f' },
+        { "append-file", 0, 0, 'F' },
+        { "help", 0, 0, 'h' },
+        { "replace", 0, 0, 'r' },
+        { "remove", 0, 0, 'R' },
+        { "uuid", 1, 0, 'u' },
+        { 0, 0, 0, 0 },
     };
 
     while ((arg = getopt_long(argc, argv, "acdDhrRH:b:u:p:f:F:", opt,

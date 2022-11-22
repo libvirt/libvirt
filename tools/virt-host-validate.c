@@ -73,10 +73,10 @@ show_version(FILE *out, const char *argv0)
 }
 
 static const struct option argOptions[] = {
-    { "help", 0, NULL, 'h', },
-    { "version", 0, NULL, 'v', },
-    { "quiet", 0, NULL, 'q', },
-    { NULL, 0, NULL, '\0', }
+    { "help", 0, NULL, 'h' },
+    { "version", 0, NULL, 'v' },
+    { "quiet", 0, NULL, 'q' },
+    { NULL, 0, NULL, '\0' },
 };
 
 int

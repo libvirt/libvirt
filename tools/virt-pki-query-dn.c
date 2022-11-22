@@ -61,9 +61,9 @@ main(int argc,
     int rv = 0;
 
     struct option opt[] = {
-        {"help", no_argument, NULL, 'h'},
-        {"version", optional_argument, NULL, 'v'},
-        {NULL, 0, NULL, 0}
+        { "help", no_argument, NULL, 'h' },
+        { "version", optional_argument, NULL, 'v' },
+        { NULL, 0, NULL, 0 },
     };
 
     if (virGettextInitialize() < 0)

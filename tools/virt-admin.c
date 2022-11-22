@@ -1318,13 +1318,13 @@ vshAdmParseArgv(vshControl *ctl, int argc, char **argv)
     size_t i;
     int longindex = -1;
     struct option opt[] = {
-        {"connect", required_argument, NULL, 'c'},
-        {"debug", required_argument, NULL, 'd'},
-        {"help", no_argument, NULL, 'h'},
-        {"log", required_argument, NULL, 'l'},
-        {"quiet", no_argument, NULL, 'q'},
-        {"version", optional_argument, NULL, 'v'},
-        {NULL, 0, NULL, 0}
+        { "connect", required_argument, NULL, 'c' },
+        { "debug", required_argument, NULL, 'd' },
+        { "help", no_argument, NULL, 'h' },
+        { "log", required_argument, NULL, 'l' },
+        { "quiet", no_argument, NULL, 'q' },
+        { "version", optional_argument, NULL, 'v' },
+        { NULL, 0, NULL, 0 },
     };
 
     /* Standard (non-command) options. The leading + ensures that no
