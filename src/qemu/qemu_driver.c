@@ -3497,7 +3497,7 @@ processGuestPanicEvent(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     virObjectEvent *event = NULL;
     bool removeInactive = false;
-    unsigned long flags = VIR_DUMP_MEMORY_ONLY;
+    unsigned int flags = VIR_DUMP_MEMORY_ONLY;
 
     if (virDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_DUMP,
                                    VIR_DOMAIN_JOB_OPERATION_DUMP, flags) < 0)
