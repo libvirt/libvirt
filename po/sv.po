@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-10-25 07:42+0000\n"
-"PO-Revision-Date: 2022-11-17 07:30+0000\n"
+"PO-Revision-Date: 2022-11-23 09:20+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -17346,307 +17346,258 @@ msgstr "Kan inte hämta bryggan %s %s"
 msgid "Unable to get bridge %s port %s %s"
 msgstr "Kan inte hämta bryggan %s port %s %s"
 
-#, fuzzy
 msgid "Unable to get bridge port isolated on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Kan inte hämta bryggportens isolering på denna plattform"
 
-#, fuzzy
 msgid "Unable to get bridge port learning on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Kan inte hämta bryggportens lärande på denna plattform"
 
-#, fuzzy
 msgid "Unable to get bridge port unicast_flood on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Kan inte hämta bryggportens unicast_flood på denna plattform"
 
 msgid "Unable to get bridge vlan_filtering on this platform"
-msgstr ""
+msgstr "Kan inte hämta bryggans vlan_filtering på denna plattform"
 
-#, fuzzy
 msgid "Unable to get childMedium location"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte hämta childMedium-platsen"
 
-#, fuzzy
 msgid "Unable to get cpu map"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte hämta cpu-avbildningen"
 
-#, fuzzy
 msgid "Unable to get current position in file"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte hämta aktuell position i filen"
 
-#, fuzzy
 msgid "Unable to get current position in stream"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte hämta den aktuella positionen i strömmen"
 
-#, fuzzy
 msgid "Unable to get current process SELinux context"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte hämta aktuell process-SELinux-kontext"
 
 msgid "Unable to get current time"
 msgstr "Kan inte ta reda på aktuell tid"
 
-#, fuzzy
 msgid "Unable to get daemon logging filters information"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "Kan inte hämta demonloggningsinformation"
 
-#, fuzzy
 msgid "Unable to get daemon logging outputs information"
-msgstr "Misslyckades att få diskinformation"
+msgstr "Kan inte hämta demonloggningsutmatningsinformation"
 
 msgid "Unable to get device master from netlink on this platform"
-msgstr ""
+msgstr "Kan inte hämta enhetsmaster från netlink på denna plattform"
 
 msgid "Unable to get device-mapper version"
-msgstr ""
+msgstr "Kan inte hämta device-mapper-version"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get devmapper targets for %s"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "Kan inte hämta devmapper-mål för %s"
 
-#, fuzzy
 msgid "Unable to get disk children"
-msgstr "Misslyckades att få diskinformation"
+msgstr "Kan inte hämta diskbarn"
 
-#, fuzzy
 msgid "Unable to get disk format"
-msgstr "Misslyckades att få diskinformation"
+msgstr "Kan inte hämta diskformat"
 
-#, fuzzy
 msgid "Unable to get disk parent"
-msgstr "kan inte skapa uttagspar"
+msgstr "Kan inte hämta diskförälder"
 
-#, fuzzy
 msgid "Unable to get disk uuid"
-msgstr "Kan inte fråga kqueue"
+msgstr "Kan inte hämta disk-uuid"
 
-#, fuzzy
 msgid "Unable to get domain IOThreads information"
-msgstr "Misslyckades att få diskinformation"
+msgstr "Kan inte hämta domän-IOThreads-information"
 
 msgid "Unable to get domain status"
 msgstr "Kan inte ta reda på domänstatus"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get driver name for '%s'"
-msgstr "misslyckades att hämta nätverk '%s'"
+msgstr "Kan inte att hämta drivrutinsnamn för ”%s”"
 
-#, fuzzy
 msgid "Unable to get filesystem information"
-msgstr "Misslyckades att få diskinformation"
+msgstr "Kan inte hämta filsystemsinformation"
 
-#, fuzzy
 msgid "Unable to get free loop device via ioctl"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte få en ledig slingenhet via ioctl"
 
-#, fuzzy
 msgid "Unable to get hard disk format"
-msgstr "Misslyckades att få diskinformation"
+msgstr "Kan inte hämta hårddiskformatet"
 
-#, fuzzy
 msgid "Unable to get hard disk id"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte hämta hårddiskens id"
 
 #, c-format
 msgid "Unable to get hard disk id, rc=%08x"
-msgstr ""
+msgstr "Kan inte hämta håddiskens id, rk=%08x"
 
 #, c-format
 msgid "Unable to get hardDisk Id, rc=%08x"
-msgstr ""
+msgstr "Kan inte hämta hardDisk Id, rk=%08x"
 
 msgid "Unable to get host SEV information"
-msgstr ""
+msgstr "Kan inte hämta värd-SEV-information"
 
-#, fuzzy
 msgid "Unable to get host boot time"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte hämta värdens uppstartstid"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get index for interface %s"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "Kan inte hämt index för gränssnittet %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get interface index for %s"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "Kan inte hämta gränssnittsindex för %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get interface index for '%s'"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "Kan inte hämta gränssnittsindex för ”%s”"
 
-#, fuzzy
 msgid "Unable to get interface index on this platform"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "Kan inte hämta gränssnittsindex på denna plattform"
 
-#, fuzzy
 msgid "Unable to get interface parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte hämta gränssnittsparametrar"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get kvm descriptor: %s"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte hämta kvm-beskrivare: %s"
 
 msgid "Unable to get launch security parameters"
-msgstr ""
+msgstr "Kan inte hämta uppstartssäkerhetsparametrar"
 
 msgid "Unable to get local socket name"
 msgstr "Kan inte få lokalt uttagsnamn"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get loop status on %s"
-msgstr "Misslyckades att hämta block statistik %sl %s"
+msgstr "Kan inte hämta slingstatus för %s"
 
-#, fuzzy
 msgid "Unable to get medium location"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte hämta mediumplats"
 
 #, c-format
 msgid "Unable to get medium uuid, rc=%08x"
-msgstr ""
+msgstr "Kan inte hämta medium-uuid, rk=%08x"
 
-#, fuzzy
 msgid "Unable to get memory parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte hämta minnesparametrar"
 
-#, fuzzy
 msgid "Unable to get memory stats"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte hämta minnesstatistik"
 
-#, fuzzy
 msgid "Unable to get node cpu stats"
-msgstr "kan inte ta fram nodegenskaper"
+msgstr "Kan inte hämta nod-cpu-statistik"
 
-#, fuzzy
 msgid "Unable to get numa parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte hämta numa-parametrar"
 
-#, fuzzy
 msgid "Unable to get number of blkio parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte hämta antalet blkio-parametrar"
 
-#, fuzzy
 msgid "Unable to get number of block I/O throttle parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte hämta antalet block-I/O-strypningsparametrar"
 
-#, fuzzy
 msgid "Unable to get number of cpu stats"
-msgstr "kan inte ta fram nodegenskaper"
+msgstr "Kan inte hämta antalet cpu-statistikvärden"
 
-#, fuzzy
 msgid "Unable to get number of interface parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte hämta antalet gränssnittsparametrar"
 
-#, fuzzy
 msgid "Unable to get number of memory parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte hämta antalet minnesparametrar"
 
-#, fuzzy
 msgid "Unable to get number of memory stats"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte hämta antalet minnesstatistikvärden"
 
-#, fuzzy
 msgid "Unable to get parent hard disk"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte hämta föräldrahårddisken"
 
 msgid "Unable to get peer socket name"
 msgstr "Kan inte få partnerfjärruttagets namn"
 
-#, fuzzy
 msgid "Unable to get perf events"
-msgstr "Kan inte fråga kqueue"
+msgstr "Kan inte hämta perf-händelser"
 
 msgid "Unable to get physical function status on this platform"
-msgstr ""
+msgstr "Kan inte hämta fysisk funktionsstatus på denna plattform"
 
 msgid "Unable to get remote socket name"
 msgstr "Kan inte få fjärruttagets namn"
 
-#, fuzzy
 msgid "Unable to get server workerpool parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte hämta parametrar för serverarbetspoolen"
 
 #, c-format
 msgid "Unable to get session bus connection: %s"
-msgstr ""
+msgstr "Kan inte få en sessionsbussanslutning: %s"
 
-#, fuzzy
 msgid "Unable to get snapshot content"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte hämta ögonblicksavbildsinnehåll"
 
-#, fuzzy
 msgid "Unable to get sysfs info on this platform"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte hämta sysfs-information på denna plattform"
 
 #, c-format
 msgid "Unable to get system bus connection: %s"
-msgstr ""
+msgstr "Kan inte få en systembussanslutning: %s"
 
-#, fuzzy
 msgid "Unable to get the machine location path"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte hämta sökvägen till maskinplatsen"
 
-#, fuzzy
 msgid "Unable to get the parent disk"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte hämta föräldradisken"
 
-#, fuzzy
 msgid "Unable to get the read write medium format"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "Kan inte hämta formtet på läs/skriv-mediumet"
 
-#, fuzzy
 msgid "Unable to get the read write medium id"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte hämta id:t för läs/skriv-mediumet"
 
-#, fuzzy
 msgid "Unable to get the snapshot to remove"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte hämta ögonblicksbilden att ta bort"
 
 msgid "Unable to get virtual function index on this platform"
-msgstr ""
+msgstr "Kan inte hämta virtuellt funktions-index på denna plattform"
 
-#, fuzzy
 msgid "Unable to get virtual function info on this platform"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "Kan inte hämta virtuell funktions-information på denna plattform"
 
-#, fuzzy
 msgid "Unable to get virtual function name on this platform"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "Kan inte hämta virtuell funktions-namn på denna plattform"
 
 msgid "Unable to get virtual functions on this platform"
-msgstr ""
+msgstr "Kan inte hämta virtuella funktioner på denna plattform"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to import CA certificate list %s"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte importera CA-certfikatlistan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to import client certificate %s"
-msgstr "Kan inte initiera certifikat"
+msgstr "Kan inte importera klientcertifikatet %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to import server certificate %s"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte importera servercertfikatet %s"
 
-#, fuzzy
 msgid "Unable to init device stream mutex"
-msgstr "kan inte initiera mutex"
+msgstr "kan inte initiera enhetsström-mutex"
 
-#, fuzzy
 msgid "Unable to initialize RW lock"
-msgstr "Kan inte initiera certifikat"
+msgstr "Kan inte initiera RW-lås"
 
-#, fuzzy
 msgid "Unable to initialize audit layer"
-msgstr "Kan inte initiera certifikat"
+msgstr "Kan inte initiera granskningslagret"
 
 msgid "Unable to initialize certificate"
 msgstr "Kan inte initiera certifikat"
 
 #, c-format
 msgid "Unable to initialize certificate: %s\n"
-msgstr ""
+msgstr "Kan inte initiera certifikat: %s\n"
 
-#, fuzzy
 msgid "Unable to initialize condition variable"
-msgstr "Kan inte initiera certifikat"
+msgstr "Kan inte initiera villkorsvariabeln"
 
 #, c-format
 msgid "Unable to initialize lease %s"
@@ -17656,96 +17607,86 @@ msgstr "Kan inte initiera hyran: %s"
 msgid "Unable to initialize lease %s: %s"
 msgstr "Kan inte initiera hyran %s: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to initialize lockspace %s"
-msgstr "Kan inte initiera certifikat"
+msgstr "Kan inte initiera låsrymden %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to initialize lockspace %s: %s"
-msgstr "Kan inte initiera certifikat"
+msgstr "Kan inte initiera låsrymden %s: %s"
 
-#, fuzzy
 msgid "Unable to initialize lockspace mutex"
-msgstr "Kan inte initiera certifikat"
+msgstr "Kan inte initiera låsrymds-mutex"
 
-#, fuzzy
 msgid "Unable to initialize mutex"
-msgstr "kan inte initiera mutex"
+msgstr "Kan inte initiera mutex"
 
-#, fuzzy
 msgid "Unable to initialize thread local variable"
-msgstr "Kan inte initiera certifikat"
+msgstr "Kan inte initiera en trådlokal variabel"
 
-#, fuzzy
 msgid "Unable to invoke fstrim"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte anropa fstrim"
 
-#, fuzzy
 msgid "Unable to join domain namespace"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte gå med i domännamnrymden"
 
-#, fuzzy
 msgid "Unable to kill all processes"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte döda alla processer"
 
 msgid "Unable to know if disk is in media registry"
-msgstr ""
+msgstr "Kan inte avgöra om disken är i mediaregistret"
 
 msgid "Unable to know if the snapshot is the current snapshot"
-msgstr ""
+msgstr "Kan inte avgör om ögonblicksbilden är den aktuella ögonblicksbilden"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to label files under %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte etikettera filer under %s"
 
-#, fuzzy
 msgid "Unable to list RBD images"
-msgstr "kan inte initiera mutex"
+msgstr "Kan inte lista RBD-avbilder"
 
-#, fuzzy
 msgid "Unable to listen on socket"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte lyssna på uttaget"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to listen to UNIX socket path '%s'"
-msgstr "Misslyckades att binda uttag till ”%s”"
+msgstr "Kan inte lyssna på UNIX-uttaget med sökvägen ”%s”"
 
 msgid "Unable to load certificate"
 msgstr "Kan inte ladda certfikat"
 
 #, c-format
 msgid "Unable to load certificate, make sure it is in PEM format: %s\n"
-msgstr ""
+msgstr "Kan inte läsa in certifikatet, se till att det är i PEM-format: %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to lock '%s'"
-msgstr "Misslyckades att binda uttag till ”%s”"
+msgstr "Kan inte låsa ”%s”"
 
 msgid "Unable to lookup SELinux process context"
-msgstr ""
+msgstr "Kan inte slå upp SELinux-processkontexten"
 
 msgid "Unable to make TAP device non-persistent"
-msgstr ""
+msgstr "Kan inte göra TAP-enheten icke-beständig"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to make dir %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte skapa katalogen %s"
 
-#, fuzzy
 msgid "Unable to mark loop device as autoclear"
-msgstr "Misslyckades att markera domän %s som autostartad"
+msgstr "Kan inte markera slingenheten som autoclear"
 
-#, fuzzy
 msgid "Unable to modify live devices"
-msgstr "Kan inte initiera certifikat"
+msgstr "Kan inte ändra aktiva enheter"
 
 #, c-format
 msgid "Unable to monitor directory: %s"
-msgstr ""
+msgstr "Kan inte övervaka katalogen: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to move %s mount to %s"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte flytta %s-monteringin till %s"
 
 msgid "Unable to notify child process"
 msgstr "Kan inte notifiera barnprocessen"
@@ -17753,20 +17694,18 @@ msgstr "Kan inte notifiera barnprocessen"
 msgid "Unable to notify parent process"
 msgstr "Kan inte notifiera föräldraprocessen"
 
-#, fuzzy
 msgid "Unable to obtain host UUID"
-msgstr "misslyckades att hämta domän-UUID"
+msgstr "Kan inte hämta värd-UUID"
 
 msgid "Unable to obtain hostInternetScsiHba"
-msgstr ""
+msgstr "Kan inte få tag i hostInternetScsiHba"
 
-#, fuzzy
 msgid "Unable to obtain iSCSI adapter"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte få tag i iSCSI-adaptern"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to obtain information about pid: %d"
-msgstr "Returnerar grundinformation om noden."
+msgstr "Kan inte få tag i information om pid: %d"
 
 #, c-format
 msgid "Unable to open %s"
@@ -17778,58 +17717,55 @@ msgstr "Kan inte öppna %s (%d)"
 
 #, c-format
 msgid "Unable to open %s, is tun module loaded?"
-msgstr ""
+msgstr "Kan inte öppna %s, är tun-modulen laddad?"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Kan inte öppna ”%s”"
 
 #, c-format
 msgid "Unable to open '%s' for vdpa device"
-msgstr ""
+msgstr "Kan inte öppna ”%s” för en vdpa-enhet"
 
 msgid "Unable to open /dev/loop-control"
-msgstr ""
+msgstr "Kan inte öppna /dev/loop-control"
 
-#, fuzzy
 msgid "Unable to open /proc/mounts"
-msgstr "Det gick inte att läsa /proc/mounts"
+msgstr "Kan inte öppna /proc/mounts"
 
 #, c-format
 msgid "Unable to open HardDisk, rc=%08x"
-msgstr ""
+msgstr "Kan inte öppna HardDisk, rk=%08x"
 
 #, c-format
 msgid "Unable to open Machine, rc=%08x"
-msgstr ""
+msgstr "Kan inte öppna Machine, rk=%08x"
 
-#, fuzzy
 msgid "Unable to open UNIX socket"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte öppna UNIX-uttag"
 
 #, c-format
 msgid "Unable to open VirtualBox session with domain %s"
-msgstr ""
+msgstr "Kan inte öppna en VirtualBox-session med domänen %s"
 
-#, fuzzy
 msgid "Unable to open control socket"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte öppna styruttaget"
 
 #, c-format
 msgid "Unable to open file: %s"
 msgstr "Kan inte öppna filen: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open filesystem %s"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Kan inte öppna filsystemet %s"
 
 #, c-format
 msgid "Unable to open log file %s"
 msgstr "Kan inte öppna loggfilen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open resource %s"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte öppna resursen %s"
 
 #, c-format
 msgid "Unable to open stream for '%s'"
@@ -17837,34 +17773,32 @@ msgstr "Kan inte öppna strömmen för ”%s”"
 
 #, c-format
 msgid "Unable to open system token %s"
-msgstr ""
+msgstr "Kan inte öppna systempoletten %s"
 
-#, fuzzy
 msgid "Unable to open test socket"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte öppna testuttaget"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open/create resource %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte öppna/skapa resursen %s"
 
 msgid "Unable to override peer2peer migration URI"
-msgstr ""
+msgstr "Kan inte åsidosätta peer2peer-migrerings-URI:n"
 
 #, c-format
 msgid "Unable to parse %s %s"
 msgstr "Kan inte tolka %s %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse '%s' as an integer"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte tolka ”%s” som ett heltal"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse FD number '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Kan inte tolka FD-numret ”%s”"
 
-#, fuzzy
 msgid "Unable to parse HPT maxpagesize setting"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte tolka HPT-maxpagesize-inställningen"
 
 #, c-format
 msgid "Unable to parse MAC '%s'"
