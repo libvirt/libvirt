@@ -573,6 +573,9 @@ virshShowVersion(vshControl *ctl G_GNUC_UNUSED)
 #ifdef WITH_STORAGE_ISCSI
     vshPrint(ctl, " iSCSI");
 #endif
+#ifdef WITH_STORAGE_ISCSI_DIRECT
+    vshPrint(ctl, " iSCSI-direct");
+#endif
 #ifdef WITH_STORAGE_LVM
     vshPrint(ctl, " LVM");
 #endif
