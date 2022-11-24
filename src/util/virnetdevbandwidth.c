@@ -114,8 +114,10 @@ virNetDevBandwidthManipulateFilter(const char *ifname,
         goto cleanup;
     }
 
-    /* u32 filters must have 800:: prefix. Don't ask. */
-    filter_id = g_strdup_printf("800::%u", id);
+    /* u32 filters must have 800:: prefix. Don't ask. Furthermore, handles
+     * start at 800. Therefore, we want the filter ID to look like this:
+     *   800::(800 + id) */
+    filter_id = g_strdup_printf("800::%u", 800 + id);
 
     if (remove_old) {
         g_autoptr(virCommand) cmd = virCommandNew(TC);
