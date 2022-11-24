@@ -586,7 +586,7 @@ virshShowVersion(vshControl *ctl G_GNUC_UNUSED)
     vshPrint(ctl, " ZFS");
 #endif
 #ifdef WITH_STORAGE_VSTORAGE
-    vshPrint(ctl, "Virtuozzo Storage");
+    vshPrint(ctl, " Virtuozzo Storage");
 #endif
     vshPrint(ctl, "\n");
 
