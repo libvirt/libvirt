@@ -2257,6 +2257,12 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
     if (mem->targetNode != -1) {
         const size_t nodeCount = virDomainNumaGetNodeCount(def->numa);
 
+        if (nodeCount == 0) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("can't add memory backend as guest has no NUMA nodes configured"));
+            return -1;
+        }
+
         if (mem->targetNode >= nodeCount) {
             virReportError(VIR_ERR_XML_DETAIL,
                            _("can't add memory backend for guest node '%d' as the guest has only '%zu' NUMA nodes configured"),
