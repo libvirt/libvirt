@@ -17,11 +17,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 91,
-      "minor": 1,
+      "micro": 0,
+      "minor": 2,
       "major": 7
     },
-    "package": "v7.2.0-rc1"
+    "package": "v7.2.0"
   },
   "id": "libvirt-2"
 }

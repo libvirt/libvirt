@@ -201,10 +201,10 @@
   <flag name='query-stats-schemas'/>
   <flag name='thread-context'/>
   <flag name='screenshot-format-png'/>
-  <version>7001091</version>
+  <version>7002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100245</microcodeVersion>
-  <package>v7.2.0-rc1</package>
+  <package>v7.2.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
