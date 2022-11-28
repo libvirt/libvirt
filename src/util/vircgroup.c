@@ -519,7 +519,7 @@ virCgroupSetValueRaw(const char *path,
 {
     char *tmp;
 
-    VIR_DEBUG("Set value '%s' to '%s'", path, value);
+    VIR_DEBUG("Set path '%s' to value '%s'", path, value);
     if (virFileWriteStr(path, value, 0) < 0) {
         if (errno == EINVAL &&
             (tmp = strrchr(path, '/'))) {
