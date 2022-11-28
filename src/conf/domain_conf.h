@@ -1339,7 +1339,7 @@ struct _virDomainChrSourceDef {
             char *host;
             char *service;
             bool listen;
-            int protocol;
+            virDomainChrTcpProtocol protocol;
             bool tlscreds;
             virTristateBool haveTLS;
             bool tlsFromConfig;

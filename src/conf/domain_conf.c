@@ -10282,18 +10282,13 @@ static int
 virDomainChrSourceDefParseProtocol(virDomainChrSourceDef *def,
                                    xmlNodePtr protocol)
 {
-    g_autofree char *prot = NULL;
-
     if (def->type != VIR_DOMAIN_CHR_TYPE_TCP)
         return 0;
 
-    if ((prot = virXMLPropString(protocol, "type")) &&
-        (def->data.tcp.protocol =
-         virDomainChrTcpProtocolTypeFromString(prot)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unknown protocol '%1$s'"), prot);
+    if (virXMLPropEnum(protocol, "type",
+                       virDomainChrTcpProtocolTypeFromString,
+                       VIR_XML_PROP_NONE, &def->data.tcp.protocol) < 0)
         return -1;
-    }
 
     return 0;
 }
