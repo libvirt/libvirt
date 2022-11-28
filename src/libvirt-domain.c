@@ -12270,6 +12270,23 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *                          instead of running. Exposed to the VM as a steal
  *                          time.
  *
+ *    This group of statistics also reports additional hypervisor-originating
+ *    per-vCPU stats. The hypervisor-specific statistics in this group have the
+ *    following naming scheme:
+ *
+ *     "vcpu.<num>.$NAME.$TYPE"
+ *
+ *       $NAME - name of the statistics field provided by the hypervisor
+ *
+ *       $TYPE - Type of the value. The following types are returned:
+ *          'cur' - current instant value
+ *          'sum' - aggregate value
+ *          'max' - peak value
+ *
+ *      The returned value may be either an unsigned long long or a boolean.
+ *      Meaning is hypervisor specific. Please see the disclaimer for the
+ *      VIR_DOMAIN_STATS_VM group below.
+ *
  * VIR_DOMAIN_STATS_INTERFACE:
  *     Return network interface statistics (from domain point of view).
  *     The typed parameter keys are in this format:
