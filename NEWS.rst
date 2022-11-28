@@ -17,10 +17,85 @@ v8.10.0 (unreleased)
 
 * **New features**
 
+  * Tool for validating SEV firmware boot measurement of QEMU VMs
+
+    The ``virt-qemu-sev-validate`` program will compare a reported SEV/SEV-ES
+    domain launch measurement, to a computed launch measurement. This
+    determines whether the domain has been tampered with during launch.
+
+  * Support for SGX EPC (enclave page cache)
+
+    Users can add a ``<memory model='sgx-epc'>`` device to lauch a VM with
+    ``Intel Software Guard Extensions``.
+
+  * Support migration of vTPM state of QEMU vms on shared storage
+
+    Pass ``--migration`` option if appropriate in order for ``swtpm`` to
+    properly migrate on shared storage.
+
 * **Improvements**
+
+  * Mark close callback (un-)register API as high priority
+
+    High priority APIs use a separate thread pool thus can help in eliminating
+    problems with stuck VMs. Marking the close callback API as high priority
+    allows ``virsh`` to properly connect to the daemon in case the normal
+    priority workers are stuck allowing other high priority API usage.
+
+  * Updated x86 CPU features
+
+    The following features for the x86 platform were added:
+    ``v-vmsave-vmload``, ``vgif``, ``avx512-vp2intersect``, ``avx512-fp16``,
+    ``serialize``, ``tsx-ldtrk``, ``arch-lbr``, ``xfd``, ``intel-pt-lip``,
+    ``avic``, ``sgx``, ``sgxlc``, ``sgx-exinfo``, ``sgx1``, ``sgx2``,
+    ``sgx-debug``, ``sgx-mode64``, ``sgx-provisionkey``, ``sgx-tokenkey``,
+    ``sgx-kss``, ``bus-lock-detect``, ``pks``, ``amx``.
+
+  * Add support for ``hv-avic`` Hyper-V enlightenment
+
+    ``qemu-6.2`` introduced support for the ``hv-avic`` enlightenment which
+    allows to use Hyper-V SynIC with hardware APICv/AVIC enabled.
+
+  * qemu: Run memory preallocation with numa-pinned threads
+
+    Run the thread allocating memory in the proper NUMA node to reduce overhead.
+
+  * RPM packaging changes
+
+    - add optional dependancy of ``libvirt-daemon`` on ``libvirt-client``
+
+      The ``libvirt-guests.`` tool requires the ``virsh`` client to work
+      properly, but we don't want to require the installation of the daemon
+      if the tool is not used.
+
+    - relax required ``python3-libvirt`` version for ``libvirt-client-qemu``
+
+      The ``virt-qemu-qmp-proxy`` tool requires python but doesn't strictly
+      need the newest version. Remove the strict versioning requirement in
+      order to prevent cyclic dependency when building.
 
 * **Bug fixes**
 
+  * Skip initialization of ``cache`` capabilities if host doesn't support them
+
+    Hypervisor drivers would fail to initialize on ``aarch64`` hosts with
+    following error ::
+
+      virStateInitialize:657 : Initialisation of cloud-hypervisor state driver failed: no error
+
+    which prevented the startup of the daemon.
+
+  * Allow incoming connections to guests on routed networks w/firewalld
+
+    A change in handling of implicit rules in ``firewalld 1.0.0`` broke
+    incomming connections to VMs when using ``routed`` network. This is fixed
+    by adding a new ``libvirt-routed`` zone configured to once again allow
+    incoming sessions to guests on routed networks.
+
+  * Fix infinite loop in nodedev driver
+
+    Certain udev entries might be of a size that makes libudev emit EINVAL
+    which caused a busy loop burning CPU. Fix it by ignoring the return code.
 
 v8.9.0 (2022-11-01)
 ===================
