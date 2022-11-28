@@ -1845,6 +1845,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("serial-unix-chardev");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("serial-unix-missing-source");
     DO_TEST_CAPS_LATEST("serial-tcp-chardev");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("serial-tcp-chardev-telnets");
     DO_TEST_CAPS_LATEST("serial-udp-chardev");
     DO_TEST_CAPS_LATEST("serial-tcp-telnet-chardev");
     driver.config->chardevTLS = 1;

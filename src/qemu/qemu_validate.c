@@ -2044,6 +2044,25 @@ qemuValidateDomainChrSourceDef(const virDomainChrSourceDef *def,
 {
     switch ((virDomainChrType)def->type) {
     case VIR_DOMAIN_CHR_TYPE_TCP:
+        switch (def->data.tcp.protocol) {
+        case VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW:
+        case VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET:
+            break;
+
+        case VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNETS:
+        case VIR_DOMAIN_CHR_TCP_PROTOCOL_TLS:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("tcp chardev protocol '%1$s' not supported"),
+                           virDomainChrTcpProtocolTypeToString(def->data.tcp.protocol));
+            return -1;
+
+        case VIR_DOMAIN_CHR_TCP_PROTOCOL_LAST:
+        default:
+            virReportEnumRangeError(virDomainChrTcpProtocol, def->data.tcp.protocol);
+            return -1;
+
+        }
+
         if (qemuValidateDomainChrSourceReconnectDef(&def->data.tcp.reconnect) < 0)
             return -1;
         break;
