@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-11-24 14:54+0000\n"
-"PO-Revision-Date: 2022-10-26 23:20+0000\n"
+"PO-Revision-Date: 2022-11-29 08:38+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.14.2\n"
 
 msgid ""
 "\n"
@@ -541,6 +541,8 @@ msgid ""
 "%s (on destination side) does not support the --migration option needed for "
 "migration with shared storage"
 msgstr ""
+"У %s (на боці призначення) не передбачено підтримки параметра --migration, "
+"який потрібен для перенесення зі спільним сховищем даних"
 
 #, c-format
 msgid "%s (out of %d)"
@@ -668,7 +670,7 @@ msgstr "Довжина %s перевищує максимальну можлив
 
 #, c-format
 msgid "%s memory device info is not handled yet"
-msgstr ""
+msgstr "Обробки даних пристрою пам'яті %s ще не передбачено"
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -2476,7 +2478,7 @@ msgstr "Вказано виробника процесора, але не вка
 
 #, c-format
 msgid "CPU vendor value 0x%2llx already defined"
-msgstr ""
+msgstr "Значення виробника процесора 0x%2llx вже визначено"
 
 msgid "CPU vendors do not match"
 msgstr "Записи виробників процесорів не збігаються"
@@ -2997,7 +2999,7 @@ msgstr "Не вдалося знайти «iothread»: %u"
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%03llx"
-msgstr ""
+msgstr "Не вдалося знайти модель процесора з PVR 0x%03llx"
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
@@ -3006,6 +3008,7 @@ msgstr "Не вдалося знайти моделі процесора з PVR 
 #, c-format
 msgid "Cannot find CPU vendor with vendor id 0x%02llx"
 msgstr ""
+"Не вдалося знайти виробника процесора із ідентифікатором виробника 0x%02llx"
 
 #, c-format
 msgid "Cannot find boot device of requested type %s"
@@ -9891,11 +9894,11 @@ msgstr "Некоректна IP-адреса у визначення стати�
 
 #, c-format
 msgid "Invalid IPv4 prefix '%u' in network '%s'"
-msgstr ""
+msgstr "Некоректний префікс IPv4 «%u» у мережі «%s»"
 
 #, c-format
 msgid "Invalid IPv6 prefix '%u' in network '%s'"
-msgstr ""
+msgstr "Некоректний префікс IPv6 «%u» у мережі «%s»"
 
 msgid "Invalid NULL callback provided"
 msgstr "Надано некоректну нульову адресу повернення з виклику"
@@ -11566,10 +11569,10 @@ msgstr ""
 "VIR_CRED_NOECHOPROMPT"
 
 msgid "Missing XPath context"
-msgstr ""
+msgstr "Пропущено контекст XPath"
 
 msgid "Missing XPath expression"
-msgstr ""
+msgstr "Пропущено вираз XPath"
 
 msgid "Missing acpi table type"
 msgstr "Не вказано тип таблиці acpi"
@@ -16709,6 +16712,7 @@ msgstr "Машина не має знімків, хоча повинна бул�
 
 msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
 msgstr ""
+"Максимальним значенням «start» для <clock offset='absolute'> є 253402300799"
 
 msgid "The minimum lease time should be greater than 2 minutes"
 msgstr "Мінімальний час відпускання має бути більшим за 2 хвилини"
@@ -27031,7 +27035,7 @@ msgid "failed to parse SCSI host '%s'"
 msgstr "не вдалося обробити запис вузла SCSI «%s»"
 
 msgid "failed to parse SGX sections in QEMU capabilities cache"
-msgstr ""
+msgstr "не вдалося обробити розділи SGX у кеші можливостей QEMU"
 
 msgid "failed to parse agent timeout"
 msgstr "не вдалося обробити час очікування на обробку агентом"
@@ -28418,7 +28422,7 @@ msgstr ""
 
 #, c-format
 msgid "hotplug is not supported for the %s device"
-msgstr ""
+msgstr "для пристрою %s не передбачено підтримки з'єднання «у гарячу»"
 
 #, c-format
 msgid "hotplug of interface type of %s is not implemented yet"
@@ -30611,9 +30615,13 @@ msgstr ""
 
 msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr ""
+"помилкове форматування memaddr або його пропущено у даних щодо пам'яті sgx-"
+"epc"
 
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
+"помилкове форматуванян розміру або пропущений розмір у даних щодо пам'яті "
+"sgx-epc"
 
 msgid "malformed/missing size in virtio memory info"
 msgstr "помилкове форматування розміру у даних щодо пам'яті virtio"
@@ -30784,7 +30792,7 @@ msgstr "атрибути пам'яті: [file=]назва[,snapshot=тип]"
 
 #, c-format
 msgid "memory device address is not supported for model '%s'"
-msgstr ""
+msgstr "підтримки адресування пам'яті пристрою для моделі «%s» не передбачено"
 
 msgid "memory device alias"
 msgstr "альтернативна назва пристрою пам'яті"
@@ -31316,7 +31324,7 @@ msgid "missing SEV platform data in QEMU capabilities cache"
 msgstr "у записі кешу можливостей QEMU не вистачає запису даних платформи SEV"
 
 msgid "missing SGX platform data in QEMU capabilities cache"
-msgstr ""
+msgstr "пропущено дані платформи SGX у кеші можливостей QEMU"
 
 msgid "missing TPM device backend"
 msgstr "не вказано назву модуля пристрою TPM"
@@ -31648,7 +31656,7 @@ msgid "missing network device feature name"
 msgstr "пропущено назву можливості пристрою мережі"
 
 msgid "missing node name in QEMU capabilities cache"
-msgstr ""
+msgstr "пропущено назву вузла у кеші можливостей QEMU"
 
 #, c-format
 msgid "missing number of available instances for mediated device type '%s'"
@@ -31675,13 +31683,15 @@ msgstr ""
 "вказано некоректне значення цієї властивості"
 
 msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
-msgstr ""
+msgstr "пропущено FLC платформи SGX або запис пропущено у кеші можливостей QEMU"
 
 msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
 msgstr ""
+"пропущено sgx1 платформи SGX або некоректні дані у кеші можливостей QEMU"
 
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr ""
+"пропущено sgx2 платформи SGX або некоректні дані у кеші можливостей QEMU"
 
 msgid "missing or invalid cpuid-input-eax in CPU data"
 msgstr ""
@@ -31716,6 +31726,8 @@ msgstr ""
 msgid ""
 "missing or malformed SGX platform section_size in QEMU capabilities cache"
 msgstr ""
+"пропущено section_size платформи SGX або неправильно форматовані дані у кеші "
+"можливостей QEMU"
 
 msgid "missing or malformed session-uuid element in migration data"
 msgstr ""
@@ -31841,7 +31853,7 @@ msgid "missing sheepdog vdi name"
 msgstr "пропущено назву vdi sheepdog"
 
 msgid "missing size name in QEMU capabilities cache"
-msgstr ""
+msgstr "пропущено назву розміру у кеші можливостей QEMU"
 
 msgid "missing socket address type in JSON backing volume definition"
 msgstr "у визначенні резервного тому JSON пропущено тип адреси сокета"
@@ -34691,22 +34703,22 @@ msgstr ""
 "у відповіді query-sev-capabilities не виявлено поля «reduced-phys-bits»"
 
 msgid "query-sgx-capabilities reply was missing 'flc' field"
-msgstr ""
+msgstr "у відповіді query-sgx-capabilities пропущено поле «flc»"
 
 msgid "query-sgx-capabilities reply was missing 'node' field"
-msgstr ""
+msgstr "у відповіді query-sgx-capabilities пропущено поле «node»"
 
 msgid "query-sgx-capabilities reply was missing 'section-size' field"
-msgstr ""
+msgstr "у відповіді query-sgx-capabilities пропущено поле «section-size»"
 
 msgid "query-sgx-capabilities reply was missing 'sgx1' field"
-msgstr ""
+msgstr "у відповіді query-sgx-capabilities пропущено поле «sgx1»"
 
 msgid "query-sgx-capabilities reply was missing 'sgx2' field"
-msgstr ""
+msgstr "у відповіді query-sgx-capabilities було пропущено поле «sgx2»"
 
 msgid "query-sgx-capabilities reply was missing 'size' field"
-msgstr ""
+msgstr "у відповіді query-sgx-capabilities пропущено поле «size»"
 
 msgid "query-status reply was missing running state"
 msgstr "у відповіді на запит щодо стану немає даних щодо стану виконання"
@@ -35053,7 +35065,7 @@ msgid "report hostname"
 msgstr "вивести звіт щодо назви вузла"
 
 msgid "report hypervisor-specific statistics"
-msgstr ""
+msgstr "повідомити про статистичні дані окремих гіпервізорів"
 
 msgid "report interface information"
 msgstr "вивести звіт щодо інтерфейсу"
@@ -35706,18 +35718,18 @@ msgid "sgio is only supported for scsi host device"
 msgstr "підтримку sgio передбачено лише для пристроїв-вузлів scsi"
 
 msgid "sgx epc isn't supported by this QEMU binary"
-msgstr ""
+msgstr "підтримки epc sgx не передбачено у цьому виконуваному файлі QEMU"
 
 #, c-format
 msgid "sgx epc size %lld on host node %d is less than requested size %lld"
-msgstr ""
+msgstr "розмір epc sgx %lld у вузлі %d є меншим за запитаний розмір %lld"
 
 #, c-format
 msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
-msgstr ""
+msgstr "розмір epc sgx %lld у вузлі %zd є меншим за запитаний розмір %lld"
 
 msgid "sgx-epc memory info data is missing 'memdev'"
-msgstr ""
+msgstr "у даних щодо пам'яті sgx-epc пропущено «memdev»"
 
 #, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
@@ -36596,6 +36608,8 @@ msgstr "результат не вміщується до REMOTE_NODE_MAX_CELLS"
 
 msgid "the running swtpm does not support migration with shared storage"
 msgstr ""
+"у запущеному swtpm не передбачено підтримки перенесення зі спільним сховищем "
+"даних"
 
 msgid "the signal number or name"
 msgstr "номер або назва сигналу"
@@ -36694,7 +36708,7 @@ msgid "this QEMU does not support the 'genid' capability"
 msgstr "у цьому QEMU не передбачено підтримки можливості «genid»"
 
 msgid "this QEMU version didn't provide SGX EPC NUMA info"
-msgstr ""
+msgstr "ця версія QEMU не надала даних NUMA EPC SGX"
 
 msgid "this disk doesn't support update"
 msgstr "оновлення не підтримується цим диском"
@@ -39398,7 +39412,7 @@ msgid "value of managerid out of range"
 msgstr "значення «managerid» лежить поза межами діапазону припустимих значень"
 
 msgid "value of the 'size' attribute of 'mtu' element must be at most 100000"
-msgstr ""
+msgstr "значення атрибута «size» елемента «mtu» має не перевищувати 100000"
 
 msgid "value of typeidversion out of range"
 msgstr ""
@@ -39882,6 +39896,7 @@ msgstr "Відсутня назва тегу VLAN"
 #, c-format
 msgid "vlan tag id %u too large (maximum 4095)"
 msgstr ""
+"значення ідентифікатора мітки vlan %u є надто великим (максимальним є 4095)"
 
 #, c-format
 msgid "vlan tag set for interface %s but caller requested it not be set"
