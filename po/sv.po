@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-10-25 07:42+0000\n"
-"PO-Revision-Date: 2022-11-23 09:20+0000\n"
+"PO-Revision-Date: 2022-11-24 15:31+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -7870,7 +7870,7 @@ msgstr "Misslyckades med att förallokera utrymme för filen ”%s”"
 
 #, c-format
 msgid "Failed to probe capabilities for %s: %s"
-msgstr "Misslyckades att käna av förmågor hos %s: %s"
+msgstr "Misslyckades att känna av förmågor hos %s: %s"
 
 #, c-format
 msgid "Failed to probe for format type '%s'"
@@ -17816,79 +17816,74 @@ msgstr "Kan inte tolka URI:n %s"
 msgid "Unable to parse UUID '%s'"
 msgstr "Kan inte tolka UUID:n ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse base SELinux context '%s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte tolka bas-SELinux-kontexten ”%s”"
 
 msgid "Unable to parse child device"
-msgstr ""
+msgstr "Kan inte tolka barnenheten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse class id '%s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte tolka klass-id ”%s”"
 
 #, c-format
 msgid "Unable to parse cloud-hypervisor version: %s"
-msgstr ""
+msgstr "Kan inte tolka moln-hypervisor-versionen: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse current SELinux context '%s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte tolka aktuell SELinux-kontext ”%s”"
 
-#, fuzzy
 msgid "Unable to parse group-name parameter"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte tolka parametern för gruppnamn"
 
-#, fuzzy
 msgid "Unable to parse integer parameter"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte hämta heltalsparametern"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse integer parameter %s"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte heltalsparametern %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse integer parameter '%s'"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte tolka heltalsparametern ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse lock state %s"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte tolka låstillståndet %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse lock state %s: %s"
-msgstr "Misslyckades att hämta block statistik %sl %s"
+msgstr "Kan inte tolka låstillståndet %s: %s"
 
 msgid "Unable to parse ovs-vsctl output"
-msgstr ""
+msgstr "Kan inte tolka utdata från ovs-vsctl"
 
-#, fuzzy
 msgid "Unable to parse quota"
-msgstr "Kan inte fråga kqueue"
+msgstr "Kan inte tolka kvoten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse sched info value '%s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte tolka sched-informationsvärdet ”%s”"
 
 #, c-format
 msgid "Unable to parse schedstat info at '%s'"
-msgstr ""
+msgstr "Kan inte tolka schedstat-information vid ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse secret uuid '%s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte tolka hemlighets-uuid ”%s”"
 
-#, fuzzy
 msgid "Unable to parse string parameter"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte tolka strängparametern"
 
-#, fuzzy
 msgid "Unable to parse the xml"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte tolka xml:en"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse uptime value '%s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte tolka uppetidsvärdet ”%s”"
 
 #, c-format
 msgid "Unable to parse: %s"
@@ -17896,189 +17891,175 @@ msgstr "Kan inte tolka: %s"
 
 #, c-format
 msgid "Unable to preserve mac/vlan tag for device = %s, vf = %d"
-msgstr ""
+msgstr "Kan inte bevara mac/vlan-taggen för enheten = %s, vf = %d"
 
 #, c-format
 msgid "Unable to probe '%s' for existing data, forced overwrite is necessary"
 msgstr ""
+"Kan inte känna av ”%s” efter befintliga data, framtvingad överskrivning är "
+"nödvändig"
 
 msgid "Unable to probe TSC frequency"
-msgstr ""
+msgstr "Kan inte känna av TSC-frekvens"
 
 #, c-format
 msgid "Unable to process file with flags %d"
-msgstr ""
+msgstr "Kan inte bearbeta en fil med flaggorna %d"
 
 msgid "Unable to query TSC scaling support"
-msgstr ""
+msgstr "Kan inte fråga om TSC-skalningsstöd"
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
-msgstr ""
+msgstr "Kan inte fråga om certifikatet %s grundbegränsning %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to query certificate %s key purpose %s"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte fråga om certfikatet %s nyckeländamål %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to query certificate %s key usage %s"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte fråga om certifikatet %s nyckelanvändning %s"
 
 #, c-format
 msgid "Unable to query dependencies for %s"
-msgstr ""
+msgstr "Kan inte fråga om beroenden för %s"
 
 msgid "Unable to query kqueue"
 msgstr "Kan inte fråga kqueue"
 
-#, fuzzy
 msgid "Unable to query memory available"
-msgstr "Kan inte fråga kqueue"
+msgstr "Kan inte fråga om tillgängligt minne"
 
-#, fuzzy
 msgid "Unable to query memory page size"
-msgstr "Kan inte fråga kqueue"
+msgstr "Kan inte fråga om minnets sidstorlek"
 
-#, fuzzy
 msgid "Unable to query memory total"
-msgstr "Kan inte fråga kqueue"
+msgstr "Kan inte fråga om totalt minne"
 
-#, fuzzy
 msgid "Unable to query peer security context"
-msgstr "Kan inte fråga kqueue"
+msgstr "Kan inte fråga om motpartens säkerhetskontext"
 
-#, fuzzy
 msgid "Unable to query process ID start time"
-msgstr "Kan inte fråga kqueue"
+msgstr "Kan inte fråga om process-ID:s starttid"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to query sector size %s"
-msgstr "Kan inte fråga kqueue"
+msgstr "Kan inte fråga om sektorstorleken %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to query sector size %s: %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte fråga om sektorstorleken %s: %s"
 
-#, fuzzy
 msgid "Unable to query tap interface name"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte fråga om tap-gränssnittest namn"
 
 msgid "Unable to re-encode message length"
 msgstr "Kan inte koda om meddelandelängden"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read %s"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte läsa %s"
 
 #, c-format
 msgid "Unable to read %s for ipv6 forwarding checks"
-msgstr ""
+msgstr "Kan inte läsa %s för ipv6-vidarebefordranskontroller"
 
-#, fuzzy
 msgid "Unable to read TLS confirmation"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte läsa TLS-bekräftelsen"
 
-#, fuzzy
 msgid "Unable to read cache data"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte läsa cache-data"
 
-#, fuzzy
 msgid "Unable to read container pty"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte läsa behållar-pty"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read directory '%s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte läsa katalogen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read from %s"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte läsa från %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read from '%s'"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte läsa från ”%s”"
 
-#, fuzzy
 msgid "Unable to read from agent"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte läsa från agenten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read from file %s"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte läsa från filen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read from file '%s'"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte läsa från filen ”%s”"
 
-#, fuzzy
 msgid "Unable to read from log file"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte läsa från loggfilen"
 
-#, fuzzy
 msgid "Unable to read from log pipe"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte läsa från loggröret"
 
 msgid "Unable to read from monitor"
 msgstr "Kan inte läsa från övervakaren"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read leases file: %s"
-msgstr "det gick inte att skapa loggfilen %s"
+msgstr "Kan inte läsa hyresfilen: %s"
 
-#, fuzzy
 msgid "Unable to read net device config on this platform"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte läsa konfigurationen av nätenheter på denna plattform"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read slirp pidfile '%s'"
-msgstr "kunde inte läsa konfigurationsfilen %s"
+msgstr "Kan inte läsa slirp-pid-filen ”%s”"
 
 #, c-format
 msgid "Unable to read vhost-user-gpu pidfile '%s'"
-msgstr ""
+msgstr "Kan inte läsa pid-filen för vhost-user-gpu ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read virtiofsd pidfile '%s'"
-msgstr "kunde inte läsa konfigurationsfilen %s"
+msgstr "Kan inte läsa pid-filen för virtiofsd ”%s”"
 
 #, c-format
 msgid "Unable to register Machine, rc=%08x"
-msgstr ""
+msgstr "Kan inte registrera Machine, rk=%08x"
 
 msgid "Unable to register async IO callback"
-msgstr ""
+msgstr "Kan inte registrera async-IO-återanrop"
 
-#, fuzzy
 msgid "Unable to register disconnect callback"
-msgstr "kan inte skapa uttagspar"
+msgstr "Kan inte registrera frånkopplingsåteranrop"
 
-#, fuzzy
 msgid "Unable to register process kevent"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte registrera process-kevent"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove %s"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Kan inte ta bort %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove %s (%d)"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte ta bort %s (%d)"
 
-#, fuzzy
 msgid "Unable to remove Fake Disks"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte ta bort Fake Disks"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove XATTR %s on %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte ta bort XATTR %s på %s"
 
 #, c-format
 msgid "Unable to remove bridge %s"
 msgstr "Kan inte ta bort bryggan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove bridge %s port %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte ta bort bryggan %s port %s"
 
 #, c-format
 msgid "Unable to remove device %s"
@@ -18086,124 +18067,123 @@ msgstr "Kan inte ta bort enheten %s"
 
 #, c-format
 msgid "Unable to remove disk from media registry. uuid = %s"
-msgstr ""
+msgstr "Kan inte ta bort disken från mediaregistret. uuid = %s"
 
-#, fuzzy
 msgid "Unable to remove epoll fd"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte ta bort epoll-fb"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove hard disk %s from media registry"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte ta bort hårddisken %s från mediaregistret"
 
 #, c-format
 msgid "Unable to remove metadata of %d snapshots"
-msgstr ""
+msgstr "Kan inte ta bort metadata för %d ögonblicksbilder"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove snapshot %s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Kan int ta bort ögonblicksbilden %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove stale socket path: %s"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte ta bort ett förlegat uttags sökväg: %s"
 
 #, c-format
 msgid "Unable to remove status '%s' for nwfilter binding %s'"
-msgstr ""
+msgstr "Kan inte ta bort statusen ”%s” för nwfilter-bindningen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove symlink %s"
-msgstr "Misslyckades att fortsätta domän %s"
+msgstr "Kan inte ta bort symlänken %s"
 
 #, c-format
 msgid "Unable to remove tap device %s"
 msgstr "Kan inte ta bort tap-enheten %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to rename %s to %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte byta namn från %s till %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to rename '%s' to '%s'"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte byta namn från ”%s” till ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to request personality for %s on %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte begära personlighet för %s på %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to reset PCI device %s: %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte återställa PCI-enheten %s: %s"
 
 #, c-format
 msgid "Unable to reset ingress on port %s"
-msgstr ""
+msgstr "Kan inte återställa ingången på port %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to resolve address '%s' service '%s': %s"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte slå upp adresset ”%s” tjänsten ”%s”: %s"
 
 #, c-format
 msgid "Unable to resolve device %s driver symlink %s"
-msgstr ""
+msgstr "Kan inte slå upp enheten %s drivrutinssymlänken %s"
 
 #, c-format
 msgid "Unable to resolve device %s iommu_group symlink %s"
-msgstr ""
+msgstr "Kan inte slå upp enheten %s iommu_group-symlänken %s"
 
 #, c-format
 msgid "Unable to resolve device subsystem symlink %s"
-msgstr ""
+msgstr "Kan inte lösa upp enhetens subsystesmssymlänk %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to resolve link: %s"
-msgstr "Misslyckades att fortsätta domän %s"
+msgstr "Kan inte lösa upp länken: %s"
 
-#, fuzzy
 msgid "Unable to restart self"
-msgstr "kan inte skapa uttagspar"
+msgstr "Kan inte starta om mig själv"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to restore file labels under %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte återställa filetiketter under %s"
 
 msgid "Unable to retrieve client limits from server's configuration"
-msgstr ""
+msgstr "Kan inte hämta klientgränser från serverns konfiguration"
 
 msgid "Unable to retrieve threadpool parameters"
 msgstr "Kan inte hämta parametrar för trådpoolen"
 
 #, c-format
 msgid "Unable to run among %llu"
-msgstr ""
+msgstr "Kan inte köra bland %llu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to run command to get OVS master for interface %s"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "Kan inte köra kommandot för att hämta OVS-master för gränssnittet %s"
 
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %s"
-msgstr ""
+msgstr "Kan inte köra kommandot för att få OVS-portsdata för gränssnittet %s"
 
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %s"
 msgstr ""
+"Kan inte körra kommandot för att ställa in OVS-portsdata för gränssnittet %s"
 
 msgid "Unable to run one time GDBus initializer"
-msgstr ""
+msgstr "Kan inte köra engångs GDBus-initierare"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to save '%s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte spara ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to save lease %s"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Kan inte spara hyran %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to save lockspace %s"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte spara låsrymden %s"
 
 msgid "Unable to save net device config on this platform"
 msgstr ""
@@ -38846,6 +38826,135 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <sträng>"
+
+#, c-format
+msgid ""
+"%s (on destination side) does not support the --migration option needed for "
+"migration with shared storage"
+msgstr ""
+"%s (på destinationssidan) stödjer inte flaggan --migration som behövs för "
+"migrering med delad lagring"
+
+#, c-format
+msgid "%s memory device info is not handled yet"
+msgstr "%s minnesenhetsinformation hanteras inte än"
+
+#, c-format
+msgid "CPU vendor value 0x%2llx already defined"
+msgstr "CPU-leverantörsvärdet 0x%2llx är redan definierat"
+
+#, c-format
+msgid "Cannot find CPU model with PVR 0x%03llx"
+msgstr "Kan inte hitta CPU-modellen med PVR 0x%03llx"
+
+#, c-format
+msgid "Cannot find CPU vendor with vendor id 0x%02llx"
+msgstr "Kan inte hitta CPU-leverantören med leverantörs-id 0x%02llx"
+
+#, c-format
+msgid "Invalid IPv4 prefix '%u' in network '%s'"
+msgstr "Felaktigt IPv4-prefix ”%u” i nätverket ”%s”"
+
+#, c-format
+msgid "Invalid IPv6 prefix '%u' in network '%s'"
+msgstr "Felaktigt IPv6-prefix ”%u” i nätverket ”%s”"
+
+msgid "Missing XPath context"
+msgstr "Saknad XPath-kontext"
+
+msgid "Missing XPath expression"
+msgstr "Saknat XPath-uttryck"
+
+msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
+msgstr ""
+"Det maximala värdet på ”start” för <clock offset='absolute'> är 253402300799"
+
+msgid "failed to parse SGX sections in QEMU capabilities cache"
+msgstr ""
+
+#, c-format
+msgid "hotplug is not supported for the %s device"
+msgstr ""
+
+msgid "malformed/missing memaddr in sgx-epc memory info"
+msgstr ""
+
+msgid "malformed/missing size in sgx-epc memory info"
+msgstr ""
+
+#, c-format
+msgid "memory device address is not supported for model '%s'"
+msgstr ""
+
+msgid "missing SGX platform data in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing node name in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
+msgstr ""
+
+msgid ""
+"missing or malformed SGX platform section_size in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing size name in QEMU capabilities cache"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'flc' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'node' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'section-size' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx1' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx2' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'size' field"
+msgstr ""
+
+msgid "report hypervisor-specific statistics"
+msgstr ""
+
+msgid "sgx epc isn't supported by this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %d is less than requested size %lld"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
+msgstr ""
+
+msgid "sgx-epc memory info data is missing 'memdev'"
+msgstr ""
+
+msgid "the running swtpm does not support migration with shared storage"
+msgstr ""
+
+msgid "this QEMU version didn't provide SGX EPC NUMA info"
+msgstr ""
+
+msgid "value of the 'size' attribute of 'mtu' element must be at most 100000"
+msgstr ""
+
+#, c-format
+msgid "vlan tag id %u too large (maximum 4095)"
+msgstr ""
 
 #~ msgid "%s 3d acceleration is not supported"
 #~ msgstr "%s 3d-acceleration stödjs inte"
