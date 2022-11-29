@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-11-24 14:54+0000\n"
-"PO-Revision-Date: 2022-11-16 18:36+0000\n"
+"PO-Revision-Date: 2022-11-29 08:38+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -529,7 +529,8 @@ msgstr ""
 msgid ""
 "%s (on destination side) does not support the --migration option needed for "
 "migration with shared storage"
-msgstr ""
+msgstr "%s (대상 측면에서)는 공유 저장소로 이전을 위해 필요한 --migration 옵션을 "
+"지원하지 않습니다"
 
 #, c-format
 msgid "%s (out of %d)"
@@ -650,7 +651,7 @@ msgstr "%s는 최대보다 길이를 초과: %d > %d"
 
 #, c-format
 msgid "%s memory device info is not handled yet"
-msgstr ""
+msgstr "%s 메모리 장치 정보는 아직 다루지 않습니다"
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -2382,7 +2383,7 @@ msgstr "CPU 제조사 가 CPU 모델 없이 지정됨"
 
 #, c-format
 msgid "CPU vendor value 0x%2llx already defined"
-msgstr ""
+msgstr "CPU 제조사 값 0x%2llx가 이미 정의됨"
 
 msgid "CPU vendors do not match"
 msgstr "CPU 제조사가 일치하지 않음"
@@ -2768,7 +2769,7 @@ msgid "Cannot create log directory '%s'"
 msgstr "로그 디렉토리 '%s'를 생성 할 수 없음"
 
 msgid "Cannot create macvlan devices on this platform"
-msgstr "이 플랫폼에서 macvlan 장치를 생성할 수 없음"
+msgstr "이 기술환경에서 macvlan 장치를 생성 할 수 없음"
 
 #, c-format
 msgid "Cannot create resctrl directory '%s'"
@@ -2869,7 +2870,7 @@ msgstr "'iothread'를 찾을 수 없습니다: %u"
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%03llx"
-msgstr ""
+msgstr "PVR 0x%03llx인 CPU 모델을 찾을 수 없습니다"
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
@@ -2877,7 +2878,7 @@ msgstr "PVR 0x%08x로 CPU 모델을 찾을 수 없음"
 
 #, c-format
 msgid "Cannot find CPU vendor with vendor id 0x%02llx"
-msgstr ""
+msgstr "제조사 id 0x%02llx인 CPU 제조사를 찾을 수 없습니다"
 
 #, c-format
 msgid "Cannot find boot device of requested type %s"
@@ -3251,7 +3252,7 @@ msgstr "점검점 %s를 %s에서 이름을 변경 할 수 없음"
 
 #, c-format
 msgid "Cannot rename interface '%s' to '%s' on this platform"
-msgstr "이 플랫폼에서 인터페이스 '%s'를 '%s'로 이름 변경할 수 없음"
+msgstr "이 기술환경에서 연결장치 '%s'를 '%s'로 이름 변경 할 수 없음"
 
 msgid "Cannot resize the max memory on an active domain"
 msgstr "활성 도메인의 최대 메모리 크기를 조정할 수 없습니다"
@@ -3825,7 +3826,7 @@ msgid "Container is not defined"
 msgstr "컨테이너가 정의되지 않았습니다"
 
 msgid "Control groups not supported on this platform"
-msgstr "제어 그룹이 이 플랫폼에서 지원하지 않습니다"
+msgstr "제어 그룹이 이 기술환경에서 지원하지 않습니다"
 
 msgid "Controllers must use the 'ccid' address type"
 msgstr "컨트롤러는 'ccid' 주소 유형을 사용해야 합니다"
@@ -6075,7 +6076,7 @@ msgid "Exceeded max iface limit %d"
 msgstr "iface 한계 %d를 넘어감"
 
 msgid "Executing new processes is not supported on Win32 platform"
-msgstr "새 프로세스 실행은 Win32 플랫폼에서 지원되지 않습니다"
+msgstr "신규 프로세스 실행은 Win32 기술환경에서 지원되지 않습니다"
 
 #, c-format
 msgid "Existing device %s has no type"
@@ -8586,7 +8587,7 @@ msgid "File remaining:"
 msgstr "남은 파일:"
 
 msgid "File streams are not supported on this platform"
-msgstr "이 플랫폼에서는 파일 스트림이 지원되지 않습니다"
+msgstr "이 기술환경에서는 파일 스트림이 지원되지 않습니다"
 
 msgid "File total:"
 msgstr "전체 파일:"
@@ -9032,7 +9033,7 @@ msgstr ""
 "된 CPU만 사용 할 수 있음; 성능은 상당히 제한적입니다"
 
 msgid "Host sysinfo extraction not supported on this platform"
-msgstr "이 플랫폼에서는 호스트 sysinfo 추출이 지원되지 않습니다"
+msgstr "이 기술환경에서는 호스트 시스템정보 추출이 지원되지 않습니다"
 
 #, c-format
 msgid "HostCpuIdInfo register '%s' has an unexpected format"
@@ -9497,11 +9498,11 @@ msgstr "네트워크 '%s'의 정적 호스트 정의에서 잘못된 IP 주소"
 
 #, c-format
 msgid "Invalid IPv4 prefix '%u' in network '%s'"
-msgstr ""
+msgstr "잘못된 IPv4 접두사 '%u' (네트워크 '%s'에서)"
 
 #, c-format
 msgid "Invalid IPv6 prefix '%u' in network '%s'"
-msgstr ""
+msgstr "잘못된 IPv6 접두사 '%u' (네트워크 '%s'에서)"
 
 msgid "Invalid NULL callback provided"
 msgstr "잘못된 NULL 콜백이 제공됨"
@@ -10406,7 +10407,7 @@ msgid "KVM device assignment is no longer supported on this system"
 msgstr "이 시스템에서는 KVM 장치 할당이 더 이상 지원되지 않습니다"
 
 msgid "KVM is not supported on this platform"
-msgstr "KVM은 이 플랫폼에서 지원되지 않습니다"
+msgstr "KVM은 이 기술환경에서 지원되지 않습니다"
 
 msgid "Kernel does not provide mount namespace"
 msgstr "커널은 사용자 이름 공간 적재를 제공하지 않습니다"
@@ -11107,10 +11108,10 @@ msgstr ""
 "다"
 
 msgid "Missing XPath context"
-msgstr ""
+msgstr "누락된 XPath 컨텍스트"
 
 msgid "Missing XPath expression"
-msgstr ""
+msgstr "누락된 XPath 식"
 
 msgid "Missing acpi table type"
 msgstr "누락된 acpi 테이블 유형"
@@ -11843,7 +11844,7 @@ msgid "Network device %s already exists"
 msgstr "네트워크 장치 %s이(가) 이미 있습니다"
 
 msgid "Network device configuration is not supported on this platform"
-msgstr "이 플랫폼에서는 네트워크 장치 구성이 지원되지 않습니다"
+msgstr "이 기술환경에서는 네트워크 장치 구성이 지원되지 않습니다"
 
 msgid "Network device type is not supported"
 msgstr "네트워크 장치 유형은 지원되지 않습니다"
@@ -12398,7 +12399,7 @@ msgid "Not supported"
 msgstr "지원되지 않음"
 
 msgid "Not supported on this platform"
-msgstr "이 플랫폼에서 지원되지 않음"
+msgstr "이 기술환경에서 지원되지 않음"
 
 #, sh-format
 msgid "Not suspending transient guests on URI: $uri: "
@@ -12463,7 +12464,7 @@ msgid "O_DIRECT read needs entire seekable file"
 msgstr "O_DIRECT 읽기에는 전체 검색 가능한 파일이 필요합니다"
 
 msgid "O_DIRECT unsupported on this platform"
-msgstr "이 플랫폼에서 O_DIRECT가 지원되지 않습니다"
+msgstr "이 기술환경에서 O_DIRECT가 지원되지 않습니다"
 
 msgid "O_DIRECT write needs empty seekable file"
 msgstr "O_DIRECT 쓰기에는 빈 탐색 가능한 파일이 필요합니다"
@@ -13045,7 +13046,7 @@ msgid "Per-node binding is not compatible with automatic NUMA placement."
 msgstr "노드당 바인딩은 자동 NUMA 배치와 호환되지 않습니다."
 
 msgid "Perf not supported on this platform"
-msgstr "이 플랫폼에서 지원되지 않는 성능"
+msgstr "이 기술환경에서 지원되지 않는 성능"
 
 msgid "Persistent"
 msgstr "영구적"
@@ -13202,19 +13203,19 @@ msgid "Priority '%d' is outside valid range of [%d,%d]"
 msgstr "우선 순위 '%d'가 유효한 범위 [%d,%d] 밖에 있습니다"
 
 msgid "Probing TSC is not supported on this platform"
-msgstr "이 플랫폼에서는 프로빙 TSC가 지원되지 않습니다"
+msgstr "이 기술환경에서는 프로빙 TSC가 지원되지 않습니다"
 
 msgid "Process CPU affinity is not supported on this platform"
-msgstr "CPU 친화도 처리가 이 플랫폼에서는 지원되지 않습니다"
+msgstr "CPU 친화도 처리가 이 기술환경에서는 지원되지 않습니다"
 
 msgid "Process CPU scheduling is not supported on this platform"
-msgstr "CPU 스케쥴링 처리는 이 플랫폼에서 지원되지 않습니다"
+msgstr "CPU 스케쥴링 처리는 이 기술환경에서 지원되지 않습니다"
 
 msgid "Process exited prior to exec"
 msgstr "exec 이전에 종료된 프로세스"
 
 msgid "Process spawning is not supported on this platform"
-msgstr "프로세서 생성은 이 플랫폼에서는 지원되지 않습니다"
+msgstr "프로세서 생성은 이 기술환경에서는 지원되지 않습니다"
 
 #, c-format
 msgid "Processes %d refused to die"
@@ -13440,7 +13441,7 @@ msgid "Reading CPUID is not supported on this platform"
 msgstr "CPUID 읽기는 이와 같은 기술환경에서 지원되지 않습니다"
 
 msgid "Reading MSRs is not supported on this platform"
-msgstr "이 플랫폼에서는 MSR 읽기가 지원되지 않습니다"
+msgstr "이 기술환경에서는 MSR 읽기가 지원되지 않습니다"
 
 msgid "Reattach node device to its device driver once released by the domain."
 msgstr "도메인에 의해 한번 해제된 장치 드라이버에 노드 장치를 재부착."
@@ -14374,7 +14375,7 @@ msgid "Shutting down guests on $uri URI..."
 msgstr "$uri URI에서 게스트 종료 중..."
 
 msgid "Signal handling not available on this platform"
-msgstr "이 플랫폼에서는 신호 처리를 사용할 수 없습니다"
+msgstr "이 기술환경에서는 신호 처리를 사용 할 수 없습니다"
 
 #, c-format
 msgid ""
@@ -15816,7 +15817,7 @@ msgid "The machine has no snapshot and it should have it"
 msgstr "머신에는 현재 스냅샷이 없으며, 스냅샷이 필요합니다"
 
 msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
-msgstr ""
+msgstr "<clock offset='absolute'>를 위한 최대 'start' 값은 253402300799 입니다"
 
 msgid "The minimum lease time should be greater than 2 minutes"
 msgstr "최소 임대 시간은 2분 이상이어야 합니다"
@@ -15942,7 +15943,7 @@ msgid ""
 msgstr "이 명령은 libvirtd에서 사용하기 위한 것이며 직접 사용하지 않습니다.\n"
 
 msgid "This function is not supported on WIN32 platform"
-msgstr "이 기능은 WIN32 플랫폼에서 지원되지 않습니다"
+msgstr "이 기능은 WIN32 기술환경에서 지원되지 않습니다"
 
 #, c-format
 msgid ""
@@ -16216,7 +16217,7 @@ msgstr ""
 "터널링을 이용한 이전이 요청되었으나, 잘못된 RPC 메소드가 호출되었습니다"
 
 msgid "Tunnelling sockets not supported on this platform"
-msgstr "이 플랫폼에서 지원되지 않는 터널링 소켓"
+msgstr "이 기술환경에서 지원되지 않는 터널링 소켓"
 
 msgid "Turn auto convergence on to tune it"
 msgstr "자동 수렴을 켜서 조정하십시오"
@@ -16267,10 +16268,10 @@ msgid "UNIX socket path '%s' too long"
 msgstr "유닉스 소켓 경로 '%s'가 너무 깁니다"
 
 msgid "UNIX sockets are not supported on this platform"
-msgstr "이 플랫폼에서는 UNIX 소켓이 지원되지 않습니다"
+msgstr "이 기술환경에서는 유닉스 소켓이 지원되지 않습니다"
 
 msgid "UNIX sockets not supported on this platform"
-msgstr "이 플랫폼에서 지원되지 않는 UNIX 소켓"
+msgstr "이 기술환경에서 지원되지 않는 유닉스 소켓"
 
 #, c-format
 msgid "URI '%s' does not include a driver name"
@@ -16398,7 +16399,7 @@ msgid "Unable to acquire lock on '%s'"
 msgstr "'%s'에 잠금을 획득 할 수 없습니다"
 
 msgid "Unable to add address to interface multicast list on this platform"
-msgstr "이 플랫폼의 인터페이스 멀티캐스트 목록에 주소를 추가할 수 없습니다"
+msgstr "이 기술환경의 연결장치 멀티캐스트 목록에 주소를 추가 할 수 없습니다"
 
 #, c-format
 msgid "Unable to add bridge %s port %s"
@@ -16455,7 +16456,7 @@ msgid ""
 msgstr "이 스냅샷을 추가할 수 없습니다; 이미 컴퓨터에 연결된 스냅샷이 있습니다"
 
 msgid "Unable to add/delete fdb entries on this platform"
-msgstr "이 플랫폼에서 fdb 항목을 추가/삭제할 수 없습니다"
+msgstr "이 기술환경에서 fdb 항목을 추가/삭제 할 수 없습니다"
 
 #, c-format
 msgid "Unable to allocate %llu pages. Allocated only %llu"
@@ -16569,7 +16570,7 @@ msgid "Unable to check interface %s"
 msgstr "인터페이스 %s을(를) 확인할 수 없습니다"
 
 msgid "Unable to check interface config on this platform"
-msgstr "이 플랫폼에서 인터페이스 구성을 확인할 수 없습니다"
+msgstr "이 기술환경에서 연결장치 구성을 확인 할 수 없습니다"
 
 #, c-format
 msgid "Unable to check interface flags for %s"
@@ -16580,7 +16581,7 @@ msgid "Unable to check status of pid file '%s'"
 msgstr "pid 파일 '%s'의 상태를 점검 할 수 없습니다"
 
 msgid "Unable to check virtual function status on this platform"
-msgstr "이 플랫폼에서 가상 기능 상태를 확인할 수 없습니다"
+msgstr "이 기술환경에서 가상 기능 상태를 확인 할 수 없습니다"
 
 msgid "Unable to clear thread local variable"
 msgstr "스레드 로컬 변수를 지울 수 없습니다"
@@ -16670,7 +16671,7 @@ msgid "Unable to create RNG validation context %s"
 msgstr "RNG 유효성 내용 %s를 생성 할 수 없습니다"
 
 msgid "Unable to create TAP devices on this platform"
-msgstr "이 플랫폼에서 TAP 장치를 생성할 수 없습니다"
+msgstr "이 기술환경에서 탭 장치를 생성 할 수 없습니다"
 
 msgid "Unable to create UNIX socket"
 msgstr "유닉스 소켓을 생성 할 수 없습니다"
@@ -16795,10 +16796,10 @@ msgid "Unable to delete %s"
 msgstr "%s을 삭제 할 수 없습니다"
 
 msgid "Unable to delete TAP devices on this platform"
-msgstr "이 플랫폼에서 TAP 장치를 삭제할 수 없습니다"
+msgstr "이 기술환경에서 탭 장치를 삭제 할 수 없습니다"
 
 msgid "Unable to delete address from interface multicast list on this platform"
-msgstr "이 플랫폼의 인터페이스 멀티캐스트 목록에서 주소를 삭제할 수 없습니다"
+msgstr "이 기술환경의 연결장치 멀티캐스트 목록에서 주소를 삭제 할 수 없습니다"
 
 #, c-format
 msgid "Unable to delete bridge %s"
@@ -16851,13 +16852,13 @@ msgid "Unable to determine model for SCSI controller idx=%d"
 msgstr "SCSI 컨트롤러 idx=%d의 모델을 확인할 수 없습니다"
 
 msgid "Unable to determine mount table on this platform"
-msgstr "이 플랫폼에서 마운트 테이블을 결정할 수 없습니다"
+msgstr "이 기술환경에서 적재 테이블을 결정 할 수 없습니다"
 
 msgid "Unable to disable nagle algorithm"
 msgstr "nagle 알고리즘을 비활성화할 수 없습니다"
 
 msgid "Unable to dump link info on this platform"
-msgstr "이 플랫폼에서 링크 정보를 덤프할 수 없습니다"
+msgstr "이 기술환경에서 연결 정보를 덤프 할 수 없습니다"
 
 #, c-format
 msgid "Unable to duplicate FD %d"
@@ -17029,7 +17030,7 @@ msgid "Unable to get Console object for domain %s"
 msgstr "도메인 %s에 대한 콘솔 개체를 가져올 수 없습니다"
 
 msgid "Unable to get IP address on this platform"
-msgstr "이 플랫폼에서 IP 주소를 가져올 수 없습니다"
+msgstr "이 기술환경에서 IP 주소를 가져올 수 없습니다"
 
 #, c-format
 msgid "Unable to get IPv4 address for interface %s via ioctl"
@@ -17060,14 +17061,14 @@ msgid "Unable to get STP on %s on this platform"
 msgstr "이와 같은 기술환경에서 %s에 STD를 가져 올 수 없습니다"
 
 msgid "Unable to get VF net device stats on this platform"
-msgstr "이 플랫폼에서 VF net 장치 통계를 가져올 수 없습니다"
+msgstr "이 기술환경에서 VF 넷 장치 통계를 가져올 수 없습니다"
 
 #, c-format
 msgid "Unable to get VLAN for interface %s"
 msgstr "인터페이스 %s에 대한 VLAN을 가져올 수 없습니다"
 
 msgid "Unable to get VLAN on this platform"
-msgstr "이 플랫폼에서 VLAN을 가져올 수 없습니다"
+msgstr "이 기술환경에서 VLAN을 가져올 수 없습니다"
 
 #, c-format
 msgid "Unable to get XATTR %s on %s"
@@ -17097,16 +17098,16 @@ msgid "Unable to get bridge %s port %s %s"
 msgstr "브릿지 %s 포트 %s %s를 가져 올 수 없습니다"
 
 msgid "Unable to get bridge port isolated on this platform"
-msgstr "이 플랫폼에서 격리된 브리지 포트를 가져올 수 없습니다"
+msgstr "이 기술환경에서 격리된 브리지 포트를 가져올 수 없습니다"
 
 msgid "Unable to get bridge port learning on this platform"
-msgstr "이 플랫폼에서 브리지 포트 학습을 가져올 수 없습니다"
+msgstr "이 기술환경에서 브리지 포트 학습을 가져올 수 없습니다"
 
 msgid "Unable to get bridge port unicast_flood on this platform"
-msgstr "이 플랫폼에서 브리지 포트 unicast_flood를 가져올 수 없습니다"
+msgstr "이 기술환경에서 브리지 포트 unicast_flood를 가져올 수 없습니다"
 
 msgid "Unable to get bridge vlan_filtering on this platform"
-msgstr "이 플랫폼에서 브리지 vlan_filtering을 가져올 수 없습니다"
+msgstr "이 기술환경에서 브리지 vlan_filtering을 가져올 수 없습니다"
 
 msgid "Unable to get childMedium location"
 msgstr "childMedium 위치를 가져올 수 없습니다"
@@ -17133,7 +17134,7 @@ msgid "Unable to get daemon logging outputs information"
 msgstr "데몬 로깅 출력 정보를 가져올 수 없습니다"
 
 msgid "Unable to get device master from netlink on this platform"
-msgstr "이 플랫폼의 netlink에서 장치 마스터를 가져올 수 없습니다"
+msgstr "이 기술환경의 넷링크에서 장치 마스터를 가져올 수 없습니다"
 
 msgid "Unable to get device-mapper version"
 msgstr "장치 매퍼 버전을 가져올 수 없습니다"
@@ -17203,7 +17204,7 @@ msgid "Unable to get interface index for '%s'"
 msgstr "%s를 위한 연결장치 색인을 가져 올 수 없습니다"
 
 msgid "Unable to get interface index on this platform"
-msgstr "이 플랫폼에서 인터페이스 색인을 가져올 수 없습니다"
+msgstr "이 기술환경에서 연결장치 색인을 가져올 수 없습니다"
 
 msgid "Unable to get interface parameters"
 msgstr "인터페이스 매개변수를 가져올 수 없습니다"
@@ -17269,7 +17270,7 @@ msgid "Unable to get perf events"
 msgstr "성능 이벤트를 가져올 수 없습니다"
 
 msgid "Unable to get physical function status on this platform"
-msgstr "이 플랫폼에서 물리적 기능 상태를 가져올 수 없습니다"
+msgstr "이 기술환경에서 물리적 기능 상태를 가져올 수 없습니다"
 
 msgid "Unable to get remote socket name"
 msgstr "원격 소켓 이름을 가져올 수 없습니다"
@@ -17285,7 +17286,7 @@ msgid "Unable to get snapshot content"
 msgstr "스냅샷 콘텐츠를 가져올 수 없습니다"
 
 msgid "Unable to get sysfs info on this platform"
-msgstr "이 플랫폼에서 sysfs 정보를 가져올 수 없습니다"
+msgstr "이 기술환경에서 sysfs 정보를 가져올 수 없습니다"
 
 #, c-format
 msgid "Unable to get system bus connection: %s"
@@ -17307,16 +17308,16 @@ msgid "Unable to get the snapshot to remove"
 msgstr "제거에 스냅샷을 가져 올 수 없습니다"
 
 msgid "Unable to get virtual function index on this platform"
-msgstr "이 플랫폼에서 가상 기능 인덱스를 가져올 수 없습니다"
+msgstr "이 기술환경에서 가상 기능 색인을 가져올 수 없습니다"
 
 msgid "Unable to get virtual function info on this platform"
-msgstr "이 플랫폼에서 가상 기능 정보를 가져올 수 없습니다"
+msgstr "이 기술환경에서 가상 기능 정보를 가져올 수 없습니다"
 
 msgid "Unable to get virtual function name on this platform"
-msgstr "이 플랫폼에서 가상 기능 이름을 가져올 수 없습니다"
+msgstr "이 기술환경에서 가상 기능 이름을 가져올 수 없습니다"
 
 msgid "Unable to get virtual functions on this platform"
-msgstr "이 플랫폼에서 가상 기능을 가져올 수 없습니다"
+msgstr "이 기술환경에서 가상 기능을 가져올 수 없습니다"
 
 #, c-format
 msgid "Unable to import CA certificate list %s"
@@ -17760,7 +17761,7 @@ msgid "Unable to read leases file: %s"
 msgstr "임대 파일: %s을 읽을 수 없습니다"
 
 msgid "Unable to read net device config on this platform"
-msgstr "이 플랫폼에서 네트 장치 구성을 읽을 수 없습니다"
+msgstr "이 기술환경에서 네트 장치 환경구성을 읽을 수 없습니다"
 
 #, c-format
 msgid "Unable to read slirp pidfile '%s'"
@@ -17934,7 +17935,7 @@ msgid "Unable to save lockspace %s"
 msgstr "잠금공간 %s를 저장 할 수 없습니다"
 
 msgid "Unable to save net device config on this platform"
-msgstr "이 플랫폼에 네트 장치 구성을 저장할 수 없습니다"
+msgstr "이 기술환경에서 넷 장치 구성을 저장 할 수 없습니다"
 
 msgid "Unable to save new snapshot xml file"
 msgstr "새로운 스냅샷 xml 파일을 저장 할 수 없습니다"
@@ -18077,16 +18078,16 @@ msgid "Unable to set bridge %s port %s %s to %s"
 msgstr "브릿지 %s 포트 %s %s를 %s에 설정 할 수 없습니다"
 
 msgid "Unable to set bridge port isolated on this platform"
-msgstr "이 플랫폼에서 격리된 브리지 포트를 설정할 수 없습니다"
+msgstr "이 기술환경에서 격리된 브리지 포트를 설정 할 수 없습니다"
 
 msgid "Unable to set bridge port learning on this platform"
-msgstr "이 플랫폼에서 브리지 포트 학습을 설정할 수 없습니다"
+msgstr "이 기술환경에서 브리지 포트 학습을 설정 할 수 없습니다"
 
 msgid "Unable to set bridge port unicast_flood on this platform"
-msgstr "이 플랫폼에서 브리지 포트 unicast_flood를 설정할 수 없습니다"
+msgstr "이 기술환경에서 브리지 포트 unicast_flood를 설정 할 수 없습니다"
 
 msgid "Unable to set bridge vlan_filtering on this platform"
-msgstr "이 플랫폼에서 브리지 vlan_filtering을 설정할 수 없습니다"
+msgstr "이 기술환경에서 브리지 vlan_filtering을 설정 할 수 없습니다"
 
 msgid "Unable to set cloexec flag"
 msgstr "cloexec 플래그를 설정할 수 없습니다"
@@ -18111,7 +18112,7 @@ msgid "Unable to set monitor close-on-exec flag"
 msgstr "모니터의 close-on-exec 플래그를 설정할 수 없음"
 
 msgid "Unable to set net device config on this platform"
-msgstr "이 플랫폼에서 네트 장치 구성을 설정할 수 없습니다"
+msgstr "이 기술환경에서 네트 장치 구성을 설정 할 수 없습니다"
 
 msgid "Unable to set network bandwidth on direct interfaces"
 msgstr "직접 인터페이스에서 네트워크 대역폭을 설정할 수 없음"
@@ -18555,7 +18556,7 @@ msgid "Unexpectedly got a network port without a plug"
 msgstr "예기치 않게 플러그가 없는 네트워크 포트가 있음"
 
 msgid "Unix file descriptors not supported on this platform"
-msgstr "이 플랫폼에서 지원되지 않는 Unix 파일 설명자"
+msgstr "이 기술환경에서 지원되지 않는 유닉스 파일 설명자"
 
 msgid "Unknown"
 msgstr "알려지지 않음"
@@ -19536,7 +19537,7 @@ msgid "Virtual network portgroups are not supported by vz driver."
 msgstr "가상 네트워크 포트 그룹은 vz 드라이버에서 지원되지 않습니다."
 
 msgid "Virtual port profile association not supported on this platform"
-msgstr "이 플랫폼에서 지원되지 않는 가상 포트 프로필 연결"
+msgstr "이 기술환경에서 지원되지 않는 가상 포트 프로파일 연결"
 
 #, c-format
 msgid "Vol %s cloned from %s\n"
@@ -25753,7 +25754,7 @@ msgid "failed to parse SCSI host '%s'"
 msgstr "SCSI 호스트 '%s'을(를) 구문 분석하지 못했습니다"
 
 msgid "failed to parse SGX sections in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 가용 캐쉬에서 STX 부분을 구문 분석하는데 실패함"
 
 msgid "failed to parse agent timeout"
 msgstr "에이전트 시간 초과를 구문 분석하지 못했습니다"
@@ -26632,7 +26633,7 @@ msgid "get active job information for the specified disk"
 msgstr "지정된 디스크에 대한 활성 작업 정보 가져오기"
 
 msgid "get arp table not implemented on this platform"
-msgstr "이 플랫폼에서 구현되지 않은 arp 테이블 가져오기"
+msgstr "이 기술환경에서 구현되지 않은 arp 테이블 가져오기"
 
 msgid "get device block stats for a domain"
 msgstr "도메인의 장치 블럭 상태 보기"
@@ -26899,7 +26900,7 @@ msgid "host arch %s is too big for destination"
 msgstr "호스트 아치 %s이(가) 대상에 비해 너무 큽니다"
 
 msgid "host cpu counting not implemented on this platform"
-msgstr "이 플랫폼에서 구현되지 않은 호스트 CPU 계산"
+msgstr "이 기술환경에서 구현되지 않은 호스트 CPU 계산"
 
 msgid "host cpu number(s) to set"
 msgstr "설정할 호스트 CPU 번호"
@@ -27052,7 +27053,7 @@ msgstr "hostdev 하위 시스템 유형 '%s'에 대해 핫플러그가 지원되
 
 #, c-format
 msgid "hotplug is not supported for the %s device"
-msgstr ""
+msgstr "핫플러그는 %s 장치를 위해 지원되지 않습니다"
 
 #, c-format
 msgid "hotplug of interface type of %s is not implemented yet"
@@ -27438,7 +27439,7 @@ msgid "interface state driver is not active"
 msgstr "접속기 상태 드라이버가 활성화되지 않았습니다"
 
 msgid "interface stats not implemented on this platform"
-msgstr "이 플랫폼에서 구현되지 않은 접속기 통계"
+msgstr "이 기술환경에서 구현되지 않은 연결장치 통계"
 
 #, c-format
 msgid "interface type='%s' requires a 'source' element"
@@ -29135,10 +29136,10 @@ msgid "malformed/missing hotplugged in dimm memory info"
 msgstr "dimm 메모리 정보의 핫플러그 형식이 잘못되었거나 누락되었습니다"
 
 msgid "malformed/missing memaddr in sgx-epc memory info"
-msgstr ""
+msgstr "sgx-epc 메모리 정보에서 잘못된/누락된 메모리주소"
 
 msgid "malformed/missing size in sgx-epc memory info"
-msgstr ""
+msgstr "sgx-epc 메모리 정보에서 잘못된/누락된 크기"
 
 msgid "malformed/missing size in virtio memory info"
 msgstr "virtio 메모리 정보에서 잘못됨/누락 크기"
@@ -29275,7 +29276,7 @@ msgid "mediated device '%s' not found"
 msgstr "중재된 장치 '%s'를 찾을 수 없습니다"
 
 msgid "mediated devices are not supported on non-linux platforms"
-msgstr "미디에이션된 장치는 Linux가 아닌 플랫폼에서 지원되지 않습니다"
+msgstr "미디어 장치는 비-리눅스 기술환경에서 지원되지 않습니다"
 
 msgid "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
 msgstr "메모리(램-중단), 디스크(디스크-중단), 하이브리드 (하이브리드-중단)"
@@ -29293,7 +29294,7 @@ msgstr "메모리 속성: [file=]name[,snapshot=type]"
 
 #, c-format
 msgid "memory device address is not supported for model '%s'"
-msgstr ""
+msgstr "메모리 장치 주소가 모델 '%s'를 위해 지원되지 않습니다"
 
 msgid "memory device alias"
 msgstr "메모리 장치 별칭"
@@ -29773,10 +29774,10 @@ msgid "missing SEV pdh information in QEMU capabilities cache"
 msgstr "QEMU 기능 캐시에서 누락된 SEV pdh 정보"
 
 msgid "missing SEV platform data in QEMU capabilities cache"
-msgstr "QEMU 기능 캐시에서 누락된 SEV 플랫폼 데이터"
+msgstr "QEMU 기능 캐쉬에서 누락된 SEV 기술환경 자료"
 
 msgid "missing SGX platform data in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐쉬에서 누락된 SGX 기술환경 자료"
 
 msgid "missing TPM device backend"
 msgstr "TPM 장치 백엔드가 누락되어 있음"
@@ -30098,7 +30099,7 @@ msgid "missing network device feature name"
 msgstr "누락된 네트워크 장치 기능 이름"
 
 msgid "missing node name in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐쉬에서 누락된 노드 이름"
 
 #, c-format
 msgid "missing number of available instances for mediated device type '%s'"
@@ -30122,13 +30123,13 @@ msgid "missing or invalid CPU model property type in QEMU capabilities cache"
 msgstr "QEMU 기능 캐시에서 누락되거나 잘못된 CPU 모델 속성 유형"
 
 msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐쉬에서 누락되거나 잘못된 SGX 기술환경 flc"
 
 msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐쉬에서 누락되거나 잘못된 SGX 기술환경 sgx1"
 
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐쉬에서 누락되거나 잘못된 SGX 기술환경 sgx2"
 
 msgid "missing or invalid cpuid-input-eax in CPU data"
 msgstr "CPU 데이터에 cpuid-input-eax가 없거나 잘못되었습니다"
@@ -30152,7 +30153,7 @@ msgstr "QEMU 기능 캐쉬의 SEV ReducedPhysBits 정보 누락 또는 잘못된
 
 msgid ""
 "missing or malformed SGX platform section_size in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐쉬에서 누락되거나 잘못된 SGX 기술환경 부분_크기"
 
 msgid "missing or malformed session-uuid element in migration data"
 msgstr "이전 자료에서 누락되거나 잘못된 형식의 session-uuid 요소"
@@ -30268,7 +30269,7 @@ msgid "missing sheepdog vdi name"
 msgstr "쉽독 vdi 이름 누락"
 
 msgid "missing size name in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐쉬에서 누락된 크기 이름"
 
 msgid "missing socket address type in JSON backing volume definition"
 msgstr "JSON 백업 볼륨 정의에서 누락된 소켓 주소 유형"
@@ -30455,9 +30456,8 @@ msgstr "mkdir(\"%s\")"
 msgid ""
 "mkfs is not available on this platform: Failed to make filesystem of type "
 "'%s' on device '%s'"
-msgstr ""
-"mkfs는 이 플랫폼에서 사용할 수 없습니다. '%s' 장치에서 '%s' 유형의 파일 시스"
-"템을 만들지 못했습니다"
+msgstr "mkfs는 이 기술환경에서 사용 할 수 없습니다. '%s' 장치에서 '%s' 유형의 파일 "
+"시스템을 만들지 못했습니다"
 
 msgid "mode attribute of <source/> element"
 msgstr "<source/> 요소의 방법(mode) 속성"
@@ -30526,10 +30526,10 @@ msgid "more than one snapshot claims to be active"
 msgstr "둘 이상의 스냅샷이 활성 상태라고 주장합니다"
 
 msgid "mount is not supported on this platform."
-msgstr "적재는 이 플랫폼에서는 지원되지 않습니다."
+msgstr "적재는 이 기술환경에서는 지원되지 않습니다."
 
 msgid "mount move is not supported on this platform."
-msgstr "적재 이동은 플랫폼에서는 지원되지 않습니다."
+msgstr "적재 이동은 이 기술환경에서 지원되지 않습니다."
 
 #, c-format
 msgid "mount point not found: %s"
@@ -31521,13 +31521,13 @@ msgid "node '%s' has unexpected type %d"
 msgstr "노드 '%s'에 예기치 않은 유형 %d가 있습니다"
 
 msgid "node CPU stats not implemented on this platform"
-msgstr "이 플랫폼에서 구현되어 않은 노드 CPU 통계"
+msgstr "이 기술환경에서 구현되어 않은 노드 CPU 통계"
 
 msgid "node SEV information"
 msgstr "노드 SEV 정보"
 
 msgid "node cpu info not implemented on this platform"
-msgstr "이 플랫폼에는 구현되지 않은 노드 cpu 정보"
+msgstr "이 기술환경에 구현되지 않은 노드 cpu 정보"
 
 msgid "node cpu map"
 msgstr "node cpu map"
@@ -31547,25 +31547,25 @@ msgid "node device information"
 msgstr "노드 장치 정보"
 
 msgid "node get memory parameters not implemented on this platform"
-msgstr "이 플랫폼에서 구현되지 않은 노드 가져오기 메모리 매개변수"
+msgstr "이 기술환경에서 구현되지 않은 노드 가져오기 메모리 매개변수"
 
 msgid "node info not implemented on this platform"
-msgstr "이 플랫폼에는 노드 정보가 구현되어 있지 않습니다"
+msgstr "이 기술환경에서 노드 정보가 구현되어 있지 않습니다"
 
 msgid "node information"
 msgstr "노드 정보"
 
 msgid "node memory stats not implemented on this platform"
-msgstr "이 플랫폼에서 구현되지 않은 노드 메모리 통계"
+msgstr "이 기술환경에서 구현되지 않은 노드 메모리 통계"
 
 msgid "node online CPU map not implemented on this platform"
-msgstr "이 플랫폼에서 구현되지 않은 노드 온라인 CPU 맵"
+msgstr "이 기술환경에서 구현되지 않은 노드 온라인 CPU 맵"
 
 msgid "node present CPU map not implemented on this platform"
-msgstr "노드 현재 CPU 맵이 이 플랫폼에서 구현되지 않았습니다"
+msgstr "노드 현재 CPU 맵이 이 기술환경에서 구현되지 않았습니다"
 
 msgid "node set memory parameters not implemented on this platform"
-msgstr "이 플랫폼에서 구현되지 않은 노드 세트 메모리 매개변수"
+msgstr "이 기술환경에서 구현되지 않은 노드 세트 메모리 매개변수"
 
 #, c-format
 msgid "node-name '%s' too long for qemu"
@@ -31603,7 +31603,7 @@ msgid "not specified"
 msgstr "지정되지 않음"
 
 msgid "not supported on non-linux platforms"
-msgstr "비 Linux 플랫폼에서 지원되지 않음"
+msgstr "비-리눅스 기술환경에서 지원되지 않음"
 
 msgid "nothing selected for snapshot"
 msgstr "스냅샷에 대해 선택된 항목이 없습니다"
@@ -32127,10 +32127,10 @@ msgid "page count"
 msgstr "페이지 수"
 
 msgid "page info is not supported on this platform"
-msgstr "페이지 정보는 이 플랫폼에서 지원되지 않습니다"
+msgstr "관련 정보는 이 기술환경에서 지원되지 않습니다"
 
 msgid "page pool allocation is not supported on this platform"
-msgstr "이 플랫폼에서는 페이지 풀 할당이 지원되지 않습니다"
+msgstr "이 기술환경에서는 부분 풀 할당이 지원되지 않습니다"
 
 #, c-format
 msgid "page size %u is not available"
@@ -32423,7 +32423,7 @@ msgid "pin all memory before starting RDMA live migration"
 msgstr "RDMA 실시간 이전을 시작하기 전에 모든 메모리 고정합니다"
 
 msgid "platform unsupported"
-msgstr "지원되지 않는 플랫폼"
+msgstr "지원되지 않는 기술환경"
 
 msgid "ploop"
 msgstr "덩어리"
@@ -32590,7 +32590,7 @@ msgid ""
 msgstr "증분 저장소 이전을 위한 저장소 대상의 사전-생성은 지원되지 않습니다"
 
 msgid "preallocate is not supported on this platform"
-msgstr "이 플랫폼에서는 사전 할당이 지원되지 않습니다"
+msgstr "이 기술환경에서는 사전 할당이 지원되지 않습니다"
 
 msgid "preallocate is only supported for an unencrypted raw volume"
 msgstr "사전 할당은 암호화되지 않은 단순 볼륨만 지원됩니다"
@@ -32973,22 +32973,22 @@ msgstr ""
 "query-sev-capabilities 응답에 'reduced-phys-bits' 필드가 누락되었습니다"
 
 msgid "query-sgx-capabilities reply was missing 'flc' field"
-msgstr ""
+msgstr "query-sgx-capabilities 응답은 누락된 'flc' 부분이었습니다"
 
 msgid "query-sgx-capabilities reply was missing 'node' field"
-msgstr ""
+msgstr "query-sgx-capabilities 응답은 누락된 'node' 부분이었습니다"
 
 msgid "query-sgx-capabilities reply was missing 'section-size' field"
-msgstr ""
+msgstr "query-sgx-capabilities 응답은 누락된 'section-size' 부분이었습니다"
 
 msgid "query-sgx-capabilities reply was missing 'sgx1' field"
-msgstr ""
+msgstr "query-sgx-capabilities 응답은 누락된 'sgx1' 부분이었습니다"
 
 msgid "query-sgx-capabilities reply was missing 'sgx2' field"
-msgstr ""
+msgstr "query-sgx-capabilities 응답은 누락된 'sgx2' 부분이었습니다"
 
 msgid "query-sgx-capabilities reply was missing 'size' field"
-msgstr ""
+msgstr "query-sgx-capabilities 응답은 누락된 'size' 부분이었습니다"
 
 msgid "query-status reply was missing running state"
 msgstr "쿼리 상태 응답에 실행 상태가 누락되었습니다"
@@ -33304,7 +33304,7 @@ msgid "report hostname"
 msgstr "호스트 이름 보고"
 
 msgid "report hypervisor-specific statistics"
-msgstr ""
+msgstr "hypervisor-specific 통계를 보고합니다"
 
 msgid "report interface information"
 msgstr "연결장치 정보 보고"
@@ -33380,7 +33380,7 @@ msgid "require atomic operation"
 msgstr "원자적 연산이 필요합니다"
 
 msgid "resctrl locking is not supported on this platform"
-msgstr "이 플랫폼에서는 resctrl 잠금이 지원되지 않습니다"
+msgstr "이 기술환경에서는 resctrl 잠금이 지원되지 않습니다"
 
 msgid "reservations not supported with this QEMU binary"
 msgstr "이 QEMU 바이너리에서 지원되지 않는 예약"
@@ -33912,18 +33912,18 @@ msgid "sgio is only supported for scsi host device"
 msgstr "sgio는 scsi 호스트 장치만 지원됩니다"
 
 msgid "sgx epc isn't supported by this QEMU binary"
-msgstr ""
+msgstr "sgx epc은 이와 같은 QEMU 바이너리에서 지원되지 않습니다"
 
 #, c-format
 msgid "sgx epc size %lld on host node %d is less than requested size %lld"
-msgstr ""
+msgstr "sgx epc 크기 %lld(호스트 노드 %d에서)는 요청된 크기 %lld 보다 작습니다"
 
 #, c-format
 msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
-msgstr ""
+msgstr "sgx epc 크기 %lld(호스트 노드 %zd에서)는 요청된 크기 %lld 보다 작습니다"
 
 msgid "sgx-epc memory info data is missing 'memdev'"
-msgstr ""
+msgstr "sgx-epc 메모리 정보 자료는 누락된 'memdev'입니다"
 
 #, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
@@ -34767,7 +34767,7 @@ msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
 msgstr "결과가 REMOTE_NODE_MAX_CELLS에 맞지 않습니다"
 
 msgid "the running swtpm does not support migration with shared storage"
-msgstr ""
+msgstr "작동중인 swtpm은 공유 저장소로 이전을 지원하지 않습니다"
 
 msgid "the signal number or name"
 msgstr "신호 번호 또는 이름"
@@ -34863,7 +34863,7 @@ msgid "this QEMU does not support the 'genid' capability"
 msgstr "이 QEMU는 'genid' 기능을 지원하지 않습니다"
 
 msgid "this QEMU version didn't provide SGX EPC NUMA info"
-msgstr ""
+msgstr "QEMU 버전은 SGX EPC NUMA 정보를 제공하지 않습니다"
 
 msgid "this disk doesn't support update"
 msgstr "이 디스크는 업데이트를 지원하지 않음"
@@ -37517,7 +37517,7 @@ msgid "value of managerid out of range"
 msgstr "managerid 값이 범위를 벗어남"
 
 msgid "value of the 'size' attribute of 'mtu' element must be at most 100000"
-msgstr ""
+msgstr "'mtu' 요소의 'size' 속성 값은 최대 10000 이어야 합니다"
 
 msgid "value of typeidversion out of range"
 msgstr "typeidversion 값이 범위를 벗어남"
@@ -37753,7 +37753,7 @@ msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs는 WIN32에 대해 구현되지 않았습니다"
 
 msgid "virFileWrapperFd unsupported on this platform"
-msgstr "이 플랫폼에서 virFileWrapperFd가 지원되지 않습니다"
+msgstr "이 기술환경에서 virFileWrapperFd가 지원되지 않습니다"
 
 msgid "virGetGroupID is not available"
 msgstr "virGetGroupID를 사용할 수 없습니다"
@@ -37973,7 +37973,7 @@ msgstr "vlan에 tag 이름이 빠졌습니다"
 
 #, c-format
 msgid "vlan tag id %u too large (maximum 4095)"
-msgstr ""
+msgstr "vlan 꼬리표 id %u는 너무 큽니다 (최대 4095)"
 
 #, c-format
 msgid "vlan tag set for interface %s but caller requested it not be set"
