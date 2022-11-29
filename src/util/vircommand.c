@@ -3078,8 +3078,6 @@ virCommandFree(virCommand *cmd)
  *
  *      ...
  *
- *
- * The libvirt's event loop is used for handling stdios of @cmd.
  * Since current implementation uses strlen to determine length
  * of data to be written to @cmd's stdin, don't pass any binary
  * data. If you want to re-run command, you need to call this and
