@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-10-25 07:42+0000\n"
+"POT-Creation-Date: 2022-11-24 14:54+0000\n"
 "PO-Revision-Date: 2022-01-30 17:16+0000\n"
 "Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -428,6 +428,12 @@ msgid "%s %s '%s' has unsupported type '%s', expecting '%s' or '%s'"
 msgstr "%s %s «%s» tiene un tipo no admitido, «%s»; se esperaba «%s» o «%s»"
 
 #, c-format
+msgid ""
+"%s (on destination side) does not support the --migration option needed for "
+"migration with shared storage"
+msgstr ""
+
+#, c-format
 msgid "%s (out of %d)"
 msgstr "%s (de %d)"
 
@@ -546,6 +552,10 @@ msgstr "Binario QEMU no admite descarte"
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "Longitud %s mayor que el máxima: %d > %d"
+
+#, c-format
+msgid "%s memory device info is not handled yet"
+msgstr ""
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -701,14 +711,6 @@ msgstr "familia %s especificada para dirección non-IPv4 '%s' en red '%s'"
 msgid "%s: IPv4 family specified for non-IPv4 gateway '%s' in route definition"
 msgstr "familia %s especificada para dirección non-IPv4 '%s' en red '%s'"
 
-#, c-format
-msgid "%s: Invalid metric specified in route definition"
-msgstr ""
-
-#, c-format
-msgid "%s: Invalid metric value, must be > 0 in route definition"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "%s: Invalid netmask '%s' for address '%s' (both must be IPv4)"
 msgstr ""
@@ -721,10 +723,6 @@ msgstr ""
 
 #, c-format
 msgid "%s: Invalid prefix %u specified in route definition, must be 0 - 32"
-msgstr ""
-
-#, c-format
-msgid "%s: Invalid prefix specified in route definition"
 msgstr ""
 
 #, fuzzy, c-format
@@ -2307,9 +2305,9 @@ msgstr "El vendedor %s del modelo %s es distinto del vendedor %s"
 msgid "CPU vendor specified without CPU model"
 msgstr "Se ha indicado un vendedor sin modelo de CPU"
 
-#, fuzzy, c-format
-msgid "CPU vendor value 0x%2lx already defined"
-msgstr "Ya ha sido definido el vendedor de CPU %s"
+#, c-format
+msgid "CPU vendor value 0x%2llx already defined"
+msgstr ""
 
 msgid "CPU vendors do not match"
 msgstr "Los vendedores de las CPU no coinciden"
@@ -2820,17 +2818,17 @@ msgstr "No se encontró '%s' en ruta"
 msgid "Cannot find 'iothread' : %u"
 msgstr "No se puede iniciar tiempo en %s"
 
-#, fuzzy, c-format
-msgid "Cannot find CPU model with PVR 0x%03lx"
-msgstr "No se puede encontrar el modelo de CPU con PVR 0x%08x"
+#, c-format
+msgid "Cannot find CPU model with PVR 0x%03llx"
+msgstr ""
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "No se puede encontrar el modelo de CPU con PVR 0x%08x"
 
-#, fuzzy, c-format
-msgid "Cannot find CPU vendor with vendor id 0x%02lx"
-msgstr "No se puede encontrar el modelo de CPU con PVR 0x%08x"
+#, c-format
+msgid "Cannot find CPU vendor with vendor id 0x%02llx"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot find boot device of requested type %s"
@@ -9679,10 +9677,6 @@ msgstr ""
 "Tipo de interfaz hostdev tiene soporte actualmente en funciones SR-IOV "
 "Virtual únicamente"
 
-#, c-format
-msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
-msgstr " \"nativeMode='%s'\" en elemento vlan <tag> no es válido"
-
 #, fuzzy, c-format
 msgid "Invalid %s attribute 'vcpus' value '%s'"
 msgstr "Atributo de modo inválido '%s'"
@@ -9750,12 +9744,12 @@ msgid "Invalid IP address in static host definition for network '%s'"
 msgstr "Dirección IP inválida en definición de host estático para red '%s'"
 
 #, c-format
-msgid "Invalid IPv4 prefix '%lu' in network '%s'"
-msgstr "Prefijo IPv4 '%lu' es inválido en red '%s'"
+msgid "Invalid IPv4 prefix '%u' in network '%s'"
+msgstr ""
 
 #, c-format
-msgid "Invalid IPv6 prefix '%lu' in network '%s'"
-msgstr "Prefijo IPv6 '%lu' es inválido en red '%s'"
+msgid "Invalid IPv6 prefix '%u' in network '%s'"
+msgstr ""
 
 msgid "Invalid NULL callback provided"
 msgstr "Llamada NULL provista inválida"
@@ -9809,11 +9803,6 @@ msgstr "FD inválido %d para %s"
 msgid "Invalid STP state value %d received for '%s'. Must be -1, 0, or 1."
 msgstr ""
 "Es nulo el valor de estado STP %d recibido para '%s'. Debe ser -1, 0, o 1."
-
-#, c-format
-msgid "Invalid ULong value specified for prefix in definition of network '%s'"
-msgstr ""
-"Valor ULong especificado para prefijo es inválida en definición de red '%s'"
 
 #, fuzzy, c-format
 msgid "Invalid URI path '%s', try '/system'"
@@ -10159,10 +10148,6 @@ msgstr "La máscara de red es inválida '%s' en red '%s'"
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "Parámetro ipv6 '%s' inválido en red '%s'"
 
-#, fuzzy
-msgid "Invalid job flags"
-msgstr "Indicador inválido"
-
 #, c-format
 msgid "Invalid libxl cpuid key=value element: %s"
 msgstr ""
@@ -10309,26 +10294,11 @@ msgstr "Parámetro inválido "
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "Parámetro inválido hacia virXPathBoolean()"
 
-msgid "Invalid parameter to virXPathLong()"
-msgstr "Parámetro inválido hacia virXPathLong()"
-
-msgid "Invalid parameter to virXPathLongLong()"
-msgstr "Parámetro inválido hacia virXPathLongLong()"
-
 msgid "Invalid parameter to virXPathNode()"
 msgstr "Parámetro inválido hacia virXPathNode()"
 
 msgid "Invalid parameter to virXPathNodeSet()"
 msgstr "Parámetro inválido hacia virXPathNodeSet()"
-
-msgid "Invalid parameter to virXPathNumber()"
-msgstr "Parámetro inválido hacia virXPathNumber()"
-
-msgid "Invalid parameter to virXPathString()"
-msgstr "Parámetro inválido hacia virXPathString()"
-
-msgid "Invalid parameter to virXPathULong()"
-msgstr "Parámetro inválido hacia virXPathULong)"
 
 #, fuzzy
 msgid "Invalid parameter type passed to free"
@@ -11389,10 +11359,6 @@ msgstr "No se encuentra nombre de funcionalidad de CPU"
 msgid "Missing CPU model name"
 msgstr "No se encuentra el nombre del modelo de la CPU"
 
-#, fuzzy
-msgid "Missing CPU vendor value"
-msgstr "No se encuentra nombre de funcionalidad de CPU"
-
 msgid "Missing ID parameter for domain object"
 msgstr "Falta parámetro de ID para objeto de domain"
 
@@ -11436,6 +11402,12 @@ msgid "Missing VIR_CRED_AUTHNAME credential type"
 msgstr ""
 
 msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
+msgstr ""
+
+msgid "Missing XPath context"
+msgstr ""
+
+msgid "Missing XPath expression"
 msgstr ""
 
 #, fuzzy
@@ -11695,14 +11667,6 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Missing or invalid CPU frequency in %s"
-msgstr "Falta el valor PVR o el valor es inválido en el modelo de CPU %s"
-
-#, fuzzy, c-format
-msgid "Missing or invalid PVR mask in CPU model %s"
-msgstr "Falta el valor PVR o el valor es inválido en el modelo de CPU %s"
-
-#, c-format
-msgid "Missing or invalid PVR value in CPU model %s"
 msgstr "Falta el valor PVR o el valor es inválido en el modelo de CPU %s"
 
 #, c-format
@@ -12096,11 +12060,6 @@ msgstr "NUMA topology defined without NUMA cells"
 #, fuzzy
 msgid "NUMA tuning is not available in session mode"
 msgstr "Ajuste de CPU no está disponible en este host"
-
-#, fuzzy
-msgid ""
-"NUMA without specified memory backing is not supported with this QEMU binary"
-msgstr "vhost-net no tiene soporte con este binario de QEMU"
 
 #, fuzzy, c-format
 msgid "NVMe device %s already in use by driver %s domain %s"
@@ -13513,10 +13472,6 @@ msgstr ""
 "'none'"
 
 #, fuzzy
-msgid "Per-node memory binding is not supported with this QEMU"
-msgstr "gráficas vnc no tienen soporte con este QEMU"
-
-#, fuzzy
 msgid "Perf not supported on this platform"
 msgstr "No está soportado en  esta plataforma"
 
@@ -14880,10 +14835,6 @@ msgstr "Parámetro  wwn no tiene soporte para dispositivo lun"
 #, fuzzy
 msgid "Setup time:"
 msgstr "Hora de la CPU:"
-
-#, fuzzy
-msgid "Shared memory mapping is not supported with this QEMU"
-msgstr "Gráficas Spice no tienen soporte con este QEMU"
 
 msgid "Shared memory:\n"
 msgstr "Memoria compartida:\n"
@@ -16491,6 +16442,9 @@ msgstr "Esta versión de QEMU no admite el dispositivo nvram"
 #, fuzzy
 msgid "The machine has no snapshot and it should have it"
 msgstr "el dominio %s no posee capturas instantáneas denominadas %s"
+
+msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
+msgstr ""
 
 msgid "The minimum lease time should be greater than 2 minutes"
 msgstr ""
@@ -20528,23 +20482,8 @@ msgstr ""
 msgid "XML document failed to validate against schema: %s"
 msgstr "No se pudo validar nuestro propio certificado %s con %s: %s"
 
-#, fuzzy
-msgid "XML does not contain expected 'bios' element"
-msgstr "XML no posee el elemento 'sysinfo'"
-
-#, fuzzy
-msgid "XML does not contain expected 'chassis' element"
-msgstr "XML no posee el elemento 'sysinfo'"
-
 msgid "XML does not contain expected 'cpu' element"
 msgstr "El archivo XML no contiene el elemento 'cpu' esperado"
-
-msgid "XML does not contain expected 'sysinfo' element"
-msgstr "XML no posee el elemento 'sysinfo'"
-
-#, fuzzy
-msgid "XML does not contain expected 'system' element"
-msgstr "XML no posee el elemento 'sysinfo'"
 
 #, c-format
 msgid "XML error: %s"
@@ -22108,9 +22047,6 @@ msgstr "No se pueden extraer nodos de recursos"
 
 #, fuzzy
 msgid "cannot extract memorytune nodes"
-msgstr "no es posible extraer nodos numatune"
-
-msgid "cannot extract numatune nodes"
 msgstr "no es posible extraer nodos numatune"
 
 msgid "cannot extract resource nodes"
@@ -24825,9 +24761,6 @@ msgstr ""
 msgid "discover potential storage pool sources"
 msgstr "descubre posibles fuentes de grupo de almacenamiento"
 
-msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
-msgstr "Rangos de CPU NUMA desunidos no tienen soporte con este QEMU"
-
 #, fuzzy, c-format
 msgid "disk %s does not have an active block job"
 msgstr "el secreto '%s' no posee un valor"
@@ -26884,6 +26817,9 @@ msgstr "Falló al leer indicadores de capacidades Qemu "
 msgid "failed to parse SCSI host '%s'"
 msgstr "Falló al intentar analizar el modo '%s'"
 
+msgid "failed to parse SGX sections in QEMU capabilities cache"
+msgstr ""
+
 #, fuzzy
 msgid "failed to parse agent timeout"
 msgstr "No se pudo leer valor de %s"
@@ -28235,6 +28171,10 @@ msgstr "Modo de hostdev %s no tiene soporte"
 msgid "hotplug is not supported for hostdev subsys type '%s'"
 msgstr "Tipo de hostdev %s no tiene soporte "
 
+#, c-format
+msgid "hotplug is not supported for the %s device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "hotplug of interface type of %s is not implemented yet"
 msgstr "Copiando la definición de %d' tipo no  se ha implementado aún. "
@@ -28253,10 +28193,6 @@ msgstr ""
 #, c-format
 msgid "hub type %s not supported"
 msgstr "Tipo de concentrador %s no tiene soporte"
-
-#, fuzzy
-msgid "huge pages per NUMA node are not supported with this QEMU"
-msgstr "Rangos de CPU NUMA desunidos no tienen soporte con este QEMU"
 
 msgid "hugepage size can't be zero"
 msgstr ""
@@ -28605,9 +28541,6 @@ msgstr "red no está en ejecución"
 msgid "interface mac"
 msgstr "interfaz mac"
 
-msgid "interface mtu value is improper"
-msgstr "el valor mtu de la interfaz es inadecuado"
-
 msgid "interface name"
 msgstr "nombre de interfaz"
 
@@ -28925,15 +28858,6 @@ msgstr "indicador de grupo de almacenamiento inválido en  %s"
 msgid "invalid capability_filters capability '%s'"
 msgstr "Tipo de capacidad inválido"
 
-msgid "invalid catchup limit"
-msgstr "Límite de recuperación inválido"
-
-msgid "invalid catchup slew"
-msgstr "Giro de recuperación inválido"
-
-msgid "invalid catchup threshold"
-msgstr "Umbral de recuperación inválido"
-
 #, fuzzy, c-format
 msgid "invalid char in %s: %c"
 msgstr "estado de dominio no válido: %d"
@@ -29246,9 +29170,6 @@ msgstr "ruta inválida, '%s' no es una interfaz conocida"
 msgid "invalid path: %s"
 msgstr "ruta inválida: %s"
 
-msgid "invalid pid"
-msgstr "pid inválido"
-
 #, fuzzy
 msgid "invalid prefix, must be in range of 4-27"
 msgstr "Valor inválido para rebootTimeout, debe ser del rango [-1,65535]"
@@ -29347,9 +29268,6 @@ msgid ""
 "invalid string value for '%s' host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
-
-msgid "invalid timer frequency"
-msgstr "Frecuencia de temporizador no válida"
 
 #, c-format
 msgid "invalid tlsPort number: %s"
@@ -30414,6 +30332,12 @@ msgstr ""
 msgid "malformed/missing hotplugged in dimm memory info"
 msgstr ""
 
+msgid "malformed/missing memaddr in sgx-epc memory info"
+msgstr ""
+
+msgid "malformed/missing size in sgx-epc memory info"
+msgstr ""
+
 msgid "malformed/missing size in virtio memory info"
 msgstr ""
 
@@ -30575,6 +30499,10 @@ msgstr "Modelo de etiqueta de seguridad %s no tiene soporte de SELinux "
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "atributos de memoria: [file=]name[,snapshot=type]"
+
+#, c-format
+msgid "memory device address is not supported for model '%s'"
+msgstr ""
 
 msgid "memory device alias"
 msgstr ""
@@ -31088,6 +31016,9 @@ msgstr "Falta nombre de capacidad de migración"
 msgid "missing SEV platform data in QEMU capabilities cache"
 msgstr "Falta nombre de capacidad de migración"
 
+msgid "missing SGX platform data in QEMU capabilities cache"
+msgstr ""
+
 msgid "missing TPM device backend"
 msgstr "Falta plano secundario de dispositivo TPM"
 
@@ -31445,6 +31376,9 @@ msgstr "Falta información de nombre en %s"
 msgid "missing network device feature name"
 msgstr "Falta nombre de funcionalidad"
 
+msgid "missing node name in QEMU capabilities cache"
+msgstr ""
+
 #, c-format
 msgid "missing number of available instances for mediated device type '%s'"
 msgstr ""
@@ -31464,11 +31398,16 @@ msgstr "no se encuentra información de sistema operativo para %s"
 msgid "missing or broken bitmap '%s' for disk '%s'"
 msgstr ""
 
-#, fuzzy
-msgid "missing or invalid CPU cache mode"
-msgstr "Falta el valor PVR o el valor es inválido en el modelo de CPU %s"
-
 msgid "missing or invalid CPU model property type in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr ""
 
 #, fuzzy
@@ -31478,9 +31417,6 @@ msgstr "Falta el valor PVR o el valor es inválido en el modelo de CPU %s"
 #, fuzzy
 msgid "missing or invalid features in CPU data"
 msgstr "Falta el valor PVR o el valor es inválido en el modelo de CPU %s"
-
-msgid "missing or invalid vlan tag id attribute"
-msgstr "Falta o es inválido el atributo ID de etiqueta VLAN"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr ""
@@ -31494,6 +31430,10 @@ msgstr ""
 msgid ""
 "missing or malformed SEV reducedPhysBits information in QEMU capabilities "
 "cache"
+msgstr ""
+
+msgid ""
+"missing or malformed SGX platform section_size in QEMU capabilities cache"
 msgstr ""
 
 #, fuzzy
@@ -31621,6 +31561,9 @@ msgstr ""
 msgid "missing sheepdog vdi name"
 msgstr "Falta nombre de funcionalidad"
 
+msgid "missing size name in QEMU capabilities cache"
+msgstr ""
+
 #, fuzzy
 msgid "missing socket address type in JSON backing volume definition"
 msgstr "Falta campo socks en documento JSON"
@@ -31724,9 +31667,6 @@ msgstr "no se encuentra información de destino para el dispositivo %s"
 
 msgid "missing the host address for the iSCSI hostdev"
 msgstr ""
-
-msgid "missing timer name"
-msgstr "No se encuentra el nombre del temporizador"
 
 msgid "missing tlsPort attribute in migration data"
 msgstr "Falta atributo tlsPort en migración de datos"
@@ -33059,10 +32999,6 @@ msgid "nparams too large"
 msgstr "nparams demasiado extensos"
 
 #, fuzzy
-msgid "num-queues property isn't supported by this QEMU binary"
-msgstr "Esta versión de QEMU no admite el dispositivo nvram"
-
-#, fuzzy
 msgid "numa parameters are not supported by vz driver"
 msgstr "Parámetro '%s' no está soportado por este kernel"
 
@@ -33131,10 +33067,6 @@ msgstr "desbordamiento numérico: %s"
 
 msgid "nvcpus is zero"
 msgstr "nvcous es cero"
-
-#, fuzzy
-msgid "nvdimm align property is not available with this QEMU binary"
-msgstr "Inhabilitar memoria compartida no está disponible con el binario QEMU"
 
 #, fuzzy
 msgid "nvdimm isn't supported by this QEMU binary"
@@ -34498,6 +34430,24 @@ msgstr "A la respuesta query-version le faltan datos de 'qemu'"
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
 msgstr "A la respuesta query-version le faltan datos de 'qemu'"
 
+msgid "query-sgx-capabilities reply was missing 'flc' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'node' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'section-size' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx1' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx2' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'size' field"
+msgstr ""
+
 msgid "query-status reply was missing running state"
 msgstr "A la respuesta query-status le faltaba el estado en ejecución"
 
@@ -34834,9 +34784,6 @@ msgstr "Información detallada de dominio de VCPU"
 msgid "report error if CPUs are incompatible"
 msgstr "Las CPU son incompatibles"
 
-msgid "report fd-based VM statistics by KVM"
-msgstr ""
-
 #, fuzzy
 msgid "report filesystem information"
 msgstr "información del filtro de red en XML"
@@ -34844,6 +34791,9 @@ msgstr "información del filtro de red en XML"
 #, fuzzy
 msgid "report hostname"
 msgstr "Falló al obtener nombre de host"
+
+msgid "report hypervisor-specific statistics"
+msgstr ""
 
 msgid "report interface information"
 msgstr ""
@@ -35433,10 +35383,6 @@ msgstr "Parámetro ACPI iS3 no tiene soporte"
 msgid "setting ACPI S4 not supported"
 msgstr "Parámetro ACPI iS4 no tiene soporte"
 
-#, fuzzy
-msgid "setting MTU is not supported with this QEMU binary"
-msgstr "No existe soporte para SATA con este binario QEMU"
-
 #, fuzzy, c-format
 msgid "setting MTU on interface type %s is not supported yet"
 msgstr "El tipo de red %d no es soportado"
@@ -35491,6 +35437,20 @@ msgstr ""
 
 msgid "sgio is only supported for scsi host device"
 msgstr "sgio solo se admite  para dispositivo de host scsi"
+
+msgid "sgx epc isn't supported by this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %d is less than requested size %lld"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
+msgstr ""
+
+msgid "sgx-epc memory info data is missing 'memdev'"
+msgstr ""
 
 #, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
@@ -36135,9 +36095,6 @@ msgstr "Falló sysconf(_SC_OPEN_MAX)"
 msgid "sysctl failed for '%s'"
 msgstr "No se ha indicado tamaño para '%s'"
 
-msgid "sysinfo must contain a type attribute"
-msgstr "sysinfo debe contener un atributo de tipo"
-
 msgid "system call error"
 msgstr "error de llamada de sistema"
 
@@ -36379,6 +36336,9 @@ msgstr "ID del proceso"
 msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
+msgid "the running swtpm does not support migration with shared storage"
+msgstr ""
+
 msgid "the signal number or name"
 msgstr "El nombre o número de señal"
 
@@ -36475,9 +36435,8 @@ msgstr "El bus ps2 no tiene soporte para el dispositivo de entrada %s"
 msgid "this QEMU does not support the 'genid' capability"
 msgstr "Este QEMU no soporta destino mayor que 7"
 
-#, fuzzy
-msgid "this QEMU doesn't support memory discard"
-msgstr "Este QEMU no soporta controlador virtio scsi"
+msgid "this QEMU version didn't provide SGX EPC NUMA info"
+msgstr ""
 
 msgid "this disk doesn't support update"
 msgstr "Este disco no soporta actualización"
@@ -36518,15 +36477,7 @@ msgid "this qemu does not support TLS transport for NBD"
 msgstr "nbd no soporta transporte '%s'"
 
 #, fuzzy
-msgid "this qemu doesn't support the memory-backend-file object"
-msgstr "Este QEMU no soporta el segundo plano de rng-egd"
-
-#, fuzzy
 msgid "this qemu doesn't support the memory-backend-memfd object"
-msgstr "Este QEMU no soporta el segundo plano de rng-egd"
-
-#, fuzzy
-msgid "this qemu doesn't support the memory-backend-ram object"
 msgstr "Este QEMU no soporta el segundo plano de rng-egd"
 
 #, fuzzy
@@ -38445,10 +38396,6 @@ msgstr "tipo de volumen de almacenamiento %d desconocido"
 msgid "unknown suffix '%s'"
 msgstr "sufijo desconocido '%s'"
 
-#, c-format
-msgid "unknown sysinfo type '%s'"
-msgstr "tipo '%s' de sysinfo desconocido"
-
 #, fuzzy, c-format
 msgid "unknown target model '%s' specified for character device"
 msgstr ""
@@ -38462,22 +38409,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "unknown teaming type '%s'"
 msgstr "tipo de reenvío '%s' desconocido"
-
-#, c-format
-msgid "unknown timer mode '%s'"
-msgstr "Modelo de temporizador '%s' desconocido"
-
-#, c-format
-msgid "unknown timer name '%s'"
-msgstr "Nombre del temporizador '%s' desconocido"
-
-#, c-format
-msgid "unknown timer tickpolicy '%s'"
-msgstr "tickpolicy '%s' de temporizador desconocida"
-
-#, c-format
-msgid "unknown timer track '%s'"
-msgstr "Pista '%s' de temporizador desconocida "
 
 #, c-format
 msgid "unknown type '%s'"
@@ -39186,6 +39117,9 @@ msgstr "Nombre de cadena contiene caracteres inválidos"
 msgid "value of managerid out of range"
 msgstr "El valor de managerid se encuentra fuera de rango"
 
+msgid "value of the 'size' attribute of 'mtu' element must be at most 100000"
+msgstr ""
+
 msgid "value of typeidversion out of range"
 msgstr "El valor de typeidversion se encuentra fuera de rango"
 
@@ -39512,10 +39446,6 @@ msgstr ""
 msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
 msgstr ""
 
-#, fuzzy
-msgid "virtio rx_queue_size option is not supported with this QEMU binary"
-msgstr "vhost-net no tiene soporte con este binario de QEMU"
-
 #, fuzzy, c-format
 msgid "virtio serial controller %u does not have port %u"
 msgstr ""
@@ -39537,19 +39467,11 @@ msgstr "el dispositivo de serie virtio posee un tipo de dirección no válido"
 msgid "virtio serial port %u on controller %u is already occupied"
 msgstr ""
 
-#, fuzzy
-msgid "virtio tx_queue_size option is not supported with this QEMU binary"
-msgstr "Opción de virtio-net-pci 'tx' no tiene soporte en este binario QEMU"
-
 msgid "virtio-mem device is missing <requested/>"
 msgstr ""
 
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr ""
-
-#, fuzzy
-msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
-msgstr "vhost-net no tiene soporte con este binario de QEMU"
 
 #, c-format
 msgid ""
@@ -39651,8 +39573,8 @@ msgid "vlan misses the tag name"
 msgstr "vlan no encuentra el nombre de la etiqueta"
 
 #, c-format
-msgid "vlan tag id %lu too large (maximum 4095)"
-msgstr "ID de etiqueta vlan %lu es demasiado grande (máximo 4095)"
+msgid "vlan tag id %u too large (maximum 4095)"
+msgstr ""
 
 #, c-format
 msgid "vlan tag set for interface %s but caller requested it not be set"
@@ -40011,6 +39933,188 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "CPU vendor value 0x%2lx already defined"
+#~ msgstr "Ya ha sido definido el vendedor de CPU %s"
+
+#, fuzzy
+#~ msgid "Cannot find CPU model with PVR 0x%03lx"
+#~ msgstr "No se puede encontrar el modelo de CPU con PVR 0x%08x"
+
+#, fuzzy
+#~ msgid "Cannot find CPU vendor with vendor id 0x%02lx"
+#~ msgstr "No se puede encontrar el modelo de CPU con PVR 0x%08x"
+
+#~ msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
+#~ msgstr " \"nativeMode='%s'\" en elemento vlan <tag> no es válido"
+
+#~ msgid "Invalid IPv4 prefix '%lu' in network '%s'"
+#~ msgstr "Prefijo IPv4 '%lu' es inválido en red '%s'"
+
+#~ msgid "Invalid IPv6 prefix '%lu' in network '%s'"
+#~ msgstr "Prefijo IPv6 '%lu' es inválido en red '%s'"
+
+#~ msgid ""
+#~ "Invalid ULong value specified for prefix in definition of network '%s'"
+#~ msgstr ""
+#~ "Valor ULong especificado para prefijo es inválida en definición de red "
+#~ "'%s'"
+
+#, fuzzy
+#~ msgid "Invalid job flags"
+#~ msgstr "Indicador inválido"
+
+#~ msgid "Invalid parameter to virXPathLong()"
+#~ msgstr "Parámetro inválido hacia virXPathLong()"
+
+#~ msgid "Invalid parameter to virXPathLongLong()"
+#~ msgstr "Parámetro inválido hacia virXPathLongLong()"
+
+#~ msgid "Invalid parameter to virXPathNumber()"
+#~ msgstr "Parámetro inválido hacia virXPathNumber()"
+
+#~ msgid "Invalid parameter to virXPathString()"
+#~ msgstr "Parámetro inválido hacia virXPathString()"
+
+#~ msgid "Invalid parameter to virXPathULong()"
+#~ msgstr "Parámetro inválido hacia virXPathULong)"
+
+#, fuzzy
+#~ msgid "Missing CPU vendor value"
+#~ msgstr "No se encuentra nombre de funcionalidad de CPU"
+
+#, fuzzy
+#~ msgid "Missing or invalid PVR mask in CPU model %s"
+#~ msgstr "Falta el valor PVR o el valor es inválido en el modelo de CPU %s"
+
+#~ msgid "Missing or invalid PVR value in CPU model %s"
+#~ msgstr "Falta el valor PVR o el valor es inválido en el modelo de CPU %s"
+
+#, fuzzy
+#~ msgid ""
+#~ "NUMA without specified memory backing is not supported with this QEMU "
+#~ "binary"
+#~ msgstr "vhost-net no tiene soporte con este binario de QEMU"
+
+#, fuzzy
+#~ msgid "Per-node memory binding is not supported with this QEMU"
+#~ msgstr "gráficas vnc no tienen soporte con este QEMU"
+
+#, fuzzy
+#~ msgid "Shared memory mapping is not supported with this QEMU"
+#~ msgstr "Gráficas Spice no tienen soporte con este QEMU"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'bios' element"
+#~ msgstr "XML no posee el elemento 'sysinfo'"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'chassis' element"
+#~ msgstr "XML no posee el elemento 'sysinfo'"
+
+#~ msgid "XML does not contain expected 'sysinfo' element"
+#~ msgstr "XML no posee el elemento 'sysinfo'"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'system' element"
+#~ msgstr "XML no posee el elemento 'sysinfo'"
+
+#~ msgid "cannot extract numatune nodes"
+#~ msgstr "no es posible extraer nodos numatune"
+
+#~ msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
+#~ msgstr "Rangos de CPU NUMA desunidos no tienen soporte con este QEMU"
+
+#, fuzzy
+#~ msgid "huge pages per NUMA node are not supported with this QEMU"
+#~ msgstr "Rangos de CPU NUMA desunidos no tienen soporte con este QEMU"
+
+#~ msgid "interface mtu value is improper"
+#~ msgstr "el valor mtu de la interfaz es inadecuado"
+
+#~ msgid "invalid catchup limit"
+#~ msgstr "Límite de recuperación inválido"
+
+#~ msgid "invalid catchup slew"
+#~ msgstr "Giro de recuperación inválido"
+
+#~ msgid "invalid catchup threshold"
+#~ msgstr "Umbral de recuperación inválido"
+
+#~ msgid "invalid pid"
+#~ msgstr "pid inválido"
+
+#~ msgid "invalid timer frequency"
+#~ msgstr "Frecuencia de temporizador no válida"
+
+#, fuzzy
+#~ msgid "missing or invalid CPU cache mode"
+#~ msgstr "Falta el valor PVR o el valor es inválido en el modelo de CPU %s"
+
+#~ msgid "missing or invalid vlan tag id attribute"
+#~ msgstr "Falta o es inválido el atributo ID de etiqueta VLAN"
+
+#~ msgid "missing timer name"
+#~ msgstr "No se encuentra el nombre del temporizador"
+
+#, fuzzy
+#~ msgid "num-queues property isn't supported by this QEMU binary"
+#~ msgstr "Esta versión de QEMU no admite el dispositivo nvram"
+
+#, fuzzy
+#~ msgid "nvdimm align property is not available with this QEMU binary"
+#~ msgstr ""
+#~ "Inhabilitar memoria compartida no está disponible con el binario QEMU"
+
+#, fuzzy
+#~ msgid "setting MTU is not supported with this QEMU binary"
+#~ msgstr "No existe soporte para SATA con este binario QEMU"
+
+#~ msgid "sysinfo must contain a type attribute"
+#~ msgstr "sysinfo debe contener un atributo de tipo"
+
+#, fuzzy
+#~ msgid "this QEMU doesn't support memory discard"
+#~ msgstr "Este QEMU no soporta controlador virtio scsi"
+
+#, fuzzy
+#~ msgid "this qemu doesn't support the memory-backend-file object"
+#~ msgstr "Este QEMU no soporta el segundo plano de rng-egd"
+
+#, fuzzy
+#~ msgid "this qemu doesn't support the memory-backend-ram object"
+#~ msgstr "Este QEMU no soporta el segundo plano de rng-egd"
+
+#~ msgid "unknown sysinfo type '%s'"
+#~ msgstr "tipo '%s' de sysinfo desconocido"
+
+#~ msgid "unknown timer mode '%s'"
+#~ msgstr "Modelo de temporizador '%s' desconocido"
+
+#~ msgid "unknown timer name '%s'"
+#~ msgstr "Nombre del temporizador '%s' desconocido"
+
+#~ msgid "unknown timer tickpolicy '%s'"
+#~ msgstr "tickpolicy '%s' de temporizador desconocida"
+
+#~ msgid "unknown timer track '%s'"
+#~ msgstr "Pista '%s' de temporizador desconocida "
+
+#, fuzzy
+#~ msgid "virtio rx_queue_size option is not supported with this QEMU binary"
+#~ msgstr "vhost-net no tiene soporte con este binario de QEMU"
+
+#, fuzzy
+#~ msgid "virtio tx_queue_size option is not supported with this QEMU binary"
+#~ msgstr "Opción de virtio-net-pci 'tx' no tiene soporte en este binario QEMU"
+
+#, fuzzy
+#~ msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
+#~ msgstr "vhost-net no tiene soporte con este binario de QEMU"
+
+#~ msgid "vlan tag id %lu too large (maximum 4095)"
+#~ msgstr "ID de etiqueta vlan %lu es demasiado grande (máximo 4095)"
 
 #~ msgid "%s 3d acceleration is not supported"
 #~ msgstr "La aceleración 3D %s no se admite"

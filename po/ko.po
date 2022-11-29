@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-10-25 07:42+0000\n"
+"POT-Creation-Date: 2022-11-24 14:54+0000\n"
 "PO-Revision-Date: 2022-11-16 18:36+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -526,6 +526,12 @@ msgstr ""
 "%s %s '%s'은 지원하지 않는 유형'%s', 예상치 '%s' 또는 '%s'을 갖고 있습니다"
 
 #, c-format
+msgid ""
+"%s (on destination side) does not support the --migration option needed for "
+"migration with shared storage"
+msgstr ""
+
+#, c-format
 msgid "%s (out of %d)"
 msgstr "%s (%d 의 밖에)"
 
@@ -641,6 +647,10 @@ msgstr "%s는 이 QEMU 바이너리에서 지원되지 않습니다"
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "%s는 최대보다 길이를 초과: %d > %d"
+
+#, c-format
+msgid "%s memory device info is not handled yet"
+msgstr ""
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -795,14 +805,6 @@ msgid "%s: IPv4 family specified for non-IPv4 gateway '%s' in route definition"
 msgstr "%s: 경로 정의에 비-IPv4 게이트웨이 '%s'에 지정된 IPV4 제품군"
 
 #, c-format
-msgid "%s: Invalid metric specified in route definition"
-msgstr "%s: 경로 정의에서 지정된 잘못된 미터법"
-
-#, c-format
-msgid "%s: Invalid metric value, must be > 0 in route definition"
-msgstr "%s: 잘못된 측정 값, 경로 정의에서 0보다 커야 합니다"
-
-#, c-format
 msgid "%s: Invalid netmask '%s' for address '%s' (both must be IPv4)"
 msgstr "%s: 주소 '%s'에 잘못된 넷마스크 '%s' (두 가지 모두 IPv4이어야 함)"
 
@@ -813,10 +815,6 @@ msgstr "%s: 경로 정의에서 지정된 잘못된 접두사 %u, 0-128 이어�
 #, c-format
 msgid "%s: Invalid prefix %u specified in route definition, must be 0 - 32"
 msgstr "%s: 경로 정의에서 지정된 잘못된 접두사 %u, 0-32이어야 합니다"
-
-#, c-format
-msgid "%s: Invalid prefix specified in route definition"
-msgstr "%s: 경로 정의에서 지정된 잘못된 접두사"
 
 #, c-format
 msgid "%s: Missing required address attribute in route definition"
@@ -1336,7 +1334,8 @@ msgstr "'queues'는 virtio-scsi 제어기에서만 지원됩니다"
 msgid ""
 "'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
-msgstr "<interface type='vhostuser'>를 위해 '재연결' 속성이 지원되지 않는 '서버' 방식"
+msgstr ""
+"<interface type='vhostuser'>를 위해 '재연결' 속성이 지원되지 않는 '서버' 방식"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -2382,8 +2381,8 @@ msgid "CPU vendor specified without CPU model"
 msgstr "CPU 제조사 가 CPU 모델 없이 지정됨"
 
 #, c-format
-msgid "CPU vendor value 0x%2lx already defined"
-msgstr "CPU 제조사 값 0x%2lx가 이미 지정되어 있음"
+msgid "CPU vendor value 0x%2llx already defined"
+msgstr ""
 
 msgid "CPU vendors do not match"
 msgstr "CPU 제조사가 일치하지 않음"
@@ -2869,16 +2868,16 @@ msgid "Cannot find 'iothread' : %u"
 msgstr "'iothread'를 찾을 수 없습니다: %u"
 
 #, c-format
-msgid "Cannot find CPU model with PVR 0x%03lx"
-msgstr "PVR 0x%03lx에서 CPU 유형을 찾을 수 없음"
+msgid "Cannot find CPU model with PVR 0x%03llx"
+msgstr ""
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "PVR 0x%08x로 CPU 모델을 찾을 수 없음"
 
 #, c-format
-msgid "Cannot find CPU vendor with vendor id 0x%02lx"
-msgstr "공급사 id 0x%02lx인 CPU 공급사를 찾을 수 없습니다"
+msgid "Cannot find CPU vendor with vendor id 0x%02llx"
+msgstr ""
 
 #, c-format
 msgid "Cannot find boot device of requested type %s"
@@ -9430,10 +9429,6 @@ msgid ""
 msgstr "인터페이스 유형 hostdev는 현재 SR-IOV 가상 기능에서만 지원됩니다"
 
 #, c-format
-msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
-msgstr "vlan <tag> 요소에서 잘못된 \"nativeMode='%s'\""
-
-#, c-format
 msgid "Invalid %s attribute 'vcpus' value '%s'"
 msgstr "유효하지 않은 %s 속성 'vcpus' 값 '%s'"
 
@@ -9501,12 +9496,12 @@ msgid "Invalid IP address in static host definition for network '%s'"
 msgstr "네트워크 '%s'의 정적 호스트 정의에서 잘못된 IP 주소"
 
 #, c-format
-msgid "Invalid IPv4 prefix '%lu' in network '%s'"
-msgstr "잘못된 IPv4 프리픽스 '%lu' (네트워크 '%s'에서)"
+msgid "Invalid IPv4 prefix '%u' in network '%s'"
+msgstr ""
 
 #, c-format
-msgid "Invalid IPv6 prefix '%lu' in network '%s'"
-msgstr "잘못된 IPv6 프리픽스 '%lu' (네트워크 '%s'에서)"
+msgid "Invalid IPv6 prefix '%u' in network '%s'"
+msgstr ""
 
 msgid "Invalid NULL callback provided"
 msgstr "잘못된 NULL 콜백이 제공됨"
@@ -9563,10 +9558,6 @@ msgid "Invalid STP state value %d received for '%s'. Must be -1, 0, or 1."
 msgstr ""
 "잘못된 STP 상태 값 %d이 '%s'에 대해 수신되었습니다. -1, 0, 또는 1이어야 합니"
 "다."
-
-#, c-format
-msgid "Invalid ULong value specified for prefix in definition of network '%s'"
-msgstr "네트워크 '%s'의 정의에서 프리픽스에 잘못된 ULong 값이 지정되었습니다"
 
 #, c-format
 msgid "Invalid URI path '%s', try '/system'"
@@ -9922,9 +9913,6 @@ msgstr "잘못된 정수 값 '%s'이(가) 파일 '%s'에 있습니다"
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "네트워크 '%s'에서 잘못된 ipv6 설정 '%s'"
 
-msgid "Invalid job flags"
-msgstr "잘못된 작업 플래그"
-
 #, c-format
 msgid "Invalid libxl cpuid key=value element: %s"
 msgstr "잘못된 libxl cpuid 키=값 요소: %s"
@@ -10070,26 +10058,11 @@ msgstr "잘못된 매개 변수"
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "virXPathBoolean()에 잘못된 매개변수 전달"
 
-msgid "Invalid parameter to virXPathLong()"
-msgstr "virXPathLong()에 잘못된 매개변수 전달"
-
-msgid "Invalid parameter to virXPathLongLong()"
-msgstr "virXPathLongLong()에 잘못된 매개변수 전달"
-
 msgid "Invalid parameter to virXPathNode()"
 msgstr "virXPathNode()에 잘못된 매개변수 전달"
 
 msgid "Invalid parameter to virXPathNodeSet()"
 msgstr "virXPathNodeSet()에 잘못된 매개변수 전달"
-
-msgid "Invalid parameter to virXPathNumber()"
-msgstr "virXPathNumber()에 잘못된 매개변수 전달"
-
-msgid "Invalid parameter to virXPathString()"
-msgstr "virXPathString()으로 잘못된 매개변수 전달"
-
-msgid "Invalid parameter to virXPathULong()"
-msgstr "virXPathULong()에 잘못된 매개변수 전달"
 
 msgid "Invalid parameter type passed to free"
 msgstr "free에 잘못된 매개변수 유형이 전달되었습니다"
@@ -10297,7 +10270,8 @@ msgstr "요소 '%s'의 특성 '%s'에 대한 잘못된 값: '%s'. 예상 정수 
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
 "integer value"
-msgstr "속성 '%s'를 위해 잘못된 값(요소 '%s': '%s' 중에서). 예상된 long long integer "
+msgstr ""
+"속성 '%s'를 위해 잘못된 값(요소 '%s': '%s' 중에서). 예상된 long long integer "
 "값"
 
 #, c-format
@@ -11088,9 +11062,6 @@ msgstr "CPU 기능 이름이 빠짐"
 msgid "Missing CPU model name"
 msgstr "CPU 모델 이름이 빠져있습니다"
 
-msgid "Missing CPU vendor value"
-msgstr "CPU 공급업체 값 누락"
-
 msgid "Missing ID parameter for domain object"
 msgstr "도메인 개체의 ID 매개 변수가 누락되어 있음"
 
@@ -11134,6 +11105,12 @@ msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
 msgstr ""
 "VIR_CRED_PASSPHRASE 또는 VIR_CRED_NOECHOPROMPT 자격 증명 유형이 누락되었습니"
 "다"
+
+msgid "Missing XPath context"
+msgstr ""
+
+msgid "Missing XPath expression"
+msgstr ""
 
 msgid "Missing acpi table type"
 msgstr "누락된 acpi 테이블 유형"
@@ -11369,14 +11346,6 @@ msgstr "%s에 누락되었거나 잘못된 CPU 주소 크기"
 #, c-format
 msgid "Missing or invalid CPU frequency in %s"
 msgstr "%s에서 누락되었거나 잘못된 CPU 주파수"
-
-#, c-format
-msgid "Missing or invalid PVR mask in CPU model %s"
-msgstr "CPU 모델 %s에 누락되어 있거나 잘못된 PVR 매스크"
-
-#, c-format
-msgid "Missing or invalid PVR value in CPU model %s"
-msgstr "CPU 모델 %s에 누락되어 있거나 잘못된 PVR 값"
 
 #, c-format
 msgid ""
@@ -11754,11 +11723,6 @@ msgstr "NUMA 토폴로지는 NUMA 셀 없이 정의되어 있음"
 
 msgid "NUMA tuning is not available in session mode"
 msgstr "NUMA 튜닝은 세션 모드에서 사용 할 수 없습니다"
-
-msgid ""
-"NUMA without specified memory backing is not supported with this QEMU binary"
-msgstr ""
-"지정된 메모리 백업이 없는 NUMA는 이 QEMU 바이너리에서 지원하지 않습니다"
 
 #, c-format
 msgid "NVMe device %s already in use by driver %s domain %s"
@@ -13080,9 +13044,6 @@ msgstr ""
 msgid "Per-node binding is not compatible with automatic NUMA placement."
 msgstr "노드당 바인딩은 자동 NUMA 배치와 호환되지 않습니다."
 
-msgid "Per-node memory binding is not supported with this QEMU"
-msgstr "이 QEMU에서는 노드별 메모리 바인딩이 지원되지 않습니다"
-
 msgid "Perf not supported on this platform"
 msgstr "이 플랫폼에서 지원되지 않는 성능"
 
@@ -14357,9 +14318,6 @@ msgstr "lun 장치에는 wwn 설정이 지원되지 않습니다"
 
 msgid "Setup time:"
 msgstr "설치 시간:"
-
-msgid "Shared memory mapping is not supported with this QEMU"
-msgstr "공유된 메모리 대응하기는 이 QEMU에서 지원되지 않습니다"
 
 msgid "Shared memory:\n"
 msgstr "공유된 메모리:\n"
@@ -15856,6 +15814,9 @@ msgstr ""
 
 msgid "The machine has no snapshot and it should have it"
 msgstr "머신에는 현재 스냅샷이 없으며, 스냅샷이 필요합니다"
+
+msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
+msgstr ""
 
 msgid "The minimum lease time should be greater than 2 minutes"
 msgstr "최소 임대 시간은 2분 이상이어야 합니다"
@@ -19741,20 +19702,8 @@ msgstr "XML 문서가 스키마에 대해 유효성을 검사하지 못했습니
 msgid "XML document failed to validate against schema: %s"
 msgstr "XML 문서가 스키마에 대해 유효성을 검사하지 못했습니다: %s"
 
-msgid "XML does not contain expected 'bios' element"
-msgstr "XML는 예상되는 'bios' 요소가 포함되어 있지 않습니다"
-
-msgid "XML does not contain expected 'chassis' element"
-msgstr "XML는 예상되는 'chassis' 요소가 포함되지 않습니다"
-
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML에는 예상되는 'cpu' 요소가 들어 있지 않습니다"
-
-msgid "XML does not contain expected 'sysinfo' element"
-msgstr "XML에는 예상되는 'sysinfo' 요소가 들어 있지 않습니다"
-
-msgid "XML does not contain expected 'system' element"
-msgstr "XML는 예상되는 'system' 요소를 포함하지 않습니다"
 
 #, c-format
 msgid "XML error: %s"
@@ -21252,9 +21201,6 @@ msgstr "iothreadsched 노드를 추출할 수 없습니다"
 
 msgid "cannot extract memorytune nodes"
 msgstr "memorytune 노드를 추출할 수 없습니다"
-
-msgid "cannot extract numatune nodes"
-msgstr "numatune 노드를 추출할 수 없음"
 
 msgid "cannot extract resource nodes"
 msgstr "리소스 노드를 추출할 수 없음"
@@ -23843,9 +23789,6 @@ msgstr "연결 해제됨"
 msgid "discover potential storage pool sources"
 msgstr "사용가능한 저장소 풀 소스를 발견합니다"
 
-msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
-msgstr "이 QEMU에서는 분리된 NUMA CPU 범위가 지원되지 않습니다"
-
 #, c-format
 msgid "disk %s does not have an active block job"
 msgstr "디스크 %s에 활성 블록 작업이 없습니다"
@@ -25809,6 +25752,9 @@ msgstr "QEMU 기능에서 CPU 차단기를 구문 분석하지 못했습니다"
 msgid "failed to parse SCSI host '%s'"
 msgstr "SCSI 호스트 '%s'을(를) 구문 분석하지 못했습니다"
 
+msgid "failed to parse SGX sections in QEMU capabilities cache"
+msgstr ""
+
 msgid "failed to parse agent timeout"
 msgstr "에이전트 시간 초과를 구문 분석하지 못했습니다"
 
@@ -27105,6 +27051,10 @@ msgid "hotplug is not supported for hostdev subsys type '%s'"
 msgstr "hostdev 하위 시스템 유형 '%s'에 대해 핫플러그가 지원되지 않습니다"
 
 #, c-format
+msgid "hotplug is not supported for the %s device"
+msgstr ""
+
+#, c-format
 msgid "hotplug of interface type of %s is not implemented yet"
 msgstr "인터페이스 유형 %s의 핫플러그가 아직 구현되지 않았습니다"
 
@@ -27121,9 +27071,6 @@ msgstr "http 쿠키는 HTTP(S) 프로토콜에서만 지원됩니다"
 #, c-format
 msgid "hub type %s not supported"
 msgstr "허브 유형 %s이 지원되지 않습니다"
-
-msgid "huge pages per NUMA node are not supported with this QEMU"
-msgstr "이 QEMU에서는 NUMA 노드당 방대한 페이지가 지원되지 않습니다"
 
 msgid "hugepage size can't be zero"
 msgstr "거대 페이지 크기는 0이 될 수 없습니다"
@@ -27473,9 +27420,6 @@ msgstr "접속기가 실행되고 있지 않음"
 msgid "interface mac"
 msgstr "인터페이스 MAC"
 
-msgid "interface mtu value is improper"
-msgstr "인터페이스 mtu 값이 적절하지 않습니다"
-
 msgid "interface name"
 msgstr "인터페이스 이름"
 
@@ -27789,15 +27733,6 @@ msgstr "잘못된 지원 프로토콜 문자열 '%s'"
 msgid "invalid capability_filters capability '%s'"
 msgstr "잘못된 capability_filters 기능 '%s'"
 
-msgid "invalid catchup limit"
-msgstr "잘못된 catchup limit입니다"
-
-msgid "invalid catchup slew"
-msgstr "잘못된 catchup slew"
-
-msgid "invalid catchup threshold"
-msgstr "잘못된 catchup threshold입니다"
-
 #, c-format
 msgid "invalid char in %s: %c"
 msgstr "%s의 잘못된 문자: %c"
@@ -28108,9 +28043,6 @@ msgstr "잘못된 경로, '%s'는 알려진 인터페이스가 이닙니다"
 msgid "invalid path: %s"
 msgstr "잘못된 경로: %s"
 
-msgid "invalid pid"
-msgstr "잘못된 pid"
-
 msgid "invalid prefix, must be in range of 4-27"
 msgstr "잘못된 접두사, 4-27 범위에 있어야 합니다"
 
@@ -28205,9 +28137,6 @@ msgid ""
 "invalid string value for '%s' host CPU model property in QEMU capabilities "
 "cache"
 msgstr "QEMU 기능 캐쉬의 '%s' 호스트 CPU 모델 속성에 대한 잘못된 문자열 값"
-
-msgid "invalid timer frequency"
-msgstr "잘못된 타이머 주파수"
 
 #, c-format
 msgid "invalid tlsPort number: %s"
@@ -29205,6 +29134,12 @@ msgstr "dimm 메모리 정보에 잘못된 형식/누락된 핫플러그 가능"
 msgid "malformed/missing hotplugged in dimm memory info"
 msgstr "dimm 메모리 정보의 핫플러그 형식이 잘못되었거나 누락되었습니다"
 
+msgid "malformed/missing memaddr in sgx-epc memory info"
+msgstr ""
+
+msgid "malformed/missing size in sgx-epc memory info"
+msgstr ""
+
 msgid "malformed/missing size in virtio memory info"
 msgstr "virtio 메모리 정보에서 잘못됨/누락 크기"
 
@@ -29355,6 +29290,10 @@ msgstr "이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'를 지�
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "메모리 속성: [file=]name[,snapshot=type]"
+
+#, c-format
+msgid "memory device address is not supported for model '%s'"
+msgstr ""
 
 msgid "memory device alias"
 msgstr "메모리 장치 별칭"
@@ -29836,6 +29775,9 @@ msgstr "QEMU 기능 캐시에서 누락된 SEV pdh 정보"
 msgid "missing SEV platform data in QEMU capabilities cache"
 msgstr "QEMU 기능 캐시에서 누락된 SEV 플랫폼 데이터"
 
+msgid "missing SGX platform data in QEMU capabilities cache"
+msgstr ""
+
 msgid "missing TPM device backend"
 msgstr "TPM 장치 백엔드가 누락되어 있음"
 
@@ -30155,6 +30097,9 @@ msgstr "%s에 이름 정보가 없습니다"
 msgid "missing network device feature name"
 msgstr "누락된 네트워크 장치 기능 이름"
 
+msgid "missing node name in QEMU capabilities cache"
+msgstr ""
+
 #, c-format
 msgid "missing number of available instances for mediated device type '%s'"
 msgstr "조정된 장치 유형 '%s'에 대해 사용 가능한 인스턴스 수가 없습니다"
@@ -30173,20 +30118,23 @@ msgstr "%s의 운영 시스템 정보 부재"
 msgid "missing or broken bitmap '%s' for disk '%s'"
 msgstr "디스크 '%s'에 대한 비트맵 '%s'가 없거나 손상되었습니다"
 
-msgid "missing or invalid CPU cache mode"
-msgstr "CPU 캐시 모드가 없거나 잘못되었습니다"
-
 msgid "missing or invalid CPU model property type in QEMU capabilities cache"
 msgstr "QEMU 기능 캐시에서 누락되거나 잘못된 CPU 모델 속성 유형"
+
+msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
+msgstr ""
 
 msgid "missing or invalid cpuid-input-eax in CPU data"
 msgstr "CPU 데이터에 cpuid-input-eax가 없거나 잘못되었습니다"
 
 msgid "missing or invalid features in CPU data"
 msgstr "CPU 데이터의 누락되거나 잘못된 기능"
-
-msgid "missing or invalid vlan tag id attribute"
-msgstr "누락되거나 또는 잘못된 vlan 태그 id 속성"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr "'nvme' 저장소의 '장치' 필드가 없거나 형식이 잘못되었습니다"
@@ -30201,6 +30149,10 @@ msgid ""
 "missing or malformed SEV reducedPhysBits information in QEMU capabilities "
 "cache"
 msgstr "QEMU 기능 캐쉬의 SEV ReducedPhysBits 정보 누락 또는 잘못된 형식"
+
+msgid ""
+"missing or malformed SGX platform section_size in QEMU capabilities cache"
+msgstr ""
 
 msgid "missing or malformed session-uuid element in migration data"
 msgstr "이전 자료에서 누락되거나 잘못된 형식의 session-uuid 요소"
@@ -30315,6 +30267,9 @@ msgstr "JSON 백업 볼륨 정의에서 누락된 쉽독 URI"
 msgid "missing sheepdog vdi name"
 msgstr "쉽독 vdi 이름 누락"
 
+msgid "missing size name in QEMU capabilities cache"
+msgstr ""
+
 msgid "missing socket address type in JSON backing volume definition"
 msgstr "JSON 백업 볼륨 정의에서 누락된 소켓 주소 유형"
 
@@ -30411,9 +30366,6 @@ msgstr "%s 장치의 대상 정보 부재"
 
 msgid "missing the host address for the iSCSI hostdev"
 msgstr "iSCSI hostdev의 호스트 주소 누락"
-
-msgid "missing timer name"
-msgstr "타이머 이름이 누락되어 있음"
 
 msgid "missing tlsPort attribute in migration data"
 msgstr "이전할 자료에서 tlsPort 속성이 누락되어 있음"
@@ -31681,9 +31633,6 @@ msgstr "%s의 nparams는 %d와 같아야 합니다"
 msgid "nparams too large"
 msgstr "nparams가 너무 큽니다"
 
-msgid "num-queues property isn't supported by this QEMU binary"
-msgstr "이 QEMU 바이너리는 num-queues 속성을 지원하지 않습니다"
-
 msgid "numa parameters are not supported by vz driver"
 msgstr "numa 매개변수는 vz 드라이버에서 지원되지 않습니다"
 
@@ -31745,9 +31694,6 @@ msgstr "숫자 오버플로: %s"
 
 msgid "nvcpus is zero"
 msgstr "nvcpus는 0입니다"
-
-msgid "nvdimm align property is not available with this QEMU binary"
-msgstr "이 QEMU 바이너리에서는 nvdimm align 속성을 사용할 수 없습니다"
 
 msgid "nvdimm isn't supported by this QEMU binary"
 msgstr "이 QEMU 바이너리는 nvdimm을 지원하지 않습니다"
@@ -33026,6 +32972,24 @@ msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
 msgstr ""
 "query-sev-capabilities 응답에 'reduced-phys-bits' 필드가 누락되었습니다"
 
+msgid "query-sgx-capabilities reply was missing 'flc' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'node' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'section-size' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx1' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx2' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'size' field"
+msgstr ""
+
 msgid "query-status reply was missing running state"
 msgstr "쿼리 상태 응답에 실행 상태가 누락되었습니다"
 
@@ -33333,14 +33297,14 @@ msgstr "도메인 가상 CPU 정보 보고"
 msgid "report error if CPUs are incompatible"
 msgstr "CPU가 호환되지 않는 경우 오류 보고"
 
-msgid "report fd-based VM statistics by KVM"
-msgstr "KVM에 의해 fd-기반 VM 통계를 보고합니다"
-
 msgid "report filesystem information"
 msgstr "파일 시스템 정보 보고"
 
 msgid "report hostname"
 msgstr "호스트 이름 보고"
+
+msgid "report hypervisor-specific statistics"
+msgstr ""
 
 msgid "report interface information"
 msgstr "연결장치 정보 보고"
@@ -33894,9 +33858,6 @@ msgstr "ACPI S3 설정이 지원되지 않음"
 msgid "setting ACPI S4 not supported"
 msgstr "ACPI S4 설정이 지원되지 않음"
 
-msgid "setting MTU is not supported with this QEMU binary"
-msgstr "설정 MTU가 이 QEMU 바이너리에서 지원하지 않습니다"
-
 #, c-format
 msgid "setting MTU on interface type %s is not supported yet"
 msgstr "인터페이스 유형 %s에 대한 MTU 설정은 아직 지원되지 않습니다"
@@ -33949,6 +33910,20 @@ msgstr "sgio는 device='lun'에서만 사용할 수 있습니다"
 
 msgid "sgio is only supported for scsi host device"
 msgstr "sgio는 scsi 호스트 장치만 지원됩니다"
+
+msgid "sgx epc isn't supported by this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %d is less than requested size %lld"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
+msgstr ""
+
+msgid "sgx-epc memory info data is missing 'memdev'"
+msgstr ""
 
 #, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
@@ -34561,9 +34536,6 @@ msgstr "sysconf(_SC_OPEN_MAX) 실패함"
 msgid "sysctl failed for '%s'"
 msgstr "'%s'에 대한 sysctl이 실패했습니다"
 
-msgid "sysinfo must contain a type attribute"
-msgstr "시스템 정보에는 유형 속성이 있어야 합니다"
-
 msgid "system call error"
 msgstr "시스템 호출 오류"
 
@@ -34794,6 +34766,9 @@ msgstr "프로세스 ID"
 msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
 msgstr "결과가 REMOTE_NODE_MAX_CELLS에 맞지 않습니다"
 
+msgid "the running swtpm does not support migration with shared storage"
+msgstr ""
+
 msgid "the signal number or name"
 msgstr "신호 번호 또는 이름"
 
@@ -34887,8 +34862,8 @@ msgstr "QEMU는 'vhost-user'는 비디오 장치를 지원하지 않습니다"
 msgid "this QEMU does not support the 'genid' capability"
 msgstr "이 QEMU는 'genid' 기능을 지원하지 않습니다"
 
-msgid "this QEMU doesn't support memory discard"
-msgstr "이 QEMU는 메모리 폐기를 지원하지 않습니다"
+msgid "this QEMU version didn't provide SGX EPC NUMA info"
+msgstr ""
 
 msgid "this disk doesn't support update"
 msgstr "이 디스크는 업데이트를 지원하지 않음"
@@ -34924,14 +34899,8 @@ msgstr "이와 같은 기술환경은 dlopen이 누락되어 있습니다"
 msgid "this qemu does not support TLS transport for NBD"
 msgstr "이 qemu는 NBD에 대한 TLS 전송을 지원하지 않습니다"
 
-msgid "this qemu doesn't support the memory-backend-file object"
-msgstr "이 qemu는 메모리 백엔드 파일 개체를 지원하지 않습니다"
-
 msgid "this qemu doesn't support the memory-backend-memfd object"
 msgstr "이 qemu는 memory-backend-memfd 개체를 지원하지 않습니다"
-
-msgid "this qemu doesn't support the memory-backend-ram object"
-msgstr "이 qemu는 memory-backend-ram 개체를 지원하지 않습니다"
 
 msgid "this qemu doesn't support the rng-builtin backend"
 msgstr "이 qemu는 rng-builtin 백엔드를 지원하지 않습니다"
@@ -36841,10 +36810,6 @@ msgid "unknown suffix '%s'"
 msgstr "알 수 없는 접미사 '%s'"
 
 #, c-format
-msgid "unknown sysinfo type '%s'"
-msgstr "알 수 없는 시스템 정보 유형 '%s'"
-
-#, c-format
 msgid "unknown target model '%s' specified for character device"
 msgstr "문자 장치에 지정된 알 수 없는 대상 모델 '%s'"
 
@@ -36855,22 +36820,6 @@ msgstr "문자 장치에 지정된 알 수 없는 대상 유형 '%s'"
 #, c-format
 msgid "unknown teaming type '%s'"
 msgstr "알 수 없는 팀 구성 유형 '%s'"
-
-#, c-format
-msgid "unknown timer mode '%s'"
-msgstr "알 수 없는 타이머 모드 '%s'"
-
-#, c-format
-msgid "unknown timer name '%s'"
-msgstr "알 수 없는 타이머 이름 '%s'"
-
-#, c-format
-msgid "unknown timer tickpolicy '%s'"
-msgstr "알 수 없는 타이머 tickpolicy '%s'"
-
-#, c-format
-msgid "unknown timer track '%s'"
-msgstr "알 수 없는 타이머 트랙 '%s'"
 
 #, c-format
 msgid "unknown type '%s'"
@@ -37567,6 +37516,9 @@ msgstr "쿠키 '%s' 값에 잘못된 문자가 포함되어 있습니다"
 msgid "value of managerid out of range"
 msgstr "managerid 값이 범위를 벗어남"
 
+msgid "value of the 'size' attribute of 'mtu' element must be at most 100000"
+msgstr ""
+
 msgid "value of typeidversion out of range"
 msgstr "typeidversion 값이 범위를 벗어남"
 
@@ -37898,9 +37850,6 @@ msgstr "virtio rss는 이와 같은 QEMU 바이너리를 지원하지 않습니�
 msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
 msgstr "virtio rx_queue_size 옵션 %d는 tx_queue_size %d와 동일하지 않습니다"
 
-msgid "virtio rx_queue_size option is not supported with this QEMU binary"
-msgstr "virtio rx_queue_size 옵션은 이 QEMU 바이너리에서 지원되지 않습니다"
-
 #, c-format
 msgid "virtio serial controller %u does not have port %u"
 msgstr "virtio 직렬 컨트롤러 %u에 %u 포트가 없습니다"
@@ -37921,18 +37870,11 @@ msgstr "virtio 직렬 장치가 잘못된 주소 유형을 가졌습니다"
 msgid "virtio serial port %u on controller %u is already occupied"
 msgstr "컨트롤러 %u의 virtio 직렬 포트 %u가 이미 사용 중입니다"
 
-msgid "virtio tx_queue_size option is not supported with this QEMU binary"
-msgstr "virtio tx_queue_size 옵션은 이 QEMU 바이너리에서 지원되지 않습니다"
-
 msgid "virtio-mem device is missing <requested/>"
 msgstr "virtio-mem 장치가 누락 <requested/>"
 
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "virtio-mem은 이 QEMU 바이너리에서 지원되지 않습니다"
-
-msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
-msgstr ""
-"이 QEMU 바이너리에서는 virtio-net 장애 조치(팀 구성)가 지원되지 않습니다"
 
 #, c-format
 msgid ""
@@ -38030,8 +37972,8 @@ msgid "vlan misses the tag name"
 msgstr "vlan에 tag 이름이 빠졌습니다"
 
 #, c-format
-msgid "vlan tag id %lu too large (maximum 4095)"
-msgstr "vlan 태그 id %lu가 너무 큼 (최대값 4095)"
+msgid "vlan tag id %u too large (maximum 4095)"
+msgstr ""
 
 #, c-format
 msgid "vlan tag set for interface %s but caller requested it not be set"
@@ -38381,6 +38323,177 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "%s: Invalid metric specified in route definition"
+#~ msgstr "%s: 경로 정의에서 지정된 잘못된 미터법"
+
+#~ msgid "%s: Invalid metric value, must be > 0 in route definition"
+#~ msgstr "%s: 잘못된 측정 값, 경로 정의에서 0보다 커야 합니다"
+
+#~ msgid "%s: Invalid prefix specified in route definition"
+#~ msgstr "%s: 경로 정의에서 지정된 잘못된 접두사"
+
+#~ msgid "CPU vendor value 0x%2lx already defined"
+#~ msgstr "CPU 제조사 값 0x%2lx가 이미 지정되어 있음"
+
+#~ msgid "Cannot find CPU model with PVR 0x%03lx"
+#~ msgstr "PVR 0x%03lx에서 CPU 유형을 찾을 수 없음"
+
+#~ msgid "Cannot find CPU vendor with vendor id 0x%02lx"
+#~ msgstr "공급사 id 0x%02lx인 CPU 공급사를 찾을 수 없습니다"
+
+#~ msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
+#~ msgstr "vlan <tag> 요소에서 잘못된 \"nativeMode='%s'\""
+
+#~ msgid "Invalid IPv4 prefix '%lu' in network '%s'"
+#~ msgstr "잘못된 IPv4 프리픽스 '%lu' (네트워크 '%s'에서)"
+
+#~ msgid "Invalid IPv6 prefix '%lu' in network '%s'"
+#~ msgstr "잘못된 IPv6 프리픽스 '%lu' (네트워크 '%s'에서)"
+
+#~ msgid ""
+#~ "Invalid ULong value specified for prefix in definition of network '%s'"
+#~ msgstr ""
+#~ "네트워크 '%s'의 정의에서 프리픽스에 잘못된 ULong 값이 지정되었습니다"
+
+#~ msgid "Invalid job flags"
+#~ msgstr "잘못된 작업 플래그"
+
+#~ msgid "Invalid parameter to virXPathLong()"
+#~ msgstr "virXPathLong()에 잘못된 매개변수 전달"
+
+#~ msgid "Invalid parameter to virXPathLongLong()"
+#~ msgstr "virXPathLongLong()에 잘못된 매개변수 전달"
+
+#~ msgid "Invalid parameter to virXPathNumber()"
+#~ msgstr "virXPathNumber()에 잘못된 매개변수 전달"
+
+#~ msgid "Invalid parameter to virXPathString()"
+#~ msgstr "virXPathString()으로 잘못된 매개변수 전달"
+
+#~ msgid "Invalid parameter to virXPathULong()"
+#~ msgstr "virXPathULong()에 잘못된 매개변수 전달"
+
+#~ msgid "Missing CPU vendor value"
+#~ msgstr "CPU 공급업체 값 누락"
+
+#~ msgid "Missing or invalid PVR mask in CPU model %s"
+#~ msgstr "CPU 모델 %s에 누락되어 있거나 잘못된 PVR 매스크"
+
+#~ msgid "Missing or invalid PVR value in CPU model %s"
+#~ msgstr "CPU 모델 %s에 누락되어 있거나 잘못된 PVR 값"
+
+#~ msgid ""
+#~ "NUMA without specified memory backing is not supported with this QEMU "
+#~ "binary"
+#~ msgstr ""
+#~ "지정된 메모리 백업이 없는 NUMA는 이 QEMU 바이너리에서 지원하지 않습니다"
+
+#~ msgid "Per-node memory binding is not supported with this QEMU"
+#~ msgstr "이 QEMU에서는 노드별 메모리 바인딩이 지원되지 않습니다"
+
+#~ msgid "Shared memory mapping is not supported with this QEMU"
+#~ msgstr "공유된 메모리 대응하기는 이 QEMU에서 지원되지 않습니다"
+
+#~ msgid "XML does not contain expected 'bios' element"
+#~ msgstr "XML는 예상되는 'bios' 요소가 포함되어 있지 않습니다"
+
+#~ msgid "XML does not contain expected 'chassis' element"
+#~ msgstr "XML는 예상되는 'chassis' 요소가 포함되지 않습니다"
+
+#~ msgid "XML does not contain expected 'sysinfo' element"
+#~ msgstr "XML에는 예상되는 'sysinfo' 요소가 들어 있지 않습니다"
+
+#~ msgid "XML does not contain expected 'system' element"
+#~ msgstr "XML는 예상되는 'system' 요소를 포함하지 않습니다"
+
+#~ msgid "cannot extract numatune nodes"
+#~ msgstr "numatune 노드를 추출할 수 없음"
+
+#~ msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
+#~ msgstr "이 QEMU에서는 분리된 NUMA CPU 범위가 지원되지 않습니다"
+
+#~ msgid "huge pages per NUMA node are not supported with this QEMU"
+#~ msgstr "이 QEMU에서는 NUMA 노드당 방대한 페이지가 지원되지 않습니다"
+
+#~ msgid "interface mtu value is improper"
+#~ msgstr "인터페이스 mtu 값이 적절하지 않습니다"
+
+#~ msgid "invalid catchup limit"
+#~ msgstr "잘못된 catchup limit입니다"
+
+#~ msgid "invalid catchup slew"
+#~ msgstr "잘못된 catchup slew"
+
+#~ msgid "invalid catchup threshold"
+#~ msgstr "잘못된 catchup threshold입니다"
+
+#~ msgid "invalid pid"
+#~ msgstr "잘못된 pid"
+
+#~ msgid "invalid timer frequency"
+#~ msgstr "잘못된 타이머 주파수"
+
+#~ msgid "missing or invalid CPU cache mode"
+#~ msgstr "CPU 캐시 모드가 없거나 잘못되었습니다"
+
+#~ msgid "missing or invalid vlan tag id attribute"
+#~ msgstr "누락되거나 또는 잘못된 vlan 태그 id 속성"
+
+#~ msgid "missing timer name"
+#~ msgstr "타이머 이름이 누락되어 있음"
+
+#~ msgid "num-queues property isn't supported by this QEMU binary"
+#~ msgstr "이 QEMU 바이너리는 num-queues 속성을 지원하지 않습니다"
+
+#~ msgid "nvdimm align property is not available with this QEMU binary"
+#~ msgstr "이 QEMU 바이너리에서는 nvdimm align 속성을 사용할 수 없습니다"
+
+#~ msgid "report fd-based VM statistics by KVM"
+#~ msgstr "KVM에 의해 fd-기반 VM 통계를 보고합니다"
+
+#~ msgid "setting MTU is not supported with this QEMU binary"
+#~ msgstr "설정 MTU가 이 QEMU 바이너리에서 지원하지 않습니다"
+
+#~ msgid "sysinfo must contain a type attribute"
+#~ msgstr "시스템 정보에는 유형 속성이 있어야 합니다"
+
+#~ msgid "this QEMU doesn't support memory discard"
+#~ msgstr "이 QEMU는 메모리 폐기를 지원하지 않습니다"
+
+#~ msgid "this qemu doesn't support the memory-backend-file object"
+#~ msgstr "이 qemu는 메모리 백엔드 파일 개체를 지원하지 않습니다"
+
+#~ msgid "this qemu doesn't support the memory-backend-ram object"
+#~ msgstr "이 qemu는 memory-backend-ram 개체를 지원하지 않습니다"
+
+#~ msgid "unknown sysinfo type '%s'"
+#~ msgstr "알 수 없는 시스템 정보 유형 '%s'"
+
+#~ msgid "unknown timer mode '%s'"
+#~ msgstr "알 수 없는 타이머 모드 '%s'"
+
+#~ msgid "unknown timer name '%s'"
+#~ msgstr "알 수 없는 타이머 이름 '%s'"
+
+#~ msgid "unknown timer tickpolicy '%s'"
+#~ msgstr "알 수 없는 타이머 tickpolicy '%s'"
+
+#~ msgid "unknown timer track '%s'"
+#~ msgstr "알 수 없는 타이머 트랙 '%s'"
+
+#~ msgid "virtio rx_queue_size option is not supported with this QEMU binary"
+#~ msgstr "virtio rx_queue_size 옵션은 이 QEMU 바이너리에서 지원되지 않습니다"
+
+#~ msgid "virtio tx_queue_size option is not supported with this QEMU binary"
+#~ msgstr "virtio tx_queue_size 옵션은 이 QEMU 바이너리에서 지원되지 않습니다"
+
+#~ msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "이 QEMU 바이너리에서는 virtio-net 장애 조치(팀 구성)가 지원되지 않습니다"
+
+#~ msgid "vlan tag id %lu too large (maximum 4095)"
+#~ msgstr "vlan 태그 id %lu가 너무 큼 (최대값 4095)"
 
 #~ msgid "%s 3d acceleration is not supported"
 #~ msgstr "%s 3d 가속은 지원되지 않습니다"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-10-25 07:42+0000\n"
+"POT-Creation-Date: 2022-11-24 14:54+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -352,6 +352,12 @@ msgid "%s %s '%s' has unsupported type '%s', expecting '%s' or '%s'"
 msgstr "Đĩa mềm '%s' có kiểu không hỗ trợ '%s', mong đợi '%s' hoặc '%s'"
 
 #, c-format
+msgid ""
+"%s (on destination side) does not support the --migration option needed for "
+"migration with shared storage"
+msgstr ""
+
+#, c-format
 msgid "%s (out of %d)"
 msgstr ""
 
@@ -466,6 +472,10 @@ msgstr "SATA không được hỗ trợ với binary QEMU này"
 #, fuzzy, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "độ dài bộ đệm bản đồ vCPU vượt quá lớn nhất: %d > %d"
+
+#, c-format
+msgid "%s memory device info is not handled yet"
+msgstr ""
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -610,14 +620,6 @@ msgid "%s: IPv4 family specified for non-IPv4 gateway '%s' in route definition"
 msgstr ""
 
 #, c-format
-msgid "%s: Invalid metric specified in route definition"
-msgstr ""
-
-#, c-format
-msgid "%s: Invalid metric value, must be > 0 in route definition"
-msgstr ""
-
-#, c-format
 msgid "%s: Invalid netmask '%s' for address '%s' (both must be IPv4)"
 msgstr ""
 
@@ -627,10 +629,6 @@ msgstr ""
 
 #, c-format
 msgid "%s: Invalid prefix %u specified in route definition, must be 0 - 32"
-msgstr ""
-
-#, c-format
-msgid "%s: Invalid prefix specified in route definition"
 msgstr ""
 
 #, c-format
@@ -2149,9 +2147,9 @@ msgstr "Nhà cung cấp CPU %s của mẫu %s khác so với nhà cung cấp %s"
 msgid "CPU vendor specified without CPU model"
 msgstr "Nhà cung cấp CPU đã chỉ rõ mà không có mẫu CPU"
 
-#, fuzzy, c-format
-msgid "CPU vendor value 0x%2lx already defined"
-msgstr "Nhà cung cấp CPU %s đã được định"
+#, c-format
+msgid "CPU vendor value 0x%2llx already defined"
+msgstr ""
 
 msgid "CPU vendors do not match"
 msgstr "Các nhà cung cấp CPU không khớp"
@@ -2647,7 +2645,7 @@ msgid "Cannot find 'iothread' : %u"
 msgstr "Không thể tìm giả lập phù hợp cho %s"
 
 #, c-format
-msgid "Cannot find CPU model with PVR 0x%03lx"
+msgid "Cannot find CPU model with PVR 0x%03llx"
 msgstr ""
 
 #, c-format
@@ -2655,7 +2653,7 @@ msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr ""
 
 #, c-format
-msgid "Cannot find CPU vendor with vendor id 0x%02lx"
+msgid "Cannot find CPU vendor with vendor id 0x%02llx"
 msgstr ""
 
 #, c-format
@@ -9430,10 +9428,6 @@ msgid ""
 "only"
 msgstr ""
 
-#, c-format
-msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Invalid %s attribute 'vcpus' value '%s'"
 msgstr "Đường dẫn quan hệ '%s' không hợp lệ"
@@ -9500,13 +9494,13 @@ msgstr ""
 msgid "Invalid IP address in static host definition for network '%s'"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Invalid IPv4 prefix '%lu' in network '%s'"
-msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
+#, c-format
+msgid "Invalid IPv4 prefix '%u' in network '%s'"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Invalid IPv6 prefix '%lu' in network '%s'"
-msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
+#, c-format
+msgid "Invalid IPv6 prefix '%u' in network '%s'"
+msgstr ""
 
 msgid "Invalid NULL callback provided"
 msgstr ""
@@ -9558,10 +9552,6 @@ msgstr "Tên hook không hợp lệ cho #%d"
 
 #, c-format
 msgid "Invalid STP state value %d received for '%s'. Must be -1, 0, or 1."
-msgstr ""
-
-#, c-format
-msgid "Invalid ULong value specified for prefix in definition of network '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -9908,10 +9898,6 @@ msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
 
-#, fuzzy
-msgid "Invalid job flags"
-msgstr "Cổng không rõ: %s"
-
 #, c-format
 msgid "Invalid libxl cpuid key=value element: %s"
 msgstr ""
@@ -10057,26 +10043,11 @@ msgstr "Tham số không hợp lệ"
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "Tham số không hợp lệ cho virXPathBoolean()"
 
-msgid "Invalid parameter to virXPathLong()"
-msgstr "Tham số không hợp lệ cho virXPathLong()"
-
-msgid "Invalid parameter to virXPathLongLong()"
-msgstr "Tham số không hợp lệ cho virXPathLongLong()"
-
 msgid "Invalid parameter to virXPathNode()"
 msgstr "Tham số không hợp lệ cho virXPathNode()"
 
 msgid "Invalid parameter to virXPathNodeSet()"
 msgstr "Tham số không hợp lệ cho virXPathNodeSet()"
-
-msgid "Invalid parameter to virXPathNumber()"
-msgstr "Tham số không hợp lệ cho virXPathNumber()"
-
-msgid "Invalid parameter to virXPathString()"
-msgstr "tham số không hợp lệ cho virXPathString()"
-
-msgid "Invalid parameter to virXPathULong()"
-msgstr "Tham số không hợp lệ cho virXPathULong()"
 
 #, fuzzy
 msgid "Invalid parameter type passed to free"
@@ -11103,10 +11074,6 @@ msgid "Missing CPU model name"
 msgstr "Thiếu tên mẫu CPU"
 
 #, fuzzy
-msgid "Missing CPU vendor value"
-msgstr "Thiếu tên tính năng CPU"
-
-#, fuzzy
 msgid "Missing ID parameter for domain object"
 msgstr "thiếu thông tin đích cho thiết bị"
 
@@ -11148,6 +11115,12 @@ msgid "Missing VIR_CRED_AUTHNAME credential type"
 msgstr ""
 
 msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
+msgstr ""
+
+msgid "Missing XPath context"
+msgstr ""
+
+msgid "Missing XPath expression"
 msgstr ""
 
 #, fuzzy
@@ -11396,14 +11369,6 @@ msgstr ""
 #, c-format
 msgid "Missing or invalid CPU frequency in %s"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Missing or invalid PVR mask in CPU model %s"
-msgstr "Thiếu tên đời gốc trong mẫu CPU %s"
-
-#, fuzzy, c-format
-msgid "Missing or invalid PVR value in CPU model %s"
-msgstr "Thiếu tên đời gốc trong mẫu CPU %s"
 
 #, c-format
 msgid ""
@@ -11780,11 +11745,6 @@ msgstr ""
 
 msgid "NUMA tuning is not available in session mode"
 msgstr ""
-
-#, fuzzy
-msgid ""
-"NUMA without specified memory backing is not supported with this QEMU binary"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
 
 #, fuzzy, c-format
 msgid "NVMe device %s already in use by driver %s domain %s"
@@ -13142,10 +13102,6 @@ msgid "Per-node binding is not compatible with automatic NUMA placement."
 msgstr ""
 
 #, fuzzy
-msgid "Per-node memory binding is not supported with this QEMU"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
-
-#, fuzzy
 msgid "Perf not supported on this platform"
 msgstr "Ái lực CPU của tiến trình không được hỗ trợ trên nền tảng này"
 
@@ -14439,10 +14395,6 @@ msgstr "Phương tiện tháo được không hỗ trợ cho thiết bị %s"
 #, fuzzy
 msgid "Setup time:"
 msgstr "Thời gian CPU:"
-
-#, fuzzy
-msgid "Shared memory mapping is not supported with this QEMU"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
 
 #, fuzzy
 msgid "Shared memory:\n"
@@ -15913,6 +15865,9 @@ msgstr "SATA không được hỗ trợ với binary QEMU này"
 #, fuzzy
 msgid "The machine has no snapshot and it should have it"
 msgstr "miền %s không có ảnh chụp với tên %s"
+
+msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
+msgstr ""
 
 msgid "The minimum lease time should be greater than 2 minutes"
 msgstr ""
@@ -20015,23 +19970,7 @@ msgstr ""
 msgid "XML document failed to validate against schema: %s"
 msgstr ""
 
-#, fuzzy
-msgid "XML does not contain expected 'bios' element"
-msgstr "XML không chứ thành phần 'cpu' mong đợi"
-
-#, fuzzy
-msgid "XML does not contain expected 'chassis' element"
-msgstr "XML không chứ thành phần 'cpu' mong đợi"
-
 msgid "XML does not contain expected 'cpu' element"
-msgstr "XML không chứ thành phần 'cpu' mong đợi"
-
-#, fuzzy
-msgid "XML does not contain expected 'sysinfo' element"
-msgstr "XML không chứ thành phần 'cpu' mong đợi"
-
-#, fuzzy
-msgid "XML does not contain expected 'system' element"
 msgstr "XML không chứ thành phần 'cpu' mong đợi"
 
 #, fuzzy, c-format
@@ -21560,10 +21499,6 @@ msgstr ""
 
 msgid "cannot extract memorytune nodes"
 msgstr ""
-
-#, fuzzy
-msgid "cannot extract numatune nodes"
-msgstr "không thể thực thi tập tin nhị phân %s"
 
 #, fuzzy
 msgid "cannot extract resource nodes"
@@ -24249,10 +24184,6 @@ msgstr ""
 msgid "discover potential storage pool sources"
 msgstr "khám phá các nguồn pool lưu trữ tiềm năng"
 
-#, fuzzy
-msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
-
 #, fuzzy, c-format
 msgid "disk %s does not have an active block job"
 msgstr "bí mật '%s' không có một giá trị"
@@ -26302,6 +26233,9 @@ msgstr "Thất bại khi phân tích tên khối %s"
 msgid "failed to parse SCSI host '%s'"
 msgstr "Thất bại khi phân tích chế độ '%s'"
 
+msgid "failed to parse SGX sections in QEMU capabilities cache"
+msgstr ""
+
 #, fuzzy
 msgid "failed to parse agent timeout"
 msgstr "Thất bại khi phân tích đầu ra vzlist"
@@ -27650,6 +27584,10 @@ msgid "hotplug is not supported for hostdev subsys type '%s'"
 msgstr "kiểu đồ họa không hỗ trợ '%s'"
 
 #, c-format
+msgid "hotplug is not supported for the %s device"
+msgstr ""
+
+#, c-format
 msgid "hotplug of interface type of %s is not implemented yet"
 msgstr ""
 
@@ -27667,10 +27605,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "hub type %s not supported"
 msgstr "kiểu subsys hostdev '%s' không được hỗ trợ"
-
-#, fuzzy
-msgid "huge pages per NUMA node are not supported with this QEMU"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
 
 msgid "hugepage size can't be zero"
 msgstr ""
@@ -28019,9 +27953,6 @@ msgstr "Miền không đang chạy"
 msgid "interface mac"
 msgstr "mac giao diện"
 
-msgid "interface mtu value is improper"
-msgstr "giá trị mtu của giao diện không thích hợp"
-
 msgid "interface name"
 msgstr "tên giao diện"
 
@@ -28342,16 +28273,6 @@ msgstr "con trỏ pool lưu trữ không hợp lệ trong %s"
 msgid "invalid capability_filters capability '%s'"
 msgstr "không có các khả năng thiết bị cho '%s'"
 
-msgid "invalid catchup limit"
-msgstr "giới hạn catchup không hợp lệ"
-
-#, fuzzy
-msgid "invalid catchup slew"
-msgstr "giới hạn catchup không hợp lệ"
-
-msgid "invalid catchup threshold"
-msgstr "ngưỡng catchup không hợp lệ"
-
 #, fuzzy, c-format
 msgid "invalid char in %s: %c"
 msgstr "tuỳ chọn bộ lập lịch không hợp lệ: %s"
@@ -28669,9 +28590,6 @@ msgstr "đường dẫn không hợp lệ, '%s' không phải là một giao di�
 msgid "invalid path: %s"
 msgstr "đường dẫn không hợp lý: %s"
 
-msgid "invalid pid"
-msgstr "pid không hợp lệ"
-
 msgid "invalid prefix, must be in range of 4-27"
 msgstr ""
 
@@ -28770,9 +28688,6 @@ msgid ""
 "invalid string value for '%s' host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
-
-msgid "invalid timer frequency"
-msgstr "tần số bộ đếm giờ không hợp lệ"
 
 #, fuzzy, c-format
 msgid "invalid tlsPort number: %s"
@@ -29851,6 +29766,12 @@ msgstr ""
 msgid "malformed/missing hotplugged in dimm memory info"
 msgstr ""
 
+msgid "malformed/missing memaddr in sgx-epc memory info"
+msgstr ""
+
+msgid "malformed/missing size in sgx-epc memory info"
+msgstr ""
+
 msgid "malformed/missing size in virtio memory info"
 msgstr ""
 
@@ -30009,6 +29930,10 @@ msgstr ""
 "qemu"
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
+msgstr ""
+
+#, c-format
+msgid "memory device address is not supported for model '%s'"
 msgstr ""
 
 msgid "memory device alias"
@@ -30505,6 +30430,9 @@ msgstr ""
 msgid "missing SEV platform data in QEMU capabilities cache"
 msgstr ""
 
+msgid "missing SGX platform data in QEMU capabilities cache"
+msgstr ""
+
 #, fuzzy
 msgid "missing TPM device backend"
 msgstr "thiếu kiểu thiết bị nhập"
@@ -30874,6 +30802,9 @@ msgstr "thiếu thông tin thiết bị gốc trong %s"
 msgid "missing network device feature name"
 msgstr "Tên thiết bị mạng quá dài"
 
+msgid "missing node name in QEMU capabilities cache"
+msgstr ""
+
 #, c-format
 msgid "missing number of available instances for mediated device type '%s'"
 msgstr ""
@@ -30893,11 +30824,16 @@ msgstr "thiếu thông tin hệ điều hành cho %s"
 msgid "missing or broken bitmap '%s' for disk '%s'"
 msgstr ""
 
-#, fuzzy
-msgid "missing or invalid CPU cache mode"
-msgstr "Thiếu tên đời gốc trong mẫu CPU %s"
-
 msgid "missing or invalid CPU model property type in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr ""
 
 msgid "missing or invalid cpuid-input-eax in CPU data"
@@ -30905,10 +30841,6 @@ msgstr ""
 
 msgid "missing or invalid features in CPU data"
 msgstr ""
-
-#, fuzzy
-msgid "missing or invalid vlan tag id attribute"
-msgstr "thiếu thuộc tính kiểu miền"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr ""
@@ -30922,6 +30854,10 @@ msgstr ""
 msgid ""
 "missing or malformed SEV reducedPhysBits information in QEMU capabilities "
 "cache"
+msgstr ""
+
+msgid ""
+"missing or malformed SGX platform section_size in QEMU capabilities cache"
 msgstr ""
 
 msgid "missing or malformed session-uuid element in migration data"
@@ -31045,6 +30981,9 @@ msgstr ""
 msgid "missing sheepdog vdi name"
 msgstr "thiếu tên bộ đếm giờ"
 
+msgid "missing size name in QEMU capabilities cache"
+msgstr ""
+
 msgid "missing socket address type in JSON backing volume definition"
 msgstr ""
 
@@ -31147,9 +31086,6 @@ msgstr "thiếu thông tin đích cho thiết bị %s"
 
 msgid "missing the host address for the iSCSI hostdev"
 msgstr ""
-
-msgid "missing timer name"
-msgstr "thiếu tên bộ đếm giờ"
 
 #, fuzzy
 msgid "missing tlsPort attribute in migration data"
@@ -32454,10 +32390,6 @@ msgid "nparams too large"
 msgstr "nparams quá lớn"
 
 #, fuzzy
-msgid "num-queues property isn't supported by this QEMU binary"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
-
-#, fuzzy
 msgid "numa parameters are not supported by vz driver"
 msgstr "Kỹ thuật SASL %s không được hỗ trợ bởi máy chủ"
 
@@ -32523,10 +32455,6 @@ msgstr ""
 
 msgid "nvcpus is zero"
 msgstr ""
-
-#, fuzzy
-msgid "nvdimm align property is not available with this QEMU binary"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
 
 #, fuzzy
 msgid "nvdimm isn't supported by this QEMU binary"
@@ -33853,6 +33781,24 @@ msgstr ""
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
 msgstr ""
 
+msgid "query-sgx-capabilities reply was missing 'flc' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'node' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'section-size' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx1' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx2' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'size' field"
+msgstr ""
+
 #, fuzzy
 msgid "query-status reply was missing running state"
 msgstr "phản hồi di trú thông tin thiếu trạng thái trả về"
@@ -34177,9 +34123,6 @@ msgstr "thông tin vcpu miền chi tiết"
 msgid "report error if CPUs are incompatible"
 msgstr "Các CPU không tương thích"
 
-msgid "report fd-based VM statistics by KVM"
-msgstr ""
-
 #, fuzzy
 msgid "report filesystem information"
 msgstr "thông tin bộ lọc mạng trong XML"
@@ -34187,6 +34130,9 @@ msgstr "thông tin bộ lọc mạng trong XML"
 #, fuzzy
 msgid "report hostname"
 msgstr "thất bại khi lấy tên máy chủ"
+
+msgid "report hypervisor-specific statistics"
+msgstr ""
 
 msgid "report interface information"
 msgstr ""
@@ -34772,10 +34718,6 @@ msgstr "kiểu thao tác %d không hỗ trợ"
 msgid "setting ACPI S4 not supported"
 msgstr "kiểu thao tác %d không hỗ trợ"
 
-#, fuzzy
-msgid "setting MTU is not supported with this QEMU binary"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
-
 #, fuzzy, c-format
 msgid "setting MTU on interface type %s is not supported yet"
 msgstr "Kiểu mạng %d không được hỗ trợ"
@@ -34829,6 +34771,20 @@ msgstr ""
 #, fuzzy
 msgid "sgio is only supported for scsi host device"
 msgstr "Phương tiện tháo được không hỗ trợ cho thiết bị %s"
+
+msgid "sgx epc isn't supported by this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %d is less than requested size %lld"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
+msgstr ""
+
+msgid "sgx-epc memory info data is missing 'memdev'"
+msgstr ""
 
 #, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
@@ -35448,10 +35404,6 @@ msgstr ""
 msgid "sysctl failed for '%s'"
 msgstr "không có kích thước cung cấp cho '%s'"
 
-#, fuzzy
-msgid "sysinfo must contain a type attribute"
-msgstr "thiếu thuộc tính kiểu miền"
-
 msgid "system call error"
 msgstr "lỗi gọi hệ thống"
 
@@ -35691,6 +35643,9 @@ msgstr "Tập tin đã xử lý:"
 msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
 msgstr ""
 
+msgid "the running swtpm does not support migration with shared storage"
+msgstr ""
+
 msgid "the signal number or name"
 msgstr ""
 
@@ -35775,7 +35730,7 @@ msgstr "tuyến ps2 không hỗ trợ thiết bị nhập %s"
 msgid "this QEMU does not support the 'genid' capability"
 msgstr ""
 
-msgid "this QEMU doesn't support memory discard"
+msgid "this QEMU version didn't provide SGX EPC NUMA info"
 msgstr ""
 
 #, fuzzy
@@ -35814,13 +35769,7 @@ msgstr ""
 msgid "this qemu does not support TLS transport for NBD"
 msgstr ""
 
-msgid "this qemu doesn't support the memory-backend-file object"
-msgstr ""
-
 msgid "this qemu doesn't support the memory-backend-memfd object"
-msgstr ""
-
-msgid "this qemu doesn't support the memory-backend-ram object"
 msgstr ""
 
 msgid "this qemu doesn't support the rng-builtin backend"
@@ -37718,10 +37667,6 @@ msgid "unknown suffix '%s'"
 msgstr "kiểu không rõ '%s'"
 
 #, fuzzy, c-format
-msgid "unknown sysinfo type '%s'"
-msgstr "kiểu không rõ '%s'"
-
-#, fuzzy, c-format
 msgid "unknown target model '%s' specified for character device"
 msgstr "kiểu đích phải được ghi rõ cho thiết bị %s"
 
@@ -37732,22 +37677,6 @@ msgstr "kiểu đích phải được ghi rõ cho thiết bị %s"
 #, fuzzy, c-format
 msgid "unknown teaming type '%s'"
 msgstr "kiểu chuyển hướng không rõ '%s'"
-
-#, c-format
-msgid "unknown timer mode '%s'"
-msgstr "chế độ bộ đếm giờ không rõ '%s'"
-
-#, c-format
-msgid "unknown timer name '%s'"
-msgstr "tên bộ đếm giờ không rõ '%s'"
-
-#, c-format
-msgid "unknown timer tickpolicy '%s'"
-msgstr "tickpolicy bộ đếm giờ không rõ '%s'"
-
-#, c-format
-msgid "unknown timer track '%s'"
-msgstr "theo dõi bộ đếm giờ không rõ '%s'"
 
 #, c-format
 msgid "unknown type '%s'"
@@ -38456,6 +38385,9 @@ msgstr "Tên mẫu chứa các ký tự không hợp lệ"
 msgid "value of managerid out of range"
 msgstr "giá trị của managerid vượt miền"
 
+msgid "value of the 'size' attribute of 'mtu' element must be at most 100000"
+msgstr ""
+
 msgid "value of typeidversion out of range"
 msgstr "giá trị của typeidversion vượt miền"
 
@@ -38787,10 +38719,6 @@ msgstr ""
 msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
 msgstr ""
 
-#, fuzzy
-msgid "virtio rx_queue_size option is not supported with this QEMU binary"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
-
 #, c-format
 msgid "virtio serial controller %u does not have port %u"
 msgstr ""
@@ -38811,19 +38739,11 @@ msgstr "thiết bị nối tiếp virtio có kiểu địa chỉ không hợp l�
 msgid "virtio serial port %u on controller %u is already occupied"
 msgstr ""
 
-#, fuzzy
-msgid "virtio tx_queue_size option is not supported with this QEMU binary"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
-
 msgid "virtio-mem device is missing <requested/>"
 msgstr ""
 
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr ""
-
-#, fuzzy
-msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
 
 #, c-format
 msgid ""
@@ -38922,7 +38842,7 @@ msgid "vlan misses the tag name"
 msgstr "vlan thiếu tên thẻ"
 
 #, c-format
-msgid "vlan tag id %lu too large (maximum 4095)"
+msgid "vlan tag id %u too large (maximum 4095)"
 msgstr ""
 
 #, c-format
@@ -39277,6 +39197,165 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <chuỗi>"
+
+#, fuzzy
+#~ msgid "CPU vendor value 0x%2lx already defined"
+#~ msgstr "Nhà cung cấp CPU %s đã được định"
+
+#, fuzzy
+#~ msgid "Invalid IPv4 prefix '%lu' in network '%s'"
+#~ msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
+
+#, fuzzy
+#~ msgid "Invalid IPv6 prefix '%lu' in network '%s'"
+#~ msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
+
+#, fuzzy
+#~ msgid "Invalid job flags"
+#~ msgstr "Cổng không rõ: %s"
+
+#~ msgid "Invalid parameter to virXPathLong()"
+#~ msgstr "Tham số không hợp lệ cho virXPathLong()"
+
+#~ msgid "Invalid parameter to virXPathLongLong()"
+#~ msgstr "Tham số không hợp lệ cho virXPathLongLong()"
+
+#~ msgid "Invalid parameter to virXPathNumber()"
+#~ msgstr "Tham số không hợp lệ cho virXPathNumber()"
+
+#~ msgid "Invalid parameter to virXPathString()"
+#~ msgstr "tham số không hợp lệ cho virXPathString()"
+
+#~ msgid "Invalid parameter to virXPathULong()"
+#~ msgstr "Tham số không hợp lệ cho virXPathULong()"
+
+#, fuzzy
+#~ msgid "Missing CPU vendor value"
+#~ msgstr "Thiếu tên tính năng CPU"
+
+#, fuzzy
+#~ msgid "Missing or invalid PVR mask in CPU model %s"
+#~ msgstr "Thiếu tên đời gốc trong mẫu CPU %s"
+
+#, fuzzy
+#~ msgid "Missing or invalid PVR value in CPU model %s"
+#~ msgstr "Thiếu tên đời gốc trong mẫu CPU %s"
+
+#, fuzzy
+#~ msgid ""
+#~ "NUMA without specified memory backing is not supported with this QEMU "
+#~ "binary"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "Per-node memory binding is not supported with this QEMU"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "Shared memory mapping is not supported with this QEMU"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'bios' element"
+#~ msgstr "XML không chứ thành phần 'cpu' mong đợi"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'chassis' element"
+#~ msgstr "XML không chứ thành phần 'cpu' mong đợi"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'sysinfo' element"
+#~ msgstr "XML không chứ thành phần 'cpu' mong đợi"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'system' element"
+#~ msgstr "XML không chứ thành phần 'cpu' mong đợi"
+
+#, fuzzy
+#~ msgid "cannot extract numatune nodes"
+#~ msgstr "không thể thực thi tập tin nhị phân %s"
+
+#, fuzzy
+#~ msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "huge pages per NUMA node are not supported with this QEMU"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#~ msgid "interface mtu value is improper"
+#~ msgstr "giá trị mtu của giao diện không thích hợp"
+
+#~ msgid "invalid catchup limit"
+#~ msgstr "giới hạn catchup không hợp lệ"
+
+#, fuzzy
+#~ msgid "invalid catchup slew"
+#~ msgstr "giới hạn catchup không hợp lệ"
+
+#~ msgid "invalid catchup threshold"
+#~ msgstr "ngưỡng catchup không hợp lệ"
+
+#~ msgid "invalid pid"
+#~ msgstr "pid không hợp lệ"
+
+#~ msgid "invalid timer frequency"
+#~ msgstr "tần số bộ đếm giờ không hợp lệ"
+
+#, fuzzy
+#~ msgid "missing or invalid CPU cache mode"
+#~ msgstr "Thiếu tên đời gốc trong mẫu CPU %s"
+
+#, fuzzy
+#~ msgid "missing or invalid vlan tag id attribute"
+#~ msgstr "thiếu thuộc tính kiểu miền"
+
+#~ msgid "missing timer name"
+#~ msgstr "thiếu tên bộ đếm giờ"
+
+#, fuzzy
+#~ msgid "num-queues property isn't supported by this QEMU binary"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "nvdimm align property is not available with this QEMU binary"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "setting MTU is not supported with this QEMU binary"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "sysinfo must contain a type attribute"
+#~ msgstr "thiếu thuộc tính kiểu miền"
+
+#, fuzzy
+#~ msgid "unknown sysinfo type '%s'"
+#~ msgstr "kiểu không rõ '%s'"
+
+#~ msgid "unknown timer mode '%s'"
+#~ msgstr "chế độ bộ đếm giờ không rõ '%s'"
+
+#~ msgid "unknown timer name '%s'"
+#~ msgstr "tên bộ đếm giờ không rõ '%s'"
+
+#~ msgid "unknown timer tickpolicy '%s'"
+#~ msgstr "tickpolicy bộ đếm giờ không rõ '%s'"
+
+#~ msgid "unknown timer track '%s'"
+#~ msgstr "theo dõi bộ đếm giờ không rõ '%s'"
+
+#, fuzzy
+#~ msgid "virtio rx_queue_size option is not supported with this QEMU binary"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "virtio tx_queue_size option is not supported with this QEMU binary"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
 
 #, fuzzy
 #~ msgid "%s 3d acceleration is not supported"

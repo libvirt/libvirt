@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-10-25 07:42+0000\n"
+"POT-Creation-Date: 2022-11-24 14:54+0000\n"
 "PO-Revision-Date: 2022-09-01 08:44+0000\n"
 "Last-Translator: Ludek Janda <ljanda@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -536,6 +536,12 @@ msgstr ""
 "す"
 
 #, c-format
+msgid ""
+"%s (on destination side) does not support the --migration option needed for "
+"migration with shared storage"
+msgstr ""
+
+#, c-format
 msgid "%s (out of %d)"
 msgstr "%s/%d"
 
@@ -657,6 +663,10 @@ msgstr "この QEMU バイナリーでは、%s はサポートされません"
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "%s の長さが最大値よりも大きいです: %d > %d"
+
+#, c-format
+msgid "%s memory device info is not handled yet"
+msgstr ""
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -815,14 +825,6 @@ msgstr ""
 "います"
 
 #, c-format
-msgid "%s: Invalid metric specified in route definition"
-msgstr "%s: ルート定義で無効なメトリックが指定されています"
-
-#, c-format
-msgid "%s: Invalid metric value, must be > 0 in route definition"
-msgstr "%s: 無効なメトリック値、ルート定義で > 0 である必要があります"
-
-#, c-format
 msgid "%s: Invalid netmask '%s' for address '%s' (both must be IPv4)"
 msgstr ""
 "%s: アドレス '%s' の無効なネットマスク '%s' (両方とも IPv4 である必要がありま"
@@ -839,10 +841,6 @@ msgid "%s: Invalid prefix %u specified in route definition, must be 0 - 32"
 msgstr ""
 "%s: 無効な接頭辞 %u がルート定義で指定されています、0 - 32 でなければなりませ"
 "ん"
-
-#, c-format
-msgid "%s: Invalid prefix specified in route definition"
-msgstr "%s: 無効な接頭辞がルート定義に指定されています"
 
 #, c-format
 msgid "%s: Missing required address attribute in route definition"
@@ -2419,8 +2417,8 @@ msgid "CPU vendor specified without CPU model"
 msgstr "CPU ベンダーが CPU モデルなしで指定されていません"
 
 #, c-format
-msgid "CPU vendor value 0x%2lx already defined"
-msgstr "CPU ベンダー値 0x%2lx がすでに定義されています"
+msgid "CPU vendor value 0x%2llx already defined"
+msgstr ""
 
 msgid "CPU vendors do not match"
 msgstr "CPU ベンダーが一致しません"
@@ -2922,16 +2920,16 @@ msgid "Cannot find 'iothread' : %u"
 msgstr "'iothread' を見つけることができません: %u"
 
 #, c-format
-msgid "Cannot find CPU model with PVR 0x%03lx"
-msgstr "PVR 0x%03lx の CPU モデルを見つけることができません"
+msgid "Cannot find CPU model with PVR 0x%03llx"
+msgstr ""
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "PVR 0x%08x の CPU モデルを見つけることができません"
 
 #, c-format
-msgid "Cannot find CPU vendor with vendor id 0x%02lx"
-msgstr "ベンダー ID 0x%02lx の CPU ベンダーを見つけることができません"
+msgid "Cannot find CPU vendor with vendor id 0x%02llx"
+msgstr ""
 
 #, c-format
 msgid "Cannot find boot device of requested type %s"
@@ -9620,10 +9618,6 @@ msgstr ""
 "ポートされます"
 
 #, c-format
-msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
-msgstr "VLAN <tag> 要素の \"nativeMode='%s'\" が無効です"
-
-#, c-format
 msgid "Invalid %s attribute 'vcpus' value '%s'"
 msgstr "無効な %s 属性 'vcpus' 値 '%s'"
 
@@ -9692,12 +9686,12 @@ msgstr ""
 "ネットワーク '%s' に対する静的ホスト定義において無効な IP アドレスがあります"
 
 #, c-format
-msgid "Invalid IPv4 prefix '%lu' in network '%s'"
-msgstr "無効な IPv4 プレフィックス '%lu' がネットワーク '%s' にあります"
+msgid "Invalid IPv4 prefix '%u' in network '%s'"
+msgstr ""
 
 #, c-format
-msgid "Invalid IPv6 prefix '%lu' in network '%s'"
-msgstr "無効な IPv6 プレフィックス '%lu' がネットワーク '%s' にあります"
+msgid "Invalid IPv6 prefix '%u' in network '%s'"
+msgstr ""
 
 msgid "Invalid NULL callback provided"
 msgstr "無効な NULL コールバックが提供されました"
@@ -9756,12 +9750,6 @@ msgid "Invalid STP state value %d received for '%s'. Must be -1, 0, or 1."
 msgstr ""
 "無効な STP 状態値 %d を '%s' 向けに受信しました、 -1, 0, または 1 のどれかで"
 "ある必要があります。"
-
-#, c-format
-msgid "Invalid ULong value specified for prefix in definition of network '%s'"
-msgstr ""
-"ネットワーク '%s' の定義において、プレフィックスに対して無効な ULong 値が指定"
-"されています"
 
 #, c-format
 msgid "Invalid URI path '%s', try '/system'"
@@ -10121,9 +10109,6 @@ msgstr "ファイル '%s' 内の無効な整数値 '%s'"
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "無効な IPv6 設定 '%s' がネットワーク '%s' にあります"
 
-msgid "Invalid job flags"
-msgstr "無効なジョブフラグ"
-
 #, c-format
 msgid "Invalid libxl cpuid key=value element: %s"
 msgstr "無効な libxl cpuid key=value 要素: %s"
@@ -10270,26 +10255,11 @@ msgstr "無効なパラメーター"
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "virXPathBoolean() への無効なパラメーター"
 
-msgid "Invalid parameter to virXPathLong()"
-msgstr "virXPathLong() への無効なパラメーター"
-
-msgid "Invalid parameter to virXPathLongLong()"
-msgstr "virXPathLongLong() への無効なパラメーター"
-
 msgid "Invalid parameter to virXPathNode()"
 msgstr "virXPathNode() への無効なパラメーター"
 
 msgid "Invalid parameter to virXPathNodeSet()"
 msgstr "virXPathNodeSet() への無効なパラメーター"
-
-msgid "Invalid parameter to virXPathNumber()"
-msgstr "virXPathNumber() への無効なパラメーター"
-
-msgid "Invalid parameter to virXPathString()"
-msgstr "virXPathString() への無効なパラメーター"
-
-msgid "Invalid parameter to virXPathULong()"
-msgstr "virXPathULong() への無効なパラメーター"
 
 msgid "Invalid parameter type passed to free"
 msgstr "free に渡された無効なパラメータータイプ"
@@ -11318,9 +11288,6 @@ msgstr "CPU 機能名がありません"
 msgid "Missing CPU model name"
 msgstr "CPU モデル名がありません"
 
-msgid "Missing CPU vendor value"
-msgstr "CPU ベンダー値がありません"
-
 msgid "Missing ID parameter for domain object"
 msgstr "ドメインオブジェクト向けの ID パラメーターがありません"
 
@@ -11364,6 +11331,12 @@ msgstr "VIR_CRED_AUTHNAME 認証情報タイプがありません"
 msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
 msgstr ""
 "VIR_CRED_PASSPHRASE または VIR_CRED_NOECHOPROMPT 認証情報タイプがありません"
+
+msgid "Missing XPath context"
+msgstr ""
+
+msgid "Missing XPath expression"
+msgstr ""
 
 msgid "Missing acpi table type"
 msgstr "acpi テーブルタイプがありません"
@@ -11600,14 +11573,6 @@ msgstr ""
 #, c-format
 msgid "Missing or invalid CPU frequency in %s"
 msgstr "%s の CPU 周波数がないか無効です"
-
-#, c-format
-msgid "Missing or invalid PVR mask in CPU model %s"
-msgstr "CPU モデル %s に PVR マスクがないか無効です"
-
-#, c-format
-msgid "Missing or invalid PVR value in CPU model %s"
-msgstr "CPU モデル %s に PVR 値が見つからないか無効です"
 
 #, c-format
 msgid ""
@@ -11990,12 +11955,6 @@ msgstr "NUMA トポロジーが NUMA セルなしで定義されています"
 
 msgid "NUMA tuning is not available in session mode"
 msgstr "NUMA チューニングはセッションモードでは使用できません"
-
-msgid ""
-"NUMA without specified memory backing is not supported with this QEMU binary"
-msgstr ""
-"この QEMU バイナリーでは、指定されたメモリーバッキングのない NUMA はサポート"
-"されません"
 
 #, c-format
 msgid "NVMe device %s already in use by driver %s domain %s"
@@ -13347,9 +13306,6 @@ msgstr ""
 msgid "Per-node binding is not compatible with automatic NUMA placement."
 msgstr "ノードごとのバインディングは、自動 NUMA 配置と互換性がありません。"
 
-msgid "Per-node memory binding is not supported with this QEMU"
-msgstr "この QEMU では、ノードごとのメモリーバインディングはサポートされません"
-
 msgid "Perf not supported on this platform"
 msgstr "このプラットフォームでは Perf はサポートされません"
 
@@ -14665,9 +14621,6 @@ msgstr "WWN の設定は LUN デバイスに対してサポートされません
 
 msgid "Setup time:"
 msgstr "セットアップ時間:"
-
-msgid "Shared memory mapping is not supported with this QEMU"
-msgstr "この QEMU では、共有メモリーマッピングはサポートされません"
 
 msgid "Shared memory:\n"
 msgstr "共有メモリー:\n"
@@ -16221,6 +16174,9 @@ msgstr ""
 
 msgid "The machine has no snapshot and it should have it"
 msgstr "マシンにはスナップショットがありませんが、必要です"
+
+msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
+msgstr ""
 
 msgid "The minimum lease time should be greater than 2 minutes"
 msgstr "最小リース時間は 2 分より長くする必要があります"
@@ -20175,20 +20131,8 @@ msgstr "XML ドキュメントがスキーマに対して検証できません�
 msgid "XML document failed to validate against schema: %s"
 msgstr "XML ドキュメントがスキーマに対して検証できませんでした: %s"
 
-msgid "XML does not contain expected 'bios' element"
-msgstr "XML には予期される 'bios' 要素が含まれていません"
-
-msgid "XML does not contain expected 'chassis' element"
-msgstr "XML には予期される 'chassis' 要素が含まれていません"
-
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML には予期される 'cpu' 要素が含まれていません"
-
-msgid "XML does not contain expected 'sysinfo' element"
-msgstr "XML には予期される 'sysinfo' 要素が含まれていません"
-
-msgid "XML does not contain expected 'system' element"
-msgstr "XML には予期される 'system' 要素が含まれていません"
 
 #, c-format
 msgid "XML error: %s"
@@ -21722,9 +21666,6 @@ msgstr "iothreadsched ノードを抽出できません"
 
 msgid "cannot extract memorytune nodes"
 msgstr "memorytune ノードを抽出できません"
-
-msgid "cannot extract numatune nodes"
-msgstr "numatune ノードを抽出できません"
 
 msgid "cannot extract resource nodes"
 msgstr "リソースノードを抽出できません"
@@ -24351,9 +24292,6 @@ msgstr "切断済み"
 msgid "discover potential storage pool sources"
 msgstr "潜在的なストレージプールソースの探索"
 
-msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
-msgstr "NUMA の CPU 範囲の分解はこの QEMU でサポートされません"
-
 #, c-format
 msgid "disk %s does not have an active block job"
 msgstr "ディスク %s にはアクティブなブロックジョブがありません"
@@ -26362,6 +26300,9 @@ msgstr "QEMU ケイパビリティーでの CPU ブロッカーの解析に失�
 msgid "failed to parse SCSI host '%s'"
 msgstr "SCSI ホスト '%s' の解析に失敗しました"
 
+msgid "failed to parse SGX sections in QEMU capabilities cache"
+msgstr ""
+
 msgid "failed to parse agent timeout"
 msgstr "エージェントタイムアウトの解析に失敗しました"
 
@@ -27676,6 +27617,10 @@ msgid "hotplug is not supported for hostdev subsys type '%s'"
 msgstr "hostdev subsys タイプ '%s' では、ホットプラグはサポートされていません"
 
 #, c-format
+msgid "hotplug is not supported for the %s device"
+msgstr ""
+
+#, c-format
 msgid "hotplug of interface type of %s is not implemented yet"
 msgstr "%s のインターフェイスタイプのホットプラグは、まだ実装されていません"
 
@@ -27692,9 +27637,6 @@ msgstr "http cookie は、HTTP(S) プロトコルでのみサポートされま�
 #, c-format
 msgid "hub type %s not supported"
 msgstr "ハブタイプ %s はサポートされません"
-
-msgid "huge pages per NUMA node are not supported with this QEMU"
-msgstr "この QEMU では、NUMA ノードあたりの Huge Page はサポートされません"
 
 msgid "hugepage size can't be zero"
 msgstr "hugepage のサイズをゼロにすることはできません"
@@ -28049,9 +27991,6 @@ msgstr "インターフェイスが実行されていません"
 msgid "interface mac"
 msgstr "インターフェイスの MAC"
 
-msgid "interface mtu value is improper"
-msgstr "インターフェイスの MTU 値が不適切です"
-
 msgid "interface name"
 msgstr "インターフェイス名"
 
@@ -28373,15 +28312,6 @@ msgstr "無効なバッキングプロトコル文字列 '%s'"
 msgid "invalid capability_filters capability '%s'"
 msgstr "無効な capability_filters 機能 '%s'"
 
-msgid "invalid catchup limit"
-msgstr "無効な catchup limit です"
-
-msgid "invalid catchup slew"
-msgstr "無効な catchup slew です"
-
-msgid "invalid catchup threshold"
-msgstr "無効な catchup threshold です"
-
 #, c-format
 msgid "invalid char in %s: %c"
 msgstr "%s の無効な文字: %c"
@@ -28699,9 +28629,6 @@ msgstr "無効なパス、'%s' は不明なインターフェイスです"
 msgid "invalid path: %s"
 msgstr "無効なパスです: %s"
 
-msgid "invalid pid"
-msgstr "無効な pid"
-
 msgid "invalid prefix, must be in range of 4-27"
 msgstr "無効な接頭辞、4-27 の範囲でなければなりません"
 
@@ -28798,9 +28725,6 @@ msgid ""
 msgstr ""
 "QEMU ケイパビリティーキャッシュの '%s' ホスト CPU モデル プロパティーに無効な"
 "文字列値があります"
-
-msgid "invalid timer frequency"
-msgstr "無効なタイマー frequency です"
 
 #, c-format
 msgid "invalid tlsPort number: %s"
@@ -29822,6 +29746,12 @@ msgstr "dimm メモリー情報の不正な形式/欠落した hotpluggable"
 msgid "malformed/missing hotplugged in dimm memory info"
 msgstr "dimm メモリー情報の不正な形式/欠落したhotplugged"
 
+msgid "malformed/missing memaddr in sgx-epc memory info"
+msgstr ""
+
+msgid "malformed/missing size in sgx-epc memory info"
+msgstr ""
+
 msgid "malformed/missing size in virtio memory info"
 msgstr "virtio メモリー情報の不正な形式/欠落したサイズ"
 
@@ -29973,6 +29903,10 @@ msgstr ""
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "memory 属性: [file=]name[,snapshot=type]"
+
+#, c-format
+msgid "memory device address is not supported for model '%s'"
+msgstr ""
 
 msgid "memory device alias"
 msgstr "メモリーデバイスのエイリアス"
@@ -30477,6 +30411,9 @@ msgid "missing SEV platform data in QEMU capabilities cache"
 msgstr ""
 "QEMU ケイパビリティーキャッシュに SEV プラットフォームデータがありません"
 
+msgid "missing SGX platform data in QEMU capabilities cache"
+msgstr ""
+
 msgid "missing TPM device backend"
 msgstr "TPM デバイスバックエンドがありません"
 
@@ -30801,6 +30738,9 @@ msgstr "%s に名前の情報がありません"
 msgid "missing network device feature name"
 msgstr "ネットワークデバイスの機能名がありません"
 
+msgid "missing node name in QEMU capabilities cache"
+msgstr ""
+
 #, c-format
 msgid "missing number of available instances for mediated device type '%s'"
 msgstr "仲介デバイスタイプ '%s' の使用可能なインスタンスの数がありません"
@@ -30819,22 +30759,25 @@ msgstr "%s のオペレーティングシステム情報がありません"
 msgid "missing or broken bitmap '%s' for disk '%s'"
 msgstr "ディスク '%s' のビットマップ '%s' がないか破損しています"
 
-msgid "missing or invalid CPU cache mode"
-msgstr "CPU キャッシュモードがないか無効です"
-
 msgid "missing or invalid CPU model property type in QEMU capabilities cache"
 msgstr ""
 "QEMU ケイパビリティーキャッシュに CPU モデルプロパティータイプがないか無効で"
 "す"
+
+msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
+msgstr ""
 
 msgid "missing or invalid cpuid-input-eax in CPU data"
 msgstr "CPU データに cpuid-input-eax がありません、または無効です"
 
 msgid "missing or invalid features in CPU data"
 msgstr "CPU データに features がありません、または無効です"
-
-msgid "missing or invalid vlan tag id attribute"
-msgstr "VLAN タグ ID 属性がありません、または無効です"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr ""
@@ -30855,6 +30798,10 @@ msgid ""
 msgstr ""
 "QEMU ケイパビリティーキャッシュに SEV reducedPhysBits 情報がないか不正な形式"
 "となっています"
+
+msgid ""
+"missing or malformed SGX platform section_size in QEMU capabilities cache"
+msgstr ""
 
 msgid "missing or malformed session-uuid element in migration data"
 msgstr ""
@@ -30975,6 +30922,9 @@ msgstr "JSON バッキングボリューム定義にsheepdog URI がありませ
 msgid "missing sheepdog vdi name"
 msgstr "sheepdog vdi 名がありません"
 
+msgid "missing size name in QEMU capabilities cache"
+msgstr ""
+
 msgid "missing socket address type in JSON backing volume definition"
 msgstr "JSON バッキングボリューム定義にソケットアドレスタイプがありません"
 
@@ -31075,9 +31025,6 @@ msgstr "デバイス %s のターゲット情報がありません"
 
 msgid "missing the host address for the iSCSI hostdev"
 msgstr "iSCSI hostdev のホストアドレスがありません"
-
-msgid "missing timer name"
-msgstr "タイマー名がありません"
 
 msgid "missing tlsPort attribute in migration data"
 msgstr "マイグレーションのデータに tlsPort 属性がありません"
@@ -32374,9 +32321,6 @@ msgstr "%s のパラメーター数は %d と一致する必要があります"
 msgid "nparams too large"
 msgstr "nparams が大きすぎます"
 
-msgid "num-queues property isn't supported by this QEMU binary"
-msgstr "この QEMU バイナリーでは、num-queues プロパティーはサポートされません"
-
 msgid "numa parameters are not supported by vz driver"
 msgstr "numa パラメーターは vz ドライバーではサポートされません"
 
@@ -32438,9 +32382,6 @@ msgstr "数値のオーバーフロー: %s"
 
 msgid "nvcpus is zero"
 msgstr "nvcpus が 0 です"
-
-msgid "nvdimm align property is not available with this QEMU binary"
-msgstr "nvdimm align プロパティーは、この QEMU バイナリーでは使用できません"
 
 msgid "nvdimm isn't supported by this QEMU binary"
 msgstr "nvdimm はこの QEMU バイナリーではサポートされていません"
@@ -33766,6 +33707,24 @@ msgstr ""
 "query-sev-capabilities の応答に 'reduced-phys-bits' フィールドがありませんで"
 "した"
 
+msgid "query-sgx-capabilities reply was missing 'flc' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'node' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'section-size' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx1' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx2' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'size' field"
+msgstr ""
+
 msgid "query-status reply was missing running state"
 msgstr "query-status 応答に running state がありませんでした"
 
@@ -34082,14 +34041,14 @@ msgstr "ドメイン仮想 cpu 情報を報告します"
 msgid "report error if CPUs are incompatible"
 msgstr "CPU に互換性がない場合はエラーを報告します"
 
-msgid "report fd-based VM statistics by KVM"
-msgstr ""
-
 msgid "report filesystem information"
 msgstr "レポートファイルシステム情報"
 
 msgid "report hostname"
 msgstr "ホスト名を報告します"
+
+msgid "report hypervisor-specific statistics"
+msgstr ""
 
 msgid "report interface information"
 msgstr "インターフェイス情報を報告します"
@@ -34654,9 +34613,6 @@ msgstr "ACPI S3 の設定はサポートされません"
 msgid "setting ACPI S4 not supported"
 msgstr "ACPI S4 の設定はサポートされません"
 
-msgid "setting MTU is not supported with this QEMU binary"
-msgstr "この QEMU バイナリーでは、MTU の設定はサポートされません"
-
 #, c-format
 msgid "setting MTU on interface type %s is not supported yet"
 msgstr ""
@@ -34719,6 +34675,20 @@ msgstr "sgio は device='lun' とのみ使用できます"
 
 msgid "sgio is only supported for scsi host device"
 msgstr "sgio は scsi ホストデバイスでのみサポートされます"
+
+msgid "sgx epc isn't supported by this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %d is less than requested size %lld"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
+msgstr ""
+
+msgid "sgx-epc memory info data is missing 'memdev'"
+msgstr ""
 
 #, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
@@ -35345,9 +35315,6 @@ msgstr "sysconf(_SC_OPEN_MAX) に失敗しました"
 msgid "sysctl failed for '%s'"
 msgstr "sysctl は '%s' のために失敗しました"
 
-msgid "sysinfo must contain a type attribute"
-msgstr "sysinfo は type 属性を含まなければいけません"
-
 msgid "system call error"
 msgstr "システムコールエラー"
 
@@ -35589,6 +35556,9 @@ msgstr "プロセス ID"
 msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
 msgstr "結果は REMOTE_NODE_MAX_CELLS に適合しません"
 
+msgid "the running swtpm does not support migration with shared storage"
+msgstr ""
+
 msgid "the signal number or name"
 msgstr "シグナルの番号または名前"
 
@@ -35685,8 +35655,8 @@ msgstr "この QEMU は、'vhost-user' ビデオデバイスをサポートし�
 msgid "this QEMU does not support the 'genid' capability"
 msgstr "この QEMU は 'genid' ケイパビリティーをサポートしません"
 
-msgid "this QEMU doesn't support memory discard"
-msgstr "この QEMU はメモリー破棄をサポートしません"
+msgid "this QEMU version didn't provide SGX EPC NUMA info"
+msgstr ""
 
 msgid "this disk doesn't support update"
 msgstr "このディスクは更新をサポートしません"
@@ -35724,14 +35694,8 @@ msgstr "このプラットフォームは dlopen がありません"
 msgid "this qemu does not support TLS transport for NBD"
 msgstr "この qemu は NBD の TLS トランスポートをサポートしません"
 
-msgid "this qemu doesn't support the memory-backend-file object"
-msgstr "この qemu は memory-backend-file オブジェクトをサポートしません"
-
 msgid "this qemu doesn't support the memory-backend-memfd object"
 msgstr "この qemu は memory-backend-memfd オブジェクトをサポートしません"
-
-msgid "this qemu doesn't support the memory-backend-ram object"
-msgstr "この qemu は memory-backend-ram オブジェクトをサポートしません"
 
 msgid "this qemu doesn't support the rng-builtin backend"
 msgstr "この qemu は rng-builtin バックエンドをサポートしません"
@@ -37651,10 +37615,6 @@ msgid "unknown suffix '%s'"
 msgstr "不明な接尾辞 '%s'"
 
 #, c-format
-msgid "unknown sysinfo type '%s'"
-msgstr "不明な sysinfo type '%s'"
-
-#, c-format
 msgid "unknown target model '%s' specified for character device"
 msgstr "キャラクターデバイスに指定された不明なターゲットモデル '%s'"
 
@@ -37665,22 +37625,6 @@ msgstr "キャラクターデバイスに対して指定されている不明な
 #, c-format
 msgid "unknown teaming type '%s'"
 msgstr "不明なチーミングタイプ '%s'"
-
-#, c-format
-msgid "unknown timer mode '%s'"
-msgstr "不明なタイマーモード '%s'"
-
-#, c-format
-msgid "unknown timer name '%s'"
-msgstr "不明なタイマー名 '%s'"
-
-#, c-format
-msgid "unknown timer tickpolicy '%s'"
-msgstr "不明なタイマー tickpolicy '%s'"
-
-#, c-format
-msgid "unknown timer track '%s'"
-msgstr "不明な track '%s'"
 
 #, c-format
 msgid "unknown type '%s'"
@@ -38386,6 +38330,9 @@ msgstr "cookie '%s' の値には無効な文字が含まれています"
 msgid "value of managerid out of range"
 msgstr "managerid の値は範囲外にあります"
 
+msgid "value of the 'size' attribute of 'mtu' element must be at most 100000"
+msgstr ""
+
 msgid "value of typeidversion out of range"
 msgstr "typeidversion の値は範囲外にあります"
 
@@ -38724,10 +38671,6 @@ msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
 msgstr ""
 "virtio rx_queue_size オプション %d は tx_queue_size %d と同じではありません"
 
-msgid "virtio rx_queue_size option is not supported with this QEMU binary"
-msgstr ""
-"この QEMU バイナリーでは、virtio rx_queue_size オプションはサポートされません"
-
 #, c-format
 msgid "virtio serial controller %u does not have port %u"
 msgstr "virtio シリアルコントローラー %u にはポート %u がありません"
@@ -38751,20 +38694,11 @@ msgid "virtio serial port %u on controller %u is already occupied"
 msgstr ""
 "コントローラー %u 上の virtio シリアルポート %u はすでに占有されています"
 
-msgid "virtio tx_queue_size option is not supported with this QEMU binary"
-msgstr ""
-"この QEMU バイナリーでは、virtio tx_queue_size オプションはサポートされません"
-
 msgid "virtio-mem device is missing <requested/>"
 msgstr "virtio-mem デバイスに <requested/> がありません"
 
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "この QEMU バイナリーでは、virtio-mem はサポートされません"
-
-msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
-msgstr ""
-"この QEMU バイナリーでは、virtio-net フェイルオーバー (チーミング) はサポート"
-"されません"
 
 #, c-format
 msgid ""
@@ -38866,8 +38800,8 @@ msgid "vlan misses the tag name"
 msgstr "vlan にタグ名がありません"
 
 #, c-format
-msgid "vlan tag id %lu too large (maximum 4095)"
-msgstr "VLAN タグ ID %lu が大きすぎます (最大 4095)"
+msgid "vlan tag id %u too large (maximum 4095)"
+msgstr ""
 
 #, c-format
 msgid "vlan tag set for interface %s but caller requested it not be set"
@@ -39234,6 +39168,183 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "%s: Invalid metric specified in route definition"
+#~ msgstr "%s: ルート定義で無効なメトリックが指定されています"
+
+#~ msgid "%s: Invalid metric value, must be > 0 in route definition"
+#~ msgstr "%s: 無効なメトリック値、ルート定義で > 0 である必要があります"
+
+#~ msgid "%s: Invalid prefix specified in route definition"
+#~ msgstr "%s: 無効な接頭辞がルート定義に指定されています"
+
+#~ msgid "CPU vendor value 0x%2lx already defined"
+#~ msgstr "CPU ベンダー値 0x%2lx がすでに定義されています"
+
+#~ msgid "Cannot find CPU model with PVR 0x%03lx"
+#~ msgstr "PVR 0x%03lx の CPU モデルを見つけることができません"
+
+#~ msgid "Cannot find CPU vendor with vendor id 0x%02lx"
+#~ msgstr "ベンダー ID 0x%02lx の CPU ベンダーを見つけることができません"
+
+#~ msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
+#~ msgstr "VLAN <tag> 要素の \"nativeMode='%s'\" が無効です"
+
+#~ msgid "Invalid IPv4 prefix '%lu' in network '%s'"
+#~ msgstr "無効な IPv4 プレフィックス '%lu' がネットワーク '%s' にあります"
+
+#~ msgid "Invalid IPv6 prefix '%lu' in network '%s'"
+#~ msgstr "無効な IPv6 プレフィックス '%lu' がネットワーク '%s' にあります"
+
+#~ msgid ""
+#~ "Invalid ULong value specified for prefix in definition of network '%s'"
+#~ msgstr ""
+#~ "ネットワーク '%s' の定義において、プレフィックスに対して無効な ULong 値が"
+#~ "指定されています"
+
+#~ msgid "Invalid job flags"
+#~ msgstr "無効なジョブフラグ"
+
+#~ msgid "Invalid parameter to virXPathLong()"
+#~ msgstr "virXPathLong() への無効なパラメーター"
+
+#~ msgid "Invalid parameter to virXPathLongLong()"
+#~ msgstr "virXPathLongLong() への無効なパラメーター"
+
+#~ msgid "Invalid parameter to virXPathNumber()"
+#~ msgstr "virXPathNumber() への無効なパラメーター"
+
+#~ msgid "Invalid parameter to virXPathString()"
+#~ msgstr "virXPathString() への無効なパラメーター"
+
+#~ msgid "Invalid parameter to virXPathULong()"
+#~ msgstr "virXPathULong() への無効なパラメーター"
+
+#~ msgid "Missing CPU vendor value"
+#~ msgstr "CPU ベンダー値がありません"
+
+#~ msgid "Missing or invalid PVR mask in CPU model %s"
+#~ msgstr "CPU モデル %s に PVR マスクがないか無効です"
+
+#~ msgid "Missing or invalid PVR value in CPU model %s"
+#~ msgstr "CPU モデル %s に PVR 値が見つからないか無効です"
+
+#~ msgid ""
+#~ "NUMA without specified memory backing is not supported with this QEMU "
+#~ "binary"
+#~ msgstr ""
+#~ "この QEMU バイナリーでは、指定されたメモリーバッキングのない NUMA はサポー"
+#~ "トされません"
+
+#~ msgid "Per-node memory binding is not supported with this QEMU"
+#~ msgstr ""
+#~ "この QEMU では、ノードごとのメモリーバインディングはサポートされません"
+
+#~ msgid "Shared memory mapping is not supported with this QEMU"
+#~ msgstr "この QEMU では、共有メモリーマッピングはサポートされません"
+
+#~ msgid "XML does not contain expected 'bios' element"
+#~ msgstr "XML には予期される 'bios' 要素が含まれていません"
+
+#~ msgid "XML does not contain expected 'chassis' element"
+#~ msgstr "XML には予期される 'chassis' 要素が含まれていません"
+
+#~ msgid "XML does not contain expected 'sysinfo' element"
+#~ msgstr "XML には予期される 'sysinfo' 要素が含まれていません"
+
+#~ msgid "XML does not contain expected 'system' element"
+#~ msgstr "XML には予期される 'system' 要素が含まれていません"
+
+#~ msgid "cannot extract numatune nodes"
+#~ msgstr "numatune ノードを抽出できません"
+
+#~ msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
+#~ msgstr "NUMA の CPU 範囲の分解はこの QEMU でサポートされません"
+
+#~ msgid "huge pages per NUMA node are not supported with this QEMU"
+#~ msgstr "この QEMU では、NUMA ノードあたりの Huge Page はサポートされません"
+
+#~ msgid "interface mtu value is improper"
+#~ msgstr "インターフェイスの MTU 値が不適切です"
+
+#~ msgid "invalid catchup limit"
+#~ msgstr "無効な catchup limit です"
+
+#~ msgid "invalid catchup slew"
+#~ msgstr "無効な catchup slew です"
+
+#~ msgid "invalid catchup threshold"
+#~ msgstr "無効な catchup threshold です"
+
+#~ msgid "invalid pid"
+#~ msgstr "無効な pid"
+
+#~ msgid "invalid timer frequency"
+#~ msgstr "無効なタイマー frequency です"
+
+#~ msgid "missing or invalid CPU cache mode"
+#~ msgstr "CPU キャッシュモードがないか無効です"
+
+#~ msgid "missing or invalid vlan tag id attribute"
+#~ msgstr "VLAN タグ ID 属性がありません、または無効です"
+
+#~ msgid "missing timer name"
+#~ msgstr "タイマー名がありません"
+
+#~ msgid "num-queues property isn't supported by this QEMU binary"
+#~ msgstr ""
+#~ "この QEMU バイナリーでは、num-queues プロパティーはサポートされません"
+
+#~ msgid "nvdimm align property is not available with this QEMU binary"
+#~ msgstr "nvdimm align プロパティーは、この QEMU バイナリーでは使用できません"
+
+#~ msgid "setting MTU is not supported with this QEMU binary"
+#~ msgstr "この QEMU バイナリーでは、MTU の設定はサポートされません"
+
+#~ msgid "sysinfo must contain a type attribute"
+#~ msgstr "sysinfo は type 属性を含まなければいけません"
+
+#~ msgid "this QEMU doesn't support memory discard"
+#~ msgstr "この QEMU はメモリー破棄をサポートしません"
+
+#~ msgid "this qemu doesn't support the memory-backend-file object"
+#~ msgstr "この qemu は memory-backend-file オブジェクトをサポートしません"
+
+#~ msgid "this qemu doesn't support the memory-backend-ram object"
+#~ msgstr "この qemu は memory-backend-ram オブジェクトをサポートしません"
+
+#~ msgid "unknown sysinfo type '%s'"
+#~ msgstr "不明な sysinfo type '%s'"
+
+#~ msgid "unknown timer mode '%s'"
+#~ msgstr "不明なタイマーモード '%s'"
+
+#~ msgid "unknown timer name '%s'"
+#~ msgstr "不明なタイマー名 '%s'"
+
+#~ msgid "unknown timer tickpolicy '%s'"
+#~ msgstr "不明なタイマー tickpolicy '%s'"
+
+#~ msgid "unknown timer track '%s'"
+#~ msgstr "不明な track '%s'"
+
+#~ msgid "virtio rx_queue_size option is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "この QEMU バイナリーでは、virtio rx_queue_size オプションはサポートされま"
+#~ "せん"
+
+#~ msgid "virtio tx_queue_size option is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "この QEMU バイナリーでは、virtio tx_queue_size オプションはサポートされま"
+#~ "せん"
+
+#~ msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "この QEMU バイナリーでは、virtio-net フェイルオーバー (チーミング) はサ"
+#~ "ポートされません"
+
+#~ msgid "vlan tag id %lu too large (maximum 4095)"
+#~ msgstr "VLAN タグ ID %lu が大きすぎます (最大 4095)"
 
 #~ msgid "%s 3d acceleration is not supported"
 #~ msgstr "%s 3D アクセラレーションはサポートされていません"

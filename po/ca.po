@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-10-25 07:42+0000\n"
+"POT-Creation-Date: 2022-11-24 14:54+0000\n"
 "PO-Revision-Date: 2018-02-24 11:19+0000\n"
 "Last-Translator: Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>\n"
 "Language-Team: Catalan (http://www.transifex.com/projects/p/libvirt/language/"
@@ -353,6 +353,12 @@ msgid "%s %s '%s' has unsupported type '%s', expecting '%s' or '%s'"
 msgstr ""
 
 #, c-format
+msgid ""
+"%s (on destination side) does not support the --migration option needed for "
+"migration with shared storage"
+msgstr ""
+
+#, c-format
 msgid "%s (out of %d)"
 msgstr ""
 
@@ -466,6 +472,10 @@ msgstr ""
 
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
+msgstr ""
+
+#, c-format
+msgid "%s memory device info is not handled yet"
 msgstr ""
 
 #, c-format
@@ -611,14 +621,6 @@ msgid "%s: IPv4 family specified for non-IPv4 gateway '%s' in route definition"
 msgstr ""
 
 #, c-format
-msgid "%s: Invalid metric specified in route definition"
-msgstr ""
-
-#, c-format
-msgid "%s: Invalid metric value, must be > 0 in route definition"
-msgstr ""
-
-#, c-format
 msgid "%s: Invalid netmask '%s' for address '%s' (both must be IPv4)"
 msgstr ""
 
@@ -628,10 +630,6 @@ msgstr ""
 
 #, c-format
 msgid "%s: Invalid prefix %u specified in route definition, must be 0 - 32"
-msgstr ""
-
-#, c-format
-msgid "%s: Invalid prefix specified in route definition"
 msgstr ""
 
 #, c-format
@@ -2118,7 +2116,7 @@ msgid "CPU vendor specified without CPU model"
 msgstr ""
 
 #, c-format
-msgid "CPU vendor value 0x%2lx already defined"
+msgid "CPU vendor value 0x%2llx already defined"
 msgstr ""
 
 msgid "CPU vendors do not match"
@@ -2603,7 +2601,7 @@ msgid "Cannot find 'iothread' : %u"
 msgstr ""
 
 #, c-format
-msgid "Cannot find CPU model with PVR 0x%03lx"
+msgid "Cannot find CPU model with PVR 0x%03llx"
 msgstr ""
 
 #, c-format
@@ -2611,7 +2609,7 @@ msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr ""
 
 #, c-format
-msgid "Cannot find CPU vendor with vendor id 0x%02lx"
+msgid "Cannot find CPU vendor with vendor id 0x%02llx"
 msgstr ""
 
 #, c-format
@@ -9243,10 +9241,6 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
-msgstr ""
-
-#, c-format
 msgid "Invalid %s attribute 'vcpus' value '%s'"
 msgstr ""
 
@@ -9312,11 +9306,11 @@ msgid "Invalid IP address in static host definition for network '%s'"
 msgstr ""
 
 #, c-format
-msgid "Invalid IPv4 prefix '%lu' in network '%s'"
+msgid "Invalid IPv4 prefix '%u' in network '%s'"
 msgstr ""
 
 #, c-format
-msgid "Invalid IPv6 prefix '%lu' in network '%s'"
+msgid "Invalid IPv6 prefix '%u' in network '%s'"
 msgstr ""
 
 msgid "Invalid NULL callback provided"
@@ -9369,10 +9363,6 @@ msgstr ""
 
 #, c-format
 msgid "Invalid STP state value %d received for '%s'. Must be -1, 0, or 1."
-msgstr ""
-
-#, c-format
-msgid "Invalid ULong value specified for prefix in definition of network '%s'"
 msgstr ""
 
 #, c-format
@@ -9712,9 +9702,6 @@ msgstr ""
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr ""
 
-msgid "Invalid job flags"
-msgstr ""
-
 #, c-format
 msgid "Invalid libxl cpuid key=value element: %s"
 msgstr ""
@@ -9860,25 +9847,10 @@ msgstr ""
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr ""
 
-msgid "Invalid parameter to virXPathLong()"
-msgstr ""
-
-msgid "Invalid parameter to virXPathLongLong()"
-msgstr ""
-
 msgid "Invalid parameter to virXPathNode()"
 msgstr ""
 
 msgid "Invalid parameter to virXPathNodeSet()"
-msgstr ""
-
-msgid "Invalid parameter to virXPathNumber()"
-msgstr ""
-
-msgid "Invalid parameter to virXPathString()"
-msgstr ""
-
-msgid "Invalid parameter to virXPathULong()"
 msgstr ""
 
 msgid "Invalid parameter type passed to free"
@@ -10878,9 +10850,6 @@ msgstr ""
 msgid "Missing CPU model name"
 msgstr ""
 
-msgid "Missing CPU vendor value"
-msgstr ""
-
 #, fuzzy
 msgid "Missing ID parameter for domain object"
 msgstr "falta la informació de la destinació per al dispositiu"
@@ -10923,6 +10892,12 @@ msgid "Missing VIR_CRED_AUTHNAME credential type"
 msgstr ""
 
 msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
+msgstr ""
+
+msgid "Missing XPath context"
+msgstr ""
+
+msgid "Missing XPath expression"
 msgstr ""
 
 #, fuzzy
@@ -11166,14 +11141,6 @@ msgstr ""
 
 #, c-format
 msgid "Missing or invalid CPU frequency in %s"
-msgstr ""
-
-#, c-format
-msgid "Missing or invalid PVR mask in CPU model %s"
-msgstr ""
-
-#, c-format
-msgid "Missing or invalid PVR value in CPU model %s"
 msgstr ""
 
 #, c-format
@@ -11547,10 +11514,6 @@ msgid "NUMA topology defined without NUMA cells"
 msgstr ""
 
 msgid "NUMA tuning is not available in session mode"
-msgstr ""
-
-msgid ""
-"NUMA without specified memory backing is not supported with this QEMU binary"
 msgstr ""
 
 #, c-format
@@ -12879,9 +12842,6 @@ msgstr ""
 msgid "Per-node binding is not compatible with automatic NUMA placement."
 msgstr ""
 
-msgid "Per-node memory binding is not supported with this QEMU"
-msgstr ""
-
 msgid "Perf not supported on this platform"
 msgstr ""
 
@@ -14134,9 +14094,6 @@ msgstr "el bus xen no disposa del dispositiu d'entrada %s"
 #, fuzzy
 msgid "Setup time:"
 msgstr "Temps de CPU:"
-
-msgid "Shared memory mapping is not supported with this QEMU"
-msgstr ""
 
 #, fuzzy
 msgid "Shared memory:\n"
@@ -15640,6 +15597,9 @@ msgid ""
 msgstr ""
 
 msgid "The machine has no snapshot and it should have it"
+msgstr ""
+
+msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
 msgstr ""
 
 msgid "The minimum lease time should be greater than 2 minutes"
@@ -19654,19 +19614,7 @@ msgstr ""
 msgid "XML document failed to validate against schema: %s"
 msgstr ""
 
-msgid "XML does not contain expected 'bios' element"
-msgstr ""
-
-msgid "XML does not contain expected 'chassis' element"
-msgstr ""
-
 msgid "XML does not contain expected 'cpu' element"
-msgstr ""
-
-msgid "XML does not contain expected 'sysinfo' element"
-msgstr ""
-
-msgid "XML does not contain expected 'system' element"
 msgstr ""
 
 #, fuzzy, c-format
@@ -21150,9 +21098,6 @@ msgid "cannot extract iothreadsched nodes"
 msgstr ""
 
 msgid "cannot extract memorytune nodes"
-msgstr ""
-
-msgid "cannot extract numatune nodes"
 msgstr ""
 
 msgid "cannot extract resource nodes"
@@ -23773,9 +23718,6 @@ msgstr ""
 msgid "discover potential storage pool sources"
 msgstr ""
 
-msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
-msgstr ""
-
 #, c-format
 msgid "disk %s does not have an active block job"
 msgstr ""
@@ -25812,6 +25754,9 @@ msgstr "no s'ha pogut obtenir les capacitats"
 msgid "failed to parse SCSI host '%s'"
 msgstr "No s'ha pogut analitzar el mode '%s'"
 
+msgid "failed to parse SGX sections in QEMU capabilities cache"
+msgstr ""
+
 #, fuzzy
 msgid "failed to parse agent timeout"
 msgstr "No s'ha pogut analitzar la sortida de vzlist"
@@ -27138,6 +27083,10 @@ msgid "hotplug is not supported for hostdev subsys type '%s'"
 msgstr ""
 
 #, c-format
+msgid "hotplug is not supported for the %s device"
+msgstr ""
+
+#, c-format
 msgid "hotplug of interface type of %s is not implemented yet"
 msgstr ""
 
@@ -27155,9 +27104,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "hub type %s not supported"
 msgstr "El tipus de xarxa %d no està suportat"
-
-msgid "huge pages per NUMA node are not supported with this QEMU"
-msgstr ""
 
 msgid "hugepage size can't be zero"
 msgstr ""
@@ -27492,9 +27438,6 @@ msgstr "el domini no s'està executant"
 msgid "interface mac"
 msgstr ""
 
-msgid "interface mtu value is improper"
-msgstr ""
-
 #, fuzzy
 msgid "interface name"
 msgstr "nom de xarxa"
@@ -27809,15 +27752,6 @@ msgstr "punter de domini invàlid a %s"
 msgid "invalid capability_filters capability '%s'"
 msgstr ""
 
-msgid "invalid catchup limit"
-msgstr ""
-
-msgid "invalid catchup slew"
-msgstr ""
-
-msgid "invalid catchup threshold"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "invalid char in %s: %c"
 msgstr "punter de domini invàlid a %s"
@@ -28124,9 +28058,6 @@ msgstr ""
 msgid "invalid path: %s"
 msgstr ""
 
-msgid "invalid pid"
-msgstr ""
-
 msgid "invalid prefix, must be in range of 4-27"
 msgstr ""
 
@@ -28223,9 +28154,6 @@ msgstr "punter de xarxa invàlid a %s"
 msgid ""
 "invalid string value for '%s' host CPU model property in QEMU capabilities "
 "cache"
-msgstr ""
-
-msgid "invalid timer frequency"
 msgstr ""
 
 #, fuzzy, c-format
@@ -29277,6 +29205,12 @@ msgstr ""
 msgid "malformed/missing hotplugged in dimm memory info"
 msgstr ""
 
+msgid "malformed/missing memaddr in sgx-epc memory info"
+msgstr ""
+
+msgid "malformed/missing size in sgx-epc memory info"
+msgstr ""
+
 msgid "malformed/missing size in virtio memory info"
 msgstr ""
 
@@ -29430,6 +29364,10 @@ msgid "memory access mode '%s' not supported without guest numa node"
 msgstr ""
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
+msgstr ""
+
+#, c-format
+msgid "memory device address is not supported for model '%s'"
 msgstr ""
 
 msgid "memory device alias"
@@ -29913,6 +29851,9 @@ msgstr ""
 msgid "missing SEV platform data in QEMU capabilities cache"
 msgstr ""
 
+msgid "missing SGX platform data in QEMU capabilities cache"
+msgstr ""
+
 #, fuzzy
 msgid "missing TPM device backend"
 msgstr "falta el tipus de dispositiu d'entrada"
@@ -30272,6 +30213,9 @@ msgstr "falta la informació del dispositiu arrel a %s"
 msgid "missing network device feature name"
 msgstr "falta el tipus de dispositiu d'entrada"
 
+msgid "missing node name in QEMU capabilities cache"
+msgstr ""
+
 #, c-format
 msgid "missing number of available instances for mediated device type '%s'"
 msgstr ""
@@ -30291,10 +30235,16 @@ msgstr "falta la informació del sistema operatiu per a %s"
 msgid "missing or broken bitmap '%s' for disk '%s'"
 msgstr ""
 
-msgid "missing or invalid CPU cache mode"
+msgid "missing or invalid CPU model property type in QEMU capabilities cache"
 msgstr ""
 
-msgid "missing or invalid CPU model property type in QEMU capabilities cache"
+msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr ""
 
 msgid "missing or invalid cpuid-input-eax in CPU data"
@@ -30302,10 +30252,6 @@ msgstr ""
 
 msgid "missing or invalid features in CPU data"
 msgstr ""
-
-#, fuzzy
-msgid "missing or invalid vlan tag id attribute"
-msgstr "falta l'atribut del tipus de domini"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr ""
@@ -30319,6 +30265,10 @@ msgstr ""
 msgid ""
 "missing or malformed SEV reducedPhysBits information in QEMU capabilities "
 "cache"
+msgstr ""
+
+msgid ""
+"missing or malformed SGX platform section_size in QEMU capabilities cache"
 msgstr ""
 
 msgid "missing or malformed session-uuid element in migration data"
@@ -30443,6 +30393,9 @@ msgstr ""
 msgid "missing sheepdog vdi name"
 msgstr "falta l'argument pagesize"
 
+msgid "missing size name in QEMU capabilities cache"
+msgstr ""
+
 msgid "missing socket address type in JSON backing volume definition"
 msgstr ""
 
@@ -30547,10 +30500,6 @@ msgstr "falta la informació de la destinació per al dispositiu %s"
 
 msgid "missing the host address for the iSCSI hostdev"
 msgstr ""
-
-#, fuzzy
-msgid "missing timer name"
-msgstr "falta l'argument pagesize"
 
 #, fuzzy
 msgid "missing tlsPort attribute in migration data"
@@ -31832,9 +31781,6 @@ msgstr ""
 msgid "nparams too large"
 msgstr "l'nparams és massa gran"
 
-msgid "num-queues property isn't supported by this QEMU binary"
-msgstr ""
-
 msgid "numa parameters are not supported by vz driver"
 msgstr ""
 
@@ -31895,9 +31841,6 @@ msgid "numerical overflow: %s"
 msgstr ""
 
 msgid "nvcpus is zero"
-msgstr ""
-
-msgid "nvdimm align property is not available with this QEMU binary"
 msgstr ""
 
 msgid "nvdimm isn't supported by this QEMU binary"
@@ -33176,6 +33119,24 @@ msgstr ""
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
 msgstr ""
 
+msgid "query-sgx-capabilities reply was missing 'flc' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'node' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'section-size' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx1' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx2' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'size' field"
+msgstr ""
+
 msgid "query-status reply was missing running state"
 msgstr ""
 
@@ -33490,9 +33451,6 @@ msgstr "informació del domini"
 msgid "report error if CPUs are incompatible"
 msgstr ""
 
-msgid "report fd-based VM statistics by KVM"
-msgstr ""
-
 #, fuzzy
 msgid "report filesystem information"
 msgstr "falta la informació del sistema operatiu"
@@ -33500,6 +33458,9 @@ msgstr "falta la informació del sistema operatiu"
 #, fuzzy
 msgid "report hostname"
 msgstr "no s'ha pogut obtenir el nom d'amfitrió"
+
+msgid "report hypervisor-specific statistics"
+msgstr ""
 
 msgid "report interface information"
 msgstr ""
@@ -34066,9 +34027,6 @@ msgstr "El tipus de xarxa %d no està suportat"
 msgid "setting ACPI S4 not supported"
 msgstr "El tipus de xarxa %d no està suportat"
 
-msgid "setting MTU is not supported with this QEMU binary"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "setting MTU on interface type %s is not supported yet"
 msgstr "El tipus de xarxa %d no està suportat"
@@ -34121,6 +34079,20 @@ msgstr ""
 #, fuzzy
 msgid "sgio is only supported for scsi host device"
 msgstr "el bus ps2 no suporta el dispositiu d'entrada %s"
+
+msgid "sgx epc isn't supported by this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %d is less than requested size %lld"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
+msgstr ""
+
+msgid "sgx-epc memory info data is missing 'memdev'"
+msgstr ""
 
 #, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
@@ -34731,10 +34703,6 @@ msgstr ""
 msgid "sysctl failed for '%s'"
 msgstr "no hi ha fitxer de configuració per a %s"
 
-#, fuzzy
-msgid "sysinfo must contain a type attribute"
-msgstr "falta l'atribut del tipus de domini"
-
 msgid "system call error"
 msgstr "error de crida de sistema"
 
@@ -34966,6 +34934,9 @@ msgstr ""
 msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
+msgid "the running swtpm does not support migration with shared storage"
+msgstr ""
+
 msgid "the signal number or name"
 msgstr ""
 
@@ -35049,7 +35020,7 @@ msgstr "el bus ps2 no suporta el dispositiu d'entrada %s"
 msgid "this QEMU does not support the 'genid' capability"
 msgstr ""
 
-msgid "this QEMU doesn't support memory discard"
+msgid "this QEMU version didn't provide SGX EPC NUMA info"
 msgstr ""
 
 #, fuzzy
@@ -35088,13 +35059,7 @@ msgstr ""
 msgid "this qemu does not support TLS transport for NBD"
 msgstr ""
 
-msgid "this qemu doesn't support the memory-backend-file object"
-msgstr ""
-
 msgid "this qemu doesn't support the memory-backend-memfd object"
-msgstr ""
-
-msgid "this qemu doesn't support the memory-backend-ram object"
 msgstr ""
 
 msgid "this qemu doesn't support the rng-builtin backend"
@@ -36985,10 +36950,6 @@ msgstr "tipus d'SO desconegut %s"
 msgid "unknown suffix '%s'"
 msgstr "es desconeix l'amfitrió %s"
 
-#, fuzzy, c-format
-msgid "unknown sysinfo type '%s'"
-msgstr "tipus d'SO desconegut %s"
-
 #, c-format
 msgid "unknown target model '%s' specified for character device"
 msgstr ""
@@ -37000,22 +36961,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "unknown teaming type '%s'"
 msgstr "tipus d'autenticació desconegut: %s"
-
-#, fuzzy, c-format
-msgid "unknown timer mode '%s'"
-msgstr "ordre desconeguda: '%s'"
-
-#, fuzzy, c-format
-msgid "unknown timer name '%s'"
-msgstr "ordre desconeguda: '%s'"
-
-#, fuzzy, c-format
-msgid "unknown timer tickpolicy '%s'"
-msgstr "el dispositiu d'arrencada '%s' és desconegut"
-
-#, fuzzy, c-format
-msgid "unknown timer track '%s'"
-msgstr "el dispositiu d'arrencada '%s' és desconegut"
 
 #, fuzzy, c-format
 msgid "unknown type '%s'"
@@ -37719,6 +37664,9 @@ msgstr "El nom de model conté caràcters invàlids"
 msgid "value of managerid out of range"
 msgstr ""
 
+msgid "value of the 'size' attribute of 'mtu' element must be at most 100000"
+msgstr ""
+
 msgid "value of typeidversion out of range"
 msgstr ""
 
@@ -38038,9 +37986,6 @@ msgstr ""
 msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
 msgstr ""
 
-msgid "virtio rx_queue_size option is not supported with this QEMU binary"
-msgstr ""
-
 #, c-format
 msgid "virtio serial controller %u does not have port %u"
 msgstr ""
@@ -38061,16 +38006,10 @@ msgstr ""
 msgid "virtio serial port %u on controller %u is already occupied"
 msgstr ""
 
-msgid "virtio tx_queue_size option is not supported with this QEMU binary"
-msgstr ""
-
 msgid "virtio-mem device is missing <requested/>"
 msgstr ""
 
 msgid "virtio-mem isn't supported by this QEMU binary"
-msgstr ""
-
-msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
 msgstr ""
 
 #, c-format
@@ -38164,7 +38103,7 @@ msgid "vlan misses the tag name"
 msgstr ""
 
 #, c-format
-msgid "vlan tag id %lu too large (maximum 4095)"
+msgid "vlan tag id %u too large (maximum 4095)"
 msgstr ""
 
 #, c-format
@@ -38511,6 +38450,38 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <cadena>"
+
+#, fuzzy
+#~ msgid "missing or invalid vlan tag id attribute"
+#~ msgstr "falta l'atribut del tipus de domini"
+
+#, fuzzy
+#~ msgid "missing timer name"
+#~ msgstr "falta l'argument pagesize"
+
+#, fuzzy
+#~ msgid "sysinfo must contain a type attribute"
+#~ msgstr "falta l'atribut del tipus de domini"
+
+#, fuzzy
+#~ msgid "unknown sysinfo type '%s'"
+#~ msgstr "tipus d'SO desconegut %s"
+
+#, fuzzy
+#~ msgid "unknown timer mode '%s'"
+#~ msgstr "ordre desconeguda: '%s'"
+
+#, fuzzy
+#~ msgid "unknown timer name '%s'"
+#~ msgstr "ordre desconeguda: '%s'"
+
+#, fuzzy
+#~ msgid "unknown timer tickpolicy '%s'"
+#~ msgstr "el dispositiu d'arrencada '%s' és desconegut"
+
+#, fuzzy
+#~ msgid "unknown timer track '%s'"
+#~ msgstr "el dispositiu d'arrencada '%s' és desconegut"
 
 #, fuzzy
 #~ msgid "(network status)"

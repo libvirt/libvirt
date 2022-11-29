@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-10-25 07:42+0000\n"
+"POT-Creation-Date: 2022-11-24 14:54+0000\n"
 "PO-Revision-Date: 2022-10-26 23:20+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -537,6 +537,12 @@ msgstr ""
 "«%s» або «%s»"
 
 #, c-format
+msgid ""
+"%s (on destination side) does not support the --migration option needed for "
+"migration with shared storage"
+msgstr ""
+
+#, c-format
 msgid "%s (out of %d)"
 msgstr "%s (з %d)"
 
@@ -659,6 +665,10 @@ msgstr "у цьому виконуваному файлі QEMU не передб
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "Довжина %s перевищує максимальну можливу: %d > %d"
+
+#, c-format
+msgid "%s memory device info is not handled yet"
+msgstr ""
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -818,14 +828,6 @@ msgstr ""
 "«%s» у визначенні маршруту"
 
 #, c-format
-msgid "%s: Invalid metric specified in route definition"
-msgstr "%s: у визначенні маршруту вказано некоректну метрику"
-
-#, c-format
-msgid "%s: Invalid metric value, must be > 0 in route definition"
-msgstr "%s: некоректне значення метрики, має бути > 0 у визначенні маршруту"
-
-#, c-format
 msgid "%s: Invalid netmask '%s' for address '%s' (both must be IPv4)"
 msgstr ""
 "%s: некоректна маска мережі, «%s», для адреси «%s» (обидві повинні "
@@ -842,10 +844,6 @@ msgid "%s: Invalid prefix %u specified in route definition, must be 0 - 32"
 msgstr ""
 "%s: у визначенні маршруту вказано некоректний префікс %u, має бути у "
 "діапазоні від 0 до 32"
-
-#, c-format
-msgid "%s: Invalid prefix specified in route definition"
-msgstr "%s: у визначенні маршруту вказано некоректний префікс"
 
 #, c-format
 msgid "%s: Missing required address attribute in route definition"
@@ -2477,8 +2475,8 @@ msgid "CPU vendor specified without CPU model"
 msgstr "Вказано виробника процесора, але не вказано моделі"
 
 #, c-format
-msgid "CPU vendor value 0x%2lx already defined"
-msgstr "Значення виробника процесора 0x%2lx вже визначено"
+msgid "CPU vendor value 0x%2llx already defined"
+msgstr ""
 
 msgid "CPU vendors do not match"
 msgstr "Записи виробників процесорів не збігаються"
@@ -2998,17 +2996,16 @@ msgid "Cannot find 'iothread' : %u"
 msgstr "Не вдалося знайти «iothread»: %u"
 
 #, c-format
-msgid "Cannot find CPU model with PVR 0x%03lx"
-msgstr "Не вдалося знайти моделі процесора з PVR 0x%03lx"
+msgid "Cannot find CPU model with PVR 0x%03llx"
+msgstr ""
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "Не вдалося знайти моделі процесора з PVR 0x%08x"
 
 #, c-format
-msgid "Cannot find CPU vendor with vendor id 0x%02lx"
+msgid "Cannot find CPU vendor with vendor id 0x%02llx"
 msgstr ""
-"Не вдалося знайти виробника процесора із ідентифікатором виробника 0x%02lx"
 
 #, c-format
 msgid "Cannot find boot device of requested type %s"
@@ -9825,10 +9822,6 @@ msgstr ""
 "функціях SR-IOV"
 
 #, c-format
-msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
-msgstr "некоректне значення «nativeMode='%s'» у елементі <tag> vlan"
-
-#, c-format
 msgid "Invalid %s attribute 'vcpus' value '%s'"
 msgstr "Некоректне значення атрибута %s «vcpus», «%s»"
 
@@ -9897,12 +9890,12 @@ msgid "Invalid IP address in static host definition for network '%s'"
 msgstr "Некоректна IP-адреса у визначення статичного вузла для мережі «%s»"
 
 #, c-format
-msgid "Invalid IPv4 prefix '%lu' in network '%s'"
-msgstr "Некоректний префікс IPv4, «%lu», у записі мережі «%s»"
+msgid "Invalid IPv4 prefix '%u' in network '%s'"
+msgstr ""
 
 #, c-format
-msgid "Invalid IPv6 prefix '%lu' in network '%s'"
-msgstr "Некоректний префікс IPv6, «%lu», у записі мережі «%s»"
+msgid "Invalid IPv6 prefix '%u' in network '%s'"
+msgstr ""
 
 msgid "Invalid NULL callback provided"
 msgstr "Надано некоректну нульову адресу повернення з виклику"
@@ -9959,10 +9952,6 @@ msgid "Invalid STP state value %d received for '%s'. Must be -1, 0, or 1."
 msgstr ""
 "Отримано некоректне значення стану STP, %d, для «%s». Значенням має бути "
 "число -1, 0 або 1."
-
-#, c-format
-msgid "Invalid ULong value specified for prefix in definition of network '%s'"
-msgstr "Для префікса у визначені мережі «%s» вказано некоректне значення ULong"
 
 #, c-format
 msgid "Invalid URI path '%s', try '/system'"
@@ -10324,9 +10313,6 @@ msgstr "Некоректне ціле значення «%s» у файлі «%s
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "Некоректний параметр ipv6, «%s», у мережі «%s»"
 
-msgid "Invalid job flags"
-msgstr "Некоректні прапорці завдання"
-
 #, c-format
 msgid "Invalid libxl cpuid key=value element: %s"
 msgstr "Некоректний елемент ідентифікатора процесора libxl ключ=значення: %s"
@@ -10474,26 +10460,11 @@ msgstr "Некоректний параметр"
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "virXPathBoolean() передано некоректний параметр"
 
-msgid "Invalid parameter to virXPathLong()"
-msgstr "virXPathLong() передано некоректний параметр"
-
-msgid "Invalid parameter to virXPathLongLong()"
-msgstr "virXPathLongLong() передано некоректний параметр"
-
 msgid "Invalid parameter to virXPathNode()"
 msgstr "virXPathNode() передано некоректний параметр"
 
 msgid "Invalid parameter to virXPathNodeSet()"
 msgstr "virXPathNodeSet() передано некоректний параметр"
-
-msgid "Invalid parameter to virXPathNumber()"
-msgstr "virXPathNumber() передано некоректний параметр"
-
-msgid "Invalid parameter to virXPathString()"
-msgstr "virXPathString() передано некоректний параметр"
-
-msgid "Invalid parameter to virXPathULong()"
-msgstr "virXPathULong() передано некоректний параметр"
 
 msgid "Invalid parameter type passed to free"
 msgstr "Free передано параметр некоректного типу"
@@ -11550,9 +11521,6 @@ msgstr "Не вказано назви можливості процесора"
 msgid "Missing CPU model name"
 msgstr "Не вказано назву моделі процесора"
 
-msgid "Missing CPU vendor value"
-msgstr "Не вказано значення виробника процесора"
-
 msgid "Missing ID parameter for domain object"
 msgstr "Не вистачає параметра ідентифікатора (ID) для об'єкта домену"
 
@@ -11596,6 +11564,12 @@ msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
 msgstr ""
 "Пропущено тип реєстраційних даних VIR_CRED_PASSPHRASE або "
 "VIR_CRED_NOECHOPROMPT"
+
+msgid "Missing XPath context"
+msgstr ""
+
+msgid "Missing XPath expression"
+msgstr ""
 
 msgid "Missing acpi table type"
 msgstr "Не вказано тип таблиці acpi"
@@ -11859,18 +11833,6 @@ msgstr "Пропущений або некоректний розмір адре
 #, c-format
 msgid "Missing or invalid CPU frequency in %s"
 msgstr "Не вказано частоту процесора у %s або вказано неправильну частоту"
-
-#, c-format
-msgid "Missing or invalid PVR mask in CPU model %s"
-msgstr ""
-"Не вказано маску PVR або вказано помилкове значення у записі моделі "
-"процесора %s"
-
-#, c-format
-msgid "Missing or invalid PVR value in CPU model %s"
-msgstr ""
-"Не вказано значення PVR або вказано помилкове значення у записі моделі "
-"процесора %s"
 
 #, c-format
 msgid ""
@@ -12268,12 +12230,6 @@ msgstr "Топологію NUMA визначено без комірок NUMA"
 
 msgid "NUMA tuning is not available in session mode"
 msgstr "У режимі сеансу коригування NUMA недоступне"
-
-msgid ""
-"NUMA without specified memory backing is not supported with this QEMU binary"
-msgstr ""
-"Підтримки NUMA без вказаного резервування пам'яті не передбачено для цього "
-"виконуваного файла QEMU"
 
 #, c-format
 msgid "NVMe device %s already in use by driver %s domain %s"
@@ -13665,9 +13621,6 @@ msgid "Per-node binding is not compatible with automatic NUMA placement."
 msgstr ""
 "Прив'язка до окремих вузлів є несумісною з автоматичним розміщенням NUMA."
 
-msgid "Per-node memory binding is not supported with this QEMU"
-msgstr "У цій версії QEMU не передбачено прив'язки пам'яті до окремих вузлів"
-
 msgid "Perf not supported on this platform"
 msgstr "Підтримки perf на цій платформі не передбачено"
 
@@ -15039,9 +14992,6 @@ msgstr "Встановлення wwn для пристрою lun не перед
 
 msgid "Setup time:"
 msgstr "Час налаштування:"
-
-msgid "Shared memory mapping is not supported with this QEMU"
-msgstr "У цій версії QEMU не передбачено підтримки прив'язки спільної пам'яті"
 
 msgid "Shared memory:\n"
 msgstr "Спільна пам'ять:\n"
@@ -16756,6 +16706,9 @@ msgstr ""
 
 msgid "The machine has no snapshot and it should have it"
 msgstr "Машина не має знімків, хоча повинна була б мати"
+
+msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
+msgstr ""
 
 msgid "The minimum lease time should be greater than 2 minutes"
 msgstr "Мінімальний час відпускання має бути більшим за 2 хвилини"
@@ -20755,20 +20708,8 @@ msgstr "Документ XML не пройшов перевірки за схе�
 msgid "XML document failed to validate against schema: %s"
 msgstr "Документ XML не пройшов перевірки за схемою: %s"
 
-msgid "XML does not contain expected 'bios' element"
-msgstr "У XML не міститься очікуваного елемента «bios»"
-
-msgid "XML does not contain expected 'chassis' element"
-msgstr "У XML не міститься очікуваного елемента «chassis»"
-
 msgid "XML does not contain expected 'cpu' element"
 msgstr "У XML не міститься очікуваного елемента «cpu»"
-
-msgid "XML does not contain expected 'sysinfo' element"
-msgstr "У XML не міститься очікуваного елемента «sysinfo»"
-
-msgid "XML does not contain expected 'system' element"
-msgstr "У XML не міститься очікуваного елемента «system»"
 
 #, c-format
 msgid "XML error: %s"
@@ -22366,9 +22307,6 @@ msgstr "не вдалося видобути вузли iothreadsched"
 
 msgid "cannot extract memorytune nodes"
 msgstr "не вдалося видобути вузли memorytune"
-
-msgid "cannot extract numatune nodes"
-msgstr "не вдалося видобути вузли numatune"
 
 msgid "cannot extract resource nodes"
 msgstr "не вдалося видобути вузли resource"
@@ -25079,9 +25017,6 @@ msgstr "роз'єднано"
 msgid "discover potential storage pool sources"
 msgstr "виявити потенційні джерела резервних сховищ даних"
 
-msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
-msgstr "У цьому QEMU не передбачено відокремлених діапазонів процесорів NUMA"
-
 #, c-format
 msgid "disk %s does not have an active block job"
 msgstr "для диска %s не передбачено активного блокового завдання"
@@ -27095,6 +27030,9 @@ msgstr "не вдалося обробити засоби блокування �
 msgid "failed to parse SCSI host '%s'"
 msgstr "не вдалося обробити запис вузла SCSI «%s»"
 
+msgid "failed to parse SGX sections in QEMU capabilities cache"
+msgstr ""
+
 msgid "failed to parse agent timeout"
 msgstr "не вдалося обробити час очікування на обробку агентом"
 
@@ -28479,6 +28417,10 @@ msgstr ""
 "«%s» не передбачено"
 
 #, c-format
+msgid "hotplug is not supported for the %s device"
+msgstr ""
+
+#, c-format
 msgid "hotplug of interface type of %s is not implemented yet"
 msgstr "під'єднання «вгарячу» інтерфейсів типу %s ще не реалізовано"
 
@@ -28497,11 +28439,6 @@ msgstr "підтримку кук http передбачено лише у поє
 #, c-format
 msgid "hub type %s not supported"
 msgstr "підтримки основного пристрою типу %s не передбачено"
-
-msgid "huge pages per NUMA node are not supported with this QEMU"
-msgstr ""
-"у цій версії QEMU не передбачено підтримки окремих великих сторінок для "
-"кожного вузла NUMA"
 
 msgid "hugepage size can't be zero"
 msgstr "розмір великої сторінки (hugepage) не може бути нульовим"
@@ -28878,9 +28815,6 @@ msgstr "інтерфейс не працює"
 msgid "interface mac"
 msgstr "MAC-адреса інтерфейсу"
 
-msgid "interface mtu value is improper"
-msgstr "некоректне значення mtu для інтерфейсу"
-
 msgid "interface name"
 msgstr "назва інтерфейсу"
 
@@ -29200,15 +29134,6 @@ msgstr "некоректний рядок протоколу резервува�
 msgid "invalid capability_filters capability '%s'"
 msgstr "некоректна можливість capability_filters «%s»"
 
-msgid "invalid catchup limit"
-msgstr "некоректне обмеження перехоплення"
-
-msgid "invalid catchup slew"
-msgstr "некоректне обернення відліку перехоплення"
-
-msgid "invalid catchup threshold"
-msgstr "некоректне порогове значення перехоплення"
-
 #, c-format
 msgid "invalid char in %s: %c"
 msgstr "некоректний символ у %s: %c"
@@ -29527,9 +29452,6 @@ msgstr "некоректна адреса, «%s» не є відомим інт�
 msgid "invalid path: %s"
 msgstr "некоректна адреса: %s"
 
-msgid "invalid pid"
-msgstr "неправильний pid"
-
 msgid "invalid prefix, must be in range of 4-27"
 msgstr "некоректний префікс, префікс має належати діапазону від 4 до 27"
 
@@ -29626,9 +29548,6 @@ msgid ""
 msgstr ""
 "у кеші можливостей QEMU міститься некоректне рядкове значення для "
 "властивості типу моделі процесора «%s»"
-
-msgid "invalid timer frequency"
-msgstr "некоректна частота таймера"
 
 #, c-format
 msgid "invalid tlsPort number: %s"
@@ -30690,6 +30609,12 @@ msgstr ""
 "помилкове форматування даних щодо інтерактивності у даних щодо dimm або "
 "даних немає"
 
+msgid "malformed/missing memaddr in sgx-epc memory info"
+msgstr ""
+
+msgid "malformed/missing size in sgx-epc memory info"
+msgstr ""
+
 msgid "malformed/missing size in virtio memory info"
 msgstr "помилкове форматування розміру у даних щодо пам'яті virtio"
 
@@ -30856,6 +30781,10 @@ msgstr ""
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "атрибути пам'яті: [file=]назва[,snapshot=тип]"
+
+#, c-format
+msgid "memory device address is not supported for model '%s'"
+msgstr ""
 
 msgid "memory device alias"
 msgstr "альтернативна назва пристрою пам'яті"
@@ -31386,6 +31315,9 @@ msgstr ""
 msgid "missing SEV platform data in QEMU capabilities cache"
 msgstr "у записі кешу можливостей QEMU не вистачає запису даних платформи SEV"
 
+msgid "missing SGX platform data in QEMU capabilities cache"
+msgstr ""
+
 msgid "missing TPM device backend"
 msgstr "не вказано назву модуля пристрою TPM"
 
@@ -31715,6 +31647,9 @@ msgstr "у %s не вистачає даних щодо назви"
 msgid "missing network device feature name"
 msgstr "пропущено назву можливості пристрою мережі"
 
+msgid "missing node name in QEMU capabilities cache"
+msgstr ""
+
 #, c-format
 msgid "missing number of available instances for mediated device type '%s'"
 msgstr ""
@@ -31734,13 +31669,19 @@ msgstr "немає даних щодо операційної системи %s"
 msgid "missing or broken bitmap '%s' for disk '%s'"
 msgstr "пропущено або вказано неправильну бітову карту «%s» для диска «%s»"
 
-msgid "missing or invalid CPU cache mode"
-msgstr "не вказано режим кешування процесора або вказано некоректний режим"
-
 msgid "missing or invalid CPU model property type in QEMU capabilities cache"
 msgstr ""
 "у кеші можливостей QEMU не вистачає властивості типу моделі процесора або "
 "вказано некоректне значення цієї властивості"
+
+msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
+msgstr ""
 
 msgid "missing or invalid cpuid-input-eax in CPU data"
 msgstr ""
@@ -31750,9 +31691,6 @@ msgstr ""
 msgid "missing or invalid features in CPU data"
 msgstr ""
 "у даних щодо процесора пропущено можливості або вказано некоректні дані"
-
-msgid "missing or invalid vlan tag id attribute"
-msgstr "не вистачає атрибута id теґу vlan або вказано некоректне значення"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr ""
@@ -31774,6 +31712,10 @@ msgid ""
 msgstr ""
 "у записі кешу можливостей QEMU не вистачає відомостей щодо SEV "
 "reducedPhysBits або форматування запису відомостей є помилковим"
+
+msgid ""
+"missing or malformed SGX platform section_size in QEMU capabilities cache"
+msgstr ""
 
 msgid "missing or malformed session-uuid element in migration data"
 msgstr ""
@@ -31898,6 +31840,9 @@ msgstr "у визначенні резервного тому JSON пропущ�
 msgid "missing sheepdog vdi name"
 msgstr "пропущено назву vdi sheepdog"
 
+msgid "missing size name in QEMU capabilities cache"
+msgstr ""
+
 msgid "missing socket address type in JSON backing volume definition"
 msgstr "у визначенні резервного тому JSON пропущено тип адреси сокета"
 
@@ -31997,9 +31942,6 @@ msgstr "немає цільових даних для пристрою %s"
 
 msgid "missing the host address for the iSCSI hostdev"
 msgstr "не вказано адреси для пристрою iSCSI основної системи"
-
-msgid "missing timer name"
-msgstr "не вказано назви таймера"
 
 msgid "missing tlsPort attribute in migration data"
 msgstr "немає атрибута tlsPort у даних перенесення"
@@ -33305,11 +33247,6 @@ msgstr "значення nparams у %s має дорівнювати %d"
 msgid "nparams too large"
 msgstr "надто великий розмір nparams"
 
-msgid "num-queues property isn't supported by this QEMU binary"
-msgstr ""
-"підтримки властивості num-queues у цьому виконуваному файлі QEMU не "
-"передбачено"
-
 msgid "numa parameters are not supported by vz driver"
 msgstr "у драйвері vz не передбачено підтримки параметрів numa"
 
@@ -33376,10 +33313,6 @@ msgstr "числове переповнення: %s"
 
 msgid "nvcpus is zero"
 msgstr "nvcpus дорівнює нулю"
-
-msgid "nvdimm align property is not available with this QEMU binary"
-msgstr ""
-"властивість align NVDIMM для цього виконуваного файла QEMU є недоступною"
 
 msgid "nvdimm isn't supported by this QEMU binary"
 msgstr "підтримки nvdimm у цьому виконуваному файлі QEMU не передбачено"
@@ -34757,6 +34690,24 @@ msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
 msgstr ""
 "у відповіді query-sev-capabilities не виявлено поля «reduced-phys-bits»"
 
+msgid "query-sgx-capabilities reply was missing 'flc' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'node' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'section-size' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx1' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx2' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'size' field"
+msgstr ""
+
 msgid "query-status reply was missing running state"
 msgstr "у відповіді на запит щодо стану немає даних щодо стану виконання"
 
@@ -35095,16 +35046,14 @@ msgstr "звітувати про дані щодо віртуальних пр�
 msgid "report error if CPUs are incompatible"
 msgstr "повідомити про помилку, якщо процесори є несумісними"
 
-msgid "report fd-based VM statistics by KVM"
-msgstr ""
-"вивести статистичні дані від KVM для віртуальної машини на основі "
-"дескрипторів файлів"
-
 msgid "report filesystem information"
 msgstr "вивести відомості щодо файлової системи"
 
 msgid "report hostname"
 msgstr "вивести звіт щодо назви вузла"
+
+msgid "report hypervisor-specific statistics"
+msgstr ""
 
 msgid "report interface information"
 msgstr "вивести звіт щодо інтерфейсу"
@@ -35686,10 +35635,6 @@ msgstr "підтримки встановлення S3 ACPI не передба�
 msgid "setting ACPI S4 not supported"
 msgstr "підтримки встановлення S4 ACPI не передбачено"
 
-msgid "setting MTU is not supported with this QEMU binary"
-msgstr ""
-"у цьому виконуваному файлі QEMU не передбачено можливості встановлення MTU"
-
 #, c-format
 msgid "setting MTU on interface type %s is not supported yet"
 msgstr "підтримки встановлення MTU на типі інтерфейсу %s ще не передбачено"
@@ -35759,6 +35704,20 @@ msgstr "sgio можна використовувати лише з device='lun'"
 
 msgid "sgio is only supported for scsi host device"
 msgstr "підтримку sgio передбачено лише для пристроїв-вузлів scsi"
+
+msgid "sgx epc isn't supported by this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %d is less than requested size %lld"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
+msgstr ""
+
+msgid "sgx-epc memory info data is missing 'memdev'"
+msgstr ""
 
 #, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
@@ -36389,9 +36348,6 @@ msgstr "помилка sysconf(_SC_OPEN_MAX)"
 msgid "sysctl failed for '%s'"
 msgstr "помилка sysctl для «%s»"
 
-msgid "sysinfo must contain a type attribute"
-msgstr "sysinfo має містити атрибути типу"
-
 msgid "system call error"
 msgstr "помилка системного виклику"
 
@@ -36638,6 +36594,9 @@ msgstr "ідентифікатор процесу"
 msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
 msgstr "результат не вміщується до REMOTE_NODE_MAX_CELLS"
 
+msgid "the running swtpm does not support migration with shared storage"
+msgstr ""
+
 msgid "the signal number or name"
 msgstr "номер або назва сигналу"
 
@@ -36734,8 +36693,8 @@ msgstr "у цьому QEMU не передбачено підтримки від
 msgid "this QEMU does not support the 'genid' capability"
 msgstr "у цьому QEMU не передбачено підтримки можливості «genid»"
 
-msgid "this QEMU doesn't support memory discard"
-msgstr "у цьому QEMU не передбачено підтримки відкидання пам'яті"
+msgid "this QEMU version didn't provide SGX EPC NUMA info"
+msgstr ""
 
 msgid "this disk doesn't support update"
 msgstr "оновлення не підтримується цим диском"
@@ -36772,14 +36731,8 @@ msgstr "на цій платформі не передбачено dlopen"
 msgid "this qemu does not support TLS transport for NBD"
 msgstr "у цьому qemu не передбачено підтримки передавання TLS для NBD"
 
-msgid "this qemu doesn't support the memory-backend-file object"
-msgstr "у цьому qemu не передбачено підтримки об'єктів memory-backend-file"
-
 msgid "this qemu doesn't support the memory-backend-memfd object"
 msgstr "у цьому qemu не передбачено підтримки об'єктів memory-backend-memfd"
-
-msgid "this qemu doesn't support the memory-backend-ram object"
-msgstr "у цьому qemu не передбачено підтримки об'єктів memory-backend-ram"
 
 msgid "this qemu doesn't support the rng-builtin backend"
 msgstr "у цьому варіанті qemu не передбачено підтримки модуля rng-builtin"
@@ -38713,10 +38666,6 @@ msgid "unknown suffix '%s'"
 msgstr "невідомий суфікс «%s»"
 
 #, c-format
-msgid "unknown sysinfo type '%s'"
-msgstr "невідомий тип sysinfo «%s»"
-
-#, c-format
 msgid "unknown target model '%s' specified for character device"
 msgstr "для символьного пристрою вказано невідому модель призначення, «%s»"
 
@@ -38727,22 +38676,6 @@ msgstr "для символьного пристрою вказано невід
 #, c-format
 msgid "unknown teaming type '%s'"
 msgstr "невідомий командний тип «%s»"
-
-#, c-format
-msgid "unknown timer mode '%s'"
-msgstr "невідомий режим роботи таймера «%s»"
-
-#, c-format
-msgid "unknown timer name '%s'"
-msgstr "невідома назва таймера «%s»"
-
-#, c-format
-msgid "unknown timer tickpolicy '%s'"
-msgstr "невідомі правила відліку таймера «%s»"
-
-#, c-format
-msgid "unknown timer track '%s'"
-msgstr "невідомий канал таймера «%s»"
 
 #, c-format
 msgid "unknown type '%s'"
@@ -39464,6 +39397,9 @@ msgstr "значення куки «%s» містить некоректні с�
 msgid "value of managerid out of range"
 msgstr "значення «managerid» лежить поза межами діапазону припустимих значень"
 
+msgid "value of the 'size' attribute of 'mtu' element must be at most 100000"
+msgstr ""
+
 msgid "value of typeidversion out of range"
 msgstr ""
 "значення «typeidversion» лежить поза межами діапазону припустимих значень"
@@ -39817,11 +39753,6 @@ msgstr "підтримки RSS virtio у цьому виконуваному ф�
 msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
 msgstr "параметр virtio rx_queue_size %d не збігається із tx_queue_size %d"
 
-msgid "virtio rx_queue_size option is not supported with this QEMU binary"
-msgstr ""
-"підтримки параметра rx_queue_size virtio у цьому виконуваному файлі QEMU не "
-"передбачено"
-
 #, c-format
 msgid "virtio serial controller %u does not have port %u"
 msgstr "серійний контролер virtio %u не має порту %u"
@@ -39842,21 +39773,11 @@ msgstr "Тип адреси послідовного пристрою virtio є 
 msgid "virtio serial port %u on controller %u is already occupied"
 msgstr "серійний порт virtio %u на контролері %u уже зайнято"
 
-msgid "virtio tx_queue_size option is not supported with this QEMU binary"
-msgstr ""
-"підтримки параметра tx_queue_size virtio у цьому виконуваному файлі QEMU не "
-"передбачено"
-
 msgid "virtio-mem device is missing <requested/>"
 msgstr "У записі пристрою virtio-mem пропущено <requested/>"
 
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "підтримки virtio-mem не передбачено у цьому виконуваному файлі QEMU"
-
-msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
-msgstr ""
-"підтримки перемикання на резервний варіант у virtio-net (teaming) не "
-"передбачено із цим виконуваним файлом QEMU"
 
 #, c-format
 msgid ""
@@ -39959,9 +39880,8 @@ msgid "vlan misses the tag name"
 msgstr "Відсутня назва тегу VLAN"
 
 #, c-format
-msgid "vlan tag id %lu too large (maximum 4095)"
+msgid "vlan tag id %u too large (maximum 4095)"
 msgstr ""
-"значення id теґу vlan, %lu, є надто великим (максимальне значення 4095)"
 
 #, c-format
 msgid "vlan tag set for interface %s but caller requested it not be set"
@@ -40338,6 +40258,200 @@ msgstr "надійшов запит щодо зони %s для мережі %s,
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <рядок>}..."
+
+#~ msgid "%s: Invalid metric specified in route definition"
+#~ msgstr "%s: у визначенні маршруту вказано некоректну метрику"
+
+#~ msgid "%s: Invalid metric value, must be > 0 in route definition"
+#~ msgstr "%s: некоректне значення метрики, має бути > 0 у визначенні маршруту"
+
+#~ msgid "%s: Invalid prefix specified in route definition"
+#~ msgstr "%s: у визначенні маршруту вказано некоректний префікс"
+
+#~ msgid "CPU vendor value 0x%2lx already defined"
+#~ msgstr "Значення виробника процесора 0x%2lx вже визначено"
+
+#~ msgid "Cannot find CPU model with PVR 0x%03lx"
+#~ msgstr "Не вдалося знайти моделі процесора з PVR 0x%03lx"
+
+#~ msgid "Cannot find CPU vendor with vendor id 0x%02lx"
+#~ msgstr ""
+#~ "Не вдалося знайти виробника процесора із ідентифікатором виробника 0x%02lx"
+
+#~ msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
+#~ msgstr "некоректне значення «nativeMode='%s'» у елементі <tag> vlan"
+
+#~ msgid "Invalid IPv4 prefix '%lu' in network '%s'"
+#~ msgstr "Некоректний префікс IPv4, «%lu», у записі мережі «%s»"
+
+#~ msgid "Invalid IPv6 prefix '%lu' in network '%s'"
+#~ msgstr "Некоректний префікс IPv6, «%lu», у записі мережі «%s»"
+
+#~ msgid ""
+#~ "Invalid ULong value specified for prefix in definition of network '%s'"
+#~ msgstr ""
+#~ "Для префікса у визначені мережі «%s» вказано некоректне значення ULong"
+
+#~ msgid "Invalid job flags"
+#~ msgstr "Некоректні прапорці завдання"
+
+#~ msgid "Invalid parameter to virXPathLong()"
+#~ msgstr "virXPathLong() передано некоректний параметр"
+
+#~ msgid "Invalid parameter to virXPathLongLong()"
+#~ msgstr "virXPathLongLong() передано некоректний параметр"
+
+#~ msgid "Invalid parameter to virXPathNumber()"
+#~ msgstr "virXPathNumber() передано некоректний параметр"
+
+#~ msgid "Invalid parameter to virXPathString()"
+#~ msgstr "virXPathString() передано некоректний параметр"
+
+#~ msgid "Invalid parameter to virXPathULong()"
+#~ msgstr "virXPathULong() передано некоректний параметр"
+
+#~ msgid "Missing CPU vendor value"
+#~ msgstr "Не вказано значення виробника процесора"
+
+#~ msgid "Missing or invalid PVR mask in CPU model %s"
+#~ msgstr ""
+#~ "Не вказано маску PVR або вказано помилкове значення у записі моделі "
+#~ "процесора %s"
+
+#~ msgid "Missing or invalid PVR value in CPU model %s"
+#~ msgstr ""
+#~ "Не вказано значення PVR або вказано помилкове значення у записі моделі "
+#~ "процесора %s"
+
+#~ msgid ""
+#~ "NUMA without specified memory backing is not supported with this QEMU "
+#~ "binary"
+#~ msgstr ""
+#~ "Підтримки NUMA без вказаного резервування пам'яті не передбачено для "
+#~ "цього виконуваного файла QEMU"
+
+#~ msgid "Per-node memory binding is not supported with this QEMU"
+#~ msgstr ""
+#~ "У цій версії QEMU не передбачено прив'язки пам'яті до окремих вузлів"
+
+#~ msgid "Shared memory mapping is not supported with this QEMU"
+#~ msgstr ""
+#~ "У цій версії QEMU не передбачено підтримки прив'язки спільної пам'яті"
+
+#~ msgid "XML does not contain expected 'bios' element"
+#~ msgstr "У XML не міститься очікуваного елемента «bios»"
+
+#~ msgid "XML does not contain expected 'chassis' element"
+#~ msgstr "У XML не міститься очікуваного елемента «chassis»"
+
+#~ msgid "XML does not contain expected 'sysinfo' element"
+#~ msgstr "У XML не міститься очікуваного елемента «sysinfo»"
+
+#~ msgid "XML does not contain expected 'system' element"
+#~ msgstr "У XML не міститься очікуваного елемента «system»"
+
+#~ msgid "cannot extract numatune nodes"
+#~ msgstr "не вдалося видобути вузли numatune"
+
+#~ msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
+#~ msgstr ""
+#~ "У цьому QEMU не передбачено відокремлених діапазонів процесорів NUMA"
+
+#~ msgid "huge pages per NUMA node are not supported with this QEMU"
+#~ msgstr ""
+#~ "у цій версії QEMU не передбачено підтримки окремих великих сторінок для "
+#~ "кожного вузла NUMA"
+
+#~ msgid "interface mtu value is improper"
+#~ msgstr "некоректне значення mtu для інтерфейсу"
+
+#~ msgid "invalid catchup limit"
+#~ msgstr "некоректне обмеження перехоплення"
+
+#~ msgid "invalid catchup slew"
+#~ msgstr "некоректне обернення відліку перехоплення"
+
+#~ msgid "invalid catchup threshold"
+#~ msgstr "некоректне порогове значення перехоплення"
+
+#~ msgid "invalid pid"
+#~ msgstr "неправильний pid"
+
+#~ msgid "invalid timer frequency"
+#~ msgstr "некоректна частота таймера"
+
+#~ msgid "missing or invalid CPU cache mode"
+#~ msgstr "не вказано режим кешування процесора або вказано некоректний режим"
+
+#~ msgid "missing or invalid vlan tag id attribute"
+#~ msgstr "не вистачає атрибута id теґу vlan або вказано некоректне значення"
+
+#~ msgid "missing timer name"
+#~ msgstr "не вказано назви таймера"
+
+#~ msgid "num-queues property isn't supported by this QEMU binary"
+#~ msgstr ""
+#~ "підтримки властивості num-queues у цьому виконуваному файлі QEMU не "
+#~ "передбачено"
+
+#~ msgid "nvdimm align property is not available with this QEMU binary"
+#~ msgstr ""
+#~ "властивість align NVDIMM для цього виконуваного файла QEMU є недоступною"
+
+#~ msgid "report fd-based VM statistics by KVM"
+#~ msgstr ""
+#~ "вивести статистичні дані від KVM для віртуальної машини на основі "
+#~ "дескрипторів файлів"
+
+#~ msgid "setting MTU is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "у цьому виконуваному файлі QEMU не передбачено можливості встановлення MTU"
+
+#~ msgid "sysinfo must contain a type attribute"
+#~ msgstr "sysinfo має містити атрибути типу"
+
+#~ msgid "this QEMU doesn't support memory discard"
+#~ msgstr "у цьому QEMU не передбачено підтримки відкидання пам'яті"
+
+#~ msgid "this qemu doesn't support the memory-backend-file object"
+#~ msgstr "у цьому qemu не передбачено підтримки об'єктів memory-backend-file"
+
+#~ msgid "this qemu doesn't support the memory-backend-ram object"
+#~ msgstr "у цьому qemu не передбачено підтримки об'єктів memory-backend-ram"
+
+#~ msgid "unknown sysinfo type '%s'"
+#~ msgstr "невідомий тип sysinfo «%s»"
+
+#~ msgid "unknown timer mode '%s'"
+#~ msgstr "невідомий режим роботи таймера «%s»"
+
+#~ msgid "unknown timer name '%s'"
+#~ msgstr "невідома назва таймера «%s»"
+
+#~ msgid "unknown timer tickpolicy '%s'"
+#~ msgstr "невідомі правила відліку таймера «%s»"
+
+#~ msgid "unknown timer track '%s'"
+#~ msgstr "невідомий канал таймера «%s»"
+
+#~ msgid "virtio rx_queue_size option is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "підтримки параметра rx_queue_size virtio у цьому виконуваному файлі QEMU "
+#~ "не передбачено"
+
+#~ msgid "virtio tx_queue_size option is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "підтримки параметра tx_queue_size virtio у цьому виконуваному файлі QEMU "
+#~ "не передбачено"
+
+#~ msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "підтримки перемикання на резервний варіант у virtio-net (teaming) не "
+#~ "передбачено із цим виконуваним файлом QEMU"
+
+#~ msgid "vlan tag id %lu too large (maximum 4095)"
+#~ msgstr ""
+#~ "значення id теґу vlan, %lu, є надто великим (максимальне значення 4095)"
 
 #~ msgid "%s 3d acceleration is not supported"
 #~ msgstr "підтримки пришвидшення обробки просторових фігур %s не передбачено"

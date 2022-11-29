@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-10-25 07:42+0000\n"
+"POT-Creation-Date: 2022-11-24 14:54+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -354,6 +354,12 @@ msgid "%s %s '%s' has unsupported type '%s', expecting '%s' or '%s'"
 msgstr "Floppym '%s' heeft niet-ondersteund type '%s', verwacht '%s' of '%s'"
 
 #, c-format
+msgid ""
+"%s (on destination side) does not support the --migration option needed for "
+"migration with shared storage"
+msgstr ""
+
+#, c-format
 msgid "%s (out of %d)"
 msgstr ""
 
@@ -468,6 +474,10 @@ msgstr "SATA wordt niet ondersteund met dit QEMU binaire programma"
 #, fuzzy, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "vCPU kaart buffer lengte overschrijdt maximum: %d > %d"
+
+#, c-format
+msgid "%s memory device info is not handled yet"
+msgstr ""
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -614,14 +624,6 @@ msgid "%s: IPv4 family specified for non-IPv4 gateway '%s' in route definition"
 msgstr ""
 
 #, c-format
-msgid "%s: Invalid metric specified in route definition"
-msgstr ""
-
-#, c-format
-msgid "%s: Invalid metric value, must be > 0 in route definition"
-msgstr ""
-
-#, c-format
 msgid "%s: Invalid netmask '%s' for address '%s' (both must be IPv4)"
 msgstr ""
 
@@ -631,10 +633,6 @@ msgstr ""
 
 #, c-format
 msgid "%s: Invalid prefix %u specified in route definition, must be 0 - 32"
-msgstr ""
-
-#, c-format
-msgid "%s: Invalid prefix specified in route definition"
 msgstr ""
 
 #, c-format
@@ -2164,9 +2162,9 @@ msgstr "CPU leverancier %s van model %s verschilt van leverancier %s"
 msgid "CPU vendor specified without CPU model"
 msgstr "CPU leverancier gespecificeerd zonder CPU model"
 
-#, fuzzy, c-format
-msgid "CPU vendor value 0x%2lx already defined"
-msgstr "CPU leverancier %s is al gedefinieerd"
+#, c-format
+msgid "CPU vendor value 0x%2llx already defined"
+msgstr ""
 
 msgid "CPU vendors do not match"
 msgstr "CPU leveranciers komen niet overeen"
@@ -2667,7 +2665,7 @@ msgid "Cannot find 'iothread' : %u"
 msgstr "Kan '%s' niet vinden in pad"
 
 #, c-format
-msgid "Cannot find CPU model with PVR 0x%03lx"
+msgid "Cannot find CPU model with PVR 0x%03llx"
 msgstr ""
 
 #, c-format
@@ -2675,7 +2673,7 @@ msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr ""
 
 #, c-format
-msgid "Cannot find CPU vendor with vendor id 0x%02lx"
+msgid "Cannot find CPU vendor with vendor id 0x%02llx"
 msgstr ""
 
 #, c-format
@@ -9513,10 +9511,6 @@ msgid ""
 "only"
 msgstr ""
 
-#, c-format
-msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Invalid %s attribute 'vcpus' value '%s'"
 msgstr "Ongeldig relatief pad: '%s'"
@@ -9583,13 +9577,13 @@ msgstr "Ongeldig bridge mac adres '%s' in netwerk '%s'"
 msgid "Invalid IP address in static host definition for network '%s'"
 msgstr "Ontbrekend IP adres in statische host definitie van netwerk '%s'"
 
-#, fuzzy, c-format
-msgid "Invalid IPv4 prefix '%lu' in network '%s'"
-msgstr "Ongeldig bridge mac adres '%s' in netwerk '%s'"
+#, c-format
+msgid "Invalid IPv4 prefix '%u' in network '%s'"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Invalid IPv6 prefix '%lu' in network '%s'"
-msgstr "Ongeldig bridge mac adres '%s' in netwerk '%s'"
+#, c-format
+msgid "Invalid IPv6 prefix '%u' in network '%s'"
+msgstr ""
 
 msgid "Invalid NULL callback provided"
 msgstr ""
@@ -9641,10 +9635,6 @@ msgstr "Ongeldig haak naam voor #%d"
 
 #, c-format
 msgid "Invalid STP state value %d received for '%s'. Must be -1, 0, or 1."
-msgstr ""
-
-#, c-format
-msgid "Invalid ULong value specified for prefix in definition of network '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -9993,10 +9983,6 @@ msgstr "Ongeldige waarde '%s' voor VMX ingang '%s'"
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "Ongeldig bridge mac adres '%s' in netwerk '%s'"
 
-#, fuzzy
-msgid "Invalid job flags"
-msgstr "ongeldig vlag"
-
 #, c-format
 msgid "Invalid libxl cpuid key=value element: %s"
 msgstr ""
@@ -10142,26 +10128,11 @@ msgstr "Ongeldig argument"
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "Ongeldige parameter voor virXPathBoolean()"
 
-msgid "Invalid parameter to virXPathLong()"
-msgstr "Ongeldige parameter voor virXPathLong()"
-
-msgid "Invalid parameter to virXPathLongLong()"
-msgstr "Ongeldige parameter voor virXPathLongLong()"
-
 msgid "Invalid parameter to virXPathNode()"
 msgstr "Ongeldige parameter voor virXPathNode()"
 
 msgid "Invalid parameter to virXPathNodeSet()"
 msgstr "Ongeldige parameter voor virXPathNodeSet()"
-
-msgid "Invalid parameter to virXPathNumber()"
-msgstr "Ongeldige parameter voor virXPathNumber()"
-
-msgid "Invalid parameter to virXPathString()"
-msgstr "Ongeldige parameter voor virXPathString()"
-
-msgid "Invalid parameter to virXPathULong()"
-msgstr "Ongeldige parameter voor virXPathULong()"
 
 #, fuzzy
 msgid "Invalid parameter type passed to free"
@@ -11193,10 +11164,6 @@ msgid "Missing CPU model name"
 msgstr "Ontbrekende CPU model naam"
 
 #, fuzzy
-msgid "Missing CPU vendor value"
-msgstr "Ontbrekende CPU eigenschap naam"
-
-#, fuzzy
 msgid "Missing ID parameter for domain object"
 msgstr "ontbrekende doel informatie voor apparaat"
 
@@ -11238,6 +11205,12 @@ msgid "Missing VIR_CRED_AUTHNAME credential type"
 msgstr ""
 
 msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
+msgstr ""
+
+msgid "Missing XPath context"
+msgstr ""
+
+msgid "Missing XPath expression"
 msgstr ""
 
 #, fuzzy
@@ -11487,14 +11460,6 @@ msgstr ""
 #, c-format
 msgid "Missing or invalid CPU frequency in %s"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Missing or invalid PVR mask in CPU model %s"
-msgstr "Ontbrekende voorouder naam in CPU model %s"
-
-#, fuzzy, c-format
-msgid "Missing or invalid PVR value in CPU model %s"
-msgstr "Ontbrekende voorouder naam in CPU model %s"
 
 #, c-format
 msgid ""
@@ -11877,11 +11842,6 @@ msgstr ""
 #, fuzzy
 msgid "NUMA tuning is not available in session mode"
 msgstr "Block I/O tuning is op deze host niet beschikbaar"
-
-#, fuzzy
-msgid ""
-"NUMA without specified memory backing is not supported with this QEMU binary"
-msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
 
 #, fuzzy, c-format
 msgid "NVMe device %s already in use by driver %s domain %s"
@@ -13251,10 +13211,6 @@ msgid "Per-node binding is not compatible with automatic NUMA placement."
 msgstr ""
 
 #, fuzzy
-msgid "Per-node memory binding is not supported with this QEMU"
-msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
-
-#, fuzzy
 msgid "Perf not supported on this platform"
 msgstr "Proces CPU affiniteit wordt op dit platform niet ondersteund"
 
@@ -14561,10 +14517,6 @@ msgstr "Verwijderbare media niet ondersteund voor %s apparaat"
 #, fuzzy
 msgid "Setup time:"
 msgstr "CPU tijd:"
-
-#, fuzzy
-msgid "Shared memory mapping is not supported with this QEMU"
-msgstr "spice graphics wordt niet ondersteund met deze QEMU"
 
 #, fuzzy
 msgid "Shared memory:\n"
@@ -16089,6 +16041,9 @@ msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
 #, fuzzy
 msgid "The machine has no snapshot and it should have it"
 msgstr "domein %s heeft geen snapshots met de naam %s"
+
+msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
+msgstr ""
 
 msgid "The minimum lease time should be greater than 2 minutes"
 msgstr ""
@@ -20205,23 +20160,8 @@ msgstr ""
 msgid "XML document failed to validate against schema: %s"
 msgstr ""
 
-#, fuzzy
-msgid "XML does not contain expected 'bios' element"
-msgstr "XML bevat geen verwacht 'sysinfo' element"
-
-#, fuzzy
-msgid "XML does not contain expected 'chassis' element"
-msgstr "XML bevat geen verwacht 'sysinfo' element"
-
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML bevat geen verwacht 'cpu' element"
-
-msgid "XML does not contain expected 'sysinfo' element"
-msgstr "XML bevat geen verwacht 'sysinfo' element"
-
-#, fuzzy
-msgid "XML does not contain expected 'system' element"
-msgstr "XML bevat geen verwacht 'sysinfo' element"
 
 #, fuzzy, c-format
 msgid "XML error: %s"
@@ -21748,10 +21688,6 @@ msgstr ""
 
 msgid "cannot extract memorytune nodes"
 msgstr ""
-
-#, fuzzy
-msgid "cannot extract numatune nodes"
-msgstr "kan binair bestand %s niet uitvoeren"
 
 #, fuzzy
 msgid "cannot extract resource nodes"
@@ -24439,10 +24375,6 @@ msgstr ""
 msgid "discover potential storage pool sources"
 msgstr "ontdek potentiële opslag pool bronnen"
 
-#, fuzzy
-msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
-msgstr "spice graphics wordt niet ondersteund met deze QEMU"
-
 #, fuzzy, c-format
 msgid "disk %s does not have an active block job"
 msgstr "geheim '%s' heeft geen waarde"
@@ -26490,6 +26422,9 @@ msgstr "Blok naam %s ontleden mislukte"
 msgid "failed to parse SCSI host '%s'"
 msgstr "Ontleden mode '%s' mislukte"
 
+msgid "failed to parse SGX sections in QEMU capabilities cache"
+msgstr ""
+
 #, fuzzy
 msgid "failed to parse agent timeout"
 msgstr "vzlist output ontleden misluke"
@@ -27835,6 +27770,10 @@ msgid "hotplug is not supported for hostdev subsys type '%s'"
 msgstr "niet-ondersteund grafisch type '%s'"
 
 #, c-format
+msgid "hotplug is not supported for the %s device"
+msgstr ""
+
+#, c-format
 msgid "hotplug of interface type of %s is not implemented yet"
 msgstr ""
 
@@ -27852,10 +27791,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "hub type %s not supported"
 msgstr "hostdev subsys type '%s' niet ondersteund"
-
-#, fuzzy
-msgid "huge pages per NUMA node are not supported with this QEMU"
-msgstr "spice graphics wordt niet ondersteund met deze QEMU"
 
 msgid "hugepage size can't be zero"
 msgstr ""
@@ -28205,9 +28140,6 @@ msgstr "Domein draait niet"
 msgid "interface mac"
 msgstr "interface mac"
 
-msgid "interface mtu value is improper"
-msgstr "interface mtu waarde is onjuist"
-
 msgid "interface name"
 msgstr "interface naam"
 
@@ -28526,15 +28458,6 @@ msgstr "ongeldige opslag pool aanwijzer in %s"
 msgid "invalid capability_filters capability '%s'"
 msgstr "geen apparaat mogelijkheden voor '%s'"
 
-msgid "invalid catchup limit"
-msgstr "ongeldige catchup limiet"
-
-msgid "invalid catchup slew"
-msgstr "ongeldige catchup slew"
-
-msgid "invalid catchup threshold"
-msgstr "ongeldige catchup drempel"
-
 #, fuzzy, c-format
 msgid "invalid char in %s: %c"
 msgstr "ongeldig scheduler optie: %s"
@@ -28850,9 +28773,6 @@ msgstr "ongeldig pad, '%s' is geen bekende interface"
 msgid "invalid path: %s"
 msgstr "ongeldig pad: %s"
 
-msgid "invalid pid"
-msgstr "ongeldig pid"
-
 msgid "invalid prefix, must be in range of 4-27"
 msgstr ""
 
@@ -28951,9 +28871,6 @@ msgid ""
 "invalid string value for '%s' host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
-
-msgid "invalid timer frequency"
-msgstr "ongeldige timer frequentie"
 
 #, fuzzy, c-format
 msgid "invalid tlsPort number: %s"
@@ -30038,6 +29955,12 @@ msgstr ""
 msgid "malformed/missing hotplugged in dimm memory info"
 msgstr ""
 
+msgid "malformed/missing memaddr in sgx-epc memory info"
+msgstr ""
+
+msgid "malformed/missing size in sgx-epc memory info"
+msgstr ""
+
 msgid "malformed/missing size in virtio memory info"
 msgstr ""
 
@@ -30208,6 +30131,10 @@ msgstr ""
 "van qemu"
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
+msgstr ""
+
+#, c-format
+msgid "memory device address is not supported for model '%s'"
 msgstr ""
 
 msgid "memory device alias"
@@ -30707,6 +30634,9 @@ msgstr ""
 msgid "missing SEV platform data in QEMU capabilities cache"
 msgstr ""
 
+msgid "missing SGX platform data in QEMU capabilities cache"
+msgstr ""
+
 #, fuzzy
 msgid "missing TPM device backend"
 msgstr "ontbrekend invoer apparaat type"
@@ -31074,6 +31004,9 @@ msgstr "ontbrekende root apparaat informatie in %s"
 msgid "missing network device feature name"
 msgstr "Te lange netwerk apparaat naam"
 
+msgid "missing node name in QEMU capabilities cache"
+msgstr ""
+
 #, c-format
 msgid "missing number of available instances for mediated device type '%s'"
 msgstr ""
@@ -31093,11 +31026,16 @@ msgstr "ontbrekende besturingssysteem informatie voor %s"
 msgid "missing or broken bitmap '%s' for disk '%s'"
 msgstr ""
 
-#, fuzzy
-msgid "missing or invalid CPU cache mode"
-msgstr "ontbrekende smartcard apparaat mode"
-
 msgid "missing or invalid CPU model property type in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr ""
 
 msgid "missing or invalid cpuid-input-eax in CPU data"
@@ -31105,10 +31043,6 @@ msgstr ""
 
 msgid "missing or invalid features in CPU data"
 msgstr ""
-
-#, fuzzy
-msgid "missing or invalid vlan tag id attribute"
-msgstr "ontbrekend domein type attribuut"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr ""
@@ -31122,6 +31056,10 @@ msgstr ""
 msgid ""
 "missing or malformed SEV reducedPhysBits information in QEMU capabilities "
 "cache"
+msgstr ""
+
+msgid ""
+"missing or malformed SGX platform section_size in QEMU capabilities cache"
 msgstr ""
 
 msgid "missing or malformed session-uuid element in migration data"
@@ -31246,6 +31184,9 @@ msgstr ""
 msgid "missing sheepdog vdi name"
 msgstr "timer naam ontbreekt"
 
+msgid "missing size name in QEMU capabilities cache"
+msgstr ""
+
 msgid "missing socket address type in JSON backing volume definition"
 msgstr ""
 
@@ -31348,9 +31289,6 @@ msgstr "ontbrekende doel informatie voor apparaat %s"
 
 msgid "missing the host address for the iSCSI hostdev"
 msgstr ""
-
-msgid "missing timer name"
-msgstr "timer naam ontbreekt"
 
 #, fuzzy
 msgid "missing tlsPort attribute in migration data"
@@ -32657,10 +32595,6 @@ msgid "nparams too large"
 msgstr "nparams te groot"
 
 #, fuzzy
-msgid "num-queues property isn't supported by this QEMU binary"
-msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
-
-#, fuzzy
 msgid "numa parameters are not supported by vz driver"
 msgstr "SASL mechanisme %s wordt door server niet ondersteund"
 
@@ -32726,10 +32660,6 @@ msgstr ""
 
 msgid "nvcpus is zero"
 msgstr ""
-
-#, fuzzy
-msgid "nvdimm align property is not available with this QEMU binary"
-msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
 
 #, fuzzy
 msgid "nvdimm isn't supported by this QEMU binary"
@@ -34060,6 +33990,24 @@ msgstr ""
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
 msgstr ""
 
+msgid "query-sgx-capabilities reply was missing 'flc' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'node' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'section-size' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx1' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx2' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'size' field"
+msgstr ""
+
 #, fuzzy
 msgid "query-status reply was missing running state"
 msgstr "info migratie antwoord miste retour status"
@@ -34384,9 +34332,6 @@ msgstr "gedetailleerde domein vcpu informatie"
 msgid "report error if CPUs are incompatible"
 msgstr "CPU's zijn incompatibel"
 
-msgid "report fd-based VM statistics by KVM"
-msgstr ""
-
 #, fuzzy
 msgid "report filesystem information"
 msgstr "netwerk filter informatie in XML"
@@ -34394,6 +34339,9 @@ msgstr "netwerk filter informatie in XML"
 #, fuzzy
 msgid "report hostname"
 msgstr "kon host naam niet krijgen"
+
+msgid "report hypervisor-specific statistics"
+msgstr ""
 
 msgid "report interface information"
 msgstr ""
@@ -34984,10 +34932,6 @@ msgstr "operatie type %d wordt niet ondersteund"
 msgid "setting ACPI S4 not supported"
 msgstr "operatie type %d wordt niet ondersteund"
 
-#, fuzzy
-msgid "setting MTU is not supported with this QEMU binary"
-msgstr "SATA wordt niet ondersteund met dit QEMU binaire programma"
-
 #, fuzzy, c-format
 msgid "setting MTU on interface type %s is not supported yet"
 msgstr "Netwerk type %d wordt niet ondersteund."
@@ -35041,6 +34985,20 @@ msgstr ""
 #, fuzzy
 msgid "sgio is only supported for scsi host device"
 msgstr "Verwijderbare media niet ondersteund voor %s apparaat"
+
+msgid "sgx epc isn't supported by this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %d is less than requested size %lld"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
+msgstr ""
+
+msgid "sgx-epc memory info data is missing 'memdev'"
+msgstr ""
 
 #, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
@@ -35661,9 +35619,6 @@ msgstr ""
 msgid "sysctl failed for '%s'"
 msgstr "geen grootte opgegeven voor '%s'"
 
-msgid "sysinfo must contain a type attribute"
-msgstr "sysinfo moet bevatten een type attribuut bevatten"
-
 msgid "system call error"
 msgstr "systeem aanroep fout"
 
@@ -35902,6 +35857,9 @@ msgstr "Verwerkt bestand:"
 msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
 msgstr ""
 
+msgid "the running swtpm does not support migration with shared storage"
+msgstr ""
+
 msgid "the signal number or name"
 msgstr ""
 
@@ -35986,7 +35944,7 @@ msgstr "ps2 bus ondersteunt %s input apparaat niet"
 msgid "this QEMU does not support the 'genid' capability"
 msgstr ""
 
-msgid "this QEMU doesn't support memory discard"
+msgid "this QEMU version didn't provide SGX EPC NUMA info"
 msgstr ""
 
 #, fuzzy
@@ -36025,13 +35983,7 @@ msgstr ""
 msgid "this qemu does not support TLS transport for NBD"
 msgstr ""
 
-msgid "this qemu doesn't support the memory-backend-file object"
-msgstr ""
-
 msgid "this qemu doesn't support the memory-backend-memfd object"
-msgstr ""
-
-msgid "this qemu doesn't support the memory-backend-ram object"
 msgstr ""
 
 msgid "this qemu doesn't support the rng-builtin backend"
@@ -37931,10 +37883,6 @@ msgstr "onbekend opslag volume type %d"
 msgid "unknown suffix '%s'"
 msgstr "onbekend type '%s'"
 
-#, c-format
-msgid "unknown sysinfo type '%s'"
-msgstr "onbekend sysinfo type '%s'"
-
 #, fuzzy, c-format
 msgid "unknown target model '%s' specified for character device"
 msgstr "onbekend type opgegeven aan host voor karakter apparaat: %s"
@@ -37946,22 +37894,6 @@ msgstr "doel type moet gespecificeerd worden voor %s apparaat"
 #, fuzzy, c-format
 msgid "unknown teaming type '%s'"
 msgstr "onbekend doorstuur type '%s'"
-
-#, c-format
-msgid "unknown timer mode '%s'"
-msgstr "onbekende timer mode '%s'"
-
-#, c-format
-msgid "unknown timer name '%s'"
-msgstr "onbekende timer naam '%s'"
-
-#, c-format
-msgid "unknown timer tickpolicy '%s'"
-msgstr "onbekende timer tickpolicy '%s'"
-
-#, c-format
-msgid "unknown timer track '%s'"
-msgstr "onbekende timer track '%s'"
 
 #, c-format
 msgid "unknown type '%s'"
@@ -38672,6 +38604,9 @@ msgstr "Model naam bevat ongeldige karakters"
 msgid "value of managerid out of range"
 msgstr "waarde van managerid buiten het bereik"
 
+msgid "value of the 'size' attribute of 'mtu' element must be at most 100000"
+msgstr ""
+
 msgid "value of typeidversion out of range"
 msgstr "waarde van typeidversion buiten het bereik "
 
@@ -38999,10 +38934,6 @@ msgstr ""
 msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
 msgstr ""
 
-#, fuzzy
-msgid "virtio rx_queue_size option is not supported with this QEMU binary"
-msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
-
 #, c-format
 msgid "virtio serial controller %u does not have port %u"
 msgstr ""
@@ -39023,19 +38954,11 @@ msgstr "virtio serieel apparaat heeft ongeldig adres type"
 msgid "virtio serial port %u on controller %u is already occupied"
 msgstr ""
 
-#, fuzzy
-msgid "virtio tx_queue_size option is not supported with this QEMU binary"
-msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
-
 msgid "virtio-mem device is missing <requested/>"
 msgstr ""
 
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr ""
-
-#, fuzzy
-msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
-msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
 
 #, c-format
 msgid ""
@@ -39134,7 +39057,7 @@ msgid "vlan misses the tag name"
 msgstr "vlan mist de tag naam"
 
 #, c-format
-msgid "vlan tag id %lu too large (maximum 4095)"
+msgid "vlan tag id %u too large (maximum 4095)"
 msgstr ""
 
 #, c-format
@@ -39492,6 +39415,161 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <tekenreeks>"
+
+#, fuzzy
+#~ msgid "CPU vendor value 0x%2lx already defined"
+#~ msgstr "CPU leverancier %s is al gedefinieerd"
+
+#, fuzzy
+#~ msgid "Invalid IPv4 prefix '%lu' in network '%s'"
+#~ msgstr "Ongeldig bridge mac adres '%s' in netwerk '%s'"
+
+#, fuzzy
+#~ msgid "Invalid IPv6 prefix '%lu' in network '%s'"
+#~ msgstr "Ongeldig bridge mac adres '%s' in netwerk '%s'"
+
+#, fuzzy
+#~ msgid "Invalid job flags"
+#~ msgstr "ongeldig vlag"
+
+#~ msgid "Invalid parameter to virXPathLong()"
+#~ msgstr "Ongeldige parameter voor virXPathLong()"
+
+#~ msgid "Invalid parameter to virXPathLongLong()"
+#~ msgstr "Ongeldige parameter voor virXPathLongLong()"
+
+#~ msgid "Invalid parameter to virXPathNumber()"
+#~ msgstr "Ongeldige parameter voor virXPathNumber()"
+
+#~ msgid "Invalid parameter to virXPathString()"
+#~ msgstr "Ongeldige parameter voor virXPathString()"
+
+#~ msgid "Invalid parameter to virXPathULong()"
+#~ msgstr "Ongeldige parameter voor virXPathULong()"
+
+#, fuzzy
+#~ msgid "Missing CPU vendor value"
+#~ msgstr "Ontbrekende CPU eigenschap naam"
+
+#, fuzzy
+#~ msgid "Missing or invalid PVR mask in CPU model %s"
+#~ msgstr "Ontbrekende voorouder naam in CPU model %s"
+
+#, fuzzy
+#~ msgid "Missing or invalid PVR value in CPU model %s"
+#~ msgstr "Ontbrekende voorouder naam in CPU model %s"
+
+#, fuzzy
+#~ msgid ""
+#~ "NUMA without specified memory backing is not supported with this QEMU "
+#~ "binary"
+#~ msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
+
+#, fuzzy
+#~ msgid "Per-node memory binding is not supported with this QEMU"
+#~ msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
+
+#, fuzzy
+#~ msgid "Shared memory mapping is not supported with this QEMU"
+#~ msgstr "spice graphics wordt niet ondersteund met deze QEMU"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'bios' element"
+#~ msgstr "XML bevat geen verwacht 'sysinfo' element"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'chassis' element"
+#~ msgstr "XML bevat geen verwacht 'sysinfo' element"
+
+#~ msgid "XML does not contain expected 'sysinfo' element"
+#~ msgstr "XML bevat geen verwacht 'sysinfo' element"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'system' element"
+#~ msgstr "XML bevat geen verwacht 'sysinfo' element"
+
+#, fuzzy
+#~ msgid "cannot extract numatune nodes"
+#~ msgstr "kan binair bestand %s niet uitvoeren"
+
+#, fuzzy
+#~ msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
+#~ msgstr "spice graphics wordt niet ondersteund met deze QEMU"
+
+#, fuzzy
+#~ msgid "huge pages per NUMA node are not supported with this QEMU"
+#~ msgstr "spice graphics wordt niet ondersteund met deze QEMU"
+
+#~ msgid "interface mtu value is improper"
+#~ msgstr "interface mtu waarde is onjuist"
+
+#~ msgid "invalid catchup limit"
+#~ msgstr "ongeldige catchup limiet"
+
+#~ msgid "invalid catchup slew"
+#~ msgstr "ongeldige catchup slew"
+
+#~ msgid "invalid catchup threshold"
+#~ msgstr "ongeldige catchup drempel"
+
+#~ msgid "invalid pid"
+#~ msgstr "ongeldig pid"
+
+#~ msgid "invalid timer frequency"
+#~ msgstr "ongeldige timer frequentie"
+
+#, fuzzy
+#~ msgid "missing or invalid CPU cache mode"
+#~ msgstr "ontbrekende smartcard apparaat mode"
+
+#, fuzzy
+#~ msgid "missing or invalid vlan tag id attribute"
+#~ msgstr "ontbrekend domein type attribuut"
+
+#~ msgid "missing timer name"
+#~ msgstr "timer naam ontbreekt"
+
+#, fuzzy
+#~ msgid "num-queues property isn't supported by this QEMU binary"
+#~ msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
+
+#, fuzzy
+#~ msgid "nvdimm align property is not available with this QEMU binary"
+#~ msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
+
+#, fuzzy
+#~ msgid "setting MTU is not supported with this QEMU binary"
+#~ msgstr "SATA wordt niet ondersteund met dit QEMU binaire programma"
+
+#~ msgid "sysinfo must contain a type attribute"
+#~ msgstr "sysinfo moet bevatten een type attribuut bevatten"
+
+#~ msgid "unknown sysinfo type '%s'"
+#~ msgstr "onbekend sysinfo type '%s'"
+
+#~ msgid "unknown timer mode '%s'"
+#~ msgstr "onbekende timer mode '%s'"
+
+#~ msgid "unknown timer name '%s'"
+#~ msgstr "onbekende timer naam '%s'"
+
+#~ msgid "unknown timer tickpolicy '%s'"
+#~ msgstr "onbekende timer tickpolicy '%s'"
+
+#~ msgid "unknown timer track '%s'"
+#~ msgstr "onbekende timer track '%s'"
+
+#, fuzzy
+#~ msgid "virtio rx_queue_size option is not supported with this QEMU binary"
+#~ msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
+
+#, fuzzy
+#~ msgid "virtio tx_queue_size option is not supported with this QEMU binary"
+#~ msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
+
+#, fuzzy
+#~ msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
+#~ msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
 
 #, fuzzy
 #~ msgid "%s 3d acceleration is not supported"

@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-10-25 07:42+0000\n"
+"POT-Creation-Date: 2022-11-24 14:54+0000\n"
 "PO-Revision-Date: 2022-09-25 12:19+0000\n"
 "Last-Translator: zhanchun li <lzc777@126.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -534,6 +534,12 @@ msgid "%s %s '%s' has unsupported type '%s', expecting '%s' or '%s'"
 msgstr "%s %s '%s' 不支持 '%s' 类型，应为 '%s' 或者 '%s'"
 
 #, c-format
+msgid ""
+"%s (on destination side) does not support the --migration option needed for "
+"migration with shared storage"
+msgstr ""
+
+#, c-format
 msgid "%s (out of %d)"
 msgstr "%s （%d 中的）"
 
@@ -648,6 +654,10 @@ msgstr "此 QEMU 二进制文件不支持 %s"
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "%s 长度超过上限：%d > %d"
+
+#, c-format
+msgid "%s memory device info is not handled yet"
+msgstr ""
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -798,14 +808,6 @@ msgid "%s: IPv4 family specified for non-IPv4 gateway '%s' in route definition"
 msgstr "%s：路由定义中没有为非 IPv4 网关 '%s' 指定 IPv4 产品线"
 
 #, c-format
-msgid "%s: Invalid metric specified in route definition"
-msgstr "%s：路由定义中指定的无效度量标准"
-
-#, c-format
-msgid "%s: Invalid metric value, must be > 0 in route definition"
-msgstr "%s：无效度量值，在路由定义中必须大于 0。"
-
-#, c-format
 msgid "%s: Invalid netmask '%s' for address '%s' (both must be IPv4)"
 msgstr "%s：地址 '%s' 的无效子网掩码 '%s'（二者必须都为 IPv4）"
 
@@ -816,10 +818,6 @@ msgstr "%s：路由定义中的无效前缀 %u，必须为 0-128"
 #, c-format
 msgid "%s: Invalid prefix %u specified in route definition, must be 0 - 32"
 msgstr "%s：路由定义中的无效前缀 %u，必须为 0-32"
-
-#, c-format
-msgid "%s: Invalid prefix specified in route definition"
-msgstr "%s：路由定义中指定的无效前缀"
 
 #, c-format
 msgid "%s: Missing required address attribute in route definition"
@@ -2302,8 +2300,8 @@ msgid "CPU vendor specified without CPU model"
 msgstr "指定 CPU 销售商但没有 CPU 型号"
 
 #, c-format
-msgid "CPU vendor value 0x%2lx already defined"
-msgstr "CPU 供应商值 0x%2lx 已定义"
+msgid "CPU vendor value 0x%2llx already defined"
+msgstr ""
 
 msgid "CPU vendors do not match"
 msgstr "CPU 供应商不匹配"
@@ -2776,16 +2774,16 @@ msgid "Cannot find 'iothread' : %u"
 msgstr "无法找到 'iothread' : %u"
 
 #, c-format
-msgid "Cannot find CPU model with PVR 0x%03lx"
-msgstr "无法找到具有 PVR 0x%03lx 的 CPU 型号"
+msgid "Cannot find CPU model with PVR 0x%03llx"
+msgstr ""
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "无法找到具有 PVR 0x%08x 的 CPU 型号"
 
 #, c-format
-msgid "Cannot find CPU vendor with vendor id 0x%02lx"
-msgstr "无法找到厂商 id 为 0x%02lx 的 CPU 供应商"
+msgid "Cannot find CPU vendor with vendor id 0x%02llx"
+msgstr ""
 
 #, c-format
 msgid "Cannot find boot device of requested type %s"
@@ -9200,10 +9198,6 @@ msgid ""
 msgstr "只有 SR-IOV Virtual Functions 目前支持接口类型 hostdev"
 
 #, c-format
-msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
-msgstr "vlan <tag> 元素中无效的 \"nativeMode='%s'\""
-
-#, c-format
 msgid "Invalid %s attribute 'vcpus' value '%s'"
 msgstr "无效的 %s 属性 'vcpus' 值 '%s'"
 
@@ -9269,12 +9263,12 @@ msgid "Invalid IP address in static host definition for network '%s'"
 msgstr "网络 '%s' 静态主机定义中的无效 IP 地址"
 
 #, c-format
-msgid "Invalid IPv4 prefix '%lu' in network '%s'"
-msgstr "无效 IPv4 前缀 '%lu' 出现在网络 '%s' 中"
+msgid "Invalid IPv4 prefix '%u' in network '%s'"
+msgstr ""
 
 #, c-format
-msgid "Invalid IPv6 prefix '%lu' in network '%s'"
-msgstr "无效 IPv6 前缀 '%lu' 出现在网络 '%s' 中"
+msgid "Invalid IPv6 prefix '%u' in network '%s'"
+msgstr ""
 
 msgid "Invalid NULL callback provided"
 msgstr "提供无效 NULL 回叫"
@@ -9327,10 +9321,6 @@ msgstr "VM 的无效 PID %d"
 #, c-format
 msgid "Invalid STP state value %d received for '%s'. Must be -1, 0, or 1."
 msgstr "%d 收到的 '%s' 无效 STP 状态值。必须为 -1、0 或者 1。"
-
-#, c-format
-msgid "Invalid ULong value specified for prefix in definition of network '%s'"
-msgstr "网络 '%s' 定义中为前缀指定的无效 ULong 值"
 
 #, c-format
 msgid "Invalid URI path '%s', try '/system'"
@@ -9666,9 +9656,6 @@ msgstr "文件 '%s' 中无效的整数值 '%s'"
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "网络 '%s' 中有无效 ipv6 设置 '%s'"
 
-msgid "Invalid job flags"
-msgstr "无效的作业标记"
-
 #, c-format
 msgid "Invalid libxl cpuid key=value element: %s"
 msgstr "无效的 libxl cpuid key=value 元素：%s"
@@ -9810,26 +9797,11 @@ msgstr "无效参数"
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "virXPathBoolean() 的无效参数"
 
-msgid "Invalid parameter to virXPathLong()"
-msgstr "virXPathLong() 的无效参数"
-
-msgid "Invalid parameter to virXPathLongLong()"
-msgstr "virXPathLongLong() 的无效参数"
-
 msgid "Invalid parameter to virXPathNode()"
 msgstr "virXPathNode() 的无效参数"
 
 msgid "Invalid parameter to virXPathNodeSet()"
 msgstr "virXPathNodeSet() 的无效参数"
-
-msgid "Invalid parameter to virXPathNumber()"
-msgstr "virXPathNumber() 的无效参数"
-
-msgid "Invalid parameter to virXPathString()"
-msgstr "virXPathString() 的无效参数"
-
-msgid "Invalid parameter to virXPathULong()"
-msgstr "virXPathLong() 的无效参数"
 
 msgid "Invalid parameter type passed to free"
 msgstr "传递给 free 的无效的参数类型"
@@ -10806,9 +10778,6 @@ msgstr "缺少 CPU 特性名称"
 msgid "Missing CPU model name"
 msgstr "缺少 CPU 型号名"
 
-msgid "Missing CPU vendor value"
-msgstr "缺少 CPU 供应商值"
-
 msgid "Missing ID parameter for domain object"
 msgstr "域对象缺少 ID 参数"
 
@@ -10850,6 +10819,12 @@ msgstr "缺少 VIR_CRED_AUTHNAME 凭证类型"
 
 msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
 msgstr "缺少 VIR_CRED_PASSPHRASE 或 VIR_CRED_NOECHOPROMPT 凭证类型"
+
+msgid "Missing XPath context"
+msgstr ""
+
+msgid "Missing XPath expression"
+msgstr ""
 
 msgid "Missing acpi table type"
 msgstr "缺少 acpi 表类型"
@@ -11082,14 +11057,6 @@ msgstr ""
 #, c-format
 msgid "Missing or invalid CPU frequency in %s"
 msgstr "在 %s 中缺少或无效的 CPU 频率"
-
-#, c-format
-msgid "Missing or invalid PVR mask in CPU model %s"
-msgstr "在 CPU 型号 %s 中缺少或无效的 PVR mask"
-
-#, c-format
-msgid "Missing or invalid PVR value in CPU model %s"
-msgstr "CPU 型号 %s 中缺少或者有无效 PVR 值"
 
 #, c-format
 msgid ""
@@ -11454,10 +11421,6 @@ msgstr "未定义 NUMA 单元的 NUMA 拓扑"
 
 msgid "NUMA tuning is not available in session mode"
 msgstr "会话模式中 NUMA 调优不可用"
-
-msgid ""
-"NUMA without specified memory backing is not supported with this QEMU binary"
-msgstr "此 QEMU 二进制文件不支持没有指定内存支持的 NUMA"
 
 #, c-format
 msgid "NVMe device %s already in use by driver %s domain %s"
@@ -12749,9 +12712,6 @@ msgstr ""
 msgid "Per-node binding is not compatible with automatic NUMA placement."
 msgstr "按节点绑定与自动 NUMA 分配不兼容"
 
-msgid "Per-node memory binding is not supported with this QEMU"
-msgstr "此 QEMU 不支持按节点的内存绑定"
-
 msgid "Perf not supported on this platform"
 msgstr "此平台上不支持 perf"
 
@@ -13986,9 +13946,6 @@ msgstr "lun 设备不支持设定 wwn"
 
 msgid "Setup time:"
 msgstr "设置时间："
-
-msgid "Shared memory mapping is not supported with this QEMU"
-msgstr "此 QEMU 不支持共享内存映射"
 
 msgid "Shared memory:\n"
 msgstr "共享内存：\n"
@@ -15434,6 +15391,9 @@ msgstr "这个 QEMU 二进制文件不支持 ich9-intel-hda 音频控制器"
 
 msgid "The machine has no snapshot and it should have it"
 msgstr "机器没有快照，但应该有"
+
+msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
+msgstr ""
 
 msgid "The minimum lease time should be greater than 2 minutes"
 msgstr "最小租期时间应大于 2 分钟"
@@ -19282,20 +19242,8 @@ msgstr "XML 文档无法对模式进行验证"
 msgid "XML document failed to validate against schema: %s"
 msgstr "XML 文档无法对模式进行验证：%s"
 
-msgid "XML does not contain expected 'bios' element"
-msgstr "XML 不包含预期的 'bios' 元素"
-
-msgid "XML does not contain expected 'chassis' element"
-msgstr "XML 不包含预期的 'chassis' 元素"
-
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML 不包含预期的‘cpu’ 元素"
-
-msgid "XML does not contain expected 'sysinfo' element"
-msgstr "XML 不包含预期的‘sysinfo’ 元素"
-
-msgid "XML does not contain expected 'system' element"
-msgstr "XML 不包含预期的 'system' 元素"
 
 #, c-format
 msgid "XML error: %s"
@@ -20760,9 +20708,6 @@ msgstr "无法提取 iothreadsched 节点"
 
 msgid "cannot extract memorytune nodes"
 msgstr "无法提取内存调优节点"
-
-msgid "cannot extract numatune nodes"
-msgstr "无法提取 numatune 节点"
 
 msgid "cannot extract resource nodes"
 msgstr "无法提取资源节点"
@@ -23310,9 +23255,6 @@ msgstr "已断开"
 msgid "discover potential storage pool sources"
 msgstr "发现潜在存储池源"
 
-msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
-msgstr "这个 QEMU 不支持断开的 NUMA cpu 范围"
-
 #, c-format
 msgid "disk %s does not have an active block job"
 msgstr "磁盘 %s 没有活跃的块作业"
@@ -25255,6 +25197,9 @@ msgstr "无法在 QEMU 功能中解析 CPU 块程序"
 msgid "failed to parse SCSI host '%s'"
 msgstr "无法解析 SCSI 主机 '%s'"
 
+msgid "failed to parse SGX sections in QEMU capabilities cache"
+msgstr ""
+
 msgid "failed to parse agent timeout"
 msgstr "无法解析代理超时"
 
@@ -26531,6 +26476,10 @@ msgid "hotplug is not supported for hostdev subsys type '%s'"
 msgstr "hostdev 子系统类型 '%s' 不支持热插拔"
 
 #, c-format
+msgid "hotplug is not supported for the %s device"
+msgstr ""
+
+#, c-format
 msgid "hotplug of interface type of %s is not implemented yet"
 msgstr "%s 的接口类型的热插拔尚未实现"
 
@@ -26547,9 +26496,6 @@ msgstr "HTTP Cookie 只支持 HTTP(S)协议"
 #, c-format
 msgid "hub type %s not supported"
 msgstr "不支持集线器类型 %s"
-
-msgid "huge pages per NUMA node are not supported with this QEMU"
-msgstr "此 QEMU 不支持按 NUMA 节点的巨页"
 
 msgid "hugepage size can't be zero"
 msgstr "hugepage 大小不能为 0"
@@ -26881,9 +26827,6 @@ msgstr "接口未运行"
 msgid "interface mac"
 msgstr "接口 mac"
 
-msgid "interface mtu value is improper"
-msgstr "接口 mtu 值不恰当"
-
 msgid "interface name"
 msgstr "接口名称"
 
@@ -27192,15 +27135,6 @@ msgstr "无效的后备协议字符串 '%s'"
 msgid "invalid capability_filters capability '%s'"
 msgstr "无效的 capability_filters 功能 '%s'"
 
-msgid "invalid catchup limit"
-msgstr "无效 catchup 极限"
-
-msgid "invalid catchup slew"
-msgstr "无效 catchup 回转"
-
-msgid "invalid catchup threshold"
-msgstr "无效 catchup 临界值"
-
 #, c-format
 msgid "invalid char in %s: %c"
 msgstr "%s 中无效的字符：%c"
@@ -27503,9 +27437,6 @@ msgstr "无效路径，'%s' 是未知接口"
 msgid "invalid path: %s"
 msgstr "无效路径：%s"
 
-msgid "invalid pid"
-msgstr "无效 pid"
-
 msgid "invalid prefix, must be in range of 4-27"
 msgstr "无效的前缀，必须在 4-27 范围内"
 
@@ -27600,9 +27531,6 @@ msgid ""
 "invalid string value for '%s' host CPU model property in QEMU capabilities "
 "cache"
 msgstr "QEMU 功能缓存中 '%s' 主机 CPU 型号属性的无效的字符串值"
-
-msgid "invalid timer frequency"
-msgstr "无效计时器频率"
 
 #, c-format
 msgid "invalid tlsPort number: %s"
@@ -28591,6 +28519,12 @@ msgstr "dimm 内存信息中格式错误的/丢失的可热插拔"
 msgid "malformed/missing hotplugged in dimm memory info"
 msgstr "dimm 内存信息中格式错误的/丢失的热插拔"
 
+msgid "malformed/missing memaddr in sgx-epc memory info"
+msgstr ""
+
+msgid "malformed/missing size in sgx-epc memory info"
+msgstr ""
+
 msgid "malformed/missing size in virtio memory info"
 msgstr "virtio 内存信息中格式错误的/丢失的的大小"
 
@@ -28740,6 +28674,10 @@ msgstr "在没有 guest numa 节点的情况下不支持内存访问模式 '%s'"
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "内存属性：[file=]name[,snapshot=type]"
+
+#, c-format
+msgid "memory device address is not supported for model '%s'"
+msgstr ""
 
 msgid "memory device alias"
 msgstr "内存设备别名"
@@ -29206,6 +29144,9 @@ msgstr "QEMU 功能缓存中缺少 SEV pdh 信息"
 msgid "missing SEV platform data in QEMU capabilities cache"
 msgstr "QEMU 功能缓存中缺少 SEV 平台数据"
 
+msgid "missing SGX platform data in QEMU capabilities cache"
+msgstr ""
+
 msgid "missing TPM device backend"
 msgstr "缺少 TPM 设备后端"
 
@@ -29525,6 +29466,9 @@ msgstr "%s 中缺少名称信息"
 msgid "missing network device feature name"
 msgstr "缺少网络设备功能名称"
 
+msgid "missing node name in QEMU capabilities cache"
+msgstr ""
+
 #, c-format
 msgid "missing number of available instances for mediated device type '%s'"
 msgstr "缺少中介设备类型 '%s' 的可用实例数"
@@ -29543,20 +29487,23 @@ msgstr "丢失操作系统信息 %s"
 msgid "missing or broken bitmap '%s' for disk '%s'"
 msgstr "缺少或损坏了磁盘 '%s' 的位图 '%s'"
 
-msgid "missing or invalid CPU cache mode"
-msgstr "缺少或无效的 CPU 缓存模式"
-
 msgid "missing or invalid CPU model property type in QEMU capabilities cache"
 msgstr "QEMU 功能缓存中缺少或无效的 CPU 型号属性类型"
+
+msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
+msgstr ""
 
 msgid "missing or invalid cpuid-input-eax in CPU data"
 msgstr "CPU 数据中缺少或无效的 cpuid-input-eax"
 
 msgid "missing or invalid features in CPU data"
 msgstr "CPU 数据中缺少或无效的功能"
-
-msgid "missing or invalid vlan tag id attribute"
-msgstr "缺少 vlan tagid 属性或者属性无效"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr "缺失或格式错误的 'nvme' 存储的 'device' 字段"
@@ -29571,6 +29518,10 @@ msgid ""
 "missing or malformed SEV reducedPhysBits information in QEMU capabilities "
 "cache"
 msgstr "QEMU 功能缓存中缺少或格式错误的 SEV reducedPhysBits 信息"
+
+msgid ""
+"missing or malformed SGX platform section_size in QEMU capabilities cache"
+msgstr ""
 
 msgid "missing or malformed session-uuid element in migration data"
 msgstr "迁移数据中缺少或格式错误的 session-uuid 元素"
@@ -29685,6 +29636,9 @@ msgstr "JSON 后备卷定义中缺少 sheepdog URI"
 msgid "missing sheepdog vdi name"
 msgstr "缺少 sheepdog vdi 名称"
 
+msgid "missing size name in QEMU capabilities cache"
+msgstr ""
+
 msgid "missing socket address type in JSON backing volume definition"
 msgstr "JSON 后备卷定义中缺少套接字地址类型"
 
@@ -29779,9 +29733,6 @@ msgstr "丢失设备的目标信息 %s"
 
 msgid "missing the host address for the iSCSI hostdev"
 msgstr "缺少 iSCSI hostdev 的主机地址"
-
-msgid "missing timer name"
-msgstr "缺少计时器名称"
 
 msgid "missing tlsPort attribute in migration data"
 msgstr "迁移数据中缺少 tlsport 属性"
@@ -31024,9 +30975,6 @@ msgstr "%s 中的 nparams 必须等于 %d"
 msgid "nparams too large"
 msgstr "nparmas 过大"
 
-msgid "num-queues property isn't supported by this QEMU binary"
-msgstr "这个 QEMU 二进制文件不支持 num-queues 属性"
-
 msgid "numa parameters are not supported by vz driver"
 msgstr "vz 驱动程序不支持 numa 参数"
 
@@ -31088,9 +31036,6 @@ msgstr "数字溢出：%s"
 
 msgid "nvcpus is zero"
 msgstr "nvcpus 为 0"
-
-msgid "nvdimm align property is not available with this QEMU binary"
-msgstr "此 QEMU 二进制文件没有 NVDIMM align 属性"
 
 msgid "nvdimm isn't supported by this QEMU binary"
 msgstr "此 QEMU 二进制文件不支持 NVDIMM"
@@ -32350,6 +32295,24 @@ msgstr "query-sev-capabilities 回复缺少 'pdh' 字段"
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
 msgstr "query-sev-capabilities 回复缺少 'reduced-phys-bits' 字段"
 
+msgid "query-sgx-capabilities reply was missing 'flc' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'node' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'section-size' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx1' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx2' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'size' field"
+msgstr ""
+
 msgid "query-status reply was missing running state"
 msgstr "query-status 回复缺少返回状态"
 
@@ -32655,14 +32618,14 @@ msgstr "报告域虚拟 CPU 信息"
 msgid "report error if CPUs are incompatible"
 msgstr "如果 CPU 不兼容，则报告错误"
 
-msgid "report fd-based VM statistics by KVM"
-msgstr ""
-
 msgid "report filesystem information"
 msgstr "报告文件系统信息"
 
 msgid "report hostname"
 msgstr "报告主机名"
+
+msgid "report hypervisor-specific statistics"
+msgstr ""
 
 msgid "report interface information"
 msgstr "报告接口信息"
@@ -33210,9 +33173,6 @@ msgstr "不支持设定 ACPI S3"
 msgid "setting ACPI S4 not supported"
 msgstr "不支持设定 ACPI S4"
 
-msgid "setting MTU is not supported with this QEMU binary"
-msgstr "此 QEMU 二进制文件不支持设置 MTU"
-
 #, c-format
 msgid "setting MTU on interface type %s is not supported yet"
 msgstr "尚不支持在接口类型 %s 上设置 MTU"
@@ -33264,6 +33224,20 @@ msgstr "sgio 只能与 device='lun' 一起使用"
 
 msgid "sgio is only supported for scsi host device"
 msgstr "只有 scsi 主机设备支持 sgio"
+
+msgid "sgx epc isn't supported by this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %d is less than requested size %lld"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
+msgstr ""
+
+msgid "sgx-epc memory info data is missing 'memdev'"
+msgstr ""
 
 #, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
@@ -33856,9 +33830,6 @@ msgstr "sysconf(_SC_OPEN_MAX) 失败"
 msgid "sysctl failed for '%s'"
 msgstr "'%s' 的 sysctl 失败"
 
-msgid "sysinfo must contain a type attribute"
-msgstr "sysinfo 必须包含 type 属性"
-
 msgid "system call error"
 msgstr "系统调用错误"
 
@@ -34086,6 +34057,9 @@ msgstr "进程 ID"
 msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
 msgstr "结果无法用于 REMOTE_NODE_MAX_CELLS"
 
+msgid "the running swtpm does not support migration with shared storage"
+msgstr ""
+
 msgid "the signal number or name"
 msgstr "信号数或者名称"
 
@@ -34170,8 +34144,8 @@ msgstr "此 QEMU 不支持 'vhost-user' 视频设备"
 msgid "this QEMU does not support the 'genid' capability"
 msgstr "此 QEMU 不支持 'genid' 功能"
 
-msgid "this QEMU doesn't support memory discard"
-msgstr "这个 QEMU 不支持内存丢弃"
+msgid "this QEMU version didn't provide SGX EPC NUMA info"
+msgstr ""
 
 msgid "this disk doesn't support update"
 msgstr "这个磁盘不支持更新"
@@ -34207,14 +34181,8 @@ msgstr "这个平台缺少 dlopen"
 msgid "this qemu does not support TLS transport for NBD"
 msgstr "这个 qemu 不支持 NBD 的 TLS 传输"
 
-msgid "this qemu doesn't support the memory-backend-file object"
-msgstr "这个 qemu 不支持 memory-backend-file 对象"
-
 msgid "this qemu doesn't support the memory-backend-memfd object"
 msgstr "这个 qemu 不支持 memory-backend-memfd 对象"
-
-msgid "this qemu doesn't support the memory-backend-ram object"
-msgstr "这个 qemu 不支持 memory-backend-ram 对象"
 
 msgid "this qemu doesn't support the rng-builtin backend"
 msgstr "这个 qemu 不支持 rng-builtin 后端"
@@ -36085,10 +36053,6 @@ msgid "unknown suffix '%s'"
 msgstr "未知的后缀 '%s'"
 
 #, c-format
-msgid "unknown sysinfo type '%s'"
-msgstr "未知的系统信息类型 '%s'"
-
-#, c-format
 msgid "unknown target model '%s' specified for character device"
 msgstr "为字符设备指定的未知的目标型号 '%s'"
 
@@ -36099,22 +36063,6 @@ msgstr "为字符设备指定的未知的目标类型 '%s'"
 #, c-format
 msgid "unknown teaming type '%s'"
 msgstr "未知的团队类型 '%s'"
-
-#, c-format
-msgid "unknown timer mode '%s'"
-msgstr "未知的计时器模式‘%s’"
-
-#, c-format
-msgid "unknown timer name '%s'"
-msgstr "未知的计时器名称 '%s'"
-
-#, c-format
-msgid "unknown timer tickpolicy '%s'"
-msgstr "未知的计时器 tickpolicy '%s'"
-
-#, c-format
-msgid "unknown timer track '%s'"
-msgstr "未知的计时器跟踪‘%s’"
 
 #, c-format
 msgid "unknown type '%s'"
@@ -36804,6 +36752,9 @@ msgstr "Cookie '%s' 的值包含无效的字符"
 msgid "value of managerid out of range"
 msgstr "managerid 值超出范围"
 
+msgid "value of the 'size' attribute of 'mtu' element must be at most 100000"
+msgstr ""
+
 msgid "value of typeidversion out of range"
 msgstr "typeidversion 值超出范围"
 
@@ -37121,9 +37072,6 @@ msgstr "这个 QEMU 二进制文件不支持 virtio rss"
 msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
 msgstr "virtio rx_queue_size 选项 %d 与 tx_queue_size %d 不一样"
 
-msgid "virtio rx_queue_size option is not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制文件不支持 virtio rx_queue_size 选项"
-
 #, c-format
 msgid "virtio serial controller %u does not have port %u"
 msgstr "virtio 串行控制器 %u 没有端口 %u"
@@ -37144,17 +37092,11 @@ msgstr "virtio 串口设备有无效地址类型"
 msgid "virtio serial port %u on controller %u is already occupied"
 msgstr "控制器 %u 上的 virtio 串行端口 %u 已被占用"
 
-msgid "virtio tx_queue_size option is not supported with this QEMU binary"
-msgstr "此 QEMU 二进制文件不支持 virtio tx_queue_size 选项"
-
 msgid "virtio-mem device is missing <requested/>"
 msgstr "缺少 virtio-mem 设备 <requested/>"
 
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 virtio-mem"
-
-msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制文件不支持 virtio-net 故障转移(团队)"
 
 #, c-format
 msgid ""
@@ -37247,8 +37189,8 @@ msgid "vlan misses the tag name"
 msgstr "vlan 缺少标签名"
 
 #, c-format
-msgid "vlan tag id %lu too large (maximum 4095)"
-msgstr "vlan tagid %lu 太大（最大值为 4095）"
+msgid "vlan tag id %u too large (maximum 4095)"
+msgstr ""
 
 #, c-format
 msgid "vlan tag set for interface %s but caller requested it not be set"
@@ -37590,6 +37532,171 @@ msgstr "请求网络 %s 的区 %s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "%s: Invalid metric specified in route definition"
+#~ msgstr "%s：路由定义中指定的无效度量标准"
+
+#~ msgid "%s: Invalid metric value, must be > 0 in route definition"
+#~ msgstr "%s：无效度量值，在路由定义中必须大于 0。"
+
+#~ msgid "%s: Invalid prefix specified in route definition"
+#~ msgstr "%s：路由定义中指定的无效前缀"
+
+#~ msgid "CPU vendor value 0x%2lx already defined"
+#~ msgstr "CPU 供应商值 0x%2lx 已定义"
+
+#~ msgid "Cannot find CPU model with PVR 0x%03lx"
+#~ msgstr "无法找到具有 PVR 0x%03lx 的 CPU 型号"
+
+#~ msgid "Cannot find CPU vendor with vendor id 0x%02lx"
+#~ msgstr "无法找到厂商 id 为 0x%02lx 的 CPU 供应商"
+
+#~ msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
+#~ msgstr "vlan <tag> 元素中无效的 \"nativeMode='%s'\""
+
+#~ msgid "Invalid IPv4 prefix '%lu' in network '%s'"
+#~ msgstr "无效 IPv4 前缀 '%lu' 出现在网络 '%s' 中"
+
+#~ msgid "Invalid IPv6 prefix '%lu' in network '%s'"
+#~ msgstr "无效 IPv6 前缀 '%lu' 出现在网络 '%s' 中"
+
+#~ msgid ""
+#~ "Invalid ULong value specified for prefix in definition of network '%s'"
+#~ msgstr "网络 '%s' 定义中为前缀指定的无效 ULong 值"
+
+#~ msgid "Invalid job flags"
+#~ msgstr "无效的作业标记"
+
+#~ msgid "Invalid parameter to virXPathLong()"
+#~ msgstr "virXPathLong() 的无效参数"
+
+#~ msgid "Invalid parameter to virXPathLongLong()"
+#~ msgstr "virXPathLongLong() 的无效参数"
+
+#~ msgid "Invalid parameter to virXPathNumber()"
+#~ msgstr "virXPathNumber() 的无效参数"
+
+#~ msgid "Invalid parameter to virXPathString()"
+#~ msgstr "virXPathString() 的无效参数"
+
+#~ msgid "Invalid parameter to virXPathULong()"
+#~ msgstr "virXPathLong() 的无效参数"
+
+#~ msgid "Missing CPU vendor value"
+#~ msgstr "缺少 CPU 供应商值"
+
+#~ msgid "Missing or invalid PVR mask in CPU model %s"
+#~ msgstr "在 CPU 型号 %s 中缺少或无效的 PVR mask"
+
+#~ msgid "Missing or invalid PVR value in CPU model %s"
+#~ msgstr "CPU 型号 %s 中缺少或者有无效 PVR 值"
+
+#~ msgid ""
+#~ "NUMA without specified memory backing is not supported with this QEMU "
+#~ "binary"
+#~ msgstr "此 QEMU 二进制文件不支持没有指定内存支持的 NUMA"
+
+#~ msgid "Per-node memory binding is not supported with this QEMU"
+#~ msgstr "此 QEMU 不支持按节点的内存绑定"
+
+#~ msgid "Shared memory mapping is not supported with this QEMU"
+#~ msgstr "此 QEMU 不支持共享内存映射"
+
+#~ msgid "XML does not contain expected 'bios' element"
+#~ msgstr "XML 不包含预期的 'bios' 元素"
+
+#~ msgid "XML does not contain expected 'chassis' element"
+#~ msgstr "XML 不包含预期的 'chassis' 元素"
+
+#~ msgid "XML does not contain expected 'sysinfo' element"
+#~ msgstr "XML 不包含预期的‘sysinfo’ 元素"
+
+#~ msgid "XML does not contain expected 'system' element"
+#~ msgstr "XML 不包含预期的 'system' 元素"
+
+#~ msgid "cannot extract numatune nodes"
+#~ msgstr "无法提取 numatune 节点"
+
+#~ msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
+#~ msgstr "这个 QEMU 不支持断开的 NUMA cpu 范围"
+
+#~ msgid "huge pages per NUMA node are not supported with this QEMU"
+#~ msgstr "此 QEMU 不支持按 NUMA 节点的巨页"
+
+#~ msgid "interface mtu value is improper"
+#~ msgstr "接口 mtu 值不恰当"
+
+#~ msgid "invalid catchup limit"
+#~ msgstr "无效 catchup 极限"
+
+#~ msgid "invalid catchup slew"
+#~ msgstr "无效 catchup 回转"
+
+#~ msgid "invalid catchup threshold"
+#~ msgstr "无效 catchup 临界值"
+
+#~ msgid "invalid pid"
+#~ msgstr "无效 pid"
+
+#~ msgid "invalid timer frequency"
+#~ msgstr "无效计时器频率"
+
+#~ msgid "missing or invalid CPU cache mode"
+#~ msgstr "缺少或无效的 CPU 缓存模式"
+
+#~ msgid "missing or invalid vlan tag id attribute"
+#~ msgstr "缺少 vlan tagid 属性或者属性无效"
+
+#~ msgid "missing timer name"
+#~ msgstr "缺少计时器名称"
+
+#~ msgid "num-queues property isn't supported by this QEMU binary"
+#~ msgstr "这个 QEMU 二进制文件不支持 num-queues 属性"
+
+#~ msgid "nvdimm align property is not available with this QEMU binary"
+#~ msgstr "此 QEMU 二进制文件没有 NVDIMM align 属性"
+
+#~ msgid "setting MTU is not supported with this QEMU binary"
+#~ msgstr "此 QEMU 二进制文件不支持设置 MTU"
+
+#~ msgid "sysinfo must contain a type attribute"
+#~ msgstr "sysinfo 必须包含 type 属性"
+
+#~ msgid "this QEMU doesn't support memory discard"
+#~ msgstr "这个 QEMU 不支持内存丢弃"
+
+#~ msgid "this qemu doesn't support the memory-backend-file object"
+#~ msgstr "这个 qemu 不支持 memory-backend-file 对象"
+
+#~ msgid "this qemu doesn't support the memory-backend-ram object"
+#~ msgstr "这个 qemu 不支持 memory-backend-ram 对象"
+
+#~ msgid "unknown sysinfo type '%s'"
+#~ msgstr "未知的系统信息类型 '%s'"
+
+#~ msgid "unknown timer mode '%s'"
+#~ msgstr "未知的计时器模式‘%s’"
+
+#~ msgid "unknown timer name '%s'"
+#~ msgstr "未知的计时器名称 '%s'"
+
+#~ msgid "unknown timer tickpolicy '%s'"
+#~ msgstr "未知的计时器 tickpolicy '%s'"
+
+#~ msgid "unknown timer track '%s'"
+#~ msgstr "未知的计时器跟踪‘%s’"
+
+#~ msgid "virtio rx_queue_size option is not supported with this QEMU binary"
+#~ msgstr "这个 QEMU 二进制文件不支持 virtio rx_queue_size 选项"
+
+#~ msgid "virtio tx_queue_size option is not supported with this QEMU binary"
+#~ msgstr "此 QEMU 二进制文件不支持 virtio tx_queue_size 选项"
+
+#~ msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
+#~ msgstr "这个 QEMU 二进制文件不支持 virtio-net 故障转移(团队)"
+
+#~ msgid "vlan tag id %lu too large (maximum 4095)"
+#~ msgstr "vlan tagid %lu 太大（最大值为 4095）"
 
 #~ msgid "%s 3d acceleration is not supported"
 #~ msgstr "%s 不支持 3d 加速"

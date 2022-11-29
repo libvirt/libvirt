@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-10-25 07:42+0000\n"
+"POT-Creation-Date: 2022-11-24 14:54+0000\n"
 "PO-Revision-Date: 2015-02-23 06:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Gujarati (http://www.transifex.com/projects/p/libvirt/"
@@ -405,6 +405,12 @@ msgstr ""
 "%s %s '%s' પાસે બિનઆધારભૂત પ્રકાર '%s' છે, '%s' અથવા '%s' ની ઇચ્છા રાખી રહ્યા છે"
 
 #, c-format
+msgid ""
+"%s (on destination side) does not support the --migration option needed for "
+"migration with shared storage"
+msgstr ""
+
+#, c-format
 msgid "%s (out of %d)"
 msgstr ""
 
@@ -519,6 +525,10 @@ msgstr "ડિસ્કાર્ડ એ આ QEMU બાઇનરી દ્દા
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "મહત્તમ કરતા %s લંબાઇ વધારે છે: %d > %d"
+
+#, c-format
+msgid "%s memory device info is not handled yet"
+msgstr ""
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -664,14 +674,6 @@ msgstr "નેટવર્ક '%s' માં બિન-IPv4 સરનામુ�
 msgid "%s: IPv4 family specified for non-IPv4 gateway '%s' in route definition"
 msgstr "નેટવર્ક '%s' માં બિન-IPv4 સરનામું '%s' માટે સ્પષ્ટ થયેલ %s કુટુંબ"
 
-#, c-format
-msgid "%s: Invalid metric specified in route definition"
-msgstr ""
-
-#, c-format
-msgid "%s: Invalid metric value, must be > 0 in route definition"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "%s: Invalid netmask '%s' for address '%s' (both must be IPv4)"
 msgstr "નેટવર્ક '%s' માં સરનામાં '%s' માટે અયોગ્ય નેટમાસ્ક '%s' (બંને IPv4 હોવુ જ જોઇએ)"
@@ -682,10 +684,6 @@ msgstr ""
 
 #, c-format
 msgid "%s: Invalid prefix %u specified in route definition, must be 0 - 32"
-msgstr ""
-
-#, c-format
-msgid "%s: Invalid prefix specified in route definition"
 msgstr ""
 
 #, fuzzy, c-format
@@ -2235,9 +2233,9 @@ msgstr "મોડલ %s નું CPU વેન્ડર %s એ વેન્ડ�
 msgid "CPU vendor specified without CPU model"
 msgstr "CPU મોડલ વગર સ્પષ્ટ થયેલ CPU વિક્રેતા"
 
-#, fuzzy, c-format
-msgid "CPU vendor value 0x%2lx already defined"
-msgstr "CPU વિક્રેતા %s પહેલેથી જ વ્યાખ્યાયિત થયેલ છે"
+#, c-format
+msgid "CPU vendor value 0x%2llx already defined"
+msgstr ""
 
 msgid "CPU vendors do not match"
 msgstr "CPU વિક્રેતા બંધબેસતુ નથી"
@@ -2727,17 +2725,17 @@ msgstr "પાથમાં '%s' ને શોધી શકાતુ નથી"
 msgid "Cannot find 'iothread' : %u"
 msgstr "%s માં શરૂઆતનો સમય શોધી શકાતો નથી"
 
-#, fuzzy, c-format
-msgid "Cannot find CPU model with PVR 0x%03lx"
-msgstr "PVR 0x%08x સાથે CPU મોડલને શોધી શકાતુ નથી"
+#, c-format
+msgid "Cannot find CPU model with PVR 0x%03llx"
+msgstr ""
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "PVR 0x%08x સાથે CPU મોડલને શોધી શકાતુ નથી"
 
-#, fuzzy, c-format
-msgid "Cannot find CPU vendor with vendor id 0x%02lx"
-msgstr "PVR 0x%08x સાથે CPU મોડલને શોધી શકાતુ નથી"
+#, c-format
+msgid "Cannot find CPU vendor with vendor id 0x%02llx"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot find boot device of requested type %s"
@@ -9407,10 +9405,6 @@ msgid ""
 "only"
 msgstr "ઇન્ટરફેસ પ્રકાર hostdev ફક્ત હાલમાં SR-IOV વર્ચ્યુઅલ વિધેયો પર આધારભૂત છે"
 
-#, c-format
-msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
-msgstr "vlan <tag> ઘટકમાં અયોગ્ય \"nativeMode='%s'\""
-
 #, fuzzy, c-format
 msgid "Invalid %s attribute 'vcpus' value '%s'"
 msgstr "અમાન્ય સ્થિતિ ગુણધર્મ '%s'"
@@ -9478,12 +9472,12 @@ msgid "Invalid IP address in static host definition for network '%s'"
 msgstr "નેટવર્ક '%s' માટે સ્થિર યજમાન વ્યાખ્યામાં અયોગ્ય IP સરનામું"
 
 #, c-format
-msgid "Invalid IPv4 prefix '%lu' in network '%s'"
-msgstr "અયોગ્ય IPv4 ઉપસર્ગ '%lu' એ નેટવર્ક '%s' માં"
+msgid "Invalid IPv4 prefix '%u' in network '%s'"
+msgstr ""
 
 #, c-format
-msgid "Invalid IPv6 prefix '%lu' in network '%s'"
-msgstr "અયોગ્ય IPv6 ઉપસર્ગ '%lu' એ નેટવર્ક '%s' માં"
+msgid "Invalid IPv6 prefix '%u' in network '%s'"
+msgstr ""
 
 msgid "Invalid NULL callback provided"
 msgstr "અમાન્ય NULL કોલબેક પૂરુ પાડેલ છે"
@@ -9537,10 +9531,6 @@ msgstr "VM માટે અયોગ્ય PID %d"
 #, c-format
 msgid "Invalid STP state value %d received for '%s'. Must be -1, 0, or 1."
 msgstr "અયોગ્ય STP સ્થિતિ કિંમત %d એ '%s' માટે મળેલ છે. -૧, ૦, અથવા ૧ હોવુ જ જોઇએ."
-
-#, c-format
-msgid "Invalid ULong value specified for prefix in definition of network '%s'"
-msgstr "નેટવર્ક '%s ની વ્યાખ્યામાં ઉપસર્ગ માટે અયોગ્ય સ્પષ્ટ થયેલ ULong કિંમત"
 
 #, fuzzy, c-format
 msgid "Invalid URI path '%s', try '/system'"
@@ -9882,10 +9872,6 @@ msgstr "'%s' માટે અયોગ્ય કિંમત '%s'"
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "નેટવર્ક %s માં અયોગ્ય ipv6 સુયોજન '%s'"
 
-#, fuzzy
-msgid "Invalid job flags"
-msgstr "અયોગ્ય ફ્લેગ"
-
 #, c-format
 msgid "Invalid libxl cpuid key=value element: %s"
 msgstr ""
@@ -10031,26 +10017,11 @@ msgstr "અયોગ્ય પરિમાણ"
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "virXPathBoolean() માં અયોગ્ય પરિમાણ"
 
-msgid "Invalid parameter to virXPathLong()"
-msgstr "virXPathLong() માં અયોગ્ય પરિમાણ"
-
-msgid "Invalid parameter to virXPathLongLong()"
-msgstr "virXPathLong() માં અયોગ્ય પરિમાણ"
-
 msgid "Invalid parameter to virXPathNode()"
 msgstr "virXPathNode() માં અયોગ્ય પરિમાણ"
 
 msgid "Invalid parameter to virXPathNodeSet()"
 msgstr "virXPathNodeSet() માં અયોગ્ય પરિમાણ"
-
-msgid "Invalid parameter to virXPathNumber()"
-msgstr "virXPathNumber() માં અયોગ્ય પરિમાણ"
-
-msgid "Invalid parameter to virXPathString()"
-msgstr "virXPathString() માં અયોગ્ય પરિમાણ"
-
-msgid "Invalid parameter to virXPathULong()"
-msgstr "virXPathULong() માં અયોગ્ય પરિમાણ"
 
 #, fuzzy
 msgid "Invalid parameter type passed to free"
@@ -11084,10 +11055,6 @@ msgstr "ગુમ થયેલ CPU લક્ષણ નામ"
 msgid "Missing CPU model name"
 msgstr "ગેરહાજર CPU મોડલ નામ"
 
-#, fuzzy
-msgid "Missing CPU vendor value"
-msgstr "ગુમ થયેલ CPU લક્ષણ નામ"
-
 msgid "Missing ID parameter for domain object"
 msgstr "ડોમેઇન ઑબ્જેક્ટ માટે ગેરહાજર ID પરિમાણ"
 
@@ -11128,6 +11095,12 @@ msgid "Missing VIR_CRED_AUTHNAME credential type"
 msgstr ""
 
 msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
+msgstr ""
+
+msgid "Missing XPath context"
+msgstr ""
+
+msgid "Missing XPath expression"
 msgstr ""
 
 #, fuzzy
@@ -11379,14 +11352,6 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Missing or invalid CPU frequency in %s"
-msgstr "CPU મોડલ %s માં ગુમ થયેલ અથવા અયોગ્ય PVR કિંમત"
-
-#, fuzzy, c-format
-msgid "Missing or invalid PVR mask in CPU model %s"
-msgstr "CPU મોડલ %s માં ગુમ થયેલ અથવા અયોગ્ય PVR કિંમત"
-
-#, c-format
-msgid "Missing or invalid PVR value in CPU model %s"
 msgstr "CPU મોડલ %s માં ગુમ થયેલ અથવા અયોગ્ય PVR કિંમત"
 
 #, c-format
@@ -11770,11 +11735,6 @@ msgstr "NUMA સેલ વગર NUMA ટૉપોલોજી વ્યાખ�
 #, fuzzy
 msgid "NUMA tuning is not available in session mode"
 msgstr "CPU ટ્યુનિંગ આ યજમાન પર ઉપલબ્ધ નથી"
-
-#, fuzzy
-msgid ""
-"NUMA without specified memory backing is not supported with this QEMU binary"
-msgstr "64-બીટ PCI હોલ માપ સુયોજનો આ QEMU બાઇનરી સાથે આધારભૂત નથી"
 
 #, fuzzy, c-format
 msgid "NVMe device %s already in use by driver %s domain %s"
@@ -13142,10 +13102,6 @@ msgid "Per-node binding is not compatible with automatic NUMA placement."
 msgstr "સ્ત્રોત પુન:લેબલ કરવાનું 'કઇ નહિં' લેબલ પ્રકાર સાથે સુસંગત નથી"
 
 #, fuzzy
-msgid "Per-node memory binding is not supported with this QEMU"
-msgstr "vnc ગ્રાફિક્સ એ આ QEMU સાથે આધારભૂત નથી"
-
-#, fuzzy
 msgid "Perf not supported on this platform"
 msgstr "આ પ્લેટફોર્મ પર આધારભૂત નથી"
 
@@ -14442,10 +14398,6 @@ msgstr "wwn ને સુયોજિત કરવાનું lun ઉપકર�
 
 msgid "Setup time:"
 msgstr "સુયોજન સમય:"
-
-#, fuzzy
-msgid "Shared memory mapping is not supported with this QEMU"
-msgstr "સ્પાઇસ ગ્રાફિક્સ આ QEMU સાથે આધારભૂત નથી"
 
 msgid "Shared memory:\n"
 msgstr "સહભાગી મેમરી:\n"
@@ -15933,6 +15885,9 @@ msgstr "ich9-intel-hda ઓડિયો નિયંત્રક એ આ QEMU બ
 #, fuzzy
 msgid "The machine has no snapshot and it should have it"
 msgstr "ડોમેઇન %s પાસે નામ %s સાથે સ્નેપશોટ નથી"
+
+msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
+msgstr ""
 
 msgid "The minimum lease time should be greater than 2 minutes"
 msgstr ""
@@ -19918,23 +19873,8 @@ msgstr ""
 msgid "XML document failed to validate against schema: %s"
 msgstr "અમારુ પોતાનું પ્રમાણપત્ર %s એ %s વિરુદ્દ ચકાસણી નિષ્ફળ: %s"
 
-#, fuzzy
-msgid "XML does not contain expected 'bios' element"
-msgstr "XML એ ઇચ્છિત 'sysinfo' ઘટકને સમાવતુ નથી"
-
-#, fuzzy
-msgid "XML does not contain expected 'chassis' element"
-msgstr "XML એ ઇચ્છિત 'sysinfo' ઘટકને સમાવતુ નથી"
-
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML એ ઇચ્છિત 'cpu' ઘટકને સમાવતુ નથી"
-
-msgid "XML does not contain expected 'sysinfo' element"
-msgstr "XML એ ઇચ્છિત 'sysinfo' ઘટકને સમાવતુ નથી"
-
-#, fuzzy
-msgid "XML does not contain expected 'system' element"
-msgstr "XML એ ઇચ્છિત 'sysinfo' ઘટકને સમાવતુ નથી"
 
 #, c-format
 msgid "XML error: %s"
@@ -21466,9 +21406,6 @@ msgstr "સ્ત્રોત નોડને કાઢી શકાતુ ન�
 
 #, fuzzy
 msgid "cannot extract memorytune nodes"
-msgstr "numatune નોડને બહાર કાઢી શકાતુ નથી"
-
-msgid "cannot extract numatune nodes"
 msgstr "numatune નોડને બહાર કાઢી શકાતુ નથી"
 
 msgid "cannot extract resource nodes"
@@ -24126,9 +24063,6 @@ msgstr "જોડાવો"
 msgid "discover potential storage pool sources"
 msgstr "શક્તિશાળી સંગ્રહ પુલ સ્ત્રોતોને શોધો"
 
-msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
-msgstr "બિનજોડાયેલ NUMA cpu સીમા એ આ QEMU સાથે આધારભૂત નથી"
-
 #, fuzzy, c-format
 msgid "disk %s does not have an active block job"
 msgstr "સક્રિય બ્લોક જૉબમાં ડિસ્ક '%s' પહેલેથી છે"
@@ -26156,6 +26090,9 @@ msgstr "qemu ક્ષમતા ફ્લેગનું પદચ્છેદ�
 msgid "failed to parse SCSI host '%s'"
 msgstr "સ્થિતિ '%s' ને પદચ્છેદન કરવામાં નિષ્ફળતા"
 
+msgid "failed to parse SGX sections in QEMU capabilities cache"
+msgstr ""
+
 #, fuzzy
 msgid "failed to parse agent timeout"
 msgstr "%s ની કિંમતને પદચ્છેદન કરવામાં નિષ્ફળતા"
@@ -27487,6 +27424,10 @@ msgstr "બિનઆધારભૂત hostdev સ્થિતિ %s"
 msgid "hotplug is not supported for hostdev subsys type '%s'"
 msgstr "બિનઆધારભૂત hostdev પ્રકાર %s"
 
+#, c-format
+msgid "hotplug is not supported for the %s device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "hotplug of interface type of %s is not implemented yet"
 msgstr "'%d' પ્રકારની વ્યાખ્યાને નકલ કરવાનું હજુ અમલીકરણ થયેલ નથી."
@@ -27505,10 +27446,6 @@ msgstr ""
 #, c-format
 msgid "hub type %s not supported"
 msgstr "hub પ્રકાર %s આધારભૂત નથી"
-
-#, fuzzy
-msgid "huge pages per NUMA node are not supported with this QEMU"
-msgstr "બિનજોડાયેલ NUMA cpu સીમા એ આ QEMU સાથે આધારભૂત નથી"
 
 msgid "hugepage size can't be zero"
 msgstr ""
@@ -27850,9 +27787,6 @@ msgstr "ઇન્ટરફેસ ચાલી રહ્યુ નથી"
 msgid "interface mac"
 msgstr "ઈન્ટરફેસ mac"
 
-msgid "interface mtu value is improper"
-msgstr "ઇન્ટરફેસ mtu કિંમત અયોગ્ય છે"
-
 msgid "interface name"
 msgstr "ઈન્ટરફેસ નામ"
 
@@ -28169,15 +28103,6 @@ msgstr "%s માં અયોગ્ય સંગ્રહ પુલ નિર�
 msgid "invalid capability_filters capability '%s'"
 msgstr "અયોગ્ય ક્ષમતા પ્રકાર"
 
-msgid "invalid catchup limit"
-msgstr "અજ્ઞાત catchup મર્યાદા"
-
-msgid "invalid catchup slew"
-msgstr "અયોગ્ય કેચઅપ સ્લુ"
-
-msgid "invalid catchup threshold"
-msgstr "અમાન્ય catchup થ્રેશોલ્ડ"
-
 #, fuzzy, c-format
 msgid "invalid char in %s: %c"
 msgstr "અમાન્ય ડોમેઇન સ્થિતિ: %d"
@@ -28487,9 +28412,6 @@ msgstr "અયોગ્ય પાથ, '%s' એ જાણીતો ઇન્ટ�
 msgid "invalid path: %s"
 msgstr "અયોગ્ય પાથ: %s"
 
-msgid "invalid pid"
-msgstr "અયોગ્ય pid"
-
 #, fuzzy
 msgid "invalid prefix, must be in range of 4-27"
 msgstr "rebootTimeout માટે અમાન્ય કિંમત, સીમામાં હોવુ જ જોઇએ [-1,65535]"
@@ -28587,9 +28509,6 @@ msgid ""
 "invalid string value for '%s' host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
-
-msgid "invalid timer frequency"
-msgstr "અજ્ઞાત ટાઇમર આવૃત્તિ"
 
 #, c-format
 msgid "invalid tlsPort number: %s"
@@ -29638,6 +29557,12 @@ msgstr ""
 msgid "malformed/missing hotplugged in dimm memory info"
 msgstr ""
 
+msgid "malformed/missing memaddr in sgx-epc memory info"
+msgstr ""
+
+msgid "malformed/missing size in sgx-epc memory info"
+msgstr ""
+
 msgid "malformed/missing size in virtio memory info"
 msgstr ""
 
@@ -29794,6 +29719,10 @@ msgstr "સુરક્ષા લેબલ મોડલ %s selinux સાથે 
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "મેમરી ગુણધર્મો: [file=]name[,snapshot=type]"
+
+#, c-format
+msgid "memory device address is not supported for model '%s'"
+msgstr ""
 
 msgid "memory device alias"
 msgstr ""
@@ -30289,6 +30218,9 @@ msgstr "ગુમ થયેલ સ્થળાંતર ક્ષમતા ન�
 msgid "missing SEV platform data in QEMU capabilities cache"
 msgstr "ગુમ થયેલ સ્થળાંતર ક્ષમતા નામ"
 
+msgid "missing SGX platform data in QEMU capabilities cache"
+msgstr ""
+
 msgid "missing TPM device backend"
 msgstr "ગુમ થયેલ TPM ઉપકરણ બેકઍન્ડ"
 
@@ -30647,6 +30579,9 @@ msgstr "%s માં ગુમ થયેલ નામ જાણકારી"
 msgid "missing network device feature name"
 msgstr "ગુમ થયેલ લક્ષણ નામ"
 
+msgid "missing node name in QEMU capabilities cache"
+msgstr ""
+
 #, c-format
 msgid "missing number of available instances for mediated device type '%s'"
 msgstr ""
@@ -30666,11 +30601,16 @@ msgstr "%s માટે ગુમ થયેલ ઓપરેટિંગ સિ�
 msgid "missing or broken bitmap '%s' for disk '%s'"
 msgstr ""
 
-#, fuzzy
-msgid "missing or invalid CPU cache mode"
-msgstr "CPU મોડલ %s માં ગુમ થયેલ અથવા અયોગ્ય PVR કિંમત"
-
 msgid "missing or invalid CPU model property type in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
+msgstr ""
+
+msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr ""
 
 #, fuzzy
@@ -30679,9 +30619,6 @@ msgstr "CPU માહિતીમાં ગુમ થયેલ અથવા અ�
 
 msgid "missing or invalid features in CPU data"
 msgstr "CPU માહિતીમાં ગુમ થયેલ અથવા અયોગ્ય લક્ષણો"
-
-msgid "missing or invalid vlan tag id attribute"
-msgstr "ગુમ થયેલ અથવા અયોગ્ય vlan tag id ગુણધર્મ"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr ""
@@ -30695,6 +30632,10 @@ msgstr ""
 msgid ""
 "missing or malformed SEV reducedPhysBits information in QEMU capabilities "
 "cache"
+msgstr ""
+
+msgid ""
+"missing or malformed SGX platform section_size in QEMU capabilities cache"
 msgstr ""
 
 #, fuzzy
@@ -30819,6 +30760,9 @@ msgstr ""
 msgid "missing sheepdog vdi name"
 msgstr "ગુમ થયેલ લક્ષણ નામ"
 
+msgid "missing size name in QEMU capabilities cache"
+msgstr ""
+
 #, fuzzy
 msgid "missing socket address type in JSON backing volume definition"
 msgstr "JSON દસ્તાવેજ સ્થિતિમાં ગુમ થયેલ સોક ક્ષેત્ર"
@@ -30918,9 +30862,6 @@ msgstr "ઉપકરણ %s માટે ગુમ થયેલ લક્ષ્�
 
 msgid "missing the host address for the iSCSI hostdev"
 msgstr ""
-
-msgid "missing timer name"
-msgstr "ગુમ થયેલ ટાઇમર નામ"
 
 msgid "missing tlsPort attribute in migration data"
 msgstr "સ્થળાંતર માહિતીમાં ગુમ થયેલ  tlsPort ગુણધર્મ"
@@ -32212,10 +32153,6 @@ msgid "nparams too large"
 msgstr "nparams ઘણું લાંબુ છે"
 
 #, fuzzy
-msgid "num-queues property isn't supported by this QEMU binary"
-msgstr "nvram ઉપકરણ એ આ QEMU બાઇનરી દ્દારા આધારભૂત નથી"
-
-#, fuzzy
 msgid "numa parameters are not supported by vz driver"
 msgstr "પરિમાણ '%s' આ કર્નલ દ્દારા આધારભૂત નથી"
 
@@ -32278,10 +32215,6 @@ msgstr "આંકડાકીય ઓવરફ્લો: %s"
 
 msgid "nvcpus is zero"
 msgstr "nvcpus એ શૂન્ય છે"
-
-#, fuzzy
-msgid "nvdimm align property is not available with this QEMU binary"
-msgstr "નિષ્ક્રિય વહેંચાયેલ મેમરી એ આ QEMU બાઇનરી સાથે ઉપલબ્ધ નથી"
 
 #, fuzzy
 msgid "nvdimm isn't supported by this QEMU binary"
@@ -33614,6 +33547,24 @@ msgstr "query-version જવાબ ગુમ થયેલ 'qemu' માહિત
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
 msgstr "query-version જવાબ ગુમ થયેલ 'qemu' માહિતી હતી"
 
+msgid "query-sgx-capabilities reply was missing 'flc' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'node' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'section-size' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx1' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'sgx2' field"
+msgstr ""
+
+msgid "query-sgx-capabilities reply was missing 'size' field"
+msgstr ""
+
 msgid "query-status reply was missing running state"
 msgstr "query-status જવાબ પરત માહિતી ગુમ કરવામાં આવી હતી"
 
@@ -33945,9 +33896,6 @@ msgstr "વિગત થયેલ ડોમેઇન vcpu જાણકારી"
 msgid "report error if CPUs are incompatible"
 msgstr "CPUs અસુસંગત છે"
 
-msgid "report fd-based VM statistics by KVM"
-msgstr ""
-
 #, fuzzy
 msgid "report filesystem information"
 msgstr "XML માં નેટવર્ક ફિલ્ટર જાણકારી"
@@ -33955,6 +33903,9 @@ msgstr "XML માં નેટવર્ક ફિલ્ટર જાણકા�
 #, fuzzy
 msgid "report hostname"
 msgstr "યજમાનનામ મેળવવામાં નિષ્ફળ"
+
+msgid "report hypervisor-specific statistics"
+msgstr ""
 
 msgid "report interface information"
 msgstr ""
@@ -34524,10 +34475,6 @@ msgstr "ACPI S3 સુયોજન આધારભૂત નથી"
 msgid "setting ACPI S4 not supported"
 msgstr "ACPI S4 સુયોજન આધારભૂત નથી"
 
-#, fuzzy
-msgid "setting MTU is not supported with this QEMU binary"
-msgstr "QEMU બાઇનરી સાથે SATA આધારભૂત નથી"
-
 #, fuzzy, c-format
 msgid "setting MTU on interface type %s is not supported yet"
 msgstr "નેટવર્ક પ્રકાર %d આધારભૂત નથી"
@@ -34583,6 +34530,20 @@ msgstr ""
 
 msgid "sgio is only supported for scsi host device"
 msgstr "sgio એ ફક્ત scsi યજમાન ઉપકરણ માટે આધારભૂત છે"
+
+msgid "sgx epc isn't supported by this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %d is less than requested size %lld"
+msgstr ""
+
+#, c-format
+msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
+msgstr ""
+
+msgid "sgx-epc memory info data is missing 'memdev'"
+msgstr ""
 
 #, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
@@ -35209,9 +35170,6 @@ msgstr "sysconf(_SC_OPEN_MAX) નિષ્ફળ"
 msgid "sysctl failed for '%s'"
 msgstr "'%s' માટે પૂરુ પાડેલ માપ નથી"
 
-msgid "sysinfo must contain a type attribute"
-msgstr "sysinfo એ પ્રકાર ગુણધર્મને સમાવવુ જ જોઇએ"
-
 msgid "system call error"
 msgstr "સિસ્ટમ કોલ ભૂલ"
 
@@ -35449,6 +35407,9 @@ msgstr "પ્રક્રિયા ID"
 msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
+msgid "the running swtpm does not support migration with shared storage"
+msgstr ""
+
 msgid "the signal number or name"
 msgstr "સંકેત નંબર અથવા નામ"
 
@@ -35543,9 +35504,8 @@ msgstr "ps2 bus એ %s ઇનપુટ ઉપકરણને આધાર આપ
 msgid "this QEMU does not support the 'genid' capability"
 msgstr "આ QEMU એ 7 કરતા વધારે લક્ષ્યને આધાર આપતુ નથી"
 
-#, fuzzy
-msgid "this QEMU doesn't support memory discard"
-msgstr "આ QEMU એ virtio scsi નિયંત્રકને આધાર આપતુ નથી"
+msgid "this QEMU version didn't provide SGX EPC NUMA info"
+msgstr ""
 
 msgid "this disk doesn't support update"
 msgstr "આ ડિસ્ક સુધારાને આધાર આપતુ નથી"
@@ -35584,15 +35544,7 @@ msgid "this qemu does not support TLS transport for NBD"
 msgstr "nbd  ટ્રાન્સપોર્ટ '%s' ને આધાર આપતુ નથી"
 
 #, fuzzy
-msgid "this qemu doesn't support the memory-backend-file object"
-msgstr "આ qemu rng-egd બૅકએન્ડને આધાર આપતુ નથી"
-
-#, fuzzy
 msgid "this qemu doesn't support the memory-backend-memfd object"
-msgstr "આ qemu rng-egd બૅકએન્ડને આધાર આપતુ નથી"
-
-#, fuzzy
-msgid "this qemu doesn't support the memory-backend-ram object"
 msgstr "આ qemu rng-egd બૅકએન્ડને આધાર આપતુ નથી"
 
 #, fuzzy
@@ -37486,10 +37438,6 @@ msgstr "અજ્ઞાત સગ્રહ vol પ્રકાર %d"
 msgid "unknown suffix '%s'"
 msgstr "અજ્ઞાત માપ એકમો '%s'"
 
-#, c-format
-msgid "unknown sysinfo type '%s'"
-msgstr "અજ્ઞાત sysinfo પ્રકાર '%s'"
-
 #, fuzzy, c-format
 msgid "unknown target model '%s' specified for character device"
 msgstr "અક્ષર ઉપકરણ માટે અજ્ઞાત લક્ષ્ય પ્રકાર '%s' સ્પષ્ટ થયેલ છે"
@@ -37501,22 +37449,6 @@ msgstr "અક્ષર ઉપકરણ માટે અજ્ઞાત લક�
 #, fuzzy, c-format
 msgid "unknown teaming type '%s'"
 msgstr "અજ્ઞાત આગળ ધપાવાનો પ્રકાર '%s'"
-
-#, c-format
-msgid "unknown timer mode '%s'"
-msgstr "અજ્ઞાત ટાઇમર સ્થિતિ '%s'"
-
-#, c-format
-msgid "unknown timer name '%s'"
-msgstr "અજ્ઞાત ટાઇમર નામ '%s'"
-
-#, c-format
-msgid "unknown timer tickpolicy '%s'"
-msgstr "અજ્ઞાત ટાઇમર tickpolicy '%s'"
-
-#, c-format
-msgid "unknown timer track '%s'"
-msgstr "અજ્ઞાત ટાઇમર ટ્રેક '%s'"
 
 #, c-format
 msgid "unknown type '%s'"
@@ -38220,6 +38152,9 @@ msgstr "ચેઇન નામ અયોગ્ય અક્ષરોને સ�
 msgid "value of managerid out of range"
 msgstr "સીમા ની બહાર managerid ની કિંમત"
 
+msgid "value of the 'size' attribute of 'mtu' element must be at most 100000"
+msgstr ""
+
 msgid "value of typeidversion out of range"
 msgstr "સીમા ની બહાર typeidversion ની કિંમત"
 
@@ -38545,10 +38480,6 @@ msgstr ""
 msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
 msgstr ""
 
-#, fuzzy
-msgid "virtio rx_queue_size option is not supported with this QEMU binary"
-msgstr "vhost-net એ આ QEMU બાઇનરી સાથે આધારભૂત નથી"
-
 #, fuzzy, c-format
 msgid "virtio serial controller %u does not have port %u"
 msgstr "લક્ષ્ય ડોમેઇન નિયંત્રક ગણતરી %zu એ સ્ત્રોત %zu સાથે બંધબેસતુ નથી"
@@ -38571,19 +38502,11 @@ msgstr "virtio શ્રેણી ઉપકરણ પાસે અયોગ્�
 msgid "virtio serial port %u on controller %u is already occupied"
 msgstr ""
 
-#, fuzzy
-msgid "virtio tx_queue_size option is not supported with this QEMU binary"
-msgstr "virtio-net-pci 'tx' વિકલ્પ આ QEMU બાઇનરીમાં આધારભૂત નથી"
-
 msgid "virtio-mem device is missing <requested/>"
 msgstr ""
 
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr ""
-
-#, fuzzy
-msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
-msgstr "vhost-net એ આ QEMU બાઇનરી સાથે આધારભૂત નથી"
 
 #, c-format
 msgid ""
@@ -38683,8 +38606,8 @@ msgid "vlan misses the tag name"
 msgstr "vlan એ ટેગ નામ ને ગુમ કરે છે"
 
 #, c-format
-msgid "vlan tag id %lu too large (maximum 4095)"
-msgstr "vlan ટેગ id %lu ઘણું મોટુ છે (મહત્તમ 4095)"
+msgid "vlan tag id %u too large (maximum 4095)"
+msgstr ""
 
 #, c-format
 msgid "vlan tag set for interface %s but caller requested it not be set"
@@ -39040,6 +38963,185 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "CPU vendor value 0x%2lx already defined"
+#~ msgstr "CPU વિક્રેતા %s પહેલેથી જ વ્યાખ્યાયિત થયેલ છે"
+
+#, fuzzy
+#~ msgid "Cannot find CPU model with PVR 0x%03lx"
+#~ msgstr "PVR 0x%08x સાથે CPU મોડલને શોધી શકાતુ નથી"
+
+#, fuzzy
+#~ msgid "Cannot find CPU vendor with vendor id 0x%02lx"
+#~ msgstr "PVR 0x%08x સાથે CPU મોડલને શોધી શકાતુ નથી"
+
+#~ msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
+#~ msgstr "vlan <tag> ઘટકમાં અયોગ્ય \"nativeMode='%s'\""
+
+#~ msgid "Invalid IPv4 prefix '%lu' in network '%s'"
+#~ msgstr "અયોગ્ય IPv4 ઉપસર્ગ '%lu' એ નેટવર્ક '%s' માં"
+
+#~ msgid "Invalid IPv6 prefix '%lu' in network '%s'"
+#~ msgstr "અયોગ્ય IPv6 ઉપસર્ગ '%lu' એ નેટવર્ક '%s' માં"
+
+#~ msgid ""
+#~ "Invalid ULong value specified for prefix in definition of network '%s'"
+#~ msgstr "નેટવર્ક '%s ની વ્યાખ્યામાં ઉપસર્ગ માટે અયોગ્ય સ્પષ્ટ થયેલ ULong કિંમત"
+
+#, fuzzy
+#~ msgid "Invalid job flags"
+#~ msgstr "અયોગ્ય ફ્લેગ"
+
+#~ msgid "Invalid parameter to virXPathLong()"
+#~ msgstr "virXPathLong() માં અયોગ્ય પરિમાણ"
+
+#~ msgid "Invalid parameter to virXPathLongLong()"
+#~ msgstr "virXPathLong() માં અયોગ્ય પરિમાણ"
+
+#~ msgid "Invalid parameter to virXPathNumber()"
+#~ msgstr "virXPathNumber() માં અયોગ્ય પરિમાણ"
+
+#~ msgid "Invalid parameter to virXPathString()"
+#~ msgstr "virXPathString() માં અયોગ્ય પરિમાણ"
+
+#~ msgid "Invalid parameter to virXPathULong()"
+#~ msgstr "virXPathULong() માં અયોગ્ય પરિમાણ"
+
+#, fuzzy
+#~ msgid "Missing CPU vendor value"
+#~ msgstr "ગુમ થયેલ CPU લક્ષણ નામ"
+
+#, fuzzy
+#~ msgid "Missing or invalid PVR mask in CPU model %s"
+#~ msgstr "CPU મોડલ %s માં ગુમ થયેલ અથવા અયોગ્ય PVR કિંમત"
+
+#~ msgid "Missing or invalid PVR value in CPU model %s"
+#~ msgstr "CPU મોડલ %s માં ગુમ થયેલ અથવા અયોગ્ય PVR કિંમત"
+
+#, fuzzy
+#~ msgid ""
+#~ "NUMA without specified memory backing is not supported with this QEMU "
+#~ "binary"
+#~ msgstr "64-બીટ PCI હોલ માપ સુયોજનો આ QEMU બાઇનરી સાથે આધારભૂત નથી"
+
+#, fuzzy
+#~ msgid "Per-node memory binding is not supported with this QEMU"
+#~ msgstr "vnc ગ્રાફિક્સ એ આ QEMU સાથે આધારભૂત નથી"
+
+#, fuzzy
+#~ msgid "Shared memory mapping is not supported with this QEMU"
+#~ msgstr "સ્પાઇસ ગ્રાફિક્સ આ QEMU સાથે આધારભૂત નથી"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'bios' element"
+#~ msgstr "XML એ ઇચ્છિત 'sysinfo' ઘટકને સમાવતુ નથી"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'chassis' element"
+#~ msgstr "XML એ ઇચ્છિત 'sysinfo' ઘટકને સમાવતુ નથી"
+
+#~ msgid "XML does not contain expected 'sysinfo' element"
+#~ msgstr "XML એ ઇચ્છિત 'sysinfo' ઘટકને સમાવતુ નથી"
+
+#, fuzzy
+#~ msgid "XML does not contain expected 'system' element"
+#~ msgstr "XML એ ઇચ્છિત 'sysinfo' ઘટકને સમાવતુ નથી"
+
+#~ msgid "cannot extract numatune nodes"
+#~ msgstr "numatune નોડને બહાર કાઢી શકાતુ નથી"
+
+#~ msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
+#~ msgstr "બિનજોડાયેલ NUMA cpu સીમા એ આ QEMU સાથે આધારભૂત નથી"
+
+#, fuzzy
+#~ msgid "huge pages per NUMA node are not supported with this QEMU"
+#~ msgstr "બિનજોડાયેલ NUMA cpu સીમા એ આ QEMU સાથે આધારભૂત નથી"
+
+#~ msgid "interface mtu value is improper"
+#~ msgstr "ઇન્ટરફેસ mtu કિંમત અયોગ્ય છે"
+
+#~ msgid "invalid catchup limit"
+#~ msgstr "અજ્ઞાત catchup મર્યાદા"
+
+#~ msgid "invalid catchup slew"
+#~ msgstr "અયોગ્ય કેચઅપ સ્લુ"
+
+#~ msgid "invalid catchup threshold"
+#~ msgstr "અમાન્ય catchup થ્રેશોલ્ડ"
+
+#~ msgid "invalid pid"
+#~ msgstr "અયોગ્ય pid"
+
+#~ msgid "invalid timer frequency"
+#~ msgstr "અજ્ઞાત ટાઇમર આવૃત્તિ"
+
+#, fuzzy
+#~ msgid "missing or invalid CPU cache mode"
+#~ msgstr "CPU મોડલ %s માં ગુમ થયેલ અથવા અયોગ્ય PVR કિંમત"
+
+#~ msgid "missing or invalid vlan tag id attribute"
+#~ msgstr "ગુમ થયેલ અથવા અયોગ્ય vlan tag id ગુણધર્મ"
+
+#~ msgid "missing timer name"
+#~ msgstr "ગુમ થયેલ ટાઇમર નામ"
+
+#, fuzzy
+#~ msgid "num-queues property isn't supported by this QEMU binary"
+#~ msgstr "nvram ઉપકરણ એ આ QEMU બાઇનરી દ્દારા આધારભૂત નથી"
+
+#, fuzzy
+#~ msgid "nvdimm align property is not available with this QEMU binary"
+#~ msgstr "નિષ્ક્રિય વહેંચાયેલ મેમરી એ આ QEMU બાઇનરી સાથે ઉપલબ્ધ નથી"
+
+#, fuzzy
+#~ msgid "setting MTU is not supported with this QEMU binary"
+#~ msgstr "QEMU બાઇનરી સાથે SATA આધારભૂત નથી"
+
+#~ msgid "sysinfo must contain a type attribute"
+#~ msgstr "sysinfo એ પ્રકાર ગુણધર્મને સમાવવુ જ જોઇએ"
+
+#, fuzzy
+#~ msgid "this QEMU doesn't support memory discard"
+#~ msgstr "આ QEMU એ virtio scsi નિયંત્રકને આધાર આપતુ નથી"
+
+#, fuzzy
+#~ msgid "this qemu doesn't support the memory-backend-file object"
+#~ msgstr "આ qemu rng-egd બૅકએન્ડને આધાર આપતુ નથી"
+
+#, fuzzy
+#~ msgid "this qemu doesn't support the memory-backend-ram object"
+#~ msgstr "આ qemu rng-egd બૅકએન્ડને આધાર આપતુ નથી"
+
+#~ msgid "unknown sysinfo type '%s'"
+#~ msgstr "અજ્ઞાત sysinfo પ્રકાર '%s'"
+
+#~ msgid "unknown timer mode '%s'"
+#~ msgstr "અજ્ઞાત ટાઇમર સ્થિતિ '%s'"
+
+#~ msgid "unknown timer name '%s'"
+#~ msgstr "અજ્ઞાત ટાઇમર નામ '%s'"
+
+#~ msgid "unknown timer tickpolicy '%s'"
+#~ msgstr "અજ્ઞાત ટાઇમર tickpolicy '%s'"
+
+#~ msgid "unknown timer track '%s'"
+#~ msgstr "અજ્ઞાત ટાઇમર ટ્રેક '%s'"
+
+#, fuzzy
+#~ msgid "virtio rx_queue_size option is not supported with this QEMU binary"
+#~ msgstr "vhost-net એ આ QEMU બાઇનરી સાથે આધારભૂત નથી"
+
+#, fuzzy
+#~ msgid "virtio tx_queue_size option is not supported with this QEMU binary"
+#~ msgstr "virtio-net-pci 'tx' વિકલ્પ આ QEMU બાઇનરીમાં આધારભૂત નથી"
+
+#, fuzzy
+#~ msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
+#~ msgstr "vhost-net એ આ QEMU બાઇનરી સાથે આધારભૂત નથી"
+
+#~ msgid "vlan tag id %lu too large (maximum 4095)"
+#~ msgstr "vlan ટેગ id %lu ઘણું મોટુ છે (મહત્તમ 4095)"
 
 #, fuzzy
 #~ msgid "%s 3d acceleration is not supported"
