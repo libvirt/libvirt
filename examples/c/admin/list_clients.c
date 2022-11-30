@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 {
     int ret = -1;
     virAdmConnectPtr conn = NULL;
-    virAdmServerPtr srv = NULL;      /* which server list the clients from */
+    virAdmServerPtr srv = NULL;      /* which server to list the clients from */
     virAdmClientPtr *clients = NULL;    /* where to store the servers */
     ssize_t i = 0;
     int count = 0;

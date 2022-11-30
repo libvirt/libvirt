@@ -77,7 +77,7 @@ int main(int argc, char **argv)
         goto cleanup;
     }
 
-    /* now, try to change the redefine the current log output and filters */
+    /* now, try to change the current log output and filters */
     if (virAdmConnectSetLoggingOutputs(conn, set_outputs, 0) < 0)
         goto cleanup;
 
