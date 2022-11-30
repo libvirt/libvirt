@@ -3935,7 +3935,8 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
     if (qemuMigrationJobStartPhase(vm, phase) < 0)
         return -1;
 
-    if (!(mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname, priv,
+    if (!(mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname,
+                                         priv->qemuCaps,
                                          cookiein, cookieinlen,
                                          QEMU_MIGRATION_COOKIE_STATS)))
         return -1;
@@ -4768,7 +4769,8 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
         }
     }
 
-    mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname, priv,
+    mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname,
+                                   priv->qemuCaps,
                                    cookiein, cookieinlen,
                                    cookieFlags |
                                    QEMU_MIGRATION_COOKIE_GRAPHICS |
@@ -5058,7 +5060,8 @@ qemuMigrationSrcResume(virDomainObj *vm,
 
     VIR_DEBUG("vm=%p", vm);
 
-    mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname, priv,
+    mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname,
+                                   priv->qemuCaps,
                                    cookiein, cookieinlen,
                                    QEMU_MIGRATION_COOKIE_CAPS);
     if (!mig)
@@ -6456,7 +6459,8 @@ qemuMigrationDstFinishOffline(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(qemuMigrationCookie) mig = NULL;
 
-    if (!(mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname, priv,
+    if (!(mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname,
+                                         priv->qemuCaps,
                                          cookiein, cookieinlen, cookie_flags)))
         return NULL;
 
@@ -6652,7 +6656,8 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
     VIR_DEBUG("vm=%p, flags=0x%lx, retcode=%d",
               vm, flags, retcode);
 
-    if (!(mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname, priv,
+    if (!(mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname,
+                                         priv->qemuCaps,
                                          cookiein, cookieinlen, cookie_flags)))
         goto error;
 

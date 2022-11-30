@@ -1493,7 +1493,7 @@ qemuMigrationCookieParse(virQEMUDriver *driver,
                          virDomainObj *vm,
                          const virDomainDef *def,
                          const char *origname,
-                         qemuDomainObjPrivate *priv,
+                         virQEMUCaps *qemuCaps,
                          const char *cookiein,
                          int cookieinlen,
                          unsigned int flags)
@@ -1514,11 +1514,7 @@ qemuMigrationCookieParse(virQEMUDriver *driver,
         return NULL;
 
     if (cookiein && cookieinlen &&
-        qemuMigrationCookieXMLParseStr(mig,
-                                       driver,
-                                       priv ? priv->qemuCaps : NULL,
-                                       cookiein,
-                                       flags) < 0)
+        qemuMigrationCookieXMLParseStr(mig, driver, qemuCaps, cookiein, flags) < 0)
         return NULL;
 
     if (flags & QEMU_MIGRATION_COOKIE_PERSISTENT &&

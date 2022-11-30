@@ -144,7 +144,7 @@ testQemuMigrationCookieParse(const void *opaque)
                                                   data->vm,
                                                   data->vm->def,
                                                   NULL,
-                                                  priv,
+                                                  priv->qemuCaps,
                                                   data->xmlstr,
                                                   data->xmlstrlen,
                                                   data->cookieParseFlags))) {
