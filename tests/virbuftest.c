@@ -92,7 +92,7 @@ static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
     virBufferAddChar(buf, '\n');
 
     result = virBufferContentAndReset(buf);
-    if (!result || STRNEQ(result, expected)) {
+    if (STRNEQ_NULLABLE(result, expected)) {
         virTestDifference(stderr, expected, result);
         ret = -1;
     }
@@ -122,7 +122,7 @@ static int testBufTrim(const void *data G_GNUC_UNUSED)
     virBufferTrim(buf, ",,");
 
     result = virBufferContentAndReset(buf);
-    if (!result || STRNEQ(result, expected)) {
+    if (STRNEQ_NULLABLE(result, expected)) {
         virTestDifference(stderr, expected, result);
         return -1;
     }
@@ -146,7 +146,6 @@ testBufTrimChars(const void *opaque)
     }
 
     if (STRNEQ_NULLABLE(actual, data->expect)) {
-        VIR_TEST_DEBUG("testBufEscapeStr(): Strings don't match:");
         virTestDifference(stderr, data->expect, actual);
         return -1;
     }
@@ -278,7 +277,6 @@ testBufAddStr(const void *opaque)
     }
 
     if (STRNEQ_NULLABLE(actual, data->expect)) {
-        VIR_TEST_DEBUG("testBufAddStr(): Strings don't match:");
         virTestDifference(stderr, data->expect, actual);
         return -1;
     }
@@ -306,7 +304,6 @@ testBufEscapeStr(const void *opaque)
     }
 
     if (STRNEQ_NULLABLE(actual, data->expect)) {
-        VIR_TEST_DEBUG("testBufEscapeStr(): Strings don't match:");
         virTestDifference(stderr, data->expect, actual);
         return -1;
     }
@@ -330,7 +327,6 @@ testBufEscapeRegex(const void *opaque)
     }
 
     if (STRNEQ_NULLABLE(actual, data->expect)) {
-        VIR_TEST_DEBUG("testBufEscapeRegex: Strings don't match:");
         virTestDifference(stderr, data->expect, actual);
         return -1;
     }
