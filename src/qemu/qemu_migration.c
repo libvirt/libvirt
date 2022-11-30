@@ -3316,7 +3316,7 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
     /* Parse cookie earlier than adding the domain onto the
      * domain list. Parsing/validation may fail and there's no
      * point in having the domain in the list at that point. */
-    if (!(mig = qemuMigrationCookieParse(driver, *def, origname, NULL,
+    if (!(mig = qemuMigrationCookieParse(driver, NULL, *def, origname, NULL,
                                          cookiein, cookieinlen,
                                          QEMU_MIGRATION_COOKIE_LOCKSTATE |
                                          QEMU_MIGRATION_COOKIE_NBD |
@@ -3324,8 +3324,7 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
                                          QEMU_MIGRATION_COOKIE_CPU_HOTPLUG |
                                          QEMU_MIGRATION_COOKIE_CPU |
                                          QEMU_MIGRATION_COOKIE_CAPS |
-                                         QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS,
-                                         NULL)))
+                                         QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS)))
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains, def,
@@ -3466,9 +3465,9 @@ qemuMigrationDstPrepareResume(virQEMUDriver *driver,
         goto cleanup;
     }
 
-    if (!(mig = qemuMigrationCookieParse(driver, def, origname, NULL,
+    if (!(mig = qemuMigrationCookieParse(driver, vm, def, origname, NULL,
                                          cookiein, cookieinlen,
-                                         QEMU_MIGRATION_COOKIE_CAPS, vm)))
+                                         QEMU_MIGRATION_COOKIE_CAPS)))
         goto cleanup;
 
     priv->origname = g_strdup(origname);
@@ -3936,9 +3935,9 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
     if (qemuMigrationJobStartPhase(vm, phase) < 0)
         return -1;
 
-    if (!(mig = qemuMigrationCookieParse(driver, vm->def, priv->origname, priv,
+    if (!(mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname, priv,
                                          cookiein, cookieinlen,
-                                         QEMU_MIGRATION_COOKIE_STATS, vm)))
+                                         QEMU_MIGRATION_COOKIE_STATS)))
         return -1;
 
     if (retcode == 0)
@@ -4769,13 +4768,12 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
         }
     }
 
-    mig = qemuMigrationCookieParse(driver, vm->def, priv->origname, priv,
+    mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname, priv,
                                    cookiein, cookieinlen,
                                    cookieFlags |
                                    QEMU_MIGRATION_COOKIE_GRAPHICS |
                                    QEMU_MIGRATION_COOKIE_CAPS |
-                                   QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS,
-                                   vm);
+                                   QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS);
     if (!mig)
         goto error;
 
@@ -5060,9 +5058,9 @@ qemuMigrationSrcResume(virDomainObj *vm,
 
     VIR_DEBUG("vm=%p", vm);
 
-    mig = qemuMigrationCookieParse(driver, vm->def, priv->origname, priv,
+    mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname, priv,
                                    cookiein, cookieinlen,
-                                   QEMU_MIGRATION_COOKIE_CAPS, vm);
+                                   QEMU_MIGRATION_COOKIE_CAPS);
     if (!mig)
         return -1;
 
@@ -6458,8 +6456,8 @@ qemuMigrationDstFinishOffline(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(qemuMigrationCookie) mig = NULL;
 
-    if (!(mig = qemuMigrationCookieParse(driver, vm->def, priv->origname, priv,
-                                         cookiein, cookieinlen, cookie_flags, vm)))
+    if (!(mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname, priv,
+                                         cookiein, cookieinlen, cookie_flags)))
         return NULL;
 
     if (qemuMigrationDstPersist(driver, vm, mig, false) < 0)
@@ -6654,8 +6652,8 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
     VIR_DEBUG("vm=%p, flags=0x%lx, retcode=%d",
               vm, flags, retcode);
 
-    if (!(mig = qemuMigrationCookieParse(driver, vm->def, priv->origname, priv,
-                                         cookiein, cookieinlen, cookie_flags, vm)))
+    if (!(mig = qemuMigrationCookieParse(driver, vm, vm->def, priv->origname, priv,
+                                         cookiein, cookieinlen, cookie_flags)))
         goto error;
 
     if (retcode != 0) {

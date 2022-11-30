@@ -141,13 +141,13 @@ testQemuMigrationCookieParse(const void *opaque)
     g_auto(virBuffer) actual = VIR_BUFFER_INITIALIZER;
 
     if (!(data->cookie = qemuMigrationCookieParse(&driver,
+                                                  data->vm,
                                                   data->vm->def,
                                                   NULL,
                                                   priv,
                                                   data->xmlstr,
                                                   data->xmlstrlen,
-                                                  data->cookieParseFlags,
-                                                  data->vm))) {
+                                                  data->cookieParseFlags))) {
         VIR_TEST_DEBUG("\nfailed to parse qemu migration cookie:\n%s\n", data->xmlstr);
         return -1;
     }
