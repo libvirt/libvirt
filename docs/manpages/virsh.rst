@@ -1890,13 +1890,16 @@ domif-setlink
 
 ::
 
-   domif-setlink domain interface-device state [--config]
+   domif-setlink domain interface-device state [--config] [--print-xml]
 
 Modify link state of the domain's virtual interface. Possible values for
 state are "up" and "down". If *--config* is specified, only the persistent
 configuration of the domain is modified, for compatibility purposes,
 *--persistent* is alias of *--config*.
 *interface-device* can be the interface's target name or the MAC address.
+
+If *--print-xml* is specified, then the XML used to update the interface is
+printed instead.
 
 
 domifaddr

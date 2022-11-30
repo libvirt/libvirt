@@ -3120,6 +3120,10 @@ static const vshCmdOptDef opts_domif_setlink[] = {
      .help = "config"
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
+    {.name = "print-xml",
+     .type = VSH_OT_BOOL,
+     .help = N_("print XML document rather than set the interface link state")
+    },
     {.name = NULL}
 };
 
@@ -3236,6 +3240,11 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
         vshSaveLibvirtError();
         vshError(ctl, _("Failed to create XML"));
         return false;
+    }
+
+    if (vshCommandOptBool(cmd, "print-xml")) {
+        vshPrint(ctl, "%s", xml_buf);
+        return true;
     }
 
     if (virDomainUpdateDeviceFlags(dom, xml_buf, flags) < 0) {
