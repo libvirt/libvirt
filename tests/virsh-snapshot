@@ -100,11 +100,14 @@ Domain snapshot s1 created
 
 Domain snapshot s3 created
 Domain snapshot s2 created
+Domain snapshot s3 reverted
 
 Domain snapshot s6 created
 Domain snapshot s5 created
+Domain snapshot s6 reverted
 
 Domain snapshot s4 created
+Domain snapshot s1 reverted
 
 Domain snapshot s7 created
 Domain snapshot s8 created
