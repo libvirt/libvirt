@@ -3068,6 +3068,9 @@ virNodeDeviceGetPCIVPDDynamicCap(virNodeDevCapPCIDev *devCapPCIDev)
     virPCIDeviceAddress devAddr = { 0 };
     g_autoptr(virPCIVPDResource) res = NULL;
 
+    g_clear_pointer(&devCapPCIDev->vpd, virPCIVPDResourceFree);
+    devCapPCIDev->flags &= ~VIR_NODE_DEV_CAP_FLAG_PCI_VPD;
+
     devAddr.domain = devCapPCIDev->domain;
     devAddr.bus = devCapPCIDev->bus;
     devAddr.slot = devCapPCIDev->slot;
@@ -3081,8 +3084,6 @@ virNodeDeviceGetPCIVPDDynamicCap(virNodeDevCapPCIDev *devCapPCIDev)
         if ((res = virPCIDeviceGetVPD(pciDev))) {
             devCapPCIDev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VPD;
             devCapPCIDev->vpd = g_steal_pointer(&res);
-        } else {
-            virPCIVPDResourceFree(g_steal_pointer(&devCapPCIDev->vpd));
         }
     }
     return 0;
