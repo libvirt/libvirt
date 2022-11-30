@@ -5090,7 +5090,7 @@ detach-interface
 ::
 
    detach-interface domain type [--mac mac]
-      [[[--live] [--config] | [--current]] | [--persistent]]
+      [[[--live] [--config] | [--current]] | [--persistent]] [--print-xml]
 
 Detach a network interface from a domain.
 *type* can be either *network* to indicate a physical network device or
@@ -5111,6 +5111,9 @@ an offline domain, and like *--live* *--config* for a running domain.
 
 Note that older versions of virsh used *--config* as an alias for
 *--persistent*.
+
+If *--print-xml* is specified, then the XML used to detach the interface
+is printed instead.
 
 Please see documentation for ``detach-device`` for known quirks.
 

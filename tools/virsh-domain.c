@@ -12454,6 +12454,10 @@ static const vshCmdOptDef opts_detach_interface[] = {
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
     VIRSH_COMMON_OPT_DOMAIN_LIVE,
     VIRSH_COMMON_OPT_DOMAIN_CURRENT,
+    {.name = "print-xml",
+     .type = VSH_OT_BOOL,
+     .help = N_("print XML document rather than detach the interface")
+    },
     {.name = NULL}
 };
 
@@ -12464,7 +12468,8 @@ virshDomainDetachInterface(char *doc,
                            vshControl *ctl,
                            bool current,
                            const char *type,
-                           const char *mac)
+                           const char *mac,
+                           bool printxml)
 {
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathObject) obj = NULL;
@@ -12533,6 +12538,11 @@ virshDomainDetachInterface(char *doc,
         return false;
     }
 
+    if (printxml) {
+        vshPrint(ctl, "%s", detach_xml);
+        return true;
+    }
+
     if (flags != 0 || current)
         return virDomainDetachDeviceFlags(dom, detach_xml, flags) == 0;
     return virDomainDetachDevice(dom, detach_xml) == 0;
@@ -12552,6 +12562,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool persistent = vshCommandOptBool(cmd, "persistent");
+    bool printxml = vshCommandOptBool(cmd, "print-xml");
 
     VSH_EXCLUSIVE_OPTIONS_VAR(persistent, current);
 
@@ -12574,7 +12585,8 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         if (!(ret = virshDomainDetachInterface(doc_config,
                                                flags | VIR_DOMAIN_AFFECT_CONFIG,
-                                               dom, ctl, current, type, mac)))
+                                               dom, ctl, current, type, mac,
+                                               printxml)))
             goto cleanup;
     }
 
@@ -12590,8 +12602,11 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
 
         ret = virshDomainDetachInterface(doc_live, flags,
-                                         dom, ctl, current, type, mac);
+                                         dom, ctl, current, type, mac, printxml);
     }
+
+    if (printxml)
+        return ret;
 
  cleanup:
     if (!ret) {
