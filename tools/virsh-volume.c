@@ -559,6 +559,10 @@ static const vshCmdOptDef opts_vol_clone[] = {
      .type = VSH_OT_BOOL,
      .help = N_("use btrfs COW lightweight copy")
     },
+    {.name = "print-xml",
+     .type = VSH_OT_BOOL,
+     .help = N_("print XML document rather than clone the volume")
+    },
     {.name = NULL}
 };
 
@@ -597,6 +601,11 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
     if (!(newxml = virshMakeCloneXML(origxml, name))) {
         vshError(ctl, "%s", _("Failed to allocate XML buffer"));
         return false;
+    }
+
+    if (vshCommandOptBool(cmd, "print-xml")) {
+        vshPrint(ctl, "%s", newxml);
+        return true;
     }
 
     if (!(newvol = virStorageVolCreateXMLFrom(origpool, (char *) newxml,

@@ -6719,7 +6719,7 @@ vol-clone
 ::
 
    vol-clone vol-name-or-key-or-path name
-      [--pool pool-or-uuid] [--prealloc-metadata] [--reflink]
+      [--pool pool-or-uuid] [--prealloc-metadata] [--reflink] [--print-xml]
 
 Clone an existing volume within the parent pool.  Less powerful,
 but easier to type, version of ``vol-create-from``.
@@ -6742,6 +6742,9 @@ only slightly higher initial disk space usage.
 When *--reflink* is specified, perform a COW lightweight copy,
 where the data blocks are copied only when modified.
 If this is not possible, the copy fails.
+
+If *--print-xml* is specified, then the XML used to clone the volume is
+printed instead.
 
 
 vol-delete
