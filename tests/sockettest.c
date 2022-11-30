@@ -48,8 +48,7 @@ static int testFormat(virSocketAddr *addr, const char *addrstr, bool pass)
     if (!newaddrstr)
         return pass ? -1 : 0;
 
-    if (STRNEQ(newaddrstr, addrstr)) {
-        virTestDifference(stderr, addrstr, newaddrstr);
+    if (virTestCompareToString(newaddrstr, addrstr) < 0) {
         return pass ? -1 : 0;
     } else {
         return pass ? 0 : -1;

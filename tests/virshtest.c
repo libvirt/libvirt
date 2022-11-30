@@ -134,8 +134,7 @@ testCompareOutputLit(const char *expectData,
     if (filter && testFilterLine(actualData, filter) < 0)
         return -1;
 
-    if (STRNEQ(expectData, actualData)) {
-        virTestDifference(stderr, expectData, actualData);
+    if (virTestCompareToString(expectData, actualData) < 0) {
         return -1;
     }
 

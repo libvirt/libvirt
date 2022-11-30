@@ -69,8 +69,7 @@ testCompareXMLtoXMLFiles(const char *xml)
     if (!(xmlData = testFilterXML(xmlData)))
         goto cleanup;
 
-    if (STRNEQ(actual, xmlData)) {
-        virTestDifference(stderr, xmlData, actual);
+    if (virTestCompareToString(xmlData, actual) < 0) {
         goto cleanup;
     }
 

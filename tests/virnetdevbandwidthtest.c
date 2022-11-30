@@ -92,8 +92,7 @@ testVirNetDevBandwidthSet(const void *data)
          * Maybe that's expected, actually. */
     }
 
-    if (STRNEQ_NULLABLE(exp_cmd, actual_cmd)) {
-        virTestDifference(stderr, exp_cmd, actual_cmd);
+    if (virTestCompareToString(exp_cmd, actual_cmd) < 0) {
         return -1;
     }
 

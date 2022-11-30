@@ -436,8 +436,7 @@ static int test13(const void *unused G_GNUC_UNUSED)
 
     g_clear_pointer(&cmd, virCommandFree);
 
-    if (STRNEQ(outactual, outexpect)) {
-        virTestDifference(stderr, outexpect, outactual);
+    if (virTestCompareToString(outexpect, outactual) < 0) {
         goto cleanup;
     }
 
@@ -497,16 +496,13 @@ static int test14(const void *unused G_GNUC_UNUSED)
     if (!jointactual)
         goto cleanup;
 
-    if (STRNEQ(outactual, outexpect)) {
-        virTestDifference(stderr, outexpect, outactual);
+    if (virTestCompareToString(outexpect, outactual) < 0) {
         goto cleanup;
     }
-    if (STRNEQ(erractual, errexpect)) {
-        virTestDifference(stderr, errexpect, erractual);
+    if (virTestCompareToString(errexpect, erractual) < 0) {
         goto cleanup;
     }
-    if (STRNEQ(jointactual, jointexpect)) {
-        virTestDifference(stderr, jointexpect, jointactual);
+    if (virTestCompareToString(jointexpect, jointactual) < 0) {
         goto cleanup;
     }
 
@@ -569,8 +565,7 @@ static int test16(const void *unused G_GNUC_UNUSED)
         return -1;
     }
 
-    if (STRNEQ(outactual, outexpect)) {
-        virTestDifference(stderr, outexpect, outactual);
+    if (virTestCompareToString(outexpect, outactual) < 0) {
         return -1;
     }
 
@@ -774,13 +769,11 @@ static int test21(const void *unused G_GNUC_UNUSED)
     if (virTestGetVerbose())
         printf("STDOUT:%s\nSTDERR:%s\n", NULLSTR(outbuf), NULLSTR(errbuf));
 
-    if (STRNEQ_NULLABLE(outbuf, outbufExpected)) {
-        virTestDifference(stderr, outbufExpected, outbuf);
+    if (virTestCompareToString(outbufExpected, outbuf) < 0) {
         return -1;
     }
 
-    if (STRNEQ_NULLABLE(errbuf, errbufExpected)) {
-        virTestDifference(stderr, errbufExpected, errbuf);
+    if (virTestCompareToString(errbufExpected, errbuf) < 0) {
         return -1;
     }
 
@@ -1016,8 +1009,7 @@ static int test26(const void *unused G_GNUC_UNUSED)
         return -1;
     }
 
-    if (STRNEQ(outactual, outexpect)) {
-        virTestDifference(stderr, outexpect, outactual);
+    if (virTestCompareToString(outexpect, outactual) < 0) {
         return -1;
     }
 
@@ -1086,12 +1078,10 @@ static int test27(const void *unused G_GNUC_UNUSED)
     if (!outactual || !erractual)
         return -1;
 
-    if (STRNEQ(outactual, outexpect)) {
-        virTestDifference(stderr, outexpect, outactual);
+    if (virTestCompareToString(outexpect, outactual) < 0) {
         return -1;
     }
-    if (STRNEQ(erractual, errexpect)) {
-        virTestDifference(stderr, errexpect, erractual);
+    if (virTestCompareToString(errexpect, erractual) < 0) {
         return -1;
     }
 
@@ -1225,8 +1215,7 @@ test29(const void *unused G_GNUC_UNUSED)
         }
     }
 
-    if (STRNEQ_NULLABLE(outactual, outexpect)) {
-        virTestDifference(stderr, outexpect, outactual);
+    if (virTestCompareToString(outexpect, outactual) < 0) {
         goto cleanup;
     }
 

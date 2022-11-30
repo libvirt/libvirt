@@ -49,8 +49,7 @@ testReadConfigParam(const void *data G_GNUC_UNUSED)
         if (configParams[i].ret != 1)
             continue;
 
-        if (STRNEQ(configParams[i].value, value)) {
-            virTestDifference(stderr, configParams[i].value, value);
+        if (virTestCompareToString(configParams[i].value, value) < 0) {
             return -1;
         }
     }
@@ -114,8 +113,7 @@ testReadNetworkConf(const void *data G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    if (STRNEQ(expected, actual)) {
-        virTestDifference(stderr, expected, actual);
+    if (virTestCompareToString(expected, actual) < 0) {
         goto cleanup;
     }
 

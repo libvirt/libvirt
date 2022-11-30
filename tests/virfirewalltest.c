@@ -89,9 +89,8 @@ testFirewallSingleGroup(const void *opaque G_GNUC_UNUSED)
 
     actual = virBufferCurrentContent(&cmdbuf);
 
-    if (STRNEQ_NULLABLE(expected, actual)) {
+    if (virTestCompareToString(expected, actual) < 0) {
         fprintf(stderr, "Unexpected command execution\n");
-        virTestDifference(stderr, expected, actual);
         return -1;
     }
 
@@ -136,9 +135,8 @@ testFirewallRemoveRule(const void *opaque G_GNUC_UNUSED)
 
     actual = virBufferCurrentContent(&cmdbuf);
 
-    if (STRNEQ_NULLABLE(expected, actual)) {
+    if (virTestCompareToString(expected, actual) < 0) {
         fprintf(stderr, "Unexpected command execution\n");
-        virTestDifference(stderr, expected, actual);
         return -1;
     }
 
@@ -190,9 +188,8 @@ testFirewallManyGroups(const void *opaque G_GNUC_UNUSED)
 
     actual = virBufferCurrentContent(&cmdbuf);
 
-    if (STRNEQ_NULLABLE(expected, actual)) {
+    if (virTestCompareToString(expected, actual) < 0) {
         fprintf(stderr, "Unexpected command execution\n");
-        virTestDifference(stderr, expected, actual);
         return -1;
     }
 
@@ -265,9 +262,8 @@ testFirewallIgnoreFailGroup(const void *opaque G_GNUC_UNUSED)
 
     actual = virBufferCurrentContent(&cmdbuf);
 
-    if (STRNEQ_NULLABLE(expected, actual)) {
+    if (virTestCompareToString(expected, actual) < 0) {
         fprintf(stderr, "Unexpected command execution\n");
-        virTestDifference(stderr, expected, actual);
         return -1;
     }
 
@@ -318,9 +314,8 @@ testFirewallIgnoreFailRule(const void *opaque G_GNUC_UNUSED)
 
     actual = virBufferCurrentContent(&cmdbuf);
 
-    if (STRNEQ_NULLABLE(expected, actual)) {
+    if (virTestCompareToString(expected, actual) < 0) {
         fprintf(stderr, "Unexpected command execution\n");
-        virTestDifference(stderr, expected, actual);
         return -1;
     }
 
@@ -365,9 +360,8 @@ testFirewallNoRollback(const void *opaque G_GNUC_UNUSED)
 
     actual = virBufferCurrentContent(&cmdbuf);
 
-    if (STRNEQ_NULLABLE(expected, actual)) {
+    if (virTestCompareToString(expected, actual) < 0) {
         fprintf(stderr, "Unexpected command execution\n");
-        virTestDifference(stderr, expected, actual);
         return -1;
     }
 
@@ -431,9 +425,8 @@ testFirewallSingleRollback(const void *opaque G_GNUC_UNUSED)
 
     actual = virBufferCurrentContent(&cmdbuf);
 
-    if (STRNEQ_NULLABLE(expected, actual)) {
+    if (virTestCompareToString(expected, actual) < 0) {
         fprintf(stderr, "Unexpected command execution\n");
-        virTestDifference(stderr, expected, actual);
         return -1;
     }
 
@@ -500,9 +493,8 @@ testFirewallManyRollback(const void *opaque G_GNUC_UNUSED)
 
     actual = virBufferCurrentContent(&cmdbuf);
 
-    if (STRNEQ_NULLABLE(expected, actual)) {
+    if (virTestCompareToString(expected, actual) < 0) {
         fprintf(stderr, "Unexpected command execution\n");
-        virTestDifference(stderr, expected, actual);
         return -1;
     }
 
@@ -599,9 +591,8 @@ testFirewallChainedRollback(const void *opaque G_GNUC_UNUSED)
 
     actual = virBufferCurrentContent(&cmdbuf);
 
-    if (STRNEQ_NULLABLE(expected, actual)) {
+    if (virTestCompareToString(expected, actual) < 0) {
         fprintf(stderr, "Unexpected command execution\n");
-        virTestDifference(stderr, expected, actual);
         return -1;
     }
 
@@ -763,9 +754,8 @@ testFirewallQuery(const void *opaque G_GNUC_UNUSED)
         return -1;
     }
 
-    if (STRNEQ_NULLABLE(expected, actual)) {
+    if (virTestCompareToString(expected, actual) < 0) {
         fprintf(stderr, "Unexpected command execution\n");
-        virTestDifference(stderr, expected, actual);
         return -1;
     }
 

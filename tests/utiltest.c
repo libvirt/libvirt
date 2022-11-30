@@ -47,8 +47,7 @@ testIndexToDiskName(const void *data G_GNUC_UNUSED)
 
         diskName = virIndexToDiskName(i, "sd");
 
-        if (STRNEQ(diskNames[i], diskName)) {
-            virTestDifference(stderr, diskNames[i], diskName);
+        if (virTestCompareToString(diskNames[i], diskName) < 0) {
             return -1;
         }
     }

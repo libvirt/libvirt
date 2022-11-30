@@ -488,8 +488,7 @@ static int testSocketSSH(const void *opaque)
         }
         buf[rv] = '\0';
 
-        if (STRNEQ(buf, data->expectOut)) {
-            virTestDifference(stderr, data->expectOut, buf);
+        if (virTestCompareToString(data->expectOut, buf) < 0) {
             goto cleanup;
         }
 
