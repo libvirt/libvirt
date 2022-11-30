@@ -570,12 +570,11 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshStorageVol) newvol = NULL;
     const char *name = NULL;
     g_autofree char *origxml = NULL;
-    xmlChar *newxml = NULL;
-    bool ret = false;
+    g_autofree xmlChar *newxml = NULL;
     unsigned int flags = 0;
 
     if (!(origvol = virshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
-        goto cleanup;
+        return false;
 
     if (vshCommandOptBool(cmd, "prealloc-metadata"))
         flags |= VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
@@ -586,38 +585,30 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
     origpool = virStoragePoolLookupByVolume(origvol);
     if (!origpool) {
         vshError(ctl, "%s", _("failed to get parent pool"));
-        goto cleanup;
+        return false;
     }
 
     if (vshCommandOptStringReq(ctl, cmd, "newname", &name) < 0)
-        goto cleanup;
+        return false;
 
-    origxml = virStorageVolGetXMLDesc(origvol, 0);
-    if (!origxml)
-        goto cleanup;
+    if (!(origxml = virStorageVolGetXMLDesc(origvol, 0)))
+        return false;
 
-    newxml = virshMakeCloneXML(origxml, name);
-    if (!newxml) {
+    if (!(newxml = virshMakeCloneXML(origxml, name))) {
         vshError(ctl, "%s", _("Failed to allocate XML buffer"));
-        goto cleanup;
+        return false;
     }
 
-    newvol = virStorageVolCreateXMLFrom(origpool, (char *) newxml, origvol, flags);
-
-    if (newvol != NULL) {
-        vshPrintExtra(ctl, _("Vol %s cloned from %s\n"),
-                      virStorageVolGetName(newvol), virStorageVolGetName(origvol));
-    } else {
+    if (!(newvol = virStorageVolCreateXMLFrom(origpool, (char *) newxml,
+                                              origvol, flags))) {
         vshError(ctl, _("Failed to clone vol from %s"),
                  virStorageVolGetName(origvol));
-        goto cleanup;
+        return false;
     }
 
-    ret = true;
-
- cleanup:
-    xmlFree(newxml);
-    return ret;
+    vshPrintExtra(ctl, _("Vol %s cloned from %s\n"),
+                  virStorageVolGetName(newvol), virStorageVolGetName(origvol));
+    return true;
 }
 
 /*
