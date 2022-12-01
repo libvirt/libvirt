@@ -4841,6 +4841,7 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitor *mon,
         virJSONValue *child = virJSONValueArrayGet(data, i);
         const char *tmp;
         qemuMonitorCPUDefInfo *cpu = defs->cpus + i;
+        virJSONValue *feat;
 
         if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4853,16 +4854,14 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitor *mon,
         if ((tmp = virJSONValueObjectGetString(child, "typename")) && *tmp)
             cpu->type = g_strdup(tmp);
 
-        if (virJSONValueObjectHasKey(child, "unavailable-features")) {
-            if (!(cpu->blockers = virJSONValueObjectGetStringArray(child,
-                                                                   "unavailable-features")))
-                return -1;
+        if ((feat = virJSONValueObjectGetArray(child, "unavailable-features"))) {
+            if (virJSONValueArraySize(feat) > 0) {
+                if (!(cpu->blockers = virJSONValueArrayToStringList(feat)))
+                    return -1;
 
-            if (g_strv_length(cpu->blockers) == 0) {
-                cpu->usable = VIR_DOMCAPS_CPU_USABLE_YES;
-                g_clear_pointer(&cpu->blockers, g_strfreev);
-            } else {
                 cpu->usable = VIR_DOMCAPS_CPU_USABLE_NO;
+            } else {
+                cpu->usable = VIR_DOMCAPS_CPU_USABLE_YES;
             }
         }
 
