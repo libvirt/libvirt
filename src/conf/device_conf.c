@@ -199,8 +199,7 @@ int
 virPCIDeviceAddressParseXML(xmlNodePtr node,
                             virPCIDeviceAddress *addr)
 {
-    xmlNodePtr cur;
-    xmlNodePtr zpci = NULL;
+    xmlNodePtr zpci;
 
     memset(addr, 0, sizeof(*addr));
 
@@ -227,17 +226,10 @@ virPCIDeviceAddressParseXML(xmlNodePtr node,
     if (!virPCIDeviceAddressIsEmpty(addr) && !virPCIDeviceAddressIsValid(addr, true))
         return -1;
 
-    cur = node->children;
-    while (cur) {
-        if (cur->type == XML_ELEMENT_NODE &&
-            virXMLNodeNameEqual(cur, "zpci")) {
-            zpci = cur;
-        }
-        cur = cur->next;
+    if ((zpci = virXMLNodeGetSubelement(node, "zpci"))) {
+        if (virZPCIDeviceAddressParseXML(zpci, addr) < 0)
+            return -1;
     }
-
-    if (zpci && virZPCIDeviceAddressParseXML(zpci, addr) < 0)
-        return -1;
 
     return 0;
 }
