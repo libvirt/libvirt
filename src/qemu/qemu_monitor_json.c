@@ -396,15 +396,15 @@ qemuMonitorJSONCheckError(virJSONValue *cmd,
 }
 
 
-static int
-qemuMonitorJSONCheckReply(virJSONValue *cmd,
-                          virJSONValue *reply,
-                          virJSONType type)
+static virJSONValue *
+qemuMonitorJSONGetReply(virJSONValue *cmd,
+                        virJSONValue *reply,
+                        virJSONType type)
 {
     virJSONValue *data;
 
     if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-        return -1;
+        return NULL;
 
     data = virJSONValueObjectGet(reply, "return");
     if (virJSONValueGetType(data) != type) {
@@ -417,8 +417,20 @@ qemuMonitorJSONCheckReply(virJSONValue *cmd,
                        _("unexpected type returned by QEMU command '%s'"),
                        qemuMonitorJSONCommandName(cmd));
 
-        return -1;
+        return NULL;
     }
+
+    return data;
+}
+
+
+static int
+qemuMonitorJSONCheckReply(virJSONValue *cmd,
+                          virJSONValue *reply,
+                          virJSONType type)
+{
+    if (!qemuMonitorJSONGetReply(cmd, reply, type))
+        return -1;
 
     return 0;
 }
