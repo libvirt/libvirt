@@ -5522,6 +5522,7 @@ qemuMonitorJSONGetStringListProperty(qemuMonitor *mon,
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
+    virJSONValue *data;
 
     *strList = NULL;
 
@@ -5534,10 +5535,10 @@ qemuMonitorJSONGetStringListProperty(qemuMonitor *mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_ARRAY)))
         return -1;
 
-    if (!(*strList = virJSONValueObjectGetStringArray(reply, "return")))
+    if (!(*strList = virJSONValueArrayToStringList(data)))
         return -1;
 
     return 0;
@@ -6297,6 +6298,7 @@ qemuMonitorJSONGetStringArray(qemuMonitor *mon,
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
+    virJSONValue *data;
 
     *array = NULL;
 
@@ -6309,10 +6311,10 @@ qemuMonitorJSONGetStringArray(qemuMonitor *mon,
     if (qemuMonitorJSONHasError(reply, "CommandNotFound"))
         return 0;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_ARRAY)))
         return -1;
 
-    if (!(*array = virJSONValueObjectGetStringArray(reply, "return")))
+    if (!(*array = virJSONValueArrayToStringList(data)))
         return -1;
 
     return 0;
