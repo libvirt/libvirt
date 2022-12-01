@@ -2413,6 +2413,7 @@ qemuAgentSSHGetAuthorizedKeys(qemuAgent *agent,
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
     virJSONValue *data = NULL;
+    virJSONValue *arr = NULL;
 
     if (!(cmd = qemuAgentMakeCommand("guest-ssh-get-authorized-keys",
                                      "s:username", user,
@@ -2422,13 +2423,14 @@ qemuAgentSSHGetAuthorizedKeys(qemuAgent *agent,
     if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0)
         return -1;
 
-    if (!(data = virJSONValueObjectGetObject(reply, "return"))) {
+    if (!(data = virJSONValueObjectGetObject(reply, "return")) ||
+        !(arr = virJSONValueObjectGetArray(data, "keys"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("qemu agent didn't return an array of keys"));
         return -1;
     }
 
-    if (!(*keys = virJSONValueObjectGetStringArray(data, "keys")))
+    if (!(*keys = virJSONValueArrayToStringList(arr)))
         return -1;
 
     return g_strv_length(*keys);
