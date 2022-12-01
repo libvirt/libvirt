@@ -5267,6 +5267,7 @@ qemuMonitorJSONGetCommandLineOptions(qemuMonitor *mon)
     g_autoptr(GHashTable) ret = virHashNew(virJSONValueHashFree);
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
+    virJSONValue *data;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-command-line-options", NULL)))
         return NULL;
@@ -5274,10 +5275,10 @@ qemuMonitorJSONGetCommandLineOptions(qemuMonitor *mon)
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return NULL;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_ARRAY)))
         return NULL;
 
-    if (virJSONValueArrayForeachSteal(virJSONValueObjectGetArray(reply, "return"),
+    if (virJSONValueArrayForeachSteal(data,
                                       qemuMonitorJSONGetCommandLineOptionsWorker,
                                       ret) < 0)
         return NULL;
@@ -5673,6 +5674,7 @@ qemuMonitorJSONGetDeviceProps(qemuMonitor *mon,
     g_autoptr(GHashTable) props = virHashNew(virJSONValueHashFree);
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
+    virJSONValue *data;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("device-list-properties",
                                            "s:typename", device,
@@ -5686,10 +5688,10 @@ qemuMonitorJSONGetDeviceProps(qemuMonitor *mon,
     if (qemuMonitorJSONHasError(reply, "DeviceNotFound"))
         return g_steal_pointer(&props);
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_ARRAY)))
         return NULL;
 
-    if (virJSONValueArrayForeachSteal(virJSONValueObjectGetArray(reply, "return"),
+    if (virJSONValueArrayForeachSteal(data,
                                       qemuMonitorJSONGetDevicePropsWorker,
                                       props) < 0)
         return NULL;
@@ -8381,6 +8383,7 @@ qemuMonitorJSONGetCPUMigratable(qemuMonitor *mon,
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
+    virJSONValue *data;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("qom-get",
                                            "s:path", cpuQOMPath,
@@ -8394,11 +8397,10 @@ qemuMonitorJSONGetCPUMigratable(qemuMonitor *mon,
     if (qemuMonitorJSONHasError(reply, "GenericError"))
         return 1;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_BOOLEAN) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_BOOLEAN)))
         return -1;
 
-    return virJSONValueGetBoolean(virJSONValueObjectGet(reply, "return"),
-                                  migratable);
+    return virJSONValueGetBoolean(data, migratable);
 }
 
 
