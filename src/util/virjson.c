@@ -1313,23 +1313,6 @@ virJSONValueObjectStealObject(virJSONValue *object,
 }
 
 
-char **
-virJSONValueObjectGetStringArray(virJSONValue *object, const char *key)
-{
-    virJSONValue *data;
-
-    data = virJSONValueObjectGetArray(object, key);
-    if (!data) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s is missing or not an array"),
-                       key);
-        return NULL;
-    }
-
-    return virJSONValueArrayToStringList(data);
-}
-
-
 /**
  * virJSONValueArrayToStringList:
  * @data: a JSON array containing strings to convert

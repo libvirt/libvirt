@@ -2616,7 +2616,6 @@ virJSONValueObjectGetNumberUint;
 virJSONValueObjectGetNumberUlong;
 virJSONValueObjectGetObject;
 virJSONValueObjectGetString;
-virJSONValueObjectGetStringArray;
 virJSONValueObjectGetValue;
 virJSONValueObjectHasKey;
 virJSONValueObjectKeysNumber;
