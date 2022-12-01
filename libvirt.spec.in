@@ -432,6 +432,7 @@ Summary: Server side daemon and supporting files for libvirt library
 
 # The client side, i.e. shared libs are in a subpackage
 Requires: libvirt-libs = %{version}-%{release}
+Requires: libvirt-daemon-lock = %{version}-%{release}
 # The libvirt-guests.sh script requires virsh from libvirt-client subpackage,
 # but not every deployment wants to use libvirt-guests service. Using
 # Recommends here will install libvirt-client by default (if available), but
@@ -479,6 +480,14 @@ Obsoletes: libvirt-bash-completion < 7.3.0
 Server side daemon required to manage the virtualization capabilities
 of recent versions of Linux. Requires a hypervisor specific sub-RPM
 for specific drivers.
+
+%package daemon-lock
+Summary: Server side daemon for managing locks
+Requires: libvirt-libs = %{version}-%{release}
+
+%description daemon-lock
+Server side daemon used to manage locks held against virtual machine
+resources
 
 %package daemon-config-network
 Summary: Default configuration files for the libvirtd daemon
@@ -1398,7 +1407,7 @@ fi \
 %define libvirt_daemon_systemd_preun_priv() %systemd_preun %1.service %1-admin.socket %1.socket
 
 %pre daemon
-%libvirt_sysconfig_pre libvirtd virtproxyd virtlogd virtlockd libvirt-guests
+%libvirt_sysconfig_pre libvirtd virtproxyd virtlogd libvirt-guests
 # 'libvirt' group is just to allow password-less polkit access to
 # libvirtd. The uid number is irrelevant, so we use dynamic allocation
 # described at the above link.
@@ -1407,7 +1416,6 @@ exit 0
 
 %post daemon
 %libvirt_daemon_systemd_post_priv virtlogd
-%libvirt_daemon_systemd_post_priv virtlockd
 %if %{with_modular_daemons}
 %libvirt_daemon_systemd_post_inet virtproxyd
 %else
@@ -1421,17 +1429,16 @@ exit 0
 %libvirt_daemon_systemd_preun_inet libvirtd
 %libvirt_daemon_systemd_preun_inet virtproxyd
 %libvirt_daemon_systemd_preun_priv virtlogd
-%libvirt_daemon_systemd_preun_priv virtlockd
 
 %postun daemon
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 if [ $1 -ge 1 ] ; then
-    /bin/systemctl reload-or-try-restart virtlockd.service virtlogd.service >/dev/null 2>&1 || :
+    /bin/systemctl reload-or-try-restart virtlogd.service >/dev/null 2>&1 || :
 fi
 %systemd_postun libvirt-guests.service
 
 %posttrans daemon
-%libvirt_sysconfig_posttrans libvirtd virtproxyd virtlogd virtlockd libvirt-guests
+%libvirt_sysconfig_posttrans libvirtd virtproxyd virtlogd libvirt-guests
 if test %libvirt_daemon_needs_restart libvirtd
 then
     # See if user has previously modified their install to
@@ -1465,6 +1472,24 @@ then
     fi
 fi
 %libvirt_daemon_finish_restart libvirtd
+
+%pre daemon-lock
+%libvirt_sysconfig_pre virtlockd
+
+%post daemon-lock
+%libvirt_daemon_systemd_post_priv virtlockd
+
+%preun daemon-lock
+%libvirt_daemon_systemd_preun_priv virtlockd
+
+%postun daemon-lock
+/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+if [ $1 -ge 1 ] ; then
+    /bin/systemctl reload-or-try-restart virtlockd.service >/dev/null 2>&1 || :
+fi
+
+%posttrans daemon-lock
+%libvirt_sysconfig_posttrans virtlockd
 
 %pre daemon-driver-network
 %libvirt_sysconfig_pre virtnetworkd
@@ -1747,14 +1772,10 @@ exit 0
 %{_unitdir}/virtlogd.service
 %{_unitdir}/virtlogd.socket
 %{_unitdir}/virtlogd-admin.socket
-%{_unitdir}/virtlockd.service
-%{_unitdir}/virtlockd.socket
-%{_unitdir}/virtlockd-admin.socket
 %{_unitdir}/libvirt-guests.service
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
 %config(noreplace) %{_sysconfdir}/libvirt/virtproxyd.conf
 %config(noreplace) %{_sysconfdir}/libvirt/virtlogd.conf
-%config(noreplace) %{_sysconfdir}/libvirt/virtlockd.conf
 %config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
 %config(noreplace) %{_prefix}/lib/sysctl.d/60-libvirtd.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
@@ -1776,14 +1797,8 @@ exit 0
 %{_datadir}/augeas/lenses/tests/test_libvirtd.aug
 %{_datadir}/augeas/lenses/virtlogd.aug
 %{_datadir}/augeas/lenses/tests/test_virtlogd.aug
-%{_datadir}/augeas/lenses/virtlockd.aug
-%{_datadir}/augeas/lenses/tests/test_virtlockd.aug
 %{_datadir}/augeas/lenses/virtproxyd.aug
 %{_datadir}/augeas/lenses/tests/test_virtproxyd.aug
-%{_datadir}/augeas/lenses/libvirt_lockd.aug
-%if %{with_qemu}
-%{_datadir}/augeas/lenses/tests/test_libvirt_lockd.aug
-%endif
 %{_datadir}/polkit-1/actions/org.libvirt.unix.policy
 %{_datadir}/polkit-1/actions/org.libvirt.api.policy
 %{_datadir}/polkit-1/rules.d/50-libvirt.rules
@@ -1793,7 +1808,6 @@ exit 0
 %attr(0755, root, root) %{_sbindir}/libvirtd
 %attr(0755, root, root) %{_sbindir}/virtproxyd
 %attr(0755, root, root) %{_sbindir}/virtlogd
-%attr(0755, root, root) %{_sbindir}/virtlockd
 %attr(0755, root, root) %{_libexecdir}/libvirt-guests.sh
 %{_mandir}/man1/virt-admin.1*
 %{_mandir}/man1/virt-host-validate.1*
@@ -1801,11 +1815,24 @@ exit 0
 %{_mandir}/man8/libvirt-guests.8*
 %{_mandir}/man8/libvirtd.8*
 %{_mandir}/man8/virtlogd.8*
-%{_mandir}/man8/virtlockd.8*
 %{_mandir}/man8/virtproxyd.8*
 %{_bindir}/virt-host-validate
 %{_bindir}/virt-admin
 %{_datadir}/bash-completion/completions/virt-admin
+
+%files daemon-lock
+%{_unitdir}/virtlockd.service
+%{_unitdir}/virtlockd.socket
+%{_unitdir}/virtlockd-admin.socket
+%config(noreplace) %{_sysconfdir}/libvirt/virtlockd.conf
+%{_datadir}/augeas/lenses/virtlockd.aug
+%{_datadir}/augeas/lenses/tests/test_virtlockd.aug
+%{_datadir}/augeas/lenses/libvirt_lockd.aug
+%if %{with_qemu}
+%{_datadir}/augeas/lenses/tests/test_libvirt_lockd.aug
+%endif
+%attr(0755, root, root) %{_sbindir}/virtlockd
+%{_mandir}/man8/virtlockd.8*
 
 %files daemon-config-network
 %dir %{_datadir}/libvirt/networks/
