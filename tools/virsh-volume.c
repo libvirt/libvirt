@@ -505,28 +505,22 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
     return true;
 }
 
-static xmlChar *
+static char *
 virshMakeCloneXML(const char *origxml, const char *newname)
 {
     g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    g_autoptr(xmlXPathObject) obj = NULL;
-    xmlChar *newxml = NULL;
-    int size;
+    xmlNodePtr node;
 
-    doc = virXMLParseStringCtxt(origxml, _("(volume_definition)"), &ctxt);
-    if (!doc)
+    if (!(doc = virXMLParseStringCtxt(origxml, _("(volume_definition)"), &ctxt)))
         return NULL;
 
-    obj = xmlXPathEval(BAD_CAST "/volume/name", ctxt);
-    if (obj == NULL || obj->nodesetval == NULL ||
-        obj->nodesetval->nodeTab == NULL)
+    if (!(node = virXPathNode("/volume/name", ctxt)))
         return NULL;
 
-    xmlNodeSetContent(obj->nodesetval->nodeTab[0], (const xmlChar *)newname);
-    xmlDocDumpMemory(doc, &newxml, &size);
+    xmlNodeSetContent(node, (const xmlChar *)newname);
 
-    return newxml;
+    return virXMLNodeToString(doc, doc->children);
 }
 
 /*
@@ -574,7 +568,7 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshStorageVol) newvol = NULL;
     const char *name = NULL;
     g_autofree char *origxml = NULL;
-    g_autofree xmlChar *newxml = NULL;
+    g_autofree char *newxml = NULL;
     unsigned int flags = 0;
 
     if (!(origvol = virshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
@@ -608,8 +602,7 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
         return true;
     }
 
-    if (!(newvol = virStorageVolCreateXMLFrom(origpool, (char *) newxml,
-                                              origvol, flags))) {
+    if (!(newvol = virStorageVolCreateXMLFrom(origpool, newxml, origvol, flags))) {
         vshError(ctl, _("Failed to clone vol from %s"),
                  virStorageVolGetName(origvol));
         return false;
