@@ -1205,6 +1205,9 @@ test29(const void *unused G_GNUC_UNUSED)
                 goto cleanup;
             }
 
+            if (rc == 0)
+                break;
+
             outactual = g_renew(char, outactual, outactuallen + rc + 1);
             memcpy(outactual + outactuallen, buf, rc);
             outactuallen += rc;
