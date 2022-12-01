@@ -4842,6 +4842,7 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitor *mon,
         const char *tmp;
         qemuMonitorCPUDefInfo *cpu = defs->cpus + i;
         virJSONValue *feat;
+        virJSONValue *deprecated;
 
         if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4865,8 +4866,8 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitor *mon,
             }
         }
 
-        if (virJSONValueObjectHasKey(child, "deprecated") &&
-            virJSONValueObjectGetBoolean(child, "deprecated", &cpu->deprecated) < 0)
+        if ((deprecated = virJSONValueObjectGet(child, "deprecated")) &&
+            virJSONValueGetBoolean(deprecated, &cpu->deprecated) < 0)
             return -1;
     }
 
