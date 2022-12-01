@@ -3096,6 +3096,13 @@ qemuSnapshotDeleteValidate(virDomainObj *vm,
     }
 
     if (virDomainSnapshotIsExternal(snap) &&
+        qemuDomainHasBlockjob(vm, false)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot delete external snapshots when there is another active block job"));
+        return -1;
+    }
+
+    if (virDomainSnapshotIsExternal(snap) &&
         !(flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("deletion of external disk snapshots not supported"));
@@ -3158,6 +3165,14 @@ qemuSnapshotDelete(virDomainObj *vm,
                  * running to get everything we need. */
                 delData = g_steal_pointer(&externalData);
                 externalData = qemuSnapshotDeleteExternalPrepare(vm, snap);
+            } else {
+                qemuDomainJobPrivate *jobPriv = vm->job->privateData;
+
+                /* If the VM is running we need to indicate that the async snapshot
+                 * job is snapshot delete job. */
+                jobPriv->snapshotDelete = true;
+
+                qemuDomainSaveStatus(vm);
             }
 
             if (!externalData)

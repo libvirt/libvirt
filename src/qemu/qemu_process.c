@@ -3692,6 +3692,42 @@ qemuProcessRecoverMigration(virQEMUDriver *driver,
 }
 
 
+static void
+qemuProcessAbortSnapshotDelete(virDomainObj *vm,
+                               virDomainJobObj *job)
+{
+    size_t i;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobPrivate *jobPriv = job->privateData;
+
+    if (!jobPriv->snapshotDelete)
+        return;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDef *disk = vm->def->disks[i];
+        g_autoptr(qemuBlockJobData) diskJob = qemuBlockJobDiskGetJob(disk);
+
+        if (!diskJob)
+            continue;
+
+        if (diskJob->type != QEMU_BLOCKJOB_TYPE_COMMIT &&
+            diskJob->type != QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT) {
+            continue;
+        }
+
+        qemuBlockJobSyncBegin(diskJob);
+
+        qemuDomainObjEnterMonitor(vm);
+        ignore_value(qemuMonitorBlockJobCancel(priv->mon, diskJob->name, false));
+        qemuDomainObjExitMonitor(vm);
+
+        diskJob->state = QEMU_BLOCKJOB_STATE_ABORTING;
+
+        qemuBlockJobSyncEnd(vm, diskJob, VIR_ASYNC_JOB_NONE);
+    }
+}
+
+
 static int
 qemuProcessRecoverJob(virQEMUDriver *driver,
                       virDomainObj *vm,
@@ -3741,6 +3777,7 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
                           vm->def->name);
             }
         }
+        qemuProcessAbortSnapshotDelete(vm, job);
         break;
 
     case VIR_ASYNC_JOB_START:
