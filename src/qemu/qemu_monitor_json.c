@@ -1481,10 +1481,8 @@ qemuMonitorJSONGetStatus(qemuMonitor *mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
         return -1;
-
-    data = virJSONValueObjectGetObject(reply, "return");
 
     if (virJSONValueObjectGetBoolean(data, "running", running) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1866,10 +1864,8 @@ qemuMonitorJSONGetBalloonInfo(qemuMonitor *mon,
     }
 
     /* See if any other fatal error occurred */
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
         return -1;
-
-    data = virJSONValueObjectGetObject(reply, "return");
 
     if (virJSONValueObjectGetNumberUlong(data, "actual", &mem) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1964,10 +1960,8 @@ qemuMonitorJSONGetMemoryStats(qemuMonitor *mon,
         }
     }
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
         return got;
-
-    data = virJSONValueObjectGetObject(reply, "return");
 
     if (!(statsdata = virJSONValueObjectGet(data, "stats"))) {
         VIR_DEBUG("data does not include 'stats'");
@@ -3165,10 +3159,8 @@ qemuMonitorJSONGetMigrationBlockers(qemuMonitor *mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
         return -1;
-
-    data = virJSONValueObjectGetObject(reply, "return");
 
     if (!(jblockers = virJSONValueObjectGetArray(data, "blocked-reasons")))
         return 0;
@@ -3244,10 +3236,8 @@ qemuMonitorJSONQueryDump(qemuMonitor *mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+    if (!(result = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
         return -1;
-
-    result = virJSONValueObjectGetObject(reply, "return");
 
     return qemuMonitorJSONExtractDumpStats(result, stats);
 }
@@ -3270,10 +3260,8 @@ qemuMonitorJSONGetDumpGuestMemoryCapability(qemuMonitor *mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+    if (!(caps = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
         return -1;
-
-    caps = virJSONValueObjectGetObject(reply, "return");
 
     if (!(formats = virJSONValueObjectGetArray(caps, "formats"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4656,10 +4644,8 @@ int qemuMonitorJSONGetVersion(qemuMonitor *mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
         return -1;
-
-    data = virJSONValueObjectGetObject(reply, "return");
 
     if (!(qemu = virJSONValueObjectGetObject(data, "qemu"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -5155,10 +5141,8 @@ qemuMonitorJSONGetCPUModelBaseline(qemuMonitor *mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
         return -1;
-
-    data = virJSONValueObjectGetObject(reply, "return");
 
     if (qemuMonitorJSONParseCPUModelData(data, "query-cpu-model-baseline",
                                          false, &cpu_model, &cpu_props,
@@ -5322,10 +5306,8 @@ int qemuMonitorJSONGetKVMState(qemuMonitor *mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
         return -1;
-
-    data = virJSONValueObjectGetObject(reply, "return");
 
     if (virJSONValueObjectGetBoolean(data, "enabled", enabled) < 0 ||
         virJSONValueObjectGetBoolean(data, "present", present) < 0) {
@@ -5761,10 +5743,8 @@ qemuMonitorJSONGetTargetArch(qemuMonitor *mon)
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return NULL;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
         return NULL;
-
-    data = virJSONValueObjectGetObject(reply, "return");
 
     if (!(arch = virJSONValueObjectGetString(data, "arch"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -7521,10 +7501,8 @@ qemuMonitorJSONGetRTCTime(qemuMonitor *mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
         return -1;
-
-    data = virJSONValueObjectGet(reply, "return");
 
     if (virJSONValueObjectGetNumberInt(data, "tm_year", &tm->tm_year) < 0 ||
         virJSONValueObjectGetNumberInt(data, "tm_mon", &tm->tm_mon) < 0 ||
@@ -7973,10 +7951,8 @@ qemuMonitorJSONGetSEVMeasurement(qemuMonitor *mon)
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return NULL;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
         return NULL;
-
-    data = virJSONValueObjectGetObject(reply, "return");
 
     if (!(tmp = virJSONValueObjectGetString(data, "data")))
         return NULL;
@@ -8016,10 +7992,8 @@ qemuMonitorJSONGetSEVInfo(qemuMonitor *mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
 
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
         return -1;
-
-    data = virJSONValueObjectGetObject(reply, "return");
 
     if (virJSONValueObjectGetNumberUint(data, "api-major", apiMajor) < 0 ||
         virJSONValueObjectGetNumberUint(data, "api-minor", apiMinor) < 0 ||
