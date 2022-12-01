@@ -6578,24 +6578,19 @@ qemuMonitorJSONAttachCharDev(qemuMonitor *mon,
         return -1;
 
     if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
-        if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
-            return -1;
-    } else {
-        if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-            return -1;
-    }
+        virJSONValue *data;
 
-    if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
-        virJSONValue *data = virJSONValueObjectGetObject(reply, "return");
-        const char *path;
+        if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
+            return -1;
 
-        if (!(path = virJSONValueObjectGetString(data, "pty"))) {
+        if (!(chr->data.file.path = g_strdup(virJSONValueObjectGetString(data, "pty")))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("chardev-add reply was missing pty path"));
             return -1;
         }
-
-        chr->data.file.path = g_strdup(path);
+    } else {
+        if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+            return -1;
     }
 
     return 0;
