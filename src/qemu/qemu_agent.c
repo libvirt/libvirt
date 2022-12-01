@@ -2545,6 +2545,7 @@ int qemuAgentGetDisks(qemuAgent *agent,
     for (i = 0; i < ndata; i++) {
         virJSONValue *addr;
         virJSONValue *entry = virJSONValueArrayGet(data, i);
+        virJSONValue *dependencies;
         qemuAgentDiskInfo *disk;
 
         if (!entry) {
@@ -2570,7 +2571,11 @@ int qemuAgentGetDisks(qemuAgent *agent,
             goto error;
         }
 
-        disk->dependencies = virJSONValueObjectGetStringArray(entry, "dependencies");
+        if ((dependencies = virJSONValueObjectGetArray(entry, "dependencies"))) {
+            if (!(disk->dependencies = virJSONValueArrayToStringList(dependencies)))
+                goto error;
+        }
+
         disk->alias = g_strdup(virJSONValueObjectGetString(entry, "alias"));
         addr = virJSONValueObjectGetObject(entry, "address");
         if (addr) {
