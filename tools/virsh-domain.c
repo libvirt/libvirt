@@ -13089,9 +13089,8 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
     const char *source = NULL;
     const char *path = NULL;
     g_autofree char *doc = NULL;
-    xmlNodePtr disk_node = NULL;
+    g_autoptr(xmlNode) disk_node = NULL;
     g_autofree char *disk_xml = NULL;
-    bool ret = false;
     virshUpdateDiskXMLType update_type;
     const char *action = NULL;
     const char *success_msg = NULL;
@@ -13152,38 +13151,34 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
-        goto cleanup;
+        return false;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG)
         doc = virDomainGetXMLDesc(dom, VIR_DOMAIN_XML_INACTIVE);
     else
         doc = virDomainGetXMLDesc(dom, 0);
     if (!doc)
-        goto cleanup;
+        return false;
 
     if (!(disk_node = virshFindDisk(doc, path, VIRSH_FIND_DISK_CHANGEABLE)))
-        goto cleanup;
+        return false;
 
     if (!(disk_xml = virshUpdateDiskXML(disk_node, source, block, path,
                                         update_type)))
-        goto cleanup;
+        return false;
 
     if (vshCommandOptBool(cmd, "print-xml")) {
         vshPrint(ctl, "%s", disk_xml);
-    } else {
-        if (virDomainUpdateDeviceFlags(dom, disk_xml, flags) != 0) {
-            vshError(ctl, _("Failed to complete action %s on media"), action);
-            goto cleanup;
-        }
-
-        vshPrint(ctl, "%s", success_msg);
+        return true;
     }
 
-    ret = true;
+    if (virDomainUpdateDeviceFlags(dom, disk_xml, flags) != 0) {
+        vshError(ctl, _("Failed to complete action %s on media"), action);
+        return false;
+    }
 
- cleanup:
-    xmlFreeNode(disk_node);
-    return ret;
+    vshPrint(ctl, "%s", success_msg);
+    return true;
 }
 
 static const vshCmdInfo info_domfstrim[] = {
