@@ -663,6 +663,11 @@ qemuStateInitialize(bool privileged,
                              cfg->slirpStateDir);
         goto error;
     }
+    if (g_mkdir_with_parents(cfg->passtStateDir, 0777) < 0) {
+        virReportSystemError(errno, _("Failed to create passt state dir %s"),
+                             cfg->passtStateDir);
+        goto error;
+    }
 
     if (virDirCreate(cfg->dbusStateDir, 0770, cfg->user, cfg->group,
                      VIR_DIR_CREATE_ALLOW_EXIST) < 0) {
@@ -808,6 +813,13 @@ qemuStateInitialize(bool privileged,
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
                                  cfg->slirpStateDir, (int)cfg->user,
+                                 (int)cfg->group);
+            goto error;
+        }
+        if (chown(cfg->passtStateDir, cfg->user, cfg->group) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 cfg->passtStateDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }
