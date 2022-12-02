@@ -12894,8 +12894,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     const char *target = NULL;
     g_autofree char *doc = NULL;
     int ret;
-    bool functionReturn = false;
-    xmlNodePtr disk_node = NULL;
+    g_autoptr(xmlNode) disk_node = NULL;
     bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
@@ -12916,7 +12915,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "target", &target) < 0)
-        goto cleanup;
+        return false;
 
     if (flags == VIR_DOMAIN_AFFECT_CONFIG)
         doc = virDomainGetXMLDesc(dom, VIR_DOMAIN_XML_INACTIVE);
@@ -12924,24 +12923,23 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
         doc = virDomainGetXMLDesc(dom, 0);
 
     if (!doc)
-        goto cleanup;
+        return false;
 
     if (persistent &&
         virDomainIsActive(dom) == 1)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(disk_node = virshFindDisk(doc, target, VIRSH_FIND_DISK_NORMAL)))
-        goto cleanup;
+        return false;
 
     if (!(disk_xml = virXMLNodeToString(NULL, disk_node))) {
         vshSaveLibvirtError();
-        goto cleanup;
+        return false;
     }
 
     if (vshCommandOptBool(cmd, "print-xml")) {
         vshPrint(ctl, "%s", disk_xml);
-        functionReturn = true;
-        goto cleanup;
+        return true;
     }
 
     if (flags != 0 || current)
@@ -12951,15 +12949,11 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
 
     if (ret != 0) {
         vshError(ctl, "%s", _("Failed to detach disk"));
-        goto cleanup;
+        return false;
     }
 
     vshPrintExtra(ctl, "%s", _("Disk detached successfully\n"));
-    functionReturn = true;
-
- cleanup:
-    xmlFreeNode(disk_node);
-    return functionReturn;
+    return true;
 }
 
 /*
