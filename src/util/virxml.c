@@ -850,6 +850,29 @@ virXPathBoolean(const char *xpath,
 
 
 /**
+ * virXMLNodeGetSubelement:
+ * @node: node to get subelement of
+ * @name: name of subelement to fetch
+ *
+ * Find and return a sub-element node of @node named @name.
+ */
+xmlNodePtr
+virXMLNodeGetSubelement(xmlNodePtr node,
+                        const char *name)
+{
+    xmlNodePtr n;
+
+    for (n = node->children; n; n = n->next) {
+        if (n->type == XML_ELEMENT_NODE &&
+            virXMLNodeNameEqual(n, name))
+            return n;
+    }
+
+    return NULL;
+}
+
+
+/**
  * virXPathNode:
  * @xpath: the XPath string to evaluate
  * @ctxt: an XPath context

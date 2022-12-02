@@ -72,6 +72,11 @@ int
 virXPathLongLong(const char *xpath,
                  xmlXPathContextPtr ctxt,
                  long long *value);
+
+xmlNodePtr
+virXMLNodeGetSubelement(xmlNodePtr node,
+                        const char *name);
+
 xmlNodePtr
 virXPathNode(const char *xpath,
              xmlXPathContextPtr ctxt);
