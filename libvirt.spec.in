@@ -433,6 +433,7 @@ Summary: Server side daemon and supporting files for libvirt library
 # The client side, i.e. shared libs are in a subpackage
 Requires: libvirt-libs = %{version}-%{release}
 Requires: libvirt-daemon-lock = %{version}-%{release}
+Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
 Requires: libvirt-daemon-log = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
 # The libvirt-guests.sh script requires virsh from libvirt-client subpackage,
@@ -484,6 +485,15 @@ Requires: libvirt-libs = %{version}-%{release}
 %description daemon-lock
 Server side daemon used to manage locks held against virtual machine
 resources
+
+%package daemon-plugin-lockd
+Summary: lockd client plugin for virtlockd
+Requires: libvirt-libs = %{version}-%{release}
+Requires: libvirt-daemon-lock = %{version}-%{release}
+
+%description daemon-plugin-lockd
+A client-side plugin that implements disk locking using POSIX fcntl advisory
+locks via communication with the virtlockd daemon
 
 %package daemon-log
 Summary: Server side daemon for managing logs
@@ -1822,7 +1832,6 @@ exit 0
 %dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/storage-backend/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/storage-file/
-%attr(0755, root, root) %{_libdir}/libvirt/lock-driver/lockd.so
 %{_datadir}/augeas/lenses/libvirtd.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd.aug
 %{_datadir}/polkit-1/actions/org.libvirt.unix.policy
@@ -1855,6 +1864,10 @@ exit 0
 %endif
 %attr(0755, root, root) %{_sbindir}/virtlockd
 %{_mandir}/man8/virtlockd.8*
+
+%files daemon-plugin-lockd
+%dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/
+%attr(0755, root, root) %{_libdir}/libvirt/lock-driver/lockd.so
 
 %files daemon-log
 %{_unitdir}/virtlogd.service
