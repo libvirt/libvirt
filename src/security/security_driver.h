@@ -154,9 +154,11 @@ typedef int (*virSecurityDomainRestoreChardevLabel) (virSecurityManager *mgr,
                                                      virDomainChrSourceDef *dev_source,
                                                      bool chardevStdioLogd);
 typedef int (*virSecurityDomainSetTPMLabels) (virSecurityManager *mgr,
-                                              virDomainDef *def);
+                                              virDomainDef *def,
+                                              bool setTPMStateLabel);
 typedef int (*virSecurityDomainRestoreTPMLabels) (virSecurityManager *mgr,
-                                                  virDomainDef *def);
+                                                  virDomainDef *def,
+                                                  bool restoreTPMStateLabel);
 typedef int (*virSecurityDomainSetNetdevLabel) (virSecurityManager *mgr,
                                                 virDomainDef *def,
                                                 virDomainNetDef *net);

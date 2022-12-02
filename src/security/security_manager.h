@@ -214,10 +214,12 @@ int virSecurityManagerRestoreChardevLabel(virSecurityManager *mgr,
                                           bool chardevStdioLogd);
 
 int virSecurityManagerSetTPMLabels(virSecurityManager *mgr,
-                                   virDomainDef *vm);
+                                   virDomainDef *vm,
+                                   bool setTPMStateLabel);
 
 int virSecurityManagerRestoreTPMLabels(virSecurityManager *mgr,
-                                       virDomainDef *vm);
+                                       virDomainDef *vm,
+                                       bool restoreTPMStateLabel);
 
 int virSecurityManagerSetNetdevLabel(virSecurityManager *mgr,
                                      virDomainDef *vm,

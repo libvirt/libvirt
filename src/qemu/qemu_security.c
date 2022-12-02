@@ -535,7 +535,7 @@ qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
     transactionStarted = true;
 
     if (virSecurityManagerSetTPMLabels(driver->securityManager,
-                                       vm->def) < 0) {
+                                       vm->def, true) < 0) {
         virSecurityManagerTransactionAbort(driver->securityManager);
         return -1;
     }
@@ -560,7 +560,7 @@ qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
         virSecurityManagerTransactionStart(driver->securityManager) >= 0)
         transactionStarted = true;
 
-    virSecurityManagerRestoreTPMLabels(driver->securityManager, vm->def);
+    virSecurityManagerRestoreTPMLabels(driver->securityManager, vm->def, true);
 
     if (transactionStarted &&
         virSecurityManagerTransactionCommit(driver->securityManager,
@@ -583,7 +583,7 @@ qemuSecurityCleanupTPMEmulator(virQEMUDriver *driver,
     if (virSecurityManagerTransactionStart(driver->securityManager) >= 0)
         transactionStarted = true;
 
-    virSecurityManagerRestoreTPMLabels(driver->securityManager, vm->def);
+    virSecurityManagerRestoreTPMLabels(driver->securityManager, vm->def, true);
 
     if (transactionStarted &&
         virSecurityManagerTransactionCommit(driver->securityManager,

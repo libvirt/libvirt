@@ -1188,27 +1188,29 @@ virSecurityManagerRestoreChardevLabel(virSecurityManager *mgr,
 
 int
 virSecurityManagerSetTPMLabels(virSecurityManager *mgr,
-                               virDomainDef *vm)
+                               virDomainDef *vm,
+                               bool setTPMStateLabel)
 {
     VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
     if (!mgr->drv->domainSetSecurityTPMLabels)
         return 0;
 
-    return mgr->drv->domainSetSecurityTPMLabels(mgr, vm);
+    return mgr->drv->domainSetSecurityTPMLabels(mgr, vm, setTPMStateLabel);
 }
 
 
 int
 virSecurityManagerRestoreTPMLabels(virSecurityManager *mgr,
-                                   virDomainDef *vm)
+                                   virDomainDef *vm,
+                                   bool restoreTPMStateLabel)
 {
     VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
     if (!mgr->drv->domainRestoreSecurityTPMLabels)
         return 0;
 
-    return mgr->drv->domainRestoreSecurityTPMLabels(mgr, vm);
+    return mgr->drv->domainRestoreSecurityTPMLabels(mgr, vm, restoreTPMStateLabel);
 }
 
 
