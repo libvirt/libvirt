@@ -13729,6 +13729,32 @@ virDomainCryptoDefParseXML(virDomainXMLOption *xmlopt,
 }
 
 
+static int
+virDomainDeviceDefParseType(const char *typestr,
+                            int *type)
+{
+    int tmp;
+
+    /* Mapping of serial, parallel, console and channel to VIR_DOMAIN_DEVICE_CHR. */
+    if (STREQ(typestr, "channel") ||
+        STREQ(typestr, "console") ||
+        STREQ(typestr, "parallel") ||
+        STREQ(typestr, "serial")) {
+        *type = VIR_DOMAIN_DEVICE_CHR;
+        return 0;
+    }
+
+    if ((tmp = virDomainDeviceTypeFromString(typestr)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown device type '%s'"), typestr);
+        return -1;
+    }
+
+    *type = tmp;
+    return 0;
+}
+
+
 virDomainDeviceDef *
 virDomainDeviceDefParse(const char *xmlStr,
                         const virDomainDef *def,
@@ -13748,21 +13774,8 @@ virDomainDeviceDefParse(const char *xmlStr,
 
     dev = g_new0(virDomainDeviceDef, 1);
 
-    if ((dev->type = virDomainDeviceTypeFromString((const char *) node->name)) < 0) {
-        /* Some crazy mapping of serial, parallel, console and channel to
-         * VIR_DOMAIN_DEVICE_CHR. */
-        if (virXMLNodeNameEqual(node, "channel") ||
-            virXMLNodeNameEqual(node, "console") ||
-            virXMLNodeNameEqual(node, "parallel") ||
-            virXMLNodeNameEqual(node, "serial")) {
-            dev->type = VIR_DOMAIN_DEVICE_CHR;
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown device type '%s'"),
-                           node->name);
-            return NULL;
-        }
-    }
+    if (virDomainDeviceDefParseType((const char *)node->name, &dev->type) < 0)
+        return NULL;
 
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
