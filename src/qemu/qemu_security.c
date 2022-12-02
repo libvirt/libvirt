@@ -507,6 +507,7 @@ qemuSecurityRestoreNetdevLabel(virQEMUDriver *driver,
  * @cmd: the command to run
  * @uid: the uid to run the emulator
  * @gid: the gid to run the emulator
+ * @setTPMStateLabel: whether TPM state should be labelled, or just logfile
  * @existstatus: pointer to int returning exit status of process
  * @cmdret: pointer to int returning result of virCommandRun
  *
@@ -523,6 +524,7 @@ qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
                              virCommand *cmd,
                              uid_t uid,
                              gid_t gid,
+                             bool setTPMStateLabel,
                              int *exitstatus,
                              int *cmdret)
 {
@@ -535,7 +537,7 @@ qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
     transactionStarted = true;
 
     if (virSecurityManagerSetTPMLabels(driver->securityManager,
-                                       vm->def, true) < 0) {
+                                       vm->def, setTPMStateLabel) < 0) {
         virSecurityManagerTransactionAbort(driver->securityManager);
         return -1;
     }
@@ -560,7 +562,8 @@ qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
         virSecurityManagerTransactionStart(driver->securityManager) >= 0)
         transactionStarted = true;
 
-    virSecurityManagerRestoreTPMLabels(driver->securityManager, vm->def, true);
+    virSecurityManagerRestoreTPMLabels(driver->securityManager,
+                                       vm->def, setTPMStateLabel);
 
     if (transactionStarted &&
         virSecurityManagerTransactionCommit(driver->securityManager,
@@ -575,7 +578,8 @@ qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
 
 void
 qemuSecurityCleanupTPMEmulator(virQEMUDriver *driver,
-                               virDomainObj *vm)
+                               virDomainObj *vm,
+                               bool restoreTPMStateLabel)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     bool transactionStarted = false;
@@ -583,7 +587,8 @@ qemuSecurityCleanupTPMEmulator(virQEMUDriver *driver,
     if (virSecurityManagerTransactionStart(driver->securityManager) >= 0)
         transactionStarted = true;
 
-    virSecurityManagerRestoreTPMLabels(driver->securityManager, vm->def, true);
+    virSecurityManagerRestoreTPMLabels(driver->securityManager,
+                                       vm->def, restoreTPMStateLabel);
 
     if (transactionStarted &&
         virSecurityManagerTransactionCommit(driver->securityManager,

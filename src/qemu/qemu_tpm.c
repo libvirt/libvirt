@@ -962,7 +962,7 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
         }
     } else if (qemuSecurityStartTPMEmulator(driver, vm, cmd,
                                             cfg->swtpm_user, cfg->swtpm_group,
-                                            NULL, &cmdret) < 0) {
+                                            true, NULL, &cmdret) < 0) {
         goto error;
     }
 
@@ -1139,7 +1139,7 @@ qemuExtTPMStop(virQEMUDriver *driver,
 
     qemuTPMEmulatorStop(cfg->swtpmStateDir, shortName);
     if (!(outgoingMigration && qemuTPMHasSharedStorage(vm->def)))
-        qemuSecurityCleanupTPMEmulator(driver, vm);
+        qemuSecurityCleanupTPMEmulator(driver, vm, true);
 }
 
 
