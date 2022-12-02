@@ -453,7 +453,7 @@ virNetworkDHCPRangeDefParseXML(const char *networkName,
                                virNetworkDHCPRangeDef *range)
 {
     virSocketAddrRange *addr = &range->addr;
-    xmlNodePtr cur = node->children;
+    xmlNodePtr lease;
     g_autofree char *start = NULL;
     g_autofree char *end = NULL;
 
@@ -480,15 +480,9 @@ virNetworkDHCPRangeDefParseXML(const char *networkName,
                               virNetworkIPDefPrefix(ipdef)) < 0)
         return -1;
 
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE &&
-            virXMLNodeNameEqual(cur, "lease")) {
-
-            if (virNetworkDHCPLeaseTimeDefParseXML(&range->lease, cur) < 0)
-                return -1;
-        }
-        cur = cur->next;
-    }
+    if ((lease = virXMLNodeGetSubelement(node, "lease")) &&
+        virNetworkDHCPLeaseTimeDefParseXML(&range->lease, lease) < 0)
+        return -1;
 
     return 0;
 }
