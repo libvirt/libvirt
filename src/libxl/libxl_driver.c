@@ -3476,7 +3476,30 @@ libxlDomainAttachDeviceLive(libxlDriverPrivate *driver,
                 dev->data.hostdev = NULL;
             break;
 
-        default:
+        case VIR_DOMAIN_DEVICE_LEASE:
+        case VIR_DOMAIN_DEVICE_FS:
+        case VIR_DOMAIN_DEVICE_INPUT:
+        case VIR_DOMAIN_DEVICE_SOUND:
+        case VIR_DOMAIN_DEVICE_VIDEO:
+        case VIR_DOMAIN_DEVICE_WATCHDOG:
+        case VIR_DOMAIN_DEVICE_GRAPHICS:
+        case VIR_DOMAIN_DEVICE_HUB:
+        case VIR_DOMAIN_DEVICE_REDIRDEV:
+        case VIR_DOMAIN_DEVICE_NONE:
+        case VIR_DOMAIN_DEVICE_SMARTCARD:
+        case VIR_DOMAIN_DEVICE_CHR:
+        case VIR_DOMAIN_DEVICE_MEMBALLOON:
+        case VIR_DOMAIN_DEVICE_NVRAM:
+        case VIR_DOMAIN_DEVICE_LAST:
+        case VIR_DOMAIN_DEVICE_RNG:
+        case VIR_DOMAIN_DEVICE_TPM:
+        case VIR_DOMAIN_DEVICE_PANIC:
+        case VIR_DOMAIN_DEVICE_SHMEM:
+        case VIR_DOMAIN_DEVICE_MEMORY:
+        case VIR_DOMAIN_DEVICE_IOMMU:
+        case VIR_DOMAIN_DEVICE_VSOCK:
+        case VIR_DOMAIN_DEVICE_AUDIO:
+        case VIR_DOMAIN_DEVICE_CRYPTO:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("device type '%s' cannot be attached"),
                            virDomainDeviceTypeToString(dev->type));
@@ -3557,7 +3580,30 @@ libxlDomainAttachDeviceConfig(virDomainDef *vmdef, virDomainDeviceDef *dev)
             dev->data.hostdev = NULL;
             break;
 
-        default:
+        case VIR_DOMAIN_DEVICE_LEASE:
+        case VIR_DOMAIN_DEVICE_FS:
+        case VIR_DOMAIN_DEVICE_INPUT:
+        case VIR_DOMAIN_DEVICE_SOUND:
+        case VIR_DOMAIN_DEVICE_VIDEO:
+        case VIR_DOMAIN_DEVICE_WATCHDOG:
+        case VIR_DOMAIN_DEVICE_GRAPHICS:
+        case VIR_DOMAIN_DEVICE_HUB:
+        case VIR_DOMAIN_DEVICE_REDIRDEV:
+        case VIR_DOMAIN_DEVICE_NONE:
+        case VIR_DOMAIN_DEVICE_SMARTCARD:
+        case VIR_DOMAIN_DEVICE_CHR:
+        case VIR_DOMAIN_DEVICE_MEMBALLOON:
+        case VIR_DOMAIN_DEVICE_NVRAM:
+        case VIR_DOMAIN_DEVICE_LAST:
+        case VIR_DOMAIN_DEVICE_RNG:
+        case VIR_DOMAIN_DEVICE_TPM:
+        case VIR_DOMAIN_DEVICE_PANIC:
+        case VIR_DOMAIN_DEVICE_SHMEM:
+        case VIR_DOMAIN_DEVICE_MEMORY:
+        case VIR_DOMAIN_DEVICE_IOMMU:
+        case VIR_DOMAIN_DEVICE_VSOCK:
+        case VIR_DOMAIN_DEVICE_AUDIO:
+        case VIR_DOMAIN_DEVICE_CRYPTO:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("persistent attach of device is not supported"));
             return -1;
@@ -3902,7 +3948,30 @@ libxlDomainDetachDeviceLive(libxlDriverPrivate *driver,
                 ret = libxlDomainDetachHostDevice(driver, vm, hostdev);
             break;
 
-        default:
+        case VIR_DOMAIN_DEVICE_LEASE:
+        case VIR_DOMAIN_DEVICE_FS:
+        case VIR_DOMAIN_DEVICE_INPUT:
+        case VIR_DOMAIN_DEVICE_SOUND:
+        case VIR_DOMAIN_DEVICE_VIDEO:
+        case VIR_DOMAIN_DEVICE_WATCHDOG:
+        case VIR_DOMAIN_DEVICE_GRAPHICS:
+        case VIR_DOMAIN_DEVICE_HUB:
+        case VIR_DOMAIN_DEVICE_REDIRDEV:
+        case VIR_DOMAIN_DEVICE_NONE:
+        case VIR_DOMAIN_DEVICE_SMARTCARD:
+        case VIR_DOMAIN_DEVICE_CHR:
+        case VIR_DOMAIN_DEVICE_MEMBALLOON:
+        case VIR_DOMAIN_DEVICE_NVRAM:
+        case VIR_DOMAIN_DEVICE_LAST:
+        case VIR_DOMAIN_DEVICE_RNG:
+        case VIR_DOMAIN_DEVICE_TPM:
+        case VIR_DOMAIN_DEVICE_PANIC:
+        case VIR_DOMAIN_DEVICE_SHMEM:
+        case VIR_DOMAIN_DEVICE_MEMORY:
+        case VIR_DOMAIN_DEVICE_IOMMU:
+        case VIR_DOMAIN_DEVICE_VSOCK:
+        case VIR_DOMAIN_DEVICE_AUDIO:
+        case VIR_DOMAIN_DEVICE_CRYPTO:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("device type '%s' cannot be detached"),
                            virDomainDeviceTypeToString(dev->type));
@@ -3969,7 +4038,30 @@ libxlDomainDetachDeviceConfig(virDomainDef *vmdef, virDomainDeviceDef *dev)
             break;
         }
 
-        default:
+        case VIR_DOMAIN_DEVICE_LEASE:
+        case VIR_DOMAIN_DEVICE_FS:
+        case VIR_DOMAIN_DEVICE_INPUT:
+        case VIR_DOMAIN_DEVICE_SOUND:
+        case VIR_DOMAIN_DEVICE_VIDEO:
+        case VIR_DOMAIN_DEVICE_WATCHDOG:
+        case VIR_DOMAIN_DEVICE_GRAPHICS:
+        case VIR_DOMAIN_DEVICE_HUB:
+        case VIR_DOMAIN_DEVICE_REDIRDEV:
+        case VIR_DOMAIN_DEVICE_NONE:
+        case VIR_DOMAIN_DEVICE_SMARTCARD:
+        case VIR_DOMAIN_DEVICE_CHR:
+        case VIR_DOMAIN_DEVICE_MEMBALLOON:
+        case VIR_DOMAIN_DEVICE_NVRAM:
+        case VIR_DOMAIN_DEVICE_LAST:
+        case VIR_DOMAIN_DEVICE_RNG:
+        case VIR_DOMAIN_DEVICE_TPM:
+        case VIR_DOMAIN_DEVICE_PANIC:
+        case VIR_DOMAIN_DEVICE_SHMEM:
+        case VIR_DOMAIN_DEVICE_MEMORY:
+        case VIR_DOMAIN_DEVICE_IOMMU:
+        case VIR_DOMAIN_DEVICE_VSOCK:
+        case VIR_DOMAIN_DEVICE_AUDIO:
+        case VIR_DOMAIN_DEVICE_CRYPTO:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("persistent detach of device is not supported"));
             return -1;
@@ -4004,7 +4096,34 @@ libxlDomainUpdateDeviceLive(virDomainObj *vm, virDomainDeviceDef *dev)
                     break;
             }
             break;
-        default:
+
+        case VIR_DOMAIN_DEVICE_LEASE:
+        case VIR_DOMAIN_DEVICE_FS:
+        case VIR_DOMAIN_DEVICE_NET:
+        case VIR_DOMAIN_DEVICE_INPUT:
+        case VIR_DOMAIN_DEVICE_SOUND:
+        case VIR_DOMAIN_DEVICE_VIDEO:
+        case VIR_DOMAIN_DEVICE_HOSTDEV:
+        case VIR_DOMAIN_DEVICE_WATCHDOG:
+        case VIR_DOMAIN_DEVICE_CONTROLLER:
+        case VIR_DOMAIN_DEVICE_GRAPHICS:
+        case VIR_DOMAIN_DEVICE_HUB:
+        case VIR_DOMAIN_DEVICE_REDIRDEV:
+        case VIR_DOMAIN_DEVICE_NONE:
+        case VIR_DOMAIN_DEVICE_SMARTCARD:
+        case VIR_DOMAIN_DEVICE_CHR:
+        case VIR_DOMAIN_DEVICE_MEMBALLOON:
+        case VIR_DOMAIN_DEVICE_NVRAM:
+        case VIR_DOMAIN_DEVICE_LAST:
+        case VIR_DOMAIN_DEVICE_RNG:
+        case VIR_DOMAIN_DEVICE_TPM:
+        case VIR_DOMAIN_DEVICE_PANIC:
+        case VIR_DOMAIN_DEVICE_SHMEM:
+        case VIR_DOMAIN_DEVICE_MEMORY:
+        case VIR_DOMAIN_DEVICE_IOMMU:
+        case VIR_DOMAIN_DEVICE_VSOCK:
+        case VIR_DOMAIN_DEVICE_AUDIO:
+        case VIR_DOMAIN_DEVICE_CRYPTO:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("device type '%s' cannot be updated"),
                            virDomainDeviceTypeToString(dev->type));
@@ -4039,7 +4158,34 @@ libxlDomainUpdateDeviceConfig(virDomainDef *vmdef, virDomainDeviceDef *dev)
             virDomainDiskSetFormat(orig, virDomainDiskGetFormat(disk));
             virDomainDiskSetDriver(orig, virDomainDiskGetDriver(disk));
             break;
-        default:
+
+        case VIR_DOMAIN_DEVICE_LEASE:
+        case VIR_DOMAIN_DEVICE_FS:
+        case VIR_DOMAIN_DEVICE_NET:
+        case VIR_DOMAIN_DEVICE_INPUT:
+        case VIR_DOMAIN_DEVICE_SOUND:
+        case VIR_DOMAIN_DEVICE_VIDEO:
+        case VIR_DOMAIN_DEVICE_HOSTDEV:
+        case VIR_DOMAIN_DEVICE_WATCHDOG:
+        case VIR_DOMAIN_DEVICE_CONTROLLER:
+        case VIR_DOMAIN_DEVICE_GRAPHICS:
+        case VIR_DOMAIN_DEVICE_HUB:
+        case VIR_DOMAIN_DEVICE_REDIRDEV:
+        case VIR_DOMAIN_DEVICE_NONE:
+        case VIR_DOMAIN_DEVICE_SMARTCARD:
+        case VIR_DOMAIN_DEVICE_CHR:
+        case VIR_DOMAIN_DEVICE_MEMBALLOON:
+        case VIR_DOMAIN_DEVICE_NVRAM:
+        case VIR_DOMAIN_DEVICE_LAST:
+        case VIR_DOMAIN_DEVICE_RNG:
+        case VIR_DOMAIN_DEVICE_TPM:
+        case VIR_DOMAIN_DEVICE_PANIC:
+        case VIR_DOMAIN_DEVICE_SHMEM:
+        case VIR_DOMAIN_DEVICE_MEMORY:
+        case VIR_DOMAIN_DEVICE_IOMMU:
+        case VIR_DOMAIN_DEVICE_VSOCK:
+        case VIR_DOMAIN_DEVICE_AUDIO:
+        case VIR_DOMAIN_DEVICE_CRYPTO:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("persistent update of device is not supported"));
             return -1;

@@ -13731,7 +13731,7 @@ virDomainCryptoDefParseXML(virDomainXMLOption *xmlopt,
 
 static int
 virDomainDeviceDefParseType(const char *typestr,
-                            int *type)
+                            virDomainDeviceType *type)
 {
     int tmp;
 

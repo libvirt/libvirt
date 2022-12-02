@@ -92,7 +92,7 @@ typedef enum {
 } virDomainDeviceType;
 
 struct _virDomainDeviceDef {
-    int type; /* enum virDomainDeviceType */
+    virDomainDeviceType type;
     union {
         virDomainDiskDef *disk;
         virDomainControllerDef *controller;
