@@ -439,13 +439,13 @@ Summary: Server side daemon and supporting files for libvirt library
 # for subpackages are listed later in those subpackages)
 
 # The client side, i.e. shared libs are in a subpackage
-Requires: %{name}-libs = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 
 # The libvirt-guests.sh script requires virsh from libvirt-client subpackage,
 # but not every deployment wants to use libvirt-guests service. Using
 # Recommends here will install libvirt-client by default (if available), but
 # RPM won't complain if the package is unavailable, masked, or removed later.
-Recommends: %{name}-client = %{version}-%{release}
+Recommends: libvirt-client = %{version}-%{release}
 
 # netcat is needed on the server side so that clients that have
 # libvirt < 6.9.0 can connect, but newer versions will prefer
@@ -896,7 +896,7 @@ capabilities of VirtualBox
 
 %package client
 Summary: Client side utilities of the libvirt library
-Requires: %{name}-libs = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 # Needed by virt-pki-validate script.
 Requires: gnutls-utils
 
@@ -909,7 +909,7 @@ capabilities of recent versions of Linux (and other OSes).
 
 %package client-qemu
 Summary: Additional client side utilities for QEMU
-Requires: %{name}-libs = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 Requires: python3-libvirt >= 3.7.0
 
 %description client-qemu
@@ -931,7 +931,7 @@ Shared libraries for accessing the libvirt daemon.
 %package wireshark
 Summary: Wireshark dissector plugin for libvirt RPC transactions
 Requires: wireshark
-Requires: %{name}-libs = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 
 %description wireshark
 Wireshark dissector plugin for better analysis of libvirt RPC traffic.
@@ -940,7 +940,7 @@ Wireshark dissector plugin for better analysis of libvirt RPC traffic.
 %if %{with_lxc}
 %package login-shell
 Summary: Login shell for connecting users to an LXC container
-Requires: %{name}-libs = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 
 %description login-shell
 Provides the set-uid virt-login-shell binary that is used to
@@ -950,7 +950,7 @@ namespaces.
 
 %package devel
 Summary: Libraries, includes, etc. to compile with the libvirt library
-Requires: %{name}-libs = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 Requires: pkgconfig
 
 %description devel
@@ -962,8 +962,8 @@ Summary: Sanlock lock manager plugin for QEMU driver
 Requires: sanlock >= 2.4
 #for virt-sanlock-cleanup require augeas
 Requires: augeas
-Requires: %{name}-daemon = %{version}-%{release}
-Requires: %{name}-libs = %{version}-%{release}
+Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 
 %description lock-sanlock
 Includes the Sanlock lock manager plugin for the QEMU
@@ -1157,7 +1157,7 @@ exit 1
 
 # place macros above and build commands below this comment
 
-export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
+export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
 
 %meson \
            -Drunstatedir=%{_rundir} \
@@ -1312,7 +1312,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
 %install
 rm -fr %{buildroot}
 
-export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
+export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
 
 %meson_install
 
@@ -1882,7 +1882,7 @@ exit 0
 %{_unitdir}/virtinterfaced-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtinterfaced
 %ghost %dir %{_rundir}/libvirt/interface/
-%{_libdir}/%{name}/connection-driver/libvirt_driver_interface.so
+%{_libdir}/libvirt/connection-driver/libvirt_driver_interface.so
 %{_mandir}/man8/virtinterfaced.8*
 
 %files daemon-driver-network
@@ -1901,7 +1901,7 @@ exit 0
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/network/
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/dnsmasq/
 %attr(0755, root, root) %{_libexecdir}/libvirt_leaseshelper
-%{_libdir}/%{name}/connection-driver/libvirt_driver_network.so
+%{_libdir}/libvirt/connection-driver/libvirt_driver_network.so
 %{_mandir}/man8/virtnetworkd.8*
 
 %if %{with_firewalld_zone}
@@ -1922,7 +1922,7 @@ exit 0
 %{_unitdir}/virtnodedevd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtnodedevd
 %ghost %dir %{_rundir}/libvirt/nodedev/
-%{_libdir}/%{name}/connection-driver/libvirt_driver_nodedev.so
+%{_libdir}/libvirt/connection-driver/libvirt_driver_nodedev.so
 %{_mandir}/man8/virtnodedevd.8*
 
 %files daemon-driver-nwfilter
@@ -1938,7 +1938,7 @@ exit 0
 %ghost %dir %{_rundir}/libvirt/network/
 %ghost %dir %{_rundir}/libvirt/nwfilter-binding/
 %ghost %dir %{_rundir}/libvirt/nwfilter/
-%{_libdir}/%{name}/connection-driver/libvirt_driver_nwfilter.so
+%{_libdir}/libvirt/connection-driver/libvirt_driver_nwfilter.so
 %{_mandir}/man8/virtnwfilterd.8*
 
 %files daemon-driver-secret
@@ -1952,7 +1952,7 @@ exit 0
 %attr(0755, root, root) %{_sbindir}/virtsecretd
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/secrets/
 %ghost %dir %{_rundir}/libvirt/secrets/
-%{_libdir}/%{name}/connection-driver/libvirt_driver_secret.so
+%{_libdir}/libvirt/connection-driver/libvirt_driver_secret.so
 %{_mandir}/man8/virtsecretd.8*
 
 %files daemon-driver-storage
@@ -1970,45 +1970,45 @@ exit 0
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/storage/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/storage/autostart/
 %ghost %dir %{_rundir}/libvirt/storage/
-%{_libdir}/%{name}/connection-driver/libvirt_driver_storage.so
-%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_fs.so
-%{_libdir}/%{name}/storage-file/libvirt_storage_file_fs.so
+%{_libdir}/libvirt/connection-driver/libvirt_driver_storage.so
+%{_libdir}/libvirt/storage-backend/libvirt_storage_backend_fs.so
+%{_libdir}/libvirt/storage-file/libvirt_storage_file_fs.so
 %{_mandir}/man8/virtstoraged.8*
 
 %files daemon-driver-storage-disk
-%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_disk.so
+%{_libdir}/libvirt/storage-backend/libvirt_storage_backend_disk.so
 
 %files daemon-driver-storage-logical
-%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_logical.so
+%{_libdir}/libvirt/storage-backend/libvirt_storage_backend_logical.so
 
 %files daemon-driver-storage-scsi
-%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_scsi.so
+%{_libdir}/libvirt/storage-backend/libvirt_storage_backend_scsi.so
 
 %files daemon-driver-storage-iscsi
-%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_iscsi.so
+%{_libdir}/libvirt/storage-backend/libvirt_storage_backend_iscsi.so
 
 %if %{with_storage_iscsi_direct}
 %files daemon-driver-storage-iscsi-direct
-%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_iscsi-direct.so
+%{_libdir}/libvirt/storage-backend/libvirt_storage_backend_iscsi-direct.so
 %endif
 
 %files daemon-driver-storage-mpath
-%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_mpath.so
+%{_libdir}/libvirt/storage-backend/libvirt_storage_backend_mpath.so
 
 %if %{with_storage_gluster}
 %files daemon-driver-storage-gluster
-%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_gluster.so
-%{_libdir}/%{name}/storage-file/libvirt_storage_file_gluster.so
+%{_libdir}/libvirt/storage-backend/libvirt_storage_backend_gluster.so
+%{_libdir}/libvirt/storage-file/libvirt_storage_file_gluster.so
 %endif
 
 %if %{with_storage_rbd}
 %files daemon-driver-storage-rbd
-%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_rbd.so
+%{_libdir}/libvirt/storage-backend/libvirt_storage_backend_rbd.so
 %endif
 
 %if %{with_storage_zfs}
 %files daemon-driver-storage-zfs
-%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_zfs.so
+%{_libdir}/libvirt/storage-backend/libvirt_storage_backend_zfs.so
 %endif
 
 %if %{with_qemu}
@@ -2044,7 +2044,7 @@ exit 0
 %dir %attr(0750, root, root) %{_localstatedir}/cache/libvirt/qemu/
 %{_datadir}/augeas/lenses/libvirtd_qemu.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
-%{_libdir}/%{name}/connection-driver/libvirt_driver_qemu.so
+%{_libdir}/libvirt/connection-driver/libvirt_driver_qemu.so
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/swtpm/
 %dir %attr(0730, tss, tss) %{_localstatedir}/log/swtpm/libvirt/qemu/
 %{_bindir}/virt-qemu-run
@@ -2072,7 +2072,7 @@ exit 0
 %{_datadir}/augeas/lenses/libvirtd_lxc.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd_lxc.aug
 %attr(0755, root, root) %{_libexecdir}/libvirt_lxc
-%{_libdir}/%{name}/connection-driver/libvirt_driver_lxc.so
+%{_libdir}/libvirt/connection-driver/libvirt_driver_lxc.so
 %{_mandir}/man8/virtlxcd.8*
 %endif
 
@@ -2100,7 +2100,7 @@ exit 0
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/channel/target/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/dump/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/save/
-%{_libdir}/%{name}/connection-driver/libvirt_driver_libxl.so
+%{_libdir}/libvirt/connection-driver/libvirt_driver_libxl.so
 %{_mandir}/man8/virtxend.8*
 %endif
 
@@ -2114,7 +2114,7 @@ exit 0
 %{_unitdir}/virtvboxd-ro.socket
 %{_unitdir}/virtvboxd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtvboxd
-%{_libdir}/%{name}/connection-driver/libvirt_driver_vbox.so
+%{_libdir}/libvirt/connection-driver/libvirt_driver_vbox.so
 %{_mandir}/man8/virtvboxd.8*
 %endif
 
