@@ -16,13 +16,14 @@
 # Pany <geekpany@gmail.com>, 2021.
 # Ludek Janda <ljanda@redhat.com>, 2022.
 # zhanchun li <lzc777@126.com>, 2022.
+# Yang Yulin <yylteam@icloud.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-11-24 14:54+0000\n"
-"PO-Revision-Date: 2022-09-25 12:19+0000\n"
-"Last-Translator: zhanchun li <lzc777@126.com>\n"
+"PO-Revision-Date: 2022-12-02 13:09+0000\n"
+"Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -30,7 +31,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.14.2\n"
 
 msgid ""
 "\n"
@@ -537,7 +538,7 @@ msgstr "%s %s '%s' 不支持 '%s' 类型，应为 '%s' 或者 '%s'"
 msgid ""
 "%s (on destination side) does not support the --migration option needed for "
 "migration with shared storage"
-msgstr ""
+msgstr "%s（在目标端）不支持使用共享存储进行迁移所需的 --migration 选项"
 
 #, c-format
 msgid "%s (out of %d)"
@@ -657,7 +658,7 @@ msgstr "%s 长度超过上限：%d > %d"
 
 #, c-format
 msgid "%s memory device info is not handled yet"
-msgstr ""
+msgstr "%s 内存设备信息尚未处理"
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
