@@ -3402,6 +3402,7 @@ qemuBlockCommit(virDomainObj *vm,
 int
 qemuBlockPivot(virDomainObj *vm,
                qemuBlockJobData *job,
+               virDomainAsyncJob asyncJob,
                virDomainDiskDef *disk)
 {
     g_autoptr(qemuBlockStorageSourceChainData) chainattachdata = NULL;
@@ -3487,7 +3488,8 @@ qemuBlockPivot(virDomainObj *vm,
         break;
     }
 
-    qemuDomainObjEnterMonitor(vm);
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
+        return -1;
 
     if (chainattachdata) {
         if ((rc = qemuBlockStorageSourceChainAttach(priv->mon, chainattachdata)) == 0) {

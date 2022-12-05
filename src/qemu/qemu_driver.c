@@ -14158,7 +14158,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         qemuBlockJobSyncBegin(job);
 
     if (pivot) {
-        if ((ret = qemuBlockPivot(vm, job, disk)) < 0)
+        if ((ret = qemuBlockPivot(vm, job, VIR_ASYNC_JOB_NONE, disk)) < 0)
             goto endjob;
     } else {
         qemuDomainObjEnterMonitor(vm);

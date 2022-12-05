@@ -290,4 +290,5 @@ qemuBlockCommit(virDomainObj *vm,
 int
 qemuBlockPivot(virDomainObj *vm,
                qemuBlockJobData *job,
+               virDomainAsyncJob asyncJob,
                virDomainDiskDef *disk);
