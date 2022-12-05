@@ -1704,9 +1704,8 @@ qemuMigrationDstPostcopyFailed(virDomainObj *vm)
         reason == VIR_DOMAIN_RUNNING_POSTCOPY_FAILED)
         return;
 
-    VIR_WARN("Migration protocol failed during incoming migration of domain "
-             "%s, but QEMU keeps migrating; leaving the domain running, the "
-             "migration will be handled as unattended", vm->def->name);
+    VIR_WARN("Incoming migration of domain '%s' failed during post-copy; "
+             "leaving the domain running", vm->def->name);
 
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                          VIR_DOMAIN_RUNNING_POSTCOPY_FAILED);
