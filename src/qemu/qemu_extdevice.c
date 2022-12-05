@@ -97,6 +97,9 @@ qemuExtDevicesPrepareDomain(virQEMUDriver *driver,
     int ret = 0;
     size_t i;
 
+    if (qemuExtDevicesInitPaths(driver, vm->def) < 0)
+        return -1;
+
     for (i = 0; i < vm->def->nvideos; i++) {
         virDomainVideoDef *video = vm->def->videos[i];
 
@@ -133,9 +136,6 @@ qemuExtDevicesPrepareHost(virQEMUDriver *driver,
 {
     virDomainDef *def = vm->def;
     size_t i;
-
-    if (qemuExtDevicesInitPaths(driver, def) < 0)
-        return -1;
 
     for (i = 0; i < def->ntpms; i++) {
         virDomainTPMDef *tpm = def->tpms[i];
