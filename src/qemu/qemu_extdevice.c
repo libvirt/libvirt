@@ -64,7 +64,7 @@ qemuExtDeviceLogCommand(virQEMUDriver *driver,
  * stored and we can remove directories and files in case of domain XML
  * changes.
  */
-static int
+int
 qemuExtDevicesInitPaths(virQEMUDriver *driver,
                         virDomainDef *def)
 {
