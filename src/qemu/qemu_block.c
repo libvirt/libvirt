@@ -3198,6 +3198,22 @@ qemuBlockExportAddNBD(virDomainObj *vm,
 }
 
 
+/**
+ * qemuBlockCommit:
+ * @vm: domain object
+ * @disk: disk object where we are about to block commit
+ * @baseSource: disk source within backing chain to commit data into
+ * @topSource: disk source within backing chain with data we will commit
+ * @top_parent: disk source that has @topSource as backing disk
+ * @bandwidth: bandwidth limit, flags determine the unit
+ * @asyncJob: qemu async job type
+ * @flags: bitwise-OR of virDomainBlockCommitFlags
+ *
+ * Starts a block commit job for @disk. If @asyncJob is different then
+ * VIR_ASYNC_JOB_NONE the job will be started as synchronous.
+ *
+ * Returns -1 on error, 0 on success.
+ */
 int
 qemuBlockCommit(virDomainObj *vm,
                 virDomainDiskDef *disk,
@@ -3205,6 +3221,7 @@ qemuBlockCommit(virDomainObj *vm,
                 virStorageSource *topSource,
                 virStorageSource *top_parent,
                 unsigned long bandwidth,
+                virDomainAsyncJob asyncJob,
                 unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -3336,7 +3353,11 @@ qemuBlockCommit(virDomainObj *vm,
         !(backingPath = qemuBlockGetBackingStoreString(baseSource, false)))
         goto cleanup;
 
-    qemuDomainObjEnterMonitor(vm);
+    if (asyncJob != VIR_ASYNC_JOB_NONE)
+        qemuBlockJobSyncBegin(job);
+
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
+        goto cleanup;
 
     ret = qemuMonitorBlockCommit(priv->mon,
                                  qemuDomainDiskGetTopNodename(disk),

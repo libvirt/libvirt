@@ -284,6 +284,7 @@ qemuBlockCommit(virDomainObj *vm,
                 virStorageSource *topSource,
                 virStorageSource *top_parent,
                 unsigned long bandwidth,
+                virDomainAsyncJob asyncJob,
                 unsigned int flags);
 
 int
