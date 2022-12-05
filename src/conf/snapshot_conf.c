@@ -158,6 +158,11 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
         return -1;
     }
 
+    if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) {
+        def->snapshotDeleteInProgress = !!virXPathNode("./snapshotDeleteInProgress",
+                                                       ctxt);
+    }
+
     if ((cur = virXPathNode("./source", ctxt)) &&
         virDomainStorageSourceParse(cur, ctxt, src, flags, xmlopt) < 0)
         return -1;
@@ -743,6 +748,9 @@ virDomainSnapshotDiskDefFormat(virBuffer *buf,
     if (disk->snapshot > 0)
         virBufferAsprintf(&attrBuf, " snapshot='%s'",
                           virDomainSnapshotLocationTypeToString(disk->snapshot));
+
+    if (disk->snapshotDeleteInProgress)
+        virBufferAddLit(&childBuf, "<snapshotDeleteInProgress/>\n");
 
     if (disk->src->path || disk->src->format != 0) {
         g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;

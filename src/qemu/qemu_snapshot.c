@@ -2316,6 +2316,13 @@ qemuSnapshotDeleteExternalPrepare(virDomainObj *vm,
         if (snapDisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NO)
             continue;
 
+        if (snapDisk->snapshotDeleteInProgress) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("snapshot disk '%s' was target of not completed snapshot delete"),
+                           snapDisk->name);
+            return NULL;
+        }
+
         data = g_new0(qemuSnapshotDeleteExternalData, 1);
         data->snapDisk = snapDisk;
 
@@ -2628,6 +2635,53 @@ qemuSnapshotDeleteBlockJobFinishing(virDomainObj *vm,
 }
 
 
+/**
+ * qemuSnapshotSetInvalid:
+ * @vm: vm object
+ * @snap: snapshot object that contains parent disk
+ * @disk: disk from the snapshot we are deleting
+ * @invalid: boolean to set/unset invalid state
+ *
+ * @snap should point to a ancestor snapshot from the snapshot tree that
+ * affected the @disk which doesn't have to be the direct parent.
+ *
+ * When setting snapshot with parent disk as invalid due to snapshot being
+ * deleted we should not mark the whole snapshot as invalid but only the
+ * affected disks because the snapshot can contain other disks that we are
+ * not modifying at the moment.
+ *
+ * Return 0 on success, -1 on error.
+ * */
+static int
+qemuSnapshotSetInvalid(virDomainObj *vm,
+                       virDomainMomentObj *snap,
+                       virDomainSnapshotDiskDef *disk,
+                       bool invalid)
+{
+    ssize_t i;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    virDomainSnapshotDef *snapdef = NULL;
+
+    if (!snap)
+        return 0;
+
+    snapdef = virDomainSnapshotObjGetDef(snap);
+    if (!snapdef)
+        return 0;
+
+    for (i = 0; i < snapdef->ndisks; i++) {
+        virDomainSnapshotDiskDef *snapDisk = &(snapdef->disks[i]);
+
+        if (STREQ(snapDisk->name, disk->name))
+            snapDisk->snapshotDeleteInProgress = invalid;
+    }
+
+    return qemuDomainSnapshotWriteMetadata(vm, snap, driver->xmlopt, cfg->snapshotDir);
+}
+
+
 static int
 qemuSnapshotDiscardExternal(virDomainObj *vm,
                             GSList *externalData)
@@ -2643,6 +2697,9 @@ qemuSnapshotDiscardExternal(virDomainObj *vm,
             commitFlags |= VIR_DOMAIN_BLOCK_COMMIT_ACTIVE;
             autofinalize = VIR_TRISTATE_BOOL_YES;
         }
+
+        if (qemuSnapshotSetInvalid(vm, data->parentSnap, data->snapDisk, true) < 0)
+            goto error;
 
         data->job = qemuBlockCommit(vm,
                                     data->domDisk,
@@ -2694,6 +2751,9 @@ qemuSnapshotDiscardExternal(virDomainObj *vm,
         }
 
         qemuBlockJobSyncEnd(vm, data->job, VIR_ASYNC_JOB_SNAPSHOT);
+
+        if (qemuSnapshotSetInvalid(vm, data->parentSnap, data->snapDisk, false) < 0)
+            goto error;
     }
 
     return 0;

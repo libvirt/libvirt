@@ -52,6 +52,7 @@ typedef struct _virDomainSnapshotDiskDef virDomainSnapshotDiskDef;
 struct _virDomainSnapshotDiskDef {
     char *name;     /* name matching the <target dev='...' of the domain */
     virDomainSnapshotLocation snapshot;
+    bool snapshotDeleteInProgress;
 
     /* details of wrapper external file. src is always non-NULL.
      * XXX optimize this to allow NULL for internal snapshots? */
