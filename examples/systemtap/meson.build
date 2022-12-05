@@ -1,5 +1,6 @@
 install_data(
   [
+    'amd-sev-es-vmsa.stp',
     'events.stp',
     'lock-debug.stp',
     'qemu-monitor.stp',
