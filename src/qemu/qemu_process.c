@@ -6634,6 +6634,8 @@ qemuProcessPrepareChardevSource(virDomainDef *def,
  * start the domain but create a valid qemu command.  If some code shouldn't be
  * executed in this case, make sure to check this flag.
  *
+ * This function MUST be called before qemuProcessPrepareHost().
+ *
  * TODO: move all XML modification from qemuBuildCommandLine into this function
  */
 int
@@ -7150,6 +7152,8 @@ qemuProcessPrepareHostBackendChardevHotplug(virDomainObj *vm,
  * This function groups all code that modifies host system (which also may
  * update live XML) to prepare environment for a domain which is about to start
  * and it's the only place to do those modifications.
+ *
+ * This function MUST be called only after qemuProcessPrepareDomain().
  *
  * TODO: move all host modification from qemuBuildCommandLine into this function
  */
