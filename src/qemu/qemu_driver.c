@@ -2000,6 +2000,7 @@ qemuDomainReset(virDomainPtr dom, unsigned int flags)
     int ret = -1;
     qemuDomainObjPrivate *priv;
     virDomainState state;
+    virQEMUDriver *driver = dom->conn->privateData;
 
     virCheckFlags(0, -1);
 
@@ -2025,6 +2026,8 @@ qemuDomainReset(virDomainPtr dom, unsigned int flags)
     state = virDomainObjGetState(vm, NULL);
     if (state == VIR_DOMAIN_CRASHED)
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_CRASHED);
+
+    qemuProcessRefreshState(driver, vm, VIR_ASYNC_JOB_NONE);
 
  endjob:
     virDomainObjEndJob(vm);
