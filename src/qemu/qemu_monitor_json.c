@@ -3634,11 +3634,9 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValue *msg,
                          "in query-rx-filter response"));
         return -1;
     }
-    if ((!(table = virJSONValueObjectGet(entry, "unicast-table"))) ||
-        (!virJSONValueIsArray(table))) {
+    if ((!(table = virJSONValueObjectGetArray(entry, "unicast-table")))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid 'unicast-table' array "
-                         "in query-rx-filter response"));
+                       _("Missing or invalid 'unicast-table' array in query-rx-filter response"));
         return -1;
     }
     nTable = virJSONValueArraySize(table);
@@ -3675,11 +3673,9 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValue *msg,
                          "in query-rx-filter response"));
         return -1;
     }
-    if ((!(table = virJSONValueObjectGet(entry, "multicast-table"))) ||
-        (!virJSONValueIsArray(table))) {
+    if ((!(table = virJSONValueObjectGetArray(entry, "multicast-table")))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid 'multicast-table' array "
-                         "in query-rx-filter response"));
+                       _("Missing or invalid 'multicast-table' array in query-rx-filter response"));
         return -1;
     }
     nTable = virJSONValueArraySize(table);
@@ -3709,11 +3705,9 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValue *msg,
                          "in query-rx-filter response"));
         return -1;
     }
-    if ((!(table = virJSONValueObjectGet(entry, "vlan-table"))) ||
-        (!virJSONValueIsArray(table))) {
+    if ((!(table = virJSONValueObjectGetArray(entry, "vlan-table")))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid 'vlan-table' array "
-                         "in query-rx-filter response"));
+                       _("Missing or invalid 'vlan-table' array in query-rx-filter response"));
         return -1;
     }
     nTable = virJSONValueArraySize(table);
@@ -8722,9 +8716,7 @@ qemuMonitorJSONExtractQueryStatsSchema(virJSONValue *json)
         if (!virJSONValueIsObject(obj))
             continue;
 
-        stats = virJSONValueObjectGetArray(obj, "stats");
-
-        if (!virJSONValueIsArray(stats))
+        if (!(stats = virJSONValueObjectGetArray(obj, "stats")))
             continue;
 
         target_str = virJSONValueObjectGetString(obj, "target");
