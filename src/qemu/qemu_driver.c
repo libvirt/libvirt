@@ -3922,6 +3922,19 @@ processMemoryDeviceSizeChange(virQEMUDriver *driver,
 }
 
 
+static void
+processResetEvent(virQEMUDriver *driver,
+                  virDomainObj *vm)
+{
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+        return;
+
+    qemuProcessRefreshState(driver, vm, VIR_ASYNC_JOB_NONE);
+
+    virDomainObjEndJob(vm);
+}
+
+
 static void qemuProcessEventHandler(void *data, void *opaque)
 {
     struct qemuProcessEvent *processEvent = data;
@@ -3972,6 +3985,9 @@ static void qemuProcessEventHandler(void *data, void *opaque)
         qemuMigrationProcessUnattended(driver, vm,
                                        processEvent->action,
                                        processEvent->status);
+        break;
+    case QEMU_PROCESS_EVENT_RESET:
+        processResetEvent(driver, vm);
         break;
     case QEMU_PROCESS_EVENT_LAST:
         break;

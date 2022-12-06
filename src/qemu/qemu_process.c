@@ -432,6 +432,8 @@ qemuProcessHandleReset(qemuMonitor *mon G_GNUC_UNUSED,
     qemuDomainSetFakeReboot(vm, false);
     qemuDomainSaveStatus(vm);
 
+    qemuProcessEventSubmit(vm, QEMU_PROCESS_EVENT_RESET, 0, 0, NULL);
+
  unlock:
     virObjectUnlock(vm);
     virObjectEventStateQueue(driver->domainEventState, event);

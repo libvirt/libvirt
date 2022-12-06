@@ -11161,6 +11161,7 @@ qemuProcessEventFree(struct qemuProcessEvent *event)
         break;
     case QEMU_PROCESS_EVENT_PR_DISCONNECT:
     case QEMU_PROCESS_EVENT_UNATTENDED_MIGRATION:
+    case QEMU_PROCESS_EVENT_RESET:
     case QEMU_PROCESS_EVENT_LAST:
         break;
     }
