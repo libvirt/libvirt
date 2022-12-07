@@ -14,13 +14,14 @@
 # Tomoyuki KATO <tomo@dream.daynight.jp>, 2011, 2012, 2013, 2014
 # Yasuhiko Kamata <belphegor@belbel.or.jp>, 2021.
 # Ludek Janda <ljanda@redhat.com>, 2022.
+# Jan Tomko <jtomko@redhat.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-11-24 14:54+0000\n"
-"PO-Revision-Date: 2022-09-01 08:44+0000\n"
-"Last-Translator: Ludek Janda <ljanda@redhat.com>\n"
+"PO-Revision-Date: 2022-12-05 13:44+0000\n"
+"Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ja/>\n"
 "Language: ja\n"
@@ -28,7 +29,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14\n"
+"X-Generator: Weblate 4.14.2\n"
 
 msgid ""
 "\n"
@@ -744,13 +745,13 @@ msgstr ""
 msgid "%s uri uuid action\n"
 msgstr "%s URI UUID アクション\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "%s with index %d is configured for a NUMA node (%d) not present in the "
 "domain's <cpu><numa> array (%zu)"
 msgstr ""
-"インデックス %d 付きの %s は、ドメインの <cpu><numa> 配列 (%zu) に存在しない "
-"NUMA ノード (%d) 用に設定されます"
+"インデックス %2$d 付きの %1$s は、ドメインの <cpu><numa> 配列 (%4$zu) "
+"に存在しない NUMA ノード (%3$d) 用に設定されます"
 
 #, c-format
 msgid ""
@@ -1205,9 +1206,9 @@ msgstr "'%s' には共有メモリーが必要です"
 msgid "'%s' scheduler bitmap '%s' is empty"
 msgstr "'%s' スケジューラービットマップ '%s' は空です"
 
-#, c-format
+#, c-format, fuzzy
 msgid "'%s' starting from %llu has only %zd bytes available"
-msgstr "%llu から始まる '%s' が利用できるのは %zd バイトのみです"
+msgstr "%2$llu から始まる '%1$s' が利用できるのは %3$zd バイトのみです"
 
 msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
@@ -2239,9 +2240,9 @@ msgstr "CHS ジオメトリーを '%s' に設定することはできません"
 msgid "CHS translation mode can only be set for 'ide' bus not '%s'"
 msgstr "CHS 変換モードは、'%s' ではなく 'ide' バスに対してのみ設定できます"
 
-#, c-format
+#, c-format, fuzzy
 msgid "CPU %d in cpulist '%s' exceed the maxcpu %d"
-msgstr "cpulist '%s' の CPU %d が maxcpu %d を超えています"
+msgstr "cpulist '%2$s' の CPU %1$d が maxcpu %3$d を超えています"
 
 msgid "CPU Affinity"
 msgstr "CPU アフィニティー"
@@ -2698,20 +2699,19 @@ msgstr "'%s' にアクセスできません"
 msgid "Cannot access backing file '%s' of storage file '%s'"
 msgstr "ストレージファイル '%s' のバッキングファイル '%s' にアクセスできません"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Cannot access backing file '%s' of storage file '%s' (as uid:%u, gid:%u)"
-msgstr ""
-"(uid:%u、gid:%u として) ストレージファイル '%s' のバッキングファイル '%s' に"
-"アクセスできません"
+msgstr "(uid:%3$u、gid:%4$u として) ストレージファイル '%2$s' のバッキングファイル "
+"'%1$s' にアクセスできません"
 
 #, c-format
 msgid "Cannot access storage file '%s'"
 msgstr "ストレージファイル '%s' にアクセスできません"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cannot access storage file '%s' (as uid:%u, gid:%u)"
-msgstr "(uid:%u、gid:%u として) ストレージファイル '%s' にアクセスできません"
+msgstr "(uid:%2$u、gid:%3$u として) ストレージファイル '%1$s' にアクセスできません"
 
 msgid "Cannot add CURL handle to a multi handle twice"
 msgstr "複数のハンドルに CURL ハンドルを二度追加できません"
@@ -3231,9 +3231,9 @@ msgstr "socket address '%s': %s を解析できません"
 msgid "Cannot parse socket service '%s': %s"
 msgstr "ソケットサービス '%s' を解析できません: %s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cannot parse start time %s for pid %d"
-msgstr "pid %d の開始時刻 %s を解析できません"
+msgstr "pid %2$d の開始時刻 %1$s を解析できません"
 
 #, c-format
 msgid "Cannot parse sys stat '%s'"
@@ -3246,23 +3246,23 @@ msgstr "user 統計情報 '%s' を解析できません"
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr "要素 <address> の uuid 属性を解析できません"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Cannot plug '%s' interface into '%s' because new combined inbound floor=%llu "
 "would overcommit average=%llu on network '%s'"
 msgstr ""
-"新しい結合されたインバウンド floor=%llu が、ネットワーク '%s' の average="
-"%llu をオーバーコミットするため、'%s' インターフェイスを '%s' にプラグインす"
-"ることができません"
+"新しい結合されたインバウンド floor=%3$llu が、ネットワーク '%5$s' の "
+"average=%4$llu をオーバーコミットするため、'%1$s' インターフェイスを '%2$s' "
+"にプラグインすることができません"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Cannot plug '%s' interface into '%s' because new combined inbound floor=%llu "
 "would overcommit peak=%llu on network '%s'"
 msgstr ""
-"新しい結合されたインバウンド floor=%llu が、ネットワーク '%s' の peak=%llu を"
-"オーバーコミットするため、'%s' インターフェイスを '%s' にプラグインすることが"
-"できません"
+"新しい結合されたインバウンド floor=%3$llu が、ネットワーク '%5$s' の peak=%4$"
+"llu をオーバーコミットするため、'%1$s' インターフェイスを '%2$s' "
+"にプラグインすることができません"
 
 #, c-format
 msgid "Cannot print data type %x"
@@ -3354,9 +3354,9 @@ msgstr "コンテキスト %s を設定できません"
 msgid "Cannot set interface MAC on '%s'"
 msgstr "'%s' においてインターフェイスの MAC アドレスを設定できません"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cannot set interface MAC to %s for ifname %s vf %d"
-msgstr "ifname %s vf %d の %s  にインターフェイス MAC を設定できません"
+msgstr "ifname %2$s vf %3$d の %1$s  にインターフェイス MAC を設定できません"
 
 #, c-format
 msgid "Cannot set interface MAC to %s on '%s'"
@@ -3370,9 +3370,9 @@ msgstr "'%s' においてインターフェイスの MTU を設定できませ�
 msgid "Cannot set interface flags on '%s'"
 msgstr "'%s' においてインターフェイスのフラグを設定できません"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cannot set interface vlanid to %d for ifname %s vf %d"
-msgstr "ifname %s vf %d の %d にインターフェイス vlanid を設定できません"
+msgstr "ifname %2$s vf %3$d の %1$d にインターフェイス vlanid を設定できません"
 
 msgid "Cannot set memory higher than max memory"
 msgstr "メモリーを最大メモリーよりも大きく設定できません"
@@ -4111,11 +4111,10 @@ msgstr "vzctl のバージョンを抽出できませんでした"
 msgid "Could not find %s"
 msgstr "%s を見つけられませんでした"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Could not find %s controller with index %d required for device"
-msgstr ""
-"デバイスに必要なインデックス %d を持つ %s コントローラーが見つかりませんでし"
-"た"
+msgstr "デバイスに必要なインデックス %2$d を持つ %1$s "
+"コントローラーが見つかりませんでした"
 
 #, c-format
 msgid "Could not find %s with name '%s'"
@@ -4149,13 +4148,12 @@ msgstr "名前 '%s' を持つ HostVirtualSwitch を見つけられませんで�
 msgid "Could not find Msvm_DiskDrive object"
 msgstr "Msvm_DiskDrive オブジェクトを見つけられませんでした"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Could not find PCI controller with index '%u' required for device at address "
 "'%s'"
-msgstr ""
-"アドレス '%s' のデバイスに必要なインデックス '%u' の PCI コントローラーを見つ"
-"けられませんでした"
+msgstr "アドレス '%2$s' のデバイスに必要なインデックス '%1$u' の PCI "
+"コントローラーを見つけられませんでした"
 
 #, c-format
 msgid "Could not find PhysicalNic with key '%s'"
@@ -4181,10 +4179,10 @@ msgstr "%s で PCI デバイスの下にネットワークデバイスを見つ�
 msgid "Could not find any vport capable device"
 msgstr "vport 対応デバイスが見つかりませんでした"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Could not find auto-added %s controller with index %zu"
-msgstr ""
-"インデックス %zu を持つ自動追加された %s コントローラーが見つかりませんでした"
+msgstr "インデックス %2$zu を持つ自動追加された %1$s "
+"コントローラーが見つかりませんでした"
 
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
@@ -4992,9 +4990,9 @@ msgstr "インターフェイスにおいてリンクステートを設定でき
 msgid "Couldn't write to lock file for device '%s' in path '%s'"
 msgstr "デバイス '%s' 向けロックファイルをパス '%s' に書き込めませんでした"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cpu '%u' in node '%zu' is out of range of the provided bitmap"
-msgstr "ノード '%zu' の CPU '%u' が提供されたビットマップの範囲外にあります"
+msgstr "ノード '%2$zu' の CPU '%1$u' が提供されたビットマップの範囲外にあります"
 
 msgid "Crashed"
 msgstr "クラッシュした"
@@ -5347,11 +5345,10 @@ msgstr "デバイス '%s' はアクティブではありません"
 msgid "Device '%s' is unrecognized, requires build"
 msgstr "デバイス '%s' が認識されないため、ビルドが必要です"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Device alias was not set for %s controller with index %d "
-msgstr ""
-"インデックス %d を持つ %s コントローラーにデバイスエイリアスは設定されません"
-"でした "
+msgstr "インデックス %2$d を持つ %1$s "
+"コントローラーにデバイスエイリアスは設定されませんでした "
 
 #, c-format
 msgid ""
@@ -5519,12 +5516,11 @@ msgstr ""
 "ノードの合計 CPU 数、オンライン CPU 数およびオンライン CPU の一覧を表示しま"
 "す。"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Distance value %d under node %zu is LOCAL_DISTANCE and should be set to 10"
-msgstr ""
-"ノード %zu の下の距離値 %d は、LOCAL_DISTANCE であり、10 に設定する必要があり"
-"ます"
+msgstr "ノード %2$zu の下の距離値 %1$d は、LOCAL_DISTANCE であり、10 "
+"に設定する必要があります"
 
 #, c-format
 msgid "Distance value of %d is not in valid range"
@@ -7661,9 +7657,9 @@ msgstr "ディレクトリー %s の作成に失敗しました"
 msgid "Failed to mount %s on %s type %s"
 msgstr "%s を %s にタイプ %s でマウントできませんでした"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to mount %s on %s type %s flags=0x%x"
-msgstr "%s タイプ %s flags=0x%x への %s のマウントに失敗しました"
+msgstr "%2$s タイプ %3$s flags=0x%4$x への %1$s のマウントに失敗しました"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -7941,9 +7937,9 @@ msgstr "PCI デバイスの再接続に失敗しました: %s"
 msgid "Failed to re-attach device %s"
 msgstr "デバイス %s を再接続できませんでした"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to re-mount %s on %s flags=0x%x"
-msgstr "%s flags=0x%x への %s の再マウントに失敗しました"
+msgstr "%2$s flags=0x%3$x への %1$s の再マウントに失敗しました"
 
 #, c-format
 msgid "Failed to read %s"
@@ -8221,9 +8217,9 @@ msgstr "ドメイン '%s' の状態の保存に失敗しました"
 msgid "Failed to save domain '%s' to %s"
 msgstr "ドメイン '%s' を %s に保存することに失敗しました"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to seek to %llu bytes to the end in volume with path '%s'"
-msgstr "パス '%s' のボリュームの最後への %llu バイトのシークに失敗しました"
+msgstr "パス '%2$s' のボリュームの最後への %1$llu バイトのシークに失敗しました"
 
 #, c-format
 msgid "Failed to seek to the start in volume with path '%s'"
@@ -12613,13 +12609,12 @@ msgstr "十分な引数がわたされていません。設定するものがあ
 msgid "Not enough free space in pool for volume '%s'"
 msgstr "ボリューム '%s' 用のプールに十分な空き領域がありません"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Not enough room for allocation of %llu bytes for level %u cache %u scope "
 "type '%s'"
-msgstr ""
-"レベル %u キャッシュ %u スコープタイプ '%s' 用に %llu バイトを割り当てるため"
-"の十分なスペースがありません"
+msgstr "レベル %2$u キャッシュ %3$u スコープタイプ '%4$s' 用に %1$llu "
+"バイトを割り当てるための十分なスペースがありません"
 
 msgid "Not enough space left in storage pool"
 msgstr "ストレージプールに十分なスペースが残っていません"
@@ -12689,10 +12684,9 @@ msgid "Numeric value '%s' for <%s> option is malformed or out of range"
 msgstr ""
 "<%s> オプションの数値 '%s' が不正な形式であるか、または範囲外にあります"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Numeric value '%u' for <%s> option is malformed or out of range"
-msgstr ""
-"<%s> オプションの数値 '%u' が不正な形式であるか、または範囲外にあります"
+msgstr "<%2$s> オプションの数値 '%1$u' が不正な形式であるか、または範囲外にあります"
 
 msgid "OS Type:"
 msgstr "OS タイプ:"
@@ -13162,10 +13156,10 @@ msgstr "POST 操作は失敗しました"
 msgid "POST operation failed: %s"
 msgstr "POST 操作は失敗しました: %s"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "PTR domain for %s network with prefix %u cannot be automatically created"
-msgstr "接頭辞が %u の %s ネットワークの PTR ドメインは、自動作成できません"
+msgstr "接頭辞が %2$u の %1$s ネットワークの PTR ドメインは、自動作成できません"
 
 msgid "PTY device is not yet assigned"
 msgstr "PTY デバイスはまだ割り当てられていません"
@@ -16418,9 +16412,9 @@ msgstr "ストリームに書き込むバイトが多すぎます"
 msgid "Too many clients '%d' for limit '%d'"
 msgstr "制限値 '%d' に対して クライアント '%d' が多すぎます"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Too many disks in fsinfo: %zd for limit %d"
-msgstr "fsinfo の中に情報が多すぎます: 制限値 %d に対して %zd"
+msgstr "fsinfo の中に情報が多すぎます: 制限値 %2$d に対して %1$zd"
 
 msgid "Too many domain elements in migration cookie"
 msgstr "マイグレーションクッキーにドメイン要素が多すぎます"
@@ -17002,13 +16996,13 @@ msgstr "新しいメディアを閉じることができません、rc=%08x"
 msgid "Unable to compute hash of data: %s"
 msgstr "データのハッシュを計算できません: %s"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Unable to configure VF %d of PF '%s' because the PF is not online. Please "
 "change host network config to put the PF online."
 msgstr ""
-"PF がオンラインでないため、PF '%s' の VF %d を設定できません。PF をオンライン"
-"にするために、ホストネットワークの設定を変更してください。"
+"PF がオンラインでないため、PF '%2$s' の VF %1$d を設定できません。PF "
+"をオンラインにするために、ホストネットワークの設定を変更してください。"
 
 msgid "Unable to configure libxl's memory management parameters"
 msgstr "libxl のメモリー管理パラメータを設定できません"
@@ -18992,9 +18986,9 @@ msgstr "不明な JSON 応答 '%s'"
 msgid "Unknown LXC namespace source '%s'"
 msgstr "不明な LXC 名前空間ソース '%s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Unknown PCI header type '%d' for device '%s'"
-msgstr "デバイス '%s' の不明な PCI ヘッダータイプ '%d'"
+msgstr "デバイス '%2$s' の不明な PCI ヘッダータイプ '%1$d'"
 
 msgid "Unknown Partition Type, requires build --overwrite"
 msgstr "不明なパーティションタイプ、ビルドが必要 --overwrite"
@@ -19833,13 +19827,13 @@ msgstr "VCPU"
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "VF %d of PF '%s' is not bound to a net driver, so its MAC address cannot be "
 "set to %s"
 msgstr ""
-"PF '%s' の VF %d は、ネットドライバーにバインドされていないため、その MAC ア"
-"ドレスを %s に設定することはできません"
+"PF '%2$s' の VF %1$d は、ネットドライバーにバインドされていないため、その "
+"MAC アドレスを %3$s に設定することはできません"
 
 #, c-format
 msgid "VFB %s too big for destination"
@@ -20766,11 +20760,10 @@ msgstr "不正な名前"
 msgid "bad pathname"
 msgstr "不正なパス名です"
 
-#, c-format
+#, c-format, fuzzy
 msgid "bad prefix %d for network %s when  checking range %s - %s"
-msgstr ""
-"範囲 %s - %s をチェックする際に、ネットワーク %s の接頭辞 %d が正しくありませ"
-"ん"
+msgstr "範囲 %3$s - %4$s をチェックする際に、ネットワーク %2$s の接頭辞 %1$d "
+"が正しくありません"
 
 msgid "balloon device cannot be disabled"
 msgstr "バルーンデバイスを無効にすることはできません"
@@ -21133,13 +21126,12 @@ msgstr ""
 "--live と --config のいずれかまたは両方にすることができます、実装ハイパーバイ"
 "ザードライバーによって異なります"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "can't add memory backend for guest node '%d' as the guest has only '%zu' "
 "NUMA nodes configured"
-msgstr ""
-"ゲストには '%zu' NUMA ノードのみが設定されているため、ゲストノード '%d' のメ"
-"モリーバックエンドを追加できません"
+msgstr "ゲストには '%2$zu' NUMA ノードのみが設定されているため、ゲストノード '%1$d' "
+"のメモリーバックエンドを追加できません"
 
 msgid "can't change link state: device alias not found"
 msgstr ""
@@ -21330,9 +21322,9 @@ msgstr ""
 "リダイレクトされた USB デバイスを追加できません: このドメインでは USB が無効"
 "になっています"
 
-#, c-format
+#, c-format, fuzzy
 msgid "cannot allocate %llu bytes in file '%s'"
-msgstr "ファイル '%s' に %llu バイトを割り当てることができません"
+msgstr "ファイル '%2$s' に %1$llu バイトを割り当てることができません"
 
 msgid "cannot allocate nlhandle for netlink"
 msgstr "netlink に対して nlhandle を割り当てられません"
@@ -22384,9 +22376,9 @@ msgstr "ボリューム %s からデータを受信できませんでした"
 msgid "cannot register file watch on stream"
 msgstr "ストリームにおいて監視するファイルを登録できません"
 
-#, c-format
+#, c-format, fuzzy
 msgid "cannot remove IOThread %u since it is being used by disk '%s'"
-msgstr "ディスク '%s' で使用されているため、IOThread %u を削除できません"
+msgstr "ディスク '%2$s' で使用されているため、IOThread %1$u を削除できません"
 
 #, c-format
 msgid "cannot remove IOThread '%u' since it is being used by controller"
@@ -22638,13 +22630,13 @@ msgstr "コンソールストリームを終了できません"
 msgid "cannot translate CPU model %s to a supported model"
 msgstr "CPU モデル %s をサポートモデルに変換できません"
 
-#, c-format
+#, c-format, fuzzy
 msgid "cannot translate keycode %u of %s codeset to qnum keycode"
-msgstr "%s コードセットのキーコード %u を qnum キーコードへ変換できません"
+msgstr "%2$s コードセットのキーコード %1$u を qnum キーコードへ変換できません"
 
-#, c-format
+#, c-format, fuzzy
 msgid "cannot translate keycode %u of %s codeset to xt keycode"
-msgstr "%s コードセットのキーコード %u を xt キーコードへ変換できません"
+msgstr "%2$s コードセットのキーコード %1$u を xt キーコードへ変換できません"
 
 msgid "cannot unblock signals"
 msgstr "信号をブロック解除できません"
@@ -23400,10 +23392,10 @@ msgstr "共有フォルダー '%s' を切断できませんでした, rc=%08x"
 msgid "could not determine max vcpus for the domain"
 msgstr "ドメインの最大仮想 CPU 数を決定できません"
 
-#, c-format
+#, c-format, fuzzy
 msgid "could not find backing store index '%u' in chain for '%s'"
-msgstr ""
-"'%s' のチェーンのバッキングストアのインデックス '%u' が見つかりませんでした"
+msgstr "'%2$s' のチェーンのバッキングストアのインデックス '%1$u' "
+"が見つかりませんでした"
 
 #, c-format
 msgid "could not find base image in chain for '%s'"
@@ -24279,9 +24271,9 @@ msgstr "nvdimms では破棄はサポートされていません"
 msgid "discard is not supported with vhostuser disk"
 msgstr "破棄は vhostuser ディスクではサポートされません"
 
-#, c-format
+#, c-format, fuzzy
 msgid "discarding %llu bytes failed on RBD image %s at offset %llu"
-msgstr "%llu バイトの廃棄は、オフセット %llu の RBD イメージ %s で失敗しました"
+msgstr "%1$llu バイトの廃棄は、オフセット %3$llu の RBD イメージ %2$s で失敗しました"
 
 msgid "disconnect"
 msgstr "切断"
@@ -25090,10 +25082,10 @@ msgid "encryption is supported only with 'raw' and 'qcow2' image format"
 msgstr ""
 "暗号化は 'raw' と 'qcow2' イメージフォーマットでのみサポートされています"
 
-#, c-format
+#, c-format, fuzzy
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
-msgstr ""
-"ネットワーク %s/%d の範囲 %s - %s の終わりはブロードキャストアドレスです"
+msgstr "ネットワーク %3$s/%4$d の範囲 %1$s - %2$s "
+"の終わりはブロードキャストアドレスです"
 
 msgid "enforce requested stats parameters"
 msgstr "要求された統計パラメーターを適用します"
@@ -26543,13 +26535,12 @@ msgstr "ドメインの再開に失敗しました"
 msgid "failed to retrieve XML"
 msgstr "XML の取得に失敗しました"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "failed to retrieve client identity information for client '%llu' connected "
 "to server '%s'"
-msgstr ""
-"サーバー '%s' に接続しているクライアント '%llu' のクライアント ID 情報の取得"
-"に失敗しました"
+msgstr "サーバー '%2$s' に接続しているクライアント '%1$llu' のクライアント ID "
+"情報の取得に失敗しました"
 
 msgid "failed to retrieve credentials"
 msgstr "認証情報の取得に失敗しました"
@@ -27295,11 +27286,10 @@ msgstr ""
 "QEMU モニターから間違った数の IOThread ID を取得しました。必要なのは %d でし"
 "たが、取得したのは %d でした"
 
-#, c-format
+#, c-format, fuzzy
 msgid "got wrong number of IOThread pids from QEMU monitor. got %d, wanted %zu"
-msgstr ""
-"QEMU モニターから間違った数の IOThread pid を取得しました。必要なのは %zu で"
-"したが、取得したのは %d でした"
+msgstr "QEMU モニターから間違った数の IOThread pid を取得しました。必要なのは %2$zu "
+"でしたが、取得したのは %1$d でした"
 
 msgid "gracefully shutdown a domain"
 msgstr "ドメインを正常にシャットダウンします"
@@ -28477,9 +28467,9 @@ msgid "invalid json in net device saved config file '%s': '%.60s'"
 msgstr ""
 "ネットデバイスが保存した設定ファイル '%s' に無効な json があります: '%.60s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "invalid keycode %u of %s codeset"
-msgstr "%s コードセットの無効なキーコード %u"
+msgstr "%2$s コードセットの無効なキーコード %1$u"
 
 #, c-format
 msgid "invalid keycode: '%s'"
@@ -32421,9 +32411,9 @@ msgstr "nwfilter 状態ドライバーがアクティブではありません"
 msgid "object props can't be NULL"
 msgstr "オブジェクトプロパティーは NULL にできない"
 
-#, c-format
+#, c-format, fuzzy
 msgid "object size %zu of %s is not larger than parent class %zu"
-msgstr "%s のオブジェクトサイズ %zu は、親クラス %zu より大きくありません"
+msgstr "%2$s のオブジェクトサイズ %1$zu は、親クラス %3$zu より大きくありません"
 
 msgid "occupied"
 msgstr "占有済み"
@@ -35048,9 +35038,9 @@ msgstr "物理ホストインターフェイスを開始します。"
 msgid "start cell %d out of range (0-%d)"
 msgstr "セル %d を開始、範囲外です (0-%d)"
 
-#, c-format
+#, c-format, fuzzy
 msgid "start of range %s - %s in network %s/%d is the network address"
-msgstr "ネットワーク %s/%d の範囲 %s - %s の開始は、ネットワークアドレスです"
+msgstr "ネットワーク %3$s/%4$d の範囲 %1$s - %2$s の開始は、ネットワークアドレスです"
 
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
@@ -35837,13 +35827,13 @@ msgstr "多すぎるメモリー統計が要求されました: %d > %d"
 msgid "too many parameters '%d' for limit '%d'"
 msgstr "制限値 '%d' に対してパラメーター '%d' が多すぎます"
 
-#, c-format
+#, c-format, fuzzy
 msgid "too many parameters '%u' for limit '%d'"
-msgstr "制限値 '%d' に対してパラメーター '%u' が多すぎます"
+msgstr "制限値 '%2$d' に対してパラメーター '%1$u' が多すぎます"
 
-#, c-format
+#, c-format, fuzzy
 msgid "too many parameters '%u' for nparams '%d'"
-msgstr "nparams '%d' に対してパラメーター '%u' が多すぎます"
+msgstr "nparams '%2$d' に対してパラメーター '%1$u' が多すぎます"
 
 #, c-format
 msgid ""
@@ -37050,9 +37040,9 @@ msgstr "予期しないマイグレーションスキーマ: %d"
 msgid "unexpected migration status in %s"
 msgstr "%s における予期しないマイグレーションステータス"
 
-#, c-format
+#, c-format, fuzzy
 msgid "unexpected mode 0x%x for %s"
-msgstr "%s の予期しないモード 0x%x"
+msgstr "%2$s の予期しないモード 0x%1$x"
 
 #, c-format
 msgid "unexpected model name value %d"
@@ -37314,9 +37304,9 @@ msgstr "不明なブロック I/O 状態: %s"
 msgid "unknown bonding mode %s"
 msgstr "不明なボンディングモード %s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "unknown capability type '%d' for '%s'"
-msgstr "'%s' に対する不明なケイパビリティータイプ '%d'"
+msgstr "'%2$s' に対する不明なケイパビリティータイプ '%1$d'"
 
 #, c-format
 msgid "unknown character device type: %s"

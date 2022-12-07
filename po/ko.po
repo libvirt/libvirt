@@ -11,13 +11,14 @@
 # jason lee <ppark5237@gmail.com>, 2021.
 # Kim InSoo <simmon@nplob.com>, 2022.
 # 김인수 <simmon@nplob.com>, 2022.
+# Jan Tomko <jtomko@redhat.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-11-24 14:54+0000\n"
-"PO-Revision-Date: 2022-11-29 08:38+0000\n"
-"Last-Translator: 김인수 <simmon@nplob.com>\n"
+"PO-Revision-Date: 2022-12-05 13:44+0000\n"
+"Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -529,8 +530,9 @@ msgstr ""
 msgid ""
 "%s (on destination side) does not support the --migration option needed for "
 "migration with shared storage"
-msgstr "%s (대상 측면에서)는 공유 저장소로 이전을 위해 필요한 --migration 옵션을 "
-"지원하지 않습니다"
+msgstr ""
+"%s (대상 측면에서)는 공유 저장소로 이전을 위해 필요한 --migration 옵션을 지원"
+"하지 않습니다"
 
 #, c-format
 msgid "%s (out of %d)"
@@ -3180,7 +3182,7 @@ msgstr "소켓 서비스 '%s':%s를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Cannot parse start time %s for pid %d"
-msgstr "pid %s를 위한 시작 시간 %s를 구문 분석 할 수 없습니다"
+msgstr "시작 시간 %s를(pid %d를 위한) 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Cannot parse sys stat '%s'"
@@ -3198,8 +3200,8 @@ msgid ""
 "Cannot plug '%s' interface into '%s' because new combined inbound floor=%llu "
 "would overcommit average=%llu on network '%s'"
 msgstr ""
-"'%s' 연결장치를 '%s'에 연결 할 수 없습니다, 왜냐하면 새로 결합된 인바운드 "
-"floor=%llu가 네트워크 '%s'에서 평균=%llu를 초과 커밋하기 때문입니다"
+"'%s' 연결장치를 '%s'에 연결 할 수 없으며, 왜냐하면 새로 결합된 인바운드 "
+"floor=%llu는 평균= %llu를 초과 커밋(네트워크 '%s'에서)하기 때문입니다"
 
 #, c-format
 msgid ""
@@ -7944,7 +7946,7 @@ msgstr "포트 %d를 예약하는데 실패"
 
 #, c-format
 msgid "Failed to reserve port %zu"
-msgstr "포트 %z를 예약하는데 실패"
+msgstr "포트 %zu를 예약하는데 실패"
 
 #, c-format
 msgid "Failed to reset PCI device: %s"
@@ -30456,8 +30458,9 @@ msgstr "mkdir(\"%s\")"
 msgid ""
 "mkfs is not available on this platform: Failed to make filesystem of type "
 "'%s' on device '%s'"
-msgstr "mkfs는 이 기술환경에서 사용 할 수 없습니다. '%s' 장치에서 '%s' 유형의 파일 "
-"시스템을 만들지 못했습니다"
+msgstr ""
+"mkfs는 이 기술환경에서 사용 할 수 없습니다. '%s' 장치에서 '%s' 유형의 파일 시"
+"스템을 만들지 못했습니다"
 
 msgid "mode attribute of <source/> element"
 msgstr "<source/> 요소의 방법(mode) 속성"
@@ -33728,7 +33731,7 @@ msgstr "보안 레이블 모델 %s는 selinux에서 지원되지 않습니다"
 
 #, c-format
 msgid "security model exceeds maximum: %zu"
-msgstr "보안 모델이 최대값을 초과함: %zd"
+msgstr "보안 모델이 최대값을 초과함: %zu"
 
 #, c-format
 msgid "security model string exceeds max %d bytes"
@@ -33920,7 +33923,8 @@ msgstr "sgx epc 크기 %lld(호스트 노드 %d에서)는 요청된 크기 %lld 
 
 #, c-format
 msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
-msgstr "sgx epc 크기 %lld(호스트 노드 %zd에서)는 요청된 크기 %lld 보다 작습니다"
+msgstr ""
+"sgx epc 크기 %lld(호스트 노드 %zd에서)는 요청된 크기 %lld 보다 작습니다"
 
 msgid "sgx-epc memory info data is missing 'memdev'"
 msgstr "sgx-epc 메모리 정보 자료는 누락된 'memdev'입니다"

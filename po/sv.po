@@ -8,13 +8,14 @@
 # Göran Uddeborg <goeran@uddeborg.se, 2011, 2020, 2021, 2022.
 # Magnus Larsson <fedoratrans@gmail.com>, 2006, 2007, 2008
 # Göran Uddeborg <goeran@uddeborg.se>, 2015, 2017, 2020, 2021, 2022.
+# Jan Tomko <jtomko@redhat.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-10-25 07:42+0000\n"
-"PO-Revision-Date: 2022-11-24 15:31+0000\n"
-"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
+"PO-Revision-Date: 2022-12-05 13:44+0000\n"
+"Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
 "Language: sv\n"
@@ -4977,7 +4978,7 @@ msgstr "Kunde inte skriva till låsfilen för enheten ”%s” i sökvägen ”%
 
 #, c-format
 msgid "Cpu '%u' in node '%zu' is out of range of the provided bitmap"
-msgstr "Cpu ”%u” i noden ”%z” är utanför intervallet för den givna bitkartan"
+msgstr "Cpu ”%u” i noden ”%zu” är utanför intervallet för den givna bitkartan"
 
 msgid "Crashed"
 msgstr "Kraschad"
@@ -7617,7 +7618,7 @@ msgstr "Misslyckades att montera %s på %s med typen %s"
 
 #, c-format
 msgid "Failed to mount %s on %s type %s flags=0x%x"
-msgstr "Misslyckades att montera %s på %s med typen %s flaggor=0x%%x"
+msgstr "Misslyckades att montera %s på %s med typen %s flaggor=0x%x"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -11898,7 +11899,7 @@ msgstr "NUMA-nod %zd är inte tillgänglig"
 
 #, c-format
 msgid "NUMA node %zu is not available"
-msgstr "NUMA-nod %zd är inte tillgänglig"
+msgstr "NUMA-nod %zu är inte tillgänglig"
 
 msgid "NUMA node selections to set"
 msgstr "NUMA-nodsval att sätta"
@@ -13746,7 +13747,7 @@ msgstr "Den begärda datalängden %llu är större än maximala %d"
 #, c-format
 msgid "Requested device '%s' is locked by lock file '%s' held by process %lld"
 msgstr ""
-"Den begärda enheten ”%s” är låst av låsfilen ”%s” som hålls av process %llu"
+"Den begärda enheten ”%s” är låst av låsfilen ”%s” som hålls av process %lld"
 
 msgid "Requested metadata element is not present"
 msgstr "Det begärda metadataelementet finns inte"
@@ -14605,7 +14606,7 @@ msgstr ""
 
 #, c-format
 msgid "Size of target NUMA node %zu (%llu) doesn't match source (%llu)"
-msgstr "Storlek på mål-NUMA-noden %zu (%llu) stämmer inte med källan (%%llu)"
+msgstr "Storlek på mål-NUMA-noden %zu (%llu) stämmer inte med källan (%llu)"
 
 #, c-format
 msgid "Size of volume '%s' successfully changed by %s\n"
@@ -18206,13 +18207,13 @@ msgstr "det gick inte att skapa loggfilen %s"
 msgid "Unable to save the xml"
 msgstr "var data ska sparas"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to seek %s to %llu"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att spara domän %s till %llu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to seek log file %s to %llu"
-msgstr "det gick inte att skapa loggfilen %s"
+msgstr "det gick inte att skapa loggfilen %s till %llu"
 
 #, fuzzy
 msgid "Unable to seek to EOF"
