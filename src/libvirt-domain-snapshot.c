@@ -1075,6 +1075,13 @@ virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
  * libvirt metadata to track snapshots, then this flag is silently
  * ignored.
  *
+ * Since libvirt 9.0.0 deletion of external snapshots is supported
+ * for QEMU driver. Using @flags VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN
+ * and VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY is not supported with
+ * external snapshots. In case that daemon process is terminated
+ * while the snapshot delete is in process the operation will be
+ * aborted when the daemon starts again.
+ *
  * Returns 0 if the selected snapshot(s) were successfully deleted,
  * -1 on error.
  *
