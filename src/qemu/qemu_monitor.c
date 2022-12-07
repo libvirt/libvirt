@@ -2855,7 +2855,7 @@ qemuMonitorScreendump(qemuMonitor *mon,
                       unsigned int head,
                       const char *file)
 {
-    VIR_DEBUG("file=%s", file);
+    VIR_DEBUG("device=%s head=%u file=%s", device, head, file);
 
     QEMU_CHECK_MONITOR(mon);
 
