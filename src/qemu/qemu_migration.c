@@ -2292,7 +2292,7 @@ qemuMigrationAnyConnectionClosed(virDomainObj *vm,
         break;
 
     case QEMU_MIGRATION_PHASE_PERFORM3_DONE:
-        if (virDomainObjIsPostcopy(vm, VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT)) {
+        if (virDomainObjIsPostcopy(vm)) {
             VIR_DEBUG("Migration protocol interrupted in post-copy mode");
             postcopy = true;
         } else {
@@ -2681,7 +2681,7 @@ qemuMigrationAnyCanResume(virDomainObj *vm,
         return false;
     }
 
-    if (!virDomainObjIsPostcopy(vm, vm->job->current->operation)) {
+    if (!virDomainObjIsPostcopy(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("migration of domain %s is not in post-copy phase"),
                        vm->def->name);
@@ -3902,7 +3902,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
     if (retcode != 0 &&
-        virDomainObjIsPostcopy(vm, VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT) &&
+        virDomainObjIsPostcopy(vm) &&
         currentData->stats.mig.status == QEMU_MONITOR_MIGRATION_STATUS_COMPLETED) {
         VIR_DEBUG("Finish phase failed, but QEMU reports post-copy migration is completed; forcing success");
         retcode = 0;

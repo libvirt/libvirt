@@ -3962,8 +3962,7 @@ bool
 virDomainObjIsFailedPostcopy(virDomainObj *obj)
         ATTRIBUTE_NONNULL(1);
 bool
-virDomainObjIsPostcopy(virDomainObj *dom,
-                       virDomainJobOperation op)
+virDomainObjIsPostcopy(virDomainObj *dom)
         ATTRIBUTE_NONNULL(1);
 
 virSecurityLabelDef *

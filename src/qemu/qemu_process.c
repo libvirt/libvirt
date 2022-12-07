@@ -1503,7 +1503,7 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
          * watching it in any thread. Let's make sure the migration is properly
          * finished in case we get a "completed" event.
          */
-        if (virDomainObjIsPostcopy(vm, vm->job->current->operation) &&
+        if (virDomainObjIsPostcopy(vm) &&
             vm->job->phase == QEMU_MIGRATION_PHASE_POSTCOPY_FAILED &&
             vm->job->asyncOwner == 0) {
             qemuProcessEventSubmit(vm, QEMU_PROCESS_EVENT_UNATTENDED_MIGRATION,
@@ -3476,7 +3476,7 @@ qemuProcessRecoverMigrationIn(virQEMUDriver *driver,
         /* migration finished, we started resuming the domain but didn't
          * confirm success or failure yet; killing it seems safest unless
          * we already started guest CPUs or we were in post-copy mode */
-        if (virDomainObjIsPostcopy(vm, VIR_DOMAIN_JOB_OPERATION_MIGRATION_IN))
+        if (virDomainObjIsPostcopy(vm))
             return 1;
 
         if (state != VIR_DOMAIN_RUNNING) {
@@ -3511,7 +3511,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
                                int reason,
                                unsigned int *stopFlags)
 {
-    bool postcopy = virDomainObjIsPostcopy(vm, VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT);
+    bool postcopy = virDomainObjIsPostcopy(vm);
     bool resume = false;
 
     VIR_DEBUG("Active outgoing migration in phase %s",
