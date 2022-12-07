@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-11-24 14:54+0000\n"
-"PO-Revision-Date: 2022-12-05 13:44+0000\n"
-"Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
+"PO-Revision-Date: 2022-12-07 12:17+0000\n"
+"Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -3008,17 +3008,17 @@ msgid "Cannot get storage controller name"
 msgstr "저장소 제어기의 이름을 가져올 수 없습니다"
 
 msgid "Cannot initialize thread local for current identity"
-msgstr "현재 ID에 대해 로컬 스레드를 초기화할 수 없습니다"
+msgstr "현재 ID에 대해 로컬 스레드를 초기화 할 수 없습니다"
 
 #, c-format
 msgid ""
 "Cannot instantiate filter due to unresolvable variables or unavailable list "
 "elements: %s"
-msgstr ""
-"알수없는 변수 또는 불가용한 리스트 요소들 %s 때문에 필터를 시작할 수 없습니다"
+msgstr "알 수 없는 변수 또는 불가용한 목록 요소들 때문에 필터를 시작 할 수 없습니다: "
+"%s"
 
 msgid "Cannot lock resctrl"
-msgstr "resctrl을 잠글수 없습니다"
+msgstr "resctrl을 잠글 수 없습니다"
 
 #, c-format
 msgid "Cannot migrate empty or read-only disk %s"
@@ -3026,7 +3026,7 @@ msgstr "비어있거나 읽기 전용 디스크 %s를 이주시킬 수 없습니
 
 #, c-format
 msgid "Cannot mount filesystem type %s"
-msgstr "파일 시스템 유형 %s을 마운트할 수 없음"
+msgstr "파일 시스템 유형 %s를 적재 할 수 없음"
 
 #, c-format
 msgid "Cannot move fd %d out of the way"
@@ -3036,7 +3036,7 @@ msgid "Cannot obtain CPU count"
 msgstr "CPU 수를 획득 할 수 없습니다"
 
 msgid "Cannot offline enough CPUs"
-msgstr "CPU를 충분히 오프라인할 수 없습니다"
+msgstr "CPU를 충분히 오프라인 할 수 없습니다"
 
 #, c-format
 msgid "Cannot open %s"
@@ -3081,37 +3081,37 @@ msgid "Cannot parse 'memory.stat' cgroup file."
 msgstr "<master> 'startport' 속성을 구문 분석 할 수 없습니다."
 
 msgid "Cannot parse <HardDisk> 'format' attribute"
-msgstr "<HardDisk> '형식' 속성을 구문 분석할 수 없습니다"
+msgstr "<HardDisk> '형식' 속성을 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse <HardDisk> 'location' attribute"
-msgstr "<HardDisk> '위치' 속성을 구문 분석할 수 없습니다"
+msgstr "<HardDisk> '위치' 속성을 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse <HardDisk> 'uuid' attribute"
-msgstr "<HardDisk> 'uuid' 속성을 구문 분석할 수 없습니다"
+msgstr "<HardDisk> 'uuid' 속성을 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse <Machine> 'currentSnapshot' attribute"
 msgstr "<Machine> '현재 스냅샷' 속성을 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse <Machine> 'lastStateChange' attribute"
-msgstr "<Machine> 'lastStateChange' 속성을 구문 분석할 수 없습니다"
+msgstr "<Machine> 'lastStateChange' 속성을 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse <Machine> 'name' attribute"
 msgstr "<Machine> '이름' 속성을 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse <Machine> 'snapshotFolder' attribute"
-msgstr "<Machine> 'snapshotFolder' 속성을 구문 분석할 수 없습니다"
+msgstr "<Machine> 'snapshotFolder' 속성을 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse <Machine> 'uuid' attribute"
-msgstr "<Machine> 'uuid' 속성을 구문 분석할 수 없습니다"
+msgstr "<Machine> 'uuid' 속성을 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse <Machine> <Hardware> node"
-msgstr "<Machine> <Hardware> 노드를 구문 분석할 수 없습니다"
+msgstr "<Machine> <Hardware> 노드를 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse <Machine> <MediaRegistry> node"
-msgstr "<Machine> <MediaRegistry> 노드를 구문 분석할 수 없습니다"
+msgstr "<Machine> <MediaRegistry> 노드를 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse <Machine> <StorageControllers> node"
-msgstr "<Machine> <StorageControllers> 노드를 구문 분석할 수 없습니다"
+msgstr "<Machine> <StorageControllers> 노드를 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse <Snapshot> 'name' attribute"
 msgstr "<Snapshot> '이름' 속성을 구문 분석 할 수 없습니다"
@@ -3126,7 +3126,7 @@ msgid "Cannot parse <Snapshot> <Hardware> node"
 msgstr "<순간찍기><하드웨어>노드 구문 분석을 할 수 없습니다"
 
 msgid "Cannot parse <Snapshot> <StorageControllers> node"
-msgstr "<Snapshot> <StorageControllers> 노드를 구문 분석할 수 없습니다"
+msgstr "<Snapshot> <StorageControllers> 노드를 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse <VirtualBox> <Machine> node"
 msgstr "<버츄얼박스><장비>노드에서 구문 분석을 할 수 없습니다"
@@ -3136,7 +3136,7 @@ msgstr "<address> '포트' 속성을 구문 분석할 수 없습니다"
 
 #, c-format
 msgid "Cannot parse MAC address '%s' in network '%s'"
-msgstr "네트워크 '%s'에서 MAC 주소 '%s'를 구문 분석할 수 없습니다"
+msgstr "MAC 주소 '%s'(네트워크 '%s'에서)를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Cannot parse USB device version %s"
@@ -3144,23 +3144,23 @@ msgstr "장치 %s를 구문 분석 할 수 없음"
 
 #, c-format
 msgid "Cannot parse UUID '%s'"
-msgstr "UUID '%s'를 구문 분석할 수 없습니다"
+msgstr "UUID '%s'를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Cannot parse adapter '%s'"
-msgstr "어댑터 '%s'를 구문 분석할 수 없습니다"
+msgstr "어댑터 '%s'를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Cannot parse byte %sstat '%s'"
-msgstr "바이트 %sstat '%s'를 구문 분석 할 수 없습니다"
+msgstr "바이트 %s 통계 '%s'를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Cannot parse byte '%s' stat '%s'"
-msgstr "'%s'stat '%s'을 구문 분석 할 수 없습니다"
+msgstr "'%s' 통계 '%s'를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Cannot parse category in %s"
-msgstr "%s에 있는 범주를 구문 분석할 수 없습니다"
+msgstr "%s에 있는 범주를 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse cbm_mask from resctrl cache info"
 msgstr "rectrl 캐쉬 정보에서 cbm_mask를 구문 분석 할 수 없습니다"
@@ -3190,7 +3190,7 @@ msgstr "stat '%s'을 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Cannot parse user stat '%s'"
-msgstr "user stat '%s'을(를) 구문 분석할 수 없음"
+msgstr "사용자 통계 '%s'를 구문 분석 할 수 없음"
 
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr "요소 <address>의 uuid 속성을 구문 분석 할 수 없습니다"
@@ -3208,8 +3208,8 @@ msgid ""
 "Cannot plug '%s' interface into '%s' because new combined inbound floor=%llu "
 "would overcommit peak=%llu on network '%s'"
 msgstr ""
-"네트워크 '%s'에 새로 결합된 층=%llu이 최고사용량=%llu을 초과하기 때문에 '%s' "
-"접속기를 '%s'에 꽂을 수 없습니다"
+"'%s' 연결장치를 '%s'에 연결 할 수 없으며, 왜냐하면 신규 결합된 인바운드 "
+"floor=%llu는 peak=%llu를 오버커밋(네트워크 '%s'에서)하기 때문입니다"
 
 #, c-format
 msgid "Cannot print data type %x"
@@ -4111,7 +4111,7 @@ msgstr "vport 지원 장치를 찾을 수 없습니다"
 
 #, c-format
 msgid "Could not find auto-added %s controller with index %zu"
-msgstr "색인 %zu과 함께 자동-추가된 %s 제어기를 찾을 수 없습니다"
+msgstr "자동-추가된 %s 제어기(색인 %zu과 함께)를 찾을 수 없습니다"
 
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
@@ -5261,7 +5261,7 @@ msgstr "장치 '%s'를인식할 수 없습니다. 빌드가 필요합니다"
 
 #, c-format
 msgid "Device alias was not set for %s controller with index %d "
-msgstr "장치 별명이 색인 '%d'인 '%s' 제어기에 대한 설정이 없습니다 "
+msgstr "장치 별명이 '%s' 제어기(색인 '%d'인)에 대한 설정이 없습니다 "
 
 #, c-format
 msgid ""
@@ -6167,8 +6167,8 @@ msgstr ""
 #, c-format
 msgid "Expecting VMX entry '%s' to be 'scsi-hardDisk' or 'disk' but found '%s'"
 msgstr ""
-"예상되는 VMX 진입 '%s'가 'scsi-hardDisk' 또는 'disk' '%s' 이어야 하지만 "
-"'%s'가 검색되었습니다"
+"예상되는 VMX 항목 '%s'가 'scsi-hardDisk' 또는 'disk' 이어야 하지만 '%s'가 검"
+"색되었습니다"
 
 #, c-format
 msgid "Expecting VMX entry '%s' to be 'server' or 'client' but found '%s'"
@@ -7007,7 +7007,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to disconnect client '%llu' from server %s"
-msgstr "서버 %s에서 클라이언트 '%llu' 연결 끊기 실패"
+msgstr "클라이언트 '%llu' 연결 끊기 실패(서버 %s에서)"
 
 msgid "Failed to disconnect from the admin server"
 msgstr "관리 서버에서 연결을 끊지 못했습니다"
@@ -7146,7 +7146,7 @@ msgstr "uuid 생성에 실패하였습니다"
 
 #, c-format
 msgid "Failed to get %s minor number"
-msgstr "% 부 번호를 가져 오는데 실패"
+msgstr "%s 부 번호를 가져 오는데 실패"
 
 #, c-format
 msgid "Failed to get SRIOV function from device link '%s'"
@@ -7526,7 +7526,7 @@ msgstr "%s를 %s유형 %s에 적재하는데 실패했습니다"
 
 #, c-format
 msgid "Failed to mount %s on %s type %s flags=0x%x"
-msgstr "%s 유형 %s flags=0x%x에서 %s를 적재하는데 실패"
+msgstr "%s (%s 유형 %s flags=0x%x에서)를 적재하는데 실패함"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -7802,7 +7802,7 @@ msgstr "장치 %s 재부착 실패"
 
 #, c-format
 msgid "Failed to re-mount %s on %s flags=0x%x"
-msgstr "%s 플래그=0x%x에서 %s를 재적재 하는데 실패했습니다"
+msgstr "%s( %s flags=0x%x에서)를 재적재 하는데 실패함"
 
 #, c-format
 msgid "Failed to read %s"
@@ -8081,7 +8081,7 @@ msgstr "도메인 '%s'를 %s에 저장하지 못했습니다"
 
 #, c-format
 msgid "Failed to seek to %llu bytes to the end in volume with path '%s'"
-msgstr "경로가 '%s'인 볼륨의 끝까지 %llu바이트를 찾지 못했습니다"
+msgstr "볼륨의 끝까지 %llu바이트(경로가 '%s'인)를 찾지 못했습니다"
 
 #, c-format
 msgid "Failed to seek to the start in volume with path '%s'"
@@ -8333,7 +8333,7 @@ msgstr "스냅샷 %s 가져오는데 실패"
 
 #, c-format
 msgid "Failed to terminate process %lld with SIG%s"
-msgstr "SIG%s와 함께 프로세서 %lld를 종료하는데 실패"
+msgstr "프로세서 %lld(SIG%s와 함께)를 종료하는데 실패함"
 
 #, c-format
 msgid "Failed to translate bridge '%s' prefix %d to netmask"
@@ -20683,8 +20683,8 @@ msgid ""
 "can't add memory backend for guest node '%d' as the guest has only '%zu' "
 "NUMA nodes configured"
 msgstr ""
-"게스트에 '%zu' NUMA 노드만 구성되어 있으므로 게스트 노드 '%d'에 대한 메모리 "
-"백엔드를 추가할 수 없습니다"
+"게스트 노드 '%d'(게스트에 '%zu' NUMA 노드만 구성되어 있으므로)에 대한 메모리 "
+"백엔드를 추가 할 수 없습니다"
 
 msgid "can't change link state: device alias not found"
 msgstr "링크 상태를 변경할 수 없음: 장치 별칭을 찾을 수 없습니다"
@@ -20872,7 +20872,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot allocate %llu bytes in file '%s'"
-msgstr "파일 '%s'에서 %llu 바이트를 할당 할 수 없음"
+msgstr "%llu 바이트(파일 '%s'에서)를 할당 할 수 없음"
 
 msgid "cannot allocate nlhandle for netlink"
 msgstr "netlink의 nlhandle을 할당할 수 없음"
@@ -21687,7 +21687,7 @@ msgstr "%s CPU 데이터를 구문 분석할 수 없습니다"
 
 #, c-format
 msgid "cannot parse %s version number in '%.*s'"
-msgstr "'%.*s'에서 %s 버전 번호를 구문 분석 할 수 없습니다"
+msgstr "%s 버전 번호('%.*s'에서)를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "cannot parse 'dspPolicy' value '%i'"
@@ -26002,7 +26002,7 @@ msgid ""
 "failed to retrieve client identity information for client '%llu' connected "
 "to server '%s'"
 msgstr ""
-"서버 '%s'에 연결된 클라이언트 '%llu'에 대한 클라이언트 ID 정보를 검색하지 못"
+"클라이언트 '%llu'(서버 '%s'에 연결된)에 대한 클라이언트 ID 정보를 검색하지 못"
 "했습니다"
 
 msgid "failed to retrieve credentials"
@@ -35906,7 +35906,7 @@ msgstr "보안 문맥 '%s'를 '%s'상에 설정할 수 없음"
 
 #, c-format
 msgid "unable to set security context '%s' on fd %d"
-msgstr "fd %d에서 보안 문맥 '%s를 설정 할 수 없음"
+msgstr "보안 문맥 '%s(fd %d에서)을 설정 할 수 없음"
 
 #, c-format
 msgid "unable to set security context range '%s'"
