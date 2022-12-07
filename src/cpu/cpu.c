@@ -936,7 +936,7 @@ virCPUGetVendorForModel(virArch arch,
 {
     struct cpuArchDriver *driver;
 
-    VIR_DEBUG("arch=%s", virArchToString(arch));
+    VIR_DEBUG("arch=%s model=%s", virArchToString(arch), model);
 
     if (!(driver = cpuGetSubDriver(arch)))
         return NULL;
