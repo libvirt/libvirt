@@ -200,6 +200,7 @@
   <flag name='query-stats'/>
   <flag name='query-stats-schemas'/>
   <flag name='thread-context'/>
+  <flag name='screenshot-format-png'/>
   <version>7001091</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100245</microcodeVersion>

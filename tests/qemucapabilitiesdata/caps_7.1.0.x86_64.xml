@@ -198,6 +198,7 @@
   <flag name='migration.blocked-reasons'/>
   <flag name='query-stats'/>
   <flag name='query-stats-schemas'/>
+  <flag name='screenshot-format-png'/>
   <version>7001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>

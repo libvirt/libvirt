@@ -679,6 +679,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "query-stats-schemas", /* QEMU_CAPS_QUERY_STATS_SCHEMAS */
               "sgx-epc", /* QEMU_CAPS_SGX_EPC */
               "thread-context", /* QEMU_CAPS_THREAD_CONTEXT */
+              "screenshot-format-png", /* QEMU_CAPS_SCREENSHOT_FORMAT_PNG */
     );
 
 
@@ -1562,6 +1563,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "query-display-options/ret-type/+dbus", QEMU_CAPS_DISPLAY_DBUS },
     { "object-add/arg-type/+iothread/thread-pool-max", QEMU_CAPS_IOTHREAD_THREAD_POOL_MAX },
     { "query-migrate/ret-type/blocked-reasons", QEMU_CAPS_MIGRATION_BLOCKED_REASONS },
+    { "screendump/arg-type/format/^png", QEMU_CAPS_SCREENSHOT_FORMAT_PNG },
 };
 
 typedef struct _virQEMUCapsObjectTypeProps virQEMUCapsObjectTypeProps;

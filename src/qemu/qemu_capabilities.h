@@ -658,6 +658,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_QUERY_STATS_SCHEMAS,  /* accepts query-stats-schemas */
     QEMU_CAPS_SGX_EPC, /* -object sgx-epc,... */
     QEMU_CAPS_THREAD_CONTEXT, /* -object thread-context */
+    QEMU_CAPS_SCREENSHOT_FORMAT_PNG, /* screendump command supports png format */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
