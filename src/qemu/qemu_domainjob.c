@@ -647,7 +647,8 @@ qemuDomainObjReleaseAsyncJob(virDomainObj *obj)
     VIR_DEBUG("Releasing ownership of '%s' async job",
               virDomainAsyncJobTypeToString(obj->job->asyncJob));
 
-    if (obj->job->asyncOwner != virThreadSelfID()) {
+    if (obj->job->asyncOwner != 0 &&
+        obj->job->asyncOwner != virThreadSelfID()) {
         VIR_WARN("'%s' async job is owned by thread %llu",
                  virDomainAsyncJobTypeToString(obj->job->asyncJob),
                  obj->job->asyncOwner);
