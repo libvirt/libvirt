@@ -3291,6 +3291,7 @@ qemuDomainScreenshot(virDomainPtr dom,
     const char *videoAlias = NULL;
     char *ret = NULL;
     bool unlink_tmp = false;
+    const char *format = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -3339,6 +3340,10 @@ qemuDomainScreenshot(virDomainPtr dom,
         }
     }
 
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SCREENSHOT_FORMAT_PNG)) {
+        format = "png";
+    }
+
     tmp = g_strdup_printf("%s/qemu.screendump.XXXXXX", priv->libDir);
 
     if ((tmp_fd = g_mkstemp_full(tmp, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
@@ -3350,7 +3355,7 @@ qemuDomainScreenshot(virDomainPtr dom,
     qemuSecurityDomainSetPathLabel(driver, vm, tmp, false);
 
     qemuDomainObjEnterMonitor(vm);
-    if (qemuMonitorScreendump(priv->mon, videoAlias, screen, NULL, tmp) < 0) {
+    if (qemuMonitorScreendump(priv->mon, videoAlias, screen, format, tmp) < 0) {
         qemuDomainObjExitMonitor(vm);
         goto endjob;
     }
@@ -3367,7 +3372,11 @@ qemuDomainScreenshot(virDomainPtr dom,
         goto endjob;
     }
 
-    ret = g_strdup("image/x-portable-pixmap");
+    if (STREQ_NULLABLE(format, "png")) {
+        ret = g_strdup("image/png");
+    } else {
+        ret = g_strdup("image/x-portable-pixmap");
+    }
 
  endjob:
     VIR_FORCE_CLOSE(tmp_fd);
