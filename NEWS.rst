@@ -19,6 +19,10 @@ v9.0.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Prefer PNG for domain screenshots
+
+    With sufficiently new QEMU (v7.1.0) screenshots change format from PPM to PNG.
+
 * **Bug fixes**
 
 
