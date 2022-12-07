@@ -3350,7 +3350,7 @@ qemuDomainScreenshot(virDomainPtr dom,
     qemuSecurityDomainSetPathLabel(driver, vm, tmp, false);
 
     qemuDomainObjEnterMonitor(vm);
-    if (qemuMonitorScreendump(priv->mon, videoAlias, screen, tmp) < 0) {
+    if (qemuMonitorScreendump(priv->mon, videoAlias, screen, NULL, tmp) < 0) {
         qemuDomainObjExitMonitor(vm);
         goto endjob;
     }

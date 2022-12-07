@@ -4151,6 +4151,7 @@ int qemuMonitorJSONSendKey(qemuMonitor *mon,
 int qemuMonitorJSONScreendump(qemuMonitor *mon,
                               const char *device,
                               unsigned int head,
+                              const char *format,
                               const char *file)
 {
     g_autoptr(virJSONValue) cmd = NULL;
@@ -4160,6 +4161,7 @@ int qemuMonitorJSONScreendump(qemuMonitor *mon,
                                      "s:filename", file,
                                      "S:device", device,
                                      "p:head", head,
+                                     "S:format", format,
                                      NULL);
 
     if (!cmd)

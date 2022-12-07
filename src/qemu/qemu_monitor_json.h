@@ -337,6 +337,7 @@ int
 qemuMonitorJSONScreendump(qemuMonitor *mon,
                           const char *device,
                           unsigned int head,
+                          const char *format,
                           const char *file);
 
 int

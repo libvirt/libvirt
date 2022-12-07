@@ -2853,13 +2853,15 @@ int
 qemuMonitorScreendump(qemuMonitor *mon,
                       const char *device,
                       unsigned int head,
+                      const char *format,
                       const char *file)
 {
-    VIR_DEBUG("device=%s head=%u file=%s", device, head, file);
+    VIR_DEBUG("device=%s head=%u format=%s file=%s",
+              device, head, NULLSTR(format), file);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONScreendump(mon, device, head, file);
+    return qemuMonitorJSONScreendump(mon, device, head, format, file);
 }
 
 
