@@ -17,6 +17,12 @@ v9.0.0 (unreleased)
 
 * **New features**
 
+  * QEMU: implement external snapshot deletion
+
+    External snapshot deletion is now possible using the existing API
+    ``virDomainSnapshotDelete()``. Flags that allow deleting children
+    or children only are not supported.
+
 * **Improvements**
 
   * qemu: Prefer PNG for domain screenshots
