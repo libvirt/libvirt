@@ -2410,6 +2410,127 @@ qemuSnapshotChildrenReparent(void *payload,
 }
 
 
+typedef struct _qemuSnapshotUpdateDisksData qemuSnapshotUpdateDisksData;
+struct _qemuSnapshotUpdateDisksData {
+    virDomainMomentObj *snap;
+    virDomainObj *vm;
+    int error;
+};
+
+
+/**
+ * qemuSnapshotUpdateDisksSingle:
+ * @snap: snapshot object where we are updating disks
+ * @def: active or inactive definition from @snap
+ * @parentDef: parent snapshot object of snapshot that we are deleting
+ * @snapDisk: snapshot disk definition from snapshot we are deleting
+ *
+ * When deleting external snapshots we need to modify remaining metadata
+ * files stored by libvirt.
+ *
+ * The first part updates only metadata for external snapshots where we need
+ * to update the disk source in the domain definition stored within the
+ * snapshot metadata. There is no need to do it for internal snapshots as
+ * they don't create new disk files.
+ *
+ * The second part needs to be done for all metadata files. Both internal and
+ * external snapshot metadata files have in the domain definition backingStore
+ * that could contain the deleted disk.
+ *
+ * Returns 0 on success, -1 on error.
+ * */
+static int
+qemuSnapshotUpdateDisksSingle(virDomainMomentObj *snap,
+                              virDomainDef *def,
+                              virDomainDef *parentDef,
+                              virDomainSnapshotDiskDef *snapDisk)
+{
+    virDomainDiskDef *disk = NULL;
+
+    if (!(disk = qemuDomainDiskByName(def, snapDisk->name)))
+        return -1;
+
+    if (virDomainSnapshotIsExternal(snap)) {
+        virDomainDiskDef *parentDisk = NULL;
+
+        if (!(parentDisk = qemuDomainDiskByName(parentDef, snapDisk->name)))
+            return -1;
+
+        if (virStorageSourceIsSameLocation(snapDisk->src, disk->src)) {
+            virObjectUnref(disk->src);
+            disk->src = virStorageSourceCopy(parentDisk->src, false);
+        }
+    }
+
+    if (disk->src->backingStore) {
+        virStorageSource *cur = disk->src;
+        virStorageSource *next = disk->src->backingStore;
+
+        while (next) {
+            if (virStorageSourceIsSameLocation(snapDisk->src, next)) {
+                cur->backingStore = next->backingStore;
+                next->backingStore = NULL;
+                virObjectUnref(next);
+                break;
+            }
+
+            cur = next;
+            next = cur->backingStore;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+qemuSnapshotDeleteUpdateDisks(void *payload,
+                              const char *name G_GNUC_UNUSED,
+                              void *opaque)
+{
+    virDomainMomentObj *snap = payload;
+    qemuSnapshotUpdateDisksData *data = opaque;
+    qemuDomainObjPrivate *priv = data->vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(data->snap);
+    ssize_t i;
+
+    for (i = 0; i < snapdef->ndisks; i++) {
+        virDomainSnapshotDiskDef *snapDisk = &(snapdef->disks[i]);
+
+        if (snapDisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NO)
+            continue;
+
+        if (qemuSnapshotUpdateDisksSingle(snap, snap->def->dom,
+                                          data->snap->def->dom, snapDisk) < 0) {
+            data->error = -1;
+        }
+
+        if (snap->def->inactiveDom) {
+            virDomainDef *dom = data->snap->def->inactiveDom;
+
+            if (!dom)
+                dom = data->snap->def->dom;
+
+            if (qemuSnapshotUpdateDisksSingle(snap, snap->def->inactiveDom,
+                                              dom, snapDisk) < 0) {
+                data->error = -1;
+            }
+        }
+    }
+
+    if (qemuDomainSnapshotWriteMetadata(data->vm,
+                                        snap,
+                                        driver->xmlopt,
+                                        cfg->snapshotDir) < 0) {
+        data->error = -1;
+    }
+
+    return 0;
+}
+
+
 /* Deleting external snapshot is started by running qemu block-commit job.
  * We need to wait for all block-commit jobs to be 'ready' or 'pending' to
  * continue with external snapshot deletion. */
@@ -2612,24 +2733,34 @@ qemuSnapshotDiscardMetadata(virDomainObj *vm,
     virQEMUDriver *driver = priv->driver;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *snapFile = NULL;
+    int ret = 0;
 
-    if (update_parent) {
-        if (snap->nchildren) {
-            virQEMUMomentReparent rep;
+    if (update_parent && snap->nchildren) {
+        virQEMUMomentReparent rep;
+        qemuSnapshotUpdateDisksData data;
 
-            rep.dir = cfg->snapshotDir;
-            rep.parent = snap->parent;
-            rep.vm = vm;
-            rep.err = 0;
-            rep.xmlopt = driver->xmlopt;
-            rep.writeMetadata = qemuDomainSnapshotWriteMetadata;
-            virDomainMomentForEachChild(snap,
-                                        qemuSnapshotChildrenReparent,
-                                        &rep);
-            if (rep.err < 0)
-                return -1;
-            virDomainMomentMoveChildren(snap, snap->parent);
-        }
+        rep.dir = cfg->snapshotDir;
+        rep.parent = snap->parent;
+        rep.vm = vm;
+        rep.err = 0;
+        rep.xmlopt = driver->xmlopt;
+        rep.writeMetadata = qemuDomainSnapshotWriteMetadata;
+        virDomainMomentForEachChild(snap,
+                                    qemuSnapshotChildrenReparent,
+                                    &rep);
+        if (rep.err < 0)
+            ret = -1;
+
+        data.snap = snap;
+        data.vm = vm;
+        data.error = 0;
+        virDomainMomentForEachDescendant(snap,
+                                         qemuSnapshotDeleteUpdateDisks,
+                                         &data);
+        if (data.error < 0)
+            ret = -1;
+
+        virDomainMomentMoveChildren(snap, snap->parent);
     }
 
     snapFile = g_strdup_printf("%s/%s/%s.xml", cfg->snapshotDir, vm->def->name,
@@ -2663,7 +2794,7 @@ qemuSnapshotDiscardMetadata(virDomainObj *vm,
         virDomainMomentDropParent(snap);
     virDomainSnapshotObjListRemove(vm->snapshots, snap);
 
-    return 0;
+    return ret;
 }
 
 
