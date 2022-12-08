@@ -720,6 +720,7 @@ struct _virSecret {
     char *usageID;                       /* the usage's unique identifier */
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSecret, virObjectUnref);
 
 typedef int (*virStreamAbortFunc)(virStreamPtr, void *opaque);
 typedef int (*virStreamFinishFunc)(virStreamPtr, void *opaque);
