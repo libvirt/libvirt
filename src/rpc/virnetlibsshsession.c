@@ -500,6 +500,7 @@ virNetLibsshAuthenticatePrivkey(virNetLibsshSession *sess,
 static int
 virNetLibsshAuthenticatePassword(virNetLibsshSession *sess)
 {
+    g_autofree char *password = NULL;
     const char *errmsg;
     int rc = SSH_AUTH_ERROR;
 
@@ -513,19 +514,34 @@ virNetLibsshAuthenticatePassword(virNetLibsshSession *sess)
         return SSH_AUTH_ERROR;
     }
 
+    /* first try to get password from config */
+    if (virAuthGetCredential("ssh", sess->hostname, "password", sess->authPath,
+                             &password) < 0)
+        return SSH_AUTH_ERROR;
+
+    if (password) {
+        rc = ssh_userauth_password(sess->session, NULL, password);
+        virSecureEraseString(password);
+
+        if (rc == 0)
+            return SSH_AUTH_SUCCESS;
+        else if (rc != SSH_AUTH_DENIED)
+            goto error;
+    }
+
     /* Try the authenticating the set amount of times. The server breaks the
      * connection if maximum number of bad auth tries is exceeded */
     while (true) {
-        g_autofree char *password = NULL;
+        g_autoptr(virConnectCredential) cred = NULL;
+        g_autofree char *prompt = NULL;
 
-        if (!(password = virAuthGetPasswordPath(sess->authPath, sess->cred,
-                                                "ssh", sess->username,
-                                                sess->hostname)))
+        prompt = g_strdup_printf(_("Enter %s's password for %s"),
+                                 sess->username, sess->hostname);
+
+        if (!(cred = virAuthAskCredential(sess->cred, prompt, false)))
             return SSH_AUTH_ERROR;
 
-        /* tunnelled password authentication */
-        rc = ssh_userauth_password(sess->session, NULL, password);
-        virSecureEraseString(password);
+        rc = ssh_userauth_password(sess->session, NULL, cred->result);
 
         if (rc == 0)
             return SSH_AUTH_SUCCESS;
@@ -533,7 +549,7 @@ virNetLibsshAuthenticatePassword(virNetLibsshSession *sess)
             break;
     }
 
-    /* error path */
+ error:
     errmsg = ssh_get_error(sess->session);
     virReportError(VIR_ERR_AUTH_FAILED,
                    _("authentication failed: %s"), errmsg);
