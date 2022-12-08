@@ -69,7 +69,6 @@ struct _virNetLibsshAuthMethod {
     virNetLibsshAuthMethods method;
     int ssh_flags;  /* SSH_AUTH_METHOD_* for this auth method */
 
-    char *password;
     char *filename;
 
     int tries;
@@ -129,8 +128,6 @@ virNetLibsshSessionDispose(void *obj)
     }
 
     for (i = 0; i < sess->nauths; i++) {
-        virSecureEraseString(sess->auths[i]->password);
-        g_free(sess->auths[i]->password);
         g_free(sess->auths[i]->filename);
         g_free(sess->auths[i]);
     }
@@ -456,7 +453,7 @@ virNetLibsshImportPrivkey(virNetLibsshSession *sess,
      * failed or libssh did.
      */
     virResetLastError();
-    ret = ssh_pki_import_privkey_file(priv->filename, priv->password,
+    ret = ssh_pki_import_privkey_file(priv->filename, NULL,
                                       virNetLibsshAuthenticatePrivkeyCb,
                                       sess, &key);
     if (ret == SSH_EOF) {
@@ -564,47 +561,39 @@ virNetLibsshAuthenticatePrivkey(virNetLibsshSession *sess,
  * returns SSH_AUTH_* values
  */
 static int
-virNetLibsshAuthenticatePassword(virNetLibsshSession *sess,
-                                 virNetLibsshAuthMethod *priv)
+virNetLibsshAuthenticatePassword(virNetLibsshSession *sess)
 {
     const char *errmsg;
     int rc = SSH_AUTH_ERROR;
 
     VIR_DEBUG("sess=%p", sess);
 
-    if (priv->password) {
-        /* tunnelled password authentication */
-        if ((rc = ssh_userauth_password(sess->session, NULL,
-                                        priv->password)) == 0)
-            return SSH_AUTH_SUCCESS;
-    } else {
-        /* password authentication with interactive password request */
-        if (!sess->cred || !sess->cred->cb) {
-            virReportError(VIR_ERR_LIBSSH, "%s",
-                           _("Can't perform authentication: "
-                             "Authentication callback not provided"));
+    /* password authentication with interactive password request */
+    if (!sess->cred || !sess->cred->cb) {
+        virReportError(VIR_ERR_LIBSSH, "%s",
+                       _("Can't perform authentication: "
+                         "Authentication callback not provided"));
+        return SSH_AUTH_ERROR;
+    }
+
+    /* Try the authenticating the set amount of times. The server breaks the
+     * connection if maximum number of bad auth tries is exceeded */
+    while (true) {
+        g_autofree char *password = NULL;
+
+        if (!(password = virAuthGetPasswordPath(sess->authPath, sess->cred,
+                                                "ssh", sess->username,
+                                                sess->hostname)))
             return SSH_AUTH_ERROR;
-        }
 
-        /* Try the authenticating the set amount of times. The server breaks the
-         * connection if maximum number of bad auth tries is exceeded */
-        while (true) {
-            g_autofree char *password = NULL;
+        /* tunnelled password authentication */
+        rc = ssh_userauth_password(sess->session, NULL, password);
+        virSecureEraseString(password);
 
-            if (!(password = virAuthGetPasswordPath(sess->authPath, sess->cred,
-                                                    "ssh", sess->username,
-                                                    sess->hostname)))
-                return SSH_AUTH_ERROR;
-
-            /* tunnelled password authentication */
-            rc = ssh_userauth_password(sess->session, NULL, password);
-            virSecureEraseString(password);
-
-            if (rc == 0)
-                return SSH_AUTH_SUCCESS;
-            else if (rc != SSH_AUTH_DENIED)
-                break;
-        }
+        if (rc == 0)
+            return SSH_AUTH_SUCCESS;
+        else if (rc != SSH_AUTH_DENIED)
+            break;
     }
 
     /* error path */
@@ -809,7 +798,7 @@ virNetLibsshAuthenticate(virNetLibsshSession *sess)
             break;
         case VIR_NET_LIBSSH_AUTH_PASSWORD:
             /* try to authenticate with password */
-            ret = virNetLibsshAuthenticatePassword(sess, auth);
+            ret = virNetLibsshAuthenticatePassword(sess);
             break;
         }
 
