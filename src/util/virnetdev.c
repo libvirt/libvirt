@@ -3093,9 +3093,7 @@ virNetDevGetEthtoolFeatures(const char *ifname,
         {ETH_FLAG_RXVLAN, VIR_NET_DEV_FEAT_RXVLAN},
         {ETH_FLAG_TXVLAN, VIR_NET_DEV_FEAT_TXVLAN},
         {ETH_FLAG_NTUPLE, VIR_NET_DEV_FEAT_NTUPLE},
-# if WITH_DECL_ETH_FLAG_RXHASH
         {ETH_FLAG_RXHASH, VIR_NET_DEV_FEAT_RXHASH},
-# endif
     };
 
     for (i = 0; i < G_N_ELEMENTS(ethtool_cmds); i++) {
