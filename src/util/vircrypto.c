@@ -164,8 +164,6 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
     /* Encrypt the data and free the memory for cipher operations */
     rc = gnutls_cipher_encrypt(handle, ciphertext, ciphertextlen);
     gnutls_cipher_deinit(handle);
-    virSecureErase(&enc_key, sizeof(gnutls_datum_t));
-    virSecureErase(&iv_buf, sizeof(gnutls_datum_t));
     if (rc < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to encrypt the data: '%s'"),
@@ -180,8 +178,6 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
  error:
     virSecureErase(ciphertext, ciphertextlen);
     g_free(ciphertext);
-    virSecureErase(&enc_key, sizeof(gnutls_datum_t));
-    virSecureErase(&iv_buf, sizeof(gnutls_datum_t));
     return -1;
 }
 
