@@ -1060,9 +1060,6 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSession *sess,
 {
     virNetSSHAuthMethod *auth;
 
-    char *user = NULL;
-    char *file = NULL;
-
     if (!username || !keyfile) {
         virReportError(VIR_ERR_SSH, "%s",
                        _("Username and key file path must be provided "
@@ -1072,24 +1069,17 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSession *sess,
 
     virObjectLock(sess);
 
-    user = g_strdup(username);
-    file = g_strdup(keyfile);
+    if (!(auth = virNetSSHSessionAuthMethodNew(sess))) {
+        virObjectUnlock(sess);
+        return -1;
+    }
 
-    if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
-        goto error;
-
-    auth->username = user;
-    auth->filename = file;
+    auth->username = g_strdup(username);
+    auth->filename = g_strdup(keyfile);
     auth->method = VIR_NET_SSH_AUTH_PRIVKEY;
 
     virObjectUnlock(sess);
     return 0;
-
- error:
-    VIR_FREE(user);
-    VIR_FREE(file);
-    virObjectUnlock(sess);
-    return -1;
 }
 
 int
