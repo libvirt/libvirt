@@ -1541,19 +1541,6 @@ void main(void) {
   elif get_option('driver_lxc').enabled()
     error('Required kernel features for LXC were not found')
   endif
-
-  lxc_get_free_code = '''
-#include <sched.h>
-#include <linux/loop.h>
-#include <sys/epoll.h>
-
-void main(void) {
-    unshare(!(LOOP_CTL_GET_FREE));
-}
-  '''
-  if cc.compiles(lxc_get_free_code)
-    conf.set('WITH_DECL_LOOP_CTL_GET_FREE', 1)
-  endif
 elif get_option('driver_lxc').enabled()
   error('linux and remote_driver are required for LXC')
 endif

@@ -750,8 +750,6 @@ int virFileUpdatePerm(const char *path,
 
 #if defined(__linux__) && WITH_DECL_LO_FLAGS_AUTOCLEAR
 
-# if WITH_DECL_LOOP_CTL_GET_FREE
-
 /* virFileLoopDeviceOpenLoopCtl() returns -1 when a real failure has occurred
  * while in the process of allocating or opening the loop device.  On success
  * we return 0 and modify the fd to the appropriate file descriptor.
@@ -795,7 +793,6 @@ static int virFileLoopDeviceOpenLoopCtl(char **dev_name, int *fd)
     *dev_name = looppath;
     return 0;
 }
-# endif /* WITH_DECL_LOOP_CTL_GET_FREE */
 
 static int virFileLoopDeviceOpenSearch(char **dev_name)
 {
@@ -864,7 +861,6 @@ static int virFileLoopDeviceOpen(char **dev_name)
 {
     int loop_fd = -1;
 
-# if WITH_DECL_LOOP_CTL_GET_FREE
     if (virFileLoopDeviceOpenLoopCtl(dev_name, &loop_fd) < 0)
         return -1;
 
@@ -872,7 +868,6 @@ static int virFileLoopDeviceOpen(char **dev_name)
 
     if (loop_fd >= 0)
         return loop_fd;
-# endif /* WITH_DECL_LOOP_CTL_GET_FREE */
 
     /* Without the loop control device we just use the old technique. */
     loop_fd = virFileLoopDeviceOpenSearch(dev_name);
