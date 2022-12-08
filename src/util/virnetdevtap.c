@@ -148,12 +148,15 @@ virNetDevTapGetRealDeviceName(char *ifname G_GNUC_UNUSED)
  * @tunpath: path to the tun device (if NULL, /dev/net/tun is used)
  * @tapfds: array of file descriptors return value for the new tap device
  * @tapfdSize: number of file descriptors in @tapfd
- * @flags: OR of virNetDevTapCreateFlags. Only one flag is recognized:
+ * @flags: OR of virNetDevTapCreateFlags. Only the following flags are
+ *         recognized:
  *
  *   VIR_NETDEV_TAP_CREATE_VNET_HDR
  *     - Enable IFF_VNET_HDR on the tap device
  *   VIR_NETDEV_TAP_CREATE_PERSIST
  *     - The device will persist after the file descriptor is closed
+ *   VIR_NETDEV_TAP_CREATE_ALLOW_EXISTING
+ *     - The device creation fails if @ifname already exists
  *
  * Creates a tap interface. The caller must use virNetDevTapDelete to
  * remove a persistent TAP device when it is no longer needed. In case
@@ -170,6 +173,7 @@ int virNetDevTapCreate(char **ifname,
 {
     size_t i = 0;
     struct ifreq ifr;
+    int rc;
     int ret = -1;
     int fd = -1;
 
@@ -179,8 +183,23 @@ int virNetDevTapCreate(char **ifname,
      * can lead to race conditions).  if ifname is just a
      * user-provided name, virNetDevGenerateName leaves it
      * unchanged. */
-    if (virNetDevGenerateName(ifname, VIR_NET_DEV_GEN_NAME_VNET) < 0)
+    rc = virNetDevGenerateName(ifname, VIR_NET_DEV_GEN_NAME_VNET);
+    if (rc < 0)
         return -1;
+
+    if (rc > 0 &&
+        !(flags & VIR_NETDEV_TAP_CREATE_ALLOW_EXISTING)) {
+        rc = virNetDevExists(*ifname);
+
+        if (rc < 0) {
+            return -1;
+        } else if (rc > 0) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("The %s interface already exists"),
+                           *ifname);
+            return -1;
+        }
+    }
 
     if (!tunpath)
         tunpath = "/dev/net/tun";

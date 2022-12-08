@@ -56,6 +56,8 @@ typedef enum {
    VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE = 1 << 2,
    /* The device will persist after the file descriptor is closed */
    VIR_NETDEV_TAP_CREATE_PERSIST            = 1 << 3,
+   /* The device is allowed to exist before creation */
+   VIR_NETDEV_TAP_CREATE_ALLOW_EXISTING     = 1 << 4,
 } virNetDevTapCreateFlags;
 
 int

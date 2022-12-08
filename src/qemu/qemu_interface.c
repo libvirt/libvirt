@@ -461,6 +461,8 @@ qemuInterfaceEthernetConnect(virDomainDef *def,
         if (!net->ifname)
             template_ifname = true;
 
+        tap_create_flags |= VIR_NETDEV_TAP_CREATE_ALLOW_EXISTING;
+
         if (virNetDevTapCreate(&net->ifname, tunpath, tapfd, tapfdSize,
                                tap_create_flags) < 0) {
             goto cleanup;
