@@ -37,23 +37,17 @@ VIR_LOG_INIT("util.authconfig");
 
 virAuthConfig *virAuthConfigNew(const char *path)
 {
-    virAuthConfig *auth;
-
-    auth = g_new0(virAuthConfig, 1);
+    g_autoptr(virAuthConfig) auth = g_new0(virAuthConfig, 1);
 
     auth->path = g_strdup(path);
 
     if (!(auth->keyfile = g_key_file_new()))
-        goto error;
+        return NULL;
 
     if (!g_key_file_load_from_file(auth->keyfile, path, 0, NULL))
-        goto error;
+        return NULL;
 
-    return auth;
-
- error:
-    virAuthConfigFree(auth);
-    return NULL;
+    return g_steal_pointer(&auth);
 }
 
 
@@ -61,23 +55,17 @@ virAuthConfig *virAuthConfigNewData(const char *path,
                                       const char *data,
                                       size_t len)
 {
-    virAuthConfig *auth;
-
-    auth = g_new0(virAuthConfig, 1);
+    g_autoptr(virAuthConfig) auth = g_new0(virAuthConfig, 1);
 
     auth->path = g_strdup(path);
 
     if (!(auth->keyfile = g_key_file_new()))
-        goto error;
+        return NULL;
 
     if (!g_key_file_load_from_data(auth->keyfile, data, len, 0, NULL))
-        goto error;
+        return NULL;
 
-    return auth;
-
- error:
-    virAuthConfigFree(auth);
-    return NULL;
+    return g_steal_pointer(&auth);
 }
 
 
