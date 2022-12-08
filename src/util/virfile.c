@@ -66,9 +66,7 @@
 #  include <linux/magic.h>
 # endif
 # include <sys/statfs.h>
-# if WITH_DECL_LO_FLAGS_AUTOCLEAR
-#  include <linux/loop.h>
-# endif
+# include <linux/loop.h>
 # include <sys/ioctl.h>
 # include <linux/cdrom.h>
 /* These come from linux/fs.h, but that header conflicts with
@@ -748,7 +746,7 @@ int virFileUpdatePerm(const char *path,
 }
 
 
-#if defined(__linux__) && WITH_DECL_LO_FLAGS_AUTOCLEAR
+#if defined(__linux__)
 
 /* virFileLoopDeviceOpenLoopCtl() returns -1 when a real failure has occurred
  * while in the process of allocating or opening the loop device.  On success

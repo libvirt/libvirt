@@ -1532,12 +1532,11 @@ if not get_option('driver_lxc').disabled() and host_machine.system() == 'linux' 
 #include <sys/epoll.h>
 
 void main(void) {
-    unshare(!(LO_FLAGS_AUTOCLEAR));
+    unshare(1);
 }
   '''
   if cc.compiles(lxc_support_code, name: 'lxc support', args: '-D_GNU_SOURCE')
     conf.set('WITH_LXC', 1)
-    conf.set('WITH_DECL_LO_FLAGS_AUTOCLEAR', 1)
   elif get_option('driver_lxc').enabled()
     error('Required kernel features for LXC were not found')
   endif
