@@ -283,10 +283,8 @@ virStorageBackendISCSISetAuth(const char *portal,
                                  &secret_value, &secret_size) < 0)
         return -1;
 
-    secret_str = g_new0(char, secret_size + 1);
-    memcpy(secret_str, secret_value, secret_size);
+    secret_str = g_strndup((char *) secret_value, secret_size);
     virSecureErase(secret_value, secret_size);
-    secret_str[secret_size] = '\0';
 
     if (virISCSINodeUpdate(portal,
                            source->devices[0].path,
