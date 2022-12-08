@@ -42,6 +42,11 @@ char *virAuthGetPassword(virConnectPtr conn,
                          const char *servicename,
                          const char *username,
                          const char *hostname);
+int virAuthGetCredential(const char *servicename,
+                         const char *hostname,
+                         const char *credname,
+                         const char *path,
+                         char **value);
 char * virAuthGetUsernamePath(const char *path,
                               virConnectAuthPtr auth,
                               const char *servicename,

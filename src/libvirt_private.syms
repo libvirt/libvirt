@@ -1854,6 +1854,7 @@ virAuthAskCredential;
 virAuthConnectCredentialFree;
 virAuthGetConfigFilePath;
 virAuthGetConfigFilePathURI;
+virAuthGetCredential;
 virAuthGetPassword;
 virAuthGetPasswordPath;
 virAuthGetUsername;

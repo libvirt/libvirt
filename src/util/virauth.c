@@ -99,7 +99,7 @@ virAuthGetConfigFilePath(virConnectPtr conn,
 }
 
 
-static int
+int
 virAuthGetCredential(const char *servicename,
                      const char *hostname,
                      const char *credname,
