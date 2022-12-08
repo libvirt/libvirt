@@ -35,7 +35,8 @@ struct _virAuthConfig {
 
 VIR_LOG_INIT("util.authconfig");
 
-virAuthConfig *virAuthConfigNew(const char *path)
+virAuthConfig *
+virAuthConfigNew(const char *path)
 {
     g_autoptr(virAuthConfig) auth = g_new0(virAuthConfig, 1);
 
@@ -51,9 +52,10 @@ virAuthConfig *virAuthConfigNew(const char *path)
 }
 
 
-virAuthConfig *virAuthConfigNewData(const char *path,
-                                      const char *data,
-                                      size_t len)
+virAuthConfig *
+virAuthConfigNewData(const char *path,
+                     const char *data,
+                     size_t len)
 {
     g_autoptr(virAuthConfig) auth = g_new0(virAuthConfig, 1);
 
@@ -69,7 +71,8 @@ virAuthConfig *virAuthConfigNewData(const char *path,
 }
 
 
-void virAuthConfigFree(virAuthConfig *auth)
+void
+virAuthConfigFree(virAuthConfig *auth)
 {
     if (!auth)
         return;
@@ -80,11 +83,12 @@ void virAuthConfigFree(virAuthConfig *auth)
 }
 
 
-int virAuthConfigLookup(virAuthConfig *auth,
-                        const char *service,
-                        const char *hostname,
-                        const char *credname,
-                        char **value)
+int
+virAuthConfigLookup(virAuthConfig *auth,
+                    const char *service,
+                    const char *hostname,
+                    const char *credname,
+                    char **value)
 {
     g_autofree char *authgroup = NULL;
     g_autofree char *credgroup = NULL;
