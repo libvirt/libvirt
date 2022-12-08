@@ -1259,10 +1259,10 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObj *pool,
                                       virStorageVolDef *vol)
 {
     virStorageEncryption *enc = vol->target.encryption;
-    char *secretPath = NULL;
-    uint8_t *secret = NULL;
+    g_autofree char *secretPath = NULL;
+    g_autofree uint8_t *secret = NULL;
     size_t secretlen = 0;
-    virConnectPtr conn = NULL;
+    g_autoptr(virConnect) conn = NULL;
     VIR_AUTOCLOSE fd = -1;
     VIR_IDENTITY_AUTORESTORE virIdentity *oldident = NULL;
 
@@ -1287,24 +1287,29 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObj *pool,
         return NULL;
 
     if (!(secretPath = virStoragePoolObjBuildTempFilePath(pool, vol)))
-        goto cleanup;
+        return NULL;
 
     if ((fd = g_mkstemp_full(secretPath, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to open secret file for write"));
-        goto error;
+        return NULL;
     }
 
     if (virSecretGetSecretString(conn, &enc->secrets[0]->seclookupdef,
                                  VIR_SECRET_USAGE_TYPE_VOLUME,
-                                 &secret, &secretlen) < 0)
-        goto error;
+                                 &secret, &secretlen) < 0) {
+        unlink(secretPath);
+        return NULL;
+    }
 
     if (safewrite(fd, secret, secretlen) < 0) {
+        virSecureErase(secret, secretlen);
         virReportSystemError(errno, "%s",
                              _("failed to write secret file"));
-        goto error;
+        unlink(secretPath);
+        return NULL;
     }
+    virSecureErase(secret, secretlen);
 
     if ((vol->target.perms->uid != (uid_t)-1) &&
         (vol->target.perms->gid != (gid_t)-1)) {
@@ -1312,21 +1317,12 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObj *pool,
                   vol->target.perms->gid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to chown secret file"));
-            goto error;
+            unlink(secretPath);
+            return NULL;
         }
     }
 
- cleanup:
-    virObjectUnref(conn);
-    virSecureErase(secret, secretlen);
-    g_free(secret);
-
-    return secretPath;
-
- error:
-    unlink(secretPath);
-    VIR_FREE(secretPath);
-    goto cleanup;
+    return g_steal_pointer(&secretPath);
 }
 
 
