@@ -1080,9 +1080,7 @@ virNetSocketNewConnectLibssh(const char *host,
         } else if (STRCASEEQ(authMethod, "password")) {
             ret = virNetLibsshSessionAuthAddPasswordAuth(sess, uri);
         } else if (STRCASEEQ(authMethod, "privkey")) {
-            ret = virNetLibsshSessionAuthAddPrivKeyAuth(sess,
-                                                        privkey,
-                                                        NULL);
+            ret = virNetLibsshSessionAuthAddPrivKeyAuth(sess, privkey);
         } else if (STRCASEEQ(authMethod, "agent")) {
             ret = virNetLibsshSessionAuthAddAgentAuth(sess);
         } else {

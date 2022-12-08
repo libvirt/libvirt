@@ -988,8 +988,7 @@ virNetLibsshSessionAuthAddAgentAuth(virNetLibsshSession *sess)
 
 int
 virNetLibsshSessionAuthAddPrivKeyAuth(virNetLibsshSession *sess,
-                                      const char *keyfile,
-                                      const char *password)
+                                      const char *keyfile)
 {
     virNetLibsshAuthMethod *auth;
 
@@ -1006,7 +1005,6 @@ virNetLibsshSessionAuthAddPrivKeyAuth(virNetLibsshSession *sess,
         return -1;
     }
 
-    auth->password = g_strdup(password);
     auth->filename = g_strdup(keyfile);
     auth->method = VIR_NET_LIBSSH_AUTH_PRIVKEY;
     auth->ssh_flags = SSH_AUTH_METHOD_PUBLICKEY;

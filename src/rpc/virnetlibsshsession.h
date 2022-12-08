@@ -46,8 +46,7 @@ int virNetLibsshSessionAuthAddPasswordAuth(virNetLibsshSession *sess,
 int virNetLibsshSessionAuthAddAgentAuth(virNetLibsshSession *sess);
 
 int virNetLibsshSessionAuthAddPrivKeyAuth(virNetLibsshSession *sess,
-                                          const char *keyfile,
-                                          const char *password);
+                                          const char *keyfile);
 
 int virNetLibsshSessionAuthAddKeyboardAuth(virNetLibsshSession *sess,
                                            int tries);
