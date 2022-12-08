@@ -25,7 +25,7 @@
 
 typedef struct _virNetSSHSession virNetSSHSession;
 
-virNetSSHSession *virNetSSHSessionNew(void);
+virNetSSHSession *virNetSSHSessionNew(const char *username);
 void virNetSSHSessionFree(virNetSSHSession *sess);
 
 typedef enum {
@@ -48,18 +48,14 @@ int virNetSSHSessionAuthSetCallback(virNetSSHSession *sess,
                                     virConnectAuthPtr auth);
 
 int virNetSSHSessionAuthAddPasswordAuth(virNetSSHSession *sess,
-                                        virURI *uri,
-                                        const char *username);
+                                        virURI *uri);
 
-int virNetSSHSessionAuthAddAgentAuth(virNetSSHSession *sess,
-                                     const char *username);
+int virNetSSHSessionAuthAddAgentAuth(virNetSSHSession *sess);
 
 int virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSession *sess,
-                                       const char *username,
                                        const char *keyfile);
 
 int virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSession *sess,
-                                        const char *username,
                                         int tries);
 
 int virNetSSHSessionSetHostKeyVerification(virNetSSHSession *sess,

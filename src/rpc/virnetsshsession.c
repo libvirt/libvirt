@@ -70,7 +70,6 @@ typedef struct _virNetSSHAuthMethod virNetSSHAuthMethod;
 
 struct _virNetSSHAuthMethod {
     virNetSSHAuthMethods method;
-    char *username;
     char *filename;
 
     int tries;
@@ -93,6 +92,7 @@ struct _virNetSSHSession {
     int port;
 
     /* authentication stuff */
+    char *username;
     virConnectAuthPtr cred;
     char *authPath;
     virNetSSHAuthCallbackError authCbErr;
@@ -115,7 +115,6 @@ virNetSSHSessionAuthMethodsClear(virNetSSHSession *sess)
     size_t i;
 
     for (i = 0; i < sess->nauths; i++) {
-        VIR_FREE(sess->auths[i]->username);
         VIR_FREE(sess->auths[i]->filename);
         VIR_FREE(sess->auths[i]);
     }
@@ -151,6 +150,7 @@ virNetSSHSessionDispose(void *obj)
     g_free(sess->hostname);
     g_free(sess->knownHostsFile);
     g_free(sess->authPath);
+    g_free(sess->username);
 }
 
 static virClass *virNetSSHSessionClass;
@@ -488,8 +488,7 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
  *         -1 on error
  */
 static int
-virNetSSHAuthenticateAgent(virNetSSHSession *sess,
-                           virNetSSHAuthMethod *priv)
+virNetSSHAuthenticateAgent(virNetSSHSession *sess)
 {
     struct libssh2_agent_publickey *agent_identity = NULL;
     bool no_identity = true;
@@ -515,7 +514,7 @@ virNetSSHAuthenticateAgent(virNetSSHSession *sess,
                                               agent_identity))) {
         no_identity = false;
         if (!(ret = libssh2_agent_userauth(sess->agent,
-                                           priv->username,
+                                           sess->username,
                                            agent_identity)))
             return 0; /* key accepted */
 
@@ -575,7 +574,7 @@ virNetSSHAuthenticatePrivkey(virNetSSHSession *sess,
 
     /* try open the key with no password */
     if ((ret = libssh2_userauth_publickey_fromfile(sess->session,
-                                                   priv->username,
+                                                   sess->username,
                                                    NULL,
                                                    priv->filename,
                                                    NULL)) == 0)
@@ -634,7 +633,7 @@ virNetSSHAuthenticatePrivkey(virNetSSHSession *sess,
     VIR_FREE(tmp);
 
     ret = libssh2_userauth_publickey_fromfile(sess->session,
-                                              priv->username,
+                                              sess->username,
                                               NULL,
                                               priv->filename,
                                               retr_passphrase.result);
@@ -668,8 +667,7 @@ virNetSSHAuthenticatePrivkey(virNetSSHSession *sess,
  *         -1 on error
  */
 static int
-virNetSSHAuthenticatePassword(virNetSSHSession *sess,
-                              virNetSSHAuthMethod *priv)
+virNetSSHAuthenticatePassword(virNetSSHSession *sess)
 {
     char *password = NULL;
     char *errmsg;
@@ -690,13 +688,13 @@ virNetSSHAuthenticatePassword(virNetSSHSession *sess,
      * connection if maximum number of bad auth tries is exceeded */
     while (true) {
         if (!(password = virAuthGetPasswordPath(sess->authPath, sess->cred,
-                                                "ssh", priv->username,
+                                                "ssh", sess->username,
                                                 sess->hostname)))
             goto cleanup;
 
         /* tunnelled password authentication */
         if ((rc = libssh2_userauth_password(sess->session,
-                                            priv->username,
+                                            sess->username,
                                             password)) == 0) {
             ret = 0;
             goto cleanup;
@@ -751,7 +749,7 @@ virNetSSHAuthenticateKeyboardInteractive(virNetSSHSession *sess,
      * connection if maximum number of bad auth tries is exceeded */
     while (priv->tries < 0 || priv->tries-- > 0) {
         ret = libssh2_userauth_keyboard_interactive(sess->session,
-                                                    priv->username,
+                                                    sess->username,
                                                     virNetSSHKbIntCb);
 
         /* check for errors while calling the callback */
@@ -817,9 +815,8 @@ virNetSSHAuthenticate(virNetSSHSession *sess)
     }
 
     /* obtain list of supported auth methods */
-    auth_list = libssh2_userauth_list(sess->session,
-                                      sess->auths[0]->username,
-                                      strlen(sess->auths[0]->username));
+    auth_list = libssh2_userauth_list(sess->session, sess->username,
+                                      strlen(sess->username));
     if (!auth_list) {
         /* unlikely event, authentication succeeded with NONE as method */
         if (libssh2_userauth_authenticated(sess->session) == 1)
@@ -845,7 +842,7 @@ virNetSSHAuthenticate(virNetSSHSession *sess)
             break;
         case VIR_NET_SSH_AUTH_AGENT:
             if (strstr(auth_list, "publickey"))
-                ret = virNetSSHAuthenticateAgent(sess, auth);
+                ret = virNetSSHAuthenticateAgent(sess);
             break;
         case VIR_NET_SSH_AUTH_PRIVKEY:
             if (strstr(auth_list, "publickey"))
@@ -853,7 +850,7 @@ virNetSSHAuthenticate(virNetSSHSession *sess)
             break;
         case VIR_NET_SSH_AUTH_PASSWORD:
             if (strstr(auth_list, "password"))
-                ret = virNetSSHAuthenticatePassword(sess, auth);
+                ret = virNetSSHAuthenticatePassword(sess);
             break;
         }
 
@@ -969,11 +966,9 @@ virNetSSHSessionAuthReset(virNetSSHSession *sess)
 
 int
 virNetSSHSessionAuthAddPasswordAuth(virNetSSHSession *sess,
-                                    virURI *uri,
-                                    const char *username)
+                                    virURI *uri)
 {
     virNetSSHAuthMethod *auth;
-    char *user = NULL;
 
     if (uri) {
         VIR_FREE(sess->authPath);
@@ -982,75 +977,50 @@ virNetSSHSessionAuthAddPasswordAuth(virNetSSHSession *sess,
             goto error;
     }
 
-    if (!username) {
-        if (!(user = virAuthGetUsernamePath(sess->authPath, sess->cred,
-                                            "ssh", NULL, sess->hostname)))
-            goto error;
-    } else {
-        user = g_strdup(username);
-    }
-
     virObjectLock(sess);
 
     if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
         goto error;
 
-    auth->username = user;
     auth->method = VIR_NET_SSH_AUTH_PASSWORD;
 
     virObjectUnlock(sess);
     return 0;
 
  error:
-    VIR_FREE(user);
     virObjectUnlock(sess);
     return -1;
 }
 
 int
-virNetSSHSessionAuthAddAgentAuth(virNetSSHSession *sess,
-                                 const char *username)
+virNetSSHSessionAuthAddAgentAuth(virNetSSHSession *sess)
 {
     virNetSSHAuthMethod *auth;
-    char *user = NULL;
-
-    if (!username) {
-        virReportError(VIR_ERR_SSH, "%s",
-                       _("Username must be provided "
-                         "for ssh agent authentication"));
-        return -1;
-    }
 
     virObjectLock(sess);
-
-    user = g_strdup(username);
 
     if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
         goto error;
 
-    auth->username = user;
     auth->method = VIR_NET_SSH_AUTH_AGENT;
 
     virObjectUnlock(sess);
     return 0;
 
  error:
-    VIR_FREE(user);
     virObjectUnlock(sess);
     return -1;
 }
 
 int
 virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSession *sess,
-                                   const char *username,
                                    const char *keyfile)
 {
     virNetSSHAuthMethod *auth;
 
-    if (!username || !keyfile) {
+    if (!keyfile) {
         virReportError(VIR_ERR_SSH, "%s",
-                       _("Username and key file path must be provided "
-                         "for private key authentication"));
+                       _("Key file path must be provided for private key authentication"));
         return -1;
     }
 
@@ -1061,7 +1031,6 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSession *sess,
         return -1;
     }
 
-    auth->username = g_strdup(username);
     auth->filename = g_strdup(keyfile);
     auth->method = VIR_NET_SSH_AUTH_PRIVKEY;
 
@@ -1071,27 +1040,15 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSession *sess,
 
 int
 virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSession *sess,
-                                    const char *username,
                                     int tries)
 {
     virNetSSHAuthMethod *auth;
-    char *user = NULL;
-
-    if (!username) {
-        virReportError(VIR_ERR_SSH, "%s",
-                       _("Username must be provided "
-                         "for ssh agent authentication"));
-        return -1;
-    }
 
     virObjectLock(sess);
-
-    user = g_strdup(username);
 
     if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
         goto error;
 
-    auth->username = user;
     auth->tries = tries;
     auth->method = VIR_NET_SSH_AUTH_KEYBOARD_INTERACTIVE;
 
@@ -1099,7 +1056,6 @@ virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSession *sess,
     return 0;
 
  error:
-    VIR_FREE(user);
     virObjectUnlock(sess);
     return -1;
 
@@ -1172,7 +1128,7 @@ virNetSSHSessionSetHostKeyVerification(virNetSSHSession *sess,
 }
 
 /* allocate and initialize a ssh session object */
-virNetSSHSession *virNetSSHSessionNew(void)
+virNetSSHSession *virNetSSHSessionNew(const char *username)
 {
     virNetSSHSession *sess = NULL;
 
@@ -1181,6 +1137,8 @@ virNetSSHSession *virNetSSHSessionNew(void)
 
     if (!(sess = virObjectLockableNew(virNetSSHSessionClass)))
         goto error;
+
+    sess->username = g_strdup(username);
 
     /* initialize session data, use the internal data for callbacks
      * and stick to default memory management functions */
