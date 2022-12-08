@@ -628,19 +628,11 @@ foreach name : headers
   endif
 endforeach
 
-# check for kernel headers required by src/util/virnetdevbridge.c
+# check for kernel header required by src/util/virnetdevbridge.c
 if host_machine.system() == 'linux'
-  required_headers = [
-    'linux/param.h',
-    'linux/sockios.h',
-    'linux/if_bridge.h',
-    'linux/if_tun.h',
-  ]
-  foreach name : required_headers
-    if not cc.has_header(name)
-      error('You must install kernel-headers in order to compile libvirt with QEMU or LXC support')
-    endif
-  endforeach
+  if not cc.has_header('linux/sockios.h')
+    error('You must install kernel-headers in order to compile libvirt with QEMU or LXC support')
+  endif
 endif
 
 
