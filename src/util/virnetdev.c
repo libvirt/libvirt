@@ -44,6 +44,7 @@
 # include <linux/if_vlan.h>
 # include <linux/types.h>
 # include <linux/ethtool.h>
+# include <linux/devlink.h>
 # define VIR_NETDEV_FAMILY AF_UNIX
 #elif defined(WITH_STRUCT_IFREQ) && defined(AF_LOCAL)
 # define VIR_NETDEV_FAMILY AF_LOCAL
@@ -56,9 +57,6 @@
 # include <net/if_dl.h>
 #endif
 
-#if WITH_LINUX_DEVLINK_H
-# include <linux/devlink.h>
-#endif
 
 #ifndef IFNAMSIZ
 # define IFNAMSIZ 16
@@ -3112,7 +3110,7 @@ virNetDevGetEthtoolFeatures(const char *ifname,
 }
 
 
-# if defined(WITH_LIBNL) && WITH_DECL_DEVLINK_CMD_ESWITCH_GET
+# if defined(WITH_LIBNL)
 
 /**
  * virNetDevGetFamilyId:

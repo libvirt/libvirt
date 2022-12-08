@@ -613,11 +613,6 @@ headers = [
   'xlocale.h',
 ]
 
-if host_machine.system() == 'linux'
-  # check for DEVLINK_CMD_ESWITCH_GET
-  headers += 'linux/devlink.h'
-endif
-
 if host_machine.system() == 'freebsd'
   headers += 'libutil.h'
 endif
@@ -652,12 +647,6 @@ symbols = [
 
 if host_machine.system() == 'linux'
   symbols += [
-    # check for DEVLINK_CMD_ESWITCH_GET
-    # Assume DEVLINK_ESWITCH_MODE_SWITCHDEV is also available, as it was
-    # introudced in kernel 4.8 along with the original spelling of this
-    # constant (DEVLINK_CMD_ESWITCH_MODE_GET, not supported by libvirt).
-    [ 'linux/devlink.h', 'DEVLINK_CMD_ESWITCH_GET' ],
-
     # check for VHOST_VSOCK_SET_GUEST_CID
     [ 'linux/vhost.h', 'VHOST_VSOCK_SET_GUEST_CID' ],
 
