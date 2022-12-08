@@ -127,8 +127,16 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
     gnutls_cipher_hd_t handle = NULL;
     gnutls_datum_t enc_key = { .data = enckey, .size = enckeylen };
     gnutls_datum_t iv_buf = { .data = iv, .size = ivlen };
-    uint8_t *ciphertext;
+    g_autofree uint8_t *ciphertext = NULL;
     size_t ciphertextlen;
+
+    if ((rc = gnutls_cipher_init(&handle, gnutls_enc_alg,
+                                 &enc_key, &iv_buf)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to initialize cipher: '%s'"),
+                       gnutls_strerror(rc));
+        return -1;
+    }
 
     /* Allocate a padded buffer, copy in the data.
      *
@@ -146,32 +154,20 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
     for (i = datalen; i < ciphertextlen; i++)
         ciphertext[i] = ciphertextlen - datalen;
 
-    if ((rc = gnutls_cipher_init(&handle, gnutls_enc_alg,
-                                 &enc_key, &iv_buf)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to initialize cipher: '%s'"),
-                       gnutls_strerror(rc));
-        goto error;
-    }
-
     /* Encrypt the data and free the memory for cipher operations */
     rc = gnutls_cipher_encrypt(handle, ciphertext, ciphertextlen);
     gnutls_cipher_deinit(handle);
     if (rc < 0) {
+        virSecureErase(ciphertext, ciphertextlen);
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to encrypt the data: '%s'"),
                        gnutls_strerror(rc));
-        goto error;
+        return -1;
     }
 
-    *ciphertextret = ciphertext;
+    *ciphertextret = g_steal_pointer(&ciphertext);
     *ciphertextlenret = ciphertextlen;
     return 0;
-
- error:
-    virSecureErase(ciphertext, ciphertextlen);
-    g_free(ciphertext);
-    return -1;
 }
 
 
