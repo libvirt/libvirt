@@ -219,27 +219,6 @@ virLibsshServerKeyAsString(virNetLibsshSession *sess)
 }
 
 static int
-virCredTypeForPrompt(virConnectAuthPtr cred, char echo)
-{
-    size_t i;
-
-    for (i = 0; i < cred->ncredtype; ++i) {
-        int type = cred->credtype[i];
-        if (echo) {
-            if (type == VIR_CRED_ECHOPROMPT)
-                return type;
-        } else {
-            if (type == VIR_CRED_PASSPHRASE ||
-                type == VIR_CRED_NOECHOPROMPT) {
-                return type;
-            }
-        }
-    }
-
-    return -1;
-}
-
-static int
 virLengthForPromptString(const char *str)
 {
     int len = strlen(str);
@@ -296,9 +275,8 @@ virNetLibsshCheckHostKey(virNetLibsshSession *sess)
     case SSH_SERVER_NOT_KNOWN:
         /* key was not found, query to add it to database */
         if (sess->hostKeyVerify == VIR_NET_LIBSSH_HOSTKEY_VERIFY_NORMAL) {
-            virConnectCredential askKey;
-            int cred_type;
-            char *tmp;
+            g_autoptr(virConnectCredential) cred = NULL;
+            g_autofree char *prompt = NULL;
 
             /* ask to add the key */
             if (!sess->cred || !sess->cred->cb) {
@@ -308,48 +286,27 @@ virNetLibsshCheckHostKey(virNetLibsshSession *sess)
                 return -1;
             }
 
-            cred_type = virCredTypeForPrompt(sess->cred, 1 /* echo */);
-            if (cred_type == -1) {
-                virReportError(VIR_ERR_LIBSSH, "%s",
-                               _("no suitable callback for host key "
-                                 "verification"));
-                return -1;
-            }
-
-            /* prepare data for the callback */
-            memset(&askKey, 0, sizeof(virConnectCredential));
-            askKey.type = cred_type;
-
             keyhashstr = virLibsshServerKeyAsString(sess);
             if (!keyhashstr)
                 return -1;
 
-            tmp = g_strdup_printf(_("Accept SSH host key with hash '%s' for " "host '%s:%d' (%s/%s)?"),
-                                  keyhashstr, sess->hostname, sess->port, "y", "n");
-            askKey.prompt = tmp;
+            prompt = g_strdup_printf(_("Accept SSH host key with hash '%s' for " "host '%s:%d' (%s/%s)?"),
+                                     keyhashstr, sess->hostname, sess->port, "y", "n");
 
-            if (sess->cred->cb(&askKey, 1, sess->cred->cbdata)) {
-                virReportError(VIR_ERR_LIBSSH, "%s",
-                               _("failed to retrieve decision to accept "
-                                 "host key"));
-                VIR_FREE(tmp);
+            if (!(cred = virAuthAskCredential(sess->cred, prompt, true))) {
                 ssh_string_free_char(keyhashstr);
                 return -1;
             }
 
-            VIR_FREE(tmp);
-
-            if (!askKey.result ||
-                STRCASENEQ(askKey.result, "y")) {
+            if (!cred->result ||
+                STRCASENEQ(cred->result, "y")) {
                 virReportError(VIR_ERR_LIBSSH,
                                _("SSH host key for '%s' (%s) was not accepted"),
                                sess->hostname, keyhashstr);
                 ssh_string_free_char(keyhashstr);
-                VIR_FREE(askKey.result);
                 return -1;
             }
             ssh_string_free_char(keyhashstr);
-            VIR_FREE(askKey.result);
         }
 
         /* write the host key file, if specified */
