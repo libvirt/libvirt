@@ -62,9 +62,7 @@
 #include <sys/file.h>
 
 #ifdef __linux__
-# if WITH_LINUX_MAGIC_H
-#  include <linux/magic.h>
-# endif
+# include <linux/magic.h>
 # include <sys/statfs.h>
 # include <linux/loop.h>
 # include <sys/ioctl.h>

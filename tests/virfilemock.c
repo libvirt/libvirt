@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <mntent.h>
 #include <sys/vfs.h>
-#if WITH_LINUX_MAGIC_H
+#ifdef __linux__
 # include <linux/magic.h>
 #endif
 

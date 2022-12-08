@@ -596,7 +596,6 @@ headers = [
   'ifaddrs.h',
   'libtasn1.h',
   'linux/kvm.h',
-  'linux/magic.h',
   'mntent.h',
   'net/ethernet.h',
   'net/if.h',

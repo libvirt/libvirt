@@ -23,9 +23,7 @@
  * detected. */
 
 #include "virmock.h"
-#if WITH_LINUX_MAGIC_H
-# include <linux/magic.h>
-#endif
+#include <linux/magic.h>
 #include <selinux/selinux.h>
 #include <selinux/label.h>
 #include <sys/vfs.h>
