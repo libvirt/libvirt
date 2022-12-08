@@ -215,8 +215,7 @@ virAuthGetPasswordPath(const char *path,
                        const char *username,
                        const char *hostname)
 {
-    unsigned int ncred;
-    virConnectCredential cred;
+    g_autoptr(virConnectCredential) cred = NULL;
     g_autofree char *prompt = NULL;
     char *ret = NULL;
 
@@ -231,42 +230,12 @@ virAuthGetPasswordPath(const char *path,
         return NULL;
     }
 
-    memset(&cred, 0, sizeof(virConnectCredential));
-
     prompt = g_strdup_printf(_("Enter %s's password for %s"), username, hostname);
 
-    for (ncred = 0; ncred < auth->ncredtype; ncred++) {
-        if (auth->credtype[ncred] != VIR_CRED_PASSPHRASE &&
-            auth->credtype[ncred] != VIR_CRED_NOECHOPROMPT) {
-            continue;
-        }
+    if (!(cred = virAuthAskCredential(auth, prompt, false)))
+        return NULL;
 
-        if (!auth->cb) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("Missing authentication callback"));
-            return NULL;
-        }
-
-        cred.type = auth->credtype[ncred];
-        cred.prompt = prompt;
-        cred.challenge = hostname;
-        cred.defresult = NULL;
-        cred.result = NULL;
-        cred.resultlen = 0;
-
-        if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
-            virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                           _("Password request failed"));
-            VIR_FREE(cred.result);
-        }
-
-        return cred.result;
-    }
-
-    virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                   _("Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT "
-                     "credential type"));
-    return NULL;
+    return g_steal_pointer(&cred->result);
 }
 
 
