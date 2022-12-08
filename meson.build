@@ -1532,7 +1532,7 @@ if not get_option('driver_lxc').disabled() and host_machine.system() == 'linux' 
 #include <sys/epoll.h>
 
 void main(void) {
-    unshare(!(LO_FLAGS_AUTOCLEAR + EPOLL_CLOEXEC));
+    unshare(!(LO_FLAGS_AUTOCLEAR));
 }
   '''
   if cc.compiles(lxc_support_code, name: 'lxc support', args: '-D_GNU_SOURCE')
