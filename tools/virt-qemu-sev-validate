@@ -849,7 +849,7 @@ class ConfidentialVM(abc.ABC):
         secret64 = b64encode(secret_table_ciphertext).decode('utf8')
         log.debug("Header: %s (%d bytes)", header64, len(header))
         log.debug("Secret: %s (%d bytes)",
-            secret64, len(secret_table_ciphertext))
+                  secret64, len(secret_table_ciphertext))
 
         return header64, secret64
 
@@ -955,7 +955,7 @@ class LibvirtConfidentialVM(ConfidentialVM):
             self.dom = self.conn.lookupByName(id_name_uuid)
 
         log.debug("VM: id=%d name=%s uuid=%s",
-            self.dom.ID(), self.dom.name(), self.dom.UUIDString())
+                  self.dom.ID(), self.dom.name(), self.dom.UUIDString())
 
         if not self.dom.isActive():
             raise InvalidStateException(
@@ -1330,6 +1330,7 @@ def main():
         if not args.quiet:
             print("ERROR: %s" % e, file=sys.stderr)
         sys.exit(6)
+
 
 if __name__ == "__main__":
     main()
