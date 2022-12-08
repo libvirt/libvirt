@@ -86,7 +86,7 @@ VIR_LOG_INIT("util.netdev");
 #endif
 
 #define RESOURCE_FILE_LEN 4096
-#if WITH_DECL_ETHTOOL_GFEATURES
+#ifdef __linux__
 # define TX_UDP_TNL 25
 # define GFEATURES_SIZE 2
 # define FEATURE_WORD(blocks, index, field)  ((blocks)[(index) / 32U].field)
@@ -3264,7 +3264,6 @@ virNetDevSwitchdevFeature(const char *ifname G_GNUC_UNUSED,
 # endif
 
 
-# if WITH_DECL_ETHTOOL_GFEATURES
 /**
  * virNetDevGFeatureAvailable
  * This function checks for the availability of a network device gfeature
@@ -3305,16 +3304,6 @@ virNetDevGetEthtoolGFeatures(const char *ifname,
         ignore_value(virBitmapSetBit(bitmap, VIR_NET_DEV_FEAT_TXUDPTNL));
     return 0;
 }
-# else
-static int
-virNetDevGetEthtoolGFeatures(const char *ifname G_GNUC_UNUSED,
-                             virBitmap *bitmap G_GNUC_UNUSED,
-                             int fd G_GNUC_UNUSED,
-                             struct ifreq *ifr G_GNUC_UNUSED)
-{
-    return 0;
-}
-# endif
 
 
 # if WITH_DECL_ETHTOOL_SCOALESCE && WITH_DECL_ETHTOOL_GCOALESCE
