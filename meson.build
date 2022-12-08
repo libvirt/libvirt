@@ -1526,20 +1526,7 @@ elif get_option('driver_libxl').enabled()
 endif
 
 if not get_option('driver_lxc').disabled() and host_machine.system() == 'linux' and conf.has('WITH_LIBVIRTD')
-  lxc_support_code = '''
-#include <sched.h>
-#include <linux/loop.h>
-#include <sys/epoll.h>
-
-void main(void) {
-    unshare(1);
-}
-  '''
-  if cc.compiles(lxc_support_code, name: 'lxc support', args: '-D_GNU_SOURCE')
-    conf.set('WITH_LXC', 1)
-  elif get_option('driver_lxc').enabled()
-    error('Required kernel features for LXC were not found')
-  endif
+  conf.set('WITH_LXC', 1)
 elif get_option('driver_lxc').enabled()
   error('linux and remote_driver are required for LXC')
 endif
