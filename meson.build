@@ -654,7 +654,6 @@ symbols = [
   [ 'linux/ethtool.h', 'ETH_FLAG_NTUPLE' ],
   [ 'linux/ethtool.h', 'ETH_FLAG_RXHASH' ],
   [ 'linux/ethtool.h', 'ETH_FLAG_LRO' ],
-  [ 'linux/ethtool.h', 'ETHTOOL_GGSO' ],
   [ 'linux/ethtool.h', 'ETHTOOL_GGRO' ],
   [ 'linux/ethtool.h', 'ETHTOOL_GFLAGS' ],
   [ 'linux/ethtool.h', 'ETHTOOL_GFEATURES' ],
