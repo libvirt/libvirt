@@ -24,7 +24,7 @@ VIR_LOG_INIT("util.bpf");
 
 #define VIR_FROM_THIS VIR_FROM_BPF
 
-#if WITH_SYS_SYSCALL_H && WITH_DECL_BPF_PROG_QUERY
+#ifdef __linux__
 # include <sys/syscall.h>
 # include <unistd.h>
 
@@ -292,7 +292,7 @@ virBPFDeleteElem(int mapfd,
 }
 
 
-#else /* !WITH_SYS_SYSCALL_H || !WITH_DECL_BPF_PROG_QUERY */
+#else /* ! __linux__ */
 
 
 int
@@ -420,4 +420,4 @@ virBPFDeleteElem(int mapfd G_GNUC_UNUSED,
     errno = ENOSYS;
     return -1;
 }
-#endif /* !WITH_SYS_SYSCALL_H || !WITH_DECL_BPF_PROG_QUERY */
+#endif /* !__linux__ */

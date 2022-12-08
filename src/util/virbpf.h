@@ -18,7 +18,7 @@
 
 #pragma once
 
-#if WITH_DECL_BPF_PROG_QUERY
+#ifdef __linux__
 
 # include <linux/bpf.h>
 
@@ -171,7 +171,7 @@
      .imm = 0, \
      })
 
-#else /* WITH_DECL_BPF_PROG_QUERY */
+#else /* ! __linux__ */
 
 struct bpf_prog_info;
 struct bpf_map_info;
@@ -191,7 +191,7 @@ struct bpf_insn;
 # define VIR_BPF_CALL_INSN(func)
 # define VIR_BPF_EXIT_INSN()
 
-#endif /* WITH_DECL_BPF_PROG_QUERY */
+#endif /* ! __linux__ */
 
 int
 virBPFCreateMap(unsigned int mapType,

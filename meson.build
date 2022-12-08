@@ -647,7 +647,6 @@ symbols = [
 if host_machine.system() == 'linux'
   symbols += [
     # Check if we have new enough kernel to support BPF devices for cgroups v2
-    [ 'linux/bpf.h', 'BPF_PROG_QUERY' ],
     [ 'linux/bpf.h', 'BPF_CGROUP_DEVICE' ],
   ]
 endif
