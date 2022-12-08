@@ -3595,7 +3595,9 @@ virNetDevReserveName(const char *name)
  * Note: if string pointed by @ifname is NOT a template or NULL, leave
  * it unchanged and return it directly.
  *
- * Returns 0 on success, -1 on failure.
+ * Returns: 1 if @ifname already contains a valid name,
+ *          0 on success (@ifname was generated),
+ *         -1 on failure.
  */
 int
 virNetDevGenerateName(char **ifname, virNetDevGenNameType type)
@@ -3609,7 +3611,7 @@ virNetDevGenerateName(char **ifname, virNetDevGenNameType type)
     if (*ifname &&
         (strchr(*ifname, '%') != strrchr(*ifname, '%') ||
          strstr(*ifname, "%d") == NULL)) {
-        return 0;
+        return 1;
     }
 
     if (maxIDd <= (double)INT_MAX)
