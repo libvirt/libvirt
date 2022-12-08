@@ -646,9 +646,6 @@ symbols = [
 
 if host_machine.system() == 'linux'
   symbols += [
-    # check for VHOST_VSOCK_SET_GUEST_CID
-    [ 'linux/vhost.h', 'VHOST_VSOCK_SET_GUEST_CID' ],
-
     # Check if we have new enough kernel to support BPF devices for cgroups v2
     [ 'linux/bpf.h', 'BPF_PROG_QUERY' ],
     [ 'linux/bpf.h', 'BPF_CGROUP_DEVICE' ],

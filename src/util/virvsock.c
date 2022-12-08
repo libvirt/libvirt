@@ -21,7 +21,7 @@
 # include <sys/ioctl.h>
 #endif
 
-#if WITH_DECL_VHOST_VSOCK_SET_GUEST_CID
+#ifdef __linux__
 # include <linux/vhost.h>
 #endif
 
@@ -35,7 +35,7 @@
 
 VIR_LOG_INIT("util.vsock");
 
-#if WITH_DECL_VHOST_VSOCK_SET_GUEST_CID
+#ifdef __linux__
 static int
 virVsockSetGuestCidQuiet(int fd,
                          unsigned int guest_cid)
