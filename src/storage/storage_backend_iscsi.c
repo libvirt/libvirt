@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#include "datatypes.h"
 #include "driver.h"
 #include "storage_backend_iscsi.h"
 #include "viralloc.h"
@@ -255,8 +256,8 @@ virStorageBackendISCSISetAuth(const char *portal,
     size_t secret_size;
     g_autofree char *secret_str = NULL;
     virStorageAuthDef *authdef = source->auth;
-    int ret = -1;
-    virConnectPtr conn = NULL;
+    int ret = 0;
+    g_autoptr(virConnect) conn = NULL;
     VIR_IDENTITY_AUTORESTORE virIdentity *oldident = NULL;
 
     if (!authdef || authdef->authType == VIR_STORAGE_AUTH_TYPE_NONE)
@@ -280,7 +281,7 @@ virStorageBackendISCSISetAuth(const char *portal,
     if (virSecretGetSecretString(conn, &authdef->seclookupdef,
                                  VIR_SECRET_USAGE_TYPE_ISCSI,
                                  &secret_value, &secret_size) < 0)
-        goto cleanup;
+        return -1;
 
     secret_str = g_new0(char, secret_size + 1);
     memcpy(secret_str, secret_value, secret_size);
@@ -299,13 +300,9 @@ virStorageBackendISCSISetAuth(const char *portal,
                            source->devices[0].path,
                            "node.session.auth.password",
                            secret_str) < 0)
-        goto cleanup;
+        ret = -1;
 
-    ret = 0;
-
- cleanup:
     virSecureErase(secret_str, secret_size);
-    virObjectUnref(conn);
     return ret;
 }
 
