@@ -1850,6 +1850,8 @@ virAuditSend;
 
 
 # util/virauth.h
+virAuthAskCredential;
+virAuthConnectCredentialFree;
 virAuthGetConfigFilePath;
 virAuthGetConfigFilePathURI;
 virAuthGetPassword;

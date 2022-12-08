@@ -31,6 +31,7 @@
 #include "virerror.h"
 #include "configmake.h"
 #include "virauthconfig.h"
+#include "virsecureerase.h"
 
 #define VIR_FROM_THIS VIR_FROM_AUTH
 
@@ -282,4 +283,69 @@ virAuthGetPassword(virConnectPtr conn,
         return NULL;
 
     return virAuthGetPasswordPath(path, auth, servicename, username, hostname);
+}
+
+
+void
+virAuthConnectCredentialFree(virConnectCredential *cred)
+{
+    if (cred->result) {
+        virSecureErase(cred->result, cred->resultlen);
+        g_free(cred->result);
+    }
+    g_free(cred);
+}
+
+
+/**
+ * virAuthAskCredential:
+ * @auth: authentication callback data
+ * @prompt: question string to ask the user
+ * @echo: false if user's reply should be considered sensitive and not echoed
+ *
+ * Invoke the authentication callback for the connection @auth and ask the user
+ * the question in @prompt. If @echo is false user's reply should be collected
+ * as sensitive (user's input not printed on screen).
+ */
+virConnectCredential *
+virAuthAskCredential(virConnectAuthPtr auth,
+                     const char *prompt,
+                     bool echo)
+{
+    g_autoptr(virConnectCredential) ret = g_new0(virConnectCredential, 1);
+    size_t i;
+
+    ret->type = -1;
+
+    for (i = 0; i < auth->ncredtype; ++i) {
+        int type = auth->credtype[i];
+        if (echo) {
+            if (type == VIR_CRED_ECHOPROMPT) {
+                ret->type = type;
+                break;
+            }
+        } else {
+            if (type == VIR_CRED_PASSPHRASE ||
+                type == VIR_CRED_NOECHOPROMPT) {
+                ret->type = type;
+                break;
+            }
+        }
+    }
+
+    if (ret->type == -1) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("no suitable callback authentication callback was found"));
+        return NULL;
+    }
+
+    ret->prompt = prompt;
+
+    if (auth->cb(ret, 1, auth->cbdata) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("failed to retrieve user response for authentication callback"));
+        return NULL;
+    }
+
+    return g_steal_pointer(&ret);
 }

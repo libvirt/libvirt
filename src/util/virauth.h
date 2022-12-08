@@ -52,3 +52,10 @@ char * virAuthGetPasswordPath(const char *path,
                               const char *servicename,
                               const char *username,
                               const char *hostname);
+
+virConnectCredential *virAuthAskCredential(virConnectAuthPtr auth,
+                                           const char *prompt,
+                                           bool echo);
+
+void virAuthConnectCredentialFree(virConnectCredential *cred);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virConnectCredential, virAuthConnectCredentialFree);
