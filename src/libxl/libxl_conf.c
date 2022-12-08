@@ -1026,10 +1026,9 @@ libxlMakeNetworkDiskSrcStr(virStorageSource *src,
 static int
 libxlMakeNetworkDiskSrc(virStorageSource *src, char **srcstr)
 {
-    virConnectPtr conn = NULL;
+    g_autoptr(virConnect) conn = NULL;
     g_autofree char *base64secret = NULL;
     char *username = NULL;
-    int ret = -1;
 
     *srcstr = NULL;
     if (src->auth && src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
@@ -1038,16 +1037,16 @@ libxlMakeNetworkDiskSrc(virStorageSource *src, char **srcstr)
         VIR_IDENTITY_AUTORESTORE virIdentity *oldident = virIdentityElevateCurrent();
 
         if (!oldident)
-            goto cleanup;
+            return -1;
 
         username = src->auth->username;
         if (!(conn = virConnectOpen("xen:///system")))
-            goto cleanup;
+            return -1;
 
         if (virSecretGetSecretString(conn, &src->auth->seclookupdef,
                                      VIR_SECRET_USAGE_TYPE_CEPH,
                                      &secret, &secretlen) < 0)
-            goto cleanup;
+            return -1;
 
         /* RBD expects an encoded secret */
         base64secret = g_base64_encode(secret, secretlen);
@@ -1058,13 +1057,9 @@ libxlMakeNetworkDiskSrc(virStorageSource *src, char **srcstr)
     virSecureEraseString(base64secret);
 
     if (!*srcstr)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virObjectUnref(conn);
-    return ret;
+    return 0;
 }
 
 int
