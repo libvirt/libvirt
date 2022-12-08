@@ -3306,7 +3306,6 @@ virNetDevGetEthtoolGFeatures(const char *ifname,
 }
 
 
-# if WITH_DECL_ETHTOOL_SCOALESCE && WITH_DECL_ETHTOOL_GCOALESCE
 /**
  * virNetDevSetCoalesce:
  * @ifname: interface name to modify
@@ -3402,20 +3401,6 @@ int virNetDevSetCoalesce(const char *ifname,
 
     return 0;
 }
-# else
-int virNetDevSetCoalesce(const char *ifname,
-                         virNetDevCoalesce *coalesce,
-                         bool update)
-{
-    if (!coalesce && !update)
-        return 0;
-
-    virReportSystemError(ENOSYS,
-                         _("Cannot set coalesce info on interface '%s'"),
-                         ifname);
-    return -1;
-}
-# endif
 
 
 /**

@@ -650,9 +650,6 @@ symbols = [
   # Check whether endian provides handy macros.
   [ 'endian.h', 'htole64' ],
 
-  [ 'linux/ethtool.h', 'ETHTOOL_SCOALESCE' ],
-  [ 'linux/ethtool.h', 'ETHTOOL_GCOALESCE' ],
-
   # GET_VLAN_VID_CMD is required for virNetDevGetVLanID
   [ 'linux/if_vlan.h', 'GET_VLAN_VID_CMD' ],
 
