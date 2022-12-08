@@ -556,7 +556,7 @@ on the virtualization host. In that scenario the only three command
 line parameters required are for the TIK, TEK and libvirt domain
 name. It should be able to automatically determine all the other
 information required. If it still reports a failure, this points
-very strongly to the TIK/TEK pair not maching the configured
+very strongly to the TIK/TEK pair not matching the configured
 DH certificate and session blob.
 
 The ``--debug`` flag will display hashes and/or hex dumps for various
