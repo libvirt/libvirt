@@ -249,7 +249,7 @@ configure_file(
   configuration: tools_conf,
   install: true,
   install_dir: bindir,
-  install_mode: 'rwxrwxr-x',
+  install_mode: 'rwxr-xr-x',
 )
 
 configure_file(
@@ -258,7 +258,7 @@ configure_file(
   configuration: tools_conf,
   install: true,
   install_dir: bindir,
-  install_mode: 'rwxrwxr-x',
+  install_mode: 'rwxr-xr-x',
 )
 
 executable(
@@ -295,7 +295,7 @@ if conf.has('WITH_SANLOCK')
     configuration: tools_conf,
     install: true,
     install_dir: sbindir,
-    install_mode: 'rwxrwxr-x',
+    install_mode: 'rwxr-xr-x',
   )
 endif
 
@@ -311,7 +311,7 @@ if conf.has('WITH_LIBVIRTD')
     configuration: tools_conf,
     install: true,
     install_dir: libexecdir,
-    install_mode: 'rwxrwxr-x',
+    install_mode: 'rwxr-xr-x',
   )
 
   if init_script == 'systemd'
