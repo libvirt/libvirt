@@ -653,7 +653,6 @@ symbols = [
   [ 'linux/ethtool.h', 'ETH_FLAG_TXVLAN' ],
   [ 'linux/ethtool.h', 'ETH_FLAG_NTUPLE' ],
   [ 'linux/ethtool.h', 'ETH_FLAG_RXHASH' ],
-  [ 'linux/ethtool.h', 'ETH_FLAG_LRO' ],
   [ 'linux/ethtool.h', 'ETHTOOL_GFEATURES' ],
   [ 'linux/ethtool.h', 'ETHTOOL_SCOALESCE' ],
   [ 'linux/ethtool.h', 'ETHTOOL_GCOALESCE' ],

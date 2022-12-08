@@ -3089,9 +3089,7 @@ virNetDevGetEthtoolFeatures(const char *ifname,
 
     /* ethtool masks */
     struct virNetDevEthtoolFeatureCmd flags[] = {
-# if WITH_DECL_ETH_FLAG_LRO
         {ETH_FLAG_LRO, VIR_NET_DEV_FEAT_LRO},
-# endif
 # if WITH_DECL_ETH_FLAG_TXVLAN
         {ETH_FLAG_RXVLAN, VIR_NET_DEV_FEAT_RXVLAN},
         {ETH_FLAG_TXVLAN, VIR_NET_DEV_FEAT_TXVLAN},
