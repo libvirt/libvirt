@@ -959,7 +959,7 @@ virNetDevGetMaster(const char *ifname G_GNUC_UNUSED,
 #endif /* defined(WITH_LIBNL) */
 
 
-#if defined(SIOCGIFVLAN) && defined(WITH_STRUCT_IFREQ) && WITH_DECL_GET_VLAN_VID_CMD
+#if __linux__
 int virNetDevGetVLanID(const char *ifname, int *vlanid)
 {
     struct vlan_ioctl_args vlanargs = {
@@ -989,7 +989,7 @@ int virNetDevGetVLanID(const char *ifname, int *vlanid)
     *vlanid = vlanargs.u.VID;
     return 0;
 }
-#else /* ! SIOCGIFVLAN */
+#else /* ! __linux__ */
 int virNetDevGetVLanID(const char *ifname G_GNUC_UNUSED,
                        int *vlanid G_GNUC_UNUSED)
 {
@@ -997,7 +997,7 @@ int virNetDevGetVLanID(const char *ifname G_GNUC_UNUSED,
                          _("Unable to get VLAN on this platform"));
     return -1;
 }
-#endif /* ! SIOCGIFVLAN */
+#endif /* ! __linux__ */
 
 
 /**

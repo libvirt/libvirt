@@ -650,9 +650,6 @@ symbols = [
   # Check whether endian provides handy macros.
   [ 'endian.h', 'htole64' ],
 
-  # GET_VLAN_VID_CMD is required for virNetDevGetVLanID
-  [ 'linux/if_vlan.h', 'GET_VLAN_VID_CMD' ],
-
   [ 'unistd.h', 'SEEK_HOLE' ],
 
   # Check for BSD approach for setting MAC addr
