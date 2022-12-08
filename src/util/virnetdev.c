@@ -42,16 +42,13 @@
 #ifdef __linux__
 # include <linux/sockios.h>
 # include <linux/if_vlan.h>
+# include <linux/types.h>
+# include <linux/ethtool.h>
 # define VIR_NETDEV_FAMILY AF_UNIX
 #elif defined(WITH_STRUCT_IFREQ) && defined(AF_LOCAL)
 # define VIR_NETDEV_FAMILY AF_LOCAL
 #else
 # undef WITH_STRUCT_IFREQ
-#endif
-
-#if defined(SIOCETHTOOL) && defined(WITH_STRUCT_IFREQ)
-# include <linux/types.h>
-# include <linux/ethtool.h>
 #endif
 
 #if WITH_DECL_LINK_ADDR
@@ -2958,7 +2955,7 @@ int virNetDevGetRxFilter(const char *ifname,
     return ret;
 }
 
-#if defined(SIOCETHTOOL) && defined(WITH_STRUCT_IFREQ)
+#if __linux__
 
 /**
  * virNetDevRDMAFeature
