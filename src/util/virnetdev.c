@@ -3084,9 +3084,7 @@ virNetDevGetEthtoolFeatures(const char *ifname,
         {ETHTOOL_GSG, VIR_NET_DEV_FEAT_GSG},
         {ETHTOOL_GTSO, VIR_NET_DEV_FEAT_GTSO},
         {ETHTOOL_GGSO, VIR_NET_DEV_FEAT_GGSO},
-# if WITH_DECL_ETHTOOL_GGRO
         {ETHTOOL_GGRO, VIR_NET_DEV_FEAT_GGRO},
-# endif
     };
 
 # if WITH_DECL_ETHTOOL_GFLAGS
