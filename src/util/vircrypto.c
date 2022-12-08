@@ -125,8 +125,8 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
     int rc;
     size_t i;
     gnutls_cipher_hd_t handle = NULL;
-    gnutls_datum_t enc_key;
-    gnutls_datum_t iv_buf;
+    gnutls_datum_t enc_key = { .data = enckey, .size = enckeylen };
+    gnutls_datum_t iv_buf = { .data = iv, .size = ivlen };
     uint8_t *ciphertext;
     size_t ciphertextlen;
 
@@ -146,13 +146,6 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
     for (i = datalen; i < ciphertextlen; i++)
         ciphertext[i] = ciphertextlen - datalen;
 
-    /* Initialize the gnutls cipher */
-    enc_key.size = enckeylen;
-    enc_key.data = enckey;
-    if (iv) {
-        iv_buf.size = ivlen;
-        iv_buf.data = iv;
-    }
     if ((rc = gnutls_cipher_init(&handle, gnutls_enc_alg,
                                  &enc_key, &iv_buf)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
