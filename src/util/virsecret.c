@@ -139,8 +139,7 @@ virSecretGetSecretString(virConnectPtr conn,
                          uint8_t **secret,
                          size_t *secret_size)
 {
-    virSecretPtr sec = NULL;
-    int ret = -1;
+    g_autoptr(virSecret) sec = NULL;
 
     switch (seclookupdef->type) {
     case VIR_SECRET_LOOKUP_TYPE_UUID:
@@ -154,7 +153,7 @@ virSecretGetSecretString(virConnectPtr conn,
     }
 
     if (!sec)
-        goto cleanup;
+        return -1;
 
     /* NB: NONE is a byproduct of the qemuxml2argvtest test mocking
      * for UUID lookups. Normal secret XML processing would fail if
@@ -170,17 +169,11 @@ virSecretGetSecretString(virConnectPtr conn,
                          "expected '%s' type"),
                        uuidstr, virSecretUsageTypeToString(sec->usageType),
                        virSecretUsageTypeToString(secretUsageType));
-        goto cleanup;
+        return -1;
     }
 
-    *secret = conn->secretDriver->secretGetValue(sec, secret_size, 0);
+    if (!(*secret = conn->secretDriver->secretGetValue(sec, secret_size, 0)))
+        return -1;
 
-    if (!*secret)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    virObjectUnref(sec);
-    return ret;
+    return 0;
 }
