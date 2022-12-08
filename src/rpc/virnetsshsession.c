@@ -71,7 +71,6 @@ typedef struct _virNetSSHAuthMethod virNetSSHAuthMethod;
 struct _virNetSSHAuthMethod {
     virNetSSHAuthMethods method;
     char *username;
-    char *password;
     char *filename;
 
     int tries;
@@ -117,7 +116,6 @@ virNetSSHSessionAuthMethodsClear(virNetSSHSession *sess)
 
     for (i = 0; i < sess->nauths; i++) {
         VIR_FREE(sess->auths[i]->username);
-        VIR_FREE(sess->auths[i]->password);
         VIR_FREE(sess->auths[i]->filename);
         VIR_FREE(sess->auths[i]);
     }
@@ -580,12 +578,11 @@ virNetSSHAuthenticatePrivkey(virNetSSHSession *sess,
                                                    priv->username,
                                                    NULL,
                                                    priv->filename,
-                                                   priv->password)) == 0)
+                                                   NULL)) == 0)
         return 0; /* success */
 
     VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
-    if (priv->password ||
-        ret == LIBSSH2_ERROR_PUBLICKEY_UNRECOGNIZED ||
+    if (ret == LIBSSH2_ERROR_PUBLICKEY_UNRECOGNIZED ||
         ret == LIBSSH2_ERROR_AUTHENTICATION_FAILED) {
     VIR_WARNINGS_RESET
         libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
@@ -681,44 +678,34 @@ virNetSSHAuthenticatePassword(virNetSSHSession *sess,
 
     VIR_DEBUG("sess=%p", sess);
 
-    if (priv->password) {
+    /* password authentication with interactive password request */
+    if (!sess->cred || !sess->cred->cb) {
+        virReportError(VIR_ERR_SSH, "%s",
+                       _("Can't perform authentication: "
+                         "Authentication callback not provided"));
+        goto cleanup;
+    }
+
+    /* Try the authenticating the set amount of times. The server breaks the
+     * connection if maximum number of bad auth tries is exceeded */
+    while (true) {
+        if (!(password = virAuthGetPasswordPath(sess->authPath, sess->cred,
+                                                "ssh", priv->username,
+                                                sess->hostname)))
+            goto cleanup;
+
         /* tunnelled password authentication */
         if ((rc = libssh2_userauth_password(sess->session,
                                             priv->username,
-                                            priv->password)) == 0) {
+                                            password)) == 0) {
             ret = 0;
             goto cleanup;
         }
-    } else {
-        /* password authentication with interactive password request */
-        if (!sess->cred || !sess->cred->cb) {
-            virReportError(VIR_ERR_SSH, "%s",
-                           _("Can't perform authentication: "
-                             "Authentication callback not provided"));
-            goto cleanup;
-        }
 
-        /* Try the authenticating the set amount of times. The server breaks the
-         * connection if maximum number of bad auth tries is exceeded */
-        while (true) {
-            if (!(password = virAuthGetPasswordPath(sess->authPath, sess->cred,
-                                                    "ssh", priv->username,
-                                                    sess->hostname)))
-                goto cleanup;
+        if (rc != LIBSSH2_ERROR_AUTHENTICATION_FAILED)
+            break;
 
-            /* tunnelled password authentication */
-            if ((rc = libssh2_userauth_password(sess->session,
-                                                priv->username,
-                                                password)) == 0) {
-                ret = 0;
-                goto cleanup;
-            }
-
-            if (rc != LIBSSH2_ERROR_AUTHENTICATION_FAILED)
-                break;
-
-            VIR_FREE(password);
-        }
+        VIR_FREE(password);
     }
 
     /* error path */
