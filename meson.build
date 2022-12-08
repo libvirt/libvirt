@@ -644,13 +644,6 @@ symbols = [
   [ 'sched.h', 'cpu_set_t' ],
 ]
 
-if host_machine.system() == 'linux'
-  symbols += [
-    # Check if we have new enough kernel to support BPF devices for cgroups v2
-    [ 'linux/bpf.h', 'BPF_CGROUP_DEVICE' ],
-  ]
-endif
-
 foreach symbol : symbols
   if cc.has_header_symbol(symbol[0], symbol[1], args: '-D_GNU_SOURCE', prefix: symbol.get(2, ''))
     conf.set('WITH_DECL_@0@'.format(symbol[1].to_upper()), 1)
