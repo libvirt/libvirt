@@ -647,25 +647,16 @@ virNetLibsshAuthenticateKeyboardInteractive(virNetLibsshSession *sess,
             virBufferAddChar(&buff, '\n');
 
         for (iprompt = 0; iprompt < nprompts; ++iprompt) {
-            virConnectCredential retr_passphrase;
             const char *promptStr;
             int promptStrLen;
             char echo;
-            char *prompt = NULL;
-            int cred_type;
+            g_autofree char *prompt = NULL;
+            g_autoptr(virConnectCredential) cred = NULL;
 
             /* get the prompt */
             promptStr = ssh_userauth_kbdint_getprompt(sess->session, iprompt,
                                                       &echo);
             promptStrLen = virLengthForPromptString(promptStr);
-
-            cred_type = virCredTypeForPrompt(sess->cred, echo);
-            if (cred_type == -1) {
-                virReportError(VIR_ERR_LIBSSH, "%s",
-                               _("no suitable callback for input of keyboard "
-                                 "response"));
-                goto prompt_error;
-            }
 
             /* create the prompt for the user, using the instruction
              * buffer if specified
@@ -681,42 +672,18 @@ virNetLibsshAuthenticateKeyboardInteractive(virNetLibsshSession *sess,
                 prompt = g_strndup(promptStr, promptStrLen);
             }
 
-            memset(&retr_passphrase, 0, sizeof(virConnectCredential));
-            retr_passphrase.type = cred_type;
-            retr_passphrase.prompt = prompt;
+            if (!(cred = virAuthAskCredential(sess->cred, prompt, echo)))
+                return SSH_AUTH_ERROR;
 
-            if (retr_passphrase.type == -1) {
-                virReportError(VIR_ERR_LIBSSH, "%s",
-                               _("no suitable callback for input of key "
-                                 "passphrase"));
-                goto prompt_error;
-            }
-
-            if (sess->cred->cb(&retr_passphrase, 1, sess->cred->cbdata)) {
-                virReportError(VIR_ERR_LIBSSH, "%s",
-                               _("failed to retrieve keyboard interactive "
-                                 "result: callback has failed"));
-                goto prompt_error;
-            }
-
-            VIR_FREE(prompt);
-
-            ret = ssh_userauth_kbdint_setanswer(sess->session, iprompt,
-                                                retr_passphrase.result);
-            virSecureEraseString(retr_passphrase.result);
-            g_free(retr_passphrase.result);
-            if (ret < 0) {
+            if (ssh_userauth_kbdint_setanswer(sess->session, iprompt,
+                                              cred->result) < 0) {
                 errmsg = ssh_get_error(sess->session);
                 virReportError(VIR_ERR_AUTH_FAILED,
                                _("authentication failed: %s"), errmsg);
-                goto prompt_error;
+                return SSH_AUTH_ERROR;
             }
 
             continue;
-
-         prompt_error:
-            VIR_FREE(prompt);
-            return SSH_AUTH_ERROR;
         }
 
         ret = ssh_userauth_kbdint(sess->session, NULL, NULL);
