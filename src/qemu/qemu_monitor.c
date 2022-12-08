@@ -943,7 +943,7 @@ qemuMonitorInitBalloonObjectPath(qemuMonitor *mon,
             case VIR_DOMAIN_MEMBALLOON_MODEL_XEN:
             case VIR_DOMAIN_MEMBALLOON_MODEL_NONE:
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("invalid model for virtio-balloon-pci"));
+                               _("invalid model for virtio-balloon-pci"));
                 return;
             case VIR_DOMAIN_MEMBALLOON_MODEL_LAST:
             default:
@@ -2053,8 +2053,8 @@ qemuMonitorSetPassword(qemuMonitor *mon,
     if (!protocol)
         return -1;
 
-    VIR_DEBUG("protocol=%s, password=%p, action_if_connected=%s",
-              protocol, password, action_if_connected);
+    VIR_DEBUG("protocol=%s, action_if_connected=%s",
+              protocol, action_if_connected);
 
     QEMU_CHECK_MONITOR(mon);
 
@@ -3488,7 +3488,7 @@ qemuMonitorBlockExportAdd(qemuMonitor *mon,
 
 int
 qemuMonitorGetTPMModels(qemuMonitor *mon,
-                            char ***tpmmodels)
+                        char ***tpmmodels)
 {
     VIR_DEBUG("tpmmodels=%p", tpmmodels);
 

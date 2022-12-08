@@ -627,8 +627,8 @@ struct _qemuMonitorCPUInfo {
 };
 typedef struct _qemuMonitorCPUInfo qemuMonitorCPUInfo;
 
-void qemuMonitorCPUInfoFree(qemuMonitorCPUInfo *list,
-                            size_t nitems);
+void qemuMonitorCPUInfoFree(qemuMonitorCPUInfo *cpus,
+                            size_t ncpus);
 int qemuMonitorGetCPUInfo(qemuMonitor *mon,
                           qemuMonitorCPUInfo **vcpus,
                           size_t maxvcpus,
@@ -1186,7 +1186,7 @@ int qemuMonitorNBDServerAdd(qemuMonitor *mon,
                             const char *export,
                             bool writable,
                             const char *bitmap);
-int qemuMonitorNBDServerStop(qemuMonitor *);
+int qemuMonitorNBDServerStop(qemuMonitor *mon);
 
 int qemuMonitorBlockExportAdd(qemuMonitor *mon,
                               virJSONValue **props);
