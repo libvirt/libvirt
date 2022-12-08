@@ -394,10 +394,8 @@ virNetLibsshAuthenticatePrivkeyCb(const char *prompt,
                                   void *userdata)
 {
     virNetLibsshSession *sess = userdata;
-    virConnectCredential retr_passphrase;
-    int cred_type;
     g_autofree char *actual_prompt = NULL;
-    int p;
+    g_autoptr(virConnectCredential) cred = NULL;
 
     /* request user's key password */
     if (!sess->cred || !sess->cred->cb) {
@@ -407,30 +405,12 @@ virNetLibsshAuthenticatePrivkeyCb(const char *prompt,
         return -1;
     }
 
-    cred_type = virCredTypeForPrompt(sess->cred, echo);
-    if (cred_type == -1) {
-        virReportError(VIR_ERR_LIBSSH, "%s",
-                       _("no suitable callback for input of key passphrase"));
-        return -1;
-    }
-
     actual_prompt = g_strndup(prompt, virLengthForPromptString(prompt));
 
-    memset(&retr_passphrase, 0, sizeof(virConnectCredential));
-    retr_passphrase.type = cred_type;
-    retr_passphrase.prompt = actual_prompt;
-
-    if (sess->cred->cb(&retr_passphrase, 1, sess->cred->cbdata)) {
-        virReportError(VIR_ERR_LIBSSH, "%s",
-                       _("failed to retrieve private key passphrase: "
-                         "callback has failed"));
+    if (!(cred = virAuthAskCredential(sess->cred, actual_prompt, echo)))
         return -1;
-    }
 
-    p = virStrcpy(buf, retr_passphrase.result, len);
-    virSecureEraseString(retr_passphrase.result);
-    g_free(retr_passphrase.result);
-    if (p < 0) {
+    if (virStrcpy(buf, cred->result, len) < 0) {
         virReportError(VIR_ERR_LIBSSH, "%s",
                        _("passphrase is too long for the buffer"));
         return -1;
