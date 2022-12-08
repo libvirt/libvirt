@@ -56,8 +56,7 @@ int virNetSSHSessionAuthAddAgentAuth(virNetSSHSession *sess,
 
 int virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSession *sess,
                                        const char *username,
-                                       const char *keyfile,
-                                       const char *password);
+                                       const char *keyfile);
 
 int virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSession *sess,
                                         const char *username,

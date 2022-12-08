@@ -954,8 +954,7 @@ virNetSocketNewConnectLibSSH2(const char *host,
         } else if (STRCASEEQ(authMethod, "privkey")) {
             ret = virNetSSHSessionAuthAddPrivKeyAuth(sess,
                                                      username,
-                                                     privkey,
-                                                     NULL);
+                                                     privkey);
         } else if (STRCASEEQ(authMethod, "agent")) {
             ret = virNetSSHSessionAuthAddAgentAuth(sess, username);
         } else {

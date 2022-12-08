@@ -1056,13 +1056,11 @@ virNetSSHSessionAuthAddAgentAuth(virNetSSHSession *sess,
 int
 virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSession *sess,
                                    const char *username,
-                                   const char *keyfile,
-                                   const char *password)
+                                   const char *keyfile)
 {
     virNetSSHAuthMethod *auth;
 
     char *user = NULL;
-    char *pass = NULL;
     char *file = NULL;
 
     if (!username || !keyfile) {
@@ -1076,13 +1074,11 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSession *sess,
 
     user = g_strdup(username);
     file = g_strdup(keyfile);
-    pass = g_strdup(password);
 
     if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
         goto error;
 
     auth->username = user;
-    auth->password = pass;
     auth->filename = file;
     auth->method = VIR_NET_SSH_AUTH_PRIVKEY;
 
@@ -1091,7 +1087,6 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSession *sess,
 
  error:
     VIR_FREE(user);
-    VIR_FREE(pass);
     VIR_FREE(file);
     virObjectUnlock(sess);
     return -1;
