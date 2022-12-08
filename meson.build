@@ -650,7 +650,6 @@ symbols = [
   # Check whether endian provides handy macros.
   [ 'endian.h', 'htole64' ],
 
-  [ 'linux/ethtool.h', 'ETH_FLAG_TXVLAN' ],
   [ 'linux/ethtool.h', 'ETH_FLAG_NTUPLE' ],
   [ 'linux/ethtool.h', 'ETH_FLAG_RXHASH' ],
   [ 'linux/ethtool.h', 'ETHTOOL_GFEATURES' ],
