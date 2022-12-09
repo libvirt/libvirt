@@ -161,12 +161,10 @@ virStoragePoolDefRBDNamespaceFormatXML(virBuffer *buf,
 
 
 static int
-virStorageBackendRBDRADOSConfSet(rados_t cluster,
-                                 const char *option,
-                                 const char *value)
+virStorageBackendRBDRADOSConfSetQuiet(rados_t cluster,
+                                      const char *option,
+                                      const char *value)
 {
-    VIR_DEBUG("Setting RADOS option '%s' to '%s'",
-              option, value);
     if (rados_conf_set(cluster, option, value) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to set RADOS option: %s"),
@@ -176,6 +174,19 @@ virStorageBackendRBDRADOSConfSet(rados_t cluster,
 
     return 0;
 }
+
+
+static int
+virStorageBackendRBDRADOSConfSet(rados_t cluster,
+                                 const char *option,
+                                 const char *value)
+{
+    VIR_DEBUG("Setting RADOS option '%s' to '%s'",
+              option, value);
+
+    return virStorageBackendRBDRADOSConfSetQuiet(cluster, option, value);
+}
+
 
 static int
 virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDState *ptr,
@@ -222,7 +233,8 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDState *ptr,
         rados_key = g_base64_encode(secret_value, secret_value_size);
         virSecureErase(secret_value, secret_value_size);
 
-        rc = virStorageBackendRBDRADOSConfSet(ptr->cluster, "key", rados_key);
+        VIR_DEBUG("Setting RADOS option 'key'");
+        rc = virStorageBackendRBDRADOSConfSetQuiet(ptr->cluster, "key", rados_key);
         virSecureEraseString(rados_key);
 
         if (rc < 0)
