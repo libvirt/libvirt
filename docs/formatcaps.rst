@@ -155,6 +155,11 @@ capabilities enabled in the chip and BIOS you will see:
          <topology sockets="1" dies="1" cores="2" threads="1"/>
          <feature name="lahf_lm"/>
          <feature name='xtpr'/>
+         <pages unit='KiB' size='4'/>
+         <pages unit='KiB' size='2048'/>
+         <pages unit='KiB' size='1048576'/>
+         <microcode version='36'/>
+         <maxphysaddr mode='emulate' bits='46'/>
          ...
        </cpu>
        <power_management>
