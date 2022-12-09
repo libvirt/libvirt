@@ -5642,33 +5642,40 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriver *driver,
      * confirm migration completion.
      */
     VIR_DEBUG("Perform3 %p uri=%s", sconn, NULLSTR(uri));
-    ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_PERFORM3));
     VIR_FREE(cookiein);
     cookiein = g_steal_pointer(&cookieout);
     cookieinlen = cookieoutlen;
     cookieoutlen = 0;
-    if (flags & VIR_MIGRATE_TUNNELLED) {
-        ret = qemuMigrationSrcPerformTunnel(driver, vm, st, persist_xml,
+
+    if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
+        ret = qemuMigrationSrcPerformResume(driver, dconn, vm, uri, migParams,
                                             cookiein, cookieinlen,
-                                            &cookieout, &cookieoutlen,
-                                            flags, bandwidth, dconn, graphicsuri,
-                                            nmigrate_disks, migrate_disks,
-                                            migParams);
+                                            &cookieout, &cookieoutlen, flags);
     } else {
-        ret = qemuMigrationSrcPerformNative(driver, vm, persist_xml, uri,
-                                            cookiein, cookieinlen,
-                                            &cookieout, &cookieoutlen,
-                                            flags, bandwidth, dconn, graphicsuri,
-                                            nmigrate_disks, migrate_disks,
-                                            migParams, nbdURI);
+        ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_PERFORM3));
+        if (flags & VIR_MIGRATE_TUNNELLED) {
+            ret = qemuMigrationSrcPerformTunnel(driver, vm, st, persist_xml,
+                                                cookiein, cookieinlen,
+                                                &cookieout, &cookieoutlen,
+                                                flags, bandwidth, dconn, graphicsuri,
+                                                nmigrate_disks, migrate_disks,
+                                                migParams);
+        } else {
+            ret = qemuMigrationSrcPerformNative(driver, vm, persist_xml, uri,
+                                                cookiein, cookieinlen,
+                                                &cookieout, &cookieoutlen,
+                                                flags, bandwidth, dconn, graphicsuri,
+                                                nmigrate_disks, migrate_disks,
+                                                migParams, nbdURI);
+        }
+
+        if (ret == 0)
+            ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_PERFORM3_DONE));
     }
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
-    if (ret < 0) {
+    if (ret < 0)
         virErrorPreserveLast(&orig_err);
-    } else {
-        ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_PERFORM3_DONE));
-    }
 
     /* If Perform returns < 0, then we need to cancel the VM
      * startup on the destination
