@@ -1059,6 +1059,9 @@ endif
 numactl_dep = cc.find_library('numa', required: get_option('numactl'))
 if numactl_dep.found()
   conf.set('WITH_NUMACTL', 1)
+  if cc.has_function('numa_set_preferred_many', dependencies: numactl_dep)
+    conf.set('WITH_NUMACTL_SET_PREFERRED_MANY', 1)
+  endif
 endif
 
 openwsman_version = '2.6.3'

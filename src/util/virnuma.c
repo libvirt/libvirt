@@ -93,7 +93,6 @@ virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode,
                          virBitmap *nodeset)
 {
     nodemask_t mask;
-    int node = -1;
     int bit = 0;
     size_t i;
     int maxnode = 0;
@@ -128,7 +127,19 @@ virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode,
 
     case VIR_DOMAIN_NUMATUNE_MEM_PREFERRED:
     {
+# ifdef WITH_NUMACTL_SET_PREFERRED_MANY
+        struct bitmask *bitmask = NULL;
+# endif
+        int G_GNUC_UNUSED node = -1;
         int nnodes = 0;
+        bool has_preferred_many = false;
+
+# ifdef WITH_NUMACTL_SET_PREFERRED_MANY
+        if (numa_has_preferred_many() > 0) {
+            has_preferred_many = true;
+        }
+# endif
+
         for (i = 0; i < NUMA_NUM_NODES; i++) {
             if (nodemask_isset(&mask, i)) {
                 node = i;
@@ -136,15 +147,25 @@ virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode,
             }
         }
 
-        if (nnodes != 1) {
+        if (!has_preferred_many && nnodes != 1) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("NUMA memory tuning in 'preferred' mode "
                                    "only supports single node"));
             return -1;
         }
 
+        /* The following automatically sets MPOL_PREFERRED_MANY
+         * whenever possible, so no need to special case it. */
         numa_set_bind_policy(0);
+
+# ifdef WITH_NUMACTL_SET_PREFERRED_MANY
+        bitmask = numa_bitmask_alloc(maxnode + 1);
+        copy_nodemask_to_bitmask(&mask, bitmask);
+        numa_set_preferred_many(bitmask);
+        numa_bitmask_free(bitmask);
+# else
         numa_set_preferred(node);
+# endif
     }
     break;
 
