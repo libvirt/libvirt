@@ -20,7 +20,6 @@
 #include <config.h>
 #include <glib.h>
 
-#include "configmake.h"
 #include "vircommand.h"
 #include "virerror.h"
 #include "virlog.h"
@@ -39,10 +38,6 @@
 
 VIR_LOG_INIT("qemu.nbdkit");
 
-#define NBDKIT_MODDIR LIBDIR "/nbdkit"
-#define NBDKIT_PLUGINDIR NBDKIT_MODDIR "/plugins"
-#define NBDKIT_FILTERDIR NBDKIT_MODDIR "/filters"
-
 VIR_ENUM_IMPL(qemuNbdkitCaps,
     QEMU_NBDKIT_CAPS_LAST,
     /* 0 */
@@ -56,6 +51,9 @@ struct _qemuNbdkitCaps {
 
     char *path;
     char *version;
+    char *filterDir;
+    char *pluginDir;
+
     time_t ctime;
     time_t libvirtCtime;
     time_t pluginDirMtime;
@@ -129,18 +127,47 @@ qemuNbdkitCapsQueryFilters(qemuNbdkitCaps *nbdkit)
 
 
 static int
-qemuNbdkitCapsQueryVersion(qemuNbdkitCaps *nbdkit)
+qemuNbdkitCapsQueryBuildConfig(qemuNbdkitCaps *nbdkit)
 {
+    size_t i;
+    g_autofree char *output = NULL;
+    g_auto(GStrv) lines = NULL;
+    const char *line;
     g_autoptr(virCommand) cmd = virCommandNewArgList(nbdkit->path,
-                                                     "--version",
+                                                     "--dump-config",
                                                      NULL);
 
-    virCommandSetOutputBuffer(cmd, &nbdkit->version);
+    virCommandSetOutputBuffer(cmd, &output);
 
     if (virCommandRun(cmd, NULL) != 0)
         return -1;
 
-    VIR_DEBUG("Got nbdkit version %s", nbdkit->version);
+    lines = g_strsplit(output, "\n", 0);
+    if (!lines)
+        return -1;
+
+    for (i = 0; (line = lines[i]); i++) {
+        const char *key;
+        const char *val;
+        char *p;
+
+        p = strchr(line, '=');
+        if (!p)
+            continue;
+
+        *p = '\0';
+        key = line;
+        val = p + 1;
+
+        VIR_DEBUG("Got nbdkit config value %s=%s", key, val);
+
+        if (STREQ(key, "version"))
+            nbdkit->version = g_strdup(val);
+        else if (STREQ(key, "filterdir"))
+            nbdkit->filterDir = g_strdup(val);
+        else if (STREQ(key, "plugindir"))
+            nbdkit->pluginDir = g_strdup(val);
+    }
     return 0;
 }
 
@@ -152,6 +179,8 @@ qemuNbdkitCapsFinalize(GObject *object)
 
     g_clear_pointer(&nbdkit->path, g_free);
     g_clear_pointer(&nbdkit->version, g_free);
+    g_clear_pointer(&nbdkit->filterDir, g_free);
+    g_clear_pointer(&nbdkit->pluginDir, g_free);
     g_clear_pointer(&nbdkit->flags, virBitmapFree);
 
     G_OBJECT_CLASS(qemu_nbdkit_caps_parent_class)->finalize(object);
@@ -214,15 +243,15 @@ qemuNbdkitCapsQuery(qemuNbdkitCaps *caps)
         return;
     }
 
-    caps->ctime = st.st_ctime;
-    caps->filterDirMtime = qemuNbdkitGetDirMtime(NBDKIT_FILTERDIR);
-    caps->pluginDirMtime = qemuNbdkitGetDirMtime(NBDKIT_PLUGINDIR);
-    caps->libvirtCtime = virGetSelfLastChanged();
-    caps->libvirtVersion = LIBVIR_VERSION_NUMBER;
-
+    qemuNbdkitCapsQueryBuildConfig(caps);
     qemuNbdkitCapsQueryPlugins(caps);
     qemuNbdkitCapsQueryFilters(caps);
-    qemuNbdkitCapsQueryVersion(caps);
+
+    caps->ctime = st.st_ctime;
+    caps->filterDirMtime = qemuNbdkitGetDirMtime(caps->filterDir);
+    caps->pluginDirMtime = qemuNbdkitGetDirMtime(caps->pluginDir);
+    caps->libvirtCtime = virGetSelfLastChanged();
+    caps->libvirtVersion = LIBVIR_VERSION_NUMBER;
 }
 
 
@@ -267,9 +296,9 @@ virNbdkitCapsIsValid(void *data,
     if (!nbdkitCaps->path)
         return true;
 
-    if (!virNbkditCapsCheckModdir(NBDKIT_PLUGINDIR, nbdkitCaps->pluginDirMtime))
+    if (!virNbkditCapsCheckModdir(nbdkitCaps->pluginDir, nbdkitCaps->pluginDirMtime))
         return false;
-    if (!virNbkditCapsCheckModdir(NBDKIT_FILTERDIR, nbdkitCaps->filterDirMtime))
+    if (!virNbkditCapsCheckModdir(nbdkitCaps->filterDir, nbdkitCaps->filterDirMtime))
         return false;
 
     if (nbdkitCaps->libvirtCtime != virGetSelfLastChanged() ||
@@ -421,11 +450,21 @@ qemuNbdkitCapsLoadCache(qemuNbdkitCaps *nbdkitCaps,
     }
     nbdkitCaps->ctime = (time_t)l;
 
+    if ((nbdkitCaps->pluginDir = virXPathString("string(./plugindir)", ctxt)) == NULL) {
+        VIR_DEBUG("missing plugindir in nbdkit capabilities cache");
+        return -1;
+    }
+
     if (virXPathLongLong("string(./plugindirmtime)", ctxt, &l) < 0) {
         VIR_DEBUG("missing plugindirmtime in nbdkit capabilities XML");
         return -1;
     }
     nbdkitCaps->pluginDirMtime = (time_t)l;
+
+    if ((nbdkitCaps->filterDir = virXPathString("string(./filterdir)", ctxt)) == NULL) {
+        VIR_DEBUG("missing filterdir in nbdkit capabilities cache");
+        return -1;
+    }
 
     if (virXPathLongLong("string(./filterdirmtime)", ctxt, &l) < 0) {
         VIR_DEBUG("missing filterdirmtime in nbdkit capabilities XML");
@@ -482,8 +521,12 @@ qemuNbdkitCapsFormatCache(qemuNbdkitCaps *nbdkitCaps)
                           nbdkitCaps->path);
     virBufferAsprintf(&buf, "<nbdkitctime>%lu</nbdkitctime>\n",
                       nbdkitCaps->ctime);
+    virBufferEscapeString(&buf, "<plugindir>%s</plugindir>\n",
+                          nbdkitCaps->pluginDir);
     virBufferAsprintf(&buf, "<plugindirmtime>%lu</plugindirmtime>\n",
                       nbdkitCaps->pluginDirMtime);
+    virBufferEscapeString(&buf, "<filterdir>%s</filterdir>\n",
+                          nbdkitCaps->filterDir);
     virBufferAsprintf(&buf, "<filterdirmtime>%lu</filterdirmtime>\n",
                       nbdkitCaps->filterDirMtime);
     virBufferAsprintf(&buf, "<selfctime>%lu</selfctime>\n",
