@@ -143,60 +143,182 @@ capabilities enabled in the chip and BIOS you will see:
 
 ::
 
-   <capabilities>
-     <host>
-       <cpu>
-         <arch>x86_64</arch>
-         <features>
-           <vmx/>
-         </features>
-         <model>core2duo</model>
-         <vendor>Intel</vendor>
-         <topology sockets="1" dies="1" cores="2" threads="1"/>
-         <feature name="lahf_lm"/>
-         <feature name='xtpr'/>
-         <pages unit='KiB' size='4'/>
-         <pages unit='KiB' size='2048'/>
-         <pages unit='KiB' size='1048576'/>
-         <microcode version='36'/>
-         <maxphysaddr mode='emulate' bits='46'/>
-         ...
-       </cpu>
-       <power_management>
-         <suspend_mem/>
-         <suspend_disk/>
-         <suspend_hybrid/>
-       </power_management>
-     </host>
+  <capabilities>
 
-     <!-- xen-3.0-x86_64 -->
-     <guest>
-       <os_type>xen</os_type>
-       <arch name="x86_64">
-         <wordsize>64</wordsize>
-         <domain type="xen"></domain>
-         <emulator>/usr/lib64/xen/bin/qemu-dm</emulator>
-       </arch>
-       <features>
-       </features>
-     </guest>
+    <host>
+      <uuid>7b55704c-29f4-11b2-a85c-9dc6ff50623f</uuid>
+      <cpu>
+        <arch>x86_64</arch>
+        <model>Skylake-Client-noTSX-IBRS</model>
+        <vendor>Intel</vendor>
+        <microcode version='236'/>
+        <signature family='6' model='142' stepping='12'/>
+        <counter name='tsc' frequency='2303997000' scaling='no'/>
+        <topology sockets='1' dies='1' cores='4' threads='2'/>
+        <maxphysaddr mode='emulate' bits='39'/>
+        <feature name='ds'/>
+        <feature name='acpi'/>
+        <feature name='ss'/>
+        <feature name='ht'/>
+        <feature name='tm'/>
+        <feature name='pbe'/>
+        <feature name='dtes64'/>
+        <feature name='monitor'/>
+        <feature name='ds_cpl'/>
+        <feature name='vmx'/>
+        <feature name='smx'/>
+        <feature name='est'/>
+        <feature name='tm2'/>
+        <feature name='xtpr'/>
+        <feature name='pdcm'/>
+        <feature name='osxsave'/>
+        <feature name='tsc_adjust'/>
+        <feature name='sgx'/>
+        <feature name='clflushopt'/>
+        <feature name='intel-pt'/>
+        <feature name='md-clear'/>
+        <feature name='stibp'/>
+        <feature name='arch-capabilities'/>
+        <feature name='ssbd'/>
+        <feature name='xsaves'/>
+        <feature name='sgx1'/>
+        <feature name='sgx-debug'/>
+        <feature name='sgx-mode64'/>
+        <feature name='sgx-provisionkey'/>
+        <feature name='sgx-tokenkey'/>
+        <feature name='pdpe1gb'/>
+        <feature name='invtsc'/>
+        <feature name='rdctl-no'/>
+        <feature name='ibrs-all'/>
+        <feature name='skip-l1dfl-vmentry'/>
+        <feature name='mds-no'/>
+        <feature name='tsx-ctrl'/>
+        <pages unit='KiB' size='4'/>
+        <pages unit='KiB' size='2048'/>
+        <pages unit='KiB' size='1048576'/>
+      </cpu>
+      <power_management>
+        <suspend_mem/>
+      </power_management>
+      <iommu support='yes'/>
+      <migration_features>
+        <live/>
+        <uri_transports>
+          <uri_transport>tcp</uri_transport>
+          <uri_transport>rdma</uri_transport>
+        </uri_transports>
+      </migration_features>
+      <topology>
+        <cells num='1'>
+          <cell id='0'>
+            <memory unit='KiB'>32498112</memory>
+            <pages unit='KiB' size='4'>6813808</pages>
+            <pages unit='KiB' size='2048'>2048</pages>
+            <pages unit='KiB' size='1048576'>1</pages>
+            <distances>
+              <sibling id='0' value='10'/>
+            </distances>
+            <cpus num='8'>
+              <cpu id='0' socket_id='0' die_id='0' core_id='0' siblings='0,4'/>
+              <cpu id='1' socket_id='0' die_id='0' core_id='1' siblings='1,5'/>
+              <cpu id='2' socket_id='0' die_id='0' core_id='2' siblings='2,6'/>
+              <cpu id='3' socket_id='0' die_id='0' core_id='3' siblings='3,7'/>
+              <cpu id='4' socket_id='0' die_id='0' core_id='0' siblings='0,4'/>
+              <cpu id='5' socket_id='0' die_id='0' core_id='1' siblings='1,5'/>
+              <cpu id='6' socket_id='0' die_id='0' core_id='2' siblings='2,6'/>
+              <cpu id='7' socket_id='0' die_id='0' core_id='3' siblings='3,7'/>
+            </cpus>
+          </cell>
+        </cells>
+      </topology>
+      <cache>
+        <bank id='0' level='3' type='both' size='8' unit='MiB' cpus='0-7'/>
+      </cache>
+      <secmodel>
+        <model>none</model>
+        <doi>0</doi>
+      </secmodel>
+      <secmodel>
+        <model>dac</model>
+        <doi>0</doi>
+        <baselabel type='kvm'>+77:+77</baselabel>
+        <baselabel type='qemu'>+77:+77</baselabel>
+      </secmodel>
+    </host>
 
-     <!-- hvm-3.0-x86_32 -->
-     <guest>
-       <os_type>hvm</os_type>
-       <arch name="i686">
-         <wordsize>32</wordsize>
-         <domain type="xen"></domain>
-         <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
-         <machine>pc</machine>
-         <machine>isapc</machine>
-         <loader>/usr/lib/xen/boot/hvmloader</loader>
-       </arch>
-       <features>
-         <cpuselection/>
-         <deviceboot/>
-       </features>
-     </guest>
+    <guest>
+      <os_type>hvm</os_type>
+      <arch name='x86_64'>
+        <wordsize>64</wordsize>
+        <emulator>/usr/bin/qemu-system-x86_64</emulator>
+        <machine maxCpus='255'>pc-i440fx-7.1</machine>
+        <machine canonical='pc-i440fx-7.1' maxCpus='255'>pc</machine>
+        <machine maxCpus='288'>pc-q35-5.2</machine>
+        <machine maxCpus='255'>pc-i440fx-2.12</machine>
+        <machine maxCpus='255'>pc-i440fx-2.0</machine>
+        <machine maxCpus='255'>pc-i440fx-6.2</machine>
+        <machine maxCpus='288'>pc-q35-4.2</machine>
+        <machine maxCpus='255'>pc-i440fx-2.5</machine>
+        <machine maxCpus='255'>pc-i440fx-4.2</machine>
+        <machine maxCpus='255'>pc-i440fx-5.2</machine>
+        <machine maxCpus='255' deprecated='yes'>pc-i440fx-1.5</machine>
+        <machine maxCpus='255'>pc-q35-2.7</machine>
+        <machine maxCpus='288'>pc-q35-7.1</machine>
+        <machine canonical='pc-q35-7.1' maxCpus='288'>q35</machine>
+        <machine maxCpus='255'>pc-i440fx-2.2</machine>
+        <machine maxCpus='255'>pc-i440fx-2.7</machine>
+        <machine maxCpus='288'>pc-q35-6.1</machine>
+        <machine maxCpus='255'>pc-q35-2.4</machine>
+        <machine maxCpus='288'>pc-q35-2.10</machine>
+        <machine maxCpus='1'>x-remote</machine>
+        <machine maxCpus='288'>pc-q35-5.1</machine>
+        <machine maxCpus='255' deprecated='yes'>pc-i440fx-1.7</machine>
+        <machine maxCpus='288'>pc-q35-2.9</machine>
+        <machine maxCpus='255'>pc-i440fx-2.11</machine>
+        <machine maxCpus='288'>pc-q35-3.1</machine>
+        <machine maxCpus='255'>pc-i440fx-6.1</machine>
+        <machine maxCpus='288'>pc-q35-4.1</machine>
+        <machine maxCpus='255'>pc-i440fx-2.4</machine>
+        <machine maxCpus='255'>pc-i440fx-4.1</machine>
+        <machine maxCpus='255'>pc-i440fx-5.1</machine>
+        <machine maxCpus='255'>pc-i440fx-2.9</machine>
+        <machine maxCpus='1'>isapc</machine>
+        <machine maxCpus='255' deprecated='yes'>pc-i440fx-1.4</machine>
+        <machine maxCpus='255'>pc-q35-2.6</machine>
+        <machine maxCpus='255'>pc-i440fx-3.1</machine>
+        <machine maxCpus='288'>pc-q35-2.12</machine>
+        <machine maxCpus='288'>pc-q35-7.0</machine>
+        <machine maxCpus='255'>pc-i440fx-2.1</machine>
+        <machine maxCpus='288'>pc-q35-6.0</machine>
+        <machine maxCpus='255'>pc-i440fx-2.6</machine>
+        <machine maxCpus='288'>pc-q35-4.0.1</machine>
+        <machine maxCpus='255'>pc-i440fx-7.0</machine>
+        <machine maxCpus='255' deprecated='yes'>pc-i440fx-1.6</machine>
+        <machine maxCpus='288'>pc-q35-5.0</machine>
+        <machine maxCpus='288'>pc-q35-2.8</machine>
+        <machine maxCpus='255'>pc-i440fx-2.10</machine>
+        <machine maxCpus='288'>pc-q35-3.0</machine>
+        <machine maxCpus='255'>pc-i440fx-6.0</machine>
+        <machine maxCpus='288'>pc-q35-4.0</machine>
+        <machine maxCpus='288'>microvm</machine>
+        <machine maxCpus='255'>pc-i440fx-2.3</machine>
+        <machine maxCpus='255'>pc-i440fx-4.0</machine>
+        <machine maxCpus='255'>pc-i440fx-5.0</machine>
+        <machine maxCpus='255'>pc-i440fx-2.8</machine>
+        <machine maxCpus='288'>pc-q35-6.2</machine>
+        <machine maxCpus='255'>pc-q35-2.5</machine>
+        <machine maxCpus='255'>pc-i440fx-3.0</machine>
+        <machine maxCpus='288'>pc-q35-2.11</machine>
+        <domain type='qemu'/>
+        <domain type='kvm'/>
+      </arch>
+      <features>
+        <acpi default='on' toggle='yes'/>
+        <apic default='on' toggle='no'/>
+        <cpuselection/>
+        <deviceboot/>
+        <disksnapshot default='on' toggle='no'/>
+      </features>
+    </guest>
 
-     ...
-   </capabilities>
+  </capabilities>
