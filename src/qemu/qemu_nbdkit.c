@@ -852,12 +852,23 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
     virTimeBackOffVar timebackoff;
     g_autoptr(virURI) uri = NULL;
     g_autofree char *uristring = NULL;
+    g_autofree char *basename = g_strdup_printf("%s-nbdkit-%i", vm->def->name, proc->source->id);
+    int logfd = -1;
+    g_autoptr(qemuLogContext) logContext = NULL;
 
     if (!(cmd = qemuNbdkitProcessBuildCommand(proc)))
         return -1;
 
+    if (!(logContext = qemuLogContextNew(driver, vm, basename))) {
+        virLastErrorPrefixMessage("%s", _("can't connect to virtlogd"));
+        return -1;
+    }
+
+    logfd = qemuLogContextGetWriteFD(logContext);
+
     VIR_DEBUG("starting nbdkit process for %s", proc->source->nodestorage);
-    virCommandSetErrorBuffer(cmd, &errbuf);
+    virCommandSetErrorFD(cmd, &logfd);
+    virCommandSetOutputFD(cmd, &logfd);
     virCommandSetPidFile(cmd, proc->pidfile);
 
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "nbdkit") < 0)
@@ -898,6 +909,9 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
  errorlog:
     if ((uri = qemuBlockStorageSourceGetURI(proc->source)))
         uristring = virURIFormat(uri);
+
+    if (qemuLogContextReadFiltered(logContext, &errbuf, 1024) < 0)
+        VIR_WARN("Unable to read from nbdkit log");
 
     virReportError(VIR_ERR_OPERATION_FAILED,
                    _("Failed to connect to nbdkit for '%1$s': %2$s"),
