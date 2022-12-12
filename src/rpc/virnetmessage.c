@@ -423,7 +423,7 @@ int virNetMessageDecodePayload(virNetMessage *msg,
     }
 
     /* Get the length stored in buffer. */
-    msg->bufferLength += xdr_getpos(&xdr);
+    msg->bufferOffset += xdr_getpos(&xdr);
     xdr_destroy(&xdr);
     return 0;
 
