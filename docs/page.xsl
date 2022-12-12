@@ -179,7 +179,7 @@
           <div id="community">
             <h3>Community</h3>
             <ul>
-              <li><a href="https://twitter.com/hashtag/libvirt">twitter</a></li>
+              <li><a href="https://fosstodon.org/tags/libvirt">fosstodon</a></li>
               <li><a href="https://stackoverflow.com/questions/tagged/libvirt">stackoverflow</a></li>
               <li><a href="https://serverfault.com/questions/tagged/libvirt">serverfault</a></li>
             </ul>
