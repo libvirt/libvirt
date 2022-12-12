@@ -1433,8 +1433,8 @@ if not get_option('driver_libxl').disabled() and conf.has('WITH_LIBVIRTD')
   libxl_dep = dependency('xenlight', version: '>=' + libxl_version, required: get_option('driver_libxl'))
 
   if libxl_dep.found()
-    libxl_firmware_dir = libxl_dep.get_variable(pkgconfig : 'xenfirmwaredir')
-    libxl_execbin = libxl_dep.get_variable(pkgconfig : 'libexec_bin')
+    libxl_firmware_dir = libxl_dep.get_variable(pkgconfig : 'xenfirmwaredir', default_value: '')
+    libxl_execbin = libxl_dep.get_variable(pkgconfig : 'libexec_bin', default_value: '')
     if libxl_firmware_dir != ''
       conf.set_quoted('LIBXL_FIRMWARE_DIR', libxl_firmware_dir)
     endif
