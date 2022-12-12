@@ -19,6 +19,8 @@
 
 #include <config.h>
 
+#include <string.h>
+
 #include "virsecureerase.h"
 
 /**
@@ -40,7 +42,11 @@ virSecureErase(void *ptr,
     if (!ptr || size == 0)
         return;
 
+#ifdef WITH_EXPLICIT_BZERO
+    explicit_bzero(ptr, size);
+#else
     memset(ptr, 0, size);
+#endif
 }
 
 /**

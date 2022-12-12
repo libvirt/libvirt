@@ -537,6 +537,7 @@ libvirt_export_dynamic = cc.first_supported_link_argument([
 
 functions = [
   'elf_aux_info',
+  'explicit_bzero',
   'fallocate',
   'getauxval',
   'getegid',
