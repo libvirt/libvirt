@@ -1355,6 +1355,8 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 
 %mingw_debug_install_post
 
+%mingw_find_lang %{name}
+
 %endif
 
 %check
@@ -2181,7 +2183,7 @@ exit 0
 %{_datadir}/libvirt/api/libvirt-lxc-api.xml
 
 %if %{with_mingw}
-%files -n mingw32-libvirt
+%files -n mingw32-libvirt -f mingw32-libvirt.lang
 %dir %{mingw32_sysconfdir}/libvirt/
 %config(noreplace) %{mingw32_sysconfdir}/libvirt/libvirt.conf
 %config(noreplace) %{mingw32_sysconfdir}/libvirt/libvirt-admin.conf
@@ -2212,7 +2214,6 @@ exit 0
 %{mingw32_datadir}/libvirt/api/libvirt-admin-api.xml
 %{mingw32_datadir}/libvirt/cpu_map/*.xml
 %{mingw32_datadir}/libvirt/test-screenshot.png
-%{mingw32_datadir}/locale/*/LC_MESSAGES/libvirt.mo
 %dir %{mingw32_includedir}/libvirt
 %{mingw32_includedir}/libvirt/libvirt.h
 %{mingw32_includedir}/libvirt/libvirt-common.h
@@ -2239,7 +2240,7 @@ exit 0
 %{mingw32_mandir}/man1/virt-pki-validate.1*
 %{mingw32_mandir}/man7/virkey*.7*
 
-%files -n mingw64-libvirt
+%files -n mingw64-libvirt -f mingw64-libvirt.lang
 %dir %{mingw64_sysconfdir}/libvirt/
 %config(noreplace) %{mingw64_sysconfdir}/libvirt/libvirt.conf
 %config(noreplace) %{mingw64_sysconfdir}/libvirt/libvirt-admin.conf
@@ -2270,7 +2271,6 @@ exit 0
 %{mingw64_datadir}/libvirt/api/libvirt-admin-api.xml
 %{mingw64_datadir}/libvirt/cpu_map/*.xml
 %{mingw64_datadir}/libvirt/test-screenshot.png
-%{mingw64_datadir}/locale/*/LC_MESSAGES/libvirt.mo
 %dir %{mingw64_includedir}/libvirt
 %{mingw64_includedir}/libvirt/libvirt.h
 %{mingw64_includedir}/libvirt/libvirt-common.h
