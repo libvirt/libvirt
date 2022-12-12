@@ -5262,6 +5262,50 @@ qemuMigrationSrcPerformTunnel(virQEMUDriver *driver,
 }
 
 
+static int
+qemuMigrationSrcPerformResume(virQEMUDriver *driver,
+                              virConnectPtr conn,
+                              virDomainObj *vm,
+                              const char *uri,
+                              qemuMigrationParams *migParams,
+                              const char *cookiein,
+                              int cookieinlen,
+                              char **cookieout,
+                              int *cookieoutlen,
+                              unsigned int flags)
+{
+    int ret;
+
+    VIR_DEBUG("vm=%p, uri=%s", vm, uri);
+
+    if (!qemuMigrationAnyCanResume(vm, VIR_ASYNC_JOB_MIGRATION_OUT, flags,
+                                   QEMU_MIGRATION_PHASE_BEGIN_RESUME))
+        return -1;
+
+    if (qemuMigrationJobStartPhase(vm, QEMU_MIGRATION_PHASE_PERFORM_RESUME) < 0)
+        return -1;
+
+    virCloseCallbacksUnset(driver->closeCallbacks, vm,
+                           qemuMigrationAnyConnectionClosed);
+    qemuDomainCleanupRemove(vm, qemuProcessCleanupMigrationJob);
+
+    ret = qemuMigrationSrcPerformNative(driver, vm, NULL, uri,
+                                        cookiein, cookieinlen,
+                                        cookieout, cookieoutlen, flags,
+                                        0, NULL, NULL, 0, NULL, migParams, NULL);
+
+    if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
+                             qemuMigrationAnyConnectionClosed) < 0)
+        ret = -1;
+
+    if (ret < 0)
+        ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
+
+    qemuMigrationJobContinue(vm, qemuProcessCleanupMigrationJob);
+    return ret;
+}
+
+
 /* This is essentially a re-impl of virDomainMigrateVersion2
  * from libvirt.c, but running in source libvirtd context,
  * instead of client app context & also adding in tunnel
@@ -6070,50 +6114,6 @@ qemuMigrationSrcPerformJob(virQEMUDriver *driver,
 
  cleanup:
     virObjectEventStateQueue(driver->domainEventState, event);
-    return ret;
-}
-
-
-static int
-qemuMigrationSrcPerformResume(virQEMUDriver *driver,
-                              virConnectPtr conn,
-                              virDomainObj *vm,
-                              const char *uri,
-                              qemuMigrationParams *migParams,
-                              const char *cookiein,
-                              int cookieinlen,
-                              char **cookieout,
-                              int *cookieoutlen,
-                              unsigned int flags)
-{
-    int ret;
-
-    VIR_DEBUG("vm=%p, uri=%s", vm, uri);
-
-    if (!qemuMigrationAnyCanResume(vm, VIR_ASYNC_JOB_MIGRATION_OUT, flags,
-                                   QEMU_MIGRATION_PHASE_BEGIN_RESUME))
-        return -1;
-
-    if (qemuMigrationJobStartPhase(vm, QEMU_MIGRATION_PHASE_PERFORM_RESUME) < 0)
-        return -1;
-
-    virCloseCallbacksUnset(driver->closeCallbacks, vm,
-                           qemuMigrationAnyConnectionClosed);
-    qemuDomainCleanupRemove(vm, qemuProcessCleanupMigrationJob);
-
-    ret = qemuMigrationSrcPerformNative(driver, vm, NULL, uri,
-                                        cookiein, cookieinlen,
-                                        cookieout, cookieoutlen, flags,
-                                        0, NULL, NULL, 0, NULL, migParams, NULL);
-
-    if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
-                             qemuMigrationAnyConnectionClosed) < 0)
-        ret = -1;
-
-    if (ret < 0)
-        ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
-
-    qemuMigrationJobContinue(vm, qemuProcessCleanupMigrationJob);
     return ret;
 }
 
