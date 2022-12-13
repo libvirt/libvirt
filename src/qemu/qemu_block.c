@@ -3364,7 +3364,8 @@ qemuBlockCommit(virDomainObj *vm,
                                  job->name,
                                  topSource->nodeformat,
                                  baseSource->nodeformat,
-                                 backingPath, bandwidth);
+                                 backingPath, bandwidth,
+                                 VIR_TRISTATE_BOOL_YES);
 
     qemuDomainObjExitMonitor(vm);
 

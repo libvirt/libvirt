@@ -4028,11 +4028,11 @@ qemuMonitorJSONBlockCommit(qemuMonitor *mon,
                            const char *topNode,
                            const char *baseNode,
                            const char *backingName,
-                           unsigned long long speed)
+                           unsigned long long speed,
+                           virTristateBool autofinalize)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
-    virTristateBool autofinalize = VIR_TRISTATE_BOOL_YES;
     virTristateBool autodismiss = VIR_TRISTATE_BOOL_NO;
 
     cmd = qemuMonitorJSONMakeCommand("block-commit",
