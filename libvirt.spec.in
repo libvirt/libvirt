@@ -1762,6 +1762,8 @@ exit 0
 %dir %attr(0755, root, root) %{_libdir}/libvirt/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/connection-driver/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/
+%dir %attr(0755, root, root) %{_libdir}/libvirt/storage-backend/
+%dir %attr(0755, root, root) %{_libdir}/libvirt/storage-file/
 %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/lockd.so
 %{_datadir}/augeas/lenses/libvirtd.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd.aug
