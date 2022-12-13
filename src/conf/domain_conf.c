@@ -27921,7 +27921,8 @@ virDomainObjGetState(virDomainObj *dom, int *reason)
 
 
 bool
-virDomainObjIsFailedPostcopy(virDomainObj *dom)
+virDomainObjIsFailedPostcopy(virDomainObj *dom,
+                             virDomainJobObj *job G_GNUC_UNUSED)
 {
     return ((dom->state.state == VIR_DOMAIN_PAUSED &&
              dom->state.reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED) ||
@@ -27931,9 +27932,10 @@ virDomainObjIsFailedPostcopy(virDomainObj *dom)
 
 
 bool
-virDomainObjIsPostcopy(virDomainObj *dom)
+virDomainObjIsPostcopy(virDomainObj *dom,
+                       virDomainJobObj *job)
 {
-    if (virDomainObjIsFailedPostcopy(dom))
+    if (virDomainObjIsFailedPostcopy(dom, job))
         return true;
 
     return (dom->state.state == VIR_DOMAIN_PAUSED &&

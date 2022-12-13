@@ -2292,7 +2292,7 @@ qemuMigrationAnyConnectionClosed(virDomainObj *vm,
         break;
 
     case QEMU_MIGRATION_PHASE_PERFORM3_DONE:
-        if (virDomainObjIsPostcopy(vm)) {
+        if (virDomainObjIsPostcopy(vm, vm->job)) {
             VIR_DEBUG("Migration protocol interrupted in post-copy mode");
             postcopy = true;
         } else {
@@ -2681,7 +2681,7 @@ qemuMigrationAnyCanResume(virDomainObj *vm,
         return false;
     }
 
-    if (!virDomainObjIsPostcopy(vm)) {
+    if (!virDomainObjIsPostcopy(vm, vm->job)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("migration of domain %s is not in post-copy phase"),
                        vm->def->name);
@@ -2689,7 +2689,7 @@ qemuMigrationAnyCanResume(virDomainObj *vm,
     }
 
     if (vm->job->phase < QEMU_MIGRATION_PHASE_POSTCOPY_FAILED &&
-        !virDomainObjIsFailedPostcopy(vm)) {
+        !virDomainObjIsFailedPostcopy(vm, vm->job)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("post-copy migration of domain %s has not failed"),
                        vm->def->name);
@@ -3902,7 +3902,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
     if (retcode != 0 &&
-        virDomainObjIsPostcopy(vm) &&
+        virDomainObjIsPostcopy(vm, vm->job) &&
         currentData->stats.mig.status == QEMU_MONITOR_MIGRATION_STATUS_COMPLETED) {
         VIR_DEBUG("Finish phase failed, but QEMU reports post-copy migration is completed; forcing success");
         retcode = 0;
@@ -3910,7 +3910,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
 
     if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
         phase = QEMU_MIGRATION_PHASE_CONFIRM_RESUME;
-    } else if (virDomainObjIsFailedPostcopy(vm)) {
+    } else if (virDomainObjIsFailedPostcopy(vm, vm->job)) {
         /* Keep the original migration phase in case post-copy failed as the
          * job will stay active even though migration API finishes with an
          * error.
@@ -3970,7 +3970,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
         if (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
             reason == VIR_DOMAIN_PAUSED_POSTCOPY) {
             qemuMigrationSrcPostcopyFailed(vm);
-        } else if (!virDomainObjIsFailedPostcopy(vm)) {
+        } else if (!virDomainObjIsFailedPostcopy(vm, vm->job)) {
             qemuMigrationSrcRestoreDomainState(driver, vm);
 
             qemuMigrationParamsReset(vm, VIR_ASYNC_JOB_MIGRATION_OUT,
@@ -4011,7 +4011,7 @@ qemuMigrationSrcConfirm(virQEMUDriver *driver,
          * job will stay active even though migration API finishes with an
          * error.
          */
-        if (virDomainObjIsFailedPostcopy(vm))
+        if (virDomainObjIsFailedPostcopy(vm, vm->job))
             phase = vm->job->phase;
         else if (cancelled)
             phase = QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED;
@@ -4029,7 +4029,7 @@ qemuMigrationSrcConfirm(virQEMUDriver *driver,
                                        cookiein, cookieinlen,
                                        flags, cancelled);
 
-    if (virDomainObjIsFailedPostcopy(vm)) {
+    if (virDomainObjIsFailedPostcopy(vm, vm->job)) {
         ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
         qemuMigrationJobContinue(vm, qemuProcessCleanupMigrationJob);
     } else {
@@ -6079,7 +6079,7 @@ qemuMigrationSrcPerformJob(virQEMUDriver *driver,
     if (ret < 0)
         virErrorPreserveLast(&orig_err);
 
-    if (virDomainObjIsFailedPostcopy(vm)) {
+    if (virDomainObjIsFailedPostcopy(vm, vm->job)) {
         ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
         qemuMigrationJobContinue(vm, qemuProcessCleanupMigrationJob);
     } else {
@@ -6167,7 +6167,7 @@ qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
     ret = 0;
 
  cleanup:
-    if (ret < 0 && !virDomainObjIsFailedPostcopy(vm)) {
+    if (ret < 0 && !virDomainObjIsFailedPostcopy(vm, vm->job)) {
         qemuMigrationSrcRestoreDomainState(driver, vm);
         qemuMigrationParamsReset(vm, VIR_ASYNC_JOB_MIGRATION_OUT,
                                  jobPriv->migParams, vm->job->apiFlags);
@@ -6708,7 +6708,7 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
         }
     }
 
-    if (virDomainObjIsFailedPostcopy(vm)) {
+    if (virDomainObjIsFailedPostcopy(vm, vm->job)) {
         ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
         virCloseCallbacksDomainRemove(vm, NULL, qemuProcessAutoDestroy);
         *finishJob = false;

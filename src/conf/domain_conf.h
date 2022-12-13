@@ -3959,10 +3959,12 @@ virDomainObjGetState(virDomainObj *obj, int *reason)
         ATTRIBUTE_NONNULL(1);
 
 bool
-virDomainObjIsFailedPostcopy(virDomainObj *obj)
+virDomainObjIsFailedPostcopy(virDomainObj *obj,
+                             virDomainJobObj *job)
         ATTRIBUTE_NONNULL(1);
 bool
-virDomainObjIsPostcopy(virDomainObj *dom)
+virDomainObjIsPostcopy(virDomainObj *dom,
+                       virDomainJobObj *job)
         ATTRIBUTE_NONNULL(1);
 
 virSecurityLabelDef *

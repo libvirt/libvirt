@@ -12609,7 +12609,7 @@ qemuDomainAbortJobFlags(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_ABORT_JOB_POSTCOPY &&
         (vm->job->asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT ||
-         !virDomainObjIsPostcopy(vm))) {
+         !virDomainObjIsPostcopy(vm, vm->job))) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("current job is not outgoing migration in post-copy mode"));
         goto endjob;
@@ -12634,7 +12634,7 @@ qemuDomainAbortJobFlags(virDomainPtr dom,
         break;
 
     case VIR_ASYNC_JOB_MIGRATION_OUT:
-        if (virDomainObjIsPostcopy(vm))
+        if (virDomainObjIsPostcopy(vm, vm->job))
             ret = qemuDomainAbortJobPostcopy(vm, flags);
         else
             ret = qemuDomainAbortJobMigration(vm);
