@@ -3218,9 +3218,10 @@ qemuBlockExportAddNBD(virDomainObj *vm,
  * disable automatic finalization for some use-case. The default value passed
  * to this argument should be VIR_TRISTATE_BOOL_YES.
  *
- * Returns -1 on error, 0 on success.
+ * Returns qemuBlockJobData pointer on success, NULL on error. Caller is responsible
+ * to call virObjectUnref on the pointer.
  */
-int
+qemuBlockJobData *
 qemuBlockCommit(virDomainObj *vm,
                 virDomainDiskDef *disk,
                 virStorageSource *baseSource,
@@ -3233,14 +3234,15 @@ qemuBlockCommit(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
-    int ret = -1;
+    int rc = -1;
     bool clean_access = false;
     g_autofree char *backingPath = NULL;
     qemuBlockJobData *job = NULL;
+    qemuBlockJobData *ret = NULL;
     g_autoptr(virStorageSource) mirror = NULL;
 
     if (virDomainObjCheckActive(vm) < 0)
-        return -1;
+        return NULL;
 
     /* Convert bandwidth MiB to bytes, if necessary */
     if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_BANDWIDTH_BYTES)) {
@@ -3248,26 +3250,26 @@ qemuBlockCommit(virDomainObj *vm,
             virReportError(VIR_ERR_OVERFLOW,
                            _("bandwidth must be less than %llu"),
                            LLONG_MAX >> 20);
-            return -1;
+            return NULL;
         }
         bandwidth <<= 20;
     }
 
     if (!qemuDomainDiskBlockJobIsSupported(disk))
-        return -1;
+        return NULL;
 
     if (virStorageSourceIsEmpty(disk->src)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("disk %s has no source file to be committed"),
                        disk->dst);
-        return -1;
+        return NULL;
     }
 
     if (qemuDomainDiskBlockJobIsActive(disk))
-        return -1;
+        return NULL;
 
     if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
-        return -1;
+        return NULL;
 
     if (topSource == disk->src) {
         /* XXX Should we auto-pivot when COMMIT_ACTIVE is not specified? */
@@ -3275,20 +3277,20 @@ qemuBlockCommit(virDomainObj *vm,
             virReportError(VIR_ERR_INVALID_ARG,
                            _("commit of '%s' active layer requires active flag"),
                            disk->dst);
-            return -1;
+            return NULL;
         }
     } else if (flags & VIR_DOMAIN_BLOCK_COMMIT_ACTIVE) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("active commit requested but '%s' is not active"),
                        topSource->path);
-        return -1;
+        return NULL;
     }
 
     if (!virStorageSourceHasBacking(topSource)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("top '%s' in chain for '%s' has no backing file"),
                        topSource->path, disk->src->path);
-        return -1;
+        return NULL;
     }
 
     if ((flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW) &&
@@ -3297,33 +3299,33 @@ qemuBlockCommit(virDomainObj *vm,
                        _("base '%s' is not immediately below '%s' in chain "
                          "for '%s'"),
                        baseSource->path, topSource->path, disk->src->path);
-        return -1;
+        return NULL;
     }
 
     /* For an active commit, clone enough of the base to act as the mirror */
     if (topSource == disk->src) {
         if (!(mirror = virStorageSourceCopy(baseSource, false)))
-            return -1;
+            return NULL;
         if (virStorageSourceInitChainElement(mirror,
                                              disk->src,
                                              true) < 0)
-            return -1;
+            return NULL;
     }
 
     if (flags & VIR_DOMAIN_BLOCK_COMMIT_RELATIVE &&
         topSource != disk->src) {
         if (top_parent &&
             qemuBlockUpdateRelativeBacking(vm, top_parent, disk->src) < 0)
-            return -1;
+            return NULL;
 
         if (virStorageSourceGetRelativeBackingPath(topSource, baseSource,
                                                    &backingPath) < 0)
-            return -1;
+            return NULL;
 
         if (!backingPath) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("can't keep relative backing relationship"));
-            return -1;
+            return NULL;
         }
     }
 
@@ -3366,17 +3368,17 @@ qemuBlockCommit(virDomainObj *vm,
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         goto cleanup;
 
-    ret = qemuMonitorBlockCommit(priv->mon,
-                                 qemuDomainDiskGetTopNodename(disk),
-                                 job->name,
-                                 topSource->nodeformat,
-                                 baseSource->nodeformat,
-                                 backingPath, bandwidth,
-                                 autofinalize);
+    rc = qemuMonitorBlockCommit(priv->mon,
+                                qemuDomainDiskGetTopNodename(disk),
+                                job->name,
+                                topSource->nodeformat,
+                                baseSource->nodeformat,
+                                backingPath, bandwidth,
+                                autofinalize);
 
     qemuDomainObjExitMonitor(vm);
 
-    if (ret < 0)
+    if (rc < 0)
         goto cleanup;
 
     if (mirror) {
@@ -3384,9 +3386,10 @@ qemuBlockCommit(virDomainObj *vm,
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT;
     }
     qemuBlockJobStarted(job, vm);
+    ret = virObjectRef(job);
 
  cleanup:
-    if (ret < 0 && clean_access) {
+    if (rc < 0 && clean_access) {
         virErrorPtr orig_err;
         virErrorPreserveLast(&orig_err);
         /* Revert access to read-only, if possible.  */

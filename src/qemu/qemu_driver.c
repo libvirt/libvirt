@@ -14994,6 +14994,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     virStorageSource *topSource;
     virStorageSource *baseSource = NULL;
     virStorageSource *top_parent = NULL;
+    g_autoptr(qemuBlockJobData) job = NULL;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW |
                   VIR_DOMAIN_BLOCK_COMMIT_ACTIVE |
@@ -15025,9 +15026,11 @@ qemuDomainBlockCommit(virDomainPtr dom,
                                                         base, disk->dst, NULL)))
         goto endjob;
 
-    ret = qemuBlockCommit(vm, disk, baseSource, topSource, top_parent,
+    job = qemuBlockCommit(vm, disk, baseSource, topSource, top_parent,
                           bandwidth, VIR_ASYNC_JOB_NONE, VIR_TRISTATE_BOOL_YES,
                           flags);
+    if (job)
+        ret = 0;
 
  endjob:
     virDomainObjEndJob(vm);
