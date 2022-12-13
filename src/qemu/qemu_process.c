@@ -8673,6 +8673,7 @@ qemuProcessRefreshDisks(virDomainObj *vm,
                         virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
     g_autoptr(GHashTable) table = NULL;
     size_t i;
 
@@ -8697,14 +8698,26 @@ qemuProcessRefreshDisks(virDomainObj *vm,
             continue;
 
         if (info->removable) {
+            virObjectEvent *event = NULL;
+            int reason;
+
             if (info->empty)
                 virDomainDiskEmptySource(disk);
 
             if (info->tray) {
-                if (info->tray_open)
+                if (info->tray_open == disk->tray_status)
+                    continue;
+
+                if (info->tray_open) {
+                    reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN;
                     disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
-                else
+                } else {
+                    reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE;
                     disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
+                }
+
+                event = virDomainEventTrayChangeNewFromObj(vm, disk->info.alias, reason);
+                virObjectEventStateQueue(driver->domainEventState, event);
             }
         }
 
