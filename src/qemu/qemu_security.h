@@ -94,6 +94,10 @@ int qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
                                  int *exitstatus,
                                  int *cmdret);
 
+int qemuSecuritySetTPMLabels(virQEMUDriver *driver,
+                             virDomainObj *vm,
+                             bool setTPMStateLabel);
+
 int qemuSecurityRestoreTPMLabels(virQEMUDriver *driver,
                                  virDomainObj *vm,
                                  bool restoreTPMStateLabel);

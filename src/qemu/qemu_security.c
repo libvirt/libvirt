@@ -577,6 +577,32 @@ qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
 
 
 int
+qemuSecuritySetTPMLabels(virQEMUDriver *driver,
+                         virDomainObj *vm,
+                         bool setTPMStateLabel)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    int ret = -1;
+
+    if (virSecurityManagerTransactionStart(driver->securityManager) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerSetTPMLabels(driver->securityManager,
+                                       vm->def, setTPMStateLabel) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerTransactionCommit(driver->securityManager,
+                                            -1, priv->rememberOwner) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virSecurityManagerTransactionAbort(driver->securityManager);
+    return ret;
+}
+
+
+int
 qemuSecurityRestoreTPMLabels(virQEMUDriver *driver,
                              virDomainObj *vm,
                              bool restoreTPMStateLabel)
