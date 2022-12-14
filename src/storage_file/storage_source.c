@@ -1304,6 +1304,21 @@ virStorageSourceGetMetadataRecurseReadHeader(virStorageSource *src,
     int ret = -1;
     ssize_t len;
 
+    if (virStorageSourceIsFD(src)) {
+        if (!src->fdtuple) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("fd passed image source not initialized"));
+            return -1;
+        }
+
+        if ((len = virFileReadHeaderFD(src->fdtuple->fds[0],
+                                       VIR_STORAGE_MAX_HEADER, buf)) < 0)
+            return -1;
+
+        *headerLen = len;
+        return 0;
+    }
+
     if (virStorageSourceInitAs(src, uid, gid) < 0)
         return -1;
 

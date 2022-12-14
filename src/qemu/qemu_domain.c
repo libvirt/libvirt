@@ -7611,15 +7611,19 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
         disksrc->format > VIR_STORAGE_FILE_NONE &&
         disksrc->format < VIR_STORAGE_FILE_BACKING) {
 
+        /* terminate the chain for such images as the code below would do */
+        if (!disksrc->backingStore)
+            disksrc->backingStore = virStorageSourceNew();
+
+        /* we assume that FD-passed disks always exist */
+        if (virStorageSourceIsFD(disksrc))
+            return 0;
+
         if (!virFileExists(disksrc->path)) {
             virStorageSourceReportBrokenChain(errno, disksrc, disksrc);
 
             return -1;
         }
-
-        /* terminate the chain for such images as the code below would do */
-        if (!disksrc->backingStore)
-            disksrc->backingStore = virStorageSourceNew();
 
         /* host cdrom requires special treatment in qemu, so we need to check
          * whether a block device is a cdrom */
@@ -7632,12 +7636,14 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
         return 0;
     }
 
-    src = disksrc;
     /* skip to the end of the chain if there is any */
-    while (virStorageSourceHasBacking(src)) {
-        int rv = virStorageSourceSupportsAccess(src);
+    for (src = disksrc; virStorageSourceHasBacking(src); src = src->backingStore) {
+        int rv;
 
-        if (rv < 0)
+        if (virStorageSourceIsFD(src))
+            continue;
+
+        if ((rv = virStorageSourceSupportsAccess(src)) < 0)
             return -1;
 
         if (rv > 0) {
@@ -7652,7 +7658,6 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
 
             virStorageSourceDeinit(src);
         }
-        src = src->backingStore;
     }
 
     /* We skipped to the end of the chain. Skip detection if there's the
