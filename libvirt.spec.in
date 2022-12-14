@@ -432,10 +432,20 @@ Summary: Server side daemon and supporting files for libvirt library
 
 # The client side, i.e. shared libs are in a subpackage
 Requires: libvirt-libs = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-daemon-lock = %{version}-%{release}
 Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
 Requires: libvirt-daemon-log = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
+
+%description daemon
+Server side daemon required to manage the virtualization capabilities
+of recent versions of Linux. Requires a hypervisor specific sub-RPM
+for specific drivers.
+
+%package daemon-common
+Summary: Files and utilities used by daemons
+Requires: libvirt-libs = %{version}-%{release}
 # The libvirt-guests.sh script requires virsh from libvirt-client subpackage,
 # but not every deployment wants to use libvirt-guests service. Using
 # Recommends here will install libvirt-client by default (if available), but
@@ -473,10 +483,8 @@ Obsoletes: libvirt-admin < 7.3.0
 Provides: libvirt-admin = %{version}-%{release}
 Obsoletes: libvirt-bash-completion < 7.3.0
 
-%description daemon
-Server side daemon required to manage the virtualization capabilities
-of recent versions of Linux. Requires a hypervisor specific sub-RPM
-for specific drivers.
+%description daemon-common
+Miscellaneous files and utilities used by other libvirt daemons
 
 %package daemon-lock
 Summary: Server side daemon for managing locks
@@ -1435,30 +1443,19 @@ fi \
 %define libvirt_daemon_systemd_preun_priv() %systemd_preun %1.service %1-admin.socket %1.socket
 
 %pre daemon
-%libvirt_sysconfig_pre libvirtd libvirt-guests
-# 'libvirt' group is just to allow password-less polkit access to
-# libvirtd. The uid number is irrelevant, so we use dynamic allocation
-# described at the above link.
-getent group libvirt >/dev/null || groupadd -r libvirt
-exit 0
+%libvirt_sysconfig_pre libvirtd
 
 %post daemon
 %if ! %{with_modular_daemons}
 %libvirt_daemon_systemd_post_inet libvirtd
 %endif
-%systemd_post libvirt-guests.service
 %libvirt_daemon_schedule_restart libvirtd
 
 %preun daemon
-%systemd_preun libvirt-guests.service
 %libvirt_daemon_systemd_preun_inet libvirtd
 
-%postun daemon
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-%systemd_postun libvirt-guests.service
-
 %posttrans daemon
-%libvirt_sysconfig_posttrans libvirtd libvirt-guests
+%libvirt_sysconfig_posttrans libvirtd
 if test %libvirt_daemon_needs_restart libvirtd
 then
     # See if user has previously modified their install to
@@ -1492,6 +1489,26 @@ then
     fi
 fi
 %libvirt_daemon_finish_restart libvirtd
+
+%pre daemon-common
+%libvirt_sysconfig_pre libvirt-guests
+# 'libvirt' group is just to allow password-less polkit access to libvirt
+# daemons. The uid number is irrelevant, so we use dynamic allocation.
+getent group libvirt >/dev/null || groupadd -r libvirt
+exit 0
+
+%post daemon-common
+%systemd_post libvirt-guests.service
+
+%preun daemon-common
+%systemd_preun libvirt-guests.service
+
+%postun daemon-common
+/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+%systemd_postun libvirt-guests.service
+
+%posttrans daemon-common
+%libvirt_sysconfig_posttrans libvirt-guests
 
 %pre daemon-lock
 %libvirt_sysconfig_pre virtlockd
@@ -1814,12 +1831,18 @@ exit 0
 %{_unitdir}/libvirtd-admin.socket
 %{_unitdir}/libvirtd-tcp.socket
 %{_unitdir}/libvirtd-tls.socket
-%{_unitdir}/virt-guest-shutdown.target
-%{_unitdir}/libvirt-guests.service
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
-%config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
 %config(noreplace) %{_prefix}/lib/sysctl.d/60-libvirtd.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
+%{_datadir}/augeas/lenses/libvirtd.aug
+%{_datadir}/augeas/lenses/tests/test_libvirtd.aug
+%attr(0755, root, root) %{_sbindir}/libvirtd
+%{_mandir}/man8/libvirtd.8*
+
+%files daemon-common
+%{_unitdir}/virt-guest-shutdown.target
+%{_unitdir}/libvirt-guests.service
+%config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
 %dir %{_datadir}/libvirt/
 %ghost %dir %{_rundir}/libvirt/
 %ghost %dir %{_rundir}/libvirt/common/
@@ -1832,21 +1855,17 @@ exit 0
 %dir %attr(0755, root, root) %{_libdir}/libvirt/connection-driver/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/storage-backend/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/storage-file/
-%{_datadir}/augeas/lenses/libvirtd.aug
-%{_datadir}/augeas/lenses/tests/test_libvirtd.aug
 %{_datadir}/polkit-1/actions/org.libvirt.unix.policy
 %{_datadir}/polkit-1/actions/org.libvirt.api.policy
 %{_datadir}/polkit-1/rules.d/50-libvirt.rules
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/
 %attr(0755, root, root) %{_libexecdir}/libvirt_iohelper
 %attr(0755, root, root) %{_bindir}/virt-ssh-helper
-%attr(0755, root, root) %{_sbindir}/libvirtd
 %attr(0755, root, root) %{_libexecdir}/libvirt-guests.sh
 %{_mandir}/man1/virt-admin.1*
 %{_mandir}/man1/virt-host-validate.1*
 %{_mandir}/man8/virt-ssh-helper.8*
 %{_mandir}/man8/libvirt-guests.8*
-%{_mandir}/man8/libvirtd.8*
 %{_bindir}/virt-host-validate
 %{_bindir}/virt-admin
 %{_datadir}/bash-completion/completions/virt-admin
