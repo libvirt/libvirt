@@ -822,7 +822,15 @@ Libxl
 %package daemon-qemu
 Summary: Server side daemon & driver required to run QEMU guests
 
+    %if %{with_modular_daemons}
+Requires: libvirt-daemon-common = %{version}-%{release}
+Requires: libvirt-daemon-log = %{version}-%{release}
+Requires: libvirt-daemon-lock = %{version}-%{release}
+Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
+Requires: libvirt-daemon-proxy = %{version}-%{release}
+    %else
 Requires: libvirt-daemon = %{version}-%{release}
+    %endif
 Requires: libvirt-daemon-driver-qemu = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -841,7 +849,15 @@ capabilities of the QEMU TCG emulators
 %package daemon-kvm
 Summary: Server side daemon & driver required to run KVM guests
 
+    %if %{with_modular_daemons}
+Requires: libvirt-daemon-common = %{version}-%{release}
+Requires: libvirt-daemon-log = %{version}-%{release}
+Requires: libvirt-daemon-lock = %{version}-%{release}
+Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
+Requires: libvirt-daemon-proxy = %{version}-%{release}
+    %else
 Requires: libvirt-daemon = %{version}-%{release}
+    %endif
 Requires: libvirt-daemon-driver-qemu = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -860,7 +876,12 @@ capabilities of the KVM hypervisor
 %package daemon-lxc
 Summary: Server side daemon & driver required to run LXC guests
 
+    %if %{with_modular_daemons}
+Requires: libvirt-daemon-common = %{version}-%{release}
+Requires: libvirt-daemon-proxy = %{version}-%{release}
+    %else
 Requires: libvirt-daemon = %{version}-%{release}
+    %endif
 Requires: libvirt-daemon-driver-lxc = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -878,7 +899,14 @@ capabilities of LXC
 %package daemon-xen
 Summary: Server side daemon & driver required to run XEN guests
 
+    %if %{with_modular_daemons}
+Requires: libvirt-daemon-common = %{version}-%{release}
+Requires: libvirt-daemon-lock = %{version}-%{release}
+Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
+Requires: libvirt-daemon-proxy = %{version}-%{release}
+    %else
 Requires: libvirt-daemon = %{version}-%{release}
+    %endif
 Requires: libvirt-daemon-driver-libxl = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -897,7 +925,12 @@ capabilities of XEN
 %package daemon-vbox
 Summary: Server side daemon & driver required to run VirtualBox guests
 
+    %if %{with_modular_daemons}
+Requires: libvirt-daemon-common = %{version}-%{release}
+Requires: libvirt-daemon-proxy = %{version}-%{release}
+    %else
 Requires: libvirt-daemon = %{version}-%{release}
+    %endif
 Requires: libvirt-daemon-driver-vbox = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
