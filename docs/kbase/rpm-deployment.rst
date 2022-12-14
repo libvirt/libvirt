@@ -109,14 +109,17 @@ RPM packages
   stateful drivers. This package does not contain any drivers, so further
   packages need to be installed to provide the desired drivers.
 
-  In addition to the libvirtd daemon this package also contains the virtlogd,
-  virtlockd and virtproxyd daemons, plus a number of helpers, configuration
-  files and other bits necessary to create and admin a virtualization host.
+  New installations should not use this package, instead opting for one of
+  the modular daemon deployment options.
 
-  The virt-admin tool, also included in this package, is used for
-  administrative operations on any libvirt daemons. Most usefully it allows
-  for logging filters and outputs to be reconfigured on a running daemon
-  without a restart.
+* libvirt-daemon-common
+  This package contains libvirt-guests, virt-host-validate, virt-ssh-helper
+  and other utilities and configuration files necessary to create and
+  administer a virtualization host.
+
+  The virt-admin tool, used for administrative operations on any of the libvirt
+  daemons, is also included in this package. It is most useful for reconfiguring
+  logging filters and outputs on a running daemon without the need for a restart.
 
 * libvirt-daemon-config-network
 
@@ -276,6 +279,14 @@ RPM packages
   features, the subset of libvirt-daemon-driver-XXX packages should be used
   instead.
 
+* libvirt-daemon-lock
+  This package provides virtlockd, a server side daemon used to manage locks
+  held against virtual machine resources.
+
+* libvirt-daemon-log
+  This package provides virtlogd, a server side daemon used to manage logs
+  from virtual machine consoles.
+
 * libvirt-daemon-lxc
 
   This is an empty package that exists only as a convenient way to request
@@ -289,11 +300,22 @@ RPM packages
   features, the subset of libvirt-daemon-driver-XXX packages should be used
   instead.
 
+* libvirt-daemon-plugin-lockd
+  This package provides the lockd.so module, a daemon plugin that implements
+  disk locking using POSIX fcntl advisory locks via communication with the
+  virtlockd daemon.
+
 * libvirt-daemon-plugin-sanlock
 
   This package provides the sanlock.so module, a daemon plugin that implements
   disk locking via communication with the sanlock daemon. It is optional and
   only relevant to hosts with the QEMU driver and oVirt management application.
+
+* libvirt-daemon-proxy
+  This package provides virtproxyd, a server side daemon providing remote
+  network access to libvirt daemons, as well as backwards compatibility
+  for older libvirt clients expecting to communicate with the traditional,
+  monolithic libvirtd.
 
 * libvirt-daemon-qemu
 
