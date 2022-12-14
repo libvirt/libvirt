@@ -289,6 +289,12 @@ RPM packages
   features, the subset of libvirt-daemon-driver-XXX packages should be used
   instead.
 
+* libvirt-daemon-plugin-sanlock
+
+  This package provides the sanlock.so module, a daemon plugin that implements
+  disk locking via communication with the sanlock daemon. It is optional and
+  only relevant to hosts with the QEMU driver and oVirt management application.
+
 * libvirt-daemon-qemu
 
   This is an empty package that exists only as a convenient way to request
@@ -351,12 +357,6 @@ RPM packages
   have stateless drivers (VMWare ESX, HyperV, etc) built-in, and are able to
   take to the libvirt daemons to utilize stateful drivers (QEMU, Xen, BHyve,
   LXC, VZ, etc). This is needed on all libvirt hosts, both client and server.
-
-* libvirt-lock-sanlock
-
-  A plugin for locking disks that communicates with the sanlock daemon. It is
-  optional and only relevant to hosts with the QEMU driver and oVirt management
-  application.
 
 * libvirt-login-shell
 

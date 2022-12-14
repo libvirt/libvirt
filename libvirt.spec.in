@@ -962,15 +962,16 @@ Requires: pkgconfig
 Include header files & development libraries for the libvirt C library.
 
 %if %{with_sanlock}
-%package lock-sanlock
+%package daemon-plugin-sanlock
 Summary: Sanlock lock manager plugin for QEMU driver
 Requires: sanlock >= 2.4
 #for virt-sanlock-cleanup require augeas
 Requires: augeas
-Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
+Obsoletes: libvirt-lock-sanlock < 9.1.0
+Provides: libvirt-lock-sanlock = %{version}-%{release}
 
-%description lock-sanlock
+%description daemon-plugin-sanlock
 Includes the Sanlock lock manager plugin for the QEMU
 driver
 %endif
@@ -1829,7 +1830,6 @@ exit 0
 %dir %attr(0711, root, root) %{_localstatedir}/cache/libvirt/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/connection-driver/
-%dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/storage-backend/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/storage-file/
 %{_datadir}/augeas/lenses/libvirtd.aug
@@ -2170,13 +2170,14 @@ exit 0
 %endif
 
 %if %{with_sanlock}
-%files lock-sanlock
+%files daemon-plugin-sanlock
     %if %{with_qemu}
 %config(noreplace) %{_sysconfdir}/libvirt/qemu-sanlock.conf
     %endif
     %if %{with_libxl}
 %config(noreplace) %{_sysconfdir}/libvirt/libxl-sanlock.conf
     %endif
+%dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/
 %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/sanlock.so
 %{_datadir}/augeas/lenses/libvirt_sanlock.aug
 %{_datadir}/augeas/lenses/tests/test_libvirt_sanlock.aug
