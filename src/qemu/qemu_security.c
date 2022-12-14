@@ -577,9 +577,9 @@ qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
 
 
 int
-qemuSecurityCleanupTPMEmulator(virQEMUDriver *driver,
-                               virDomainObj *vm,
-                               bool restoreTPMStateLabel)
+qemuSecurityRestoreTPMLabels(virQEMUDriver *driver,
+                             virDomainObj *vm,
+                             bool restoreTPMStateLabel)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     int ret = -1;

@@ -1143,7 +1143,7 @@ qemuExtTPMStop(virQEMUDriver *driver,
     if (outgoingMigration || qemuTPMHasSharedStorage(vm->def))
         restoreTPMStateLabel = false;
 
-    if (qemuSecurityCleanupTPMEmulator(driver, vm, restoreTPMStateLabel) < 0)
+    if (qemuSecurityRestoreTPMLabels(driver, vm, restoreTPMStateLabel) < 0)
         VIR_WARN("Unable to restore labels on TPM state and/or log file");
 }
 
