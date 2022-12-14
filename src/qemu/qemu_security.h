@@ -94,9 +94,9 @@ int qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
                                  int *exitstatus,
                                  int *cmdret);
 
-void qemuSecurityCleanupTPMEmulator(virQEMUDriver *driver,
-                                    virDomainObj *vm,
-                                    bool restoreTPMStateLabel);
+int qemuSecurityCleanupTPMEmulator(virQEMUDriver *driver,
+                                   virDomainObj *vm,
+                                   bool restoreTPMStateLabel);
 
 int qemuSecuritySetSavedStateLabel(virQEMUDriver *driver,
                                    virDomainObj *vm,

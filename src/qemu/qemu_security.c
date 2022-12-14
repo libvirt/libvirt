@@ -576,26 +576,29 @@ qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
 }
 
 
-void
+int
 qemuSecurityCleanupTPMEmulator(virQEMUDriver *driver,
                                virDomainObj *vm,
                                bool restoreTPMStateLabel)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    bool transactionStarted = false;
+    int ret = -1;
 
-    if (virSecurityManagerTransactionStart(driver->securityManager) >= 0)
-        transactionStarted = true;
+    if (virSecurityManagerTransactionStart(driver->securityManager) < 0)
+        goto cleanup;
 
-    virSecurityManagerRestoreTPMLabels(driver->securityManager,
-                                       vm->def, restoreTPMStateLabel);
+    if (virSecurityManagerRestoreTPMLabels(driver->securityManager,
+                                           vm->def, restoreTPMStateLabel) < 0)
+        goto cleanup;
 
-    if (transactionStarted &&
-        virSecurityManagerTransactionCommit(driver->securityManager,
+    if (virSecurityManagerTransactionCommit(driver->securityManager,
                                             -1, priv->rememberOwner) < 0)
-        VIR_WARN("Unable to run security manager transaction");
+        goto cleanup;
 
+    ret = 0;
+ cleanup:
     virSecurityManagerTransactionAbort(driver->securityManager);
+    return ret;
 }
 
 
