@@ -927,6 +927,7 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
     virTimeBackOffVar timebackoff;
     const unsigned long long timeout = 1000; /* ms */
     bool setTPMStateLabel = true;
+    bool teardownlabel = false;
     int cmdret = 0;
     pid_t pid = -1;
 
@@ -970,6 +971,7 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
          * already reported error. */
         goto error;
     }
+    teardownlabel = true;
 
     if (virPidFileReadPath(pidfile, &pid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1012,6 +1014,8 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
         virProcessKillPainfully(pid, true);
     if (pidfile)
         unlink(pidfile);
+    if (teardownlabel)
+        qemuSecurityRestoreTPMLabels(driver, vm, setTPMStateLabel);
     return -1;
 }
 
