@@ -85,15 +85,6 @@ int qemuSecurityRestoreNetdevLabel(virQEMUDriver *driver,
                                    virDomainObj *vm,
                                    virDomainNetDef *net);
 
-int qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
-                                 virDomainObj *vm,
-                                 virCommand *cmd,
-                                 uid_t uid,
-                                 gid_t gid,
-                                 bool setTPMStateLabel,
-                                 int *exitstatus,
-                                 int *cmdret);
-
 int qemuSecuritySetTPMLabels(virQEMUDriver *driver,
                              virDomainObj *vm,
                              bool setTPMStateLabel);
