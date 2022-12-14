@@ -25,8 +25,10 @@ foreach name : [ 'remote', 'qemu', 'lxc' ]
     protocol_h,
     input: protocol_x,
     output: protocol_h,
+    depend_files: rpcgen_src,
     command: [
-      genprotocol_prog, rpcgen_prog, '-h', '@INPUT@', '@OUTPUT@',
+      meson_python_prog, python3_prog, rpcgen_prog,
+      '--mode=header', '@INPUT@', '@OUTPUT@',
     ],
   )
 
@@ -34,8 +36,10 @@ foreach name : [ 'remote', 'qemu', 'lxc' ]
     protocol_c,
     input: protocol_x,
     output: protocol_c,
+    depend_files: rpcgen_src,
     command: [
-      genprotocol_prog, rpcgen_prog, '-c', '@INPUT@', '@OUTPUT@',
+      meson_python_prog, python3_prog, rpcgen_prog,
+      '--mode=source', '--header=' + protocol_h, '@INPUT@', '@OUTPUT@',
     ],
   )
 

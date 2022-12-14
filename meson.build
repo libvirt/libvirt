@@ -783,10 +783,6 @@ required_programs = [
   'xsltproc',
 ]
 
-required_programs_groups = [
-  { 'name': 'rpcgen', 'prog': [ 'rpcgen', 'portable-rpcgen' ] },
-]
-
 if host_machine.system() == 'freebsd'
   required_programs += 'ifconfig'
 endif
@@ -794,13 +790,6 @@ endif
 foreach name : required_programs
   prog = find_program(name, dirs: libvirt_sbin_path)
   varname = name.underscorify()
-  conf.set_quoted(varname.to_upper(), prog.full_path())
-  set_variable('@0@_prog'.format(varname), prog)
-endforeach
-
-foreach item : required_programs_groups
-  prog = find_program(item.get('prog'), dirs: libvirt_sbin_path)
-  varname = item.get('name').underscorify()
   conf.set_quoted(varname.to_upper(), prog.full_path())
   set_variable('@0@_prog'.format(varname), prog)
 endforeach

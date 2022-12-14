@@ -1,3 +1,5 @@
+subdir('rpcgen')
+
 if pytest_prog.found()
     subdir('tests')
 
@@ -9,3 +11,6 @@ if pytest_prog.found()
         workdir: meson.current_source_dir(),
     )
 endif
+
+rpcgen_prog = find_program('main.py')
+rpcgen_src += files(['main.py'])

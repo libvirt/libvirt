@@ -1,4 +1,3 @@
-genprotocol_prog = find_program('genprotocol.pl')
 gendispatch_prog = find_program('gendispatch.pl')
 
 socket_sources = [
@@ -53,8 +52,10 @@ foreach name : [ 'virnet', 'virkeepalive' ]
     header_file,
     input: protocol_file,
     output: header_file,
+    depend_files: rpcgen_src,
     command: [
-      genprotocol_prog, rpcgen_prog, '-h', '@INPUT@', '@OUTPUT@',
+      meson_python_prog, python3_prog, rpcgen_prog,
+      '--mode=header', '@INPUT@', '@OUTPUT@',
     ],
   )
 
@@ -62,8 +63,10 @@ foreach name : [ 'virnet', 'virkeepalive' ]
     source_file,
     input: protocol_file,
     output: source_file,
+    depend_files: rpcgen_src,
     command: [
-      genprotocol_prog, rpcgen_prog, '-c', '@INPUT@', '@OUTPUT@',
+      meson_python_prog, python3_prog, rpcgen_prog,
+      '--mode=source', '--header=' + header_file, '@INPUT@', '@OUTPUT@',
     ],
   )
 

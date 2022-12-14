@@ -10,8 +10,10 @@ log_protocol_header_generated = custom_target(
   'log_protocol.h',
   input: log_protocol,
   output: 'log_protocol.h',
+  depend_files: rpcgen_src,
   command: [
-    genprotocol_prog, rpcgen_prog, '-h', '@INPUT@', '@OUTPUT@'
+    meson_python_prog, python3_prog, rpcgen_prog,
+    '--mode=header', '@INPUT@', '@OUTPUT@',
   ],
 )
 log_protocol_generated += log_protocol_header_generated
@@ -20,8 +22,10 @@ log_protocol_generated += custom_target(
   'log_protocol.c',
   input: log_protocol,
   output: 'log_protocol.c',
+  depend_files: rpcgen_src,
   command: [
-    genprotocol_prog, rpcgen_prog, '-c', '@INPUT@', '@OUTPUT@'
+    meson_python_prog, python3_prog, rpcgen_prog,
+    '--mode=source', '--header=log_protocol.h', '@INPUT@', '@OUTPUT@',
   ],
 )
 

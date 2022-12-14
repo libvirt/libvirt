@@ -21,14 +21,22 @@ lxc_monitor_protocol_generated += custom_target(
   'lxc_monitor_protocol_h',
   input: lxc_monitor_protocol,
   output: 'lxc_monitor_protocol.h',
-  command: [ genprotocol_prog, rpcgen_prog, '-h', '@INPUT@', '@OUTPUT@' ]
+  depend_files: rpcgen_src,
+  command: [
+    meson_python_prog, python3_prog, rpcgen_prog,
+    '--mode=header', '@INPUT@', '@OUTPUT@',
+  ]
 )
 
 lxc_monitor_protocol_generated += custom_target(
   'lxc_monitor_protocol_c',
   input: lxc_monitor_protocol,
   output: 'lxc_monitor_protocol.c',
-  command: [ genprotocol_prog, rpcgen_prog, '-c', '@INPUT@', '@OUTPUT@' ]
+  depend_files: rpcgen_src,
+  command: [
+    meson_python_prog, python3_prog, rpcgen_prog,
+    '--mode=source', '--header=lxc_monitor_protocol.h', '@INPUT@', '@OUTPUT@',
+  ],
 )
 
 lxc_monitor_generated = custom_target(

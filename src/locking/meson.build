@@ -18,8 +18,10 @@ lock_protocol_generated += custom_target(
   'lock_protocol.h',
   input: lock_protocol,
   output: 'lock_protocol.h',
+  depend_files: rpcgen_src,
   command: [
-    genprotocol_prog, rpcgen_prog, '-h', '@INPUT@', '@OUTPUT@',
+    meson_python_prog, python3_prog, rpcgen_prog,
+    '--mode=header', '@INPUT@', '@OUTPUT@',
   ],
 )
 
@@ -27,8 +29,10 @@ lock_protocol_generated += custom_target(
   'lock_protocol.c',
   input: lock_protocol,
   output: 'lock_protocol.c',
+  depend_files: rpcgen_src,
   command: [
-    genprotocol_prog, rpcgen_prog, '-c', '@INPUT@', '@OUTPUT@',
+    meson_python_prog, python3_prog, rpcgen_prog,
+    '--mode=source', '--header=lock_protocol.h', '@INPUT@', '@OUTPUT@',
   ],
 )
 

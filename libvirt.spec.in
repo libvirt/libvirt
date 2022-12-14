@@ -394,7 +394,6 @@ BuildRequires: wireshark-devel
 %if %{with_libssh}
 BuildRequires: libssh-devel >= 0.8.1
 %endif
-BuildRequires: rpcgen
 BuildRequires: libtirpc-devel
 # Needed for the firewalld_reload macro
 %if %{with_firewalld_zone}
