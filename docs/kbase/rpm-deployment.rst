@@ -20,6 +20,73 @@ of the drivers will be disabled at build time, so not all of the packages
 listed on this page will exist.
 
 
+Deployment choices
+==================
+
+Client only install
+-------------------
+
+If an application is capable of using multiple different virtualization drivers
+it is undesirable to force the installation of a specific set of drivers. In
+this case the application will merely wish to request a client only install
+
+Alternatively if an application is intended to communicate with a hypervisor on
+a remote host there is no need to install drivers locally, only a client is
+needed
+
+The only required package is the `libvirt-libs`, however, it is useful to
+also install `libvirt-client`.
+
+
+Every possible virt driver
+--------------------------
+
+There is rarely a need to install every virt driver at once on a given host.
+In the unlikely event that this is needed, however, the `libvirt` package
+should be installed.
+
+Note that this doesn't actually pull in the hypervisors, only the libvirt
+code to talk to the hypervisors.
+
+
+Full features for one virt driver
+---------------------------------
+
+This is a common default installation profile when there is no need to minimise
+the on-disk footprint.
+
+This is achieved by installing the `libvirt-daemon-XXXX` package for the
+virtualization driver that is desired. This will also pull in the default
+set of hypervisor packages too.
+
+Since this installs every possible libvirt feature for the virtualization
+driver in question, the on-disk footprint is quite large. The in-memory
+footprint of the daemons is also relatively large since a lot of code is
+loaded.
+
+
+Minimal features for one virt driver
+------------------------------------
+
+This is the best installation profile when it is desired to minimize the
+on-disk footprint.
+
+This is achieved by installing the individual `libvirt-daemon-driver-XXX`
+packages needed for the features that will be used.  This will not pull in the
+hypervisor packages, allowing a fine grained set of hypervisor features to be
+chosen separately.
+
+Since this allows fine grained installation of individual libvirt drivers,
+this results in the lowest on-disk footprint. The in-memory footprint of
+the daemons is also minimized by reducing the code loaded.
+
+As an example, the smallest possible installation for running KVM guests can
+be achieved by installing `libvirt-daemon-driver-qemu` and `qemu-kvm-core`.
+This will exclude all the secondary libvirt drivers for storage, networking
+and host devices, leaving only the bare minimum functionality for managing
+KVM guests.
+
+
 RPM packages
 ============
 
@@ -308,70 +375,3 @@ RPM packages
   between libvirt and its daemons. Since production deployments should all be
   using a TLS encrypted, this only useful for development hosts with a libvirt
   daemon configured without encryption.
-
-
-Deployment choices
-==================
-
-Client only install
--------------------
-
-If an application is capable of using multiple different virtualization drivers
-it is undesirable to force the installation of a specific set of drivers. In
-this case the application will merely wish to request a client only install
-
-Alternatively if an application is intended to communicate with a hypervisor on
-a remote host there is no need to install drivers locally, only a client is
-needed
-
-The only required package is the `libvirt-libs`, however, it is useful to
-also install `libvirt-client`.
-
-
-Every possible virt driver
---------------------------
-
-There is rarely a need to install every virt driver at once on a given host.
-In the unlikely event that this is needed, however, the `libvirt` package
-should be installed.
-
-Note that this doesn't actually pull in the hypervisors, only the libvirt
-code to talk to the hypervisors.
-
-
-Full features for one virt driver
----------------------------------
-
-This is a common default installation profile when there is no need to minimise
-the on-disk footprint.
-
-This is achieved by installing the `libvirt-daemon-XXXX` package for the
-virtualization driver that is desired. This will also pull in the default
-set of hypervisor packages too.
-
-Since this installs every possible libvirt feature for the virtualization
-driver in question, the on-disk footprint is quite large. The in-memory
-footprint of the daemons is also relatively large since a lot of code is
-loaded.
-
-
-Minimal features for one virt driver
-------------------------------------
-
-This is the best installation profile when it is desired to minimize the
-on-disk footprint.
-
-This is achieved by installing the individual `libvirt-daemon-driver-XXX`
-packages needed for the features that will be used.  This will not pull in the
-hypervisor packages, allowing a fine grained set of hypervisor features to be
-chosen separately.
-
-Since this allows fine grained installation of individual libvirt drivers,
-this results in the lowest on-disk footprint. The in-memory footprint of
-the daemons is also minimized by reducing the code loaded.
-
-As an example, the smallest possible installation for running KVM guests can
-be achieved by installing `libvirt-daemon-driver-qemu` and `qemu-kvm-core`.
-This will exclude all the secondary libvirt drivers for storage, networking
-and host devices, leaving only the bare minimum functionality for managing
-KVM guests.
