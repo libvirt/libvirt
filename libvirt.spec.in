@@ -522,7 +522,6 @@ the monolithic libvirtd
 %package daemon-config-network
 Summary: Default configuration files for the libvirtd daemon
 
-Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
 
 %description daemon-config-network
@@ -531,7 +530,6 @@ Default configuration files for setting up NAT based networking
 %package daemon-config-nwfilter
 Summary: Network filter configuration files for the libvirtd daemon
 
-Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
 
 %description daemon-config-nwfilter
@@ -539,7 +537,7 @@ Network filter configuration files for cleaning guest traffic
 
 %package daemon-driver-network
 Summary: Network driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Requires: dnsmasq >= 2.41
 Requires: iptables
@@ -551,7 +549,7 @@ bridge capabilities.
 
 %package daemon-driver-nwfilter
 Summary: Nwfilter driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Requires: iptables
 Requires: ebtables
@@ -563,7 +561,7 @@ iptables and ip6tables capabilities
 
 %package daemon-driver-nodedev
 Summary: Nodedev driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 # needed for device enumeration
 Requires: systemd >= 185
@@ -579,7 +577,7 @@ capabilities.
 
 %package daemon-driver-interface
 Summary: Interface driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 %if %{with_netcf}
 Requires: netcf-libs >= 0.2.2
@@ -591,7 +589,7 @@ an implementation of the host network interface APIs.
 
 %package daemon-driver-secret
 Summary: Secret driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 
 %description daemon-driver-secret
@@ -600,7 +598,7 @@ an implementation of the secret key APIs.
 
 %package daemon-driver-storage-core
 Summary: Storage driver plugin including base backends for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Requires: nfs-utils
 # For mkfs
