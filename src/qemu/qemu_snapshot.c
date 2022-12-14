@@ -2359,10 +2359,15 @@ qemuSnapshotDiscard(virQEMUDriver *driver,
             if (qemuDomainSnapshotForEachQcow2(driver, def, snap, "-d", true) < 0)
                 return -1;
         } else {
-            qemuDomainObjEnterMonitor(vm);
+            /* Similarly as internal snapshot creation we would use a regular job
+             * here so set a mask to forbid any other job. */
+            qemuDomainObjSetAsyncJobMask(vm, VIR_JOB_NONE);
+            if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_SNAPSHOT) < 0)
+                return -1;
             /* we continue on even in the face of error */
             qemuMonitorDeleteSnapshot(qemuDomainGetMonitor(vm), snap->def->name);
             qemuDomainObjExitMonitor(vm);
+            qemuDomainObjSetAsyncJobMask(vm, VIR_JOB_DEFAULT_MASK);
         }
     }
 
@@ -2563,8 +2568,11 @@ qemuSnapshotDelete(virDomainObj *vm,
                   VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY |
                   VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY, -1);
 
-    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+    if (virDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_SNAPSHOT,
+                                  VIR_DOMAIN_JOB_OPERATION_SNAPSHOT_DELETE,
+                                  flags) < 0) {
         return -1;
+    }
 
     if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))
         goto endjob;
@@ -2583,7 +2591,7 @@ qemuSnapshotDelete(virDomainObj *vm,
     }
 
  endjob:
-    virDomainObjEndJob(vm);
+    virDomainObjEndAsyncJob(vm);
 
     return ret;
 }
