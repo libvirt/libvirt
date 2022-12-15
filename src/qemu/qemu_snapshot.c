@@ -2311,6 +2311,31 @@ qemuSnapshotDeleteSingle(virDomainObj *vm,
 }
 
 
+struct qemuSnapshotDeleteAllData {
+    virDomainObj *vm;
+    bool metadata_only;
+    int error;
+};
+
+
+static int
+qemuSnapshotDeleteAllHelper(void *payload,
+                            const char *name G_GNUC_UNUSED,
+                            void *opaque)
+{
+    int error;
+    virDomainMomentObj *snap = payload;
+    struct qemuSnapshotDeleteAllData *data = opaque;
+
+    error = qemuSnapshotDeleteSingle(data->vm, snap, data->metadata_only);
+
+    if (error != 0)
+        data->error = error;
+
+    return 0;
+}
+
+
 /**
  * qemuSnapshotDeleteChildren:
  * @vm: domain object
@@ -2331,44 +2356,22 @@ qemuSnapshotDeleteChildren(virDomainObj *vm,
                            bool metadata_only,
                            bool children_only)
 {
-    virQEMUMomentRemove rem;
-    qemuDomainObjPrivate *priv = vm->privateData;
-    virQEMUDriver *driver = priv->driver;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    struct qemuSnapshotDeleteAllData data = {
+        .vm = vm,
+        .metadata_only = metadata_only,
+    };
 
-    rem.driver = driver;
-    rem.vm = vm;
-    rem.metadata_only = metadata_only;
-    rem.err = 0;
-    rem.current = virDomainSnapshotGetCurrent(vm->snapshots);
-    rem.found = false;
-    rem.momentDiscard = qemuDomainSnapshotDiscard;
-    virDomainMomentForEachDescendant(snap, qemuDomainMomentDiscardAll,
-                                     &rem);
-    if (rem.err < 0)
+    virDomainMomentForEachDescendant(snap, qemuSnapshotDeleteAllHelper, &data);
+
+    if (data.error < 0)
         return -1;
-    if (rem.found) {
-        qemuSnapshotSetCurrent(vm, snap);
 
-        if (children_only) {
-            if (qemuDomainSnapshotWriteMetadata(vm, snap,
-                                                driver->xmlopt,
-                                                cfg->snapshotDir) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("failed to set snapshot '%s' as current"),
-                               snap->def->name);
-                virDomainSnapshotSetCurrent(vm->snapshots, NULL);
-                return -1;
-            }
-        }
+    if (!children_only &&
+        qemuSnapshotDeleteSingle(vm, snap, metadata_only) < 0) {
+        return -1;
     }
 
-    if (children_only) {
-        virDomainMomentDropChildren(snap);
-        return 0;
-    }
-
-    return qemuDomainSnapshotDiscard(driver, vm, snap, true, metadata_only);
+    return 0;
 }
 
 
