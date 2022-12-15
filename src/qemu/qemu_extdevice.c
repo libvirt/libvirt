@@ -25,6 +25,7 @@
 #include "qemu_dbus.h"
 #include "qemu_domain.h"
 #include "qemu_tpm.h"
+#include "qemu_passt.h"
 #include "qemu_slirp.h"
 #include "qemu_virtiofs.h"
 
@@ -194,8 +195,16 @@ qemuExtDevicesStart(virQEMUDriver *driver,
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDef *net = def->nets[i];
 
-        if (qemuSlirpStart(vm, net, incomingMigration) < 0)
-            return -1;
+        if (net->type != VIR_DOMAIN_NET_TYPE_USER)
+            continue;
+
+        if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
+            if (qemuPasstStart(vm, net) < 0)
+                return -1;
+        } else {
+            if (qemuSlirpStart(vm, net, incomingMigration) < 0)
+                return -1;
+        }
     }
 
     for (i = 0; i < def->nfss; i++) {
@@ -254,6 +263,12 @@ qemuExtDevicesStop(virQEMUDriver *driver,
 
         if (slirp)
             qemuSlirpStop(slirp, vm, driver, net);
+
+        if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
+            net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
+            qemuPasstStop(vm, net);
+        }
+
         if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET && net->downscript)
             virNetDevRunEthernetScript(net->ifname, net->downscript);
     }
@@ -319,6 +334,12 @@ qemuExtDevicesSetupCgroup(virQEMUDriver *driver,
 
         if (slirp && qemuSlirpSetupCgroup(slirp, cgroup) < 0)
             return -1;
+
+        if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
+            net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST &&
+            qemuPasstSetupCgroup(vm, net, cgroup) < 0) {
+            return -1;
+        }
     }
 
     for (i = 0; i < def->ntpms; i++) {

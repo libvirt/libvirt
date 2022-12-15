@@ -179,6 +179,7 @@ src/qemu/qemu_monitor.c
 src/qemu/qemu_monitor_json.c
 src/qemu/qemu_monitor_text.c
 src/qemu/qemu_namespace.c
+src/qemu/qemu_passt.c
 src/qemu/qemu_process.c
 src/qemu/qemu_qapi.c
 src/qemu/qemu_saveimage.c

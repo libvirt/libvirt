@@ -2379,6 +2379,7 @@ qemuDomainGetSlirpHelperOk(virDomainObj *vm)
 
         /* if there is a builtin slirp, prevent slirp-helper */
         if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
+            net->backend.type == VIR_DOMAIN_NET_BACKEND_DEFAULT &&
             !QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp)
             return false;
     }
@@ -9848,7 +9849,8 @@ qemuDomainSupportsNicdev(virDomainDef *def,
 }
 
 bool
-qemuDomainNetSupportsMTU(virDomainNetType type)
+qemuDomainNetSupportsMTU(virDomainNetType type,
+                         virDomainNetBackendType backend)
 {
     switch (type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
@@ -9857,6 +9859,7 @@ qemuDomainNetSupportsMTU(virDomainNetType type)
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         return true;
     case VIR_DOMAIN_NET_TYPE_USER:
+        return backend == VIR_DOMAIN_NET_BACKEND_PASST;
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_CLIENT:
     case VIR_DOMAIN_NET_TYPE_MCAST:

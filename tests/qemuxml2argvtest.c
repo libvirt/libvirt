@@ -471,6 +471,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
             virDomainNetDef *net = vm->def->nets[i];
 
             if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
+                net->backend.type == VIR_DOMAIN_NET_BACKEND_DEFAULT &&
                 virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
                 qemuSlirp *slirp = qemuSlirpNew();
                 slirp->fd[0] = 42;
@@ -1469,6 +1470,7 @@ mymain(void)
     DO_TEST_NOCAPS("net-user");
     DO_TEST_CAPS_ARCH_LATEST_FULL("net-user", "x86_64", ARG_FLAGS, FLAG_SLIRP_HELPER);
     DO_TEST_NOCAPS("net-user-addr");
+    DO_TEST_CAPS_LATEST("net-user-passt");
     DO_TEST_NOCAPS("net-virtio");
     DO_TEST_NOCAPS("net-virtio-device");
     DO_TEST_NOCAPS("net-virtio-disable-offloads");

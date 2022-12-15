@@ -1830,6 +1830,13 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                 }
                 hasIPv6 = true;
 
+                if (ip->prefix && ip->prefix != 64) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unsupported IPv6 address prefix='%u' - must be 64"),
+                                   ip->prefix);
+                    return -1;
+                }
+
                 if (ip->prefix > 120) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("prefix too long"));
@@ -1892,7 +1899,7 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
     }
 
     if (net->mtu &&
-        !qemuDomainNetSupportsMTU(net->type)) {
+        !qemuDomainNetSupportsMTU(net->type, net->backend.type)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("setting MTU on interface type %s is not supported yet"),
                        virDomainNetTypeToString(net->type));

@@ -78,7 +78,8 @@ virJSONValue *
 qemuBuildChannelGuestfwdNetdevProps(virDomainChrDef *chr);
 
 virJSONValue *
-qemuBuildHostNetProps(virDomainNetDef *net);
+qemuBuildHostNetProps(virDomainObj *vm,
+                      virDomainNetDef *net);
 
 int
 qemuBuildInterfaceConnect(virDomainObj *vm,

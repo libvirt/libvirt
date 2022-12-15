@@ -31,6 +31,7 @@
 #include "qemu_command.h"
 #include "qemu_hostdev.h"
 #include "qemu_interface.h"
+#include "qemu_passt.h"
 #include "qemu_process.h"
 #include "qemu_security.h"
 #include "qemu_block.h"
@@ -1202,8 +1203,16 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
-        if (!priv->disableSlirp &&
-            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
+        if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
+
+            if (qemuPasstStart(vm, net) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("Failed to start passt"));
+                goto cleanup;
+            }
+
+        } else if (!priv->disableSlirp &&
+                   virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
 
             if (qemuInterfacePrepareSlirp(driver, net) < 0)
                 goto cleanup;
@@ -1270,7 +1279,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         virNetDevSetMTU(net->ifname, net->mtu) < 0)
         goto cleanup;
 
-    if (!(netprops = qemuBuildHostNetProps(net)))
+    if (!(netprops = qemuBuildHostNetProps(vm, net)))
         goto cleanup;
 
     qemuDomainObjEnterMonitor(vm);
@@ -1418,6 +1427,12 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     netdev_name = g_strdup_printf("host%s", net->info.alias);
     if (QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp)
         qemuSlirpStop(QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp, vm, driver, net);
+
+    if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
+        net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
+        qemuPasstStop(vm, net);
+    }
+
     qemuDomainObjEnterMonitor(vm);
     if (charDevPlugged &&
         qemuMonitorDetachCharDev(priv->mon, charDevAlias) < 0)
@@ -4618,6 +4633,11 @@ qemuDomainRemoveNetDevice(virQEMUDriver *driver,
 
     if (QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp)
         qemuSlirpStop(QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp, vm, driver, net);
+
+    if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
+        net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
+        qemuPasstStop(vm, net);
+    }
 
     virDomainAuditNet(vm, net, NULL, "detach", true);
 

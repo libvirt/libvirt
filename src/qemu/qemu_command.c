@@ -27,6 +27,7 @@
 #include "qemu_interface.h"
 #include "qemu_alias.h"
 #include "qemu_security.h"
+#include "qemu_passt.h"
 #include "qemu_slirp.h"
 #include "qemu_block.h"
 #include "qemu_fd.h"
@@ -3817,7 +3818,8 @@ qemuBuildNicDevProps(virDomainDef *def,
 
 
 virJSONValue *
-qemuBuildHostNetProps(virDomainNetDef *net)
+qemuBuildHostNetProps(virDomainObj *vm,
+                      virDomainNetDef *net)
 {
     virDomainNetType netType = virDomainNetGetActualType(net);
     size_t i;
@@ -3932,7 +3934,10 @@ qemuBuildHostNetProps(virDomainNetDef *net)
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
-        if (netpriv->slirpfd) {
+        if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
+            if (qemuPasstAddNetProps(vm, net, &netprops) < 0)
+                return NULL;
+        } else if (netpriv->slirpfd) {
             if (virJSONValueObjectAdd(&netprops,
                                       "s:type", "socket",
                                       "s:fd", qemuFDPassDirectGetPath(netpriv->slirpfd),
@@ -8503,7 +8508,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     qemuFDPassDirectTransferCommand(netpriv->slirpfd, cmd);
     qemuFDPassTransferCommand(netpriv->vdpafd, cmd);
 
-    if (!(hostnetprops = qemuBuildHostNetProps(net)))
+    if (!(hostnetprops = qemuBuildHostNetProps(vm, net)))
         goto cleanup;
 
     if (qemuBuildNetdevCommandlineFromJSON(cmd, hostnetprops, qemuCaps) < 0)

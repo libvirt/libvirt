@@ -5846,6 +5846,7 @@ qemuProcessNetworkPrepareDevices(virQEMUDriver *driver,
             if (virDomainHostdevInsert(def, hostdev) < 0)
                 return -1;
         } else if (actualType == VIR_DOMAIN_NET_TYPE_USER &&
+                   net->backend.type == VIR_DOMAIN_NET_BACKEND_DEFAULT &&
                    !priv->disableSlirp &&
                    virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
             if (qemuInterfacePrepareSlirp(driver, net) < 0)

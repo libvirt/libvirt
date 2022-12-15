@@ -780,6 +780,7 @@ optional_programs = [
   'mm-ctl',
   'modprobe',
   'ovs-vsctl',
+  'passt',
   'pdwtags',
   'rmmod',
   'scrub',

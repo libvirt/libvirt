@@ -28,6 +28,7 @@ qemu_driver_sources = [
   'qemu_monitor_json.c',
   'qemu_monitor_text.c',
   'qemu_namespace.c',
+  'qemu_passt.c',
   'qemu_process.c',
   'qemu_qapi.c',
   'qemu_saveimage.c',
@@ -216,6 +217,7 @@ if conf.has('WITH_QEMU')
     localstatedir / 'log' / 'swtpm' / 'libvirt' / 'qemu',
     runstatedir / 'libvirt' / 'qemu',
     runstatedir / 'libvirt' / 'qemu' / 'dbus',
+    runstatedir / 'libvirt' / 'qemu' / 'passt',
     runstatedir / 'libvirt' / 'qemu' / 'slirp',
     runstatedir / 'libvirt' / 'qemu' / 'swtpm',
   ]

@@ -882,7 +882,8 @@ int qemuDomainRefreshVcpuHalted(virDomainObj *vm,
 bool qemuDomainSupportsNicdev(virDomainDef *def,
                               virDomainNetDef *net);
 
-bool qemuDomainNetSupportsMTU(virDomainNetType type);
+bool qemuDomainNetSupportsMTU(virDomainNetType type,
+                              virDomainNetBackendType backend);
 
 int qemuDomainSetPrivatePaths(virQEMUDriver *driver,
                               virDomainObj *vm);
