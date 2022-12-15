@@ -176,6 +176,7 @@ struct _virDomainJobObj {
     unsigned long long asyncOwner;      /* Thread which set current async job */
     char *asyncOwnerAPI;                /* The API which owns the async job */
     unsigned long long asyncStarted;    /* When the current async job started */
+    bool asyncPaused;                   /* The async job is paused */
     int phase;                          /* Job phase (mainly for migrations) */
     unsigned long long mask;            /* Jobs allowed during async job */
     virDomainJobData *current;       /* async job progress data */

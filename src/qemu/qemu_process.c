@@ -712,6 +712,15 @@ qemuProcessHandleResume(qemuMonitor *mon G_GNUC_UNUSED,
                   vm->def->name, virDomainRunningReasonTypeToString(reason),
                   eventDetail);
 
+        /* When a domain is running in (failed) post-copy migration on the
+         * destination host, we need to make sure to set the appropriate reason
+         * here. */
+        if (virDomainObjIsPostcopy(vm, vm->job)) {
+            if (virDomainObjIsFailedPostcopy(vm, vm->job))
+                reason = VIR_DOMAIN_RUNNING_POSTCOPY_FAILED;
+            else
+                reason = VIR_DOMAIN_RUNNING_POSTCOPY;
+        }
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
         event = virDomainEventLifecycleNewFromObj(vm,
                                                   VIR_DOMAIN_EVENT_RESUMED,
@@ -1491,6 +1500,7 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
                       vm->def->name,
                       virDomainStateTypeToString(state),
                       NULLSTR(virDomainStateReasonToString(state, reason)));
+            vm->job->asyncPaused = false;
             virDomainObjSetState(vm, state, reason);
             event = virDomainEventLifecycleNewFromObj(vm, eventType, eventDetail);
             qemuDomainSaveStatus(vm);
@@ -3420,6 +3430,7 @@ qemuProcessRestoreMigrationJob(virDomainObj *vm,
     job->privateData = g_steal_pointer(&vm->job->privateData);
     vm->job->privateData = jobPriv;
     vm->job->apiFlags = job->apiFlags;
+    vm->job->asyncPaused = job->asyncPaused;
 
     qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
 }
@@ -3645,6 +3656,7 @@ qemuProcessRecoverMigration(virQEMUDriver *driver,
         if (migStatus == VIR_DOMAIN_JOB_STATUS_POSTCOPY) {
             VIR_DEBUG("Post-copy migration of domain %s still running, it will be handled as unattended",
                       vm->def->name);
+            vm->job->asyncPaused = false;
             return 0;
         }
 
@@ -3653,6 +3665,9 @@ qemuProcessRecoverMigration(virQEMUDriver *driver,
                 qemuMigrationSrcPostcopyFailed(vm);
             else
                 qemuMigrationDstPostcopyFailed(vm);
+            /* Set the asyncPaused flag in case we're reconnecting to a domain
+             * started by an older libvirt. */
+            vm->job->asyncPaused = true;
             return 0;
         }
 

@@ -1664,17 +1664,19 @@ qemuMigrationSrcPostcopyFailed(virDomainObj *vm)
 
     state = virDomainObjGetState(vm, &reason);
 
-    VIR_DEBUG("%s/%s",
+    VIR_DEBUG("%s/%s, asyncPaused=%u",
               virDomainStateTypeToString(state),
-              virDomainStateReasonToString(state, reason));
+              virDomainStateReasonToString(state, reason),
+              vm->job->asyncPaused);
 
     if (state != VIR_DOMAIN_PAUSED ||
-        reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED)
+        virDomainObjIsFailedPostcopy(vm, vm->job))
         return;
 
     VIR_WARN("Migration of domain %s failed during post-copy; "
              "leaving the domain paused", vm->def->name);
 
+    vm->job->asyncPaused = true;
     virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
                          VIR_DOMAIN_PAUSED_POSTCOPY_FAILED);
     event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_SUSPENDED,
@@ -1694,21 +1696,31 @@ qemuMigrationDstPostcopyFailed(virDomainObj *vm)
 
     state = virDomainObjGetState(vm, &reason);
 
-    VIR_DEBUG("%s/%s",
+    VIR_DEBUG("%s/%s, asyncPaused=%u",
               virDomainStateTypeToString(state),
-              virDomainStateReasonToString(state, reason));
+              virDomainStateReasonToString(state, reason),
+              vm->job->asyncPaused);
 
-    if (state != VIR_DOMAIN_RUNNING ||
-        reason == VIR_DOMAIN_RUNNING_POSTCOPY_FAILED)
+    if ((state != VIR_DOMAIN_RUNNING && state != VIR_DOMAIN_PAUSED) ||
+        virDomainObjIsFailedPostcopy(vm, vm->job))
         return;
 
     VIR_WARN("Incoming migration of domain '%s' failed during post-copy; "
              "leaving the domain running", vm->def->name);
 
-    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
-                         VIR_DOMAIN_RUNNING_POSTCOPY_FAILED);
-    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_RESUMED,
-                                              VIR_DOMAIN_EVENT_RESUMED_POSTCOPY_FAILED);
+    vm->job->asyncPaused = true;
+    if (state == VIR_DOMAIN_RUNNING) {
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
+                             VIR_DOMAIN_RUNNING_POSTCOPY_FAILED);
+        event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_RESUMED,
+                                                  VIR_DOMAIN_EVENT_RESUMED_POSTCOPY_FAILED);
+    } else {
+        /* The domain was paused for other reasons (I/O error, ...) so we don't
+         * want to rewrite the original reason and just emit a postcopy-failed
+         * event. */
+        event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_SUSPENDED,
+                                                  VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED);
+    }
     virObjectEventStateQueue(driver->domainEventState, event);
 }
 

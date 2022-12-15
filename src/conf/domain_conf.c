@@ -27922,8 +27922,13 @@ virDomainObjGetState(virDomainObj *dom, int *reason)
 
 bool
 virDomainObjIsFailedPostcopy(virDomainObj *dom,
-                             virDomainJobObj *job G_GNUC_UNUSED)
+                             virDomainJobObj *job)
 {
+    if (job && job->asyncPaused &&
+        (job->asyncJob == VIR_ASYNC_JOB_MIGRATION_IN ||
+         job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT))
+        return true;
+
     return ((dom->state.state == VIR_DOMAIN_PAUSED &&
              dom->state.reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED) ||
             (dom->state.state == VIR_DOMAIN_RUNNING &&

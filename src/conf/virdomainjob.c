@@ -174,6 +174,7 @@ virDomainObjResetAsyncJob(virDomainJobObj *job)
     job->asyncOwner = 0;
     g_clear_pointer(&job->asyncOwnerAPI, g_free);
     job->asyncStarted = 0;
+    job->asyncPaused = false;
     job->phase = 0;
     job->mask = VIR_JOB_DEFAULT_MASK;
     job->abortJob = false;
