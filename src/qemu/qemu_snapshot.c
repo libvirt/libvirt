@@ -2410,6 +2410,199 @@ qemuSnapshotChildrenReparent(void *payload,
 }
 
 
+/* Deleting external snapshot is started by running qemu block-commit job.
+ * We need to wait for all block-commit jobs to be 'ready' or 'pending' to
+ * continue with external snapshot deletion. */
+static int
+qemuSnapshotDeleteBlockJobIsRunning(qemuBlockjobState state)
+{
+    switch (state) {
+    case QEMU_BLOCKJOB_STATE_NEW:
+    case QEMU_BLOCKJOB_STATE_RUNNING:
+    case QEMU_BLOCKJOB_STATE_ABORTING:
+    case QEMU_BLOCKJOB_STATE_PIVOTING:
+        return 1;
+
+    case QEMU_BLOCKJOB_STATE_COMPLETED:
+    case QEMU_BLOCKJOB_STATE_FAILED:
+    case QEMU_BLOCKJOB_STATE_CANCELLED:
+    case QEMU_BLOCKJOB_STATE_READY:
+    case QEMU_BLOCKJOB_STATE_CONCLUDED:
+    case QEMU_BLOCKJOB_STATE_PENDING:
+    case QEMU_BLOCKJOB_STATE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+/* When finishing or aborting qemu blockjob we only need to know if the
+ * job is still active or not. */
+static int
+qemuSnapshotDeleteBlockJobIsActive(qemuBlockjobState state)
+{
+    switch (state) {
+    case QEMU_BLOCKJOB_STATE_READY:
+    case QEMU_BLOCKJOB_STATE_NEW:
+    case QEMU_BLOCKJOB_STATE_RUNNING:
+    case QEMU_BLOCKJOB_STATE_ABORTING:
+    case QEMU_BLOCKJOB_STATE_PENDING:
+    case QEMU_BLOCKJOB_STATE_PIVOTING:
+        return 1;
+
+    case QEMU_BLOCKJOB_STATE_COMPLETED:
+    case QEMU_BLOCKJOB_STATE_FAILED:
+    case QEMU_BLOCKJOB_STATE_CANCELLED:
+    case QEMU_BLOCKJOB_STATE_CONCLUDED:
+    case QEMU_BLOCKJOB_STATE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+/* Wait for qemu blockjob to finish 'block-commit' operation until it is
+ * ready to be finished by calling 'block-pivot' or 'block-finalize'. */
+static int
+qemuSnapshotDeleteBlockJobRunning(virDomainObj *vm,
+                                  qemuBlockJobData *job)
+{
+    int rc;
+    qemuBlockJobUpdate(vm, job, VIR_ASYNC_JOB_SNAPSHOT);
+
+    while ((rc = qemuSnapshotDeleteBlockJobIsRunning(job->state)) > 0) {
+        if (qemuDomainObjWait(vm) < 0)
+            return -1;
+        qemuBlockJobUpdate(vm, job, VIR_ASYNC_JOB_SNAPSHOT);
+    }
+
+    if (rc < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/* Wait for qemu blockjob to be done after 'block-pivot' or 'block-finalize'
+ * was started. */
+static int
+qemuSnapshotDeleteBlockJobFinishing(virDomainObj *vm,
+                                    qemuBlockJobData *job)
+{
+    int rc;
+    qemuBlockJobUpdate(vm, job, VIR_ASYNC_JOB_SNAPSHOT);
+
+    while ((rc = qemuSnapshotDeleteBlockJobIsActive(job->state)) > 0) {
+        if (qemuDomainObjWait(vm) < 0)
+            return -1;
+        qemuBlockJobUpdate(vm, job, VIR_ASYNC_JOB_SNAPSHOT);
+    }
+
+    if (rc < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+qemuSnapshotDiscardExternal(virDomainObj *vm,
+                            GSList *externalData)
+{
+    GSList *cur = NULL;
+
+    for (cur = externalData; cur; cur = g_slist_next(cur)) {
+        qemuSnapshotDeleteExternalData *data = cur->data;
+        virTristateBool autofinalize = VIR_TRISTATE_BOOL_NO;
+        unsigned int commitFlags = VIR_DOMAIN_BLOCK_COMMIT_DELETE;
+
+        if (data->domDisk->src == data->diskSrc) {
+            commitFlags |= VIR_DOMAIN_BLOCK_COMMIT_ACTIVE;
+            autofinalize = VIR_TRISTATE_BOOL_YES;
+        }
+
+        data->job = qemuBlockCommit(vm,
+                                    data->domDisk,
+                                    data->parentDiskSrc,
+                                    data->diskSrc,
+                                    data->prevDiskSrc,
+                                    0,
+                                    VIR_ASYNC_JOB_SNAPSHOT,
+                                    autofinalize,
+                                    commitFlags);
+
+        if (!data->job)
+            goto error;
+    }
+
+    for (cur = externalData; cur; cur = g_slist_next(cur)) {
+        qemuSnapshotDeleteExternalData *data = cur->data;
+
+        if (qemuSnapshotDeleteBlockJobRunning(vm, data->job) < 0)
+            goto error;
+
+        if (data->job->state == QEMU_BLOCKJOB_STATE_FAILED) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("block commit failed while deleting disk '%s' snapshot: '%s'"),
+                           data->snapDisk->name, data->job->errmsg);
+            goto error;
+        }
+    }
+
+    for (cur = externalData; cur; cur = g_slist_next(cur)) {
+        qemuSnapshotDeleteExternalData *data = cur->data;
+
+        if (data->job->state == QEMU_BLOCKJOB_STATE_READY) {
+            if (qemuBlockPivot(vm, data->job, VIR_ASYNC_JOB_SNAPSHOT, NULL) < 0)
+                goto error;
+        } else if (data->job->state == QEMU_BLOCKJOB_STATE_PENDING) {
+            if (qemuBlockFinalize(vm, data->job, VIR_ASYNC_JOB_SNAPSHOT) < 0)
+                goto error;
+        }
+
+        if (qemuSnapshotDeleteBlockJobFinishing(vm, data->job) < 0)
+            goto error;
+
+        if (data->job->state == QEMU_BLOCKJOB_STATE_FAILED) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("finishing block job failed while deleting disk '%s' snapshot: '%s'"),
+                           data->snapDisk->name, data->job->errmsg);
+            goto error;
+        }
+
+        qemuBlockJobSyncEnd(vm, data->job, VIR_ASYNC_JOB_SNAPSHOT);
+    }
+
+    return 0;
+
+ error:
+    for (cur = externalData; cur; cur = g_slist_next(cur)) {
+        qemuDomainObjPrivate *priv = vm->privateData;
+        qemuSnapshotDeleteExternalData *data = cur->data;
+
+        if (!data->job)
+            continue;
+
+        qemuBlockJobUpdate(vm, data->job, VIR_ASYNC_JOB_SNAPSHOT);
+
+        if (qemuSnapshotDeleteBlockJobIsActive(data->job->state)) {
+            if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_SNAPSHOT) == 0) {
+                ignore_value(qemuMonitorBlockJobCancel(priv->mon, data->job->name, false));
+                qemuDomainObjExitMonitor(vm);
+
+                data->job->state = QEMU_BLOCKJOB_STATE_ABORTING;
+            }
+        }
+
+        qemuBlockJobSyncEnd(vm, data->job, VIR_ASYNC_JOB_SNAPSHOT);
+    }
+
+    return -1;
+}
+
+
 static int
 qemuSnapshotDiscardMetadata(virDomainObj *vm,
                             virDomainMomentObj *snap,
@@ -2476,11 +2669,12 @@ qemuSnapshotDiscardMetadata(virDomainObj *vm,
 
 /* Discard one snapshot (or its metadata), without reparenting any children.  */
 static int
-qemuSnapshotDiscard(virQEMUDriver *driver,
-                    virDomainObj *vm,
-                    virDomainMomentObj *snap,
-                    bool update_parent,
-                    bool metadata_only)
+qemuSnapshotDiscardImpl(virQEMUDriver *driver,
+                        virDomainObj *vm,
+                        virDomainMomentObj *snap,
+                        GSList *externalData,
+                        bool update_parent,
+                        bool metadata_only)
 {
     if (!metadata_only) {
         if (!virDomainObjIsActive(vm)) {
@@ -2500,18 +2694,28 @@ qemuSnapshotDiscard(virQEMUDriver *driver,
                     return -1;
             }
 
-            if (qemuDomainSnapshotForEachQcow2(driver, def, snap, "-d", true) < 0)
-                return -1;
+            if (virDomainSnapshotIsExternal(snap)) {
+                if (qemuSnapshotDiscardExternal(vm, externalData) < 0)
+                    return -1;
+            } else {
+                if (qemuDomainSnapshotForEachQcow2(driver, def, snap, "-d", true) < 0)
+                    return -1;
+            }
         } else {
-            /* Similarly as internal snapshot creation we would use a regular job
-             * here so set a mask to forbid any other job. */
-            qemuDomainObjSetAsyncJobMask(vm, VIR_JOB_NONE);
-            if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_SNAPSHOT) < 0)
-                return -1;
-            /* we continue on even in the face of error */
-            qemuMonitorDeleteSnapshot(qemuDomainGetMonitor(vm), snap->def->name);
-            qemuDomainObjExitMonitor(vm);
-            qemuDomainObjSetAsyncJobMask(vm, VIR_JOB_DEFAULT_MASK);
+            if (virDomainSnapshotIsExternal(snap)) {
+                if (qemuSnapshotDiscardExternal(vm, externalData) < 0)
+                    return -1;
+            } else {
+                /* Similarly as internal snapshot creation we would use a regular job
+                 * here so set a mask to forbid any other job. */
+                qemuDomainObjSetAsyncJobMask(vm, VIR_JOB_NONE);
+                if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_SNAPSHOT) < 0)
+                    return -1;
+                /* we continue on even in the face of error */
+                qemuMonitorDeleteSnapshot(qemuDomainGetMonitor(vm), snap->def->name);
+                qemuDomainObjExitMonitor(vm);
+                qemuDomainObjSetAsyncJobMask(vm, VIR_JOB_DEFAULT_MASK);
+            }
         }
     }
 
@@ -2519,6 +2723,17 @@ qemuSnapshotDiscard(virQEMUDriver *driver,
         return -1;
 
     return 0;
+}
+
+
+static int
+qemuSnapshotDiscard(virQEMUDriver *driver,
+                    virDomainObj *vm,
+                    virDomainMomentObj *snap,
+                    bool update_parent,
+                    bool metadata_only)
+{
+    return qemuSnapshotDiscardImpl(driver, vm, snap, NULL, update_parent, metadata_only);
 }
 
 
@@ -2543,12 +2758,13 @@ qemuSnapshotDiscardAllMetadata(virQEMUDriver *driver,
 static int
 qemuSnapshotDeleteSingle(virDomainObj *vm,
                          virDomainMomentObj *snap,
+                         GSList *externalData,
                          bool metadata_only)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
 
-    return qemuSnapshotDiscard(driver, vm, snap, true, metadata_only);
+    return qemuSnapshotDiscardImpl(driver, vm, snap, externalData, true, metadata_only);
 }
 
 
@@ -2568,7 +2784,7 @@ qemuSnapshotDeleteAllHelper(void *payload,
     virDomainMomentObj *snap = payload;
     struct qemuSnapshotDeleteAllData *data = opaque;
 
-    error = qemuSnapshotDeleteSingle(data->vm, snap, data->metadata_only);
+    error = qemuSnapshotDeleteSingle(data->vm, snap, NULL, data->metadata_only);
 
     if (error != 0)
         data->error = error;
@@ -2608,7 +2824,7 @@ qemuSnapshotDeleteChildren(virDomainObj *vm,
         return -1;
 
     if (!children_only &&
-        qemuSnapshotDeleteSingle(vm, snap, metadata_only) < 0) {
+        qemuSnapshotDeleteSingle(vm, snap, NULL, metadata_only) < 0) {
         return -1;
     }
 
@@ -2763,7 +2979,7 @@ qemuSnapshotDelete(virDomainObj *vm,
         bool children_only = !!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY);
         ret = qemuSnapshotDeleteChildren(vm, snap, metadata_only, children_only);
     } else {
-        ret = qemuSnapshotDeleteSingle(vm, snap, metadata_only);
+        ret = qemuSnapshotDeleteSingle(vm, snap, externalData, metadata_only);
     }
 
  endjob:
