@@ -1011,6 +1011,12 @@ endif
 libiscsi_version = '1.18.0'
 libiscsi_dep = dependency('libiscsi', version: '>=' + libiscsi_version, required: get_option('libiscsi'))
 
+libnbd_version = '1.0'
+libnbd_dep = dependency('libnbd', version: '>=' + libnbd_version, required: get_option('libnbd'))
+if libnbd_dep.found()
+  conf.set('WITH_LIBNBD', 1)
+endif
+
 libnl_version = '3.0'
 if not get_option('libnl').disabled() and host_machine.system() == 'linux'
   libnl_dep = dependency('libnl-3.0', version: '>=' + libnl_version, required: get_option('libnl'))
@@ -2228,6 +2234,7 @@ libs_summary = {
   'glusterfs': glusterfs_dep.found(),
   'libiscsi': libiscsi_dep.found(),
   'libkvm': libkvm_dep.found(),
+  'libnbd': libnbd_dep.found(),
   'libnl': libnl_dep.found(),
   'libparted': libparted_dep.found(),
   'libpcap': libpcap_dep.found(),

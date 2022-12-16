@@ -99,6 +99,7 @@ if conf.has('WITH_QEMU')
       access_dep,
       capng_dep,
       gnutls_dep,
+      libnbd_dep,
       libnl_dep,
       log_dep,
       selinux_dep,

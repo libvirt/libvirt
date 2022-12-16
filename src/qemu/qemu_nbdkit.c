@@ -19,6 +19,9 @@
 
 #include <config.h>
 #include <glib.h>
+#if WITH_LIBNBD
+# include <libnbd.h>
+#endif
 #include <sys/syscall.h>
 
 #include "vircommand.h"
@@ -1136,6 +1139,9 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
     g_autofree char *basename = g_strdup_printf("%s-nbdkit-%i", vm->def->name, proc->source->id);
     int logfd = -1;
     g_autoptr(qemuLogContext) logContext = NULL;
+#if WITH_LIBNBD
+    struct nbd_handle *nbd = NULL;
+#endif
 
     if (!(cmd = qemuNbdkitProcessBuildCommand(proc)))
         return -1;
@@ -1176,6 +1182,23 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
 
     while (virTimeBackOffWait(&timebackoff)) {
         if (virFileExists(proc->socketfile)) {
+#if WITH_LIBNBD
+            /* if the disk source was misconfigured, nbdkit will not produce an error
+             * until somebody connects to the socket and tries to access the nbd
+             * export. This results in poor user experience because the only error we
+             * would get from qemu is something like "Requested export not available".
+             * So let's try to access it ourselves so that we can error out early and
+             * provide a useful message to the user.
+             */
+            nbd = nbd_create();
+            if (nbd_connect_unix(nbd, proc->socketfile) < 0) {
+                VIR_WARN("nbd_connect_unix failed: %s", nbd_get_error());
+                nbd_close(nbd);
+                goto errorlog;
+            }
+            nbd_close(nbd);
+
+#endif
             if (qemuNbdkitProcessStartMonitor(proc, vm) < 0)
                 goto error;
             return 0;
