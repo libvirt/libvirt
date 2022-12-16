@@ -163,8 +163,7 @@ virQEMUBuildCommandLineJSONIterate(const char *key,
     if (data->prefix)
         key = tmpkey = g_strdup_printf("%s.%s", data->prefix, key);
 
-    return virQEMUBuildCommandLineJSONRecurse(key, value, data->buf,
-                                              data->skipKey,
+    return virQEMUBuildCommandLineJSONRecurse(key, value, data->buf, NULL,
                                               data->arrayFunc, false);
 }
 
@@ -222,14 +221,14 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
             return -1;
         }
 
-        if (arrayFunc(key, value, buf, skipKey) < 0) {
+        if (arrayFunc(key, value, buf, NULL) < 0) {
             /* fallback, treat the array as a non-bitmap, adding the key
              * for each member */
             for (i = 0; i < virJSONValueArraySize(value); i++) {
                 elem = virJSONValueArrayGet((virJSONValue *)value, i);
 
                 /* recurse to avoid duplicating code */
-                if (virQEMUBuildCommandLineJSONRecurse(key, elem, buf, skipKey,
+                if (virQEMUBuildCommandLineJSONRecurse(key, elem, buf, NULL,
                                                        arrayFunc, true) < 0)
                     return -1;
             }
@@ -257,7 +256,8 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
  * virQEMUBuildCommandLineJSON:
  * @value: json object containing the value
  * @buf: otuput buffer
- * @skipKey: name of key that will be handled separately by caller
+ * @skipKey: name of key inside the top level object that will be handled
+ *           separately by caller
  * @arrayFunc: array formatter function to allow for different syntax
  *
  * Formats JSON value object into command line parameters suitable for use with
