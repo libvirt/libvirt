@@ -53,8 +53,7 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
 int
 virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
                                        virJSONValue *array,
-                                       virBuffer *buf,
-                                       const char *skipKey G_GNUC_UNUSED)
+                                       virBuffer *buf)
 {
     ssize_t pos = -1;
     ssize_t end;
@@ -90,8 +89,7 @@ virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
 int
 virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
                                          virJSONValue *array,
-                                         virBuffer *buf,
-                                         const char *skipKey)
+                                         virBuffer *buf)
 {
     virJSONValue *member;
     size_t i;
@@ -102,7 +100,7 @@ virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
         member = virJSONValueArrayGet((virJSONValue *) array, i);
         prefix = g_strdup_printf("%s.%zu", key, i);
 
-        if (virQEMUBuildCommandLineJSONRecurse(prefix, member, buf, skipKey,
+        if (virQEMUBuildCommandLineJSONRecurse(prefix, member, buf, NULL,
                                                virQEMUBuildCommandLineJSONArrayNumbered,
                                                true) < 0)
             return 0;
@@ -127,8 +125,7 @@ virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
 int
 virQEMUBuildCommandLineJSONArrayObjectsStr(const char *key,
                                            virJSONValue *array,
-                                           virBuffer *buf,
-                                           const char *skipKey G_GNUC_UNUSED)
+                                           virBuffer *buf)
 {
     g_auto(virBuffer) tmp = VIR_BUFFER_INITIALIZER;
     size_t i;
@@ -221,7 +218,7 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
             return -1;
         }
 
-        if (arrayFunc(key, value, buf, NULL) < 0) {
+        if (arrayFunc(key, value, buf) < 0) {
             /* fallback, treat the array as a non-bitmap, adding the key
              * for each member */
             for (i = 0; i < virJSONValueArraySize(value); i++) {
