@@ -766,6 +766,8 @@ struct _virQEMUCaps {
 
     virSGXCapability *sgxCapabilities;
 
+    virDomainCapsFeatureHyperv *hypervCapabilities;
+
     /* Capabilities which may differ depending on the accelerator. */
     virQEMUCapsAccel kvm;
     virQEMUCapsAccel hvf;
@@ -2019,6 +2021,9 @@ virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps)
                                qemuCaps->sgxCapabilities) < 0)
         return NULL;
 
+    ret->hypervCapabilities = g_memdup(qemuCaps->hypervCapabilities,
+                                       sizeof(virDomainCapsFeatureHyperv));
+
     return g_steal_pointer(&ret);
 }
 
@@ -2058,6 +2063,8 @@ void virQEMUCapsDispose(void *obj)
 
     virSEVCapabilitiesFree(qemuCaps->sevCapabilities);
     virSGXCapabilitiesFree(qemuCaps->sgxCapabilities);
+
+    g_free(qemuCaps->hypervCapabilities);
 
     virQEMUCapsAccelClear(&qemuCaps->kvm);
     virQEMUCapsAccelClear(&qemuCaps->hvf);
@@ -3030,6 +3037,68 @@ virQEMUCapsProbeCPUDefinitionsTest(virQEMUCaps *qemuCaps,
 
 
 static int
+virQEMUCapsProbeHypervCapabilities(virQEMUCaps *qemuCaps,
+                                   qemuMonitorCPUModelInfo *fullQEMU)
+{
+    g_autofree virDomainCapsFeatureHyperv *hvcaps = NULL;
+    size_t i;
+
+    if (!fullQEMU)
+        return 0;
+
+    hvcaps = g_new0(virDomainCapsFeatureHyperv, 1);
+    hvcaps->supported = VIR_TRISTATE_BOOL_YES;
+    hvcaps->features.report = true;
+
+    for (i = 0; i < fullQEMU->nprops; i++) {
+        qemuMonitorCPUProperty prop = fullQEMU->props[i];
+        const char *name;
+        int hvprop;
+
+        if (!(name = STRSKIP(prop.name, "hv-")))
+            continue;
+
+        hvprop = virDomainHypervTypeFromString(name);
+
+        if (hvprop < 0) {
+            /* Some names are different. For instance QEMU reports hv-vendor-id
+             * but we have it as vendor_id (because of XML). Replace hyphens
+             * with underscores and try again. */
+            g_autofree char *underscoreName = NULL;
+
+            underscoreName = virStringReplace(name, "-", "_");
+
+            hvprop = virDomainHypervTypeFromString(underscoreName);
+            if (hvprop < 0) {
+                VIR_DEBUG("Not yet implement Hyper-V enlightenment: %s",
+                          prop.name);
+                continue;
+            }
+        }
+
+        if ((prop.type == QEMU_MONITOR_CPU_PROPERTY_BOOLEAN &&
+             prop.value.boolean) ||
+            (prop.type == QEMU_MONITOR_CPU_PROPERTY_NUMBER &&
+             prop.value.number > 0) ||
+            (prop.type == QEMU_MONITOR_CPU_PROPERTY_STRING &&
+             prop.value.string))
+            VIR_DOMAIN_CAPS_ENUM_SET(hvcaps->features, hvprop);
+
+    }
+
+    if (hvcaps->features.values == 0) {
+        /* No capabilities detected. This is probably because we're talking to
+         * older QEMU which did not report error but did not expand HyperV
+         * features either. */
+        return 0;
+    }
+
+    qemuCaps->hypervCapabilities = g_steal_pointer(&hvcaps);
+    return 0;
+}
+
+
+static int
 virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
                            virQEMUCapsAccel *accel,
                            qemuMonitor *mon,
@@ -3108,6 +3177,18 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
         }
 
         modelInfo->migratability = true;
+    }
+
+    if (virQEMUCapsTypeIsAccelerated(virtType) &&
+        (ARCH_IS_X86(qemuCaps->arch) || ARCH_IS_ARM(qemuCaps->arch))) {
+        g_autoptr(qemuMonitorCPUModelInfo) fullQEMU = NULL;
+
+        if (qemuMonitorGetCPUModelExpansion(mon, QEMU_MONITOR_CPU_MODEL_EXPANSION_FULL,
+                                            cpu, false, true, true, &fullQEMU) < 0)
+            return -1;
+
+        if (virQEMUCapsProbeHypervCapabilities(qemuCaps, fullQEMU) < 0)
+            return -1;
     }
 
     accel->hostCPU.info = g_steal_pointer(&modelInfo);
@@ -4338,6 +4419,53 @@ virQEMUCapsParseSGXInfo(virQEMUCaps *qemuCaps,
 
 
 static int
+virQEMUCapsParseHypervCapabilities(virQEMUCaps *qemuCaps,
+                                   xmlXPathContextPtr ctxt)
+{
+    g_autofree virDomainCapsFeatureHyperv *hvcaps = NULL;
+    xmlNodePtr n = NULL;
+    g_autofree xmlNodePtr *capNodes = NULL;
+    int ncapNodes;
+    size_t i;
+
+    if (!(n = virXPathNode("./hypervCapabilities", ctxt)))
+        return 0;
+
+    hvcaps = g_new0(virDomainCapsFeatureHyperv, 1);
+    if (virXMLPropTristateBool(n, "supported", VIR_XML_PROP_REQUIRED,
+                               &hvcaps->supported) < 0) {
+        return -1;
+    }
+
+    if ((ncapNodes = virXPathNodeSet("./hypervCapabilities/cap",
+                                     ctxt, &capNodes)) < 0) {
+        return -1;
+    }
+
+    hvcaps->features.report = ncapNodes > 0;
+    for (i = 0; i < ncapNodes; i++) {
+        g_autofree char *name = virXMLPropStringRequired(capNodes[i], "name");
+        int val;
+
+        if (!name)
+            return -1;
+
+        if ((val = virDomainHypervTypeFromString(name)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported HyperV Enlightenment feature: %s"),
+                           name);
+            return -1;
+        }
+
+        VIR_DOMAIN_CAPS_ENUM_SET(hvcaps->features, val);
+    }
+
+    qemuCaps->hypervCapabilities = g_steal_pointer(&hvcaps);
+    return 0;
+}
+
+
+static int
 virQEMUCapsParseFlags(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
 {
     g_autofree xmlNodePtr *nodes = NULL;
@@ -4628,6 +4756,9 @@ virQEMUCapsLoadCache(virArch hostArch,
     if (virQEMUCapsParseSGXInfo(qemuCaps, ctxt) < 0)
         return -1;
 
+    if (virQEMUCapsParseHypervCapabilities(qemuCaps, ctxt) < 0)
+        return -1;
+
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
         virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_KVM);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_HVF))
@@ -4848,6 +4979,33 @@ virQEMUCapsFormatSGXInfo(virQEMUCaps *qemuCaps,
 }
 
 
+static void
+virQEMUCapsFormatHypervCapabilities(virQEMUCaps *qemuCaps,
+                                    virBuffer *buf)
+{
+    virDomainCapsFeatureHyperv *hvcaps = qemuCaps->hypervCapabilities;
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+    virBufferAsprintf(&attrBuf, " supported='%s'",
+                      virTristateBoolTypeToString(hvcaps->supported));
+
+    if (hvcaps->supported) {
+        size_t i;
+
+        for (i = 0; i < sizeof(hvcaps->features.values) * CHAR_BIT; i++) {
+            if (!(hvcaps->features.values & (1U << i)))
+                continue;
+
+            virBufferAsprintf(&childBuf, "<cap name='%s'/>\n",
+                              virDomainHypervTypeToString(i));
+        }
+    }
+
+    return virXMLFormatElement(buf, "hypervCapabilities", &attrBuf, &childBuf);
+}
+
+
 char *
 virQEMUCapsFormatCache(virQEMUCaps *qemuCaps)
 {
@@ -4931,6 +5089,9 @@ virQEMUCapsFormatCache(virQEMUCaps *qemuCaps)
 
     if (qemuCaps->sgxCapabilities)
         virQEMUCapsFormatSGXInfo(qemuCaps, &buf);
+
+    if (qemuCaps->hypervCapabilities)
+        virQEMUCapsFormatHypervCapabilities(qemuCaps, &buf);
 
     if (qemuCaps->kvmSupportsNesting)
         virBufferAddLit(&buf, "<kvmSupportsNesting/>\n");

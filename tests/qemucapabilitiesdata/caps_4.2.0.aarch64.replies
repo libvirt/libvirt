@@ -21526,6 +21526,51 @@
 }
 
 {
+  "execute": "query-cpu-model-expansion",
+  "arguments": {
+    "type": "full",
+    "model": {
+      "name": "host",
+      "props": {
+        "migratable": false,
+        "hv-passthrough": true
+      }
+    }
+  },
+  "id": "libvirt-43"
+}
+
+{
+  "return": {
+    "model": {
+      "name": "host",
+      "props": {
+        "sve768": false,
+        "sve128": true,
+        "sve1024": false,
+        "sve1280": false,
+        "sve896": false,
+        "sve256": true,
+        "sve1536": false,
+        "sve1792": false,
+        "sve384": false,
+        "sve": true,
+        "sve2048": false,
+        "sve512": true,
+        "aarch64": true,
+        "pmu": true,
+        "sve1920": false,
+        "sve1152": false,
+        "sve640": false,
+        "sve1408": false,
+        "sve1664": false
+      }
+    }
+  },
+  "id": "libvirt-43"
+}
+
+{
   "execute": "qmp_capabilities",
   "id": "libvirt-1"
 }

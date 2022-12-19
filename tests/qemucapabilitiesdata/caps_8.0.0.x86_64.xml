@@ -3250,4 +3250,20 @@
   <machine type='tcg' name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-i440fx-7.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
+  <hypervCapabilities supported='yes'>
+    <cap name='relaxed'/>
+    <cap name='vapic'/>
+    <cap name='spinlocks'/>
+    <cap name='vpindex'/>
+    <cap name='runtime'/>
+    <cap name='synic'/>
+    <cap name='stimer'/>
+    <cap name='reset'/>
+    <cap name='vendor_id'/>
+    <cap name='frequencies'/>
+    <cap name='reenlightenment'/>
+    <cap name='tlbflush'/>
+    <cap name='ipi'/>
+    <cap name='avic'/>
+  </hypervCapabilities>
 </qemuCaps>
