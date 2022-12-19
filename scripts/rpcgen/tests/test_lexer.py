@@ -1,0 +1,116 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
+from pathlib import Path
+
+from rpcgen.lexer import (
+    XDRLexer,
+    XDRTokenIdentifier,
+    XDRTokenPunctuation,
+    XDRTokenConstant,
+)
+
+
+def test_lexer():
+    p = Path(Path(__file__).parent, "simple.x")
+    with p.open("r") as fp:
+        lexer = XDRLexer(fp)
+
+        tokens = []
+        while True:
+            tok = lexer.next()
+            if tok is None:
+                break
+            tokens.append(tok)
+
+    assert tokens == [
+        XDRTokenIdentifier(line=3, column=0, value="const"),
+        XDRTokenIdentifier(line=3, column=6, value="MAXUSERNAME"),
+        XDRTokenPunctuation(line=3, column=18, value="="),
+        XDRTokenConstant(line=3, column=20, value="32"),
+        XDRTokenPunctuation(line=3, column=22, value=";"),
+        XDRTokenIdentifier(line=4, column=0, value="const"),
+        XDRTokenIdentifier(line=4, column=6, value="MAXFILELEN"),
+        XDRTokenPunctuation(line=4, column=17, value="="),
+        XDRTokenConstant(line=4, column=19, value="65535"),
+        XDRTokenPunctuation(line=4, column=24, value=";"),
+        XDRTokenIdentifier(line=5, column=0, value="const"),
+        XDRTokenIdentifier(line=5, column=6, value="MAXNAMELEN"),
+        XDRTokenPunctuation(line=5, column=17, value="="),
+        XDRTokenConstant(line=5, column=19, value="255"),
+        XDRTokenPunctuation(line=5, column=22, value=";"),
+        XDRTokenIdentifier(line=10, column=0, value="enum"),
+        XDRTokenIdentifier(line=10, column=5, value="filekind"),
+        XDRTokenPunctuation(line=10, column=14, value="{"),
+        XDRTokenIdentifier(line=11, column=3, value="TEXT"),
+        XDRTokenPunctuation(line=11, column=8, value="="),
+        XDRTokenConstant(line=11, column=10, value="0"),
+        XDRTokenPunctuation(line=11, column=11, value=","),
+        XDRTokenIdentifier(line=12, column=3, value="DATA"),
+        XDRTokenPunctuation(line=12, column=8, value="="),
+        XDRTokenConstant(line=12, column=10, value="1"),
+        XDRTokenPunctuation(line=12, column=11, value=","),
+        XDRTokenIdentifier(line=13, column=3, value="EXEC"),
+        XDRTokenPunctuation(line=13, column=8, value="="),
+        XDRTokenConstant(line=13, column=10, value="2"),
+        XDRTokenPunctuation(line=14, column=0, value="}"),
+        XDRTokenPunctuation(line=14, column=1, value=";"),
+        XDRTokenIdentifier(line=19, column=0, value="union"),
+        XDRTokenIdentifier(line=19, column=6, value="filetype"),
+        XDRTokenIdentifier(line=19, column=15, value="switch"),
+        XDRTokenPunctuation(line=19, column=22, value="("),
+        XDRTokenIdentifier(line=19, column=23, value="filekind"),
+        XDRTokenIdentifier(line=19, column=32, value="kind"),
+        XDRTokenPunctuation(line=19, column=36, value=")"),
+        XDRTokenPunctuation(line=19, column=38, value="{"),
+        XDRTokenIdentifier(line=20, column=0, value="case"),
+        XDRTokenIdentifier(line=20, column=5, value="TEXT"),
+        XDRTokenPunctuation(line=20, column=9, value=":"),
+        XDRTokenIdentifier(line=21, column=3, value="void"),
+        XDRTokenPunctuation(line=21, column=7, value=";"),
+        XDRTokenIdentifier(line=22, column=0, value="case"),
+        XDRTokenIdentifier(line=22, column=5, value="DATA"),
+        XDRTokenPunctuation(line=22, column=9, value=":"),
+        XDRTokenIdentifier(line=23, column=3, value="string"),
+        XDRTokenIdentifier(line=23, column=10, value="creator"),
+        XDRTokenPunctuation(line=23, column=17, value="<"),
+        XDRTokenIdentifier(line=23, column=18, value="MAXNAMELEN"),
+        XDRTokenPunctuation(line=23, column=28, value=">"),
+        XDRTokenPunctuation(line=23, column=29, value=";"),
+        XDRTokenIdentifier(line=24, column=0, value="case"),
+        XDRTokenIdentifier(line=24, column=5, value="EXEC"),
+        XDRTokenPunctuation(line=24, column=9, value=":"),
+        XDRTokenIdentifier(line=25, column=3, value="string"),
+        XDRTokenIdentifier(line=25, column=10, value="interpretor"),
+        XDRTokenPunctuation(line=25, column=21, value="<"),
+        XDRTokenIdentifier(line=25, column=22, value="MAXNAMELEN"),
+        XDRTokenPunctuation(line=25, column=32, value=">"),
+        XDRTokenPunctuation(line=25, column=33, value=";"),
+        XDRTokenPunctuation(line=26, column=0, value="}"),
+        XDRTokenPunctuation(line=26, column=1, value=";"),
+        XDRTokenIdentifier(line=30, column=0, value="struct"),
+        XDRTokenIdentifier(line=30, column=7, value="file"),
+        XDRTokenPunctuation(line=30, column=12, value="{"),
+        XDRTokenIdentifier(line=31, column=3, value="string"),
+        XDRTokenIdentifier(line=31, column=10, value="filename"),
+        XDRTokenPunctuation(line=31, column=18, value="<"),
+        XDRTokenIdentifier(line=31, column=19, value="MAXNAMELEN"),
+        XDRTokenPunctuation(line=31, column=29, value=">"),
+        XDRTokenPunctuation(line=31, column=30, value=";"),
+        XDRTokenIdentifier(line=32, column=3, value="filetype"),
+        XDRTokenIdentifier(line=32, column=12, value="type"),
+        XDRTokenPunctuation(line=32, column=16, value=";"),
+        XDRTokenIdentifier(line=33, column=3, value="string"),
+        XDRTokenIdentifier(line=33, column=10, value="owner"),
+        XDRTokenPunctuation(line=33, column=15, value="<"),
+        XDRTokenIdentifier(line=33, column=16, value="MAXUSERNAME"),
+        XDRTokenPunctuation(line=33, column=27, value=">"),
+        XDRTokenPunctuation(line=33, column=28, value=";"),
+        XDRTokenIdentifier(line=34, column=3, value="opaque"),
+        XDRTokenIdentifier(line=34, column=10, value="data"),
+        XDRTokenPunctuation(line=34, column=14, value="<"),
+        XDRTokenIdentifier(line=34, column=15, value="MAXFILELEN"),
+        XDRTokenPunctuation(line=34, column=25, value=">"),
+        XDRTokenPunctuation(line=34, column=26, value=";"),
+        XDRTokenPunctuation(line=35, column=0, value="}"),
+        XDRTokenPunctuation(line=35, column=1, value=";"),
+    ]

@@ -823,6 +823,7 @@ optional_programs = [
   'ovs-vsctl',
   'passt',
   'pdwtags',
+  'pytest',
   'rmmod',
   'scrub',
   'tc',

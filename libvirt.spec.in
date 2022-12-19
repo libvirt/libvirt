@@ -287,6 +287,7 @@ BuildRequires: ninja-build
 BuildRequires: git
 BuildRequires: perl-interpreter
 BuildRequires: python3
+BuildRequires: python3-pytest
 %if %{with_libxl}
 BuildRequires: xen-devel
 %endif
