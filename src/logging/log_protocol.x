@@ -22,13 +22,11 @@ struct virLogManagerProtocolDomain {
     virLogManagerProtocolUUID uuid;
     virLogManagerProtocolNonNullString name;
 };
-typedef struct virLogManagerProtocolDomain virLogManagerProtocolDomain;
 
 struct virLogManagerProtocolLogFilePosition {
     unsigned hyper inode;
     unsigned hyper offset;
 };
-typedef struct virLogManagerProtocolLogFilePosition virLogManagerProtocolLogFilePosition;
 
 enum virLogManagerProtocolDomainOpenLogFileFlags {
     VIR_LOG_MANAGER_PROTOCOL_DOMAIN_OPEN_LOG_FILE_TRUNCATE = 1
