@@ -1344,6 +1344,10 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-scsi-incompatible-address");
     DO_TEST_CAPS_LATEST("disk-backing-chains-index");
     DO_TEST_CAPS_LATEST("disk-backing-chains-noindex");
+    DO_TEST_CAPS_ARCH_LATEST_FULL("disk-source-fd", "x86_64",
+                                  ARG_FD_GROUP, "testgroup2", 2, 700, 705,
+                                  ARG_FD_GROUP, "testgroup5", 1, 704,
+                                  ARG_FD_GROUP, "testgroup6", 2, 777, 778);
 
     DO_TEST_CAPS_LATEST("disk-slices");
     DO_TEST_CAPS_LATEST("disk-rotation");

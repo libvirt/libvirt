@@ -909,6 +909,8 @@ mymain(void)
     DO_TEST_NOCAPS("disk-backing-chains-index");
     DO_TEST_NOCAPS("disk-backing-chains-noindex");
 
+    DO_TEST_CAPS_LATEST("disk-source-fd");
+
     DO_TEST_CAPS_LATEST("disk-network-http");
 
     DO_TEST("chardev-label",
