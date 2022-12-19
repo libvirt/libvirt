@@ -1436,7 +1436,7 @@ exclude_file_name_regexp--sc_prohibit_xmlURI = ^src/util/viruri\.c$$
 exclude_file_name_regexp--sc_prohibit_return_as_function = \.py$$
 
 exclude_file_name_regexp--sc_require_config_h = \
-	^(examples/|tools/virsh-edit\.c$$|tests/virmockstathelpers.c)
+	^(examples/c/.*/.*\.c|tools/virsh-edit\.c|tests/virmockstathelpers\.c|scripts/rpcgen/tests/demo\.c)$$
 
 exclude_file_name_regexp--sc_require_config_h_first = \
 	^(examples/|tools/virsh-edit\.c$$|tests/virmockstathelpers.c)
@@ -1500,6 +1500,8 @@ exclude_file_name_regexp--sc_prohibit_strcmp = \
 exclude_file_name_regexp--sc_prohibit_select = \
   ^build-aux/syntax-check\.mk|src/util/vireventglibwatch\.c|tests/meson\.build$$
 
+exclude_file_name_regexp--sc_header-ifdef = \
+  ^scripts/rpcgen/tests/demo\.[ch]$$
 
 exclude_file_name_regexp--sc_black = \
   ^tools/|src/|tests/|ci/|run\.in|scripts/[^/]*\.py
