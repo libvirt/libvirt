@@ -4921,7 +4921,8 @@ qemuMonitorJSONParseCPUModelProperty(const char *key,
 
 static virJSONValue *
 qemuMonitorJSONMakeCPUModel(virCPUDef *cpu,
-                            bool migratable)
+                            bool migratable,
+                            bool hv_passthrough)
 {
     g_autoptr(virJSONValue) model = virJSONValueNewObject();
     size_t i;
@@ -4929,7 +4930,7 @@ qemuMonitorJSONMakeCPUModel(virCPUDef *cpu,
     if (virJSONValueObjectAppendString(model, "name", cpu->model) < 0)
         return NULL;
 
-    if (cpu->nfeatures || !migratable) {
+    if (cpu->nfeatures || !migratable || hv_passthrough) {
         g_autoptr(virJSONValue) props = virJSONValueNewObject();
 
         for (i = 0; i < cpu->nfeatures; i++) {
@@ -4948,6 +4949,11 @@ qemuMonitorJSONMakeCPUModel(virCPUDef *cpu,
 
         if (!migratable &&
             virJSONValueObjectAppendBoolean(props, "migratable", false) < 0) {
+            return NULL;
+        }
+
+        if (hv_passthrough &&
+            virJSONValueObjectAppendBoolean(props, "hv-passthrough", true) < 0) {
             return NULL;
         }
 
@@ -5079,7 +5085,7 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
 
     *model_info = NULL;
 
-    if (!(model = qemuMonitorJSONMakeCPUModel(cpu, migratable)))
+    if (!(model = qemuMonitorJSONMakeCPUModel(cpu, migratable, false)))
         return -1;
 
     if ((rc = qemuMonitorJSONQueryCPUModelExpansionOne(mon, type, &model, &data)) <= 0)
@@ -5128,8 +5134,8 @@ qemuMonitorJSONGetCPUModelBaseline(qemuMonitor *mon,
     virJSONValue *cpu_props = NULL;
     const char *cpu_name = "";
 
-    if (!(model_a = qemuMonitorJSONMakeCPUModel(cpu_a, true)) ||
-        !(model_b = qemuMonitorJSONMakeCPUModel(cpu_b, true)))
+    if (!(model_a = qemuMonitorJSONMakeCPUModel(cpu_a, true, false)) ||
+        !(model_b = qemuMonitorJSONMakeCPUModel(cpu_b, true, false)))
         return -1;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-cpu-model-baseline",
@@ -5166,8 +5172,8 @@ qemuMonitorJSONGetCPUModelComparison(qemuMonitor *mon,
     const char *data_result;
     virJSONValue *data;
 
-    if (!(model_a = qemuMonitorJSONMakeCPUModel(cpu_a, true)) ||
-        !(model_b = qemuMonitorJSONMakeCPUModel(cpu_b, true)))
+    if (!(model_a = qemuMonitorJSONMakeCPUModel(cpu_a, true, false)) ||
+        !(model_b = qemuMonitorJSONMakeCPUModel(cpu_b, true, false)))
         return -1;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-cpu-model-comparison",
