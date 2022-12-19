@@ -5072,6 +5072,7 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
                                     qemuMonitorCPUModelExpansionType type,
                                     virCPUDef *cpu,
                                     bool migratable,
+                                    bool hv_passthrough,
                                     bool fail_no_props,
                                     qemuMonitorCPUModelInfo **model_info)
 {
@@ -5085,7 +5086,7 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
 
     *model_info = NULL;
 
-    if (!(model = qemuMonitorJSONMakeCPUModel(cpu, migratable, false)))
+    if (!(model = qemuMonitorJSONMakeCPUModel(cpu, migratable, hv_passthrough)))
         return -1;
 
     if ((rc = qemuMonitorJSONQueryCPUModelExpansionOne(mon, type, &model, &data)) <= 0)

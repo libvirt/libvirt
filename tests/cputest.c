@@ -455,7 +455,7 @@ cpuTestMakeQEMUCaps(const struct data *data)
 
     if (qemuMonitorGetCPUModelExpansion(qemuMonitorTestGetMonitor(testMon),
                                         QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC,
-                                        cpu, true, fail_no_props, &model) < 0)
+                                        cpu, true, false, fail_no_props, &model) < 0)
         return NULL;
 
     if (!(qemuCaps = virQEMUCapsNew()))

@@ -12210,7 +12210,8 @@ qemuConnectCPUModelBaseline(virQEMUCaps *qemuCaps,
                                          : QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC;
 
         if (qemuMonitorGetCPUModelExpansion(proc->mon, expansion_type,
-                                            baseline, true, false, &result) < 0)
+                                            baseline, true,
+                                            false, false, &result) < 0)
             return NULL;
 
         if (qemuConnectStealCPUModelFromInfo(baseline, &result) < 0)

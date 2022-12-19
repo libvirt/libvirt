@@ -449,6 +449,7 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
                                     qemuMonitorCPUModelExpansionType type,
                                     virCPUDef *cpu,
                                     bool migratable,
+                                    bool hv_passthrough,
                                     bool fail_no_props,
                                     qemuMonitorCPUModelInfo **model_info)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(6);

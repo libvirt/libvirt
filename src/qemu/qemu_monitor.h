@@ -1140,6 +1140,7 @@ int qemuMonitorGetCPUModelExpansion(qemuMonitor *mon,
                                     qemuMonitorCPUModelExpansionType type,
                                     virCPUDef *cpu,
                                     bool migratable,
+                                    bool hv_passthrough,
                                     bool fail_no_props,
                                     qemuMonitorCPUModelInfo **model_info);
 

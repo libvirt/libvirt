@@ -3069,15 +3069,15 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
     if (ARCH_IS_S390(qemuCaps->arch))
         fail_no_props = false;
 
-    if (qemuMonitorGetCPUModelExpansion(mon, type, cpu, true, fail_no_props,
-                                        &modelInfo) < 0)
+    if (qemuMonitorGetCPUModelExpansion(mon, type, cpu, true, false,
+                                        fail_no_props, &modelInfo) < 0)
         return -1;
 
     /* Try to check migratability of each feature. */
     if (modelInfo &&
         ARCH_IS_X86(qemuCaps->arch) &&
-        qemuMonitorGetCPUModelExpansion(mon, type, cpu, false, fail_no_props,
-                                        &nonMigratable) < 0)
+        qemuMonitorGetCPUModelExpansion(mon, type, cpu, false, false,
+                                        fail_no_props, &nonMigratable) < 0)
         return -1;
 
     if (nonMigratable) {
