@@ -592,8 +592,12 @@ libxlMakeDomBuildInfo(virDomainDef *def,
              * a single device.  From the man page: soundhw=DEVICE
              */
             virDomainSoundDef *snd = def->sounds[0];
+            const char *model = virDomainSoundModelTypeToString(snd->model);
 
-            b_info->u.hvm.soundhw = g_strdup(virDomainSoundModelTypeToString(snd->model));
+            if (snd->model == VIR_DOMAIN_SOUND_MODEL_ICH6)
+                model = "hda";
+
+            b_info->u.hvm.soundhw = g_strdup(model);
         }
 
         for (i = 0; i < def->os.nBootDevs; i++) {
