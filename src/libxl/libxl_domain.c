@@ -312,6 +312,28 @@ libxlDomainDefValidate(const virDomainDef *def,
         return -1;
     }
 
+    if (def->nsounds > 0) {
+        virDomainSoundDef *snd = def->sounds[0];
+
+        switch (snd->model) {
+            case VIR_DOMAIN_SOUND_MODEL_ICH6:
+            case VIR_DOMAIN_SOUND_MODEL_ES1370:
+            case VIR_DOMAIN_SOUND_MODEL_AC97:
+            case VIR_DOMAIN_SOUND_MODEL_SB16:
+                break;
+            default:
+            case VIR_DOMAIN_SOUND_MODEL_PCSPK:
+            case VIR_DOMAIN_SOUND_MODEL_ICH7:
+            case VIR_DOMAIN_SOUND_MODEL_USB:
+            case VIR_DOMAIN_SOUND_MODEL_ICH9:
+            case VIR_DOMAIN_SOUND_MODEL_LAST:
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("unsupported audio model %s"),
+                        virDomainSoundModelTypeToString(snd->model));
+                return -1;
+        }
+    }
+
     return 0;
 }
 
