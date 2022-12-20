@@ -451,8 +451,6 @@ Requires: libvirt-libs = %{version}-%{release}
 # Recommends here will install libvirt-client by default (if available), but
 # RPM won't complain if the package is unavailable, masked, or removed later.
 Recommends: libvirt-client = %{version}-%{release}
-# for modprobe of pci devices
-Requires: module-init-tools
 # for /sbin/ip
 Requires: iproute
 # for /sbin/tc
@@ -574,6 +572,8 @@ Requires: libvirt-libs = %{version}-%{release}
 Requires: systemd >= 185
 # For managing persistent mediated devices
 Requires: mdevctl
+# for modprobe of pci devices
+Requires: module-init-tools
 
 %description daemon-driver-nodedev
 The nodedev driver plugin for the libvirtd daemon, providing
@@ -782,6 +782,8 @@ Requires: libvirt-libs = %{version}-%{release}
 # There really is a hard cross-driver dependency here
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
 Requires: systemd-container
+# for modprobe of nbd driver
+Requires: module-init-tools
 
 %description daemon-driver-lxc
 The LXC driver plugin for the libvirtd daemon, providing
