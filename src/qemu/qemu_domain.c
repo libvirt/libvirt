@@ -4927,6 +4927,24 @@ qemuDomainValidateStorageSource(virStorageSource *src,
         }
     }
 
+    if (src->reconnectDelay > 0) {
+        if (actualType != VIR_STORAGE_TYPE_NETWORK ||
+            src->protocol != VIR_STORAGE_NET_PROTOCOL_NBD) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("reconnectDelay is supported only with NBD protocol"));
+            return -1;
+        }
+    }
+
+    if (src->openTimeout > 0) {
+        if (actualType != VIR_STORAGE_TYPE_NETWORK ||
+            src->protocol != VIR_STORAGE_NET_PROTOCOL_NBD) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("openTimeout is supported only with NBD protocol"));
+            return -1;
+        }
+    }
+
     if (src->query &&
         (actualType != VIR_STORAGE_TYPE_NETWORK ||
          (src->protocol != VIR_STORAGE_NET_PROTOCOL_HTTPS &&

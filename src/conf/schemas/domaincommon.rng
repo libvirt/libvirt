@@ -2185,6 +2185,16 @@
         <ref name="diskSourceCommon"/>
         <ref name="diskSourceNetworkHost"/>
         <optional>
+          <attribute name="reconnectDelay">
+            <ref name="unsignedInt"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="openTimeout">
+            <ref name="unsignedInt"/>
+          </attribute>
+        </optional>
+        <optional>
           <ref name="encryption"/>
         </optional>
       </interleave>

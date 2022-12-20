@@ -7024,6 +7024,15 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
         src->tlsFromConfig = !!value;
     }
 
+     if (src->protocol == VIR_STORAGE_NET_PROTOCOL_NBD) {
+        if (virXMLPropUInt(node, "reconnectDelay", 10, VIR_XML_PROP_NONE, &src->reconnectDelay) < 0 ||
+            virXMLPropUInt(node, "openTimeout", 10, VIR_XML_PROP_NONE, &src->openTimeout) < 0) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                            _("invalid reconnectDelay or openTimeout"));
+            return -1;
+        }
+    }
+
     /* for historical reasons we store the volume and image name in one XML
      * element although it complicates thing when attempting to access them. */
     if (src->path &&
@@ -21703,6 +21712,12 @@ virDomainDiskSourceFormatNetwork(virBuffer *attrBuf,
     virBufferEscapeString(attrBuf, " tlsHostname='%s'", src->tlsHostname);
     if (flags & VIR_DOMAIN_DEF_FORMAT_STATUS)
         virBufferAsprintf(attrBuf, " tlsFromConfig='%d'", src->tlsFromConfig);
+
+    if (src->reconnectDelay)
+        virBufferAsprintf(attrBuf, " reconnectDelay='%u'", src->reconnectDelay);
+
+    if (src->openTimeout)
+        virBufferAsprintf(attrBuf, " openTimeout='%u'", src->openTimeout);
 
     for (n = 0; n < src->nhosts; n++) {
         virBufferAddLit(childBuf, "<host");

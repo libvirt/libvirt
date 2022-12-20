@@ -530,6 +530,8 @@ qemuBlockStorageSourceGetNBDProps(virStorageSource *src,
                               "S:export", src->path,
                               "S:tls-creds", tlsAlias,
                               "S:tls-hostname", tlsHostname,
+                              "p:reconnect-delay", src->reconnectDelay,
+                              "p:open-timeout", src->openTimeout,
                               NULL) < 0)
         return NULL;
 
