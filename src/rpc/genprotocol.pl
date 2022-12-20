@@ -85,29 +85,6 @@ while (<RPCGEN>) {
         @uses = grep /[^.>]\bi\b/, @function;
         @function = grep !/[^.>]\bi\b/, @function if @uses == 1;
 
-        # (char **)&objp->... gives:
-        # warning: dereferencing type-punned pointer will break
-        #   strict-aliasing rules
-        # so rewrite it.
-        my %uses = ();
-        my $i = 0;
-        foreach (@function) {
-            $uses{$1} = $i++ if m/\(char \*\*\)\&(objp->[a-z_.]+_val)/i;
-        }
-        if (keys %uses >= 1) {
-            my $i = 1;
-
-            foreach (sort(keys %uses)) {
-                $i = $uses{$_};
-                unshift @function,
-                ("        char **objp_cpp$i = (char **) (void *) &$_;\n");
-                $i++;
-            }
-            @function =
-                map { s{\(char \*\*\)\&(objp->[a-z_.]+_val)}
-                       {objp_cpp$uses{$1}}gi; $_ } @function;
-        }
-
         # The code uses 'IXDR_PUT_{U_,}LONG' but it's wrong in two
         # ways: Firstly these functions are deprecated and don't
         # work on 64 bit platforms.  Secondly the return value should
