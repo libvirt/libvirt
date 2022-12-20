@@ -462,9 +462,6 @@ Requires: dmidecode
 %endif
 # For service management
 Requires(post): /usr/bin/systemctl
-%if %{with_numad}
-Requires: numad
-%endif
 # libvirtd depends on 'messagebus' service
 Requires: dbus
 # For uid creation during pre
@@ -764,6 +761,9 @@ Requires: lzop
 Requires: xz
 Requires: systemd-container
 Requires: swtpm-tools
+    %if %{with_numad}
+Requires: numad
+    %endif
     %if (0%{?fedora} >= 36) || (0%{?rhel} >= 9)
 Recommends: passt
     %endif
@@ -784,6 +784,9 @@ Requires: libvirt-daemon-driver-network = %{version}-%{release}
 Requires: systemd-container
 # for modprobe of nbd driver
 Requires: module-init-tools
+    %if %{with_numad}
+Requires: numad
+    %endif
 
 %description daemon-driver-lxc
 The LXC driver plugin for the libvirtd daemon, providing
