@@ -66,6 +66,10 @@ struct _virSecretDriverState {
 
     /* Immutable pointer, self-locking APIs */
     virObjectEventState *secretEventState;
+
+    /* Immutable pointers. Caller must provide locking */
+    virStateInhibitCallback inhibitCallback;
+    void *inhibitOpaque;
 };
 
 static virSecretDriverState *driver;
@@ -83,6 +87,23 @@ secretObjFromSecret(virSecretPtr secret)
         return NULL;
     }
     return obj;
+}
+
+
+static bool
+secretNumOfEphemeralSecretsHelper(virConnectPtr conn G_GNUC_UNUSED,
+                                  virSecretDef *def)
+{
+    return def->isephemeral;
+}
+
+
+static int
+secretNumOfEphemeralSecrets(void)
+{
+    return virSecretObjListNumOfSecrets(driver->secrets,
+                                        secretNumOfEphemeralSecretsHelper,
+                                        NULL);
 }
 
 
@@ -266,6 +287,10 @@ secretDefineXML(virConnectPtr conn,
  cleanup:
     virSecretDefFree(def);
     virSecretObjEndAPI(&obj);
+
+    if (secretNumOfEphemeralSecrets() > 0)
+        driver->inhibitCallback(true, driver->inhibitOpaque);
+
     virObjectEventStateQueue(driver->secretEventState, event);
 
     return ret;
@@ -424,6 +449,10 @@ secretUndefine(virSecretPtr secret)
 
  cleanup:
     virSecretObjEndAPI(&obj);
+
+    if (secretNumOfEphemeralSecrets() == 0)
+        driver->inhibitCallback(false, driver->inhibitOpaque);
+
     virObjectEventStateQueue(driver->secretEventState, event);
 
     return ret;
@@ -463,8 +492,8 @@ static int
 secretStateInitialize(bool privileged,
                       const char *root,
                       bool monolithic G_GNUC_UNUSED,
-                      virStateInhibitCallback callback G_GNUC_UNUSED,
-                      void *opaque G_GNUC_UNUSED)
+                      virStateInhibitCallback callback,
+                      void *opaque)
 {
     VIR_LOCK_GUARD lock = virLockGuardLock(&mutex);
 
@@ -473,6 +502,8 @@ secretStateInitialize(bool privileged,
     driver->lockFD = -1;
     driver->secretEventState = virObjectEventStateNew();
     driver->privileged = privileged;
+    driver->inhibitCallback = callback;
+    driver->inhibitOpaque = opaque;
 
     if (root) {
         driver->embeddedRoot = g_strdup(root);
