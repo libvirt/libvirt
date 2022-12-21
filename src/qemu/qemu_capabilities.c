@@ -6823,6 +6823,16 @@ virQEMUCapsFillDomainFeatureSGXCaps(virQEMUCaps *qemuCaps,
     virQEMUCapsSGXInfoCopy(&domCaps->sgx, qemuCaps->sgxCapabilities);
 }
 
+
+static void
+virQEMUCapsFillDomainFeatureHypervCaps(virQEMUCaps *qemuCaps,
+                                       virDomainCaps *domCaps)
+{
+    domCaps->hyperv = g_memdup(qemuCaps->hypervCapabilities,
+                               sizeof(virDomainCapsFeatureHyperv));
+}
+
+
 int
 virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
                           virArch hostarch,
@@ -6879,6 +6889,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virQEMUCapsFillDomainFeatureSEVCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureS390PVCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureSGXCaps(qemuCaps, domCaps);
+    virQEMUCapsFillDomainFeatureHypervCaps(qemuCaps, domCaps);
 
     return 0;
 }
