@@ -3038,7 +3038,6 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
     const char *model = virQEMUCapsTypeIsAccelerated(virtType) ? "host" : "max";
     g_autoptr(qemuMonitorCPUModelInfo) modelInfo = NULL;
     g_autoptr(qemuMonitorCPUModelInfo) nonMigratable = NULL;
-    g_autoptr(GHashTable) hash = NULL;
     g_autoptr(virCPUDef) cpu = NULL;
     qemuMonitorCPUModelExpansionType type;
     bool fail_no_props = true;
@@ -3082,11 +3081,10 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
         return -1;
 
     if (nonMigratable) {
+        g_autoptr(GHashTable) hash = virHashNew(NULL);
         qemuMonitorCPUProperty *prop;
         qemuMonitorCPUProperty *nmProp;
         size_t i;
-
-        hash = virHashNew(NULL);
 
         for (i = 0; i < modelInfo->nprops; i++) {
             prop = modelInfo->props + i;
