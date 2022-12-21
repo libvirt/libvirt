@@ -2784,7 +2784,7 @@ paravirtualized driver is specified via the ``disk`` element.
    ``network``
       The ``protocol`` attribute specifies the protocol to access to the
       requested image. Possible values are "nbd", "iscsi", "rbd", "sheepdog",
-      "gluster", "vxhs", "nfs", "http", "https", "ftp", ftps", or "tftp".
+      "gluster", "vxhs", "nfs", "http", "https", "ftp", ftps", "tftp", or "ssh".
 
       For any ``protocol`` other than ``nbd`` an additional attribute ``name``
       is mandatory to specify which volume/image will be used.
@@ -2945,18 +2945,19 @@ paravirtualized driver is specified via the ``disk`` element.
    ``auth``
       :since:`Since libvirt 3.9.0` , the ``auth`` element is supported for a
       disk ``type`` "network" that is using a ``source`` element with the
-      ``protocol`` attributes "rbd" or "iscsi". If present, the ``auth`` element
-      provides the authentication credentials needed to access the source. It
-      includes a mandatory attribute ``username``, which identifies the username
-      to use during authentication, as well as a sub-element ``secret`` with
-      mandatory attribute ``type``, to tie back to a `libvirt secret
-      object <formatsecret.html>`__ that holds the actual password or other
-      credentials (the domain XML intentionally does not expose the password,
-      only the reference to the object that does manage the password). Known
-      secret types are "ceph" for Ceph RBD network sources and "iscsi" for CHAP
-      authentication of iSCSI targets. Both will require either a ``uuid``
-      attribute with the UUID of the secret object or a ``usage`` attribute
-      matching the key that was specified in the secret object.
+      ``protocol`` attributes "rbd", "iscsi", or "ssh". If present, the
+      ``auth`` element provides the authentication credentials needed to access
+      the source. It includes a mandatory attribute ``username``, which
+      identifies the username to use during authentication, as well as a
+      sub-element ``secret`` with mandatory attribute ``type``, to tie back to
+      a `libvirt secret object <formatsecret.html>`__ that holds the actual
+      password or other credentials (the domain XML intentionally does not
+      expose the password, only the reference to the object that does manage
+      the password). Known secret types are "ceph" for Ceph RBD network sources
+      and "iscsi" for CHAP authentication of iSCSI targets. Both will require
+      either a ``uuid`` attribute with the UUID of the secret object or a
+      ``usage`` attribute matching the key that was specified in the secret
+      object.
    ``encryption``
       :since:`Since libvirt 3.9.0` , the ``encryption`` can be a sub-element of
       the ``source`` element for encrypted storage sources. If present,
