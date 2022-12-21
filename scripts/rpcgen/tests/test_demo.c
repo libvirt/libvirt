@@ -73,13 +73,6 @@ static void test_xdr(xdrproc_t proc, void *vorig, void *vnew, const char *testna
     g_assert_cmpint(memcmp(buf, expected, actlen), ==, 0);
     xdr_destroy(&xdr);
 
-    /* Step 4: free mem from the new object only; the orig
-     * was on the stack so leave untouched */
-    xdrmem_create(&xdr, buf, buflen, XDR_FREE);
-
-    ret = !!proc(&xdr, vnew);
-    g_assert_cmpint(ret, ==, true);
-
  cleanup:
     xdr_destroy(&xdr);
 }
@@ -97,7 +90,7 @@ static void test_struct(void)
     TestStruct vorig = {
         .c1 = 'a', .c2 = 'b',
     };
-    TestStruct vnew = {0};
+    g_auto(TestStruct) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestStruct, &vorig, &vnew, "struct", false);
 }
@@ -107,7 +100,7 @@ static void test_union_case(void)
     TestUnion vorig = {
         .type = 20, .TestUnion_u = { .i1 = 1729 },
     };
-    TestUnion vnew = {0};
+    g_auto(TestUnion) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestUnion, &vorig, &vnew, "union_case", false);
 }
@@ -117,7 +110,7 @@ static void test_union_default(void)
     TestUnion vorig = {
         .type = 87539319, .TestUnion_u = { .i3 = 1729 },
     };
-    TestUnion vnew = {0};
+    g_auto(TestUnion) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestUnion, &vorig, &vnew, "union_default", false);
 }
@@ -127,7 +120,7 @@ static void test_union_void_default_case(void)
     TestUnionVoidDefault vorig = {
         .type = 21, .TestUnionVoidDefault_u = { .i1 = 1729 },
     };
-    TestUnionVoidDefault vnew = {0};
+    g_auto(TestUnionVoidDefault) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestUnionVoidDefault, &vorig, &vnew, "union_void_default_case", false);
 }
@@ -137,7 +130,7 @@ static void test_union_void_default_default(void)
     TestUnionVoidDefault vorig = {
         .type = 87539319
     };
-    TestUnionVoidDefault vnew = {0};
+    g_auto(TestUnionVoidDefault) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestUnionVoidDefault, &vorig, &vnew, "union_void_default_default", false);
 }
@@ -147,7 +140,7 @@ static void test_union_no_default_case(void)
     TestUnionNoDefault vorig = {
         .type = 22, .TestUnionNoDefault_u = { .i1 = 1729 },
     };
-    TestUnionNoDefault vnew = {0};
+    g_auto(TestUnionNoDefault) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestUnionNoDefault, &vorig, &vnew, "union_no_default_case", false);
 }
@@ -157,7 +150,7 @@ static void test_union_no_default_default(void)
     TestUnionNoDefault vorig = {
         .type = 87539319,
     };
-    TestUnionNoDefault vnew = {0};
+    g_auto(TestUnionNoDefault) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestUnionNoDefault, &vorig, &vnew, "union_no_default_default", true);
 }
@@ -165,7 +158,7 @@ static void test_union_no_default_default(void)
 static void test_int_scalar(void)
 {
     TestIntScalar vorig = 1729;
-    TestIntScalar vnew = 0;
+    g_auto(TestIntScalar) vnew = 0;
 
     test_xdr((xdrproc_t)xdr_TestIntScalar, &vorig, &vnew, "int_scalar", false);
 }
@@ -174,7 +167,7 @@ static void test_int_pointer_set(void)
 {
     int vorigp = 1729;
     TestIntPointer vorig = &vorigp;
-    TestIntPointer vnew = NULL;
+    g_auto(TestIntPointer) vnew = NULL;
 
     test_xdr((xdrproc_t)xdr_TestIntPointer, &vorig, &vnew, "int_pointer_set", false);
 }
@@ -182,7 +175,7 @@ static void test_int_pointer_set(void)
 static void test_int_pointer_null(void)
 {
     TestIntPointer vorig = NULL;
-    TestIntPointer vnew = NULL;
+    g_auto(TestIntPointer) vnew = NULL;
 
     test_xdr((xdrproc_t)xdr_TestIntPointer, &vorig, &vnew, "int_pointer_null", false);
 }
@@ -190,7 +183,7 @@ static void test_int_pointer_null(void)
 static void test_int_fixed_array(void)
 {
     TestIntFixedArray vorig = { 1729, 0, 87539319 };
-    TestIntFixedArray vnew = {0};
+    g_auto(TestIntFixedArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestIntFixedArray,
              vorig, vnew, "int_fixed_array", false);
@@ -202,7 +195,7 @@ static void test_int_variable_array_set(void)
         .TestIntVariableArray_len = 3,
         .TestIntVariableArray_val = (int[]) { 1729, 0, 87539319 }
     };
-    TestIntVariableArray vnew = {0};
+    g_auto(TestIntVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestIntVariableArray,
              &vorig, &vnew, "int_variable_array_set", false);
@@ -214,7 +207,7 @@ static void test_int_variable_array_overflow(void)
         .TestIntVariableArray_len = 6,
         .TestIntVariableArray_val = (int[]) { 1729, 0, 87539319, 0, 1729 }
     };
-    TestIntVariableArray vnew = {0};
+    g_auto(TestIntVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestIntVariableArray,
              &vorig, &vnew, "int_variable_array_overflow", true);
@@ -226,7 +219,7 @@ static void test_int_variable_array_empty(void)
         .TestIntVariableArray_len = 0,
         .TestIntVariableArray_val = (int[]) {0},
     };
-    TestIntVariableArray vnew = {0};
+    g_auto(TestIntVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestIntVariableArray,
              &vorig, &vnew, "int_variable_array_empty", false);
@@ -235,7 +228,7 @@ static void test_int_variable_array_empty(void)
 static void test_string_variable_array_set(void)
 {
     TestStringVariableArray vorig = (TestStringVariableArray) "taxis";
-    TestStringVariableArray vnew = NULL;
+    g_auto(TestStringVariableArray) vnew = NULL;
 
     test_xdr((xdrproc_t)xdr_TestStringVariableArray,
              &vorig, &vnew, "string_variable_array_set", false);
@@ -244,7 +237,7 @@ static void test_string_variable_array_set(void)
 static void test_string_variable_array_empty(void)
 {
     TestStringVariableArray vorig = (TestStringVariableArray)"";
-    TestStringVariableArray vnew = NULL;
+    g_auto(TestStringVariableArray) vnew = NULL;
 
     test_xdr((xdrproc_t)xdr_TestStringVariableArray,
              &vorig, &vnew, "string_variable_array_empty", false);
@@ -253,7 +246,7 @@ static void test_string_variable_array_empty(void)
 static void test_opaque_fixed_array(void)
 {
     TestOpaqueFixedArray vorig = { 0xca, 0xfe, 0x12, 0x23, 0x34, 0x45, 0x56, 0x67, 0x78 };
-    TestOpaqueFixedArray vnew = {0};
+    g_auto(TestOpaqueFixedArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestOpaqueFixedArray, vorig, vnew, "opaque_fixed_array", false);
 }
@@ -264,7 +257,7 @@ static void test_opaque_variable_array_set(void)
         .TestOpaqueVariableArray_len = 3,
         .TestOpaqueVariableArray_val = (char[]) { 0xca, 0xfe, 0x12 },
     };
-    TestOpaqueVariableArray vnew = {0};
+    g_auto(TestOpaqueVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestOpaqueVariableArray,
              &vorig, &vnew, "opaque_variable_array_set", false);
@@ -279,7 +272,7 @@ static void test_opaque_variable_array_overflow(void)
             0xca, 0xfe, 0x12, 0xca, 0xfe, 0x12,
         },
     };
-    TestOpaqueVariableArray vnew = {0};
+    g_auto(TestOpaqueVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestOpaqueVariableArray,
              &vorig, &vnew, "opaque_variable_array_overflow", true);
@@ -291,7 +284,7 @@ static void test_opaque_variable_array_empty(void)
         .TestOpaqueVariableArray_len = 0,
         .TestOpaqueVariableArray_val = (char[]) {0},
     };
-    TestOpaqueVariableArray vnew = {0};
+    g_auto(TestOpaqueVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestOpaqueVariableArray,
              &vorig, &vnew, "opaque_variable_array_empty", false);
@@ -300,7 +293,7 @@ static void test_opaque_variable_array_empty(void)
 static void test_enum_scalar(void)
 {
     TestEnumScalar vorig = TEST_ENUM_TWO;
-    TestEnumScalar vnew = 0;
+    g_auto(TestEnumScalar) vnew = 0;
 
     test_xdr((xdrproc_t)xdr_TestEnumScalar,
              &vorig, &vnew, "enum_scalar", false);
@@ -310,7 +303,7 @@ static void test_enum_pointer_set(void)
 {
     TestEnum vorigp = TEST_ENUM_TWO;
     TestEnumPointer vorig = &vorigp;
-    TestEnumPointer vnew = NULL;
+    g_auto(TestEnumPointer) vnew = NULL;
 
     test_xdr((xdrproc_t)xdr_TestEnumPointer,
              &vorig, &vnew, "enum_pointer_set", false);
@@ -319,7 +312,7 @@ static void test_enum_pointer_set(void)
 static void test_enum_pointer_null(void)
 {
     TestEnumPointer vorig = NULL;
-    TestEnumPointer vnew = NULL;
+    g_auto(TestEnumPointer) vnew = NULL;
 
     test_xdr((xdrproc_t)xdr_TestEnumPointer,
              &vorig, &vnew, "enum_pointer_null", false);
@@ -332,7 +325,7 @@ static void test_enum_fixed_array(void)
         TEST_ENUM_ONE, TEST_ENUM_TWO, TEST_ENUM_ONE, TEST_ENUM_TWO,
         TEST_ENUM_ONE, TEST_ENUM_TWO, TEST_ENUM_ONE
     };
-    TestEnumFixedArray vnew = {0};
+    g_auto(TestEnumFixedArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestEnumFixedArray, vorig, vnew, "enum_fixed_array", false);
 }
@@ -345,7 +338,7 @@ static void test_enum_variable_array_set(void)
             TEST_ENUM_ONE, TEST_ENUM_TWO, TEST_ENUM_ONE,
         },
     };
-    TestEnumVariableArray vnew = {0};
+    g_auto(TestEnumVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestEnumVariableArray,
              &vorig, &vnew, "enum_variable_array_set", false);
@@ -362,7 +355,7 @@ static void test_enum_variable_array_overflow(void)
             TEST_ENUM_ONE, TEST_ENUM_TWO, TEST_ENUM_ONE, TEST_ENUM_TWO,
         }
     };
-    TestEnumVariableArray vnew = {0};
+    g_auto(TestEnumVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestEnumVariableArray,
              &vorig, &vnew, "enum_variable_array_overflow", true);
@@ -374,7 +367,7 @@ static void test_enum_variable_array_empty(void)
         .TestEnumVariableArray_len = 0,
         .TestEnumVariableArray_val = (TestEnum[]) {0},
     };
-    TestEnumVariableArray vnew = {0};
+    g_auto(TestEnumVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestEnumVariableArray,
              &vorig, &vnew, "enum_variable_array_empty", false);
@@ -386,7 +379,7 @@ static void test_enum_variable_array_empty(void)
 static void test_struct_scalar(void)
 {
     TestStructScalar vorig = TEST_STRUCT_INIT;
-    TestStructScalar vnew = {0};
+    g_auto(TestStructScalar) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestStructScalar,
              &vorig, &vnew, "struct_scalar", false);
@@ -396,7 +389,7 @@ static void test_struct_pointer_set(void)
 {
     TestStruct vorigp = TEST_STRUCT_INIT;
     TestStructPointer vorig = &vorigp;
-    TestStructPointer vnew = NULL;
+    g_auto(TestStructPointer) vnew = NULL;
 
     test_xdr((xdrproc_t)xdr_TestStructPointer,
              &vorig, &vnew, "struct_pointer_set", false);
@@ -405,7 +398,7 @@ static void test_struct_pointer_set(void)
 static void test_struct_pointer_null(void)
 {
     TestStructPointer vorig = NULL;
-    TestStructPointer vnew = NULL;
+    g_auto(TestStructPointer) vnew = NULL;
 
     test_xdr((xdrproc_t)xdr_TestStructPointer,
              &vorig, &vnew, "struct_pointer_null", false);
@@ -420,7 +413,7 @@ static void test_struct_fixed_array(void)
         TEST_STRUCT_INIT_ALT, TEST_STRUCT_INIT_ALT, TEST_STRUCT_INIT, TEST_STRUCT_INIT,
         TEST_STRUCT_INIT_ALT
     };
-    TestStructFixedArray vnew = {0};
+    g_auto(TestStructFixedArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestStructFixedArray, vorig, vnew, "struct_fixed_array", false);
 }
@@ -433,7 +426,7 @@ static void test_struct_variable_array_set(void)
             TEST_STRUCT_INIT, TEST_STRUCT_INIT_ALT, TEST_STRUCT_INIT_ALT,
         },
     };
-    TestStructVariableArray vnew = {0};
+    g_auto(TestStructVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestStructVariableArray,
              &vorig, &vnew, "struct_variable_array_set", false);
@@ -451,7 +444,7 @@ static void test_struct_variable_array_overflow(void)
             TEST_STRUCT_INIT, TEST_STRUCT_INIT, TEST_STRUCT_INIT, TEST_STRUCT_INIT,
         }
     };
-    TestStructVariableArray vnew = {0};
+    g_auto(TestStructVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestStructVariableArray,
              &vorig, &vnew, "struct_variable_array_overflow", true);
@@ -463,7 +456,7 @@ static void test_struct_variable_array_empty(void)
         .TestStructVariableArray_len = 0,
         .TestStructVariableArray_val = (TestStruct[]) {},
     };
-    TestStructVariableArray vnew = {0};
+    g_auto(TestStructVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestStructVariableArray,
              &vorig, &vnew, "struct_variable_array_empty", false);
@@ -475,7 +468,7 @@ static void test_struct_variable_array_empty(void)
 static void test_union_scalar(void)
 {
     TestUnionScalar vorig = TEST_UNION_INIT;
-    TestUnionScalar vnew = {0};
+    g_auto(TestUnionScalar) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestUnionScalar,
              &vorig, &vnew, "union_scalar", false);
@@ -485,7 +478,7 @@ static void test_union_pointer_set(void)
 {
     TestUnion vorigp = TEST_UNION_INIT;
     TestUnionPointer vorig = &vorigp;
-    TestUnionPointer vnew = NULL;
+    g_auto(TestUnionPointer) vnew = NULL;
 
     test_xdr((xdrproc_t)xdr_TestUnionPointer,
              &vorig, &vnew, "union_pointer_set", false);
@@ -494,7 +487,7 @@ static void test_union_pointer_set(void)
 static void test_union_pointer_null(void)
 {
     TestUnionPointer vorig = NULL;
-    TestUnionPointer vnew = NULL;
+    g_auto(TestUnionPointer) vnew = NULL;
 
     test_xdr((xdrproc_t)xdr_TestUnionPointer,
              &vorig, &vnew, "union_pointer_null", false);
@@ -509,7 +502,7 @@ static void test_union_fixed_array(void)
         TEST_UNION_INIT_ALT, TEST_UNION_INIT_ALT, TEST_UNION_INIT, TEST_UNION_INIT,
         TEST_UNION_INIT_ALT
     };
-    TestUnionFixedArray vnew = {0};
+    g_auto(TestUnionFixedArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestUnionFixedArray, vorig, vnew, "union_fixed_array", false);
 }
@@ -522,7 +515,7 @@ static void test_union_variable_array_set(void)
             TEST_UNION_INIT, TEST_UNION_INIT_ALT, TEST_UNION_INIT_ALT,
         },
     };
-    TestUnionVariableArray vnew = {0};
+    g_auto(TestUnionVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestUnionVariableArray,
              &vorig, &vnew, "union_variable_array_set", false);
@@ -541,7 +534,7 @@ static void test_union_variable_array_overflow(void)
             TEST_UNION_INIT, TEST_UNION_INIT, TEST_UNION_INIT, TEST_UNION_INIT,
         }
     };
-    TestUnionVariableArray vnew = {0};
+    g_auto(TestUnionVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestUnionVariableArray,
              &vorig, &vnew, "union_variable_array_overflow", true);
@@ -553,7 +546,7 @@ static void test_union_variable_array_empty(void)
         .TestUnionVariableArray_len = 0,
         .TestUnionVariableArray_val = (TestUnion[]) {},
     };
-    TestUnionVariableArray vnew = {0};
+    g_auto(TestUnionVariableArray) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestUnionVariableArray,
              &vorig, &vnew, "union_variable_array_empty", false);
@@ -721,7 +714,7 @@ static void test_struct_all_types(void)
             },
         },
     };
-    TestStructAllTypes vnew = {0};
+    g_auto(TestStructAllTypes) vnew = {0};
 
     test_xdr((xdrproc_t)xdr_TestStructAllTypes,
              &vorig, &vnew, "test_struct_all_types", false);

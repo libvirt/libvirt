@@ -9,6 +9,8 @@ struct TestStruct {
     char c2;
 };
 typedef struct TestStruct TestStruct;
+void xdr_TestStruct_clear(TestStruct *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestStruct, xdr_TestStruct_clear);
 
 struct TestUnion {
     int type;
@@ -19,6 +21,8 @@ struct TestUnion {
     } TestUnion_u;
 };
 typedef struct TestUnion TestUnion;
+void xdr_TestUnion_clear(TestUnion *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestUnion, xdr_TestUnion_clear);
 
 struct TestUnionVoidDefault {
     int type;
@@ -28,6 +32,8 @@ struct TestUnionVoidDefault {
     } TestUnionVoidDefault_u;
 };
 typedef struct TestUnionVoidDefault TestUnionVoidDefault;
+void xdr_TestUnionVoidDefault_clear(TestUnionVoidDefault *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestUnionVoidDefault, xdr_TestUnionVoidDefault_clear);
 
 struct TestUnionNoDefault {
     int type;
@@ -37,59 +43,99 @@ struct TestUnionNoDefault {
     } TestUnionNoDefault_u;
 };
 typedef struct TestUnionNoDefault TestUnionNoDefault;
+void xdr_TestUnionNoDefault_clear(TestUnionNoDefault *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestUnionNoDefault, xdr_TestUnionNoDefault_clear);
 
 typedef int TestIntScalar;
+void xdr_TestIntScalar_clear(TestIntScalar *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestIntScalar, xdr_TestIntScalar_clear);
 
 typedef int *TestIntPointer;
+void xdr_TestIntPointer_clear(TestIntPointer *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestIntPointer, xdr_TestIntPointer_clear);
 
 typedef int TestIntFixedArray[3];
+void xdr_TestIntFixedArray_clear(TestIntFixedArray *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestIntFixedArray, xdr_TestIntFixedArray_clear);
 
 typedef struct {
     u_int TestIntVariableArray_len;
     int *TestIntVariableArray_val;
 } TestIntVariableArray;
+void xdr_TestIntVariableArray_clear(TestIntVariableArray *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestIntVariableArray, xdr_TestIntVariableArray_clear);
 
 typedef char *TestStringVariableArray;
+void xdr_TestStringVariableArray_clear(TestStringVariableArray *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestStringVariableArray, xdr_TestStringVariableArray_clear);
 
 typedef char TestOpaqueFixedArray[9];
+void xdr_TestOpaqueFixedArray_clear(TestOpaqueFixedArray *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestOpaqueFixedArray, xdr_TestOpaqueFixedArray_clear);
 
 typedef struct {
     u_int TestOpaqueVariableArray_len;
     char *TestOpaqueVariableArray_val;
 } TestOpaqueVariableArray;
+void xdr_TestOpaqueVariableArray_clear(TestOpaqueVariableArray *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestOpaqueVariableArray, xdr_TestOpaqueVariableArray_clear);
 
 typedef TestEnum TestEnumScalar;
+void xdr_TestEnumScalar_clear(TestEnumScalar *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestEnumScalar, xdr_TestEnumScalar_clear);
 
 typedef TestEnum *TestEnumPointer;
+void xdr_TestEnumPointer_clear(TestEnumPointer *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestEnumPointer, xdr_TestEnumPointer_clear);
 
 typedef TestEnum TestEnumFixedArray[13];
+void xdr_TestEnumFixedArray_clear(TestEnumFixedArray *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestEnumFixedArray, xdr_TestEnumFixedArray_clear);
 
 typedef struct {
     u_int TestEnumVariableArray_len;
     TestEnum *TestEnumVariableArray_val;
 } TestEnumVariableArray;
+void xdr_TestEnumVariableArray_clear(TestEnumVariableArray *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestEnumVariableArray, xdr_TestEnumVariableArray_clear);
 
 typedef TestStruct TestStructScalar;
+void xdr_TestStructScalar_clear(TestStructScalar *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestStructScalar, xdr_TestStructScalar_clear);
 
 typedef TestStruct *TestStructPointer;
+void xdr_TestStructPointer_clear(TestStructPointer *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestStructPointer, xdr_TestStructPointer_clear);
 
 typedef TestStruct TestStructFixedArray[17];
+void xdr_TestStructFixedArray_clear(TestStructFixedArray *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestStructFixedArray, xdr_TestStructFixedArray_clear);
 
 typedef struct {
     u_int TestStructVariableArray_len;
     TestStruct *TestStructVariableArray_val;
 } TestStructVariableArray;
+void xdr_TestStructVariableArray_clear(TestStructVariableArray *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestStructVariableArray, xdr_TestStructVariableArray_clear);
 
 typedef TestUnion TestUnionScalar;
+void xdr_TestUnionScalar_clear(TestUnionScalar *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestUnionScalar, xdr_TestUnionScalar_clear);
 
 typedef TestUnion *TestUnionPointer;
+void xdr_TestUnionPointer_clear(TestUnionPointer *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestUnionPointer, xdr_TestUnionPointer_clear);
 
 typedef TestUnion TestUnionFixedArray[21];
+void xdr_TestUnionFixedArray_clear(TestUnionFixedArray *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestUnionFixedArray, xdr_TestUnionFixedArray_clear);
 
 typedef struct {
     u_int TestUnionVariableArray_len;
     TestUnion *TestUnionVariableArray_val;
 } TestUnionVariableArray;
+void xdr_TestUnionVariableArray_clear(TestUnionVariableArray *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestUnionVariableArray, xdr_TestUnionVariableArray_clear);
 
 #define TestConstDec 25
 
@@ -164,6 +210,8 @@ struct TestStructAllTypes {
     TestUnionVariableArray tuva;
 };
 typedef struct TestStructAllTypes TestStructAllTypes;
+void xdr_TestStructAllTypes_clear(TestStructAllTypes *objp);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TestStructAllTypes, xdr_TestStructAllTypes_clear);
 
 extern  bool_t xdr_TestEnum(XDR *, TestEnum*);
 

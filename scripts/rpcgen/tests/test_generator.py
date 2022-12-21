@@ -6,6 +6,7 @@ from pathlib import Path
 from rpcgen.parser import XDRParser
 from rpcgen.generator import (
     XDRTypeDeclarationGenerator,
+    XDRTypeImplementationGenerator,
     XDRMarshallDeclarationGenerator,
     XDRMarshallImplementationGenerator,
 )
@@ -42,7 +43,11 @@ def test_generate_source():
         parser = XDRParser(fp)
         spec = parser.parse()
 
-    got = XDRMarshallImplementationGenerator(spec).visit()
+    got = (
+        XDRTypeImplementationGenerator(spec).visit()
+        + "\n"
+        + XDRMarshallImplementationGenerator(spec).visit()
+    )
 
     with h.open("r") as fp:
         want = fp.read()

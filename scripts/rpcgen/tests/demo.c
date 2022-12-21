@@ -1,3 +1,147 @@
+
+void xdr_TestStruct_clear(TestStruct *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestStruct, (char *)objp);
+}
+
+
+void xdr_TestUnion_clear(TestUnion *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestUnion, (char *)objp);
+}
+
+
+void xdr_TestUnionVoidDefault_clear(TestUnionVoidDefault *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestUnionVoidDefault, (char *)objp);
+}
+
+
+void xdr_TestUnionNoDefault_clear(TestUnionNoDefault *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestUnionNoDefault, (char *)objp);
+}
+
+
+void xdr_TestIntScalar_clear(TestIntScalar *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestIntScalar, (char *)objp);
+}
+
+
+void xdr_TestIntPointer_clear(TestIntPointer *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestIntPointer, (char *)objp);
+}
+
+
+void xdr_TestIntFixedArray_clear(TestIntFixedArray *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestIntFixedArray, (char *)objp);
+}
+
+
+void xdr_TestIntVariableArray_clear(TestIntVariableArray *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestIntVariableArray, (char *)objp);
+}
+
+
+void xdr_TestStringVariableArray_clear(TestStringVariableArray *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestStringVariableArray, (char *)objp);
+}
+
+
+void xdr_TestOpaqueFixedArray_clear(TestOpaqueFixedArray *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestOpaqueFixedArray, (char *)objp);
+}
+
+
+void xdr_TestOpaqueVariableArray_clear(TestOpaqueVariableArray *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestOpaqueVariableArray, (char *)objp);
+}
+
+
+void xdr_TestEnumScalar_clear(TestEnumScalar *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestEnumScalar, (char *)objp);
+}
+
+
+void xdr_TestEnumPointer_clear(TestEnumPointer *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestEnumPointer, (char *)objp);
+}
+
+
+void xdr_TestEnumFixedArray_clear(TestEnumFixedArray *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestEnumFixedArray, (char *)objp);
+}
+
+
+void xdr_TestEnumVariableArray_clear(TestEnumVariableArray *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestEnumVariableArray, (char *)objp);
+}
+
+
+void xdr_TestStructScalar_clear(TestStructScalar *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestStructScalar, (char *)objp);
+}
+
+
+void xdr_TestStructPointer_clear(TestStructPointer *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestStructPointer, (char *)objp);
+}
+
+
+void xdr_TestStructFixedArray_clear(TestStructFixedArray *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestStructFixedArray, (char *)objp);
+}
+
+
+void xdr_TestStructVariableArray_clear(TestStructVariableArray *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestStructVariableArray, (char *)objp);
+}
+
+
+void xdr_TestUnionScalar_clear(TestUnionScalar *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestUnionScalar, (char *)objp);
+}
+
+
+void xdr_TestUnionPointer_clear(TestUnionPointer *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestUnionPointer, (char *)objp);
+}
+
+
+void xdr_TestUnionFixedArray_clear(TestUnionFixedArray *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestUnionFixedArray, (char *)objp);
+}
+
+
+void xdr_TestUnionVariableArray_clear(TestUnionVariableArray *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestUnionVariableArray, (char *)objp);
+}
+
+
+void xdr_TestStructAllTypes_clear(TestStructAllTypes *objp)
+{
+    xdr_free((xdrproc_t)xdr_TestStructAllTypes, (char *)objp);
+}
+
 bool_t
 xdr_TestEnum(XDR *xdrs, TestEnum *objp)
 {

@@ -30,24 +30,42 @@ class XDRTypeDeclarationGenerator(XDRVisitor):
         ) + "%stypedef enum %s %s;\n" % (indent, obj.name, obj.name)
         return code
 
-    def visit_definition_struct(self, obj, indent, context):
-        code = "%sstruct %s %s;\n" % (
+    def generate_cleanup(self, name, indent):
+        code = "%svoid xdr_%s_clear(%s *objp);\n" % (
             indent,
-            obj.name,
-            self.visit_object(obj.body, indent),
-        ) + "%stypedef struct %s %s;\n" % (indent, obj.name, obj.name)
+            name,
+            name,
+        ) + "%sG_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(%s, xdr_%s_clear);\n" % (
+            indent,
+            name,
+            name,
+        )
+        return code
+
+    def visit_definition_struct(self, obj, indent, context):
+        code = (
+            "%sstruct %s %s;\n"
+            % (indent, obj.name, self.visit_object(obj.body, indent))
+            + "%stypedef struct %s %s;\n" % (indent, obj.name, obj.name)
+            + self.generate_cleanup(obj.name, indent)
+        )
         return code
 
     def visit_definition_union(self, obj, indent, context):
-        code = "%sstruct %s %s;\n" % (
-            indent,
-            obj.name,
-            self.visit_object(obj.body, indent, obj.name),
-        ) + "%stypedef struct %s %s;\n" % (indent, obj.name, obj.name)
+        code = (
+            "%sstruct %s %s;\n"
+            % (indent, obj.name, self.visit_object(obj.body, indent, obj.name))
+            + "%stypedef struct %s %s;\n" % (indent, obj.name, obj.name)
+            + self.generate_cleanup(obj.name, indent)
+        )
         return code
 
     def visit_definition_typedef(self, obj, indent, context):
-        return "%stypedef %s;\n" % (indent, self.visit_object(obj.decl, indent))
+        code = "%stypedef %s;\n" % (
+            indent,
+            self.visit_object(obj.decl, indent),
+        ) + self.generate_cleanup(obj.decl.identifier, indent)
+        return code
 
     def visit_declaration_scalar(self, obj, indent, context):
         return "%s %s" % (self.visit_object(obj.typ, indent), obj.identifier)
@@ -167,6 +185,30 @@ class XDRTypeDeclarationGenerator(XDRVisitor):
             code = code + self.visit_object(obj.default, indent + "        ") + ";\n"
         code = code + "%s    } %su;\n" % (indent, prefix) + "%s}" % indent
         return code
+
+
+class XDRTypeImplementationGenerator(XDRVisitor):
+    def visit_definition_enum(self, obj, indent, context):
+        pass
+
+    def generate_cleanup(self, name, indent):
+        code = (
+            "\n"
+            + "%svoid xdr_%s_clear(%s *objp)\n" % (indent, name, name)
+            + "%s{\n" % indent
+            + "%s    xdr_free((xdrproc_t)xdr_%s, (char *)objp);\n" % (indent, name)
+            + "%s}\n" % indent
+        )
+        return code
+
+    def visit_definition_union(self, obj, indent, context):
+        return self.generate_cleanup(obj.name, indent)
+
+    def visit_definition_struct(self, obj, indent, context):
+        return self.generate_cleanup(obj.name, indent)
+
+    def visit_definition_typedef(self, obj, indent, context):
+        return self.generate_cleanup(obj.decl.identifier, indent)
 
 
 class XDRMarshallDeclarationGenerator(XDRVisitor):

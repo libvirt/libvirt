@@ -8,6 +8,7 @@ import sys
 from rpcgen.parser import XDRParser
 from rpcgen.generator import (
     XDRTypeDeclarationGenerator,
+    XDRTypeImplementationGenerator,
     XDRMarshallDeclarationGenerator,
     XDRMarshallImplementationGenerator,
 )
@@ -59,6 +60,7 @@ def main():
     if args.mode == "header":
         print("/* This file is auto-generated from %s */\n" % args.input, file=outfp)
         print("#include <rpc/rpc.h>", file=outfp)
+        print('#include "internal.h"', file=outfp)
         for h in args.header:
             print('#include "%s"' % h, file=outfp)
         print("", file=outfp)
@@ -73,6 +75,8 @@ def main():
         for h in args.header:
             print('#include "%s"' % h, file=outfp)
         print("", file=outfp)
+        generator = XDRTypeImplementationGenerator(spec)
+        print(generator.visit(), file=outfp)
         generator = XDRMarshallImplementationGenerator(spec)
         print(generator.visit(), file=outfp)
     elif args.mode == "repr":
