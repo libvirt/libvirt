@@ -1302,6 +1302,9 @@ qemuMonitorTestProcessFileEntries(char *inputstr,
             continue;
         }
 
+        /* We've seen a new line, increment the counter */
+        line++;
+
         /* Cut off a single reply. */
         *(tmp + 1) = '\0';
 
