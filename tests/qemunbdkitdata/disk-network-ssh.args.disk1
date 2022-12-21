@@ -1,0 +1,8 @@
+nbdkit \
+--unix /tmp/statedir-1/nbdkit-test-disk-1.socket \
+--foreground ssh \
+host=example.org \
+port=2222 \
+path=test2.img \
+user=testuser \
+password=-777

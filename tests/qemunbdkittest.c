@@ -298,6 +298,7 @@ mymain(void)
     DO_TEST("disk-network-source-curl-nbdkit-backing", QEMU_NBDKIT_CAPS_PLUGIN_CURL);
     DO_TEST("disk-network-source-curl", QEMU_NBDKIT_CAPS_PLUGIN_CURL);
     DO_TEST("disk-network-ssh", QEMU_NBDKIT_CAPS_PLUGIN_SSH);
+    DO_TEST("disk-network-ssh-password", QEMU_NBDKIT_CAPS_PLUGIN_SSH);
 
  cleanup:
     qemuTestDriverFree(&driver);

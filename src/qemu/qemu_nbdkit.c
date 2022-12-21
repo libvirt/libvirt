@@ -951,6 +951,43 @@ qemuNbdkitCommandPassDataByPipe(virCommand *cmd,
 
 
 static int
+qemuNbdkitProcessBuildCommandAuth(virStorageAuthDef *authdef,
+                                  virCommand *cmd)
+{
+    g_autoptr(virConnect) conn = NULL;
+    g_autofree uint8_t *secret = NULL;
+    size_t secretlen = 0;
+    int secrettype;
+
+    if (!authdef)
+        return 0;
+
+    if ((secrettype = virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("invalid secret type %1$s"),
+                       authdef->secrettype);
+        return -1;
+    }
+
+    conn = virGetConnectSecret();
+    if (virSecretGetSecretString(conn,
+                                 &authdef->seclookupdef,
+                                 secrettype,
+                                 &secret,
+                                 &secretlen) < 0)
+        return -1;
+
+    virCommandAddArgPair(cmd, "user", authdef->username);
+
+    if (qemuNbdkitCommandPassDataByPipe(cmd, "password",
+                                        &secret, secretlen) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuNbdkitProcessBuildCommandCurl(qemuNbdkitProcess *proc,
                                   virCommand *cmd)
 {
@@ -968,37 +1005,8 @@ qemuNbdkitProcessBuildCommandCurl(qemuNbdkitProcess *proc,
     }
     virCommandAddArgPair(cmd, "url", uristring);
 
-    if (proc->source->auth) {
-        g_autoptr(virConnect) conn = virGetConnectSecret();
-        g_autofree uint8_t *secret = NULL;
-        size_t secretlen = 0;
-        int secrettype;
-        virStorageAuthDef *authdef = proc->source->auth;
-
-        virCommandAddArgPair(cmd, "user",
-                             proc->source->auth->username);
-
-        if ((secrettype = virSecretUsageTypeFromString(proc->source->auth->secrettype)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("invalid secret type %1$s"),
-                           proc->source->auth->secrettype);
-            return -1;
-        }
-
-        if (virSecretGetSecretString(conn,
-                                     &authdef->seclookupdef,
-                                     secrettype,
-                                     &secret,
-                                     &secretlen) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to get auth secret for storage"));
-            return -1;
-        }
-
-        if (qemuNbdkitCommandPassDataByPipe(cmd, "password",
-                                            &secret, secretlen) < 0)
-            return -1;
-    }
+    if (proc->source->auth && qemuNbdkitProcessBuildCommandAuth(proc->source->auth, cmd) < 0)
+        return -1;
 
     /* Create a pipe to send the cookies to the nbdkit process. */
     if (proc->source->ncookies) {
@@ -1027,7 +1035,6 @@ static int
 qemuNbdkitProcessBuildCommandSSH(qemuNbdkitProcess *proc,
                                  virCommand *cmd)
 {
-    const char *user = NULL;
     virStorageNetHostDef *host = &proc->source->hosts[0];
     g_autofree char *portstr = g_strdup_printf("%u", host->port);
 
@@ -1038,13 +1045,12 @@ qemuNbdkitProcessBuildCommandSSH(qemuNbdkitProcess *proc,
     virCommandAddArgPair(cmd, "port", portstr);
     virCommandAddArgPair(cmd, "path", proc->source->path);
 
-    if (proc->source->auth)
-        user = proc->source->auth->username;
-    else if (proc->source->ssh_user)
-        user = proc->source->ssh_user;
-
-    if (user)
-        virCommandAddArgPair(cmd, "user", user);
+    if (proc->source->auth) {
+        if (qemuNbdkitProcessBuildCommandAuth(proc->source->auth, cmd) < 0)
+            return -1;
+    } else if (proc->source->ssh_user) {
+        virCommandAddArgPair(cmd, "user", proc->source->ssh_user);
+    }
 
     if (proc->source->ssh_host_key_check_disabled)
         virCommandAddArgPair(cmd, "verify-remote-host", "false");

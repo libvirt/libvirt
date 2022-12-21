@@ -1178,6 +1178,7 @@ mymain(void)
     driver.config->vxhsTLS = 0;
     DO_TEST_CAPS_LATEST("disk-network-ssh");
     DO_TEST_CAPS_LATEST_NBDKIT("disk-network-ssh-nbdkit", QEMU_NBDKIT_CAPS_PLUGIN_SSH);
+    DO_TEST_CAPS_LATEST_NBDKIT("disk-network-ssh-password", QEMU_NBDKIT_CAPS_PLUGIN_SSH);
     DO_TEST_CAPS_LATEST("disk-no-boot");
     DO_TEST_CAPS_LATEST("disk-nvme");
     DO_TEST_CAPS_VER("disk-vhostuser-numa", "4.2.0");
