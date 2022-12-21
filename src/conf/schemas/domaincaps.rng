@@ -296,6 +296,9 @@
       <optional>
         <ref name="sgx"/>
       </optional>
+      <optional>
+        <ref name="hyperv"/>
+      </optional>
     </element>
   </define>
 
@@ -393,6 +396,13 @@
           </element>
         </optional>
       </optional>
+    </element>
+  </define>
+
+  <define name="hyperv">
+    <element name="hyperv">
+      <ref name="supported"/>
+      <ref name="enum"/>
     </element>
   </define>
 

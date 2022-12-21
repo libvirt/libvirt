@@ -624,6 +624,12 @@ capabilities. All features occur as children of the main ``features`` element.
            <section node='1' size='262144' unit='KiB'/>
          </sections>
        </sgx>
+       <hyperv supported='yes'>
+         <enum name='features'>
+           <value>relaxed</value>
+           <value>vapic</value>
+         </enum>
+       </hyperv>
      </features>
    </domainCapabilities>
 
@@ -733,3 +739,12 @@ document store. In order to use SGX with libvirt have a look at `SGX in domain X
 
 ``sections``
    The sections of the SGX enclave page cache (called EPC).
+
+
+Hyper-V Enlightenments
+^^^^^^^^^^^^^^^^^^^^^^
+
+Report which features improving behavior of guests running Microsoft Windows
+are supported. The ``features`` enum corresponds to the ``<hyperv/>`` element
+(well, its children) as documented in `Hypervisor features
+<formatdomain.html#hypervisor-features>`__

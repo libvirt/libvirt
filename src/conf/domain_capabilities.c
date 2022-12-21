@@ -100,6 +100,7 @@ virDomainCapsDispose(void *obj)
     virCPUDefFree(caps->cpu.hostModel);
     virSEVCapabilitiesFree(caps->sev);
     virSGXCapabilitiesFree(caps->sgx);
+    g_free(caps->hyperv);
 
     values = &caps->os.loader.values;
     for (i = 0; i < values->nvalues; i++)
@@ -679,6 +680,20 @@ virDomainCapsFeatureSGXFormat(virBuffer *buf,
 }
 
 static void
+virDomainCapsFeatureHypervFormat(virBuffer *buf,
+                                 const virDomainCapsFeatureHyperv *hyperv)
+{
+    if (!hyperv)
+        return;
+
+    FORMAT_PROLOGUE(hyperv);
+
+    ENUM_PROCESS(hyperv, features, virDomainHypervTypeToString);
+
+    FORMAT_EPILOGUE(hyperv);
+}
+
+static void
 virDomainCapsFormatFeatures(const virDomainCaps *caps,
                             virBuffer *buf)
 {
@@ -698,6 +713,7 @@ virDomainCapsFormatFeatures(const virDomainCaps *caps,
 
     virDomainCapsFeatureSEVFormat(&childBuf, caps->sev);
     virDomainCapsFeatureSGXFormat(&childBuf, caps->sgx);
+    virDomainCapsFeatureHypervFormat(&childBuf, caps->hyperv);
 
     virXMLFormatElement(buf, "features", NULL, &childBuf);
 }
