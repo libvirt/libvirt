@@ -335,9 +335,9 @@ virDomainCapsStringValuesFormat(virBuffer *buf,
 
 
 static void
-qemuDomainCapsFeatureFormatSimple(virBuffer *buf,
-                                  const char *featurename,
-                                  virTristateBool supported)
+virDomainCapsFeatureFormatSimple(virBuffer *buf,
+                                 const char *featurename,
+                                 virTristateBool supported)
 {
     if (supported == VIR_TRISTATE_BOOL_ABSENT)
         return;
@@ -697,9 +697,9 @@ virDomainCapsFormatFeatures(const virDomainCaps *caps,
         if (i == VIR_DOMAIN_CAPS_FEATURE_IOTHREADS)
             continue;
 
-        qemuDomainCapsFeatureFormatSimple(&childBuf,
-                                          virDomainCapsFeatureTypeToString(i),
-                                          caps->features[i]);
+        virDomainCapsFeatureFormatSimple(&childBuf,
+                                         virDomainCapsFeatureTypeToString(i),
+                                         caps->features[i]);
     }
 
     virDomainCapsFeatureSEVFormat(&childBuf, caps->sev);
@@ -728,8 +728,8 @@ virDomainCapsFormat(const virDomainCaps *caps)
     if (caps->maxvcpus)
         virBufferAsprintf(&buf, "<vcpu max='%d'/>\n", caps->maxvcpus);
 
-    qemuDomainCapsFeatureFormatSimple(&buf, "iothreads",
-                                      caps->features[VIR_DOMAIN_CAPS_FEATURE_IOTHREADS]);
+    virDomainCapsFeatureFormatSimple(&buf, "iothreads",
+                                     caps->features[VIR_DOMAIN_CAPS_FEATURE_IOTHREADS]);
 
     virDomainCapsOSFormat(&buf, &caps->os);
     virDomainCapsCPUFormat(&buf, &caps->cpu);
