@@ -294,6 +294,13 @@ use the 'context' option when mounting the filesystem to set the default label
 to ``system_u:object_r:virt_image_t``. In the case of NFS, there is an
 alternative option, of enabling the ``virt_use_nfs`` SELinux boolean.
 
+There are some network filesystems, however, that propagate SELinux labels
+properly, just like a local filesystem (e.g. ceph of CIFS). In such case,
+dynamic labelling (described below) might prevent migration of a virtual
+machine as new unique SELinux label is assigned to the virtual machine on the
+migration destination side. Users are advised to use static labels (``<seclabel
+type='static' .../>``).
+
 SELinux sVirt confinement
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
