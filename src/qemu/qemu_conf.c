@@ -1454,6 +1454,27 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriver *driver,
     g_autoptr(virDomainCaps) domCaps = NULL;
     const char *path = virQEMUCapsGetBinary(qemuCaps);
 
+    if (!virQEMUCapsIsArchSupported(qemuCaps, arch)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Emulator '%s' does not support arch '%s'"),
+                       path, virArchToString(arch));
+        return NULL;
+    }
+
+    if (!virQEMUCapsIsVirtTypeSupported(qemuCaps, virttype)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Emulator '%s' does not support virt type '%s'"),
+                       path, virDomainVirtTypeToString(virttype));
+        return NULL;
+    }
+
+    if (!virQEMUCapsIsMachineSupported(qemuCaps, virttype, machine)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Emulator '%s' does not support machine type '%s'"),
+                       path, NULLSTR(machine));
+        return NULL;
+    }
+
     if (!(domCaps = virDomainCapsNew(path, machine, arch, virttype)))
         return NULL;
 
