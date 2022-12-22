@@ -229,10 +229,9 @@ remoteAdminServerGetThreadPoolParameters(virAdmServerPtr srv,
                                          int *nparams,
                                          unsigned int flags)
 {
-    int rv = -1;
     remoteAdminPriv *priv = srv->conn->privateData;
     admin_server_get_threadpool_parameters_args args;
-    admin_server_get_threadpool_parameters_ret ret = {0};
+    g_auto(admin_server_get_threadpool_parameters_ret) ret = {0};
     VIR_LOCK_GUARD lock = virObjectLockGuard(priv);
 
     args.flags = flags;
@@ -248,13 +247,9 @@ remoteAdminServerGetThreadPoolParameters(virAdmServerPtr srv,
                                   ADMIN_SERVER_THREADPOOL_PARAMETERS_MAX,
                                   params,
                                   nparams) < 0)
-        goto cleanup;
+        return -1;
 
-    rv = 0;
-
- cleanup:
-    xdr_free((xdrproc_t)xdr_admin_server_get_threadpool_parameters_ret, (char *) &ret);
-    return rv;
+    return 0;
 }
 
 static int
@@ -297,10 +292,9 @@ remoteAdminClientGetInfo(virAdmClientPtr client,
                          int *nparams,
                          unsigned int flags)
 {
-    int rv = -1;
     remoteAdminPriv *priv = client->srv->conn->privateData;
     admin_client_get_info_args args;
-    admin_client_get_info_ret ret = {0};
+    g_auto(admin_client_get_info_ret) ret = {0};
     VIR_LOCK_GUARD lock = virObjectLockGuard(priv);
 
     args.flags = flags;
@@ -316,13 +310,9 @@ remoteAdminClientGetInfo(virAdmClientPtr client,
                                   ADMIN_CLIENT_INFO_PARAMETERS_MAX,
                                   params,
                                   nparams) < 0)
-        goto cleanup;
+        return -1;
 
-    rv = 0;
-
- cleanup:
-    xdr_free((xdrproc_t)xdr_admin_client_get_info_ret, (char *) &ret);
-    return rv;
+    return 0;
 }
 
 static int
@@ -331,9 +321,8 @@ remoteAdminServerGetClientLimits(virAdmServerPtr srv,
                                  int *nparams,
                                  unsigned int flags)
 {
-    int rv = -1;
     admin_server_get_client_limits_args args;
-    admin_server_get_client_limits_ret ret = {0};
+    g_auto(admin_server_get_client_limits_ret) ret = {0};
     remoteAdminPriv *priv = srv->conn->privateData;
     VIR_LOCK_GUARD lock = virObjectLockGuard(priv);
 
@@ -352,14 +341,9 @@ remoteAdminServerGetClientLimits(virAdmServerPtr srv,
                                   ADMIN_SERVER_CLIENT_LIMITS_MAX,
                                   params,
                                   nparams) < 0)
-        goto cleanup;
+        return -1;
 
-    rv = 0;
-
- cleanup:
-    xdr_free((xdrproc_t) xdr_admin_server_get_client_limits_ret,
-             (char *) &ret);
-    return rv;
+    return 0;
 }
 
 static int
@@ -401,10 +385,9 @@ remoteAdminConnectGetLoggingOutputs(virAdmConnectPtr conn,
                                     char **outputs,
                                     unsigned int flags)
 {
-    int rv = -1;
     remoteAdminPriv *priv = conn->privateData;
     admin_connect_get_logging_outputs_args args;
-    admin_connect_get_logging_outputs_ret ret = {0};
+    g_auto(admin_connect_get_logging_outputs_ret) ret = {0};
     VIR_LOCK_GUARD lock = virObjectLockGuard(priv);
 
     args.flags = flags;
@@ -421,9 +404,7 @@ remoteAdminConnectGetLoggingOutputs(virAdmConnectPtr conn,
     if (outputs)
         *outputs = g_steal_pointer(&ret.outputs);
 
-    rv = ret.noutputs;
-    xdr_free((xdrproc_t) xdr_admin_connect_get_logging_outputs_ret, (char *) &ret);
-    return rv;
+    return ret.noutputs;
 }
 
 static int
@@ -431,10 +412,9 @@ remoteAdminConnectGetLoggingFilters(virAdmConnectPtr conn,
                                     char **filters,
                                     unsigned int flags)
 {
-    int rv = -1;
     remoteAdminPriv *priv = conn->privateData;
     admin_connect_get_logging_filters_args args;
-    admin_connect_get_logging_filters_ret ret = {0};
+    g_auto(admin_connect_get_logging_filters_ret) ret = {0};
     VIR_LOCK_GUARD lock = virObjectLockGuard(priv);
 
     args.flags = flags;
@@ -449,9 +429,7 @@ remoteAdminConnectGetLoggingFilters(virAdmConnectPtr conn,
         return -1;
 
     if (filters)
-        *filters = ret.filters ? *ret.filters : NULL;
+        *filters = ret.filters ? g_steal_pointer(ret.filters) : NULL;
 
-    rv = ret.nfilters;
-    VIR_FREE(ret.filters);
-    return rv;
+    return ret.nfilters;
 }
