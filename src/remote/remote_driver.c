@@ -6000,7 +6000,6 @@ remoteDomainMigrateBegin3(virDomainPtr domain,
 
     remoteDriverLock(priv);
 
-    memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
     make_nonnull_domain(&args.dom, domain);
@@ -6056,7 +6055,6 @@ remoteDomainMigratePrepare3(virConnectPtr dconn,
 
     remoteDriverLock(priv);
 
-    memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
     args.cookie_in.cookie_in_val = (char *)cookiein;
@@ -6125,7 +6123,6 @@ remoteDomainMigratePrepareTunnel3(virConnectPtr dconn,
 
     remoteDriverLock(priv);
 
-    memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
     if (!(netst = virNetClientStreamNew(priv->remoteProgram,
@@ -6200,7 +6197,6 @@ remoteDomainMigratePerform3(virDomainPtr dom,
 
     remoteDriverLock(priv);
 
-    memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
     make_nonnull_domain(&args.dom, dom);
@@ -6260,7 +6256,6 @@ remoteDomainMigrateFinish3(virConnectPtr dconn,
 
     remoteDriverLock(priv);
 
-    memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
     args.cookie_in.cookie_in_val = (char *)cookiein;
@@ -6313,8 +6308,6 @@ remoteDomainMigrateConfirm3(virDomainPtr domain,
     struct private_data *priv = domain->conn->privateData;
 
     remoteDriverLock(priv);
-
-    memset(&args, 0, sizeof(args));
 
     make_nonnull_domain(&args.dom, domain);
     args.cookie_in.cookie_in_len = cookieinlen;
@@ -6908,7 +6901,6 @@ remoteDomainMigrateBegin3Params(virDomainPtr domain,
 
     remoteDriverLock(priv);
 
-    memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
     make_nonnull_domain(&args.dom, domain);
@@ -6971,7 +6963,6 @@ remoteDomainMigratePrepare3Params(virConnectPtr dconn,
 
     remoteDriverLock(priv);
 
-    memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
     if (virTypedParamsSerialize(params, nparams,
@@ -7047,7 +7038,6 @@ remoteDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
 
     remoteDriverLock(priv);
 
-    memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
     args.cookie_in.cookie_in_val = (char *)cookiein;
@@ -7129,7 +7119,6 @@ remoteDomainMigratePerform3Params(virDomainPtr dom,
 
     remoteDriverLock(priv);
 
-    memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
     make_nonnull_domain(&args.dom, dom);
@@ -7195,7 +7184,6 @@ remoteDomainMigrateFinish3Params(virConnectPtr dconn,
 
     remoteDriverLock(priv);
 
-    memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
     args.cookie_in.cookie_in_val = (char *)cookiein;
@@ -7260,8 +7248,6 @@ remoteDomainMigrateConfirm3Params(virDomainPtr domain,
     struct private_data *priv = domain->conn->privateData;
 
     remoteDriverLock(priv);
-
-    memset(&args, 0, sizeof(args));
 
     make_nonnull_domain(&args.dom, domain);
     args.cookie_in.cookie_in_len = cookieinlen;
@@ -7562,8 +7548,6 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
     remote_connect_get_all_domain_stats_ret ret;
     virDomainStatsRecordPtr elem = NULL;
     virDomainStatsRecordPtr *tmpret = NULL;
-
-    memset(&args, 0, sizeof(args));
 
     if (ndoms) {
         args.doms.doms_val = g_new0(remote_nonnull_domain, ndoms);
