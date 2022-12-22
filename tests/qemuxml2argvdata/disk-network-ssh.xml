@@ -19,6 +19,7 @@
         <host name='example.org' port='2222'/>
         <timeout seconds='1234'/>
         <readahead size='1024'/>
+        <knownHosts path="/path/to/ssh_known_hosts"/>
       </source>
       <target dev='vda' bus='virtio'/>
     </disk>

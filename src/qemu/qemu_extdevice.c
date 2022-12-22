@@ -297,11 +297,11 @@ qemuExtDevicesStop(virQEMUDriver *driver,
 
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDef *disk = def->disks[i];
-        qemuNbdkitStopStorageSource(disk->src);
+        qemuNbdkitStopStorageSource(disk->src, vm);
     }
 
     if (def->os.loader && def->os.loader->nvram)
-        qemuNbdkitStopStorageSource(def->os.loader->nvram);
+        qemuNbdkitStopStorageSource(def->os.loader->nvram, vm);
 }
 
 

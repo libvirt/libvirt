@@ -630,7 +630,7 @@ qemuNbdkitProcessRestart(qemuNbdkitProcess *proc,
     virQEMUDriver *driver = vmpriv->driver;
 
     /* clean up resources associated with process */
-    qemuNbdkitProcessStop(proc);
+    qemuNbdkitProcessStop(proc, vm);
 
     return qemuNbdkitProcessStart(proc, vm, driver);
 }
@@ -913,7 +913,8 @@ qemuNbdkitStartStorageSource(virQEMUDriver *driver,
 
 
 void
-qemuNbdkitStopStorageSource(virStorageSource *src)
+qemuNbdkitStopStorageSource(virStorageSource *src,
+                            virDomainObj *vm)
 {
     virStorageSource *backing;
 
@@ -921,7 +922,7 @@ qemuNbdkitStopStorageSource(virStorageSource *src)
         qemuDomainStorageSourcePrivate *priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
 
         if (priv && priv->nbdkitProcess &&
-            qemuNbdkitProcessStop(priv->nbdkitProcess) < 0)
+            qemuNbdkitProcessStop(priv->nbdkitProcess, vm) < 0)
             VIR_WARN("Unable to stop nbdkit for storage source '%s'", src->nodestorage);
     }
 }
@@ -1055,6 +1056,9 @@ qemuNbdkitProcessBuildCommandSSH(qemuNbdkitProcess *proc,
     if (proc->source->ssh_host_key_check_disabled)
         virCommandAddArgPair(cmd, "verify-remote-host", "false");
 
+    if (proc->source->ssh_known_hosts_file)
+        virCommandAddArgPair(cmd, "known-hosts", proc->source->ssh_known_hosts_file);
+
     return 0;
 }
 
@@ -1167,6 +1171,10 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "nbdkit") < 0)
         goto error;
 
+    if (proc->source->ssh_known_hosts_file &&
+        qemuSecurityDomainSetPathLabel(driver, vm, proc->source->ssh_known_hosts_file, false) < 0)
+        goto error;
+
     if (qemuSecurityCommandRun(driver, vm, cmd, proc->user, proc->group, true, &exitstatus) < 0)
         goto error;
 
@@ -1231,15 +1239,22 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
                    NULLSTR(uristring), NULLSTR(errbuf));
 
  error:
-    qemuNbdkitProcessStop(proc);
+    qemuNbdkitProcessStop(proc, vm);
     return -1;
 }
 
 
 int
-qemuNbdkitProcessStop(qemuNbdkitProcess *proc)
+qemuNbdkitProcessStop(qemuNbdkitProcess *proc,
+                      virDomainObj *vm)
 {
+    qemuDomainObjPrivate *vmpriv = vm->privateData;
+    virQEMUDriver *driver = vmpriv->driver;
+
     qemuNbdkitProcessStopMonitor(proc);
+
+    if (proc->source->ssh_known_hosts_file)
+        qemuSecurityDomainRestorePathLabel(driver, vm, proc->source->ssh_known_hosts_file);
 
     if (proc->pid < 0)
         return 0;

@@ -66,7 +66,8 @@ qemuNbdkitStartStorageSource(virQEMUDriver *driver,
                              virStorageSource *src);
 
 void
-qemuNbdkitStopStorageSource(virStorageSource *src);
+qemuNbdkitStopStorageSource(virStorageSource *src,
+                            virDomainObj *vm);
 
 int
 qemuNbdkitStorageSourceManageProcess(virStorageSource *src,
@@ -105,7 +106,8 @@ qemuNbdkitProcessRestart(qemuNbdkitProcess *proc,
                          virDomainObj *vm);
 
 int
-qemuNbdkitProcessStop(qemuNbdkitProcess *proc);
+qemuNbdkitProcessStop(qemuNbdkitProcess *proc,
+                      virDomainObj *vm);
 
 void
 qemuNbdkitProcessFree(qemuNbdkitProcess *proc);

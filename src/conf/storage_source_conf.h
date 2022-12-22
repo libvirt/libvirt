@@ -412,6 +412,8 @@ struct _virStorageSource {
     /* these must not be used apart from formatting the output JSON in the qemu driver */
     char *ssh_user;
     bool ssh_host_key_check_disabled;
+    /* additional ssh variables */
+    char *ssh_known_hosts_file;
 
     /* nfs_user and nfs_group store the strings passed in by the user for NFS params.
      * nfs_uid and nfs_gid represent the converted/looked up ID numbers which are used

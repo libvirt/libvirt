@@ -3,4 +3,5 @@ nbdkit \
 --foreground ssh \
 host=example.org \
 port=2222 \
-path=test.img
+path=test.img \
+known-hosts=/path/to/ssh_known_hosts

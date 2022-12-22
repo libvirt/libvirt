@@ -7219,6 +7219,11 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
             return -1;
         }
     }
+    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_SSH &&
+        (tmpnode = virXPathNode("./knownHosts", ctxt))) {
+        if (!(src->ssh_known_hosts_file = virXMLPropStringRequired(tmpnode, "path")))
+            return -1;
+    }
 
     return 0;
 }
@@ -22205,6 +22210,9 @@ virDomainDiskSourceFormatNetwork(virBuffer *attrBuf,
 
     if (src->timeout)
         virBufferAsprintf(childBuf, "<timeout seconds='%llu'/>\n", src->timeout);
+
+    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_SSH && src->ssh_known_hosts_file)
+        virBufferEscapeString(childBuf, "<knownHosts path='%s'/>\n", src->ssh_known_hosts_file);
 }
 
 

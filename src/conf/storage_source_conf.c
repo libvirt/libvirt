@@ -897,6 +897,7 @@ virStorageSourceCopy(const virStorageSource *src,
     /* ssh config passthrough for libguestfs */
     def->ssh_host_key_check_disabled = src->ssh_host_key_check_disabled;
     def->ssh_user = g_strdup(src->ssh_user);
+    def->ssh_known_hosts_file = g_strdup(src->ssh_known_hosts_file);
 
     def->nfs_user = g_strdup(src->nfs_user);
     def->nfs_group = g_strdup(src->nfs_group);
@@ -1175,6 +1176,7 @@ virStorageSourceClear(virStorageSource *def)
     VIR_FREE(def->tlsHostname);
 
     VIR_FREE(def->ssh_user);
+    VIR_FREE(def->ssh_known_hosts_file);
 
     VIR_FREE(def->nfs_user);
     VIR_FREE(def->nfs_group);
