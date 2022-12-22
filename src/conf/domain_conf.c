@@ -7219,10 +7219,18 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
             return -1;
         }
     }
-    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_SSH &&
-        (tmpnode = virXPathNode("./knownHosts", ctxt))) {
-        if (!(src->ssh_known_hosts_file = virXMLPropStringRequired(tmpnode, "path")))
-            return -1;
+    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_SSH) {
+        if ((tmpnode = virXPathNode("./knownHosts", ctxt))) {
+            if (!(src->ssh_known_hosts_file = virXMLPropStringRequired(tmpnode, "path")))
+                return -1;
+        }
+        if ((tmpnode = virXPathNode("./identity", ctxt))) {
+            if (!(src->ssh_user = virXMLPropStringRequired(tmpnode, "username")))
+                return -1;
+
+            if (!(src->ssh_keyfile = virXMLPropStringRequired(tmpnode, "keyfile")))
+                return -1;
+        }
     }
 
     return 0;
@@ -22211,8 +22219,18 @@ virDomainDiskSourceFormatNetwork(virBuffer *attrBuf,
     if (src->timeout)
         virBufferAsprintf(childBuf, "<timeout seconds='%llu'/>\n", src->timeout);
 
-    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_SSH && src->ssh_known_hosts_file)
-        virBufferEscapeString(childBuf, "<knownHosts path='%s'/>\n", src->ssh_known_hosts_file);
+    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_SSH) {
+        if (src->ssh_known_hosts_file)
+            virBufferEscapeString(childBuf, "<knownHosts path='%s'/>\n", src->ssh_known_hosts_file);
+        if (src->ssh_keyfile) {
+            virBufferAddLit(childBuf, "<identity");
+
+            virBufferEscapeString(childBuf, " username='%s'", src->ssh_user);
+            virBufferEscapeString(childBuf, " keyfile='%s'", src->ssh_keyfile);
+
+            virBufferAddLit(childBuf, "/>\n");
+        }
+    }
 }
 
 

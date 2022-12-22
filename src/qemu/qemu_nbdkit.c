@@ -1049,8 +1049,12 @@ qemuNbdkitProcessBuildCommandSSH(qemuNbdkitProcess *proc,
     if (proc->source->auth) {
         if (qemuNbdkitProcessBuildCommandAuth(proc->source->auth, cmd) < 0)
             return -1;
-    } else if (proc->source->ssh_user) {
-        virCommandAddArgPair(cmd, "user", proc->source->ssh_user);
+    } else {
+        if (proc->source->ssh_keyfile)
+            virCommandAddArgPair(cmd, "identity", proc->source->ssh_keyfile);
+
+        if (proc->source->ssh_user)
+            virCommandAddArgPair(cmd, "user", proc->source->ssh_user);
     }
 
     if (proc->source->ssh_host_key_check_disabled)
@@ -1171,6 +1175,10 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "nbdkit") < 0)
         goto error;
 
+    if (proc->source->ssh_keyfile &&
+        qemuSecurityDomainSetPathLabel(driver, vm, proc->source->ssh_keyfile, false) < 0)
+        goto error;
+
     if (proc->source->ssh_known_hosts_file &&
         qemuSecurityDomainSetPathLabel(driver, vm, proc->source->ssh_known_hosts_file, false) < 0)
         goto error;
@@ -1255,6 +1263,9 @@ qemuNbdkitProcessStop(qemuNbdkitProcess *proc,
 
     if (proc->source->ssh_known_hosts_file)
         qemuSecurityDomainRestorePathLabel(driver, vm, proc->source->ssh_known_hosts_file);
+
+    if (proc->source->ssh_keyfile)
+        qemuSecurityDomainRestorePathLabel(driver, vm, proc->source->ssh_keyfile);
 
     if (proc->pid < 0)
         return 0;

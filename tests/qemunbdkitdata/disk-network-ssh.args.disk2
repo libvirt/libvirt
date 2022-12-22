@@ -1,0 +1,9 @@
+nbdkit \
+--unix /tmp/statedir-2/nbdkit-test-disk-2.socket \
+--foreground ssh \
+host=example.org \
+port=2222 \
+path=test2.img \
+identity=/path/to/id_rsa \
+user=myuser \
+known-hosts=/path/to/ssh_known_hosts
