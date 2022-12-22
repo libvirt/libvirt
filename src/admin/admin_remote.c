@@ -269,9 +269,9 @@ remoteAdminServerGetThreadPoolParameters(virAdmServerPtr srv,
         goto cleanup;
 
     rv = 0;
-    xdr_free((xdrproc_t)xdr_admin_server_get_threadpool_parameters_ret, (char *) &ret);
 
  cleanup:
+    xdr_free((xdrproc_t)xdr_admin_server_get_threadpool_parameters_ret, (char *) &ret);
     virObjectUnlock(priv);
     return rv;
 }
@@ -342,9 +342,9 @@ remoteAdminClientGetInfo(virAdmClientPtr client,
         goto cleanup;
 
     rv = 0;
-    xdr_free((xdrproc_t)xdr_admin_client_get_info_ret, (char *) &ret);
 
  cleanup:
+    xdr_free((xdrproc_t)xdr_admin_client_get_info_ret, (char *) &ret);
     virObjectUnlock(priv);
     return rv;
 }
@@ -380,10 +380,10 @@ remoteAdminServerGetClientLimits(virAdmServerPtr srv,
         goto cleanup;
 
     rv = 0;
-    xdr_free((xdrproc_t) xdr_admin_server_get_client_limits_ret,
-             (char *) &ret);
 
  cleanup:
+    xdr_free((xdrproc_t) xdr_admin_server_get_client_limits_ret,
+             (char *) &ret);
     virObjectUnlock(priv);
     return rv;
 }
