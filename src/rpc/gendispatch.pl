@@ -1818,11 +1818,10 @@ elsif ($mode eq "client") {
             }
         }
 
-        print "\n";
         if ($structprefix eq "admin") {
-            print "    virObjectLock(priv);\n";
+            print "    VIR_LOCK_GUARD lock = virObjectLockGuard(&priv);\n";
         } else {
-            print "    remoteDriverLock(priv);\n";
+            print "    VIR_LOCK_GUARD lock = remoteDriverLock(priv);\n";
         }
 
         if ($call->{streamflag} ne "none") {
@@ -2019,12 +2018,6 @@ elsif ($mode eq "client") {
         print "done:\n";
 
         print join("\n", @free_list);
-
-        if ($structprefix eq "admin") {
-            print "    virObjectUnlock(priv);\n";
-        } else {
-            print "    remoteDriverUnlock(priv);\n";
-        }
 
         print "    return rv;\n";
         print "}\n";
