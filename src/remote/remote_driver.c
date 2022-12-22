@@ -6919,8 +6919,6 @@ remoteDomainMigrateBegin3Params(virDomainPtr domain,
                                 (struct _virTypedParameterRemote **) &args.params.params_val,
                                 &args.params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0) {
-        xdr_free((xdrproc_t) xdr_remote_domain_migrate_begin3_params_args,
-                 (char *) &args);
         goto cleanup;
     }
 
@@ -6981,8 +6979,6 @@ remoteDomainMigratePrepare3Params(virConnectPtr dconn,
                                 (struct _virTypedParameterRemote **) &args.params.params_val,
                                 &args.params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0) {
-        xdr_free((xdrproc_t) xdr_remote_domain_migrate_prepare3_params_args,
-                 (char *) &args);
         goto cleanup;
     }
 
@@ -7063,8 +7059,6 @@ remoteDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
                                 (struct _virTypedParameterRemote **) &args.params.params_val,
                                 &args.params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0) {
-        xdr_free((xdrproc_t) xdr_remote_domain_migrate_prepare_tunnel3_params_args,
-                 (char *) &args);
         goto cleanup;
     }
 
@@ -7149,8 +7143,6 @@ remoteDomainMigratePerform3Params(virDomainPtr dom,
                                 (struct _virTypedParameterRemote **) &args.params.params_val,
                                 &args.params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0) {
-        xdr_free((xdrproc_t) xdr_remote_domain_migrate_perform3_params_args,
-                 (char *) &args);
         goto cleanup;
     }
 
@@ -7216,8 +7208,6 @@ remoteDomainMigrateFinish3Params(virConnectPtr dconn,
                                 (struct _virTypedParameterRemote **) &args.params.params_val,
                                 &args.params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0) {
-        xdr_free((xdrproc_t) xdr_remote_domain_migrate_finish3_params_args,
-                 (char *) &args);
         goto cleanup;
     }
 
@@ -7284,8 +7274,6 @@ remoteDomainMigrateConfirm3Params(virDomainPtr domain,
                                 (struct _virTypedParameterRemote **) &args.params.params_val,
                                 &args.params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0) {
-        xdr_free((xdrproc_t) xdr_remote_domain_migrate_confirm3_params_args,
-                 (char *) &args);
         goto cleanup;
     }
 
