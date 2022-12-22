@@ -1440,7 +1440,7 @@ elsif ($mode eq "client") {
                                          "                                &args.$1.$1_len,\n" .
                                          "                                VIR_TYPED_PARAM_STRING_OKAY) < 0) {\n" .
                                          "        xdr_free((xdrproc_t)xdr_$call->{args}, (char *)&args);\n" .
-                                         "        goto done;\n" .
+                                         "        goto cleanup;\n" .
                                          "    }");
                     push(@free_list, "    virTypedParamsRemoteFree((struct _virTypedParameterRemote *) args.params.params_val,\n" .
                                      "                             args.params.params_len);\n");
@@ -1527,7 +1527,7 @@ elsif ($mode eq "client") {
         if ($rettype eq "void") {
             $call_ret = "NULL";
         } else {
-            push(@vars_list, "$rettype ret = {0}");
+            push(@vars_list, "g_auto($rettype) ret = {0}");
 
             foreach my $ret_member (@{$call->{ret_members}}) {
                 if ($multi_ret) {
@@ -1582,12 +1582,11 @@ elsif ($mode eq "client") {
                     # error out on unannotated arrays
                     die "$1_nonnull_string array without insert@<offset> annotation: $ret_member";
                 } elsif ($ret_member =~ m/^(?:admin|remote)_nonnull_string (\S+);/) {
-                    push(@ret_list, "rv = ret.$1;");
+                    push(@ret_list, "rv = g_steal_pointer(&ret.$1);");
                     $single_ret_var = "char *rv = NULL";
                     $single_ret_type = "char *";
                 } elsif ($ret_member =~ m/^(?:admin|remote)_string (\S+);/) {
-                    push(@ret_list, "rv = ret.$1 ? *ret.$1 : NULL;");
-                    push(@ret_list, "VIR_FREE(ret.$1);");
+                    push(@ret_list, "rv = ret.$1 ? g_steal_pointer(ret.$1) : NULL;");
                     $single_ret_var = "char *rv = NULL";
                     $single_ret_type = "char *";
                 } elsif ($ret_member =~ m/^remote_nonnull_(domain|network|network_port|storage_pool|storage_vol|node_device|interface|secret|nwfilter|nwfilter_binding|domain_checkpoint|domain_snapshot) (\S+);/) {
@@ -1599,7 +1598,6 @@ elsif ($mode eq "client") {
                         # SPECIAL: virDomainCreateWithFlags updates the given
                         #          domain object instead of returning a new one
                         push(@ret_list, "dom->id = ret.dom.id;");
-                        push(@ret_list, "xdr_free((xdrproc_t)xdr_$call->{ret}, (char *)&ret);");
                         push(@ret_list, "rv = 0;");
                         $single_ret_var = "int rv = -1";
                         $single_ret_type = "int";
@@ -1612,7 +1610,6 @@ elsif ($mode eq "client") {
                             push(@ret_list, "rv = get_nonnull_$name($priv_src, ret.$arg_name);");
                         }
 
-                        push(@ret_list, "xdr_free((xdrproc_t)xdr_$rettype, (char *)&ret);");
                         $single_ret_var = "vir${type_name}Ptr rv = NULL";
                         $single_ret_type = "vir${type_name}Ptr";
                     }
@@ -1711,8 +1708,6 @@ elsif ($mode eq "client") {
                     } else {
                         push(@ret_list, "rv = get_nonnull_$name($priv_src, ret.$arg_name);");
                     }
-
-                    push(@ret_list, "xdr_free((xdrproc_t)xdr_$rettype, (char *)&ret);");
 
                     $single_ret_var = "virAdm${type_name}Ptr rv = NULL";
                     $single_ret_type = "virAdm${type_name}Ptr";
@@ -1820,11 +1815,11 @@ elsif ($mode eq "client") {
         if ($call->{streamflag} ne "none") {
             print "\n";
             print "    if (!(netst = virNetClientStreamNew(priv->remoteProgram, $call->{constname}, priv->counter, sparse)))\n";
-            print "        goto done;\n";
+            print "        goto cleanup;\n";
             print "\n";
             print "    if (virNetClientAddStream(priv->client, netst) < 0) {\n";
             print "        virObjectUnref(netst);\n";
-            print "        goto done;\n";
+            print "        goto cleanup;\n";
             print "    }";
             print "\n";
             print "    st->driver = &remoteStreamDrv;\n";
@@ -1837,7 +1832,7 @@ elsif ($mode eq "client") {
             print "\n";
             print "    if (feature == VIR_DRV_FEATURE_REMOTE) {\n";
             print "        rv = 1;\n";
-            print "        goto done;\n";
+            print "        goto cleanup;\n";
             print "    }\n";
         }
 
@@ -1847,7 +1842,7 @@ elsif ($mode eq "client") {
             print "        virReportError(VIR_ERR_RPC,\n";
             print "                       _(\"%1\$s length greater than maximum: %2\$d > %3\$d\"),\n";
             print "                       $args_check->{name}, (int)$args_check->{arg}, $args_check->{limit});\n";
-            print "        goto done;\n";
+            print "        goto cleanup;\n";
             print "    }\n";
         }
 
@@ -1858,7 +1853,7 @@ elsif ($mode eq "client") {
             print "                       _(\"too many remote ${single_ret_list_error_msg_type}s: %1\$d > %2\$d,\"\n";
             print "                         \"in parameter '$single_ret_list_name' for 'vir$call->{ProcName}'\"),\n";
             print "                       $single_ret_list_max_var, $single_ret_list_max_define);\n";
-            print "        goto done;\n";
+            print "        goto cleanup;\n";
             print "    }\n";
         }
 
@@ -1909,7 +1904,7 @@ elsif ($mode eq "client") {
             print "        st->privateData = NULL;\n";
         }
 
-        print "        goto done;\n";
+        print "        goto cleanup;\n";
         print "    }\n";
         print "\n";
 
@@ -1982,29 +1977,22 @@ elsif ($mode eq "client") {
             }
         }
 
-        if ($single_ret_as_list or $single_ret_cleanup or $modern_ret_as_list) {
-            print "\n";
-            print "cleanup:\n";
-            if (@custom_error_cleanup) {
-                print "    if (rv != 0) {\n";
-                print "        ";
-                print join("\n        ", @custom_error_cleanup);
-                print "    }\n";
-            }
-            if ($modern_ret_as_list) {
-                print "    if (tmp_results) {\n";
-                print "        for (i = 0; i < ret.$single_ret_list_name.${single_ret_list_name}_len; i++)\n";
-                print "            virObjectUnref(tmp_results[i]);\n";
-                print "        VIR_FREE(tmp_results);\n";
-                print "    }\n";
-                print "\n";
-            }
-            print "    xdr_free((xdrproc_t)xdr_$call->{ret}, (char *)&ret);\n";
-        }
-
         print "\n";
-        print "done:\n";
-
+        print "cleanup:\n";
+        if (@custom_error_cleanup) {
+            print "    if (rv != 0) {\n";
+            print "        ";
+            print join("\n        ", @custom_error_cleanup);
+            print "    }\n";
+        }
+        if ($modern_ret_as_list) {
+            print "    if (tmp_results) {\n";
+            print "        for (i = 0; i < ret.$single_ret_list_name.${single_ret_list_name}_len; i++)\n";
+            print "            virObjectUnref(tmp_results[i]);\n";
+            print "        VIR_FREE(tmp_results);\n";
+            print "    }\n";
+            print "\n";
+        }
         print join("\n", @free_list);
 
         print "    return rv;\n";

@@ -60,7 +60,7 @@ VIR_LOG_INIT("remote.remote_driver");
         if ((_from) != (_type)(_from)) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
                            _("conversion from hyper to %1$s overflowed"), #_type); \
-            goto done; \
+            goto cleanup; \
         } \
         (_to) = (_from); \
     } while (0)
