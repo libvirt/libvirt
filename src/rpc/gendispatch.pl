@@ -1534,7 +1534,7 @@ elsif ($mode eq "client") {
         if ($rettype eq "void") {
             $call_ret = "NULL";
         } else {
-            push(@vars_list, "$rettype ret");
+            push(@vars_list, "$rettype ret = {0}");
 
             foreach my $ret_member (@{$call->{ret_members}}) {
                 if ($multi_ret) {
@@ -1889,11 +1889,6 @@ elsif ($mode eq "client") {
 
         if (@setters_list2) {
             print "\n";
-        }
-
-        if ($rettype ne "void") {
-            print "\n";
-            print "    memset(&ret, 0, sizeof(ret));\n";
         }
 
         my $callflags = "0";
