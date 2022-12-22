@@ -232,13 +232,11 @@ remoteAdminServerGetThreadPoolParameters(virAdmServerPtr srv,
     int rv = -1;
     remoteAdminPriv *priv = srv->conn->privateData;
     admin_server_get_threadpool_parameters_args args;
-    admin_server_get_threadpool_parameters_ret ret;
+    admin_server_get_threadpool_parameters_ret ret = {0};
     VIR_LOCK_GUARD lock = virObjectLockGuard(priv);
 
     args.flags = flags;
     make_nonnull_server(&args.srv, srv);
-
-    memset(&ret, 0, sizeof(ret));
 
     if (call(srv->conn, 0, ADMIN_PROC_SERVER_GET_THREADPOOL_PARAMETERS,
              (xdrproc_t)xdr_admin_server_get_threadpool_parameters_args, (char *) &args,
@@ -302,13 +300,11 @@ remoteAdminClientGetInfo(virAdmClientPtr client,
     int rv = -1;
     remoteAdminPriv *priv = client->srv->conn->privateData;
     admin_client_get_info_args args;
-    admin_client_get_info_ret ret;
+    admin_client_get_info_ret ret = {0};
     VIR_LOCK_GUARD lock = virObjectLockGuard(priv);
 
     args.flags = flags;
     make_nonnull_client(&args.clnt, client);
-
-    memset(&ret, 0, sizeof(ret));
 
     if (call(client->srv->conn, 0, ADMIN_PROC_CLIENT_GET_INFO,
              (xdrproc_t)xdr_admin_client_get_info_args, (char *) &args,
@@ -337,14 +333,12 @@ remoteAdminServerGetClientLimits(virAdmServerPtr srv,
 {
     int rv = -1;
     admin_server_get_client_limits_args args;
-    admin_server_get_client_limits_ret ret;
+    admin_server_get_client_limits_ret ret = {0};
     remoteAdminPriv *priv = srv->conn->privateData;
     VIR_LOCK_GUARD lock = virObjectLockGuard(priv);
 
     args.flags = flags;
     make_nonnull_server(&args.srv, srv);
-
-    memset(&ret, 0, sizeof(ret));
 
     if (call(srv->conn, 0, ADMIN_PROC_SERVER_GET_CLIENT_LIMITS,
              (xdrproc_t) xdr_admin_server_get_client_limits_args,
@@ -410,12 +404,10 @@ remoteAdminConnectGetLoggingOutputs(virAdmConnectPtr conn,
     int rv = -1;
     remoteAdminPriv *priv = conn->privateData;
     admin_connect_get_logging_outputs_args args;
-    admin_connect_get_logging_outputs_ret ret;
+    admin_connect_get_logging_outputs_ret ret = {0};
     VIR_LOCK_GUARD lock = virObjectLockGuard(priv);
 
     args.flags = flags;
-
-    memset(&ret, 0, sizeof(ret));
 
     if (call(conn,
              0,
@@ -442,12 +434,10 @@ remoteAdminConnectGetLoggingFilters(virAdmConnectPtr conn,
     int rv = -1;
     remoteAdminPriv *priv = conn->privateData;
     admin_connect_get_logging_filters_args args;
-    admin_connect_get_logging_filters_ret ret;
+    admin_connect_get_logging_filters_ret ret = {0};
     VIR_LOCK_GUARD lock = virObjectLockGuard(priv);
 
     args.flags = flags;
-
-    memset(&ret, 0, sizeof(ret));
 
     if (call(conn,
              0,
