@@ -146,7 +146,7 @@ struct _virNWFilterSnoopIPLease {
     virSocketAddr              ipAddress;
     virSocketAddr              ipServer;
     virNWFilterSnoopReq *    snoopReq;
-    unsigned int               timeout;
+    time_t                     timeout;
     /* timer list */
     virNWFilterSnoopIPLease *prev;
     virNWFilterSnoopIPLease *next;
@@ -1580,7 +1580,9 @@ virNWFilterSnoopLeaseFileWrite(int lfd, const char *ifkey,
         return -1;
 
     /* time intf ip dhcpserver */
-    lbuf = g_strdup_printf("%u %s %s %s\n", ipl->timeout, ifkey, ipstr, dhcpstr);
+    lbuf = g_strdup_printf("%llu %s %s %s\n",
+                           (unsigned long long) ipl->timeout,
+                           ifkey, ipstr, dhcpstr);
     len = strlen(lbuf);
 
     if (safewrite(lfd, lbuf, len) != len) {
@@ -1739,7 +1741,8 @@ virNWFilterSnoopLeaseFileLoad(void)
         }
         ln++;
         /* key len 54 = "VMUUID"+'-'+"MAC" */
-        if (sscanf(line, "%u %54s %15s %15s", &ipl.timeout,
+        if (sscanf(line, "%llu %54s %15s %15s",
+                   (unsigned long long *) &ipl.timeout,
                    ifkey, ipstr, srvstr) < 4) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("virNWFilterSnoopLeaseFileLoad lease file "
