@@ -10,14 +10,14 @@
 # SeongHyun Jo <caelus9536@gmail.com>, 2021.
 # jason lee <ppark5237@gmail.com>, 2021.
 # Kim InSoo <simmon@nplob.com>, 2022.
-# 김인수 <simmon@nplob.com>, 2022.
+# 김인수 <simmon@nplob.com>, 2022, 2023.
 # Jan Tomko <jtomko@redhat.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-11-24 14:54+0000\n"
-"PO-Revision-Date: 2022-12-07 12:17+0000\n"
+"PO-Revision-Date: 2023-01-01 08:20+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.2\n"
+"X-Generator: Weblate 4.15\n"
 
 msgid ""
 "\n"
@@ -23767,7 +23767,7 @@ msgid "disable cpus specified by cpumap"
 msgstr "cpumap에 의해 지정된 CPU 비활성화"
 
 msgid "disabled"
-msgstr "사용 않음"
+msgstr "비활성화됨"
 
 #, c-format
 msgid "discard is not supported for model '%s'"
