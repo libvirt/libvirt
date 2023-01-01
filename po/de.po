@@ -16,13 +16,14 @@
 # Fabian Affolter <mail@fabian-affolter.ch>, 2020.
 # Christian Kirbach <christian.kirbach@gmail.com>, 2021.
 # Tom Wieczorek <tom@bibbu.net>, 2022.
+# Ettore Atalan <atalanttore@googlemail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-11-24 14:54+0000\n"
-"PO-Revision-Date: 2022-03-19 09:16+0000\n"
-"Last-Translator: Tom Wieczorek <tom@bibbu.net>\n"
+"PO-Revision-Date: 2022-12-24 15:20+0000\n"
+"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/de/>\n"
 "Language: de\n"
@@ -30,7 +31,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.11.2\n"
+"X-Generator: Weblate 4.15\n"
 
 msgid ""
 "\n"
@@ -39792,9 +39793,9 @@ msgstr "y - ja, starten Editor wieder"
 msgid "yes"
 msgstr "ja"
 
-#, fuzzy, c-format
+#, c-format
 msgid "zPCI %s %o is already reserved"
-msgstr "Ein Close Callback ist bereits registriert"
+msgstr ""
 
 msgid "zero-copy is only available for parallel migration"
 msgstr ""
