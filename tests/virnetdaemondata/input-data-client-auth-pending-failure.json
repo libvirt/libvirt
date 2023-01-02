@@ -22,7 +22,7 @@
                             "isClient": false
                         }
                     ]
-                },
+                }
             ],
             "clients": [
                 {
@@ -38,7 +38,7 @@
                         "isClient": true
                     },
 		    "privateData": 1729
-                },
+                }
             ]
         }
     }
