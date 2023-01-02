@@ -15026,7 +15026,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
         goto endjob;
 
     ret = qemuBlockCommit(vm, disk, baseSource, topSource, top_parent,
-                          bandwidth, VIR_ASYNC_JOB_NONE, flags);
+                          bandwidth, VIR_ASYNC_JOB_NONE, VIR_TRISTATE_BOOL_YES,
+                          flags);
 
  endjob:
     virDomainObjEndJob(vm);

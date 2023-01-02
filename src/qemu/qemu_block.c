@@ -3207,10 +3207,16 @@ qemuBlockExportAddNBD(virDomainObj *vm,
  * @top_parent: disk source that has @topSource as backing disk
  * @bandwidth: bandwidth limit, flags determine the unit
  * @asyncJob: qemu async job type
+ * @autofinalize: virTristateBool controlling qemu block job finalization
  * @flags: bitwise-OR of virDomainBlockCommitFlags
  *
  * Starts a block commit job for @disk. If @asyncJob is different then
  * VIR_ASYNC_JOB_NONE the job will be started as synchronous.
+ *
+ * The @autofinalize argument controls if the qemu block job will be automatically
+ * finalized. This is used when deleting external snapshots where we need to
+ * disable automatic finalization for some use-case. The default value passed
+ * to this argument should be VIR_TRISTATE_BOOL_YES.
  *
  * Returns -1 on error, 0 on success.
  */
@@ -3222,6 +3228,7 @@ qemuBlockCommit(virDomainObj *vm,
                 virStorageSource *top_parent,
                 unsigned long bandwidth,
                 virDomainAsyncJob asyncJob,
+                virTristateBool autofinalize,
                 unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -3365,7 +3372,7 @@ qemuBlockCommit(virDomainObj *vm,
                                  topSource->nodeformat,
                                  baseSource->nodeformat,
                                  backingPath, bandwidth,
-                                 VIR_TRISTATE_BOOL_YES);
+                                 autofinalize);
 
     qemuDomainObjExitMonitor(vm);
 
