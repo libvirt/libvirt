@@ -370,6 +370,13 @@ virNetServerNew(const char *name,
     g_autoptr(virNetServer) srv = NULL;
     g_autofree char *jobName = g_strdup_printf("rpc-%s", name);
 
+    if (max_clients < max_anonymous_clients) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("The overall maximum number of clients must not be less "
+                         "than the number of clients waiting for authentication"));
+        return NULL;
+    }
+
     if (virNetServerInitialize() < 0)
         return NULL;
 
@@ -447,6 +454,12 @@ virNetServerNewPostExecRestart(virJSONValue *object,
                                             &max_anonymous_clients) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Malformed max_anonymous_clients data in JSON document"));
+            return NULL;
+        }
+        if (max_clients < max_anonymous_clients) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("The overall maximum number of clients must not be less "
+                             "than the number of clients waiting for authentication"));
             return NULL;
         }
     } else {
