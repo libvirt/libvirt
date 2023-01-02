@@ -303,8 +303,8 @@ static int testExecRestart(const void *opaque)
     infile = g_strdup_printf("%s/virnetdaemondata/input-data-%s.json", abs_srcdir,
                              data->jsonfile);
 
-    outfile = g_strdup_printf("%s/virnetdaemondata/output-data-%s.json",
-                              abs_srcdir, data->jsonfile);
+    outfile = g_strdup_printf("%s/virnetdaemondata/output-data-%s.%s",
+                              abs_srcdir, data->jsonfile, data->pass ? "json" : "err");
 
     if (virFileReadAll(infile, 8192, &injsonstr) < 0)
         goto cleanup;
@@ -331,6 +331,9 @@ static int testExecRestart(const void *opaque)
     if (!(outjson = virNetDaemonPreExecRestart(dmn)))
         goto cleanup;
 
+    if (!data->pass)
+        goto cleanup;
+
     if (!(outjsonstr = virJSONValueToString(outjson, true)))
         goto cleanup;
 
@@ -340,15 +343,15 @@ static int testExecRestart(const void *opaque)
     ret = 0;
  cleanup:
     if (ret < 0) {
-        if (!data->pass) {
-            VIR_TEST_DEBUG("Got expected error: %s",
-                           virGetLastErrorMessage());
+        if (injson && !data->pass) {
+            ret = virTestCompareToFile(virGetLastErrorMessage(), outfile);
+            if (ret < 0)
+                VIR_TEST_DEBUG("Test failed with different error message");
             virResetLastError();
-            ret = 0;
         }
     } else if (!data->pass) {
-            VIR_TEST_DEBUG("Test should have failed");
-            ret = -1;
+        VIR_TEST_DEBUG("Test should have failed");
+        ret = -1;
     }
     virObjectUnref(dmn);
     VIR_FORCE_CLOSE(fdserver[0]);
