@@ -1,0 +1,1 @@
+internal error: The overall maximum number of clients must not be less than the number of clients waiting for authentication

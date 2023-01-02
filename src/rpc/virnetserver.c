@@ -1114,9 +1114,9 @@ virNetServerSetClientLimits(virNetServer *srv,
 
     if (max < max_unauth) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("The overall maximum number of clients must be "
-                         "greater than the maximum number of clients waiting "
-                         "for authentication"));
+                       _("The overall maximum number of clients waiting "
+                         "for authentication must not be less than the overall "
+                         "maximum number of clients"));
         return -1;
     }
 

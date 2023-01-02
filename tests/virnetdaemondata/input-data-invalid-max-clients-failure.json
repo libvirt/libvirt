@@ -1,0 +1,31 @@
+{
+    "servers": {
+        "testServer0": {
+            "min_workers": 10,
+            "max_workers": 50,
+            "priority_workers": 5,
+            "max_clients": 5,
+            "max_anonymous_clients": 10,
+            "keepaliveInterval": 120,
+            "keepaliveCount": 5,
+            "next_client_id": 5,
+            "services": [
+                {
+                    "auth": 0,
+                    "readonly": true,
+                    "nrequests_client_max": 2,
+                    "socks": [
+                        {
+                            "fd": 100,
+                            "errfd": -1,
+                            "pid": 0,
+                            "isClient": false
+                        }
+                    ]
+                }
+            ],
+            "clients": [
+            ]
+        }
+    }
+}
