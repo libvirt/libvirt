@@ -47,9 +47,6 @@
 VIR_LOG_INIT("security.security_dac");
 
 #define SECURITY_DAC_NAME "dac"
-#define DEV_SEV "/dev/sev"
-#define DEV_SGX_VEPC "/dev/sgx_vepc"
-#define DEV_SGX_PROVISION "/dev/sgx_provision"
 
 typedef struct _virSecurityDACData virSecurityDACData;
 struct _virSecurityDACData {
