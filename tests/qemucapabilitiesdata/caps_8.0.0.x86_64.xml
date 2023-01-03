@@ -201,6 +201,7 @@
   <flag name='query-stats-schemas'/>
   <flag name='thread-context'/>
   <flag name='screenshot-format-png'/>
+  <flag name='machine-hpet'/>
   <version>7002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>

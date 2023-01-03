@@ -660,6 +660,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_THREAD_CONTEXT, /* -object thread-context */
     QEMU_CAPS_SCREENSHOT_FORMAT_PNG, /* screendump command supports png format */
 
+    /* 440 */
+    QEMU_CAPS_MACHINE_HPET, /* the HPET timer is configured via -machine, rather than -no-hpet */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

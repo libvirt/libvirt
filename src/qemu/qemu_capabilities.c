@@ -680,6 +680,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "sgx-epc", /* QEMU_CAPS_SGX_EPC */
               "thread-context", /* QEMU_CAPS_THREAD_CONTEXT */
               "screenshot-format-png", /* QEMU_CAPS_SCREENSHOT_FORMAT_PNG */
+
+              /* 440 */
+              "machine-hpet", /* QEMU_CAPS_MACHINE_HPET */
     );
 
 
@@ -3283,6 +3286,7 @@ struct virQEMUCapsCommandLineProps {
  * features should be used if possible. */
 static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },
+    { "machine", "hpet", QEMU_CAPS_MACHINE_HPET },
     { "sandbox", NULL, QEMU_CAPS_SECCOMP_SANDBOX },
     { "spice", NULL, QEMU_CAPS_SPICE },
     { "spice", "gl", QEMU_CAPS_SPICE_GL },
