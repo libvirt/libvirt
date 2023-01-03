@@ -1,0 +1,20 @@
+<domain type='qemu'>
+  <name>QEMUGuest</name>
+  <uuid>9f4b6512-e73a-4a25-93e8-5307802821ce</uuid>
+  <memory unit='KiB'>24682468</memory>
+  <currentMemory unit='KiB'>24682468</currentMemory>
+  <vcpu placement='static'>32</vcpu>
+  <numatune>
+    <memory mode='strict' nodeset='999'/>
+  </numatune>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' model='none'/>
+    <controller type='pci' model='pci-root'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>
