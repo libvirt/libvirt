@@ -5860,7 +5860,10 @@ qemuBuildClockCommandLine(virCommand *cmd,
             break;
 
         case VIR_DOMAIN_TIMER_NAME_HPET:
-            /* the only meaningful attribute for hpet is "present". If present
+            /* Modern qemu versions configure the HPET timer via -machine. See
+             * qemuBuildMachineCommandLine.
+             *
+             * the only meaningful attribute for hpet is "present". If present
              * is VIR_TRISTATE_BOOL_ABSENT, that means it wasn't specified, and
              * should be left at the default for the hypervisor. "default" when
              * -no-hpet exists is VIR_TRISTATE_BOOL_YES, and when -no-hpet
@@ -6744,6 +6747,7 @@ qemuBuildMachineCommandLine(virCommand *cmd,
 {
     virCPUDef *cpu = def->cpu;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
 
     virCommandAddArg(cmd, "-machine");
     virBufferAdd(&buf, def->os.machine, -1);
@@ -6827,6 +6831,29 @@ qemuBuildMachineCommandLine(virCommand *cmd,
      */
     if (def->os.bios.useserial == VIR_TRISTATE_BOOL_YES) {
         virBufferAddLit(&buf, ",graphics=off");
+    }
+
+    for (i = 0; i < def->clock.ntimers; i++) {
+        switch ((virDomainTimerNameType)def->clock.timers[i]->name) {
+        case VIR_DOMAIN_TIMER_NAME_HPET:
+            /* qemuBuildClockCommandLine handles the old-style config via '-no-hpet' */
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_HPET) &&
+                def->clock.timers[i]->present != VIR_TRISTATE_BOOL_ABSENT) {
+                virBufferAsprintf(&buf, ",hpet=%s",
+                                  virTristateSwitchTypeToString(def->clock.timers[i]->present));
+            }
+            break;
+
+        case VIR_DOMAIN_TIMER_NAME_PLATFORM:
+        case VIR_DOMAIN_TIMER_NAME_TSC:
+        case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
+        case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
+        case VIR_DOMAIN_TIMER_NAME_ARMVTIMER:
+        case VIR_DOMAIN_TIMER_NAME_RTC:
+        case VIR_DOMAIN_TIMER_NAME_PIT:
+        case VIR_DOMAIN_TIMER_NAME_LAST:
+            break;
+        }
     }
 
     virCommandAddArgBuffer(cmd, &buf);

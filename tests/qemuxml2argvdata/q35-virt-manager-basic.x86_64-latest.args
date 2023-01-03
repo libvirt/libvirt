@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-virt-manager-basic/.config \
 -name guest=virt-manager-basic,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-virt-manager-basic/master-key.aes"}' \
--machine q35,usb=off,vmport=off,dump-guest-core=off,memory-backend=pc.ram \
+-machine q35,usb=off,vmport=off,dump-guest-core=off,memory-backend=pc.ram,hpet=off \
 -accel kvm \
 -cpu qemu64 \
 -m 4096 \
@@ -24,7 +24,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-virt-manager-basic/.config \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc,driftfix=slew \
 -global kvm-pit.lost_tick_policy=delay \
--no-hpet \
 -no-shutdown \
 -global ICH9-LPC.disable_s3=1 \
 -global ICH9-LPC.disable_s4=1 \

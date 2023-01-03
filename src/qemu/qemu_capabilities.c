@@ -5410,6 +5410,11 @@ virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps)
      * on a not entirely related witness. */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_JSON))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_COMPAT_DEPRECATED);
+
+    /* Modern-style config of the HPET timer overrides support for the '-no-hpet'
+     * option */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_HPET))
+        virQEMUCapsClear(qemuCaps, QEMU_CAPS_NO_HPET);
 }
 
 
