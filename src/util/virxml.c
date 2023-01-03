@@ -320,7 +320,7 @@ virXMLPropStringRequired(xmlNodePtr node,
 {
     char *ret = virXMLPropString(node, name);
 
-     if (!(*ret))
+     if (!ret)
          virReportError(VIR_ERR_XML_ERROR,
                         _("Missing required attribute '%s' in element '%s'"),
                         name, node->name);
