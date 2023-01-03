@@ -1264,9 +1264,11 @@ qemuNamespacePrepareOneItem(qemuNamespaceMknodData *data,
             bool found = false;
 
             for (n = devMountsPath; n && *n; n++) {
+                const char *p;
+
                 if (STREQ(*n, "/dev"))
                     continue;
-                if (STRPREFIX(item.file, *n)) {
+                if ((p = STRSKIP(item.file, *n)) && *p == '/') {
                     found = true;
                     break;
                 }
