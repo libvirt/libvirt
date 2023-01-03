@@ -4533,8 +4533,8 @@ virQEMUCapsLoadCache(virArch hostArch,
     }
     qemuCaps->libvirtCtime = (time_t)l;
 
-    if (virXMLPropUInt(ctxt->node, "selfvers", 10, VIR_XML_PROP_NONE,
-                       &qemuCaps->libvirtVersion) < 0)
+    if (virXPathUInt("string(./selfvers)", ctxt,
+                     &qemuCaps->libvirtVersion) < 0)
         return -1;
 
     if (!skipInvalidation &&
