@@ -1982,7 +1982,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR_NOCAPS("numatune-memnode-nocpu");
     DO_TEST_PARSE_ERROR_NOCAPS("numatune-memnodes-problematic");
     DO_TEST_CAPS_LATEST_FAILURE("numatune-memnode-unavailable-strict");
-    DO_TEST_CAPS_LATEST("numatune-memnode-unavailable-restrictive");
+    DO_TEST_CAPS_LATEST_FAILURE("numatune-memnode-unavailable-restrictive");
     DO_TEST_NOCAPS("numad");
     DO_TEST_NOCAPS("numad-auto-vcpu-static-numatune");
     DO_TEST_PARSE_ERROR_NOCAPS("numad-auto-vcpu-static-numatune-no-nodeset");
