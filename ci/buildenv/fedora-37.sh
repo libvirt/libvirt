@@ -58,7 +58,6 @@ function install_buildenv() {
         lvm2 \
         make \
         meson \
-        netcf-devel \
         nfs-utils \
         ninja-build \
         numactl-devel \

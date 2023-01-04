@@ -193,32 +193,6 @@ x86_64-debian-sid-local-env:
     NAME: debian-sid
 
 
-x86_64-fedora-35-prebuilt-env:
-  extends: .native_build_job_prebuilt_env
-  needs:
-    - job: x86_64-fedora-35-container
-      optional: true
-  allow_failure: false
-  variables:
-    NAME: fedora-35
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - libvirt-rpms
-
-x86_64-fedora-35-local-env:
-  extends: .native_build_job_local_env
-  needs: []
-  allow_failure: false
-  variables:
-    IMAGE: registry.fedoraproject.org/fedora:35
-    NAME: fedora-35
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - libvirt-rpms
-
-
 x86_64-fedora-36-prebuilt-env:
   extends: .native_build_job_prebuilt_env
   needs:
@@ -239,6 +213,32 @@ x86_64-fedora-36-local-env:
   variables:
     IMAGE: registry.fedoraproject.org/fedora:36
     NAME: fedora-36
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - libvirt-rpms
+
+
+x86_64-fedora-37-prebuilt-env:
+  extends: .native_build_job_prebuilt_env
+  needs:
+    - job: x86_64-fedora-37-container
+      optional: true
+  allow_failure: false
+  variables:
+    NAME: fedora-37
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - libvirt-rpms
+
+x86_64-fedora-37-local-env:
+  extends: .native_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    IMAGE: registry.fedoraproject.org/fedora:37
+    NAME: fedora-37
   artifacts:
     expire_in: 1 day
     paths:
@@ -746,46 +746,46 @@ s390x-debian-sid-local-env:
     NAME: debian-sid
 
 
-mingw32-fedora-36-prebuilt-env:
+mingw32-fedora-37-prebuilt-env:
   extends: .cross_build_job_prebuilt_env
   needs:
-    - job: mingw32-fedora-36-container
+    - job: mingw32-fedora-37-container
       optional: true
   allow_failure: false
   variables:
     CROSS: mingw32
     JOB_OPTIONAL: 1
-    NAME: fedora-36
+    NAME: fedora-37
 
-mingw32-fedora-36-local-env:
+mingw32-fedora-37-local-env:
   extends: .cross_build_job_local_env
   needs: []
   allow_failure: false
   variables:
     CROSS: mingw32
-    IMAGE: registry.fedoraproject.org/fedora:36
+    IMAGE: registry.fedoraproject.org/fedora:37
     JOB_OPTIONAL: 1
-    NAME: fedora-36
+    NAME: fedora-37
 
 
-mingw64-fedora-36-prebuilt-env:
+mingw64-fedora-37-prebuilt-env:
   extends: .cross_build_job_prebuilt_env
   needs:
-    - job: mingw64-fedora-36-container
+    - job: mingw64-fedora-37-container
       optional: true
   allow_failure: false
   variables:
     CROSS: mingw64
-    NAME: fedora-36
+    NAME: fedora-37
 
-mingw64-fedora-36-local-env:
+mingw64-fedora-37-local-env:
   extends: .cross_build_job_local_env
   needs: []
   allow_failure: false
   variables:
     CROSS: mingw64
-    IMAGE: registry.fedoraproject.org/fedora:36
-    NAME: fedora-36
+    IMAGE: registry.fedoraproject.org/fedora:37
+    NAME: fedora-37
 
 
 mingw32-fedora-rawhide-prebuilt-env:

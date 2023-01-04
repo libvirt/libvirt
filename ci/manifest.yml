@@ -116,7 +116,7 @@ targets:
         containers: false
         builds: false
 
-  fedora-35:
+  fedora-36:
     jobs:
       - arch: x86_64
         artifacts:
@@ -124,7 +124,7 @@ targets:
           paths:
             - libvirt-rpms
 
-  fedora-36:
+  fedora-37:
     jobs:
       - arch: x86_64
         artifacts:
