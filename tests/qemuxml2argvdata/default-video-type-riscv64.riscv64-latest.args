@@ -9,10 +9,11 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-default-video-type-r/.config \
 /usr/bin/qemu-system-riscv64 \
 -name guest=default-video-type-riscv64-test,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-default-video-type-r/master-key.aes \
--machine virt,usb=off,dump-guest-core=off \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-default-video-type-r/master-key.aes"}' \
+-machine virt,usb=off,dump-guest-core=off,memory-backend=riscv_virt_board.ram \
 -accel tcg \
 -m 1024 \
+-object '{"qom-type":"memory-backend-ram","id":"riscv_virt_board.ram","size":1073741824}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 6ba410c5-1e5c-4d57-bee7-2228e7ffa32f \
@@ -23,10 +24,10 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-default-video-type-r/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device pcie-root-port,port=8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
--device pcie-root-port,port=9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
+-device '{"driver":"pcie-root-port","port":8,"chassis":1,"id":"pci.1","bus":"pcie.0","multifunction":true,"addr":"0x1"}' \
+-device '{"driver":"pcie-root-port","port":9,"chassis":2,"id":"pci.2","bus":"pcie.0","addr":"0x1.0x1"}' \
 -audiodev '{"id":"audio1","driver":"spice"}' \
 -spice port=0,seamless-migration=on \
--device virtio-gpu-pci,id=video0,max_outputs=1,bus=pci.1,addr=0x0 \
+-device '{"driver":"virtio-vga","id":"video0","max_outputs":1,"bus":"pci.1","addr":"0x0"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
