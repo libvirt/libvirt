@@ -337,8 +337,18 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
                                VIR_DOMAIN_VIRT_KVM, opaque) < 0)
             ret = -1;
     } else if (STRPREFIX(arch, "riscv")) {
-        /* Unfortunately we have to skip RISC-V at the moment */
-        return 0;
+        /* For riscv64 we test two combinations:
+         *
+         *   - KVM with virt machine
+         *   - TCG with virt machine
+         */
+        if (doTestQemuInternal(version, "virt", arch,
+                               VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+            ret = -1;
+
+        if (doTestQemuInternal(version, "virt", arch,
+                               VIR_DOMAIN_VIRT_QEMU, opaque) < 0)
+            ret = -1;
     } else {
         if (doTestQemuInternal(version, NULL, arch,
                                VIR_DOMAIN_VIRT_KVM, opaque) < 0)

@@ -147,6 +147,14 @@ static virCPUDef cpuSparcData = {
     .threads = 1,
 };
 
+static virCPUDef cpuRiscv64Data = {
+    .type = VIR_CPU_TYPE_HOST,
+    .arch = VIR_ARCH_RISCV64,
+    .sockets = 1,
+    .cores = 4,
+    .threads = 1,
+};
+
 static inline virCPUDef *
 testUtilsHostCpusGetDefForModel(const char *model)
 {
@@ -182,6 +190,8 @@ testUtilsHostCpusGetDefForArch(virArch arch)
         return virCPUDefCopy(&cpuAarch64Data);
     else if (arch == VIR_ARCH_SPARC)
         return virCPUDefCopy(&cpuSparcData);
+    else if (arch == VIR_ARCH_RISCV64)
+        return virCPUDefCopy(&cpuRiscv64Data);
 
     return NULL;
 }
