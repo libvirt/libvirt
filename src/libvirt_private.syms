@@ -1117,6 +1117,7 @@ virStorageSourceChainHasManagedPR;
 virStorageSourceChainHasNVMe;
 virStorageSourceClear;
 virStorageSourceCopy;
+virStorageSourceFDTupleNew;
 virStorageSourceGetActualType;
 virStorageSourceGetSecurityLabelDef;
 virStorageSourceHasBacking;

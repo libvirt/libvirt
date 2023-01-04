@@ -258,6 +258,23 @@ struct _virStorageSourceSlice {
 };
 
 
+struct _virStorageSourceFDTuple {
+    GObject parent;
+    int *fds;
+    size_t nfds;
+
+    bool writable;
+    bool tryRestoreLabel;
+
+    /* connection this FD tuple is associated with for auto-closing */
+    virConnect *conn;
+};
+G_DECLARE_FINAL_TYPE(virStorageSourceFDTuple, vir_storage_source_fd_tuple, VIR, STORAGE_SOURCE_FD_TUPLE, GObject);
+
+virStorageSourceFDTuple *
+virStorageSourceFDTupleNew(void);
+
+
 typedef struct _virStorageSource virStorageSource;
 
 /* Stores information related to a host resource.  In the case of backing

@@ -28,6 +28,7 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "virstring.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -1360,4 +1361,44 @@ void
 virStorageSourceInitiatorClear(virStorageSourceInitiatorDef *initiator)
 {
     VIR_FREE(initiator->iqn);
+}
+
+G_DEFINE_TYPE(virStorageSourceFDTuple, vir_storage_source_fd_tuple, G_TYPE_OBJECT);
+
+static void
+vir_storage_source_fd_tuple_init(virStorageSourceFDTuple *fdt G_GNUC_UNUSED)
+{
+}
+
+
+static void
+virStorageSourceFDTupleFinalize(GObject *object)
+{
+    virStorageSourceFDTuple *fdt = VIR_STORAGE_SOURCE_FD_TUPLE(object);
+    size_t i;
+
+    if (!fdt)
+        return;
+
+    for (i = 0; i < fdt->nfds; i++)
+        VIR_FORCE_CLOSE(fdt->fds[i]);
+
+    g_free(fdt->fds);
+    G_OBJECT_CLASS(vir_storage_source_fd_tuple_parent_class)->finalize(object);
+}
+
+
+static void
+vir_storage_source_fd_tuple_class_init(virStorageSourceFDTupleClass *klass)
+{
+    GObjectClass *obj = G_OBJECT_CLASS(klass);
+
+    obj->finalize = virStorageSourceFDTupleFinalize;
+}
+
+
+virStorageSourceFDTuple *
+virStorageSourceFDTupleNew(void)
+{
+    return g_object_new(vir_storage_source_fd_tuple_get_type(), NULL);
 }
