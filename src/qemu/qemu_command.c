@@ -9870,11 +9870,11 @@ typedef enum {
     QEMU_COMMAND_DEPRECATION_BEHAVIOR_CRASH,
 
     QEMU_COMMAND_DEPRECATION_BEHAVIOR_LAST
-} qemuCommnadDeprecationBehavior;
+} qemuCommandDeprecationBehavior;
 
 
-VIR_ENUM_DECL(qemuCommnadDeprecationBehavior);
-VIR_ENUM_IMPL(qemuCommnadDeprecationBehavior,
+VIR_ENUM_DECL(qemuCommandDeprecationBehavior);
+VIR_ENUM_IMPL(qemuCommandDeprecationBehavior,
               QEMU_COMMAND_DEPRECATION_BEHAVIOR_LAST,
               "none",
               "omit",
@@ -9890,7 +9890,7 @@ qemuBuildCompatDeprecatedCommandLine(virCommand *cmd,
     g_autoptr(virJSONValue) props = NULL;
     g_autofree char *propsstr = NULL;
     qemuDomainXmlNsDef *nsdata = def->namespaceData;
-    qemuCommnadDeprecationBehavior behavior = QEMU_COMMAND_DEPRECATION_BEHAVIOR_NONE;
+    qemuCommandDeprecationBehavior behavior = QEMU_COMMAND_DEPRECATION_BEHAVIOR_NONE;
     const char *behaviorStr = cfg->deprecationBehavior;
     int tmp;
     const char *deprecatedOutput = NULL;
@@ -9899,7 +9899,7 @@ qemuBuildCompatDeprecatedCommandLine(virCommand *cmd,
     if (nsdata && nsdata->deprecationBehavior)
         behaviorStr = nsdata->deprecationBehavior;
 
-    if ((tmp = qemuCommnadDeprecationBehaviorTypeFromString(behaviorStr)) < 0) {
+    if ((tmp = qemuCommandDeprecationBehaviorTypeFromString(behaviorStr)) < 0) {
         VIR_WARN("Unsupported deprecation behavior '%s' for VM '%s'",
                  behaviorStr, def->name);
         return;
