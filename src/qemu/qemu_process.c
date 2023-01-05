@@ -7590,7 +7590,7 @@ qemuProcessLaunch(virConnectPtr conn,
     g_autofree int *nicindexes = NULL;
     unsigned long long maxMemLock = 0;
 
-    VIR_DEBUG("conn=%p driver=%p vm=%p name=%s if=%d asyncJob=%d "
+    VIR_DEBUG("conn=%p driver=%p vm=%p name=%s id=%d asyncJob=%d "
               "incoming.uri=%s "
               "incoming.fd=%d incoming.path=%s "
               "snapshot=%p vmop=%d flags=0x%x",
