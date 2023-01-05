@@ -925,8 +925,7 @@ int qemuDomainSecretChardevPrepare(virQEMUDriverConfig *cfg,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4);
 
-void qemuDomainSecretDestroy(virDomainObj *vm)
-    ATTRIBUTE_NONNULL(1);
+void qemuDomainStartupCleanup(virDomainObj *vm);
 
 int qemuDomainSecretPrepare(virQEMUDriver *driver,
                             virDomainObj *vm)

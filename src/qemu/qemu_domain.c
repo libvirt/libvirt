@@ -1576,7 +1576,7 @@ qemuDomainSecretGraphicsPrepare(virQEMUDriverConfig *cfg,
  *
  * Removes all unnecessary data which was needed to generate 'secret' objects.
  */
-void
+static void
 qemuDomainSecretDestroy(virDomainObj *vm)
 {
     size_t i;
@@ -12210,4 +12210,17 @@ qemuDomainSchedCoreStop(qemuDomainObjPrivate *priv)
         virProcessAbort(priv->schedCoreChildPID);
         priv->schedCoreChildPID = -1;
     }
+}
+
+
+/**
+ * qemuDomainStartupCleanup:
+ *
+ * Performs a cleanup of data which is not required after a startup of a VM
+ * (successful or not).
+ */
+void
+qemuDomainStartupCleanup(virDomainObj *vm)
+{
+    qemuDomainSecretDestroy(vm);
 }

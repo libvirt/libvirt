@@ -7973,7 +7973,7 @@ qemuProcessLaunch(virConnectPtr conn,
 
  cleanup:
     qemuDomainSchedCoreStop(priv);
-    qemuDomainSecretDestroy(vm);
+    qemuDomainStartupCleanup(vm);
     return ret;
 }
 
