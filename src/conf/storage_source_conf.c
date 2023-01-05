@@ -1057,6 +1057,13 @@ virStorageSourceIsLocalStorage(const virStorageSource *src)
 }
 
 
+bool
+virStorageSourceIsFD(const virStorageSource *src)
+{
+    return src->fdgroup;
+}
+
+
 /**
  * virStorageSourceIsEmpty:
  *

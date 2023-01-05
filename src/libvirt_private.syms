@@ -1129,6 +1129,7 @@ virStorageSourceInitiatorParseXML;
 virStorageSourceIsBacking;
 virStorageSourceIsBlockLocal;
 virStorageSourceIsEmpty;
+virStorageSourceIsFD;
 virStorageSourceIsLocalStorage;
 virStorageSourceIsRelative;
 virStorageSourceIsSameLocation;

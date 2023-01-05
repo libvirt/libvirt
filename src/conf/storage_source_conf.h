@@ -495,6 +495,9 @@ bool
 virStorageSourceIsLocalStorage(const virStorageSource *src);
 
 bool
+virStorageSourceIsFD(const virStorageSource *src);
+
+bool
 virStorageSourceIsEmpty(virStorageSource *src);
 
 bool
