@@ -32,8 +32,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -object '{"qom-type":"memory-backend-ram","id":"memvirtiomem0","reserve":false,"size":1073741824}' \
 -device '{"driver":"virtio-mem-pci","node":0,"block-size":2097152,"requested-size":536870912,"memdev":"memvirtiomem0","id":"virtiomem0","bus":"pci.0","addr":"0x2"}' \
--object '{"qom-type":"thread-context","id":"tc-memvirtiomem1","node-affinity":[1,2,3]}' \
--object '{"qom-type":"memory-backend-file","id":"memvirtiomem1","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1","reserve":false,"size":2147483648,"host-nodes":[1,2,3],"policy":"bind","prealloc-context":"tc-memvirtiomem1"}' \
+-object '{"qom-type":"memory-backend-file","id":"memvirtiomem1","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1","reserve":false,"size":2147483648,"host-nodes":[1,2,3],"policy":"bind"}' \
 -device '{"driver":"virtio-mem-pci","node":0,"block-size":2097152,"requested-size":1073741824,"memdev":"memvirtiomem1","prealloc":true,"id":"virtiomem1","bus":"pci.1","addr":"0x1"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \

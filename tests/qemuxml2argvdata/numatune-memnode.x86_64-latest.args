@@ -16,14 +16,11 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest/.config \
 -m 24105 \
 -overcommit mem-lock=off \
 -smp 32,sockets=32,cores=1,threads=1 \
--object '{"qom-type":"thread-context","id":"tc-ram-node0","node-affinity":[3]}' \
--object '{"qom-type":"memory-backend-ram","id":"ram-node0","size":20971520,"host-nodes":[3],"policy":"preferred","prealloc-context":"tc-ram-node0"}' \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node0","size":20971520,"host-nodes":[3],"policy":"preferred"}' \
 -numa node,nodeid=0,cpus=0,memdev=ram-node0 \
--object '{"qom-type":"thread-context","id":"tc-ram-node1","node-affinity":[0,1,2,3,4,5,6,7]}' \
--object '{"qom-type":"memory-backend-ram","id":"ram-node1","size":676331520,"host-nodes":[0,1,2,3,4,5,6,7],"policy":"bind","prealloc-context":"tc-ram-node1"}' \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node1","size":676331520,"host-nodes":[0,1,2,3,4,5,6,7],"policy":"bind"}' \
 -numa node,nodeid=1,cpus=1-27,cpus=29,memdev=ram-node1 \
--object '{"qom-type":"thread-context","id":"tc-ram-node2","node-affinity":[1,2,5,7]}' \
--object '{"qom-type":"memory-backend-ram","id":"ram-node2","size":24578621440,"host-nodes":[1,2,5,7],"policy":"bind","prealloc-context":"tc-ram-node2"}' \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node2","size":24578621440,"host-nodes":[1,2,5,7],"policy":"bind"}' \
 -numa node,nodeid=2,cpus=28,cpus=30-31,memdev=ram-node2 \
 -uuid 9f4b6512-e73a-4a25-93e8-5307802821ce \
 -display none \

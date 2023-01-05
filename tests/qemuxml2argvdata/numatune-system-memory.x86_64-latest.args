@@ -14,8 +14,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -accel tcg \
 -cpu qemu64 \
 -m 214 \
--object '{"qom-type":"thread-context","id":"tc-pc.ram","node-affinity":[0]}' \
--object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264,"host-nodes":[0],"policy":"bind","prealloc-context":"tc-pc.ram"}' \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264,"host-nodes":[0],"policy":"bind"}' \
 -overcommit mem-lock=off \
 -smp 2,sockets=2,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \

@@ -3658,6 +3658,10 @@ qemuBuildThreadContextProps(virJSONValue **tcProps,
     if (!nodemask)
         return 0;
 
+    if (virJSONValueObjectGetBoolean(*memProps, "prealloc", &prealloc) < 0 ||
+        !prealloc)
+        return 0;
+
     memalias = virJSONValueObjectGetString(*memProps, "id");
     if (!memalias) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3680,11 +3684,8 @@ qemuBuildThreadContextProps(virJSONValue **tcProps,
                               NULL) < 0)
         return -1;
 
-    if (virJSONValueObjectGetBoolean(*memProps, "prealloc", &prealloc) >= 0 &&
-        prealloc) {
-        priv->threadContextAliases = g_slist_prepend(priv->threadContextAliases,
-                                                     g_steal_pointer(&tcAlias));
-    }
+    priv->threadContextAliases = g_slist_prepend(priv->threadContextAliases,
+                                                 g_steal_pointer(&tcAlias));
 
     *tcProps = g_steal_pointer(&props);
     return 0;
