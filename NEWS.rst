@@ -19,6 +19,12 @@ v9.1.0 (unreleased)
 
 * **Improvements**
 
+  * RPM packaging changes
+
+    The ``libvirt-daemon`` subpackage is split into several new subpackages,
+    allowing installation of a modular daemon configuration without the
+    traditional monolithic libvirtd.
+
 * **Bug fixes**
 
 
