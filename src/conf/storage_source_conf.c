@@ -1399,6 +1399,7 @@ virStorageSourceFDTupleFinalize(GObject *object)
 
     g_free(fdt->fds);
     g_free(fdt->testfds);
+    g_free(fdt->selinuxLabel);
     G_OBJECT_CLASS(vir_storage_source_fd_tuple_parent_class)->finalize(object);
 }
 

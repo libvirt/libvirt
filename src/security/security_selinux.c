@@ -1741,6 +1741,19 @@ virSecuritySELinuxRestoreImageLabelSingle(virSecurityManager *mgr,
     if (src->readonly || src->shared)
         return 0;
 
+    if (virStorageSourceIsFD(src)) {
+        if (migrated)
+            return 0;
+
+        if (!src->fdtuple ||
+            !src->fdtuple->selinuxLabel ||
+            src->fdtuple->nfds == 0)
+            return 0;
+
+        ignore_value(virSecuritySELinuxFSetFilecon(src->fdtuple->fds[0],
+                                                   src->fdtuple->selinuxLabel));
+        return 0;
+    }
 
     /* If we have a shared FS and are doing migration, we must not change
      * ownership, because that kills access on the destination host which is
@@ -1888,7 +1901,24 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManager *mgr,
         path = vfioGroupDev;
     }
 
-    ret = virSecuritySELinuxSetFilecon(mgr, path, use_label, remember);
+    if (virStorageSourceIsFD(src)) {
+        /* We can only really do labelling when we have the FD as the path
+         * may not be accessible for us */
+        if (!src->fdtuple || src->fdtuple->nfds == 0)
+            return 0;
+
+        /* force a writable label for the image if requested */
+        if (src->fdtuple->writable && secdef->imagelabel)
+            use_label = secdef->imagelabel;
+
+        /* store the existing selinux label for the image */
+        if (!src->fdtuple->selinuxLabel)
+            fgetfilecon_raw(src->fdtuple->fds[0], &src->fdtuple->selinuxLabel);
+
+        ret = virSecuritySELinuxFSetFilecon(src->fdtuple->fds[0], use_label);
+    } else {
+        ret = virSecuritySELinuxSetFilecon(mgr, path, use_label, remember);
+    }
 
     if (ret == 1 && !disk_seclabel) {
         /* If we failed to set a label, but virt_use_nfs let us

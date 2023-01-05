@@ -269,6 +269,9 @@ struct _virStorageSourceFDTuple {
 
     /* connection this FD tuple is associated with for auto-closing */
     virConnect *conn;
+
+    /* original selinux label when we relabel the image */
+    char *selinuxLabel;
 };
 G_DECLARE_FINAL_TYPE(virStorageSourceFDTuple, vir_storage_source_fd_tuple, VIR, STORAGE_SOURCE_FD_TUPLE, GObject);
 
