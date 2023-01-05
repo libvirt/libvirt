@@ -881,6 +881,10 @@ virSecurityDACSetImageLabelInternal(virSecurityManager *mgr,
     if (!priv->dynamicOwnership)
         return 0;
 
+    /* Images passed via FD don't need DAC seclabel change */
+    if (virStorageSourceIsFD(src))
+        return 0;
+
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
     if (secdef && !secdef->relabel)
         return 0;
@@ -990,6 +994,10 @@ virSecurityDACRestoreImageLabelSingle(virSecurityManager *mgr,
      * not work for clustered filesystems, since we can't see running VMs using
      * the file on other nodes. Safest bet is thus to skip the restore step. */
     if (src->readonly || src->shared)
+        return 0;
+
+    /* Images passed via FD don't need DAC seclabel change */
+    if (virStorageSourceIsFD(src))
         return 0;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
@@ -1112,10 +1120,14 @@ virSecurityDACMoveImageMetadata(virSecurityManager *mgr,
     if (!priv->dynamicOwnership)
         return 0;
 
-    if (src && virStorageSourceIsLocalStorage(src))
+    if (src &&
+        virStorageSourceIsLocalStorage(src) &&
+        !virStorageSourceIsFD(src))
         data.src = src->path;
 
-    if (dst && virStorageSourceIsLocalStorage(dst))
+    if (dst &&
+        virStorageSourceIsLocalStorage(dst) &&
+        !virStorageSourceIsFD(dst))
         data.dst = dst->path;
 
     if (!data.src)
