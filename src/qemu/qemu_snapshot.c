@@ -3103,9 +3103,9 @@ qemuSnapshotDeleteValidate(virDomainObj *vm,
     }
 
     if (virDomainSnapshotIsExternal(snap) &&
-        !(flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)) {
+        (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("deletion of external disk snapshots not supported"));
+                       _("deletion of external disk snapshots with children not supported"));
         return -1;
     }
 
