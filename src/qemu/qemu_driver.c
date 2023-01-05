@@ -10499,6 +10499,13 @@ qemuDomainBlockPeek(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (virStorageSourceIsFD(disk->src)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("peeking is not supported for FD passed images"));
+        goto cleanup;
+
+    }
+
     if (qemuDomainStorageFileInit(driver, vm, disk->src, NULL) < 0)
         goto cleanup;
 
@@ -10855,6 +10862,12 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         virReportError(VIR_ERR_INVALID_ARG,
                        _("disk '%s' does not currently have a source assigned"),
                        path);
+        goto endjob;
+    }
+
+    if (virStorageSourceIsFD(disk->src)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("block info is not supported for FD passed disk image"));
         goto endjob;
     }
 
@@ -14569,6 +14582,12 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
     if (!qemuDomainDiskBlockJobIsSupported(disk))
         goto endjob;
 
+    if (virStorageSourceIsFD(mirror)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("copy to a FD passed disk source is not yet supported"));
+        goto endjob;
+    }
+
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN &&
         virDomainDiskDefSourceLUNValidate(mirror) < 0)
         goto endjob;
@@ -17677,6 +17696,9 @@ qemuDomainGetStatsOneBlockFallback(virQEMUDriver *driver,
                                    size_t block_idx)
 {
     if (virStorageSourceIsEmpty(src))
+        return 0;
+
+    if (virStorageSourceIsFD(src))
         return 0;
 
     if (qemuStorageLimitsRefresh(driver, cfg, dom, src, true) <= 0) {
