@@ -263,7 +263,7 @@ virDomainCapsEnumClear(virDomainCapsEnum *capsEnum)
 }
 
 
-static int
+static void
 virDomainCapsEnumFormat(virBuffer *buf,
                         const virDomainCapsEnum *capsEnum,
                         const char *capsEnumName,
@@ -274,7 +274,7 @@ virDomainCapsEnumFormat(virBuffer *buf,
     size_t i;
 
     if (!capsEnum->report)
-        return 0;
+        return;
 
     virBufferAsprintf(&attrBuf, " name='%s'", capsEnumName);
 
@@ -289,7 +289,6 @@ virDomainCapsEnumFormat(virBuffer *buf,
     }
 
     virXMLFormatElement(buf, "enum", &attrBuf, &childBuf);
-    return 0;
 }
 
 
