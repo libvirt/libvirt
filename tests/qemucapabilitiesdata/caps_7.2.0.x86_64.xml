@@ -201,6 +201,7 @@
   <flag name='query-stats-schemas'/>
   <flag name='thread-context'/>
   <flag name='screenshot-format-png'/>
+  <flag name='netdev.stream'/>
   <version>7002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100245</microcodeVersion>

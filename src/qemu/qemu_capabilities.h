@@ -662,6 +662,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 440 */
     QEMU_CAPS_MACHINE_HPET, /* the HPET timer is configured via -machine, rather than -no-hpet */
+    QEMU_CAPS_NETDEV_STREAM, /* -netdev stream */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

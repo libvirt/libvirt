@@ -683,6 +683,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 440 */
               "machine-hpet", /* QEMU_CAPS_MACHINE_HPET */
+              "netdev.stream", /* QEMU_CAPS_NETDEV_STREAM */
     );
 
 
@@ -1550,6 +1551,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "migrate-set-parameters/arg-type/block-bitmap-mapping/bitmaps/transform", QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING },
     { "nbd-server-start/arg-type/tls-creds", QEMU_CAPS_NBD_TLS },
     { "nbd-server-add/arg-type/bitmap", QEMU_CAPS_NBD_BITMAP },
+    { "netdev_add/arg-type/+stream", QEMU_CAPS_NETDEV_STREAM },
     { "netdev_add/arg-type/+vhost-vdpa", QEMU_CAPS_NETDEV_VHOST_VDPA },
     /* JSON support for -netdev was introduced for the 'dgram' netdev type */
     { "netdev_add/arg-type/type/^dgram", QEMU_CAPS_NETDEV_JSON },
