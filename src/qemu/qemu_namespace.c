@@ -776,10 +776,12 @@ qemuDomainUnshareNamespace(virQEMUDriverConfig *cfg,
             goto cleanup;
     }
 
+#if defined(__linux__)
     if (umount("/dev") < 0) {
         virReportSystemError(errno, "%s", _("failed to umount devfs on /dev"));
         return -1;
     }
+#endif /* !defined(__linux__) */
 
     if (virFileMoveMount(devPath, "/dev") < 0)
         goto cleanup;
