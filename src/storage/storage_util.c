@@ -3784,12 +3784,10 @@ getNewStyleBlockDevice(const char *lun_path,
     if (virDirOpen(&block_dir, block_path) < 0)
         return -1;
 
-    while ((direrr = virDirRead(block_dir, &block_dirent, block_path)) > 0) {
+    if ((direrr = virDirRead(block_dir, &block_dirent, block_path)) > 0) {
         *block_device = g_strdup(block_dirent->d_name);
 
         VIR_DEBUG("Block device is '%s'", *block_device);
-
-        break;
     }
 
     if (direrr < 0)

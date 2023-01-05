@@ -1432,15 +1432,11 @@ virHostHasIOMMU(void)
 {
     g_autoptr(DIR) iommuDir = NULL;
     struct dirent *iommuGroup = NULL;
-    int direrr;
 
     if (virDirOpenQuiet(&iommuDir, "/sys/kernel/iommu_groups/") < 0)
         return false;
 
-    while ((direrr = virDirRead(iommuDir, &iommuGroup, NULL)) > 0)
-        break;
-
-    if (direrr < 0 || !iommuGroup)
+    if (virDirRead(iommuDir, &iommuGroup, NULL) < 0 || !iommuGroup)
         return false;
 
     return true;
