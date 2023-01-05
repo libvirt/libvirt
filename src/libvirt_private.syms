@@ -1780,6 +1780,7 @@ virStorageFileProbeGetMetadata;
 # storage_file/storage_source.h
 virStorageSourceAccess;
 virStorageSourceChainLookup;
+virStorageSourceChainLookupBySource;
 virStorageSourceChown;
 virStorageSourceCreate;
 virStorageSourceDeinit;

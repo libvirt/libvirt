@@ -47,6 +47,12 @@ virStorageSourceChainLookup(virStorageSource *chain,
                             virStorageSource **parent)
     ATTRIBUTE_NONNULL(1);
 
+virStorageSource *
+virStorageSourceChainLookupBySource(virStorageSource *chain,
+                                    virStorageSource *base,
+                                    virStorageSource **parent)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 int
 virStorageSourceUpdatePhysicalSize(virStorageSource *src,
                                    int fd,

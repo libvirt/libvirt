@@ -322,6 +322,46 @@ virStorageSourceChainLookup(virStorageSource *chain,
 }
 
 
+/**
+ * virStorageSourceChainLookupBySource:
+ * @chain: chain top to look in
+ * @base: storage source to look for in @chain
+ * @parent: Filled with parent virStorageSource of the returned value if non-NULL.
+ *
+ * Looks up a storage source definition corresponding to @base in @chain.
+ *
+ * Returns virStorageSource withing chain or NULL if not found.
+ */
+virStorageSource *
+virStorageSourceChainLookupBySource(virStorageSource *chain,
+                                    virStorageSource *base,
+                                    virStorageSource **parent)
+{
+    virStorageSource *prev = NULL;
+
+    if (parent)
+        *parent = NULL;
+
+    while (virStorageSourceIsBacking(chain)) {
+        if (virStorageSourceIsSameLocation(chain, base))
+            break;
+
+        prev = chain;
+        chain = chain->backingStore;
+    }
+
+    if (!virStorageSourceIsBacking(chain)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("could not find base disk source in disk source chain"));
+        return NULL;
+    }
+
+    if (parent)
+        *parent = prev;
+    return chain;
+}
+
+
 static virStorageSource *
 virStorageSourceNewFromBackingRelative(virStorageSource *parent,
                                        const char *rel)
