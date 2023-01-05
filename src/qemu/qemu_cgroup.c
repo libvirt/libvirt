@@ -206,7 +206,9 @@ qemuSetupImageCgroupInternal(virDomainObj *vm,
         if (qemuSetupImagePathCgroup(vm, QEMU_DEV_VFIO, false) < 0)
             return -1;
     } else {
-        if (!src->path || !virStorageSourceIsLocalStorage(src)) {
+        if (!src->path ||
+            !virStorageSourceIsLocalStorage(src) ||
+            virStorageSourceIsFD(src)) {
             VIR_DEBUG("Not updating cgroups for disk path '%s', type: %s",
                       NULLSTR(src->path), virStorageTypeToString(src->type));
             return 0;
