@@ -337,10 +337,10 @@ daemonStreamFilter(virNetServerClient *client,
 
 
 /*
- * @conn: a connection object to associate the stream with
+ * @client: a locked client object
  * @header: the method call to associate with the stream
  *
- * Creates a new stream for this conn
+ * Creates a new stream for this client.
  *
  * Returns a new stream object, or NULL upon OOM
  */
