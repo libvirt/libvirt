@@ -269,18 +269,14 @@ virDomainCapsEnumFormat(virBuffer *buf,
                         const char *capsEnumName,
                         virDomainCapsValToStr valToStr)
 {
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     size_t i;
 
     if (!capsEnum->report)
         return 0;
 
-    virBufferAsprintf(buf, "<enum name='%s'", capsEnumName);
-    if (!capsEnum->values) {
-        virBufferAddLit(buf, "/>\n");
-        return 0;
-    }
-    virBufferAddLit(buf, ">\n");
-    virBufferAdjustIndent(buf, 2);
+    virBufferAsprintf(&attrBuf, " name='%s'", capsEnumName);
 
     for (i = 0; i < sizeof(capsEnum->values) * CHAR_BIT; i++) {
         const char *val;
@@ -289,11 +285,10 @@ virDomainCapsEnumFormat(virBuffer *buf,
             continue;
 
         if ((val = (valToStr)(i)))
-            virBufferAsprintf(buf, "<value>%s</value>\n", val);
+            virBufferAsprintf(&childBuf, "<value>%s</value>\n", val);
     }
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</enum>\n");
 
+    virXMLFormatElement(buf, "enum", &attrBuf, &childBuf);
     return 0;
 }
 
