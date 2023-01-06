@@ -3841,23 +3841,19 @@ struct remoteAuthInteractState {
 static int remoteAuthFillFromConfig(virConnectPtr conn,
                                     struct remoteAuthInteractState *state)
 {
-    int ret = -1;
     int ninteract;
     const char *credname;
-    char *path = NULL;
+    g_autofree char *path = NULL;
 
     VIR_DEBUG("Trying to fill auth parameters from config file");
 
     if (!state->config) {
         if (virAuthGetConfigFilePath(conn, &path) < 0)
-            goto cleanup;
-        if (path == NULL) {
-            ret = 0;
-            goto cleanup;
-        }
-
+            return -1;
+        if (path == NULL)
+            return 0;
         if (!(state->config = virAuthConfigNew(path)))
-            goto cleanup;
+            return -1;
     }
 
     for (ninteract = 0; state->interact[ninteract].id != 0; ninteract++) {
@@ -3887,7 +3883,7 @@ static int remoteAuthFillFromConfig(virConnectPtr conn,
                                 VIR_URI_SERVER(conn->uri),
                                 credname,
                                 &value) < 0)
-            goto cleanup;
+            return -1;
 
         if (value) {
             state->interact[ninteract].result = value;
@@ -3895,11 +3891,7 @@ static int remoteAuthFillFromConfig(virConnectPtr conn,
         }
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(path);
-    return ret;
+    return 0;
 }
 
 
