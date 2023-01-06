@@ -338,9 +338,8 @@ int
 vmwareVmxPath(virDomainDef *vmdef, char **vmxPath)
 {
     virDomainDiskDef *disk = NULL;
-    char *directoryName = NULL;
-    char *fileName = NULL;
-    int ret = -1;
+    g_autofree char *directoryName = NULL;
+    g_autofree char *fileName = NULL;
     size_t i;
     const char *src;
 
@@ -355,7 +354,7 @@ vmwareVmxPath(virDomainDef *vmdef, char **vmxPath)
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Domain XML doesn't contain any disks, "
                          "cannot deduce datastore and path for VMX file"));
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < vmdef->ndisks; ++i) {
@@ -370,7 +369,7 @@ vmwareVmxPath(virDomainDef *vmdef, char **vmxPath)
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Domain XML doesn't contain any file-based harddisks, "
                          "cannot deduce datastore and path for VMX file"));
-        goto cleanup;
+        return -1;
     }
 
     src = virDomainDiskGetSource(disk);
@@ -378,27 +377,22 @@ vmwareVmxPath(virDomainDef *vmdef, char **vmxPath)
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("First file-based harddisk has no source, cannot "
                          "deduce datastore and path for VMX file"));
-        goto cleanup;
+        return -1;
     }
 
     if (vmwareParsePath(src, &directoryName, &fileName) < 0)
-        goto cleanup;
+        return -1;
 
     if (!virStringHasCaseSuffix(fileName, ".vmdk")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting source '%s' of first file-based harddisk "
                          "to be a VMDK image"), src);
-        goto cleanup;
+        return -1;
     }
 
     vmwareConstructVmxPath(directoryName, vmdef->name, vmxPath);
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(directoryName);
-    VIR_FREE(fileName);
-    return ret;
+    return 0;
 }
 
 int
@@ -436,8 +430,8 @@ vmwareMakePath(char *srcDir, char *srcName, char *srcExt, char **outpath)
 int
 vmwareExtractPid(const char * vmxPath)
 {
-    char *vmxDir = NULL;
-    char *logFilePath = NULL;
+    g_autofree char *vmxDir = NULL;
+    g_autofree char *logFilePath = NULL;
     FILE *logFile = NULL;
     char line[1024];
     char *tmp = NULL;
@@ -473,8 +467,6 @@ vmwareExtractPid(const char * vmxPath)
     }
 
  cleanup:
-    VIR_FREE(vmxDir);
-    VIR_FREE(logFilePath);
     VIR_FORCE_FCLOSE(logFile);
     return pid_value;
 }
