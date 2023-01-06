@@ -474,7 +474,7 @@ static gnutls_x509_crt_t virNetTLSContextLoadCertFromFile(const char *certFile,
 {
     gnutls_datum_t data;
     gnutls_x509_crt_t cert = NULL;
-    char *buf = NULL;
+    g_autofree char *buf = NULL;
     int ret = -1;
 
     VIR_DEBUG("isServer %d certFile %s",
@@ -506,7 +506,6 @@ static gnutls_x509_crt_t virNetTLSContextLoadCertFromFile(const char *certFile,
     if (ret != 0) {
         g_clear_pointer(&cert, gnutls_x509_crt_deinit);
     }
-    VIR_FREE(buf);
     return cert;
 }
 
@@ -517,14 +516,13 @@ static int virNetTLSContextLoadCACertListFromFile(const char *certFile,
                                                   size_t *ncerts)
 {
     gnutls_datum_t data;
-    char *buf = NULL;
-    int ret = -1;
+    g_autofree char *buf = NULL;
 
     *ncerts = 0;
     VIR_DEBUG("certFile %s", certFile);
 
     if (virFileReadAll(certFile, (1<<16), &buf) < 0)
-        goto cleanup;
+        return -1;
 
     data.data = (unsigned char *)buf;
     data.size = strlen(buf);
@@ -533,15 +531,11 @@ static int virNetTLSContextLoadCACertListFromFile(const char *certFile,
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Unable to import CA certificate list %s"),
                        certFile);
-        goto cleanup;
+        return -1;
     }
     *ncerts = certMax;
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(buf);
-    return ret;
+    return 0;
 }
 
 

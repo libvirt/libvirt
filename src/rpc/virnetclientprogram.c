@@ -208,7 +208,7 @@ int virNetClientProgramDispatch(virNetClientProgram *prog,
                                 virNetMessage *msg)
 {
     virNetClientProgramEvent *event;
-    char *evdata;
+    g_autofree char *evdata = NULL;
 
     VIR_DEBUG("prog=%d ver=%d type=%d status=%d serial=%d proc=%d",
               msg->header.prog, msg->header.vers, msg->header.type,
@@ -250,14 +250,12 @@ int virNetClientProgramDispatch(virNetClientProgram *prog,
     evdata = g_new0(char, event->msg_len);
 
     if (virNetMessageDecodePayload(msg, event->msg_filter, evdata) < 0)
-        goto cleanup;
+        return 0;
 
     event->func(prog, client, evdata, prog->eventOpaque);
 
     xdr_free(event->msg_filter, evdata);
 
- cleanup:
-    VIR_FREE(evdata);
     return 0;
 }
 
