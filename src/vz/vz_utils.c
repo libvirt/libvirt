@@ -151,7 +151,8 @@ vzInitCaps(unsigned long vzVersion, struct _vzCapabilities *vzCaps)
 int
 vzInitVersion(struct _vzDriver *driver)
 {
-    char *output, *sVer, *tmp;
+    g_autofree char *output = NULL;
+    char *sVer, *tmp;
     const char *searchStr = "prlsrvctl version ";
     int ret = -1;
 
@@ -159,12 +160,12 @@ vzInitVersion(struct _vzDriver *driver)
 
     if (!output) {
         vzParseError();
-        goto cleanup;
+        return -1;
     }
 
     if (!(sVer = strstr(output, searchStr))) {
         vzParseError();
-        goto cleanup;
+        return -1;
     }
 
     sVer = sVer + strlen(searchStr);
@@ -173,26 +174,23 @@ vzInitVersion(struct _vzDriver *driver)
      * In libvirt we handle only first two numbers. */
     if (!(tmp = strchr(sVer, '.'))) {
         vzParseError();
-        goto cleanup;
+        return -1;
     }
 
     if (!(tmp = strchr(tmp + 1, '.'))) {
         vzParseError();
-        goto cleanup;
+        return -1;
     }
 
     tmp[0] = '\0';
     if (virStringParseVersion(&(driver->vzVersion), sVer, true) < 0) {
         vzParseError();
-        goto cleanup;
+        return -1;
     }
 
     vzInitCaps(driver->vzVersion, &driver->vzCaps);
-    ret = 0;
 
- cleanup:
-    VIR_FREE(output);
-    return ret;
+    return 0;
 }
 
 static int
