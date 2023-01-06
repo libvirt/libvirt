@@ -879,24 +879,23 @@ udevGetIfaceDefVlan(struct udev *udev G_GNUC_UNUSED,
                     const char *name,
                     virInterfaceDef *ifacedef)
 {
-    char *procpath = NULL;
-    char *buf = NULL;
+    g_autofree char *procpath = NULL;
+    g_autofree char *buf = NULL;
     char *vid_pos, *dev_pos;
     size_t vid_len, dev_len;
     const char *vid_prefix = "VID: ";
     const char *dev_prefix = "\nDevice: ";
-    int ret = -1;
 
     procpath = g_strdup_printf("/proc/net/vlan/%s", name);
 
     if (virFileReadAll(procpath, BUFSIZ, &buf) < 0)
-        goto cleanup;
+        return -1;
 
     if ((vid_pos = strstr(buf, vid_prefix)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to find the VID for the VLAN device '%s'"),
                        name);
-        goto cleanup;
+        return -1;
     }
     vid_pos += strlen(vid_prefix);
 
@@ -905,14 +904,14 @@ udevGetIfaceDefVlan(struct udev *udev G_GNUC_UNUSED,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to find the VID for the VLAN device '%s'"),
                        name);
-        goto cleanup;
+        return -1;
     }
 
     if ((dev_pos = strstr(vid_pos + vid_len, dev_prefix)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to find the real device for the VLAN device '%s'"),
                        name);
-        goto cleanup;
+        return -1;
     }
     dev_pos += strlen(dev_prefix);
 
@@ -920,18 +919,13 @@ udevGetIfaceDefVlan(struct udev *udev G_GNUC_UNUSED,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to find the real device for the VLAN device '%s'"),
                        name);
-        goto cleanup;
+        return -1;
     }
 
     ifacedef->data.vlan.tag = g_strndup(vid_pos, vid_len);
     ifacedef->data.vlan.dev_name = g_strndup(dev_pos, dev_len);
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(procpath);
-    VIR_FREE(buf);
-    return ret;
+    return 0;
 }
 
 static virInterfaceDef * ATTRIBUTE_NONNULL(1)
