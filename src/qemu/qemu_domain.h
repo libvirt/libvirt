@@ -550,6 +550,8 @@ struct _qemuDomainJobPrivate {
                                          * should wait for it to finish */
     bool spiceMigrated;                 /* spice migration completed */
     bool dumpCompleted;                 /* dump completed */
+    bool snapshotDelete;                /* indicate that snapshot job is
+                                         * deleting snapshot */
     qemuMigrationParams *migParams;
     GSList *migTempBitmaps;  /* temporary block dirty bitmaps - qemuDomainJobPrivateMigrateTempBitmap */
 };

@@ -197,6 +197,15 @@ qemuDomainObjPrivateXMLFormatMigrateTempBitmap(virBuffer *buf,
 }
 
 
+static void
+qemuDomainFormatJobPrivateSnapshot(virBuffer *buf,
+                                   qemuDomainJobPrivate *priv)
+{
+    if (priv->snapshotDelete)
+        virBufferAddLit(buf, "<snapshotDelete/>\n");
+}
+
+
 static int
 qemuDomainFormatJobPrivate(virBuffer *buf,
                            virDomainJobObj *job,
@@ -213,6 +222,9 @@ qemuDomainFormatJobPrivate(virBuffer *buf,
 
     if (priv->migParams)
         qemuMigrationParamsFormat(buf, priv->migParams);
+
+    if (job->asyncJob == VIR_ASYNC_JOB_SNAPSHOT)
+        qemuDomainFormatJobPrivateSnapshot(buf, priv);
 
     return 0;
 }
@@ -340,6 +352,15 @@ qemuDomainObjPrivateXMLParseMigrateTempBitmap(qemuDomainJobPrivate *jobPriv,
 }
 
 
+static void
+qemuDomainParseJobPrivateSnapshot(xmlXPathContextPtr ctxt,
+                                  qemuDomainJobPrivate *priv)
+{
+    if (virXPathNode("./snapshotDelete", ctxt))
+        priv->snapshotDelete = true;
+}
+
+
 static int
 qemuDomainParseJobPrivate(xmlXPathContextPtr ctxt,
                           virDomainJobObj *job,
@@ -355,6 +376,8 @@ qemuDomainParseJobPrivate(xmlXPathContextPtr ctxt,
 
     if (qemuMigrationParamsParse(ctxt, &priv->migParams) < 0)
         return -1;
+
+    qemuDomainParseJobPrivateSnapshot(ctxt, priv);
 
     return 0;
 }
