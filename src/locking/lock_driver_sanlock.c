@@ -118,9 +118,8 @@ virLockManagerSanlockLoadConfig(virLockManagerSanlockDriver *driver,
                                 const char *configFile)
 {
     g_autoptr(virConf) conf = NULL;
-    int ret = -1;
-    char *user = NULL;
-    char *group = NULL;
+    g_autofree char *user = NULL;
+    g_autofree char *group = NULL;
 
     if (access(configFile, R_OK) == -1) {
         if (errno != ENOENT) {
@@ -136,38 +135,34 @@ virLockManagerSanlockLoadConfig(virLockManagerSanlockDriver *driver,
         return -1;
 
     if (virConfGetValueBool(conf, "auto_disk_leases", &driver->autoDiskLease) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueString(conf, "disk_lease_dir", &driver->autoDiskLeasePath) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueUInt(conf, "host_id", &driver->hostID) < 0)
-        goto cleanup;
+        return -1;
 
     driver->requireLeaseForDisks = !driver->autoDiskLease;
     if (virConfGetValueBool(conf, "require_lease_for_disks", &driver->requireLeaseForDisks) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueUInt(conf, "io_timeout", &driver->io_timeout) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueString(conf, "user", &user) < 0)
-        goto cleanup;
+        return -1;
     if (user &&
         virGetUserID(user, &driver->user) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueString(conf, "group", &group) < 0)
-        goto cleanup;
+        return -1;
     if (group &&
         virGetGroupID(group, &driver->group) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(user);
-    VIR_FREE(group);
-    return ret;
+    return 0;
 }
 
 static int
@@ -778,8 +773,7 @@ virLockManagerSanlockRegisterKillscript(int sock,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *path;
-    char *args = NULL;
-    int ret = -1;
+    g_autofree char *args = NULL;
     int rv;
 
     switch (action) {
@@ -796,7 +790,7 @@ virLockManagerSanlockRegisterKillscript(int sock,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Failure action %s is not supported by sanlock"),
                        virDomainLockFailureTypeToString(action));
-        goto cleanup;
+        return -1;
     }
 
     virBufferEscape(&buf, '\\', "\\ ", "%s", vmuri);
@@ -820,14 +814,14 @@ virLockManagerSanlockRegisterKillscript(int sock,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Sanlock helper path is longer than %d: '%s'"),
                        SANLK_HELPER_PATH_LEN - 1, path);
-        goto cleanup;
+        return -1;
     }
     if (strlen(args) >= SANLK_HELPER_ARGS_LEN) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Sanlock helper arguments are longer than %d:"
                          " '%s'"),
                        SANLK_HELPER_ARGS_LEN - 1, args);
-        goto cleanup;
+        return -1;
     }
 
     if ((rv = sanlock_killpath(sock, 0, path, args)) < 0) {
@@ -842,14 +836,10 @@ virLockManagerSanlockRegisterKillscript(int sock,
                                  _("Failed to register lock failure"
                                    " action"));
         }
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(args);
-    return ret;
+    return 0;
 }
 
 static int virLockManagerSanlockAcquire(virLockManager *lock,
