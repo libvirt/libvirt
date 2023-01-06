@@ -207,7 +207,7 @@
   <version>7002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>
-  <package>v7.2.0-333-g222059a0fc</package>
+  <package>v7.2.0-1550-g79b677d658</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -332,6 +332,7 @@
     <property name='x2apic' type='boolean' value='true' migratable='yes'/>
     <property name='avx512vbmi' type='boolean' value='false'/>
     <property name='avx512vnni' type='boolean' value='false'/>
+    <property name='sgx-edeccssa' type='boolean' value='false'/>
     <property name='vmx-apicv-x2apic' type='boolean' value='false'/>
     <property name='kvm-pv-sched-yield' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-invlpg-exit' type='boolean' value='false'/>
@@ -509,6 +510,7 @@
     <property name='xstore' type='boolean' value='false'/>
     <property name='rtm' type='boolean' value='false'/>
     <property name='kvm-hint-dedicated' type='boolean' value='false'/>
+    <property name='sgx-aex-notify' type='boolean' value='false'/>
     <property name='amx-bf16' type='boolean' value='false'/>
     <property name='lmce' type='boolean' value='false'/>
     <property name='perfctr-nb' type='boolean' value='false'/>
@@ -1675,6 +1677,7 @@
     <property name='x2apic' type='boolean' value='false'/>
     <property name='avx512vbmi' type='boolean' value='false'/>
     <property name='avx512vnni' type='boolean' value='false'/>
+    <property name='sgx-edeccssa' type='boolean' value='false'/>
     <property name='vmx-apicv-x2apic' type='boolean' value='false'/>
     <property name='kvm-pv-sched-yield' type='boolean' value='false'/>
     <property name='vmx-invlpg-exit' type='boolean' value='false'/>
@@ -1852,6 +1855,7 @@
     <property name='xstore' type='boolean' value='false'/>
     <property name='rtm' type='boolean' value='false'/>
     <property name='kvm-hint-dedicated' type='boolean' value='false'/>
+    <property name='sgx-aex-notify' type='boolean' value='false'/>
     <property name='amx-bf16' type='boolean' value='false'/>
     <property name='lmce' type='boolean' value='false'/>
     <property name='perfctr-nb' type='boolean' value='false'/>
