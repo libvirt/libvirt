@@ -281,21 +281,14 @@ static bool
 virNWFilterDefEqual(const virNWFilterDef *def1,
                     virNWFilterDef *def2)
 {
-    bool ret = false;
-    char *xml1 = NULL;
-    char *xml2 = NULL;
+    g_autofree char *xml1 = NULL;
+    g_autofree char *xml2 = NULL;
 
     if (!(xml1 = virNWFilterDefFormat(def1)) ||
         !(xml2 = virNWFilterDefFormat(def2)))
-        goto cleanup;
+        return false;
 
-    ret = STREQ(xml1, xml2);
-
- cleanup:
-    VIR_FREE(xml1);
-    VIR_FREE(xml2);
-
-    return ret;
+    return STREQ(xml1, xml2);
 }
 
 
@@ -573,7 +566,7 @@ virNWFilterObjListLoadConfig(virNWFilterObjList *nwfilters,
 {
     virNWFilterDef *def = NULL;
     virNWFilterObj *obj;
-    char *configFile = NULL;
+    g_autofree char *configFile = NULL;
 
     if (!(configFile = virFileBuildPath(configDir, name, ".xml")))
         goto error;
@@ -597,11 +590,9 @@ virNWFilterObjListLoadConfig(virNWFilterObjList *nwfilters,
     if (!(obj = virNWFilterObjListAssignDef(nwfilters, def)))
         goto error;
 
-    VIR_FREE(configFile);
     return obj;
 
  error:
-    VIR_FREE(configFile);
     virNWFilterDefFree(def);
     return NULL;
 }

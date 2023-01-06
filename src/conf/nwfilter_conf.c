@@ -2375,10 +2375,10 @@ virNWFilterRuleDefFixup(virNWFilterRuleDef *rule)
 static virNWFilterRuleDef *
 virNWFilterRuleParse(xmlNodePtr node)
 {
-    char *action;
-    char *direction;
-    char *prio;
-    char *statematch;
+    g_autofree char *action = NULL;
+    g_autofree char *direction = NULL;
+    g_autofree char *prio = NULL;
+    g_autofree char *statematch = NULL;
     bool found;
     int found_i = 0;
     int priority;
@@ -2476,17 +2476,11 @@ virNWFilterRuleParse(xmlNodePtr node)
 
     virNWFilterRuleDefFixup(ret);
 
- cleanup:
-    VIR_FREE(prio);
-    VIR_FREE(action);
-    VIR_FREE(direction);
-    VIR_FREE(statematch);
-
     return ret;
 
  err_exit:
     g_clear_pointer(&ret, virNWFilterRuleDefFree);
-    goto cleanup;
+    return NULL;
 }
 
 
@@ -2521,7 +2515,7 @@ virNWFilterIsAllowedChain(const char *chainname)
 {
     virNWFilterChainSuffixType i;
     const char *name;
-    char *msg;
+    g_autofree char *msg = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool printed = false;
 
@@ -2559,7 +2553,6 @@ virNWFilterIsAllowedChain(const char *chainname)
     msg = virBufferContentAndReset(&buf);
 
     virReportError(VIR_ERR_INVALID_ARG, "%s", msg);
-    VIR_FREE(msg);
 
     return NULL;
 }
@@ -2570,9 +2563,9 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
 {
     virNWFilterDef *ret;
     xmlNodePtr curr = ctxt->node;
-    char *uuid = NULL;
-    char *chain = NULL;
-    char *chain_pri_s = NULL;
+    g_autofree char *uuid = NULL;
+    g_autofree char *chain = NULL;
+    g_autofree char *chain_pri_s = NULL;
     virNWFilterEntry *entry;
     int chain_priority;
     const char *name_prefix;
@@ -2641,7 +2634,6 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
                            "%s", _("malformed uuid element"));
             goto cleanup;
         }
-        VIR_FREE(uuid);
     }
 
     curr = curr->children;
@@ -2671,16 +2663,10 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
         curr = curr->next;
     }
 
-    VIR_FREE(chain);
-    VIR_FREE(chain_pri_s);
-
     return ret;
 
  cleanup:
     virNWFilterDefFree(ret);
-    VIR_FREE(chain);
-    VIR_FREE(uuid);
-    VIR_FREE(chain_pri_s);
     return NULL;
 }
 
@@ -2707,24 +2693,21 @@ virNWFilterSaveConfig(const char *configDir,
                       virNWFilterDef *def)
 {
     int ret = -1;
-    char *xml;
+    g_autofree char *xml = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *configFile = NULL;
+    g_autofree char *configFile = NULL;
 
     if (!(xml = virNWFilterDefFormat(def)))
-        goto cleanup;
+        return -1;
 
     if (!(configFile = virFileBuildPath(configDir, def->name, ".xml")))
-        goto cleanup;
+        return -1;
 
     virUUIDFormat(def->uuid, uuidstr);
     ret = virXMLSaveFile(configFile,
                          virXMLPickShellSafeComment(def->name, uuidstr),
                          "nwfilter-edit", xml);
 
- cleanup:
-    VIR_FREE(configFile);
-    VIR_FREE(xml);
     return ret;
 }
 
@@ -2733,23 +2716,19 @@ int
 virNWFilterDeleteDef(const char *configDir,
                      virNWFilterDef *def)
 {
-    int ret = -1;
-    char *configFile = NULL;
+    g_autofree char *configFile = NULL;
 
     if (!(configFile = virFileBuildPath(configDir, def->name, ".xml")))
-        goto error;
+        return -1;
 
     if (unlink(configFile) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot remove config for %s"),
                        def->name);
-        goto error;
+        return -1;
     }
 
-    ret = 0;
- error:
-    VIR_FREE(configFile);
-    return ret;
+    return 0;
 }
 
 

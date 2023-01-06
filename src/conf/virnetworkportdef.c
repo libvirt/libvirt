@@ -415,22 +415,18 @@ virNetworkPortDefDeleteStatus(virNetworkPortDef *def,
                               const char *dir)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *path;
-    int ret = -1;
+    g_autofree char *path = NULL;
 
     virUUIDFormat(def->uuid, uuidstr);
 
     if (!(path = virNetworkPortDefConfigFile(dir, uuidstr)))
-        goto cleanup;
+        return -1;
 
     if (unlink(path) < 0 && errno != ENOENT) {
         virReportSystemError(errno,
                              _("Unable to delete %s"), path);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(path);
-    return ret;
+    return 0;
 }

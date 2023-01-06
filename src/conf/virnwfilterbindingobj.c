@@ -146,8 +146,8 @@ int
 virNWFilterBindingObjSave(const virNWFilterBindingObj *obj,
                           const char *statusDir)
 {
-    char *filename;
-    char *xml = NULL;
+    g_autofree char *filename = NULL;
+    g_autofree char *xml = NULL;
     int ret = -1;
 
     if (!(filename = virNWFilterBindingObjConfigFile(statusDir,
@@ -155,22 +155,19 @@ virNWFilterBindingObjSave(const virNWFilterBindingObj *obj,
         return -1;
 
     if (!(xml = virNWFilterBindingObjFormat(obj)))
-        goto cleanup;
+        return -1;
 
     if (g_mkdir_with_parents(statusDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("cannot create config directory '%s'"),
                              statusDir);
-        goto cleanup;
+        return -1;
     }
 
     ret = virXMLSaveFile(filename,
                          obj->def->portdevname, "nwfilter-binding-create",
                          xml);
 
- cleanup:
-    VIR_FREE(xml);
-    VIR_FREE(filename);
     return ret;
 }
 
@@ -179,8 +176,7 @@ int
 virNWFilterBindingObjDelete(const virNWFilterBindingObj *obj,
                             const char *statusDir)
 {
-    char *filename;
-    int ret = -1;
+    g_autofree char *filename = NULL;
 
     if (!(filename = virNWFilterBindingObjConfigFile(statusDir,
                                                      obj->def->portdevname)))
@@ -191,14 +187,10 @@ virNWFilterBindingObjDelete(const virNWFilterBindingObj *obj,
         virReportSystemError(errno,
                              _("Unable to remove status '%s' for nwfilter binding %s'"),
                              filename, obj->def->portdevname);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(filename);
-    return ret;
+    return 0;
 }
 
 

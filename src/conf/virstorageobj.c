@@ -1088,9 +1088,8 @@ static int
 getSCSIHostNumber(virStorageAdapterSCSIHost *scsi_host,
                   unsigned int *hostnum)
 {
-    int ret = -1;
     unsigned int num;
-    char *name = NULL;
+    g_autofree char *name = NULL;
 
     if (scsi_host->has_parent) {
         virPCIDeviceAddress *addr = &scsi_host->parentaddr;
@@ -1101,20 +1100,17 @@ getSCSIHostNumber(virStorageAdapterSCSIHost *scsi_host,
                                                     addr->slot,
                                                     addr->function,
                                                     unique_id)))
-            goto cleanup;
+            return -1;
         if (virSCSIHostGetNumber(name, &num) < 0)
-            goto cleanup;
+            return -1;
     } else {
         if (virSCSIHostGetNumber(scsi_host->name, &num) < 0)
-            goto cleanup;
+            return -1;
     }
 
     *hostnum = num;
-    ret = 0;
 
- cleanup:
-    VIR_FREE(name);
-    return ret;
+    return 0;
 }
 
 
@@ -1147,9 +1143,9 @@ matchFCHostToSCSIHost(virStorageAdapterFCHost *fchost,
 {
     virConnectPtr conn = NULL;
     bool ret = false;
-    char *name = NULL;
-    char *scsi_host_name = NULL;
-    char *parent_name = NULL;
+    g_autofree char *name = NULL;
+    g_autofree char *scsi_host_name = NULL;
+    g_autofree char *parent_name = NULL;
 
     /* If we have a parent defined, get its hostnum, and compare to the
      * scsi_hostnum. If they are the same, then we have a match
@@ -1202,9 +1198,6 @@ matchFCHostToSCSIHost(virStorageAdapterFCHost *fchost,
      */
 
  cleanup:
-    VIR_FREE(name);
-    VIR_FREE(parent_name);
-    VIR_FREE(scsi_host_name);
     virConnectClose(conn);
     return ret;
 }

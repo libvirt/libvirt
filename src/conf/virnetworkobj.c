@@ -260,8 +260,7 @@ virNetworkObjMacMgrAdd(virNetworkObj *obj,
                        const virMacAddr *mac)
 {
     char macStr[VIR_MAC_STRING_BUFLEN];
-    char *file = NULL;
-    int ret = -1;
+    g_autofree char *file = NULL;
 
     if (!obj->macmap)
         return 0;
@@ -269,18 +268,15 @@ virNetworkObjMacMgrAdd(virNetworkObj *obj,
     virMacAddrFormat(mac, macStr);
 
     if (!(file = virMacMapFileName(dnsmasqStateDir, obj->def->bridge)))
-        goto cleanup;
+        return -1;
 
     if (virMacMapAdd(obj->macmap, domain, macStr) < 0)
-        goto cleanup;
+        return -1;
 
     if (virMacMapWriteFile(obj->macmap, file) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(file);
-    return ret;
+    return 0;
 }
 
 
@@ -291,8 +287,7 @@ virNetworkObjMacMgrDel(virNetworkObj *obj,
                        const virMacAddr *mac)
 {
     char macStr[VIR_MAC_STRING_BUFLEN];
-    char *file = NULL;
-    int ret = -1;
+    g_autofree char *file = NULL;
 
     if (!obj->macmap)
         return 0;
@@ -300,18 +295,15 @@ virNetworkObjMacMgrDel(virNetworkObj *obj,
     virMacAddrFormat(mac, macStr);
 
     if (!(file = virMacMapFileName(dnsmasqStateDir, obj->def->bridge)))
-        goto cleanup;
+        return -1;
 
     if (virMacMapRemove(obj->macmap, domain, macStr) < 0)
-        goto cleanup;
+        return -1;
 
     if (virMacMapWriteFile(obj->macmap, file) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(file);
-    return ret;
+    return 0;
 }
 
 
@@ -819,20 +811,16 @@ virNetworkObjSaveStatus(const char *statusDir,
                         virNetworkObj *obj,
                         virNetworkXMLOption *xmlopt)
 {
-    int ret = -1;
     int flags = 0;
-    char *xml;
+    g_autofree char *xml = NULL;
 
     if (!(xml = virNetworkObjFormat(obj, xmlopt, flags)))
-        goto cleanup;
+        return -1;
 
     if (virNetworkSaveXML(statusDir, obj->def, xml))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(xml);
-    return ret;
+    return 0;
 }
 
 
@@ -953,29 +941,30 @@ virNetworkLoadConfig(virNetworkObjList *nets,
                      const char *name,
                      virNetworkXMLOption *xmlopt)
 {
-    char *configFile = NULL, *autostartLink = NULL;
+    g_autofree char *configFile = NULL;
+    g_autofree char *autostartLink = NULL;
     g_autoptr(virNetworkDef) def = NULL;
     virNetworkObj *obj;
     bool saveConfig = false;
     int autostart;
 
     if ((configFile = virNetworkConfigFile(configDir, name)) == NULL)
-        goto error;
+        return NULL;
     if ((autostartLink = virNetworkConfigFile(autostartDir, name)) == NULL)
-        goto error;
+        return NULL;
 
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
-        goto error;
+        return NULL;
 
     if (!(def = virNetworkDefParse(NULL, configFile, xmlopt, false)))
-        goto error;
+        return NULL;
 
     if (STRNEQ(name, def->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Network config filename '%s'"
                          " does not match network name '%s'"),
                        configFile, def->name);
-        goto error;
+        return NULL;
     }
 
     switch ((virNetworkForwardType) def->forward.type) {
@@ -1005,7 +994,7 @@ virNetworkLoadConfig(virNetworkObjList *nets,
     case VIR_NETWORK_FORWARD_LAST:
     default:
         virReportEnumRangeError(virNetworkForwardType, def->forward.type);
-        goto error;
+        return NULL;
     }
 
     /* The network didn't have a UUID so we generated a new one, and
@@ -1016,25 +1005,17 @@ virNetworkLoadConfig(virNetworkObjList *nets,
 
     if (saveConfig &&
         virNetworkSaveConfig(configDir, def, xmlopt) < 0) {
-        goto error;
+        return NULL;
     }
 
     if (!(obj = virNetworkObjAssignDef(nets, def, 0)))
-        goto error;
+        return NULL;
 
     def = NULL;
 
     obj->autostart = (autostart == 1);
 
-    VIR_FREE(configFile);
-    VIR_FREE(autostartLink);
-
     return obj;
-
- error:
-    VIR_FREE(configFile);
-    VIR_FREE(autostartLink);
-    return NULL;
 }
 
 
@@ -1110,14 +1091,13 @@ virNetworkObjDeleteConfig(const char *configDir,
                           const char *autostartDir,
                           virNetworkObj *obj)
 {
-    char *configFile = NULL;
-    char *autostartLink = NULL;
-    int ret = -1;
+    g_autofree char *configFile = NULL;
+    g_autofree char *autostartLink = NULL;
 
     if (!(configFile = virNetworkConfigFile(configDir, obj->def->name)))
-        goto error;
+        return -1;
     if (!(autostartLink = virNetworkConfigFile(autostartDir, obj->def->name)))
-        goto error;
+        return -1;
 
     /* Not fatal if this doesn't work */
     unlink(autostartLink);
@@ -1127,15 +1107,10 @@ virNetworkObjDeleteConfig(const char *configDir,
         virReportSystemError(errno,
                              _("cannot remove config file '%s'"),
                              configFile);
-        goto error;
+        return -1;
     }
 
-    ret = 0;
-
- error:
-    VIR_FREE(configFile);
-    VIR_FREE(autostartLink);
-    return ret;
+    return 0;
 }
 
 
