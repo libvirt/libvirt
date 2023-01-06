@@ -347,6 +347,9 @@ BuildRequires: libssh2-devel >= 1.3.0
 %if %{with_netcf}
 BuildRequires: netcf-devel >= 0.2.2
 %endif
+%if (0%{?fedora} >= 36) || (0%{?rhel} >= 9)
+BuildRequires: passt
+%endif
 %if %{with_esx}
 BuildRequires: libcurl-devel
 %endif
@@ -717,6 +720,9 @@ Requires: lzop
 Requires: xz
 Requires: systemd-container
 Requires: swtpm-tools
+    %if (0%{?fedora} >= 36) || (0%{?rhel} >= 9)
+Recommends: passt
+    %endif
 
 %description daemon-driver-qemu
 The qemu driver plugin for the libvirtd daemon, providing
@@ -1968,6 +1974,7 @@ exit 0
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.qemu
 %ghost %dir %{_rundir}/libvirt/qemu/
 %ghost %dir %{_rundir}/libvirt/qemu/dbus/
+%ghost %dir %{_rundir}/libvirt/qemu/passt/
 %ghost %dir %{_rundir}/libvirt/qemu/slirp/
 %ghost %dir %{_rundir}/libvirt/qemu/swtpm/
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/
