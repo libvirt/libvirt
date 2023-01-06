@@ -1733,6 +1733,8 @@ virNWFilterSnoopLeaseFileLoad(void)
     fp = fopen(LEASEFILE, "r");
     time(&now);
     while (fp && fgets(line, sizeof(line), fp)) {
+        unsigned long long timeout;
+
         if (line[strlen(line)-1] != '\n') {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("virNWFilterSnoopLeaseFileLoad lease file "
@@ -1742,13 +1744,13 @@ virNWFilterSnoopLeaseFileLoad(void)
         ln++;
         /* key len 54 = "VMUUID"+'-'+"MAC" */
         if (sscanf(line, "%llu %54s %15s %15s",
-                   (unsigned long long *) &ipl.timeout,
-                   ifkey, ipstr, srvstr) < 4) {
+                   &timeout, ifkey, ipstr, srvstr) < 4) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("virNWFilterSnoopLeaseFileLoad lease file "
                              "line %d corrupt"), ln);
             break;
         }
+        ipl.timeout = timeout;
         if (ipl.timeout && ipl.timeout < now)
             continue;
         req = virNWFilterSnoopReqGetByIFKey(ifkey);
