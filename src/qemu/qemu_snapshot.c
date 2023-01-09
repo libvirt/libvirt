@@ -3146,12 +3146,13 @@ qemuSnapshotDelete(virDomainObj *vm,
         if (virDomainSnapshotIsExternal(snap) &&
             !(flags & (VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
                        VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY))) {
+            g_autoslist(qemuSnapshotDeleteExternalData) tmpData = NULL;
 
-            externalData = qemuSnapshotDeleteExternalPrepare(vm, snap);
+            /* this also serves as validation whether the snapshot can be deleted */
+            if (!(tmpData = qemuSnapshotDeleteExternalPrepare(vm, snap)))
+                goto endjob;
 
             if (!virDomainObjIsActive(vm)) {
-                g_autoslist(qemuSnapshotDeleteExternalData) delData = NULL;
-
                 if (qemuProcessStart(NULL, driver, vm, NULL, VIR_ASYNC_JOB_SNAPSHOT,
                                      NULL, -1, NULL, NULL,
                                      VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
@@ -3163,10 +3164,12 @@ qemuSnapshotDelete(virDomainObj *vm,
 
                 /* Call the prepare again as some data require that the VM is
                  * running to get everything we need. */
-                delData = g_steal_pointer(&externalData);
-                externalData = qemuSnapshotDeleteExternalPrepare(vm, snap);
+                if (!(externalData = qemuSnapshotDeleteExternalPrepare(vm, snap)))
+                    goto endjob;
             } else {
                 qemuDomainJobPrivate *jobPriv = vm->job->privateData;
+
+                externalData = g_steal_pointer(&tmpData);
 
                 /* If the VM is running we need to indicate that the async snapshot
                  * job is snapshot delete job. */
@@ -3174,9 +3177,6 @@ qemuSnapshotDelete(virDomainObj *vm,
 
                 qemuDomainSaveStatus(vm);
             }
-
-            if (!externalData)
-                goto endjob;
         }
     }
 
