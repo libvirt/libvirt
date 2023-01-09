@@ -10,9 +10,7 @@ subject prefix.
 
 Alternatively, you may send patches using ``git send-email``.
 
-Also, for code motion patches, you may find that
-``git diff --patience`` provides an easier-to-read
-patch. However, the usual workflow of libvirt developer is:
+The usual workflow of libvirt developer is:
 
 ::
 
