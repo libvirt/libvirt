@@ -3205,7 +3205,7 @@ qemuBlockExportAddNBD(virDomainObj *vm,
  * @baseSource: disk source within backing chain to commit data into
  * @topSource: disk source within backing chain with data we will commit
  * @top_parent: disk source that has @topSource as backing disk
- * @bandwidth: bandwidth limit, flags determine the unit
+ * @bandwidth: bandwidth limit in bytes/s
  * @asyncJob: qemu async job type
  * @autofinalize: virTristateBool controlling qemu block job finalization
  * @flags: bitwise-OR of virDomainBlockCommitFlags
@@ -3227,7 +3227,7 @@ qemuBlockCommit(virDomainObj *vm,
                 virStorageSource *baseSource,
                 virStorageSource *topSource,
                 virStorageSource *top_parent,
-                unsigned long bandwidth,
+                unsigned long long bandwidth,
                 virDomainAsyncJob asyncJob,
                 virTristateBool autofinalize,
                 unsigned int flags)
@@ -3243,17 +3243,6 @@ qemuBlockCommit(virDomainObj *vm,
 
     if (virDomainObjCheckActive(vm) < 0)
         return NULL;
-
-    /* Convert bandwidth MiB to bytes, if necessary */
-    if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_BANDWIDTH_BYTES)) {
-        if (bandwidth > LLONG_MAX >> 20) {
-            virReportError(VIR_ERR_OVERFLOW,
-                           _("bandwidth must be less than %llu"),
-                           LLONG_MAX >> 20);
-            return NULL;
-        }
-        bandwidth <<= 20;
-    }
 
     if (!qemuDomainDiskBlockJobIsSupported(disk))
         return NULL;

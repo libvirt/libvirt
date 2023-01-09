@@ -14994,6 +14994,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     virStorageSource *topSource;
     virStorageSource *baseSource = NULL;
     virStorageSource *top_parent = NULL;
+    unsigned long long speed = bandwidth;
     g_autoptr(qemuBlockJobData) job = NULL;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW |
@@ -15011,6 +15012,17 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
+    /* Convert bandwidth MiB to bytes, if necessary */
+    if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_BANDWIDTH_BYTES)) {
+        if (speed > LLONG_MAX >> 20) {
+            virReportError(VIR_ERR_OVERFLOW,
+                           _("bandwidth must be less than %llu"),
+                           LLONG_MAX >> 20);
+            goto endjob;
+        }
+        speed <<= 20;
+    }
+
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
 
@@ -15027,7 +15039,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
         goto endjob;
 
     job = qemuBlockCommit(vm, disk, baseSource, topSource, top_parent,
-                          bandwidth, VIR_ASYNC_JOB_NONE, VIR_TRISTATE_BOOL_YES,
+                          speed, VIR_ASYNC_JOB_NONE, VIR_TRISTATE_BOOL_YES,
                           flags);
     if (job)
         ret = 0;

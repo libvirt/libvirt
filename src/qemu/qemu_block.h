@@ -283,7 +283,7 @@ qemuBlockCommit(virDomainObj *vm,
                 virStorageSource *baseSource,
                 virStorageSource *topSource,
                 virStorageSource *top_parent,
-                unsigned long bandwidth,
+                unsigned long long bandwidth,
                 virDomainAsyncJob asyncJob,
                 virTristateBool autofinalize,
                 unsigned int flags);
