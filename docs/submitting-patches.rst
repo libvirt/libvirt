@@ -56,11 +56,6 @@ well:
 
   $ git config sendemail.to libvir-list@redhat.com
 
-As a rule, patches should be sent to the mailing list only: all
-developers are subscribed to libvir-list and read it regularly,
-so **please don't CC individual developers** unless they've
-explicitly asked you to.
-
 Avoid using mail clients for sending patches, as most of them
 will mangle the messages in some way, making them unusable for
 our purposes. Gmail and other Web-based mail clients are
