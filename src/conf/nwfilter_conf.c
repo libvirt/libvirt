@@ -2692,7 +2692,6 @@ int
 virNWFilterSaveConfig(const char *configDir,
                       virNWFilterDef *def)
 {
-    int ret = -1;
     g_autofree char *xml = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     g_autofree char *configFile = NULL;
@@ -2704,11 +2703,10 @@ virNWFilterSaveConfig(const char *configDir,
         return -1;
 
     virUUIDFormat(def->uuid, uuidstr);
-    ret = virXMLSaveFile(configFile,
-                         virXMLPickShellSafeComment(def->name, uuidstr),
-                         "nwfilter-edit", xml);
 
-    return ret;
+    return virXMLSaveFile(configFile,
+                          virXMLPickShellSafeComment(def->name, uuidstr),
+                          "nwfilter-edit", xml);
 }
 
 
