@@ -2384,7 +2384,7 @@ virNWFilterRuleParse(xmlNodePtr node)
     int priority;
 
     xmlNodePtr cur;
-    virNWFilterRuleDef *ret;
+    g_autoptr(virNWFilterRuleDef) ret = NULL;
 
     ret = g_new0(virNWFilterRuleDef, 1);
 
@@ -2397,28 +2397,28 @@ virNWFilterRuleParse(xmlNodePtr node)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s",
                        _("rule node requires action attribute"));
-        goto err_exit;
+        return NULL;
     }
 
     if ((ret->action = virNWFilterRuleActionTypeFromString(action)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s",
                        _("unknown rule action attribute value"));
-        goto err_exit;
+        return NULL;
     }
 
     if (!direction) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s",
                        _("rule node requires direction attribute"));
-        goto err_exit;
+        return NULL;
     }
 
     if ((ret->tt = virNWFilterRuleDirectionTypeFromString(direction)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s",
                        _("unknown rule direction attribute value"));
-        goto err_exit;
+        return NULL;
     }
 
     ret->priority = MAX_RULE_PRIORITY / 2;
@@ -2455,10 +2455,10 @@ virNWFilterRuleParse(xmlNodePtr node)
                     if (virNWFilterRuleDetailsParse(cur,
                                                     ret,
                                                     virAttr[i].att) < 0) {
-                        goto err_exit;
+                        return NULL;
                     }
                     if (virNWFilterRuleValidate(ret) < 0)
-                        goto err_exit;
+                        return NULL;
                     break;
                 }
                 if (!found) {
@@ -2476,11 +2476,7 @@ virNWFilterRuleParse(xmlNodePtr node)
 
     virNWFilterRuleDefFixup(ret);
 
-    return ret;
-
- err_exit:
-    g_clear_pointer(&ret, virNWFilterRuleDefFree);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
 
 
@@ -2561,7 +2557,7 @@ virNWFilterIsAllowedChain(const char *chainname)
 static virNWFilterDef *
 virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
 {
-    virNWFilterDef *ret;
+    g_autoptr(virNWFilterDef) ret = NULL;
     xmlNodePtr curr = ctxt->node;
     g_autofree char *uuid = NULL;
     g_autofree char *chain = NULL;
@@ -2576,7 +2572,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
     if (!ret->name) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("filter has no name"));
-        goto cleanup;
+        return NULL;
     }
 
     chain_pri_s = virXPathString("string(./@priority)", ctxt);
@@ -2585,7 +2581,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Could not parse chain priority '%s'"),
                            chain_pri_s);
-            goto cleanup;
+            return NULL;
         }
         if (chain_priority < NWFILTER_MIN_FILTER_PRIORITY ||
             chain_priority > NWFILTER_MAX_FILTER_PRIORITY) {
@@ -2595,7 +2591,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
                            chain_priority,
                            NWFILTER_MIN_FILTER_PRIORITY,
                            NWFILTER_MAX_FILTER_PRIORITY);
-            goto cleanup;
+            return NULL;
         }
     }
 
@@ -2603,7 +2599,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
     if (chain) {
         name_prefix = virNWFilterIsAllowedChain(chain);
         if (name_prefix == NULL)
-            goto cleanup;
+            return NULL;
         ret->chainsuffix = g_steal_pointer(&chain);
 
         if (chain_pri_s) {
@@ -2626,13 +2622,13 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
         if (virUUIDGenerate(ret->uuid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("unable to generate uuid"));
-            goto cleanup;
+            return NULL;
         }
     } else {
         if (virUUIDParse(uuid, ret->uuid) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("malformed uuid element"));
-            goto cleanup;
+            return NULL;
         }
     }
 
@@ -2645,12 +2641,12 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
             if (virXMLNodeNameEqual(curr, "rule")) {
                 if (!(entry->rule = virNWFilterRuleParse(curr))) {
                     virNWFilterEntryFree(entry);
-                    goto cleanup;
+                    return NULL;
                 }
             } else if (virXMLNodeNameEqual(curr, "filterref")) {
                 if (!(entry->include = virNWFilterIncludeParse(curr))) {
                     virNWFilterEntryFree(entry);
-                    goto cleanup;
+                    return NULL;
                 }
             }
 
@@ -2663,11 +2659,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
         curr = curr->next;
     }
 
-    return ret;
-
- cleanup:
-    virNWFilterDefFree(ret);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
 
 

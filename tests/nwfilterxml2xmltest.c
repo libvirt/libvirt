@@ -16,31 +16,25 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
                          bool expect_error)
 {
     g_autofree char *actual = NULL;
-    int ret = -1;
-    virNWFilterDef *dev = NULL;
+    g_autoptr(virNWFilterDef) def = NULL;
 
     virResetLastError();
 
-    if (!(dev = virNWFilterDefParse(NULL, inxml, 0))) {
+    if (!(def = virNWFilterDefParse(NULL, inxml, 0))) {
         if (expect_error) {
             virResetLastError();
-            goto done;
+            return 0;
         }
-        goto fail;
+        return -1;
     }
 
-    if (!(actual = virNWFilterDefFormat(dev)))
-        goto fail;
+    if (!(actual = virNWFilterDefFormat(def)))
+        return -1;
 
     if (virTestCompareToFile(actual, outxml) < 0)
-        goto fail;
+        return -1;
 
- done:
-    ret = 0;
-
- fail:
-    virNWFilterDefFree(dev);
-    return ret;
+    return 0;
 }
 
 typedef struct test_parms {
