@@ -7478,6 +7478,9 @@ remoteDispatchDomainFdAssociate(virNetServer *server G_GNUC_UNUSED,
     rv = 0;
 
  cleanup:
+    for (i = 0; i < nfds; i++)
+        VIR_FORCE_CLOSE(fds[i]);
+    g_free(fds);
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virObjectUnref(dom);

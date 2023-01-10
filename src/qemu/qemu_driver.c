@@ -20442,7 +20442,8 @@ qemuDomainFDAssociate(virDomainPtr domain,
 {
     virDomainObj *vm = NULL;
     qemuDomainObjPrivate *priv;
-    virStorageSourceFDTuple *new;
+    g_autoptr(virStorageSourceFDTuple) new = NULL;
+    size_t i;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_FD_ASSOCIATE_SECLABEL_RESTORE |
@@ -20460,8 +20461,16 @@ qemuDomainFDAssociate(virDomainPtr domain,
     priv = vm->privateData;
 
     new = virStorageSourceFDTupleNew();
-    new->fds = fds;
     new->nfds = nfds;
+    new->fds = g_new0(int, new->nfds);
+    for (i = 0; i < new->nfds; i++) {
+        if ((new->fds[i] = dup(fds[i])) < 0) {
+            virReportSystemError(errno,
+                                 _("failed to duplicate passed fd with index '%zu'"),
+                                 i);
+            goto cleanup;
+        }
+    }
     new->conn = domain->conn;
 
     new->writable = flags & VIR_DOMAIN_FD_ASSOCIATE_SECLABEL_WRITABLE;
@@ -20469,7 +20478,7 @@ qemuDomainFDAssociate(virDomainPtr domain,
 
     virCloseCallbacksDomainAdd(vm, domain->conn, qemuDomainFDHashCloseConnect);
 
-    g_hash_table_insert(priv->fds, g_strdup(name), new);
+    g_hash_table_insert(priv->fds, g_strdup(name), g_steal_pointer(&new));
 
     ret = 0;
 
