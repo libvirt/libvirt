@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-11-24 14:54+0000\n"
+"POT-Creation-Date: 2023-01-09 14:27+0000\n"
 "PO-Revision-Date: 2015-02-27 07:08+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
@@ -418,14 +418,6 @@ msgid "%s (out of %d)"
 msgstr ""
 
 #, c-format
-msgid "%s array element does not contain a string"
-msgstr ""
-
-#, c-format
-msgid "%s array element is missing item %zu"
-msgstr ""
-
-#, c-format
 msgid "%s can't be empty"
 msgstr "%s ಖಾಲಿ ಇರುವಂತಿಲ್ಲ"
 
@@ -511,10 +503,6 @@ msgstr "%s (%s ನಲ್ಲಿನ) ಸೊನ್ನೆವಾಗಿರಬಾರದ
 #, c-format
 msgid "%s is missing 'type' property"
 msgstr "%s ಎನ್ನುವುದರಲ್ಲಿ 'ಬಗೆ' ಗುಣವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
-#, c-format
-msgid "%s is missing or not an array"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "%s is not an executable"
@@ -1782,10 +1770,6 @@ msgstr "ಒಂದು ಸ್ಪಷ್ಟವಾದ ಡಿಸ್ಕಿನ ವಿನ
 #, c-format
 msgid "Ancestor model %s not found for CPU model %s"
 msgstr "%s ಎಂಬ ಪೂರ್ವಿಕರ ಹೆಸರು %s ಎಂಬ CPU ಮಾದರಿಯಲ್ಲಿ ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
-#, c-format
-msgid "Another close callback is already defined for domain %s"
-msgstr "ಒಂದು ಮುಚ್ಚುವ ಕಾಲ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಈಗಾಗಲೆ %s ಡೊಮೇನ್‌ಗಾಗಿ ಸೂಚಿಸಲಾಗಿದೆ"
 
 #, fuzzy
 msgid "Another relabel transaction is already started"
@@ -3607,12 +3591,6 @@ msgid "Clone an existing volume within the parent pool."
 msgstr ""
 
 #, c-format
-msgid ""
-"Close callback for domain %s already registered with another connection %p"
-msgstr ""
-"%s ಡೊಮೇನ್‌ಗಾಗಿ ಮುಚ್ಚುವ ಕಾಲ್‌ಬ್ಯಾಕ್‌ %p ಇನ್ನೊಂದು ಸಂಪರ್ಕದೊಂದಿಗೆ ಈಗಾಗಲೆ ನೋಂದಾಯಿಸಲಾಗಿದೆ"
-
-#, c-format
 msgid "Cloud-Hypervisor doesn't support '%s' device"
 msgstr ""
 
@@ -3826,10 +3804,6 @@ msgstr "ಪ್ರತಿ ಮಾಡುವಿಕೆಯನ್ನು ವಿಫಲಗ�
 #, fuzzy
 msgid "Copy failed"
 msgstr "ಡಂಪ್ ವಿಫಲಗೊಂಡಿದೆ"
-
-#, c-format
-msgid "Copying definition of '%d' type is not implemented yet."
-msgstr "'%d' ಬಗೆಯ ವಿವರಣೆಯನ್ನು ಪ್ರತಿ ಮಾಡುವುದನ್ನು ಇನ್ನೂ ಸಹ ಅನ್ವಯಿಸಲಾಗಿಲ್ಲ."
 
 msgid "Core dump a domain."
 msgstr "ಡೊಮೇನ್‌ನ ಮುಖ್ಯ ಭಾಗವನ್ನು ಹಾಕು."
@@ -5642,10 +5616,8 @@ msgstr "ಡೊಮೈನ್ ಒಂದು ಪ್ರಸಕ್ತ ಸ್ನ್ಯಾ
 
 #, c-format
 msgid ""
-"Domain has %d interfaces. Please specify which one to detach using --mac"
+"Domain has %zd interfaces. Please specify which one to detach using --mac"
 msgstr ""
-"ಡೊಮೇನ್ %d ಸಂಪರ್ಕಸಾಧನಗಳನ್ನು ಹೊಂದಿದೆ. --mac ಅನ್ನು ಬಳಸಿಕೊಂಡು ಯಾವುದನ್ನು ಕಳಚಬೇಕು "
-"ಎನ್ನುವುದನ್ನು ಸೂಚಿಸಿ"
 
 #, c-format
 msgid ""
@@ -5754,6 +5726,10 @@ msgstr "ಡೊಮೈನ್ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ %s ಅನ್�
 #, c-format
 msgid "Domain snapshot %s deleted\n"
 msgstr "%s ಡೊಮೇನ್‌ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ\n"
+
+#, c-format
+msgid "Domain snapshot %s reverted\n"
+msgstr ""
 
 msgid "Domain snapshot not found"
 msgstr "ಡೊಮೇನ್‌ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಕಂಡು ಬಂದಿಲ್ಲ"
@@ -6832,6 +6808,9 @@ msgstr "%s ದಿಂದ ನೋಡ್‌ ಸಾಧನವನ್ನು ನಿರ್
 #, fuzzy, c-format
 msgid "Failed to create nvram dir %s"
 msgstr "%s ಪರಿಮಾಣವನ್ನು ನಿರ್ಮಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+msgid "Failed to create or modify the state XML attribute"
+msgstr ""
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -8143,6 +8122,10 @@ msgstr "ಅತಿಥಿಯಿಂದ vCPU ಎಣಿಕೆಯನ್ನು ಪಡ�
 #, fuzzy
 msgid "Failed to retrieve vcpu state bitmap"
 msgstr "ಪ್ರಸಕ್ತ vcpu ಎಣಿಕೆಯನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+#, c-format
+msgid "Failed to revert snapshot %s"
+msgstr ""
 
 msgid "Failed to rollback network config change transaction"
 msgstr "ಜಾಲಬಂಧ ಸಂರಚನೆ ಬದಲಾವಣೆ ವ್ಯವಹಾರವನ್ನು ಹಿಂದಕ್ಕೆ ಮರಳಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -10527,6 +10510,9 @@ msgstr ""
 
 #, c-format
 msgid "JSON backing volume definition '%s' must not have nested format drivers"
+msgstr ""
+
+msgid "JSON string array contains non-string element"
 msgstr ""
 
 #, c-format
@@ -14762,6 +14748,9 @@ msgstr "ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ ಡಂಪ್ XML"
 msgid "Snapshot List"
 msgstr "ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ ಪಟ್ಟಿ"
 
+msgid "Snapshot delete"
+msgstr ""
+
 #, fuzzy
 msgid "Snapshot is Null"
 msgstr "ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ ಪಟ್ಟಿ"
@@ -15979,6 +15968,10 @@ msgstr "ಡೊಮೈನ್ ಏರಿಸಲಾದ ಕಡತವ್ಯವಸ್ಥ�
 msgid "Thawed %d filesystem(s)\n"
 msgstr ""
 
+#, c-format
+msgid "The %s interface already exists"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "The '%s' device is not supported by this QEMU binary"
 msgstr "ಈ QEMU ಬೈನರಿಯಿಂದ nvram ಸಾಧನಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ"
@@ -16182,8 +16175,13 @@ msgid ""
 msgstr ""
 
 msgid ""
-"The overall maximum number of clients must be greater than the maximum "
-"number of clients waiting for authentication"
+"The overall maximum number of clients must not be less than the number of "
+"clients waiting for authentication"
+msgstr ""
+
+msgid ""
+"The overall maximum number of clients waiting for authentication must not be "
+"less than the overall maximum number of clients"
 msgstr ""
 
 #, fuzzy
@@ -16556,10 +16554,6 @@ msgstr "ಇನ್ನೂ ಸಹ ಬಳಸಲಾಗುತ್ತಿರುವ Shared
 #, c-format
 msgid "Trying to lock unknown SharedCURL lock %d"
 msgstr "ಗೊತ್ತಿರದ SharedCURL ಲಾಕ್ %d ಅನ್ನು ಲಾಕ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ"
-
-#, c-format
-msgid "Trying to remove mismatching close callback for domain %s"
-msgstr "%s ಡೊಮೇನ್‌ಗಾಗಿ ಒಂದು ಮುಚ್ಚುವ ಕಾಲ್‌ಬ್ಯಾಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲು ಪ್ರಯತ್ನಿಸಿದೆ"
 
 #, c-format
 msgid "Trying to unlock unknown SharedCURL lock %d"
@@ -19923,6 +19917,9 @@ msgstr "VFIO PCI ಸಾಧನ ನಿಯೋಜನೆಯು qemu ಈ ಆವೃತ�
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "VFIO PCI ಸಾಧನ ನಿಯೋಜನೆಯು qemu ಈ ಆವೃತ್ತಿಯಿಂದ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
 
+msgid "VM disk source and snapshot disk source are not the same"
+msgstr ""
+
 msgid "VM is already active"
 msgstr "VM ಈಗಾಗಲೆ ಸಕ್ರಿಯವಾಗಿದೆ"
 
@@ -20581,6 +20578,9 @@ msgstr "guest-get-vcpus ಮರಳಿಸಲಾದ ಮೌಲ್ಯದಲ್ಲಿ 
 msgid "array element missing in guest-get-vcpus return value"
 msgstr "guest-get-vcpus ಮರಳಿಸಲಾದ ಮೌಲ್ಯದಲ್ಲಿ ವ್ಯೂಹದ (ಅರೇ) ಘಟಕವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
+msgid "associate a FD with a domain"
+msgstr ""
+
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
 msgstr ""
@@ -20929,6 +20929,10 @@ msgstr ""
 msgid "block I/O throttle limit value must be no more than %llu"
 msgstr ""
 
+#, c-format
+msgid "block commit failed while deleting disk '%s' snapshot: '%s'"
+msgstr ""
+
 msgid "block copy still active"
 msgstr "ಬ್ಲಾಕ್‌ ಪ್ರತಿ ಇನ್ನೂ ಸಕ್ರಿಯವಾಗಿದೆ"
 
@@ -20941,6 +20945,9 @@ msgstr "ಬ್ಲಾಕ್ ಸಾಧನ"
 
 #, c-format
 msgid "block device snapshot target '%s' doesn't exist"
+msgstr ""
+
+msgid "block info is not supported for FD passed disk image"
 msgstr ""
 
 msgid "block info is not supported for vhostuser disk"
@@ -21188,6 +21195,9 @@ msgstr "ಕಾಲರ್ ಇಂದ uri_out ಅನ್ನು ಕಡೆಗಣಿಸ�
 msgid ""
 "can be either or both of --live and --config, depends on implementation "
 "hypervisor driver"
+msgstr ""
+
+msgid "can't add memory backend as guest has no NUMA nodes configured"
 msgstr ""
 
 #, c-format
@@ -21651,6 +21661,9 @@ msgstr "ಒಂದು ನಿಷ್ಕ್ರಿಯ ಡೊಮೇನ್‌ ಮೇಲ
 
 msgid "cannot delete domain snapshot for running domain"
 msgstr "ಚಾಲನೆಯಲ್ಲಿರುವ ಡೊಮೇನ್‌ಗಾಗಿ ಡೊಮೇನ್ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಅನ್ನು ಅಳಿಸಲಾಗಿಲ್ಲ"
+
+msgid "cannot delete external snapshots when there is another active block job"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "cannot delete inactive domain with %d checkpoints"
@@ -23413,6 +23426,9 @@ msgstr ""
 msgid "copy of read-only disks is not supported"
 msgstr "fs ಚಾಲಕ %s ಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 
+msgid "copy to a FD passed disk source is not yet supported"
+msgstr ""
+
 #, fuzzy
 msgid "copy-on-write ploop volumes are not yet supported"
 msgstr "ಕಡತವಲ್ಲದ ಪರಿಮಾಣಗಳನ್ನು ನಿರ್ಮಿಸಲು ಬೆಂಬಲವಿರುವುದಿಲ್ಲ."
@@ -23515,6 +23531,9 @@ msgstr "ಡೊಮೇನ್‌ಗಾಗಿನ ಗರಿಷ್ಟ vcpus ಅನ್�
 
 #, c-format
 msgid "could not find backing store index '%u' in chain for '%s'"
+msgstr ""
+
+msgid "could not find base disk source in disk source chain"
 msgstr ""
 
 #, fuzzy, c-format
@@ -24145,9 +24164,18 @@ msgstr ""
 msgid "delete the specified network port"
 msgstr ""
 
-#, c-format
-msgid "deletion of %d external disk snapshots not supported yet"
-msgstr "%d ಬಾಹ್ಯ ಡಿಸ್ಕ್ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ಗಳನ್ನು ಅಳಿಸುವಿಕೆಯು ಇನ್ನೂ ಸಹ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
+msgid ""
+"deleting external snapshot that has internal snapshot as parent not supported"
+msgstr ""
+
+msgid "deletion of external and internal children disk snapshots not supported"
+msgstr ""
+
+msgid "deletion of external children disk snapshots not supported"
+msgstr ""
+
+msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
 
 #, c-format
 msgid "deprecated configuration: %s"
@@ -24539,6 +24567,12 @@ msgstr "ಡಿಸ್ಕ್‍ event_idx ಕ್ರಮವನ್ನು ಕೇವಲ
 #, c-format
 msgid "disk format %s is not supported"
 msgstr "ಡಿಸ್ಕ್ ವಿನ್ಯಾಸ %s ಗೆ ಬೆಂಬಲವಿಲ್ಲ"
+
+#, c-format
+msgid ""
+"disk image '%s' for internal snapshot '%s' is not the same as disk image "
+"currently used by VM"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "disk image format not supported: %s"
@@ -24993,6 +25027,10 @@ msgstr "ಆಯಿತು"
 
 msgid "download volume contents to a file"
 msgstr "ಒಂದು ಪರಿಮಾಣದಲ್ಲಿರುವುದನ್ನು ಒಂದು ಕಡತಕ್ಕೆ ಇಳಿಸಿ"
+
+#, c-format
+msgid "driver does not support FD passing for disk '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "driver does not support net model '%s'"
@@ -25880,6 +25918,9 @@ msgstr "ಸಂಪರ್ಕಸಾಧನ %s ಅನ್ನು ರಚಿಸುವಲ�
 msgid "failed to create RBD snapshot %s@%s"
 msgstr "%s ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಅನ್ನು ಅಳಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+msgid "failed to create XML node"
+msgstr ""
+
 #, fuzzy
 msgid "failed to create a new XML namespace"
 msgstr "XML ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -26003,6 +26044,10 @@ msgstr ""
 msgid "failed to determine loop exit status: %s"
 msgstr "%s ನಲ್ಲಿ ಲೂಪ್‌ ಸ್ಥಿತಿಯನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
+#, c-format
+msgid "failed to duplicate file descriptor for fd group '%s'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr "IP ಫಾರ್ವಾರ್ಡಿಂಗ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
@@ -26053,9 +26098,16 @@ msgstr ""
 msgid "failed to find disk '%s'"
 msgstr "ಸಾಕೆಟ್‌ ಅನ್ನು '%s' ಗೆ ಬೈಂಡ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+#, c-format
+msgid "failed to find disk '%s' in snapshot VM XML"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to find iothread id for '%s'"
 msgstr "%s ಕ್ಕಾಗಿ ಮೂಲ ಸಾಧನವನ್ನು ಪತ್ತೆಮಾಡಲು ವಿಫಲಗೊಂಡಿದೆ"
+
+msgid "failed to find parent disk source in backing chain"
+msgstr ""
 
 #, c-format
 msgid "failed to find the VID for the VLAN device '%s'"
@@ -26785,10 +26837,6 @@ msgstr "nwfilter '%s' ಅನ್ನು ಪಡೆದುಕೊಳ್ಳುವಲ್
 msgid "failed to set guest cid"
 msgstr "%s ಅನ್ನು ಹೊಂದಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#, c-format
-msgid "failed to set snapshot '%s' as current"
-msgstr "'%s' ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ ಅನ್ನು ಪ್ರಸಕ್ತಕ್ಕೆ ಹೊಂದಿಸಲು ವಿಫಲಗೊಂಡಿದೆ"
-
 msgid "failed to setup stderr file handle"
 msgstr "stderr ಕಡತದ ಹ್ಯಾಂಡಲ್‌ ಅನ್ನು ಸಿದ್ಧಗೊಳಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
@@ -26833,6 +26881,9 @@ msgstr "ತೆರೆಚಿತ್ರವನ್ನು ತೆಗೆದುಕೊಳ�
 #, c-format
 msgid "failed to truncate %s"
 msgstr "%s ತುಂಡರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+msgid "failed to umount devfs on /dev"
+msgstr ""
 
 #, c-format
 msgid "failed to undefine interface %s: %s%s%s"
@@ -26978,6 +27029,9 @@ msgstr "fd ಯು ಮಾನ್ಯವಾದುದಾಗಿರಬೇಕು"
 msgid "fd must be valid"
 msgstr "fd ಯು ಮಾನ್ಯವಾದುದಾಗಿರಬೇಕು"
 
+msgid "fd passed image source not initialized"
+msgstr ""
+
 #, fuzzy
 msgid "fd passing is not supported by this connection"
 msgstr "ಈ ಕಾರ್ಯವು ಸಂಪರ್ಕ ಚಾಲಕದಿಂದ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
@@ -27044,6 +27098,13 @@ msgstr "ಒಂದು XML ಪರಿಮಾಣದ ವಿವರಣೆಯನ್ನು
 
 msgid "file containing secret attributes in XML"
 msgstr "XML ನಲ್ಲಿ ಸೀಕ್ರೆಟ್ ಗುಣವಿಶೇಷಗಳನ್ನು ಹೊಂದಿರುವ ಕಡತ"
+
+#, c-format
+msgid "file descriptor group '%s' was not associated with the domain"
+msgstr ""
+
+msgid "file descriptors N,M,... to associate"
+msgstr ""
 
 msgid "file format type raw,bochs,qcow,qcow2,qed,vmdk"
 msgstr "ಕಡತ ವಿನ್ಯಾದ ಬಗೆ raw,bochs,qcow,qcow2,qed,vmdk"
@@ -27175,6 +27236,10 @@ msgid "find potential storage pool sources"
 msgstr "ಸಮರ್ಥ ಶೇಖರಣಾ ಪೂಲ್ ಆಕರಗಳನ್ನು ಪತ್ತೆ ಮಾಡು"
 
 msgid "finish step ignored that migration was cancelled"
+msgstr ""
+
+#, c-format
+msgid "finishing block job failed while deleting disk '%s' snapshot: '%s'"
 msgstr ""
 
 msgid ""
@@ -28132,8 +28197,8 @@ msgid "interface '%s' failing; reopening"
 msgstr "'%s' ಸಂಪರ್ಕಸಾಧನ ವಿಫಲಗೊಳ್ಳುತ್ತಿದೆ; ಮರಳಿ ತೆರೆಯಲಾಗುತ್ತಿದೆ"
 
 #, c-format
-msgid "interface (%s: %s) not found"
-msgstr "ಸಂಪರ್ಕಸಾಧನವು (%s: %s) ಕಂಡುಬಂದಿಲ್ಲ"
+msgid "interface '%s' not found"
+msgstr ""
 
 msgid "interface device (MAC Address)"
 msgstr "ಸಂಪರ್ಕ ಸಾಧನ (MAC ವಿಳಾಸ)"
@@ -30835,6 +30900,9 @@ msgstr "ಕಾರ್ಯವ್ಯವಸ್ಥೆಯ ಮಾಹಿತಿಯು ಕ�
 msgid "missing existing file for disk %s: %s"
 msgstr "%s ಡಿಸ್ಕಿಗಾಗಿ ಈಗಿರುವ ಕಡತವು ಕಾಣಿಸುತ್ತಿಲ್ಲ: %s"
 
+msgid "missing external TPM backend type"
+msgstr ""
+
 msgid "missing feature name"
 msgstr "ಸೌಲಭ್ಯದ ಹೆಸರು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
@@ -31186,6 +31254,9 @@ msgstr "JSON ಸ್ಥಿತಿ ದಸ್ತಾವೇಜಿನಲ್ಲಿ socks
 
 msgid "missing socket for unix transport"
 msgstr "unix ವರ್ಗಾವಣೆಗಾಗಿ ಸಾಕೆಟ್ ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+msgid "missing socket path for external TPM device"
+msgstr ""
 
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
@@ -31563,6 +31634,9 @@ msgstr ""
 
 msgid "name of snapshot"
 msgstr "ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ನ ಹೆಸರು"
+
+msgid "name of the FD group"
+msgstr ""
 
 msgid "name of the inactive domain"
 msgstr "ನಿಷ್ಕ್ರಿಯ ಡೊಮೇನ್‌ನ ಹೆಸರು"
@@ -32749,6 +32823,9 @@ msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr ""
 
+msgid "only 'client' mode is supported for external TPM device"
+msgstr ""
+
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr ""
 
@@ -32922,6 +32999,9 @@ msgid "only single input device is supported"
 msgstr "ಕೇವಲ ಒಂದು nvram ಸಾಧನಕ್ಕೆ ಮಾತ್ರ ಬೆಂಬಲವಿದೆ"
 
 msgid "only snapshot=no is supported with vhostuser disk"
+msgstr ""
+
+msgid "only source type 'unix' is supported for external TPM device"
 msgstr ""
 
 msgid "only supports mount filesystem type"
@@ -33324,6 +33404,9 @@ msgstr "pci-root ಮತ್ತು pcie-root ನಿಯಂತ್ರಕಗಳು ಒ
 msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
+msgid "peeking is not supported for FD passed images"
+msgstr ""
+
 msgid "peeking is not supported for vhostuser disk"
 msgstr ""
 
@@ -33647,12 +33730,21 @@ msgstr "ಡಿಸ್ಕನ್ನು ಲಗತ್ತಿಸುವ ಬದಲಿಗ�
 msgid "print XML document rather than change media"
 msgstr "XML ದಸ್ತಾವೇಜನ್ನು ರಚಿಸುವ ಬದಲಿಗೆ ಅದನ್ನು ಮುದ್ರಿಸು"
 
+msgid "print XML document rather than clone the volume"
+msgstr ""
+
 msgid "print XML document rather than create"
 msgstr "XML ದಸ್ತಾವೇಜನ್ನು ರಚಿಸುವ ಬದಲಿಗೆ ಅದನ್ನು ಮುದ್ರಿಸು"
 
 #, fuzzy
 msgid "print XML document rather than detach the disk"
 msgstr "ಡಿಸ್ಕನ್ನು ಲಗತ್ತಿಸುವ ಬದಲಿಗೆ XML ದಸ್ತಾವೇಜನ್ನು ಮುದ್ರಿಸು"
+
+msgid "print XML document rather than detach the interface"
+msgstr ""
+
+msgid "print XML document rather than set the interface link state"
+msgstr ""
 
 msgid "print XML document, but don't define/create"
 msgstr "XML ದಸ್ತಾವೇಜನ್ನು ಮುದ್ರಿಸು, ಆದರೆ ವಿವರಿಸ/ರಚಿಸಬೇಡ"
@@ -35180,6 +35272,13 @@ msgstr "ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ '%s' ಒಂದು ಮೂಲವ�
 msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr "'%s' ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ನಲ್ಲಿ ಡೊಮೇನ್ '%s' ಹಿಮ್ಮರಳಿಸುವ ಮಾಹಿತಿಯು ಇಲ್ಲ"
 
+msgid "snapshot VM disk source and parent disk source are not the same"
+msgstr ""
+
+#, c-format
+msgid "snapshot disk '%s' was target of not completed snapshot delete"
+msgstr ""
+
 msgid "snapshot information"
 msgstr "ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಮಾಹಿತಿ"
 
@@ -36487,6 +36586,9 @@ msgstr ""
 msgid "try harder on risky reverts"
 msgstr "ಅಪಾಯಕಾರಿ ಮರಳಿಕೆಯಲ್ಲಿ ಹೆಚ್ಚು ಪ್ರಯತ್ನಿಸಿ"
 
+msgid "try to restore security label after use if possible"
+msgstr ""
+
 msgid "tty console"
 msgstr "tty ಕನ್ಸೋಲ್"
 
@@ -37596,6 +37698,10 @@ msgstr "ಅಜ್ಞಾತ ದೃಢೀಕರಣದ ಬಗೆ %s"
 msgid "unknown backend type '%s' for egd"
 msgstr "egd ಗಾಗಿ ಗೊತ್ತಿರದ ಬ್ಯಾಕೆಂಡ್ ಬಗೆ '%s'"
 
+#, c-format
+msgid "unknown backend type '%s' for external TPM"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown backup mode '%s'"
 msgstr "ಗೊತ್ತಿರದ RNG ಬ್ಯಾಕೆಂಡ್ ಮಾದರಿ '%s'"
@@ -38103,6 +38209,10 @@ msgid "unsupported audio backend '%s'"
 msgstr ""
 
 #, c-format
+msgid "unsupported audio model %s"
+msgstr ""
+
+#, c-format
 msgid "unsupported authentication type %d"
 msgstr "%d, ಬೆಂಬಲವಿಲ್ಲದ ದೃಢೀಕರಣದ ಬಗೆ"
 
@@ -38237,12 +38347,12 @@ msgid "unsupported filesystem type '%s'"
 msgstr ""
 
 #, c-format
-msgid "unsupported flags (0x%lx) in function %s"
-msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಫ್ಲಾಗ್‌ಗಳು (0x%lx), %s ಕ್ರಿಯೆಯಲ್ಲಿ"
-
-#, c-format
 msgid "unsupported flags (0x%x)"
 msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಫ್ಲಾಗ್‌ಗಳು: (0x%x)"
+
+#, c-format
+msgid "unsupported flags (0x%x) in function %s"
+msgstr ""
 
 #, c-format
 msgid "unsupported flags: (0x%x)"
@@ -38382,6 +38492,10 @@ msgstr "ಬೆಂಬಲವಿಲ್ಲದ ದತ್ತಾಂಶದ ಬಗೆ '%c
 msgid "unsupported usb model"
 msgstr "ಬೆಂಬಲವಿಲ್ಲದ hostdev ಸ್ಥಿತಿ %s"
 
+#, c-format
+msgid "unsupported use of long flags in function %s"
+msgstr ""
+
 #, fuzzy
 msgid "unsupported value"
 msgstr "ಬೆಂಬಲವಿರದ ಸೌಲಭ್ಯ %s"
@@ -38475,6 +38589,9 @@ msgid "use of flags requires a copy job"
 msgstr ""
 
 msgid "use of host cdrom passthrough"
+msgstr ""
+
+msgid "use seclabels allowing writes"
 msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
@@ -39451,6 +39568,38 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Another close callback is already defined for domain %s"
+#~ msgstr "ಒಂದು ಮುಚ್ಚುವ ಕಾಲ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಈಗಾಗಲೆ %s ಡೊಮೇನ್‌ಗಾಗಿ ಸೂಚಿಸಲಾಗಿದೆ"
+
+#~ msgid ""
+#~ "Close callback for domain %s already registered with another connection %p"
+#~ msgstr ""
+#~ "%s ಡೊಮೇನ್‌ಗಾಗಿ ಮುಚ್ಚುವ ಕಾಲ್‌ಬ್ಯಾಕ್‌ %p ಇನ್ನೊಂದು ಸಂಪರ್ಕದೊಂದಿಗೆ ಈಗಾಗಲೆ ನೋಂದಾಯಿಸಲಾಗಿದೆ"
+
+#~ msgid "Copying definition of '%d' type is not implemented yet."
+#~ msgstr "'%d' ಬಗೆಯ ವಿವರಣೆಯನ್ನು ಪ್ರತಿ ಮಾಡುವುದನ್ನು ಇನ್ನೂ ಸಹ ಅನ್ವಯಿಸಲಾಗಿಲ್ಲ."
+
+#~ msgid ""
+#~ "Domain has %d interfaces. Please specify which one to detach using --mac"
+#~ msgstr ""
+#~ "ಡೊಮೇನ್ %d ಸಂಪರ್ಕಸಾಧನಗಳನ್ನು ಹೊಂದಿದೆ. --mac ಅನ್ನು ಬಳಸಿಕೊಂಡು ಯಾವುದನ್ನು ಕಳಚಬೇಕು "
+#~ "ಎನ್ನುವುದನ್ನು ಸೂಚಿಸಿ"
+
+#~ msgid "Trying to remove mismatching close callback for domain %s"
+#~ msgstr "%s ಡೊಮೇನ್‌ಗಾಗಿ ಒಂದು ಮುಚ್ಚುವ ಕಾಲ್‌ಬ್ಯಾಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲು ಪ್ರಯತ್ನಿಸಿದೆ"
+
+#~ msgid "deletion of %d external disk snapshots not supported yet"
+#~ msgstr "%d ಬಾಹ್ಯ ಡಿಸ್ಕ್ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ಗಳನ್ನು ಅಳಿಸುವಿಕೆಯು ಇನ್ನೂ ಸಹ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
+
+#~ msgid "failed to set snapshot '%s' as current"
+#~ msgstr "'%s' ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ ಅನ್ನು ಪ್ರಸಕ್ತಕ್ಕೆ ಹೊಂದಿಸಲು ವಿಫಲಗೊಂಡಿದೆ"
+
+#~ msgid "interface (%s: %s) not found"
+#~ msgstr "ಸಂಪರ್ಕಸಾಧನವು (%s: %s) ಕಂಡುಬಂದಿಲ್ಲ"
+
+#~ msgid "unsupported flags (0x%lx) in function %s"
+#~ msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಫ್ಲಾಗ್‌ಗಳು (0x%lx), %s ಕ್ರಿಯೆಯಲ್ಲಿ"
 
 #, fuzzy
 #~ msgid "CPU vendor value 0x%2lx already defined"

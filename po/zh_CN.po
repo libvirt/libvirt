@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-11-24 14:54+0000\n"
+"POT-Creation-Date: 2023-01-09 14:27+0000\n"
 "PO-Revision-Date: 2022-12-05 13:44+0000\n"
 "Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -547,14 +547,6 @@ msgid "%s (out of %d)"
 msgstr "%s （%d 中的）"
 
 #, c-format
-msgid "%s array element does not contain a string"
-msgstr "%s 数组元素不包含字符串"
-
-#, c-format
-msgid "%s array element is missing item %zu"
-msgstr "%s 数组元素缺少项 %zu"
-
-#, c-format
 msgid "%s can't be empty"
 msgstr "%s 不能为空。"
 
@@ -637,10 +629,6 @@ msgstr "%s 中的 %s 不能为 0"
 #, c-format
 msgid "%s is missing 'type' property"
 msgstr "%s 缺少 'type' 属性"
-
-#, c-format
-msgid "%s is missing or not an array"
-msgstr "%s 缺失或不是数组"
 
 #, c-format
 msgid "%s is not an executable"
@@ -738,12 +726,13 @@ msgstr ""
 msgid "%s uri uuid action\n"
 msgstr "%s uri uuid 动作\n"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "%s with index %d is configured for a NUMA node (%d) not present in the "
 "domain's <cpu><numa> array (%zu)"
-msgstr "为 NUMA 节点(%3$d)配置的索引为 %2$d 的 %1$s 在域的 <cpu><numa> "
-"数组(%4$zu)中不存在"
+msgstr ""
+"为 NUMA 节点(%3$d)配置的索引为 %2$d 的 %1$s 在域的 <cpu><numa> 数组(%4$zu)中"
+"不存在"
 
 #, c-format
 msgid ""
@@ -1824,10 +1813,6 @@ msgstr "必须明确指定磁盘格式"
 msgid "Ancestor model %s not found for CPU model %s"
 msgstr "没有找到 CPU 型号 %s 的上一代型号 %s"
 
-#, c-format
-msgid "Another close callback is already defined for domain %s"
-msgstr "已为域 %s 定义另一个 close 回叫"
-
 msgid "Another relabel transaction is already started"
 msgstr "另一个重新标记事务已启动"
 
@@ -2132,7 +2117,7 @@ msgstr "不能为 '%s' 总线设置 CHS 几何图形"
 msgid "CHS translation mode can only be set for 'ide' bus not '%s'"
 msgstr "只能为 'ide' 总线而不是 '%s' 设置 CHS 转换模式"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "CPU %d in cpulist '%s' exceed the maxcpu %d"
 msgstr "cpulist '%2$s' 中的 CPU %1$d 超出了 maxcpu %3$d"
 
@@ -2365,7 +2350,7 @@ msgstr "缓存级别 %d id %u 不支持对范围类型 '%s' 进行性能优化"
 msgid "Cache level '%u' already defined"
 msgstr "缓存级别 '%u' 已定义"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Cache with id %u does not exists for level %d"
 msgstr "级别 %2$d 不存在 id 为 %1$u 的缓存"
 
@@ -3083,7 +3068,7 @@ msgstr "无法解析插槽地址 '%s': %s"
 msgid "Cannot parse socket service '%s': %s"
 msgstr "无法解析套接字服务 '%s'：%s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Cannot parse start time %s for pid %d"
 msgstr "无法解析 pid %2$d 的启动时间 %1$s"
 
@@ -3098,7 +3083,7 @@ msgstr "无法解析用户统计 '%s'"
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr "无法解析元素 <address> 的 uuid 属性"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Cannot plug '%s' interface into '%s' because new combined inbound floor=%llu "
 "would overcommit average=%llu on network '%s'"
@@ -3106,7 +3091,7 @@ msgstr ""
 "无法将 '%1$s' 接口插入 '%2$s'，因为新合并的入站 floor=%3$llu 将在网络 '%5$s' "
 "上过度承诺 average=%4$llu"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Cannot plug '%s' interface into '%s' because new combined inbound floor=%llu "
 "would overcommit peak=%llu on network '%s'"
@@ -3200,7 +3185,7 @@ msgstr "无法设定上下文 %s"
 msgid "Cannot set interface MAC on '%s'"
 msgstr "无法在 '%s' 上设置接口 MAC"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Cannot set interface MAC to %s for ifname %s vf %d"
 msgstr "无法为 ifname %2$s vf %3$d 将接口 MAC 设为 %1$s"
 
@@ -3216,7 +3201,7 @@ msgstr "无法在 '%s' 设定接口 MTU"
 msgid "Cannot set interface flags on '%s'"
 msgstr "无法在 '%s' 中设定接口标签"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Cannot set interface vlanid to %d for ifname %s vf %d"
 msgstr "无法为 ifname %2$s vf %3$d 将接口 vlanid 设为%1$d"
 
@@ -3536,11 +3521,6 @@ msgid "Clone an existing volume within the parent pool."
 msgstr "在父池中克隆现有的卷。"
 
 #, c-format
-msgid ""
-"Close callback for domain %s already registered with another connection %p"
-msgstr "关闭域 %s 的回退已使用另一个连接 %p 注册了"
-
-#, c-format
 msgid "Cloud-Hypervisor doesn't support '%s' device"
 msgstr "Cloud-Hypervisor 不支持 '%s' 设备"
 
@@ -3742,10 +3722,6 @@ msgstr "放弃复制操作"
 msgid "Copy failed"
 msgstr "复制失败"
 
-#, c-format
-msgid "Copying definition of '%d' type is not implemented yet."
-msgstr "还没有采用复制 '%d' 类型定义的方法"
-
 msgid "Core dump a domain."
 msgstr "内核 dump 一个域。"
 
@@ -3929,7 +3905,7 @@ msgstr "无法提取 vzctl 版本"
 msgid "Could not find %s"
 msgstr "无法找到 %s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Could not find %s controller with index %d required for device"
 msgstr "无法找到设备所需的索引为 %2$d 的 %1$s 控制器"
 
@@ -3965,7 +3941,7 @@ msgstr "无法找到名为 '%s' 的 HostVirtualSwitch"
 msgid "Could not find Msvm_DiskDrive object"
 msgstr "无法找到 Msvm_DiskDrive 对象"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Could not find PCI controller with index '%u' required for device at address "
 "'%s'"
@@ -3995,7 +3971,7 @@ msgstr "无法在 %s 处找到 PCI 设备下的任何网络设备"
 msgid "Could not find any vport capable device"
 msgstr "无法找到任何具有 vport 功能的设备"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Could not find auto-added %s controller with index %zu"
 msgstr "无法找到索引为 %2$zu 的自动添加的 %1$s 控制器"
 
@@ -5127,15 +5103,16 @@ msgstr "设备 '%s' 没有处于活动状态"
 msgid "Device '%s' is unrecognized, requires build"
 msgstr "设备 '%s' 未被识别，需要构建"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Device alias was not set for %s controller with index %d "
 msgstr "对索引为 %2$d 的 %1$s 控制器没有设置设备别名 "
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Device alias was not set for PCI controller with index '%u' required for "
 "device at address '%s'"
-msgstr "对地址 '%2$s' 处的设备所需的索引为 '%1$u' 的 PCI 控制器没有设置设备别名"
+msgstr ""
+"对地址 '%2$s' 处的设备所需的索引为 '%1$u' 的 PCI 控制器没有设置设备别名"
 
 msgid "Device attached successfully\n"
 msgstr "成功附加设备\n"
@@ -5287,7 +5264,7 @@ msgid ""
 "list of online CPUs."
 msgstr "显示该节点的 CPU 总数，在线 CPU 数以及在线 CPU 列表。"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Distance value %d under node %zu is LOCAL_DISTANCE and should be set to 10"
 msgstr "节点 %2$zu 下的距离值 %1$d 为 LOCAL_DISTANCE，应该被设为 10"
@@ -5474,8 +5451,8 @@ msgstr "域没有挂起支持"
 
 #, c-format
 msgid ""
-"Domain has %d interfaces. Please specify which one to detach using --mac"
-msgstr "域有 %d 个接口。请使用 --mac 指定要分离的接口。"
+"Domain has %zd interfaces. Please specify which one to detach using --mac"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -5579,6 +5556,10 @@ msgstr "使用 '%s' 生成域快照 %s"
 #, c-format
 msgid "Domain snapshot %s deleted\n"
 msgstr "已删除域快照 %s\n"
+
+#, c-format
+msgid "Domain snapshot %s reverted\n"
+msgstr ""
 
 msgid "Domain snapshot not found"
 msgstr "未找到域快照"
@@ -6581,6 +6562,9 @@ msgstr "使用 %s 生成的节点设备失败"
 msgid "Failed to create nvram dir %s"
 msgstr "创建 nvram 目录 %s 失败"
 
+msgid "Failed to create or modify the state XML attribute"
+msgstr ""
+
 #, c-format
 msgid "Failed to create pool %s"
 msgstr "创建池 %s 失败"
@@ -7336,7 +7320,7 @@ msgstr "新建文件夹 %s 失败"
 msgid "Failed to mount %s on %s type %s"
 msgstr "将 %s 在 %s 类型 %s 中挂载失败"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to mount %s on %s type %s flags=0x%x"
 msgstr "在 %2$s 类型 %3$s flags=0x%4$x 上挂载 %1$s 失败"
 
@@ -7611,7 +7595,7 @@ msgstr "重新附加 PCI 设备失败：%s"
 msgid "Failed to re-attach device %s"
 msgstr "重新附加设备 %s 失败"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to re-mount %s on %s flags=0x%x"
 msgstr "在 %2$s flags=0x%3$x 上重新挂载 %1$s 失败"
 
@@ -7851,6 +7835,10 @@ msgstr "从虚拟机中检索 vCPU 计数失败"
 msgid "Failed to retrieve vcpu state bitmap"
 msgstr "获取 vcpu 状态位图失败"
 
+#, c-format
+msgid "Failed to revert snapshot %s"
+msgstr ""
+
 msgid "Failed to rollback network config change transaction"
 msgstr "返回到网络配置更改事务失败"
 
@@ -7885,7 +7873,7 @@ msgstr "保存域 '%s' 状态失败"
 msgid "Failed to save domain '%s' to %s"
 msgstr "将域 '%s' 保存为 %s 失败"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to seek to %llu bytes to the end in volume with path '%s'"
 msgstr "在路径为 '%2$s' 的卷中查找距离末尾的 %1$llu 字节失败"
 
@@ -10124,6 +10112,9 @@ msgstr "JSON 后端卷定义 '%s' 缺少驱动程序名称"
 msgid "JSON backing volume definition '%s' must not have nested format drivers"
 msgstr "JSON 后端卷定义 '%s' 不得有嵌套格式驱动程序"
 
+msgid "JSON string array contains non-string element"
+msgstr ""
+
 #, c-format
 msgid "Job submission failed on interface '%s'"
 msgstr "接口 '%s' 中的任务提交失败"
@@ -12071,7 +12062,7 @@ msgstr "未传递足够的参数，没有设置任何内容"
 msgid "Not enough free space in pool for volume '%s'"
 msgstr "在池中没有用于卷 '%s' 的足够可用空间"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Not enough room for allocation of %llu bytes for level %u cache %u scope "
 "type '%s'"
@@ -12577,7 +12568,7 @@ msgstr "POST操作失败"
 msgid "POST operation failed: %s"
 msgstr "POST操作失败: %s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "PTR domain for %s network with prefix %u cannot be automatically created"
 msgstr "不能为前缀为 %2$u 的 %1$s 网络自动创建 PTR 域"
@@ -13210,12 +13201,13 @@ msgstr "所需操作无效：%s"
 msgid "Requested volume '%s' is not in pool '%s'"
 msgstr "请求的卷 '%s' 不在池 '%s' 中"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Required option '%s' is not set for PCI controller with index '%d', model "
 "'%s' and modelName '%s'"
-msgstr "没有为索引为 '%2$d'、型号为 '%3$s' 和 modelName 为 '%4$s' 的 PCI "
-"控制器设置必选项 '%1$s'"
+msgstr ""
+"没有为索引为 '%2$d'、型号为 '%3$s' 和 modelName 为 '%4$s' 的 PCI 控制器设置必"
+"选项 '%1$s'"
 
 #, c-format
 msgid ""
@@ -14057,6 +14049,9 @@ msgstr "快照转储 XML"
 
 msgid "Snapshot List"
 msgstr "快照列表"
+
+msgid "Snapshot delete"
+msgstr ""
 
 msgid "Snapshot is Null"
 msgstr "快照为 Null"
@@ -15204,6 +15199,10 @@ msgid "Thawed %d filesystem(s)\n"
 msgstr "解冻的 %d 文件系统\n"
 
 #, c-format
+msgid "The %s interface already exists"
+msgstr ""
+
+#, c-format
 msgid "The '%s' device is not supported by this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 '%s' 设备"
 
@@ -15406,9 +15405,14 @@ msgid ""
 msgstr ""
 
 msgid ""
-"The overall maximum number of clients must be greater than the maximum "
-"number of clients waiting for authentication"
-msgstr "客户端的整体最大数必须大于等待身份验证的客户端的最大数"
+"The overall maximum number of clients must not be less than the number of "
+"clients waiting for authentication"
+msgstr ""
+
+msgid ""
+"The overall maximum number of clients waiting for authentication must not be "
+"less than the overall maximum number of clients"
+msgstr ""
 
 msgid "The read only disk has no parent"
 msgstr "只读磁盘没有父磁盘"
@@ -15620,7 +15624,7 @@ msgstr "要写入流中的字节太多"
 msgid "Too many clients '%d' for limit '%d'"
 msgstr "客户端数量 '%d' 已超过限制 '%d'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Too many disks in fsinfo: %zd for limit %d"
 msgstr "fsinfo 中有太多的磁盘：对于限制 %2$d 来说为 %1$zd"
 
@@ -15762,10 +15766,6 @@ msgstr "尝试释放仍在使用的共享 CURL 对象"
 #, c-format
 msgid "Trying to lock unknown SharedCURL lock %d"
 msgstr "尝试锁定未知共享的 CURL 锁 %d"
-
-#, c-format
-msgid "Trying to remove mismatching close callback for domain %s"
-msgstr "尝试为域 %s 删除不匹配的 close 回叫"
 
 #, c-format
 msgid "Trying to unlock unknown SharedCURL lock %d"
@@ -16184,12 +16184,13 @@ msgstr "无法关闭新的中型 rc=%08x"
 msgid "Unable to compute hash of data: %s"
 msgstr "无法计算数据的哈希：%s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Unable to configure VF %d of PF '%s' because the PF is not online. Please "
 "change host network config to put the PF online."
-msgstr "无法配置 PF '%2$s' 的 VF %1$d，因为 PF 不在线。请更改主机网络配置以使 PF "
-"在线。"
+msgstr ""
+"无法配置 PF '%2$s' 的 VF %1$d，因为 PF 不在线。请更改主机网络配置以使 PF 在"
+"线。"
 
 msgid "Unable to configure libxl's memory management parameters"
 msgstr "无法配置 libxl 的内存管理参数"
@@ -18158,7 +18159,7 @@ msgstr "未知 JSON 回复 '%s'"
 msgid "Unknown LXC namespace source '%s'"
 msgstr "未知的 LXC 命名空间源 '%s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Unknown PCI header type '%d' for device '%s'"
 msgstr "设备 '%2$s' 的未知的 PCI 标头类型 '%1$d'"
 
@@ -18963,11 +18964,12 @@ msgstr "VCPU"
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "VF %d of PF '%s' is not bound to a net driver, so its MAC address cannot be "
 "set to %s"
-msgstr "PF '%2$s' 的 VF %1$d 没有绑定到网络驱动程序，因此其 MAC 地址不能设为 %3$s"
+msgstr ""
+"PF '%2$s' 的 VF %1$d 没有绑定到网络驱动程序，因此其 MAC 地址不能设为 %3$s"
 
 #, c-format
 msgid "VFB %s too big for destination"
@@ -18987,6 +18989,9 @@ msgstr "此版本的 QEMU 不支持 VFIO PCI 设备分配"
 
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "此系统上当前不支持 VFIO 设备分配"
+
+msgid "VM disk source and snapshot disk source are not the same"
+msgstr ""
 
 msgid "VM is already active"
 msgstr "VM 已处于活动状态"
@@ -19616,6 +19621,9 @@ msgstr "guest-get-users 返回值中缺少数组元素"
 msgid "array element missing in guest-get-vcpus return value"
 msgstr "guest-get-vcpus 返回值中缺少阵列"
 
+msgid "associate a FD with a domain"
+msgstr ""
+
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
 msgstr "gluster 卷的 JSON 后备定义中至少需要 1 个服务器"
@@ -19850,7 +19858,7 @@ msgstr "坏名字"
 msgid "bad pathname"
 msgstr "坏路径名"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "bad prefix %d for network %s when  checking range %s - %s"
 msgstr "检查范围 %3$s - %4$s 时，网络 %2$s 的错误前缀 %1$d"
 
@@ -19938,6 +19946,10 @@ msgstr "块 I/O 节流限制不能超过使用 QEMU 的 %llu"
 msgid "block I/O throttle limit value must be no more than %llu"
 msgstr "块 I/O 节流限制值不能超过 %llu"
 
+#, c-format
+msgid "block commit failed while deleting disk '%s' snapshot: '%s'"
+msgstr ""
+
 msgid "block copy still active"
 msgstr "块复制仍活跃"
 
@@ -19951,6 +19963,9 @@ msgstr "阻止设备"
 #, c-format
 msgid "block device snapshot target '%s' doesn't exist"
 msgstr "块设备快照目标 '%s' 不存在"
+
+msgid "block info is not supported for FD passed disk image"
+msgstr ""
 
 msgid "block info is not supported for vhostuser disk"
 msgstr "vhostuser 磁盘不支持块信息"
@@ -20195,6 +20210,9 @@ msgid ""
 "hypervisor driver"
 msgstr "可以是 --live 和 --config，具体取决于 hypervisor 驱动程序的实现"
 
+msgid "can't add memory backend as guest has no NUMA nodes configured"
+msgstr ""
+
 #, c-format
 msgid ""
 "can't add memory backend for guest node '%d' as the guest has only '%zu' "
@@ -20377,7 +20395,7 @@ msgstr "无法添加 netlink 成员"
 msgid "cannot add redirected USB device: USB is disabled for this domain"
 msgstr "无法添加重定向 USB 设备：USB 设备对这个域禁用"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "cannot allocate %llu bytes in file '%s'"
 msgstr "无法在文件 '%2$s' 中分配 %1$llu 字节"
 
@@ -20632,6 +20650,9 @@ msgstr "无法删除不活跃域的检查点"
 
 msgid "cannot delete domain snapshot for running domain"
 msgstr "无法删除运行中的域的快照"
+
+msgid "cannot delete external snapshots when there is another active block job"
+msgstr ""
 
 #, c-format
 msgid "cannot delete inactive domain with %d checkpoints"
@@ -21664,11 +21685,11 @@ msgstr "无法终止控制台流"
 msgid "cannot translate CPU model %s to a supported model"
 msgstr "无法将 CPU 型号 %s 转换为支持的型号"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "cannot translate keycode %u of %s codeset to qnum keycode"
 msgstr "无法将 %2$s codeset 的 keycode %1$u 转换为 qnum keycode"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "cannot translate keycode %u of %s codeset to xt keycode"
 msgstr "无法将 %2$s codeset 的 keycode %1$u 转换为 xt keycode"
 
@@ -22307,6 +22328,9 @@ msgstr "复制目的地是块设备而不是常规文件"
 msgid "copy of read-only disks is not supported"
 msgstr "不支持只读磁盘的复制"
 
+msgid "copy to a FD passed disk source is not yet supported"
+msgstr ""
+
 msgid "copy-on-write ploop volumes are not yet supported"
 msgstr "尚不支持 copy-on-write ploop 卷"
 
@@ -22406,9 +22430,12 @@ msgstr "无法从共享文件夹中分离 '%s', rc=%08x"
 msgid "could not determine max vcpus for the domain"
 msgstr "无法决定该域的最大 vcpu"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "could not find backing store index '%u' in chain for '%s'"
 msgstr "无法在 '%2$s' 的链中找到后备存储索引 '%1$u'"
+
+msgid "could not find base disk source in disk source chain"
+msgstr ""
 
 #, c-format
 msgid "could not find base image in chain for '%s'"
@@ -23007,9 +23034,18 @@ msgstr "删除与卷关联的快照，需要 --remove-all-storage（存储驱动
 msgid "delete the specified network port"
 msgstr "删除指定的网络端口"
 
-#, c-format
-msgid "deletion of %d external disk snapshots not supported yet"
-msgstr "尚不支持 %d 外部磁盘快照删除"
+msgid ""
+"deleting external snapshot that has internal snapshot as parent not supported"
+msgstr ""
+
+msgid "deletion of external and internal children disk snapshots not supported"
+msgstr ""
+
+msgid "deletion of external children disk snapshots not supported"
+msgstr ""
+
+msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
 
 #, c-format
 msgid "deprecated configuration: %s"
@@ -23381,6 +23417,12 @@ msgstr "只有 virtio 总线支持 event_idx 模式"
 #, c-format
 msgid "disk format %s is not supported"
 msgstr "不支持磁盘格式 %s"
+
+#, c-format
+msgid ""
+"disk image '%s' for internal snapshot '%s' is not the same as disk image "
+"currently used by VM"
+msgstr ""
 
 #, c-format
 msgid "disk image format not supported: %s"
@@ -23812,6 +23854,10 @@ msgid "download volume contents to a file"
 msgstr "将卷内容下载到文件中"
 
 #, c-format
+msgid "driver does not support FD passing for disk '%s'"
+msgstr ""
+
+#, c-format
 msgid "driver does not support net model '%s'"
 msgstr "驱动程序不支持网络型号 '%s'"
 
@@ -24024,7 +24070,7 @@ msgstr "vhostuser 磁盘不支持加密"
 msgid "encryption is supported only with 'raw' and 'qcow2' image format"
 msgstr "加密仅支持 'raw' 和 'qcow2' 镜像格式"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
 msgstr "网络 %3$s/%4$d 中范围 %1$s - %2$s 的末尾是广播地址"
 
@@ -24662,6 +24708,9 @@ msgstr "无法生成（启动）接口 %s ：%s%s%s"
 msgid "failed to create RBD snapshot %s@%s"
 msgstr "无法创建 RBD 快照 %s@%s"
 
+msgid "failed to create XML node"
+msgstr ""
+
 msgid "failed to create a new XML namespace"
 msgstr "无法创建一个新的 XML 命名空间"
 
@@ -24779,6 +24828,10 @@ msgstr "无法确定主机名称"
 msgid "failed to determine loop exit status: %s"
 msgstr "无法查询循环的退出状态: %s"
 
+#, c-format
+msgid "failed to duplicate file descriptor for fd group '%s'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr "无法启用 IP 转发"
 
@@ -24828,8 +24881,15 @@ msgid "failed to find disk '%s'"
 msgstr "无法找到磁盘 '%s'"
 
 #, c-format
+msgid "failed to find disk '%s' in snapshot VM XML"
+msgstr ""
+
+#, c-format
 msgid "failed to find iothread id for '%s'"
 msgstr "无法找到 '%s' 的 iothread id"
+
+msgid "failed to find parent disk source in backing chain"
+msgstr ""
 
 #, c-format
 msgid "failed to find the VID for the VLAN device '%s'"
@@ -25440,7 +25500,7 @@ msgstr "无法恢复域"
 msgid "failed to retrieve XML"
 msgstr "无法检索 XML"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "failed to retrieve client identity information for client '%llu' connected "
 "to server '%s'"
@@ -25513,10 +25573,6 @@ msgstr "无法设置 gluster volfile 服务器 '%s'"
 msgid "failed to set guest cid"
 msgstr "无法设置 guest cid"
 
-#, c-format
-msgid "failed to set snapshot '%s' as current"
-msgstr "无法将快照 '%s' 设为当前快照"
-
 msgid "failed to setup stderr file handle"
 msgstr "无法将 stderr 设为文件句柄"
 
@@ -25561,6 +25617,9 @@ msgstr "截屏失败"
 #, c-format
 msgid "failed to truncate %s"
 msgstr "截取 %s 失败"
+
+msgid "failed to umount devfs on /dev"
+msgstr ""
 
 #, c-format
 msgid "failed to undefine interface %s: %s%s%s"
@@ -25697,6 +25756,9 @@ msgstr "fd %d 必须是一个套接字"
 msgid "fd must be valid"
 msgstr "fd 必须有效"
 
+msgid "fd passed image source not initialized"
+msgstr ""
+
 msgid "fd passing is not supported by this connection"
 msgstr "这个连接不支持 fd 传送"
 
@@ -25760,6 +25822,13 @@ msgstr "包含 XML 卷描述的文件"
 
 msgid "file containing secret attributes in XML"
 msgstr "XML 中包含 secret 属性的文件"
+
+#, c-format
+msgid "file descriptor group '%s' was not associated with the domain"
+msgstr ""
+
+msgid "file descriptors N,M,... to associate"
+msgstr ""
 
 msgid "file format type raw,bochs,qcow,qcow2,qed,vmdk"
 msgstr "文件格式类型：raw、bochs、qcow、qcow2、qed、vmdk"
@@ -25876,6 +25945,10 @@ msgstr "找到潜在存储池源"
 
 msgid "finish step ignored that migration was cancelled"
 msgstr "完成步骤忽略了迁移已被取消"
+
+#, c-format
+msgid "finishing block job failed while deleting disk '%s' snapshot: '%s'"
+msgstr ""
 
 msgid ""
 "firewalld is set to use the nftables backend, but the required firewalld "
@@ -26798,8 +26871,8 @@ msgid "interface '%s' failing; reopening"
 msgstr "接口 '%s' 失败；正在重新打开"
 
 #, c-format
-msgid "interface (%s: %s) not found"
-msgstr "未找到接口 (%s: %s)"
+msgid "interface '%s' not found"
+msgstr ""
 
 msgid "interface device (MAC Address)"
 msgstr "接口失败 (MAC 地址)"
@@ -27294,7 +27367,7 @@ msgstr "文件中的无效 json：%s，正在重新编写"
 msgid "invalid json in net device saved config file '%s': '%.60s'"
 msgstr "网络设备保存的配置文件 '%s' 中无效的 json : '%.60s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "invalid keycode %u of %s codeset"
 msgstr "%2$s codeset 的无效的 keycode %1$u"
 
@@ -29329,6 +29402,9 @@ msgstr "支持的转储格式中缺少条目"
 msgid "missing existing file for disk %s: %s"
 msgstr "磁盘 %s 缺少文件：%s"
 
+msgid "missing external TPM backend type"
+msgstr ""
+
 msgid "missing feature name"
 msgstr "缺少功能名称"
 
@@ -29646,6 +29722,9 @@ msgstr "JSON 后备卷定义中缺少套接字地址类型"
 
 msgid "missing socket for unix transport"
 msgstr "Unix 传输缺少套接字"
+
+msgid "missing socket path for external TPM device"
+msgstr ""
 
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
@@ -29998,6 +30077,9 @@ msgstr ""
 
 msgid "name of snapshot"
 msgstr "快照名称"
+
+msgid "name of the FD group"
+msgstr ""
 
 msgid "name of the inactive domain"
 msgstr "非活跃域的名称"
@@ -31074,7 +31156,7 @@ msgstr "nwfilter 状态驱动程序未处于活动状态"
 msgid "object props can't be NULL"
 msgstr "对象 props 不能为 NULL"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "object size %zu of %s is not larger than parent class %zu"
 msgstr "%2$s 的对象大小 %1$zu 不能大于父类 %3$zu"
 
@@ -31121,6 +31203,9 @@ msgstr "在线非可插拔 vcpu 必须按升序排序"
 msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr "在线非可插拔 vcpu 需要排在可插拔 vcpu 之前"
+
+msgid "only 'client' mode is supported for external TPM device"
+msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "'dimm' 地址只支持 pc-dimm 设备"
@@ -31280,6 +31365,9 @@ msgstr "只支持单个输入设备"
 
 msgid "only snapshot=no is supported with vhostuser disk"
 msgstr "vhostuser 磁盘只支持 snapshot=no"
+
+msgid "only source type 'unix' is supported for external TPM device"
+msgstr ""
 
 msgid "only supports mount filesystem type"
 msgstr "只支持挂载文件系统类型"
@@ -31473,7 +31561,7 @@ msgstr "这个平台上不支持页面池分配"
 msgid "page size %u is not available"
 msgstr "页面大小 %u 不可用"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "page size %u is not available on node %d"
 msgstr "节点 %2$d 上的页面大小 %1$u 不可用"
 
@@ -31663,6 +31751,9 @@ msgstr "pci-root 和 pcie-root 控制器不应有任何地址"
 
 msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr "此机器类型不支持 PCIe-expander-bus 控制器"
+
+msgid "peeking is not supported for FD passed images"
+msgstr ""
 
 msgid "peeking is not supported for vhostuser disk"
 msgstr "vhostuser 磁盘不支持窥视"
@@ -31968,11 +32059,20 @@ msgstr "打印 XML 文档而不是附加接口"
 msgid "print XML document rather than change media"
 msgstr "打印 XML 文档而不是更改介质"
 
+msgid "print XML document rather than clone the volume"
+msgstr ""
+
 msgid "print XML document rather than create"
 msgstr "输出 XML 文档而不是生成 XML"
 
 msgid "print XML document rather than detach the disk"
 msgstr "打印 XML 文档而不是分离磁盘"
+
+msgid "print XML document rather than detach the interface"
+msgstr ""
+
+msgid "print XML document rather than set the interface link state"
+msgstr ""
 
 msgid "print XML document, but don't define/create"
 msgstr "打印 XML 文档，但不能定义/创建"
@@ -33414,6 +33514,13 @@ msgstr "快照 '%s' 没有上级"
 msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr "快照 '%s' 缺少域 '%s' 恢复信息"
 
+msgid "snapshot VM disk source and parent disk source are not the same"
+msgstr ""
+
+#, c-format
+msgid "snapshot disk '%s' was target of not completed snapshot delete"
+msgstr ""
+
 msgid "snapshot information"
 msgstr "快照信息"
 
@@ -33574,7 +33681,7 @@ msgstr "启动物理主机接口。"
 msgid "start cell %d out of range (0-%d)"
 msgstr "启动单元 %d 溢出（0 - %d）"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "start of range %s - %s in network %s/%d is the network address"
 msgstr "网络 %3$s/%4$d 中范围 %1$s - %2$s 的开始是网络地址"
 
@@ -34321,11 +34428,11 @@ msgstr "请求的内存统计过多：%d > %d"
 msgid "too many parameters '%d' for limit '%d'"
 msgstr "用于限制 '%d' 的太多参数 '%d'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "too many parameters '%u' for limit '%d'"
 msgstr "用于限制 '%2$d' 的太多参数 '%1$u'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "too many parameters '%u' for nparams '%d'"
 msgstr "用于 nparams '%2$d' 的太多参数 '%1$u'"
 
@@ -34657,6 +34764,9 @@ msgstr "触发 top 文件的双阶段活跃提交"
 
 msgid "try harder on risky reverts"
 msgstr "更努力地尝试有风险的转换"
+
+msgid "try to restore security label after use if possible"
+msgstr ""
 
 msgid "tty console"
 msgstr "tty 控制台"
@@ -35491,7 +35601,7 @@ msgstr "意外的迁移模式：%d"
 msgid "unexpected migration status in %s"
 msgstr "%s 中意外的迁移状态"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "unexpected mode 0x%x for %s"
 msgstr "%2$s 的意外的模式 0x%1$x"
 
@@ -35740,6 +35850,10 @@ msgid "unknown backend type '%s' for egd"
 msgstr "未知的 egd 的后端类型 '%s'"
 
 #, c-format
+msgid "unknown backend type '%s' for external TPM"
+msgstr ""
+
+#, c-format
 msgid "unknown backup mode '%s'"
 msgstr "未知的备份模式 '%s'"
 
@@ -35754,7 +35868,7 @@ msgstr "未知的块 IO 状态：%s"
 msgid "unknown bonding mode %s"
 msgstr "未知的绑定模式类型 %s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "unknown capability type '%d' for '%s'"
 msgstr "'%2$s' 的未知的能力类型 '%1$d'"
 
@@ -36241,6 +36355,10 @@ msgid "unsupported audio backend '%s'"
 msgstr "不支持的音频后端 '%s'"
 
 #, c-format
+msgid "unsupported audio model %s"
+msgstr ""
+
+#, c-format
 msgid "unsupported authentication type %d"
 msgstr "不支持的验证类型 %d"
 
@@ -36294,7 +36412,7 @@ msgstr "不支持的控制台目标类型 %s"
 msgid "unsupported cpu feature '%s'"
 msgstr "不支持的 cpu 功能 '%s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "unsupported data type '%c' for arg '%s'"
 msgstr "参数 '%2$s' 的不支持的数据类型 '%1$c'"
 
@@ -36373,12 +36491,12 @@ msgid "unsupported filesystem type '%s'"
 msgstr "不支持的文件系统类型 '%s'"
 
 #, c-format
-msgid "unsupported flags (0x%lx) in function %s"
-msgstr "标签（0x%lx）在功能 %s 中不支持"
-
-#, c-format
 msgid "unsupported flags (0x%x)"
 msgstr "不支持的标签 (0x%x)"
+
+#, c-format
+msgid "unsupported flags (0x%x) in function %s"
+msgstr ""
 
 #, c-format
 msgid "unsupported flags: (0x%x)"
@@ -36514,6 +36632,10 @@ msgstr "型号 'none' 的不支持的 type='%s'"
 msgid "unsupported usb model"
 msgstr "不支持的 usb 型号"
 
+#, c-format
+msgid "unsupported use of long flags in function %s"
+msgstr ""
+
 msgid "unsupported value"
 msgstr "不支持的值"
 
@@ -36604,6 +36726,9 @@ msgstr "使用标志需要一个复制作业"
 
 msgid "use of host cdrom passthrough"
 msgstr "使用主机 cdrom passthrough"
+
+msgid "use seclabels allowing writes"
+msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr "使用 virDomainMigrateToURI3 进行点对点迁移"
@@ -37534,6 +37659,49 @@ msgstr "请求网络 %s 的区 %s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "%s array element does not contain a string"
+#~ msgstr "%s 数组元素不包含字符串"
+
+#~ msgid "%s array element is missing item %zu"
+#~ msgstr "%s 数组元素缺少项 %zu"
+
+#~ msgid "%s is missing or not an array"
+#~ msgstr "%s 缺失或不是数组"
+
+#~ msgid "Another close callback is already defined for domain %s"
+#~ msgstr "已为域 %s 定义另一个 close 回叫"
+
+#~ msgid ""
+#~ "Close callback for domain %s already registered with another connection %p"
+#~ msgstr "关闭域 %s 的回退已使用另一个连接 %p 注册了"
+
+#~ msgid "Copying definition of '%d' type is not implemented yet."
+#~ msgstr "还没有采用复制 '%d' 类型定义的方法"
+
+#~ msgid ""
+#~ "Domain has %d interfaces. Please specify which one to detach using --mac"
+#~ msgstr "域有 %d 个接口。请使用 --mac 指定要分离的接口。"
+
+#~ msgid ""
+#~ "The overall maximum number of clients must be greater than the maximum "
+#~ "number of clients waiting for authentication"
+#~ msgstr "客户端的整体最大数必须大于等待身份验证的客户端的最大数"
+
+#~ msgid "Trying to remove mismatching close callback for domain %s"
+#~ msgstr "尝试为域 %s 删除不匹配的 close 回叫"
+
+#~ msgid "deletion of %d external disk snapshots not supported yet"
+#~ msgstr "尚不支持 %d 外部磁盘快照删除"
+
+#~ msgid "failed to set snapshot '%s' as current"
+#~ msgstr "无法将快照 '%s' 设为当前快照"
+
+#~ msgid "interface (%s: %s) not found"
+#~ msgstr "未找到接口 (%s: %s)"
+
+#~ msgid "unsupported flags (0x%lx) in function %s"
+#~ msgstr "标签（0x%lx）在功能 %s 中不支持"
 
 #~ msgid "%s: Invalid metric specified in route definition"
 #~ msgstr "%s：路由定义中指定的无效度量标准"

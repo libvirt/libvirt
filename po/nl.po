@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-11-24 14:54+0000\n"
+"POT-Creation-Date: 2023-01-09 14:27+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -364,14 +364,6 @@ msgid "%s (out of %d)"
 msgstr ""
 
 #, c-format
-msgid "%s array element does not contain a string"
-msgstr ""
-
-#, c-format
-msgid "%s array element is missing item %zu"
-msgstr ""
-
-#, c-format
 msgid "%s can't be empty"
 msgstr ""
 
@@ -454,10 +446,6 @@ msgstr ""
 #, c-format
 msgid "%s is missing 'type' property"
 msgstr "%s mist 'type' eigenschap"
-
-#, c-format
-msgid "%s is missing or not an array"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "%s is not an executable"
@@ -1667,10 +1655,6 @@ msgstr ""
 #, c-format
 msgid "Ancestor model %s not found for CPU model %s"
 msgstr "Voorouder model %s niet gevonden voor CPU model %s"
-
-#, fuzzy, c-format
-msgid "Another close callback is already defined for domain %s"
-msgstr "netwerk '%s' is al gedefinieerd met uuid %s"
 
 msgid "Another relabel transaction is already started"
 msgstr ""
@@ -3471,11 +3455,6 @@ msgid "Clone an existing volume within the parent pool."
 msgstr ""
 
 #, c-format
-msgid ""
-"Close callback for domain %s already registered with another connection %p"
-msgstr ""
-
-#, c-format
 msgid "Cloud-Hypervisor doesn't support '%s' device"
 msgstr ""
 
@@ -3696,10 +3675,6 @@ msgstr ""
 #, fuzzy
 msgid "Copy failed"
 msgstr "Dump mislukte"
-
-#, c-format
-msgid "Copying definition of '%d' type is not implemented yet."
-msgstr ""
 
 msgid "Core dump a domain."
 msgstr "Core dump een domein."
@@ -5523,9 +5498,8 @@ msgstr "het domein heeft geen actuele snapshot"
 
 #, c-format
 msgid ""
-"Domain has %d interfaces. Please specify which one to detach using --mac"
+"Domain has %zd interfaces. Please specify which one to detach using --mac"
 msgstr ""
-"Domein heeft %d interfaces. Specificeer welke los te koppelen met --mac"
 
 #, c-format
 msgid ""
@@ -5635,6 +5609,10 @@ msgstr "Domein snapshot %s is aangemaakt"
 #, fuzzy, c-format
 msgid "Domain snapshot %s deleted\n"
 msgstr "Domein snapshot %s is aangemaakt"
+
+#, c-format
+msgid "Domain snapshot %s reverted\n"
+msgstr ""
 
 msgid "Domain snapshot not found"
 msgstr "Domein snapshot niet gevonden"
@@ -6706,6 +6684,9 @@ msgstr "Aanmaken van node apparaat uit %s mislukte"
 #, fuzzy, c-format
 msgid "Failed to create nvram dir %s"
 msgstr "Aanmaken van volume %s mislukte"
+
+msgid "Failed to create or modify the state XML attribute"
+msgstr ""
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -8061,6 +8042,10 @@ msgstr "Aanmaken van volume uit %s mislukte"
 #, fuzzy
 msgid "Failed to retrieve vcpu state bitmap"
 msgstr "Aanmaken van volume %s mislukte"
+
+#, c-format
+msgid "Failed to revert snapshot %s"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to rollback network config change transaction"
@@ -10460,6 +10445,9 @@ msgstr ""
 
 #, c-format
 msgid "JSON backing volume definition '%s' must not have nested format drivers"
+msgstr ""
+
+msgid "JSON string array contains non-string element"
 msgstr ""
 
 #, fuzzy, c-format
@@ -14635,6 +14623,9 @@ msgstr "Snapshot dump XML"
 msgid "Snapshot List"
 msgstr "Snapshot lijst"
 
+msgid "Snapshot delete"
+msgstr ""
+
 #, fuzzy
 msgid "Snapshot is Null"
 msgstr "Snapshot lijst"
@@ -15855,6 +15846,10 @@ msgstr ""
 msgid "Thawed %d filesystem(s)\n"
 msgstr ""
 
+#, c-format
+msgid "The %s interface already exists"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "The '%s' device is not supported by this QEMU binary"
 msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
@@ -16054,8 +16049,13 @@ msgid ""
 msgstr ""
 
 msgid ""
-"The overall maximum number of clients must be greater than the maximum "
-"number of clients waiting for authentication"
+"The overall maximum number of clients must not be less than the number of "
+"clients waiting for authentication"
+msgstr ""
+
+msgid ""
+"The overall maximum number of clients waiting for authentication must not be "
+"less than the overall maximum number of clients"
 msgstr ""
 
 msgid "The read only disk has no parent"
@@ -16424,10 +16424,6 @@ msgstr ""
 #, c-format
 msgid "Trying to lock unknown SharedCURL lock %d"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Trying to remove mismatching close callback for domain %s"
-msgstr "Verwijderen van beheerde opslag image voor domein %s mislukte"
 
 #, c-format
 msgid "Trying to unlock unknown SharedCURL lock %d"
@@ -19894,6 +19890,9 @@ msgstr ""
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr ""
 
+msgid "VM disk source and snapshot disk source are not the same"
+msgstr ""
+
 msgid "VM is already active"
 msgstr "VM is al actief"
 
@@ -20551,6 +20550,9 @@ msgstr ""
 msgid "array element missing in guest-get-vcpus return value"
 msgstr ""
 
+msgid "associate a FD with a domain"
+msgstr ""
+
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
 msgstr ""
@@ -20885,6 +20887,10 @@ msgstr ""
 msgid "block I/O throttle limit value must be no more than %llu"
 msgstr ""
 
+#, c-format
+msgid "block commit failed while deleting disk '%s' snapshot: '%s'"
+msgstr ""
+
 msgid "block copy still active"
 msgstr ""
 
@@ -20897,6 +20903,9 @@ msgstr "blok apparaat"
 
 #, c-format
 msgid "block device snapshot target '%s' doesn't exist"
+msgstr ""
+
+msgid "block info is not supported for FD passed disk image"
 msgstr ""
 
 msgid "block info is not supported for vhostuser disk"
@@ -21147,6 +21156,9 @@ msgstr "aanroeper negeert uri_out"
 msgid ""
 "can be either or both of --live and --config, depends on implementation "
 "hypervisor driver"
+msgstr ""
+
+msgid "can't add memory backend as guest has no NUMA nodes configured"
 msgstr ""
 
 #, c-format
@@ -21603,6 +21615,9 @@ msgstr "kan vcpus niet tonen voor een inactief domein"
 
 msgid "cannot delete domain snapshot for running domain"
 msgstr "kan domein snapshot niet verwijderen voor draaiend domein"
+
+msgid "cannot delete external snapshots when there is another active block job"
+msgstr ""
 
 #, c-format
 msgid "cannot delete inactive domain with %d checkpoints"
@@ -23379,6 +23394,9 @@ msgstr ""
 msgid "copy of read-only disks is not supported"
 msgstr "cpu affiniteit wordt niet ondersteund"
 
+msgid "copy to a FD passed disk source is not yet supported"
+msgstr ""
+
 #, fuzzy
 msgid "copy-on-write ploop volumes are not yet supported"
 msgstr "Aanmaken van niet-bestand volumes wordt niet ondersteund"
@@ -23486,6 +23504,9 @@ msgstr "kan max vcpus voor het domein niet bepalen"
 
 #, c-format
 msgid "could not find backing store index '%u' in chain for '%s'"
+msgstr ""
+
+msgid "could not find base disk source in disk source chain"
 msgstr ""
 
 #, fuzzy, c-format
@@ -24112,9 +24133,18 @@ msgstr ""
 msgid "delete the specified network port"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "deletion of %d external disk snapshots not supported yet"
-msgstr "Aanmaken van %s volumes wordt niet ondersteund"
+msgid ""
+"deleting external snapshot that has internal snapshot as parent not supported"
+msgstr ""
+
+msgid "deletion of external and internal children disk snapshots not supported"
+msgstr ""
+
+msgid "deletion of external children disk snapshots not supported"
+msgstr ""
+
+msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
 
 #, c-format
 msgid "deprecated configuration: %s"
@@ -24502,6 +24532,12 @@ msgstr ""
 #, fuzzy, c-format
 msgid "disk format %s is not supported"
 msgstr "station hotplug wordt niet ondersteund"
+
+#, c-format
+msgid ""
+"disk image '%s' for internal snapshot '%s' is not the same as disk image "
+"currently used by VM"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "disk image format not supported: %s"
@@ -24969,6 +25005,10 @@ msgstr "voltooid"
 #, fuzzy
 msgid "download volume contents to a file"
 msgstr "ongeldige volume omvang lengte waarde"
+
+#, c-format
+msgid "driver does not support FD passing for disk '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "driver does not support net model '%s'"
@@ -25850,6 +25890,9 @@ msgstr "Starten van interface %s mislukte"
 msgid "failed to create RBD snapshot %s@%s"
 msgstr "Snapshot maken mislukte: %s"
 
+msgid "failed to create XML node"
+msgstr ""
+
 #, fuzzy
 msgid "failed to create a new XML namespace"
 msgstr "Aanmaken van XML mislukte"
@@ -25975,6 +26018,10 @@ msgstr ""
 msgid "failed to determine loop exit status: %s"
 msgstr "Verkrijgen van blok stats mislukte  %s %s"
 
+#, c-format
+msgid "failed to duplicate file descriptor for fd group '%s'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr "IP doorsturen aanzetten mislukte"
 
@@ -26025,9 +26072,16 @@ msgstr ""
 msgid "failed to find disk '%s'"
 msgstr "verkrijgen van domein '%s' mislukte"
 
+#, c-format
+msgid "failed to find disk '%s' in snapshot VM XML"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to find iothread id for '%s'"
 msgstr "Vinden van ouder apparaat voor %s mislukte"
+
+msgid "failed to find parent disk source in backing chain"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to find the VID for the VLAN device '%s'"
@@ -26760,10 +26814,6 @@ msgstr "verkrijgen van nwfilter '%s' mislukte"
 msgid "failed to set guest cid"
 msgstr "kon URI niet krijgen"
 
-#, fuzzy, c-format
-msgid "failed to set snapshot '%s' as current"
-msgstr "Snapshot maken mislukte: %s"
-
 msgid "failed to setup stderr file handle"
 msgstr "Instellen van stderr bestand handel mislukte"
 
@@ -26810,6 +26860,9 @@ msgstr "Snapshot maken mislukte: %s"
 #, fuzzy, c-format
 msgid "failed to truncate %s"
 msgstr "%s aanmaken mislukte"
+
+msgid "failed to umount devfs on /dev"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to undefine interface %s: %s%s%s"
@@ -26951,6 +27004,9 @@ msgstr "fd moet geldig zijn"
 msgid "fd must be valid"
 msgstr "fd moet geldig zijn"
 
+msgid "fd passed image source not initialized"
+msgstr ""
+
 #, fuzzy
 msgid "fd passing is not supported by this connection"
 msgstr "deze functie wordt niet ondersteund door de verbinding driver"
@@ -27017,6 +27073,13 @@ msgstr "bestand bevat een XML volume beschrijving"
 
 msgid "file containing secret attributes in XML"
 msgstr "bestand met geheim attributen in XML"
+
+#, c-format
+msgid "file descriptor group '%s' was not associated with the domain"
+msgstr ""
+
+msgid "file descriptors N,M,... to associate"
+msgstr ""
 
 msgid "file format type raw,bochs,qcow,qcow2,qed,vmdk"
 msgstr ""
@@ -27150,6 +27213,10 @@ msgid "find potential storage pool sources"
 msgstr "zoek naar potentiële opslag pool bronnen"
 
 msgid "finish step ignored that migration was cancelled"
+msgstr ""
+
+#, c-format
+msgid "finishing block job failed while deleting disk '%s' snapshot: '%s'"
 msgstr ""
 
 msgid ""
@@ -28103,9 +28170,9 @@ msgstr ""
 msgid "interface '%s' failing; reopening"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "interface (%s: %s) not found"
-msgstr "Interface niet gevonden"
+#, c-format
+msgid "interface '%s' not found"
+msgstr ""
 
 #, fuzzy
 msgid "interface device (MAC Address)"
@@ -30843,6 +30910,9 @@ msgstr "ontbrekende besturingssysteem informatie"
 msgid "missing existing file for disk %s: %s"
 msgstr "ontbrekende naam voor schijf bron"
 
+msgid "missing external TPM backend type"
+msgstr ""
+
 #, fuzzy
 msgid "missing feature name"
 msgstr "Ontbrekende CPU eigenschap naam"
@@ -31193,6 +31263,9 @@ msgstr ""
 #, fuzzy
 msgid "missing socket for unix transport"
 msgstr "ontbrekende naam voor schijf bron"
+
+msgid "missing socket path for external TPM device"
+msgstr ""
 
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
@@ -31571,6 +31644,9 @@ msgstr ""
 #, fuzzy
 msgid "name of snapshot"
 msgstr "domein heeft geen snapshots"
+
+msgid "name of the FD group"
+msgstr ""
 
 msgid "name of the inactive domain"
 msgstr "naam van een inactief domein"
@@ -32756,6 +32832,9 @@ msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr ""
 
+msgid "only 'client' mode is supported for external TPM device"
+msgstr ""
+
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr ""
 
@@ -32932,6 +33011,9 @@ msgid "only single input device is supported"
 msgstr "slechts een enkel bewaker apparaat wordt ondersteund"
 
 msgid "only snapshot=no is supported with vhostuser disk"
+msgstr ""
+
+msgid "only source type 'unix' is supported for external TPM device"
 msgstr ""
 
 msgid "only supports mount filesystem type"
@@ -33334,6 +33416,9 @@ msgstr ""
 msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
+msgid "peeking is not supported for FD passed images"
+msgstr ""
+
 msgid "peeking is not supported for vhostuser disk"
 msgstr ""
 
@@ -33654,6 +33739,9 @@ msgstr "XML document afdrukken, maar niets definiëren/aanmaken"
 msgid "print XML document rather than change media"
 msgstr "XML document afdrukken, maar niets definiëren/aanmaken"
 
+msgid "print XML document rather than clone the volume"
+msgstr ""
+
 #, fuzzy
 msgid "print XML document rather than create"
 msgstr "XML document afdrukken, maar niets definiëren/aanmaken"
@@ -33661,6 +33749,12 @@ msgstr "XML document afdrukken, maar niets definiëren/aanmaken"
 #, fuzzy
 msgid "print XML document rather than detach the disk"
 msgstr "XML document afdrukken, maar niets definiëren/aanmaken"
+
+msgid "print XML document rather than detach the interface"
+msgstr ""
+
+msgid "print XML document rather than set the interface link state"
+msgstr ""
 
 msgid "print XML document, but don't define/create"
 msgstr "XML document afdrukken, maar niets definiëren/aanmaken"
@@ -35180,6 +35274,13 @@ msgstr "Snapshot '%s' bestaat al"
 msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr ""
 
+msgid "snapshot VM disk source and parent disk source are not the same"
+msgstr ""
+
+#, c-format
+msgid "snapshot disk '%s' was target of not completed snapshot delete"
+msgstr ""
+
 #, fuzzy
 msgid "snapshot information"
 msgstr "node informatie"
@@ -36440,6 +36541,9 @@ msgstr ""
 msgid "try harder on risky reverts"
 msgstr ""
 
+msgid "try to restore security label after use if possible"
+msgstr ""
+
 msgid "tty console"
 msgstr "tty console"
 
@@ -37564,6 +37668,10 @@ msgstr "onbekend authenticatie type %s"
 msgid "unknown backend type '%s' for egd"
 msgstr "onbekend interface type '%s'"
 
+#, c-format
+msgid "unknown backend type '%s' for external TPM"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown backup mode '%s'"
 msgstr "onbekende toegangsmode '%s'"
@@ -38073,6 +38181,10 @@ msgid "unsupported audio backend '%s'"
 msgstr ""
 
 #, c-format
+msgid "unsupported audio model %s"
+msgstr ""
+
+#, c-format
 msgid "unsupported authentication type %d"
 msgstr "niet-ondersteund authenticatie type %d"
 
@@ -38207,13 +38319,13 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "unsupported flags (0x%lx) in function %s"
-msgstr "niet-ondersteunde vlaggen (0x%x)"
-
 #, c-format
 msgid "unsupported flags (0x%x)"
 msgstr "niet-ondersteunde vlaggen (0x%x)"
+
+#, c-format
+msgid "unsupported flags (0x%x) in function %s"
+msgstr ""
 
 #, c-format
 msgid "unsupported flags: (0x%x)"
@@ -38353,6 +38465,10 @@ msgstr "niet-ondersteund data type '%c' voor arg '%s'"
 msgid "unsupported usb model"
 msgstr "niet-ondersteund schijf type %s"
 
+#, c-format
+msgid "unsupported use of long flags in function %s"
+msgstr ""
+
 #, fuzzy
 msgid "unsupported value"
 msgstr "niet-ondersteunde gebeurtenis ID %d"
@@ -38450,6 +38566,9 @@ msgid "use of flags requires a copy job"
 msgstr ""
 
 msgid "use of host cdrom passthrough"
+msgstr ""
+
+msgid "use seclabels allowing writes"
 msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
@@ -39415,6 +39534,35 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <tekenreeks>"
+
+#, fuzzy
+#~ msgid "Another close callback is already defined for domain %s"
+#~ msgstr "netwerk '%s' is al gedefinieerd met uuid %s"
+
+#~ msgid ""
+#~ "Domain has %d interfaces. Please specify which one to detach using --mac"
+#~ msgstr ""
+#~ "Domein heeft %d interfaces. Specificeer welke los te koppelen met --mac"
+
+#, fuzzy
+#~ msgid "Trying to remove mismatching close callback for domain %s"
+#~ msgstr "Verwijderen van beheerde opslag image voor domein %s mislukte"
+
+#, fuzzy
+#~ msgid "deletion of %d external disk snapshots not supported yet"
+#~ msgstr "Aanmaken van %s volumes wordt niet ondersteund"
+
+#, fuzzy
+#~ msgid "failed to set snapshot '%s' as current"
+#~ msgstr "Snapshot maken mislukte: %s"
+
+#, fuzzy
+#~ msgid "interface (%s: %s) not found"
+#~ msgstr "Interface niet gevonden"
+
+#, fuzzy
+#~ msgid "unsupported flags (0x%lx) in function %s"
+#~ msgstr "niet-ondersteunde vlaggen (0x%x)"
 
 #, fuzzy
 #~ msgid "CPU vendor value 0x%2lx already defined"

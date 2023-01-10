@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-11-24 14:54+0000\n"
+"POT-Creation-Date: 2023-01-09 14:27+0000\n"
 "PO-Revision-Date: 2021-07-21 11:38+0000\n"
 "Last-Translator: Matej Cepl <mcepl@cepl.eu>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -504,14 +504,6 @@ msgid "%s (out of %d)"
 msgstr "%s (z %d)"
 
 #, c-format
-msgid "%s array element does not contain a string"
-msgstr ""
-
-#, c-format
-msgid "%s array element is missing item %zu"
-msgstr ""
-
-#, c-format
 msgid "%s can't be empty"
 msgstr "%s nemůže být prázdné"
 
@@ -595,10 +587,6 @@ msgstr "je třeba, aby %s v %s nebylo nula"
 #, c-format
 msgid "%s is missing 'type' property"
 msgstr "%s chybí vlastnost 'type'"
-
-#, c-format
-msgid "%s is missing or not an array"
-msgstr ""
 
 #, c-format
 msgid "%s is not an executable"
@@ -1836,10 +1824,6 @@ msgstr "Je třeba zadat výslovný formát disku"
 #, c-format
 msgid "Ancestor model %s not found for CPU model %s"
 msgstr "Model předchůdce %s nenalezen pro model procesoru %s"
-
-#, c-format
-msgid "Another close callback is already defined for domain %s"
-msgstr "Pro doménu %s už je definováno jiné zpětné volání zavření"
 
 msgid "Another relabel transaction is already started"
 msgstr "Už je spuštěná jiná transakce přeštítkování"
@@ -3644,12 +3628,6 @@ msgid "Clone an existing volume within the parent pool."
 msgstr "Klonovat existující svazek v rámci nadřazeného fondu."
 
 #, c-format
-msgid ""
-"Close callback for domain %s already registered with another connection %p"
-msgstr ""
-"Zpětné volání uzavření pro doménu %s už je registrováno s jiným spojením %p"
-
-#, c-format
 msgid "Cloud-Hypervisor doesn't support '%s' device"
 msgstr ""
 
@@ -3865,10 +3843,6 @@ msgstr "Kopírování přerušeno"
 
 msgid "Copy failed"
 msgstr "Kopírování se nezdařilo"
-
-#, c-format
-msgid "Copying definition of '%d' type is not implemented yet."
-msgstr "Kopírování definic typu „%d“ zatím není implementováno."
 
 msgid "Core dump a domain."
 msgstr "Vypsat paměť domény."
@@ -5645,8 +5619,8 @@ msgstr "Doména nepodporuje uspání"
 
 #, c-format
 msgid ""
-"Domain has %d interfaces. Please specify which one to detach using --mac"
-msgstr "Doména má %d rozhraní. Určete které odpojit pomocí --mac"
+"Domain has %zd interfaces. Please specify which one to detach using --mac"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -5753,6 +5727,10 @@ msgstr "Zachycený stav domény %s vytvořen z „%s“"
 #, c-format
 msgid "Domain snapshot %s deleted\n"
 msgstr "Zachycený stav domény %s smazán\n"
+
+#, c-format
+msgid "Domain snapshot %s reverted\n"
+msgstr ""
 
 msgid "Domain snapshot not found"
 msgstr "Zachycený stav domény nenalezen"
@@ -6813,6 +6791,9 @@ msgstr "Nepodařilo se vytvořit zařízení uzlu z %s"
 #, c-format
 msgid "Failed to create nvram dir %s"
 msgstr "Nepodařilo se vytvořit složku nvram %s"
+
+msgid "Failed to create or modify the state XML attribute"
+msgstr ""
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -8106,6 +8087,10 @@ msgstr "Nepodařilo se získat počet virt. procesorů z hosta"
 
 msgid "Failed to retrieve vcpu state bitmap"
 msgstr "Nepodařilo se získat bitovou mapu stavu virt. procesoru"
+
+#, c-format
+msgid "Failed to revert snapshot %s"
+msgstr ""
 
 msgid "Failed to rollback network config change transaction"
 msgstr "Nepodařilo se vrátit zpět transakci změny nastavení sítě"
@@ -10486,6 +10471,9 @@ msgstr ""
 msgid "JSON backing volume definition '%s' must not have nested format drivers"
 msgstr ""
 "JSON definice svazku „%s“, na kterém je zalotené, postrádá název ovladače"
+
+msgid "JSON string array contains non-string element"
+msgstr ""
 
 #, c-format
 msgid "Job submission failed on interface '%s'"
@@ -14606,6 +14594,9 @@ msgstr "Výpis XML zachyceného stavu"
 msgid "Snapshot List"
 msgstr "Seznam zachycených stavů"
 
+msgid "Snapshot delete"
+msgstr ""
+
 msgid "Snapshot is Null"
 msgstr "Zachycený stav je prázdný"
 
@@ -15812,6 +15803,10 @@ msgid "Thawed %d filesystem(s)\n"
 msgstr "Rozmrazeno %d souborových systémů\n"
 
 #, c-format
+msgid "The %s interface already exists"
+msgstr ""
+
+#, c-format
 msgid "The '%s' device is not supported by this QEMU binary"
 msgstr "Zařízení „%s“ není touto binárkou QEMU podporováno"
 
@@ -16026,11 +16021,14 @@ msgid ""
 msgstr ""
 
 msgid ""
-"The overall maximum number of clients must be greater than the maximum "
-"number of clients waiting for authentication"
+"The overall maximum number of clients must not be less than the number of "
+"clients waiting for authentication"
 msgstr ""
-"Je třeba, aby celkový maximální počet klientů byl vyšší než maximální počet "
-"klientů, čekajících na ověření se"
+
+msgid ""
+"The overall maximum number of clients waiting for authentication must not be "
+"less than the overall maximum number of clients"
+msgstr ""
 
 msgid "The read only disk has no parent"
 msgstr "Disk pouze pro čtení nemá žádný nadřazený"
@@ -16398,10 +16396,6 @@ msgstr "Zkouší se uvolnit SharedCURL objekt, který je stále používán"
 #, c-format
 msgid "Trying to lock unknown SharedCURL lock %d"
 msgstr "Pokouší se zamknout neznámý SharedCURL zámek %d"
-
-#, c-format
-msgid "Trying to remove mismatching close callback for domain %s"
-msgstr "Pokus o odstranění neshodného zpětného volání uzavření pro doménu %s"
 
 #, c-format
 msgid "Trying to unlock unknown SharedCURL lock %d"
@@ -19689,6 +19683,9 @@ msgid "VFIO device assignment is currently not supported on this system"
 msgstr ""
 "VFIO přiřazování zařízení v tuto chvíli není na tomto systému podporováno"
 
+msgid "VM disk source and snapshot disk source are not the same"
+msgstr ""
+
 msgid "VM is already active"
 msgstr "virt. stroj už je aktivní"
 
@@ -20348,6 +20345,9 @@ msgstr "v návratové hodnotě guest-get-users chybí prvek pole"
 msgid "array element missing in guest-get-vcpus return value"
 msgstr "v návratové hodnotě guest-get-vcpus chybí prvek pole"
 
+msgid "associate a FD with a domain"
+msgstr ""
+
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
 msgstr ""
@@ -20694,6 +20694,10 @@ msgid "block I/O throttle limit value must be no more than %llu"
 msgstr ""
 "je třeba, aby hodnota limitu blokového vstup./výstupu nebyla vyšší než %llu"
 
+#, c-format
+msgid "block commit failed while deleting disk '%s' snapshot: '%s'"
+msgstr ""
+
 msgid "block copy still active"
 msgstr "bloková kopie je pořád aktivní"
 
@@ -20706,6 +20710,9 @@ msgstr "blokové zařízení"
 
 #, c-format
 msgid "block device snapshot target '%s' doesn't exist"
+msgstr ""
+
+msgid "block info is not supported for FD passed disk image"
 msgstr ""
 
 msgid "block info is not supported for vhostuser disk"
@@ -20965,6 +20972,9 @@ msgid ""
 msgstr ""
 "může být jedno či druhé, případně obojí z --live a --config – dle "
 "implementace ovladače hypervizoru"
+
+msgid "can't add memory backend as guest has no NUMA nodes configured"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -21419,6 +21429,9 @@ msgstr "není možné vytvořit kontrolní bod pro neaktivní doménu"
 
 msgid "cannot delete domain snapshot for running domain"
 msgstr "není možné smazat zachycený stav spuštěné domény"
+
+msgid "cannot delete external snapshots when there is another active block job"
+msgstr ""
 
 #, c-format
 msgid "cannot delete inactive domain with %d checkpoints"
@@ -23154,6 +23167,9 @@ msgstr "cíl kopie je blokové zařízení namísto běžného souboru"
 msgid "copy of read-only disks is not supported"
 msgstr "ide disky pouze pro čtení nejsou podporovány"
 
+msgid "copy to a FD passed disk source is not yet supported"
+msgstr ""
+
 msgid "copy-on-write ploop volumes are not yet supported"
 msgstr "copy-on-write ploop svazky zatím nejsou podporovány"
 
@@ -23261,6 +23277,9 @@ msgstr "nedaří se zjistit horní hranici počtu virt. procesorů pro domény"
 
 #, c-format
 msgid "could not find backing store index '%u' in chain for '%s'"
+msgstr ""
+
+msgid "could not find base disk source in disk source chain"
 msgstr ""
 
 #, c-format
@@ -23887,9 +23906,18 @@ msgstr ""
 msgid "delete the specified network port"
 msgstr "smazat zadaný síťový port"
 
-#, c-format
-msgid "deletion of %d external disk snapshots not supported yet"
-msgstr "mazání %d externích zachycených stavů disku zatím není podporováno"
+msgid ""
+"deleting external snapshot that has internal snapshot as parent not supported"
+msgstr ""
+
+msgid "deletion of external and internal children disk snapshots not supported"
+msgstr ""
+
+msgid "deletion of external children disk snapshots not supported"
+msgstr ""
+
+msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
 
 #, c-format
 msgid "deprecated configuration: %s"
@@ -24268,6 +24296,12 @@ msgstr "režim disku event_idx je podporován pouze pro virtio sběrnici"
 #, c-format
 msgid "disk format %s is not supported"
 msgstr "formát disku %s není podporován"
+
+#, c-format
+msgid ""
+"disk image '%s' for internal snapshot '%s' is not the same as disk image "
+"currently used by VM"
+msgstr ""
 
 #, c-format
 msgid "disk image format not supported: %s"
@@ -24713,6 +24747,10 @@ msgstr "hotovo"
 
 msgid "download volume contents to a file"
 msgstr "stáhnout obsah svazku do souboru"
+
+#, c-format
+msgid "driver does not support FD passing for disk '%s'"
+msgstr ""
 
 #, c-format
 msgid "driver does not support net model '%s'"
@@ -25587,6 +25625,9 @@ msgstr "nepodařilo se vytvořit (spustit) rozhraní %s: %s%s%s"
 msgid "failed to create RBD snapshot %s@%s"
 msgstr "nepodařilo se vytvořit RBD zachycený stav %s@%s"
 
+msgid "failed to create XML node"
+msgstr ""
+
 msgid "failed to create a new XML namespace"
 msgstr "nepodařilo se vytvořit nový XML jmenný prostor"
 
@@ -25705,6 +25746,10 @@ msgstr ""
 msgid "failed to determine loop exit status: %s"
 msgstr "nepodařilo se zjistit návratový stav smyčky: %s"
 
+#, c-format
+msgid "failed to duplicate file descriptor for fd group '%s'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr "nepodařilo se zapnout IP přeposílání"
 
@@ -25756,9 +25801,16 @@ msgid "failed to find disk '%s'"
 msgstr "nepodařilo se najít disk „%s“"
 
 #, c-format
+msgid "failed to find disk '%s' in snapshot VM XML"
+msgstr ""
+
+#, c-format
 msgid "failed to find iothread id for '%s'"
 msgstr ""
 "nepodařilo se nalézt identifikátor iotherad (vst./výstupního vlákna) pro „%s“"
+
+msgid "failed to find parent disk source in backing chain"
+msgstr ""
 
 #, c-format
 msgid "failed to find the VID for the VLAN device '%s'"
@@ -26464,10 +26516,6 @@ msgstr "nepodařilo se zjistit stav souboru „%s“ na protějšku"
 msgid "failed to set guest cid"
 msgstr "nepodařilo se nastavit %s"
 
-#, c-format
-msgid "failed to set snapshot '%s' as current"
-msgstr "nepodařilo se nastavit zachycený stav „%s“ jako aktuální"
-
 msgid "failed to setup stderr file handle"
 msgstr "nepodařilo se nastavit obsluhu souboru standardního chybového vstupu"
 
@@ -26512,6 +26560,9 @@ msgstr "nepodařilo se pořídit snímek obrazovky"
 #, c-format
 msgid "failed to truncate %s"
 msgstr "nepodařilo se zkrátit %s"
+
+msgid "failed to umount devfs on /dev"
+msgstr ""
 
 #, c-format
 msgid "failed to undefine interface %s: %s%s%s"
@@ -26650,6 +26701,9 @@ msgstr "je třeba, aby popisovač souboru %d byl soket"
 msgid "fd must be valid"
 msgstr "je třeba, aby popisovač souboru byl platný"
 
+msgid "fd passed image source not initialized"
+msgstr ""
+
 msgid "fd passing is not supported by this connection"
 msgstr "předávání popisovače souboru není tímto spojením podporováno"
 
@@ -26718,6 +26772,13 @@ msgstr "soubor obsahující XML popis svazku"
 
 msgid "file containing secret attributes in XML"
 msgstr "soubor obsahující atributy tajemství v XML"
+
+#, c-format
+msgid "file descriptor group '%s' was not associated with the domain"
+msgstr ""
+
+msgid "file descriptors N,M,... to associate"
+msgstr ""
 
 msgid "file format type raw,bochs,qcow,qcow2,qed,vmdk"
 msgstr "typ formátu souboru raw,bochs,qcow,qcow2,qed,vmdk"
@@ -26848,6 +26909,10 @@ msgstr "najít potenciální zdroje fondu úložiště"
 
 msgid "finish step ignored that migration was cancelled"
 msgstr "krok dokončení ignoroval že migrace byla zrušena"
+
+#, c-format
+msgid "finishing block job failed while deleting disk '%s' snapshot: '%s'"
+msgstr ""
 
 msgid ""
 "firewalld is set to use the nftables backend, but the required firewalld "
@@ -27810,8 +27875,8 @@ msgid "interface '%s' failing; reopening"
 msgstr "rozhraní „%s“ selhává; otevírá se znovu"
 
 #, c-format
-msgid "interface (%s: %s) not found"
-msgstr "rozhraní (%s: %s) nenalezeno"
+msgid "interface '%s' not found"
+msgstr ""
 
 msgid "interface device (MAC Address)"
 msgstr "zařízení rozhraní (MAC adresa)"
@@ -30452,6 +30517,9 @@ msgstr "chybí položka v podporovaných formátech výpisů"
 msgid "missing existing file for disk %s: %s"
 msgstr "chybí existující soubor pro disk %s: %s"
 
+msgid "missing external TPM backend type"
+msgstr ""
+
 msgid "missing feature name"
 msgstr "chybí název funkce"
 
@@ -30799,6 +30867,9 @@ msgstr "V JSON definici svazku, na kterém je založeno chybí typ adresy soketu
 
 msgid "missing socket for unix transport"
 msgstr "chybí soket pro unixový transport"
+
+msgid "missing socket path for external TPM device"
+msgstr ""
 
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
@@ -31171,6 +31242,9 @@ msgstr ""
 
 msgid "name of snapshot"
 msgstr "název zachyceného stavu"
+
+msgid "name of the FD group"
+msgstr ""
 
 msgid "name of the inactive domain"
 msgstr "název neaktivní domény"
@@ -32337,6 +32411,9 @@ msgstr ""
 "zapnuté za chodu nepřipojovatelné virtuální procesory je třeba instruovat "
 "dříve, než ty za chodu připojitelné"
 
+msgid "only 'client' mode is supported for external TPM device"
+msgstr ""
+
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "pro pc-dimm zařízení jsou podporovány pouze 'dimm' adresy"
 
@@ -32501,6 +32578,9 @@ msgid "only single input device is supported"
 msgstr "v rámci jednoho stroje je podporováno pouze jedno vstupní zařízení"
 
 msgid "only snapshot=no is supported with vhostuser disk"
+msgstr ""
+
+msgid "only source type 'unix' is supported for external TPM device"
 msgstr ""
 
 msgid "only supports mount filesystem type"
@@ -32901,6 +32981,9 @@ msgstr "řadiče pci-root a pcie-root by neměly mít adresu"
 msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
+msgid "peeking is not supported for FD passed images"
+msgstr ""
+
 msgid "peeking is not supported for vhostuser disk"
 msgstr ""
 
@@ -33220,11 +33303,20 @@ msgstr "vypsat XML dokument namísto připojení rozhraní"
 msgid "print XML document rather than change media"
 msgstr "namísto výměny média vypsat XML dokument"
 
+msgid "print XML document rather than clone the volume"
+msgstr ""
+
 msgid "print XML document rather than create"
 msgstr "namísto vytvoření pouze vypsat XML dokument"
 
 msgid "print XML document rather than detach the disk"
 msgstr "vypsat XML dokument namísto odpojení disku"
+
+msgid "print XML document rather than detach the interface"
+msgstr ""
+
+msgid "print XML document rather than set the interface link state"
+msgstr ""
 
 msgid "print XML document, but don't define/create"
 msgstr "vypsat XML dokument, ale nedefinovat/nevytvářet"
@@ -34733,6 +34825,13 @@ msgstr "zachycený stav „%s“ nemá žádný jemu nadřazený"
 msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr "zachycený stav „%s“ postrádá informace o rolback domény „%s“"
 
+msgid "snapshot VM disk source and parent disk source are not the same"
+msgstr ""
+
+#, c-format
+msgid "snapshot disk '%s' was target of not completed snapshot delete"
+msgstr ""
+
 msgid "snapshot information"
 msgstr "informace o zachyceném stavu"
 
@@ -36055,6 +36154,9 @@ msgstr "spustit dvoufázové aktivní odesílání nejvrchnějšího souboru"
 msgid "try harder on risky reverts"
 msgstr "snažit se více při riskantních návratech"
 
+msgid "try to restore security label after use if possible"
+msgstr ""
+
 msgid "tty console"
 msgstr "tty konzole"
 
@@ -37146,6 +37248,10 @@ msgstr "neznámý typ ověřování %s"
 msgid "unknown backend type '%s' for egd"
 msgstr "neznámý typ podpůrné vrstvy „%s“ pro egd"
 
+#, c-format
+msgid "unknown backend type '%s' for external TPM"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown backup mode '%s'"
 msgstr "neznámý model paniky „%s“"
@@ -37650,6 +37756,10 @@ msgid "unsupported audio backend '%s'"
 msgstr ""
 
 #, c-format
+msgid "unsupported audio model %s"
+msgstr ""
+
+#, c-format
 msgid "unsupported authentication type %d"
 msgstr "nepodporovaný typ ověření se %d"
 
@@ -37782,12 +37892,12 @@ msgid "unsupported filesystem type '%s'"
 msgstr ""
 
 #, c-format
-msgid "unsupported flags (0x%lx) in function %s"
-msgstr "nepodporované příznaky (0x%lx) ve funkci %s"
-
-#, c-format
 msgid "unsupported flags (0x%x)"
 msgstr "nepodporované příznaky (0x%x)"
+
+#, c-format
+msgid "unsupported flags (0x%x) in function %s"
+msgstr ""
 
 #, c-format
 msgid "unsupported flags: (0x%x)"
@@ -37925,6 +38035,10 @@ msgstr "nepodporovaný typ=„%s“ pro model „none“ (žádné)"
 msgid "unsupported usb model"
 msgstr "nepodporovaný model usb"
 
+#, c-format
+msgid "unsupported use of long flags in function %s"
+msgstr ""
+
 msgid "unsupported value"
 msgstr "nepodporovaná hodnota"
 
@@ -38017,6 +38131,9 @@ msgid "use of flags requires a copy job"
 msgstr "použití příznaků vyžaduje úlohu kopírování"
 
 msgid "use of host cdrom passthrough"
+msgstr ""
+
+msgid "use seclabels allowing writes"
 msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
@@ -39008,6 +39125,45 @@ msgstr "zóna %s vyžadována pro sít %s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <řetězec>}…"
+
+#~ msgid "Another close callback is already defined for domain %s"
+#~ msgstr "Pro doménu %s už je definováno jiné zpětné volání zavření"
+
+#~ msgid ""
+#~ "Close callback for domain %s already registered with another connection %p"
+#~ msgstr ""
+#~ "Zpětné volání uzavření pro doménu %s už je registrováno s jiným spojením "
+#~ "%p"
+
+#~ msgid "Copying definition of '%d' type is not implemented yet."
+#~ msgstr "Kopírování definic typu „%d“ zatím není implementováno."
+
+#~ msgid ""
+#~ "Domain has %d interfaces. Please specify which one to detach using --mac"
+#~ msgstr "Doména má %d rozhraní. Určete které odpojit pomocí --mac"
+
+#~ msgid ""
+#~ "The overall maximum number of clients must be greater than the maximum "
+#~ "number of clients waiting for authentication"
+#~ msgstr ""
+#~ "Je třeba, aby celkový maximální počet klientů byl vyšší než maximální "
+#~ "počet klientů, čekajících na ověření se"
+
+#~ msgid "Trying to remove mismatching close callback for domain %s"
+#~ msgstr ""
+#~ "Pokus o odstranění neshodného zpětného volání uzavření pro doménu %s"
+
+#~ msgid "deletion of %d external disk snapshots not supported yet"
+#~ msgstr "mazání %d externích zachycených stavů disku zatím není podporováno"
+
+#~ msgid "failed to set snapshot '%s' as current"
+#~ msgstr "nepodařilo se nastavit zachycený stav „%s“ jako aktuální"
+
+#~ msgid "interface (%s: %s) not found"
+#~ msgstr "rozhraní (%s: %s) nenalezeno"
+
+#~ msgid "unsupported flags (0x%lx) in function %s"
+#~ msgstr "nepodporované příznaky (0x%lx) ve funkci %s"
 
 #~ msgid "%s: Invalid metric specified in route definition"
 #~ msgstr "%s: neplatná metrika zadána v definici trasy"

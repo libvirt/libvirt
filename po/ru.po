@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-11-24 14:54+0000\n"
+"POT-Creation-Date: 2023-01-09 14:27+0000\n"
 "PO-Revision-Date: 2022-10-02 12:19+0000\n"
 "Last-Translator: Sergey A. <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -532,14 +532,6 @@ msgid "%s (out of %d)"
 msgstr "%s (из %d)"
 
 #, c-format
-msgid "%s array element does not contain a string"
-msgstr ""
-
-#, c-format
-msgid "%s array element is missing item %zu"
-msgstr ""
-
-#, c-format
 msgid "%s can't be empty"
 msgstr "%s не может быть пустым"
 
@@ -624,10 +616,6 @@ msgstr "%s в %s не может быть равен нулю"
 #, c-format
 msgid "%s is missing 'type' property"
 msgstr "Свойство «type» для %s не определено"
-
-#, c-format
-msgid "%s is missing or not an array"
-msgstr ""
 
 #, c-format
 msgid "%s is not an executable"
@@ -1896,10 +1884,6 @@ msgstr "Необходимо явно определить формат диск
 #, c-format
 msgid "Ancestor model %s not found for CPU model %s"
 msgstr "Не найдена предшествующая модель %s для %s"
-
-#, c-format
-msgid "Another close callback is already defined for domain %s"
-msgstr "Для домена %s уже определён другой близкий обратный вызов"
 
 msgid "Another relabel transaction is already started"
 msgstr "Уже начата другая операция изменения меток"
@@ -3732,13 +3716,6 @@ msgid "Clone an existing volume within the parent pool."
 msgstr "Клонировать существующий том в родительском пуле."
 
 #, c-format
-msgid ""
-"Close callback for domain %s already registered with another connection %p"
-msgstr ""
-"Близкий обратный вызов для домена %s уже зарегистрирован с другим "
-"соединением %p"
-
-#, c-format
 msgid "Cloud-Hypervisor doesn't support '%s' device"
 msgstr ""
 
@@ -3954,10 +3931,6 @@ msgstr "Копирование прервано"
 
 msgid "Copy failed"
 msgstr "Сбой копирования"
-
-#, c-format
-msgid "Copying definition of '%d' type is not implemented yet."
-msgstr "Копирование определения  «%d» не допускается."
 
 msgid "Core dump a domain."
 msgstr "Создает файл дампа домена."
@@ -5729,10 +5702,8 @@ msgstr "Домен не поддерживает приостановку"
 
 #, c-format
 msgid ""
-"Domain has %d interfaces. Please specify which one to detach using --mac"
+"Domain has %zd interfaces. Please specify which one to detach using --mac"
 msgstr ""
-"У домена есть несколько интерфейсов (%d). С помощью параметра «--mac» "
-"выберите интерфейс для отключения."
 
 #, c-format
 msgid ""
@@ -5837,6 +5808,10 @@ msgstr "Снимок %s создан на основе «%s»"
 #, c-format
 msgid "Domain snapshot %s deleted\n"
 msgstr "Снимок домена %s удалён\n"
+
+#, c-format
+msgid "Domain snapshot %s reverted\n"
+msgstr ""
 
 msgid "Domain snapshot not found"
 msgstr "Снимок домена не найден"
@@ -6888,6 +6863,9 @@ msgstr "Не удалось создать устройство из %s"
 #, c-format
 msgid "Failed to create nvram dir %s"
 msgstr "Не удалось создать каталог nvram %s"
+
+msgid "Failed to create or modify the state XML attribute"
+msgstr ""
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -8179,6 +8157,10 @@ msgstr "Не удалось получить число виртуальных �
 
 msgid "Failed to retrieve vcpu state bitmap"
 msgstr "Не удалось получить битовую карту состояния виртуальных процессоров"
+
+#, c-format
+msgid "Failed to revert snapshot %s"
+msgstr ""
 
 msgid "Failed to rollback network config change transaction"
 msgstr "Не удалось выполнить откат к предыдущей конфигурации"
@@ -10571,6 +10553,9 @@ msgid "JSON backing volume definition '%s' must not have nested format drivers"
 msgstr ""
 "Определение JSON резервного тома «%s» не должно содержать вложенные драйверы "
 "форматирования"
+
+msgid "JSON string array contains non-string element"
+msgstr ""
 
 #, c-format
 msgid "Job submission failed on interface '%s'"
@@ -14766,6 +14751,9 @@ msgstr "XML-дамп снимка"
 msgid "Snapshot List"
 msgstr "Список доменов"
 
+msgid "Snapshot delete"
+msgstr ""
+
 msgid "Snapshot is Null"
 msgstr "Снимок не определен"
 
@@ -16018,6 +16006,10 @@ msgid "Thawed %d filesystem(s)\n"
 msgstr "Разморожено файловых систем: %d\n"
 
 #, c-format
+msgid "The %s interface already exists"
+msgstr ""
+
+#, c-format
 msgid "The '%s' device is not supported by this QEMU binary"
 msgstr "Этот исполняемый файл не поддерживает устройство «%s»"
 
@@ -16237,11 +16229,14 @@ msgid ""
 msgstr ""
 
 msgid ""
-"The overall maximum number of clients must be greater than the maximum "
-"number of clients waiting for authentication"
+"The overall maximum number of clients must not be less than the number of "
+"clients waiting for authentication"
 msgstr ""
-"Общее максимальное количество клиентов должно быть больше максимального "
-"количества клиентов, ожидающих аутентификации"
+
+msgid ""
+"The overall maximum number of clients waiting for authentication must not be "
+"less than the overall maximum number of clients"
+msgstr ""
 
 msgid "The read only disk has no parent"
 msgstr "Доступный только для чтения диск не имеет родителя"
@@ -16613,10 +16608,6 @@ msgstr "Попытка освобождения занятого объекта 
 #, c-format
 msgid "Trying to lock unknown SharedCURL lock %d"
 msgstr "Попытка блокирования неизвестного ключа SharedCURL %d"
-
-#, c-format
-msgid "Trying to remove mismatching close callback for domain %s"
-msgstr "Попытка удаления неподходящего близкого обратного вызова для домена %s"
 
 #, c-format
 msgid "Trying to unlock unknown SharedCURL lock %d"
@@ -19914,6 +19905,9 @@ msgstr "Эта версия QEMU не поддерживает сопостав�
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "в этой системе не поддерживается сопоставление устройств VFIO"
 
+msgid "VM disk source and snapshot disk source are not the same"
+msgstr ""
+
 msgid "VM is already active"
 msgstr "Виртуальная машина уже активна"
 
@@ -20575,6 +20569,9 @@ msgstr "ответ guest-get-users не содержит элемент масс
 msgid "array element missing in guest-get-vcpus return value"
 msgstr "ответ guest-get-vcpus не содержит элемент массива"
 
+msgid "associate a FD with a domain"
+msgstr ""
+
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
 msgstr ""
@@ -20927,6 +20924,10 @@ msgstr ""
 "предельное значение ограничения блочного ввода-вывода не должно превышать "
 "%llu"
 
+#, c-format
+msgid "block commit failed while deleting disk '%s' snapshot: '%s'"
+msgstr ""
+
 msgid "block copy still active"
 msgstr "операция блочного копирования еще активна"
 
@@ -20939,6 +20940,9 @@ msgstr "блочное устройство"
 
 #, c-format
 msgid "block device snapshot target '%s' doesn't exist"
+msgstr ""
+
+msgid "block info is not supported for FD passed disk image"
 msgstr ""
 
 msgid "block info is not supported for vhostuser disk"
@@ -21197,6 +21201,9 @@ msgid ""
 msgstr ""
 "может быть одним из значений или обоими значениями --live и --config, "
 "зависит от реализации драйвера гипервизора"
+
+msgid "can't add memory backend as guest has no NUMA nodes configured"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -21674,6 +21681,9 @@ msgstr "невозможно удалить контрольную точку д
 
 msgid "cannot delete domain snapshot for running domain"
 msgstr "снимок работающего домена не может быть удалён"
+
+msgid "cannot delete external snapshots when there is another active block job"
+msgstr ""
 
 #, c-format
 msgid "cannot delete inactive domain with %d checkpoints"
@@ -23432,6 +23442,9 @@ msgstr "копировать данные не в файл, а на блочно
 msgid "copy of read-only disks is not supported"
 msgstr "копирование доступных только для чтения дисков не поддерживается"
 
+msgid "copy to a FD passed disk source is not yet supported"
+msgstr ""
+
 msgid "copy-on-write ploop volumes are not yet supported"
 msgstr "копирование во время записи не поддерживается для томов ploop"
 
@@ -23535,6 +23548,9 @@ msgstr ""
 
 #, c-format
 msgid "could not find backing store index '%u' in chain for '%s'"
+msgstr ""
+
+msgid "could not find base disk source in disk source chain"
 msgstr ""
 
 #, c-format
@@ -24157,9 +24173,18 @@ msgstr ""
 msgid "delete the specified network port"
 msgstr "удалить указанный сетевой порт"
 
-#, c-format
-msgid "deletion of %d external disk snapshots not supported yet"
-msgstr "удаление внешних снимков диска (%d) не поддерживается"
+msgid ""
+"deleting external snapshot that has internal snapshot as parent not supported"
+msgstr ""
+
+msgid "deletion of external and internal children disk snapshots not supported"
+msgstr ""
+
+msgid "deletion of external children disk snapshots not supported"
+msgstr ""
+
+msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
 
 #, c-format
 msgid "deprecated configuration: %s"
@@ -24538,6 +24563,12 @@ msgstr "Режим event_idx поддерживается только шино�
 #, c-format
 msgid "disk format %s is not supported"
 msgstr "Формат дисков %s не поддерживается"
+
+#, c-format
+msgid ""
+"disk image '%s' for internal snapshot '%s' is not the same as disk image "
+"currently used by VM"
+msgstr ""
 
 #, c-format
 msgid "disk image format not supported: %s"
@@ -24973,6 +25004,10 @@ msgstr "готово"
 
 msgid "download volume contents to a file"
 msgstr "загрузить содержимое тома в файл"
+
+#, c-format
+msgid "driver does not support FD passing for disk '%s'"
+msgstr ""
 
 #, c-format
 msgid "driver does not support net model '%s'"
@@ -25833,6 +25868,9 @@ msgstr "не удалось создать или запустить интер�
 msgid "failed to create RBD snapshot %s@%s"
 msgstr "не удалось создать снимок RBD %s@%s"
 
+msgid "failed to create XML node"
+msgstr ""
+
 msgid "failed to create a new XML namespace"
 msgstr "не удалось создать новое пространство имен XML"
 
@@ -25950,6 +25988,10 @@ msgstr ""
 msgid "failed to determine loop exit status: %s"
 msgstr "не удалось определить состояние выхода из цикла: %s"
 
+#, c-format
+msgid "failed to duplicate file descriptor for fd group '%s'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr "ошибка активации перенаправления IP"
 
@@ -26002,8 +26044,15 @@ msgid "failed to find disk '%s'"
 msgstr "не удалось найти диск «%s»"
 
 #, c-format
+msgid "failed to find disk '%s' in snapshot VM XML"
+msgstr ""
+
+#, c-format
 msgid "failed to find iothread id for '%s'"
 msgstr "не удалось найти идентификатор потока ввода-вывода для «%s»"
+
+msgid "failed to find parent disk source in backing chain"
+msgstr ""
 
 #, c-format
 msgid "failed to find the VID for the VLAN device '%s'"
@@ -26694,10 +26743,6 @@ msgstr "не удалось установить сервер volfile gluster «
 msgid "failed to set guest cid"
 msgstr "не удалось указать CID гостевой системы"
 
-#, c-format
-msgid "failed to set snapshot '%s' as current"
-msgstr "не удалось указать снимок «%s» как текущий"
-
 msgid "failed to setup stderr file handle"
 msgstr "не удалось настроить дескриптор stderr"
 
@@ -26742,6 +26787,9 @@ msgstr "не удалось создать снимок"
 #, c-format
 msgid "failed to truncate %s"
 msgstr "не удалось усечь %s"
+
+msgid "failed to umount devfs on /dev"
+msgstr ""
 
 #, c-format
 msgid "failed to undefine interface %s: %s%s%s"
@@ -26879,6 +26927,9 @@ msgstr "файловый дескриптор %d должен быть соке�
 msgid "fd must be valid"
 msgstr "файловый дескриптор должен быть корректным"
 
+msgid "fd passed image source not initialized"
+msgstr ""
+
 msgid "fd passing is not supported by this connection"
 msgstr ""
 "это соединение не поддерживает возможность передачи файловых дескрипторов"
@@ -26946,6 +26997,13 @@ msgstr "файл с XML-описанием тома"
 
 msgid "file containing secret attributes in XML"
 msgstr "файл с атрибутами секрета в формате XML"
+
+#, c-format
+msgid "file descriptor group '%s' was not associated with the domain"
+msgstr ""
+
+msgid "file descriptors N,M,... to associate"
+msgstr ""
 
 msgid "file format type raw,bochs,qcow,qcow2,qed,vmdk"
 msgstr "формат: raw,bochs,qcow,qcow2,qed,vmdk"
@@ -27063,6 +27121,10 @@ msgstr "найти потенциальные источники пулов но
 
 msgid "finish step ignored that migration was cancelled"
 msgstr "отмена миграции на завершающем этапе была проигнорирована"
+
+#, c-format
+msgid "finishing block job failed while deleting disk '%s' snapshot: '%s'"
+msgstr ""
 
 msgid ""
 "firewalld is set to use the nftables backend, but the required firewalld "
@@ -28081,8 +28143,8 @@ msgid "interface '%s' failing; reopening"
 msgstr "Ошибка интерфейса «%s». Будет открыт снова..."
 
 #, c-format
-msgid "interface (%s: %s) not found"
-msgstr "интерфейс (%s: %s) не найден"
+msgid "interface '%s' not found"
+msgstr ""
 
 msgid "interface device (MAC Address)"
 msgstr "интерфейс (MAC)"
@@ -30736,6 +30798,9 @@ msgstr "в списке поддерживаемых форматов дампо
 msgid "missing existing file for disk %s: %s"
 msgstr "отсутствует файл для диска %s: %s"
 
+msgid "missing external TPM backend type"
+msgstr ""
+
 msgid "missing feature name"
 msgstr "отсутствует имя возможности"
 
@@ -31079,6 +31144,9 @@ msgstr "в определении JSON резервного тома отсут�
 
 msgid "missing socket for unix transport"
 msgstr "для протокола unix требуется атрибут socket"
+
+msgid "missing socket path for external TPM device"
+msgstr ""
 
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
@@ -31447,6 +31515,9 @@ msgstr ""
 
 msgid "name of snapshot"
 msgstr "имя снимка"
+
+msgid "name of the FD group"
+msgstr ""
 
 msgid "name of the inactive domain"
 msgstr "имя неактивного домена"
@@ -32611,6 +32682,9 @@ msgstr ""
 "должны быть упорядочены перед доступными для «горячего» подключения "
 "виртуальными процессорами"
 
+msgid "only 'client' mode is supported for external TPM device"
+msgstr ""
+
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "для устройства pc-dimm поддерживаются только адреса «dimm»"
 
@@ -32783,6 +32857,9 @@ msgid "only single input device is supported"
 msgstr "поддерживается только одно устройство ввода"
 
 msgid "only snapshot=no is supported with vhostuser disk"
+msgstr ""
+
+msgid "only source type 'unix' is supported for external TPM device"
 msgstr ""
 
 msgid "only supports mount filesystem type"
@@ -33179,6 +33256,9 @@ msgstr "контроллеры pci-root и pcie-root должны быть бе�
 msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
+msgid "peeking is not supported for FD passed images"
+msgstr ""
+
 msgid "peeking is not supported for vhostuser disk"
 msgstr ""
 
@@ -33512,11 +33592,20 @@ msgstr "вывести XML и не присоединять интерфейс"
 msgid "print XML document rather than change media"
 msgstr "вывести XML, но не менять носитель"
 
+msgid "print XML document rather than clone the volume"
+msgstr ""
+
 msgid "print XML document rather than create"
 msgstr "вывести XML, но не выполнять операцию создания"
 
 msgid "print XML document rather than detach the disk"
 msgstr "вывести XML и не отсоединять диск"
+
+msgid "print XML document rather than detach the interface"
+msgstr ""
+
+msgid "print XML document rather than set the interface link state"
+msgstr ""
 
 msgid "print XML document, but don't define/create"
 msgstr "вывести XML-документ, но не выполнять создание и определение"
@@ -35026,6 +35115,13 @@ msgstr "у снимка «%s» нет родителя"
 msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr "в снимке «%s» отсутствует информация об откате домена «%s»"
 
+msgid "snapshot VM disk source and parent disk source are not the same"
+msgstr ""
+
+#, c-format
+msgid "snapshot disk '%s' was target of not completed snapshot delete"
+msgstr ""
+
 msgid "snapshot information"
 msgstr "данные снимка"
 
@@ -36363,6 +36459,9 @@ msgstr "включить двухэтапное активное сведени�
 msgid "try harder on risky reverts"
 msgstr "усиленный режим при рискованном восстановлении"
 
+msgid "try to restore security label after use if possible"
+msgstr ""
+
 msgid "tty console"
 msgstr "консоль TTY"
 
@@ -37456,6 +37555,10 @@ msgid "unknown backend type '%s' for egd"
 msgstr "неизвестный тип в строке  <backend model='egd'>: «%s»"
 
 #, c-format
+msgid "unknown backend type '%s' for external TPM"
+msgstr ""
+
+#, c-format
 msgid "unknown backup mode '%s'"
 msgstr "неизвестная режим резервного копирования «%s»"
 
@@ -37963,6 +38066,10 @@ msgid "unsupported audio backend '%s'"
 msgstr "неподдерживаемый модуль аудио «%s»"
 
 #, c-format
+msgid "unsupported audio model %s"
+msgstr ""
+
+#, c-format
 msgid "unsupported authentication type %d"
 msgstr "тип аутентификации %d не поддерживается"
 
@@ -38097,12 +38204,12 @@ msgid "unsupported filesystem type '%s'"
 msgstr ""
 
 #, c-format
-msgid "unsupported flags (0x%lx) in function %s"
-msgstr "неподдерживаемые флаги (0x%lx) в функции %s"
-
-#, c-format
 msgid "unsupported flags (0x%x)"
 msgstr "неподдерживаемые флаги (0x%x)"
+
+#, c-format
+msgid "unsupported flags (0x%x) in function %s"
+msgstr ""
 
 #, c-format
 msgid "unsupported flags: (0x%x)"
@@ -38240,6 +38347,10 @@ msgstr "неподдерживаемый тип «%s» для модели «non
 msgid "unsupported usb model"
 msgstr "неподдерживаемая модель USB"
 
+#, c-format
+msgid "unsupported use of long flags in function %s"
+msgstr ""
+
 msgid "unsupported value"
 msgstr "неподдерживаемое значение"
 
@@ -38332,6 +38443,9 @@ msgid "use of flags requires a copy job"
 msgstr "для использования флагов требуется задание копирования"
 
 msgid "use of host cdrom passthrough"
+msgstr ""
+
+msgid "use seclabels allowing writes"
 msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
@@ -39339,6 +39453,47 @@ msgstr "поступил запрос о зоне %s для сети %s, но fi
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <строка>}..."
+
+#~ msgid "Another close callback is already defined for domain %s"
+#~ msgstr "Для домена %s уже определён другой близкий обратный вызов"
+
+#~ msgid ""
+#~ "Close callback for domain %s already registered with another connection %p"
+#~ msgstr ""
+#~ "Близкий обратный вызов для домена %s уже зарегистрирован с другим "
+#~ "соединением %p"
+
+#~ msgid "Copying definition of '%d' type is not implemented yet."
+#~ msgstr "Копирование определения  «%d» не допускается."
+
+#~ msgid ""
+#~ "Domain has %d interfaces. Please specify which one to detach using --mac"
+#~ msgstr ""
+#~ "У домена есть несколько интерфейсов (%d). С помощью параметра «--mac» "
+#~ "выберите интерфейс для отключения."
+
+#~ msgid ""
+#~ "The overall maximum number of clients must be greater than the maximum "
+#~ "number of clients waiting for authentication"
+#~ msgstr ""
+#~ "Общее максимальное количество клиентов должно быть больше максимального "
+#~ "количества клиентов, ожидающих аутентификации"
+
+#~ msgid "Trying to remove mismatching close callback for domain %s"
+#~ msgstr ""
+#~ "Попытка удаления неподходящего близкого обратного вызова для домена %s"
+
+#~ msgid "deletion of %d external disk snapshots not supported yet"
+#~ msgstr "удаление внешних снимков диска (%d) не поддерживается"
+
+#~ msgid "failed to set snapshot '%s' as current"
+#~ msgstr "не удалось указать снимок «%s» как текущий"
+
+#~ msgid "interface (%s: %s) not found"
+#~ msgstr "интерфейс (%s: %s) не найден"
+
+#~ msgid "unsupported flags (0x%lx) in function %s"
+#~ msgstr "неподдерживаемые флаги (0x%lx) в функции %s"
 
 #~ msgid "%s: Invalid metric specified in route definition"
 #~ msgstr "%s: в определении маршрута указана некорректная метрика"

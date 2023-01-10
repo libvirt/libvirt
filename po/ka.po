@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 8.4.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-11-24 14:54+0000\n"
+"POT-Creation-Date: 2023-01-09 14:27+0000\n"
 "PO-Revision-Date: 2022-07-25 06:18+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
@@ -348,14 +348,6 @@ msgid "%s (out of %d)"
 msgstr ""
 
 #, c-format
-msgid "%s array element does not contain a string"
-msgstr ""
-
-#, c-format
-msgid "%s array element is missing item %zu"
-msgstr ""
-
-#, c-format
 msgid "%s can't be empty"
 msgstr ""
 
@@ -437,10 +429,6 @@ msgstr ""
 
 #, c-format
 msgid "%s is missing 'type' property"
-msgstr ""
-
-#, c-format
-msgid "%s is missing or not an array"
 msgstr ""
 
 #, c-format
@@ -1600,10 +1588,6 @@ msgstr ""
 
 #, c-format
 msgid "Ancestor model %s not found for CPU model %s"
-msgstr ""
-
-#, c-format
-msgid "Another close callback is already defined for domain %s"
 msgstr ""
 
 msgid "Another relabel transaction is already started"
@@ -3300,11 +3284,6 @@ msgid "Clone an existing volume within the parent pool."
 msgstr ""
 
 #, c-format
-msgid ""
-"Close callback for domain %s already registered with another connection %p"
-msgstr ""
-
-#, c-format
 msgid "Cloud-Hypervisor doesn't support '%s' device"
 msgstr ""
 
@@ -3504,10 +3483,6 @@ msgid "Copy aborted"
 msgstr ""
 
 msgid "Copy failed"
-msgstr ""
-
-#, c-format
-msgid "Copying definition of '%d' type is not implemented yet."
 msgstr ""
 
 msgid "Core dump a domain."
@@ -5223,7 +5198,7 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Domain has %d interfaces. Please specify which one to detach using --mac"
+"Domain has %zd interfaces. Please specify which one to detach using --mac"
 msgstr ""
 
 #, c-format
@@ -5323,6 +5298,10 @@ msgstr ""
 
 #, c-format
 msgid "Domain snapshot %s deleted\n"
+msgstr ""
+
+#, c-format
+msgid "Domain snapshot %s reverted\n"
 msgstr ""
 
 msgid "Domain snapshot not found"
@@ -6306,6 +6285,9 @@ msgstr ""
 
 #, c-format
 msgid "Failed to create nvram dir %s"
+msgstr ""
+
+msgid "Failed to create or modify the state XML attribute"
 msgstr ""
 
 #, c-format
@@ -7576,6 +7558,10 @@ msgid "Failed to retrieve vCPU count from the guest"
 msgstr ""
 
 msgid "Failed to retrieve vcpu state bitmap"
+msgstr ""
+
+#, c-format
+msgid "Failed to revert snapshot %s"
 msgstr ""
 
 msgid "Failed to rollback network config change transaction"
@@ -9816,6 +9802,9 @@ msgstr ""
 
 #, c-format
 msgid "JSON backing volume definition '%s' must not have nested format drivers"
+msgstr ""
+
+msgid "JSON string array contains non-string element"
 msgstr ""
 
 #, c-format
@@ -13721,6 +13710,9 @@ msgstr ""
 msgid "Snapshot List"
 msgstr ""
 
+msgid "Snapshot delete"
+msgstr ""
+
 msgid "Snapshot is Null"
 msgstr ""
 
@@ -14861,6 +14853,10 @@ msgid "Thawed %d filesystem(s)\n"
 msgstr ""
 
 #, c-format
+msgid "The %s interface already exists"
+msgstr ""
+
+#, c-format
 msgid "The '%s' device is not supported by this QEMU binary"
 msgstr ""
 
@@ -15055,8 +15051,13 @@ msgid ""
 msgstr ""
 
 msgid ""
-"The overall maximum number of clients must be greater than the maximum "
-"number of clients waiting for authentication"
+"The overall maximum number of clients must not be less than the number of "
+"clients waiting for authentication"
+msgstr ""
+
+msgid ""
+"The overall maximum number of clients waiting for authentication must not be "
+"less than the overall maximum number of clients"
 msgstr ""
 
 msgid "The read only disk has no parent"
@@ -15409,10 +15410,6 @@ msgstr ""
 
 #, c-format
 msgid "Trying to lock unknown SharedCURL lock %d"
-msgstr ""
-
-#, c-format
-msgid "Trying to remove mismatching close callback for domain %s"
 msgstr ""
 
 #, c-format
@@ -18610,6 +18607,9 @@ msgstr ""
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr ""
 
+msgid "VM disk source and snapshot disk source are not the same"
+msgstr ""
+
 msgid "VM is already active"
 msgstr ""
 
@@ -19231,6 +19231,9 @@ msgstr ""
 msgid "array element missing in guest-get-vcpus return value"
 msgstr ""
 
+msgid "associate a FD with a domain"
+msgstr ""
+
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
 msgstr ""
@@ -19551,6 +19554,10 @@ msgstr ""
 msgid "block I/O throttle limit value must be no more than %llu"
 msgstr ""
 
+#, c-format
+msgid "block commit failed while deleting disk '%s' snapshot: '%s'"
+msgstr ""
+
 msgid "block copy still active"
 msgstr ""
 
@@ -19563,6 +19570,9 @@ msgstr "ბლოკური მოწყობილობა"
 
 #, c-format
 msgid "block device snapshot target '%s' doesn't exist"
+msgstr ""
+
+msgid "block info is not supported for FD passed disk image"
 msgstr ""
 
 msgid "block info is not supported for vhostuser disk"
@@ -19804,6 +19814,9 @@ msgstr ""
 msgid ""
 "can be either or both of --live and --config, depends on implementation "
 "hypervisor driver"
+msgstr ""
+
+msgid "can't add memory backend as guest has no NUMA nodes configured"
 msgstr ""
 
 #, c-format
@@ -20240,6 +20253,9 @@ msgid "cannot delete checkpoint for inactive domain"
 msgstr ""
 
 msgid "cannot delete domain snapshot for running domain"
+msgstr ""
+
+msgid "cannot delete external snapshots when there is another active block job"
 msgstr ""
 
 #, c-format
@@ -21915,6 +21931,9 @@ msgstr ""
 msgid "copy of read-only disks is not supported"
 msgstr ""
 
+msgid "copy to a FD passed disk source is not yet supported"
+msgstr ""
+
 msgid "copy-on-write ploop volumes are not yet supported"
 msgstr ""
 
@@ -22016,6 +22035,9 @@ msgstr ""
 
 #, c-format
 msgid "could not find backing store index '%u' in chain for '%s'"
+msgstr ""
+
+msgid "could not find base disk source in disk source chain"
 msgstr ""
 
 #, c-format
@@ -22610,8 +22632,17 @@ msgstr ""
 msgid "delete the specified network port"
 msgstr ""
 
-#, c-format
-msgid "deletion of %d external disk snapshots not supported yet"
+msgid ""
+"deleting external snapshot that has internal snapshot as parent not supported"
+msgstr ""
+
+msgid "deletion of external and internal children disk snapshots not supported"
+msgstr ""
+
+msgid "deletion of external children disk snapshots not supported"
+msgstr ""
+
+msgid "deletion of external disk snapshots with children not supported"
 msgstr ""
 
 #, c-format
@@ -22980,6 +23011,12 @@ msgstr ""
 
 #, c-format
 msgid "disk format %s is not supported"
+msgstr ""
+
+#, c-format
+msgid ""
+"disk image '%s' for internal snapshot '%s' is not the same as disk image "
+"currently used by VM"
 msgstr ""
 
 #, c-format
@@ -23409,6 +23446,10 @@ msgid "done"
 msgstr "შესრულებულია"
 
 msgid "download volume contents to a file"
+msgstr ""
+
+#, c-format
+msgid "driver does not support FD passing for disk '%s'"
 msgstr ""
 
 #, c-format
@@ -24257,6 +24298,9 @@ msgstr ""
 msgid "failed to create RBD snapshot %s@%s"
 msgstr ""
 
+msgid "failed to create XML node"
+msgstr ""
+
 msgid "failed to create a new XML namespace"
 msgstr ""
 
@@ -24374,6 +24418,10 @@ msgstr ""
 msgid "failed to determine loop exit status: %s"
 msgstr ""
 
+#, c-format
+msgid "failed to duplicate file descriptor for fd group '%s'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr ""
 
@@ -24423,7 +24471,14 @@ msgid "failed to find disk '%s'"
 msgstr ""
 
 #, c-format
+msgid "failed to find disk '%s' in snapshot VM XML"
+msgstr ""
+
+#, c-format
 msgid "failed to find iothread id for '%s'"
+msgstr ""
+
+msgid "failed to find parent disk source in backing chain"
 msgstr ""
 
 #, c-format
@@ -25108,10 +25163,6 @@ msgstr ""
 msgid "failed to set guest cid"
 msgstr ""
 
-#, c-format
-msgid "failed to set snapshot '%s' as current"
-msgstr ""
-
 msgid "failed to setup stderr file handle"
 msgstr ""
 
@@ -25155,6 +25206,9 @@ msgstr ""
 
 #, c-format
 msgid "failed to truncate %s"
+msgstr ""
+
+msgid "failed to umount devfs on /dev"
 msgstr ""
 
 #, c-format
@@ -25292,6 +25346,9 @@ msgstr ""
 msgid "fd must be valid"
 msgstr ""
 
+msgid "fd passed image source not initialized"
+msgstr ""
+
 msgid "fd passing is not supported by this connection"
 msgstr ""
 
@@ -25354,6 +25411,13 @@ msgid "file containing an XML vol description"
 msgstr ""
 
 msgid "file containing secret attributes in XML"
+msgstr ""
+
+#, c-format
+msgid "file descriptor group '%s' was not associated with the domain"
+msgstr ""
+
+msgid "file descriptors N,M,... to associate"
 msgstr ""
 
 msgid "file format type raw,bochs,qcow,qcow2,qed,vmdk"
@@ -25470,6 +25534,10 @@ msgid "find potential storage pool sources"
 msgstr ""
 
 msgid "finish step ignored that migration was cancelled"
+msgstr ""
+
+#, c-format
+msgid "finishing block job failed while deleting disk '%s' snapshot: '%s'"
 msgstr ""
 
 msgid ""
@@ -26374,7 +26442,7 @@ msgid "interface '%s' failing; reopening"
 msgstr ""
 
 #, c-format
-msgid "interface (%s: %s) not found"
+msgid "interface '%s' not found"
 msgstr ""
 
 msgid "interface device (MAC Address)"
@@ -28904,6 +28972,9 @@ msgstr ""
 msgid "missing existing file for disk %s: %s"
 msgstr ""
 
+msgid "missing external TPM backend type"
+msgstr ""
+
 msgid "missing feature name"
 msgstr ""
 
@@ -29220,6 +29291,9 @@ msgid "missing socket address type in JSON backing volume definition"
 msgstr ""
 
 msgid "missing socket for unix transport"
+msgstr ""
+
+msgid "missing socket path for external TPM device"
 msgstr ""
 
 msgid ""
@@ -29568,6 +29642,9 @@ msgid ""
 msgstr ""
 
 msgid "name of snapshot"
+msgstr ""
+
+msgid "name of the FD group"
 msgstr ""
 
 msgid "name of the inactive domain"
@@ -30683,6 +30760,9 @@ msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr ""
 
+msgid "only 'client' mode is supported for external TPM device"
+msgstr ""
+
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr ""
 
@@ -30840,6 +30920,9 @@ msgid "only single input device is supported"
 msgstr ""
 
 msgid "only snapshot=no is supported with vhostuser disk"
+msgstr ""
+
+msgid "only source type 'unix' is supported for external TPM device"
 msgstr ""
 
 msgid "only supports mount filesystem type"
@@ -31225,6 +31308,9 @@ msgstr ""
 msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
+msgid "peeking is not supported for FD passed images"
+msgstr ""
+
 msgid "peeking is not supported for vhostuser disk"
 msgstr ""
 
@@ -31529,10 +31615,19 @@ msgstr ""
 msgid "print XML document rather than change media"
 msgstr ""
 
+msgid "print XML document rather than clone the volume"
+msgstr ""
+
 msgid "print XML document rather than create"
 msgstr ""
 
 msgid "print XML document rather than detach the disk"
+msgstr ""
+
+msgid "print XML document rather than detach the interface"
+msgstr ""
+
+msgid "print XML document rather than set the interface link state"
 msgstr ""
 
 msgid "print XML document, but don't define/create"
@@ -32967,6 +33062,13 @@ msgstr ""
 msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr ""
 
+msgid "snapshot VM disk source and parent disk source are not the same"
+msgstr ""
+
+#, c-format
+msgid "snapshot disk '%s' was target of not completed snapshot delete"
+msgstr ""
+
 msgid "snapshot information"
 msgstr ""
 
@@ -34176,6 +34278,9 @@ msgstr ""
 msgid "try harder on risky reverts"
 msgstr ""
 
+msgid "try to restore security label after use if possible"
+msgstr ""
+
 msgid "tty console"
 msgstr ""
 
@@ -35256,6 +35361,10 @@ msgid "unknown backend type '%s' for egd"
 msgstr ""
 
 #, c-format
+msgid "unknown backend type '%s' for external TPM"
+msgstr ""
+
+#, c-format
 msgid "unknown backup mode '%s'"
 msgstr ""
 
@@ -35755,6 +35864,10 @@ msgid "unsupported audio backend '%s'"
 msgstr ""
 
 #, c-format
+msgid "unsupported audio model %s"
+msgstr ""
+
+#, c-format
 msgid "unsupported authentication type %d"
 msgstr ""
 
@@ -35887,11 +36000,11 @@ msgid "unsupported filesystem type '%s'"
 msgstr ""
 
 #, c-format
-msgid "unsupported flags (0x%lx) in function %s"
+msgid "unsupported flags (0x%x)"
 msgstr ""
 
 #, c-format
-msgid "unsupported flags (0x%x)"
+msgid "unsupported flags (0x%x) in function %s"
 msgstr ""
 
 #, c-format
@@ -36028,6 +36141,10 @@ msgstr ""
 msgid "unsupported usb model"
 msgstr ""
 
+#, c-format
+msgid "unsupported use of long flags in function %s"
+msgstr ""
+
 msgid "unsupported value"
 msgstr ""
 
@@ -36117,6 +36234,9 @@ msgid "use of flags requires a copy job"
 msgstr ""
 
 msgid "use of host cdrom passthrough"
+msgstr ""
+
+msgid "use seclabels allowing writes"
 msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
