@@ -522,9 +522,11 @@ struct _virNWFilterDef {
 
 void
 virNWFilterRuleDefFree(virNWFilterRuleDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNWFilterRuleDef, virNWFilterRuleDefFree);
 
 void
 virNWFilterDefFree(virNWFilterDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNWFilterDef, virNWFilterDefFree);
 
 int
 virNWFilterTriggerRebuild(void);
