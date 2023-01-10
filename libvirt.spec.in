@@ -1449,6 +1449,7 @@ then
                 libvirtd-admin.socket \
                 libvirtd-tls.socket \
                 libvirtd-tcp.socket >/dev/null 2>&1 || :
+        /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
     else
         # Old libvirtd owns the sockets and will delete them on
         # shutdown. Can't use a try-restart as libvirtd will simply
