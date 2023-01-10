@@ -23,6 +23,16 @@ v9.0.0 (unreleased)
     ``virDomainSnapshotDelete()``. Flags that allow deleting children
     or children only are not supported.
 
+  * QEMU: support passt (https://passt.top)
+
+    passt can be used to connect an emulated network device to the
+    host's network without requiring libvirt to have any sort of
+    elevated privileges. This is configured with::
+
+      <interface type='user'>
+        <backend type='passt'>
+        ...
+
 * **Improvements**
 
   * qemu: Prefer PNG for domain screenshots
