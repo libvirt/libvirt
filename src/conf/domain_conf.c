@@ -30064,7 +30064,6 @@ virDomainNetResolveActualType(virDomainNetDef *iface)
              * is VIR_DOMAIN_NET_TYPE_BRIDGE
              */
             return VIR_DOMAIN_NET_TYPE_BRIDGE;
-            break;
         }
 
         /* intentionally fall through to the direct case for
