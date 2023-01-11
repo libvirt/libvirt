@@ -7104,7 +7104,8 @@ void qemuDomainObjCheckNetTaint(virQEMUDriver *driver,
 
 
 qemuDomainLogContext *qemuDomainLogContextNew(virQEMUDriver *driver,
-                                              virDomainObj *vm)
+                                              virDomainObj *vm,
+                                              const char *basename)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainLogContext *ctxt = QEMU_DOMAIN_LOG_CONTEXT(g_object_new(QEMU_TYPE_DOMAIN_LOG_CONTEXT, NULL));
@@ -7113,7 +7114,7 @@ qemuDomainLogContext *qemuDomainLogContextNew(virQEMUDriver *driver,
     ctxt->writefd = -1;
     ctxt->readfd = -1;
 
-    ctxt->path = g_strdup_printf("%s/%s.log", cfg->logDir, vm->def->name);
+    ctxt->path = g_strdup_printf("%s/%s.log", cfg->logDir, basename);
 
     if (cfg->stdioLogD) {
         ctxt->manager = virLogManagerNew(driver->privileged);

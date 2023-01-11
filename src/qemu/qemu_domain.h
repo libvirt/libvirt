@@ -657,7 +657,8 @@ void qemuDomainObjCheckNetTaint(virQEMUDriver *driver,
                                 qemuDomainLogContext *logCtxt);
 
 qemuDomainLogContext *qemuDomainLogContextNew(virQEMUDriver *driver,
-                                              virDomainObj *vm);
+                                              virDomainObj *vm,
+                                              const char *basename);
 int qemuDomainLogContextWrite(qemuDomainLogContext *ctxt,
                               const char *fmt, ...) G_GNUC_PRINTF(2, 3);
 ssize_t qemuDomainLogContextRead(qemuDomainLogContext *ctxt,
