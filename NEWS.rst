@@ -33,6 +33,11 @@ v9.0.0 (unreleased)
         <backend type='passt'>
         ...
 
+  * QEMU: add external backend for swtpm
+
+    Connecting the VM to a swtpm daemon started outside of libvirt
+    is now possible.
+
 * **Improvements**
 
   * qemu: Prefer PNG for domain screenshots
