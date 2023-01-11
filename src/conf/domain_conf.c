@@ -2629,8 +2629,10 @@ virDomainNetPortForwardFree(virDomainNetPortForward *pf)
 {
     size_t i;
 
-    if (pf)
-        g_free(pf->dev);
+    if (!pf)
+        return;
+
+    g_free(pf->dev);
 
     for (i = 0; i < pf->nRanges; i++)
         g_free(pf->ranges[i]);
