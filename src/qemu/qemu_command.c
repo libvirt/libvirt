@@ -8482,9 +8482,7 @@ qemuBuildInterfaceConnect(virDomainObj *vm,
                                           vm->def, tapfd[i]) < 0)
                 return -1;
         }
-    }
 
-    if (vhostfd) {
         if (qemuInterfaceOpenVhostNet(vm, net) < 0)
             return -1;
     }
