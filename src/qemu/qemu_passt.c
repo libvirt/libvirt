@@ -209,14 +209,14 @@ qemuPasstStart(virDomainObj *vm,
             /* validation guarantees this will never happen */
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid portForward proto value %u"), pf->proto);
-            goto error;
+            return -1;
         }
 
         if (VIR_SOCKET_ADDR_VALID(&pf->address)) {
             g_autofree char *addr = NULL;
 
             if (!(addr = virSocketAddrFormat(&pf->address)))
-                goto error;
+                return -1;
 
             virBufferAddStr(&buf, addr);
 
@@ -258,7 +258,7 @@ qemuPasstStart(virDomainObj *vm,
 
 
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "passt") < 0)
-        goto error;
+        return -1;
 
     if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, &exitstatus, &cmdret) < 0)
         goto error;
