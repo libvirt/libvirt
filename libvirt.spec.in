@@ -749,7 +749,8 @@ parted and more.
 %if %{with_qemu}
 %package daemon-driver-qemu
 Summary: QEMU driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
+Requires: libvirt-daemon-log = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Requires: /usr/bin/qemu-img
 # For image compression
@@ -775,7 +776,7 @@ QEMU
 %if %{with_lxc}
 %package daemon-driver-lxc
 Summary: LXC driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 # There really is a hard cross-driver dependency here
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -795,7 +796,7 @@ the Linux kernel
 %if %{with_vbox}
 %package daemon-driver-vbox
 Summary: VirtualBox driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 
 %description daemon-driver-vbox
@@ -807,7 +808,7 @@ VirtualBox
 %if %{with_libxl}
 %package daemon-driver-libxl
 Summary: Libxl driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Obsoletes: libvirt-daemon-driver-xen < 4.3.0
 
