@@ -275,8 +275,7 @@ qemuPasstStart(virDomainObj *vm,
     ignore_value(virPidFileReadPathIfLocked(pidfile, &pid));
     if (pid != -1)
         virProcessKillPainfully(pid, true);
-    if (pidfile)
-        unlink(pidfile);
+    unlink(pidfile);
 
     return -1;
 }
