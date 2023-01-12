@@ -94,6 +94,7 @@
     SCRATCH_DIR: "/tmp/scratch"
   artifacts:
     name: logs
+    expire_in: 1 day
     paths:
       - logs
     when: on_failure
