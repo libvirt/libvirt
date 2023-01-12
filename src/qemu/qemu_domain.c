@@ -455,21 +455,8 @@ qemuDomainObjFromDomain(virDomainPtr domain)
 }
 
 
-struct _qemuDomainLogContext {
-    GObject parent;
-
-    int writefd;
-    int readfd; /* Only used if manager == NULL */
-    off_t pos;
-    ino_t inode; /* Only used if manager != NULL */
-    char *path;
-    virLogManager *manager;
-};
-
-G_DEFINE_TYPE(qemuDomainLogContext, qemu_domain_log_context, G_TYPE_OBJECT);
 static virClass *qemuDomainSaveCookieClass;
 
-static void qemuDomainLogContextFinalize(GObject *obj);
 static void qemuDomainSaveCookieDispose(void *obj);
 
 
@@ -482,31 +469,7 @@ qemuDomainOnceInit(void)
     return 0;
 }
 
-static void qemu_domain_log_context_init(qemuDomainLogContext *logctxt G_GNUC_UNUSED)
-{
-}
-
-static void qemu_domain_log_context_class_init(qemuDomainLogContextClass *klass)
-{
-    GObjectClass *obj = G_OBJECT_CLASS(klass);
-
-    obj->finalize = qemuDomainLogContextFinalize;
-}
-
 VIR_ONCE_GLOBAL_INIT(qemuDomain);
-
-static void
-qemuDomainLogContextFinalize(GObject *object)
-{
-    qemuDomainLogContext *ctxt = QEMU_DOMAIN_LOG_CONTEXT(object);
-    VIR_DEBUG("ctxt=%p", ctxt);
-
-    virLogManagerFree(ctxt->manager);
-    VIR_FREE(ctxt->path);
-    VIR_FORCE_CLOSE(ctxt->writefd);
-    VIR_FORCE_CLOSE(ctxt->readfd);
-    G_OBJECT_CLASS(qemu_domain_log_context_parent_class)->finalize(object);
-}
 
 /* qemuDomainGetMasterKeyFilePath:
  * @libDir: Directory path to domain lib files
@@ -6867,7 +6830,7 @@ static void G_GNUC_PRINTF(5, 6)
 qemuDomainObjTaintMsg(virQEMUDriver *driver,
                       virDomainObj *obj,
                       virDomainTaintFlags taint,
-                      qemuDomainLogContext *logCtxt,
+                      qemuLogContext *logCtxt,
                       const char *fmt, ...)
 {
     virErrorPtr orig_err = NULL;
@@ -6920,12 +6883,12 @@ qemuDomainObjTaintMsg(virQEMUDriver *driver,
         goto cleanup;
 
     if (logCtxt) {
-        rc = qemuDomainLogContextWrite(logCtxt,
-                                       "%s: Domain id=%d is tainted: %s%s%s%s\n",
-                                       timestamp,
-                                       obj->def->id,
-                                       virDomainTaintTypeToString(taint),
-                                       extraprefix, extramsg, extrasuffix);
+        rc = qemuLogContextWrite(logCtxt,
+                                 "%s: Domain id=%d is tainted: %s%s%s%s\n",
+                                 timestamp,
+                                 obj->def->id,
+                                 virDomainTaintTypeToString(taint),
+                                 extraprefix, extramsg, extrasuffix);
     } else {
         rc = qemuDomainLogAppendMessage(driver, obj,
                                         "%s: Domain id=%d is tainted: %s%s%s%s\n",
@@ -6946,7 +6909,7 @@ qemuDomainObjTaintMsg(virQEMUDriver *driver,
 void qemuDomainObjTaint(virQEMUDriver *driver,
                         virDomainObj *obj,
                         virDomainTaintFlags taint,
-                        qemuDomainLogContext *logCtxt)
+                        qemuLogContext *logCtxt)
 {
     qemuDomainObjTaintMsg(driver, obj, taint, logCtxt, NULL);
     qemuDomainSaveStatus(obj);
@@ -6955,7 +6918,7 @@ void qemuDomainObjTaint(virQEMUDriver *driver,
 static void
 qemuDomainObjCheckMachineTaint(virQEMUDriver *driver,
                                virDomainObj *obj,
-                               qemuDomainLogContext *logCtxt)
+                               qemuLogContext *logCtxt)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
     virQEMUCaps *qemuCaps = priv->qemuCaps;
@@ -6973,7 +6936,7 @@ qemuDomainObjCheckMachineTaint(virQEMUDriver *driver,
 static void
 qemuDomainObjCheckCPUTaint(virQEMUDriver *driver,
                            virDomainObj *obj,
-                           qemuDomainLogContext *logCtxt,
+                           qemuLogContext *logCtxt,
                            bool incomingMigration)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
@@ -7005,7 +6968,7 @@ qemuDomainObjCheckCPUTaint(virQEMUDriver *driver,
 
 void qemuDomainObjCheckTaint(virQEMUDriver *driver,
                              virDomainObj *obj,
-                             qemuDomainLogContext *logCtxt,
+                             qemuLogContext *logCtxt,
                              bool incomingMigration)
 {
     size_t i;
@@ -7061,7 +7024,7 @@ void qemuDomainObjCheckTaint(virQEMUDriver *driver,
 void qemuDomainObjCheckDiskTaint(virQEMUDriver *driver,
                                  virDomainObj *obj,
                                  virDomainDiskDef *disk,
-                                 qemuDomainLogContext *logCtxt)
+                                 qemuLogContext *logCtxt)
 {
     if (disk->rawio == VIR_TRISTATE_BOOL_YES)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES,
@@ -7078,7 +7041,7 @@ void qemuDomainObjCheckDiskTaint(virQEMUDriver *driver,
 void qemuDomainObjCheckHostdevTaint(virQEMUDriver *driver,
                                     virDomainObj *obj,
                                     virDomainHostdevDef *hostdev,
-                                    qemuDomainLogContext *logCtxt)
+                                    qemuLogContext *logCtxt)
 {
     if (!virHostdevIsSCSIDevice(hostdev))
         return;
@@ -7091,7 +7054,7 @@ void qemuDomainObjCheckHostdevTaint(virQEMUDriver *driver,
 void qemuDomainObjCheckNetTaint(virQEMUDriver *driver,
                                 virDomainObj *obj,
                                 virDomainNetDef *net,
-                                qemuDomainLogContext *logCtxt)
+                                qemuLogContext *logCtxt)
 {
     /* script is only useful for NET_TYPE_ETHERNET (qemu) and
      * NET_TYPE_BRIDGE (xen), but could be (incorrectly) specified for
@@ -7100,163 +7063,6 @@ void qemuDomainObjCheckNetTaint(virQEMUDriver *driver,
      */
     if (net->script != NULL)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_SHELL_SCRIPTS, logCtxt);
-}
-
-
-qemuDomainLogContext *qemuDomainLogContextNew(virQEMUDriver *driver,
-                                              virDomainObj *vm,
-                                              const char *basename)
-{
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    qemuDomainLogContext *ctxt = QEMU_DOMAIN_LOG_CONTEXT(g_object_new(QEMU_TYPE_DOMAIN_LOG_CONTEXT, NULL));
-
-    VIR_DEBUG("Context new %p stdioLogD=%d", ctxt, cfg->stdioLogD);
-    ctxt->writefd = -1;
-    ctxt->readfd = -1;
-
-    ctxt->path = g_strdup_printf("%s/%s.log", cfg->logDir, basename);
-
-    if (cfg->stdioLogD) {
-        ctxt->manager = virLogManagerNew(driver->privileged);
-        if (!ctxt->manager)
-            goto error;
-
-        ctxt->writefd = virLogManagerDomainOpenLogFile(ctxt->manager,
-                                                       "qemu",
-                                                       vm->def->uuid,
-                                                       vm->def->name,
-                                                       ctxt->path,
-                                                       0,
-                                                       &ctxt->inode,
-                                                       &ctxt->pos);
-        if (ctxt->writefd < 0)
-            goto error;
-    } else {
-        if ((ctxt->writefd = open(ctxt->path, O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR)) < 0) {
-            virReportSystemError(errno, _("failed to create logfile %1$s"),
-                                 ctxt->path);
-            goto error;
-        }
-        if (virSetCloseExec(ctxt->writefd) < 0) {
-            virReportSystemError(errno, _("failed to set close-on-exec flag on %1$s"),
-                                 ctxt->path);
-            goto error;
-        }
-
-        /* For unprivileged startup we must truncate the file since
-         * we can't rely on logrotate. We don't use O_TRUNC since
-         * it is better for SELinux policy if we truncate afterwards */
-        if (!driver->privileged &&
-            ftruncate(ctxt->writefd, 0) < 0) {
-            virReportSystemError(errno, _("failed to truncate %1$s"),
-                                 ctxt->path);
-            goto error;
-        }
-
-        if ((ctxt->readfd = open(ctxt->path, O_RDONLY)) < 0) {
-            virReportSystemError(errno, _("failed to open logfile %1$s"),
-                                 ctxt->path);
-            goto error;
-        }
-        if (virSetCloseExec(ctxt->readfd) < 0) {
-            virReportSystemError(errno, _("failed to set close-on-exec flag on %1$s"),
-                                 ctxt->path);
-            goto error;
-        }
-
-        if ((ctxt->pos = lseek(ctxt->writefd, 0, SEEK_END)) < 0) {
-            virReportSystemError(errno, _("failed to seek in log file %1$s"),
-                                 ctxt->path);
-            goto error;
-        }
-    }
-
-    return ctxt;
-
- error:
-    g_clear_object(&ctxt);
-    return NULL;
-}
-
-
-int qemuDomainLogContextWrite(qemuDomainLogContext *ctxt,
-                              const char *fmt, ...)
-{
-    va_list argptr;
-    g_autofree char *message = NULL;
-    int ret = -1;
-
-    va_start(argptr, fmt);
-
-    message = g_strdup_vprintf(fmt, argptr);
-    if (!ctxt->manager &&
-        lseek(ctxt->writefd, 0, SEEK_END) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to seek to end of domain logfile"));
-        goto cleanup;
-    }
-    if (safewrite(ctxt->writefd, message, strlen(message)) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to write to domain logfile"));
-        goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    va_end(argptr);
-    return ret;
-}
-
-
-ssize_t qemuDomainLogContextRead(qemuDomainLogContext *ctxt,
-                                 char **msg)
-{
-    char *buf;
-    size_t buflen;
-
-    VIR_DEBUG("Context read %p manager=%p inode=%llu pos=%llu",
-              ctxt, ctxt->manager,
-              (unsigned long long)ctxt->inode,
-              (unsigned long long)ctxt->pos);
-
-    if (ctxt->manager) {
-        buf = virLogManagerDomainReadLogFile(ctxt->manager,
-                                             ctxt->path,
-                                             ctxt->inode,
-                                             ctxt->pos,
-                                             1024 * 128,
-                                             0);
-        if (!buf)
-            return -1;
-        buflen = strlen(buf);
-    } else {
-        ssize_t got;
-
-        buflen = 1024 * 128;
-
-        /* Best effort jump to start of messages */
-        ignore_value(lseek(ctxt->readfd, ctxt->pos, SEEK_SET));
-
-        buf = g_new0(char, buflen);
-
-        got = saferead(ctxt->readfd, buf, buflen - 1);
-        if (got < 0) {
-            VIR_FREE(buf);
-            virReportSystemError(errno, "%s",
-                                 _("Unable to read from log file"));
-            return -1;
-        }
-
-        buf[got] = '\0';
-
-        buf = g_renew(char, buf, got + 1);
-        buflen = got;
-    }
-
-    *msg = buf;
-
-    return buflen;
 }
 
 
@@ -7314,31 +7120,6 @@ qemuDomainLogAppendMessage(virQEMUDriver *driver,
     virLogManagerFree(manager);
 
     return ret;
-}
-
-
-int qemuDomainLogContextGetWriteFD(qemuDomainLogContext *ctxt)
-{
-    return ctxt->writefd;
-}
-
-
-void qemuDomainLogContextMarkPosition(qemuDomainLogContext *ctxt)
-{
-    if (ctxt->manager)
-        virLogManagerDomainGetLogFilePosition(ctxt->manager,
-                                              ctxt->path,
-                                              0,
-                                              &ctxt->inode,
-                                              &ctxt->pos);
-    else
-        ctxt->pos = lseek(ctxt->writefd, 0, SEEK_END);
-}
-
-
-virLogManager *qemuDomainLogContextGetManager(qemuDomainLogContext *ctxt)
-{
-    return ctxt->manager;
 }
 
 

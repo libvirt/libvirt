@@ -32,13 +32,13 @@
 #include "qemu_domainjob.h"
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
+#include "qemu_logcontext.h"
 #include "qemu_migration_params.h"
 #include "qemu_nbdkit.h"
 #include "qemu_slirp.h"
 #include "qemu_fd.h"
 #include "virchrdev.h"
 #include "virobject.h"
-#include "logging/log_manager.h"
 #include "virdomainmomentobjlist.h"
 #include "virenum.h"
 #include "vireventthread.h"
@@ -479,9 +479,6 @@ struct qemuProcessEvent {
 
 void qemuProcessEventFree(struct qemuProcessEvent *event);
 
-#define QEMU_TYPE_DOMAIN_LOG_CONTEXT qemu_domain_log_context_get_type()
-G_DECLARE_FINAL_TYPE(qemuDomainLogContext, qemu_domain_log_context, QEMU, DOMAIN_LOG_CONTEXT, GObject);
-
 typedef struct _qemuDomainSaveCookie qemuDomainSaveCookie;
 struct _qemuDomainSaveCookie {
     virObject parent;
@@ -634,39 +631,27 @@ char *qemuDomainDefFormatLive(virQEMUDriver *driver,
 void qemuDomainObjTaint(virQEMUDriver *driver,
                         virDomainObj *obj,
                         virDomainTaintFlags taint,
-                        qemuDomainLogContext *logCtxt);
+                        qemuLogContext *logCtxt);
 
 char **qemuDomainObjGetTainting(virQEMUDriver *driver,
                                 virDomainObj *obj);
 
 void qemuDomainObjCheckTaint(virQEMUDriver *driver,
                              virDomainObj *obj,
-                             qemuDomainLogContext *logCtxt,
+                             qemuLogContext *logCtxt,
                              bool incomingMigration);
 void qemuDomainObjCheckDiskTaint(virQEMUDriver *driver,
                                  virDomainObj *obj,
                                  virDomainDiskDef *disk,
-                                 qemuDomainLogContext *logCtxt);
+                                 qemuLogContext *logCtxt);
 void qemuDomainObjCheckHostdevTaint(virQEMUDriver *driver,
                                     virDomainObj *obj,
                                     virDomainHostdevDef *disk,
-                                    qemuDomainLogContext *logCtxt);
+                                    qemuLogContext *logCtxt);
 void qemuDomainObjCheckNetTaint(virQEMUDriver *driver,
                                 virDomainObj *obj,
                                 virDomainNetDef *net,
-                                qemuDomainLogContext *logCtxt);
-
-qemuDomainLogContext *qemuDomainLogContextNew(virQEMUDriver *driver,
-                                              virDomainObj *vm,
-                                              const char *basename);
-int qemuDomainLogContextWrite(qemuDomainLogContext *ctxt,
-                              const char *fmt, ...) G_GNUC_PRINTF(2, 3);
-ssize_t qemuDomainLogContextRead(qemuDomainLogContext *ctxt,
-                                 char **msg);
-int qemuDomainLogContextGetWriteFD(qemuDomainLogContext *ctxt);
-void qemuDomainLogContextMarkPosition(qemuDomainLogContext *ctxt);
-
-virLogManager *qemuDomainLogContextGetManager(qemuDomainLogContext *ctxt);
+                                qemuLogContext *logCtxt);
 
 int qemuDomainLogAppendMessage(virQEMUDriver *driver,
                                virDomainObj *vm,
