@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-01-09 14:27+0000\n"
-"PO-Revision-Date: 2023-01-01 08:20+0000\n"
+"PO-Revision-Date: 2023-01-12 08:59+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -5596,7 +5596,8 @@ msgstr "도메인에 일시 중단 지원이 없습니다"
 #, c-format
 msgid ""
 "Domain has %zd interfaces. Please specify which one to detach using --mac"
-msgstr ""
+msgstr "도메인은 %zd 연결장치를 가지고 있습니다. --mac을 사용하여 분리 하려는 것 "
+"중에 하나를 지정하세요"
 
 #, c-format
 msgid ""
@@ -5704,7 +5705,7 @@ msgstr "도메인 스냅샷 %s이 삭제됨\n"
 
 #, c-format
 msgid "Domain snapshot %s reverted\n"
-msgstr ""
+msgstr "도메인 스냅샷 %s가 복귀되었습니다\n"
 
 msgid "Domain snapshot not found"
 msgstr "도메인 스냅샷을 찾을 수 없음"
@@ -6742,7 +6743,7 @@ msgid "Failed to create nvram dir %s"
 msgstr "nvram 디렉토리 %s를 작성하지 못했습니다"
 
 msgid "Failed to create or modify the state XML attribute"
-msgstr ""
+msgstr "상태 XML 속성을 생성하거나 수정하는데 실패함"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -8025,7 +8026,7 @@ msgstr "vcpu 상태 비트맵을 검색하는데 실패"
 
 #, c-format
 msgid "Failed to revert snapshot %s"
-msgstr ""
+msgstr "스냅샷 %s를 되돌리는데 실패함"
 
 msgid "Failed to rollback network config change transaction"
 msgstr "네트워크 구성 변경 연결을 되돌리는데 실패"
@@ -10381,7 +10382,7 @@ msgid "JSON backing volume definition '%s' must not have nested format drivers"
 msgstr "JSON 백업 볼륨 정의 '%s'에는 중첩 형식 드라이버가 없어야 합니다"
 
 msgid "JSON string array contains non-string element"
-msgstr ""
+msgstr "JSON 문자열 배열은 비-문자열 요소를 포함합니다"
 
 #, c-format
 msgid "Job submission failed on interface '%s'"
@@ -14420,7 +14421,7 @@ msgid "Snapshot List"
 msgstr "스냅샷 목록"
 
 msgid "Snapshot delete"
-msgstr ""
+msgstr "스냅샷 삭제"
 
 msgid "Snapshot is Null"
 msgstr "스냅샷이 없습니다"
@@ -15605,7 +15606,7 @@ msgstr "해제된 %d 파일 시스템\n"
 
 #, c-format
 msgid "The %s interface already exists"
-msgstr ""
+msgstr "%s 연결장치는 이미 존재합니다"
 
 #, c-format
 msgid "The '%s' device is not supported by this QEMU binary"
