@@ -8,7 +8,7 @@
 # Maxim Dziumanenko <dziumanenko@gmail.com>, 2007
 # Rax Garfield <admin@dvizho.ks.ua>, 2012
 # Sergey <dmytserg@gmail.com>, 2011
-# Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022.
+# Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023.
 # Данило Коростіль <ted.korostiled@gmail.com>, 2011
 # Daniel Berrange <dan-zanata@berrange.com>, 2018
 msgid ""
@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-01-09 14:27+0000\n"
-"PO-Revision-Date: 2022-11-29 08:38+0000\n"
+"PO-Revision-Date: 2023-01-11 22:20+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -24,9 +24,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14.2\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.15\n"
 
 msgid ""
 "\n"
@@ -5855,6 +5855,8 @@ msgstr "У домені не передбачено підтримки прис�
 msgid ""
 "Domain has %zd interfaces. Please specify which one to detach using --mac"
 msgstr ""
+"У домену %zd інтерфейсів. Будь ласка, вкажіть інтерфейс для від'єднання за "
+"допомогою --mac"
 
 #, c-format
 msgid ""
@@ -5963,7 +5965,7 @@ msgstr "Знімок домену %s вилучено\n"
 
 #, c-format
 msgid "Domain snapshot %s reverted\n"
-msgstr ""
+msgstr "Знімок домену %s повернуто до попереднього стану\n"
 
 msgid "Domain snapshot not found"
 msgstr "Не знайдено знімка домену"
@@ -7028,7 +7030,7 @@ msgid "Failed to create nvram dir %s"
 msgstr "Не вдалося створити каталог nvram %s"
 
 msgid "Failed to create or modify the state XML attribute"
-msgstr ""
+msgstr "Не вдалося створити або змінити атрибут XML стану"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -8344,7 +8346,7 @@ msgstr "Не вдалося отримати бітову карту стані�
 
 #, c-format
 msgid "Failed to revert snapshot %s"
-msgstr ""
+msgstr "Не вдалося повернути знімок %s до попереднього стану"
 
 msgid "Failed to rollback network config change transaction"
 msgstr "Не вдалося скасувати дію зі зміни налаштувань мережі"
@@ -10800,7 +10802,7 @@ msgstr ""
 "драйверів форматування"
 
 msgid "JSON string array contains non-string element"
-msgstr ""
+msgstr "Масив рядків JSON містить нерядковий елемент"
 
 #, c-format
 msgid "Job submission failed on interface '%s'"
@@ -15096,7 +15098,7 @@ msgid "Snapshot List"
 msgstr "Список знімків"
 
 msgid "Snapshot delete"
-msgstr ""
+msgstr "Вилучення знімка"
 
 msgid "Snapshot is Null"
 msgstr "Значення Snapshot є порожнім"
@@ -16486,7 +16488,7 @@ msgstr "Розморожено %d файлові системи\n"
 
 #, c-format
 msgid "The %s interface already exists"
-msgstr ""
+msgstr "Інтерфейс %s вже існує"
 
 #, c-format
 msgid "The '%s' device is not supported by this QEMU binary"
@@ -16720,11 +16722,15 @@ msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
 msgstr ""
+"Загальна максимальна кількість клієнтів має не бути меншою за кількість "
+"клієнтів, що очікують на розпізнавання"
 
 msgid ""
 "The overall maximum number of clients waiting for authentication must not be "
 "less than the overall maximum number of clients"
 msgstr ""
+"Загальна максимальна кількість клієнтів, що очікують на розпізнавання, має "
+"бути не меншою за загальну максимальну кількість клієнтів"
 
 msgid "The read only disk has no parent"
 msgstr "Придатний лише для читання диск не має батьківського"
@@ -20428,7 +20434,7 @@ msgid "VFIO device assignment is currently not supported on this system"
 msgstr "у цій системі поки що не передбачено призначення пристроїв VFIO"
 
 msgid "VM disk source and snapshot disk source are not the same"
-msgstr ""
+msgstr "Джерело диска ВМ і джерело диска знімка не є тотожними"
 
 msgid "VM is already active"
 msgstr "Віртуальна машина вже активна"
@@ -21107,7 +21113,7 @@ msgid "array element missing in guest-get-vcpus return value"
 msgstr "у повернутому значенні guest-get-vcpus пропущено елемент масиву"
 
 msgid "associate a FD with a domain"
-msgstr ""
+msgstr "пов'язати дескриптор файла з доменом"
 
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
@@ -21476,6 +21482,7 @@ msgstr ""
 #, c-format
 msgid "block commit failed while deleting disk '%s' snapshot: '%s'"
 msgstr ""
+"внесення блоку зазнало невдачі під час вилучення знімка диска «%s»: «%s»"
 
 msgid "block copy still active"
 msgstr "не завершено копіювання блоків"
@@ -21493,6 +21500,8 @@ msgstr "цілі знімка блокового пристрою «%s» не і
 
 msgid "block info is not supported for FD passed disk image"
 msgstr ""
+"підтримки відомостей щодо блоків для образів дисків, які передаються за "
+"допомогою дескриптора файла, не передбачено"
 
 msgid "block info is not supported for vhostuser disk"
 msgstr ""
@@ -21762,6 +21771,8 @@ msgstr ""
 
 msgid "can't add memory backend as guest has no NUMA nodes configured"
 msgstr ""
+"не вдалося додати модуль пам'яті, оскільки у гостьовій системі не "
+"налаштовано вузлів NUMA"
 
 #, c-format
 msgid ""
@@ -22241,6 +22252,8 @@ msgstr "не можна вилучати знімок запущеного до�
 
 msgid "cannot delete external snapshots when there is another active block job"
 msgstr ""
+"неможливо вилучити зовнішні знімки, якщо є активним інше завдання з роботи з "
+"блоками"
 
 #, c-format
 msgid "cannot delete inactive domain with %d checkpoints"
@@ -24026,6 +24039,8 @@ msgstr "підтримки копіювання придатних лише до
 
 msgid "copy to a FD passed disk source is not yet supported"
 msgstr ""
+"підтримки копіювання переданого за допомогою дескриптора файла джерела диска "
+"ще не передбачено"
 
 msgid "copy-on-write ploop volumes are not yet supported"
 msgstr "підтримки томів ploop із копіюванням під час запису ще не передбачено"
@@ -24134,7 +24149,7 @@ msgstr ""
 "не вдалося знайти індекс резервного сховища даних «%u» у ланцюжку для «%s»"
 
 msgid "could not find base disk source in disk source chain"
-msgstr ""
+msgstr "Не вдалося знайти базове джерело диска у ланцюжку джерел дисків"
 
 #, c-format
 msgid "could not find base image in chain for '%s'"
@@ -24778,15 +24793,21 @@ msgstr "вилучити вказаний порт мережі"
 msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
 msgstr ""
+"підтримки вилучення зовнішнього знімка, для якого внутрішній знімок є "
+"батьківським, не передбачено"
 
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr ""
+"підтримки вилучення зовнішнього і внутрішнього дочірніх знімків диска не "
+"передбачено"
 
 msgid "deletion of external children disk snapshots not supported"
-msgstr ""
+msgstr "підтримки вилучення зовнішніх дочірніх знімків дисків не передбачено"
 
 msgid "deletion of external disk snapshots with children not supported"
 msgstr ""
+"підтримки вилучення зовнішніх знімків дисків із дочірніми елементами не "
+"передбачено"
 
 #, c-format
 msgid "deprecated configuration: %s"
@@ -25180,6 +25201,8 @@ msgid ""
 "disk image '%s' for internal snapshot '%s' is not the same as disk image "
 "currently used by VM"
 msgstr ""
+"образ диска «%s» для внутрішнього знімка «%s» не є тотожним до образу диска, "
+"який зараз використовує ВМ"
 
 #, c-format
 msgid "disk image format not supported: %s"
@@ -25633,6 +25656,8 @@ msgstr "отримати вміст тому до файла"
 #, c-format
 msgid "driver does not support FD passing for disk '%s'"
 msgstr ""
+"у драйвері не передбачено підтримки передавання за дескриптором файла для "
+"диска «%s»"
 
 #, c-format
 msgid "driver does not support net model '%s'"
@@ -26524,7 +26549,7 @@ msgid "failed to create RBD snapshot %s@%s"
 msgstr "не вдалося створити знімок RBD %s@%s"
 
 msgid "failed to create XML node"
-msgstr ""
+msgstr "не вдалося створити вузол XML"
 
 msgid "failed to create a new XML namespace"
 msgstr "не вдалося створити простір назв XML"
@@ -26646,6 +26671,7 @@ msgstr "не вдалося визначити стан виходу з цикл
 #, c-format
 msgid "failed to duplicate file descriptor for fd group '%s'"
 msgstr ""
+"не вдалося здублювати дескриптор файла для групи дескрипторів файлів «%s»"
 
 msgid "failed to enable IP forwarding"
 msgstr "помилка при вмиканні перенаправлення IP"
@@ -26700,14 +26726,14 @@ msgstr "Не вдалося знайти диск «%s»"
 
 #, c-format
 msgid "failed to find disk '%s' in snapshot VM XML"
-msgstr ""
+msgstr "не вдалося знайти диск «%s» в XML знімка ВМ"
 
 #, c-format
 msgid "failed to find iothread id for '%s'"
 msgstr "не вдалося знайти ідентифікатор потоку введення-виведення для «%s»"
 
 msgid "failed to find parent disk source in backing chain"
-msgstr ""
+msgstr "не вдалося знайти джерело батьківського диска у ланцюжку резервування"
 
 #, c-format
 msgid "failed to find the VID for the VLAN device '%s'"
@@ -27455,7 +27481,7 @@ msgid "failed to truncate %s"
 msgstr "не вдалося обрізати %s"
 
 msgid "failed to umount devfs on /dev"
-msgstr ""
+msgstr "не вдалося демонтувати devfs у /dev"
 
 #, c-format
 msgid "failed to undefine interface %s: %s%s%s"
@@ -27593,7 +27619,7 @@ msgid "fd must be valid"
 msgstr "дескриптор файла має бути коректним"
 
 msgid "fd passed image source not initialized"
-msgstr ""
+msgstr "передане за дескриптором файла джерело образу не ініціалізовано"
 
 msgid "fd passing is not supported by this connection"
 msgstr ""
@@ -27667,10 +27693,10 @@ msgstr "файл, що містить атрибути ключа у форма�
 
 #, c-format
 msgid "file descriptor group '%s' was not associated with the domain"
-msgstr ""
+msgstr "групу дескрипторів файлв «%s» не пов'язано з доменом"
 
 msgid "file descriptors N,M,... to associate"
-msgstr ""
+msgstr "дескриптори файлів N,M,... для прив'язки"
 
 msgid "file format type raw,bochs,qcow,qcow2,qed,vmdk"
 msgstr "тип формату файлів, raw,bochs,qcow,qcow2,qed,vmdk"
@@ -27793,6 +27819,8 @@ msgstr "на завершальному кроці проігноровано с
 #, c-format
 msgid "finishing block job failed while deleting disk '%s' snapshot: '%s'"
 msgstr ""
+"не вдалося завершити завдання з роботи з блоками під час вилучення знімка "
+"диска «%s»: «%s»"
 
 msgid ""
 "firewalld is set to use the nftables backend, but the required firewalld "
@@ -28850,7 +28878,7 @@ msgstr "помилка у інтерфейсі «%s»; повторне відк
 
 #, c-format
 msgid "interface '%s' not found"
-msgstr ""
+msgstr "не знайдено інтерфейсу «%s»"
 
 msgid "interface device (MAC Address)"
 msgstr "пристрій інтерфейсу (MAC-адреса)"
@@ -31570,7 +31598,7 @@ msgid "missing existing file for disk %s: %s"
 msgstr "не вистачає вже створеного файла для диска %s: %s"
 
 msgid "missing external TPM backend type"
-msgstr ""
+msgstr "не вказано типу модуля зовнішнього TPM"
 
 msgid "missing feature name"
 msgstr "не вказано назви можливості"
@@ -31927,7 +31955,7 @@ msgid "missing socket for unix transport"
 msgstr "не вказано сокета для каналу передавання UNIX"
 
 msgid "missing socket path for external TPM device"
-msgstr ""
+msgstr "не вказано шляху до сокета для зовнішнього пристрою TPM"
 
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
@@ -32301,7 +32329,7 @@ msgid "name of snapshot"
 msgstr "назва знімка"
 
 msgid "name of the FD group"
-msgstr ""
+msgstr "назва групи дескрипторів файлів"
 
 msgid "name of the inactive domain"
 msgstr "назва неактивного домену"
@@ -33496,7 +33524,7 @@ msgstr ""
 "процесори, які працюють і не можуть бути під'єднані «вгарячу»"
 
 msgid "only 'client' mode is supported for external TPM device"
-msgstr ""
+msgstr "для зовнішнього пристрою TPM передбачено підтримку лише режиму «клієнт»"
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "для пристрою pc-dimm передбачено підтримку лише адрес «dimm»"
@@ -33680,6 +33708,7 @@ msgstr "для пристроїв vhostuser передбачено підтри�
 
 msgid "only source type 'unix' is supported for external TPM device"
 msgstr ""
+"для зовнішнього пристрою TPM передбачено підтримку лише типу джерела «unix»"
 
 msgid "only supports mount filesystem type"
 msgstr "передбачено лише підтримку типів файлових систем mount"
@@ -34083,6 +34112,8 @@ msgstr ""
 
 msgid "peeking is not supported for FD passed images"
 msgstr ""
+"підтримки вибору для образів, які передано за допомогою дескрипторів файлів, "
+"не передбачено"
 
 msgid "peeking is not supported for vhostuser disk"
 msgstr "для диска vhostuser не передбачено підтримки вибору"
@@ -34424,7 +34455,7 @@ msgid "print XML document rather than change media"
 msgstr "вивести документ XML замість зміни носія"
 
 msgid "print XML document rather than clone the volume"
-msgstr ""
+msgstr "вивести документ XML, а не клонувати том"
 
 msgid "print XML document rather than create"
 msgstr "вивести документ XML, а не створювати буфер"
@@ -34433,10 +34464,10 @@ msgid "print XML document rather than detach the disk"
 msgstr "вивести документ XML без від'єднання диска"
 
 msgid "print XML document rather than detach the interface"
-msgstr ""
+msgstr "вивести документ XML, а не від'єднувати інтерфейс"
 
 msgid "print XML document rather than set the interface link state"
-msgstr ""
+msgstr "вивести документ XML, а не встановлювати стан зв'язку інтерфейсу"
 
 msgid "print XML document, but don't define/create"
 msgstr "вивести документ XML, але не визначати і не створювати буфер"
@@ -36003,10 +36034,11 @@ msgstr "у знімку «%s» не вказано даних щодо відн�
 
 msgid "snapshot VM disk source and parent disk source are not the same"
 msgstr ""
+"джерело диска знімка ВМ і джерело диска батьківського запису не є тотожними"
 
 #, c-format
 msgid "snapshot disk '%s' was target of not completed snapshot delete"
-msgstr ""
+msgstr "диск знімка «%s» був ціллю незавершеного вилучення знімка"
 
 msgid "snapshot information"
 msgstr "дані щодо знімка"
@@ -37366,7 +37398,7 @@ msgid "try harder on risky reverts"
 msgstr "спробувати важчі або ризиковані повернення"
 
 msgid "try to restore security label after use if possible"
-msgstr ""
+msgstr "спробувати відновити мітку захисту після використання, якщо це можливо"
 
 msgid "tty console"
 msgstr "консоль tty"
@@ -38465,7 +38497,7 @@ msgstr "невідомий тип модуля «%s» для egd"
 
 #, c-format
 msgid "unknown backend type '%s' for external TPM"
-msgstr ""
+msgstr "невідомий тип модуля «%s» для зовнішнього TPM"
 
 #, c-format
 msgid "unknown backup mode '%s'"
@@ -38975,7 +39007,7 @@ msgstr "непідтримуваний звуковий модуль «%s»"
 
 #, c-format
 msgid "unsupported audio model %s"
-msgstr ""
+msgstr "непідтримувана модель звуку %s"
 
 #, c-format
 msgid "unsupported authentication type %d"
@@ -39115,7 +39147,7 @@ msgstr "непідтримувані прапорці (0x%x)"
 
 #, c-format
 msgid "unsupported flags (0x%x) in function %s"
-msgstr ""
+msgstr "непідтримувані прапорці (0x%x) у функції %s"
 
 #, c-format
 msgid "unsupported flags: (0x%x)"
@@ -39254,7 +39286,7 @@ msgstr "непідтримувана модель usb"
 
 #, c-format
 msgid "unsupported use of long flags in function %s"
-msgstr ""
+msgstr "непідтримуване використання довгих версій прапорців у функції %s"
 
 msgid "unsupported value"
 msgstr "непідтримуване значення"
@@ -39360,7 +39392,7 @@ msgstr ""
 "системи"
 
 msgid "use seclabels allowing writes"
-msgstr ""
+msgstr "використовувати мітки захисту із уможливленням запису"
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr "скористайтеся virDomainMigrateToURI3 для перенесення з вузла на вузол"
