@@ -2715,6 +2715,7 @@ virDomainNetDefFree(virDomainNetDef *def)
     g_free(def->ifname_guest_actual);
     g_free(def->virtio);
     g_free(def->coalesce);
+    g_free(def->sourceDev);
 
     virNetDevIPInfoClear(&def->guestIP);
     virNetDevIPInfoClear(&def->hostIP);
@@ -9038,7 +9039,6 @@ virDomainNetBackendParseXML(xmlNodePtr node,
     }
 
     def->backend.logFile = virXMLPropString(node, "logFile");
-    def->backend.upstream = virXMLPropString(node, "upstream");
 
     if (tap)
         def->backend.tap = virFileSanitizePath(tap);
@@ -9464,6 +9464,9 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
+        def->sourceDev = virXMLPropString(source_node, "dev");
+        break;
+
     case VIR_DOMAIN_NET_TYPE_NULL:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
@@ -23277,6 +23280,8 @@ virDomainActualNetDefContentsFormat(virBuffer *buf,
                 return -1;
             }
             virBufferAsprintf(buf, " mode='%s'", mode);
+        } else if (actualType == VIR_DOMAIN_NET_TYPE_USER) {
+            virBufferEscapeString(buf, " dev='%s'", def->sourceDev);
         }
 
         virBufferAddLit(buf, "/>\n");
@@ -23487,7 +23492,6 @@ virDomainNetBackendFormat(virBuffer *buf,
     virBufferEscapeString(&attrBuf, " tap='%s'", backend->tap);
     virBufferEscapeString(&attrBuf, " vhost='%s'", backend->vhost);
     virBufferEscapeString(&attrBuf, " logFile='%s'", backend->logFile);
-    virBufferEscapeString(&attrBuf, " upstream='%s'", backend->upstream);
     virXMLFormatElement(buf, "backend", &attrBuf, NULL);
 }
 
@@ -23752,6 +23756,13 @@ virDomainNetDefFormat(virBuffer *buf,
         }
 
         case VIR_DOMAIN_NET_TYPE_USER:
+            if (def->backend.type == VIR_DOMAIN_NET_BACKEND_PASST &&
+                def->sourceDev) {
+                virBufferEscapeString(buf, "<source dev='%s'", def->sourceDev);
+                sourceLines++;
+            }
+            break;
+
         case VIR_DOMAIN_NET_TYPE_NULL:
         case VIR_DOMAIN_NET_TYPE_LAST:
             break;

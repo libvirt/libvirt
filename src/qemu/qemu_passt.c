@@ -167,8 +167,8 @@ qemuPasstStart(virDomainObj *vm,
         virCommandAddArgFormat(cmd, "%u", net->mtu);
     }
 
-    if (net->backend.upstream)
-        virCommandAddArgList(cmd, "--interface", net->backend.upstream, NULL);
+    if (net->sourceDev)
+        virCommandAddArgList(cmd, "--interface", net->sourceDev, NULL);
 
     if (net->backend.logFile)
         virCommandAddArgList(cmd, "--log-file", net->backend.logFile, NULL);

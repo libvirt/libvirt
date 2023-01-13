@@ -3318,6 +3318,14 @@
             <value>user</value>
           </attribute>
           <interleave>
+            <optional>
+              <element name="source">
+                <attribute name="dev">
+                  <ref name="deviceName"/>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
             <ref name="interface-options"/>
           </interleave>
         </group>
@@ -3641,11 +3649,6 @@
           <optional>
             <attribute name="logFile">
               <ref name="absFilePath"/>
-            </attribute>
-          </optional>
-          <optional>
-            <attribute name="upstream">
-              <ref name="deviceName"/>
             </attribute>
           </optional>
         </element>

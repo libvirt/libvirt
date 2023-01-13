@@ -1192,6 +1192,7 @@ struct _virDomainNetDef {
     virNetDevIPInfo hostIP;
     char *ifname_guest_actual;
     char *ifname_guest;
+    char *sourceDev;
     virNetDevIPInfo guestIP;
     size_t nPortForwards;
     virDomainNetPortForward **portForwards;

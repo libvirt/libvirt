@@ -4821,9 +4821,9 @@ destined for the host toward the guest instead.
 
 When the passt backend is used, the ``<backend>`` attribute
 ``logFile`` can be used to tell the passt process for this interface
-where to write its message log, and the ``<backend>`` attribute
-``upstream`` can tell it to restrict upstream traffic to a particular
-host interface.
+where to write its message log, and the ``<source>`` attribute ``dev``
+can tell it to use a particular host interface to derive the routes
+given to the guest for forwarding traffic upstream.
 
 Additionally, when passt is used, multiple ``<portForward>`` elements
 can be added to forward incoming network traffic for the host to this
@@ -4855,8 +4855,9 @@ ports **with the exception of some subset**.
    <devices>
      ...
      <interface type='user'>
-       <backend type='passt' logFile='/var/log/passt.log' upstream='eth0'/>
+       <backend type='passt' logFile='/var/log/passt.log'/>
        <mac address="00:11:22:33:44:55"/>
+       <source dev='eth0'/>
        <ip family='ipv4' address='172.17.2.0' prefix='24'/>
        <ip family='ipv6' address='2001:db8:ac10:fd01::' prefix='64'/>
        <portForward proto='tcp' address='2001:db8:ac10:fd01::1:10' start='2022'>
