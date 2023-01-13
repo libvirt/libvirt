@@ -1,10 +1,10 @@
 [Unit]
 Description=Virtualization xen daemon
 Conflicts=libvirtd.service
-Requires=virtlockd.socket
 Requires=virtxend.socket
 Requires=virtxend-ro.socket
 Requires=virtxend-admin.socket
+Wants=virtlockd.socket
 After=network.target
 After=dbus.service
 After=apparmor.service

@@ -2,10 +2,10 @@
 Description=Virtualization qemu daemon
 Conflicts=libvirtd.service
 Requires=virtlogd.socket
-Requires=virtlockd.socket
 Requires=virtqemud.socket
 Requires=virtqemud-ro.socket
 Requires=virtqemud-admin.socket
+Wants=virtlockd.socket
 Wants=systemd-machined.service
 After=network.target
 After=dbus.service
