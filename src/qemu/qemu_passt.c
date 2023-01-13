@@ -95,7 +95,6 @@ qemuPasstAddNetProps(virDomainObj *vm,
                               "s:type", "stream",
                               "a:addr", &addrprops,
                               "b:server", false,
-                              /*  "u:reconnect", 5, */
                               NULL) < 0) {
         return -1;
     }
