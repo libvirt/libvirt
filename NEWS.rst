@@ -38,6 +38,12 @@ v9.0.0 (unreleased)
     Connecting the VM to a swtpm daemon started outside of libvirt
     is now possible.
 
+  * QEMU: Support for passing FDs instead of opening files for `<disk>`
+
+    A new API `virDomainFDAssociate` gives the users the option to pass FDs
+    to libvirt and then use them when starting a VM. Currently the FDs can
+    be used instead of directly opening files as `<disk>` backend.
+
 * **Improvements**
 
   * qemu: Prefer PNG for domain screenshots
@@ -46,6 +52,11 @@ v9.0.0 (unreleased)
 
 * **Bug fixes**
 
+  * Fix NULL-pointer dereference `virXMLPropStringRequired`
+
+    Fix a bug where when parsing a XML property which is required to be present
+    by using `virXMLPropStringRequired` the parser will crash instead of
+    reporting an error.
 
 v8.10.0 (2022-12-01)
 ====================
