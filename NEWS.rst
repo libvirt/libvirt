@@ -50,6 +50,30 @@ v9.0.0 (unreleased)
 
     With sufficiently new QEMU (v7.1.0) screenshots change format from PPM to PNG.
 
+  * tools: Fix install_mode for some scripts
+
+    Scripts from the following list were installed with group write bit set:
+    virt-xml-validate, virt-pki-validate, virt-sanlock-cleanup,
+    libvirt-guests.sh. This was changed so that only the owner is able to write
+    them.
+
+  * qemu: Allow multiple nodes for preferred policy
+
+    Due to restrictions of old kernels and libnuma APIs, the preferred NUMA
+    policy accepted just a single host NUMA node. With recent enough kernel
+    (v5.15.0) and libnuma (v2.0.15) it's possible to set multiple nodes.
+
+  * secret: Inhibit shutdown of daemon for ephemeral secrets
+
+    When an ephemeral secret is defined then automatic shutdown of virtsecretd
+    is inhibited. This is to avoid ephemeral secrets disappearing shortly
+    before their use.
+
+  * qemu: Report Hyper-V Enlightenments in domcapabilities
+
+    The supported Hyper-V Enlightenments are now reported in domain
+    capabilities XML.
+
 * **Bug fixes**
 
   * Fix NULL-pointer dereference `virXMLPropStringRequired`
@@ -57,6 +81,19 @@ v9.0.0 (unreleased)
     Fix a bug where when parsing a XML property which is required to be present
     by using `virXMLPropStringRequired` the parser will crash instead of
     reporting an error.
+
+  * qemu: Init ext devices paths on reconnect
+
+    Paths for external devices are not stored in the status XML. Therefore,
+    when the daemon restarted and was reconnecting to a running domain, these
+    paths were left blank which led to the daemon crash.
+
+  * qemu: Validate arguments passed to `virConnectGetDomainCapabilities`
+
+    There was a code path in which insufficient validation of input arguments
+    of `virConnectGetDomainCapabilities` API was possible which led to the
+    daemon crash. This path is now fixed.
+
 
 v8.10.0 (2022-12-01)
 ====================
