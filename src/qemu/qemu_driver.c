@@ -16009,6 +16009,50 @@ qemuDomainGetMetadata(virDomainPtr dom,
     return ret;
 }
 
+#define QEMU_CPU_STATS_PROC_TOTAL 3
+
+static int
+qemuDomainGetCPUStatsProc(virDomainObj *vm,
+                          virTypedParameterPtr params,
+                          unsigned int nparams)
+{
+    unsigned long long cpuTime = 0;
+    unsigned long long userTime = 0;
+    unsigned long long sysTime = 0;
+
+    if (nparams == 0) {
+        /* return supported number of params */
+        return QEMU_CPU_STATS_PROC_TOTAL;
+    }
+
+    if (virProcessGetStatInfo(&cpuTime, &userTime, &sysTime,
+                              NULL, NULL, vm->pid, 0) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("cannot read cputime for domain"));
+        return -1;
+    }
+
+    if (virTypedParameterAssign(&params[0], VIR_DOMAIN_CPU_STATS_CPUTIME,
+                                VIR_TYPED_PARAM_ULLONG, cpuTime) < 0)
+        return -1;
+
+    if (nparams > 1 &&
+        virTypedParameterAssign(&params[1], VIR_DOMAIN_CPU_STATS_USERTIME,
+                                VIR_TYPED_PARAM_ULLONG, userTime) < 0)
+        return -1;
+
+    if (nparams > 2 &&
+        virTypedParameterAssign(&params[2], VIR_DOMAIN_CPU_STATS_SYSTEMTIME,
+                                VIR_TYPED_PARAM_ULLONG, sysTime) < 0)
+        return -1;
+
+    if (nparams > 3)
+        nparams = 3;
+
+    return nparams;
+}
+
+#undef QEMU_CPU_STATS_PROC_TOTAL
 
 static int
 qemuDomainGetCPUStats(virDomainPtr domain,
@@ -16037,8 +16081,12 @@ qemuDomainGetCPUStats(virDomainPtr domain,
         goto cleanup;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUACCT)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("cgroup CPUACCT controller is not mounted"));
+        if (start_cpu == -1) {
+            ret = qemuDomainGetCPUStatsProc(vm, params, nparams);
+        } else {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cgroup CPUACCT controller is not mounted"));
+        }
         goto cleanup;
     }
 
