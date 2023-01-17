@@ -849,7 +849,7 @@ CPU Tuning
    There is no unit for the value, it's a relative measure based on the setting
    of other VM, e.g. A VM configured with value 2048 will get twice as much CPU
    time as a VM configured with value 1024. The value should be in range
-   [2, 262144]. :since:`Since 0.9.0`
+   [2, 262144] using cgroups v1, [1, 10000] using cgroups v2. :since:`Since 0.9.0`
 ``period``
    The optional ``period`` element specifies the enforcement interval (unit:
    microseconds). Within ``period``, each vCPU of the domain will not be allowed
