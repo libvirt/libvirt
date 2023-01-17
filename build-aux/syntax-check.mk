@@ -581,15 +581,22 @@ sc_prohibit_python_without_env:
 
 # We're intentionally ignoring a few warnings
 #
+# E302: whitespace before ':'. This is something that is
+# desirable when indexing array slices and is used by the
+# 'black' formatting tool
+#
 # E501: Force breaking lines at < 80 characters results in
 # some really unnatural code formatting which harms
 # readability.
+#
+# W503: line break before binary operator, because this
+# is contrary to what 'black' formatting tool wants
 #
 # W504: Knuth code style requires the operators "or" and "and" etc
 # to be at the start of line in a multi-line conditional.
 # This the opposite to what is normal libvirt practice.
 #
-FLAKE8_IGNORE = E501,W504
+FLAKE8_IGNORE = E203,E501,W503,W504
 
 sc_flake8:
 	@if [ -n "$(FLAKE8)" ]; then \
