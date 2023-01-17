@@ -2703,7 +2703,7 @@ paravirtualized driver is specified via the ``disk`` element.
       holding the disk. :since:`Since 0.0.3`
 
       :since:`Since 9.0.0` a new optional attribute ``fdgroup`` can be added
-      instructing to access the disk via file descriptiors associated to the
+      instructing to access the disk via file descriptors associated to the
       domain object via the ``virDomainFDAssociate()`` API rather than opening
       the files. The files do not necessarily have to be accessible by libvirt
       via the filesystem. The filename passed via ``file`` can still be used
