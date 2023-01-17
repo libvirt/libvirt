@@ -926,6 +926,12 @@ qemuBuildVirtioDevGetConfigDev(const virDomainDeviceDef *device,
         }
             break;
 
+        case VIR_DOMAIN_DEVICE_CRYPTO: {
+            *baseName = "virtio-crypto";
+            *virtioOptions = device->data.crypto->virtio;
+            break;
+        }
+
         case VIR_DOMAIN_DEVICE_LEASE:
         case VIR_DOMAIN_DEVICE_SOUND:
         case VIR_DOMAIN_DEVICE_WATCHDOG:
@@ -942,7 +948,6 @@ qemuBuildVirtioDevGetConfigDev(const virDomainDeviceDef *device,
         case VIR_DOMAIN_DEVICE_MEMORY:
         case VIR_DOMAIN_DEVICE_IOMMU:
         case VIR_DOMAIN_DEVICE_AUDIO:
-        case VIR_DOMAIN_DEVICE_CRYPTO:
         case VIR_DOMAIN_DEVICE_LAST:
         default:
             break;
@@ -9894,6 +9899,96 @@ qemuBuildVsockCommandLine(virCommand *cmd,
 }
 
 
+VIR_ENUM_DECL(qemuCryptoBackend);
+VIR_ENUM_IMPL(qemuCryptoBackend,
+              VIR_DOMAIN_CRYPTO_BACKEND_LAST,
+              "cryptodev-backend-builtin",
+              "cryptodev-backend-lkcf",
+);
+
+
+static int
+qemuBuildCryptoBackendProps(virDomainCryptoDef *crypto,
+                            virJSONValue **props)
+{
+    g_autofree char *objAlias = NULL;
+
+    objAlias = g_strdup_printf("obj%s", crypto->info.alias);
+
+    if (qemuMonitorCreateObjectProps(props,
+                                     qemuCryptoBackendTypeToString(crypto->backend),
+                                     objAlias,
+                                     "p:queues", crypto->queues,
+                                     NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static virJSONValue *
+qemuBuildCryptoDevProps(const virDomainDef *def,
+                        virDomainCryptoDef *dev,
+                        virQEMUCaps *qemuCaps)
+{
+    g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *crypto = g_strdup_printf("obj%s", dev->info.alias);
+
+    if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_CRYPTO, dev, qemuCaps)))
+        return NULL;
+
+    if (virJSONValueObjectAdd(&props,
+                              "s:cryptodev", crypto,
+                              "s:id", dev->info.alias,
+                              NULL) < 0)
+        return NULL;
+
+    if (qemuBuildDeviceAddressProps(props, def, &dev->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
+}
+
+
+static int
+qemuBuildCryptoCommandLine(virCommand *cmd,
+                           const virDomainDef *def,
+                           virQEMUCaps *qemuCaps)
+{
+    size_t i;
+
+    for (i = 0; i < def->ncryptos; i++) {
+        g_autoptr(virJSONValue) props = NULL;
+        virDomainCryptoDef *crypto = def->cryptos[i];
+        g_autoptr(virJSONValue) devprops = NULL;
+
+        if (!crypto->info.alias) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Crypto device is missing alias"));
+            return -1;
+        }
+
+        if (qemuBuildCryptoBackendProps(crypto, &props) < 0)
+            return -1;
+
+        if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+            return -1;
+
+        /* add the device */
+        if (qemuCommandAddExtDevice(cmd, &crypto->info, def, qemuCaps) < 0)
+            return -1;
+
+        if (!(devprops = qemuBuildCryptoDevProps(def, crypto, qemuCaps)))
+            return -1;
+
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 typedef enum {
     QEMU_COMMAND_DEPRECATION_BEHAVIOR_NONE = 0,
     QEMU_COMMAND_DEPRECATION_BEHAVIOR_OMIT,
@@ -10244,6 +10339,9 @@ qemuBuildCommandLine(virDomainObj *vm,
 
     if (def->vsock &&
         qemuBuildVsockCommandLine(cmd, def, def->vsock, qemuCaps) < 0)
+        return NULL;
+
+    if (qemuBuildCryptoCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
     if (cfg->logTimestamp)

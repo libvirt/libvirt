@@ -2983,6 +2983,8 @@ mymain(void)
 
     DO_TEST_CAPS_VER("sgx-epc", "7.0.0");
 
+    DO_TEST_CAPS_LATEST("crypto-builtin");
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
