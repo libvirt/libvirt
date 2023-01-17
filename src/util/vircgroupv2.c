@@ -1499,13 +1499,13 @@ static int
 virCgroupV2SetCpuShares(virCgroup *group,
                         unsigned long long shares)
 {
-    if (shares < VIR_CGROUP_CPU_SHARES_MIN ||
-        shares > VIR_CGROUP_CPU_SHARES_MAX) {
+    if (shares < VIR_CGROUPV2_WEIGHT_MIN ||
+        shares > VIR_CGROUPV2_WEIGHT_MAX) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("shares '%llu' must be in range [%llu, %llu]"),
                        shares,
-                       VIR_CGROUP_CPU_SHARES_MIN,
-                       VIR_CGROUP_CPU_SHARES_MAX);
+                       VIR_CGROUPV2_WEIGHT_MIN,
+                       VIR_CGROUPV2_WEIGHT_MAX);
         return -1;
     }
 
