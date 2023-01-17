@@ -405,6 +405,12 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDef *def,
             def->vsock->info.type = type;
         }
     }
+
+    for (i = 0; i < def->ncryptos; i++) {
+        /* All <crypto> devices accepted by the qemu driver are virtio */
+        if (def->cryptos[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            def->cryptos[i]->info.type = type;
+    }
 }
 
 
@@ -544,6 +550,7 @@ qemuDomainDeviceSupportZPCI(virDomainDeviceDef *device)
     case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
+    case VIR_DOMAIN_DEVICE_CRYPTO:
         break;
 
     case VIR_DOMAIN_DEVICE_NONE:
@@ -1041,6 +1048,15 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
         case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
         case VIR_DOMAIN_MEMORY_MODEL_LAST:
+            return 0;
+        }
+        break;
+
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+        switch (dev->data.crypto->model) {
+        case VIR_DOMAIN_CRYPTO_MODEL_VIRTIO:
+            return pciFlags;
+        case VIR_DOMAIN_CRYPTO_MODEL_LAST:
             return 0;
         }
         break;
@@ -2427,6 +2443,16 @@ qemuDomainAssignDevicePCISlots(virDomainDef *def,
             break;
         }
     }
+
+    /* the qemu driver only accepts virtio crypto devices */
+    for (i = 0; i < def->ncryptos; i++) {
+        if (!virDeviceInfoPCIAddressIsWanted(&def->cryptos[i]->info))
+            continue;
+
+        if (qemuDomainPCIAddressReserveNextAddr(addrs, &def->cryptos[i]->info) < 0)
+            return -1;
+    }
+
 
     return 0;
 }

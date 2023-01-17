@@ -2433,6 +2433,21 @@ virDomainVsockDefValidate(const virDomainVsockDef *vsock)
 
 
 static int
+virDomainCryptoDefValidate(const virDomainCryptoDef *crypto)
+{
+    switch (crypto->model) {
+    case VIR_DOMAIN_CRYPTO_MODEL_VIRTIO:
+        break;
+    case VIR_DOMAIN_CRYPTO_MODEL_LAST:
+    default:
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainInputDefValidate(const virDomainInputDef *input,
                           const virDomainDef *def)
 {
@@ -2855,6 +2870,9 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
 
     case VIR_DOMAIN_DEVICE_VSOCK:
         return virDomainVsockDefValidate(dev->data.vsock);
+
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+        return virDomainCryptoDefValidate(dev->data.crypto);
 
     case VIR_DOMAIN_DEVICE_INPUT:
         return virDomainInputDefValidate(dev->data.input, def);

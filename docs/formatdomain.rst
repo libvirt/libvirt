@@ -8305,6 +8305,27 @@ The optional ``driver`` element allows to specify virtio options, see
    ...
 
 
+Crypto
+~~~~~~
+
+A crypto device. The ``model`` attribute defaults to ``virtio``.
+:since:`Since v9.0.0` ``model`` supports ``virtio`` only. The ``type`` attribute
+defaults to ``qemu``. :since:`Since v9.0.0` ``type`` supports ``qemu`` only.
+The optional attribute ``backend`` is required if the ``type`` is ``qemu``, the
+``model`` attribute can be ``builtint`` and ``lkcf``, the optional attribute
+``queues`` specifies the number of virt queues for virtio crypto.
+
+::
+
+   ...
+   <devices>
+     <crypto model='virtio' type='qemu'>
+       <backend model='builtin' queues='1'/>
+     </crypto>
+   </devices>
+   ...
+
+
 Security label
 --------------
 

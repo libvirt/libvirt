@@ -332,6 +332,7 @@ VIR_ENUM_IMPL(virDomainDevice,
               "iommu",
               "vsock",
               "audio",
+              "crypto",
 );
 
 VIR_ENUM_IMPL(virDomainDiskDevice,
@@ -1325,6 +1326,22 @@ VIR_ENUM_IMPL(virDomainVsockModel,
               "virtio",
               "virtio-transitional",
               "virtio-non-transitional",
+);
+
+VIR_ENUM_IMPL(virDomainCryptoModel,
+              VIR_DOMAIN_CRYPTO_MODEL_LAST,
+              "virtio",
+);
+
+VIR_ENUM_IMPL(virDomainCryptoType,
+              VIR_DOMAIN_CRYPTO_TYPE_LAST,
+              "qemu",
+);
+
+VIR_ENUM_IMPL(virDomainCryptoBackend,
+              VIR_DOMAIN_CRYPTO_BACKEND_LAST,
+              "builtin",
+              "lkcf",
 );
 
 VIR_ENUM_IMPL(virDomainDiskDiscard,
@@ -3510,6 +3527,9 @@ void virDomainDeviceDefFree(virDomainDeviceDef *def)
     case VIR_DOMAIN_DEVICE_AUDIO:
         virDomainAudioDefFree(def->data.audio);
         break;
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+        virDomainCryptoDefFree(def->data.crypto);
+        break;
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_NONE:
         break;
@@ -3852,6 +3872,10 @@ void virDomainDefFree(virDomainDef *def)
     for (i = 0; i < def->npanics; i++)
         virDomainPanicDefFree(def->panics[i]);
     g_free(def->panics);
+
+    for (i = 0; i < def->ncryptos; i++)
+        virDomainCryptoDefFree(def->cryptos[i]);
+    g_free(def->cryptos);
 
     virDomainIOMMUDefFree(def->iommu);
 
@@ -4411,6 +4435,8 @@ virDomainDeviceGetInfo(const virDomainDeviceDef *device)
         return &device->data.iommu->info;
     case VIR_DOMAIN_DEVICE_VSOCK:
         return &device->data.vsock->info;
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+        return &device->data.crypto->info;
 
     /* The following devices do not contain virDomainDeviceInfo */
     case VIR_DOMAIN_DEVICE_LEASE:
@@ -4512,6 +4538,9 @@ virDomainDeviceSetData(virDomainDeviceDef *device,
         break;
     case VIR_DOMAIN_DEVICE_AUDIO:
         device->data.audio = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+        device->data.crypto = devicedata;
         break;
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
@@ -4724,6 +4753,13 @@ virDomainDeviceInfoIterateFlags(virDomainDef *def,
             return rc;
     }
 
+    device.type = VIR_DOMAIN_DEVICE_CRYPTO;
+    for (i = 0; i < def->ncryptos; i++) {
+        device.data.crypto = def->cryptos[i];
+        if ((rc = cb(def, &device, &def->cryptos[i]->info, opaque)) != 0)
+            return rc;
+    }
+
     /* If the flag below is set, make sure @cb can handle @info being NULL */
     if (iteratorFlags & DOMAIN_DEVICE_ITERATE_MISSING_INFO) {
         device.type = VIR_DOMAIN_DEVICE_GRAPHICS;
@@ -4782,6 +4818,7 @@ virDomainDeviceInfoIterateFlags(virDomainDef *def,
     case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
+    case VIR_DOMAIN_DEVICE_CRYPTO:
         break;
     }
 #endif
@@ -13610,6 +13647,64 @@ virDomainVsockDefParseXML(virDomainXMLOption *xmlopt,
     return g_steal_pointer(&vsock);
 }
 
+
+static virDomainCryptoDef *
+virDomainCryptoDefParseXML(virDomainXMLOption *xmlopt,
+                           xmlNodePtr node,
+                           xmlXPathContextPtr ctxt,
+                           unsigned int flags)
+{
+    g_autoptr(virDomainCryptoDef) def = NULL;
+    int nbackends;
+    g_autofree xmlNodePtr *backends = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    def = g_new0(virDomainCryptoDef, 1);
+
+    if (virXMLPropEnum(node, "model", virDomainCryptoModelTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &def->model) < 0) {
+        return NULL;
+    }
+
+
+    if (virXMLPropEnum(node, "type", virDomainCryptoTypeTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &def->type) < 0) {
+        return NULL;
+    }
+
+    ctxt->node = node;
+
+    if ((nbackends = virXPathNodeSet("./backend", ctxt, &backends)) < 0)
+        return NULL;
+
+    if (nbackends != 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("only one crypto backend is supported"));
+        return NULL;
+    }
+
+    if (virXMLPropEnum(backends[0], "model",
+                       virDomainCryptoBackendTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &def->backend) < 0) {
+        return NULL;
+    }
+
+    if (virXMLPropUInt(backends[0], "queues", 10,
+                       VIR_XML_PROP_NONE, &def->queues) < 0) {
+        return NULL;
+    }
+
+    if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info, flags) < 0)
+        return NULL;
+
+    if (virDomainVirtioOptionsParseXML(virXPathNode("./driver", ctxt),
+                                       &def->virtio) < 0)
+        return NULL;
+
+    return g_steal_pointer(&def);
+}
+
+
 virDomainDeviceDef *
 virDomainDeviceDefParse(const char *xmlStr,
                         const virDomainDef *def,
@@ -13769,6 +13864,11 @@ virDomainDeviceDefParse(const char *xmlStr,
     case VIR_DOMAIN_DEVICE_VSOCK:
         if (!(dev->data.vsock = virDomainVsockDefParseXML(xmlopt, node, ctxt,
                                                           flags)))
+            return NULL;
+        break;
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+        if (!(dev->data.crypto = virDomainCryptoDefParseXML(xmlopt, node, ctxt,
+                                                            flags)))
             return NULL;
         break;
     case VIR_DOMAIN_DEVICE_NONE:
@@ -18863,6 +18963,21 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     }
     VIR_FREE(nodes);
 
+    /* Parse the crypto devices */
+    if ((n = virXPathNodeSet("./devices/crypto", ctxt, &nodes)) < 0)
+        return NULL;
+    if (n)
+        def->cryptos = g_new0(virDomainCryptoDef *, n);
+    for (i = 0; i < n; i++) {
+        virDomainCryptoDef *crypto = virDomainCryptoDefParseXML(xmlopt, nodes[i],
+                                                                ctxt, flags);
+        if (!crypto)
+            return NULL;
+
+        def->cryptos[def->ncryptos++] = crypto;
+    }
+    VIR_FREE(nodes);
+
     /* Parse the TPM devices */
     if ((n = virXPathNodeSet("./devices/tpm", ctxt, &nodes)) < 0)
         return NULL;
@@ -21403,6 +21518,7 @@ virDomainDefCheckABIStabilityFlags(virDomainDef *src,
     case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
+    case VIR_DOMAIN_DEVICE_CRYPTO:
         break;
     }
 #endif
@@ -24843,6 +24959,45 @@ virDomainRNGDefFree(virDomainRNGDef *def)
 }
 
 
+static void
+virDomainCryptoDefFormat(virBuffer *buf,
+                         virDomainCryptoDef *def,
+                         unsigned int flags)
+{
+    const char *model = virDomainCryptoModelTypeToString(def->model);
+    const char *type = virDomainCryptoTypeTypeToString(def->model);
+    const char *backend = virDomainCryptoBackendTypeToString(def->backend);
+    g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+    virBufferAsprintf(&attrBuf, " model='%s' type='%s'", model, type);
+    virBufferAsprintf(&childBuf, "<backend model='%s'", backend);
+    if (def->queues)
+        virBufferAsprintf(&childBuf, " queues='%d'", def->queues);
+    virBufferAddLit(&childBuf, "/>\n");
+
+    virDomainVirtioOptionsFormat(&driverAttrBuf, def->virtio);
+
+    virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL);
+
+    virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
+
+    virXMLFormatElement(buf, "crypto", &attrBuf, &childBuf);
+}
+
+void
+virDomainCryptoDefFree(virDomainCryptoDef *def)
+{
+    if (!def)
+        return;
+
+    virDomainDeviceInfoClear(&def->info);
+    g_free(def->virtio);
+    g_free(def);
+}
+
+
 static int
 virDomainMemorySourceDefFormat(virBuffer *buf,
                                virDomainMemoryDef *def)
@@ -27542,6 +27697,9 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
             return -1;
     }
 
+    for (n = 0; n < def->ncryptos; n++) {
+        virDomainCryptoDefFormat(buf, def->cryptos[n], flags);
+    }
     if (def->iommu)
         virDomainIOMMUDefFormat(buf, def->iommu);
 

@@ -4512,6 +4512,25 @@ qemuValidateDomainDeviceDefAudio(virDomainAudioDef *audio,
 
 
 static int
+qemuValidateDomainDeviceDefCrypto(virDomainCryptoDef *crypto,
+                                  const virDomainDef *def G_GNUC_UNUSED,
+                                  virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+{
+    switch (crypto->type) {
+    case VIR_DOMAIN_CRYPTO_TYPE_QEMU:
+        break;
+
+    case VIR_DOMAIN_CRYPTO_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainCryptoType, crypto->type);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuSoundCodecTypeToCaps(int type)
 {
     switch (type) {
@@ -5217,6 +5236,9 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
 
     case VIR_DOMAIN_DEVICE_AUDIO:
         return qemuValidateDomainDeviceDefAudio(dev->data.audio, def, qemuCaps);
+
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+        return qemuValidateDomainDeviceDefCrypto(dev->data.crypto, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_PANIC:

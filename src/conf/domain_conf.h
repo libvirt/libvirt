@@ -86,6 +86,7 @@ typedef enum {
     VIR_DOMAIN_DEVICE_IOMMU,
     VIR_DOMAIN_DEVICE_VSOCK,
     VIR_DOMAIN_DEVICE_AUDIO,
+    VIR_DOMAIN_DEVICE_CRYPTO,
 
     VIR_DOMAIN_DEVICE_LAST
 } virDomainDeviceType;
@@ -118,6 +119,7 @@ struct _virDomainDeviceDef {
         virDomainIOMMUDef *iommu;
         virDomainVsockDef *vsock;
         virDomainAudioDef *audio;
+        virDomainCryptoDef *crypto;
     } data;
 };
 
@@ -2897,6 +2899,34 @@ struct _virDomainVsockDef {
     virDomainVirtioOptions *virtio;
 };
 
+typedef enum {
+    VIR_DOMAIN_CRYPTO_MODEL_VIRTIO,
+
+    VIR_DOMAIN_CRYPTO_MODEL_LAST
+} virDomainCryptoModel;
+
+typedef enum {
+    VIR_DOMAIN_CRYPTO_TYPE_QEMU,
+
+    VIR_DOMAIN_CRYPTO_TYPE_LAST
+} virDomainCryptoType;
+
+typedef enum {
+    VIR_DOMAIN_CRYPTO_BACKEND_BUILTIN,
+    VIR_DOMAIN_CRYPTO_BACKEND_LKCF,
+
+    VIR_DOMAIN_CRYPTO_BACKEND_LAST
+} virDomainCryptoBackend;
+
+struct _virDomainCryptoDef {
+    virDomainCryptoModel model;
+    virDomainCryptoType type;
+    virDomainCryptoBackend backend;
+    unsigned int queues;
+    virDomainDeviceInfo info;
+    virDomainVirtioOptions *virtio;
+};
+
 struct _virDomainVirtioOptions {
     virTristateSwitch iommu;
     virTristateSwitch ats;
@@ -3061,6 +3091,9 @@ struct _virDomainDef {
 
     size_t nsysinfo;
     virSysinfoDef **sysinfo;
+
+    size_t ncryptos;
+    virDomainCryptoDef **cryptos;
 
     /* At maximum 2 TPMs on the domain if a TPM Proxy is present. */
     size_t ntpms;
@@ -3331,6 +3364,7 @@ struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataNewFunc    vcpuNew;
     virDomainXMLPrivateDataNewFunc    chrSourceNew;
     virDomainXMLPrivateDataNewFunc    vsockNew;
+    virDomainXMLPrivateDataNewFunc    cryptoNew;
     virDomainXMLPrivateDataNewFunc    graphicsNew;
     virDomainXMLPrivateDataNewFunc    networkNew;
     virDomainXMLPrivateDataNewFunc    videoNew;
@@ -3505,6 +3539,8 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainIOMMUDef, virDomainIOMMUDefFree);
 virDomainVsockDef *virDomainVsockDefNew(virDomainXMLOption *xmlopt);
 void virDomainVsockDefFree(virDomainVsockDef *vsock);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainVsockDef, virDomainVsockDefFree);
+void virDomainCryptoDefFree(virDomainCryptoDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainCryptoDef, virDomainCryptoDefFree);
 void virDomainNetTeamingInfoFree(virDomainNetTeamingInfo *teaming);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainNetTeamingInfo, virDomainNetTeamingInfoFree);
 void virDomainNetPortForwardFree(virDomainNetPortForward *pf);
@@ -4159,6 +4195,9 @@ VIR_ENUM_DECL(virDomainMemorySource);
 VIR_ENUM_DECL(virDomainMemoryAllocation);
 VIR_ENUM_DECL(virDomainIOMMUModel);
 VIR_ENUM_DECL(virDomainVsockModel);
+VIR_ENUM_DECL(virDomainCryptoModel);
+VIR_ENUM_DECL(virDomainCryptoType);
+VIR_ENUM_DECL(virDomainCryptoBackend);
 VIR_ENUM_DECL(virDomainShmemModel);
 VIR_ENUM_DECL(virDomainShmemRole);
 VIR_ENUM_DECL(virDomainLaunchSecurity);
