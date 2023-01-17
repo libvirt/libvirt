@@ -28,6 +28,11 @@ v9.1.0 (unreleased)
     only, so we are looking for feedback from users on how well it works in
     practice.
 
+  * qemu: Support crypto device
+
+    Support crypto device(virtio crypto only), also add support for QEMU with
+    backend ``builtin`` and ``lkcf``.
+
 * **Improvements**
 
   * RPM packaging changes
