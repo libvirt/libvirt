@@ -602,6 +602,26 @@ qemuAssignDeviceIOMMUAlias(virDomainIOMMUDef *iommu)
 }
 
 
+static void
+qemuAssignDeviceCryptoAlias(virDomainDef *def,
+                            virDomainCryptoDef *crypto)
+{
+    size_t i;
+    int maxidx = 0;
+    int idx;
+
+    if (crypto->info.alias)
+        return;
+
+    for (i = 0; i < def->ncryptos; i++) {
+        if ((idx = qemuDomainDeviceAliasIndex(&def->cryptos[i]->info, "crypto")) >= maxidx)
+            maxidx = idx + 1;
+    }
+
+    crypto->info.alias = g_strdup_printf("crypto%d", maxidx);
+}
+
+
 int
 qemuAssignDeviceAliases(virDomainDef *def)
 {
@@ -688,6 +708,9 @@ qemuAssignDeviceAliases(virDomainDef *def)
     }
     if (def->iommu)
         qemuAssignDeviceIOMMUAlias(def->iommu);
+    for (i = 0; i < def->ncryptos; i++) {
+        qemuAssignDeviceCryptoAlias(def, def->cryptos[i]);
+    }
 
     return 0;
 }
