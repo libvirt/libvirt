@@ -287,7 +287,7 @@ qemuProcessEventSubmit(virDomainObj *vm,
     event->data = data;
 
     if (virThreadPoolSendJob(driver->workerPool, 0, event) < 0) {
-        virObjectUnref(vm);
+        virObjectUnref(event->vm);
         qemuProcessEventFree(event);
     }
 }
