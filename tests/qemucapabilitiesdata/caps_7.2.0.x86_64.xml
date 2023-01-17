@@ -202,6 +202,8 @@
   <flag name='thread-context'/>
   <flag name='screenshot-format-png'/>
   <flag name='netdev.stream'/>
+  <flag name='virtio-crypto'/>
+  <flag name='cryptodev-backend-lkcf'/>
   <version>7002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100245</microcodeVersion>

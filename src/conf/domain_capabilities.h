@@ -231,6 +231,17 @@ struct _virSGXCapability {
     virSGXSection *sgxSections;
 };
 
+STATIC_ASSERT_ENUM(VIR_DOMAIN_CRYPTO_MODEL_LAST);
+STATIC_ASSERT_ENUM(VIR_DOMAIN_CRYPTO_TYPE_LAST);
+STATIC_ASSERT_ENUM(VIR_DOMAIN_CRYPTO_BACKEND_LAST);
+typedef struct _virDomainCapsDeviceCrypto virDomainCapsDeviceCrypto;
+struct _virDomainCapsDeviceCrypto {
+    virTristateBool supported;
+    virDomainCapsEnum model;   /* virDomainCryptoModel */
+    virDomainCapsEnum type;   /* virDomainCryptoType */
+    virDomainCapsEnum backendModel;   /* virDomainCryptoBackend */
+};
+
 typedef enum {
     VIR_DOMAIN_CAPS_FEATURE_IOTHREADS = 0,
     VIR_DOMAIN_CAPS_FEATURE_VMCOREINFO,
@@ -265,6 +276,7 @@ struct _virDomainCaps {
     virDomainCapsDeviceTPM tpm;
     virDomainCapsDeviceRedirdev redirdev;
     virDomainCapsDeviceChannel channel;
+    virDomainCapsDeviceCrypto crypto;
     /* add new domain devices here */
 
     virDomainCapsFeatureGIC gic;

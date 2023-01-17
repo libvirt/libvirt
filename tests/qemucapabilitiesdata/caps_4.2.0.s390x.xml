@@ -79,6 +79,7 @@
   <flag name='input-linux'/>
   <flag name='virtio-blk.queue-size'/>
   <flag name='usb-host.guest-resets-all'/>
+  <flag name='virtio-crypto'/>
   <version>4002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100242</microcodeVersion>

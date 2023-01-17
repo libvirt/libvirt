@@ -4514,15 +4514,39 @@ qemuValidateDomainDeviceDefAudio(virDomainAudioDef *audio,
 static int
 qemuValidateDomainDeviceDefCrypto(virDomainCryptoDef *crypto,
                                   const virDomainDef *def G_GNUC_UNUSED,
-                                  virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+                                  virQEMUCaps *qemuCaps)
 {
+    virDomainCapsDeviceCrypto cryptoCaps = { 0 };
+
     switch (crypto->type) {
     case VIR_DOMAIN_CRYPTO_TYPE_QEMU:
+        virQEMUCapsFillDomainDeviceCryptoCaps(qemuCaps, &cryptoCaps);
         break;
 
     case VIR_DOMAIN_CRYPTO_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainCryptoType, crypto->type);
+        return -1;
+    }
+
+    if (!VIR_DOMAIN_CAPS_ENUM_IS_SET(cryptoCaps.model, crypto->model)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("crypto model %s is not supported"),
+                       virDomainCryptoModelTypeToString(crypto->model));
+        return -1;
+    }
+
+    if (!VIR_DOMAIN_CAPS_ENUM_IS_SET(cryptoCaps.type, crypto->type)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("crypto type %s is not supported"),
+                       virDomainCryptoTypeTypeToString(crypto->type));
+        return -1;
+    }
+
+    if (!VIR_DOMAIN_CAPS_ENUM_IS_SET(cryptoCaps.backendModel, crypto->backend)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("crypto backend %s is not supported"),
+                       virDomainCryptoBackendTypeToString(crypto->backend));
         return -1;
     }
 

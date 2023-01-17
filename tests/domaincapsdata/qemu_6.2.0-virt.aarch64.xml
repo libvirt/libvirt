@@ -194,6 +194,17 @@
         <value>spicevmc</value>
       </enum>
     </channel>
+    <crypto supported='yes'>
+      <enum name='model'>
+        <value>virtio</value>
+      </enum>
+      <enum name='type'>
+        <value>qemu</value>
+      </enum>
+      <enum name='backendModel'>
+        <value>builtin</value>
+      </enum>
+    </crypto>
   </devices>
   <features>
     <gic supported='yes'>

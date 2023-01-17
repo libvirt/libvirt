@@ -167,6 +167,7 @@
   <flag name='query-stats'/>
   <flag name='query-stats-schemas'/>
   <flag name='screenshot-format-png'/>
+  <flag name='virtio-crypto'/>
   <version>7001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900244</microcodeVersion>

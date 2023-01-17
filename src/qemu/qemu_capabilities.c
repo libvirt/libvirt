@@ -684,6 +684,8 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 440 */
               "machine-hpet", /* QEMU_CAPS_MACHINE_HPET */
               "netdev.stream", /* QEMU_CAPS_NETDEV_STREAM */
+              "virtio-crypto", /* QEMU_CAPS_DEVICE_VIRTIO_CRYPTO */
+              "cryptodev-backend-lkcf", /* QEMU_CAPS_OBJECT_CRYPTO_LKCF */
     );
 
 
@@ -1393,6 +1395,9 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-iommu-pci", QEMU_CAPS_DEVICE_VIRTIO_IOMMU_PCI },
     { "sgx-epc", QEMU_CAPS_SGX_EPC },
     { "thread-context", QEMU_CAPS_THREAD_CONTEXT },
+    { "virtio-crypto-pci", QEMU_CAPS_DEVICE_VIRTIO_CRYPTO },
+    { "virtio-crypto-device", QEMU_CAPS_DEVICE_VIRTIO_CRYPTO },
+    { "cryptodev-backend-lkcf", QEMU_CAPS_OBJECT_CRYPTO_LKCF },
 };
 
 
@@ -6691,6 +6696,26 @@ virQEMUCapsFillDomainDeviceChannelCaps(virQEMUCaps *qemuCaps,
 }
 
 
+void
+virQEMUCapsFillDomainDeviceCryptoCaps(virQEMUCaps *qemuCaps,
+                                      virDomainCapsDeviceCrypto *crypto)
+{
+    crypto->supported = VIR_TRISTATE_BOOL_YES;
+    crypto->model.report = true;
+    crypto->type.report = true;
+    crypto->backendModel.report = true;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_CRYPTO))
+        VIR_DOMAIN_CAPS_ENUM_SET(crypto->model, VIR_DOMAIN_CRYPTO_MODEL_VIRTIO);
+
+    VIR_DOMAIN_CAPS_ENUM_SET(crypto->type, VIR_DOMAIN_CRYPTO_TYPE_QEMU);
+
+    VIR_DOMAIN_CAPS_ENUM_SET(crypto->backendModel, VIR_DOMAIN_CRYPTO_BACKEND_BUILTIN);
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_CRYPTO_LKCF))
+        VIR_DOMAIN_CAPS_ENUM_SET(crypto->backendModel, VIR_DOMAIN_CRYPTO_BACKEND_LKCF);
+}
+
+
 /**
  * virQEMUCapsSupportsGICVersion:
  * @qemuCaps: QEMU capabilities
@@ -6854,6 +6879,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virDomainCapsDeviceRedirdev *redirdev = &domCaps->redirdev;
     virDomainCapsDeviceChannel *channel = &domCaps->channel;
     virDomainCapsMemoryBacking *memoryBacking = &domCaps->memoryBacking;
+    virDomainCapsDeviceCrypto *crypto = &domCaps->crypto;
 
     virQEMUCapsFillDomainFeaturesFromQEMUCaps(qemuCaps, domCaps);
 
@@ -6892,6 +6918,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virQEMUCapsFillDomainFeatureS390PVCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureSGXCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureHypervCaps(qemuCaps, domCaps);
+    virQEMUCapsFillDomainDeviceCryptoCaps(qemuCaps, crypto);
 
     return 0;
 }

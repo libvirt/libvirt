@@ -138,6 +138,7 @@
   <flag name='virtio-iommu-pci'/>
   <flag name='virtio-net.rss'/>
   <flag name='usb-host.guest-resets-all'/>
+  <flag name='virtio-crypto'/>
   <version>5002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900243</microcodeVersion>

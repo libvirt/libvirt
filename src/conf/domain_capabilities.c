@@ -593,6 +593,20 @@ virDomainCapsDeviceChannelFormat(virBuffer *buf,
 }
 
 
+static void
+virDomainCapsDeviceCryptoFormat(virBuffer *buf,
+                                const virDomainCapsDeviceCrypto *crypto)
+{
+    FORMAT_PROLOGUE(crypto);
+
+    ENUM_PROCESS(crypto, model, virDomainCryptoModelTypeToString);
+    ENUM_PROCESS(crypto, type, virDomainCryptoTypeTypeToString);
+    ENUM_PROCESS(crypto, backendModel, virDomainCryptoBackendTypeToString);
+
+    FORMAT_EPILOGUE(crypto);
+}
+
+
 /**
  * virDomainCapsFeatureGICFormat:
  * @buf: target buffer
@@ -758,6 +772,7 @@ virDomainCapsFormat(const virDomainCaps *caps)
     virDomainCapsDeviceTPMFormat(&buf, &caps->tpm);
     virDomainCapsDeviceRedirdevFormat(&buf, &caps->redirdev);
     virDomainCapsDeviceChannelFormat(&buf, &caps->channel);
+    virDomainCapsDeviceCryptoFormat(&buf, &caps->crypto);
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</devices>\n");

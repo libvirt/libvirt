@@ -188,6 +188,7 @@
   <flag name='chardev.qemu-vdagent'/>
   <flag name='usb-host.guest-resets-all'/>
   <flag name='migration.blocked-reasons'/>
+  <flag name='virtio-crypto'/>
   <version>6001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>

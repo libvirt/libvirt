@@ -127,6 +127,7 @@
   <flag name='memory-backend-file.prealloc-threads'/>
   <flag name='virtio-iommu-pci'/>
   <flag name='usb-host.guest-resets-all'/>
+  <flag name='virtio-crypto'/>
   <version>5000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700241</microcodeVersion>

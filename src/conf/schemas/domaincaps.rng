@@ -204,6 +204,9 @@
       <optional>
         <ref name="channel"/>
       </optional>
+      <optional>
+        <ref name="crypto"/>
+      </optional>
     </element>
   </define>
 
@@ -265,6 +268,13 @@
 
   <define name="channel">
     <element name="channel">
+      <ref name="supported"/>
+      <ref name="enum"/>
+    </element>
+  </define>
+
+  <define name="crypto">
+    <element name="crypto">
       <ref name="supported"/>
       <ref name="enum"/>
     </element>

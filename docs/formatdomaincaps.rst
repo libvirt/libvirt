@@ -589,6 +589,39 @@ Channel device capabilities are exposed under the ``channel`` element. For insta
 ``type``
    Options for the ``type`` attribute of the ``<channel/>`` element.
 
+Crypto device
+^^^^^^^^^^^^^^
+
+Crypto device capabilities are exposed under the ``crypto`` element. For instance:
+
+::
+
+  <domainCapabilities>
+    ...
+    <devices>
+      <crypto supported='yes'>
+        <enum name='model'>
+          <value>virtio</value>
+        </enum>
+        <enum name='type'>
+          <value>qemu</value>
+        </enum>
+        <enum name='backendModel'>
+          <value>builtin</value>
+          <value>lkcf</value>
+        </enum>
+      </crypto>
+      ...
+    </devices>
+  </domainCapabilities>
+
+``model``
+   Options for the ``model`` attribute of the ``<crypto/>`` element.
+``type``
+   Options for the ``type`` attribute of the ``<crypto/>`` element.
+``backendModel``
+   Options for the ``backendModel`` attribute of the ``<crypto><backend/>`` element.
+
 Features
 ~~~~~~~~
 
