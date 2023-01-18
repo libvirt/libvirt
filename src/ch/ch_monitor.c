@@ -660,7 +660,7 @@ virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint)
 
     curl_easy_setopt(mon->handle, CURLOPT_UNIX_SOCKET_PATH, mon->socketpath);
     curl_easy_setopt(mon->handle, CURLOPT_URL, url);
-    curl_easy_setopt(mon->handle, CURLOPT_PUT, true);
+    curl_easy_setopt(mon->handle, CURLOPT_UPLOAD, 1L);
     curl_easy_setopt(mon->handle, CURLOPT_HTTPHEADER, NULL);
 
     responseCode = virCHMonitorCurlPerform(mon->handle);
