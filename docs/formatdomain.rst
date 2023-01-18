@@ -4858,18 +4858,18 @@ ports **with the exception of some subset**.
        <backend type='passt' logFile='/var/log/passt.log'/>
        <mac address="00:11:22:33:44:55"/>
        <source dev='eth0'/>
-       <ip family='ipv4' address='172.17.2.0' prefix='24'/>
-       <ip family='ipv6' address='2001:db8:ac10:fd01::' prefix='64'/>
-       <portForward proto='tcp' address='2001:db8:ac10:fd01::1:10' start='2022'>
-         <port start='22'/>
+       <ip family='ipv4' address='172.17.2.4' prefix='24'/>
+       <ip family='ipv6' address='2001:db8:ac10:fd01::20'/>
+       <portForward proto='tcp'>
+         <range start='2022' to='22'/>
        </portForward>
-       <portForward proto='udp' address='1.2.3.4' start='5000' end='5020'>
-         <port start='6000' end='6020'/>
+       <portForward proto='udp' address='1.2.3.4'>
+         <range start='5000' end='5020' to='6000'/>
+         <range start='5010' end='5015' exclude='yes'/>
        </portForward>
-       <portForward exclude='yes' proto='tcp' address='1.2.3.4' start='5010' end='5015'/>
-       <portForward proto='tcp' start='80'/>
-       <portForward proto='tcp' start='443'>
-         <port start='344'/>
+       <portForward proto='tcp' address='2001:db8:ac10:fd01::1:10'>
+         <range start='80'/>
+         <range start='443' to='344'/>
        </portForward>
      </interface>
    </devices>
