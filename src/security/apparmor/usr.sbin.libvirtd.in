@@ -35,6 +35,7 @@ profile libvirtd @sbindir@/libvirtd flags=(attach_disconnected) {
   mount options=(rw,rslave)  -> /,
   mount options=(rw, nosuid) -> /{var/,}run/libvirt/qemu/*.dev/,
   umount /{var/,}run/libvirt/qemu/*.dev/,
+  umount /dev/,
 
   # libvirt provides any mounts under /dev to qemu namespaces
   mount options=(rw, move) /dev/ -> /{,var/}run/libvirt/qemu/*.dev/,
