@@ -2428,7 +2428,7 @@ remoteDomainCreate(virDomainPtr domain)
 {
     remote_domain_create_args args;
     remote_domain_lookup_by_uuid_args args2;
-    remote_domain_lookup_by_uuid_ret ret2;
+    remote_domain_lookup_by_uuid_ret ret2 = {0};
     struct private_data *priv = domain->conn->privateData;
     VIR_LOCK_GUARD lock = remoteDriverLock(priv);
 
