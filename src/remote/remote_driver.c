@@ -5088,6 +5088,7 @@ remoteSecretGetValue(virSecretPtr secret, size_t *value_size,
     remote_secret_get_value_args args;
     remote_secret_get_value_ret ret = {0};
     struct private_data *priv = secret->conn->privateData;
+    VIR_LOCK_GUARD lock = remoteDriverLock(priv);
 
     make_nonnull_secret(&args.secret, secret);
     args.flags = flags;
