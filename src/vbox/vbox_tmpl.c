@@ -46,6 +46,8 @@
 /* This one changes from version to version. */
 #if VBOX_API_VERSION == 6001000
 # include "vbox_CAPI_v6_1.h"
+#elif VBOX_API_VERSION == 7000000
+# include "vbox_CAPI_v7_0.h"
 #else
 # error "Unsupported VBOX_API_VERSION"
 #endif
@@ -584,7 +586,11 @@ _virtualboxGetMachine(IVirtualBox *vboxObj, vboxIID *iid, IMachine **machine)
 static nsresult
 _virtualboxOpenMachine(IVirtualBox *vboxObj, PRUnichar *settingsFile, IMachine **machine)
 {
+#if VBOX_API_VERSION >= 7000000
+    return vboxObj->vtbl->OpenMachine(vboxObj, settingsFile, NULL, machine);
+#else
     return vboxObj->vtbl->OpenMachine(vboxObj, settingsFile, machine);
+#endif
 }
 
 static nsresult
@@ -612,6 +618,19 @@ _virtualboxCreateMachine(struct _vboxDriver *data, virDomainDef *def, IMachine *
     vboxIIDFromUUID(&iid, def->uuid);
     createFlags = g_strdup_printf("UUID=%s,forceOverwrite=0", uuidstr);
     VBOX_UTF8_TO_UTF16(createFlags, &createFlagsUtf16);
+#if VBOX_API_VERSION >= 7000000
+    rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
+                                            NULL,
+                                            machineNameUtf16,
+                                            0,
+                                            nsnull,
+                                            nsnull,
+                                            createFlagsUtf16,
+                                            NULL,
+                                            NULL,
+                                            NULL,
+                                            machine);
+#else
     rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
                                             NULL,
                                             machineNameUtf16,
@@ -620,6 +639,7 @@ _virtualboxCreateMachine(struct _vboxDriver *data, virDomainDef *def, IMachine *
                                             nsnull,
                                             createFlagsUtf16,
                                             machine);
+#endif
     VIR_FREE(createFlags);
     VBOX_UTF16_FREE(machineNameUtf16);
     VBOX_UTF16_FREE(createFlagsUtf16);
@@ -802,7 +822,17 @@ _machineGetBIOSSettings(IMachine *machine, IBIOSSettings **bios)
 static nsresult
 _machineGetAudioAdapter(IMachine *machine, IAudioAdapter **audioadapter)
 {
+#if VBOX_API_VERSION >= 7000000
+    IAudioSettings *audioSettings = NULL;
+    nsresult rc;
+
+    rc = machine->vtbl->GetAudioSettings(machine, &audioSettings);
+    if (NS_FAILED(rc))
+        return rc;
+    return audioSettings->vtbl->GetAdapter(audioSettings, audioadapter);
+#else
     return machine->vtbl->GetAudioAdapter(machine, audioadapter);
+#endif
 }
 
 static nsresult
