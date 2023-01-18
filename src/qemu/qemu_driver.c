@@ -1355,8 +1355,8 @@ qemuDomainHelperGetVcpus(virDomainObj *vm,
                                       NULL, NULL,
                                       &vcpuinfo->cpu, NULL,
                                       vm->pid, vcpupid) < 0) {
-                virReportSystemError(errno, "%s",
-                                     _("cannot get vCPU placement & pCPU time"));
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("cannot get vCPU placement & pCPU time"));
                 return -1;
             }
         }
