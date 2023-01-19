@@ -2275,7 +2275,7 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
         goto cleanup;
     releaseaddr = true;
 
-    if (qemuAssignDeviceMemoryAlias(vm->def, mem, false) < 0)
+    if (qemuAssignDeviceMemoryAlias(vm->def, mem) < 0)
         goto cleanup;
 
     objalias = g_strdup_printf("mem%s", mem->info.alias);

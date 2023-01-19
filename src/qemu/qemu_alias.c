@@ -454,7 +454,6 @@ qemuAssignDeviceRNGAlias(virDomainDef *def,
 static int
 qemuDeviceMemoryGetAliasID(virDomainDef *def,
                            virDomainMemoryDef *mem,
-                           bool oldAlias,
                            const char *prefix)
 {
     size_t i;
@@ -462,8 +461,7 @@ qemuDeviceMemoryGetAliasID(virDomainDef *def,
 
     /* virtio-pmem and virtio-mem go onto PCI bus and thus DIMM address is not
      * valid */
-    if (!oldAlias &&
-        mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM &&
+    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM &&
         mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM &&
         mem->model != VIR_DOMAIN_MEMORY_MODEL_SGX_EPC)
         return mem->info.addr.dimm.slot;
@@ -482,8 +480,6 @@ qemuDeviceMemoryGetAliasID(virDomainDef *def,
  * qemuAssignDeviceMemoryAlias:
  * @def: domain definition. Necessary only if @oldAlias is true.
  * @mem: memory device definition
- * @oldAlias: Generate the alias according to the order of the device in @def
- *            rather than according to the slot number for legacy reasons.
  *
  * Generates alias for a memory device according to slot number if @oldAlias is
  * false or according to order in @def->mems otherwise.
@@ -492,8 +488,7 @@ qemuDeviceMemoryGetAliasID(virDomainDef *def,
  */
 int
 qemuAssignDeviceMemoryAlias(virDomainDef *def,
-                            virDomainMemoryDef *mem,
-                            bool oldAlias)
+                            virDomainMemoryDef *mem)
 {
     const char *prefix = NULL;
     int idx = 0;
@@ -525,7 +520,7 @@ qemuAssignDeviceMemoryAlias(virDomainDef *def,
         break;
     }
 
-    idx = qemuDeviceMemoryGetAliasID(def, mem, oldAlias, prefix);
+    idx = qemuDeviceMemoryGetAliasID(def, mem, prefix);
     mem->info.alias = g_strdup_printf("%s%d", prefix, idx);
 
     return 0;
@@ -685,7 +680,7 @@ qemuAssignDeviceAliases(virDomainDef *def)
         qemuAssignDeviceTPMAlias(def->tpms[i], i);
     }
     for (i = 0; i < def->nmems; i++) {
-        if (qemuAssignDeviceMemoryAlias(def, def->mems[i], false) < 0)
+        if (qemuAssignDeviceMemoryAlias(def, def->mems[i]) < 0)
             return -1;
     }
     if (def->vsock) {
