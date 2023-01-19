@@ -2181,6 +2181,19 @@
     </element>
   </define>
 
+  <define name="diskSourceNetworkProtocolSSHKeyDef">
+    <element name="identity">
+      <interleave>
+        <attribute name="username">
+          <ref name="genericName"/>
+        </attribute>
+        <attribute name="keyfile">
+          <ref name="absFilePath"/>
+        </attribute>
+      </interleave>
+    </element>
+  </define>
+
   <define name="diskSourceNetworkProtocolSSH">
     <element name="source">
       <interleave>
@@ -2200,11 +2213,15 @@
           <ref name="diskSourceNetworkProtocolSSHHostVerify"/>
         </optional>
         <optional>
-          <ref name="diskAuth"/>
+          <choice>
+            <ref name="diskSourceNetworkProtocolSSHKeyDef"/>
+            <ref name="diskAuth"/>
+          </choice>
         </optional>
       </interleave>
     </element>
   </define>
+
   <define name="diskSourceNetworkProtocolSimple">
     <element name="source">
       <interleave>
