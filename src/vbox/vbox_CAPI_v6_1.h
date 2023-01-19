@@ -44,8 +44,8 @@
  * otherwise unspecified.
  */
 
-#ifndef ___VirtualBox_CXPCOM_h
-# define ___VirtualBox_CXPCOM_h
+#ifndef ___VirtualBox_CAPI_h
+# define ___VirtualBox_CAPI_h
 
 # ifdef _WIN32
 #  pragma warning(push)
@@ -32893,4 +32893,4 @@ typedef PCVBOXCAPI (*PFNVBOXGETXPCOMCFUNCTIONS)(unsigned uVersion);
 }
 # endif /* __cplusplus */
 
-#endif /* !___VirtualBox_CXPCOM_h */
+#endif /* !___VirtualBox_CAPI_h */
