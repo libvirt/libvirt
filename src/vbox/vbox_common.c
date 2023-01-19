@@ -63,6 +63,119 @@ static struct _vboxDriver *vbox_driver;
 static struct _vboxDriver *vboxDriverObjNew(void);
 static __thread bool vboxDriverDisposed;
 
+#define vboxReportError(errcode, ...) \
+    vboxReportErrorHelper(data, errcode, __FILE__, \
+                          __FUNCTION__, __LINE__, __VA_ARGS__)
+
+static void G_GNUC_PRINTF(6, 7) G_GNUC_UNUSED
+vboxReportErrorHelper(struct _vboxDriver *data,
+                      int errcode,
+                      const char *filename,
+                      const char *funcname,
+                      size_t linenr,
+                      const char *fmt, ...)
+{
+    int save_errno = errno;
+    g_auto(virBuffer) errBuf = VIR_BUFFER_INITIALIZER;
+    nsIException *ex = NULL;
+    IVirtualBoxErrorInfo *ei = NULL;
+    const nsID *vboxErrorInfoIID = NULL;
+    bool multipleLines = false;
+    nsresult rc;
+    g_autofree char *detail = NULL;
+
+    if (fmt) {
+        va_list args;
+
+        va_start(args, fmt);
+        detail = g_strdup_vprintf(fmt, args);
+        va_end(args);
+    }
+
+    rc = gVBoxAPI.UPFN.GetException(data->pFuncs, &ex);
+    if (NS_FAILED(rc) || !ex) {
+        VIR_WARN("failed to get exception object");
+        goto report;
+    }
+
+    vboxErrorInfoIID = gVBoxAPI.UIVirtualBoxErrorInfo.GetIID();
+    rc = VBOX_QUERY_INTERFACE(ex, vboxErrorInfoIID, (void **)&ei);
+    if (NS_FAILED(rc) || !ei) {
+        VIR_WARN("unable to typecast exception object");
+        goto report;
+    }
+
+    while (ei) {
+        IVirtualBoxErrorInfo *ei_next = NULL;
+        PRUnichar *componentUtf16 = NULL;
+        char *componentUtf8 = NULL;
+        PRUnichar *textUtf16 = NULL;
+        char *textUtf8 = NULL;
+
+        rc = gVBoxAPI.UIVirtualBoxErrorInfo.GetComponent(ei, &componentUtf16);
+        if (NS_FAILED(rc)) {
+            VIR_WARN("failed to get error component");
+            goto report;
+        }
+
+        rc = gVBoxAPI.UIVirtualBoxErrorInfo.GetText(ei, &textUtf16);
+        if (NS_FAILED(rc)) {
+            VBOX_UTF16_FREE(componentUtf16);
+            VIR_WARN("failed to get error text");
+            goto report;
+        }
+
+        VBOX_UTF16_TO_UTF8(componentUtf16, &componentUtf8);
+        VBOX_UTF16_FREE(componentUtf16);
+
+        VBOX_UTF16_TO_UTF8(textUtf16, &textUtf8);
+        VBOX_UTF16_FREE(textUtf16);
+
+        virBufferAsprintf(&errBuf, "%s: %s", componentUtf8, textUtf8);
+        VBOX_UTF8_FREE(componentUtf8);
+        VBOX_UTF8_FREE(textUtf8);
+
+        if (multipleLines)
+            virBufferAddChar(&errBuf, '\n');
+        else
+            multipleLines = true;
+
+        rc = gVBoxAPI.UIVirtualBoxErrorInfo.GetNext(ei, &ei_next);
+        if (NS_FAILED(rc)) {
+            break;
+        }
+
+        VBOX_RELEASE(ei);
+        ei = ei_next;
+    }
+
+ report:
+    if (virBufferUse(&errBuf)) {
+        const char *vboxErr = virBufferCurrentContent(&errBuf);
+        g_autofree char *newDetail = NULL;
+
+        if (!detail || STREQ(detail, "")) {
+            newDetail = g_strdup(vboxErr);
+        } else {
+            newDetail = g_strdup_printf("%s: %s", detail, vboxErr);
+        }
+
+        VIR_FREE(detail);
+        detail = g_steal_pointer(&newDetail);
+    }
+
+    virReportErrorHelper(VIR_FROM_THIS, errcode, filename, funcname, linenr, "%s", detail);
+
+    rc = gVBoxAPI.UPFN.ClearException(data->pFuncs);
+    if (NS_FAILED(rc)) {
+        VIR_WARN("failed to clear exception");
+    }
+
+    VBOX_RELEASE(ei);
+    VBOX_RELEASE(ex);
+    errno = save_errno;
+}
+
 static int
 vboxDomainDevicesDefPostParse(virDomainDeviceDef *dev,
                               const virDomainDef *def G_GNUC_UNUSED,
