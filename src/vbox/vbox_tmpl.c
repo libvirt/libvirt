@@ -481,6 +481,11 @@ static int _pfnUtf8ToUtf16(PCVBOXXPCOM pFuncs, const char *pszString, PRUnichar 
     return pFuncs->pfnUtf8ToUtf16(pszString, ppwszString);
 }
 
+static HRESULT _pfnGetException(PCVBOXXPCOM pFuncs, IErrorInfo **ppException)
+{
+    return pFuncs->pfnGetException(ppException);
+}
+
 static void _vboxIIDInitialize(vboxIID *iid)
 {
     memset(iid, 0, sizeof(vboxIID));
@@ -2218,6 +2223,7 @@ static vboxUniformedPFN _UPFN = {
     .Utf8Free = _pfnUtf8Free,
     .Utf16ToUtf8 = _pfnUtf16ToUtf8,
     .Utf8ToUtf16 = _pfnUtf8ToUtf16,
+    .GetException = _pfnGetException,
 };
 
 static vboxUniformedIID _UIID = {

@@ -109,6 +109,7 @@ typedef unsigned long PRUword;
 
 #define nsnull 0
 typedef PRUint32 nsresult;
+#define HRESULT nsresult
 
 #if defined(__GNUC__) && (__GNUC__ > 2)
 # define NS_LIKELY(x)    (__builtin_expect((x), 1))
@@ -362,6 +363,7 @@ typedef nsISupports IHostNetworkInterface;
 typedef nsISupports IDHCPServer;
 typedef nsISupports IKeyboard;
 typedef nsISupports IVirtualBoxErrorInfo;
+typedef struct nsIException nsIException;
 
 /* Macros for all vbox drivers. */
 
