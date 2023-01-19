@@ -2275,9 +2275,7 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
         goto cleanup;
     releaseaddr = true;
 
-    /* in cases where we are using a VM with aliases generated according to the
-     * index of the memory device we need to keep continue using that scheme */
-    if (qemuAssignDeviceMemoryAlias(vm->def, mem, priv->memAliasOrderMismatch) < 0)
+    if (qemuAssignDeviceMemoryAlias(vm->def, mem, false) < 0)
         goto cleanup;
 
     objalias = g_strdup_printf("mem%s", mem->info.alias);
