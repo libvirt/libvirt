@@ -1908,71 +1908,6 @@ qemuConnectMonitor(virQEMUDriver *driver,
 }
 
 
-/**
- * qemuProcessReadLog: Read log file of a qemu VM
- * @logCtxt: the domain log context
- * @msg: pointer to buffer to store the read messages in
- * @max: maximum length of the message returned in @msg
- *
- * Reads log of a qemu VM. Skips messages not produced by qemu or irrelevant
- * messages. If @max is not zero, @msg will contain at most @max characters
- * from the end of the log and @msg will start after a new line if possible.
- *
- * Returns 0 on success or -1 on error
- */
-static int
-qemuProcessReadLog(qemuLogContext *logCtxt,
-                   char **msg,
-                   size_t max)
-{
-    char *buf;
-    ssize_t got;
-    char *eol;
-    char *filter_next;
-    size_t skip;
-
-    if ((got = qemuLogContextRead(logCtxt, &buf)) < 0)
-        return -1;
-
-    /* Filter out debug messages from intermediate libvirt process */
-    filter_next = buf;
-    while ((eol = strchr(filter_next, '\n'))) {
-        *eol = '\0';
-        if (virLogProbablyLogMessage(filter_next) ||
-            strstr(filter_next, "char device redirected to")) {
-            skip = (eol + 1) - filter_next;
-            memmove(filter_next, eol + 1, buf + got - eol);
-            got -= skip;
-        } else {
-            filter_next = eol + 1;
-            *eol = '\n';
-        }
-    }
-
-    if (got > 0 &&
-        buf[got - 1] == '\n') {
-        buf[got - 1] = '\0';
-        got--;
-    }
-
-    if (max > 0 && got > max) {
-        skip = got - max;
-
-        if (buf[skip - 1] != '\n' &&
-            (eol = strchr(buf + skip, '\n')) &&
-            !virStringIsEmpty(eol + 1))
-            skip = eol + 1 - buf;
-
-        memmove(buf, buf + skip, got - skip + 1);
-        got -= skip;
-    }
-
-    buf = g_renew(char, buf, got + 1);
-    *msg = buf;
-    return 0;
-}
-
-
 static int
 qemuProcessReportLogError(qemuLogContext *logCtxt,
                           const char *msgprefix)
@@ -1980,7 +1915,7 @@ qemuProcessReportLogError(qemuLogContext *logCtxt,
     g_autofree char *logmsg = NULL;
 
     /* assume that 1024 chars of qemu log is the right balance */
-    if (qemuProcessReadLog(logCtxt, &logmsg, 1024) < 0)
+    if (qemuLogContextReadFiltered(logCtxt, &logmsg, 1024) < 0)
         return -1;
 
     virResetLastError();

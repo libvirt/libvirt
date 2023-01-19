@@ -32,6 +32,9 @@ int qemuLogContextWrite(qemuLogContext *ctxt,
                         const char *fmt, ...) G_GNUC_PRINTF(2, 3);
 ssize_t qemuLogContextRead(qemuLogContext *ctxt,
                            char **msg);
+int qemuLogContextReadFiltered(qemuLogContext *ctxt,
+                               char **msg,
+                               size_t max);
 int qemuLogContextGetWriteFD(qemuLogContext *ctxt);
 void qemuLogContextMarkPosition(qemuLogContext *ctxt);
 

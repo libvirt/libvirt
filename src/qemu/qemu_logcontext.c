@@ -21,6 +21,7 @@
 #include "qemu_logcontext.h"
 #include "viralloc.h"
 #include "virlog.h"
+#include "virstring.h"
 #include "virutil.h"
 
 #include <fcntl.h>
@@ -233,6 +234,70 @@ qemuLogContextRead(qemuLogContext *ctxt,
     *msg = buf;
 
     return buflen;
+}
+
+
+/**
+ * qemuLogContextFilter: Read and filter log for relevant messages
+ * @ctxt: the domain log context
+ * @msg: pointer to buffer to store the read messages in
+ * @max: maximum length of the message returned in @msg after filtering
+ *
+ * Reads log output from @ctxt and filters it. Skips messages not produced by
+ * the target executable or irrelevant messages. If @max is not zero, @buf will
+ * contain at most @max characters from the end of the log and @buf will start
+ * after a new line if possible.
+ */
+int
+qemuLogContextReadFiltered(qemuLogContext *ctxt,
+                           char **msg,
+                           size_t max)
+{
+    char *buf;
+    char *eol;
+    char *filter_next;
+    size_t skip;
+    ssize_t got;
+
+    if ((got = qemuLogContextRead(ctxt, &buf)) < 0)
+        return -1;
+
+    /* Filter out debug messages from intermediate libvirt process */
+    filter_next = buf;
+    while ((eol = strchr(filter_next, '\n'))) {
+        *eol = '\0';
+        if (virLogProbablyLogMessage(filter_next) ||
+            strstr(filter_next, "char device redirected to")) {
+            skip = (eol + 1) - filter_next;
+            memmove(filter_next, eol + 1, buf + got - eol);
+            got -= skip;
+        } else {
+            filter_next = eol + 1;
+            *eol = '\n';
+        }
+    }
+
+    if (got > 0 &&
+        buf[got - 1] == '\n') {
+        buf[got - 1] = '\0';
+        got--;
+    }
+
+    if (max > 0 && got > max) {
+        skip = got - max;
+
+        if (buf[skip - 1] != '\n' &&
+            (eol = strchr(buf + skip, '\n')) &&
+            !virStringIsEmpty(eol + 1))
+            skip = eol + 1 - buf;
+
+        memmove(buf, buf + skip, got - skip + 1);
+        got -= skip;
+    }
+
+    buf = g_renew(char, buf, got + 1);
+    *msg = buf;
+    return 0;
 }
 
 
