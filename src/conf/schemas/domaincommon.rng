@@ -2173,6 +2173,14 @@
     </element>
   </define>
 
+  <define name="diskSourceNetworkProtocolSSHHostVerify">
+    <element name="knownHosts">
+      <attribute name="path">
+        <ref name="absFilePath"/>
+      </attribute>
+    </element>
+  </define>
+
   <define name="diskSourceNetworkProtocolSSH">
     <element name="source">
       <interleave>
@@ -2188,6 +2196,9 @@
           <ref name="encryption"/>
         </optional>
         <ref name="diskSourceNetworkProtocolPropsCommon"/>
+        <optional>
+          <ref name="diskSourceNetworkProtocolSSHHostVerify"/>
+        </optional>
         <optional>
           <ref name="diskAuth"/>
         </optional>

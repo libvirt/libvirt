@@ -3036,6 +3036,14 @@ paravirtualized driver is specified via the ``disk`` element.
          paused and will be rerun after a successful reconnect. After that time, any
          delayed requests and all future requests before a successful reconnect
          will immediately fail. If not set the default QEMU value is 0.
+   ``knownHosts``
+      For storage accessed via the ``ssh`` protocol, this element configures a
+      path to a file that will be used to verify the remote host. This file
+      must contain the expected host key for the remote host or the connection
+      will fail. The location of the file is specified via the ``path``
+      attribute.
+      :since:`Since 9.8.0`
+
 
    For a "file" or "volume" disk type which represents a cdrom or floppy (the
    ``device`` attribute), it is possible to define policy what to do with the
