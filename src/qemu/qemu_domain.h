@@ -177,9 +177,6 @@ struct _qemuDomainObjPrivate {
     uint8_t *masterKey;
     size_t masterKeyLen;
 
-    /* note whether memory device alias does not correspond to slot number */
-    bool memAliasOrderMismatch;
-
     /* for migrations using TLS with a secret (not to be saved in our */
     /* private XML). */
     qemuDomainSecretInfo *migSecinfo;

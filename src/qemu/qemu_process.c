@@ -3896,28 +3896,6 @@ qemuDomainPerfRestart(virDomainObj *vm)
 }
 
 
-static void
-qemuProcessReconnectCheckMemAliasOrderMismatch(virDomainObj *vm)
-{
-    size_t i;
-    int aliasidx;
-    virDomainDef *def = vm->def;
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (!virDomainDefHasMemoryHotplug(def) || def->nmems == 0)
-        return;
-
-    for (i = 0; i < def->nmems; i++) {
-        aliasidx = qemuDomainDeviceAliasIndex(&def->mems[i]->info, "dimm");
-
-        if (def->mems[i]->info.addr.dimm.slot != aliasidx) {
-            priv->memAliasOrderMismatch = true;
-            break;
-        }
-    }
-}
-
-
 static bool
 qemuProcessDomainMemoryDefNeedHugepagesPath(const virDomainMemoryDef *mem,
                                             const long system_pagesize)
@@ -9090,8 +9068,6 @@ qemuProcessReconnect(void *opaque)
 
     if (qemuProcessRefreshFdsetIndex(obj) < 0)
         goto error;
-
-    qemuProcessReconnectCheckMemAliasOrderMismatch(obj);
 
     if (qemuConnectAgent(driver, obj) < 0)
         goto error;
