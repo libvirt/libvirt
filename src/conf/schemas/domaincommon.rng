@@ -5345,6 +5345,7 @@
             <value>i6300esb</value>
             <value>ib700</value>
             <value>diag288</value>
+            <value>itco</value>
           </choice>
         </attribute>
         <optional>

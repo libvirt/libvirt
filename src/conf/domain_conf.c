@@ -838,6 +838,7 @@ VIR_ENUM_IMPL(virDomainWatchdogModel,
               "i6300esb",
               "ib700",
               "diag288",
+              "itco",
 );
 
 VIR_ENUM_IMPL(virDomainWatchdogAction,

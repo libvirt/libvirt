@@ -1191,6 +1191,7 @@ qemuValidateDomainDefTPMs(const virDomainDef *def)
 static int
 qemuValidateDomainDefWatchdogs(const virDomainDef *def)
 {
+    bool found_itco = false;
     ssize_t i = 0;
 
     for (i = 1; i < def->nwatchdogs; i++) {
@@ -1203,6 +1204,15 @@ qemuValidateDomainDefWatchdogs(const virDomainDef *def)
                            _("watchdogs with different actions are not supported "
                              "with this QEMU binary"));
             return -1;
+        }
+
+        if (def->watchdogs[i]->model == VIR_DOMAIN_WATCHDOG_MODEL_ITCO) {
+            if (found_itco) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Multiple iTCO watchdogs are not supported"));
+                return -1;
+            }
+            found_itco = true;
         }
     }
 
@@ -2405,6 +2415,21 @@ qemuValidateDomainWatchdogDef(const virDomainWatchdogDef *dev,
         if (!(ARCH_IS_S390(def->os.arch))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("%s model of watchdog is allowed for s390 and s390x only"),
+                           virDomainWatchdogModelTypeToString(dev->model));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_WATCHDOG_MODEL_ITCO:
+        if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("%s model of watchdog is part of the machine and cannot have any address set."),
+                           virDomainWatchdogModelTypeToString(dev->model));
+            return -1;
+        }
+        if (!qemuDomainIsQ35(def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("%s model of watchdog is only part of q35 machine"),
                            virDomainWatchdogModelTypeToString(dev->model));
             return -1;
         }
