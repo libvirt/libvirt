@@ -2936,16 +2936,16 @@ qemuDomainAttachWatchdog(virDomainObj *vm,
 
     qemuAssignDeviceWatchdogAlias(watchdog);
 
-    if (watchdog->model == VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB) {
-        if (qemuDomainEnsurePCIAddress(vm, &dev) < 0)
-            goto cleanup;
-        releaseAddress = true;
-    } else {
+    if (watchdog->model != VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("hotplug of watchdog of model %s is not supported"),
                        virDomainWatchdogModelTypeToString(watchdog->model));
         goto cleanup;
     }
+
+    if (qemuDomainEnsurePCIAddress(vm, &dev) < 0)
+        goto cleanup;
+    releaseAddress = true;
 
     if (!(props = qemuBuildWatchdogDevProps(vm->def, watchdog)))
         goto cleanup;
