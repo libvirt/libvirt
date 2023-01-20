@@ -2150,6 +2150,32 @@ _keyboardPutScancodes(IKeyboard *keyboard, PRUint32 scancodesSize,
                                         codesStored);
 }
 
+static const nsID *
+_virtualBoxErrorInfoGetIID(void)
+{
+    static const nsID ret = IVIRTUALBOXERRORINFO_IID;
+
+    return &ret;
+}
+
+static nsresult
+_virtualBoxErrorInfoGetComponent(IVirtualBoxErrorInfo *errInfo, PRUnichar **component)
+{
+    return errInfo->vtbl->GetComponent(errInfo, component);
+}
+
+static nsresult
+_virtualBoxErrorInfoGetNext(IVirtualBoxErrorInfo *errInfo, IVirtualBoxErrorInfo **next)
+{
+    return errInfo->vtbl->GetNext(errInfo, next);
+}
+
+static nsresult
+_virtualBoxErrorInfoGetText(IVirtualBoxErrorInfo *errInfo, PRUnichar **text)
+{
+    return errInfo->vtbl->GetText(errInfo, text);
+}
+
 static bool _machineStateOnline(PRUint32 state)
 {
     return ((state >= MachineState_FirstOnline) &&
@@ -2505,6 +2531,13 @@ static vboxUniformedIKeyboard _UIKeyboard = {
     .PutScancodes = _keyboardPutScancodes,
 };
 
+static vboxUniformedIVirtualBoxErrorInfo _UIVirtualBoxErrorInfo = {
+    .GetIID = _virtualBoxErrorInfoGetIID,
+    .GetComponent = _virtualBoxErrorInfoGetComponent,
+    .GetNext = _virtualBoxErrorInfoGetNext,
+    .GetText = _virtualBoxErrorInfoGetText,
+};
+
 static uniformedMachineStateChecker _machineStateChecker = {
     .Online = _machineStateOnline,
     .Inactive = _machineStateInactive,
@@ -2550,6 +2583,7 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->UIHNInterface = _UIHNInterface;
     pVBoxAPI->UIDHCPServer = _UIDHCPServer;
     pVBoxAPI->UIKeyboard = _UIKeyboard;
+    pVBoxAPI->UIVirtualBoxErrorInfo = _UIVirtualBoxErrorInfo;
     pVBoxAPI->machineStateChecker = _machineStateChecker;
 
     pVBoxAPI->chipsetType = 1;

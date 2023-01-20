@@ -361,6 +361,7 @@ typedef nsISupports IHost;
 typedef nsISupports IHostNetworkInterface;
 typedef nsISupports IDHCPServer;
 typedef nsISupports IKeyboard;
+typedef nsISupports IVirtualBoxErrorInfo;
 
 /* Macros for all vbox drivers. */
 

@@ -495,6 +495,13 @@ typedef struct {
 } vboxUniformedIKeyboard;
 
 typedef struct {
+    const nsID * (*GetIID)(void);
+    nsresult (*GetComponent)(IVirtualBoxErrorInfo *errInfo, PRUnichar **component);
+    nsresult (*GetNext)(IVirtualBoxErrorInfo *errInfo, IVirtualBoxErrorInfo **next);
+    nsresult (*GetText)(IVirtualBoxErrorInfo *errInfo, PRUnichar **text);
+} vboxUniformedIVirtualBoxErrorInfo;
+
+typedef struct {
     bool (*Online)(PRUint32 state);
     bool (*Inactive)(PRUint32 state);
     bool (*NotStart)(PRUint32 state);
@@ -541,6 +548,7 @@ typedef struct {
     vboxUniformedIHNInterface UIHNInterface;
     vboxUniformedIDHCPServer UIDHCPServer;
     vboxUniformedIKeyboard UIKeyboard;
+    vboxUniformedIVirtualBoxErrorInfo UIVirtualBoxErrorInfo;
     uniformedMachineStateChecker machineStateChecker;
     /* vbox API features */
     bool chipsetType;
