@@ -4426,6 +4426,31 @@ qemuDomainRecheckInternalPaths(virDomainDef *def,
 
 
 static int
+qemuDomainDefMachinePostParse(virDomainDef *def,
+                              virQEMUCaps *qemuCaps)
+{
+    if (!def->os.machine) {
+        const char *machine = virQEMUCapsGetPreferredMachine(qemuCaps,
+                                                             def->virtType);
+        if (!machine) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("could not get preferred machine for %s type=%s"),
+                           def->emulator,
+                           virDomainVirtTypeToString(def->virtType));
+            return -1;
+        }
+
+        def->os.machine = g_strdup(machine);
+    }
+
+    if (qemuCanonicalizeMachine(def, qemuCaps) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefVcpusPostParse(virDomainDef *def)
 {
     unsigned int maxvcpus = virDomainDefGetVcpusMax(def);
@@ -4767,24 +4792,13 @@ qemuDomainDefPostParse(virDomainDef *def,
     if (!qemuCaps)
         return 1;
 
+    if (qemuDomainDefMachinePostParse(def, qemuCaps) < 0)
+        return -1;
+
     if (def->os.bootloader || def->os.bootloaderArgs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("bootloader is not supported by QEMU"));
         return -1;
-    }
-
-    if (!def->os.machine) {
-        const char *machine = virQEMUCapsGetPreferredMachine(qemuCaps,
-                                                             def->virtType);
-        if (!machine) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("could not get preferred machine for %s type=%s"),
-                           def->emulator,
-                           virDomainVirtTypeToString(def->virtType));
-            return -1;
-        }
-
-        def->os.machine = g_strdup(machine);
     }
 
     if (virDomainDefHasOldStyleROUEFI(def) &&
@@ -4797,9 +4811,6 @@ qemuDomainDefPostParse(virDomainDef *def,
     }
 
     if (qemuDomainDefAddDefaultDevices(driver, def, qemuCaps) < 0)
-        return -1;
-
-    if (qemuCanonicalizeMachine(def, qemuCaps) < 0)
         return -1;
 
     if (qemuDomainDefSetDefaultCPU(def, driver->hostarch, qemuCaps) < 0)
