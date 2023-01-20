@@ -84,10 +84,14 @@ run_website_build() {
 run_integration() {
     sudo pip3 install --prefix=/usr avocado-framework
 
-    sudo sh -c "echo DefaultLimitCORE=infinity >> /etc/systemd/system.conf" # Explicitly allow storing cores globally
-    sudo systemctl daemon-reexec # need to reexec systemd after changing config
+    # Explicitly allow storing cores globally
+    sudo sh -c "echo DefaultLimitCORE=infinity >> /etc/systemd/system.conf"
 
-    source /etc/os-release  # in order to query the vendor-provided variables
+    # Need to reexec systemd after changing config
+    sudo systemctl daemon-reexec
+
+    # Source the os-release file to query the vendor-provided variables
+    source /etc/os-release
     if test "$ID" = "centos" && test "$VERSION_ID" -eq 8
     then
         DAEMONS="libvirtd virtlockd virtlogd"
@@ -104,6 +108,11 @@ run_integration() {
         sudo systemctl restart ${daemon}.socket
     done
 
+    # Make sure the default network is started on all platforms
+    # The reason for the '|| true' here is solely that GitLab executes all
+    # Shell scripts with -e by default and virsh returns an error if one tries
+    # to start a machine/network that is already active which is both fine and
+    # should also be a non-fatal error
     sudo virsh --quiet net-start default &>/dev/null || true
 
     cd "$SCRATCH_DIR"
