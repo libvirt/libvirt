@@ -24,10 +24,6 @@
   - sudo make install
 
 
-.install-deps: &install-deps
-  - sudo dnf install -y libvirt-rpms/* libvirt-perl-rpms/* libvirt-python-rpms/*
-
-
 .collect-logs: &collect-logs
   - set +e
   - shopt -s nullglob
@@ -50,7 +46,7 @@
   stage: integration_tests
   before_script:
     - mkdir "$SCRATCH_DIR"
-    - *install-deps
+    - sudo dnf install -y libvirt-rpms/* libvirt-perl-rpms/* libvirt-python-rpms/*
   script:
     - source ci/jobs.sh
     - run_integration
