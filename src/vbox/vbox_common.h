@@ -405,6 +405,9 @@ typedef nsISupports IKeyboard;
             abort(); \
     } while (0)
 
+#define VBOX_QUERY_INTERFACE(nsi, iid, resultp) \
+    gVBoxAPI.nsUISupports.QueryInterface((void*)(nsi), iid, resultp)
+
 #define VBOX_ADDREF(arg)                gVBoxAPI.nsUISupports.AddRef((void *)(arg))
 
 #define VBOX_RELEASE(arg) \

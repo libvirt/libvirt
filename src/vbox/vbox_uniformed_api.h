@@ -145,6 +145,7 @@ typedef struct {
 
 /* Functions for nsISupports */
 typedef struct {
+    nsresult (*QueryInterface)(nsISupports *nsi, const nsID *iid, void **resultp);
     nsresult (*Release)(nsISupports *nsi);
     nsresult (*AddRef)(nsISupports *nsi);
 } vboxUniformednsISupports;

@@ -561,6 +561,11 @@ static void* _handleHostGetNetworkInterfaces(IHost *host)
     return host->vtbl->GetNetworkInterfaces;
 }
 
+static nsresult _nsisupportsQueryInterface(nsISupports *nsi, const nsID *iid, void **resultp)
+{
+    return nsi->vtbl->QueryInterface(nsi, iid, resultp);
+}
+
 static nsresult _nsisupportsRelease(nsISupports *nsi)
 {
     return nsi->vtbl->Release(nsi);
@@ -2219,6 +2224,7 @@ static vboxUniformedArray _UArray = {
 };
 
 static vboxUniformednsISupports _nsUISupports = {
+    .QueryInterface = _nsisupportsQueryInterface,
     .Release = _nsisupportsRelease,
     .AddRef = _nsisupportsAddRef,
 };
