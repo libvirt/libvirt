@@ -4054,6 +4054,7 @@ qemuBuildWatchdogCommandLine(virCommand *cmd,
     const char *action;
     int actualAction;
     ssize_t i = 0;
+    bool itco_pin_strap = false;
 
     if (def->nwatchdogs == 0)
         return 0;
@@ -4062,6 +4063,12 @@ qemuBuildWatchdogCommandLine(virCommand *cmd,
         g_autoptr(virJSONValue) props = NULL;
 
         watchdog = def->watchdogs[i];
+
+        /* iTCO is part of q35 and cannot be added */
+        if (watchdog->model == VIR_DOMAIN_WATCHDOG_MODEL_ITCO) {
+            itco_pin_strap = true;
+            continue;
+        }
 
         if (qemuCommandAddExtDevice(cmd, &watchdog->info, def, qemuCaps) < 0)
             return -1;
@@ -4072,6 +4079,9 @@ qemuBuildWatchdogCommandLine(virCommand *cmd,
         if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps))
             return -1;
     }
+
+    if (itco_pin_strap)
+        virCommandAddArgList(cmd, "-global", "ICH9-LPC.noreboot=off", NULL);
 
     /* qemu doesn't have a 'dump' action; we tell qemu to 'pause', then
        libvirt listens for the watchdog event, and we perform the dump
