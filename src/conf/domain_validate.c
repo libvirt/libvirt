@@ -2757,7 +2757,7 @@ virDomainTPMDevValidate(const virDomainTPMDef *tpm)
         }
         if (tpm->data.external.source->data.nix.listen) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("only 'client' mode is supported for external TPM device"));
+                           _("only 'connect' mode is supported for external TPM device"));
             return -1;
         }
         if (tpm->data.external.source->data.nix.path == NULL) {

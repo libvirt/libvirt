@@ -10545,7 +10545,7 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
     case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
         if (!(type = virXPathString("string(./backend/source/@type)", ctxt))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("missing external TPM backend type"));
+                           _("missing external TPM backend source type"));
             goto error;
         }
 
@@ -10555,7 +10555,7 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
         def->data.external.source->type = virDomainChrTypeFromString(type);
         if (def->data.external.source->type < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown backend type '%s' for external TPM"),
+                           _("unknown backend source type '%s' for external TPM"),
                            type);
             goto error;
         }
