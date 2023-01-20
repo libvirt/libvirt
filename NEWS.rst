@@ -43,6 +43,15 @@ v9.1.0 (unreleased)
 
 * **Bug fixes**
 
+  * QEMU: iTCO watchdog made operational
+
+    The watchdog was always included when q35 machine type was used, but needed
+    an extra bit of configuration in order to be operational.  This is now done
+    by default when running a QEMU domain with q35 machine type.  This is not a
+    change in the guest ABI, but it is a guest visible behavior change since the
+    watchdog that did not fire before will now fire once used.  To switch to the
+    previous behavior the watchdog action must be set to ``none``.
+
 
 v9.0.0 (2023-01-16)
 ===================
