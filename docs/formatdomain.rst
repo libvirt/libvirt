@@ -7544,8 +7544,8 @@ defaults to 'WAV' with QEMU.
 
 :since:`Since 7.2.0, qemu`
 
-Watchdog device
-~~~~~~~~~~~~~~~
+Watchdog devices
+~~~~~~~~~~~~~~~~
 
 A virtual hardware watchdog device can be added to the guest via the
 ``watchdog`` element. :since:`Since 0.7.3, QEMU and KVM only`
@@ -7556,6 +7556,11 @@ anything useful on its own.
 
 Currently libvirt does not support notification when the watchdog fires. This
 feature is planned for a future version of libvirt.
+
+Having multiple watchdogs is usually not something very common, but be aware
+that this might happen, for example, when an implicit watchdog device is added
+as part of another device.  For example whe iTCO watchdog being part of the ich9
+southbridge, which is used with the q35 machine type. :since:`Since 9.1.0`
 
 ::
 
@@ -7579,6 +7584,7 @@ feature is planned for a future version of libvirt.
 
    QEMU and KVM support:
 
+   -  'itco' - included by default with q35 machine type :since:`Since 9.1.0`
    -  'i6300esb' - the recommended device, emulating a PCI Intel 6300ESB
    -  'ib700' - emulating an ISA iBase IB700
    -  'diag288' - emulating an S390 DIAG288 device :since:`Since 1.2.17`
