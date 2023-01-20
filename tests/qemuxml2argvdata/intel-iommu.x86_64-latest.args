@@ -29,5 +29,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -device '{"driver":"intel-iommu","id":"iommu0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-global ICH9-LPC.noreboot=off \
+-watchdog-action reset \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

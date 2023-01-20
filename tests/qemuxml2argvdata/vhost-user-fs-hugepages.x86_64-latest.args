@@ -37,5 +37,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -chardev socket,id=chr-vu-fs0,path=/tmp/lib/domain--1-guest/fs0-fs.sock \
 -device '{"driver":"vhost-user-fs-pci","id":"fs0","chardev":"chr-vu-fs0","tag":"mount_tag","bootindex":2,"bus":"pci.1","addr":"0x0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-global ICH9-LPC.noreboot=off \
+-watchdog-action reset \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

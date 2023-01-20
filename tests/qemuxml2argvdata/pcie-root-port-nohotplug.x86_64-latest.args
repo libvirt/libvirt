@@ -37,5 +37,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -device '{"driver":"xio3130-downstream","port":39,"chassis":30,"id":"pci.8","bus":"pci.4","addr":"0x3"}' \
 -device '{"driver":"qemu-xhci","id":"usb","bus":"pci.2","addr":"0x0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-global ICH9-LPC.noreboot=off \
+-watchdog-action reset \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

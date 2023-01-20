@@ -150,6 +150,7 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
+    <watchdog model='itco' action='reset'/>
     <memballoon model='none'/>
   </devices>
 </domain>

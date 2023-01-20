@@ -36,4 +36,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-q35-test/.config \
 -device ide-hd,bus=ide.0,drive=libvirt-1-format,id=sata0-0-0,bootindex=1 \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device qxl-vga,id=video0,max_outputs=1,ram_size=67108864,vram_size=33554432,bus=pcie.0,addr=0x1 \
+-global ICH9-LPC.noreboot=off \
+-watchdog-action reset \
 -msg timestamp=on

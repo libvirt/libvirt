@@ -28,6 +28,7 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
+    <watchdog model='itco' action='reset'/>
     <memballoon model='none'/>
     <iommu model='virtio'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>

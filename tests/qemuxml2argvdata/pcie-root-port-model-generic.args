@@ -29,4 +29,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -device pcie-root-port,port=9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
 -device ioh3420,port=10,chassis=3,id=pci.3,bus=pcie.0,addr=0x1.0x2 \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-global ICH9-LPC.noreboot=off \
+-watchdog-action reset \
 -msg timestamp=on

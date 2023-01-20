@@ -3996,6 +3996,7 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     bool addDefaultUSBKBD = false;
     bool addDefaultUSBMouse = false;
     bool addPanicDevice = false;
+    bool addITCOWatchdog = false;
 
     /* add implicit input devices */
     if (qemuDomainDefAddImplicitInputDevice(def) < 0)
@@ -4012,6 +4013,7 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
         if (qemuDomainIsQ35(def)) {
             addPCIeRoot = true;
             addImplicitSATA = true;
+            addITCOWatchdog = true;
 
             /* Prefer adding a USB3 controller if supported, fall back
              * to USB2 if there is no USB3 available, and if that's
@@ -4228,6 +4230,27 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
             virDomainPanicDef *panic = g_new0(virDomainPanicDef, 1);
 
             VIR_APPEND_ELEMENT_COPY(def->panics, def->npanics, panic);
+        }
+    }
+
+    if (addITCOWatchdog) {
+        size_t i = 0;
+
+        for (i = 0; i < def->nwatchdogs; i++) {
+            if (def->watchdogs[i]->model == VIR_DOMAIN_WATCHDOG_MODEL_ITCO)
+                break;
+        }
+
+        if (i == def->nwatchdogs) {
+            virDomainWatchdogDef *watchdog = g_new0(virDomainWatchdogDef, 1);
+
+            watchdog->model = VIR_DOMAIN_WATCHDOG_MODEL_ITCO;
+            if (def->nwatchdogs)
+                watchdog->action = def->watchdogs[0]->action;
+            else
+                watchdog->action = VIR_DOMAIN_WATCHDOG_ACTION_RESET;
+
+            VIR_APPEND_ELEMENT(def->watchdogs, def->nwatchdogs, watchdog);
         }
     }
 
@@ -6470,6 +6493,27 @@ qemuDomainDefFormatBufInternal(virQEMUDriver *driver,
          */
         if (qemuDomainDefClearDefaultAudioBackend(driver, def) < 0)
             return -1;
+
+        /* Old libvirt did not know about the iTCO watchdog in q35 machine
+         * types, but nevertheless it was always present.  Remove it if it has
+         * the default action set. */
+        if (qemuDomainIsQ35(def)) {
+            virDomainWatchdogDef *watchdog = NULL;
+
+            for (i = 0; i < def->nwatchdogs; i++) {
+                if (def->watchdogs[i]->model == VIR_DOMAIN_WATCHDOG_MODEL_ITCO)
+                    break;
+            }
+
+            if (i < def->nwatchdogs) {
+                watchdog = def->watchdogs[i];
+
+                if (watchdog->action == VIR_DOMAIN_WATCHDOG_ACTION_RESET) {
+                    VIR_DELETE_ELEMENT(def->watchdogs, i, def->nwatchdogs);
+                    virDomainWatchdogDefFree(watchdog);
+                }
+            }
+        }
     }
 
  format:

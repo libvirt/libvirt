@@ -65,6 +65,7 @@
       <source protocol='vhost' wwpn='naa.5123456789abcde0'/>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x06' function='0x0'/>
     </hostdev>
+    <watchdog model='itco' action='reset'/>
     <memballoon model='virtio-transitional'>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x07' function='0x0'/>
     </memballoon>

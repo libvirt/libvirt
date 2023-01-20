@@ -30,6 +30,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest2/.config \
 -device '{"driver":"pcie-root-port","port":8,"chassis":1,"id":"pci.1","bus":"pcie.0","multifunction":true,"addr":"0x1"}' \
 -device '{"driver":"pcie-root-port","port":9,"chassis":2,"id":"pci.2","bus":"pcie.0","addr":"0x1.0x1"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-global ICH9-LPC.noreboot=off \
+-watchdog-action reset \
 -device '{"driver":"vhost-scsi-pci","wwpn":"naa.5123456789abcde0","vhostfd":"3","id":"hostdev0","bus":"pci.1","addr":"0x0"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -34,6 +34,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"ib700","id":"watchdog0"}' \
 -device '{"driver":"i6300esb","id":"watchdog1","bus":"pci.2","addr":"0x2"}' \
+-global ICH9-LPC.noreboot=off \
 -watchdog-action poweroff \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -39,6 +39,7 @@
       <source protocol='vhost' wwpn='naa.5123456789abcde0'/>
       <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
     </hostdev>
+    <watchdog model='itco' action='reset'/>
     <memballoon model='none'/>
   </devices>
 </domain>

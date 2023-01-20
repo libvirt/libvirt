@@ -47,6 +47,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci-non-transitional","netdev":"hostnet0","id":"net0","mac":"00:11:22:33:44:55","bus":"pci.2","addr":"0x0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-global ICH9-LPC.noreboot=off \
+-watchdog-action reset \
 -device '{"driver":"vhost-scsi-pci-non-transitional","wwpn":"naa.5123456789abcde0","vhostfd":"3","id":"hostdev0","bus":"pci.6","addr":"0x0"}' \
 -device '{"driver":"virtio-balloon-pci-non-transitional","id":"balloon0","bus":"pci.7","addr":"0x0"}' \
 -object '{"qom-type":"rng-random","id":"objrng0","filename":"/dev/urandom"}' \

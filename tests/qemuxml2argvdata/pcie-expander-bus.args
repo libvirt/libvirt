@@ -130,4 +130,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-pcie-expander-bus-te/.config \
 -netdev user,id=hostnet31 \
 -device e1000,netdev=hostnet31,id=net31,mac=52:54:00:7e:6d:c9,bus=pci.35,addr=0x0 \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-global ICH9-LPC.noreboot=off \
+-watchdog-action reset \
 -msg timestamp=on

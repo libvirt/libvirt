@@ -53,6 +53,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-virt-manager-basic/.config \
 -device '{"driver":"qxl-vga","id":"video0","max_outputs":1,"ram_size":67108864,"vram_size":67108864,"vram64_size_mb":0,"vgamem_mb":16,"bus":"pcie.0","addr":"0x1"}' \
 -device '{"driver":"ich9-intel-hda","id":"sound0","bus":"pcie.0","addr":"0x1b"}' \
 -device '{"driver":"hda-duplex","id":"sound0-codec0","bus":"sound0.0","cad":0,"audiodev":"audio1"}' \
+-global ICH9-LPC.noreboot=off \
+-watchdog-action reset \
 -chardev spicevmc,id=charredir0,name=usbredir \
 -device '{"driver":"usb-redir","chardev":"charredir0","id":"redir0","bus":"usb.0","port":"2"}' \
 -chardev spicevmc,id=charredir1,name=usbredir \

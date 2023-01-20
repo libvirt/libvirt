@@ -79,6 +79,7 @@
       <model type='qxl' ram='65536' vram='32768' vgamem='8192' heads='1' primary='yes'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </video>
+    <watchdog model='itco' action='reset'/>
     <memballoon model='none'/>
   </devices>
 </domain>

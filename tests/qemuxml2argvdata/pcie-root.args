@@ -26,4 +26,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-q35-test/.config \
 -no-acpi \
 -boot strict=on \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-global ICH9-LPC.noreboot=off \
+-watchdog-action reset \
 -msg timestamp=on

@@ -33,4 +33,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-q35-test/.config \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device intel-hda,id=sound0,bus=pci.3,addr=0x0 \
 -device hda-duplex,id=sound0-codec0,bus=sound0.0,cad=0,audiodev=audio1 \
+-global ICH9-LPC.noreboot=off \
+-watchdog-action reset \
 -msg timestamp=on

@@ -35,6 +35,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -object '{"qom-type":"memory-backend-epc","id":"memepc0","prealloc":true,"size":67108864,"host-nodes":[0,1],"policy":"bind"}' \
 -object '{"qom-type":"memory-backend-epc","id":"memepc1","prealloc":true,"size":16777216,"host-nodes":[0,1],"policy":"bind"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-global ICH9-LPC.noreboot=off \
+-watchdog-action reset \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.1","addr":"0x0"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
