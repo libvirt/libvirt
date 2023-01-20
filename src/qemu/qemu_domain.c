@@ -4426,6 +4426,29 @@ qemuDomainRecheckInternalPaths(virDomainDef *def,
 
 
 static int
+qemuDomainDefBootPostParse(virDomainDef *def,
+                           virQEMUDriverConfig *cfg)
+{
+    if (def->os.bootloader || def->os.bootloaderArgs) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("bootloader is not supported by QEMU"));
+        return -1;
+    }
+
+    if (virDomainDefHasOldStyleROUEFI(def) &&
+        !def->os.loader->nvram &&
+        def->os.loader->stateless != VIR_TRISTATE_BOOL_YES) {
+        def->os.loader->nvram = virStorageSourceNew();
+        def->os.loader->nvram->type = VIR_STORAGE_TYPE_FILE;
+        def->os.loader->nvram->format = VIR_STORAGE_FILE_RAW;
+        qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram->path);
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefMachinePostParse(virDomainDef *def,
                               virQEMUCaps *qemuCaps)
 {
@@ -4795,20 +4818,8 @@ qemuDomainDefPostParse(virDomainDef *def,
     if (qemuDomainDefMachinePostParse(def, qemuCaps) < 0)
         return -1;
 
-    if (def->os.bootloader || def->os.bootloaderArgs) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("bootloader is not supported by QEMU"));
+    if (qemuDomainDefBootPostParse(def, cfg) < 0)
         return -1;
-    }
-
-    if (virDomainDefHasOldStyleROUEFI(def) &&
-        !def->os.loader->nvram &&
-        def->os.loader->stateless != VIR_TRISTATE_BOOL_YES) {
-        def->os.loader->nvram = virStorageSourceNew();
-        def->os.loader->nvram->type = VIR_STORAGE_TYPE_FILE;
-        def->os.loader->nvram->format = VIR_STORAGE_FILE_RAW;
-        qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram->path);
-    }
 
     if (qemuDomainDefAddDefaultDevices(driver, def, qemuCaps) < 0)
         return -1;
