@@ -4,7 +4,7 @@
 VirtualBox hypervisor driver
 ============================
 
-The libvirt VirtualBox driver can manage any VirtualBox version from version 4.0
+The libvirt VirtualBox driver can manage any VirtualBox version from version 6.0
 onwards ( :since:`since libvirt 3.0.0` ).
 
 Project Links

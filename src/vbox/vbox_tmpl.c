@@ -44,9 +44,7 @@
 #include "virstring.h"
 
 /* This one changes from version to version. */
-#if VBOX_API_VERSION == 5002000
-# include "vbox_CAPI_v5_2.h"
-#elif VBOX_API_VERSION == 6000000
+#if VBOX_API_VERSION == 6000000
 # include "vbox_CAPI_v6_0.h"
 #elif VBOX_API_VERSION == 6001000
 # include "vbox_CAPI_v6_1.h"
@@ -729,13 +727,8 @@ _machineCreateSharedFolder(IMachine *machine, PRUnichar *name,
                            PRUnichar *hostPath, PRBool writable,
                            PRBool automount)
 {
-#if VBOX_API_VERSION >= 6000000
     return machine->vtbl->CreateSharedFolder(machine, name, hostPath,
                                              writable, automount, NULL);
-#else
-    return machine->vtbl->CreateSharedFolder(machine, name, hostPath,
-                                             writable, automount);
-#endif
 }
 
 static nsresult
