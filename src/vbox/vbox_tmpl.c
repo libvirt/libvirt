@@ -626,6 +626,7 @@ _virtualboxCreateMachine(struct _vboxDriver *data, virDomainDef *def, IMachine *
                                             machine);
     VIR_FREE(createFlags);
     VBOX_UTF16_FREE(machineNameUtf16);
+    VBOX_UTF16_FREE(createFlagsUtf16);
     vboxIIDUnalloc(&iid);
     return rc;
 }
