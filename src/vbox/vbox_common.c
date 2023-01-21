@@ -570,8 +570,8 @@ vboxSetStorageController(virDomainControllerDef *controller,
 
     if (NS_FAILED(rc)) {
         vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Failed to add storage controller (name: %s, busType: %d), rc=%08x"),
-                        debugName, vboxBusType, rc);
+                        _("Failed to add storage controller (name: %s, busType: %d)"),
+                        debugName, vboxBusType);
         goto cleanup;
     }
 
@@ -580,8 +580,8 @@ vboxSetStorageController(virDomainControllerDef *controller,
         rc = gVBoxAPI.UIStorageController.SetControllerType(vboxController,
                                                             vboxModel);
         if (NS_FAILED(rc)) {
-            vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Failed to change storage controller model, rc=%08x"), rc);
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Failed to change storage controller model"));
             goto cleanup;
         }
     }
@@ -795,9 +795,8 @@ static int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids)
 
     rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Could not get list of Domains, rc=%08x"),
-                        (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not get list of Domains"));
         goto cleanup;
     }
 
@@ -837,8 +836,8 @@ static int vboxConnectNumOfDomains(virConnectPtr conn)
 
     rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Could not get number of Domains, rc=%08x"), (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not get number of Domains"));
         goto cleanup;
     }
 
@@ -891,8 +890,8 @@ static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id)
 
     rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not get list of machines"));
         return NULL;
     }
 
@@ -957,8 +956,8 @@ virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
     VBOX_IID_INITIALIZE(&iid);
     rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not get list of machines"));
         return NULL;
     }
 
@@ -1029,8 +1028,8 @@ vboxDomainLookupByName(virConnectPtr conn, const char *name)
     VBOX_IID_INITIALIZE(&iid);
     rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not get list of machines"));
         return NULL;
     }
 
@@ -1270,8 +1269,8 @@ vboxAttachDrives(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
 
             if (!medium) {
                 vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"),
-                                src, rc);
+                                _("Failed to open the following disk/dvd/floppy to the machine: %s"),
+                                src);
                 ret = -1;
                 goto cleanup;
             }
@@ -1279,8 +1278,8 @@ vboxAttachDrives(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
             rc = gVBoxAPI.UIMedium.GetId(medium, &mediumUUID);
             if (NS_FAILED(rc)) {
                 vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc=%08x"),
-                                src, rc);
+                                _("Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"),
+                                src);
                 ret = -1;
                 goto cleanup;
             }
@@ -1314,8 +1313,8 @@ vboxAttachDrives(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
 
         if (NS_FAILED(rc)) {
             vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"),
-                            src, rc);
+                            _("Could not attach the file as harddisk/dvd/floppy: %s"),
+                            src);
             ret = -1;
             goto cleanup;
         } else {
@@ -1975,8 +1974,8 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
     rc = gVBoxAPI.UIVirtualBox.CreateMachine(data, def, &machine, uuidstr);
 
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("could not define a domain, rc=%08x"), (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("could not define a domain"));
         goto cleanup;
     }
 
@@ -1984,8 +1983,8 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
                                           VIR_DIV_UP(def->mem.cur_balloon, 1024));
     if (NS_FAILED(rc)) {
         vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("could not set the memory size of the domain to: %llu Kb, rc=%08x"),
-                        def->mem.cur_balloon, (unsigned)rc);
+                        _("could not set the memory size of the domain to: %llu Kb"),
+                        def->mem.cur_balloon);
     }
 
     if (virDomainDefHasVcpusOffline(def)) {
@@ -1995,8 +1994,8 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
     rc = gVBoxAPI.UIMachine.SetCPUCount(machine, virDomainDefGetVcpusMax(def));
     if (NS_FAILED(rc)) {
         vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("could not set the number of virtual CPUs to: %u, rc=%08x"),
-                        virDomainDefGetVcpusMax(def), (unsigned)rc);
+                        _("could not set the number of virtual CPUs to: %u"),
+                        virDomainDefGetVcpusMax(def));
     }
 
     rc = gVBoxAPI.UIMachine.SetCPUProperty(machine, CPUPropertyType_PAE,
@@ -2004,9 +2003,9 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
                                            VIR_TRISTATE_SWITCH_ON);
     if (NS_FAILED(rc)) {
         vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("could not change PAE status to: %s, rc=%08x"),
+                        _("could not change PAE status to: %s"),
                         (def->features[VIR_DOMAIN_FEATURE_PAE] == VIR_TRISTATE_SWITCH_ON)
-                        ? _("Enabled") : _("Disabled"), (unsigned)rc);
+                        ? _("Enabled") : _("Disabled"));
     }
 
     gVBoxAPI.UIMachine.GetBIOSSettings(machine, &bios);
@@ -2016,18 +2015,18 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
                                                     VIR_TRISTATE_SWITCH_ON);
         if (NS_FAILED(rc)) {
             vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("could not change ACPI status to: %s, rc=%08x"),
+                            _("could not change ACPI status to: %s"),
                             (def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_TRISTATE_SWITCH_ON)
-                            ? _("Enabled") : _("Disabled"), (unsigned)rc);
+                            ? _("Enabled") : _("Disabled"));
         }
         rc = gVBoxAPI.UIBIOSSettings.SetIOAPICEnabled(bios,
                                                       def->features[VIR_DOMAIN_FEATURE_APIC] ==
                                                       VIR_TRISTATE_SWITCH_ON);
         if (NS_FAILED(rc)) {
             vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("could not change APIC status to: %s, rc=%08x"),
+                            _("could not change APIC status to: %s"),
                             (def->features[VIR_DOMAIN_FEATURE_APIC] == VIR_TRISTATE_SWITCH_ON)
-                            ? _("Enabled") : _("Disabled"), (unsigned)rc);
+                            ? _("Enabled") : _("Disabled"));
         }
         VBOX_RELEASE(bios);
     }
@@ -2035,8 +2034,8 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
     /* Register the machine before attaching other devices to it */
     rc = gVBoxAPI.UIVirtualBox.RegisterMachine(data->vboxObj, machine);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("could not define a domain, rc=%08x"), (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("could not define a domain"));
         goto cleanup;
     }
 
@@ -2079,8 +2078,8 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
      */
     rc = gVBoxAPI.UIMachine.SaveSettings(machine);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Failed to save VM settings, rc=%08x"), rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Failed to save VM settings"));
         machineReady = false;
     }
 
@@ -2136,8 +2135,8 @@ static int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
         gVBoxAPI.deleteConfig(machine);
         ret = 0;
     } else {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("could not delete the domain, rc=%08x"), (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("could not delete the domain"));
     }
 
     vboxIIDUnalloc(&iid);
@@ -2317,8 +2316,8 @@ static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 
     rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not get list of machines"));
         return -1;
     }
 
@@ -2416,8 +2415,8 @@ static int vboxDomainIsActive(virDomainPtr dom)
     VBOX_IID_INITIALIZE(&iid);
     rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not get list of machines"));
         return ret;
     }
 
@@ -2830,8 +2829,8 @@ static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory)
             ret = 0;
         } else {
             vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("could not set the memory size of the domain to: %lu Kb, rc=%08x"),
-                            memory, (unsigned)rc);
+                            _("could not set the memory size of the domain to: %lu Kb"),
+                            memory);
         }
     }
     gVBoxAPI.UISession.Close(data->vboxSession);
@@ -2857,8 +2856,8 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 
     rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not get list of machines"));
         return -1;
     }
 
@@ -2985,8 +2984,8 @@ static int vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                 ret = 0;
             } else {
                 vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("could not set the number of cpus of the domain to: %u, rc=%08x"),
-                                CPUCount, (unsigned)rc);
+                                _("could not set the number of cpus of the domain to: %u"),
+                                CPUCount);
             }
             VBOX_RELEASE(machine);
         } else {
@@ -3280,8 +3279,8 @@ vboxDumpDisks(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
 
         rc = gVBoxAPI.UIMediumAttachment.GetMedium(mediumAttachment, &medium);
         if (NS_FAILED(rc)) {
-            vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Could not get IMedium, rc=%08x"), rc);
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Could not get IMedium"));
             goto cleanup;
         }
 
@@ -3320,17 +3319,16 @@ vboxDumpDisks(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
 
         rc = gVBoxAPI.UIMediumAttachment.GetMedium(mediumAttachment, &medium);
         if (NS_FAILED(rc)) {
-            vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Could not get IMedium, rc=%08x"), rc);
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Could not get IMedium"));
             goto cleanup;
         }
 
         rc = gVBoxAPI.UIMediumAttachment.GetController(mediumAttachment,
                                                        &controllerName);
         if (NS_FAILED(rc)) {
-            vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Failed to get storage controller name, rc=%08x"),
-                            rc);
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Failed to get storage controller name"));
             goto cleanup;
         }
 
@@ -3338,44 +3336,41 @@ vboxDumpDisks(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
                                                            controllerName,
                                                            &controller);
         if (NS_FAILED(rc)) {
-            vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Could not get storage controller by name, rc=%08x"),
-                            rc);
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Could not get storage controller by name"));
             goto cleanup;
         }
 
         rc = gVBoxAPI.UIMediumAttachment.GetType(mediumAttachment, &deviceType);
         if (NS_FAILED(rc)) {
-            vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Could not get device type, rc=%08x"), rc);
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Could not get device type"));
             goto cleanup;
         }
         rc = gVBoxAPI.UIMediumAttachment.GetPort(mediumAttachment, &devicePort);
         if (NS_FAILED(rc)) {
-            vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Could not get device port, rc=%08x"), rc);
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Could not get device port"));
             goto cleanup;
         }
         rc = gVBoxAPI.UIMediumAttachment.GetDevice(mediumAttachment, &deviceSlot);
         if (NS_FAILED(rc)) {
-            vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Could not get device slot, rc=%08x"), rc);
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Could not get device slot"));
             goto cleanup;
         }
         rc = gVBoxAPI.UIStorageController.GetBus(controller, &storageBus);
         if (NS_FAILED(rc)) {
-            vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Could not get storage controller bus, rc=%08x"),
-                            rc);
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Could not get storage controller bus"));
             goto cleanup;
         }
 
         if (medium) {
             rc = gVBoxAPI.UIMedium.GetLocation(medium, &mediumLocUtf16);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Could not get medium storage location, rc=%08x"),
-                                rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Could not get medium storage location"));
                 goto cleanup;
             }
 
@@ -3385,8 +3380,8 @@ vboxDumpDisks(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
 
             rc = gVBoxAPI.UIMedium.GetReadOnly(medium, &readOnly);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Could not get read only state, rc=%08x"), rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Could not get read only state"));
                 goto cleanup;
             }
         }
@@ -4212,9 +4207,8 @@ static int vboxConnectListDefinedDomains(virConnectPtr conn,
     rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj,
                                       ARRAY_GET_MACHINES);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Could not get list of Defined Domains, rc=%08x"),
-                        (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not get list of Defined Domains"));
         goto cleanup;
     }
 
@@ -4265,9 +4259,8 @@ static int vboxConnectNumOfDefinedDomains(virConnectPtr conn)
     rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj,
                                       ARRAY_GET_MACHINES);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Could not get number of Defined Domains, rc=%08x"),
-                        (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not get number of Defined Domains"));
         goto cleanup;
     }
 
@@ -4358,8 +4351,8 @@ vboxDomainAttachDeviceImpl(virDomainPtr dom,
 
             if (NS_FAILED(rc)) {
                 vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("could not attach shared folder '%s', rc=%08x"),
-                                dev->data.fs->dst, (unsigned)rc);
+                                _("could not attach shared folder '%s'"),
+                                dev->data.fs->dst);
                 ret = -1;
             } else {
                 ret = 0;
@@ -4476,8 +4469,8 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
 
             if (NS_FAILED(rc)) {
                 vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("could not detach shared folder '%s', rc=%08x"),
-                                dev->data.fs->dst, (unsigned)rc);
+                                _("could not detach shared folder '%s'"),
+                                dev->data.fs->dst);
             } else {
                 ret = 0;
             }
@@ -4532,9 +4525,8 @@ static int vboxCloseDisksRecursively(virDomainPtr dom, char *location)
                                           AccessMode_ReadWrite,
                                           &medium);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Unable to open HardDisk, rc=%08x"),
-                        (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Unable to open HardDisk"));
         goto cleanup;
     }
     rc = gVBoxAPI.UIMedium.GetChildren(medium, &childrenSize, &children);
@@ -4566,9 +4558,8 @@ static int vboxCloseDisksRecursively(virDomainPtr dom, char *location)
     }
     rc = gVBoxAPI.UIMedium.Close(medium);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Unable to close HardDisk, rc=%08x"),
-                        (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Unable to close HardDisk"));
         goto cleanup;
     }
 
@@ -4732,9 +4723,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
                                                   AccessMode_ReadWrite,
                                                   &readWriteMedium);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to open HardDisk, rc=%08x"),
-                                (unsigned)rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to open HardDisk"));
                 VBOX_UTF16_FREE(locationUtf);
                 goto cleanup;
             }
@@ -4785,9 +4775,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
             }
             rc = gVBoxAPI.UIMedium.Close(readWriteMedium);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to close HardDisk, rc=%08x"),
-                                (unsigned)rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to close HardDisk"));
                 goto cleanup;
             }
         }
@@ -4838,9 +4827,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
                                               AccessMode_ReadWrite,
                                               &readOnlyMedium);
         if (NS_FAILED(rc)) {
-            vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unable to open HardDisk, rc=%08x"),
-                            (unsigned)rc);
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to open HardDisk"));
             VBOX_UTF16_FREE(locationUtf);
             goto cleanup;
         }
@@ -4876,9 +4864,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
 
         rc = gVBoxAPI.UIMedium.GetId(parentReadOnlyMedium, &parentiid);
         if (NS_FAILED(rc)) {
-            vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unable to get hard disk id, rc=%08x"),
-                            (unsigned)rc);
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to get hard disk id"));
             VIR_FREE(uuid);
             goto cleanup;
         }
@@ -4887,9 +4874,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
 
         rc = gVBoxAPI.UIMedium.Close(readOnlyMedium);
         if (NS_FAILED(rc)) {
-            vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unable to close HardDisk, rc=%08x"),
-                            (unsigned)rc);
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to close HardDisk"));
             VIR_FREE(uuid);
             VIR_FREE(parentUuid);
             goto cleanup;
@@ -4916,9 +4902,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
                                        &aMediaSize,
                                        &aMedia);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Unable to unregister machine, rc=%08x"),
-                        (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Unable to unregister machine"));
         goto cleanup;
     }
     VBOX_RELEASE(machine);
@@ -4948,9 +4933,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
                 resultCodeUnion resultCode;
                 rc = gVBoxAPI.UIMedium.DeleteStorage(medium, &progress);
                 if (NS_FAILED(rc)) {
-                    vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                    _("Unable to delete medium, rc=%08x"),
-                                    (unsigned)rc);
+                    vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("Unable to delete medium"));
                     VIR_FREE(locationUtf8);
                     goto cleanup;
                 }
@@ -5082,9 +5066,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
                                                   &medium);
             VBOX_UTF16_FREE(locationUtf16);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to open HardDisk, rc=%08x"),
-                                (unsigned)rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to open HardDisk"));
                 goto cleanup;
             }
         }
@@ -5115,9 +5098,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
                                                  AccessMode_ReadWrite,
                                                  &medium);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to open HardDisk, rc=%08x"),
-                                (unsigned)rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to open HardDisk"));
                 goto cleanup;
             }
             VBOX_UTF16_FREE(locationUtf16);
@@ -5195,9 +5177,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
             /* Close disk */
             rc = gVBoxAPI.UIMedium.Close(medium);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to close HardDisk, rc=%08x"),
-                                (unsigned)rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to close HardDisk"));
                 goto cleanup;
             }
         }
@@ -5229,9 +5210,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
                                                   AccessMode_ReadWrite,
                                                   &medium);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to open HardDisk, rc=%08x"),
-                                (unsigned)rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to open HardDisk"));
                 VBOX_UTF16_FREE(locationUtf16);
                 goto cleanup;
             }
@@ -5239,9 +5219,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
 
             rc = gVBoxAPI.UIMedium.GetId(medium, &parentiid);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to get hardDisk Id, rc=%08x"),
-                                (unsigned)rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to get hardDisk Id"));
                 goto cleanup;
             }
             gVBoxAPI.UIID.vboxIIDToUtf8(data, &parentiid, &parentUuid);
@@ -5258,9 +5237,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
             VBOX_UTF16_FREE(newLocation);
             VBOX_UTF16_FREE(formatUtf16);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to create HardDisk, rc=%08x"),
-                                (unsigned)rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to create HardDisk"));
                 goto cleanup;
             }
 
@@ -5285,9 +5263,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
 
             rc = gVBoxAPI.UIMedium.GetId(newMedium, &iid);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to get medium uuid, rc=%08x"),
-                                (unsigned)rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to get medium uuid"));
                 goto cleanup;
             }
             gVBoxAPI.UIID.vboxIIDToUtf8(data, &iid, &uuid);
@@ -5333,9 +5310,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
             /* Closing the "fake" disk */
             rc = gVBoxAPI.UIMedium.Close(newMedium);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to close the new medium, rc=%08x"),
-                                (unsigned)rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to close the new medium"));
                 goto cleanup;
             }
         }
@@ -5382,16 +5358,14 @@ vboxSnapshotRedefine(virDomainPtr dom,
                                                   AccessMode_ReadWrite,
                                                   &medium);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to open HardDisk, rc=%08x"),
-                                (unsigned)rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to open HardDisk"));
                 goto cleanup;
             }
             rc = gVBoxAPI.UIMedium.Close(medium);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to close HardDisk, rc=%08x"),
-                                (unsigned)rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to close HardDisk"));
                 goto cleanup;
             }
             VBOX_UTF16_FREE(locationUtf16);
@@ -5408,17 +5382,15 @@ vboxSnapshotRedefine(virDomainPtr dom,
                                            settingsFilePath,
                                            &machine);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Unable to open Machine, rc=%08x"),
-                        (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Unable to open Machine"));
         goto cleanup;
     }
 
     rc = gVBoxAPI.UIVirtualBox.RegisterMachine(data->vboxObj, machine);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Unable to register Machine, rc=%08x"),
-                        (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Unable to register Machine"));
         goto cleanup;
     }
 
@@ -6966,17 +6938,15 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                                                       AccessMode_ReadWrite,
                                                       &medium);
                 if (NS_FAILED(rc)) {
-                    vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                    _("Unable to open HardDisk, rc=%08x"),
-                                    (unsigned)rc);
+                    vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("Unable to open HardDisk"));
                     goto cleanup;
                 }
 
                 rc = gVBoxAPI.UIMedium.GetId(medium, &parentiid);
                 if (NS_FAILED(rc)) {
-                    vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                    _("Unable to get hardDisk Id, rc=%08x"),
-                                    (unsigned)rc);
+                    vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("Unable to get hardDisk Id"));
                     goto cleanup;
                 }
                 gVBoxAPI.UIID.vboxIIDToUtf8(data, &parentiid, &parentUuid);
@@ -6992,9 +6962,8 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                                                           newLocation,
                                                           &newMedium);
                 if (NS_FAILED(rc)) {
-                    vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                    _("Unable to create HardDisk, rc=%08x"),
-                                    (unsigned)rc);
+                    vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("Unable to create HardDisk"));
                     goto cleanup;
                 }
                 VBOX_UTF16_FREE(formatUtf16);
@@ -7021,9 +6990,8 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
 
                 rc = gVBoxAPI.UIMedium.GetId(newMedium, &iid);
                 if (NS_FAILED(rc)) {
-                    vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                    _("Unable to get medium uuid, rc=%08x"),
-                                    (unsigned)rc);
+                    vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("Unable to get medium uuid"));
                     VIR_FREE(disk);
                     goto cleanup;
                 }
@@ -7069,9 +7037,8 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                 /* Closing the "fake" disk */
                 rc = gVBoxAPI.UIMedium.Close(newMedium);
                 if (NS_FAILED(rc)) {
-                    vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                    _("Unable to close the new medium, rc=%08x"),
-                                    (unsigned)rc);
+                    vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("Unable to close the new medium"));
                     goto cleanup;
                 }
             }
@@ -7150,9 +7117,8 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                                        &aMediaSize,
                                        &aMedia);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Unable to unregister machine, rc=%08x"),
-                        (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Unable to unregister machine"));
         goto cleanup;
     }
     VBOX_RELEASE(machine);
@@ -7172,9 +7138,8 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
             resultCodeUnion resultCode;
             rc = gVBoxAPI.UIMedium.DeleteStorage(medium, &progress);
             if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unable to delete medium, rc=%08x"),
-                                (unsigned)rc);
+                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to delete medium"));
                 goto cleanup;
             }
             gVBoxAPI.UIProgress.WaitForCompletion(progress, -1);
@@ -7229,17 +7194,15 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                                            settingsFilePathUtf16,
                                            &machine);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Unable to open Machine, rc=%08x"),
-                        (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Unable to open Machine"));
         goto cleanup;
     }
 
     rc = gVBoxAPI.UIVirtualBox.RegisterMachine(data->vboxObj, machine);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Unable to register Machine, rc=%08x"),
-                        (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Unable to register Machine"));
         goto cleanup;
     }
 
@@ -7516,8 +7479,8 @@ vboxConnectListAllDomains(virConnectPtr conn,
 
     rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Could not get list of domains, rc=%08x"), (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not get list of domains"));
         goto cleanup;
     }
 
@@ -7716,8 +7679,8 @@ vboxDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
     VBOX_IID_INITIALIZE(&iid);
     rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
     if (NS_FAILED(rc)) {
-        vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not get list of machines"));
         return ret;
     }
 
