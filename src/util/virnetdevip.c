@@ -529,7 +529,7 @@ virNetDevIPCheckIPv6Forwarding(void)
     char *cur;
     g_autofree char *buf = NULL;
     /* lines are 150 chars */
-    enum {MAX_ROUTE_SIZE = 150*100000};
+    enum {MAX_ROUTE_SIZE = 150*1000000};
 
     /* This is /proc/sys/net/ipv6/conf/all/accept_ra */
     int all_accept_ra = virNetDevIPGetAcceptRA(NULL);
