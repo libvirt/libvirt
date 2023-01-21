@@ -1,5 +1,4 @@
 vbox_driver_sources = [
-  'vbox_V6_0.c',
   'vbox_V6_1.c',
   'vbox_common.c',
   'vbox_driver.c',
