@@ -527,8 +527,7 @@ vboxSetStorageController(virDomainControllerDef *controller,
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
             vboxReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("The vbox driver does not support %s SCSI "
-                              "controller model"),
+                            _("The vbox driver does not support %s SCSI controller model"),
                             virDomainControllerModelSCSITypeToString(controller->model));
             goto cleanup;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
@@ -571,8 +570,7 @@ vboxSetStorageController(virDomainControllerDef *controller,
 
     if (NS_FAILED(rc)) {
         vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Failed to add storage controller "
-                          "(name: %s, busType: %d), rc=%08x"),
+                        _("Failed to add storage controller (name: %s, busType: %d), rc=%08x"),
                         debugName, vboxBusType, rc);
         goto cleanup;
     }
@@ -583,8 +581,7 @@ vboxSetStorageController(virDomainControllerDef *controller,
                                                             vboxModel);
         if (NS_FAILED(rc)) {
             vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Failed to change storage controller model, "
-                              "rc=%08x"), rc);
+                            _("Failed to change storage controller model, rc=%08x"), rc);
             goto cleanup;
         }
     }
@@ -1167,8 +1164,7 @@ vboxAttachDrives(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
 
         if (type != VIR_STORAGE_TYPE_FILE) {
             vboxReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("Unsupported storage type %s, the only supported "
-                              "type is %s"),
+                            _("Unsupported storage type %s, the only supported type is %s"),
                             virStorageTypeToString(type),
                             virStorageTypeToString(VIR_STORAGE_TYPE_FILE));
             ret = -1;
@@ -1274,8 +1270,8 @@ vboxAttachDrives(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
 
             if (!medium) {
                 vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Failed to open the following disk/dvd/floppy "
-                                  "to the machine: %s, rc=%08x"), src, rc);
+                                _("Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"),
+                                src, rc);
                 ret = -1;
                 goto cleanup;
             }
@@ -1283,8 +1279,7 @@ vboxAttachDrives(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
             rc = gVBoxAPI.UIMedium.GetId(medium, &mediumUUID);
             if (NS_FAILED(rc)) {
                 vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Can't get the UUID of the file to be attached "
-                                  "as harddisk/dvd/floppy: %s, rc=%08x"),
+                                _("Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc=%08x"),
                                 src, rc);
                 ret = -1;
                 goto cleanup;
@@ -1319,8 +1314,8 @@ vboxAttachDrives(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
 
         if (NS_FAILED(rc)) {
             vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Could not attach the file as "
-                              "harddisk/dvd/floppy: %s, rc=%08x"), src, rc);
+                            _("Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"),
+                            src, rc);
             ret = -1;
             goto cleanup;
         } else {
@@ -1989,8 +1984,7 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
                                           VIR_DIV_UP(def->mem.cur_balloon, 1024));
     if (NS_FAILED(rc)) {
         vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("could not set the memory size of the domain to: %llu Kb, "
-                          "rc=%08x"),
+                        _("could not set the memory size of the domain to: %llu Kb, rc=%08x"),
                         def->mem.cur_balloon, (unsigned)rc);
     }
 
@@ -2354,9 +2348,7 @@ static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
                     ret = vboxStartMachine(dom, i, machine);
                 } else {
                     vboxReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                                    _("machine is not in "
-                                      "poweroff|saved|aborted state, so "
-                                      "couldn't start it"));
+                                    _("machine is not in poweroff|saved|aborted state, so couldn't start it"));
                     ret = -1;
                 }
             }
@@ -2838,8 +2830,7 @@ static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory)
             ret = 0;
         } else {
             vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("could not set the memory size of the "
-                              "domain to: %lu Kb, rc=%08x"),
+                            _("could not set the memory size of the domain to: %lu Kb, rc=%08x"),
                             memory, (unsigned)rc);
         }
     }
@@ -2994,8 +2985,7 @@ static int vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                 ret = 0;
             } else {
                 vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("could not set the number of cpus of the domain "
-                                  "to: %u, rc=%08x"),
+                                _("could not set the number of cpus of the domain to: %u, rc=%08x"),
                                 CPUCount, (unsigned)rc);
             }
             VBOX_RELEASE(machine);
@@ -3406,8 +3396,8 @@ vboxDumpDisks(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
 
         if (!disk->dst) {
             vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Could not generate medium name for the disk "
-                              "at: port:%d, slot:%d"), devicePort, deviceSlot);
+                            _("Could not generate medium name for the disk at: port:%d, slot:%d"),
+                            devicePort, deviceSlot);
             goto cleanup;
         }
 
@@ -4721,8 +4711,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
          * read-write disk number */
         if (realReadOnlyDisksPathSize < realReadWriteDisksPathSize) {
             vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("The read only disk number must be greater or equal to the "
-                              " read write disk number"));
+                            _("The read only disk number must be greater or equal to the  read write disk number"));
             goto cleanup;
         }
         for (it = 0; it < realReadWriteDisksPathSize; it++) {
@@ -6105,8 +6094,7 @@ vboxSnapshotGetReadOnlyDisks(virDomainSnapshotDef *def,
                                                                sdCount);
         if (!defdom->disks[diskCount]->dst) {
             vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Could not generate medium name for the disk "
-                              "at: port:%d, slot:%d"), devicePort, deviceSlot);
+                            _("Could not generate medium name for the disk at: port:%d, slot:%d"), devicePort, deviceSlot);
             ret = -1;
             goto cleanup;
         }
@@ -7391,8 +7379,7 @@ vboxDomainScreenshot(virDomainPtr dom,
 
     if (screen >= max_screen) {
         vboxReportError(VIR_ERR_INVALID_ARG,
-                        _("screen ID higher than monitor "
-                          "count (%d)"), max_screen);
+                        _("screen ID higher than monitor count (%d)"), max_screen);
         VBOX_RELEASE(machine);
         return NULL;
     }
@@ -7814,8 +7801,7 @@ vboxDomainSendKey(virDomainPtr dom,
                                                keyDownCodes[i]);
             if (keycode < 0) {
                 vboxReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("cannot translate keycode %u of %s codeset to"
-                                  " xt keycode"),
+                                _("cannot translate keycode %u of %s codeset to xt keycode"),
                                 keyDownCodes[i],
                                 virKeycodeSetTypeToString(codeset));
                 goto cleanup;
