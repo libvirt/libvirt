@@ -2120,32 +2120,33 @@ vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine, vboxIID *iid
     }
     VBOX_UTF8_FREE(valueDisplayUtf8);
 
-    if (guiPresent) {
-        if (guiDisplay) {
-            char *displayutf8;
-            displayutf8 = g_strdup_printf("DISPLAY=%s", guiDisplay);
-            VBOX_UTF8_TO_UTF16(displayutf8, &env);
-            VIR_FREE(displayutf8);
-            VIR_FREE(guiDisplay);
+    if (guiPresent || sdlPresent) {
+        const char *display = NULL;
+        const char *sessType = NULL;
+        char *displayutf8;
+
+        if (guiPresent) {
+            sessType = "gui";
+            display = guiDisplay;
+        } else {
+            sessType = "sdl";
+            display = sdlDisplay;
         }
 
-        VBOX_UTF8_TO_UTF16("gui", &sessionType);
-    }
-
-    if (sdlPresent) {
-        if (sdlDisplay) {
-            char *displayutf8;
-            displayutf8 = g_strdup_printf("DISPLAY=%s", sdlDisplay);
-            VBOX_UTF8_TO_UTF16(displayutf8, &env);
-            VIR_FREE(displayutf8);
-            VIR_FREE(sdlDisplay);
+        if (!display) {
+            /* Provide some sane default */
+            display = ":0";
         }
 
-        VBOX_UTF8_TO_UTF16("sdl", &sessionType);
-    }
+        displayutf8 = g_strdup_printf("DISPLAY=%s", display);
+        VBOX_UTF8_TO_UTF16(displayutf8, &env);
+        VIR_FREE(displayutf8);
+        VIR_FREE(guiDisplay);
 
-    if (vrdpPresent)
+        VBOX_UTF8_TO_UTF16(sessType, &sessionType);
+    } else if (vrdpPresent) {
         VBOX_UTF8_TO_UTF16("vrdp", &sessionType);
+    }
 
     rc = gVBoxAPI.UIMachine.LaunchVMProcess(data, machine, iid,
                                             sessionType, env,
