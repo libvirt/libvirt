@@ -486,6 +486,11 @@ static HRESULT _pfnGetException(PCVBOXXPCOM pFuncs, IErrorInfo **ppException)
     return pFuncs->pfnGetException(ppException);
 }
 
+static HRESULT _pfnClearException(PCVBOXXPCOM pFuncs)
+{
+    return pFuncs->pfnClearException();
+}
+
 static void _vboxIIDInitialize(vboxIID *iid)
 {
     memset(iid, 0, sizeof(vboxIID));
@@ -2224,6 +2229,7 @@ static vboxUniformedPFN _UPFN = {
     .Utf16ToUtf8 = _pfnUtf16ToUtf8,
     .Utf8ToUtf16 = _pfnUtf8ToUtf16,
     .GetException = _pfnGetException,
+    .ClearException = _pfnClearException,
 };
 
 static vboxUniformedIID _UIID = {

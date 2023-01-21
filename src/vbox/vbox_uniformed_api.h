@@ -110,6 +110,7 @@ typedef struct {
     int (*Utf16ToUtf8)(PCVBOXXPCOM pFuncs, const PRUnichar *pwszString, char **ppszString);
     int (*Utf8ToUtf16)(PCVBOXXPCOM pFuncs, const char *pszString, PRUnichar **ppwszString);
     HRESULT (*GetException)(PCVBOXXPCOM pFuncs, nsIException **ppException);
+    HRESULT (*ClearException)(PCVBOXXPCOM pFuncs);
 } vboxUniformedPFN;
 
 /* Functions for vboxIID */
