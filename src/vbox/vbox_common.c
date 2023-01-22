@@ -1749,7 +1749,6 @@ vboxAttachUSB(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
     rc = gVBoxAPI.UIMachine.GetUSBCommon(machine, &USBCommon);
     if (NS_FAILED(rc) || !USBCommon)
         return;
-    gVBoxAPI.UIUSBCommon.Enable(USBCommon);
 
     for (i = 0; i < def->nhostdevs; i++) {
         char *filtername = NULL;

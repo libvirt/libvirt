@@ -1680,13 +1680,6 @@ _vrdeServerSetNetAddress(struct _vboxDriver *data,
 }
 
 static nsresult
-_usbCommonEnable(IUSBCommon *USBCommon G_GNUC_UNUSED)
-{
-    /* We don't need to set usb enabled for vbox 4.3 and later */
-    return 0;
-}
-
-static nsresult
 _usbCommonGetEnabled(IUSBCommon *USBCommon G_GNUC_UNUSED, PRBool *enabled)
 {
     *enabled = true;
@@ -2414,7 +2407,6 @@ static vboxUniformedIVRDEServer _UIVRDEServer = {
 };
 
 static vboxUniformedIUSBCommon _UIUSBCommon = {
-    .Enable = _usbCommonEnable,
     .GetEnabled = _usbCommonGetEnabled,
     .CreateDeviceFilter = _usbCommonCreateDeviceFilter,
     .InsertDeviceFilter = _usbCommonInsertDeviceFilter,

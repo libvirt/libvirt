@@ -354,7 +354,6 @@ typedef struct {
 
 /* Common Functions for IUSBController and IUSBDeviceFilters */
 typedef struct {
-    nsresult (*Enable)(IUSBCommon *USBCommon);
     nsresult (*GetEnabled)(IUSBCommon *USBCommon, PRBool *enabled);
     nsresult (*CreateDeviceFilter)(IUSBCommon *USBCommon, PRUnichar *name,
                                    IUSBDeviceFilter **filter);
