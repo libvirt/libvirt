@@ -64,7 +64,7 @@ static struct _vboxDriver *vboxDriverObjNew(void);
 static __thread bool vboxDriverDisposed;
 
 static int
-vboxDomainDevicesDefPostParse(virDomainDeviceDef *dev G_GNUC_UNUSED,
+vboxDomainDevicesDefPostParse(virDomainDeviceDef *dev,
                               const virDomainDef *def G_GNUC_UNUSED,
                               unsigned int parseFlags G_GNUC_UNUSED,
                               void *opaque G_GNUC_UNUSED,
@@ -7578,7 +7578,7 @@ vboxNodeGetFreePages(virConnectPtr conn,
 }
 
 static int
-vboxNodeAllocPages(virConnectPtr conn G_GNUC_UNUSED,
+vboxNodeAllocPages(virConnectPtr conn,
                    unsigned int npages,
                    unsigned int *pageSizes,
                    unsigned long long *pageCounts,

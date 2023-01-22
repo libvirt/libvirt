@@ -495,9 +495,9 @@ static void _DEBUGIID(struct _vboxDriver *data, const char *msg, vboxIID *iid)
 }
 
 static void
-_vboxIIDToUtf8(struct _vboxDriver *data G_GNUC_UNUSED,
-               vboxIID *iid G_GNUC_UNUSED,
-               char **utf8 G_GNUC_UNUSED)
+_vboxIIDToUtf8(struct _vboxDriver *data,
+               vboxIID *iid,
+               char **utf8)
 {
     data->pFuncs->pfnUtf16ToUtf8(iid->value, utf8);
 }
@@ -543,7 +543,7 @@ static void* _handleSnapshotGetChildren(ISnapshot *snapshot)
     return snapshot->vtbl->GetChildren;
 }
 
-static void* _handleMediumGetChildren(IMedium *medium G_GNUC_UNUSED)
+static void* _handleMediumGetChildren(IMedium *medium)
 {
     return medium->vtbl->GetChildren;
 }
@@ -604,7 +604,7 @@ _virtualboxGetHost(IVirtualBox *vboxObj, IHost **host)
 }
 
 static nsresult
-_virtualboxCreateMachine(struct _vboxDriver *data, virDomainDef *def, IMachine **machine, char *uuidstr G_GNUC_UNUSED)
+_virtualboxCreateMachine(struct _vboxDriver *data, virDomainDef *def, IMachine **machine, char *uuidstr)
 {
     vboxIID iid = VBOX_IID_INITIALIZER;
     PRUnichar *machineNameUtf16 = NULL;
@@ -652,7 +652,7 @@ static nsresult
 _virtualboxFindHardDisk(IVirtualBox *vboxObj,
                         PRUnichar *location,
                         PRUint32 deviceType,
-                        PRUint32 accessMode G_GNUC_UNUSED,
+                        PRUint32 accessMode,
                         IMedium **medium)
 {
     return vboxObj->vtbl->OpenMedium(vboxObj, location, deviceType, accessMode,
@@ -727,7 +727,7 @@ _machineAttachDevice(IMachine *machine,
 static nsresult
 _machineCreateSharedFolder(IMachine *machine, PRUnichar *name,
                            PRUnichar *hostPath, PRBool writable,
-                           PRBool automount G_GNUC_UNUSED)
+                           PRBool automount)
 {
 #if VBOX_API_VERSION >= 6000000
     return machine->vtbl->CreateSharedFolder(machine, name, hostPath,
@@ -746,7 +746,7 @@ _machineRemoveSharedFolder(IMachine *machine, PRUnichar *name)
 
 static nsresult
 _machineLaunchVMProcess(struct _vboxDriver *data,
-                        IMachine *machine G_GNUC_UNUSED,
+                        IMachine *machine,
                         vboxIID *iid G_GNUC_UNUSED,
                         PRUnichar *sessionType, PRUnichar *env,
                         IProgress **progress)
@@ -762,10 +762,10 @@ _machineLaunchVMProcess(struct _vboxDriver *data,
 }
 
 static nsresult
-_machineUnregister(IMachine *machine G_GNUC_UNUSED,
-                   PRUint32 cleanupMode G_GNUC_UNUSED,
-                   PRUint32 *aMediaSize G_GNUC_UNUSED,
-                   IMedium ***aMedia G_GNUC_UNUSED)
+_machineUnregister(IMachine *machine,
+                   PRUint32 cleanupMode,
+                   PRUint32 *aMediaSize,
+                   IMedium ***aMedia)
 {
     return machine->vtbl->Unregister(machine, cleanupMode, aMediaSize, aMedia);
 }
@@ -826,7 +826,7 @@ _machineGetNetworkAdapter(IMachine *machine, PRUint32 slot, INetworkAdapter **ad
 }
 
 static nsresult
-_machineGetChipsetType(IMachine *machine G_GNUC_UNUSED, PRUint32 *chipsetType G_GNUC_UNUSED)
+_machineGetChipsetType(IMachine *machine, PRUint32 *chipsetType)
 {
     return machine->vtbl->GetChipsetType(machine, chipsetType);
 }
@@ -892,13 +892,13 @@ _machineSetMemorySize(IMachine *machine, PRUint32 memorySize)
 }
 
 static nsresult
-_machineGetCPUProperty(IMachine *machine, PRUint32 property G_GNUC_UNUSED, PRBool *value)
+_machineGetCPUProperty(IMachine *machine, PRUint32 property, PRBool *value)
 {
     return machine->vtbl->GetCPUProperty(machine, property, value);
 }
 
 static nsresult
-_machineSetCPUProperty(IMachine *machine, PRUint32 property G_GNUC_UNUSED, PRBool value)
+_machineSetCPUProperty(IMachine *machine, PRUint32 property, PRBool value)
 {
     return machine->vtbl->SetCPUProperty(machine, property, value);
 }
@@ -1229,7 +1229,7 @@ _systemPropertiesGetMaxBootPosition(ISystemProperties *systemProperties, PRUint3
 }
 
 static nsresult
-_systemPropertiesGetMaxNetworkAdapters(ISystemProperties *systemProperties, PRUint32 chipset G_GNUC_UNUSED,
+_systemPropertiesGetMaxNetworkAdapters(ISystemProperties *systemProperties, PRUint32 chipset,
                                        PRUint32 *maxNetworkAdapters)
 {
     return systemProperties->vtbl->GetMaxNetworkAdapters(systemProperties, chipset,
@@ -1652,7 +1652,7 @@ _vrdeServerSetAllowMultiConnection(IVRDEServer *VRDEServer, PRBool enabled)
 }
 
 static nsresult
-_vrdeServerGetNetAddress(struct _vboxDriver *data G_GNUC_UNUSED,
+_vrdeServerGetNetAddress(struct _vboxDriver *data,
                          IVRDEServer *VRDEServer, PRUnichar **netAddress)
 {
     PRUnichar *VRDENetAddressKey = NULL;
@@ -1666,7 +1666,7 @@ _vrdeServerGetNetAddress(struct _vboxDriver *data G_GNUC_UNUSED,
 }
 
 static nsresult
-_vrdeServerSetNetAddress(struct _vboxDriver *data G_GNUC_UNUSED,
+_vrdeServerSetNetAddress(struct _vboxDriver *data,
                          IVRDEServer *VRDEServer, PRUnichar *netAddress)
 {
     PRUnichar *netAddressKey = NULL;
@@ -1775,8 +1775,8 @@ static nsresult _mediumGetSize(IMedium *medium, PRUint64 *uSize)
     return rc;
 }
 
-static nsresult _mediumGetReadOnly(IMedium *medium G_GNUC_UNUSED,
-                                   PRBool *readOnly G_GNUC_UNUSED)
+static nsresult _mediumGetReadOnly(IMedium *medium,
+                                   PRBool *readOnly)
 {
     return medium->vtbl->GetReadOnly(medium, readOnly);
 }
@@ -1815,18 +1815,18 @@ static nsresult _mediumClose(IMedium *medium)
     return medium->vtbl->Close(medium);
 }
 
-static nsresult _mediumSetType(IMedium *medium G_GNUC_UNUSED,
-                               PRUint32 type G_GNUC_UNUSED)
+static nsresult _mediumSetType(IMedium *medium,
+                               PRUint32 type)
 {
     return medium->vtbl->SetType(medium, type);
 }
 
 static nsresult
-_mediumCreateDiffStorage(IMedium *medium G_GNUC_UNUSED,
-                         IMedium *target G_GNUC_UNUSED,
-                         PRUint32 variantSize G_GNUC_UNUSED,
-                         PRUint32 *variant G_GNUC_UNUSED,
-                         IProgress **progress G_GNUC_UNUSED)
+_mediumCreateDiffStorage(IMedium *medium,
+                         IMedium *target,
+                         PRUint32 variantSize,
+                         PRUint32 *variant,
+                         IProgress **progress)
 {
     return medium->vtbl->CreateDiffStorage(medium, target, variantSize, variant, progress);
 }
@@ -1865,8 +1865,8 @@ _mediumAttachmentGetController(IMediumAttachment *mediumAttachment,
 }
 
 static nsresult
-_mediumAttachmentGetType(IMediumAttachment *mediumAttachment G_GNUC_UNUSED,
-                         PRUint32 *type G_GNUC_UNUSED)
+_mediumAttachmentGetType(IMediumAttachment *mediumAttachment,
+                         PRUint32 *type)
 {
     return mediumAttachment->vtbl->GetType(mediumAttachment, type);
 }
@@ -1962,13 +1962,13 @@ _snapshotGetOnline(ISnapshot *snapshot, PRBool *online)
 }
 
 static nsresult
-_displayGetScreenResolution(IDisplay *display G_GNUC_UNUSED,
-                            PRUint32 screenId G_GNUC_UNUSED,
-                            PRUint32 *width G_GNUC_UNUSED,
-                            PRUint32 *height G_GNUC_UNUSED,
-                            PRUint32 *bitsPerPixel G_GNUC_UNUSED,
-                            PRInt32 *xOrigin G_GNUC_UNUSED,
-                            PRInt32 *yOrigin G_GNUC_UNUSED)
+_displayGetScreenResolution(IDisplay *display,
+                            PRUint32 screenId,
+                            PRUint32 *width,
+                            PRUint32 *height,
+                            PRUint32 *bitsPerPixel,
+                            PRInt32 *xOrigin,
+                            PRInt32 *yOrigin)
 {
     PRUint32 gms;
 
@@ -2024,9 +2024,9 @@ _hostCreateHostOnlyNetworkInterface(struct _vboxDriver *data G_GNUC_UNUSED,
 }
 
 static nsresult
-_hostRemoveHostOnlyNetworkInterface(IHost *host G_GNUC_UNUSED,
-                                    vboxIID *iid G_GNUC_UNUSED,
-                                    IProgress **progress G_GNUC_UNUSED)
+_hostRemoveHostOnlyNetworkInterface(IHost *host,
+                                    vboxIID *iid,
+                                    IProgress **progress)
 {
     return host->vtbl->RemoveHostOnlyNetworkInterface(host, iid->value, progress);
 }
