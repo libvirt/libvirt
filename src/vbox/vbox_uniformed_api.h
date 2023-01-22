@@ -228,7 +228,7 @@ typedef struct {
 /* Functions for ISession */
 typedef struct {
     nsresult (*Open)(struct _vboxDriver *driver, IMachine *machine);
-    nsresult (*OpenExisting)(struct _vboxDriver *driver, vboxIID *iid, IMachine *machine);
+    nsresult (*OpenExisting)(struct _vboxDriver *driver, IMachine *machine);
     nsresult (*GetConsole)(ISession *session, IConsole **console);
     nsresult (*GetMachine)(ISession *session, IMachine **machine);
     nsresult (*Close)(ISession *session);

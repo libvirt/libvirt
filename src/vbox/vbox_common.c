@@ -570,7 +570,7 @@ vboxDomainSave(virDomainPtr dom, const char *path G_GNUC_UNUSED)
     if (openSessionForMachine(data, dom->uuid, &iid, &machine) < 0)
         goto cleanup;
 
-    rc = gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+    rc = gVBoxAPI.UISession.OpenExisting(data, machine);
     if (NS_FAILED(rc))
         goto cleanup;
 
@@ -2436,7 +2436,7 @@ static int vboxDomainSuspend(virDomainPtr dom)
 
     if (gVBoxAPI.machineStateChecker.Running(state)) {
         /* set state pause */
-        gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+        gVBoxAPI.UISession.OpenExisting(data, machine);
         gVBoxAPI.UISession.GetConsole(data->vboxSession, &console);
         if (console) {
             gVBoxAPI.UIConsole.Pause(console);
@@ -2487,7 +2487,7 @@ static int vboxDomainResume(virDomainPtr dom)
 
     if (gVBoxAPI.machineStateChecker.Paused(state)) {
         /* resume the machine here */
-        gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+        gVBoxAPI.UISession.OpenExisting(data, machine);
         gVBoxAPI.UISession.GetConsole(data->vboxSession, &console);
         if (console) {
             gVBoxAPI.UIConsole.Resume(console);
@@ -2548,7 +2548,7 @@ static int vboxDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+    gVBoxAPI.UISession.OpenExisting(data, machine);
     gVBoxAPI.UISession.GetConsole(data->vboxSession, &console);
     if (console) {
         gVBoxAPI.UIConsole.PowerButton(console);
@@ -2596,7 +2596,7 @@ static int vboxDomainReboot(virDomainPtr dom, unsigned int flags)
     gVBoxAPI.UIMachine.GetState(machine, &state);
 
     if (gVBoxAPI.machineStateChecker.Running(state)) {
-        gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+        gVBoxAPI.UISession.OpenExisting(data, machine);
         gVBoxAPI.UISession.GetConsole(data->vboxSession, &console);
         if (console) {
             gVBoxAPI.UIConsole.Reset(console);
@@ -2649,7 +2649,7 @@ static int vboxDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+    gVBoxAPI.UISession.OpenExisting(data, machine);
     gVBoxAPI.UISession.GetConsole(data->vboxSession, &console);
     if (console) {
         gVBoxAPI.UIConsole.PowerDown(console);
@@ -4234,7 +4234,7 @@ vboxDomainAttachDeviceImpl(virDomainPtr dom,
 
     if (gVBoxAPI.machineStateChecker.Running(state) ||
         gVBoxAPI.machineStateChecker.Paused(state)) {
-        rc = gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+        rc = gVBoxAPI.UISession.OpenExisting(data, machine);
     } else {
         rc = gVBoxAPI.UISession.Open(data, machine);
     }
@@ -4353,7 +4353,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
 
     if (gVBoxAPI.machineStateChecker.Running(state) ||
         gVBoxAPI.machineStateChecker.Paused(state)) {
-        rc = gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+        rc = gVBoxAPI.UISession.OpenExisting(data, machine);
     } else {
         rc = gVBoxAPI.UISession.Open(data, machine);
     }
@@ -5404,7 +5404,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     }
 
     if (gVBoxAPI.machineStateChecker.Online(state)) {
-        rc = gVBoxAPI.UISession.OpenExisting(data, &domiid, machine);
+        rc = gVBoxAPI.UISession.OpenExisting(data, machine);
     } else {
         rc = gVBoxAPI.UISession.Open(data, machine);
     }
@@ -7305,7 +7305,7 @@ vboxDomainScreenshot(virDomainPtr dom,
     }
 
 
-    rc = gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+    rc = gVBoxAPI.UISession.OpenExisting(data, machine);
     if (NS_SUCCEEDED(rc)) {
         rc = gVBoxAPI.UISession.GetConsole(data->vboxSession, &console);
         if (NS_SUCCEEDED(rc) && console) {
@@ -7722,7 +7722,7 @@ vboxDomainSendKey(virDomainPtr dom,
     if (openSessionForMachine(data, dom->uuid, &iid, &machine) < 0)
         goto cleanup;
 
-    rc = gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+    rc = gVBoxAPI.UISession.OpenExisting(data, machine);
 
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
