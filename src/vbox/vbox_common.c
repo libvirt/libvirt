@@ -1939,7 +1939,7 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
      * you can make changes to the machine setting
      */
     gVBoxAPI.UIMachine.GetId(machine, &mchiid);
-    gVBoxAPI.UISession.Open(data, &mchiid, machine);
+    gVBoxAPI.UISession.Open(data, machine);
     gVBoxAPI.UISession.GetMachine(data->vboxSession, &machine);
 
     vboxSetBootDeviceOrder(def, data, machine);
@@ -2712,7 +2712,7 @@ static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory)
         goto cleanup;
     }
 
-    rc = gVBoxAPI.UISession.Open(data, &iid, machine);
+    rc = gVBoxAPI.UISession.Open(data, machine);
     if (NS_FAILED(rc))
         goto cleanup;
 
@@ -2872,7 +2872,7 @@ static int vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     if (openSessionForMachine(data, dom->uuid, &iid, &machine) < 0)
         return -1;
 
-    rc = gVBoxAPI.UISession.Open(data, &iid, machine);
+    rc = gVBoxAPI.UISession.Open(data, machine);
     if (NS_SUCCEEDED(rc)) {
         gVBoxAPI.UISession.GetMachine(data->vboxSession, &machine);
         if (machine) {
@@ -4236,7 +4236,7 @@ vboxDomainAttachDeviceImpl(virDomainPtr dom,
         gVBoxAPI.machineStateChecker.Paused(state)) {
         rc = gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
     } else {
-        rc = gVBoxAPI.UISession.Open(data, &iid, machine);
+        rc = gVBoxAPI.UISession.Open(data, machine);
     }
 
     if (NS_FAILED(rc))
@@ -4355,7 +4355,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
         gVBoxAPI.machineStateChecker.Paused(state)) {
         rc = gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
     } else {
-        rc = gVBoxAPI.UISession.Open(data, &iid, machine);
+        rc = gVBoxAPI.UISession.Open(data, machine);
     }
 
     if (NS_FAILED(rc))
@@ -5406,7 +5406,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     if (gVBoxAPI.machineStateChecker.Online(state)) {
         rc = gVBoxAPI.UISession.OpenExisting(data, &domiid, machine);
     } else {
-        rc = gVBoxAPI.UISession.Open(data, &domiid, machine);
+        rc = gVBoxAPI.UISession.Open(data, machine);
     }
 
     if (NS_SUCCEEDED(rc))
@@ -7225,7 +7225,7 @@ static int vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    rc = gVBoxAPI.UISession.Open(data, &domiid, machine);
+    rc = gVBoxAPI.UISession.Open(data, machine);
     if (NS_SUCCEEDED(rc))
         rc = gVBoxAPI.UISession.GetConsole(data->vboxSession, &console);
     if (NS_FAILED(rc)) {

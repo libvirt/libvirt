@@ -573,7 +573,7 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
             break;
         }
 
-        if (NS_FAILED(gVBoxAPI.UISession.Open(data, &machineId, machine))) {
+        if (NS_FAILED(gVBoxAPI.UISession.Open(data, machine))) {
             vboxIIDUnalloc(&machineId);
             continue;
         }

@@ -1061,7 +1061,7 @@ _machineSaveSettings(IMachine *machine)
 }
 
 static nsresult
-_sessionOpen(struct _vboxDriver *data, vboxIID *iid G_GNUC_UNUSED, IMachine *machine)
+_sessionOpen(struct _vboxDriver *data, IMachine *machine)
 {
     return machine->vtbl->LockMachine(machine, data->vboxSession, LockType_Write);
 }
