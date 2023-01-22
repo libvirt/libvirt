@@ -482,7 +482,7 @@ typedef struct {
     nsresult (*SetConfiguration)(IDHCPServer *dhcpServer, PRUnichar *IPAddress,
                                  PRUnichar *networkMask, PRUnichar *FromIPAddress,
                                  PRUnichar *ToIPAddress);
-    nsresult (*Start)(IDHCPServer *dhcpServer, PRUnichar *networkName,
+    nsresult (*Start)(IDHCPServer *dhcpServer,
                       PRUnichar *trunkName, PRUnichar *trunkType);
     nsresult (*Stop)(IDHCPServer *dhcpServer);
 } vboxUniformedIDHCPServer;

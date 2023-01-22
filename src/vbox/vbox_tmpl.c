@@ -2088,7 +2088,7 @@ _dhcpServerSetConfiguration(IDHCPServer *dhcpServer, PRUnichar *IPAddress,
 }
 
 static nsresult
-_dhcpServerStart(IDHCPServer *dhcpServer, PRUnichar *networkName G_GNUC_UNUSED,
+_dhcpServerStart(IDHCPServer *dhcpServer,
                  PRUnichar *trunkName, PRUnichar *trunkType)
 {
     return dhcpServer->vtbl->Start(dhcpServer,
