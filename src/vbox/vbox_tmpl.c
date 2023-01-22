@@ -747,7 +747,6 @@ _machineRemoveSharedFolder(IMachine *machine, PRUnichar *name)
 static nsresult
 _machineLaunchVMProcess(struct _vboxDriver *data,
                         IMachine *machine,
-                        vboxIID *iid G_GNUC_UNUSED,
                         PRUnichar *sessionType, PRUnichar *env,
                         IProgress **progress)
 {

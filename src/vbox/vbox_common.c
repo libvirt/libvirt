@@ -2046,7 +2046,7 @@ static int vboxDomainUndefine(virDomainPtr dom)
 }
 
 static int
-vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine, vboxIID *iid)
+vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine)
 {
     struct _vboxDriver *data = dom->conn->privateData;
     int vrdpPresent = 0;
@@ -2148,7 +2148,7 @@ vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine, vboxIID *iid
         VBOX_UTF8_TO_UTF16("vrdp", &sessionType);
     }
 
-    rc = gVBoxAPI.UIMachine.LaunchVMProcess(data, machine, iid,
+    rc = gVBoxAPI.UIMachine.LaunchVMProcess(data, machine,
                                             sessionType, env,
                                             &progress);
 
@@ -2239,7 +2239,7 @@ static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
                 gVBoxAPI.UIMachine.GetState(machine, &state);
 
                 if (gVBoxAPI.machineStateChecker.NotStart(state)) {
-                    ret = vboxStartMachine(dom, i, machine, &iid);
+                    ret = vboxStartMachine(dom, i, machine);
                 } else {
                     virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                    _("machine is not in "

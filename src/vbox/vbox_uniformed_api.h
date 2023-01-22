@@ -182,7 +182,6 @@ typedef struct {
                                    PRBool automount);
     nsresult (*RemoveSharedFolder)(IMachine *machine, PRUnichar *name);
     nsresult (*LaunchVMProcess)(struct _vboxDriver *driver, IMachine *machine,
-                                vboxIID *iid,
                                 PRUnichar *sessionType, PRUnichar *env,
                                 IProgress **progress);
     nsresult (*Unregister)(IMachine *machine, PRUint32 cleanupMode,
