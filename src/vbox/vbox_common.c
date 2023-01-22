@@ -2947,7 +2947,6 @@ static void
 vboxHostDeviceGetXMLDesc(struct _vboxDriver *data, virDomainDef *def, IMachine *machine)
 {
     IUSBCommon *USBCommon = NULL;
-    PRBool enabled = PR_FALSE;
     vboxArray deviceFilters = VBOX_ARRAY_INITIALIZER;
     size_t i;
     PRUint32 USBFilterCount = 0;
@@ -2957,10 +2956,6 @@ vboxHostDeviceGetXMLDesc(struct _vboxDriver *data, virDomainDef *def, IMachine *
     gVBoxAPI.UIMachine.GetUSBCommon(machine, &USBCommon);
     if (!USBCommon)
         return;
-
-    gVBoxAPI.UIUSBCommon.GetEnabled(USBCommon, &enabled);
-    if (!enabled)
-        goto release_controller;
 
     gVBoxAPI.UArray.vboxArrayGet(&deviceFilters, USBCommon,
                                  gVBoxAPI.UArray.handleUSBGetDeviceFilters(USBCommon));
@@ -3036,7 +3031,6 @@ vboxHostDeviceGetXMLDesc(struct _vboxDriver *data, virDomainDef *def, IMachine *
 
  release_filters:
     gVBoxAPI.UArray.vboxArrayRelease(&deviceFilters);
- release_controller:
     VBOX_RELEASE(USBCommon);
     return;
 

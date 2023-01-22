@@ -1680,13 +1680,6 @@ _vrdeServerSetNetAddress(struct _vboxDriver *data,
 }
 
 static nsresult
-_usbCommonGetEnabled(IUSBCommon *USBCommon G_GNUC_UNUSED, PRBool *enabled)
-{
-    *enabled = true;
-    return 0;
-}
-
-static nsresult
 _usbCommonCreateDeviceFilter(IUSBCommon *USBCommon, PRUnichar *name,
                              IUSBDeviceFilter **filter)
 {
@@ -2407,7 +2400,6 @@ static vboxUniformedIVRDEServer _UIVRDEServer = {
 };
 
 static vboxUniformedIUSBCommon _UIUSBCommon = {
-    .GetEnabled = _usbCommonGetEnabled,
     .CreateDeviceFilter = _usbCommonCreateDeviceFilter,
     .InsertDeviceFilter = _usbCommonInsertDeviceFilter,
 };
