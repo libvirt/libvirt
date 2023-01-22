@@ -453,8 +453,7 @@ typedef struct {
                                              IHostNetworkInterface **networkInterface);
     nsresult (*FindHostNetworkInterfaceByName)(IHost *host, PRUnichar *name,
                                                IHostNetworkInterface **networkInterface);
-    nsresult (*CreateHostOnlyNetworkInterface)(struct _vboxDriver *driver,
-                                               IHost *host, char *name,
+    nsresult (*CreateHostOnlyNetworkInterface)(IHost *host,
                                                IHostNetworkInterface **networkInterface);
     nsresult (*RemoveHostOnlyNetworkInterface)(IHost *host, vboxIID *iid,
                                                IProgress **progress);

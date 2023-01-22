@@ -2004,8 +2004,7 @@ _hostFindHostNetworkInterfaceByName(IHost *host, PRUnichar *name,
 }
 
 static nsresult
-_hostCreateHostOnlyNetworkInterface(struct _vboxDriver *data G_GNUC_UNUSED,
-                                    IHost *host, char *name G_GNUC_UNUSED,
+_hostCreateHostOnlyNetworkInterface(IHost *host,
                                     IHostNetworkInterface **networkInterface)
 {
     nsresult rc = -1;

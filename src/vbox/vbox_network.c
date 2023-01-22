@@ -429,8 +429,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start,
      * NULL. (We can't assign a new name to hostonly network, only
      * take the given name, say vboxnet0)
      */
-    gVBoxAPI.UIHost.CreateHostOnlyNetworkInterface(data, host, def->name,
-                                                   &networkInterface);
+    gVBoxAPI.UIHost.CreateHostOnlyNetworkInterface(host, &networkInterface);
 
     if (!networkInterface)
         goto cleanup;
