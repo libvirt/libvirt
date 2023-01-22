@@ -4197,9 +4197,9 @@ static int vboxConnectNumOfDefinedDomains(virConnectPtr conn)
     return ret;
 }
 
-static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
-                                      const char *xml,
-                                      int mediaChangeOnly G_GNUC_UNUSED)
+static int
+vboxDomainAttachDeviceImpl(virDomainPtr dom,
+                           const char *xml)
 {
     struct _vboxDriver *data = dom->conn->privateData;
     IMachine *machine = NULL;
@@ -4290,7 +4290,7 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
 
 static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml)
 {
-    return vboxDomainAttachDeviceImpl(dom, xml, 0);
+    return vboxDomainAttachDeviceImpl(dom, xml);
 }
 
 static int vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
@@ -4298,7 +4298,7 @@ static int vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 {
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE, -1);
 
-    return vboxDomainAttachDeviceImpl(dom, xml, 0);
+    return vboxDomainAttachDeviceImpl(dom, xml);
 }
 
 static int vboxDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
@@ -4314,7 +4314,7 @@ static int vboxDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
         return -1;
     }
 
-    return vboxDomainAttachDeviceImpl(dom, xml, 1);
+    return vboxDomainAttachDeviceImpl(dom, xml);
 }
 
 static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
