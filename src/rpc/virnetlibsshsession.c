@@ -846,16 +846,17 @@ virNetLibsshSessionAuthAddPasswordAuth(virNetLibsshSession *sess,
     int ret;
     virNetLibsshAuthMethod *auth;
 
+    virObjectLock(sess);
+
     if (uri) {
         VIR_FREE(sess->authPath);
 
         if (virAuthGetConfigFilePathURI(uri, &sess->authPath) < 0) {
-            ret = -1;
-            goto cleanup;
+            virObjectUnlock(sess);
+            return -1;
         }
     }
 
-    virObjectLock(sess);
 
     if (!(auth = virNetLibsshSessionAuthMethodNew(sess))) {
         ret = -1;
