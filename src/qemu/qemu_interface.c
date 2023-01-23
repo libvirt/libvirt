@@ -443,6 +443,9 @@ qemuInterfaceEthernetConnect(virDomainDef *def,
                            _("target managed='no' but specified dev doesn't exist"));
             goto cleanup;
         }
+
+        tap_create_flags |= VIR_NETDEV_TAP_CREATE_ALLOW_EXISTING;
+
         if (virNetDevMacVLanIsMacvtap(net->ifname)) {
             auditdev = net->ifname;
             if (virNetDevMacVLanTapOpen(net->ifname, tapfd, tapfdSize) < 0)
@@ -460,8 +463,6 @@ qemuInterfaceEthernetConnect(virDomainDef *def,
 
         if (!net->ifname)
             template_ifname = true;
-
-        tap_create_flags |= VIR_NETDEV_TAP_CREATE_ALLOW_EXISTING;
 
         if (virNetDevTapCreate(&net->ifname, tunpath, tapfd, tapfdSize,
                                tap_create_flags) < 0) {
