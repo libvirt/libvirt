@@ -15,7 +15,18 @@ v9.1.0 (unreleased)
 
 * **Removed features**
 
+  * vbox: removed support for version 5.2 and 6.0 APIs
+
+    Libvirt no longer supports use of VirtualBox 5.2 and 6.0 since these
+    versions reached their end of life on 2020/07.
+
 * **New features**
+
+  * vbox: added support for version 7.0 API
+
+    Libvirt can now support use of the VirtualBox 7.0, This is compile tested
+    only, so we are looking for feedback from users on how well it works in
+    practice.
 
 * **Improvements**
 
