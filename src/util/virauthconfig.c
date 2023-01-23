@@ -41,9 +41,7 @@ virAuthConfigNew(const char *path)
     g_autoptr(virAuthConfig) auth = g_new0(virAuthConfig, 1);
 
     auth->path = g_strdup(path);
-
-    if (!(auth->keyfile = g_key_file_new()))
-        return NULL;
+    auth->keyfile = g_key_file_new();
 
     if (!g_key_file_load_from_file(auth->keyfile, path, 0, NULL))
         return NULL;
@@ -60,9 +58,7 @@ virAuthConfigNewData(const char *path,
     g_autoptr(virAuthConfig) auth = g_new0(virAuthConfig, 1);
 
     auth->path = g_strdup(path);
-
-    if (!(auth->keyfile = g_key_file_new()))
-        return NULL;
+    auth->keyfile = g_key_file_new();
 
     if (!g_key_file_load_from_data(auth->keyfile, data, len, 0, NULL))
         return NULL;
