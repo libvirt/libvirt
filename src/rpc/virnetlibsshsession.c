@@ -843,7 +843,6 @@ int
 virNetLibsshSessionAuthAddPasswordAuth(virNetLibsshSession *sess,
                                        virURI *uri)
 {
-    int ret;
     virNetLibsshAuthMethod *auth;
 
     virObjectLock(sess);
@@ -857,43 +856,27 @@ virNetLibsshSessionAuthAddPasswordAuth(virNetLibsshSession *sess,
         }
     }
 
-
-    if (!(auth = virNetLibsshSessionAuthMethodNew(sess))) {
-        ret = -1;
-        goto cleanup;
-    }
-
+    auth = virNetLibsshSessionAuthMethodNew(sess);
     auth->method = VIR_NET_LIBSSH_AUTH_PASSWORD;
     auth->ssh_flags = SSH_AUTH_METHOD_PASSWORD;
 
-    ret = 0;
-
- cleanup:
     virObjectUnlock(sess);
-    return ret;
+    return 0;
 }
 
 int
 virNetLibsshSessionAuthAddAgentAuth(virNetLibsshSession *sess)
 {
-    int ret;
     virNetLibsshAuthMethod *auth;
 
     virObjectLock(sess);
 
-    if (!(auth = virNetLibsshSessionAuthMethodNew(sess))) {
-        ret = -1;
-        goto cleanup;
-    }
-
+    auth = virNetLibsshSessionAuthMethodNew(sess);
     auth->method = VIR_NET_LIBSSH_AUTH_AGENT;
     auth->ssh_flags = SSH_AUTH_METHOD_PUBLICKEY;
 
-    ret = 0;
-
- cleanup:
     virObjectUnlock(sess);
-    return ret;
+    return 0;
 }
 
 int
@@ -910,11 +893,7 @@ virNetLibsshSessionAuthAddPrivKeyAuth(virNetLibsshSession *sess,
 
     virObjectLock(sess);
 
-    if (!(auth = virNetLibsshSessionAuthMethodNew(sess))) {
-        virObjectUnlock(sess);
-        return -1;
-    }
-
+    auth = virNetLibsshSessionAuthMethodNew(sess);
     auth->filename = g_strdup(keyfile);
     auth->method = VIR_NET_LIBSSH_AUTH_PRIVKEY;
     auth->ssh_flags = SSH_AUTH_METHOD_PUBLICKEY;
@@ -927,26 +906,18 @@ int
 virNetLibsshSessionAuthAddKeyboardAuth(virNetLibsshSession *sess,
                                        int tries)
 {
-    int ret;
     virNetLibsshAuthMethod *auth;
 
     virObjectLock(sess);
 
-    if (!(auth = virNetLibsshSessionAuthMethodNew(sess))) {
-        ret = -1;
-        goto cleanup;
-    }
+    auth = virNetLibsshSessionAuthMethodNew(sess);
 
     auth->tries = tries;
     auth->method = VIR_NET_LIBSSH_AUTH_KEYBOARD_INTERACTIVE;
     auth->ssh_flags = SSH_AUTH_METHOD_INTERACTIVE;
 
-    ret = 0;
-
- cleanup:
     virObjectUnlock(sess);
-    return ret;
-
+    return 0;
 }
 
 void
