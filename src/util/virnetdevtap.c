@@ -156,7 +156,7 @@ virNetDevTapGetRealDeviceName(char *ifname G_GNUC_UNUSED)
  *   VIR_NETDEV_TAP_CREATE_PERSIST
  *     - The device will persist after the file descriptor is closed
  *   VIR_NETDEV_TAP_CREATE_ALLOW_EXISTING
- *     - The device creation fails if @ifname already exists
+ *     - The device creation does not fail if @ifname already exists
  *
  * Creates a tap interface. The caller must use virNetDevTapDelete to
  * remove a persistent TAP device when it is no longer needed. In case
