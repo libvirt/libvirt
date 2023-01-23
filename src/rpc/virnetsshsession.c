@@ -970,14 +970,16 @@ virNetSSHSessionAuthAddPasswordAuth(virNetSSHSession *sess,
 {
     virNetSSHAuthMethod *auth;
 
+    virObjectLock(sess);
+
     if (uri) {
         VIR_FREE(sess->authPath);
 
-        if (virAuthGetConfigFilePathURI(uri, &sess->authPath) < 0)
-            goto error;
+        if (virAuthGetConfigFilePathURI(uri, &sess->authPath) < 0) {
+            virObjectUnlock(sess);
+            return -1;
+        }
     }
-
-    virObjectLock(sess);
 
     if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
         goto error;
