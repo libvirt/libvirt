@@ -981,17 +981,11 @@ virNetSSHSessionAuthAddPasswordAuth(virNetSSHSession *sess,
         }
     }
 
-    if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
-        goto error;
-
+    auth = virNetSSHSessionAuthMethodNew(sess);
     auth->method = VIR_NET_SSH_AUTH_PASSWORD;
 
     virObjectUnlock(sess);
     return 0;
-
- error:
-    virObjectUnlock(sess);
-    return -1;
 }
 
 int
@@ -1001,17 +995,11 @@ virNetSSHSessionAuthAddAgentAuth(virNetSSHSession *sess)
 
     virObjectLock(sess);
 
-    if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
-        goto error;
-
+    auth = virNetSSHSessionAuthMethodNew(sess);
     auth->method = VIR_NET_SSH_AUTH_AGENT;
 
     virObjectUnlock(sess);
     return 0;
-
- error:
-    virObjectUnlock(sess);
-    return -1;
 }
 
 int
@@ -1028,11 +1016,7 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSession *sess,
 
     virObjectLock(sess);
 
-    if (!(auth = virNetSSHSessionAuthMethodNew(sess))) {
-        virObjectUnlock(sess);
-        return -1;
-    }
-
+    auth = virNetSSHSessionAuthMethodNew(sess);
     auth->filename = g_strdup(keyfile);
     auth->method = VIR_NET_SSH_AUTH_PRIVKEY;
 
@@ -1048,19 +1032,12 @@ virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSession *sess,
 
     virObjectLock(sess);
 
-    if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
-        goto error;
-
+    auth = virNetSSHSessionAuthMethodNew(sess);
     auth->tries = tries;
     auth->method = VIR_NET_SSH_AUTH_KEYBOARD_INTERACTIVE;
 
     virObjectUnlock(sess);
     return 0;
-
- error:
-    virObjectUnlock(sess);
-    return -1;
-
 }
 
 void
