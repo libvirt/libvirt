@@ -1454,6 +1454,7 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
         goto cleanup;
 
     def->os.firmware = VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
+    VIR_FREE(def->os.firmwareFeatures);
 
     ret = 0;
  cleanup:
