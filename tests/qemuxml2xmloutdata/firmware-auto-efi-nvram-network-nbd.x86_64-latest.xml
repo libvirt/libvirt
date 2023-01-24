@@ -4,8 +4,9 @@
   <memory unit='KiB'>1048576</memory>
   <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu placement='static'>1</vcpu>
-  <os firmware='efi'>
+  <os>
     <type arch='x86_64' machine='pc-i440fx-4.0'>hvm</type>
+    <loader readonly='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
     <nvram type='network'>
       <source protocol='nbd' name='bar'>
         <host name='example.org' port='6000'/>

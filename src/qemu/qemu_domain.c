@@ -27,6 +27,7 @@
 #include "qemu_cgroup.h"
 #include "qemu_command.h"
 #include "qemu_capabilities.h"
+#include "qemu_firmware.h"
 #include "qemu_hostdev.h"
 #include "qemu_migration_params.h"
 #include "qemu_security.h"
@@ -4427,21 +4428,42 @@ qemuDomainRecheckInternalPaths(virDomainDef *def,
 
 static int
 qemuDomainDefBootPostParse(virDomainDef *def,
-                           virQEMUDriverConfig *cfg)
+                           virQEMUDriver *driver,
+                           unsigned int parseFlags)
 {
+    bool abiUpdate = !!(parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE);
+
     if (def->os.bootloader || def->os.bootloaderArgs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("bootloader is not supported by QEMU"));
         return -1;
     }
 
-    if (virDomainDefHasOldStyleROUEFI(def) &&
-        !def->os.loader->nvram &&
-        def->os.loader->stateless != VIR_TRISTATE_BOOL_YES) {
-        def->os.loader->nvram = virStorageSourceNew();
-        def->os.loader->nvram->type = VIR_STORAGE_TYPE_FILE;
-        def->os.loader->nvram->format = VIR_STORAGE_FILE_RAW;
-        qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram->path);
+    /* Firmware selection can fail for a number of reasons, but the
+     * most likely one is that the requested configuration contains
+     * mistakes or includes constraints that are impossible to
+     * satisfy on the current system.
+     *
+     * If that happens, we have to react differently based on the
+     * situation: if we're defining a new domain or updating its ABI,
+     * we should let the user know immediately so that they can
+     * change the requested configuration, hopefully into one that we
+     * can work with; if we're loading the configuration of an
+     * existing domain from disk, however, we absolutely cannot error
+     * out here, or the domain will disappear.
+     *
+     * To handle the second case gracefully, we clear any reported
+     * errors and continue as if nothing had happened. When it's time
+     * to start the domain, qemuFirmwareFillDomain() will be run
+     * again, fail in the same way, and at that point we'll have a
+     * chance to inform the user of any issues */
+    if (qemuFirmwareFillDomain(driver, def) < 0) {
+        if (abiUpdate) {
+            return -1;
+        } else {
+            virResetLastError();
+            return 0;
+        }
     }
 
     return 0;
@@ -4818,7 +4840,7 @@ qemuDomainDefPostParse(virDomainDef *def,
     if (qemuDomainDefMachinePostParse(def, qemuCaps) < 0)
         return -1;
 
-    if (qemuDomainDefBootPostParse(def, cfg) < 0)
+    if (qemuDomainDefBootPostParse(def, driver, parseFlags) < 0)
         return -1;
 
     if (qemuDomainDefAddDefaultDevices(driver, def, qemuCaps) < 0)

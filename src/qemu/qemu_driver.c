@@ -6646,8 +6646,6 @@ qemuDomainUndefineFlags(virDomainPtr dom,
     if (vm->def->os.loader && vm->def->os.loader->nvram &&
         virStorageSourceIsLocalStorage(vm->def->os.loader->nvram)) {
         nvram_path = g_strdup(vm->def->os.loader->nvram->path);
-    } else if (vm->def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_EFI) {
-        qemuDomainNVRAMPathFormat(cfg, vm->def, &nvram_path);
     }
 
     if (nvram_path && virFileExists(nvram_path)) {

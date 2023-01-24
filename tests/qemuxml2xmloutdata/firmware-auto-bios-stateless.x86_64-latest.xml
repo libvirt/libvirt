@@ -4,9 +4,9 @@
   <memory unit='KiB'>1048576</memory>
   <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu placement='static'>1</vcpu>
-  <os firmware='bios'>
+  <os>
     <type arch='x86_64' machine='pc-q35-4.0'>hvm</type>
-    <loader stateless='yes'/>
+    <loader type='rom' stateless='yes'>/usr/share/seabios/bios-256k.bin</loader>
     <boot dev='hd'/>
   </os>
   <features>

@@ -26,6 +26,7 @@
 #include "qemu_capabilities.h"
 #include "qemu_domain.h"
 #include "qemu_process.h"
+#include "domain_validate.h"
 #include "virarch.h"
 #include "virjson.h"
 #include "virlog.h"
@@ -1176,11 +1177,10 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
 
 
 static int
-qemuFirmwareEnableFeatures(virQEMUDriver *driver,
-                           virDomainDef *def,
-                           const qemuFirmware *fw)
+qemuFirmwareEnableFeaturesModern(virQEMUDriverConfig *cfg,
+                                 virDomainDef *def,
+                                 const qemuFirmware *fw)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const qemuFirmwareMappingFlash *flash = &fw->mapping.data.flash;
     const qemuFirmwareMappingKernel *kernel = &fw->mapping.data.kernel;
     const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;
@@ -1216,10 +1216,8 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
             }
         }
 
-        VIR_DEBUG("decided on firmware '%s' template '%s' NVRAM '%s'",
-                  loader->path,
-                  NULLSTR(loader->nvramTemplate),
-                  NULLSTR(loader->nvram ? loader->nvram->path : NULL));
+        VIR_DEBUG("decided on firmware '%s' template '%s'",
+                  loader->path, NULLSTR(loader->nvramTemplate));
         break;
 
     case QEMU_FIRMWARE_DEVICE_KERNEL:
@@ -1360,57 +1358,98 @@ qemuFirmwareFetchParsedConfigs(bool privileged,
 }
 
 
-int
-qemuFirmwareFillDomain(virQEMUDriver *driver,
-                       virDomainDef *def,
-                       unsigned int flags)
+/**
+ * qemuFirmwareFillDomainLegacy:
+ * @driver: QEMU driver
+ * @def: domain definition
+ *
+ * Go through the legacy list of CODE:VARS pairs looking for a
+ * suitable NVRAM template for the user-provided firmware path.
+ *
+ * Should only be used as a fallback in case looking at the firmware
+ * descriptors yielded no results.
+ *
+ * Returns: 0 on success,
+ *          1 if a matching firmware could not be found,
+ *          -1 on error.
+ */
+static int
+qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
+                             virDomainDef *def)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    virDomainLoaderDef *loader = def->os.loader;
+    size_t i;
+
+    if (!loader)
+        return 0;
+
+    if (loader->type != VIR_DOMAIN_LOADER_TYPE_PFLASH) {
+        VIR_DEBUG("Ignoring legacy entries for '%s' loader",
+                  virDomainLoaderTypeToString(loader->type));
+        return 0;
+    }
+
+    if (loader->stateless == VIR_TRISTATE_BOOL_YES) {
+        VIR_DEBUG("Ignoring legacy entries for stateless loader");
+        return 0;
+    }
+
+    for (i = 0; i < cfg->nfirmwares; i++) {
+        virFirmware *fw = cfg->firmwares[i];
+
+        if (STRNEQ(fw->name, loader->path)) {
+            VIR_DEBUG("Not matching loader path '%s' for user provided path '%s'",
+                      fw->name, loader->path);
+            continue;
+        }
+
+        loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
+        loader->readonly = VIR_TRISTATE_BOOL_YES;
+        loader->nvramTemplate = g_strdup(cfg->firmwares[i]->nvram);
+
+        if (!loader->nvram) {
+            loader->nvram = virStorageSourceNew();
+            loader->nvram->type = VIR_STORAGE_TYPE_FILE;
+            loader->nvram->format = VIR_STORAGE_FILE_RAW;
+            qemuDomainNVRAMPathFormat(cfg, def, &loader->nvram->path);
+        }
+
+        VIR_DEBUG("decided on firmware '%s' template '%s'",
+                  loader->path, NULLSTR(loader->nvramTemplate));
+
+        return 0;
+    }
+
+    return 1;
+}
+
+
+/**
+ * qemuFirmwareFillDomainModern:
+ * @driver: QEMU driver
+ * @def: domain definition
+ *
+ * Look at the firmware descriptors available on the system and try
+ * to find one that matches the user's requested configuration. If
+ * successful, @def will be updated so that it explicitly points to
+ * the corresponding paths.
+ *
+ * Returns: 0 on success,
+ *          1 if a matching firmware could not be found,
+ *          -1 on error.
+ */
+static int
+qemuFirmwareFillDomainModern(virQEMUDriver *driver,
+                             virDomainDef *def)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_auto(GStrv) paths = NULL;
     qemuFirmware **firmwares = NULL;
     ssize_t nfirmwares = 0;
     const qemuFirmware *theone = NULL;
-    bool needResult = true;
-    const bool reset_nvram = flags & VIR_QEMU_PROCESS_START_RESET_NVRAM;
     size_t i;
     int ret = -1;
-
-    /* Fill in FW paths if either os.firmware is enabled, or
-     * loader path was provided with no nvram varstore. */
-    if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE) {
-        /* This is horrific check, but loosely said, if UEFI
-         * image was provided by the old method (by specifying
-         * its path in domain XML) but no template for NVRAM was
-         * specified and the varstore doesn't exist ... */
-        if (!virDomainDefHasOldStyleROUEFI(def) ||
-            def->os.loader->nvramTemplate)
-            return 0;
-
-        if (def->os.loader->nvram) {
-            if (!virStorageSourceIsLocalStorage(def->os.loader->nvram)) {
-                if (reset_nvram) {
-                    virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                                   _("resetting of nvram is not supported with network backed nvram"));
-                    return -1;
-                }
-
-                /* we don't scrutinize whether NVRAM image accessed via network
-                 * is present */
-                return 0;
-            }
-
-            if (!reset_nvram && virFileExists(def->os.loader->nvram->path))
-                return 0;
-        }
-
-        /* ... then we want to consult JSON FW descriptors first,
-         * but we don't want to fail if we haven't found a match. */
-        needResult = false;
-    } else {
-        /* Domain has FW autoselection enabled => do nothing if
-         * we are not starting it from scratch. */
-        if (!(flags & VIR_QEMU_PROCESS_START_NEW))
-            return 0;
-    }
 
     if ((nfirmwares = qemuFirmwareFetchParsedConfigs(driver->privileged,
                                                      &firmwares, &paths)) < 0)
@@ -1426,16 +1465,7 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
     }
 
     if (!theone) {
-        if (needResult) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("Unable to find any firmware to satisfy '%s'"),
-                           virDomainOsDefFirmwareTypeToString(def->os.firmware));
-        } else {
-            VIR_DEBUG("Unable to find NVRAM template for '%s', "
-                      "falling back to old style",
-                      NULLSTR(def->os.loader ? def->os.loader->path : NULL));
-            ret = 0;
-        }
+        ret = 1;
         goto cleanup;
     }
 
@@ -1444,18 +1474,132 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
      * likely that admin/FW manufacturer messed up. */
     qemuFirmwareSanityCheck(theone, paths[i]);
 
-    if (qemuFirmwareEnableFeatures(driver, def, theone) < 0)
+    if (qemuFirmwareEnableFeaturesModern(cfg, def, theone) < 0)
         goto cleanup;
 
     def->os.firmware = VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
     VIR_FREE(def->os.firmwareFeatures);
 
     ret = 0;
+
  cleanup:
     for (i = 0; i < nfirmwares; i++)
         qemuFirmwareFree(firmwares[i]);
     VIR_FREE(firmwares);
     return ret;
+}
+
+
+/**
+ * qemuFirmwareFillDomain:
+ * @driver: QEMU driver
+ * @def: domain definition
+ *
+ * Perform firmware selection.
+ *
+ * When firmware autoselection is used, this means looking at the
+ * firmware descriptors available on the system and finding one that
+ * matches the user's requested parameters; when manual firmware
+ * selection is used, the path to the firmware itself is usually
+ * already provided, but other information such as the path to the
+ * NVRAM template might be missing.
+ *
+ * The idea is that calling this function a first time (at PostParse
+ * time) will convert whatever partial configuration the user might
+ * have provided into a fully specified firmware configuration, such
+ * as that calling it a second time (at domain start time) will
+ * result in an early successful exit. The same thing should happen
+ * if the input configuration wasn't missing any information in the
+ * first place.
+ *
+ * Returns: 0 on success,
+ *          -1 on error.
+ */
+int
+qemuFirmwareFillDomain(virQEMUDriver *driver,
+                       virDomainDef *def)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    virDomainLoaderDef *loader = def->os.loader;
+    bool autoSelection = (def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_NONE);
+    int ret;
+
+    /* Start by performing a thorough validation of the input.
+     *
+     * We need to do this here because the firmware selection logic
+     * can only work correctly if the request is constructed
+     * properly; at the same time, we can't rely on Validate having
+     * been called ahead of time, because in some situations (such as
+     * when loading the configuration of existing domains from disk)
+     * that entire phase is intentionally skipped */
+    if (virDomainDefOSValidate(def, NULL) < 0)
+        return -1;
+
+    /* If firmware autoselection is disabled and the loader is a ROM
+     * instead of a PFLASH device, then we're using BIOS and we don't
+     * need any information at all */
+    if (!autoSelection &&
+        (!loader || (loader && loader->type == VIR_DOMAIN_LOADER_TYPE_ROM))) {
+        return 0;
+    }
+
+    /* For UEFI with firmware autoselection disabled, even if some of
+     * the information is missing we might still be able to avoid
+     * having to look at firmware descriptors */
+    if (!autoSelection &&
+        virDomainDefHasOldStyleROUEFI(def) &&
+        loader->path) {
+
+        /* For stateless firmwares, the firmware path is all we need */
+        if (loader->stateless == VIR_TRISTATE_BOOL_YES)
+            return 0;
+
+        /* If the path to the NVRAM file is already provided and it
+         * points to a non-local source, we don't need to look up any
+         * other information */
+        if (loader->nvram && !virStorageSourceIsLocalStorage(loader->nvram))
+            return 0;
+
+        /* If we have the path to both the firmware itself and the
+         * corresponding NVRAM template we might still need to
+         * generate a path to the domain-specific NVRAM file, but
+         * otherwise we're good to go */
+        if (loader->nvramTemplate) {
+            if (!loader->nvram) {
+                loader->nvram = virStorageSourceNew();
+                loader->nvram->type = VIR_STORAGE_TYPE_FILE;
+                loader->nvram->format = VIR_STORAGE_FILE_RAW;
+                qemuDomainNVRAMPathFormat(cfg, def, &loader->nvram->path);
+            }
+            return 0;
+        }
+    }
+
+    /* Look for the information we need in firmware descriptors */
+    if ((ret = qemuFirmwareFillDomainModern(driver, def)) < 0)
+        return -1;
+
+    if (ret == 1) {
+        /* If we haven't found any match among firmware descriptors,
+         * that would normally be the end of it.
+         *
+         * However, in order to handle legacy configurations
+         * correctly, we make another attempt at locating the missing
+         * information by going through the hardcoded list of
+         * CODE:NVRAM pairs that might have been provided at build
+         * time */
+        if (!autoSelection) {
+            if (qemuFirmwareFillDomainLegacy(driver, def) < 0)
+                return -1;
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("Unable to find any firmware to satisfy '%s'"),
+                           virDomainOsDefFirmwareTypeToString(def->os.firmware));
+            return -1;
+        }
+    }
+
+    return 0;
 }
 
 

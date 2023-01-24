@@ -4601,42 +4601,41 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     VIR_AUTOCLOSE srcFD = -1;
     virDomainLoaderDef *loader = vm->def->os.loader;
-    const char *master_nvram_path;
     struct qemuPrepareNVRAMHelperData data;
 
-    if (!loader || !loader->nvram ||
-        !virStorageSourceIsLocalStorage(loader->nvram) ||
-        (virFileExists(loader->nvram->path) && !reset_nvram))
+    if (!loader || !loader->nvram)
         return 0;
 
-    master_nvram_path = loader->nvramTemplate;
-    if (!loader->nvramTemplate) {
-        size_t i;
-        for (i = 0; i < cfg->nfirmwares; i++) {
-            if (STREQ(cfg->firmwares[i]->name, loader->path)) {
-                master_nvram_path = cfg->firmwares[i]->nvram;
-                break;
-            }
+    if (!virStorageSourceIsLocalStorage(loader->nvram)) {
+        if (!reset_nvram) {
+            return 0;
+        } else {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                    _("resetting of nvram is not supported with network backed nvram"));
+            return -1;
         }
     }
 
-    if (!master_nvram_path) {
+    if (virFileExists(loader->nvram->path) && !reset_nvram)
+        return 0;
+
+    if (!loader->nvramTemplate) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("unable to find any master var store for "
                          "loader: %s"), loader->path);
         return -1;
     }
 
-    if ((srcFD = virFileOpenAs(master_nvram_path, O_RDONLY,
+    if ((srcFD = virFileOpenAs(loader->nvramTemplate, O_RDONLY,
                                0, -1, -1, 0)) < 0) {
         virReportSystemError(-srcFD,
                              _("Failed to open file '%s'"),
-                             master_nvram_path);
+                             loader->nvramTemplate);
         return -1;
     }
 
     data.srcFD = srcFD;
-    data.srcPath = master_nvram_path;
+    data.srcPath = loader->nvramTemplate;
 
     if (virFileRewrite(loader->nvram->path,
                        S_IRUSR | S_IWUSR,
@@ -6769,7 +6768,7 @@ qemuProcessPrepareDomain(virQEMUDriver *driver,
         return -1;
 
     VIR_DEBUG("Prepare bios/uefi paths");
-    if (qemuFirmwareFillDomain(driver, vm->def, flags) < 0)
+    if (qemuFirmwareFillDomain(driver, vm->def) < 0)
         return -1;
     if (qemuDomainInitializePflashStorageSource(vm, cfg) < 0)
         return -1;
