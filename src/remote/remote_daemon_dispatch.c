@@ -3310,11 +3310,6 @@ remoteDispatchNodeGetCPUStats(virNetServer *server G_GNUC_UNUSED,
  cleanup:
     if (rv < 0) {
         virNetMessageSaveError(rerr);
-        if (ret->params.params_val) {
-            for (i = 0; i < nparams; i++)
-                VIR_FREE(ret->params.params_val[i].field);
-            VIR_FREE(ret->params.params_val);
-        }
     }
     VIR_FREE(params);
     return rv;
@@ -3377,11 +3372,6 @@ remoteDispatchNodeGetMemoryStats(virNetServer *server G_GNUC_UNUSED,
  cleanup:
     if (rv < 0) {
         virNetMessageSaveError(rerr);
-        if (ret->params.params_val) {
-            for (i = 0; i < nparams; i++)
-                VIR_FREE(ret->params.params_val[i].field);
-            VIR_FREE(ret->params.params_val);
-        }
     }
     VIR_FREE(params);
     return rv;
