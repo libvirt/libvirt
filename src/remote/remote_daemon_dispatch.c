@@ -2637,13 +2637,11 @@ remoteDispatchDomainGetSecurityLabelList(virNetServer *server G_GNUC_UNUSED,
     if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
-    if ((len = virDomainGetSecurityLabelList(dom, &seclabels)) < 0) {
-        ret->ret = len;
-        ret->labels.labels_len = 0;
-        ret->labels.labels_val = NULL;
-        goto done;
-    }
+    if ((len = virDomainGetSecurityLabelList(dom, &seclabels)) < 0)
+        goto cleanup;
 
+    ret->ret = len;
+    ret->labels.labels_len = len;
     ret->labels.labels_val = g_new0(remote_domain_get_security_label_ret, len);
 
     for (i = 0; i < len; i++) {
@@ -2653,9 +2651,7 @@ remoteDispatchDomainGetSecurityLabelList(virNetServer *server G_GNUC_UNUSED,
         cur->label.label_len = label_len;
         cur->enforcing = seclabels[i].enforcing;
     }
-    ret->labels.labels_len = ret->ret = len;
 
- done:
     rv = 0;
 
  cleanup:
