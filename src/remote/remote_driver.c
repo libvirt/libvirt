@@ -5917,8 +5917,6 @@ remoteDomainMigrateFinish3(virConnectPtr dconn,
              (xdrproc_t) xdr_remote_domain_migrate_finish3_ret, (char *) &ret) == -1)
         return NULL;
 
-    rv = get_nonnull_domain(dconn, ret.dom);
-
     if (ret.cookie_out.cookie_out_len > 0) {
         if (!cookieout || !cookieoutlen) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -5929,6 +5927,8 @@ remoteDomainMigrateFinish3(virConnectPtr dconn,
         *cookieoutlen = ret.cookie_out.cookie_out_len;
         ret.cookie_out.cookie_out_len = 0;
     }
+
+    rv = get_nonnull_domain(dconn, ret.dom);
 
     xdr_free((xdrproc_t) &xdr_remote_domain_migrate_finish3_ret, (char *) &ret);
 
@@ -6770,8 +6770,6 @@ remoteDomainMigrateFinish3Params(virConnectPtr dconn,
              (char *) &ret) == -1)
         goto cleanup;
 
-    rv = get_nonnull_domain(dconn, ret.dom);
-
     if (ret.cookie_out.cookie_out_len > 0) {
         if (!cookieout || !cookieoutlen) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -6782,6 +6780,8 @@ remoteDomainMigrateFinish3Params(virConnectPtr dconn,
         *cookieoutlen = ret.cookie_out.cookie_out_len;
         ret.cookie_out.cookie_out_len = 0;
     }
+
+    rv = get_nonnull_domain(dconn, ret.dom);
 
     xdr_free((xdrproc_t) &xdr_remote_domain_migrate_finish3_params_ret,
              (char *) &ret);
