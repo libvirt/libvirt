@@ -11923,7 +11923,8 @@ qemuDomainRefreshStatsSchema(virDomainObj *dom)
     if (!schema)
         return -1;
 
-    g_hash_table_unref(priv->statsSchema);
+    if (priv->statsSchema)
+        g_hash_table_unref(priv->statsSchema);
     priv->statsSchema = schema;
 
     return 0;
