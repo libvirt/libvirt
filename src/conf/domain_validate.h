@@ -44,3 +44,6 @@ int virDomainDiskDefValidateSource(const virStorageSource *src);
 int virDomainDiskDefValidateStartupPolicy(const virDomainDiskDef *disk);
 
 int virDomainDiskDefSourceLUNValidate(const virStorageSource *src);
+
+int virDomainDefOSValidate(const virDomainDef *def,
+                           virDomainXMLOption *xmlopt);

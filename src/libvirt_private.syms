@@ -795,6 +795,7 @@ virDomainDefPostParse;
 
 # conf/domain_validate.h
 virDomainActualNetDefValidate;
+virDomainDefOSValidate;
 virDomainDefValidate;
 virDomainDeviceValidateAliasForHotplug;
 virDomainDiskDefSourceLUNValidate;
