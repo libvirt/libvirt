@@ -1129,8 +1129,8 @@ mymain(void)
     DO_TEST_NOCAPS("firmware-manual-efi");
     DO_TEST_PARSE_ERROR_NOCAPS("firmware-manual-efi-no-path");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-features");
-    DO_TEST_CAPS_LATEST("firmware-manual-bios-rw");
-    DO_TEST_CAPS_LATEST("firmware-manual-bios-rw-implicit");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-rw");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-rw-implicit");
     DO_TEST("firmware-manual-efi-secure",
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
