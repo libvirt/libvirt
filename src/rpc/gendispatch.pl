@@ -1330,7 +1330,7 @@ elsif ($mode eq "client") {
         if ($argtype eq "void") {
             $call_args = "NULL";
         } else {
-            push(@vars_list, "$argtype args");
+            push(@vars_list, "$argtype args = {0}");
 
             my $is_first_arg = 1;
             my $has_node_device = 0;
