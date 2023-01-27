@@ -1102,11 +1102,18 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
         }
     }
 
-    if (loader && loader->secure == VIR_TRISTATE_BOOL_YES &&
-        !requiresSMM) {
-        VIR_DEBUG("Domain restricts pflash programming to SMM, "
-                  "but firmware '%s' doesn't support SMM", path);
-        return false;
+    if (requiresSMM) {
+        if (def->features[VIR_DOMAIN_FEATURE_SMM] == VIR_TRISTATE_SWITCH_OFF) {
+            VIR_DEBUG("Domain explicitly disables SMM, "
+                      "but firmware '%s' requires it to be enabled", path);
+            return false;
+        }
+    } else {
+        if (loader && loader->secure == VIR_TRISTATE_BOOL_YES) {
+            VIR_DEBUG("Domain restricts pflash programming to SMM, "
+                      "but firmware '%s' doesn't support SMM", path);
+            return false;
+        }
     }
 
     if (fw->mapping.device == QEMU_FIRMWARE_DEVICE_FLASH) {
@@ -1244,21 +1251,9 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
     for (i = 0; i < fw->nfeatures; i++) {
         switch (fw->features[i]) {
         case QEMU_FIRMWARE_FEATURE_REQUIRES_SMM:
-            switch (def->features[VIR_DOMAIN_FEATURE_SMM]) {
-            case VIR_TRISTATE_SWITCH_OFF:
-                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                               _("domain has SMM turned off "
-                                 "but chosen firmware requires it"));
-                return -1;
-            case VIR_TRISTATE_SWITCH_ABSENT:
-                VIR_DEBUG("Enabling SMM feature");
-                def->features[VIR_DOMAIN_FEATURE_SMM] = VIR_TRISTATE_SWITCH_ON;
-                break;
+            VIR_DEBUG("Enabling SMM feature");
+            def->features[VIR_DOMAIN_FEATURE_SMM] = VIR_TRISTATE_SWITCH_ON;
 
-            case VIR_TRISTATE_SWITCH_ON:
-            case VIR_TRISTATE_SWITCH_LAST:
-                break;
-            }
             VIR_DEBUG("Enabling secure loader");
             def->os.loader->secure = VIR_TRISTATE_BOOL_YES;
             break;
