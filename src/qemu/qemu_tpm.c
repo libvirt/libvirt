@@ -1142,7 +1142,7 @@ qemuExtTPMStop(virQEMUDriver *driver,
         return;
 
     qemuTPMEmulatorStop(cfg->swtpmStateDir, shortName);
-    if (outgoingMigration || qemuTPMHasSharedStorage(vm->def))
+    if (outgoingMigration && qemuTPMHasSharedStorage(vm->def))
         restoreTPMStateLabel = false;
 
     if (qemuSecurityRestoreTPMLabels(driver, vm, restoreTPMStateLabel) < 0)
