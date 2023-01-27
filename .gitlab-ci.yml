@@ -76,7 +76,7 @@ include:
   script:
     - *script_variables
     - meson setup build --werror -Dsystem=true || (cat build/meson-logs/meson-log.txt && exit 1)
-    - DESTDIR=$(pwd)/install ninja -C build install-web
+    - DESTDIR=$(pwd)/install meson compile -C build install-web
     - mv install/usr/share/doc/libvirt/html/ website
   artifacts:
     expose_as: 'Website'
@@ -110,7 +110,7 @@ website_local_env:
   script:
     - *script_variables
     - meson setup build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
-    - ninja -C build libvirt-pot-dep
+    - meson compile -C build libvirt-pot-dep
     - meson test -C build --suite syntax-check --no-rebuild --print-errorlogs
 
 codestyle_prebuilt_env:
@@ -153,9 +153,8 @@ potfile:
     - *script_variables
   script:
     - meson setup build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
-    - ninja -C build libvirt-pot-dep
-    - ninja -C build libvirt-pot
-    - ninja -C build libvirt-pot-check
+    - meson compile -C build libvirt-pot-dep
+    - meson compile -C build libvirt-pot
     - cp po/libvirt.pot libvirt.pot
   artifacts:
     expose_as: 'Potfile'
