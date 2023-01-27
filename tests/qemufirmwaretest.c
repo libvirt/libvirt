@@ -73,6 +73,8 @@ testFWPrecedence(const void *opaque G_GNUC_UNUSED)
         PREFIX "/share/qemu/firmware/50-ovmf-sb-keys.json",
         PREFIX "/share/qemu/firmware/55-ovmf-sb-combined.json",
         PREFIX "/share/qemu/firmware/61-ovmf.json",
+        PREFIX "/share/qemu/firmware/65-ovmf-qcow2.json",
+        PREFIX "/share/qemu/firmware/66-aavmf-qcow2.json",
         PREFIX "/share/qemu/firmware/70-aavmf.json",
         NULL
     };
@@ -234,6 +236,8 @@ mymain(void)
     DO_PARSE_TEST("usr/share/qemu/firmware/55-ovmf-sb-combined.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/60-ovmf-sb.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/61-ovmf.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/65-ovmf-qcow2.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/66-aavmf-qcow2.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/70-aavmf.json");
 
     if (virTestRun("QEMU FW precedence test", testFWPrecedence, NULL) < 0)
@@ -254,7 +258,8 @@ mymain(void)
 
     DO_SUPPORTED_TEST("pc-i440fx-3.1", VIR_ARCH_X86_64, false,
                       "/usr/share/seabios/bios-256k.bin:NULL:"
-                      "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd",
+                      "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd:"
+                      "/usr/share/OVMF/OVMF_CODE.qcow2:/usr/share/OVMF/OVMF_VARS.qcow2",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
     DO_SUPPORTED_TEST("pc-i440fx-3.1", VIR_ARCH_I686, false,
@@ -265,13 +270,15 @@ mymain(void)
                       "/usr/share/OVMF/OVMF_CODE.secboot.fd:/usr/share/OVMF/OVMF_VARS.secboot.fd:"
                       "/usr/share/OVMF/OVMF.sev.fd:NULL:"
                       "/usr/share/OVMF/OVMF.secboot.fd:NULL:"
-                      "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd",
+                      "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd:"
+                      "/usr/share/OVMF/OVMF_CODE.qcow2:/usr/share/OVMF/OVMF_VARS.qcow2",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
     DO_SUPPORTED_TEST("pc-q35-3.1", VIR_ARCH_I686, false,
                       "/usr/share/seabios/bios-256k.bin:NULL",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS);
     DO_SUPPORTED_TEST("virt-3.1", VIR_ARCH_AARCH64, false,
+                      "/usr/share/AAVMF/AAVMF_CODE.qcow2:/usr/share/AAVMF/AAVMF_VARS.qcow2:"
                       "/usr/share/AAVMF/AAVMF_CODE.fd:/usr/share/AAVMF/AAVMF_VARS.fd",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
 

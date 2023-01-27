@@ -1,0 +1,35 @@
+{
+    "description": "UEFI firmware for x86_64 virtual machines (QCOW2 format)",
+    "interface-types": [
+        "uefi"
+    ],
+    "mapping": {
+        "device": "flash",
+        "mode": "split",
+        "executable": {
+            "filename": "/usr/share/OVMF/OVMF_CODE.qcow2",
+            "format": "qcow2"
+        },
+        "nvram-template": {
+            "filename": "/usr/share/OVMF/OVMF_VARS.qcow2",
+            "format": "qcow2"
+        }
+    },
+    "targets": [
+        {
+            "architecture": "x86_64",
+            "machines": [
+                "pc-i440fx-*",
+                "pc-q35-*"
+            ]
+        }
+    ],
+    "features": [
+        "acpi-s3",
+        "amd-sev",
+        "verbose-dynamic"
+    ],
+    "tags": [
+
+    ]
+}

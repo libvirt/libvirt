@@ -1,0 +1,36 @@
+{
+    "description": "UEFI firmware for ARM64 virtual machines (QCOW2 format)",
+    "interface-types": [
+        "uefi"
+    ],
+    "mapping": {
+        "device": "flash",
+        "mode": "split",
+        "executable": {
+            "filename": "/usr/share/AAVMF/AAVMF_CODE.qcow2",
+            "format": "qcow2"
+        },
+        "nvram-template": {
+            "filename": "/usr/share/AAVMF/AAVMF_VARS.qcow2",
+            "format": "qcow2"
+        }
+    },
+    "targets": [
+        {
+            "architecture": "aarch64",
+            "machines": [
+                "virt-*"
+            ]
+        }
+    ],
+    "features": [
+
+    ],
+    "tags": [
+        "-a AARCH64",
+        "-p ArmVirtPkg/ArmVirtQemu.dsc",
+        "-t GCC48",
+        "-b DEBUG",
+        "-D DEBUG_PRINT_ERROR_LEVEL=0x80000000"
+    ]
+}
