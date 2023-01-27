@@ -986,6 +986,7 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
                         const qemuFirmware *fw,
                         const char *path)
 {
+    const virDomainLoaderDef *loader = def->os.loader;
     size_t i;
     qemuFirmwareOSInterface want;
     bool supportsS3 = false;
@@ -1000,17 +1001,16 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
 
     want = qemuFirmwareOSInterfaceTypeFromOsDefFirmware(def->os.firmware);
 
-    if (want == QEMU_FIRMWARE_OS_INTERFACE_NONE &&
-        def->os.loader) {
-        want = qemuFirmwareOSInterfaceTypeFromOsDefLoaderType(def->os.loader->type);
+    if (want == QEMU_FIRMWARE_OS_INTERFACE_NONE && loader) {
+        want = qemuFirmwareOSInterfaceTypeFromOsDefLoaderType(loader->type);
 
         if (fw->mapping.device != QEMU_FIRMWARE_DEVICE_FLASH ||
-            STRNEQ(def->os.loader->path, fw->mapping.data.flash.executable.filename)) {
+            STRNEQ(loader->path, fw->mapping.data.flash.executable.filename)) {
             VIR_DEBUG("Not matching FW interface %s or loader "
                       "path '%s' for user provided path '%s'",
                       qemuFirmwareDeviceTypeToString(fw->mapping.device),
                       fw->mapping.data.flash.executable.filename,
-                      def->os.loader->path);
+                      loader->path);
             return false;
         }
     }
@@ -1102,8 +1102,7 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
         }
     }
 
-    if (def->os.loader &&
-        def->os.loader->secure == VIR_TRISTATE_BOOL_YES &&
+    if (loader && loader->secure == VIR_TRISTATE_BOOL_YES &&
         !requiresSMM) {
         VIR_DEBUG("Domain restricts pflash programming to SMM, "
                   "but firmware '%s' doesn't support SMM", path);
@@ -1111,13 +1110,15 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
     }
 
     if (fw->mapping.device == QEMU_FIRMWARE_DEVICE_FLASH) {
-        if (def->os.loader && def->os.loader->stateless == VIR_TRISTATE_BOOL_YES) {
-            if (fw->mapping.data.flash.mode != QEMU_FIRMWARE_FLASH_MODE_STATELESS) {
+        const qemuFirmwareMappingFlash *flash = &fw->mapping.data.flash;
+
+        if (loader && loader->stateless == VIR_TRISTATE_BOOL_YES) {
+            if (flash->mode != QEMU_FIRMWARE_FLASH_MODE_STATELESS) {
                 VIR_DEBUG("Discarding loader without stateless flash");
                 return false;
             }
         } else {
-            if (fw->mapping.data.flash.mode != QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
+            if (flash->mode != QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
                 VIR_DEBUG("Discarding loader without split flash");
                 return false;
             }
@@ -1163,15 +1164,17 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
     const qemuFirmwareMappingFlash *flash = &fw->mapping.data.flash;
     const qemuFirmwareMappingKernel *kernel = &fw->mapping.data.kernel;
     const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;
+    virDomainLoaderDef *loader = NULL;
     size_t i;
 
     switch (fw->mapping.device) {
     case QEMU_FIRMWARE_DEVICE_FLASH:
         if (!def->os.loader)
             def->os.loader = virDomainLoaderDefNew();
+        loader = def->os.loader;
 
-        def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
-        def->os.loader->readonly = VIR_TRISTATE_BOOL_YES;
+        loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
+        loader->readonly = VIR_TRISTATE_BOOL_YES;
 
         if (STRNEQ(flash->executable.format, "raw")) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
@@ -1180,8 +1183,8 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
             return -1;
         }
 
-        VIR_FREE(def->os.loader->path);
-        def->os.loader->path = g_strdup(flash->executable.filename);
+        VIR_FREE(loader->path);
+        loader->path = g_strdup(flash->executable.filename);
 
         if (flash->mode == QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
             if (STRNEQ(flash->nvram_template.format, "raw")) {
@@ -1191,21 +1194,21 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
                 return -1;
             }
 
-            VIR_FREE(def->os.loader->nvramTemplate);
-            def->os.loader->nvramTemplate = g_strdup(flash->nvram_template.filename);
+            VIR_FREE(loader->nvramTemplate);
+            loader->nvramTemplate = g_strdup(flash->nvram_template.filename);
 
-            if (!def->os.loader->nvram) {
-                def->os.loader->nvram = virStorageSourceNew();
-                def->os.loader->nvram->type = VIR_STORAGE_TYPE_FILE;
-                def->os.loader->nvram->format = VIR_STORAGE_FILE_RAW;
-                qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram->path);
+            if (!loader->nvram) {
+                loader->nvram = virStorageSourceNew();
+                loader->nvram->type = VIR_STORAGE_TYPE_FILE;
+                loader->nvram->format = VIR_STORAGE_FILE_RAW;
+                qemuDomainNVRAMPathFormat(cfg, def, &loader->nvram->path);
             }
         }
 
         VIR_DEBUG("decided on firmware '%s' template '%s' NVRAM '%s'",
-                  def->os.loader->path,
-                  NULLSTR(def->os.loader->nvramTemplate),
-                  NULLSTR(def->os.loader->nvram ? def->os.loader->nvram->path : NULL));
+                  loader->path,
+                  NULLSTR(loader->nvramTemplate),
+                  NULLSTR(loader->nvram ? loader->nvram->path : NULL));
         break;
 
     case QEMU_FIRMWARE_DEVICE_KERNEL:
@@ -1219,12 +1222,13 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
     case QEMU_FIRMWARE_DEVICE_MEMORY:
         if (!def->os.loader)
             def->os.loader = virDomainLoaderDefNew();
+        loader = def->os.loader;
 
-        def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
-        def->os.loader->path = g_strdup(memory->filename);
+        loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
+        loader->path = g_strdup(memory->filename);
 
         VIR_DEBUG("decided on loader '%s'",
-                  def->os.loader->path);
+                  loader->path);
         break;
 
     case QEMU_FIRMWARE_DEVICE_NONE:
