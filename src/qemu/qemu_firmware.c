@@ -1130,6 +1130,19 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
                 return false;
             }
         }
+
+        if (STRNEQ(flash->executable.format, "raw")) {
+            VIR_DEBUG("Discarding loader with unsupported flash format '%s'",
+                      flash->executable.format);
+            return false;
+        }
+        if (flash->mode == QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
+            if (STRNEQ(flash->nvram_template.format, "raw")) {
+                VIR_DEBUG("Discarding loader with unsupported nvram template format '%s'",
+                          flash->nvram_template.format);
+                return false;
+            }
+        }
     }
 
     if (def->sec) {
@@ -1183,24 +1196,10 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
         loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
         loader->readonly = VIR_TRISTATE_BOOL_YES;
 
-        if (STRNEQ(flash->executable.format, "raw")) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("unsupported flash format '%s'"),
-                           flash->executable.format);
-            return -1;
-        }
-
         VIR_FREE(loader->path);
         loader->path = g_strdup(flash->executable.filename);
 
         if (flash->mode == QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
-            if (STRNEQ(flash->nvram_template.format, "raw")) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                               _("unsupported nvram template format '%s'"),
-                               flash->nvram_template.format);
-                return -1;
-            }
-
             if (!loader->nvram) {
                 loader->nvram = virStorageSourceNew();
                 loader->nvram->type = VIR_STORAGE_TYPE_FILE;
