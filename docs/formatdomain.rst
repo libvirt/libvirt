@@ -255,7 +255,7 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    is assumed that there will be a writable NVRAM available. In some cases,
    however, it may be desirable for the loader to run without any NVRAM, discarding
    any config changes on shutdown. The ``stateless`` flag (:since:`Since 8.6.0`)
-   can be used to control this behaviour, when set to ``no`` NVRAM will never
+   can be used to control this behaviour, when set to ``yes`` NVRAM will never
    be created.
 ``nvram``
    Some UEFI firmwares may want to use a non-volatile memory to store some
