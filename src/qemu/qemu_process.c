@@ -7621,6 +7621,7 @@ qemuProcessLaunch(virConnectPtr conn,
     size_t nnicindexes = 0;
     g_autofree int *nicindexes = NULL;
     unsigned long long maxMemLock = 0;
+    bool incomingMigrationExtDevices = false;
 
     VIR_DEBUG("conn=%p driver=%p vm=%p name=%s id=%d asyncJob=%d "
               "incoming.uri=%s "
@@ -7675,7 +7676,13 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuDomainSchedCoreStart(cfg, vm) < 0)
         goto cleanup;
 
-    if (qemuExtDevicesStart(driver, vm, incoming != NULL) < 0)
+    /* For external devices the rules of incoming migration are a bit stricter,
+     * than plain @incoming != NULL. They need to differentiate between
+     * incoming migration and restore from a save file.  */
+    incomingMigrationExtDevices = incoming &&
+        vmop == VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START;
+
+    if (qemuExtDevicesStart(driver, vm, incomingMigrationExtDevices) < 0)
         goto cleanup;
 
     if (!(cmd = qemuBuildCommandLine(vm,
