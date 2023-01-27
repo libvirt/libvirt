@@ -16778,7 +16778,8 @@ virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
                               &format, VIR_STORAGE_FILE_RAW) < 0) {
         return -1;
     }
-    if (format != VIR_STORAGE_FILE_RAW) {
+    if (format != VIR_STORAGE_FILE_RAW &&
+        format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Unsupported nvram format '%s'"),
                        virStorageFileFormatTypeToString(format));
@@ -16866,7 +16867,8 @@ virDomainLoaderDefParseXMLLoader(virDomainLoaderDef *loader,
                               &format, VIR_STORAGE_FILE_RAW) < 0) {
         return -1;
     }
-    if (format != VIR_STORAGE_FILE_RAW) {
+    if (format != VIR_STORAGE_FILE_RAW &&
+        format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Unsupported loader format '%s'"),
                        virStorageFileFormatTypeToString(format));

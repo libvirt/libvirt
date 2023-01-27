@@ -7548,6 +7548,7 @@
     <attribute name="format">
       <choice>
         <value>raw</value>
+        <value>qcow2</value>
       </choice>
     </attribute>
   </define>
