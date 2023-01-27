@@ -8398,7 +8398,7 @@ void qemuProcessStop(virQEMUDriver *driver,
     qemuDomainCleanupRun(driver, vm);
 
     outgoingMigration = (flags & VIR_QEMU_PROCESS_STOP_MIGRATED) &&
-        (asyncJob != VIR_ASYNC_JOB_MIGRATION_IN);
+        (asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT);
     qemuExtDevicesStop(driver, vm, outgoingMigration);
 
     qemuDBusStop(driver, vm);
