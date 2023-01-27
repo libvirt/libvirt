@@ -1043,11 +1043,6 @@ qemuDomainRunningReasonToResumeEvent(virDomainRunningReason reason);
 bool
 qemuDomainDiskIsMissingLocalOptional(virDomainDiskDef *disk);
 
-void
-qemuDomainNVRAMPathFormat(virQEMUDriverConfig *cfg,
-                          virDomainDef *def,
-                          char **path);
-
 virDomainEventSuspendedDetailType
 qemuDomainPausedReasonToSuspendedEvent(virDomainPausedReason reason);
 
