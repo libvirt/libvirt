@@ -1201,15 +1201,6 @@ sc_prohibit_double_semicolon:
 	halt="Double semicolon detected" \
 	  $(_sc_search_regexp)
 
-_ptm1 = use "test C1 && test C2", not "test C1 -''a C2"
-_ptm2 = use "test C1 || test C2", not "test C1 -''o C2"
-# Using test's -a and -o operators is not portable.
-# We prefer test over [, since the latter is spelled [[ in configure.ac.
-sc_prohibit_test_minus_ao:
-	@prohibit='(\<test| \[+) .+ -[ao] ' \
-	halt='$(_ptm1); $(_ptm2)' \
-	  $(_sc_search_regexp)
-
 # Avoid a test bashism.
 sc_prohibit_test_double_equal:
 	@prohibit='(\<test| \[+) .+ == ' \
