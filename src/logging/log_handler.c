@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include "log_handler.h"
+#include "log_cleaner.h"
 #include "virerror.h"
 #include "virfile.h"
 #include "viralloc.h"
@@ -175,7 +176,15 @@ virLogHandlerNew(bool privileged,
     handler->inhibitor = inhibitor;
     handler->opaque = opaque;
 
+    if (virLogCleanerInit(handler) < 0) {
+        goto error;
+    }
+
     return handler;
+
+ error:
+    virObjectUnref(handler);
+    return NULL;
 }
 
 
@@ -312,6 +321,8 @@ virLogHandlerDispose(void *obj)
 {
     virLogHandler *handler = obj;
     size_t i;
+
+    virLogCleanerShutdown(handler);
 
     for (i = 0; i < handler->nfiles; i++) {
         handler->inhibitor(false, handler->opaque);
