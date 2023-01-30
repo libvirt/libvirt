@@ -9,3 +9,5 @@ module Test_virtlogd =
         { "admin_max_clients" = "5" }
         { "max_size" = "2097152" }
         { "max_backups" = "3" }
+        { "max_age_days" = "0" }
+        { "log_root" = "/var/log/libvirt" }

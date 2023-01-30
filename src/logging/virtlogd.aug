@@ -31,6 +31,8 @@ module Virtlogd =
                      | int_entry "admin_max_clients"
                      | int_entry "max_size"
                      | int_entry "max_backups"
+                     | int_entry "max_age_days"
+                     | str_entry "log_root"
 
    (* Each entry in the config is one of the following three ... *)
    let entry = logging_entry
