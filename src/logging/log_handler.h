@@ -23,12 +23,37 @@
 #include "internal.h"
 #include "virjson.h"
 #include "log_daemon_config.h"
-
-typedef struct _virLogHandler virLogHandler;
-
+#include "virobject.h"
+#include "virrotatingfile.h"
 
 typedef void (*virLogHandlerShutdownInhibitor)(bool inhibit,
                                                void *opaque);
+
+typedef struct _virLogHandlerLogFile virLogHandlerLogFile;
+struct _virLogHandlerLogFile {
+    virRotatingFileWriter *file;
+    int watch;
+    int pipefd; /* Read from QEMU via this */
+    bool drained;
+
+    char *driver;
+    unsigned char domuuid[VIR_UUID_BUFLEN];
+    char *domname;
+};
+
+typedef struct _virLogHandler virLogHandler;
+struct _virLogHandler {
+    virObjectLockable parent;
+
+    bool privileged;
+    virLogDaemonConfig *config;
+
+    virLogHandlerLogFile **files;
+    size_t nfiles;
+
+    virLogHandlerShutdownInhibitor inhibitor;
+    void *opaque;
+};
 
 virLogHandler *virLogHandlerNew(bool privileged,
                                 virLogDaemonConfig *config,
