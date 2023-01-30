@@ -145,8 +145,7 @@ virLogDaemonNew(virLogDaemonConfig *config, bool privileged)
     g_clear_pointer(&srv, virObjectUnref);
 
     if (!(logd->handler = virLogHandlerNew(privileged,
-                                           config->max_size,
-                                           config->max_backups,
+                                           config,
                                            virLogDaemonInhibitor,
                                            logd)))
         goto error;
@@ -231,8 +230,7 @@ virLogDaemonNewPostExecRestart(virJSONValue *object, bool privileged,
 
     if (!(logd->handler = virLogHandlerNewPostExecRestart(child,
                                                           privileged,
-                                                          config->max_size,
-                                                          config->max_backups,
+                                                          config,
                                                           virLogDaemonInhibitor,
                                                           logd)))
         goto error;

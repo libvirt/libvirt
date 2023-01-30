@@ -22,6 +22,7 @@
 
 #include "internal.h"
 #include "virjson.h"
+#include "log_daemon_config.h"
 
 typedef struct _virLogHandler virLogHandler;
 
@@ -30,16 +31,14 @@ typedef void (*virLogHandlerShutdownInhibitor)(bool inhibit,
                                                void *opaque);
 
 virLogHandler *virLogHandlerNew(bool privileged,
-                                  size_t max_size,
-                                  size_t max_backups,
-                                  virLogHandlerShutdownInhibitor inhibitor,
-                                  void *opaque);
+                                virLogDaemonConfig *config,
+                                virLogHandlerShutdownInhibitor inhibitor,
+                                void *opaque);
 virLogHandler *virLogHandlerNewPostExecRestart(virJSONValue *child,
-                                                 bool privileged,
-                                                 size_t max_size,
-                                                 size_t max_backups,
-                                                 virLogHandlerShutdownInhibitor inhibitor,
-                                                 void *opaque);
+                                               bool privileged,
+                                               virLogDaemonConfig *config,
+                                               virLogHandlerShutdownInhibitor inhibitor,
+                                               void *opaque);
 
 void virLogHandlerFree(virLogHandler *handler);
 
