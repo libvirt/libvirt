@@ -3209,7 +3209,7 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
-    if (xmlHasProp(linkNode, BAD_CAST "link"))
+    if (xmlHasProp(linkNode, BAD_CAST "state"))
         stateAttr = xmlSetProp(linkNode, BAD_CAST "state", BAD_CAST state);
     else
         stateAttr = xmlNewProp(linkNode, BAD_CAST "state", BAD_CAST state);
