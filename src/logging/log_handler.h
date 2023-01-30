@@ -48,6 +48,8 @@ struct _virLogHandler {
     bool privileged;
     virLogDaemonConfig *config;
 
+    int cleanup_log_timer;
+
     virLogHandlerLogFile **files;
     size_t nfiles;
 

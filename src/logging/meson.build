@@ -30,6 +30,7 @@ log_daemon_sources = files(
   'log_daemon_config.c',
   'log_daemon_dispatch.c',
   'log_handler.c',
+  'log_cleaner.c',
 )
 
 if conf.has('WITH_REMOTE')
