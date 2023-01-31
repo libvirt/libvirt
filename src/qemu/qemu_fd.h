@@ -30,9 +30,6 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuFDPass, qemuFDPassFree);
 qemuFDPass *
 qemuFDPassNew(const char *prefix,
               void *dompriv);
-qemuFDPass *
-qemuFDPassNewDirect(const char *prefix,
-                    void *dompriv);
 
 void
 qemuFDPassAddFD(qemuFDPass *fdpass,
