@@ -50,6 +50,9 @@
       <mac address='52:54:00:e5:48:59'/>
       <source network='default'/>
       <model type='virtio'/>
+      <tune>
+        <sndbuf>1600</sndbuf>
+      </tune>
       <mtu size='9000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>

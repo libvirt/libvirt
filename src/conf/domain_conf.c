@@ -23993,11 +23993,11 @@ virDomainNetDefFormat(virBuffer *buf,
     }
 
     if (def->tune.sndbuf_specified) {
-        virBufferAddLit(buf,   "<tune>\n");
-        virBufferAdjustIndent(buf, 2);
-        virBufferAsprintf(buf, "<sndbuf>%llu</sndbuf>\n", def->tune.sndbuf);
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf,   "</tune>\n");
+        g_auto(virBuffer) sndChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+        virBufferAsprintf(&sndChildBuf, "<sndbuf>%llu</sndbuf>\n", def->tune.sndbuf);
+
+        virXMLFormatElement(buf, "tune", NULL, &sndChildBuf);
     }
 
     virDomainNetTeamingInfoFormat(def->teaming, buf);
