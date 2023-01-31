@@ -16775,16 +16775,13 @@ virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
         return -1;
 
     if (!typePresent) {
-        g_autofree char *path = NULL;
-
-        if (!(path = virXMLNodeContentString(nvramNode)))
+        if (!(src->path = virXMLNodeContentString(nvramNode)))
             return -1;
 
-        if (STREQ(path, ""))
-            return 0;
+        if (STREQ(src->path, ""))
+            VIR_FREE(src->path);
 
         src->type = VIR_STORAGE_TYPE_FILE;
-        src->path = g_steal_pointer(&path);
     } else {
         if (!nvramSourceNode)
             return -1;

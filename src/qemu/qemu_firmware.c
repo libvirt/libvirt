@@ -997,8 +997,13 @@ qemuFirmwareEnsureNVRAM(virDomainDef *def,
     if (!loader)
         return;
 
-    if (loader->nvram)
+    /* If the source already exists and is fully specified, including
+     * the path, leave it alone */
+    if (loader->nvram && loader->nvram->path)
         return;
+
+    if (loader->nvram)
+        virObjectUnref(loader->nvram);
 
     loader->nvram = virStorageSourceNew();
     loader->nvram->type = VIR_STORAGE_TYPE_FILE;
