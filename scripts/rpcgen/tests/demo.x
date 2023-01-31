@@ -74,7 +74,6 @@ struct TestStructAllTypes {
   bool sb;
   float sf;
   double sd;
-/*  quadruple sq; */
 
   int *ip;
   int ifa[TestConstDec];

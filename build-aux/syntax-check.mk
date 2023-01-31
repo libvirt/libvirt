@@ -1362,7 +1362,7 @@ exclude_file_name_regexp--sc_avoid_strcase = ^tools/(vsh\.h|nss/libvirt_nss_(lea
 exclude_file_name_regexp--sc_avoid_write = ^src/libvirt-stream\.c$$
 
 exclude_file_name_regexp--sc_gettext_init = \
-	^((tests|examples)/|tools/virt-login-shell.c)
+	^((tests|examples)/|tools/virt-login-shell\.c$$|scripts/rpcgen/tests/test_demo\.c$$)
 
 exclude_file_name_regexp--sc_copyright_usage = \
   ^COPYING(|\.LESSER)$$
@@ -1391,7 +1391,7 @@ exclude_file_name_regexp--sc_prohibit_close = \
   (\.p[yl]$$|\.spec\.in$$|^docs/|^(src/util/vir(file|event)\.c|src/libvirt-stream\.c|tests/(vir.+mock\.c|commandhelper\.c|qemusecuritymock\.c)|tools/nss/libvirt_nss_(leases|macs)\.c)|tools/virt-qemu-qmp-proxy$$)
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
-  (^tests/(nodedevmdevctl|viracpi|virhostcpu|virpcitest|virstoragetest|qemunbdkit)data/|docs/js/.*\.js|docs/fonts/.*\.woff|\.diff|tests/virconfdata/no-newline\.conf$$)
+  ((^tests/(nodedevmdevctl|viracpi|virhostcpu|virpcitest|virstoragetest|qemunbdkit)data/|docs/js/.*\.js|docs/fonts/.*\.woff|\.diff|tests/virconfdata/no-newline\.conf$$)|\.bin)
 
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
   (^(src/(util/(vircommand|virdaemon)|lxc/lxc_controller)|tests/testutils)\.c$$)
@@ -1436,10 +1436,10 @@ exclude_file_name_regexp--sc_prohibit_xmlURI = ^src/util/viruri\.c$$
 exclude_file_name_regexp--sc_prohibit_return_as_function = \.py$$
 
 exclude_file_name_regexp--sc_require_config_h = \
-	^(examples/c/.*/.*\.c|tools/virsh-edit\.c|tests/virmockstathelpers\.c|scripts/rpcgen/tests/demo\.c)$$
+	^(examples/c/.*/.*\.c|tools/virsh-edit\.c|tests/virmockstathelpers\.c|scripts/rpcgen/tests/(test_)?demo\.c)$$
 
 exclude_file_name_regexp--sc_require_config_h_first = \
-	^(examples/|tools/virsh-edit\.c$$|tests/virmockstathelpers.c)
+	^(examples/|tools/virsh-edit\.c$$|tests/virmockstathelpers\.c$$|scripts/rpcgen/tests/test_demo\.c$$)
 
 exclude_file_name_regexp--sc_trailing_blank = \
   /sysinfodata/.*\.data|/virhostcpudata/.*\.cpuinfo$$
@@ -1505,6 +1505,9 @@ exclude_file_name_regexp--sc_header-ifdef = \
 
 exclude_file_name_regexp--sc_black = \
   ^tools/|src/|tests/|ci/|run\.in|scripts/[^/]*\.py
+
+exclude_file_name_regexp--sc_spacing-check = \
+  ^scripts/rpcgen/tests/test_demo\.[ch]$$
 
 ## -------------- ##
 ## Implementation ##
