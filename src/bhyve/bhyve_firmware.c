@@ -78,7 +78,7 @@ bhyveFirmwareFillDomain(bhyveConn *driver,
     }
 
     if (!def->os.loader)
-        def->os.loader = g_new0(virDomainLoaderDef, 1);
+        def->os.loader = virDomainLoaderDefNew();
 
     def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
     def->os.loader->readonly = VIR_TRISTATE_BOOL_YES;

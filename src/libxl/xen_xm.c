@@ -42,7 +42,7 @@ xenParseXMOS(virConf *conf, virDomainDef *def)
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         g_autofree char *boot = NULL;
 
-        def->os.loader = g_new0(virDomainLoaderDef, 1);
+        def->os.loader = virDomainLoaderDefNew();
 
         if (xenConfigCopyString(conf, "kernel", &def->os.loader->path) < 0)
             return -1;

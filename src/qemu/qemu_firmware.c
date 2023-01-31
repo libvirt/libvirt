@@ -1168,7 +1168,7 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
     switch (fw->mapping.device) {
     case QEMU_FIRMWARE_DEVICE_FLASH:
         if (!def->os.loader)
-            def->os.loader = g_new0(virDomainLoaderDef, 1);
+            def->os.loader = virDomainLoaderDefNew();
 
         def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
         def->os.loader->readonly = VIR_TRISTATE_BOOL_YES;
@@ -1218,7 +1218,7 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
 
     case QEMU_FIRMWARE_DEVICE_MEMORY:
         if (!def->os.loader)
-            def->os.loader = g_new0(virDomainLoaderDef, 1);
+            def->os.loader = virDomainLoaderDefNew();
 
         def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
         def->os.loader->path = g_strdup(memory->filename);

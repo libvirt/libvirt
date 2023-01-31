@@ -643,7 +643,7 @@ libxlMakeDomBuildInfo(virDomainDef *def,
          */
         if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_EFI) {
             if (def->os.loader == NULL)
-                def->os.loader = g_new0(virDomainLoaderDef, 1);
+                def->os.loader = virDomainLoaderDefNew();
             if (def->os.loader->path == NULL)
                 def->os.loader->path = g_strdup(cfg->firmwares[0]->name);
             if (def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_NONE)

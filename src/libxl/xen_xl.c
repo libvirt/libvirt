@@ -111,7 +111,7 @@ xenParseXLOS(virConf *conf, virDomainDef *def, virCaps *caps)
             return -1;
 
         if (bios && STREQ(bios, "ovmf")) {
-            def->os.loader = g_new0(virDomainLoaderDef, 1);
+            def->os.loader = virDomainLoaderDefNew();
             def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
             def->os.loader->readonly = VIR_TRISTATE_BOOL_YES;
 
@@ -120,7 +120,7 @@ xenParseXLOS(virConf *conf, virDomainDef *def, virCaps *caps)
             for (i = 0; i < caps->nguests; i++) {
                 if (caps->guests[i]->ostype == VIR_DOMAIN_OSTYPE_HVM &&
                     caps->guests[i]->arch.id == def->os.arch) {
-                    def->os.loader = g_new0(virDomainLoaderDef, 1);
+                    def->os.loader = virDomainLoaderDefNew();
                     def->os.loader->path = g_strdup(caps->guests[i]->arch.defaultInfo.loader);
                 }
             }

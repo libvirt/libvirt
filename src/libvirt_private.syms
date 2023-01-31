@@ -507,6 +507,7 @@ virDomainLeaseRemoveAt;
 virDomainLifecycleActionTypeFromString;
 virDomainLifecycleActionTypeToString;
 virDomainLoaderDefFree;
+virDomainLoaderDefNew;
 virDomainLoaderTypeFromString;
 virDomainLoaderTypeToString;
 virDomainLockFailureTypeFromString;

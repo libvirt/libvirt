@@ -2316,6 +2316,7 @@ struct _virDomainLoaderDef {
     char *nvramTemplate;   /* user override of path to master nvram */
 };
 
+virDomainLoaderDef *virDomainLoaderDefNew(void);
 void virDomainLoaderDefFree(virDomainLoaderDef *loader);
 
 typedef enum {

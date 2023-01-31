@@ -3723,6 +3723,12 @@ virDomainPanicDefFree(virDomainPanicDef *panic)
     g_free(panic);
 }
 
+virDomainLoaderDef *
+virDomainLoaderDefNew(void)
+{
+    return g_new0(virDomainLoaderDef, 1);
+}
+
 void
 virDomainLoaderDefFree(virDomainLoaderDef *loader)
 {
@@ -17245,7 +17251,7 @@ virDomainDefParseBootLoaderOptions(virDomainDef *def,
     if (!loaderNode && !nvramNode)
         return 0;
 
-    def->os.loader = g_new0(virDomainLoaderDef, 1);
+    def->os.loader = virDomainLoaderDefNew();
 
     if (virDomainLoaderDefParseXML(def->os.loader,
                                    loaderNode, nvramNode, nvramSourceNode,
