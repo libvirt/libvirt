@@ -8,7 +8,7 @@ export VIR_TEST_DEBUG=1
 # populated at build time from the Dockerfile. A typical use case would
 # be to pass options to trigger cross-compilation
 
-meson setup build --werror -Dsystem=true $MESON_OPTS $CI_MESON_ARGS || \
+meson setup build --werror -Dsystem=true $MESON_OPTS $MESON_ARGS || \
 (cat build/meson-logs/meson-log.txt && exit 1)
 
-ninja -C build $CI_NINJA_ARGS
+ninja -C build $NINJA_ARGS

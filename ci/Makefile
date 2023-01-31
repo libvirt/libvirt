@@ -161,8 +161,8 @@ CI_ENGINE_ARGS = \
 	--user "$(CI_UID)":"$(CI_GID)" \
 	--workdir "$(CI_USER_HOME)" \
 	--env CI_CONT_SRCDIR="$(CI_CONT_SRCDIR)" \
-	--env CI_MESON_ARGS="$(CI_MESON_ARGS)" \
-	--env CI_NINJA_ARGS="$(CI_NINJA_ARGS)" \
+	--env MESON_ARGS="$(MESON_ARGS)" \
+	--env NINJA_ARGS="$(NINJA_ARGS)" \
 	$(CI_PODMAN_ARGS) \
 	$(CI_PWDB_MOUNTS) \
 	$(CI_HOME_MOUNTS) \

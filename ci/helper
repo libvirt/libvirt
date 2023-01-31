@@ -152,8 +152,8 @@ class Application:
 
         if self._args.action in ["build", "test"]:
             args.extend([
-                f"CI_MESON_ARGS={self._args.meson_args}",
-                f"CI_NINJA_ARGS={self._args.ninja_args}",
+                f"MESON_ARGS={self._args.meson_args}",
+                f"NINJA_ARGS={self._args.ninja_args}",
             ])
 
         if pty.spawn(["make"] + args) != 0:
