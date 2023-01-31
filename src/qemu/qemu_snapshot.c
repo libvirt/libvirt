@@ -1892,12 +1892,6 @@ qemuSnapshotRevertValidate(virDomainObj *vm,
         return -1;
     }
 
-    if (virDomainSnapshotIsExternal(snap)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("revert to external snapshot not supported yet"));
-        return -1;
-    }
-
     if (!snap->def->dom) {
         virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY,
                        _("snapshot '%1$s' lacks domain '%2$s' rollback info"),
