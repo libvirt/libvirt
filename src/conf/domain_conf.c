@@ -23681,7 +23681,6 @@ virDomainNetDefFormat(virBuffer *buf,
 {
     virDomainNetType actualType = virDomainNetGetActualType(def);
     bool publicActual = false;
-    int sourceLines = 0;
     const char *typeStr;
     virDomainHostdevDef *hostdef = NULL;
     char macstr[VIR_MAC_STRING_BUFLEN];
@@ -23745,6 +23744,8 @@ virDomainNetDefFormat(virBuffer *buf,
         if (virDomainActualNetDefContentsFormat(buf, def, false, flags, xmlopt) < 0)
             return -1;
     } else {
+        g_auto(virBuffer) sourceAttrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INIT_CHILD(buf);
         /* ...but if we've asked for the inactive XML (rather than
          * status), or to report the ActualDef as a separate <actual>
          * subelement (this is how we privately store interface
@@ -23754,17 +23755,16 @@ virDomainNetDefFormat(virBuffer *buf,
          */
         switch (def->type) {
         case VIR_DOMAIN_NET_TYPE_NETWORK:
-            virBufferEscapeString(buf, "<source network='%s'",
+            virBufferEscapeString(&sourceAttrBuf, " network='%s'",
                                   def->data.network.name);
-            virBufferEscapeString(buf, " portgroup='%s'",
+            virBufferEscapeString(&sourceAttrBuf, " portgroup='%s'",
                                   def->data.network.portgroup);
             if (virUUIDIsValid(def->data.network.portid) &&
                 !(flags & (VIR_DOMAIN_DEF_FORMAT_INACTIVE))) {
                 char portidstr[VIR_UUID_STRING_BUFLEN];
                 virUUIDFormat(def->data.network.portid, portidstr);
-                virBufferEscapeString(buf, " portid='%s'", portidstr);
+                virBufferEscapeString(&sourceAttrBuf, " portid='%s'", portidstr);
             }
-            sourceLines++;
             break;
 
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -23772,31 +23772,23 @@ virDomainNetDefFormat(virBuffer *buf,
 
         case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
             if (def->data.vhostuser->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
-                virBufferAddLit(buf, "<source type='unix'");
-                virBufferEscapeString(buf, " path='%s'",
+                virBufferAddLit(&sourceAttrBuf, " type='unix'");
+                virBufferEscapeString(&sourceAttrBuf, " path='%s'",
                                       def->data.vhostuser->data.nix.path);
-                virBufferAsprintf(buf, " mode='%s'",
+                virBufferAsprintf(&sourceAttrBuf, " mode='%s'",
                                   def->data.vhostuser->data.nix.listen ?
                                   "server"  : "client");
-                sourceLines++;
                 if (def->data.vhostuser->data.nix.reconnect.enabled) {
-                    virBufferAddLit(buf, ">\n");
-                    sourceLines++;
-                    virBufferAdjustIndent(buf, 2);
-                    virDomainChrSourceReconnectDefFormat(buf,
+                    virDomainChrSourceReconnectDefFormat(&sourceChildBuf,
                                                          &def->data.vhostuser->data.nix.reconnect);
-                    virBufferAdjustIndent(buf, -2);
                 }
 
             }
             break;
 
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
-           if (def->data.bridge.brname) {
-               virBufferEscapeString(buf, "<source bridge='%s'",
-                                     def->data.bridge.brname);
-               sourceLines++;
-           }
+            virBufferEscapeString(&sourceAttrBuf, " bridge='%s'",
+                                  def->data.bridge.brname);
             break;
 
         case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -23804,42 +23796,32 @@ virDomainNetDefFormat(virBuffer *buf,
         case VIR_DOMAIN_NET_TYPE_MCAST:
         case VIR_DOMAIN_NET_TYPE_UDP:
             if (def->data.socket.address) {
-                virBufferAsprintf(buf, "<source address='%s' port='%d'",
+                virBufferAsprintf(&sourceAttrBuf, " address='%s' port='%d'",
                                   def->data.socket.address,
                                   def->data.socket.port);
             } else {
-                virBufferAsprintf(buf, "<source port='%d'",
+                virBufferAsprintf(&sourceAttrBuf, " port='%d'",
                                   def->data.socket.port);
             }
-            sourceLines++;
 
             if (def->type != VIR_DOMAIN_NET_TYPE_UDP)
                 break;
 
-            virBufferAddLit(buf, ">\n");
-            sourceLines++;
-            virBufferAdjustIndent(buf, 2);
-
-            virBufferAsprintf(buf, "<local address='%s' port='%d'/>\n",
+            virBufferAsprintf(&sourceChildBuf, "<local address='%s' port='%d'/>\n",
                               def->data.socket.localaddr,
                               def->data.socket.localport);
-            virBufferAdjustIndent(buf, -2);
             break;
 
         case VIR_DOMAIN_NET_TYPE_INTERNAL:
-            if (def->data.internal.name) {
-                virBufferEscapeString(buf, "<source name='%s'",
-                                      def->data.internal.name);
-                sourceLines++;
-            }
+            virBufferEscapeString(&sourceAttrBuf, " name='%s'",
+                                  def->data.internal.name);
             break;
 
         case VIR_DOMAIN_NET_TYPE_DIRECT:
-            virBufferEscapeString(buf, "<source dev='%s'",
+            virBufferEscapeString(&sourceAttrBuf, " dev='%s'",
                                   def->data.direct.linkdev);
-            virBufferAsprintf(buf, " mode='%s'",
+            virBufferAsprintf(&sourceAttrBuf, " mode='%s'",
                               virNetDevMacVLanModeTypeToString(def->data.direct.mode));
-            sourceLines++;
             break;
 
         case VIR_DOMAIN_NET_TYPE_HOSTDEV:
@@ -23850,33 +23832,24 @@ virDomainNetDefFormat(virBuffer *buf,
             break;
 
         case VIR_DOMAIN_NET_TYPE_VDPA:
-           if (def->data.vdpa.devicepath) {
-               virBufferEscapeString(buf, "<source dev='%s'",
-                                     def->data.vdpa.devicepath);
-               sourceLines++;
-           }
-           break;
+            virBufferEscapeString(&sourceAttrBuf, " dev='%s'",
+                                  def->data.vdpa.devicepath);
+            break;
 
         case VIR_DOMAIN_NET_TYPE_VDS: {
             char switchidstr[VIR_UUID_STRING_BUFLEN];
 
             virUUIDFormat(def->data.vds.switch_id, switchidstr);
-            virBufferEscapeString(buf, "<source switchid='%s'", switchidstr);
-            virBufferAsprintf(buf, " portid='%lld'", def->data.vds.port_id);
-            virBufferEscapeString(buf, " portgroupid='%s'", def->data.vds.portgroup_id);
-            virBufferAsprintf(buf, " connectionid='%lld'", def->data.vds.connection_id);
-
-            sourceLines++;
-
+            virBufferEscapeString(&sourceAttrBuf, " switchid='%s'", switchidstr);
+            virBufferAsprintf(&sourceAttrBuf, " portid='%lld'", def->data.vds.port_id);
+            virBufferEscapeString(&sourceAttrBuf, " portgroupid='%s'", def->data.vds.portgroup_id);
+            virBufferAsprintf(&sourceAttrBuf, " connectionid='%lld'", def->data.vds.connection_id);
             break;
         }
 
         case VIR_DOMAIN_NET_TYPE_USER:
-            if (def->backend.type == VIR_DOMAIN_NET_BACKEND_PASST &&
-                def->sourceDev) {
-                virBufferEscapeString(buf, "<source dev='%s'", def->sourceDev);
-                sourceLines++;
-            }
+            if (def->backend.type == VIR_DOMAIN_NET_BACKEND_PASST)
+                virBufferEscapeString(&sourceAttrBuf, " dev='%s'", def->sourceDev);
             break;
 
         case VIR_DOMAIN_NET_TYPE_NULL:
@@ -23884,27 +23857,12 @@ virDomainNetDefFormat(virBuffer *buf,
             break;
         }
 
-        /* if sourceLines == 0 - no <source> info at all so far
-         *    sourceLines == 1 - first line written, no terminating ">"
-         *    sourceLines > 1 - multiple lines, including subelements
-         */
         if (def->hostIP.nips || def->hostIP.nroutes) {
-            if (sourceLines == 0) {
-                virBufferAddLit(buf, "<source>\n");
-                sourceLines += 2;
-            } else if (sourceLines == 1) {
-                virBufferAddLit(buf, ">\n");
-                sourceLines++;
-            }
-            virBufferAdjustIndent(buf, 2);
-            if (virDomainNetIPInfoFormat(buf, &def->hostIP) < 0)
+            if (virDomainNetIPInfoFormat(&sourceChildBuf, &def->hostIP) < 0)
                 return -1;
-            virBufferAdjustIndent(buf, -2);
         }
-        if (sourceLines == 1)
-            virBufferAddLit(buf, "/>\n");
-        else if (sourceLines > 1)
-            virBufferAddLit(buf, "</source>\n");
+
+        virXMLFormatElement(buf, "source", &sourceAttrBuf, &sourceChildBuf);
 
         if (virNetDevVlanFormat(&def->vlan, buf) < 0)
             return -1;
@@ -23922,7 +23880,6 @@ virDomainNetDefFormat(virBuffer *buf,
             (flags & VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET) &&
             (virDomainActualNetDefFormat(buf, def, flags, xmlopt) < 0))
             return -1;
-
     }
 
     if (virDomainNetIPInfoFormat(buf, &def->guestIP) < 0)
