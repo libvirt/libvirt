@@ -23795,14 +23795,10 @@ virDomainNetDefFormat(virBuffer *buf,
         case VIR_DOMAIN_NET_TYPE_CLIENT:
         case VIR_DOMAIN_NET_TYPE_MCAST:
         case VIR_DOMAIN_NET_TYPE_UDP:
-            if (def->data.socket.address) {
-                virBufferAsprintf(&sourceAttrBuf, " address='%s' port='%d'",
-                                  def->data.socket.address,
-                                  def->data.socket.port);
-            } else {
-                virBufferAsprintf(&sourceAttrBuf, " port='%d'",
-                                  def->data.socket.port);
-            }
+            virBufferEscapeString(&sourceAttrBuf, " address='%s'",
+                                  def->data.socket.address);
+            virBufferAsprintf(&sourceAttrBuf, " port='%d'",
+                              def->data.socket.port);
 
             if (def->type != VIR_DOMAIN_NET_TYPE_UDP)
                 break;
