@@ -23685,6 +23685,7 @@ virDomainNetDefFormat(virBuffer *buf,
     virDomainHostdevDef *hostdef = NULL;
     char macstr[VIR_MAC_STRING_BUFLEN];
     g_auto(virBuffer) targetAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) macAttrBuf = VIR_BUFFER_INITIALIZER;
     const char *prefix = xmlopt ? xmlopt->config.netPrefix : NULL;
 
     /* publicActual is true if we should report the current state in
@@ -23725,13 +23726,13 @@ virDomainNetDefFormat(virBuffer *buf,
     virBufferAddLit(buf, ">\n");
 
     virBufferAdjustIndent(buf, 2);
-    virBufferAsprintf(buf, "<mac address='%s'",
+    virBufferAsprintf(&macAttrBuf, " address='%s'",
                       virMacAddrFormat(&def->mac, macstr));
     if (def->mac_type)
-        virBufferAsprintf(buf, " type='%s'", virDomainNetMacTypeTypeToString(def->mac_type));
+        virBufferAsprintf(&macAttrBuf, " type='%s'", virDomainNetMacTypeTypeToString(def->mac_type));
     if (def->mac_check != VIR_TRISTATE_BOOL_ABSENT)
-        virBufferAsprintf(buf, " check='%s'", virTristateBoolTypeToString(def->mac_check));
-    virBufferAddLit(buf, "/>\n");
+        virBufferAsprintf(&macAttrBuf, " check='%s'", virTristateBoolTypeToString(def->mac_check));
+    virXMLFormatElement(buf, "mac", &macAttrBuf, NULL);
 
     if (publicActual) {
         /* when there is a virDomainActualNetDef, and we haven't been
