@@ -23955,16 +23955,17 @@ virDomainNetDefFormat(virBuffer *buf,
     virXMLFormatElement(buf, "target", &targetAttrBuf, NULL);
 
     if (def->ifname_guest || def->ifname_guest_actual) {
-        virBufferAddLit(buf, "<guest");
+        g_auto(virBuffer) guestAttrBuf = VIR_BUFFER_INITIALIZER;
+
         /* Skip auto-generated target names for inactive config. */
-        if (def->ifname_guest)
-            virBufferEscapeString(buf, " dev='%s'", def->ifname_guest);
+        virBufferEscapeString(&guestAttrBuf, " dev='%s'", def->ifname_guest);
 
         /* Only set if the host is running, so shouldn't pollute output */
-        if (def->ifname_guest_actual)
-            virBufferEscapeString(buf, " actual='%s'", def->ifname_guest_actual);
-        virBufferAddLit(buf, "/>\n");
+        virBufferEscapeString(&guestAttrBuf, " actual='%s'", def->ifname_guest_actual);
+
+        virXMLFormatElement(buf, "guest", &guestAttrBuf, NULL);
     }
+
     if (virDomainNetGetModelString(def)) {
         virBufferEscapeString(buf, "<model type='%s'/>\n",
                               virDomainNetGetModelString(def));
