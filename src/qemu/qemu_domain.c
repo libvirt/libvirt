@@ -1235,6 +1235,31 @@ qemuDomainTPMPrivateFormat(const virDomainTPMDef *tpm,
 }
 
 
+static int
+qemuDomainNetworkPrivateParse(xmlXPathContextPtr ctxt,
+                              virDomainNetDef *net)
+{
+    qemuDomainNetworkPrivate *priv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
+
+    priv->created = virXPathBoolean("string(./created[@value='yes'])", ctxt);
+
+    return 0;
+}
+
+
+static int
+qemuDomainNetworkPrivateFormat(const virDomainNetDef *net,
+                               virBuffer *buf)
+{
+    qemuDomainNetworkPrivate *priv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
+
+    if (priv->created)
+        virBufferAddLit(buf, "<created value='yes'/>\n");
+
+    return 0;
+}
+
+
 /* qemuDomainSecretInfoSetup:
  * @priv: pointer to domain private object
  * @alias: alias of the secret
@@ -3328,6 +3353,8 @@ virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
     .vsockNew = qemuDomainVsockPrivateNew,
     .graphicsNew = qemuDomainGraphicsPrivateNew,
     .networkNew = qemuDomainNetworkPrivateNew,
+    .networkParse = qemuDomainNetworkPrivateParse,
+    .networkFormat = qemuDomainNetworkPrivateFormat,
     .videoNew = qemuDomainVideoPrivateNew,
     .tpmNew = qemuDomainTPMPrivateNew,
     .tpmParse = qemuDomainTPMPrivateParse,

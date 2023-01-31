@@ -268,6 +268,7 @@ qemuInterfaceDirectConnect(virDomainDef *def,
     char *res_ifname = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned int macvlan_create_flags = VIR_NETDEV_MACVLAN_CREATE_WITH_TAP;
+    qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
 
     if (qemuInterfaceIsVnetCompatModel(net))
         macvlan_create_flags |= VIR_NETDEV_MACVLAN_VNET_HDR;
@@ -284,6 +285,8 @@ qemuInterfaceDirectConnect(virDomainDef *def,
                                                tapfd, tapfdSize,
                                                macvlan_create_flags) < 0)
         goto cleanup;
+
+    netpriv->created = true;
 
     virDomainAuditNetDevice(def, net, res_ifname, true);
     VIR_FREE(net->ifname);
