@@ -151,6 +151,8 @@ qemuFDPassTransferCommand(qemuFDPass *fdpass,
         fdpass->fds[i].fd = -1;
         virCommandAddArgList(cmd, "-add-fd", arg, NULL);
     }
+
+    fdpass->passed = true;
 }
 
 
