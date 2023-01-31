@@ -97,6 +97,47 @@ qemuFDPassNew(const char *prefix,
 
 
 /**
+ * qemuFDPassNewPassed:
+ * @fdSetID: ID of an FDset which was allready passed to qemu
+ *
+ * Create qemuFDPass pointing to an already passed FD. Useful to usw with
+ * qemuFDPassTransferMonitorRollback, when restoring after restart.
+ */
+qemuFDPass *
+qemuFDPassNewPassed(unsigned int fdSetID)
+{
+    qemuFDPass *fdpass = g_new0(qemuFDPass, 1);
+
+    fdpass->fdSetID = fdSetID;
+    fdpass->passed = true;
+
+    return fdpass;
+}
+
+
+/**
+ * qemuFDPassIsPassed:
+ * @fdpass: The fd passing helper struct
+ * @id: when non-NULL filled with the fdset ID
+ *
+ * Returns true if @fdpass was passed to qemu. In such case @id is also filled
+ * with the ID of the fdset if non-NULL.
+ */
+bool
+qemuFDPassIsPassed(qemuFDPass *fdpass,
+                   unsigned *id)
+{
+    if (!fdpass || !fdpass->passed)
+        return false;
+
+    if (id)
+        *id = fdpass->fdSetID;
+
+    return true;
+}
+
+
+/**
  * qemuFDPassAddFD:
  * @fdpass: The fd passing helper struct
  * @fd: File descriptor to pass

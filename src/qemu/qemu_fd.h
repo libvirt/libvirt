@@ -31,6 +31,13 @@ qemuFDPass *
 qemuFDPassNew(const char *prefix,
               void *dompriv);
 
+qemuFDPass *
+qemuFDPassNewPassed(unsigned int fdSetID);
+
+bool
+qemuFDPassIsPassed(qemuFDPass *fdpass,
+                   unsigned *id);
+
 void
 qemuFDPassAddFD(qemuFDPass *fdpass,
                 int *fd,
