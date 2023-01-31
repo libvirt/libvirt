@@ -1941,6 +1941,8 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
     g_autofree char *httpcookiealias = NULL;
     g_autofree char *tlskeyalias = NULL;
     g_autofree char *thresholdEventWithIndex = NULL;
+    bool fdsetPresent = false;
+    unsigned int fdSetID;
 
     src->nodestorage = virXPathString("string(./nodenames/nodename[@type='storage']/@name)", ctxt);
     src->nodeformat = virXPathString("string(./nodenames/nodename[@type='format']/@name)", ctxt);
@@ -1957,7 +1959,9 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
     httpcookiealias = virXPathString("string(./objects/secret[@type='httpcookie']/@alias)", ctxt);
     tlskeyalias = virXPathString("string(./objects/secret[@type='tlskey']/@alias)", ctxt);
 
-    if (authalias || encalias || httpcookiealias || tlskeyalias) {
+    fdsetPresent = virXPathUInt("string(./fdsets/fdset[@type='storage']/@id)", ctxt, &fdSetID) == 0;
+
+    if (authalias || encalias || httpcookiealias || tlskeyalias || fdsetPresent) {
         if (!src->privateData &&
             !(src->privateData = qemuDomainStorageSourcePrivateNew()))
             return -1;
@@ -1975,6 +1979,9 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
 
         if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->tlsKeySecret, &tlskeyalias) < 0)
             return -1;
+
+        if (fdsetPresent)
+            priv->fdpass = qemuFDPassNewPassed(fdSetID);
     }
 
     if (virStorageSourcePrivateDataParseRelPath(ctxt, src) < 0)
@@ -2008,6 +2015,7 @@ qemuStorageSourcePrivateDataFormat(virStorageSource *src,
     qemuDomainStorageSourcePrivate *srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
     g_auto(virBuffer) nodenamesChildBuf = VIR_BUFFER_INIT_CHILD(buf);
     g_auto(virBuffer) objectsChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) fdsetsChildBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     virBufferEscapeString(&nodenamesChildBuf, "<nodename type='storage' name='%s'/>\n", src->nodestorage);
     virBufferEscapeString(&nodenamesChildBuf, "<nodename type='format' name='%s'/>\n", src->nodeformat);
@@ -2025,16 +2033,23 @@ qemuStorageSourcePrivateDataFormat(virStorageSource *src,
         return -1;
 
     if (srcPriv) {
+        unsigned int fdSetID;
+
         qemuStorageSourcePrivateDataFormatSecinfo(&objectsChildBuf, srcPriv->secinfo, "auth");
         qemuStorageSourcePrivateDataFormatSecinfo(&objectsChildBuf, srcPriv->encinfo, "encryption");
         qemuStorageSourcePrivateDataFormatSecinfo(&objectsChildBuf, srcPriv->httpcookie, "httpcookie");
         qemuStorageSourcePrivateDataFormatSecinfo(&objectsChildBuf, srcPriv->tlsKeySecret, "tlskey");
+
+        if (qemuFDPassIsPassed(srcPriv->fdpass, &fdSetID))
+            virBufferAsprintf(&fdsetsChildBuf, "<fdset type='storage' id='%u'/>\n", fdSetID);
     }
 
     if (src->tlsAlias)
         virBufferAsprintf(&objectsChildBuf, "<TLSx509 alias='%s'/>\n", src->tlsAlias);
 
     virXMLFormatElement(buf, "objects", NULL, &objectsChildBuf);
+
+    virXMLFormatElement(buf, "fdsets", NULL, &fdsetsChildBuf);
 
     if (src->thresholdEventWithIndex)
         virBufferAddLit(buf, "<thresholdEvent indexUsed='yes'/>\n");

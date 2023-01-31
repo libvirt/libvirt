@@ -341,6 +341,9 @@
                 <secret type='tlskey' alias='tls-certificate-key-alias'/>
                 <TLSx509 alias='transport-alias'/>
               </objects>
+              <fdsets>
+                <fdset type='storage' id='1337'/>
+              </fdsets>
               <thresholdEvent indexUsed='yes'/>
             </privateData>
           </source>
