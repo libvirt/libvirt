@@ -11481,7 +11481,7 @@ qemuDomainInitializePflashStorageSource(virDomainObj *vm,
 
     pflash0 = virStorageSourceNew();
     pflash0->type = VIR_STORAGE_TYPE_FILE;
-    pflash0->format = VIR_STORAGE_FILE_RAW;
+    pflash0->format = def->os.loader->format;
     pflash0->path = g_strdup(def->os.loader->path);
     pflash0->readonly = false;
     virTristateBoolToBool(def->os.loader->readonly, &pflash0->readonly);

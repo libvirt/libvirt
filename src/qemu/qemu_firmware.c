@@ -990,9 +990,11 @@ qemuFirmwareOSInterfaceTypeFromOsDefLoaderType(virDomainLoader type)
  */
 static void
 qemuFirmwareEnsureNVRAM(virDomainDef *def,
-                        const virQEMUDriverConfig *cfg)
+                        const virQEMUDriverConfig *cfg,
+                        virStorageFileFormat format)
 {
     virDomainLoaderDef *loader = def->os.loader;
+    const char *ext = NULL;
 
     if (!loader)
         return;
@@ -1007,9 +1009,14 @@ qemuFirmwareEnsureNVRAM(virDomainDef *def,
 
     loader->nvram = virStorageSourceNew();
     loader->nvram->type = VIR_STORAGE_TYPE_FILE;
-    loader->nvram->format = VIR_STORAGE_FILE_RAW;
+    loader->nvram->format = format;
 
-    loader->nvram->path = g_strdup_printf("%s/%s_VARS.fd", cfg->nvramDir, def->name);
+    if (format == VIR_STORAGE_FILE_RAW)
+        ext = ".fd";
+
+    loader->nvram->path = g_strdup_printf("%s/%s_VARS%s",
+                                          cfg->nvramDir, def->name,
+                                          ext ? ext : "");
 }
 
 
@@ -1233,22 +1240,30 @@ qemuFirmwareEnableFeaturesModern(virQEMUDriverConfig *cfg,
     const qemuFirmwareMappingKernel *kernel = &fw->mapping.data.kernel;
     const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;
     virDomainLoaderDef *loader = NULL;
+    virStorageFileFormat format;
     size_t i;
 
     switch (fw->mapping.device) {
     case QEMU_FIRMWARE_DEVICE_FLASH:
+        if ((format = virStorageFileFormatTypeFromString(flash->executable.format)) < 0)
+            return -1;
+
         if (!def->os.loader)
             def->os.loader = virDomainLoaderDefNew();
         loader = def->os.loader;
 
         loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
         loader->readonly = VIR_TRISTATE_BOOL_YES;
+        loader->format = format;
 
         VIR_FREE(loader->path);
         loader->path = g_strdup(flash->executable.filename);
 
         if (flash->mode == QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
-            qemuFirmwareEnsureNVRAM(def, cfg);
+            if ((format = virStorageFileFormatTypeFromString(flash->nvram_template.format)) < 0)
+                return -1;
+
+            qemuFirmwareEnsureNVRAM(def, cfg, format);
 
             /* If the NVRAM is not a local path then we can't create or
              * reset it, so in that case filling in the nvramTemplate
@@ -1457,7 +1472,7 @@ qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
         loader->readonly = VIR_TRISTATE_BOOL_YES;
         loader->nvramTemplate = g_strdup(cfg->firmwares[i]->nvram);
 
-        qemuFirmwareEnsureNVRAM(def, cfg);
+        qemuFirmwareEnsureNVRAM(def, cfg, VIR_STORAGE_FILE_RAW);
 
         VIR_DEBUG("decided on firmware '%s' template '%s'",
                   loader->path, NULLSTR(loader->nvramTemplate));
@@ -1625,7 +1640,7 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
          * generate a path to the domain-specific NVRAM file, but
          * otherwise we're good to go */
         if (loader->nvramTemplate) {
-            qemuFirmwareEnsureNVRAM(def, cfg);
+            qemuFirmwareEnsureNVRAM(def, cfg, loader->format);
             return 0;
         }
     }
