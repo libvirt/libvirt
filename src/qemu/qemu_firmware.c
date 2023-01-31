@@ -1171,10 +1171,24 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
                       flash->executable.format);
             return false;
         }
+        if (loader &&
+            STRNEQ(flash->executable.format, virStorageFileFormatTypeToString(loader->format))) {
+            VIR_DEBUG("Discarding loader with mismatching flash format '%s' != '%s'",
+                      flash->executable.format,
+                      virStorageFileFormatTypeToString(loader->format));
+            return false;
+        }
         if (flash->mode == QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
             if (STRNEQ(flash->nvram_template.format, "raw")) {
                 VIR_DEBUG("Discarding loader with unsupported nvram template format '%s'",
                           flash->nvram_template.format);
+                return false;
+            }
+            if (loader && loader->nvram &&
+                STRNEQ(flash->nvram_template.format, virStorageFileFormatTypeToString(loader->nvram->format))) {
+                VIR_DEBUG("Discarding loader with mismatching nvram template format '%s' != '%s'",
+                          flash->nvram_template.format,
+                          virStorageFileFormatTypeToString(loader->nvram->format));
                 return false;
             }
         }
@@ -1422,6 +1436,12 @@ qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
     if (loader->stateless == VIR_TRISTATE_BOOL_YES) {
         VIR_DEBUG("Ignoring legacy entries for stateless loader");
         return 0;
+    }
+
+    if (loader->format != VIR_STORAGE_FILE_RAW) {
+        VIR_DEBUG("Ignoring legacy entries for loader with flash format '%s'",
+                  virStorageFileFormatTypeToString(loader->format));
+        return 1;
     }
 
     for (i = 0; i < cfg->nfirmwares; i++) {
