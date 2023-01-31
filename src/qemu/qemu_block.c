@@ -1410,6 +1410,9 @@ qemuBlockStorageSourceAttachApplyStorageDeps(qemuMonitor *mon,
         qemuMonitorAddObject(mon, &data->tlsProps, &data->tlsAlias) < 0)
         return -1;
 
+    if (qemuFDPassTransferMonitor(data->fdpass, mon) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -1559,6 +1562,8 @@ qemuBlockStorageSourceAttachRollback(qemuMonitor *mon,
     if (data->tlsKeySecretAlias)
         ignore_value(qemuMonitorDelObject(mon, data->tlsKeySecretAlias, false));
 
+    qemuFDPassTransferMonitorRollback(data->fdpass, mon);
+
     virErrorRestore(&orig_err);
 }
 
@@ -1609,6 +1614,8 @@ qemuBlockStorageSourceDetachPrepare(virStorageSource *src)
 
         if (srcpriv->tlsKeySecret)
             data->tlsKeySecretAlias = g_strdup(srcpriv->tlsKeySecret->alias);
+
+        data->fdpass = srcpriv->fdpass;
     }
 
     return g_steal_pointer(&data);
