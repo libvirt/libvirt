@@ -99,6 +99,8 @@ struct qemuBlockStorageSourceAttachData {
     char *tlsAlias;
     virJSONValue *tlsKeySecretProps;
     char *tlsKeySecretAlias;
+
+    qemuFDPass *fdpass;
 };
 
 

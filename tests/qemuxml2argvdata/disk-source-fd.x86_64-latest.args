@@ -33,13 +33,13 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -blockdev '{"driver":"file","filename":"/dev/fdset/2","node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"qcow2","file":"libvirt-4-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x2","drive":"libvirt-4-format","id":"virtio-disk4","bootindex":1}' \
--add-fd set=0,fd=704,opaque=libvirt-1-storage0 \
--add-fd set=1,fd=777,opaque=libvirt-2-storage0 \
--add-fd set=1,fd=778,opaque=libvirt-2-storage1 \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/rhel7.1484071876","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":true,"driver":"qcow2","file":"libvirt-3-storage","backing":null}' \
+-add-fd set=1,fd=777,opaque=libvirt-2-storage0 \
+-add-fd set=1,fd=778,opaque=libvirt-2-storage1 \
 -blockdev '{"driver":"file","filename":"/dev/fdset/1","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":true,"driver":"qcow2","file":"libvirt-2-storage","backing":"libvirt-3-format"}' \
+-add-fd set=0,fd=704,opaque=libvirt-1-storage0 \
 -blockdev '{"driver":"file","filename":"/dev/fdset/0","node-name":"libvirt-1-storage","read-only":false,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage","backing":"libvirt-2-format"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x3","drive":"libvirt-1-format","id":"virtio-disk5"}' \
