@@ -2005,9 +2005,9 @@ static int
 qemuStorageSourcePrivateDataFormat(virStorageSource *src,
                                    virBuffer *buf)
 {
-    g_auto(virBuffer) tmp = VIR_BUFFER_INIT_CHILD(buf);
     qemuDomainStorageSourcePrivate *srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
     g_auto(virBuffer) nodenamesChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) objectsChildBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     virBufferEscapeString(&nodenamesChildBuf, "<nodename type='storage' name='%s'/>\n", src->nodestorage);
     virBufferEscapeString(&nodenamesChildBuf, "<nodename type='format' name='%s'/>\n", src->nodeformat);
@@ -2025,16 +2025,16 @@ qemuStorageSourcePrivateDataFormat(virStorageSource *src,
         return -1;
 
     if (srcPriv) {
-        qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->secinfo, "auth");
-        qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->encinfo, "encryption");
-        qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->httpcookie, "httpcookie");
-        qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->tlsKeySecret, "tlskey");
+        qemuStorageSourcePrivateDataFormatSecinfo(&objectsChildBuf, srcPriv->secinfo, "auth");
+        qemuStorageSourcePrivateDataFormatSecinfo(&objectsChildBuf, srcPriv->encinfo, "encryption");
+        qemuStorageSourcePrivateDataFormatSecinfo(&objectsChildBuf, srcPriv->httpcookie, "httpcookie");
+        qemuStorageSourcePrivateDataFormatSecinfo(&objectsChildBuf, srcPriv->tlsKeySecret, "tlskey");
     }
 
     if (src->tlsAlias)
-        virBufferAsprintf(&tmp, "<TLSx509 alias='%s'/>\n", src->tlsAlias);
+        virBufferAsprintf(&objectsChildBuf, "<TLSx509 alias='%s'/>\n", src->tlsAlias);
 
-    virXMLFormatElement(buf, "objects", NULL, &tmp);
+    virXMLFormatElement(buf, "objects", NULL, &objectsChildBuf);
 
     if (src->thresholdEventWithIndex)
         virBufferAddLit(buf, "<thresholdEvent indexUsed='yes'/>\n");
