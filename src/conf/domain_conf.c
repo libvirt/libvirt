@@ -23685,7 +23685,7 @@ virDomainNetDefFormat(virBuffer *buf,
     const char *typeStr;
     virDomainHostdevDef *hostdef = NULL;
     char macstr[VIR_MAC_STRING_BUFLEN];
-    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) targetAttrBuf = VIR_BUFFER_INITIALIZER;
     const char *prefix = xmlopt ? xmlopt->config.netPrefix : NULL;
 
     /* publicActual is true if we should report the current state in
@@ -23945,14 +23945,14 @@ virDomainNetDefFormat(virBuffer *buf,
             STRPREFIX(def->ifname, VIR_NET_GENERATED_MACVLAN_PREFIX) ||
             (prefix && STRPREFIX(def->ifname, prefix)))))) {
         /* Skip auto-generated target names for inactive config. */
-        virBufferEscapeString(&attrBuf, " dev='%s'", def->ifname);
+        virBufferEscapeString(&targetAttrBuf, " dev='%s'", def->ifname);
     }
     if (def->managed_tap != VIR_TRISTATE_BOOL_ABSENT) {
-        virBufferAsprintf(&attrBuf, " managed='%s'",
+        virBufferAsprintf(&targetAttrBuf, " managed='%s'",
                           virTristateBoolTypeToString(def->managed_tap));
     }
 
-    virXMLFormatElement(buf, "target", &attrBuf, NULL);
+    virXMLFormatElement(buf, "target", &targetAttrBuf, NULL);
 
     if (def->ifname_guest || def->ifname_guest_actual) {
         virBufferAddLit(buf, "<guest");
