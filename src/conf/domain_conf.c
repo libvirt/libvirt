@@ -9254,6 +9254,29 @@ virDomainNetDefParseXMLRequireSource(virDomainNetDef *def,
 }
 
 
+static int
+virDomainNetDefParsePrivateData(xmlXPathContextPtr ctxt,
+                                virDomainNetDef *net,
+                                virDomainXMLOption *xmlopt)
+{
+    xmlNodePtr private_node = virXPathNode("./privateData", ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    if (!xmlopt ||
+        !xmlopt->privateData.networkParse ||
+        !private_node)
+        return 0;
+
+    ctxt->node = private_node;
+
+    if (xmlopt->privateData.networkParse(ctxt, net) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+
 static virDomainNetDef *
 virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                         xmlNodePtr node,
@@ -9670,6 +9693,10 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     }
 
     if (virNetworkPortOptionsParseXML(ctxt, &def->isolatedPort) < 0)
+        return NULL;
+
+    if (flags & VIR_DOMAIN_DEF_PARSE_STATUS &&
+        virDomainNetDefParsePrivateData(ctxt, def, xmlopt) < 0)
         return NULL;
 
     return g_steal_pointer(&def);
@@ -23668,6 +23695,27 @@ virDomainNetPortForwardsFormat(virBuffer *buf,
 }
 
 
+static int
+virDomainNetDefFormatPrivateData(virBuffer *buf,
+                                 virDomainNetDef *net,
+                                 unsigned int flags,
+                                 virDomainXMLOption *xmlopt)
+{
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+    if (!(flags & VIR_DOMAIN_DEF_FORMAT_STATUS) ||
+        !xmlopt ||
+        !xmlopt->privateData.networkFormat)
+        return 0;
+
+    if (xmlopt->privateData.networkFormat(net, &childBuf) < 0)
+        return -1;
+
+    virXMLFormatElement(buf, "privateData", NULL, &childBuf);
+    return 0;
+}
+
+
 int
 virDomainNetDefFormat(virBuffer *buf,
                       virDomainNetDef *def,
@@ -23964,6 +24012,9 @@ virDomainNetDefFormat(virBuffer *buf,
 
     virDomainDeviceInfoFormat(buf, &def->info, flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT
                                                      | VIR_DOMAIN_DEF_FORMAT_ALLOW_ROM);
+
+    if (virDomainNetDefFormatPrivateData(buf, def, flags, xmlopt) < 0)
+        return -1;
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</interface>\n");
