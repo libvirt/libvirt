@@ -1516,6 +1516,21 @@ VIR_ENUM_IMPL(virDomainNetVhostuserMode,
               "server",
 );
 
+typedef enum {
+    VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT,
+    VIR_DOMAIN_CHR_SOURCE_MODE_BIND,
+
+    VIR_DOMAIN_CHR_SOURCE_MODE_LAST
+} virDomainChrSourceMode;
+
+
+VIR_ENUM_DECL(virDomainChrSourceMode);
+VIR_ENUM_IMPL(virDomainChrSourceMode,
+              VIR_DOMAIN_CHR_SOURCE_MODE_LAST,
+              "connect",
+              "bind",
+);
+
 
 static virClass *virDomainObjClass;
 static virClass *virDomainXMLOptionClass;
@@ -9846,26 +9861,6 @@ virDomainChrDefParseTargetXML(virDomainChrDef *def,
     return 0;
 }
 
-typedef enum {
-    VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT,
-    VIR_DOMAIN_CHR_SOURCE_MODE_BIND,
-} virDomainChrSourceModeType;
-
-
-static int
-virDomainChrSourceModeTypeFromString(const char *str)
-{
-    if (!str)
-        return -1;
-
-    if (STREQ(str, "connect"))
-        return VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT;
-    if (STREQ(str, "bind"))
-        return VIR_DOMAIN_CHR_SOURCE_MODE_BIND;
-
-    return -1;
-}
-
 
 static int
 virDomainChrSourceDefParseTCP(virDomainChrSourceDef *def,
@@ -9873,7 +9868,7 @@ virDomainChrSourceDefParseTCP(virDomainChrSourceDef *def,
                               xmlXPathContextPtr ctxt,
                               unsigned int flags)
 {
-    virDomainChrSourceModeType mode;
+    virDomainChrSourceMode mode;
 
     if (virXMLPropEnumDefault(source, "mode", virDomainChrSourceModeTypeFromString,
                               VIR_XML_PROP_NONE, &mode,
@@ -9911,7 +9906,7 @@ static int
 virDomainChrSourceDefParseUDP(virDomainChrSourceDef *def,
                               xmlNodePtr source)
 {
-    virDomainChrSourceModeType mode;
+    virDomainChrSourceMode mode;
 
     if (virXMLPropEnumDefault(source, "mode", virDomainChrSourceModeTypeFromString,
                               VIR_XML_PROP_NONE, &mode,
@@ -9937,7 +9932,7 @@ virDomainChrSourceDefParseUnix(virDomainChrSourceDef *def,
                                xmlNodePtr source,
                                xmlXPathContextPtr ctxt)
 {
-    virDomainChrSourceModeType mode;
+    virDomainChrSourceMode mode;
 
     if (virXMLPropEnumDefault(source, "mode", virDomainChrSourceModeTypeFromString,
                               VIR_XML_PROP_NONE, &mode,
