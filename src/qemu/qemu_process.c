@@ -8443,12 +8443,11 @@ void qemuProcessStop(virQEMUDriver *driver,
         vport = virDomainNetGetActualVirtPortProfile(net);
         switch (virDomainNetGetActualType(net)) {
         case VIR_DOMAIN_NET_TYPE_DIRECT:
-            ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
-                             net->ifname, &net->mac,
-                             virDomainNetGetActualDirectDev(net),
-                             virDomainNetGetActualDirectMode(net),
-                             virDomainNetGetActualVirtPortProfile(net),
-                             cfg->stateDir));
+            virNetDevMacVLanDeleteWithVPortProfile(net->ifname, &net->mac,
+                                                   virDomainNetGetActualDirectDev(net),
+                                                   virDomainNetGetActualDirectMode(net),
+                                                   virDomainNetGetActualVirtPortProfile(net),
+                                                   cfg->stateDir);
             break;
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
             if (net->managed_tap != VIR_TRISTATE_BOOL_NO && net->ifname) {

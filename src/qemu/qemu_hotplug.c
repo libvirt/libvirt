@@ -1378,12 +1378,11 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
             virErrorRestore(&originalError);
 
             if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
-                ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
-                                 net->ifname, &net->mac,
-                                 virDomainNetGetActualDirectDev(net),
-                                 virDomainNetGetActualDirectMode(net),
-                                 virDomainNetGetActualVirtPortProfile(net),
-                                 cfg->stateDir));
+                virNetDevMacVLanDeleteWithVPortProfile(net->ifname, &net->mac,
+                                                       virDomainNetGetActualDirectDev(net),
+                                                       virDomainNetGetActualDirectMode(net),
+                                                       virDomainNetGetActualVirtPortProfile(net),
+                                                       cfg->stateDir);
             }
 
             qemuDomainNetDeviceVportRemove(net);
@@ -4653,12 +4652,11 @@ qemuDomainRemoveNetDevice(virQEMUDriver *driver,
     }
 
     if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
-                         net->ifname, &net->mac,
-                         virDomainNetGetActualDirectDev(net),
-                         virDomainNetGetActualDirectMode(net),
-                         virDomainNetGetActualVirtPortProfile(net),
-                         cfg->stateDir));
+        virNetDevMacVLanDeleteWithVPortProfile(net->ifname, &net->mac,
+                                               virDomainNetGetActualDirectDev(net),
+                                               virDomainNetGetActualDirectMode(net),
+                                               virDomainNetGetActualVirtPortProfile(net),
+                                               cfg->stateDir);
     }
 
     if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {

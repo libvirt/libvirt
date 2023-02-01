@@ -92,7 +92,7 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
                                            const virNetDevVPortProfile *virtPortProfile,
                                            char *stateDir)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(6) G_GNUC_WARN_UNUSED_RESULT;
+    ATTRIBUTE_NONNULL(6);
 
 int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
                                             const virMacAddr *macaddress,
