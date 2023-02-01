@@ -31,10 +31,15 @@ include:
     - if test -x /usr/bin/rpmbuild && test "$RPM" != "skip";
       then
         rpmbuild --clean --nodeps --define "_without_mingw 1" -ta build/meson-dist/libvirt-*.tar.xz;
-        mv "$HOME"/rpmbuild/RPMS/x86_64/ libvirt-rpms/;
       else
         meson compile -C build;
         meson test -C build --no-suite syntax-check --print-errorlogs;
+      fi
+  after_script:
+    - test "$CI_JOB_STATUS" != "success" && exit 1;
+    - if test -x /usr/bin/rpmbuild && test "$RPM" != "skip";
+      then
+        mv "$HOME"/rpmbuild/RPMS/x86_64/ libvirt-rpms/;
       fi
 
 .native_build_job_prebuilt_env:
@@ -77,6 +82,8 @@ include:
     - *script_variables
     - meson setup build --werror -Dsystem=true || (cat build/meson-logs/meson-log.txt && exit 1)
     - DESTDIR=$(pwd)/install meson compile -C build install-web
+  after_script:
+    - test "$CI_JOB_STATUS" != "success" && exit 1;
     - mv install/usr/share/doc/libvirt/html/ website
   artifacts:
     expose_as: 'Website'
@@ -155,6 +162,8 @@ potfile:
     - meson setup build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
     - meson compile -C build libvirt-pot-dep
     - meson compile -C build libvirt-pot
+  after_script:
+    - test "$CI_JOB_STATUS" != "success" && exit 1;
     - cp po/libvirt.pot libvirt.pot
   artifacts:
     expose_as: 'Potfile'
