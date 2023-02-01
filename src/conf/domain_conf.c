@@ -1500,6 +1500,23 @@ VIR_ENUM_IMPL(virDomainLaunchSecurity,
               "s390-pv",
 );
 
+typedef enum {
+    VIR_DOMAIN_NET_VHOSTUSER_MODE_NONE,
+    VIR_DOMAIN_NET_VHOSTUSER_MODE_CLIENT,
+    VIR_DOMAIN_NET_VHOSTUSER_MODE_SERVER,
+
+    VIR_DOMAIN_NET_VHOSTUSER_MODE_LAST
+} virDomainNetVhostuserMode;
+
+VIR_ENUM_DECL(virDomainNetVhostuserMode);
+VIR_ENUM_IMPL(virDomainNetVhostuserMode,
+              VIR_DOMAIN_NET_VHOSTUSER_MODE_LAST,
+              "",
+              "client",
+              "server",
+);
+
+
 static virClass *virDomainObjClass;
 static virClass *virDomainXMLOptionClass;
 static void virDomainObjDispose(void *obj);
@@ -9220,23 +9237,6 @@ virDomainNetDefParseXMLRequireSource(virDomainNetDef *def,
 
     return 0;
 }
-
-
-typedef enum {
-    VIR_DOMAIN_NET_VHOSTUSER_MODE_NONE,
-    VIR_DOMAIN_NET_VHOSTUSER_MODE_CLIENT,
-    VIR_DOMAIN_NET_VHOSTUSER_MODE_SERVER,
-
-    VIR_DOMAIN_NET_VHOSTUSER_MODE_LAST
-} virDomainNetVhostuserMode;
-
-VIR_ENUM_DECL(virDomainNetVhostuserMode);
-VIR_ENUM_IMPL(virDomainNetVhostuserMode,
-              VIR_DOMAIN_NET_VHOSTUSER_MODE_LAST,
-              "",
-              "client",
-              "server",
-);
 
 
 static virDomainNetDef *
