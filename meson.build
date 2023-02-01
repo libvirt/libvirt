@@ -809,6 +809,7 @@ endforeach
 
 optional_programs = [
   'augparse',
+  'black',
   'dmidecode',
   'ebtables',
   'flake8',

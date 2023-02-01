@@ -608,6 +608,16 @@ sc_flake8:
 		echo 'skipping test $@: flake8 not installed' 1>&2; \
 	fi
 
+sc_black:
+	if [ -n "$(BLACK)" ]; then \
+		DOT_PY=$$($(VC_LIST_EXCEPT) | $(GREP) '\.py$$'); \
+		BANG_PY=$$($(VC_LIST_EXCEPT) | xargs grep -l '^#!/usr/bin/env python3$$'); \
+		ALL_PY=$$(printf "%s\n%s" "$$DOT_PY" "$$BANG_PY" | sort -u); \
+		echo "$$ALL_PY" | xargs --no-run-if-empty $(BLACK) --check; \
+	else \
+		echo 'skipping test $@: black not installed' 1>&2; \
+	fi
+
 # mymain() in test files should use return, not exit, for nicer output
 sc_prohibit_exit_in_tests:
 	@prohibit='\<exit *\(' \
@@ -1307,6 +1317,11 @@ syntax-check: sc_spacing-check \
 		echo "* flake8 not installed, sc_flake8 has been skipped  *" >&2; \
 		echo "*****************************************************" >&2; \
 	fi
+	if [ -z "$(BLACK)" ]; then \
+		echo "*****************************************************" >&2; \
+		echo "* black not installed, sc_black has been skipped    *" >&2; \
+		echo "*****************************************************" >&2; \
+	fi
 endif
 
 # Don't include duplicate header in the source (either *.c or *.h)
@@ -1485,6 +1500,9 @@ exclude_file_name_regexp--sc_prohibit_strcmp = \
 exclude_file_name_regexp--sc_prohibit_select = \
   ^build-aux/syntax-check\.mk|src/util/vireventglibwatch\.c|tests/meson\.build$$
 
+
+exclude_file_name_regexp--sc_black = \
+  ^tools/|src/|tests/|ci/|run\.in|scripts/[^/]*\.py
 
 ## -------------- ##
 ## Implementation ##

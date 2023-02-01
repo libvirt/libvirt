@@ -3,6 +3,7 @@
 top_srcdir = @top_srcdir@
 top_builddir = @top_builddir@
 FLAKE8 = @flake8_path@
+BLACK = @black_path@
 RUNUTF8 = @runutf8@
 PYTHON = @PYTHON3@
 GREP = @GREP@

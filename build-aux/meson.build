@@ -5,6 +5,10 @@ if git and tests_enabled[0]
   if flake8_prog.found()
     flake8_path = flake8_prog.full_path()
   endif
+  black_path = ''
+  if black_prog.found()
+    black_path = black_prog.full_path()
+  endif
 
   if host_machine.system() == 'freebsd' or host_machine.system() == 'darwin'
     make_prog = find_program('gmake')
@@ -35,6 +39,7 @@ if git and tests_enabled[0]
     'top_srcdir': meson.project_source_root(),
     'top_builddir': meson.project_build_root(),
     'flake8_path': flake8_path,
+    'black_path': black_path,
     'runutf8': ' '.join(runutf8),
     'PYTHON3': python3_prog.full_path(),
     'GREP': grep_prog.full_path(),
