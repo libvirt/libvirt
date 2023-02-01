@@ -56,7 +56,7 @@ void virHostMsgCheck(const char *prefix,
                      ...)
 {
     va_list args;
-    char *msg;
+    g_autofree char *msg = NULL;
 
     if (quiet)
         return;
@@ -66,7 +66,6 @@ void virHostMsgCheck(const char *prefix,
     va_end(args);
 
     fprintf(stdout, _("%6s: Checking %-60s: "), prefix, msg);
-    VIR_FREE(msg);
 }
 
 static bool virHostMsgWantEscape(void)
@@ -114,7 +113,7 @@ void virHostMsgFail(virHostValidateLevel level,
                     ...)
 {
     va_list args;
-    char *msg;
+    g_autofree char *msg = NULL;
 
     if (quiet)
         return;
@@ -129,7 +128,6 @@ void virHostMsgFail(virHostValidateLevel level,
     else
         fprintf(stdout, "%s (%s)\n",
                 _(failMessages[level]), msg);
-    VIR_FREE(msg);
 }
 
 

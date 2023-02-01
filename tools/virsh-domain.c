@@ -366,7 +366,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
     const char *from = NULL;
-    char *buffer;
+    g_autofree char *buffer = NULL;
     int rv;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     bool current = vshCommandOptBool(cmd, "current");
@@ -403,8 +403,6 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
         rv = virDomainAttachDeviceFlags(dom, buffer, flags);
     else
         rv = virDomainAttachDevice(dom, buffer);
-
-    VIR_FREE(buffer);
 
     if (rv < 0) {
         vshError(ctl, _("Failed to attach device from %s"), from);
@@ -2364,7 +2362,7 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
     const char *path = NULL;
     int abort_flags = 0;
     const char *xml = NULL;
-    char *xmlstr = NULL;
+    g_autofree char *xmlstr = NULL;
     bool print_xml = vshCommandOptBool(cmd, "print-xml");
     virTypedParameterPtr params = NULL;
     virshBlockJobWaitData *bjWait = NULL;
@@ -2567,7 +2565,6 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    VIR_FREE(xmlstr);
     virTypedParamsFree(params, nparams);
     virshBlockJobWaitFree(bjWait);
     return ret;
@@ -5624,7 +5621,7 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     bool created = false;
     bool generated = false;
-    char *mime = NULL;
+    g_autofree char *mime = NULL;
     virshControl *priv = ctl->privData;
     virshStreamCallbackData cbdata;
 
@@ -5688,7 +5685,6 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
         unlink(file);
     if (generated)
         VIR_FREE(file);
-    VIR_FREE(mime);
     return ret;
 }
 
@@ -7432,9 +7428,8 @@ cmdGuestvcpus(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
 
         for (i = 0; i < nparams; i++) {
-            char *str = vshGetTypedParamValue(ctl, &params[i]);
+            g_autofree char *str = vshGetTypedParamValue(ctl, &params[i]);
             vshPrint(ctl, "%-15s: %s\n", params[i].field, str);
-            VIR_FREE(str);
         }
     }
 
@@ -8305,7 +8300,7 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
     const char *from = NULL;
-    char *buffer;
+    g_autofree char *buffer = NULL;
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
@@ -8322,7 +8317,6 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
         dom = virDomainDefineXMLFlags(priv->conn, buffer, flags);
     else
         dom = virDomainDefineXML(priv->conn, buffer);
-    VIR_FREE(buffer);
 
     if (!dom) {
         vshError(ctl, _("Failed to define domain from %s"), from);
@@ -10340,7 +10334,7 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
-    char *guest_agent_cmd = NULL;
+    g_autofree char *guest_agent_cmd = NULL;
     char *result = NULL;
     int timeout = VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT;
     int judge = 0;
@@ -10405,7 +10399,6 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(result);
-    VIR_FREE(guest_agent_cmd);
 
     return ret;
 }
@@ -11185,7 +11178,7 @@ doMigrate(void *opaque)
     if (vshCommandOptStringReq(ctl, cmd, "migrate-disks", &opt) < 0)
         goto out;
     if (opt) {
-        char **val = NULL;
+        g_autofree char **val = NULL;
 
         val = g_strsplit(opt, ",", 0);
 
@@ -11194,28 +11187,22 @@ doMigrate(void *opaque)
                                         &maxparams,
                                         VIR_MIGRATE_PARAM_MIGRATE_DISKS,
                                         (const char **)val) < 0) {
-            VIR_FREE(val);
             goto save_error;
         }
-
-        VIR_FREE(val);
     }
 
     if (vshCommandOptStringReq(ctl, cmd, "comp-methods", &opt) < 0)
         goto out;
     if (opt) {
-        char **val = g_strsplit(opt, ",", 0);
+        g_autofree char **val = g_strsplit(opt, ",", 0);
 
         if (virTypedParamsAddStringList(&params,
                                         &nparams,
                                         &maxparams,
                                         VIR_MIGRATE_PARAM_COMPRESSION,
                                         (const char **)val) < 0) {
-            VIR_FREE(val);
             goto save_error;
         }
-
-        VIR_FREE(val);
     }
 
     if ((rv = vshCommandOptInt(ctl, cmd, "comp-mt-level", &intOpt)) < 0) {
@@ -11257,7 +11244,7 @@ doMigrate(void *opaque)
     if (vshCommandOptStringReq(ctl, cmd, "xml", &opt) < 0)
         goto out;
     if (opt) {
-        char *xml;
+        g_autofree char *xml = NULL;
 
         if (virFileReadAll(opt, VSH_MAX_XML_FILE, &xml) < 0) {
             vshError(ctl, _("cannot read file '%s'"), opt);
@@ -11266,16 +11253,14 @@ doMigrate(void *opaque)
 
         if (virTypedParamsAddString(&params, &nparams, &maxparams,
                                     VIR_MIGRATE_PARAM_DEST_XML, xml) < 0) {
-            VIR_FREE(xml);
             goto save_error;
         }
-        VIR_FREE(xml);
     }
 
     if (vshCommandOptStringReq(ctl, cmd, "persistent-xml", &opt) < 0)
         goto out;
     if (opt) {
-        char *xml;
+        g_autofree char *xml = NULL;
 
         if (virFileReadAll(opt, VSH_MAX_XML_FILE, &xml) < 0) {
             vshError(ctl, _("cannot read file '%s'"), opt);
@@ -11284,10 +11269,8 @@ doMigrate(void *opaque)
 
         if (virTypedParamsAddString(&params, &nparams, &maxparams,
                                     VIR_MIGRATE_PARAM_PERSIST_XML, xml) < 0) {
-            VIR_FREE(xml);
             goto save_error;
         }
-        VIR_FREE(xml);
     }
 
     if ((rv = vshCommandOptInt(ctl, cmd, "auto-converge-initial", &intOpt)) < 0) {

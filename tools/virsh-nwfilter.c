@@ -516,7 +516,7 @@ cmdNWFilterBindingCreate(vshControl *ctl, const vshCmd *cmd)
 {
     virNWFilterBindingPtr binding;
     const char *from = NULL;
-    char *buffer;
+    g_autofree char *buffer = NULL;
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
@@ -530,7 +530,6 @@ cmdNWFilterBindingCreate(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     binding = virNWFilterBindingCreateXML(priv->conn, buffer, flags);
-    VIR_FREE(buffer);
 
     if (!binding) {
         vshError(ctl, _("Failed to create network filter from %s"), from);

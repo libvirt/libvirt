@@ -412,7 +412,7 @@ cmdNetworkInfo(vshControl *ctl, const vshCmd *cmd)
     int autostart;
     int persistent = -1;
     int active = -1;
-    char *bridge = NULL;
+    g_autofree char *bridge = NULL;
 
     if (!(network = virshCommandOptNetwork(ctl, cmd, NULL)))
         return false;
@@ -441,7 +441,6 @@ cmdNetworkInfo(vshControl *ctl, const vshCmd *cmd)
     if (bridge)
         vshPrint(ctl, "%-15s %s\n", _("Bridge:"), bridge);
 
-    VIR_FREE(bridge);
     return true;
 }
 
@@ -1500,7 +1499,7 @@ cmdNetworkPortCreate(vshControl *ctl, const vshCmd *cmd)
     virNetworkPortPtr port = NULL;
     const char *from = NULL;
     bool ret = false;
-    char *buffer = NULL;
+    g_autofree char *buffer = NULL;
     g_autoptr(virshNetwork) network = NULL;
     unsigned int flags = 0;
 
@@ -1533,7 +1532,6 @@ cmdNetworkPortCreate(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    VIR_FREE(buffer);
     if (port)
         virNetworkPortFree(port);
     return ret;

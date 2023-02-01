@@ -1213,7 +1213,6 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
     virDomainInfo info;
     g_autoptr(virshDomain) dom = NULL;
     virSecurityModel secmodel;
-    virSecurityLabelPtr seclabel;
     int persistent = 0;
     bool ret = true;
     int autostart;
@@ -1301,6 +1300,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
     } else {
         /* Only print something if a security model is active */
         if (secmodel.model[0] != '\0') {
+            g_autofree virSecurityLabelPtr seclabel = NULL;
             vshPrint(ctl, "%-15s %s\n", _("Security model:"), secmodel.model);
             vshPrint(ctl, "%-15s %s\n", _("Security DOI:"), secmodel.doi);
 
@@ -1308,15 +1308,12 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
             seclabel = g_new0(virSecurityLabel, 1);
 
             if (virDomainGetSecurityLabel(dom, seclabel) == -1) {
-                VIR_FREE(seclabel);
                 return false;
             } else {
                 if (seclabel->label[0] != '\0')
                     vshPrint(ctl, "%-15s %s (%s)\n", _("Security label:"),
                              seclabel->label, seclabel->enforcing ? "enforcing" : "permissive");
             }
-
-            VIR_FREE(seclabel);
         }
     }
 

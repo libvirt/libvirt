@@ -73,7 +73,7 @@ vshAdmCatchDisconnect(virAdmConnectPtr conn G_GNUC_UNUSED,
     vshControl *ctl = opaque;
     const char *str = "unknown reason";
     virErrorPtr error;
-    char *uri = NULL;
+    g_autofree char *uri = NULL;
 
     if (reason == VIR_CONNECT_CLOSE_REASON_CLIENT)
         return;
@@ -97,8 +97,6 @@ vshAdmCatchDisconnect(virAdmConnectPtr conn G_GNUC_UNUSED,
     }
 
     vshError(ctl, _(str), NULLSTR(uri));
-    VIR_FREE(uri);
-
     virErrorRestore(&error);
 }
 
@@ -183,7 +181,7 @@ static const vshCmdInfo info_uri[] = {
 static bool
 cmdURI(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
-    char *uri;
+    g_autofree char *uri = NULL;
     vshAdmControl *priv = ctl->privData;
 
     uri = virAdmConnectGetURI(priv->conn);
@@ -193,7 +191,6 @@ cmdURI(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     }
 
     vshPrint(ctl, "%s\n", uri);
-    VIR_FREE(uri);
 
     return true;
 }
@@ -328,7 +325,7 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     int nsrvs = 0;
     size_t i;
     bool ret = false;
-    char *uri = NULL;
+    g_autofree char *uri = NULL;
     virAdmServerPtr *srvs = NULL;
     vshAdmControl *priv = ctl->privData;
     g_autoptr(vshTable) table = NULL;
@@ -365,7 +362,6 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
             virAdmServerFree(srvs[i]);
         VIR_FREE(srvs);
     }
-    VIR_FREE(uri);
 
     return ret;
 }
@@ -702,9 +698,8 @@ cmdClientInfo(vshControl *ctl, const vshCmd *cmd)
              vshAdmClientTransportToString(virAdmClientGetTransport(clnt)));
 
     for (i = 0; i < nparams; i++) {
-        char *str = vshGetTypedParamValue(ctl, &params[i]);
+        g_autofree char *str = vshGetTypedParamValue(ctl, &params[i]);
         vshPrint(ctl, "%-15s: %s\n", params[i].field, str);
-        VIR_FREE(str);
     }
 
     ret = true;
