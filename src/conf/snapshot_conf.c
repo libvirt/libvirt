@@ -486,12 +486,14 @@ virDomainSnapshotRedefineValidate(virDomainSnapshotDef *def,
 /**
  * virDomainSnapshotDefAssignExternalNames:
  * @def: snapshot def object
+ * @domdef: domain def object
  *
  * Generate default external file names for snapshot targets. Returns 0 on
  * success, -1 on error.
  */
 static int
-virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def)
+virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def,
+                                        virDomainDef *domdef)
 {
     const char *origpath;
     char *tmppath;
@@ -514,7 +516,7 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def)
             return -1;
         }
 
-        if (!(origpath = virDomainDiskGetSource(def->parent.dom->disks[i]))) {
+        if (!(origpath = virDomainDiskGetSource(domdef->disks[i]))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("cannot generate external snapshot name for disk '%1$s' without source"),
                            disk->name);
@@ -702,7 +704,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
     }
 
     /* Generate default external file names for external snapshot locations */
-    if (virDomainSnapshotDefAssignExternalNames(snapdef) < 0)
+    if (virDomainSnapshotDefAssignExternalNames(snapdef, domdef) < 0)
         return -1;
 
     return 0;
