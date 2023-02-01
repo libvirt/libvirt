@@ -30,8 +30,8 @@ include:
     - meson dist -C build --no-tests
     - if test -x /usr/bin/rpmbuild && test "$RPM" != "skip";
       then
-        rpmbuild --clean --nodeps --define "_without_mingw 1" --define "_topdir $PWD/rpmbuild/" -ta build/meson-dist/libvirt-*.tar.xz;
-        mv rpmbuild/RPMS/x86_64/ libvirt-rpms/;
+        rpmbuild --clean --nodeps --define "_without_mingw 1" -ta build/meson-dist/libvirt-*.tar.xz;
+        mv "$HOME"/rpmbuild/RPMS/x86_64/ libvirt-rpms/;
       else
         meson compile -C build;
         meson test -C build --no-suite syntax-check --print-errorlogs;
