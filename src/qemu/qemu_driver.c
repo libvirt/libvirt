@@ -17585,8 +17585,7 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
     virDomainVcpuDef *vcpu;
     qemuDomainVcpuPrivate *vcpupriv;
     size_t i;
-    int ret = -1;
-    virVcpuInfoPtr cpuinfo = NULL;
+    g_autofree virVcpuInfoPtr cpuinfo = NULL;
     g_autofree unsigned long long *cpuwait = NULL;
     g_autofree unsigned long long *cpudelay = NULL;
     qemuDomainObjPrivate *priv = dom->privateData;
@@ -17615,8 +17614,7 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
                                  virDomainDefGetVcpus(dom->def),
                                  NULL, 0) < 0) {
         virResetLastError();
-        ret = 0; /* it's ok to be silent and go ahead */
-        goto cleanup;
+        return 0;
     }
 
     if (HAVE_JOB(privflags) && qemuDomainRefreshStatsSchema(dom) == 0) {
@@ -17634,7 +17632,7 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
 
         if (virTypedParamListAddInt(params, cpuinfo[i].state,
                                     "vcpu.%u.state", cpuinfo[i].number) < 0)
-            goto cleanup;
+            return -1;
 
         /* stats below are available only if the VM is alive */
         if (!virDomainObjIsActive(dom))
@@ -17642,15 +17640,15 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
 
         if (virTypedParamListAddULLong(params, cpuinfo[i].cpuTime,
                                        "vcpu.%u.time", cpuinfo[i].number) < 0)
-            goto cleanup;
+            return -1;
 
         if (virTypedParamListAddULLong(params, cpuwait[i],
                                        "vcpu.%u.wait", cpuinfo[i].number) < 0)
-            goto cleanup;
+            return -1;
 
         if (virTypedParamListAddULLong(params, cpudelay[i],
                                         "vcpu.%u.delay", cpuinfo[i].number) < 0)
-            goto cleanup;
+            return -1;
 
         /* state below is extracted from the individual vcpu structs */
         if (!(vcpu = virDomainDefGetVcpu(dom->def, cpuinfo[i].number)))
@@ -17663,7 +17661,7 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
                                             vcpupriv->halted == VIR_TRISTATE_BOOL_YES,
                                             "vcpu.%u.halted",
                                             cpuinfo[i].number) < 0)
-                goto cleanup;
+                return -1;
         }
 
         if (!queried_stats)
@@ -17675,11 +17673,7 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
         qemuDomainAddStatsFromHashTable(stats, priv->statsSchema, prefix, params);
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(cpuinfo);
-    return ret;
+    return 0;
 }
 
 #define QEMU_ADD_NET_PARAM(params, num, name, value) \
