@@ -1789,12 +1789,6 @@ qemuAgentGetFSInfoFillDisks(virJSONValue *jsondisks,
     size_t ndisks;
     size_t i;
 
-    if (!virJSONValueIsArray(jsondisks)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Malformed guest-get-fsinfo 'disk' data array"));
-        return -1;
-    }
-
     ndisks = virJSONValueArraySize(jsondisks);
 
     if (ndisks)
@@ -1846,15 +1840,9 @@ qemuAgentGetFSInfo(qemuAgent *agent,
                                    report_unsupported)) < 0)
         return rc;
 
-    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+    if (!(data = virJSONValueObjectGetArray(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("guest-get-fsinfo reply was missing return data"));
-        goto cleanup;
-    }
-
-    if (!virJSONValueIsArray(data)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Malformed guest-get-fsinfo data array"));
+                       _("guest-get-fsinfo reply was missing or not an array"));
         goto cleanup;
     }
 
@@ -1934,9 +1922,9 @@ qemuAgentGetFSInfo(qemuAgent *agent,
             info_ret[i]->total_bytes = -1;
         }
 
-        if (!(disk = virJSONValueObjectGet(entry, "disk"))) {
+        if (!(disk = virJSONValueObjectGetArray(entry, "disk"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("'disk' missing in reply of guest-get-fsinfo"));
+                           _("'disk' missing or not an array in reply of guest-get-fsinfo"));
             goto cleanup;
         }
 
@@ -2067,15 +2055,8 @@ qemuAgentGetInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
 
     /* as well as IP address which - moreover -
      * can be presented multiple times */
-    ip_addr_arr = virJSONValueObjectGet(iface_obj, "ip-addresses");
-    if (!ip_addr_arr)
+    if (!(ip_addr_arr = virJSONValueObjectGetArray(iface_obj, "ip-addresses")))
         return 0;
-
-    if (!virJSONValueIsArray(ip_addr_arr)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Malformed ip-addresses array"));
-        return -1;
-    }
 
     /* If current iface already exists, continue with the count */
     addrs_count = iface->naddrs;
