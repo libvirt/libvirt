@@ -942,7 +942,7 @@ class LibvirtConfidentialVM(ConfidentialVM):
     def load_domain(self, uri, id_name_uuid, secure, ignore_config):
         self.conn = libvirt.open(uri)
 
-        remote = socket.gethostname() != self.conn.getHostname()
+        remote = socket.getfqdn() != self.conn.getHostname()
         if not remote and secure:
             raise InsecureUsageException(
                 "running locally on the hypervisor host is not secure")
