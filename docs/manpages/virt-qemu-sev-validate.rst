@@ -257,7 +257,7 @@ Validate the measurement of a SEV guest with direct kernel boot:
 
 ::
 
-   # virt-dom-sev-validate \
+   # virt-qemu-sev-validate \
        --firmware OVMF.sev.fd \
        --kernel vmlinuz-5.11.12 \
        --initrd initramfs-5.11.12 \
@@ -273,7 +273,7 @@ Validate the measurement of a SEV-ES SMP guest booting from disk:
 
 ::
 
-   # virt-dom-sev-validate \
+   # virt-qemu-sev-validate \
        --firmware OVMF.sev.fd \
        --num-cpus 2 \
        --vmsa-cpu0 vmsa0.bin \
@@ -290,7 +290,7 @@ automatically constructed VMSA:
 
 ::
 
-   # virt-dom-sev-validate \
+   # virt-qemu-sev-validate \
        --firmware OVMF.sev.fd \
        --num-cpus 2 \
        --cpu-family 23 \
@@ -308,7 +308,7 @@ inject a disk password on success:
 
 ::
 
-   # virt-dom-sev-validate \
+   # virt-qemu-sev-validate \
        --loader OVMF.sev.fd \
        --tk this-guest-tk.bin \
        --measurement Zs2pf19ubFSafpZ2WKkwquXvACx9Wt/BV+eJwQ/taO8jhyIj/F8swFrybR1fZ2ID \
@@ -347,7 +347,7 @@ Validate the measurement of a SEV guest with direct kernel boot:
 
 ::
 
-   # virt-dom-sev-validate \
+   # virt-qemu-sev-validate \
        --connect qemu+ssh://root@some.remote.host/system \
        --firmware OVMF.sev.fd \
        --kernel vmlinuz-5.11.12 \
@@ -360,7 +360,7 @@ Validate the measurement of a SEV-ES SMP guest booting from disk:
 
 ::
 
-   # virt-dom-sev-validate \
+   # virt-qemu-sev-validate \
        --connect qemu+ssh://root@some.remote.host/system \
        --firmware OVMF.sev.fd \
        --num-cpus 2 \
@@ -374,7 +374,7 @@ automatically constructed VMSA:
 
 ::
 
-   # virt-dom-sev-validate \
+   # virt-qemu-sev-validate \
        --connect qemu+ssh://root@some.remote.host/system \
        --firmware OVMF.sev.fd \
        --cpu-family 23 \
@@ -388,7 +388,7 @@ inject a disk password on success:
 
 ::
 
-   # virt-dom-sev-validate \
+   # virt-qemu-sev-validate \
        --connect qemu+ssh://root@some.remote.host/system \
        --loader OVMF.sev.fd \
        --tk this-guest-tk.bin \
@@ -419,7 +419,7 @@ Validate the measurement of a SEV guest with direct kernel boot:
 
 ::
 
-   # virt-dom-sev-validate \
+   # virt-qemu-sev-validate \
        --insecure \
        --tk this-guest-tk.bin \
        --domain fedora34x86_64
@@ -428,7 +428,7 @@ Validate the measurement of a SEV-ES SMP guest booting from disk:
 
 ::
 
-   # virt-dom-sev-validate \
+   # virt-qemu-sev-validate \
        --insecure \
        --vmsa-cpu0 vmsa0.bin \
        --vmsa-cpu1 vmsa1.bin \
@@ -440,7 +440,7 @@ automatically constructed VMSA:
 
 ::
 
-   # virt-dom-sev-validate \
+   # virt-qemu-sev-validate \
        --insecure \
        --tk this-guest-tk.bin \
        --domain fedora34x86_64
@@ -450,7 +450,7 @@ inject a disk password on success:
 
 ::
 
-   # virt-dom-sev-validate \
+   # virt-qemu-sev-validate \
        --insecure \
        --tk this-guest-tk.bin \
        --domain fedora34x86_64 \
