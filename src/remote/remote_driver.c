@@ -709,7 +709,7 @@ remoteConnectSupportsFeatureUnlocked(virConnectPtr conn,
             virReportError(VIR_ERR_INVALID_ARG, \
                            _("Failed to parse value of URI component %s"), \
                            var->name); \
-            goto failed; \
+            goto error; \
         } \
         ARG_VAR = tmp == 0; \
         var->ignore = 1; \
@@ -852,13 +852,13 @@ doRemoteOpen(virConnectPtr conn,
 
     if (conf && !mode_str &&
         virConfGetValueString(conf, "remote_mode", &mode_str) < 0)
-        goto failed;
+        goto error;
 
     if (mode_str) {
         if ((mode = remoteDriverModeTypeFromString(mode_str)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Unknown remote mode '%s'"), mode_str);
-            goto failed;
+            goto error;
         }
     } else {
         if (inside_daemon && !conn->uri->server) {
@@ -870,13 +870,13 @@ doRemoteOpen(virConnectPtr conn,
 
     if (conf && !proxy_str &&
         virConfGetValueString(conf, "remote_proxy", &proxy_str) < 0)
-        goto failed;
+        goto error;
 
     if (proxy_str) {
         if ((proxy = virNetClientProxyTypeFromString(proxy_str)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Unnkown proxy type '%s'"), proxy_str);
-            goto failed;
+            goto error;
         }
     } else {
         /*
@@ -924,7 +924,7 @@ doRemoteOpen(virConnectPtr conn,
     if (transport == REMOTE_DRIVER_TRANSPORT_EXT && !command) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("remote_open: for 'ext' transport, command is required"));
-        goto failed;
+        goto error;
     }
 
     VIR_DEBUG("Connecting with transport %d", transport);
@@ -937,7 +937,7 @@ doRemoteOpen(virConnectPtr conn,
         if (!sockname &&
             !(sockname = remoteGetUNIXSocket(transport, mode, driver_str,
                                              flags, &daemon_path)))
-            goto failed;
+            goto error;
         break;
 
     case REMOTE_DRIVER_TRANSPORT_TCP:
@@ -948,7 +948,7 @@ doRemoteOpen(virConnectPtr conn,
     case REMOTE_DRIVER_TRANSPORT_LAST:
     default:
         virReportEnumRangeError(remoteDriverTransport, transport);
-        goto failed;
+        goto error;
     }
 
     VIR_DEBUG("Chosen UNIX socket %s", NULLSTR(sockname));
@@ -958,26 +958,26 @@ doRemoteOpen(virConnectPtr conn,
     case REMOTE_DRIVER_TRANSPORT_TLS:
         if (conf && !tls_priority &&
             virConfGetValueString(conf, "tls_priority", &tls_priority) < 0)
-            goto failed;
+            goto error;
 
         priv->tls = virNetTLSContextNewClientPath(pkipath,
                                                   geteuid() != 0,
                                                   tls_priority,
                                                   sanity, verify);
         if (!priv->tls)
-            goto failed;
+            goto error;
         priv->is_secure = 1;
         G_GNUC_FALLTHROUGH;
 
     case REMOTE_DRIVER_TRANSPORT_TCP:
         priv->client = virNetClientNewTCP(priv->hostname, port, AF_UNSPEC);
         if (!priv->client)
-            goto failed;
+            goto error;
 
         if (priv->tls) {
             VIR_DEBUG("Starting TLS session");
             if (virNetClientSetTLSSession(priv->client, priv->tls) < 0)
-                goto failed;
+                goto error;
         }
 
         break;
@@ -1001,7 +1001,7 @@ doRemoteOpen(virConnectPtr conn,
                                               auth,
                                               conn->uri);
         if (!priv->client)
-            goto failed;
+            goto error;
 
         priv->is_secure = 1;
         break;
@@ -1025,7 +1025,7 @@ doRemoteOpen(virConnectPtr conn,
                                              auth,
                                              conn->uri);
         if (!priv->client)
-            goto failed;
+            goto error;
 
         priv->is_secure = 1;
         break;
@@ -1034,7 +1034,7 @@ doRemoteOpen(virConnectPtr conn,
     case REMOTE_DRIVER_TRANSPORT_UNIX:
         if (!(priv->client = virNetClientNewUNIX(sockname,
                                                  daemon_path)))
-            goto failed;
+            goto error;
 
         priv->is_secure = 1;
         break;
@@ -1055,7 +1055,7 @@ doRemoteOpen(virConnectPtr conn,
                                                 sockname,
                                                 name,
                                                 flags & REMOTE_DRIVER_OPEN_RO)))
-            goto failed;
+            goto error;
 
         priv->is_secure = 1;
         break;
@@ -1063,7 +1063,7 @@ doRemoteOpen(virConnectPtr conn,
     case REMOTE_DRIVER_TRANSPORT_EXT: {
         char const *cmd_argv[] = { command, NULL };
         if (!(priv->client = virNetClientNewExternal(cmd_argv)))
-            goto failed;
+            goto error;
 
         /* Do not set 'is_secure' flag since we can't guarantee
          * an external program is secure, and this flag must be
@@ -1078,14 +1078,14 @@ doRemoteOpen(virConnectPtr conn,
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("transport methods unix, ssh and ext are not supported "
                          "under Windows"));
-        goto failed;
+        goto error;
 
 #endif /* WIN32 */
 
     case REMOTE_DRIVER_TRANSPORT_LAST:
     default:
         virReportEnumRangeError(remoteDriverTransport, transport);
-        goto failed;
+        goto error;
     } /* switch (transport) */
 
 
@@ -1095,11 +1095,11 @@ doRemoteOpen(virConnectPtr conn,
         virResetLastError();
     } else {
         if (virNetClientRegisterKeepAlive(priv->client) < 0)
-            goto failed;
+            goto error;
     }
 
     if (!(priv->closeCallback = virNewConnectCloseCallbackData()))
-        goto failed;
+        goto error;
     /* ref on behalf of netclient */
     virObjectRef(priv->closeCallback);
     virNetClientSetCloseCallback(priv->client,
@@ -1111,29 +1111,29 @@ doRemoteOpen(virConnectPtr conn,
                                                        remoteEvents,
                                                        G_N_ELEMENTS(remoteEvents),
                                                        conn)))
-        goto failed;
+        goto error;
     if (!(priv->lxcProgram = virNetClientProgramNew(LXC_PROGRAM,
                                                     LXC_PROTOCOL_VERSION,
                                                     NULL,
                                                     0,
                                                     NULL)))
-        goto failed;
+        goto error;
     if (!(priv->qemuProgram = virNetClientProgramNew(QEMU_PROGRAM,
                                                      QEMU_PROTOCOL_VERSION,
                                                      qemuEvents,
                                                      G_N_ELEMENTS(qemuEvents),
                                                      conn)))
-        goto failed;
+        goto error;
 
     if (virNetClientAddProgram(priv->client, priv->remoteProgram) < 0 ||
         virNetClientAddProgram(priv->client, priv->lxcProgram) < 0 ||
         virNetClientAddProgram(priv->client, priv->qemuProgram) < 0)
-        goto failed;
+        goto error;
 
     /* Try and authenticate with server */
     VIR_DEBUG("Trying authentication");
     if (remoteAuthenticate(conn, priv, auth, authtype) == -1)
-        goto failed;
+        goto error;
 
     if (virNetClientKeepAliveIsSupported(priv->client)) {
         priv->serverKeepAlive = remoteConnectSupportsFeatureUnlocked(conn,
@@ -1152,7 +1152,7 @@ doRemoteOpen(virConnectPtr conn,
         if (call(conn, priv, 0, REMOTE_PROC_CONNECT_OPEN,
                  (xdrproc_t) xdr_remote_connect_open_args, (char *) &args,
                  (xdrproc_t) xdr_void, (char *) NULL) == -1)
-            goto failed;
+            goto error;
     }
 
     /* Now try and find out what URI the daemon used */
@@ -1165,18 +1165,18 @@ doRemoteOpen(virConnectPtr conn,
                  REMOTE_PROC_CONNECT_GET_URI,
                  (xdrproc_t) xdr_void, (char *) NULL,
                  (xdrproc_t) xdr_remote_connect_get_uri_ret, (char *) &uriret) < 0)
-            goto failed;
+            goto error;
 
         VIR_DEBUG("Auto-probed URI is %s", uriret.uri);
         conn->uri = virURIParse(uriret.uri);
         VIR_FREE(uriret.uri);
         if (!conn->uri)
-            goto failed;
+            goto error;
     }
 
     /* Set up events */
     if (!(priv->eventState = virObjectEventStateNew()))
-        goto failed;
+        goto error;
 
     priv->serverEventFilter = remoteConnectSupportsFeatureUnlocked(conn,
                                 priv, VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK);
@@ -1194,7 +1194,7 @@ doRemoteOpen(virConnectPtr conn,
 
     return VIR_DRV_OPEN_SUCCESS;
 
- failed:
+ error:
     virObjectUnref(priv->remoteProgram);
     virObjectUnref(priv->lxcProgram);
     virObjectUnref(priv->qemuProgram);
