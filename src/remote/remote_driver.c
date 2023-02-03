@@ -693,6 +693,24 @@ remoteConnectSupportsFeatureUnlocked(virConnectPtr conn,
     return rc != -1 && ret.supported;
 }
 
+
+static char *
+remoteConnectFormatURI(virURI *uri,
+                       const char *driver_str)
+{
+    g_autofree char *query = NULL;
+    virURI tmpuri = {
+        .scheme = (char *)driver_str,
+        .path = uri->path,
+        .fragment = uri->fragment,
+    };
+
+    query = tmpuri.query = virURIFormatParams(uri);
+
+    return virURIFormat(&tmpuri);
+}
+
+
 /* helper macro to ease extraction of arguments from the URI */
 #define EXTRACT_URI_ARG_STR(ARG_NAME, ARG_VAR) \
     if (STRCASEEQ(var->name, ARG_NAME)) { \
@@ -833,16 +851,8 @@ doRemoteOpen(virConnectPtr conn,
                 /* Allow remote serve to probe */
                 name = g_strdup("");
             } else {
-                virURI tmpuri = {
-                    .scheme = (char *)driver_str,
-                    .query = virURIFormatParams(conn->uri),
-                    .path = conn->uri->path,
-                    .fragment = conn->uri->fragment,
-                };
+                name = remoteConnectFormatURI(conn->uri, driver_str);
 
-                name = virURIFormat(&tmpuri);
-
-                VIR_FREE(tmpuri.query);
             }
         }
     } else {
