@@ -979,12 +979,32 @@ qemuFirmwareOSInterfaceTypeFromOsDefLoaderType(virDomainLoader type)
 }
 
 
+/**
+ * qemuFirmwareEnsureNVRAM:
+ * @def: domain definition
+ * @cfg: QEMU driver configuration
+ *
+ * Make sure that a source for the NVRAM file exists, possibly by
+ * creating it. This might involve automatically generating the
+ * corresponding path.
+ */
 static void
-qemuDomainNVRAMPathFormat(virQEMUDriverConfig *cfg,
-                          virDomainDef *def,
-                          char **path)
+qemuFirmwareEnsureNVRAM(virDomainDef *def,
+                        const virQEMUDriverConfig *cfg)
 {
-    *path = g_strdup_printf("%s/%s_VARS.fd", cfg->nvramDir, def->name);
+    virDomainLoaderDef *loader = def->os.loader;
+
+    if (!loader)
+        return;
+
+    if (loader->nvram)
+        return;
+
+    loader->nvram = virStorageSourceNew();
+    loader->nvram->type = VIR_STORAGE_TYPE_FILE;
+    loader->nvram->format = VIR_STORAGE_FILE_RAW;
+
+    loader->nvram->path = g_strdup_printf("%s/%s_VARS.fd", cfg->nvramDir, def->name);
 }
 
 
@@ -1209,12 +1229,7 @@ qemuFirmwareEnableFeaturesModern(virQEMUDriverConfig *cfg,
         loader->path = g_strdup(flash->executable.filename);
 
         if (flash->mode == QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
-            if (!loader->nvram) {
-                loader->nvram = virStorageSourceNew();
-                loader->nvram->type = VIR_STORAGE_TYPE_FILE;
-                loader->nvram->format = VIR_STORAGE_FILE_RAW;
-                qemuDomainNVRAMPathFormat(cfg, def, &loader->nvram->path);
-            }
+            qemuFirmwareEnsureNVRAM(def, cfg);
 
             /* If the NVRAM is not a local path then we can't create or
              * reset it, so in that case filling in the nvramTemplate
@@ -1417,12 +1432,7 @@ qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
         loader->readonly = VIR_TRISTATE_BOOL_YES;
         loader->nvramTemplate = g_strdup(cfg->firmwares[i]->nvram);
 
-        if (!loader->nvram) {
-            loader->nvram = virStorageSourceNew();
-            loader->nvram->type = VIR_STORAGE_TYPE_FILE;
-            loader->nvram->format = VIR_STORAGE_FILE_RAW;
-            qemuDomainNVRAMPathFormat(cfg, def, &loader->nvram->path);
-        }
+        qemuFirmwareEnsureNVRAM(def, cfg);
 
         VIR_DEBUG("decided on firmware '%s' template '%s'",
                   loader->path, NULLSTR(loader->nvramTemplate));
@@ -1574,12 +1584,7 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
          * generate a path to the domain-specific NVRAM file, but
          * otherwise we're good to go */
         if (loader->nvramTemplate) {
-            if (!loader->nvram) {
-                loader->nvram = virStorageSourceNew();
-                loader->nvram->type = VIR_STORAGE_TYPE_FILE;
-                loader->nvram->format = VIR_STORAGE_FILE_RAW;
-                qemuDomainNVRAMPathFormat(cfg, def, &loader->nvram->path);
-            }
+            qemuFirmwareEnsureNVRAM(def, cfg);
             return 0;
         }
     }
