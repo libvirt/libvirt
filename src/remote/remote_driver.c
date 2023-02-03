@@ -696,18 +696,31 @@ remoteConnectSupportsFeatureUnlocked(virConnectPtr conn,
 
 static char *
 remoteConnectFormatURI(virURI *uri,
-                       const char *driver_str)
+                       const char *driver_str,
+                       bool unmask)
 {
+    const char *names[] = {"mode", "socket", NULL};
     g_autofree char *query = NULL;
+    char *ret = NULL;
     virURI tmpuri = {
         .scheme = (char *)driver_str,
         .path = uri->path,
         .fragment = uri->fragment,
     };
 
+    if (unmask) {
+        virURIParamsSetIgnore(uri, false, names);
+    }
+
     query = tmpuri.query = virURIFormatParams(uri);
 
-    return virURIFormat(&tmpuri);
+    ret = virURIFormat(&tmpuri);
+
+    if (unmask) {
+        virURIParamsSetIgnore(uri, true, names);
+    }
+
+    return ret;
 }
 
 
@@ -780,6 +793,7 @@ doRemoteOpen(virConnectPtr conn,
     g_autofree char *mode_str = NULL;
     g_autofree char *daemon_path = NULL;
     g_autofree char *proxy_str = NULL;
+    g_autofree char *virtSshURI = NULL;
     bool sanity = true;
     bool verify = true;
 #ifndef WIN32
@@ -851,7 +865,10 @@ doRemoteOpen(virConnectPtr conn,
                 /* Allow remote serve to probe */
                 name = g_strdup("");
             } else {
-                name = remoteConnectFormatURI(conn->uri, driver_str);
+                name = remoteConnectFormatURI(conn->uri, driver_str, false);
+
+                /* Preserve mode and socket parameters. */
+                virtSshURI = remoteConnectFormatURI(conn->uri, driver_str, true);
 
             }
         }
@@ -1006,7 +1023,7 @@ doRemoteOpen(virConnectPtr conn,
                                               proxy,
                                               netcat,
                                               sockname,
-                                              name,
+                                              virtSshURI ? virtSshURI : name,
                                               flags & REMOTE_DRIVER_OPEN_RO,
                                               auth,
                                               conn->uri);
@@ -1030,7 +1047,7 @@ doRemoteOpen(virConnectPtr conn,
                                              proxy,
                                              netcat,
                                              sockname,
-                                             name,
+                                             virtSshURI ? virtSshURI : name,
                                              flags & REMOTE_DRIVER_OPEN_RO,
                                              auth,
                                              conn->uri);
@@ -1063,7 +1080,7 @@ doRemoteOpen(virConnectPtr conn,
                                                 proxy,
                                                 netcat,
                                                 sockname,
-                                                name,
+                                                virtSshURI ? virtSshURI : name,
                                                 flags & REMOTE_DRIVER_OPEN_RO)))
             goto error;
 
