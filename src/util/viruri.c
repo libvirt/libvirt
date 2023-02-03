@@ -365,13 +365,24 @@ virURIResolveAlias(virConf *conf, const char *alias, char **uri)
 }
 
 
+/**
+ * virURIGetParam:
+ * @uri: URI to get parameter from
+ * @name: name of the parameter
+ *
+ * For parsed @uri, find parameter with name @name and return its value. The
+ * string comparison is case insensitive, by design.
+ *
+ * Returns: a value on success, or
+ *          NULL on error (with error reported)
+ */
 const char *
 virURIGetParam(virURI *uri, const char *name)
 {
     size_t i;
 
     for (i = 0; i < uri->paramsCount; i++) {
-        if (STREQ(uri->params[i].name, name))
+        if (STRCASEEQ(uri->params[i].name, name))
             return uri->params[i].value;
     }
 
@@ -389,6 +400,8 @@ virURIGetParam(virURI *uri, const char *name)
  * scenario the socket might be proxied to a remote server even though the URI
  * looks like it is only local.
  *
+ * The "socket" parameter is looked for in case insensitive manner, by design.
+ *
  * Returns: true if the URI might be proxied to a remote server
  */
 bool
@@ -403,7 +416,7 @@ virURICheckUnixSocket(virURI *uri)
         return false;
 
     for (i = 0; i < uri->paramsCount; i++) {
-        if (STREQ(uri->params[i].name, "socket"))
+        if (STRCASEEQ(uri->params[i].name, "socket"))
             return true;
     }
 
