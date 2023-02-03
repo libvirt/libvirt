@@ -195,11 +195,7 @@ virStorageBackendGlusterSetMetadata(virStorageBackendGlusterState *state,
 
     tmp = state->uri->path;
     state->uri->path = g_strdup_printf("/%s", path);
-    if (!(vol->target.path = virURIFormat(state->uri))) {
-        VIR_FREE(state->uri->path);
-        state->uri->path = tmp;
-        return -1;
-    }
+    vol->target.path = virURIFormat(state->uri);
     VIR_FREE(state->uri->path);
     state->uri->path = tmp;
 

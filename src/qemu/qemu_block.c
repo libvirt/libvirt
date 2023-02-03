@@ -407,8 +407,7 @@ qemuBlockStorageSourceGetCURLProps(virStorageSource *src,
     if (!(uri = qemuBlockStorageSourceGetURI(src)))
         return NULL;
 
-    if (!(uristr = virURIFormat(uri)))
-        return NULL;
+    uristr = virURIFormat(uri);
 
     if (!onlytarget) {
         if (src->auth) {

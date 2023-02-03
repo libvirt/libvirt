@@ -3777,8 +3777,7 @@ qemuMigrationDstPrepareDirect(virQEMUDriver *driver,
                 /* Send well-formed URI only if uri_in was well-formed */
                 if (well_formed_uri) {
                     uri->port = port;
-                    if (!(*uri_out = virURIFormat(uri)))
-                        goto cleanup;
+                    *uri_out = virURIFormat(uri);
                 } else {
                     *uri_out = g_strdup_printf("%s:%d", uri_in, port);
                 }

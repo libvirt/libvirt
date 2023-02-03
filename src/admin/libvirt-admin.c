@@ -427,17 +427,13 @@ virAdmConnectIsAlive(virAdmConnectPtr conn)
 char *
 virAdmConnectGetURI(virAdmConnectPtr conn)
 {
-    char *uri = NULL;
     VIR_DEBUG("conn=%p", conn);
 
     virResetLastError();
 
     virCheckAdmConnectReturn(conn, NULL);
 
-    if (!(uri = virURIFormat(conn->uri)))
-        virDispatchError(NULL);
-
-    return uri;
+    return virURIFormat(conn->uri);
 }
 
 /**

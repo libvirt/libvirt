@@ -194,7 +194,7 @@ virURIParse(const char *uri)
  * Wrapper for xmlSaveUri
  *
  * This function constructs back everything that @ref virURIParse
- * changes after parsing
+ * changes after parsing. It aborts on error.
  *
  * @returns the constructed uri as a string
  */

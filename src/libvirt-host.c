@@ -313,21 +313,13 @@ virConnectGetHostname(virConnectPtr conn)
 char *
 virConnectGetURI(virConnectPtr conn)
 {
-    char *name;
     VIR_DEBUG("conn=%p", conn);
 
     virResetLastError();
 
     virCheckConnectReturn(conn, NULL);
 
-    if (!(name = virURIFormat(conn->uri)))
-        goto error;
-
-    return name;
-
- error:
-    virDispatchError(conn);
-    return NULL;
+    return virURIFormat(conn->uri);
 }
 
 

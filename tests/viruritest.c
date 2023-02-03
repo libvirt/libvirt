@@ -118,8 +118,7 @@ static int testURIParse(const void *args)
     VIR_FREE(uri->query);
     uri->query = virURIFormatParams(uri);
 
-    if (!(uristr = virURIFormat(uri)))
-        return -1;
+    uristr = virURIFormat(uri);
 
     if (STRNEQ(uristr, data->uri_out)) {
         VIR_TEST_DEBUG("URI did not roundtrip, expect '%s', actual '%s'",

@@ -843,9 +843,6 @@ doRemoteOpen(virConnectPtr conn,
                 name = virURIFormat(&tmpuri);
 
                 VIR_FREE(tmpuri.query);
-
-                if (!name)
-                    goto failed;
             }
         }
     } else {
