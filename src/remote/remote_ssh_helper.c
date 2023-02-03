@@ -438,6 +438,9 @@ int main(int argc, char **argv)
         if (STRCASEEQ(var->name, "mode")) {
             mode_str = var->value;
             continue;
+        } else if (STRCASEEQ(var->name, "socket")) {
+            sock_path = g_strdup(var->value);
+            continue;
         }
     }
 
@@ -447,11 +450,12 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    sock_path = remoteGetUNIXSocket(transport,
-                                    mode,
-                                    driver,
-                                    flags,
-                                    &daemon_path);
+    if (!sock_path &&
+        !(sock_path = remoteGetUNIXSocket(transport, mode,
+                                          driver, flags, &daemon_path))) {
+        g_printerr(_("%s: failed to generate UNIX socket path"), argv[0]);
+        exit(EXIT_FAILURE);
+    }
 
     if (virNetSocketNewConnectUNIX(sock_path, daemon_path, &sock) < 0) {
         g_printerr(_("%s: cannot connect to '%s': %s\n"),
