@@ -3560,6 +3560,7 @@ virURIFormat;
 virURIFormatParams;
 virURIFree;
 virURIGetParam;
+virURIParamsSetIgnore;
 virURIParse;
 virURIResolveAlias;
 

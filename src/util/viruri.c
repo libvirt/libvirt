@@ -422,3 +422,21 @@ virURICheckUnixSocket(virURI *uri)
 
     return false;
 }
+
+
+void
+virURIParamsSetIgnore(virURI *uri,
+                      bool ignore,
+                      const char *names[])
+{
+    size_t i;
+
+    for (i = 0; i < uri->paramsCount; i++) {
+        size_t j;
+
+        for (j = 0; names[j]; j++) {
+            if (STRCASEEQ(uri->params[i].name, names[j]))
+                uri->params[i].ignore = ignore;
+        }
+    }
+}
