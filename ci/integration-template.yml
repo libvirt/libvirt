@@ -28,7 +28,7 @@
   - sudo dnf install -y libvirt-rpms/* libvirt-perl-rpms/* libvirt-python-rpms/*
 
   # Avocado >98.0 fails with the nwfilter TCK tests, so stick with 98.0 for now
-  - sudo pip3 install --prefix=/usr avocado-framework==98.0
+  - sudo pip3 install --prefix=/usr avocado-framework
 
 
 .enable-core-dumps: &enable-core-dumps
