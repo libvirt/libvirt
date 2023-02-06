@@ -123,7 +123,7 @@ myInit(void)
     size_t i;
 
     for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevSubsys subsys;
+        virDomainHostdevSubsys subsys = {0};
         hostdevs[i] = virDomainHostdevDefNew();
         if (!hostdevs[i])
             goto cleanup;
