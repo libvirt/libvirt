@@ -19,17 +19,7 @@ __pycache__/
 # libvirt related ignores
 /build/
 /ci/scratch/
-
-# *tags and cscope files
-/GPATH
-/GRTAGS
-/GTAGS
-/TAGS
-/cscope.files
-/cscope.in.out
-/cscope.out
-/cscope.po.out
-/tags
+tags
 
 # clangd related ignores
 .clangd
