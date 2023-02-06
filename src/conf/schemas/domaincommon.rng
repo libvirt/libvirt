@@ -1811,6 +1811,7 @@
       <ref name="diskSourceVolume"/>
       <ref name="diskSourceNvme"/>
       <ref name="diskSourceVhostUser"/>
+      <ref name="diskSourceVhostVdpa"/>
     </choice>
   </define>
 
@@ -2377,6 +2378,18 @@
       <optional>
          <ref name="reconnect"/>
       </optional>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="diskSourceVhostVdpa">
+    <attribute name="type">
+      <value>vhostvdpa</value>
+    </attribute>
+    <element name="source">
+      <attribute name="dev">
+        <ref name="absFilePath"/>
+      </attribute>
       <empty/>
     </element>
   </define>

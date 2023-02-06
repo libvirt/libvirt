@@ -2678,6 +2678,11 @@ paravirtualized driver is specified via the ``disk`` element.
        </source>
        <target dev='vdf' bus='virtio'/>
      </disk>
+     <disk type='vhostvdpa' device='disk'>
+       <driver name='qemu' type='raw'/>
+       <source dev='/dev/vhost-vdpa-0' />
+       <target dev='vdg' bus='virtio'/>
+     </disk>
    </devices>
    ...
 
@@ -2688,8 +2693,9 @@ paravirtualized driver is specified via the ``disk`` element.
    ``type``
       Valid values are "file", "block", "dir" ( :since:`since 0.7.5` ),
       "network" ( :since:`since 0.8.7` ), or "volume" ( :since:`since 1.0.5` ),
-      or "nvme" ( :since:`since 6.0.0` ), or "vhostuser" ( :since:`since 7.1.0` )
-      and refer to the underlying source for the disk. :since:`Since 0.0.3`
+      or "nvme" ( :since:`since 6.0.0` ), or "vhostuser" ( :since:`since 7.1.0` ),
+      or "vhostvdpa" ( :since:`since 9.8.0 (QEMU 8.1.0)`) and refer to the
+      underlying source for the disk. :since:`Since 0.0.3`
    ``device``
       Indicates how the disk is to be exposed to the guest OS. Possible values
       for this attribute are "floppy", "disk", "cdrom", and "lun", defaulting to
@@ -2878,6 +2884,15 @@ paravirtualized driver is specified via the ``disk`` element.
       thus almost all of the disk properties can't be configured via the
       ``<disk>`` XML for this disk type. Additionally features such as blockjobs,
       incremental backups and snapshots are not supported for this disk type.
+
+   ``vhostvdpa``
+      Enables the hypervisor to connect to a vDPA block device. Requires shared
+      memory configured for the VM, for more details see ``access`` mode for
+      ``memoryBacking`` element (See `Memory Backing`_).
+
+      The ``source`` element has a mandatory attribute ``dev`` that specifies
+      the fully-qualified path to the vhost-vdpa character device (e.g.
+      ``/dev/vhost-vdpa-0``).
 
    With "file", "block", and "volume", one or more optional sub-elements
    ``seclabel`` (See `Security label`_) can be used to override the domain

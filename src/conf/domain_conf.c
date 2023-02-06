@@ -7522,6 +7522,10 @@ virDomainStorageSourceParse(xmlNodePtr node,
         if (virDomainDiskSourceVHostUserParse(node, src, xmlopt, ctxt) < 0)
             return -1;
         break;
+    case VIR_STORAGE_TYPE_VHOST_VDPA:
+        if (!(src->vdpadev = virXMLPropStringRequired(node, "dev")))
+            return -1;
+        break;
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -22384,6 +22388,10 @@ virDomainDiskSourceFormat(virBuffer *buf,
 
     case VIR_STORAGE_TYPE_VHOST_USER:
         virDomainDiskSourceVhostuserFormat(&attrBuf, &childBuf, src->vhostuser);
+        break;
+
+    case VIR_STORAGE_TYPE_VHOST_VDPA:
+        virBufferEscapeString(&attrBuf, " dev='%s'", src->vdpadev);
         break;
 
     case VIR_STORAGE_TYPE_NONE:

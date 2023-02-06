@@ -873,6 +873,11 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
             return NULL;
         break;
 
+    case VIR_STORAGE_TYPE_VHOST_VDPA:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("vhostvdpa disk type not yet supported"));
+        return NULL;
+
     case VIR_STORAGE_TYPE_VHOST_USER:
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unable to create blockdev props for vhostuser disk type"));
@@ -2320,6 +2325,7 @@ qemuBlockStorageSourceCreateGetStorageProps(virStorageSource *src,
     case VIR_STORAGE_TYPE_VOLUME:
     case VIR_STORAGE_TYPE_NVME:
     case VIR_STORAGE_TYPE_VHOST_USER:
+    case VIR_STORAGE_TYPE_VHOST_VDPA:
         return 0;
 
     case VIR_STORAGE_TYPE_NONE:

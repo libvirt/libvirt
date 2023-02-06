@@ -47,7 +47,8 @@ VIR_ENUM_IMPL(virStorage,
               "network",
               "volume",
               "nvme",
-              "vhostuser"
+              "vhostuser",
+              "vhostvdpa"
 );
 
 
@@ -834,6 +835,7 @@ virStorageSourceCopy(const virStorageSource *src,
     def->tlsCertdir = g_strdup(src->tlsCertdir);
     def->tlsHostname = g_strdup(src->tlsHostname);
     def->query = g_strdup(src->query);
+    def->vdpadev = g_strdup(src->vdpadev);
 
     if (src->sliceStorage)
         def->sliceStorage = virStorageSourceSliceCopy(src->sliceStorage);
@@ -958,6 +960,7 @@ virStorageSourceIsSameLocation(virStorageSource *a,
         break;
 
     case VIR_STORAGE_TYPE_VHOST_USER:
+    case VIR_STORAGE_TYPE_VHOST_VDPA:
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_BLOCK:
@@ -1054,6 +1057,7 @@ virStorageSourceIsLocalStorage(const virStorageSource *src)
          * Therefore, we have to return false here. */
     case VIR_STORAGE_TYPE_NVME:
     case VIR_STORAGE_TYPE_VHOST_USER:
+    case VIR_STORAGE_TYPE_VHOST_VDPA:
     case VIR_STORAGE_TYPE_LAST:
     case VIR_STORAGE_TYPE_NONE:
         return false;
@@ -1246,6 +1250,7 @@ virStorageSourceIsRelative(virStorageSource *src)
     case VIR_STORAGE_TYPE_VOLUME:
     case VIR_STORAGE_TYPE_NVME:
     case VIR_STORAGE_TYPE_VHOST_USER:
+    case VIR_STORAGE_TYPE_VHOST_VDPA:
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
         return false;

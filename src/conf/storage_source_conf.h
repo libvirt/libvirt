@@ -43,6 +43,7 @@ typedef enum {
     VIR_STORAGE_TYPE_VOLUME,
     VIR_STORAGE_TYPE_NVME,
     VIR_STORAGE_TYPE_VHOST_USER,
+    VIR_STORAGE_TYPE_VHOST_VDPA,
 
     VIR_STORAGE_TYPE_LAST
 } virStorageType;
@@ -299,6 +300,7 @@ struct _virStorageSource {
     char *configFile; /* some storage systems use config file as part of
                          the source definition */
     char *query; /* query string for HTTP based protocols */
+    char *vdpadev;
     size_t nhosts;
     virStorageNetHostDef *hosts;
     size_t ncookies;

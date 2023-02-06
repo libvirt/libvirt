@@ -607,6 +607,7 @@ qemuValidateDomainDefNvram(const virDomainDef *def,
     case VIR_STORAGE_TYPE_VOLUME:
     case VIR_STORAGE_TYPE_NVME:
     case VIR_STORAGE_TYPE_VHOST_USER:
+    case VIR_STORAGE_TYPE_VHOST_VDPA:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported nvram disk type '%1$s'"),
                        virStorageTypeToString(src->type));
