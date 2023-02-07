@@ -1013,6 +1013,8 @@ qemuFirmwareEnsureNVRAM(virDomainDef *def,
 
     if (format == VIR_STORAGE_FILE_RAW)
         ext = ".fd";
+    if (format == VIR_STORAGE_FILE_QCOW2)
+        ext = ".qcow2";
 
     loader->nvram->path = g_strdup_printf("%s/%s_VARS%s",
                                           cfg->nvramDir, def->name,
@@ -1173,7 +1175,8 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
             }
         }
 
-        if (STRNEQ(flash->executable.format, "raw")) {
+        if (STRNEQ(flash->executable.format, "raw") &&
+            STRNEQ(flash->executable.format, "qcow2")) {
             VIR_DEBUG("Discarding loader with unsupported flash format '%s'",
                       flash->executable.format);
             return false;
@@ -1186,7 +1189,8 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
             return false;
         }
         if (flash->mode == QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
-            if (STRNEQ(flash->nvram_template.format, "raw")) {
+            if (STRNEQ(flash->nvram_template.format, "raw") &&
+                STRNEQ(flash->nvram_template.format, "qcow2")) {
                 VIR_DEBUG("Discarding loader with unsupported nvram template format '%s'",
                           flash->nvram_template.format);
                 return false;
@@ -1596,14 +1600,16 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
         return -1;
 
     if (loader &&
-        loader->format != VIR_STORAGE_FILE_RAW) {
+        loader->format != VIR_STORAGE_FILE_RAW &&
+        loader->format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported loader format '%s'"),
                        virStorageFileFormatTypeToString(loader->format));
         return -1;
     }
     if (nvram &&
-        nvram->format != VIR_STORAGE_FILE_RAW) {
+        nvram->format != VIR_STORAGE_FILE_RAW &&
+        nvram->format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported nvram format '%s'"),
                        virStorageFileFormatTypeToString(nvram->format));
