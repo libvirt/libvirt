@@ -7378,11 +7378,17 @@ qemuProcessEnableDomainNamespaces(virQEMUDriver *driver,
                                   virDomainObj *vm)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    const char *state = "disabled";
 
     if (virBitmapIsBitSet(cfg->namespaces, QEMU_DOMAIN_NS_MOUNT) &&
         qemuDomainEnableNamespace(vm, QEMU_DOMAIN_NS_MOUNT) < 0)
         return -1;
 
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        state = "enabled";
+
+    VIR_DEBUG("Mount namespace for domain name=%s is %s",
+              vm->def->name, state);
     return 0;
 }
 
@@ -7705,8 +7711,6 @@ qemuProcessLaunch(virConnectPtr conn,
     qemuDomainObjCheckTaint(driver, vm, logCtxt, incoming != NULL);
 
     qemuDomainLogContextMarkPosition(logCtxt);
-
-    VIR_DEBUG("Building mount namespace");
 
     if (qemuProcessEnableDomainNamespaces(driver, vm) < 0)
         goto cleanup;
