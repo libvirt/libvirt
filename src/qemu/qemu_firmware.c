@@ -1545,6 +1545,7 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainLoaderDef *loader = def->os.loader;
+    virStorageSource *nvram = loader ? loader->nvram : NULL;
     bool autoSelection = (def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_NONE);
     int ret;
 
@@ -1558,6 +1559,21 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
      * that entire phase is intentionally skipped */
     if (virDomainDefOSValidate(def, NULL) < 0)
         return -1;
+
+    if (loader &&
+        loader->format != VIR_STORAGE_FILE_RAW) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported loader format '%s'"),
+                       virStorageFileFormatTypeToString(loader->format));
+        return -1;
+    }
+    if (nvram &&
+        nvram->format != VIR_STORAGE_FILE_RAW) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported nvram format '%s'"),
+                       virStorageFileFormatTypeToString(nvram->format));
+        return -1;
+    }
 
     /* If firmware autoselection is disabled and the loader is a ROM
      * instead of a PFLASH device, then we're using BIOS and we don't

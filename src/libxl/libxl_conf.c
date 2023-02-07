@@ -656,6 +656,13 @@ libxlMakeDomBuildInfo(virDomainDef *def,
             b_info->u.hvm.bios = LIBXL_BIOS_TYPE_OVMF;
         }
 
+        if (def->os.loader && def->os.loader->format != VIR_STORAGE_FILE_RAW) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported loader format '%s'"),
+                           virStorageFileFormatTypeToString(def->os.loader->format));
+            return -1;
+        }
+
         if (def->emulator) {
             if (!virFileExists(def->emulator)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

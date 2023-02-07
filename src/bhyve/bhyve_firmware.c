@@ -80,6 +80,13 @@ bhyveFirmwareFillDomain(bhyveConn *driver,
     if (!def->os.loader)
         def->os.loader = virDomainLoaderDefNew();
 
+    if (def->os.loader->format != VIR_STORAGE_FILE_RAW) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported loader format '%s'"),
+                       virStorageFileFormatTypeToString(def->os.loader->format));
+        return -1;
+    }
+
     def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
     def->os.loader->readonly = VIR_TRISTATE_BOOL_YES;
 
