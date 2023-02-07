@@ -54,6 +54,7 @@
 #include "virpidfile.h"
 #include "virprocess.h"
 #include "virbuffer.h"
+#include "virsecureerase.h"
 #include "virthread.h"
 #include "virstring.h"
 
@@ -1697,6 +1698,7 @@ virCommandFreeSendBuffers(virCommand *cmd)
 
     for (i = 0; i < virCommandGetNumSendBuffers(cmd); i++) {
         VIR_FORCE_CLOSE(cmd->sendBuffers[i].fd);
+        virSecureErase(cmd->sendBuffers[i].buffer, cmd->sendBuffers[i].buflen);
         VIR_FREE(cmd->sendBuffers[i].buffer);
     }
     VIR_FREE(cmd->sendBuffers);
