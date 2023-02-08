@@ -1,0 +1,22 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>63840878-0deb-4095-97e6-fc444d9bc9fa</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os firmware='efi'>
+    <type arch='x86_64' machine='pc-i440fx-4.0'>hvm</type>
+    <nvram type='network' format='qcow2'>
+      <source protocol='nbd' name='bar'>
+        <host name='example.org' port='6000'/>
+      </source>
+    </nvram>
+  </os>
+  <features>
+    <acpi/>
+  </features>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' model='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

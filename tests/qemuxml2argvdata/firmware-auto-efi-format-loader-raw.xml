@@ -1,0 +1,18 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>63840878-0deb-4095-97e6-fc444d9bc9fa</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os firmware='efi'>
+    <type arch='aarch64' machine='virt-4.0'>hvm</type>
+    <loader format='raw'/>
+  </os>
+  <features>
+    <acpi/>
+  </features>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <controller type='usb' model='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>
