@@ -6,7 +6,7 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-test-bios/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-test-bios/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-test-bios/.config \
-/usr/bin/qemu-system-i386 \
+/usr/bin/qemu-system-x86_64 \
 -name guest=test-bios,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-test-bios/master-key.aes \
