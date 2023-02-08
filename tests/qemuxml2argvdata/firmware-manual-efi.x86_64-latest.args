@@ -9,15 +9,16 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-test-bios/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=test-bios,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-test-bios/master-key.aes \
--blockdev '{"driver":"file","filename":"/usr/share/OVMF/OVMF_CODE.secboot.fd","node-name":"libvirt-pflash0-storage","auto-read-only":true,"discard":"unmap"}' \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-test-bios/master-key.aes"}' \
+-blockdev '{"driver":"file","filename":"/usr/share/OVMF/OVMF_CODE.fd","node-name":"libvirt-pflash0-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,"driver":"raw","file":"libvirt-pflash0-storage"}' \
 -blockdev '{"driver":"file","filename":"/some/user/nvram/path/guest_VARS.fd","node-name":"libvirt-pflash1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-pflash1-format","read-only":false,"driver":"raw","file":"libvirt-pflash1-storage"}' \
--machine q35,usb=off,smm=on,dump-guest-core=off,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format \
 -accel tcg \
--global driver=cfi.pflash01,property=secure,value=on \
+-cpu qemu64 \
 -m 1024 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":1073741824}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 362d1fc1-df7d-193e-5c18-49a71bd1da66 \
@@ -30,6 +31,5 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-test-bios/.config \
 -no-shutdown \
 -boot strict=on \
 -audiodev '{"id":"audio1","driver":"none"}' \
--global ICH9-LPC.noreboot=off \
--watchdog-action reset \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

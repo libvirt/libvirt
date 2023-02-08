@@ -9,6 +9,9 @@
     <loader type='rom' stateless='yes'>/usr/share/seabios/bios.bin</loader>
     <boot dev='hd'/>
   </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>

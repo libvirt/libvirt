@@ -1120,23 +1120,15 @@ mymain(void)
     DO_TEST_NOCAPS("reboot-timeout-disabled");
     DO_TEST_NOCAPS("reboot-timeout-enabled");
 
-    DO_TEST("firmware-manual-bios",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST("firmware-manual-bios-stateless",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST_PARSE_ERROR("firmware-manual-bios-not-stateless",
-                        QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST_NOCAPS("firmware-manual-efi");
-    DO_TEST_PARSE_ERROR_NOCAPS("firmware-manual-efi-no-path");
+    DO_TEST_CAPS_LATEST("firmware-manual-bios");
+    DO_TEST_CAPS_LATEST("firmware-manual-bios-stateless");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-bios-not-stateless");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-no-path");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-features");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-rw");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-rw-implicit");
-    DO_TEST("firmware-manual-efi-secure",
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-secure");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-stateless");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-template");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-nvram-template-stateless");
@@ -1146,14 +1138,14 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-nvram-stateless");
 
     /* Make sure all combinations of ACPI and UEFI behave as expected */
-    DO_TEST_NOCAPS("firmware-manual-efi-acpi-aarch64");
-    DO_TEST_NOCAPS("firmware-manual-efi-acpi-q35");
-    DO_TEST_NOCAPS("firmware-manual-efi-noacpi-aarch64");
-    DO_TEST_PARSE_ERROR_NOCAPS("firmware-manual-efi-noacpi-q35");
-    DO_TEST_PARSE_ERROR_NOCAPS("firmware-manual-noefi-acpi-aarch64");
-    DO_TEST_NOCAPS("firmware-manual-noefi-acpi-q35");
-    DO_TEST_NOCAPS("firmware-manual-noefi-noacpi-aarch64");
-    DO_TEST_NOCAPS("firmware-manual-noefi-noacpi-q35");
+    DO_TEST_CAPS_ARCH_LATEST("firmware-manual-efi-acpi-aarch64", "aarch64");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-acpi-q35");
+    DO_TEST_CAPS_ARCH_LATEST("firmware-manual-efi-noacpi-aarch64", "aarch64");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-noacpi-q35");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("firmware-manual-noefi-acpi-aarch64", "aarch64");
+    DO_TEST_CAPS_LATEST("firmware-manual-noefi-acpi-q35");
+    DO_TEST_CAPS_ARCH_LATEST("firmware-manual-noefi-noacpi-aarch64", "aarch64");
+    DO_TEST_CAPS_LATEST("firmware-manual-noefi-noacpi-q35");
 
     DO_TEST_CAPS_LATEST("firmware-auto-bios");
     DO_TEST_CAPS_LATEST("firmware-auto-bios-stateless");

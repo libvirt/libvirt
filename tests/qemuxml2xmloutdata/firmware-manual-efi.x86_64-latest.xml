@@ -6,9 +6,16 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='x86_64' machine='pc'>hvm</type>
-    <loader type='rom'>/usr/share/seabios/bios.bin</loader>
+    <loader readonly='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
+    <nvram>/some/user/nvram/path/guest_VARS.fd</nvram>
     <boot dev='hd'/>
   </os>
+  <features>
+    <acpi/>
+  </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
