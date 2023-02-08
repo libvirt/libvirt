@@ -944,13 +944,26 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-manual-bios");
     DO_TEST_CAPS_LATEST("firmware-manual-bios-stateless");
     DO_TEST_CAPS_LATEST("firmware-manual-efi");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-rw");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-rw-implicit");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-secure");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-stateless");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-template");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-iscsi");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-nbd");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-file");
 
+    DO_TEST_CAPS_ARCH_LATEST("firmware-manual-efi-acpi-aarch64", "aarch64");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-acpi-q35");
+    DO_TEST_CAPS_ARCH_LATEST("firmware-manual-efi-noacpi-aarch64", "aarch64");
+    DO_TEST_CAPS_LATEST("firmware-manual-noefi-acpi-q35");
+    DO_TEST_CAPS_ARCH_LATEST("firmware-manual-noefi-noacpi-aarch64", "aarch64");
+    DO_TEST_CAPS_LATEST("firmware-manual-noefi-noacpi-q35");
+
     DO_TEST_CAPS_LATEST("firmware-auto-bios");
     DO_TEST_CAPS_LATEST("firmware-auto-bios-stateless");
     DO_TEST_CAPS_LATEST("firmware-auto-efi");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-stateless");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-secure");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-secboot");
