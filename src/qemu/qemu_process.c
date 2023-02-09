@@ -8715,16 +8715,13 @@ qemuProcessRefreshDisks(virDomainObj *vm,
             continue;
 
         if (info->removable) {
-            virObjectEvent *event = NULL;
+            bool emitEvent = info->tray_open != disk->tray_status;
             int reason;
 
             if (info->empty)
                 virDomainDiskEmptySource(disk);
 
             if (info->tray) {
-                if (info->tray_open == disk->tray_status)
-                    continue;
-
                 if (info->tray_open) {
                     reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN;
                     disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
@@ -8733,8 +8730,10 @@ qemuProcessRefreshDisks(virDomainObj *vm,
                     disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
                 }
 
-                event = virDomainEventTrayChangeNewFromObj(vm, disk->info.alias, reason);
-                virObjectEventStateQueue(driver->domainEventState, event);
+                if (emitEvent) {
+                    virObjectEvent *event = virDomainEventTrayChangeNewFromObj(vm, disk->info.alias, reason);
+                    virObjectEventStateQueue(driver->domainEventState, event);
+                }
             }
         }
 
