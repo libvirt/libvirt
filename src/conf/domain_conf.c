@@ -21751,9 +21751,10 @@ virDomainDefAddImplicitVideo(virDomainDef *def, virDomainXMLOption *xmlopt)
 int
 virDomainDefAddImplicitDevices(virDomainDef *def, virDomainXMLOption *xmlopt)
 {
-    if (virDomainDefAddConsoleCompat(def) < 0)
-        return -1;
-
+    if ((xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_NO_STUB_CONSOLE) == 0) {
+        if (virDomainDefAddConsoleCompat(def) < 0)
+            return -1;
+    }
     if (virDomainDefAddImplicitControllers(def) < 0)
         return -1;
 

@@ -262,6 +262,7 @@ virDomainDefParserConfig virCHDriverDomainDefParserConfig = {
     .domainPostParseBasicCallback = virCHDomainDefPostParseBasic,
     .domainPostParseCallback = virCHDomainDefPostParse,
     .deviceValidateCallback = chValidateDomainDeviceDef,
+    .features = VIR_DOMAIN_DEF_FEATURE_NO_STUB_CONSOLE,
 };
 
 virCHMonitor *
