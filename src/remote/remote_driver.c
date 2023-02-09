@@ -712,7 +712,7 @@ remoteConnectFormatURI(virURI *uri,
         virURIParamsSetIgnore(uri, false, names);
     }
 
-    query = tmpuri.query = virURIFormatParams(uri);
+    tmpuri.query = query = virURIFormatParams(uri);
 
     ret = virURIFormat(&tmpuri);
 
