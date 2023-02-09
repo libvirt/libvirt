@@ -306,8 +306,11 @@ virDomainPCIAddressFlagsCompatible(virPCIDeviceAddress *addr,
         if (addr->bus == 0) {
             /* pcie-root doesn't usually allow endpoint devices to be
              * plugged directly into it, but for integrated devices
-             * that's exactly what we want */
-            busFlags |= VIR_PCI_CONNECT_AUTOASSIGN;
+             * that's exactly what we want. It also refuses conventional
+             * PCI devices by default, but in the case of integrated
+             * devices both types are fine */
+            busFlags |= VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
+                        VIR_PCI_CONNECT_AUTOASSIGN;
         } else {
             if (reportError) {
                 virReportError(errType,
