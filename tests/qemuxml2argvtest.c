@@ -1162,7 +1162,11 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-auto-efi-enrolled-keys");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-no-enrolled-keys");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-efi-enrolled-keys-no-secboot");
+    DO_TEST_CAPS_LATEST_FAILURE("firmware-auto-efi-smm-off");
     DO_TEST_CAPS_ARCH_LATEST("firmware-auto-efi-aarch64", "aarch64");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-file");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-network-nbd");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-network-iscsi");
 
     DO_TEST_NOCAPS("clock-utc");
     DO_TEST_NOCAPS("clock-localtime");
