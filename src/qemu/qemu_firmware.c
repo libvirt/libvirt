@@ -1194,14 +1194,19 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
                 return -1;
             }
 
-            VIR_FREE(loader->nvramTemplate);
-            loader->nvramTemplate = g_strdup(flash->nvram_template.filename);
-
             if (!loader->nvram) {
                 loader->nvram = virStorageSourceNew();
                 loader->nvram->type = VIR_STORAGE_TYPE_FILE;
                 loader->nvram->format = VIR_STORAGE_FILE_RAW;
                 qemuDomainNVRAMPathFormat(cfg, def, &loader->nvram->path);
+            }
+
+            /* If the NVRAM is not a local path then we can't create or
+             * reset it, so in that case filling in the nvramTemplate
+             * field would be misleading */
+            VIR_FREE(loader->nvramTemplate);
+            if (loader->nvram && virStorageSourceIsLocalStorage(loader->nvram)) {
+                loader->nvramTemplate = g_strdup(flash->nvram_template.filename);
             }
         }
 
