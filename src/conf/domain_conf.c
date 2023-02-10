@@ -16795,19 +16795,9 @@ virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
 
 
 static int
-virDomainLoaderDefParseXML(virDomainLoaderDef *loader,
-                           xmlNodePtr loaderNode,
-                           xmlNodePtr nvramNode,
-                           xmlNodePtr nvramSourceNode,
-                           xmlXPathContextPtr ctxt,
-                           virDomainXMLOption *xmlopt,
-                           unsigned int flags)
+virDomainLoaderDefParseXMLLoader(virDomainLoaderDef *loader,
+                                 xmlNodePtr loaderNode)
 {
-    if (virDomainLoaderDefParseXMLNvram(loader,
-                                        nvramNode, nvramSourceNode,
-                                        ctxt, xmlopt, flags) < 0)
-        return -1;
-
     if (!loaderNode)
         return 0;
 
@@ -16831,6 +16821,28 @@ virDomainLoaderDefParseXML(virDomainLoaderDef *loader,
 
     if (virXMLPropTristateBool(loaderNode, "stateless", VIR_XML_PROP_NONE,
                                &loader->stateless) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+virDomainLoaderDefParseXML(virDomainLoaderDef *loader,
+                           xmlNodePtr loaderNode,
+                           xmlNodePtr nvramNode,
+                           xmlNodePtr nvramSourceNode,
+                           xmlXPathContextPtr ctxt,
+                           virDomainXMLOption *xmlopt,
+                           unsigned int flags)
+{
+    if (virDomainLoaderDefParseXMLNvram(loader,
+                                        nvramNode, nvramSourceNode,
+                                        ctxt, xmlopt, flags) < 0)
+        return -1;
+
+    if (virDomainLoaderDefParseXMLLoader(loader,
+                                         loaderNode) < 0)
         return -1;
 
     return 0;
