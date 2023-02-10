@@ -3373,6 +3373,7 @@ qemuBlockCommit(virDomainObj *vm,
     if (!(job = qemuBlockJobDiskNewCommit(vm, disk, top_parent, topSource,
                                           baseSource,
                                           flags & VIR_DOMAIN_BLOCK_COMMIT_DELETE,
+                                          autofinalize,
                                           flags)))
         goto cleanup;
 

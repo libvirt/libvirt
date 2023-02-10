@@ -274,6 +274,7 @@ qemuBlockJobDiskNewCommit(virDomainObj *vm,
                           virStorageSource *top,
                           virStorageSource *base,
                           bool delete_imgs,
+                          virTristateBool autofinalize,
                           unsigned int jobflags)
 {
     g_autoptr(qemuBlockJobData) job = NULL;
@@ -290,6 +291,7 @@ qemuBlockJobDiskNewCommit(virDomainObj *vm,
     job->data.commit.top = top;
     job->data.commit.base = base;
     job->data.commit.deleteCommittedImages = delete_imgs;
+    job->processPending = autofinalize == VIR_TRISTATE_BOOL_NO;
     job->jobflags = jobflags;
 
     if (qemuBlockJobRegister(job, vm, disk, true) < 0)
@@ -532,8 +534,6 @@ qemuBlockJobRefreshJobs(virDomainObj *vm)
                 if (job->state == QEMU_BLOCKJOB_STATE_NEW ||
                     job->state == QEMU_BLOCKJOB_STATE_RUNNING)
                     job->newstate = newstate;
-            } else if (newstate == QEMU_BLOCKJOB_STATE_PENDING) {
-                job->newstate = newstate;
             }
             /* don't update the job otherwise */
         }
@@ -1568,13 +1568,14 @@ qemuBlockJobEventProcess(virQEMUDriver *driver,
 
     case QEMU_BLOCKJOB_STATE_PENDING:
         /* Similarly as for 'ready' state we should handle it only when
-         * previous state was 'new' or 'running' as there are other cases
-         * when it can be emitted by QEMU. Currently we need this only when
-         * deleting non-active external snapshots. */
-        if (job->state == QEMU_BLOCKJOB_STATE_NEW ||
-            job->state == QEMU_BLOCKJOB_STATE_RUNNING) {
-            job->state = job->newstate;
-            qemuDomainSaveStatus(vm);
+         * previous state was 'new' or 'running' and only if the blockjob code
+         * is handling finalization of the job explicitly. */
+        if (job->processPending) {
+            if (job->state == QEMU_BLOCKJOB_STATE_NEW ||
+                job->state == QEMU_BLOCKJOB_STATE_RUNNING) {
+                job->state = job->newstate;
+                qemuDomainSaveStatus(vm);
+            }
         }
         job->newstate = -1;
         break;

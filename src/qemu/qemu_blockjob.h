@@ -138,6 +138,9 @@ struct _qemuBlockJobData {
 
     int brokentype; /* the previous type of a broken blockjob qemuBlockJobType */
 
+    bool processPending; /* process the 'pending' state of the job, if the job
+                            should not be auto-finalized */
+
     bool invalidData; /* the job data (except name) is not valid */
     bool reconnected; /* internal field for tracking whether job is live after reconnect to qemu */
 };
@@ -175,6 +178,7 @@ qemuBlockJobDiskNewCommit(virDomainObj *vm,
                           virStorageSource *top,
                           virStorageSource *base,
                           bool delete_imgs,
+                          virTristateBool autofinalize,
                           unsigned int jobflags);
 
 qemuBlockJobData *
