@@ -183,6 +183,7 @@ mymain(void)
 
     DO_TEST("basic-pv");
     DO_TEST("basic-hvm");
+    DO_TEST("efi-hvm");
 # ifdef WITH_XEN_PVH
     DO_TEST("basic-pvh");
 # endif
