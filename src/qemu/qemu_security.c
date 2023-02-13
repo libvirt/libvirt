@@ -622,7 +622,7 @@ qemuSecurityDomainRestorePathLabel(virQEMUDriver *driver,
  * @cmd: the command to run
  * @uid: the uid to force
  * @gid: the gid to force
- * @existstatus: pointer to int returning exit status of process
+ * @existstatus: optional pointer to int returning exit status of process
  *
  * Run @cmd with seclabels set on it. If @uid and/or @gid are not
  * -1 then their value is enforced.

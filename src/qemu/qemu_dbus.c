@@ -182,7 +182,6 @@ qemuDBusStart(virQEMUDriver *driver,
     virTimeBackOffVar timebackoff;
     const unsigned long long timeout = 500 * 1000; /* ms */
     VIR_AUTOCLOSE errfd = -1;
-    int exitstatus = 0;
     pid_t cpid = -1;
     int ret = -1;
 
@@ -218,14 +217,8 @@ qemuDBusStart(virQEMUDriver *driver,
     virCommandDaemonize(cmd);
     virCommandAddArgFormat(cmd, "--config-file=%s", configfile);
 
-    if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, &exitstatus) < 0)
+    if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, NULL) < 0)
         goto cleanup;
-
-    if (exitstatus != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not start dbus-daemon. exitstatus: %d"), exitstatus);
-        goto cleanup;
-    }
 
     if (virPidFileReadPath(pidfile, &cpid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
