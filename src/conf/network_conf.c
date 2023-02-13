@@ -605,7 +605,6 @@ virNetworkDHCPDefParseXML(const char *networkName,
                           xmlNodePtr node,
                           virNetworkIPDef *def)
 {
-    int ret = -1;
     xmlNodePtr cur;
     virNetworkDHCPRangeDef range;
     virNetworkDHCPHostDef host;
@@ -619,7 +618,7 @@ virNetworkDHCPDefParseXML(const char *networkName,
             virXMLNodeNameEqual(cur, "range")) {
 
             if (virNetworkDHCPRangeDefParseXML(networkName, def, cur, &range) < 0)
-                goto cleanup;
+                return -1;
             VIR_APPEND_ELEMENT(def->ranges, def->nranges, range);
 
         } else if (cur->type == XML_ELEMENT_NODE &&
@@ -627,7 +626,7 @@ virNetworkDHCPDefParseXML(const char *networkName,
 
             if (virNetworkDHCPHostDefParseXML(networkName, def, cur,
                                               &host, false) < 0)
-                goto cleanup;
+                return -1;
             VIR_APPEND_ELEMENT(def->hosts, def->nhosts, host);
         } else if (VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET) &&
                    cur->type == XML_ELEMENT_NODE &&
@@ -645,7 +644,7 @@ virNetworkDHCPDefParseXML(const char *networkName,
 
             if (server &&
                 virSocketAddrParse(&inaddr, server, AF_UNSPEC) < 0) {
-                goto cleanup;
+                return -1;
             }
 
             def->bootfile = g_steal_pointer(&file);
@@ -655,10 +654,7 @@ virNetworkDHCPDefParseXML(const char *networkName,
         cur = cur->next;
     }
 
-    ret = 0;
- cleanup:
-    virNetworkDHCPHostDefClear(&host);
-    return ret;
+    return 0;
 }
 
 
