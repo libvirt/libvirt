@@ -224,8 +224,10 @@ qemuDBusStart(virQEMUDriver *driver,
         goto cleanup;
 
     if (cmdret < 0 || exitstatus != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not start dbus-daemon. exitstatus: %d"), exitstatus);
+        if (cmdret >= 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not start dbus-daemon. exitstatus: %d"), exitstatus);
+        }
         goto cleanup;
     }
 

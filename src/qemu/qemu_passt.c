@@ -289,8 +289,10 @@ qemuPasstStart(virDomainObj *vm,
         goto error;
 
     if (cmdret < 0 || exitstatus != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not start 'passt': %s"), NULLSTR(errbuf));
+        if (cmdret >= 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not start 'passt': %s"), NULLSTR(errbuf));
+        }
         goto error;
     }
 

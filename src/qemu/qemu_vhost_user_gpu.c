@@ -157,8 +157,10 @@ int qemuExtVhostUserGPUStart(virQEMUDriver *driver,
         goto error;
 
     if (cmdret < 0 || exitstatus != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not start 'vhost-user-gpu'. exitstatus: %d"), exitstatus);
+        if (cmdret >= 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not start 'vhost-user-gpu'. exitstatus: %d"), exitstatus);
+        }
         goto cleanup;
     }
 

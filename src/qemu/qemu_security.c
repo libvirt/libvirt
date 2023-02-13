@@ -626,10 +626,11 @@ qemuSecurityDomainRestorePathLabel(virQEMUDriver *driver,
  * @cmdret: pointer to int returning result of virCommandRun
  *
  * Run @cmd with seclabels set on it. If @uid and/or @gid are not
- * -1 then their value is enforced.
+ * -1 then their value is enforced. If @cmdret is negative upon
+ *  return, then appropriate error was already reported.
  *
  * Returns: 0 on success,
- *         -1 otherwise.
+ *         -1 otherwise (with error reported).
  */
 int
 qemuSecurityCommandRun(virQEMUDriver *driver,

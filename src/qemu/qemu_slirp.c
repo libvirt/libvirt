@@ -331,8 +331,10 @@ qemuSlirpStart(virDomainObj *vm,
         goto error;
 
     if (cmdret < 0 || exitstatus != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not start 'slirp'. exitstatus: %d"), exitstatus);
+        if (cmdret >= 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not start 'slirp'. exitstatus: %d"), exitstatus);
+        }
         goto error;
     }
 
