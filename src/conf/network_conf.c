@@ -601,26 +601,28 @@ virNetworkDHCPDefParseXML(const char *networkName,
                           xmlNodePtr node,
                           virNetworkIPDef *def)
 {
-    g_autofree xmlNodePtr *rangeNodes = NULL;
-    size_t nrangeNodes = virXMLNodeGetSubelementList(node, "range", &rangeNodes);
-    g_autofree xmlNodePtr *hostNodes = NULL;
-    size_t nhostNodes = virXMLNodeGetSubelementList(node, "host", &hostNodes);
+
+    g_autoptr(GPtrArray) rangeNodes = virXMLNodeGetSubelementList(node, "range");
+    g_autoptr(GPtrArray) hostNodes = virXMLNodeGetSubelementList(node, "host");
     xmlNodePtr bootp = virXMLNodeGetSubelement(node, "bootp");
     size_t i;
 
-    for (i = 0; i < nrangeNodes; i++) {
+    for (i = 0; i < rangeNodes->len; i++) {
         virNetworkDHCPRangeDef range = { 0 };
 
-        if (virNetworkDHCPRangeDefParseXML(networkName, def, rangeNodes[i], &range) < 0)
+        if (virNetworkDHCPRangeDefParseXML(networkName, def,
+                                           g_ptr_array_index(rangeNodes, i),
+                                           &range) < 0)
             return -1;
 
         VIR_APPEND_ELEMENT(def->ranges, def->nranges, range);
     }
 
-    for (i = 0; i < nhostNodes; i++) {
+    for (i = 0; i < hostNodes->len; i++) {
         virNetworkDHCPHostDef host = { 0 };
 
-        if (virNetworkDHCPHostDefParseXML(networkName, def, hostNodes[i],
+        if (virNetworkDHCPHostDefParseXML(networkName, def,
+                                          g_ptr_array_index(hostNodes, i),
                                           &host, false) < 0)
             return -1;
 
@@ -650,17 +652,16 @@ virNetworkDNSHostDefParseXML(const char *networkName,
                              virNetworkDNSHostDef *def,
                              bool partialOkay)
 {
-    g_autofree xmlNodePtr *hostnameNodes = NULL;
-    size_t nhostnameNodes = virXMLNodeGetSubelementList(node, "hostname", &hostnameNodes);
+    g_autoptr(GPtrArray) hostnameNodes = virXMLNodeGetSubelementList(node, "hostname");
     size_t i;
     g_auto(GStrv) hostnames = NULL;
     g_autofree char *ip = virXMLPropString(node, "ip");
 
-    if (nhostnameNodes > 0) {
-        hostnames = g_new0(char *, nhostnameNodes + 1);
+    if (hostnameNodes->len > 0) {
+        hostnames = g_new0(char *, hostnameNodes->len + 1);
 
-        for (i = 0; i < nhostnameNodes; i++) {
-            if (!(hostnames[i] = virXMLNodeContentString(hostnameNodes[i])))
+        for (i = 0; i < hostnameNodes->len; i++) {
+            if (!(hostnames[i] = virXMLNodeContentString(g_ptr_array_index(hostnameNodes, i))))
                 return -1;
 
             if (*hostnames[i] == '\0') {
@@ -694,7 +695,7 @@ virNetworkDNSHostDefParseXML(const char *networkName,
             return -1;
         }
 
-        if (nhostnameNodes == 0) {
+        if (hostnameNodes->len == 0) {
             virReportError(VIR_ERR_XML_DETAIL,
                            _("Missing ip and hostname in network '%1$s' DNS HOST record"),
                            networkName);
@@ -703,7 +704,7 @@ virNetworkDNSHostDefParseXML(const char *networkName,
     }
 
     def->names = g_steal_pointer(&hostnames);
-    def->nnames = nhostnameNodes;
+    def->nnames = hostnameNodes->len;
     return 0;
 }
 

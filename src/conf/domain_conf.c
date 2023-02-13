@@ -16386,23 +16386,23 @@ virDomainFeaturesKVMDefParse(virDomainDef *def,
                              xmlNodePtr node)
 {
     g_autofree virDomainFeatureKVM *kvm = g_new0(virDomainFeatureKVM, 1);
-    g_autofree xmlNodePtr *feats = NULL;
-    size_t nfeats = virXMLNodeGetSubelementList(node, NULL, &feats);
+    g_autoptr(GPtrArray) feats = virXMLNodeGetSubelementList(node, NULL);
     size_t i;
 
-    for (i = 0; i < nfeats; i++) {
+    for (i = 0; i < feats->len; i++) {
+        xmlNodePtr feat = g_ptr_array_index(feats, i);
         int feature;
         virTristateSwitch value;
 
-        feature = virDomainKVMTypeFromString((const char *)feats[i]->name);
+        feature = virDomainKVMTypeFromString((const char *)feat->name);
         if (feature < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported KVM feature: %1$s"),
-                           feats[i]->name);
+                           feat->name);
             return -1;
         }
 
-        if (virXMLPropTristateSwitch(feats[i], "state", VIR_XML_PROP_REQUIRED,
+        if (virXMLPropTristateSwitch(feat, "state", VIR_XML_PROP_REQUIRED,
                                      &value) < 0)
             return -1;
 
@@ -16412,7 +16412,7 @@ virDomainFeaturesKVMDefParse(virDomainDef *def,
         if (feature == VIR_DOMAIN_KVM_DIRTY_RING &&
             value == VIR_TRISTATE_SWITCH_ON) {
 
-            if (virXMLPropUInt(feats[i], "size", 0, VIR_XML_PROP_REQUIRED,
+            if (virXMLPropUInt(feat, "size", 0, VIR_XML_PROP_REQUIRED,
                                &kvm->dirty_ring_size) < 0) {
                 return -1;
             }
@@ -16439,25 +16439,25 @@ static int
 virDomainFeaturesXENDefParse(virDomainDef *def,
                              xmlNodePtr node)
 {
-    g_autofree xmlNodePtr *feats = NULL;
-    size_t nfeats = virXMLNodeGetSubelementList(node, NULL, &feats);
+    g_autoptr(GPtrArray) feats = virXMLNodeGetSubelementList(node, NULL);
     size_t i;
 
     def->features[VIR_DOMAIN_FEATURE_XEN] = VIR_TRISTATE_SWITCH_ON;
 
-    for (i = 0; i < nfeats; i++) {
+    for (i = 0; i < feats->len; i++) {
+        xmlNodePtr feat = g_ptr_array_index(feats, i);
         int feature;
         virTristateSwitch value;
 
-        feature = virDomainXenTypeFromString((const char *)feats[i]->name);
+        feature = virDomainXenTypeFromString((const char *)feat->name);
         if (feature < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported Xen feature: %1$s"),
-                           feats[i]->name);
+                           feat->name);
             return -1;
         }
 
-        if (virXMLPropTristateSwitch(feats[i], "state",
+        if (virXMLPropTristateSwitch(feat, "state",
                                      VIR_XML_PROP_REQUIRED, &value) < 0)
             return -1;
 
@@ -16471,7 +16471,7 @@ virDomainFeaturesXENDefParse(virDomainDef *def,
             if (value != VIR_TRISTATE_SWITCH_ON)
                 break;
 
-            if (virXMLPropEnum(feats[i], "mode",
+            if (virXMLPropEnum(feat, "mode",
                                virDomainXenPassthroughModeTypeFromString,
                                VIR_XML_PROP_NONZERO,
                                &def->xen_passthrough_mode) < 0)
@@ -16491,8 +16491,7 @@ static int
 virDomainFeaturesCapabilitiesDefParse(virDomainDef *def,
                                       xmlNodePtr node)
 {
-    g_autofree xmlNodePtr *caps = NULL;
-    size_t ncaps = virXMLNodeGetSubelementList(node, NULL, &caps);
+    g_autoptr(GPtrArray) caps = virXMLNodeGetSubelementList(node, NULL);
     virDomainCapabilitiesPolicy policy;
     size_t i;
 
@@ -16504,17 +16503,18 @@ virDomainFeaturesCapabilitiesDefParse(virDomainDef *def,
 
     def->features[VIR_DOMAIN_FEATURE_CAPABILITIES] = policy;
 
-    for (i = 0; i < ncaps; i++) {
+    for (i = 0; i < caps->len; i++) {
+        xmlNodePtr cap = g_ptr_array_index(caps, i);
         virTristateSwitch state;
-        int val = virDomainProcessCapsFeatureTypeFromString((const char *)caps[i]->name);
+        int val = virDomainProcessCapsFeatureTypeFromString((const char *)cap->name);
         if (val < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unexpected capability feature '%1$s'"), caps[i]->name);
+                           _("unexpected capability feature '%1$s'"), cap->name);
             return -1;
         }
 
 
-        if (virXMLPropTristateSwitch(caps[i], "state", VIR_XML_PROP_NONE, &state) < 0)
+        if (virXMLPropTristateSwitch(cap, "state", VIR_XML_PROP_NONE, &state) < 0)
             return -1;
 
         if (state == VIR_TRISTATE_SWITCH_ABSENT)

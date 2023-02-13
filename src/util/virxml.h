@@ -77,10 +77,9 @@ xmlNodePtr
 virXMLNodeGetSubelement(xmlNodePtr node,
                         const char *name);
 
-size_t
+GPtrArray *
 virXMLNodeGetSubelementList(xmlNodePtr node,
-                            const char *name,
-                            xmlNodePtr **list);
+                            const char *name);
 
 xmlNodePtr
 virXPathNode(const char *xpath,
