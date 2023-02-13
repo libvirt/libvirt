@@ -350,6 +350,9 @@
                 </attribute>
               </optional>
               <optional>
+                <ref name="pflashFormat"/>
+              </optional>
+              <optional>
                 <ref name="absFilePath"/>
               </optional>
             </element>
@@ -360,6 +363,9 @@
                 <attribute name="template">
                   <ref name="absFilePath"/>
                 </attribute>
+              </optional>
+              <optional>
+                <ref name="pflashFormat"/>
               </optional>
               <optional>
                 <choice>
@@ -7536,6 +7542,14 @@
         </choice>
       </interleave>
     </element>
+  </define>
+
+  <define name="pflashFormat">
+    <attribute name="format">
+      <choice>
+        <value>raw</value>
+      </choice>
+    </attribute>
   </define>
 
   <!-- Optional HyperV Enlightenment features -->
