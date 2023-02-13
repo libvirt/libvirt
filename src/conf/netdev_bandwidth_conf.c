@@ -91,8 +91,8 @@ virNetDevBandwidthParse(virNetDevBandwidth **bandwidth,
                         bool allowFloor)
 {
     g_autoptr(virNetDevBandwidth) def = NULL;
-    xmlNodePtr cur;
-    xmlNodePtr in = NULL, out = NULL;
+    xmlNodePtr in;
+    xmlNodePtr out;
     unsigned int class_id_value;
     int rc;
 
@@ -113,40 +113,14 @@ virNetDevBandwidthParse(virNetDevBandwidth **bandwidth,
         *class_id = class_id_value;
     }
 
-    cur = node->children;
-
-    while (cur) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (virXMLNodeNameEqual(cur, "inbound")) {
-                if (in) {
-                    virReportError(VIR_ERR_XML_DETAIL, "%s",
-                                   _("Only one child <inbound> "
-                                     "element allowed"));
-                    return -1;
-                }
-                in = cur;
-            } else if (virXMLNodeNameEqual(cur, "outbound")) {
-                if (out) {
-                    virReportError(VIR_ERR_XML_DETAIL, "%s",
-                                   _("Only one child <outbound> "
-                                     "element allowed"));
-                    return -1;
-                }
-                out = cur;
-            }
-            /* Silently ignore unknown elements */
-        }
-        cur = cur->next;
-    }
-
-    if (in) {
+    if ((in = virXMLNodeGetSubelement(node, "inbound"))) {
         def->in = g_new0(virNetDevBandwidthRate, 1);
 
         if (virNetDevBandwidthParseRate(in, def->in, allowFloor) < 0)
             return -1;
     }
 
-    if (out) {
+    if ((out = virXMLNodeGetSubelement(node, "outbound"))) {
         def->out = g_new0(virNetDevBandwidthRate, 1);
 
         /* floor is not allowed for <outbound> */
