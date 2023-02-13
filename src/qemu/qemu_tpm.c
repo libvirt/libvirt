@@ -927,7 +927,6 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
     virTimeBackOffVar timebackoff;
     const unsigned long long timeout = 1000; /* ms */
     bool setTPMStateLabel = true;
-    int cmdret = 0;
     pid_t pid = -1;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -963,14 +962,8 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
         return -1;
 
     if (qemuSecurityCommandRun(driver, vm, cmd, cfg->swtpm_user,
-                               cfg->swtpm_group, NULL, &cmdret) < 0)
+                               cfg->swtpm_group, NULL) < 0)
         goto error;
-
-    if (cmdret < 0) {
-        /* virCommandRun() hidden in qemuSecurityCommandRun()
-         * already reported error. */
-        goto error;
-    }
 
     if (virPidFileReadPath(pidfile, &pid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

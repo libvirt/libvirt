@@ -623,11 +623,9 @@ qemuSecurityDomainRestorePathLabel(virQEMUDriver *driver,
  * @uid: the uid to force
  * @gid: the gid to force
  * @existstatus: pointer to int returning exit status of process
- * @cmdret: pointer to int returning result of virCommandRun
  *
  * Run @cmd with seclabels set on it. If @uid and/or @gid are not
- * -1 then their value is enforced. If @cmdret is negative upon
- *  return, then appropriate error was already reported.
+ * -1 then their value is enforced.
  *
  * Returns: 0 on success,
  *         -1 otherwise (with error reported).
@@ -638,11 +636,11 @@ qemuSecurityCommandRun(virQEMUDriver *driver,
                        virCommand *cmd,
                        uid_t uid,
                        gid_t gid,
-                       int *exitstatus,
-                       int *cmdret)
+                       int *exitstatus)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivate *priv = vm->privateData;
+    int ret = -1;
 
     if (virSecurityManagerSetChildProcessLabel(driver->securityManager,
                                                vm->def, cmd) < 0)
@@ -664,9 +662,9 @@ qemuSecurityCommandRun(virQEMUDriver *driver,
     if (virSecurityManagerPreFork(driver->securityManager) < 0)
         return -1;
 
-    *cmdret = virCommandRun(cmd, exitstatus);
+    ret = virCommandRun(cmd, exitstatus);
 
     virSecurityManagerPostFork(driver->securityManager);
 
-    return 0;
+    return ret;
 }

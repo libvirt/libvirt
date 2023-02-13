@@ -173,7 +173,6 @@ qemuPasstStart(virDomainObj *vm,
     char macaddr[VIR_MAC_STRING_BUFLEN];
     size_t i;
     int exitstatus = 0;
-    int cmdret = 0;
 
     cmd = virCommandNew(PASST);
 
@@ -285,14 +284,12 @@ qemuPasstStart(virDomainObj *vm,
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "passt") < 0)
         return -1;
 
-    if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, &exitstatus, &cmdret) < 0)
+    if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, &exitstatus) < 0)
         goto error;
 
-    if (cmdret < 0 || exitstatus != 0) {
-        if (cmdret >= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not start 'passt': %s"), NULLSTR(errbuf));
-        }
+    if (exitstatus != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not start 'passt': %s"), NULLSTR(errbuf));
         goto error;
     }
 
