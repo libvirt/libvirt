@@ -125,8 +125,11 @@ qemuPasstSetupCgroup(virDomainObj *vm,
 {
     pid_t pid = (pid_t) -1;
 
-    if (qemuPasstGetPid(vm, net, &pid) < 0 || pid <= 0)
+    if (qemuPasstGetPid(vm, net, &pid) < 0 || pid <= 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not get process ID of passt"));
         return -1;
+    }
 
     return virCgroupAddProcess(cgroup, pid);
 }
