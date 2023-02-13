@@ -25,61 +25,46 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 static int
-virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRate *rate)
+virNetDevBandwidthParseRate(xmlNodePtr node,
+                            virNetDevBandwidthRate *rate,
+                            bool allowFloor)
 {
-    g_autofree char *average = NULL;
-    g_autofree char *peak = NULL;
-    g_autofree char *burst = NULL;
-    g_autofree char *floor = NULL;
+    int rc_average;
+    int rc_peak;
+    int rc_burst;
+    int rc_floor;
 
-    if (!node || !rate) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("invalid argument supplied"));
+    if ((rc_average = virXMLPropULongLong(node, "average", 10, VIR_XML_PROP_NONE,
+                                          &rate->average)) < 0)
         return -1;
-    }
 
-    average = virXMLPropString(node, "average");
-    peak = virXMLPropString(node, "peak");
-    burst = virXMLPropString(node, "burst");
-    floor = virXMLPropString(node, "floor");
+    if ((rc_peak = virXMLPropULongLong(node, "peak", 10, VIR_XML_PROP_NONE,
+                                       &rate->peak)) < 0)
+        return -1;
 
-    if (average) {
-        if (virStrToLong_ullp(average, NULL, 10, &rate->average) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("could not convert bandwidth average value '%1$s'"),
-                           average);
-            return -1;
-        }
-    } else if (!floor) {
+    if ((rc_burst = virXMLPropULongLong(node, "burst", 10, VIR_XML_PROP_NONE,
+                                        &rate->burst)) < 0)
+        return -1;
+
+    if ((rc_floor = virXMLPropULongLong(node, "floor", 10, VIR_XML_PROP_NONE,
+                                        &rate->floor)) < 0)
+        return -1;
+
+    if (!rc_average && !rc_floor) {
         virReportError(VIR_ERR_XML_DETAIL, "%s",
                        _("Missing mandatory average or floor attributes"));
         return -1;
     }
 
-    if ((peak || burst) && !average) {
+    if ((rc_peak || rc_burst) && !rc_average) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("'peak' and 'burst' require 'average' attribute"));
         return -1;
     }
 
-    if (peak && virStrToLong_ullp(peak, NULL, 10, &rate->peak) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("could not convert bandwidth peak value '%1$s'"),
-                       peak);
-        return -1;
-    }
-
-    if (burst && virStrToLong_ullp(burst, NULL, 10, &rate->burst) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("could not convert bandwidth burst value '%1$s'"),
-                       burst);
-        return -1;
-    }
-
-    if (floor && virStrToLong_ullp(floor, NULL, 10, &rate->floor) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("could not convert bandwidth floor value '%1$s'"),
-                       floor);
+    if (rc_floor && !allowFloor) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("floor attribute is not supported for this config"));
         return -1;
     }
 
@@ -157,32 +142,16 @@ virNetDevBandwidthParse(virNetDevBandwidth **bandwidth,
     if (in) {
         def->in = g_new0(virNetDevBandwidthRate, 1);
 
-        if (virNetDevBandwidthParseRate(in, def->in) < 0) {
-            /* helper reported error for us */
+        if (virNetDevBandwidthParseRate(in, def->in, allowFloor) < 0)
             return -1;
-        }
-
-        if (def->in->floor && !allowFloor) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("floor attribute is not supported for this config"));
-            return -1;
-        }
     }
 
     if (out) {
         def->out = g_new0(virNetDevBandwidthRate, 1);
 
-        if (virNetDevBandwidthParseRate(out, def->out) < 0) {
-            /* helper reported error for us */
+        /* floor is not allowed for <outbound> */
+        if (virNetDevBandwidthParseRate(out, def->out, false) < 0)
             return -1;
-        }
-
-        if (def->out->floor) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'floor' attribute allowed "
-                             "only in <inbound> element"));
-            return -1;
-        }
     }
 
     if (def->in || def->out)
