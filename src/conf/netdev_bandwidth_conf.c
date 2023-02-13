@@ -108,24 +108,24 @@ virNetDevBandwidthParse(virNetDevBandwidth **bandwidth,
     g_autoptr(virNetDevBandwidth) def = NULL;
     xmlNodePtr cur;
     xmlNodePtr in = NULL, out = NULL;
-    g_autofree char *class_id_prop = NULL;
+    unsigned int class_id_value;
+    int rc;
 
     def = g_new0(virNetDevBandwidth, 1);
 
-    class_id_prop = virXMLPropString(node, "classID");
-    if (class_id_prop) {
+
+    if ((rc = virXMLPropUInt(node, "classID", 10, VIR_XML_PROP_NONE, &class_id_value)) < 0)
+        return -1;
+
+    if (rc == 1) {
         if (!class_id) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("classID attribute not supported on <bandwidth> "
                              "in this usage context"));
             return -1;
         }
-        if (virStrToLong_ui(class_id_prop, NULL, 10, class_id) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to parse class id '%1$s'"),
-                           class_id_prop);
-            return -1;
-        }
+
+        *class_id = class_id_value;
     }
 
     cur = node->children;
