@@ -6,7 +6,7 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='x86_64' machine='xenfv'>hvm</type>
-    <loader readonly='yes' type='pflash'>/LIBXL_FIRMWARE_DIR/ovmf.bin</loader>
+    <loader readonly='yes' type='pflash'>/usr/share/qemu/ovmf-x86_64-xen.bin</loader>
     <boot dev='cdrom'/>
   </os>
   <features>

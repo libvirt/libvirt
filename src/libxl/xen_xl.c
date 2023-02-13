@@ -104,18 +104,23 @@ xenParseXLOS(virConf *conf, virDomainDef *def, virCaps *caps)
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         g_autofree char *bios = NULL;
+        g_autofree char *bios_path = NULL;
         g_autofree char *boot = NULL;
         int val = 0;
 
         if (xenConfigGetString(conf, "bios", &bios, NULL) < 0)
+            return -1;
+        if (xenConfigGetString(conf, "bios_path_override", &bios_path, NULL) < 0)
             return -1;
 
         if (bios && STREQ(bios, "ovmf")) {
             def->os.loader = virDomainLoaderDefNew();
             def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
             def->os.loader->readonly = VIR_TRISTATE_BOOL_YES;
-
-            def->os.loader->path = g_strdup(LIBXL_FIRMWARE_DIR "/ovmf.bin");
+            if (bios_path)
+                def->os.loader->path = g_strdup(bios_path);
+            else
+                def->os.loader->path = g_strdup(LIBXL_FIRMWARE_DIR "/ovmf.bin");
         } else {
             for (i = 0; i < caps->nguests; i++) {
                 if (caps->guests[i]->ostype == VIR_DOMAIN_OSTYPE_HVM &&
@@ -1119,9 +1124,13 @@ xenFormatXLOS(virConf *conf, virDomainDef *def)
         if (xenConfigSetString(conf, "builder", "hvm") < 0)
             return -1;
 
-        if (virDomainDefHasOldStyleUEFI(def) &&
-            xenConfigSetString(conf, "bios", "ovmf") < 0)
-            return -1;
+        if (virDomainDefHasOldStyleUEFI(def)) {
+            if (xenConfigSetString(conf, "bios", "ovmf") < 0)
+                return -1;
+            if (def->os.loader->path &&
+                (xenConfigSetString(conf, "bios_path_override", def->os.loader->path) < 0))
+                return -1;
+        }
 
         if (def->os.slic_table &&
             xenConfigSetString(conf, "acpi_firmware", def->os.slic_table) < 0)
