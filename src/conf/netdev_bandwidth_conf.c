@@ -112,12 +112,6 @@ virNetDevBandwidthParse(virNetDevBandwidth **bandwidth,
 
     def = g_new0(virNetDevBandwidth, 1);
 
-    if (!node || !virXMLNodeNameEqual(node, "bandwidth")) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("invalid argument supplied"));
-        return -1;
-    }
-
     class_id_prop = virXMLPropString(node, "classID");
     if (class_id_prop) {
         if (!class_id) {
