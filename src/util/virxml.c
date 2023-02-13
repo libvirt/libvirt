@@ -900,6 +900,40 @@ virXMLNodeGetSubelement(xmlNodePtr node,
 
 
 /**
+ * virXMLNodeGetSubelementList:
+ * @node: node to get subelement of
+ * @name: name of subelement to fetch (NULL to fetch all sub-elements)
+ * @list: If non-NULL, filled with a list of pointers to the nodes. Caller is
+ *        responsible for freeing the list but not the members.
+ *
+ * Find and return a sub-elements node of @node named @name in a list.
+ * Returns the number of subelements with @name
+ */
+size_t
+virXMLNodeGetSubelementList(xmlNodePtr node,
+                            const char *name,
+                            xmlNodePtr **list)
+{
+    xmlNodePtr n;
+    size_t nelems = 0;
+
+    for (n = node->children; n; n = n->next) {
+        if (n->type == XML_ELEMENT_NODE) {
+            if (name && !virXMLNodeNameEqual(n, name))
+                continue;
+
+            if (list)
+                VIR_APPEND_ELEMENT_COPY(*list, nelems, n);
+            else
+                nelems++;
+        }
+    }
+
+    return nelems;
+}
+
+
+/**
  * virXPathNode:
  * @xpath: the XPath string to evaluate
  * @ctxt: an XPath context

@@ -3709,6 +3709,7 @@ virXMLFormatMetadata;
 virXMLNewNode;
 virXMLNodeContentString;
 virXMLNodeGetSubelement;
+virXMLNodeGetSubelementList;
 virXMLNodeNameEqual;
 virXMLNodeSanitizeNamespaces;
 virXMLNodeToString;
