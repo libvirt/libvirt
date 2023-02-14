@@ -257,6 +257,12 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    any config changes on shutdown. The ``stateless`` flag (:since:`Since 8.6.0`)
    can be used to control this behaviour, when set to ``yes`` NVRAM will never
    be created.
+
+   When firmware autoselection is enabled, the ``format`` attribute can be
+   used to tell libvirt to only consider firmware builds that are in a
+   specific format. Supported values are ``raw`` and ``qcow2``.
+   :since:`Since 9.2.0 (QEMU only)`
+
 ``nvram``
    Some UEFI firmwares may want to use a non-volatile memory to store some
    variables. In the host, this is represented as a file and the absolute path
@@ -275,6 +281,10 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
 
    **Note:** ``network`` backed NVRAM the variables are not instantiated from
    the ``template`` and it's user's responsibility to provide a valid NVRAM image.
+
+   This element supports a ``format`` attribute, which has the same semantics
+   as the attribute of the same name for the ``<loader>`` element.
+   :since:`Since 9.2.0 (QEMU only)`
 
    It is not valid to provide this element if the loader is marked as
    stateless.
