@@ -30,13 +30,6 @@ def get_file_list(prefix):
     filelist = []
 
     for root, dir, files in os.walk(prefix):
-        prefixbase = os.path.dirname(prefix)
-
-        if root.startswith(prefixbase):
-            relroot = root[len(prefixbase):]
-        else:
-            relroot = root
-
         for file in files:
             if not re.search('\\.html$', file):
                 continue
@@ -45,20 +38,21 @@ def get_file_list(prefix):
             if '404.html' in file:
                 continue
 
-            fullfilename = os.path.join(root, file)
-            relfilename = os.path.join(relroot, file)
-            filelist.append((fullfilename, relfilename))
+            filelist.append(os.path.join(root, file))
 
     return filelist
 
 
 # loads an XHTML and extracts all anchors, local and remote links for the one file
-def process_file(filetuple):
-    filename, relfilename = filetuple
+def process_file(filename):
     tree = ET.parse(filename)
     root = tree.getroot()
+    docname = root.get('data-sourcedoc')
 
-    anchors = [relfilename]
+    if not docname:
+        docname = filename
+
+    anchors = [filename]
     targets = []
 
     for elem in root.findall('.//html:a', ns):
@@ -66,30 +60,30 @@ def process_file(filetuple):
         an = elem.get('id')
 
         if an:
-            anchors.append(relfilename + '#' + an)
+            anchors.append(filename + '#' + an)
 
         if target:
             if re.search('://', target):
                 externallinks.append(target)
             elif target[0] != '#' and 'mailto:' not in target:
-                dirname = os.path.dirname(relfilename)
-                targetname = os.path.normpath(os.path.join(dirname, target))
+                dirname = os.path.dirname(filename)
+                targetfull = os.path.normpath(os.path.join(dirname, target))
 
-                targets.append((targetname, filename, target))
+                targets.append((filename, docname, targetfull, target))
 
     # older docutils generate "<div class='section'"
     for elem in root.findall('.//html:div/[@class=\'section\']', ns):
         an = elem.get('id')
 
         if an:
-            anchors.append(relfilename + '#' + an)
+            anchors.append(filename + '#' + an)
 
     # modern docutils generate a <section element
     for elem in root.findall('.//html:section', ns):
         an = elem.get('id')
 
         if an:
-            anchors.append(relfilename + '#' + an)
+            anchors.append(filename + '#' + an)
 
     return (anchors, targets)
 
@@ -98,8 +92,8 @@ def process_all(filelist):
     anchors = []
     targets = []
 
-    for filetuple in filelist:
-        anchor, target = process_file(filetuple)
+    for file in filelist:
+        anchor, target = process_file(file)
 
         targets = targets + target
         anchors = anchors + anchor
@@ -109,17 +103,15 @@ def process_all(filelist):
 
 def check_targets(targets, anchors):
     errors = []
-    for target, targetfrom, targetorig in targets:
+    for _, docname, target, targetorig in targets:
         if target not in anchors:
-            errors.append((targetfrom, targetorig))
+            errors.append((docname, targetorig))
 
     if errors:
         errors.sort()
 
-        print('broken link targets:')
-
         for file, target in errors:
-            print(file + " broken link: " + target)
+            print(f'ERROR: \'{file}\': broken link to: \'{target}\'')
 
         return True
 
@@ -134,7 +126,7 @@ parser.add_argument('--external', action="store_true",
 
 args = parser.parse_args()
 
-files = get_file_list(args.webroot)
+files = get_file_list(os.path.abspath(args.webroot))
 
 targets, anchors = process_all(files)
 
