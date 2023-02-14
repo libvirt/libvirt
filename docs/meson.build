@@ -80,6 +80,7 @@ docs_rst_files = [
   'formatstorageencryption',
   'glib-adoption',
   'goals',
+  'golang',
   'governance',
   'hacking',
   'hooks',
