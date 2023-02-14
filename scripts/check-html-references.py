@@ -40,6 +40,8 @@ def get_file_list(prefix):
 
             filelist.append(os.path.join(root, file))
 
+    filelist.sort()
+
     return filelist
 
 
@@ -118,9 +120,54 @@ def check_targets(targets, anchors):
     return False
 
 
+def check_usage_crawl(page, targets, visited):
+    visited.append(page)
+
+    tocrawl = []
+
+    for filename, docname, target, _ in targets:
+        if page != filename:
+            continue
+
+        targetpage = target.split("#", 1)[0]
+
+        if targetpage not in visited and targetpage not in tocrawl:
+            tocrawl.append(targetpage)
+
+    for crawl in tocrawl:
+        check_usage_crawl(crawl, targets, visited)
+
+
+# crawls the document references starting from entrypoint and tries to find
+# unreachable pages
+def check_usage(targets, files, entrypoint):
+    visited = []
+    fail = False
+
+    check_usage_crawl(entrypoint, targets, visited)
+
+    for file in files:
+        if file not in visited:
+            brokendoc = file
+
+            for filename, docname, _, _ in targets:
+                if filename != file:
+                    continue
+                if docname:
+                    brokendoc = docname
+                    break
+
+            print(f'ERROR: \'{brokendoc}\': is not referenced from anywhere')
+            fail = True
+
+    return fail
+
+
 parser = argparse.ArgumentParser(description='HTML reference checker')
 parser.add_argument('--webroot', required=True,
                     help='path to the web root')
+parser.add_argument('--entrypoint', default="index.html",
+                    help='file name of web entry point relative to --webroot')
 parser.add_argument('--external', action="store_true",
                     help='print external references instead')
 
@@ -128,7 +175,11 @@ args = parser.parse_args()
 
 files = get_file_list(os.path.abspath(args.webroot))
 
+entrypoint = os.path.join(os.path.abspath(args.webroot), args.entrypoint)
+
 targets, anchors = process_all(files)
+
+fail = False
 
 if args.external:
     prev = None
@@ -140,6 +191,12 @@ if args.external:
         prev = ext
 else:
     if check_targets(targets, anchors):
+        fail = True
+
+    if check_usage(targets, files, entrypoint):
+        fail = True
+
+    if fail:
         sys.exit(1)
 
     sys.exit(0)
