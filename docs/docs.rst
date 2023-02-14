@@ -163,3 +163,6 @@ Project development
 
 `New repo setup <newreposetup.html>`__
    Procedure for configuring new git repositories for libvirt
+
+`Libvirt logos <logos/index.html>`__
+   Libvirt logo files and guideline how to use them
