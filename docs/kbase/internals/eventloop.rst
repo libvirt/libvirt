@@ -23,7 +23,7 @@ desired function. If generalized, this is how many long running programs
 (daemons) work. Even those who are not waiting for direct user input and have no
 graphical interface. Such as Libvirt.
 
-.. image:: ../images/event_loop_simple.png
+.. image:: ../../images/event_loop_simple.png
    :alt: event loop
 
 In Libvirt this approach is used in combination with ``poll(2)`` as all the
@@ -57,7 +57,7 @@ a message event loop is blocked and for an outside observer unresponsive. This
 is not acceptable for Libvirt. Therefore we have came up with the following
 solution.
 
-.. image:: ../images/event_loop_worker.png
+.. image:: ../../images/event_loop_worker.png
    :alt: event loop
 
 The event loop does only necessary minimum and hand over message processing to
