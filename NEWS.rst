@@ -19,6 +19,16 @@ v9.2.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Make firmware selection persistent
+
+    Up until now, firmware autoselection has been performed at domain startup
+    time: as a result, changes to the JSON firmware descriptors present on the
+    system could have translated to a different firmware being chosen for
+    subsequent startups of the same domain, potentially rendering it unbootable
+    or lowering the security guarantees. Firmware selection now happens once,
+    when the domain is defined, and its results are stored in the domain XML
+    to be reused, unchanged, for all subsequent boots.
+
 * **Bug fixes**
 
 
