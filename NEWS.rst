@@ -17,6 +17,12 @@ v9.2.0 (unreleased)
 
 * **New features**
 
+  * qemu: Add support for QCOW2 formatted firmware
+
+    This type of firmware can be picked up either automatically, if the
+    corresponding JSON descriptor has the highest priority, or manually by
+    using ``<loader format='qcow2'/>`` in the domain XML.
+
 * **Improvements**
 
   * qemu: Make firmware selection persistent
