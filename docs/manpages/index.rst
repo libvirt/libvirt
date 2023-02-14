@@ -42,6 +42,9 @@ Tools
 * `virsh(1) <virsh.html>`__ - management user interface
 * `virt-qemu-run(1) <virt-qemu-run.html>`__ - run standalone QEMU instances
 * `libvirt-guests(8) <libvirt-guests.html>`__ - suspend/resume running libvirt guests
+* `virt-pki-query-dn(1) <virt-pki-query-dn.html>`__ - extract Distinguished Name from a PEM certificate
+* `virt-ssh-helper(8) <virt-ssh-helper.html>`__ - libvirt socket proxy (internal helper tool)
+* `virt-qemu-qmp-proxy(1) <virt-qemu-qmp-proxy.html>`__ - Expose a QMP proxy server for a libvirt QEMU guest
 
 Key codes
 =========
