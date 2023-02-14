@@ -127,14 +127,14 @@ def check_targets(targets, anchors):
 
 
 parser = argparse.ArgumentParser(description='HTML reference checker')
-parser.add_argument('--prefix', default='.',
-                    help='build tree prefix')
+parser.add_argument('--webroot', required=True,
+                    help='path to the web root')
 parser.add_argument('--external', action="store_true",
                     help='print external references instead')
 
 args = parser.parse_args()
 
-files = get_file_list(args.prefix)
+files = get_file_list(args.webroot)
 
 targets, anchors = process_all(files)
 
