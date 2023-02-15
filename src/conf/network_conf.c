@@ -605,53 +605,43 @@ virNetworkDHCPDefParseXML(const char *networkName,
                           xmlNodePtr node,
                           virNetworkIPDef *def)
 {
-    xmlNodePtr cur;
-    virNetworkDHCPRangeDef range;
-    virNetworkDHCPHostDef host;
+    g_autofree xmlNodePtr *rangeNodes = NULL;
+    size_t nrangeNodes = virXMLNodeGetSubelementList(node, "range", &rangeNodes);
+    g_autofree xmlNodePtr *hostNodes = NULL;
+    size_t nhostNodes = virXMLNodeGetSubelementList(node, "host", &hostNodes);
+    xmlNodePtr bootp = virXMLNodeGetSubelement(node, "bootp");
+    size_t i;
 
-    memset(&range, 0, sizeof(range));
-    memset(&host, 0, sizeof(host));
+    for (i = 0; i < nrangeNodes; i++) {
+        virNetworkDHCPRangeDef range = { 0 };
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE &&
-            virXMLNodeNameEqual(cur, "range")) {
+        if (virNetworkDHCPRangeDefParseXML(networkName, def, rangeNodes[i], &range) < 0)
+            return -1;
 
-            if (virNetworkDHCPRangeDefParseXML(networkName, def, cur, &range) < 0)
-                return -1;
-            VIR_APPEND_ELEMENT(def->ranges, def->nranges, range);
+        VIR_APPEND_ELEMENT(def->ranges, def->nranges, range);
+    }
 
-        } else if (cur->type == XML_ELEMENT_NODE &&
-            virXMLNodeNameEqual(cur, "host")) {
+    for (i = 0; i < nhostNodes; i++) {
+        virNetworkDHCPHostDef host = { 0 };
 
-            if (virNetworkDHCPHostDefParseXML(networkName, def, cur,
-                                              &host, false) < 0)
-                return -1;
-            VIR_APPEND_ELEMENT(def->hosts, def->nhosts, host);
-        } else if (VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET) &&
-                   cur->type == XML_ELEMENT_NODE &&
-                   virXMLNodeNameEqual(cur, "bootp")) {
-            g_autofree char *file = NULL;
-            g_autofree char *server = NULL;
-            virSocketAddr inaddr;
-            memset(&inaddr, 0, sizeof(inaddr));
+        if (virNetworkDHCPHostDefParseXML(networkName, def, hostNodes[i],
+                                          &host, false) < 0)
+            return -1;
 
-            if (!(file = virXMLPropString(cur, "file"))) {
-                cur = cur->next;
-                continue;
-            }
-            server = virXMLPropString(cur, "server");
+        VIR_APPEND_ELEMENT(def->hosts, def->nhosts, host);
+    }
 
-            if (server &&
-                virSocketAddrParse(&inaddr, server, AF_UNSPEC) < 0) {
-                return -1;
-            }
+    if (bootp &&
+        VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET)) {
+        g_autofree char *server = virXMLPropString(bootp, "server");
 
-            def->bootfile = g_steal_pointer(&file);
-            def->bootserver = inaddr;
+        if (!(def->bootfile = virXMLPropStringRequired(bootp, "file")))
+            return -1;
+
+        if (server &&
+            virSocketAddrParse(&def->bootserver, server, AF_UNSPEC) < 0) {
+            return -1;
         }
-
-        cur = cur->next;
     }
 
     return 0;
