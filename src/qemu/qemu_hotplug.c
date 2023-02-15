@@ -3675,6 +3675,15 @@ qemuDomainChangeNet(virQEMUDriver *driver,
         goto cleanup;
     }
 
+    /* nothing in <backend> can be modified in an existing interface -
+     * the entire device will need to be removed and re-added.
+     */
+    if (!virDomainNetBackendIsEqual(&olddev->backend, &newdev->backend)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot modify network device backend settings"));
+        goto cleanup;
+    }
+
     /* allocate new actual device to compare to old - we will need to
      * free it if we fail for any reason
      */

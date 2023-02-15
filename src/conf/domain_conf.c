@@ -19854,6 +19854,20 @@ virDomainFsDefCheckABIStability(virDomainFSDef *src,
 }
 
 
+bool
+virDomainNetBackendIsEqual(virDomainNetBackend *src,
+                           virDomainNetBackend *dst)
+{
+    if (src->type != dst->type ||
+        STRNEQ_NULLABLE(src->tap, dst->tap) ||
+        STRNEQ_NULLABLE(src->vhost, dst->vhost) ||
+        STRNEQ_NULLABLE(src->logFile, dst->logFile)) {
+        return false;
+    }
+    return true;
+}
+
+
 static bool
 virDomainNetDefCheckABIStability(virDomainNetDef *src,
                                  virDomainNetDef *dst)
