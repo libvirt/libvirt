@@ -374,6 +374,7 @@
 # connection. To avoid one client monopolizing the server
 # this should be a small fraction of the global max_workers
 # parameter.
+# Setting this too low may cause keepalive timeouts.
 #max_client_requests = 5
 
 # Same processing controls, but this time for the admin interface.
