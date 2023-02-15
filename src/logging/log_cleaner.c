@@ -264,6 +264,5 @@ virLogCleanerShutdown(virLogHandler *handler)
         handler->cleanup_log_timer = -1;
     }
 
-    g_regex_unref(log_regex);
-    log_regex = NULL;
+    g_clear_pointer(&log_regex, g_regex_unref);
 }
