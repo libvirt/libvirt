@@ -331,6 +331,9 @@ qemuExtDevicesSetupCgroup(virQEMUDriver *driver,
     virDomainDef *def = vm->def;
     size_t i;
 
+    /* Don't forget to adjust qemuExtDevicesHasDevice() accordingly.
+     * Otherwise, this function might not be called at all. */
+
     if (qemuDBusSetupCgroup(driver, vm, cgroup) < 0)
         return -1;
 
