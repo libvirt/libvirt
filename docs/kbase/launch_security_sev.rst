@@ -465,12 +465,13 @@ scope of this document. Fortunately, libvirt provides a tool that can be used
 to perform this validation::
 
   $ virt-qemu-sev-validate \
-      --measurement LMnv8i8N2QejezMPkscShF0cyPYCslgUoCxGWRqQuyt0Q0aUjVkH/T6NcmkwZkWp
-      --api-major 0
-      --api-minor 24
-      --build-id 15
-      --policy 3
-      --tik ${myvmname}_tik.bin
+      --measurement LMnv8i8N2QejezMPkscShF0cyPYCslgUoCxGWRqQuyt0Q0aUjVkH/T6NcmkwZkWp \
+      --api-major 0 \
+      --api-minor 24 \
+      --build-id 15 \
+      --policy 3 \
+      --firmware /path/to/OVMF.sev.fd \
+      --tik ${myvmname}_tik.bin \
       --tek ${myvmname}_tek.bin
   OK: Looks good to me
 
