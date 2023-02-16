@@ -144,18 +144,18 @@ qemuPasstStart(virDomainObj *vm,
     g_autofree char *passtSocketName = qemuPasstCreateSocketPath(vm, net);
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *pidfile = qemuPasstCreatePidFilename(vm, net);
+    g_autofree char *errbuf = NULL;
     char macaddr[VIR_MAC_STRING_BUFLEN];
     size_t i;
     pid_t pid = (pid_t) -1;
     int exitstatus = 0;
     int cmdret = 0;
-    VIR_AUTOCLOSE errfd = -1;
 
     cmd = virCommandNew(PASST);
 
     virCommandClearCaps(cmd);
     virCommandSetPidFile(cmd, pidfile);
-    virCommandSetErrorFD(cmd, &errfd);
+    virCommandSetErrorBuffer(cmd, &errbuf);
 
     virCommandAddArgList(cmd,
                          "--one-off",
@@ -266,7 +266,7 @@ qemuPasstStart(virDomainObj *vm,
 
     if (cmdret < 0 || exitstatus != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not start 'passt'. exitstatus: %d"), exitstatus);
+                       _("Could not start 'passt': %s"), NULLSTR(errbuf));
         goto error;
     }
 
