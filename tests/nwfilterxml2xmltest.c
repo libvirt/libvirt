@@ -117,6 +117,11 @@ mymain(void)
     DO_TEST("example-1", false);
     DO_TEST("example-2", false);
 
+    /* The parser and formatter for nwfilter rules was written in a quirky way.
+     * Validate that it still works. Note that the files don't conform to the
+     * schema */
+    DO_TEST("quirks-invalid", false);
+
     DO_TEST("chain_prefixtest1-invalid", true); /* derived from arp-test */
 
     DO_TEST("attr-value-test", false);

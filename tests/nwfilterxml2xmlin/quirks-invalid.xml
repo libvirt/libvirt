@@ -1,0 +1,13 @@
+<filter name='testcase'>
+  <uuid>01a992d2-f8c8-7c27-f69b-ab0a9d377379</uuid>
+
+  <!-- quirky XML for parser validation -->
+  <rule action='accept' direction='in' priority='100'>
+    <tcp match='no' srcipaddr='10.1.2.3'/>
+    <tcp match='no' srcportstart='22'/>
+    <tcp dstportstart='22' comment='comment'/>
+    <tcp match='no' srcporttend='24'/>
+    <tcp srcipmask='32' dstporttend='24'/>
+  </rule>
+
+</filter>
