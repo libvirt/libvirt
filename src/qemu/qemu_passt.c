@@ -102,11 +102,9 @@ qemuPasstAddNetProps(virDomainObj *vm,
 }
 
 
-void
-qemuPasstStop(virDomainObj *vm,
-              virDomainNetDef *net)
+static void
+qemuPasstKill(const char *pidfile)
 {
-    g_autofree char *pidfile = qemuPasstCreatePidFilename(vm, net);
     virErrorPtr orig_err;
 
     virErrorPreserveLast(&orig_err);
@@ -115,6 +113,16 @@ qemuPasstStop(virDomainObj *vm,
         VIR_WARN("Unable to kill passt process");
 
     virErrorRestore(&orig_err);
+}
+
+
+void
+qemuPasstStop(virDomainObj *vm,
+              virDomainNetDef *net)
+{
+    g_autofree char *pidfile = qemuPasstCreatePidFilename(vm, net);
+
+    qemuPasstKill(pidfile);
 }
 
 
@@ -147,7 +155,6 @@ qemuPasstStart(virDomainObj *vm,
     g_autofree char *errbuf = NULL;
     char macaddr[VIR_MAC_STRING_BUFLEN];
     size_t i;
-    pid_t pid = (pid_t) -1;
     int exitstatus = 0;
     int cmdret = 0;
 
@@ -273,10 +280,6 @@ qemuPasstStart(virDomainObj *vm,
     return 0;
 
  error:
-    ignore_value(virPidFileReadPathIfLocked(pidfile, &pid));
-    if (pid != -1)
-        virProcessKillPainfully(pid, true);
-    unlink(pidfile);
-
+    qemuPasstKill(pidfile);
     return -1;
 }
