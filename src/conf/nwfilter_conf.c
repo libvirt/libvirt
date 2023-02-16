@@ -2373,18 +2373,15 @@ virNWFilterRuleDefFixup(virNWFilterRuleDef *rule)
 static virNWFilterRuleDef *
 virNWFilterRuleParse(xmlNodePtr node)
 {
-    g_autofree char *prio = NULL;
     g_autofree char *statematch = NULL;
     bool found;
     int found_i = 0;
-    int priority;
 
     xmlNodePtr cur;
     g_autoptr(virNWFilterRuleDef) ret = NULL;
 
     ret = g_new0(virNWFilterRuleDef, 1);
 
-    prio       = virXMLPropString(node, "priority");
     statematch = virXMLPropString(node, "statematch");
 
     if (virXMLPropEnum(node, "action", virNWFilterRuleActionTypeFromString,
@@ -2395,15 +2392,12 @@ virNWFilterRuleParse(xmlNodePtr node)
                        VIR_XML_PROP_REQUIRED, &ret->tt) < 0)
         return NULL;
 
-    ret->priority = MAX_RULE_PRIORITY / 2;
+    if (virXMLPropInt(node, "priority", 10, VIR_XML_PROP_NONE, &ret->priority,
+                      MAX_RULE_PRIORITY / 2) < 0)
+        return NULL;
 
-    if (prio) {
-        if (virStrToLong_i(prio, NULL, 10, &priority) >= 0) {
-            if (priority <= MAX_RULE_PRIORITY &&
-                priority >= MIN_RULE_PRIORITY)
-                ret->priority = priority;
-        }
-    }
+    if (ret->priority > MAX_RULE_PRIORITY || ret->priority < MIN_RULE_PRIORITY)
+        ret->priority = MAX_RULE_PRIORITY / 2;
 
     if (statematch &&
         (STREQ(statematch, "0") || STRCASEEQ(statematch, "false")))
