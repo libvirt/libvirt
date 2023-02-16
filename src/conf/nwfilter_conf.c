@@ -2373,8 +2373,6 @@ virNWFilterRuleDefFixup(virNWFilterRuleDef *rule)
 static virNWFilterRuleDef *
 virNWFilterRuleParse(xmlNodePtr node)
 {
-    g_autofree char *action = NULL;
-    g_autofree char *direction = NULL;
     g_autofree char *prio = NULL;
     g_autofree char *statematch = NULL;
     bool found;
@@ -2386,38 +2384,16 @@ virNWFilterRuleParse(xmlNodePtr node)
 
     ret = g_new0(virNWFilterRuleDef, 1);
 
-    action     = virXMLPropString(node, "action");
-    direction  = virXMLPropString(node, "direction");
     prio       = virXMLPropString(node, "priority");
     statematch = virXMLPropString(node, "statematch");
 
-    if (!action) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s",
-                       _("rule node requires action attribute"));
+    if (virXMLPropEnum(node, "action", virNWFilterRuleActionTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &ret->action) < 0)
         return NULL;
-    }
 
-    if ((ret->action = virNWFilterRuleActionTypeFromString(action)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s",
-                       _("unknown rule action attribute value"));
+    if (virXMLPropEnum(node, "direction", virNWFilterRuleDirectionTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &ret->tt) < 0)
         return NULL;
-    }
-
-    if (!direction) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s",
-                       _("rule node requires direction attribute"));
-        return NULL;
-    }
-
-    if ((ret->tt = virNWFilterRuleDirectionTypeFromString(direction)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s",
-                       _("unknown rule direction attribute value"));
-        return NULL;
-    }
 
     ret->priority = MAX_RULE_PRIORITY / 2;
 

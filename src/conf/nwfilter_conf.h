@@ -446,8 +446,8 @@ typedef struct _virNWFilterRuleDef  virNWFilterRuleDef;
 struct _virNWFilterRuleDef {
     virNWFilterRulePriority priority;
     virNWFilterRuleFlags flags;
-    int action; /* virNWFilterRuleActionType */
-    int tt; /* virNWFilterRuleDirectionType */
+    virNWFilterRuleActionType action;
+    virNWFilterRuleDirectionType tt;
     virNWFilterRuleProtocolType prtclType;
     union {
         ethHdrFilterDef  ethHdrFilter;

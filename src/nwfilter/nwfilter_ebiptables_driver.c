@@ -2361,6 +2361,11 @@ ebtablesCreateRuleInstance(virFirewall *fw,
         target = virNWFilterJumpTargetTypeToString(
                                      VIR_NWFILTER_RULE_ACTION_DROP);
         break;
+    case VIR_NWFILTER_RULE_ACTION_DROP:
+    case VIR_NWFILTER_RULE_ACTION_ACCEPT:
+    case VIR_NWFILTER_RULE_ACTION_RETURN:
+    case VIR_NWFILTER_RULE_ACTION_CONTINUE:
+    case VIR_NWFILTER_RULE_ACTION_LAST:
     default:
         target = virNWFilterJumpTargetTypeToString(rule->action);
     }
