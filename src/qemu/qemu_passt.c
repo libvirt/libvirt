@@ -72,7 +72,7 @@ qemuPasstGetPid(virDomainObj *vm,
 {
     g_autofree char *pidfile = qemuPasstCreatePidFilename(vm, net);
 
-    return virPidFileReadPathIfLocked(pidfile, pid);
+    return virPidFileReadPath(pidfile, pid);
 }
 
 
@@ -106,11 +106,14 @@ static void
 qemuPasstKill(const char *pidfile)
 {
     virErrorPtr orig_err;
+    pid_t pid = 0;
 
     virErrorPreserveLast(&orig_err);
 
-    if (virPidFileForceCleanupPath(pidfile) < 0)
-        VIR_WARN("Unable to kill passt process");
+    ignore_value(virPidFileReadPath(pidfile, &pid));
+    if (pid != 0)
+        virProcessKillPainfully(pid, true);
+    unlink(pidfile);
 
     virErrorRestore(&orig_err);
 }
@@ -161,13 +164,13 @@ qemuPasstStart(virDomainObj *vm,
     cmd = virCommandNew(PASST);
 
     virCommandClearCaps(cmd);
-    virCommandSetPidFile(cmd, pidfile);
     virCommandSetErrorBuffer(cmd, &errbuf);
 
     virCommandAddArgList(cmd,
                          "--one-off",
                          "--socket", passtSocketName,
                          "--mac-addr", virMacAddrFormat(&net->mac, macaddr),
+                         "--pid", pidfile,
                          NULL);
 
     if (net->mtu) {
