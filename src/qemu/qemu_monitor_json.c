@@ -6450,7 +6450,7 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
                     return NULL;
 
                 if (chr->data.nix.reconnect.enabled == VIR_TRISTATE_BOOL_YES)
-                    reconnect = chr->data.tcp.reconnect.timeout;
+                    reconnect = chr->data.nix.reconnect.timeout;
                 else if (chr->data.nix.reconnect.enabled == VIR_TRISTATE_BOOL_NO)
                     reconnect = 0;
             }
