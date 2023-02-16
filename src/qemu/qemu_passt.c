@@ -156,7 +156,6 @@ qemuPasstStart(virDomainObj *vm,
     virCommandClearCaps(cmd);
     virCommandSetPidFile(cmd, pidfile);
     virCommandSetErrorFD(cmd, &errfd);
-    virCommandDaemonize(cmd);
 
     virCommandAddArgList(cmd,
                          "--one-off",
