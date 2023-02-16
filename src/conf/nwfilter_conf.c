@@ -2374,10 +2374,8 @@ static virNWFilterRuleDef *
 virNWFilterRuleParse(xmlNodePtr node)
 {
     g_autofree char *statematch = NULL;
-    bool found;
-    int found_i = 0;
-
-    xmlNodePtr cur;
+    g_autofree xmlNodePtr *attrNodes = NULL;
+    size_t nattrNodes = 0;
     g_autoptr(virNWFilterRuleDef) ret = NULL;
 
     ret = g_new0(virNWFilterRuleDef, 1);
@@ -2403,43 +2401,42 @@ virNWFilterRuleParse(xmlNodePtr node)
         (STREQ(statematch, "0") || STRCASEEQ(statematch, "false")))
         ret->flags |= RULE_FLAG_NO_STATEMATCH;
 
-    cur = node->children;
+    nattrNodes = virXMLNodeGetSubelementList(node, NULL, &attrNodes);
 
-    found = false;
+    if (nattrNodes > 0) {
+        size_t i;
+        size_t attr;
 
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            size_t i = 0;
-            while (1) {
-                if (found)
-                    i = found_i;
-
-                if (virXMLNodeNameEqual(cur, virAttr[i].id)) {
-
-                    found_i = i;
-                    found = true;
-                    ret->prtclType = virAttr[i].prtclType;
-
-                    if (virNWFilterRuleDetailsParse(cur,
-                                                    ret,
-                                                    virAttr[i].att) < 0) {
-                        return NULL;
-                    }
-                    if (virNWFilterRuleValidate(ret) < 0)
-                        return NULL;
+        /* First we look up the type of the first valid element. The rest of
+         * the parsing then only considers elements with same name. */
+        for (i = 0; i < nattrNodes; i++) {
+            for (attr = 0; virAttr[attr].id; attr++) {
+                if (virXMLNodeNameEqual(attrNodes[i], virAttr[attr].id)) {
+                    ret->prtclType = virAttr[attr].prtclType;
                     break;
                 }
-                if (!found) {
-                    i++;
-                    if (!virAttr[i].id)
-                        break;
-                } else {
-                   break;
-                }
             }
+
+            /* if we've found the first correct element end the search */
+            if (virAttr[attr].id)
+                break;
         }
 
-        cur = cur->next;
+        /* parse the correct subelements now */
+        for (i = 0; i < nattrNodes; i++) {
+            /* no valid elements */
+            if (!virAttr[attr].id)
+                break;
+
+            if (!virXMLNodeNameEqual(attrNodes[i], virAttr[attr].id))
+                continue;
+
+            if (virNWFilterRuleDetailsParse(attrNodes[i], ret, virAttr[attr].att) < 0)
+                return NULL;
+        }
+
+        if (virNWFilterRuleValidate(ret) < 0)
+            return NULL;
     }
 
     virNWFilterRuleDefFixup(ret);
