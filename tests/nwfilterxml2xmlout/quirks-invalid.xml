@@ -1,7 +1,7 @@
 <filter name='testcase' chain='root'>
   <uuid>01a992d2-f8c8-7c27-f69b-ab0a9d377379</uuid>
   <rule action='accept' direction='in' priority='100'>
-    <tcp match='no' srcipaddr='10.1.2.3' srcipmask='32' srcportstart='22' dstportstart='22'/>
     <tcp comment='comment'/>
+    <tcp match='no' srcipaddr='10.1.2.3' srcipmask='32' srcportstart='22' dstportstart='22'/>
   </rule>
 </filter>
