@@ -309,7 +309,7 @@ inject a disk password on success:
 ::
 
    # virt-qemu-sev-validate \
-       --loader OVMF.sev.fd \
+       --firmware OVMF.sev.fd \
        --tk this-guest-tk.bin \
        --measurement Zs2pf19ubFSafpZ2WKkwquXvACx9Wt/BV+eJwQ/taO8jhyIj/F8swFrybR1fZ2ID \
        --api-major 0 \
@@ -390,7 +390,7 @@ inject a disk password on success:
 
    # virt-qemu-sev-validate \
        --connect qemu+ssh://root@some.remote.host/system \
-       --loader OVMF.sev.fd \
+       --firmware OVMF.sev.fd \
        --tk this-guest-tk.bin \
        --domain fedora34x86_64 \
        --disk-password passwd.txt
