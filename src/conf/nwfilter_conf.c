@@ -2877,43 +2877,31 @@ virNWFilterRuleDefDetailsFormat(virBuffer *buf,
 }
 
 
-static int
+static void
 virNWFilterRuleDefFormat(virBuffer *buf,
                          virNWFilterRuleDef *def)
 {
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     size_t i;
-    bool subelement = false;
 
-    virBufferAsprintf(buf, "<rule action='%s' direction='%s' priority='%d'",
+    virBufferAsprintf(&attrBuf, " action='%s' direction='%s' priority='%d'",
                       virNWFilterRuleActionTypeToString(def->action),
                       virNWFilterRuleDirectionTypeToString(def->tt),
                       def->priority);
 
     if ((def->flags & RULE_FLAG_NO_STATEMATCH))
-        virBufferAddLit(buf, " statematch='false'");
+        virBufferAddLit(&attrBuf, " statematch='false'");
 
-    virBufferAdjustIndent(buf, 2);
-    i = 0;
-    while (virAttr[i].id) {
-        if (virAttr[i].prtclType == def->prtclType) {
-            if (!subelement)
-                virBufferAddLit(buf, ">\n");
-            virNWFilterRuleDefDetailsFormat(buf,
-                                            virAttr[i].id,
-                                            virAttr[i].att,
-                                            def);
-            subelement = true;
-            break;
-        }
-        i++;
+    for (i = 0; virAttr[i].id; i++) {
+        if (virAttr[i].prtclType != def->prtclType)
+            continue;
+
+        virNWFilterRuleDefDetailsFormat(&childBuf, virAttr[i].id, virAttr[i].att, def);
+        break;
     }
 
-    virBufferAdjustIndent(buf, -2);
-    if (subelement)
-        virBufferAddLit(buf, "</rule>\n");
-    else
-        virBufferAddLit(buf, "/>\n");
-    return 0;
+    virXMLFormatElement(buf, "rule", &attrBuf, &childBuf);
 }
 
 
@@ -2921,8 +2909,11 @@ static int
 virNWFilterEntryFormat(virBuffer *buf,
                        virNWFilterEntry *entry)
 {
-    if (entry->rule)
-        return virNWFilterRuleDefFormat(buf, entry->rule);
+    if (entry->rule) {
+        virNWFilterRuleDefFormat(buf, entry->rule);
+        return 0;
+    }
+
     return virNWFilterFormatParamAttributes(buf, entry->include->params,
                                             entry->include->filterref);
 }
