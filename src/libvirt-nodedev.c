@@ -1089,7 +1089,6 @@ virNodeDeviceGetAutostart(virNodeDevicePtr dev,
     virResetLastError();
 
     virCheckNodeDeviceReturn(dev, -1);
-    virCheckReadOnlyGoto(dev->conn->flags, error);
 
     if (dev->conn->nodeDeviceDriver &&
         dev->conn->nodeDeviceDriver->nodeDeviceGetAutostart) {
