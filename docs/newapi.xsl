@@ -24,18 +24,16 @@
 
   <xsl:param name="indexfile" select="''"/>
 
+  <xsl:param name="aclxmlpath" select="''"/>
+
   <!-- the target directory for the HTML output -->
   <xsl:variable name="htmldir">html</xsl:variable>
   <xsl:variable name="href_base">../</xsl:variable>
 
   <xsl:variable name="acls">
-    <xsl:copy-of select="document('{$builddir}/src/libvirt_access.xml')/aclinfo/api"/>
-  </xsl:variable>
-  <xsl:variable name="qemuacls">
-    <xsl:copy-of select="document('{$builddir}/src/libvirt_access_qemu.xml')/aclinfo/api"/>
-  </xsl:variable>
-  <xsl:variable name="lxcacls">
-    <xsl:copy-of select="document('{$builddir}/src/libvirt_access_lxc.xml')/aclinfo/api"/>
+    <xsl:if test="$aclxmlpath != ''">
+      <xsl:copy-of select="document($aclxmlpath)/aclinfo/api"/>
+    </xsl:if>
   </xsl:variable>
 
   <xsl:template name="aclinfo">

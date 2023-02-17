@@ -74,6 +74,10 @@ foreach name : [ 'remote', 'qemu', 'lxc' ]
   )
 endforeach
 
+docs_acl_xml = access_gen_xml[0]
+docs_acl_qemu_xml = access_gen_xml[1]
+docs_acl_lxc_xml = access_gen_xml[2]
+
 if conf.has('WITH_POLKIT')
   access_sources += access_polkit_sources
 
