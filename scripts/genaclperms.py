@@ -91,7 +91,7 @@ for obj in sorted(perms.keys()):
     objname = obj.lower().replace("_", "-")
     olink = "object_" + objname
 
-    print('    <h3><a id="%s">%s</a></h3>' % (olink, klass))
+    print('    <h3><a id="%s"><code>%s</code> - %s</a></h3>' % (olink, objname, klass))
     print('    <table>')
     print('      <thead>')
     print('        <tr>')
