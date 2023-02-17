@@ -96,12 +96,18 @@ for obj in sorted(perms.keys()):
     print('        <tr>')
     print('          <th>Permission</th>')
     print('          <th>Description</th>')
+    print('          <th>Anonymous</th>')
     print('        </tr>')
     print('      </thead>')
     print('      <tbody>')
 
     for perm in sorted(perms[obj].keys()):
         description = perms[obj][perm]["desc"]
+
+        if perms[obj][perm]["anonymous"]:
+            anonymous = 'yes'
+        else:
+            anonymous = ''
 
         if description is None:
             raise Exception("missing description for %s.%s" % (obj, perm))
@@ -112,6 +118,7 @@ for obj in sorted(perms.keys()):
         print('        <tr>')
         print('          <td><a id="%s">%s</a></td>' % (plink, perm))
         print('          <td>%s</td>' % description)
+        print('          <td>%s</td>' % anonymous)
         print('        </tr>')
 
     print('      </tbody>')

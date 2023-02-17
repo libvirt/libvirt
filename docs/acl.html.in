@@ -20,7 +20,8 @@
       state, where the only API operations allowed are those required
       to complete authentication. After successful authentication, a
       connection either has full, unrestricted access to all libvirt
-      API calls, or is locked down to only "read only" operations,
+      API calls, or is locked down to only "read only" (see 'Anonymous'
+      in the table below) operations,
       according to what socket a client connection originated on.
     </p>
 
