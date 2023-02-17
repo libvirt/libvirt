@@ -473,6 +473,7 @@ typedef enum {
     /**
      * @desc: Read node device
      * @message: Reading node device configuration requires authorization
+     * @anonymous: 1
      */
     VIR_ACCESS_PERM_NODE_DEVICE_READ,
 
