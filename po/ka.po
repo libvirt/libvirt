@@ -1,13 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the libvirt package.
-# Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2022.
+# Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2022, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 8.4.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-01-09 14:27+0000\n"
-"PO-Revision-Date: 2022-07-25 06:18+0000\n"
+"PO-Revision-Date: 2023-02-19 16:20+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ka/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.13\n"
+"X-Generator: Weblate 4.15.2\n"
 
 msgid ""
 "\n"
@@ -276,7 +276,7 @@ msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr ""
 
 msgid "  NAME\n"
-msgstr "  უსახელო\n"
+msgstr "  სახელი\n"
 
 #, c-format
 msgid " %s (help keyword '%s')\n"
@@ -287,16 +287,16 @@ msgid " %s (help keyword '%s'):\n"
 msgstr ""
 
 msgid " Hypervisors:"
-msgstr " ჰაიპერვაიზორი:"
+msgstr " ჰაიპერვაიზორები:"
 
 msgid " Miscellaneous:"
 msgstr " სხვადასხვა:"
 
 msgid " Networking:"
-msgstr ""
+msgstr " ქსელი:"
 
 msgid " Storage:"
-msgstr ""
+msgstr " საცავი:"
 
 #, c-format
 msgid ""
@@ -323,7 +323,7 @@ msgstr ""
 
 #, c-format
 msgid "%s\n"
-msgstr ""
+msgstr "%s\n"
 
 #, c-format
 msgid "%s %s"
@@ -873,7 +873,7 @@ msgstr ""
 
 #, c-format
 msgid "'%s'"
-msgstr ""
+msgstr "'%s'"
 
 #, c-format
 msgid "'%s' D-Bus address is not handled"
@@ -1153,7 +1153,7 @@ msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr ""
 
 msgid "(<null>)"
-msgstr ""
+msgstr "(<null>)"
 
 msgid "(CPU_definition)"
 msgstr ""
@@ -1165,7 +1165,7 @@ msgid "(bridge interface definition)"
 msgstr ""
 
 msgid "(capabilities)"
-msgstr ""
+msgstr "(შესაძლებლობები)"
 
 msgid "(definition_of_secret)"
 msgstr ""
@@ -1219,7 +1219,7 @@ msgid "(node_device_definition)"
 msgstr ""
 
 msgid "(none)"
-msgstr ""
+msgstr "(არცერთი)"
 
 msgid "(nwfilter_definition)"
 msgstr ""
