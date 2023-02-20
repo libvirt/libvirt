@@ -249,7 +249,6 @@ qemuSlirpStart(virDomainObj *vm,
     int rc;
     int exitstatus = 0;
     int cmdret = 0;
-    VIR_AUTOCLOSE errfd = -1;
     bool killDBusDaemon = false;
     g_autofree char *fdname = g_strdup_printf("slirpfd-%s", net->info.alias);
 
@@ -272,7 +271,6 @@ qemuSlirpStart(virDomainObj *vm,
 
     virCommandClearCaps(cmd);
     virCommandSetPidFile(cmd, pidfile);
-    virCommandSetErrorFD(cmd, &errfd);
     virCommandDaemonize(cmd);
 
     virCommandAddArgFormat(cmd, "--fd=%d", slirp->fd[1]);
