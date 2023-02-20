@@ -807,6 +807,10 @@ virInterfaceDefParseString;
 virInterfaceDefParseXML;
 
 
+# conf/moment_conf.h
+virDomainMomentDefPostParse;
+
+
 # conf/netdev_bandwidth_conf.h
 virDomainClearNetBandwidth;
 virNetDevBandwidthFormat;
