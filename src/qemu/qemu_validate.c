@@ -1146,6 +1146,20 @@ qemuValidateDomainDefPanic(const virDomainDef *def,
             }
             break;
 
+        case VIR_DOMAIN_PANIC_MODEL_PVPANIC:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PANIC_PCI)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("the QEMU binary does not support the PCI pvpanic device"));
+                return -1;
+            }
+
+            if (def->panics[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("pvpanic is supported only with PCI address type"));
+                return -1;
+            }
+            break;
+
         /* default model value was changed before in post parse */
         case VIR_DOMAIN_PANIC_MODEL_DEFAULT:
         case VIR_DOMAIN_PANIC_MODEL_LAST:

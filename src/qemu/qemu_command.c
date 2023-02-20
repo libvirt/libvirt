@@ -9557,6 +9557,23 @@ qemuBuildPanicCommandLine(virCommand *cmd,
             break;
         }
 
+        case VIR_DOMAIN_PANIC_MODEL_PVPANIC: {
+            g_autoptr(virJSONValue) props = NULL;
+
+            if (virJSONValueObjectAdd(&props,
+                                      "s:driver", "pvpanic-pci",
+                                      NULL) < 0)
+                return -1;
+
+            if (qemuBuildDeviceAddressProps(props, def, &def->panics[i]->info) < 0)
+                return -1;
+
+            if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
+                return -1;
+
+            break;
+        }
+
         case VIR_DOMAIN_PANIC_MODEL_S390:
         case VIR_DOMAIN_PANIC_MODEL_HYPERV:
         case VIR_DOMAIN_PANIC_MODEL_PSERIES:

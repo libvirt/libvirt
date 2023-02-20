@@ -859,6 +859,7 @@ VIR_ENUM_IMPL(virDomainPanicModel,
               "pseries",
               "hyperv",
               "s390",
+              "pvpanic",
 );
 
 VIR_ENUM_IMPL(virDomainVideoBackend,
