@@ -561,6 +561,11 @@ sc_require_enum_last_marker:
 	  { echo 'enum impl needs _LAST marker on second line' 1>&2; \
 	    exit 1; } || :
 
+sc_prohibit_python_without_env:
+	@prohibit='#!/usr/.*/py''thon' \
+	 halt='always call python via /usr/bin/env' \
+	   $(_sc_search_regexp)
+
 # We're intentionally ignoring a few warnings
 #
 # E501: Force breaking lines at < 80 characters results in
