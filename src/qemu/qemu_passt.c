@@ -83,6 +83,8 @@ qemuPasstAddNetProps(virDomainObj *vm,
 {
     g_autofree char *passtSocketName = qemuPasstCreateSocketPath(vm, net);
     g_autoptr(virJSONValue) addrprops = NULL;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUCaps *qemuCaps = priv->qemuCaps;
 
     if (virJSONValueObjectAdd(&addrprops,
                               "s:type", "unix",
@@ -98,6 +100,15 @@ qemuPasstAddNetProps(virDomainObj *vm,
                               NULL) < 0) {
         return -1;
     }
+
+    /* a narrow range of QEMU releases support -netdev stream, but
+     * don't support its "reconnect" option
+     */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_STREAM_RECONNECT) &&
+        virJSONValueObjectAdd(netprops, "u:reconnect", 5, NULL) < 0) {
+        return -1;
+    }
+
     return 0;
 }
 
