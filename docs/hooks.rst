@@ -78,7 +78,7 @@ or:
 
 ::
 
-   #!/usr/bin/python
+   #!/usr/bin/env python3
 
 Other command interpreters are equally valid, as is any executable binary, so
 you are welcome to use your favourite languages.
