@@ -181,6 +181,77 @@ qemuSnapshotDomainDefUpdateDisk(virDomainDef *domdef,
 }
 
 
+/**
+ * qemuSnapshotCreateQcow2Files:
+ * @vm: domain object
+ * @snapdef: snapshot definition
+ * @created: bitmap to store which disks were created
+ *
+ * Create new qcow2 images based on snapshot definition @snapdef and use
+ * domain object @vm as source for backing images.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+static int
+qemuSnapshotCreateQcow2Files(virDomainObj *vm,
+                             virDomainSnapshotDef *snapdef,
+                             virBitmap *created)
+{
+    size_t i;
+    const char *qemuImgPath;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    virQEMUDriver *driver = ((qemuDomainObjPrivate *) vm->privateData)->driver;
+    virDomainSnapshotDiskDef *snapdisk = NULL;
+    virDomainDiskDef *defdisk = NULL;
+
+    if (!(qemuImgPath = qemuFindQemuImgBinary(driver)))
+        return -1;
+
+    for (i = 0; i < snapdef->ndisks; i++) {
+        g_autoptr(virCommand) cmd = NULL;
+        snapdisk = &(snapdef->disks[i]);
+        defdisk = vm->def->disks[i];
+
+        if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
+            continue;
+
+        if (!snapdisk->src->format)
+            snapdisk->src->format = VIR_STORAGE_FILE_QCOW2;
+
+        if (qemuDomainStorageSourceValidateDepth(defdisk->src, 1, defdisk->dst) < 0)
+            return -1;
+
+        /* creates cmd line args: qemu-img create -f qcow2 -o */
+        if (!(cmd = virCommandNewArgList(qemuImgPath,
+                                         "create",
+                                         "-f",
+                                         virStorageFileFormatTypeToString(snapdisk->src->format),
+                                         "-o",
+                                         NULL)))
+            return -1;
+
+        /* adds cmd line arg: backing_fmt=format,backing_file=/path/to/backing/file */
+        virBufferAsprintf(&buf, "backing_fmt=%s,backing_file=",
+                          virStorageFileFormatTypeToString(defdisk->src->format));
+        virQEMUBuildBufferEscapeComma(&buf, defdisk->src->path);
+        virCommandAddArgBuffer(cmd, &buf);
+
+        /* adds cmd line args: /path/to/target/file */
+        virQEMUBuildBufferEscapeComma(&buf, snapdisk->src->path);
+        virCommandAddArgBuffer(cmd, &buf);
+
+        /* If the target does not exist, we're going to create it possibly */
+        if (!virFileExists(snapdisk->src->path))
+            ignore_value(virBitmapSetBit(created, i));
+
+        if (virCommandRun(cmd, NULL) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 /* The domain is expected to be locked and inactive. */
 static int
 qemuSnapshotCreateInactiveInternal(virQEMUDriver *driver,
@@ -198,61 +269,17 @@ qemuSnapshotCreateInactiveExternal(virQEMUDriver *driver,
                                    virDomainMomentObj *snap,
                                    bool reuse)
 {
-    size_t i;
     virDomainSnapshotDiskDef *snapdisk;
-    virDomainDiskDef *defdisk;
-    const char *qemuImgPath;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
     g_autoptr(virBitmap) created = virBitmapNew(snapdef->ndisks);
-
-    if (!(qemuImgPath = qemuFindQemuImgBinary(driver)))
-        goto cleanup;
 
     /* If reuse is true, then qemuSnapshotPrepare already
      * ensured that the new files exist, and it was up to the user to
      * create them correctly.  */
-    for (i = 0; i < snapdef->ndisks && !reuse; i++) {
-        g_autoptr(virCommand) cmd = NULL;
-        snapdisk = &(snapdef->disks[i]);
-        defdisk = vm->def->disks[i];
-        if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
-            continue;
-
-        if (!snapdisk->src->format)
-            snapdisk->src->format = VIR_STORAGE_FILE_QCOW2;
-
-        if (qemuDomainStorageSourceValidateDepth(defdisk->src, 1, defdisk->dst) < 0)
-            goto cleanup;
-
-        /* creates cmd line args: qemu-img create -f qcow2 -o */
-        if (!(cmd = virCommandNewArgList(qemuImgPath,
-                                         "create",
-                                         "-f",
-                                         virStorageFileFormatTypeToString(snapdisk->src->format),
-                                         "-o",
-                                         NULL)))
-            goto cleanup;
-
-        /* adds cmd line arg: backing_fmt=format,backing_file=/path/to/backing/file */
-        virBufferAsprintf(&buf, "backing_fmt=%s,backing_file=",
-                          virStorageFileFormatTypeToString(defdisk->src->format));
-        virQEMUBuildBufferEscapeComma(&buf, defdisk->src->path);
-        virCommandAddArgBuffer(cmd, &buf);
-
-        /* adds cmd line args: /path/to/target/file */
-        virQEMUBuildBufferEscapeComma(&buf, snapdisk->src->path);
-        virCommandAddArgBuffer(cmd, &buf);
-
-        /* If the target does not exist, we're going to create it possibly */
-        if (!virFileExists(snapdisk->src->path))
-            ignore_value(virBitmapSetBit(created, i));
-
-        if (virCommandRun(cmd, NULL) < 0)
-            goto cleanup;
-    }
+    if (!reuse && qemuSnapshotCreateQcow2Files(vm, snapdef, created) < 0)
+        goto cleanup;
 
     /* update disk definitions */
     if (qemuSnapshotDomainDefUpdateDisk(vm->def, snapdef, reuse) < 0)
