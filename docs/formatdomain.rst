@@ -7940,6 +7940,7 @@ Example: usage of panic configuration
    -  'hyperv' - for Hyper-V crash CPU feature. :since:`Since 1.3.0, QEMU and
       KVM only`
    -  's390' - default for S390 guests. :since:`Since 1.3.5`
+   -  'pvpanic' - for PCI pvpanic device :since:`Since 9.1.0, QEMU only`
 
 ``address``
    address of panic. The default ioport is 0x505. Most users don't need to
