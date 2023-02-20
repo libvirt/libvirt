@@ -1837,6 +1837,12 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
     size_t i;
 
     if (net->type == VIR_DOMAIN_NET_TYPE_USER) {
+        if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_STREAM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the passt network backend is not supported with this QEMU binary"));
+            return -1;
+        }
         if (net->guestIP.nroutes) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Invalid attempt to set network interface "

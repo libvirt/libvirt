@@ -1,0 +1,61 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='usb' index='0' model='none'/>
+    <controller type='ide' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <interface type='user'>
+      <mac address='00:11:22:33:44:55'/>
+      <source dev='eth42'/>
+      <ip address='172.17.2.0' family='ipv4' prefix='24'/>
+      <ip address='2001:db8:ac10:fd01::feed' family='ipv6'/>
+      <portForward proto='tcp' address='2001:db8:ac10:fd01::1:10'>
+        <range start='22' to='2022'/>
+        <range start='1000' end='1050'/>
+        <range start='1020' exclude='yes'/>
+        <range start='1030' end='1040' exclude='yes'/>
+      </portForward>
+      <portForward proto='udp' address='1.2.3.4' dev='eth0'>
+        <range start='5000' end='5020' to='6000'/>
+        <range start='5010' end='5015' exclude='yes'/>
+      </portForward>
+      <portForward proto='tcp'>
+        <range start='80'/>
+      </portForward>
+      <portForward proto='tcp'>
+        <range start='443' to='344'/>
+      </portForward>
+      <model type='rtl8139'/>
+      <backend type='passt' logFile='/var/log/loglaw.blog'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </interface>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>
