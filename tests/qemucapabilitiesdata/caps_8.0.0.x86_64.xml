@@ -204,6 +204,7 @@
   <flag name='netdev.stream'/>
   <flag name='virtio-crypto'/>
   <flag name='cryptodev-backend-lkcf'/>
+  <flag name='pvpanic-pci'/>
   <version>7002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>

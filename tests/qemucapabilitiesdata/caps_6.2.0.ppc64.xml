@@ -150,6 +150,7 @@
   <flag name='virtio-net.rss'/>
   <flag name='migration.blocked-reasons'/>
   <flag name='virtio-crypto'/>
+  <flag name='pvpanic-pci'/>
   <version>6002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900244</microcodeVersion>

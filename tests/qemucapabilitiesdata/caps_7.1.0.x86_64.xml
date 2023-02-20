@@ -200,6 +200,7 @@
   <flag name='query-stats-schemas'/>
   <flag name='screenshot-format-png'/>
   <flag name='virtio-crypto'/>
+  <flag name='pvpanic-pci'/>
   <version>7001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>

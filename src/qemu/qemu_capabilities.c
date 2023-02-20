@@ -686,6 +686,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "netdev.stream", /* QEMU_CAPS_NETDEV_STREAM */
               "virtio-crypto", /* QEMU_CAPS_DEVICE_VIRTIO_CRYPTO */
               "cryptodev-backend-lkcf", /* QEMU_CAPS_OBJECT_CRYPTO_LKCF */
+              "pvpanic-pci", /* QEMU_CAPS_DEVICE_PANIC_PCI */
     );
 
 
@@ -1398,6 +1399,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-crypto-pci", QEMU_CAPS_DEVICE_VIRTIO_CRYPTO },
     { "virtio-crypto-device", QEMU_CAPS_DEVICE_VIRTIO_CRYPTO },
     { "cryptodev-backend-lkcf", QEMU_CAPS_OBJECT_CRYPTO_LKCF },
+    { "pvpanic-pci", QEMU_CAPS_DEVICE_PANIC_PCI },
 };
 
 

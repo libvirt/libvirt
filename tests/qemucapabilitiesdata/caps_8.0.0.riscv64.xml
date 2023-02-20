@@ -143,6 +143,7 @@
   <flag name='screenshot-format-png'/>
   <flag name='netdev.stream'/>
   <flag name='virtio-crypto'/>
+  <flag name='pvpanic-pci'/>
   <version>7002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>

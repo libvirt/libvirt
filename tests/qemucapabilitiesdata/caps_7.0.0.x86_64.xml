@@ -197,6 +197,7 @@
   <flag name='migration.blocked-reasons'/>
   <flag name='sgx-epc'/>
   <flag name='virtio-crypto'/>
+  <flag name='pvpanic-pci'/>
   <version>7000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>

@@ -184,6 +184,7 @@
   <flag name='usb-host.guest-resets-all'/>
   <flag name='migration.blocked-reasons'/>
   <flag name='virtio-crypto'/>
+  <flag name='pvpanic-pci'/>
   <version>6000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>
