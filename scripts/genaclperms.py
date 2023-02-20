@@ -88,7 +88,8 @@ print('  <body>')
 for obj in sorted(perms.keys()):
     klass = classes[obj]
 
-    olink = "object_" + obj.lower()
+    objname = obj.lower().replace("_", "-")
+    olink = "object_" + objname
 
     print('    <h3><a id="%s">%s</a></h3>' % (olink, klass))
     print('    <table>')
@@ -112,8 +113,7 @@ for obj in sorted(perms.keys()):
         if description is None:
             raise Exception("missing description for %s.%s" % (obj, perm))
 
-        plink = "perm_" + obj.lower() + "_" + perm.lower()
-        plink = plink.replace("-", "_")
+        plink = "perm_" + objname + "_" + perm.lower()
 
         print('        <tr>')
         print('          <td><a id="%s">%s</a></td>' % (plink, perm))

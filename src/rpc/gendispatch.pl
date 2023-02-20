@@ -2262,7 +2262,11 @@ elsif ($mode eq "client") {
             my $acl = $call->{acl};
             foreach (@{$acl}) {
                 my @bits = split /:/;
-                print "    <check object='$bits[0]' perm='$bits[1]'";
+                my $objname = $bits[0];
+                $objname =~ s/_/-/g;
+                my $perm = $bits[1];
+                $perm =~ s/_/-/g;
+                print "    <check object='$objname' perm='$perm'";
                 if (defined $bits[2]) {
                     print " flags='$bits[2]'";
                 }
@@ -2272,7 +2276,12 @@ elsif ($mode eq "client") {
             my $aclfilter = $call->{aclfilter};
             foreach (@{$aclfilter}) {
                 my @bits = split /:/;
-                print "    <filter object='$bits[0]' perm='$bits[1]'/>\n";
+                my $objname = $bits[0];
+                $objname =~ s/_/-/g;
+                my $perm = $bits[1];
+                $perm =~ s/_/-/g;
+
+                print "    <filter object='$objname' perm='$perm'/>\n";
             }
 
             print "  </api>\n";
