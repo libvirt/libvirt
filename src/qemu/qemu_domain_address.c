@@ -1062,10 +1062,24 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
         }
         break;
 
+    case VIR_DOMAIN_DEVICE_PANIC:
+        switch ((virDomainPanicModel) dev->data.panic->model) {
+        case VIR_DOMAIN_PANIC_MODEL_PVPANIC:
+            return pciFlags | VIR_PCI_CONNECT_INTEGRATED;
+
+        case VIR_DOMAIN_PANIC_MODEL_DEFAULT:
+        case VIR_DOMAIN_PANIC_MODEL_ISA:
+        case VIR_DOMAIN_PANIC_MODEL_PSERIES:
+        case VIR_DOMAIN_PANIC_MODEL_HYPERV:
+        case VIR_DOMAIN_PANIC_MODEL_S390:
+        case VIR_DOMAIN_PANIC_MODEL_LAST:
+            return 0;
+        }
+        break;
+
         /* These devices don't ever connect with PCI */
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_TPM:
-    case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_HUB:
     case VIR_DOMAIN_DEVICE_REDIRDEV:
     case VIR_DOMAIN_DEVICE_SMARTCARD:
@@ -2454,6 +2468,24 @@ qemuDomainAssignDevicePCISlots(virDomainDef *def,
             return -1;
     }
 
+    for (i = 0; i < def->npanics; i++) {
+        virDomainPanicDef *panic = def->panics[i];
+
+        switch (panic->model) {
+        case VIR_DOMAIN_PANIC_MODEL_PVPANIC:
+            if (virDeviceInfoPCIAddressIsWanted(&panic->info) &&
+                qemuDomainPCIAddressReserveNextAddr(addrs, &panic->info) < 0)
+                return -1;
+            break;
+        case VIR_DOMAIN_PANIC_MODEL_DEFAULT:
+        case VIR_DOMAIN_PANIC_MODEL_ISA:
+        case VIR_DOMAIN_PANIC_MODEL_PSERIES:
+        case VIR_DOMAIN_PANIC_MODEL_HYPERV:
+        case VIR_DOMAIN_PANIC_MODEL_S390:
+        case VIR_DOMAIN_PANIC_MODEL_LAST:
+            break;
+        }
+    }
 
     return 0;
 }
