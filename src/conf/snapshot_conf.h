@@ -80,6 +80,11 @@ struct _virDomainSnapshotDef {
     size_t ndisks; /* should not exceed dom->ndisks */
     virDomainSnapshotDiskDef *disks;
 
+    /* When we revert to non-leaf snapshot we need to
+     * store the new overlay disks. */
+    size_t nrevertdisks;
+    virDomainSnapshotDiskDef *revertdisks;
+
     virObject *cookie;
 };
 

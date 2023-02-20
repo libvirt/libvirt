@@ -61,6 +61,13 @@
           </element>
         </optional>
         <optional>
+          <element name="revertDisks">
+            <zeroOrMore>
+              <ref name="disksnapshot"/>
+            </zeroOrMore>
+          </element>
+        </optional>
+        <optional>
           <element name="active">
             <choice>
               <value>0</value>

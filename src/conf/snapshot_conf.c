@@ -112,6 +112,9 @@ virDomainSnapshotDefDispose(void *obj)
     for (i = 0; i < def->ndisks; i++)
         virDomainSnapshotDiskDefClear(&def->disks[i]);
     g_free(def->disks);
+    for (i = 0; i < def->nrevertdisks; i++)
+        virDomainSnapshotDiskDefClear(&def->revertdisks[i]);
+    g_free(def->revertdisks);
     virObjectUnref(def->cookie);
 }
 
@@ -374,6 +377,22 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
         if (virDomainSnapshotDiskDefParseXML(diskNodes[i], ctxt, &def->disks[i],
                                              flags, xmlopt) < 0)
             return NULL;
+    }
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) {
+        g_autofree xmlNodePtr *revertDiskNodes = NULL;
+
+        if ((n = virXPathNodeSet("./revertDisks/*", ctxt, &revertDiskNodes)) < 0)
+            return NULL;
+        if (n)
+            def->revertdisks = g_new0(virDomainSnapshotDiskDef, n);
+        def->nrevertdisks = n;
+        for (i = 0; i < def->nrevertdisks; i++) {
+            if (virDomainSnapshotDiskDefParseXML(revertDiskNodes[i], ctxt,
+                                                 &def->revertdisks[i],
+                                                 flags, xmlopt) < 0)
+                return NULL;
+        }
     }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL) {
@@ -832,6 +851,17 @@ virDomainSnapshotDefFormatInternal(virBuffer *buf,
         }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</disks>\n");
+    }
+
+    if (def->nrevertdisks > 0) {
+        g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+        for (i = 0; i < def->nrevertdisks; i++) {
+            if (virDomainSnapshotDiskDefFormat(&childBuf, &def->revertdisks[i], xmlopt) < 0)
+                return -1;
+        }
+
+        virXMLFormatElement(buf, "revertDisks", NULL, &childBuf);
     }
 
     if (def->parent.dom) {
