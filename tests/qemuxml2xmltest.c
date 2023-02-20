@@ -910,6 +910,7 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("pvpanic-pci-x86_64");
     DO_TEST_CAPS_ARCH_LATEST("pvpanic-pci-aarch64", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("pvpanic-pci-no-address-aarch64", "aarch64");
 
     DO_TEST_NOCAPS("disk-backing-chains-index");
     DO_TEST_NOCAPS("disk-backing-chains-noindex");
