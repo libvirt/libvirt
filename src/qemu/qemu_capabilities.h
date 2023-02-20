@@ -667,6 +667,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_OBJECT_CRYPTO_LKCF, /* -object cryptodev-backend-lkcf */
     QEMU_CAPS_DEVICE_PANIC_PCI, /* -device pvpanic-pci */
 
+    /* 445 */
+    QEMU_CAPS_NETDEV_STREAM_RECONNECT, /* -netdev stream supports reconnect */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

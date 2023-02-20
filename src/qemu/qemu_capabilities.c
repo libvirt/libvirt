@@ -687,6 +687,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-crypto", /* QEMU_CAPS_DEVICE_VIRTIO_CRYPTO */
               "cryptodev-backend-lkcf", /* QEMU_CAPS_OBJECT_CRYPTO_LKCF */
               "pvpanic-pci", /* QEMU_CAPS_DEVICE_PANIC_PCI */
+
+              /* 445 */
+              "netdev.stream.reconnect", /* QEMU_CAPS_NETDEV_STREAM_RECONNECT */
     );
 
 
@@ -1559,6 +1562,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "nbd-server-start/arg-type/tls-creds", QEMU_CAPS_NBD_TLS },
     { "nbd-server-add/arg-type/bitmap", QEMU_CAPS_NBD_BITMAP },
     { "netdev_add/arg-type/+stream", QEMU_CAPS_NETDEV_STREAM },
+    { "netdev_add/arg-type/+stream/reconnect", QEMU_CAPS_NETDEV_STREAM_RECONNECT },
     { "netdev_add/arg-type/+vhost-vdpa", QEMU_CAPS_NETDEV_VHOST_VDPA },
     /* JSON support for -netdev was introduced for the 'dgram' netdev type */
     { "netdev_add/arg-type/type/^dgram", QEMU_CAPS_NETDEV_JSON },
