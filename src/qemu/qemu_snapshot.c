@@ -142,6 +142,42 @@ qemuSnapshotFSThaw(virDomainObj *vm,
 }
 
 
+static int
+qemuSnapshotDomainDefUpdateDisk(virDomainDef *domdef,
+                                virDomainSnapshotDef *snapdef,
+                                bool reuse)
+{
+    size_t i;
+
+    for (i = 0; i < snapdef->ndisks; i++) {
+        g_autoptr(virStorageSource) newsrc = NULL;
+        virDomainSnapshotDiskDef *snapdisk = &(snapdef->disks[i]);
+        virDomainDiskDef *defdisk = domdef->disks[i];
+
+        if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
+            continue;
+
+        if (!(newsrc = virStorageSourceCopy(snapdisk->src, false)))
+            return -1;
+
+        if (virStorageSourceInitChainElement(newsrc, defdisk->src, false) < 0)
+            return -1;
+
+        if (!reuse &&
+            virStorageSourceHasBacking(defdisk->src)) {
+            defdisk->src->readonly = true;
+            newsrc->backingStore = g_steal_pointer(&defdisk->src);
+        } else {
+            virObjectUnref(defdisk->src);
+        }
+
+        defdisk->src = g_steal_pointer(&newsrc);
+    }
+
+    return 0;
+}
+
+
 /* The domain is expected to be locked and inactive. */
 static int
 qemuSnapshotCreateInactiveInternal(virQEMUDriver *driver,
@@ -216,31 +252,8 @@ qemuSnapshotCreateInactiveExternal(virQEMUDriver *driver,
     }
 
     /* update disk definitions */
-    for (i = 0; i < snapdef->ndisks; i++) {
-        g_autoptr(virStorageSource) newsrc = NULL;
-
-        snapdisk = &(snapdef->disks[i]);
-        defdisk = vm->def->disks[i];
-
-        if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
-            continue;
-
-        if (!(newsrc = virStorageSourceCopy(snapdisk->src, false)))
-            goto cleanup;
-
-        if (virStorageSourceInitChainElement(newsrc, defdisk->src, false) < 0)
-            goto cleanup;
-
-        if (!reuse &&
-            virStorageSourceHasBacking(defdisk->src)) {
-            defdisk->src->readonly = true;
-            newsrc->backingStore = g_steal_pointer(&defdisk->src);
-        } else {
-            virObjectUnref(defdisk->src);
-        }
-
-        defdisk->src = g_steal_pointer(&newsrc);
-    }
+    if (qemuSnapshotDomainDefUpdateDisk(vm->def, snapdef, reuse) < 0)
+        goto cleanup;
 
     if (virDomainDefSave(vm->def, driver->xmlopt, cfg->configDir) < 0)
         goto cleanup;
