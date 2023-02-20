@@ -60,6 +60,9 @@ struct _virDomainSnapshotDiskDef {
 };
 
 void
+virDomainSnapshotDiskDefClear(virDomainSnapshotDiskDef *disk);
+
+void
 virDomainSnapshotDiskDefFree(virDomainSnapshotDiskDef *disk);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainSnapshotDiskDef, virDomainSnapshotDiskDefFree);

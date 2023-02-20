@@ -74,7 +74,7 @@ VIR_ENUM_IMPL(virDomainSnapshotState,
 );
 
 /* Snapshot Def functions */
-static void
+void
 virDomainSnapshotDiskDefClear(virDomainSnapshotDiskDef *disk)
 {
     VIR_FREE(disk->name);
