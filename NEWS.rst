@@ -33,6 +33,11 @@ v9.1.0 (unreleased)
     Support crypto device(virtio crypto only), also add support for QEMU with
     backend ``builtin`` and ``lkcf``.
 
+  * qemu: added support for pvpanic-pci device
+
+    A pvpanic device can be now defined as a PCI device (the original is an ISA
+    device) with ``<panic model='pvpanic'/>``.
+
 * **Improvements**
 
   * RPM packaging changes
