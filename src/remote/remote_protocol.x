@@ -3974,8 +3974,9 @@ enum remote_procedure {
      *   Declare the access control requirements for the API. May be repeated
      *   multiple times, if multiple rules are required.
      *
-     *     <object> is one of 'connect', 'domain', 'network', 'storagepool',
-     *              'interface', 'nodedev', 'secret'.
+     *     <object> is one of 'connect', 'domain', 'interface', 'network',
+     *              'network_port', 'node_device', 'nwfilter',
+     *              'nwfilter_binding', 'secret', 'storage_pool', 'storage_vol'
      *     <permission> is one of the permissions in access/viraccessperm.h
      *     <flagname> indicates the rule only applies if the named flag
      *     is set in the API call
