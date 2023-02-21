@@ -1061,7 +1061,6 @@ struct _virDomainNetBackend {
     char *vhost;
     /* The following are currently only valid/used when backend type='passt' */
     char *logFile;  /* path to logfile used by passt process */
-    char *upstream; /* host interface to use for traffic egress */
 };
 
 struct _virDomainNetPortForwardRange {

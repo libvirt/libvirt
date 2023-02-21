@@ -2762,7 +2762,6 @@ virDomainNetDefFree(virDomainNetDef *def)
     g_free(def->backend.tap);
     g_free(def->backend.vhost);
     g_free(def->backend.logFile);
-    g_free(def->backend.upstream);
     virDomainNetTeamingInfoFree(def->teaming);
     g_free(def->virtPortProfile);
     g_free(def->script);
