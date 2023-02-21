@@ -1,0 +1,16 @@
+==================
+404 page not found
+==================
+
+.. role:: del
+   :class: del
+
+.. contents::
+
+Someone appears to have eaten the :del:`penguin` page you were looking
+for. You might want to try
+
+* going back to the `home page <https://libvirt.org/>`_ to find a collection
+  of links to interesting pages on this site
+* using the search box at the top right corner of the screen to
+  locate the content on this site or mailing list archives

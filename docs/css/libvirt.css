@@ -636,3 +636,7 @@ th p, td p {
 #contents p.topic-title {
     display: none;
 }
+
+span.del {
+    text-decoration: line-through;
+}
