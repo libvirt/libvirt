@@ -103,7 +103,7 @@ qemuPasstAddNetProps(virDomainObj *vm,
 
 
 static void
-qemuPasstKill(const char *pidfile)
+qemuPasstKill(const char *pidfile, const char *passtSocketName)
 {
     virErrorPtr orig_err;
     pid_t pid = 0;
@@ -115,6 +115,8 @@ qemuPasstKill(const char *pidfile)
         virProcessKillPainfully(pid, true);
     unlink(pidfile);
 
+    unlink(passtSocketName);
+
     virErrorRestore(&orig_err);
 }
 
@@ -124,8 +126,9 @@ qemuPasstStop(virDomainObj *vm,
               virDomainNetDef *net)
 {
     g_autofree char *pidfile = qemuPasstCreatePidFilename(vm, net);
+    g_autofree char *passtSocketName = qemuPasstCreateSocketPath(vm, net);
 
-    qemuPasstKill(pidfile);
+    qemuPasstKill(pidfile, passtSocketName);
 }
 
 
@@ -283,6 +286,6 @@ qemuPasstStart(virDomainObj *vm,
     return 0;
 
  error:
-    qemuPasstKill(pidfile);
+    qemuPasstKill(pidfile, passtSocketName);
     return -1;
 }
