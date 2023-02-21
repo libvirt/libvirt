@@ -27,14 +27,12 @@ index_api_gen = custom_target(
   command: [
     xsltproc_prog, '--nonet', '-o', docs_builddir,
     '--stringparam', 'builddir', meson.project_build_root(),
-    '--stringparam', 'aclxmlpath', docs_acl_xml.full_path(),
     '--stringparam', 'timestamp', docs_timestamp,
     '--stringparam', 'indexfile', 'index.html',
     '@INPUT@',
   ],
   install: true,
   install_dir: docs_html_dir / 'html',
-  depends: docs_acl_xml,
   depend_files: [
     page_xsl,
   ],
@@ -43,7 +41,7 @@ index_api_gen = custom_target(
 docs_html_gen += index_api_gen.to_list()
 docs_html_dep += index_api_gen
 
-foreach name : [ 'lxc', 'qemu' ]
+foreach name : [ 'admin', 'lxc', 'qemu' ]
   index_api_gen = custom_target(
     'index-@0@-api'.format(name),
     input: [
@@ -56,13 +54,11 @@ foreach name : [ 'lxc', 'qemu' ]
     command: [
       xsltproc_prog, '--nonet', '-o', docs_builddir,
       '--stringparam', 'builddir', meson.project_build_root(),
-      '--stringparam', 'aclxmlpath', get_variable('docs_acl_@0@_xml'.format(name)).full_path(),
       '--stringparam', 'timestamp', docs_timestamp,
       '@INPUT@',
     ],
     install: true,
     install_dir: docs_html_dir / 'html',
-    depends:  get_variable('docs_acl_@0@_xml'.format(name)),
     depend_files: [
       page_xsl,
     ],
@@ -71,32 +67,6 @@ foreach name : [ 'lxc', 'qemu' ]
   docs_html_gen += index_api_gen.to_list()
   docs_html_dep += index_api_gen
 endforeach
-
-index_api_gen = custom_target(
-  'index-admin-api'.format(name),
-  input: [
-    newapi_xsl,
-    docs_admin_api_xml,
-    ],
-  output: [
-    'libvirt-libvirt-admin.html'
-    ],
-  command: [
-    xsltproc_prog, '--nonet', '-o', docs_builddir,
-    '--stringparam', 'builddir', meson.project_build_root(),
-    '--stringparam', 'aclxmlpath', '',
-    '--stringparam', 'timestamp', docs_timestamp,
-    '@INPUT@',
-    ],
-  install: true,
-  install_dir: docs_html_dir / 'html',
-  depend_files: [
-    page_xsl,
-    ],
-  )
-
-docs_html_gen += index_api_gen.to_list()
-docs_html_dep += index_api_gen
 
 docs_html_paths = []
 

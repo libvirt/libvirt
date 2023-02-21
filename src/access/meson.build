@@ -23,12 +23,10 @@ foreach name : [ 'remote', 'qemu', 'lxc' ]
     header_file = 'viraccessapicheck.h'
     source_file = 'viraccessapicheck.c'
     syms_file = 'libvirt_access.syms'
-    xml_file = 'libvirt_access.xml'
   else
     header_file = 'viraccessapicheck@0@.h'.format(name)
     source_file = 'viraccessapicheck@0@.c'.format(name)
     syms_file = 'libvirt_access_@0@.syms'.format(name)
-    xml_file = 'libvirt_access_@0@.xml'.format(name)
   endif
   protocol_file = remote_path / '@0@_protocol.x'.format(name)
 
@@ -62,21 +60,7 @@ foreach name : [ 'remote', 'qemu', 'lxc' ]
       gendispatch_prog, '--mode=aclsym', name, name.to_upper(), '@INPUT@',
     ]
   )
-
-  access_gen_xml += custom_target(
-    xml_file,
-    input: protocol_file,
-    output: xml_file,
-    capture: true,
-    command: [
-      gendispatch_prog, '--mode=aclapi', name, name.to_upper(), '@INPUT@',
-    ],
-  )
 endforeach
-
-docs_acl_xml = access_gen_xml[0]
-docs_acl_qemu_xml = access_gen_xml[1]
-docs_acl_lxc_xml = access_gen_xml[2]
 
 if conf.has('WITH_POLKIT')
   access_sources += access_polkit_sources
