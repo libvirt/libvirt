@@ -57,6 +57,12 @@ v9.1.0 (unreleased)
     watchdog that did not fire before will now fire once used.  To switch to the
     previous behavior the watchdog action must be set to ``none``.
 
+  * QEMU: fix deleting memory snapshot when deleting external snapshots
+
+    When external snapshot deletion was introduced it did not remove memory
+    snapshot when it existed. In addition when external memory only snapshot
+    was created libvirt failed without producing any error.
+
 
 v9.0.0 (2023-01-16)
 ===================
