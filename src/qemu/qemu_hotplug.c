@@ -1205,11 +1205,8 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     case VIR_DOMAIN_NET_TYPE_USER:
         if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
 
-            if (qemuPasstStart(vm, net) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("Failed to start passt"));
+            if (qemuPasstStart(vm, net) < 0)
                 goto cleanup;
-            }
 
         } else if (!priv->disableSlirp &&
                    virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
