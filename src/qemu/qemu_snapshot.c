@@ -2684,9 +2684,11 @@ qemuSnapshotSetInvalid(virDomainObj *vm,
 
 static int
 qemuSnapshotDiscardExternal(virDomainObj *vm,
+                            virDomainMomentObj *snap,
                             GSList *externalData)
 {
     GSList *cur = NULL;
+    virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
 
     for (cur = externalData; cur; cur = g_slist_next(cur)) {
         qemuSnapshotDeleteExternalData *data = cur->data;
@@ -2754,6 +2756,14 @@ qemuSnapshotDiscardExternal(virDomainObj *vm,
 
         if (qemuSnapshotSetInvalid(vm, data->parentSnap, data->snapDisk, false) < 0)
             goto error;
+    }
+
+    if (snapdef->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL &&
+        snapdef->memorysnapshotfile) {
+        if (unlink(snapdef->memorysnapshotfile) < 0) {
+            VIR_WARN("failed to remove memory snapshot '%s'",
+                     snapdef->memorysnapshotfile);
+        }
     }
 
     return 0;
@@ -2886,7 +2896,7 @@ qemuSnapshotDiscardImpl(virQEMUDriver *driver,
             }
 
             if (virDomainSnapshotIsExternal(snap)) {
-                if (qemuSnapshotDiscardExternal(vm, externalData) < 0)
+                if (qemuSnapshotDiscardExternal(vm, snap, externalData) < 0)
                     return -1;
             } else {
                 if (qemuDomainSnapshotForEachQcow2(driver, def, snap, "-d", true) < 0)
@@ -2894,7 +2904,7 @@ qemuSnapshotDiscardImpl(virQEMUDriver *driver,
             }
         } else {
             if (virDomainSnapshotIsExternal(snap)) {
-                if (qemuSnapshotDiscardExternal(vm, externalData) < 0)
+                if (qemuSnapshotDiscardExternal(vm, snap, externalData) < 0)
                     return -1;
             } else {
                 /* Similarly as internal snapshot creation we would use a regular job
