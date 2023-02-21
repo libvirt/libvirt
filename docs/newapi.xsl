@@ -24,22 +24,14 @@
 
   <xsl:param name="indexfile" select="''"/>
 
-  <xsl:param name="aclxmlpath" select="''"/>
-
   <!-- the target directory for the HTML output -->
   <xsl:variable name="htmldir">html</xsl:variable>
   <xsl:variable name="href_base">../</xsl:variable>
 
-  <xsl:variable name="acls">
-    <xsl:if test="$aclxmlpath != ''">
-      <xsl:copy-of select="document($aclxmlpath)/aclinfo/api"/>
-    </xsl:if>
-  </xsl:variable>
-
   <xsl:template name="aclinfo">
-    <xsl:param name="api"/>
+    <xsl:param name="acl"/>
 
-    <xsl:if test="count(exsl:node-set($acls)/api[@name=$api]/check) > 0">
+    <xsl:if test="count($acl/check) > 0">
       <h5>Access control parameter checks</h5>
       <table>
         <thead>
@@ -49,10 +41,10 @@
             <th>Condition</th>
           </tr>
         </thead>
-        <xsl:apply-templates select="exsl:node-set($acls)/api[@name=$api]/check" mode="acl"/>
+        <xsl:apply-templates select="$acl/check" mode="acl"/>
       </table>
     </xsl:if>
-    <xsl:if test="count(exsl:node-set($acls)/api[@name=$api]/filter) > 0">
+    <xsl:if test="count($acl/filter) > 0">
       <h5>Access control return value filters</h5>
       <table>
         <thead>
@@ -61,7 +53,7 @@
             <th>Permission</th>
           </tr>
         </thead>
-        <xsl:apply-templates select="exsl:node-set($acls)/api[@name=$api]/filter" mode="acl"/>
+        <xsl:apply-templates select="$acl/filter" mode="acl"/>
       </table>
     </xsl:if>
   </xsl:template>
@@ -692,7 +684,7 @@
     </xsl:if>
     <div class="acl">
       <xsl:call-template name="aclinfo">
-        <xsl:with-param name="api" select="$name"/>
+        <xsl:with-param name="acl" select="acls"/>
       </xsl:call-template>
     </div>
   </xsl:template>
