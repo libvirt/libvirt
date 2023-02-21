@@ -2588,6 +2588,125 @@ class docBuilder:
             sys.exit(3)
 
 
+def remoteProcToAPI(remotename: str) -> (str):
+    components = remotename.split('_')
+    fixednames = []
+
+    if components[1] != "PROC":
+        raise Exception("Malformed remote function name '%s'" % remotename)
+
+    if components[0] == 'REMOTE':
+        driver = ''
+    elif components[0] == 'QEMU':
+        driver = 'Qemu'
+    elif components[0] == 'LXC':
+        driver = 'Lxc'
+    else:
+        raise Exception("Unknown remote protocol '%s'" % components[0])
+
+    for comp in components[2:]:
+        if comp == '':
+            raise Exception("Invalid empty component in remote procedure name '%s'" % remotename)
+
+        fixedname = comp[0].upper() + comp[1:].lower()
+
+        fixedname = re.sub('Nwfilter', 'NWFilter', fixedname)
+        fixedname = re.sub('Xml$', 'XML', fixedname)
+        fixedname = re.sub('Xml2$', 'XML2', fixedname)
+        fixedname = re.sub('Uri$', 'URI', fixedname)
+        fixedname = re.sub('Uuid$', 'UUID', fixedname)
+        fixedname = re.sub('Id$', 'ID', fixedname)
+        fixedname = re.sub('Mac$', 'MAC', fixedname)
+        fixedname = re.sub('Cpu$', 'CPU', fixedname)
+        fixedname = re.sub('Os$', 'OS', fixedname)
+        fixedname = re.sub('Nmi$', 'NMI', fixedname)
+        fixedname = re.sub('Pm', 'PM', fixedname)
+        fixedname = re.sub('Fstrim$', 'FSTrim', fixedname)
+        fixedname = re.sub('Fsfreeze$', 'FSFreeze', fixedname)
+        fixedname = re.sub('Fsthaw$', 'FSThaw', fixedname)
+        fixedname = re.sub('Fsinfo$', 'FSInfo', fixedname)
+        fixedname = re.sub('Iothread$', 'IOThread', fixedname)
+        fixedname = re.sub('Scsi', 'SCSI', fixedname)
+        fixedname = re.sub('Wwn$', 'WWN', fixedname)
+        fixedname = re.sub('Dhcp$', 'DHCP', fixedname)
+
+        fixednames.append(fixedname)
+
+    apiname = "vir" + fixednames[0]
+
+    # In case of remote procedures for qemu/lxc private APIs we need to add
+    # the name of the driver in the middle of the string after the object name.
+    # For a special case of event callbacks the 'object' name is actually two
+    # words: virConenctDomainQemuEvent ...
+    if fixednames[1] == 'Domain':
+        apiname += 'Domain'
+        fixednames.pop(1)
+
+    apiname += driver
+
+    for name in fixednames[1:]:
+        apiname = apiname + name
+
+    return apiname
+
+
+def remoteProtocolGetAcls(protocolfilename: str) -> {}:
+    apiacls = {}
+
+    with open(protocolfilename) as proto:
+        in_procedures = False
+        acls = []
+        aclfilters = []
+
+        while True:
+            line = proto.readline()
+            if not line:
+                break
+
+            if not in_procedures:
+                if re.match('^enum [a-z]+_procedure {$', line):
+                    in_procedures = True
+
+                continue
+
+            if line == '};\n':
+                break
+
+            acl_match = re.search(r"\* @acl: ([^\s]+)", line)
+
+            if acl_match:
+                acls.append(acl_match.group(1))
+                continue
+
+            aclfilter_match = re.search(r"\* @aclfilter: ([^\s]+)", line)
+
+            if aclfilter_match:
+                aclfilters.append(aclfilter_match.group(1))
+                continue
+
+            remote_proc_match = re.search(r"^\s+([A-Z_0-9]+) ", line)
+
+            if remote_proc_match:
+                proc = remote_proc_match.group(1)
+                apiname = remoteProcToAPI(proc)
+
+                if len(acls) == 0:
+                    raise Exception("No ACLs for procedure %s(%s)" % proc, apiname)
+
+                if 'none' in acls:
+                    if len(acls) > 1:
+                        raise Exception("Procedure %s(%s) has 'none' ACL followed by other ACLs" % proc, apiname)
+
+                    acls = []
+
+                apiacls[apiname] = (acls, aclfilters)
+                acls = []
+                aclfilters = []
+                continue
+
+    return apiacls
+
+
 class app:
     def warning(self, msg):
         global warnings
@@ -2595,15 +2714,26 @@ class app:
         print(msg)
 
     def rebuild(self, name, srcdir, builddir):
+        apiacl = None
+
         syms = {
             "libvirt": srcdir + "/../src/libvirt_public.syms",
             "libvirt-qemu": srcdir + "/../src/libvirt_qemu.syms",
             "libvirt-lxc": srcdir + "/../src/libvirt_lxc.syms",
             "libvirt-admin": srcdir + "/../src/admin/libvirt_admin_public.syms",
         }
-        if name not in syms:
+        protocols = {
+            "libvirt": srcdir + "/../src/remote/remote_protocol.x",
+            "libvirt-qemu": srcdir + "/../src/remote/qemu_protocol.x",
+            "libvirt-lxc": srcdir + "/../src/remote/lxc_protocol.x",
+            "libvirt-admin": None,
+        }
+        if name not in syms or name not in protocols:
             self.warning("rebuild() failed, unknown module %s" % name)
             return None
+
+        if protocols[name]:
+            apiacl = remoteProtocolGetAcls(protocols[name])
 
         builder = None
         if glob.glob(srcdir + "/../src/libvirt.c") != []:
@@ -2614,7 +2744,7 @@ class app:
                     srcdir + "/../src/util",
                     srcdir + "/../include/libvirt",
                     builddir + "/../include/libvirt"]
-            builder = docBuilder(name, syms[name], builddir, dirs, [])
+            builder = docBuilder(name, syms[name], builddir, dirs, [], apiacl)
         else:
             self.warning("rebuild() failed, unable to guess the module")
             return None

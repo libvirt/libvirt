@@ -160,6 +160,9 @@ docs_api_generated = custom_target(
     libvirt_lxc_sources,
     admin_sources,
     util_public_sources,
+    meson.project_source_root() / 'src' / 'remote' / 'remote_protocol.x',
+    meson.project_source_root() / 'src' / 'remote' / 'qemu_protocol.x',
+    meson.project_source_root() / 'src' / 'remote' / 'lxc_protocol.x',
   ],
 )
 
