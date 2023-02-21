@@ -2301,9 +2301,10 @@ qemuSnapshotFindParentSnapForDisk(virDomainMomentObj *snap,
 }
 
 
-static GSList*
+static int
 qemuSnapshotDeleteExternalPrepare(virDomainObj *vm,
-                                  virDomainMomentObj *snap)
+                                  virDomainMomentObj *snap,
+                                  GSList **externalData)
 {
     ssize_t i;
     virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
@@ -2320,7 +2321,7 @@ qemuSnapshotDeleteExternalPrepare(virDomainObj *vm,
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("snapshot disk '%s' was target of not completed snapshot delete"),
                            snapDisk->name);
-            return NULL;
+            return -1;
         }
 
         data = g_new0(qemuSnapshotDeleteExternalData, 1);
@@ -2328,18 +2329,18 @@ qemuSnapshotDeleteExternalPrepare(virDomainObj *vm,
 
         data->domDisk = qemuDomainDiskByName(vm->def, snapDisk->name);
         if (!data->domDisk)
-            return NULL;
+            return -1;
 
         data->diskSrc = virStorageSourceChainLookupBySource(data->domDisk->src,
                                                             data->snapDisk->src,
                                                             &data->prevDiskSrc);
         if (!data->diskSrc)
-            return NULL;
+            return -1;
 
         if (!virStorageSourceIsSameLocation(data->diskSrc, data->snapDisk->src)) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("VM disk source and snapshot disk source are not the same"));
-            return NULL;
+            return -1;
         }
 
         data->parentDomDisk = virDomainDiskByTarget(snapdef->parent.dom,
@@ -2348,7 +2349,7 @@ qemuSnapshotDeleteExternalPrepare(virDomainObj *vm,
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("failed to find disk '%s' in snapshot VM XML"),
                            snapDisk->name);
-            return NULL;
+            return -1;
         }
 
         if (virDomainObjIsActive(vm)) {
@@ -2356,13 +2357,13 @@ qemuSnapshotDeleteExternalPrepare(virDomainObj *vm,
             if (!virStorageSourceIsBacking(data->parentDiskSrc)) {
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("failed to find parent disk source in backing chain"));
-                return NULL;
+                return -1;
             }
 
             if (!virStorageSourceIsSameLocation(data->parentDiskSrc, data->parentDomDisk->src)) {
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("snapshot VM disk source and parent disk source are not the same"));
-                return NULL;
+                return -1;
             }
         }
 
@@ -2371,15 +2372,16 @@ qemuSnapshotDeleteExternalPrepare(virDomainObj *vm,
         if (data->parentSnap && !virDomainSnapshotIsExternal(data->parentSnap)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("deleting external snapshot that has internal snapshot as parent not supported"));
-            return NULL;
+            return -1;
         }
 
         ret = g_slist_prepend(ret, g_steal_pointer(&data));
     }
 
     ret = g_slist_reverse(ret);
+    *externalData = g_steal_pointer(&ret);
 
-    return g_steal_pointer(&ret);
+    return 0;
 }
 
 
@@ -3159,7 +3161,7 @@ qemuSnapshotDelete(virDomainObj *vm,
             g_autoslist(qemuSnapshotDeleteExternalData) tmpData = NULL;
 
             /* this also serves as validation whether the snapshot can be deleted */
-            if (!(tmpData = qemuSnapshotDeleteExternalPrepare(vm, snap)))
+            if (qemuSnapshotDeleteExternalPrepare(vm, snap, &tmpData) < 0)
                 goto endjob;
 
             if (!virDomainObjIsActive(vm)) {
@@ -3174,7 +3176,7 @@ qemuSnapshotDelete(virDomainObj *vm,
 
                 /* Call the prepare again as some data require that the VM is
                  * running to get everything we need. */
-                if (!(externalData = qemuSnapshotDeleteExternalPrepare(vm, snap)))
+                if (qemuSnapshotDeleteExternalPrepare(vm, snap, &externalData) < 0)
                     goto endjob;
             } else {
                 qemuDomainJobPrivate *jobPriv = vm->job->privateData;
