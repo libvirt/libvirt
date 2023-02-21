@@ -2071,10 +2071,11 @@ class CParser:
 
 class docBuilder:
     """A documentation builder"""
-    def __init__(self, name, syms, path='.', directories=['.'], includes=[]):
+    def __init__(self, name, syms, path='.', directories=['.'], includes=[], acls=None):
         self.name = name
         self.syms = syms
         self.path = path
+        self.acls = acls
         self.directories = directories
         if name == "libvirt":
             self.includes = includes + list(included_files.keys())
@@ -2477,6 +2478,32 @@ class docBuilder:
         except Exception:
             print("Exception:", sys.exc_info()[1], file=sys.stderr)
             self.warning("Failed to save function %s info: %s" % (name, repr(id.info)))
+
+        if self.acls and name in self.acls:
+            acls = self.acls[name][0]
+            aclfilters = self.acls[name][1]
+
+            if len(acls) > 0 or len(aclfilters) > 0:
+                output.write("      <acls>\n")
+                for acl in acls:
+                    comp = acl.split(':', 3)
+                    objname = comp[0].replace('_', '-')
+                    perm = comp[1].replace('_', '-')
+                    output.write("        <check object='%s' perm='%s'" % (objname, perm))
+                    if len(comp) > 2:
+                        output.write(" flags='%s'" % comp[2])
+
+                    output.write("/>\n")
+
+                for aclfilter in aclfilters:
+                    comp = aclfilter.split(':', 2)
+                    objname = comp[0].replace('_', '-')
+                    perm = comp[1].replace('_', '-')
+
+                    output.write("        <filter object='%s' perm='%s'/>\n" % (objname, perm))
+
+                output.write("      </acls>\n")
+
         output.write("    </%s>\n" % (id.type))
 
     def serialize_exports(self, output, file):
