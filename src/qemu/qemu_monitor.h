@@ -250,6 +250,9 @@ typedef void (*qemuMonitorDomainDeviceUnplugErrCallback)(qemuMonitor *mon,
                                                          virDomainObj *vm,
                                                          const char *devPath,
                                                          const char *devAlias);
+typedef void (*qemuMonitorDomainNetdevStreamDisconnectedCallback)(qemuMonitor *mon,
+                                                                  virDomainObj *vm,
+                                                                  const char *devAlias);
 typedef void (*qemuMonitorDomainNicRxFilterChangedCallback)(qemuMonitor *mon,
                                                             virDomainObj *vm,
                                                             const char *devAlias);
@@ -397,6 +400,7 @@ struct _qemuMonitorCallbacks {
     qemuMonitorDomainMemoryFailureCallback domainMemoryFailure;
     qemuMonitorDomainMemoryDeviceSizeChange domainMemoryDeviceSizeChange;
     qemuMonitorDomainDeviceUnplugErrCallback domainDeviceUnplugError;
+    qemuMonitorDomainNetdevStreamDisconnectedCallback domainNetdevStreamDisconnected;
 };
 
 qemuMonitor *qemuMonitorOpen(virDomainObj *vm,
@@ -480,6 +484,8 @@ void qemuMonitorEmitDeviceDeleted(qemuMonitor *mon,
 void qemuMonitorEmitDeviceUnplugErr(qemuMonitor *mon,
                                     const char *devPath,
                                     const char *devAlias);
+void qemuMonitorEmitNetdevStreamDisconnected(qemuMonitor *mon,
+                                             const char *devAlias);
 void qemuMonitorEmitNicRxFilterChanged(qemuMonitor *mon,
                                        const char *devAlias);
 void qemuMonitorEmitSerialChange(qemuMonitor *mon,

@@ -1266,6 +1266,17 @@ qemuMonitorEmitNicRxFilterChanged(qemuMonitor *mon,
 
 
 void
+qemuMonitorEmitNetdevStreamDisconnected(qemuMonitor *mon,
+                                        const char *devAlias)
+{
+    VIR_DEBUG("mon=%p", mon);
+
+    QEMU_MONITOR_CALLBACK(mon, domainNetdevStreamDisconnected,
+                          mon->vm, devAlias);
+}
+
+
+void
 qemuMonitorEmitSerialChange(qemuMonitor *mon,
                             const char *devAlias,
                             bool connected)

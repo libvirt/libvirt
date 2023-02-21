@@ -1362,6 +1362,23 @@ qemuProcessHandleBlockThreshold(qemuMonitor *mon G_GNUC_UNUSED,
 
 
 static void
+qemuProcessHandleNetdevStreamDisconnected(qemuMonitor *mon G_GNUC_UNUSED,
+                                          virDomainObj *vm,
+                                          const char *devAlias)
+{
+    virObjectLock(vm);
+
+    VIR_DEBUG("Device %s Netdev Stream Disconnected in domain %p %s",
+              devAlias, vm, vm->def->name);
+
+    qemuProcessEventSubmit(vm, QEMU_PROCESS_EVENT_NETDEV_STREAM_DISCONNECTED,
+                           0, 0, g_strdup(devAlias));
+
+    virObjectUnlock(vm);
+}
+
+
+static void
 qemuProcessHandleNicRxFilterChanged(qemuMonitor *mon G_GNUC_UNUSED,
                                     virDomainObj *vm,
                                     const char *devAlias)
@@ -1802,6 +1819,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainMemoryFailure = qemuProcessHandleMemoryFailure,
     .domainMemoryDeviceSizeChange = qemuProcessHandleMemoryDeviceSizeChange,
     .domainDeviceUnplugError = qemuProcessHandleDeviceUnplugErr,
+    .domainNetdevStreamDisconnected = qemuProcessHandleNetdevStreamDisconnected,
 };
 
 static void

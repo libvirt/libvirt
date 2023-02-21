@@ -40,6 +40,7 @@
 #include "qemu_hostdev.h"
 #include "qemu_hotplug.h"
 #include "qemu_monitor.h"
+#include "qemu_passt.h"
 #include "qemu_process.h"
 #include "qemu_migration.h"
 #include "qemu_migration_params.h"
@@ -3623,6 +3624,78 @@ processDeviceDeletedEvent(virQEMUDriver *driver,
 
 
 static void
+processNetdevStreamDisconnectedEvent(virDomainObj *vm,
+                                     const char *netdevId)
+{
+    virDomainDeviceDef dev;
+    virDomainNetDef *def;
+    virQEMUCaps *qemuCaps = QEMU_DOMAIN_PRIVATE(vm)->qemuCaps;
+    const char *devAlias = STRSKIP(netdevId, "host");
+
+    /* The event sends us the "netdev-id", but we don't store the
+     * netdev-id in the NetDef and thus can't use it to find the
+     * correct NetDef. We *do* keep the device alias in the NetDef,
+     * and by convention the netdev-id is always "host" + devAlias, so
+     * we just need to remove "host" from the front of netdev-id to
+     * get the alias, which we can then use to find the proper NetDef.
+     */
+
+    if (!devAlias) {
+        VIR_WARN("Received NETDEV_STREAM_DISCONNECTED event for unrecognized netdev %s from domain %p %s",
+                  netdevId, vm, vm->def->name);
+        return;
+    }
+
+    VIR_DEBUG("Received NETDEV_STREAM_DISCONNECTED event for device %s from domain %p %s",
+              devAlias, vm, vm->def->name);
+
+    if (virDomainObjBeginJob(vm, VIR_JOB_QUERY) < 0)
+        return;
+
+    if (!virDomainObjIsActive(vm)) {
+        VIR_DEBUG("Domain is not running");
+        goto endjob;
+    }
+
+    if (virDomainDefFindDevice(vm->def, devAlias, &dev, true) < 0) {
+        VIR_WARN("NETDEV_STREAM_DISCONNECTED event received for non-existent device %s in domain %s",
+                 devAlias, vm->def->name);
+        goto endjob;
+    }
+    if (dev.type != VIR_DOMAIN_DEVICE_NET) {
+        VIR_WARN("NETDEV_STREAM_DISCONNECTED event received for non-network device %s in domain %s",
+                 devAlias, vm->def->name);
+        goto endjob;
+    }
+    def = dev.data.net;
+
+    if (def->backend.type != VIR_DOMAIN_NET_BACKEND_PASST) {
+        VIR_DEBUG("ignore NETDEV_STREAM_DISCONNECTED event for non-passt network device %s in domain %s",
+                  def->info.alias, vm->def->name);
+        goto endjob;
+    }
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_STREAM_RECONNECT)) {
+        VIR_WARN("ignore NETDEV_STREAM_DISCONNECTED event for passt network device %s in domain %s - QEMU binary does not support reconnect",
+                  def->info.alias, vm->def->name);
+        goto endjob;
+    }
+
+    /* handle the event - restart the passt process with its original
+     * parameters
+     */
+    VIR_DEBUG("process NETDEV_STREAM_DISCONNECTED event for network device %s in domain %s",
+              def->info.alias, vm->def->name);
+
+    if (qemuPasstStart(vm, def) < 0)
+        goto endjob;
+
+ endjob:
+    virDomainObjEndJob(vm);
+}
+
+
+static void
 processNicRxFilterChangedEvent(virDomainObj *vm,
                                const char *devAlias)
 {
@@ -3970,6 +4043,9 @@ static void qemuProcessEventHandler(void *data, void *opaque)
         break;
     case QEMU_PROCESS_EVENT_DEVICE_DELETED:
         processDeviceDeletedEvent(driver, vm, processEvent->data);
+        break;
+    case QEMU_PROCESS_EVENT_NETDEV_STREAM_DISCONNECTED:
+        processNetdevStreamDisconnectedEvent(vm, processEvent->data);
         break;
     case QEMU_PROCESS_EVENT_NIC_RX_FILTER_CHANGED:
         processNicRxFilterChangedEvent(vm, processEvent->data);
