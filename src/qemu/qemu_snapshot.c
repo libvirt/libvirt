@@ -3230,6 +3230,41 @@ qemuSnapshotDiscardExternal(virDomainObj *vm,
 
 
 static int
+qemuSnapshotDeleteUpdateParent(virDomainObj *vm,
+                               virDomainMomentObj *parent)
+{
+    size_t i;
+    virQEMUDriver *driver = QEMU_DOMAIN_PRIVATE(vm)->driver;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    virDomainSnapshotDef *parentDef = virDomainSnapshotObjGetDef(parent);
+
+    if (!parentDef)
+        return 0;
+
+    if (!parentDef->revertdisks)
+        return 0;
+
+    for (i = 0; i < parentDef->ndisks; i++) {
+        virDomainSnapshotDiskDefClear(&parentDef->disks[i]);
+    }
+    g_free(parentDef->disks);
+
+    parentDef->disks = g_steal_pointer(&parentDef->revertdisks);
+    parentDef->ndisks = parentDef->nrevertdisks;
+    parentDef->nrevertdisks = 0;
+
+    if (qemuDomainSnapshotWriteMetadata(vm,
+                                        parent,
+                                        driver->xmlopt,
+                                        cfg->snapshotDir) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuSnapshotDiscardMetadata(virDomainObj *vm,
                             virDomainMomentObj *snap,
                             bool update_parent)
@@ -3266,6 +3301,11 @@ qemuSnapshotDiscardMetadata(virDomainObj *vm,
             ret = -1;
 
         virDomainMomentMoveChildren(snap, snap->parent);
+    }
+
+    if (update_parent && snap->parent) {
+        if (qemuSnapshotDeleteUpdateParent(vm, snap->parent) < 0)
+            ret = -1;
     }
 
     snapFile = g_strdup_printf("%s/%s/%s.xml", cfg->snapshotDir, vm->def->name,
