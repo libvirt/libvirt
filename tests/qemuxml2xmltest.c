@@ -560,14 +560,12 @@ mymain(void)
     DO_TEST_NOCAPS("memtune-unlimited");
     DO_TEST_NOCAPS("blkiotune");
     DO_TEST_NOCAPS("blkiotune-device");
-    DO_TEST_NOCAPS("cputune");
-    DO_TEST_NOCAPS("cputune-zero-shares");
+    DO_TEST_CAPS_LATEST("cputune");
+    DO_TEST_CAPS_LATEST("cputune-zero-shares");
     DO_TEST_NOCAPS("cputune-iothreadsched");
     DO_TEST_NOCAPS("cputune-iothreadsched-zeropriority");
-    DO_TEST_NOCAPS("cputune-numatune");
-    DO_TEST("vcpu-placement-static",
-            QEMU_CAPS_KVM,
-            QEMU_CAPS_OBJECT_IOTHREAD);
+    DO_TEST_CAPS_LATEST("cputune-numatune");
+    DO_TEST_CAPS_LATEST("vcpu-placement-static");
     DO_TEST_CAPS_LATEST("cputune-cpuset-big-id");
     DO_TEST_CAPS_LATEST("numavcpus-topology-mismatch");
 

@@ -9,14 +9,16 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-dummy2/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=dummy2,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-dummy2/master-key.aes \
--machine q35,usb=off,dump-guest-core=off \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-dummy2/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram \
 -accel kvm \
+-cpu qemu64 \
 -m 128 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":134217728,"host-nodes":[0,1,2,3],"policy":"bind"}' \
 -overcommit mem-lock=off \
 -smp 2,maxcpus=6,sockets=6,cores=1,threads=1 \
--object iothread,id=iothread1 \
--object iothread,id=iothread2 \
+-object '{"qom-type":"iothread","id":"iothread1"}' \
+-object '{"qom-type":"iothread","id":"iothread2"}' \
 -uuid 4d92ec27-9ebf-400b-ae91-20c71c647c19 \
 -display none \
 -no-user-config \
@@ -27,7 +29,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-dummy2/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--global ICH9-LPC.noreboot=off \
--watchdog-action reset \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
