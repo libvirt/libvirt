@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-01-09 14:27+0000\n"
+"POT-Creation-Date: 2023-02-22 13:50+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -478,6 +478,15 @@ msgid "%s model of watchdog is allowed for s390 and s390x only"
 msgstr ""
 
 #, c-format
+msgid "%s model of watchdog is only part of q35 machine"
+msgstr ""
+
+#, c-format
+msgid ""
+"%s model of watchdog is part of the machine and cannot have any address set."
+msgstr ""
+
+#, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
 msgstr ""
 
@@ -739,6 +748,10 @@ msgid "%s: failed to communicate with bridge helper: %s"
 msgstr ""
 
 #, c-format
+msgid "%s: failed to generate UNIX socket path"
+msgstr ""
+
+#, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "%s: thất bại khi đọc tập tin tạm: %s"
 
@@ -841,6 +854,10 @@ msgstr ""
 
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
+#, c-format
+msgid "%s: unknown remote mode '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -1011,7 +1028,7 @@ msgid ""
 "type instead"
 msgstr ""
 
-msgid "'disk' missing in reply of guest-get-fsinfo"
+msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
 #, c-format
@@ -2315,8 +2332,7 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc="
-"%08x"
+"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"
 msgstr ""
 
 #, fuzzy
@@ -3702,9 +3718,9 @@ msgstr ""
 msgid "Could not attach serial port %zu"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
-msgstr "không thể lấy danh sách ổ trong pool: %s, rc=%08x"
+#, c-format
+msgid "Could not attach the file as harddisk/dvd/floppy: %s"
+msgstr ""
 
 msgid "Could not build CURL header list"
 msgstr "Không thể dựng danh sách header CURL"
@@ -4063,9 +4079,8 @@ msgstr "Không thể kiểm tra địa chỉ đĩa"
 msgid "Could not get EPR items"
 msgstr "Không thể lấy giờ hiện tại"
 
-#, fuzzy, c-format
-msgid "Could not get IMedium, rc=%08x"
-msgstr "Không thể lấy danh sách các Miền, rc=%08x"
+msgid "Could not get IMedium"
+msgstr ""
 
 msgid "Could not get Msvm_DiskDrive default InstanceID"
 msgstr ""
@@ -4096,17 +4111,14 @@ msgstr "Không thể lấy giờ hiện tại"
 msgid "Could not get current time"
 msgstr "Không thể lấy giờ hiện tại"
 
-#, fuzzy, c-format
-msgid "Could not get device port, rc=%08x"
-msgstr "Không thể lấy danh sách các Miền, rc=%08x"
+msgid "Could not get device port"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get device slot, rc=%08x"
-msgstr "Không thể lấy danh sách các máy, rc=%08x"
+msgid "Could not get device slot"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get device type, rc=%08x"
-msgstr "Không thể lấy danh sách các máy, rc=%08x"
+msgid "Could not get device type"
+msgstr ""
 
 #, c-format
 msgid "Could not get free memory for host %s"
@@ -4144,30 +4156,25 @@ msgstr "Không thể tạo tên eth cho bộ chứa"
 msgid "Could not get iterator index for iterator ID %u"
 msgstr "Không thể tạo tên eth cho bộ chứa"
 
-#, c-format
-msgid "Could not get list of Defined Domains, rc=%08x"
-msgstr "Không thể lấy danh sách các Miền đã Định nghĩa, rc=%08x"
+msgid "Could not get list of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of Domains, rc=%08x"
-msgstr "Không thể lấy danh sách các Miền, rc=%08x"
+msgid "Could not get list of Domains"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get list of domains, rc=%08x"
-msgstr "Không thể lấy danh sách các Miền, rc=%08x"
+msgid "Could not get list of domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of machines, rc=%08x"
-msgstr "Không thể lấy danh sách các máy, rc=%08x"
+msgid "Could not get list of machines"
+msgstr ""
 
 #, c-format
 msgid ""
 "Could not get maximum definition of Msvm_ProcessorSettingData for host %s"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get medium storage location, rc=%08x"
-msgstr "Không thể lấy danh sách các Miền, rc=%08x"
+msgid "Could not get medium storage location"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not get members of bridge '%s'"
@@ -4180,16 +4187,17 @@ msgstr "Không thể lấy tên của máy ảo"
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "Không thể lấy tên của máy ảo"
 
-#, c-format
-msgid "Could not get number of Defined Domains, rc=%08x"
-msgstr "Không thể lấy số của các Miền đã Định nghĩa, rc=%08x"
+msgid "Could not get number of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get number of Domains, rc=%08x"
-msgstr "Không thể lấy số của các Miền, rc=%08x"
+msgid "Could not get number of Domains"
+msgstr ""
 
 #, c-format
 msgid "Could not get parent of '%s'"
+msgstr ""
+
+msgid "Could not get process ID of passt"
 msgstr ""
 
 #, fuzzy
@@ -4200,9 +4208,8 @@ msgstr "không thể lấy cha của ảnh chụp %s"
 msgid "Could not get process id of vhost-user-gpu"
 msgstr "không thể lấy cha của ảnh chụp %s"
 
-#, fuzzy, c-format
-msgid "Could not get read only state, rc=%08x"
-msgstr "Không thể lấy danh sách các máy, rc=%08x"
+msgid "Could not get read only state"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get response"
@@ -4236,13 +4243,11 @@ msgstr "không thể lấy UUID ảnh chụp"
 msgid "Could not get snapshot name"
 msgstr "không thể lấy tên ảnh chụp"
 
-#, fuzzy, c-format
-msgid "Could not get storage controller bus, rc=%08x"
-msgstr "Không thể lấy danh sách các máy, rc=%08x"
+msgid "Could not get storage controller bus"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get storage controller by name, rc=%08x"
-msgstr "Không thể lấy danh sách các máy, rc=%08x"
+msgid "Could not get storage controller by name"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not get syspath for parent of '%s'"
@@ -4679,6 +4684,10 @@ msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
 
 #, c-format
+msgid "Could not start 'passt': %s"
+msgstr ""
+
+#, c-format
 msgid "Could not start 'slirp'. exitstatus: %d"
 msgstr ""
 
@@ -4832,6 +4841,9 @@ msgstr "Thời gian tạo"
 #, c-format
 msgid "Creation of %s volumes is not supported"
 msgstr "Tạo các ổ %s không được hỗ trợ"
+
+msgid "Crypto device is missing alias"
+msgstr ""
 
 msgid "Current memory size too large"
 msgstr ""
@@ -6297,7 +6309,7 @@ msgid "Failed to add signal handle watch"
 msgstr "Thất bại khi dựng đường dẫn tập tin pid"
 
 #, c-format
-msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
+msgid "Failed to add storage controller (name: %s, busType: %d)"
 msgstr ""
 
 #, fuzzy, c-format
@@ -6407,9 +6419,8 @@ msgstr "Thất bại khi tạo liên kết tượng trưng '%s' tới '%s'"
 msgid "Failed to change size of volume '%s' to %s"
 msgstr "Thất bại khi tạo liên kết tượng trưng '%s' tới '%s'"
 
-#, fuzzy, c-format
-msgid "Failed to change storage controller model, rc=%08x"
-msgstr "không thể thay đổi trạng thái PAE thành: %s, rc=%08x"
+msgid "Failed to change storage controller model"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to chdir into %s"
@@ -6647,6 +6658,10 @@ msgid "Failed to create nvram dir %s"
 msgstr "Thất bại khi tạo ổ %s"
 
 msgid "Failed to create or modify the state XML attribute"
+msgstr ""
+
+#, c-format
+msgid "Failed to create passt state dir %s"
 msgstr ""
 
 #, c-format
@@ -7185,9 +7200,8 @@ msgstr ""
 msgid "Failed to get snapshot count"
 msgstr "Thất bại khi tạo ảnh chụp: %s"
 
-#, fuzzy, c-format
-msgid "Failed to get storage controller name, rc=%08x"
-msgstr "Không thể lấy số nhỏ %s"
+msgid "Failed to get storage controller name"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to get the number of active networks"
@@ -7565,8 +7579,7 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr "Thất bại khi mở ổ lưu trữ với đường dẫn '%s'"
 
 #, c-format
-msgid ""
-"Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
+msgid "Failed to open the following disk/dvd/floppy to the machine: %s"
 msgstr ""
 
 #, c-format
@@ -7671,6 +7684,10 @@ msgstr "Thất bại khi phân tính số nguyên dương từ '%s'"
 #, fuzzy, c-format
 msgid "Failed to parse rate '%s'"
 msgstr "Không thể phân tích tên thư mục '%s'"
+
+#, c-format
+msgid "Failed to parse rotated index from '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%s'"
@@ -8029,9 +8046,8 @@ msgstr "Thất bại khi chạy lệnh '%s' để cập nhật giao diện iscsi
 msgid "Failed to save '%s' for '%s'"
 msgstr "Thất bại khi lưu miền %s vào %s"
 
-#, fuzzy, c-format
-msgid "Failed to save VM settings, rc=%08x"
-msgstr "Thất bại khi lưu miền %s vào %s"
+msgid "Failed to save VM settings"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to save domain '%d' with libxenlight"
@@ -9563,6 +9579,10 @@ msgstr ""
 msgid "Invalid address '%s' in <ip>"
 msgstr "địa chỉ MAC không hợp lệ: %s"
 
+#, c-format
+msgid "Invalid address '%s' in <portForward>"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid address '%s' in network '%s'"
 msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
@@ -10071,6 +10091,10 @@ msgstr "Số cổng không hợp lệ: %s"
 #, fuzzy, c-format
 msgid "Invalid port range '%u-%u'."
 msgstr "Số cổng không hợp lệ: %s"
+
+#, c-format
+msgid "Invalid portForward proto value %u"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid prefix or netmask for '%s'"
@@ -10643,19 +10667,9 @@ msgstr "thất bại khi đọc từ tập tin '%s'"
 msgid "Malformed format for log output '%s'"
 msgstr ""
 
-msgid "Malformed guest-get-fsinfo 'disk' data array"
-msgstr ""
-
-msgid "Malformed guest-get-fsinfo data array"
-msgstr ""
-
 #, fuzzy
 msgid "Malformed id field in JSON state document"
 msgstr "thành phần uuid sai dạng thức"
-
-#, fuzzy
-msgid "Malformed ip-addresses array"
-msgstr "địa chỉ mac sai dạng thức '%s'"
 
 #, fuzzy
 msgid "Malformed lease_entries array"
@@ -11101,9 +11115,6 @@ msgid "Missing UUID parameter for domain object"
 msgstr ""
 
 msgid "Missing VIR_CRED_AUTHNAME credential type"
-msgstr ""
-
-msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
 msgstr ""
 
 msgid "Missing XPath context"
@@ -11611,6 +11622,9 @@ msgid ""
 msgstr ""
 
 msgid "Multiple graphics devices are not supported"
+msgstr ""
+
+msgid "Multiple iTCO watchdogs are not supported"
 msgstr ""
 
 #, fuzzy
@@ -13017,9 +13031,6 @@ msgstr ""
 
 msgid "Password may not contain ',' character"
 msgstr ""
-
-msgid "Password request failed"
-msgstr "Yêu cầu tên mật khẩu thất bại"
 
 #, c-format
 msgid "Password set successfully for %s in %s"
@@ -15434,7 +15445,7 @@ msgid "Target domain vsock device model '%s' does not match source '%s'"
 msgstr "tên tập tin cấu hình pool lưu trữ '%s' không khớp tên pool '%s'"
 
 #, c-format
-msgid "Target domain watchdog count %d does not match source %d"
+msgid "Target domain watchdog device count %zu does not match source %zu"
 msgstr ""
 
 msgid "Target filesystem access mode does not match source"
@@ -15698,6 +15709,14 @@ msgid ""
 "'%s' or machine type '%s'"
 msgstr ""
 
+msgid "The 'passt' backend can only be used with interface type='user'"
+msgstr ""
+
+msgid ""
+"The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
+"'exclude' is specified"
+msgstr ""
+
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -15876,11 +15895,6 @@ msgstr ""
 msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
-msgstr ""
-
-msgid ""
-"The overall maximum number of clients waiting for authentication must not be "
-"less than the overall maximum number of clients"
 msgstr ""
 
 msgid "The read only disk has no parent"
@@ -16674,9 +16688,8 @@ msgstr "không thể đóng %s"
 msgid "Unable to close %s"
 msgstr "không thể đóng %s"
 
-#, fuzzy, c-format
-msgid "Unable to close HardDisk, rc=%08x"
-msgstr "không thể đóng %s"
+msgid "Unable to close HardDisk"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to close disk children"
@@ -16689,8 +16702,10 @@ msgstr ""
 msgid "Unable to close the VPD file, fd: %d"
 msgstr ""
 
-#, c-format
-msgid "Unable to close the new medium, rc=%08x"
+msgid "Unable to close the new medium"
+msgstr ""
+
+msgid "Unable to compile regex"
 msgstr ""
 
 #, fuzzy, c-format
@@ -16727,9 +16742,8 @@ msgstr "thất bại khi cài đặt móc tập tin stdout"
 msgid "Unable to create %s"
 msgstr "Thất bại khi tạo %s"
 
-#, fuzzy, c-format
-msgid "Unable to create HardDisk, rc=%08x"
-msgstr "không thể tạo rundir %s: %s"
+msgid "Unable to create HardDisk"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to create JSON formatter"
@@ -16911,9 +16925,8 @@ msgstr "Thất bại khi xoá ổ %s"
 msgid "Unable to delete lockspace resource %s"
 msgstr "Thất bại khi xoá bí mật %s"
 
-#, fuzzy, c-format
-msgid "Unable to delete medium, rc=%08x"
-msgstr "không thể xoá miền, rc=%08x"
+msgid "Unable to delete medium"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to delete port %s from OVS"
@@ -17317,12 +17330,7 @@ msgstr "Lấy thông tin ổ đĩa thất bại"
 msgid "Unable to get hard disk id"
 msgstr "Không thể thay đổi thư mục gốc"
 
-#, fuzzy, c-format
-msgid "Unable to get hard disk id, rc=%08x"
-msgstr "Không thể thay đổi thư mục gốc"
-
-#, c-format
-msgid "Unable to get hardDisk Id, rc=%08x"
+msgid "Unable to get hardDisk Id"
 msgstr ""
 
 msgid "Unable to get host SEV information"
@@ -17371,9 +17379,8 @@ msgstr "Không thể lấy trạng thái miền"
 msgid "Unable to get medium location"
 msgstr "Không thể lấy trạng thái miền"
 
-#, fuzzy, c-format
-msgid "Unable to get medium uuid, rc=%08x"
-msgstr "không thể tạo uuid"
+msgid "Unable to get medium uuid"
+msgstr ""
 
 msgid "Unable to get memory parameters"
 msgstr "Không thể lấy các thông số bộ nhớ"
@@ -17674,13 +17681,11 @@ msgstr "Không thể mở /proc/mounts"
 msgid "Unable to open /proc/mounts"
 msgstr "Không thể mở /proc/mounts"
 
-#, fuzzy, c-format
-msgid "Unable to open HardDisk, rc=%08x"
-msgstr "Không thể mở %s (%d)"
+msgid "Unable to open HardDisk"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to open Machine, rc=%08x"
-msgstr "Không thể mở %s"
+msgid "Unable to open Machine"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to open UNIX socket"
@@ -17991,9 +17996,8 @@ msgstr "Không thể ghi tập tin pid '%s/%s.pid'"
 msgid "Unable to read virtiofsd pidfile '%s'"
 msgstr "Không thể ghi tập tin pid '%s/%s.pid'"
 
-#, fuzzy, c-format
-msgid "Unable to register Machine, rc=%08x"
-msgstr "Không thể lấy danh sách các máy, rc=%08x"
+msgid "Unable to register Machine"
+msgstr ""
 
 msgid "Unable to register async IO callback"
 msgstr ""
@@ -18474,9 +18478,8 @@ msgstr "Không thể mở %s"
 msgid "Unable to unlink path '%s'"
 msgstr "Thất bại khi tạo đường dẫn %s"
 
-#, fuzzy, c-format
-msgid "Unable to unregister machine, rc=%08x"
-msgstr "Không thể lấy danh sách các máy, rc=%08x"
+msgid "Unable to unregister machine"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to update server's tls related files."
@@ -19634,13 +19637,6 @@ msgstr "'%s' không tồn tại"
 msgid "User namespace support is recommended"
 msgstr ""
 
-msgid ""
-"Username and key file path must be provided for private key authentication"
-msgstr ""
-
-msgid "Username must be provided for ssh agent authentication"
-msgstr ""
-
 msgid "Username request failed"
 msgstr "Yêu cầu tên người dùng thất bại"
 
@@ -19766,10 +19762,6 @@ msgstr "Giá trị '%s' vượt miền %s"
 
 #, c-format
 msgid "Value of cputune '%s' must be in range [%llu, %llu]"
-msgstr ""
-
-#, c-format
-msgid "Value of cputune 'shares' must be in range [%llu, %llu]"
 msgstr ""
 
 #, fuzzy
@@ -21942,6 +21934,9 @@ msgstr ""
 msgid "cannot modify network device address type"
 msgstr "Tên thiết bị mạng quá dài"
 
+msgid "cannot modify network device backend settings"
+msgstr ""
+
 msgid "cannot modify network device boot index setting"
 msgstr ""
 
@@ -23231,9 +23226,9 @@ msgstr "chuỗi không kết thúc"
 msgid "could not allocate memory"
 msgstr "Không thể đặt kích thước bộ nhớ"
 
-#, fuzzy, c-format
-msgid "could not attach shared folder '%s', rc=%08x"
-msgstr "không thể thay đổi trạng thái PAE thành: %s, rc=%08x"
+#, c-format
+msgid "could not attach shared folder '%s'"
+msgstr ""
 
 msgid "could not build absolute core file path"
 msgstr ""
@@ -23247,16 +23242,16 @@ msgid "could not build absolute output file path"
 msgstr "Thất bại khi dựng đường dẫn tập tin pid"
 
 #, c-format
-msgid "could not change ACPI status to: %s, rc=%08x"
-msgstr "không thể thay đổi trạng thái ACPI thành: %s,rc=%08x"
+msgid "could not change ACPI status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change APIC status to: %s, rc=%08x"
-msgstr "không thể thay đổi trạng thái APIC thành: %s, rc=%08x"
+msgid "could not change APIC status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change PAE status to: %s, rc=%08x"
-msgstr "không thể thay đổi trạng thái PAE thành: %s, rc=%08x"
+msgid "could not change PAE status to: %s"
+msgstr ""
 
 #, fuzzy
 msgid "could not close handshake fd"
@@ -23293,20 +23288,18 @@ msgstr "Không thể tìm miền với tên '%s'"
 msgid "could not create profile"
 msgstr "không thể xóa bỏ hồ sơ cho '%s'"
 
-#, c-format
-msgid "could not define a domain, rc=%08x"
-msgstr "không thể định nghĩa một miền, rc=%08x"
+msgid "could not define a domain"
+msgstr ""
 
 msgid "could not delete snapshot"
 msgstr "không thể xoá ảnh chụp"
 
-#, c-format
-msgid "could not delete the domain, rc=%08x"
-msgstr "không thể xoá miền, rc=%08x"
+msgid "could not delete the domain"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "could not detach shared folder '%s', rc=%08x"
-msgstr "không thể xoá miền, rc=%08x"
+#, c-format
+msgid "could not detach shared folder '%s'"
+msgstr ""
 
 msgid "could not determine max vcpus for the domain"
 msgstr "không thể quyết định số vcpu lớn nhất cho miền"
@@ -23513,21 +23506,21 @@ msgstr "Không thể đặt UUID"
 msgid "could not set PATH"
 msgstr "Không thể đặt UUID"
 
-#, fuzzy, c-format
-msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
-msgstr "không thể đặt kích thước của miền thành: %lu Kb, rc=%08x"
+#, c-format
+msgid "could not set the memory size of the domain to: %llu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
-msgstr "không thể đặt kích thước của miền thành: %lu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %lu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
-msgstr "không thể đặt số cpu của miền thành: %u, rc=%08x"
+msgid "could not set the number of cpus of the domain to: %u"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
-msgstr "không thể đặt số CPU ảo thành: %u, rc=%08x"
+msgid "could not set the number of virtual CPUs to: %u"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "could not take a screenshot of %s"
@@ -23737,6 +23730,18 @@ msgstr ""
 #, fuzzy
 msgid "creation of qcow2 encrypted image is not supported"
 msgstr "Tạo các ổ %s không được hỗ trợ"
+
+#, c-format
+msgid "crypto backend %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto model %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto type %s is not supported"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -24575,10 +24580,6 @@ msgstr "miền đã đang chạy"
 msgid "domain already has a vsock device"
 msgstr "Miền đã hoạt động rồi"
 
-#, fuzzy
-msgid "domain already has a watchdog"
-msgstr "miền '%s' đã tồn tại với uuid %s"
-
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr ""
 
@@ -24645,10 +24646,6 @@ msgid "domain has assigned host devices"
 msgstr "không có pty gán cho thiết bị %s"
 
 msgid "domain has no snapshots"
-msgstr "miền không có ảnh chụp"
-
-#, fuzzy
-msgid "domain has no watchdog"
 msgstr "miền không có ảnh chụp"
 
 #, fuzzy
@@ -25833,6 +25830,10 @@ msgstr "Thất bại khi lấy thống kê khối %s %s"
 msgid "failed to duplicate file descriptor for fd group '%s'"
 msgstr ""
 
+#, c-format
+msgid "failed to duplicate passed fd with index '%zu'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr "thất bại khi bật chuyển tiếp IP"
 
@@ -26564,10 +26565,10 @@ msgstr "Thất bại khi tạo ủy nhiệm xác thực"
 msgid "failed to retrieve decision to accept host key"
 msgstr ""
 
-msgid "failed to retrieve keyboard interactive result: callback has failed"
+msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr ""
 
-msgid "failed to retrieve private key passphrase: callback has failed"
+msgid "failed to retrieve user response for authentication callback"
 msgstr ""
 
 #, fuzzy, c-format
@@ -27434,9 +27435,8 @@ msgstr "khách thoát bất ngờ"
 msgid "guest unexpectedly quit during hotplug"
 msgstr "khách thoát bất ngờ trong khi cắm nóng"
 
-#, fuzzy
-msgid "guest-get-fsinfo reply was missing return data"
-msgstr "phản hồi di trú thông tin thiếu trạng thái trả về"
+msgid "guest-get-fsinfo reply was missing or not an array"
+msgstr ""
 
 #, fuzzy
 msgid "guest-get-osinfo reply was missing return data"
@@ -30707,7 +30707,7 @@ msgstr "thiếu thông tin hệ điều hành"
 msgid "missing existing file for disk %s: %s"
 msgstr "thiếu thông tin đích cho thiết bị %s"
 
-msgid "missing external TPM backend type"
+msgid "missing external TPM backend source type"
 msgstr ""
 
 #, fuzzy
@@ -31276,10 +31276,6 @@ msgstr "miền '%s' không đang xử lý di trú vào"
 
 #, fuzzy, c-format
 msgid "model '%s' shmem device not present in domain configuration"
-msgstr "miền '%s' không đang xử lý di trú vào"
-
-#, fuzzy, c-format
-msgid "model '%s' watchdog device not present in domain configuration"
 msgstr "miền '%s' không đang xử lý di trú vào"
 
 #, fuzzy
@@ -32104,6 +32100,9 @@ msgstr "không tìm thấy tên người dùng trình khách nào"
 msgid "no matching redirdev was not found"
 msgstr "không tìm thấy tên người dùng trình khách nào"
 
+msgid "no matching watchdog was found"
+msgstr ""
+
 msgid "no medium attachments"
 msgstr ""
 
@@ -32271,13 +32270,10 @@ msgstr "luồng đã có một callback được đăng ký"
 msgid "no such screen ID"
 msgstr ""
 
+msgid "no suitable callback authentication callback was found"
+msgstr ""
+
 msgid "no suitable callback for host key verification"
-msgstr ""
-
-msgid "no suitable callback for input of key passphrase"
-msgstr ""
-
-msgid "no suitable callback for input of keyboard response"
 msgstr ""
 
 #, fuzzy
@@ -32627,7 +32623,7 @@ msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr ""
 
-msgid "only 'client' mode is supported for external TPM device"
+msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
@@ -32688,9 +32684,6 @@ msgstr "chỉ có một thiết bị watchdog đơn được hỗ trợ"
 msgid "only a single vsock device is supported"
 msgstr "chỉ có một thiết bị watchdog đơn được hỗ trợ"
 
-msgid "only a single watchdog device is supported"
-msgstr "chỉ có một thiết bị watchdog đơn được hỗ trợ"
-
 #, fuzzy
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "tuyến xen không hỗ trợ thiết bị nhập %s"
@@ -32742,6 +32735,9 @@ msgstr "chỉ có một hệ thống tập tin được hỗ trợ"
 #, fuzzy
 msgid "only one backup job is supported"
 msgstr "chỉ có một hệ thống tập tin được hỗ trợ"
+
+msgid "only one crypto backend is supported"
+msgstr ""
 
 #, fuzzy
 msgid "only one emulatorpin is supported"
@@ -33657,6 +33653,9 @@ msgstr "tuyến ps2 không hỗ trợ thiết bị nhập %s"
 
 #, c-format
 msgid "pull mode backup for disk '%s' requires qcow2 driver"
+msgstr ""
+
+msgid "pvpanic is supported only with PCI address type"
 msgstr ""
 
 #, c-format
@@ -35670,6 +35669,9 @@ msgstr ""
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr "tuyến xen không hỗ trợ thiết bị nhập %s"
 
+msgid "the QEMU binary does not support the PCI pvpanic device"
+msgstr ""
+
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
 msgstr ""
@@ -35732,6 +35734,9 @@ msgid "the machine has no snapshot"
 msgstr "miền không có ảnh chụp"
 
 msgid "the new password"
+msgstr ""
+
+msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -37447,13 +37452,13 @@ msgstr "kiểu xác thực không rõ '%s'"
 msgid "unknown authentication type %s"
 msgstr "kiểu xác thực %s không rõ"
 
+#, c-format
+msgid "unknown backend source type '%s' for external TPM"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown backend type '%s' for egd"
 msgstr "kiểu giao diện không rõ '%s'"
-
-#, c-format
-msgid "unknown backend type '%s' for external TPM"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown backup mode '%s'"
@@ -37920,6 +37925,10 @@ msgstr "theo dõi thời gian rtc không hỗ trợ '%s'"
 #, fuzzy, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
 msgstr "theo dõi thời gian rtc không hỗ trợ '%s'"
+
+#, c-format
+msgid "unsupported IPv6 address prefix='%u' - must be 64"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unsupported KVM feature: %s"
@@ -39162,12 +39171,12 @@ msgstr "cảnh báo"
 msgid "watchdog"
 msgstr ""
 
-#, fuzzy
-msgid "watchdog device not present in domain configuration"
-msgstr "miền '%s' không đang xử lý di trú vào"
-
 msgid "watchdog must contain model name"
 msgstr "watchdog phải chứa tên mẫu"
+
+msgid ""
+"watchdogs with different actions are not supported with this QEMU binary"
+msgstr ""
 
 msgid "webSocket"
 msgstr ""
@@ -39317,6 +39326,175 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <chuỗi>"
+
+#, fuzzy
+#~ msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
+#~ msgstr "không thể lấy danh sách ổ trong pool: %s, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get IMedium, rc=%08x"
+#~ msgstr "Không thể lấy danh sách các Miền, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device port, rc=%08x"
+#~ msgstr "Không thể lấy danh sách các Miền, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device slot, rc=%08x"
+#~ msgstr "Không thể lấy danh sách các máy, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device type, rc=%08x"
+#~ msgstr "Không thể lấy danh sách các máy, rc=%08x"
+
+#~ msgid "Could not get list of Defined Domains, rc=%08x"
+#~ msgstr "Không thể lấy danh sách các Miền đã Định nghĩa, rc=%08x"
+
+#~ msgid "Could not get list of Domains, rc=%08x"
+#~ msgstr "Không thể lấy danh sách các Miền, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get list of domains, rc=%08x"
+#~ msgstr "Không thể lấy danh sách các Miền, rc=%08x"
+
+#~ msgid "Could not get list of machines, rc=%08x"
+#~ msgstr "Không thể lấy danh sách các máy, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get medium storage location, rc=%08x"
+#~ msgstr "Không thể lấy danh sách các Miền, rc=%08x"
+
+#~ msgid "Could not get number of Defined Domains, rc=%08x"
+#~ msgstr "Không thể lấy số của các Miền đã Định nghĩa, rc=%08x"
+
+#~ msgid "Could not get number of Domains, rc=%08x"
+#~ msgstr "Không thể lấy số của các Miền, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get read only state, rc=%08x"
+#~ msgstr "Không thể lấy danh sách các máy, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get storage controller bus, rc=%08x"
+#~ msgstr "Không thể lấy danh sách các máy, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get storage controller by name, rc=%08x"
+#~ msgstr "Không thể lấy danh sách các máy, rc=%08x"
+
+#, fuzzy
+#~ msgid "Failed to change storage controller model, rc=%08x"
+#~ msgstr "không thể thay đổi trạng thái PAE thành: %s, rc=%08x"
+
+#, fuzzy
+#~ msgid "Failed to get storage controller name, rc=%08x"
+#~ msgstr "Không thể lấy số nhỏ %s"
+
+#, fuzzy
+#~ msgid "Failed to save VM settings, rc=%08x"
+#~ msgstr "Thất bại khi lưu miền %s vào %s"
+
+#, fuzzy
+#~ msgid "Malformed ip-addresses array"
+#~ msgstr "địa chỉ mac sai dạng thức '%s'"
+
+#~ msgid "Password request failed"
+#~ msgstr "Yêu cầu tên mật khẩu thất bại"
+
+#, fuzzy
+#~ msgid "Unable to close HardDisk, rc=%08x"
+#~ msgstr "không thể đóng %s"
+
+#, fuzzy
+#~ msgid "Unable to create HardDisk, rc=%08x"
+#~ msgstr "không thể tạo rundir %s: %s"
+
+#, fuzzy
+#~ msgid "Unable to delete medium, rc=%08x"
+#~ msgstr "không thể xoá miền, rc=%08x"
+
+#, fuzzy
+#~ msgid "Unable to get hard disk id, rc=%08x"
+#~ msgstr "Không thể thay đổi thư mục gốc"
+
+#, fuzzy
+#~ msgid "Unable to get medium uuid, rc=%08x"
+#~ msgstr "không thể tạo uuid"
+
+#, fuzzy
+#~ msgid "Unable to open HardDisk, rc=%08x"
+#~ msgstr "Không thể mở %s (%d)"
+
+#, fuzzy
+#~ msgid "Unable to open Machine, rc=%08x"
+#~ msgstr "Không thể mở %s"
+
+#, fuzzy
+#~ msgid "Unable to register Machine, rc=%08x"
+#~ msgstr "Không thể lấy danh sách các máy, rc=%08x"
+
+#, fuzzy
+#~ msgid "Unable to unregister machine, rc=%08x"
+#~ msgstr "Không thể lấy danh sách các máy, rc=%08x"
+
+#, fuzzy
+#~ msgid "could not attach shared folder '%s', rc=%08x"
+#~ msgstr "không thể thay đổi trạng thái PAE thành: %s, rc=%08x"
+
+#~ msgid "could not change ACPI status to: %s, rc=%08x"
+#~ msgstr "không thể thay đổi trạng thái ACPI thành: %s,rc=%08x"
+
+#~ msgid "could not change APIC status to: %s, rc=%08x"
+#~ msgstr "không thể thay đổi trạng thái APIC thành: %s, rc=%08x"
+
+#~ msgid "could not change PAE status to: %s, rc=%08x"
+#~ msgstr "không thể thay đổi trạng thái PAE thành: %s, rc=%08x"
+
+#~ msgid "could not define a domain, rc=%08x"
+#~ msgstr "không thể định nghĩa một miền, rc=%08x"
+
+#~ msgid "could not delete the domain, rc=%08x"
+#~ msgstr "không thể xoá miền, rc=%08x"
+
+#, fuzzy
+#~ msgid "could not detach shared folder '%s', rc=%08x"
+#~ msgstr "không thể xoá miền, rc=%08x"
+
+#, fuzzy
+#~ msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
+#~ msgstr "không thể đặt kích thước của miền thành: %lu Kb, rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
+#~ msgstr "không thể đặt kích thước của miền thành: %lu Kb, rc=%08x"
+
+#~ msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
+#~ msgstr "không thể đặt số cpu của miền thành: %u, rc=%08x"
+
+#~ msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
+#~ msgstr "không thể đặt số CPU ảo thành: %u, rc=%08x"
+
+#, fuzzy
+#~ msgid "domain already has a watchdog"
+#~ msgstr "miền '%s' đã tồn tại với uuid %s"
+
+#, fuzzy
+#~ msgid "domain has no watchdog"
+#~ msgstr "miền không có ảnh chụp"
+
+#, fuzzy
+#~ msgid "guest-get-fsinfo reply was missing return data"
+#~ msgstr "phản hồi di trú thông tin thiếu trạng thái trả về"
+
+#, fuzzy
+#~ msgid "model '%s' watchdog device not present in domain configuration"
+#~ msgstr "miền '%s' không đang xử lý di trú vào"
+
+#~ msgid "only a single watchdog device is supported"
+#~ msgstr "chỉ có một thiết bị watchdog đơn được hỗ trợ"
+
+#, fuzzy
+#~ msgid "watchdog device not present in domain configuration"
+#~ msgstr "miền '%s' không đang xử lý di trú vào"
 
 #, fuzzy
 #~ msgid "Another close callback is already defined for domain %s"

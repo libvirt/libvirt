@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-01-09 14:27+0000\n"
+"POT-Creation-Date: 2023-02-22 13:50+0000\n"
 "PO-Revision-Date: 2022-10-02 12:19+0000\n"
 "Last-Translator: Sergey A. <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -650,6 +650,15 @@ msgid "%s model of watchdog is allowed for s390 and s390x only"
 msgstr "модель %s watchdog может использоваться только для s390 и s390x"
 
 #, c-format
+msgid "%s model of watchdog is only part of q35 machine"
+msgstr ""
+
+#, c-format
+msgid ""
+"%s model of watchdog is part of the machine and cannot have any address set."
+msgstr ""
+
+#, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
 msgstr ""
 "модель %s watchdog является виртуальной и не может использоваться на какой-"
@@ -941,6 +950,10 @@ msgid "%s: failed to communicate with bridge helper: %s"
 msgstr ""
 
 #, c-format
+msgid "%s: failed to generate UNIX socket path"
+msgstr ""
+
+#, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "%s: не удалось прочитать временный файл: %s"
 
@@ -1061,6 +1074,10 @@ msgstr "%s: для получения подробной информации и
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
 msgstr "%s: непредвиденный транспорт URI «%s»\n"
+
+#, c-format
+msgid "%s: unknown remote mode '%s'"
+msgstr ""
 
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
@@ -1240,8 +1257,8 @@ msgstr ""
 "формат хранения «directory» не поддерживается QEMU напрямую, используйте тип "
 "диска «dir»"
 
-msgid "'disk' missing in reply of guest-get-fsinfo"
-msgstr "ответ guest-get-fsinfo не содержит «disk»"
+msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
+msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %s"
@@ -2599,11 +2616,8 @@ msgstr "Команда prlctl не определена в переменной 
 
 #, c-format
 msgid ""
-"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc="
-"%08x"
+"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"
 msgstr ""
-"Не удалось получить UUID файла, который будет подключён как жёсткий диск/DVD/"
-"дискета: %s, rc=%08x"
 
 msgid "Can't initialize Parallels SDK"
 msgstr "Не удалось инициализировать SDK Parallels"
@@ -3986,8 +4000,8 @@ msgid "Could not attach serial port %zu"
 msgstr ""
 
 #, c-format
-msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
-msgstr "Не удалось подключить файл как жёсткий диск/DVD/дискету: %s, rc=%08x"
+msgid "Could not attach the file as harddisk/dvd/floppy: %s"
+msgstr ""
 
 msgid "Could not build CURL header list"
 msgstr "Не удалось создать список заголовков CURL"
@@ -4329,9 +4343,8 @@ msgstr "Не удалось получить адрес EPR"
 msgid "Could not get EPR items"
 msgstr "Не удалось получить элементы EPR"
 
-#, c-format
-msgid "Could not get IMedium, rc=%08x"
-msgstr "Не удалось получить IMedium, rc=%08x"
+msgid "Could not get IMedium"
+msgstr ""
 
 msgid "Could not get Msvm_DiskDrive default InstanceID"
 msgstr ""
@@ -4360,17 +4373,14 @@ msgstr "Не удалось получить имя контрольной то�
 msgid "Could not get current time"
 msgstr "Ошибка получения текущего времени"
 
-#, c-format
-msgid "Could not get device port, rc=%08x"
-msgstr "Не удалось получить порт устройства, rc=%08x"
+msgid "Could not get device port"
+msgstr ""
 
-#, c-format
-msgid "Could not get device slot, rc=%08x"
-msgstr "Не удалось получить слот устройства, rc=%08x"
+msgid "Could not get device slot"
+msgstr ""
 
-#, c-format
-msgid "Could not get device type, rc=%08x"
-msgstr "Не удалось получить тип устройства, rc=%08x"
+msgid "Could not get device type"
+msgstr ""
 
 #, c-format
 msgid "Could not get free memory for host %s"
@@ -4407,30 +4417,25 @@ msgstr "Не удалось определить индекс итератора
 msgid "Could not get iterator index for iterator ID %u"
 msgstr "Не удалось определить индекс итератора для ID %u"
 
-#, c-format
-msgid "Could not get list of Defined Domains, rc=%08x"
-msgstr "Не удалось получить список определяемых доменов, rc=%08x"
+msgid "Could not get list of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of Domains, rc=%08x"
-msgstr "Не удалось получить список доменов (rc=%08x)"
+msgid "Could not get list of Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of domains, rc=%08x"
-msgstr "Не удалось получить список доменов, rc=%08x"
+msgid "Could not get list of domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of machines, rc=%08x"
-msgstr "Не удалось получить список машин (rc=%08x)"
+msgid "Could not get list of machines"
+msgstr ""
 
 #, c-format
 msgid ""
 "Could not get maximum definition of Msvm_ProcessorSettingData for host %s"
 msgstr ""
 
-#, c-format
-msgid "Could not get medium storage location, rc=%08x"
-msgstr "Не удалось получить расположение носителя хранилища данных, rc=%08x"
+msgid "Could not get medium storage location"
+msgstr ""
 
 #, c-format
 msgid "Could not get members of bridge '%s'"
@@ -4443,16 +4448,17 @@ msgstr "Не удалось получить имя виртуальной ма�
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "Не удалось получить значение %u переменной  «%s»"
 
-#, c-format
-msgid "Could not get number of Defined Domains, rc=%08x"
-msgstr "Не удалось получить число определяемых доменов, rc=%08x"
+msgid "Could not get number of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get number of Domains, rc=%08x"
-msgstr "Не удалось получить число доменов (rc=%08x)"
+msgid "Could not get number of Domains"
+msgstr ""
 
 #, c-format
 msgid "Could not get parent of '%s'"
+msgstr ""
+
+msgid "Could not get process ID of passt"
 msgstr ""
 
 msgid "Could not get process id of swtpm"
@@ -4461,9 +4467,8 @@ msgstr "Не удалось получить идентификатор проц
 msgid "Could not get process id of vhost-user-gpu"
 msgstr "Не удалось получить идентификатор процесса vhost-user-gpu"
 
-#, c-format
-msgid "Could not get read only state, rc=%08x"
-msgstr "Не удалось получить состояние «только чтение», rc=%08x"
+msgid "Could not get read only state"
+msgstr ""
 
 msgid "Could not get response"
 msgstr "Не удалось получить ответ"
@@ -4491,13 +4496,11 @@ msgstr "Не удалось получить идентификатор сним
 msgid "Could not get snapshot name"
 msgstr "Не удалось получить имя снимка"
 
-#, c-format
-msgid "Could not get storage controller bus, rc=%08x"
-msgstr "Не удалось получить шину контроллера хранилища, rc=%08x"
+msgid "Could not get storage controller bus"
+msgstr ""
 
-#, c-format
-msgid "Could not get storage controller by name, rc=%08x"
-msgstr "Не удалось получить контроллер хранилища по имени, rc=%08x"
+msgid "Could not get storage controller by name"
+msgstr ""
 
 #, c-format
 msgid "Could not get syspath for parent of '%s'"
@@ -4920,6 +4923,10 @@ msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr "Не удалось указать адрес пространства имён wsman для xmlNodeParam"
 
 #, c-format
+msgid "Could not start 'passt': %s"
+msgstr ""
+
+#, c-format
 msgid "Could not start 'slirp'. exitstatus: %d"
 msgstr "Не удалось запустить «slirp». Состояние выхода: %d"
 
@@ -5067,6 +5074,9 @@ msgstr "Время создания"
 #, c-format
 msgid "Creation of %s volumes is not supported"
 msgstr "Создание томов %s не поддерживается"
+
+msgid "Crypto device is missing alias"
+msgstr ""
 
 msgid "Current memory size too large"
 msgstr "Текущий размер памяти слишком велик"
@@ -6527,9 +6537,8 @@ msgid "Failed to add signal handle watch"
 msgstr "Не удалось добавить наблюдение за дескриптором сигнала"
 
 #, c-format
-msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
+msgid "Failed to add storage controller (name: %s, busType: %d)"
 msgstr ""
-"Не удалось добавить контроллер хранилища (имя: %s, тип шины: %d), rc=%08x"
 
 #, c-format
 msgid "Failed to allocate PCI device list: %s"
@@ -6635,9 +6644,8 @@ msgstr "Не удалось изменить размер тома «%s» на %
 msgid "Failed to change size of volume '%s' to %s"
 msgstr "Не удалось изменить размер тома «%s» на новый размер %s"
 
-#, c-format
-msgid "Failed to change storage controller model, rc=%08x"
-msgstr "Не удалось изменить модель контроллера хранилища, rc=%08x"
+msgid "Failed to change storage controller model"
+msgstr ""
 
 #, c-format
 msgid "Failed to chdir into %s"
@@ -6865,6 +6873,10 @@ msgid "Failed to create nvram dir %s"
 msgstr "Не удалось создать каталог nvram %s"
 
 msgid "Failed to create or modify the state XML attribute"
+msgstr ""
+
+#, c-format
+msgid "Failed to create passt state dir %s"
 msgstr ""
 
 #, c-format
@@ -7377,9 +7389,8 @@ msgstr ""
 msgid "Failed to get snapshot count"
 msgstr "Не удалось получить число снимков"
 
-#, c-format
-msgid "Failed to get storage controller name, rc=%08x"
-msgstr "Не удалось получить имя контроллера хранилища, rc=%08x"
+msgid "Failed to get storage controller name"
+msgstr ""
 
 msgid "Failed to get the number of active networks"
 msgstr "Не удалось определить число активных сетей"
@@ -7734,9 +7745,8 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr "Не удалось открыть том хранилища по пути «%s»"
 
 #, c-format
-msgid ""
-"Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
-msgstr "Не удалось открыть следующий диск/DVD/дискету для машины: %s, rc=%08x"
+msgid "Failed to open the following disk/dvd/floppy to the machine: %s"
+msgstr ""
 
 #, c-format
 msgid "Failed to open tty %s"
@@ -7832,6 +7842,10 @@ msgstr "Не удалось получить положительное цело
 #, c-format
 msgid "Failed to parse rate '%s'"
 msgstr "Не удалось разобрать скорость «%s»"
+
+#, c-format
+msgid "Failed to parse rotated index from '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%s'"
@@ -8182,9 +8196,8 @@ msgstr ""
 msgid "Failed to save '%s' for '%s'"
 msgstr "Не удалось сохранить «%s» для «%s»"
 
-#, c-format
-msgid "Failed to save VM settings, rc=%08x"
-msgstr "Не удалось сохранить параметры виртуальной машины, rc=%08x"
+msgid "Failed to save VM settings"
+msgstr ""
 
 #, c-format
 msgid "Failed to save domain '%d' with libxenlight"
@@ -9737,6 +9750,10 @@ msgid "Invalid address '%s' in <ip>"
 msgstr "Недопустимый адрес «%s» в <ip>"
 
 #, c-format
+msgid "Invalid address '%s' in <portForward>"
+msgstr ""
+
+#, c-format
 msgid "Invalid address '%s' in network '%s'"
 msgstr "Недопустимый адрес «%s» в сети «%s»"
 
@@ -10260,6 +10277,10 @@ msgstr "Недопустимый номер порта: %s"
 #, c-format
 msgid "Invalid port range '%u-%u'."
 msgstr "Недопустимый диапазон портов «%u — %u»"
+
+#, c-format
+msgid "Invalid portForward proto value %u"
+msgstr ""
 
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
@@ -10835,17 +10856,8 @@ msgstr "Неверно сформированный формат для филь
 msgid "Malformed format for log output '%s'"
 msgstr ""
 
-msgid "Malformed guest-get-fsinfo 'disk' data array"
-msgstr "Неверно сформированный массив данных «disk» guest-get-fsinfo"
-
-msgid "Malformed guest-get-fsinfo data array"
-msgstr "Неверно сформированный массив данных guest-get-fsinfo"
-
 msgid "Malformed id field in JSON state document"
 msgstr "Неверно сформированное поле идентификатора в документе состояния JSON"
-
-msgid "Malformed ip-addresses array"
-msgstr "Неверно сформированный массив ip-addresses"
 
 msgid "Malformed lease_entries array"
 msgstr "Неверно сформированный массив lease_entries"
@@ -11298,10 +11310,6 @@ msgstr "Параметр UUID для объекта домена не опред
 
 msgid "Missing VIR_CRED_AUTHNAME credential type"
 msgstr "Отсутствует тип учётных данных VIR_CRED_AUTHNAME credential type"
-
-msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
-msgstr ""
-"Отсутствует тип учётных данных VIR_CRED_PASSPHRASE или VIR_CRED_NOECHOPROMPT"
 
 msgid "Missing XPath context"
 msgstr ""
@@ -11833,6 +11841,9 @@ msgstr ""
 
 msgid "Multiple graphics devices are not supported"
 msgstr "Использование нескольких графических устройств не поддерживается"
+
+msgid "Multiple iTCO watchdogs are not supported"
+msgstr ""
 
 msgid "Multiple interfaces attached to bridge"
 msgstr "К мосту подключено несколько интерфейсов"
@@ -13250,9 +13261,6 @@ msgstr "Парольная фраза для ключа «%s»"
 
 msgid "Password may not contain ',' character"
 msgstr "Пароль не может содержать символ «,»"
-
-msgid "Password request failed"
-msgstr "Ошибка запроса пароля"
 
 #, c-format
 msgid "Password set successfully for %s in %s"
@@ -15753,8 +15761,8 @@ msgstr ""
 "«%s»"
 
 #, c-format
-msgid "Target domain watchdog count %d does not match source %d"
-msgstr "%d не соответствует числу устройств наблюдения исходного домена, %d"
+msgid "Target domain watchdog device count %zu does not match source %zu"
+msgstr ""
 
 msgid "Target filesystem access mode does not match source"
 msgstr ""
@@ -16035,6 +16043,14 @@ msgstr ""
 "Атрибут «eoi» возможности «%s» не поддерживается для архитектуры «%s» или "
 "типа машины «%s»"
 
+msgid "The 'passt' backend can only be used with interface type='user'"
+msgstr ""
+
+msgid ""
+"The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
+"'exclude' is specified"
+msgstr ""
+
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -16231,11 +16247,6 @@ msgstr ""
 msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
-msgstr ""
-
-msgid ""
-"The overall maximum number of clients waiting for authentication must not be "
-"less than the overall maximum number of clients"
 msgstr ""
 
 msgid "The read only disk has no parent"
@@ -17016,9 +17027,8 @@ msgstr "Не удалось закрыть"
 msgid "Unable to close %s"
 msgstr "Не удалось закрыть %s"
 
-#, c-format
-msgid "Unable to close HardDisk, rc=%08x"
-msgstr "Не удалось закрыть HardDisk, rc=%08x"
+msgid "Unable to close HardDisk"
+msgstr ""
 
 msgid "Unable to close disk children"
 msgstr "Не удалось закрыть подчиненные диски"
@@ -17030,9 +17040,11 @@ msgstr "Не удалось рекурсивно закрыть все диск�
 msgid "Unable to close the VPD file, fd: %d"
 msgstr ""
 
-#, c-format
-msgid "Unable to close the new medium, rc=%08x"
-msgstr "Не удалось закрыть новый носитель, rc=%08x"
+msgid "Unable to close the new medium"
+msgstr ""
+
+msgid "Unable to compile regex"
+msgstr ""
 
 #, c-format
 msgid "Unable to compute hash of data: %s"
@@ -17067,9 +17079,8 @@ msgstr "Не удалось скопировать дескриптор файл
 msgid "Unable to create %s"
 msgstr "Не удалось создать %s"
 
-#, c-format
-msgid "Unable to create HardDisk, rc=%08x"
-msgstr "Не удалось создать HardDisk, rc=%08x"
+msgid "Unable to create HardDisk"
+msgstr ""
 
 msgid "Unable to create JSON formatter"
 msgstr "Ну удалось создать средство форматирования JSON"
@@ -17236,9 +17247,8 @@ msgstr "Не удалось удалить файл %s"
 msgid "Unable to delete lockspace resource %s"
 msgstr "Не удалось удалить ресурс пространства блокирования %s"
 
-#, c-format
-msgid "Unable to delete medium, rc=%08x"
-msgstr "Не удалось удалить носитель,  rc=%08x"
+msgid "Unable to delete medium"
+msgstr ""
 
 #, c-format
 msgid "Unable to delete port %s from OVS"
@@ -17607,13 +17617,8 @@ msgstr "Не удалось получить формат жесткого ди�
 msgid "Unable to get hard disk id"
 msgstr "Не удалось получить идентификатор жесткого диска"
 
-#, c-format
-msgid "Unable to get hard disk id, rc=%08x"
-msgstr "Не удалось получить идентификатор жесткого диска, rc=%08x"
-
-#, c-format
-msgid "Unable to get hardDisk Id, rc=%08x"
-msgstr "Не удалось получить идентификатор жесткого диска, rc=%08x"
+msgid "Unable to get hardDisk Id"
+msgstr ""
 
 msgid "Unable to get host SEV information"
 msgstr ""
@@ -17656,9 +17661,8 @@ msgstr "Не удалось получить состояние петлевог
 msgid "Unable to get medium location"
 msgstr "Не удалось получить информацию о расположении носителя"
 
-#, c-format
-msgid "Unable to get medium uuid, rc=%08x"
-msgstr "Не удалось получить UUID носителя, rc=%08x"
+msgid "Unable to get medium uuid"
+msgstr ""
 
 msgid "Unable to get memory parameters"
 msgstr "Не удалось получить параметры памяти"
@@ -17914,13 +17918,11 @@ msgstr "Не удалось открыть /dev/loop-control"
 msgid "Unable to open /proc/mounts"
 msgstr "Не удалось открыть /proc/mounts"
 
-#, c-format
-msgid "Unable to open HardDisk, rc=%08x"
-msgstr "Не удалось открыть HardDisk, rc=%08x"
+msgid "Unable to open HardDisk"
+msgstr ""
 
-#, c-format
-msgid "Unable to open Machine, rc=%08x"
-msgstr "Не удалось открыть машину,  rc=%08x"
+msgid "Unable to open Machine"
+msgstr ""
 
 msgid "Unable to open UNIX socket"
 msgstr "Не удалось открыть сокет UNIX"
@@ -18209,9 +18211,8 @@ msgstr "Не удалось выполнить чтение файла PID vhost
 msgid "Unable to read virtiofsd pidfile '%s'"
 msgstr "Не удалось выполнить чтение файла PID virtiofsd «%s»"
 
-#, c-format
-msgid "Unable to register Machine, rc=%08x"
-msgstr "Не удалось зарегистрировать машину, rc=%08x"
+msgid "Unable to register Machine"
+msgstr ""
 
 msgid "Unable to register async IO callback"
 msgstr "Не удалось зарегистрировать обратный вызов асинхронного ввода-вывода"
@@ -18672,9 +18673,8 @@ msgstr "Не удалось удалить привязку %s"
 msgid "Unable to unlink path '%s'"
 msgstr "Не удалось удалить привязку пути «%s»"
 
-#, c-format
-msgid "Unable to unregister machine, rc=%08x"
-msgstr "Не удалось отменить регистрацию машины, rc=%08x"
+msgid "Unable to unregister machine"
+msgstr ""
 
 msgid "Unable to update server's tls related files."
 msgstr "Не удалось обновить связанные с TLS файлы сервера."
@@ -19843,16 +19843,6 @@ msgstr "Пользователь %s не существует"
 msgid "User namespace support is recommended"
 msgstr "Рекомендована поддержка пространства имён пользователя (user)"
 
-msgid ""
-"Username and key file path must be provided for private key authentication"
-msgstr ""
-"Для аутентификации с помощью закрытого ключа необходимо указать имя "
-"пользователя и путь к файлу ключа"
-
-msgid "Username must be provided for ssh agent authentication"
-msgstr ""
-"Для аутентификации с помощью агента SSH необходимо указать имя пользователя"
-
 msgid "Username request failed"
 msgstr "Ошибка запроса имени пользователя"
 
@@ -19969,10 +19959,6 @@ msgstr "«%s» выходит за пределы диапазона %s"
 
 #, c-format
 msgid "Value of cputune '%s' must be in range [%llu, %llu]"
-msgstr ""
-
-#, c-format
-msgid "Value of cputune 'shares' must be in range [%llu, %llu]"
 msgstr ""
 
 msgid "Variable value contains invalid character"
@@ -22196,6 +22182,9 @@ msgstr ""
 msgid "cannot modify network device address type"
 msgstr "не удалось изменить тип адреса сетевого устройства"
 
+msgid "cannot modify network device backend settings"
+msgstr ""
+
 msgid "cannot modify network device boot index setting"
 msgstr "не удалось изменить параметр индекса загрузки сетевого устройства"
 
@@ -23470,9 +23459,8 @@ msgid "could not allocate memory"
 msgstr "Не удалось выделить память"
 
 #, c-format
-msgid "could not attach shared folder '%s', rc=%08x"
+msgid "could not attach shared folder '%s'"
 msgstr ""
-"не удалось подключить папку «%s» для совместного использования, rc=%08x"
 
 msgid "could not build absolute core file path"
 msgstr "не удалось сформировать абсолютный путь к файлу ядра"
@@ -23484,16 +23472,16 @@ msgid "could not build absolute output file path"
 msgstr "не удалось сформировать абсолютный путь к файлу вывода"
 
 #, c-format
-msgid "could not change ACPI status to: %s, rc=%08x"
-msgstr "не удалось изменить состояние ACPI на %s, rc=%08x"
+msgid "could not change ACPI status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change APIC status to: %s, rc=%08x"
-msgstr "не удалось изменить состояние APIC на %s, rc=%08x"
+msgid "could not change APIC status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change PAE status to: %s, rc=%08x"
-msgstr "не удалось изменить состояние PAE на %s, rc=%08x"
+msgid "could not change PAE status to: %s"
+msgstr ""
 
 msgid "could not close handshake fd"
 msgstr "не удалось закрыть файловый дескриптор подключения"
@@ -23527,20 +23515,18 @@ msgstr "не удалось преобразовать верхний порог
 msgid "could not create profile"
 msgstr "не удалось создать профиль"
 
-#, c-format
-msgid "could not define a domain, rc=%08x"
-msgstr "не удалось определить домен, rc=%08x"
+msgid "could not define a domain"
+msgstr ""
 
 msgid "could not delete snapshot"
 msgstr "не удалось удалить снимок"
 
-#, c-format
-msgid "could not delete the domain, rc=%08x"
-msgstr "не удалось удалить домен, rc=%08x"
+msgid "could not delete the domain"
+msgstr ""
 
 #, c-format
-msgid "could not detach shared folder '%s', rc=%08x"
-msgstr "Не удалось отсоединить совместную папку «%s», rc=%08x"
+msgid "could not detach shared folder '%s'"
+msgstr ""
 
 msgid "could not determine max vcpus for the domain"
 msgstr ""
@@ -23735,20 +23721,20 @@ msgid "could not set PATH"
 msgstr "не удалось установить PATH"
 
 #, c-format
-msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
-msgstr "не удалось изменить размер памяти для домена: %llu КБ, rc=%08x"
+msgid "could not set the memory size of the domain to: %llu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
-msgstr "не удалось настроить %lu КБ памяти для домена, rc=%08x"
+msgid "could not set the memory size of the domain to: %lu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
-msgstr "не удалось изменить количество процессоров домена на %u, rc=%08x"
+msgid "could not set the number of cpus of the domain to: %u"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
-msgstr "не удалось изменить число виртуальных процессоров на %u, rc=%08x"
+msgid "could not set the number of virtual CPUs to: %u"
+msgstr ""
 
 #, c-format
 msgid "could not take a screenshot of %s"
@@ -23965,6 +23951,18 @@ msgstr "создание файлов qcow/qcow2 поддерживается т
 
 msgid "creation of qcow2 encrypted image is not supported"
 msgstr "cоздание шифрованного образа qcow2 не поддерживается"
+
+#, c-format
+msgid "crypto backend %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto model %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto type %s is not supported"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -24785,9 +24783,6 @@ msgstr "домен уже имеет графическую систему VNC"
 msgid "domain already has a vsock device"
 msgstr "домен уже имеет устройство vsock"
 
-msgid "domain already has a watchdog"
-msgstr "домен уже имеет устройство наблюдения"
-
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "архитектура домена (/домен/операционная_система/тип/@архитектура)"
 
@@ -24850,9 +24845,6 @@ msgstr "с доменом связаны устройства основной �
 
 msgid "domain has no snapshots"
 msgstr "у домена нет снимков"
-
-msgid "domain has no watchdog"
-msgstr "домен не имеет устройства наблюдения"
 
 msgid "domain has to be shutoff before renaming"
 msgstr "домен необходимо выключить перед переименованием"
@@ -25992,6 +25984,10 @@ msgstr "не удалось определить состояние выхода
 msgid "failed to duplicate file descriptor for fd group '%s'"
 msgstr ""
 
+#, c-format
+msgid "failed to duplicate passed fd with index '%zu'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr "ошибка активации перенаправления IP"
 
@@ -26679,14 +26675,12 @@ msgstr "не удалось получить учётные данные"
 msgid "failed to retrieve decision to accept host key"
 msgstr "не удалось получить решение о принятии ключа узла"
 
-msgid "failed to retrieve keyboard interactive result: callback has failed"
-msgstr ""
-"не удалось получить интерактивный результат с клавиатуры: ошибка обратного "
-"вызова"
-
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr ""
 "не удалось получить парольную фразу закрытого ключа: ошибка обратного вызова"
+
+msgid "failed to retrieve user response for authentication callback"
+msgstr ""
 
 #, c-format
 msgid "failed to rollback transaction: %s%s%s"
@@ -27565,8 +27559,8 @@ msgstr "неожиданное завершение работы гостя"
 msgid "guest unexpectedly quit during hotplug"
 msgstr "работа гостя прервана во время «горячего» подключения"
 
-msgid "guest-get-fsinfo reply was missing return data"
-msgstr "Ответ guest-get-fsinfo не содержит данных."
+msgid "guest-get-fsinfo reply was missing or not an array"
+msgstr ""
 
 msgid "guest-get-osinfo reply was missing return data"
 msgstr "Ответ guest-get-osinfo не содержит данных."
@@ -30798,7 +30792,7 @@ msgstr "в списке поддерживаемых форматов дампо
 msgid "missing existing file for disk %s: %s"
 msgstr "отсутствует файл для диска %s: %s"
 
-msgid "missing external TPM backend type"
+msgid "missing external TPM backend source type"
 msgstr ""
 
 msgid "missing feature name"
@@ -31352,10 +31346,6 @@ msgstr "конфигурация домена не содержит устрой
 #, c-format
 msgid "model '%s' shmem device not present in domain configuration"
 msgstr "конфигурация домена не содержит устройство shmem модели «%s»"
-
-#, c-format
-msgid "model '%s' watchdog device not present in domain configuration"
-msgstr "конфигурация домена не содержит устройство наблюдения модели «%s»"
 
 msgid "model resolution is not supported"
 msgstr "разрешение модели не поддерживается"
@@ -32175,6 +32165,9 @@ msgstr "не найдено соответствующее устройство 
 msgid "no matching redirdev was not found"
 msgstr "не найдено соответствующее устройство redirdev"
 
+msgid "no matching watchdog was found"
+msgstr ""
+
 msgid "no medium attachments"
 msgstr "нет подключенных носителей"
 
@@ -32337,15 +32330,11 @@ msgstr "обратный вызов потока не зарегистриров
 msgid "no such screen ID"
 msgstr "указанный идентификатор экрана отсутствует"
 
+msgid "no suitable callback authentication callback was found"
+msgstr ""
+
 msgid "no suitable callback for host key verification"
 msgstr "нет подходящего обратного вызова для проверки ключа хоста"
-
-msgid "no suitable callback for input of key passphrase"
-msgstr "нет подходящего обратного вызова для ввода парольной фразы ключа"
-
-msgid "no suitable callback for input of keyboard response"
-msgstr ""
-"нет подходящего обратного вызова для ответа на ввод данных с клавиатуры"
 
 msgid "no suitable info found"
 msgstr "не найдена подходящая информация"
@@ -32682,7 +32671,7 @@ msgstr ""
 "должны быть упорядочены перед доступными для «горячего» подключения "
 "виртуальными процессорами"
 
-msgid "only 'client' mode is supported for external TPM device"
+msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
@@ -32742,9 +32731,6 @@ msgstr "поддерживается только одно устройство 
 msgid "only a single vsock device is supported"
 msgstr "поддерживается только одно устройство vsock"
 
-msgid "only a single watchdog device is supported"
-msgstr "поддерживается только одно устройство watchdog"
-
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "для устройств ввода «passthrough» поддерживается только шина «virtio»"
 
@@ -32797,6 +32783,9 @@ msgstr "описание устройства TPM может содержать 
 
 msgid "only one backup job is supported"
 msgstr "поддерживается только одно задание резервного копирования"
+
+msgid "only one crypto backend is supported"
+msgstr ""
 
 msgid "only one emulatorpin is supported"
 msgstr "поддерживается только один emulatorpin"
@@ -33715,6 +33704,9 @@ msgstr "шина ps2 не поддерживает устройство ввод
 
 #, c-format
 msgid "pull mode backup for disk '%s' requires qcow2 driver"
+msgstr ""
+
+msgid "pvpanic is supported only with PCI address type"
 msgstr ""
 
 #, c-format
@@ -35724,6 +35716,9 @@ msgstr "«%s»  соответствует нескольким интерфей
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr "исполняемый файл QEMU не поддерживает устройство паники ISA"
 
+msgid "the QEMU binary does not support the PCI pvpanic device"
+msgstr ""
+
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
 msgstr ""
@@ -35792,6 +35787,9 @@ msgstr "у этой машины нет снимков"
 
 msgid "the new password"
 msgstr "новый пароль"
+
+msgid "the passt network backend is not supported with this QEMU binary"
+msgstr ""
 
 msgid "the password is already encrypted"
 msgstr "пароль уже зашифрован"
@@ -37551,12 +37549,12 @@ msgid "unknown authentication type %s"
 msgstr "неизвестный тип аутентификации %s"
 
 #, c-format
-msgid "unknown backend type '%s' for egd"
-msgstr "неизвестный тип в строке  <backend model='egd'>: «%s»"
+msgid "unknown backend source type '%s' for external TPM"
+msgstr ""
 
 #, c-format
-msgid "unknown backend type '%s' for external TPM"
-msgstr ""
+msgid "unknown backend type '%s' for egd"
+msgstr "неизвестный тип в строке  <backend model='egd'>: «%s»"
 
 #, c-format
 msgid "unknown backup mode '%s'"
@@ -38019,6 +38017,10 @@ msgstr "неподдерживаемая возможность stimer Hyper-V: 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
 msgstr "недопустимая функция HyperV Enlightenment: %s"
+
+#, c-format
+msgid "unsupported IPv6 address prefix='%u' - must be 64"
+msgstr ""
 
 #, c-format
 msgid "unsupported KVM feature: %s"
@@ -39293,11 +39295,12 @@ msgstr "предупреждение"
 msgid "watchdog"
 msgstr "событие устройства наблюдения"
 
-msgid "watchdog device not present in domain configuration"
-msgstr "конфигурация домена не содержит устройство наблюдения"
-
 msgid "watchdog must contain model name"
 msgstr "watchdog должен включать имя модели"
+
+msgid ""
+"watchdogs with different actions are not supported with this QEMU binary"
+msgstr ""
 
 msgid "webSocket"
 msgstr "webSocket"
@@ -39453,6 +39456,208 @@ msgstr "поступил запрос о зоне %s для сети %s, но fi
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <строка>}..."
+
+#~ msgid "'disk' missing in reply of guest-get-fsinfo"
+#~ msgstr "ответ guest-get-fsinfo не содержит «disk»"
+
+#~ msgid ""
+#~ "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, "
+#~ "rc=%08x"
+#~ msgstr ""
+#~ "Не удалось получить UUID файла, который будет подключён как жёсткий диск/"
+#~ "DVD/дискета: %s, rc=%08x"
+
+#~ msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
+#~ msgstr ""
+#~ "Не удалось подключить файл как жёсткий диск/DVD/дискету: %s, rc=%08x"
+
+#~ msgid "Could not get IMedium, rc=%08x"
+#~ msgstr "Не удалось получить IMedium, rc=%08x"
+
+#~ msgid "Could not get device port, rc=%08x"
+#~ msgstr "Не удалось получить порт устройства, rc=%08x"
+
+#~ msgid "Could not get device slot, rc=%08x"
+#~ msgstr "Не удалось получить слот устройства, rc=%08x"
+
+#~ msgid "Could not get device type, rc=%08x"
+#~ msgstr "Не удалось получить тип устройства, rc=%08x"
+
+#~ msgid "Could not get list of Defined Domains, rc=%08x"
+#~ msgstr "Не удалось получить список определяемых доменов, rc=%08x"
+
+#~ msgid "Could not get list of Domains, rc=%08x"
+#~ msgstr "Не удалось получить список доменов (rc=%08x)"
+
+#~ msgid "Could not get list of domains, rc=%08x"
+#~ msgstr "Не удалось получить список доменов, rc=%08x"
+
+#~ msgid "Could not get list of machines, rc=%08x"
+#~ msgstr "Не удалось получить список машин (rc=%08x)"
+
+#~ msgid "Could not get medium storage location, rc=%08x"
+#~ msgstr "Не удалось получить расположение носителя хранилища данных, rc=%08x"
+
+#~ msgid "Could not get number of Defined Domains, rc=%08x"
+#~ msgstr "Не удалось получить число определяемых доменов, rc=%08x"
+
+#~ msgid "Could not get number of Domains, rc=%08x"
+#~ msgstr "Не удалось получить число доменов (rc=%08x)"
+
+#~ msgid "Could not get read only state, rc=%08x"
+#~ msgstr "Не удалось получить состояние «только чтение», rc=%08x"
+
+#~ msgid "Could not get storage controller bus, rc=%08x"
+#~ msgstr "Не удалось получить шину контроллера хранилища, rc=%08x"
+
+#~ msgid "Could not get storage controller by name, rc=%08x"
+#~ msgstr "Не удалось получить контроллер хранилища по имени, rc=%08x"
+
+#~ msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
+#~ msgstr ""
+#~ "Не удалось добавить контроллер хранилища (имя: %s, тип шины: %d), rc=%08x"
+
+#~ msgid "Failed to change storage controller model, rc=%08x"
+#~ msgstr "Не удалось изменить модель контроллера хранилища, rc=%08x"
+
+#~ msgid "Failed to get storage controller name, rc=%08x"
+#~ msgstr "Не удалось получить имя контроллера хранилища, rc=%08x"
+
+#~ msgid ""
+#~ "Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
+#~ msgstr ""
+#~ "Не удалось открыть следующий диск/DVD/дискету для машины: %s, rc=%08x"
+
+#~ msgid "Failed to save VM settings, rc=%08x"
+#~ msgstr "Не удалось сохранить параметры виртуальной машины, rc=%08x"
+
+#~ msgid "Malformed guest-get-fsinfo 'disk' data array"
+#~ msgstr "Неверно сформированный массив данных «disk» guest-get-fsinfo"
+
+#~ msgid "Malformed guest-get-fsinfo data array"
+#~ msgstr "Неверно сформированный массив данных guest-get-fsinfo"
+
+#~ msgid "Malformed ip-addresses array"
+#~ msgstr "Неверно сформированный массив ip-addresses"
+
+#~ msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
+#~ msgstr ""
+#~ "Отсутствует тип учётных данных VIR_CRED_PASSPHRASE или "
+#~ "VIR_CRED_NOECHOPROMPT"
+
+#~ msgid "Password request failed"
+#~ msgstr "Ошибка запроса пароля"
+
+#~ msgid "Target domain watchdog count %d does not match source %d"
+#~ msgstr "%d не соответствует числу устройств наблюдения исходного домена, %d"
+
+#~ msgid "Unable to close HardDisk, rc=%08x"
+#~ msgstr "Не удалось закрыть HardDisk, rc=%08x"
+
+#~ msgid "Unable to close the new medium, rc=%08x"
+#~ msgstr "Не удалось закрыть новый носитель, rc=%08x"
+
+#~ msgid "Unable to create HardDisk, rc=%08x"
+#~ msgstr "Не удалось создать HardDisk, rc=%08x"
+
+#~ msgid "Unable to delete medium, rc=%08x"
+#~ msgstr "Не удалось удалить носитель,  rc=%08x"
+
+#~ msgid "Unable to get hard disk id, rc=%08x"
+#~ msgstr "Не удалось получить идентификатор жесткого диска, rc=%08x"
+
+#~ msgid "Unable to get hardDisk Id, rc=%08x"
+#~ msgstr "Не удалось получить идентификатор жесткого диска, rc=%08x"
+
+#~ msgid "Unable to get medium uuid, rc=%08x"
+#~ msgstr "Не удалось получить UUID носителя, rc=%08x"
+
+#~ msgid "Unable to open HardDisk, rc=%08x"
+#~ msgstr "Не удалось открыть HardDisk, rc=%08x"
+
+#~ msgid "Unable to open Machine, rc=%08x"
+#~ msgstr "Не удалось открыть машину,  rc=%08x"
+
+#~ msgid "Unable to register Machine, rc=%08x"
+#~ msgstr "Не удалось зарегистрировать машину, rc=%08x"
+
+#~ msgid "Unable to unregister machine, rc=%08x"
+#~ msgstr "Не удалось отменить регистрацию машины, rc=%08x"
+
+#~ msgid ""
+#~ "Username and key file path must be provided for private key authentication"
+#~ msgstr ""
+#~ "Для аутентификации с помощью закрытого ключа необходимо указать имя "
+#~ "пользователя и путь к файлу ключа"
+
+#~ msgid "Username must be provided for ssh agent authentication"
+#~ msgstr ""
+#~ "Для аутентификации с помощью агента SSH необходимо указать имя "
+#~ "пользователя"
+
+#~ msgid "could not attach shared folder '%s', rc=%08x"
+#~ msgstr ""
+#~ "не удалось подключить папку «%s» для совместного использования, rc=%08x"
+
+#~ msgid "could not change ACPI status to: %s, rc=%08x"
+#~ msgstr "не удалось изменить состояние ACPI на %s, rc=%08x"
+
+#~ msgid "could not change APIC status to: %s, rc=%08x"
+#~ msgstr "не удалось изменить состояние APIC на %s, rc=%08x"
+
+#~ msgid "could not change PAE status to: %s, rc=%08x"
+#~ msgstr "не удалось изменить состояние PAE на %s, rc=%08x"
+
+#~ msgid "could not define a domain, rc=%08x"
+#~ msgstr "не удалось определить домен, rc=%08x"
+
+#~ msgid "could not delete the domain, rc=%08x"
+#~ msgstr "не удалось удалить домен, rc=%08x"
+
+#~ msgid "could not detach shared folder '%s', rc=%08x"
+#~ msgstr "Не удалось отсоединить совместную папку «%s», rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
+#~ msgstr "не удалось изменить размер памяти для домена: %llu КБ, rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
+#~ msgstr "не удалось настроить %lu КБ памяти для домена, rc=%08x"
+
+#~ msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
+#~ msgstr "не удалось изменить количество процессоров домена на %u, rc=%08x"
+
+#~ msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
+#~ msgstr "не удалось изменить число виртуальных процессоров на %u, rc=%08x"
+
+#~ msgid "domain already has a watchdog"
+#~ msgstr "домен уже имеет устройство наблюдения"
+
+#~ msgid "domain has no watchdog"
+#~ msgstr "домен не имеет устройства наблюдения"
+
+#~ msgid "failed to retrieve keyboard interactive result: callback has failed"
+#~ msgstr ""
+#~ "не удалось получить интерактивный результат с клавиатуры: ошибка "
+#~ "обратного вызова"
+
+#~ msgid "guest-get-fsinfo reply was missing return data"
+#~ msgstr "Ответ guest-get-fsinfo не содержит данных."
+
+#~ msgid "model '%s' watchdog device not present in domain configuration"
+#~ msgstr "конфигурация домена не содержит устройство наблюдения модели «%s»"
+
+#~ msgid "no suitable callback for input of key passphrase"
+#~ msgstr "нет подходящего обратного вызова для ввода парольной фразы ключа"
+
+#~ msgid "no suitable callback for input of keyboard response"
+#~ msgstr ""
+#~ "нет подходящего обратного вызова для ответа на ввод данных с клавиатуры"
+
+#~ msgid "only a single watchdog device is supported"
+#~ msgstr "поддерживается только одно устройство watchdog"
+
+#~ msgid "watchdog device not present in domain configuration"
+#~ msgstr "конфигурация домена не содержит устройство наблюдения"
 
 #~ msgid "Another close callback is already defined for domain %s"
 #~ msgstr "Для домена %s уже определён другой близкий обратный вызов"

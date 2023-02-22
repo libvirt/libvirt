@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-01-09 14:27+0000\n"
+"POT-Creation-Date: 2023-02-22 13:50+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -480,6 +480,15 @@ msgid "%s model of watchdog is allowed for s390 and s390x only"
 msgstr ""
 
 #, c-format
+msgid "%s model of watchdog is only part of q35 machine"
+msgstr ""
+
+#, c-format
+msgid ""
+"%s model of watchdog is part of the machine and cannot have any address set."
+msgstr ""
+
+#, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
 msgstr ""
 
@@ -743,6 +752,10 @@ msgid "%s: failed to communicate with bridge helper: %s"
 msgstr ""
 
 #, c-format
+msgid "%s: failed to generate UNIX socket path"
+msgstr ""
+
+#, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "%s: tijdelijk bestand lezen mislukte: %s"
 
@@ -845,6 +858,10 @@ msgstr ""
 
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
+#, c-format
+msgid "%s: unknown remote mode '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -1015,7 +1032,7 @@ msgid ""
 "type instead"
 msgstr ""
 
-msgid "'disk' missing in reply of guest-get-fsinfo"
+msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
 #, c-format
@@ -2332,8 +2349,7 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc="
-"%08x"
+"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"
 msgstr ""
 
 #, fuzzy
@@ -3732,9 +3748,9 @@ msgstr ""
 msgid "Could not attach serial port %zu"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
-msgstr "kon volume lijst in de pool niet krijgen: %s, rc=%08x"
+#, c-format
+msgid "Could not attach the file as harddisk/dvd/floppy: %s"
+msgstr ""
 
 msgid "Could not build CURL header list"
 msgstr "Kan CURL koptekst lijst niet bouwen"
@@ -4091,9 +4107,8 @@ msgstr "Kan schijf adres niet verifiëren"
 msgid "Could not get EPR items"
 msgstr "Kan huidige tijd niet krijgen"
 
-#, fuzzy, c-format
-msgid "Could not get IMedium, rc=%08x"
-msgstr "Kon lijst van domeinen niet krijgen, rc=%08x"
+msgid "Could not get IMedium"
+msgstr ""
 
 msgid "Could not get Msvm_DiskDrive default InstanceID"
 msgstr ""
@@ -4124,17 +4139,14 @@ msgstr "Kan huidige tijd niet krijgen"
 msgid "Could not get current time"
 msgstr "Kan huidige tijd niet krijgen"
 
-#, fuzzy, c-format
-msgid "Could not get device port, rc=%08x"
-msgstr "Kon lijst van domeinen niet krijgen, rc=%08x"
+msgid "Could not get device port"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get device slot, rc=%08x"
-msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+msgid "Could not get device slot"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get device type, rc=%08x"
-msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+msgid "Could not get device type"
+msgstr ""
 
 #, c-format
 msgid "Could not get free memory for host %s"
@@ -4172,30 +4184,25 @@ msgstr "Kon geen eth naam voor container genereren"
 msgid "Could not get iterator index for iterator ID %u"
 msgstr "Kon geen eth naam voor container genereren"
 
-#, c-format
-msgid "Could not get list of Defined Domains, rc=%08x"
-msgstr "Kon lijst van gedefinieerde domeinen niet krijgen, rc=%08x"
+msgid "Could not get list of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of Domains, rc=%08x"
-msgstr "Kon lijst van domeinen niet krijgen, rc=%08x"
+msgid "Could not get list of Domains"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get list of domains, rc=%08x"
-msgstr "Kon lijst van domeinen niet krijgen, rc=%08x"
+msgid "Could not get list of domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of machines, rc=%08x"
-msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+msgid "Could not get list of machines"
+msgstr ""
 
 #, c-format
 msgid ""
 "Could not get maximum definition of Msvm_ProcessorSettingData for host %s"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get medium storage location, rc=%08x"
-msgstr "Kon lijst van domeinen niet krijgen, rc=%08x"
+msgid "Could not get medium storage location"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not get members of bridge '%s'"
@@ -4208,16 +4215,17 @@ msgstr "Kon naam van virtuele machine niet krijgen"
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "Kon naam van virtuele machine niet krijgen"
 
-#, c-format
-msgid "Could not get number of Defined Domains, rc=%08x"
-msgstr "Kon aantal gedefinieerde domeinen niet krijgen, rc=%08x"
+msgid "Could not get number of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get number of Domains, rc=%08x"
-msgstr "Kon aantal domeinen niet krijgen, rc=%08x"
+msgid "Could not get number of Domains"
+msgstr ""
 
 #, c-format
 msgid "Could not get parent of '%s'"
+msgstr ""
+
+msgid "Could not get process ID of passt"
 msgstr ""
 
 #, fuzzy
@@ -4228,9 +4236,8 @@ msgstr "kan geen beschrijving van snapshot %s krijgen"
 msgid "Could not get process id of vhost-user-gpu"
 msgstr "kan geen beschrijving van snapshot %s krijgen"
 
-#, fuzzy, c-format
-msgid "Could not get read only state, rc=%08x"
-msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+msgid "Could not get read only state"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get response"
@@ -4264,13 +4271,11 @@ msgstr "kon snapshot UUID niet krijgen"
 msgid "Could not get snapshot name"
 msgstr "kon geen snapshot naam krijgen"
 
-#, fuzzy, c-format
-msgid "Could not get storage controller bus, rc=%08x"
-msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+msgid "Could not get storage controller bus"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get storage controller by name, rc=%08x"
-msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+msgid "Could not get storage controller by name"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not get syspath for parent of '%s'"
@@ -4707,6 +4712,10 @@ msgstr "Kon de bron map voor het bestandssysteem niet instellen"
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
 
+#, c-format
+msgid "Could not start 'passt': %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Could not start 'slirp'. exitstatus: %d"
 msgstr "Kon domein niet starten: %s"
@@ -4862,6 +4871,9 @@ msgstr "Aanmaak tijd"
 #, c-format
 msgid "Creation of %s volumes is not supported"
 msgstr "Aanmaken van %s volumes wordt niet ondersteund"
+
+msgid "Crypto device is missing alias"
+msgstr ""
 
 msgid "Current memory size too large"
 msgstr ""
@@ -6336,7 +6348,7 @@ msgid "Failed to add signal handle watch"
 msgstr "Bouwen van pidfile pad mislukte."
 
 #, c-format
-msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
+msgid "Failed to add storage controller (name: %s, busType: %d)"
 msgstr ""
 
 #, fuzzy, c-format
@@ -6446,9 +6458,8 @@ msgstr "Initialiseren van opslag pool '%s' mislukte: %s"
 msgid "Failed to change size of volume '%s' to %s"
 msgstr "Aanmaken van symlink '%s' naar '%s' mislukte"
 
-#, fuzzy, c-format
-msgid "Failed to change storage controller model, rc=%08x"
-msgstr "kan PAE status niet veranderen naar: %s, rc=%08x"
+msgid "Failed to change storage controller model"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to chdir into %s"
@@ -6686,6 +6697,10 @@ msgid "Failed to create nvram dir %s"
 msgstr "Aanmaken van volume %s mislukte"
 
 msgid "Failed to create or modify the state XML attribute"
+msgstr ""
+
+#, c-format
+msgid "Failed to create passt state dir %s"
 msgstr ""
 
 #, c-format
@@ -7223,9 +7238,8 @@ msgstr "Afsluiten van domein '%d' met libxenlight mislukte"
 msgid "Failed to get snapshot count"
 msgstr "Snapshot maken mislukte: %s"
 
-#, fuzzy, c-format
-msgid "Failed to get storage controller name, rc=%08x"
-msgstr "Krijgen van %s minor nummer mislukte"
+msgid "Failed to get storage controller name"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to get the number of active networks"
@@ -7602,8 +7616,7 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr "Openen van opslag volume met pad '%s' mislukte"
 
 #, c-format
-msgid ""
-"Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
+msgid "Failed to open the following disk/dvd/floppy to the machine: %s"
 msgstr ""
 
 #, c-format
@@ -7708,6 +7721,10 @@ msgstr "Positief geheel getal ontleden uit '%s' mislukte"
 #, fuzzy, c-format
 msgid "Failed to parse rate '%s'"
 msgstr "Kan map naam '%s' niet ontleden"
+
+#, c-format
+msgid "Failed to parse rotated index from '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%s'"
@@ -8069,9 +8086,8 @@ msgstr ""
 msgid "Failed to save '%s' for '%s'"
 msgstr "Opslaan van domein %s naar %s mislukte"
 
-#, fuzzy, c-format
-msgid "Failed to save VM settings, rc=%08x"
-msgstr "Opslaan van domein %s naar %s mislukte"
+msgid "Failed to save VM settings"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to save domain '%d' with libxenlight"
@@ -9645,6 +9661,10 @@ msgstr ""
 msgid "Invalid address '%s' in <ip>"
 msgstr "ongeldig MAC adres: %s"
 
+#, c-format
+msgid "Invalid address '%s' in <portForward>"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid address '%s' in network '%s'"
 msgstr "Ongeldig bridge mac adres '%s' in netwerk '%s'"
@@ -10155,6 +10175,10 @@ msgstr "Ongeldig poort nummer: %s"
 #, fuzzy, c-format
 msgid "Invalid port range '%u-%u'."
 msgstr "Ongeldig poort nummer: %s"
+
+#, c-format
+msgid "Invalid portForward proto value %u"
+msgstr ""
 
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
@@ -10728,19 +10752,9 @@ msgstr "lezen van bestand '%s' mislukte"
 msgid "Malformed format for log output '%s'"
 msgstr ""
 
-msgid "Malformed guest-get-fsinfo 'disk' data array"
-msgstr ""
-
-msgid "Malformed guest-get-fsinfo data array"
-msgstr ""
-
 #, fuzzy
 msgid "Malformed id field in JSON state document"
 msgstr "ongeldig uuid element"
-
-#, fuzzy
-msgid "Malformed ip-addresses array"
-msgstr "ongeldig mac adres: '%s'"
 
 #, fuzzy
 msgid "Malformed lease_entries array"
@@ -11190,9 +11204,6 @@ msgid "Missing UUID parameter for domain object"
 msgstr ""
 
 msgid "Missing VIR_CRED_AUTHNAME credential type"
-msgstr ""
-
-msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
 msgstr ""
 
 msgid "Missing XPath context"
@@ -11704,6 +11715,9 @@ msgstr ""
 #, fuzzy
 msgid "Multiple graphics devices are not supported"
 msgstr "Multi-kop video apparaten worden niet ondersteund"
+
+msgid "Multiple iTCO watchdogs are not supported"
+msgstr ""
 
 #, fuzzy
 msgid "Multiple interfaces attached to bridge"
@@ -13124,9 +13138,6 @@ msgstr ""
 
 msgid "Password may not contain ',' character"
 msgstr ""
-
-msgid "Password request failed"
-msgstr "Wachtwoord verzoek faalde"
 
 #, c-format
 msgid "Password set successfully for %s in %s"
@@ -15590,7 +15601,7 @@ msgstr ""
 "Opslag pool config bestandsnaam '%s' komt niet overeen met pool naam '%s'"
 
 #, c-format
-msgid "Target domain watchdog count %d does not match source %d"
+msgid "Target domain watchdog device count %zu does not match source %zu"
 msgstr ""
 
 msgid "Target filesystem access mode does not match source"
@@ -15873,6 +15884,14 @@ msgid ""
 "'%s' or machine type '%s'"
 msgstr ""
 
+msgid "The 'passt' backend can only be used with interface type='user'"
+msgstr ""
+
+msgid ""
+"The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
+"'exclude' is specified"
+msgstr ""
+
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -16051,11 +16070,6 @@ msgstr ""
 msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
-msgstr ""
-
-msgid ""
-"The overall maximum number of clients waiting for authentication must not be "
-"less than the overall maximum number of clients"
 msgstr ""
 
 msgid "The read only disk has no parent"
@@ -16854,9 +16868,8 @@ msgstr "kan %s niet sluiten"
 msgid "Unable to close %s"
 msgstr "kan %s niet sluiten"
 
-#, fuzzy, c-format
-msgid "Unable to close HardDisk, rc=%08x"
-msgstr "kan %s niet sluiten"
+msgid "Unable to close HardDisk"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to close disk children"
@@ -16869,8 +16882,10 @@ msgstr ""
 msgid "Unable to close the VPD file, fd: %d"
 msgstr ""
 
-#, c-format
-msgid "Unable to close the new medium, rc=%08x"
+msgid "Unable to close the new medium"
+msgstr ""
+
+msgid "Unable to compile regex"
 msgstr ""
 
 #, fuzzy, c-format
@@ -16907,9 +16922,8 @@ msgstr "Instellen van stdout bestand handel mislukte"
 msgid "Unable to create %s"
 msgstr "%s aanmaken mislukte"
 
-#, fuzzy, c-format
-msgid "Unable to create HardDisk, rc=%08x"
-msgstr "niet in staat om rundir %s aan te maken: %s"
+msgid "Unable to create HardDisk"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to create JSON formatter"
@@ -17091,9 +17105,8 @@ msgstr "Verwijderen van volume %s mislukte"
 msgid "Unable to delete lockspace resource %s"
 msgstr "Verwijderen van geheim %s mislukte"
 
-#, fuzzy, c-format
-msgid "Unable to delete medium, rc=%08x"
-msgstr "kan het domein niet verwijderen, rc=%08x"
+msgid "Unable to delete medium"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to delete port %s from OVS"
@@ -17497,12 +17510,7 @@ msgstr "Verkrijgen van schijf informatie mislukte"
 msgid "Unable to get hard disk id"
 msgstr "Kan niet veranderen naar root map"
 
-#, fuzzy, c-format
-msgid "Unable to get hard disk id, rc=%08x"
-msgstr "Kan niet veranderen naar root map"
-
-#, c-format
-msgid "Unable to get hardDisk Id, rc=%08x"
+msgid "Unable to get hardDisk Id"
 msgstr ""
 
 msgid "Unable to get host SEV information"
@@ -17551,9 +17559,8 @@ msgstr "Kan domein status niet krijgen"
 msgid "Unable to get medium location"
 msgstr "Kan domein status niet krijgen"
 
-#, fuzzy, c-format
-msgid "Unable to get medium uuid, rc=%08x"
-msgstr "kan uuid niet genereren"
+msgid "Unable to get medium uuid"
+msgstr ""
 
 msgid "Unable to get memory parameters"
 msgstr "Kan geheugen parameters niet verkrijgen"
@@ -17854,13 +17861,11 @@ msgstr "Kan /proc/mounts niet openen"
 msgid "Unable to open /proc/mounts"
 msgstr "Kan /proc/mounts niet openen"
 
-#, fuzzy, c-format
-msgid "Unable to open HardDisk, rc=%08x"
-msgstr "Kan %s (%d) niet openen"
+msgid "Unable to open HardDisk"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to open Machine, rc=%08x"
-msgstr "Kan %s niet openen"
+msgid "Unable to open Machine"
+msgstr ""
 
 msgid "Unable to open UNIX socket"
 msgstr "Kan UNIX socket niet openen"
@@ -18170,9 +18175,8 @@ msgstr "Kan niet schrijven naar pid bestand '%s/%s.pid'"
 msgid "Unable to read virtiofsd pidfile '%s'"
 msgstr "Kan niet schrijven naar pid bestand '%s/%s.pid'"
 
-#, fuzzy, c-format
-msgid "Unable to register Machine, rc=%08x"
-msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+msgid "Unable to register Machine"
+msgstr ""
 
 msgid "Unable to register async IO callback"
 msgstr ""
@@ -18659,9 +18663,8 @@ msgstr "Kan %s niet openen"
 msgid "Unable to unlink path '%s'"
 msgstr "Pad %s maken mislukte"
 
-#, fuzzy, c-format
-msgid "Unable to unregister machine, rc=%08x"
-msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+msgid "Unable to unregister machine"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to update server's tls related files."
@@ -19821,13 +19824,6 @@ msgstr "bestand %s bestaat niet"
 msgid "User namespace support is recommended"
 msgstr ""
 
-msgid ""
-"Username and key file path must be provided for private key authentication"
-msgstr ""
-
-msgid "Username must be provided for ssh agent authentication"
-msgstr ""
-
 msgid "Username request failed"
 msgstr "Gebruikersnaam verzoek faalde"
 
@@ -19953,10 +19949,6 @@ msgstr "Waarde '%s' is buiten de %s reeks"
 
 #, c-format
 msgid "Value of cputune '%s' must be in range [%llu, %llu]"
-msgstr ""
-
-#, c-format
-msgid "Value of cputune 'shares' must be in range [%llu, %llu]"
 msgstr ""
 
 #, fuzzy
@@ -22130,6 +22122,9 @@ msgstr ""
 msgid "cannot modify network device address type"
 msgstr "Te lange netwerk apparaat naam"
 
+msgid "cannot modify network device backend settings"
+msgstr ""
+
 msgid "cannot modify network device boot index setting"
 msgstr ""
 
@@ -23423,9 +23418,9 @@ msgstr "niet-afgesloten tekenreeks"
 msgid "could not allocate memory"
 msgstr "toewijzen van geheugen mislukte"
 
-#, fuzzy, c-format
-msgid "could not attach shared folder '%s', rc=%08x"
-msgstr "kan PAE status niet veranderen naar: %s, rc=%08x"
+#, c-format
+msgid "could not attach shared folder '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "could not build absolute core file path"
@@ -23440,16 +23435,16 @@ msgid "could not build absolute output file path"
 msgstr "Bouwen van pidfile pad mislukte."
 
 #, c-format
-msgid "could not change ACPI status to: %s, rc=%08x"
-msgstr "kan ACPI status niet veranderen naar: %s, rc=%08x"
+msgid "could not change ACPI status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change APIC status to: %s, rc=%08x"
-msgstr "kan APIC status niet veranderen naar: %s, rc=%08x"
+msgid "could not change APIC status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change PAE status to: %s, rc=%08x"
-msgstr "kan PAE status niet veranderen naar: %s, rc=%08x"
+msgid "could not change PAE status to: %s"
+msgstr ""
 
 #, fuzzy
 msgid "could not close handshake fd"
@@ -23484,20 +23479,18 @@ msgstr "Kon domein met naam '%s' niet vinden"
 msgid "could not create profile"
 msgstr "kon profiel niet aanmaken"
 
-#, c-format
-msgid "could not define a domain, rc=%08x"
-msgstr "kan geen domein definiëren, rc=%08x"
+msgid "could not define a domain"
+msgstr ""
 
 msgid "could not delete snapshot"
 msgstr "kan snapshot niet verwijderen"
 
-#, c-format
-msgid "could not delete the domain, rc=%08x"
-msgstr "kan het domein niet verwijderen, rc=%08x"
+msgid "could not delete the domain"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "could not detach shared folder '%s', rc=%08x"
-msgstr "kan het domein niet verwijderen, rc=%08x"
+#, c-format
+msgid "could not detach shared folder '%s'"
+msgstr ""
 
 msgid "could not determine max vcpus for the domain"
 msgstr "kan max vcpus voor het domein niet bepalen"
@@ -23697,21 +23690,21 @@ msgstr "kon IFS niet instellen"
 msgid "could not set PATH"
 msgstr "kon PATH niet instellen"
 
-#, fuzzy, c-format
-msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
-msgstr "kan geheugen grootte van het domein niet instellen op: %lu Kb, rc=%08x"
+#, c-format
+msgid "could not set the memory size of the domain to: %llu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
-msgstr "kan geheugen grootte van het domein niet instellen op: %lu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %lu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
-msgstr "kan het aantal cpus van het domein niet instellen op: %u, rc=%08x"
+msgid "could not set the number of cpus of the domain to: %u"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
-msgstr "kan het aantal virtuele CPU's niet instellen op: %u, rc=%08x"
+msgid "could not set the number of virtual CPUs to: %u"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "could not take a screenshot of %s"
@@ -23922,6 +23915,18 @@ msgstr ""
 #, fuzzy
 msgid "creation of qcow2 encrypted image is not supported"
 msgstr "Aanmaken van %s volumes wordt niet ondersteund"
+
+#, c-format
+msgid "crypto backend %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto model %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto type %s is not supported"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -24767,10 +24772,6 @@ msgstr "domein draait al"
 msgid "domain already has a vsock device"
 msgstr "Domein is al actief"
 
-#, fuzzy
-msgid "domain already has a watchdog"
-msgstr "domein '%s' bestaat al met uuid %s"
-
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr ""
 
@@ -24838,10 +24839,6 @@ msgid "domain has assigned host devices"
 msgstr "geen pty toegewezen aan apparaat %s"
 
 msgid "domain has no snapshots"
-msgstr "domein heeft geen snapshots"
-
-#, fuzzy
-msgid "domain has no watchdog"
 msgstr "domein heeft geen snapshots"
 
 #, fuzzy
@@ -26022,6 +26019,10 @@ msgstr "Verkrijgen van blok stats mislukte  %s %s"
 msgid "failed to duplicate file descriptor for fd group '%s'"
 msgstr ""
 
+#, c-format
+msgid "failed to duplicate passed fd with index '%zu'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr "IP doorsturen aanzetten mislukte"
 
@@ -26751,10 +26752,10 @@ msgstr "Auth legitimatie maken mislukte"
 msgid "failed to retrieve decision to accept host key"
 msgstr ""
 
-msgid "failed to retrieve keyboard interactive result: callback has failed"
+msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr ""
 
-msgid "failed to retrieve private key passphrase: callback has failed"
+msgid "failed to retrieve user response for authentication callback"
 msgstr ""
 
 #, fuzzy, c-format
@@ -27619,9 +27620,8 @@ msgstr "gast sloot onverwachts af"
 msgid "guest unexpectedly quit during hotplug"
 msgstr "gast sluit onverwachts af tijdens hotplug"
 
-#, fuzzy
-msgid "guest-get-fsinfo reply was missing return data"
-msgstr "info migratie antwoord miste retour status"
+msgid "guest-get-fsinfo reply was missing or not an array"
+msgstr ""
 
 #, fuzzy
 msgid "guest-get-osinfo reply was missing return data"
@@ -30910,7 +30910,7 @@ msgstr "ontbrekende besturingssysteem informatie"
 msgid "missing existing file for disk %s: %s"
 msgstr "ontbrekende naam voor schijf bron"
 
-msgid "missing external TPM backend type"
+msgid "missing external TPM backend source type"
 msgstr ""
 
 #, fuzzy
@@ -31478,10 +31478,6 @@ msgstr "domein '%s' verwerkt de binnenkomende migratie niet"
 
 #, fuzzy, c-format
 msgid "model '%s' shmem device not present in domain configuration"
-msgstr "domein '%s' verwerkt de binnenkomende migratie niet"
-
-#, fuzzy, c-format
-msgid "model '%s' watchdog device not present in domain configuration"
 msgstr "domein '%s' verwerkt de binnenkomende migratie niet"
 
 #, fuzzy
@@ -32309,6 +32305,9 @@ msgstr "geen cliënt gebruikersnaam gevonden"
 msgid "no matching redirdev was not found"
 msgstr "geen cliënt gebruikersnaam gevonden"
 
+msgid "no matching watchdog was found"
+msgstr ""
+
 msgid "no medium attachments"
 msgstr ""
 
@@ -32475,13 +32474,10 @@ msgstr "geen stream callback geregistreerd"
 msgid "no such screen ID"
 msgstr ""
 
+msgid "no suitable callback authentication callback was found"
+msgstr ""
+
 msgid "no suitable callback for host key verification"
-msgstr ""
-
-msgid "no suitable callback for input of key passphrase"
-msgstr ""
-
-msgid "no suitable callback for input of keyboard response"
 msgstr ""
 
 #, fuzzy
@@ -32832,7 +32828,7 @@ msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr ""
 
-msgid "only 'client' mode is supported for external TPM device"
+msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
@@ -32893,9 +32889,6 @@ msgstr "slechts een enkel bewaker apparaat wordt ondersteund"
 msgid "only a single vsock device is supported"
 msgstr "slechts een enkel bewaker apparaat wordt ondersteund"
 
-msgid "only a single watchdog device is supported"
-msgstr "slechts een enkel bewaker apparaat wordt ondersteund"
-
 #, fuzzy
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "xen bus ondersteunt %s input apparaat niet"
@@ -32947,6 +32940,9 @@ msgstr "slechts één bestandssysteem ondersteund"
 #, fuzzy
 msgid "only one backup job is supported"
 msgstr "slechts één bestandssysteem ondersteund"
+
+msgid "only one crypto backend is supported"
+msgstr ""
 
 #, fuzzy
 msgid "only one emulatorpin is supported"
@@ -33865,6 +33861,9 @@ msgstr "ps2 bus ondersteunt %s input apparaat niet"
 
 #, c-format
 msgid "pull mode backup for disk '%s' requires qcow2 driver"
+msgstr ""
+
+msgid "pvpanic is supported only with PCI address type"
 msgstr ""
 
 #, c-format
@@ -35883,6 +35882,9 @@ msgstr ""
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr "xen bus ondersteunt %s input apparaat niet"
 
+msgid "the QEMU binary does not support the PCI pvpanic device"
+msgstr ""
+
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
 msgstr ""
@@ -35945,6 +35947,9 @@ msgid "the machine has no snapshot"
 msgstr "domein heeft geen snapshots"
 
 msgid "the new password"
+msgstr ""
+
+msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -37664,13 +37669,13 @@ msgstr "onbekend auth type '%s'"
 msgid "unknown authentication type %s"
 msgstr "onbekend authenticatie type %s"
 
+#, c-format
+msgid "unknown backend source type '%s' for external TPM"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown backend type '%s' for egd"
 msgstr "onbekend interface type '%s'"
-
-#, c-format
-msgid "unknown backend type '%s' for external TPM"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown backup mode '%s'"
@@ -38136,6 +38141,10 @@ msgstr "niet-ondersteunde rtc timer track '%s'"
 #, fuzzy, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
 msgstr "niet-ondersteunde rtc timer track '%s'"
+
+#, c-format
+msgid "unsupported IPv6 address prefix='%u' - must be 64"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unsupported KVM feature: %s"
@@ -39378,12 +39387,12 @@ msgstr "waarschuwing"
 msgid "watchdog"
 msgstr ""
 
-#, fuzzy
-msgid "watchdog device not present in domain configuration"
-msgstr "domein '%s' verwerkt de binnenkomende migratie niet"
-
 msgid "watchdog must contain model name"
 msgstr "bewaker moet model naam bevatten"
+
+msgid ""
+"watchdogs with different actions are not supported with this QEMU binary"
+msgstr ""
 
 msgid "webSocket"
 msgstr ""
@@ -39534,6 +39543,177 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <tekenreeks>"
+
+#, fuzzy
+#~ msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
+#~ msgstr "kon volume lijst in de pool niet krijgen: %s, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get IMedium, rc=%08x"
+#~ msgstr "Kon lijst van domeinen niet krijgen, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device port, rc=%08x"
+#~ msgstr "Kon lijst van domeinen niet krijgen, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device slot, rc=%08x"
+#~ msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device type, rc=%08x"
+#~ msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+
+#~ msgid "Could not get list of Defined Domains, rc=%08x"
+#~ msgstr "Kon lijst van gedefinieerde domeinen niet krijgen, rc=%08x"
+
+#~ msgid "Could not get list of Domains, rc=%08x"
+#~ msgstr "Kon lijst van domeinen niet krijgen, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get list of domains, rc=%08x"
+#~ msgstr "Kon lijst van domeinen niet krijgen, rc=%08x"
+
+#~ msgid "Could not get list of machines, rc=%08x"
+#~ msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get medium storage location, rc=%08x"
+#~ msgstr "Kon lijst van domeinen niet krijgen, rc=%08x"
+
+#~ msgid "Could not get number of Defined Domains, rc=%08x"
+#~ msgstr "Kon aantal gedefinieerde domeinen niet krijgen, rc=%08x"
+
+#~ msgid "Could not get number of Domains, rc=%08x"
+#~ msgstr "Kon aantal domeinen niet krijgen, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get read only state, rc=%08x"
+#~ msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get storage controller bus, rc=%08x"
+#~ msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get storage controller by name, rc=%08x"
+#~ msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+
+#, fuzzy
+#~ msgid "Failed to change storage controller model, rc=%08x"
+#~ msgstr "kan PAE status niet veranderen naar: %s, rc=%08x"
+
+#, fuzzy
+#~ msgid "Failed to get storage controller name, rc=%08x"
+#~ msgstr "Krijgen van %s minor nummer mislukte"
+
+#, fuzzy
+#~ msgid "Failed to save VM settings, rc=%08x"
+#~ msgstr "Opslaan van domein %s naar %s mislukte"
+
+#, fuzzy
+#~ msgid "Malformed ip-addresses array"
+#~ msgstr "ongeldig mac adres: '%s'"
+
+#~ msgid "Password request failed"
+#~ msgstr "Wachtwoord verzoek faalde"
+
+#, fuzzy
+#~ msgid "Unable to close HardDisk, rc=%08x"
+#~ msgstr "kan %s niet sluiten"
+
+#, fuzzy
+#~ msgid "Unable to create HardDisk, rc=%08x"
+#~ msgstr "niet in staat om rundir %s aan te maken: %s"
+
+#, fuzzy
+#~ msgid "Unable to delete medium, rc=%08x"
+#~ msgstr "kan het domein niet verwijderen, rc=%08x"
+
+#, fuzzy
+#~ msgid "Unable to get hard disk id, rc=%08x"
+#~ msgstr "Kan niet veranderen naar root map"
+
+#, fuzzy
+#~ msgid "Unable to get medium uuid, rc=%08x"
+#~ msgstr "kan uuid niet genereren"
+
+#, fuzzy
+#~ msgid "Unable to open HardDisk, rc=%08x"
+#~ msgstr "Kan %s (%d) niet openen"
+
+#, fuzzy
+#~ msgid "Unable to open Machine, rc=%08x"
+#~ msgstr "Kan %s niet openen"
+
+#, fuzzy
+#~ msgid "Unable to register Machine, rc=%08x"
+#~ msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+
+#, fuzzy
+#~ msgid "Unable to unregister machine, rc=%08x"
+#~ msgstr "Kon lijst van machines niet krijgen, rc=%08x"
+
+#, fuzzy
+#~ msgid "could not attach shared folder '%s', rc=%08x"
+#~ msgstr "kan PAE status niet veranderen naar: %s, rc=%08x"
+
+#~ msgid "could not change ACPI status to: %s, rc=%08x"
+#~ msgstr "kan ACPI status niet veranderen naar: %s, rc=%08x"
+
+#~ msgid "could not change APIC status to: %s, rc=%08x"
+#~ msgstr "kan APIC status niet veranderen naar: %s, rc=%08x"
+
+#~ msgid "could not change PAE status to: %s, rc=%08x"
+#~ msgstr "kan PAE status niet veranderen naar: %s, rc=%08x"
+
+#~ msgid "could not define a domain, rc=%08x"
+#~ msgstr "kan geen domein definiëren, rc=%08x"
+
+#~ msgid "could not delete the domain, rc=%08x"
+#~ msgstr "kan het domein niet verwijderen, rc=%08x"
+
+#, fuzzy
+#~ msgid "could not detach shared folder '%s', rc=%08x"
+#~ msgstr "kan het domein niet verwijderen, rc=%08x"
+
+#, fuzzy
+#~ msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
+#~ msgstr ""
+#~ "kan geheugen grootte van het domein niet instellen op: %lu Kb, rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
+#~ msgstr ""
+#~ "kan geheugen grootte van het domein niet instellen op: %lu Kb, rc=%08x"
+
+#~ msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
+#~ msgstr "kan het aantal cpus van het domein niet instellen op: %u, rc=%08x"
+
+#~ msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
+#~ msgstr "kan het aantal virtuele CPU's niet instellen op: %u, rc=%08x"
+
+#, fuzzy
+#~ msgid "domain already has a watchdog"
+#~ msgstr "domein '%s' bestaat al met uuid %s"
+
+#, fuzzy
+#~ msgid "domain has no watchdog"
+#~ msgstr "domein heeft geen snapshots"
+
+#, fuzzy
+#~ msgid "guest-get-fsinfo reply was missing return data"
+#~ msgstr "info migratie antwoord miste retour status"
+
+#, fuzzy
+#~ msgid "model '%s' watchdog device not present in domain configuration"
+#~ msgstr "domein '%s' verwerkt de binnenkomende migratie niet"
+
+#~ msgid "only a single watchdog device is supported"
+#~ msgstr "slechts een enkel bewaker apparaat wordt ondersteund"
+
+#, fuzzy
+#~ msgid "watchdog device not present in domain configuration"
+#~ msgstr "domein '%s' verwerkt de binnenkomende migratie niet"
 
 #, fuzzy
 #~ msgid "Another close callback is already defined for domain %s"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-01-09 14:27+0000\n"
+"POT-Creation-Date: 2023-02-22 13:50+0000\n"
 "PO-Revision-Date: 2015-02-27 02:47+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malay (http://www.transifex.com/projects/p/fedora/language/"
@@ -471,6 +471,15 @@ msgid "%s model of watchdog is allowed for s390 and s390x only"
 msgstr ""
 
 #, c-format
+msgid "%s model of watchdog is only part of q35 machine"
+msgstr ""
+
+#, c-format
+msgid ""
+"%s model of watchdog is part of the machine and cannot have any address set."
+msgstr ""
+
+#, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
 msgstr ""
 
@@ -729,6 +738,10 @@ msgstr ""
 msgid "%s: failed to communicate with bridge helper: %s"
 msgstr ""
 
+#, c-format
+msgid "%s: failed to generate UNIX socket path"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "gagal untuk menulis ke fail log"
@@ -830,6 +843,10 @@ msgstr ""
 
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
+#, c-format
+msgid "%s: unknown remote mode '%s'"
 msgstr ""
 
 #, c-format
@@ -999,7 +1016,7 @@ msgid ""
 "type instead"
 msgstr ""
 
-msgid "'disk' missing in reply of guest-get-fsinfo"
+msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
 #, c-format
@@ -2253,8 +2270,7 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc="
-"%08x"
+"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"
 msgstr ""
 
 msgid "Can't initialize Parallels SDK"
@@ -3552,7 +3568,7 @@ msgid "Could not attach serial port %zu"
 msgstr ""
 
 #, c-format
-msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
+msgid "Could not attach the file as harddisk/dvd/floppy: %s"
 msgstr ""
 
 msgid "Could not build CURL header list"
@@ -3890,8 +3906,7 @@ msgstr ""
 msgid "Could not get EPR items"
 msgstr ""
 
-#, c-format
-msgid "Could not get IMedium, rc=%08x"
+msgid "Could not get IMedium"
 msgstr ""
 
 msgid "Could not get Msvm_DiskDrive default InstanceID"
@@ -3921,16 +3936,13 @@ msgstr ""
 msgid "Could not get current time"
 msgstr ""
 
-#, c-format
-msgid "Could not get device port, rc=%08x"
+msgid "Could not get device port"
 msgstr ""
 
-#, c-format
-msgid "Could not get device slot, rc=%08x"
+msgid "Could not get device slot"
 msgstr ""
 
-#, c-format
-msgid "Could not get device type, rc=%08x"
+msgid "Could not get device type"
 msgstr ""
 
 #, c-format
@@ -3968,20 +3980,16 @@ msgstr ""
 msgid "Could not get iterator index for iterator ID %u"
 msgstr ""
 
-#, c-format
-msgid "Could not get list of Defined Domains, rc=%08x"
+msgid "Could not get list of Defined Domains"
 msgstr ""
 
-#, c-format
-msgid "Could not get list of Domains, rc=%08x"
+msgid "Could not get list of Domains"
 msgstr ""
 
-#, c-format
-msgid "Could not get list of domains, rc=%08x"
+msgid "Could not get list of domains"
 msgstr ""
 
-#, c-format
-msgid "Could not get list of machines, rc=%08x"
+msgid "Could not get list of machines"
 msgstr ""
 
 #, c-format
@@ -3989,8 +3997,7 @@ msgid ""
 "Could not get maximum definition of Msvm_ProcessorSettingData for host %s"
 msgstr ""
 
-#, c-format
-msgid "Could not get medium storage location, rc=%08x"
+msgid "Could not get medium storage location"
 msgstr ""
 
 #, c-format
@@ -4004,16 +4011,17 @@ msgstr ""
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr ""
 
-#, c-format
-msgid "Could not get number of Defined Domains, rc=%08x"
+msgid "Could not get number of Defined Domains"
 msgstr ""
 
-#, c-format
-msgid "Could not get number of Domains, rc=%08x"
+msgid "Could not get number of Domains"
 msgstr ""
 
 #, c-format
 msgid "Could not get parent of '%s'"
+msgstr ""
+
+msgid "Could not get process ID of passt"
 msgstr ""
 
 msgid "Could not get process id of swtpm"
@@ -4022,8 +4030,7 @@ msgstr ""
 msgid "Could not get process id of vhost-user-gpu"
 msgstr ""
 
-#, c-format
-msgid "Could not get read only state, rc=%08x"
+msgid "Could not get read only state"
 msgstr ""
 
 msgid "Could not get response"
@@ -4052,12 +4059,10 @@ msgstr ""
 msgid "Could not get snapshot name"
 msgstr ""
 
-#, c-format
-msgid "Could not get storage controller bus, rc=%08x"
+msgid "Could not get storage controller bus"
 msgstr ""
 
-#, c-format
-msgid "Could not get storage controller by name, rc=%08x"
+msgid "Could not get storage controller by name"
 msgstr ""
 
 #, c-format
@@ -4473,6 +4478,10 @@ msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
 
 #, c-format
+msgid "Could not start 'passt': %s"
+msgstr ""
+
+#, c-format
 msgid "Could not start 'slirp'. exitstatus: %d"
 msgstr ""
 
@@ -4612,6 +4621,9 @@ msgstr ""
 
 #, c-format
 msgid "Creation of %s volumes is not supported"
+msgstr ""
+
+msgid "Crypto device is missing alias"
 msgstr ""
 
 msgid "Current memory size too large"
@@ -5967,7 +5979,7 @@ msgid "Failed to add signal handle watch"
 msgstr ""
 
 #, c-format
-msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
+msgid "Failed to add storage controller (name: %s, busType: %d)"
 msgstr ""
 
 #, fuzzy, c-format
@@ -6077,8 +6089,7 @@ msgstr ""
 msgid "Failed to change size of volume '%s' to %s"
 msgstr ""
 
-#, c-format
-msgid "Failed to change storage controller model, rc=%08x"
+msgid "Failed to change storage controller model"
 msgstr ""
 
 #, fuzzy, c-format
@@ -6313,6 +6324,10 @@ msgid "Failed to create nvram dir %s"
 msgstr "gagal untuk mendapatkan domain '%s'"
 
 msgid "Failed to create or modify the state XML attribute"
+msgstr ""
+
+#, c-format
+msgid "Failed to create passt state dir %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -6839,8 +6854,7 @@ msgstr ""
 msgid "Failed to get snapshot count"
 msgstr "gagal untuk menyimpan kandungan"
 
-#, c-format
-msgid "Failed to get storage controller name, rc=%08x"
+msgid "Failed to get storage controller name"
 msgstr ""
 
 #, fuzzy
@@ -7213,8 +7227,7 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr ""
 
 #, c-format
-msgid ""
-"Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
+msgid "Failed to open the following disk/dvd/floppy to the machine: %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -7314,6 +7327,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Failed to parse rate '%s'"
 msgstr "gagal untuk mendapatkan domain '%s'"
+
+#, c-format
+msgid "Failed to parse rotated index from '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%s'"
@@ -7668,8 +7685,7 @@ msgstr ""
 msgid "Failed to save '%s' for '%s'"
 msgstr "gagal untuk mendapatkan rangkaian '%s'"
 
-#, c-format
-msgid "Failed to save VM settings, rc=%08x"
+msgid "Failed to save VM settings"
 msgstr ""
 
 #, fuzzy, c-format
@@ -9132,6 +9148,10 @@ msgid "Invalid address '%s' in <ip>"
 msgstr ""
 
 #, c-format
+msgid "Invalid address '%s' in <portForward>"
+msgstr ""
+
+#, c-format
 msgid "Invalid address '%s' in network '%s'"
 msgstr ""
 
@@ -9624,6 +9644,10 @@ msgstr ""
 
 #, c-format
 msgid "Invalid port range '%u-%u'."
+msgstr ""
+
+#, c-format
+msgid "Invalid portForward proto value %u"
 msgstr ""
 
 #, c-format
@@ -10173,16 +10197,7 @@ msgstr ""
 msgid "Malformed format for log output '%s'"
 msgstr ""
 
-msgid "Malformed guest-get-fsinfo 'disk' data array"
-msgstr ""
-
-msgid "Malformed guest-get-fsinfo data array"
-msgstr ""
-
 msgid "Malformed id field in JSON state document"
-msgstr ""
-
-msgid "Malformed ip-addresses array"
 msgstr ""
 
 msgid "Malformed lease_entries array"
@@ -10603,9 +10618,6 @@ msgid "Missing UUID parameter for domain object"
 msgstr ""
 
 msgid "Missing VIR_CRED_AUTHNAME credential type"
-msgstr ""
-
-msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
 msgstr ""
 
 msgid "Missing XPath context"
@@ -11089,6 +11101,9 @@ msgid ""
 msgstr ""
 
 msgid "Multiple graphics devices are not supported"
+msgstr ""
+
+msgid "Multiple iTCO watchdogs are not supported"
 msgstr ""
 
 msgid "Multiple interfaces attached to bridge"
@@ -12427,9 +12442,6 @@ msgid "Passphrase for key '%s'"
 msgstr ""
 
 msgid "Password may not contain ',' character"
-msgstr ""
-
-msgid "Password request failed"
 msgstr ""
 
 #, c-format
@@ -14726,7 +14738,7 @@ msgid "Target domain vsock device model '%s' does not match source '%s'"
 msgstr ""
 
 #, c-format
-msgid "Target domain watchdog count %d does not match source %d"
+msgid "Target domain watchdog device count %zu does not match source %zu"
 msgstr ""
 
 msgid "Target filesystem access mode does not match source"
@@ -14988,6 +15000,14 @@ msgid ""
 "'%s' or machine type '%s'"
 msgstr ""
 
+msgid "The 'passt' backend can only be used with interface type='user'"
+msgstr ""
+
+msgid ""
+"The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
+"'exclude' is specified"
+msgstr ""
+
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -15162,11 +15182,6 @@ msgstr ""
 msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
-msgstr ""
-
-msgid ""
-"The overall maximum number of clients waiting for authentication must not be "
-"less than the overall maximum number of clients"
 msgstr ""
 
 msgid "The read only disk has no parent"
@@ -15915,8 +15930,7 @@ msgstr ""
 msgid "Unable to close %s"
 msgstr ""
 
-#, c-format
-msgid "Unable to close HardDisk, rc=%08x"
+msgid "Unable to close HardDisk"
 msgstr ""
 
 msgid "Unable to close disk children"
@@ -15929,8 +15943,10 @@ msgstr ""
 msgid "Unable to close the VPD file, fd: %d"
 msgstr ""
 
-#, c-format
-msgid "Unable to close the new medium, rc=%08x"
+msgid "Unable to close the new medium"
+msgstr ""
+
+msgid "Unable to compile regex"
 msgstr ""
 
 #, c-format
@@ -15963,8 +15979,7 @@ msgstr ""
 msgid "Unable to create %s"
 msgstr ""
 
-#, c-format
-msgid "Unable to create HardDisk, rc=%08x"
+msgid "Unable to create HardDisk"
 msgstr ""
 
 msgid "Unable to create JSON formatter"
@@ -16126,8 +16141,7 @@ msgstr "gagal untuk membuka fail"
 msgid "Unable to delete lockspace resource %s"
 msgstr ""
 
-#, c-format
-msgid "Unable to delete medium, rc=%08x"
+msgid "Unable to delete medium"
 msgstr ""
 
 #, c-format
@@ -16492,12 +16506,7 @@ msgstr ""
 msgid "Unable to get hard disk id"
 msgstr ""
 
-#, c-format
-msgid "Unable to get hard disk id, rc=%08x"
-msgstr ""
-
-#, c-format
-msgid "Unable to get hardDisk Id, rc=%08x"
+msgid "Unable to get hardDisk Id"
 msgstr ""
 
 msgid "Unable to get host SEV information"
@@ -16541,8 +16550,7 @@ msgstr "gagal untuk mendapatkan domain '%s'"
 msgid "Unable to get medium location"
 msgstr ""
 
-#, c-format
-msgid "Unable to get medium uuid, rc=%08x"
+msgid "Unable to get medium uuid"
 msgstr ""
 
 msgid "Unable to get memory parameters"
@@ -16802,12 +16810,10 @@ msgstr ""
 msgid "Unable to open /proc/mounts"
 msgstr ""
 
-#, c-format
-msgid "Unable to open HardDisk, rc=%08x"
+msgid "Unable to open HardDisk"
 msgstr ""
 
-#, c-format
-msgid "Unable to open Machine, rc=%08x"
+msgid "Unable to open Machine"
 msgstr ""
 
 msgid "Unable to open UNIX socket"
@@ -17095,8 +17101,7 @@ msgstr ""
 msgid "Unable to read virtiofsd pidfile '%s'"
 msgstr ""
 
-#, c-format
-msgid "Unable to register Machine, rc=%08x"
+msgid "Unable to register Machine"
 msgstr ""
 
 msgid "Unable to register async IO callback"
@@ -17550,8 +17555,7 @@ msgstr ""
 msgid "Unable to unlink path '%s'"
 msgstr ""
 
-#, c-format
-msgid "Unable to unregister machine, rc=%08x"
+msgid "Unable to unregister machine"
 msgstr ""
 
 msgid "Unable to update server's tls related files."
@@ -18681,13 +18685,6 @@ msgstr ""
 msgid "User namespace support is recommended"
 msgstr ""
 
-msgid ""
-"Username and key file path must be provided for private key authentication"
-msgstr ""
-
-msgid "Username must be provided for ssh agent authentication"
-msgstr ""
-
 msgid "Username request failed"
 msgstr ""
 
@@ -18801,10 +18798,6 @@ msgstr ""
 
 #, c-format
 msgid "Value of cputune '%s' must be in range [%llu, %llu]"
-msgstr ""
-
-#, c-format
-msgid "Value of cputune 'shares' must be in range [%llu, %llu]"
 msgstr ""
 
 msgid "Variable value contains invalid character"
@@ -20867,6 +20860,9 @@ msgstr ""
 msgid "cannot modify network device address type"
 msgstr ""
 
+msgid "cannot modify network device backend settings"
+msgstr ""
+
 msgid "cannot modify network device boot index setting"
 msgstr ""
 
@@ -22092,7 +22088,7 @@ msgid "could not allocate memory"
 msgstr ""
 
 #, c-format
-msgid "could not attach shared folder '%s', rc=%08x"
+msgid "could not attach shared folder '%s'"
 msgstr ""
 
 msgid "could not build absolute core file path"
@@ -22105,15 +22101,15 @@ msgid "could not build absolute output file path"
 msgstr ""
 
 #, c-format
-msgid "could not change ACPI status to: %s, rc=%08x"
+msgid "could not change ACPI status to: %s"
 msgstr ""
 
 #, c-format
-msgid "could not change APIC status to: %s, rc=%08x"
+msgid "could not change APIC status to: %s"
 msgstr ""
 
 #, c-format
-msgid "could not change PAE status to: %s, rc=%08x"
+msgid "could not change PAE status to: %s"
 msgstr ""
 
 msgid "could not close handshake fd"
@@ -22149,19 +22145,17 @@ msgstr ""
 msgid "could not create profile"
 msgstr ""
 
-#, c-format
-msgid "could not define a domain, rc=%08x"
+msgid "could not define a domain"
 msgstr ""
 
 msgid "could not delete snapshot"
 msgstr ""
 
-#, c-format
-msgid "could not delete the domain, rc=%08x"
+msgid "could not delete the domain"
 msgstr ""
 
 #, c-format
-msgid "could not detach shared folder '%s', rc=%08x"
+msgid "could not detach shared folder '%s'"
 msgstr ""
 
 msgid "could not determine max vcpus for the domain"
@@ -22358,19 +22352,19 @@ msgid "could not set PATH"
 msgstr ""
 
 #, c-format
-msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %llu Kb"
 msgstr ""
 
 #, c-format
-msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %lu Kb"
 msgstr ""
 
 #, c-format
-msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
+msgid "could not set the number of cpus of the domain to: %u"
 msgstr ""
 
 #, c-format
-msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
+msgid "could not set the number of virtual CPUs to: %u"
 msgstr ""
 
 #, c-format
@@ -22571,6 +22565,18 @@ msgid "creation of qcow/qcow2 files supports only 'luks' encryption"
 msgstr ""
 
 msgid "creation of qcow2 encrypted image is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto backend %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto model %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto type %s is not supported"
 msgstr ""
 
 #, c-format
@@ -23369,9 +23375,6 @@ msgstr ""
 msgid "domain already has a vsock device"
 msgstr ""
 
-msgid "domain already has a watchdog"
-msgstr ""
-
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr ""
 
@@ -23432,9 +23435,6 @@ msgid "domain has assigned host devices"
 msgstr ""
 
 msgid "domain has no snapshots"
-msgstr ""
-
-msgid "domain has no watchdog"
 msgstr ""
 
 msgid "domain has to be shutoff before renaming"
@@ -24582,6 +24582,10 @@ msgstr ""
 msgid "failed to duplicate file descriptor for fd group '%s'"
 msgstr ""
 
+#, c-format
+msgid "failed to duplicate passed fd with index '%zu'"
+msgstr ""
+
 #, fuzzy
 msgid "failed to enable IP forwarding"
 msgstr "gagal untuk membuka fail"
@@ -25310,10 +25314,10 @@ msgstr "gagal untuk menyimpan kandungan"
 msgid "failed to retrieve decision to accept host key"
 msgstr ""
 
-msgid "failed to retrieve keyboard interactive result: callback has failed"
+msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr ""
 
-msgid "failed to retrieve private key passphrase: callback has failed"
+msgid "failed to retrieve user response for authentication callback"
 msgstr ""
 
 #, c-format
@@ -26145,7 +26149,7 @@ msgstr ""
 msgid "guest unexpectedly quit during hotplug"
 msgstr ""
 
-msgid "guest-get-fsinfo reply was missing return data"
+msgid "guest-get-fsinfo reply was missing or not an array"
 msgstr ""
 
 msgid "guest-get-osinfo reply was missing return data"
@@ -29201,7 +29205,7 @@ msgstr ""
 msgid "missing existing file for disk %s: %s"
 msgstr ""
 
-msgid "missing external TPM backend type"
+msgid "missing external TPM backend source type"
 msgstr ""
 
 msgid "missing feature name"
@@ -29721,10 +29725,6 @@ msgstr ""
 
 #, c-format
 msgid "model '%s' shmem device not present in domain configuration"
-msgstr ""
-
-#, c-format
-msgid "model '%s' watchdog device not present in domain configuration"
 msgstr ""
 
 msgid "model resolution is not supported"
@@ -30504,6 +30504,9 @@ msgstr ""
 msgid "no matching redirdev was not found"
 msgstr ""
 
+msgid "no matching watchdog was found"
+msgstr ""
+
 msgid "no medium attachments"
 msgstr ""
 
@@ -30667,13 +30670,10 @@ msgstr ""
 msgid "no such screen ID"
 msgstr ""
 
+msgid "no suitable callback authentication callback was found"
+msgstr ""
+
 msgid "no suitable callback for host key verification"
-msgstr ""
-
-msgid "no suitable callback for input of key passphrase"
-msgstr ""
-
-msgid "no suitable callback for input of keyboard response"
 msgstr ""
 
 msgid "no suitable info found"
@@ -30993,7 +30993,7 @@ msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr ""
 
-msgid "only 'client' mode is supported for external TPM device"
+msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
@@ -31050,9 +31050,6 @@ msgstr ""
 msgid "only a single vsock device is supported"
 msgstr ""
 
-msgid "only a single watchdog device is supported"
-msgstr ""
-
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr ""
 
@@ -31098,6 +31095,9 @@ msgid "only one TPM backend is supported"
 msgstr ""
 
 msgid "only one backup job is supported"
+msgstr ""
+
+msgid "only one crypto backend is supported"
 msgstr ""
 
 msgid "only one emulatorpin is supported"
@@ -31969,6 +31969,9 @@ msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%s' requires qcow2 driver"
+msgstr ""
+
+msgid "pvpanic is supported only with PCI address type"
 msgstr ""
 
 #, c-format
@@ -33878,6 +33881,9 @@ msgstr ""
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr ""
 
+msgid "the QEMU binary does not support the PCI pvpanic device"
+msgstr ""
+
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
 msgstr ""
@@ -33937,6 +33943,9 @@ msgid "the machine has no snapshot"
 msgstr ""
 
 msgid "the new password"
+msgstr ""
+
+msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 msgid "the password is already encrypted"
@@ -35602,11 +35611,11 @@ msgid "unknown authentication type %s"
 msgstr ""
 
 #, c-format
-msgid "unknown backend type '%s' for egd"
+msgid "unknown backend source type '%s' for external TPM"
 msgstr ""
 
 #, c-format
-msgid "unknown backend type '%s' for external TPM"
+msgid "unknown backend type '%s' for egd"
 msgstr ""
 
 #, fuzzy, c-format
@@ -36066,6 +36075,10 @@ msgstr ""
 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
+msgstr ""
+
+#, c-format
+msgid "unsupported IPv6 address prefix='%u' - must be 64"
 msgstr ""
 
 #, c-format
@@ -37261,10 +37274,11 @@ msgstr "amaran"
 msgid "watchdog"
 msgstr ""
 
-msgid "watchdog device not present in domain configuration"
+msgid "watchdog must contain model name"
 msgstr ""
 
-msgid "watchdog must contain model name"
+msgid ""
+"watchdogs with different actions are not supported with this QEMU binary"
 msgstr ""
 
 msgid "webSocket"

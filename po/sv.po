@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-01-09 14:27+0000\n"
+"POT-Creation-Date: 2023-02-22 13:50+0000\n"
 "PO-Revision-Date: 2022-12-05 13:44+0000\n"
 "Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -661,6 +661,15 @@ msgid "%s model of watchdog is allowed for s390 and s390x only"
 msgstr "%s-modellen av vakthund tillåts bara för s390 och s390x"
 
 #, c-format
+msgid "%s model of watchdog is only part of q35 machine"
+msgstr ""
+
+#, c-format
+msgid ""
+"%s model of watchdog is part of the machine and cannot have any address set."
+msgstr ""
+
+#, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
 msgstr "%s-modellen av vakthund är virtuell och kan inte gå via någon buss."
 
@@ -940,6 +949,10 @@ msgid "%s: failed to communicate with bridge helper: %s"
 msgstr "%s: misslyckades att kommuniciera med brygghjälparen: %s"
 
 #, c-format
+msgid "%s: failed to generate UNIX socket path"
+msgstr ""
+
+#, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "%s: misslyckades att läsa temporärfilen: %s"
 
@@ -1052,6 +1065,10 @@ msgstr "%s: prova --help för fler detaljer\n"
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
 msgstr "%s: oväntad URI-transport ”%s”\n"
+
+#, c-format
+msgid "%s: unknown remote mode '%s'"
+msgstr ""
 
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
@@ -1227,8 +1244,8 @@ msgstr ""
 "lagringsformatet ”directory” stödjs inte direkt av QEMU, använd disktypen "
 "”dir” istället"
 
-msgid "'disk' missing in reply of guest-get-fsinfo"
-msgstr "”disk” saknas i svar från guest-get-fsinfo"
+msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
+msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %s"
@@ -2570,11 +2587,8 @@ msgstr "Kan inte hitta prlctl-kommando i miljön PATH"
 
 #, c-format
 msgid ""
-"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc="
-"%08x"
+"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"
 msgstr ""
-"Kan inte hämta UUID:t för filen att ansluta som hårddisk/dvd/floppy: %s, rc="
-"%08x"
 
 msgid "Can't initialize Parallels SDK"
 msgstr "Kan inte initiera Parallels-SDK:n"
@@ -3940,8 +3954,8 @@ msgid "Could not attach serial port %zu"
 msgstr "Kunde inte ansluta serieport %zu"
 
 #, c-format
-msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
-msgstr "Kunde inte ansluta filen som hårddisk/dvd/floppy: %s, rc=%08x"
+msgid "Could not attach the file as harddisk/dvd/floppy: %s"
+msgstr ""
 
 msgid "Could not build CURL header list"
 msgstr "Kunde inte bygga CURL-huvudlista"
@@ -4280,9 +4294,8 @@ msgstr "Kunde inte hämta en EPR-adress"
 msgid "Could not get EPR items"
 msgstr "Kunde inte få tag i EPR-element"
 
-#, c-format
-msgid "Could not get IMedium, rc=%08x"
-msgstr "Kunde inte få IMedium, rc=%08x"
+msgid "Could not get IMedium"
+msgstr ""
 
 msgid "Could not get Msvm_DiskDrive default InstanceID"
 msgstr "Kunde inte standard InstanceID för Msvm_DiskDrive"
@@ -4311,17 +4324,14 @@ msgstr "Kunde inte få tag i checkpunktsnamnet"
 msgid "Could not get current time"
 msgstr "Kunde inte ta reda på aktuell tid"
 
-#, c-format
-msgid "Could not get device port, rc=%08x"
-msgstr "Kunde inte få tag i enhetsporten, rc=%08x"
+msgid "Could not get device port"
+msgstr ""
 
-#, c-format
-msgid "Could not get device slot, rc=%08x"
-msgstr "Kunde inte få tag i enhetsfacket, rc=%08x"
+msgid "Could not get device slot"
+msgstr ""
 
-#, c-format
-msgid "Could not get device type, rc=%08x"
-msgstr "Kunde inte få tag i enhetstypen, rc=%08x"
+msgid "Could not get device type"
+msgstr ""
 
 #, c-format
 msgid "Could not get free memory for host %s"
@@ -4362,21 +4372,17 @@ msgstr "Kunde inte få tag i iteratorindex för (internt) iterator-ID %u"
 msgid "Could not get iterator index for iterator ID %u"
 msgstr "Kunde inte få tag i iteratorindex för iterator-ID %u"
 
-#, c-format
-msgid "Could not get list of Defined Domains, rc=%08x"
-msgstr "Kunde inte få tag i listan av definierade domäner, rc=%08x"
+msgid "Could not get list of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of Domains, rc=%08x"
-msgstr "Kunde inte få tag i listan av domäner, rc=%08x"
+msgid "Could not get list of Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of domains, rc=%08x"
-msgstr "Kunde inte få tag i listan av domäner: rc=%08x"
+msgid "Could not get list of domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of machines, rc=%08x"
-msgstr "Kunde inte få tag i listan av maskiner, rc=%08x"
+msgid "Could not get list of machines"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -4385,9 +4391,8 @@ msgstr ""
 "Kunde inte hitta maximumdefinitionen av Msvm_ProcessorSettingData för värden "
 "%s"
 
-#, c-format
-msgid "Could not get medium storage location, rc=%08x"
-msgstr "Kunde inte få tag i medielagringsplats, rc=%08x"
+msgid "Could not get medium storage location"
+msgstr ""
 
 #, c-format
 msgid "Could not get members of bridge '%s'"
@@ -4400,17 +4405,18 @@ msgstr "Kunde inte få tag i namnet på den virtuella maskinen"
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "Kunde inte få n:e (%u) värdet på variabeln ”%s”"
 
-#, c-format
-msgid "Could not get number of Defined Domains, rc=%08x"
-msgstr "Kunde inte få tag i antalet definierade domäner, rc=%08x"
+msgid "Could not get number of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get number of Domains, rc=%08x"
-msgstr "Kunde inte få tag i antalet domäner, rc=%08x"
+msgid "Could not get number of Domains"
+msgstr ""
 
 #, c-format
 msgid "Could not get parent of '%s'"
 msgstr "Kunde inte ta reda på föräldern till ”%s”"
+
+msgid "Could not get process ID of passt"
+msgstr ""
 
 msgid "Could not get process id of swtpm"
 msgstr "Kunde inte få tag i process-id för swtpm"
@@ -4418,9 +4424,8 @@ msgstr "Kunde inte få tag i process-id för swtpm"
 msgid "Could not get process id of vhost-user-gpu"
 msgstr "Kunde inte få tag i process-id för vhost-user-gpu"
 
-#, c-format
-msgid "Could not get read only state, rc=%08x"
-msgstr "Kunde inte få endast läsbart tillstånd, rc=%08x"
+msgid "Could not get read only state"
+msgstr ""
 
 msgid "Could not get response"
 msgstr "Kunde inte få svar"
@@ -4448,13 +4453,11 @@ msgstr "Kunde inte få tag i ögonblicsbilds-id"
 msgid "Could not get snapshot name"
 msgstr "Kunde inte få tag i ögonblicsbildsnamn"
 
-#, c-format
-msgid "Could not get storage controller bus, rc=%08x"
-msgstr "Kunde inte få tag i lagringsstyrenhetsbussen, rc=%08x"
+msgid "Could not get storage controller bus"
+msgstr ""
 
-#, c-format
-msgid "Could not get storage controller by name, rc=%08x"
-msgstr "Kunde inte få tag i lagringsstyrenheten efter namn, rc=%08x"
+msgid "Could not get storage controller by name"
+msgstr ""
 
 #, c-format
 msgid "Could not get syspath for parent of '%s'"
@@ -4889,6 +4892,10 @@ msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr "Kunde inte sätta wsman-namnrymdsadressen för xmlNodeParam"
 
 #, c-format
+msgid "Could not start 'passt': %s"
+msgstr ""
+
+#, c-format
 msgid "Could not start 'slirp'. exitstatus: %d"
 msgstr "Kunde inte starta ”slirp”, slutstatus: %d"
 
@@ -5035,6 +5042,9 @@ msgstr "Skapandetidpunkt"
 #, c-format
 msgid "Creation of %s volumes is not supported"
 msgstr "Att skapa %s-volymer stödjs inte"
+
+msgid "Crypto device is missing alias"
+msgstr ""
 
 msgid "Current memory size too large"
 msgstr "Aktuell minnesstorlek är för stor"
@@ -6486,10 +6496,8 @@ msgid "Failed to add signal handle watch"
 msgstr "Misslyckades att lägga till signalhanteringsbevakning"
 
 #, c-format
-msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
+msgid "Failed to add storage controller (name: %s, busType: %d)"
 msgstr ""
-"Misslyckades att lägga till lagringsstyrenhet (namn: %s, busstyp: %d), rk="
-"%08x"
 
 #, c-format
 msgid "Failed to allocate PCI device list: %s"
@@ -6596,9 +6604,8 @@ msgstr "Misslyckades med att ändra storleken på volymen ”%s” med %s"
 msgid "Failed to change size of volume '%s' to %s"
 msgstr "Misslyckades att ändra storlek på volymen ”%s” till %s"
 
-#, c-format
-msgid "Failed to change storage controller model, rc=%08x"
-msgstr "Misslyckades att ändra styrenhetsmodellen för lagring, rk=%08x"
+msgid "Failed to change storage controller model"
+msgstr ""
 
 #, c-format
 msgid "Failed to chdir into %s"
@@ -6826,6 +6833,10 @@ msgid "Failed to create nvram dir %s"
 msgstr "Misslyckades att skapa nvram-katalogen %s"
 
 msgid "Failed to create or modify the state XML attribute"
+msgstr ""
+
+#, c-format
+msgid "Failed to create passt state dir %s"
 msgstr ""
 
 #, c-format
@@ -7339,9 +7350,8 @@ msgstr ""
 msgid "Failed to get snapshot count"
 msgstr "Misslyckades hämta antal ögonblicksbilder"
 
-#, c-format
-msgid "Failed to get storage controller name, rc=%08x"
-msgstr "Misslyckades att få tag i lagringsstyrenhetsnamn, rc=%08x"
+msgid "Failed to get storage controller name"
+msgstr ""
 
 msgid "Failed to get the number of active networks"
 msgstr "Misslyckades att hämta antalet aktiva nätverk"
@@ -7692,10 +7702,8 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr "Misslyckades att öppna lagringsvolymen med sökväg ”%s”"
 
 #, c-format
-msgid ""
-"Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
+msgid "Failed to open the following disk/dvd/floppy to the machine: %s"
 msgstr ""
-"Misslyckades att öppna följande disk/dvd/floppy till masknen: %s, rk=%08x"
 
 #, c-format
 msgid "Failed to open tty %s"
@@ -7792,6 +7800,10 @@ msgstr "Misslyckades med att tolka ett positivt heltal från ”%s”"
 #, c-format
 msgid "Failed to parse rate '%s'"
 msgstr "Misslyckades med att tolka hastigheten ”%s”"
+
+#, c-format
+msgid "Failed to parse rotated index from '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%s'"
@@ -8145,9 +8157,8 @@ msgstr ""
 msgid "Failed to save '%s' for '%s'"
 msgstr "Misslyckades med att spara ”%s” för ”%s”"
 
-#, c-format
-msgid "Failed to save VM settings, rc=%08x"
-msgstr "Misslyckades med att spara VM-inställningar, rl=%08x"
+msgid "Failed to save VM settings"
+msgstr ""
 
 #, c-format
 msgid "Failed to save domain '%d' with libxenlight"
@@ -9695,6 +9706,10 @@ msgid "Invalid address '%s' in <ip>"
 msgstr "Felaktig adress ”%s” i <ip>"
 
 #, c-format
+msgid "Invalid address '%s' in <portForward>"
+msgstr ""
+
+#, c-format
 msgid "Invalid address '%s' in network '%s'"
 msgstr "Felaktig adress ”%s” i nätverket ”%s”"
 
@@ -10217,6 +10232,10 @@ msgstr "Ogiltigt portnummer: %s"
 #, c-format
 msgid "Invalid port range '%u-%u'."
 msgstr "Felaktigt portintervall ”%u-%u”."
+
+#, c-format
+msgid "Invalid portForward proto value %u"
+msgstr ""
 
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
@@ -10796,17 +10815,8 @@ msgstr "Felformaterat filterformat ”%s”"
 msgid "Malformed format for log output '%s'"
 msgstr "Felformaterat format för logutdata ”%s”"
 
-msgid "Malformed guest-get-fsinfo 'disk' data array"
-msgstr "Felformaterad guest-get-fsinfo ”disk” datavektor"
-
-msgid "Malformed guest-get-fsinfo data array"
-msgstr "Felformaterad guest-get-fsinfo datavektor"
-
 msgid "Malformed id field in JSON state document"
 msgstr "Felformaterat id-fält i JSON-tillståndsdokumentet"
-
-msgid "Malformed ip-addresses array"
-msgstr "Felformaterad ip-adressvektor"
 
 msgid "Malformed lease_entries array"
 msgstr "Felaktig lease_entries-vektor"
@@ -11240,9 +11250,6 @@ msgstr "Saknad UUID-parameter till domänobjektet"
 
 msgid "Missing VIR_CRED_AUTHNAME credential type"
 msgstr "Saknad kreditivtyp VIR_CRED_AUTHNAME"
-
-msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
-msgstr "Saknad kreditivtyp VIR_CRED_PASSPHRASE eller VIR_CRED_NOECHOPROMPT"
 
 msgid "Missing XPath context"
 msgstr "Saknad XPath-kontext"
@@ -11746,6 +11753,9 @@ msgstr ""
 
 msgid "Multiple graphics devices are not supported"
 msgstr "Flera grafiska enheter stödjs inte"
+
+msgid "Multiple iTCO watchdogs are not supported"
+msgstr ""
 
 msgid "Multiple interfaces attached to bridge"
 msgstr "Flera gränssnitt anslutna till bryggan"
@@ -13133,9 +13143,6 @@ msgstr "Lösenfras för nyckeln ”%s”"
 
 msgid "Password may not contain ',' character"
 msgstr "Lösenordet får inte innehålla tecknet ”,”"
-
-msgid "Password request failed"
-msgstr "Lösenordsbegäran misslyckades"
 
 #, c-format
 msgid "Password set successfully for %s in %s"
@@ -15549,8 +15556,8 @@ msgid "Target domain vsock device model '%s' does not match source '%s'"
 msgstr "Måldomänens vsock-enhetsmodell ”%s” stämmer inte med källan ”%s”"
 
 #, c-format
-msgid "Target domain watchdog count %d does not match source %d"
-msgstr "Måldomänens vakthundsantal %d stämmer inte med källan %d"
+msgid "Target domain watchdog device count %zu does not match source %zu"
+msgstr ""
 
 msgid "Target filesystem access mode does not match source"
 msgstr "Målfilsystemets åtkomstläge stämmer inte med källan"
@@ -15826,6 +15833,14 @@ msgstr ""
 "Attributet ”eoi” hos funktionen ”%s” stödjs inte för arkitekturen ”%s” eller "
 "maskintypen ”%s”"
 
+msgid "The 'passt' backend can only be used with interface type='user'"
+msgstr ""
+
+msgid ""
+"The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
+"'exclude' is specified"
+msgstr ""
+
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -16023,11 +16038,6 @@ msgstr ""
 msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
-msgstr ""
-
-msgid ""
-"The overall maximum number of clients waiting for authentication must not be "
-"less than the overall maximum number of clients"
 msgstr ""
 
 msgid "The read only disk has no parent"
@@ -16798,9 +16808,8 @@ msgstr "Kan inte stänga"
 msgid "Unable to close %s"
 msgstr "Kan inte stänga %s"
 
-#, c-format
-msgid "Unable to close HardDisk, rc=%08x"
-msgstr "Kan inte stänga hårddisken, rk=%08x"
+msgid "Unable to close HardDisk"
+msgstr ""
 
 msgid "Unable to close disk children"
 msgstr "Kan inte stänga diskbarnen"
@@ -16812,9 +16821,11 @@ msgstr "Kan inte rekursivt stänga alla diskar"
 msgid "Unable to close the VPD file, fd: %d"
 msgstr "Kan inte stänga VPD-filen, fb: %d"
 
-#, c-format
-msgid "Unable to close the new medium, rc=%08x"
-msgstr "Kan inte stänga det nya mediumet, rk=%08x"
+msgid "Unable to close the new medium"
+msgstr ""
+
+msgid "Unable to compile regex"
+msgstr ""
 
 #, c-format
 msgid "Unable to compute hash of data: %s"
@@ -16848,9 +16859,8 @@ msgstr "Kan inte kopiera uttagsfilhandtaget"
 msgid "Unable to create %s"
 msgstr "Kan inte skapa %s"
 
-#, c-format
-msgid "Unable to create HardDisk, rc=%08x"
-msgstr "Kan inte skapa HardDisk, rk=%08x"
+msgid "Unable to create HardDisk"
+msgstr ""
 
 msgid "Unable to create JSON formatter"
 msgstr "Kan inte skapa en JSON-formaterare"
@@ -17017,9 +17027,8 @@ msgstr "Kan inte radera filen %s"
 msgid "Unable to delete lockspace resource %s"
 msgstr "Kan inte radera låsutrymmesresursen %s"
 
-#, c-format
-msgid "Unable to delete medium, rc=%08x"
-msgstr "Kan inte radera mediumet, rk=%08x"
+msgid "Unable to delete medium"
+msgstr ""
 
 #, c-format
 msgid "Unable to delete port %s from OVS"
@@ -17381,13 +17390,8 @@ msgstr "Kan inte hämta hårddiskformatet"
 msgid "Unable to get hard disk id"
 msgstr "Kan inte hämta hårddiskens id"
 
-#, c-format
-msgid "Unable to get hard disk id, rc=%08x"
-msgstr "Kan inte hämta håddiskens id, rk=%08x"
-
-#, c-format
-msgid "Unable to get hardDisk Id, rc=%08x"
-msgstr "Kan inte hämta hardDisk Id, rk=%08x"
+msgid "Unable to get hardDisk Id"
+msgstr ""
 
 msgid "Unable to get host SEV information"
 msgstr "Kan inte hämta värd-SEV-information"
@@ -17430,9 +17434,8 @@ msgstr "Kan inte hämta slingstatus för %s"
 msgid "Unable to get medium location"
 msgstr "Kan inte hämta mediumplats"
 
-#, c-format
-msgid "Unable to get medium uuid, rc=%08x"
-msgstr "Kan inte hämta medium-uuid, rk=%08x"
+msgid "Unable to get medium uuid"
+msgstr ""
 
 msgid "Unable to get memory parameters"
 msgstr "Kan inte hämta minnesparametrar"
@@ -17688,13 +17691,11 @@ msgstr "Kan inte öppna /dev/loop-control"
 msgid "Unable to open /proc/mounts"
 msgstr "Kan inte öppna /proc/mounts"
 
-#, c-format
-msgid "Unable to open HardDisk, rc=%08x"
-msgstr "Kan inte öppna HardDisk, rk=%08x"
+msgid "Unable to open HardDisk"
+msgstr ""
 
-#, c-format
-msgid "Unable to open Machine, rc=%08x"
-msgstr "Kan inte öppna Machine, rk=%08x"
+msgid "Unable to open Machine"
+msgstr ""
 
 msgid "Unable to open UNIX socket"
 msgstr "Kan inte öppna UNIX-uttag"
@@ -17980,9 +17981,8 @@ msgstr "Kan inte läsa pid-filen för vhost-user-gpu ”%s”"
 msgid "Unable to read virtiofsd pidfile '%s'"
 msgstr "Kan inte läsa pid-filen för virtiofsd ”%s”"
 
-#, c-format
-msgid "Unable to register Machine, rc=%08x"
-msgstr "Kan inte registrera Machine, rk=%08x"
+msgid "Unable to register Machine"
+msgstr ""
 
 msgid "Unable to register async IO callback"
 msgstr "Kan inte registrera async-IO-återanrop"
@@ -18456,8 +18456,7 @@ msgstr "Misslyckades att avdefiniera nätverk %s"
 msgid "Unable to unlink path '%s'"
 msgstr "Kan inte vänta på föräldraprocessen"
 
-#, c-format
-msgid "Unable to unregister machine, rc=%08x"
+msgid "Unable to unregister machine"
 msgstr ""
 
 msgid "Unable to update server's tls related files."
@@ -19605,13 +19604,6 @@ msgstr "Hyra %s i låsrymden %s finns inte"
 msgid "User namespace support is recommended"
 msgstr ""
 
-msgid ""
-"Username and key file path must be provided for private key authentication"
-msgstr ""
-
-msgid "Username must be provided for ssh agent authentication"
-msgstr ""
-
 msgid "Username request failed"
 msgstr ""
 
@@ -19727,10 +19719,6 @@ msgstr "värde på typeid är utanför intervallet"
 
 #, c-format
 msgid "Value of cputune '%s' must be in range [%llu, %llu]"
-msgstr ""
-
-#, c-format
-msgid "Value of cputune 'shares' must be in range [%llu, %llu]"
 msgstr ""
 
 #, fuzzy
@@ -21841,6 +21829,9 @@ msgstr ""
 msgid "cannot modify network device address type"
 msgstr ""
 
+msgid "cannot modify network device backend settings"
+msgstr ""
+
 msgid "cannot modify network device boot index setting"
 msgstr ""
 
@@ -23093,7 +23084,7 @@ msgid "could not allocate memory"
 msgstr "kunde inte allokera minne"
 
 #, c-format
-msgid "could not attach shared folder '%s', rc=%08x"
+msgid "could not attach shared folder '%s'"
 msgstr ""
 
 msgid "could not build absolute core file path"
@@ -23106,15 +23097,15 @@ msgid "could not build absolute output file path"
 msgstr ""
 
 #, c-format
-msgid "could not change ACPI status to: %s, rc=%08x"
+msgid "could not change ACPI status to: %s"
 msgstr ""
 
 #, c-format
-msgid "could not change APIC status to: %s, rc=%08x"
+msgid "could not change APIC status to: %s"
 msgstr ""
 
 #, c-format
-msgid "could not change PAE status to: %s, rc=%08x"
+msgid "could not change PAE status to: %s"
 msgstr ""
 
 msgid "could not close handshake fd"
@@ -23151,20 +23142,18 @@ msgstr "kunde inte ansluta till Xen Store %s"
 msgid "could not create profile"
 msgstr "misslyckats med att skapa profil"
 
-#, fuzzy, c-format
-msgid "could not define a domain, rc=%08x"
-msgstr "Misslyckades att definiera domän från %s"
+msgid "could not define a domain"
+msgstr ""
 
 #, fuzzy
 msgid "could not delete snapshot"
 msgstr "Misslyckades att ta ögonblicksbild: %s"
 
-#, fuzzy, c-format
-msgid "could not delete the domain, rc=%08x"
-msgstr "Kunde inte starta domänen: %s"
+msgid "could not delete the domain"
+msgstr ""
 
 #, c-format
-msgid "could not detach shared folder '%s', rc=%08x"
+msgid "could not detach shared folder '%s'"
 msgstr ""
 
 msgid "could not determine max vcpus for the domain"
@@ -23368,20 +23357,20 @@ msgid "could not set PATH"
 msgstr ""
 
 #, c-format
-msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %llu Kb"
 msgstr ""
 
 #, c-format
-msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %lu Kb"
 msgstr ""
 
 #, c-format
-msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
+msgid "could not set the number of cpus of the domain to: %u"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
-msgstr "Kunde inte ställa in antalet virtuella processorer till %d: %s"
+#, c-format
+msgid "could not set the number of virtual CPUs to: %u"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "could not take a screenshot of %s"
@@ -23585,6 +23574,18 @@ msgid "creation of qcow/qcow2 files supports only 'luks' encryption"
 msgstr ""
 
 msgid "creation of qcow2 encrypted image is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto backend %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto model %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto type %s is not supported"
 msgstr ""
 
 #, c-format
@@ -24401,10 +24402,6 @@ msgstr ""
 msgid "domain already has a vsock device"
 msgstr "Domänen är redan aktiv"
 
-#, fuzzy
-msgid "domain already has a watchdog"
-msgstr "Domänen är redan aktiv"
-
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "domänarkitektur (/domän/os/typ/@arkitektur)"
 
@@ -24471,10 +24468,6 @@ msgstr ""
 #, fuzzy
 msgid "domain has no snapshots"
 msgstr "domännamn eller uuid"
-
-#, fuzzy
-msgid "domain has no watchdog"
-msgstr "domäninformation"
 
 msgid "domain has to be shutoff before renaming"
 msgstr ""
@@ -25649,6 +25642,10 @@ msgstr "Misslyckades att hämta block statistik %sl %s"
 msgid "failed to duplicate file descriptor for fd group '%s'"
 msgstr ""
 
+#, c-format
+msgid "failed to duplicate passed fd with index '%zu'"
+msgstr ""
+
 #, fuzzy
 msgid "failed to enable IP forwarding"
 msgstr "misslyckades att få nodinformation"
@@ -26375,10 +26372,10 @@ msgstr "misslyckats med att skapa profil"
 msgid "failed to retrieve decision to accept host key"
 msgstr ""
 
-msgid "failed to retrieve keyboard interactive result: callback has failed"
+msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr ""
 
-msgid "failed to retrieve private key passphrase: callback has failed"
+msgid "failed to retrieve user response for authentication callback"
 msgstr ""
 
 #, fuzzy, c-format
@@ -27233,7 +27230,7 @@ msgstr ""
 msgid "guest unexpectedly quit during hotplug"
 msgstr ""
 
-msgid "guest-get-fsinfo reply was missing return data"
+msgid "guest-get-fsinfo reply was missing or not an array"
 msgstr ""
 
 msgid "guest-get-osinfo reply was missing return data"
@@ -30426,7 +30423,7 @@ msgstr "saknar operativsysteminformation"
 msgid "missing existing file for disk %s: %s"
 msgstr "saknat namn för källskiva"
 
-msgid "missing external TPM backend type"
+msgid "missing external TPM backend source type"
 msgstr ""
 
 #, fuzzy
@@ -30993,10 +30990,6 @@ msgstr ""
 
 #, c-format
 msgid "model '%s' shmem device not present in domain configuration"
-msgstr ""
-
-#, c-format
-msgid "model '%s' watchdog device not present in domain configuration"
 msgstr ""
 
 msgid "model resolution is not supported"
@@ -31803,6 +31796,9 @@ msgstr ""
 msgid "no matching redirdev was not found"
 msgstr "Domän hittades inte"
 
+msgid "no matching watchdog was found"
+msgstr ""
+
 msgid "no medium attachments"
 msgstr ""
 
@@ -31969,13 +31965,10 @@ msgstr ""
 msgid "no such screen ID"
 msgstr ""
 
+msgid "no suitable callback authentication callback was found"
+msgstr ""
+
 msgid "no suitable callback for host key verification"
-msgstr ""
-
-msgid "no suitable callback for input of key passphrase"
-msgstr ""
-
-msgid "no suitable callback for input of keyboard response"
 msgstr ""
 
 msgid "no suitable info found"
@@ -32308,7 +32301,7 @@ msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr ""
 
-msgid "only 'client' mode is supported for external TPM device"
+msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
@@ -32366,9 +32359,6 @@ msgstr ""
 msgid "only a single vsock device is supported"
 msgstr ""
 
-msgid "only a single watchdog device is supported"
-msgstr ""
-
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr ""
 
@@ -32415,6 +32405,9 @@ msgid "only one TPM backend is supported"
 msgstr ""
 
 msgid "only one backup job is supported"
+msgstr ""
+
+msgid "only one crypto backend is supported"
 msgstr ""
 
 msgid "only one emulatorpin is supported"
@@ -33308,6 +33301,9 @@ msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%s' requires qcow2 driver"
+msgstr ""
+
+msgid "pvpanic is supported only with PCI address type"
 msgstr ""
 
 #, c-format
@@ -35279,6 +35275,9 @@ msgstr ""
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr ""
 
+msgid "the QEMU binary does not support the PCI pvpanic device"
+msgstr ""
+
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
 msgstr ""
@@ -35340,6 +35339,9 @@ msgid "the machine has no snapshot"
 msgstr ""
 
 msgid "the new password"
+msgstr ""
+
+msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 msgid "the password is already encrypted"
@@ -37043,13 +37045,13 @@ msgstr "okänd autentiseringstyp ”%s”"
 msgid "unknown authentication type %s"
 msgstr "autentisering misslyckades: %s"
 
+#, c-format
+msgid "unknown backend source type '%s' for external TPM"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown backend type '%s' for egd"
 msgstr "okän gränssnittstyp ”%s”"
-
-#, c-format
-msgid "unknown backend type '%s' for external TPM"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown backup mode '%s'"
@@ -37515,6 +37517,10 @@ msgstr "disktypen stödjs inte %s"
 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
+msgstr ""
+
+#, c-format
+msgid "unsupported IPv6 address prefix='%u' - must be 64"
 msgstr ""
 
 #, fuzzy, c-format
@@ -38727,10 +38733,11 @@ msgstr "varning"
 msgid "watchdog"
 msgstr "vakthund"
 
-msgid "watchdog device not present in domain configuration"
+msgid "watchdog must contain model name"
 msgstr ""
 
-msgid "watchdog must contain model name"
+msgid ""
+"watchdogs with different actions are not supported with this QEMU binary"
 msgstr ""
 
 msgid "webSocket"
@@ -38880,6 +38887,148 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <sträng>"
+
+#~ msgid "'disk' missing in reply of guest-get-fsinfo"
+#~ msgstr "”disk” saknas i svar från guest-get-fsinfo"
+
+#~ msgid ""
+#~ "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, "
+#~ "rc=%08x"
+#~ msgstr ""
+#~ "Kan inte hämta UUID:t för filen att ansluta som hårddisk/dvd/floppy: %s, "
+#~ "rc=%08x"
+
+#~ msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
+#~ msgstr "Kunde inte ansluta filen som hårddisk/dvd/floppy: %s, rc=%08x"
+
+#~ msgid "Could not get IMedium, rc=%08x"
+#~ msgstr "Kunde inte få IMedium, rc=%08x"
+
+#~ msgid "Could not get device port, rc=%08x"
+#~ msgstr "Kunde inte få tag i enhetsporten, rc=%08x"
+
+#~ msgid "Could not get device slot, rc=%08x"
+#~ msgstr "Kunde inte få tag i enhetsfacket, rc=%08x"
+
+#~ msgid "Could not get device type, rc=%08x"
+#~ msgstr "Kunde inte få tag i enhetstypen, rc=%08x"
+
+#~ msgid "Could not get list of Defined Domains, rc=%08x"
+#~ msgstr "Kunde inte få tag i listan av definierade domäner, rc=%08x"
+
+#~ msgid "Could not get list of Domains, rc=%08x"
+#~ msgstr "Kunde inte få tag i listan av domäner, rc=%08x"
+
+#~ msgid "Could not get list of domains, rc=%08x"
+#~ msgstr "Kunde inte få tag i listan av domäner: rc=%08x"
+
+#~ msgid "Could not get list of machines, rc=%08x"
+#~ msgstr "Kunde inte få tag i listan av maskiner, rc=%08x"
+
+#~ msgid "Could not get medium storage location, rc=%08x"
+#~ msgstr "Kunde inte få tag i medielagringsplats, rc=%08x"
+
+#~ msgid "Could not get number of Defined Domains, rc=%08x"
+#~ msgstr "Kunde inte få tag i antalet definierade domäner, rc=%08x"
+
+#~ msgid "Could not get number of Domains, rc=%08x"
+#~ msgstr "Kunde inte få tag i antalet domäner, rc=%08x"
+
+#~ msgid "Could not get read only state, rc=%08x"
+#~ msgstr "Kunde inte få endast läsbart tillstånd, rc=%08x"
+
+#~ msgid "Could not get storage controller bus, rc=%08x"
+#~ msgstr "Kunde inte få tag i lagringsstyrenhetsbussen, rc=%08x"
+
+#~ msgid "Could not get storage controller by name, rc=%08x"
+#~ msgstr "Kunde inte få tag i lagringsstyrenheten efter namn, rc=%08x"
+
+#~ msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
+#~ msgstr ""
+#~ "Misslyckades att lägga till lagringsstyrenhet (namn: %s, busstyp: %d), rk="
+#~ "%08x"
+
+#~ msgid "Failed to change storage controller model, rc=%08x"
+#~ msgstr "Misslyckades att ändra styrenhetsmodellen för lagring, rk=%08x"
+
+#~ msgid "Failed to get storage controller name, rc=%08x"
+#~ msgstr "Misslyckades att få tag i lagringsstyrenhetsnamn, rc=%08x"
+
+#~ msgid ""
+#~ "Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
+#~ msgstr ""
+#~ "Misslyckades att öppna följande disk/dvd/floppy till masknen: %s, rk=%08x"
+
+#~ msgid "Failed to save VM settings, rc=%08x"
+#~ msgstr "Misslyckades med att spara VM-inställningar, rl=%08x"
+
+#~ msgid "Malformed guest-get-fsinfo 'disk' data array"
+#~ msgstr "Felformaterad guest-get-fsinfo ”disk” datavektor"
+
+#~ msgid "Malformed guest-get-fsinfo data array"
+#~ msgstr "Felformaterad guest-get-fsinfo datavektor"
+
+#~ msgid "Malformed ip-addresses array"
+#~ msgstr "Felformaterad ip-adressvektor"
+
+#~ msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
+#~ msgstr "Saknad kreditivtyp VIR_CRED_PASSPHRASE eller VIR_CRED_NOECHOPROMPT"
+
+#~ msgid "Password request failed"
+#~ msgstr "Lösenordsbegäran misslyckades"
+
+#~ msgid "Target domain watchdog count %d does not match source %d"
+#~ msgstr "Måldomänens vakthundsantal %d stämmer inte med källan %d"
+
+#~ msgid "Unable to close HardDisk, rc=%08x"
+#~ msgstr "Kan inte stänga hårddisken, rk=%08x"
+
+#~ msgid "Unable to close the new medium, rc=%08x"
+#~ msgstr "Kan inte stänga det nya mediumet, rk=%08x"
+
+#~ msgid "Unable to create HardDisk, rc=%08x"
+#~ msgstr "Kan inte skapa HardDisk, rk=%08x"
+
+#~ msgid "Unable to delete medium, rc=%08x"
+#~ msgstr "Kan inte radera mediumet, rk=%08x"
+
+#~ msgid "Unable to get hard disk id, rc=%08x"
+#~ msgstr "Kan inte hämta håddiskens id, rk=%08x"
+
+#~ msgid "Unable to get hardDisk Id, rc=%08x"
+#~ msgstr "Kan inte hämta hardDisk Id, rk=%08x"
+
+#~ msgid "Unable to get medium uuid, rc=%08x"
+#~ msgstr "Kan inte hämta medium-uuid, rk=%08x"
+
+#~ msgid "Unable to open HardDisk, rc=%08x"
+#~ msgstr "Kan inte öppna HardDisk, rk=%08x"
+
+#~ msgid "Unable to open Machine, rc=%08x"
+#~ msgstr "Kan inte öppna Machine, rk=%08x"
+
+#~ msgid "Unable to register Machine, rc=%08x"
+#~ msgstr "Kan inte registrera Machine, rk=%08x"
+
+#, fuzzy
+#~ msgid "could not define a domain, rc=%08x"
+#~ msgstr "Misslyckades att definiera domän från %s"
+
+#, fuzzy
+#~ msgid "could not delete the domain, rc=%08x"
+#~ msgstr "Kunde inte starta domänen: %s"
+
+#, fuzzy
+#~ msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
+#~ msgstr "Kunde inte ställa in antalet virtuella processorer till %d: %s"
+
+#, fuzzy
+#~ msgid "domain already has a watchdog"
+#~ msgstr "Domänen är redan aktiv"
+
+#, fuzzy
+#~ msgid "domain has no watchdog"
+#~ msgstr "domäninformation"
 
 #~ msgid "%s array element does not contain a string"
 #~ msgstr "%s vektorelement innehåller inte en sträng"

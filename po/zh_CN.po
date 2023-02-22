@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-01-09 14:27+0000\n"
+"POT-Creation-Date: 2023-02-22 13:50+0000\n"
 "PO-Revision-Date: 2022-12-05 13:44+0000\n"
 "Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -663,6 +663,15 @@ msgid "%s model of watchdog is allowed for s390 and s390x only"
 msgstr "s390 和 s390x 允许使用 watchdog 的 %s 模型"
 
 #, c-format
+msgid "%s model of watchdog is only part of q35 machine"
+msgstr ""
+
+#, c-format
+msgid ""
+"%s model of watchdog is part of the machine and cannot have any address set."
+msgstr ""
+
+#, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
 msgstr "watchdog 的 %s 模型是虚拟的，无法在任何总线上运行。"
 
@@ -933,6 +942,10 @@ msgid "%s: failed to communicate with bridge helper: %s"
 msgstr "%s: 无法与网桥帮助程序通信：%s"
 
 #, c-format
+msgid "%s: failed to generate UNIX socket path"
+msgstr ""
+
+#, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "%s：无法读取临时文件：%s"
 
@@ -1035,6 +1048,10 @@ msgstr "%s: 尝试使用 --help 获取更多信息\n"
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
 msgstr "%s:意外的 URI I传输 '%s'\n"
+
+#, c-format
+msgid "%s: unknown remote mode '%s'"
+msgstr ""
 
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
@@ -1205,8 +1222,8 @@ msgid ""
 "type instead"
 msgstr "QEMU 不直接支持 'directory' 存储格式，请使用 'dir' 磁盘类型"
 
-msgid "'disk' missing in reply of guest-get-fsinfo"
-msgstr "guest-get-fsinfo 回复中缺少 'disk'"
+msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
+msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %s"
@@ -2468,9 +2485,8 @@ msgstr "无法在 PATH env 中找到 prlctl 命令"
 
 #, c-format
 msgid ""
-"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc="
-"%08x"
-msgstr "无法获得要附加为 harddisk/dvd/floppy 的文件的 UUID ：%s, rc=%08x"
+"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"
+msgstr ""
 
 msgid "Can't initialize Parallels SDK"
 msgstr "无法初始化平行 SDK"
@@ -3776,8 +3792,8 @@ msgid "Could not attach serial port %zu"
 msgstr "无法附加串行端口 %zu"
 
 #, c-format
-msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
-msgstr "无法将文件附加为 harddisk/dvd/floppy: %s, rc=%08x"
+msgid "Could not attach the file as harddisk/dvd/floppy: %s"
+msgstr ""
 
 msgid "Could not build CURL header list"
 msgstr "无法构建 CURL 表头列表"
@@ -4114,9 +4130,8 @@ msgstr "无法获取 EPR 地址"
 msgid "Could not get EPR items"
 msgstr "无法获取 EPR 条目"
 
-#, c-format
-msgid "Could not get IMedium, rc=%08x"
-msgstr "无法获得 IMedium、rc=%08x"
+msgid "Could not get IMedium"
+msgstr ""
 
 msgid "Could not get Msvm_DiskDrive default InstanceID"
 msgstr "无法获取 Msvm_DiskDrive 默认的 InstanceID"
@@ -4145,17 +4160,14 @@ msgstr "无法获取检查点名称"
 msgid "Could not get current time"
 msgstr "无法获得当前时间"
 
-#, c-format
-msgid "Could not get device port, rc=%08x"
-msgstr "无法获取设备端口 rc=%08x"
+msgid "Could not get device port"
+msgstr ""
 
-#, c-format
-msgid "Could not get device slot, rc=%08x"
-msgstr "无法获取设备插槽，rc=%08x"
+msgid "Could not get device slot"
+msgstr ""
 
-#, c-format
-msgid "Could not get device type, rc=%08x"
-msgstr "无法获取设备类型，rc=%08x"
+msgid "Could not get device type"
+msgstr ""
 
 #, c-format
 msgid "Could not get free memory for host %s"
@@ -4192,30 +4204,25 @@ msgstr "无法为（内置）迭代器 ID %u 获得迭代器索引"
 msgid "Could not get iterator index for iterator ID %u"
 msgstr "无法为迭代器 ID %u 获得迭代器索引"
 
-#, c-format
-msgid "Could not get list of Defined Domains, rc=%08x"
-msgstr "无法获取定义的域列表：rc=%08x"
+msgid "Could not get list of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of Domains, rc=%08x"
-msgstr "无法获取域列表，rc=%08x"
+msgid "Could not get list of Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of domains, rc=%08x"
-msgstr "无法获取域列表，rc=%08x"
+msgid "Could not get list of domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of machines, rc=%08x"
-msgstr "无法获取及其列表，rc=%08x"
+msgid "Could not get list of machines"
+msgstr ""
 
 #, c-format
 msgid ""
 "Could not get maximum definition of Msvm_ProcessorSettingData for host %s"
 msgstr "无法获取主机 %s 的 Msvm_ProcessorSettingData 的最大定义"
 
-#, c-format
-msgid "Could not get medium storage location, rc=%08x"
-msgstr "无法获取中等存储位置 rc=%08x"
+msgid "Could not get medium storage location"
+msgstr ""
 
 #, c-format
 msgid "Could not get members of bridge '%s'"
@@ -4228,17 +4235,18 @@ msgstr "无法获得虚拟机名称"
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "nth（%u）值不在变量 '%s' 中"
 
-#, c-format
-msgid "Could not get number of Defined Domains, rc=%08x"
-msgstr "无法获取定义的域数量：rc=%08x"
+msgid "Could not get number of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get number of Domains, rc=%08x"
-msgstr "无法获取域数量，rc=%08x"
+msgid "Could not get number of Domains"
+msgstr ""
 
 #, c-format
 msgid "Could not get parent of '%s'"
 msgstr "无法获得 '%s' 的父项"
+
+msgid "Could not get process ID of passt"
+msgstr ""
 
 msgid "Could not get process id of swtpm"
 msgstr "无法获取 swtpm 的进程 id"
@@ -4246,9 +4254,8 @@ msgstr "无法获取 swtpm 的进程 id"
 msgid "Could not get process id of vhost-user-gpu"
 msgstr "无法获取 vhost-user-gpu 的进程 id"
 
-#, c-format
-msgid "Could not get read only state, rc=%08x"
-msgstr "无法只获取只读状态, rc=%08x"
+msgid "Could not get read only state"
+msgstr ""
 
 msgid "Could not get response"
 msgstr "无法获得响应"
@@ -4276,13 +4283,11 @@ msgstr "无法获取快照 ID"
 msgid "Could not get snapshot name"
 msgstr "无法获取快照名称"
 
-#, c-format
-msgid "Could not get storage controller bus, rc=%08x"
-msgstr "无法获取存储控制器总线，rc=%08x"
+msgid "Could not get storage controller bus"
+msgstr ""
 
-#, c-format
-msgid "Could not get storage controller by name, rc=%08x"
-msgstr "不能按名称获取存储控制器，rc=%08x"
+msgid "Could not get storage controller by name"
+msgstr ""
 
 #, c-format
 msgid "Could not get syspath for parent of '%s'"
@@ -4702,6 +4707,10 @@ msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr "无法为 xmlNodeParam 设置 wsman 命名空间地址"
 
 #, c-format
+msgid "Could not start 'passt': %s"
+msgstr ""
+
+#, c-format
 msgid "Could not start 'slirp'. exitstatus: %d"
 msgstr "无法启动 'slirp'。 exitstatus: %d"
 
@@ -4844,6 +4853,9 @@ msgstr "生成时间"
 #, c-format
 msgid "Creation of %s volumes is not supported"
 msgstr "不支持生成 %s 卷"
+
+msgid "Crypto device is missing alias"
+msgstr ""
 
 msgid "Current memory size too large"
 msgstr "当前内存太大"
@@ -6228,8 +6240,8 @@ msgid "Failed to add signal handle watch"
 msgstr "添加信号处理观察失败"
 
 #, c-format
-msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
-msgstr "添加存储控制器失败（名称：%s、busType: %d）, rc=%08x"
+msgid "Failed to add storage controller (name: %s, busType: %d)"
+msgstr ""
 
 #, c-format
 msgid "Failed to allocate PCI device list: %s"
@@ -6335,9 +6347,8 @@ msgstr "根据 %s 更改卷 '%s' 的大小失败"
 msgid "Failed to change size of volume '%s' to %s"
 msgstr "将卷 '%s' 的大小改为 %s 失败"
 
-#, c-format
-msgid "Failed to change storage controller model, rc=%08x"
-msgstr "更改存储控制器型号失败，rc=%08x"
+msgid "Failed to change storage controller model"
+msgstr ""
 
 #, c-format
 msgid "Failed to chdir into %s"
@@ -6563,6 +6574,10 @@ msgid "Failed to create nvram dir %s"
 msgstr "创建 nvram 目录 %s 失败"
 
 msgid "Failed to create or modify the state XML attribute"
+msgstr ""
+
+#, c-format
+msgid "Failed to create passt state dir %s"
 msgstr ""
 
 #, c-format
@@ -7065,9 +7080,8 @@ msgstr "使用 libxenlight 为域 '%d' 获取调度程序参数失败"
 msgid "Failed to get snapshot count"
 msgstr "获取快照计数失败"
 
-#, c-format
-msgid "Failed to get storage controller name, rc=%08x"
-msgstr "获取存储控制器名称失败, rc=%08x"
+msgid "Failed to get storage controller name"
+msgstr ""
 
 msgid "Failed to get the number of active networks"
 msgstr "获取活跃的网络数失败"
@@ -7416,9 +7430,8 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr "使用路径 '%s' 打开存储卷失败"
 
 #, c-format
-msgid ""
-"Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
-msgstr "对机器打开以下磁盘/dvd/软驱失败：%s, rc=%08x"
+msgid "Failed to open the following disk/dvd/floppy to the machine: %s"
+msgstr ""
 
 #, c-format
 msgid "Failed to open tty %s"
@@ -7514,6 +7527,10 @@ msgstr "从 '%s' 中解析正整数失败"
 #, c-format
 msgid "Failed to parse rate '%s'"
 msgstr "解析速率 '%s' 失败"
+
+#, c-format
+msgid "Failed to parse rotated index from '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%s'"
@@ -7857,9 +7874,8 @@ msgstr "运行 '%s' 命令使用 IQN '%s' 更新 iscsi 接口失败"
 msgid "Failed to save '%s' for '%s'"
 msgstr "为 '%s' 保存 '%s' 失败"
 
-#, c-format
-msgid "Failed to save VM settings, rc=%08x"
-msgstr "保存虚拟机设置失败，rc=%08x"
+msgid "Failed to save VM settings"
+msgstr ""
 
 #, c-format
 msgid "Failed to save domain '%d' with libxenlight"
@@ -9336,6 +9352,10 @@ msgid "Invalid address '%s' in <ip>"
 msgstr "<ip> 中无效的地址 '%s'"
 
 #, c-format
+msgid "Invalid address '%s' in <portForward>"
+msgstr ""
+
+#, c-format
 msgid "Invalid address '%s' in network '%s'"
 msgstr "网络 '%s' 中的无效地址 '%s'"
 
@@ -9829,6 +9849,10 @@ msgstr "无效端口号：%s"
 #, c-format
 msgid "Invalid port range '%u-%u'."
 msgstr "无效端口范围 '%u-%u'。"
+
+#, c-format
+msgid "Invalid portForward proto value %u"
+msgstr ""
 
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
@@ -10379,17 +10403,8 @@ msgstr "过滤器 '%s' 的错误格式"
 msgid "Malformed format for log output '%s'"
 msgstr "日志输出 '%s' 的错误格式"
 
-msgid "Malformed guest-get-fsinfo 'disk' data array"
-msgstr "格式错误的 guest-get-fsinfo 'disk' 数据数组"
-
-msgid "Malformed guest-get-fsinfo data array"
-msgstr "格式错误的 guest-get-fsinfo 数据数组"
-
 msgid "Malformed id field in JSON state document"
 msgstr "JSON 状态文档中的格式错误的 id 字段"
-
-msgid "Malformed ip-addresses array"
-msgstr "格式错误的 ip-addresses 数组"
 
 msgid "Malformed lease_entries array"
 msgstr "格式错误的 lease_entries 数组"
@@ -10810,9 +10825,6 @@ msgstr "域对象缺少 UUID 参数"
 
 msgid "Missing VIR_CRED_AUTHNAME credential type"
 msgstr "缺少 VIR_CRED_AUTHNAME 凭证类型"
-
-msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
-msgstr "缺少 VIR_CRED_PASSPHRASE 或 VIR_CRED_NOECHOPROMPT 凭证类型"
 
 msgid "Missing XPath context"
 msgstr ""
@@ -11295,6 +11307,9 @@ msgstr "名称为 '%s' 的多个域存在：使用 UUID 重复请求"
 
 msgid "Multiple graphics devices are not supported"
 msgstr "不支持多个图形设备"
+
+msgid "Multiple iTCO watchdogs are not supported"
+msgstr ""
 
 msgid "Multiple interfaces attached to bridge"
 msgstr "附加到桥接的多个接口"
@@ -12639,9 +12654,6 @@ msgstr "密钥 '%s' 的密码短语"
 
 msgid "Password may not contain ',' character"
 msgstr "密码不能包含 ',' 字符"
-
-msgid "Password request failed"
-msgstr "密码请求失败"
 
 #, c-format
 msgid "Password set successfully for %s in %s"
@@ -14963,8 +14975,8 @@ msgid "Target domain vsock device model '%s' does not match source '%s'"
 msgstr "目标域 vsock 设备型号 '%s' 与源 '%s' 不匹配"
 
 #, c-format
-msgid "Target domain watchdog count %d does not match source %d"
-msgstr "目标域监控程序计数 %d 与源 %d 不匹配"
+msgid "Target domain watchdog device count %zu does not match source %zu"
+msgstr ""
 
 msgid "Target filesystem access mode does not match source"
 msgstr "目标文件系统访问模式与源不匹配"
@@ -15225,6 +15237,14 @@ msgid ""
 "'%s' or machine type '%s'"
 msgstr "'%s' 功能的 'eoi'属性不支持架构 '%s' 或机器类型 '%s'"
 
+msgid "The 'passt' backend can only be used with interface type='user'"
+msgstr ""
+
+msgid ""
+"The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
+"'exclude' is specified"
+msgstr ""
+
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -15407,11 +15427,6 @@ msgstr ""
 msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
-msgstr ""
-
-msgid ""
-"The overall maximum number of clients waiting for authentication must not be "
-"less than the overall maximum number of clients"
 msgstr ""
 
 msgid "The read only disk has no parent"
@@ -16162,9 +16177,8 @@ msgstr "无法关闭"
 msgid "Unable to close %s"
 msgstr "无法关闭 %s"
 
-#, c-format
-msgid "Unable to close HardDisk, rc=%08x"
-msgstr "无法关闭 HardDisk, rc=%08x"
+msgid "Unable to close HardDisk"
+msgstr ""
 
 msgid "Unable to close disk children"
 msgstr "无法关闭磁盘子项"
@@ -16176,9 +16190,11 @@ msgstr "无法递归关闭所有磁盘"
 msgid "Unable to close the VPD file, fd: %d"
 msgstr "无法关闭 VPD 文件，fd: %d"
 
-#, c-format
-msgid "Unable to close the new medium, rc=%08x"
-msgstr "无法关闭新的中型 rc=%08x"
+msgid "Unable to close the new medium"
+msgstr ""
+
+msgid "Unable to compile regex"
+msgstr ""
 
 #, c-format
 msgid "Unable to compute hash of data: %s"
@@ -16212,9 +16228,8 @@ msgstr "无法复制插槽文件句柄"
 msgid "Unable to create %s"
 msgstr "无法创建 %s"
 
-#, c-format
-msgid "Unable to create HardDisk, rc=%08x"
-msgstr "无法创建 HardDisk、rc=%08x"
+msgid "Unable to create HardDisk"
+msgstr ""
 
 msgid "Unable to create JSON formatter"
 msgstr "无法生成 JSON 格式化程序"
@@ -16377,9 +16392,8 @@ msgstr "无法删除文件 %s"
 msgid "Unable to delete lockspace resource %s"
 msgstr "无法删除锁空间资源 %s"
 
-#, c-format
-msgid "Unable to delete medium, rc=%08x"
-msgstr "无法删除中型, rc=%08x"
+msgid "Unable to delete medium"
+msgstr ""
 
 #, c-format
 msgid "Unable to delete port %s from OVS"
@@ -16741,13 +16755,8 @@ msgstr "无法获取硬盘格式"
 msgid "Unable to get hard disk id"
 msgstr "无法获取硬盘 ID"
 
-#, c-format
-msgid "Unable to get hard disk id, rc=%08x"
-msgstr "无法获取硬盘 id, rc=%08x"
-
-#, c-format
-msgid "Unable to get hardDisk Id, rc=%08x"
-msgstr "无法获取硬盘 Id, rc=%08x"
+msgid "Unable to get hardDisk Id"
+msgstr ""
 
 msgid "Unable to get host SEV information"
 msgstr "无法获取主机 SEV 信息"
@@ -16790,9 +16799,8 @@ msgstr "无法获取 %s 中的回路状态"
 msgid "Unable to get medium location"
 msgstr "无法获取中型位置"
 
-#, c-format
-msgid "Unable to get medium uuid, rc=%08x"
-msgstr "无法获取中型 uuid, rc=%08x"
+msgid "Unable to get medium uuid"
+msgstr ""
 
 msgid "Unable to get memory parameters"
 msgstr "无法获取内存参数"
@@ -17048,13 +17056,11 @@ msgstr "无法打开 /dev/loop-control"
 msgid "Unable to open /proc/mounts"
 msgstr "无法打开 /proc/mounts"
 
-#, c-format
-msgid "Unable to open HardDisk, rc=%08x"
-msgstr "无法打开 HardDisk, rc=%08x"
+msgid "Unable to open HardDisk"
+msgstr ""
 
-#, c-format
-msgid "Unable to open Machine, rc=%08x"
-msgstr "无法打开 Machine，rc=%08x"
+msgid "Unable to open Machine"
+msgstr ""
 
 msgid "Unable to open UNIX socket"
 msgstr "无法打开 UNIX 套接字"
@@ -17338,9 +17344,8 @@ msgstr "无法读取 vhost-user-gpu pidfile '%s'"
 msgid "Unable to read virtiofsd pidfile '%s'"
 msgstr "无法读取 virtiofsd pidfile '%s'"
 
-#, c-format
-msgid "Unable to register Machine, rc=%08x"
-msgstr "无法注册 Machine，rc=%08x"
+msgid "Unable to register Machine"
+msgstr ""
 
 msgid "Unable to register async IO callback"
 msgstr "无法注册异步 IO 回叫"
@@ -17791,9 +17796,8 @@ msgstr "无法取消链接 %s"
 msgid "Unable to unlink path '%s'"
 msgstr "无法取消链接路径 '%s'"
 
-#, c-format
-msgid "Unable to unregister machine, rc=%08x"
-msgstr "无法对机器取消注册，rc=%08x"
+msgid "Unable to unregister machine"
+msgstr ""
 
 msgid "Unable to update server's tls related files."
 msgstr "无法更新服务器的 tls 相关文件。"
@@ -18933,13 +18937,6 @@ msgstr "用户 %s 不存在"
 msgid "User namespace support is recommended"
 msgstr "需要user namespace功能"
 
-msgid ""
-"Username and key file path must be provided for private key authentication"
-msgstr "私钥认证必须提供用户名和密钥文件路径"
-
-msgid "Username must be provided for ssh agent authentication"
-msgstr "SSH 代理认证必须提供用户名"
-
 msgid "Username request failed"
 msgstr "用户名请求失败"
 
@@ -19054,10 +19051,6 @@ msgstr "值 '%s' 在 %s 范围之外"
 #, c-format
 msgid "Value of cputune '%s' must be in range [%llu, %llu]"
 msgstr "cputune '%s' 的值必须在 [%llu, %llu] 范围内"
-
-#, c-format
-msgid "Value of cputune 'shares' must be in range [%llu, %llu]"
-msgstr "cputune 'shares' 的值必须在 [%llu, %llu] 范围内"
 
 msgid "Variable value contains invalid character"
 msgstr "变量值包含无效字符"
@@ -21132,6 +21125,9 @@ msgstr "无法将内存 targetNode 从 '%d' 修改为 '%d'"
 msgid "cannot modify network device address type"
 msgstr "无法修改网络设备地址类型"
 
+msgid "cannot modify network device backend settings"
+msgstr ""
+
 msgid "cannot modify network device boot index setting"
 msgstr "无法修改网络设备引导索引设置"
 
@@ -22356,8 +22352,8 @@ msgid "could not allocate memory"
 msgstr "无法分配内存"
 
 #, c-format
-msgid "could not attach shared folder '%s', rc=%08x"
-msgstr "无法附加到共享文件夹: %s, rc=%08x"
+msgid "could not attach shared folder '%s'"
+msgstr ""
 
 msgid "could not build absolute core file path"
 msgstr "无法构建绝对 core 文件路径"
@@ -22369,16 +22365,16 @@ msgid "could not build absolute output file path"
 msgstr "无法构建绝对输出文件路径"
 
 #, c-format
-msgid "could not change ACPI status to: %s, rc=%08x"
-msgstr "无法将 ACPI 状态改为：%s, rc=%08x"
+msgid "could not change ACPI status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change APIC status to: %s, rc=%08x"
-msgstr "无法将 APIC 状态改为：%s, rc=%08x"
+msgid "could not change APIC status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change PAE status to: %s, rc=%08x"
-msgstr "无法将PAE 状态改为：%s, rc=%08x"
+msgid "could not change PAE status to: %s"
+msgstr ""
 
 msgid "could not close handshake fd"
 msgstr "无法关闭握手 fd"
@@ -22412,20 +22408,18 @@ msgstr "无法转换带宽峰值 '%s'"
 msgid "could not create profile"
 msgstr "无法生成配置文件"
 
-#, c-format
-msgid "could not define a domain, rc=%08x"
-msgstr "无法定义域，rc=%08x"
+msgid "could not define a domain"
+msgstr ""
 
 msgid "could not delete snapshot"
 msgstr "无法删除快照"
 
-#, c-format
-msgid "could not delete the domain, rc=%08x"
-msgstr "无法删除域，rc=%08x"
+msgid "could not delete the domain"
+msgstr ""
 
 #, c-format
-msgid "could not detach shared folder '%s', rc=%08x"
-msgstr "无法从共享文件夹中分离 '%s', rc=%08x"
+msgid "could not detach shared folder '%s'"
+msgstr ""
 
 msgid "could not determine max vcpus for the domain"
 msgstr "无法决定该域的最大 vcpu"
@@ -22619,20 +22613,20 @@ msgid "could not set PATH"
 msgstr "无法设定 PATH"
 
 #, c-format
-msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
-msgstr "无法将该域的内存大小设定为：%llu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %llu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
-msgstr "无法将该域的内存设定为：%lu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %lu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
-msgstr "无法将该域的 cpu 数设定为：%u, rc=%08x"
+msgid "could not set the number of cpus of the domain to: %u"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
-msgstr "无法将虚拟 CPUs 数设定为：%u, rc=%08x"
+msgid "could not set the number of virtual CPUs to: %u"
+msgstr ""
 
 #, c-format
 msgid "could not take a screenshot of %s"
@@ -22837,6 +22831,18 @@ msgstr "创建 qcow/qcow2 文件只支持 'luks' 加密"
 
 msgid "creation of qcow2 encrypted image is not supported"
 msgstr "不支持创建 qcow2 加密的镜像"
+
+#, c-format
+msgid "crypto backend %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto model %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto type %s is not supported"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -23637,9 +23643,6 @@ msgstr "域已经有 VNC 图形"
 msgid "domain already has a vsock device"
 msgstr "域已有一个 vsock 设备"
 
-msgid "domain already has a watchdog"
-msgstr "域已有一个 watchdog"
-
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "域架构(/domain/os/type/@arch)"
 
@@ -23700,9 +23703,6 @@ msgstr "已分配主机设备的域"
 
 msgid "domain has no snapshots"
 msgstr "域没有快照"
-
-msgid "domain has no watchdog"
-msgstr "域没有 watchdog"
 
 msgid "domain has to be shutoff before renaming"
 msgstr "重命名前域必须关闭"
@@ -24832,6 +24832,10 @@ msgstr "无法查询循环的退出状态: %s"
 msgid "failed to duplicate file descriptor for fd group '%s'"
 msgstr ""
 
+#, c-format
+msgid "failed to duplicate passed fd with index '%zu'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr "无法启用 IP 转发"
 
@@ -25512,11 +25516,11 @@ msgstr "无法检索凭证"
 msgid "failed to retrieve decision to accept host key"
 msgstr "无法检索接受主机密钥的决定"
 
-msgid "failed to retrieve keyboard interactive result: callback has failed"
-msgstr "无法检索键盘交互结果：回调已失败"
-
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr "无法检索私钥密码短语：回调已失败"
+
+msgid "failed to retrieve user response for authentication callback"
+msgstr ""
 
 #, c-format
 msgid "failed to rollback transaction: %s%s%s"
@@ -26348,8 +26352,8 @@ msgstr "虚拟机意外退出"
 msgid "guest unexpectedly quit during hotplug"
 msgstr "热插拔过程中虚拟机意外退出"
 
-msgid "guest-get-fsinfo reply was missing return data"
-msgstr "guest-get-fsinfo 回复缺少返回数据"
+msgid "guest-get-fsinfo reply was missing or not an array"
+msgstr ""
 
 msgid "guest-get-osinfo reply was missing return data"
 msgstr "guest-get-osinfo 回复缺少返回数据"
@@ -29402,7 +29406,7 @@ msgstr "支持的转储格式中缺少条目"
 msgid "missing existing file for disk %s: %s"
 msgstr "磁盘 %s 缺少文件：%s"
 
-msgid "missing external TPM backend type"
+msgid "missing external TPM backend source type"
 msgstr ""
 
 msgid "missing feature name"
@@ -29921,10 +29925,6 @@ msgstr "型号 '%s' 内存设备在域配置中不存在"
 #, c-format
 msgid "model '%s' shmem device not present in domain configuration"
 msgstr "型号 '%s' shmem 设备在域配置中不存在"
-
-#, c-format
-msgid "model '%s' watchdog device not present in domain configuration"
-msgstr "型号 '%s' watchdog 设备在域配置中不存在"
 
 msgid "model resolution is not supported"
 msgstr "不支持型号解析"
@@ -30712,6 +30712,9 @@ msgstr "未找到匹配的文件系统设备"
 msgid "no matching redirdev was not found"
 msgstr "未找到匹配的 redirdev"
 
+msgid "no matching watchdog was found"
+msgstr ""
+
 msgid "no medium attachments"
 msgstr "没有中型附件"
 
@@ -30874,14 +30877,11 @@ msgstr "未注册流回叫"
 msgid "no such screen ID"
 msgstr "没有这样的屏幕 ID"
 
+msgid "no suitable callback authentication callback was found"
+msgstr ""
+
 msgid "no suitable callback for host key verification"
 msgstr "没有适合主机密钥验证的回调"
-
-msgid "no suitable callback for input of key passphrase"
-msgstr "没有适合密钥密码短语输入的回调"
-
-msgid "no suitable callback for input of keyboard response"
-msgstr "没有适合键盘响应输入的回调"
 
 msgid "no suitable info found"
 msgstr "未找到合适的信息"
@@ -31204,7 +31204,7 @@ msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr "在线非可插拔 vcpu 需要排在可插拔 vcpu 之前"
 
-msgid "only 'client' mode is supported for external TPM device"
+msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
@@ -31261,9 +31261,6 @@ msgstr "只支持单一 nvram 设备"
 msgid "only a single vsock device is supported"
 msgstr "只支持一个 vsock 设备"
 
-msgid "only a single watchdog device is supported"
-msgstr "只支持单一监视器设备"
-
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "总线 'virtio' 只支持对于 'passthrough' 输入设备"
 
@@ -31310,6 +31307,9 @@ msgstr "只支持一个 TPM 后端"
 
 msgid "only one backup job is supported"
 msgstr "只支持一个备份作业"
+
+msgid "only one crypto backend is supported"
+msgstr ""
 
 msgid "only one emulatorpin is supported"
 msgstr "只支持一个 emulatorpin"
@@ -32181,6 +32181,9 @@ msgstr "ps2 总线不支持 %s 输入设备"
 #, c-format
 msgid "pull mode backup for disk '%s' requires qcow2 driver"
 msgstr "磁盘 '%s' 的 pull 模式备份需要 qcow2 驱动程序"
+
+msgid "pvpanic is supported only with PCI address type"
+msgstr ""
 
 #, c-format
 msgid "qemu agent didn't provide 'ip-address' field for interface '%s'"
@@ -34096,6 +34099,9 @@ msgstr "MAC 地址 '%s' 与多个接口映射"
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr "QEMU 二进制文件不支持 ISA panic 设备"
 
+msgid "the QEMU binary does not support the PCI pvpanic device"
+msgstr ""
+
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
 msgstr "在这个主机上 '%s' 不支持 accel '%s'"
@@ -34156,6 +34162,9 @@ msgstr "机器没有快照"
 
 msgid "the new password"
 msgstr "新密码"
+
+msgid "the passt network backend is not supported with this QEMU binary"
+msgstr ""
 
 msgid "the password is already encrypted"
 msgstr "密码已被加密"
@@ -35846,12 +35855,12 @@ msgid "unknown authentication type %s"
 msgstr "未知的验证类型 %s"
 
 #, c-format
-msgid "unknown backend type '%s' for egd"
-msgstr "未知的 egd 的后端类型 '%s'"
+msgid "unknown backend source type '%s' for external TPM"
+msgstr ""
 
 #, c-format
-msgid "unknown backend type '%s' for external TPM"
-msgstr ""
+msgid "unknown backend type '%s' for egd"
+msgstr "未知的 egd 的后端类型 '%s'"
 
 #, c-format
 msgid "unknown backup mode '%s'"
@@ -36312,6 +36321,10 @@ msgstr "不支持的 Hyper-V stimer 功能：%s"
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
 msgstr "不支持的 HyperV Enlightenment 功能：%s"
+
+#, c-format
+msgid "unsupported IPv6 address prefix='%u' - must be 64"
+msgstr ""
 
 #, c-format
 msgid "unsupported KVM feature: %s"
@@ -37508,11 +37521,12 @@ msgstr "警告"
 msgid "watchdog"
 msgstr "watchdog"
 
-msgid "watchdog device not present in domain configuration"
-msgstr "域配置中不存在 watchdog 设备"
-
 msgid "watchdog must contain model name"
 msgstr "计时器必须包含模型名称"
+
+msgid ""
+"watchdogs with different actions are not supported with this QEMU binary"
+msgstr ""
 
 msgid "webSocket"
 msgstr "webSocket"
@@ -37659,6 +37673,196 @@ msgstr "请求网络 %s 的区 %s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "'disk' missing in reply of guest-get-fsinfo"
+#~ msgstr "guest-get-fsinfo 回复中缺少 'disk'"
+
+#~ msgid ""
+#~ "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, "
+#~ "rc=%08x"
+#~ msgstr "无法获得要附加为 harddisk/dvd/floppy 的文件的 UUID ：%s, rc=%08x"
+
+#~ msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
+#~ msgstr "无法将文件附加为 harddisk/dvd/floppy: %s, rc=%08x"
+
+#~ msgid "Could not get IMedium, rc=%08x"
+#~ msgstr "无法获得 IMedium、rc=%08x"
+
+#~ msgid "Could not get device port, rc=%08x"
+#~ msgstr "无法获取设备端口 rc=%08x"
+
+#~ msgid "Could not get device slot, rc=%08x"
+#~ msgstr "无法获取设备插槽，rc=%08x"
+
+#~ msgid "Could not get device type, rc=%08x"
+#~ msgstr "无法获取设备类型，rc=%08x"
+
+#~ msgid "Could not get list of Defined Domains, rc=%08x"
+#~ msgstr "无法获取定义的域列表：rc=%08x"
+
+#~ msgid "Could not get list of Domains, rc=%08x"
+#~ msgstr "无法获取域列表，rc=%08x"
+
+#~ msgid "Could not get list of domains, rc=%08x"
+#~ msgstr "无法获取域列表，rc=%08x"
+
+#~ msgid "Could not get list of machines, rc=%08x"
+#~ msgstr "无法获取及其列表，rc=%08x"
+
+#~ msgid "Could not get medium storage location, rc=%08x"
+#~ msgstr "无法获取中等存储位置 rc=%08x"
+
+#~ msgid "Could not get number of Defined Domains, rc=%08x"
+#~ msgstr "无法获取定义的域数量：rc=%08x"
+
+#~ msgid "Could not get number of Domains, rc=%08x"
+#~ msgstr "无法获取域数量，rc=%08x"
+
+#~ msgid "Could not get read only state, rc=%08x"
+#~ msgstr "无法只获取只读状态, rc=%08x"
+
+#~ msgid "Could not get storage controller bus, rc=%08x"
+#~ msgstr "无法获取存储控制器总线，rc=%08x"
+
+#~ msgid "Could not get storage controller by name, rc=%08x"
+#~ msgstr "不能按名称获取存储控制器，rc=%08x"
+
+#~ msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
+#~ msgstr "添加存储控制器失败（名称：%s、busType: %d）, rc=%08x"
+
+#~ msgid "Failed to change storage controller model, rc=%08x"
+#~ msgstr "更改存储控制器型号失败，rc=%08x"
+
+#~ msgid "Failed to get storage controller name, rc=%08x"
+#~ msgstr "获取存储控制器名称失败, rc=%08x"
+
+#~ msgid ""
+#~ "Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
+#~ msgstr "对机器打开以下磁盘/dvd/软驱失败：%s, rc=%08x"
+
+#~ msgid "Failed to save VM settings, rc=%08x"
+#~ msgstr "保存虚拟机设置失败，rc=%08x"
+
+#~ msgid "Malformed guest-get-fsinfo 'disk' data array"
+#~ msgstr "格式错误的 guest-get-fsinfo 'disk' 数据数组"
+
+#~ msgid "Malformed guest-get-fsinfo data array"
+#~ msgstr "格式错误的 guest-get-fsinfo 数据数组"
+
+#~ msgid "Malformed ip-addresses array"
+#~ msgstr "格式错误的 ip-addresses 数组"
+
+#~ msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
+#~ msgstr "缺少 VIR_CRED_PASSPHRASE 或 VIR_CRED_NOECHOPROMPT 凭证类型"
+
+#~ msgid "Password request failed"
+#~ msgstr "密码请求失败"
+
+#~ msgid "Target domain watchdog count %d does not match source %d"
+#~ msgstr "目标域监控程序计数 %d 与源 %d 不匹配"
+
+#~ msgid "Unable to close HardDisk, rc=%08x"
+#~ msgstr "无法关闭 HardDisk, rc=%08x"
+
+#~ msgid "Unable to close the new medium, rc=%08x"
+#~ msgstr "无法关闭新的中型 rc=%08x"
+
+#~ msgid "Unable to create HardDisk, rc=%08x"
+#~ msgstr "无法创建 HardDisk、rc=%08x"
+
+#~ msgid "Unable to delete medium, rc=%08x"
+#~ msgstr "无法删除中型, rc=%08x"
+
+#~ msgid "Unable to get hard disk id, rc=%08x"
+#~ msgstr "无法获取硬盘 id, rc=%08x"
+
+#~ msgid "Unable to get hardDisk Id, rc=%08x"
+#~ msgstr "无法获取硬盘 Id, rc=%08x"
+
+#~ msgid "Unable to get medium uuid, rc=%08x"
+#~ msgstr "无法获取中型 uuid, rc=%08x"
+
+#~ msgid "Unable to open HardDisk, rc=%08x"
+#~ msgstr "无法打开 HardDisk, rc=%08x"
+
+#~ msgid "Unable to open Machine, rc=%08x"
+#~ msgstr "无法打开 Machine，rc=%08x"
+
+#~ msgid "Unable to register Machine, rc=%08x"
+#~ msgstr "无法注册 Machine，rc=%08x"
+
+#~ msgid "Unable to unregister machine, rc=%08x"
+#~ msgstr "无法对机器取消注册，rc=%08x"
+
+#~ msgid ""
+#~ "Username and key file path must be provided for private key authentication"
+#~ msgstr "私钥认证必须提供用户名和密钥文件路径"
+
+#~ msgid "Username must be provided for ssh agent authentication"
+#~ msgstr "SSH 代理认证必须提供用户名"
+
+#~ msgid "Value of cputune 'shares' must be in range [%llu, %llu]"
+#~ msgstr "cputune 'shares' 的值必须在 [%llu, %llu] 范围内"
+
+#~ msgid "could not attach shared folder '%s', rc=%08x"
+#~ msgstr "无法附加到共享文件夹: %s, rc=%08x"
+
+#~ msgid "could not change ACPI status to: %s, rc=%08x"
+#~ msgstr "无法将 ACPI 状态改为：%s, rc=%08x"
+
+#~ msgid "could not change APIC status to: %s, rc=%08x"
+#~ msgstr "无法将 APIC 状态改为：%s, rc=%08x"
+
+#~ msgid "could not change PAE status to: %s, rc=%08x"
+#~ msgstr "无法将PAE 状态改为：%s, rc=%08x"
+
+#~ msgid "could not define a domain, rc=%08x"
+#~ msgstr "无法定义域，rc=%08x"
+
+#~ msgid "could not delete the domain, rc=%08x"
+#~ msgstr "无法删除域，rc=%08x"
+
+#~ msgid "could not detach shared folder '%s', rc=%08x"
+#~ msgstr "无法从共享文件夹中分离 '%s', rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
+#~ msgstr "无法将该域的内存大小设定为：%llu Kb, rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
+#~ msgstr "无法将该域的内存设定为：%lu Kb, rc=%08x"
+
+#~ msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
+#~ msgstr "无法将该域的 cpu 数设定为：%u, rc=%08x"
+
+#~ msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
+#~ msgstr "无法将虚拟 CPUs 数设定为：%u, rc=%08x"
+
+#~ msgid "domain already has a watchdog"
+#~ msgstr "域已有一个 watchdog"
+
+#~ msgid "domain has no watchdog"
+#~ msgstr "域没有 watchdog"
+
+#~ msgid "failed to retrieve keyboard interactive result: callback has failed"
+#~ msgstr "无法检索键盘交互结果：回调已失败"
+
+#~ msgid "guest-get-fsinfo reply was missing return data"
+#~ msgstr "guest-get-fsinfo 回复缺少返回数据"
+
+#~ msgid "model '%s' watchdog device not present in domain configuration"
+#~ msgstr "型号 '%s' watchdog 设备在域配置中不存在"
+
+#~ msgid "no suitable callback for input of key passphrase"
+#~ msgstr "没有适合密钥密码短语输入的回调"
+
+#~ msgid "no suitable callback for input of keyboard response"
+#~ msgstr "没有适合键盘响应输入的回调"
+
+#~ msgid "only a single watchdog device is supported"
+#~ msgstr "只支持单一监视器设备"
+
+#~ msgid "watchdog device not present in domain configuration"
+#~ msgstr "域配置中不存在 watchdog 设备"
 
 #~ msgid "%s array element does not contain a string"
 #~ msgstr "%s 数组元素不包含字符串"

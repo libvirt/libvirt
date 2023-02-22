@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-01-09 14:27+0000\n"
+"POT-Creation-Date: 2023-02-22 13:50+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -530,6 +530,15 @@ msgid "%s model of watchdog is allowed for s390 and s390x only"
 msgstr ""
 
 #, c-format
+msgid "%s model of watchdog is only part of q35 machine"
+msgstr ""
+
+#, c-format
+msgid ""
+"%s model of watchdog is part of the machine and cannot have any address set."
+msgstr ""
+
+#, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
 msgstr ""
 
@@ -793,6 +802,10 @@ msgid "%s: failed to communicate with bridge helper: %s"
 msgstr ""
 
 #, c-format
+msgid "%s: failed to generate UNIX socket path"
+msgstr ""
+
+#, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "%s: తాత్కాలిక దస్త్రము చదువుటకు విఫలమైంది: %s"
 
@@ -896,6 +909,10 @@ msgstr "%s: మరిన్ని వివరాల కొరకు --help ప�
 
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
+#, c-format
+msgid "%s: unknown remote mode '%s'"
 msgstr ""
 
 #, c-format
@@ -1070,9 +1087,8 @@ msgid ""
 "type instead"
 msgstr ""
 
-#, fuzzy
-msgid "'disk' missing in reply of guest-get-fsinfo"
-msgstr "guest-get-vcpus యొక్క ప్రత్యుత్తరం నందు 'online' దొరకలేదు"
+msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
+msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %s"
@@ -2402,8 +2418,7 @@ msgstr "PATH env నందు prlctl ఆదేశమును కనుగొన
 
 #, c-format
 msgid ""
-"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc="
-"%08x"
+"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"
 msgstr ""
 
 #, fuzzy
@@ -3775,9 +3790,9 @@ msgstr ""
 msgid "Could not attach serial port %zu"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
-msgstr "భాగస్వామ్య సంచయం '%s' ను అనుబందించలేక పోయింది, rc=%08x"
+#, c-format
+msgid "Could not attach the file as harddisk/dvd/floppy: %s"
+msgstr ""
 
 msgid "Could not build CURL header list"
 msgstr "CURL హెడర్ జాబితా నిర్మించలేక పోయెను"
@@ -4128,9 +4143,8 @@ msgstr "డిస్కు చిరునామా నిర్థారిం�
 msgid "Could not get EPR items"
 msgstr "వడపోత సృష్టించలేక పోయింది"
 
-#, fuzzy, c-format
-msgid "Could not get IMedium, rc=%08x"
-msgstr "డొమైన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+msgid "Could not get IMedium"
+msgstr ""
 
 msgid "Could not get Msvm_DiskDrive default InstanceID"
 msgstr ""
@@ -4161,17 +4175,14 @@ msgstr "స్నాప్‌షాట్ పేరు పొందలేక ప
 msgid "Could not get current time"
 msgstr "ప్రస్తుత సమయమును పొందలేక పోయింది"
 
-#, fuzzy, c-format
-msgid "Could not get device port, rc=%08x"
-msgstr "డొమైన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+msgid "Could not get device port"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get device slot, rc=%08x"
-msgstr "మిషన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+msgid "Could not get device slot"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get device type, rc=%08x"
-msgstr "మిషన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+msgid "Could not get device type"
+msgstr ""
 
 #, c-format
 msgid "Could not get free memory for host %s"
@@ -4209,30 +4220,25 @@ msgstr "(అంతర్గత) ఇటరేటర్ ID %u కొరకు ఇ�
 msgid "Could not get iterator index for iterator ID %u"
 msgstr "ఇటరేటర్ ID %u కొరకు ఇటరేటర్ విషయసూచి పొందలేక పోయింది"
 
-#, c-format
-msgid "Could not get list of Defined Domains, rc=%08x"
-msgstr "నిర్వచిత డొమైన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+msgid "Could not get list of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of Domains, rc=%08x"
-msgstr "డొమైన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+msgid "Could not get list of Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of domains, rc=%08x"
-msgstr "డొమైన్ల జాబితాను పొందలేక పోయింది, rc=%08x"
+msgid "Could not get list of domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of machines, rc=%08x"
-msgstr "మిషన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+msgid "Could not get list of machines"
+msgstr ""
 
 #, c-format
 msgid ""
 "Could not get maximum definition of Msvm_ProcessorSettingData for host %s"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get medium storage location, rc=%08x"
-msgstr "డొమైన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+msgid "Could not get medium storage location"
+msgstr ""
 
 #, c-format
 msgid "Could not get members of bridge '%s'"
@@ -4245,16 +4251,17 @@ msgstr "వర్చ్యువల్ మిషన్ యొక్క పేర
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "nth (%u) విలువ వేరియబుల్ '%s' యొక్కది పొందలేక పోయింది"
 
-#, c-format
-msgid "Could not get number of Defined Domains, rc=%08x"
-msgstr "నిర్వచిత డొమైన్ల యొక్క సంఖ్యను పొందలేక పోయింది, rc=%08x"
+msgid "Could not get number of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get number of Domains, rc=%08x"
-msgstr "డొమైన్ల యొక్క సంఖ్యను పొందలేక పోయింది, rc=%08x"
+msgid "Could not get number of Domains"
+msgstr ""
 
 #, c-format
 msgid "Could not get parent of '%s'"
+msgstr ""
+
+msgid "Could not get process ID of passt"
 msgstr ""
 
 #, fuzzy
@@ -4265,9 +4272,8 @@ msgstr "స్నాప్‌షాట్ %s యొక్క పేరెంట�
 msgid "Could not get process id of vhost-user-gpu"
 msgstr "స్నాప్‌షాట్ %s యొక్క పేరెంట్ పొందలేక పోయింది"
 
-#, fuzzy, c-format
-msgid "Could not get read only state, rc=%08x"
-msgstr "మిషన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+msgid "Could not get read only state"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get response"
@@ -4300,13 +4306,11 @@ msgstr "స్నాప్‌షాట్ పేరు పొందలేక ప
 msgid "Could not get snapshot name"
 msgstr "స్నాప్‌షాట్ పేరు పొందలేక పోయింది"
 
-#, fuzzy, c-format
-msgid "Could not get storage controller bus, rc=%08x"
-msgstr "మిషన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+msgid "Could not get storage controller bus"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get storage controller by name, rc=%08x"
-msgstr "మిషన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+msgid "Could not get storage controller by name"
+msgstr ""
 
 #, c-format
 msgid "Could not get syspath for parent of '%s'"
@@ -4728,6 +4732,10 @@ msgstr "మూలపు dirను దస్త్రవ్యవస్థ కొ
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
 
+#, c-format
+msgid "Could not start 'passt': %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Could not start 'slirp'. exitstatus: %d"
 msgstr "డొమైన్ ప్రారంభించలేక పోయింది: %s"
@@ -4880,6 +4888,9 @@ msgstr "సృష్టించు సమయం"
 #, c-format
 msgid "Creation of %s volumes is not supported"
 msgstr "%s వాల్యూమ్ల సృష్టీకరణ తోడ్పాటులేదు"
+
+msgid "Crypto device is missing alias"
+msgstr ""
 
 #, fuzzy
 msgid "Current memory size too large"
@@ -6321,7 +6332,7 @@ msgid "Failed to add signal handle watch"
 msgstr "సంకేతం సంభాలన వాచ్‌ను జతచేయుటకు విఫలమైంది"
 
 #, c-format
-msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
+msgid "Failed to add storage controller (name: %s, busType: %d)"
 msgstr ""
 
 #, c-format
@@ -6430,9 +6441,8 @@ msgstr "'%s' యాజమాన్యం %d:%d కు మార్చుటక�
 msgid "Failed to change size of volume '%s' to %s"
 msgstr "'%s' యాజమాన్యం %d:%d కు మార్చుటకు విఫలమైంది"
 
-#, fuzzy, c-format
-msgid "Failed to change storage controller model, rc=%08x"
-msgstr "PAE స్థితిని దీనికి మార్చలేక పోయింది: %s, rc=%08x"
+msgid "Failed to change storage controller model"
+msgstr ""
 
 #, c-format
 msgid "Failed to chdir into %s"
@@ -6662,6 +6672,10 @@ msgid "Failed to create nvram dir %s"
 msgstr "vol %s సృష్టించుటలో విఫలమైంది"
 
 msgid "Failed to create or modify the state XML attribute"
+msgstr ""
+
+#, c-format
+msgid "Failed to create passt state dir %s"
 msgstr ""
 
 #, c-format
@@ -7178,9 +7192,8 @@ msgstr "డొమైన్ '%d' కొరకు libxenlight తో ప్రణ�
 msgid "Failed to get snapshot count"
 msgstr "స్నాప్‌షాట్ లెక్క పొందుటకు విఫలమైంది"
 
-#, fuzzy, c-format
-msgid "Failed to get storage controller name, rc=%08x"
-msgstr "%s మిర్రర్ సంఖ్య పొందుటకు విఫలమైంది"
+msgid "Failed to get storage controller name"
+msgstr ""
 
 msgid "Failed to get the number of active networks"
 msgstr "క్రియాశీల నెట్వర్కుల సంఖ్యను పొందుటకు విఫలమైంది"
@@ -7536,8 +7549,7 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr "పాత్ '%s'తో నిల్వ వాల్యూమ్‌ను తెరుచుటలో విఫలమైంది"
 
 #, c-format
-msgid ""
-"Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
+msgid "Failed to open the following disk/dvd/floppy to the machine: %s"
 msgstr ""
 
 #, c-format
@@ -7640,6 +7652,10 @@ msgstr "'%s' నుండి ధన పూర్ణసంఖ్యను పా�
 #, fuzzy, c-format
 msgid "Failed to parse rate '%s'"
 msgstr "dir నామము '%s' పార్శ్ చేయుటకు విఫలమైంది"
+
+#, c-format
+msgid "Failed to parse rotated index from '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%s'"
@@ -7988,9 +8004,8 @@ msgstr "'%s' ఆదేశాన్ని నడిపి IQN '%s'తో iscsi �
 msgid "Failed to save '%s' for '%s'"
 msgstr "%s క్షేత్రాన్ని %sకి భద్రపరవటంలో విఫలమైంది"
 
-#, fuzzy, c-format
-msgid "Failed to save VM settings, rc=%08x"
-msgstr "%s క్షేత్రాన్ని %sకి భద్రపరవటంలో విఫలమైంది"
+msgid "Failed to save VM settings"
+msgstr ""
 
 #, c-format
 msgid "Failed to save domain '%d' with libxenlight"
@@ -9512,6 +9527,10 @@ msgid "Invalid address '%s' in <ip>"
 msgstr "చెల్లని చిరునామా '%s' నెట్వర్కు '%s' నందు"
 
 #, c-format
+msgid "Invalid address '%s' in <portForward>"
+msgstr ""
+
+#, c-format
 msgid "Invalid address '%s' in network '%s'"
 msgstr "చెల్లని చిరునామా '%s' నెట్వర్కు '%s' నందు"
 
@@ -10012,6 +10031,10 @@ msgstr "చెల్లని పోర్టు సంఖ్య: %s"
 #, c-format
 msgid "Invalid port range '%u-%u'."
 msgstr "చెల్లని పోర్ట్ విస్తృతి '%u-%u'."
+
+#, c-format
+msgid "Invalid portForward proto value %u"
+msgstr ""
 
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
@@ -10585,19 +10608,9 @@ msgstr "తప్పుగారూపొందిన nbd పోర్ట్ '%s
 msgid "Malformed format for log output '%s'"
 msgstr ""
 
-msgid "Malformed guest-get-fsinfo 'disk' data array"
-msgstr ""
-
-msgid "Malformed guest-get-fsinfo data array"
-msgstr ""
-
 #, fuzzy
 msgid "Malformed id field in JSON state document"
 msgstr "JSON స్థితి పత్రము నందు చదువుటకుమాత్రమే క్షేత్రము దొరకలేదు"
-
-#, fuzzy
-msgid "Malformed ip-addresses array"
-msgstr "తప్పుగావున్న mac చిరునామా '%s'"
 
 #, fuzzy
 msgid "Malformed lease_entries array"
@@ -11049,9 +11062,6 @@ msgid "Missing UUID parameter for domain object"
 msgstr "డొమైన్ ఆబ్జక్టు కొరకు దొరకని UUID పారామితి"
 
 msgid "Missing VIR_CRED_AUTHNAME credential type"
-msgstr ""
-
-msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
 msgstr ""
 
 msgid "Missing XPath context"
@@ -11571,6 +11581,9 @@ msgstr ""
 #, fuzzy
 msgid "Multiple graphics devices are not supported"
 msgstr "బహుళ-హెడ్ వీడియో పరికరాల తోడ్పాటులేదు"
+
+msgid "Multiple iTCO watchdogs are not supported"
+msgstr ""
 
 msgid "Multiple interfaces attached to bridge"
 msgstr "బ్రిడ్జ్ కు బహుళ ఇంటర్ఫేసులు అనుబందించబడినవి"
@@ -12992,9 +13005,6 @@ msgstr "కీ '%s' కొరకు సంకేతపదం"
 
 msgid "Password may not contain ',' character"
 msgstr ""
-
-msgid "Password request failed"
-msgstr "సంకేతపదం అభ్యర్ధన విఫలమైంది"
 
 #, c-format
 msgid "Password set successfully for %s in %s"
@@ -15421,8 +15431,8 @@ msgid "Target domain vsock device model '%s' does not match source '%s'"
 msgstr "లక్ష్యపు అతిధేయ పరికరం రీతి %s మూలం %s తో సరిపోలడంలేదు"
 
 #, c-format
-msgid "Target domain watchdog count %d does not match source %d"
-msgstr "లక్ష్యపు డొమైన్ వాచ్‌డాగ్ లెక్క %d మూలం %d తో సరిపోలడంలేదు"
+msgid "Target domain watchdog device count %zu does not match source %zu"
+msgstr ""
 
 msgid "Target filesystem access mode does not match source"
 msgstr "లక్ష్యపు ఫైల్‌సిస్టమ్ యాక్సెస్ రీతి అనునది మూలంతో సరిపోలడంలేదు"
@@ -15688,6 +15698,14 @@ msgid ""
 "'%s' or machine type '%s'"
 msgstr ""
 
+msgid "The 'passt' backend can only be used with interface type='user'"
+msgstr ""
+
+msgid ""
+"The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
+"'exclude' is specified"
+msgstr ""
+
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -15865,11 +15883,6 @@ msgstr ""
 msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
-msgstr ""
-
-msgid ""
-"The overall maximum number of clients waiting for authentication must not be "
-"less than the overall maximum number of clients"
 msgstr ""
 
 #, fuzzy
@@ -16652,9 +16665,8 @@ msgstr "%s మూయలేదు"
 msgid "Unable to close %s"
 msgstr "%s మూయలేదు"
 
-#, fuzzy, c-format
-msgid "Unable to close HardDisk, rc=%08x"
-msgstr "%s మూయలేదు"
+msgid "Unable to close HardDisk"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to close disk children"
@@ -16668,8 +16680,10 @@ msgstr "వనరు %s తెరువలేక పోయింది"
 msgid "Unable to close the VPD file, fd: %d"
 msgstr ""
 
-#, c-format
-msgid "Unable to close the new medium, rc=%08x"
+msgid "Unable to close the new medium"
+msgstr ""
+
+msgid "Unable to compile regex"
 msgstr ""
 
 #, fuzzy, c-format
@@ -16704,9 +16718,8 @@ msgstr "సాకెట్ ఫైల్ సంభాలికను నకలు
 msgid "Unable to create %s"
 msgstr "%s సృష్టించలేదు"
 
-#, fuzzy, c-format
-msgid "Unable to create HardDisk, rc=%08x"
-msgstr "బ్రిడ్జ్ %s సృష్టించలేదు"
+msgid "Unable to create HardDisk"
+msgstr ""
 
 msgid "Unable to create JSON formatter"
 msgstr "JSON ఫార్మాటర్ సృష్టించలేదు"
@@ -16876,9 +16889,8 @@ msgstr "బ్రిడ్జ్ %s తొలగించలేదు"
 msgid "Unable to delete lockspace resource %s"
 msgstr "లాక్‌స్పేస్ వనరు %s తొలగించలేదు"
 
-#, fuzzy, c-format
-msgid "Unable to delete medium, rc=%08x"
-msgstr "బ్రిడ్జ్ %s తొలగించలేదు"
+msgid "Unable to delete medium"
+msgstr ""
 
 #, c-format
 msgid "Unable to delete port %s from OVS"
@@ -17269,13 +17281,8 @@ msgstr "డిస్కు సమాచారాన్ని పొందటం�
 msgid "Unable to get hard disk id"
 msgstr "బ్రిడ్జ్ %s %s పొందలేదు"
 
-#, fuzzy, c-format
-msgid "Unable to get hard disk id, rc=%08x"
-msgstr "బ్రిడ్జ్ %s %s పొందలేదు"
-
-#, fuzzy, c-format
-msgid "Unable to get hardDisk Id, rc=%08x"
-msgstr "పరికర ఐడి '%s' పొందలేదు"
+msgid "Unable to get hardDisk Id"
+msgstr ""
 
 msgid "Unable to get host SEV information"
 msgstr ""
@@ -17320,9 +17327,8 @@ msgstr "%s పైన లూప్ స్థితి పొందలేదు"
 msgid "Unable to get medium location"
 msgstr "మెమొరీ గణాంకాలను పొందలేదు"
 
-#, fuzzy, c-format
-msgid "Unable to get medium uuid, rc=%08x"
-msgstr "uuidను వుద్భవింపచేయ లేదు"
+msgid "Unable to get medium uuid"
+msgstr ""
 
 msgid "Unable to get memory parameters"
 msgstr "మెమొరీ పారామితులు పొందలేదు"
@@ -17596,13 +17602,11 @@ msgstr "నియంత్రణ సాకెట్ తెరువలేదు"
 msgid "Unable to open /proc/mounts"
 msgstr "/proc/mounts తెరువలేదు"
 
-#, fuzzy, c-format
-msgid "Unable to open HardDisk, rc=%08x"
-msgstr "వనరు %s తెరువలేక పోయింది"
+msgid "Unable to open HardDisk"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to open Machine, rc=%08x"
-msgstr "%sను తెరువలేక పోయింది"
+msgid "Unable to open Machine"
+msgstr ""
 
 msgid "Unable to open UNIX socket"
 msgstr "యునిక్స్ సాకెట్ తెరువలేక పోయింది"
@@ -17900,9 +17904,8 @@ msgstr "pid ఫైల్ '%s' స్థితి పరిశీలించల�
 msgid "Unable to read virtiofsd pidfile '%s'"
 msgstr "pid ఫైల్ '%s' స్థితి పరిశీలించలేదు"
 
-#, fuzzy, c-format
-msgid "Unable to register Machine, rc=%08x"
-msgstr "డిజ్‌కనెక్ట్ కాల్‌బాక్ నమోదుచేయలేదు"
+msgid "Unable to register Machine"
+msgstr ""
 
 msgid "Unable to register async IO callback"
 msgstr "async IO కాల్‌బాక్ నమోదు చేయలేదు"
@@ -18376,9 +18379,8 @@ msgstr "%sను తెరువలేక పోయింది"
 msgid "Unable to unlink path '%s'"
 msgstr "'%s' కు వ్రాయలేదు"
 
-#, fuzzy, c-format
-msgid "Unable to unregister machine, rc=%08x"
-msgstr "మిషన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+msgid "Unable to unregister machine"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to update server's tls related files."
@@ -19526,13 +19528,6 @@ msgstr "బ్రిడ్జ్ %s లేదు"
 msgid "User namespace support is recommended"
 msgstr ""
 
-msgid ""
-"Username and key file path must be provided for private key authentication"
-msgstr "వ్యక్తిగత కీ ధృవీకరణ కొరకు వాడుకరిపేరు మరియు కీ ఫైల్ తప్పక అందివ్వాలి"
-
-msgid "Username must be provided for ssh agent authentication"
-msgstr "ssh ఏజెంట్ ధృవీకరణ కొరకు వాడుకరిపేరు తప్పక అందివ్వాలి"
-
 msgid "Username request failed"
 msgstr "వాడుకరిపేరు అభ్యర్ధన విఫలమైంది"
 
@@ -19650,10 +19645,6 @@ msgstr "విలువ '%s' అనునది %s విస్తృతి బ�
 
 #, c-format
 msgid "Value of cputune '%s' must be in range [%llu, %llu]"
-msgstr ""
-
-#, c-format
-msgid "Value of cputune 'shares' must be in range [%llu, %llu]"
 msgstr ""
 
 msgid "Variable value contains invalid character"
@@ -21812,6 +21803,9 @@ msgstr ""
 msgid "cannot modify network device address type"
 msgstr "నెట్వర్కు పరికరం PCI చిరునామా సవరించలేదు"
 
+msgid "cannot modify network device backend settings"
+msgstr ""
+
 msgid "cannot modify network device boot index setting"
 msgstr "నెట్వర్కు పరికర బూట్ విషయసూచి అమర్పు సవరించలేదు"
 
@@ -23090,8 +23084,8 @@ msgid "could not allocate memory"
 msgstr "మెమొరీ కేటాయించలేదు"
 
 #, c-format
-msgid "could not attach shared folder '%s', rc=%08x"
-msgstr "భాగస్వామ్య సంచయం '%s' ను అనుబందించలేక పోయింది, rc=%08x"
+msgid "could not attach shared folder '%s'"
+msgstr ""
 
 msgid "could not build absolute core file path"
 msgstr "ఆబ్సల్యూట్ కోర్ ఫైల్ పాత్ నిర్మించలేక పోయింది"
@@ -23103,16 +23097,16 @@ msgid "could not build absolute output file path"
 msgstr "ఆబ్సల్యూట్ అవుట్పుట్ ఫైల్ ఫాత్ నిర్మించలేక పోయింది"
 
 #, c-format
-msgid "could not change ACPI status to: %s, rc=%08x"
-msgstr "ACPI స్థితిని దీనికి మార్చలేక పోయింది: %s, rc=%08x"
+msgid "could not change ACPI status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change APIC status to: %s, rc=%08x"
-msgstr "APIC స్థితిని దీనికి మార్చలేక పోయింది: %s, rc=%08x"
+msgid "could not change APIC status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change PAE status to: %s, rc=%08x"
-msgstr "PAE స్థితిని దీనికి మార్చలేక పోయింది: %s, rc=%08x"
+msgid "could not change PAE status to: %s"
+msgstr ""
 
 msgid "could not close handshake fd"
 msgstr "హాండ్‌షేక్ ఎఫ్‌డి మూయలేదు"
@@ -23146,20 +23140,18 @@ msgstr "బాండ్‌విడ్త్ పీక్ విలువ '%s' �
 msgid "could not create profile"
 msgstr "ప్రొఫైల్ సృష్టించుటకు విఫలమైంది"
 
-#, c-format
-msgid "could not define a domain, rc=%08x"
-msgstr "డొమైన్ నిర్వచించలేక పోయింది, rc=%08x"
+msgid "could not define a domain"
+msgstr ""
 
 msgid "could not delete snapshot"
 msgstr "స్నాప్‌షాట్ తొలగించలేక పోయింది"
 
-#, c-format
-msgid "could not delete the domain, rc=%08x"
-msgstr "డొమైన్ తొలగించలేక పోయింది, rc=%08x"
+msgid "could not delete the domain"
+msgstr ""
 
 #, c-format
-msgid "could not detach shared folder '%s', rc=%08x"
-msgstr "భాగస్వామ్య సంచయం '%s' వేరుచేయలేక పోయింది, rc=%08x"
+msgid "could not detach shared folder '%s'"
+msgstr ""
 
 msgid "could not determine max vcpus for the domain"
 msgstr "డొమైన్‌కొరకు గరిష్ట vcpusను నిర్ణయించలేక పోయింది"
@@ -23357,20 +23349,20 @@ msgid "could not set PATH"
 msgstr "పాత్ అమర్చలేక పోయింది"
 
 #, c-format
-msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
-msgstr "డొమైన్ యొక్క మెమొరీ పరిమాణంను దీనికి అమర్చలేక పోయింది: %llu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %llu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
-msgstr "డొమైన్ యొక్క మెమొరీ పరిమాణంను దీనికి అమర్చలేక పోయింది: %lu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %lu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
-msgstr "డొమైన్ యొక్క cpu ల సంఖ్యను దీనికి అమర్చలేక పోయింది: %u, rc=%08x"
+msgid "could not set the number of cpus of the domain to: %u"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
-msgstr "వర్చ్యువల్ CPU ల సంఖ్యను అమర్చలేక పోయింది: %u, rc=%08x"
+msgid "could not set the number of virtual CPUs to: %u"
+msgstr ""
 
 #, c-format
 msgid "could not take a screenshot of %s"
@@ -23584,6 +23576,18 @@ msgstr ""
 #, fuzzy
 msgid "creation of qcow2 encrypted image is not supported"
 msgstr "%s వాల్యూమ్ల సృష్టీకరణ తోడ్పాటులేదు"
+
+#, c-format
+msgid "crypto backend %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto model %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto type %s is not supported"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -24415,10 +24419,6 @@ msgstr "డొమైన్ యిప్పటికే నడుచుచున�
 msgid "domain already has a vsock device"
 msgstr "క్షేత్రం ఇప్పటికే ‌క్రియాసహితంగా ఉంది"
 
-#, fuzzy
-msgid "domain already has a watchdog"
-msgstr "‍డొమైన్ '%s' యిప్పటికే uuid %sతో వుంది"
-
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr ""
 
@@ -24484,10 +24484,6 @@ msgid "domain has assigned host devices"
 msgstr "పరికరము %s కొరకు యెటువంటి pty కనబడలేదు"
 
 msgid "domain has no snapshots"
-msgstr "డొమైన్ ఏ స్నాప్‌షాట్లను కలిగిలేదు"
-
-#, fuzzy
-msgid "domain has no watchdog"
 msgstr "డొమైన్ ఏ స్నాప్‌షాట్లను కలిగిలేదు"
 
 #, fuzzy
@@ -25660,6 +25656,10 @@ msgstr "%s పైన లూప్ స్థితి పొందలేదు"
 msgid "failed to duplicate file descriptor for fd group '%s'"
 msgstr ""
 
+#, c-format
+msgid "failed to duplicate passed fd with index '%zu'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr "IP ఫార్వార్డింగును చేతనపరచుటలో విఫలమైంది"
 
@@ -26381,12 +26381,11 @@ msgstr "ఆనవాళ్ళు వెలికితీయుటకు వి�
 msgid "failed to retrieve decision to accept host key"
 msgstr "హోస్ట్ కీను ఆమోదించు నిర్ణయాన్ని పొందుటకు విఫలమైంది"
 
-#, fuzzy
-msgid "failed to retrieve keyboard interactive result: callback has failed"
-msgstr "వ్యక్తిగత కీ సంకేతపదం పొందుటకు విఫలమైంది: కాల్‌బ్యాక్ విఫలమైంది"
-
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr "వ్యక్తిగత కీ సంకేతపదం పొందుటకు విఫలమైంది: కాల్‌బ్యాక్ విఫలమైంది"
+
+msgid "failed to retrieve user response for authentication callback"
+msgstr ""
 
 #, c-format
 msgid "failed to rollback transaction: %s%s%s"
@@ -27244,9 +27243,8 @@ msgstr "అతిథి అనుకోకుండా నిష్క్రమ�
 msgid "guest unexpectedly quit during hotplug"
 msgstr "హాట్‌ప్లగ్ నందు అతిథి అనుకోకుండా నిష్క్రమించెను"
 
-#, fuzzy
-msgid "guest-get-fsinfo reply was missing return data"
-msgstr "guest-get-vcpus ప్రత్యుత్తరంనందు రిటర్న్ దత్తాంశం దొరకలేదు"
+msgid "guest-get-fsinfo reply was missing or not an array"
+msgstr ""
 
 #, fuzzy
 msgid "guest-get-osinfo reply was missing return data"
@@ -30479,7 +30477,7 @@ msgstr "ఆపరేటింగు సిస్టం సమాచారం త
 msgid "missing existing file for disk %s: %s"
 msgstr "డిస్కు %s కొరకు యిప్పటికే వున్న ఫైలు దొరకలేదు: %s"
 
-msgid "missing external TPM backend type"
+msgid "missing external TPM backend source type"
 msgstr ""
 
 msgid "missing feature name"
@@ -31035,10 +31033,6 @@ msgstr "డొమైన్ ఆకృతీకరణ నందు పరికర
 
 #, fuzzy, c-format
 msgid "model '%s' shmem device not present in domain configuration"
-msgstr "డొమైన్ ఆకృతీకరణ నందు పరికరం లేదు"
-
-#, fuzzy, c-format
-msgid "model '%s' watchdog device not present in domain configuration"
 msgstr "డొమైన్ ఆకృతీకరణ నందు పరికరం లేదు"
 
 #, fuzzy
@@ -31859,6 +31853,9 @@ msgstr "%s కొరకు చాలా ఫైల్‌సిస్టమ్స�
 msgid "no matching redirdev was not found"
 msgstr "ఎటువంటి కక్షిదారి వినియోగదారినామము కనబడలేదు"
 
+msgid "no matching watchdog was found"
+msgstr ""
+
 msgid "no medium attachments"
 msgstr ""
 
@@ -32026,16 +32023,12 @@ msgstr "ఏ స్ట్రీమ్ కాల్‌బాక్ నమోదు
 msgid "no such screen ID"
 msgstr ""
 
+msgid "no suitable callback authentication callback was found"
+msgstr ""
+
 #, fuzzy
 msgid "no suitable callback for host key verification"
 msgstr "అతిధేయ కీ నిర్థారణ కొరకు అతిధేయపేరు అవసరమైంది"
-
-#, fuzzy
-msgid "no suitable callback for input of key passphrase"
-msgstr "కీ సంకేతపదం పొందుటకు సరిపోయే పద్దతి లేదు"
-
-msgid "no suitable callback for input of keyboard response"
-msgstr ""
 
 #, fuzzy
 msgid "no suitable info found"
@@ -32374,7 +32367,7 @@ msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr ""
 
-msgid "only 'client' mode is supported for external TPM device"
+msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
@@ -32435,9 +32428,6 @@ msgstr "ఒక వొంటరి nvram పరికరం మాత్రమే
 msgid "only a single vsock device is supported"
 msgstr "ఒక వొంటరి nvram పరికరం మాత్రమే తోడ్పాటునిచ్చును"
 
-msgid "only a single watchdog device is supported"
-msgstr "ఒంటరి watchdog పరికరము మాత్రమే మద్దతించబడుతుంది"
-
 #, fuzzy
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "sgio అనునది scsi అతిధేయ పరికరంకు మాత్రమే తోడ్పాటునిచ్చును"
@@ -32488,6 +32478,9 @@ msgstr "ఒక TPM బ్యాకెండ్ మాత్రమే తోడ�
 #, fuzzy
 msgid "only one backup job is supported"
 msgstr "ఒక RNG బాకెండ్ మాత్రమే తోడ్పాటునిచ్చును"
+
+msgid "only one crypto backend is supported"
+msgstr ""
 
 msgid "only one emulatorpin is supported"
 msgstr "ఒక ఎమ్యులేషన్‌పిన్ మాత్రమే తోడ్పాటునిచ్చును"
@@ -33406,6 +33399,9 @@ msgstr "ps2 బస్ అనునది %s ఇన్‌పుట్ పరి�
 
 #, c-format
 msgid "pull mode backup for disk '%s' requires qcow2 driver"
+msgstr ""
+
+msgid "pvpanic is supported only with PCI address type"
 msgstr ""
 
 #, fuzzy, c-format
@@ -35425,6 +35421,9 @@ msgstr "MAC చిరునామా '%s' అనునది బహుళ యి
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr "QEMU బైనరీ అనునది %s తో తోడ్పాటునీయదు"
 
+msgid "the QEMU binary does not support the PCI pvpanic device"
+msgstr ""
+
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
 msgstr ""
@@ -35488,6 +35487,9 @@ msgid "the machine has no snapshot"
 msgstr "డొమైన్ ఏ స్నాప్‌షాట్లను కలిగిలేదు"
 
 msgid "the new password"
+msgstr ""
+
+msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -37211,12 +37213,12 @@ msgid "unknown authentication type %s"
 msgstr "తెలియని దృవీకరణము రకము %s"
 
 #, c-format
-msgid "unknown backend type '%s' for egd"
-msgstr "తెలియని బ్యాకెండ్ రకం '%s' egd కొరకు"
+msgid "unknown backend source type '%s' for external TPM"
+msgstr ""
 
 #, c-format
-msgid "unknown backend type '%s' for external TPM"
-msgstr ""
+msgid "unknown backend type '%s' for egd"
+msgstr "తెలియని బ్యాకెండ్ రకం '%s' egd కొరకు"
 
 #, fuzzy, c-format
 msgid "unknown backup mode '%s'"
@@ -37679,6 +37681,10 @@ msgstr "తోడ్పాటులేని HyperV ఎన్‌లైట్మ�
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
 msgstr "తోడ్పాటులేని HyperV ఎన్‌లైట్మెంట్ విశేషణం: %s"
+
+#, c-format
+msgid "unsupported IPv6 address prefix='%u' - must be 64"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unsupported KVM feature: %s"
@@ -38916,12 +38922,12 @@ msgstr "హెచ్చరిక"
 msgid "watchdog"
 msgstr "వాచ్‌డాగ్"
 
-#, fuzzy
-msgid "watchdog device not present in domain configuration"
-msgstr "డొమైన్ ఆకృతీకరణ నందు పరికరం లేదు"
-
 msgid "watchdog must contain model name"
 msgstr "watchdog తప్పక రీతి నామమును కలిగివుండాలి"
+
+msgid ""
+"watchdogs with different actions are not supported with this QEMU binary"
+msgstr ""
 
 msgid "webSocket"
 msgstr ""
@@ -39072,6 +39078,197 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "'disk' missing in reply of guest-get-fsinfo"
+#~ msgstr "guest-get-vcpus యొక్క ప్రత్యుత్తరం నందు 'online' దొరకలేదు"
+
+#, fuzzy
+#~ msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
+#~ msgstr "భాగస్వామ్య సంచయం '%s' ను అనుబందించలేక పోయింది, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get IMedium, rc=%08x"
+#~ msgstr "డొమైన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device port, rc=%08x"
+#~ msgstr "డొమైన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device slot, rc=%08x"
+#~ msgstr "మిషన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device type, rc=%08x"
+#~ msgstr "మిషన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+
+#~ msgid "Could not get list of Defined Domains, rc=%08x"
+#~ msgstr "నిర్వచిత డొమైన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+
+#~ msgid "Could not get list of Domains, rc=%08x"
+#~ msgstr "డొమైన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+
+#~ msgid "Could not get list of domains, rc=%08x"
+#~ msgstr "డొమైన్ల జాబితాను పొందలేక పోయింది, rc=%08x"
+
+#~ msgid "Could not get list of machines, rc=%08x"
+#~ msgstr "మిషన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get medium storage location, rc=%08x"
+#~ msgstr "డొమైన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+
+#~ msgid "Could not get number of Defined Domains, rc=%08x"
+#~ msgstr "నిర్వచిత డొమైన్ల యొక్క సంఖ్యను పొందలేక పోయింది, rc=%08x"
+
+#~ msgid "Could not get number of Domains, rc=%08x"
+#~ msgstr "డొమైన్ల యొక్క సంఖ్యను పొందలేక పోయింది, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get read only state, rc=%08x"
+#~ msgstr "మిషన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get storage controller bus, rc=%08x"
+#~ msgstr "మిషన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get storage controller by name, rc=%08x"
+#~ msgstr "మిషన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+
+#, fuzzy
+#~ msgid "Failed to change storage controller model, rc=%08x"
+#~ msgstr "PAE స్థితిని దీనికి మార్చలేక పోయింది: %s, rc=%08x"
+
+#, fuzzy
+#~ msgid "Failed to get storage controller name, rc=%08x"
+#~ msgstr "%s మిర్రర్ సంఖ్య పొందుటకు విఫలమైంది"
+
+#, fuzzy
+#~ msgid "Failed to save VM settings, rc=%08x"
+#~ msgstr "%s క్షేత్రాన్ని %sకి భద్రపరవటంలో విఫలమైంది"
+
+#, fuzzy
+#~ msgid "Malformed ip-addresses array"
+#~ msgstr "తప్పుగావున్న mac చిరునామా '%s'"
+
+#~ msgid "Password request failed"
+#~ msgstr "సంకేతపదం అభ్యర్ధన విఫలమైంది"
+
+#~ msgid "Target domain watchdog count %d does not match source %d"
+#~ msgstr "లక్ష్యపు డొమైన్ వాచ్‌డాగ్ లెక్క %d మూలం %d తో సరిపోలడంలేదు"
+
+#, fuzzy
+#~ msgid "Unable to close HardDisk, rc=%08x"
+#~ msgstr "%s మూయలేదు"
+
+#, fuzzy
+#~ msgid "Unable to create HardDisk, rc=%08x"
+#~ msgstr "బ్రిడ్జ్ %s సృష్టించలేదు"
+
+#, fuzzy
+#~ msgid "Unable to delete medium, rc=%08x"
+#~ msgstr "బ్రిడ్జ్ %s తొలగించలేదు"
+
+#, fuzzy
+#~ msgid "Unable to get hard disk id, rc=%08x"
+#~ msgstr "బ్రిడ్జ్ %s %s పొందలేదు"
+
+#, fuzzy
+#~ msgid "Unable to get hardDisk Id, rc=%08x"
+#~ msgstr "పరికర ఐడి '%s' పొందలేదు"
+
+#, fuzzy
+#~ msgid "Unable to get medium uuid, rc=%08x"
+#~ msgstr "uuidను వుద్భవింపచేయ లేదు"
+
+#, fuzzy
+#~ msgid "Unable to open HardDisk, rc=%08x"
+#~ msgstr "వనరు %s తెరువలేక పోయింది"
+
+#, fuzzy
+#~ msgid "Unable to open Machine, rc=%08x"
+#~ msgstr "%sను తెరువలేక పోయింది"
+
+#, fuzzy
+#~ msgid "Unable to register Machine, rc=%08x"
+#~ msgstr "డిజ్‌కనెక్ట్ కాల్‌బాక్ నమోదుచేయలేదు"
+
+#, fuzzy
+#~ msgid "Unable to unregister machine, rc=%08x"
+#~ msgstr "మిషన్ల యొక్క జాబితాను పొందలేక పోయింది, rc=%08x"
+
+#~ msgid ""
+#~ "Username and key file path must be provided for private key authentication"
+#~ msgstr "వ్యక్తిగత కీ ధృవీకరణ కొరకు వాడుకరిపేరు మరియు కీ ఫైల్ తప్పక అందివ్వాలి"
+
+#~ msgid "Username must be provided for ssh agent authentication"
+#~ msgstr "ssh ఏజెంట్ ధృవీకరణ కొరకు వాడుకరిపేరు తప్పక అందివ్వాలి"
+
+#~ msgid "could not attach shared folder '%s', rc=%08x"
+#~ msgstr "భాగస్వామ్య సంచయం '%s' ను అనుబందించలేక పోయింది, rc=%08x"
+
+#~ msgid "could not change ACPI status to: %s, rc=%08x"
+#~ msgstr "ACPI స్థితిని దీనికి మార్చలేక పోయింది: %s, rc=%08x"
+
+#~ msgid "could not change APIC status to: %s, rc=%08x"
+#~ msgstr "APIC స్థితిని దీనికి మార్చలేక పోయింది: %s, rc=%08x"
+
+#~ msgid "could not change PAE status to: %s, rc=%08x"
+#~ msgstr "PAE స్థితిని దీనికి మార్చలేక పోయింది: %s, rc=%08x"
+
+#~ msgid "could not define a domain, rc=%08x"
+#~ msgstr "డొమైన్ నిర్వచించలేక పోయింది, rc=%08x"
+
+#~ msgid "could not delete the domain, rc=%08x"
+#~ msgstr "డొమైన్ తొలగించలేక పోయింది, rc=%08x"
+
+#~ msgid "could not detach shared folder '%s', rc=%08x"
+#~ msgstr "భాగస్వామ్య సంచయం '%s' వేరుచేయలేక పోయింది, rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
+#~ msgstr "డొమైన్ యొక్క మెమొరీ పరిమాణంను దీనికి అమర్చలేక పోయింది: %llu Kb, rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
+#~ msgstr "డొమైన్ యొక్క మెమొరీ పరిమాణంను దీనికి అమర్చలేక పోయింది: %lu Kb, rc=%08x"
+
+#~ msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
+#~ msgstr "డొమైన్ యొక్క cpu ల సంఖ్యను దీనికి అమర్చలేక పోయింది: %u, rc=%08x"
+
+#~ msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
+#~ msgstr "వర్చ్యువల్ CPU ల సంఖ్యను అమర్చలేక పోయింది: %u, rc=%08x"
+
+#, fuzzy
+#~ msgid "domain already has a watchdog"
+#~ msgstr "‍డొమైన్ '%s' యిప్పటికే uuid %sతో వుంది"
+
+#, fuzzy
+#~ msgid "domain has no watchdog"
+#~ msgstr "డొమైన్ ఏ స్నాప్‌షాట్లను కలిగిలేదు"
+
+#, fuzzy
+#~ msgid "failed to retrieve keyboard interactive result: callback has failed"
+#~ msgstr "వ్యక్తిగత కీ సంకేతపదం పొందుటకు విఫలమైంది: కాల్‌బ్యాక్ విఫలమైంది"
+
+#, fuzzy
+#~ msgid "guest-get-fsinfo reply was missing return data"
+#~ msgstr "guest-get-vcpus ప్రత్యుత్తరంనందు రిటర్న్ దత్తాంశం దొరకలేదు"
+
+#, fuzzy
+#~ msgid "model '%s' watchdog device not present in domain configuration"
+#~ msgstr "డొమైన్ ఆకృతీకరణ నందు పరికరం లేదు"
+
+#, fuzzy
+#~ msgid "no suitable callback for input of key passphrase"
+#~ msgstr "కీ సంకేతపదం పొందుటకు సరిపోయే పద్దతి లేదు"
+
+#~ msgid "only a single watchdog device is supported"
+#~ msgstr "ఒంటరి watchdog పరికరము మాత్రమే మద్దతించబడుతుంది"
+
+#, fuzzy
+#~ msgid "watchdog device not present in domain configuration"
+#~ msgstr "డొమైన్ ఆకృతీకరణ నందు పరికరం లేదు"
 
 #~ msgid "Another close callback is already defined for domain %s"
 #~ msgstr "డొమైన్ %s కొరకు వేరొక క్లోజ్ కాల్‌బాక్ యిప్పటికే నిర్వచించబడింది"

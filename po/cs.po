@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-01-09 14:27+0000\n"
+"POT-Creation-Date: 2023-02-22 13:50+0000\n"
 "PO-Revision-Date: 2021-07-21 11:38+0000\n"
 "Last-Translator: Matej Cepl <mcepl@cepl.eu>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -621,6 +621,15 @@ msgid "%s model of watchdog is allowed for s390 and s390x only"
 msgstr "model resetátoru (watchdog) %s je k dispozici pouze pro s390 a s390x"
 
 #, c-format
+msgid "%s model of watchdog is only part of q35 machine"
+msgstr ""
+
+#, c-format
+msgid ""
+"%s model of watchdog is part of the machine and cannot have any address set."
+msgstr ""
+
+#, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
 msgstr ""
 "model resetátoru (watchdog) %s je virtuální a nemůže přijít na žádnou "
@@ -899,6 +908,10 @@ msgid "%s: failed to communicate with bridge helper: %s"
 msgstr ""
 
 #, c-format
+msgid "%s: failed to generate UNIX socket path"
+msgstr ""
+
+#, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "%s: nezdařilo se čtení dočasného souboru: %s"
 
@@ -1011,6 +1024,10 @@ msgstr "%s: pro další podrobnosti vyzkoušejte --help\n"
 
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
+#, c-format
+msgid "%s: unknown remote mode '%s'"
 msgstr ""
 
 #, c-format
@@ -1187,8 +1204,8 @@ msgstr ""
 "formát úložiště 'directory' (složka) není přímo v QEMU podporován – namísto "
 "toho použijte typ disku 'dir' (složka)"
 
-msgid "'disk' missing in reply of guest-get-fsinfo"
-msgstr "v odpovědi guest-get-fsinfo chybí 'disk'"
+msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
+msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %s"
@@ -2523,11 +2540,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc="
-"%08x"
+"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"
 msgstr ""
-"Nedaří se získat nikde se neopakující identifikátor souboru, který má být "
-"připojen jako pevný disk / optické médium / disketa: %s, rc=%08x"
 
 msgid "Can't initialize Parallels SDK"
 msgstr "Nedaří se inicializovat Parallels SDK"
@@ -3898,10 +3912,8 @@ msgid "Could not attach serial port %zu"
 msgstr ""
 
 #, c-format
-msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
+msgid "Could not attach the file as harddisk/dvd/floppy: %s"
 msgstr ""
-"Nedaří se připojit soubor jako pevný disk / optické médium / disketu: %s, rc="
-"%08x"
 
 msgid "Could not build CURL header list"
 msgstr "Nedaří se sestavit seznam CURL záhlaví"
@@ -4244,9 +4256,8 @@ msgstr "Nedaří se získat EPR adresy"
 msgid "Could not get EPR items"
 msgstr "Nedaří se získat EPR položky"
 
-#, c-format
-msgid "Could not get IMedium, rc=%08x"
-msgstr "Nedaří se získat IMedium, rc=%08x"
+msgid "Could not get IMedium"
+msgstr ""
 
 msgid "Could not get Msvm_DiskDrive default InstanceID"
 msgstr ""
@@ -4275,17 +4286,14 @@ msgstr "Nepodařilo se získat název kontrolního bodu"
 msgid "Could not get current time"
 msgstr "Nedaří se získat aktuální čas"
 
-#, c-format
-msgid "Could not get device port, rc=%08x"
-msgstr "Nedaří se získat port zařízení, rc=%08x"
+msgid "Could not get device port"
+msgstr ""
 
-#, c-format
-msgid "Could not get device slot, rc=%08x"
-msgstr "Nedaří se získat slot zařízení, rc=%08x"
+msgid "Could not get device slot"
+msgstr ""
 
-#, c-format
-msgid "Could not get device type, rc=%08x"
-msgstr "Nedaří se získat typ zařízení, rc=%08x"
+msgid "Could not get device type"
+msgstr ""
 
 #, c-format
 msgid "Could not get free memory for host %s"
@@ -4325,30 +4333,25 @@ msgstr ""
 msgid "Could not get iterator index for iterator ID %u"
 msgstr "Nedaří se získat index iterátoru pro identifikátor iterátoru %u"
 
-#, c-format
-msgid "Could not get list of Defined Domains, rc=%08x"
-msgstr "Nedaří se získat seznam Defined Domains, rc=%08x"
+msgid "Could not get list of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of Domains, rc=%08x"
-msgstr "Nepodařilo se získat seznam domén, rc=%08x"
+msgid "Could not get list of Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of domains, rc=%08x"
-msgstr "Nedaří se získat seznam domén, rc=%08x"
+msgid "Could not get list of domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of machines, rc=%08x"
-msgstr "Nepodařilo se získat seznam strojů, rc=%08x"
+msgid "Could not get list of machines"
+msgstr ""
 
 #, c-format
 msgid ""
 "Could not get maximum definition of Msvm_ProcessorSettingData for host %s"
 msgstr ""
 
-#, c-format
-msgid "Could not get medium storage location, rc=%08x"
-msgstr "Nedaří se získat umístění úložiště média, rc=%08x"
+msgid "Could not get medium storage location"
+msgstr ""
 
 #, c-format
 msgid "Could not get members of bridge '%s'"
@@ -4361,16 +4364,17 @@ msgstr "Nepodařilo se získat název virtuálního stroje"
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "Nedaří se nalézt n-tou (%u) hodnotu proměnné „%s“"
 
-#, c-format
-msgid "Could not get number of Defined Domains, rc=%08x"
-msgstr "Nedaří se získat počet Defined Domains, rc=%08x"
+msgid "Could not get number of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get number of Domains, rc=%08x"
-msgstr "Nepodařilo se získat počet domén, rc=%08x"
+msgid "Could not get number of Domains"
+msgstr ""
 
 #, c-format
 msgid "Could not get parent of '%s'"
+msgstr ""
+
+msgid "Could not get process ID of passt"
 msgstr ""
 
 #, fuzzy
@@ -4381,9 +4385,8 @@ msgstr "Nedaří se získat položky odpovědi"
 msgid "Could not get process id of vhost-user-gpu"
 msgstr "Nedaří se získat položky odpovědi"
 
-#, c-format
-msgid "Could not get read only state, rc=%08x"
-msgstr "Nedaří se získat stav pouze pro čtení, rc=%08x"
+msgid "Could not get read only state"
+msgstr ""
 
 msgid "Could not get response"
 msgstr "Nedaří se získat odpověď"
@@ -4411,13 +4414,11 @@ msgstr "Nedaří se získat identifikátor zachyceného stavu"
 msgid "Could not get snapshot name"
 msgstr "Nedaří se zjistit název zachyceného stavu"
 
-#, c-format
-msgid "Could not get storage controller bus, rc=%08x"
-msgstr "Nedaří se získat sběrnici řadiče úložiště, rc=%08x"
+msgid "Could not get storage controller bus"
+msgstr ""
 
-#, c-format
-msgid "Could not get storage controller by name, rc=%08x"
-msgstr "Nedaří se získat řadič úložiště podle názvu, rc=%08x"
+msgid "Could not get storage controller by name"
+msgstr ""
 
 #, c-format
 msgid "Could not get syspath for parent of '%s'"
@@ -4836,6 +4837,10 @@ msgstr "Nedaří se nastavit zdrojovou složku pro souborový systém"
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr "Nedaří se nastavit adresu jmenného prostoru vsman pro xmlNodeParam"
 
+#, c-format
+msgid "Could not start 'passt': %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Could not start 'slirp'. exitstatus: %d"
 msgstr "Nepodařilo se spustit doménu: %s"
@@ -4985,6 +4990,9 @@ msgstr "Čas okamžiku vytvoření"
 #, c-format
 msgid "Creation of %s volumes is not supported"
 msgstr "Vytváření svazků %s není podporováno"
+
+msgid "Crypto device is missing alias"
+msgstr ""
 
 msgid "Current memory size too large"
 msgstr "Stávající velikost paměti je příliš velká"
@@ -6456,8 +6464,8 @@ msgid "Failed to add signal handle watch"
 msgstr "Nepodařilo se přidat hlídání obsluhy signálu"
 
 #, c-format
-msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
-msgstr "Nepodařilo se přidat řadič úložiště (name: %s, busType: %d), rc=%08x"
+msgid "Failed to add storage controller (name: %s, busType: %d)"
+msgstr ""
 
 #, c-format
 msgid "Failed to allocate PCI device list: %s"
@@ -6564,9 +6572,8 @@ msgstr "Změna velikost svazku „%s“ o %s se nezdařila"
 msgid "Failed to change size of volume '%s' to %s"
 msgstr "Změna velikost svazku „%s“ na %s se nezdařila"
 
-#, c-format
-msgid "Failed to change storage controller model, rc=%08x"
-msgstr "Nepodařilo se změnit model řadiče úložiště, rc=%08x"
+msgid "Failed to change storage controller model"
+msgstr ""
 
 #, c-format
 msgid "Failed to chdir into %s"
@@ -6793,6 +6800,10 @@ msgid "Failed to create nvram dir %s"
 msgstr "Nepodařilo se vytvořit složku nvram %s"
 
 msgid "Failed to create or modify the state XML attribute"
+msgstr ""
+
+#, c-format
+msgid "Failed to create passt state dir %s"
 msgstr ""
 
 #, c-format
@@ -7306,9 +7317,8 @@ msgstr ""
 msgid "Failed to get snapshot count"
 msgstr "Nepodařilo se získat informaci o počtu zachycených stavů"
 
-#, c-format
-msgid "Failed to get storage controller name, rc=%08x"
-msgstr "Nepodařilo se získat název řadiče úložiště, rc=%08x"
+msgid "Failed to get storage controller name"
+msgstr ""
 
 msgid "Failed to get the number of active networks"
 msgstr "Nepodařilo se získat počet aktivních sítí"
@@ -7663,11 +7673,8 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr "Nepodařilo se otevřít svazek úložiště s popisem umístění „%s“"
 
 #, c-format
-msgid ""
-"Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
+msgid "Failed to open the following disk/dvd/floppy to the machine: %s"
 msgstr ""
-"Na stroji se nepodařilo otevřít následující disk / optické médium / disketu: "
-"%s, rc=%08x"
 
 #, c-format
 msgid "Failed to open tty %s"
@@ -7763,6 +7770,10 @@ msgstr "Nezdařilo se zpracování nezáporného celého čísla z „%s“"
 #, c-format
 msgid "Failed to parse rate '%s'"
 msgstr "Nepodařilo se zpracovat rychlost „%s“"
+
+#, c-format
+msgid "Failed to parse rotated index from '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%s'"
@@ -8111,9 +8122,8 @@ msgstr ""
 msgid "Failed to save '%s' for '%s'"
 msgstr "Nepodařilo se uložit „%s“ pro „%s“"
 
-#, c-format
-msgid "Failed to save VM settings, rc=%08x"
-msgstr "Nepodařilo se uložit nastavení virt. stroje, rc=%08x"
+msgid "Failed to save VM settings"
+msgstr ""
 
 #, c-format
 msgid "Failed to save domain '%d' with libxenlight"
@@ -9658,6 +9668,10 @@ msgid "Invalid address '%s' in <ip>"
 msgstr "Neplatná adresa „%s“ v <ip>"
 
 #, c-format
+msgid "Invalid address '%s' in <portForward>"
+msgstr ""
+
+#, c-format
 msgid "Invalid address '%s' in network '%s'"
 msgstr "neplatná adresa „%s“ v síti „%s“"
 
@@ -10180,6 +10194,10 @@ msgstr "Neplatné číslo portu: %s"
 #, c-format
 msgid "Invalid port range '%u-%u'."
 msgstr "Neplatný rozsah portů „%u-%u“"
+
+#, c-format
+msgid "Invalid portForward proto value %u"
+msgstr ""
 
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
@@ -10747,17 +10765,8 @@ msgstr "Chybný formát pro filtr „%s“"
 msgid "Malformed format for log output '%s'"
 msgstr ""
 
-msgid "Malformed guest-get-fsinfo 'disk' data array"
-msgstr "Nesprávně formulované datové pole 'disk' guest-get-fsinfo"
-
-msgid "Malformed guest-get-fsinfo data array"
-msgstr "Nesprávně formulované datové pole guest-get-fsinfo"
-
 msgid "Malformed id field in JSON state document"
 msgstr "V JSON stavovém dokumentu chybí kolonka id (identifikátor)"
-
-msgid "Malformed ip-addresses array"
-msgstr "Nesprávně formulované pole IP adres"
 
 msgid "Malformed lease_entries array"
 msgstr "Nesprávně formulované pole lease_entries"
@@ -11200,10 +11209,6 @@ msgstr "Chybí parametr nikde se neopakující identifikátor pro objekt domény
 
 msgid "Missing VIR_CRED_AUTHNAME credential type"
 msgstr "Chybí VIR_CRED_AUTHNAME typ přihlašovacích údajů"
-
-msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
-msgstr ""
-"Chybí VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT typ přihlašovacího údaje"
 
 msgid "Missing XPath context"
 msgstr ""
@@ -11711,6 +11716,9 @@ msgstr ""
 
 msgid "Multiple graphics devices are not supported"
 msgstr "Vícero grafických zařízení v rámci jednoho stroje není podporováno"
+
+msgid "Multiple iTCO watchdogs are not supported"
+msgstr ""
 
 msgid "Multiple interfaces attached to bridge"
 msgstr "K mostu je připojeno vícero zařízení"
@@ -13110,9 +13118,6 @@ msgstr "Heslová fráze pro klíč „%s“"
 
 msgid "Password may not contain ',' character"
 msgstr ""
-
-msgid "Password request failed"
-msgstr "Požadavek na heslo se nezdařil"
 
 #, c-format
 msgid "Password set successfully for %s in %s"
@@ -15551,9 +15556,8 @@ msgid "Target domain vsock device model '%s' does not match source '%s'"
 msgstr "Model „%s“ vsock zařízení cílové domény se neshoduje se zdrojovým „%s“"
 
 #, c-format
-msgid "Target domain watchdog count %d does not match source %d"
+msgid "Target domain watchdog device count %zu does not match source %zu"
 msgstr ""
-"Počet resetátorů (watchdog) %d cílové domény se neshoduje se zdrojovým %d"
 
 msgid "Target filesystem access mode does not match source"
 msgstr ""
@@ -15831,6 +15835,14 @@ msgid ""
 msgstr ""
 "Funkce „%s“ není pro architekturu „%s“ nebo typ stroje „%s“ podporována"
 
+msgid "The 'passt' backend can only be used with interface type='user'"
+msgstr ""
+
+msgid ""
+"The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
+"'exclude' is specified"
+msgstr ""
+
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -16023,11 +16035,6 @@ msgstr ""
 msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
-msgstr ""
-
-msgid ""
-"The overall maximum number of clients waiting for authentication must not be "
-"less than the overall maximum number of clients"
 msgstr ""
 
 msgid "The read only disk has no parent"
@@ -16804,9 +16811,8 @@ msgstr "Nedaří se zavřít"
 msgid "Unable to close %s"
 msgstr "Nedaří se zavřít %s"
 
-#, c-format
-msgid "Unable to close HardDisk, rc=%08x"
-msgstr "Nedaří se zavřít HardDisk, rc=%08x"
+msgid "Unable to close HardDisk"
+msgstr ""
 
 msgid "Unable to close disk children"
 msgstr "Nedaří se zavřít podřízené disku"
@@ -16818,9 +16824,11 @@ msgstr "Nedaří se rekurzivně zavřít všechny disky"
 msgid "Unable to close the VPD file, fd: %d"
 msgstr ""
 
-#, c-format
-msgid "Unable to close the new medium, rc=%08x"
-msgstr "Nové médium se nedaří zavřít, rc=%08x"
+msgid "Unable to close the new medium"
+msgstr ""
+
+msgid "Unable to compile regex"
+msgstr ""
 
 #, c-format
 msgid "Unable to compute hash of data: %s"
@@ -16854,9 +16862,8 @@ msgstr "Nedaří se zkopírovat obsluhu souboru soketu"
 msgid "Unable to create %s"
 msgstr "Nedaří se vytvořit %s"
 
-#, c-format
-msgid "Unable to create HardDisk, rc=%08x"
-msgstr "Nedaří se vytvořit HardDisk, rc=%08x"
+msgid "Unable to create HardDisk"
+msgstr ""
 
 msgid "Unable to create JSON formatter"
 msgstr "Nedaří se vytvořit formátování JSON"
@@ -17027,9 +17034,8 @@ msgstr "Nedaří se smazat soubor %s"
 msgid "Unable to delete lockspace resource %s"
 msgstr "Nedaří se smazat prostředek zámkového prostoru %s"
 
-#, c-format
-msgid "Unable to delete medium, rc=%08x"
-msgstr "Nedaří se smazat médium, rc=%08x"
+msgid "Unable to delete medium"
+msgstr ""
 
 #, c-format
 msgid "Unable to delete port %s from OVS"
@@ -17398,13 +17404,8 @@ msgstr "Nepodařilo se získat formát pevného disku"
 msgid "Unable to get hard disk id"
 msgstr "Nedaří se získat identifikátor pevného disku"
 
-#, c-format
-msgid "Unable to get hard disk id, rc=%08x"
-msgstr "Nedaří se získat identifikátor pevného disku, rc=%08x"
-
-#, c-format
-msgid "Unable to get hardDisk Id, rc=%08x"
-msgstr "Nedaří se získat identifikátor hardDisk, rc=%08x"
+msgid "Unable to get hardDisk Id"
+msgstr ""
 
 msgid "Unable to get host SEV information"
 msgstr ""
@@ -17448,9 +17449,8 @@ msgstr "Nedaří se získat stav smyčky na %s"
 msgid "Unable to get medium location"
 msgstr "Nedaří se získat umístění média"
 
-#, c-format
-msgid "Unable to get medium uuid, rc=%08x"
-msgstr "Nedaří se získat nikde se neopakující identifikátor média, rc=%08x"
+msgid "Unable to get medium uuid"
+msgstr ""
 
 msgid "Unable to get memory parameters"
 msgstr "Nedaří se získat parametry paměti"
@@ -17707,13 +17707,11 @@ msgstr "Nedaří se otevřít /dev/loop-control"
 msgid "Unable to open /proc/mounts"
 msgstr "Nelze otevřít /proc/mounts"
 
-#, c-format
-msgid "Unable to open HardDisk, rc=%08x"
-msgstr "Nedaří se otevřít HardDisk, rc=%08x"
+msgid "Unable to open HardDisk"
+msgstr ""
 
-#, c-format
-msgid "Unable to open Machine, rc=%08x"
-msgstr "Nedaří se otevřít Machine, rc=%08x"
+msgid "Unable to open Machine"
+msgstr ""
 
 msgid "Unable to open UNIX socket"
 msgstr "Nelze otevřít UNIXový socket"
@@ -18005,9 +18003,8 @@ msgstr "Nedaří se číst ze souboru „%s“"
 msgid "Unable to read virtiofsd pidfile '%s'"
 msgstr "Nedaří se číst ze souboru „%s“"
 
-#, c-format
-msgid "Unable to register Machine, rc=%08x"
-msgstr "Nedaří se zaregistrovat stroj, rc=%08x"
+msgid "Unable to register Machine"
+msgstr ""
 
 msgid "Unable to register async IO callback"
 msgstr "Nedaří se zaregistrovat zpětné volání asynchronního vstupu/výstupu"
@@ -18465,9 +18462,8 @@ msgstr "Nedaří se zrušit propojení %s"
 msgid "Unable to unlink path '%s'"
 msgstr "Nedaří se odlinkovat popis umístění „%s“"
 
-#, c-format
-msgid "Unable to unregister machine, rc=%08x"
-msgstr "Nedaří se zrušit registraci stroje, rc=%08x"
+msgid "Unable to unregister machine"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to update server's tls related files."
@@ -19621,16 +19617,6 @@ msgstr "Uživatel %s neexistuje"
 msgid "User namespace support is recommended"
 msgstr "Je doporučena podpora pro jmenný prostor uživatelů"
 
-msgid ""
-"Username and key file path must be provided for private key authentication"
-msgstr ""
-"Pro ověřování soukromým klíčem je třeba poskytnout uživatelské jméno a popis "
-"umístění souboru s klíčem"
-
-msgid "Username must be provided for ssh agent authentication"
-msgstr ""
-"Je třeba, aby pro ověřování ssh agentem bylo poskytnuto uživatelské jméno"
-
 msgid "Username request failed"
 msgstr "Požadavek na uživatelské jméno se nezdařil"
 
@@ -19749,10 +19735,6 @@ msgstr "Hodnota „%s“ je mimo rozsah %s"
 
 #, c-format
 msgid "Value of cputune '%s' must be in range [%llu, %llu]"
-msgstr ""
-
-#, c-format
-msgid "Value of cputune 'shares' must be in range [%llu, %llu]"
 msgstr ""
 
 msgid "Variable value contains invalid character"
@@ -21933,6 +21915,9 @@ msgstr ""
 msgid "cannot modify network device address type"
 msgstr "není možné upravit typ adresy síťového zařízení"
 
+msgid "cannot modify network device backend settings"
+msgstr ""
+
 msgid "cannot modify network device boot index setting"
 msgstr "není možné změnit nastavení pořadí zavádění síťového zařízení"
 
@@ -23201,8 +23186,8 @@ msgid "could not allocate memory"
 msgstr "nedaří se přidělit paměť"
 
 #, c-format
-msgid "could not attach shared folder '%s', rc=%08x"
-msgstr "nedaří se připojit sdílenou složku „%s“, rc=%08x"
+msgid "could not attach shared folder '%s'"
+msgstr ""
 
 msgid "could not build absolute core file path"
 msgstr "nedaří se sestavit úplný popis umístění souboru s výpisem paměti"
@@ -23214,16 +23199,16 @@ msgid "could not build absolute output file path"
 msgstr "nedaří se sestavit úplný popis umístění výstupního souboru"
 
 #, c-format
-msgid "could not change ACPI status to: %s, rc=%08x"
-msgstr "nedaří se změnit stav ACPI na: %s, rc=%08x"
+msgid "could not change ACPI status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change APIC status to: %s, rc=%08x"
-msgstr "nedaří se změnit stav APIC na: %s, rc=%08x"
+msgid "could not change APIC status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change PAE status to: %s, rc=%08x"
-msgstr "nedaří se změnit stav PAE na: %s, rc=%08x"
+msgid "could not change PAE status to: %s"
+msgstr ""
 
 msgid "could not close handshake fd"
 msgstr "nedaří se zavřít popisovač souboru navázání spojení (handshake)"
@@ -23257,20 +23242,18 @@ msgstr "nedaří se převést hodnotu „%s“ špičky přenosové rychlosti"
 msgid "could not create profile"
 msgstr "nelze vytvořit profil"
 
-#, c-format
-msgid "could not define a domain, rc=%08x"
-msgstr "nedaří se definovat doménu, rc=%08x"
+msgid "could not define a domain"
+msgstr ""
 
 msgid "could not delete snapshot"
 msgstr "zachycený stav se nedaří smazat"
 
-#, c-format
-msgid "could not delete the domain, rc=%08x"
-msgstr "nedaří se smazat doménu, rc=%08x"
+msgid "could not delete the domain"
+msgstr ""
 
 #, c-format
-msgid "could not detach shared folder '%s', rc=%08x"
-msgstr "nedaří se odpojit sdílenou složku „%s“, rc=%08x"
+msgid "could not detach shared folder '%s'"
+msgstr ""
 
 msgid "could not determine max vcpus for the domain"
 msgstr "nedaří se zjistit horní hranici počtu virt. procesorů pro domény"
@@ -23466,20 +23449,20 @@ msgid "could not set PATH"
 msgstr "nelze nastavit PATH"
 
 #, c-format
-msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
-msgstr "nepodařilo se nastavit velikost paměti domény na: %llu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %llu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
-msgstr "nedaří se nastavit velikost paměti domény na: %lu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %lu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
-msgstr "nedaří se nastavit počet procesorů domény na: %u, rc=%08x"
+msgid "could not set the number of cpus of the domain to: %u"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
-msgstr "nedaří se nastavit počet virtuálních procesoru na: %u, rc=%08x"
+msgid "could not set the number of virtual CPUs to: %u"
+msgstr ""
 
 #, c-format
 msgid "could not take a screenshot of %s"
@@ -23694,6 +23677,18 @@ msgstr "vytvoření qcow/qcow2 souborů podporuje pouze šifrování 'luks'"
 
 msgid "creation of qcow2 encrypted image is not supported"
 msgstr "vytvoření šifrovaného qcow2 obrazu není podporováno"
+
+#, c-format
+msgid "crypto backend %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto model %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto type %s is not supported"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -24521,9 +24516,6 @@ msgstr "doména už má VNC grafiku"
 msgid "domain already has a vsock device"
 msgstr "doména už má vsock  zařízení"
 
-msgid "domain already has a watchdog"
-msgstr "doména už má resetátor"
-
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "architektura domény (/domain/os/type/@arch)"
 
@@ -24589,9 +24581,6 @@ msgstr "doména má přiřazená zařízení hostitele"
 
 msgid "domain has no snapshots"
 msgstr "doména nemá zachycené stavy"
-
-msgid "domain has no watchdog"
-msgstr "doména nemá resetátor"
 
 msgid "domain has to be shutoff before renaming"
 msgstr "před přejmenováním je třeba doménu vypnout"
@@ -25750,6 +25739,10 @@ msgstr "nepodařilo se zjistit návratový stav smyčky: %s"
 msgid "failed to duplicate file descriptor for fd group '%s'"
 msgstr ""
 
+#, c-format
+msgid "failed to duplicate passed fd with index '%zu'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr "nepodařilo se zapnout IP přeposílání"
 
@@ -26452,13 +26445,12 @@ msgstr "nepodařilo se obdržet přihlašovací údaje"
 msgid "failed to retrieve decision to accept host key"
 msgstr "nepodařilo se získat rozhodnutí pro přijetí klíče hostitele"
 
-msgid "failed to retrieve keyboard interactive result: callback has failed"
-msgstr ""
-"nepodařilo se získat výsledek vstupu z klávesnice: zpětné volání se nezdařilo"
-
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr ""
 "nepodařilo se získat heslovou frázi ke klíči: zpětné volání se nezdařilo"
+
+msgid "failed to retrieve user response for authentication callback"
+msgstr ""
 
 #, c-format
 msgid "failed to rollback transaction: %s%s%s"
@@ -27326,8 +27318,8 @@ msgstr "host neočekávaně skončil"
 msgid "guest unexpectedly quit during hotplug"
 msgstr "při připojování za chodu host neočekávaně skončil"
 
-msgid "guest-get-fsinfo reply was missing return data"
-msgstr "v odpovědi guest-get-fsinfo chybí návratová data"
+msgid "guest-get-fsinfo reply was missing or not an array"
+msgstr ""
 
 msgid "guest-get-osinfo reply was missing return data"
 msgstr "v odpovědi quest-get-osinfo chyběla návratová data"
@@ -30517,7 +30509,7 @@ msgstr "chybí položka v podporovaných formátech výpisů"
 msgid "missing existing file for disk %s: %s"
 msgstr "chybí existující soubor pro disk %s: %s"
 
-msgid "missing external TPM backend type"
+msgid "missing external TPM backend source type"
 msgstr ""
 
 msgid "missing feature name"
@@ -31078,10 +31070,6 @@ msgstr "model „%s“ zařízení paměti se nenachází v nastavení domény"
 #, c-format
 msgid "model '%s' shmem device not present in domain configuration"
 msgstr "model zařízení sdílené paměti „%s“ se nenachází v nastavení domény"
-
-#, c-format
-msgid "model '%s' watchdog device not present in domain configuration"
-msgstr "model zařízení resetátoru „%s“ není v nastavení domény přítomen"
 
 msgid "model resolution is not supported"
 msgstr "překlad modelu není podporován"
@@ -31901,6 +31889,9 @@ msgstr "nebylo nalezeno žádné odpovídající zařízení souborového systé
 msgid "no matching redirdev was not found"
 msgstr "nebylo nalezeno odpovídající redirdev"
 
+msgid "no matching watchdog was found"
+msgstr ""
+
 msgid "no medium attachments"
 msgstr "žádná připojení médií"
 
@@ -32064,14 +32055,11 @@ msgstr "není zaregistrováno žádné zpětné volání proudu"
 msgid "no such screen ID"
 msgstr "žádný takový identifikátor obrazovky"
 
+msgid "no suitable callback authentication callback was found"
+msgstr ""
+
 msgid "no suitable callback for host key verification"
 msgstr "žádné použitelné zpětné volání pro ověření klíče hostitele"
-
-msgid "no suitable callback for input of key passphrase"
-msgstr "žádné použitelné zpětné volání pro vstup heslové fráze ke klíči"
-
-msgid "no suitable callback for input of keyboard response"
-msgstr "žádné použitelné zpětné volání pro vstup odpovědi přes klávesnici"
 
 msgid "no suitable info found"
 msgstr "nenalezeny žádné použitelné informace"
@@ -32411,7 +32399,7 @@ msgstr ""
 "zapnuté za chodu nepřipojovatelné virtuální procesory je třeba instruovat "
 "dříve, než ty za chodu připojitelné"
 
-msgid "only 'client' mode is supported for external TPM device"
+msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
@@ -32468,9 +32456,6 @@ msgstr "je podporováno pouze jediné nvram zařízení"
 msgid "only a single vsock device is supported"
 msgstr "je podporováno pouze jediné vsock zařízení"
 
-msgid "only a single watchdog device is supported"
-msgstr "je podporováno pouze jediné zařízení resetátoru (watchdog)"
-
 #, fuzzy
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr ""
@@ -32523,6 +32508,9 @@ msgstr "je podporována pouze jedna TPM podpůrná vrstva"
 #, fuzzy
 msgid "only one backup job is supported"
 msgstr "Je podporovaná pouze jedna acpi tabulka"
+
+msgid "only one crypto backend is supported"
+msgstr ""
 
 msgid "only one emulatorpin is supported"
 msgstr "je podporován pouze jeden emulatorpin"
@@ -33425,6 +33413,9 @@ msgstr "sběrnice ps2 nepodporuje vstupní zařízení %s"
 
 #, c-format
 msgid "pull mode backup for disk '%s' requires qcow2 driver"
+msgstr ""
+
+msgid "pvpanic is supported only with PCI address type"
 msgstr ""
 
 #, c-format
@@ -35430,6 +35421,9 @@ msgstr "MAC adresa „%s“ odpovídá vícero rozhraním "
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr "binárka QEMU nepodporuje ISA zařízení paniky"
 
+msgid "the QEMU binary does not support the PCI pvpanic device"
+msgstr ""
+
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
 msgstr ""
@@ -35496,6 +35490,9 @@ msgstr "stroj nemá žádný zachycený stav"
 
 msgid "the new password"
 msgstr "nové heslo"
+
+msgid "the passt network backend is not supported with this QEMU binary"
+msgstr ""
 
 msgid "the password is already encrypted"
 msgstr "heslo už je šifrované"
@@ -37245,12 +37242,12 @@ msgid "unknown authentication type %s"
 msgstr "neznámý typ ověřování %s"
 
 #, c-format
-msgid "unknown backend type '%s' for egd"
-msgstr "neznámý typ podpůrné vrstvy „%s“ pro egd"
+msgid "unknown backend source type '%s' for external TPM"
+msgstr ""
 
 #, c-format
-msgid "unknown backend type '%s' for external TPM"
-msgstr ""
+msgid "unknown backend type '%s' for egd"
+msgstr "neznámý typ podpůrné vrstvy „%s“ pro egd"
 
 #, fuzzy, c-format
 msgid "unknown backup mode '%s'"
@@ -37711,6 +37708,10 @@ msgstr "nepodporovaná funkce Hyper-V stimer: %s"
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
 msgstr "nepodporovaná funkce HyperV Enlightenment: %s"
+
+#, c-format
+msgid "unsupported IPv6 address prefix='%u' - must be 64"
+msgstr ""
 
 #, c-format
 msgid "unsupported KVM feature: %s"
@@ -38968,11 +38969,12 @@ msgstr "varování"
 msgid "watchdog"
 msgstr "resetátor"
 
-msgid "watchdog device not present in domain configuration"
-msgstr "zařízení resetátoru není v nastavení domény přítomno"
-
 msgid "watchdog must contain model name"
 msgstr "je třeba, aby resetátor (watchdog) obsahoval název modelu"
+
+msgid ""
+"watchdogs with different actions are not supported with this QEMU binary"
+msgstr ""
 
 msgid "webSocket"
 msgstr "webSocket"
@@ -39125,6 +39127,208 @@ msgstr "zóna %s vyžadována pro sít %s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <řetězec>}…"
+
+#~ msgid "'disk' missing in reply of guest-get-fsinfo"
+#~ msgstr "v odpovědi guest-get-fsinfo chybí 'disk'"
+
+#~ msgid ""
+#~ "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, "
+#~ "rc=%08x"
+#~ msgstr ""
+#~ "Nedaří se získat nikde se neopakující identifikátor souboru, který má být "
+#~ "připojen jako pevný disk / optické médium / disketa: %s, rc=%08x"
+
+#~ msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
+#~ msgstr ""
+#~ "Nedaří se připojit soubor jako pevný disk / optické médium / disketu: %s, "
+#~ "rc=%08x"
+
+#~ msgid "Could not get IMedium, rc=%08x"
+#~ msgstr "Nedaří se získat IMedium, rc=%08x"
+
+#~ msgid "Could not get device port, rc=%08x"
+#~ msgstr "Nedaří se získat port zařízení, rc=%08x"
+
+#~ msgid "Could not get device slot, rc=%08x"
+#~ msgstr "Nedaří se získat slot zařízení, rc=%08x"
+
+#~ msgid "Could not get device type, rc=%08x"
+#~ msgstr "Nedaří se získat typ zařízení, rc=%08x"
+
+#~ msgid "Could not get list of Defined Domains, rc=%08x"
+#~ msgstr "Nedaří se získat seznam Defined Domains, rc=%08x"
+
+#~ msgid "Could not get list of Domains, rc=%08x"
+#~ msgstr "Nepodařilo se získat seznam domén, rc=%08x"
+
+#~ msgid "Could not get list of domains, rc=%08x"
+#~ msgstr "Nedaří se získat seznam domén, rc=%08x"
+
+#~ msgid "Could not get list of machines, rc=%08x"
+#~ msgstr "Nepodařilo se získat seznam strojů, rc=%08x"
+
+#~ msgid "Could not get medium storage location, rc=%08x"
+#~ msgstr "Nedaří se získat umístění úložiště média, rc=%08x"
+
+#~ msgid "Could not get number of Defined Domains, rc=%08x"
+#~ msgstr "Nedaří se získat počet Defined Domains, rc=%08x"
+
+#~ msgid "Could not get number of Domains, rc=%08x"
+#~ msgstr "Nepodařilo se získat počet domén, rc=%08x"
+
+#~ msgid "Could not get read only state, rc=%08x"
+#~ msgstr "Nedaří se získat stav pouze pro čtení, rc=%08x"
+
+#~ msgid "Could not get storage controller bus, rc=%08x"
+#~ msgstr "Nedaří se získat sběrnici řadiče úložiště, rc=%08x"
+
+#~ msgid "Could not get storage controller by name, rc=%08x"
+#~ msgstr "Nedaří se získat řadič úložiště podle názvu, rc=%08x"
+
+#~ msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
+#~ msgstr ""
+#~ "Nepodařilo se přidat řadič úložiště (name: %s, busType: %d), rc=%08x"
+
+#~ msgid "Failed to change storage controller model, rc=%08x"
+#~ msgstr "Nepodařilo se změnit model řadiče úložiště, rc=%08x"
+
+#~ msgid "Failed to get storage controller name, rc=%08x"
+#~ msgstr "Nepodařilo se získat název řadiče úložiště, rc=%08x"
+
+#~ msgid ""
+#~ "Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
+#~ msgstr ""
+#~ "Na stroji se nepodařilo otevřít následující disk / optické médium / "
+#~ "disketu: %s, rc=%08x"
+
+#~ msgid "Failed to save VM settings, rc=%08x"
+#~ msgstr "Nepodařilo se uložit nastavení virt. stroje, rc=%08x"
+
+#~ msgid "Malformed guest-get-fsinfo 'disk' data array"
+#~ msgstr "Nesprávně formulované datové pole 'disk' guest-get-fsinfo"
+
+#~ msgid "Malformed guest-get-fsinfo data array"
+#~ msgstr "Nesprávně formulované datové pole guest-get-fsinfo"
+
+#~ msgid "Malformed ip-addresses array"
+#~ msgstr "Nesprávně formulované pole IP adres"
+
+#~ msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
+#~ msgstr ""
+#~ "Chybí VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT typ přihlašovacího "
+#~ "údaje"
+
+#~ msgid "Password request failed"
+#~ msgstr "Požadavek na heslo se nezdařil"
+
+#~ msgid "Target domain watchdog count %d does not match source %d"
+#~ msgstr ""
+#~ "Počet resetátorů (watchdog) %d cílové domény se neshoduje se zdrojovým %d"
+
+#~ msgid "Unable to close HardDisk, rc=%08x"
+#~ msgstr "Nedaří se zavřít HardDisk, rc=%08x"
+
+#~ msgid "Unable to close the new medium, rc=%08x"
+#~ msgstr "Nové médium se nedaří zavřít, rc=%08x"
+
+#~ msgid "Unable to create HardDisk, rc=%08x"
+#~ msgstr "Nedaří se vytvořit HardDisk, rc=%08x"
+
+#~ msgid "Unable to delete medium, rc=%08x"
+#~ msgstr "Nedaří se smazat médium, rc=%08x"
+
+#~ msgid "Unable to get hard disk id, rc=%08x"
+#~ msgstr "Nedaří se získat identifikátor pevného disku, rc=%08x"
+
+#~ msgid "Unable to get hardDisk Id, rc=%08x"
+#~ msgstr "Nedaří se získat identifikátor hardDisk, rc=%08x"
+
+#~ msgid "Unable to get medium uuid, rc=%08x"
+#~ msgstr "Nedaří se získat nikde se neopakující identifikátor média, rc=%08x"
+
+#~ msgid "Unable to open HardDisk, rc=%08x"
+#~ msgstr "Nedaří se otevřít HardDisk, rc=%08x"
+
+#~ msgid "Unable to open Machine, rc=%08x"
+#~ msgstr "Nedaří se otevřít Machine, rc=%08x"
+
+#~ msgid "Unable to register Machine, rc=%08x"
+#~ msgstr "Nedaří se zaregistrovat stroj, rc=%08x"
+
+#~ msgid "Unable to unregister machine, rc=%08x"
+#~ msgstr "Nedaří se zrušit registraci stroje, rc=%08x"
+
+#~ msgid ""
+#~ "Username and key file path must be provided for private key authentication"
+#~ msgstr ""
+#~ "Pro ověřování soukromým klíčem je třeba poskytnout uživatelské jméno a "
+#~ "popis umístění souboru s klíčem"
+
+#~ msgid "Username must be provided for ssh agent authentication"
+#~ msgstr ""
+#~ "Je třeba, aby pro ověřování ssh agentem bylo poskytnuto uživatelské jméno"
+
+#~ msgid "could not attach shared folder '%s', rc=%08x"
+#~ msgstr "nedaří se připojit sdílenou složku „%s“, rc=%08x"
+
+#~ msgid "could not change ACPI status to: %s, rc=%08x"
+#~ msgstr "nedaří se změnit stav ACPI na: %s, rc=%08x"
+
+#~ msgid "could not change APIC status to: %s, rc=%08x"
+#~ msgstr "nedaří se změnit stav APIC na: %s, rc=%08x"
+
+#~ msgid "could not change PAE status to: %s, rc=%08x"
+#~ msgstr "nedaří se změnit stav PAE na: %s, rc=%08x"
+
+#~ msgid "could not define a domain, rc=%08x"
+#~ msgstr "nedaří se definovat doménu, rc=%08x"
+
+#~ msgid "could not delete the domain, rc=%08x"
+#~ msgstr "nedaří se smazat doménu, rc=%08x"
+
+#~ msgid "could not detach shared folder '%s', rc=%08x"
+#~ msgstr "nedaří se odpojit sdílenou složku „%s“, rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
+#~ msgstr "nepodařilo se nastavit velikost paměti domény na: %llu Kb, rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
+#~ msgstr "nedaří se nastavit velikost paměti domény na: %lu Kb, rc=%08x"
+
+#~ msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
+#~ msgstr "nedaří se nastavit počet procesorů domény na: %u, rc=%08x"
+
+#~ msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
+#~ msgstr "nedaří se nastavit počet virtuálních procesoru na: %u, rc=%08x"
+
+#~ msgid "domain already has a watchdog"
+#~ msgstr "doména už má resetátor"
+
+#~ msgid "domain has no watchdog"
+#~ msgstr "doména nemá resetátor"
+
+#~ msgid "failed to retrieve keyboard interactive result: callback has failed"
+#~ msgstr ""
+#~ "nepodařilo se získat výsledek vstupu z klávesnice: zpětné volání se "
+#~ "nezdařilo"
+
+#~ msgid "guest-get-fsinfo reply was missing return data"
+#~ msgstr "v odpovědi guest-get-fsinfo chybí návratová data"
+
+#~ msgid "model '%s' watchdog device not present in domain configuration"
+#~ msgstr "model zařízení resetátoru „%s“ není v nastavení domény přítomen"
+
+#~ msgid "no suitable callback for input of key passphrase"
+#~ msgstr "žádné použitelné zpětné volání pro vstup heslové fráze ke klíči"
+
+#~ msgid "no suitable callback for input of keyboard response"
+#~ msgstr "žádné použitelné zpětné volání pro vstup odpovědi přes klávesnici"
+
+#~ msgid "only a single watchdog device is supported"
+#~ msgstr "je podporováno pouze jediné zařízení resetátoru (watchdog)"
+
+#~ msgid "watchdog device not present in domain configuration"
+#~ msgstr "zařízení resetátoru není v nastavení domény přítomno"
 
 #~ msgid "Another close callback is already defined for domain %s"
 #~ msgstr "Pro doménu %s už je definováno jiné zpětné volání zavření"

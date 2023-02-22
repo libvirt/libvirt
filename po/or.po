@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-01-09 14:27+0000\n"
+"POT-Creation-Date: 2023-02-22 13:50+0000\n"
 "PO-Revision-Date: 2015-02-27 04:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -599,6 +599,15 @@ msgid "%s model of watchdog is allowed for s390 and s390x only"
 msgstr ""
 
 #, c-format
+msgid "%s model of watchdog is only part of q35 machine"
+msgstr ""
+
+#, c-format
+msgid ""
+"%s model of watchdog is part of the machine and cannot have any address set."
+msgstr ""
+
+#, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
 msgstr ""
 
@@ -863,6 +872,10 @@ msgid "%s: failed to communicate with bridge helper: %s"
 msgstr ""
 
 #, c-format
+msgid "%s: failed to generate UNIX socket path"
+msgstr ""
+
+#, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "%s: ଅସ୍ତାୟୀ ଫାଇଲ ପଢ଼ିବାରେ ବିଫଳ: %s"
 
@@ -977,6 +990,10 @@ msgstr "%s: ଅଧିକ ବିବରଣୀ ପାଇଁ --help ବ୍ଯବହ�
 
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
+#, c-format
+msgid "%s: unknown remote mode '%s'"
 msgstr ""
 
 #, c-format
@@ -1152,7 +1169,7 @@ msgid ""
 "type instead"
 msgstr ""
 
-msgid "'disk' missing in reply of guest-get-fsinfo"
+msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
 #, c-format
@@ -2468,8 +2485,7 @@ msgstr "prlctl ନିର୍ଦ୍ଦେଶକୁ PATH ପରିବେଶରେ �
 
 #, c-format
 msgid ""
-"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc="
-"%08x"
+"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"
 msgstr ""
 
 #, fuzzy
@@ -3833,9 +3849,9 @@ msgstr ""
 msgid "Could not attach serial port %zu"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
-msgstr "ସହଭାଗୀ ଫୋଲଡର '%s' କୁ ସଂଲଗ୍ନ କରିପାରିଲା ନାହିଁ, rc=%08x"
+#, c-format
+msgid "Could not attach the file as harddisk/dvd/floppy: %s"
+msgstr ""
 
 msgid "Could not build CURL header list"
 msgstr "CURL ଶୀର୍ଷକ ତାଲିକା ନିର୍ମାଣ କରିପାରିଲା ନାହିଁ"
@@ -4187,9 +4203,8 @@ msgstr "ଡିସ୍କ ଠିକଣାକୁ ଯାଞ୍ଚ କରିପାର
 msgid "Could not get EPR items"
 msgstr "ଅନ୍ତରାପୃଷ୍ଠ ତାଲିକା ପାଇଲା ନାହିଁ"
 
-#, fuzzy, c-format
-msgid "Could not get IMedium, rc=%08x"
-msgstr "ଡମେନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+msgid "Could not get IMedium"
+msgstr ""
 
 msgid "Could not get Msvm_DiskDrive default InstanceID"
 msgstr ""
@@ -4220,17 +4235,14 @@ msgstr "ଆଶୁଚିତ୍ର ନାମ ପାଇଲା ନାହିଁ"
 msgid "Could not get current time"
 msgstr "ଏବେର ସମୟ ପାଇଲା ନାହିଁ"
 
-#, fuzzy, c-format
-msgid "Could not get device port, rc=%08x"
-msgstr "ଡମେନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+msgid "Could not get device port"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get device slot, rc=%08x"
-msgstr "ମେସିନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+msgid "Could not get device slot"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get device type, rc=%08x"
-msgstr "ମେସିନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+msgid "Could not get device type"
+msgstr ""
 
 #, c-format
 msgid "Could not get free memory for host %s"
@@ -4267,30 +4279,25 @@ msgstr "(ଆଭ୍ୟନ୍ତରୀଣ) ପୂନରାବର୍ତ୍ତକ ID
 msgid "Could not get iterator index for iterator ID %u"
 msgstr "ପୂନରାବର୍ତ୍ତକ ID %u ପାଇଁ ପୂନରାବର୍ତ୍ତକ ଅନୁକ୍ରମଣିକା ପାଇଲା ନାହିଁ"
 
-#, c-format
-msgid "Could not get list of Defined Domains, rc=%08x"
-msgstr "ବ୍ୟାଖ୍ୟା କରାଯାଇଥିବା ଡମେନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+msgid "Could not get list of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of Domains, rc=%08x"
-msgstr "ଡମେନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+msgid "Could not get list of Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of domains, rc=%08x"
-msgstr "ଡମେନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+msgid "Could not get list of domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of machines, rc=%08x"
-msgstr "ମେସିନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+msgid "Could not get list of machines"
+msgstr ""
 
 #, c-format
 msgid ""
 "Could not get maximum definition of Msvm_ProcessorSettingData for host %s"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get medium storage location, rc=%08x"
-msgstr "ଡମେନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+msgid "Could not get medium storage location"
+msgstr ""
 
 #, c-format
 msgid "Could not get members of bridge '%s'"
@@ -4303,16 +4310,17 @@ msgstr "ଆଭାସୀ ତନ୍ତ୍ରର ନାମ ପାଇଲା ନା�
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "nth (%u) ମୂଲ୍ୟ ପ୍ରାଚଳ '%s' ର  ପାଇଲା ନାହିଁ"
 
-#, c-format
-msgid "Could not get number of Defined Domains, rc=%08x"
-msgstr "ବ୍ୟାଖ୍ୟା କରାଯାଇଥିବା ଡମେନଗୁଡ଼ିକର ସଂଖ୍ୟା ପାଇଲା ନାହିଁ, rc=%08x"
+msgid "Could not get number of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get number of Domains, rc=%08x"
-msgstr "ଡମେନଗୁଡ଼ିକର ସଂଖ୍ଯା ପାଇଲା ନାହିଁ, rc=%08x"
+msgid "Could not get number of Domains"
+msgstr ""
 
 #, c-format
 msgid "Could not get parent of '%s'"
+msgstr ""
+
+msgid "Could not get process ID of passt"
 msgstr ""
 
 #, fuzzy
@@ -4323,9 +4331,8 @@ msgstr "ଅନ୍ତରାପୃଷ୍ଠ ତାଲିକା ପାଇଲା ନ
 msgid "Could not get process id of vhost-user-gpu"
 msgstr "ଆଶୁଚିତ୍ର %s ର ମୂଖ୍ୟକୁ ପାଇଲା ନାହିଁ"
 
-#, fuzzy, c-format
-msgid "Could not get read only state, rc=%08x"
-msgstr "ମେସିନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+msgid "Could not get read only state"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get response"
@@ -4357,13 +4364,11 @@ msgstr "ଆଶୁଚିତ୍ର id କୁ ପାଇଲା ନାହିଁ"
 msgid "Could not get snapshot name"
 msgstr "ଆଶୁଚିତ୍ର ନାମ ପାଇଲା ନାହିଁ"
 
-#, fuzzy, c-format
-msgid "Could not get storage controller bus, rc=%08x"
-msgstr "ମେସିନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+msgid "Could not get storage controller bus"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get storage controller by name, rc=%08x"
-msgstr "ମେସିନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+msgid "Could not get storage controller by name"
+msgstr ""
 
 #, c-format
 msgid "Could not get syspath for parent of '%s'"
@@ -4786,6 +4791,10 @@ msgstr "ଫାଇଲତନ୍ତ୍ର ପାଇଁ ଉତ୍ସ dirକୁ ସ�
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
 
+#, c-format
+msgid "Could not start 'passt': %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Could not start 'slirp'. exitstatus: %d"
 msgstr "ଡମେନକୁ ଆରମ୍ଭ କରିପାରିଲି ନାହିଁ: %s"
@@ -4938,6 +4947,9 @@ msgstr "ନିର୍ମାଣ ସମୟ"
 #, c-format
 msgid "Creation of %s volumes is not supported"
 msgstr "%s ଭଲ୍ୟୁମର ନିର୍ମାଣ ସମର୍ଥିତ ନୁହଁ"
+
+msgid "Crypto device is missing alias"
+msgstr ""
 
 #, fuzzy
 msgid "Current memory size too large"
@@ -6379,7 +6391,7 @@ msgid "Failed to add signal handle watch"
 msgstr "ସଂକେତ ନିୟନ୍ତ୍ରଣ ଘଡ଼ି ଯୋଗ କରିବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
+msgid "Failed to add storage controller (name: %s, busType: %d)"
 msgstr ""
 
 #, c-format
@@ -6487,9 +6499,8 @@ msgstr "ଭଲ୍ୟୁମ '%s/%s' କୁ ସୃଷ୍ଟି କରିବାର�
 msgid "Failed to change size of volume '%s' to %s"
 msgstr "%s ର ମାଲିକତ୍ତ୍ୱକୁ %u ରେ ପରିବର୍ତ୍ତନ କରିବାରେ ବିଫଳ:%u"
 
-#, fuzzy, c-format
-msgid "Failed to change storage controller model, rc=%08x"
-msgstr "ସଂରକ୍ଷଣ ନିୟନ୍ତ୍ରକ ଯୋଗ କରିବାରେ ଅସମର୍ଥ"
+msgid "Failed to change storage controller model"
+msgstr ""
 
 #, c-format
 msgid "Failed to chdir into %s"
@@ -6717,6 +6728,10 @@ msgid "Failed to create nvram dir %s"
 msgstr "ଅବସ୍ଥା dir '%s' କୁ ନିର୍ମାଣ କରିବାରେ ବିଫଳ"
 
 msgid "Failed to create or modify the state XML attribute"
+msgstr ""
+
+#, c-format
+msgid "Failed to create passt state dir %s"
 msgstr ""
 
 #, c-format
@@ -7234,9 +7249,8 @@ msgstr "ଡମେନ '%d' ପାଇଁ libxenlight ସହିତ ଯୋଜନା 
 msgid "Failed to get snapshot count"
 msgstr "ଆଶୁଚିତ୍ର ସଂଖ୍ୟା ପ୍ରାପ୍ତ କରିବାରେ ବିଫଳ"
 
-#, fuzzy, c-format
-msgid "Failed to get storage controller name, rc=%08x"
-msgstr "ସଂରକ୍ଷଣ ନିୟନ୍ତ୍ରକ ଯୋଗ କରିବାରେ ଅସମର୍ଥ"
+msgid "Failed to get storage controller name"
+msgstr ""
 
 msgid "Failed to get the number of active networks"
 msgstr "ସକ୍ରିୟ ନେଟୱର୍କଗୁଡ଼ିକ ସଂଖ୍ୟା ପାଇବାରେ ବିଫଳ"
@@ -7593,8 +7607,7 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr "ପଥ '%s' ସହିତ ସଂରକ୍ଷଣ ଭଲ୍ୟୁମକୁ ଖୋଲିବାରେ ବିଫଳ"
 
 #, c-format
-msgid ""
-"Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
+msgid "Failed to open the following disk/dvd/floppy to the machine: %s"
 msgstr ""
 
 #, c-format
@@ -7697,6 +7710,10 @@ msgstr "'%s' ରୁ ଯୁକ୍ତାତ୍ମକ ଗଣନ ସଂଖ୍ୟା 
 #, fuzzy, c-format
 msgid "Failed to parse rate '%s'"
 msgstr "ଡିରେକ୍ଟୋରୀ ନାମ '%s' କୁ ବିଶ୍ଳେଷଣ କରିବାରେ ବିଫଳ"
+
+#, c-format
+msgid "Failed to parse rotated index from '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%s'"
@@ -8049,9 +8066,8 @@ msgstr "iscsi ଅନ୍ତରାପୃଷ୍ଠକୁ IQN '%s' ସହିତ ଅ�
 msgid "Failed to save '%s' for '%s'"
 msgstr "%s ପରିସରକୁ %s ରେ ସଂରକ୍ଷଣ କରିବାରେ ବିଫଳ"
 
-#, fuzzy, c-format
-msgid "Failed to save VM settings, rc=%08x"
-msgstr "ହାର୍ଡ ଡିସ୍କ ବନ୍ଦ କରିବାରେ ଅସମର୍ଥ, rc=%08x"
+msgid "Failed to save VM settings"
+msgstr ""
 
 #, c-format
 msgid "Failed to save domain '%d' with libxenlight"
@@ -9558,6 +9574,10 @@ msgid "Invalid address '%s' in <ip>"
 msgstr "ଅବୈଧ ଠିକଣା'%s' ନେଟୱର୍କ '%s' ରେ ଅଛି"
 
 #, c-format
+msgid "Invalid address '%s' in <portForward>"
+msgstr ""
+
+#, c-format
 msgid "Invalid address '%s' in network '%s'"
 msgstr "ଅବୈଧ ଠିକଣା'%s' ନେଟୱର୍କ '%s' ରେ ଅଛି"
 
@@ -10065,6 +10085,10 @@ msgstr "ଅବୈଧ ସଂଯୋଗିକୀ ସଂଖ୍ୟା: %s"
 #, c-format
 msgid "Invalid port range '%u-%u'."
 msgstr "ଅବୈଧ ପୋର୍ଟ ସୀମା '%u-%u'."
+
+#, c-format
+msgid "Invalid portForward proto value %u"
+msgstr ""
 
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
@@ -10636,19 +10660,9 @@ msgstr "ତୃଟିଯୁକ୍ତ nbd ପୋର୍ଟ '%s'"
 msgid "Malformed format for log output '%s'"
 msgstr ""
 
-msgid "Malformed guest-get-fsinfo 'disk' data array"
-msgstr ""
-
-msgid "Malformed guest-get-fsinfo data array"
-msgstr ""
-
 #, fuzzy
 msgid "Malformed id field in JSON state document"
 msgstr "JSON ଦଲିଲରେ କେବଳ ପଠନୀୟ ସ୍ଥାନ ଅନୁପସ୍ଥିତ"
-
-#, fuzzy
-msgid "Malformed ip-addresses array"
-msgstr "ତ୍ରୁଟିଯୁକ୍ତ mac ଠିକଣା '%s'"
 
 #, fuzzy
 msgid "Malformed lease_entries array"
@@ -11102,9 +11116,6 @@ msgid "Missing UUID parameter for domain object"
 msgstr "ଡମେନ ବସ୍ତୁ ପାଇଁ ଅନୁପସ୍ଥିତ  UUID ପ୍ରାଚଳ"
 
 msgid "Missing VIR_CRED_AUTHNAME credential type"
-msgstr ""
-
-msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
 msgstr ""
 
 msgid "Missing XPath context"
@@ -11616,6 +11627,9 @@ msgstr ""
 #, fuzzy
 msgid "Multiple graphics devices are not supported"
 msgstr "ଏକାଧିକ ଶୀର୍ଷକ ବିଶିଷ୍ଟ ଭିଡ଼ିଓ ଉପକରଣଗୁଡ଼ିକ ସହାୟତା ପାଇନଥାଏ"
+
+msgid "Multiple iTCO watchdogs are not supported"
+msgstr ""
 
 msgid "Multiple interfaces attached to bridge"
 msgstr "ଏହି ବ୍ରିଜ ସହିତ ଏକାଧିକ  ଅନ୍ତରାପୃଷ୍ଠ ସଂଲଗ୍ନ"
@@ -13033,9 +13047,6 @@ msgstr "କି '%s' ପାଇଁ ପ୍ରବେଶ ସଂକେତ"
 
 msgid "Password may not contain ',' character"
 msgstr ""
-
-msgid "Password request failed"
-msgstr "ପ୍ରବେଶ ସଂକେତ ଅନୁରୋଧ ବିଫଳ ହୋଇଛି"
 
 #, c-format
 msgid "Password set successfully for %s in %s"
@@ -15458,8 +15469,8 @@ msgid "Target domain vsock device model '%s' does not match source '%s'"
 msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ହୋଷ୍ଟ ଉପକରଣ ଧାରା %s ଉତ୍ସ %s ସହିତ ମେଳଖାଉ ନାହିଁ"
 
 #, c-format
-msgid "Target domain watchdog count %d does not match source %d"
-msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ଡମେନ ୱାଚଡଗ ହିସାବ %d ଉତ୍ସ %d ସହିତ ମେଳଖାଉ ନାହିଁ"
+msgid "Target domain watchdog device count %zu does not match source %zu"
+msgstr ""
 
 msgid "Target filesystem access mode does not match source"
 msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ଫାଇଲତନ୍ତ୍ର ପ୍ରବେଶାନୁମତି ଧାରା ଉତ୍ସ ସହିତ ମିଶୁ ନାହିଁ"
@@ -15725,6 +15736,14 @@ msgid ""
 "'%s' or machine type '%s'"
 msgstr ""
 
+msgid "The 'passt' backend can only be used with interface type='user'"
+msgstr ""
+
+msgid ""
+"The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
+"'exclude' is specified"
+msgstr ""
+
 #, fuzzy, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -15900,11 +15919,6 @@ msgstr ""
 msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
-msgstr ""
-
-msgid ""
-"The overall maximum number of clients waiting for authentication must not be "
-"less than the overall maximum number of clients"
 msgstr ""
 
 msgid "The read only disk has no parent"
@@ -16683,9 +16697,8 @@ msgstr "%s କୁ ବନ୍ଦ କରିବାରେ ଅସମର୍ଥ"
 msgid "Unable to close %s"
 msgstr "%s କୁ ବନ୍ଦ କରିବାରେ ଅସମର୍ଥ"
 
-#, c-format
-msgid "Unable to close HardDisk, rc=%08x"
-msgstr "ହାର୍ଡ ଡିସ୍କ ବନ୍ଦ କରିବାରେ ଅସମର୍ଥ, rc=%08x"
+msgid "Unable to close HardDisk"
+msgstr ""
 
 msgid "Unable to close disk children"
 msgstr "ଡିସ୍କ ନିମ୍ନସ୍ତରକୁ ବନ୍ଦ କରିବାରେ ଅସମର୍ଥ"
@@ -16697,9 +16710,11 @@ msgstr "ସମସ୍ତ ଡିସ୍କଗୁଡ଼ିକୁ ପୁନଃପୌ�
 msgid "Unable to close the VPD file, fd: %d"
 msgstr ""
 
-#, c-format
-msgid "Unable to close the new medium, rc=%08x"
-msgstr "ନୂତନ ମାଧ୍ଯମକୁ ବନ୍ଦ କରିବାରେ ଅସମର୍ଥ, rc=%08x"
+msgid "Unable to close the new medium"
+msgstr ""
+
+msgid "Unable to compile regex"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to compute hash of data: %s"
@@ -16735,9 +16750,8 @@ msgstr "stdout ଫାଇଲ ନିୟନ୍ତ୍ରକକୁ ବିନ୍ୟା
 msgid "Unable to create %s"
 msgstr "%s କୁ ନିର୍ମାଣ କରିବାରେ ଅସମର୍ଥ"
 
-#, c-format
-msgid "Unable to create HardDisk, rc=%08x"
-msgstr "ହାର୍ଡ ଡିସ୍କ ସୃଷ୍ଟି କରିବାରେ ଅସମର୍ଥ, rc=%08x"
+msgid "Unable to create HardDisk"
+msgstr ""
 
 msgid "Unable to create JSON formatter"
 msgstr "JSON ଫରମାଟର୍‌ ସୃଷ୍ଟି କରିବାରେ ଅସମର୍ଥ"
@@ -16912,9 +16926,8 @@ msgstr "ଫାଇଲ %s କୁ ଅପସାରଣ କରିବାରେ ଅସ�
 msgid "Unable to delete lockspace resource %s"
 msgstr "ଉତ୍ସ %s କୁ ଖୋଲିବାରେ ଅସମର୍ଥ"
 
-#, c-format
-msgid "Unable to delete medium, rc=%08x"
-msgstr "ମାଧ୍ଯମ ଅପସାରଣ କରିବାରେ ଅସମର୍ଥ, rc=%08x"
+msgid "Unable to delete medium"
+msgstr ""
 
 #, c-format
 msgid "Unable to delete port %s from OVS"
@@ -17302,13 +17315,8 @@ msgstr "ହାର୍ଡ ଡିସ୍କ ଫର୍ମାଟ୍‌ ପାଇବା
 msgid "Unable to get hard disk id"
 msgstr "ହାର୍ଡ ଡିସ୍କ id ପାଇବାରେ ଅସମର୍ଥ"
 
-#, c-format
-msgid "Unable to get hard disk id, rc=%08x"
-msgstr "ହାର୍ଡ ଡିସ୍କ id ପାଇବାରେ ଅସମର୍ଥ, rc=%08x"
-
-#, c-format
-msgid "Unable to get hardDisk Id, rc=%08x"
-msgstr "ହାର୍ଡ ଡିସ୍କ Id ପାଇବାରେ ଅସମର୍ଥ, rc=%08x"
+msgid "Unable to get hardDisk Id"
+msgstr ""
 
 msgid "Unable to get host SEV information"
 msgstr ""
@@ -17354,9 +17362,8 @@ msgstr "%s ଉପରେ ଲୁପ ସ୍ଥିତି ପାଇବାରେ ଅ�
 msgid "Unable to get medium location"
 msgstr "ମାଧ୍ଯମ ଅବସ୍ଥାନ ପାଇବାରେ ଅସମର୍ଥ"
 
-#, c-format
-msgid "Unable to get medium uuid, rc=%08x"
-msgstr "ମାଧ୍ଯମ uuid ପାଇବାରେ ଅସମର୍ଥ, rc=%08x"
+msgid "Unable to get medium uuid"
+msgstr ""
 
 msgid "Unable to get memory parameters"
 msgstr "ସ୍ମୃତିସ୍ଥାନ ପ୍ରାଚଳକୁ ପାଇବାରେ ଅସମର୍ଥ"
@@ -17626,13 +17633,11 @@ msgstr "/dev/loop-control କୁ ଖୋଲିବାରେ ଅସମର୍ଥ"
 msgid "Unable to open /proc/mounts"
 msgstr "/proc/mountsକୁ ଖୋଲିବାରେ ଅସମର୍ଥ"
 
-#, c-format
-msgid "Unable to open HardDisk, rc=%08x"
-msgstr "ହାର୍ଡ ଡିସ୍କ ଖୋଲିବାରେ ଅସମର୍ଥ, rc=%08x"
+msgid "Unable to open HardDisk"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to open Machine, rc=%08x"
-msgstr "ହାର୍ଡ ଡିସ୍କ ଖୋଲିବାରେ ଅସମର୍ଥ, rc=%08x"
+msgid "Unable to open Machine"
+msgstr ""
 
 msgid "Unable to open UNIX socket"
 msgstr "UNIX ସକେଟକୁ ଖୋଲିବାରେ ଅସମର୍ଥ"
@@ -17934,9 +17939,8 @@ msgstr "ଫାଇଲ '%s' କୁ ବନ୍ଦ କରିବାରେ ଅସମର
 msgid "Unable to read virtiofsd pidfile '%s'"
 msgstr "ଡିରେକ୍ଟୋରୀ '%s' କୁ ପଢ଼ିବାରେ ଅସମର୍ଥ"
 
-#, fuzzy, c-format
-msgid "Unable to register Machine, rc=%08x"
-msgstr "ମେସିନକୁ ପଞ୍ଜିକରଣହୀନ କରିବାରେ ଅସମର୍ଥ, rc=%08x"
+msgid "Unable to register Machine"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to register async IO callback"
@@ -18408,9 +18412,8 @@ msgstr "%s କୁ ଖୋଲିବାରେ ଅସମର୍ଥ"
 msgid "Unable to unlink path '%s'"
 msgstr "'%s' ଲେଖିବାରେ ଅସମର୍ଥ"
 
-#, c-format
-msgid "Unable to unregister machine, rc=%08x"
-msgstr "ମେସିନକୁ ପଞ୍ଜିକରଣହୀନ କରିବାରେ ଅସମର୍ଥ, rc=%08x"
+msgid "Unable to unregister machine"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to update server's tls related files."
@@ -19559,13 +19562,6 @@ msgstr "ବ୍ରିଜ %s ଅବସ୍ଥିତ ନାହିଁ"
 msgid "User namespace support is recommended"
 msgstr ""
 
-msgid ""
-"Username and key file path must be provided for private key authentication"
-msgstr "ବ୍ୟକ୍ତିଗତ କି ବୈଧିକରଣ ପାଇଁ ବ୍ୟବହାରକାରୀ ନାମ ଏବଂ କି ଫାଇଲ ନିଶ୍ଚିତ ଭାବରେ ଦିଆଯିବା ଉଚିତ"
-
-msgid "Username must be provided for ssh agent authentication"
-msgstr "ssh ସଦସ୍ୟ ବୈଧିକରଣ ପାଇଁ ବ୍ୟବହାରକାରୀ ନାମ ନିଶ୍ଚିତ ଭାବରେ ଦିଆଯିବା ଉଚିତ"
-
 msgid "Username request failed"
 msgstr "ଚାଳକ ନାମ ଅନୁରୋଧ ବିଫଳ ହୋଇଛି"
 
@@ -19683,10 +19679,6 @@ msgstr "ମୂଲ୍ଯ '%s' ଟି %s ପରିସର ବାହାରେ"
 
 #, c-format
 msgid "Value of cputune '%s' must be in range [%llu, %llu]"
-msgstr ""
-
-#, c-format
-msgid "Value of cputune 'shares' must be in range [%llu, %llu]"
 msgstr ""
 
 msgid "Variable value contains invalid character"
@@ -21836,6 +21828,9 @@ msgstr ""
 msgid "cannot modify network device address type"
 msgstr "ନେଟୱର୍କ ଉପକରଣ ଅତିଥି PCI ଠିକଣାକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
+msgid "cannot modify network device backend settings"
+msgstr ""
+
 msgid "cannot modify network device boot index setting"
 msgstr "ନେଟୱର୍କ ଉପକରଣ ବୁଟ ଅନୁକ୍ରମଣିକା ବିନ୍ୟାସକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ "
 
@@ -23116,8 +23111,8 @@ msgid "could not allocate memory"
 msgstr "ସ୍ମୃତି ସ୍ଥାନ ଯୋଗାଇ ହେଲା ନାହିଁ"
 
 #, c-format
-msgid "could not attach shared folder '%s', rc=%08x"
-msgstr "ସହଭାଗୀ ଫୋଲଡର '%s' କୁ ସଂଲଗ୍ନ କରିପାରିଲା ନାହିଁ, rc=%08x"
+msgid "could not attach shared folder '%s'"
+msgstr ""
 
 msgid "could not build absolute core file path"
 msgstr "ସମ୍ପୂର୍ଣ୍ଣ ମୂଖ୍ୟ ଫାଇଲ ପଥ ନିର୍ମାଣ କରିପାରିଲା ନାହିଁ"
@@ -23129,16 +23124,16 @@ msgid "could not build absolute output file path"
 msgstr "ସମ୍ପୂର୍ଣ୍ଣ ଫଳାଫଳ ଫାଇଲ ପଥ ନିର୍ମାଣ କରିପାରିଲା ନାହିଁ"
 
 #, c-format
-msgid "could not change ACPI status to: %s, rc=%08x"
-msgstr "ACPI ସ୍ଥିତିକୁ ପରିବର୍ତ୍ତନ କରିପାରିଲା ନାହିଁ: %s, rc=%08x"
+msgid "could not change ACPI status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change APIC status to: %s, rc=%08x"
-msgstr "APIC ସ୍ଥିତିକୁ ପରିବର୍ତ୍ତନ କରିପାରିଲା ନାହିଁ: %s, rc=%08x"
+msgid "could not change APIC status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change PAE status to: %s, rc=%08x"
-msgstr "PAE ସ୍ଥିତିକୁ ପରିବର୍ତ୍ତନ କରିପାରିଲା ନାହିଁ: %s, rc=%08x"
+msgid "could not change PAE status to: %s"
+msgstr ""
 
 msgid "could not close handshake fd"
 msgstr "ହସ୍ତ ମିଳନ  fd କୁ ବନ୍ଦ କରିପାରିଲା ନାହିଁ"
@@ -23172,20 +23167,18 @@ msgstr "'%s' ନାମ ସହିତ ମେଳ ଖାଉଥିବା  ଡମେ�
 msgid "could not create profile"
 msgstr "ରୂପରେଖା ସୃଷ୍ଟି କରିପାରିଲା ନାହିଁ"
 
-#, c-format
-msgid "could not define a domain, rc=%08x"
-msgstr "କୌଣସି ଡମେନକୁ ବ୍ୟାଖ୍ୟା କରିପାରିଲା ନାହିଁ, rc=%08x"
+msgid "could not define a domain"
+msgstr ""
 
 msgid "could not delete snapshot"
 msgstr "ଆଶୁଚିତ୍ରକୁ ଅପସାରଣ କରିପାରିଲା ନାହିଁ"
 
-#, c-format
-msgid "could not delete the domain, rc=%08x"
-msgstr "ଡମେନକୁ ଅପସାରଣ କରିହେଲା ନାହିଁ, rc=%08x"
+msgid "could not delete the domain"
+msgstr ""
 
 #, c-format
-msgid "could not detach shared folder '%s', rc=%08x"
-msgstr "ସହଭାଗୀ ଫୋଲଡର '%s' କୁ ପୃଥକ କରିପାରିଲା ନାହିଁ, rc=%08x"
+msgid "could not detach shared folder '%s'"
+msgstr ""
 
 msgid "could not determine max vcpus for the domain"
 msgstr "ପରିସର ପାଇଁ ସର୍ବାଧିକ vcpus ନିର୍ଦ୍ଧାରଣ କରାଯାଇପାରିବ ନାହିଁ"
@@ -23382,20 +23375,20 @@ msgid "could not set PATH"
 msgstr "PATH କୁ ସେଟ କରିପାରିଲା ନାହିଁ"
 
 #, c-format
-msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
-msgstr "ଡମେନର ସ୍ମୃତିସ୍ଥାନ ଆକାରକୁ ସେଟ କରିପାରିଲା ନାହିଁ: %llu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %llu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
-msgstr "ଡମେନର ସ୍ମୃତିସ୍ଥାନ ଆକାରକୁ ସେଟ କରିପାରିଲା ନାହିଁ: %lu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %lu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
-msgstr "ଡମେନର cpus ମାନଙ୍କର ସଂଖ୍ଯାକୁ ସେଟ କରିପାରିଲା ନାହିଁ: %u, rc=%08x"
+msgid "could not set the number of cpus of the domain to: %u"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
-msgstr "ଆଭାସୀ CPU ମାନଙ୍କର ସଂଖ୍ଯାକୁ ସେଟ କରିପାରିଲା ନାହିଁ: %u, rc=%08x"
+msgid "could not set the number of virtual CPUs to: %u"
+msgstr ""
 
 #, c-format
 msgid "could not take a screenshot of %s"
@@ -23609,6 +23602,18 @@ msgstr ""
 #, fuzzy
 msgid "creation of qcow2 encrypted image is not supported"
 msgstr "%s ଭଲ୍ୟୁମର ନିର୍ମାଣ ସମର୍ଥିତ ନୁହଁ"
+
+#, c-format
+msgid "crypto backend %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto model %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto type %s is not supported"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -24436,10 +24441,6 @@ msgstr "ପରିସର %s ଟି ପୂର୍ବରୁ ଚାଲୁଅଛି"
 msgid "domain already has a vsock device"
 msgstr "ଡମେନରେ ହୋଷ୍ଟ ଉପକରଣ ନ୍ୟସ୍ତ ହୋଇଛି"
 
-#, fuzzy
-msgid "domain already has a watchdog"
-msgstr "ଡମେନ '%s' କୁ uuid %s ସହିତ ପୂର୍ବରୁ ଅବସ୍ଥିତ"
-
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr ""
 
@@ -24503,10 +24504,6 @@ msgid "domain has assigned host devices"
 msgstr "ଡମେନରେ ହୋଷ୍ଟ ଉପକରଣ ନ୍ୟସ୍ତ ହୋଇଛି"
 
 msgid "domain has no snapshots"
-msgstr "ଡମେନର କୌଣସି ଆଶୁଚିତ୍ର ନାହିଁ"
-
-#, fuzzy
-msgid "domain has no watchdog"
 msgstr "ଡମେନର କୌଣସି ଆଶୁଚିତ୍ର ନାହିଁ"
 
 #, fuzzy
@@ -25678,6 +25675,10 @@ msgstr "ଲୁପ ପ୍ରସ୍ଥାନ ସ୍ଥିତି ନିର୍ଦ୍
 msgid "failed to duplicate file descriptor for fd group '%s'"
 msgstr ""
 
+#, c-format
+msgid "failed to duplicate passed fd with index '%zu'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr "IP ଅଗ୍ରଗମୀକୁ ସକ୍ରିୟ କରିବାରେ ବିଫଳ"
 
@@ -26395,12 +26396,11 @@ msgstr "ପରିଚୟ ପତ୍ର ବାହାର କରିବାରେ ବ�
 msgid "failed to retrieve decision to accept host key"
 msgstr "ହୋଷ୍ଟ କି ଗ୍ରହଣ କରିବା ପାଇଁ ସିଦ୍ଧାନ୍ତ କାଢ଼ିବାରେ ବିଫଳ"
 
-#, fuzzy
-msgid "failed to retrieve keyboard interactive result: callback has failed"
-msgstr "ବ୍ୟକ୍ତିଗତ କି ପ୍ରବେଶ ସଂକେତ କାଢ଼ିବାରେ ବିଫଳ: କଲବ୍ୟାକ ବିଫଳ ହୋଇଛି"
-
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr "ବ୍ୟକ୍ତିଗତ କି ପ୍ରବେଶ ସଂକେତ କାଢ଼ିବାରେ ବିଫଳ: କଲବ୍ୟାକ ବିଫଳ ହୋଇଛି"
+
+msgid "failed to retrieve user response for authentication callback"
+msgstr ""
 
 #, c-format
 msgid "failed to rollback transaction: %s%s%s"
@@ -27259,9 +27259,8 @@ msgstr "ଅତିଥି ଅପ୍ରତ୍ୟାଶିତ ଭାବରେ ବି
 msgid "guest unexpectedly quit during hotplug"
 msgstr "ହଟପ୍ଲଗ ସମୟରେ ଅତିଥି ଅପ୍ରତ୍ୟାଶିତ ଭାବରେ ବିଦାୟ ନେଇଛି"
 
-#, fuzzy
-msgid "guest-get-fsinfo reply was missing return data"
-msgstr "guest-get-vcpus ଉତ୍ତରରେ ଫେରସ୍ତ ତଥ୍ୟ ଅନୁପସ୍ଥିତ"
+msgid "guest-get-fsinfo reply was missing or not an array"
+msgstr ""
 
 #, fuzzy
 msgid "guest-get-osinfo reply was missing return data"
@@ -30465,7 +30464,7 @@ msgstr "ଅନୁପସ୍ଥିତ ପ୍ରଚାଳନ ତନ୍ତ୍ର ସ
 msgid "missing existing file for disk %s: %s"
 msgstr "ଡିସ୍କ %s ପାଇଁ ସ୍ଥିତବାନ ଫାଇଲ ଅନୁପସ୍ଥିତ: %s"
 
-msgid "missing external TPM backend type"
+msgid "missing external TPM backend source type"
 msgstr ""
 
 msgid "missing feature name"
@@ -31017,10 +31016,6 @@ msgstr "ଡମେନ ସଂରଚନାରେ ଉପକରଣ ନାହିଁ"
 
 #, fuzzy, c-format
 msgid "model '%s' shmem device not present in domain configuration"
-msgstr "ଡମେନ ସଂରଚନାରେ ଉପକରଣ ନାହିଁ"
-
-#, fuzzy, c-format
-msgid "model '%s' watchdog device not present in domain configuration"
 msgstr "ଡମେନ ସଂରଚନାରେ ଉପକରଣ ନାହିଁ"
 
 #, fuzzy
@@ -31842,6 +31837,9 @@ msgstr "କୌଣସି ମେଳଖାଉଥିବା ଫାଇଲତନ୍ତ�
 msgid "no matching redirdev was not found"
 msgstr "କୌଣସି ମେଳଖାଉଥିବା ଫାଇଲତନ୍ତ୍ର ଉପକରଣ ମିଳି ନାହିଁ"
 
+msgid "no matching watchdog was found"
+msgstr ""
+
 msgid "no medium attachments"
 msgstr "କୌଣସି ମାଧ୍ଯମ ସଂଲଗ୍ନ ହୋଇ ନାହିଁ"
 
@@ -32010,16 +32008,12 @@ msgstr "ଧାରାରେ ପୂର୍ବରୁ କଲ ବ୍ୟାକକୁ �
 msgid "no such screen ID"
 msgstr ""
 
+msgid "no suitable callback authentication callback was found"
+msgstr ""
+
 #, fuzzy
 msgid "no suitable callback for host key verification"
 msgstr "ହୋଷ୍ଟ କି ଯାଞ୍ଚ ପାଇଁ ହୋଷ୍ଟ ନାମ ଆବଶ୍ୟକ"
-
-#, fuzzy
-msgid "no suitable callback for input of key passphrase"
-msgstr "କି ପ୍ରବେଶ ସଂକେତ ବାକ୍ୟାଂଶ କାଢ଼ିବା ପାଇଁ କୌଣସି ଉପଯୁକ୍ତ ପଦ୍ଧତି ନାହିଁ"
-
-msgid "no suitable callback for input of keyboard response"
-msgstr ""
 
 msgid "no suitable info found"
 msgstr "କୌଣସି  ଉପଯୁକ୍ତ ସୂଚନା ମିଳିଲା ନାହିଁ"
@@ -32360,7 +32354,7 @@ msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr ""
 
-msgid "only 'client' mode is supported for external TPM device"
+msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
@@ -32421,9 +32415,6 @@ msgstr "କେବଳ ଏକକ nvram ଉପକରଣ ସମର୍ଥିତ"
 msgid "only a single vsock device is supported"
 msgstr "କେବଳ ଏକକ nvram ଉପକରଣ ସମର୍ଥିତ"
 
-msgid "only a single watchdog device is supported"
-msgstr "କେବଳ ଏକକ ୱାଚଡଗ ଉପକରଣ ସମର୍ଥିତ"
-
 #, fuzzy
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "sgio ହିଁ କେବଳ scsi ହୋଷ୍ଟ ଉପକରଣ ପାଇଁ ସହାୟତା ପ୍ରାପ୍ତ"
@@ -32473,6 +32464,9 @@ msgstr "କେବଳ ଗୋଟିଏ TPM ପୃଷ୍ଠଭୂମିକୁ ସ�
 #, fuzzy
 msgid "only one backup job is supported"
 msgstr "କେବଳ ଗୋଟିଏ RNG ପୃଷ୍ଠଭୂମି ସମର୍ଥିତ"
+
+msgid "only one crypto backend is supported"
+msgstr ""
 
 msgid "only one emulatorpin is supported"
 msgstr "କେବଳ ଗୋଟିଏ emulatorpin ସମର୍ଥିତ"
@@ -33384,6 +33378,9 @@ msgstr "ps2 bus ନିବେଶ ଉପକରଣ %s କୁ ସମର୍ଥନ କ
 
 #, c-format
 msgid "pull mode backup for disk '%s' requires qcow2 driver"
+msgstr ""
+
+msgid "pvpanic is supported only with PCI address type"
 msgstr ""
 
 #, fuzzy, c-format
@@ -35392,6 +35389,9 @@ msgstr "MAC ଠିକଣା '%s' ଏକାଧିକ ଅନ୍ତରାପୃଷ�
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr "QEMU ବାଇନାରୀ %s କୁ ସହାୟତା କରେ ନାହିଁ"
 
+msgid "the QEMU binary does not support the PCI pvpanic device"
+msgstr ""
+
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
 msgstr ""
@@ -35455,6 +35455,9 @@ msgid "the machine has no snapshot"
 msgstr "ମେସିନରେ କୌଣସି ଆଶୁଚିତ୍ର ନାହିଁ"
 
 msgid "the new password"
+msgstr ""
+
+msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -37169,12 +37172,12 @@ msgid "unknown authentication type %s"
 msgstr "ଅଜଣା ପ୍ରାଧିକରଣ ପ୍ରକାର %s"
 
 #, c-format
-msgid "unknown backend type '%s' for egd"
-msgstr "egd ପାଇଁ ଅଜଣା ପୃଷ୍ଠଭୂମି ପ୍ରକାର '%s'"
+msgid "unknown backend source type '%s' for external TPM"
+msgstr ""
 
 #, c-format
-msgid "unknown backend type '%s' for external TPM"
-msgstr ""
+msgid "unknown backend type '%s' for egd"
+msgstr "egd ପାଇଁ ଅଜଣା ପୃଷ୍ଠଭୂମି ପ୍ରକାର '%s'"
 
 #, fuzzy, c-format
 msgid "unknown backup mode '%s'"
@@ -37636,6 +37639,10 @@ msgstr "ଅସମର୍ଥିତ HyperV Enlightenment ବିଶେଷତା: %s"
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
 msgstr "ଅସମର୍ଥିତ HyperV Enlightenment ବିଶେଷତା: %s"
+
+#, c-format
+msgid "unsupported IPv6 address prefix='%u' - must be 64"
+msgstr ""
 
 #, c-format
 msgid "unsupported KVM feature: %s"
@@ -38869,12 +38876,12 @@ msgstr "ଚେତାବନୀ"
 msgid "watchdog"
 msgstr "ୱାଚଡଗ"
 
-#, fuzzy
-msgid "watchdog device not present in domain configuration"
-msgstr "ଡମେନ ସଂରଚନାରେ ଉପକରଣ ନାହିଁ"
-
 msgid "watchdog must contain model name"
 msgstr "ୱାଚଡଗରେ ନିଶ୍ଚିତ ଭାବରେ ମଡେଲ ନାମ ଧାରଣ ହୋଇଥାଏ"
+
+msgid ""
+"watchdogs with different actions are not supported with this QEMU binary"
+msgstr ""
 
 msgid "webSocket"
 msgstr "webSocket"
@@ -39026,6 +39033,188 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
+#~ msgstr "ସହଭାଗୀ ଫୋଲଡର '%s' କୁ ସଂଲଗ୍ନ କରିପାରିଲା ନାହିଁ, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get IMedium, rc=%08x"
+#~ msgstr "ଡମେନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device port, rc=%08x"
+#~ msgstr "ଡମେନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device slot, rc=%08x"
+#~ msgstr "ମେସିନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device type, rc=%08x"
+#~ msgstr "ମେସିନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+
+#~ msgid "Could not get list of Defined Domains, rc=%08x"
+#~ msgstr "ବ୍ୟାଖ୍ୟା କରାଯାଇଥିବା ଡମେନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+
+#~ msgid "Could not get list of Domains, rc=%08x"
+#~ msgstr "ଡମେନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+
+#~ msgid "Could not get list of domains, rc=%08x"
+#~ msgstr "ଡମେନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+
+#~ msgid "Could not get list of machines, rc=%08x"
+#~ msgstr "ମେସିନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get medium storage location, rc=%08x"
+#~ msgstr "ଡମେନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+
+#~ msgid "Could not get number of Defined Domains, rc=%08x"
+#~ msgstr "ବ୍ୟାଖ୍ୟା କରାଯାଇଥିବା ଡମେନଗୁଡ଼ିକର ସଂଖ୍ୟା ପାଇଲା ନାହିଁ, rc=%08x"
+
+#~ msgid "Could not get number of Domains, rc=%08x"
+#~ msgstr "ଡମେନଗୁଡ଼ିକର ସଂଖ୍ଯା ପାଇଲା ନାହିଁ, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get read only state, rc=%08x"
+#~ msgstr "ମେସିନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get storage controller bus, rc=%08x"
+#~ msgstr "ମେସିନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get storage controller by name, rc=%08x"
+#~ msgstr "ମେସିନଗୁଡ଼ିକର ତାଲିକା ପାଇଲା ନାହିଁ, rc=%08x"
+
+#, fuzzy
+#~ msgid "Failed to change storage controller model, rc=%08x"
+#~ msgstr "ସଂରକ୍ଷଣ ନିୟନ୍ତ୍ରକ ଯୋଗ କରିବାରେ ଅସମର୍ଥ"
+
+#, fuzzy
+#~ msgid "Failed to get storage controller name, rc=%08x"
+#~ msgstr "ସଂରକ୍ଷଣ ନିୟନ୍ତ୍ରକ ଯୋଗ କରିବାରେ ଅସମର୍ଥ"
+
+#, fuzzy
+#~ msgid "Failed to save VM settings, rc=%08x"
+#~ msgstr "ହାର୍ଡ ଡିସ୍କ ବନ୍ଦ କରିବାରେ ଅସମର୍ଥ, rc=%08x"
+
+#, fuzzy
+#~ msgid "Malformed ip-addresses array"
+#~ msgstr "ତ୍ରୁଟିଯୁକ୍ତ mac ଠିକଣା '%s'"
+
+#~ msgid "Password request failed"
+#~ msgstr "ପ୍ରବେଶ ସଂକେତ ଅନୁରୋଧ ବିଫଳ ହୋଇଛି"
+
+#~ msgid "Target domain watchdog count %d does not match source %d"
+#~ msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ଡମେନ ୱାଚଡଗ ହିସାବ %d ଉତ୍ସ %d ସହିତ ମେଳଖାଉ ନାହିଁ"
+
+#~ msgid "Unable to close HardDisk, rc=%08x"
+#~ msgstr "ହାର୍ଡ ଡିସ୍କ ବନ୍ଦ କରିବାରେ ଅସମର୍ଥ, rc=%08x"
+
+#~ msgid "Unable to close the new medium, rc=%08x"
+#~ msgstr "ନୂତନ ମାଧ୍ଯମକୁ ବନ୍ଦ କରିବାରେ ଅସମର୍ଥ, rc=%08x"
+
+#~ msgid "Unable to create HardDisk, rc=%08x"
+#~ msgstr "ହାର୍ଡ ଡିସ୍କ ସୃଷ୍ଟି କରିବାରେ ଅସମର୍ଥ, rc=%08x"
+
+#~ msgid "Unable to delete medium, rc=%08x"
+#~ msgstr "ମାଧ୍ଯମ ଅପସାରଣ କରିବାରେ ଅସମର୍ଥ, rc=%08x"
+
+#~ msgid "Unable to get hard disk id, rc=%08x"
+#~ msgstr "ହାର୍ଡ ଡିସ୍କ id ପାଇବାରେ ଅସମର୍ଥ, rc=%08x"
+
+#~ msgid "Unable to get hardDisk Id, rc=%08x"
+#~ msgstr "ହାର୍ଡ ଡିସ୍କ Id ପାଇବାରେ ଅସମର୍ଥ, rc=%08x"
+
+#~ msgid "Unable to get medium uuid, rc=%08x"
+#~ msgstr "ମାଧ୍ଯମ uuid ପାଇବାରେ ଅସମର୍ଥ, rc=%08x"
+
+#~ msgid "Unable to open HardDisk, rc=%08x"
+#~ msgstr "ହାର୍ଡ ଡିସ୍କ ଖୋଲିବାରେ ଅସମର୍ଥ, rc=%08x"
+
+#, fuzzy
+#~ msgid "Unable to open Machine, rc=%08x"
+#~ msgstr "ହାର୍ଡ ଡିସ୍କ ଖୋଲିବାରେ ଅସମର୍ଥ, rc=%08x"
+
+#, fuzzy
+#~ msgid "Unable to register Machine, rc=%08x"
+#~ msgstr "ମେସିନକୁ ପଞ୍ଜିକରଣହୀନ କରିବାରେ ଅସମର୍ଥ, rc=%08x"
+
+#~ msgid "Unable to unregister machine, rc=%08x"
+#~ msgstr "ମେସିନକୁ ପଞ୍ଜିକରଣହୀନ କରିବାରେ ଅସମର୍ଥ, rc=%08x"
+
+#~ msgid ""
+#~ "Username and key file path must be provided for private key authentication"
+#~ msgstr "ବ୍ୟକ୍ତିଗତ କି ବୈଧିକରଣ ପାଇଁ ବ୍ୟବହାରକାରୀ ନାମ ଏବଂ କି ଫାଇଲ ନିଶ୍ଚିତ ଭାବରେ ଦିଆଯିବା ଉଚିତ"
+
+#~ msgid "Username must be provided for ssh agent authentication"
+#~ msgstr "ssh ସଦସ୍ୟ ବୈଧିକରଣ ପାଇଁ ବ୍ୟବହାରକାରୀ ନାମ ନିଶ୍ଚିତ ଭାବରେ ଦିଆଯିବା ଉଚିତ"
+
+#~ msgid "could not attach shared folder '%s', rc=%08x"
+#~ msgstr "ସହଭାଗୀ ଫୋଲଡର '%s' କୁ ସଂଲଗ୍ନ କରିପାରିଲା ନାହିଁ, rc=%08x"
+
+#~ msgid "could not change ACPI status to: %s, rc=%08x"
+#~ msgstr "ACPI ସ୍ଥିତିକୁ ପରିବର୍ତ୍ତନ କରିପାରିଲା ନାହିଁ: %s, rc=%08x"
+
+#~ msgid "could not change APIC status to: %s, rc=%08x"
+#~ msgstr "APIC ସ୍ଥିତିକୁ ପରିବର୍ତ୍ତନ କରିପାରିଲା ନାହିଁ: %s, rc=%08x"
+
+#~ msgid "could not change PAE status to: %s, rc=%08x"
+#~ msgstr "PAE ସ୍ଥିତିକୁ ପରିବର୍ତ୍ତନ କରିପାରିଲା ନାହିଁ: %s, rc=%08x"
+
+#~ msgid "could not define a domain, rc=%08x"
+#~ msgstr "କୌଣସି ଡମେନକୁ ବ୍ୟାଖ୍ୟା କରିପାରିଲା ନାହିଁ, rc=%08x"
+
+#~ msgid "could not delete the domain, rc=%08x"
+#~ msgstr "ଡମେନକୁ ଅପସାରଣ କରିହେଲା ନାହିଁ, rc=%08x"
+
+#~ msgid "could not detach shared folder '%s', rc=%08x"
+#~ msgstr "ସହଭାଗୀ ଫୋଲଡର '%s' କୁ ପୃଥକ କରିପାରିଲା ନାହିଁ, rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
+#~ msgstr "ଡମେନର ସ୍ମୃତିସ୍ଥାନ ଆକାରକୁ ସେଟ କରିପାରିଲା ନାହିଁ: %llu Kb, rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
+#~ msgstr "ଡମେନର ସ୍ମୃତିସ୍ଥାନ ଆକାରକୁ ସେଟ କରିପାରିଲା ନାହିଁ: %lu Kb, rc=%08x"
+
+#~ msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
+#~ msgstr "ଡମେନର cpus ମାନଙ୍କର ସଂଖ୍ଯାକୁ ସେଟ କରିପାରିଲା ନାହିଁ: %u, rc=%08x"
+
+#~ msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
+#~ msgstr "ଆଭାସୀ CPU ମାନଙ୍କର ସଂଖ୍ଯାକୁ ସେଟ କରିପାରିଲା ନାହିଁ: %u, rc=%08x"
+
+#, fuzzy
+#~ msgid "domain already has a watchdog"
+#~ msgstr "ଡମେନ '%s' କୁ uuid %s ସହିତ ପୂର୍ବରୁ ଅବସ୍ଥିତ"
+
+#, fuzzy
+#~ msgid "domain has no watchdog"
+#~ msgstr "ଡମେନର କୌଣସି ଆଶୁଚିତ୍ର ନାହିଁ"
+
+#, fuzzy
+#~ msgid "failed to retrieve keyboard interactive result: callback has failed"
+#~ msgstr "ବ୍ୟକ୍ତିଗତ କି ପ୍ରବେଶ ସଂକେତ କାଢ଼ିବାରେ ବିଫଳ: କଲବ୍ୟାକ ବିଫଳ ହୋଇଛି"
+
+#, fuzzy
+#~ msgid "guest-get-fsinfo reply was missing return data"
+#~ msgstr "guest-get-vcpus ଉତ୍ତରରେ ଫେରସ୍ତ ତଥ୍ୟ ଅନୁପସ୍ଥିତ"
+
+#, fuzzy
+#~ msgid "model '%s' watchdog device not present in domain configuration"
+#~ msgstr "ଡମେନ ସଂରଚନାରେ ଉପକରଣ ନାହିଁ"
+
+#, fuzzy
+#~ msgid "no suitable callback for input of key passphrase"
+#~ msgstr "କି ପ୍ରବେଶ ସଂକେତ ବାକ୍ୟାଂଶ କାଢ଼ିବା ପାଇଁ କୌଣସି ଉପଯୁକ୍ତ ପଦ୍ଧତି ନାହିଁ"
+
+#~ msgid "only a single watchdog device is supported"
+#~ msgstr "କେବଳ ଏକକ ୱାଚଡଗ ଉପକରଣ ସମର୍ଥିତ"
+
+#, fuzzy
+#~ msgid "watchdog device not present in domain configuration"
+#~ msgstr "ଡମେନ ସଂରଚନାରେ ଉପକରଣ ନାହିଁ"
 
 #, fuzzy
 #~ msgid "Another close callback is already defined for domain %s"

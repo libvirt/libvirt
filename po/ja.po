@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-01-09 14:27+0000\n"
+"POT-Creation-Date: 2023-02-22 13:50+0000\n"
 "PO-Revision-Date: 2022-12-05 13:44+0000\n"
 "Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -670,6 +670,15 @@ msgid "%s model of watchdog is allowed for s390 and s390x only"
 msgstr "ウォッチドッグの %s モデルは、s390 および s390x でのみ許可されます"
 
 #, c-format
+msgid "%s model of watchdog is only part of q35 machine"
+msgstr ""
+
+#, c-format
+msgid ""
+"%s model of watchdog is part of the machine and cannot have any address set."
+msgstr ""
+
+#, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
 msgstr "ウォッチドッグの %s モデルは仮想であり、どのバスでも動作できません。"
 
@@ -955,6 +964,10 @@ msgid "%s: failed to communicate with bridge helper: %s"
 msgstr "%s: ブリッジヘルパーとの通信に失敗しました: %s"
 
 #, c-format
+msgid "%s: failed to generate UNIX socket path"
+msgstr ""
+
+#, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "%s: 一時ファイルの読み込みに失敗しました: %s"
 
@@ -1069,6 +1082,10 @@ msgstr "%s: 詳細は --help をお試しください\n"
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
 msgstr "%s: 予期しない URI トランスポート '%s'\n"
+
+#, c-format
+msgid "%s: unknown remote mode '%s'"
+msgstr ""
 
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
@@ -1243,8 +1260,8 @@ msgstr ""
 "QEMU では 'directory' ストレージタイプは直接サポートされません、代わりに "
 "'dir' ディスクタイプを使用してください"
 
-msgid "'disk' missing in reply of guest-get-fsinfo"
-msgstr "guest-get-fsinfo の応答に 'disk' がありません"
+msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
+msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %s"
@@ -2597,11 +2614,8 @@ msgstr "PATH 環境において prlctl コマンドを見つけられません"
 
 #, c-format
 msgid ""
-"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc="
-"%08x"
+"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"
 msgstr ""
-"harddisk/dvd/floppy として添付されるファイルの UUID を取得できません: %s, rc="
-"%08x"
 
 msgid "Can't initialize Parallels SDK"
 msgstr "Parallels SDK を初期化できません"
@@ -3958,8 +3972,8 @@ msgid "Could not attach serial port %zu"
 msgstr "シリアルポート %zu を接続できませんでした"
 
 #, c-format
-msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
-msgstr "ファイルを harddisk/dvd/floppy として接続できませんでした: %s、rc=%08x"
+msgid "Could not attach the file as harddisk/dvd/floppy: %s"
+msgstr ""
 
 msgid "Could not build CURL header list"
 msgstr "CURL ヘッダーリストを構築できませんでした"
@@ -4302,9 +4316,8 @@ msgstr "EPR アドレスを取得できませんでした"
 msgid "Could not get EPR items"
 msgstr "EPR アイテムを取得できませんでした"
 
-#, c-format
-msgid "Could not get IMedium, rc=%08x"
-msgstr "IMedium を取得できませんでした、rc=%08x"
+msgid "Could not get IMedium"
+msgstr ""
 
 msgid "Could not get Msvm_DiskDrive default InstanceID"
 msgstr "Msvm_DiskDrive のデフォルトの InstanceID を取得できませんでした"
@@ -4334,17 +4347,14 @@ msgstr "チェックポイント名を取得できませんでした"
 msgid "Could not get current time"
 msgstr "現在の時刻を取得できません"
 
-#, c-format
-msgid "Could not get device port, rc=%08x"
-msgstr "デバイスポートを取得できませんでした、rc=%08x"
+msgid "Could not get device port"
+msgstr ""
 
-#, c-format
-msgid "Could not get device slot, rc=%08x"
-msgstr "デバイススロットを取得できませんでした、rc=%08x"
+msgid "Could not get device slot"
+msgstr ""
 
-#, c-format
-msgid "Could not get device type, rc=%08x"
-msgstr "デバイスタイプを取得できませんでした、rc=%08x"
+msgid "Could not get device type"
+msgstr ""
 
 #, c-format
 msgid "Could not get free memory for host %s"
@@ -4385,30 +4395,25 @@ msgstr "(内部) 反復子 ID %u のインデックスを取得できません�
 msgid "Could not get iterator index for iterator ID %u"
 msgstr "反復子 ID %u のインデックスを取得できませんでした"
 
-#, c-format
-msgid "Could not get list of Defined Domains, rc=%08x"
-msgstr "定義済みドメインの一覧を取得できませんでした, rc=%08x"
+msgid "Could not get list of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of Domains, rc=%08x"
-msgstr "ドメインの一覧を取得できませんでした, rc=%08x"
+msgid "Could not get list of Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of domains, rc=%08x"
-msgstr "ドメインの一覧を取得できませんでした、返り値 = %08x"
+msgid "Could not get list of domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of machines, rc=%08x"
-msgstr "マシンの一覧を取得できませんでした, rc=%08x"
+msgid "Could not get list of machines"
+msgstr ""
 
 #, c-format
 msgid ""
 "Could not get maximum definition of Msvm_ProcessorSettingData for host %s"
 msgstr "%s ホストの Msvm_ProcessorSettingData の最大定義を取得できませんでした"
 
-#, c-format
-msgid "Could not get medium storage location, rc=%08x"
-msgstr "メディアのストレージ場所を取得できませんでした、rc=%08x"
+msgid "Could not get medium storage location"
+msgstr ""
 
 #, c-format
 msgid "Could not get members of bridge '%s'"
@@ -4421,17 +4426,18 @@ msgstr "仮想マシンの名前を取得できませんでした"
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "N 番目 (%u) の値を変数 '%s' から取得できませんでした"
 
-#, c-format
-msgid "Could not get number of Defined Domains, rc=%08x"
-msgstr "定義済みドメインの数を取得できませんでした, rc=%08x"
+msgid "Could not get number of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get number of Domains, rc=%08x"
-msgstr "ドメインの数を取得できませんでした, rc=%08x"
+msgid "Could not get number of Domains"
+msgstr ""
 
 #, c-format
 msgid "Could not get parent of '%s'"
 msgstr "'%s' の親を取得できませんでした"
+
+msgid "Could not get process ID of passt"
+msgstr ""
 
 msgid "Could not get process id of swtpm"
 msgstr "swtpm のプロセス ID を取得できませんでした"
@@ -4439,9 +4445,8 @@ msgstr "swtpm のプロセス ID を取得できませんでした"
 msgid "Could not get process id of vhost-user-gpu"
 msgstr "vhost-user-gpu のプロセス ID を取得できませんでした"
 
-#, c-format
-msgid "Could not get read only state, rc=%08x"
-msgstr "読み取り専用状態を取得できませんでした、rc=%08x"
+msgid "Could not get read only state"
+msgstr ""
 
 msgid "Could not get response"
 msgstr "応答がありませんでした"
@@ -4469,13 +4474,11 @@ msgstr "スナップショット ID を取得できませんでした"
 msgid "Could not get snapshot name"
 msgstr "スナップショット名を取得できませんでした"
 
-#, c-format
-msgid "Could not get storage controller bus, rc=%08x"
-msgstr "ストレージコントローラーバスを取得できませんでした、rc=%08x"
+msgid "Could not get storage controller bus"
+msgstr ""
 
-#, c-format
-msgid "Could not get storage controller by name, rc=%08x"
-msgstr "名前でストレージコントローラーを取得できませんでした、rc=%08x"
+msgid "Could not get storage controller by name"
+msgstr ""
 
 #, c-format
 msgid "Could not get syspath for parent of '%s'"
@@ -4909,6 +4912,10 @@ msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr "xmlNodeParam の wsman 名前空間アドレスを設定できませんでした"
 
 #, c-format
+msgid "Could not start 'passt': %s"
+msgstr ""
+
+#, c-format
 msgid "Could not start 'slirp'. exitstatus: %d"
 msgstr "'slirp' を開始できませんでした。exitstatus: %d"
 
@@ -5054,6 +5061,9 @@ msgstr "作成時間"
 #, c-format
 msgid "Creation of %s volumes is not supported"
 msgstr "%s ボリュームの作成はサポートされていません"
+
+msgid "Crypto device is missing alias"
+msgstr ""
 
 msgid "Current memory size too large"
 msgstr "現在のメモリーサイズが大きすぎます"
@@ -6530,9 +6540,8 @@ msgid "Failed to add signal handle watch"
 msgstr "シグナルハンドルウォッチの追加に失敗しました"
 
 #, c-format
-msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
+msgid "Failed to add storage controller (name: %s, busType: %d)"
 msgstr ""
-"ストレージコントローラーの追加に失敗しました (名前: %s、busType: %d)、rc=%08x"
 
 #, c-format
 msgid "Failed to allocate PCI device list: %s"
@@ -6638,9 +6647,8 @@ msgstr "%s によるボリューム '%s' のサイズ変更に失敗しました
 msgid "Failed to change size of volume '%s' to %s"
 msgstr "ボリューム '%s' のサイズを %s に変更することに失敗しました"
 
-#, c-format
-msgid "Failed to change storage controller model, rc=%08x"
-msgstr "ストレージコントローラーモデルの変更に失敗しました、rc=%08x"
+msgid "Failed to change storage controller model"
+msgstr ""
 
 #, c-format
 msgid "Failed to chdir into %s"
@@ -6870,6 +6878,10 @@ msgid "Failed to create nvram dir %s"
 msgstr "nvram ディレクトリー %s の作成に失敗しました"
 
 msgid "Failed to create or modify the state XML attribute"
+msgstr ""
+
+#, c-format
+msgid "Failed to create passt state dir %s"
 msgstr ""
 
 #, c-format
@@ -7387,9 +7399,8 @@ msgstr ""
 msgid "Failed to get snapshot count"
 msgstr "スナップショット数の取得に失敗しました"
 
-#, c-format
-msgid "Failed to get storage controller name, rc=%08x"
-msgstr "ストレージコントローラー名の取得に失敗しました、rc=%08x"
+msgid "Failed to get storage controller name"
+msgstr ""
 
 msgid "Failed to get the number of active networks"
 msgstr "稼働中のネットワーク数の取得に失敗しました"
@@ -7744,10 +7755,8 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr "パス '%s' を持つストレージボリュームを開けませんでした"
 
 #, c-format
-msgid ""
-"Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
+msgid "Failed to open the following disk/dvd/floppy to the machine: %s"
 msgstr ""
-"次のディスク/DVD/フロッピーをマシン: %s に開くことができませんでした、rc=%08x"
 
 #, c-format
 msgid "Failed to open tty %s"
@@ -7843,6 +7852,10 @@ msgstr "'%s' から正の整数値を解析できませんでした"
 #, c-format
 msgid "Failed to parse rate '%s'"
 msgstr "レート '%s' の解析に失敗しました"
+
+#, c-format
+msgid "Failed to parse rotated index from '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%s'"
@@ -8192,9 +8205,8 @@ msgstr ""
 msgid "Failed to save '%s' for '%s'"
 msgstr "'%s' の '%s' の保存に失敗しました"
 
-#, c-format
-msgid "Failed to save VM settings, rc=%08x"
-msgstr "VM 設定の保存に失敗しました、rc=%08x"
+msgid "Failed to save VM settings"
+msgstr ""
 
 #, c-format
 msgid "Failed to save domain '%d' with libxenlight"
@@ -9761,6 +9773,10 @@ msgid "Invalid address '%s' in <ip>"
 msgstr "<ip> の無効なアドレス '%s'"
 
 #, c-format
+msgid "Invalid address '%s' in <portForward>"
+msgstr ""
+
+#, c-format
 msgid "Invalid address '%s' in network '%s'"
 msgstr "無効なアドレス '%s' がネットワーク '%s' にあります"
 
@@ -10283,6 +10299,10 @@ msgstr "無効なポート番号: %s"
 #, c-format
 msgid "Invalid port range '%u-%u'."
 msgstr "無効なポート範囲 '%u-%u'。"
+
+#, c-format
+msgid "Invalid portForward proto value %u"
+msgstr ""
 
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
@@ -10861,17 +10881,8 @@ msgstr "フィルター '%s' の不正な形式のフォーマット"
 msgid "Malformed format for log output '%s'"
 msgstr "ログ出力 '%s' の不正な形式のフォーマット"
 
-msgid "Malformed guest-get-fsinfo 'disk' data array"
-msgstr "不正な形式の guest-get-fsinfo 'disk' データ配列"
-
-msgid "Malformed guest-get-fsinfo data array"
-msgstr "不正な形式の guest-get-fsinfo データ配列"
-
 msgid "Malformed id field in JSON state document"
 msgstr "JSON 状態ドキュメントの不正な形式の ID フィールド"
-
-msgid "Malformed ip-addresses array"
-msgstr "不正な形式の ip-addresses 配列"
 
 msgid "Malformed lease_entries array"
 msgstr "不正な形式の lease_entries 配列"
@@ -11317,10 +11328,6 @@ msgstr "ドメインオブジェクト向けの UUID パラメーターがあり
 
 msgid "Missing VIR_CRED_AUTHNAME credential type"
 msgstr "VIR_CRED_AUTHNAME 認証情報タイプがありません"
-
-msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
-msgstr ""
-"VIR_CRED_PASSPHRASE または VIR_CRED_NOECHOPROMPT 認証情報タイプがありません"
 
 msgid "Missing XPath context"
 msgstr ""
@@ -11820,6 +11827,9 @@ msgstr ""
 
 msgid "Multiple graphics devices are not supported"
 msgstr "複数のグラフィックデバイスはサポートされません"
+
+msgid "Multiple iTCO watchdogs are not supported"
+msgstr ""
 
 msgid "Multiple interfaces attached to bridge"
 msgstr "複数のインターフェイスがブリッジに接続されています"
@@ -13225,9 +13235,6 @@ msgstr "キー '%s' のパスフレーズ"
 
 msgid "Password may not contain ',' character"
 msgstr "パスワードに ',' 文字を含めることはできません"
-
-msgid "Password request failed"
-msgstr "パスワードの要求が失敗しました"
 
 #, c-format
 msgid "Password set successfully for %s in %s"
@@ -15700,8 +15707,8 @@ msgstr ""
 "ターゲットドメインの vsock デバイスモデル '%s' がソース '%s' と一致しません"
 
 #, c-format
-msgid "Target domain watchdog count %d does not match source %d"
-msgstr "ターゲットドメインの watchdog 数 %d がソースの %d と一致しません"
+msgid "Target domain watchdog device count %zu does not match source %zu"
+msgstr ""
 
 msgid "Target filesystem access mode does not match source"
 msgstr "ターゲットのファイルシステムのアクセスモードがソースと一致しません"
@@ -15991,6 +15998,14 @@ msgstr ""
 "'%s' 機能の 'eoi' 属性は、アーキテクチャー '%s' またはマシンタイプ '%s' では"
 "サポートされません"
 
+msgid "The 'passt' backend can only be used with interface type='user'"
+msgstr ""
+
+msgid ""
+"The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
+"'exclude' is specified"
+msgstr ""
+
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -16187,11 +16202,6 @@ msgstr ""
 msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
-msgstr ""
-
-msgid ""
-"The overall maximum number of clients waiting for authentication must not be "
-"less than the overall maximum number of clients"
 msgstr ""
 
 msgid "The read only disk has no parent"
@@ -16977,9 +16987,8 @@ msgstr "閉じることができません"
 msgid "Unable to close %s"
 msgstr "%s を閉じられません"
 
-#, c-format
-msgid "Unable to close HardDisk, rc=%08x"
-msgstr "ハードディスクを閉じることができません、rc=%08x"
+msgid "Unable to close HardDisk"
+msgstr ""
 
 msgid "Unable to close disk children"
 msgstr "ディスクの子を閉じることができません"
@@ -16991,9 +17000,11 @@ msgstr "すべてのディスクを再帰的に閉じることができません
 msgid "Unable to close the VPD file, fd: %d"
 msgstr "VPD ファイル、fd を閉じることができません: %d"
 
-#, c-format
-msgid "Unable to close the new medium, rc=%08x"
-msgstr "新しいメディアを閉じることができません、rc=%08x"
+msgid "Unable to close the new medium"
+msgstr ""
+
+msgid "Unable to compile regex"
+msgstr ""
 
 #, c-format
 msgid "Unable to compute hash of data: %s"
@@ -17027,9 +17038,8 @@ msgstr "ソケットのファイルハンドルをコピーできません"
 msgid "Unable to create %s"
 msgstr "%s を作成できません"
 
-#, c-format
-msgid "Unable to create HardDisk, rc=%08x"
-msgstr "ハードディスクを作成できません、rc=%08x"
+msgid "Unable to create HardDisk"
+msgstr ""
 
 msgid "Unable to create JSON formatter"
 msgstr "JSON フォーマッターを作成できません"
@@ -17196,9 +17206,8 @@ msgstr "ファイル %s を削除できません"
 msgid "Unable to delete lockspace resource %s"
 msgstr "ロック空間のリソース %s を削除できません"
 
-#, c-format
-msgid "Unable to delete medium, rc=%08x"
-msgstr "メディアを削除できません、rc=%08x"
+msgid "Unable to delete medium"
+msgstr ""
 
 #, c-format
 msgid "Unable to delete port %s from OVS"
@@ -17560,13 +17569,8 @@ msgstr "ハードディスクフォーマットを取得できません"
 msgid "Unable to get hard disk id"
 msgstr "ハードディスク ID を取得できません"
 
-#, c-format
-msgid "Unable to get hard disk id, rc=%08x"
-msgstr "ハードディスク ID を取得できません、rc=%08x"
-
-#, c-format
-msgid "Unable to get hardDisk Id, rc=%08x"
-msgstr "hardDisk ID を取得できません、rc=%08x"
+msgid "Unable to get hardDisk Id"
+msgstr ""
 
 msgid "Unable to get host SEV information"
 msgstr "ホスト SEV 情報を取得できません"
@@ -17609,9 +17613,8 @@ msgstr "%s において loop のステータスを取得できません"
 msgid "Unable to get medium location"
 msgstr "メディアの場所を取得できません"
 
-#, c-format
-msgid "Unable to get medium uuid, rc=%08x"
-msgstr "メディア uuid を取得できません、rc=%08x"
+msgid "Unable to get medium uuid"
+msgstr ""
 
 msgid "Unable to get memory parameters"
 msgstr "メモリーのパラメーターを取得できませんでした"
@@ -17869,13 +17872,11 @@ msgstr "/dev/loop-control を開けません"
 msgid "Unable to open /proc/mounts"
 msgstr "/proc/mounts を開けません"
 
-#, c-format
-msgid "Unable to open HardDisk, rc=%08x"
-msgstr "ハードディスクを開くことができません、rc=%08x"
+msgid "Unable to open HardDisk"
+msgstr ""
 
-#, c-format
-msgid "Unable to open Machine, rc=%08x"
-msgstr "マシンを開くことができません、rc=%08x"
+msgid "Unable to open Machine"
+msgstr ""
 
 msgid "Unable to open UNIX socket"
 msgstr "UNIX ソケットを開けません"
@@ -18160,9 +18161,8 @@ msgstr "vhost-user-gpu pidfile '%s' を読み取れません"
 msgid "Unable to read virtiofsd pidfile '%s'"
 msgstr "virtiofsd pidfile '%s' を読み取れません"
 
-#, c-format
-msgid "Unable to register Machine, rc=%08x"
-msgstr "マシンを登録できません、rc=%08x"
+msgid "Unable to register Machine"
+msgstr ""
 
 msgid "Unable to register async IO callback"
 msgstr "非同期 I/O のコールバックを登録できません"
@@ -18616,9 +18616,8 @@ msgstr "%s のリンクを解除できません"
 msgid "Unable to unlink path '%s'"
 msgstr "パス '%s' のリンクを解除できません"
 
-#, c-format
-msgid "Unable to unregister machine, rc=%08x"
-msgstr "マシンの登録を解除できません、rc=%08x"
+msgid "Unable to unregister machine"
+msgstr ""
 
 msgid "Unable to update server's tls related files."
 msgstr "サーバーの tls 関連ファイルを更新できません。"
@@ -19796,14 +19795,6 @@ msgstr "ユーザー %s は存在しません"
 msgid "User namespace support is recommended"
 msgstr "ユーザー名前空間のサポートをお勧めします"
 
-msgid ""
-"Username and key file path must be provided for private key authentication"
-msgstr ""
-"SSH エージェント認証にユーザー名とキーファイルのパスを指定する必要があります"
-
-msgid "Username must be provided for ssh agent authentication"
-msgstr "SSH エージェント認証にユーザー名を指定する必要があります"
-
 msgid "Username request failed"
 msgstr "ユーザー名の要求が失敗しました"
 
@@ -19928,10 +19919,6 @@ msgstr "値 '%s' が %s の範囲外にあります"
 #, c-format
 msgid "Value of cputune '%s' must be in range [%llu, %llu]"
 msgstr "cputune '%s' の値は、[%llu、%llu] の範囲内になければなりません"
-
-#, c-format
-msgid "Value of cputune 'shares' must be in range [%llu, %llu]"
-msgstr "cputune 'shares' の値は、[%llu、%llu] の範囲内になければなりません"
 
 msgid "Variable value contains invalid character"
 msgstr "変数の値が無効な文字を含みます"
@@ -22092,6 +22079,9 @@ msgstr "メモリー targetNode を '%d' から '%d' へ変更できません"
 msgid "cannot modify network device address type"
 msgstr "ネットワークデバイスのアドレスタイプを変更できません"
 
+msgid "cannot modify network device backend settings"
+msgstr ""
+
 msgid "cannot modify network device boot index setting"
 msgstr "ネットワークデバイスのブートインデックスの設定を変更できません"
 
@@ -23345,8 +23335,8 @@ msgid "could not allocate memory"
 msgstr "メモリーを割り当てられませんでした"
 
 #, c-format
-msgid "could not attach shared folder '%s', rc=%08x"
-msgstr "共有フォルダー '%s' を接続できませんでした, rc=%08x"
+msgid "could not attach shared folder '%s'"
+msgstr ""
 
 msgid "could not build absolute core file path"
 msgstr "コアファイルの絶対パスを構築できませんでした"
@@ -23358,16 +23348,16 @@ msgid "could not build absolute output file path"
 msgstr "出力ファイルの絶対パスを構築できませんでした"
 
 #, c-format
-msgid "could not change ACPI status to: %s, rc=%08x"
-msgstr "ACPI ステータスを変更できませんでした: %s, rc=%08x"
+msgid "could not change ACPI status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change APIC status to: %s, rc=%08x"
-msgstr "APIC ステータスを変更できませんでした: %s, rc=%08x"
+msgid "could not change APIC status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change PAE status to: %s, rc=%08x"
-msgstr "PAE ステータスを変更できませんでした: %s, rc=%08x"
+msgid "could not change PAE status to: %s"
+msgstr ""
 
 msgid "could not close handshake fd"
 msgstr "ハンドシェイクディスクリプターを閉じられません"
@@ -23401,20 +23391,18 @@ msgstr "帯域のピーク値 '%s' を変換できませんでした"
 msgid "could not create profile"
 msgstr "プロファイルを作成できませんでした"
 
-#, c-format
-msgid "could not define a domain, rc=%08x"
-msgstr "ドメインを定義できませんでした, rc=%08x"
+msgid "could not define a domain"
+msgstr ""
 
 msgid "could not delete snapshot"
 msgstr "スナップショットを削除できませんでした"
 
-#, c-format
-msgid "could not delete the domain, rc=%08x"
-msgstr "ドメインを削除できませんでした, rc=%08x"
+msgid "could not delete the domain"
+msgstr ""
 
 #, c-format
-msgid "could not detach shared folder '%s', rc=%08x"
-msgstr "共有フォルダー '%s' を切断できませんでした, rc=%08x"
+msgid "could not detach shared folder '%s'"
+msgstr ""
 
 msgid "could not determine max vcpus for the domain"
 msgstr "ドメインの最大仮想 CPU 数を決定できません"
@@ -23610,20 +23598,20 @@ msgid "could not set PATH"
 msgstr "PATH を設定できませんでした"
 
 #, c-format
-msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
-msgstr "ドメインのメモリー容量を設定できませんでした: %llu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %llu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
-msgstr "ドメインのメモリー容量を設定できませんでした: %lu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %lu Kb"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
-msgstr "ドメインの CPU 数を設定できませんでした: %u, rc=%08x"
+msgid "could not set the number of cpus of the domain to: %u"
+msgstr ""
 
 #, c-format
-msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
-msgstr "仮想 CPU の数を設定できませんでした: %u, rc=%08x"
+msgid "could not set the number of virtual CPUs to: %u"
+msgstr ""
 
 #, c-format
 msgid "could not take a screenshot of %s"
@@ -23845,6 +23833,18 @@ msgstr "qcow/qcow2 ファイルの作成は、'luks' 暗号化のみをサポー
 
 msgid "creation of qcow2 encrypted image is not supported"
 msgstr "qcow2 暗号化イメージの作成はサポートされていません"
+
+#, c-format
+msgid "crypto backend %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto model %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto type %s is not supported"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -24688,9 +24688,6 @@ msgstr "ドメインにはすでに VNC グラフィックがあります"
 msgid "domain already has a vsock device"
 msgstr "ドメインにはすでに vsock デバイスがあります"
 
-msgid "domain already has a watchdog"
-msgstr "ドメインにはすでにウォッチドッグがあります"
-
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "ドメインアーキテクチャー (/domain/os/type/@arch)"
 
@@ -24755,9 +24752,6 @@ msgstr "ドメインにホストデバイスが割り当てられています"
 
 msgid "domain has no snapshots"
 msgstr "ドメインはスナップショットがありません"
-
-msgid "domain has no watchdog"
-msgstr "ドメインにはウォッチドッグがありません"
 
 msgid "domain has to be shutoff before renaming"
 msgstr "名前を変更する前に、ドメインをシャットオフする必要があります"
@@ -25925,6 +25919,10 @@ msgstr "ループ終了ステータスの判別に失敗しました: %s"
 msgid "failed to duplicate file descriptor for fd group '%s'"
 msgstr ""
 
+#, c-format
+msgid "failed to duplicate passed fd with index '%zu'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr "IP ホワーディングを有効にするのに失敗"
 
@@ -26615,13 +26613,11 @@ msgstr "認証情報の取得に失敗しました"
 msgid "failed to retrieve decision to accept host key"
 msgstr "ホスト鍵を受け取るかどうかの取得に失敗しました"
 
-msgid "failed to retrieve keyboard interactive result: callback has failed"
-msgstr ""
-"キーボードインタラクティブの結果の取得に失敗しました: コールバックが失敗しま"
-"した"
-
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr "秘密鍵のパスフレーズの取得に失敗しました: コールバックに失敗しました"
+
+msgid "failed to retrieve user response for authentication callback"
+msgstr ""
 
 #, c-format
 msgid "failed to rollback transaction: %s%s%s"
@@ -27481,8 +27477,8 @@ msgstr "ゲストが予期せず終了しました"
 msgid "guest unexpectedly quit during hotplug"
 msgstr "ゲストが活性挿入中に予期せず終了しました"
 
-msgid "guest-get-fsinfo reply was missing return data"
-msgstr "guest-get-fsinfo の応答に戻り値がありませんでした"
+msgid "guest-get-fsinfo reply was missing or not an array"
+msgstr ""
 
 msgid "guest-get-osinfo reply was missing return data"
 msgstr "guest-get-osinfo の応答に戻り値がありませんでした"
@@ -30666,7 +30662,7 @@ msgstr "サポートされているダンプ形式のエントリーがありま
 msgid "missing existing file for disk %s: %s"
 msgstr "ディスク %s に対して既存のファイルがありません: %s"
 
-msgid "missing external TPM backend type"
+msgid "missing external TPM backend source type"
 msgstr ""
 
 msgid "missing feature name"
@@ -31215,10 +31211,6 @@ msgstr "ドメイン設定にモデル '%s' メモリーデバイスが存在し
 #, c-format
 msgid "model '%s' shmem device not present in domain configuration"
 msgstr "ドメイン設定にモデル '%s' shmem デバイスが存在しません"
-
-#, c-format
-msgid "model '%s' watchdog device not present in domain configuration"
-msgstr "ドメイン設定にモデル '%s' ウォッチドッグデバイスが存在しません"
 
 msgid "model resolution is not supported"
 msgstr "モデル解像度はサポートされていません"
@@ -32045,6 +32037,9 @@ msgstr "一致するファイルシステムデバイスが見つかりません
 msgid "no matching redirdev was not found"
 msgstr "一致する redirdev が見つかりませんでした"
 
+msgid "no matching watchdog was found"
+msgstr ""
+
 msgid "no medium attachments"
 msgstr "メディア接続なし"
 
@@ -32208,14 +32203,11 @@ msgstr "ストリームのコールバックが登録されていません"
 msgid "no such screen ID"
 msgstr "そのような画面 ID はありません"
 
+msgid "no suitable callback authentication callback was found"
+msgstr ""
+
 msgid "no suitable callback for host key verification"
 msgstr "ホストキーの検証に適したコールバックがありません"
-
-msgid "no suitable callback for input of key passphrase"
-msgstr "キーパスフレーズの入力に適したコールバックがありません"
-
-msgid "no suitable callback for input of keyboard response"
-msgstr "キーボード応答の入力に適したコールバックがありません"
 
 msgid "no suitable info found"
 msgstr "適切な情報が見つかりません"
@@ -32555,7 +32547,7 @@ msgstr ""
 "オンラインのホットプラグ不可能な vcpus は、ホットプラグ可能な vcpus の前に順"
 "序付ける必要があります"
 
-msgid "only 'client' mode is supported for external TPM device"
+msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
@@ -32615,9 +32607,6 @@ msgstr "単一の nvram デバイスのみがサポートされます"
 msgid "only a single vsock device is supported"
 msgstr "単一の vsock デバイスのみがサポートされます"
 
-msgid "only a single watchdog device is supported"
-msgstr "ウォッチドッグデバイスは 1 つのみサポートされます"
-
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "'passthrough' 入力デバイスでサポートされるのはバス 'virtio' のみです"
 
@@ -32667,6 +32656,9 @@ msgstr "1 つの TPM バックエンドのみがサポートされます"
 
 msgid "only one backup job is supported"
 msgstr "1 つのバックアップジョブのみがサポートされます"
+
+msgid "only one crypto backend is supported"
+msgstr ""
 
 msgid "only one emulatorpin is supported"
 msgstr "emulatorpin は 1 つのみサポートされます"
@@ -33575,6 +33567,9 @@ msgstr "ps2 バスは %s 入力デバイスをサポートしません"
 #, c-format
 msgid "pull mode backup for disk '%s' requires qcow2 driver"
 msgstr "ディスク '%s' のプルモードバックアップには qcow2 ドライバーが必要です"
+
+msgid "pvpanic is supported only with PCI address type"
+msgstr ""
 
 #, c-format
 msgid "qemu agent didn't provide 'ip-address' field for interface '%s'"
@@ -35585,6 +35580,9 @@ msgstr "MAC アドレス '%s' が複数のインターフェイスに一致し�
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr "QEMU バイナリーは ISA パニックデバイスをサポートしません"
 
+msgid "the QEMU binary does not support the PCI pvpanic device"
+msgstr ""
+
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
 msgstr ""
@@ -35653,6 +35651,9 @@ msgstr "マシンにはスナップショットがありません"
 
 msgid "the new password"
 msgstr "新しいパスワード"
+
+msgid "the passt network backend is not supported with this QEMU binary"
+msgstr ""
 
 msgid "the password is already encrypted"
 msgstr "パスワードはすでに暗号化されています"
@@ -37406,12 +37407,12 @@ msgid "unknown authentication type %s"
 msgstr "不明な認証タイプ: %s"
 
 #, c-format
-msgid "unknown backend type '%s' for egd"
-msgstr "EGD 向け不明なバックエンドタイプ '%s'"
+msgid "unknown backend source type '%s' for external TPM"
+msgstr ""
 
 #, c-format
-msgid "unknown backend type '%s' for external TPM"
-msgstr ""
+msgid "unknown backend type '%s' for egd"
+msgstr "EGD 向け不明なバックエンドタイプ '%s'"
 
 #, c-format
 msgid "unknown backup mode '%s'"
@@ -37876,6 +37877,10 @@ msgstr "サポートされない Hyper-V stimer 機能: %s"
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
 msgstr "サポートされない HyperV Enlightenment 機能: %s"
+
+#, c-format
+msgid "unsupported IPv6 address prefix='%u' - must be 64"
+msgstr ""
 
 #, c-format
 msgid "unsupported KVM feature: %s"
@@ -39134,11 +39139,12 @@ msgstr "警告"
 msgid "watchdog"
 msgstr "ウォッチドッグ"
 
-msgid "watchdog device not present in domain configuration"
-msgstr "ドメイン設定にウォッチドッグデバイスが存在しません"
-
 msgid "watchdog must contain model name"
 msgstr "watchdog はモデル名を含まなければいけません"
+
+msgid ""
+"watchdogs with different actions are not supported with this QEMU binary"
+msgstr ""
 
 msgid "webSocket"
 msgstr "webSocket"
@@ -39293,6 +39299,209 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "'disk' missing in reply of guest-get-fsinfo"
+#~ msgstr "guest-get-fsinfo の応答に 'disk' がありません"
+
+#~ msgid ""
+#~ "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, "
+#~ "rc=%08x"
+#~ msgstr ""
+#~ "harddisk/dvd/floppy として添付されるファイルの UUID を取得できません: %s, "
+#~ "rc=%08x"
+
+#~ msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
+#~ msgstr ""
+#~ "ファイルを harddisk/dvd/floppy として接続できませんでした: %s、rc=%08x"
+
+#~ msgid "Could not get IMedium, rc=%08x"
+#~ msgstr "IMedium を取得できませんでした、rc=%08x"
+
+#~ msgid "Could not get device port, rc=%08x"
+#~ msgstr "デバイスポートを取得できませんでした、rc=%08x"
+
+#~ msgid "Could not get device slot, rc=%08x"
+#~ msgstr "デバイススロットを取得できませんでした、rc=%08x"
+
+#~ msgid "Could not get device type, rc=%08x"
+#~ msgstr "デバイスタイプを取得できませんでした、rc=%08x"
+
+#~ msgid "Could not get list of Defined Domains, rc=%08x"
+#~ msgstr "定義済みドメインの一覧を取得できませんでした, rc=%08x"
+
+#~ msgid "Could not get list of Domains, rc=%08x"
+#~ msgstr "ドメインの一覧を取得できませんでした, rc=%08x"
+
+#~ msgid "Could not get list of domains, rc=%08x"
+#~ msgstr "ドメインの一覧を取得できませんでした、返り値 = %08x"
+
+#~ msgid "Could not get list of machines, rc=%08x"
+#~ msgstr "マシンの一覧を取得できませんでした, rc=%08x"
+
+#~ msgid "Could not get medium storage location, rc=%08x"
+#~ msgstr "メディアのストレージ場所を取得できませんでした、rc=%08x"
+
+#~ msgid "Could not get number of Defined Domains, rc=%08x"
+#~ msgstr "定義済みドメインの数を取得できませんでした, rc=%08x"
+
+#~ msgid "Could not get number of Domains, rc=%08x"
+#~ msgstr "ドメインの数を取得できませんでした, rc=%08x"
+
+#~ msgid "Could not get read only state, rc=%08x"
+#~ msgstr "読み取り専用状態を取得できませんでした、rc=%08x"
+
+#~ msgid "Could not get storage controller bus, rc=%08x"
+#~ msgstr "ストレージコントローラーバスを取得できませんでした、rc=%08x"
+
+#~ msgid "Could not get storage controller by name, rc=%08x"
+#~ msgstr "名前でストレージコントローラーを取得できませんでした、rc=%08x"
+
+#~ msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
+#~ msgstr ""
+#~ "ストレージコントローラーの追加に失敗しました (名前: %s、busType: %d)、rc="
+#~ "%08x"
+
+#~ msgid "Failed to change storage controller model, rc=%08x"
+#~ msgstr "ストレージコントローラーモデルの変更に失敗しました、rc=%08x"
+
+#~ msgid "Failed to get storage controller name, rc=%08x"
+#~ msgstr "ストレージコントローラー名の取得に失敗しました、rc=%08x"
+
+#~ msgid ""
+#~ "Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
+#~ msgstr ""
+#~ "次のディスク/DVD/フロッピーをマシン: %s に開くことができませんでした、rc="
+#~ "%08x"
+
+#~ msgid "Failed to save VM settings, rc=%08x"
+#~ msgstr "VM 設定の保存に失敗しました、rc=%08x"
+
+#~ msgid "Malformed guest-get-fsinfo 'disk' data array"
+#~ msgstr "不正な形式の guest-get-fsinfo 'disk' データ配列"
+
+#~ msgid "Malformed guest-get-fsinfo data array"
+#~ msgstr "不正な形式の guest-get-fsinfo データ配列"
+
+#~ msgid "Malformed ip-addresses array"
+#~ msgstr "不正な形式の ip-addresses 配列"
+
+#~ msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
+#~ msgstr ""
+#~ "VIR_CRED_PASSPHRASE または VIR_CRED_NOECHOPROMPT 認証情報タイプがありませ"
+#~ "ん"
+
+#~ msgid "Password request failed"
+#~ msgstr "パスワードの要求が失敗しました"
+
+#~ msgid "Target domain watchdog count %d does not match source %d"
+#~ msgstr "ターゲットドメインの watchdog 数 %d がソースの %d と一致しません"
+
+#~ msgid "Unable to close HardDisk, rc=%08x"
+#~ msgstr "ハードディスクを閉じることができません、rc=%08x"
+
+#~ msgid "Unable to close the new medium, rc=%08x"
+#~ msgstr "新しいメディアを閉じることができません、rc=%08x"
+
+#~ msgid "Unable to create HardDisk, rc=%08x"
+#~ msgstr "ハードディスクを作成できません、rc=%08x"
+
+#~ msgid "Unable to delete medium, rc=%08x"
+#~ msgstr "メディアを削除できません、rc=%08x"
+
+#~ msgid "Unable to get hard disk id, rc=%08x"
+#~ msgstr "ハードディスク ID を取得できません、rc=%08x"
+
+#~ msgid "Unable to get hardDisk Id, rc=%08x"
+#~ msgstr "hardDisk ID を取得できません、rc=%08x"
+
+#~ msgid "Unable to get medium uuid, rc=%08x"
+#~ msgstr "メディア uuid を取得できません、rc=%08x"
+
+#~ msgid "Unable to open HardDisk, rc=%08x"
+#~ msgstr "ハードディスクを開くことができません、rc=%08x"
+
+#~ msgid "Unable to open Machine, rc=%08x"
+#~ msgstr "マシンを開くことができません、rc=%08x"
+
+#~ msgid "Unable to register Machine, rc=%08x"
+#~ msgstr "マシンを登録できません、rc=%08x"
+
+#~ msgid "Unable to unregister machine, rc=%08x"
+#~ msgstr "マシンの登録を解除できません、rc=%08x"
+
+#~ msgid ""
+#~ "Username and key file path must be provided for private key authentication"
+#~ msgstr ""
+#~ "SSH エージェント認証にユーザー名とキーファイルのパスを指定する必要がありま"
+#~ "す"
+
+#~ msgid "Username must be provided for ssh agent authentication"
+#~ msgstr "SSH エージェント認証にユーザー名を指定する必要があります"
+
+#~ msgid "Value of cputune 'shares' must be in range [%llu, %llu]"
+#~ msgstr "cputune 'shares' の値は、[%llu、%llu] の範囲内になければなりません"
+
+#~ msgid "could not attach shared folder '%s', rc=%08x"
+#~ msgstr "共有フォルダー '%s' を接続できませんでした, rc=%08x"
+
+#~ msgid "could not change ACPI status to: %s, rc=%08x"
+#~ msgstr "ACPI ステータスを変更できませんでした: %s, rc=%08x"
+
+#~ msgid "could not change APIC status to: %s, rc=%08x"
+#~ msgstr "APIC ステータスを変更できませんでした: %s, rc=%08x"
+
+#~ msgid "could not change PAE status to: %s, rc=%08x"
+#~ msgstr "PAE ステータスを変更できませんでした: %s, rc=%08x"
+
+#~ msgid "could not define a domain, rc=%08x"
+#~ msgstr "ドメインを定義できませんでした, rc=%08x"
+
+#~ msgid "could not delete the domain, rc=%08x"
+#~ msgstr "ドメインを削除できませんでした, rc=%08x"
+
+#~ msgid "could not detach shared folder '%s', rc=%08x"
+#~ msgstr "共有フォルダー '%s' を切断できませんでした, rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
+#~ msgstr "ドメインのメモリー容量を設定できませんでした: %llu Kb, rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
+#~ msgstr "ドメインのメモリー容量を設定できませんでした: %lu Kb, rc=%08x"
+
+#~ msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
+#~ msgstr "ドメインの CPU 数を設定できませんでした: %u, rc=%08x"
+
+#~ msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
+#~ msgstr "仮想 CPU の数を設定できませんでした: %u, rc=%08x"
+
+#~ msgid "domain already has a watchdog"
+#~ msgstr "ドメインにはすでにウォッチドッグがあります"
+
+#~ msgid "domain has no watchdog"
+#~ msgstr "ドメインにはウォッチドッグがありません"
+
+#~ msgid "failed to retrieve keyboard interactive result: callback has failed"
+#~ msgstr ""
+#~ "キーボードインタラクティブの結果の取得に失敗しました: コールバックが失敗し"
+#~ "ました"
+
+#~ msgid "guest-get-fsinfo reply was missing return data"
+#~ msgstr "guest-get-fsinfo の応答に戻り値がありませんでした"
+
+#~ msgid "model '%s' watchdog device not present in domain configuration"
+#~ msgstr "ドメイン設定にモデル '%s' ウォッチドッグデバイスが存在しません"
+
+#~ msgid "no suitable callback for input of key passphrase"
+#~ msgstr "キーパスフレーズの入力に適したコールバックがありません"
+
+#~ msgid "no suitable callback for input of keyboard response"
+#~ msgstr "キーボード応答の入力に適したコールバックがありません"
+
+#~ msgid "only a single watchdog device is supported"
+#~ msgstr "ウォッチドッグデバイスは 1 つのみサポートされます"
+
+#~ msgid "watchdog device not present in domain configuration"
+#~ msgstr "ドメイン設定にウォッチドッグデバイスが存在しません"
 
 #~ msgid "%s array element does not contain a string"
 #~ msgstr "%s 配列要素に文字列が含まれていません"

@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-01-09 14:27+0000\n"
+"POT-Creation-Date: 2023-02-22 13:50+0000\n"
 "PO-Revision-Date: 2015-03-04 01:18+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (http://www.transifex.com/projects/p/libvirt/language/"
@@ -562,6 +562,15 @@ msgid "%s model of watchdog is allowed for s390 and s390x only"
 msgstr ""
 
 #, c-format
+msgid "%s model of watchdog is only part of q35 machine"
+msgstr ""
+
+#, c-format
+msgid ""
+"%s model of watchdog is part of the machine and cannot have any address set."
+msgstr ""
+
+#, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
 msgstr ""
 
@@ -836,6 +845,10 @@ msgid "%s: failed to communicate with bridge helper: %s"
 msgstr ""
 
 #, c-format
+msgid "%s: failed to generate UNIX socket path"
+msgstr ""
+
+#, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "%s: தற்காலிகமாக கோப்பினை வாசிக்க முடியவில்லை: %s"
 
@@ -952,6 +965,10 @@ msgstr "%s: மேலும் விவரங்களுக்கு --help �
 
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
+#, c-format
+msgid "%s: unknown remote mode '%s'"
 msgstr ""
 
 #, c-format
@@ -1125,9 +1142,8 @@ msgid ""
 "type instead"
 msgstr ""
 
-#, fuzzy
-msgid "'disk' missing in reply of guest-get-fsinfo"
-msgstr "guest-get-vcpus இன் பதிலளிப்பில் 'online' இல்லை"
+msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
+msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %s"
@@ -2487,8 +2503,7 @@ msgstr "PATH env இல் prlctl கட்டளையைக் கண்டற
 
 #, c-format
 msgid ""
-"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc="
-"%08x"
+"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"
 msgstr ""
 
 #, fuzzy
@@ -3870,9 +3885,9 @@ msgstr ""
 msgid "Could not attach serial port %zu"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
-msgstr "பகிரப்பட்ட கோப்புறை '%s' ஐ இணைக்க முடியவில்லை, rc=%08x"
+#, c-format
+msgid "Could not attach the file as harddisk/dvd/floppy: %s"
+msgstr ""
 
 msgid "Could not build CURL header list"
 msgstr "CURL மேற்குறிப்புப் பட்டியலை உருவாக்க முடியவில்லை"
@@ -4225,9 +4240,8 @@ msgstr "வட்டு முகவரியை சரிபார்க்க 
 msgid "Could not get EPR items"
 msgstr "வடிப்பானை உருவாக்க முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Could not get IMedium, rc=%08x"
-msgstr "டொமைன்களின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+msgid "Could not get IMedium"
+msgstr ""
 
 msgid "Could not get Msvm_DiskDrive default InstanceID"
 msgstr ""
@@ -4258,17 +4272,14 @@ msgstr "ஸ்னாப்ஷாட்டின் பெயரைப் பெ�
 msgid "Could not get current time"
 msgstr "நடப்பு நேரத்தைப் பெற முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Could not get device port, rc=%08x"
-msgstr "டொமைன்களின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+msgid "Could not get device port"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get device slot, rc=%08x"
-msgstr "கணினிகளின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+msgid "Could not get device slot"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get device type, rc=%08x"
-msgstr "கணினிகளின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+msgid "Could not get device type"
+msgstr ""
 
 #, c-format
 msgid "Could not get free memory for host %s"
@@ -4306,30 +4317,25 @@ msgstr "இட்டரேட்டர் ஐடி %u க்கான இட்
 msgid "Could not get iterator index for iterator ID %u"
 msgstr "இட்டரேட்டர் ஐடி %u க்கான இட்டரேட்டரைப் பெற முடியவில்லை"
 
-#, c-format
-msgid "Could not get list of Defined Domains, rc=%08x"
-msgstr "வரையறுக்கப்பட்ட டொமைன்களின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+msgid "Could not get list of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of Domains, rc=%08x"
-msgstr "டொமைன்களின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+msgid "Could not get list of Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of domains, rc=%08x"
-msgstr "டொமைன்களின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+msgid "Could not get list of domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get list of machines, rc=%08x"
-msgstr "கணினிகளின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+msgid "Could not get list of machines"
+msgstr ""
 
 #, c-format
 msgid ""
 "Could not get maximum definition of Msvm_ProcessorSettingData for host %s"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get medium storage location, rc=%08x"
-msgstr "டொமைன்களின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+msgid "Could not get medium storage location"
+msgstr ""
 
 #, c-format
 msgid "Could not get members of bridge '%s'"
@@ -4342,16 +4348,17 @@ msgstr "மெய்நிகர் கணினியின் பெயரை�
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "மாறி '%2$s' இன் nth (%1$u) மதிப்பைப் பெற முடியவில்லை"
 
-#, c-format
-msgid "Could not get number of Defined Domains, rc=%08x"
-msgstr "வரையறுக்கப்பட்ட டொமைன்களின் எண்ணிக்கையைப் பெற முடியவில்லை, rc=%08x"
+msgid "Could not get number of Defined Domains"
+msgstr ""
 
-#, c-format
-msgid "Could not get number of Domains, rc=%08x"
-msgstr "டொமைன்களின் எண்ணிக்கையைப் பெற முடியவில்லை, rc=%08x"
+msgid "Could not get number of Domains"
+msgstr ""
 
 #, c-format
 msgid "Could not get parent of '%s'"
+msgstr ""
+
+msgid "Could not get process ID of passt"
 msgstr ""
 
 #, fuzzy
@@ -4362,9 +4369,8 @@ msgstr "ஸ்னாப்ஷாட் %s இன் தாய் ஸ்னாப
 msgid "Could not get process id of vhost-user-gpu"
 msgstr "ஸ்னாப்ஷாட் %s இன் தாய் ஸ்னாப்ஷாட்டைப் பெற முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Could not get read only state, rc=%08x"
-msgstr "கணினிகளின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+msgid "Could not get read only state"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get response"
@@ -4397,13 +4403,11 @@ msgstr "ஸ்னாப்ஷாட்டின் பெயரைப் பெ�
 msgid "Could not get snapshot name"
 msgstr "ஸ்னாப்ஷாட்டின் பெயரைப் பெற முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Could not get storage controller bus, rc=%08x"
-msgstr "கணினிகளின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+msgid "Could not get storage controller bus"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Could not get storage controller by name, rc=%08x"
-msgstr "கணினிகளின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+msgid "Could not get storage controller by name"
+msgstr ""
 
 #, c-format
 msgid "Could not get syspath for parent of '%s'"
@@ -4835,6 +4839,10 @@ msgstr "கோப்புமுறைக்கு மூல அடைவின�
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
 
+#, c-format
+msgid "Could not start 'passt': %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Could not start 'slirp'. exitstatus: %d"
 msgstr "டொமைனை தொடங்க முடியவில்லை: %s"
@@ -4988,6 +4996,9 @@ msgstr "உருவாக்க நேரம்"
 #, c-format
 msgid "Creation of %s volumes is not supported"
 msgstr "%s பிரிவகங்களை உருவாக்க ஆதரவில்லை"
+
+msgid "Crypto device is missing alias"
+msgstr ""
 
 #, fuzzy
 msgid "Current memory size too large"
@@ -6478,7 +6489,7 @@ msgid "Failed to add signal handle watch"
 msgstr "சிக்னல் ஹேன்டில் கவனிப்பைச் சேர்ப்பதில் தோல்வி"
 
 #, c-format
-msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
+msgid "Failed to add storage controller (name: %s, busType: %d)"
 msgstr ""
 
 #, c-format
@@ -6586,9 +6597,8 @@ msgstr "'%s' இன் உரிமையாளரை %d க்கு மாற�
 msgid "Failed to change size of volume '%s' to %s"
 msgstr "'%s' இன் உரிமையாளரை %d க்கு மாற்றுவதில் தோல்வி:%d"
 
-#, fuzzy, c-format
-msgid "Failed to change storage controller model, rc=%08x"
-msgstr "PAE நிலையை இவ்வாறாக மாற்ற முடியவில்லை: %s, rc=%08x"
+msgid "Failed to change storage controller model"
+msgstr ""
 
 #, c-format
 msgid "Failed to chdir into %s"
@@ -6816,6 +6826,10 @@ msgid "Failed to create nvram dir %s"
 msgstr "தொகுதி %sஐ உருவாக்க முடியவில்லை"
 
 msgid "Failed to create or modify the state XML attribute"
+msgstr ""
+
+#, c-format
+msgid "Failed to create passt state dir %s"
 msgstr ""
 
 #, c-format
@@ -7331,9 +7345,8 @@ msgstr "டொமைன் '%d' க்கான அளவுருக்கள�
 msgid "Failed to get snapshot count"
 msgstr "ஸ்னாப்ஷாட் எண்ணிக்கையைப் பெற முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Failed to get storage controller name, rc=%08x"
-msgstr "%s மைனர் எண்ணைப் பெறுவதில் தோல்வி"
+msgid "Failed to get storage controller name"
+msgstr ""
 
 msgid "Failed to get the number of active networks"
 msgstr "செயலிலுள்ள பிணையங்களின் எண்னிக்கையைப் பெற முடியவில்லை"
@@ -7687,8 +7700,7 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr "பாதை '%s'உடன் சேமிப்பக தொகுதியைத் திறக்க முடியவில்லை"
 
 #, c-format
-msgid ""
-"Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
+msgid "Failed to open the following disk/dvd/floppy to the machine: %s"
 msgstr ""
 
 #, c-format
@@ -7791,6 +7803,10 @@ msgstr "'%s' இல் இருந்து நேர்க்குறி ம�
 #, fuzzy, c-format
 msgid "Failed to parse rate '%s'"
 msgstr "அடைவு பெயர் '%s'ஐ இடைநிறுத்த முடியவில்லை"
+
+#, c-format
+msgid "Failed to parse rotated index from '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%s'"
@@ -8138,9 +8154,8 @@ msgstr "iscsi இடைமுகத்தை IQN '%s' உடன் புது�
 msgid "Failed to save '%s' for '%s'"
 msgstr "'%s' க்கு '%s' ஐச் சேமிக்க முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Failed to save VM settings, rc=%08x"
-msgstr "%s லிருந்து %s க்கு செயற்களத்தை சேமிக்க முடியவில்லை"
+msgid "Failed to save VM settings"
+msgstr ""
 
 #, c-format
 msgid "Failed to save domain '%d' with libxenlight"
@@ -9691,6 +9706,10 @@ msgid "Invalid address '%s' in <ip>"
 msgstr "பிணையம் '%s' இல் செல்லுபடியாகாத முகவரி '%s'"
 
 #, c-format
+msgid "Invalid address '%s' in <portForward>"
+msgstr ""
+
+#, c-format
 msgid "Invalid address '%s' in network '%s'"
 msgstr "பிணையம் '%s' இல் செல்லுபடியாகாத முகவரி '%s'"
 
@@ -10199,6 +10218,10 @@ msgstr "தவறான துறை எண்: '%s'"
 #, c-format
 msgid "Invalid port range '%u-%u'."
 msgstr "செல்லுபடியாகாத முனைய வரம்பு '%u-%u'."
+
+#, c-format
+msgid "Invalid portForward proto value %u"
+msgstr ""
 
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
@@ -10783,19 +10806,9 @@ msgstr "தவறான வடிவமைப்புள்ள nbd முனை
 msgid "Malformed format for log output '%s'"
 msgstr ""
 
-msgid "Malformed guest-get-fsinfo 'disk' data array"
-msgstr ""
-
-msgid "Malformed guest-get-fsinfo data array"
-msgstr ""
-
 #, fuzzy
 msgid "Malformed id field in JSON state document"
 msgstr "JSON நிலை ஆவணத்தில் readonly புலம் விடுபட்டுள்ளது"
-
-#, fuzzy
-msgid "Malformed ip-addresses array"
-msgstr "தவறான mac முகவரி '%s'"
 
 #, fuzzy
 msgid "Malformed lease_entries array"
@@ -11248,9 +11261,6 @@ msgid "Missing UUID parameter for domain object"
 msgstr "டொமைன் பொருளுக்கு UUID அளவுரு விடுபட்டுள்ளது"
 
 msgid "Missing VIR_CRED_AUTHNAME credential type"
-msgstr ""
-
-msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
 msgstr ""
 
 msgid "Missing XPath context"
@@ -11768,6 +11778,9 @@ msgstr ""
 #, fuzzy
 msgid "Multiple graphics devices are not supported"
 msgstr "மல்டி-ஹெட் வீடியோ சாதனங்களுக்கு ஆதரவில்லை"
+
+msgid "Multiple iTCO watchdogs are not supported"
+msgstr ""
 
 msgid "Multiple interfaces attached to bridge"
 msgstr "பிரிட்ஜில் பல இடைமுகங்கள் இணைக்கப்பட்டுள்ளன"
@@ -13211,9 +13224,6 @@ msgstr "விசை '%s' க்கான கடவுச்சொற்றொ�
 
 msgid "Password may not contain ',' character"
 msgstr ""
-
-msgid "Password request failed"
-msgstr "கடவுச்ச்சொல் கோரிக்கை தோல்வி"
 
 #, c-format
 msgid "Password set successfully for %s in %s"
@@ -15688,8 +15698,8 @@ msgid "Target domain vsock device model '%s' does not match source '%s'"
 msgstr "இலக்கு வழங்கி சாதன பயன்முறை %s ஆனது மூலம் %s உடன் பொருந்தவில்லை"
 
 #, c-format
-msgid "Target domain watchdog count %d does not match source %d"
-msgstr "இலக்கு டொமைன் வாட்ச்டாக் எண்ணிக்கை %d ஆனது மூலம் %d உடன் பொருந்தவில்லை"
+msgid "Target domain watchdog device count %zu does not match source %zu"
+msgstr ""
 
 msgid "Target filesystem access mode does not match source"
 msgstr "இலக்கு கோப்புமுறைமை அணுகல் பயன்முறை மூலத்துடன் பொருந்தவில்லை"
@@ -15957,6 +15967,14 @@ msgid ""
 "'%s' or machine type '%s'"
 msgstr ""
 
+msgid "The 'passt' backend can only be used with interface type='user'"
+msgstr ""
+
+msgid ""
+"The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
+"'exclude' is specified"
+msgstr ""
+
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -16140,11 +16158,6 @@ msgstr ""
 msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
-msgstr ""
-
-msgid ""
-"The overall maximum number of clients waiting for authentication must not be "
-"less than the overall maximum number of clients"
 msgstr ""
 
 #, fuzzy
@@ -16930,9 +16943,8 @@ msgstr "%s ஐ மூட முடியவில்லை"
 msgid "Unable to close %s"
 msgstr "%s ஐ மூட முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Unable to close HardDisk, rc=%08x"
-msgstr "%s ஐ மூட முடியவில்லை"
+msgid "Unable to close HardDisk"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to close disk children"
@@ -16946,8 +16958,10 @@ msgstr "வளம் %s ஐ திறக்க முடியவில்லை
 msgid "Unable to close the VPD file, fd: %d"
 msgstr ""
 
-#, c-format
-msgid "Unable to close the new medium, rc=%08x"
+msgid "Unable to close the new medium"
+msgstr ""
+
+msgid "Unable to compile regex"
 msgstr ""
 
 #, fuzzy, c-format
@@ -16982,9 +16996,8 @@ msgstr "சாக்கெட் கோப்பு ஹேன்டிலை ந
 msgid "Unable to create %s"
 msgstr "%s ஐ உருவாக்க முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Unable to create HardDisk, rc=%08x"
-msgstr "பிரிட்ஜ் %s ஐ உருவாக்க முடியவில்லை"
+msgid "Unable to create HardDisk"
+msgstr ""
 
 msgid "Unable to create JSON formatter"
 msgstr "JSON ஃபார்மேட்டரை உருவாக்க முடியவில்லை"
@@ -17155,9 +17168,8 @@ msgstr "பிரிட்ஜ் %s ஐ நீக்க முடியவில
 msgid "Unable to delete lockspace resource %s"
 msgstr "லாக்ஸ்பேஸ் வளம் %s ஐ நீக்க முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Unable to delete medium, rc=%08x"
-msgstr "பிரிட்ஜ் %s ஐ நீக்க முடியவில்லை"
+msgid "Unable to delete medium"
+msgstr ""
 
 #, c-format
 msgid "Unable to delete port %s from OVS"
@@ -17545,13 +17557,8 @@ msgstr "வட்டு தகவலை பெற முடியவில்ல
 msgid "Unable to get hard disk id"
 msgstr "பிரிட்ஜ் %s %s ஐப் பெற முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Unable to get hard disk id, rc=%08x"
-msgstr "பிரிட்ஜ் %s %s ஐப் பெற முடியவில்லை"
-
-#, fuzzy, c-format
-msgid "Unable to get hardDisk Id, rc=%08x"
-msgstr "சாதன ID '%s' ஐப் பெற முடியவில்லை"
+msgid "Unable to get hardDisk Id"
+msgstr ""
 
 msgid "Unable to get host SEV information"
 msgstr ""
@@ -17596,9 +17603,8 @@ msgstr "%s இல் லூப் நிலையைப் பெற முட�
 msgid "Unable to get medium location"
 msgstr "நினைவக புள்ளிவிவரங்களைப் பெற முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Unable to get medium uuid, rc=%08x"
-msgstr "uuidஐ உருவாக்க முடியவில்லை"
+msgid "Unable to get medium uuid"
+msgstr ""
 
 msgid "Unable to get memory parameters"
 msgstr "நினைவக அளவுருக்களைப் பெற முடியவில்லை"
@@ -17870,13 +17876,11 @@ msgstr "/dev/loop-control ஐத் திறக்க முடியவில�
 msgid "Unable to open /proc/mounts"
 msgstr "/proc/mounts ஐ திறக்க முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Unable to open HardDisk, rc=%08x"
-msgstr "வளம் %s ஐ திறக்க முடியவில்லை"
+msgid "Unable to open HardDisk"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to open Machine, rc=%08x"
-msgstr "%sஐ திறக்க முடியவில்லை"
+msgid "Unable to open Machine"
+msgstr ""
 
 msgid "Unable to open UNIX socket"
 msgstr "UNIX சாக்கெட்டைத் திறக்க முடியவில்லை"
@@ -18174,9 +18178,8 @@ msgstr "pid கோப்பு '%s' இன் நிலையை சரிபா
 msgid "Unable to read virtiofsd pidfile '%s'"
 msgstr "pid கோப்பு '%s' இன் நிலையை சரிபார்க்க முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Unable to register Machine, rc=%08x"
-msgstr "இணைப்பு துண்டிப்பு கால்பேக்கைப் பதிவு செய்ய முடியவில்லை"
+msgid "Unable to register Machine"
+msgstr ""
 
 msgid "Unable to register async IO callback"
 msgstr "async IO கால்பேக்கைப் பதிவு செய்ய முடியவில்லை"
@@ -18648,9 +18651,8 @@ msgstr "%sஐ திறக்க முடியவில்லை"
 msgid "Unable to unlink path '%s'"
 msgstr "'%s' இல் எழுத முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Unable to unregister machine, rc=%08x"
-msgstr "கணினிகளின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+msgid "Unable to unregister machine"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to update server's tls related files."
@@ -19808,14 +19810,6 @@ msgstr "பிரிட்ஜ் %s இல்லை"
 msgid "User namespace support is recommended"
 msgstr ""
 
-msgid ""
-"Username and key file path must be provided for private key authentication"
-msgstr ""
-"தனிப்பட்ட விசை அங்கீகரிப்புக்கு பயனர் பெயரும் விசைக் கோப்பு பாதையும் வழங்கப்பட வேண்டும்"
-
-msgid "Username must be provided for ssh agent authentication"
-msgstr "ssh ஏஜன்ட் அங்கீகரிப்புக்கு பயனர் பெயர் வழங்கப்பட வேண்டும்"
-
 msgid "Username request failed"
 msgstr "பயனர்பெயர் கோரிக்கை தோல்வி"
 
@@ -19933,10 +19927,6 @@ msgstr "'%s' மதிப்பு %s வரம்பாஇத் தாண்�
 
 #, c-format
 msgid "Value of cputune '%s' must be in range [%llu, %llu]"
-msgstr ""
-
-#, c-format
-msgid "Value of cputune 'shares' must be in range [%llu, %llu]"
 msgstr ""
 
 msgid "Variable value contains invalid character"
@@ -22110,6 +22100,9 @@ msgstr ""
 msgid "cannot modify network device address type"
 msgstr "பிணைய சாதன விருந்தினர் PCI முகவரியை மாற்றியமைக்க முடியாது"
 
+msgid "cannot modify network device backend settings"
+msgstr ""
+
 msgid "cannot modify network device boot index setting"
 msgstr "பிணைய சாதன பூட் அட்டவணை அமைப்பை மாற்றியமைக்க முடியாது"
 
@@ -23395,8 +23388,8 @@ msgid "could not allocate memory"
 msgstr "நினைவகத்தை ஒதுக்க முடியவில்லை"
 
 #, c-format
-msgid "could not attach shared folder '%s', rc=%08x"
-msgstr "பகிரப்பட்ட கோப்புறை '%s' ஐ இணைக்க முடியவில்லை, rc=%08x"
+msgid "could not attach shared folder '%s'"
+msgstr ""
 
 msgid "could not build absolute core file path"
 msgstr "துல்லியமான கோர் கோப்புப் பாதையை உருவாக்க முடியவில்லை"
@@ -23408,16 +23401,16 @@ msgid "could not build absolute output file path"
 msgstr "துல்லியமான வெளியீடு கோப்புப் பாதையை உருவாக்க முடியவில்லை"
 
 #, c-format
-msgid "could not change ACPI status to: %s, rc=%08x"
-msgstr "ACPI நிலையை இவ்வாறாக மாற்ற முடியவில்லை: %s, rc=%08x"
+msgid "could not change ACPI status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change APIC status to: %s, rc=%08x"
-msgstr "APIC நிலையை இவ்வாறாக மாற்ற முடியவில்லை: %s, rc=%08x"
+msgid "could not change APIC status to: %s"
+msgstr ""
 
 #, c-format
-msgid "could not change PAE status to: %s, rc=%08x"
-msgstr "PAE நிலையை இவ்வாறாக மாற்ற முடியவில்லை: %s, rc=%08x"
+msgid "could not change PAE status to: %s"
+msgstr ""
 
 msgid "could not close handshake fd"
 msgstr "ஹேன்ட்ஷேக் fd ஐ மூட முடியவில்லை"
@@ -23451,20 +23444,18 @@ msgstr "பட்டையகல உச்ச மதிப்பு '%s' ஐ ம
 msgid "could not create profile"
 msgstr "விவரத்தொகுப்பை உருவாக்க முடியவில்லை"
 
-#, c-format
-msgid "could not define a domain, rc=%08x"
-msgstr "டொமைனை வரையறுக்க முடியவில்லை, rc=%08x"
+msgid "could not define a domain"
+msgstr ""
 
 msgid "could not delete snapshot"
 msgstr "ஸ்னாப்ஷாட்டை அழிக்க முடியவில்லை"
 
-#, c-format
-msgid "could not delete the domain, rc=%08x"
-msgstr "டொமைனை அழிக்க முடியவில்லை, rc=%08x"
+msgid "could not delete the domain"
+msgstr ""
 
 #, c-format
-msgid "could not detach shared folder '%s', rc=%08x"
-msgstr "பகிரப்பட்ட கோப்புறை '%s' ஐ பிரிக்க முடியவில்லை, rc=%08x"
+msgid "could not detach shared folder '%s'"
+msgstr ""
 
 msgid "could not determine max vcpus for the domain"
 msgstr "அதிகபட்ச vcpus செயற்களத்திற்கு வரையறுக்க முடியவில்லை"
@@ -23662,22 +23653,20 @@ msgid "could not set PATH"
 msgstr "PATH ஐ அமைக்க முடியவில்லை"
 
 #, c-format
-msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
+msgid "could not set the memory size of the domain to: %llu Kb"
 msgstr ""
-"டொமைனின் நினைவக அளவை இந்த மதிப்புகளுக்கு அமைக்க முடியவில்லை: %llu Kb, rc=%08x"
 
 #, c-format
-msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
-msgstr "டொமைனின் நினைவக அளவை இந்த மதிப்புகளுக்கு அமைக்க முடியவில்லை: %lu Kb, rc=%08x"
-
-#, c-format
-msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
+msgid "could not set the memory size of the domain to: %lu Kb"
 msgstr ""
-"டொமைனின் cpuகளின் எண்ணிக்கையை இந்த மதிப்புகளுக்கு அமைக்க முடியவில்லை: %u, rc=%08x"
 
 #, c-format
-msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
-msgstr "மெய்நிகர் CPUகளின் எண்ணிக்கையை இந்த அளவுகளுக்கு அமைக்க முடியவில்லை: %u, rc=%08x"
+msgid "could not set the number of cpus of the domain to: %u"
+msgstr ""
+
+#, c-format
+msgid "could not set the number of virtual CPUs to: %u"
+msgstr ""
 
 #, c-format
 msgid "could not take a screenshot of %s"
@@ -23896,6 +23885,18 @@ msgstr ""
 #, fuzzy
 msgid "creation of qcow2 encrypted image is not supported"
 msgstr "%s பிரிவகங்களை உருவாக்க ஆதரவில்லை"
+
+#, c-format
+msgid "crypto backend %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto model %s is not supported"
+msgstr ""
+
+#, c-format
+msgid "crypto type %s is not supported"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -24737,10 +24738,6 @@ msgstr "செயற்களம் ஏற்கனவே இயக்கத்�
 msgid "domain already has a vsock device"
 msgstr "டொமைன் வழங்கி சாதனங்களை நியமித்துள்ளது"
 
-#, fuzzy
-msgid "domain already has a watchdog"
-msgstr "செயற்களம் '%s' ஏற்கனவே uuid %sஉடன் ஃள்ளது"
-
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr ""
 
@@ -24804,10 +24801,6 @@ msgid "domain has assigned host devices"
 msgstr "டொமைன் வழங்கி சாதனங்களை நியமித்துள்ளது"
 
 msgid "domain has no snapshots"
-msgstr "டொமைனில் ஸ்னாப்ஷாட்டுகள் இல்லை"
-
-#, fuzzy
-msgid "domain has no watchdog"
 msgstr "டொமைனில் ஸ்னாப்ஷாட்டுகள் இல்லை"
 
 #, fuzzy
@@ -25986,6 +25979,10 @@ msgstr "%s இல் லூப் நிலையைப் பெற முட�
 msgid "failed to duplicate file descriptor for fd group '%s'"
 msgstr ""
 
+#, c-format
+msgid "failed to duplicate passed fd with index '%zu'"
+msgstr ""
+
 msgid "failed to enable IP forwarding"
 msgstr "IP முன்னனுப்புதலை செயல்படுத்த முடியவில்லை"
 
@@ -26701,12 +26698,11 @@ msgstr "சான்றளிப்புகளை மீட்டுப் ப�
 msgid "failed to retrieve decision to accept host key"
 msgstr "வழங்கி விசையை ஏற்கும் முடிவை மீட்டுப் பெற முடியவில்லை"
 
-#, fuzzy
-msgid "failed to retrieve keyboard interactive result: callback has failed"
-msgstr "தனிப்பட்ட விசை கடவுச்சொற்றொடரை மீட்டெடுப்பதில் தோல்வி: கால்பேக் தோல்வியடைந்தது"
-
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr "தனிப்பட்ட விசை கடவுச்சொற்றொடரை மீட்டெடுப்பதில் தோல்வி: கால்பேக் தோல்வியடைந்தது"
+
+msgid "failed to retrieve user response for authentication callback"
+msgstr ""
 
 #, c-format
 msgid "failed to rollback transaction: %s%s%s"
@@ -27568,9 +27564,8 @@ msgstr "விருந்தினர்கள் எதிர்பாரா�
 msgid "guest unexpectedly quit during hotplug"
 msgstr "விருந்தினர் ஹாட்பிளக்கின் போது எதிர்பாராவிதமாக வெளியேறிவிட்டது"
 
-#, fuzzy
-msgid "guest-get-fsinfo reply was missing return data"
-msgstr "guest-get-vcpus பதிலளிப்பில் திருப்பல் தரவு விடுபட்டுள்ளது"
+msgid "guest-get-fsinfo reply was missing or not an array"
+msgstr ""
 
 #, fuzzy
 msgid "guest-get-osinfo reply was missing return data"
@@ -30800,7 +30795,7 @@ msgstr "இயக்கத்தள தகவல் விடுபட்டு�
 msgid "missing existing file for disk %s: %s"
 msgstr "வட்டு %s க்கு உள்ள கோப்பு விடுபட்டுள்ளது: %s"
 
-msgid "missing external TPM backend type"
+msgid "missing external TPM backend source type"
 msgstr ""
 
 msgid "missing feature name"
@@ -31354,10 +31349,6 @@ msgstr "டொமைன் அமைவாக்கத்தில் சாத�
 
 #, fuzzy, c-format
 msgid "model '%s' shmem device not present in domain configuration"
-msgstr "டொமைன் அமைவாக்கத்தில் சாதனம் இல்லை"
-
-#, fuzzy, c-format
-msgid "model '%s' watchdog device not present in domain configuration"
 msgstr "டொமைன் அமைவாக்கத்தில் சாதனம் இல்லை"
 
 #, fuzzy
@@ -32187,6 +32178,9 @@ msgstr "பொருந்தும் கோப்புமுறைமை ச�
 msgid "no matching redirdev was not found"
 msgstr "பொருந்தும் கோப்புமுறைமை சாதனம் எதுவும் கண்டறியப்படவில்லை"
 
+msgid "no matching watchdog was found"
+msgstr ""
+
 msgid "no medium attachments"
 msgstr ""
 
@@ -32354,16 +32348,12 @@ msgstr "பதிவு செய்யப்பட்ட ஸ்ட்ரீம�
 msgid "no such screen ID"
 msgstr ""
 
+msgid "no suitable callback authentication callback was found"
+msgstr ""
+
 #, fuzzy
 msgid "no suitable callback for host key verification"
 msgstr "வழங்கி விசை சரிபார்த்தலுக்கு வழங்கி பெயர் அவசியம்"
-
-#, fuzzy
-msgid "no suitable callback for input of key passphrase"
-msgstr "கடவுச்சொற்றொடரை மீட்டெடுக்க பொருத்தமான முறை இல்லை"
-
-msgid "no suitable callback for input of keyboard response"
-msgstr ""
 
 msgid "no suitable info found"
 msgstr "பொருத்தமான தகவல் இல்லை"
@@ -32704,7 +32694,7 @@ msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr ""
 
-msgid "only 'client' mode is supported for external TPM device"
+msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
@@ -32765,9 +32755,6 @@ msgstr "ஒரே ஒரு nvram சாதனம் மட்டுமே ஆ�
 msgid "only a single vsock device is supported"
 msgstr "ஒரே ஒரு nvram சாதனம் மட்டுமே ஆதரிக்கப்படும்"
 
-msgid "only a single watchdog device is supported"
-msgstr "ஒரே ஒரு watchdog சாதனம் துணைபுரிகிறது"
-
 #, fuzzy
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "scsi புரவலன் சாதனத்திற்கு மட்டுமே sgio ஆதரிக்கப்படும்"
@@ -32817,6 +32804,9 @@ msgstr "ஒரே ஒரு TPM பின்புல முறைமை மட�
 #, fuzzy
 msgid "only one backup job is supported"
 msgstr "ஒரே ஒரு RNG பின்புலமுறைமைக்கு மட்டுமே ஆதரவுண்டு"
+
+msgid "only one crypto backend is supported"
+msgstr ""
 
 msgid "only one emulatorpin is supported"
 msgstr "ஒரே ஒரு எமுலாட்டார்ப்பினுக்கு மட்டுமே ஆதரவுண்டு"
@@ -33739,6 +33729,9 @@ msgstr "ps2 %s உள்ளீடு சாதனத்திற்கு து
 
 #, c-format
 msgid "pull mode backup for disk '%s' requires qcow2 driver"
+msgstr ""
+
+msgid "pvpanic is supported only with PCI address type"
 msgstr ""
 
 #, fuzzy, c-format
@@ -35778,6 +35771,9 @@ msgstr "MAC முகவரி '%s' ஆனது பல இடைமுகங்
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr "QEMU பைனரியானது %s ஐ ஆதரிக்காது"
 
+msgid "the QEMU binary does not support the PCI pvpanic device"
+msgstr ""
+
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
 msgstr ""
@@ -35842,6 +35838,9 @@ msgid "the machine has no snapshot"
 msgstr "டொமைனில் ஸ்னாப்ஷாட்டுகள் இல்லை"
 
 msgid "the new password"
+msgstr ""
+
+msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -37578,12 +37577,12 @@ msgid "unknown authentication type %s"
 msgstr "தெரியாத அங்கீகார வகை %s"
 
 #, c-format
-msgid "unknown backend type '%s' for egd"
-msgstr "egd க்கு தெரியாத பின்புலமுறைமை வகை '%s'"
+msgid "unknown backend source type '%s' for external TPM"
+msgstr ""
 
 #, c-format
-msgid "unknown backend type '%s' for external TPM"
-msgstr ""
+msgid "unknown backend type '%s' for egd"
+msgstr "egd க்கு தெரியாத பின்புலமுறைமை வகை '%s'"
 
 #, fuzzy, c-format
 msgid "unknown backup mode '%s'"
@@ -38048,6 +38047,10 @@ msgstr "ஆதரிக்கப்படாத HyperV என்லைட்ம�
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
 msgstr "ஆதரிக்கப்படாத HyperV என்லைட்மென்ட் அம்சம்: %s"
+
+#, c-format
+msgid "unsupported IPv6 address prefix='%u' - must be 64"
+msgstr ""
 
 #, c-format
 msgid "unsupported KVM feature: %s"
@@ -39288,12 +39291,12 @@ msgstr "எச்சரிக்கை"
 msgid "watchdog"
 msgstr "watchdog"
 
-#, fuzzy
-msgid "watchdog device not present in domain configuration"
-msgstr "டொமைன் அமைவாக்கத்தில் சாதனம் இல்லை"
-
 msgid "watchdog must contain model name"
 msgstr "watchdog மாதிரிப் பெயரைக் கொண்டிருக்க வேண்டும்"
+
+msgid ""
+"watchdogs with different actions are not supported with this QEMU binary"
+msgstr ""
 
 msgid "webSocket"
 msgstr "webSocket"
@@ -39445,6 +39448,202 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "'disk' missing in reply of guest-get-fsinfo"
+#~ msgstr "guest-get-vcpus இன் பதிலளிப்பில் 'online' இல்லை"
+
+#, fuzzy
+#~ msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
+#~ msgstr "பகிரப்பட்ட கோப்புறை '%s' ஐ இணைக்க முடியவில்லை, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get IMedium, rc=%08x"
+#~ msgstr "டொமைன்களின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device port, rc=%08x"
+#~ msgstr "டொமைன்களின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device slot, rc=%08x"
+#~ msgstr "கணினிகளின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get device type, rc=%08x"
+#~ msgstr "கணினிகளின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+
+#~ msgid "Could not get list of Defined Domains, rc=%08x"
+#~ msgstr "வரையறுக்கப்பட்ட டொமைன்களின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+
+#~ msgid "Could not get list of Domains, rc=%08x"
+#~ msgstr "டொமைன்களின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+
+#~ msgid "Could not get list of domains, rc=%08x"
+#~ msgstr "டொமைன்களின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+
+#~ msgid "Could not get list of machines, rc=%08x"
+#~ msgstr "கணினிகளின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get medium storage location, rc=%08x"
+#~ msgstr "டொமைன்களின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+
+#~ msgid "Could not get number of Defined Domains, rc=%08x"
+#~ msgstr "வரையறுக்கப்பட்ட டொமைன்களின் எண்ணிக்கையைப் பெற முடியவில்லை, rc=%08x"
+
+#~ msgid "Could not get number of Domains, rc=%08x"
+#~ msgstr "டொமைன்களின் எண்ணிக்கையைப் பெற முடியவில்லை, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get read only state, rc=%08x"
+#~ msgstr "கணினிகளின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get storage controller bus, rc=%08x"
+#~ msgstr "கணினிகளின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+
+#, fuzzy
+#~ msgid "Could not get storage controller by name, rc=%08x"
+#~ msgstr "கணினிகளின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+
+#, fuzzy
+#~ msgid "Failed to change storage controller model, rc=%08x"
+#~ msgstr "PAE நிலையை இவ்வாறாக மாற்ற முடியவில்லை: %s, rc=%08x"
+
+#, fuzzy
+#~ msgid "Failed to get storage controller name, rc=%08x"
+#~ msgstr "%s மைனர் எண்ணைப் பெறுவதில் தோல்வி"
+
+#, fuzzy
+#~ msgid "Failed to save VM settings, rc=%08x"
+#~ msgstr "%s லிருந்து %s க்கு செயற்களத்தை சேமிக்க முடியவில்லை"
+
+#, fuzzy
+#~ msgid "Malformed ip-addresses array"
+#~ msgstr "தவறான mac முகவரி '%s'"
+
+#~ msgid "Password request failed"
+#~ msgstr "கடவுச்ச்சொல் கோரிக்கை தோல்வி"
+
+#~ msgid "Target domain watchdog count %d does not match source %d"
+#~ msgstr "இலக்கு டொமைன் வாட்ச்டாக் எண்ணிக்கை %d ஆனது மூலம் %d உடன் பொருந்தவில்லை"
+
+#, fuzzy
+#~ msgid "Unable to close HardDisk, rc=%08x"
+#~ msgstr "%s ஐ மூட முடியவில்லை"
+
+#, fuzzy
+#~ msgid "Unable to create HardDisk, rc=%08x"
+#~ msgstr "பிரிட்ஜ் %s ஐ உருவாக்க முடியவில்லை"
+
+#, fuzzy
+#~ msgid "Unable to delete medium, rc=%08x"
+#~ msgstr "பிரிட்ஜ் %s ஐ நீக்க முடியவில்லை"
+
+#, fuzzy
+#~ msgid "Unable to get hard disk id, rc=%08x"
+#~ msgstr "பிரிட்ஜ் %s %s ஐப் பெற முடியவில்லை"
+
+#, fuzzy
+#~ msgid "Unable to get hardDisk Id, rc=%08x"
+#~ msgstr "சாதன ID '%s' ஐப் பெற முடியவில்லை"
+
+#, fuzzy
+#~ msgid "Unable to get medium uuid, rc=%08x"
+#~ msgstr "uuidஐ உருவாக்க முடியவில்லை"
+
+#, fuzzy
+#~ msgid "Unable to open HardDisk, rc=%08x"
+#~ msgstr "வளம் %s ஐ திறக்க முடியவில்லை"
+
+#, fuzzy
+#~ msgid "Unable to open Machine, rc=%08x"
+#~ msgstr "%sஐ திறக்க முடியவில்லை"
+
+#, fuzzy
+#~ msgid "Unable to register Machine, rc=%08x"
+#~ msgstr "இணைப்பு துண்டிப்பு கால்பேக்கைப் பதிவு செய்ய முடியவில்லை"
+
+#, fuzzy
+#~ msgid "Unable to unregister machine, rc=%08x"
+#~ msgstr "கணினிகளின் பட்டியலைப் பெற முடியவில்லை, rc=%08x"
+
+#~ msgid ""
+#~ "Username and key file path must be provided for private key authentication"
+#~ msgstr ""
+#~ "தனிப்பட்ட விசை அங்கீகரிப்புக்கு பயனர் பெயரும் விசைக் கோப்பு பாதையும் வழங்கப்பட வேண்டும்"
+
+#~ msgid "Username must be provided for ssh agent authentication"
+#~ msgstr "ssh ஏஜன்ட் அங்கீகரிப்புக்கு பயனர் பெயர் வழங்கப்பட வேண்டும்"
+
+#~ msgid "could not attach shared folder '%s', rc=%08x"
+#~ msgstr "பகிரப்பட்ட கோப்புறை '%s' ஐ இணைக்க முடியவில்லை, rc=%08x"
+
+#~ msgid "could not change ACPI status to: %s, rc=%08x"
+#~ msgstr "ACPI நிலையை இவ்வாறாக மாற்ற முடியவில்லை: %s, rc=%08x"
+
+#~ msgid "could not change APIC status to: %s, rc=%08x"
+#~ msgstr "APIC நிலையை இவ்வாறாக மாற்ற முடியவில்லை: %s, rc=%08x"
+
+#~ msgid "could not change PAE status to: %s, rc=%08x"
+#~ msgstr "PAE நிலையை இவ்வாறாக மாற்ற முடியவில்லை: %s, rc=%08x"
+
+#~ msgid "could not define a domain, rc=%08x"
+#~ msgstr "டொமைனை வரையறுக்க முடியவில்லை, rc=%08x"
+
+#~ msgid "could not delete the domain, rc=%08x"
+#~ msgstr "டொமைனை அழிக்க முடியவில்லை, rc=%08x"
+
+#~ msgid "could not detach shared folder '%s', rc=%08x"
+#~ msgstr "பகிரப்பட்ட கோப்புறை '%s' ஐ பிரிக்க முடியவில்லை, rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %llu Kb, rc=%08x"
+#~ msgstr ""
+#~ "டொமைனின் நினைவக அளவை இந்த மதிப்புகளுக்கு அமைக்க முடியவில்லை: %llu Kb, rc=%08x"
+
+#~ msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
+#~ msgstr ""
+#~ "டொமைனின் நினைவக அளவை இந்த மதிப்புகளுக்கு அமைக்க முடியவில்லை: %lu Kb, rc=%08x"
+
+#~ msgid "could not set the number of cpus of the domain to: %u, rc=%08x"
+#~ msgstr ""
+#~ "டொமைனின் cpuகளின் எண்ணிக்கையை இந்த மதிப்புகளுக்கு அமைக்க முடியவில்லை: %u, rc=%08x"
+
+#~ msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
+#~ msgstr ""
+#~ "மெய்நிகர் CPUகளின் எண்ணிக்கையை இந்த அளவுகளுக்கு அமைக்க முடியவில்லை: %u, rc=%08x"
+
+#, fuzzy
+#~ msgid "domain already has a watchdog"
+#~ msgstr "செயற்களம் '%s' ஏற்கனவே uuid %sஉடன் ஃள்ளது"
+
+#, fuzzy
+#~ msgid "domain has no watchdog"
+#~ msgstr "டொமைனில் ஸ்னாப்ஷாட்டுகள் இல்லை"
+
+#, fuzzy
+#~ msgid "failed to retrieve keyboard interactive result: callback has failed"
+#~ msgstr "தனிப்பட்ட விசை கடவுச்சொற்றொடரை மீட்டெடுப்பதில் தோல்வி: கால்பேக் தோல்வியடைந்தது"
+
+#, fuzzy
+#~ msgid "guest-get-fsinfo reply was missing return data"
+#~ msgstr "guest-get-vcpus பதிலளிப்பில் திருப்பல் தரவு விடுபட்டுள்ளது"
+
+#, fuzzy
+#~ msgid "model '%s' watchdog device not present in domain configuration"
+#~ msgstr "டொமைன் அமைவாக்கத்தில் சாதனம் இல்லை"
+
+#, fuzzy
+#~ msgid "no suitable callback for input of key passphrase"
+#~ msgstr "கடவுச்சொற்றொடரை மீட்டெடுக்க பொருத்தமான முறை இல்லை"
+
+#~ msgid "only a single watchdog device is supported"
+#~ msgstr "ஒரே ஒரு watchdog சாதனம் துணைபுரிகிறது"
+
+#, fuzzy
+#~ msgid "watchdog device not present in domain configuration"
+#~ msgstr "டொமைன் அமைவாக்கத்தில் சாதனம் இல்லை"
 
 #~ msgid "Another close callback is already defined for domain %s"
 #~ msgstr "டொமைன் %s க்கு ஏற்கனவே ஒரு குளோஸ் கால்பேக் வரையறுக்கப்பட்டுள்ளது"
