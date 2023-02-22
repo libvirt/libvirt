@@ -1874,10 +1874,10 @@ mymain(void)
     DO_TEST_NOCAPS("smp");
     DO_TEST("smp-dies", QEMU_CAPS_SMP_DIES);
 
-    DO_TEST("iothreads-ids", QEMU_CAPS_OBJECT_IOTHREAD);
-    DO_TEST("iothreads-ids-partial", QEMU_CAPS_OBJECT_IOTHREAD);
+    DO_TEST_CAPS_LATEST("iothreads-ids");
+    DO_TEST_CAPS_LATEST("iothreads-ids-partial");
     DO_TEST_CAPS_LATEST("iothreads-ids-pool-sizes");
-    DO_TEST("iothreads-disk", QEMU_CAPS_OBJECT_IOTHREAD);
+    DO_TEST_CAPS_LATEST("iothreads-disk");
     DO_TEST_CAPS_ARCH_VER("iothreads-disk-virtio-ccw", "s390x", "4.2.0");
     DO_TEST_CAPS_VER("iothreads-virtio-scsi-pci", "5.2.0");
     DO_TEST_CAPS_LATEST("iothreads-virtio-scsi-pci");
