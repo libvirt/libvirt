@@ -577,11 +577,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST("iothreads-ids-partial");
     DO_TEST_NOCAPS("cputune-iothreads");
     DO_TEST_CAPS_LATEST("iothreads-disk");
-    DO_TEST_NOCAPS("iothreads-disk-virtio-ccw");
-    DO_TEST("iothreads-virtio-scsi-pci",
-            QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("iothreads-virtio-scsi-ccw",
-            QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_CAPS_ARCH_LATEST("iothreads-disk-virtio-ccw", "s390x");
+    DO_TEST_CAPS_LATEST("iothreads-virtio-scsi-pci");
+    DO_TEST_CAPS_ARCH_LATEST("iothreads-virtio-scsi-ccw", "s390x");
     DO_TEST_NOCAPS("lease");
     DO_TEST_NOCAPS("event_idx");
     DO_TEST_NOCAPS("vhost_queues");
