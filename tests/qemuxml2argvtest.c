@@ -1878,7 +1878,6 @@ mymain(void)
     DO_TEST("iothreads-ids", QEMU_CAPS_OBJECT_IOTHREAD);
     DO_TEST("iothreads-ids-partial", QEMU_CAPS_OBJECT_IOTHREAD);
     DO_TEST_CAPS_LATEST("iothreads-ids-pool-sizes");
-    DO_TEST_FAILURE_NOCAPS("iothreads-nocap");
     DO_TEST("iothreads-disk", QEMU_CAPS_OBJECT_IOTHREAD);
     DO_TEST_CAPS_ARCH_VER("iothreads-disk-virtio-ccw", "s390x", "4.2.0");
     DO_TEST_CAPS_VER("iothreads-virtio-scsi-pci", "5.2.0");
