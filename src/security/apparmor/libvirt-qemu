@@ -91,7 +91,7 @@
   /usr/share/proll/** r,
   /usr/share/qemu-efi/** r,
   /usr/share/qemu-kvm/** r,
-  /usr/share/qemu/** r,
+  /usr/share/qemu/** rk,
   /usr/share/seabios/** r,
   /usr/share/sgabios/** r,
   /usr/share/slof/** r,
