@@ -562,8 +562,6 @@ mymain(void)
     DO_TEST_NOCAPS("blkiotune-device");
     DO_TEST_CAPS_LATEST("cputune");
     DO_TEST_CAPS_LATEST("cputune-zero-shares");
-    DO_TEST_NOCAPS("cputune-iothreadsched");
-    DO_TEST_NOCAPS("cputune-iothreadsched-zeropriority");
     DO_TEST_CAPS_LATEST("cputune-numatune");
     DO_TEST_CAPS_LATEST("vcpu-placement-static");
     DO_TEST_CAPS_LATEST("cputune-cpuset-big-id");
@@ -573,7 +571,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("iothreads-ids");
     DO_TEST_CAPS_LATEST("iothreads-ids-pool-sizes");
     DO_TEST_CAPS_LATEST("iothreads-ids-partial");
-    DO_TEST_NOCAPS("cputune-iothreads");
     DO_TEST_CAPS_LATEST("iothreads-disk");
     DO_TEST_CAPS_ARCH_LATEST("iothreads-disk-virtio-ccw", "s390x");
     DO_TEST_CAPS_LATEST("iothreads-virtio-scsi-pci");
