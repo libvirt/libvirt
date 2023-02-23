@@ -1953,8 +1953,8 @@ mymain(void)
     DO_TEST_NOCAPS("blkiotune-device");
     DO_TEST_CAPS_LATEST("cputune");
     DO_TEST_CAPS_LATEST("cputune-zero-shares");
-    DO_TEST_PARSE_ERROR_NOCAPS("cputune-iothreadsched-toomuch");
-    DO_TEST_PARSE_ERROR_NOCAPS("cputune-vcpusched-overlap");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("cputune-iothreadsched-toomuch");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("cputune-vcpusched-overlap");
     DO_TEST_CAPS_LATEST("cputune-numatune");
     DO_TEST_CAPS_LATEST("vcpu-placement-static");
     DO_TEST_CAPS_LATEST("cputune-cpuset-big-id");
