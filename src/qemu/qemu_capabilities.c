@@ -308,7 +308,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "usb-audio", /* QEMU_CAPS_OBJECT_USB_AUDIO */
               "rtc-reset-reinjection", /* QEMU_CAPS_RTC_RESET_REINJECTION */
               "splash-timeout", /* X_QEMU_CAPS_SPLASH_TIMEOUT */
-              "iothread", /* QEMU_CAPS_OBJECT_IOTHREAD */
+              "iothread", /* X_QEMU_CAPS_OBJECT_IOTHREAD */
 
               /* 175 */
               "migrate-rdma", /* QEMU_CAPS_MIGRATE_RDMA */
@@ -1287,7 +1287,6 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "pvpanic", QEMU_CAPS_DEVICE_PANIC },
     { "usb-kbd", QEMU_CAPS_DEVICE_USB_KBD },
     { "usb-audio", QEMU_CAPS_OBJECT_USB_AUDIO },
-    { "iothread", QEMU_CAPS_OBJECT_IOTHREAD},
     { "ivshmem", QEMU_CAPS_DEVICE_IVSHMEM },
     { "pc-dimm", QEMU_CAPS_DEVICE_PC_DIMM },
     { "pci-serial", QEMU_CAPS_DEVICE_PCI_SERIAL },

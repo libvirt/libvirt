@@ -286,7 +286,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_OBJECT_USB_AUDIO, /* usb-audio device support */
     QEMU_CAPS_RTC_RESET_REINJECTION, /* rtc-reset-reinjection monitor command */
     X_QEMU_CAPS_SPLASH_TIMEOUT, /* -boot splash-time */
-    QEMU_CAPS_OBJECT_IOTHREAD, /* -object iothread */
+    X_QEMU_CAPS_OBJECT_IOTHREAD, /* -object iothread */
 
     /* 175 */
     QEMU_CAPS_MIGRATE_RDMA, /* have rdma migration */

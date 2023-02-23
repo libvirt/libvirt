@@ -58,7 +58,6 @@
   <flag name='usb-kbd'/>
   <flag name='usb-audio'/>
   <flag name='rtc-reset-reinjection'/>
-  <flag name='iothread'/>
   <flag name='migrate-rdma'/>
   <flag name='VGA.vgamem_mb'/>
   <flag name='vmware-svga.vgamem_mb'/>

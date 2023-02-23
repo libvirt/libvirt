@@ -22,7 +22,6 @@
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
   <flag name='enable-fips'/>
-  <flag name='iothread'/>
   <flag name='migrate-rdma'/>
   <flag name='aes-key-wrap'/>
   <flag name='dea-key-wrap'/>
