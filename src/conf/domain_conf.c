@@ -7754,13 +7754,8 @@ virDomainDiskDefGeometryParse(virDomainDiskDef *def,
 
 static int
 virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
-                               xmlNodePtr cur,
-                               xmlXPathContextPtr ctxt)
+                               xmlNodePtr cur)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt)
-
-    ctxt->node = cur;
-
     def->driverName = virXMLPropString(cur, "name");
 
     if (virXMLPropEnum(cur, "cache", virDomainDiskCacheTypeFromString,
@@ -8048,7 +8043,7 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
         if (virDomainVirtioOptionsParseXML(driverNode, &def->virtio) < 0)
             return NULL;
 
-        if (virDomainDiskDefDriverParseXML(def, driverNode, ctxt) < 0)
+        if (virDomainDiskDefDriverParseXML(def, driverNode) < 0)
             return NULL;
 
         if (virDomainDiskDefDriverSourceParseXML(def->src, driverNode, ctxt) < 0)
