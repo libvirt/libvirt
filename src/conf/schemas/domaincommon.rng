@@ -885,6 +885,25 @@
                   <ref name="unsignedInt"/>
                 </attribute>
               </optional>
+              <optional>
+                <element name="poll">
+                  <optional>
+                    <attribute name="max">
+                      <ref name="unsignedInt"/>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <attribute name="grow">
+                      <ref name="unsignedInt"/>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <attribute name="shrink">
+                      <ref name="unsignedInt"/>
+                    </attribute>
+                  </optional>
+                </element>
+              </optional>
             </element>
           </zeroOrMore>
         </element>

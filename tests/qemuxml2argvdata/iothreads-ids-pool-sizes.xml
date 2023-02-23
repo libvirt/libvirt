@@ -7,9 +7,15 @@
   <iothreads>5</iothreads>
   <iothreadids>
     <iothread id='2' thread_pool_min='0' thread_pool_max='60'/>
-    <iothread id='4' thread_pool_min='1' thread_pool_max='1'/>
-    <iothread id='1'/>
-    <iothread id='3'/>
+    <iothread id='4' thread_pool_min='1' thread_pool_max='1'>
+      <poll max='123'/>
+    </iothread>
+    <iothread id='1'>
+      <poll grow='456' shrink='789'/>
+    </iothread>
+    <iothread id='3'>
+      <poll max='123000' grow='456' shrink='789'/>
+    </iothread>
     <iothread id='5'/>
   </iothreadids>
   <defaultiothread thread_pool_min='8' thread_pool_max='16'/>

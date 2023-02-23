@@ -740,7 +740,9 @@ host/guest with many LUNs. :since:`Since 1.2.8 (QEMU only)`
        <iothread id="2"/>
        <iothread id="4"/>
        <iothread id="6"/>
-       <iothread id="8" thread_pool_min="2" thread_pool_max="32"/>
+       <iothread id="8" thread_pool_min="2" thread_pool_max="32">
+         <poll max='123' grow='456' shrink='789'/>
+       </iothread>
      </iothreadids>
      <defaultiothread thread_pool_min="8" thread_pool_max="16"/>
      ...
@@ -766,6 +768,13 @@ host/guest with many LUNs. :since:`Since 1.2.8 (QEMU only)`
    ``thread_pool_max`` which allow setting lower and upper boundary for number
    of worker threads for given IOThread. While the former can be value of zero,
    the latter can't. :since:`Since 8.5.0`
+   :since:`Since 9.4.0` an optional sub-element ``poll`` with can be used to
+   override the hypervisor-default interval of polling for the iothread before
+   it switches back to events. The optional attribute ``max`` sets the maximum
+   time polling should be used in nanoseconds. Setting ``max`` to ``0`` disables
+   polling. Attributes ``grow`` and ``shrink`` override (or disable when set to
+   ``0`` the default steps for increasing/decreasing the polling interval if
+   the set interval is deemed insufficient or extensive.
 ``defaultiothread``
    This element represents the default event loop within hypervisor, where I/O
    requests from devices not assigned to a specific IOThread are processed.

@@ -15721,6 +15721,7 @@ static virDomainIOThreadIDDef *
 virDomainIOThreadIDDefParseXML(xmlNodePtr node)
 {
     g_autoptr(virDomainIOThreadIDDef) iothrid = virDomainIOThreadIDDefNew();
+    xmlNodePtr pollNode;
 
     if (virXMLPropUInt(node, "id", 10,
                        VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
@@ -15736,6 +15737,28 @@ virDomainIOThreadIDDefParseXML(xmlNodePtr node)
                       VIR_XML_PROP_NONNEGATIVE,
                       &iothrid->thread_pool_max, -1) < 0)
         return NULL;
+
+    if ((pollNode = virXMLNodeGetSubelement(node, "poll"))) {
+        int rc;
+
+        if ((rc = virXMLPropULongLong(pollNode, "max", 10, VIR_XML_PROP_NONE,
+                                      &iothrid->poll_max_ns)) < 0)
+            return NULL;
+
+        iothrid->set_poll_max_ns = rc == 1;
+
+        if ((rc = virXMLPropULongLong(pollNode, "grow", 10, VIR_XML_PROP_NONE,
+                                      &iothrid->poll_grow)) < 0)
+            return NULL;
+
+        iothrid->set_poll_grow = rc == 1;
+
+        if ((rc = virXMLPropULongLong(pollNode, "shrink", 10, VIR_XML_PROP_NONE,
+                                      &iothrid->poll_shrink)) < 0)
+            return NULL;
+
+        iothrid->set_poll_shrink = rc == 1;
+    }
 
     return g_steal_pointer(&iothrid);
 }
@@ -26630,6 +26653,9 @@ virDomainDefIothreadShouldFormat(const virDomainDef *def)
 
     for (i = 0; i < def->niothreadids; i++) {
         if (!def->iothreadids[i]->autofill ||
+            def->iothreadids[i]->set_poll_max_ns ||
+            def->iothreadids[i]->set_poll_grow ||
+            def->iothreadids[i]->set_poll_shrink ||
             def->iothreadids[i]->thread_pool_min >= 0 ||
             def->iothreadids[i]->thread_pool_max >= 0)
             return true;
@@ -26678,6 +26704,8 @@ virDomainDefIOThreadsFormat(virBuffer *buf,
         for (i = 0; i < def->niothreadids; i++) {
             virDomainIOThreadIDDef *iothread = def->iothreadids[i];
             g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+            g_auto(virBuffer) iothreadChildBuf = VIR_BUFFER_INIT_CHILD(&childrenBuf);
+            g_auto(virBuffer) pollAttrBuf = VIR_BUFFER_INITIALIZER;
 
             virBufferAsprintf(&attrBuf, " id='%u'",
                               iothread->iothread_id);
@@ -26692,7 +26720,18 @@ virDomainDefIOThreadsFormat(virBuffer *buf,
                                   iothread->thread_pool_max);
             }
 
-            virXMLFormatElement(&childrenBuf, "iothread", &attrBuf, NULL);
+            if (iothread->set_poll_max_ns)
+                virBufferAsprintf(&pollAttrBuf, " max='%llu'", iothread->poll_max_ns);
+
+            if (iothread->set_poll_grow)
+                virBufferAsprintf(&pollAttrBuf, " grow='%llu'", iothread->poll_grow);
+
+            if (iothread->set_poll_shrink)
+                virBufferAsprintf(&pollAttrBuf, " shrink='%llu'", iothread->poll_shrink);
+
+            virXMLFormatElement(&iothreadChildBuf, "poll", &pollAttrBuf, NULL);
+
+            virXMLFormatElement(&childrenBuf, "iothread", &attrBuf, &iothreadChildBuf);
         }
 
         virXMLFormatElement(buf, "iothreadids", NULL, &childrenBuf);

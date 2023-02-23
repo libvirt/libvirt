@@ -2715,6 +2715,13 @@ struct _virDomainIOThreadIDDef {
 
     virDomainThreadSchedParam sched;
 
+    unsigned long long poll_max_ns;
+    bool set_poll_max_ns;
+    unsigned long long poll_grow;
+    bool set_poll_grow;
+    unsigned long long poll_shrink;
+    bool set_poll_shrink;
+
     int thread_pool_min;
     int thread_pool_max;
 };
