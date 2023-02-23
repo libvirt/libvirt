@@ -5055,12 +5055,6 @@ qemuDomainHotplugModIOThread(virDomainObj *vm,
     qemuDomainObjPrivate *priv = vm->privateData;
     int rc;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_IOTHREAD_POLLING)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("IOThreads polling is not supported for this QEMU"));
-        return -1;
-    }
-
     qemuDomainObjEnterMonitor(vm);
 
     rc = qemuMonitorSetIOThread(priv->mon, &iothread);
