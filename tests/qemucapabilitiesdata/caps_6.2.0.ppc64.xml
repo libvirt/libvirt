@@ -87,7 +87,6 @@
   <flag name='vfio-pci.display'/>
   <flag name='memory-backend-memfd'/>
   <flag name='memory-backend-memfd.hugetlb'/>
-  <flag name='iothread.poll-max-ns'/>
   <flag name='machine.pseries.cap-nested-hv'/>
   <flag name='nvdimm.unarmed'/>
   <flag name='virtio-pci-non-transitional'/>

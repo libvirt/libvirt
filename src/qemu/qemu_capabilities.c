@@ -511,7 +511,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "zpci", /* QEMU_CAPS_DEVICE_ZPCI */
               "memory-backend-memfd", /* QEMU_CAPS_OBJECT_MEMORY_MEMFD */
               "memory-backend-memfd.hugetlb", /* QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB */
-              "iothread.poll-max-ns", /* QEMU_CAPS_IOTHREAD_POLLING */
+              "iothread.poll-max-ns", /* X_QEMU_CAPS_IOTHREAD_POLLING */
 
               /* 320 */
               "machine.pseries.cap-nested-hv", /* QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV */
@@ -1569,7 +1569,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "query-display-options/ret-type/+egl-headless/rendernode", QEMU_CAPS_EGL_HEADLESS_RENDERNODE },
     { "query-display-options/ret-type/+sdl", QEMU_CAPS_SDL },
     { "query-display-options/ret-type/+egl-headless", QEMU_CAPS_EGL_HEADLESS },
-    { "query-iothreads/ret-type/poll-max-ns", QEMU_CAPS_IOTHREAD_POLLING },
     { "query-hotpluggable-cpus/ret-type/props/die-id", QEMU_CAPS_SMP_DIES },
     { "query-named-block-nodes/arg-type/flat", QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT },
     { "screendump/arg-type/device", QEMU_CAPS_SCREENDUMP_DEVICE },

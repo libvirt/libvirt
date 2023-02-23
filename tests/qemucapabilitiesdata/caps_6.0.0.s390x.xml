@@ -54,7 +54,6 @@
   <flag name='zpci'/>
   <flag name='memory-backend-memfd'/>
   <flag name='memory-backend-memfd.hugetlb'/>
-  <flag name='iothread.poll-max-ns'/>
   <flag name='egl-headless.rendernode'/>
   <flag name='virtio-pci-non-transitional'/>
   <flag name='nbd-bitmap'/>
