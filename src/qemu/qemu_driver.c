@@ -5067,23 +5067,30 @@ qemuDomainHotplugModIOThread(virDomainObj *vm,
 }
 
 
-static int
+static void
 qemuDomainHotplugModIOThreadIDDef(virDomainIOThreadIDDef *def,
                                   qemuMonitorIOThreadInfo mondef)
 {
-    /* These have no representation in domain XML */
-    if (mondef.set_poll_grow ||
-        mondef.set_poll_max_ns ||
-        mondef.set_poll_shrink)
-        return -1;
+    if (mondef.set_poll_max_ns) {
+        def->poll_max_ns = mondef.poll_max_ns;
+        def->set_poll_max_ns = true;
+    }
+
+    if (mondef.set_poll_grow) {
+        def->poll_grow = mondef.poll_grow;
+        def->set_poll_grow = true;
+    }
+
+    if (mondef.set_poll_shrink) {
+        def->poll_shrink = mondef.poll_shrink;
+        def->set_poll_shrink = true;
+    }
 
     if (mondef.set_thread_pool_min)
         def->thread_pool_min = mondef.thread_pool_min;
 
     if (mondef.set_thread_pool_max)
         def->thread_pool_max = mondef.thread_pool_max;
-
-    return 0;
 }
 
 
@@ -5380,12 +5387,7 @@ qemuDomainChgIOThread(virQEMUDriver *driver,
             if (qemuDomainIOThreadValidate(iothreaddef, iothread, false) < 0)
                 goto endjob;
 
-            if (qemuDomainHotplugModIOThreadIDDef(iothreaddef, iothread) < 0) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                               _("configuring persistent polling values is not supported"));
-                goto endjob;
-            }
-
+            qemuDomainHotplugModIOThreadIDDef(iothreaddef, iothread);
             break;
         }
     }

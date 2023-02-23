@@ -18,9 +18,9 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -overcommit mem-lock=off \
 -smp 6,sockets=6,cores=1,threads=1 \
 -object '{"qom-type":"iothread","id":"iothread2","thread-pool-min":0,"thread-pool-max":60}' \
--object '{"qom-type":"iothread","id":"iothread4","thread-pool-min":1,"thread-pool-max":1}' \
--object '{"qom-type":"iothread","id":"iothread1"}' \
--object '{"qom-type":"iothread","id":"iothread3"}' \
+-object '{"qom-type":"iothread","id":"iothread4","thread-pool-min":1,"thread-pool-max":1,"poll-max-ns":123}' \
+-object '{"qom-type":"iothread","id":"iothread1","poll-grow":456,"poll-shrink":789}' \
+-object '{"qom-type":"iothread","id":"iothread3","poll-max-ns":123000,"poll-grow":456,"poll-shrink":789}' \
 -object '{"qom-type":"iothread","id":"iothread5"}' \
 -object '{"qom-type":"main-loop","id":"main-loop","thread-pool-min":8,"thread-pool-max":16}' \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \

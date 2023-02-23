@@ -7305,6 +7305,24 @@ qemuBuildIOThreadCommandLine(virCommand *cmd,
                                          NULL) < 0)
             return -1;
 
+        if (iothread->set_poll_max_ns &&
+            virJSONValueObjectAdd(&props,
+                                  "U:poll-max-ns", iothread->poll_max_ns,
+                                  NULL) < 0)
+            return -1;
+
+        if (iothread->set_poll_grow &&
+            virJSONValueObjectAdd(&props,
+                                  "U:poll-grow", iothread->poll_grow,
+                                  NULL) < 0)
+            return -1;
+
+        if (iothread->set_poll_shrink &&
+            virJSONValueObjectAdd(&props,
+                                  "U:poll-shrink", iothread->poll_shrink,
+                                  NULL) < 0)
+            return -1;
+
         if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
             return -1;
     }
