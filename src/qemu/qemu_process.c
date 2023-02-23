@@ -2350,11 +2350,6 @@ qemuProcessDetectIOThreadPIDs(virDomainObj *vm,
     int ret = -1;
     size_t i;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
-        ret = 0;
-        goto cleanup;
-    }
-
     /* Get the list of IOThreads from qemu */
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         goto cleanup;
@@ -5365,21 +5360,6 @@ qemuProcessStartValidateGraphics(virDomainObj *vm)
 
 
 static int
-qemuProcessStartValidateIOThreads(virDomainObj *vm,
-                                  virQEMUCaps *qemuCaps)
-{
-    if (vm->def->niothreadids > 0 &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("IOThreads not supported for this QEMU"));
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
 qemuProcessStartValidateShmem(virDomainObj *vm)
 {
     size_t i;
@@ -5551,9 +5531,6 @@ qemuProcessStartValidate(virQEMUDriver *driver,
         return -1;
 
     if (qemuProcessStartValidateGraphics(vm) < 0)
-        return -1;
-
-    if (qemuProcessStartValidateIOThreads(vm, qemuCaps) < 0)
         return -1;
 
     if (qemuProcessStartValidateShmem(vm) < 0)

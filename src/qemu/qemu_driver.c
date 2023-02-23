@@ -4728,7 +4728,6 @@ static int
 qemuDomainGetIOThreadsLive(virDomainObj *vm,
                            virDomainIOThreadInfoPtr **info)
 {
-    qemuDomainObjPrivate *priv;
     qemuMonitorIOThreadInfo **iothreads = NULL;
     virDomainIOThreadInfoPtr *info_ret = NULL;
     int niothreads = 0;
@@ -4741,13 +4740,6 @@ qemuDomainGetIOThreadsLive(virDomainObj *vm,
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot list IOThreads for an inactive domain"));
-        goto endjob;
-    }
-
-    priv = vm->privateData;
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("IOThreads not supported with this binary"));
         goto endjob;
     }
 
@@ -5428,12 +5420,6 @@ qemuDomainChgIOThread(virQEMUDriver *driver,
     }
 
     if (def) {
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("IOThreads not supported with this binary"));
-            goto endjob;
-        }
-
         switch (action) {
         case VIR_DOMAIN_IOTHREAD_ACTION_ADD:
             if (virDomainDriverAddIOThreadCheck(def, iothread.iothread_id) < 0)
@@ -18393,11 +18379,6 @@ struct qemuDomainGetStatsWorker {
 };
 
 
-static virQEMUCapsFlags queryIOThreadRequired[] = {
-    QEMU_CAPS_OBJECT_IOTHREAD,
-    QEMU_CAPS_LAST
-};
-
 static virQEMUCapsFlags queryDirtyRateRequired[] = {
     QEMU_CAPS_QUERY_DIRTY_RATE,
     QEMU_CAPS_LAST
@@ -18416,7 +18397,7 @@ static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
     { qemuDomainGetStatsInterface, VIR_DOMAIN_STATS_INTERFACE, false, NULL },
     { qemuDomainGetStatsBlock, VIR_DOMAIN_STATS_BLOCK, true, NULL },
     { qemuDomainGetStatsPerf, VIR_DOMAIN_STATS_PERF, false, NULL },
-    { qemuDomainGetStatsIOThread, VIR_DOMAIN_STATS_IOTHREAD, true, queryIOThreadRequired },
+    { qemuDomainGetStatsIOThread, VIR_DOMAIN_STATS_IOTHREAD, true, NULL },
     { qemuDomainGetStatsMemory, VIR_DOMAIN_STATS_MEMORY, false, NULL },
     { qemuDomainGetStatsDirtyRate, VIR_DOMAIN_STATS_DIRTYRATE, true, queryDirtyRateRequired },
     { qemuDomainGetStatsVm, VIR_DOMAIN_STATS_VM, true, queryVmRequired },
