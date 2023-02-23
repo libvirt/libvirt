@@ -3338,7 +3338,28 @@ paravirtualized driver is specified via the ``disk`` element.
       assigned to the same IOThread and are numbered from 1 to the domain
       iothreads value. Available for a disk device ``target`` configured to use
       "virtio" ``bus`` and "pci" or "ccw" ``address`` types. :since:`Since 1.2.8
-      (QEMU 2.1)`
+      (QEMU 2.1)` *Note:* ``iothread`` is mutually exclusive with ``iothreads``.
+   -  The optional ``iothreads`` sub-element allows specifying multiple IOThreads
+      via the ``iothread`` sub-element with attribute ``id``  the disk will use
+      for I/O operations. Optionally the ``iothread`` element can have multiple
+      ``queue`` subelements specifying that given iothread should be used to
+      handle given queues. :since:`Since 10.0.0 (QEMU 9.0, virtio disks only)`.
+      Example::
+
+        <driver name='qemu' queues='2'>
+          <iothreads>
+            <iothread id='1'>
+              <queue id='1'/>
+            </iothread>
+            <iothread id='2'>
+              <queue id='1'/>
+            </iothread>
+            <iothread id='3'>
+              <queue id='2'/>
+            </iothread>
+          </iothreads>
+        </driver>
+
    -  The optional ``queues`` attribute specifies the number of virt queues for
       virtio-blk ( :since:`Since 3.9.0` ) or vhost-user-blk
       ( :since `Since 7.1.0` )

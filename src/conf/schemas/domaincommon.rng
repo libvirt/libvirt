@@ -2536,9 +2536,26 @@
       </optional>
     </element>
   </define>
-  <!--
-      Disk may use a special driver for access.
-    -->
+
+  <define name="diskDriverIothreads">
+    <element name="iothreads">
+      <oneOrMore>
+        <element name="iothread">
+          <attribute name="id">
+            <ref name="unsignedInt"/>
+          </attribute>
+          <zeroOrMore>
+            <element name="queue">
+              <attribute name="id">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </element>
+          </zeroOrMore>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
   <define name="diskDriver">
     <element name="driver">
       <optional>
@@ -2590,17 +2607,23 @@
         </attribute>
       </optional>
       <ref name="virtioOptions"/>
-      <optional>
-        <element name="metadata_cache">
-          <optional>
-            <element name="max_size">
-              <ref name="scaledInteger"/>
-            </element>
-          </optional>
-        </element>
-      </optional>
+      <interleave>
+        <optional>
+          <element name="metadata_cache">
+            <optional>
+              <element name="max_size">
+                <ref name="scaledInteger"/>
+              </element>
+            </optional>
+          </element>
+        </optional>
+        <optional>
+          <ref name="diskDriverIothreads"/>
+        </optional>
+      </interleave>
     </element>
   </define>
+
   <define name="driverFormat">
     <optional>
       <attribute name="name">

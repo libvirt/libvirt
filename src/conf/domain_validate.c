@@ -934,6 +934,14 @@ virDomainDiskDefValidate(const virDomainDef *def,
         }
     }
 
+    /* configuring both <driver iothread='n'> and it's <iothreads> sub-element
+     * isn't supported */
+    if (disk->iothread && disk->iothreads) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("disk driver 'iothread' attribute can't be used together with 'iothreads' subelement"));
+        return -1;
+    }
+
     return 0;
 }
 
