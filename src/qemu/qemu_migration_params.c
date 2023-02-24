@@ -71,6 +71,8 @@ struct _qemuMigrationParams {
 typedef enum {
     QEMU_MIGRATION_COMPRESS_XBZRLE = 0,
     QEMU_MIGRATION_COMPRESS_MT,
+    QEMU_MIGRATION_COMPRESS_ZLIB,
+    QEMU_MIGRATION_COMPRESS_ZSTD,
 
     QEMU_MIGRATION_COMPRESS_LAST
 } qemuMigrationCompressMethod;
@@ -79,6 +81,8 @@ VIR_ENUM_IMPL(qemuMigrationCompressMethod,
               QEMU_MIGRATION_COMPRESS_LAST,
               "xbzrle",
               "mt",
+              "zlib",
+              "zstd",
 );
 
 VIR_ENUM_IMPL(qemuMigrationCapability,
@@ -114,6 +118,9 @@ VIR_ENUM_IMPL(qemuMigrationParam,
               "xbzrle-cache-size",
               "max-postcopy-bandwidth",
               "multifd-channels",
+              "multifd-compression",
+              "multifd-zlib-level",
+              "multifd-zstd-level",
 );
 
 typedef struct _qemuMigrationParamsAlwaysOnItem qemuMigrationParamsAlwaysOnItem;
@@ -225,6 +232,14 @@ static const qemuMigrationParamsTPMapItem qemuMigrationParamsTPMap[] = {
      .param = QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS,
      .party = QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
 
+    {.typedParam = VIR_MIGRATE_PARAM_COMPRESSION_ZLIB_LEVEL,
+     .param = QEMU_MIGRATION_PARAM_MULTIFD_ZLIB_LEVEL,
+     .party = QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
+
+    {.typedParam = VIR_MIGRATE_PARAM_COMPRESSION_ZSTD_LEVEL,
+     .param = QEMU_MIGRATION_PARAM_MULTIFD_ZSTD_LEVEL,
+     .party = QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
+
     {.typedParam = VIR_MIGRATE_PARAM_TLS_DESTINATION,
      .param = QEMU_MIGRATION_PARAM_TLS_HOSTNAME,
      .party = QEMU_MIGRATION_SOURCE},
@@ -269,6 +284,15 @@ static const qemuMigrationParamInfoItem qemuMigrationParamInfo[] = {
         .applyOnPostcopyResume = true,
     },
     [QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_INT,
+    },
+    [QEMU_MIGRATION_PARAM_MULTIFD_COMPRESSION] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_STRING,
+    },
+    [QEMU_MIGRATION_PARAM_MULTIFD_ZLIB_LEVEL] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_INT,
+    },
+    [QEMU_MIGRATION_PARAM_MULTIFD_ZSTD_LEVEL] = {
         .type = QEMU_MIGRATION_PARAM_TYPE_INT,
     },
 };
@@ -514,7 +538,6 @@ qemuMigrationParamsSetCompression(virTypedParameterPtr params,
 {
     size_t i;
     int method;
-    qemuMigrationCapability cap;
 
     for (i = 0; i < nparams; i++) {
         if (STRNEQ(params[i].field, VIR_MIGRATE_PARAM_COMPRESSION))
@@ -535,22 +558,51 @@ qemuMigrationParamsSetCompression(virTypedParameterPtr params,
             return -1;
         }
 
+        if ((method == QEMU_MIGRATION_COMPRESS_MT ||
+             method == QEMU_MIGRATION_COMPRESS_XBZRLE) &&
+            flags & VIR_MIGRATE_PARALLEL) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Compression method '%1$s' isn't supported with parallel migration"),
+                           params[i].value.s);
+            return -1;
+        }
+
+        if ((method == QEMU_MIGRATION_COMPRESS_ZLIB ||
+             method == QEMU_MIGRATION_COMPRESS_ZSTD) &&
+            !(flags & VIR_MIGRATE_PARALLEL)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Compression method '%1$s' is only supported with parallel migration"),
+                           params[i].value.s);
+            return -1;
+        }
+
+        if (migParams->params[QEMU_MIGRATION_PARAM_MULTIFD_COMPRESSION].set) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("Only one compression method could be specified with parallel compression"));
+            return -1;
+        }
+
         migParams->compMethods |= 1ULL << method;
 
         switch ((qemuMigrationCompressMethod) method) {
         case QEMU_MIGRATION_COMPRESS_XBZRLE:
-            cap = QEMU_MIGRATION_CAP_XBZRLE;
+            ignore_value(virBitmapSetBit(migParams->caps, QEMU_MIGRATION_CAP_XBZRLE));
             break;
 
         case QEMU_MIGRATION_COMPRESS_MT:
-            cap = QEMU_MIGRATION_CAP_COMPRESS;
+            ignore_value(virBitmapSetBit(migParams->caps, QEMU_MIGRATION_CAP_COMPRESS));
+            break;
+
+        case QEMU_MIGRATION_COMPRESS_ZLIB:
+        case QEMU_MIGRATION_COMPRESS_ZSTD:
+            migParams->params[QEMU_MIGRATION_PARAM_MULTIFD_COMPRESSION].value.s = g_strdup(params[i].value.s);
+            migParams->params[QEMU_MIGRATION_PARAM_MULTIFD_COMPRESSION].set = true;
             break;
 
         case QEMU_MIGRATION_COMPRESS_LAST:
         default:
-            continue;
+            break;
         }
-        ignore_value(virBitmapSetBit(migParams->caps, cap));
     }
 
     if ((migParams->params[QEMU_MIGRATION_PARAM_COMPRESS_LEVEL].set ||
@@ -569,7 +621,27 @@ qemuMigrationParamsSetCompression(virTypedParameterPtr params,
         return -1;
     }
 
+    if (migParams->params[QEMU_MIGRATION_PARAM_MULTIFD_ZLIB_LEVEL].set &&
+        !(migParams->compMethods & (1ULL << QEMU_MIGRATION_COMPRESS_ZLIB))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Turn zlib compression on to tune it"));
+        return -1;
+    }
+
+    if (migParams->params[QEMU_MIGRATION_PARAM_MULTIFD_ZSTD_LEVEL].set &&
+        !(migParams->compMethods & (1ULL << QEMU_MIGRATION_COMPRESS_ZSTD))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Turn zstd compression on to tune it"));
+        return -1;
+    }
+
     if (!migParams->compMethods && (flags & VIR_MIGRATE_COMPRESSED)) {
+        if (flags & VIR_MIGRATE_PARALLEL) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("No compression algorithm selected for parallel migration"));
+            return -1;
+        }
+
         migParams->compMethods = 1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE;
         ignore_value(virBitmapSetBit(migParams->caps,
                                      QEMU_MIGRATION_CAP_XBZRLE));
