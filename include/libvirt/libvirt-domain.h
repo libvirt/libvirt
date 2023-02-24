@@ -1270,9 +1270,11 @@ typedef enum {
  * VIR_MIGRATE_PARAM_COMPRESSION:
  *
  * virDomainMigrate* params multiple field: name of the method used to
- * compress migration traffic. Supported compression methods: xbzrle, mt.
- * The parameter may be specified multiple times if more than one method
- * should be used.
+ * compress migration traffic. Supported compression methods: xbzrle, mt,
+ * zlib, zstd. The parameter may be specified multiple times if more than
+ * one method should be used. Not all combinations of compression methods
+ * and migration options may be allowed. Parallel migration of QEMU domains
+ * is only compatible with either zlib or zstd method.
  *
  * Since: 1.3.4
  */
@@ -1318,6 +1320,28 @@ typedef enum {
  * Since: 1.3.4
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE "compression.xbzrle.cache"
+
+/**
+ * VIR_MIGRATE_PARAM_COMPRESSION_ZLIB_LEVEL:
+ *
+ * virDomainMigrate* params field: the level of compression for zlib as
+ * VIR_TYPED_PARAM_INT. Accepted values are in range 0-9. 0 is no compression,
+ * 1 is maximum speed and 9 is maximum compression.
+ *
+ * Since: 9.1.0
+ */
+# define VIR_MIGRATE_PARAM_COMPRESSION_ZLIB_LEVEL      "compression.zlib.level"
+
+/**
+ * VIR_MIGRATE_PARAM_COMPRESSION_ZSTD_LEVEL:
+ *
+ * virDomainMigrate* params field: the level of compression for zstd as
+ * VIR_TYPED_PARAM_INT. Accepted values are in range 0-20. 0 is no compression,
+ * 1 is maximum speed and 20 is maximum compression.
+ *
+ * Since: 9.1.0
+ */
+# define VIR_MIGRATE_PARAM_COMPRESSION_ZSTD_LEVEL      "compression.zstd.level"
 
 /**
  * VIR_MIGRATE_PARAM_AUTO_CONVERGE_INITIAL:
