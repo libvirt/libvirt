@@ -3372,7 +3372,8 @@ migrate
       [--xml file] [--migrate-disks disk-list] [--disks-port port]
       [--compressed] [--comp-methods method-list]
       [--comp-mt-level] [--comp-mt-threads] [--comp-mt-dthreads]
-      [--comp-xbzrle-cache] [--auto-converge] [auto-converge-initial]
+      [--comp-xbzrle-cache] [--comp-zlib-level] [--comp-zstd-level]
+      [--auto-converge] [auto-converge-initial]
       [auto-converge-increment] [--persistent-xml file] [--tls]
       [--postcopy-bandwidth bandwidth]
       [--parallel [--parallel-connections connections]]
@@ -3479,14 +3480,25 @@ to post-copy upon timeout; migration has to be started with *--postcopy*
 option for this to work.
 
 *--compressed* activates compression, the compression method is chosen
-with *--comp-methods*. Supported methods are "mt" and "xbzrle" and
-can be used in any combination. When no methods are specified, a hypervisor
-default methods will be used. QEMU defaults to "xbzrle". Compression methods
-can be tuned further. *--comp-mt-level* sets compression level.
-Values are in range from 0 to 9, where 1 is maximum speed and 9 is maximum
-compression. *--comp-mt-threads* and *--comp-mt-dthreads* set the number
-of compress threads on source and the number of decompress threads on target
-respectively. *--comp-xbzrle-cache* sets size of page cache in bytes.
+with *--comp-methods*. Supported methods are "mt", "xbzrle", "zlib",
+and "zstd". The supported set of methods and their combinations depend
+on a hypervisor and migration options. QEMU only supports "zlib" and
+"zstd" methods when *--parallel* is used and they cannot be used at
+once. When no methods are specified, a hypervisor default methods will
+be used. QEMU defaults to "xbzrle" as long as *--parallel* is not used.
+For *--parallel* migrations QEMU does not provide any default compression
+method and thus it has to be specified explicitly using *--comp-method*.
+Compression methods can be tuned further. *--comp-mt-level* sets
+compression level for "mt" method. Values are in range from 0 to 9, where 1
+is maximum speed and 9 is maximum compression. *--comp-mt-threads* and
+*--comp-mt-dthreads* set the number of compress threads on source and the
+number of decompress threads on target respectively. *--comp-xbzrle-cache*
+sets size of page cache in bytes. *--comp-zlib-level* sets the compression
+level when using "zlib" method. Values are in range from 0 to 9 and defaults
+to 1, where 0 is no compression, 1 is maximum speed and 9 is maximum
+compression. *--comp-zstd-level* sets the compression level when using "zstd"
+method. Values are in range from 0 to 20 and defaults to 1, where 0 is no
+compression, 1 is maximum speed and 20 is maximum compression.
 
 Providing *--tls* causes the migration to use the host configured TLS setup
 (see migrate_tls_x509_cert_dir in /etc/libvirt/qemu.conf) in order to perform

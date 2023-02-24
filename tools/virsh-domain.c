@@ -11076,6 +11076,14 @@ static const vshCmdOptDef opts_migrate[] = {
      .completer = virshCompleteEmpty,
      .help = N_("override the destination host name used for TLS verification")
     },
+    {.name = "comp-zlib-level",
+     .type = VSH_OT_INT,
+     .help = N_("compress level for zlib compression")
+    },
+    {.name = "comp-zstd-level",
+     .type = VSH_OT_INT,
+     .help = N_("compress level for zstd compression")
+    },
     {.name = NULL}
 };
 
@@ -11284,6 +11292,24 @@ doMigrate(void *opaque)
     } else if (rv > 0) {
         if (virTypedParamsAddInt(&params, &nparams, &maxparams,
                                  VIR_MIGRATE_PARAM_PARALLEL_CONNECTIONS,
+                                 intOpt) < 0)
+            goto save_error;
+    }
+
+    if ((rv = vshCommandOptInt(ctl, cmd, "comp-zlib-level", &intOpt)) < 0) {
+        goto out;
+    } else if (rv > 0) {
+        if (virTypedParamsAddInt(&params, &nparams, &maxparams,
+                                 VIR_MIGRATE_PARAM_COMPRESSION_ZLIB_LEVEL,
+                                 intOpt) < 0)
+            goto save_error;
+    }
+
+    if ((rv = vshCommandOptInt(ctl, cmd, "comp-zstd-level", &intOpt)) < 0) {
+        goto out;
+    } else if (rv > 0) {
+        if (virTypedParamsAddInt(&params, &nparams, &maxparams,
+                                 VIR_MIGRATE_PARAM_COMPRESSION_ZSTD_LEVEL,
                                  intOpt) < 0)
             goto save_error;
     }
