@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: libvirt 8.4.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-02-22 13:50+0000\n"
-"PO-Revision-Date: 2023-02-21 05:20+0000\n"
+"PO-Revision-Date: 2023-02-25 10:20+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ka/>\n"
@@ -558,7 +558,7 @@ msgstr ""
 
 #, c-format
 msgid "%s: '%s' does not exist"
-msgstr ""
+msgstr "%s: '%s' არ არსებობს"
 
 #, c-format
 msgid "%s: Address '%s' in route definition is not a network address"
@@ -2452,7 +2452,7 @@ msgstr "საქაღალდის ('%s') შექმნის შეცდ
 
 #, c-format
 msgid "Cannot create log directory '%s'"
-msgstr ""
+msgstr "ჟურნალის საქაღალდის (%s) შექმნის შეცდომა"
 
 msgid "Cannot create macvlan devices on this platform"
 msgstr ""
@@ -16747,7 +16747,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to parse %s %s"
-msgstr ""
+msgstr "%s-ის დამუშავების შეცდომა %s"
 
 #, c-format
 msgid "Unable to parse '%s' as an integer"
@@ -18581,7 +18581,7 @@ msgid "VCPU"
 msgstr "VCPU"
 
 msgid "VCPU:"
-msgstr ""
+msgstr "VCPU:"
 
 #, c-format
 msgid ""
@@ -21378,7 +21378,7 @@ msgid "cap for XEN_CREDIT"
 msgstr ""
 
 msgid "capabilities"
-msgstr ""
+msgstr "შესაძლებლობები"
 
 msgid "capability names, separated by comma"
 msgstr ""
@@ -24255,7 +24255,7 @@ msgstr ""
 
 #, c-format
 msgid "failed to connect to %s"
-msgstr ""
+msgstr "დაკავშირების შეცდომა: %s"
 
 msgid "failed to connect to agent socket"
 msgstr ""
@@ -34623,7 +34623,7 @@ msgstr ""
 
 #, c-format
 msgid "unable to parse %s"
-msgstr ""
+msgstr "დამუშავების შეცდომა: %s"
 
 #, c-format
 msgid "unable to parse FD: %s"
@@ -34678,7 +34678,7 @@ msgstr ""
 
 #, c-format
 msgid "unable to parse: %s"
-msgstr ""
+msgstr "დამუშავების შეცდომა: %s"
 
 msgid "unable to perform snapshot filtering"
 msgstr ""
@@ -35595,7 +35595,7 @@ msgstr ""
 
 #, c-format
 msgid "unknown parameter '%s'"
-msgstr ""
+msgstr "უცნობი პარამეტრი %s"
 
 #, c-format
 msgid "unknown parameter type: %d"
