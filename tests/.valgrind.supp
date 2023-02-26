@@ -1,163 +1,57 @@
 {
-   bashMemoryLeak1
+   glib-memory-leak1
    Memcheck:Leak
-   fun:malloc
-   fun:xmalloc
+   match-leak-kinds: possible
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:pthread_create@@GLIBC_2.34
+   fun:g_system_thread_new
    ...
-   fun:execute_command_internal
-   ...
-   obj:*/bin/bash
+   fun:g_task_get_type_once
+   fun:g_task_get_type
+   fun:_g_dbus_initialize.part.0
+   fun:g_dbus_error_new_for_dbus_error
+   fun:wrap_g_dbus_connection_call_sync
 }
 {
-   bashMemoryLeak2
+   glib-memory-leak2
    Memcheck:Leak
+   match-leak-kinds: possible
    fun:malloc
-   fun:xmalloc
+   fun:tsearch
+   fun:__add_to_environ
+   fun:setenv
+   fun:g_setenv
    ...
-   fun:yyparse
-   fun:parse_command
-   fun:read_command
-   ...
-   obj:*/bin/bash
-}
-{
-   bashMemoryLeak3
-   Memcheck:Leak
-   fun:malloc
-   fun:xmalloc
-   fun:array_create
-   fun:array_copy
-   fun:run_exit_trap
-   fun:exit_shell
-   ...
-   obj:*/bin/bash
-}
-{
-   bashMemoryLeak4
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:xmalloc
-   fun:set_default_locale
+   fun:virTestMain
    fun:main
-   ...
-   obj:*/bin/bash
 }
-#
-# Failure seen in /usr/lib64/ld-2.15.so
-#
 {
-    dlInitMemoryLeak1
-    Memcheck:Leak
-    fun:?alloc
-    ...
-    fun:call_init.part.0
-    fun:_dl_init
-    ...
-    obj:*/lib*/ld-2.*so*
+   commandtest
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:pthread_create@@GLIBC_2.34
+   fun:virThreadCreateFull
+   fun:virCommandRunAsync
+   fun:test21
+   fun:virTestRun
+   fun:mymain
+   fun:virTestMain
+   fun:main
 }
-#
-# Failure seen in
-#  p11_kit_registered_module_to_name: /usr/lib64/libp11-kit.so.0.0.0
-#  gnutls_pkcs11_init: /usr/lib64/libgnutls.so.26.22.4
-#
 {
-    gnutlsInitMemoryLeak
-    Memcheck:Leak
-    fun:malloc
-    fun:strdup
-    fun:p11_kit_registered_module_to_name
-    fun:gnutls_pkcs11_init
-    fun:gnutls_global_init
-    ...
-    obj:*/lib*/libc-2.*so*
-}
-#
-# Failure seen in eventtest, qemumonitorjsontest, qemuhotplugtest,
-#                 qemuagenttest
-#
-{
-    dlAllocateTlsMemoryLeak
-    Memcheck:Leak
-    fun:calloc
-    fun:_dl_allocate_tls
-    fun:pthread_create*
-    ...
-    fun:mymain
-    fun:virtTestMain
-    ...
-    obj:*/lib*/libc-2.*so*
-}
-#
-# commandtest validates the various threaded commands. The
-# virThreadCreate() routine allocates and passes args to the
-# new thread which now owns the 'args' and thus cannot be free'd
-#
-{
-    commandtestLeak1
-    Memcheck:Leak
-    fun:calloc
-    fun:virAlloc
-    fun:virThreadCreate
-    fun:mymain
-    fun:virtTestMain
-}
-#
-# The Error code requires static memory that is never free'd
-# for thread local storage to store error message/data
-#
-{
-    commandtestLeak2
-    Memcheck:Leak
-    fun:calloc
-    fun:virAlloc
-    ...
-    fun:vir*LastError*
-    fun:virEventRunDefaultImpl
-    fun:virCommandThreadWorker
-    fun:virThreadHelper
-    fun:start_thread
-    fun:clone
-}
-#
-# Some of the commandtests (test0, test1, test4, & test18) cause the
-# following traceback although it appears the memory is properly freed
-#
-{
-    commandtestLeak3
-    Memcheck:Leak
-    fun:calloc
-    fun:virAllocN
-    fun:virEventPollRunOnce
-    fun:virEventRunDefaultImpl
-    fun:virCommandThreadWorker
-    fun:virThreadHelper
-    fun:start_thread
-    fun:clone
-}
-#
-# seclabeltest relies on 'selabel_close' which is not in libvirt
-#
-{
-    seclabeltestcond1
-    Memcheck:Cond
-    obj:/usr/lib64/libselinux.so.1
-    fun:selabel_close
-    fun:virSecuritySELinuxSecurityDriverClose
-    fun:virSecurityManagerDispose
-    fun:virObjectUnref
-    fun:main
-}
-#
-# types registered with GLib are never freed
-#
-{
-    glibTypeRegisterLeak
-    Memcheck:Leak
-    match-leak-kinds: possible
-    ...
-    fun:g_realloc
-    obj:*/lib*/libgobject*
-    fun:g_type_register_static
-    ...
+   eventtest
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:pthread_create@@GLIBC_2.34
+   fun:mymain
+   fun:virTestMain
+   fun:main
 }
