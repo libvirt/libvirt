@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-02-22 13:50+0000\n"
-"PO-Revision-Date: 2023-01-15 04:20+0000\n"
+"PO-Revision-Date: 2023-02-27 14:20+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15\n"
+"X-Generator: Weblate 4.15.2\n"
 
 msgid ""
 "\n"
@@ -657,12 +657,12 @@ msgstr "와치독의 %s 모델은 s390과 s390x만 허용합니다"
 
 #, c-format
 msgid "%s model of watchdog is only part of q35 machine"
-msgstr ""
+msgstr "와치독 %s 모델은 q35 장비의 일부일 뿐입니다"
 
 #, c-format
 msgid ""
 "%s model of watchdog is part of the machine and cannot have any address set."
-msgstr ""
+msgstr "와치독의 %s 모델은 장비의 일부분이고 어떤 주소 구성도 갖지 않습니다."
 
 #, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
@@ -941,7 +941,7 @@ msgstr "%s: 브릿지 도우미와 통신하는데 실패함: %s"
 
 #, c-format
 msgid "%s: failed to generate UNIX socket path"
-msgstr ""
+msgstr "%s: 유닉스 소켓 경로 생성에 실패함"
 
 #, c-format
 msgid "%s: failed to read temporary file: %s"
@@ -1051,7 +1051,7 @@ msgstr "%s: 예상되지 않는 URI 전송 '%s'\n"
 
 #, c-format
 msgid "%s: unknown remote mode '%s'"
-msgstr ""
+msgstr "%s: 알지 못하는 원격 방식 '%s'"
 
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
@@ -1227,7 +1227,7 @@ msgstr ""
 "유형을 사용합니다"
 
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
-msgstr ""
+msgstr "'disk' 누락이거나 guest-get-fsinfo의 응답에서 배열이 아님"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %s"
@@ -2573,7 +2573,7 @@ msgstr "env 경로에서 prlctl 명령어를 찾을 수 없습니다"
 #, c-format
 msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"
-msgstr ""
+msgstr "파일의 UUID를 harddisk/dvd/floppy로 연결 하는데 가져 올 수 없습니다: %s"
 
 msgid "Can't initialize Parallels SDK"
 msgstr "Parallels SDK를 초기화 할 수 없습니다"
@@ -3905,7 +3905,7 @@ msgstr "시리얼 포트 %zu를 추가 할 수 없음"
 
 #, c-format
 msgid "Could not attach the file as harddisk/dvd/floppy: %s"
-msgstr ""
+msgstr "harddisk/dvd/floppy로 파일을 연결 할 수 없습니다: %s"
 
 msgid "Could not build CURL header list"
 msgstr "CURL 헤더 목록을 빌드할 수 없음"
@@ -4236,7 +4236,7 @@ msgid "Could not generate next class ID"
 msgstr "다음 클래스 ID를 생성할 수 없습니다"
 
 msgid "Could not generate veth name"
-msgstr "veth 이름을 생성할 수 없음"
+msgstr "veth 이름을 생성 할 수 없습니다"
 
 msgid "Could not get EPR address"
 msgstr "EPR 주소를 가져올 수 없습니다"
@@ -4245,7 +4245,7 @@ msgid "Could not get EPR items"
 msgstr "ERP 항목을 가져 올 수 없습니다"
 
 msgid "Could not get IMedium"
-msgstr ""
+msgstr "IMedium를 가져 올 수 없습니다"
 
 msgid "Could not get Msvm_DiskDrive default InstanceID"
 msgstr "Msvm_DiskDrive 기본 InstanceID를 가져올 수 없습니다"
@@ -4276,13 +4276,13 @@ msgid "Could not get current time"
 msgstr "현재 시간을 얻을 수 없음"
 
 msgid "Could not get device port"
-msgstr ""
+msgstr "장치 포트를 가져 올 수 없습니다"
 
 msgid "Could not get device slot"
-msgstr ""
+msgstr "장치 슬롯을 가져 올 수 없습니다"
 
 msgid "Could not get device type"
-msgstr ""
+msgstr "장치 유형을 가져 올 수 없습니다"
 
 #, c-format
 msgid "Could not get free memory for host %s"
@@ -4320,16 +4320,16 @@ msgid "Could not get iterator index for iterator ID %u"
 msgstr "반복자 ID %u를 위하여 반복자 색인을 가져 올 수 없습니다"
 
 msgid "Could not get list of Defined Domains"
-msgstr ""
+msgstr "정의된 도메인의 목록을 가져 올 수 없습니다"
 
 msgid "Could not get list of Domains"
-msgstr ""
+msgstr "도메인의 목록을 가져 올 수 없습니다"
 
 msgid "Could not get list of domains"
-msgstr ""
+msgstr "도메인의 목록을 가져 올 수 없습니다"
 
 msgid "Could not get list of machines"
-msgstr ""
+msgstr "장비의 목록을 가져 올 수 없습니다"
 
 #, c-format
 msgid ""
@@ -4338,7 +4338,7 @@ msgstr ""
 "호스트 %s에 대한 Msvm_ProcessorSettingData의 최대 정의를 알 수 없습니다"
 
 msgid "Could not get medium storage location"
-msgstr ""
+msgstr "중간 저장소 위치를 가져 올 수 없습니다"
 
 #, c-format
 msgid "Could not get members of bridge '%s'"
@@ -4352,17 +4352,17 @@ msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "nth (%u) 값 (변수 '%s')을 얻을 수 없습니다"
 
 msgid "Could not get number of Defined Domains"
-msgstr ""
+msgstr "정의된 도메인의 수를 가져 올 수 없습니다"
 
 msgid "Could not get number of Domains"
-msgstr ""
+msgstr "도메인의 수를 가져 올 수 없습니다"
 
 #, c-format
 msgid "Could not get parent of '%s'"
 msgstr "'%s'의 상위 항목을 가져올 수 없습니다"
 
 msgid "Could not get process ID of passt"
-msgstr ""
+msgstr "passt의 처리 ID를 가져 올 수 없습니다"
 
 msgid "Could not get process id of swtpm"
 msgstr "swtpm의 프로세스 ID를 가져올 수 없습니다"
@@ -4371,7 +4371,7 @@ msgid "Could not get process id of vhost-user-gpu"
 msgstr "vhost-user-gpu의 프로세스 ID를 가져올 수 없습니다"
 
 msgid "Could not get read only state"
-msgstr ""
+msgstr "읽기 전용 상태를 가져 올 수 없습니다"
 
 msgid "Could not get response"
 msgstr "응답을 받을 수 없음"
@@ -4400,10 +4400,10 @@ msgid "Could not get snapshot name"
 msgstr "스냅샷 이름을 얻을 수 없음"
 
 msgid "Could not get storage controller bus"
-msgstr ""
+msgstr "저장소 제어기 버스를 가져 올 수 없습니다"
 
 msgid "Could not get storage controller by name"
-msgstr ""
+msgstr "이름으로 저장소 제어기를 가져 올 수 없습니다"
 
 #, c-format
 msgid "Could not get syspath for parent of '%s'"
@@ -4833,7 +4833,7 @@ msgstr ""
 
 #, c-format
 msgid "Could not start 'passt': %s"
-msgstr ""
+msgstr "'passt'를 시작 할 수 없습니다: %s"
 
 #, c-format
 msgid "Could not start 'slirp'. exitstatus: %d"
@@ -4980,7 +4980,7 @@ msgid "Creation of %s volumes is not supported"
 msgstr "%s 볼륨 생성은 지원되지 않습니다"
 
 msgid "Crypto device is missing alias"
-msgstr ""
+msgstr "암호화 장치가 별칭이 누락되었습니다"
 
 msgid "Current memory size too large"
 msgstr "현재 메모리 크기가 너무 큽니다"
@@ -6421,7 +6421,7 @@ msgstr "신호 핸들 시계를 추가하지 못했습니다"
 
 #, c-format
 msgid "Failed to add storage controller (name: %s, busType: %d)"
-msgstr ""
+msgstr "저장소 제어기 추가에 실패함 (이름: %s, 버스유형: %d)"
 
 #, c-format
 msgid "Failed to allocate PCI device list: %s"
@@ -6528,7 +6528,7 @@ msgid "Failed to change size of volume '%s' to %s"
 msgstr "볼륨 '%s'의 크기를 %s로 변경하지 못했습니다"
 
 msgid "Failed to change storage controller model"
-msgstr ""
+msgstr "저장소 제어기 모델 변경에 실패함"
 
 #, c-format
 msgid "Failed to chdir into %s"
@@ -6758,7 +6758,7 @@ msgstr "상태 XML 속성을 생성하거나 수정하는데 실패함"
 
 #, c-format
 msgid "Failed to create passt state dir %s"
-msgstr ""
+msgstr "passt 상태 디렉토리 %s 생성에 실패함"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -7267,7 +7267,7 @@ msgid "Failed to get snapshot count"
 msgstr "스냅샷 카운트 가져오기 실패"
 
 msgid "Failed to get storage controller name"
-msgstr ""
+msgstr "저장소 제어기 이름을 가져오는데 실패함"
 
 msgid "Failed to get the number of active networks"
 msgstr "활성 네트워크 수를 가져오지 못했습니다"
@@ -7618,7 +7618,7 @@ msgstr "경로가 '%s'인 저장소 볼륨을 여는 데 실패했습니다"
 
 #, c-format
 msgid "Failed to open the following disk/dvd/floppy to the machine: %s"
-msgstr ""
+msgstr "장비에 다음과 같은 disk/dvd/floppy를 여는데 실패함: %s"
 
 #, c-format
 msgid "Failed to open tty %s"
@@ -7717,7 +7717,7 @@ msgstr "비율 '%s'을(를) 구문 분석하지 못했습니다"
 
 #, c-format
 msgid "Failed to parse rotated index from '%s'"
-msgstr ""
+msgstr "'%s'에서 회전된 색인을 구문 분석하는데 실패함"
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%s'"
@@ -8067,7 +8067,7 @@ msgid "Failed to save '%s' for '%s'"
 msgstr "'%s'에 대한 '%s'을(를) 저장하지 못했습니다"
 
 msgid "Failed to save VM settings"
-msgstr ""
+msgstr "VM 설정을 저장하는데 실패함"
 
 #, c-format
 msgid "Failed to save domain '%d' with libxenlight"
@@ -9588,7 +9588,7 @@ msgstr "<ip>에서 잘못된 주소 '%s'"
 
 #, c-format
 msgid "Invalid address '%s' in <portForward>"
-msgstr ""
+msgstr "<portForward>에서 잘못된 주소 '%s'"
 
 #, c-format
 msgid "Invalid address '%s' in network '%s'"
@@ -10111,7 +10111,7 @@ msgstr "잘못된 포트 범위 '%u-%u'."
 
 #, c-format
 msgid "Invalid portForward proto value %u"
-msgstr ""
+msgstr "잘못된 portForward proto 값 %u"
 
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
@@ -11606,7 +11606,7 @@ msgid "Multiple graphics devices are not supported"
 msgstr "다중 그래픽 장치는 지원되지 않음"
 
 msgid "Multiple iTCO watchdogs are not supported"
-msgstr ""
+msgstr "다중 iTCO 와치독은 지원되지 않습니다"
 
 msgid "Multiple interfaces attached to bridge"
 msgstr "브리지에 여러 인터페이스가 첨부되어 있습니다"
@@ -15366,7 +15366,7 @@ msgstr ""
 
 #, c-format
 msgid "Target domain watchdog device count %zu does not match source %zu"
-msgstr ""
+msgstr "대상 도메인 와치독 장치 카운트 %zu는 원천 %zu와 일치하지 않습니다"
 
 msgid "Target filesystem access mode does not match source"
 msgstr "대상 파일 시스템 액세스 모드가 소스와 일치하지 않음"
@@ -15645,12 +15645,14 @@ msgstr ""
 "습니다"
 
 msgid "The 'passt' backend can only be used with interface type='user'"
-msgstr ""
+msgstr "'passt' 백엔드는 연결장치 유형='user'만 사용될 수 있습니다"
 
 msgid ""
 "The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
 "'exclude' is specified"
 msgstr ""
+"'portForward'의 '범위'는 'end', 'to' 또는 'exclude'가 지정된 경우에 'start' "
+"속성이 필요합니다"
 
 #, c-format
 msgid ""
@@ -16445,7 +16447,7 @@ msgid "Unable to add lockspace %s: %s"
 msgstr "잠금공간 %s: %s를 추가 할 수 없습니다"
 
 msgid "Unable to add media registry other media"
-msgstr "미디어 레지스트리 다른 미디어를 추가할 수 없습니다"
+msgstr "미디어 레지스트리 다른 미디어를 추가 할 수 없습니다"
 
 #, c-format
 msgid "Unable to add port %s to OVS bridge %s"
@@ -16537,10 +16539,10 @@ msgid "Unable to change blkio parameters"
 msgstr "blkio 매개 변수를 변경 할 수 없습니다"
 
 msgid "Unable to change block I/O throttle"
-msgstr "블록 I/O 스로틀을 변경할 수 없습니다"
+msgstr "블록 I/O 쓰로틀을 변경 할 수 없습니다"
 
 msgid "Unable to change daemon logging settings"
-msgstr "데몬 로깅 설정을 변경할 수 없습니다"
+msgstr "데몬 로깅 설정을 변경 할 수 없습니다"
 
 msgid "Unable to change lifecycle action."
 msgstr "생명주기 동작을 변경 할 수 없습니다."
@@ -16610,7 +16612,7 @@ msgid "Unable to close %s"
 msgstr "%s를 닫을 수 없습니다"
 
 msgid "Unable to close HardDisk"
-msgstr ""
+msgstr "하드디스크를 닫을 수 없습니다"
 
 msgid "Unable to close disk children"
 msgstr "디스크 하위 항목을 닫을 수 없습니다"
@@ -16623,10 +16625,10 @@ msgid "Unable to close the VPD file, fd: %d"
 msgstr "fd인 VPD 파일을 닫을 수 없습니다: %d"
 
 msgid "Unable to close the new medium"
-msgstr ""
+msgstr "새로운 미디어를 닫을 수 없습니다"
 
 msgid "Unable to compile regex"
-msgstr ""
+msgstr "regex을 컴파일 할 수 없습니다"
 
 #, c-format
 msgid "Unable to compute hash of data: %s"
@@ -16641,7 +16643,7 @@ msgstr ""
 "다 . PF를 온라인 상태로 전환하려면 호스트 네트워크 구성을 변경하세요."
 
 msgid "Unable to configure libxl's memory management parameters"
-msgstr "libxl의 메모리 관리 매개변수를 구성할 수 없습니다"
+msgstr "libxl의 메모리 관리 매개변수를 구성 할 수 없습니다"
 
 msgid "Unable to construct table of device aliases"
 msgstr "장치 별칭의 테이블을 구성 할 수 없습니다"
@@ -16661,7 +16663,7 @@ msgid "Unable to create %s"
 msgstr "%s을 생성할 수 없습니다"
 
 msgid "Unable to create HardDisk"
-msgstr ""
+msgstr "하드디스크를 생성 할 수 없습니다"
 
 msgid "Unable to create JSON formatter"
 msgstr "JSON 포맷터를 생성할 수 없습니다"
@@ -16670,7 +16672,7 @@ msgid "Unable to create JSON parser"
 msgstr "JSON을 구문 분석을 생성할 수 없습니다"
 
 msgid "Unable to create KVM VM for TSC probing"
-msgstr "TSC 프로빙을 위한 KVM VM을 생성할 수 없음"
+msgstr "TSC 프로빙을 위한 KVM VM을 생성 할 수 없음"
 
 msgid "Unable to create KVM vCPU for TSC probing"
 msgstr "TSC 프로빙을 위한 KVM vCPU를 생성할 수 없음"
@@ -16719,7 +16721,7 @@ msgid "Unable to create epoll fd"
 msgstr "epoll fd를 생성 할 수 없습니다"
 
 msgid "Unable to create kqueue"
-msgstr "kqueue를 생성할 수 없습니다"
+msgstr "kqueue를 생성 할 수 없습니다"
 
 #, c-format
 msgid "Unable to create lock '%s'"
@@ -16772,7 +16774,7 @@ msgid "Unable to create tap device %s"
 msgstr "탭 장치 %s를 생성 할 수 없습니다"
 
 msgid "Unable to create thread to process command's IO"
-msgstr "명령의 IO를 처리하기 위한 스레드를 생성할 수 없습니다"
+msgstr "명령의 IO를 처리하기 위한 쓰레드를 생성 할 수 없습니다"
 
 msgid "Unable to create tunnel migration thread"
 msgstr "터널 이전 쓰레드를 생성 할 수 없습니다"
@@ -16827,7 +16829,7 @@ msgid "Unable to delete lockspace resource %s"
 msgstr "잠금공간 자원 %s를 삭제 할 수 없습니다"
 
 msgid "Unable to delete medium"
-msgstr ""
+msgstr "미디어를 삭제 할 수 없습니다"
 
 #, c-format
 msgid "Unable to delete port %s from OVS"
@@ -17010,16 +17012,16 @@ msgid "Unable to find the snapshot with name %s"
 msgstr "이름 '%s'에 스냅샷을 찾을 수 없습니다"
 
 msgid "Unable to force bind to IPv6 only"
-msgstr "IPv6에만 강제로 바인딩할 수 없음"
+msgstr "IPv6에만 강제로 바인딩 할 수 없음"
 
 msgid "Unable to format NUMA node cache"
-msgstr "NUMA 노드 캐시를 포맷할 수 없습니다"
+msgstr "NUMA 노드 캐쉬를 초기화 할 수 없습니다"
 
 msgid "Unable to format SELinux context"
-msgstr "SELinux 컨텍스트를 포맷할 수 없습니다"
+msgstr "SELinux 컨텍스트를 초기화 할 수 없습니다"
 
 msgid "Unable to format guestfwd port"
-msgstr "guestfwd 포트를 초기화할 수 없음"
+msgstr "guestfwd 포트를 초기화 할 수 없음"
 
 msgid "Unable to format metadata element"
 msgstr "메타데이터 요소의 형식을 지정할 수 없습니다"
@@ -17103,7 +17105,7 @@ msgstr "블록 I/O 스로틀 매개변수를 가져올 수 없습니다"
 
 #, c-format
 msgid "Unable to get bridge %s %s"
-msgstr "브리지 %s %s을(를) 가져올 수 없습니다"
+msgstr "브리지 %s %s를 가져올 수 없습니다"
 
 #, c-format
 msgid "Unable to get bridge %s port %s %s"
@@ -17190,7 +17192,7 @@ msgid "Unable to get hard disk id"
 msgstr "하드 디스크 id를 가져 올 수 없습니다"
 
 msgid "Unable to get hardDisk Id"
-msgstr ""
+msgstr "하드디스크 ID를 가져 올 수 없습니다"
 
 msgid "Unable to get host SEV information"
 msgstr "호스트 SEV 정보를 가져 올 수 없습니다"
@@ -17234,7 +17236,7 @@ msgid "Unable to get medium location"
 msgstr "중간 위치를 가져올 수 없습니다"
 
 msgid "Unable to get medium uuid"
-msgstr ""
+msgstr "미디어 uuid를 가져 올 수 없습니다"
 
 msgid "Unable to get memory parameters"
 msgstr "메모리 매개 변수를 얻을 수 없음"
@@ -17491,10 +17493,10 @@ msgid "Unable to open /proc/mounts"
 msgstr "/proc/mounts를 열 수 없습니다"
 
 msgid "Unable to open HardDisk"
-msgstr ""
+msgstr "하드디스크를 열 수 없습니다"
 
 msgid "Unable to open Machine"
-msgstr ""
+msgstr "장비를 열 수 없습니다"
 
 msgid "Unable to open UNIX socket"
 msgstr "유닉스 소켓을 열 수 없습니다"
@@ -17780,7 +17782,7 @@ msgid "Unable to read virtiofsd pidfile '%s'"
 msgstr "virtiofsd pid 파일 '%s'를 읽을 수 없습니다"
 
 msgid "Unable to register Machine"
-msgstr ""
+msgstr "장비를 등록 할 수 없습니다"
 
 msgid "Unable to register async IO callback"
 msgstr "비동기 IO 콜백을 등록할 수 없습니다"
@@ -18233,7 +18235,7 @@ msgid "Unable to unlink path '%s'"
 msgstr "경로 '%s'을(를) 연결 해제할 수 없습니다"
 
 msgid "Unable to unregister machine"
-msgstr ""
+msgstr "장비를 등록 해제 할 수 없습니다"
 
 msgid "Unable to update server's tls related files."
 msgstr "서버 tls와 연관된 파일을 최신화 할 수 없습니다."
@@ -21617,7 +21619,7 @@ msgid "cannot modify network device address type"
 msgstr "네트워크 장치 주소 유형을 수정할 수 없습니다"
 
 msgid "cannot modify network device backend settings"
-msgstr ""
+msgstr "네트워크 장치 백엔드 설정을 수정 할 수 없습니다"
 
 msgid "cannot modify network device boot index setting"
 msgstr "네트워크 장치 부팅 인덱스 설정을 수정할 수 없습니다"
@@ -22860,7 +22862,7 @@ msgstr "메모리 크기를 설정 할 수 없음"
 
 #, c-format
 msgid "could not attach shared folder '%s'"
-msgstr ""
+msgstr "공유된 폴더 '%s' 를 추가 할 수 없습니다"
 
 msgid "could not build absolute core file path"
 msgstr "절대 코어 파일 경로를 구축 할 수 없습니다"
@@ -22873,15 +22875,15 @@ msgstr "절대 출력 파일 경로를 구축 할 수 없습니다"
 
 #, c-format
 msgid "could not change ACPI status to: %s"
-msgstr ""
+msgstr "ACPI 상태를 변경 할 수 없습니다: %s"
 
 #, c-format
 msgid "could not change APIC status to: %s"
-msgstr ""
+msgstr "APIC 상태를 변경 할 수 없습니다: %s"
 
 #, c-format
 msgid "could not change PAE status to: %s"
-msgstr ""
+msgstr "PAE 상태를 변경 할 수 없습니다: %s"
 
 msgid "could not close handshake fd"
 msgstr "핸드쉐이크 fd를 종료 할 수 없습니다"
@@ -22916,17 +22918,17 @@ msgid "could not create profile"
 msgstr "프로파일을 생성 할 수 없습니다"
 
 msgid "could not define a domain"
-msgstr ""
+msgstr "도메인을 정의 할 수 없습니다"
 
 msgid "could not delete snapshot"
 msgstr "스냅샷을 삭제 할 수 없습니다"
 
 msgid "could not delete the domain"
-msgstr ""
+msgstr "도메인을 삭제 할 수 없습니다"
 
 #, c-format
 msgid "could not detach shared folder '%s'"
-msgstr ""
+msgstr "공유된 폴더 '%s'를 분리 할 수 없습니다"
 
 msgid "could not determine max vcpus for the domain"
 msgstr "도메인에 최대 vcpu를 결정 할 수 없습니다"
@@ -23121,19 +23123,19 @@ msgstr "PATH를 설정할 수 없습니다"
 
 #, c-format
 msgid "could not set the memory size of the domain to: %llu Kb"
-msgstr ""
+msgstr "도메인의 메모리 크기를 설정 할 수 없습니다: %llu Kb"
 
 #, c-format
 msgid "could not set the memory size of the domain to: %lu Kb"
-msgstr ""
+msgstr "도메인의 메모리 크기를 설정 할 수 없습니다: %lu Kb"
 
 #, c-format
 msgid "could not set the number of cpus of the domain to: %u"
-msgstr ""
+msgstr "도메인의 cpu의 수를 설정 할 수 없습니다: %u"
 
 #, c-format
 msgid "could not set the number of virtual CPUs to: %u"
-msgstr ""
+msgstr "가상 cpu의 수를 설정 할 수 없습니다: %u"
 
 #, c-format
 msgid "could not take a screenshot of %s"
@@ -23350,15 +23352,15 @@ msgstr "qcow2 암호화 이미지 생성은 지원되지 않습니다"
 
 #, c-format
 msgid "crypto backend %s is not supported"
-msgstr ""
+msgstr "암호화 백엔드 %s는 지원하지 않습니다"
 
 #, c-format
 msgid "crypto model %s is not supported"
-msgstr ""
+msgstr "암호화 모델 %s는 지원하지 않습니다"
 
 #, c-format
 msgid "crypto type %s is not supported"
-msgstr ""
+msgstr "암호화 유형 %s는 지원되지 않습니다"
 
 #, c-format
 msgid ""
@@ -25381,7 +25383,7 @@ msgstr "fd 그룹 '%s'를 위해 파일 설명자 복제에 실패함"
 
 #, c-format
 msgid "failed to duplicate passed fd with index '%zu'"
-msgstr ""
+msgstr "전달된 fd를 색인 '%zu'와 함께 복제하는데 실패함"
 
 msgid "failed to enable IP forwarding"
 msgstr "IP 포워딩을 활성화하는 데 실패"
@@ -26076,7 +26078,7 @@ msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr "개인 키 암호 검색 실패: 콜백 실패"
 
 msgid "failed to retrieve user response for authentication callback"
-msgstr ""
+msgstr "인증 콜백을 위한 사용자 응답을 검색하는데 실패함"
 
 #, c-format
 msgid "failed to rollback transaction: %s%s%s"
@@ -26924,7 +26926,7 @@ msgid "guest unexpectedly quit during hotplug"
 msgstr "게스트가 핫플러그 중에 예기치 않게 종료됨"
 
 msgid "guest-get-fsinfo reply was missing or not an array"
-msgstr ""
+msgstr "guest-get-fsinfo 응답은 누락되었거나 정렬되지 않았습니다"
 
 msgid "guest-get-osinfo reply was missing return data"
 msgstr "guest-get-osinfo 응답에 반환 데이터가 누락되었습니다"
@@ -30036,7 +30038,7 @@ msgid "missing existing file for disk %s: %s"
 msgstr "디스크 %s에 대한 기존 파일 누락: %s"
 
 msgid "missing external TPM backend source type"
-msgstr ""
+msgstr "누락된 외부 TPM 백엔드 원천 유형"
 
 msgid "missing feature name"
 msgstr "기능 이름 누락"
@@ -31368,7 +31370,7 @@ msgid "no matching redirdev was not found"
 msgstr "일치하는 redirdev를 찾을 수 없습니다"
 
 msgid "no matching watchdog was found"
-msgstr ""
+msgstr "일치하는 와치독을 찾을 수 없습니다"
 
 msgid "no medium attachments"
 msgstr "첨부 수단 없음"
@@ -31533,7 +31535,7 @@ msgid "no such screen ID"
 msgstr "해당 화면 ID가 없습니다"
 
 msgid "no suitable callback authentication callback was found"
-msgstr ""
+msgstr "적합한 callback 인증 callback을 찾을 수 없습니다"
 
 msgid "no suitable callback for host key verification"
 msgstr "호스트 키 확인을 위한 적절한 콜백 없음"
@@ -31867,7 +31869,7 @@ msgstr ""
 "니다"
 
 msgid "only 'connect' mode is supported for external TPM device"
-msgstr ""
+msgstr "'connect' 방식만이 외부 TPM을 지원합니다"
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "pc-dimm 장치에는 'dimm' 주소만 지원됩니다"
@@ -31972,7 +31974,7 @@ msgid "only one backup job is supported"
 msgstr "하나의 백업 작업만 지원됩니다"
 
 msgid "only one crypto backend is supported"
-msgstr ""
+msgstr "하나의 암호화 백엔드만 지원됩니다"
 
 msgid "only one emulatorpin is supported"
 msgstr "오직 하나의 emulatorpin만 지원됨"
@@ -32847,7 +32849,7 @@ msgid "pull mode backup for disk '%s' requires qcow2 driver"
 msgstr "디스크 '%s'에 대한 풀 모드 백업에는 qcow2 드라이버가 필요합니다"
 
 msgid "pvpanic is supported only with PCI address type"
-msgstr ""
+msgstr "pvpanic은 PCI 주소 유형과 함께만 지원됩니다"
 
 #, c-format
 msgid "qemu agent didn't provide 'ip-address' field for interface '%s'"
@@ -34805,7 +34807,7 @@ msgid "the QEMU binary does not support the ISA panic device"
 msgstr "QEMU 바이너리는 ISA 패닉 장치를 지원하지 않습니다"
 
 msgid "the QEMU binary does not support the PCI pvpanic device"
-msgstr ""
+msgstr "QEMU 바이너리는 PCI pvpanic 장치를 지원하지 않습니다"
 
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
@@ -34872,7 +34874,7 @@ msgid "the new password"
 msgstr "새 비밀번호"
 
 msgid "the passt network backend is not supported with this QEMU binary"
-msgstr ""
+msgstr "passt 네트워크 백엔드는 이와 같은 QEMU 바이너리와 함께 지원되지 않습니다"
 
 msgid "the password is already encrypted"
 msgstr "암호는 이미 암호화되어 있습니다"
@@ -36612,7 +36614,7 @@ msgstr "알려지지 않은 인증 유형 %s"
 
 #, c-format
 msgid "unknown backend source type '%s' for external TPM"
-msgstr ""
+msgstr "외부 TPM을 위해 알려지지 않은 백엔드 원천 유형 '%s'"
 
 #, c-format
 msgid "unknown backend type '%s' for egd"
@@ -37082,7 +37084,7 @@ msgstr "지원되지 않는 HyperV Enlightenment 기능: %s"
 
 #, c-format
 msgid "unsupported IPv6 address prefix='%u' - must be 64"
-msgstr ""
+msgstr "미지원된 IPv6 주소 접두사='%u' - 64이어야 합니다"
 
 #, c-format
 msgid "unsupported KVM feature: %s"
@@ -38315,7 +38317,7 @@ msgstr "와치독에는 모델명이 포함되어야 합니다"
 
 msgid ""
 "watchdogs with different actions are not supported with this QEMU binary"
-msgstr ""
+msgstr "다른 동작을 갖는 와치독은 이와 같은 QEMU 바이너리 함께 지원되지 않습니다"
 
 msgid "webSocket"
 msgstr "웹소켓"
