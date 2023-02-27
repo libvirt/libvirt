@@ -7166,6 +7166,15 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
         src->tlsFromConfig = !!value;
     }
 
+    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_NBD) {
+        xmlNodePtr cur;
+        if ((cur = virXPathNode("./reconnect", ctxt))) {
+            if (virXMLPropUInt(cur, "delay", 10, VIR_XML_PROP_NONE,
+                               &src->reconnectDelay) < 0)
+                return -1;
+        }
+    }
+
     /* for historical reasons we store the volume and image name in one XML
      * element although it complicates thing when attempting to access them. */
     if (src->path &&
@@ -22146,6 +22155,9 @@ virDomainDiskSourceFormatNetwork(virBuffer *attrBuf,
         virBufferAddLit(childBuf, "/>\n");
     }
 
+    if (src->reconnectDelay) {
+        virBufferAsprintf(childBuf, "<reconnect delay='%u'/>\n", src->reconnectDelay);
+    }
 
     virBufferEscapeString(childBuf, "<snapshot name='%s'/>\n", src->snapshot);
     virBufferEscapeString(childBuf, "<config file='%s'/>\n", src->configFile);

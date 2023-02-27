@@ -2206,6 +2206,9 @@
         <ref name="diskSourceCommon"/>
         <ref name="diskSourceNetworkHost"/>
         <optional>
+          <ref name="reconnect"/>
+        </optional>
+        <optional>
           <ref name="encryption"/>
         </optional>
       </interleave>

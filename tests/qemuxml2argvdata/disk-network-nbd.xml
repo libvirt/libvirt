@@ -49,6 +49,14 @@
       </source>
       <target dev='vde' bus='virtio'/>
     </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='nbd' name='foo'>
+        <host name='example.org' port='6000'/>
+        <reconnect delay='10'/>
+      </source>
+      <target dev='vdf' bus='virtio'/>
+    </disk>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>

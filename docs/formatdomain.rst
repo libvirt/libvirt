@@ -2956,13 +2956,20 @@ paravirtualized driver is specified via the ``disk`` element.
       are intended to be default, then the entire element may be omitted.
    ``reconnect``
       For disk type ``vhostuser`` configures reconnect timeout if the connection
-      is lost. It has two mandatory attributes:
+      is lost. This is set with the two mandatory attributes ``enabled`` and
+      ``timeout``.
+      For disk type ``network`` and protocol ``nbd`` the QEMU NBD reconnect delay
+      can be set via attribute ``delay``:
 
       ``enabled``
          If the reconnect feature is enabled, accepts ``yes`` and ``no``
       ``timeout``
          The amount of seconds after which hypervisor tries to reconnect.
-
+      ``delay``
+         Only for NBD hosts. The amount of seconds during which all requests are
+         paused and will be rerun after a successful reconnect. After that time, any
+         delayed requests and all future requests before a successful reconnect
+         will immediately fail. If not set the default QEMU value is 0.
 
    For a "file" or "volume" disk type which represents a cdrom or floppy (the
    ``device`` attribute), it is possible to define policy what to do with the

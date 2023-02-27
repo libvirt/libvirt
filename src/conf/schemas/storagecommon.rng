@@ -55,14 +55,21 @@
 
   <define name="reconnect">
     <element name="reconnect">
-      <attribute name="enabled">
-        <ref name="virYesNo"/>
-      </attribute>
-      <optional>
-        <attribute name="timeout">
+      <choice>
+        <group>
+          <attribute name="enabled">
+            <ref name="virYesNo"/>
+          </attribute>
+          <optional>
+            <attribute name="timeout">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </optional>
+        </group>
+        <attribute name="delay">
           <ref name="unsignedInt"/>
         </attribute>
-      </optional>
+      </choice>
     </element>
   </define>
 
