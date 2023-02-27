@@ -4182,46 +4182,38 @@ virQEMUCapsLoadMachines(virQEMUCapsAccel *caps,
     caps->machineTypes = g_new0(virQEMUCapsMachineType, caps->nmachineTypes);
 
     for (i = 0; i < n; i++) {
-        g_autofree char *str = NULL;
+        virTristateBool tmp;
 
-        if (!(caps->machineTypes[i].name = virXMLPropString(nodes[i], "name"))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("missing machine name in QEMU capabilities cache"));
+        if (!(caps->machineTypes[i].name = virXMLPropStringRequired(nodes[i], "name")))
             return -1;
-        }
         caps->machineTypes[i].alias = virXMLPropString(nodes[i], "alias");
 
-        str = virXMLPropString(nodes[i], "maxCpus");
-        if (str &&
-            virStrToLong_ui(str, NULL, 10, &(caps->machineTypes[i].maxCpus)) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("malformed machine cpu count in QEMU capabilities cache"));
+        if (virXMLPropUInt(nodes[i], "maxCpus", 10, VIR_XML_PROP_NONE,
+                           &(caps->machineTypes[i].maxCpus)) < 0)
             return -1;
-        }
-        VIR_FREE(str);
 
-        str = virXMLPropString(nodes[i], "hotplugCpus");
-        if (STREQ_NULLABLE(str, "yes"))
-            caps->machineTypes[i].hotplugCpus = true;
-        VIR_FREE(str);
+        if (virXMLPropTristateBool(nodes[i], "hotplugCpus", VIR_XML_PROP_NONE, &tmp) < 0)
+            return -1;
 
-        str = virXMLPropString(nodes[i], "default");
-        if (STREQ_NULLABLE(str, "yes"))
-            caps->machineTypes[i].qemuDefault = true;
-        VIR_FREE(str);
+        virTristateBoolToBool(tmp, &caps->machineTypes[i].hotplugCpus);
 
-        str = virXMLPropString(nodes[i], "numaMemSupported");
-        if (STREQ_NULLABLE(str, "yes"))
-            caps->machineTypes[i].numaMemSupported = true;
-        VIR_FREE(str);
+        if (virXMLPropTristateBool(nodes[i], "default", VIR_XML_PROP_NONE, &tmp) < 0)
+            return -1;
+
+        virTristateBoolToBool(tmp, &caps->machineTypes[i].qemuDefault);
+
+        if (virXMLPropTristateBool(nodes[i], "numaMemSupported", VIR_XML_PROP_NONE, &tmp) < 0)
+            return -1;
+
+        virTristateBoolToBool(tmp, &caps->machineTypes[i].numaMemSupported);
 
         caps->machineTypes[i].defaultCPU = virXMLPropString(nodes[i], "defaultCPU");
         caps->machineTypes[i].defaultRAMid = virXMLPropString(nodes[i], "defaultRAMid");
 
-        str = virXMLPropString(nodes[i], "deprecated");
-        if (STREQ_NULLABLE(str, "yes"))
-            caps->machineTypes[i].deprecated = true;
-        VIR_FREE(str);
+        if (virXMLPropTristateBool(nodes[i], "deprecated", VIR_XML_PROP_NONE, &tmp) < 0)
+            return -1;
+
+        virTristateBoolToBool(tmp, &caps->machineTypes[i].deprecated);
     }
 
     return 0;
