@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest/.config \
 -name guest=QEMUGuest,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest/master-key.aes"}' \
--machine pc,usb=off,dump-guest-core=off,hmat=on \
+-machine pc,usb=off,dump-guest-core=off,hmat=on,acpi=on \
 -accel tcg \
 -cpu qemu64 \
 -m 12288 \

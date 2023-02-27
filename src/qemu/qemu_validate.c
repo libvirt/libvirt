@@ -1326,6 +1326,14 @@ qemuValidateDomainDef(const virDomainDef *def,
         return -1;
     }
 
+    if (virQEMUCapsMachineSupportsACPI(qemuCaps, def->virtType, def->os.machine) == VIR_TRISTATE_BOOL_NO &&
+        def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_TRISTATE_SWITCH_ON) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("machine type '%s' does not support ACPI"),
+                       def->os.machine);
+        return -1;
+    }
+
     if (def->mem.min_guarantee) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Parameter 'min_guarantee' not supported by QEMU."));

@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-rhel7/.config \
 -name guest=rhel7,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-rhel7/master-key.aes"}' \
--machine pc-i440fx-2.3,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-machine pc-i440fx-2.3,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
 -accel kvm \
 -cpu qemu64 \
 -m 2048 \
@@ -25,7 +25,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-rhel7/.config \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--no-acpi \
 -global PIIX4_PM.disable_s3=1 \
 -global PIIX4_PM.disable_s4=1 \
 -boot strict=on \

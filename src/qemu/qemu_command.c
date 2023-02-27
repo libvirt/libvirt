@@ -5933,7 +5933,10 @@ qemuBuildPMCommandLine(virCommand *cmd,
             virCommandAddArg(cmd, "-no-shutdown");
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI)) {
+    /* Use old syntax of -no-acpi only if qemu didn't report that it supports the
+     * new syntax */
+    if (virQEMUCapsMachineSupportsACPI(qemuCaps, def->virtType, def->os.machine) == VIR_TRISTATE_BOOL_ABSENT &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI)) {
         if (def->features[VIR_DOMAIN_FEATURE_ACPI] != VIR_TRISTATE_SWITCH_ON)
             virCommandAddArg(cmd, "-no-acpi");
     }
@@ -6772,6 +6775,41 @@ qemuAppendDomainMemoryMachineParams(virBuffer *buf,
     return 0;
 }
 
+
+/**
+ * qemuBuildMachineACPI:
+ * @machineOptsBuf: buffer for formatting argument of '-machine'
+ * @def: domain definition
+ * @qemuCaps: qemu capabilities object
+ *
+ * Logic for formatting the 'acpi=' parameter for '-machine'. See comments below
+ */
+static void
+qemuBuildMachineACPI(virBuffer *machineOptsBuf,
+                     const virDomainDef *def,
+                     virQEMUCaps *qemuCaps)
+{
+    virTristateSwitch defACPI = def->features[VIR_DOMAIN_FEATURE_ACPI];
+
+    /* We format this field only when qemu reports that the current machine
+     * type supports ACPI in 'query-machines' */
+    if (virQEMUCapsMachineSupportsACPI(qemuCaps, def->virtType, def->os.machine) != VIR_TRISTATE_BOOL_YES)
+        return;
+
+    /* Historically ACPI is configured by the presence or absence of the
+     * '<acpi/>' element without any property. The conf code thus allows only
+     * VIR_TRISTATE_SWITCH_ON and VIR_TRISTATE_SWITCH_ABSENT as values.
+     *
+     * Convert VIR_TRISTATE_SWITCH_ABSENT to VIR_TRISTATE_SWITCH_OFF.
+     */
+    if (defACPI == VIR_TRISTATE_SWITCH_ABSENT)
+        defACPI = VIR_TRISTATE_SWITCH_OFF;
+
+    virBufferAsprintf(machineOptsBuf, ",acpi=%s",
+                      virTristateSwitchTypeToString(defACPI));
+}
+
+
 static int
 qemuBuildMachineCommandLine(virCommand *cmd,
                             virQEMUDriverConfig *cfg,
@@ -6889,6 +6927,8 @@ qemuBuildMachineCommandLine(virCommand *cmd,
             break;
         }
     }
+
+    qemuBuildMachineACPI(&buf, def, qemuCaps);
 
     virCommandAddArgBuffer(cmd, &buf);
 

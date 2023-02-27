@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-encryptdisk/.config \
 -name guest=encryptdisk,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-encryptdisk/master-key.aes"}' \
--machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
 -accel tcg \
 -cpu qemu64 \
 -m 1024 \
@@ -25,7 +25,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-encryptdisk/.config \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--no-acpi \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -object '{"qom-type":"secret","id":"libvirt-7-format-encryption-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \

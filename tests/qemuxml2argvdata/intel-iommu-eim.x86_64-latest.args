@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
--machine q35,usb=off,kernel_irqchip=split,dump-guest-core=off,memory-backend=pc.ram \
+-machine q35,usb=off,kernel_irqchip=split,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
 -accel kvm \
 -cpu qemu64 \
 -m 214 \
@@ -25,7 +25,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--no-acpi \
 -boot strict=on \
 -device '{"driver":"intel-iommu","id":"iommu0","intremap":"on","eim":"on"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \

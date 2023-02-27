@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest2/.config \
 -name guest=QEMUGuest2,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest2/master-key.aes"}' \
--machine q35,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-machine q35,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
 -accel kvm \
 -cpu qemu64 \
 -m 214 \
@@ -25,7 +25,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest2/.config \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--no-acpi \
 -boot strict=on \
 -device '{"driver":"pcie-root-port","port":8,"chassis":1,"id":"pci.1","bus":"pcie.0","multifunction":true,"addr":"0x1"}' \
 -device '{"driver":"pcie-root-port","port":9,"chassis":2,"id":"pci.2","bus":"pcie.0","addr":"0x1.0x1"}' \

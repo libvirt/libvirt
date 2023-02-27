@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-instance-00000092/.config \
 -name guest=instance-00000092,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-instance-00000092/master-key.aes"}' \
--machine pc-i440fx-2.3,usb=off,dump-guest-core=off,nvdimm=on \
+-machine pc-i440fx-2.3,usb=off,dump-guest-core=off,nvdimm=on,acpi=off \
 -accel kvm \
 -cpu qemu64 \
 -m size=14680064k,slots=16,maxmem=1099511627776k \
@@ -27,7 +27,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-instance-00000092/.config \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--no-acpi \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -object '{"qom-type":"thread-context","id":"tc-memnvdimm0","node-affinity":[3]}' \
