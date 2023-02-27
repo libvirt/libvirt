@@ -11,13 +11,13 @@
 # Yulia <yulia.poyarkova@redhat.com>, 2012, 2013, 2014
 # yuliya <ypoyarko@redhat.com>, 2015, 2016
 # Olesya Gerasimenko <gammaray@basealt.ru>, 2020.
-# Sergey A. <sw@atrus.ru>, 2022.
+# Sergey A. <sw@atrus.ru>, 2022, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-02-22 13:50+0000\n"
-"PO-Revision-Date: 2022-10-02 12:19+0000\n"
+"PO-Revision-Date: 2023-02-27 14:20+0000\n"
 "Last-Translator: Sergey A. <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ru/>\n"
@@ -25,9 +25,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14.1\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.15.2\n"
 
 msgid ""
 "\n"
@@ -1059,9 +1059,7 @@ msgstr ""
 
 #, c-format
 msgid "%s: too many command line arguments\n"
-msgstr ""
-"%s: слишком много аргументов в команде\n"
-"\n"
+msgstr "%s: слишком много аргументов в команде\n"
 
 #, c-format
 msgid "%s: try --help for more details"
@@ -2189,9 +2187,7 @@ msgstr "Генерация моста превысила максимальны�
 
 #, c-format
 msgid "Bridge interface %s started\n"
-msgstr ""
-"Интерфейс моста %s запущен\n"
-"\n"
+msgstr "Интерфейс моста %s запущен\n"
 
 msgid "Bridge:"
 msgstr "Мост:"
@@ -38848,7 +38844,7 @@ msgid "virDirCreate is not implemented for WIN32"
 msgstr "Функции virDirCreate не реализованы в WIN32"
 
 msgid "virDomainCheckpointGetXMLDesc with secure flag"
-msgstr "virDomainGetXMLDesc с флагом безопасности"
+msgstr "virDomainCheckpointGetXMLDesc с флагом безопасности"
 
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr "virDomainGetXMLDesc с флагом безопасности"
@@ -38957,7 +38953,7 @@ msgid "virtio rss hash report is not supported with this QEMU binary"
 msgstr ""
 
 msgid "virtio rss is not supported with this QEMU binary"
-msgstr ""
+msgstr "этот исполняемый файл QEMU не поддерживает virtiofs rss"
 
 #, c-format
 msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
