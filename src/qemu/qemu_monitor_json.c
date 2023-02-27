@@ -7233,6 +7233,8 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
             return -1;
         }
 
+        meminfo = g_new0(qemuMonitorMemoryDeviceInfo, 1);
+
         switch ((virDomainMemoryModel) model) {
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:
         case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
@@ -7245,6 +7247,46 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
                                _("dimm memory info data is missing 'id'"));
                 return -1;
             }
+
+            if (model == VIR_DOMAIN_MEMORY_MODEL_DIMM ||
+                model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+                if (virJSONValueObjectGetNumberUlong(dimminfo, "addr",
+                                                     &meminfo->address) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("malformed/missing addr in dimm memory info"));
+                    return -1;
+                }
+
+                if (virJSONValueObjectGetNumberUint(dimminfo, "slot",
+                                                    &meminfo->slot) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("malformed/missing slot in dimm memory info"));
+                    return -1;
+                }
+
+                if (virJSONValueObjectGetBoolean(dimminfo, "hotplugged",
+                                                 &meminfo->hotplugged) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("malformed/missing hotplugged in dimm memory info"));
+                    return -1;
+
+                }
+
+                if (virJSONValueObjectGetBoolean(dimminfo, "hotpluggable",
+                                                 &meminfo->hotpluggable) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("malformed/missing hotpluggable in dimm memory info"));
+                    return -1;
+
+                }
+            } else if (model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM) {
+                if (virJSONValueObjectGetNumberUlong(dimminfo, "size",
+                                                     &meminfo->size) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("malformed/missing size in virtio memory info"));
+                    return -1;
+                }
+            }
             break;
 
         case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
@@ -7253,61 +7295,6 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
                                _("sgx-epc memory info data is missing 'memdev'"));
                 return -1;
             }
-            break;
-
-        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        case VIR_DOMAIN_MEMORY_MODEL_NONE:
-        case VIR_DOMAIN_MEMORY_MODEL_LAST:
-            /* type not handled yet */
-            continue;
-        }
-
-        meminfo = g_new0(qemuMonitorMemoryDeviceInfo, 1);
-
-        switch ((virDomainMemoryModel) model) {
-        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
-        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-            if (virJSONValueObjectGetNumberUlong(dimminfo, "addr",
-                                                 &meminfo->address) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("malformed/missing addr in dimm memory info"));
-                return -1;
-            }
-
-            if (virJSONValueObjectGetNumberUint(dimminfo, "slot",
-                                                &meminfo->slot) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("malformed/missing slot in dimm memory info"));
-                return -1;
-            }
-
-            if (virJSONValueObjectGetBoolean(dimminfo, "hotplugged",
-                                             &meminfo->hotplugged) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("malformed/missing hotplugged in dimm memory info"));
-                return -1;
-
-            }
-
-            if (virJSONValueObjectGetBoolean(dimminfo, "hotpluggable",
-                                             &meminfo->hotpluggable) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("malformed/missing hotpluggable in dimm memory info"));
-                return -1;
-
-            }
-            break;
-
-        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-            if (virJSONValueObjectGetNumberUlong(dimminfo, "size",
-                                                 &meminfo->size) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("malformed/missing size in virtio memory info"));
-                return -1;
-            }
-            break;
-
-        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
             if (virJSONValueObjectGetNumberUlong(dimminfo, "memaddr",
                                                  &meminfo->address) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
