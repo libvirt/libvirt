@@ -519,6 +519,7 @@ virDomainMemoryFindByDeviceAlias;
 virDomainMemoryFindByDeviceInfo;
 virDomainMemoryFindInactiveByDef;
 virDomainMemoryInsert;
+virDomainMemoryModelTypeFromString;
 virDomainMemoryModelTypeToString;
 virDomainMemoryRemove;
 virDomainMemorySourceTypeFromString;
