@@ -2540,6 +2540,22 @@ virQEMUCapsIsMachineDeprecated(virQEMUCaps *qemuCaps,
 }
 
 
+virTristateBool
+virQEMUCapsMachineSupportsACPI(virQEMUCaps *qemuCaps,
+                               virDomainVirtType type,
+                               const char *machine)
+{
+    virQEMUCapsAccel *accel = virQEMUCapsGetAccel(qemuCaps, type);
+    size_t i;
+
+    for (i = 0; i < accel->nmachineTypes; i++) {
+        if (STREQ_NULLABLE(accel->machineTypes[i].name, machine))
+            return accel->machineTypes[i].acpi;
+    }
+    return VIR_TRISTATE_BOOL_ABSENT;
+}
+
+
 bool
 virQEMUCapsGetMachineNumaMemSupported(virQEMUCaps *qemuCaps,
                                       virDomainVirtType virtType,

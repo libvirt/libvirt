@@ -767,6 +767,9 @@ bool virQEMUCapsIsCPUDeprecated(virQEMUCaps *qemuCaps,
 bool virQEMUCapsIsMachineDeprecated(virQEMUCaps *qemuCaps,
                                     virDomainVirtType type,
                                     const char *machine);
+virTristateBool virQEMUCapsMachineSupportsACPI(virQEMUCaps *qemuCaps,
+                                               virDomainVirtType type,
+                                               const char *machine);
 bool virQEMUCapsGetMachineNumaMemSupported(virQEMUCaps *qemuCaps,
                                            virDomainVirtType virtType,
                                            const char *name);
