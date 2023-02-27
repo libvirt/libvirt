@@ -13,6 +13,10 @@ is designed to offer local file system semantics and performance.
 
 See https://virtio-fs.gitlab.io/
 
+*Note:* virtiofs currently does not support migration so operations such as
+migration, save/managed-save, or snapshots with memory are not supported if
+a VM has a virtiofs filesystem connected.
+
 Sharing a host directory with a guest
 =====================================
 
