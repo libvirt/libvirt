@@ -17,8 +17,10 @@ check-dco:
     - if: '$CI_PIPELINE_SOURCE =~ "merge_request_event"'
       when: on_success
 
-    # forks: pushes to branches with pipeline requested
+    # forks: pushes to branches with pipeline requested (including upstream env pipelines)
     - if: '$CI_PROJECT_NAMESPACE != $RUN_UPSTREAM_NAMESPACE && $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $RUN_PIPELINE'
+      when: on_success
+    - if: '$CI_PROJECT_NAMESPACE != $RUN_UPSTREAM_NAMESPACE && $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $RUN_PIPELINE_UPSTREAM_ENV'
       when: on_success
 
     # upstream+forks: that's all folks

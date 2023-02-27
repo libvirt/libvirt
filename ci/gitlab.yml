@@ -14,6 +14,12 @@
 #    created/updated. Setting this variable to a non-empty
 #    value allows CI testing prior to opening a merge request.
 #
+#  - RUN_PIPELINE_UPSTREAM_ENV - same semantics as RUN_PIPELINE,
+#    but uses the CI environment (containers) from the upstream project
+#    rather than creating and updating a throwaway environment
+#    Should not be used if the pushed branch includes CI container
+#    changes.
+#
 #  - RUN_CONTAINER_BUILDS - CI pipelines in upstream only
 #    publish containers if CI file changes are detected.
 #    Setting this variable to a non-empty value will force
@@ -44,6 +50,7 @@
 
 variables:
   RUN_UPSTREAM_NAMESPACE: libvirt
+  FF_SCRIPT_SECTIONS: 1
 
 
 workflow:
