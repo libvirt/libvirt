@@ -38,6 +38,13 @@ v9.1.0 (unreleased)
     A pvpanic device can be now defined as a PCI device (the original is an ISA
     device) with ``<panic model='pvpanic'/>``.
 
+  * qemu: support automatic restart of inadvertently terminated passt process
+
+    If the passt process that is serving as the backend of a -netdev
+    stream is terminated unexpectedly, libvirt now listens to QEMU's
+    notification of this, and starts up a new passt instance, thus
+    preserving network connectivity.
+
 * **Improvements**
 
   * RPM packaging changes
@@ -62,6 +69,17 @@ v9.1.0 (unreleased)
     When external snapshot deletion was introduced it did not remove memory
     snapshot when it existed. In addition when external memory only snapshot
     was created libvirt failed without producing any error.
+
+  * QEMU: properly report passt startup errors
+
+    Due to how the child passt process was started, the initial
+    support for passt (added in 9.0.0) would not see errors
+    encountered during startup, so libvirt would continue to setup and
+    start the guest; this led to a running guest with no network
+    connectivity.
+
+    (NB: On systems that use them, it is still necessary to disable
+    SELinux/AppArmor to start passt.)
 
 
 v9.0.0 (2023-01-16)
