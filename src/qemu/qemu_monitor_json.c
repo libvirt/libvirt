@@ -7243,9 +7243,8 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
                 return -1;
             }
         } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("%s memory device info is not handled yet"), type);
-                return -1;
+            /* type not handled yet */
+            continue;
         }
 
         meminfo = g_new0(qemuMonitorMemoryDeviceInfo, 1);
