@@ -704,6 +704,7 @@ struct _virQEMUCapsMachineType {
     bool numaMemSupported;
     char *defaultRAMid;
     bool deprecated;
+    virTristateBool acpi;
 };
 
 typedef struct _virQEMUCapsHostCPUData virQEMUCapsHostCPUData;
@@ -1964,6 +1965,7 @@ virQEMUCapsAccelCopyMachineTypes(virQEMUCapsAccel *dst,
         dst->machineTypes[i].numaMemSupported = src->machineTypes[i].numaMemSupported;
         dst->machineTypes[i].defaultRAMid = g_strdup(src->machineTypes[i].defaultRAMid);
         dst->machineTypes[i].deprecated = src->machineTypes[i].deprecated;
+        dst->machineTypes[i].acpi = src->machineTypes[i].acpi;
     }
 }
 
@@ -2783,7 +2785,8 @@ virQEMUCapsAddMachine(virQEMUCaps *qemuCaps,
                       bool isDefault,
                       bool numaMemSupported,
                       const char *defaultRAMid,
-                      bool deprecated)
+                      bool deprecated,
+                      virTristateBool acpi)
 {
     virQEMUCapsAccel *accel = virQEMUCapsGetAccel(qemuCaps, virtType);
     virQEMUCapsMachineType *mach;
@@ -2807,6 +2810,7 @@ virQEMUCapsAddMachine(virQEMUCaps *qemuCaps,
 
     mach->defaultRAMid = g_strdup(defaultRAMid);
     mach->deprecated = deprecated;
+    mach->acpi = acpi;
 }
 
 /**
@@ -2857,7 +2861,8 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCaps *qemuCaps,
                               machines[i]->isDefault,
                               machines[i]->numaMemSupported,
                               machines[i]->defaultRAMid,
-                              machines[i]->deprecated);
+                              machines[i]->deprecated,
+                              machines[i]->acpi);
 
         if (preferredMachine &&
             (STREQ_NULLABLE(machines[i]->alias, preferredMachine) ||
@@ -4214,6 +4219,9 @@ virQEMUCapsLoadMachines(virQEMUCapsAccel *caps,
             return -1;
 
         virTristateBoolToBool(tmp, &caps->machineTypes[i].deprecated);
+
+        if (virXMLPropTristateBool(nodes[i], "acpi", VIR_XML_PROP_NONE, &caps->machineTypes[i].acpi) < 0)
+            return -1;
     }
 
     return 0;
@@ -4907,6 +4915,11 @@ virQEMUCapsFormatMachines(virQEMUCapsAccel *caps,
                               caps->machineTypes[i].defaultRAMid);
         if (caps->machineTypes[i].deprecated)
             virBufferAddLit(buf, " deprecated='yes'");
+
+        if (caps->machineTypes[i].acpi != VIR_TRISTATE_BOOL_ABSENT)
+            virBufferAsprintf(buf, " acpi='%s'",
+                              virTristateBoolTypeToString(caps->machineTypes[i].acpi));
+
         virBufferAddLit(buf, "/>\n");
     }
 }
@@ -6943,7 +6956,7 @@ virQEMUCapsStripMachineAliasesForVirtType(virQEMUCaps *qemuCaps,
             virQEMUCapsAddMachine(qemuCaps, virtType, name, NULL, mach->defaultCPU,
                                   mach->maxCpus, mach->hotplugCpus, mach->qemuDefault,
                                   mach->numaMemSupported, mach->defaultRAMid,
-                                  mach->deprecated);
+                                  mach->deprecated, mach->acpi);
         }
     }
 }

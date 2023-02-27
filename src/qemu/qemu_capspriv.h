@@ -117,4 +117,5 @@ virQEMUCapsAddMachine(virQEMUCaps *qemuCaps,
                       bool isDefault,
                       bool numaMemSupported,
                       const char *defaultRAMid,
-                      bool deprecated);
+                      bool deprecated,
+                      virTristateBool acpi);

@@ -4822,6 +4822,18 @@ int qemuMonitorJSONGetMachines(qemuMonitor *mon,
         if (virJSONValueObjectHasKey(child, "deprecated") &&
             virJSONValueObjectGetBoolean(child, "deprecated", &info->deprecated) < 0)
             goto cleanup;
+
+        if (virJSONValueObjectHasKey(child, "acpi")) {
+            bool acpi;
+
+            if (virJSONValueObjectGetBoolean(child, "acpi", &acpi) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("qemu-machines reply has malformed 'acpi data"));
+                goto cleanup;
+            }
+
+            info->acpi = virTristateBoolFromBool(acpi);
+        }
     }
 
     ret = n;

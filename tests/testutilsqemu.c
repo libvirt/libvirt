@@ -458,7 +458,8 @@ qemuTestCapsPopulateFakeMachines(virQEMUCaps *caps,
                               false,
                               true,
                               defaultRAMid,
-                              false);
+                              false,
+                              VIR_TRISTATE_BOOL_ABSENT);
         virQEMUCapsSet(caps, QEMU_CAPS_TCG);
     }
 
@@ -475,7 +476,8 @@ qemuTestCapsPopulateFakeMachines(virQEMUCaps *caps,
                                       false,
                                       true,
                                       defaultRAMid,
-                                      false);
+                                      false,
+                                      VIR_TRISTATE_BOOL_ABSENT);
                 virQEMUCapsSet(caps, QEMU_CAPS_KVM);
             }
         }
@@ -494,7 +496,8 @@ qemuTestCapsPopulateFakeMachines(virQEMUCaps *caps,
                         false,
                         true,
                         defaultRAMid,
-                        false);
+                        false,
+                        VIR_TRISTATE_BOOL_ABSENT);
                 virQEMUCapsSet(caps, QEMU_CAPS_HVF);
             }
         }

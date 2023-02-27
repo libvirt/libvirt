@@ -1082,6 +1082,7 @@ struct _qemuMonitorMachineInfo {
     bool numaMemSupported;
     char *defaultRAMid;
     bool deprecated;
+    virTristateBool acpi;
 };
 
 int qemuMonitorGetMachines(qemuMonitor *mon,
