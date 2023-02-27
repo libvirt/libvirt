@@ -7210,14 +7210,20 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
         virJSONValue *elem = virJSONValueArrayGet(data, i);
         g_autofree qemuMonitorMemoryDeviceInfo *meminfo = NULL;
         virJSONValue *dimminfo;
-        const char *devalias;
-        const char *type;
+        const char *devalias = NULL;
+        const char *modelStr;
+        int model;
 
-        if (!(type = virJSONValueObjectGetString(elem, "type"))) {
+        if (!(modelStr = virJSONValueObjectGetString(elem, "type"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("query-memory-devices reply data doesn't contain "
                              "enum type discriminator"));
             return -1;
+        }
+
+        if ((model = virDomainMemoryModelTypeFromString(modelStr)) < 0) {
+            VIR_WARN("Unknown memory model: %s", modelStr);
+            continue;
         }
 
         if (!(dimminfo = virJSONValueObjectGetObject(elem, "data"))) {
@@ -7227,30 +7233,40 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
             return -1;
         }
 
-        if (STREQ(type, "dimm") || STREQ(type, "nvdimm") || STREQ(type, "virtio-mem")) {
+        switch ((virDomainMemoryModel) model) {
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
             /* While 'id' attribute is marked as optional in QEMU's QAPI
-            * specification, Libvirt always sets it. Thus we can fail if not
-            * present. */
+             * specification, Libvirt always sets it. Thus we can fail if not
+             * present. */
             if (!(devalias = virJSONValueObjectGetString(dimminfo, "id"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("dimm memory info data is missing 'id'"));
+                               _("dimm memory info data is missing 'id'"));
                 return -1;
             }
-        } else if (STREQ(type, "sgx-epc")) {
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
             if (!(devalias = virJSONValueObjectGetString(dimminfo, "memdev"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("sgx-epc memory info data is missing 'memdev'"));
+                               _("sgx-epc memory info data is missing 'memdev'"));
                 return -1;
             }
-        } else {
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_NONE:
+        case VIR_DOMAIN_MEMORY_MODEL_LAST:
             /* type not handled yet */
             continue;
         }
 
         meminfo = g_new0(qemuMonitorMemoryDeviceInfo, 1);
 
-        /* dimm memory devices */
-        if (STREQ(type, "dimm") || STREQ(type, "nvdimm")) {
+        switch ((virDomainMemoryModel) model) {
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
             if (virJSONValueObjectGetNumberUlong(dimminfo, "addr",
                                                  &meminfo->address) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -7280,16 +7296,18 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
                 return -1;
 
             }
+            break;
 
-        } else if (STREQ(type, "virtio-mem")) {
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
             if (virJSONValueObjectGetNumberUlong(dimminfo, "size",
                                                  &meminfo->size) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("malformed/missing size in virtio memory info"));
                 return -1;
             }
-        } else if (STREQ(type, "sgx-epc")) {
-            /* sgx-epc memory devices */
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
             if (virJSONValueObjectGetNumberUlong(dimminfo, "memaddr",
                                                  &meminfo->address) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -7303,7 +7321,11 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
                                _("malformed/missing size in sgx-epc memory info"));
                 return -1;
             }
-        } else {
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_NONE:
+        case VIR_DOMAIN_MEMORY_MODEL_LAST:
             /* type not handled yet */
             continue;
         }
