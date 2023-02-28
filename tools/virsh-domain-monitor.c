@@ -192,6 +192,7 @@ VIR_ENUM_IMPL(virshDomainPausedReason,
               N_("starting up"),
               N_("post-copy"),
               N_("post-copy failed"),
+              N_("api error"),
 );
 
 VIR_ENUM_DECL(virshDomainShutdownReason);

@@ -11376,6 +11376,9 @@ qemuDomainPausedReasonToSuspendedEvent(virDomainPausedReason reason)
     case VIR_DOMAIN_PAUSED_POSTCOPY:
         return VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY;
 
+    case VIR_DOMAIN_PAUSED_API_ERROR:
+        return VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR;
+
     case VIR_DOMAIN_PAUSED_UNKNOWN:
     case VIR_DOMAIN_PAUSED_USER:
     case VIR_DOMAIN_PAUSED_SAVE:

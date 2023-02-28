@@ -148,6 +148,7 @@ typedef enum {
     VIR_DOMAIN_PAUSED_STARTING_UP = 11, /* the domain is being started (Since: 1.2.14) */
     VIR_DOMAIN_PAUSED_POSTCOPY = 12,    /* paused for post-copy migration (Since: 1.3.3) */
     VIR_DOMAIN_PAUSED_POSTCOPY_FAILED = 13, /* paused after failed post-copy (Since: 1.3.3) */
+    VIR_DOMAIN_PAUSED_API_ERROR = 14,   /* Some APIs (e.g., migration, snapshot) internally need to suspend a domain. This paused state reason is used when resume operation at the end of such API fails. (Since: 9.2.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_PAUSED_LAST /* (Since: 0.9.10) */

@@ -1163,6 +1163,7 @@ VIR_ENUM_IMPL(virDomainPausedReason,
               "starting up",
               "post-copy",
               "post-copy failed",
+              "api error",
 );
 
 VIR_ENUM_IMPL(virDomainShutdownReason,
