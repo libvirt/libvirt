@@ -81,6 +81,18 @@ v9.1.0 (unreleased)
     (NB: On systems that use them, it is still necessary to disable
     SELinux/AppArmor to start passt.)
 
+  * qemu: Fix error when attempting to change media in a CDROM drive
+
+    Due to a logic bug introduced in libvirt-9.0 attempts to change media in a
+    CDROM would previously fail with an error stating that the tray isn't open.
+
+  * qemu: Properly handle block job transitions
+
+    Starting with libvirt-9.0 the block job state machine improperly handled
+    some job transitions, which resulted into some block jobs not being
+    properly terminated. This could cause problems such as errors when
+    detaching a disk after snapshot.
+
 
 v9.0.0 (2023-01-16)
 ===================
