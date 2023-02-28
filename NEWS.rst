@@ -79,7 +79,9 @@ v9.1.0 (unreleased)
     connectivity.
 
     (NB: On systems that use them, it is still necessary to disable
-    SELinux/AppArmor to start passt.)
+    SELinux/AppArmor to start passt. This is a temporary limitation,
+    and use of the feature in production is strongly discouraged
+    until it has been lifted.)
 
   * qemu: Fix error when attempting to change media in a CDROM drive
 
