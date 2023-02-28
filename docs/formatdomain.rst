@@ -3266,28 +3266,26 @@ paravirtualized driver is specified via the ``disk`` element.
       to the ``qemu``
       `qcow2 cache docs <https://git.qemu.org/?p=qemu.git;a=blob;f=docs/qcow2-cache.txt>`__
 
-      **Example:**
+      **Example**::
 
-::
-
-   <disk type='file' device='disk'>
-     <driver name='qemu' type='qcow2'>
-       <metadata_cache>
-         <max_size unit='bytes'>1234</max_size>
-       </metadata_cache>
-     </driver>
-     <source file='/var/lib/libvirt/images/domain.qcow'/>
-     <backingStore type='file'>
-       <format type='qcow2'>
-         <metadata_cache>
-           <max_size unit='bytes'>1234</max_size>
-         </metadata_cache>
-       </format>
-       <source file='/var/lib/libvirt/images/snapshot.qcow'/>
-       <backingStore/>
-     </backingStore>
-     <target dev='vdd' bus='virtio'/>
-   </disk>
+        <disk type='file' device='disk'>
+          <driver name='qemu' type='qcow2'>
+            <metadata_cache>
+              <max_size unit='bytes'>1234</max_size>
+            </metadata_cache>
+          </driver>
+          <source file='/var/lib/libvirt/images/domain.qcow'/>
+          <backingStore type='file'>
+            <format type='qcow2'>
+              <metadata_cache>
+                <max_size unit='bytes'>1234</max_size>
+              </metadata_cache>
+            </format>
+            <source file='/var/lib/libvirt/images/snapshot.qcow'/>
+            <backingStore/>
+          </backingStore>
+          <target dev='vdd' bus='virtio'/>
+        </disk>
 
 ``backenddomain``
    The optional ``backenddomain`` element allows specifying a backend domain
