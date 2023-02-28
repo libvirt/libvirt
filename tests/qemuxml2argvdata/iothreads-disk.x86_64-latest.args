@@ -30,12 +30,9 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-acpi \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"raw","file":"libvirt-3-storage"}' \
--device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-3-format","id":"ide0-0-0","bootindex":1}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/iothrtest1.img","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw","file":"libvirt-2-storage"}' \
--device '{"driver":"virtio-blk-pci","iothread":"iothread1","bus":"pci.0","addr":"0x4","drive":"libvirt-2-format","id":"virtio-disk1"}' \
+-device '{"driver":"virtio-blk-pci","iothread":"iothread1","bus":"pci.0","addr":"0x4","drive":"libvirt-2-format","id":"virtio-disk1","bootindex":1}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/iothrtest2.img","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"virtio-blk-pci","iothread":"iothread2","bus":"pci.0","addr":"0x2","drive":"libvirt-1-format","id":"virtio-disk2"}' \
