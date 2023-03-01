@@ -95,6 +95,39 @@ v9.1.0 (unreleased)
     properly terminated. This could cause problems such as errors when
     detaching a disk after snapshot.
 
+  * virsh: Make domif-setlink work more than once
+
+    There was a bug introduced in the previous release which made ``virsh
+    domif-setlink`` work exactly once over given domain. The bug was fixed and
+    now the command can be run multiple times.
+
+  * qemu: Make domain startup fail if NIC already exists
+
+    When starting a domain with an ``<interface/>`` that's supposed to be
+    managed by libvirt (``managed='yes'``) but corresponding TAP device already
+    exists, report an error and make the startup process fail.
+
+  * qemu: Deal with nested mounts when umount()-ing /dev
+
+    When setting up private ``/dev`` for a domain (also known as ``namespaces``
+    in ``qemu.conf``), libvirt preserves mount points nested under ``/dev``
+    (e.g.  ``/dev/shm``, ``/dev/pts`` and so on). But there was a bug which
+    resulted in inability to construct the namespace when there were two or
+    more filesystems mounted on the same path. This is common scenario with
+    containers and thus the bug was fixed.
+
+  * remote: Pass ``mode`` and ``socket`` URI parameters to virt-ssh-helper
+
+    When connecting to a remote host using SSH transport, ``?mode=`` and
+    ``?socket=`` URI parameters were ignored. This prevented users from
+    connecting to a monolithic daemon running on a remote host.
+
+  * qemu: Various ``swtpm`` related fixes
+
+    There are more cleanups and small bug fixes with regards to emulated
+    ``<tpm/>``. For instance with migration when the ``swtpm`` state is on a
+    shared volume, or seclabel setting/restoring.
+
 
 v9.0.0 (2023-01-16)
 ===================
