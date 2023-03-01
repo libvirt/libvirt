@@ -173,12 +173,6 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
         cfg->memoryBackingDir = g_strdup_printf("%s/ram", cfg->libDir);
         cfg->swtpmStorageDir = g_strdup_printf("%s/lib/libvirt/swtpm",
                                                LOCALSTATEDIR);
-        if (!virDoesUserExist("tss") ||
-            virGetUserID("tss", &cfg->swtpm_user) < 0)
-            cfg->swtpm_user = 0; /* fall back to root */
-        if (!virDoesGroupExist("tss") ||
-            virGetGroupID("tss", &cfg->swtpm_group) < 0)
-            cfg->swtpm_group = 0; /* fall back to root */
     } else {
         g_autofree char *rundir = NULL;
         g_autofree char *cachedir = NULL;
