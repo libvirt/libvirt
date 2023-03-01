@@ -790,6 +790,8 @@ virTestFakeRootDirCleanup(char *fakerootdir)
 
     if (!g_getenv("LIBVIRT_SKIP_CLEANUP"))
         virFileDeleteTree(fakerootdir);
+    else
+        fprintf(stderr, "Test data ready for inspection: %s\n", fakerootdir);
 }
 
 int virTestMain(int argc,
