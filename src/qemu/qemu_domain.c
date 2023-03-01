@@ -6638,20 +6638,12 @@ qemuDomainDefFormatLive(virQEMUDriver *driver,
 }
 
 
-void qemuDomainObjTaint(virQEMUDriver *driver,
-                        virDomainObj *obj,
-                        virDomainTaintFlags taint,
-                        qemuDomainLogContext *logCtxt)
-{
-    qemuDomainObjTaintMsg(driver, obj, taint, logCtxt, NULL);
-    qemuDomainSaveStatus(obj);
-}
-
-void qemuDomainObjTaintMsg(virQEMUDriver *driver,
-                           virDomainObj *obj,
-                           virDomainTaintFlags taint,
-                           qemuDomainLogContext *logCtxt,
-                           const char *fmt, ...)
+static void G_GNUC_PRINTF(5, 6)
+qemuDomainObjTaintMsg(virQEMUDriver *driver,
+                      virDomainObj *obj,
+                      virDomainTaintFlags taint,
+                      qemuDomainLogContext *logCtxt,
+                      const char *fmt, ...)
 {
     virErrorPtr orig_err = NULL;
     g_autofree char *timestamp = NULL;
@@ -6723,6 +6715,16 @@ void qemuDomainObjTaintMsg(virQEMUDriver *driver,
 
  cleanup:
     virErrorRestore(&orig_err);
+}
+
+
+void qemuDomainObjTaint(virQEMUDriver *driver,
+                        virDomainObj *obj,
+                        virDomainTaintFlags taint,
+                        qemuDomainLogContext *logCtxt)
+{
+    qemuDomainObjTaintMsg(driver, obj, taint, logCtxt, NULL);
+    qemuDomainSaveStatus(obj);
 }
 
 static void
