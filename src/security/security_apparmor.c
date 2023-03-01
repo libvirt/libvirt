@@ -570,6 +570,7 @@ AppArmorSetSecurityProcessLabel(virSecurityManager *mgr G_GNUC_UNUSED,
 static int
 AppArmorSetSecurityChildProcessLabel(virSecurityManager *mgr G_GNUC_UNUSED,
                                      virDomainDef *def,
+                                     bool useBinarySpecificLabel G_GNUC_UNUSED,
                                      virCommand *cmd)
 {
     g_autofree char *profile_name = NULL;

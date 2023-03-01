@@ -96,6 +96,7 @@ typedef int (*virSecurityDomainSetProcessLabel) (virSecurityManager *mgr,
                                                  virDomainDef *def);
 typedef int (*virSecurityDomainSetChildProcessLabel) (virSecurityManager *mgr,
                                                       virDomainDef *def,
+                                                      bool useBinarySpecificLabel,
                                                       virCommand *cmd);
 typedef int (*virSecurityDomainSecurityVerify) (virSecurityManager *mgr,
                                                 virDomainDef *def);

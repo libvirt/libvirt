@@ -458,6 +458,7 @@ virSecurityStackSetProcessLabel(virSecurityManager *mgr,
 static int
 virSecurityStackSetChildProcessLabel(virSecurityManager *mgr,
                                      virDomainDef *vm,
+                                     bool useBinarySpecificLabel,
                                      virCommand *cmd)
 {
     virSecurityStackData *priv = virSecurityManagerGetPrivateData(mgr);
@@ -465,8 +466,10 @@ virSecurityStackSetChildProcessLabel(virSecurityManager *mgr,
     int rc = 0;
 
     for (; item; item = item->next) {
-        if (virSecurityManagerSetChildProcessLabel(item->securityManager, vm, cmd) < 0)
+        if (virSecurityManagerSetChildProcessLabel(item->securityManager, vm,
+                                                   useBinarySpecificLabel, cmd) < 0) {
             rc = -1;
+        }
     }
 
     return rc;

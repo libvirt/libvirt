@@ -963,8 +963,9 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
         return -1;
 
     if (qemuSecurityCommandRun(driver, vm, cmd, cfg->swtpm_user,
-                               cfg->swtpm_group, NULL) < 0)
+                               cfg->swtpm_group, false, NULL) < 0) {
         goto error;
+    }
 
     if (virPidFileReadPath(pidfile, &pid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

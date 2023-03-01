@@ -7747,7 +7747,7 @@ qemuProcessLaunch(virConnectPtr conn,
 
     VIR_DEBUG("Setting up security labelling");
     if (qemuSecuritySetChildProcessLabel(driver->securityManager,
-                                         vm->def, cmd) < 0)
+                                         vm->def, false, cmd) < 0)
         goto cleanup;
 
     virCommandSetOutputFD(cmd, &logfile);

@@ -325,7 +325,7 @@ qemuSlirpStart(virDomainObj *vm,
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "slirp") < 0)
         goto error;
 
-    if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, NULL) < 0)
+    if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, false, NULL) < 0)
         goto error;
 
     rc = virPidFileReadPath(pidfile, &pid);

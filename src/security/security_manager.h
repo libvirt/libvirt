@@ -145,6 +145,7 @@ int virSecurityManagerSetProcessLabel(virSecurityManager *mgr,
                                       virDomainDef *def);
 int virSecurityManagerSetChildProcessLabel(virSecurityManager *mgr,
                                            virDomainDef *def,
+                                           bool useBinarySpecificLabel,
                                            virCommand *cmd);
 int virSecurityManagerVerify(virSecurityManager *mgr,
                              virDomainDef *def);

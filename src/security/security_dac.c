@@ -2273,6 +2273,7 @@ virSecurityDACSetProcessLabel(virSecurityManager *mgr,
 static int
 virSecurityDACSetChildProcessLabel(virSecurityManager *mgr,
                                    virDomainDef *def,
+                                   bool useBinarySpecificLabel G_GNUC_UNUSED,
                                    virCommand *cmd)
 {
     virSecurityDACData *priv = virSecurityManagerGetPrivateData(mgr);

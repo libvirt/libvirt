@@ -560,6 +560,52 @@ virSecuritySELinuxContextAddRange(const char *src,
     return ret;
 }
 
+
+static char *
+virSecuritySELinuxContextSetFromFile(const char *origLabel,
+                                     const char *binaryPath)
+{
+    g_autofree char *currentCon = NULL;
+    g_autofree char *binaryCon = NULL;
+    g_autofree char *naturalLabel = NULL;
+    g_autofree char *updatedLabel = NULL;
+
+    /* First learn what would be the context set
+     * if binaryPath was exec'ed from this process.
+     */
+    if (getcon(&currentCon) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("unable to get SELinux context for current process"));
+        return NULL;
+    }
+
+    if (getfilecon(binaryPath, &binaryCon) < 0) {
+        virReportSystemError(errno, _("unable to get SELinux context for '%s'"),
+                             binaryPath);
+        return NULL;
+    }
+
+    if (security_compute_create(currentCon, binaryCon,
+                                string_to_security_class("process"),
+                                &naturalLabel) < 0) {
+        virReportSystemError(errno,
+                             _("unable create new SELinux label based on label '%s' and file '%s'"),
+                             origLabel, binaryPath);
+        return NULL;
+    }
+
+    /* now get the type from the original label
+     * (which already has proper MCS set) and add it to
+     * the new label
+     */
+    updatedLabel = virSecuritySELinuxContextAddRange(origLabel, naturalLabel);
+
+    VIR_DEBUG("original label: '%s' binary: '%s' binary-specific label: '%s'",
+              origLabel, binaryPath, NULLSTR(updatedLabel));
+    return g_steal_pointer(&updatedLabel);
+}
+
+
 static char *
 virSecuritySELinuxGenNewContext(const char *basecontext,
                                 const char *mcs,
@@ -2986,10 +3032,13 @@ virSecuritySELinuxSetProcessLabel(virSecurityManager *mgr G_GNUC_UNUSED,
 static int
 virSecuritySELinuxSetChildProcessLabel(virSecurityManager *mgr G_GNUC_UNUSED,
                                        virDomainDef *def,
+                                       bool useBinarySpecificLabel G_GNUC_UNUSED,
                                        virCommand *cmd)
 {
     /* TODO: verify DOI */
     virSecurityLabelDef *secdef;
+    g_autofree char *tmpLabel = NULL;
+    const char *label = NULL;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
     if (!secdef || !secdef->label)
@@ -3006,8 +3055,30 @@ virSecuritySELinuxSetChildProcessLabel(virSecurityManager *mgr G_GNUC_UNUSED,
             return -1;
     }
 
+    /* pick either the common label used by most binaries exec'ed by
+     * libvirt, or the specific label of this binary.
+     */
+    if (useBinarySpecificLabel) {
+        const char *binaryPath = virCommandGetBinaryPath(cmd);
+
+        if (!binaryPath)
+            return -1; /* error was already logged */
+
+        tmpLabel = virSecuritySELinuxContextSetFromFile(secdef->label,
+                                                        binaryPath);
+        if (!tmpLabel)
+            return -1;
+
+        label = tmpLabel;
+
+    } else {
+
+        label = secdef->label;
+
+    }
+
     /* save in cmd to be set after fork/before child process is exec'ed */
-    virCommandSetSELinuxLabel(cmd, secdef->label);
+    virCommandSetSELinuxLabel(cmd, label);
     return 0;
 }
 

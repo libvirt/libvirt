@@ -115,6 +115,7 @@ int qemuSecurityCommandRun(virQEMUDriver *driver,
                            virCommand *cmd,
                            uid_t uid,
                            gid_t gid,
+                           bool useBinarySpecificLabel,
                            int *exitstatus);
 
 /* Please note that for these APIs there is no wrapper yet. Do NOT blindly add

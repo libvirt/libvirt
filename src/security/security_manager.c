@@ -885,10 +885,14 @@ virSecurityManagerSetProcessLabel(virSecurityManager *mgr,
 int
 virSecurityManagerSetChildProcessLabel(virSecurityManager *mgr,
                                        virDomainDef *vm,
+                                       bool useBinarySpecificLabel,
                                        virCommand *cmd)
 {
-    if (mgr->drv->domainSetSecurityChildProcessLabel)
-       return mgr->drv->domainSetSecurityChildProcessLabel(mgr, vm, cmd);
+    if (mgr->drv->domainSetSecurityChildProcessLabel) {
+       return mgr->drv->domainSetSecurityChildProcessLabel(mgr, vm,
+                                                           useBinarySpecificLabel,
+                                                           cmd);
+    }
 
     virReportUnsupportedError();
     return -1;

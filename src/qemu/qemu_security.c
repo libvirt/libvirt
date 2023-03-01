@@ -636,6 +636,7 @@ qemuSecurityCommandRun(virQEMUDriver *driver,
                        virCommand *cmd,
                        uid_t uid,
                        gid_t gid,
+                       bool useBinarySpecificLabel,
                        int *exitstatus)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -643,8 +644,10 @@ qemuSecurityCommandRun(virQEMUDriver *driver,
     int ret = -1;
 
     if (virSecurityManagerSetChildProcessLabel(driver->securityManager,
-                                               vm->def, cmd) < 0)
+                                               vm->def, useBinarySpecificLabel,
+                                               cmd) < 0) {
         return -1;
+    }
 
     if (uid != (uid_t) -1)
         virCommandSetUID(cmd, uid);

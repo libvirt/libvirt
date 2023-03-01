@@ -152,7 +152,7 @@ int qemuExtVhostUserGPUStart(virQEMUDriver *driver,
             virCommandAddArgFormat(cmd, "--render-node=%s", video->accel->rendernode);
     }
 
-    if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, NULL) < 0)
+    if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, false, NULL) < 0)
         goto error;
 
     rc = virPidFileReadPath(pidfile, &pid);

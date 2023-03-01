@@ -217,7 +217,7 @@ qemuDBusStart(virQEMUDriver *driver,
     virCommandDaemonize(cmd);
     virCommandAddArgFormat(cmd, "--config-file=%s", configfile);
 
-    if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, NULL) < 0)
+    if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, false, NULL) < 0)
         goto cleanup;
 
     if (virPidFileReadPath(pidfile, &cpid) < 0) {

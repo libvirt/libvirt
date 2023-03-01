@@ -152,6 +152,7 @@ virSecurityDomainSetProcessLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
 static int
 virSecurityDomainSetChildProcessLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
                                          virDomainDef *vm G_GNUC_UNUSED,
+                                         bool useBinarySpecificLabel G_GNUC_UNUSED,
                                          virCommand *cmd G_GNUC_UNUSED)
 {
     return 0;
