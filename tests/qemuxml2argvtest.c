@@ -2722,6 +2722,7 @@ mymain(void)
     DO_TEST("cpu-phys-bits-emulate2", QEMU_CAPS_KVM);
     DO_TEST_PARSE_ERROR("cpu-phys-bits-emulate3", QEMU_CAPS_KVM);
     DO_TEST_PARSE_ERROR("cpu-phys-bits-passthrough2", QEMU_CAPS_KVM);
+    DO_TEST_CAPS_LATEST("cpu-phys-bits-limit");
 
     DO_TEST_CAPS_VER("sgx-epc", "7.0.0");
 
