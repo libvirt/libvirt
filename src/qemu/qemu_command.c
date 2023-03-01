@@ -1731,6 +1731,45 @@ qemuBuildDriveStr(virDomainDiskDef *disk)
 }
 
 
+static virJSONValue *
+qemuBuildDiskDeviceIothreadMappingProps(GSList *iothreads)
+{
+    g_autoptr(virJSONValue) ret = virJSONValueNewArray();
+    GSList *n;
+
+    for (n = iothreads; n; n = n->next) {
+        virDomainDiskIothreadDef *ioth = n->data;
+        g_autoptr(virJSONValue) props = NULL;
+        g_autoptr(virJSONValue) queues = NULL;
+        g_autofree char *alias = g_strdup_printf("iothread%u", ioth->id);
+        size_t i;
+
+        if (ioth->nqueues > 0) {
+            queues = virJSONValueNewArray();
+
+            for (i = 0; i < ioth->nqueues; i++) {
+                g_autoptr(virJSONValue) vq = virJSONValueNewNumberUint(ioth->queues[i]);
+
+                if (virJSONValueArrayAppend(queues, &vq))
+                    return NULL;
+            }
+        }
+
+        if (virJSONValueObjectAdd(&props,
+                                  "s:iothread", alias,
+                                  "A:vqs", &queues,
+                                  NULL) < 0)
+            return NULL;
+
+
+        if (virJSONValueArrayAppend(ret, &props))
+            return NULL;
+    }
+
+    return g_steal_pointer(&ret);
+}
+
+
 virJSONValue *
 qemuBuildDiskDeviceProps(const virDomainDef *def,
                          virDomainDiskDef *disk,
@@ -1792,10 +1831,15 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
 
     case VIR_DOMAIN_DISK_BUS_VIRTIO: {
         virTristateSwitch scsi = VIR_TRISTATE_SWITCH_ABSENT;
+        g_autoptr(virJSONValue) iothreadMapping = NULL;
         g_autofree char *iothread = NULL;
 
         if (disk->iothread > 0)
             iothread = g_strdup_printf("iothread%u", disk->iothread);
+
+        if (disk->iothreads &&
+            !(iothreadMapping = qemuBuildDiskDeviceIothreadMappingProps(disk->iothreads)))
+            return NULL;
 
         if (virStorageSourceGetActualType(disk->src) != VIR_STORAGE_TYPE_VHOST_USER &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SCSI)) {
@@ -1820,6 +1864,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
                                   "T:scsi", scsi,
                                   "p:num-queues", disk->queues,
                                   "p:queue-size", disk->queue_size,
+                                  "A:iothread-vq-mapping", &iothreadMapping,
                                   NULL) < 0)
             return NULL;
     }
