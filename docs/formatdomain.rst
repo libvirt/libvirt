@@ -1374,7 +1374,7 @@ following collection of elements. :since:`Since 0.7.5`
 
    <cpu mode='host-passthrough' migratable='off'>
      <cache mode='passthrough'/>
-     <maxphysaddr mode='passthrough'/>
+     <maxphysaddr mode='passthrough' limit='39'/>
      <feature policy='disable' name='lahf_lm'/>
    ...
 
@@ -1643,6 +1643,11 @@ In case no restrictions need to be put on CPU model and its features, a simpler
    ``bits``
       The ``bits`` attribute is mandatory if the ``mode`` attribute is set to
       ``emulate`` and specifies the virtual CPU address size in bits.
+
+   ``limit``
+     The ``limit`` attribute can be used to restrict the maximum value of
+     address bits for ``passthrough`` mode, i.e. in case the host CPU reports
+     more bits than that, ``limit`` is used. :since:`Since 9.3.0`
 
 Guest NUMA topology can be specified using the ``numa`` element. :since:`Since
 0.9.8`

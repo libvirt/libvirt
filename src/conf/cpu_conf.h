@@ -128,6 +128,7 @@ VIR_ENUM_DECL(virCPUMaxPhysAddrMode);
 typedef struct _virCPUMaxPhysAddrDef virCPUMaxPhysAddrDef;
 struct _virCPUMaxPhysAddrDef {
     int bits;           /* -1 for unspecified */
+    unsigned int limit; /* 0 for unspecified */
     virCPUMaxPhysAddrMode mode;
 };
 

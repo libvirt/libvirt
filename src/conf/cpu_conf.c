@@ -668,6 +668,17 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
                           VIR_XML_PROP_NONNEGATIVE,
                           &def->addr->bits, -1) < 0)
             return -1;
+
+        if ((rv = virXMLPropUInt(maxphysaddrNode, "limit", 10,
+                                 VIR_XML_PROP_NONZERO,
+                                 &def->addr->limit)) < 0) {
+            return -1;
+        } else if (rv > 0 && def->addr->mode != VIR_CPU_MAX_PHYS_ADDR_MODE_PASSTHROUGH) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"));
+            return -1;
+        }
+
     }
 
     *cpu = g_steal_pointer(&def);
@@ -843,6 +854,8 @@ virCPUDefFormatBuf(virBuffer *buf,
                           virCPUMaxPhysAddrModeTypeToString(def->addr->mode));
         if (def->addr->bits != -1)
             virBufferAsprintf(buf, " bits='%d'", def->addr->bits);
+        if (def->addr->limit > 0)
+            virBufferAsprintf(buf, " limit='%d'", def->addr->limit);
         virBufferAddLit(buf, "/>\n");
     }
 

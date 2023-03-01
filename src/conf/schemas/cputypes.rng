@@ -318,6 +318,11 @@
           <ref name="unsignedInt"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="limit">
+          <ref name="unsignedInt"/>
+        </attribute>
+      </optional>
     </element>
   </define>
 

@@ -1247,6 +1247,8 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("crypto-builtin");
 
+    DO_TEST_CAPS_LATEST("cpu-phys-bits-limit");
+
  cleanup:
     qemuTestDriverFree(&driver);
     virFileWrapperClearPrefixes();
