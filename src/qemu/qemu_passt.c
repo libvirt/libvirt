@@ -281,7 +281,7 @@ qemuPasstStart(virDomainObj *vm,
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "passt") < 0)
         return -1;
 
-    if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, false, NULL) < 0)
+    if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, true, NULL) < 0)
         goto error;
 
     return 0;
