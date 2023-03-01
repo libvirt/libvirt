@@ -4,7 +4,7 @@
   <memory unit='KiB'>219136</memory>
   <currentMemory unit='KiB'>219136</currentMemory>
   <vcpu placement='static'>2</vcpu>
-  <iothreads>2</iothreads>
+  <iothreads>4</iothreads>
   <os>
     <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='hd'/>
@@ -22,9 +22,30 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </disk>
     <disk type='file' device='disk'>
-      <driver name='qemu' type='raw' iothread='2'/>
+      <driver name='qemu' type='raw' queues='4'>
+        <iothreads>
+          <iothread id='2'>
+            <queue id='1'/>
+            <queue id='3'/>
+          </iothread>
+          <iothread id='3'>
+            <queue id='0'/>
+            <queue id='2'/>
+          </iothread>
+        </iothreads>
+      </driver>
       <source file='/var/lib/libvirt/images/iothrtest2.img'/>
       <target dev='vdc' bus='virtio'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'>
+        <iothreads>
+          <iothread id='4'/>
+          <iothread id='1'/>
+        </iothreads>
+      </driver>
+      <source file='/var/lib/libvirt/images/iothrtest3.img'/>
+      <target dev='vdd' bus='virtio'/>
     </disk>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
