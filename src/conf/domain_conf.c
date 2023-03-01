@@ -29576,8 +29576,12 @@ virDomainNetTypeSharesHostView(const virDomainNetDef *net)
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_DIRECT:
         return true;
-    case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        if (net->managed_tap == VIR_TRISTATE_BOOL_NO &&
+            virNetDevMacVLanIsMacvtap(net->ifname))
+            return true;
+        break;
+    case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_CLIENT:
