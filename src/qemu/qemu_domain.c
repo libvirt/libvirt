@@ -6663,7 +6663,7 @@ void qemuDomainObjTaintMsg(virQEMUDriver *driver,
     const char *extrasuffix = "";
     va_list args;
 
-    if (virDomainObjTaint(obj, taint)) {
+    if (!virDomainObjTaint(obj, taint)) {
         /* If an extra message was given we must always
          * emit the taint warning, otherwise it is a
          * one-time only warning per VM
