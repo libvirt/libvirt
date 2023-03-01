@@ -1366,12 +1366,8 @@ qemuAgentGetVCPUs(qemuAgent *agent,
             return -1;
         }
 
-        if (virJSONValueObjectGetBoolean(entry, "can-offline",
-                                         &in->offlinable) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("'can-offline' missing in reply of guest-get-vcpus"));
-            return -1;
-        }
+        in->offlinable = false;
+        ignore_value(virJSONValueObjectGetBoolean(entry, "can-offline", &in->offlinable));
     }
 
     return ndata;
