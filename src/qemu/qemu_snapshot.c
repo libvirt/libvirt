@@ -2706,6 +2706,73 @@ qemuSnapshotDeleteExternalPrepareData(virDomainObj *vm,
 }
 
 
+/**
+ * qemuSnapshotDeleteExternalPrepare:
+ * @vm: domain object
+ * @snap: snapshot object we are deleting
+ * @flags: flags passed to virDomainSnapshotDelete
+ * @externalData: pointer to GSList of qemuSnapshotDeleteExternalData
+ * @stop_qemu: pointer to boolean indicating QEMU process was started
+ *
+ * Validates and prepares data for snapshot @snap we are deleting and
+ * store it in @externalData. For offline VMs we need to start QEMU
+ * process in order to delete external snapshots and caller will need
+ * to stop that process, @stop_qemu will be set to True.
+ *
+ * Return 0 on success, -1 on error.
+ */
+static int
+qemuSnapshotDeleteExternalPrepare(virDomainObj *vm,
+                                  virDomainMomentObj *snap,
+                                  unsigned int flags,
+                                  GSList **externalData,
+                                  bool *stop_qemu)
+{
+    virQEMUDriver *driver = ((qemuDomainObjPrivate *) vm->privateData)->driver;
+    g_autoslist(qemuSnapshotDeleteExternalData) tmpData = NULL;
+
+    if (!virDomainSnapshotIsExternal(snap))
+        return 0;
+
+    if (flags & (VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
+                 VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)) {
+        return 0;
+    }
+
+    /* this also serves as validation whether the snapshot can be deleted */
+    if (qemuSnapshotDeleteExternalPrepareData(vm, snap, &tmpData) < 0)
+        return -1;
+
+    if (!virDomainObjIsActive(vm)) {
+        if (qemuProcessStart(NULL, driver, vm, NULL, VIR_ASYNC_JOB_SNAPSHOT,
+                             NULL, -1, NULL, NULL,
+                             VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
+                             VIR_QEMU_PROCESS_START_PAUSED) < 0) {
+            return -1;
+        }
+
+        *stop_qemu = true;
+
+        /* Call the prepare again as some data require that the VM is
+         * running to get everything we need. */
+        if (qemuSnapshotDeleteExternalPrepareData(vm, snap, externalData) < 0)
+            return -1;
+    } else {
+        qemuDomainJobPrivate *jobPriv = vm->job->privateData;
+
+        *externalData = g_steal_pointer(&tmpData);
+
+        /* If the VM is running we need to indicate that the async snapshot
+         * job is snapshot delete job. */
+        jobPriv->snapshotDelete = true;
+
+        qemuDomainSaveStatus(vm);
+    }
+
+    return 0;
+}
+
+
 typedef struct _virQEMUMomentReparent virQEMUMomentReparent;
 struct _virQEMUMomentReparent {
     const char *dir;
@@ -3476,40 +3543,9 @@ qemuSnapshotDelete(virDomainObj *vm,
         if (qemuSnapshotDeleteValidate(vm, snap, flags) < 0)
             goto endjob;
 
-        if (virDomainSnapshotIsExternal(snap) &&
-            !(flags & (VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
-                       VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY))) {
-            g_autoslist(qemuSnapshotDeleteExternalData) tmpData = NULL;
-
-            /* this also serves as validation whether the snapshot can be deleted */
-            if (qemuSnapshotDeleteExternalPrepareData(vm, snap, &tmpData) < 0)
-                goto endjob;
-
-            if (!virDomainObjIsActive(vm)) {
-                if (qemuProcessStart(NULL, driver, vm, NULL, VIR_ASYNC_JOB_SNAPSHOT,
-                                     NULL, -1, NULL, NULL,
-                                     VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
-                                     VIR_QEMU_PROCESS_START_PAUSED) < 0) {
-                    goto endjob;
-                }
-
-                stop_qemu = true;
-
-                /* Call the prepare again as some data require that the VM is
-                 * running to get everything we need. */
-                if (qemuSnapshotDeleteExternalPrepareData(vm, snap, &externalData) < 0)
-                    goto endjob;
-            } else {
-                qemuDomainJobPrivate *jobPriv = vm->job->privateData;
-
-                externalData = g_steal_pointer(&tmpData);
-
-                /* If the VM is running we need to indicate that the async snapshot
-                 * job is snapshot delete job. */
-                jobPriv->snapshotDelete = true;
-
-                qemuDomainSaveStatus(vm);
-            }
+        if (qemuSnapshotDeleteExternalPrepare(vm, snap, flags,
+                                              &externalData, &stop_qemu) < 0) {
+            goto endjob;
         }
     }
 
