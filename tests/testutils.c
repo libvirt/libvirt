@@ -766,6 +766,32 @@ virTestSetEnvPath(void)
     return 0;
 }
 
+#define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
+
+char*
+virTestFakeRootDirInit(void)
+{
+    g_autofree char *fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
+
+    if (!g_mkdtemp(fakerootdir)) {
+        fprintf(stderr, "Cannot create fakerootdir");
+        return NULL;
+    }
+
+    g_setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, TRUE);
+
+    return g_steal_pointer(&fakerootdir);
+}
+
+void
+virTestFakeRootDirCleanup(char *fakerootdir)
+{
+    g_unsetenv("LIBVIRT_FAKE_ROOT_DIR");
+
+    if (!g_getenv("LIBVIRT_SKIP_CLEANUP"))
+        virFileDeleteTree(fakerootdir);
+}
+
 int virTestMain(int argc,
                 char **argv,
                 int (*func)(void),
