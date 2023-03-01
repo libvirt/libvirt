@@ -2623,9 +2623,9 @@ qemuSnapshotFindParentSnapForDisk(virDomainMomentObj *snap,
 
 
 static int
-qemuSnapshotDeleteExternalPrepare(virDomainObj *vm,
-                                  virDomainMomentObj *snap,
-                                  GSList **externalData)
+qemuSnapshotDeleteExternalPrepareData(virDomainObj *vm,
+                                      virDomainMomentObj *snap,
+                                      GSList **externalData)
 {
     ssize_t i;
     virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
@@ -3482,7 +3482,7 @@ qemuSnapshotDelete(virDomainObj *vm,
             g_autoslist(qemuSnapshotDeleteExternalData) tmpData = NULL;
 
             /* this also serves as validation whether the snapshot can be deleted */
-            if (qemuSnapshotDeleteExternalPrepare(vm, snap, &tmpData) < 0)
+            if (qemuSnapshotDeleteExternalPrepareData(vm, snap, &tmpData) < 0)
                 goto endjob;
 
             if (!virDomainObjIsActive(vm)) {
@@ -3497,7 +3497,7 @@ qemuSnapshotDelete(virDomainObj *vm,
 
                 /* Call the prepare again as some data require that the VM is
                  * running to get everything we need. */
-                if (qemuSnapshotDeleteExternalPrepare(vm, snap, &externalData) < 0)
+                if (qemuSnapshotDeleteExternalPrepareData(vm, snap, &externalData) < 0)
                     goto endjob;
             } else {
                 qemuDomainJobPrivate *jobPriv = vm->job->privateData;
