@@ -98,7 +98,7 @@ VIR_ONCE_GLOBAL_INIT(virQEMUConfig);
 
 
 virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
-                                              const char *root)
+                                            const char *root)
 {
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
 
