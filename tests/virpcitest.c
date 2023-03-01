@@ -367,10 +367,6 @@ static int
 mymain(void)
 {
     int ret = 0;
-    g_autofree char *fakerootdir = NULL;
-
-    if (!(fakerootdir = virTestFakeRootDirInit()))
-        return EXIT_FAILURE;
 
 # define DO_TEST(fnc) \
     do { \
@@ -437,8 +433,6 @@ mymain(void)
     DO_TEST_PCI_DRIVER(0, 0x0a, 3, 0, NULL);
 
     DO_TEST_PCI(testVirPCIDeviceGetVPD, 0, 0x03, 0, 0);
-
-    virTestFakeRootDirCleanup(fakerootdir);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

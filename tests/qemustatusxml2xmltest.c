@@ -74,7 +74,6 @@ static int
 mymain(void)
 {
     int ret = 0;
-    g_autofree char *fakerootdir = NULL;
     g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
     g_autoptr(GHashTable) capscache = virHashNew(virObjectUnref);
     g_autoptr(virConnect) conn = NULL;
@@ -83,9 +82,6 @@ mymain(void)
                                      .qapiSchemaCache = NULL };
 
     if (!capslatest)
-        return EXIT_FAILURE;
-
-    if (!(fakerootdir = virTestFakeRootDirInit()))
         return EXIT_FAILURE;
 
     if (qemuTestDriverInit(&driver) < 0)
@@ -134,8 +130,6 @@ mymain(void)
     DO_TEST_STATUS("backup-pull");
 
  cleanup:
-    virTestFakeRootDirCleanup(fakerootdir);
-
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

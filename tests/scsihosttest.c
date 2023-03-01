@@ -231,10 +231,10 @@ static int
 mymain(void)
 {
     int ret = -1;
-    g_autofree char *fakerootdir = NULL;
+    const char *fakerootdir = NULL;
     g_autofree char *fakesysfsdir = NULL;
 
-    if (!(fakerootdir = virTestFakeRootDirInit()))
+    if (!(fakerootdir = g_getenv("LIBVIRT_FAKE_ROOT_DIR")))
         return EXIT_FAILURE;
 
     fakesysfsdir = g_strdup_printf("%s/sys", fakerootdir);
@@ -262,7 +262,6 @@ mymain(void)
     ret = 0;
 
  cleanup:
-    virTestFakeRootDirCleanup(fakerootdir);
     VIR_FREE(scsihost_class_path);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

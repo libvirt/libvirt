@@ -46,11 +46,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-    g_autofree char *fakerootdir = NULL;
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
-
-    if (!(fakerootdir = virTestFakeRootDirInit()))
-        return EXIT_FAILURE;
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
@@ -129,8 +125,6 @@ mymain(void)
     DO_TEST("pseries-locked+hostdev", VIR_DOMAIN_MEMORY_PARAM_UNLIMITED);
 
  cleanup:
-    virTestFakeRootDirCleanup(fakerootdir);
-
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

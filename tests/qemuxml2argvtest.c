@@ -800,7 +800,6 @@ static int
 mymain(void)
 {
     int ret = 0;
-    g_autofree char *fakerootdir = NULL;
     g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
     g_autoptr(GHashTable) qapiSchemaCache = virHashNew((GDestroyNotify) g_hash_table_unref);
     g_autoptr(GHashTable) capscache = virHashNew(virObjectUnref);
@@ -809,9 +808,6 @@ mymain(void)
                                      .qapiSchemaCache = qapiSchemaCache };
 
     if (!capslatest)
-        return EXIT_FAILURE;
-
-    if (!(fakerootdir = virTestFakeRootDirInit()))
         return EXIT_FAILURE;
 
     /* Set the timezone because we are mocking the time() function.
@@ -2986,8 +2982,6 @@ mymain(void)
     DO_TEST_CAPS_VER("sgx-epc", "7.0.0");
 
     DO_TEST_CAPS_LATEST("crypto-builtin");
-
-    virTestFakeRootDirCleanup(fakerootdir);
 
     VIR_FREE(driver.config->nbdTLSx509certdir);
     qemuTestDriverFree(&driver);

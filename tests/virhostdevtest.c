@@ -588,10 +588,6 @@ static int
 mymain(void)
 {
     int ret = 0;
-    g_autofree char *fakerootdir = NULL;
-
-    if (!(fakerootdir = virTestFakeRootDirInit()))
-        return EXIT_FAILURE;
 
 # define DO_TEST(fnc) \
     do { \
@@ -601,7 +597,6 @@ mymain(void)
 
     if (myInit() < 0) {
         fprintf(stderr, "Init data structures failed.");
-        virTestFakeRootDirCleanup(fakerootdir);
         return EXIT_FAILURE;
     }
 
@@ -613,8 +608,6 @@ mymain(void)
     DO_TEST(testNVMeDiskRoundtrip);
 
     myCleanup();
-
-    virTestFakeRootDirCleanup(fakerootdir);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

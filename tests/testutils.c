@@ -808,6 +808,7 @@ int virTestMain(int argc,
     g_autofree const char **preloads = NULL;
     size_t npreloads = 0;
     g_autofree char *mock = NULL;
+    g_autofree char *fakerootdir = NULL;
 
     if (getenv("VIR_TEST_FILE_ACCESS")) {
         preloads = g_renew(const char *, preloads, npreloads + 2);
@@ -888,6 +889,9 @@ int virTestMain(int argc,
 
     failedTests = virBitmapNew(1);
 
+    if (!(fakerootdir = virTestFakeRootDirInit()))
+        return EXIT_FAILURE;
+
     ret = (func)();
 
     virResetLastError();
@@ -896,6 +900,8 @@ int virTestMain(int argc,
             fprintf(stderr, "%*s", 40 - (int)(testCounter % 40), "");
         fprintf(stderr, " %-3zu %s\n", testCounter, ret == 0 ? "OK" : "FAIL");
     }
+
+    virTestFakeRootDirCleanup(fakerootdir);
 
     switch (ret) {
     case EXIT_FAILURE:

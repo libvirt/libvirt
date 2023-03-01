@@ -117,7 +117,6 @@ static int
 mymain(void)
 {
     int ret = 0;
-    g_autofree char *fakerootdir = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
     g_autoptr(GHashTable) capscache = virHashNew(virObjectUnref);
@@ -127,9 +126,6 @@ mymain(void)
                                      .qapiSchemaCache = NULL };
 
     if (!capslatest)
-        return EXIT_FAILURE;
-
-    if (!(fakerootdir = virTestFakeRootDirInit()))
         return EXIT_FAILURE;
 
     /* Required for tpm-emulator tests
@@ -1325,8 +1321,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("crypto-builtin");
 
  cleanup:
-    virTestFakeRootDirCleanup(fakerootdir);
-
     qemuTestDriverFree(&driver);
     virFileWrapperClearPrefixes();
 
