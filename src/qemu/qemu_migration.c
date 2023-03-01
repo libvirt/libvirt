@@ -251,6 +251,16 @@ qemuMigrationSrcRestoreDomainState(virQEMUDriver *driver, virDomainObj *vm)
              * overwrite the previous error, though, so we just throw something
              * to the logs and hope for the best */
             VIR_ERROR(_("Failed to resume guest %s after failure"), vm->def->name);
+            if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
+                virObjectEvent *event;
+
+                virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
+                                     VIR_DOMAIN_PAUSED_API_ERROR);
+                event = virDomainEventLifecycleNewFromObj(vm,
+                                                          VIR_DOMAIN_EVENT_SUSPENDED,
+                                                          VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
+                virObjectEventStateQueue(driver->domainEventState, event);
+            }
             goto cleanup;
         }
         ret = true;
