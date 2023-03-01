@@ -88,6 +88,7 @@ struct _virCommandSendBuffer {
 struct _virCommand {
     int has_error; /* 0 on success, -1 on error  */
 
+    char *binaryPath; /* only valid if args[0] isn't absolute path */
     char **args;
     size_t nargs;
     size_t maxargs;
@@ -630,6 +631,7 @@ virCommandMassClose(virCommand *cmd,
 
 # endif /* ! __FreeBSD__ */
 
+
 /*
  * virExec:
  * @cmd virCommand * containing all information about the program to
@@ -646,22 +648,13 @@ virExec(virCommand *cmd)
     int childin = cmd->infd;
     int childout = -1;
     int childerr = -1;
-    g_autofree char *binarystr = NULL;
     const char *binary = NULL;
     int ret;
     g_autofree gid_t *groups = NULL;
     int ngroups;
 
-    if (!g_path_is_absolute(cmd->args[0])) {
-        if (!(binary = binarystr = virFindFileInPath(cmd->args[0]))) {
-            virReportSystemError(ENOENT,
-                                 _("Cannot find '%s' in path"),
-                                 cmd->args[0]);
-            return -1;
-        }
-    } else {
-        binary = cmd->args[0];
-    }
+    if (!(binary = virCommandGetBinaryPath(cmd)))
+        return -1;
 
     if (childin < 0) {
         if (getDevNull(&null) < 0)
@@ -2164,6 +2157,40 @@ virCommandGetArgList(virCommand *cmd,
 }
 
 
+/*
+ * virCommandGetBinaryPath:
+ * @cmd: virCommand* containing all information about the program
+ *
+ * If args[0] is an absolute path, return that. If not, then resolve
+ * args[0] to a full absolute path, cache that in binaryPath, and
+ * return a pointer to this resolved string. binaryPath is only set by
+ * calling this function, so even other virCommand functions should
+ * access binaryPath via this function.
+ *
+ * returns const char* with the full path of the binary to be
+ * executed, or NULL on failure.
+ */
+const char *
+virCommandGetBinaryPath(virCommand *cmd)
+{
+
+    if (cmd->binaryPath)
+        return cmd->binaryPath;
+
+    if (g_path_is_absolute(cmd->args[0]))
+        return cmd->args[0];
+
+    if (!(cmd->binaryPath = virFindFileInPath(cmd->args[0]))) {
+        virReportSystemError(ENOENT,
+                             _("Cannot find '%s' in path"),
+                             cmd->args[0]);
+        return NULL;
+    }
+
+    return cmd->binaryPath;
+}
+
+
 #ifndef WIN32
 /*
  * Manage input and output to the child process.
@@ -3014,6 +3041,8 @@ virCommandFree(virCommand *cmd)
     g_free(cmd->inbuf);
     VIR_FORCE_CLOSE(cmd->outfd);
     VIR_FORCE_CLOSE(cmd->errfd);
+
+    g_free(cmd->binaryPath);
 
     for (i = 0; i < cmd->nargs; i++)
         g_free(cmd->args[i]);

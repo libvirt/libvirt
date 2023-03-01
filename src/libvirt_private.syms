@@ -2091,6 +2091,7 @@ virCommandDryRunTokenNew;
 virCommandExec;
 virCommandFree;
 virCommandGetArgList;
+virCommandGetBinaryPath;
 virCommandGetGID;
 virCommandGetUID;
 virCommandHandshakeNotify;
