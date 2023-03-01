@@ -656,8 +656,6 @@ testQemuHotplugCpuIndividual(const void *opaque)
     return ret;
 }
 
-#define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
-
 
 static int
 mymain(void)
@@ -669,14 +667,9 @@ mymain(void)
     g_autofree char *fakerootdir = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
 
-    fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
-
-    if (!g_mkdtemp(fakerootdir)) {
-        fprintf(stderr, "Cannot create fakerootdir");
-        abort();
+    if (!(fakerootdir = virTestFakeRootDirInit())) {
+        return EXIT_FAILURE;
     }
-
-    g_setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, TRUE);
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
@@ -1004,8 +997,7 @@ mymain(void)
     DO_TEST_CPU_INDIVIDUAL("ppc64-modern-individual", "16-22", true, true, true);
     DO_TEST_CPU_INDIVIDUAL("ppc64-modern-individual", "17", true, true, true);
 
-    if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
-        virFileDeleteTree(fakerootdir);
+    virTestFakeRootDirCleanup(fakerootdir);
 
     qemuTestDriverFree(&driver);
     virObjectUnref(data.vm);

@@ -70,8 +70,6 @@ testInfoSetStatusPaths(struct testQemuInfo *info)
 }
 
 
-#define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
-
 static int
 mymain(void)
 {
@@ -87,14 +85,8 @@ mymain(void)
     if (!capslatest)
         return EXIT_FAILURE;
 
-    fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
-
-    if (!g_mkdtemp(fakerootdir)) {
-        fprintf(stderr, "Cannot create fakerootdir");
-        abort();
-    }
-
-    g_setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, TRUE);
+    if (!(fakerootdir = virTestFakeRootDirInit()))
+        return EXIT_FAILURE;
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
@@ -142,8 +134,7 @@ mymain(void)
     DO_TEST_STATUS("backup-pull");
 
  cleanup:
-    if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
-        virFileDeleteTree(fakerootdir);
+    virTestFakeRootDirCleanup(fakerootdir);
 
     qemuTestDriverFree(&driver);
 

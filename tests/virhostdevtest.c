@@ -584,22 +584,14 @@ testNVMeDiskRoundtrip(const void *opaque G_GNUC_UNUSED)
 }
 
 
-# define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
-
 static int
 mymain(void)
 {
     int ret = 0;
     g_autofree char *fakerootdir = NULL;
 
-    fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
-
-    if (!g_mkdtemp(fakerootdir)) {
-        fprintf(stderr, "Cannot create fakerootdir");
-        abort();
-    }
-
-    g_setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, TRUE);
+    if (!(fakerootdir = virTestFakeRootDirInit()))
+        return EXIT_FAILURE;
 
 # define DO_TEST(fnc) \
     do { \
@@ -609,7 +601,7 @@ mymain(void)
 
     if (myInit() < 0) {
         fprintf(stderr, "Init data structures failed.");
-        virFileDeleteTree(fakerootdir);
+        virTestFakeRootDirCleanup(fakerootdir);
         return EXIT_FAILURE;
     }
 
@@ -622,8 +614,7 @@ mymain(void)
 
     myCleanup();
 
-    if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
-        virFileDeleteTree(fakerootdir);
+    virTestFakeRootDirCleanup(fakerootdir);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

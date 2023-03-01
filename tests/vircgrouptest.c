@@ -956,22 +956,14 @@ static int testCgroupGetBlkioIoDeviceServiced(const void *args G_GNUC_UNUSED)
     return 0;
 }
 
-# define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
-
 static char *
 initFakeFS(const char *mode,
            const char *filename)
 {
     char *fakerootdir;
 
-    fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
-
-    if (!g_mkdtemp(fakerootdir)) {
-        fprintf(stderr, "Cannot create fakerootdir");
+    if (!(fakerootdir = virTestFakeRootDirInit()))
         abort();
-    }
-
-    g_setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, TRUE);
 
     if (mode)
         g_setenv("VIR_CGROUP_MOCK_MODE", mode, TRUE);
@@ -985,13 +977,11 @@ initFakeFS(const char *mode,
 static void
 cleanupFakeFS(char *fakerootdir)
 {
-    if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
-        virFileDeleteTree(fakerootdir);
-
-    VIR_FREE(fakerootdir);
-    g_unsetenv("LIBVIRT_FAKE_ROOT_DIR");
     g_unsetenv("VIR_CGROUP_MOCK_MODE");
     g_unsetenv("VIR_CGROUP_MOCK_FILENAME");
+
+    virTestFakeRootDirCleanup(fakerootdir);
+    VIR_FREE(fakerootdir);
 }
 
 static int
