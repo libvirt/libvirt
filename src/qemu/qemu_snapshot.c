@@ -2314,7 +2314,7 @@ qemuSnapshotDeleteExternalPrepare(virDomainObj *vm,
         g_autofree qemuSnapshotDeleteExternalData *data = NULL;
         virDomainSnapshotDiskDef *snapDisk = &(snapdef->disks[i]);
 
-        if (snapDisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NO)
+        if (snapDisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
             continue;
 
         if (snapDisk->snapshotDeleteInProgress) {
