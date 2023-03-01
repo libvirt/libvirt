@@ -1915,8 +1915,17 @@ virDomainBlkioDeviceParseXML(xmlNodePtr root,
 }
 
 
-bool virDomainObjTaint(virDomainObj *obj,
-                       virDomainTaintFlags taint)
+/**
+ * virDomainObjTaint:
+ * @obj: domain object
+ * @taint: domain taint flag
+ *
+ * Marks @obj as tainted by @taint. Returns 'false' if @obj already has
+ * been tainted with @taint.
+ */
+bool
+virDomainObjTaint(virDomainObj *obj,
+                  virDomainTaintFlags taint)
 {
     unsigned int flag = (1 << taint);
 
