@@ -1293,7 +1293,6 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-network-tlsx509-vxhs", "5.0.0");
     DO_TEST_CAPS_LATEST("disk-network-http");
     driver.config->vxhsTLS = 0;
-    VIR_FREE(driver.config->vxhsTLSx509certdir);
     DO_TEST_CAPS_LATEST("disk-no-boot");
     DO_TEST_CAPS_LATEST("disk-nvme");
     DO_TEST_CAPS_VER("disk-vhostuser-numa", "4.2.0");
@@ -1396,7 +1395,6 @@ mymain(void)
     VIR_FREE(driver.config->vncTLSx509secretUUID);
     driver.config->vncSASL = driver.config->vncTLSx509verify = driver.config->vncTLS = 0;
     VIR_FREE(driver.config->vncSASLdir);
-    VIR_FREE(driver.config->vncTLSx509certdir);
     DO_TEST_CAPS_LATEST("graphics-vnc-egl-headless");
 
     DO_TEST("graphics-sdl",
@@ -1566,14 +1564,11 @@ mymain(void)
     DO_TEST("serial-tcp-tlsx509-chardev-notls",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_CAPS_LATEST("serial-tcp-tlsx509-chardev-notls");
-    VIR_FREE(driver.config->chardevTLSx509certdir);
-    driver.config->chardevTLSx509certdir = g_strdup("/etc/pki/libvirt-chardev");
     driver.config->chardevTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     DO_TEST("serial-tcp-tlsx509-secret-chardev",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_CAPS_LATEST("serial-tcp-tlsx509-secret-chardev");
     driver.config->chardevTLS = 0;
-    VIR_FREE(driver.config->chardevTLSx509certdir);
     DO_TEST("serial-many-chardev",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_NOCAPS("parallel-tcp-chardev");
@@ -2977,7 +2972,6 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("crypto-builtin");
 
-    VIR_FREE(driver.config->nbdTLSx509certdir);
     qemuTestDriverFree(&driver);
     virFileWrapperClearPrefixes();
 
