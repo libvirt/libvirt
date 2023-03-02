@@ -696,6 +696,10 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     cfg->vxhsTLSx509certdir = g_strdup("/etc/pki/libvirt-vxhs/dummy,path");
     VIR_FREE(cfg->nbdTLSx509certdir);
     cfg->nbdTLSx509certdir = g_strdup("/etc/pki/libvirt-nbd/dummy,path");
+    VIR_FREE(cfg->migrateTLSx509certdir);
+    cfg->migrateTLSx509certdir = g_strdup("/etc/pki/libvirt-migrate");
+    VIR_FREE(cfg->backupTLSx509certdir);
+    cfg->backupTLSx509certdir = g_strdup("/etc/pki/libvirt-backup");
 
     VIR_FREE(cfg->vncSASLdir);
     cfg->vncSASLdir = g_strdup("/root/.sasl2");
