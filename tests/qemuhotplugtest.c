@@ -673,11 +673,6 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
-    VIR_FREE(driver.config->spiceListen);
-    VIR_FREE(driver.config->vncListen);
-    /* some dummy values from 'config file' */
-    driver.config->spicePassword = g_strdup("123456");
-
     if (!(driver.domainEventState = virObjectEventStateNew()))
         return EXIT_FAILURE;
 
