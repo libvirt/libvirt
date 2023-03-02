@@ -135,3 +135,7 @@ int
 virFileCacheInsertData(virFileCache *cache,
                        const char *name,
                        void *data);
+
+/* for testing usage */
+void
+virFileCacheClear(virFileCache *cache);

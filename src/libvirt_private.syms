@@ -2354,6 +2354,7 @@ virFindFileInPath;
 
 
 # util/virfilecache.h
+virFileCacheClear;
 virFileCacheGetPriv;
 virFileCacheInsertData;
 virFileCacheLookup;

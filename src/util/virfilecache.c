@@ -407,3 +407,19 @@ virFileCacheInsertData(virFileCache *cache,
 
     return ret;
 }
+
+
+/**
+ * virFileCacheClear:
+ * @cache: existing cache object
+ *
+ * Drops all entries from the cache. This is useful in tests to clean out
+ * previous usage.
+ */
+void
+virFileCacheClear(virFileCache *cache)
+{
+    virObjectLock(cache);
+    virHashRemoveAll(cache->table);
+    virObjectUnlock(cache);
+}
