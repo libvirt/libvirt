@@ -83,18 +83,6 @@ static const char *const *qemu_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_S390X] = s390x_machines,
 };
 
-static const char *const *kvm_machines[VIR_ARCH_LAST] = {
-    [VIR_ARCH_I686] = i386_machines,
-    [VIR_ARCH_X86_64] = x86_64_machines,
-    [VIR_ARCH_AARCH64] = aarch64_machines,
-    [VIR_ARCH_ARMV7L] = arm_machines,
-    [VIR_ARCH_PPC64] = ppc64_machines,
-    [VIR_ARCH_PPC] = ppc_machines,
-    [VIR_ARCH_RISCV32] = riscv32_machines,
-    [VIR_ARCH_RISCV64] = riscv64_machines,
-    [VIR_ARCH_S390X] = s390x_machines,
-};
-
 static const char *const *hvf_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_I686] = NULL,
     [VIR_ARCH_X86_64] = x86_64_machines,
@@ -238,17 +226,15 @@ testQemuAddGuest(virCaps *caps,
                                   NULL, NULL, 0, NULL);
 
     if (hostOS == HOST_OS_LINUX) {
-        if (kvm_machines[emu_arch] != NULL) {
-            nmachines = g_strv_length((char **)kvm_machines[emu_arch]);
-            machines = virCapabilitiesAllocMachines(kvm_machines[emu_arch],
-                                                    nmachines);
-            if (machines == NULL)
-                goto error;
+        nmachines = g_strv_length((char **)qemu_machines[emu_arch]);
+        machines = virCapabilitiesAllocMachines(qemu_machines[emu_arch],
+                                                nmachines);
+        if (machines == NULL)
+            goto error;
 
-            virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
-                                          qemu_emulators[emu_arch],
-                                          NULL, nmachines, machines);
-        }
+        virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                      qemu_emulators[emu_arch],
+                                      NULL, nmachines, machines);
     }
 
     if (hostOS == HOST_OS_MACOS) {
@@ -455,25 +441,21 @@ qemuTestCapsPopulateFakeMachines(virQEMUCaps *caps,
                               false,
                               VIR_TRISTATE_BOOL_ABSENT);
         virQEMUCapsSet(caps, QEMU_CAPS_TCG);
-    }
 
-    if (hostOS == HOST_OS_LINUX) {
-        if (kvm_machines[arch] != NULL) {
-            for (i = 0; kvm_machines[arch][i] != NULL; i++) {
-                virQEMUCapsAddMachine(caps,
-                                      VIR_DOMAIN_VIRT_KVM,
-                                      kvm_machines[arch][i],
-                                      NULL,
-                                      NULL,
-                                      0,
-                                      false,
-                                      false,
-                                      true,
-                                      defaultRAMid,
-                                      false,
-                                      VIR_TRISTATE_BOOL_ABSENT);
-                virQEMUCapsSet(caps, QEMU_CAPS_KVM);
-            }
+        if (hostOS == HOST_OS_LINUX) {
+            virQEMUCapsAddMachine(caps,
+                                  VIR_DOMAIN_VIRT_KVM,
+                                  qemu_machines[arch][i],
+                                  NULL,
+                                  NULL,
+                                  0,
+                                  false,
+                                  false,
+                                  true,
+                                  defaultRAMid,
+                                  false,
+                                  VIR_TRISTATE_BOOL_ABSENT);
+            virQEMUCapsSet(caps, QEMU_CAPS_KVM);
         }
     }
 
