@@ -29,14 +29,12 @@ static const char *qemu_emulators[VIR_ARCH_LAST] = {
     [VIR_ARCH_I686] = "/usr/bin/qemu-system-i386",
     [VIR_ARCH_X86_64] = "/usr/bin/qemu-system-x86_64",
     [VIR_ARCH_AARCH64] = "/usr/bin/qemu-system-aarch64",
-    [VIR_ARCH_ARMV7L] = "/usr/bin/qemu-system-arm",
     [VIR_ARCH_PPC64] = "/usr/bin/qemu-system-ppc64",
     [VIR_ARCH_S390X] = "/usr/bin/qemu-system-s390x",
 };
 
 static const virArch arch_alias[VIR_ARCH_LAST] = {
     [VIR_ARCH_PPC64LE] = VIR_ARCH_PPC64,
-    [VIR_ARCH_ARMV6L] = VIR_ARCH_ARMV7L,
 };
 
 static const char *const i386_machines[] = {
@@ -49,9 +47,6 @@ static const char *const x86_64_machines[] = {
 static const char *const aarch64_machines[] = {
     "virt", "virt-2.6", "versatilepb", NULL
 };
-static const char *const arm_machines[] = {
-    "vexpress-a9", "virt", NULL
-};
 static const char *const ppc64_machines[] = {
     "pseries", NULL
 };
@@ -63,7 +58,6 @@ static const char *const *qemu_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_I686] = i386_machines,
     [VIR_ARCH_X86_64] = x86_64_machines,
     [VIR_ARCH_AARCH64] = aarch64_machines,
-    [VIR_ARCH_ARMV7L] = arm_machines,
     [VIR_ARCH_PPC64] = ppc64_machines,
     [VIR_ARCH_S390X] = s390x_machines,
 };
@@ -72,7 +66,6 @@ static const char *const *hvf_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_I686] = NULL,
     [VIR_ARCH_X86_64] = x86_64_machines,
     [VIR_ARCH_AARCH64] = aarch64_machines,
-    [VIR_ARCH_ARMV7L] = NULL,
     [VIR_ARCH_PPC64] = NULL,
     [VIR_ARCH_RISCV64] = NULL,
     [VIR_ARCH_S390X] = NULL,
@@ -82,7 +75,6 @@ static const char *qemu_default_ram_id[VIR_ARCH_LAST] = {
     [VIR_ARCH_I686] = "pc.ram",
     [VIR_ARCH_X86_64] = "pc.ram",
     [VIR_ARCH_AARCH64] = "mach-virt.ram",
-    [VIR_ARCH_ARMV7L] = "vexpress.highmem",
     [VIR_ARCH_PPC64] = "ppc_spapr.ram",
     [VIR_ARCH_S390X] = "s390.ram",
 };
