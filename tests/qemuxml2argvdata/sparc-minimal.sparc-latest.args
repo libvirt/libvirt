@@ -32,4 +32,5 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-redhat62sparc/.config \
 -blockdev '{"node-name":"libvirt-1-format","read-only":true,"driver":"raw","file":"libvirt-1-storage"}' \
 -device scsi-cd,bus=scsi.0,scsi-id=1,device_id=drive-scsi0-0-0-1,drive=libvirt-1-format,id=scsi0-0-0-1 \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

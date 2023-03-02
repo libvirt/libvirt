@@ -2737,8 +2737,7 @@ mymain(void)
             QEMU_CAPS_OBJECT_GPEX,
             QEMU_CAPS_NEC_USB_XHCI);
 
-    DO_TEST("sparc-minimal",
-            QEMU_CAPS_SCSI_NCR53C90);
+    DO_TEST_CAPS_ARCH_LATEST("sparc-minimal", "sparc");
 
     DO_TEST_CAPS_LATEST_PARSE_ERROR("missing-machine");
 
