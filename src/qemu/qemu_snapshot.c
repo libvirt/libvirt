@@ -2759,34 +2759,43 @@ qemuSnapshotDeleteExternalPrepare(virDomainObj *vm,
         return 0;
     }
 
-    /* this also serves as validation whether the snapshot can be deleted */
-    if (qemuSnapshotDeleteExternalPrepareData(vm, snap, true, &tmpData) < 0)
-        return -1;
-
-    if (!virDomainObjIsActive(vm)) {
-        if (qemuProcessStart(NULL, driver, vm, NULL, VIR_ASYNC_JOB_SNAPSHOT,
-                             NULL, -1, NULL, NULL,
-                             VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
-                             VIR_QEMU_PROCESS_START_PAUSED) < 0) {
-            return -1;
-        }
-
-        *stop_qemu = true;
-
-        /* Call the prepare again as some data require that the VM is
-         * running to get everything we need. */
-        if (qemuSnapshotDeleteExternalPrepareData(vm, snap, true, externalData) < 0)
+    /* Leaf non-active snapshot doesn't have overlay files for the disk images
+     * so there is no need to do any merge and we can just delete the files
+     * directly. */
+    if (snap != virDomainSnapshotGetCurrent(vm->snapshots) &&
+        snap->nchildren == 0) {
+        if (qemuSnapshotDeleteExternalPrepareData(vm, snap, false, externalData) < 0)
             return -1;
     } else {
-        qemuDomainJobPrivate *jobPriv = vm->job->privateData;
+        /* this also serves as validation whether the snapshot can be deleted */
+        if (qemuSnapshotDeleteExternalPrepareData(vm, snap, true, &tmpData) < 0)
+            return -1;
 
-        *externalData = g_steal_pointer(&tmpData);
+        if (!virDomainObjIsActive(vm)) {
+            if (qemuProcessStart(NULL, driver, vm, NULL, VIR_ASYNC_JOB_SNAPSHOT,
+                                 NULL, -1, NULL, NULL,
+                                 VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
+                                 VIR_QEMU_PROCESS_START_PAUSED) < 0) {
+                return -1;
+            }
 
-        /* If the VM is running we need to indicate that the async snapshot
-         * job is snapshot delete job. */
-        jobPriv->snapshotDelete = true;
+            *stop_qemu = true;
 
-        qemuDomainSaveStatus(vm);
+            /* Call the prepare again as some data require that the VM is
+             * running to get everything we need. */
+            if (qemuSnapshotDeleteExternalPrepareData(vm, snap, true, externalData) < 0)
+                return -1;
+        } else {
+            qemuDomainJobPrivate *jobPriv = vm->job->privateData;
+
+            *externalData = g_steal_pointer(&tmpData);
+
+            /* If the VM is running we need to indicate that the async snapshot
+             * job is snapshot delete job. */
+            jobPriv->snapshotDelete = true;
+
+            qemuDomainSaveStatus(vm);
+        }
     }
 
     return 0;
