@@ -858,7 +858,6 @@ mymain(void)
     driver.config->hugetlbfs[0].size = 2048;
     driver.config->hugetlbfs[0].deflt = true;
     driver.config->hugetlbfs[1].size = 1048576;
-    driver.config->spiceTLS = 1;
     driver.config->spicePassword = g_strdup("123456");
     VIR_FREE(driver.config->memoryBackingDir);
     driver.config->memoryBackingDir = g_strdup("/var/lib/libvirt/qemu/ram");
@@ -1404,6 +1403,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("graphics-sdl-egl-headless");
     DO_TEST("graphics-sdl-fullscreen",
             QEMU_CAPS_DEVICE_CIRRUS_VGA, QEMU_CAPS_SDL);
+
+    driver.config->spiceTLS = 1;
     DO_TEST_CAPS_LATEST("graphics-spice");
     DO_TEST_CAPS_LATEST("graphics-spice-no-args");
     driver.config->spiceSASL = 1;
@@ -1423,6 +1424,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("graphics-spice-egl-headless");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("graphics-spice-invalid-egl-headless");
     DO_TEST_CAPS_LATEST("graphics-spice-gl-auto-rendernode");
+    driver.config->spiceTLS = 0;
 
     DO_TEST("graphics-dbus",
             QEMU_CAPS_DEVICE_CIRRUS_VGA, QEMU_CAPS_DISPLAY_DBUS);
@@ -1505,10 +1507,12 @@ mymain(void)
 
     DO_TEST("serial-file-log",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
+    driver.config->spiceTLS = 1;
     DO_TEST("serial-spiceport",
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_ISA_SERIAL);
+    driver.config->spiceTLS = 0;
 
     DO_TEST("console-compat",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
@@ -1528,7 +1532,9 @@ mymain(void)
     DO_TEST("serial-unix-chardev",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_CAPS_LATEST("serial-file-log");
+    driver.config->spiceTLS = 1;
     DO_TEST_CAPS_LATEST("serial-spiceport");
+    driver.config->spiceTLS = 0;
     DO_TEST_CAPS_LATEST("serial-debugcon");
 
     DO_TEST_CAPS_LATEST("console-compat");
@@ -1597,9 +1603,11 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("console-virtio-ccw", "s390x");
     DO_TEST_CAPS_LATEST("console-virtio-unix");
     DO_TEST_CAPS_ARCH_LATEST("console-sclp", "s390x");
+    driver.config->spiceTLS = 1;
     DO_TEST("channel-spicevmc",
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    driver.config->spiceTLS = 0;
     DO_TEST_CAPS_LATEST("channel-qemu-vdagent");
     DO_TEST_CAPS_LATEST("channel-qemu-vdagent-features");
     DO_TEST("channel-virtio-default",
