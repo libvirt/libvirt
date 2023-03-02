@@ -1,15 +1,15 @@
 LC_ALL=C \
 PATH=/bin \
-HOME=/tmp/lib/domain--1-foo=1,bar=2 \
+HOME=/var/lib/libvirt/qemu/domain--1-foo=1,bar=2 \
 USER=test \
 LOGNAME=test \
-XDG_DATA_HOME=/tmp/lib/domain--1-foo=1,bar=2/.local/share \
-XDG_CACHE_HOME=/tmp/lib/domain--1-foo=1,bar=2/.cache \
-XDG_CONFIG_HOME=/tmp/lib/domain--1-foo=1,bar=2/.config \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-foo=1,bar=2/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-foo=1,bar=2/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-foo=1,bar=2/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=foo=1,,bar=2,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-foo=1,bar=2/master-key.aes"}' \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-foo=1,bar=2/master-key.aes"}' \
 -machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
 -accel tcg \
 -cpu qemu64 \
@@ -40,8 +40,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-foo=1,bar=2/.config \
 -chardev pipe,id=charchannel0,path=/tmp/guestfwd,,foo \
 -netdev '{"type":"user","guestfwd":[{"str":"tcp:10.0.2.1:4600-chardev:charchannel0"}],"id":"channel0"}' \
 -audiodev '{"id":"audio1","driver":"spice"}' \
--vnc vnc=unix:/tmp/lib/domain--1-foo=1,,bar=2/vnc.sock,audiodev=audio1 \
--spice unix,addr=/tmp/lib/domain--1-foo=1,,bar=2/spice.sock,gl=on,rendernode=/dev/dri/foo,,bar,seamless-migration=on \
+-vnc vnc=unix:/var/lib/libvirt/qemu/domain--1-foo=1,,bar=2/vnc.sock,audiodev=audio1 \
+-spice unix,addr=/var/lib/libvirt/qemu/domain--1-foo=1,,bar=2/spice.sock,gl=on,rendernode=/dev/dri/foo,,bar,seamless-migration=on \
 -device '{"driver":"cirrus-vga","id":"video0","bus":"pci.0","addr":"0x2"}' \
 -blockdev '{"driver":"iscsi","portal":"example.foo.org:3260","target":"iqn.1992-01.com.example:my,storage","lun":1,"transport":"tcp","node-name":"libvirt-2-backend","read-only":false}' \
 -device '{"driver":"scsi-generic","drive":"libvirt-2-backend","id":"hostdev0","bus":"scsi0.0","channel":0,"scsi-id":0,"lun":4}' \

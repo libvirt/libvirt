@@ -1,15 +1,15 @@
 LC_ALL=C \
 PATH=/bin \
-HOME=/tmp/lib/domain--1-armtest \
+HOME=/var/lib/libvirt/qemu/domain--1-armtest \
 USER=test \
 LOGNAME=test \
-XDG_DATA_HOME=/tmp/lib/domain--1-armtest/.local/share \
-XDG_CACHE_HOME=/tmp/lib/domain--1-armtest/.cache \
-XDG_CONFIG_HOME=/tmp/lib/domain--1-armtest/.config \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
 /usr/bin/qemu-system-arm \
 -name guest=armtest,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-armtest/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-armtest/master-key.aes \
 -machine virt,usb=off,dump-guest-core=off \
 -accel kvm \
 -cpu host,aarch64=off \

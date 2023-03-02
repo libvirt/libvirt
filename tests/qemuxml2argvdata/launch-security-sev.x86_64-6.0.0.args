@@ -1,15 +1,15 @@
 LC_ALL=C \
 PATH=/bin \
-HOME=/tmp/lib/domain--1-QEMUGuest1 \
+HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1 \
 USER=test \
 LOGNAME=test \
-XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
-XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
-XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pc-i440fx-6.0,usb=off,dump-guest-core=off,memory-backend=pc.ram,confidential-guest-support=lsec0 \
 -accel kvm \
 -cpu qemu64 \
@@ -32,6 +32,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device ide-hd,bus=ide.0,unit=0,drive=libvirt-1-format,id=ide0-0-0,bootindex=1 \
 -audiodev '{"id":"audio1","driver":"none"}' \
--object '{"qom-type":"sev-guest","id":"lsec0","cbitpos":47,"reduced-phys-bits":1,"policy":1,"dh-cert-file":"/tmp/lib/domain--1-QEMUGuest1/dh_cert.base64","session-file":"/tmp/lib/domain--1-QEMUGuest1/session.base64"}' \
+-object '{"qom-type":"sev-guest","id":"lsec0","cbitpos":47,"reduced-phys-bits":1,"policy":1,"dh-cert-file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/dh_cert.base64","session-file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/session.base64"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

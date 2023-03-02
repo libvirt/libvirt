@@ -1,15 +1,15 @@
 LC_ALL=C \
 PATH=/bin \
-HOME=/tmp/lib/domain--1-q35-test \
+HOME=/var/lib/libvirt/qemu/domain--1-q35-test \
 USER=test \
 LOGNAME=test \
-XDG_DATA_HOME=/tmp/lib/domain--1-q35-test/.local/share \
-XDG_CACHE_HOME=/tmp/lib/domain--1-q35-test/.cache \
-XDG_CONFIG_HOME=/tmp/lib/domain--1-q35-test/.config \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=q35-test,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-q35-test/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-q35-test/master-key.aes \
 -machine pc-q35-4.2,usb=off,dump-guest-core=off \
 -accel tcg \
 -cpu qemu64 \

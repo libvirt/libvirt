@@ -641,12 +641,6 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     VIR_FREE(cfg->stateDir);
     VIR_FREE(cfg->configDir);
 
-    /* Overwrite some default paths so it's consistent for tests. */
-    VIR_FREE(cfg->libDir);
-    VIR_FREE(cfg->channelTargetDir);
-    cfg->libDir = g_strdup("/tmp/lib");
-    cfg->channelTargetDir = g_strdup("/tmp/channel");
-
     if (!g_mkdtemp(statedir)) {
         fprintf(stderr, "Cannot create fake stateDir");
         goto error;

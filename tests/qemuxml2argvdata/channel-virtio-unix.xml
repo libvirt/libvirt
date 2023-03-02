@@ -33,7 +33,7 @@
       <target type='virtio' name='ble'/>
     </channel>
     <channel type='unix'>
-      <source path='/tmp/channel/domain-oldname/fdsa'/>
+      <source path='/var/lib/libvirt/qemu/channel/target/domain-oldname/fdsa'/>
       <target type='virtio' name='fdsa'/>
     </channel>
     <memballoon model='none'/>

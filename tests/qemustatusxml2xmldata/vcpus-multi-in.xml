@@ -306,7 +306,7 @@
   </devices>
   <numad nodeset='0-2' cpuset='1,3'/>
   <libDir path='/tmp'/>
-  <channelTargetDir path='/tmp/channel'/>
+  <channelTargetDir path='/var/lib/libvirt/qemu/channel/target'/>
   <allowReboot value='yes'/>
   <nodename index='0'/>
   <fdset index='0'/>

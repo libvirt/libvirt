@@ -1,15 +1,15 @@
 LC_ALL=C \
 PATH=/bin \
-HOME=/tmp/lib/domain--1-foo \
+HOME=/var/lib/libvirt/qemu/domain--1-foo \
 USER=test \
 LOGNAME=test \
-XDG_DATA_HOME=/tmp/lib/domain--1-foo/.local/share \
-XDG_CACHE_HOME=/tmp/lib/domain--1-foo/.cache \
-XDG_CONFIG_HOME=/tmp/lib/domain--1-foo/.config \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-foo/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-foo/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-foo/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=foo,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-foo/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-foo/master-key.aes \
 -machine pc,usb=off,dump-guest-core=off \
 -accel kvm \
 -cpu host,host-cache-info=on \

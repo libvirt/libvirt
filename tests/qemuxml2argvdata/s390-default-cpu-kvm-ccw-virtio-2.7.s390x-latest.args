@@ -1,15 +1,15 @@
 LC_ALL=C \
 PATH=/bin \
-HOME=/tmp/lib/domain--1-test \
+HOME=/var/lib/libvirt/qemu/domain--1-test \
 USER=test \
 LOGNAME=test \
-XDG_DATA_HOME=/tmp/lib/domain--1-test/.local/share \
-XDG_CACHE_HOME=/tmp/lib/domain--1-test/.cache \
-XDG_CONFIG_HOME=/tmp/lib/domain--1-test/.config \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-test/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-test/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-test/.config \
 /usr/bin/qemu-system-s390x \
 -name guest=test,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-test/master-key.aes"}' \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-test/master-key.aes"}' \
 -machine s390-ccw-virtio-2.7,usb=off,dump-guest-core=off,memory-backend=s390.ram \
 -accel kvm \
 -cpu host \

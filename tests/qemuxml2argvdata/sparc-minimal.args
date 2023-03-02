@@ -1,15 +1,15 @@
 LC_ALL=C \
 PATH=/bin \
-HOME=/tmp/lib/domain--1-redhat62sparc \
+HOME=/var/lib/libvirt/qemu/domain--1-redhat62sparc \
 USER=test \
 LOGNAME=test \
-XDG_DATA_HOME=/tmp/lib/domain--1-redhat62sparc/.local/share \
-XDG_CACHE_HOME=/tmp/lib/domain--1-redhat62sparc/.cache \
-XDG_CONFIG_HOME=/tmp/lib/domain--1-redhat62sparc/.config \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-redhat62sparc/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-redhat62sparc/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-redhat62sparc/.config \
 /usr/bin/qemu-system-sparc \
 -name guest=redhat62sparc,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-redhat62sparc/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-redhat62sparc/master-key.aes \
 -machine SS-5,usb=off,dump-guest-core=off \
 -accel tcg \
 -m 500 \

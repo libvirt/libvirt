@@ -1,15 +1,15 @@
 LC_ALL=C \
 PATH=/bin \
-HOME=/tmp/lib/domain--1-pc \
+HOME=/var/lib/libvirt/qemu/domain--1-pc \
 USER=test \
 LOGNAME=test \
-XDG_DATA_HOME=/tmp/lib/domain--1-pc/.local/share \
-XDG_CACHE_HOME=/tmp/lib/domain--1-pc/.cache \
-XDG_CONFIG_HOME=/tmp/lib/domain--1-pc/.config \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-pc/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-pc/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-pc/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=pc,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-pc/master-key.aes"}' \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-pc/master-key.aes"}' \
 -machine pc-i440fx-5.0,usb=off,dump-guest-core=off,acpi=off \
 -accel kvm \
 -cpu qemu64 \

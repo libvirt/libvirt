@@ -1,15 +1,15 @@
 LC_ALL=C \
 PATH=/bin \
-HOME=/tmp/lib/domain--1-default-video-type-r \
+HOME=/var/lib/libvirt/qemu/domain--1-default-video-type-r \
 USER=test \
 LOGNAME=test \
-XDG_DATA_HOME=/tmp/lib/domain--1-default-video-type-r/.local/share \
-XDG_CACHE_HOME=/tmp/lib/domain--1-default-video-type-r/.cache \
-XDG_CONFIG_HOME=/tmp/lib/domain--1-default-video-type-r/.config \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-default-video-type-r/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-default-video-type-r/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-default-video-type-r/.config \
 /usr/bin/qemu-system-riscv64 \
 -name guest=default-video-type-riscv64-test,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-default-video-type-r/master-key.aes"}' \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-default-video-type-r/master-key.aes"}' \
 -machine virt,usb=off,dump-guest-core=off,memory-backend=riscv_virt_board.ram \
 -accel tcg \
 -m 1024 \

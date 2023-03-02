@@ -1,15 +1,15 @@
 LC_ALL=C \
 PATH=/bin \
-HOME=/tmp/lib/domain--1-aarch64-virt-default \
+HOME=/var/lib/libvirt/qemu/domain--1-aarch64-virt-default \
 USER=test \
 LOGNAME=test \
-XDG_DATA_HOME=/tmp/lib/domain--1-aarch64-virt-default/.local/share \
-XDG_CACHE_HOME=/tmp/lib/domain--1-aarch64-virt-default/.cache \
-XDG_CONFIG_HOME=/tmp/lib/domain--1-aarch64-virt-default/.config \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-aarch64-virt-default/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-aarch64-virt-default/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-aarch64-virt-default/.config \
 /usr/bin/qemu-system-aarch64 \
 -name guest=aarch64-virt-default-nic,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-aarch64-virt-default/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-aarch64-virt-default/master-key.aes \
 -machine virt,usb=off,gic-version=2,dump-guest-core=off \
 -accel tcg \
 -cpu cortex-a53 \

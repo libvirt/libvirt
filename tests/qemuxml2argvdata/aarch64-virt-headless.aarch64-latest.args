@@ -1,15 +1,15 @@
 LC_ALL=C \
 PATH=/bin \
-HOME=/tmp/lib/domain--1-guest \
+HOME=/var/lib/libvirt/qemu/domain--1-guest \
 USER=test \
 LOGNAME=test \
-XDG_DATA_HOME=/tmp/lib/domain--1-guest/.local/share \
-XDG_CACHE_HOME=/tmp/lib/domain--1-guest/.cache \
-XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-guest/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-guest/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 /usr/bin/qemu-system-aarch64 \
 -name guest=guest,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-guest/master-key.aes"}' \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-guest/master-key.aes"}' \
 -blockdev '{"driver":"file","filename":"/usr/share/AAVMF/AAVMF_CODE.fd","node-name":"libvirt-pflash0-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,"driver":"raw","file":"libvirt-pflash0-storage"}' \
 -blockdev '{"driver":"file","filename":"/some/user/nvram/path/guest_VARS.fd","node-name":"libvirt-pflash1-storage","auto-read-only":true,"discard":"unmap"}' \

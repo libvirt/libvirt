@@ -1,15 +1,15 @@
 LC_ALL=C \
 PATH=/bin \
-HOME=/tmp/lib/domain--1-hotplug \
+HOME=/var/lib/libvirt/qemu/domain--1-hotplug \
 USER=test \
 LOGNAME=test \
-XDG_DATA_HOME=/tmp/lib/domain--1-hotplug/.local/share \
-XDG_CACHE_HOME=/tmp/lib/domain--1-hotplug/.cache \
-XDG_CONFIG_HOME=/tmp/lib/domain--1-hotplug/.config \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-hotplug/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-hotplug/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-hotplug/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=hotplug,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-hotplug/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-hotplug/master-key.aes \
 -machine pc,usb=off,dump-guest-core=off \
 -accel kvm \
 -m 4096 \

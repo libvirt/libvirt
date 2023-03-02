@@ -34,7 +34,7 @@
       <address type='virtio-serial' controller='0' bus='0' port='3'/>
     </channel>
     <channel type='unix'>
-      <source mode='bind' path='/tmp/channel/QEMUGuest1/org.qemu.guest_agent.3'/>
+      <source mode='bind' path='/var/lib/libvirt/qemu/channel/target/QEMUGuest1/org.qemu.guest_agent.3'/>
       <target type='virtio' name='org.qemu.guest_agent.3'/>
       <address type='virtio-serial' controller='0' bus='0' port='4'/>
     </channel>

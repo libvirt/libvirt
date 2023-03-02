@@ -23,7 +23,7 @@
       <driver name='qemu' type='raw'/>
       <source dev='/dev/mapper/virt' index='1'>
         <reservations managed='yes'>
-          <source type='unix' path='/tmp/lib/domain-7-hotplug/pr-helper0.sock' mode='client'/>
+          <source type='unix' path='/var/lib/libvirt/qemu/domain-7-hotplug/pr-helper0.sock' mode='client'/>
         </reservations>
       </source>
       <backingStore/>

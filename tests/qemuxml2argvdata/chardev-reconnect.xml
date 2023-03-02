@@ -18,7 +18,7 @@
       </source>
     </redirdev>
     <smartcard mode='passthrough' type='unix'>
-      <source mode='connect' path='/tmp/channel/asdf'>
+      <source mode='connect' path='/var/lib/libvirt/qemu/channel/target/asdf'>
         <reconnect enabled='yes' timeout='20'/>
       </source>
     </smartcard>
@@ -29,7 +29,7 @@
       <target type='virtio' name='asdf'/>
     </channel>
     <channel type='unix'>
-      <source mode='connect' path='/tmp/channel/fdsa'>
+      <source mode='connect' path='/var/lib/libvirt/qemu/channel/target/fdsa'>
         <reconnect enabled='no'/>
       </source>
       <target type='virtio' name='fdsa'/>
