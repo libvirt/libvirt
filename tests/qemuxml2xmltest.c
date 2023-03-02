@@ -148,7 +148,6 @@ mymain(void)
     macOSCaps = testQemuCapsInitMacOS();
 
     cfg = virQEMUDriverGetConfig(&driver);
-    driver.privileged = true;
 
     VIR_FREE(cfg->nvramDir);
     cfg->nvramDir = g_strdup("/var/lib/libvirt/qemu/nvram");

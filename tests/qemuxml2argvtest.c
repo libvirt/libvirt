@@ -830,8 +830,6 @@ mymain(void)
     linuxCaps = driver.caps;
     macOSCaps = testQemuCapsInitMacOS();
 
-    driver.privileged = true;
-
     VIR_FREE(driver.config->defaultTLSx509certdir);
     driver.config->defaultTLSx509certdir = g_strdup("/etc/pki/qemu");
     VIR_FREE(driver.config->vncTLSx509certdir);

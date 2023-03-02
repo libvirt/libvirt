@@ -683,6 +683,8 @@ int qemuTestDriverInit(virQEMUDriver *driver)
 
     qemuTestSetHostCPU(driver, driver->hostarch, NULL);
 
+    driver->privileged = true;
+
     return 0;
 
  error:

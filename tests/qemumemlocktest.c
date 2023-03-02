@@ -51,8 +51,6 @@ mymain(void)
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
-    driver.privileged = true;
-
 # define DO_TEST(name, memlock) \
     do { \
         static struct testInfo info = { \
