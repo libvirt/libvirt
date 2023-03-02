@@ -35,7 +35,6 @@ static const char *qemu_emulators[VIR_ARCH_LAST] = {
     [VIR_ARCH_RISCV32] = "/usr/bin/qemu-system-riscv32",
     [VIR_ARCH_RISCV64] = "/usr/bin/qemu-system-riscv64",
     [VIR_ARCH_S390X] = "/usr/bin/qemu-system-s390x",
-    [VIR_ARCH_SPARC] = "/usr/bin/qemu-system-sparc",
 };
 
 static const virArch arch_alias[VIR_ARCH_LAST] = {
@@ -71,9 +70,6 @@ static const char *const riscv64_machines[] = {
 static const char *const s390x_machines[] = {
     "s390-ccw-virtio", NULL
 };
-static const char *const sparc_machines[] = {
-    "SS-5", NULL
-};
 
 static const char *const *qemu_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_I686] = i386_machines,
@@ -85,7 +81,6 @@ static const char *const *qemu_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_RISCV32] = riscv32_machines,
     [VIR_ARCH_RISCV64] = riscv64_machines,
     [VIR_ARCH_S390X] = s390x_machines,
-    [VIR_ARCH_SPARC] = sparc_machines,
 };
 
 static const char *const *kvm_machines[VIR_ARCH_LAST] = {
@@ -120,7 +115,6 @@ static const char *qemu_default_ram_id[VIR_ARCH_LAST] = {
     [VIR_ARCH_PPC64] = "ppc_spapr.ram",
     [VIR_ARCH_PPC] = "ppc_spapr.ram",
     [VIR_ARCH_S390X] = "s390.ram",
-    [VIR_ARCH_SPARC] = "sun4m.ram",
 };
 
 char *
