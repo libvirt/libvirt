@@ -25,6 +25,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-acpi \
 -boot strict=on \
 -usb \
--display dbus,addr=unix:path=/bad-test-used-env-xdg-runtime-dir/libvirt/qemu/run/dbus/-1-QEMUGuest1-dbus.sock \
+-display dbus,addr=unix:path=/var/run/libvirt/qemu/dbus/-1-QEMUGuest1-dbus.sock \
 -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
 -msg timestamp=on
