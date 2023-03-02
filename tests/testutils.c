@@ -820,6 +820,9 @@ int virTestMain(int argc,
 
     g_setenv("HOME", "/bad-test-used-env-home", TRUE);
     g_setenv("XDG_RUNTIME_DIR", "/bad-test-used-env-xdg-runtime-dir", TRUE);
+    g_setenv("XDG_DATA_HOME", "/bad-test-used-env-xdg-data-home", TRUE);
+    g_setenv("XDG_CACHE_HOME", "/bad-test-used-env-xdg-cache-home", TRUE);
+    g_setenv("XDG_CONFIG_HOME", "/bad-test-used-env-xdg-config-home", TRUE);
 
     va_start(ap, func);
     while ((lib = va_arg(ap, const char *))) {
