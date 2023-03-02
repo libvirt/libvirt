@@ -612,6 +612,7 @@ qemuTestCapsCacheInsertMacOS(virFileCache *cache,
 
 int qemuTestDriverInit(virQEMUDriver *driver)
 {
+    virQEMUDriverConfig *cfg = NULL;
     virSecurityManager *mgr = NULL;
     char statedir[] = STATEDIRTEMPLATE;
     char configdir[] = CONFIGDIRTEMPLATE;
@@ -629,34 +630,36 @@ int qemuTestDriverInit(virQEMUDriver *driver)
         return -1;
 
     driver->hostarch = virArchFromHost();
-    driver->config = virQEMUDriverConfigNew(true, NULL);
-    if (!driver->config)
+
+    cfg = virQEMUDriverConfigNew(true, NULL);
+    if (!cfg)
         goto error;
+    driver->config = cfg;
 
     /* Do this early so that qemuTestDriverFree() doesn't see (unlink) the real
      * dirs. */
-    VIR_FREE(driver->config->stateDir);
-    VIR_FREE(driver->config->configDir);
+    VIR_FREE(cfg->stateDir);
+    VIR_FREE(cfg->configDir);
 
     /* Overwrite some default paths so it's consistent for tests. */
-    VIR_FREE(driver->config->libDir);
-    VIR_FREE(driver->config->channelTargetDir);
-    driver->config->libDir = g_strdup("/tmp/lib");
-    driver->config->channelTargetDir = g_strdup("/tmp/channel");
+    VIR_FREE(cfg->libDir);
+    VIR_FREE(cfg->channelTargetDir);
+    cfg->libDir = g_strdup("/tmp/lib");
+    cfg->channelTargetDir = g_strdup("/tmp/channel");
 
     if (!g_mkdtemp(statedir)) {
         fprintf(stderr, "Cannot create fake stateDir");
         goto error;
     }
 
-    driver->config->stateDir = g_strdup(statedir);
+    cfg->stateDir = g_strdup(statedir);
 
     if (!g_mkdtemp(configdir)) {
         fprintf(stderr, "Cannot create fake configDir");
         goto error;
     }
 
-    driver->config->configDir = g_strdup(configdir);
+    cfg->configDir = g_strdup(configdir);
 
     driver->caps = testQemuCapsInit();
     if (!driver->caps)
