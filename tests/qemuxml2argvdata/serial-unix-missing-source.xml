@@ -4,10 +4,10 @@
   <memory unit='KiB'>1048576</memory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='aarch64' machine='virt'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
   </os>
   <devices>
-    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <serial type='unix'>
       <target type='pci-serial'/>
     </serial>

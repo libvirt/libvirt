@@ -1514,7 +1514,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("serial-dev-chardev-iobase");
     DO_TEST_CAPS_LATEST("serial-file-chardev");
     DO_TEST_CAPS_LATEST("serial-unix-chardev");
-    DO_TEST_PARSE_ERROR_NOCAPS("serial-unix-missing-source");
     DO_TEST("serial-tcp-chardev",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("serial-udp-chardev",

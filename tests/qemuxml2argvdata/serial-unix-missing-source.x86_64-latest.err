@@ -1,1 +1,1 @@
-unsupported configuration: Emulator '/usr/bin/qemu-system-aarch64' does not support arch 'aarch64'
+internal error: Missing source path attribute for char device
