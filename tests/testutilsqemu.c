@@ -32,7 +32,6 @@ static const char *qemu_emulators[VIR_ARCH_LAST] = {
     [VIR_ARCH_ARMV7L] = "/usr/bin/qemu-system-arm",
     [VIR_ARCH_PPC64] = "/usr/bin/qemu-system-ppc64",
     [VIR_ARCH_PPC] = "/usr/bin/qemu-system-ppc",
-    [VIR_ARCH_RISCV32] = "/usr/bin/qemu-system-riscv32",
     [VIR_ARCH_RISCV64] = "/usr/bin/qemu-system-riscv64",
     [VIR_ARCH_S390X] = "/usr/bin/qemu-system-s390x",
 };
@@ -61,9 +60,6 @@ static const char *const ppc64_machines[] = {
 static const char *const ppc_machines[] = {
     "ppce500", NULL
 };
-static const char *const riscv32_machines[] = {
-    "virt", NULL
-};
 static const char *const riscv64_machines[] = {
     "virt", NULL
 };
@@ -78,7 +74,6 @@ static const char *const *qemu_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_ARMV7L] = arm_machines,
     [VIR_ARCH_PPC64] = ppc64_machines,
     [VIR_ARCH_PPC] = ppc_machines,
-    [VIR_ARCH_RISCV32] = riscv32_machines,
     [VIR_ARCH_RISCV64] = riscv64_machines,
     [VIR_ARCH_S390X] = s390x_machines,
 };
@@ -90,7 +85,6 @@ static const char *const *hvf_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_ARMV7L] = NULL,
     [VIR_ARCH_PPC64] = NULL,
     [VIR_ARCH_PPC] = NULL,
-    [VIR_ARCH_RISCV32] = NULL,
     [VIR_ARCH_RISCV64] = NULL,
     [VIR_ARCH_S390X] = NULL,
 };
