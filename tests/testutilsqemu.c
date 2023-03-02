@@ -527,16 +527,15 @@ qemuTestCapsCacheInsertImpl(virFileCache *cache,
     size_t i;
 
     if (caps && virQEMUCapsGetArch(caps) != VIR_ARCH_NONE) {
-        /* for capabilities which have architecture set we populate only the
-         * given architecture and poison all other so that the test doesn't
-         * accidentally test a weird combination */
+        /* all tests using real caps or arcitecture are expected to call:
+         *
+         *  virFileCacheClear(driver.qemuCapsCache);
+         *
+         * before populating the cache;
+         */
         virArch arch = virQEMUCapsGetArch(caps);
-        g_autoptr(virQEMUCaps) emptyCaps = virQEMUCapsNew();
         g_autoptr(virQEMUCaps) copyCaps = NULL;
         virQEMUCaps *effCaps = caps;
-
-        if (!emptyCaps)
-            return -1;
 
         if (arch_alias[arch] != VIR_ARCH_NONE)
             arch = arch_alias[arch];
@@ -551,18 +550,6 @@ qemuTestCapsCacheInsertImpl(virFileCache *cache,
             }
 
             if (qemuTestCapsCacheInsertData(cache, qemu_emulators[arch], effCaps) < 0)
-                return -1;
-        }
-
-
-        for (i = 0; i < G_N_ELEMENTS(qemu_emulators); i++) {
-            if (!qemu_emulators[i])
-                continue;
-
-            if (i == arch)
-                continue;
-
-            if (qemuTestCapsCacheInsertData(cache, qemu_emulators[i], emptyCaps) < 0)
                 return -1;
         }
     } else {

@@ -64,6 +64,8 @@ prepareObjects(virQEMUDriver *driver,
     if (!(priv->qemuCaps = qemuTestParseCapabilitiesArch(VIR_ARCH_X86_64, latestCapsFile)))
         return -1;
 
+    virFileCacheClear(driver->qemuCapsCache);
+
     if (qemuTestCapsCacheInsert(driver->qemuCapsCache, priv->qemuCaps) < 0)
         return -1;
 

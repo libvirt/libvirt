@@ -26,6 +26,8 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     if (testQemuInfoInitArgs((struct testQemuInfo *) data) < 0)
         return -1;
 
+    virFileCacheClear(driver.qemuCapsCache);
+
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, data->qemuCaps) < 0)
         return -1;
 

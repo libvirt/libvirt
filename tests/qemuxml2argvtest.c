@@ -664,6 +664,8 @@ testCompareXMLToArgv(const void *data)
             goto cleanup;
     }
 
+    virFileCacheClear(driver.qemuCapsCache);
+
     if (info->args.hostOS == HOST_OS_MACOS)
         rc = qemuTestCapsCacheInsertMacOS(driver.qemuCapsCache, info->qemuCaps);
     else
