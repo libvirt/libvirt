@@ -702,9 +702,9 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     cfg->backupTLSx509certdir = g_strdup("/etc/pki/libvirt-backup");
 
     VIR_FREE(cfg->vncSASLdir);
-    cfg->vncSASLdir = g_strdup("/root/.sasl2");
+    cfg->vncSASLdir = g_strdup("/etc/sasl2");
     VIR_FREE(cfg->spiceSASLdir);
-    cfg->spiceSASLdir = g_strdup("/root/.sasl2");
+    cfg->spiceSASLdir = g_strdup("/etc/sasl2");
 
     VIR_FREE(cfg->spicePassword);
     cfg->spicePassword = g_strdup("123456");
