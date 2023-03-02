@@ -149,9 +149,6 @@ mymain(void)
 
     cfg = virQEMUDriverGetConfig(&driver);
 
-    VIR_FREE(cfg->nvramDir);
-    cfg->nvramDir = g_strdup("/var/lib/libvirt/qemu/nvram");
-
     if (!(conn = virGetConnect()))
         goto cleanup;
 

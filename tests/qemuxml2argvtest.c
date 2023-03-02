@@ -830,8 +830,6 @@ mymain(void)
     linuxCaps = driver.caps;
     macOSCaps = testQemuCapsInitMacOS();
 
-    VIR_FREE(driver.config->defaultTLSx509certdir);
-    driver.config->defaultTLSx509certdir = g_strdup("/etc/pki/qemu");
     VIR_FREE(driver.config->vncTLSx509certdir);
     driver.config->vncTLSx509certdir = g_strdup("/etc/pki/libvirt-vnc");
     VIR_FREE(driver.config->spiceTLSx509certdir);
@@ -857,10 +855,6 @@ mymain(void)
     driver.config->hugetlbfs[0].deflt = true;
     driver.config->hugetlbfs[1].size = 1048576;
     driver.config->spicePassword = g_strdup("123456");
-    VIR_FREE(driver.config->memoryBackingDir);
-    driver.config->memoryBackingDir = g_strdup("/var/lib/libvirt/qemu/ram");
-    VIR_FREE(driver.config->nvramDir);
-    driver.config->nvramDir = g_strdup("/var/lib/libvirt/qemu/nvram");
 
     virFileWrapperAddPrefix(SYSCONFDIR "/qemu/firmware",
                             abs_srcdir "/qemufirmwaredata/etc/qemu/firmware");
