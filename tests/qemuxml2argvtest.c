@@ -845,6 +845,11 @@ mymain(void)
     VIR_FREE(driver.config->nbdTLSx509certdir);
     driver.config->nbdTLSx509certdir = g_strdup("/etc/pki/libvirt-nbd/dummy,path");
 
+    VIR_FREE(driver.config->vncSASLdir);
+    driver.config->vncSASLdir = g_strdup("/root/.sasl2");
+    VIR_FREE(driver.config->spiceSASLdir);
+    driver.config->spiceSASLdir = g_strdup("/root/.sasl2");
+
     VIR_FREE(driver.config->hugetlbfs);
     driver.config->hugetlbfs = g_new0(virHugeTLBFS, 2);
     driver.config->nhugetlbfs = 2;
@@ -1383,8 +1388,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("graphics-vnc-socket-new-cmdline");
 
     driver.config->vncSASL = 1;
-    VIR_FREE(driver.config->vncSASLdir);
-    driver.config->vncSASLdir = g_strdup("/root/.sasl2");
     DO_TEST_CAPS_LATEST("graphics-vnc-sasl");
     driver.config->vncTLS = 1;
     driver.config->vncTLSx509verify = 1;
@@ -1394,7 +1397,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("graphics-vnc-tls-secret");
     VIR_FREE(driver.config->vncTLSx509secretUUID);
     driver.config->vncSASL = driver.config->vncTLSx509verify = driver.config->vncTLS = 0;
-    VIR_FREE(driver.config->vncSASLdir);
     DO_TEST_CAPS_LATEST("graphics-vnc-egl-headless");
 
     DO_TEST("graphics-sdl",
@@ -1405,9 +1407,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("graphics-spice");
     DO_TEST_CAPS_LATEST("graphics-spice-no-args");
     driver.config->spiceSASL = 1;
-    driver.config->spiceSASLdir = g_strdup("/root/.sasl2");
     DO_TEST_CAPS_LATEST("graphics-spice-sasl");
-    VIR_FREE(driver.config->spiceSASLdir);
     driver.config->spiceSASL = 0;
     DO_TEST_CAPS_LATEST("graphics-spice-agentmouse");
     DO_TEST_CAPS_LATEST("graphics-spice-compression");
