@@ -334,6 +334,7 @@ mymain(void)
     DO_TEST_NOCAPS("disk-network-tlsx509-vxhs");
     DO_TEST_CAPS_LATEST("disk-nvme");
     DO_TEST_CAPS_LATEST("disk-vhostuser");
+    DO_TEST_CAPS_LATEST("disk-sata-device");
     DO_TEST_CAPS_LATEST("disk-scsi");
     DO_TEST("disk-virtio-scsi-reservations",
             QEMU_CAPS_VIRTIO_SCSI,

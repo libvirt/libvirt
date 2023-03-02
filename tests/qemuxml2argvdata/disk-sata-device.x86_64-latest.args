@@ -28,7 +28,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -device '{"driver":"ahci","id":"sata0","bus":"pci.0","addr":"0x2"}' \
--blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUG uest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"ide-hd","bus":"sata0.0","drive":"libvirt-1-format","id":"sata0-0-0","bootindex":1}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
