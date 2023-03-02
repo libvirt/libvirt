@@ -830,32 +830,6 @@ mymain(void)
     linuxCaps = driver.caps;
     macOSCaps = testQemuCapsInitMacOS();
 
-    VIR_FREE(driver.config->vncTLSx509certdir);
-    driver.config->vncTLSx509certdir = g_strdup("/etc/pki/libvirt-vnc");
-    VIR_FREE(driver.config->spiceTLSx509certdir);
-    driver.config->spiceTLSx509certdir = g_strdup("/etc/pki/libvirt-spice");
-    VIR_FREE(driver.config->chardevTLSx509certdir);
-    driver.config->chardevTLSx509certdir = g_strdup("/etc/pki/libvirt-chardev");
-    VIR_FREE(driver.config->vxhsTLSx509certdir);
-    driver.config->vxhsTLSx509certdir = g_strdup("/etc/pki/libvirt-vxhs/dummy,path");
-    VIR_FREE(driver.config->nbdTLSx509certdir);
-    driver.config->nbdTLSx509certdir = g_strdup("/etc/pki/libvirt-nbd/dummy,path");
-
-    VIR_FREE(driver.config->vncSASLdir);
-    driver.config->vncSASLdir = g_strdup("/root/.sasl2");
-    VIR_FREE(driver.config->spiceSASLdir);
-    driver.config->spiceSASLdir = g_strdup("/root/.sasl2");
-
-    VIR_FREE(driver.config->hugetlbfs);
-    driver.config->hugetlbfs = g_new0(virHugeTLBFS, 2);
-    driver.config->nhugetlbfs = 2;
-    driver.config->hugetlbfs[0].mnt_dir = g_strdup("/dev/hugepages2M");
-    driver.config->hugetlbfs[1].mnt_dir = g_strdup("/dev/hugepages1G");
-    driver.config->hugetlbfs[0].size = 2048;
-    driver.config->hugetlbfs[0].deflt = true;
-    driver.config->hugetlbfs[1].size = 1048576;
-    driver.config->spicePassword = g_strdup("123456");
-
     virFileWrapperAddPrefix(SYSCONFDIR "/qemu/firmware",
                             abs_srcdir "/qemufirmwaredata/etc/qemu/firmware");
     virFileWrapperAddPrefix(PREFIX "/share/qemu/firmware",

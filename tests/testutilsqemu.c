@@ -686,6 +686,34 @@ int qemuTestDriverInit(virQEMUDriver *driver)
 
     qemuTestSetHostCPU(driver, driver->hostarch, NULL);
 
+    VIR_FREE(cfg->vncTLSx509certdir);
+    cfg->vncTLSx509certdir = g_strdup("/etc/pki/libvirt-vnc");
+    VIR_FREE(cfg->spiceTLSx509certdir);
+    cfg->spiceTLSx509certdir = g_strdup("/etc/pki/libvirt-spice");
+    VIR_FREE(cfg->chardevTLSx509certdir);
+    cfg->chardevTLSx509certdir = g_strdup("/etc/pki/libvirt-chardev");
+    VIR_FREE(cfg->vxhsTLSx509certdir);
+    cfg->vxhsTLSx509certdir = g_strdup("/etc/pki/libvirt-vxhs/dummy,path");
+    VIR_FREE(cfg->nbdTLSx509certdir);
+    cfg->nbdTLSx509certdir = g_strdup("/etc/pki/libvirt-nbd/dummy,path");
+
+    VIR_FREE(cfg->vncSASLdir);
+    cfg->vncSASLdir = g_strdup("/root/.sasl2");
+    VIR_FREE(cfg->spiceSASLdir);
+    cfg->spiceSASLdir = g_strdup("/root/.sasl2");
+
+    VIR_FREE(cfg->spicePassword);
+    cfg->spicePassword = g_strdup("123456");
+
+    VIR_FREE(cfg->hugetlbfs);
+    cfg->hugetlbfs = g_new0(virHugeTLBFS, 2);
+    cfg->nhugetlbfs = 2;
+    cfg->hugetlbfs[0].mnt_dir = g_strdup("/dev/hugepages2M");
+    cfg->hugetlbfs[1].mnt_dir = g_strdup("/dev/hugepages1G");
+    cfg->hugetlbfs[0].size = 2048;
+    cfg->hugetlbfs[0].deflt = true;
+    cfg->hugetlbfs[1].size = 1048576;
+
     driver->privileged = true;
 
     return 0;
