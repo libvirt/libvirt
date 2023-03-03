@@ -2943,8 +2943,7 @@ x86UpdateHostModel(virCPUDef *guest,
 
     updated->type = VIR_CPU_TYPE_GUEST;
     updated->mode = VIR_CPU_MODE_CUSTOM;
-    if (virCPUDefCopyModel(updated, host, true) < 0)
-        return -1;
+    virCPUDefCopyModel(updated, host, true);
 
     if (guest->vendor_id) {
         g_free(updated->vendor_id);
@@ -3257,7 +3256,9 @@ virCPUx86ExpandFeatures(virCPUDef *cpu)
 
     virCPUDefFreeModel(cpu);
 
-    return virCPUDefCopyModel(cpu, expanded, false);
+    virCPUDefCopyModel(cpu, expanded, false);
+
+    return 0;
 }
 
 
@@ -3282,9 +3283,7 @@ virCPUx86CopyMigratable(virCPUDef *cpu)
     if (!(copy = virCPUDefCopyWithoutModel(cpu)))
         return NULL;
 
-    if (virCPUDefCopyModelFilter(copy, cpu, false,
-                                 x86FeatureFilterMigratable, map) < 0)
-        return NULL;
+    virCPUDefCopyModelFilter(copy, cpu, false, x86FeatureFilterMigratable, map);
 
     return g_steal_pointer(&copy);
 }

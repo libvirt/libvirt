@@ -140,16 +140,16 @@ virCPUDefFree(virCPUDef *def)
 }
 
 
-int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+void ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 virCPUDefCopyModel(virCPUDef *dst,
                    const virCPUDef *src,
                    bool resetPolicy)
 {
-    return virCPUDefCopyModelFilter(dst, src, resetPolicy, NULL, NULL);
+    virCPUDefCopyModelFilter(dst, src, resetPolicy, NULL, NULL);
 }
 
 
-int
+void
 virCPUDefCopyModelFilter(virCPUDef *dst,
                          const virCPUDef *src,
                          bool resetPolicy,
@@ -185,8 +185,6 @@ virCPUDefCopyModelFilter(virCPUDef *dst,
 
         dst->features[n].name = g_strdup(src->features[i].name);
     }
-
-    return 0;
 }
 
 
@@ -281,8 +279,7 @@ virCPUDefCopy(const virCPUDef *cpu)
     if (!(copy = virCPUDefCopyWithoutModel(cpu)))
         return NULL;
 
-    if (virCPUDefCopyModel(copy, cpu, false) < 0)
-        return NULL;
+    virCPUDefCopyModel(copy, cpu, false);
 
     return g_steal_pointer(&copy);
 }

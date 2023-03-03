@@ -10825,9 +10825,8 @@ qemuDomainFixupCPUs(virDomainObj *vm,
         if (!fixedCPU)
             return -1;
 
-        if (virCPUDefCopyModelFilter(fixedCPU, vm->def->cpu, false,
-                                     virQEMUCapsCPUFilterFeatures, &arch) < 0)
-            return -1;
+        virCPUDefCopyModelFilter(fixedCPU, vm->def->cpu, false,
+                                 virQEMUCapsCPUFilterFeatures, &arch);
 
         virCPUDefFree(vm->def->cpu);
         vm->def->cpu = g_steal_pointer(&fixedCPU);
@@ -10839,9 +10838,8 @@ qemuDomainFixupCPUs(virDomainObj *vm,
         if (!fixedOrig)
             return -1;
 
-        if (virCPUDefCopyModelFilter(fixedOrig, *origCPU, false,
-                                     virQEMUCapsCPUFilterFeatures, &arch) < 0)
-            return -1;
+        virCPUDefCopyModelFilter(fixedOrig, *origCPU, false,
+                                 virQEMUCapsCPUFilterFeatures, &arch);
 
         virCPUDefFree(*origCPU);
         *origCPU = g_steal_pointer(&fixedOrig);

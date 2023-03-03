@@ -3871,13 +3871,11 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
         VIR_DEBUG("No host CPU model info from QEMU; probing host CPU directly");
 
         cpuModels = virQEMUCapsGetCPUModels(qemuCaps, type, NULL, NULL);
-        hostCPU = virQEMUCapsProbeHostCPU(hostArch, cpuModels);
-
-        if (!hostCPU ||
-            virCPUDefCopyModelFilter(cpu, hostCPU, true,
-                                     virQEMUCapsCPUFilterFeatures,
-                                     &qemuCaps->arch) < 0)
+        if (!(hostCPU = virQEMUCapsProbeHostCPU(hostArch, cpuModels)))
             goto error;
+
+        virCPUDefCopyModelFilter(cpu, hostCPU, true, virQEMUCapsCPUFilterFeatures,
+                                 &qemuCaps->arch);
     } else if (rc == 2) {
         VIR_DEBUG("QEMU does not provide CPU model for arch=%s virttype=%s",
                   virArchToString(qemuCaps->arch),

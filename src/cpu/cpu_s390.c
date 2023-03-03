@@ -72,8 +72,7 @@ virCPUs390Update(virCPUDef *guest,
         return -1;
 
     updated->mode = VIR_CPU_MODE_CUSTOM;
-    if (virCPUDefCopyModel(updated, host, true) < 0)
-        return -1;
+    virCPUDefCopyModel(updated, host, true);
 
     for (i = 0; i < guest->nfeatures; i++) {
        if (virCPUDefUpdateFeature(updated,

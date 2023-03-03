@@ -12174,10 +12174,8 @@ qemuConnectBaselineCPU(virConnectPtr conn G_GNUC_UNUSED,
     if (!(cpu = virCPUDefCopyWithoutModel(baseline)))
         goto cleanup;
 
-    if (virCPUDefCopyModelFilter(cpu, baseline, false,
-                                 virQEMUCapsCPUFilterFeatures,
-                                 &cpus[0]->arch) < 0)
-        goto cleanup;
+    virCPUDefCopyModelFilter(cpu, baseline, false, virQEMUCapsCPUFilterFeatures,
+                             &cpus[0]->arch);
 
     if ((flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
         virCPUExpandFeatures(cpus[0]->arch, cpu) < 0)
@@ -12273,8 +12271,7 @@ qemuConnectCPUModelBaseline(virQEMUCaps *qemuCaps,
 
     baseline = g_new0(virCPUDef, 1);
 
-    if (virCPUDefCopyModel(baseline, cpus[0], false) < 0)
-        return NULL;
+    virCPUDefCopyModel(baseline, cpus[0], false);
 
     for (i = 1; i < ncpus; i++) {
         if (qemuMonitorGetCPUModelBaseline(proc->mon, baseline,
