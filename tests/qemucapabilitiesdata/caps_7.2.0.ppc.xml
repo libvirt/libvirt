@@ -1,0 +1,557 @@
+<qemuCaps>
+  <emulator>/usr/bin/qemu-system-ppc</emulator>
+  <qemuctime>0</qemuctime>
+  <selfctime>0</selfctime>
+  <selfvers>0</selfvers>
+  <flag name='sdl'/>
+  <flag name='spice'/>
+  <flag name='hda-duplex'/>
+  <flag name='ccid-emulated'/>
+  <flag name='ccid-passthru'/>
+  <flag name='piix3-usb-uhci'/>
+  <flag name='piix4-usb-uhci'/>
+  <flag name='usb-ehci'/>
+  <flag name='ich9-usb-ehci1'/>
+  <flag name='vt82c686b-usb-uhci'/>
+  <flag name='pci-ohci'/>
+  <flag name='usb-redir'/>
+  <flag name='usb-hub'/>
+  <flag name='ich9-ahci'/>
+  <flag name='virtio-blk-pci.scsi'/>
+  <flag name='scsi-disk.channel'/>
+  <flag name='scsi-block'/>
+  <flag name='hda-micro'/>
+  <flag name='nec-usb-xhci'/>
+  <flag name='lsi'/>
+  <flag name='virtio-scsi-pci'/>
+  <flag name='disable-s3'/>
+  <flag name='disable-s4'/>
+  <flag name='usb-redir.filter'/>
+  <flag name='ide-drive.wwn'/>
+  <flag name='scsi-disk.wwn'/>
+  <flag name='seccomp-sandbox'/>
+  <flag name='vnc'/>
+  <flag name='VGA'/>
+  <flag name='cirrus-vga'/>
+  <flag name='vmware-svga'/>
+  <flag name='usb-serial'/>
+  <flag name='virtio-rng'/>
+  <flag name='rng-random'/>
+  <flag name='rng-egd'/>
+  <flag name='megasas'/>
+  <flag name='pci-bridge'/>
+  <flag name='vfio-pci'/>
+  <flag name='dmi-to-pci-bridge'/>
+  <flag name='usb-storage'/>
+  <flag name='usb-storage.removable'/>
+  <flag name='ich9-intel-hda'/>
+  <flag name='usb-kbd'/>
+  <flag name='usb-audio'/>
+  <flag name='migrate-rdma'/>
+  <flag name='VGA.vgamem_mb'/>
+  <flag name='vmware-svga.vgamem_mb'/>
+  <flag name='pci-serial'/>
+  <flag name='ioh3420'/>
+  <flag name='x3130-upstream'/>
+  <flag name='xio3130-downstream'/>
+  <flag name='rtl8139'/>
+  <flag name='e1000'/>
+  <flag name='virtio-net'/>
+  <flag name='virtio-gpu'/>
+  <flag name='virtio-keyboard'/>
+  <flag name='virtio-mouse'/>
+  <flag name='virtio-tablet'/>
+  <flag name='virtio-input-host'/>
+  <flag name='virtio-balloon-pci.deflate-on-oom'/>
+  <flag name='mptsas1068'/>
+  <flag name='spice-gl'/>
+  <flag name='query-hotpluggable-cpus'/>
+  <flag name='ivshmem-plain'/>
+  <flag name='ivshmem-doorbell'/>
+  <flag name='vhost-scsi'/>
+  <flag name='spice-rendernode'/>
+  <flag name='pcie-root-port'/>
+  <flag name='query-cpu-definitions'/>
+  <flag name='qemu-xhci'/>
+  <flag name='chardev-reconnect'/>
+  <flag name='isa-serial'/>
+  <flag name='pcie-pci-bridge'/>
+  <flag name='nbd-tls'/>
+  <flag name='pr-manager-helper'/>
+  <flag name='screendump_device'/>
+  <flag name='hda-output'/>
+  <flag name='vhost-vsock'/>
+  <flag name='egl-headless'/>
+  <flag name='vfio-pci.display'/>
+  <flag name='memory-backend-memfd'/>
+  <flag name='memory-backend-memfd.hugetlb'/>
+  <flag name='egl-headless.rendernode'/>
+  <flag name='memory-backend-file.pmem'/>
+  <flag name='virtio-pci-non-transitional'/>
+  <flag name='nbd-bitmap'/>
+  <flag name='bochs-display'/>
+  <flag name='migration-file-drop-cache'/>
+  <flag name='dbus-vmstate'/>
+  <flag name='vhost-user-gpu'/>
+  <flag name='incremental-backup'/>
+  <flag name='drive-nvme'/>
+  <flag name='smp-dies'/>
+  <flag name='i8042'/>
+  <flag name='rng-builtin'/>
+  <flag name='vhost-user-fs'/>
+  <flag name='query-named-block-nodes.flat'/>
+  <flag name='blockdev-snapshot.allow-write-only-overlay'/>
+  <flag name='blockdev-reopen'/>
+  <flag name='fsdev.multidevs'/>
+  <flag name='pcie-root-port.hotplug'/>
+  <flag name='aio.io_uring'/>
+  <flag name='tcg'/>
+  <flag name='virtio-blk-pci.scsi.default.disabled'/>
+  <flag name='pvscsi'/>
+  <flag name='numa.hmat'/>
+  <flag name='usb-host.hostdevice'/>
+  <flag name='virtio-balloon.free-page-reporting'/>
+  <flag name='block-export-add'/>
+  <flag name='netdev.vhost-vdpa'/>
+  <flag name='dc390'/>
+  <flag name='am53c974'/>
+  <flag name='vhost-user-fs.bootindex'/>
+  <flag name='vhost-user-blk'/>
+  <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
+  <flag name='migration-param.block-bitmap-mapping'/>
+  <flag name='vnc-power-control'/>
+  <flag name='object.qapified'/>
+  <flag name='rotation-rate'/>
+  <flag name='compat-deprecated'/>
+  <flag name='acpi-index'/>
+  <flag name='input-linux'/>
+  <flag name='virtio-gpu-gl-pci'/>
+  <flag name='confidential-guest-support'/>
+  <flag name='set-action'/>
+  <flag name='virtio-blk.queue-size'/>
+  <flag name='memory-backend-file.reserve'/>
+  <flag name='piix4.acpi-root-pci-hotplug'/>
+  <flag name='netdev.json'/>
+  <flag name='query-dirty-rate'/>
+  <flag name='rbd-encryption'/>
+  <flag name='sev-guest-kernel-hashes'/>
+  <flag name='device.json+hotplug'/>
+  <flag name='calc-dirty-rate'/>
+  <flag name='dirtyrate-param.mode'/>
+  <flag name='blockdev.nbd.tls-hostname'/>
+  <flag name='memory-backend-file.prealloc-threads'/>
+  <flag name='virtio-iommu-pci'/>
+  <flag name='virtio-iommu.boot-bypass'/>
+  <flag name='virtio-net.rss'/>
+  <flag name='chardev.qemu-vdagent'/>
+  <flag name='display-dbus'/>
+  <flag name='iothread.thread-pool-max'/>
+  <flag name='usb-host.guest-resets-all'/>
+  <flag name='migration.blocked-reasons'/>
+  <flag name='query-stats'/>
+  <flag name='query-stats-schemas'/>
+  <flag name='thread-context'/>
+  <flag name='screenshot-format-png'/>
+  <flag name='netdev.stream'/>
+  <flag name='virtio-crypto'/>
+  <flag name='pvpanic-pci'/>
+  <version>7002000</version>
+  <kvmVersion>0</kvmVersion>
+  <microcodeVersion>0</microcodeVersion>
+  <package>qemu-7.2.0-6.fc37</package>
+  <arch>ppc</arch>
+  <cpu type='tcg' name='ppc' typename='604-powerpc-cpu'/>
+  <cpu type='tcg' name='ppc32' typename='604-powerpc-cpu'/>
+  <cpu type='tcg' name='apollo7pm' typename='7457a_v1.0-powerpc-cpu'/>
+  <cpu type='tcg' name='7457a' typename='7457a_v1.2-powerpc-cpu'/>
+  <cpu type='tcg' name='7447a' typename='7447a_v1.2-powerpc-cpu'/>
+  <cpu type='tcg' name='apollo7' typename='7457_v1.2-powerpc-cpu'/>
+  <cpu type='tcg' name='7457' typename='7457_v1.2-powerpc-cpu'/>
+  <cpu type='tcg' name='7447' typename='7447_v1.1-powerpc-cpu'/>
+  <cpu type='tcg' name='apollo6' typename='7455_v3.2-powerpc-cpu'/>
+  <cpu type='tcg' name='7455' typename='7455_v3.2-powerpc-cpu'/>
+  <cpu type='tcg' name='7445' typename='7445_v3.2-powerpc-cpu'/>
+  <cpu type='tcg' name='7451' typename='7451_v2.3-powerpc-cpu'/>
+  <cpu type='tcg' name='7441' typename='7441_v2.3-powerpc-cpu'/>
+  <cpu type='tcg' name='vger' typename='7450_v2.1-powerpc-cpu'/>
+  <cpu type='tcg' name='7450' typename='7450_v2.1-powerpc-cpu'/>
+  <cpu type='tcg' name='7448' typename='7448_v2.1-powerpc-cpu'/>
+  <cpu type='tcg' name='nitro' typename='7410_v1.4-powerpc-cpu'/>
+  <cpu type='tcg' name='7410' typename='7410_v1.4-powerpc-cpu'/>
+  <cpu type='tcg' name='g4' typename='7400_v2.9-powerpc-cpu'/>
+  <cpu type='tcg' name='7400' typename='7400_v2.9-powerpc-cpu'/>
+  <cpu type='tcg' name='goldfinger' typename='755_v2.8-powerpc-cpu'/>
+  <cpu type='tcg' name='755' typename='755_v2.8-powerpc-cpu'/>
+  <cpu type='tcg' name='745' typename='745_v2.8-powerpc-cpu'/>
+  <cpu type='tcg' name='lonestar' typename='750l_v3.2-powerpc-cpu'/>
+  <cpu type='tcg' name='750l' typename='750l_v3.2-powerpc-cpu'/>
+  <cpu type='tcg' name='750gx' typename='750gx_v1.2-powerpc-cpu'/>
+  <cpu type='tcg' name='750fx' typename='750fx_v2.3-powerpc-cpu'/>
+  <cpu type='tcg' name='750cxe' typename='750cxe_v3.1b-powerpc-cpu'/>
+  <cpu type='tcg' name='750cx' typename='750cx_v2.2-powerpc-cpu'/>
+  <cpu type='tcg' name='750cl' typename='750cl_v2.0-powerpc-cpu'/>
+  <cpu type='tcg' name='conan/doyle' typename='750p-powerpc-cpu'/>
+  <cpu type='tcg' name='g3' typename='750_v3.1-powerpc-cpu'/>
+  <cpu type='tcg' name='typhoon' typename='750_v3.1-powerpc-cpu'/>
+  <cpu type='tcg' name='750' typename='750_v3.1-powerpc-cpu'/>
+  <cpu type='tcg' name='arthur' typename='740_v3.1-powerpc-cpu'/>
+  <cpu type='tcg' name='740' typename='740_v3.1-powerpc-cpu'/>
+  <cpu type='tcg' name='mach5' typename='604r-powerpc-cpu'/>
+  <cpu type='tcg' name='sirocco' typename='604e_v2.4-powerpc-cpu'/>
+  <cpu type='tcg' name='604e' typename='604e_v2.4-powerpc-cpu'/>
+  <cpu type='tcg' name='goldeneye' typename='603e7t-powerpc-cpu'/>
+  <cpu type='tcg' name='603r' typename='603e7t-powerpc-cpu'/>
+  <cpu type='tcg' name='vaillant' typename='603e7v-powerpc-cpu'/>
+  <cpu type='tcg' name='stretch' typename='603e_v4.1-powerpc-cpu'/>
+  <cpu type='tcg' name='603e' typename='603e_v4.1-powerpc-cpu'/>
+  <cpu type='tcg' name='vanilla' typename='603-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8560' typename='mpc8560_v21-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8555e' typename='mpc8555e_v11-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8555' typename='mpc8555_v11-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8548e' typename='mpc8548e_v21-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8548' typename='mpc8548_v21-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8547e' typename='mpc8547e_v21-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8545e' typename='mpc8545e_v21-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8545' typename='mpc8545_v21-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8544e' typename='mpc8544e_v11-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8544' typename='mpc8544_v11-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8543e' typename='mpc8543e_v21-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8543' typename='mpc8543_v21-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8541e' typename='mpc8541e_v11-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8541' typename='mpc8541_v11-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8540' typename='mpc8540_v21-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8533e' typename='mpc8533e_v11-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8533' typename='mpc8533_v11-powerpc-cpu'/>
+  <cpu type='tcg' name='e500v2' typename='e500v2_v22-powerpc-cpu'/>
+  <cpu type='tcg' name='e500v1' typename='e500_v20-powerpc-cpu'/>
+  <cpu type='tcg' name='e500' typename='e500v2_v22-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8347ea' typename='mpc8347eat-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8347e' typename='mpc8347et-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8347a' typename='mpc8347at-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8347' typename='mpc8347t-powerpc-cpu'/>
+  <cpu type='tcg' name='e300' typename='e300c3-powerpc-cpu'/>
+  <cpu type='tcg' name='e200' typename='e200z6-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8280' typename='g2legp3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8275' typename='g2legp3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8272' typename='g2legp3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8271' typename='g2legp3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8270' typename='g2legp3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8266_hip4' typename='g2hip4-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8266_hip3' typename='g2hip3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8266' typename='g2hip4-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8265_hip4' typename='g2hip4-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8265_hip3' typename='g2hip3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8265' typename='g2hip4-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8264_hip4' typename='g2hip4-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8264_hip3' typename='g2hip3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8264' typename='g2hip4-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8260_hip4' typename='g2hip4-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8260_hip3' typename='g2hip3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8260' typename='g2hip4-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8255_hip4' typename='g2hip4-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8255_hip3' typename='g2hip3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8255' typename='g2hip4-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8250_hip4' typename='g2hip4-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8250_hip3' typename='g2hip3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8250' typename='g2hip4-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8248' typename='g2legp3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8247' typename='g2legp3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8245' typename='g2hip4-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8241' typename='g2hip4-powerpc-cpu'/>
+  <cpu type='tcg' name='powerquicc-ii' typename='g2legp3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc82xx' typename='g2legp3-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc5200b' typename='mpc5200b_v21-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc5200' typename='mpc5200_v12-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc52xx' typename='mpc5200_v12-powerpc-cpu'/>
+  <cpu type='tcg' name='mpc8240' typename='603-powerpc-cpu'/>
+  <cpu type='tcg' name='460ex' typename='460exb-powerpc-cpu'/>
+  <cpu type='tcg' name='440ep' typename='440epb-powerpc-cpu'/>
+  <cpu type='tcg' name='x2vp50' typename='x2vp20-powerpc-cpu'/>
+  <cpu type='tcg' name='x2vp7' typename='x2vp4-powerpc-cpu'/>
+  <cpu type='tcg' name='405gpe' typename='405crc-powerpc-cpu'/>
+  <cpu type='tcg' name='405gp' typename='405gpd-powerpc-cpu'/>
+  <cpu type='tcg' name='405cr' typename='405crc-powerpc-cpu'/>
+  <cpu type='tcg' name='405' typename='405d4-powerpc-cpu'/>
+  <cpu type='tcg' name='7447a_v1.2'/>
+  <cpu type='tcg' name='405crc'/>
+  <cpu type='tcg' name='603e7v1'/>
+  <cpu type='tcg' name='750cx_v2.0'/>
+  <cpu type='tcg' name='mpc8533_v11'/>
+  <cpu type='tcg' name='7447a_v1.1'/>
+  <cpu type='tcg' name='7400_v2.2'/>
+  <cpu type='tcg' name='745_v2.7'/>
+  <cpu type='tcg' name='mpc8343e'/>
+  <cpu type='tcg' name='405crb'/>
+  <cpu type='tcg' name='750gx_v1.2'/>
+  <cpu type='tcg' name='mpc8533_v10'/>
+  <cpu type='tcg' name='7457_v1.1'/>
+  <cpu type='tcg' name='e500v2_v22'/>
+  <cpu type='tcg' name='mpc8548_v11'/>
+  <cpu type='tcg' name='7447a_v1.0'/>
+  <cpu type='tcg' name='7400_v2.1'/>
+  <cpu type='tcg' name='603e7v'/>
+  <cpu type='tcg' name='750gx_v1.1'/>
+  <cpu type='tcg' name='x2vp4'/>
+  <cpu type='tcg' name='7457_v1.0'/>
+  <cpu type='tcg' name='e500v2_v21'/>
+  <cpu type='tcg' name='e500_v20'/>
+  <cpu type='tcg' name='mpc8548_v10'/>
+  <cpu type='tcg' name='603e_v2.2'/>
+  <cpu type='tcg' name='g2legp3'/>
+  <cpu type='tcg' name='460exb'/>
+  <cpu type='tcg' name='755_v1.0'/>
+  <cpu type='tcg' name='750_v1.0'/>
+  <cpu type='tcg' name='npe405h'/>
+  <cpu type='tcg' name='e500v2_v20'/>
+  <cpu type='tcg' name='mpc8349ea'/>
+  <cpu type='tcg' name='mpc8545e_v20'/>
+  <cpu type='tcg' name='g2h4'/>
+  <cpu type='tcg' name='7457a_v1.2'/>
+  <cpu type='tcg' name='g2lels'/>
+  <cpu type='tcg' name='7455_v2.1'/>
+  <cpu type='tcg' name='745_v2.6'/>
+  <cpu type='tcg' name='mpc8378e'/>
+  <cpu type='tcg' name='mpc8641'/>
+  <cpu type='tcg' name='7450_v2.1'/>
+  <cpu type='tcg' name='g2legp1'/>
+  <cpu type='tcg' name='755_v2.8'/>
+  <cpu type='tcg' name='mpc8572'/>
+  <cpu type='tcg' name='7457a_v1.1'/>
+  <cpu type='tcg' name='g2gp'/>
+  <cpu type='tcg' name='405cra'/>
+  <cpu type='tcg' name='745_v2.5'/>
+  <cpu type='tcg' name='7400_v2.0'/>
+  <cpu type='tcg' name='mpc8347ap'/>
+  <cpu type='tcg' name='750gx_v1.0'/>
+  <cpu type='tcg' name='604e_v2.4'/>
+  <cpu type='tcg' name='440epb'/>
+  <cpu type='tcg' name='750e'/>
+  <cpu type='tcg' name='e200z6'/>
+  <cpu type='tcg' name='mpc8347eat'/>
+  <cpu type='tcg' name='mpc8567e'/>
+  <cpu type='tcg' name='mpc8568'/>
+  <cpu type='tcg' name='603e7t'/>
+  <cpu type='tcg' name='mpc8540_v21'/>
+  <cpu type='tcg' name='g2hip4'/>
+  <cpu type='tcg' name='740_v3.1'/>
+  <cpu type='tcg' name='440epa'/>
+  <cpu type='tcg' name='e200z5'/>
+  <cpu type='tcg' name='mpc8567'/>
+  <cpu type='tcg' name='mpc5200_v12'/>
+  <cpu type='tcg' name='mpc8343a'/>
+  <cpu type='tcg' name='g2legp'/>
+  <cpu type='tcg' name='mpc603'/>
+  <cpu type='tcg' name='mpc8347t'/>
+  <cpu type='tcg' name='e500mc'/>
+  <cpu type='tcg' name='7445_v1.0'/>
+  <cpu type='tcg' name='mpc8541e_v11'/>
+  <cpu type='tcg' name='mpc8540_v20'/>
+  <cpu type='tcg' name='750fl'/>
+  <cpu type='tcg' name='740_v3.0'/>
+  <cpu type='tcg' name='7450_v2.0'/>
+  <cpu type='tcg' name='405d4'/>
+  <cpu type='tcg' name='mpc5200_v11'/>
+  <cpu type='tcg' name='604'/>
+  <cpu type='tcg' name='mpc8347et'/>
+  <cpu type='tcg' name='750cx_v1.0'/>
+  <cpu type='tcg' name='mpc8541e_v10'/>
+  <cpu type='tcg' name='755_v2.7'/>
+  <cpu type='tcg' name='7457a_v1.0'/>
+  <cpu type='tcg' name='mpc8379'/>
+  <cpu type='tcg' name='mpc8560_v10'/>
+  <cpu type='tcg' name='7448_v2.1'/>
+  <cpu type='tcg' name='stb04'/>
+  <cpu type='tcg' name='603e_v1.4'/>
+  <cpu type='tcg' name='745_v2.4'/>
+  <cpu type='tcg' name='755_v2.6'/>
+  <cpu type='tcg' name='7410_v1.4'/>
+  <cpu type='tcg' name='mpc8378'/>
+  <cpu type='tcg' name='mpc8548e_v21'/>
+  <cpu type='tcg' name='7448_v2.0'/>
+  <cpu type='tcg' name='603e_v1.3'/>
+  <cpu type='tcg' name='745_v2.3'/>
+  <cpu type='tcg' name='7400_v1.1'/>
+  <cpu type='tcg' name='x2vp20'/>
+  <cpu type='tcg' name='mpc8377'/>
+  <cpu type='tcg' name='750p'/>
+  <cpu type='tcg' name='g2hip3'/>
+  <cpu type='tcg' name='604e_v2.2'/>
+  <cpu type='tcg' name='603e_v1.2'/>
+  <cpu type='tcg' name='745_v2.2'/>
+  <cpu type='tcg' name='603e7'/>
+  <cpu type='tcg' name='7445_v3.4'/>
+  <cpu type='tcg' name='mpc8543_v21'/>
+  <cpu type='tcg' name='604r'/>
+  <cpu type='tcg' name='7450_v1.2'/>
+  <cpu type='tcg' name='mpc5200b_v21'/>
+  <cpu type='tcg' name='mpc8543_v20'/>
+  <cpu type='tcg' name='mpc5200_v10'/>
+  <cpu type='tcg' name='603'/>
+  <cpu type='tcg' name='e500_v10'/>
+  <cpu type='tcg' name='7450_v1.1'/>
+  <cpu type='tcg' name='mpc8349'/>
+  <cpu type='tcg' name='stb03'/>
+  <cpu type='tcg' name='mpc8347eap'/>
+  <cpu type='tcg' name='405d2'/>
+  <cpu type='tcg' name='750fx_v2.3'/>
+  <cpu type='tcg' name='mpc8543e_v21'/>
+  <cpu type='tcg' name='mpc8545_v21'/>
+  <cpu type='tcg' name='750_v3.1'/>
+  <cpu type='tcg' name='npe4gs3'/>
+  <cpu type='tcg' name='7410_v1.3'/>
+  <cpu type='tcg' name='755_v2.5'/>
+  <cpu type='tcg' name='mpc8548e_v20'/>
+  <cpu type='tcg' name='e600'/>
+  <cpu type='tcg' name='7400_v1.0'/>
+  <cpu type='tcg' name='mpc8543e_v20'/>
+  <cpu type='tcg' name='stb25'/>
+  <cpu type='tcg' name='7410_v1.2'/>
+  <cpu type='tcg' name='740_v2.2'/>
+  <cpu type='tcg' name='740e'/>
+  <cpu type='tcg' name='755_v2.4'/>
+  <cpu type='tcg' name='603e_v1.1'/>
+  <cpu type='tcg' name='745_v2.1'/>
+  <cpu type='tcg' name='750cl_v2.0'/>
+  <cpu type='tcg' name='7400_v2.9'/>
+  <cpu type='tcg' name='755_v2.3'/>
+  <cpu type='tcg' name='740_v2.1'/>
+  <cpu type='tcg' name='750l_v3.2'/>
+  <cpu type='tcg' name='7445_v3.3'/>
+  <cpu type='tcg' name='405ep'/>
+  <cpu type='tcg' name='mpc8610'/>
+  <cpu type='tcg' name='745_v2.0'/>
+  <cpu type='tcg' name='7400_v2.8'/>
+  <cpu type='tcg' name='7445_v3.2'/>
+  <cpu type='tcg' name='mpc5200b_v20'/>
+  <cpu type='tcg' name='740_v2.0'/>
+  <cpu type='tcg' name='750_v3.0'/>
+  <cpu type='tcg' name='7455_v1.0'/>
+  <cpu type='tcg' name='7450_v1.0'/>
+  <cpu type='tcg' name='e500v2_v10'/>
+  <cpu type='tcg' name='603e_v4'/>
+  <cpu type='tcg' name='750fx_v2.2'/>
+  <cpu type='tcg' name='mpc8545_v20'/>
+  <cpu type='tcg' name='npe405h2'/>
+  <cpu type='tcg' name='mpc8347p'/>
+  <cpu type='tcg' name='7448_v1.1'/>
+  <cpu type='tcg' name='603e_v3'/>
+  <cpu type='tcg' name='405gpr'/>
+  <cpu type='tcg' name='mpc8377e'/>
+  <cpu type='tcg' name='mpc8347ep'/>
+  <cpu type='tcg' name='mpc8548_v21'/>
+  <cpu type='tcg' name='mpc8555e_v11'/>
+  <cpu type='tcg' name='440epx'/>
+  <cpu type='tcg' name='750fx_v2.1'/>
+  <cpu type='tcg' name='mpc8544e_v11'/>
+  <cpu type='tcg' name='7448_v1.0'/>
+  <cpu type='tcg' name='mpc8547e_v21'/>
+  <cpu type='tcg' name='mpc8533e_v11'/>
+  <cpu type='tcg' name='7410_v1.1'/>
+  <cpu type='tcg' name='750cxe_v3.1'/>
+  <cpu type='tcg' name='750cxe_v2.4'/>
+  <cpu type='tcg' name='7441_v2.3'/>
+  <cpu type='tcg' name='750fx_v2.0'/>
+  <cpu type='tcg' name='7441_v2.10'/>
+  <cpu type='tcg' name='mpc8544e_v10'/>
+  <cpu type='tcg' name='mpc8349e'/>
+  <cpu type='tcg' name='405gpd'/>
+  <cpu type='tcg' name='mpc8547e_v20'/>
+  <cpu type='tcg' name='mpc8533e_v10'/>
+  <cpu type='tcg' name='7410_v1.0'/>
+  <cpu type='tcg' name='740p'/>
+  <cpu type='tcg' name='750cxe_v3.0'/>
+  <cpu type='tcg' name='7455_v3.4'/>
+  <cpu type='tcg' name='mpc8541_v11'/>
+  <cpu type='tcg' name='603e_v4.1'/>
+  <cpu type='tcg' name='750_v2.2'/>
+  <cpu type='tcg' name='e300c4'/>
+  <cpu type='tcg' name='7400_v2.7'/>
+  <cpu type='tcg' name='755_v2.2'/>
+  <cpu type='tcg' name='405gpc'/>
+  <cpu type='tcg' name='755_v2.1'/>
+  <cpu type='tcg' name='7455_v3.3'/>
+  <cpu type='tcg' name='mpc8541_v10'/>
+  <cpu type='tcg' name='750l_v3.0'/>
+  <cpu type='tcg' name='405lp'/>
+  <cpu type='tcg' name='750_v2.1'/>
+  <cpu type='tcg' name='e300c3'/>
+  <cpu type='tcg' name='mpc8540_v10'/>
+  <cpu type='tcg' name='mpc8379e'/>
+  <cpu type='tcg' name='7400_v2.6'/>
+  <cpu type='tcg' name='mpc8555_v11'/>
+  <cpu type='tcg' name='405gpb'/>
+  <cpu type='tcg' name='mpc8543_v11'/>
+  <cpu type='tcg' name='750cxe_v3.1b'/>
+  <cpu type='tcg' name='750cxe_v2.3'/>
+  <cpu type='tcg' name='mpc8548_v20'/>
+  <cpu type='tcg' name='mpc8555e_v10'/>
+  <cpu type='tcg' name='440-xilinx'/>
+  <cpu type='tcg' name='mpc8555_v10'/>
+  <cpu type='tcg' name='mpc8560_v21'/>
+  <cpu type='tcg' name='g2'/>
+  <cpu type='tcg' name='750cxe_v2.2'/>
+  <cpu type='tcg' name='e500v2_v30'/>
+  <cpu type='tcg' name='mpc8568e'/>
+  <cpu type='tcg' name='7447_v1.1'/>
+  <cpu type='tcg' name='mpc8548e_v11'/>
+  <cpu type='tcg' name='750cl_v1.0'/>
+  <cpu type='tcg' name='745_v1.1'/>
+  <cpu type='tcg' name='7441_v2.1'/>
+  <cpu type='tcg' name='mpc8543e_v11'/>
+  <cpu type='tcg' name='7451_v2.3'/>
+  <cpu type='tcg' name='mpc8343ea'/>
+  <cpu type='tcg' name='750l_v2.2'/>
+  <cpu type='tcg' name='405ez'/>
+  <cpu type='tcg' name='mpc8544_v11'/>
+  <cpu type='tcg' name='755_v2.0'/>
+  <cpu type='tcg' name='745_v1.0'/>
+  <cpu type='tcg' name='7455_v3.2'/>
+  <cpu type='tcg' name='750cxr'/>
+  <cpu type='tcg' name='mpc8548e_v10'/>
+  <cpu type='tcg' name='750_v2.0'/>
+  <cpu type='tcg' name='740_v1.0'/>
+  <cpu type='tcg' name='604e_v1.0'/>
+  <cpu type='tcg' name='e300c2'/>
+  <cpu type='tcg' name='405gpa'/>
+  <cpu type='tcg' name='7451_v2.10'/>
+  <cpu type='tcg' name='750cx_v2.2'/>
+  <cpu type='tcg' name='e300c1'/>
+  <cpu type='tcg' name='mpc8347at'/>
+  <cpu type='tcg' name='mpc8349a'/>
+  <cpu type='tcg' name='750cxe_v2.4b'/>
+  <cpu type='tcg' name='mpc8572e'/>
+  <cpu type='tcg' name='mpc8543_v10'/>
+  <cpu type='tcg' name='npe405l'/>
+  <cpu type='tcg' name='mpc8560_v20'/>
+  <cpu type='tcg' name='603p'/>
+  <cpu type='tcg' name='750cxe_v2.1'/>
+  <cpu type='tcg' name='440-xilinx-w-dfpu'/>
+  <cpu type='tcg' name='7447_v1.0'/>
+  <cpu type='tcg' name='750fx_v1.0'/>
+  <cpu type='tcg' name='mpc8641d'/>
+  <cpu type='tcg' name='7457_v1.2'/>
+  <cpu type='tcg' name='750gl'/>
+  <cpu type='tcg' name='mpc8543e_v10'/>
+  <cpu type='tcg' name='g2ls'/>
+  <cpu type='tcg' name='mpc8343'/>
+  <cpu type='tcg' name='750l_v2.1'/>
+  <cpu type='tcg' name='mpc8544_v10'/>
+  <cpu type='tcg' name='7445_v2.1'/>
+  <cpu type='tcg' name='755_v1.1'/>
+  <cpu type='tcg' name='750l_v2.0'/>
+  <cpu type='tcg' name='g2le'/>
+  <cpu type='tcg' name='mpc8545e_v21'/>
+  <cpu type='tcg' name='603e7v2'/>
+  <cpu type='tcg' name='750cx_v2.1'/>
+  <cpu type='tcg' name='745_v2.8'/>
+  <machine type='tcg' name='g3beige' maxCpus='1' default='yes' defaultCPU='750_v3.1-powerpc-cpu' defaultRAMid='ppc_heathrow.ram'/>
+  <machine type='tcg' name='virtex-ml507' maxCpus='1' defaultCPU='440-xilinx-powerpc-cpu' defaultRAMid='ram'/>
+  <machine type='tcg' name='mac99' maxCpus='1' defaultCPU='7400_v2.9-powerpc-cpu' defaultRAMid='ppc_core99.ram'/>
+  <machine type='tcg' name='ppce500' maxCpus='32' defaultCPU='e500v2_v30-powerpc-cpu' defaultRAMid='mpc8544ds.ram'/>
+  <machine type='tcg' name='sam460ex' maxCpus='1' defaultCPU='460exb-powerpc-cpu' defaultRAMid='ppc4xx.sdram'/>
+  <machine type='tcg' name='pegasos2' maxCpus='1' defaultCPU='7400_v2.9-powerpc-cpu' defaultRAMid='pegasos2.ram'/>
+  <machine type='tcg' name='bamboo' maxCpus='1' defaultCPU='440epb-powerpc-cpu' defaultRAMid='ppc4xx.sdram'/>
+  <machine type='tcg' name='40p' maxCpus='1' defaultCPU='604-powerpc-cpu'/>
+  <machine type='tcg' name='ref405ep' maxCpus='1' defaultRAMid='ppc405.ram'/>
+  <machine type='tcg' name='mpc8544ds' maxCpus='15' defaultCPU='e500v2_v30-powerpc-cpu' defaultRAMid='mpc8544ds.ram'/>
+</qemuCaps>

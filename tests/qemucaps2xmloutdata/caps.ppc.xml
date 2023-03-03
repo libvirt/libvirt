@@ -1,0 +1,25 @@
+<capabilities>
+
+  <host>
+    <cpu>
+      <arch>ppc</arch>
+    </cpu>
+    <power_management/>
+    <iommu support='no'/>
+  </host>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='ppc'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-ppc</emulator>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+    </features>
+  </guest>
+
+</capabilities>

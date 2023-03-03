@@ -788,6 +788,7 @@ testQemuGetLatestCaps(void)
         "s390x",
         "x86_64",
         "sparc",
+        "ppc",
     };
     g_autoptr(GHashTable) capslatest = virHashNew(g_free);
     size_t i;
