@@ -95,9 +95,9 @@ testQemuCaps(const void *opaque)
     binary = g_strdup_printf("/usr/bin/qemu-system-%s",
                              data->archName);
 
-    if (!(capsActual = virQEMUCapsNewBinary(binary)) ||
-        virQEMUCapsInitQMPMonitor(capsActual,
-                                  qemuMonitorTestGetMonitor(mon)) < 0)
+    capsActual = virQEMUCapsNewBinary(binary);
+
+    if (virQEMUCapsInitQMPMonitor(capsActual, qemuMonitorTestGetMonitor(mon)) < 0)
         return -1;
 
     if (virQEMUCapsGet(capsActual, QEMU_CAPS_KVM)) {

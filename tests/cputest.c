@@ -458,8 +458,7 @@ cpuTestMakeQEMUCaps(const struct data *data)
                                         cpu, true, false, fail_no_props, &model) < 0)
         return NULL;
 
-    if (!(qemuCaps = virQEMUCapsNew()))
-        return NULL;
+    qemuCaps = virQEMUCapsNew();
 
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_KVM);
     if (data->flags == JSON_MODELS ||

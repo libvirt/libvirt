@@ -68,8 +68,7 @@ qemuHotplugCreateObjects(virDomainXMLOption *xmlopt,
 
     priv = (*vm)->privateData;
 
-    if (!(priv->qemuCaps = virQEMUCapsNew()))
-        return -1;
+    priv->qemuCaps = virQEMUCapsNew();
 
     virQEMUCapsInitQMPBasicArch(priv->qemuCaps);
 

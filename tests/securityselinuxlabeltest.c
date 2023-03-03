@@ -322,8 +322,7 @@ mymain(void)
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
-    if (!(qemuCaps = virQEMUCapsNew()))
-        return EXIT_FAILURE;
+    qemuCaps = virQEMUCapsNew();
 
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC);

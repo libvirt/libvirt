@@ -1827,11 +1827,9 @@ virQEMUCapsNew(void)
     virQEMUCaps *qemuCaps;
 
     if (virQEMUCapsInitialize() < 0)
-        return NULL;
+        abort();
 
-    if (!(qemuCaps = virObjectNew(virQEMUCapsClass)))
-        return NULL;
-
+    qemuCaps = virObjectNew(virQEMUCapsClass);
     qemuCaps->invalidation = true;
     qemuCaps->flags = virBitmapNew(QEMU_CAPS_LAST);
 
@@ -1844,8 +1842,7 @@ virQEMUCapsNewBinary(const char *binary)
 {
     virQEMUCaps *qemuCaps = virQEMUCapsNew();
 
-    if (qemuCaps)
-        qemuCaps->binary = g_strdup(binary);
+    qemuCaps->binary = g_strdup(binary);
 
     return qemuCaps;
 }
@@ -1989,9 +1986,6 @@ virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps)
 {
     g_autoptr(virQEMUCaps) ret = virQEMUCapsNewBinary(qemuCaps->binary);
     size_t i;
-
-    if (!ret)
-        return NULL;
 
     ret->invalidation = qemuCaps->invalidation;
     ret->kvmSupportsNesting = qemuCaps->kvmSupportsNesting;
@@ -5877,11 +5871,8 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 const char *kernelVersion,
                                 virCPUData* cpuData)
 {
-    g_autoptr(virQEMUCaps) qemuCaps = NULL;
+    g_autoptr(virQEMUCaps) qemuCaps = virQEMUCapsNewBinary(binary);
     struct stat sb;
-
-    if (!(qemuCaps = virQEMUCapsNewBinary(binary)))
-        return NULL;
 
     /* We would also want to check faccessat if we cared about ACLs,
      * but we don't.  */
@@ -5967,9 +5958,6 @@ virQEMUCapsLoadFile(const char *filename,
     g_autoptr(virQEMUCaps) qemuCaps = virQEMUCapsNewBinary(binary);
     virQEMUCapsCachePriv *priv = privData;
     int ret;
-
-    if (!qemuCaps)
-        return NULL;
 
     ret = virQEMUCapsLoadCache(priv->hostArch, qemuCaps, filename, false);
     if (ret < 0)

@@ -3198,8 +3198,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
         return -1;
     }
     if (n > 0) {
-        if (!(qemuCaps = virQEMUCapsNew()))
-            return -1;
+        qemuCaps = virQEMUCapsNew();
 
         for (i = 0; i < n; i++) {
             g_autofree char *str = virXMLPropString(nodes[i], "name");

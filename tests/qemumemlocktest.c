@@ -81,10 +81,7 @@ mymain(void)
     DO_TEST("pc-kvm", 0);
     DO_TEST("pc-tcg", 0);
 
-    if (!(qemuCaps = virQEMUCapsNew())) {
-        ret = -1;
-        goto cleanup;
-    }
+    qemuCaps = virQEMUCapsNew();
 
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI);
 

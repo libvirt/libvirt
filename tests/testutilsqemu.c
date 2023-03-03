@@ -372,12 +372,11 @@ virQEMUCaps *
 qemuTestParseCapabilitiesArch(virArch arch,
                               const char *capsFile)
 {
-    g_autoptr(virQEMUCaps) qemuCaps = NULL;
     g_autofree char *binary = g_strdup_printf("/usr/bin/qemu-system-%s",
                                               virArchToString(arch));
+    g_autoptr(virQEMUCaps) qemuCaps = virQEMUCapsNewBinary(binary);
 
-    if (!(qemuCaps = virQEMUCapsNewBinary(binary)) ||
-        virQEMUCapsLoadCache(arch, qemuCaps, capsFile, true) < 0)
+    if (virQEMUCapsLoadCache(arch, qemuCaps, capsFile, true) < 0)
         return NULL;
 
     return g_steal_pointer(&qemuCaps);
@@ -896,8 +895,7 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
     testQemuInfoArgName argname;
     int flag;
 
-    if (!(info->args.fakeCaps = virQEMUCapsNew()))
-        abort();
+    info->args.fakeCaps = virQEMUCapsNew();
 
     info->conf = conf;
     info->args.newargs = true;

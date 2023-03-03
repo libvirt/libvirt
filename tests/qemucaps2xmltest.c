@@ -64,8 +64,7 @@ testQemuGetCaps(char *caps)
         return NULL;
     }
 
-    if (!(qemuCaps = virQEMUCapsNew()))
-        return NULL;
+    qemuCaps = virQEMUCapsNew();
 
     for (i = 0; i < n; i++) {
         g_autofree char *str = virXMLPropString(nodes[i], "name");
