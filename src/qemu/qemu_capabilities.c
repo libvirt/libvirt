@@ -1848,13 +1848,12 @@ virQEMUCapsNewBinary(const char *binary)
 }
 
 
-static int
+static void
 virQEMUCapsHostCPUDataCopy(virQEMUCapsHostCPUData *dst,
                            virQEMUCapsHostCPUData *src)
 {
-    if (src->info &&
-        !(dst->info = qemuMonitorCPUModelInfoCopy(src->info)))
-        return -1;
+    if (src->info)
+        dst->info = qemuMonitorCPUModelInfoCopy(src->info);
 
     if (src->reported)
         dst->reported = virCPUDefCopy(src->reported);
@@ -1864,8 +1863,6 @@ virQEMUCapsHostCPUDataCopy(virQEMUCapsHostCPUData *dst,
 
     if (src->full)
         dst->full = virCPUDefCopy(src->full);
-
-    return 0;
 }
 
 
@@ -1968,8 +1965,7 @@ virQEMUCapsAccelCopy(virQEMUCapsAccel *dst,
 {
     virQEMUCapsAccelCopyMachineTypes(dst, src);
 
-    if (virQEMUCapsHostCPUDataCopy(&dst->hostCPU, &src->hostCPU) < 0)
-        return -1;
+    virQEMUCapsHostCPUDataCopy(&dst->hostCPU, &src->hostCPU);
 
     dst->cpuModels = qemuMonitorCPUDefsCopy(src->cpuModels);
 
