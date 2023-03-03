@@ -430,15 +430,6 @@ qemuValidateDomainDefCpu(virQEMUDriver *driver,
     if (cpu->model || cpu->mode != VIR_CPU_MODE_CUSTOM) {
         switch ((virCPUMode) cpu->mode) {
         case VIR_CPU_MODE_HOST_PASSTHROUGH:
-            if (def->os.arch == VIR_ARCH_ARMV7L &&
-                driver->hostarch == VIR_ARCH_AARCH64) {
-                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_AARCH64_OFF)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("QEMU binary does not support CPU host-passthrough for armv7l on aarch64 host"));
-                    return -1;
-                }
-            }
-
             if (cpu->migratable &&
                 cpu->migratable != VIR_TRISTATE_SWITCH_OFF &&
                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MIGRATABLE)) {

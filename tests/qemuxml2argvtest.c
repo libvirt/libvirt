@@ -2536,10 +2536,7 @@ mymain(void)
     DO_TEST("aarch64-kvm-32-on-64",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_PL011,
-            QEMU_CAPS_KVM, QEMU_CAPS_CPU_AARCH64_OFF);
-    DO_TEST_PARSE_ERROR("aarch64-kvm-32-on-64",
-                        QEMU_CAPS_DEVICE_VIRTIO_MMIO,
-                        QEMU_CAPS_KVM);
+            QEMU_CAPS_KVM);
     DO_TEST("aarch64-pci-serial",
             QEMU_CAPS_DEVICE_PCI_SERIAL,
             QEMU_CAPS_OBJECT_GPEX,
