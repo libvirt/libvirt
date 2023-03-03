@@ -1884,7 +1884,7 @@ virQEMUCapsHostCPUDataClear(virQEMUCapsHostCPUData *cpuData)
 }
 
 
-static int
+static void
 virQEMUCapsSEVInfoCopy(virSEVCapability **dst,
                        virSEVCapability *src)
 {
@@ -1892,7 +1892,7 @@ virQEMUCapsSEVInfoCopy(virSEVCapability **dst,
 
     if (!src) {
         *dst = NULL;
-        return 0;
+        return;
     }
 
     tmp = g_new0(virSEVCapability, 1);
@@ -1909,11 +1909,10 @@ virQEMUCapsSEVInfoCopy(virSEVCapability **dst,
     tmp->max_es_guests = src->max_es_guests;
 
     *dst = g_steal_pointer(&tmp);
-    return 0;
 }
 
 
-static int
+static void
 virQEMUCapsSGXInfoCopy(virSGXCapability **dst,
                        virSGXCapability *src)
 {
@@ -1921,7 +1920,7 @@ virQEMUCapsSGXInfoCopy(virSGXCapability **dst,
 
     if (!src) {
         *dst = NULL;
-        return 0;
+        return;
     }
 
     tmp = g_new0(virSGXCapability, 1);
@@ -1939,7 +1938,6 @@ virQEMUCapsSGXInfoCopy(virSGXCapability **dst,
     }
 
     *dst = g_steal_pointer(&tmp);
-    return 0;
 }
 
 
@@ -2017,16 +2015,11 @@ virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps)
     for (i = 0; i < qemuCaps->ngicCapabilities; i++)
         ret->gicCapabilities[i] = qemuCaps->gicCapabilities[i];
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST) &&
-        virQEMUCapsSEVInfoCopy(&ret->sevCapabilities,
-                               qemuCaps->sevCapabilities) < 0)
-        return NULL;
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST))
+        virQEMUCapsSEVInfoCopy(&ret->sevCapabilities, qemuCaps->sevCapabilities);
 
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SGX_EPC) &&
-        virQEMUCapsSGXInfoCopy(&ret->sgxCapabilities,
-                               qemuCaps->sgxCapabilities) < 0)
-        return NULL;
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SGX_EPC))
+        virQEMUCapsSGXInfoCopy(&ret->sgxCapabilities, qemuCaps->sgxCapabilities);
 
     ret->hypervCapabilities = g_memdup(qemuCaps->hypervCapabilities,
                                        sizeof(virDomainCapsFeatureHyperv));
