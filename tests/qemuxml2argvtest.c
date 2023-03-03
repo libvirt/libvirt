@@ -2179,10 +2179,8 @@ mymain(void)
     DO_TEST("s390-serial-console",
             QEMU_CAPS_DEVICE_SCLPCONSOLE);
 
-    DO_TEST("ppc-dtb",
-            QEMU_CAPS_KVM);
-    DO_TEST("ppce500-serial",
-            QEMU_CAPS_KVM);
+    DO_TEST_CAPS_ARCH_LATEST("ppc-dtb", "ppc");
+    DO_TEST_CAPS_ARCH_LATEST("ppce500-serial", "ppc");
 
     DO_TEST_CAPS_LATEST("tpm-passthrough");
     DO_TEST_CAPS_LATEST("tpm-passthrough-crb");

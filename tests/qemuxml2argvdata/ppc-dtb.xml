@@ -1,4 +1,4 @@
-<domain type='kvm'>
+<domain type='qemu'>
   <name>QEMUGuest1</name>
   <uuid>49545eb3-75e1-2d0a-acdd-f0294406c99e</uuid>
   <memory unit='KiB'>262144</memory>
