@@ -1177,10 +1177,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("vhost-user-fs-hugepages");
     DO_TEST_CAPS_LATEST("vhost-user-fs-sock");
 
-    DO_TEST("riscv64-virt",
-            QEMU_CAPS_DEVICE_VIRTIO_MMIO);
-    DO_TEST("riscv64-virt-pci",
-            QEMU_CAPS_OBJECT_GPEX);
+    DO_TEST_CAPS_ARCH_LATEST("riscv64-virt", "riscv64");
+    DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-pci", "riscv64");
 
     DO_TEST_CAPS_LATEST("x86-kvm-32-on-64");
 
