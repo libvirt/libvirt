@@ -2407,15 +2407,10 @@ mymain(void)
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_DEVICE_QXL);
 
-    DO_TEST_NOCAPS("arm-vexpressa9-nodevs");
-    DO_TEST_NOCAPS("arm-vexpressa9-basic");
-    DO_TEST("arm-vexpressa9-virtio",
-            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
-            QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
-    DO_TEST("arm-virt-virtio",
-            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
-            QEMU_CAPS_DEVICE_PL011,
-            QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
+    DO_TEST_CAPS_ARCH_LATEST("arm-vexpressa9-nodevs", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("arm-vexpressa9-basic", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("arm-vexpressa9-virtio", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("arm-virt-virtio", "aarch64");
 
     DO_TEST("aarch64-virt-virtio",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
@@ -2533,10 +2528,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("aarch64-gic-not-arm",
                         QEMU_CAPS_KVM,
                         QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-    DO_TEST("aarch64-kvm-32-on-64",
-            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
-            QEMU_CAPS_DEVICE_PL011,
-            QEMU_CAPS_KVM);
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-kvm-32-on-64", "aarch64");
     DO_TEST("aarch64-pci-serial",
             QEMU_CAPS_DEVICE_PCI_SERIAL,
             QEMU_CAPS_OBJECT_GPEX,

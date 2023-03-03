@@ -21,7 +21,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
   <devices>
-    <emulator>/usr/bin/qemu-system-arm</emulator>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
     <disk type='file' device='disk'>
       <source file='/arm.raw'/>
       <target dev='vda' bus='virtio'/>

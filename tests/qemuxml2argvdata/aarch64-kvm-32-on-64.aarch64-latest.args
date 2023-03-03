@@ -6,14 +6,15 @@ LOGNAME=test \
 XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.local/share \
 XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.cache \
 XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
-/usr/bin/qemu-system-arm \
+/usr/bin/qemu-system-aarch64 \
 -name guest=armtest,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-armtest/master-key.aes \
--machine virt,usb=off,dump-guest-core=off \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-armtest/master-key.aes"}' \
+-machine virt,usb=off,gic-version=3,dump-guest-core=off,memory-backend=mach-virt.ram \
 -accel kvm \
 -cpu host,aarch64=off \
 -m 1024 \
+-object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":1073741824}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 496d7ea8-9739-544b-4ebd-ef08be936e6a \
@@ -28,12 +29,16 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
 -kernel /arm.kernel \
 -initrd /arm.initrd \
 -append 'console=ttyAMA0,115200n8 rw root=/dev/vda rootwait physmap.enabled=0' \
+-device '{"driver":"pcie-root-port","port":8,"chassis":1,"id":"pci.1","bus":"pcie.0","multifunction":true,"addr":"0x1"}' \
+-device '{"driver":"pcie-root-port","port":9,"chassis":2,"id":"pci.2","bus":"pcie.0","addr":"0x1.0x1"}' \
+-device '{"driver":"pcie-root-port","port":10,"chassis":3,"id":"pci.3","bus":"pcie.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"file","filename":"/arm.raw","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device virtio-blk-device,drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.2","addr":"0x0","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \
 -netdev user,id=hostnet0 \
--device virtio-net-device,netdev=hostnet0,id=net0,mac=52:54:00:09:a4:37 \
+-device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"52:54:00:09:a4:37","bus":"pci.1","addr":"0x0"}' \
 -chardev pty,id=charserial0 \
 -serial chardev:charserial0 \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
