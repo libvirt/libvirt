@@ -1959,7 +1959,7 @@ virQEMUCapsAccelCopyMachineTypes(virQEMUCapsAccel *dst,
 }
 
 
-static int
+static void
 virQEMUCapsAccelCopy(virQEMUCapsAccel *dst,
                      virQEMUCapsAccel *src)
 {
@@ -1968,8 +1968,6 @@ virQEMUCapsAccelCopy(virQEMUCapsAccel *dst,
     virQEMUCapsHostCPUDataCopy(&dst->hostCPU, &src->hostCPU);
 
     dst->cpuModels = qemuMonitorCPUDefsCopy(src->cpuModels);
-
-    return 0;
 }
 
 
@@ -1998,10 +1996,9 @@ virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps)
     ret->arch = qemuCaps->arch;
     ret->cpuData = virCPUDataNewCopy(qemuCaps->cpuData);
 
-    if (virQEMUCapsAccelCopy(&ret->kvm, &qemuCaps->kvm) < 0 ||
-        virQEMUCapsAccelCopy(&ret->hvf, &qemuCaps->hvf) < 0 ||
-        virQEMUCapsAccelCopy(&ret->tcg, &qemuCaps->tcg) < 0)
-        return NULL;
+    virQEMUCapsAccelCopy(&ret->kvm, &qemuCaps->kvm);
+    virQEMUCapsAccelCopy(&ret->hvf, &qemuCaps->hvf);
+    virQEMUCapsAccelCopy(&ret->tcg, &qemuCaps->tcg);
 
     ret->gicCapabilities = g_new0(virGICCapability, qemuCaps->ngicCapabilities);
     ret->ngicCapabilities = qemuCaps->ngicCapabilities;
