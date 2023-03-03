@@ -327,7 +327,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 185 */
               "dea-key-wrap", /* QEMU_CAPS_DEA_KEY_WRAP */
               "pci-serial", /* QEMU_CAPS_DEVICE_PCI_SERIAL */
-              "aarch64-off", /* QEMU_CAPS_CPU_AARCH64_OFF */
+              "aarch64-off", /* X_QEMU_CAPS_CPU_AARCH64_OFF */
               "vhost-user-multiqueue", /* X_QEMU_CAPS_VHOSTUSER_MULTIQUEUE */
               "migration-event", /* X_QEMU_CAPS_MIGRATION_EVENT */
 
@@ -5485,9 +5485,6 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
     case VIR_ARCH_AARCH64:
         /* ACPI only works on x86 and aarch64 */
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_ACPI);
-
-        /* -cpu ...,aarch64=off is not detectable via qmp at this point */
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_AARCH64_OFF);
 
         /* gic is arm specific */
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACH_VIRT_GIC_VERSION);
