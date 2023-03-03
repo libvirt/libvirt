@@ -81,8 +81,7 @@ typedef enum {
 
 struct testQemuArgs {
     bool newargs;
-    virQEMUCaps *fakeCaps;
-    bool fakeCapsUsed;
+    virBitmap *fakeCapsAdd;
     char *capsver;
     char *capsarch;
     qemuTestCPUDef capsHostCPUModel;
