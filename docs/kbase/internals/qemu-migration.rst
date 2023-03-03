@@ -79,7 +79,7 @@ The sequence of calling ``qemuMigrationJob*`` helper methods is as follows:
   it active::
 
       qemuMigrationJobStart(driver, vm, VIR_JOB_MIGRATION_{IN,OUT});
-      qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_*);
+      qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_*);
       ...do work...
       qemuMigrationJobContinue(vm);
 
@@ -97,9 +97,9 @@ The sequence of calling ``qemuMigrationJob*`` helper methods is as follows:
           return;
       qemuMigrationJobStartPhase(driver, vm, QEMU_MIGRATION_PHASE_*);
       ...do work...
-      qemuMigrationJobFinish(driver, vm);
+      qemuMigrationJobFinish(vm);
 
 While migration job is running (i.e., after ``qemuMigrationJobStart*`` but before
 ``qemuMigrationJob{Continue,Finish}``), migration phase can be advanced using::
 
-      qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_*);
+      qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_*);
