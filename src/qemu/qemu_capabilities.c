@@ -6074,9 +6074,6 @@ virQEMUCapsCacheLookupCopy(virFileCache *cache,
     ret = virQEMUCapsNewCopy(qemuCaps);
     virObjectUnref(qemuCaps);
 
-    if (!ret)
-        return NULL;
-
     virQEMUCapsFilterByMachineType(ret, virtType, machineType);
     return ret;
 }

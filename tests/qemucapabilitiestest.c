@@ -150,8 +150,7 @@ testQemuCapsCopy(const void *opaque)
               virArchFromString(data->archName), capsFile)))
         return -1;
 
-    if (!(copy = virQEMUCapsNewCopy(orig)))
-        return -1;
+    copy = virQEMUCapsNewCopy(orig);
 
     if (!(actual = virQEMUCapsFormatCache(copy)))
         return -1;

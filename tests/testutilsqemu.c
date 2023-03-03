@@ -517,9 +517,7 @@ qemuTestCapsCacheInsertImpl(virFileCache *cache,
             if (qemu_emulators[arch]) {
                 /* if we are dealing with fake caps we need to populate machine types */
                 if (!virQEMUCapsHasMachines(caps)) {
-                    if (!(copyCaps = effCaps = virQEMUCapsNewCopy(caps)))
-                        return -1;
-
+                    copyCaps = effCaps = virQEMUCapsNewCopy(caps);
                     qemuTestCapsPopulateFakeMachines(copyCaps, arch, hostOS);
                 }
 
@@ -540,9 +538,6 @@ qemuTestCapsCacheInsertImpl(virFileCache *cache,
                 tmp = virQEMUCapsNewCopy(caps);
             else
                 tmp = virQEMUCapsNew();
-
-            if (!tmp)
-                return -1;
 
             qemuTestCapsPopulateFakeMachines(tmp, i, hostOS);
 
@@ -1040,8 +1035,7 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
             g_hash_table_insert(info->conf->capscache, g_strdup(capsfile), cachedcaps);
         }
 
-        if (!(info->qemuCaps = virQEMUCapsNewCopy(cachedcaps)))
-            return -1;
+        info->qemuCaps = virQEMUCapsNewCopy(cachedcaps);
 
         if (info->args.fakeCapsUsed) {
             size_t i;
