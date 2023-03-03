@@ -12171,8 +12171,7 @@ qemuConnectBaselineCPU(virConnectPtr conn G_GNUC_UNUSED,
                                     !!(flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE))))
         goto cleanup;
 
-    if (!(cpu = virCPUDefCopyWithoutModel(baseline)))
-        goto cleanup;
+    cpu = virCPUDefCopyWithoutModel(baseline);
 
     virCPUDefCopyModelFilter(cpu, baseline, false, virQEMUCapsCPUFilterFeatures,
                              &cpus[0]->arch);

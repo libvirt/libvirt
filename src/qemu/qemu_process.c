@@ -8829,8 +8829,7 @@ qemuProcessRefreshCPU(virQEMUDriver *driver,
         if (!(hostmig = virCPUCopyMigratable(host->arch, host)))
             return -1;
 
-        if (!(cpu = virCPUDefCopyWithoutModel(hostmig)))
-            return -1;
+        cpu = virCPUDefCopyWithoutModel(hostmig);
 
         virCPUDefCopyModelFilter(cpu, hostmig, false, virQEMUCapsCPUFilterFeatures,
                                  &host->arch);

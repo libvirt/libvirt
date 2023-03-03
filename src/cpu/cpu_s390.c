@@ -44,7 +44,7 @@ virCPUs390Update(virCPUDef *guest,
                  const virCPUDef *host,
                  bool relative)
 {
-    g_autoptr(virCPUDef) updated = NULL;
+    g_autoptr(virCPUDef) updated = virCPUDefCopyWithoutModel(guest);
     size_t i;
 
     if (!relative)
@@ -67,9 +67,6 @@ virCPUs390Update(virCPUDef *guest,
                        _("unknown host CPU model"));
         return -1;
     }
-
-    if (!(updated = virCPUDefCopyWithoutModel(guest)))
-        return -1;
 
     updated->mode = VIR_CPU_MODE_CUSTOM;
     virCPUDefCopyModel(updated, host, true);

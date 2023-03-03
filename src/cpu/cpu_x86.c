@@ -2935,11 +2935,8 @@ static int
 x86UpdateHostModel(virCPUDef *guest,
                    const virCPUDef *host)
 {
-    g_autoptr(virCPUDef) updated = NULL;
+    g_autoptr(virCPUDef) updated = virCPUDefCopyWithoutModel(host);
     size_t i;
-
-    if (!(updated = virCPUDefCopyWithoutModel(host)))
-        return -1;
 
     updated->type = VIR_CPU_TYPE_GUEST;
     updated->mode = VIR_CPU_MODE_CUSTOM;
@@ -3169,7 +3166,7 @@ static int
 virCPUx86Translate(virCPUDef *cpu,
                    virDomainCapsCPUModels *models)
 {
-    g_autoptr(virCPUDef) translated = NULL;
+    g_autoptr(virCPUDef) translated = virCPUDefCopyWithoutModel(cpu);
     virCPUx86Map *map;
     g_autoptr(virCPUx86Model) model = NULL;
     size_t i;
@@ -3190,9 +3187,6 @@ virCPUx86Translate(virCPUDef *cpu,
                                 virCPUx86SignatureToCPUID(sig)) < 0)
             return -1;
     }
-
-    if (!(translated = virCPUDefCopyWithoutModel(cpu)))
-        return -1;
 
     if (x86Decode(translated, &model->data, models, NULL, false) < 0)
         return -1;
@@ -3280,9 +3274,10 @@ virCPUx86CopyMigratable(virCPUDef *cpu)
     if (!(map = virCPUx86GetMap()))
         return NULL;
 
-    if (!(copy = virCPUDefCopyWithoutModel(cpu)))
+    if (!cpu)
         return NULL;
 
+    copy = virCPUDefCopyWithoutModel(cpu);
     virCPUDefCopyModelFilter(copy, cpu, false, x86FeatureFilterMigratable, map);
 
     return g_steal_pointer(&copy);

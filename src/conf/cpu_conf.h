@@ -204,7 +204,8 @@ virCPUDef *
 virCPUDefCopy(const virCPUDef *cpu);
 
 virCPUDef *
-virCPUDefCopyWithoutModel(const virCPUDef *cpu);
+virCPUDefCopyWithoutModel(const virCPUDef *cpu)
+    ATTRIBUTE_NONNULL(1);
 
 int
 virCPUDefParseXMLString(const char *xml,

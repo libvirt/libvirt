@@ -10822,9 +10822,6 @@ qemuDomainFixupCPUs(virDomainObj *vm,
     if (virCPUDefFindFeature(vm->def->cpu, "cmt")) {
         g_autoptr(virCPUDef) fixedCPU = virCPUDefCopyWithoutModel(vm->def->cpu);
 
-        if (!fixedCPU)
-            return -1;
-
         virCPUDefCopyModelFilter(fixedCPU, vm->def->cpu, false,
                                  virQEMUCapsCPUFilterFeatures, &arch);
 
@@ -10834,9 +10831,6 @@ qemuDomainFixupCPUs(virDomainObj *vm,
 
     if (virCPUDefFindFeature(*origCPU, "cmt")) {
         g_autoptr(virCPUDef) fixedOrig = virCPUDefCopyWithoutModel(*origCPU);
-
-        if (!fixedOrig)
-            return -1;
 
         virCPUDefCopyModelFilter(fixedOrig, *origCPU, false,
                                  virQEMUCapsCPUFilterFeatures, &arch);
