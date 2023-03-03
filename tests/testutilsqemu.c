@@ -495,7 +495,7 @@ qemuTestCapsCacheInsertImpl(virFileCache *cache,
 {
     size_t i;
 
-    if (caps && virQEMUCapsGetArch(caps) != VIR_ARCH_NONE) {
+    if (virQEMUCapsGetArch(caps) != VIR_ARCH_NONE) {
         /* all tests using real caps or arcitecture are expected to call:
          *
          *  virFileCacheClear(driver.qemuCapsCache);
@@ -534,10 +534,7 @@ qemuTestCapsCacheInsertImpl(virFileCache *cache,
             if (qemu_emulators[i] == NULL)
                 continue;
 
-            if (caps)
-                tmp = virQEMUCapsNewCopy(caps);
-            else
-                tmp = virQEMUCapsNew();
+            tmp = virQEMUCapsNewCopy(caps);
 
             qemuTestCapsPopulateFakeMachines(tmp, i, hostOS);
 
@@ -573,6 +570,7 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     virSecurityManager *mgr = NULL;
     char statedir[] = STATEDIRTEMPLATE;
     char configdir[] = CONFIGDIRTEMPLATE;
+    g_autoptr(virQEMUCaps) emptyCaps = NULL;
 
     memset(driver, 0, sizeof(*driver));
 
@@ -643,7 +641,9 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     if (!driver->xmlopt)
         goto error;
 
-    if (qemuTestCapsCacheInsert(driver->qemuCapsCache, NULL) < 0)
+    /* Populate the capabilities cache with fake empty caps */
+    emptyCaps = virQEMUCapsNew();
+    if (qemuTestCapsCacheInsert(driver->qemuCapsCache, emptyCaps) < 0)
         goto error;
 
     if (!(mgr = virSecurityManagerNew("none", "qemu",
