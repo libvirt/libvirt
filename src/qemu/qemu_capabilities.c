@@ -1856,17 +1856,14 @@ virQEMUCapsHostCPUDataCopy(virQEMUCapsHostCPUData *dst,
         !(dst->info = qemuMonitorCPUModelInfoCopy(src->info)))
         return -1;
 
-    if (src->reported &&
-        !(dst->reported = virCPUDefCopy(src->reported)))
-        return -1;
+    if (src->reported)
+        dst->reported = virCPUDefCopy(src->reported);
 
-    if (src->migratable &&
-        !(dst->migratable = virCPUDefCopy(src->migratable)))
-        return -1;
+    if (src->migratable)
+        dst->migratable = virCPUDefCopy(src->migratable);
 
-    if (src->full &&
-        !(dst->full = virCPUDefCopy(src->full)))
-        return -1;
+    if (src->full)
+        dst->full = virCPUDefCopy(src->full);
 
     return 0;
 }
@@ -3886,8 +3883,9 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
         if (!(fullCPU = virQEMUCapsProbeHostCPU(qemuCaps->arch, NULL)))
             goto error;
 
-        if (!(cpuExpanded = virCPUDefCopy(cpu)) ||
-            virCPUExpandFeatures(qemuCaps->arch, cpuExpanded) < 0)
+        cpuExpanded = virCPUDefCopy(cpu);
+
+        if (virCPUExpandFeatures(qemuCaps->arch, cpuExpanded) < 0)
             goto error;
 
         for (i = 0; i < cpuExpanded->nfeatures; i++) {

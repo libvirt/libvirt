@@ -3206,15 +3206,12 @@ static int
 virCPUx86ExpandFeatures(virCPUDef *cpu)
 {
     virCPUx86Map *map;
-    g_autoptr(virCPUDef) expanded = NULL;
+    g_autoptr(virCPUDef) expanded = virCPUDefCopy(cpu);
     g_autoptr(virCPUx86Model) model = NULL;
     bool host = cpu->type == VIR_CPU_TYPE_HOST;
     size_t i;
 
     if (!(map = virCPUx86GetMap()))
-        return -1;
-
-    if (!(expanded = virCPUDefCopy(cpu)))
         return -1;
 
     virCPUDefFreeFeatures(expanded);

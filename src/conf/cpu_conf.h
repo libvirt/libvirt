@@ -201,7 +201,8 @@ virCPUDefStealModel(virCPUDef *dst,
                     bool keepVendor);
 
 virCPUDef *
-virCPUDefCopy(const virCPUDef *cpu);
+virCPUDefCopy(const virCPUDef *cpu)
+    ATTRIBUTE_NONNULL(1);
 
 virCPUDef *
 virCPUDefCopyWithoutModel(const virCPUDef *cpu)

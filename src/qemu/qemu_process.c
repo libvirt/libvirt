@@ -4464,8 +4464,7 @@ qemuProcessUpdateLiveGuestCPU(virDomainObj *vm,
          !def->cpu->model))
         return 0;
 
-    if (!(orig = virCPUDefCopy(def->cpu)))
-        return -1;
+    orig = virCPUDefCopy(def->cpu);
 
     if ((rc = virCPUUpdateLive(def->os.arch, def->cpu, enabled, disabled)) < 0) {
         return -1;

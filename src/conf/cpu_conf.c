@@ -271,12 +271,7 @@ virCPUDefCopyWithoutModel(const virCPUDef *cpu)
 virCPUDef *
 virCPUDefCopy(const virCPUDef *cpu)
 {
-    g_autoptr(virCPUDef) copy = NULL;
-
-    if (!cpu)
-        return NULL;
-
-    copy = virCPUDefCopyWithoutModel(cpu);
+    g_autoptr(virCPUDef) copy = virCPUDefCopyWithoutModel(cpu);
 
     virCPUDefCopyModel(copy, cpu, false);
 

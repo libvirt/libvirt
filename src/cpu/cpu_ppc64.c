@@ -406,8 +406,12 @@ ppc64Compute(virCPUDef *host,
     size_t i;
 
     /* Ensure existing configurations are handled correctly */
-    if (!(cpu = virCPUDefCopy(other)) ||
-        virCPUppc64ConvertLegacy(cpu) < 0)
+    if (!other)
+        return VIR_CPU_COMPARE_ERROR;
+
+    cpu = virCPUDefCopy(other);
+
+    if (virCPUppc64ConvertLegacy(cpu) < 0)
         return VIR_CPU_COMPARE_ERROR;
 
     if (cpu->arch != VIR_ARCH_NONE) {

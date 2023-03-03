@@ -581,12 +581,11 @@ int qemuTestDriverInit(virQEMUDriver *driver)
 
     memset(driver, 0, sizeof(*driver));
 
-    if (!(cpuDefault = virCPUDefCopy(&cpuDefaultData)) ||
-        !(cpuHaswell = virCPUDefCopy(&cpuHaswellData)) ||
-        !(cpuPower8 = virCPUDefCopy(&cpuPower8Data)) ||
-        !(cpuPower9 = virCPUDefCopy(&cpuPower9Data)) ||
-        !(cpuPower10 = virCPUDefCopy(&cpuPower10Data)))
-        return -1;
+    cpuDefault = virCPUDefCopy(&cpuDefaultData);
+    cpuHaswell = virCPUDefCopy(&cpuHaswellData);
+    cpuPower8 = virCPUDefCopy(&cpuPower8Data);
+    cpuPower9 = virCPUDefCopy(&cpuPower9Data);
+    cpuPower10 = virCPUDefCopy(&cpuPower10Data);
 
     if (virMutexInit(&driver->lock) < 0)
         return -1;
