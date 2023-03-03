@@ -903,6 +903,14 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
                 ignore_value(virBitmapSetBit(info->args.fakeCapsAdd, flag));
             break;
 
+        case ARG_QEMU_CAPS_DEL:
+            if (!(info->args.fakeCapsDel))
+                info->args.fakeCapsDel = virBitmapNew(QEMU_CAPS_LAST);
+
+            while ((flag = va_arg(argptr, int)) < QEMU_CAPS_LAST)
+                ignore_value(virBitmapSetBit(info->args.fakeCapsDel, flag));
+            break;
+
         case ARG_GIC:
             info->args.gic = va_arg(argptr, int);
             break;
@@ -1052,6 +1060,9 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
     for (cap = -1; (cap = virBitmapNextSetBit(info->args.fakeCapsAdd, cap)) >= 0;)
         virQEMUCapsSet(info->qemuCaps, cap);
 
+    for (cap = -1; (cap = virBitmapNextSetBit(info->args.fakeCapsDel, cap)) >= 0;)
+        virQEMUCapsClear(info->qemuCaps, cap);
+
     if (info->args.gic != GIC_NONE &&
         testQemuCapsSetGIC(info->qemuCaps, info->args.gic) < 0)
         return -1;
@@ -1069,6 +1080,7 @@ testQemuInfoClear(struct testQemuInfo *info)
     VIR_FREE(info->errfile);
     virObjectUnref(info->qemuCaps);
     g_clear_pointer(&info->args.fakeCapsAdd, virBitmapFree);
+    g_clear_pointer(&info->args.fakeCapsDel, virBitmapFree);
     g_clear_pointer(&info->args.fds, g_hash_table_unref);
 }
 

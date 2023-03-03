@@ -43,6 +43,7 @@ typedef enum {
 
 typedef enum {
     ARG_QEMU_CAPS = QEMU_CAPS_LAST + 1,
+    ARG_QEMU_CAPS_DEL,
     ARG_GIC,
     ARG_MIGRATE_FROM,
     ARG_MIGRATE_FD,
@@ -82,6 +83,7 @@ typedef enum {
 struct testQemuArgs {
     bool newargs;
     virBitmap *fakeCapsAdd;
+    virBitmap *fakeCapsDel;
     char *capsver;
     char *capsarch;
     qemuTestCPUDef capsHostCPUModel;
