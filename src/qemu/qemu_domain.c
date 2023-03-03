@@ -10802,8 +10802,6 @@ int
 qemuDomainFixupCPUs(virDomainObj *vm,
                     virCPUDef **origCPU)
 {
-    g_autoptr(virCPUDef) fixedCPU = NULL;
-    g_autoptr(virCPUDef) fixedOrig = NULL;
     virArch arch = vm->def->os.arch;
 
     if (!ARCH_IS_X86(arch))
@@ -10821,24 +10819,30 @@ qemuDomainFixupCPUs(virDomainObj *vm,
     if (!*origCPU)
         return 0;
 
-    if (virCPUDefFindFeature(vm->def->cpu, "cmt") &&
-        (!(fixedCPU = virCPUDefCopyWithoutModel(vm->def->cpu)) ||
-         virCPUDefCopyModelFilter(fixedCPU, vm->def->cpu, false,
-                                  virQEMUCapsCPUFilterFeatures, &arch) < 0))
-        return -1;
+    if (virCPUDefFindFeature(vm->def->cpu, "cmt")) {
+        g_autoptr(virCPUDef) fixedCPU = virCPUDefCopyWithoutModel(vm->def->cpu);
 
-    if (virCPUDefFindFeature(*origCPU, "cmt") &&
-        (!(fixedOrig = virCPUDefCopyWithoutModel(*origCPU)) ||
-         virCPUDefCopyModelFilter(fixedOrig, *origCPU, false,
-                                  virQEMUCapsCPUFilterFeatures, &arch) < 0))
-        return -1;
+        if (!fixedCPU)
+            return -1;
 
-    if (fixedCPU) {
+        if (virCPUDefCopyModelFilter(fixedCPU, vm->def->cpu, false,
+                                     virQEMUCapsCPUFilterFeatures, &arch) < 0)
+            return -1;
+
         virCPUDefFree(vm->def->cpu);
         vm->def->cpu = g_steal_pointer(&fixedCPU);
     }
 
-    if (fixedOrig) {
+    if (virCPUDefFindFeature(*origCPU, "cmt")) {
+        g_autoptr(virCPUDef) fixedOrig = virCPUDefCopyWithoutModel(*origCPU);
+
+        if (!fixedOrig)
+            return -1;
+
+        if (virCPUDefCopyModelFilter(fixedOrig, *origCPU, false,
+                                     virQEMUCapsCPUFilterFeatures, &arch) < 0)
+            return -1;
+
         virCPUDefFree(*origCPU);
         *origCPU = g_steal_pointer(&fixedOrig);
     }
