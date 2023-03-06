@@ -88,7 +88,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 30 */
     X_QEMU_CAPS_VHOST_NET, /* vhost-net support available */
     X_QEMU_CAPS_RTC_TD_HACK, /* -rtc-td-hack available */
-    QEMU_CAPS_NO_HPET, /* -no-hpet flag is supported */
+    X_QEMU_CAPS_NO_HPET, /* -no-hpet flag is supported */
     X_QEMU_CAPS_NO_KVM_PIT, /* -no-kvm-pit-reinjection supported */
     X_QEMU_CAPS_TDF, /* -tdf flag (user-mode pit catchup) */
 

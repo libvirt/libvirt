@@ -110,7 +110,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 30 */
               "vhost-net", /* X_QEMU_CAPS_VHOST_NET */
               "rtc-td-hack", /* X_QEMU_CAPS_RTC_TD_HACK */
-              "no-hpet", /* QEMU_CAPS_NO_HPET */
+              "no-hpet", /* X_QEMU_CAPS_NO_HPET */
               "no-kvm-pit", /* X_QEMU_CAPS_NO_KVM_PIT */
               "tdf", /* X_QEMU_CAPS_TDF */
 
@@ -5473,12 +5473,6 @@ void
 virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
 {
     switch (qemuCaps->arch) {
-    case VIR_ARCH_I686:
-    case VIR_ARCH_X86_64:
-        /* HPET is x86 specific */
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_HPET);
-        break;
-
     case VIR_ARCH_AARCH64:
         /* gic is arm specific */
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACH_VIRT_GIC_VERSION);
@@ -5491,6 +5485,8 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_LOADPARM);
         break;
 
+    case VIR_ARCH_I686:
+    case VIR_ARCH_X86_64:
     case VIR_ARCH_ALPHA:
     case VIR_ARCH_PPC:
     case VIR_ARCH_PPCEMB:
@@ -5568,11 +5564,6 @@ virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps)
      * on a not entirely related witness. */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_JSON))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_COMPAT_DEPRECATED);
-
-    /* Modern-style config of the HPET timer overrides support for the '-no-hpet'
-     * option */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_HPET))
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_NO_HPET);
 }
 
 

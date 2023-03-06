@@ -5,7 +5,6 @@
   <selfvers>0</selfvers>
   <flag name='kvm'/>
   <flag name='sdl'/>
-  <flag name='no-hpet'/>
   <flag name='spice'/>
   <flag name='hda-duplex'/>
   <flag name='ccid-emulated'/>
