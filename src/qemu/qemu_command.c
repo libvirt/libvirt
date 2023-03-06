@@ -6534,38 +6534,33 @@ qemuBuildCpuCommandLine(virCommand *cmd,
 }
 
 
-static bool
-qemuAppendKeyWrapMachineParm(virBuffer *buf, virQEMUCaps *qemuCaps,
-                             virQEMUCapsFlags flag, const char *pname,
-                             virTristateSwitch pstate)
+static int
+qemuAppendKeyWrapMachineParms(virBuffer *buf,
+                              const virDomainDef *def)
 {
-    if (pstate != VIR_TRISTATE_SWITCH_ABSENT) {
-        if (!virQEMUCapsGet(qemuCaps, flag)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("%s is not available with this QEMU binary"), pname);
-            return false;
-        }
+    if (!def->keywrap)
+        return 0;
 
-        virBufferAsprintf(buf, ",%s=%s", pname,
-                          virTristateSwitchTypeToString(pstate));
+    if (def->keywrap->aes == VIR_TRISTATE_SWITCH_ABSENT &&
+        def->keywrap->dea == VIR_TRISTATE_SWITCH_ABSENT)
+        return 0;
+
+    if (def->os.arch != VIR_ARCH_S390 &&
+        def->os.arch != VIR_ARCH_S390X) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"));
+        return -1;
     }
 
-    return true;
-}
+    if (def->keywrap->aes != VIR_TRISTATE_SWITCH_ABSENT)
+        virBufferAsprintf(buf, ",aes-key-wrap=%s",
+                          virTristateSwitchTypeToString(def->keywrap->aes));
 
-static bool
-qemuAppendKeyWrapMachineParms(virBuffer *buf, virQEMUCaps *qemuCaps,
-                              const virDomainKeyWrapDef *keywrap)
-{
-    if (!qemuAppendKeyWrapMachineParm(buf, qemuCaps, QEMU_CAPS_AES_KEY_WRAP,
-                                      "aes-key-wrap", keywrap->aes))
-        return false;
+    if (def->keywrap->dea != VIR_TRISTATE_SWITCH_ABSENT)
+        virBufferAsprintf(buf, ",dea-key-wrap=%s",
+                          virTristateSwitchTypeToString(def->keywrap->dea));
 
-    if (!qemuAppendKeyWrapMachineParm(buf, qemuCaps, QEMU_CAPS_DEA_KEY_WRAP,
-                                      "dea-key-wrap", keywrap->dea))
-        return false;
-
-    return true;
+    return 0;
 }
 
 
@@ -6865,8 +6860,7 @@ qemuBuildMachineCommandLine(virCommand *cmd,
      */
     virBufferAddLit(&buf, ",usb=off");
 
-    if (def->keywrap &&
-        !qemuAppendKeyWrapMachineParms(&buf, qemuCaps, def->keywrap))
+    if (qemuAppendKeyWrapMachineParms(&buf, def) < 0)
         return -1;
 
     if (qemuAppendDomainFeaturesMachineParam(&buf, def, qemuCaps) < 0)
