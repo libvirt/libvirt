@@ -3804,6 +3804,15 @@ qemuBuildNicDevProps(virDomainDef *def,
 }
 
 
+static char *
+qemuBuildHostNetSocketAddr(virDomainNetDef *net)
+{
+    return g_strdup_printf("%s:%d",
+                           NULLSTR_EMPTY(net->data.socket.address),
+                           net->data.socket.port);
+}
+
+
 virJSONValue *
 qemuBuildHostNetProps(virDomainObj *vm,
                       virDomainNetDef *net)
@@ -3885,40 +3894,53 @@ qemuBuildHostNetProps(virDomainObj *vm,
     }
         break;
 
-    case VIR_DOMAIN_NET_TYPE_CLIENT:
-        if (virJSONValueObjectAdd(&netprops, "s:type", "socket", NULL) < 0 ||
-            virJSONValueObjectAppendStringPrintf(netprops, "connect", "%s:%d",
-                                                 net->data.socket.address,
-                                                 net->data.socket.port) < 0)
-            return NULL;
-        break;
+    case VIR_DOMAIN_NET_TYPE_CLIENT: {
+        g_autofree char *addr = qemuBuildHostNetSocketAddr(net);
 
-    case VIR_DOMAIN_NET_TYPE_SERVER:
-        if (virJSONValueObjectAdd(&netprops, "s:type", "socket", NULL) < 0 ||
-            virJSONValueObjectAppendStringPrintf(netprops, "listen", "%s:%d",
-                                                 NULLSTR_EMPTY(net->data.socket.address),
-                                                 net->data.socket.port) < 0)
+        if (virJSONValueObjectAdd(&netprops,
+                                  "s:type", "socket",
+                                  "s:connect", addr,
+                                  NULL) < 0)
             return NULL;
         break;
+    }
 
-    case VIR_DOMAIN_NET_TYPE_MCAST:
-        if (virJSONValueObjectAdd(&netprops, "s:type", "socket", NULL) < 0 ||
-            virJSONValueObjectAppendStringPrintf(netprops, "mcast", "%s:%d",
-                                                 net->data.socket.address,
-                                                 net->data.socket.port) < 0)
-            return NULL;
-        break;
+    case VIR_DOMAIN_NET_TYPE_SERVER: {
+        g_autofree char *addr = qemuBuildHostNetSocketAddr(net);
 
-    case VIR_DOMAIN_NET_TYPE_UDP:
-        if (virJSONValueObjectAdd(&netprops, "s:type", "socket", NULL) < 0 ||
-            virJSONValueObjectAppendStringPrintf(netprops, "udp", "%s:%d",
-                                                 net->data.socket.address,
-                                                 net->data.socket.port) < 0 ||
-            virJSONValueObjectAppendStringPrintf(netprops, "localaddr", "%s:%d",
-                                                 net->data.socket.localaddr,
-                                                 net->data.socket.localport) < 0)
+        if (virJSONValueObjectAdd(&netprops,
+                                  "s:type", "socket",
+                                  "s:listen", addr,
+                                  NULL) < 0)
             return NULL;
         break;
+    }
+
+    case VIR_DOMAIN_NET_TYPE_MCAST: {
+        g_autofree char *addr = qemuBuildHostNetSocketAddr(net);
+
+        if (virJSONValueObjectAdd(&netprops,
+                                  "s:type", "socket",
+                                  "s:mcast", addr,
+                                  NULL) < 0)
+            return NULL;
+        break;
+    }
+
+    case VIR_DOMAIN_NET_TYPE_UDP: {
+        g_autofree char *addr = qemuBuildHostNetSocketAddr(net);
+        g_autofree char *localaddr = g_strdup_printf("%s:%d",
+                                                     net->data.socket.localaddr,
+                                                     net->data.socket.localport);
+
+        if (virJSONValueObjectAdd(&netprops,
+                                  "s:type", "socket",
+                                  "s:udp", addr,
+                                  "s:localaddr", localaddr,
+                                  NULL) < 0)
+            return NULL;
+        break;
+    }
 
     case VIR_DOMAIN_NET_TYPE_USER:
         if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
