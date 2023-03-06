@@ -2012,7 +2012,8 @@ interface stats are only available for interfaces that have a
 physical source interface. This does not include, for example, a
 'user' interface type since it is a virtual LAN with NAT to the
 outside world. *interface-device* can be the interface target by
-name or MAC address.
+name or MAC address. Please note, for an unmanaged *ethernet*
+type returned stats might have RX/TX swapped.
 
 
 domiftune

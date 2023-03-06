@@ -5965,6 +5965,9 @@ virDomainBlockStatsFlags(virDomainPtr dom,
  *
  * The returned stats are from domain's point of view.
  *
+ * Please note, for an unmanaged ethernet type, returned stats
+ * might have RX/TX swapped.
+ *
  * Returns: 0 in case of success or -1 in case of failure.
  *
  * Since: 0.3.2
