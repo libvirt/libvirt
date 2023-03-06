@@ -3821,6 +3821,7 @@ qemuBuildHostNetProps(virDomainObj *vm,
     size_t i;
     qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
     g_autoptr(virJSONValue) netprops = NULL;
+    g_autofree char *alias = g_strdup_printf("host%s", net->info.alias);
 
     if (net->script && netType != VIR_DOMAIN_NET_TYPE_ETHERNET) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -3989,15 +3990,20 @@ qemuBuildHostNetProps(virDomainObj *vm,
             return NULL;
         break;
 
-    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-        if (virJSONValueObjectAdd(&netprops, "s:type", "vhost-user", NULL) < 0 ||
-            virJSONValueObjectAppendStringPrintf(netprops, "chardev", "char%s", net->info.alias) < 0)
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER: {
+        g_autofree char *charalias = g_strdup_printf("char%s", net->info.alias);
+
+        if (virJSONValueObjectAdd(&netprops,
+                                  "s:type", "vhost-user",
+                                  "s:chardev", charalias,
+                                  NULL) < 0)
             return NULL;
 
         if (net->driver.virtio.queues > 1 &&
             virJSONValueObjectAppendNumberUlong(netprops, "queues", net->driver.virtio.queues) < 0)
             return NULL;
         break;
+    }
 
     case VIR_DOMAIN_NET_TYPE_VDPA:
         /* Caller will pass the fd to qemu with add-fd */
@@ -4026,7 +4032,7 @@ qemuBuildHostNetProps(virDomainObj *vm,
         return NULL;
     }
 
-    if (virJSONValueObjectAppendStringPrintf(netprops, "id", "host%s", net->info.alias) < 0)
+    if (virJSONValueObjectAdd(&netprops, "s:id", alias, NULL) < 0)
         return NULL;
 
     return g_steal_pointer(&netprops);
