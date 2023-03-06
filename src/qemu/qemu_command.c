@@ -10515,22 +10515,24 @@ qemuBuildParallelChrDeviceProps(virDomainChrDef *chr)
 virJSONValue *
 qemuBuildChannelGuestfwdNetdevProps(virDomainChrDef *chr)
 {
+    g_autofree char *guestfwdstr = NULL;
+    g_autoptr(virJSONValue) guestfwdstrobj = NULL;
     g_autoptr(virJSONValue) guestfwdarr = virJSONValueNewArray();
-    g_autoptr(virJSONValue) guestfwdstrobj = virJSONValueNewObject();
     g_autofree char *addr = NULL;
     virJSONValue *ret = NULL;
 
     if (!(addr = virSocketAddrFormat(chr->target.addr)))
         return NULL;
 
+    guestfwdstr = g_strdup_printf("tcp:%s:%i-chardev:char%s",
+                                  addr,
+                                  virSocketAddrGetPort(chr->target.addr),
+                                  chr->info.alias);
+
     /* this may seem weird, but qemu indeed decided that 'guestfwd' parameter
      * is an array of objects which have just one member named 'str' which
      * contains the description */
-    if (virJSONValueObjectAppendStringPrintf(guestfwdstrobj, "str",
-                                             "tcp:%s:%i-chardev:char%s",
-                                             addr,
-                                             virSocketAddrGetPort(chr->target.addr),
-                                             chr->info.alias) < 0)
+    if (virJSONValueObjectAdd(&guestfwdstrobj, "s:str", guestfwdstr, NULL) < 0)
         return NULL;
 
     if (virJSONValueArrayAppend(guestfwdarr, &guestfwdstrobj) < 0)
