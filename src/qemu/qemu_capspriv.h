@@ -66,9 +66,6 @@ virQEMUCapsInitCPUModel(virQEMUCaps *qemuCaps,
                         virCPUDef *cpu,
                         bool migratable);
 
-void
-virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps);
-
 qemuMonitorCPUModelInfo *
 virQEMUCapsGetCPUModelInfo(virQEMUCaps *qemuCaps,
                            virDomainVirtType type);

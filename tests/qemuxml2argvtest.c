@@ -345,8 +345,6 @@ testUpdateQEMUCaps(const struct testQemuInfo *info,
 
     virQEMUCapsSetArch(info->qemuCaps, arch);
 
-    virQEMUCapsInitQMPBasicArch(info->qemuCaps);
-
     if (testAddCPUModels(info->qemuCaps,
                          !!(info->flags & FLAG_SKIP_LEGACY_CPUS)) < 0)
         return -1;

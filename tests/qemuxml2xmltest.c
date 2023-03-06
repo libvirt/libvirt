@@ -41,9 +41,6 @@ testXML2XMLCommon(const struct testQemuInfo *info)
     else
         driver.caps = linuxCaps;
 
-    if (!(info->flags & FLAG_REAL_CAPS))
-        virQEMUCapsInitQMPBasicArch(info->qemuCaps);
-
     virFileCacheClear(driver.qemuCapsCache);
 
     if (info->args.hostOS == HOST_OS_MACOS)

@@ -5463,61 +5463,6 @@ virQEMUCapsInitQMPArch(virQEMUCaps *qemuCaps,
 
 
 /**
- * virQEMUCapsInitQMPBasicArch:
- * @qemuCaps: QEMU capabilities
- *
- * Initialize @qemuCaps with basic always present and architecture-dependent
- * capabilities.
- */
-void
-virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
-{
-    switch (qemuCaps->arch) {
-    case VIR_ARCH_S390:
-    case VIR_ARCH_S390X:
-    case VIR_ARCH_AARCH64:
-    case VIR_ARCH_I686:
-    case VIR_ARCH_X86_64:
-    case VIR_ARCH_ALPHA:
-    case VIR_ARCH_PPC:
-    case VIR_ARCH_PPCEMB:
-    case VIR_ARCH_SH4:
-    case VIR_ARCH_SH4EB:
-    case VIR_ARCH_RISCV32:
-    case VIR_ARCH_RISCV64:
-    case VIR_ARCH_SPARC:
-    case VIR_ARCH_SPARC64:
-    case VIR_ARCH_ARMV6L:
-    case VIR_ARCH_ARMV7L:
-    case VIR_ARCH_ARMV7B:
-    case VIR_ARCH_CRIS:
-    case VIR_ARCH_ITANIUM:
-    case VIR_ARCH_LM32:
-    case VIR_ARCH_M68K:
-    case VIR_ARCH_MICROBLAZE:
-    case VIR_ARCH_MICROBLAZEEL:
-    case VIR_ARCH_MIPS:
-    case VIR_ARCH_MIPSEL:
-    case VIR_ARCH_MIPS64:
-    case VIR_ARCH_MIPS64EL:
-    case VIR_ARCH_OR32:
-    case VIR_ARCH_PARISC:
-    case VIR_ARCH_PARISC64:
-    case VIR_ARCH_PPCLE:
-    case VIR_ARCH_PPC64:
-    case VIR_ARCH_PPC64LE:
-    case VIR_ARCH_UNICORE32:
-    case VIR_ARCH_XTENSA:
-    case VIR_ARCH_XTENSAEB:
-    case VIR_ARCH_NONE:
-    case VIR_ARCH_LAST:
-    default:
-        break;
-    }
-}
-
-
-/**
  * virQEMUCapsInitQMPVersionCaps:
  * @qemuCaps: QEMU capabilities
  *
@@ -5665,8 +5610,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCaps *qemuCaps,
 
     if (virQEMUCapsInitQMPArch(qemuCaps, mon) < 0)
         return -1;
-
-    virQEMUCapsInitQMPBasicArch(qemuCaps);
 
     /* initiate all capabilities based on qemu version */
     virQEMUCapsInitQMPVersionCaps(qemuCaps);
