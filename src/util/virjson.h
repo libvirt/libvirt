@@ -204,12 +204,6 @@ virJSONValueObjectAppendString(virJSONValue *object,
                                const char *key,
                                const char *value);
 int
-virJSONValueObjectAppendStringPrintf(virJSONValue *object,
-                                     const char *key,
-                                     const char *fmt,
-                                     ...)
-    G_GNUC_PRINTF(3, 4);
-int
 virJSONValueObjectPrependString(virJSONValue *object,
                                 const char *key,
                                 const char *value);
