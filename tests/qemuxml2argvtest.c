@@ -1296,6 +1296,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd-hostname");
     DO_TEST_CAPS_VER("disk-network-tlsx509-vxhs", "5.0.0");
     DO_TEST_CAPS_LATEST("disk-network-http");
+    VIR_FREE(driver.config->nbdTLSx509secretUUID);
+    VIR_FREE(driver.config->vxhsTLSx509secretUUID);
     driver.config->vxhsTLS = 0;
     DO_TEST_CAPS_LATEST("disk-no-boot");
     DO_TEST_CAPS_LATEST("disk-nvme");
@@ -1574,6 +1576,7 @@ mymain(void)
     DO_TEST("serial-tcp-tlsx509-secret-chardev",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_CAPS_LATEST("serial-tcp-tlsx509-secret-chardev");
+    VIR_FREE(driver.config->chardevTLSx509secretUUID);
     driver.config->chardevTLS = 0;
     DO_TEST("serial-many-chardev",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
