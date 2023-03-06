@@ -19,6 +19,10 @@
 # A script that captures the VMSA blob for the boot vCPU and
 # first additional vCPU, when a KVM guest is booted with SEV-ES
 #
+# NOTE: This directly references specific structures and places in the
+#       kernel source code. It is expected that this example will need to be
+#       editted to match the kernel you intend to run it against.
+#
 # The captured VMSA will be printed to the console in hex format,
 # and can be converted to the required binary format by feeding
 # it through
