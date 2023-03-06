@@ -3728,18 +3728,18 @@ qemuSnapshotDeleteValidate(virDomainObj *vm,
         }
     }
 
-    if (virDomainSnapshotIsExternal(snap) &&
-        qemuDomainHasBlockjob(vm, false)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("cannot delete external snapshots when there is another active block job"));
-        return -1;
-    }
+    if (virDomainSnapshotIsExternal(snap)) {
+        if (qemuDomainHasBlockjob(vm, false)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("cannot delete external snapshots when there is another active block job"));
+            return -1;
+        }
 
-    if (virDomainSnapshotIsExternal(snap) &&
-        (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("deletion of external disk snapshots with children not supported"));
-        return -1;
+        if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("deletion of external disk snapshots with children not supported"));
+            return -1;
+        }
     }
 
     return 0;
