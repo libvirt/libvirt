@@ -6636,8 +6636,7 @@ qemuAppendDomainFeaturesMachineParam(virBuffer *buf,
         virBufferAsprintf(buf, ",smm=%s", virTristateSwitchTypeToString(smm));
 
     if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON) {
-        bool hasGICVersionOption = virQEMUCapsGet(qemuCaps,
-                                                  QEMU_CAPS_MACH_VIRT_GIC_VERSION);
+        bool hasGICVersionOption = virQEMUCapsGetArch(qemuCaps) == VIR_ARCH_AARCH64;
 
         switch ((virGICVersion) def->gic_version) {
         case VIR_GIC_VERSION_2:
