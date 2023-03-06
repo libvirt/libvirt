@@ -46,7 +46,7 @@ function dump_vmsa(addr:long) {
 # is the one beween the call to clflush_cache_range(...) and the
 # call to sev_issue_cmd(kvm, SEV_CMD_LAUNCH_UPDATE...).
 #
-# Line 632 is correct for Linux v6.0
-probe module("kvm_amd").statement("__sev_launch_update_vmsa@arch/x86/kvm/svm/sev.c:632") {
-  dump_vmsa($svm->vmsa)
+# Line 635 is correct for Linux v6.3
+probe module("kvm_amd").statement("__sev_launch_update_vmsa@arch/x86/kvm/svm/sev.c:635") {
+  dump_vmsa($svm->sev_es->vmsa)
 }
