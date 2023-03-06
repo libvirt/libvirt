@@ -157,3 +157,7 @@ virDomainMomentCheckCycles(virDomainMomentObjList *list,
 
 virDomainMomentObj *
 virDomainMomentFindLeaf(virDomainMomentObjList *list);
+
+bool
+virDomainMomentIsAncestor(virDomainMomentObj *moment,
+                          virDomainMomentObj *ancestor);

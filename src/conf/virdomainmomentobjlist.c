@@ -582,3 +582,20 @@ virDomainMomentFindLeaf(virDomainMomentObjList *list)
         return moment;
     return NULL;
 }
+
+
+/* Check if @moment is descendant of @ancestor. */
+bool
+virDomainMomentIsAncestor(virDomainMomentObj *moment,
+                          virDomainMomentObj *ancestor)
+{
+    if (moment == ancestor)
+        return false;
+
+    for (moment = moment->parent; moment; moment = moment->parent) {
+        if (moment == ancestor)
+            return true;
+    }
+
+    return false;
+}

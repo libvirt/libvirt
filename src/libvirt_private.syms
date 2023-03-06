@@ -1221,6 +1221,7 @@ virDomainMomentDropChildren;
 virDomainMomentDropParent;
 virDomainMomentForEachChild;
 virDomainMomentForEachDescendant;
+virDomainMomentIsAncestor;
 virDomainMomentMoveChildren;
 virDomainMomentObjFree;
 virDomainMomentObjNew;
