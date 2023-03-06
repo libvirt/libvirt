@@ -3995,8 +3995,14 @@ qemuBuildHostNetProps(virDomainObj *vm,
         /* Should have been handled earlier via PCI/USB hotplug code. */
     case VIR_DOMAIN_NET_TYPE_NULL:
     case VIR_DOMAIN_NET_TYPE_VDS:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("network device type '%s' is not supported by this hypervisor"),
+                       virDomainNetTypeToString(netType));
+        return NULL;
+
     case VIR_DOMAIN_NET_TYPE_LAST:
-        break;
+        virReportEnumRangeError(virDomainNetType, netType);
+        return NULL;
     }
 
     if (virJSONValueObjectAppendStringPrintf(netprops, "id", "host%s", net->info.alias) < 0)
