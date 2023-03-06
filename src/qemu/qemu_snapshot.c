@@ -152,9 +152,12 @@ qemuSnapshotDomainDefUpdateDisk(virDomainDef *domdef,
     for (i = 0; i < snapdef->ndisks; i++) {
         g_autoptr(virStorageSource) newsrc = NULL;
         virDomainSnapshotDiskDef *snapdisk = &(snapdef->disks[i]);
-        virDomainDiskDef *defdisk = domdef->disks[i];
+        virDomainDiskDef *defdisk = virDomainDiskByName(domdef, snapdisk->name, false);
 
         if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
+            continue;
+
+        if (!defdisk)
             continue;
 
         if (!(newsrc = virStorageSourceCopy(snapdisk->src, false)))
