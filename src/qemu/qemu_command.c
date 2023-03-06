@@ -5936,9 +5936,11 @@ qemuBuildClockCommandLine(virCommand *cmd,
              * -no-hpet exists is VIR_TRISTATE_BOOL_YES, and when -no-hpet
              *  doesn't exist is VIR_TRISTATE_BOOL_NO. "confusing"?  "yes"! */
 
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_HPET)) {
-                if (def->clock.timers[i]->present == VIR_TRISTATE_BOOL_NO)
-                    virCommandAddArg(cmd, "-no-hpet");
+            if (def->clock.timers[i]->present == VIR_TRISTATE_BOOL_NO &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_HPET) &&
+                (def->os.arch == VIR_ARCH_I686 ||
+                 def->os.arch == VIR_ARCH_X86_64)) {
+                virCommandAddArg(cmd, "-no-hpet");
             }
             break;
         }
