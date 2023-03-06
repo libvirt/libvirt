@@ -5969,7 +5969,9 @@ qemuBuildPMCommandLine(virCommand *cmd,
     /* Use old syntax of -no-acpi only if qemu didn't report that it supports the
      * new syntax */
     if (virQEMUCapsMachineSupportsACPI(qemuCaps, def->virtType, def->os.machine) == VIR_TRISTATE_BOOL_ABSENT &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI)) {
+        (def->os.arch == VIR_ARCH_I686 ||
+         def->os.arch == VIR_ARCH_X86_64 ||
+         def->os.arch == VIR_ARCH_AARCH64)) {
         if (def->features[VIR_DOMAIN_FEATURE_ACPI] != VIR_TRISTATE_SWITCH_ON)
             virCommandAddArg(cmd, "-no-acpi");
     }
