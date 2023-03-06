@@ -3974,11 +3974,10 @@ qemuBuildHostNetProps(virDomainObj *vm,
                     if (virJSONValueObjectAppendString(netprops, "net", ipv4netaddr) < 0)
                         return NULL;
                 } else if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6)) {
-                    if (virJSONValueObjectAppendString(netprops, "ipv6-prefix", addr) < 0)
-                        return NULL;
-                    if (ip->prefix &&
-                        virJSONValueObjectAppendNumberUlong(netprops, "ipv6-prefixlen",
-                                                            ip->prefix) < 0)
+                    if (virJSONValueObjectAdd(&netprops,
+                                              "s:ipv6-prefix", addr,
+                                              "p:ipv6-prefixlen", ip->prefix,
+                                              NULL) < 0)
                         return NULL;
                 }
             }
