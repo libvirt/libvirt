@@ -37,6 +37,11 @@ v9.2.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: Fix validation of the HPET timer
+
+    Due to a logic bug introduced in libvirt 9.0.0, VM configurations
+    explicitly enabling the HPET timer were rejected.
+
 
 v9.1.0 (2023-03-01)
 ===================
