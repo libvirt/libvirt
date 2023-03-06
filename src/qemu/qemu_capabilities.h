@@ -319,7 +319,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 195 */
     QEMU_CAPS_DEVICE_E1000, /* -device e1000 */
     QEMU_CAPS_DEVICE_VIRTIO_NET, /* -device virtio-net-* */
-    QEMU_CAPS_MACH_VIRT_GIC_VERSION, /* -machine virt,gic-version */
+    X_QEMU_CAPS_MACH_VIRT_GIC_VERSION, /* -machine virt,gic-version */
     X_QEMU_CAPS_INCOMING_DEFER, /* -incoming defer and migrate_incoming */
     QEMU_CAPS_DEVICE_VIRTIO_GPU, /* -device virtio-gpu-* */
 

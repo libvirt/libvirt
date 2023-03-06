@@ -341,7 +341,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 195 */
               "e1000", /* QEMU_CAPS_DEVICE_E1000 */
               "virtio-net", /* QEMU_CAPS_DEVICE_VIRTIO_NET */
-              "gic-version", /* QEMU_CAPS_MACH_VIRT_GIC_VERSION */
+              "gic-version", /* X_QEMU_CAPS_MACH_VIRT_GIC_VERSION */
               "incoming-defer", /* X_QEMU_CAPS_INCOMING_DEFER */
               "virtio-gpu", /* QEMU_CAPS_DEVICE_VIRTIO_GPU */
 
@@ -5473,11 +5473,6 @@ void
 virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
 {
     switch (qemuCaps->arch) {
-    case VIR_ARCH_AARCH64:
-        /* gic is arm specific */
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-        break;
-
     case VIR_ARCH_S390:
     case VIR_ARCH_S390X:
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_AES_KEY_WRAP);
@@ -5485,6 +5480,7 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_LOADPARM);
         break;
 
+    case VIR_ARCH_AARCH64:
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:
     case VIR_ARCH_ALPHA:
