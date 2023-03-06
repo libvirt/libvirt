@@ -3729,6 +3729,8 @@ qemuSnapshotDeleteValidate(virDomainObj *vm,
     }
 
     if (virDomainSnapshotIsExternal(snap)) {
+        virDomainMomentObj *current = virDomainSnapshotGetCurrent(vm->snapshots);
+
         if (qemuDomainHasBlockjob(vm, false)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot delete external snapshots when there is another active block job"));
@@ -3738,6 +3740,25 @@ qemuSnapshotDeleteValidate(virDomainObj *vm,
         if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("deletion of external disk snapshots with children not supported"));
+            return -1;
+        }
+
+        if (snap == current && snap->nchildren != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("deletion of active external snapshot that is not a leaf snapshot is not supported"));
+            return -1;
+        }
+
+        if (snap != current && snap->nchildren != 0 &&
+            virDomainMomentIsAncestor(snap, current)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("deletion of non-leaf external snapshot that is not in active chain is not supported"));
+            return -1;
+        }
+
+        if (snap->nchildren > 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("deletion of external disk snapshot with multiple children snapshots not supported"));
             return -1;
         }
     }
