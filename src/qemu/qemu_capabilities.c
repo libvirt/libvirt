@@ -431,7 +431,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 260 */
               "virtio.ats", /* X_QEMU_CAPS_VIRTIO_PCI_ATS */
-              "loadparm", /* QEMU_CAPS_LOADPARM */
+              "loadparm", /* X_QEMU_CAPS_LOADPARM */
               "spapr-pci-host-bridge", /* QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE */
               "spapr-pci-host-bridge.numa_node", /* QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE */
               "vnc-multi-servers", /* X_QEMU_CAPS_VNC_MULTI_SERVERS */
@@ -5475,9 +5475,6 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
     switch (qemuCaps->arch) {
     case VIR_ARCH_S390:
     case VIR_ARCH_S390X:
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_LOADPARM);
-        break;
-
     case VIR_ARCH_AARCH64:
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:

@@ -34,7 +34,6 @@
   <flag name='vhost-scsi'/>
   <flag name='query-cpu-model-expansion'/>
   <flag name='query-cpu-definitions'/>
-  <flag name='loadparm'/>
   <flag name='chardev-reconnect'/>
   <flag name='sclplmconsole'/>
   <flag name='virtio-gpu-ccw'/>
