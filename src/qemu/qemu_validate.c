@@ -599,13 +599,13 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
             break;
 
         case VIR_DOMAIN_TIMER_NAME_HPET:
-            /* no hpet timer available. The only possible action
-              is to raise an error if present="yes" */
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_HPET) &&
-                timer->present == VIR_TRISTATE_BOOL_YES) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("hpet timer is not supported"));
-                return -1;
+            if (timer->present == VIR_TRISTATE_BOOL_YES) {
+                if (def->os.arch != VIR_ARCH_I686 &&
+                    def->os.arch != VIR_ARCH_X86_64) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("hpet timer is not supported by this architecture"));
+                    return -1;
+                }
             }
             break;
 
