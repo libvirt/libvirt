@@ -6570,6 +6570,10 @@ qemuAppendLoadparmMachineParm(virBuffer *buf,
 {
     size_t i = 0;
 
+    if (def->os.arch != VIR_ARCH_S390 &&
+        def->os.arch != VIR_ARCH_S390X)
+        return;
+
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDef *disk = def->disks[i];
 
@@ -6893,8 +6897,7 @@ qemuBuildMachineCommandLine(virCommand *cmd,
         virBufferAsprintf(&buf, ",max-cpu-compat=%s", cpu->model);
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_LOADPARM))
-        qemuAppendLoadparmMachineParm(&buf, def);
+    qemuAppendLoadparmMachineParm(&buf, def);
 
     if (def->sec) {
         switch ((virDomainLaunchSecurity) def->sec->sectype) {
