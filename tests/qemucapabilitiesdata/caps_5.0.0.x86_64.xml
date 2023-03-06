@@ -19,7 +19,6 @@
   <flag name='usb-redir'/>
   <flag name='usb-hub'/>
   <flag name='ich9-ahci'/>
-  <flag name='no-acpi'/>
   <flag name='virtio-blk-pci.scsi'/>
   <flag name='scsi-disk.channel'/>
   <flag name='scsi-block'/>

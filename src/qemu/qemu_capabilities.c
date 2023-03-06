@@ -172,7 +172,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 75 */
               "ich9-ahci", /* QEMU_CAPS_ICH9_AHCI */
-              "no-acpi", /* QEMU_CAPS_NO_ACPI */
+              "no-acpi", /* X_QEMU_CAPS_NO_ACPI */
               "fsdev-readonly", /* X_QEMU_CAPS_FSDEV_READONLY */
               "virtio-blk-pci.scsi", /* QEMU_CAPS_VIRTIO_BLK_SCSI */
               "blk-sg-io", /* X_QEMU_CAPS_VIRTIO_BLK_SG_IO */
@@ -5475,17 +5475,11 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
     switch (qemuCaps->arch) {
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:
-        /* ACPI only works on x86 and aarch64 */
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_ACPI);
-
         /* HPET is x86 specific */
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_HPET);
         break;
 
     case VIR_ARCH_AARCH64:
-        /* ACPI only works on x86 and aarch64 */
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_ACPI);
-
         /* gic is arm specific */
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACH_VIRT_GIC_VERSION);
         break;

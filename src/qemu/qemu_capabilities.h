@@ -150,7 +150,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 75 */
     QEMU_CAPS_ICH9_AHCI, /* -device ich9-ahci */
-    QEMU_CAPS_NO_ACPI, /* -no-acpi */
+    X_QEMU_CAPS_NO_ACPI, /* -no-acpi */
     X_QEMU_CAPS_FSDEV_READONLY, /* -fsdev readonly supported */
     QEMU_CAPS_VIRTIO_BLK_SCSI, /* virtio-blk-pci.scsi */
     X_QEMU_CAPS_VIRTIO_BLK_SG_IO, /* SG_IO commands */
