@@ -300,10 +300,10 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_QXL_VGA_VGAMEM, /* -device qxl-vga.vgamem_mb */
     QEMU_CAPS_DEVICE_PC_DIMM, /* pc-dimm device */
     QEMU_CAPS_MACHINE_VMPORT_OPT, /* -machine xxx,vmport=on/off/auto */
-    QEMU_CAPS_AES_KEY_WRAP, /* -machine aes_key_wrap */
+    X_QEMU_CAPS_AES_KEY_WRAP, /* -machine aes_key_wrap */
 
     /* 185 */
-    QEMU_CAPS_DEA_KEY_WRAP, /* -machine dea_key_wrap */
+    X_QEMU_CAPS_DEA_KEY_WRAP, /* -machine dea_key_wrap */
     QEMU_CAPS_DEVICE_PCI_SERIAL, /* -device pci-serial */
     X_QEMU_CAPS_CPU_AARCH64_OFF, /* -cpu ...,aarch64=off */
     X_QEMU_CAPS_VHOSTUSER_MULTIQUEUE, /* vhost-user with -netdev queues= */

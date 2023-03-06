@@ -22,8 +22,6 @@
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
   <flag name='migrate-rdma'/>
-  <flag name='aes-key-wrap'/>
-  <flag name='dea-key-wrap'/>
   <flag name='virtio-net'/>
   <flag name='virtio-gpu'/>
   <flag name='virtio-gpu.virgl'/>

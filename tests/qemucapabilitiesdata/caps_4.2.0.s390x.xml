@@ -23,8 +23,6 @@
   <flag name='vfio-pci'/>
   <flag name='enable-fips'/>
   <flag name='migrate-rdma'/>
-  <flag name='aes-key-wrap'/>
-  <flag name='dea-key-wrap'/>
   <flag name='virtio-net'/>
   <flag name='virtio-gpu'/>
   <flag name='virtio-gpu.virgl'/>

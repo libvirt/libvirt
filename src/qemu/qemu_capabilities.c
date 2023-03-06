@@ -322,10 +322,10 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "qxl-vga.vgamem_mb", /* X_QEMU_CAPS_QXL_VGA_VGAMEM */
               "pc-dimm", /* QEMU_CAPS_DEVICE_PC_DIMM */
               "machine-vmport-opt", /* QEMU_CAPS_MACHINE_VMPORT_OPT */
-              "aes-key-wrap", /* QEMU_CAPS_AES_KEY_WRAP */
+              "aes-key-wrap", /* X_QEMU_CAPS_AES_KEY_WRAP */
 
               /* 185 */
-              "dea-key-wrap", /* QEMU_CAPS_DEA_KEY_WRAP */
+              "dea-key-wrap", /* X_QEMU_CAPS_DEA_KEY_WRAP */
               "pci-serial", /* QEMU_CAPS_DEVICE_PCI_SERIAL */
               "aarch64-off", /* X_QEMU_CAPS_CPU_AARCH64_OFF */
               "vhost-user-multiqueue", /* X_QEMU_CAPS_VHOSTUSER_MULTIQUEUE */
@@ -5475,8 +5475,6 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
     switch (qemuCaps->arch) {
     case VIR_ARCH_S390:
     case VIR_ARCH_S390X:
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_AES_KEY_WRAP);
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEA_KEY_WRAP);
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_LOADPARM);
         break;
 
