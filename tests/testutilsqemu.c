@@ -631,7 +631,7 @@ int qemuTestDriverInit(virQEMUDriver *driver)
 
     driver->hostarch = virArchFromHost();
 
-    cfg = virQEMUDriverConfigNew(true, NULL);
+    cfg = virQEMUDriverConfigNew(false, NULL);
     if (!cfg)
         goto error;
     driver->config = cfg;
@@ -640,6 +640,24 @@ int qemuTestDriverInit(virQEMUDriver *driver)
      * dirs. */
     VIR_FREE(cfg->stateDir);
     VIR_FREE(cfg->configDir);
+
+    /* Override paths to ensure predictable output
+     *
+     * FIXME Find a way to achieve the same result while avoiding
+     *       code duplication
+     */
+    VIR_FREE(cfg->libDir);
+    cfg->libDir = g_strdup("/var/lib/libvirt/qemu");
+    VIR_FREE(cfg->channelTargetDir);
+    cfg->channelTargetDir = g_strdup("/var/lib/libvirt/qemu/channel/target");
+    VIR_FREE(cfg->memoryBackingDir);
+    cfg->memoryBackingDir = g_strdup("/var/lib/libvirt/qemu/ram");
+    VIR_FREE(cfg->nvramDir);
+    cfg->nvramDir = g_strdup("/var/lib/libvirt/qemu/nvram");
+    VIR_FREE(cfg->passtStateDir);
+    cfg->passtStateDir = g_strdup("/var/run/libvirt/qemu/passt");
+    VIR_FREE(cfg->dbusStateDir);
+    cfg->dbusStateDir = g_strdup("/var/run/libvirt/qemu/dbus");
 
     if (!g_mkdtemp(statedir)) {
         fprintf(stderr, "Cannot create fake stateDir");
