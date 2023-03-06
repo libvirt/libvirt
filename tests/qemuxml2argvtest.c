@@ -2599,54 +2599,39 @@ mymain(void)
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-mem");
 
     DO_TEST("machine-aeskeywrap-on-caps",
-            QEMU_CAPS_AES_KEY_WRAP,
-            QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI);
 
     DO_TEST("machine-aeskeywrap-on-cap",
-            QEMU_CAPS_AES_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI);
 
     DO_TEST("machine-aeskeywrap-off-caps",
-            QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI);
 
     DO_TEST("machine-aeskeywrap-off-cap",
-            QEMU_CAPS_AES_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI);
 
     DO_TEST("machine-deakeywrap-on-caps",
-            QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI);
 
     DO_TEST("machine-deakeywrap-on-cap",
-            QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI);
 
     DO_TEST("machine-deakeywrap-off-caps",
-            QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI);
 
     DO_TEST("machine-deakeywrap-off-cap",
-            QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI);
 
     DO_TEST("machine-keywrap-none-caps",
-            QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("machine-keywrap-none",
             QEMU_CAPS_VIRTIO_SCSI);
 
-    DO_TEST("machine-loadparm-s390",
-            QEMU_CAPS_LOADPARM);
-    DO_TEST("machine-loadparm-net-s390",
-            QEMU_CAPS_LOADPARM);
-    DO_TEST("machine-loadparm-multiple-disks-nets-s390",
-            QEMU_CAPS_LOADPARM);
-    DO_TEST_PARSE_ERROR("machine-loadparm-s390-char-invalid",
-                        QEMU_CAPS_LOADPARM);
-    DO_TEST_PARSE_ERROR("machine-loadparm-s390-len-invalid",
-                        QEMU_CAPS_LOADPARM);
+    DO_TEST_NOCAPS("machine-loadparm-s390");
+    DO_TEST_NOCAPS("machine-loadparm-net-s390");
+    DO_TEST_NOCAPS("machine-loadparm-multiple-disks-nets-s390");
+    DO_TEST_PARSE_ERROR_NOCAPS("machine-loadparm-s390-char-invalid");
+    DO_TEST_PARSE_ERROR_NOCAPS("machine-loadparm-s390-len-invalid");
 
     DO_TEST_NOCAPS("qemu-ns-domain-ns0");
     DO_TEST_NOCAPS("qemu-ns-domain-commandline");
