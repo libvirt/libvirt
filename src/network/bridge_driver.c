@@ -608,8 +608,7 @@ networkStateInitialize(bool privileged,
         goto error;
 
     if ((network_driver->lockFD =
-         virPidFileAcquire(cfg->stateDir, "driver",
-                           false, getpid())) < 0)
+         virPidFileAcquire(cfg->stateDir, "driver", getpid())) < 0)
         goto error;
 
     /* if this fails now, it will be retried later with networkDnsmasqCapsRefresh() */

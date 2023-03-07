@@ -447,7 +447,6 @@ int virPidFileAcquirePath(const char *path,
 
 int virPidFileAcquire(const char *dir,
                       const char *name,
-                      bool waitForLock,
                       pid_t pid)
 {
     g_autofree char *pidfile = NULL;
@@ -458,7 +457,7 @@ int virPidFileAcquire(const char *dir,
     if (!(pidfile = virPidFileBuildPath(dir, name)))
         return -ENOMEM;
 
-    return virPidFileAcquirePath(pidfile, waitForLock, pid);
+    return virPidFileAcquirePath(pidfile, false, pid);
 }
 
 

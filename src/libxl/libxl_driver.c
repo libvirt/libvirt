@@ -751,7 +751,7 @@ libxlStateInitialize(bool privileged,
     }
 
     if ((libxl_driver->lockFD =
-         virPidFileAcquire(cfg->stateDir, "driver", false, getpid())) < 0)
+         virPidFileAcquire(cfg->stateDir, "driver", getpid())) < 0)
         goto error;
 
     if (!(libxl_driver->lockManager =

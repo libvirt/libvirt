@@ -1505,7 +1505,7 @@ static int lxcStateInitialize(bool privileged,
     }
 
     if ((lxc_driver->lockFD =
-         virPidFileAcquire(cfg->stateDir, "driver", false, getpid())) < 0)
+         virPidFileAcquire(cfg->stateDir, "driver", getpid())) < 0)
         goto cleanup;
 
     /* Get all the running persistent or transient configs first */
