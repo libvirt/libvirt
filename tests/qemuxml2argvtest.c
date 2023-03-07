@@ -830,6 +830,8 @@ mymain(void)
     linuxCaps = driver.caps;
     macOSCaps = testQemuCapsInitMacOS();
 
+    virFileWrapperAddPrefix("/sys/devices/system",
+                            abs_srcdir "/vircaps2xmldata/linux-basic/system");
     virFileWrapperAddPrefix(SYSCONFDIR "/qemu/firmware",
                             abs_srcdir "/qemufirmwaredata/etc/qemu/firmware");
     virFileWrapperAddPrefix(PREFIX "/share/qemu/firmware",
@@ -2911,7 +2913,8 @@ VIR_TEST_MAIN_PRELOAD(mymain,
                       VIR_TEST_MOCK("domaincaps"),
                       VIR_TEST_MOCK("virrandom"),
                       VIR_TEST_MOCK("qemucpu"),
-                      VIR_TEST_MOCK("virpci"))
+                      VIR_TEST_MOCK("virpci"),
+                      VIR_TEST_MOCK("virnuma"))
 
 #else
 

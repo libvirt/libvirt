@@ -84,6 +84,7 @@ mock_libs = [
   { 'name': 'virnetdaemonmock' },
   { 'name': 'virnetdevmock' },
   { 'name': 'virnetserverclientmock' },
+  { 'name': 'virnumamock' },
   { 'name': 'virpcimock' },
   { 'name': 'virportallocatormock' },
   { 'name': 'virprocessmock' },
@@ -94,7 +95,6 @@ if host_machine.system() == 'linux'
   mock_libs += [
     { 'name': 'virfilemock' },
     { 'name': 'virnetdevbandwidthmock' },
-    { 'name': 'virnumamock' },
     { 'name': 'virtestmock' },
     { 'name': 'virusbmock' },
   ]
