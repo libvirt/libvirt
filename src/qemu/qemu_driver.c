@@ -4582,14 +4582,9 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
     if (live)
         autoCpuset = QEMU_DOMAIN_PRIVATE(vm)->autoCpuset;
 
-    if (def->cputune.emulatorpin) {
-        cpumask = def->cputune.emulatorpin;
-    } else if (def->cpumask) {
-        cpumask = def->cpumask;
-    } else if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
-               autoCpuset) {
-        cpumask = autoCpuset;
-    } else {
+    if (!(cpumask = qemuDomainEvaluateCPUMask(def,
+                                              def->cputune.emulatorpin,
+                                              autoCpuset))) {
         if (!(bitmap = virHostCPUGetAvailableCPUsBitmap()))
             goto cleanup;
         cpumask = bitmap;
