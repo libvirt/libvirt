@@ -403,12 +403,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-    g_autoptr(GHashTable) capslatest = NULL;
     g_autoptr(virConnect) conn = NULL;
-
-    capslatest = testQemuGetLatestCaps();
-    if (!capslatest)
-        return EXIT_FAILURE;
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
