@@ -1709,6 +1709,8 @@ static void
 remoteClientFreePrivateCallbacks(struct daemonClientPrivate *priv)
 {
     g_autoptr(virIdentity) sysident = virIdentityGetSystem();
+    VIR_LOCK_GUARD lock = virLockGuardLock(&priv->lock);
+
     virIdentitySetCurrent(sysident);
 
     DEREG_CB(priv->conn, priv->domainEventCallbacks,
