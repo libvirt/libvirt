@@ -78,10 +78,10 @@ testQemuCaps(const void *opaque)
     unsigned int fakeMicrocodeVersion = 0;
     const char *p;
 
-    repliesFile = g_strdup_printf("%s/%s_%s.%s.%s",
+    repliesFile = g_strdup_printf("%s/%s_%s_%s.%s",
                                   data->inputDir, data->prefix, data->version,
                                   data->archName, data->suffix);
-    capsFile = g_strdup_printf("%s/%s_%s.%s.xml",
+    capsFile = g_strdup_printf("%s/%s_%s_%s.xml",
                                data->outputDir, data->prefix, data->version,
                                data->archName);
 
@@ -142,7 +142,7 @@ testQemuCapsCopy(const void *opaque)
     g_autoptr(virQEMUCaps) copy = NULL;
     g_autofree char *actual = NULL;
 
-    capsFile = g_strdup_printf("%s/%s_%s.%s.xml",
+    capsFile = g_strdup_printf("%s/%s_%s_%s.xml",
                                data->outputDir, data->prefix, data->version,
                                data->archName);
 

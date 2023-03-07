@@ -224,7 +224,7 @@ iterateCapsFile(const char *inputDir,
                 const char *suffix,
                 void *opaque G_GNUC_UNUSED)
 {
-    g_autofree char *repliesFile = g_strdup_printf("%s/%s_%s.%s.%s", inputDir, prefix, version, archName, suffix);
+    g_autofree char *repliesFile = g_strdup_printf("%s/%s_%s_%s.%s", inputDir, prefix, version, archName, suffix);
 
     return virTestRun(repliesFile, testCapsFile, repliesFile);
 }

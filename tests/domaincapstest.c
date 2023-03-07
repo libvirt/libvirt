@@ -81,7 +81,7 @@ fillQemuCaps(virDomainCaps *domCaps,
     if (fakeHostCPU(domCaps->arch) < 0)
         return -1;
 
-    path = g_strdup_printf("%s/%s.%s.xml", TEST_QEMU_CAPS_PATH, name, arch);
+    path = g_strdup_printf("%s/%s_%s.xml", TEST_QEMU_CAPS_PATH, name, arch);
     if (!(qemuCaps = qemuTestParseCapabilitiesArch(domCaps->arch, path)))
         return -1;
 

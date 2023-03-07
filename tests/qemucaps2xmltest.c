@@ -124,7 +124,7 @@ testQemuCapsXML(const void *opaque)
 
     xmlFile = g_strdup_printf("%s/caps.%s.xml", data->outputDir, data->archName);
 
-    capsFile = g_strdup_printf("%s/%s_%s.%s.%s",
+    capsFile = g_strdup_printf("%s/%s_%s_%s.%s",
                                data->inputDir, data->prefix, data->version,
                                data->archName, data->suffix);
 

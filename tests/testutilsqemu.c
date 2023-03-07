@@ -832,15 +832,15 @@ testQemuCapsIterate(const char *suffix,
             return -1;
         }
 
-        /* Find the last dot */
-        if (!(archName = strrchr(tmp, '.'))) {
+        /* Find the underscore separating version from arch */
+        if (!(archName = strchr(version, '_'))) {
             VIR_TEST_VERBOSE("malformed file name '%s'", ent->d_name);
             return -1;
         }
 
         /* The version number and the architecture name are separated by
-         * a dot: overwriting that dot with \0 results in both being usable
-         * as independent, null-terminated strings */
+         * a underscore: overwriting that underscore with \0 results in both
+         * being usable as independent, null-terminated strings */
         archName[0] = '\0';
         archName++;
 
@@ -1011,7 +1011,7 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
 
             stripmachinealiases = true;
         } else {
-            capsfile = g_strdup_printf("%s/caps_%s.%s.xml",
+            capsfile = g_strdup_printf("%s/caps_%s_%s.xml",
                                        TEST_QEMU_CAPS_PATH,
                                        info->args.capsver,
                                        info->args.capsarch);
