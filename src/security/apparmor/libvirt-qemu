@@ -185,6 +185,21 @@
   /usr/{lib,lib64}/libswtpm_libtpms.so mr,
   /usr/lib/@{multiarch}/libswtpm_libtpms.so mr,
 
+  # support for passt network back-end
+  /usr/bin/passt Cx -> passt,
+
+  profile passt {
+    /usr/bin/passt r,
+
+    signal (receive) set=("term") peer=/usr/sbin/libvirtd,
+    signal (receive) set=("term") peer=libvirtd,
+    signal (receive) set=("term") peer=virtqemud,
+
+    owner /{,var/}run/libvirt/qemu/passt/* rw,
+
+    include if exists <abstractions/passt>
+  }
+
   # for save and resume
   /{usr/,}bin/dash rmix,
   /{usr/,}bin/dd rmix,
