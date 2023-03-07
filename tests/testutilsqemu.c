@@ -731,54 +731,22 @@ char *
 testQemuGetLatestCapsForArch(const char *arch,
                              const char *suffix)
 {
-    struct dirent *ent;
-    g_autoptr(DIR) dir = NULL;
-    int rc;
-    g_autofree char *fullsuffix = NULL;
-    unsigned long long maxver = 0;
-    unsigned long long ver;
-    g_autofree char *maxname = NULL;
+    g_autoptr(GHashTable) caps = testQemuGetLatestCaps();
+    struct testQemuCapsFile *f;
 
-    fullsuffix = g_strdup_printf("%s.%s", arch, suffix);
-
-    if (virDirOpen(&dir, TEST_QEMU_CAPS_PATH) < 0)
-        return NULL;
-
-    while ((rc = virDirRead(dir, &ent, TEST_QEMU_CAPS_PATH)) > 0) {
-        g_autofree char *tmp = NULL;
-
-        tmp = g_strdup(STRSKIP(ent->d_name, "caps_"));
-
-        if (!tmp)
-            continue;
-
-        if (!virStringStripSuffix(tmp, fullsuffix))
-            continue;
-
-        if (virStringParseVersion(&ver, tmp, false) < 0) {
-            VIR_TEST_DEBUG("skipping caps file '%s'", ent->d_name);
-            continue;
-        }
-
-        if (ver > maxver) {
-            g_free(maxname);
-            maxname = g_strdup(ent->d_name);
-            maxver = ver;
-        }
-    }
-
-    if (rc < 0)
-        return NULL;
-
-    if (!maxname) {
+    if (!(f = g_hash_table_lookup(caps, arch))) {
         VIR_TEST_VERBOSE("failed to find capabilities for '%s' in '%s'",
                          arch, TEST_QEMU_CAPS_PATH);
         return NULL;
     }
 
-    return g_strdup_printf("%s/%s", TEST_QEMU_CAPS_PATH, maxname);
-}
+    if (STRNEQ(suffix, "xml")) {
+        ignore_value(virStringStripSuffix(f->path, "xml"));
+        return g_strdup_printf("%s%s", f->path, suffix);
+    }
 
+    return g_steal_pointer(&f->path);
+}
 
 GHashTable *
 testQemuGetLatestCaps(void)
