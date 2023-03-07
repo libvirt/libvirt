@@ -710,6 +710,23 @@ testQemuCapsSetGIC(virQEMUCaps *qemuCaps,
 #endif
 
 
+struct testQemuCapsFile {
+    unsigned long long ver;
+    char *path;
+};
+
+
+static void
+testQemuCapsFileFree(struct testQemuCapsFile *f)
+{
+    if (!f)
+        return;
+
+    g_free(f->path);
+    g_free(f);
+}
+
+
 char *
 testQemuGetLatestCapsForArch(const char *arch,
                              const char *suffix)
@@ -766,32 +783,60 @@ testQemuGetLatestCapsForArch(const char *arch,
 GHashTable *
 testQemuGetLatestCaps(void)
 {
-    const char *archs[] = {
-        "aarch64",
-        "ppc64",
-        "riscv64",
-        "s390x",
-        "x86_64",
-        "sparc",
-        "ppc",
-    };
-    g_autoptr(GHashTable) capslatest = virHashNew(g_free);
-    size_t i;
+    g_autoptr(GHashTable) caps = virHashNew((GDestroyNotify)testQemuCapsFileFree);
+    struct dirent *ent;
+    g_autoptr(DIR) dir = NULL;
+    int rc;
 
-    VIR_TEST_VERBOSE("");
+    if (virDirOpen(&dir, TEST_QEMU_CAPS_PATH) < 0)
+        return NULL;
 
-    for (i = 0; i < G_N_ELEMENTS(archs); ++i) {
-        char *cap = testQemuGetLatestCapsForArch(archs[i], "xml");
+    while ((rc = virDirRead(dir, &ent, TEST_QEMU_CAPS_PATH)) > 0) {
+        g_autofree char *version = NULL;
+        char *arch = NULL;
+        unsigned long long ver;
+        struct testQemuCapsFile *f;
 
-        if (!cap || virHashAddEntry(capslatest, archs[i], cap) < 0)
+        if (!(version = g_strdup(STRSKIP(ent->d_name, "caps_"))))
+            continue;
+
+        if (!virStringStripSuffix(version, ".xml"))
+            continue;
+
+        if (!(arch = strchr(version, '_'))) {
+            VIR_TEST_VERBOSE("malformed caps file name '%s'", ent->d_name);
             return NULL;
+        }
 
-        VIR_TEST_VERBOSE("latest caps for %s: %s", archs[i], cap);
+        *arch = '\0';
+        arch++;
+
+        if (virStringParseVersion(&ver, version, false) < 0) {
+            VIR_TEST_VERBOSE("malformed caps file name '%s'", ent->d_name);
+            return NULL;
+        }
+
+        if (!(f = g_hash_table_lookup(caps, arch))) {
+            VIR_TEST_DEBUG("CAPS: '%s': 'X' -> '%llu'", arch, ver);
+            f = g_new0(struct testQemuCapsFile, 1);
+            f->ver = ver;
+            f->path = g_strdup_printf("%s/%s", TEST_QEMU_CAPS_PATH, ent->d_name);
+            g_hash_table_insert(caps, g_strdup(arch), f);
+            continue;
+        }
+
+        if (f->ver < ver) {
+            VIR_TEST_DEBUG("CAPS: '%s': '%llu' -> '%llu'", arch, f->ver, ver);
+            f->ver = ver;
+            g_free(f->path);
+            f->path = g_strdup_printf("%s/%s", TEST_QEMU_CAPS_PATH, ent->d_name);
+        }
     }
 
-    VIR_TEST_VERBOSE("");
+    if (rc < 0)
+        return NULL;
 
-    return g_steal_pointer(&capslatest);
+    return g_steal_pointer(&caps);
 }
 
 
@@ -1002,13 +1047,14 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
         info->arch = virArchFromString(info->args.capsarch);
 
         if (STREQ(info->args.capsver, "latest")) {
-            capsfile = g_strdup(virHashLookup(info->conf->capslatest, info->args.capsarch));
+            struct testQemuCapsFile *f = g_hash_table_lookup(info->conf->capslatest, info->args.capsarch);
 
-            if (!capsfile) {
+            if (!f) {
                 fprintf(stderr, "'latest' caps for '%s' were not found\n", info->args.capsarch);
                 return -1;
             }
 
+            capsfile = g_strdup(f->path);
             stripmachinealiases = true;
         } else {
             capsfile = g_strdup_printf("%s/caps_%s_%s.xml",
