@@ -159,7 +159,7 @@ main(int argc, char **argv)
     pid_file = g_strdup(RUNSTATEDIR "/leaseshelper.pid");
 
     /* Try to claim the pidfile, exiting if we can't */
-    if ((pid_file_fd = virPidFileAcquirePathFull(pid_file, true, getpid())) < 0) {
+    if ((pid_file_fd = virPidFileAcquirePathFull(pid_file, true, false, getpid())) < 0) {
         fprintf(stderr,
                 _("Unable to acquire PID file: %s\n errno=%d"),
                 pid_file, errno);
