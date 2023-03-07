@@ -6,8 +6,8 @@
   <vcpu placement='static'>32</vcpu>
   <numatune>
     <memnode cellid='0' mode='preferred' nodeset='3'/>
-    <memory mode='strict' nodeset='0-7'/>
-    <memnode cellid='2' mode='strict' nodeset='1-2,5-7,^6'/>
+    <memory mode='strict' nodeset='0-3'/>
+    <memnode cellid='2' mode='strict' nodeset='0-2,^1'/>
   </numatune>
   <os>
     <type arch='x86_64' machine='pc'>hvm</type>
