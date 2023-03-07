@@ -30,7 +30,6 @@
 #include "virnetdevip.h"
 #include "virnetdevtap.h"
 #include "virnetdevopenvswitch.h"
-#include "virnuma.h"
 #include "virscsivhost.h"
 #include "virtpm.h"
 #include "virutil.h"
@@ -56,47 +55,6 @@ GDateTime *g_date_time_new_now_local(void)
     return g_date_time_new_from_unix_local(1234567890);
 }
 
-bool
-virNumaIsAvailable(void)
-{
-    return true;
-}
-
-int
-virNumaGetMaxNode(void)
-{
-    return 7;
-}
-
-/* We shouldn't need to mock virNumaNodeIsAvailable() and *definitely* not
- * virNumaNodesetIsAvailable(), but it seems to be the only way to get
- * mocking to work with Clang on FreeBSD, so keep these duplicates around
- * until we figure out a cleaner solution */
-bool
-virNumaNodeIsAvailable(int node)
-{
-    return node >= 0 && node <= virNumaGetMaxNode();
-}
-
-bool
-virNumaNodesetIsAvailable(virBitmap *nodeset)
-{
-    ssize_t bit = -1;
-
-    if (!nodeset)
-        return true;
-
-    while ((bit = virBitmapNextSetBit(nodeset, bit)) >= 0) {
-        if (virNumaNodeIsAvailable(bit))
-            continue;
-
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Mock: no numa node set is available at bit %zd", bit);
-        return false;
-    }
-
-    return true;
-}
 
 char *
 virTPMCreateCancelPath(const char *devpath)
