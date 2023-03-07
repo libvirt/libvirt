@@ -3539,7 +3539,7 @@ qemuBuildMemoryDimmBackendStr(virCommand *cmd,
                                     def, mem, true, false, &nodemask) < 0)
         return -1;
 
-    if (qemuBuildThreadContextProps(&tcProps, &props, priv, nodemask) < 0)
+    if (qemuBuildThreadContextProps(&tcProps, &props, def, priv, nodemask) < 0)
         return -1;
 
     if (tcProps &&
@@ -3636,10 +3636,13 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
 int
 qemuBuildThreadContextProps(virJSONValue **tcProps,
                             virJSONValue **memProps,
+                            const virDomainDef *def,
                             qemuDomainObjPrivate *priv,
                             virBitmap *nodemask)
 {
     g_autoptr(virJSONValue) props = NULL;
+    virBitmap *emulatorpin = NULL;
+    g_autoptr(virBitmap) emulatorNodes = NULL;
     g_autofree char *tcAlias = NULL;
     const char *memalias = NULL;
     bool prealloc = false;
@@ -3655,6 +3658,22 @@ qemuBuildThreadContextProps(virJSONValue **tcProps,
     if (virJSONValueObjectGetBoolean(*memProps, "prealloc", &prealloc) < 0 ||
         !prealloc)
         return 0;
+
+    emulatorpin = qemuDomainEvaluateCPUMask(def,
+                                            def->cputune.emulatorpin,
+                                            priv->autoNodeset);
+
+    if (emulatorpin && virNumaIsAvailable()) {
+        if (virNumaCPUSetToNodeset(emulatorpin, &emulatorNodes) < 0)
+            return -1;
+
+        virBitmapIntersect(emulatorNodes, nodemask);
+
+        if (virBitmapIsAllClear(emulatorNodes))
+            return 0;
+
+        nodemask = emulatorNodes;
+    }
 
     memalias = virJSONValueObjectGetString(*memProps, "id");
     if (!memalias) {
@@ -7188,7 +7207,7 @@ qemuBuildMemCommandLineMemoryDefaultBackend(virCommand *cmd,
                                     def, &mem, false, true, &nodemask) < 0)
         return -1;
 
-    if (qemuBuildThreadContextProps(&tcProps, &props, priv, nodemask) < 0)
+    if (qemuBuildThreadContextProps(&tcProps, &props, def, priv, nodemask) < 0)
         return -1;
 
     if (tcProps &&
@@ -7517,7 +7536,7 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
             g_autoptr(virJSONValue) tcProps = NULL;
 
             if (qemuBuildThreadContextProps(&tcProps, &nodeBackends[i],
-                                            priv, nodemask[i]) < 0)
+                                            def, priv, nodemask[i]) < 0)
                 goto cleanup;
 
             if (tcProps &&
