@@ -578,10 +578,8 @@ virPidFileForceCleanupPathFull(const char *path, bool group)
     if (virPidFileReadPath(path, &pid) < 0)
         return -1;
 
-    fd = virPidFileAcquirePath(path, 0);
+    fd = virPidFileAcquirePathFull(path, false, true, 0);
     if (fd < 0) {
-        virResetLastError();
-
         if (pid > 1 && group)
             pid = virProcessGroupGet(pid);
 
