@@ -21,6 +21,7 @@
 #include "internal.h"
 #include "virnuma.h"
 #include "virfile.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -170,4 +171,45 @@ virNumaGetNodeCPUs(int node, virBitmap **cpus)
         return -1;
 
     return virBitmapCountBits(*cpus);
+}
+
+int
+virNumaGetNodeOfCPU(int cpu)
+{
+    g_autoptr(DIR) cpuDir = NULL;
+    g_autofree char *sysfs_cpu_path = NULL;
+    struct dirent *ent = NULL;
+    int dirErr = 0;
+
+    sysfs_cpu_path =  g_strdup_printf("%s/cpu/cpu%d", SYSFS_SYSTEM_PATH, cpu);
+
+    if (virDirOpen(&cpuDir, sysfs_cpu_path) < 0)
+        return -1;
+
+    while ((dirErr = virDirRead(cpuDir, &ent, sysfs_cpu_path)) > 0) {
+        g_autofree char *entPath = NULL;
+        const char *number = NULL;
+        int node;
+
+        if (!(number = STRSKIP(ent->d_name, "node")))
+            continue;
+
+        entPath = g_strdup_printf("%s/%s", sysfs_cpu_path, ent->d_name);
+
+        if (!virFileIsLink(entPath))
+            continue;
+
+        if (virStrToLong_i(number, NULL, 10, &node) < 0) {
+            errno = EINVAL;
+            return -1;
+        }
+
+        return node;
+    }
+
+    if (dirErr < 0)
+        return -1;
+
+    errno = EINVAL;
+    return -1;
 }
