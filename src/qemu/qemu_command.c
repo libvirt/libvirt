@@ -3496,7 +3496,8 @@ qemuBuildMemoryCellBackendProps(virDomainDef *def,
                                 virQEMUDriverConfig *cfg,
                                 size_t cell,
                                 qemuDomainObjPrivate *priv,
-                                virJSONValue **props)
+                                virJSONValue **props,
+                                virBitmap **nodemask)
 {
     g_autofree char *alias = NULL;
     virDomainMemoryDef mem = { 0 };
@@ -3509,8 +3510,8 @@ qemuBuildMemoryCellBackendProps(virDomainDef *def,
     mem.targetNode = cell;
     mem.info.alias = alias;
 
-    return qemuBuildMemoryBackendProps(props, alias, cfg, priv,
-                                       def, &mem, false, false, NULL);
+    return qemuBuildMemoryBackendProps(props, alias, cfg, priv, def,
+                                       &mem, false, false, nodemask);
 }
 
 
@@ -3523,6 +3524,7 @@ qemuBuildMemoryDimmBackendStr(virCommand *cmd,
 {
     g_autoptr(virJSONValue) props = NULL;
     g_autoptr(virJSONValue) tcProps = NULL;
+    virBitmap *nodemask = NULL;
     g_autofree char *alias = NULL;
 
     if (!mem->info.alias) {
@@ -3533,11 +3535,11 @@ qemuBuildMemoryDimmBackendStr(virCommand *cmd,
 
     alias = g_strdup_printf("mem%s", mem->info.alias);
 
-    if (qemuBuildMemoryBackendProps(&props, alias, cfg,
-                                    priv, def, mem, true, false, NULL) < 0)
+    if (qemuBuildMemoryBackendProps(&props, alias, cfg, priv,
+                                    def, mem, true, false, &nodemask) < 0)
         return -1;
 
-    if (qemuBuildThreadContextProps(&tcProps, &props, priv) < 0)
+    if (qemuBuildThreadContextProps(&tcProps, &props, priv, nodemask) < 0)
         return -1;
 
     if (tcProps &&
@@ -3634,11 +3636,10 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
 int
 qemuBuildThreadContextProps(virJSONValue **tcProps,
                             virJSONValue **memProps,
-                            qemuDomainObjPrivate *priv)
+                            qemuDomainObjPrivate *priv,
+                            virBitmap *nodemask)
 {
     g_autoptr(virJSONValue) props = NULL;
-    virJSONValue *nodemask = NULL;
-    g_autoptr(virJSONValue) nodemaskCopy = NULL;
     g_autofree char *tcAlias = NULL;
     const char *memalias = NULL;
     bool prealloc = false;
@@ -3648,7 +3649,6 @@ qemuBuildThreadContextProps(virJSONValue **tcProps,
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_THREAD_CONTEXT))
         return 0;
 
-    nodemask = virJSONValueObjectGetArray(*memProps, "host-nodes");
     if (!nodemask)
         return 0;
 
@@ -3664,12 +3664,11 @@ qemuBuildThreadContextProps(virJSONValue **tcProps,
     }
 
     tcAlias = g_strdup_printf("tc-%s", memalias);
-    nodemaskCopy = virJSONValueCopy(nodemask);
 
     if (virJSONValueObjectAdd(&props,
                               "s:qom-type", "thread-context",
                               "s:id", tcAlias,
-                              "a:node-affinity", &nodemaskCopy,
+                              "m:node-affinity", nodemask,
                               NULL) < 0)
         return -1;
 
@@ -7178,17 +7177,18 @@ qemuBuildMemCommandLineMemoryDefaultBackend(virCommand *cmd,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     g_autoptr(virJSONValue) props = NULL;
     g_autoptr(virJSONValue) tcProps = NULL;
+    virBitmap *nodemask = NULL;
     virDomainMemoryDef mem = { 0 };
 
     mem.size = virDomainDefGetMemoryInitial(def);
     mem.targetNode = -1;
     mem.info.alias = (char *) defaultRAMid;
 
-    if (qemuBuildMemoryBackendProps(&props, defaultRAMid, cfg,
-                                    priv, def, &mem, false, true, NULL) < 0)
+    if (qemuBuildMemoryBackendProps(&props, defaultRAMid, cfg, priv,
+                                    def, &mem, false, true, &nodemask) < 0)
         return -1;
 
-    if (qemuBuildThreadContextProps(&tcProps, &props, priv) < 0)
+    if (qemuBuildThreadContextProps(&tcProps, &props, priv, nodemask) < 0)
         return -1;
 
     if (tcProps &&
@@ -7459,6 +7459,7 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
     virQEMUCaps *qemuCaps = priv->qemuCaps;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virJSONValue **nodeBackends = NULL;
+    g_autofree virBitmap **nodemask = NULL;
     bool needBackend = false;
     bool hmat = false;
     int ret = -1;
@@ -7480,10 +7481,12 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
     }
 
     nodeBackends = g_new0(virJSONValue *, ncells);
+    nodemask = g_new0(virBitmap *, ncells);
 
     for (i = 0; i < ncells; i++) {
         if ((rc = qemuBuildMemoryCellBackendProps(def, cfg, i, priv,
-                                                  &nodeBackends[i])) < 0)
+                                                  &nodeBackends[i],
+                                                  &nodemask[i])) < 0)
             goto cleanup;
 
         if (rc == 0)
@@ -7513,7 +7516,8 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
         if (needBackend) {
             g_autoptr(virJSONValue) tcProps = NULL;
 
-            if (qemuBuildThreadContextProps(&tcProps, &nodeBackends[i], priv) < 0)
+            if (qemuBuildThreadContextProps(&tcProps, &nodeBackends[i],
+                                            priv, nodemask[i]) < 0)
                 goto cleanup;
 
             if (tcProps &&

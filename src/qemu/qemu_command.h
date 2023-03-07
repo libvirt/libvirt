@@ -153,7 +153,8 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
 int
 qemuBuildThreadContextProps(virJSONValue **tcProps,
                             virJSONValue **memProps,
-                            qemuDomainObjPrivate *priv);
+                            qemuDomainObjPrivate *priv,
+                            virBitmap *nodemask);
 
 /* Current, best practice */
 virJSONValue *
