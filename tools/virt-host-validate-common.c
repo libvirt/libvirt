@@ -251,7 +251,7 @@ int virHostValidateLinuxKernel(const char *hvname,
                                const char *hint)
 {
     struct utsname uts;
-    unsigned long thisversion;
+    unsigned long long thisversion;
 
     uname(&uts);
 

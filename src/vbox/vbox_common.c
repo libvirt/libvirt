@@ -272,6 +272,7 @@ vboxExtractVersion(void)
     int ret = -1;
     PRUnichar *versionUtf16 = NULL;
     char *vboxVersion = NULL;
+    unsigned long long version;
     nsresult rc;
 
     if (vbox_driver->version > 0)
@@ -283,8 +284,10 @@ vboxExtractVersion(void)
 
     gVBoxAPI.UPFN.Utf16ToUtf8(vbox_driver->pFuncs, versionUtf16, &vboxVersion);
 
-    if (virStringParseVersion(&vbox_driver->version, vboxVersion, false) >= 0)
+    if (virStringParseVersion(&version, vboxVersion, false) >= 0)
         ret = 0;
+
+    vbox_driver->version = version;
 
     gVBoxAPI.UPFN.Utf8Free(vbox_driver->pFuncs, vboxVersion);
     gVBoxAPI.UPFN.ComUnallocMem(vbox_driver->pFuncs, versionUtf16);

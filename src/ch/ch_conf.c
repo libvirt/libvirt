@@ -175,7 +175,7 @@ virCHDriverConfigDispose(void *obj)
 int
 chExtractVersion(virCHDriver *driver)
 {
-    unsigned long version;
+    unsigned long long version;
     g_autofree char *help = NULL;
     char *tmp = NULL;
     g_autofree char *ch_cmd = g_find_program_in_path(CH_CMD);

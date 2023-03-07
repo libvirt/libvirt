@@ -136,6 +136,6 @@ int virStringParseYesNo(const char *str,
                         bool *result)
     G_GNUC_WARN_UNUSED_RESULT;
 
-int virStringParseVersion(unsigned long *version,
+int virStringParseVersion(unsigned long long *version,
                           const char *str,
                           bool allowMissing);

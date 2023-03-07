@@ -154,6 +154,7 @@ vzInitVersion(struct _vzDriver *driver)
     g_autofree char *output = NULL;
     char *sVer, *tmp;
     const char *searchStr = "prlsrvctl version ";
+    unsigned long long version;
     int ret = -1;
 
     output = vzGetOutput(PRLSRVCTL, "--help", NULL);
@@ -183,10 +184,12 @@ vzInitVersion(struct _vzDriver *driver)
     }
 
     tmp[0] = '\0';
-    if (virStringParseVersion(&(driver->vzVersion), sVer, true) < 0) {
+    if (virStringParseVersion(&version, sVer, true) < 0) {
         vzParseError();
         return -1;
     }
+
+    driver->vzVersion = version;
 
     vzInitCaps(driver->vzVersion, &driver->vzCaps);
 

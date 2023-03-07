@@ -603,7 +603,7 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
 {
     int len;
     const char *p;
-    unsigned long version;
+    unsigned long long version;
 
     p = STRSKIP(buf, DNSMASQ_VERSION_STR);
     if (!p)
@@ -616,7 +616,7 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
 
     if (version < DNSMASQ_MIN_MAJOR * 1000000 + DNSMASQ_MIN_MINOR * 1000) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("dnsmasq version >= %1$u.%2$u required but %3$lu.%4$lu found"),
+                       _("dnsmasq version >= %1$u.%2$u required but %3$llu.%4$llu found"),
                        DNSMASQ_MIN_MAJOR, DNSMASQ_MIN_MINOR,
                        version / 1000000,
                        version % 1000000 / 1000);

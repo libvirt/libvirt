@@ -1641,6 +1641,7 @@ lxcConnectSupportsFeature(virConnectPtr conn, int feature)
 
 static int lxcConnectGetVersion(virConnectPtr conn, unsigned long *version)
 {
+    unsigned long long tmpver;
     struct utsname ver;
 
     uname(&ver);
@@ -1648,10 +1649,12 @@ static int lxcConnectGetVersion(virConnectPtr conn, unsigned long *version)
     if (virConnectGetVersionEnsureACL(conn) < 0)
         return -1;
 
-    if (virStringParseVersion(version, ver.release, true) < 0) {
+    if (virStringParseVersion(&tmpver, ver.release, true) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("Unknown release: %1$s"), ver.release);
         return -1;
     }
+
+    *version = tmpver;
 
     return 0;
 }

@@ -869,7 +869,7 @@ int networkAddFirewallRules(virNetworkDef *def)
                 if (virFirewallDInterfaceSetZone(def->bridge, "libvirt") < 0)
                     return -1;
             } else {
-                unsigned long version;
+                unsigned long long version;
                 int vresult = virFirewallDGetVersion(&version);
 
                 if (vresult < 0)

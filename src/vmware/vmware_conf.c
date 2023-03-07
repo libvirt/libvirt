@@ -197,6 +197,7 @@ vmwareSetSentinal(const char **prog, const char *key)
 int
 vmwareParseVersionStr(int type, const char *verbuf, unsigned long *version)
 {
+    unsigned long long tmpver;
     const char *pattern;
     const char *tmp;
 
@@ -228,11 +229,13 @@ vmwareParseVersionStr(int type, const char *verbuf, unsigned long *version)
         return -1;
     }
 
-    if (virStringParseVersion(version, tmp, false) < 0) {
+    if (virStringParseVersion(&tmpver, tmp, false) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("version parsing error"));
         return -1;
     }
+
+    *version = tmpver;
 
     return 0;
 }

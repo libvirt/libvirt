@@ -179,9 +179,9 @@ struct _esxVI_Context {
     char *username;
     char *password;
     esxVI_ServiceContent *service;
-    unsigned long apiVersion; /* = 1000000 * major + 1000 * minor + micro */
+    unsigned long long apiVersion; /* = 1000000 * major + 1000 * minor + micro */
     esxVI_ProductLine productLine;
-    unsigned long productVersion; /* = 1000000 * major + 1000 * minor + micro */
+    unsigned long long productVersion; /* = 1000000 * major + 1000 * minor + micro */
     esxVI_UserSession *session; /* ... except the session ... */
     virMutex *sessionLock; /* ... that is protected by this mutex */
     esxVI_Datacenter *datacenter;

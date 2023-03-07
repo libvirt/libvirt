@@ -64,7 +64,7 @@ strtoI(const char *str)
 static int
 openvzExtractVersionInfo(const char *cmdstr, int *retversion)
 {
-    unsigned long version;
+    unsigned long long version;
     g_autofree char *help = NULL;
     char *tmp;
     g_autoptr(virCommand) cmd = virCommandNewArgList(cmdstr, "--help", NULL);

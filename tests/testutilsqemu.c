@@ -718,8 +718,8 @@ testQemuGetLatestCapsForArch(const char *arch,
     g_autoptr(DIR) dir = NULL;
     int rc;
     g_autofree char *fullsuffix = NULL;
-    unsigned long maxver = 0;
-    unsigned long ver;
+    unsigned long long maxver = 0;
+    unsigned long long ver;
     g_autofree char *maxname = NULL;
 
     fullsuffix = g_strdup_printf("%s.%s", arch, suffix);

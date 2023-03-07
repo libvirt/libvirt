@@ -248,6 +248,7 @@ bhyveConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 static int
 bhyveConnectGetVersion(virConnectPtr conn, unsigned long *version)
 {
+    unsigned long long tmpver;
     struct utsname ver;
 
     if (virConnectGetVersionEnsureACL(conn) < 0)
@@ -255,11 +256,13 @@ bhyveConnectGetVersion(virConnectPtr conn, unsigned long *version)
 
     uname(&ver);
 
-    if (virStringParseVersion(version, ver.release, true) < 0) {
+    if (virStringParseVersion(&tmpver, ver.release, true) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown release: %1$s"), ver.release);
         return -1;
     }
+
+    *version = tmpver;
 
     return 0;
 }

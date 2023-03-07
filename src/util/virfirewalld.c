@@ -80,7 +80,7 @@ virFirewallDIsRegistered(void)
  * Returns 0 if version was successfully retrieved, or -1 on error
  */
 int
-virFirewallDGetVersion(unsigned long *version)
+virFirewallDGetVersion(unsigned long long *version)
 {
     GDBusConnection *sysbus = virGDBusGetSystemBus();
     g_autoptr(GVariant) message = NULL;
@@ -114,7 +114,7 @@ virFirewallDGetVersion(unsigned long *version)
         return -1;
     }
 
-    VIR_DEBUG("FirewallD version: %s - %lu", versionStr, *version);
+    VIR_DEBUG("FirewallD version: %s - %llu", versionStr, *version);
 
     return 0;
 }
