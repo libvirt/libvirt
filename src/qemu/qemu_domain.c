@@ -12454,3 +12454,21 @@ qemuDomainStartupCleanup(virDomainObj *vm)
     for (i = 0; i < vm->def->ndisks; i++)
         qemuDomainCleanupStorageSourceFD(vm->def->disks[i]->src);
 }
+
+
+virBitmap *
+qemuDomainEvaluateCPUMask(const virDomainDef *def,
+                          virBitmap *cpumask,
+                          virBitmap *autoCpuset)
+{
+    if (cpumask) {
+        return cpumask;
+    } else if (autoCpuset &&
+               def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
+        return autoCpuset;
+    } else if (def->cpumask) {
+        return def->cpumask;
+    }
+
+    return NULL;
+}

@@ -1133,3 +1133,8 @@ qemuDomainSchedCoreStart(virQEMUDriverConfig *cfg,
 
 void
 qemuDomainSchedCoreStop(qemuDomainObjPrivate *priv);
+
+virBitmap *
+qemuDomainEvaluateCPUMask(const virDomainDef *def,
+                          virBitmap *cpumask,
+                          virBitmap *autoCpuset);

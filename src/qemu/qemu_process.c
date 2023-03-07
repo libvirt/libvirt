@@ -2571,13 +2571,8 @@ qemuProcessSetupPid(virDomainObj *vm,
     }
 
     /* Infer which cpumask shall be used. */
-    if (cpumask) {
-        use_cpumask = cpumask;
-    } else if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-        use_cpumask = priv->autoCpuset;
-    } else if (vm->def->cpumask) {
-        use_cpumask = vm->def->cpumask;
-    } else {
+    if (!(use_cpumask = qemuDomainEvaluateCPUMask(vm->def,
+                                                  cpumask, priv->autoCpuset))) {
         /* You may think this is redundant, but we can't assume libvirtd
          * itself is running on all pCPUs, so we need to explicitly set
          * the spawned QEMU instance to all pCPUs if no map is given in
