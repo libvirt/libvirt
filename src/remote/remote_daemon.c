@@ -990,7 +990,7 @@ int main(int argc, char **argv) {
     }
 
     /* Try to claim the pidfile, exiting if we can't */
-    if ((pid_file_fd = virPidFileAcquirePath(pid_file, false, getpid())) < 0) {
+    if ((pid_file_fd = virPidFileAcquirePath(pid_file, getpid())) < 0) {
         ret = VIR_DAEMON_ERR_PIDFILE;
         goto cleanup;
     }

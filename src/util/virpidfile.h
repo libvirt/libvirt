@@ -60,7 +60,6 @@ int virPidFileAcquirePathFull(const char *path,
                               bool waitForLock,
                               pid_t pid) G_GNUC_WARN_UNUSED_RESULT;
 int virPidFileAcquirePath(const char *path,
-                          bool waitForLock,
                           pid_t pid) G_GNUC_WARN_UNUSED_RESULT;
 int virPidFileAcquire(const char *dir,
                       const char *name,

@@ -828,7 +828,7 @@ virExec(virCommand *cmd)
         int pidfilefd = -1;
         char c;
 
-        pidfilefd = virPidFileAcquirePath(cmd->pidfile, false, pid);
+        pidfilefd = virPidFileAcquirePath(cmd->pidfile, pid);
         if (pidfilefd < 0)
             goto fork_error;
         if (virSetInherit(pidfilefd, true) < 0) {

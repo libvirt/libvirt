@@ -446,10 +446,9 @@ int virPidFileAcquirePathFull(const char *path,
 
 
 int virPidFileAcquirePath(const char *path,
-                          bool waitForLock,
                           pid_t pid)
 {
-    return virPidFileAcquirePathFull(path, waitForLock, pid);
+    return virPidFileAcquirePathFull(path, false, pid);
 }
 
 
@@ -465,7 +464,7 @@ int virPidFileAcquire(const char *dir,
     if (!(pidfile = virPidFileBuildPath(dir, name)))
         return -ENOMEM;
 
-    return virPidFileAcquirePath(pidfile, false, pid);
+    return virPidFileAcquirePath(pidfile, pid);
 }
 
 
@@ -566,7 +565,7 @@ virPidFileForceCleanupPathFull(const char *path, bool group)
     if (virPidFileReadPath(path, &pid) < 0)
         return -1;
 
-    fd = virPidFileAcquirePath(path, false, 0);
+    fd = virPidFileAcquirePath(path, 0);
     if (fd < 0) {
         virResetLastError();
 
