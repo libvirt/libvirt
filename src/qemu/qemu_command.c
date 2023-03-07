@@ -3240,6 +3240,7 @@ qemuBuildMemoryGetPagesize(virQEMUDriverConfig *cfg,
  * @def: domain definition object
  * @mem: memory definition object
  * @force: forcibly use one of the backends
+ * @nodemaskRet: [out] bitmap used to format .host-nodes attribute
  *
  * Creates a configuration object that represents memory backend of given guest
  * NUMA node (domain @def and @mem). Use @priv->autoNodeset to fine tune the
@@ -3264,7 +3265,8 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
                             const virDomainDef *def,
                             const virDomainMemoryDef *mem,
                             bool force,
-                            bool systemMemory)
+                            bool systemMemory,
+                            virBitmap **nodemaskRet)
 {
     const char *backendType = "memory-backend-file";
     virDomainNumatuneMemMode mode;
@@ -3451,6 +3453,9 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
                                       "S:policy", qemuNumaPolicyTypeToString(mode),
                                       NULL) < 0)
                 return -1;
+
+            if (nodemaskRet)
+                *nodemaskRet = nodemask;
         }
     }
 
@@ -3504,7 +3509,8 @@ qemuBuildMemoryCellBackendProps(virDomainDef *def,
     mem.targetNode = cell;
     mem.info.alias = alias;
 
-    return qemuBuildMemoryBackendProps(props, alias, cfg, priv, def, &mem, false, false);
+    return qemuBuildMemoryBackendProps(props, alias, cfg, priv,
+                                       def, &mem, false, false, NULL);
 }
 
 
@@ -3528,7 +3534,7 @@ qemuBuildMemoryDimmBackendStr(virCommand *cmd,
     alias = g_strdup_printf("mem%s", mem->info.alias);
 
     if (qemuBuildMemoryBackendProps(&props, alias, cfg,
-                                    priv, def, mem, true, false) < 0)
+                                    priv, def, mem, true, false, NULL) < 0)
         return -1;
 
     if (qemuBuildThreadContextProps(&tcProps, &props, priv) < 0)
@@ -7179,7 +7185,7 @@ qemuBuildMemCommandLineMemoryDefaultBackend(virCommand *cmd,
     mem.info.alias = (char *) defaultRAMid;
 
     if (qemuBuildMemoryBackendProps(&props, defaultRAMid, cfg,
-                                    priv, def, &mem, false, true) < 0)
+                                    priv, def, &mem, false, true, NULL) < 0)
         return -1;
 
     if (qemuBuildThreadContextProps(&tcProps, &props, priv) < 0)

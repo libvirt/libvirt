@@ -2280,7 +2280,7 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
         goto cleanup;
 
     if (qemuBuildMemoryBackendProps(&props, objalias, cfg,
-                                    priv, vm->def, mem, true, false) < 0)
+                                    priv, vm->def, mem, true, false, NULL) < 0)
         goto cleanup;
 
     if (qemuProcessBuildDestroyMemoryPaths(driver, vm, mem, true) < 0)
