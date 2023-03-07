@@ -3126,6 +3126,7 @@ virPerfReadEvent;
 # util/virpidfile.h
 virPidFileAcquire;
 virPidFileAcquirePath;
+virPidFileAcquirePathFull;
 virPidFileBuildPath;
 virPidFileConstructPath;
 virPidFileDelete;

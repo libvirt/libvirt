@@ -362,9 +362,9 @@ int virPidFileDelete(const char *dir,
     return virPidFileDeletePath(pidfile);
 }
 
-int virPidFileAcquirePath(const char *path,
-                          bool waitForLock,
-                          pid_t pid)
+int virPidFileAcquirePathFull(const char *path,
+                              bool waitForLock,
+                              pid_t pid)
 {
     int fd = -1;
     char pidstr[VIR_INT64_STR_BUFLEN];
@@ -442,6 +442,14 @@ int virPidFileAcquirePath(const char *path,
     }
 
     return fd;
+}
+
+
+int virPidFileAcquirePath(const char *path,
+                          bool waitForLock,
+                          pid_t pid)
+{
+    return virPidFileAcquirePathFull(path, waitForLock, pid);
 }
 
 
