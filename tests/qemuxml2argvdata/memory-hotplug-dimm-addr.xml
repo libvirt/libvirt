@@ -4,7 +4,7 @@
   <maxMemory slots='16' unit='KiB'>1099511627776</maxMemory>
   <memory unit='KiB'>7434230</memory>
   <currentMemory unit='KiB'>7434230</currentMemory>
-  <vcpu placement='static' cpuset='0-1'>2</vcpu>
+  <vcpu placement='static' cpuset='0-1,4-5,9'>2</vcpu>
   <os>
     <type arch='i686' machine='pc'>hvm</type>
     <boot dev='hd'/>
