@@ -2976,6 +2976,7 @@ virNodeSuspendGetTargetMask;
 
 
 # util/virnuma.h
+virNumaCPUSetToNodeset;
 virNumaGetAutoPlacementAdvice;
 virNumaGetDistances;
 virNumaGetHostMemoryNodeset;
@@ -2983,6 +2984,7 @@ virNumaGetMaxCPUs;
 virNumaGetMaxNode;
 virNumaGetNodeCPUs;
 virNumaGetNodeMemory;
+virNumaGetNodeOfCPU;
 virNumaGetPageInfo;
 virNumaGetPages;
 virNumaIsAvailable;

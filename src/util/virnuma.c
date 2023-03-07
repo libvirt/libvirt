@@ -311,6 +311,22 @@ virNumaGetNodeCPUs(int node,
 # undef MASK_CPU_ISSET
 # undef n_bits
 
+
+/**
+ * virNumaGetNodeOfCPU:
+ * @cpu: CPU ID
+ *
+ * For given @cpu, return NUMA node which it belongs to.
+ *
+ * Returns: NUMA node # on success,
+ *          -1 on failure (with errno set).
+ */
+int
+virNumaGetNodeOfCPU(int cpu)
+{
+    return numa_node_of_cpu(cpu);
+}
+
 #else /* !WITH_NUMACTL */
 
 int
@@ -365,6 +381,14 @@ virNumaGetNodeCPUs(int node G_GNUC_UNUSED,
                    _("NUMA isn't available on this host"));
     return -1;
 }
+
+int
+virNumaGetNodeOfCPU(int cpu G_GNUC_UNUSED)
+{
+    errno = ENOSYS;
+    return -1;
+}
+
 
 #endif /* !WITH_NUMACTL */
 
@@ -987,6 +1011,41 @@ virNumaGetHostMemoryNodeset(void)
     }
 
     return nodeset;
+}
+
+
+/**
+ * virNumaCPUSetToNodeset:
+ * @cpuset: bitmap containing a set of CPUs
+ * @nodeset: returned bitmap containing a set of NUMA nodes
+ *
+ * Convert a set of CPUs to set of NUMA nodes that contain the CPUs.
+ *
+ * Returns: 0 on success,
+ *          -1 on failure (with error reported)
+ */
+int
+virNumaCPUSetToNodeset(virBitmap *cpuset,
+                       virBitmap **nodeset)
+{
+    g_autoptr(virBitmap) nodes = virBitmapNew(0);
+    ssize_t pos = -1;
+
+    while ((pos = virBitmapNextSetBit(cpuset, pos)) >= 0) {
+        int node = virNumaGetNodeOfCPU(pos);
+
+        if (node < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to get NUMA node of cpu %zd"),
+                                 pos);
+            return -1;
+        }
+
+        virBitmapSetBitExpand(nodes, node);
+    }
+
+    *nodeset = g_steal_pointer(&nodes);
+    return 0;
 }
 
 
