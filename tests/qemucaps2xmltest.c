@@ -33,6 +33,7 @@ struct _testQemuData {
     const char *prefix;
     const char *version;
     const char *archName;
+    const char *variant;
     const char *suffix;
     int ret;
 };
@@ -122,11 +123,11 @@ testQemuCapsXML(const void *opaque)
     g_autofree char *capsXml = NULL;
     g_autoptr(virCaps) capsProvided = NULL;
 
-    xmlFile = g_strdup_printf("%s/caps.%s.xml", data->outputDir, data->archName);
+    xmlFile = g_strdup_printf("%s/caps.%s%s.xml", data->outputDir, data->archName, data->variant);
 
-    capsFile = g_strdup_printf("%s/%s_%s_%s.%s",
+    capsFile = g_strdup_printf("%s/%s_%s_%s%s.%s",
                                data->inputDir, data->prefix, data->version,
-                               data->archName, data->suffix);
+                               data->archName, data->variant, data->suffix);
 
     if (virTestLoadFile(capsFile, &capsData) < 0)
         return -1;
@@ -149,6 +150,7 @@ doCapsTest(const char *inputDir,
            const char *prefix,
            const char *version,
            const char *archName,
+           const char *variant,
            const char *suffix,
            void *opaque)
 {
@@ -161,6 +163,7 @@ doCapsTest(const char *inputDir,
     data->prefix = prefix;
     data->version = version;
     data->archName = archName;
+    data->variant = variant;
     data->suffix = suffix;
 
     if (virTestRun(title, testQemuCapsXML, data) < 0)

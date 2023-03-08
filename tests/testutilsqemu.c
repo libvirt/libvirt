@@ -834,6 +834,8 @@ testQemuCapsIterate(const char *suffix,
         g_autofree char *tmp = g_strdup(ent->d_name);
         char *version = NULL;
         char *archName = NULL;
+        g_autofree char *variant = NULL;
+        char *var;
 
         /* Strip the trailing suffix, moving on if it's not present */
         if (!virStringStripSuffix(tmp, suffix))
@@ -857,6 +859,14 @@ testQemuCapsIterate(const char *suffix,
         archName[0] = '\0';
         archName++;
 
+        /* Find the 'variant' of the test and split it including the leading '+' */
+        if ((var = strchr(archName, '+'))) {
+            variant = g_strdup(var);
+            var[0] = '\0';
+        } else {
+            variant = g_strdup("");
+        }
+
         /* Run the user-provided callback.
          *
          * We skip the dot that, as verified earlier, starts the suffix
@@ -864,7 +874,7 @@ testQemuCapsIterate(const char *suffix,
          * the callback.
          */
         if (callback(TEST_QEMU_CAPS_PATH, "caps", version,
-                     archName, suffix + 1, opaque) < 0)
+                     archName, variant, suffix + 1, opaque) < 0)
             fail = true;
     }
 

@@ -39,6 +39,7 @@ struct _testQemuData {
     const char *prefix;
     const char *version;
     const char *archName;
+    const char *variant;
     const char *suffix;
     int ret;
 };
@@ -78,12 +79,12 @@ testQemuCaps(const void *opaque)
     unsigned int fakeMicrocodeVersion = 0;
     const char *p;
 
-    repliesFile = g_strdup_printf("%s/%s_%s_%s.%s",
+    repliesFile = g_strdup_printf("%s/%s_%s_%s%s.%s",
                                   data->inputDir, data->prefix, data->version,
-                                  data->archName, data->suffix);
-    capsFile = g_strdup_printf("%s/%s_%s_%s.xml",
+                                  data->archName, data->variant, data->suffix);
+    capsFile = g_strdup_printf("%s/%s_%s_%s%s.xml",
                                data->outputDir, data->prefix, data->version,
-                               data->archName);
+                               data->archName, data->variant);
 
     if (!(mon = qemuMonitorTestNewFromFileFull(repliesFile, &data->driver, NULL,
                                                NULL)))
@@ -142,9 +143,9 @@ testQemuCapsCopy(const void *opaque)
     g_autoptr(virQEMUCaps) copy = NULL;
     g_autofree char *actual = NULL;
 
-    capsFile = g_strdup_printf("%s/%s_%s_%s.xml",
+    capsFile = g_strdup_printf("%s/%s_%s_%s%s.xml",
                                data->outputDir, data->prefix, data->version,
-                               data->archName);
+                               data->archName, data->variant);
 
     if (!(orig = qemuTestParseCapabilitiesArch(
               virArchFromString(data->archName), capsFile)))
@@ -167,6 +168,7 @@ doCapsTest(const char *inputDir,
            const char *prefix,
            const char *version,
            const char *archName,
+           const char *variant,
            const char *suffix,
            void *opaque)
 {
@@ -181,6 +183,7 @@ doCapsTest(const char *inputDir,
     data->prefix = prefix;
     data->version = version;
     data->archName = archName;
+    data->variant = variant,
     data->suffix = suffix;
 
     if (virTestRun(title, testQemuCaps, data) < 0)

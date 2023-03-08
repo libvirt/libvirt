@@ -22,6 +22,10 @@ Files in this directory have the following naming scheme::
 
   caps_$QEMUVERSION_$ARCHITECTURE.$SUFFIX
 
+or::
+
+  caps_$QEMUVERSION_$ARCHITECTURE+$VARIANT.$SUFFIX
+
 ``$QEMUVERSION``
 
   Numeric representation of the qemu version, e.g.: ``7.0.0``
@@ -34,6 +38,21 @@ Files in this directory have the following naming scheme::
 
   ``.replies`` for the dump of the QMP communication used to probe qemu.
   ``.xml`` for the generated capability dump
+
+``$VARIANT``
+
+  The variant name is an optional arbitrary string, not containing any dot.
+
+  A variant is an additional named version of capabilities for given version and
+  architecture tuple. This allows for testing special cases which e.g. depend
+  on a specific host platform or operating system feature, which differs from
+  the main tests. Note that in the test code the variant name is an empty string
+  or includes the '+' sign for ease of use.
+
+Known test variants
+-------------------
+
+This section will contain a list of variants that are used in the test suite.
 
 Usage in tests
 ==============

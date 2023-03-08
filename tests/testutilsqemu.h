@@ -143,6 +143,7 @@ typedef int (*testQemuCapsIterateCallback)(const char *inputDir,
                                            const char *prefix,
                                            const char *version,
                                            const char *archName,
+                                           const char *variant,
                                            const char *suffix,
                                            void *opaque);
 int testQemuCapsIterate(const char *suffix,

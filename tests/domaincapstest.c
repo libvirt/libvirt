@@ -312,10 +312,15 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
            const char *prefix G_GNUC_UNUSED,
            const char *version,
            const char *arch,
+           const char *variant,
            const char *suffix G_GNUC_UNUSED,
            void *opaque)
 {
     int ret = 0;
+
+    /* currently variant tests are not handled here */
+    if (STRNEQ(variant, ""))
+        return 0;
 
     if (STREQ(arch, "x86_64")) {
         /* For x86_64 we test three combinations:
