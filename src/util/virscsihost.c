@@ -95,9 +95,7 @@ virSCSIHostFindByPCI(const char *sysfs_prefix,
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH;
     struct dirent *entry = NULL;
     g_autoptr(DIR) dir = NULL;
-    char *p = NULL;
     char *ret = NULL;
-    unsigned int read_unique_id;
 
     if (virDirOpen(&dir, prefix) < 0)
         return NULL;
@@ -107,6 +105,8 @@ virSCSIHostFindByPCI(const char *sysfs_prefix,
         g_autofree char *host_path = NULL;
         g_autofree char *unique_path = NULL;
         g_autofree char *buf = NULL;
+        char *p = NULL;
+        unsigned int read_unique_id;
 
         if (!virFileIsLink(entry->d_name))
             continue;
