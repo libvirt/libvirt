@@ -12,13 +12,14 @@
 # yuliya <ypoyarko@redhat.com>, 2015, 2016
 # Olesya Gerasimenko <gammaray@basealt.ru>, 2020.
 # Sergey A. <sw@atrus.ru>, 2022, 2023.
+# Jan Tomko <jtomko@redhat.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-02-22 13:50+0000\n"
-"PO-Revision-Date: 2023-02-27 14:20+0000\n"
-"Last-Translator: Sergey A. <sw@atrus.ru>\n"
+"PO-Revision-Date: 2023-03-08 19:06+0000\n"
+"Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ru/>\n"
 "Language: ru\n"
@@ -38953,7 +38954,7 @@ msgid "virtio rss hash report is not supported with this QEMU binary"
 msgstr ""
 
 msgid "virtio rss is not supported with this QEMU binary"
-msgstr "этот исполняемый файл QEMU не поддерживает virtiofs rss"
+msgstr "этот исполняемый файл QEMU не поддерживает virtio rss"
 
 #, c-format
 msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
