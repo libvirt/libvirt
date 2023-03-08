@@ -95,7 +95,6 @@ virSCSIHostFindByPCI(const char *sysfs_prefix,
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH;
     struct dirent *entry = NULL;
     g_autoptr(DIR) dir = NULL;
-    char *ret = NULL;
 
     if (virDirOpen(&dir, prefix) < 0)
         return NULL;
@@ -114,7 +113,7 @@ virSCSIHostFindByPCI(const char *sysfs_prefix,
         host_link = g_strdup_printf("%s/%s", prefix, entry->d_name);
 
         if (virFileResolveLink(host_link, &host_path) < 0)
-            goto cleanup;
+            return NULL;
 
         if (!strstr(host_path, parentaddr)) {
             continue;
@@ -127,24 +126,22 @@ virSCSIHostFindByPCI(const char *sysfs_prefix,
         }
 
         if (virFileReadAll(unique_path, 1024, &buf) < 0)
-            goto cleanup;
+            return NULL;
 
         if ((p = strchr(buf, '\n')))
             *p = '\0';
 
         if (virStrToLong_ui(buf, NULL, 10, &read_unique_id) < 0)
-            goto cleanup;
+            return NULL;
 
         if (read_unique_id != unique_id) {
             continue;
         }
 
-        ret = g_strdup(entry->d_name);
-        break;
+        return g_strdup(entry->d_name);
     }
 
- cleanup:
-    return ret;
+    return NULL;
 }
 
 
@@ -224,10 +221,9 @@ virSCSIHostGetNameByParentaddr(unsigned int domain,
                        _("Failed to find scsi_host using PCI '%s' "
                          "and unique_id='%u'"),
                        parentaddr, unique_id);
-        goto cleanup;
+        return NULL;
     }
 
- cleanup:
     return name;
 }
 
