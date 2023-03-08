@@ -455,6 +455,11 @@ sc_prohibit_diagnostic_without_format:
 	  { echo 'found diagnostic without %' 1>&2; \
 	    exit 1; } || :
 
+sc_require_permutable_format_in_translation:
+	@prohibit='\<N?_ *\("[^"]*%[^%$$ ]*[a-zA-Z][^"]*"' \
+	halt='non-permutable format string(s)' \
+	  $(_sc_search_regexp)
+
 # The strings "" and "%s" should never be marked for translation.
 # Files under tests/ and examples/ should not be translated.
 sc_prohibit_useless_translation:

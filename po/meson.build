@@ -25,3 +25,11 @@ potfiles_dep = [
 ]
 
 alias_target('libvirt-pot-dep', potfiles_dep)
+
+run_target(
+  'libvirt-pot-check',
+  command: [
+    '@0@/scripts/check-pot.py'.format(meson.project_source_root()),
+    '@0@/po/libvirt.pot'.format(meson.project_source_root())
+  ],
+)
