@@ -275,6 +275,10 @@ doTestQemuInternal(const char *version,
         typestr = "";
         break;
 
+    case VIR_DOMAIN_VIRT_HVF:
+        typestr = "-hvf";
+        break;
+
     default:
         abort();
         break;
@@ -317,43 +321,65 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
            const char *suffix G_GNUC_UNUSED,
            void *opaque)
 {
+    bool hvf = false;
     int ret = 0;
 
-    /* currently variant tests are not handled here */
-    if (STRNEQ(variant, ""))
+    if (STREQ(variant, "+hvf"))
+        hvf = true;
+    else if (STREQ(variant, ""))
         return 0;
 
     if (STREQ(arch, "x86_64")) {
-        /* For x86_64 we test three combinations:
+        /* For x86_64 based on the test variant we test:
          *
-         *   - KVM with default machine
-         *   - KVM with Q35 machine
+         *   '' (default) variant (KVM):
+         *      - KVM with default machine
+         *      - KVM with Q35 machine
+         *  '+hvf' variant:
+         *      - hvf with default machine
+         *
          *   - TCG with default machine
          */
-        if (doTestQemuInternal(version, NULL, arch, variant,
-                               VIR_DOMAIN_VIRT_KVM, opaque) < 0)
-            ret = -1;
+        if (hvf) {
+            if (doTestQemuInternal(version, NULL, arch, variant,
+                                   VIR_DOMAIN_VIRT_HVF, opaque) < 0)
+                ret = -1;
+        } else {
+            if (doTestQemuInternal(version, NULL, arch, variant,
+                                   VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+                ret = -1;
 
-        if (doTestQemuInternal(version, "q35", arch, variant,
-                               VIR_DOMAIN_VIRT_KVM, opaque) < 0)
-            ret = -1;
+            if (doTestQemuInternal(version, "q35", arch, variant,
+                                   VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+                ret = -1;
+        }
 
         if (doTestQemuInternal(version, NULL, arch, variant,
                                VIR_DOMAIN_VIRT_QEMU, opaque) < 0)
             ret = -1;
     } else if (STREQ(arch, "aarch64")) {
-        /* For aarch64 we test two combinations:
+        /* For aarch64 based on the test variant we test:
          *
-         *   - KVM with default machine
-         *   - KVM with virt machine
+         *   '' (default) variant (KVM):
+         *      - KVM with default machine
+         *      - KVM with virt machine
+         *
+         *  '+hvf' variant:
+         *    - hvf with default machine
          */
-        if (doTestQemuInternal(version, NULL, arch, variant,
-                               VIR_DOMAIN_VIRT_KVM, opaque) < 0)
-            ret = -1;
+        if (hvf) {
+            if (doTestQemuInternal(version, NULL, arch, variant,
+                                   VIR_DOMAIN_VIRT_HVF, opaque) < 0)
+                ret = -1;
+        } else {
+            if (doTestQemuInternal(version, NULL, arch, variant,
+                                   VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+                ret = -1;
 
-        if (doTestQemuInternal(version, "virt", arch, variant,
-                               VIR_DOMAIN_VIRT_KVM, opaque) < 0)
-            ret = -1;
+            if (doTestQemuInternal(version, "virt", arch, variant,
+                                   VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+                ret = -1;
+        }
     } else if (STRPREFIX(arch, "riscv")) {
         /* For riscv64 we test two combinations:
          *

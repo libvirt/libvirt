@@ -52,7 +52,11 @@ or::
 Known test variants
 -------------------
 
-This section will contain a list of variants that are used in the test suite.
+``+hvf``
+
+  Variant of the test data using the Apple OSX Hypervisor Framework acceleration
+  for qemu.
+
 
 Usage in tests
 ==============
