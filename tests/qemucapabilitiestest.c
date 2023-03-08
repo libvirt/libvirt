@@ -45,6 +45,13 @@ struct _testQemuData {
 };
 
 
+bool
+virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+{
+    return false;
+}
+
+
 static int
 testQemuDataInit(testQemuData *data)
 {
