@@ -44,11 +44,12 @@ struct _testQemuData {
     int ret;
 };
 
+bool isHVF = false;
 
 bool
 virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
-    return false;
+    return isHVF;
 }
 
 
@@ -96,6 +97,8 @@ testQemuCaps(const void *opaque)
     if (!(mon = qemuMonitorTestNewFromFileFull(repliesFile, &data->driver, NULL,
                                                NULL)))
         return -1;
+
+    isHVF = STREQ(data->variant, "+hvf");
 
     if (qemuProcessQMPInitMonitor(qemuMonitorTestGetMonitor(mon)) < 0)
         return -1;
