@@ -123,6 +123,14 @@
     <ref name="disksnapshotdriver"/>
   </define>
 
+  <define name="snapshotDeleteInProgress">
+    <optional>
+      <element name="snapshotDeleteInProgress">
+        <empty/>
+      </element>
+    </optional>
+  </define>
+
   <define name="disksnapshot">
     <element name="disk">
       <attribute name="name">
@@ -175,6 +183,7 @@
                   </element>
                 </optional>
                 <ref name="storageSourceExtra"/>
+                <ref name="snapshotDeleteInProgress"/>
               </interleave>
             </group>
             <group>
@@ -200,6 +209,7 @@
                   </element>
                 </optional>
                 <ref name="storageSourceExtra"/>
+                <ref name="snapshotDeleteInProgress"/>
               </interleave>
             </group>
             <ref name="diskSourceNetwork"/>
