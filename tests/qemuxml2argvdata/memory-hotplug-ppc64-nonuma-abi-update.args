@@ -9,10 +9,12 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-ppc64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes \
--machine pseries,usb=off,dump-guest-core=off \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
+-machine pseries,usb=off,dump-guest-core=off,memory-backend=ppc_spapr.ram \
 -accel kvm \
+-cpu POWER9 \
 -m size=1048576k,slots=16,maxmem=4194304k \
+-object '{"qom-type":"memory-backend-ram","id":"ppc_spapr.ram","size":1073741824}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 49545eb3-75e1-2d0a-acdd-f0294406c99e \
@@ -24,9 +26,10 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--object memory-backend-ram,id=memdimm0,size=536870912 \
--device pc-dimm,memdev=memdimm0,id=dimm0,slot=0 \
--object memory-backend-ram,id=memdimm1,size=536870912 \
--device pc-dimm,memdev=memdimm1,id=dimm1,slot=1 \
+-object '{"qom-type":"memory-backend-ram","id":"memdimm0","size":536870912}' \
+-device '{"driver":"pc-dimm","memdev":"memdimm0","id":"dimm0","slot":0}' \
+-object '{"qom-type":"memory-backend-ram","id":"memdimm1","size":536870912}' \
+-device '{"driver":"pc-dimm","memdev":"memdimm1","id":"dimm1","slot":1}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
