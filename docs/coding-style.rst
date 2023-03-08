@@ -918,24 +918,28 @@ Error messages visible to the user should be short and
 descriptive. All error messages are translated using gettext and
 thus must be wrapped in ``_()`` macro. To simplify the translation
 work, the error message must not be concatenated from various
-parts. To simplify searching for the error message in the code the
-strings should not be broken even if they result into a line
-longer than 80 columns and any formatting modifier should be
-enclosed by quotes or other obvious separator. If a string used
-with ``%s`` can be NULL the NULLSTR macro must be used.
+parts and all format strings must be permutable by directly
+addressing each argument using ``%N$...`` syntax. For example,
+``%1$s``, ``%2$llu`` or ``%4$s`` to format the first argument as
+string, the second argument as unsigned long long, and the fourth
+argument as string, respectively. To simplify searching for the error
+message in the code the strings should not be broken even if they
+result into a line longer than 80 columns and any formatting modifier
+should be enclosed by quotes or other obvious separator. If a string
+used with ``%N$s`` can be NULL the NULLSTR macro must be used.
 
 ::
 
   GOOD: virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to connect to remote host '%s'"), hostname)
+                       _("Failed to connect to remote host '%1$s'"), hostname)
 
   BAD: virReportError(VIR_ERR_INTERNAL_ERROR,
-                      _("Failed to %s to remote host '%s'"),
+                      _("Failed to %1$s to remote host '%2$s'"),
                       "connect", hostname);
 
   BAD: virReportError(VIR_ERR_INTERNAL_ERROR,
                       _("Failed to connect "
-                      "to remote host '%s'),
+                      "to remote host '%1$s'),
                       hostname);
 
 Use of goto
