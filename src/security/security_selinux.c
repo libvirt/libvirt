@@ -523,8 +523,8 @@ virSecuritySELinuxMCSGetProcessRange(char **sens,
 }
 
 static char *
-virSecuritySELinuxContextAddRange(char *src,
-                                  char *dst)
+virSecuritySELinuxContextAddRange(const char *src,
+                                  const char *dst)
 {
     const char *str = NULL;
     char *ret = NULL;
