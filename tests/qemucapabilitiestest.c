@@ -101,7 +101,8 @@ testQemuCaps(const void *opaque)
     if (virQEMUCapsInitQMPMonitor(capsActual, qemuMonitorTestGetMonitor(mon)) < 0)
         return -1;
 
-    if (virQEMUCapsGet(capsActual, QEMU_CAPS_KVM)) {
+    if (virQEMUCapsHaveAccel(capsActual) &&
+        virQEMUCapsGet(capsActual, QEMU_CAPS_TCG)) {
         qemuMonitorResetCommandID(qemuMonitorTestGetMonitor(mon));
 
         if (qemuProcessQMPInitMonitor(qemuMonitorTestGetMonitor(mon)) < 0)

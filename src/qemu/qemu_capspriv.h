@@ -116,3 +116,6 @@ virQEMUCapsAddMachine(virQEMUCaps *qemuCaps,
                       const char *defaultRAMid,
                       bool deprecated,
                       virTristateBool acpi);
+
+bool
+virQEMUCapsHaveAccel(virQEMUCaps *qemuCaps);

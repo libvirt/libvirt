@@ -883,7 +883,7 @@ virQEMUCapsTypeIsAccelerated(virDomainVirtType type)
 }
 
 
-static bool
+bool
 virQEMUCapsHaveAccel(virQEMUCaps *qemuCaps)
 {
     return virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM) ||
@@ -5748,8 +5748,8 @@ virQEMUCapsInitQMP(virQEMUCaps *qemuCaps,
         return -1;
 
     /*
-     * If KVM was enabled during the first probe, we need to explicitly probe
-     * for TCG capabilities by asking the same binary again and turning KVM
+     * If acceleration was enabled during the first probe, we need to explicitly
+     * probe for TCG capabilities by asking the same binary again and turning KVM
      * off.
      */
     if (virQEMUCapsHaveAccel(qemuCaps) &&
