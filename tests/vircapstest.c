@@ -21,7 +21,6 @@
 
 #include "testutils.h"
 #include "testutilslxc.h"
-#include "testutilsqemu.h"
 #include "capabilities.h"
 #include "virbitmap.h"
 
@@ -50,25 +49,6 @@ test_virCapabilitiesGetCpusForNodemask(const void *data G_GNUC_UNUSED)
     return 0;
 }
 
-
-static bool G_GNUC_UNUSED
-doCapsExpectFailure(virCaps *caps,
-                    int ostype,
-                    virArch arch,
-                    int domaintype,
-                    const char *emulator,
-                    const char *machinetype)
-{
-    virCapsDomainData *data = virCapabilitiesDomainDataLookup(caps, ostype,
-        arch, domaintype, emulator, machinetype);
-
-    if (data) {
-        VIR_FREE(data);
-        return false;
-    }
-
-    return true;
-}
 
 static bool G_GNUC_UNUSED
 doCapsCompare(virCaps *caps,
@@ -135,55 +115,6 @@ doCapsCompare(virCaps *caps,
     if (!doCapsCompare(caps, o, a, d, e, m, fo, fa, fd, fe, fm)) \
         ret = -1;
 
-#define CAPS_EXPECT_ERR(o, a, d, e, m) \
-    if (!doCapsExpectFailure(caps, o, a, d, e, m)) \
-        ret = -1;
-
-#ifdef WITH_QEMU
-static int
-test_virCapsDomainDataLookupQEMU(const void *data G_GNUC_UNUSED)
-{
-    int ret = 0;
-    g_autoptr(virCaps) caps = NULL;
-
-    if (!(caps = testQemuCapsInit()))
-        return -1;
-
-    /* Checking each parameter individually */
-    CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, NULL,
-        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
-        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-x86_64", "pc");
-    CAPSCOMP(VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, NULL,
-        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
-        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-x86_64", "pc");
-    CAPSCOMP(-1, VIR_ARCH_AARCH64, VIR_DOMAIN_VIRT_NONE, NULL, NULL,
-        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_AARCH64,
-        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-aarch64", "virt");
-    CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_KVM, NULL, NULL,
-        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
-        VIR_DOMAIN_VIRT_KVM, "/usr/bin/qemu-system-x86_64", "pc");
-    CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, "/usr/bin/qemu-system-ppc64", NULL,
-        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64,
-        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-ppc64", "pseries");
-
-    CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, "pseries",
-        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64,
-        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-ppc64", "pseries");
-    CAPSCOMP(-1, VIR_ARCH_PPC64LE, VIR_DOMAIN_VIRT_NONE, NULL, "pseries",
-        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64LE,
-        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-ppc64", "pseries");
-
-    CAPS_EXPECT_ERR(VIR_DOMAIN_OSTYPE_LINUX, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, NULL);
-    CAPS_EXPECT_ERR(-1, VIR_ARCH_PPC64LE, VIR_DOMAIN_VIRT_NONE, NULL, "pc");
-    CAPS_EXPECT_ERR(-1, VIR_ARCH_MIPS, VIR_DOMAIN_VIRT_NONE, NULL, NULL);
-    CAPS_EXPECT_ERR(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE,
-        "/usr/bin/qemu-system-aarch64", "pc");
-    CAPS_EXPECT_ERR(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_VMWARE, NULL, "pc");
-
-    return ret;
-}
-#endif /* WITH_QEMU */
-
 #ifdef WITH_LXC
 static int
 test_virCapsDomainDataLookupLXC(const void *data G_GNUC_UNUSED)
@@ -213,11 +144,6 @@ mymain(void)
     if (virTestRun("virCapabilitiesGetCpusForNodemask",
                    test_virCapabilitiesGetCpusForNodemask, NULL) < 0)
         ret = -1;
-#ifdef WITH_QEMU
-    if (virTestRun("virCapsDomainDataLookupQEMU",
-                   test_virCapsDomainDataLookupQEMU, NULL) < 0)
-        ret = -1;
-#endif
 #ifdef WITH_LXC
     if (virTestRun("virCapsDomainDataLookupLXC",
                    test_virCapsDomainDataLookupLXC, NULL) < 0)
