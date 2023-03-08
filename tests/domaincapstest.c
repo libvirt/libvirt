@@ -252,13 +252,31 @@ doTestQemuInternal(const char *version,
     g_autofree char *name = NULL;
     g_autofree char *capsName = NULL;
     g_autofree char *emulator = NULL;
+    const char *typestr = NULL;
+    g_autofree char *mach = NULL;
     int rc;
 
-    name = g_strdup_printf("qemu_%s%s%s%s.%s",
-                           version,
-                           (type == VIR_DOMAIN_VIRT_QEMU ? "-tcg" : ""),
-                           (machine ? "-" : ""), (machine ? machine : ""),
-                           arch);
+    switch ((unsigned int) type) {
+    case VIR_DOMAIN_VIRT_QEMU:
+        typestr = "-tcg";
+        break;
+
+    case VIR_DOMAIN_VIRT_KVM:
+        typestr = "";
+        break;
+
+    default:
+        abort();
+        break;
+    }
+
+    if (machine)
+        mach = g_strdup_printf("-%s", machine);
+    else
+        mach = g_strdup("");
+
+    name = g_strdup_printf("qemu_%s%s%s.%s",
+                           version, typestr, mach, arch);
     capsName = g_strdup_printf("caps_%s", version);
     emulator = g_strdup_printf("/usr/bin/qemu-system-%s", arch);
 
