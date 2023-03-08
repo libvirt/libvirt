@@ -53,6 +53,13 @@ v9.2.0 (unreleased)
     Due to a logic bug introduced in libvirt 9.0.0, VM configurations
     explicitly enabling the HPET timer were rejected.
 
+  * qemu: Fix thread-context .host-nodes generation
+
+    With new enough QEMU, libvirt instructs QEMU to set affinity of memory
+    allocation threads. But this may have resulted in QEMU being unable to do
+    so, as affinity to NUMA nodes inaccessible to emulator thread might have
+    been requested.
+
 
 v9.1.0 (2023-03-01)
 ===================
