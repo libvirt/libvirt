@@ -107,10 +107,10 @@ virSCSIHostFindByPCI(const char *sysfs_prefix,
         char *p = NULL;
         unsigned int read_unique_id;
 
-        if (!virFileIsLink(entry->d_name))
-            continue;
-
         host_link = g_strdup_printf("%s/%s", prefix, entry->d_name);
+
+        if (!virFileIsLink(host_link))
+            continue;
 
         if (virFileResolveLink(host_link, &host_path) < 0)
             return NULL;
