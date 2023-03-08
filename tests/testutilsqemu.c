@@ -30,12 +30,7 @@ static const char *qemu_emulators[VIR_ARCH_LAST] = {
     [VIR_ARCH_I686] = "/usr/bin/qemu-system-i386",
     [VIR_ARCH_X86_64] = "/usr/bin/qemu-system-x86_64",
     [VIR_ARCH_AARCH64] = "/usr/bin/qemu-system-aarch64",
-    [VIR_ARCH_PPC64] = "/usr/bin/qemu-system-ppc64",
     [VIR_ARCH_S390X] = "/usr/bin/qemu-system-s390x",
-};
-
-static const virArch arch_alias[VIR_ARCH_LAST] = {
-    [VIR_ARCH_PPC64LE] = VIR_ARCH_PPC64,
 };
 
 static const char *const i386_machines[] = {
@@ -48,9 +43,6 @@ static const char *const x86_64_machines[] = {
 static const char *const aarch64_machines[] = {
     "virt", "virt-2.6", "versatilepb", NULL
 };
-static const char *const ppc64_machines[] = {
-    "pseries", NULL
-};
 static const char *const s390x_machines[] = {
     "s390-ccw-virtio", NULL
 };
@@ -59,7 +51,6 @@ static const char *const *qemu_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_I686] = i386_machines,
     [VIR_ARCH_X86_64] = x86_64_machines,
     [VIR_ARCH_AARCH64] = aarch64_machines,
-    [VIR_ARCH_PPC64] = ppc64_machines,
     [VIR_ARCH_S390X] = s390x_machines,
 };
 
@@ -67,7 +58,6 @@ static const char *qemu_default_ram_id[VIR_ARCH_LAST] = {
     [VIR_ARCH_I686] = "pc.ram",
     [VIR_ARCH_X86_64] = "pc.ram",
     [VIR_ARCH_AARCH64] = "mach-virt.ram",
-    [VIR_ARCH_PPC64] = "ppc_spapr.ram",
     [VIR_ARCH_S390X] = "s390.ram",
 };
 
@@ -163,9 +153,6 @@ testQemuAddGuest(virCaps *caps,
     virCapsGuestMachine **machines = NULL;
     virCapsGuest *guest;
     virArch emu_arch = arch;
-
-    if (arch_alias[arch] != VIR_ARCH_NONE)
-        emu_arch = arch_alias[arch];
 
     if (qemu_emulators[emu_arch] == NULL)
         return 0;
@@ -411,9 +398,6 @@ qemuTestCapsCacheInsert(virFileCache *cache,
             virArch arch = virQEMUCapsGetArch(caps);
             g_autoptr(virQEMUCaps) copyCaps = NULL;
             virQEMUCaps *effCaps = caps;
-
-            if (arch_alias[arch] != VIR_ARCH_NONE)
-                arch = arch_alias[arch];
 
             if (qemu_emulators[arch]) {
                 /* if we are dealing with fake caps we need to populate machine types */
