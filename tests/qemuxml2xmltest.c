@@ -1302,15 +1302,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("devices-acpi-index");
 
     DO_TEST_CAPS_ARCH_LATEST_FULL("hvf-x86_64-q35-headless", "x86_64", ARG_CAPS_VARIANT, "+hvf", ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("hvf-aarch64-virt-headless", "aarch64", ARG_CAPS_VARIANT, "+hvf", ARG_END);
 
-    DO_TEST_MACOS("hvf-aarch64-virt-headless",
-                  QEMU_CAPS_OBJECT_GPEX,
-                  QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL,
-                  QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
-                  QEMU_CAPS_DEVICE_VIRTIO_NET,
-                  QEMU_CAPS_DEVICE_PL011,
-                  QEMU_CAPS_DEVICE_VIRTIO_RNG,
-                  QEMU_CAPS_OBJECT_RNG_RANDOM);
     DO_TEST_CAPS_LATEST("channel-qemu-vdagent");
     DO_TEST_CAPS_LATEST("channel-qemu-vdagent-features");
 
