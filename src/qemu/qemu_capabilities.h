@@ -887,7 +887,8 @@ virQEMUCapsGetSGXCapabilities(virQEMUCaps *qemuCaps);
 bool
 virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps) G_NO_INLINE;
 
-int virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps) G_NO_INLINE;
+bool
+virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps) G_NO_INLINE;
 
 virArch virQEMUCapsArchFromString(const char *arch);
 const char *virQEMUCapsArchToString(virArch arch);

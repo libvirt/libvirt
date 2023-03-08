@@ -3339,7 +3339,7 @@ virQEMUCapsProbeQMPKVMState(virQEMUCaps *qemuCaps,
 }
 
 #ifdef __APPLE__
-int
+bool
 virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps)
 {
     int hv_support = 0;
@@ -3349,22 +3349,19 @@ virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps)
     /* Guest and host arch need to match for hardware acceleration
      * to be usable */
     if (qemuCaps->arch != hostArch)
-        return 0;
+        return false;
 
     /* We need the OS to report Hypervisor.framework availability */
     if (sysctlbyname("kern.hv_support", &hv_support, &len, NULL, 0) < 0)
-        return 0;
+        return false;
 
-    if (hv_support)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_HVF);
-
-    return 0;
+    return !!hv_support;
 }
 #else
-int
+bool
 virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
-    return 0;
+    return false;
 }
 #endif
 
@@ -5626,8 +5623,8 @@ virQEMUCapsInitQMPMonitor(virQEMUCaps *qemuCaps,
     if (virQEMUCapsProbeQMPKVMState(qemuCaps, mon) < 0)
         return -1;
 
-    if (virQEMUCapsProbeHVF(qemuCaps) < 0)
-        return -1;
+    if (virQEMUCapsProbeHVF(qemuCaps))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_HVF);
 
     type = virQEMUCapsGetVirtType(qemuCaps);
     accel = virQEMUCapsGetAccel(qemuCaps, type);

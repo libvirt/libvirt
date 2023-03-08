@@ -52,10 +52,10 @@ virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps)
     return real_virQEMUCapsGetKVMSupportsSecureGuest(qemuCaps);
 }
 
-int
+bool
 virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
-    return 0;
+    return false;
 }
 #endif
 
