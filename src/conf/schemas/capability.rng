@@ -428,6 +428,7 @@
           <value>lxc</value>
           <value>openvz</value>
           <value>test</value>
+          <value>hvf</value>
         </choice>
       </attribute>
 
