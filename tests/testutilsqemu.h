@@ -51,6 +51,7 @@ typedef enum {
     ARG_PARSEFLAGS,
     ARG_CAPS_ARCH,
     ARG_CAPS_VER,
+    ARG_CAPS_VARIANT,
     ARG_CAPS_HOST_CPU_MODEL,
     ARG_HOST_OS,
     ARG_FD_GROUP, /* name, nfds, fd[0], ... fd[n-1] */
@@ -86,6 +87,7 @@ struct testQemuArgs {
     virBitmap *fakeCapsDel;
     char *capsver;
     char *capsarch;
+    const char *capsvariant;
     qemuTestCPUDef capsHostCPUModel;
     int gic;
     testQemuHostOS hostOS;

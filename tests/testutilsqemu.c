@@ -943,6 +943,10 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
             info->args.capsver = va_arg(argptr, char *);
             break;
 
+        case ARG_CAPS_VARIANT:
+            info->args.capsvariant = va_arg(argptr, char *);
+            break;
+
         case ARG_CAPS_HOST_CPU_MODEL:
             info->args.capsHostCPUModel = va_arg(argptr, int);
             break;
@@ -1008,6 +1012,9 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
 
     info->args.newargs = false;
 
+    if (!info->args.capsvariant)
+        info->args.capsvariant = "";
+
     if (info->args.invalidarg) {
         fprintf(stderr, "Invalid argument encountered by 'testQemuInfoSetArgs'\n");
         return -1;
@@ -1025,7 +1032,8 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
         info->arch = virArchFromString(info->args.capsarch);
 
         if (STREQ(info->args.capsver, "latest")) {
-            struct testQemuCapsFile *f = g_hash_table_lookup(info->conf->capslatest, info->args.capsarch);
+            g_autofree char *archvariant = g_strdup_printf("%s%s", info->args.capsarch, info->args.capsvariant);
+            struct testQemuCapsFile *f = g_hash_table_lookup(info->conf->capslatest, archvariant);
 
             if (!f) {
                 fprintf(stderr, "'latest' caps for '%s' were not found\n", info->args.capsarch);
@@ -1035,10 +1043,11 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
             capsfile = g_strdup(f->path);
             stripmachinealiases = true;
         } else {
-            capsfile = g_strdup_printf("%s/caps_%s_%s.xml",
+            capsfile = g_strdup_printf("%s/caps_%s_%s%s.xml",
                                        TEST_QEMU_CAPS_PATH,
                                        info->args.capsver,
-                                       info->args.capsarch);
+                                       info->args.capsarch,
+                                       info->args.capsvariant);
         }
 
         if (!g_hash_table_lookup_extended(info->conf->capscache, capsfile, NULL, (void **) &cachedcaps)) {
