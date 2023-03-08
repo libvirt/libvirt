@@ -250,11 +250,20 @@ doTestQemuInternal(const char *version,
                    void *opaque)
 {
     g_autofree char *name = NULL;
-    g_autofree char *capsName = NULL;
-    g_autofree char *emulator = NULL;
+    g_autofree char *capsName = g_strdup_printf("caps_%s", version);
+    g_autofree char *emulator = g_strdup_printf("/usr/bin/qemu-system-%s", arch);
     const char *typestr = NULL;
     g_autofree char *mach = NULL;
     int rc;
+    struct testData data = {
+        .emulator = emulator,
+        .machine = machine,
+        .arch = arch,
+        .type = type,
+        .capsType = CAPS_QEMU,
+        .capsName = capsName,
+        .capsOpaque = opaque,
+    };
 
     switch ((unsigned int) type) {
     case VIR_DOMAIN_VIRT_QEMU:
@@ -275,23 +284,8 @@ doTestQemuInternal(const char *version,
     else
         mach = g_strdup("");
 
-    name = g_strdup_printf("qemu_%s%s%s.%s",
-                           version, typestr, mach, arch);
-    capsName = g_strdup_printf("caps_%s", version);
-    emulator = g_strdup_printf("/usr/bin/qemu-system-%s", arch);
-
-    VIR_WARNINGS_NO_DECLARATION_AFTER_STATEMENT
-    struct testData data = {
-        .name = name,
-        .emulator = emulator,
-        .machine = machine,
-        .arch = arch,
-        .type = type,
-        .capsType = CAPS_QEMU,
-        .capsName = capsName,
-        .capsOpaque = opaque,
-    };
-    VIR_WARNINGS_RESET
+    data.name = name = g_strdup_printf("qemu_%s%s%s.%s",
+                                       version, typestr, mach, arch);
 
     if (STRPREFIX(version, "3.") ||
         STRPREFIX(version, "4.") ||
