@@ -62,15 +62,6 @@ static const char *const *qemu_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_S390X] = s390x_machines,
 };
 
-static const char *const *hvf_machines[VIR_ARCH_LAST] = {
-    [VIR_ARCH_I686] = NULL,
-    [VIR_ARCH_X86_64] = x86_64_machines,
-    [VIR_ARCH_AARCH64] = aarch64_machines,
-    [VIR_ARCH_PPC64] = NULL,
-    [VIR_ARCH_RISCV64] = NULL,
-    [VIR_ARCH_S390X] = NULL,
-};
-
 static const char *qemu_default_ram_id[VIR_ARCH_LAST] = {
     [VIR_ARCH_I686] = "pc.ram",
     [VIR_ARCH_X86_64] = "pc.ram",
@@ -165,8 +156,7 @@ virHostCPUX86GetCPUID(uint32_t leaf,
 
 static int
 testQemuAddGuest(virCaps *caps,
-                 virArch arch,
-                 testQemuHostOS hostOS)
+                 virArch arch)
 {
     size_t nmachines;
     virCapsGuestMachine **machines = NULL;
@@ -199,31 +189,15 @@ testQemuAddGuest(virCaps *caps,
     virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
                                   NULL, NULL, 0, NULL);
 
-    if (hostOS == HOST_OS_LINUX) {
-        nmachines = g_strv_length((char **)qemu_machines[emu_arch]);
-        machines = virCapabilitiesAllocMachines(qemu_machines[emu_arch],
-                                                nmachines);
-        if (machines == NULL)
-            goto error;
+    nmachines = g_strv_length((char **)qemu_machines[emu_arch]);
+    machines = virCapabilitiesAllocMachines(qemu_machines[emu_arch],
+                                            nmachines);
+    if (machines == NULL)
+        goto error;
 
-        virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
-                                      qemu_emulators[emu_arch],
-                                      NULL, nmachines, machines);
-    }
-
-    if (hostOS == HOST_OS_MACOS) {
-        if (hvf_machines[emu_arch] != NULL) {
-            nmachines = g_strv_length((char **)hvf_machines[emu_arch]);
-            machines = virCapabilitiesAllocMachines(hvf_machines[emu_arch],
-                                                    nmachines);
-            if (machines == NULL)
-                goto error;
-
-            virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_HVF,
-                                          qemu_emulators[emu_arch],
-                                          NULL, nmachines, machines);
-        }
-    }
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                  qemu_emulators[emu_arch],
+                                  NULL, nmachines, machines);
 
     return 0;
 
@@ -233,8 +207,8 @@ testQemuAddGuest(virCaps *caps,
 }
 
 
-static virCaps*
-testQemuCapsInitImpl(testQemuHostOS hostOS)
+virCaps *
+testQemuCapsInit(void)
 {
     virCaps *caps;
     size_t i;
@@ -254,7 +228,7 @@ testQemuCapsInitImpl(testQemuHostOS hostOS)
         goto cleanup;
 
     for (i = 0; i < VIR_ARCH_LAST; i++) {
-        if (testQemuAddGuest(caps, i, hostOS) < 0)
+        if (testQemuAddGuest(caps, i) < 0)
             goto cleanup;
     }
 
@@ -275,19 +249,6 @@ testQemuCapsInitImpl(testQemuHostOS hostOS)
     virObjectUnref(caps);
     return NULL;
 }
-
-virCaps*
-testQemuCapsInit(void)
-{
-    return testQemuCapsInitImpl(HOST_OS_LINUX);
-}
-
-virCaps*
-testQemuCapsInitMacOS(void)
-{
-    return testQemuCapsInitImpl(HOST_OS_MACOS);
-}
-
 
 virCPUDef *
 qemuTestGetCPUDef(qemuTestCPUDef d)
@@ -386,8 +347,7 @@ void qemuTestDriverFree(virQEMUDriver *driver)
 
 static void
 qemuTestCapsPopulateFakeMachines(virQEMUCaps *caps,
-                                 virArch arch,
-                                 testQemuHostOS hostOS)
+                                 virArch arch)
 {
     size_t i;
     const char *defaultRAMid = NULL;
@@ -415,41 +375,19 @@ qemuTestCapsPopulateFakeMachines(virQEMUCaps *caps,
                               VIR_TRISTATE_BOOL_ABSENT);
         virQEMUCapsSet(caps, QEMU_CAPS_TCG);
 
-        if (hostOS == HOST_OS_LINUX) {
-            virQEMUCapsAddMachine(caps,
-                                  VIR_DOMAIN_VIRT_KVM,
-                                  qemu_machines[arch][i],
-                                  NULL,
-                                  NULL,
-                                  0,
-                                  false,
-                                  false,
-                                  true,
-                                  defaultRAMid,
-                                  false,
-                                  VIR_TRISTATE_BOOL_ABSENT);
-            virQEMUCapsSet(caps, QEMU_CAPS_KVM);
-        }
-    }
-
-    if (hostOS == HOST_OS_MACOS) {
-        if (hvf_machines[arch] != NULL) {
-            for (i = 0; hvf_machines[arch][i] != NULL; i++) {
-                virQEMUCapsAddMachine(caps,
-                        VIR_DOMAIN_VIRT_HVF,
-                        hvf_machines[arch][i],
-                        NULL,
-                        NULL,
-                        0,
-                        false,
-                        false,
-                        true,
-                        defaultRAMid,
-                        false,
-                        VIR_TRISTATE_BOOL_ABSENT);
-                virQEMUCapsSet(caps, QEMU_CAPS_HVF);
-            }
-        }
+        virQEMUCapsAddMachine(caps,
+                              VIR_DOMAIN_VIRT_KVM,
+                              qemu_machines[arch][i],
+                              NULL,
+                              NULL,
+                              0,
+                              false,
+                              false,
+                              true,
+                              defaultRAMid,
+                              false,
+                              VIR_TRISTATE_BOOL_ABSENT);
+        virQEMUCapsSet(caps, QEMU_CAPS_KVM);
     }
 }
 
@@ -468,10 +406,9 @@ qemuTestCapsCacheInsertData(virFileCache *cache,
 }
 
 
-static int
-qemuTestCapsCacheInsertImpl(virFileCache *cache,
-                            virQEMUCaps *caps,
-                            testQemuHostOS hostOS)
+int
+qemuTestCapsCacheInsert(virFileCache *cache,
+                        virQEMUCaps *caps)
 {
     size_t i;
 
@@ -498,7 +435,7 @@ qemuTestCapsCacheInsertImpl(virFileCache *cache,
                 /* if we are dealing with fake caps we need to populate machine types */
                 if (!virQEMUCapsHasMachines(caps)) {
                     copyCaps = effCaps = virQEMUCapsNewCopy(caps);
-                    qemuTestCapsPopulateFakeMachines(copyCaps, arch, hostOS);
+                    qemuTestCapsPopulateFakeMachines(copyCaps, arch);
                 }
 
                 if (qemuTestCapsCacheInsertData(cache, qemu_emulators[arch], effCaps) < 0)
@@ -516,7 +453,7 @@ qemuTestCapsCacheInsertImpl(virFileCache *cache,
 
             tmp = virQEMUCapsNewCopy(caps);
 
-            qemuTestCapsPopulateFakeMachines(tmp, i, hostOS);
+            qemuTestCapsPopulateFakeMachines(tmp, i);
 
             if (qemuTestCapsCacheInsertData(cache, qemu_emulators[i], tmp) < 0)
                 return -1;
@@ -525,21 +462,6 @@ qemuTestCapsCacheInsertImpl(virFileCache *cache,
 
     return 0;
 }
-
-int
-qemuTestCapsCacheInsert(virFileCache *cache,
-                        virQEMUCaps *caps)
-{
-    return qemuTestCapsCacheInsertImpl(cache, caps, HOST_OS_LINUX);
-}
-
-int
-qemuTestCapsCacheInsertMacOS(virFileCache *cache,
-                             virQEMUCaps *caps)
-{
-    return qemuTestCapsCacheInsertImpl(cache, caps, HOST_OS_MACOS);
-}
-
 
 # define STATEDIRTEMPLATE abs_builddir "/qemustatedir-XXXXXX"
 # define CONFIGDIRTEMPLATE abs_builddir "/qemuconfigdir-XXXXXX"
@@ -949,10 +871,6 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
 
         case ARG_CAPS_HOST_CPU_MODEL:
             info->args.capsHostCPUModel = va_arg(argptr, int);
-            break;
-
-        case ARG_HOST_OS:
-            info->args.hostOS = va_arg(argptr, int);
             break;
 
         case ARG_FD_GROUP: {
