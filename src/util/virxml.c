@@ -1563,7 +1563,7 @@ virXMLValidatorInit(const char *schemafile)
     if (!(validator->rngParser =
           xmlRelaxNGNewParserCtxt(validator->schemafile))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to create RNG parser for %s"),
+                       _("Unable to create RelaxNG parser for schema '%s'"),
                        validator->schemafile);
         return NULL;
     }
@@ -1575,7 +1575,7 @@ virXMLValidatorInit(const char *schemafile)
 
     if (!(validator->rng = xmlRelaxNGParse(validator->rngParser))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse RNG %s: %s"),
+                       _("Unable to parse RelaxNG schema '%s': %s"),
                        validator->schemafile,
                        virBufferCurrentContent(&validator->buf));
         return NULL;
@@ -1583,7 +1583,7 @@ virXMLValidatorInit(const char *schemafile)
 
     if (!(validator->rngValid = xmlRelaxNGNewValidCtxt(validator->rng))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to create RNG validation context %s"),
+                       _("Unable to create RelaxNG validation context for schema '%s'"),
                        validator->schemafile);
         return NULL;
     }
