@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# Generate code for an XDR protocol, optionally applying
+# Generate code for an XDR protocol, applying
 # fixups to the glibc rpcgen code so that it compiles
 # with warnings turned on.
 #
@@ -47,20 +47,11 @@ open RPCGEN, "-|", "$rpcgen $mode $xdrdef"
 open TARGET, ">$target"
     or die "cannot create $target: $!";
 
-my $fixup = $^O eq "linux" || $^O eq "gnukfreebsd" || $^O eq "freebsd" || $^O eq "darwin";
-
 if ($mode eq "-c") {
     print TARGET "#include <config.h>\n";
 }
 
 while (<RPCGEN>) {
-    # We only want to fixup the GLibc rpcgen output
-    # So just print data unchanged, if non-Linux
-    unless ($fixup) {
-        print TARGET;
-        next;
-    }
-
     if (m/^{/) {
         $in_function = 1;
         print TARGET;
