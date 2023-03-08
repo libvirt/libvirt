@@ -18,8 +18,6 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 static virQEMUDriver driver;
-static virCaps *linuxCaps;
-static virCaps *macOSCaps;
 
 enum {
     WHEN_INACTIVE = 1,
@@ -31,23 +29,12 @@ enum {
 static int
 testXML2XMLCommon(const struct testQemuInfo *info)
 {
-    int rc;
-
     if (testQemuInfoInitArgs((struct testQemuInfo *) info) < 0)
         return -1;
 
-    if (info->args.hostOS == HOST_OS_MACOS)
-        driver.caps = macOSCaps;
-    else
-        driver.caps = linuxCaps;
-
     virFileCacheClear(driver.qemuCapsCache);
 
-    if (info->args.hostOS == HOST_OS_MACOS)
-        rc = qemuTestCapsCacheInsertMacOS(driver.qemuCapsCache, info->qemuCaps);
-    else
-        rc = qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps);
-    if (rc < 0)
+    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -139,13 +126,6 @@ mymain(void)
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
-    /* By default, the driver gets a virCaps instance that's suitable for
-     * tests that expect Linux as the host OS. We create another one for
-     * macOS and keep around pointers to both: this allows us to later
-     * pick the appropriate one for each test case */
-    linuxCaps = driver.caps;
-    macOSCaps = testQemuCapsInitMacOS();
-
     cfg = virQEMUDriverGetConfig(&driver);
 
     if (!(conn = virGetConnect()))
@@ -212,11 +192,6 @@ mymain(void)
                  ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END)
 #define DO_TEST_NOCAPS(name) \
     DO_TEST_FULL(name, "", WHEN_BOTH, ARG_END)
-
-#define DO_TEST_MACOS(name, ...) \
-    DO_TEST_FULL(name, "", WHEN_BOTH, \
-                 ARG_HOST_OS, HOST_OS_MACOS, \
-                 ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END)
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
