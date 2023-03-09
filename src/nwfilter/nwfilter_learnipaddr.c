@@ -155,7 +155,7 @@ virNWFilterLockIface(const char *ifname)
 
             if (virStrcpyStatic(ifaceLock->ifname, ifname) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("interface name %s does not fit into buffer"),
+                               _("interface name %1$s does not fit into buffer"),
                                ifaceLock->ifname);
                 g_free(ifaceLock);
                 return -1;
@@ -607,8 +607,8 @@ learnIPAddressThread(void *arg)
 
         if ((inetaddr = virSocketAddrFormat(&sa)) != NULL) {
             if (virNWFilterIPAddrMapAddIPAddr(req->binding->portdevname, inetaddr) < 0) {
-                VIR_ERROR(_("Failed to add IP address %s to IP address "
-                          "cache for interface %s"), inetaddr, req->binding->portdevname);
+                VIR_ERROR(_("Failed to add IP address %1$s to IP address cache for interface %2$s"),
+                          inetaddr, req->binding->portdevname);
             }
 
             ret = virNWFilterInstantiateFilterLate(req->driver,
@@ -620,8 +620,7 @@ learnIPAddressThread(void *arg)
     } else {
         if (showError)
             virReportSystemError(req->status,
-                                 _("encountered an error on interface %s "
-                                   "index %d"),
+                                 _("encountered an error on interface %1$s index %2$d"),
                                  req->binding->portdevname, req->ifindex);
 
         techdriver->applyDropAllRules(req->binding->portdevname);

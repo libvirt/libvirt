@@ -153,8 +153,8 @@ printVar(virNWFilterVarCombIter *vars,
 
             varName = virNWFilterVarAccessGetVarName(item->varAccess);
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Buffer too small to print variable "
-                             "'%s' into"), varName);
+                           _("Buffer too small to print variable '%1$s' into"),
+                           varName);
             return -1;
         }
 
@@ -295,7 +295,7 @@ _printDataType(virNWFilterVarCombIter *vars,
     case DATATYPE_STRINGCOPY:
     case DATATYPE_BOOLEAN:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot print data type %x"), item->datatype);
+                       _("Cannot print data type %1$x"), item->datatype);
         return -1;
     case DATATYPE_LAST:
     default:
@@ -1441,7 +1441,7 @@ _iptablesCreateRuleInstance(virFirewall *fw,
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unexpected protocol %d"),
+                       _("Unexpected protocol %1$d"),
                        rule->prtclType);
         return -1;
     }
@@ -1846,8 +1846,7 @@ ebtablesCreateRuleInstance(virFirewall *fw,
         if (reverse &&
             HAS_ENTRY_ITEM(&rule->p.stpHdrFilter.ethHdr.dataSrcMACAddr)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("STP filtering in %s direction with "
-                             "source MAC address set is not supported"),
+                           _("STP filtering in %1$s direction with source MAC address set is not supported"),
                            virNWFilterRuleDirectionTypeToString(
                                VIR_NWFILTER_RULE_DIRECTION_INOUT));
             return -1;
@@ -2351,7 +2350,7 @@ ebtablesCreateRuleInstance(virFirewall *fw,
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unexpected rule protocol %d"),
+                       _("Unexpected rule protocol %1$d"),
                        rule->prtclType);
         return -1;
     }
@@ -3126,8 +3125,7 @@ iptablesCheckBridgeNFCallEnabled(bool isIPv6)
                 if (buffer[0] == '0') {
                     char msg[256];
                     g_snprintf(msg, sizeof(msg),
-                               _("To enable ip%stables filtering for the VM do "
-                                "'echo 1 > %s'"),
+                               _("To enable ip%1$stables filtering for the VM do 'echo 1 > %2$s'"),
                                isIPv6 ? "6" : "",
                                pathname);
                     VIR_WARN("%s", msg);

@@ -248,7 +248,7 @@ nwfilterStateInitialize(bool privileged,
     driver->stateDir = g_strdup(RUNSTATEDIR "/libvirt/nwfilter");
 
     if (g_mkdir_with_parents(driver->stateDir, S_IRWXU) < 0) {
-        virReportSystemError(errno, _("cannot create state directory '%s'"),
+        virReportSystemError(errno, _("cannot create state directory '%1$s'"),
                              driver->stateDir);
         goto error;
     }
@@ -282,7 +282,7 @@ nwfilterStateInitialize(bool privileged,
     driver->configDir = g_strdup(SYSCONFDIR "/libvirt/nwfilter");
 
     if (g_mkdir_with_parents(driver->configDir, S_IRWXU) < 0) {
-        virReportSystemError(errno, _("cannot create config directory '%s'"),
+        virReportSystemError(errno, _("cannot create config directory '%1$s'"),
                              driver->configDir);
         goto error;
     }
@@ -290,7 +290,7 @@ nwfilterStateInitialize(bool privileged,
     driver->bindingDir = g_strdup(RUNSTATEDIR "/libvirt/nwfilter-binding");
 
     if (g_mkdir_with_parents(driver->bindingDir, S_IRWXU) < 0) {
-        virReportSystemError(errno, _("cannot create config directory '%s'"),
+        virReportSystemError(errno, _("cannot create config directory '%1$s'"),
                              driver->bindingDir);
         goto error;
     }
@@ -359,7 +359,7 @@ nwfilterConnectOpen(virConnectPtr conn,
 
     if (STRNEQ(conn->uri->path, "/system")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected nwfilter URI path '%s', try nwfilter:///system"),
+                       _("unexpected nwfilter URI path '%1$s', try nwfilter:///system"),
                        conn->uri->path);
         return VIR_DRV_OPEN_ERROR;
     }
@@ -405,7 +405,7 @@ nwfilterObjFromNWFilter(const unsigned char *uuid)
     if (!(obj = virNWFilterObjListFindByUUID(driver->nwfilters, uuid))) {
         virUUIDFormat(uuid, uuidstr);
         virReportError(VIR_ERR_NO_NWFILTER,
-                       _("no nwfilter with matching uuid '%s'"), uuidstr);
+                       _("no nwfilter with matching uuid '%1$s'"), uuidstr);
     }
     return obj;
 }
@@ -452,7 +452,7 @@ nwfilterLookupByName(virConnectPtr conn,
 
     if (!obj) {
         virReportError(VIR_ERR_NO_NWFILTER,
-                       _("no nwfilter with matching name '%s'"), name);
+                       _("no nwfilter with matching name '%1$s'"), name);
         return NULL;
     }
     def = virNWFilterObjGetDef(obj);
@@ -661,7 +661,7 @@ nwfilterBindingLookupByPortDev(virConnectPtr conn,
                                                  portdev);
     if (!obj) {
         virReportError(VIR_ERR_NO_NWFILTER_BINDING,
-                       _("no nwfilter binding for port dev '%s'"), portdev);
+                       _("no nwfilter binding for port dev '%1$s'"), portdev);
         goto cleanup;
     }
 
@@ -706,7 +706,7 @@ nwfilterBindingGetXMLDesc(virNWFilterBindingPtr binding,
                                                  binding->portdev);
     if (!obj) {
         virReportError(VIR_ERR_NO_NWFILTER_BINDING,
-                       _("no nwfilter binding for port dev '%s'"), binding->portdev);
+                       _("no nwfilter binding for port dev '%1$s'"), binding->portdev);
         goto cleanup;
     }
 
@@ -790,7 +790,7 @@ nwfilterBindingDelete(virNWFilterBindingPtr binding)
     obj = virNWFilterBindingObjListFindByPortDev(driver->bindings, binding->portdev);
     if (!obj) {
         virReportError(VIR_ERR_NO_NWFILTER_BINDING,
-                       _("no nwfilter binding for port dev '%s'"), binding->portdev);
+                       _("no nwfilter binding for port dev '%1$s'"), binding->portdev);
         return -1;
     }
 
