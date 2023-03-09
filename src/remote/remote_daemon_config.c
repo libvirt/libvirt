@@ -62,7 +62,7 @@ remoteConfigGetAuth(virConf *conf,
         *auth = VIR_NET_SERVER_SERVICE_AUTH_POLKIT;
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("%s: %s: unsupported auth %s"),
+                       _("%1$s: %2$s: unsupported auth %3$s"),
                        filename, key, authstr);
         VIR_FREE(authstr);
         return -1;
@@ -306,7 +306,7 @@ daemonConfigLoadOptions(struct daemonConfig *data,
         return -1;
     } else if (rc > 0 && data->tcp_min_ssf < SSF_WARNING_LEVEL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("minimum SSF levels lower than %d are not supported"),
+                       _("minimum SSF levels lower than %1$d are not supported"),
                        SSF_WARNING_LEVEL);
         return -1;
     }

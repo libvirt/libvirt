@@ -657,7 +657,7 @@ daemonStreamHandleAbort(virNetServerClient *client,
         raise_error = (ret < 0);
     } else {
         virReportError(VIR_ERR_RPC,
-                       _("stream aborted with unexpected status %d"),
+                       _("stream aborted with unexpected status %1$d"),
                        msg->header.status);
         raise_error = true;
     }
@@ -768,7 +768,7 @@ daemonStreamHandleWrite(virNetServerClient *client,
             }
         } else {
             virReportError(VIR_ERR_RPC,
-                           _("Unexpected message type: %d"),
+                           _("Unexpected message type: %1$d"),
                            msg->header.type);
             ret = -1;
         }

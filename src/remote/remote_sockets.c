@@ -104,8 +104,7 @@ remoteSplitURIScheme(virURI *uri,
         if (val == REMOTE_DRIVER_TRANSPORT_UNIX &&
             uri->server) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("using unix socket and remote "
-                             "server '%s' is not supported."),
+                           _("using unix socket and remote server '%1$s' is not supported."),
                            uri->server);
             return -1;
         }
@@ -393,7 +392,7 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
     case REMOTE_DRIVER_MODE_DIRECT:
         if (transport != REMOTE_DRIVER_TRANSPORT_UNIX) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("Cannot use direct socket mode for %s transport"),
+                           _("Cannot use direct socket mode for %1$s transport"),
                            remoteDriverTransportTypeToString(transport));
             return NULL;
         }

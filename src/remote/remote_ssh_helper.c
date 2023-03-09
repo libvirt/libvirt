@@ -377,7 +377,7 @@ int main(int argc, char **argv)
                                  "clients. Not intended to be called directly by the user.");
     g_option_context_add_main_entries(context, entries, PACKAGE);
     if (!g_option_context_parse(context, &argc, &argv, &error)) {
-        g_printerr(_("option parsing failed: %s\n"), error->message);
+        g_printerr(_("option parsing failed: %1$s\n"), error->message);
         exit(EXIT_FAILURE);
     }
 
@@ -397,7 +397,7 @@ int main(int argc, char **argv)
 
     if (virGettextInitialize() < 0 ||
         virErrorInitialize() < 0) {
-        g_printerr(_("%s: initialization failed\n"), argv[0]);
+        g_printerr(_("%1$s: initialization failed\n"), argv[0]);
         exit(EXIT_FAILURE);
     }
 
@@ -417,13 +417,13 @@ int main(int argc, char **argv)
     }
 
     if (remoteSplitURIScheme(uri, &driver, &transport) < 0) {
-        g_printerr(_("%s: cannot parse URI transport '%s': %s\n"),
+        g_printerr(_("%1$s: cannot parse URI transport '%2$s': %3$s\n"),
                    argv[0], uri_str, virGetLastErrorMessage());
         exit(EXIT_FAILURE);
     }
 
     if (transport != REMOTE_DRIVER_TRANSPORT_UNIX) {
-        g_printerr(_("%s: unexpected URI transport '%s'\n"),
+        g_printerr(_("%1$s: unexpected URI transport '%2$s'\n"),
                    argv[0], uri_str);
         exit(EXIT_FAILURE);
     }
@@ -446,25 +446,25 @@ int main(int argc, char **argv)
 
     if (mode_str &&
         (mode = remoteDriverModeTypeFromString(mode_str)) < 0) {
-        g_printerr(_("%s: unknown remote mode '%s'"), argv[0], mode_str);
+        g_printerr(_("%1$s: unknown remote mode '%2$s'"), argv[0], mode_str);
         exit(EXIT_FAILURE);
     }
 
     if (!sock_path &&
         !(sock_path = remoteGetUNIXSocket(transport, mode,
                                           driver, flags, &daemon_path))) {
-        g_printerr(_("%s: failed to generate UNIX socket path"), argv[0]);
+        g_printerr(_("%1$s: failed to generate UNIX socket path"), argv[0]);
         exit(EXIT_FAILURE);
     }
 
     if (virNetSocketNewConnectUNIX(sock_path, daemon_path, &sock) < 0) {
-        g_printerr(_("%s: cannot connect to '%s': %s\n"),
+        g_printerr(_("%1$s: cannot connect to '%2$s': %3$s\n"),
                    argv[0], sock_path, virGetLastErrorMessage());
         exit(EXIT_FAILURE);
     }
 
     if (virRemoteSSHHelperRun(sock) < 0) {
-        g_printerr(_("%s: could not proxy traffic: %s\n"),
+        g_printerr(_("%1$s: could not proxy traffic: %2$s\n"),
                    argv[0], virGetLastErrorMessage());
         exit(EXIT_FAILURE);
     }

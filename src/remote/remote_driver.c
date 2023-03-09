@@ -59,7 +59,7 @@ VIR_LOG_INIT("remote.remote_driver");
     do { \
         if ((_from) != (_type)(_from)) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           _("conversion from hyper to %s overflowed"), #_type); \
+                           _("conversion from hyper to %1$s overflowed"), #_type); \
             goto done; \
         } \
         (_to) = (_from); \
@@ -738,7 +738,7 @@ remoteConnectFormatURI(virURI *uri,
         int tmp; \
         if (virStrToLong_i(var->value, NULL, 10, &tmp) < 0) { \
             virReportError(VIR_ERR_INVALID_ARG, \
-                           _("Failed to parse value of URI component %s"), \
+                           _("Failed to parse value of URI component %1$s"), \
                            var->name); \
             goto error; \
         } \
@@ -884,7 +884,7 @@ doRemoteOpen(virConnectPtr conn,
     if (mode_str) {
         if ((mode = remoteDriverModeTypeFromString(mode_str)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Unknown remote mode '%s'"), mode_str);
+                           _("Unknown remote mode '%1$s'"), mode_str);
             goto error;
         }
     } else {
@@ -902,7 +902,7 @@ doRemoteOpen(virConnectPtr conn,
     if (proxy_str) {
         if ((proxy = virNetClientProxyTypeFromString(proxy_str)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Unnkown proxy type '%s'"), proxy_str);
+                           _("Unnkown proxy type '%1$s'"), proxy_str);
             goto error;
         }
     } else {
@@ -1498,7 +1498,7 @@ remoteNodeGetCPUStats(virConnectPtr conn,
     for (i = 0; i < *nparams; ++i) {
         if (virStrcpyStatic(params[i].field, ret.params.params_val[i].field) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Stats %s too big for destination"),
+                           _("Stats %1$s too big for destination"),
                            ret.params.params_val[i].field);
             goto cleanup;
         }
@@ -1558,7 +1558,7 @@ remoteNodeGetMemoryStats(virConnectPtr conn,
     for (i = 0; i < *nparams; ++i) {
         if (virStrcpyStatic(params[i].field, ret.params.params_val[i].field) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Stats %s too big for destination"),
+                           _("Stats %1$s too big for destination"),
                            ret.params.params_val[i].field);
             goto cleanup;
         }
@@ -1586,7 +1586,7 @@ remoteNodeGetCellsFreeMemory(virConnectPtr conn,
 
     if (maxCells > REMOTE_NODE_MAX_CELLS) {
         virReportError(VIR_ERR_RPC,
-                       _("too many NUMA cells: %d > %d"),
+                       _("too many NUMA cells: %1$d > %2$d"),
                        maxCells, REMOTE_NODE_MAX_CELLS);
         return -1;
     }
@@ -1619,7 +1619,7 @@ remoteConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 
     if (maxids > REMOTE_DOMAIN_LIST_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("Too many domains '%d' for limit '%d'"),
+                       _("Too many domains '%1$d' for limit '%2$d'"),
                        maxids, REMOTE_DOMAIN_LIST_MAX);
         return -1;
     }
@@ -1632,7 +1632,7 @@ remoteConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 
     if (ret.ids.ids_len > maxids) {
         virReportError(VIR_ERR_RPC,
-                       _("Too many domains '%d' for limit '%d'"),
+                       _("Too many domains '%1$d' for limit '%2$d'"),
                        ret.ids.ids_len, maxids);
         goto cleanup;
     }
@@ -1954,7 +1954,7 @@ remoteDomainGetVcpuPinInfo(virDomainPtr domain,
 
     if (ncpumaps > REMOTE_VCPUINFO_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("vCPU count exceeds maximum: %d > %d"),
+                       _("vCPU count exceeds maximum: %1$d > %2$d"),
                        ncpumaps, REMOTE_VCPUINFO_MAX);
         return -1;
     }
@@ -1962,7 +1962,7 @@ remoteDomainGetVcpuPinInfo(virDomainPtr domain,
     if (VIR_INT_MULTIPLY_OVERFLOW(ncpumaps, maplen) ||
         ncpumaps * maplen > REMOTE_CPUMAPS_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("vCPU map buffer length exceeds maximum: %d > %d"),
+                       _("vCPU map buffer length exceeds maximum: %1$d > %2$d"),
                        ncpumaps * maplen, REMOTE_CPUMAPS_MAX);
         return -1;
     }
@@ -1981,14 +1981,14 @@ remoteDomainGetVcpuPinInfo(virDomainPtr domain,
 
     if (ret.num > ncpumaps) {
         virReportError(VIR_ERR_RPC,
-                       _("host reports too many vCPUs: %d > %d"),
+                       _("host reports too many vCPUs: %1$d > %2$d"),
                        ret.num, ncpumaps);
         goto cleanup;
     }
 
     if (ret.cpumaps.cpumaps_len > ncpumaps * maplen) {
         virReportError(VIR_ERR_RPC,
-                       _("host reports map buffer length exceeds maximum: %d > %d"),
+                       _("host reports map buffer length exceeds maximum: %1$d > %2$d"),
                        ret.cpumaps.cpumaps_len, ncpumaps * maplen);
         goto cleanup;
     }
@@ -2017,7 +2017,7 @@ remoteDomainPinEmulator(virDomainPtr dom,
 
     if (cpumaplen > REMOTE_CPUMAP_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("%s length greater than maximum: %d > %d"),
+                       _("%1$s length greater than maximum: %2$d > %3$d"),
                        "cpumap", cpumaplen, REMOTE_CPUMAP_MAX);
         return -1;
     }
@@ -2053,7 +2053,7 @@ remoteDomainGetEmulatorPinInfo(virDomainPtr domain,
     /* There is only one cpumap for all emulator threads */
     if (maplen > REMOTE_CPUMAPS_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("vCPU map buffer length exceeds maximum: %d > %d"),
+                       _("vCPU map buffer length exceeds maximum: %1$d > %2$d"),
                        maplen, REMOTE_CPUMAPS_MAX);
         return -1;
     }
@@ -2071,7 +2071,7 @@ remoteDomainGetEmulatorPinInfo(virDomainPtr domain,
 
     if (ret.cpumaps.cpumaps_len > maplen) {
         virReportError(VIR_ERR_RPC,
-                       _("host reports map buffer length exceeds maximum: %d > %d"),
+                       _("host reports map buffer length exceeds maximum: %1$d > %2$d"),
                        ret.cpumaps.cpumaps_len, maplen);
         goto cleanup;
     }
@@ -2105,14 +2105,14 @@ remoteDomainGetVcpus(virDomainPtr domain,
 
     if (maxinfo > REMOTE_VCPUINFO_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("vCPU count exceeds maximum: %d > %d"),
+                       _("vCPU count exceeds maximum: %1$d > %2$d"),
                        maxinfo, REMOTE_VCPUINFO_MAX);
         return -1;
     }
     if (VIR_INT_MULTIPLY_OVERFLOW(maxinfo, maplen) ||
         maxinfo * maplen > REMOTE_CPUMAPS_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("vCPU map buffer length exceeds maximum: %d > %d"),
+                       _("vCPU map buffer length exceeds maximum: %1$d > %2$d"),
                        maxinfo * maplen, REMOTE_CPUMAPS_MAX);
         return -1;
     }
@@ -2128,13 +2128,13 @@ remoteDomainGetVcpus(virDomainPtr domain,
 
     if (ret.info.info_len > maxinfo) {
         virReportError(VIR_ERR_RPC,
-                       _("host reports too many vCPUs: %d > %d"),
+                       _("host reports too many vCPUs: %1$d > %2$d"),
                        ret.info.info_len, maxinfo);
         goto cleanup;
     }
     if (ret.cpumaps.cpumaps_len > maxinfo * maplen) {
         virReportError(VIR_ERR_RPC,
-                       _("host reports map buffer length exceeds maximum: %d > %d"),
+                       _("host reports map buffer length exceeds maximum: %1$d > %2$d"),
                        ret.cpumaps.cpumaps_len, maxinfo * maplen);
         goto cleanup;
     }
@@ -2185,7 +2185,7 @@ remoteDomainGetIOThreadInfo(virDomainPtr dom,
 
     if (ret.info.info_len > REMOTE_IOTHREAD_INFO_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Too many IOThreads in info: %d for limit %d"),
+                       _("Too many IOThreads in info: %1$d for limit %2$d"),
                        ret.info.info_len, REMOTE_IOTHREAD_INFO_MAX);
         goto cleanup;
     }
@@ -2242,7 +2242,7 @@ remoteDomainGetSecurityLabel(virDomainPtr domain, virSecurityLabelPtr seclabel)
 
     if (ret.label.label_val != NULL) {
         if (virStrcpyStatic(seclabel->label, ret.label.label_val) < 0) {
-            virReportError(VIR_ERR_RPC, _("security label exceeds maximum: %zu"),
+            virReportError(VIR_ERR_RPC, _("security label exceeds maximum: %1$zu"),
                            sizeof(seclabel->label) - 1);
             goto cleanup;
         }
@@ -2279,7 +2279,7 @@ remoteDomainGetSecurityLabelList(virDomainPtr domain, virSecurityLabelPtr* secla
         remote_domain_get_security_label_ret *cur = &ret.labels.labels_val[i];
         if (cur->label.label_val != NULL) {
             if (virStrcpyStatic((*seclabels)[i].label, cur->label.label_val) < 0) {
-                virReportError(VIR_ERR_RPC, _("security label exceeds maximum: %zd"),
+                virReportError(VIR_ERR_RPC, _("security label exceeds maximum: %1$zd"),
                                sizeof((*seclabels)->label) - 1);
                 VIR_FREE(*seclabels);
                 goto cleanup;
@@ -2337,7 +2337,7 @@ remoteNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
 
     if (ret.model.model_val != NULL) {
         if (virStrcpyStatic(secmodel->model, ret.model.model_val) < 0) {
-            virReportError(VIR_ERR_RPC, _("security model exceeds maximum: %zu"),
+            virReportError(VIR_ERR_RPC, _("security model exceeds maximum: %1$zu"),
                            sizeof(secmodel->model) - 1);
             goto cleanup;
         }
@@ -2345,7 +2345,7 @@ remoteNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
 
     if (ret.doi.doi_val != NULL) {
         if (virStrcpyStatic(secmodel->doi, ret.doi.doi_val) < 0) {
-            virReportError(VIR_ERR_RPC, _("security doi exceeds maximum: %zu"),
+            virReportError(VIR_ERR_RPC, _("security doi exceeds maximum: %1$zu"),
                            sizeof(secmodel->doi) - 1);
             goto cleanup;
         }
@@ -2516,7 +2516,7 @@ remoteDomainMemoryStats(virDomainPtr domain,
     make_nonnull_domain(&args.dom, domain);
     if (nr_stats > REMOTE_DOMAIN_MEMORY_STATS_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("too many memory stats requested: %d > %d"), nr_stats,
+                       _("too many memory stats requested: %1$d > %2$d"), nr_stats,
                        REMOTE_DOMAIN_MEMORY_STATS_MAX);
         return -1;
     }
@@ -2556,7 +2556,7 @@ remoteDomainBlockPeek(virDomainPtr domain,
 
     if (size > REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("block peek request too large for remote protocol, %zi > %d"),
+                       _("block peek request too large for remote protocol, %1$zi > %2$d"),
                        size, REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX);
         return -1;
     }
@@ -2603,7 +2603,7 @@ remoteDomainMemoryPeek(virDomainPtr domain,
 
     if (size > REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("memory peek request too large for remote protocol, %zi > %d"),
+                       _("memory peek request too large for remote protocol, %1$zi > %2$d"),
                        size, REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX);
         return -1;
     }
@@ -2732,13 +2732,13 @@ static int remoteDomainGetCPUStats(virDomainPtr domain,
 
     if (nparams > REMOTE_NODE_CPU_STATS_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("nparams count exceeds maximum: %u > %u"),
+                       _("nparams count exceeds maximum: %1$u > %2$u"),
                        nparams, REMOTE_NODE_CPU_STATS_MAX);
         return -1;
     }
     if (ncpus > REMOTE_DOMAIN_GET_CPU_STATS_NCPUS_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("ncpus count exceeds maximum: %u > %u"),
+                       _("ncpus count exceeds maximum: %1$u > %2$u"),
                        ncpus, REMOTE_DOMAIN_GET_CPU_STATS_NCPUS_MAX);
         return -1;
     }
@@ -3361,7 +3361,7 @@ remoteAuthenticate(virConnectPtr conn, struct private_data *priv,
             want = REMOTE_AUTH_POLKIT;
         } else {
             virReportError(VIR_ERR_AUTH_FAILED,
-                           _("unknown authentication type %s"), authtype);
+                           _("unknown authentication type %1$s"), authtype);
             return -1;
         }
         for (i = 0; i < ret.types.types_len; i++) {
@@ -3370,7 +3370,7 @@ remoteAuthenticate(virConnectPtr conn, struct private_data *priv,
         }
         if (type == REMOTE_AUTH_NONE) {
             virReportError(VIR_ERR_AUTH_FAILED,
-                           _("requested authentication type %s rejected"),
+                           _("requested authentication type %1$s rejected"),
                            authtype);
             return -1;
         }
@@ -3407,7 +3407,7 @@ remoteAuthenticate(virConnectPtr conn, struct private_data *priv,
 
     default:
         virReportError(VIR_ERR_AUTH_FAILED,
-                       _("unsupported authentication type %d"),
+                       _("unsupported authentication type %1$d"),
                        ret.types.types_val[0]);
         VIR_FREE(ret.types.types_val);
         return -1;
@@ -3800,7 +3800,7 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
     if (wantmech) {
         if (strstr(mechlist, wantmech) == NULL) {
             virReportError(VIR_ERR_AUTH_FAILED,
-                           _("SASL mechanism %s not supported by server"),
+                           _("SASL mechanism %1$s not supported by server"),
                            wantmech);
             VIR_FREE(iret.mechlist);
             goto cleanup;
@@ -3830,7 +3830,7 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
 
     if (clientoutlen > REMOTE_AUTH_SASL_DATA_MAX) {
         virReportError(VIR_ERR_AUTH_FAILED,
-                       _("SASL negotiation data too long: %zu bytes"),
+                       _("SASL negotiation data too long: %1$zu bytes"),
                        clientoutlen);
         goto cleanup;
     }
@@ -3929,7 +3929,7 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
         VIR_DEBUG("SASL SSF value %d", ssf);
         if (ssf < 56) { /* 56 == DES level, good for Kerberos */
             virReportError(VIR_ERR_AUTH_FAILED,
-                           _("negotiation SSF %d was not strong enough"), ssf);
+                           _("negotiation SSF %1$d was not strong enough"), ssf);
             goto cleanup;
         }
         if (ssf < SSF_WARNING_LEVEL) {
@@ -6018,7 +6018,7 @@ remoteConnectGetCPUModelNames(virConnectPtr conn,
     /* Check the length of the returned list carefully. */
     if (ret.models.models_len > REMOTE_CONNECT_CPU_MODELS_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("Too many model names '%d' for limit '%d'"),
+                       _("Too many model names '%1$d' for limit '%2$d'"),
                        ret.models.models_len,
                        REMOTE_CONNECT_CPU_MODELS_MAX);
         goto cleanup;
@@ -6961,7 +6961,7 @@ remoteNodeGetFreePages(virConnectPtr conn,
 
     if (npages * cellCount > REMOTE_NODE_MAX_CELLS) {
         virReportError(VIR_ERR_RPC,
-                       _("too many NUMA cells: %d > %d"),
+                       _("too many NUMA cells: %1$d > %2$d"),
                        npages * cellCount, REMOTE_NODE_MAX_CELLS);
         return -1;
     }
@@ -7051,7 +7051,7 @@ remoteNetworkGetDHCPLeases(virNetworkPtr net,
 
     if (ret.leases.leases_len > REMOTE_NETWORK_DHCP_LEASES_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of leases is %d, which exceeds max limit: %d"),
+                       _("Number of leases is %1$d, which exceeds max limit: %2$d"),
                        ret.leases.leases_len, REMOTE_NETWORK_DHCP_LEASES_MAX);
         goto cleanup;
     }
@@ -7121,7 +7121,7 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
 
     if (ret.retStats.retStats_len > REMOTE_DOMAIN_LIST_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of stats entries is %d, which exceeds max limit: %d"),
+                       _("Number of stats entries is %1$d, which exceeds max limit: %2$d"),
                        ret.retStats.retStats_len, REMOTE_DOMAIN_LIST_MAX);
         goto cleanup;
     }
@@ -7181,7 +7181,7 @@ remoteNodeAllocPages(virConnectPtr conn,
 
     if (npages > REMOTE_NODE_MAX_CELLS) {
         virReportError(VIR_ERR_RPC,
-                       _("too many NUMA cells: %d > %d"),
+                       _("too many NUMA cells: %1$d > %2$d"),
                        npages, REMOTE_NODE_MAX_CELLS);
         return -1;
     }
@@ -7227,7 +7227,7 @@ remoteDomainGetFSInfo(virDomainPtr dom,
 
     if (ret.info.info_len > REMOTE_DOMAIN_FSINFO_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Too many mountpoints in fsinfo: %d for limit %d"),
+                       _("Too many mountpoints in fsinfo: %1$d for limit %2$d"),
                        ret.info.info_len, REMOTE_DOMAIN_FSINFO_MAX);
         goto cleanup;
     }
@@ -7303,7 +7303,7 @@ remoteDomainInterfaceAddresses(virDomainPtr dom,
 
     if (ret.ifaces.ifaces_len > REMOTE_DOMAIN_INTERFACE_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of interfaces, %d exceeds the max limit: %d"),
+                       _("Number of interfaces, %1$d exceeds the max limit: %2$d"),
                        ret.ifaces.ifaces_len, REMOTE_DOMAIN_INTERFACE_MAX);
         goto cleanup;
     }
@@ -7326,7 +7326,7 @@ remoteDomainInterfaceAddresses(virDomainPtr dom,
 
         if (iface_ret->addrs.addrs_len > REMOTE_DOMAIN_IP_ADDR_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Number of interfaces, %d exceeds the max limit: %d"),
+                           _("Number of interfaces, %1$d exceeds the max limit: %2$d"),
                            iface_ret->addrs.addrs_len, REMOTE_DOMAIN_IP_ADDR_MAX);
             goto cleanup;
         }

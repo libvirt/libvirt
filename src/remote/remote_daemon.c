@@ -250,17 +250,17 @@ daemonSetupNetworking(virNetServer *srv,
     }
 
     if (virStrToLong_i(config->unix_sock_ro_perms, NULL, 8, &unix_sock_ro_mask) != 0) {
-        VIR_ERROR(_("Failed to parse mode '%s'"), config->unix_sock_ro_perms);
+        VIR_ERROR(_("Failed to parse mode '%1$s'"), config->unix_sock_ro_perms);
         return -1;
     }
 
     if (virStrToLong_i(config->unix_sock_admin_perms, NULL, 8, &unix_sock_adm_mask) != 0) {
-        VIR_ERROR(_("Failed to parse mode '%s'"), config->unix_sock_admin_perms);
+        VIR_ERROR(_("Failed to parse mode '%1$s'"), config->unix_sock_admin_perms);
         return -1;
     }
 
     if (virStrToLong_i(config->unix_sock_rw_perms, NULL, 8, &unix_sock_rw_mask) != 0) {
-        VIR_ERROR(_("Failed to parse mode '%s'"), config->unix_sock_rw_perms);
+        VIR_ERROR(_("Failed to parse mode '%1$s'"), config->unix_sock_rw_perms);
         return -1;
     }
 
@@ -682,18 +682,18 @@ daemonSetupHostUUID(const struct daemonConfig *config)
         return 0;
     } else if (STREQ(config->host_uuid_source, "machine-id")) {
         if (virFileReadBufQuiet(machine_id, buf, sizeof(buf)) < 0) {
-            VIR_ERROR(_("Can't read %s"), machine_id);
+            VIR_ERROR(_("Can't read %1$s"), machine_id);
             return -1;
         }
 
         uuid = buf;
     } else {
-        VIR_ERROR(_("invalid UUID source: %s"), config->host_uuid_source);
+        VIR_ERROR(_("invalid UUID source: %1$s"), config->host_uuid_source);
         return -1;
     }
 
     if (virSetHostUUIDStr(uuid)) {
-        VIR_ERROR(_("invalid host UUID: %s"), uuid);
+        VIR_ERROR(_("invalid host UUID: %1$s"), uuid);
         return -1;
     }
 
@@ -915,7 +915,7 @@ int main(int argc, char **argv) {
     /* Read the config file if it exists */
     if (remote_config_file &&
         daemonConfigLoadFile(config, remote_config_file, implicit_conf) < 0) {
-        VIR_ERROR(_("Can't load config file: %s: %s"),
+        VIR_ERROR(_("Can't load config file: %1$s: %2$s"),
                   virGetLastErrorMessage(), remote_config_file);
         exit(EXIT_FAILURE);
     }
@@ -977,13 +977,13 @@ int main(int argc, char **argv) {
 
     if (godaemon) {
         if (chdir("/") < 0) {
-            VIR_ERROR(_("cannot change to root directory: %s"),
+            VIR_ERROR(_("cannot change to root directory: %1$s"),
                       g_strerror(errno));
             goto cleanup;
         }
 
         if ((statuswrite = virDaemonForkIntoBackground(argv[0])) < 0) {
-            VIR_ERROR(_("Failed to fork as daemon: %s"),
+            VIR_ERROR(_("Failed to fork as daemon: %1$s"),
                       g_strerror(errno));
             goto cleanup;
         }
@@ -1007,7 +1007,7 @@ int main(int argc, char **argv) {
         old_umask = umask(077);
     VIR_DEBUG("Ensuring run dir '%s' exists", run_dir);
     if (g_mkdir_with_parents(run_dir, 0777) < 0) {
-        VIR_ERROR(_("unable to create rundir %s: %s"), run_dir,
+        VIR_ERROR(_("unable to create rundir %1$s: %2$s"), run_dir,
                   g_strerror(errno));
         ret = VIR_DAEMON_ERR_RUNDIR;
         goto cleanup;

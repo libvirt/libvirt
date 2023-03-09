@@ -55,7 +55,7 @@ VIR_LOG_INIT("daemon.remote");
     do { \
         if ((_from) != (_type)(_from)) { \
             virReportError(VIR_ERR_OVERFLOW, \
-                           _("conversion from hyper to %s overflowed"), \
+                           _("conversion from hyper to %1$s overflowed"), \
                            #_type); \
             goto cleanup; \
         } \
@@ -2150,7 +2150,7 @@ remoteDispatchConnectOpen(virNetServer *server G_GNUC_UNUSED,
             priv->secretURI = "secret:///session";
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unexpected driver type '%s' opened"), type);
+                       _("Unexpected driver type '%1$s' opened"), type);
         goto cleanup;
     }
 #else /* !MODULE_NAME */
@@ -2937,7 +2937,7 @@ remoteDispatchDomainGetIOThreadInfo(virNetServer *server G_GNUC_UNUSED,
 
     if (ninfo > REMOTE_IOTHREAD_INFO_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("Too many IOThreads in info: %d for limit %d"),
+                       _("Too many IOThreads in info: %1$d for limit %2$d"),
                        ninfo, REMOTE_IOTHREAD_INFO_MAX);
         goto cleanup;
     }
@@ -3704,7 +3704,7 @@ remoteSASLFinish(virNetServer *server,
 
         VIR_DEBUG("negotiated an SSF of %d", ssf);
         if (ssf < 56) { /* 56 is good for Kerberos */
-            VIR_ERROR(_("negotiated SSF %d was not strong enough"), ssf);
+            VIR_ERROR(_("negotiated SSF %1$d was not strong enough"), ssf);
             return -2;
         }
     }
@@ -3773,7 +3773,7 @@ remoteDispatchAuthSaslStart(virNetServer *server,
         goto authfail;
 
     if (serveroutlen > REMOTE_AUTH_SASL_DATA_MAX) {
-        VIR_ERROR(_("sasl start reply data too long %d"), (int)serveroutlen);
+        VIR_ERROR(_("sasl start reply data too long %1$d"), (int)serveroutlen);
         goto authfail;
     }
 
@@ -3863,7 +3863,7 @@ remoteDispatchAuthSaslStep(virNetServer *server,
         goto authfail;
 
     if (serveroutlen > REMOTE_AUTH_SASL_DATA_MAX) {
-        VIR_ERROR(_("sasl step reply data too long %d"),
+        VIR_ERROR(_("sasl step reply data too long %1$d"),
                   (int)serveroutlen);
         goto authfail;
     }
@@ -4221,7 +4221,7 @@ remoteDispatchConnectDomainEventDeregister(virNetServer *server G_GNUC_UNUSED,
 
     if (callbackID < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("domain event %d not registered"),
+                       _("domain event %1$d not registered"),
                        VIR_DOMAIN_EVENT_ID_LIFECYCLE);
         goto cleanup;
     }
@@ -4371,7 +4371,7 @@ remoteDispatchConnectDomainEventRegisterAny(virNetServer *server G_GNUC_UNUSED,
      * modern callback style of RPC.  */
     if (args->eventID > VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED ||
         args->eventID < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("unsupported event ID %d"),
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("unsupported event ID %1$d"),
                        args->eventID);
         goto cleanup;
     }
@@ -4443,7 +4443,7 @@ remoteDispatchConnectDomainEventCallbackRegisterAny(virNetServer *server G_GNUC_
         goto cleanup;
 
     if (args->eventID >= VIR_DOMAIN_EVENT_ID_LAST || args->eventID < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("unsupported event ID %d"),
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("unsupported event ID %1$d"),
                        args->eventID);
         goto cleanup;
     }
@@ -4512,7 +4512,7 @@ remoteDispatchConnectDomainEventDeregisterAny(virNetServer *server G_GNUC_UNUSED
      * modern callback style of RPC.  */
     if (args->eventID > VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED ||
         args->eventID < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("unsupported event ID %d"),
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("unsupported event ID %1$d"),
                        args->eventID);
         goto cleanup;
     }
@@ -4525,7 +4525,7 @@ remoteDispatchConnectDomainEventDeregisterAny(virNetServer *server G_GNUC_UNUSED
     }
     if (callbackID < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("domain event %d not registered"), args->eventID);
+                       _("domain event %1$d not registered"), args->eventID);
         goto cleanup;
     }
 
@@ -4565,7 +4565,7 @@ remoteDispatchConnectDomainEventCallbackDeregisterAny(virNetServer *server G_GNU
     }
     if (i == priv->ndomainEventCallbacks) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("domain event callback %d not registered"),
+                       _("domain event callback %1$d not registered"),
                        args->callbackID);
         goto cleanup;
     }
@@ -5488,7 +5488,7 @@ remoteDispatchDomainMigrateBegin3Params(virNetServer *server G_GNUC_UNUSED,
 
     if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("Too many migration parameters '%d' for limit '%d'"),
+                       _("Too many migration parameters '%1$d' for limit '%2$d'"),
                        args->params.params_len, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
         goto cleanup;
     }
@@ -5541,7 +5541,7 @@ remoteDispatchDomainMigratePrepare3Params(virNetServer *server G_GNUC_UNUSED,
 
     if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("Too many migration parameters '%d' for limit '%d'"),
+                       _("Too many migration parameters '%1$d' for limit '%2$d'"),
                        args->params.params_len, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
         goto cleanup;
     }
@@ -5597,7 +5597,7 @@ remoteDispatchDomainMigratePrepareTunnel3Params(virNetServer *server G_GNUC_UNUS
 
     if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("Too many migration parameters '%d' for limit '%d'"),
+                       _("Too many migration parameters '%1$d' for limit '%2$d'"),
                        args->params.params_len, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
         goto cleanup;
     }
@@ -5664,7 +5664,7 @@ remoteDispatchDomainMigratePerform3Params(virNetServer *server G_GNUC_UNUSED,
 
     if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("Too many migration parameters '%d' for limit '%d'"),
+                       _("Too many migration parameters '%1$d' for limit '%2$d'"),
                        args->params.params_len, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
         goto cleanup;
     }
@@ -5721,7 +5721,7 @@ remoteDispatchDomainMigrateFinish3Params(virNetServer *server G_GNUC_UNUSED,
 
     if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("Too many migration parameters '%d' for limit '%d'"),
+                       _("Too many migration parameters '%1$d' for limit '%2$d'"),
                        args->params.params_len, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
         goto cleanup;
     }
@@ -5775,7 +5775,7 @@ remoteDispatchDomainMigrateConfirm3Params(virNetServer *server G_GNUC_UNUSED,
 
     if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("Too many migration parameters '%d' for limit '%d'"),
+                       _("Too many migration parameters '%1$d' for limit '%2$d'"),
                        args->params.params_len, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
         goto cleanup;
     }
@@ -5828,7 +5828,7 @@ remoteDispatchConnectGetCPUModelNames(virNetServer *server G_GNUC_UNUSED,
 
     if (len > REMOTE_CONNECT_CPU_MODELS_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("Too many CPU models '%d' for limit '%d'"),
+                       _("Too many CPU models '%1$d' for limit '%2$d'"),
                        len, REMOTE_CONNECT_CPU_MODELS_MAX);
         goto cleanup;
     }
@@ -5971,7 +5971,7 @@ remoteDispatchConnectNetworkEventRegisterAny(virNetServer *server G_GNUC_UNUSED,
 
     if (args->eventID >= VIR_NETWORK_EVENT_ID_LAST || args->eventID < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unsupported network event ID %d"), args->eventID);
+                       _("unsupported network event ID %1$d"), args->eventID);
         goto cleanup;
     }
 
@@ -6039,7 +6039,7 @@ remoteDispatchConnectNetworkEventDeregisterAny(virNetServer *server G_GNUC_UNUSE
     }
     if (i == priv->nnetworkEventCallbacks) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("network event callback %d not registered"),
+                       _("network event callback %1$d not registered"),
                        args->callbackID);
         goto cleanup;
     }
@@ -6084,7 +6084,7 @@ remoteDispatchConnectStoragePoolEventRegisterAny(virNetServer *server G_GNUC_UNU
 
     if (args->eventID >= VIR_STORAGE_POOL_EVENT_ID_LAST || args->eventID < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unsupported storage pool event ID %d"), args->eventID);
+                       _("unsupported storage pool event ID %1$d"), args->eventID);
         goto cleanup;
     }
 
@@ -6152,7 +6152,7 @@ remoteDispatchConnectStoragePoolEventDeregisterAny(virNetServer *server G_GNUC_U
     }
     if (i == priv->nstorageEventCallbacks) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("storage pool event callback %d not registered"),
+                       _("storage pool event callback %1$d not registered"),
                        args->callbackID);
         goto cleanup;
     }
@@ -6197,7 +6197,7 @@ remoteDispatchConnectNodeDeviceEventRegisterAny(virNetServer *server G_GNUC_UNUS
 
     if (args->eventID >= VIR_NODE_DEVICE_EVENT_ID_LAST || args->eventID < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unsupported node device event ID %d"), args->eventID);
+                       _("unsupported node device event ID %1$d"), args->eventID);
         goto cleanup;
     }
 
@@ -6264,7 +6264,7 @@ remoteDispatchConnectNodeDeviceEventDeregisterAny(virNetServer *server G_GNUC_UN
     }
     if (i == priv->nnodeDeviceEventCallbacks) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("node device event callback %d not registered"),
+                       _("node device event callback %1$d not registered"),
                        args->callbackID);
         goto cleanup;
     }
@@ -6309,7 +6309,7 @@ remoteDispatchConnectSecretEventRegisterAny(virNetServer *server G_GNUC_UNUSED,
 
     if (args->eventID >= VIR_SECRET_EVENT_ID_LAST || args->eventID < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unsupported secret event ID %d"), args->eventID);
+                       _("unsupported secret event ID %1$d"), args->eventID);
         goto cleanup;
     }
 
@@ -6376,7 +6376,7 @@ remoteDispatchConnectSecretEventDeregisterAny(virNetServer *server G_GNUC_UNUSED
     }
     if (i == priv->nsecretEventCallbacks) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("node device event callback %d not registered"),
+                       _("node device event callback %1$d not registered"),
                        args->callbackID);
         goto cleanup;
     }
@@ -6485,7 +6485,7 @@ qemuDispatchConnectDomainMonitorEventDeregister(virNetServer *server G_GNUC_UNUS
     }
     if (i == priv->nqemuEventCallbacks) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("qemu monitor event callback %d not registered"),
+                       _("qemu monitor event callback %1$d not registered"),
                        args->callbackID);
         goto cleanup;
     }
@@ -6645,7 +6645,7 @@ remoteDispatchNetworkGetDHCPLeases(virNetServer *server G_GNUC_UNUSED,
 
     if (nleases > REMOTE_NETWORK_DHCP_LEASES_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of leases is %d, which exceeds max limit: %d"),
+                       _("Number of leases is %1$d, which exceeds max limit: %2$d"),
                        nleases, REMOTE_NETWORK_DHCP_LEASES_MAX);
         goto cleanup;
     }
@@ -6722,8 +6722,7 @@ remoteDispatchConnectGetAllDomainStats(virNetServer *server G_GNUC_UNUSED,
     if (nrecords) {
         if (nrecords > REMOTE_DOMAIN_LIST_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Number of domain stats records is %d, "
-                             "which exceeds max limit: %d"),
+                           _("Number of domain stats records is %1$d, which exceeds max limit: %2$d"),
                            nrecords, REMOTE_DOMAIN_LIST_MAX);
             goto cleanup;
         }
@@ -6827,7 +6826,7 @@ remoteDispatchDomainGetFSInfo(virNetServer *server G_GNUC_UNUSED,
 
     if (ninfo > REMOTE_DOMAIN_FSINFO_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("Too many mountpoints in fsinfo: %d for limit %d"),
+                       _("Too many mountpoints in fsinfo: %1$d for limit %2$d"),
                        ninfo, REMOTE_DOMAIN_FSINFO_MAX);
         goto cleanup;
     }
@@ -6847,7 +6846,7 @@ remoteDispatchDomainGetFSInfo(virNetServer *server G_GNUC_UNUSED,
             ndisk = info[i]->ndevAlias;
             if (ndisk > REMOTE_DOMAIN_FSINFO_DISKS_MAX) {
                 virReportError(VIR_ERR_RPC,
-                               _("Too many disks in fsinfo: %zd for limit %d"),
+                               _("Too many disks in fsinfo: %1$zd for limit %2$d"),
                                ndisk, REMOTE_DOMAIN_FSINFO_DISKS_MAX);
                 goto cleanup;
             }
@@ -6910,7 +6909,7 @@ remoteSerializeDomainInterface(virDomainInterfacePtr *ifaces,
 
     if (ifaces_count > REMOTE_DOMAIN_INTERFACE_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of interfaces, %d exceeds the max limit: %d"),
+                       _("Number of interfaces, %1$d exceeds the max limit: %2$d"),
                        ifaces_count, REMOTE_DOMAIN_INTERFACE_MAX);
         return -1;
     }
@@ -6931,7 +6930,7 @@ remoteSerializeDomainInterface(virDomainInterfacePtr *ifaces,
 
         if (iface->naddrs > REMOTE_DOMAIN_IP_ADDR_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Number of interfaces, %d exceeds the max limit: %d"),
+                           _("Number of interfaces, %1$d exceeds the max limit: %2$d"),
                            iface->naddrs, REMOTE_DOMAIN_IP_ADDR_MAX);
             goto cleanup;
         }
@@ -7332,7 +7331,7 @@ remoteDispatchDomainAuthorizedSshKeysGet(virNetServer *server G_GNUC_UNUSED,
 
     if (nkeys > REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of keys %d, which exceeds max limit: %d"),
+                       _("Number of keys %1$d, which exceeds max limit: %2$d"),
                        nkeys, REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX);
         goto cleanup;
     }
@@ -7369,7 +7368,7 @@ remoteDispatchDomainAuthorizedSshKeysSet(virNetServer *server G_GNUC_UNUSED,
 
     if (args->keys.keys_len > REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of keys %d, which exceeds max limit: %d"),
+                       _("Number of keys %1$d, which exceeds max limit: %2$d"),
                        args->keys.keys_len, REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX);
         goto cleanup;
     }
@@ -7411,7 +7410,7 @@ remoteDispatchDomainGetMessages(virNetServer *server G_GNUC_UNUSED,
 
     if (nmsgs > REMOTE_DOMAIN_MESSAGES_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of msgs %d, which exceeds max limit: %d"),
+                       _("Number of msgs %1$d, which exceeds max limit: %2$d"),
                        nmsgs, REMOTE_DOMAIN_MESSAGES_MAX);
         goto cleanup;
     }
