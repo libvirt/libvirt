@@ -179,6 +179,7 @@ def ignore_feature(feature):
         "vmx-wbinvd-exit",
         "vmx-xsaves",
         "vmx-zero-len-inject",
+        "xen-vapic",
     ]
 
     if feature["type"] != "bool":
