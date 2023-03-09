@@ -90,7 +90,7 @@ qemuMigrationJobIsAllowed(virDomainObj *vm)
     if (vm->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_IN ||
         vm->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("another migration job is already running for domain '%s'"),
+                       _("another migration job is already running for domain '%1$s'"),
                        vm->def->name);
         return false;
     }
@@ -139,7 +139,7 @@ qemuMigrationCheckPhase(virDomainObj *vm,
     if (phase < QEMU_MIGRATION_PHASE_POSTCOPY_FAILED &&
         phase < vm->job->phase) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("migration protocol going backwards %s => %s"),
+                       _("migration protocol going backwards %1$s => %2$s"),
                        qemuMigrationJobPhaseTypeToString(vm->job->phase),
                        qemuMigrationJobPhaseTypeToString(phase));
         return -1;
@@ -190,9 +190,9 @@ qemuMigrationJobIsActive(virDomainObj *vm,
         const char *msg;
 
         if (job == VIR_ASYNC_JOB_MIGRATION_IN)
-            msg = _("domain '%s' is not processing incoming migration");
+            msg = _("domain '%1$s' is not processing incoming migration");
         else
-            msg = _("domain '%s' is not being migrated");
+            msg = _("domain '%1$s' is not being migrated");
 
         virReportError(VIR_ERR_OPERATION_INVALID, msg, vm->def->name);
         return false;
@@ -250,7 +250,7 @@ qemuMigrationSrcRestoreDomainState(virQEMUDriver *driver, virDomainObj *vm)
             /* Hm, we already know we are in error here.  We don't want to
              * overwrite the previous error, though, so we just throw something
              * to the logs and hope for the best */
-            VIR_ERROR(_("Failed to resume guest %s after failure"), vm->def->name);
+            VIR_ERROR(_("Failed to resume guest %1$s after failure"), vm->def->name);
             if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
                 virObjectEvent *event;
 
@@ -301,7 +301,7 @@ qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
 
         if (!(volName = strrchr(basePath, '/'))) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("malformed disk path: %s"),
+                           _("malformed disk path: %1$s"),
                            disk->src->path);
             goto cleanup;
         }
@@ -350,7 +350,7 @@ qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot precreate storage for disk type '%s'"),
+                       _("cannot precreate storage for disk type '%1$s'"),
                        virStorageTypeToString(disk->src->type));
         goto cleanup;
     }
@@ -456,7 +456,7 @@ qemuMigrationDstPrecreateStorage(virDomainObj *vm,
 
         if (!(disk = virDomainDiskByTarget(vm->def, nbd->disks[i].target))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to find disk by target: %s"),
+                           _("unable to find disk by target: %1$s"),
                            nbd->disks[i].target);
             goto cleanup;
         }
@@ -536,7 +536,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriver *driver,
             return -1;
 
         if (!uri->scheme) {
-            virReportError(VIR_ERR_INVALID_ARG, _("No URI scheme specified: %s"), nbdURI);
+            virReportError(VIR_ERR_INVALID_ARG, _("No URI scheme specified: %1$s"), nbdURI);
             return -1;
         }
 
@@ -547,7 +547,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriver *driver,
                  * we should rather error out instead of auto-allocating a port
                  * as that would be the exact opposite of what was requested. */
                 virReportError(VIR_ERR_INVALID_ARG,
-                               _("URI with tcp scheme did not provide a server part: %s"),
+                               _("URI with tcp scheme did not provide a server part: %1$s"),
                                nbdURI);
                 return -1;
             }
@@ -564,7 +564,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriver *driver,
             server.socket = (char *)uri->path;
         } else {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Unsupported scheme in disks URI: %s"),
+                           _("Unsupported scheme in disks URI: %1$s"),
                            uri->scheme);
             return -1;
         }
@@ -584,7 +584,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriver *driver,
 
         if (disk->src->readonly || virStorageSourceIsEmpty(disk->src)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("Cannot migrate empty or read-only disk %s"),
+                           _("Cannot migrate empty or read-only disk %1$s"),
                            disk->dst);
             goto cleanup;
         }
@@ -665,11 +665,11 @@ qemuMigrationNBDReportMirrorError(qemuBlockJobData *job,
 {
     if (job->errmsg) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("migration of disk %s failed: %s"),
+                       _("migration of disk %1$s failed: %2$s"),
                        diskdst, job->errmsg);
     } else {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("migration of disk %s failed"), diskdst);
+                       _("migration of disk %1$s failed"), diskdst);
     }
 }
 
@@ -702,7 +702,7 @@ qemuMigrationSrcNBDStorageCopyReady(virDomainObj *vm,
 
         if (!(job = qemuBlockJobDiskGetJob(disk))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("missing block job data for disk '%s'"), disk->dst);
+                           _("missing block job data for disk '%1$s'"), disk->dst);
             return -1;
         }
 
@@ -1168,7 +1168,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriver *driver,
 
     if (mirror_speed > LLONG_MAX >> 20) {
         virReportError(VIR_ERR_OVERFLOW,
-                       _("bandwidth must be less than %llu"),
+                       _("bandwidth must be less than %1$llu"),
                        LLONG_MAX >> 20);
         return -1;
     }
@@ -1211,7 +1211,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriver *driver,
                 return -1;
         } else {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Unsupported scheme in disks URI: %s"),
+                           _("Unsupported scheme in disks URI: %1$s"),
                            uri->scheme);
             return -1;
         }
@@ -1242,7 +1242,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriver *driver,
 
         if (vm->job->abortJob) {
             vm->job->current->status = VIR_DOMAIN_JOB_STATUS_CANCELED;
-            virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
+            virReportError(VIR_ERR_OPERATION_ABORTED, _("%1$s: %2$s"),
                            virDomainAsyncJobTypeToString(vm->job->asyncJob),
                            _("canceled by client"));
             return -1;
@@ -1296,7 +1296,7 @@ qemuMigrationSrcIsAllowedHostdev(const virDomainDef *def)
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                               _("cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"),
+                               _("cannot migrate a domain with <hostdev mode='subsystem' type='%1$s'>"),
                                virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
                 return false;
 
@@ -1321,11 +1321,11 @@ qemuMigrationSrcIsAllowedHostdev(const virDomainDef *def)
                     virDomainNetType actualType = virDomainNetGetActualType(hostdev->parentnet);
 
                     virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                                   _("cannot migrate a domain with <interface type='%s'>"),
+                                   _("cannot migrate a domain with <interface type='%1$s'>"),
                                    virDomainNetTypeToString(actualType));
                 } else {
                     virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                                   _("cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"),
+                                   _("cannot migrate a domain with <hostdev mode='subsystem' type='%1$s'>"),
                                    virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
                 }
                 return false;
@@ -1398,7 +1398,7 @@ qemuMigrationSrcIsAllowed(virDomainObj *vm,
 
         if (nsnapshots > 0) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("cannot migrate domain with %d snapshots"),
+                           _("cannot migrate domain with %1$d snapshots"),
                            nsnapshots);
             return false;
         }
@@ -1422,7 +1422,7 @@ qemuMigrationSrcIsAllowed(virDomainObj *vm,
             if (blockers && blockers[0]) {
                 g_autofree char *reasons = g_strjoinv("; ", blockers);
                 virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("cannot migrate domain: %s"), reasons);
+                               _("cannot migrate domain: %1$s"), reasons);
                 return false;
             }
         } else {
@@ -1510,8 +1510,7 @@ qemuMigrationSrcIsAllowed(virDomainObj *vm,
             }
             if (shmem->role != VIR_DOMAIN_SHMEM_ROLE_MASTER) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("shmem device '%s' cannot be migrated, "
-                                 "only shmem with role='%s' can be migrated"),
+                               _("shmem device '%1$s' cannot be migrated, only shmem with role='%2$s' can be migrated"),
                                shmem->name,
                                virDomainShmemRoleTypeToString(VIR_DOMAIN_SHMEM_ROLE_MASTER));
                 return false;
@@ -1870,31 +1869,31 @@ qemuMigrationJobCheckStatus(virDomainObj *vm,
     switch (jobData->status) {
     case VIR_DOMAIN_JOB_STATUS_NONE:
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("job '%s' is not active"),
+                       _("job '%1$s' is not active"),
                        qemuMigrationJobName(vm));
         return -1;
 
     case VIR_DOMAIN_JOB_STATUS_FAILED:
         if (error) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("job '%s' failed: %s"),
+                           _("job '%1$s' failed: %2$s"),
                            qemuMigrationJobName(vm), error);
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("job '%s' unexpectedly failed"),
+                           _("job '%1$s' unexpectedly failed"),
                            qemuMigrationJobName(vm));
         }
         return -1;
 
     case VIR_DOMAIN_JOB_STATUS_CANCELED:
         virReportError(VIR_ERR_OPERATION_ABORTED,
-                       _("job '%s' canceled by client"),
+                       _("job '%1$s' canceled by client"),
                        qemuMigrationJobName(vm));
         return -1;
 
     case VIR_DOMAIN_JOB_STATUS_POSTCOPY_PAUSED:
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("job '%s' failed in post-copy phase"),
+                       _("job '%1$s' failed in post-copy phase"),
                        qemuMigrationJobName(vm));
         return -1;
 
@@ -1947,7 +1946,7 @@ qemuMigrationAnyCompleted(virDomainObj *vm,
         virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
         pauseReason == VIR_DOMAIN_PAUSED_IOERROR) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("job '%s' failed due to I/O error"),
+                       _("job '%1$s' failed due to I/O error"),
                        qemuMigrationJobName(vm));
         goto error;
     }
@@ -2119,7 +2118,7 @@ qemuMigrationSrcGraphicsRelocate(virDomainObj *vm,
 
         if ((type = virDomainGraphicsTypeFromString(uri->scheme)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("unknown graphics type %s"), uri->scheme);
+                           _("unknown graphics type %1$s"), uri->scheme);
             return -1;
         }
 
@@ -2134,7 +2133,7 @@ qemuMigrationSrcGraphicsRelocate(virDomainObj *vm,
             if (STRCASEEQ(param->name, "tlsPort")) {
                 if (virStrToLong_i(param->value, NULL, 10, &tlsPort) < 0) {
                     virReportError(VIR_ERR_INVALID_ARG,
-                                   _("invalid tlsPort number: %s"),
+                                   _("invalid tlsPort number: %1$s"),
                                    param->value);
                     return -1;
                 }
@@ -2190,8 +2189,8 @@ qemuMigrationDstOPDRelocate(virQEMUDriver *driver G_GNUC_UNUSED,
             if (virNetDevOpenvswitchSetMigrateData(cookie->network->net[i].portdata,
                                                    netptr->ifname) != 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to run command to set OVS port data for "
-                                 "interface %s"), netptr->ifname);
+                               _("Unable to run command to set OVS port data for interface %1$s"),
+                               netptr->ifname);
                 return -1;
             }
             break;
@@ -2631,7 +2630,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
 
                 if (j == vm->def->ndisks) {
                     virReportError(VIR_ERR_INVALID_ARG,
-                                   _("disk target %s not found"),
+                                   _("disk target %1$s not found"),
                                    migrate_disks[i]);
                     return NULL;
                 }
@@ -2698,14 +2697,14 @@ qemuMigrationAnyCanResume(virDomainObj *vm,
     if (vm->job->asyncOwner != 0 &&
         vm->job->asyncOwner != virThreadSelfID()) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("migration of domain %s is being actively monitored by another thread"),
+                       _("migration of domain %1$s is being actively monitored by another thread"),
                        vm->def->name);
         return false;
     }
 
     if (!virDomainObjIsPostcopy(vm, vm->job)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("migration of domain %s is not in post-copy phase"),
+                       _("migration of domain %1$s is not in post-copy phase"),
                        vm->def->name);
         return false;
     }
@@ -2713,14 +2712,14 @@ qemuMigrationAnyCanResume(virDomainObj *vm,
     if (vm->job->phase < QEMU_MIGRATION_PHASE_POSTCOPY_FAILED &&
         !virDomainObjIsFailedPostcopy(vm, vm->job)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("post-copy migration of domain %s has not failed"),
+                       _("post-copy migration of domain %1$s has not failed"),
                        vm->def->name);
         return false;
     }
 
     if (vm->job->phase > expectedPhase) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("resuming failed post-copy migration of domain %s already in progress"),
+                       _("resuming failed post-copy migration of domain %1$s already in progress"),
                        vm->def->name);
         return false;
     }
@@ -3007,7 +3006,7 @@ qemuMigrationDstPrepareAnyBlockDirtyBitmaps(virDomainObj *vm,
 
         if (!(nodedata = virHashLookup(blockNamedNodeData, disk->nodename))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to find data for block node '%s'"),
+                           _("failed to find data for block node '%1$s'"),
                            disk->nodename);
             return -1;
         }
@@ -3453,7 +3452,7 @@ qemuMigrationDstPrepareResume(virQEMUDriver *driver,
     vm = virDomainObjListFindByName(driver->domains, def->name);
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching name '%s'"), def->name);
+                       _("no domain with matching name '%1$s'"), def->name);
         qemuMigrationDstErrorReport(driver, def->name);
         return -1;
     }
@@ -3756,7 +3755,7 @@ qemuMigrationDstPrepareDirect(virQEMUDriver *driver,
 
         if (uri->scheme == NULL) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("missing scheme in migration URI: %s"),
+                           _("missing scheme in migration URI: %1$s"),
                            uri_in);
             goto cleanup;
         }
@@ -3765,7 +3764,7 @@ qemuMigrationDstPrepareDirect(virQEMUDriver *driver,
             STRNEQ(uri->scheme, "rdma") &&
             STRNEQ(uri->scheme, "unix")) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                           _("unsupported scheme %s in migration URI %s"),
+                           _("unsupported scheme %1$s in migration URI %2$s"),
                            uri->scheme, uri_in);
             goto cleanup;
         }
@@ -3775,8 +3774,9 @@ qemuMigrationDstPrepareDirect(virQEMUDriver *driver,
             listenAddress = uri->path;
         } else {
             if (uri->server == NULL) {
-                virReportError(VIR_ERR_INVALID_ARG, _("missing host in migration"
-                                                      " URI: %s"), uri_in);
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("missing host in migration URI: %1$s"),
+                               uri_in);
                 goto cleanup;
             }
 
@@ -4342,7 +4342,7 @@ qemuMigrationSrcConnect(virQEMUDriver *driver,
 
     /* Migration expects a blocking FD */
     if (virSetBlocking(spec->dest.fd.qemu, true) < 0) {
-        virReportSystemError(errno, _("Unable to set FD %d blocking"),
+        virReportSystemError(errno, _("Unable to set FD %1$d blocking"),
                              spec->dest.fd.qemu);
         goto cleanup;
     }
@@ -4614,7 +4614,7 @@ qemuMigrationSrcStart(virDomainObj *vm,
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("unexpected migration schema: %d"), spec->destType);
+                   _("unexpected migration schema: %1$d"), spec->destType);
     return -1;
 }
 
@@ -4755,8 +4755,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     if (virLockManagerPluginUsesState(driver->lockManager) &&
         !cookieout) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Migration with lock driver %s requires"
-                         " cookie support"),
+                       _("Migration with lock driver %1$s requires cookie support"),
                        virLockManagerPluginGetName(driver->lockManager));
         return -1;
     }
@@ -4894,7 +4893,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
          * as this is a critical section so we are guaranteed
          * vm->job->abortJob will not change */
         vm->job->current->status = VIR_DOMAIN_JOB_STATUS_CANCELED;
-        virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
+        virReportError(VIR_ERR_OPERATION_ABORTED, _("%1$s: %2$s"),
                        virDomainAsyncJobTypeToString(vm->job->asyncJob),
                        _("canceled by client"));
         goto exit_monitor;
@@ -5140,7 +5139,7 @@ qemuMigrationSrcPerformNative(virQEMUDriver *driver,
 
     if (uribits->scheme == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing scheme in migration URI: %s"),
+                       _("missing scheme in migration URI: %1$s"),
                        uri);
         return -1;
     }
@@ -6312,7 +6311,7 @@ qemuMigrationDstVPAssociatePortProfiles(virDomainDef *def)
                                                VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH,
                                                false) < 0) {
                 virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("Port profile Associate failed for %s"),
+                               _("Port profile Associate failed for %1$s"),
                                net->ifname);
                 goto err_exit;
             }
