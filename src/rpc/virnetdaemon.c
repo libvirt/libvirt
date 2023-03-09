@@ -194,7 +194,7 @@ virNetDaemonGetServer(virNetDaemon *dmn,
 
     if (!srv) {
         virReportError(VIR_ERR_NO_SERVER,
-                       _("No server named '%s'"), serverName);
+                       _("No server named '%1$s'"), serverName);
     }
 
     return srv;
@@ -324,7 +324,7 @@ virNetDaemonNewPostExecRestart(virJSONValue *object,
         size_t n = virJSONValueArraySize(servers);
         if (n > nDefServerNames) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Server count %zd greater than default name count %zu"),
+                           _("Server count %1$zd greater than default name count %2$zu"),
                            n, nDefServerNames);
             goto error;
         }
@@ -646,7 +646,7 @@ virNetDaemonSignalEvent(int watch,
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Unexpected signal received: %d"), siginfo.si_signo);
+                   _("Unexpected signal received: %1$d"), siginfo.si_signo);
 
  cleanup:
     virObjectUnlock(dmn);

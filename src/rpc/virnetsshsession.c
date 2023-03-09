@@ -286,7 +286,7 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
     if (!key) {
         libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
         virReportError(VIR_ERR_SSH,
-                       _("Failed to retrieve ssh host key: %s"),
+                       _("Failed to retrieve ssh host key: %1$s"),
                        errmsg);
         return -1;
     }
@@ -346,7 +346,7 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
             keyhashstr = virBufferContentAndReset(&buff);
 
             askKey.type = VIR_CRED_ECHOPROMPT;
-            askKey.prompt = g_strdup_printf(_("Accept SSH host key with hash '%s' for " "host '%s:%d' (%s/%s)?"),
+            askKey.prompt = g_strdup_printf(_("Accept SSH host key with hash '%1$s' for host '%2$s:%3$d' (%4$s/%5$s)?"),
                                             keyhashstr, sess->hostname, sess->port, "y", "n");
 
             if (sess->cred->cb(&askKey, 1, sess->cred->cbdata)) {
@@ -365,7 +365,7 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
             if (!askKey.result ||
                 STRCASENEQ(askKey.result, "y")) {
                 virReportError(VIR_ERR_SSH,
-                               _("SSH host key for '%s' (%s) was not accepted"),
+                               _("SSH host key for '%1$s' (%2$s) was not accepted"),
                                sess->hostname, keyhashstr);
                 VIR_FREE(keyhashstr);
                 VIR_FREE(askKey.result);
@@ -427,7 +427,7 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
                                    NULL) < 0) {
             libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
             virReportError(VIR_ERR_SSH,
-                           _("unable to add SSH host key for host '%s': %s"),
+                           _("unable to add SSH host key for host '%1$s': %2$s"),
                            hostnameStr, errmsg);
             VIR_FREE(hostnameStr);
             return -1;
@@ -442,7 +442,7 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
                                          LIBSSH2_KNOWNHOST_FILE_OPENSSH) < 0) {
                 libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
                 virReportError(VIR_ERR_SSH,
-                               _("failed to write known_host file '%s': %s"),
+                               _("failed to write known_host file '%1$s': %2$s"),
                                sess->knownHostsFile,
                                errmsg);
                 return -1;
@@ -458,10 +458,8 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
     case LIBSSH2_KNOWNHOST_CHECK_MISMATCH:
         /* host key verification failed */
         virReportError(VIR_ERR_AUTH_FAILED,
-                       _("!!! SSH HOST KEY VERIFICATION FAILED !!!: "
-                         "Identity of host '%s:%d' differs from stored identity. "
-                         "Please verify the new host key '%s' to avoid possible "
-                         "man in the middle attack. The key is stored in '%s'."),
+                       _("!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' differs from stored identity. "
+                         "Please verify the new host key '%3$s' to avoid possible man in the middle attack. The key is stored in '%4$s'."),
                        sess->hostname, sess->port,
                        knownHostEntry->key, sess->knownHostsFile);
         return -1;
@@ -469,7 +467,7 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
     case LIBSSH2_KNOWNHOST_CHECK_FAILURE:
         libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
         virReportError(VIR_ERR_SSH,
-                       _("failed to validate SSH host key: %s"),
+                       _("failed to validate SSH host key: %1$s"),
                        errmsg);
         return -1;
 
@@ -525,7 +523,7 @@ virNetSSHAuthenticateAgent(virNetSSHSession *sess)
         VIR_WARNINGS_RESET
             libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
             virReportError(VIR_ERR_AUTH_FAILED,
-                           _("failed to authenticate using SSH agent: %s"),
+                           _("failed to authenticate using SSH agent: %1$s"),
                            errmsg);
             return -1;
         }
@@ -549,7 +547,7 @@ virNetSSHAuthenticateAgent(virNetSSHSession *sess)
 
     libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
     virReportError(VIR_ERR_AUTH_FAILED,
-                   _("failed to authenticate using SSH agent: %s"),
+                   _("failed to authenticate using SSH agent: %1$s"),
                    errmsg);
     return -1;
 }
@@ -586,8 +584,7 @@ virNetSSHAuthenticatePrivkey(virNetSSHSession *sess,
     VIR_WARNINGS_RESET
         libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
         virReportError(VIR_ERR_AUTH_FAILED,
-                       _("authentication with private key '%s' "
-                         "has failed: %s"),
+                       _("authentication with private key '%1$s' has failed: %2$s"),
                        priv->filename, errmsg);
         return 1; /* auth failed */
     }
@@ -617,7 +614,7 @@ virNetSSHAuthenticatePrivkey(virNetSSHSession *sess,
         return -1;
     }
 
-    retr_passphrase.prompt = g_strdup_printf(_("Passphrase for key '%s'"),
+    retr_passphrase.prompt = g_strdup_printf(_("Passphrase for key '%1$s'"),
                                              priv->filename);
 
     if (sess->cred->cb(&retr_passphrase, 1, sess->cred->cbdata)) {
@@ -643,8 +640,7 @@ virNetSSHAuthenticatePrivkey(virNetSSHSession *sess,
     if (ret < 0) {
         libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
         virReportError(VIR_ERR_AUTH_FAILED,
-                       _("authentication with private key '%s' "
-                         "has failed: %s"),
+                       _("authentication with private key '%1$s' has failed: %2$s"),
                        priv->filename, errmsg);
 
         VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
@@ -709,7 +705,7 @@ virNetSSHAuthenticatePassword(virNetSSHSession *sess)
     /* error path */
     libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
     virReportError(VIR_ERR_AUTH_FAILED,
-                   _("authentication failed: %s"), errmsg);
+                   _("authentication failed: %1$s"), errmsg);
 
     /* determine exist status */
     if (rc == LIBSSH2_ERROR_AUTHENTICATION_FAILED)
@@ -781,14 +777,14 @@ virNetSSHAuthenticateKeyboardInteractive(virNetSSHSession *sess,
         if (ret < 0) {
             libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
             virReportError(VIR_ERR_AUTH_FAILED,
-                           _("keyboard interactive authentication failed: %s"),
+                           _("keyboard interactive authentication failed: %1$s"),
                            errmsg);
             return -1;
         }
     }
     libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
     virReportError(VIR_ERR_AUTH_FAILED,
-                   _("keyboard interactive authentication failed: %s"),
+                   _("keyboard interactive authentication failed: %1$s"),
                    errmsg);
     return 1;
 }
@@ -824,7 +820,7 @@ virNetSSHAuthenticate(virNetSSHSession *sess)
 
         libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
         virReportError(VIR_ERR_SSH,
-                       _("couldn't retrieve authentication methods list: %s"),
+                       _("couldn't retrieve authentication methods list: %1$s"),
                        errmsg);
         return -1;
     }
@@ -895,7 +891,7 @@ virNetSSHOpenChannel(virNetSSHSession *sess)
     if (!sess->channel) {
         libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
         virReportError(VIR_ERR_SSH,
-                       _("failed to open ssh channel: %s"),
+                       _("failed to open ssh channel: %1$s"),
                        errmsg);
         return -1;
     }
@@ -903,7 +899,7 @@ virNetSSHOpenChannel(virNetSSHSession *sess)
     if (libssh2_channel_exec(sess->channel, sess->channelCommand) != 0) {
         libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
         virReportError(VIR_ERR_SSH,
-                       _("failed to execute command '%s': %s"),
+                       _("failed to execute command '%1$s': %2$s"),
                        sess->channelCommand,
                        errmsg);
         return -1;
@@ -1080,13 +1076,13 @@ virNetSSHSessionSetHostKeyVerification(virNetSSHSession *sess,
                                            LIBSSH2_KNOWNHOST_FILE_OPENSSH) < 0) {
                 libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
                 virReportError(VIR_ERR_SSH,
-                               _("unable to load knownhosts file '%s': %s"),
+                               _("unable to load knownhosts file '%1$s': %2$s"),
                                hostsfile, errmsg);
                 goto error;
             }
         } else if (!(flags & VIR_NET_SSH_HOSTKEY_FILE_CREATE)) {
             virReportError(VIR_ERR_SSH,
-                           _("known hosts file '%s' does not exist"),
+                           _("known hosts file '%1$s' does not exist"),
                            hostsfile);
             goto error;
         }
@@ -1186,7 +1182,7 @@ virNetSSHSessionConnect(virNetSSHSession *sess,
     if (ret < 0) {
         libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
         virReportError(VIR_ERR_NO_CONNECT,
-                       _("SSH session handshake failed: %s"),
+                       _("SSH session handshake failed: %1$s"),
                        errmsg);
         goto error;
     }
@@ -1231,8 +1227,7 @@ virNetSSHChannelRead(virNetSSHSession *sess,
     if (sess->state != VIR_NET_SSH_STATE_HANDSHAKE_COMPLETE) {
         if (sess->state == VIR_NET_SSH_STATE_ERROR_REMOTE)
             virReportError(VIR_ERR_SSH,
-                           _("Remote program terminated "
-                             "with non-zero code: %d"),
+                           _("Remote program terminated with non-zero code: %1$d"),
                            sess->channelCommandReturnValue);
         else
             virReportError(VIR_ERR_SSH, "%s",
@@ -1307,7 +1302,7 @@ virNetSSHChannelRead(virNetSSHSession *sess,
     if (libssh2_channel_eof(sess->channel)) {
         if (libssh2_channel_get_exit_status(sess->channel)) {
             virReportError(VIR_ERR_SSH,
-                           _("Remote command terminated with non-zero code: %d"),
+                           _("Remote command terminated with non-zero code: %1$d"),
                            libssh2_channel_get_exit_status(sess->channel));
             sess->channelCommandReturnValue = libssh2_channel_get_exit_status(sess->channel);
             sess->state = VIR_NET_SSH_STATE_ERROR_REMOTE;
@@ -1342,7 +1337,7 @@ virNetSSHChannelWrite(virNetSSHSession *sess,
     if (sess->state != VIR_NET_SSH_STATE_HANDSHAKE_COMPLETE) {
         if (sess->state == VIR_NET_SSH_STATE_ERROR_REMOTE)
             virReportError(VIR_ERR_SSH,
-                           _("Remote program terminated with non-zero code: %d"),
+                           _("Remote program terminated with non-zero code: %1$d"),
                            sess->channelCommandReturnValue);
         else
             virReportError(VIR_ERR_SSH, "%s",
@@ -1354,7 +1349,7 @@ virNetSSHChannelWrite(virNetSSHSession *sess,
     if (libssh2_channel_eof(sess->channel)) {
         if (libssh2_channel_get_exit_status(sess->channel)) {
             virReportError(VIR_ERR_SSH,
-                           _("Remote program terminated with non-zero code: %d"),
+                           _("Remote program terminated with non-zero code: %1$d"),
                            libssh2_channel_get_exit_status(sess->channel));
             sess->state = VIR_NET_SSH_STATE_ERROR_REMOTE;
             sess->channelCommandReturnValue = libssh2_channel_get_exit_status(sess->channel);
@@ -1379,7 +1374,7 @@ virNetSSHChannelWrite(virNetSSHSession *sess,
         sess->state = VIR_NET_SSH_STATE_ERROR;
         libssh2_session_last_error(sess->session, &msg, NULL, 0);
         virReportError(VIR_ERR_SSH,
-                       _("write failed: %s"), msg);
+                       _("write failed: %1$s"), msg);
     }
 
  cleanup:

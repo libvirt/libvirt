@@ -1138,7 +1138,7 @@ virNetClientCallDispatchReply(virNetClient *client)
 
     if (!thecall) {
         virReportError(VIR_ERR_RPC,
-                       _("no call waiting for reply with prog %d vers %d serial %d"),
+                       _("no call waiting for reply with prog %1$d vers %2$d serial %3$d"),
                        client->msg.header.prog, client->msg.header.vers, client->msg.header.serial);
         return -1;
     }
@@ -1327,7 +1327,7 @@ virNetClientCallDispatch(virNetClient *client)
     case VIR_NET_CALL_WITH_FDS:
     default:
         virReportError(VIR_ERR_RPC,
-                       _("got unexpected RPC call prog %d vers %d proc %d type %d"),
+                       _("got unexpected RPC call prog %1$d vers %2$d proc %3$d type %4$d"),
                        client->msg.header.prog, client->msg.header.vers,
                        client->msg.header.proc, client->msg.header.type);
         return -1;

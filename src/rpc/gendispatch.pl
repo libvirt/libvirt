@@ -1178,7 +1178,7 @@ elsif ($mode eq "server") {
         if ($modern_ret_as_list) {
             print "    if (nresults > $single_ret_list_max_define) {\n";
             print "        virReportError(VIR_ERR_INTERNAL_ERROR,\n";
-            print "                       _(\"Too many ${single_ret_list_error_msg_type}s '%d' for limit '%d'\"),\n";
+            print "                       _(\"Too many ${single_ret_list_error_msg_type}s '%1\$d' for limit '%2\$d'\"),\n";
             print "                       nresults, $single_ret_list_max_define);\n";
             print "        goto cleanup;\n";
             print "    }\n";
@@ -1845,7 +1845,7 @@ elsif ($mode eq "client") {
             print "\n";
             print "    if ($args_check->{arg} > $args_check->{limit}) {\n";
             print "        virReportError(VIR_ERR_RPC,\n";
-            print "                       _(\"%s length greater than maximum: %d > %d\"),\n";
+            print "                       _(\"%1\$s length greater than maximum: %2\$d > %3\$d\"),\n";
             print "                       $args_check->{name}, (int)$args_check->{arg}, $args_check->{limit});\n";
             print "        goto done;\n";
             print "    }\n";
@@ -1855,7 +1855,7 @@ elsif ($mode eq "client") {
             print "\n";
             print "    if ($single_ret_list_max_var > $single_ret_list_max_define) {\n";
             print "        virReportError(VIR_ERR_RPC,\n";
-            print "                       _(\"too many remote ${single_ret_list_error_msg_type}s: %d > %d,\"\n";
+            print "                       _(\"too many remote ${single_ret_list_error_msg_type}s: %1\$d > %2\$d,\"\n";
             print "                         \"in parameter '$single_ret_list_name' for 'vir$call->{ProcName}'\"),\n";
             print "                       $single_ret_list_max_var, $single_ret_list_max_define);\n";
             print "        goto done;\n";
@@ -1917,7 +1917,7 @@ elsif ($mode eq "client") {
             $modern_ret_as_list) {
             print "    if (ret.$single_ret_list_name.${single_ret_list_name}_len > $single_ret_list_max_var) {\n";
             print "        virReportError(VIR_ERR_RPC,\n";
-            print "                       _(\"too many remote ${single_ret_list_error_msg_type}s: %d > %d,\"\n";
+            print "                       _(\"too many remote ${single_ret_list_error_msg_type}s: %1\$d > %2\$d,\"\n";
             print "                         \"in parameter '$single_ret_list_name' for 'vir$call->{ProcName}'\"),\n";
             print "                       ret.$single_ret_list_name.${single_ret_list_name}_len, $single_ret_list_max_var);\n";
             print "        goto cleanup;\n";
@@ -2219,7 +2219,7 @@ elsif ($mode eq "client") {
                     if ($action eq "Ensure") {
                         print "        if (rv == 0)\n";
                         print "            virReportError(VIR_ERR_ACCESS_DENIED,\n";
-                        print"                            _(\"'%s' denied access\"), conn->driver->name);\n";
+                        print"                            _(\"'%1\$s' denied access\"), conn->driver->name);\n";
                         print "        return $fail;\n";
                     } else {
                         print "        virResetLastError();\n";

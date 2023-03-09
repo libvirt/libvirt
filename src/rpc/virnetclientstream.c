@@ -417,7 +417,7 @@ virNetClientStreamSetHole(virNetClientStream *st,
     /* Shouldn't happen, But it's better to safe than sorry. */
     if (st->holeLength) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unprocessed hole of size %lld already in the queue"),
+                       _("unprocessed hole of size %1$lld already in the queue"),
                        st->holeLength);
         return -1;
     }
@@ -462,7 +462,7 @@ virNetClientStreamHandleHole(virNetClient *client,
 
     if (msg->header.type != VIR_NET_STREAM_HOLE) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid message prog=%d type=%d serial=%u proc=%d"),
+                       _("Invalid message prog=%1$d type=%2$d serial=%3$u proc=%4$d"),
                        msg->header.prog,
                        msg->header.type,
                        msg->header.serial,
@@ -851,7 +851,7 @@ int virNetClientStreamInData(virNetClientStream *st,
         st->holeLength = 0;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid message prog=%d type=%d serial=%u proc=%d"),
+                       _("Invalid message prog=%1$d type=%2$d serial=%3$u proc=%4$d"),
                        msg->header.prog,
                        msg->header.type,
                        msg->header.serial,

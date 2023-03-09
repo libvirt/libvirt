@@ -1110,7 +1110,7 @@ virNetServerGetClient(virNetServer *srv,
             return virObjectRef(client);
     }
 
-    virReportError(VIR_ERR_NO_CLIENT, _("No client with matching ID '%llu'"), id);
+    virReportError(VIR_ERR_NO_CLIENT, _("No client with matching ID '%1$llu'"), id);
     return NULL;
 }
 

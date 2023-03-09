@@ -162,7 +162,7 @@ virNetSocketCheckProtocolByLookup(const char *address,
             gaierr == EAI_NONAME) {
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot resolve %s address: %s"),
+                           _("Cannot resolve %1$s address: %2$s"),
                            address,
                            gai_strerror(gaierr));
             return -1;
@@ -346,7 +346,7 @@ int virNetSocketNewListenTCP(const char *nodename,
     e = getaddrinfo(nodename, service, &hints, &ai);
     if (e != 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
-                       _("Unable to resolve address '%s' service '%s': %s"),
+                       _("Unable to resolve address '%1$s' service '%2$s': %3$s"),
                        nodename, service, gai_strerror(e));
         return -1;
     }
@@ -495,7 +495,7 @@ int virNetSocketNewListenUNIX(const char *path,
     addr.data.un.sun_family = AF_UNIX;
     if (virStrcpyStatic(addr.data.un.sun_path, path) < 0) {
         virReportSystemError(ENAMETOOLONG,
-                             _("Path %s too long for unix socket"), path);
+                             _("Path %1$s too long for unix socket"), path);
         goto error;
     }
     if (addr.data.un.sun_path[0] == '@')
@@ -508,7 +508,7 @@ int virNetSocketNewListenUNIX(const char *path,
     if (bind(fd, &addr.data.sa, addr.len) < 0) {
         umask(oldmask);
         virReportSystemError(errno,
-                             _("Failed to bind socket to '%s'"),
+                             _("Failed to bind socket to '%1$s'"),
                              path);
         goto error;
     }
@@ -519,7 +519,7 @@ int virNetSocketNewListenUNIX(const char *path,
      */
     if (grp != 0 && chown(path, user, grp)) {
         virReportSystemError(errno,
-                             _("Failed to change ownership of '%s' to %d:%d"),
+                             _("Failed to change ownership of '%1$s' to %2$d:%3$d"),
                              path, (int)user, (int)grp);
         goto error;
     }
@@ -598,7 +598,7 @@ int virNetSocketNewConnectTCP(const char *nodename,
     e = getaddrinfo(nodename, service, &hints, &ai);
     if (e != 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
-                       _("Unable to resolve address '%s' service '%s': %s"),
+                       _("Unable to resolve address '%1$s' service '%2$s': %3$s"),
                        nodename, service, gai_strerror(e));
         return -1;
     }
@@ -625,7 +625,7 @@ int virNetSocketNewConnectTCP(const char *nodename,
 
     if (fd == -1) {
         virReportSystemError(savedErrno,
-                             _("unable to connect to server at '%s:%s'"),
+                             _("unable to connect to server at '%1$s:%2$s'"),
                              nodename, service);
         goto error;
     }
@@ -685,7 +685,7 @@ int virNetSocketNewConnectUNIX(const char *path,
 
         if (g_mkdir_with_parents(rundir, 0700) < 0) {
             virReportSystemError(errno,
-                                 _("Cannot create user runtime directory '%s'"),
+                                 _("Cannot create user runtime directory '%1$s'"),
                                  rundir);
             goto cleanup;
         }
@@ -694,12 +694,12 @@ int virNetSocketNewConnectUNIX(const char *path,
 
         if ((lockfd = open(lockpath, O_RDWR | O_CREAT, 0600)) < 0 ||
             virSetCloseExec(lockfd) < 0) {
-            virReportSystemError(errno, _("Unable to create lock '%s'"), lockpath);
+            virReportSystemError(errno, _("Unable to create lock '%1$s'"), lockpath);
             goto cleanup;
         }
 
         if (virFileLock(lockfd, false, 0, 1, true) < 0) {
-            virReportSystemError(errno, _("Unable to lock '%s'"), lockpath);
+            virReportSystemError(errno, _("Unable to lock '%1$s'"), lockpath);
             goto cleanup;
         }
     }
@@ -711,7 +711,7 @@ int virNetSocketNewConnectUNIX(const char *path,
 
     remoteAddr.data.un.sun_family = AF_UNIX;
     if (virStrcpyStatic(remoteAddr.data.un.sun_path, path) < 0) {
-        virReportSystemError(ENOMEM, _("Path %s too long for unix socket"), path);
+        virReportSystemError(ENOMEM, _("Path %1$s too long for unix socket"), path);
         goto cleanup;
     }
     if (remoteAddr.data.un.sun_path[0] == '@')
@@ -728,7 +728,7 @@ int virNetSocketNewConnectUNIX(const char *path,
         if (!spawnDaemonPath ||
             retries == 0 ||
             (errno != ENOENT && errno != ECONNREFUSED)) {
-            virReportSystemError(errno, _("Failed to connect socket to '%s'"),
+            virReportSystemError(errno, _("Failed to connect socket to '%1$s'"),
                                  path);
             goto cleanup;
         }
@@ -924,7 +924,7 @@ virNetSocketNewConnectLibSSH2(const char *host,
         verify = VIR_NET_SSH_HOSTKEY_VERIFY_NORMAL;
     } else {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Invalid host key verification method: '%s'"),
+                       _("Invalid host key verification method: '%1$s'"),
                        knownHostsVerify);
         goto error;
     }
@@ -955,7 +955,7 @@ virNetSocketNewConnectLibSSH2(const char *host,
             ret = virNetSSHSessionAuthAddAgentAuth(sess);
         } else {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Invalid authentication method: '%s'"),
+                           _("Invalid authentication method: '%1$s'"),
                            authMethod);
             ret = -1;
             goto error;
@@ -1050,7 +1050,7 @@ virNetSocketNewConnectLibssh(const char *host,
         verify = VIR_NET_LIBSSH_HOSTKEY_VERIFY_NORMAL;
     } else {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Invalid host key verification method: '%s'"),
+                       _("Invalid host key verification method: '%1$s'"),
                        knownHostsVerify);
         goto error;
     }
@@ -1080,7 +1080,7 @@ virNetSocketNewConnectLibssh(const char *host,
             ret = virNetLibsshSessionAuthAddAgentAuth(sess);
         } else {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Invalid authentication method: '%s'"),
+                           _("Invalid authentication method: '%1$s'"),
                            authMethod);
             ret = -1;
             goto error;
@@ -1259,14 +1259,14 @@ virJSONValue *virNetSocketPreExecRestart(virNetSocket *sock)
 
     if (virSetInherit(sock->fd, true) < 0) {
         virReportSystemError(errno,
-                             _("Cannot disable close-on-exec flag on socket %d"),
+                             _("Cannot disable close-on-exec flag on socket %1$d"),
                              sock->fd);
         goto error;
     }
     if (sock->errfd != -1 &&
         virSetInherit(sock->errfd, true) < 0) {
         virReportSystemError(errno,
-                             _("Cannot disable close-on-exec flag on pipe %d"),
+                             _("Cannot disable close-on-exec flag on pipe %1$d"),
                              sock->errfd);
         goto error;
     }
@@ -1764,7 +1764,7 @@ static ssize_t virNetSocketReadWire(virNetSocket *sock, char *buf, size_t len)
     if (ret < 0) {
         if (errout)
             virReportSystemError(errno,
-                                 _("Cannot recv data: %s"), errout);
+                                 _("Cannot recv data: %1$s"), errout);
         else
             virReportSystemError(errno, "%s",
                                  _("Cannot recv data"));
@@ -1778,7 +1778,7 @@ static ssize_t virNetSocketReadWire(virNetSocket *sock, char *buf, size_t len)
         } else {
             if (errout)
                 virReportSystemError(EIO,
-                                     _("End of file while reading data: %s"),
+                                     _("End of file while reading data: %1$s"),
                                      errout);
             else
                 virReportSystemError(EIO, "%s",
@@ -1985,7 +1985,7 @@ int virNetSocketSendFD(virNetSocket *sock, int fd)
             ret = 0;
         else
             virReportSystemError(errno,
-                                 _("Failed to send file descriptor %d"),
+                                 _("Failed to send file descriptor %1$d"),
                                  fd);
         goto cleanup;
     }

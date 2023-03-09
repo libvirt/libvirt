@@ -232,7 +232,7 @@ int virNetServerProgramUnknownError(virNetServerClient *client,
     virNetMessageError rerr;
 
     virReportError(VIR_ERR_RPC,
-                   _("Cannot find program %d version %d"), req->prog, req->vers);
+                   _("Cannot find program %1$d version %2$d"), req->prog, req->vers);
 
     memset(&rerr, 0, sizeof(rerr));
     return virNetServerProgramSendError(req->prog,
@@ -284,14 +284,14 @@ int virNetServerProgramDispatch(virNetServerProgram *prog,
     /* Check version, etc. */
     if (msg->header.prog != prog->program) {
         virReportError(VIR_ERR_RPC,
-                       _("program mismatch (actual %x, expected %x)"),
+                       _("program mismatch (actual %1$x, expected %2$x)"),
                        msg->header.prog, prog->program);
         goto error;
     }
 
     if (msg->header.vers != prog->version) {
         virReportError(VIR_ERR_RPC,
-                       _("version mismatch (actual %x, expected %x)"),
+                       _("version mismatch (actual %1$x, expected %2$x)"),
                        msg->header.vers, prog->version);
         goto error;
     }
@@ -323,7 +323,7 @@ int virNetServerProgramDispatch(virNetServerProgram *prog,
     case VIR_NET_STREAM_HOLE:
     default:
         virReportError(VIR_ERR_RPC,
-                       _("Unexpected message type %u"),
+                       _("Unexpected message type %1$u"),
                        msg->header.type);
         goto error;
     }
@@ -377,7 +377,7 @@ virNetServerProgramDispatchCall(virNetServerProgram *prog,
 
     if (msg->header.status != VIR_NET_OK) {
         virReportError(VIR_ERR_RPC,
-                       _("Unexpected message status %u"),
+                       _("Unexpected message status %1$u"),
                        msg->header.status);
         goto error;
     }
@@ -386,7 +386,7 @@ virNetServerProgramDispatchCall(virNetServerProgram *prog,
 
     if (!dispatcher) {
         virReportError(VIR_ERR_RPC,
-                       _("unknown procedure: %d"),
+                       _("unknown procedure: %1$d"),
                        msg->header.proc);
         goto error;
     }

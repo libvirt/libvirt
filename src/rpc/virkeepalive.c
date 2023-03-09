@@ -249,7 +249,7 @@ virKeepAliveStart(virKeepAlive *ka,
         /* Guard against overflow */
         if (interval > INT_MAX / 1000) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("keepalive interval %d too large"), interval);
+                           _("keepalive interval %1$d too large"), interval);
             goto cleanup;
         }
         ka->interval = interval;

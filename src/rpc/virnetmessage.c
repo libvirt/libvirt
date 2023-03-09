@@ -141,7 +141,7 @@ int virNetMessageDecodeLength(virNetMessage *msg)
 
     if (len < VIR_NET_MESSAGE_LEN_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("packet %d bytes received from server too small, want %d"),
+                       _("packet %1$d bytes received from server too small, want %2$d"),
                        len, VIR_NET_MESSAGE_LEN_MAX);
         goto cleanup;
     }
@@ -151,7 +151,7 @@ int virNetMessageDecodeLength(virNetMessage *msg)
 
     if (len > VIR_NET_MESSAGE_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("packet %d bytes received from server too large, want %d"),
+                       _("packet %1$d bytes received from server too large, want %2$d"),
                        len, VIR_NET_MESSAGE_MAX);
         goto cleanup;
     }
@@ -287,7 +287,7 @@ int virNetMessageEncodeNumFDs(virNetMessage *msg)
 
     if (numFDs > VIR_NET_MESSAGE_NUM_FDS_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("Too many FDs to send %d, expected %d maximum"),
+                       _("Too many FDs to send %1$d, expected %2$d maximum"),
                        numFDs, VIR_NET_MESSAGE_NUM_FDS_MAX);
         goto cleanup;
     }
@@ -325,7 +325,7 @@ int virNetMessageDecodeNumFDs(virNetMessage *msg)
 
     if (numFDs > VIR_NET_MESSAGE_NUM_FDS_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("Received too many FDs %d, expected %d maximum"),
+                       _("Received too many FDs %1$d, expected %2$d maximum"),
                        numFDs, VIR_NET_MESSAGE_NUM_FDS_MAX);
         goto cleanup;
     }
@@ -457,8 +457,7 @@ int virNetMessageEncodePayloadRaw(virNetMessage *msg,
             if ((msg->bufferOffset + len) >
                 (VIR_NET_MESSAGE_MAX + VIR_NET_MESSAGE_LEN_MAX)) {
                 virReportError(VIR_ERR_RPC,
-                               _("Stream data too long to send "
-                                 "(%zu bytes needed, %zu bytes available)"),
+                               _("Stream data too long to send (%1$zu bytes needed, %2$zu bytes available)"),
                                len,
                                VIR_NET_MESSAGE_MAX +
                                VIR_NET_MESSAGE_LEN_MAX -
@@ -549,20 +548,20 @@ int virNetMessageDupFD(virNetMessage *msg,
 
     if (slot >= msg->nfds) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No FD available at slot %zu"), slot);
+                       _("No FD available at slot %1$zu"), slot);
         return -1;
     }
 
     if ((fd = dup(msg->fds[slot])) < 0) {
         virReportSystemError(errno,
-                             _("Unable to duplicate FD %d"),
+                             _("Unable to duplicate FD %1$d"),
                              msg->fds[slot]);
         return -1;
     }
     if (virSetInherit(fd, false) < 0) {
         VIR_FORCE_CLOSE(fd);
         virReportSystemError(errno,
-                             _("Cannot set close-on-exec %d"),
+                             _("Cannot set close-on-exec %1$d"),
                              fd);
         return -1;
     }
@@ -576,14 +575,14 @@ int virNetMessageAddFD(virNetMessage *msg,
 
     if ((newfd = dup(fd)) < 0) {
         virReportSystemError(errno,
-                             _("Unable to duplicate FD %d"),
+                             _("Unable to duplicate FD %1$d"),
                              fd);
         goto error;
     }
 
     if (virSetInherit(newfd, false) < 0) {
         virReportSystemError(errno,
-                             _("Cannot set close-on-exec %d"),
+                             _("Cannot set close-on-exec %1$d"),
                              newfd);
         goto error;
     }
