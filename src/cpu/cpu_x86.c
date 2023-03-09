@@ -681,7 +681,7 @@ virCPUx86VendorToData(const char *vendor,
 
     if (strlen(vendor) != VENDOR_STRING_LENGTH) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid CPU vendor string '%s'"), vendor);
+                       _("Invalid CPU vendor string '%1$s'"), vendor);
         return -1;
     }
 
@@ -946,14 +946,14 @@ x86VendorParse(xmlXPathContextPtr ctxt,
 
     if (x86VendorFind(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("CPU vendor %s already defined"), vendor->name);
+                       _("CPU vendor %1$s already defined"), vendor->name);
         return -1;
     }
 
     string = virXPathString("string(@string)", ctxt);
     if (!string) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing vendor string for CPU vendor %s"),
+                       _("Missing vendor string for CPU vendor %1$s"),
                        vendor->name);
         return -1;
     }
@@ -990,7 +990,7 @@ x86FeatureInData(const char *name,
     if (!(feature = x86FeatureFind(map, name)) &&
         !(feature = x86FeatureFindInternal(name))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown CPU feature %s"), name);
+                       _("unknown CPU feature %1$s"), name);
         return -1;
     }
 
@@ -1113,13 +1113,13 @@ x86ParseDataItemList(virCPUx86Data *cpudata,
         if (virXMLNodeNameEqual(node, "cpuid")) {
             if (x86ParseCPUID(node, &item) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Invalid cpuid[%zu]"), i);
+                               _("Invalid cpuid[%1$zu]"), i);
                 return -1;
             }
         } else {
             if (x86ParseMSR(node, &item) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Invalid msr[%zu]"), i);
+                               _("Invalid msr[%1$zu]"), i);
                 return -1;
             }
         }
@@ -1149,7 +1149,7 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
 
     if (x86FeatureFind(map, feature->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("CPU feature %s already defined"), feature->name);
+                       _("CPU feature %1$s already defined"), feature->name);
         return -1;
     }
 
@@ -1348,7 +1348,7 @@ x86ModelFromCPU(const virCPUDef *cpu,
         (policy == VIR_CPU_FEATURE_REQUIRE || policy == -1)) {
         if (!(model = x86ModelFind(map, cpu->model))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown CPU model %s"), cpu->model);
+                           _("Unknown CPU model %1$s"), cpu->model);
             return NULL;
         }
 
@@ -1372,7 +1372,7 @@ x86ModelFromCPU(const virCPUDef *cpu,
 
         if (!(feature = x86FeatureFind(map, cpu->features[i].name))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown CPU feature %s"), cpu->features[i].name);
+                           _("Unknown CPU feature %1$s"), cpu->features[i].name);
             return NULL;
         }
 
@@ -1460,7 +1460,7 @@ x86ModelParseDecode(virCPUx86Model *model,
 
     if (!(decode_node = virXPathNode("./decode", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing decode element in CPU model %s"),
+                       _("missing decode element in CPU model %1$s"),
                        model->name);
         return -1;
     }
@@ -1496,14 +1496,14 @@ x86ModelParseAncestor(virCPUx86Model *model,
     name = virXPathString("string(./model/@name)", ctxt);
     if (!name) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing ancestor's name in CPU model %s"),
+                       _("Missing ancestor's name in CPU model %1$s"),
                        model->name);
         return -1;
     }
 
     if (!(ancestor = x86ModelFind(map, name))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Ancestor model %s not found for CPU model %s"),
+                       _("Ancestor model %1$s not found for CPU model %2$s"),
                        name, model->name);
         return -1;
     }
@@ -1543,7 +1543,7 @@ x86ModelParseSignatures(virCPUx86Model *model,
         rc = virXPathUInt("string(@family)", ctxt, &sig->family);
         if (rc < 0 || sig->family == 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid CPU signature family in model %s"),
+                           _("Invalid CPU signature family in model %1$s"),
                            model->name);
             return -1;
         }
@@ -1551,7 +1551,7 @@ x86ModelParseSignatures(virCPUx86Model *model,
         rc = virXPathUInt("string(@model)", ctxt, &sig->model);
         if (rc < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid CPU signature model in model %s"),
+                           _("Invalid CPU signature model in model %1$s"),
                            model->name);
             return -1;
         }
@@ -1580,14 +1580,14 @@ x86ModelParseVendor(virCPUx86Model *model,
     vendor = virXPathString("string(./vendor/@name)", ctxt);
     if (!vendor) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid vendor element in CPU model %s"),
+                       _("Invalid vendor element in CPU model %1$s"),
                        model->name);
         return -1;
     }
 
     if (!(model->vendor = x86VendorFind(map, vendor))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown vendor %s referenced by CPU model %s"),
+                       _("Unknown vendor %1$s referenced by CPU model %2$s"),
                        vendor, model->name);
         return -1;
     }
@@ -1618,14 +1618,14 @@ x86ModelParseFeatures(virCPUx86Model *model,
 
         if (!(ftname = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Missing feature name for CPU model %s"),
+                           _("Missing feature name for CPU model %1$s"),
                            model->name);
             return -1;
         }
 
         if (!(feature = x86FeatureFind(map, ftname))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Feature %s required by CPU model %s not found"),
+                           _("Feature %1$s required by CPU model %2$s not found"),
                            ftname, model->name);
             return -1;
         }
@@ -1660,7 +1660,7 @@ x86ModelParse(xmlXPathContextPtr ctxt,
 
     if (x86ModelFind(map, name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Multiple definitions of CPU model '%s'"), name);
+                       _("Multiple definitions of CPU model '%1$s'"), name);
         return -1;
     }
 
@@ -1857,7 +1857,7 @@ x86Compute(virCPUDef *host,
             VIR_DEBUG("CPU arch %s does not match host arch",
                       virArchToString(cpu->arch));
             if (message) {
-                *message = g_strdup_printf(_("CPU arch %s does not match host arch"),
+                *message = g_strdup_printf(_("CPU arch %1$s does not match host arch"),
                                            virArchToString(cpu->arch));
             }
             return VIR_CPU_COMPARE_INCOMPATIBLE;
@@ -1869,8 +1869,7 @@ x86Compute(virCPUDef *host,
         VIR_DEBUG("host CPU vendor does not match required CPU vendor %s",
                   cpu->vendor);
         if (message) {
-            *message = g_strdup_printf(_("host CPU vendor does not match required "
-                                         "CPU vendor %s"),
+            *message = g_strdup_printf(_("host CPU vendor does not match required CPU vendor %1$s"),
                                        cpu->vendor);
         }
 
@@ -2196,7 +2195,7 @@ x86Decode(virCPUDef *cpu,
                 STREQ(candidate->name, preferred[0])) {
                 if (cpu->fallback != VIR_CPU_FALLBACK_ALLOW) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("CPU model %s is not supported by hypervisor"),
+                                   _("CPU model %1$s is not supported by hypervisor"),
                                    preferred[0]);
                     return -1;
                 } else {
@@ -2379,7 +2378,7 @@ x86Encode(virArch arch,
 
         if (cpu->vendor && !(v = x86VendorFind(map, cpu->vendor))) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("CPU vendor %s not found"), cpu->vendor);
+                           _("CPU vendor %1$s not found"), cpu->vendor);
             return -1;
         }
 
@@ -2840,7 +2839,7 @@ virCPUx86Baseline(virCPUDef **cpus,
         outputVendor = false;
     } else if (!(vendor = x86VendorFind(map, cpus[0]->vendor))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Unknown CPU vendor %s"), cpus[0]->vendor);
+                       _("Unknown CPU vendor %1$s"), cpus[0]->vendor);
         return NULL;
     }
 
@@ -2862,7 +2861,7 @@ virCPUx86Baseline(virCPUDef **cpus,
         if (cpus[i]->vendor && model->vendor &&
             STRNEQ(cpus[i]->vendor, model->vendor->name)) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("CPU vendor %s of model %s differs from vendor %s"),
+                           _("CPU vendor %1$s of model %2$s differs from vendor %3$s"),
                            model->vendor->name, model->name, cpus[i]->vendor);
             return NULL;
         }
@@ -2879,7 +2878,7 @@ virCPUx86Baseline(virCPUDef **cpus,
             if (!vendor) {
                 if (!(vendor = x86VendorFind(map, vn))) {
                     virReportError(VIR_ERR_OPERATION_FAILED,
-                                   _("Unknown CPU vendor %s"), vn);
+                                   _("Unknown CPU vendor %1$s"), vn);
                     return NULL;
                 }
             } else if (STRNEQ(vendor->name, vn)) {
@@ -3008,7 +3007,7 @@ virCPUx86Update(virCPUDef *guest,
 
     if (!(guestModel = x86ModelFind(map, guest->model))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown CPU model %s"), guest->model);
+                       _("Unknown CPU model %1$s"), guest->model);
         return -1;
     }
 
@@ -3097,18 +3096,15 @@ virCPUx86UpdateLive(virCPUDef *cpu,
     if (added || removed) {
         if (added && removed)
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("guest CPU doesn't match specification: "
-                             "extra features: %s, missing features: %s"),
+                           _("guest CPU doesn't match specification: extra features: %1$s, missing features: %2$s"),
                            added, removed);
         else if (added)
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("guest CPU doesn't match specification: "
-                             "extra features: %s"),
+                           _("guest CPU doesn't match specification: extra features: %1$s"),
                            added);
         else
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("guest CPU doesn't match specification: "
-                             "missing features: %s"),
+                           _("guest CPU doesn't match specification: missing features: %1$s"),
                            removed);
         return -1;
     }
@@ -3218,7 +3214,7 @@ virCPUx86ExpandFeatures(virCPUDef *cpu)
 
     if (!(model = x86ModelFind(map, cpu->model))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown CPU model %s"), cpu->model);
+                       _("unknown CPU model %1$s"), cpu->model);
         return -1;
     }
 
@@ -3293,7 +3289,7 @@ virCPUx86ValidateFeatures(virCPUDef *cpu)
     for (i = 0; i < cpu->nfeatures; i++) {
         if (!x86FeatureFind(map, cpu->features[i].name)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown CPU feature: %s"),
+                           _("unknown CPU feature: %1$s"),
                            cpu->features[i].name);
             return -1;
         }

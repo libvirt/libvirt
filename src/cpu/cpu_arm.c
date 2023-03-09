@@ -252,7 +252,7 @@ virCPUarmMapFeatureParse(xmlXPathContextPtr ctxt G_GNUC_UNUSED,
 
     if (virCPUarmMapFeatureFind(map, name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("CPU feature %s already defined"), name);
+                       _("CPU feature %1$s already defined"), name);
         return -1;
     }
 
@@ -307,7 +307,7 @@ virCPUarmVendorParse(xmlXPathContextPtr ctxt,
 
     if (virCPUarmVendorFindByName(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("CPU vendor %s already defined"),
+                       _("CPU vendor %1$s already defined"),
                        vendor->name);
         return -1;
     }
@@ -318,7 +318,7 @@ virCPUarmVendorParse(xmlXPathContextPtr ctxt,
 
     if (virCPUarmVendorFindByID(map, vendor->value)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("CPU vendor value 0x%2llx already defined"),
+                       _("CPU vendor value 0x%1$2llx already defined"),
                        vendor->value);
         return -1;
     }
@@ -373,7 +373,7 @@ virCPUarmModelParse(xmlXPathContextPtr ctxt,
 
     if (virCPUarmModelFind(map, model->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("CPU model %s already defined"),
+                       _("CPU model %1$s already defined"),
                        model->name);
         return -1;
     }
@@ -386,7 +386,7 @@ virCPUarmModelParse(xmlXPathContextPtr ctxt,
 
         if (!(model->vendor = virCPUarmVendorFindByName(map, vendor))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown vendor %s referenced by CPU model %s"),
+                           _("Unknown vendor %1$s referenced by CPU model %2$s"),
                            vendor, model->name);
             return -1;
         }
@@ -394,7 +394,7 @@ virCPUarmModelParse(xmlXPathContextPtr ctxt,
 
     if (!(pvrNode = virXPathNode("./pvr", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing PVR information for CPU model %s"),
+                       _("Missing PVR information for CPU model %1$s"),
                        model->name);
         return -1;
     }
@@ -520,8 +520,7 @@ virCPUarmCompare(virCPUDef *host,
 
         if (failIncompatible) {
             virReportError(VIR_ERR_CPU_INCOMPATIBLE,
-                           _("Host CPU model does not match required CPU "
-                             "vendor %s or(and) model %s"),
+                           _("Host CPU model does not match required CPU vendor %1$s or(and) model %2$s"),
                            NULLSTR(cpu->vendor), NULLSTR(cpu->model));
             return VIR_CPU_COMPARE_ERROR;
         }
@@ -546,7 +545,7 @@ virCPUarmValidateFeatures(virCPUDef *cpu)
 
         if (!virCPUarmMapFeatureFind(map, feature->name)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown CPU feature: %s"),
+                           _("unknown CPU feature: %1$s"),
                            feature->name);
             return -1;
         }
@@ -635,14 +634,14 @@ virCPUarmDecode(virCPUDef *cpu,
 
     if (!(model = virCPUarmModelFindByPVR(map, cpuData->pvr))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Cannot find CPU model with PVR 0x%03llx"),
+                       _("Cannot find CPU model with PVR 0x%1$03llx"),
                        cpuData->pvr);
         return -1;
     }
 
     if (!virCPUModelIsAllowed(model->name, models)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("CPU model %s is not supported by hypervisor"),
+                       _("CPU model %1$s is not supported by hypervisor"),
                        model->name);
         return -1;
     }
@@ -652,7 +651,7 @@ virCPUarmDecode(virCPUDef *cpu,
     if (cpuData->vendor_id &&
         !(vendor = virCPUarmVendorFindByID(map, cpuData->vendor_id))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Cannot find CPU vendor with vendor id 0x%02llx"),
+                       _("Cannot find CPU vendor with vendor id 0x%1$02llx"),
                        cpuData->vendor_id);
         return -1;
     }

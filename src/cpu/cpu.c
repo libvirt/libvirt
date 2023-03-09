@@ -64,7 +64,7 @@ cpuGetSubDriver(virArch arch)
     }
 
     virReportError(VIR_ERR_NO_SUPPORT,
-                   _("'%s' architecture is not supported by CPU driver"),
+                   _("'%1$s' architecture is not supported by CPU driver"),
                    virArchToString(arch));
     return NULL;
 }
@@ -81,7 +81,7 @@ cpuGetSubDriverByName(const char *name)
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("CPU driver '%s' does not exist"),
+                   _("CPU driver '%1$s' does not exist"),
                    name);
     return NULL;
 }
@@ -156,7 +156,7 @@ virCPUCompare(virArch arch,
 
     if (!driver->compare) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot compare CPUs of %s architecture"),
+                       _("cannot compare CPUs of %1$s architecture"),
                        virArchToString(arch));
         return VIR_CPU_COMPARE_ERROR;
     }
@@ -210,7 +210,7 @@ cpuDecode(virCPUDef *cpu,
 
     if (driver->decode == NULL) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot decode CPU data for %s architecture"),
+                       _("cannot decode CPU data for %1$s architecture"),
                        virArchToString(cpu->arch));
         return -1;
     }
@@ -266,7 +266,7 @@ cpuEncode(virArch arch,
 
     if (driver->encode == NULL) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot encode CPU data for %s architecture"),
+                       _("cannot encode CPU data for %1$s architecture"),
                        virArchToString(arch));
         return -1;
     }
@@ -417,7 +417,7 @@ virCPUGetHost(virArch arch,
     case VIR_CPU_TYPE_GUEST:
         if (nodeInfo) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("cannot set topology for CPU type '%s'"),
+                           _("cannot set topology for CPU type '%1$s'"),
                            virCPUTypeToString(type));
             return NULL;
         }
@@ -427,7 +427,7 @@ virCPUGetHost(virArch arch,
     case VIR_CPU_TYPE_AUTO:
     case VIR_CPU_TYPE_LAST:
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("unsupported CPU type: %s"),
+                       _("unsupported CPU type: %1$s"),
                        virCPUTypeToString(type));
         return NULL;
     }
@@ -450,7 +450,7 @@ virCPUGetHost(virArch arch,
                   virArchToString(arch));
     } else {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot detect host CPU model for %s architecture"),
+                       _("cannot detect host CPU model for %1$s architecture"),
                        virArchToString(arch));
         return NULL;
     }
@@ -524,12 +524,12 @@ virCPUBaseline(virArch arch,
     for (i = 0; i < ncpus; i++) {
         if (!cpus[i]) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("invalid CPU definition at index %zu"), i);
+                           _("invalid CPU definition at index %1$zu"), i);
             return NULL;
         }
         if (!cpus[i]->model) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("no CPU model specified at index %zu"), i);
+                           _("no CPU model specified at index %1$zu"), i);
             return NULL;
         }
     }
@@ -542,7 +542,7 @@ virCPUBaseline(virArch arch,
 
     if (!driver->baseline) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot compute baseline CPU of %s architecture"),
+                       _("cannot compute baseline CPU of %1$s architecture"),
                        virArchToString(arch));
         return NULL;
     }
@@ -614,7 +614,7 @@ virCPUUpdate(virArch arch,
 
     if (!driver->update) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot update guest CPU for %s architecture"),
+                       _("cannot update guest CPU for %1$s architecture"),
                        virArchToString(arch));
         return -1;
     }
@@ -701,7 +701,7 @@ virCPUCheckFeature(virArch arch,
 
     if (!driver->checkFeature) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot check guest CPU feature for %s architecture"),
+                       _("cannot check guest CPU feature for %1$s architecture"),
                        virArchToString(arch));
         return -1;
     }
@@ -738,7 +738,7 @@ virCPUCheckForbiddenFeatures(virCPUDef *guest, const virCPUDef *host)
             continue;
 
         virReportError(VIR_ERR_CPU_INCOMPATIBLE,
-                       _("Host CPU provides forbidden feature '%s'"),
+                       _("Host CPU provides forbidden feature '%1$s'"),
                        guest->features[i].name);
         return -1;
     }
@@ -772,7 +772,7 @@ virCPUDataCheckFeature(const virCPUData *data,
 
     if (!driver->dataCheckFeature) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot check guest CPU feature for %s architecture"),
+                       _("cannot check guest CPU feature for %1$s architecture"),
                        virArchToString(data->arch));
         return -1;
     }
@@ -802,7 +802,7 @@ virCPUDataFormat(const virCPUData *data)
 
     if (!driver->dataFormat) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot format %s CPU data"),
+                       _("cannot format %1$s CPU data"),
                        virArchToString(data->arch));
         return NULL;
     }
@@ -862,7 +862,7 @@ virCPUData *virCPUDataParseNode(xmlNodePtr node)
         return NULL;
 
     if (!driver->dataParse) {
-        virReportError(VIR_ERR_NO_SUPPORT, _("cannot parse %s CPU data"), arch);
+        virReportError(VIR_ERR_NO_SUPPORT, _("cannot parse %1$s CPU data"), arch);
         return NULL;
     }
 
@@ -988,14 +988,14 @@ virCPUTranslate(virArch arch,
 
     if (cpu->fallback != VIR_CPU_FALLBACK_ALLOW) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("CPU model %s is not supported by hypervisor"),
+                       _("CPU model %1$s is not supported by hypervisor"),
                        cpu->model);
         return -1;
     }
 
     if (!driver->translate) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot translate CPU model %s to a supported model"),
+                       _("cannot translate CPU model %1$s to a supported model"),
                        cpu->model);
         return -1;
     }
@@ -1177,7 +1177,7 @@ virCPUDataAddFeature(virCPUData *cpuData,
 
     if (!driver->dataAddFeature) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot add guest CPU feature for %s architecture"),
+                       _("cannot add guest CPU feature for %1$s architecture"),
                        virArchToString(cpuData->arch));
         return -1;
     }

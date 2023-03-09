@@ -47,7 +47,7 @@ loadData(const char *mapfile,
 
     if (n > 0 && !callback) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unexpected element '%s' in CPU map '%s'"), element, mapfile);
+                       _("Unexpected element '%1$s' in CPU map '%2$s'"), element, mapfile);
         return -1;
     }
 
@@ -56,7 +56,7 @@ loadData(const char *mapfile,
 
         if (!(name = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot find %s name in CPU map '%s'"), element, mapfile);
+                           _("cannot find %1$s name in CPU map '%2$s'"), element, mapfile);
             return -1;
         }
         VIR_DEBUG("Load %s name %s", element, name);
@@ -173,7 +173,7 @@ int cpuMapLoad(const char *arch,
 
     if ((ctxt->node = virXPathNode(xpath, ctxt)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot find CPU map for %s architecture"), arch);
+                       _("cannot find CPU map for %1$s architecture"), arch);
         return -1;
     }
 

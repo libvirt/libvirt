@@ -53,7 +53,7 @@ virCPUs390Update(virCPUDef *guest,
     if (guest->mode == VIR_CPU_MODE_CUSTOM) {
         if (guest->match == VIR_CPU_MATCH_MINIMUM) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("match mode %s not supported"),
+                           _("match mode %1$s not supported"),
                            virCPUMatchTypeToString(guest->match));
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -94,8 +94,7 @@ virCPUs390ValidateFeatures(virCPUDef *cpu)
     for (i = 0; i < cpu->nfeatures; i++) {
         if (cpu->features[i].policy == VIR_CPU_FEATURE_OPTIONAL) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("only cpu feature policies 'require' and "
-                             "'disable' are supported for %s"),
+                           _("only cpu feature policies 'require' and 'disable' are supported for %1$s"),
                            cpu->features[i].name);
             return -1;
         }

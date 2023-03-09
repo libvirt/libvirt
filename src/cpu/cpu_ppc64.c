@@ -110,7 +110,7 @@ ppc64CheckCompatibilityMode(const char *host_model,
         virStrToLong_i(tmp, NULL, 10, &compat) < 0 ||
         compat < 6 || compat > 10) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown compatibility mode %s"),
+                       _("Unknown compatibility mode %1$s"),
                        compat_mode);
         return VIR_CPU_COMPARE_ERROR;
     }
@@ -246,7 +246,7 @@ ppc64ModelFromCPU(const virCPUDef *cpu,
 
     if (!(model = ppc64ModelFind(map, cpu->model))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown CPU model %s"), cpu->model);
+                       _("Unknown CPU model %1$s"), cpu->model);
         return NULL;
     }
 
@@ -286,7 +286,7 @@ ppc64VendorParse(xmlXPathContextPtr ctxt G_GNUC_UNUSED,
 
     if (ppc64VendorFind(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("CPU vendor %s already defined"), vendor->name);
+                       _("CPU vendor %1$s already defined"), vendor->name);
         return -1;
     }
 
@@ -313,7 +313,7 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
 
     if (ppc64ModelFind(map, model->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("CPU model %s already defined"), model->name);
+                       _("CPU model %1$s already defined"), model->name);
         return -1;
     }
 
@@ -321,14 +321,14 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
         vendor = virXPathString("string(./vendor/@name)", ctxt);
         if (!vendor) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid vendor element in CPU model %s"),
+                           _("Invalid vendor element in CPU model %1$s"),
                            model->name);
             return -1;
         }
 
         if (!(model->vendor = ppc64VendorFind(map, vendor))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown vendor %s referenced by CPU model %s"),
+                           _("Unknown vendor %1$s referenced by CPU model %2$s"),
                            vendor, model->name);
             return -1;
         }
@@ -336,7 +336,7 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
 
     if ((n = virXPathNodeSet("./pvr", ctxt, &nodes)) <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing PVR information for CPU model %s"),
+                       _("Missing PVR information for CPU model %1$s"),
                        model->name);
         return -1;
     }
@@ -428,7 +428,7 @@ ppc64Compute(virCPUDef *host,
             VIR_DEBUG("CPU arch %s does not match host arch",
                       virArchToString(cpu->arch));
             if (message)
-                *message = g_strdup_printf(_("CPU arch %s does not match host arch"),
+                *message = g_strdup_printf(_("CPU arch %1$s does not match host arch"),
                                            virArchToString(cpu->arch));
 
             return VIR_CPU_COMPARE_INCOMPATIBLE;
@@ -440,8 +440,7 @@ ppc64Compute(virCPUDef *host,
         VIR_DEBUG("host CPU vendor does not match required CPU vendor %s",
                   cpu->vendor);
         if (message) {
-            *message = g_strdup_printf(_("host CPU vendor does not match required "
-                                         "CPU vendor %s"),
+            *message = g_strdup_printf(_("host CPU vendor does not match required CPU vendor %1$s"),
                                        cpu->vendor);
         }
 
@@ -497,8 +496,7 @@ ppc64Compute(virCPUDef *host,
         VIR_DEBUG("host CPU model does not match required CPU model %s",
                   guest_model->name);
         if (message) {
-            *message = g_strdup_printf(_("host CPU model does not match required "
-                                         "CPU model %s"),
+            *message = g_strdup_printf(_("host CPU model does not match required CPU model %1$s"),
                                        guest_model->name);
         }
 
@@ -554,14 +552,14 @@ ppc64DriverDecode(virCPUDef *cpu,
 
     if (!(model = ppc64ModelFindPVR(map, data->data.ppc64.pvr[0].value))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Cannot find CPU model with PVR 0x%08x"),
+                       _("Cannot find CPU model with PVR 0x%1$08x"),
                        data->data.ppc64.pvr[0].value);
         return -1;
     }
 
     if (!virCPUModelIsAllowed(model->name, models)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("CPU model %s is not supported by hypervisor"),
+                       _("CPU model %1$s is not supported by hypervisor"),
                        model->name);
         return -1;
     }
@@ -687,7 +685,7 @@ virCPUppc64Baseline(virCPUDef **cpus,
 
     if (!(model = ppc64ModelFind(map, cpus[0]->model))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown CPU model %s"), cpus[0]->model);
+                       _("Unknown CPU model %1$s"), cpus[0]->model);
         return NULL;
     }
 
@@ -716,15 +714,14 @@ virCPUppc64Baseline(virCPUDef **cpus,
 
         if (!(vnd = ppc64VendorFind(map, cpus[i]->vendor))) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("Unknown CPU vendor %s"), cpus[i]->vendor);
+                           _("Unknown CPU vendor %1$s"), cpus[i]->vendor);
             return NULL;
         }
 
         if (model->vendor) {
             if (model->vendor != vnd) {
                 virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("CPU vendor %s of model %s differs from "
-                                 "vendor %s"),
+                               _("CPU vendor %1$s of model %2$s differs from vendor %3$s"),
                                model->vendor->name, model->name,
                                vnd->name);
                 return NULL;
