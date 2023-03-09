@@ -26,8 +26,8 @@
       <target dev='sdf' bus='scsi'/>
       <readonly/>
       <shareable/>
-      <alias name='scsi3-0-5-6'/>
-      <address type='drive' controller='3' bus='0' target='5' unit='6'/>
+      <alias name='scsi3-0-6'/>
+      <address type='drive' controller='3' bus='0' target='0' unit='6'/>
     </disk>
     <controller type='usb' index='0'>
       <alias name='usb'/>
@@ -36,19 +36,19 @@
     <controller type='pci' index='0' model='pci-root'>
       <alias name='pci'/>
     </controller>
-    <controller type='scsi' index='0' model='virtio-scsi'>
+    <controller type='scsi' index='0' model='lsilogic'>
       <alias name='scsi0'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </controller>
-    <controller type='scsi' index='1' model='virtio-scsi'>
+    <controller type='scsi' index='1' model='lsilogic'>
       <alias name='scsi1'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </controller>
-    <controller type='scsi' index='2' model='virtio-scsi'>
+    <controller type='scsi' index='2' model='lsilogic'>
       <alias name='scsi2'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </controller>
-    <controller type='scsi' index='3' model='virtio-scsi'>
+    <controller type='scsi' index='3' model='lsilogic'>
       <alias name='scsi3'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </controller>

@@ -70,6 +70,7 @@ qemuHotplugCreateObjects(virDomainXMLOption *xmlopt,
 
     priv->qemuCaps = virQEMUCapsNew();
 
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_SCSI_LSI);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VIRTIO_SCSI);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM_PLAIN);
@@ -790,7 +791,7 @@ mymain(void)
     DO_TEST_DETACH("base-with-scsi-controller-live", "disk-scsi-2", true, true,
                    "device_del", QMP_OK);
     DO_TEST_DETACH("base-with-scsi-controller-live", "disk-scsi-2", false, false,
-                   "device_del", QMP_DEVICE_DELETED("scsi3-0-5-6") QMP_OK,
+                   "device_del", QMP_DEVICE_DELETED("scsi3-0-6") QMP_OK,
                    "blockdev-del", QMP_OK,
                    "blockdev-del", QMP_OK);
 
