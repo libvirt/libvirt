@@ -85,7 +85,7 @@ static int virLockManagerLockDaemonLoadConfig(const char *configFile)
     if (access(configFile, R_OK) == -1) {
         if (errno != ENOENT) {
             virReportSystemError(errno,
-                                 _("Unable to access config file %s"),
+                                 _("Unable to access config file %1$s"),
                                  configFile);
             return -1;
         }
@@ -400,7 +400,7 @@ static int virLockManagerLockDaemonNew(virLockManager *lock,
                 /* ignored */
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unexpected parameter %s for object"),
+                               _("Unexpected parameter %1$s for object"),
                                params[i].key);
                 goto cleanup;
             }
@@ -426,7 +426,7 @@ static int virLockManagerLockDaemonNew(virLockManager *lock,
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown lock manager object type %d"),
+                       _("Unknown lock manager object type %1$d"),
                        type);
         goto cleanup;
     }
@@ -498,7 +498,7 @@ static int
 virLockManagerGetLVMKey(const char *path,
                         char **key G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, _("Unable to get LVM key for %s"), path);
+    virReportSystemError(ENOSYS, _("Unable to get LVM key for %1$s"), path);
     return -1;
 }
 #endif
@@ -601,7 +601,7 @@ static int virLockManagerLockDaemonAddResource(virLockManager *lock,
                 path = params[i].value.str;
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unexpected parameter %s for lease resource"),
+                               _("Unexpected parameter %1$s for lease resource"),
                                params[i].key);
                 return -1;
             }
@@ -617,7 +617,7 @@ static int virLockManagerLockDaemonAddResource(virLockManager *lock,
     }   break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown lock manager object type %d"),
+                       _("Unknown lock manager object type %1$d"),
                        type);
         return -1;
     }

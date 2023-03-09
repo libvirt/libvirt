@@ -43,7 +43,7 @@ VIR_LOG_INIT("locking.lock_manager");
 #define CHECK_DRIVER(field, errret) \
     if (!driver->field) { \
         virReportError(VIR_ERR_INTERNAL_ERROR, \
-                     _("Missing '%s' field in lock manager driver"), \
+                     _("Missing '%1$s' field in lock manager driver"), \
                      #field); \
         return errret; \
     }
@@ -51,7 +51,7 @@ VIR_LOG_INIT("locking.lock_manager");
 #define CHECK_MANAGER(field, errret) \
     if (!lock->driver->field) { \
         virReportError(VIR_ERR_INTERNAL_ERROR, \
-                       _("Missing '%s' field in lock manager driver"), \
+                       _("Missing '%1$s' field in lock manager driver"), \
                        #field); \
         return errret; \
     }
@@ -147,7 +147,7 @@ virLockManagerPlugin *virLockManagerPluginNew(const char *name,
 
         if (access(modfile, R_OK) < 0) {
             virReportSystemError(errno,
-                                 _("Plugin %s not accessible"),
+                                 _("Plugin %1$s not accessible"),
                                  modfile);
             goto cleanup;
         }
@@ -155,7 +155,7 @@ virLockManagerPlugin *virLockManagerPluginNew(const char *name,
         handle = dlopen(modfile, RTLD_NOW | RTLD_LOCAL);
         if (!handle) {
             virReportError(VIR_ERR_SYSTEM_ERROR,
-                           _("Failed to load plugin %s: %s"),
+                           _("Failed to load plugin %1$s: %2$s"),
                            modfile, dlerror());
             goto cleanup;
         }

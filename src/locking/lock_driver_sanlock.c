@@ -101,7 +101,7 @@ virLockManagerSanlockError(int err,
 #if WITH_SANLOCK_STRERROR
         *message = g_strdup(sanlock_strerror(err));
 #else
-        *message = g_strdup_printf(_("sanlock error %d"), err);
+        *message = g_strdup_printf(_("sanlock error %1$d"), err);
 #endif
         return true;
     } else {
@@ -124,7 +124,7 @@ virLockManagerSanlockLoadConfig(virLockManagerSanlockDriver *driver,
     if (access(configFile, R_OK) == -1) {
         if (errno != ENOENT) {
             virReportSystemError(errno,
-                                 _("Unable to access config file %s"),
+                                 _("Unable to access config file %1$s"),
                                  configFile);
             return -1;
         }
@@ -196,7 +196,7 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriver *driver)
     if (virStrcpyStatic(ls.name,
                         VIR_LOCK_MANAGER_SANLOCK_AUTO_DISK_LOCKSPACE) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Lockspace path '%s' exceeded %d characters"),
+                       _("Lockspace path '%1$s' exceeded %2$d characters"),
                        VIR_LOCK_MANAGER_SANLOCK_AUTO_DISK_LOCKSPACE,
                        SANLK_PATH_LEN);
         goto error;
@@ -205,7 +205,7 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriver *driver)
     ls.flags = 0;
     if (virStrcpy(ls.host_id_disk.path, path, SANLK_PATH_LEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Lockspace path '%s' exceeded %d characters"),
+                       _("Lockspace path '%1$s' exceeded %2$d characters"),
                        path, SANLK_PATH_LEN);
         goto error;
     }
@@ -221,8 +221,7 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriver *driver)
         dir = g_path_get_dirname(path);
         if (stat(dir, &st) < 0 || !S_ISDIR(st.st_mode)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to create lockspace %s: parent directory"
-                             " does not exist or is not a directory"),
+                           _("Unable to create lockspace %1$s: parent directory does not exist or is not a directory"),
                            path);
             goto error;
         }
@@ -233,7 +232,7 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriver *driver)
         if ((fd = open(path, O_WRONLY|O_CREAT|O_EXCL, perms)) < 0) {
             if (errno != EEXIST) {
                 virReportSystemError(errno,
-                                     _("Unable to create lockspace %s"),
+                                     _("Unable to create lockspace %1$s"),
                                      path);
                 goto error;
             }
@@ -243,7 +242,7 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriver *driver)
             if ((driver->user != (uid_t) -1 || driver->group != (gid_t) -1) &&
                 (fchown(fd, driver->user, driver->group) < 0)) {
                 virReportSystemError(errno,
-                                     _("cannot chown '%s' to (%u, %u)"),
+                                     _("cannot chown '%1$s' to (%2$u, %3$u)"),
                                      path,
                                      (unsigned int) driver->user,
                                      (unsigned int) driver->group);
@@ -254,12 +253,12 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriver *driver)
                 char *err = NULL;
                 if (virLockManagerSanlockError(rv, &err)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Unable to query sector size %s: %s"),
+                                   _("Unable to query sector size %1$s: %2$s"),
                                    path, NULLSTR(err));
                     VIR_FREE(err);
                 } else {
                     virReportSystemError(-rv,
-                                         _("Unable to query sector size %s"),
+                                         _("Unable to query sector size %1$s"),
                                          path);
                 }
                 goto error_unlink;
@@ -270,14 +269,14 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriver *driver)
              */
             if (safezero(fd, 0, rv) < 0) {
                 virReportSystemError(errno,
-                                     _("Unable to allocate lockspace %s"),
+                                     _("Unable to allocate lockspace %1$s"),
                                      path);
                 goto error_unlink;
             }
 
             if (VIR_CLOSE(fd) < 0) {
                 virReportSystemError(errno,
-                                     _("Unable to save lockspace %s"),
+                                     _("Unable to save lockspace %1$s"),
                                      path);
                 goto error_unlink;
             }
@@ -286,12 +285,12 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriver *driver)
                 char *err = NULL;
                 if (virLockManagerSanlockError(rv, &err)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Unable to initialize lockspace %s: %s"),
+                                   _("Unable to initialize lockspace %1$s: %2$s"),
                                    path, NULLSTR(err));
                     VIR_FREE(err);
                 } else {
                     virReportSystemError(-rv,
-                                         _("Unable to initialize lockspace %s"),
+                                         _("Unable to initialize lockspace %1$s"),
                                          path);
                 }
                 goto error_unlink;
@@ -304,7 +303,7 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriver *driver)
              (driver->group != (gid_t) -1 && driver->group != st.st_gid)) &&
             (chown(path, driver->user, driver->group) < 0)) {
             virReportSystemError(errno,
-                                 _("cannot chown '%s' to (%u, %u)"),
+                                 _("cannot chown '%1$s' to (%2$u, %3$u)"),
                                  path,
                                  (unsigned int) driver->user,
                                  (unsigned int) driver->group);
@@ -314,7 +313,7 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriver *driver)
         if ((driver->group != (gid_t) -1 && (st.st_mode & 0060) != 0060) &&
             chmod(path, 0660) < 0) {
             virReportSystemError(errno,
-                                 _("cannot chmod '%s' to 0660"),
+                                 _("cannot chmod '%1$s' to 0660"),
                                  path);
             goto error;
         }
@@ -344,12 +343,12 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriver *driver)
             char *err = NULL;
             if (virLockManagerSanlockError(rv, &err)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to add lockspace %s: %s"),
+                               _("Unable to add lockspace %1$s: %2$s"),
                                path, NULLSTR(err));
                 VIR_FREE(err);
             } else {
                 virReportSystemError(-rv,
-                                     _("Unable to add lockspace %s"),
+                                     _("Unable to add lockspace %1$s"),
                                      path);
             }
             goto error;
@@ -454,7 +453,7 @@ static int virLockManagerSanlockNew(virLockManager *lock,
 
     if (type != VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unsupported object type %d"), type);
+                       _("Unsupported object type %1$d"), type);
         return -1;
     }
 
@@ -528,7 +527,7 @@ static int virLockManagerSanlockAddLease(virLockManager *lock,
     res->num_disks = 1;
     if (virStrcpy(res->name, name, SANLK_NAME_LEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Resource name '%s' exceeds %d characters"),
+                       _("Resource name '%1$s' exceeds %2$d characters"),
                        name, SANLK_NAME_LEN);
         return -1;
     }
@@ -537,7 +536,7 @@ static int virLockManagerSanlockAddLease(virLockManager *lock,
         if (STREQ(params[i].key, "path")) {
             if (virStrcpy(res->disks[0].path, params[i].value.str, SANLK_PATH_LEN) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Lease path '%s' exceeds %d characters"),
+                               _("Lease path '%1$s' exceeds %2$d characters"),
                                params[i].value.str, SANLK_PATH_LEN);
                 return -1;
             }
@@ -546,7 +545,7 @@ static int virLockManagerSanlockAddLease(virLockManager *lock,
         } else if (STREQ(params[i].key, "lockspace")) {
             if (virStrcpy(res->lockspace_name, params[i].value.str, SANLK_NAME_LEN) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Resource lockspace '%s' exceeds %d characters"),
+                               _("Resource lockspace '%1$s' exceeds %2$d characters"),
                                params[i].value.str, SANLK_NAME_LEN);
                 return -1;
             }
@@ -589,7 +588,7 @@ virLockManagerSanlockAddDisk(virLockManagerSanlockDriver *driver,
         return -1;
     if (virStrcpy(res->name, hash, SANLK_NAME_LEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("MD5 hash '%s' unexpectedly larger than %d characters"),
+                       _("MD5 hash '%1$s' unexpectedly larger than %2$d characters"),
                        hash, (SANLK_NAME_LEN - 1));
         return -1;
     }
@@ -597,7 +596,7 @@ virLockManagerSanlockAddDisk(virLockManagerSanlockDriver *driver,
     path = g_strdup_printf("%s/%s", driver->autoDiskLeasePath, res->name);
     if (virStrcpy(res->disks[0].path, path, SANLK_PATH_LEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Lease path '%s' exceeds %d characters"),
+                       _("Lease path '%1$s' exceeds %2$d characters"),
                        path, SANLK_PATH_LEN);
         return -1;
     }
@@ -606,7 +605,7 @@ virLockManagerSanlockAddDisk(virLockManagerSanlockDriver *driver,
                   VIR_LOCK_MANAGER_SANLOCK_AUTO_DISK_LOCKSPACE,
                   SANLK_NAME_LEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Resource lockspace '%s' exceeds %d characters"),
+                       _("Resource lockspace '%1$s' exceeds %2$d characters"),
                        VIR_LOCK_MANAGER_SANLOCK_AUTO_DISK_LOCKSPACE, SANLK_NAME_LEN);
         return -1;
     }
@@ -631,7 +630,7 @@ virLockManagerSanlockCreateLease(virLockManagerSanlockDriver *driver,
         if ((fd = open(res->disks[0].path, O_WRONLY|O_CREAT|O_EXCL, 0600)) < 0) {
             if (errno != EEXIST) {
                 virReportSystemError(errno,
-                                     _("Unable to create lockspace %s"),
+                                     _("Unable to create lockspace %1$s"),
                                      res->disks[0].path);
                 return -1;
             }
@@ -641,7 +640,7 @@ virLockManagerSanlockCreateLease(virLockManagerSanlockDriver *driver,
             if ((driver->user != (uid_t) -1 || driver->group != (gid_t) -1) &&
                 (fchown(fd, driver->user, driver->group) < 0)) {
                 virReportSystemError(errno,
-                                     _("cannot chown '%s' to (%u, %u)"),
+                                     _("cannot chown '%1$s' to (%2$u, %3$u)"),
                                      res->disks[0].path,
                                      (unsigned int) driver->user,
                                      (unsigned int) driver->group);
@@ -652,12 +651,12 @@ virLockManagerSanlockCreateLease(virLockManagerSanlockDriver *driver,
                 char *err = NULL;
                 if (virLockManagerSanlockError(rv, &err)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Unable to query sector size %s: %s"),
+                                   _("Unable to query sector size %1$s: %2$s"),
                                    res->disks[0].path, NULLSTR(err));
                     VIR_FREE(err);
                 } else {
                     virReportSystemError(-rv,
-                                         _("Unable to query sector size %s"),
+                                         _("Unable to query sector size %1$s"),
                                          res->disks[0].path);
                 }
                 goto error_unlink;
@@ -668,14 +667,14 @@ virLockManagerSanlockCreateLease(virLockManagerSanlockDriver *driver,
              */
             if (safezero(fd, 0, rv) < 0) {
                 virReportSystemError(errno,
-                                     _("Unable to allocate lease %s"),
+                                     _("Unable to allocate lease %1$s"),
                                      res->disks[0].path);
                 goto error_unlink;
             }
 
             if (VIR_CLOSE(fd) < 0) {
                 virReportSystemError(errno,
-                                     _("Unable to save lease %s"),
+                                     _("Unable to save lease %1$s"),
                                      res->disks[0].path);
                 goto error_unlink;
             }
@@ -684,12 +683,12 @@ virLockManagerSanlockCreateLease(virLockManagerSanlockDriver *driver,
                 char *err = NULL;
                 if (virLockManagerSanlockError(rv, &err)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Unable to initialize lease %s: %s"),
+                                   _("Unable to initialize lease %1$s: %2$s"),
                                    res->disks[0].path, NULLSTR(err));
                     VIR_FREE(err);
                 } else {
                     virReportSystemError(-rv,
-                                         _("Unable to initialize lease %s"),
+                                         _("Unable to initialize lease %1$s"),
                                          res->disks[0].path);
                 }
                 goto error_unlink;
@@ -722,7 +721,7 @@ static int virLockManagerSanlockAddResource(virLockManager *lock,
 
     if (priv->res_count == SANLK_MAX_RESOURCES) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Too many resources %d for object"),
+                       _("Too many resources %1$d for object"),
                        SANLK_MAX_RESOURCES);
         return -1;
     }
@@ -757,7 +756,7 @@ static int virLockManagerSanlockAddResource(virLockManager *lock,
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown lock manager object type %d for domain lock object"),
+                       _("Unknown lock manager object type %1$d for domain lock object"),
                        type);
         return -1;
     }
@@ -788,7 +787,7 @@ virLockManagerSanlockRegisterKillscript(int sock,
     case VIR_DOMAIN_LOCK_FAILURE_IGNORE:
     case VIR_DOMAIN_LOCK_FAILURE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Failure action %s is not supported by sanlock"),
+                       _("Failure action %1$s is not supported by sanlock"),
                        virDomainLockFailureTypeToString(action));
         return -1;
     }
@@ -812,14 +811,13 @@ virLockManagerSanlockRegisterKillscript(int sock,
     /* sanlock_killpath() would just crop the strings */
     if (strlen(path) >= SANLK_HELPER_PATH_LEN) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Sanlock helper path is longer than %d: '%s'"),
+                       _("Sanlock helper path is longer than %1$d: '%2$s'"),
                        SANLK_HELPER_PATH_LEN - 1, path);
         return -1;
     }
     if (strlen(args) >= SANLK_HELPER_ARGS_LEN) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Sanlock helper arguments are longer than %d:"
-                         " '%s'"),
+                       _("Sanlock helper arguments are longer than %1$d: '%2$s'"),
                        SANLK_HELPER_ARGS_LEN - 1, args);
         return -1;
     }
@@ -828,7 +826,7 @@ virLockManagerSanlockRegisterKillscript(int sock,
         char *err = NULL;
         if (virLockManagerSanlockError(rv, &err)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to register lock failure action: %s"),
+                           _("Failed to register lock failure action: %1$s"),
                            NULLSTR(err));
             VIR_FREE(err);
         } else {
@@ -881,7 +879,7 @@ static int virLockManagerSanlockAcquire(virLockManager *lock,
             char *err = NULL;
             if (virLockManagerSanlockError(sock, &err)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Failed to open socket to sanlock daemon: %s"),
+                               _("Failed to open socket to sanlock daemon: %1$s"),
                                NULLSTR(err));
                 VIR_FREE(err);
             } else {
@@ -919,12 +917,12 @@ static int virLockManagerSanlockAcquire(virLockManager *lock,
             char *err = NULL;
             if (virLockManagerSanlockError(rv, &err)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to parse lock state %s: %s"),
+                               _("Unable to parse lock state %1$s: %2$s"),
                                state, NULLSTR(err));
                 VIR_FREE(err);
             } else {
                 virReportSystemError(-rv,
-                                     _("Unable to parse lock state %s"),
+                                     _("Unable to parse lock state %1$s"),
                                      state);
             }
             goto error;
@@ -943,7 +941,7 @@ static int virLockManagerSanlockAcquire(virLockManager *lock,
             char *err = NULL;
             if (virLockManagerSanlockError(rv, &err)) {
                 virReportError(VIR_ERR_RESOURCE_BUSY,
-                               _("Failed to acquire lock: %s"),
+                               _("Failed to acquire lock: %1$s"),
                                NULLSTR(err));
                 VIR_FREE(err);
             } else {
@@ -971,7 +969,7 @@ static int virLockManagerSanlockAcquire(virLockManager *lock,
             char *err = NULL;
             if (virLockManagerSanlockError(rv, &err)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Failed to restrict process: %s"),
+                               _("Failed to restrict process: %1$s"),
                                NULLSTR(err));
                 VIR_FREE(err);
             } else {
@@ -1027,7 +1025,7 @@ static int virLockManagerSanlockRelease(virLockManager *lock,
             char *err = NULL;
             if (virLockManagerSanlockError(rv, &err)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Failed to inquire lock: %s"),
+                               _("Failed to inquire lock: %1$s"),
                                NULLSTR(err));
                 VIR_FREE(err);
             } else {
@@ -1046,7 +1044,7 @@ static int virLockManagerSanlockRelease(virLockManager *lock,
         char *err = NULL;
         if (virLockManagerSanlockError(rv, &err)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to release lock: %s"),
+                           _("Failed to release lock: %1$s"),
                            NULLSTR(err));
             VIR_FREE(err);
         } else {
@@ -1085,7 +1083,7 @@ static int virLockManagerSanlockInquire(virLockManager *lock,
         char *err;
         if (virLockManagerSanlockError(rv, &err)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to inquire lock: %s"),
+                           _("Failed to inquire lock: %1$s"),
                            NULLSTR(err));
             VIR_FREE(err);
         } else {

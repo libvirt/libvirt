@@ -15,7 +15,7 @@ getArgs(int argc,
     int act;
 
     if (argc != 4) {
-        fprintf(stderr, _("%s uri uuid action\n"), argv[0]);
+        fprintf(stderr, _("%1$s uri uuid action\n"), argv[0]);
         return -1;
     }
 
@@ -24,7 +24,7 @@ getArgs(int argc,
 
     act = virDomainLockFailureTypeFromString(argv[3]);
     if (act < 0) {
-        fprintf(stderr, _("invalid failure action: '%s'\n"), argv[3]);
+        fprintf(stderr, _("invalid failure action: '%1$s'\n"), argv[3]);
         return -1;
     }
     *action = act;
@@ -90,7 +90,7 @@ main(int argc, char **argv)
     case VIR_DOMAIN_LOCK_FAILURE_RESTART:
     case VIR_DOMAIN_LOCK_FAILURE_IGNORE:
     case VIR_DOMAIN_LOCK_FAILURE_LAST:
-        fprintf(stderr, _("unsupported failure action: '%s'\n"),
+        fprintf(stderr, _("unsupported failure action: '%1$s'\n"),
                 virDomainLockFailureTypeToString(action));
         break;
     }
