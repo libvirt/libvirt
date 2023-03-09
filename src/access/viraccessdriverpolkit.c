@@ -75,7 +75,7 @@ virAccessDriverPolkitGetCaller(const char *actionid,
 
     if (!identity) {
         virAccessError(VIR_ERR_ACCESS_DENIED,
-                       _("Policy kit denied action %s from <anonymous>"),
+                       _("Policy kit denied action %1$s from <anonymous>"),
                        actionid);
         return -1;
     }

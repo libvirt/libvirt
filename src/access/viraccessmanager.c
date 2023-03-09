@@ -141,7 +141,7 @@ virAccessManager *virAccessManagerNew(const char *name)
 
     if (!(drv = virAccessManagerFindDriver(name))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot find security driver '%s'"),
+                       _("Cannot find security driver '%1$s'"),
                        name);
         return NULL;
     }
@@ -207,7 +207,7 @@ virAccessManagerSanitizeError(int ret,
     if (ret < 0) {
         virResetLastError();
         virAccessError(VIR_ERR_ACCESS_DENIED,
-                       _("'%s' denied access"), driverName);
+                       _("'%1$s' denied access"), driverName);
     }
 
     return ret;
