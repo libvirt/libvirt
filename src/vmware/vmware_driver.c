@@ -57,7 +57,7 @@ vmwareDomObjFromDomainLocked(struct vmware_driver *driver,
         virUUIDFormat(uuid, uuidstr);
 
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+                       _("no domain with matching uuid '%1$s'"), uuidstr);
         return NULL;
     }
 
@@ -158,7 +158,7 @@ vmwareConnectOpen(virConnectPtr conn,
     /* If path isn't /session, then they typoed, so tell them correct path */
     if (STRNEQ(conn->uri->path, "/session")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected VMware URI path '%s', try vmwareplayer:///session, vmwarews:///session or vmwarefusion:///session"),
+                       _("unexpected VMware URI path '%1$s', try vmwareplayer:///session, vmwarews:///session or vmwarefusion:///session"),
                        NULLSTR(conn->uri->path));
         return VIR_DRV_OPEN_ERROR;
     }
@@ -177,7 +177,7 @@ vmwareConnectOpen(virConnectPtr conn,
         if (vmrun == NULL)
             continue;
         if (virFileResolveLink(vmrun, &driver->vmrun) < 0) {
-            virReportSystemError(errno, _("unable to resolve symlink '%s'"), vmrun);
+            virReportSystemError(errno, _("unable to resolve symlink '%1$s'"), vmrun);
             goto cleanup;
         }
         VIR_FREE(vmrun);
@@ -196,8 +196,9 @@ vmwareConnectOpen(virConnectPtr conn,
         goto cleanup;
 
     if ((tmp = STRSKIP(conn->uri->scheme, "vmware")) == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("unable to parse URI "
-                       "scheme '%s'"), conn->uri->scheme);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to parse URI scheme '%1$s'"),
+                       conn->uri->scheme);
         goto cleanup;
     }
 
@@ -205,8 +206,9 @@ vmwareConnectOpen(virConnectPtr conn,
     driver->type = vmwareDriverTypeFromString(tmp);
 
     if (driver->type == -1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("unable to find valid "
-                       "requested VMware backend '%s'"), tmp);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to find valid requested VMware backend '%1$s'"),
+                       tmp);
         goto cleanup;
     }
 
@@ -407,7 +409,7 @@ vmwareDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     /* create vmx file */
     if (virFileWriteStr(vmxPath, vmx, S_IRUSR|S_IWUSR) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to write vmx file '%s'"), vmxPath);
+                       _("Failed to write vmx file '%1$s'"), vmxPath);
         goto cleanup;
     }
 
@@ -652,7 +654,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
     /* create vmx file */
     if (virFileWriteStr(vmxPath, vmx, S_IRUSR|S_IWUSR) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to write vmx file '%s'"), vmxPath);
+                       _("Failed to write vmx file '%1$s'"), vmxPath);
         goto cleanup;
     }
 
@@ -775,7 +777,7 @@ vmwareDomainLookupByID(virConnectPtr conn, int id)
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching id '%d'"), id);
+                       _("no domain with matching id '%1$d'"), id);
         goto cleanup;
     }
 
@@ -832,7 +834,7 @@ vmwareDomainLookupByName(virConnectPtr conn, const char *name)
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching name '%s'"), name);
+                       _("no domain with matching name '%1$s'"), name);
         goto cleanup;
     }
 
@@ -910,7 +912,7 @@ vmwareConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
 
     if (STRNEQ(nativeFormat, VMX_CONFIG_FORMAT_ARGV)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Unsupported config format '%s'"), nativeFormat);
+                       _("Unsupported config format '%1$s'"), nativeFormat);
         return NULL;
     }
 
