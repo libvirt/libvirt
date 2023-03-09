@@ -259,7 +259,7 @@ qemuHotplugWaitForTrayEject(virDomainObj *vm,
              * error. Report the failure in an off-chance that it didn't. */
             if (virGetLastErrorCode() == VIR_ERR_OK) {
                 virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("timed out waiting to open tray of '%s'"),
+                               _("timed out waiting to open tray of '%1$s'"),
                                disk->dst);
             }
             return -1;
@@ -767,7 +767,7 @@ int qemuDomainAttachControllerDevice(virDomainObj *vm,
 
     if (controller->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("'%s' controller cannot be hot plugged."),
+                       _("'%1$s' controller cannot be hot plugged."),
                        virDomainControllerTypeToString(controller->type));
         return -1;
     }
@@ -782,7 +782,7 @@ int qemuDomainAttachControllerDevice(virDomainObj *vm,
 
     if (virDomainControllerFind(vm->def, controller->type, controller->idx) >= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("target %s:%d already exists"),
+                       _("target %1$s:%2$d already exists"),
                        type, controller->idx);
         return -1;
     }
@@ -939,7 +939,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         /* We should have an address already, so make sure */
         if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected disk address type %s"),
+                           _("unexpected disk address type %1$s"),
                            virDomainDeviceAddressTypeToString(disk->info.type));
             goto cleanup;
         }
@@ -975,7 +975,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
     case VIR_DOMAIN_DISK_BUS_NONE:
     case VIR_DOMAIN_DISK_BUS_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("disk bus '%s' cannot be hotplugged."),
+                       _("disk bus '%1$s' cannot be hotplugged."),
                        virDomainDiskBusTypeToString(disk->bus));
     }
 
@@ -1241,7 +1241,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     case VIR_DOMAIN_NET_TYPE_VDS:
     case VIR_DOMAIN_NET_TYPE_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("hotplug of interface type of %s is not implemented yet"),
+                       _("hotplug of interface type of %1$s is not implemented yet"),
                        virDomainNetTypeToString(actualType));
         goto cleanup;
     }
@@ -1498,7 +1498,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN:
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("QEMU does not support device assignment mode '%s'"),
+                       _("QEMU does not support device assignment mode '%1$s'"),
                        virDomainHostdevSubsysPCIBackendTypeToString(backend));
         goto error;
         break;
@@ -2763,7 +2763,7 @@ qemuDomainAttachHostDevice(virQEMUDriver *driver,
 {
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("hotplug is not supported for hostdev mode '%s'"),
+                       _("hotplug is not supported for hostdev mode '%1$s'"),
                        virDomainHostdevModeTypeToString(hostdev->mode));
         return -1;
     }
@@ -2798,7 +2798,7 @@ qemuDomainAttachHostDevice(virQEMUDriver *driver,
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("hotplug is not supported for hostdev subsys type '%s'"),
+                       _("hotplug is not supported for hostdev subsys type '%1$s'"),
                        virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
         return -1;
     }
@@ -2829,7 +2829,7 @@ qemuDomainAttachShmemDevice(virDomainObj *vm,
 
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("live attach of shmem model '%s' is not supported"),
+                       _("live attach of shmem model '%1$s' is not supported"),
                        virDomainShmemModelTypeToString(shmem->model));
         G_GNUC_FALLTHROUGH;
     case VIR_DOMAIN_SHMEM_MODEL_LAST:
@@ -2928,7 +2928,7 @@ qemuDomainAttachWatchdog(virDomainObj *vm,
 
     if (watchdog->model != VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("hotplug of watchdog of model %s is not supported"),
+                       _("hotplug of watchdog of model %1$s is not supported"),
                        virDomainWatchdogModelTypeToString(watchdog->model));
         goto cleanup;
     }
@@ -3058,7 +3058,7 @@ qemuDomainAttachInputDevice(virDomainObj *vm,
     case VIR_DOMAIN_INPUT_BUS_NONE:
     case VIR_DOMAIN_INPUT_BUS_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("input device on bus '%s' cannot be hot plugged."),
+                       _("input device on bus '%1$s' cannot be hot plugged."),
                        virDomainInputBusTypeToString(input->bus));
         return -1;
     }
@@ -3326,7 +3326,7 @@ qemuDomainChangeNetBridge(virDomainObj *vm,
 
     if (virNetDevExists(newbridge) != 1) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("bridge %s doesn't exist"), newbridge);
+                       _("bridge %1$s doesn't exist"), newbridge);
         return -1;
     }
 
@@ -3396,7 +3396,7 @@ qemuDomainChangeNetFilter(virDomainObj *vm,
     case VIR_DOMAIN_NET_TYPE_NULL:
     case VIR_DOMAIN_NET_TYPE_VDS:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("filters not supported on interfaces of type %s"),
+                       _("filters not supported on interfaces of type %1$s"),
                        virDomainNetTypeToString(virDomainNetGetActualType(newdev)));
         return -1;
     case VIR_DOMAIN_NET_TYPE_LAST:
@@ -3414,8 +3414,7 @@ qemuDomainChangeNetFilter(virDomainObj *vm,
         virErrorPtr errobj;
 
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to add new filter rules to '%s' "
-                         "- attempting to restore old rules"),
+                       _("failed to add new filter rules to '%1$s' - attempting to restore old rules"),
                        olddev->ifname);
         virErrorPreserveLast(&errobj);
         ignore_value(virDomainConfNWFilterInstantiate(vm->def->name,
@@ -3490,7 +3489,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
         oldType == VIR_DOMAIN_NET_TYPE_VDPA) {
         /* no changes are possible to a type='hostdev' or type='vdpa' interface */
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("cannot change config of '%s' network interface type"),
+                       _("cannot change config of '%1$s' network interface type"),
                        virDomainNetTypeToString(oldType));
         goto cleanup;
     }
@@ -3513,8 +3512,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
         char oldmac[VIR_MAC_STRING_BUFLEN], newmac[VIR_MAC_STRING_BUFLEN];
 
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("cannot change network interface mac address "
-                         "from %s to %s"),
+                       _("cannot change network interface mac address from %1$s to %2$s"),
                        virMacAddrFormat(&olddev->mac, oldmac),
                        virMacAddrFormat(&newdev->mac, newmac));
         goto cleanup;
@@ -3523,7 +3521,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
     if (STRNEQ_NULLABLE(virDomainNetGetModelString(olddev),
                         virDomainNetGetModelString(newdev))) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("cannot modify network device model from %s to %s"),
+                       _("cannot modify network device model from %1$s to %2$s"),
                        NULLSTR(virDomainNetGetModelString(olddev)),
                        NULLSTR(virDomainNetGetModelString(newdev)));
         goto cleanup;
@@ -3531,7 +3529,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
 
     if (olddev->model != newdev->model) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("cannot modify network device model from %s to %s"),
+                       _("cannot modify network device model from %1$s to %2$s"),
                        virDomainNetModelTypeToString(olddev->model),
                        virDomainNetModelTypeToString(newdev->model));
         goto cleanup;
@@ -3701,7 +3699,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
         newType == VIR_DOMAIN_NET_TYPE_VDPA) {
         /* can't turn it into a type='hostdev' or type='vdpa' interface */
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("cannot change network interface type to '%s'"),
+                       _("cannot change network interface type to '%1$s'"),
                        virDomainNetTypeToString(newType));
         goto cleanup;
     }
@@ -3758,7 +3756,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
         case VIR_DOMAIN_NET_TYPE_NULL:
         case VIR_DOMAIN_NET_TYPE_VDS:
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("unable to change config on '%s' network type"),
+                           _("unable to change config on '%1$s' network type"),
                            virDomainNetTypeToString(newdev->type));
             goto cleanup;
         case VIR_DOMAIN_NET_TYPE_LAST:
@@ -3848,7 +3846,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
 
     if (needReconnect) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("unable to change config on '%s' network type"),
+                       _("unable to change config on '%1$s' network type"),
                        virDomainNetTypeToString(newdev->type));
         goto cleanup;
     }
@@ -4075,15 +4073,15 @@ qemuDomainChangeGraphics(virQEMUDriver *driver,
 
     if (!olddev) {
         virReportError(VIR_ERR_DEVICE_MISSING,
-                       _("cannot find existing graphics device to modify of "
-                         "type '%s'"), type);
+                       _("cannot find existing graphics device to modify of type '%1$s'"),
+                       type);
         return -1;
     }
 
     if (dev->nListens != olddev->nListens) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("cannot change the number of listen addresses "
-                         "on '%s' graphics"), type);
+                       _("cannot change the number of listen addresses on '%1$s' graphics"),
+                       type);
         return -1;
     }
 
@@ -4093,8 +4091,8 @@ qemuDomainChangeGraphics(virQEMUDriver *driver,
 
         if (newlisten->type != oldlisten->type) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("cannot change the type of listen address "
-                             "on '%s' graphics"), type);
+                           _("cannot change the type of listen address on '%1$s' graphics"),
+                           type);
             return -1;
         }
 
@@ -4102,8 +4100,8 @@ qemuDomainChangeGraphics(virQEMUDriver *driver,
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
             if (STRNEQ_NULLABLE(newlisten->address, oldlisten->address)) {
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                               _("cannot change listen address setting "
-                                 "on '%s' graphics"), type);
+                               _("cannot change listen address setting on '%1$s' graphics"),
+                               type);
                 return -1;
             }
 
@@ -4112,8 +4110,8 @@ qemuDomainChangeGraphics(virQEMUDriver *driver,
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
             if (STRNEQ_NULLABLE(newlisten->network, oldlisten->network)) {
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                               _("cannot change listen address setting "
-                                 "on '%s' graphics"), type);
+                               _("cannot change listen address setting on '%1$s' graphics"),
+                               type);
                 return -1;
             }
 
@@ -4122,8 +4120,8 @@ qemuDomainChangeGraphics(virQEMUDriver *driver,
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
             if (STRNEQ_NULLABLE(newlisten->socket, oldlisten->socket)) {
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                               _("cannot change listen socket setting "
-                                 "on '%s' graphics"), type);
+                               _("cannot change listen socket setting on '%1$s' graphics"),
+                               type);
                 return -1;
             }
             break;
@@ -4231,7 +4229,7 @@ qemuDomainChangeGraphics(virQEMUDriver *driver,
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
     case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to change config on '%s' graphics type"), type);
+                       _("unable to change config on '%1$s' graphics type"), type);
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
     default:
@@ -5152,7 +5150,7 @@ qemuDomainRemoveDevice(virQEMUDriver *driver,
     case VIR_DOMAIN_DEVICE_CRYPTO:
     case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("don't know how to remove a %s device"),
+                       _("don't know how to remove a %1$s device"),
                        virDomainDeviceTypeToString(dev->type));
         break;
     }
@@ -5292,7 +5290,7 @@ qemuDomainDetachPrepDisk(virDomainObj *vm,
 
     if ((idx = qemuFindDisk(vm->def, match->dst)) < 0) {
         virReportError(VIR_ERR_DEVICE_MISSING,
-                       _("disk %s not found"), match->dst);
+                       _("disk %1$s not found"), match->dst);
         return -1;
     }
     *detach = disk = vm->def->disks[idx];
@@ -5334,7 +5332,7 @@ qemuDomainDetachPrepDisk(virDomainObj *vm,
 
     case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("disk device type '%s' cannot be detached"),
+                       _("disk device type '%1$s' cannot be detached"),
                        virDomainDiskDeviceTypeToString(disk->device));
         return -1;
 
@@ -5467,14 +5465,14 @@ qemuDomainDetachPrepController(virDomainObj *vm,
 
     if (match->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("'%s' controller cannot be hot unplugged."),
+                       _("'%1$s' controller cannot be hot unplugged."),
                        virDomainControllerTypeToString(match->type));
         return -1;
     }
 
     if ((idx = virDomainControllerFind(vm->def, match->type, match->idx)) < 0) {
         virReportError(VIR_ERR_DEVICE_MISSING,
-                       _("controller %s:%d not found"),
+                       _("controller %1$s:%2$d not found"),
                        virDomainControllerTypeToString(match->type),
                        match->idx);
         return -1;
@@ -5508,7 +5506,7 @@ qemuDomainDetachPrepHostdev(virDomainObj *vm,
 
     if (match->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("hot unplug is not supported for hostdev mode '%s'"),
+                       _("hot unplug is not supported for hostdev mode '%1$s'"),
                        virDomainHostdevModeTypeToString(match->mode));
         return -1;
     }
@@ -5520,18 +5518,18 @@ qemuDomainDetachPrepHostdev(virDomainObj *vm,
         switch (subsys->type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             virReportError(VIR_ERR_DEVICE_MISSING,
-                           _("host pci device %04x:%02x:%02x.%d not found"),
+                           _("host pci device %1$04x:%2$02x:%3$02x.%4$d not found"),
                            pcisrc->addr.domain, pcisrc->addr.bus,
                            pcisrc->addr.slot, pcisrc->addr.function);
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
             if (usbsrc->bus && usbsrc->device) {
                 virReportError(VIR_ERR_DEVICE_MISSING,
-                               _("host usb device %03d.%03d not found"),
+                               _("host usb device %1$03d.%2$03d not found"),
                                usbsrc->bus, usbsrc->device);
             } else {
                 virReportError(VIR_ERR_DEVICE_MISSING,
-                               _("host usb device vendor=0x%.4x product=0x%.4x not found"),
+                               _("host usb device vendor=0x%1$.4x product=0x%2$.4x not found"),
                                usbsrc->vendor, usbsrc->product);
             }
             break;
@@ -5540,13 +5538,13 @@ qemuDomainDetachPrepHostdev(virDomainObj *vm,
                 VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
                 virDomainHostdevSubsysSCSIiSCSI *iscsisrc = &scsisrc->u.iscsi;
                 virReportError(VIR_ERR_DEVICE_MISSING,
-                               _("host scsi iSCSI path %s not found"),
+                               _("host scsi iSCSI path %1$s not found"),
                                iscsisrc->src->path);
             } else {
                  virDomainHostdevSubsysSCSIHost *scsihostsrc =
                      &scsisrc->u.host;
                  virReportError(VIR_ERR_DEVICE_MISSING,
-                                _("host scsi device %s:%u:%u.%llu not found"),
+                                _("host scsi device %1$s:%2$u:%3$u.%4$llu not found"),
                                 scsihostsrc->adapter, scsihostsrc->bus,
                                 scsihostsrc->target, scsihostsrc->unit);
             }
@@ -5554,14 +5552,14 @@ qemuDomainDetachPrepHostdev(virDomainObj *vm,
         }
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
             virReportError(VIR_ERR_DEVICE_MISSING,
-                           _("mediated device '%s' not found"),
+                           _("mediated device '%1$s' not found"),
                            mdevsrc->uuidstr);
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
             break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected hostdev type %d"), subsys->type);
+                           _("unexpected hostdev type %1$d"), subsys->type);
             break;
         }
         return -1;
@@ -5581,8 +5579,7 @@ qemuDomainDetachPrepShmem(virDomainObj *vm,
 
     if ((idx = virDomainShmemDefFind(vm->def, match)) < 0) {
         virReportError(VIR_ERR_DEVICE_MISSING,
-                       _("model '%s' shmem device not present "
-                         "in domain configuration"),
+                       _("model '%1$s' shmem device not present in domain configuration"),
                        virDomainShmemModelTypeToString(match->model));
         return -1;
     }
@@ -5596,7 +5593,7 @@ qemuDomainDetachPrepShmem(virDomainObj *vm,
 
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("live detach of shmem model '%s' is not supported"),
+                       _("live detach of shmem model '%1$s' is not supported"),
                        virDomainShmemModelTypeToString(shmem->model));
         G_GNUC_FALLTHROUGH;
     case VIR_DOMAIN_SHMEM_MODEL_LAST:
@@ -5624,7 +5621,7 @@ qemuDomainDetachPrepWatchdog(virDomainObj *vm,
 
     if ((*detach)->model != VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("hot unplug of watchdog of model %s is not supported"),
+                       _("hot unplug of watchdog of model %1$s is not supported"),
                        virDomainWatchdogModelTypeToString((*detach)->model));
         return -1;
     }
@@ -5682,8 +5679,7 @@ qemuDomainDetachDeviceChr(virQEMUDriver *driver,
 
     if (!(tmpChr = virDomainChrFind(vmdef, chr))) {
         virReportError(VIR_ERR_DEVICE_MISSING,
-                       _("chr type '%s' device not present "
-                         "in domain configuration"),
+                       _("chr type '%1$s' device not present in domain configuration"),
                        virDomainChrDeviceTypeToString(chr->deviceType));
         goto cleanup;
     }
@@ -5734,8 +5730,7 @@ qemuDomainDetachPrepRNG(virDomainObj *vm,
 
     if ((idx = virDomainRNGFind(vm->def, match)) < 0) {
         virReportError(VIR_ERR_DEVICE_MISSING,
-                       _("model '%s' RNG device not present "
-                         "in domain configuration"),
+                       _("model '%1$s' RNG device not present in domain configuration"),
                        virDomainRNGBackendTypeToString(match->model));
         return -1;
     }
@@ -5758,8 +5753,7 @@ qemuDomainDetachPrepMemory(virDomainObj *vm,
 
     if ((idx = virDomainMemoryFindByDef(vm->def, match)) < 0) {
         virReportError(VIR_ERR_DEVICE_MISSING,
-                       _("model '%s' memory device not present "
-                         "in the domain configuration"),
+                       _("model '%1$s' memory device not present in the domain configuration"),
                        virDomainMemoryModelTypeToString(match->model));
         return -1;
     }
@@ -5790,7 +5784,7 @@ qemuDomainDetachPrepInput(virDomainObj *vm,
     case VIR_DOMAIN_INPUT_BUS_XEN:
     case VIR_DOMAIN_INPUT_BUS_PARALLELS:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("input device on bus '%s' cannot be detached"),
+                       _("input device on bus '%1$s' cannot be detached"),
                        virDomainInputBusTypeToString(input->bus));
         return -1;
 
@@ -5859,7 +5853,7 @@ qemuDomainDetachDeviceLease(virQEMUDriver *driver,
 
     if ((idx = virDomainLeaseIndex(vm->def, lease)) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Lease %s in lockspace %s does not exist"),
+                       _("Lease %1$s in lockspace %2$s does not exist"),
                        lease->key, NULLSTR(lease->lockspace));
         return -1;
     }
@@ -5992,7 +5986,7 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
     case VIR_DOMAIN_DEVICE_CRYPTO:
     case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("live detach of device '%s' is not supported"),
+                       _("live detach of device '%1$s' is not supported"),
                        virDomainDeviceTypeToString(match->type));
         return -1;
     }
@@ -6006,7 +6000,7 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
          * return have a virDeviceInfo in them.
          */
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("device of type '%s' has no device info"),
+                       _("device of type '%1$s' has no device info"),
                        virDomainDeviceTypeToString(detach.type));
         return -1;
     }
@@ -6016,14 +6010,14 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
 
     if (!info->alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot detach %s device with no alias"),
+                       _("Cannot detach %1$s device with no alias"),
                        virDomainDeviceTypeToString(detach.type));
         return -1;
     }
 
     if (qemuIsMultiFunctionDevice(vm->def, info)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:%02x.%d"),
+                       _("cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:%3$02x:%4$02x.%5$d"),
                        virDomainDeviceTypeToString(detach.type),
                        info->addr.pci.domain, info->addr.pci.bus,
                        info->addr.pci.slot, info->addr.pci.function);
@@ -6038,7 +6032,7 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
                                                     info->addr.pci.bus);
         if (controllerIdx < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - controller not found"),
+                           _("cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x.%5$d - controller not found"),
                            virDomainDeviceTypeToString(detach.type),
                            info->addr.pci.domain, info->addr.pci.bus,
                            info->addr.pci.slot, info->addr.pci.function);
@@ -6048,7 +6042,7 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
         controller = vm->def->controllers[controllerIdx];
         if (controller->opts.pciopts.hotplug == VIR_TRISTATE_SWITCH_OFF) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not allowed by controller"),
+                           _("cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x.%5$d - not allowed by controller"),
                            virDomainDeviceTypeToString(detach.type),
                            info->addr.pci.domain, info->addr.pci.bus,
                            info->addr.pci.slot, info->addr.pci.function);
@@ -6124,7 +6118,7 @@ qemuDomainRemoveVcpu(virDomainObj *vm,
 
     if (offlineVcpuWithTid != -1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("qemu reported thread id for inactive vcpu '%zu'"),
+                       _("qemu reported thread id for inactive vcpu '%1$zu'"),
                        offlineVcpuWithTid);
         virDomainAuditVcpu(vm, oldvcpus, oldvcpus - nvcpus, "update", false);
         return -1;
@@ -6174,7 +6168,7 @@ qemuDomainHotplugDelVcpu(virQEMUDriver *driver,
 
     if (!vcpupriv->alias) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("vcpu '%u' can't be unplugged"), vcpu);
+                       _("vcpu '%1$u' can't be unplugged"), vcpu);
         return -1;
     }
 
@@ -6271,7 +6265,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriver *driver,
 
     if (vcpuTidMissing && qemuDomainHasVcpuPids(vm)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("qemu didn't report thread id for vcpu '%zu'"), i);
+                       _("qemu didn't report thread id for vcpu '%1$zu'"), i);
         return -1;
     }
 
@@ -6499,16 +6493,14 @@ qemuDomainSetVcpusInternal(virQEMUDriver *driver,
 
     if (def && nvcpus > virDomainDefGetVcpusMax(def)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("requested vcpus is greater than max allowable"
-                         " vcpus for the live domain: %u > %u"),
+                       _("requested vcpus is greater than max allowable vcpus for the live domain: %1$u > %2$u"),
                        nvcpus, virDomainDefGetVcpusMax(def));
         return -1;
     }
 
     if (persistentDef && nvcpus > virDomainDefGetVcpusMax(persistentDef)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("requested vcpus is greater than max allowable"
-                         " vcpus for the persistent domain: %u > %u"),
+                       _("requested vcpus is greater than max allowable vcpus for the persistent domain: %1$u > %2$u"),
                        nvcpus, virDomainDefGetVcpusMax(persistentDef));
         return -1;
     }
@@ -6580,13 +6572,13 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDef *def,
 
         if (vcpu->online == state) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("vcpu '%zd' is already in requested state"), next);
+                           _("vcpu '%1$zd' is already in requested state"), next);
             return NULL;
         }
 
         if (vcpu->online && !vcpu->hotpluggable) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("vcpu '%zd' can't be hotunplugged"), next);
+                           _("vcpu '%1$zd' can't be hotunplugged"), next);
             return NULL;
         }
     }
@@ -6602,17 +6594,14 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDef *def,
 
         if (vcpupriv->vcpus == 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("vcpu '%zd' belongs to a larger hotpluggable entity, "
-                             "but siblings were not selected"), next);
+                           _("vcpu '%1$zd' belongs to a larger hotpluggable entity, but siblings were not selected"), next);
             return NULL;
         }
 
         for (i = next + 1; i < next + vcpupriv->vcpus; i++) {
             if (!virBitmapIsBitSet(map, i)) {
                 virReportError(VIR_ERR_INVALID_ARG,
-                               _("vcpu '%zu' was not selected but it belongs to "
-                                 "hotpluggable entity '%zd-%zd' which was "
-                                 "partially selected"),
+                               _("vcpu '%1$zu' was not selected but it belongs to hotpluggable entity '%2$zd-%3$zd' which was partially selected"),
                                i, next, next + vcpupriv->vcpus - 1);
                 return NULL;
             }
@@ -6655,8 +6644,8 @@ qemuDomainVcpuValidateConfig(virDomainDef *def,
 
         if (vcpu->online && vcpu->hotpluggable == VIR_TRISTATE_BOOL_NO) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("vcpu '%zd' can't be modified as it is followed "
-                             "by non-hotpluggable online vcpus"), firstvcpu);
+                           _("vcpu '%1$zd' can't be modified as it is followed by non-hotpluggable online vcpus"),
+                           firstvcpu);
             return -1;
         }
     }
