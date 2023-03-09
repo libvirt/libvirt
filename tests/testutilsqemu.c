@@ -2,6 +2,7 @@
 #ifdef WITH_QEMU
 
 # include "testutilsqemu.h"
+# include "testutilsqemuschema.h"
 # include "testutilshostcpus.h"
 # include "testutils.h"
 # include "viralloc.h"
@@ -910,11 +911,16 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
  * @variant: capabilities variant to fetch caps for
  * @capsLatestFiles: hash table containing latest version of capabilities for the  @arch+@variant tuple
  * @capsCache: hash table filled with the cache of capabilities
- * @capsReplies: Filled with path to the corresponding '.replies' file
+ * @schemaCache: hash table for caching QMP schemas (may be NULL, see below)
+ * @schema: Filled with the QMP schema (hash table) (may be NULL, see below)
  *
  * Fetches and returns the appropriate virQEMUCaps for the @arch+@version+@variant
  * tuple. The returned pointer is a copy of the cached object and thus can
  * be freely modified. Caller is responsible for freeing it.
+ *
+ * If @schemaCache and @schema are non-NULL, @schema is filled with with a
+ * pointer (borrowed from the cache) to the hash table representing the QEMU QMP
+ * schema used for validation of the monitor traffic.
  */
 virQEMUCaps *
 testQemuGetRealCaps(const char *arch,
@@ -922,7 +928,8 @@ testQemuGetRealCaps(const char *arch,
                     const char *variant,
                     GHashTable *capsLatestFiles,
                     GHashTable *capsCache,
-                    char **capsReplies)
+                    GHashTable *schemaCache,
+                    GHashTable **schema)
 {
     g_autofree char *capsfile = NULL;
     bool stripmachinealiases = false;
@@ -960,10 +967,16 @@ testQemuGetRealCaps(const char *arch,
     if (stripmachinealiases)
         virQEMUCapsStripMachineAliases(ret);
 
-    if (capsReplies) {
-        /* provide path to the replies file for schema testing */
-        capsfile[strlen(capsfile) - 3] = '\0';
-        *capsReplies = g_strdup_printf("%sreplies", capsfile);
+    /* strip 'xml' suffix so that we can format the file to '.replies' */
+    capsfile[strlen(capsfile) - 3] = '\0';
+
+    if (schemaCache && schema) {
+        g_autofree char *schemafile = g_strdup_printf("%sreplies", capsfile);
+
+        if (!g_hash_table_lookup_extended(schemaCache, schemafile, NULL, (void **) schema)) {
+            *schema = testQEMUSchemaLoad(schemafile);
+            g_hash_table_insert(schemaCache, g_strdup(schemafile), *schema);
+        }
     }
 
     return ret;
@@ -1001,7 +1014,8 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
                                              info->args.capsvariant,
                                              info->conf->capslatest,
                                              info->conf->capscache,
-                                             &info->schemafile);
+                                             info->conf->qapiSchemaCache,
+                                             &info->qmpSchema);
 
         if (!info->qemuCaps)
             return -1;
@@ -1028,7 +1042,6 @@ testQemuInfoClear(struct testQemuInfo *info)
 {
     VIR_FREE(info->infile);
     VIR_FREE(info->outfile);
-    VIR_FREE(info->schemafile);
     VIR_FREE(info->errfile);
     virObjectUnref(info->qemuCaps);
     g_clear_pointer(&info->args.fakeCapsAdd, virBitmapFree);

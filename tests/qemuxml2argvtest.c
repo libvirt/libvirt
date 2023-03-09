@@ -549,32 +549,14 @@ testCompareXMLToArgvValidateSchema(virCommand *cmd,
                                    struct testQemuInfo *info)
 {
     g_auto(GStrv) args = NULL;
-    GHashTable *schema = NULL;
 
-    /* comment out with line comment to enable schema checking for non _CAPS tests
-    if (!info->schemafile)
-        info->schemafile =  testQemuGetLatestCapsForArch(virArchToString(info->arch), "replies");
-    // */
-
-    if (info->schemafile) {
-        /* lookup and insert into cache if not found */
-        if (!g_hash_table_lookup_extended(info->conf->qapiSchemaCache,
-                                          info->schemafile,
-                                          NULL, (void **) &schema)) {
-            schema = testQEMUSchemaLoad(info->schemafile);
-            g_hash_table_insert(info->conf->qapiSchemaCache,
-                                g_strdup(info->schemafile),
-                                schema);
-        }
-    }
-
-    if (!schema)
+    if (!info->qmpSchema)
         return 0;
 
     if (virCommandGetArgList(cmd, &args) < 0)
         return -1;
 
-    if (testCompareXMLToArgvValidateSchemaCommand(args, schema) < 0)
+    if (testCompareXMLToArgvValidateSchemaCommand(args, info->qmpSchema) < 0)
         return -1;
 
     return 0;

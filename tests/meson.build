@@ -147,13 +147,13 @@ endif
 if conf.has('WITH_QEMU')
   test_utils_qemu_lib = static_library(
     'test_utils_qemu',
-    [ 'testutilsqemu.c' ],
+    [ 'testutilsqemu.c', 'testutilsqemuschema.c' ],
     dependencies: [ tests_dep ],
   )
 
   test_utils_qemu_monitor_lib = static_library(
     'test_utils_qemu_monitor',
-    [ 'qemumonitortestutils.c', 'testutilsqemuschema.c' ],
+    [ 'qemumonitortestutils.c', ],
     dependencies: [ tests_dep ],
   )
 

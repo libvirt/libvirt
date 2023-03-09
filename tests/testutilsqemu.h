@@ -99,7 +99,7 @@ struct testQemuInfo {
     unsigned int flags;
     unsigned int parseFlags;
     virArch arch;
-    char *schemafile;
+    GHashTable *qmpSchema; /* borrowed pointer from the cache */
 
     struct testQemuArgs args;
     struct testQemuConf *conf;
@@ -158,5 +158,6 @@ testQemuGetRealCaps(const char *arch,
                     const char *variant,
                     GHashTable *capsLatestFiles,
                     GHashTable *capsCache,
-                    char **capsReplies);
+                    GHashTable *schemaCache,
+                    GHashTable **schema);
 #endif
