@@ -319,7 +319,6 @@ testQemuHotplug(const void *data)
     unsigned int device_parse_flags = 0;
     virDomainObj *vm = NULL;
     virDomainDeviceDef *dev = NULL;
-    g_autoptr(virCaps) caps = NULL;
     g_autoptr(qemuMonitorTest) test_mon = NULL;
     qemuDomainObjPrivate *priv = NULL;
 
@@ -337,9 +336,6 @@ testQemuHotplug(const void *data)
 
     if (test->action == ATTACH &&
         virTestLoadFile(result_filename, &result_xml) < 0)
-        goto cleanup;
-
-    if (!(caps = virQEMUDriverGetCapabilities(&driver, false)))
         goto cleanup;
 
     if (test->vm) {
@@ -480,7 +476,6 @@ testQemuHotplugCpuPrepare(const char *test,
                           GHashTable *qmpschema)
 {
     qemuDomainObjPrivate *priv = NULL;
-    virCaps *caps = NULL;
     g_autofree char *prefix = NULL;
     struct testQemuHotplugCpuData *data = NULL;
 
@@ -499,9 +494,6 @@ testQemuHotplugCpuPrepare(const char *test,
         goto error;
 
     if (qemuHotplugCreateObjects(driver.xmlopt, &data->vm, data->xml_dom) < 0)
-        goto error;
-
-    if (!(caps = virQEMUDriverGetCapabilities(&driver, false)))
         goto error;
 
     /* create vm->newDef */
@@ -533,7 +525,6 @@ testQemuHotplugCpuPrepare(const char *test,
     return data;
 
  error:
-    virObjectUnref(caps);
     testQemuHotplugCpuDataFree(data);
     return NULL;
 }
