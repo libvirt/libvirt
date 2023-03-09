@@ -118,7 +118,7 @@ virNetworkDriverConfigNew(bool privileged)
         return NULL;
 
     if (g_mkdir_with_parents(cfg->stateDir, 0777) < 0) {
-        virReportSystemError(errno, _("cannot create directory %s"), cfg->stateDir);
+        virReportSystemError(errno, _("cannot create directory %1$s"), cfg->stateDir);
         return NULL;
     }
 

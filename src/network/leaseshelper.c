@@ -49,9 +49,9 @@ G_GNUC_NORETURN static void
 usage(int status)
 {
     if (status) {
-        fprintf(stderr, _("%s: try --help for more details\n"), program_name);
+        fprintf(stderr, _("%1$s: try --help for more details\n"), program_name);
     } else {
-        printf(_("Usage: %s add|old|del|init mac|clientid ip [hostname]\n"
+        printf(_("Usage: %1$s add|old|del|init mac|clientid ip [hostname]\n"
                  "Designed for use with 'dnsmasq --dhcp-script'\n"
                  "Refer to man page of dnsmasq for more details'\n"),
                program_name);
@@ -103,7 +103,7 @@ main(int argc, char **argv)
 
     if (virGettextInitialize() < 0 ||
         virErrorInitialize() < 0) {
-        fprintf(stderr, _("%s: initialization failed\n"), program_name);
+        fprintf(stderr, _("%1$s: initialization failed\n"), program_name);
         exit(EXIT_FAILURE);
     }
 
@@ -137,7 +137,7 @@ main(int argc, char **argv)
     mac = argv[2];
 
     if ((action = virLeaseActionTypeFromString(argv[1])) < 0) {
-        fprintf(stderr, _("Unsupported action: %s\n"), argv[1]);
+        fprintf(stderr, _("Unsupported action: %1$s\n"), argv[1]);
         exit(EXIT_FAILURE);
     }
 
@@ -161,7 +161,7 @@ main(int argc, char **argv)
     /* Try to claim the pidfile, exiting if we can't */
     if ((pid_file_fd = virPidFileAcquirePathFull(pid_file, true, false, getpid())) < 0) {
         fprintf(stderr,
-                _("Unable to acquire PID file: %s\n errno=%d"),
+                _("Unable to acquire PID file: %1$s\n errno=%2$d"),
                 pid_file, errno);
         goto cleanup;
     }
@@ -170,7 +170,7 @@ main(int argc, char **argv)
      * corresponding custom lease file exists. If not, 'touch' it */
     if (virFileTouch(custom_lease_file, 0644) < 0) {
         fprintf(stderr,
-                _("Unable to create: %s\n errno=%d"),
+                _("Unable to create: %1$s\n errno=%2$d"),
                 custom_lease_file, errno);
         goto cleanup;
     }

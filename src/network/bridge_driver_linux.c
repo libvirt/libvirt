@@ -266,7 +266,7 @@ int networkCheckRouteCollision(virNetworkDef *def)
             if ((net_dest == addr_val) &&
                 (netmask.data.inet4.sin_addr.s_addr == mask_val)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Network is already in use by interface %s"),
+                               _("Network is already in use by interface %1$s"),
                                iface);
                 return -1;
             }
@@ -291,8 +291,7 @@ int networkCheckRouteCollision(virNetworkDef *def)
                 if (!addr_str)
                     virResetLastError();
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Route address '%s' conflicts "
-                                 "with IP address for '%s'"),
+                               _("Route address '%1$s' conflicts with IP address for '%2$s'"),
                                NULLSTR(addr_str), iface);
                 return -1;
             }
@@ -317,7 +316,7 @@ networkAddMasqueradingFirewallRules(virFirewall *fw,
 
     if (prefix < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid prefix or netmask for '%s'"),
+                       _("Invalid prefix or netmask for '%1$s'"),
                        def->bridge);
         return -1;
     }
@@ -506,7 +505,7 @@ networkAddRoutingFirewallRules(virFirewall *fw,
 
     if (prefix < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid prefix or netmask for '%s'"),
+                       _("Invalid prefix or netmask for '%1$s'"),
                        def->bridge);
         return -1;
     }
@@ -833,8 +832,7 @@ int networkAddFirewallRules(virNetworkDef *def)
          */
         if (virFirewallDIsRegistered() < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("zone %s requested for network %s "
-                             "but firewalld is not active"),
+                           _("zone %1$s requested for network %2$s but firewalld is not active"),
                            def->bridgeZone, def->name);
             return -1;
         }
