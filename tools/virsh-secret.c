@@ -53,7 +53,7 @@ virshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)
     secret = virSecretLookupByUUIDString(priv->conn, n);
 
     if (secret == NULL)
-        vshError(ctl, _("failed to get secret '%s'"), n);
+        vshError(ctl, _("failed to get secret '%1$s'"), n);
 
     return secret;
 }
@@ -101,7 +101,7 @@ cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (!(res = virSecretDefineXML(priv->conn, buffer, flags))) {
-        vshError(ctl, _("Failed to set attributes from %s"), from);
+        vshError(ctl, _("Failed to set attributes from %1$s"), from);
         goto cleanup;
     }
 
@@ -110,7 +110,7 @@ cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrintExtra(ctl, _("Secret %s created\n"), uuid);
+    vshPrintExtra(ctl, _("Secret %1$s created\n"), uuid);
     ret = true;
 
  cleanup:
@@ -387,10 +387,10 @@ cmdSecretUndefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virSecretUndefine(secret) < 0) {
-        vshError(ctl, _("Failed to delete secret %s"), uuid);
+        vshError(ctl, _("Failed to delete secret %1$s"), uuid);
         goto cleanup;
     }
-    vshPrintExtra(ctl, _("Secret %s deleted\n"), uuid);
+    vshPrintExtra(ctl, _("Secret %1$s deleted\n"), uuid);
     ret = true;
 
  cleanup:
@@ -676,10 +676,10 @@ vshEventLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
         if (virTimeStringNowRaw(timestamp) < 0)
             timestamp[0] = '\0';
 
-        vshPrint(data->ctl, _("%s: event 'lifecycle' for secret %s: %s\n"),
+        vshPrint(data->ctl, _("%1$s: event 'lifecycle' for secret %2$s: %3$s\n"),
                  timestamp, uuid, virshSecretEventToString(event));
     } else {
-        vshPrint(data->ctl, _("event 'lifecycle' for secret %s: %s\n"),
+        vshPrint(data->ctl, _("event 'lifecycle' for secret %1$s: %2$s\n"),
                  uuid, virshSecretEventToString(event));
     }
 
@@ -707,12 +707,12 @@ vshEventGenericPrint(virConnectPtr conn G_GNUC_UNUSED,
         if (virTimeStringNowRaw(timestamp) < 0)
             timestamp[0] = '\0';
 
-        vshPrint(data->ctl, _("%s: event '%s' for secret %s\n"),
+        vshPrint(data->ctl, _("%1$s: event '%2$s' for secret %3$s\n"),
                  timestamp,
                  data->cb->name,
                  uuid);
     } else {
-        vshPrint(data->ctl, _("event '%s' for secret %s\n"),
+        vshPrint(data->ctl, _("event '%1$s' for secret %2$s\n"),
                  data->cb->name,
                  uuid);
     }
@@ -799,7 +799,7 @@ cmdSecretEvent(vshControl *ctl, const vshCmd *cmd)
         if (STREQ(eventName, virshSecretEventCallbacks[event].name))
             break;
     if (event == VIR_SECRET_EVENT_ID_LAST) {
-        vshError(ctl, _("unknown event type %s"), eventName);
+        vshError(ctl, _("unknown event type %1$s"), eventName);
         return false;
     }
 
@@ -832,7 +832,7 @@ cmdSecretEvent(vshControl *ctl, const vshCmd *cmd)
     default:
         goto cleanup;
     }
-    vshPrint(ctl, _("events received: %d\n"), data.count);
+    vshPrint(ctl, _("events received: %1$d\n"), data.count);
     if (data.count)
         ret = true;
 

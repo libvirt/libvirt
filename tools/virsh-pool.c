@@ -188,7 +188,7 @@ virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
     }
 
     if (!pool)
-        vshError(ctl, _("failed to get pool '%s'"), n);
+        vshError(ctl, _("failed to get pool '%1$s'"), n);
 
     return pool;
 }
@@ -230,16 +230,16 @@ cmdPoolAutostart(vshControl *ctl, const vshCmd *cmd)
 
     if (virStoragePoolSetAutostart(pool, autostart) < 0) {
         if (autostart)
-            vshError(ctl, _("failed to mark pool %s as autostarted"), name);
+            vshError(ctl, _("failed to mark pool %1$s as autostarted"), name);
         else
-            vshError(ctl, _("failed to unmark pool %s as autostarted"), name);
+            vshError(ctl, _("failed to unmark pool %1$s as autostarted"), name);
         return false;
     }
 
     if (autostart)
-        vshPrintExtra(ctl, _("Pool %s marked as autostarted\n"), name);
+        vshPrintExtra(ctl, _("Pool %1$s marked as autostarted\n"), name);
     else
-        vshPrintExtra(ctl, _("Pool %s unmarked as autostarted\n"), name);
+        vshPrintExtra(ctl, _("Pool %1$s unmarked as autostarted\n"), name);
 
     return true;
 }
@@ -299,11 +299,11 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (!(pool = virStoragePoolCreateXML(priv->conn, buffer, flags))) {
-        vshError(ctl, _("Failed to create pool from %s"), from);
+        vshError(ctl, _("Failed to create pool from %1$s"), from);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Pool %s created from %s\n"),
+    vshPrintExtra(ctl, _("Pool %1$s created from %2$s\n"),
                   virStoragePoolGetName(pool), from);
     return true;
 }
@@ -492,11 +492,11 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (!(pool = virStoragePoolCreateXML(priv->conn, xml, flags))) {
-        vshError(ctl, _("Failed to create pool %s"), name);
+        vshError(ctl, _("Failed to create pool %1$s"), name);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Pool %s created\n"), name);
+    vshPrintExtra(ctl, _("Pool %1$s created\n"), name);
     return true;
 }
 
@@ -542,11 +542,11 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (!(pool = virStoragePoolDefineXML(priv->conn, buffer, flags))) {
-        vshError(ctl, _("Failed to define pool from %s"), from);
+        vshError(ctl, _("Failed to define pool from %1$s"), from);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Pool %s defined from %s\n"),
+    vshPrintExtra(ctl, _("Pool %1$s defined from %2$s\n"),
                   virStoragePoolGetName(pool), from);
     return true;
 }
@@ -582,11 +582,11 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (!(pool = virStoragePoolDefineXML(priv->conn, xml, 0))) {
-        vshError(ctl, _("Failed to define pool %s"), name);
+        vshError(ctl, _("Failed to define pool %1$s"), name);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Pool %s defined\n"), name);
+    vshPrintExtra(ctl, _("Pool %1$s defined\n"), name);
     return true;
 }
 
@@ -629,9 +629,9 @@ cmdPoolBuild(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_STORAGE_POOL_BUILD_OVERWRITE;
 
     if (virStoragePoolBuild(pool, flags) == 0) {
-        vshPrintExtra(ctl, _("Pool %s built\n"), name);
+        vshPrintExtra(ctl, _("Pool %1$s built\n"), name);
     } else {
-        vshError(ctl, _("Failed to build pool %s"), name);
+        vshError(ctl, _("Failed to build pool %1$s"), name);
         ret = false;
     }
 
@@ -668,9 +668,9 @@ cmdPoolDestroy(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virStoragePoolDestroy(pool) == 0) {
-        vshPrintExtra(ctl, _("Pool %s destroyed\n"), name);
+        vshPrintExtra(ctl, _("Pool %1$s destroyed\n"), name);
     } else {
-        vshError(ctl, _("Failed to destroy pool %s"), name);
+        vshError(ctl, _("Failed to destroy pool %1$s"), name);
         ret = false;
     }
 
@@ -707,9 +707,9 @@ cmdPoolDelete(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virStoragePoolDelete(pool, 0) == 0) {
-        vshPrintExtra(ctl, _("Pool %s deleted\n"), name);
+        vshPrintExtra(ctl, _("Pool %1$s deleted\n"), name);
     } else {
-        vshError(ctl, _("Failed to delete pool %s"), name);
+        vshError(ctl, _("Failed to delete pool %1$s"), name);
         ret = false;
     }
 
@@ -746,9 +746,9 @@ cmdPoolRefresh(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virStoragePoolRefresh(pool, 0) == 0) {
-        vshPrintExtra(ctl, _("Pool %s refreshed\n"), name);
+        vshPrintExtra(ctl, _("Pool %1$s refreshed\n"), name);
     } else {
-        vshError(ctl, _("Failed to refresh pool %s"), name);
+        vshError(ctl, _("Failed to refresh pool %1$s"), name);
         ret = false;
     }
 
@@ -1174,7 +1174,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
         for (i = 0; i < npoolTypes; i++) {
             if ((poolType = virStoragePoolTypeFromString(poolTypes[i])) < 0) {
-                vshError(ctl, _("Invalid pool type '%s'"), poolTypes[i]);
+                vshError(ctl, _("Invalid pool type '%1$s'"), poolTypes[i]);
                 return false;
             }
 
@@ -1474,7 +1474,7 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd G_GNUC_UNUSED)
 
     srcList = virConnectFindStoragePoolSources(priv->conn, type, srcSpec, 0);
     if (srcList == NULL) {
-        vshError(ctl, _("Failed to find any %s pool sources"), type);
+        vshError(ctl, _("Failed to find any %1$s pool sources"), type);
         return false;
     }
     vshPrint(ctl, "%s", srcList);
@@ -1529,7 +1529,7 @@ cmdPoolDiscoverSources(vshControl * ctl, const vshCmd * cmd G_GNUC_UNUSED)
     srcList = virConnectFindStoragePoolSources(priv->conn, type, srcSpec, 0);
     VIR_FREE(srcSpec);
     if (srcList == NULL) {
-        vshError(ctl, _("Failed to find any %s pool sources"), type);
+        vshError(ctl, _("Failed to find any %1$s pool sources"), type);
         return false;
     }
     vshPrint(ctl, "%s", srcList);
@@ -1710,9 +1710,9 @@ cmdPoolStart(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_STORAGE_POOL_CREATE_WITH_BUILD_NO_OVERWRITE;
 
     if (virStoragePoolCreate(pool, flags) == 0) {
-        vshPrintExtra(ctl, _("Pool %s started\n"), name);
+        vshPrintExtra(ctl, _("Pool %1$s started\n"), name);
     } else {
-        vshError(ctl, _("Failed to start pool %s"), name);
+        vshError(ctl, _("Failed to start pool %1$s"), name);
         ret = false;
     }
 
@@ -1749,9 +1749,9 @@ cmdPoolUndefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virStoragePoolUndefine(pool) == 0) {
-        vshPrintExtra(ctl, _("Pool %s has been undefined\n"), name);
+        vshPrintExtra(ctl, _("Pool %1$s has been undefined\n"), name);
     } else {
-        vshError(ctl, _("Failed to undefine pool %s"), name);
+        vshError(ctl, _("Failed to undefine pool %1$s"), name);
         ret = false;
     }
 
@@ -1840,7 +1840,7 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
 #define EDIT_GET_XML virStoragePoolGetXMLDesc(pool, flags)
 #define EDIT_NOT_CHANGED \
     do { \
-        vshPrintExtra(ctl, _("Pool %s XML configuration not changed.\n"), \
+        vshPrintExtra(ctl, _("Pool %1$s XML configuration not changed.\n"), \
                  virStoragePoolGetName(pool)); \
         ret = true; \
         goto edit_cleanup; \
@@ -1849,7 +1849,7 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
     (pool_edited = virStoragePoolDefineXML(priv->conn, doc_edited, 0))
 #include "virsh-edit.c"
 
-    vshPrintExtra(ctl, _("Pool %s XML configuration edited.\n"),
+    vshPrintExtra(ctl, _("Pool %1$s XML configuration edited.\n"),
                   virStoragePoolGetName(pool_edited));
 
     ret = true;
@@ -1906,12 +1906,12 @@ vshEventLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
         if (virTimeStringNowRaw(timestamp) < 0)
             timestamp[0] = '\0';
 
-        vshPrint(data->ctl, _("%s: event 'lifecycle' for storage pool %s: %s\n"),
+        vshPrint(data->ctl, _("%1$s: event 'lifecycle' for storage pool %2$s: %3$s\n"),
                  timestamp,
                  virStoragePoolGetName(pool),
                  virshPoolEventToString(event));
     } else {
-        vshPrint(data->ctl, _("event 'lifecycle' for storage pool %s: %s\n"),
+        vshPrint(data->ctl, _("event 'lifecycle' for storage pool %1$s: %2$s\n"),
                  virStoragePoolGetName(pool),
                  virshPoolEventToString(event));
     }
@@ -1937,12 +1937,12 @@ vshEventGenericPrint(virConnectPtr conn G_GNUC_UNUSED,
         if (virTimeStringNowRaw(timestamp) < 0)
             timestamp[0] = '\0';
 
-        vshPrint(data->ctl, _("%s: event '%s' for storage pool %s\n"),
+        vshPrint(data->ctl, _("%1$s: event '%2$s' for storage pool %3$s\n"),
                  timestamp,
                  data->cb->name,
                  virStoragePoolGetName(pool));
     } else {
-        vshPrint(data->ctl, _("event '%s' for storage pool %s\n"),
+        vshPrint(data->ctl, _("event '%1$s' for storage pool %2$s\n"),
                  data->cb->name,
                  virStoragePoolGetName(pool));
     }
@@ -2031,7 +2031,7 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
         if (STREQ(eventName, virshPoolEventCallbacks[event].name))
             break;
     if (event == VIR_STORAGE_POOL_EVENT_ID_LAST) {
-        vshError(ctl, _("unknown event type %s"), eventName);
+        vshError(ctl, _("unknown event type %1$s"), eventName);
         return false;
     }
 
@@ -2064,7 +2064,7 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
     default:
         goto cleanup;
     }
-    vshPrint(ctl, _("events received: %d\n"), data.count);
+    vshPrint(ctl, _("events received: %1$d\n"), data.count);
     if (data.count)
         ret = true;
 

@@ -272,39 +272,39 @@ vshCmddefCheckInternals(vshControl *ctl,
         const vshCmdDef *alias;
 
         if (!cmd->alias) {
-            vshError(ctl, _("command '%s' has inconsistent alias"), cmd->name);
+            vshError(ctl, _("command '%1$s' has inconsistent alias"), cmd->name);
             return -1;
         }
 
         if (!(alias = vshCmddefSearch(cmd->alias))) {
-            vshError(ctl, _("command alias '%s' is pointing to a non-existent command '%s'"),
+            vshError(ctl, _("command alias '%1$s' is pointing to a non-existent command '%2$s'"),
                      cmd->name, cmd->alias);
             return -1;
         }
 
         if (alias->flags & VSH_CMD_FLAG_ALIAS) {
-            vshError(ctl, _("command alias '%s' is pointing to another command alias '%s'"),
+            vshError(ctl, _("command alias '%1$s' is pointing to another command alias '%2$s'"),
                      cmd->name, cmd->alias);
             return -1;
         }
 
         if (cmd->handler) {
-            vshError(ctl, _("command '%s' has handler set"), cmd->name);
+            vshError(ctl, _("command '%1$s' has handler set"), cmd->name);
             return -1;
         }
 
         if (cmd->opts) {
-            vshError(ctl, _("command '%s' has options set"), cmd->name);
+            vshError(ctl, _("command '%1$s' has options set"), cmd->name);
             return -1;
         }
 
         if (cmd->info) {
-            vshError(ctl, _("command '%s' has info set"), cmd->name);
+            vshError(ctl, _("command '%1$s' has info set"), cmd->name);
             return -1;
         }
 
         if (cmd->flags & ~VSH_CMD_FLAG_ALIAS) {
-            vshError(ctl, _("command '%s' has multiple flags set"), cmd->name);
+            vshError(ctl, _("command '%1$s' has multiple flags set"), cmd->name);
             return -1;
         }
 
@@ -314,7 +314,7 @@ vshCmddefCheckInternals(vshControl *ctl,
 
     /* Each command has to provide a non-empty help string. */
     if (!(help = vshCmddefGetInfo(cmd, "help")) || !*help) {
-        vshError(ctl, _("command '%s' lacks help"), cmd->name);
+        vshError(ctl, _("command '%1$s' lacks help"), cmd->name);
         return -1;
     }
 
@@ -325,7 +325,7 @@ vshCmddefCheckInternals(vshControl *ctl,
         const vshCmdOptDef *opt = &cmd->opts[i];
 
         if (i > 63) {
-            vshError(ctl, _("command '%s' has too many options"), cmd->name);
+            vshError(ctl, _("command '%1$s' has too many options"), cmd->name);
             return -1; /* too many options */
         }
 
@@ -337,7 +337,7 @@ vshCmddefCheckInternals(vshControl *ctl,
         switch (opt->type) {
         case VSH_OT_BOOL:
             if (opt->completer || opt->completer_flags) {
-                vshError(ctl, _("bool parameter '%s' of command '%s' has completer set"),
+                vshError(ctl, _("bool parameter '%1$s' of command '%2$s' has completer set"),
                          opt->name, cmd->name);
                 return -1;
             }
@@ -346,7 +346,7 @@ vshCmddefCheckInternals(vshControl *ctl,
 
         case VSH_OT_STRING:
             if (opt->flags & VSH_OFLAG_REQ) {
-                vshError(ctl, _("parameter '%s' of command '%s' misused VSH_OFLAG_REQ"),
+                vshError(ctl, _("parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"),
                          opt->name, cmd->name);
                 return -1; /* neither bool nor string options can be mandatory */
             }
@@ -360,7 +360,7 @@ vshCmddefCheckInternals(vshControl *ctl,
             char *p;
 
             if (opt->flags || !opt->help) {
-                vshError(ctl, _("parameter '%s' of command '%s' has incorrect alias option"),
+                vshError(ctl, _("parameter '%1$s' of command '%2$s' has incorrect alias option"),
                          opt->name, cmd->name);
                 return -1; /* alias options are tracked by the original name */
             }
@@ -376,13 +376,13 @@ vshCmddefCheckInternals(vshControl *ctl,
             if (p) {
                 /* If alias comes with value, replacement must not be bool */
                 if (cmd->opts[j].type == VSH_OT_BOOL) {
-                    vshError(ctl, _("alias '%s' of command '%s' has mismatched alias type"),
+                    vshError(ctl, _("alias '%1$s' of command '%2$s' has mismatched alias type"),
                              opt->name, cmd->name);
                     return -1;
                 }
             }
             if (!cmd->opts[j].name) {
-                vshError(ctl, _("alias '%s' of command '%s' has missing alias option"),
+                vshError(ctl, _("alias '%1$s' of command '%2$s' has missing alias option"),
                          opt->name, cmd->name);
                 return -1; /* alias option must map to a later option name */
             }
@@ -390,7 +390,7 @@ vshCmddefCheckInternals(vshControl *ctl,
             break;
         case VSH_OT_ARGV:
             if (cmd->opts[i + 1].name) {
-                vshError(ctl, _("parameter '%s' of command '%s' must be listed last"),
+                vshError(ctl, _("parameter '%1$s' of command '%2$s' must be listed last"),
                          opt->name, cmd->name);
                 return -1; /* argv option must be listed last */
             }
@@ -398,13 +398,13 @@ vshCmddefCheckInternals(vshControl *ctl,
 
         case VSH_OT_DATA:
             if (!(opt->flags & VSH_OFLAG_REQ)) {
-                vshError(ctl, _("parameter '%s' of command '%s' must use VSH_OFLAG_REQ flag"),
+                vshError(ctl, _("parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"),
                          opt->name, cmd->name);
                 return -1; /* OT_DATA should always be required. */
             }
 
             if (seenOptionalOption) {
-                vshError(ctl, _("parameter '%s' of command '%s' must be listed before optional parameters"),
+                vshError(ctl, _("parameter '%1$s' of command '%2$s' must be listed before optional parameters"),
                          opt->name, cmd->name);
                 return -1;  /* mandatory options must be listed first */
             }
@@ -413,7 +413,7 @@ vshCmddefCheckInternals(vshControl *ctl,
         case VSH_OT_INT:
             if (opt->flags & VSH_OFLAG_REQ) {
                 if (seenOptionalOption) {
-                    vshError(ctl, _("parameter '%s' of command '%s' must be listed before optional parameters"),
+                    vshError(ctl, _("parameter '%1$s' of command '%2$s' must be listed before optional parameters"),
                              opt->name, cmd->name);
                     return -1;  /* mandatory options must be listed first */
                 }
@@ -499,7 +499,7 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
                     *value = '\0';
                     if (*optstr) {
                         if (report)
-                            vshError(ctl, _("invalid '=' after option --%s"),
+                            vshError(ctl, _("invalid '=' after option --%1$s"),
                                      opt->name);
                         return NULL;
                     }
@@ -509,7 +509,7 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
             }
             if ((*opts_seen & (1ULL << i)) && opt->type != VSH_OT_ARGV) {
                 if (report)
-                    vshError(ctl, _("option --%s already seen"), name);
+                    vshError(ctl, _("option --%1$s already seen"), name);
                 return NULL;
             }
             *opts_seen |= 1ULL << i;
@@ -519,7 +519,7 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
     }
 
     if (STRNEQ(cmd->name, "help") && report) {
-        vshError(ctl, _("command '%s' doesn't support option --%s"),
+        vshError(ctl, _("command '%1$s' doesn't support option --%2$s"),
                  cmd->name, name);
     }
     return NULL;
@@ -564,8 +564,8 @@ vshCommandCheckOpts(vshControl *ctl, const vshCmd *cmd, uint64_t opts_required,
 
             vshError(ctl,
                      opt->type == VSH_OT_DATA || opt->type == VSH_OT_ARGV ?
-                     _("command '%s' requires <%s> option") :
-                     _("command '%s' requires --%s option"),
+                     _("command '%1$s' requires <%2$s> option") :
+                     _("command '%1$s' requires --%2$s option"),
                      def->name, opt->name);
         }
     }
@@ -628,7 +628,7 @@ vshCmdGrpHelp(vshControl *ctl, const vshCmdGrp *grp)
 {
     const vshCmdDef *cmd = NULL;
 
-    vshPrint(ctl, _(" %s (help keyword '%s'):\n"), grp->name,
+    vshPrint(ctl, _(" %1$s (help keyword '%2$s'):\n"), grp->name,
              grp->keyword);
 
     for (cmd = grp->commands; cmd->name; cmd++) {
@@ -666,13 +666,13 @@ vshCmddefHelp(const vshCmdDef *def)
             case VSH_OT_INT:
                 /* xgettext:c-format */
                 fmt = ((opt->flags & VSH_OFLAG_REQ) ? "<%s>"
-                       : _("[--%s <number>]"));
+                       : _("[--%1$s <number>]"));
                 if (!(opt->flags & VSH_OFLAG_REQ_OPT))
                     shortopt = true;
                 break;
             case VSH_OT_STRING:
                 /* xgettext:c-format */
-                fmt = _("[--%s <string>]");
+                fmt = _("[--%1$s <string>]");
                 if (!(opt->flags & VSH_OFLAG_REQ_OPT))
                     shortopt = true;
                 break;
@@ -685,11 +685,11 @@ vshCmddefHelp(const vshCmdDef *def)
                 /* xgettext:c-format */
                 if (shortopt) {
                     fmt = (opt->flags & VSH_OFLAG_REQ)
-                        ? _("{[--%s] <string>}...")
-                        : _("[[--%s] <string>]...");
+                        ? _("{[--%1$s] <string>}...")
+                        : _("[[--%1$s] <string>]...");
                 } else {
-                    fmt = (opt->flags & VSH_OFLAG_REQ) ? _("<%s>...")
-                        : _("[<%s>]...");
+                    fmt = (opt->flags & VSH_OFLAG_REQ) ? _("<%1$s>...")
+                        : _("[<%1$s>]...");
                 }
                 break;
             case VSH_OT_ALIAS:
@@ -719,19 +719,19 @@ vshCmddefHelp(const vshCmdDef *def)
                 break;
             case VSH_OT_INT:
                 g_snprintf(buf, sizeof(buf),
-                           (opt->flags & VSH_OFLAG_REQ) ? _("[--%s] <number>")
-                           : _("--%s <number>"), opt->name);
+                           (opt->flags & VSH_OFLAG_REQ) ? _("[--%1$s] <number>")
+                           : _("--%1$s <number>"), opt->name);
                 break;
             case VSH_OT_STRING:
-                g_snprintf(buf, sizeof(buf), _("--%s <string>"), opt->name);
+                g_snprintf(buf, sizeof(buf), _("--%1$s <string>"), opt->name);
                 break;
             case VSH_OT_DATA:
-                g_snprintf(buf, sizeof(buf), _("[--%s] <string>"),
+                g_snprintf(buf, sizeof(buf), _("[--%1$s] <string>"),
                            opt->name);
                 break;
             case VSH_OT_ARGV:
                 g_snprintf(buf, sizeof(buf),
-                           shortopt ? _("[--%s] <string>") : _("<%s>"),
+                           shortopt ? _("[--%1$s] <string>") : _("<%1$s>"),
                            opt->name);
                 break;
             case VSH_OT_ALIAS:
@@ -858,7 +858,7 @@ vshCommandOptInt(vshControl *ctl, const vshCmd *cmd,
 
     if ((ret = virStrToLong_i(arg->data, NULL, 10, value)) < 0)
         vshError(ctl,
-                 _("Numeric value '%s' for <%s> option is malformed or out of range"),
+                 _("Numeric value '%1$s' for <%2$s> option is malformed or out of range"),
                  arg->data, name);
     else
         ret = 1;
@@ -885,7 +885,7 @@ vshCommandOptUIntInternal(vshControl *ctl,
         ret = virStrToLong_uip(arg->data, NULL, 10, value);
     if (ret < 0)
         vshError(ctl,
-                 _("Numeric value '%s' for <%s> option is malformed or out of range"),
+                 _("Numeric value '%1$s' for <%2$s> option is malformed or out of range"),
                  arg->data, name);
     else
         ret = 1;
@@ -946,7 +946,7 @@ vshCommandOptULInternal(vshControl *ctl,
         ret = virStrToLong_ulp(arg->data, NULL, 10, value);
     if (ret < 0)
         vshError(ctl,
-                 _("Numeric value '%s' for <%s> option is malformed or out of range"),
+                 _("Numeric value '%1$s' for <%2$s> option is malformed or out of range"),
                  arg->data, name);
     else
         ret = 1;
@@ -1055,7 +1055,7 @@ vshCommandOptStringReq(vshControl *ctl,
 
     if (error) {
         if (!cmd->skipChecks)
-            vshError(ctl, _("Failed to get option '%s': %s"), name, _(error));
+            vshError(ctl, _("Failed to get option '%1$s': %2$s"), name, _(error));
         return -1;
     }
 
@@ -1085,7 +1085,7 @@ vshCommandOptLongLong(vshControl *ctl, const vshCmd *cmd,
 
     if ((ret = virStrToLong_ll(arg->data, NULL, 10, value)) < 0)
         vshError(ctl,
-                 _("Numeric value '%s' for <%s> option is malformed or out of range"),
+                 _("Numeric value '%1$s' for <%2$s> option is malformed or out of range"),
                  arg->data, name);
     else
         ret = 1;
@@ -1112,7 +1112,7 @@ vshCommandOptULongLongInternal(vshControl *ctl,
         ret = virStrToLong_ullp(arg->data, NULL, 10, value);
     if (ret < 0)
         vshError(ctl,
-                 _("Numeric value '%s' for <%s> option is malformed or out of range"),
+                 _("Numeric value '%1$s' for <%2$s> option is malformed or out of range"),
                  arg->data, name);
     else
         ret = 1;
@@ -1181,8 +1181,8 @@ vshCommandOptScaledInt(vshControl *ctl, const vshCmd *cmd,
     if (virStrToLong_ullp(arg->data, &end, 10, value) < 0 ||
         virScaleInteger(value, end, scale, max) < 0) {
         vshError(ctl,
-                 _("Scaled numeric value '%s' for <%s> option is malformed or "
-                   "out of range"), arg->data, name);
+                 _("Scaled numeric value '%1$s' for <%2$s> option is malformed or out of range"),
+                 arg->data, name);
         return -1;
     }
 
@@ -1272,8 +1272,8 @@ vshBlockJobOptionBandwidth(vshControl *ctl,
         if (virStrToLong_ullp(arg->data, &end, 10, &bw) < 0 ||
             virScaleInteger(&bw, end, 1, ULONG_MAX) < 0) {
             vshError(ctl,
-                     _("Scaled numeric value '%s' for <--bandwidth> option is "
-                       "malformed or out of range"), arg->data);
+                     _("Scaled numeric value '%1$s' for <--bandwidth> option is malformed or out of range"),
+                     arg->data);
             return -1;
         }
 
@@ -1332,7 +1332,7 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
         if (enable_timing) {
             double diff_ms = (after - before) / 1000.0;
 
-            vshPrint(ctl, _("\n(Time: %.3f ms)\n\n"), diff_ms);
+            vshPrint(ctl, _("\n(Time: %1$.3f ms)\n\n"), diff_ms);
         } else {
             vshPrintExtra(ctl, "\n");
         }
@@ -1417,7 +1417,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                     break;
                 } else if (!(cmd = vshCmddefSearch(tkdata))) {
                     if (!partial)
-                        vshError(ctl, _("unknown command: '%s'"), tkdata);
+                        vshError(ctl, _("unknown command: '%1$s'"), tkdata);
                     goto syntaxError;   /* ... or ignore this command only? */
                 }
 
@@ -1477,7 +1477,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                             last = arg;
                         } else {
                             vshError(ctl,
-                                     _("expected syntax: --%s <%s>"),
+                                     _("expected syntax: --%1$s <%2$s>"),
                                      opt->name,
                                      opt->type ==
                                      VSH_OT_INT ? _("number") : _("string"));
@@ -1490,7 +1490,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                     tkdata = NULL;
                     if (optstr) {
                         if (!partial)
-                            vshError(ctl, _("invalid '=' after option --%s"),
+                            vshError(ctl, _("invalid '=' after option --%1$s"),
                                      opt->name);
                         VIR_FREE(optstr);
                         goto syntaxError;
@@ -1508,7 +1508,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                                              &opts_seen)) &&
                      STRNEQ(cmd->name, "help")) {
                     if (!partial)
-                        vshError(ctl, _("unexpected data '%s'"), tkdata);
+                        vshError(ctl, _("unexpected data '%1$s'"), tkdata);
                     goto syntaxError;
                 }
             }
@@ -1784,7 +1784,7 @@ vshCommandOptTimeoutToMs(vshControl *ctl, const vshCmd *cmd, int *timeout)
      * it from seconds to milliseconds without overflowing. */
     if (utimeout == 0 || utimeout > INT_MAX / 1000) {
         vshError(ctl,
-                 _("Numeric value '%u' for <%s> option is malformed or out of range"),
+                 _("Numeric value '%1$u' for <%2$s> option is malformed or out of range"),
                  utimeout,
                  "timeout");
         ret = -1;
@@ -1836,7 +1836,7 @@ vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
         break;
 
     default:
-        vshError(ctl, _("unimplemented parameter type %d"), item->type);
+        vshError(ctl, _("unimplemented parameter type %1$d"), item->type);
         exit(EXIT_FAILURE);
     }
 }
@@ -1977,7 +1977,7 @@ vshTTYMakeRaw(vshControl *ctl G_GNUC_UNUSED,
 
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &rawattr) < 0) {
         if (report_errors)
-            vshError(ctl, _("unable to set tty attributes: %s"),
+            vshError(ctl, _("unable to set tty attributes: %1$s"),
                      g_strerror(errno));
         return -1;
     }
@@ -2153,7 +2153,7 @@ vshEventWait(vshControl *ctl)
     if (rv != 1) {
         if (!rv)
             errno = EPIPE;
-        vshError(ctl, _("failed to determine loop exit status: %s"),
+        vshError(ctl, _("failed to determine loop exit status: %1$s"),
                  g_strerror(errno));
         return -1;
     }
@@ -2284,7 +2284,7 @@ vshCloseLogFile(vshControl *ctl)
 {
     /* log file close */
     if (VIR_CLOSE(ctl->log_fd) < 0) {
-        vshError(ctl, _("%s: failed to write log file: %s"),
+        vshError(ctl, _("%1$s: failed to write log file: %2$s"),
                  ctl->logfile ? ctl->logfile : "?",
                  g_strerror(errno));
     }
@@ -2406,7 +2406,7 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     filename = g_strdup_printf("%s/virshXXXXXX.xml", tmpdir);
     fd = g_mkstemp_full(filename, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR);
     if (fd == -1) {
-        vshError(ctl, _("g_mkstemp_full: failed to create temporary file: %s"),
+        vshError(ctl, _("g_mkstemp_full: failed to create temporary file: %1$s"),
                  g_strerror(errno));
         return NULL;
     }
@@ -2414,12 +2414,12 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     ret = g_steal_pointer(&filename);
 
     if (safewrite(fd, doc, strlen(doc)) == -1) {
-        vshError(ctl, _("write: %s: failed to write to temporary file: %s"),
+        vshError(ctl, _("write: %1$s: failed to write to temporary file: %2$s"),
                  ret, g_strerror(errno));
         return NULL;
     }
     if (VIR_CLOSE(fd) < 0) {
-        vshError(ctl, _("close: %s: failed to write or close temporary file: %s"),
+        vshError(ctl, _("close: %1$s: failed to write or close temporary file: %2$s"),
                  ret, g_strerror(errno));
         return NULL;
     }
@@ -2461,8 +2461,7 @@ vshEditFile(vshControl *ctl, const char *filename)
     if (strspn(editor, ACCEPTED_CHARS) != strlen(editor)) {
         if (strspn(filename, ACCEPTED_CHARS) != strlen(filename)) {
             vshError(ctl,
-                     _("%s: temporary filename contains shell meta or other "
-                       "unacceptable characters (is $TMPDIR wrong?)"),
+                     _("%1$s: temporary filename contains shell meta or other unacceptable characters (is $TMPDIR wrong?)"),
                      filename);
             return -1;
         }
@@ -2490,7 +2489,7 @@ vshEditReadBackFile(vshControl *ctl, const char *filename)
 
     if (virFileReadAll(filename, VSH_MAX_XML_FILE, &ret) == -1) {
         vshError(ctl,
-                 _("%s: failed to read temporary file: %s"),
+                 _("%1$s: failed to read temporary file: %2$s"),
                  filename, g_strerror(errno));
         return NULL;
     }
@@ -2863,11 +2862,10 @@ vshReadlineInit(vshControl *ctl)
     /* Limit the total size of the history buffer */
     if ((histsize_str = getenv(histsize_env))) {
         if (virStrToLong_i(histsize_str, NULL, 10, &max_history) < 0) {
-            vshError(ctl, _("Bad $%s value."), histsize_env);
+            vshError(ctl, _("Bad $%1$s value."), histsize_env);
             return -1;
         } else if (max_history > HISTSIZE_MAX || max_history < 0) {
-            vshError(ctl, _("$%s value should be between 0 "
-                            "and %d"),
+            vshError(ctl, _("$%1$s value should be between 0 and %2$d"),
                      histsize_env, HISTSIZE_MAX);
             return -1;
         }
@@ -2893,7 +2891,7 @@ vshReadlineDeinit(vshControl *ctl)
     if (ctl->historyfile != NULL) {
         if (g_mkdir_with_parents(ctl->historydir, 0755) < 0 &&
             errno != EEXIST) {
-            vshError(ctl, _("Failed to create '%s': %s"),
+            vshError(ctl, _("Failed to create '%1$s': %2$s"),
                      ctl->historydir, g_strerror(errno));
         } else {
             write_history(ctl->historyfile);
@@ -2977,7 +2975,7 @@ vshInitDebug(vshControl *ctl)
             int debug;
             if (virStrToLong_i(debugEnv, NULL, 10, &debug) < 0 ||
                 debug < VSH_ERR_DEBUG || debug > VSH_ERR_ERROR) {
-                vshError(ctl, _("%s_DEBUG not set with a valid numeric value"),
+                vshError(ctl, _("%1$s_DEBUG not set with a valid numeric value"),
                          ctl->env_prefix);
             } else {
                 ctl->debug = debug;
@@ -3101,7 +3099,7 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%s", _("Grouped commands:\n\n"));
 
         for (grp = cmdGroups; grp->name; grp++) {
-            vshPrint(ctl, _(" %s (help keyword '%s'):\n"), grp->name,
+            vshPrint(ctl, _(" %1$s (help keyword '%2$s'):\n"), grp->name,
                      grp->keyword);
 
             for (def = grp->commands; def->name; def++) {
@@ -3125,7 +3123,7 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
     } else if ((grp = vshCmdGrpSearch(name))) {
         return vshCmdGrpHelp(ctl, grp);
     } else {
-        vshError(ctl, _("command or command group '%s' doesn't exist"), name);
+        vshError(ctl, _("command or command group '%1$s' doesn't exist"), name);
         return false;
     }
 }
@@ -3165,7 +3163,7 @@ cmdCd(vshControl *ctl, const vshCmd *cmd)
         dir = "/";
 
     if (chdir(dir) == -1) {
-        vshError(ctl, _("cd: %s: %s"),
+        vshError(ctl, _("cd: %1$s: %2$s"),
                  g_strerror(errno), dir);
         return false;
     }
@@ -3282,7 +3280,7 @@ cmdPwd(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     g_autofree char *cwd = g_get_current_dir();
 
-    vshPrint(ctl, _("%s\n"), cwd);
+    vshPrint(ctl, _("%1$s\n"), cwd);
 
     return true;
 }

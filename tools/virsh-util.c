@@ -63,7 +63,7 @@ virshLookupDomainInternal(vshControl *ctl,
     vshResetLibvirtError();
 
     if (!dom)
-        vshError(ctl, _("failed to get domain '%s'"), name);
+        vshError(ctl, _("failed to get domain '%1$s'"), name);
 
     return dom;
 }

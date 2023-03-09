@@ -49,7 +49,7 @@ show_help(FILE *out, const char *argv0)
 {
     fprintf(out,
             _("\n"
-              "syntax: %s [OPTIONS] [HVTYPE]\n"
+              "syntax: %1$s [OPTIONS] [HVTYPE]\n"
               "\n"
               " Hypervisor types:\n"
               "\n"
@@ -90,7 +90,7 @@ main(int argc, char **argv)
 
     if (virGettextInitialize() < 0 ||
         virErrorInitialize() < 0) {
-        fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
+        fprintf(stderr, _("%1$s: initialization failed\n"), argv[0]);
         return EXIT_FAILURE;
     }
 
@@ -116,7 +116,7 @@ main(int argc, char **argv)
     }
 
     if ((argc-optind) > 2) {
-        fprintf(stderr, _("%s: too many command line arguments\n"), argv[0]);
+        fprintf(stderr, _("%1$s: too many command line arguments\n"), argv[0]);
         show_help(stderr, argv[0]);
         return EXIT_FAILURE;
     }
@@ -159,7 +159,7 @@ main(int argc, char **argv)
 #endif
 
     if (hvname && !usedHvname) {
-        fprintf(stderr, _("%s: unsupported hypervisor name %s\n"),
+        fprintf(stderr, _("%1$s: unsupported hypervisor name %2$s\n"),
                 argv[0], hvname);
         return EXIT_FAILURE;
     }

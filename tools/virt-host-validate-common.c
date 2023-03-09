@@ -65,7 +65,7 @@ void virHostMsgCheck(const char *prefix,
     msg = g_strdup_vprintf(format, args);
     va_end(args);
 
-    fprintf(stdout, _("%6s: Checking %-60s: "), prefix, msg);
+    fprintf(stdout, _("%1$6s: Checking %2$-60s: "), prefix, msg);
 }
 
 static bool virHostMsgWantEscape(void)
@@ -255,7 +255,7 @@ int virHostValidateLinuxKernel(const char *hvname,
 
     uname(&uts);
 
-    virHostMsgCheck(hvname, _("for Linux >= %d.%d.%d"),
+    virHostMsgCheck(hvname, _("for Linux >= %1$d.%2$d.%3$d"),
                     ((version >> 16) & 0xff),
                     ((version >> 8) & 0xff),
                     (version & 0xff));

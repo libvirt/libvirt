@@ -90,9 +90,9 @@ virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
     }
 
     if (from)
-        vshPrintExtra(ctl, _("Domain snapshot %s created from '%s'"), name, from);
+        vshPrintExtra(ctl, _("Domain snapshot %1$s created from '%2$s'"), name, from);
     else
-        vshPrintExtra(ctl, _("Domain snapshot %s created"), name);
+        vshPrintExtra(ctl, _("Domain snapshot %1$s created"), name);
 
     return true;
 }
@@ -238,7 +238,7 @@ virshParseSnapshotMemspec(vshControl *ctl, virBuffer *buf, const char *str)
     ret = 0;
  cleanup:
     if (ret < 0)
-        vshError(ctl, _("unable to parse memspec: %s"), str);
+        vshError(ctl, _("unable to parse memspec: %1$s"), str);
     return ret;
 }
 
@@ -281,7 +281,7 @@ virshParseSnapshotDiskspec(vshControl *ctl, virBuffer *buf, const char *str)
         if (STREQ(stype, "block")) {
             isFile = false;
         } else if (STRNEQ(stype, "file")) {
-            vshError(ctl, _("Unknown storage type: '%s'"), stype);
+            vshError(ctl, _("Unknown storage type: '%1$s'"), stype);
             goto cleanup;
         }
         virBufferAsprintf(buf, " type='%s'", stype);
@@ -305,7 +305,7 @@ virshParseSnapshotDiskspec(vshControl *ctl, virBuffer *buf, const char *str)
     ret = 0;
  cleanup:
     if (ret < 0)
-        vshError(ctl, _("unable to parse diskspec: %s"), str);
+        vshError(ctl, _("unable to parse diskspec: %1$s"), str);
     return ret;
 }
 
@@ -462,7 +462,7 @@ virshLookupSnapshot(vshControl *ctl, const vshCmd *cmd,
         return -1;
 
     if (exclusive && current && snapname) {
-        vshError(ctl, _("--%s and --current are mutually exclusive"), arg);
+        vshError(ctl, _("--%1$s and --current are mutually exclusive"), arg);
         return -1;
     }
 
@@ -471,7 +471,7 @@ virshLookupSnapshot(vshControl *ctl, const vshCmd *cmd,
     } else if (current) {
         *snap = virDomainSnapshotCurrent(dom, 0);
     } else {
-        vshError(ctl, _("--%s or --current is required"), arg);
+        vshError(ctl, _("--%1$s or --current is required"), arg);
         return -1;
     }
     if (!*snap) {
@@ -549,7 +549,7 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
         /* Depending on flags, we re-edit even if XML is unchanged.  */ \
         if (!(define_flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) { \
             vshPrintExtra(ctl, \
-                          _("Snapshot %s XML configuration not changed.\n"), \
+                          _("Snapshot %1$s XML configuration not changed.\n"), \
                           name); \
             ret = true; \
             goto edit_cleanup; \
@@ -563,9 +563,9 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
 
     edited_name = virDomainSnapshotGetName(edited);
     if (STREQ(name, edited_name)) {
-        vshPrintExtra(ctl, _("Snapshot %s edited.\n"), name);
+        vshPrintExtra(ctl, _("Snapshot %1$s edited.\n"), name);
     } else if (clone_okay) {
-        vshPrintExtra(ctl, _("Snapshot %s cloned to %s.\n"), name,
+        vshPrintExtra(ctl, _("Snapshot %1$s cloned to %2$s.\n"), name,
                       edited_name);
     } else {
         unsigned int delete_flags;
@@ -574,12 +574,12 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
         if (virDomainSnapshotDelete(rename_okay ? snapshot : edited,
                                     delete_flags) < 0) {
             vshReportError(ctl);
-            vshError(ctl, _("Failed to clean up %s"),
+            vshError(ctl, _("Failed to clean up %1$s"),
                      rename_okay ? name : edited_name);
             goto cleanup;
         }
         if (!rename_okay) {
-            vshError(ctl, _("Must use --rename or --clone to change %s to %s"),
+            vshError(ctl, _("Must use --rename or --clone to change %1$s to %2$s"),
                      name, edited_name);
             goto cleanup;
         }
@@ -589,7 +589,7 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     if (!ret && name)
-        vshError(ctl, _("Failed to update %s"), name);
+        vshError(ctl, _("Failed to update %1$s"), name);
     return ret;
 }
 
@@ -666,7 +666,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
         if (!(snapshot2 = virDomainSnapshotCreateXML(dom, xml, flags)))
             goto cleanup;
 
-        vshPrintExtra(ctl, _("Snapshot %s set as current"), snapshotname);
+        vshPrintExtra(ctl, _("Snapshot %1$s set as current"), snapshotname);
         ret = true;
         goto cleanup;
     }
@@ -675,7 +675,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (!current) {
-        vshError(ctl, _("domain '%s' has no current snapshot"), domname);
+        vshError(ctl, _("domain '%1$s' has no current snapshot"), domname);
         goto cleanup;
     } else {
         if (!(snapshot = virDomainSnapshotCurrent(dom, 0)))
@@ -1234,7 +1234,7 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
          * hierarchy isn't huge.  XXX Is it worth making O(n^2 log n)
          * by using qsort and bsearch?  */
         if (start_index < 0) {
-            vshError(ctl, _("snapshot %s disappeared from list"), fromname);
+            vshError(ctl, _("snapshot %1$s disappeared from list"), fromname);
             goto cleanup;
         }
         for (i = 0; i < count; i++) {
@@ -1452,7 +1452,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         if (vshCommandOptBool(cmd, option)) { \
             if (tree) { \
                 vshError(ctl, \
-                         _("--%s and --tree are mutually exclusive"), \
+                         _("--%1$s and --tree are mutually exclusive"), \
                          option); \
                 return false; \
             } \
@@ -1695,7 +1695,7 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
     if (virshGetSnapshotParent(ctl, snapshot, &parent) < 0)
         return false;
     if (!parent) {
-        vshError(ctl, _("snapshot '%s' has no parent"), name);
+        vshError(ctl, _("snapshot '%1$s' has no parent"), name);
         return false;
     }
 
@@ -1784,9 +1784,9 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (result < 0)
-        vshError(ctl, _("Failed to revert snapshot %s"), name);
+        vshError(ctl, _("Failed to revert snapshot %1$s"), name);
     else
-        vshPrintExtra(ctl, _("Domain snapshot %s reverted\n"), name);
+        vshPrintExtra(ctl, _("Domain snapshot %1$s reverted\n"), name);
     return result >= 0;
 }
 
@@ -1853,14 +1853,14 @@ cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
      * older servers that reject the flag, by manually computing the
      * list of descendants.  But that's a lot of code to maintain.  */
     if (virDomainSnapshotDelete(snapshot, flags) < 0) {
-        vshError(ctl, _("Failed to delete snapshot %s"), name);
+        vshError(ctl, _("Failed to delete snapshot %1$s"), name);
         return false;
     }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)
-        vshPrintExtra(ctl, _("Domain snapshot %s children deleted\n"), name);
+        vshPrintExtra(ctl, _("Domain snapshot %1$s children deleted\n"), name);
     else
-        vshPrintExtra(ctl, _("Domain snapshot %s deleted\n"), name);
+        vshPrintExtra(ctl, _("Domain snapshot %1$s deleted\n"), name);
     return true;
 }
 

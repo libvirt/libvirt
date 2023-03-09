@@ -28,8 +28,8 @@ print_usage(const char *progname,
 {
   fprintf(out,
           _("Usage:\n"
-            "  %s FILE\n"
-            "  %s { -v | -h }\n"
+            "  %1$s FILE\n"
+            "  %2$s { -v | -h }\n"
             "\n"
             "Extract Distinguished Name from a PEM certificate.\n"
             "The output is meant to be used in the tls_allowed_dn_list\n"
@@ -102,7 +102,7 @@ main(int argc,
     }
 
     if (bufsize > UINT_MAX) {
-        g_printerr(_("%s: File '%s' is too large\n"), progname, filename);
+        g_printerr(_("%1$s: File '%2$s' is too large\n"), progname, filename);
         return EXIT_FAILURE;
     }
 
@@ -111,14 +111,14 @@ main(int argc,
 
     rv = gnutls_x509_crt_init(&crt);
     if (rv < 0) {
-        g_printerr(_("Unable to initialize certificate: %s\n"),
+        g_printerr(_("Unable to initialize certificate: %1$s\n"),
                    gnutls_strerror(rv));
         return EXIT_FAILURE;
     }
 
     rv = gnutls_x509_crt_import(crt, &crt_data, GNUTLS_X509_FMT_PEM);
     if (rv < 0) {
-        g_printerr(_("Unable to load certificate, make sure it is in PEM format: %s\n"),
+        g_printerr(_("Unable to load certificate, make sure it is in PEM format: %1$s\n"),
                    gnutls_strerror(rv));
         return EXIT_FAILURE;
     }
@@ -129,7 +129,7 @@ main(int argc,
         rv = gnutls_x509_crt_get_dn(crt, dname, &dnamesize);
     }
     if (rv != 0) {
-        g_printerr(_("Failed to get distinguished name: %s\n"),
+        g_printerr(_("Failed to get distinguished name: %1$s\n"),
                    gnutls_strerror(rv));
         return EXIT_FAILURE;
     }

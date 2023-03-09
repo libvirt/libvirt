@@ -83,13 +83,13 @@ vshAdmCatchDisconnect(virAdmConnectPtr conn G_GNUC_UNUSED,
 
     switch ((virConnectCloseReason) reason) {
     case VIR_CONNECT_CLOSE_REASON_ERROR:
-        str = N_("Disconnected from %s due to I/O error");
+        str = N_("Disconnected from %1$s due to I/O error");
         break;
     case VIR_CONNECT_CLOSE_REASON_EOF:
-        str = N_("Disconnected from %s due to end of file");
+        str = N_("Disconnected from %1$s due to end of file");
         break;
     case VIR_CONNECT_CLOSE_REASON_KEEPALIVE:
-        str = N_("Disconnected from %s due to keepalive timeout");
+        str = N_("Disconnected from %1$s due to keepalive timeout");
         break;
     case VIR_CONNECT_CLOSE_REASON_CLIENT:
     case VIR_CONNECT_CLOSE_REASON_LAST:
@@ -226,7 +226,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     includeVersion %= 1000000;
     minor = includeVersion / 1000;
     rel = includeVersion % 1000;
-    vshPrint(ctl, _("Compiled against library: libvirt %d.%d.%d\n"),
+    vshPrint(ctl, _("Compiled against library: libvirt %1$d.%2$d.%3$d\n"),
              major, minor, rel);
 
     ret = virGetVersion(&libVersion, NULL, NULL);
@@ -238,7 +238,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     libVersion %= 1000000;
     minor = libVersion / 1000;
     rel = libVersion % 1000;
-    vshPrint(ctl, _("Using library: libvirt %d.%d.%d\n"),
+    vshPrint(ctl, _("Using library: libvirt %1$d.%2$d.%3$d\n"),
              major, minor, rel);
 
     ret = virAdmConnectGetLibVersion(priv->conn, &daemonVersion);
@@ -249,7 +249,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         daemonVersion %= 1000000;
         minor = daemonVersion / 1000;
         rel = daemonVersion % 1000;
-        vshPrint(ctl, _("Running against daemon: %d.%d.%d\n"),
+        vshPrint(ctl, _("Running against daemon: %1$d.%2$d.%3$d\n"),
                  major, minor, rel);
     }
 
@@ -333,7 +333,7 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     /* Obtain a list of available servers on the daemon */
     if ((nsrvs = virAdmConnectListServers(priv->conn, &srvs, 0)) < 0) {
         uri = virAdmConnectGetURI(priv->conn);
-        vshError(ctl, _("failed to obtain list of available servers from %s"),
+        vshError(ctl, _("failed to obtain list of available servers from %1$s"),
                  NULLSTR(uri));
         goto cleanup;
     }
@@ -484,7 +484,7 @@ cmdSrvThreadpoolSet(vshControl *ctl, const vshCmd *cmd)
 
 #define PARSE_CMD_TYPED_PARAM(NAME, FIELD) \
     if ((rv = vshCommandOptUInt(ctl, cmd, NAME, &val)) < 0) { \
-        vshError(ctl, _("Unable to parse integer parameter '%s'"), NAME); \
+        vshError(ctl, _("Unable to parse integer parameter '%1$s'"), NAME); \
         goto cleanup; \
     } else if (rv > 0) { \
         if (virTypedParamsAddUInt(&params, &nparams, &maxparams, \
@@ -584,8 +584,8 @@ cmdSrvClientsList(vshControl *ctl, const vshCmd *cmd)
 
     /* Obtain a list of clients connected to server @srv */
     if ((nclts = virAdmServerListClients(srv, &clts, 0)) < 0) {
-        vshError(ctl, _("failed to obtain list of connected clients "
-                        "from server '%s'"), virAdmServerGetName(srv));
+        vshError(ctl, _("failed to obtain list of connected clients from server '%1$s'"),
+                 virAdmServerGetName(srv));
         goto cleanup;
     }
 
@@ -681,8 +681,7 @@ cmdClientInfo(vshControl *ctl, const vshCmd *cmd)
 
     /* Retrieve client identity info */
     if (virAdmClientGetInfo(clnt, &params, &nparams, 0) < 0) {
-        vshError(ctl, _("failed to retrieve client identity information for "
-                        "client '%llu' connected to server '%s'"),
+        vshError(ctl, _("failed to retrieve client identity information for client '%1$llu' connected to server '%2$s'"),
                         id, virAdmServerGetName(srv));
         goto cleanup;
     }
@@ -765,12 +764,12 @@ cmdClientDisconnect(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (virAdmClientClose(client, 0) < 0) {
-        vshError(ctl, _("Failed to disconnect client '%llu' from server %s"),
+        vshError(ctl, _("Failed to disconnect client '%1$llu' from server %2$s"),
                  id, virAdmServerGetName(srv));
         goto cleanup;
     }
 
-    vshPrint(ctl, _("Client '%llu' disconnected"), id);
+    vshPrint(ctl, _("Client '%1$llu' disconnected"), id);
     ret = true;
  cleanup:
     virAdmClientFree(client);
@@ -891,7 +890,7 @@ cmdSrvClientsSet(vshControl *ctl, const vshCmd *cmd)
 
 #define PARSE_CMD_TYPED_PARAM(NAME, FIELD) \
     if ((rv = vshCommandOptUInt(ctl, cmd, NAME, &val)) < 0) { \
-        vshError(ctl, _("Unable to parse integer parameter '%s'"), NAME); \
+        vshError(ctl, _("Unable to parse integer parameter '%1$s'"), NAME); \
         goto cleanup; \
     } else if (rv > 0) { \
         if (virTypedParamsAddUInt(&params, &nparams, &maxparams, \
@@ -1250,8 +1249,8 @@ vshAdmUsage(void)
     const vshCmdGrp *grp;
     const vshCmdDef *cmd;
 
-    fprintf(stdout, _("\n%s [options]... [<command_string>]"
-                      "\n%s [options]... <command> [args...]\n\n"
+    fprintf(stdout, _("\n%1$s [options]... [<command_string>]"
+                      "\n%2$s [options]... <command> [args...]\n\n"
                       "  options:\n"
                       "    -c | --connect=URI      daemon admin connection URI\n"
                       "    -d | --debug=NUM        debug level [0-4]\n"
@@ -1265,7 +1264,7 @@ vshAdmUsage(void)
             progname);
 
     for (grp = cmdGroups; grp->name; grp++) {
-        fprintf(stdout, _(" %s (help keyword '%s')\n"),
+        fprintf(stdout, _(" %1$s (help keyword '%2$s')\n"),
                 grp->name, grp->keyword);
         for (cmd = grp->commands; cmd->name; cmd++) {
             if (cmd->flags & VSH_CMD_FLAG_ALIAS ||
@@ -1292,8 +1291,8 @@ static void
 vshAdmShowVersion(vshControl *ctl G_GNUC_UNUSED)
 {
     /* FIXME - list a copyright blurb, as in GNU programs?  */
-    vshPrint(ctl, _("Virt-admin command line tool of libvirt %s\n"), VERSION);
-    vshPrint(ctl, _("See web site at %s\n\n"), "https://libvirt.org/");
+    vshPrint(ctl, _("Virt-admin command line tool of libvirt %1$s\n"), VERSION);
+    vshPrint(ctl, _("See web site at %1$s\n\n"), "https://libvirt.org/");
 
     vshPrint(ctl, "%s", _("Compiled with support for:"));
 #ifdef WITH_LIBVIRTD
@@ -1333,12 +1332,12 @@ vshAdmParseArgv(vshControl *ctl, int argc, char **argv)
             break;
         case 'd':
             if (virStrToLong_i(optarg, NULL, 10, &debug) < 0) {
-                vshError(ctl, _("option %s takes a numeric argument"),
+                vshError(ctl, _("option %1$s takes a numeric argument"),
                          longindex == -1 ? "-d" : "--debug");
                 exit(EXIT_FAILURE);
             }
             if (debug < VSH_ERR_DEBUG || debug > VSH_ERR_ERROR)
-                vshError(ctl, _("ignoring debug level %d out of range [%d-%d]"),
+                vshError(ctl, _("ignoring debug level %1$d out of range [%2$d-%3$d]"),
                          debug, VSH_ERR_DEBUG, VSH_ERR_ERROR);
             else
                 ctl->debug = debug;
@@ -1370,16 +1369,16 @@ vshAdmParseArgv(vshControl *ctl, int argc, char **argv)
                     break;
             }
             if (opt[i].name)
-                vshError(ctl, _("option '-%c'/'--%s' requires an argument"),
+                vshError(ctl, _("option '-%1$c'/'--%2$s' requires an argument"),
                          optopt, opt[i].name);
             else
-                vshError(ctl, _("option '-%c' requires an argument"), optopt);
+                vshError(ctl, _("option '-%1$c' requires an argument"), optopt);
             exit(EXIT_FAILURE);
         case '?':
             if (optopt)
-                vshError(ctl, _("unsupported option '-%c'. See --help."), optopt);
+                vshError(ctl, _("unsupported option '-%1$c'. See --help."), optopt);
             else
-                vshError(ctl, _("unsupported option '%s'. See --help."), argv[optind - 1]);
+                vshError(ctl, _("unsupported option '%1$s'. See --help."), argv[optind - 1]);
             exit(EXIT_FAILURE);
         default:
             vshError(ctl, _("unknown option"));
@@ -1616,8 +1615,7 @@ main(int argc, char **argv)
         /* interactive mode */
         if (!ctl->quiet) {
             vshPrint(ctl,
-                     _("Welcome to %s, the administrating virtualization "
-                       "interactive terminal.\n\n"),
+                     _("Welcome to %1$s, the administrating virtualization interactive terminal.\n\n"),
                      progname);
             vshPrint(ctl, "%s",
                      _("Type:  'help' for help with commands\n"

@@ -80,7 +80,7 @@ static int virLoginShellAllowedUser(virConf *conf,
         }
     }
     virReportSystemError(EPERM,
-                         _("%s not matched against 'allowed_users' in %s"),
+                         _("%1$s not matched against 'allowed_users' in %2$s"),
                          name, conf_file);
  cleanup:
     VIR_FREE(gname);
@@ -118,7 +118,7 @@ usage(void)
     fprintf(stdout,
             _("\n"
               "Usage:\n"
-              "  %s [option]\n\n"
+              "  %1$s [option]\n\n"
               "Options:\n"
               "  -h | --help            Display program help\n"
               "  -V | --version         Display program version\n"
@@ -196,12 +196,12 @@ main(int argc, char **argv)
         return ret;
 
     if (geteuid() != 0) {
-        fprintf(stderr, _("%s: must be run as root\n"), argv[0]);
+        fprintf(stderr, _("%1$s: must be run as root\n"), argv[0]);
         return ret;
     }
 
     if (getuid() != 0) {
-        fprintf(stderr, _("%s: must not be run setuid root\n"), argv[0]);
+        fprintf(stderr, _("%1$s: must not be run setuid root\n"), argv[0]);
         return ret;
     }
 
@@ -227,13 +227,13 @@ main(int argc, char **argv)
     }
 
     if (optind != (argc - 2)) {
-        virReportSystemError(EINVAL, _("%s expects UID and GID parameters"), progname);
+        virReportSystemError(EINVAL, _("%1$s expects UID and GID parameters"), progname);
         goto cleanup;
     }
 
     if (virStrToLong_ull(argv[optind], NULL, 10, &uidval) < 0 ||
         ((uid_t)uidval) != uidval) {
-        virReportSystemError(EINVAL, _("%s cannot parse UID '%s'"),
+        virReportSystemError(EINVAL, _("%1$s cannot parse UID '%2$s'"),
                              progname, argv[optind]);
         goto cleanup;
     }
@@ -241,7 +241,7 @@ main(int argc, char **argv)
     optind++;
     if (virStrToLong_ull(argv[optind], NULL, 10, &gidval) < 0 ||
         ((gid_t)gidval) != gidval) {
-        virReportSystemError(EINVAL, _("%s cannot parse GID '%s'"),
+        virReportSystemError(EINVAL, _("%1$s cannot parse GID '%2$s'"),
                              progname, argv[optind]);
         goto cleanup;
     }
@@ -285,7 +285,7 @@ main(int argc, char **argv)
         last_error = virGetLastError();
         if (last_error->code != VIR_ERR_OPERATION_INVALID) {
             virReportSystemError(last_error->code,
-                                 _("Can't create %s container: %s"),
+                                 _("Can't create %1$s container: %2$s"),
                                  name, last_error->message);
             goto cleanup;
         }
@@ -318,7 +318,7 @@ main(int argc, char **argv)
     if (virSetUIDGID(uid, gid, groups, ngroups) < 0)
         goto cleanup;
     if (chdir(homedir) < 0) {
-        virReportSystemError(errno, _("Unable to chdir(%s)"), homedir);
+        virReportSystemError(errno, _("Unable to chdir(%1$s)"), homedir);
         goto cleanup;
     }
 
@@ -347,7 +347,7 @@ main(int argc, char **argv)
     shcmd = shargv[0];
     if (!g_path_is_absolute(shcmd)) {
         virReportSystemError(errno,
-                             _("Shell '%s' should have absolute path"),
+                             _("Shell '%1$s' should have absolute path"),
                              shcmd);
         goto cleanup;
     }
@@ -382,7 +382,7 @@ main(int argc, char **argv)
             g_setenv("TERM", term, TRUE);
 
         if (execv(shcmd, (char *const*) shargv) < 0) {
-            virReportSystemError(errno, _("Unable to exec shell %s"),
+            virReportSystemError(errno, _("Unable to exec shell %1$s"),
                                  shcmd);
             virDispatchError(NULL);
             return errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
