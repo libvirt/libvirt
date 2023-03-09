@@ -297,16 +297,14 @@ virConnectValidateURIPath(const char *uriPath,
 
         if (STRNEQ(uriPath, "/system") && !compatSessionRoot) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected %s URI path '%s', try "
-                             "%s:///system"),
+                           _("unexpected %1$s URI path '%2$s', try %3$s:///system"),
                            entityName, uriPath, entityName);
             return false;
         }
     } else {
         if (STRNEQ(uriPath, "/session")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected %s URI path '%s', try "
-                             "%s:///session"),
+                           _("unexpected %1$s URI path '%2$s', try %3$s:///session"),
                            entityName, uriPath, entityName);
             return false;
         }

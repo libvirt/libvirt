@@ -236,7 +236,7 @@ virDomainQemuAttach(virConnectPtr conn,
     virCheckNonZeroArgGoto(pid_value, error);
     if (pid != pid_value) {
         virReportInvalidArg(pid_value,
-                            _("pid_value in %s is too large"),
+                            _("pid_value in %1$s is too large"),
                             __FUNCTION__);
         goto error;
     }
@@ -380,7 +380,7 @@ virConnectDomainQemuMonitorEventRegister(virConnectPtr conn,
         virCheckDomainGoto(dom, error);
         if (dom->conn != conn) {
             virReportInvalidArg(dom,
-                                _("domain '%s' in %s must match connection"),
+                                _("domain '%1$s' in %2$s must match connection"),
                                 dom->name, __FUNCTION__);
             goto error;
         }

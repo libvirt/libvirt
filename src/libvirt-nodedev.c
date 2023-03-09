@@ -952,7 +952,7 @@ virConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
         virCheckNodeDeviceGoto(dev, error);
         if (dev->conn != conn) {
             virReportInvalidArg(dev,
-                                _("node device '%s' in %s must match connection"),
+                                _("node device '%1$s' in %2$s must match connection"),
                                 dev->name, __FUNCTION__);
             goto error;
         }
@@ -962,7 +962,7 @@ virConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
 
     if (eventID >= VIR_NODE_DEVICE_EVENT_ID_LAST) {
         virReportInvalidArg(eventID,
-                            _("eventID in %s must be less than %d"),
+                            _("eventID in %1$s must be less than %2$d"),
                             __FUNCTION__, VIR_NODE_DEVICE_EVENT_ID_LAST);
         goto error;
     }

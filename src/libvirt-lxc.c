@@ -215,15 +215,14 @@ virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
 
             if (getcon(&ctx) < 0) {
                 virReportSystemError(errno,
-                                     _("unable to get PID %d security context"),
+                                     _("unable to get PID %1$d security context"),
                                      getpid());
                 goto error;
             }
 
             if (virStrcpy(oldlabel->label, ctx, VIR_SECURITY_LABEL_BUFLEN) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("security label exceeds "
-                                 "maximum length: %d"),
+                               _("security label exceeds maximum length: %1$d"),
                                VIR_SECURITY_LABEL_BUFLEN - 1);
                 freecon(ctx);
                 goto error;
@@ -239,7 +238,7 @@ virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
 
         if (setexeccon(label->label) < 0) {
             virReportSystemError(errno,
-                            _("Cannot set context %s"),
+                            _("Cannot set context %1$s"),
                             label->label);
             goto error;
         }
@@ -251,7 +250,7 @@ virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
     } else if (STREQ(model->model, "apparmor")) {
 #ifdef WITH_APPARMOR
         if (aa_change_profile(label->label) < 0) {
-            virReportSystemError(errno, _("error changing profile to %s"),
+            virReportSystemError(errno, _("error changing profile to %1$s"),
                                  label->label);
             goto error;
         }
@@ -264,7 +263,7 @@ virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
         /* nothing todo */
     } else {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                       _("Security model %s cannot be entered"),
+                       _("Security model %1$s cannot be entered"),
                        model->model);
         goto error;
     }

@@ -474,7 +474,7 @@ virStoragePoolLookupByUUIDString(virConnectPtr conn,
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
         virReportInvalidArg(uuidstr,
-                            _("uuidstr in %s must be a valid UUID"),
+                            _("uuidstr in %1$s must be a valid UUID"),
                             __FUNCTION__);
         goto error;
     }
@@ -1713,7 +1713,7 @@ virStorageVolDownload(virStorageVolPtr vol,
 
     if (vol->conn != stream->conn) {
         virReportInvalidArg(stream,
-                            _("stream in %s must match connection of volume '%s'"),
+                            _("stream in %1$s must match connection of volume '%2$s'"),
                             __FUNCTION__, vol->name);
         goto error;
     }
@@ -1798,7 +1798,7 @@ virStorageVolUpload(virStorageVolPtr vol,
 
     if (vol->conn != stream->conn) {
         virReportInvalidArg(stream,
-                            _("stream in %s must match connection of volume '%s'"),
+                            _("stream in %1$s must match connection of volume '%2$s'"),
                             __FUNCTION__, vol->name);
         goto error;
     }
@@ -2258,8 +2258,7 @@ virStorageVolResize(virStorageVolPtr vol,
     if (capacity == 0 && !((flags & VIR_STORAGE_VOL_RESIZE_DELTA) ||
                            (flags & VIR_STORAGE_VOL_RESIZE_SHRINK))) {
         virReportInvalidArg(capacity,
-                            _("capacity in %s cannot be zero without 'delta' "
-                              "or 'shrink' flags set"),
+                            _("capacity in %1$s cannot be zero without 'delta' or 'shrink' flags set"),
                             __FUNCTION__);
         goto error;
     }
@@ -2403,7 +2402,7 @@ virConnectStoragePoolEventRegisterAny(virConnectPtr conn,
         virCheckStoragePoolGoto(pool, error);
         if (pool->conn != conn) {
             virReportInvalidArg(pool,
-                                _("storage pool '%s' in %s must match connection"),
+                                _("storage pool '%1$s' in %2$s must match connection"),
                                 pool->name, __FUNCTION__);
             goto error;
         }
@@ -2413,7 +2412,7 @@ virConnectStoragePoolEventRegisterAny(virConnectPtr conn,
 
     if (eventID >= VIR_STORAGE_POOL_EVENT_ID_LAST) {
         virReportInvalidArg(eventID,
-                            _("eventID in %s must be less than %d"),
+                            _("eventID in %1$s must be less than %2$d"),
                             __FUNCTION__, VIR_STORAGE_POOL_EVENT_ID_LAST);
         goto error;
     }

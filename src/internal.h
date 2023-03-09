@@ -273,13 +273,13 @@
         unsigned int __unsuppflags = flags & ~(supported); \
         if (__uiflags != flags) { \
             virReportInvalidArg(flags, \
-                                _("unsupported use of long flags in function %s"), \
+                                _("unsupported use of long flags in function %1$s"), \
                                 __FUNCTION__); \
             return retval; \
         } \
         if (__unsuppflags) { \
             virReportInvalidArg(flags, \
-                                _("unsupported flags (0x%x) in function %s"), \
+                                _("unsupported flags (0x%1$x) in function %2$s"), \
                                 __unsuppflags, __FUNCTION__); \
             return retval; \
         } \
@@ -302,13 +302,13 @@
         unsigned int __unsuppflags = flags & ~(supported); \
         if (__uiflags != flags) { \
             virReportInvalidArg(flags, \
-                                _("unsupported use of long flags in function %s"), \
+                                _("unsupported use of long flags in function %1$s"), \
                                 __FUNCTION__); \
             goto label; \
         } \
         if (__unsuppflags) { \
             virReportInvalidArg(flags, \
-                                _("unsupported flags (0x%x) in function %s"), \
+                                _("unsupported flags (0x%1$x) in function %2$s"), \
                                 __unsuppflags, __FUNCTION__); \
             goto label; \
         } \
@@ -333,8 +333,7 @@
     do { \
         if ((flags & FLAG1) && (flags & FLAG2)) { \
             virReportInvalidArg(ctl, \
-                                _("Flags '%s' and '%s' are mutually " \
-                                  "exclusive"), \
+                                _("Flags '%1$s' and '%2$s' are mutually exclusive"), \
                                 #FLAG1, #FLAG2); \
             return RET; \
         } \
@@ -357,8 +356,7 @@
     do { \
         if ((flags & FLAG1) && (flags & FLAG2)) { \
             virReportInvalidArg(ctl, \
-                                _("Flags '%s' and '%s' are mutually " \
-                                  "exclusive"), \
+                                _("Flags '%1$s' and '%2$s' are mutually exclusive"), \
                                 #FLAG1, #FLAG2); \
             goto LABEL; \
         } \
@@ -383,7 +381,7 @@
     do { \
         if ((flags & (FLAG1)) && !(flags & (FLAG2))) { \
             virReportInvalidArg(ctl, \
-                                _("Flag '%s' is required by flag '%s'"), \
+                                _("Flag '%1$s' is required by flag '%2$s'"), \
                                 #FLAG2, #FLAG1); \
             return RET; \
         } \
@@ -405,7 +403,7 @@
     do { \
         if ((flags & (FLAG1)) && !(flags & (FLAG2))) { \
             virReportInvalidArg(ctl, \
-                                _("Flag '%s' is required by flag '%s'"), \
+                                _("Flag '%1$s' is required by flag '%2$s'"), \
                                 #FLAG2, #FLAG1); \
             goto LABEL; \
         } \
@@ -481,7 +479,7 @@
 #define virCheckReadOnlyGoto(flags, label) \
     do { \
         if ((flags) & VIR_CONNECT_RO) { \
-            virReportRestrictedError(_("read only access prevents %s"), \
+            virReportRestrictedError(_("read only access prevents %1$s"), \
                                      __FUNCTION__); \
             goto label; \
         } \

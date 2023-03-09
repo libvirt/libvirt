@@ -1490,7 +1490,7 @@ virDomainCoreDumpWithFormat(virDomainPtr domain, const char *to,
     virCheckNonNullArgGoto(to, error);
 
     if (dumpformat >= VIR_DOMAIN_CORE_DUMP_FORMAT_LAST) {
-        virReportInvalidArg(flags, _("dumpformat '%d' is not supported"),
+        virReportInvalidArg(flags, _("dumpformat '%1$d' is not supported"),
                             dumpformat);
         goto error;
     }
@@ -1569,7 +1569,7 @@ virDomainScreenshot(virDomainPtr domain,
 
     if (domain->conn != stream->conn) {
         virReportInvalidArg(stream,
-                            _("stream must match connection of domain '%s'"),
+                            _("stream must match connection of domain '%1$s'"),
                             domain->name);
         goto error;
     }
@@ -1991,7 +1991,7 @@ virDomainGetMaxMemory(virDomainPtr domain)
         if (ret == 0)
             goto error;
         if ((unsigned long) ret != ret) {
-            virReportError(VIR_ERR_OVERFLOW, _("result too large: %llu"),
+            virReportError(VIR_ERR_OVERFLOW, _("result too large: %1$llu"),
                            ret);
             goto error;
         }
@@ -2040,7 +2040,7 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     virCheckNonZeroArgGoto(memory, error);
 
     if (virMemoryMaxValue(true) / 1024 <= memory) {
-        virReportError(VIR_ERR_OVERFLOW, _("input too large: %lu"),
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %1$lu"),
                        memory);
         goto error;
     }
@@ -2095,7 +2095,7 @@ virDomainSetMemory(virDomainPtr domain, unsigned long memory)
     virCheckNonZeroArgGoto(memory, error);
 
     if (virMemoryMaxValue(true) / 1024 <= memory) {
-        virReportError(VIR_ERR_OVERFLOW, _("input too large: %lu"),
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %1$lu"),
                        memory);
         goto error;
     }
@@ -2160,7 +2160,7 @@ virDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     virCheckNonZeroArgGoto(memory, error);
 
     if (virMemoryMaxValue(true) / 1024 <= memory) {
-        virReportError(VIR_ERR_OVERFLOW, _("input too large: %lu"),
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %1$lu"),
                        memory);
         goto error;
     }
@@ -5835,7 +5835,7 @@ virDomainBlockStats(virDomainPtr dom, const char *disk,
     virCheckNonNullArgGoto(stats, error);
     if (size > sizeof(stats2)) {
         virReportInvalidArg(size,
-                            _("size must not exceed %zu"),
+                            _("size must not exceed %1$zu"),
                             sizeof(stats2));
         goto error;
     }
@@ -5990,7 +5990,7 @@ virDomainInterfaceStats(virDomainPtr dom, const char *device,
     virCheckNonNullArgGoto(stats, error);
     if (size > sizeof(stats2)) {
         virReportInvalidArg(size,
-                            _("size must not exceed %zu"),
+                            _("size must not exceed %1$zu"),
                             sizeof(stats2));
         goto error;
     }
@@ -7358,14 +7358,14 @@ virDomainSendKey(virDomainPtr domain,
 
     if (codeset >= VIR_KEYCODE_SET_LAST) {
         virReportInvalidArg(codeset,
-                            _("Unsupported codeset '%d'"),
+                            _("Unsupported codeset '%1$d'"),
                             codeset);
         goto error;
     }
 
     if (nkeycodes > VIR_DOMAIN_SEND_KEY_MAX_KEYS) {
         virReportInvalidArg(nkeycodes,
-                            _("nkeycodes must be <= %d"),
+                            _("nkeycodes must be <= %1$d"),
                             VIR_DOMAIN_SEND_KEY_MAX_KEYS);
         goto error;
     }
@@ -7830,7 +7830,7 @@ virDomainGetVcpuPinInfo(virDomainPtr domain, int ncpumaps,
     virCheckPositiveArgGoto(maplen, error);
 
     if (VIR_INT_MULTIPLY_OVERFLOW(ncpumaps, maplen)) {
-        virReportError(VIR_ERR_OVERFLOW, _("input too large: %d * %d"),
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %1$d * %2$d"),
                        ncpumaps, maplen);
         goto error;
     }
@@ -8036,7 +8036,7 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
         virCheckZeroArgGoto(maplen, error);
 
     if (cpumaps && VIR_INT_MULTIPLY_OVERFLOW(maxinfo, maplen)) {
-        virReportError(VIR_ERR_OVERFLOW, _("input too large: %d * %d"),
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %1$d * %2$d"),
                        maxinfo, maplen);
         goto error;
     }
@@ -9943,7 +9943,7 @@ virConnectDomainEventRegisterAny(virConnectPtr conn,
         virCheckDomainGoto(dom, error);
         if (dom->conn != conn) {
             virReportInvalidArg(dom,
-                                _("domain '%s' must match connection"),
+                                _("domain '%1$s' must match connection"),
                                 dom->name);
             goto error;
         }
@@ -9952,7 +9952,7 @@ virConnectDomainEventRegisterAny(virConnectPtr conn,
     virCheckNonNegativeArgGoto(eventID, error);
     if (eventID >= VIR_DOMAIN_EVENT_ID_LAST) {
         virReportInvalidArg(eventID,
-                            _("eventID must be less than %d"),
+                            _("eventID must be less than %1$d"),
                             VIR_DOMAIN_EVENT_ID_LAST);
         goto error;
     }
@@ -10328,7 +10328,7 @@ virDomainOpenConsole(virDomainPtr dom,
 
     if (conn != st->conn) {
         virReportInvalidArg(st,
-                            _("stream must match connection of domain '%s'"),
+                            _("stream must match connection of domain '%1$s'"),
                             dom->name);
         goto error;
     }
@@ -10394,7 +10394,7 @@ virDomainOpenChannel(virDomainPtr dom,
 
     if (conn != st->conn) {
         virReportInvalidArg(st,
-                            _("stream must match connection of domain '%s'"),
+                            _("stream must match connection of domain '%1$s'"),
                             dom->name);
         goto error;
     }
@@ -11295,14 +11295,14 @@ virDomainOpenGraphics(virDomainPtr dom,
 
     if (fstat(fd, &sb) < 0) {
         virReportSystemError(errno,
-                             _("Unable to access file descriptor %d"), fd);
+                             _("Unable to access file descriptor %1$d"), fd);
         goto error;
     }
 
 #ifndef WIN32
     if (!S_ISSOCK(sb.st_mode)) {
         virReportInvalidArg(fd,
-                            _("fd %d must be a socket"),
+                            _("fd %1$d must be a socket"),
                             fd);
         goto error;
     }
@@ -11672,7 +11672,7 @@ virDomainGetCPUStats(virDomainPtr domain,
         virCheckNullArgGoto(params, error);
 
     if (nparams && ncpus > UINT_MAX / nparams) {
-        virReportError(VIR_ERR_OVERFLOW, _("input too large: %u * %u"),
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %1$u * %2$u"),
                        nparams, ncpus);
         goto error;
     }
@@ -12673,7 +12673,7 @@ virDomainListGetStats(virDomainPtr *doms,
 
     if (!*doms) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("doms array in %s must contain at least one domain"),
+                       _("doms array in %1$s must contain at least one domain"),
                        __FUNCTION__);
         goto cleanup;
     }
@@ -13381,13 +13381,13 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
 
     if (type >= VIR_DOMAIN_LIFECYCLE_LAST) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid lifecycle type '%u'"), type);
+                       _("invalid lifecycle type '%1$u'"), type);
         goto error;
     }
 
     if (action >= VIR_DOMAIN_LIFECYCLE_ACTION_LAST) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid lifecycle action '%u'"), action);
+                       _("invalid lifecycle action '%1$u'"), action);
         goto error;
     }
 

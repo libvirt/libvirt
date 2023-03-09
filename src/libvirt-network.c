@@ -392,7 +392,7 @@ virNetworkLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
         virReportInvalidArg(uuidstr,
-                            _("uuidstr in %s must be a valid UUID"),
+                            _("uuidstr in %1$s must be a valid UUID"),
                             __FUNCTION__);
         goto error;
     }
@@ -1211,7 +1211,7 @@ virConnectNetworkEventRegisterAny(virConnectPtr conn,
         virCheckNetworkGoto(net, error);
         if (net->conn != conn) {
             virReportInvalidArg(net,
-                                _("network '%s' in %s must match connection"),
+                                _("network '%1$s' in %2$s must match connection"),
                                 net->name, __FUNCTION__);
             goto error;
         }
@@ -1221,7 +1221,7 @@ virConnectNetworkEventRegisterAny(virConnectPtr conn,
 
     if (eventID >= VIR_NETWORK_EVENT_ID_LAST) {
         virReportInvalidArg(eventID,
-                            _("eventID in %s must be less than %d"),
+                            _("eventID in %1$s must be less than %2$d"),
                             __FUNCTION__, VIR_NETWORK_EVENT_ID_LAST);
         goto error;
     }
@@ -1485,7 +1485,7 @@ virNetworkPortLookupByUUIDString(virNetworkPtr net,
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
         virReportInvalidArg(uuidstr,
-                            _("uuidstr in %s must be a valid UUID"),
+                            _("uuidstr in %1$s must be a valid UUID"),
                             __FUNCTION__);
         goto error;
     }

@@ -565,8 +565,7 @@ virNodeGetCPUStats(virConnectPtr conn,
     virCheckNonNegativeArgGoto(*nparams, error);
     if (cpuNum < 0 && cpuNum != VIR_NODE_CPU_STATS_ALL_CPUS) {
         virReportInvalidArg(cpuNum,
-                            _("cpuNum in %s only accepts %d as a negative "
-                              "value"),
+                            _("cpuNum in %1$s only accepts %2$d as a negative value"),
                             __FUNCTION__, VIR_NODE_CPU_STATS_ALL_CPUS);
         goto error;
     }
@@ -654,8 +653,7 @@ virNodeGetMemoryStats(virConnectPtr conn,
     virCheckNonNegativeArgGoto(*nparams, error);
     if (cellNum < 0 && cellNum != VIR_NODE_MEMORY_STATS_ALL_CELLS) {
         virReportInvalidArg(cpuNum,
-                            _("cellNum in %s only accepts %d as a negative "
-                              "value"),
+                            _("cellNum in %1$s only accepts %2$d as a negative value"),
                             __FUNCTION__, VIR_NODE_MEMORY_STATS_ALL_CELLS);
         goto error;
     }

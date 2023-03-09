@@ -269,7 +269,7 @@ virSecretLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
         virReportInvalidArg(uuidstr,
-                            _("uuidstr in %s must be a valid UUID"),
+                            _("uuidstr in %1$s must be a valid UUID"),
                             __FUNCTION__);
         goto error;
     }
@@ -787,7 +787,7 @@ virConnectSecretEventRegisterAny(virConnectPtr conn,
             char uuidstr[VIR_UUID_STRING_BUFLEN];
             virUUIDFormat(secret->uuid, uuidstr);
             virReportInvalidArg(secret,
-                                _("secret '%s' in %s must match connection"),
+                                _("secret '%1$s' in %2$s must match connection"),
                                 uuidstr, __FUNCTION__);
             goto error;
         }
@@ -797,7 +797,7 @@ virConnectSecretEventRegisterAny(virConnectPtr conn,
 
     if (eventID >= VIR_SECRET_EVENT_ID_LAST) {
         virReportInvalidArg(eventID,
-                            _("eventID in %s must be less than %d"),
+                            _("eventID in %1$s must be less than %2$d"),
                             __FUNCTION__, VIR_SECRET_EVENT_ID_LAST);
         goto error;
     }

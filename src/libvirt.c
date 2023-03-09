@@ -519,7 +519,7 @@ virRegisterConnectDriver(virConnectDriver *driver,
     virCheckNonNullArgReturn(driver, -1);
     if (virConnectDriverTabCount >= MAX_DRIVERS) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Too many drivers, cannot register %s"),
+                       _("Too many drivers, cannot register %1$s"),
                        driver->hypervisorDriver->name);
         return -1;
     }
@@ -589,7 +589,7 @@ virRegisterStateDriver(virStateDriver *driver)
 
     if (virStateDriverTabCount >= MAX_DRIVERS) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Too many drivers, cannot register %s"),
+                       _("Too many drivers, cannot register %1$s"),
                        driver->name);
         return -1;
     }
@@ -657,13 +657,13 @@ virStateInitialize(bool privileged,
                                                         opaque);
             VIR_DEBUG("State init result %d (mandatory=%d)", ret, mandatory);
             if (ret == VIR_DRV_STATE_INIT_ERROR) {
-                VIR_ERROR(_("Initialization of %s state driver failed: %s"),
+                VIR_ERROR(_("Initialization of %1$s state driver failed: %2$s"),
                           virStateDriverTab[i]->name,
                           virGetLastErrorMessage());
                 return -1;
             }
             if (ret == VIR_DRV_STATE_INIT_SKIPPED && mandatory) {
-                VIR_ERROR(_("Initialization of mandatory %s state driver skipped"),
+                VIR_ERROR(_("Initialization of mandatory %1$s state driver skipped"),
                           virStateDriverTab[i]->name);
                 return -1;
             }
@@ -869,7 +869,7 @@ virConnectCheckURIMissingSlash(const char *uristr, virURI *uri)
     if (STREQ(uri->server, "session") ||
         STREQ(uri->server, "system")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid URI %s (maybe you want %s:///%s)"),
+                       _("invalid URI %1$s (maybe you want %2$s:///%3$s)"),
                        uristr, uri->scheme, uri->server);
         return -1;
     }
@@ -968,7 +968,7 @@ virConnectOpenInternal(const char *name,
 
         if (ret->uri->scheme == NULL) {
             virReportError(VIR_ERR_NO_CONNECT,
-                           _("URI '%s' does not include a driver name"),
+                           _("URI '%1$s' does not include a driver name"),
                            name);
             return NULL;
         }
@@ -986,7 +986,7 @@ virConnectOpenInternal(const char *name,
             if (strspn(ret->uri->scheme, "abcdefghijklmnopqrstuvwxyz")  !=
                 strlen(ret->uri->scheme)) {
                 virReportError(VIR_ERR_NO_CONNECT,
-                               _("URI scheme '%s' for embedded driver is not valid"),
+                               _("URI scheme '%1$s' for embedded driver is not valid"),
                                ret->uri->scheme);
                 return NULL;
             }
@@ -1056,7 +1056,7 @@ virConnectOpenInternal(const char *name,
              false)) {
             virReportErrorHelper(VIR_FROM_NONE, VIR_ERR_CONFIG_UNSUPPORTED,
                                  __FILE__, __FUNCTION__, __LINE__,
-                                 _("libvirt was built without the '%s' driver"),
+                                 _("libvirt was built without the '%1$s' driver"),
                                  ret->uri->scheme);
             return NULL;
         }
@@ -1106,7 +1106,7 @@ virConnectOpenInternal(const char *name,
 
         if (embed && !virConnectDriverTab[i]->embeddable) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Driver %s cannot be used in embedded mode"),
+                           _("Driver %1$s cannot be used in embedded mode"),
                            virConnectDriverTab[i]->hypervisorDriver->name);
             return NULL;
         }
@@ -1341,7 +1341,7 @@ virTypedParameterValidateSet(virConnectPtr conn,
         if (strnlen(params[i].field, VIR_TYPED_PARAM_FIELD_LENGTH) ==
             VIR_TYPED_PARAM_FIELD_LENGTH) {
             virReportInvalidArg(params,
-                                _("string parameter name '%.*s' too long"),
+                                _("string parameter name '%2$.*1$s' too long"),
                                 VIR_TYPED_PARAM_FIELD_LENGTH,
                                 params[i].field);
             return -1;
@@ -1350,13 +1350,13 @@ virTypedParameterValidateSet(virConnectPtr conn,
             if (string_okay) {
                 if (!params[i].value.s) {
                     virReportInvalidArg(params,
-                                        _("NULL string parameter '%s'"),
+                                        _("NULL string parameter '%1$s'"),
                                         params[i].field);
                     return -1;
                 }
             } else {
                 virReportInvalidArg(params,
-                                    _("string parameter '%s' unsupported"),
+                                    _("string parameter '%1$s' unsupported"),
                                     params[i].field);
                 return -1;
             }

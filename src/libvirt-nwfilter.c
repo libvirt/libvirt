@@ -265,7 +265,7 @@ virNWFilterLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
         virReportInvalidArg(uuidstr,
-                            _("uuidstr in %s must be a valid UUID"),
+                            _("uuidstr in %1$s must be a valid UUID"),
                             __FUNCTION__);
         goto error;
     }
