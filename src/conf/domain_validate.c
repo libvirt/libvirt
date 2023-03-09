@@ -230,7 +230,7 @@ virDomainVideoDefValidate(const virDomainVideoDef *video,
             return -1;
         if (video->blob != VIR_TRISTATE_SWITCH_ABSENT) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("video type '%s' does not support blob resources"),
+                           _("video type '%1$s' does not support blob resources"),
                            virDomainVideoTypeToString(video->type));
             return -1;
         }
