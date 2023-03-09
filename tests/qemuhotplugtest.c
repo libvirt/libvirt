@@ -471,21 +471,29 @@ testQemuHotplugCpuDataFree(struct testQemuHotplugCpuData *data)
 }
 
 
+struct testQemuHotplugCpuParams {
+    const char *test;
+    int newcpus;
+    const char *cpumap;
+    bool state;
+    bool modern;
+    bool fail;
+    GHashTable *schema;
+};
+
+
 static struct testQemuHotplugCpuData *
-testQemuHotplugCpuPrepare(const char *test,
-                          bool modern,
-                          bool fail,
-                          GHashTable *qmpschema)
+testQemuHotplugCpuPrepare(const struct testQemuHotplugCpuParams *params)
 {
     qemuDomainObjPrivate *priv = NULL;
     g_autofree char *prefix = NULL;
     struct testQemuHotplugCpuData *data = NULL;
 
-    prefix = g_strdup_printf("%s/qemuhotplugtestcpus/%s", abs_srcdir, test);
+    prefix = g_strdup_printf("%s/qemuhotplugtestcpus/%s", abs_srcdir, params->test);
 
     data = g_new0(struct testQemuHotplugCpuData, 1);
 
-    data->modern = modern;
+    data->modern = params->modern;
 
     data->file_xml_dom = g_strdup_printf("%s-domain.xml", prefix);
     data->file_xml_res_live = g_strdup_printf("%s-result-live.xml", prefix);
@@ -509,10 +517,10 @@ testQemuHotplugCpuPrepare(const char *test,
         virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
 
     if (!(data->mon = qemuMonitorTestNewFromFileFull(data->file_json_monitor,
-                                                     &driver, data->vm, qmpschema)))
+                                                     &driver, data->vm, params->schema)))
         goto error;
 
-    if (fail)
+    if (params->fail)
         qemuMonitorTestAllowUnusedCommands(data->mon);
 
     if (!data->modern)
@@ -561,17 +569,6 @@ testQemuHotplugCpuFinalize(struct testQemuHotplugCpuData *data)
 }
 
 
-struct testQemuHotplugCpuParams {
-    const char *test;
-    int newcpus;
-    const char *cpumap;
-    bool state;
-    bool modern;
-    bool fail;
-    GHashTable *schema;
-};
-
-
 static int
 testQemuHotplugCpuGroup(const void *opaque)
 {
@@ -580,8 +577,7 @@ testQemuHotplugCpuGroup(const void *opaque)
     int ret = -1;
     int rc;
 
-    if (!(data = testQemuHotplugCpuPrepare(params->test, params->modern,
-                                           params->fail, params->schema)))
+    if (!(data = testQemuHotplugCpuPrepare(params)))
         return -1;
 
     rc = qemuDomainSetVcpusInternal(&driver, data->vm, data->vm->def,
@@ -617,8 +613,7 @@ testQemuHotplugCpuIndividual(const void *opaque)
     int ret = -1;
     int rc;
 
-    if (!(data = testQemuHotplugCpuPrepare(params->test, params->modern,
-                                           params->fail, params->schema)))
+    if (!(data = testQemuHotplugCpuPrepare(params)))
         return -1;
 
     if (virBitmapParse(params->cpumap, &map, 128) < 0)
