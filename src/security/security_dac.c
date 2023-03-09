@@ -689,7 +689,7 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
             return 0;
 
         if (stat(path, &sb) < 0) {
-            virReportSystemError(errno, _("unable to stat: %s"), path);
+            virReportSystemError(errno, _("unable to stat: %1$s"), path);
             return -1;
         }
 
@@ -721,8 +721,7 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
                      (long)uid, (long)gid, NULLSTR(path));
         } else {
             virReportSystemError(errno,
-                                 _("unable to set user and group to '%ld:%ld' "
-                                   "on '%s'"),
+                                 _("unable to set user and group to '%1$ld:%2$ld' on '%3$s'"),
                                  (long)uid, (long)gid, NULLSTR(path));
             return -1;
         }
@@ -760,7 +759,7 @@ virSecurityDACSetOwnership(virSecurityManager *mgr,
 
     if (remember && path) {
         if (stat(path, &sb) < 0) {
-            virReportSystemError(errno, _("unable to stat: %s"), path);
+            virReportSystemError(errno, _("unable to stat: %1$s"), path);
             return -1;
         }
 
@@ -778,8 +777,8 @@ virSecurityDACSetOwnership(virSecurityManager *mgr,
              * XATTRs so decrease it. */
             if (sb.st_uid != uid || sb.st_gid != gid) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("Setting different DAC user or group on %s "
-                                 "which is already in use"), path);
+                               _("Setting different DAC user or group on %1$s which is already in use"),
+                               path);
                 goto error;
             }
         }
@@ -2324,8 +2323,7 @@ virSecurityDACGenLabel(virSecurityManager *mgr,
     if (seclabel->model
         && STRNEQ(seclabel->model, SECURITY_DAC_NAME)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("security label model %s is not supported "
-                         "with selinux"),
+                       _("security label model %1$s is not supported with selinux"),
                        seclabel->model);
             return rc;
     }
@@ -2334,8 +2332,8 @@ virSecurityDACGenLabel(virSecurityManager *mgr,
     case VIR_DOMAIN_SECLABEL_STATIC:
         if (seclabel->label == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("missing label for static security "
-                             "driver in domain %s"), def->name);
+                           _("missing label for static security driver in domain %1$s"),
+                           def->name);
             return rc;
         }
         break;
@@ -2344,8 +2342,8 @@ virSecurityDACGenLabel(virSecurityManager *mgr,
                                           (unsigned int)priv->group);
         if (seclabel->label == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot generate dac user and group id "
-                             "for domain %s"), def->name);
+                           _("cannot generate dac user and group id for domain %1$s"),
+                           def->name);
             return rc;
         }
         break;
@@ -2355,7 +2353,7 @@ virSecurityDACGenLabel(virSecurityManager *mgr,
     case VIR_DOMAIN_SECLABEL_DEFAULT:
     case VIR_DOMAIN_SECLABEL_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected security label type '%s'"),
+                       _("unexpected security label type '%1$s'"),
                        virDomainSeclabelTypeToString(seclabel->type));
         return rc;
     }
@@ -2395,7 +2393,7 @@ virSecurityDACGetProcessLabelInternal(pid_t pid,
 
     if (g_lstat(path, &sb) < 0) {
         virReportSystemError(errno,
-                             _("unable to get uid and gid for PID %d via procfs"),
+                             _("unable to get uid and gid for PID %1$d via procfs"),
                              pid);
         return -1;
     }
@@ -2420,7 +2418,7 @@ virSecurityDACGetProcessLabelInternal(pid_t pid,
 
     if (sysctl(mib, 4, &p, &len, NULL, 0) < 0) {
         virReportSystemError(errno,
-                             _("unable to get PID %d uid and gid via sysctl"),
+                             _("unable to get PID %1$d uid and gid via sysctl"),
                              pid);
         return -1;
     }

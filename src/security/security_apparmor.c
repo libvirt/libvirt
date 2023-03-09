@@ -85,8 +85,8 @@ profile_status(const char *str, const int check_enforcing)
 
     if (virFileReadAll(APPARMOR_PROFILES_PATH, MAX_FILE_LEN, &content) < 0) {
         virReportSystemError(errno,
-                             _("Failed to read AppArmor profiles list "
-                             "\'%s\'"), APPARMOR_PROFILES_PATH);
+                             _("Failed to read AppArmor profiles list \'%1$s\'"),
+                             APPARMOR_PROFILES_PATH);
         return -2;
     }
 
@@ -128,7 +128,7 @@ profile_status_file(const char *str)
 
     if ((len = virFileReadAll(profile, MAX_FILE_LEN, &content)) < 0) {
         virReportSystemError(errno,
-                             _("Failed to read \'%s\'"), profile);
+                             _("Failed to read \'%1$s\'"), profile);
         goto failed;
     }
 
@@ -265,8 +265,7 @@ reload_profile(virSecurityManager *mgr,
     if (profile_loaded(secdef->imagelabel) >= 0) {
         if (load_profile(mgr, secdef->imagelabel, def, fn, append) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot update AppArmor profile "
-                             "\'%s\'"),
+                           _("cannot update AppArmor profile \'%1$s\'"),
                            secdef->imagelabel);
             return -1;
         }
@@ -327,12 +326,12 @@ AppArmorSecurityManagerProbe(const char *virtDriver G_GNUC_UNUSED)
 
     if (!virFileExists(template_qemu)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("template \'%s\' does not exist"), template_qemu);
+                       _("template \'%1$s\' does not exist"), template_qemu);
         return SECURITY_DRIVER_DISABLE;
     }
     if (!virFileExists(template_lxc)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("template \'%s\' does not exist"), template_lxc);
+                       _("template \'%1$s\' does not exist"), template_lxc);
         return SECURITY_DRIVER_DISABLE;
     }
 
@@ -414,8 +413,8 @@ AppArmorGenSecurityLabel(virSecurityManager *mgr G_GNUC_UNUSED,
     /* Now that we have a label, load the profile into the kernel. */
     if (load_profile(mgr, secdef->label, def, NULL, false) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot load AppArmor profile "
-                       "\'%s\'"), secdef->label);
+                       _("cannot load AppArmor profile \'%1$s\'"),
+                       secdef->label);
         goto err;
     }
 
@@ -518,7 +517,7 @@ AppArmorRestoreSecurityAllLabel(virSecurityManager *mgr G_GNUC_UNUSED,
     if (secdef->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
         if ((rc = remove_profile(secdef->label)) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("could not remove profile for \'%s\'"),
+                           _("could not remove profile for \'%1$s\'"),
                            secdef->label);
         }
     }
@@ -544,9 +543,7 @@ AppArmorSetSecurityProcessLabel(virSecurityManager *mgr G_GNUC_UNUSED,
 
     if (STRNEQ(SECURITY_APPARMOR_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("security label driver mismatch: "
-                         "\'%s\' model configured for domain, but "
-                         "hypervisor driver is \'%s\'."),
+                       _("security label driver mismatch: \'%1$s\' model configured for domain, but hypervisor driver is \'%2$s\'."),
                        secdef->model, SECURITY_APPARMOR_NAME);
         if (use_apparmor() > 0)
             return -1;
@@ -583,9 +580,7 @@ AppArmorSetSecurityChildProcessLabel(virSecurityManager *mgr G_GNUC_UNUSED,
 
     if (STRNEQ(SECURITY_APPARMOR_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("security label driver mismatch: "
-                         "\'%s\' model configured for domain, but "
-                         "hypervisor driver is \'%s\'."),
+                       _("security label driver mismatch: \'%1$s\' model configured for domain, but hypervisor driver is \'%2$s\'."),
                        secdef->model, SECURITY_APPARMOR_NAME);
         if (use_apparmor() > 0)
             return -1;
@@ -648,7 +643,7 @@ AppArmorSetMemoryLabel(virSecurityManager *mgr,
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
         if (!virFileExists(mem->nvdimmPath)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s: \'%s\' does not exist"),
+                           _("%1$s: \'%2$s\' does not exist"),
                            __func__, mem->nvdimmPath);
             return -1;
         }
@@ -687,13 +682,13 @@ AppArmorSetInputLabel(virSecurityManager *mgr,
     case VIR_DOMAIN_INPUT_TYPE_EVDEV:
         if (input->source.evdev == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s: passthrough input device has no source"),
+                           _("%1$s: passthrough input device has no source"),
                            __func__);
             return -1;
         }
         if (!virFileExists(input->source.evdev)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s: \'%s\' does not exist"),
+                           _("%1$s: \'%2$s\' does not exist"),
                            __func__, input->source.evdev);
             return -1;
         }
@@ -745,7 +740,7 @@ AppArmorSetSecurityImageLabelInternal(virSecurityManager *mgr,
     /* if the device doesn't exist, error out */
     if (!virFileExists(path)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("\'%s\' does not exist"),
+                       _("\'%1$s\' does not exist"),
                        path);
         return -1;
     }
@@ -790,7 +785,7 @@ AppArmorSecurityVerify(virSecurityManager *mgr G_GNUC_UNUSED,
     if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC) {
         if (use_apparmor() < 0 || profile_status(secdef->label, 0) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid security label \'%s\'"),
+                           _("Invalid security label \'%1$s\'"),
                            secdef->label);
             return -1;
         }

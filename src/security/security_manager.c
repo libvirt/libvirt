@@ -728,7 +728,7 @@ static int virSecurityManagerCheckModel(virSecurityManager *mgr,
     }
 
     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                   _("Security driver model '%s' is not available"),
+                   _("Security driver model '%1$s' is not available"),
                    secmodel);
  cleanup:
     VIR_FREE(sec_managers);
@@ -1358,7 +1358,7 @@ virSecurityManagerMetadataLock(virSecurityManager *mgr G_GNUC_UNUSED,
             }
 
             virReportSystemError(errno,
-                                 _("unable to open %s"),
+                                 _("unable to open %1$s"),
                                  p);
             goto cleanup;
         }
@@ -1373,7 +1373,7 @@ virSecurityManagerMetadataLock(virSecurityManager *mgr G_GNUC_UNUSED,
                     continue;
                 } else {
                     virReportSystemError(errno,
-                                         _("unable to lock %s for metadata change"),
+                                         _("unable to lock %1$s for metadata change"),
                                          p);
                     VIR_FORCE_CLOSE(fd);
                     goto cleanup;

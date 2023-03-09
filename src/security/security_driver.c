@@ -70,7 +70,7 @@ virSecurityDriver *virSecurityDriverLookup(const char *name,
             VIR_DEBUG("Not enabled name=%s", tmp->name);
             if (name && STREQ(tmp->name, name)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Security driver %s not enabled"),
+                               _("Security driver %1$s not enabled"),
                                name);
                 return NULL;
             }
@@ -84,7 +84,7 @@ virSecurityDriver *virSecurityDriverLookup(const char *name,
 
     if (!drv) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Security driver %s not found"),
+                       _("Security driver %1$s not found"),
                        NULLSTR(name));
         return NULL;
     }
