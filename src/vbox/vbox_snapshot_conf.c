@@ -588,7 +588,7 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
                            BAD_CAST "vbox",
                            BAD_CAST VBOX_SETTINGS_NS) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Failed to register xml namespace '%s'"),
+                       _("Failed to register xml namespace '%1$s'"),
                        VBOX_SETTINGS_NS);
         goto cleanup;
     }
@@ -751,7 +751,7 @@ virVBoxSnapshotConfAddSnapshotToXmlMachine(virVBoxSnapshotConfSnapshot *snapshot
         parentSnapshot = virVBoxSnapshotConfSnapshotByName(machine->snapshot, snapshotParentName);
         if (parentSnapshot == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to find the snapshot %s"), snapshotParentName);
+                           _("Unable to find the snapshot %1$s"), snapshotParentName);
             return -1;
         }
         VIR_EXPAND_N(parentSnapshot->children, parentSnapshot->nchildren, 1);
@@ -835,7 +835,7 @@ virVBoxSnapshotConfRemoveSnapshot(virVBoxSnapshotConfMachine *machine,
     snapshot = virVBoxSnapshotConfSnapshotByName(machine->snapshot, snapshotName);
     if (snapshot == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to find the snapshot with name %s"), snapshotName);
+                       _("Unable to find the snapshot with name %1$s"), snapshotName);
         return -1;
     }
     if (snapshot->nchildren > 0) {
@@ -896,7 +896,7 @@ virVBoxSnapshotConfRemoveHardDisk(virVBoxSnapshotConfMediaRegistry *mediaRegistr
     }
     if (hardDisk == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to find the hard disk with uuid %s"), uuid);
+                       _("Unable to find the hard disk with uuid %1$s"), uuid);
         return -1;
     }
     if (hardDisk->parent == NULL) {
@@ -1170,7 +1170,7 @@ virVBoxSnapshotConfIsCurrentSnapshot(virVBoxSnapshotConfMachine *machine,
     snapshot = virVBoxSnapshotConfSnapshotByName(machine->snapshot, snapshotName);
     if (snapshot == NULL) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
-                       _("Unable to find the snapshot %s"), snapshotName);
+                       _("Unable to find the snapshot %1$s"), snapshotName);
         return 0;
     }
     return STREQ(snapshot->uuid, machine->currentSnapshot);
@@ -1326,7 +1326,7 @@ virVBoxSnapshotConfRemoveFakeDisks(virVBoxSnapshotConfMachine *machine)
         if (strstr(diskList[i]->location, "fake") != NULL) {
             if (virVBoxSnapshotConfRemoveHardDisk(machine->mediaRegistry, diskList[i]->uuid) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to remove hard disk %s from media registry"),
+                               _("Unable to remove hard disk %1$s from media registry"),
                                diskList[i]->location);
                 goto cleanup;
             }

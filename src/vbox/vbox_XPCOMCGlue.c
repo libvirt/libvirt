@@ -86,7 +86,7 @@ tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing,
 
         if (!virFileExists(name)) {
             if (!ignoreMissing)
-                VIR_ERROR(_("Library '%s' doesn't exist"), name);
+                VIR_ERROR(_("Library '%1$s' doesn't exist"), name);
 
             VIR_FREE(name);
             return -1;
@@ -124,7 +124,7 @@ tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing,
         dlsym(hVBoxXPCOMC, VBOX_GET_XPCOMC_FUNCTIONS_SYMBOL_NAME);
 
     if (pfnGetFunctions == NULL) {
-        VIR_ERROR(_("Could not dlsym %s from '%s': %s"),
+        VIR_ERROR(_("Could not dlsym %1$s from '%2$s': %3$s"),
                   VBOX_GET_XPCOMC_FUNCTIONS_SYMBOL_NAME, name, dlerror());
         goto cleanup;
     }
@@ -132,7 +132,7 @@ tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing,
     pVBoxFuncs_v2_2 = pfnGetFunctions(VBOX_XPCOMC_VERSION);
 
     if (pVBoxFuncs_v2_2 == NULL) {
-        VIR_ERROR(_("Calling %s from '%s' failed"),
+        VIR_ERROR(_("Calling %1$s from '%2$s' failed"),
                   VBOX_GET_XPCOMC_FUNCTIONS_SYMBOL_NAME, name);
         goto cleanup;
     }

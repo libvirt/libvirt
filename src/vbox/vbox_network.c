@@ -643,7 +643,7 @@ vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterface)
         gVBoxAPI.UIProgress.GetResultCode(progress, &resultCode);
         if (RC_FAILED(resultCode)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Error while removing hostonly network interface, rc=%08x"),
+                           _("Error while removing hostonly network interface, rc=%1$08x"),
                            resultCode.uResultCode);
             goto cleanup;
         }

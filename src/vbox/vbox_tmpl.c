@@ -317,14 +317,14 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
     if (state >= MachineState_FirstOnline
         && state <= MachineState_LastOnline) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("domain %s is already running"), dom->name);
+                       _("domain %1$s is already running"), dom->name);
         goto cleanup;
     }
 
     rc = machine->vtbl->LockMachine(machine, data->vboxSession, LockType_Write);
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("could not open VirtualBox session with domain %s"),
+                       _("could not open VirtualBox session with domain %1$s"),
                        dom->name);
         goto cleanup;
     }
@@ -337,7 +337,7 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
                            _("cannot restore domain snapshot for running domain"));
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("could not restore snapshot for domain %s"),
+                           _("could not restore snapshot for domain %1$s"),
                            dom->name);
         }
         goto cleanup;
@@ -347,7 +347,7 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
     progress->vtbl->GetResultCode(progress, &result);
     if (NS_FAILED(result)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("could not restore snapshot for domain %s"), dom->name);
+                       _("could not restore snapshot for domain %1$s"), dom->name);
         goto cleanup;
     }
 
@@ -1118,7 +1118,7 @@ _consoleSaveState(IConsole *console, IProgress **progress)
         rc = machine->vtbl->SaveState(machine, progress);
     else
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to get machine from console. (error %d)"), rc);
+                       _("unable to get machine from console. (error %1$d)"), rc);
 
     return rc;
 }
@@ -1176,7 +1176,7 @@ _consoleTakeSnapshot(IConsole *console, PRUnichar *name,
         rc = machine->vtbl->TakeSnapshot(machine, name, description, bpause, &id, progress);
     else
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to get machine from console. (error %d)"), rc);
+                       _("unable to get machine from console. (error %1$d)"), rc);
 
     VBOX_RELEASE(machine);
     return rc;
@@ -1194,7 +1194,7 @@ _consoleDeleteSnapshot(IConsole *console, vboxIID *iid, IProgress **progress)
         rc = machine->vtbl->DeleteSnapshot(machine, iid->value, progress);
     else
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to get machine from console. (error %d)"), rc);
+                       _("unable to get machine from console. (error %1$d)"), rc);
 
     VBOX_RELEASE(machine);
 
@@ -1584,7 +1584,7 @@ _vrdeServerGetPorts(struct _vboxDriver *data, IVRDEServer *VRDEServer,
 
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to read RDP port value, rc=%08x"),
+                       _("Failed to read RDP port value, rc=%1$08x"),
                        (unsigned) rc);
        goto cleanup;
     }

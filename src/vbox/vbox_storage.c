@@ -97,7 +97,7 @@ static int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
                                       gVBoxAPI.UArray.handleGetHardDisks(data->vboxObj));
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("could not get number of volumes in the pool: %s, rc=%08x"),
+                       _("could not get number of volumes in the pool: %1$s, rc=%2$08x"),
                        pool->name, (unsigned)rc);
         return -1;
     }
@@ -135,7 +135,7 @@ vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nname
                                       gVBoxAPI.UArray.handleGetHardDisks(data->vboxObj));
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("could not get the volume list in the pool: %s, rc=%08x"),
+                       _("could not get the volume list in the pool: %1$s, rc=%2$08x"),
                        pool->name, (unsigned)rc);
         return -1;
     }
@@ -267,7 +267,7 @@ vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 
     if (virUUIDParse(key, uuid) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Could not parse UUID from '%s'"), key);
+                       _("Could not parse UUID from '%1$s'"), key);
         return NULL;
     }
 
@@ -457,7 +457,7 @@ vboxStorageVolCreateXML(virStoragePoolPtr pool,
     rc = gVBoxAPI.UIVirtualBox.CreateHardDisk(data->vboxObj, hddFormatUtf16, hddNameUtf16, &hardDisk);
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not create harddisk, rc=%08x"),
+                       _("Could not create harddisk, rc=%1$08x"),
                        (unsigned)rc);
         goto cleanup;
     }
@@ -470,7 +470,7 @@ vboxStorageVolCreateXML(virStoragePoolPtr pool,
     rc = gVBoxAPI.UIMedium.CreateBaseStorage(hardDisk, logicalSize, variant, &progress);
     if (NS_FAILED(rc) || !progress) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not create base storage, rc=%08x"),
+                       _("Could not create base storage, rc=%1$08x"),
                        (unsigned)rc);
         goto cleanup;
     }
@@ -479,7 +479,7 @@ vboxStorageVolCreateXML(virStoragePoolPtr pool,
     gVBoxAPI.UIProgress.GetResultCode(progress, &resultCode);
     if (RC_FAILED(resultCode)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not create base storage, rc=%08x"),
+                       _("Could not create base storage, rc=%1$08x"),
                        (unsigned)resultCode.uResultCode);
         goto cleanup;
     }
@@ -525,7 +525,7 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
 
     if (virUUIDParse(vol->key, uuid) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Could not parse UUID from '%s'"), vol->key);
+                       _("Could not parse UUID from '%1$s'"), vol->key);
         return -1;
     }
 
@@ -676,7 +676,7 @@ static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info
 
     if (virUUIDParse(vol->key, uuid) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Could not parse UUID from '%s'"), vol->key);
+                       _("Could not parse UUID from '%1$s'"), vol->key);
         return ret;
     }
 
@@ -737,7 +737,7 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 
     if (virUUIDParse(vol->key, uuid) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Could not parse UUID from '%s'"), vol->key);
+                       _("Could not parse UUID from '%1$s'"), vol->key);
         return ret;
     }
 
@@ -818,7 +818,7 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol)
 
     if (virUUIDParse(vol->key, uuid) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Could not parse UUID from '%s'"), vol->key);
+                       _("Could not parse UUID from '%1$s'"), vol->key);
         return ret;
     }
 
