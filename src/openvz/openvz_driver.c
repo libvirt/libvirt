@@ -79,7 +79,7 @@ openvzDomObjFromDomainLocked(struct openvz_driver *driver,
         virUUIDFormat(uuid, uuidstr);
 
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+                       _("no domain with matching uuid '%1$s'"), uuidstr);
         return NULL;
     }
 
@@ -235,7 +235,7 @@ openvzDomainGetHostname(virDomainPtr dom, unsigned int flags)
     /* vzlist prints an unset hostname as '-' */
     if (STREQ(hostname, "-")) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Hostname of '%s' is unset"), vm->def->name);
+                       _("Hostname of '%1$s' is unset"), vm->def->name);
         VIR_FREE(hostname);
     }
 
@@ -258,7 +258,7 @@ static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching id '%d'"), id);
+                       _("no domain with matching id '%1$d'"), id);
         goto cleanup;
     }
 
@@ -330,7 +330,7 @@ static virDomainPtr openvzDomainLookupByName(virConnectPtr conn,
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching name '%s'"), name);
+                       _("no domain with matching name '%1$s'"), name);
         goto cleanup;
     }
 
@@ -361,7 +361,7 @@ static int openvzDomainGetInfo(virDomainPtr dom,
     } else {
         if (openvzGetProcessInfo(&(info->cpuTime), dom->id) < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("cannot read cputime for domain %d"), dom->id);
+                           _("cannot read cputime for domain %1$d"), dom->id);
             goto cleanup;
         }
     }
@@ -969,7 +969,7 @@ openvzDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching name '%s'"), dom->name);
+                       _("no domain with matching name '%1$s'"), dom->name);
         goto cleanup;
     }
 
@@ -1106,7 +1106,7 @@ static int openvzConnectGetMaxVcpus(virConnectPtr conn G_GNUC_UNUSED,
         return 1028; /* OpenVZ has no limitation */
 
     virReportError(VIR_ERR_INVALID_ARG,
-                   _("unknown type '%s'"), type);
+                   _("unknown type '%1$s'"), type);
     return -1;
 }
 
@@ -1116,7 +1116,7 @@ openvzDomainGetVcpusFlags(virDomainPtr dom G_GNUC_UNUSED,
 {
     if (flags != (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("unsupported flags (0x%x)"), flags);
+                       _("unsupported flags (0x%1$x)"), flags);
         return -1;
     }
 
@@ -1166,7 +1166,7 @@ static int openvzDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
     if (flags != VIR_DOMAIN_AFFECT_LIVE) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("unsupported flags (0x%x)"), flags);
+                       _("unsupported flags (0x%1$x)"), flags);
         return -1;
     }
 
@@ -1225,7 +1225,7 @@ static virDrvOpenStatus openvzConnectOpen(virConnectPtr conn,
     /* If path isn't /system, then they typoed, so tell them correct path */
     if (STRNEQ(conn->uri->path, "/system")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected OpenVZ URI path '%s', try openvz:///system"),
+                       _("unexpected OpenVZ URI path '%1$s', try openvz:///system"),
                        conn->uri->path);
         return VIR_DRV_OPEN_ERROR;
     }
@@ -1330,7 +1330,7 @@ static int openvzConnectListDomains(virConnectPtr conn G_GNUC_UNUSED,
             break;
         if (virStrToLong_i(buf, &endptr, 10, &veid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not parse VPS ID %s"), buf);
+                           _("Could not parse VPS ID %1$s"), buf);
             continue;
         }
         ids[got++] = veid;
@@ -1378,7 +1378,7 @@ static int openvzConnectListDefinedDomains(virConnectPtr conn G_GNUC_UNUSED,
             break;
         if (virStrToLong_i(buf, &endptr, 10, &veid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not parse VPS ID %s"), buf);
+                           _("Could not parse VPS ID %1$s"), buf);
             continue;
         }
         g_snprintf(vpsname, sizeof(vpsname), "%d", veid);
@@ -1502,14 +1502,14 @@ openvzDomainGetBarrierLimit(virDomainPtr domain,
     virSkipSpaces(&tmp);
     if (virStrToLong_ull(tmp, &endp, 10, barrier) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Can't parse limit from vzlist output '%s'"), output);
+                       _("Can't parse limit from vzlist output '%1$s'"), output);
         return -1;
     }
     tmp = endp;
     virSkipSpaces(&tmp);
     if (virStrToLong_ull(tmp, &endp, 10, limit) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Can't parse barrier from vzlist output '%s'"), output);
+                       _("Can't parse barrier from vzlist output '%1$s'"), output);
         return -1;
     }
 
@@ -1528,7 +1528,7 @@ openvzDomainSetBarrierLimit(virDomainPtr domain,
     /* LONG_MAX indicates unlimited so reject larger values */
     if (barrier > LONG_MAX || limit > LONG_MAX) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Failed to set %s for %s: value too large"), param,
+                       _("Failed to set %1$s for %2$s: value too large"), param,
                        domain->name);
         return -1;
     }
@@ -1748,7 +1748,7 @@ openvzUpdateDevice(virDomainDef *vmdef,
 
         if (pos < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("target %s doesn't exist."), fs->dst);
+                           _("target %1$s doesn't exist."), fs->dst);
             return -1;
         }
         cur = vmdef->fss[pos];
@@ -1770,7 +1770,7 @@ openvzUpdateDevice(virDomainDef *vmdef,
         cur->space_soft_limit = fs->space_soft_limit;
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Can't modify device type '%s'"),
+                       _("Can't modify device type '%1$s'"),
                        virDomainDeviceTypeToString(dev->type));
         return -1;
     }
@@ -1917,7 +1917,7 @@ openvzConnectSupportsFeature(virConnectPtr conn G_GNUC_UNUSED, int feature)
     case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
     case VIR_DRV_FEATURE_FD_PASSING:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Global feature %d should have already been handled"),
+                       _("Global feature %1$d should have already been handled"),
                        feature);
         return -1;
     case VIR_DRV_FEATURE_MIGRATION_PARAMS:
@@ -2044,14 +2044,14 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
 
         if (uri == NULL) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("unable to parse URI: %s"),
+                           _("unable to parse URI: %1$s"),
                            uri_in);
             goto error;
         }
 
         if (uri->server == NULL) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("missing host in migration URI: %s"),
+                           _("missing host in migration URI: %1$s"),
                            uri_in);
             goto error;
         }
@@ -2157,8 +2157,7 @@ openvzDomainMigrateFinish3Params(virConnectPtr dconn,
         !(vm = virDomainObjListFindByName(driver->domains, dname))) {
         /* Migration obviously failed if the domain doesn't exist */
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Migration failed. No domain on destination host "
-                         "with matching name '%s'"),
+                       _("Migration failed. No domain on destination host with matching name '%1$s'"),
                        NULLSTR(dname));
         goto cleanup;
     }
