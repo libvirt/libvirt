@@ -57,6 +57,7 @@ struct qemuHotplugTestData {
     GHashTable *capsLatestFiles;
     GHashTable *capsCache;
     GHashTable *schemaCache;
+    GHashTable *schema;
 };
 
 static int
@@ -342,7 +343,7 @@ testQemuHotplug(const void *data)
         if (qemuHotplugCreateObjects(driver.xmlopt, &vm, domain_xml,
                                      test->arch, test->capsLatestFiles,
                                      test->capsCache, test->schemaCache,
-                                     NULL) < 0)
+                                     &test->schema) < 0)
             goto cleanup;
     }
 
@@ -356,7 +357,7 @@ testQemuHotplug(const void *data)
 
     /* Now is the best time to feed the spoofed monitor with predefined
      * replies. */
-    if (!(test_mon = qemuMonitorTestNew(driver.xmlopt, vm, NULL, NULL)))
+    if (!(test_mon = qemuMonitorTestNew(driver.xmlopt, vm, NULL, test->schema)))
         goto cleanup;
 
     tmp = test->mon;
