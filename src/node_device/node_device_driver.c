@@ -136,7 +136,7 @@ nodeDeviceUpdateDriverName(virNodeDeviceDef *def)
 
     if (virFileResolveLink(driver_link, &devpath) < 0) {
         virReportSystemError(errno,
-                             _("cannot resolve driver link %s"), driver_link);
+                             _("cannot resolve driver link %1$s"), driver_link);
         return -1;
     }
 
@@ -236,7 +236,7 @@ nodeDeviceObjFindByName(const char *name)
 
     if (!(obj = virNodeDeviceObjListFindByName(driver->devs, name))) {
         virReportError(VIR_ERR_NO_NODE_DEVICE,
-                       _("no node device with matching name '%s'"),
+                       _("no node device with matching name '%1$s'"),
                        name);
     }
 
@@ -735,7 +735,7 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
     default:
         /* SHOULD NEVER HAPPEN */
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown Command '%i'"), cmd_type);
+                       _("Unknown Command '%1$i'"), cmd_type);
         return NULL;
     }
 
@@ -744,7 +744,7 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
     case MDEVCTL_CMD_DEFINE:
         if (!def->caps->data.mdev.parent_addr) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to find parent device '%s'"), def->parent);
+                           _("unable to find parent device '%1$s'"), def->parent);
             return NULL;
         }
 
@@ -802,7 +802,7 @@ virMdevctlCreate(virNodeDeviceDef *def, char **uuid)
 
     if (status != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to start mediated device: %s"),
+                       _("Unable to start mediated device: %1$s"),
                        MDEVCTL_ERROR(errmsg));
         return -1;
     }
@@ -832,7 +832,7 @@ virMdevctlDefine(virNodeDeviceDef *def, char **uuid)
 
     if (status != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to define mediated device: %s"),
+                       _("Unable to define mediated device: %1$s"),
                        MDEVCTL_ERROR(errmsg));
         return -1;
     }
@@ -913,8 +913,7 @@ nodeDeviceCreateXML(virConnectPtr conn,
 
         if (device == NULL)
             virReportError(VIR_ERR_NO_NODE_DEVICE,
-                           _("no node device for '%s' with matching "
-                             "wwnn '%s' and wwpn '%s'"),
+                           _("no node device for '%1$s' with matching wwnn '%2$s' and wwpn '%3$s'"),
                            def->name, wwnn, wwpn);
     } else if (nodeDeviceHasCapability(def, VIR_NODE_DEV_CAP_MDEV)) {
         device = nodeDeviceCreateXMLMdev(conn, def);
@@ -944,7 +943,7 @@ virMdevctlStop(virNodeDeviceDef *def)
 
     if (status != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to destroy '%s': %s"), def->name,
+                       _("Unable to destroy '%1$s': %2$s"), def->name,
                        MDEVCTL_ERROR(errmsg));
         return -1;
     }
@@ -970,7 +969,7 @@ virMdevctlUndefine(virNodeDeviceDef *def)
 
     if (status != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to undefine mediated device: %s"),
+                       _("Unable to undefine mediated device: %1$s"),
                        MDEVCTL_ERROR(errmsg));
         return -1;
     }
@@ -996,7 +995,7 @@ virMdevctlStart(virNodeDeviceDef *def)
 
     if (status != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to create mediated device: %s"),
+                       _("Unable to create mediated device: %1$s"),
                        MDEVCTL_ERROR(errmsg));
         return -1;
     }
@@ -1279,7 +1278,7 @@ nodeDeviceDestroy(virNodeDevicePtr device)
 
         if (!(obj = virNodeDeviceObjListFindByName(driver->devs, parent))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot find parent '%s' definition"), parent);
+                           _("cannot find parent '%1$s' definition"), parent);
             goto cleanup;
         }
 
@@ -1296,7 +1295,7 @@ nodeDeviceDestroy(virNodeDevicePtr device)
 
         if (!virNodeDeviceObjIsActive(obj)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("Device '%s' is not active"), def->name);
+                           _("Device '%1$s' is not active"), def->name);
             goto cleanup;
         }
 
@@ -1317,7 +1316,7 @@ nodeDeviceDestroy(virNodeDevicePtr device)
 
         if (fd < 0 && errno == EBUSY) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to destroy '%s': device in use"),
+                           _("Unable to destroy '%1$s': device in use"),
                            def->name);
             goto cleanup;
         }
@@ -1478,7 +1477,7 @@ nodeDeviceUndefine(virNodeDevice *device,
 
     if (!virNodeDeviceObjIsPersistent(obj)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Node device '%s' is not defined"),
+                       _("Node device '%1$s' is not defined"),
                        def->name);
         goto cleanup;
     }
@@ -1712,7 +1711,7 @@ nodeDeviceUpdateMediatedDevices(void)
 
     if ((data.ndefs = virMdevctlListDefined(&defs, &errmsg)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to query mdevs from mdevctl: %s"), errmsg);
+                       _("failed to query mdevs from mdevctl: %1$s"), errmsg);
         return -1;
     }
 
@@ -1837,7 +1836,7 @@ nodeDeviceSetAutostart(virNodeDevice *device,
 
             if (virMdevctlSetAutostart(def, autostart, &errmsg) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to set autostart on '%s': %s"),
+                               _("Unable to set autostart on '%1$s': %2$s"),
                                def->name,
                                errmsg && errmsg[0] != '\0' ? errmsg : _("Unknown Error"));
                 goto cleanup;
@@ -1923,7 +1922,7 @@ static int nodeDeviceDefValidateMdev(virNodeDeviceDef *def,
     obj = virNodeDeviceObjListFindByName(driver->devs, def->parent);
     if (!obj) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("invalid parent device '%s'"),
+                       _("invalid parent device '%1$s'"),
                        def->parent);
         return -1;
     }
@@ -1933,7 +1932,7 @@ static int nodeDeviceDefValidateMdev(virNodeDeviceDef *def,
      * device and stored it in the mdev caps */
     if (!mdev->parent_addr) {
         virReportError(VIR_ERR_PARSE_FAILED,
-                       _("Unable to find address for parent device '%s'"),
+                       _("Unable to find address for parent device '%1$s'"),
                        def->parent);
         return -1;
     }
