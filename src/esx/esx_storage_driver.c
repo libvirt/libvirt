@@ -154,7 +154,7 @@ esxStoragePoolLookupByName(virConnectPtr conn, const char *name)
     }
 
     virReportError(VIR_ERR_NO_STORAGE_POOL,
-                   _("Could not find storage pool with name '%s'"), name);
+                   _("Could not find storage pool with name '%1$s'"), name);
 
     return NULL;
 }
@@ -182,7 +182,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
     virUUIDFormat(uuid, uuid_string);
     virReportError(VIR_ERR_NO_STORAGE_POOL,
-                   _("Could not find storage pool with uuid '%s'"),
+                   _("Could not find storage pool with uuid '%1$s'"),
                    uuid_string);
 
     return NULL;
@@ -349,7 +349,7 @@ esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
         return backends[ISCSI]->storageVolLookupByPath(conn, path);
     } else {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Unexpected volume path format: %s"), path);
+                       _("Unexpected volume path format: %1$s"), path);
 
         return NULL;
     }
@@ -375,7 +375,7 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
     }
 
     virReportError(VIR_ERR_NO_STORAGE_VOL,
-                   _("Could not find storage volume with key '%s'"),
+                   _("Could not find storage volume with key '%1$s'"),
                    key);
 
     return NULL;

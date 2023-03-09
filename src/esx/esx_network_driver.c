@@ -148,7 +148,7 @@ esxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         virUUIDFormat(uuid, uuid_string);
 
         virReportError(VIR_ERR_NO_NETWORK,
-                       _("Could not find HostVirtualSwitch with UUID '%s'"),
+                       _("Could not find HostVirtualSwitch with UUID '%1$s'"),
                        uuid_string);
 
         goto cleanup;
@@ -337,7 +337,7 @@ esxNetworkDefineXMLFlags(virConnectPtr conn, const char *xml,
     case VIR_NETWORK_FORWARD_PASSTHROUGH:
     case VIR_NETWORK_FORWARD_HOSTDEV:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported forward mode '%s'"),
+                       _("Unsupported forward mode '%1$s'"),
                        virNetworkForwardTypeToString(def->forward.type));
         goto cleanup;
 
@@ -357,7 +357,7 @@ esxNetworkDefineXMLFlags(virConnectPtr conn, const char *xml,
                  hostPortGroup = hostPortGroup->_next) {
                 if (STREQ(def->portGroups[i].name, hostPortGroup->spec->name)) {
                     virReportError(VIR_ERR_NETWORK_EXIST,
-                                   _("HostPortGroup with name '%s' exists already"),
+                                   _("HostPortGroup with name '%1$s' exists already"),
                                    def->portGroups[i].name);
                     goto cleanup;
                 }
@@ -390,8 +390,7 @@ esxNetworkDefineXMLFlags(virConnectPtr conn, const char *xml,
             if (def->forward.ifs[i].type !=
                 VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV) {
                 virReportError(VIR_ERR_NO_SUPPORT,
-                               _("unsupported device type in network %s "
-                                 "interface pool"),
+                               _("unsupported device type in network %1$s interface pool"),
                                def->name);
                 goto cleanup;
             }
@@ -412,7 +411,7 @@ esxNetworkDefineXMLFlags(virConnectPtr conn, const char *xml,
 
             if (! found) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Could not find PhysicalNic with name '%s'"),
+                               _("Could not find PhysicalNic with name '%1$s'"),
                                def->forward.ifs[i].device.dev);
                 goto cleanup;
             }
@@ -537,7 +536,7 @@ esxNetworkUndefine(virNetworkPtr network)
                      hostPortGroupPort = hostPortGroupPort->_next) {
                     if (STRNEQ(hostPortGroupPort->type, "virtualMachine")) {
                         virReportError(VIR_ERR_OPERATION_INVALID,
-                                       _("Cannot undefine HostVirtualSwitch that has a '%s' port"),
+                                       _("Cannot undefine HostVirtualSwitch that has a '%1$s' port"),
                                        hostPortGroupPort->type);
                         goto cleanup;
                     }
@@ -550,7 +549,7 @@ esxNetworkUndefine(virNetworkPtr network)
 
         if (! found) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not find HostPortGroup for key '%s'"),
+                           _("Could not find HostPortGroup for key '%1$s'"),
                            hostPortGroupKey->value);
             goto cleanup;
         }
@@ -578,7 +577,7 @@ esxNetworkUndefine(virNetworkPtr network)
 
         if (! found) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not find HostPortGroup for key '%s'"),
+                           _("Could not find HostPortGroup for key '%1$s'"),
                            hostPortGroupKey->value);
             goto cleanup;
         }
@@ -714,7 +713,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
 
             if (! found) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Could not find PhysicalNic with key '%s'"),
+                               _("Could not find PhysicalNic with key '%1$s'"),
                                physicalNicKey->value);
                 goto cleanup;
             }
@@ -787,7 +786,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
 
             if (! found) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Could not find HostPortGroup with key '%s'"),
+                               _("Could not find HostPortGroup with key '%1$s'"),
                                hostPortGroupKey->value);
                 goto cleanup;
             }

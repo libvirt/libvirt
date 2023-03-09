@@ -320,7 +320,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     if (!target) {
         /* pool not found */
         virReportError(VIR_ERR_NO_STORAGE_POOL,
-                       _("Could not find storage pool with name '%s'"),
+                       _("Could not find storage pool with name '%1$s'"),
                        pool->name);
         goto cleanup;
     }
@@ -638,7 +638,7 @@ esxStorageVolGetInfo(virStorageVolPtr volume,
 
     if (!hostScsiDisk) {
         virReportError(VIR_ERR_NO_STORAGE_VOL,
-                       _("Could not find volume with name: %s"),
+                       _("Could not find volume with name: %1$s"),
                        volume->name);
         goto cleanup;
     }
@@ -693,7 +693,7 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
 
     if (!scsiLun) {
         virReportError(VIR_ERR_NO_STORAGE_VOL,
-                       _("Could find volume with name: %s"), volume->name);
+                       _("Could find volume with name: %1$s"), volume->name);
         goto cleanup;
     }
 

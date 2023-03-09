@@ -80,7 +80,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
         if (item->_type <= esxVI_Type_Undefined || \
             item->_type >= esxVI_Type_Other) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           _("%s object has invalid dynamic type"), typeName);\
+                           _("%1$s object has invalid dynamic type"), typeName);\
             return -1; \
         } \
  \
@@ -206,8 +206,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
     { \
         if (anyType->type != esxVI_Type_##_type) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           _("Call to %s for unexpected type '%s', " \
-                             "expected '%s'"), \
+                           _("Call to %1$s for unexpected type '%2$s', expected '%3$s'"), \
                            __FUNCTION__, anyType->other, \
                            esxVI_Type_ToString(esxVI_Type_##_type)); \
             return -1; \
@@ -221,8 +220,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
     { \
         if (anyType->type != esxVI_Type_##_type) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           _("Call to %s for unexpected type '%s', " \
-                             "expected '%s'"), \
+                           _("Call to %1$s for unexpected type '%2$s', expected '%3$s'"), \
                            __FUNCTION__, anyType->other, \
                            esxVI_Type_ToString(esxVI_Type_##_type)); \
             return -1; \
@@ -294,7 +292,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
              childNode = childNode->next) { \
             if (childNode->type != XML_ELEMENT_NODE) { \
                 virReportError(VIR_ERR_INTERNAL_ERROR, \
-                               _("Wrong XML element type %d"), \
+                               _("Wrong XML element type %1$d"), \
                                childNode->type); \
                 goto failure; \
             } \
@@ -346,21 +344,21 @@ VIR_LOG_INIT("esx.esx_vi_types");
  \
         if (!string) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           _("XML node doesn't contain text, expecting an %s "\
-                             "value"), _xsdType); \
+                           _("XML node doesn't contain text, expecting an %1$s value"), \
+                           _xsdType); \
             goto cleanup; \
         } \
  \
         if (virStrToLong_ll(string, NULL, 10, &value) < 0) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           _("Unknown value '%s' for %s"), string, _xsdType); \
+                           _("Unknown value '%1$s' for %2$s"), string, _xsdType); \
             goto cleanup; \
         } \
  \
         if (((_min) != INT64_MIN && value < (_min)) \
             || ((_max) != INT64_MAX && value > (_max))) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           _("Value '%s' is not representable as %s"), \
+                           _("Value '%1$s' is not representable as %2$s"), \
                            string, _xsdType); \
             goto cleanup; \
         } \
@@ -483,7 +481,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
 #define ESX_VI__TEMPLATE__PROPERTY__REQUIRE(_name) \
     if (item->_name == 0) { \
         virReportError(VIR_ERR_INTERNAL_ERROR, \
-                       _("%s object is missing the required '%s' property"), \
+                       _("%1$s object is missing the required '%2$s' property"), \
                        typeName, #_name); \
         return -1; \
     }
@@ -540,7 +538,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
  \
       default: \
         virReportError(VIR_ERR_INTERNAL_ERROR, \
-                       _("Call to %s for unexpected type '%s'"), \
+                       _("Call to %1$s for unexpected type '%2$s'"), \
                        __FUNCTION__, _actual_type_name); \
         return _error_return; \
     }
@@ -686,7 +684,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
  \
         default: \
           virReportError(VIR_ERR_INTERNAL_ERROR, \
-                         _("Call to %s for unexpected type '%s'"), \
+                         _("Call to %1$s for unexpected type '%2$s'"), \
                          __FUNCTION__, esxVI_Type_ToString(type)); \
           return -1; \
       }, \
@@ -720,7 +718,7 @@ esxVI_GetActualObjectType(xmlNodePtr node, esxVI_Type baseType,
 
     if (*actualType == esxVI_Type_Undefined || *actualType == esxVI_Type_Other) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown value '%s' for %s 'type' property"),
+                       _("Unknown value '%1$s' for %2$s 'type' property"),
                        type, esxVI_Type_ToString(baseType));
         return -1;
     }
@@ -740,7 +738,7 @@ esxVI_GetActualObjectType(xmlNodePtr node, esxVI_Type baseType,
     if (item->_name == 0 && \
         esxVI_String_ListContainsValue(selectedPropertyNameList, #_name)) { \
         virReportError(VIR_ERR_INTERNAL_ERROR, \
-                       _("%s object is missing the required '%s' property"), \
+                       _("%1$s object is missing the required '%2$s' property"), \
                        typeName, #_name); \
         return -1; \
     }
@@ -757,7 +755,7 @@ esxVI_GetActualObjectType(xmlNodePtr node, esxVI_Type baseType,
         if (item->_type <= esxVI_Type_Undefined || \
             item->_type >= esxVI_Type_Other) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           _("%s object has invalid dynamic type"), typeName);\
+                           _("%1$s object has invalid dynamic type"), typeName);\
             return -1; \
         } \
  \
@@ -910,7 +908,7 @@ esxVI_AnyType_ExpectType(esxVI_AnyType *anyType, esxVI_Type type)
 {
     if (anyType->type != type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Expecting type '%s' but found '%s'"),
+                       _("Expecting type '%1$s' but found '%2$s'"),
                        esxVI_Type_ToString(type),
                        esxVI_AnyType_TypeToString(anyType));
         return -1;
@@ -1014,7 +1012,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
 
     if ((*anyType)->type == esxVI_Type_Undefined) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown value '%s' for AnyType 'type' property"),
+                       _("Unknown value '%1$s' for AnyType 'type' property"),
                        (*anyType)->other);
         goto failure;
     }
@@ -1029,7 +1027,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
         do { \
             if (virStrToLong_ll((*anyType)->value, NULL, 10, &number) < 0) { \
                 virReportError(VIR_ERR_INTERNAL_ERROR, \
-                               _("Unknown value '%s' for %s"), \
+                               _("Unknown value '%1$s' for %2$s"), \
                                (*anyType)->value, _xsdType); \
                 goto failure; \
             } \
@@ -1037,7 +1035,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
             if (((_min) != INT64_MIN && number < (_min)) \
                 || ((_max) != INT64_MAX && number > (_max))) { \
                 virReportError(VIR_ERR_INTERNAL_ERROR, \
-                               _("Value '%s' is out of %s range"), \
+                               _("Value '%1$s' is out of %2$s range"), \
                                (*anyType)->value, _xsdType); \
                 goto failure; \
             } \
@@ -1053,7 +1051,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
             (*anyType)->boolean = esxVI_Boolean_False;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown value '%s' for xsd:boolean"),
+                           _("Unknown value '%1$s' for xsd:boolean"),
                            (*anyType)->value);
             goto failure;
         }
@@ -1499,7 +1497,7 @@ esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
         /* second */
         virStrToLong_i(tmp+1, &tmp, 10, &sec) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("xsd:dateTime value '%s' has unexpected format"),
+                       _("xsd:dateTime value '%1$s' has unexpected format"),
                        dateTime->value);
         return -1;
     }
@@ -1509,7 +1507,7 @@ esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
         if (*tmp == '.' &&
             virStrToLong_i(tmp + 1, &tmp, 10, &milliseconds) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("xsd:dateTime value '%s' has unexpected format"),
+                           _("xsd:dateTime value '%1$s' has unexpected format"),
                            dateTime->value);
             return -1;
         }
@@ -1521,7 +1519,7 @@ esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
             tz = g_time_zone_new_utc();
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("xsd:dateTime value '%s' has unexpected format"),
+                           _("xsd:dateTime value '%1$s' has unexpected format"),
                            dateTime->value);
             return -1;
         }
@@ -1771,7 +1769,7 @@ ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(Event, /* nothing */,
 
     if (!(*ptrptr)->_actualType) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s is missing 'type' property"),
+                       _("%1$s is missing 'type' property"),
                        esxVI_Type_ToString((*ptrptr)->_type));
         goto failure;
     }

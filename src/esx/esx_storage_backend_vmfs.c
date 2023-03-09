@@ -522,7 +522,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
             def.source.format = VIR_STORAGE_POOL_NETFS_CIFS;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Datastore has unexpected type '%s'"),
+                           _("Datastore has unexpected type '%1$s'"),
                            nasInfo->nas->type);
             goto cleanup;
         }
@@ -877,15 +877,15 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
 
     if (!tmp || *def->name == '/' || tmp[1] == '\0') {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Volume name '%s' doesn't have expected format "
-                         "'<directory>/<file>'"), def->name);
+                       _("Volume name '%1$s' doesn't have expected format '<directory>/<file>'"),
+                       def->name);
         goto cleanup;
     }
 
     if (!virStringHasCaseSuffix(def->name, ".vmdk")) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("Volume name '%s' has unsupported suffix, "
-                         "expecting '.vmdk'"), def->name);
+                       _("Volume name '%1$s' has unsupported suffix, expecting '.vmdk'"),
+                       def->name);
         goto cleanup;
     }
 
@@ -980,7 +980,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
 
         if (taskInfoState != esxVI_TaskInfoState_Success) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not create volume: %s"),
+                           _("Could not create volume: %1$s"),
                            taskInfoErrorMessage);
             goto cleanup;
         }
@@ -1002,7 +1002,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
         }
     } else {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("Creation of %s volumes is not supported"),
+                       _("Creation of %1$s volumes is not supported"),
                        virStorageFileFormatTypeToString(def->target.format));
         goto cleanup;
     }
@@ -1079,15 +1079,15 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
 
     if (!tmp || *def->name == '/' || tmp[1] == '\0') {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Volume name '%s' doesn't have expected format "
-                         "'<directory>/<file>'"), def->name);
+                       _("Volume name '%1$s' doesn't have expected format '<directory>/<file>'"),
+                       def->name);
         goto cleanup;
     }
 
     if (!virStringHasCaseSuffix(def->name, ".vmdk")) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("Volume name '%s' has unsupported suffix, "
-                         "expecting '.vmdk'"), def->name);
+                       _("Volume name '%1$s' has unsupported suffix, expecting '.vmdk'"),
+                       def->name);
         goto cleanup;
     }
 
@@ -1148,7 +1148,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
         }
 
         if (taskInfoState != esxVI_TaskInfoState_Success) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not copy volume: %s"),
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not copy volume: %1$s"),
                            taskInfoErrorMessage);
             goto cleanup;
         }
@@ -1170,7 +1170,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
         }
     } else {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("Creation of %s volumes is not supported"),
+                       _("Creation of %1$s volumes is not supported"),
                        virStorageFileFormatTypeToString(def->target.format));
         goto cleanup;
     }
@@ -1211,7 +1211,7 @@ esxStorageVolDelete(virStorageVolPtr volume, unsigned int flags)
     }
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not delete volume: %s"),
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not delete volume: %1$s"),
                        taskInfoErrorMessage);
         goto cleanup;
     }
@@ -1250,7 +1250,7 @@ esxStorageVolWipe(virStorageVolPtr volume, unsigned int flags)
     }
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not wipe volume: %s"),
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not wipe volume: %1$s"),
                        taskInfoErrorMessage);
         goto cleanup;
     }
@@ -1372,7 +1372,7 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
         def.target.format = VIR_STORAGE_FILE_RAW;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("File '%s' has unknown type"), datastorePath);
+                       _("File '%1$s' has unknown type"), datastorePath);
         goto cleanup;
     }
 

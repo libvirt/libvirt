@@ -176,14 +176,14 @@ esxStreamTransfer(esxStreamPrivate *priv, bool blocking)
 
         if (status < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not complete transfer: %s (%d)"),
+                           _("Could not complete transfer: %1$s (%2$d)"),
                            curl_easy_strerror(errorCode), errorCode);
             return -1;
         }
 
         if (responseCode != 200 && responseCode != 206) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unexpected HTTP response code %lu"),
+                           _("Unexpected HTTP response code %1$lu"),
                            responseCode);
             return -1;
         }
