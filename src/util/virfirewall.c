@@ -492,7 +492,7 @@ virFirewallApplyRuleDirect(virFirewallRule *rule,
 
     if (!bin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown firewall layer %d"),
+                       _("Unknown firewall layer %1$d"),
                        rule->layer);
         return -1;
     }
@@ -516,7 +516,7 @@ virFirewallApplyRuleDirect(virFirewallRule *rule,
             VIR_DEBUG("Ignoring error running command");
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to apply firewall rules %s: %s"),
+                           _("Failed to apply firewall rules %1$s: %2$s"),
                            NULLSTR(cmdStr), NULLSTR(error));
             VIR_FREE(*output);
             return -1;

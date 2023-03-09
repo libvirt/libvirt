@@ -131,21 +131,21 @@ virLockSpaceResourceNew(virLockSpace *lockspace,
             struct stat a, b;
             if ((res->fd = open(res->path, O_RDWR|O_CREAT, 0600)) < 0) {
                 virReportSystemError(errno,
-                                     _("Unable to open/create resource %s"),
+                                     _("Unable to open/create resource %1$s"),
                                      res->path);
                 goto error;
             }
 
             if (virSetCloseExec(res->fd) < 0) {
                 virReportSystemError(errno,
-                                     _("Failed to set close-on-exec flag '%s'"),
+                                     _("Failed to set close-on-exec flag '%1$s'"),
                                      res->path);
                 goto error;
             }
 
             if (fstat(res->fd, &b) < 0) {
                 virReportSystemError(errno,
-                                     _("Unable to check status of pid file '%s'"),
+                                     _("Unable to check status of pid file '%1$s'"),
                                      res->path);
                 goto error;
             }
@@ -153,11 +153,11 @@ virLockSpaceResourceNew(virLockSpace *lockspace,
             if (virFileLock(res->fd, shared, 0, 1, false) < 0) {
                 if (errno == EACCES || errno == EAGAIN) {
                     virReportError(VIR_ERR_RESOURCE_BUSY,
-                                   _("Lockspace resource '%s' is locked"),
+                                   _("Lockspace resource '%1$s' is locked"),
                                    resname);
                 } else {
                     virReportSystemError(errno,
-                                         _("Unable to acquire lock on '%s'"),
+                                         _("Unable to acquire lock on '%1$s'"),
                                          res->path);
                 }
                 goto error;
@@ -184,14 +184,14 @@ virLockSpaceResourceNew(virLockSpace *lockspace,
     } else {
         if ((res->fd = open(res->path, O_RDWR)) < 0) {
             virReportSystemError(errno,
-                                 _("Unable to open resource %s"),
+                                 _("Unable to open resource %1$s"),
                                  res->path);
             goto error;
         }
 
         if (virSetCloseExec(res->fd) < 0) {
             virReportSystemError(errno,
-                                 _("Failed to set close-on-exec flag '%s'"),
+                                 _("Failed to set close-on-exec flag '%1$s'"),
                                  res->path);
             goto error;
         }
@@ -199,11 +199,11 @@ virLockSpaceResourceNew(virLockSpace *lockspace,
         if (virFileLock(res->fd, shared, 0, 1, false) < 0) {
             if (errno == EACCES || errno == EAGAIN) {
                 virReportError(VIR_ERR_RESOURCE_BUSY,
-                               _("Lockspace resource '%s' is locked"),
+                               _("Lockspace resource '%1$s' is locked"),
                                resname);
             } else {
                 virReportSystemError(errno,
-                                     _("Unable to acquire lock on '%s'"),
+                                     _("Unable to acquire lock on '%1$s'"),
                                      res->path);
             }
             goto error;
@@ -252,14 +252,14 @@ virLockSpace *virLockSpaceNew(const char *directory)
         if (virFileExists(directory)) {
             if (!virFileIsDir(directory)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Lockspace location %s exists, but is not a directory"),
+                               _("Lockspace location %1$s exists, but is not a directory"),
                                directory);
                 goto error;
             }
         } else {
             if (g_mkdir_with_parents(directory, 0700) < 0) {
                 virReportSystemError(errno,
-                                     _("Unable to create lockspace %s"),
+                                     _("Unable to create lockspace %1$s"),
                                      directory);
                 goto error;
             }
@@ -493,7 +493,7 @@ int virLockSpaceCreateResource(virLockSpace *lockspace,
 
     if (virHashLookup(lockspace->resources, resname) != NULL) {
         virReportError(VIR_ERR_RESOURCE_BUSY,
-                       _("Lockspace resource '%s' is locked"),
+                       _("Lockspace resource '%1$s' is locked"),
                        resname);
         return -1;
     }
@@ -518,7 +518,7 @@ int virLockSpaceDeleteResource(virLockSpace *lockspace,
 
     if (virHashLookup(lockspace->resources, resname) != NULL) {
         virReportError(VIR_ERR_RESOURCE_BUSY,
-                       _("Lockspace resource '%s' is locked"),
+                       _("Lockspace resource '%1$s' is locked"),
                        resname);
         return -1;
     }
@@ -529,7 +529,7 @@ int virLockSpaceDeleteResource(virLockSpace *lockspace,
     if (unlink(respath) < 0 &&
         errno != ENOENT) {
         virReportSystemError(errno,
-                             _("Unable to delete lockspace resource %s"),
+                             _("Unable to delete lockspace resource %1$s"),
                              respath);
         return -1;
     }
@@ -562,7 +562,7 @@ int virLockSpaceAcquireResource(virLockSpace *lockspace,
             return 0;
         }
         virReportError(VIR_ERR_RESOURCE_BUSY,
-                       _("Lockspace resource '%s' is locked"),
+                       _("Lockspace resource '%1$s' is locked"),
                        resname);
         return -1;
     }
@@ -592,7 +592,7 @@ int virLockSpaceReleaseResource(virLockSpace *lockspace,
 
     if (!(res = virHashLookup(lockspace->resources, resname))) {
         virReportError(VIR_ERR_RESOURCE_BUSY,
-                       _("Lockspace resource '%s' is not locked"),
+                       _("Lockspace resource '%1$s' is not locked"),
                        resname);
         return -1;
     }
@@ -604,7 +604,7 @@ int virLockSpaceReleaseResource(virLockSpace *lockspace,
 
     if (i == res->nOwners) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("owner %lld does not hold the resource lock"),
+                       _("owner %1$lld does not hold the resource lock"),
                        (unsigned long long)owner);
         return -1;
     }

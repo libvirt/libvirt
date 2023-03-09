@@ -220,7 +220,7 @@ virIdentityConstructSystemTokenPath(void)
 
     if (g_mkdir_with_parents(commondir, 0700) < 0) {
         virReportSystemError(errno,
-                             _("Cannot create daemon common directory '%s'"),
+                             _("Cannot create daemon common directory '%1$s'"),
                              commondir);
         return NULL;
     }
@@ -243,28 +243,28 @@ virIdentityEnsureSystemToken(void)
     fd = open(tokenfile, O_RDWR|O_APPEND|O_CREAT, 0600);
     if (fd < 0) {
         virReportSystemError(errno,
-                             _("Unable to open system token %s"),
+                             _("Unable to open system token %1$s"),
                              tokenfile);
         return NULL;
     }
 
     if (virSetCloseExec(fd) < 0) {
         virReportSystemError(errno,
-                             _("Failed to set close-on-exec flag '%s'"),
+                             _("Failed to set close-on-exec flag '%1$s'"),
                              tokenfile);
         return NULL;
     }
 
     if (virFileLock(fd, false, 0, 1, true) < 0) {
         virReportSystemError(errno,
-                             _("Failed to lock system token '%s'"),
+                             _("Failed to lock system token '%1$s'"),
                              tokenfile);
         return NULL;
     }
 
     if (fstat(fd, &st) < 0) {
         virReportSystemError(errno,
-                             _("Failed to check system token '%s'"),
+                             _("Failed to check system token '%1$s'"),
                              tokenfile);
         return NULL;
     }
@@ -276,20 +276,20 @@ virIdentityEnsureSystemToken(void)
         }
         if (safewrite(fd, token, TOKEN_STRLEN) != TOKEN_STRLEN) {
             virReportSystemError(errno,
-                                 _("Failed to write system token '%s'"),
+                                 _("Failed to write system token '%1$s'"),
                                  tokenfile);
             return NULL;
         }
     } else {
         if (virFileReadLimFD(fd, TOKEN_STRLEN, &token) < 0) {
             virReportSystemError(errno,
-                                 _("Failed to read system token '%s'"),
+                                 _("Failed to read system token '%1$s'"),
                                  tokenfile);
             return NULL;
         }
         if (strlen(token) != TOKEN_STRLEN) {
             virReportSystemError(errno,
-                                 _("System token in %s was corrupt"),
+                                 _("System token in %1$s was corrupt"),
                                  tokenfile);
             return NULL;
         }

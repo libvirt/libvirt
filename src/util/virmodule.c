@@ -51,7 +51,7 @@ virModuleLoadFile(const char *file)
 
     if (!(handle = dlopen(file, flags))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to load module '%s': %s"), file, dlerror());
+                       _("Failed to load module '%1$s': %2$s"), file, dlerror());
         return NULL;
     }
 
@@ -70,7 +70,7 @@ virModuleLoadFunc(void *handle,
 
     if (!(regsym = dlsym(handle, funcname))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to find symbol '%s' in module '%s': %s"),
+                       _("Failed to find symbol '%1$s' in module '%2$s': %3$s"),
                        funcname, file, dlerror());
         return NULL;
     }
@@ -107,7 +107,7 @@ virModuleLoad(const char *path,
     if (!virFileExists(path)) {
         if (required) {
             virReportSystemError(errno,
-                                 _("Failed to find module '%s'"), path);
+                                 _("Failed to find module '%1$s'"), path);
             return -1;
         } else {
             VIR_INFO("Module '%s' does not exist", path);
@@ -126,7 +126,7 @@ virModuleLoad(const char *path,
          * just make sure */
         if (virGetLastErrorCode() == VIR_ERR_OK) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to execute symbol '%s' in module '%s'"),
+                           _("Failed to execute symbol '%1$s' in module '%2$s'"),
                            regfunc, path);
         }
         goto cleanup;
@@ -150,7 +150,7 @@ virModuleLoad(const char *path,
     VIR_DEBUG("dlopen not available on this platform");
     if (required) {
         virReportSystemError(ENOSYS,
-                             _("Failed to find module '%s'"), path);
+                             _("Failed to find module '%1$s'"), path);
         return -1;
     } else {
         /* Since we have no dlopen(), but definition we have no

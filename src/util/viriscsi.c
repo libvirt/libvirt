@@ -102,7 +102,7 @@ virISCSIGetSession(const char *devpath,
 
     if (cbdata.session == NULL && !probe)
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot find iscsiadm session: %s"),
+                       _("cannot find iscsiadm session: %1$s"),
                        NULLSTR(error));
 
     return cbdata.session;
@@ -193,7 +193,7 @@ virStorageBackendIQNFound(const char *initiatoriqn,
 
  error:
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("malformed output of %s: %s"),
+                   _("malformed output of %1$s: %2$s"),
                    ISCSIADM, line);
     goto cleanup;
 }
@@ -226,7 +226,7 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
      * properly. */
     if (virCommandRun(newcmd, &exitstatus) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to run command '%s' to create new iscsi interface"),
+                       _("Failed to run command '%1$s' to create new iscsi interface"),
                        ISCSIADM);
         return -1;
     }
@@ -244,7 +244,7 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
      * rely on whether iface file got updated properly. */
     if (virCommandRun(updatecmd, &exitstatus) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to run command '%s' to update iscsi interface with IQN '%s'"),
+                       _("Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"),
                        ISCSIADM, initiatoriqn);
         return -1;
     }
@@ -477,7 +477,7 @@ virISCSIScanTargets(const char *portal,
 
         case IQN_MISSING:
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("no iSCSI interface defined for IQN %s"),
+                           _("no iSCSI interface defined for IQN %1$s"),
                            initiatoriqn);
             G_GNUC_FALLTHROUGH;
         case IQN_ERROR:
@@ -523,14 +523,14 @@ virISCSINodeNew(const char *portal,
 
     if (virCommandRun(cmd, &status) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed new node mode for target '%s'"),
+                       _("Failed new node mode for target '%1$s'"),
                        target);
         return -1;
     }
 
     if (status != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s failed new mode for target '%s' with status '%d'"),
+                       _("%1$s failed new mode for target '%2$s' with status '%3$d'"),
                        ISCSIADM, target, status);
         return -1;
     }
@@ -560,7 +560,7 @@ virISCSINodeUpdate(const char *portal,
     /* Ignore non-zero status.  */
     if (virCommandRun(cmd, &status) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to update '%s' of node mode for target '%s'"),
+                       _("Failed to update '%1$s' of node mode for target '%2$s'"),
                        name, target);
         return -1;
     }

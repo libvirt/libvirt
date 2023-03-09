@@ -152,7 +152,7 @@ virFDStreamMsgQueuePush(virFDStreamData *fdst,
 
     if (safewrite(fd, &c, sizeof(c)) != sizeof(c)) {
         virReportSystemError(errno,
-                             _("Unable to write to %s"),
+                             _("Unable to write to %1$s"),
                              fdname);
         return -1;
     }
@@ -177,7 +177,7 @@ virFDStreamMsgQueuePop(virFDStreamData *fdst,
 
     if (saferead(fd, &c, sizeof(c)) != sizeof(c)) {
         virReportSystemError(errno,
-                             _("Unable to read from %s"),
+                             _("Unable to read from %1$s"),
                              fdname);
         return NULL;
     }
@@ -473,7 +473,7 @@ virFDStreamThreadDoRead(virFDStreamData *fdst,
         if (sectionLen &&
             lseek(fdin, sectionLen, SEEK_CUR) == (off_t) -1) {
             virReportSystemError(errno,
-                                 _("unable to seek in %s"),
+                                 _("unable to seek in %1$s"),
                                  fdinname);
             return -1;
         }
@@ -486,7 +486,7 @@ virFDStreamThreadDoRead(virFDStreamData *fdst,
 
         if ((got = saferead(fdin, buf, buflen)) < 0) {
             virReportSystemError(errno,
-                                 _("Unable to read %s"),
+                                 _("Unable to read %1$s"),
                                  fdinname);
             return -1;
         }
@@ -524,7 +524,7 @@ virFDStreamThreadDoWrite(virFDStreamData *fdst,
                         msg->stream.data.len - msg->stream.data.offset);
         if (got < 0) {
             virReportSystemError(errno,
-                                 _("Unable to write %s"),
+                                 _("Unable to write %1$s"),
                                  fdoutname);
             return -1;
         }
@@ -560,7 +560,7 @@ virFDStreamThreadDoWrite(virFDStreamData *fdst,
 
                 if ((r = safewrite(fdout, buf, count)) < 0) {
                     virReportSystemError(errno,
-                                         _("Unable to write %s"),
+                                         _("Unable to write %1$s"),
                                          fdoutname);
                     return -1;
                 }
@@ -573,14 +573,14 @@ virFDStreamThreadDoWrite(virFDStreamData *fdst,
             off = lseek(fdout, got, SEEK_CUR);
             if (off == (off_t) -1) {
                 virReportSystemError(errno,
-                                     _("unable to seek in %s"),
+                                     _("unable to seek in %1$s"),
                                      fdoutname);
                 return -1;
             }
 
             if (ftruncate(fdout, off) < 0) {
                 virReportSystemError(errno,
-                                     _("unable to truncate %s"),
+                                     _("unable to truncate %1$s"),
                                      fdoutname);
                 return -1;
             }
@@ -1265,7 +1265,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
         fd = open(path, oflags);
     if (fd < 0) {
         virReportSystemError(errno,
-                             _("Unable to open stream for '%s'"),
+                             _("Unable to open stream for '%1$s'"),
                              path);
         return -1;
     }
@@ -1273,7 +1273,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
 
     if (fstat(fd, &sb) < 0) {
         virReportSystemError(errno,
-                             _("Unable to access stream for '%s'"),
+                             _("Unable to access stream for '%1$s'"),
                              path);
         goto error;
     }
@@ -1281,7 +1281,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
     if (offset &&
         lseek(fd, offset, SEEK_SET) < 0) {
         virReportSystemError(errno,
-                             _("Unable to seek %s to %llu"),
+                             _("Unable to seek %1$s to %2$llu"),
                              path, offset);
         goto error;
     }
@@ -1297,7 +1297,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
 
         if ((oflags & O_ACCMODE) == O_RDWR) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s: Cannot request read and write flags together"),
+                           _("%1$s: Cannot request read and write flags together"),
                            path);
             goto error;
         }
@@ -1352,7 +1352,7 @@ int virFDStreamOpenFile(virStreamPtr st,
 {
     if (oflags & O_CREAT) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Attempt to create %s without specifying mode"),
+                       _("Attempt to create %1$s without specifying mode"),
                        path);
         return -1;
     }
@@ -1393,7 +1393,7 @@ int virFDStreamOpenPTY(virStreamPtr st,
 
     if (tcgetattr(fdst->fd, &rawattr) < 0) {
         virReportSystemError(errno,
-                             _("unable to get tty attributes: %s"),
+                             _("unable to get tty attributes: %1$s"),
                              path);
         goto cleanup;
     }
@@ -1402,7 +1402,7 @@ int virFDStreamOpenPTY(virStreamPtr st,
 
     if (tcsetattr(fdst->fd, TCSANOW, &rawattr) < 0) {
         virReportSystemError(errno,
-                             _("unable to set tty attributes: %s"),
+                             _("unable to set tty attributes: %1$s"),
                              path);
         goto cleanup;
     }

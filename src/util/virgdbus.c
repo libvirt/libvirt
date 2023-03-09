@@ -97,7 +97,7 @@ virGDBusGetSystemBus(void)
 
     if (!bus) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to get system bus connection: %s"),
+                       _("Unable to get system bus connection: %1$s"),
                        systemError->message);
         return NULL;
     }
@@ -124,7 +124,7 @@ virGDBusGetSessionBus(void)
 
     if (!sessionBus) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to get session bus connection: %s"),
+                       _("Unable to get session bus connection: %1$s"),
                        sessionError->message);
         return NULL;
     }

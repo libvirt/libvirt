@@ -72,7 +72,7 @@ virFirmwareParse(const char *str, virFirmware *firmware)
     if (!token[0] || !token[1] || token[2] ||
         STREQ(token[0], "") || STREQ(token[1], "")) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("Invalid nvram format: '%s'"),
+                       _("Invalid nvram format: '%1$s'"),
                        str);
         return -1;
     }
@@ -99,7 +99,7 @@ virFirmwareParseList(const char *list,
         if (!token[i] || !token[i + 1] ||
             STREQ(token[i], "") || STREQ(token[i + 1], "")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid --with-loader-nvram list: %s"),
+                           _("Invalid --with-loader-nvram list: %1$s"),
                            list);
             return -1;
         }

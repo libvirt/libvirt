@@ -312,13 +312,13 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
     mode = fcntl(*fd, F_GETFL);
 
     if (mode < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("invalid fd %d for %s"),
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("invalid fd %1$d for %2$s"),
                        *fd, name);
         goto error;
     } else if ((mode & O_ACCMODE) == O_WRONLY) {
         output = true;
     } else if ((mode & O_ACCMODE) != O_RDONLY) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("unexpected mode 0x%x for %s"),
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("unexpected mode 0x%1$x for %2$s"),
                        mode & O_ACCMODE, name);
         goto error;
     }
@@ -575,7 +575,7 @@ virFileRewrite(const char *path,
                             uid, gid,
                             VIR_FILE_OPEN_FORCE_OWNER | VIR_FILE_OPEN_FORCE_MODE)) < 0) {
         virReportSystemError(-fd,
-                             _("Failed to create file '%s'"),
+                             _("Failed to create file '%1$s'"),
                              newfile);
         goto cleanup;
     }
@@ -585,19 +585,19 @@ virFileRewrite(const char *path,
     }
 
     if (g_fsync(fd) < 0) {
-        virReportSystemError(errno, _("cannot sync file '%s'"),
+        virReportSystemError(errno, _("cannot sync file '%1$s'"),
                              newfile);
         goto cleanup;
     }
 
     if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, _("cannot save file '%s'"),
+        virReportSystemError(errno, _("cannot save file '%1$s'"),
                              newfile);
         goto cleanup;
     }
 
     if (rename(newfile, path) < 0) {
-        virReportSystemError(errno, _("cannot rename file '%s' as '%s'"),
+        virReportSystemError(errno, _("cannot rename file '%1$s' as '%2$s'"),
                              newfile, path);
         goto cleanup;
     }
@@ -620,7 +620,7 @@ virFileRewriteStrHelper(int fd,
 
     if (safewrite(fd, data, strlen(data)) < 0) {
         virReportSystemError(errno,
-                             _("cannot write data to file '%s'"),
+                             _("cannot write data to file '%1$s'"),
                              path);
         return -1;
     }
@@ -653,7 +653,7 @@ virFileResize(const char *path,
     VIR_AUTOCLOSE fd = -1;
 
     if ((fd = open(path, O_RDWR)) < 0) {
-        virReportSystemError(errno, _("Unable to open '%s'"), path);
+        virReportSystemError(errno, _("Unable to open '%1$s'"), path);
         return -1;
     }
 
@@ -664,8 +664,8 @@ virFileResize(const char *path,
                                _("preallocate is not supported on this platform"));
             } else {
                 virReportSystemError(errno,
-                                     _("Failed to pre-allocate space for "
-                                       "file '%s'"), path);
+                                     _("Failed to pre-allocate space for file '%1$s'"),
+                                     path);
             }
             return -1;
         }
@@ -673,12 +673,12 @@ virFileResize(const char *path,
 
     if (ftruncate(fd, capacity) < 0) {
         virReportSystemError(errno,
-                             _("Failed to truncate file '%s'"), path);
+                             _("Failed to truncate file '%1$s'"), path);
         return -1;
     }
 
     if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, _("Unable to save '%s'"), path);
+        virReportSystemError(errno, _("Unable to save '%1$s'"), path);
         return -1;
     }
 
@@ -691,13 +691,13 @@ int virFileTouch(const char *path, mode_t mode)
     int fd = -1;
 
     if ((fd = open(path, O_WRONLY | O_CREAT, mode)) < 0) {
-        virReportSystemError(errno, _("cannot create file '%s'"),
+        virReportSystemError(errno, _("cannot create file '%1$s'"),
                              path);
         return -1;
     }
 
     if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, _("cannot save file '%s'"),
+        virReportSystemError(errno, _("cannot save file '%1$s'"),
                              path);
         VIR_FORCE_CLOSE(fd);
         return -1;
@@ -722,7 +722,7 @@ int virFileUpdatePerm(const char *path,
     }
 
     if (stat(path, &sb) < 0) {
-        virReportSystemError(errno, _("cannot stat '%s'"), path);
+        virReportSystemError(errno, _("cannot stat '%1$s'"), path);
         return -1;
     }
 
@@ -735,7 +735,7 @@ int virFileUpdatePerm(const char *path,
     mode |= mode_add;
 
     if (chmod(path, mode) < 0) {
-        virReportSystemError(errno, _("cannot change permission of '%s'"),
+        virReportSystemError(errno, _("cannot change permission of '%1$s'"),
                              path);
         return -1;
     }
@@ -781,7 +781,7 @@ static int virFileLoopDeviceOpenLoopCtl(char **dev_name, int *fd)
 
     if ((*fd = open(looppath, O_RDWR)) < 0) {
         virReportSystemError(errno,
-                             _("Unable to open %s"), looppath);
+                             _("Unable to open %1$s"), looppath);
         VIR_FREE(looppath);
         return -1;
     }
@@ -817,7 +817,7 @@ static int virFileLoopDeviceOpenSearch(char **dev_name)
         VIR_DEBUG("Checking up on device %s", looppath);
         if ((fd = open(looppath, O_RDWR)) < 0) {
             virReportSystemError(errno,
-                                 _("Unable to open %s"), looppath);
+                                 _("Unable to open %1$s"), looppath);
             goto cleanup;
         }
 
@@ -828,7 +828,7 @@ static int virFileLoopDeviceOpenSearch(char **dev_name)
 
             VIR_FORCE_CLOSE(fd);
             virReportSystemError(errno,
-                                 _("Unable to get loop status on %s"),
+                                 _("Unable to get loop status on %1$s"),
                                  looppath);
             goto cleanup;
         }
@@ -889,19 +889,19 @@ int virFileLoopDeviceAssociate(const char *file,
     /* Set backing file name for LOOP_GET_STATUS64 queries */
     if (virStrcpy((char *) lo.lo_file_name, file, LO_NAME_SIZE) < 0) {
         virReportSystemError(errno,
-                             _("Unable to set backing file %s"), file);
+                             _("Unable to set backing file %1$s"), file);
         goto cleanup;
     }
 
     if ((fsfd = open(file, O_RDWR)) < 0) {
         virReportSystemError(errno,
-                             _("Unable to open %s"), file);
+                             _("Unable to open %1$s"), file);
         goto cleanup;
     }
 
     if (ioctl(lofd, LOOP_SET_FD, fsfd) < 0) {
         virReportSystemError(errno,
-                             _("Unable to attach %s to loop device"),
+                             _("Unable to attach %1$s to loop device"),
                              file);
         goto cleanup;
     }
@@ -944,7 +944,7 @@ virFileNBDDeviceIsBusy(const char *dev_name)
             return 0;
         else
             virReportSystemError(errno,
-                                 _("Cannot check NBD device %s pid"),
+                                 _("Cannot check NBD device %1$s pid"),
                                  dev_name);
         return -1;
     }
@@ -1055,7 +1055,7 @@ int virFileLoopDeviceAssociate(const char *file,
                                char **dev G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS,
-                         _("Unable to associate file %s with loop device"),
+                         _("Unable to associate file %1$s with loop device"),
                          file);
     *dev = NULL;
     return -1;
@@ -1067,7 +1067,7 @@ int virFileNBDDeviceAssociate(const char *file,
                               char **dev G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS,
-                         _("Unable to associate file %s with NBD device"),
+                         _("Unable to associate file %1$s with NBD device"),
                          file);
     return -1;
 }
@@ -1107,7 +1107,7 @@ int virFileDeleteTree(const char *dir)
         filepath = g_build_filename(dir, de->d_name, NULL);
 
         if (g_lstat(filepath, &sb) < 0) {
-            virReportSystemError(errno, _("Cannot access '%s'"),
+            virReportSystemError(errno, _("Cannot access '%1$s'"),
                                  filepath);
             return -1;
         }
@@ -1118,7 +1118,7 @@ int virFileDeleteTree(const char *dir)
         } else {
             if (unlink(filepath) < 0 && errno != ENOENT) {
                 virReportSystemError(errno,
-                                     _("Cannot delete file '%s'"),
+                                     _("Cannot delete file '%1$s'"),
                                      filepath);
                 return -1;
             }
@@ -1129,7 +1129,7 @@ int virFileDeleteTree(const char *dir)
 
     if (rmdir(dir) < 0 && errno != ENOENT) {
         virReportSystemError(errno,
-                             _("Cannot delete directory '%s'"),
+                             _("Cannot delete directory '%1$s'"),
                              dir);
         return -1;
     }
@@ -1520,14 +1520,14 @@ virFileReadAll(const char *path, int maxlen, char **buf)
 
     fd = open(path, O_RDONLY);
     if (fd < 0) {
-        virReportSystemError(errno, _("Failed to open file '%s'"), path);
+        virReportSystemError(errno, _("Failed to open file '%1$s'"), path);
         return -1;
     }
 
     len = virFileReadLimFD(fd, maxlen, buf);
     VIR_FORCE_CLOSE(fd);
     if (len < 0) {
-        virReportSystemError(errno, _("Failed to read file '%s'"), path);
+        virReportSystemError(errno, _("Failed to read file '%1$s'"), path);
         return -1;
     }
 
@@ -1640,7 +1640,7 @@ virFileRelLinkPointsTo(const char *directory,
         return virFileLinkPointsTo(checkLink, checkDest);
     if (!directory) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot resolve '%s' without starting directory"),
+                       _("cannot resolve '%1$s' without starting directory"),
                        checkLink);
         return -1;
     }
@@ -1970,14 +1970,14 @@ int virFileIsMountPoint(const char *file)
             return 0;
         else
             virReportSystemError(errno,
-                                 _("Cannot stat '%s'"),
+                                 _("Cannot stat '%1$s'"),
                                  file);
         return -1;
     }
 
     if (stat(parent, &sb2) < 0) {
         virReportSystemError(errno,
-                             _("Cannot stat '%s'"),
+                             _("Cannot stat '%1$s'"),
                              parent);
         return -1;
     }
@@ -2059,7 +2059,7 @@ virFileGetMountSubtreeImpl(const char *mtabpath,
 
     if (!(procmnt = setmntent(mtabpath, "r"))) {
         virReportSystemError(errno,
-                             _("Failed to read %s"), mtabpath);
+                             _("Failed to read %1$s"), mtabpath);
         return -1;
     }
 
@@ -2219,7 +2219,7 @@ virFileOpenForceOwnerMode(const char *path, int fd, mode_t mode,
 
     if (fstat(fd, &st) == -1) {
         ret = -errno;
-        virReportSystemError(errno, _("stat of '%s' failed"), path);
+        virReportSystemError(errno, _("stat of '%1$s' failed"), path);
         return ret;
     }
     /* NB: uid:gid are never "-1" (default) at this point - the caller
@@ -2230,7 +2230,7 @@ virFileOpenForceOwnerMode(const char *path, int fd, mode_t mode,
         (fchown(fd, uid, gid) < 0)) {
         ret = -errno;
         virReportSystemError(errno,
-                             _("cannot chown '%s' to (%u, %u)"),
+                             _("cannot chown '%1$s' to (%2$u, %3$u)"),
                              path, (unsigned int) uid,
                              (unsigned int) gid);
         return ret;
@@ -2241,7 +2241,7 @@ virFileOpenForceOwnerMode(const char *path, int fd, mode_t mode,
         (fchmod(fd, mode) < 0)) {
         ret = -errno;
         virReportSystemError(errno,
-                             _("cannot set mode of '%s' to %04o"),
+                             _("cannot set mode of '%1$s' to %2$04o"),
                              path, mode);
         return ret;
     }
@@ -2283,7 +2283,7 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) < 0) {
         ret = -errno;
         virReportSystemError(errno,
-                             _("failed to create socket needed for '%s'"),
+                             _("failed to create socket needed for '%1$s'"),
                              path);
         return ret;
     }
@@ -2306,7 +2306,7 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
         if ((fd = open(path, openflags, mode)) < 0) {
             ret = -errno;
             virReportSystemError(errno,
-                                 _("child process failed to create file '%s'"),
+                                 _("child process failed to create file '%1$s'"),
                                  path);
             goto childerror;
         }
@@ -2318,7 +2318,7 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
         if (ret < 0) {
             ret = -errno;
             virReportSystemError(errno,
-                                 _("child process failed to force owner mode file '%s'"),
+                                 _("child process failed to force owner mode file '%1$s'"),
                                  path);
             goto childerror;
         }
@@ -2384,7 +2384,7 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
     /* if waitpid succeeded, but recvfd failed, report recvfd_errno */
     if (recvfd_errno != 0) {
         virReportSystemError(recvfd_errno,
-                             _("failed recvfd for child creating '%s'"),
+                             _("failed recvfd for child creating '%1$s'"),
                              path);
         return -recvfd_errno;
     }
@@ -2656,7 +2656,7 @@ virDirCreateNoFork(const char *path,
     if (!((flags & VIR_DIR_CREATE_ALLOW_EXIST) && virFileExists(path))) {
         if (mkdir(path, mode) < 0) {
             ret = -errno;
-            virReportSystemError(errno, _("failed to create directory '%s'"),
+            virReportSystemError(errno, _("failed to create directory '%1$s'"),
                                  path);
             goto error;
         }
@@ -2665,7 +2665,7 @@ virDirCreateNoFork(const char *path,
 
     if (stat(path, &st) == -1) {
         ret = -errno;
-        virReportSystemError(errno, _("stat of '%s' failed"), path);
+        virReportSystemError(errno, _("stat of '%1$s' failed"), path);
         goto error;
     }
 
@@ -2673,7 +2673,7 @@ virDirCreateNoFork(const char *path,
          (gid != (gid_t) -1 && st.st_gid != gid))
         && (chown(path, uid, gid) < 0)) {
         ret = -errno;
-        virReportSystemError(errno, _("cannot chown '%s' to (%u, %u)"),
+        virReportSystemError(errno, _("cannot chown '%1$s' to (%2$u, %3$u)"),
                              path, (unsigned int) uid, (unsigned int) gid);
         goto error;
     }
@@ -2681,7 +2681,7 @@ virDirCreateNoFork(const char *path,
     if (mode != (mode_t) -1 && chmod(path, mode) < 0) {
         ret = -errno;
         virReportSystemError(errno,
-                             _("cannot set mode of '%s' to %04o"),
+                             _("cannot set mode of '%1$s' to %2$04o"),
                              path, mode);
         goto error;
     }
@@ -2799,7 +2799,7 @@ virDirCreate(const char *path,
         ret = errno;
         if (ret != EACCES) {
             /* in case of EACCES, the parent will retry */
-            virReportSystemError(errno, _("child failed to create directory '%s'"),
+            virReportSystemError(errno, _("child failed to create directory '%1$s'"),
                                  path);
         }
         goto childerror;
@@ -2811,21 +2811,21 @@ virDirCreate(const char *path,
     if (stat(path, &st) == -1) {
         ret = errno;
         virReportSystemError(errno,
-                             _("stat of '%s' failed"), path);
+                             _("stat of '%1$s' failed"), path);
         goto childerror;
     }
 
     if ((st.st_gid != gid) && (chown(path, (uid_t) -1, gid) < 0)) {
         ret = errno;
         virReportSystemError(errno,
-                             _("cannot chown '%s' to group %u"),
+                             _("cannot chown '%1$s' to group %2$u"),
                              path, (unsigned int) gid);
         goto childerror;
     }
 
     if (mode != (mode_t) -1 && chmod(path, mode) < 0) {
         virReportSystemError(errno,
-                             _("cannot set mode of '%s' to %04o"),
+                             _("cannot set mode of '%1$s' to %2$04o"),
                              path, mode);
         goto childerror;
     }
@@ -2888,7 +2888,7 @@ virFileRemove(const char *path,
               gid_t gid G_GNUC_UNUSED)
 {
     if (unlink(path) < 0) {
-        virReportSystemError(errno, _("Unable to unlink path '%s'"),
+        virReportSystemError(errno, _("Unable to unlink path '%1$s'"),
                              path);
         return -1;
     }
@@ -2907,7 +2907,7 @@ virDirOpenInternal(DIR **dirp, const char *name, bool ignoreENOENT, bool quiet)
 
         if (ignoreENOENT && errno == ENOENT)
             return 0;
-        virReportSystemError(errno, _("cannot open directory '%s'"), name);
+        virReportSystemError(errno, _("cannot open directory '%1$s'"), name);
         return -1;
     }
     return 1;
@@ -2985,7 +2985,7 @@ int virDirRead(DIR *dirp, struct dirent **ent, const char *name)
         *ent = readdir(dirp); /* exempt from syntax-check */
         if (!*ent && errno) {
             if (name)
-                virReportSystemError(errno, _("Unable to read directory '%s'"),
+                virReportSystemError(errno, _("Unable to read directory '%1$s'"),
                                      name);
             return -1;
         }
@@ -3035,7 +3035,7 @@ int virFileChownFiles(const char *name,
 
         if (chown(path, uid, gid) < 0) {
             virReportSystemError(errno,
-                                 _("cannot chown '%s' to (%u, %u)"),
+                                 _("cannot chown '%1$s' to (%2$u, %3$u)"),
                                  ent->d_name, (unsigned int) uid,
                                  (unsigned int) gid);
             return -1;
@@ -3055,7 +3055,7 @@ int virFileChownFiles(const char *name,
                       gid_t gid)
 {
     virReportSystemError(ENOSYS,
-                         _("cannot chown '%s' to (%u, %u)"),
+                         _("cannot chown '%1$s' to (%2$u, %3$u)"),
                          name, (unsigned int) uid,
                          (unsigned int) gid);
     return -1;
@@ -3336,14 +3336,14 @@ virFileIsSharedFsFUSE(const char *path,
     bool isShared = false;
 
     if (!(canonPath = virFileCanonicalizePath(path))) {
-        virReportSystemError(errno, _("unable to canonicalize %s"), path);
+        virReportSystemError(errno, _("unable to canonicalize %1$s"), path);
         return -1;
     }
 
     VIR_DEBUG("Path canonicalization: %s->%s", path, canonPath);
 
     if (!(f = setmntent(PROC_MOUNTS, "r"))) {
-        virReportSystemError(errno, _("Unable to open %s"), PROC_MOUNTS);
+        virReportSystemError(errno, _("Unable to open %1$s"), PROC_MOUNTS);
         return -1;
     }
 
@@ -3425,7 +3425,7 @@ virFileIsSharedFSType(const char *path,
 
         if ((p = strrchr(dirpath, '/')) == NULL) {
             virReportSystemError(EINVAL,
-                                 _("Invalid relative path '%s'"), path);
+                                 _("Invalid relative path '%1$s'"), path);
             return -1;
         }
 
@@ -3439,7 +3439,7 @@ virFileIsSharedFSType(const char *path,
 
     if (statfs_ret < 0) {
         virReportSystemError(errno,
-                             _("cannot determine filesystem for '%s'"),
+                             _("cannot determine filesystem for '%1$s'"),
                              path);
         return -1;
     }
@@ -3471,14 +3471,14 @@ virFileGetHugepageSize(const char *path,
 
     if (statfs(path, &fs) < 0) {
         virReportSystemError(errno,
-                             _("cannot determine filesystem for '%s'"),
+                             _("cannot determine filesystem for '%1$s'"),
                              path);
         return -1;
     }
 
     if (fs.f_type != HUGETLBFS_MAGIC) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("not a hugetlbfs mount: '%s'"),
+                       _("not a hugetlbfs mount: '%1$s'"),
                        path);
         return -1;
     }
@@ -3504,7 +3504,7 @@ virFileGetDefaultHugepageSize(unsigned long long *size)
 
     if (!(c = strstr(meminfo, HUGEPAGESIZE_STR))) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("%s not found in %s"),
+                       _("%1$s not found in %2$s"),
                        HUGEPAGESIZE_STR,
                        PROC_MEMINFO);
         return -1;
@@ -3518,7 +3518,7 @@ virFileGetDefaultHugepageSize(unsigned long long *size)
 
     if (virStrToLong_ull(c, &unit, 10, size) < 0 || STRNEQ(unit, " kB")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse %s %s"),
+                       _("Unable to parse %1$s %2$s"),
                        HUGEPAGESIZE_STR, c);
         return -1;
     }
@@ -3540,7 +3540,7 @@ virFileFindHugeTLBFS(virHugeTLBFS **ret_fs,
 
     if (!(f = setmntent(PROC_MOUNTS, "r"))) {
         virReportSystemError(errno,
-                             _("Unable to open %s"),
+                             _("Unable to open %1$s"),
                              PROC_MOUNTS);
         goto cleanup;
     }
@@ -3674,7 +3674,7 @@ virFileSetupDev(const char *path,
 
     if (g_mkdir_with_parents(path, 0777) < 0) {
         virReportSystemError(errno,
-                             _("Failed to make path %s"), path);
+                             _("Failed to make path %1$s"), path);
         return -1;
     }
 
@@ -3682,7 +3682,7 @@ virFileSetupDev(const char *path,
               path, mount_flags, mount_options);
     if (mount("devfs", path, mount_fs, mount_flags, mount_options) < 0) {
         virReportSystemError(errno,
-                             _("Failed to mount devfs on %s type %s (%s)"),
+                             _("Failed to mount devfs on %1$s type %2$s (%3$s)"),
                              path, mount_fs, mount_options);
         return -1;
     }
@@ -3698,7 +3698,7 @@ virFileBindMountDevice(const char *src,
     if (!virFileExists(dst)) {
         if (virFileIsDir(src)) {
             if (g_mkdir_with_parents(dst, 0777) < 0) {
-                virReportSystemError(errno, _("Unable to make dir %s"), dst);
+                virReportSystemError(errno, _("Unable to make dir %1$s"), dst);
                 return -1;
             }
         } else {
@@ -3708,7 +3708,7 @@ virFileBindMountDevice(const char *src,
     }
 
     if (mount(src, dst, "none", MS_BIND, NULL) < 0) {
-        virReportSystemError(errno, _("Failed to bind %s on to %s"), src,
+        virReportSystemError(errno, _("Failed to bind %1$s on to %2$s"), src,
                              dst);
         return -1;
     }
@@ -3725,7 +3725,7 @@ virFileMoveMount(const char *src,
 
     if (mount(src, dst, "none", mount_flags, NULL) < 0) {
         virReportSystemError(errno,
-                             _("Unable to move %s mount to %s"),
+                             _("Unable to move %1$s mount to %2$s"),
                              src, dst);
         return -1;
     }
@@ -4045,7 +4045,7 @@ virFileReadValueInt(int *value, const char *format, ...)
 
     if (virStrToLong_i(str, NULL, 10, value) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid integer value '%s' in file '%s'"),
+                       _("Invalid integer value '%1$s' in file '%2$s'"),
                        str, path);
         return -1;
     }
@@ -4085,7 +4085,7 @@ virFileReadValueUint(unsigned int *value, const char *format, ...)
 
     if (virStrToLong_uip(str, NULL, 10, value) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid unsigned integer value '%s' in file '%s'"),
+                       _("Invalid unsigned integer value '%1$s' in file '%2$s'"),
                        str, path);
         return -1;
     }
@@ -4125,7 +4125,7 @@ virFileReadValueUllong(unsigned long long *value, const char *format, ...)
 
     if (virStrToLong_ullp(str, NULL, 10, value) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid unsigned long long value '%s' in file '%s'"),
+                       _("Invalid unsigned long long value '%1$s' in file '%2$s'"),
                        str, path);
         return -1;
     }
@@ -4190,7 +4190,7 @@ virFileReadValueScaledInt(unsigned long long *value, const char *format, ...)
 
     if (virStrToLong_ullp(str, &endp, 10, value) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid unsigned scaled integer value '%s' in file '%s'"),
+                       _("Invalid unsigned scaled integer value '%1$s' in file '%2$s'"),
                        str, path);
         return -1;
     }
@@ -4367,7 +4367,7 @@ virFileSetXAttr(const char *path,
 {
     if (setxattr(path, name, value, strlen(value), 0) < 0) {
         virReportSystemError(errno,
-                             _("Unable to set XATTR %s on %s"),
+                             _("Unable to set XATTR %1$s on %2$s"),
                              name, path);
         return -1;
     }
@@ -4391,7 +4391,7 @@ virFileRemoveXAttr(const char *path,
 {
     if (removexattr(path, name) < 0) {
         virReportSystemError(errno,
-                             _("Unable to remove XATTR %s on %s"),
+                             _("Unable to remove XATTR %1$s on %2$s"),
                              name, path);
         return -1;
     }
@@ -4417,7 +4417,7 @@ virFileSetXAttr(const char *path,
 {
     errno = ENOSYS;
     virReportSystemError(errno,
-                         _("Unable to set XATTR %s on %s"),
+                         _("Unable to set XATTR %1$s on %2$s"),
                          name, path);
     return -1;
 }
@@ -4428,7 +4428,7 @@ virFileRemoveXAttr(const char *path,
 {
     errno = ENOSYS;
     virReportSystemError(errno,
-                         _("Unable to remove XATTR %s on %s"),
+                         _("Unable to remove XATTR %1$s on %2$s"),
                          name, path);
     return -1;
 }
@@ -4456,7 +4456,7 @@ virFileGetXAttr(const char *path,
 
     if ((ret = virFileGetXAttrQuiet(path, name, value)) < 0) {
         virReportSystemError(errno,
-                             _("Unable to get XATTR %s on %s"),
+                             _("Unable to get XATTR %1$s on %2$s"),
                              name, path);
     }
 
@@ -4506,13 +4506,13 @@ virFileSetCOW(const char *path,
 
     fd = open(path, O_RDONLY|O_NONBLOCK|O_LARGEFILE);
     if (fd < 0) {
-        virReportSystemError(errno, _("unable to open '%s'"),
+        virReportSystemError(errno, _("unable to open '%1$s'"),
                              path);
         return -1;
     }
 
     if (fstatfs(fd, &buf) < 0)  {
-        virReportSystemError(errno, _("unable query filesystem type on '%s'"),
+        virReportSystemError(errno, _("unable query filesystem type on '%1$s'"),
                              path);
         return -1;
     }
@@ -4520,7 +4520,7 @@ virFileSetCOW(const char *path,
     if (buf.f_type != BTRFS_SUPER_MAGIC) {
         if (state != VIR_TRISTATE_BOOL_ABSENT) {
             virReportSystemError(ENOSYS,
-                                 _("unable to control COW flag on '%s', not btrfs"),
+                                 _("unable to control COW flag on '%1$s', not btrfs"),
                                  path);
             return -1;
         }
@@ -4528,7 +4528,7 @@ virFileSetCOW(const char *path,
     }
 
     if (ioctl(fd, FS_IOC_GETFLAGS, &val) < 0) {
-        virReportSystemError(errno, _("unable get directory flags on '%s'"),
+        virReportSystemError(errno, _("unable get directory flags on '%1$s'"),
                              path);
         return -1;
     }
@@ -4546,7 +4546,7 @@ virFileSetCOW(const char *path,
         VIR_DEBUG("Failed to set flags on '%s': %s", path, g_strerror(saved_err));
         if (state != VIR_TRISTATE_BOOL_ABSENT) {
             virReportSystemError(saved_err,
-                                 _("unable control COW flag on '%s'"),
+                                 _("unable control COW flag on '%1$s'"),
                                  path);
             return -1;
         } else {
@@ -4558,7 +4558,7 @@ virFileSetCOW(const char *path,
 #else /* ! __linux__ */
     if (state != VIR_TRISTATE_BOOL_ABSENT) {
         virReportSystemError(ENOSYS,
-                             _("Unable to set copy-on-write state on '%s' to '%s'"),
+                             _("Unable to set copy-on-write state on '%1$s' to '%2$s'"),
                              path, virTristateBoolTypeToString(state));
         return -1;
     }
@@ -4623,7 +4623,7 @@ runIOCopy(const struct runIOParams p)
         }
 
         if (got < 0) {
-            virReportSystemError(errno, _("Unable to read %s"), p.fdinname);
+            virReportSystemError(errno, _("Unable to read %1$s"), p.fdinname);
             return -2;
         }
         if (got == 0)
@@ -4638,12 +4638,12 @@ runIOCopy(const struct runIOParams p)
             memset(buf + got, 0, aligned_got - got);
 
             if (safewrite(p.fdout, buf, aligned_got) < 0) {
-                virReportSystemError(errno, _("Unable to write %s"), p.fdoutname);
+                virReportSystemError(errno, _("Unable to write %1$s"), p.fdoutname);
                 return -3;
             }
 
             if (!p.isBlockDev && ftruncate(p.fdout, total) < 0) {
-                virReportSystemError(errno, _("Unable to truncate %s"), p.fdoutname);
+                virReportSystemError(errno, _("Unable to truncate %1$s"), p.fdoutname);
                 return -4;
             }
 
@@ -4651,7 +4651,7 @@ runIOCopy(const struct runIOParams p)
         }
 
         if (safewrite(p.fdout, buf, got) < 0) {
-            virReportSystemError(errno, _("Unable to write %s"), p.fdoutname);
+            virReportSystemError(errno, _("Unable to write %1$s"), p.fdoutname);
             return -3;
         }
     }
@@ -4690,13 +4690,13 @@ virFileDiskCopy(int disk_fd, const char *disk_path, int remote_fd, const char *r
 
     if (oflags < 0) {
         virReportSystemError(errno,
-                             _("unable to determine access mode of %s"),
+                             _("unable to determine access mode of %1$s"),
                              disk_path);
         goto cleanup;
     }
     if (fstat(disk_fd, &sb) < 0) {
         virReportSystemError(errno,
-                             _("unable to stat file descriptor %d path %s"),
+                             _("unable to stat file descriptor %1$d path %2$s"),
                              disk_fd, disk_path);
         goto cleanup;
     }
@@ -4720,7 +4720,7 @@ virFileDiskCopy(int disk_fd, const char *disk_path, int remote_fd, const char *r
         break;
     case O_RDWR:
     default:
-        virReportSystemError(EINVAL, _("Unable to process file with flags %d"),
+        virReportSystemError(EINVAL, _("Unable to process file with flags %1$d"),
                              (oflags & O_ACCMODE));
         goto cleanup;
     }
@@ -4752,7 +4752,7 @@ virFileDiskCopy(int disk_fd, const char *disk_path, int remote_fd, const char *r
     if (virFileDataSync(p.fdout) < 0) {
         if (errno != EINVAL && errno != EROFS) {
             /* fdatasync() may fail on some special FDs, e.g. pipes */
-            virReportSystemError(errno, _("unable to fsync %s"), p.fdoutname);
+            virReportSystemError(errno, _("unable to fsync %1$s"), p.fdoutname);
             goto cleanup;
         }
     }
@@ -4761,7 +4761,7 @@ virFileDiskCopy(int disk_fd, const char *disk_path, int remote_fd, const char *r
 
  cleanup:
     if (VIR_CLOSE(disk_fd) < 0 && ret == 0) {
-        virReportSystemError(errno, _("Unable to close %s"), disk_path);
+        virReportSystemError(errno, _("Unable to close %1$s"), disk_path);
         ret = -1;
     }
     return ret;

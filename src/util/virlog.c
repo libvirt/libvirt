@@ -306,8 +306,8 @@ virLogSetDefaultPriority(virLogPriority priority)
 {
     if ((priority < VIR_LOG_DEBUG) || (priority > VIR_LOG_ERROR)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Failed to set logging priority, argument '%u' is "
-                         "invalid"), priority);
+                       _("Failed to set logging priority, argument '%1$u' is invalid"),
+                       priority);
         return -1;
     }
     if (virLogInitialize() < 0)
@@ -689,7 +689,7 @@ virLogNewOutputToFile(virLogPriority priority,
 
     fd = open(file, O_CREAT | O_APPEND | O_WRONLY, S_IRUSR | S_IWUSR);
     if (fd < 0) {
-        virReportSystemError(errno, _("failed to open %s"), file);
+        virReportSystemError(errno, _("failed to open %1$s"), file);
         return NULL;
     }
 
@@ -1195,8 +1195,8 @@ virLogParseDefaultPriority(const char *priority)
         return VIR_LOG_ERROR;
 
     virReportError(VIR_ERR_INVALID_ARG,
-                   _("Failed to set logging priority, argument '%s' is "
-                     "invalid"), priority);
+                   _("Failed to set logging priority, argument '%1$s' is invalid"),
+                   priority);
     return -1;
 }
 
@@ -1326,7 +1326,7 @@ virLogFilterNew(const char *match,
     size_t mlen = strlen(match);
 
     if (priority < VIR_LOG_DEBUG || priority > VIR_LOG_ERROR) {
-        virReportError(VIR_ERR_INVALID_ARG, _("Invalid log priority %d"),
+        virReportError(VIR_ERR_INVALID_ARG, _("Invalid log priority %1$d"),
                        priority);
         return NULL;
     }
@@ -1493,21 +1493,21 @@ virLogParseOutput(const char *src)
     if (!(tokens = g_strsplit(src, ":", 0)) ||
         (count = g_strv_length(tokens)) < 2) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Malformed format for log output '%s'"), src);
+                       _("Malformed format for log output '%1$s'"), src);
         return NULL;
     }
 
     if (virStrToLong_uip(tokens[0], NULL, 10, &prio) < 0 ||
         (prio < VIR_LOG_DEBUG) || (prio > VIR_LOG_ERROR)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Invalid log priority '%s' for log output '%s'"),
+                       _("Invalid log priority '%1$s' for log output '%2$s'"),
                        tokens[0], src);
         return NULL;
     }
 
     if ((dest = virLogDestinationTypeFromString(tokens[1])) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Invalid log destination '%s' for log output '%s'"),
+                       _("Invalid log destination '%1$s' for log output '%2$s'"),
                        tokens[1], src);
         return NULL;
     }
@@ -1517,8 +1517,8 @@ virLogParseOutput(const char *src)
         ((dest == VIR_LOG_TO_FILE ||
           dest == VIR_LOG_TO_SYSLOG) && count != 3)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Log output '%s' does not meet the format requirements "
-                         "for destination type '%s'"), src, tokens[1]);
+                       _("Log output '%1$s' does not meet the format requirements for destination type '%2$s'"),
+                       src, tokens[1]);
         return NULL;
     }
 
@@ -1587,14 +1587,14 @@ virLogParseFilter(const char *src)
     if (!(tokens = g_strsplit(src, ":", 0)) ||
         !tokens[0] || !tokens[1]) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Malformed format for filter '%s'"), src);
+                       _("Malformed format for filter '%1$s'"), src);
         return NULL;
     }
 
     if (virStrToLong_uip(tokens[0], NULL, 10, &prio) < 0 ||
         (prio < VIR_LOG_DEBUG) || (prio > VIR_LOG_ERROR)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Invalid priority '%s' for filter '%s'"),
+                       _("Invalid priority '%1$s' for filter '%2$s'"),
                        tokens[0], src);
         return NULL;
     }
@@ -1610,7 +1610,7 @@ virLogParseFilter(const char *src)
     /* match string cannot comprise just from a single '+' */
     if (!*match) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Invalid match string '%s'"), tokens[1]);
+                       _("Invalid match string '%1$s'"), tokens[1]);
         return NULL;
     }
 

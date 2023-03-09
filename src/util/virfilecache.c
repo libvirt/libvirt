@@ -106,7 +106,7 @@ virFileCacheGetFileName(virFileCache *cache,
 
     if (g_mkdir_with_parents(cache->dir, 0777) < 0) {
         virReportSystemError(errno,
-                             _("Unable to create directory '%s'"),
+                             _("Unable to create directory '%1$s'"),
                              cache->dir);
         return NULL;
     }
@@ -142,7 +142,7 @@ virFileCacheLoad(virFileCache *cache,
             goto cleanup;
         }
         virReportSystemError(errno,
-                             _("Unable to access cache '%s' for '%s'"),
+                             _("Unable to access cache '%1$s' for '%2$s'"),
                              file, name);
         goto cleanup;
     }

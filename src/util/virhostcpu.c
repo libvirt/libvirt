@@ -107,7 +107,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
 
     if ((*nparams) != BSD_CPU_STATS_ALL) {
         virReportInvalidArg(*nparams,
-                            _("nparams in %s must be equal to %d"),
+                            _("nparams in %1$s must be equal to %2$d"),
                             __FUNCTION__, BSD_CPU_STATS_ALL);
         return -1;
     }
@@ -115,7 +115,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
     clkinfo_size = sizeof(clkinfo);
     if (sysctlbyname("kern.clockrate", &clkinfo, &clkinfo_size, NULL, 0) < 0) {
         virReportSystemError(errno,
-                             _("sysctl failed for '%s'"),
+                             _("sysctl failed for '%1$s'"),
                              "kern.clockrate");
         return -1;
     }
@@ -133,7 +133,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
 
         if (cpuNum >= cpu_times_num) {
             virReportInvalidArg(cpuNum,
-                                _("Invalid cpuNum in %s"),
+                                _("Invalid cpuNum in %1$s"),
                                 __FUNCTION__);
             return -1;
         }
@@ -147,7 +147,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
 
     if (sysctlbyname(sysctl_name, cpu_times, &cpu_times_size, NULL, 0) < 0) {
         virReportSystemError(errno,
-                             _("sysctl failed for '%s'"),
+                             _("sysctl failed for '%1$s'"),
                              sysctl_name);
         return -1;
     }
@@ -157,7 +157,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
 
         if (virStrcpyStatic(param->field, cpu_map[i].field) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Field '%s' too long for destination"),
+                           _("Field '%1$s' too long for destination"),
                            cpu_map[i].field);
             return -1;
         }
@@ -529,7 +529,7 @@ virHostCPUParseFrequencyString(const char *str,
 
  error:
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Missing or invalid CPU frequency in %s"),
+                   _("Missing or invalid CPU frequency in %1$s"),
                    CPUINFO_PATH);
     return -1;
 }
@@ -596,7 +596,7 @@ virHostCPUParsePhysAddrSize(FILE *cpuinfo, unsigned int *addrsz)
 
  error:
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Missing or invalid CPU address size in %s"),
+                   _("Missing or invalid CPU address size in %1$s"),
                    CPUINFO_PATH);
     return -1;
 }
@@ -801,7 +801,7 @@ virHostCPUGetStatsLinux(FILE *procstat,
 
     if ((*nparams) != LINUX_NB_CPU_STATS) {
         virReportInvalidArg(*nparams,
-                            _("nparams in %s must be equal to %d"),
+                            _("nparams in %1$s must be equal to %2$d"),
                             __FUNCTION__, LINUX_NB_CPU_STATS);
         return -1;
     }
@@ -845,7 +845,7 @@ virHostCPUGetStatsLinux(FILE *procstat,
     }
 
     virReportInvalidArg(cpuNum,
-                        _("Invalid cpuNum in %s"),
+                        _("Invalid cpuNum in %1$s"),
                         __FUNCTION__);
 
     return -1;
@@ -916,7 +916,7 @@ virHostCPUGetInfo(virArch hostarch G_GNUC_UNUSED,
 
     if (!cpuinfo) {
         virReportSystemError(errno,
-                             _("cannot open %s"), CPUINFO_PATH);
+                             _("cannot open %1$s"), CPUINFO_PATH);
         return -1;
     }
 
@@ -995,7 +995,7 @@ virHostCPUGetStats(int cpuNum G_GNUC_UNUSED,
         FILE *procstat = fopen(PROCSTAT_PATH, "r");
         if (!procstat) {
             virReportSystemError(errno,
-                                 _("cannot open %s"), PROCSTAT_PATH);
+                                 _("cannot open %1$s"), PROCSTAT_PATH);
             return -1;
         }
         ret = virHostCPUGetStatsLinux(procstat, cpuNum, params, nparams);
@@ -1160,7 +1160,7 @@ virHostCPUGetThreadsPerSubcore(virArch arch)
              * is better than silently falling back and reporting
              * different nodeinfo depending on the user */
             virReportSystemError(errno,
-                                 _("Failed to open '%s'"),
+                                 _("Failed to open '%1$s'"),
                                  KVM_DEVICE);
             return -1;
         }
@@ -1198,7 +1198,7 @@ virHostCPUGetKVMMaxVCPUs(void)
     int ret;
 
     if ((fd = open(KVM_DEVICE, O_RDONLY)) < 0) {
-        virReportSystemError(errno, _("Unable to open %s"), KVM_DEVICE);
+        virReportSystemError(errno, _("Unable to open %1$s"), KVM_DEVICE);
         return -1;
     }
 
@@ -1293,7 +1293,7 @@ virHostCPUGetMSRFromKVM(unsigned long index,
     msr->entries[0].index = index;
 
     if ((fd = open(KVM_DEVICE, O_RDONLY)) < 0) {
-        virReportSystemError(errno, _("Unable to open %s"), KVM_DEVICE);
+        virReportSystemError(errno, _("Unable to open %1$s"), KVM_DEVICE);
         return -1;
     }
 
@@ -1419,7 +1419,7 @@ virHostCPUGetCPUID(void)
     VIR_AUTOCLOSE fd = open(KVM_DEVICE, O_RDONLY);
 
     if (fd < 0) {
-        virReportSystemError(errno, _("Unable to open %s"), KVM_DEVICE);
+        virReportSystemError(errno, _("Unable to open %1$s"), KVM_DEVICE);
         return NULL;
     }
 
@@ -1473,7 +1473,7 @@ virHostCPUGetTscInfo(void)
     int rc;
 
     if ((kvmFd = open(KVM_DEVICE, O_RDONLY)) < 0) {
-        virReportSystemError(errno, _("Unable to open %s"), KVM_DEVICE);
+        virReportSystemError(errno, _("Unable to open %1$s"), KVM_DEVICE);
         return NULL;
     }
 
@@ -1637,7 +1637,7 @@ virHostCPUGetSignature(char **signature)
     *signature = NULL;
 
     if (!(cpuinfo = fopen(CPUINFO_PATH, "r"))) {
-        virReportSystemError(errno, _("Failed to open cpuinfo file '%s'"),
+        virReportSystemError(errno, _("Failed to open cpuinfo file '%1$s'"),
                              CPUINFO_PATH);
         return -1;
     }
@@ -1651,7 +1651,7 @@ virHostCPUGetPhysAddrSize(unsigned int *size)
     g_autoptr(FILE) cpuinfo = NULL;
 
     if (!(cpuinfo = fopen(CPUINFO_PATH, "r"))) {
-        virReportSystemError(errno, _("Failed to open cpuinfo file '%s'"),
+        virReportSystemError(errno, _("Failed to open cpuinfo file '%1$s'"),
                              CPUINFO_PATH);
         return -1;
     }

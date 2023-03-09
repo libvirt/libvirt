@@ -837,7 +837,7 @@ iptablesForwardMasquerade(virFirewall *fw,
             portRangeStr = g_strdup_printf(":%u-%u", port->start, port->end);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid port range '%u-%u'."),
+                           _("Invalid port range '%1$u-%2$u'."),
                            port->start, port->end);
             return -1;
         }

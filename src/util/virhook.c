@@ -149,7 +149,7 @@ virHookCheck(int no, const char *driver)
 
     if (driver == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid hook name for #%d"), no);
+                       _("Invalid hook name for #%1$d"), no);
         return -1;
     }
 
@@ -388,7 +388,7 @@ virHookCall(int driver,
     }
     if (opstr == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Hook for %s, failed to find operation #%d"),
+                       _("Hook for %1$s, failed to find operation #%2$d"),
                        drvstr, op);
         return 1;
     }

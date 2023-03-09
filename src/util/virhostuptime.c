@@ -63,7 +63,7 @@ virHostGetBootTimeProcfs(unsigned long long *btime)
      * We're interested only in the first one */
     if (!(tmp = strchr(buf, ' '))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("uptime file has unexpected format '%s'"),
+                       _("uptime file has unexpected format '%1$s'"),
                        buf);
         return -EINVAL;
     }
@@ -72,7 +72,7 @@ virHostGetBootTimeProcfs(unsigned long long *btime)
 
     if (virStrToDouble(buf, NULL, &up) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse uptime value '%s'"),
+                       _("Unable to parse uptime value '%1$s'"),
                        buf);
         return -EINVAL;
     }

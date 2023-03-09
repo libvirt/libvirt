@@ -80,7 +80,7 @@ virHostMemGetStatsFreeBSD(virNodeMemoryStatsPtr params,
 
     if ((*nparams) != BSD_MEMORY_STATS_ALL) {
         virReportInvalidArg(nparams,
-                            _("nparams in %s must be %d"),
+                            _("nparams in %1$s must be %2$d"),
                             __FUNCTION__, BSD_MEMORY_STATS_ALL);
         return -1;
     }
@@ -93,7 +93,7 @@ virHostMemGetStatsFreeBSD(virNodeMemoryStatsPtr params,
         if (sysctlbyname(sysctl_map[i].sysctl_name, &value,
                          &value_size, NULL, 0) < 0) {
             virReportSystemError(errno,
-                                 _("sysctl failed for '%s'"),
+                                 _("sysctl failed for '%1$s'"),
                                  sysctl_map[i].sysctl_name);
             return -1;
         }
@@ -101,7 +101,7 @@ virHostMemGetStatsFreeBSD(virNodeMemoryStatsPtr params,
         param = &params[j++];
         if (virStrcpyStatic(param->field, sysctl_map[i].field) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Field '%s' too long for destination"),
+                           _("Field '%1$s' too long for destination"),
                            sysctl_map[i].field);
             return -1;
         }
@@ -113,13 +113,13 @@ virHostMemGetStatsFreeBSD(virNodeMemoryStatsPtr params,
 
         if (sysctlbyname("vfs.bufspace", &bufpages, &bufpages_size, NULL, 0) < 0) {
             virReportSystemError(errno,
-                                 _("sysctl failed for '%s'"),
+                                 _("sysctl failed for '%1$s'"),
                                  "vfs.bufspace");
             return -1;
         }
         if (virStrcpyStatic(param->field, VIR_NODE_MEMORY_STATS_BUFFERS) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Field '%s' too long for destination"),
+                           _("Field '%1$s' too long for destination"),
                            VIR_NODE_MEMORY_STATS_BUFFERS);
             return -1;
         }
@@ -176,7 +176,7 @@ virHostMemGetStatsLinux(FILE *meminfo,
 
     if ((*nparams) != nr_param) {
         virReportInvalidArg(nparams,
-                            _("nparams in %s must be %d"),
+                            _("nparams in %1$s must be %2$d"),
                             __FUNCTION__, nr_param);
         return -1;
     }
@@ -275,7 +275,7 @@ virHostMemGetStats(int cellNum G_GNUC_UNUSED,
 
             if (cellNum > max_node) {
                 virReportInvalidArg(cellNum,
-                                    _("cellNum in %s must be less than or equal to %d"),
+                                    _("cellNum in %1$s must be less than or equal to %2$d"),
                                     __FUNCTION__, max_node);
                 return -1;
             }
@@ -287,7 +287,7 @@ virHostMemGetStats(int cellNum G_GNUC_UNUSED,
 
         if (!meminfo) {
             virReportSystemError(errno,
-                                 _("cannot open %s"), meminfo_path);
+                                 _("cannot open %1$s"), meminfo_path);
             return -1;
         }
         ret = virHostMemGetStatsLinux(meminfo, cellNum, params, nparams);
@@ -320,7 +320,7 @@ virHostMemSetParameterValue(virTypedParameterPtr param)
     strval = g_strdup_printf("%u", param->value.ui);
 
     if ((rc = virFileWriteStr(path, strval, 0)) < 0) {
-        virReportSystemError(-rc, _("failed to set %s"), param->field);
+        virReportSystemError(-rc, _("failed to set %1$s"), param->field);
         return -1;
     }
 
@@ -343,8 +343,8 @@ virHostMemParametersAreAllSupported(virTypedParameterPtr params,
 
         if (!virFileExists(path)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("Parameter '%s' is not supported by "
-                             "this kernel"), param->field);
+                           _("Parameter '%1$s' is not supported by this kernel"),
+                           param->field);
             return false;
         }
     }
@@ -432,7 +432,7 @@ virHostMemGetParameterValue(const char *field,
 
     if (rc < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to parse %s"), field);
+                       _("failed to parse %1$s"), field);
         return -1;
     }
 
@@ -740,7 +740,7 @@ virHostMemGetCellsFreeFake(unsigned long long *freeMems,
 {
     if (startCell != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("start cell %d out of range (0-%d)"),
+                       _("start cell %1$d out of range (0-%2$d)"),
                        startCell, 0);
         return -1;
     }
@@ -785,7 +785,7 @@ virHostMemGetCellsFree(unsigned long long *freeMems,
 
     if (startCell > maxCell) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("start cell %d out of range (0-%d)"),
+                       _("start cell %1$d out of range (0-%2$d)"),
                        startCell, maxCell);
         return -1;
     }
@@ -860,7 +860,7 @@ virHostMemGetFreePages(unsigned int npages,
 
     if (startCell > lastCell) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("start cell %d out of range (0-%d)"),
+                       _("start cell %1$d out of range (0-%2$d)"),
                        startCell, lastCell);
         return -1;
     }
@@ -910,7 +910,7 @@ virHostMemAllocPages(unsigned int npages,
 
     if (startCell > lastCell) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("start cell %d out of range (0-%d)"),
+                       _("start cell %1$d out of range (0-%2$d)"),
                        startCell, lastCell);
         return -1;
     }

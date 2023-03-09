@@ -64,7 +64,7 @@ virLeaseReadCustomLeaseFile(virJSONValue *leases_array_new,
 
     if (!(leases_array = virJSONValueFromString(lease_entries))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid json in file: %s, rewriting it"),
+                       _("invalid json in file: %1$s, rewriting it"),
                        custom_lease_file);
         return 0;
     }
@@ -228,7 +228,7 @@ virLeaseNew(virJSONValue **lease_ret,
 
         if (virStrToLong_ll(exptime, NULL, 10, &expirytime) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to convert lease expiry time to long long: %s"),
+                           _("Unable to convert lease expiry time to long long: %1$s"),
                            NULLSTR(exptime));
             return -1;
         }

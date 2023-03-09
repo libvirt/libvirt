@@ -168,7 +168,7 @@ virJSONValueObjectAddVArgs(virJSONValue **objptr,
 
         if (strlen(key) < 3 || key[1] != ':') {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("argument key '%s' is too short or malformed"),
+                           _("argument key '%1$s' is too short or malformed"),
                            key);
             return -1;
         }
@@ -186,7 +186,7 @@ virJSONValueObjectAddVArgs(virJSONValue **objptr,
                     continue;
 
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("argument key '%s' must not have null value"),
+                               _("argument key '%1$s' must not have null value"),
                                key);
                 return -1;
             }
@@ -202,7 +202,7 @@ virJSONValueObjectAddVArgs(virJSONValue **objptr,
 
             if (val < 0 && (type == 'j' || type == 'y')) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("argument key '%s' must not be negative"),
+                               _("argument key '%1$s' must not be negative"),
                                key);
                 return -1;
             }
@@ -235,7 +235,7 @@ virJSONValueObjectAddVArgs(virJSONValue **objptr,
 
             if (val < 0 && (type == 'J' || type == 'Y')) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("argument key '%s' must not be negative"),
+                               _("argument key '%1$s' must not be negative"),
                                key);
                 return -1;
             }
@@ -303,7 +303,7 @@ virJSONValueObjectAddVArgs(virJSONValue **objptr,
                     continue;
 
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("argument key '%s' must not have null value"),
+                               _("argument key '%1$s' must not have null value"),
                                key);
                 return -1;
             }
@@ -322,7 +322,7 @@ virJSONValueObjectAddVArgs(virJSONValue **objptr,
                     continue;
 
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("argument key '%s' must not have null value"),
+                               _("argument key '%1$s' must not have null value"),
                                key);
                 return -1;
             }
@@ -340,7 +340,7 @@ virJSONValueObjectAddVArgs(virJSONValue **objptr,
 
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unsupported data type '%c' for arg '%s'"), type, key - 2);
+                           _("unsupported data type '%1$c' for arg '%2$s'"), type, key - 2);
             return -1;
         }
 
@@ -556,7 +556,7 @@ virJSONValueObjectInsert(virJSONValue *object,
     }
 
     if (virJSONValueObjectHasKey(object, key)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("duplicate key '%s'"), key);
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("duplicate key '%1$s'"), key);
         return -1;
     }
 
@@ -1681,7 +1681,7 @@ virJSONValueFromString(const char *jsonstring)
                                                strlen(jsonstring));
 
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse json %s: %s"),
+                       _("cannot parse json %1$s: %2$s"),
                        jsonstring, (const char*) errstr);
         yajl_free_error(hand, errstr);
         virJSONValueFree(parser.head);
@@ -1690,7 +1690,7 @@ virJSONValueFromString(const char *jsonstring)
 
     if (parser.nstate != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse json %s: unterminated string/map/array"),
+                       _("cannot parse json %1$s: unterminated string/map/array"),
                        jsonstring);
         virJSONValueFree(parser.head);
     } else {
@@ -1909,7 +1909,7 @@ virJSONValueObjectDeflattenWorker(const char *key,
 
         if (virJSONValueObjectHasKey(retobj, key)) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("can't deflatten colliding key '%s'"), key);
+                           _("can't deflatten colliding key '%1$s'"), key);
             return -1;
         }
 
@@ -1924,7 +1924,7 @@ virJSONValueObjectDeflattenWorker(const char *key,
 
     if (!tokens[0] || !tokens[1]) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid nested value key '%s'"), key);
+                       _("invalid nested value key '%1$s'"), key);
         return -1;
     }
 

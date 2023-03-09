@@ -149,14 +149,14 @@ virMacMapLoadFile(virMacMap *mgr,
 
     if (!(map = virJSONValueFromString(map_str))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid json in file: %s"),
+                       _("invalid json in file: %1$s"),
                        file);
         return -1;
     }
 
     if (!virJSONValueIsArray(map)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Malformed file structure: %s"),
+                       _("Malformed file structure: %1$s"),
                        file);
         return -1;
     }
@@ -182,7 +182,7 @@ virMacMapLoadFile(virMacMap *mgr,
 
         if (g_hash_table_contains(mgr->macs, domain)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("duplicate domain '%s'"), domain);
+                           _("duplicate domain '%1$s'"), domain);
             return -1;
 
         }

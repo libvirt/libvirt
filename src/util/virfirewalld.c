@@ -109,7 +109,7 @@ virFirewallDGetVersion(unsigned long *version)
 
     if (virStringParseVersion(version, versionStr, false) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to parse firewalld version '%s'"),
+                       _("Failed to parse firewalld version '%1$s'"),
                        versionStr);
         return -1;
     }
@@ -173,7 +173,7 @@ virFirewallDGetBackend(void)
 
     if ((backend = virFirewallDBackendTypeFromString(backendStr)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unrecognized firewalld backend type: %s"),
+                       _("Unrecognized firewalld backend type: %1$s"),
                        backendStr);
         return -1;
     }
@@ -364,7 +364,7 @@ virFirewallDApplyRule(virFirewallLayer layer,
 
     if (!ipv) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown firewall layer %d"),
+                       _("Unknown firewall layer %1$d"),
                        layer);
         return -1;
     }

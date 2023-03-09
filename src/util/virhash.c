@@ -139,7 +139,7 @@ virHashAddEntry(GHashTable *table, const char *name, void *userdata)
 
     if (g_hash_table_contains(table, name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Duplicate hash table key '%s'"), name);
+                       _("Duplicate hash table key '%1$s'"), name);
         return -1;
     }
 
