@@ -902,10 +902,77 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
 }
 
 
+/**
+ * testQemuGetRealCaps:
+ *
+ * @arch: architecture to fetch caps for
+ * @version: qemu version to fetch caps for ("latest" for fetching the latest version from @capsLatestFiles)
+ * @variant: capabilities variant to fetch caps for
+ * @capsLatestFiles: hash table containing latest version of capabilities for the  @arch+@variant tuple
+ * @capsCache: hash table filled with the cache of capabilities
+ * @capsReplies: Filled with path to the corresponding '.replies' file
+ *
+ * Fetches and returns the appropriate virQEMUCaps for the @arch+@version+@variant
+ * tuple. The returned pointer is a copy of the cached object and thus can
+ * be freely modified. Caller is responsible for freeing it.
+ */
+virQEMUCaps *
+testQemuGetRealCaps(const char *arch,
+                    const char *version,
+                    const char *variant,
+                    GHashTable *capsLatestFiles,
+                    GHashTable *capsCache,
+                    char **capsReplies)
+{
+    g_autofree char *capsfile = NULL;
+    bool stripmachinealiases = false;
+    virQEMUCaps *cachedcaps = NULL;
+    virQEMUCaps *ret = NULL;
+
+    if (STREQ(version, "latest")) {
+        g_autofree char *archvariant = g_strdup_printf("%s%s", arch, variant);
+        struct testQemuCapsFile *f = g_hash_table_lookup(capsLatestFiles, archvariant);
+
+        if (!f) {
+            VIR_TEST_VERBOSE("'latest' caps for '%s' were not found\n", arch);
+            return NULL;
+        }
+
+        capsfile = g_strdup(f->path);
+        stripmachinealiases = true;
+    } else {
+        capsfile = g_strdup_printf("%s/caps_%s_%s%s.xml",
+                                   TEST_QEMU_CAPS_PATH,
+                                   version, arch, variant);
+    }
+
+    if (!g_hash_table_lookup_extended(capsCache, capsfile, NULL, (void **) &cachedcaps)) {
+        if (!(cachedcaps = qemuTestParseCapabilitiesArch(virArchFromString(arch), capsfile))) {
+            VIR_TEST_VERBOSE("Failed to parse qemu capabilities file '%s'", capsfile);
+            return NULL;
+        }
+
+        g_hash_table_insert(capsCache, g_strdup(capsfile), cachedcaps);
+    }
+
+    ret = virQEMUCapsNewCopy(cachedcaps);
+
+    if (stripmachinealiases)
+        virQEMUCapsStripMachineAliases(ret);
+
+    if (capsReplies) {
+        /* provide path to the replies file for schema testing */
+        capsfile[strlen(capsfile) - 3] = '\0';
+        *capsReplies = g_strdup_printf("%sreplies", capsfile);
+    }
+
+    return ret;
+}
+
+
 int
 testQemuInfoInitArgs(struct testQemuInfo *info)
 {
-    g_autofree char *capsfile = NULL;
     ssize_t cap;
 
     if (!info->args.newargs)
@@ -927,47 +994,17 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
     }
 
     if (info->args.capsarch && info->args.capsver) {
-        bool stripmachinealiases = false;
-        virQEMUCaps *cachedcaps = NULL;
-
         info->arch = virArchFromString(info->args.capsarch);
-
-        if (STREQ(info->args.capsver, "latest")) {
-            g_autofree char *archvariant = g_strdup_printf("%s%s", info->args.capsarch, info->args.capsvariant);
-            struct testQemuCapsFile *f = g_hash_table_lookup(info->conf->capslatest, archvariant);
-
-            if (!f) {
-                fprintf(stderr, "'latest' caps for '%s' were not found\n", info->args.capsarch);
-                return -1;
-            }
-
-            capsfile = g_strdup(f->path);
-            stripmachinealiases = true;
-        } else {
-            capsfile = g_strdup_printf("%s/caps_%s_%s%s.xml",
-                                       TEST_QEMU_CAPS_PATH,
-                                       info->args.capsver,
-                                       info->args.capsarch,
-                                       info->args.capsvariant);
-        }
-
-        if (!g_hash_table_lookup_extended(info->conf->capscache, capsfile, NULL, (void **) &cachedcaps)) {
-            if (!(cachedcaps = qemuTestParseCapabilitiesArch(info->arch, capsfile)))
-                return -1;
-
-            g_hash_table_insert(info->conf->capscache, g_strdup(capsfile), cachedcaps);
-        }
-
-        info->qemuCaps = virQEMUCapsNewCopy(cachedcaps);
-
-        if (stripmachinealiases)
-            virQEMUCapsStripMachineAliases(info->qemuCaps);
-
         info->flags |= FLAG_REAL_CAPS;
+        info->qemuCaps = testQemuGetRealCaps(info->args.capsarch,
+                                             info->args.capsver,
+                                             info->args.capsvariant,
+                                             info->conf->capslatest,
+                                             info->conf->capscache,
+                                             &info->schemafile);
 
-        /* provide path to the replies file for schema testing */
-        capsfile[strlen(capsfile) - 3] = '\0';
-        info->schemafile = g_strdup_printf("%sreplies", capsfile);
+        if (!info->qemuCaps)
+            return -1;
     } else {
         info->qemuCaps = virQEMUCapsNew();
     }

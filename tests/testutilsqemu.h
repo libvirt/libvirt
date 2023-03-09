@@ -151,4 +151,12 @@ void testQemuInfoClear(struct testQemuInfo *info);
 int testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
                                          virDomainChrSourceDef *chardev,
                                          void *opaque);
+
+virQEMUCaps *
+testQemuGetRealCaps(const char *arch,
+                    const char *version,
+                    const char *variant,
+                    GHashTable *capsLatestFiles,
+                    GHashTable *capsCache,
+                    char **capsReplies);
 #endif
