@@ -357,7 +357,7 @@ qemuBuildDeviceAddressPCIGetBus(const virDomainDef *domainDef,
 
             if (!contAlias) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Device alias was not set for PCI controller with index '%u' required for device at address '%s'"),
+                               _("Device alias was not set for PCI controller with index '%1$u' required for device at address '%2$s'"),
                                info->addr.pci.bus, devStr);
                 return NULL;
             }
@@ -382,7 +382,7 @@ qemuBuildDeviceAddressPCIGetBus(const virDomainDef *domainDef,
 
     if (!contAlias) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not find PCI controller with index '%u' required for device at address '%s'"),
+                       _("Could not find PCI controller with index '%1$u' required for device at address '%2$s'"),
                        info->addr.pci.bus, devStr);
         return NULL;
     }
@@ -467,7 +467,7 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
     case VIR_DOMAIN_DISK_BUS_SCSI:
         if (!(controller = virDomainDeviceFindSCSIController(domainDef, &info->addr.drive))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to find a SCSI controller for idx=%d"),
+                           _("unable to find a SCSI controller for idx=%1$d"),
                            info->addr.drive.controller);
             return -1;
         }
@@ -511,7 +511,7 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unexpected SCSI controller model %d"),
+                           _("Unexpected SCSI controller model %1$d"),
                            controller->model);
             return -1;
         }
@@ -527,7 +527,7 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
     case VIR_DOMAIN_DISK_BUS_LAST:
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("address type drive is not supported for bus '%s'"),
+                       _("address type drive is not supported for bus '%1$s'"),
                        NULLSTR(virDomainDiskBusTypeToString(info->addr.drive.diskbus)));
         return -1;
     }
@@ -778,7 +778,7 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
 
     if (!model || STREQ(model, "")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid model for video type '%s'"),
+                       _("invalid model for video type '%1$s'"),
                        virDomainVideoTypeToString(video->type));
         return NULL;
     }
@@ -1003,7 +1003,7 @@ qemuBuildVirtioDevGetConfig(const virDomainDeviceDef *device,
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unexpected address type for '%s'"), baseName);
+                       _("Unexpected address type for '%1$s'"), baseName);
         return -1;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
@@ -1020,8 +1020,7 @@ qemuBuildVirtioDevGetConfig(const virDomainDeviceDef *device,
     if (has_tmodel || has_ntmodel) {
         if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("virtio (non-)transitional models are not "
-                             "supported for address type=%s"),
+                           _("virtio (non-)transitional models are not supported for address type=%1$s"),
                            virDomainDeviceAddressTypeToString(info->type));
         }
 
@@ -1532,7 +1531,7 @@ qemuBuildChardevCommand(virCommand *cmd,
     case VIR_DOMAIN_CHR_TYPE_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unsupported chardev '%s'"),
+                       _("unsupported chardev '%1$s'"),
                        virDomainChrTypeToString(dev->type));
         return -1;
     }
@@ -1860,7 +1859,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     case VIR_DOMAIN_DISK_BUS_LAST:
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unsupported disk bus '%s' with device setup"),
+                       _("unsupported disk bus '%1$s' with device setup"),
                        NULLSTR(virDomainDiskBusTypeToString(disk->bus)));
         return NULL;
     }
@@ -1897,7 +1896,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
 
         if (virStrToLong_ull(disk->wwn, NULL, 16, &w) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Failed to parse wwn '%s' as number"), disk->wwn);
+                           _("Failed to parse wwn '%1$s' as number"), disk->wwn);
             return NULL;
         }
 
@@ -2499,7 +2498,7 @@ qemuValidateDomainDeviceDefControllerUSB(const virDomainControllerDef *def,
 
     if (!virQEMUCapsGet(qemuCaps, qemuControllerModelUSBToCaps(def->model))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("USB controller model '%s' not supported in this QEMU binary"),
+                       _("USB controller model '%1$s' not supported in this QEMU binary"),
                        virDomainControllerModelUSBTypeToString(def->model));
         return -1;
     }
@@ -2508,7 +2507,7 @@ qemuValidateDomainDeviceDefControllerUSB(const virDomainControllerDef *def,
         if (def->model != VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI &&
             def->model != VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("usb controller type '%s' doesn't support 'ports' with this QEMU binary"),
+                           _("usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"),
                            virDomainControllerModelUSBTypeToString(def->model));
             return -1;
         }
@@ -2643,13 +2642,13 @@ qemuBuildControllerSCSIDevProps(virDomainControllerDef *def,
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90: /* It is built-in dev */
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported controller model: %s"),
+                       _("Unsupported controller model: %1$s"),
                        virDomainControllerModelSCSITypeToString(def->model));
         return NULL;
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unexpected SCSI controller model %d"),
+                       _("Unexpected SCSI controller model %1$d"),
                        def->model);
         return NULL;
     }
@@ -2685,7 +2684,7 @@ qemuBuildControllerPCIDevProps(virDomainControllerDef *def,
 
     if (!modelName) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown virDomainControllerPCIModelName value: %d"),
+                       _("Unknown virDomainControllerPCIModelName value: %1$d"),
                        pciopts->modelName);
         return -1;
     }
@@ -2759,7 +2758,7 @@ qemuBuildControllerPCIDevProps(virDomainControllerDef *def,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unexpected PCI controller model %d"),
+                       _("Unexpected PCI controller model %1$d"),
                        def->model);
         return -1;
     }
@@ -2856,7 +2855,7 @@ qemuBuildControllerDevProps(const virDomainDef *domainDef,
     case VIR_DOMAIN_CONTROLLER_TYPE_ISA:
     case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported controller type: %s"),
+                       _("Unsupported controller type: %1$s"),
                        virDomainControllerTypeToString(def->type));
         return -1;
     }
@@ -3857,7 +3856,7 @@ qemuBuildHostNetProps(virDomainObj *vm,
 
     if (net->script && netType != VIR_DOMAIN_NET_TYPE_ETHERNET) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("scripts are not supported on interfaces of type %s"),
+                       _("scripts are not supported on interfaces of type %1$s"),
                        virDomainNetTypeToString(netType));
         return NULL;
     }
@@ -4055,7 +4054,7 @@ qemuBuildHostNetProps(virDomainObj *vm,
     case VIR_DOMAIN_NET_TYPE_NULL:
     case VIR_DOMAIN_NET_TYPE_VDS:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("network device type '%s' is not supported by this hypervisor"),
+                       _("network device type '%1$s' is not supported by this hypervisor"),
                        virDomainNetTypeToString(netType));
         return NULL;
 
@@ -4675,7 +4674,7 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN:
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid PCI passthrough type '%s'"),
+                       _("invalid PCI passthrough type '%1$s'"),
                        virDomainHostdevSubsysPCIBackendTypeToString(pcisrc->backend));
         return NULL;
     }
@@ -4878,28 +4877,28 @@ qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev)
     addr.sun_family = AF_UNIX;
     if (virStrcpyStatic(addr.sun_path, dev->data.nix.path) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("UNIX socket path '%s' too long"),
+                       _("UNIX socket path '%1$s' too long"),
                        dev->data.nix.path);
         goto error;
     }
 
     if (unlink(dev->data.nix.path) < 0 && errno != ENOENT) {
         virReportSystemError(errno,
-                             _("Unable to unlink %s"),
+                             _("Unable to unlink %1$s"),
                              dev->data.nix.path);
         goto error;
     }
 
     if (bind(fd, (struct sockaddr *)&addr, addrlen) < 0) {
         virReportSystemError(errno,
-                             _("Unable to bind to UNIX socket path '%s'"),
+                             _("Unable to bind to UNIX socket path '%1$s'"),
                              dev->data.nix.path);
         goto error;
     }
 
     if (listen(fd, 1) < 0) {
         virReportSystemError(errno,
-                             _("Unable to listen to UNIX socket path '%s'"),
+                             _("Unable to listen to UNIX socket path '%1$s'"),
                              dev->data.nix.path);
         goto error;
     }
@@ -5222,7 +5221,7 @@ qemuBuildVirtioSerialPortDevProps(const virDomainDef *def,
         dev->target.name &&
         STRNEQ(dev->target.name, "com.redhat.spice.0")) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported spicevmc target name '%s'"),
+                       _("Unsupported spicevmc target name '%1$s'"),
                        dev->target.name);
         return NULL;
     }
@@ -5661,7 +5660,7 @@ qemuBuildSmbiosCommandLine(virCommand *cmd,
 
         if (!source) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Domain '%s' sysinfo are not available"),
+                           _("Domain '%1$s' sysinfo are not available"),
                            def->name);
             return -1;
         }
@@ -5843,7 +5842,7 @@ qemuBuildClockArgStr(virDomainClockDef *def)
     case VIR_DOMAIN_CLOCK_OFFSET_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unsupported clock offset '%s'"),
+                       _("unsupported clock offset '%1$s'"),
                        virDomainClockOffsetTypeToString(def->offset));
         return NULL;
     }
@@ -6233,7 +6232,7 @@ qemuBuildCpuModelArgStr(virQEMUDriver *driver,
             virBufferAddLit(buf, "host");
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected host-model CPU for %s architecture"),
+                           _("unexpected host-model CPU for %1$s architecture"),
                            virArchToString(def->os.arch));
             return -1;
         }
@@ -6251,8 +6250,8 @@ qemuBuildCpuModelArgStr(virQEMUDriver *driver,
         cpu->features &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("CPU features not supported by hypervisor for %s "
-                         "architecture"), virArchToString(def->os.arch));
+                       _("CPU features not supported by hypervisor for %1$s architecture"),
+                       virArchToString(def->os.arch));
         return -1;
     }
 
@@ -6551,8 +6550,7 @@ qemuBuildCpuCommandLine(virCommand *cmd,
             break;
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("CPU flags requested but can't determine "
-                             "default CPU for arch %s"),
+                           _("CPU flags requested but can't determine default CPU for arch %1$s"),
                            virArchToString(def->os.arch));
             return -1;
         }
@@ -8391,7 +8389,7 @@ qemuInterfaceVhostuserConnect(virCommand *cmd,
     case VIR_DOMAIN_CHR_TYPE_DBUS:
     case VIR_DOMAIN_CHR_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("vhost-user type '%s' not supported"),
+                       _("vhost-user type '%1$s' not supported"),
                        virDomainChrTypeToString(net->data.vhostuser->type));
         return -1;
     }
@@ -9132,7 +9130,7 @@ qemuBuildSerialCommandLine(virCommand *cmd,
 
             if (caps && !virQEMUCapsGet(qemuCaps, caps)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("'%s' is not supported in this QEMU binary"),
+                               _("'%1$s' is not supported in this QEMU binary"),
                                virDomainChrSerialTargetModelTypeToString(serial->targetModel));
                 return -1;
             }
@@ -9415,15 +9413,15 @@ qemuBuildTPMOpenBackendFDs(const char *tpmdev,
         return -1;
 
     if ((*tpmfd = open(tpmdev, O_RDWR)) < 0) {
-        virReportSystemError(errno, _("Could not open TPM device %s"),
+        virReportSystemError(errno, _("Could not open TPM device %1$s"),
                              tpmdev);
         return -1;
     }
 
     if ((*cancelfd = open(cancel_path, O_WRONLY)) < 0) {
         virReportSystemError(errno,
-                             _("Could not open TPM device's cancel "
-                               "path %s"), cancel_path);
+                             _("Could not open TPM device's cancel path %1$s"),
+                             cancel_path);
         VIR_FORCE_CLOSE(*tpmfd);
         return -1;
     }
@@ -9965,7 +9963,7 @@ qemuBuildCommandLineValidate(virQEMUDriver *driver,
         def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
         def->os.type == VIR_DOMAIN_OSTYPE_LINUX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("qemu emulator '%s' does not support xen"),
+                       _("qemu emulator '%1$s' does not support xen"),
                        def->emulator);
         return -1;
     }
@@ -10525,7 +10523,7 @@ qemuBuildSerialChrDeviceProps(const virDomainDef *def,
 
         if (caps && !virQEMUCapsGet(qemuCaps, caps)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("'%s' is not supported in this QEMU binary"),
+                           _("'%1$s' is not supported in this QEMU binary"),
                            virDomainChrSerialTargetModelTypeToString(serial->targetModel));
             return NULL;
         }
@@ -10657,7 +10655,7 @@ qemuBuildConsoleChrDeviceProps(const virDomainDef *def,
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_OPENVZ:
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unsupported console target type %s"),
+                       _("unsupported console target type %1$s"),
                        NULLSTR(virDomainChrConsoleTargetTypeToString(chr->targetType)));
         break;
     }
