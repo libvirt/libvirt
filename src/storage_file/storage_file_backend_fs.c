@@ -102,20 +102,20 @@ virStorageFileBackendFileRead(virStorageSource *src,
 
     if ((fd = virFileOpenAs(src->path, O_RDONLY, 0,
                             drv->uid, drv->gid, 0)) < 0) {
-        virReportSystemError(-fd, _("Failed to open file '%s'"),
+        virReportSystemError(-fd, _("Failed to open file '%1$s'"),
                              src->path);
         return -1;
     }
 
     if (offset > 0) {
         if (lseek(fd, offset, SEEK_SET) == (off_t) -1) {
-            virReportSystemError(errno, _("cannot seek into '%s'"), src->path);
+            virReportSystemError(errno, _("cannot seek into '%1$s'"), src->path);
             return -1;
         }
     }
 
     if ((ret = virFileReadHeaderFD(fd, len, buf)) < 0) {
-        virReportSystemError(errno, _("cannot read header '%s'"), src->path);
+        virReportSystemError(errno, _("cannot read header '%1$s'"), src->path);
         return -1;
     }
 

@@ -900,7 +900,7 @@ virStorageFileProbeGetMetadata(virStorageSource *meta,
 
     if (meta->format <= VIR_STORAGE_FILE_NONE ||
         meta->format >= VIR_STORAGE_FILE_LAST) {
-        virReportSystemError(EINVAL, _("unknown storage file meta->format %d"),
+        virReportSystemError(EINVAL, _("unknown storage file meta->format %1$d"),
                              meta->format);
         return -1;
     }
@@ -916,8 +916,7 @@ virStorageFileProbeGetMetadata(virStorageSource *meta,
                 } else {
                     if (meta->encryption->format != expt_fmt) {
                         virReportError(VIR_ERR_XML_ERROR,
-                                       _("encryption format %d doesn't match "
-                                         "expected format %d"),
+                                       _("encryption format %1$d doesn't match expected format %2$d"),
                                        meta->encryption->format, expt_fmt);
                         return -1;
                     }
@@ -1004,12 +1003,12 @@ virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid)
     g_autofree char *header = NULL;
 
     if ((fd = virFileOpenAs(path, O_RDONLY, 0, uid, gid, 0)) < 0) {
-        virReportSystemError(-fd, _("Failed to open file '%s'"), path);
+        virReportSystemError(-fd, _("Failed to open file '%1$s'"), path);
         return -1;
     }
 
     if (fstat(fd, &sb) < 0) {
-        virReportSystemError(errno, _("cannot stat file '%s'"), path);
+        virReportSystemError(errno, _("cannot stat file '%1$s'"), path);
         return -1;
     }
 
@@ -1018,12 +1017,12 @@ virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid)
         return VIR_STORAGE_FILE_DIR;
 
     if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
-        virReportSystemError(errno, _("cannot set to start of '%s'"), path);
+        virReportSystemError(errno, _("cannot set to start of '%1$s'"), path);
         return -1;
     }
 
     if ((len = virFileReadHeaderFD(fd, len, &header)) < 0) {
-        virReportSystemError(errno, _("cannot read header '%s'"), path);
+        virReportSystemError(errno, _("cannot read header '%1$s'"), path);
         return -1;
     }
 
