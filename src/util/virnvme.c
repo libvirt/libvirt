@@ -185,7 +185,7 @@ virNVMeDeviceListAdd(virNVMeDeviceList *list,
     if ((tmp = virNVMeDeviceListLookup(list, dev))) {
         g_autofree char *addrStr = virPCIDeviceAddressAsString(&tmp->address);
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("NVMe device %s namespace %u is already on the list"),
+                       _("NVMe device %1$s namespace %2$u is already on the list"),
                        NULLSTR(addrStr), tmp->namespace);
         return -1;
     }
@@ -209,7 +209,7 @@ virNVMeDeviceListDel(virNVMeDeviceList *list,
     if ((idx = virNVMeDeviceListLookupIndex(list, dev)) < 0) {
         g_autofree char *addrStr = virPCIDeviceAddressAsString(&dev->address);
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("NVMe device %s namespace %u not found"),
+                       _("NVMe device %1$s namespace %2$u not found"),
                        NULLSTR(addrStr), dev->namespace);
         return -1;
     }
@@ -420,7 +420,7 @@ virNVMeDeviceListCreateReAttachList(virNVMeDeviceList *activeList,
             /* Shouldn't happen (TM) */
             g_autofree char *addrStr = virPCIDeviceAddressAsString(&d->address);
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("NVMe device %s namespace %u not found"),
+                           _("NVMe device %1$s namespace %2$u not found"),
                            NULLSTR(addrStr), d->namespace);
             return NULL;
         } else if (nused > 1) {

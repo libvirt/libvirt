@@ -176,14 +176,14 @@ virSCSIHostGetNumber(const char *adapter_name,
         adapter_name += strlen("host");
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid adapter name '%s' for SCSI pool"),
+                       _("Invalid adapter name '%1$s' for SCSI pool"),
                        adapter_name);
         return -1;
     }
 
     if (virStrToLong_ui(adapter_name, NULL, 10, result) == -1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid adapter name '%s' for SCSI pool"),
+                       _("Invalid adapter name '%1$s' for SCSI pool"),
                        adapter_name);
         return -1;
     }
@@ -218,8 +218,7 @@ virSCSIHostGetNameByParentaddr(unsigned int domain,
                                  function);
     if (!(name = virSCSIHostFindByPCI(NULL, parentaddr, unique_id))) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Failed to find scsi_host using PCI '%s' "
-                         "and unique_id='%u'"),
+                       _("Failed to find scsi_host using PCI '%1$s' and unique_id='%2$u'"),
                        parentaddr, unique_id);
         return NULL;
     }

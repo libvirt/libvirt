@@ -548,7 +548,7 @@ virNetDevBandwidthPlug(const char *brname,
     char ifmacStr[VIR_MAC_STRING_BUFLEN];
 
     if (id <= 2) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid class ID %d"), id);
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid class ID %1$d"), id);
         return -1;
     }
 
@@ -556,8 +556,7 @@ virNetDevBandwidthPlug(const char *brname,
 
     if (!net_bandwidth || !net_bandwidth->in) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Bridge '%s' has no QoS set, therefore "
-                         "unable to set 'floor' on '%s'"),
+                       _("Bridge '%1$s' has no QoS set, therefore unable to set 'floor' on '%2$s'"),
                        brname, ifmacStr);
         return -1;
     }
@@ -613,7 +612,7 @@ virNetDevBandwidthUnplug(const char *brname,
     g_autofree char *qdisc_id = NULL;
 
     if (id <= 2) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid class ID %d"), id);
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid class ID %1$d"), id);
         return -1;
     }
 

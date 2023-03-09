@@ -95,7 +95,7 @@ static int virUSBSysReadFile(const char *f_name, const char *d_name,
 
     if (virStrToLong_ui(buf, &ignore, base, value) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not parse usb file %s"), filename);
+                       _("Could not parse usb file %1$s"), filename);
         return -1;
     }
 
@@ -145,7 +145,7 @@ virUSBDeviceSearch(unsigned int vendor,
 
         if (virStrToLong_ui(tmpstr, &ignore, 10, &found_bus) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to parse dir name '%s'"),
+                           _("Failed to parse dir name '%1$s'"),
                            de->d_name);
             goto cleanup;
         }
@@ -211,7 +211,7 @@ virUSBDeviceFindByVendor(unsigned int vendor,
         }
 
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Did not find USB device %04x:%04x"), vendor, product);
+                       _("Did not find USB device %1$04x:%2$04x"), vendor, product);
         return -1;
     }
 
@@ -249,7 +249,7 @@ virUSBDeviceFindByBus(unsigned int bus,
         }
 
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Did not find USB device bus:%u device:%u"),
+                       _("Did not find USB device bus:%1$u device:%2$u"),
                        bus, devno);
         return -1;
     }
@@ -290,7 +290,7 @@ virUSBDeviceFind(unsigned int vendor,
         }
 
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Did not find USB device %04x:%04x bus:%u device:%u"),
+                       _("Did not find USB device %1$04x:%2$04x bus:%3$u device:%4$u"),
                        vendor, product, bus, devno);
         return -1;
     }
@@ -319,7 +319,7 @@ virUSBDeviceNew(unsigned int bus,
     if (g_snprintf(dev->name, sizeof(dev->name), "%.3d:%.3d",
                    dev->bus, dev->dev) >= sizeof(dev->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("dev->name buffer overflow: %.3d:%.3d"),
+                       _("dev->name buffer overflow: %1$.3d:%2$.3d"),
                        dev->bus, dev->dev);
         virUSBDeviceFree(dev);
         return NULL;
@@ -337,7 +337,7 @@ virUSBDeviceNew(unsigned int bus,
     if (g_snprintf(dev->id, sizeof(dev->id), "%d %d", dev->bus,
                    dev->dev) >= sizeof(dev->id)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("dev->id buffer overflow: %d %d"),
+                       _("dev->id buffer overflow: %1$d %2$d"),
                        dev->bus, dev->dev);
         virUSBDeviceFree(dev);
         return NULL;
@@ -443,7 +443,7 @@ virUSBDeviceListAdd(virUSBDeviceList *list,
 {
     if (virUSBDeviceListFind(list, *dev)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Device %s is already in use"),
+                       _("Device %1$s is already in use"),
                        (*dev)->name);
         return -1;
     }

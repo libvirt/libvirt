@@ -84,7 +84,7 @@ virSecretLookupParseSecret(xmlNodePtr secretnode,
     if (uuid) {
         if (virUUIDParse(uuid, def->u.uuid) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid secret uuid '%s'"), uuid);
+                           _("invalid secret uuid '%1$s'"), uuid);
             return -1;
         }
         def->type = VIR_SECRET_LOOKUP_TYPE_UUID;
@@ -165,8 +165,7 @@ virSecretGetSecretString(virConnectPtr conn,
 
         virUUIDFormat(seclookupdef->u.uuid, uuidstr);
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("secret with uuid %s is of type '%s' not "
-                         "expected '%s' type"),
+                       _("secret with uuid %1$s is of type '%2$s' not expected '%3$s' type"),
                        uuidstr, virSecretUsageTypeToString(sec->usageType),
                        virSecretUsageTypeToString(secretUsageType));
         return -1;

@@ -137,7 +137,7 @@ int virPolkitCheckAuth(const char *actionid,
                        _("user cancelled authentication process"));
     } else if (is_challenge) {
         virReportError(VIR_ERR_AUTH_UNAVAILABLE,
-                       _("no polkit agent available to authenticate action '%s'"),
+                       _("no polkit agent available to authenticate action '%1$s'"),
                        actionid);
     } else {
         virReportError(VIR_ERR_AUTH_FAILED, "%s",

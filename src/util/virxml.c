@@ -276,7 +276,7 @@ virXMLCheckIllegalChars(const char *nodeName,
     char *c;
     if ((c = strpbrk(str, illegal))) {
         virReportError(VIR_ERR_XML_DETAIL,
-                       _("invalid char in %s: %c"), nodeName, *c);
+                       _("invalid char in %1$s: %2$c"), nodeName, *c);
         return -1;
     }
     return 0;
@@ -322,7 +322,7 @@ virXMLPropStringRequired(xmlNodePtr node,
 
      if (!ret)
          virReportError(VIR_ERR_XML_ERROR,
-                        _("Missing required attribute '%s' in element '%s'"),
+                        _("Missing required attribute '%1$s' in element '%2$s'"),
                         name, node->name);
 
      return ret;
@@ -345,7 +345,7 @@ virXMLNodeContentString(xmlNodePtr node)
 
     if (node->type !=  XML_ELEMENT_NODE) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("node '%s' has unexpected type %d"),
+                       _("node '%1$s' has unexpected type %2$d"),
                        node->name, node->type);
         return NULL;
     }
@@ -354,7 +354,7 @@ virXMLNodeContentString(xmlNodePtr node)
 
     if (!ret) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("node '%s' has unexpected NULL content. This could be caused by malformed input, or a memory allocation failure"),
+                       _("node '%1$s' has unexpected NULL content. This could be caused by malformed input, or a memory allocation failure"),
                        node->name);
         return NULL;
     }
@@ -382,7 +382,7 @@ virXMLPropEnumInternal(xmlNodePtr node,
             return 0;
 
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Missing required attribute '%s' in element '%s'"),
+                       _("Missing required attribute '%1$s' in element '%2$s'"),
                        name, node->name);
         return -1;
     }
@@ -391,7 +391,7 @@ virXMLPropEnumInternal(xmlNodePtr node,
     if (ret < 0 ||
         ((flags & VIR_XML_PROP_NONZERO) && (ret == 0))) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': '%s'."),
+                       _("Invalid value for attribute '%1$s' in element '%2$s': '%3$s'."),
                        name, node->name, NULLSTR(tmp));
         return -1;
     }
@@ -508,28 +508,28 @@ virXMLPropInt(xmlNodePtr node,
             return 0;
 
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Missing required attribute '%s' in element '%s'"),
+                       _("Missing required attribute '%1$s' in element '%2$s'"),
                        name, node->name);
         return -1;
     }
 
     if (virStrToLong_i(tmp, NULL, base, &val) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected integer value"),
+                       _("Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected integer value"),
                        name, node->name, tmp);
         return -1;
     }
 
     if ((flags & VIR_XML_PROP_NONNEGATIVE) && (val < 0)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected non-negative value"),
+                       _("Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected non-negative value"),
                        name, node->name, tmp);
         return -1;
     }
 
     if ((flags & VIR_XML_PROP_NONZERO) && (val == 0)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': Zero is not permitted"),
+                       _("Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"),
                        name, node->name);
         return -1;
     }
@@ -599,7 +599,7 @@ virXMLPropUIntDefault(xmlNodePtr node,
             return 0;
 
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Missing required attribute '%s' in element '%s'"),
+                       _("Missing required attribute '%1$s' in element '%2$s'"),
                        name, node->name);
         return -1;
     }
@@ -608,14 +608,14 @@ virXMLPropUIntDefault(xmlNodePtr node,
 
     if (ret < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected non-negative integer value"),
+                       _("Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected non-negative integer value"),
                        name, node->name, tmp);
         return -1;
     }
 
     if ((flags & VIR_XML_PROP_NONZERO) && (val == 0)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': Zero is not permitted"),
+                       _("Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"),
                        name, node->name);
         return -1;
     }
@@ -658,28 +658,28 @@ virXMLPropLongLong(xmlNodePtr node,
             return 0;
 
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Missing required attribute '%s' in element '%s'"),
+                       _("Missing required attribute '%1$s' in element '%2$s'"),
                        name, node->name);
         return -1;
     }
 
     if (virStrToLong_ll(tmp, NULL, base, &val) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected long long integer value"),
+                       _("Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected long long integer value"),
                        name, node->name, tmp);
         return -1;
     }
 
     if ((flags & VIR_XML_PROP_NONNEGATIVE) && (val < 0)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected non-negative value"),
+                       _("Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected non-negative value"),
                        name, node->name, tmp);
         return -1;
     }
 
     if ((flags & VIR_XML_PROP_NONZERO) && (val == 0)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': Zero is not permitted"),
+                       _("Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"),
                        name, node->name);
         return -1;
     }
@@ -722,7 +722,7 @@ virXMLPropULongLong(xmlNodePtr node,
             return 0;
 
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Missing required attribute '%s' in element '%s'"),
+                       _("Missing required attribute '%1$s' in element '%2$s'"),
                        name, node->name);
         return -1;
     }
@@ -731,14 +731,14 @@ virXMLPropULongLong(xmlNodePtr node,
 
     if (ret < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected non-negative integer value"),
+                       _("Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected non-negative integer value"),
                        name, node->name, tmp);
         return -1;
     }
 
     if ((flags & VIR_XML_PROP_NONZERO) && (val == 0)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': Zero is not permitted"),
+                       _("Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"),
                        name, node->name);
         return -1;
     }
@@ -803,14 +803,14 @@ virXMLPropUUID(xmlNodePtr node,
             return 0;
 
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Missing required attribute '%s' in element '%s'"),
+                       _("Missing required attribute '%1$s' in element '%2$s'"),
                        name, node->name);
         return -1;
     }
 
     if (virUUIDParse(tmp, val) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected UUID"),
+                       _("Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected UUID"),
                        name, node->name, tmp);
         return -1;
     }
@@ -965,7 +965,7 @@ virXPathNodeSet(const char *xpath,
 
     if (obj->type != XPATH_NODESET) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Incorrect xpath '%s'"), xpath);
+                       _("Incorrect xpath '%1$s'"), xpath);
         return -1;
     }
 
@@ -1050,7 +1050,7 @@ catchXMLError(void *ctx, const char *msg G_GNUC_UNUSED, ...)
 
     if (ctxt->lastError.file) {
         virGenericReportError(domcode, VIR_ERR_XML_DETAIL,
-                              _("%s:%d: %s%s\n%s"),
+                              _("%1$s:%2$d: %3$s%4$s\n%5$s"),
                               ctxt->lastError.file,
                               ctxt->lastError.line,
                               ctxt->lastError.message,
@@ -1058,7 +1058,7 @@ catchXMLError(void *ctx, const char *msg G_GNUC_UNUSED, ...)
                               pointerstr);
     } else {
         virGenericReportError(domcode, VIR_ERR_XML_DETAIL,
-                              _("at line %d: %s%s\n%s"),
+                              _("at line %1$d: %2$s%3$s\n%4$s"),
                               ctxt->lastError.line,
                               ctxt->lastError.message,
                               contextstr,
@@ -1131,7 +1131,7 @@ virXMLParseHelper(int domcode,
     if (!xml) {
         if (virGetLastErrorCode() == VIR_ERR_OK) {
             virGenericReportError(domcode, VIR_ERR_XML_ERROR,
-                                  _("failed to parse xml document '%s'"),
+                                  _("failed to parse xml document '%1$s'"),
                                   docname);
         }
 
@@ -1148,7 +1148,7 @@ virXMLParseHelper(int domcode,
     if (rootelement &&
         !virXMLNodeNameEqual(rootnode, rootelement)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("expecting root element of '%s', not '%s'"),
+                       _("expecting root element of '%1$s', not '%2$s'"),
                        rootelement, rootnode->name);
         return NULL;
     }
@@ -1250,14 +1250,14 @@ virXMLRewriteFile(int fd,
     if (data->warnCommand &&
         virXMLEmitWarning(fd, data->warnName, data->warnCommand) < 0) {
         virReportSystemError(errno,
-                             _("cannot write data to file '%s'"),
+                             _("cannot write data to file '%1$s'"),
                              path);
         return -1;
     }
 
     if (safewrite(fd, data->xml, strlen(data->xml)) < 0) {
         virReportSystemError(errno,
-                             _("cannot write data to file '%s'"),
+                             _("cannot write data to file '%1$s'"),
                              path);
         return -1;
     }
@@ -1563,7 +1563,7 @@ virXMLValidatorInit(const char *schemafile)
     if (!(validator->rngParser =
           xmlRelaxNGNewParserCtxt(validator->schemafile))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to create RelaxNG parser for schema '%s'"),
+                       _("Unable to create RelaxNG parser for schema '%1$s'"),
                        validator->schemafile);
         return NULL;
     }
@@ -1575,7 +1575,7 @@ virXMLValidatorInit(const char *schemafile)
 
     if (!(validator->rng = xmlRelaxNGParse(validator->rngParser))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse RelaxNG schema '%s': %s"),
+                       _("Unable to parse RelaxNG schema '%1$s': %2$s"),
                        validator->schemafile,
                        virBufferCurrentContent(&validator->buf));
         return NULL;
@@ -1583,7 +1583,7 @@ virXMLValidatorInit(const char *schemafile)
 
     if (!(validator->rngValid = xmlRelaxNGNewValidCtxt(validator->rng))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to create RelaxNG validation context for schema '%s'"),
+                       _("Unable to create RelaxNG validation context for schema '%1$s'"),
                        validator->schemafile);
         return NULL;
     }
@@ -1603,7 +1603,7 @@ virXMLValidatorValidate(virXMLValidator *validator,
 {
     if (xmlRelaxNGValidateDoc(validator->rngValid, doc) != 0) {
         virReportError(VIR_ERR_XML_INVALID_SCHEMA,
-                       _("Unable to validate doc against %s\n%s"),
+                       _("Unable to validate doc against %1$s\n%2$s"),
                        validator->schemafile,
                        virBufferCurrentContent(&validator->buf));
         return -1;
@@ -1823,7 +1823,7 @@ virXMLNamespaceRegister(xmlXPathContextPtr ctxt,
                            BAD_CAST ns->prefix,
                            BAD_CAST ns->uri) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to register xml namespace '%s'"),
+                       _("Failed to register xml namespace '%1$s'"),
                        ns->uri);
         return -1;
     }
@@ -1876,7 +1876,7 @@ virParseScaledValue(const char *xpath,
         if (!required)
             return 0;
         virReportError(VIR_ERR_XML_ERROR,
-                       _("missing element or attribute '%s'"),
+                       _("missing element or attribute '%1$s'"),
                        xpath);
         return -1;
     }
@@ -1884,7 +1884,7 @@ virParseScaledValue(const char *xpath,
 
     if (virStrToLong_ullp(bytes_str, NULL, 10, &bytes) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value '%s' for element or attribute '%s'"),
+                       _("Invalid value '%1$s' for element or attribute '%2$s'"),
                        bytes_str, xpath);
         return -1;
     }

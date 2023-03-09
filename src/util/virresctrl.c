@@ -614,7 +614,7 @@ virResctrlGetCacheInfo(virResctrlInfo *resctrl,
 
         if (i_level->types[type]) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Duplicate cache type in resctrl for level %u"),
+                           _("Duplicate cache type in resctrl for level %1$u"),
                            level);
             return -1;
         }
@@ -894,8 +894,7 @@ virResctrlInfoGetCache(virResctrlInfo *resctrl,
         } else {
             if (i_type->size != size) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("level %u cache size %llu does not match "
-                                 "expected size %llu"),
+                               _("level %1$u cache size %2$llu does not match expected size %3$llu"),
                                level, i_type->size, size);
                 goto error;
             }
@@ -966,7 +965,7 @@ virResctrlInfoGetMonitorPrefix(virResctrlInfo *resctrl,
 
     if (!mon) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Bad prefix name '%s' for resctrl monitor"),
+                       _("Bad prefix name '%1$s' for resctrl monitor"),
                        prefix);
         return -1;
     }
@@ -1205,8 +1204,7 @@ virResctrlAllocSetCacheSize(virResctrlAlloc *alloc,
 {
     if (virResctrlAllocCheckCollision(alloc, level, type, cache)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Colliding cache allocations for cache "
-                         "level '%u' id '%u', type '%s'"),
+                       _("Colliding cache allocations for cache level '%1$u' id '%2$u', type '%3$s'"),
                        level, cache, virCacheTypeToString(type));
         return -1;
     }
@@ -1290,7 +1288,7 @@ virResctrlAllocSetMemoryBandwidth(virResctrlAlloc *alloc,
 
     if (mem_bw->bandwidths[id]) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Memory Bandwidth already defined for node %u"),
+                       _("Memory Bandwidth already defined for node %1$u"),
                        id);
         return -1;
     }
@@ -1346,7 +1344,7 @@ virResctrlSetID(char **resctrlid,
 
     if (*resctrlid) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Attempt to overwrite resctrlid='%s' with id='%s'"),
+                       _("Attempt to overwrite resctrlid='%1$s' with id='%2$s'"),
                        *resctrlid, id);
         return -1;
     }
@@ -1421,19 +1419,19 @@ virResctrlAllocParseProcessMemoryBandwidth(virResctrlInfo *resctrl,
 
     if (virStrToLong_uip(mem_bw, NULL, 10, &id) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid node id %u "), id);
+                       _("Invalid node id %1$u "), id);
         return -1;
     }
     if (virStrToLong_uip(tmp, NULL, 10, &bandwidth) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid bandwidth %u"), bandwidth);
+                       _("Invalid bandwidth %1$u"), bandwidth);
         return -1;
     }
     if (bandwidth < resctrl->membw_info->min_bandwidth ||
         id > resctrl->membw_info->max_id) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing or inconsistent resctrl info for "
-                         "memory bandwidth node '%u'"), id);
+                       _("Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"),
+                       id);
         return -1;
     }
     if (alloc->mem_bw->nbandwidths <= id) {
@@ -1576,7 +1574,7 @@ virResctrlAllocParseProcessCache(virResctrlInfo *resctrl,
 
     if (virStrToLong_uip(cache, NULL, 10, &cache_id) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid cache id '%s'"), cache);
+                       _("Invalid cache id '%1$s'"), cache);
         return -1;
     }
 
@@ -1589,8 +1587,7 @@ virResctrlAllocParseProcessCache(virResctrlInfo *resctrl,
         !resctrl->levels[level] ||
         !resctrl->levels[level]->types[type]) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing or inconsistent resctrl info for "
-                         "level '%u' type '%s'"),
+                       _("Missing or inconsistent resctrl info for level '%1$u' type '%2$s'"),
                        level, virCacheTypeToString(type));
         return -1;
     }
@@ -1632,7 +1629,7 @@ virResctrlAllocParseCacheLine(virResctrlInfo *resctrl,
 
     if (virStrToLong_uip(line + 1, &line, 10, &level) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot parse resctrl schema level '%s'"),
+                       _("Cannot parse resctrl schema level '%1$s'"),
                        line + 1);
         return -1;
     }
@@ -1640,7 +1637,7 @@ virResctrlAllocParseCacheLine(virResctrlInfo *resctrl,
     type = virResctrlTypeFromString(line);
     if (type < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot parse resctrl schema level '%s'"),
+                       _("Cannot parse resctrl schema level '%1$s'"),
                        line + 1);
         return -1;
     }
@@ -1866,7 +1863,7 @@ virResctrlAllocGetUnused(virResctrlInfo *resctrl)
 
         if (rv < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not read schemata file for group %s"),
+                           _("Could not read schemata file for group %1$s"),
                            ent->d_name);
             return NULL;
         }
@@ -1912,7 +1909,7 @@ virResctrlAllocFindUnused(virResctrlAlloc *alloc,
 
     if (cache >= f_type->nmasks) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Cache with id %u does not exists for level %d"),
+                       _("Cache with id %1$u does not exists for level %2$d"),
                        cache, level);
         return -1;
     }
@@ -1920,16 +1917,14 @@ virResctrlAllocFindUnused(virResctrlAlloc *alloc,
     f_mask = f_type->masks[cache];
     if (!f_mask) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Cache level %d id %u does not support tuning for "
-                         "scope type '%s'"),
+                       _("Cache level %1$d id %2$u does not support tuning for scope type '%3$s'"),
                        level, cache, virCacheTypeToString(type));
         return -1;
     }
 
     if (*size == i_type->size) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Cache allocation for the whole cache is not "
-                         "possible, specify size smaller than %llu"),
+                       _("Cache allocation for the whole cache is not possible, specify size smaller than %1$llu"),
                        i_type->size);
         return -1;
     }
@@ -1938,16 +1933,14 @@ virResctrlAllocFindUnused(virResctrlAlloc *alloc,
 
     if (*size % i_type->control.granularity) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Cache allocation of size %llu is not "
-                         "divisible by granularity %llu"),
+                       _("Cache allocation of size %1$llu is not divisible by granularity %2$llu"),
                        *size, i_type->control.granularity);
         return -1;
     }
 
     if (need_bits < i_type->min_cbm_bits) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Cache allocation of size %llu is smaller "
-                         "than the minimum allowed allocation %llu"),
+                       _("Cache allocation of size %1$llu is smaller than the minimum allowed allocation %2$llu"),
                        *size,
                        i_type->control.granularity * i_type->min_cbm_bits);
         return -1;
@@ -1985,9 +1978,7 @@ virResctrlAllocFindUnused(virResctrlAlloc *alloc,
 
     if (last_pos < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Not enough room for allocation of "
-                         "%llu bytes for level %u cache %u "
-                         "scope type '%s'"),
+                       _("Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u scope type '%4$s'"),
                        *size, level, cache,
                        virCacheTypeToString(type));
         return -1;
@@ -2028,25 +2019,21 @@ virResctrlAllocMemoryBandwidth(virResctrlInfo *resctrl,
 
         if (*(mem_bw_alloc->bandwidths[i]) % mem_bw_info->bandwidth_granularity) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Memory Bandwidth allocation of size "
-                             "%u is not divisible by granularity %u"),
+                           _("Memory Bandwidth allocation of size %1$u is not divisible by granularity %2$u"),
                            *(mem_bw_alloc->bandwidths[i]),
                            mem_bw_info->bandwidth_granularity);
             return -1;
         }
         if (*(mem_bw_alloc->bandwidths[i]) < mem_bw_info->min_bandwidth) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Memory Bandwidth allocation of size "
-                             "%u is smaller than the minimum "
-                             "allowed allocation %u"),
+                           _("Memory Bandwidth allocation of size %1$u is smaller than the minimum allowed allocation %2$u"),
                            *(mem_bw_alloc->bandwidths[i]),
                            mem_bw_info->min_bandwidth);
             return -1;
         }
         if (i > mem_bw_info->max_id) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("bandwidth controller id %zd does not "
-                             "exist, max controller id %u"),
+                           _("bandwidth controller id %1$zd does not exist, max controller id %2$u"),
                            i, mem_bw_info->max_id);
             return -1;
         }
@@ -2168,7 +2155,7 @@ virResctrlAllocAssign(virResctrlInfo *resctrl,
 
         if (!f_level) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Cache level %d does not support tuning"),
+                           _("Cache level %1$d does not support tuning"),
                            level);
             return -1;
         }
@@ -2183,8 +2170,7 @@ virResctrlAllocAssign(virResctrlInfo *resctrl,
 
             if (!f_type) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Cache level %d does not support tuning for "
-                                 "scope type '%s'"),
+                               _("Cache level %1$d does not support tuning for scope type '%2$s'"),
                                level, virCacheTypeToString(type));
                 return -1;
             }
@@ -2210,8 +2196,8 @@ virResctrlDeterminePath(const char *parentpath,
 {
     if (!id) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Resctrl ID must be set before determining resctrl "
-                         "parentpath='%s' prefix='%s'"), parentpath, prefix);
+                       _("Resctrl ID must be set before determining resctrl parentpath='%1$s' prefix='%2$s'"),
+                       parentpath, prefix);
         return NULL;
     }
 
@@ -2225,7 +2211,7 @@ virResctrlAllocDeterminePath(virResctrlAlloc *alloc,
 {
     if (alloc->path) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Resctrl allocation path is already set to '%s'"),
+                       _("Resctrl allocation path is already set to '%1$s'"),
                        alloc->path);
         return -1;
     }
@@ -2258,7 +2244,7 @@ virResctrlCreateGroupPath(const char *path)
 
     if (g_mkdir_with_parents(path, 0777) < 0) {
         virReportSystemError(errno,
-                             _("Cannot create resctrl directory '%s'"),
+                             _("Cannot create resctrl directory '%1$s'"),
                              path);
         return -1;
     }
@@ -2315,7 +2301,7 @@ virResctrlAllocCreate(virResctrlInfo *resctrl,
     if (virFileWriteStr(schemata_path, alloc_str, 0) < 0) {
         rmdir(alloc->path);
         virReportSystemError(errno,
-                             _("Cannot write into schemata file '%s'"),
+                             _("Cannot write into schemata file '%1$s'"),
                              schemata_path);
         goto cleanup;
     }
@@ -2346,7 +2332,7 @@ virResctrlAddPID(const char *path,
 
     if (virFileWriteStr(tasks, pidstr, 0) < 0) {
         virReportSystemError(errno,
-                             _("Cannot write pid in tasks file '%s'"),
+                             _("Cannot write pid in tasks file '%1$s'"),
                              tasks);
         return -1;
     }
@@ -2383,7 +2369,7 @@ virResctrlAllocRemove(virResctrlAlloc *alloc)
     VIR_DEBUG("Removing resctrl allocation %s", alloc->path);
     if (rmdir(alloc->path) != 0 && errno != ENOENT) {
         ret = -errno;
-        VIR_ERROR(_("Unable to remove %s (%d)"), alloc->path, errno);
+        VIR_ERROR(_("Unable to remove %1$s (%2$d)"), alloc->path, errno);
     }
 
     return ret;
@@ -2438,7 +2424,7 @@ virResctrlMonitorDeterminePath(virResctrlMonitor *monitor,
 
     if (monitor->path) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Resctrl monitor path is already set to '%s'"),
+                       _("Resctrl monitor path is already set to '%1$s'"),
                        monitor->path);
         return -1;
     }
@@ -2530,7 +2516,7 @@ virResctrlMonitorRemove(virResctrlMonitor *monitor)
     VIR_DEBUG("Removing resctrl monitor path=%s", monitor->path);
     if (rmdir(monitor->path) != 0 && errno != ENOENT) {
         ret = -errno;
-        VIR_ERROR(_("Unable to remove %s (%d)"), monitor->path, errno);
+        VIR_ERROR(_("Unable to remove %1$s (%2$d)"), monitor->path, errno);
     }
 
     return ret;
@@ -2627,7 +2613,7 @@ virResctrlMonitorGetStats(virResctrlMonitor *monitor,
                                         ent->d_name, resources[i]);
             if (rv == -2) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("File '%s/%s/%s' does not exist."),
+                               _("File '%1$s/%2$s/%3$s' does not exist."),
                                datapath, ent->d_name, resources[i]);
             }
             if (rv < 0)

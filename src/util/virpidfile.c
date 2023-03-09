@@ -378,7 +378,7 @@ int virPidFileAcquirePathFull(const char *path,
         if ((fd = open(path, O_WRONLY|O_CREAT, 0644)) < 0) {
             if (!quiet) {
                 virReportSystemError(errno,
-                                     _("Failed to open pid file '%s'"),
+                                     _("Failed to open pid file '%1$s'"),
                                      path);
             }
             return -1;
@@ -387,7 +387,7 @@ int virPidFileAcquirePathFull(const char *path,
         if (virSetCloseExec(fd) < 0) {
             if (!quiet) {
                 virReportSystemError(errno,
-                                     _("Failed to set close-on-exec flag '%s'"),
+                                     _("Failed to set close-on-exec flag '%1$s'"),
                                      path);
             }
             VIR_FORCE_CLOSE(fd);
@@ -397,7 +397,7 @@ int virPidFileAcquirePathFull(const char *path,
         if (fstat(fd, &b) < 0) {
             if (!quiet) {
                 virReportSystemError(errno,
-                                     _("Unable to check status of pid file '%s'"),
+                                     _("Unable to check status of pid file '%1$s'"),
                                      path);
             }
             VIR_FORCE_CLOSE(fd);
@@ -407,7 +407,7 @@ int virPidFileAcquirePathFull(const char *path,
         if (virFileLock(fd, false, 0, 1, waitForLock) < 0) {
             if (!quiet) {
                 virReportSystemError(errno,
-                                     _("Failed to acquire pid file '%s'"),
+                                     _("Failed to acquire pid file '%1$s'"),
                                      path);
             }
             VIR_FORCE_CLOSE(fd);
@@ -438,7 +438,7 @@ int virPidFileAcquirePathFull(const char *path,
     if (ftruncate(fd, 0) < 0) {
         if (!quiet) {
             virReportSystemError(errno,
-                                 _("Failed to truncate pid file '%s'"),
+                                 _("Failed to truncate pid file '%1$s'"),
                                  path);
         }
         VIR_FORCE_CLOSE(fd);
@@ -448,7 +448,7 @@ int virPidFileAcquirePathFull(const char *path,
     if (safewrite(fd, pidstr, strlen(pidstr)) < 0) {
         if (!quiet) {
             virReportSystemError(errno,
-                                 _("Failed to write to pid file '%s'"),
+                                 _("Failed to write to pid file '%1$s'"),
                                  path);
         }
         VIR_FORCE_CLOSE(fd);
@@ -544,7 +544,7 @@ virPidFileConstructPath(bool privileged,
 
         if (g_mkdir_with_parents(rundir, 0700) < 0) {
             virReportSystemError(errno,
-                                 _("Cannot create user runtime directory '%s'"),
+                                 _("Cannot create user runtime directory '%1$s'"),
                                  rundir);
             return -1;
         }

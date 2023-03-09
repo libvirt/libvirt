@@ -81,7 +81,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
 
         if (virStrcpyStatic(keys[nkeys].field, name) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Field name '%s' too long"), name);
+                           _("Field name '%1$s' too long"), name);
             goto cleanup;
         }
 
@@ -102,7 +102,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
             if (STREQ_NULLABLE(last_name, sorted[i].field) &&
                 !(keys[j].value.i & VIR_TYPED_PARAM_MULTIPLE)) {
                 virReportError(VIR_ERR_INVALID_ARG,
-                               _("parameter '%s' occurs multiple times"),
+                               _("parameter '%1$s' occurs multiple times"),
                                sorted[i].field);
                 goto cleanup;
             }
@@ -113,8 +113,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
                 if (!badtype)
                     badtype = virTypedParameterTypeToString(0);
                 virReportError(VIR_ERR_INVALID_ARG,
-                               _("invalid type '%s' for parameter '%s', "
-                                 "expected '%s'"),
+                               _("invalid type '%1$s' for parameter '%2$s', expected '%3$s'"),
                                badtype, sorted[i].field,
                                virTypedParameterTypeToString(keys[j].type));
                 goto cleanup;
@@ -126,7 +125,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
 
     if (j == nkeys && i != nparams) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                       _("parameter '%s' not supported"),
+                       _("parameter '%1$s' not supported"),
                        sorted[i].field);
         goto cleanup;
     }
@@ -195,7 +194,7 @@ virTypedParameterToString(virTypedParameterPtr param)
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected type %d for field %s"),
+                       _("unexpected type %1$d for field %2$s"),
                        param->type, param->field);
     }
 
@@ -241,7 +240,7 @@ virTypedParameterAssignValueVArgs(virTypedParameterPtr param,
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected type %d for field %s"), type,
+                       _("unexpected type %1$d for field %2$s"), type,
                        NULLSTR(param->field));
         return -1;
     }
@@ -279,7 +278,7 @@ virTypedParameterAssign(virTypedParameterPtr param, const char *name,
     int ret = -1;
 
     if (virStrcpyStatic(param->field, name) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("Field name '%s' too long"),
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Field name '%1$s' too long"),
                        name);
         return -1;
     }
@@ -322,7 +321,7 @@ virTypedParamsReplaceString(virTypedParameterPtr *params,
     if (param) {
         if (param->type != VIR_TYPED_PARAM_STRING) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Parameter '%s' is not a string"),
+                           _("Parameter '%1$s' is not a string"),
                            param->field);
             return -1;
         }
@@ -529,7 +528,7 @@ virTypedParamsDeserialize(struct _virTypedParameterRemote *remote_params,
 
     if (limit && remote_params_len > limit) {
         virReportError(VIR_ERR_RPC,
-                       _("too many parameters '%u' for limit '%d'"),
+                       _("too many parameters '%1$u' for limit '%2$d'"),
                        remote_params_len, limit);
         goto cleanup;
     }
@@ -538,7 +537,7 @@ virTypedParamsDeserialize(struct _virTypedParameterRemote *remote_params,
         /* Check the length of the returned list carefully. */
         if (remote_params_len > *nparams) {
             virReportError(VIR_ERR_RPC,
-                           _("too many parameters '%u' for nparams '%d'"),
+                           _("too many parameters '%1$u' for nparams '%2$d'"),
                            remote_params_len, *nparams);
             goto cleanup;
         }
@@ -555,7 +554,7 @@ virTypedParamsDeserialize(struct _virTypedParameterRemote *remote_params,
         if (virStrcpyStatic(param->field,
                             remote_param->field) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("parameter %s too big for destination"),
+                           _("parameter %1$s too big for destination"),
                            remote_param->field);
             goto cleanup;
         }
@@ -590,7 +589,7 @@ virTypedParamsDeserialize(struct _virTypedParameterRemote *remote_params,
             param->value.s = g_strdup(remote_param->value.remote_typed_param_value.s);
             break;
         default:
-            virReportError(VIR_ERR_RPC, _("unknown parameter type: %d"),
+            virReportError(VIR_ERR_RPC, _("unknown parameter type: %1$d"),
                            param->type);
             goto cleanup;
         }
@@ -648,7 +647,7 @@ virTypedParamsSerialize(virTypedParameterPtr params,
 
     if (nparams > limit) {
         virReportError(VIR_ERR_RPC,
-                       _("too many parameters '%d' for limit '%d'"),
+                       _("too many parameters '%1$d' for limit '%2$d'"),
                        nparams, limit);
         goto cleanup;
     }
@@ -695,7 +694,7 @@ virTypedParamsSerialize(virTypedParameterPtr params,
             val->value.remote_typed_param_value.s = g_strdup(param->value.s);
             break;
         default:
-            virReportError(VIR_ERR_RPC, _("unknown parameter type: %d"),
+            virReportError(VIR_ERR_RPC, _("unknown parameter type: %1$d"),
                            param->type);
             goto cleanup;
         }

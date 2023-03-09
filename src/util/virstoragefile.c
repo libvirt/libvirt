@@ -90,7 +90,7 @@ int virStorageFileGetSCSIKey(const char *path,
                              bool ignoreError)
 {
     if (!ignoreError)
-        virReportSystemError(ENOSYS, _("Unable to get SCSI key for %s"), path);
+        virReportSystemError(ENOSYS, _("Unable to get SCSI key for %1$s"), path);
     return -1;
 }
 #endif

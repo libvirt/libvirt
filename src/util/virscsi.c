@@ -93,7 +93,7 @@ virSCSIDeviceGetAdapterId(const char *adapter,
                         NULL, 0, adapter_id) == 0)
         return 0;
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Cannot parse adapter '%s'"), adapter);
+                   _("Cannot parse adapter '%1$s'"), adapter);
     return -1;
 }
 
@@ -195,7 +195,7 @@ virSCSIDeviceNew(const char *sysfs_prefix,
 
     if (!virFileExists(dev->sg_path)) {
         virReportSystemError(errno,
-                             _("SCSI device '%s': could not access %s"),
+                             _("SCSI device '%1$s': could not access %2$s"),
                              dev->name, dev->sg_path);
         return NULL;
     }
@@ -353,7 +353,7 @@ virSCSIDeviceListAdd(virSCSIDeviceList *list,
 {
     if (virSCSIDeviceListFind(list, dev)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Device %s already exists"),
+                       _("Device %1$s already exists"),
                        dev->name);
         return -1;
     }

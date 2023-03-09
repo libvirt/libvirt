@@ -97,13 +97,13 @@ virProcessTranslateStatus(int status)
 {
     char *buf;
     if (WIFEXITED(status)) {
-        buf = g_strdup_printf(_("exit status %d"),
+        buf = g_strdup_printf(_("exit status %1$d"),
                               WEXITSTATUS(status));
     } else if (WIFSIGNALED(status)) {
-        buf = g_strdup_printf(_("fatal signal %d"),
+        buf = g_strdup_printf(_("fatal signal %1$d"),
                               WTERMSIG(status));
     } else {
-        buf = g_strdup_printf(_("invalid value %d"), status);
+        buf = g_strdup_printf(_("invalid value %1$d"), status);
     }
     return buf;
 }
@@ -200,7 +200,7 @@ virProcessWait(pid_t pid, int *exitstatus, bool raw)
 
     if (pid <= 0) {
         if (pid != -1)
-            virReportSystemError(EINVAL, _("unable to wait for process %lld"),
+            virReportSystemError(EINVAL, _("unable to wait for process %1$lld"),
                                  (long long) pid);
         return -1;
     }
@@ -210,7 +210,7 @@ virProcessWait(pid_t pid, int *exitstatus, bool raw)
            errno == EINTR);
 
     if (ret == -1) {
-        virReportSystemError(errno, _("unable to wait for process %lld"),
+        virReportSystemError(errno, _("unable to wait for process %1$lld"),
                              (long long) pid);
         return -1;
     }
@@ -231,7 +231,7 @@ virProcessWait(pid_t pid, int *exitstatus, bool raw)
  error:
     st = virProcessTranslateStatus(status);
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Child process (%lld) unexpected %s"),
+                   _("Child process (%1$lld) unexpected %2$s"),
                    (long long) pid, NULLSTR(st));
     return -1;
 }
@@ -241,7 +241,7 @@ virProcessWait(pid_t pid, int *exitstatus, bool raw)
 char *
 virProcessTranslateStatus(int status)
 {
-    return g_strdup_printf(_("invalid value %d"), status);
+    return g_strdup_printf(_("invalid value %1$d"), status);
 }
 
 
@@ -256,7 +256,7 @@ virProcessAbort(pid_t pid)
 int
 virProcessWait(pid_t pid, int *exitstatus G_GNUC_UNUSED, bool raw G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, _("unable to wait for process %lld"),
+    virReportSystemError(ENOSYS, _("unable to wait for process %1$lld"),
                          (long long) pid);
     return -1;
 }
@@ -417,7 +417,7 @@ virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay, boo
         if (rc < 0) {
             if (errno != ESRCH) {
                 virReportSystemError(errno,
-                                     _("Failed to terminate process %lld with SIG%s"),
+                                     _("Failed to terminate process %1$lld with SIG%2$s"),
                                      (long long)pid, signame);
                 return -1;
             }
@@ -428,7 +428,7 @@ virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay, boo
     }
 
     virReportSystemError(EBUSY,
-                         _("Failed to terminate process %lld with SIG%s"),
+                         _("Failed to terminate process %1$lld with SIG%2$s"),
                          (long long)pid, signame);
 
     return 0;
@@ -486,7 +486,7 @@ int virProcessSetAffinity(pid_t pid, virBitmap *map, bool quiet)
                       pid, g_strerror(errno));
         } else {
             virReportSystemError(errno,
-                                 _("cannot set CPU affinity on process %d"), pid);
+                                 _("cannot set CPU affinity on process %1$d"), pid);
             return -1;
         }
     }
@@ -515,7 +515,7 @@ virProcessGetAffinity(pid_t pid)
 
     if (sched_getaffinity(pid, masklen, mask) < 0) {
         virReportSystemError(errno,
-                             _("cannot get CPU affinity of process %d"), pid);
+                             _("cannot get CPU affinity of process %1$d"), pid);
         goto cleanup;
     }
 
@@ -554,7 +554,7 @@ int virProcessSetAffinity(pid_t pid,
                       pid, g_strerror(errno));
         } else {
             virReportSystemError(errno,
-                                 _("cannot set CPU affinity on process %d"), pid);
+                                 _("cannot set CPU affinity on process %1$d"), pid);
             return -1;
         }
     }
@@ -573,7 +573,7 @@ virProcessGetAffinity(pid_t pid)
     if (cpuset_getaffinity(CPU_LEVEL_WHICH, CPU_WHICH_PID, pid,
                            sizeof(mask), &mask) != 0) {
         virReportSystemError(errno,
-                             _("cannot get CPU affinity of process %d"), pid);
+                             _("cannot get CPU affinity of process %1$d"), pid);
         return NULL;
     }
 
@@ -927,8 +927,7 @@ virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes)
 
     if (virProcessSetLimit(pid, RLIMIT_MEMLOCK, &rlim) < 0) {
         virReportSystemError(errno,
-                             _("cannot limit locked memory "
-                               "of process %lld to %llu"),
+                             _("cannot limit locked memory of process %1$lld to %2$llu"),
                              (long long int)pid, bytes);
         return -1;
     }
@@ -969,8 +968,7 @@ virProcessGetMaxMemLock(pid_t pid,
 
     if (virProcessGetLimit(pid, RLIMIT_MEMLOCK, &rlim) < 0) {
         virReportSystemError(errno,
-                             _("cannot get locked memory limit "
-                               "of process %lld"),
+                             _("cannot get locked memory limit of process %1$lld"),
                              (long long int) pid);
         return -1;
     }
@@ -1017,8 +1015,7 @@ virProcessSetMaxProcesses(pid_t pid, unsigned int procs)
 
     if (virProcessSetLimit(pid, RLIMIT_NPROC, &rlim) < 0) {
         virReportSystemError(errno,
-                _("cannot limit number of subprocesses "
-                  "of process %lld to %u"),
+                _("cannot limit number of subprocesses of process %1$lld to %2$u"),
                 (long long int)pid, procs);
         return -1;
     }
@@ -1061,8 +1058,7 @@ virProcessSetMaxFiles(pid_t pid, unsigned int files)
 
     if (virProcessSetLimit(pid, RLIMIT_NOFILE, &rlim) < 0) {
         virReportSystemError(errno,
-                             _("cannot limit number of open files "
-                               "of process %lld to %u"),
+                             _("cannot limit number of open files of process %1$lld to %2$u"),
                              (long long int)pid, files);
         return -1;
     }
@@ -1098,8 +1094,7 @@ virProcessSetMaxCoreSize(pid_t pid, unsigned long long bytes)
 
     if (virProcessSetLimit(pid, RLIMIT_CORE, &rlim) < 0) {
         virReportSystemError(errno,
-                _("cannot limit core file size "
-                  "of process %lld to %llu"),
+                _("cannot limit core file size of process %1$lld to %2$llu"),
                 (long long int)pid, bytes);
         return -1;
     }
@@ -1130,14 +1125,14 @@ int virProcessGetStartTime(pid_t pid,
 
     if (!proc_stat || g_strv_length(proc_stat) < 22) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot find start time for pid %d"), (int)pid);
+                       _("Cannot find start time for pid %1$d"), (int)pid);
         return -1;
     }
 
     starttime_str = proc_stat[VIR_PROCESS_STAT_STARTTIME];
     if (virStrToLong_ull(starttime_str, NULL, 10, timestamp) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot parse start time %s for pid %d"),
+                       _("Cannot parse start time %1$s for pid %2$d"),
                        starttime_str, (int)pid);
         return -1;
     }
@@ -1363,7 +1358,7 @@ virProcessRunInFork(virProcessForkCallback cb,
                     memcpy(bin->bindata, buf, sizeof(*bin));
 
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("child reported (status=%d): %s"),
+                                   _("child reported (status=%1$d): %2$s"),
                                    status, NULLSTR(bin->data.message));
 
                     virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__,
@@ -1378,7 +1373,7 @@ virProcessRunInFork(virProcessForkCallback cb,
                                       "%s", bin->data.message);
                 } else {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("child didn't write error (status=%d)"),
+                                   _("child didn't write error (status=%1$d)"),
                                    status);
                 }
             }
@@ -1599,7 +1594,7 @@ virProcessSetScheduler(pid_t pid,
 
     if (pol < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Scheduler '%s' is not supported on this platform"),
+                       _("Scheduler '%1$s' is not supported on this platform"),
                        virProcessSchedPolicyTypeToString(policy));
         return -1;
     }
@@ -1624,7 +1619,7 @@ virProcessSetScheduler(pid_t pid,
 
         if (priority < min || priority > max) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Scheduler priority %d out of range [%d, %d]"),
+                           _("Scheduler priority %1$d out of range [%2$d, %3$d]"),
                            priority, min, max);
             return -1;
         }
@@ -1634,7 +1629,7 @@ virProcessSetScheduler(pid_t pid,
 
     if (sched_setscheduler(pid, pol, &param) < 0) {
         virReportSystemError(errno,
-                             _("Cannot set scheduler parameters for pid %lld"),
+                             _("Cannot set scheduler parameters for pid %1$lld"),
                              (long long) pid);
         return -1;
     }
@@ -1827,7 +1822,7 @@ virProcessGetSchedInfo(unsigned long long *cpuWait,
             line = strchr(line, ':');
             if (!line) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Missing separator in sched info '%s'"),
+                               _("Missing separator in sched info '%1$s'"),
                                lines[i]);
                 return -1;
             }
@@ -1837,7 +1832,7 @@ virProcessGetSchedInfo(unsigned long long *cpuWait,
 
             if (virStrToDouble(line, NULL, &val) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to parse sched info value '%s'"),
+                               _("Unable to parse sched info value '%1$s'"),
                                line);
                 return -1;
             }

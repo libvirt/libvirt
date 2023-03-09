@@ -319,7 +319,7 @@ virSysinfoReadPPC(void)
 
     if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to open %s"), CPUINFO);
+                       _("Failed to open %1$s"), CPUINFO);
         return NULL;
     }
 
@@ -445,7 +445,7 @@ virSysinfoReadARM(void)
 
     if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to open %s"), CPUINFO);
+                       _("Failed to open %1$s"), CPUINFO);
         return NULL;
     }
 
@@ -600,7 +600,7 @@ virSysinfoReadS390(void)
     /* Gather info from /proc/cpuinfo */
     if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to open %s"), CPUINFO);
+                       _("Failed to open %1$s"), CPUINFO);
         return NULL;
     }
 
@@ -613,7 +613,7 @@ virSysinfoReadS390(void)
     /* Gather info from /proc/sysinfo */
     if (virFileReadAll(SYSINFO, 8192, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to open %s"), SYSINFO);
+                       _("Failed to open %1$s"), SYSINFO);
         return NULL;
     }
 
@@ -1537,7 +1537,7 @@ virSysinfoFormat(virBuffer *buf, virSysinfoDef *def)
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected sysinfo type model %d"),
+                       _("unexpected sysinfo type model %1$d"),
                        def->type);
         return -1;
     }
@@ -1564,7 +1564,7 @@ virSysinfoFormat(virBuffer *buf, virSysinfoDef *def)
     do { \
         if (STRNEQ_NULLABLE(src->name, dst->name)) { \
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
-                           _("Target sysinfo %s %s does not match source %s"), \
+                           _("Target sysinfo %1$s %2$s does not match source %3$s"), \
                            desc, NULLSTR(dst->name), NULLSTR(src->name)); \
             return false; \
         } \
@@ -1680,7 +1680,7 @@ bool virSysinfoIsEqual(virSysinfoDef *src,
 
     if (src->type != dst->type) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target sysinfo %s does not match source %s"),
+                       _("Target sysinfo %1$s does not match source %2$s"),
                        virSysinfoTypeToString(dst->type),
                        virSysinfoTypeToString(src->type));
         return false;
@@ -1694,7 +1694,7 @@ bool virSysinfoIsEqual(virSysinfoDef *src,
 
     if (src->nbaseBoard != dst->nbaseBoard) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target sysinfo base board count '%zu' does not match source '%zu'"),
+                       _("Target sysinfo base board count '%1$zu' does not match source '%2$zu'"),
                        dst->nbaseBoard, src->nbaseBoard);
         return false;
     }

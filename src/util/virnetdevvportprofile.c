@@ -205,7 +205,7 @@ virNetDevVPortProfileCheckComplete(virNetDevVPortProfile *virtport,
 
     if (missing) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("missing %s in <virtualport type='%s'>"), missing,
+                       _("missing %1$s in <virtualport type='%2$s'>"), missing,
                        virNetDevVPortTypeToString(virtport->virtPortType));
         return -1;
     }
@@ -262,7 +262,7 @@ virNetDevVPortProfileCheckNoExtras(const virNetDevVPortProfile *virtport)
 
     if (extra) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("extra %s unsupported in <virtualport type='%s'>"),
+                       _("extra %1$s unsupported in <virtualport type='%2$s'>"),
                        extra,
                        virNetDevVPortTypeToString(virtport->virtPortType));
         return -1;
@@ -290,8 +290,7 @@ virNetDevVPortProfileMerge(virNetDevVPortProfile *orig,
         if (otype != VIR_NETDEV_VPORT_PROFILE_NONE &&
             otype != mods->virtPortType) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("attempt to merge virtualports "
-                             "with mismatched types (%s and %s)"),
+                           _("attempt to merge virtualports with mismatched types (%1$s and %2$s)"),
                            virNetDevVPortTypeToString(otype),
                            virNetDevVPortTypeToString(mods->virtPortType));
             return -1;
@@ -305,8 +304,7 @@ virNetDevVPortProfileMerge(virNetDevVPortProfile *orig,
         if (orig->managerID_specified &&
             (orig->managerID != mods->managerID)) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("attempt to merge virtualports "
-                             "with mismatched managerids (%d and %d)"),
+                           _("attempt to merge virtualports with mismatched managerids (%1$d and %2$d)"),
                            orig->managerID, mods->managerID);
             return -1;
         }
@@ -320,8 +318,7 @@ virNetDevVPortProfileMerge(virNetDevVPortProfile *orig,
         if (orig->typeID_specified &&
             (orig->typeID != mods->typeID)) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("attempt to merge virtualports "
-                             "with mismatched typeids (%d and %d)"),
+                           _("attempt to merge virtualports with mismatched typeids (%1$d and %2$d)"),
                            orig->typeID, mods->typeID);
             return -1;
         }
@@ -335,8 +332,7 @@ virNetDevVPortProfileMerge(virNetDevVPortProfile *orig,
         if (orig->typeIDVersion_specified &&
             (orig->typeIDVersion != mods->typeIDVersion)) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("attempt to merge virtualports with "
-                             "mismatched typeidversions (%d and %d)"),
+                           _("attempt to merge virtualports with mismatched typeidversions (%1$d and %2$d)"),
                            orig->typeIDVersion, mods->typeIDVersion);
             return -1;
         }
@@ -354,8 +350,7 @@ virNetDevVPortProfileMerge(virNetDevVPortProfile *orig,
             char modsuuid[VIR_UUID_STRING_BUFLEN];
 
             virReportError(VIR_ERR_XML_ERROR,
-                           _("attempt to merge virtualports with "
-                             "mismatched instanceids ('%s' and '%s')"),
+                           _("attempt to merge virtualports with mismatched instanceids ('%1$s' and '%2$s')"),
                            virUUIDFormat(orig->instanceID, origuuid),
                            virUUIDFormat(mods->instanceID, modsuuid));
             return -1;
@@ -374,8 +369,7 @@ virNetDevVPortProfileMerge(virNetDevVPortProfile *orig,
             char modsuuid[VIR_UUID_STRING_BUFLEN];
 
             virReportError(VIR_ERR_XML_ERROR,
-                           _("attempt to merge virtualports with "
-                             "mismatched interfaceids ('%s' and '%s')"),
+                           _("attempt to merge virtualports with mismatched interfaceids ('%1$s' and '%2$s')"),
                            virUUIDFormat(orig->interfaceID, origuuid),
                            virUUIDFormat(mods->interfaceID, modsuuid));
             return -1;
@@ -391,8 +385,7 @@ virNetDevVPortProfileMerge(virNetDevVPortProfile *orig,
         if (orig->profileID[0] &&
             STRNEQ(orig->profileID, mods->profileID)) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("attempt to merge virtualports with "
-                             "mismatched profileids ('%s' and '%s')"),
+                           _("attempt to merge virtualports with mismatched profileids ('%1$s' and '%2$s')"),
                            orig->profileID, mods->profileID);
             return -1;
         }
@@ -485,7 +478,7 @@ virNetDevVPortProfileGetLldpadPid(void)
         }
     } else {
         virReportSystemError(errno,
-                             _("Error opening file %s"), LLDPAD_PID_FILE);
+                             _("Error opening file %1$s"), LLDPAD_PID_FILE);
     }
 
     VIR_FORCE_CLOSE(fd);
@@ -577,7 +570,7 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
                    virUUIDFormat(instanceId, instanceIdStr);
 
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Could not find vf/instanceId %u/%s in netlink response"),
+                               _("Could not find vf/instanceId %1$u/%2$s in netlink response"),
                                vf, instanceIdStr);
 
                 /* go through all the entries again. This seems tedious,
@@ -811,7 +804,7 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
 
         if (err->error) {
             virReportSystemError(-err->error,
-                                 _("error during virtual port configuration of ifindex %d"),
+                                 _("error during virtual port configuration of ifindex %1$d"),
                                  ifindex);
             goto cleanup;
         }
@@ -977,8 +970,7 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
             /* keep trying... */
         } else {
             virReportSystemError(EINVAL,
-                                 _("error %d during port-profile setlink on "
-                                   "interface %s (%d)"),
+                                 _("error %1$d during port-profile setlink on interface %2$s (%3$d)"),
                                  status, ifname, ifindex);
             rc = -1;
             break;
@@ -1079,7 +1071,7 @@ virNetDevVPortProfileOp8021Qbg(const char *ifname,
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("operation type %d not supported"), virtPortOp);
+                       _("operation type %1$d not supported"), virtPortOp);
         return -1;
     }
 
@@ -1188,7 +1180,7 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
 
     case VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("operation type %d not supported"), virtPortOp);
+                       _("operation type %1$d not supported"), virtPortOp);
         rc = -1;
         break;
     default:

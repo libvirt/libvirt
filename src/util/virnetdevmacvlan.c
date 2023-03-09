@@ -113,7 +113,7 @@ virNetDevMacVLanCreate(const char *ifname,
         char macstr[VIR_MAC_STRING_BUFLEN];
 
         virReportSystemError(-error,
-                             _("error creating %s interface %s@%s (%s)"),
+                             _("error creating %1$s interface %2$s@%3$s (%4$s)"),
                              type, ifname, srcdev,
                              virMacAddrFormat(macaddress, macstr));
         return -1;
@@ -177,7 +177,7 @@ virNetDevMacVLanTapOpen(const char *ifname,
             } else {
                 /* However, if haven't succeeded, quit. */
                 virReportSystemError(errno,
-                                     _("cannot open macvtap tap device %s"),
+                                     _("cannot open macvtap tap device %1$s"),
                                      tapname);
                 goto cleanup;
             }

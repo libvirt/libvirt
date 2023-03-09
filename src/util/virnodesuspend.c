@@ -66,7 +66,7 @@ static int virNodeSuspendSetNodeWakeup(unsigned long long alarmTime)
 
     if (alarmTime < MIN_TIME_REQ_FOR_SUSPEND) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Suspend duration is too short, must be at least %u seconds"),
+                       _("Suspend duration is too short, must be at least %1$u seconds"),
                        MIN_TIME_REQ_FOR_SUSPEND);
         return -1;
     }

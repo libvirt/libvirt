@@ -69,7 +69,7 @@ virThreadJobSetWorker(const char *worker)
 
     if (virThreadLocalSet(&virThreadJobWorker, (void *) worker) < 0)
         virReportSystemError(errno,
-                             _("cannot set worker name to %s"),
+                             _("cannot set worker name to %1$s"),
                              worker);
 
     VIR_DEBUG("Thread %llu is running worker %s", virThreadSelfID(), worker);
@@ -86,7 +86,7 @@ virThreadJobSet(const char *caller)
 
     if (virThreadLocalSet(&virThreadJobName, (void *) caller) < 0)
         virReportSystemError(errno,
-                             _("cannot set current job to %s"),
+                             _("cannot set current job to %1$s"),
                              caller);
 
     if ((worker = virThreadLocalGet(&virThreadJobWorker))) {

@@ -237,7 +237,7 @@ virVHBAManageVport(const int parent_host,
         break;
     default:
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Invalid vport operation (%d)"), operation);
+                       _("Invalid vport operation (%1$d)"), operation);
         return -1;
     }
 
@@ -251,8 +251,7 @@ virVHBAManageVport(const int parent_host,
 
         if (!virFileExists(operation_path)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("vport operation '%s' is not supported "
-                             "for host%d"),
+                           _("vport operation '%1$s' is not supported for host%2$d"),
                            operation_file, parent_host);
             return -1;
         }
@@ -268,7 +267,7 @@ virVHBAManageVport(const int parent_host,
 
     if (virFileWriteStr(operation_path, vport_name, 0) < 0) {
         virReportSystemError(errno,
-                             _("Write of '%s' to '%s' during vport create/delete failed"),
+                             _("Write of '%1$s' to '%2$s' during vport create/delete failed"),
                              vport_name, operation_path);
         return -1;
     }

@@ -42,7 +42,7 @@ virNetDevVethCreateInternal(const char *veth1, const char *veth2)
     if (virNetlinkNewLink(veth1, "veth", &data, &error) < 0) {
         if (error != 0) {
             virReportSystemError(-error,
-                                 _("unable to create %s <-> %s veth pair"),
+                                 _("unable to create %1$s <-> %2$s veth pair"),
                                  veth1, veth2);
         }
         return -1;
@@ -83,7 +83,7 @@ virNetDevVethDeleteInternal(const char *veth)
             return 0;
         }
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to delete veth device %s"), veth);
+                       _("Failed to delete veth device %1$s"), veth);
         return -1;
     }
 

@@ -35,13 +35,13 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
                                const char *val)
 {
     if (!val) {
-        virReportError(VIR_ERR_INVALID_ARG, _("NULL value for field '%s'"),
+        virReportError(VIR_ERR_INVALID_ARG, _("NULL value for field '%1$s'"),
                        name);
         return -1;
     }
 
     if (virStrcpyStatic(param->field, name) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("Field name '%s' too long"),
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Field name '%1$s' too long"),
                        name);
         return -1;
     }
@@ -51,7 +51,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
     case VIR_TYPED_PARAM_INT:
         if (virStrToLong_i(val, NULL, 10, &param->value.i) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Invalid value for field '%s': expected int"),
+                           _("Invalid value for field '%1$s': expected int"),
                            name);
             return -1;
         }
@@ -59,8 +59,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
     case VIR_TYPED_PARAM_UINT:
         if (virStrToLong_ui(val, NULL, 10, &param->value.ui) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Invalid value for field '%s': "
-                             "expected unsigned int"),
+                           _("Invalid value for field '%1$s': expected unsigned int"),
                            name);
             return -1;
         }
@@ -68,8 +67,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
     case VIR_TYPED_PARAM_LLONG:
         if (virStrToLong_ll(val, NULL, 10, &param->value.l) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Invalid value for field '%s': "
-                             "expected long long"),
+                           _("Invalid value for field '%1$s': expected long long"),
                            name);
             return -1;
         }
@@ -77,8 +75,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
     case VIR_TYPED_PARAM_ULLONG:
         if (virStrToLong_ull(val, NULL, 10, &param->value.ul) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Invalid value for field '%s': "
-                             "expected unsigned long long"),
+                           _("Invalid value for field '%1$s': expected unsigned long long"),
                            name);
             return -1;
         }
@@ -86,8 +83,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
     case VIR_TYPED_PARAM_DOUBLE:
         if (virStrToDouble(val, NULL, &param->value.d) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Invalid value for field '%s': "
-                             "expected double"),
+                           _("Invalid value for field '%1$s': expected double"),
                            name);
             return -1;
         }
@@ -99,7 +95,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
             param->value.b = false;
         } else {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Invalid boolean value for field '%s'"), name);
+                           _("Invalid boolean value for field '%1$s'"), name);
             return -1;
         }
         break;
@@ -108,7 +104,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected type %d for field %s"), type, name);
+                       _("unexpected type %1$d for field %2$s"), type, name);
         return -1;
     }
 
@@ -154,8 +150,7 @@ virTypedParamsGet(virTypedParameterPtr params,
 #define VIR_TYPED_PARAM_CHECK_TYPE(check_type) \
     do { if (param->type != check_type) { \
         virReportError(VIR_ERR_INVALID_ARG, \
-                       _("Invalid type '%s' requested for parameter '%s', " \
-                         "actual type is '%s'"), \
+                       _("Invalid type '%1$s' requested for parameter '%2$s', actual type is '%3$s'"), \
                        virTypedParameterTypeToString(check_type), \
                        name, \
                        virTypedParameterTypeToString(param->type)); \

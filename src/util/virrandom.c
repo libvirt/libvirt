@@ -111,7 +111,7 @@ virRandomBytes(unsigned char *buf,
 
     if ((rv = gnutls_rnd(GNUTLS_RND_RANDOM, buf, buflen)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to generate byte stream: %s"),
+                       _("failed to generate byte stream: %1$s"),
                        gnutls_strerror(rv));
         return -1;
     }

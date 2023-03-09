@@ -181,7 +181,7 @@ virClassNew(virClass *parent,
     } else if (objectSize <= parentSize ||
                parentSize != (parent ? parent->objectSize : 0)) {
         virReportInvalidArg(objectSize,
-                            _("object size %zu of %s is not larger than parent class %zu"),
+                            _("object size %1$zu of %2$s is not larger than parent class %3$zu"),
                             objectSize, name, parent->objectSize);
         return NULL;
     }
@@ -266,7 +266,7 @@ virObjectLockableNew(virClass *klass)
 
     if (!virClassIsDerivedFrom(klass, virClassForObjectLockable())) {
         virReportInvalidArg(klass,
-                            _("Class %s must derive from virObjectLockable"),
+                            _("Class %1$s must derive from virObjectLockable"),
                             virClassName(klass));
         return NULL;
     }
@@ -292,7 +292,7 @@ virObjectRWLockableNew(virClass *klass)
 
     if (!virClassIsDerivedFrom(klass, virClassForObjectRWLockable())) {
         virReportInvalidArg(klass,
-                            _("Class %s must derive from virObjectRWLockable"),
+                            _("Class %1$s must derive from virObjectRWLockable"),
                             virClassName(klass));
         return NULL;
     }

@@ -112,7 +112,7 @@ virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode,
     while ((bit = virBitmapNextSetBit(nodeset, bit)) >= 0) {
         if (bit > maxnode) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("NUMA node %d is out of range"), bit);
+                           _("NUMA node %1$d is out of range"), bit);
             return -1;
         }
         nodemask_set(&mask, bit);
@@ -530,16 +530,16 @@ virNumaGetHugePageInfoPath(char **path,
         if (node != -1) {
             if (!virNumaNodeIsAvailable(node)) {
                 virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("NUMA node %d is not available"),
+                               _("NUMA node %1$d is not available"),
                                node);
             } else {
                 virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("page size %u is not available on node %d"),
+                               _("page size %1$u is not available on node %2$d"),
                                page_size, node);
             }
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("page size %u is not available"),
+                           _("page size %1$u is not available"),
                            page_size);
         }
         return -1;
@@ -600,7 +600,7 @@ virNumaGetHugePageInfo(int node,
         if (virStrToLong_ull(buf, &end, 10, page_avail) < 0 ||
             *end != '\n') {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to parse: %s"),
+                           _("unable to parse: %1$s"),
                            buf);
             return -1;
         }
@@ -619,7 +619,7 @@ virNumaGetHugePageInfo(int node,
         if (virStrToLong_ull(buf, &end, 10, page_free) < 0 ||
             *end != '\n') {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to parse: %s"),
+                           _("unable to parse: %1$s"),
                            buf);
             return -1;
         }
@@ -771,7 +771,7 @@ virNumaGetPages(int node,
         if (virStrToLong_ui(page_name, &end, 10, &page_size) < 0 ||
             STRCASENEQ(end, "kB")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to parse %s"),
+                           _("unable to parse %1$s"),
                            entry->d_name);
             return -1;
         }
@@ -864,7 +864,7 @@ virNumaSetPagePoolSize(int node,
     if (virStrToLong_ull(nr_buf, &end, 10, &nr_count) < 0 ||
         *end != '\n') {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("invalid number '%s' in '%s'"),
+                       _("invalid number '%1$s' in '%2$s'"),
                        nr_buf, nr_path);
         return -1;
     }
@@ -895,7 +895,7 @@ virNumaSetPagePoolSize(int node,
 
     if (virFileWriteStr(nr_path, nr_buf, 0) < 0) {
         virReportSystemError(errno,
-                             _("Unable to write to: %s"), nr_path);
+                             _("Unable to write to: %1$s"), nr_path);
         return -1;
     }
 
@@ -908,14 +908,14 @@ virNumaSetPagePoolSize(int node,
     if (virStrToLong_ull(nr_buf, &end, 10, &nr_count) < 0 ||
         *end != '\n') {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("invalid number '%s' in '%s'"),
+                       _("invalid number '%1$s' in '%2$s'"),
                        nr_buf, nr_path);
         return -1;
     }
 
     if (nr_count != page_count) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Unable to allocate %llu pages. Allocated only %llu"),
+                       _("Unable to allocate %1$llu pages. Allocated only %2$llu"),
                        page_count, nr_count);
         return -1;
     }
@@ -976,7 +976,7 @@ virNumaNodesetIsAvailable(virBitmap *nodeset)
             continue;
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("NUMA node %zd is unavailable"), bit);
+                       _("NUMA node %1$zd is unavailable"), bit);
         return false;
     }
     return true;
@@ -1036,7 +1036,7 @@ virNumaCPUSetToNodeset(virBitmap *cpuset,
 
         if (node < 0) {
             virReportSystemError(errno,
-                                 _("Unable to get NUMA node of cpu %zd"),
+                                 _("Unable to get NUMA node of cpu %1$zd"),
                                  pos);
             return -1;
         }
@@ -1087,7 +1087,7 @@ virNumaNodesetToCPUset(virBitmap *nodeset,
             /* Error is reported for cases other than non-existent NUMA node. */
             if (rc == -2) {
                 virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("NUMA node %zu is not available"),
+                               _("NUMA node %1$zu is not available"),
                                i);
             }
             return -1;

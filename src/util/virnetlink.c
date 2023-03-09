@@ -218,8 +218,8 @@ virNetlinkCreateSocket(int protocol)
     }
     if (nl_connect(nlhandle, protocol) < 0) {
         virReportSystemError(errno,
-                             _("cannot connect to netlink socket "
-                               "with protocol %d"), protocol);
+                             _("cannot connect to netlink socket with protocol %1$d"),
+                             protocol);
         goto error;
     }
 
@@ -255,7 +255,7 @@ virNetlinkSendRequest(struct nl_msg *nl_msg, uint32_t src_pid,
 
     if (protocol >= MAX_LINKS) {
         virReportSystemError(EINVAL,
-                             _("invalid protocol argument: %d"), protocol);
+                             _("invalid protocol argument: %1$d"), protocol);
         goto error;
     }
 
@@ -541,7 +541,7 @@ virNetlinkDumpLink(const char *ifname, int ifindex,
     if (virNetlinkTalk(ifname, nl_msg, src_pid, dst_pid,
                        &resp, &resp_len, &error, NULL) < 0) {
         virReportSystemError(-error,
-                             _("error dumping %s (%d) interface"),
+                             _("error dumping %1$s (%2$d) interface"),
                              ifname, ifindex);
         return -1;
     }
@@ -692,7 +692,7 @@ virNetlinkDelLink(const char *ifname, virNetlinkTalkFallback fallback)
     if (virNetlinkTalk(ifname, nl_msg, 0, 0,
                        &resp, &resp_len, &error, fallback) < 0) {
         virReportSystemError(-error,
-                             _("error destroying network device %s"),
+                             _("error destroying network device %1$s"),
                              ifname);
         return -1;
     }
@@ -953,7 +953,7 @@ virNetlinkEventServiceIsRunning(unsigned int protocol)
 {
     if (protocol >= MAX_LINKS) {
         virReportSystemError(EINVAL,
-                             _("invalid protocol argument: %d"), protocol);
+                             _("invalid protocol argument: %1$d"), protocol);
         return false;
     }
 
@@ -1003,7 +1003,7 @@ virNetlinkEventServiceStart(unsigned int protocol, unsigned int groups)
 
     if (protocol >= MAX_LINKS) {
         virReportSystemError(EINVAL,
-                             _("invalid protocol argument: %d"), protocol);
+                             _("invalid protocol argument: %1$d"), protocol);
         return -EINVAL;
     }
 

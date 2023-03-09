@@ -147,7 +147,7 @@ virPortAllocatorBindToPort(bool *used,
         addr = (struct sockaddr*)&addr4;
         addrlen = sizeof(addr4);
     } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("Unknown family %d"), family);
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Unknown family %1$d"), family);
         return -1;
     }
 
@@ -176,7 +176,7 @@ virPortAllocatorBindToPort(bool *used,
             *used = true;
             ret = 0;
         } else {
-            virReportSystemError(errno, _("Unable to bind to port %d"), port);
+            virReportSystemError(errno, _("Unable to bind to port %1$d"), port);
         }
         goto cleanup;
     }
@@ -224,7 +224,7 @@ virPortAllocatorAcquire(const virPortAllocatorRange *range,
                 /* Add port to bitmap of reserved ports */
                 if (virBitmapSetBit(pa->bitmap, i) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Failed to reserve port %zu"), i);
+                                   _("Failed to reserve port %1$zu"), i);
                     return -1;
                 }
                 *port = i;
@@ -234,7 +234,7 @@ virPortAllocatorAcquire(const virPortAllocatorRange *range,
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Unable to find an unused port in range '%s' (%d-%d)"),
+                   _("Unable to find an unused port in range '%1$s' (%2$d-%3$d)"),
                    range->name, range->start, range->end);
     return -1;
 }
@@ -272,7 +272,7 @@ virPortAllocatorSetUsed(unsigned short port)
         if (virBitmapIsBitSet(pa->bitmap, port) ||
             virBitmapSetBit(pa->bitmap, port) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to reserve port %d"), port);
+                           _("Failed to reserve port %1$d"), port);
             return -1;
         }
     }

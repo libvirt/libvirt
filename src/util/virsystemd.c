@@ -766,7 +766,7 @@ virSystemdActivationInitFromNames(virSystemdActivation *act,
 
     if (g_strv_length(fdnamelistptr) != nfds) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Expecting %d FD names but got %u"),
+                       _("Expecting %1$d FD names but got %2$u"),
                        nfds, g_strv_length(fdnamelistptr));
         goto error;
     }

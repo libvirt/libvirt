@@ -106,21 +106,21 @@ virRotatingFileWriterEntryNew(const char *path,
 
     if ((entry->fd = open(path, O_CREAT|O_APPEND|O_WRONLY|O_CLOEXEC, mode)) < 0) {
         virReportSystemError(errno,
-                             _("Unable to open file: %s"), path);
+                             _("Unable to open file: %1$s"), path);
         goto error;
     }
 
     entry->pos = lseek(entry->fd, 0, SEEK_END);
     if (entry->pos == (off_t)-1) {
         virReportSystemError(errno,
-                             _("Unable to determine current file offset: %s"),
+                             _("Unable to determine current file offset: %1$s"),
                              path);
         goto error;
     }
 
     if (fstat(entry->fd, &sb) < 0) {
         virReportSystemError(errno,
-                             _("Unable to determine current file inode: %s"),
+                             _("Unable to determine current file inode: %1$s"),
                              path);
         goto error;
     }
@@ -149,7 +149,7 @@ virRotatingFileReaderEntryNew(const char *path)
     if ((entry->fd = open(path, O_RDONLY|O_CLOEXEC)) < 0) {
         if (errno != ENOENT) {
             virReportSystemError(errno,
-                                 _("Unable to open file: %s"), path);
+                                 _("Unable to open file: %1$s"), path);
             goto error;
         }
     }
@@ -157,7 +157,7 @@ virRotatingFileReaderEntryNew(const char *path)
     if (entry->fd != -1) {
         if (fstat(entry->fd, &sb) < 0) {
             virReportSystemError(errno,
-                                 _("Unable to determine current file inode: %s"),
+                                 _("Unable to determine current file inode: %1$s"),
                                  path);
             goto error;
         }
@@ -183,7 +183,7 @@ virRotatingFileWriterDelete(virRotatingFileWriter *file)
     if (unlink(file->basepath) < 0 &&
         errno != ENOENT) {
         virReportSystemError(errno,
-                             _("Unable to delete file %s"),
+                             _("Unable to delete file %1$s"),
                              file->basepath);
         return -1;
     }
@@ -195,7 +195,7 @@ virRotatingFileWriterDelete(virRotatingFileWriter *file)
         if (unlink(oldpath) < 0 &&
             errno != ENOENT) {
             virReportSystemError(errno,
-                                 _("Unable to delete file %s"),
+                                 _("Unable to delete file %1$s"),
                                  oldpath);
             VIR_FREE(oldpath);
             return -1;
@@ -240,7 +240,7 @@ virRotatingFileWriterNew(const char *path,
 
     if (maxbackup > VIR_MAX_MAX_BACKUP) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Max backup %zu must be less than or equal to %d"),
+                       _("Max backup %1$zu must be less than or equal to %2$d"),
                        maxbackup, VIR_MAX_MAX_BACKUP);
         goto error;
     }
@@ -287,7 +287,7 @@ virRotatingFileReaderNew(const char *path,
 
     if (maxbackup > VIR_MAX_MAX_BACKUP) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Max backup %zu must be less than or equal to %d"),
+                       _("Max backup %1$zu must be less than or equal to %2$d"),
                        maxbackup, VIR_MAX_MAX_BACKUP);
         goto error;
     }
@@ -368,7 +368,7 @@ virRotatingFileWriterRollover(virRotatingFileWriter *file)
         if (unlink(file->basepath) < 0 &&
             errno != ENOENT) {
             virReportSystemError(errno,
-                                 _("Unable to remove %s"),
+                                 _("Unable to remove %1$s"),
                                  file->basepath);
             goto cleanup;
         }
@@ -386,7 +386,7 @@ virRotatingFileWriterRollover(virRotatingFileWriter *file)
             if (rename(thispath, nextpath) < 0 &&
                 errno != ENOENT) {
                 virReportSystemError(errno,
-                                     _("Unable to rename %s to %s"),
+                                     _("Unable to rename %1$s to %2$s"),
                                      thispath, nextpath);
                 goto cleanup;
             }
@@ -456,7 +456,7 @@ virRotatingFileWriterAppend(virRotatingFileWriter *file,
         if (towrite) {
             if (safewrite(file->entry->fd, buf, towrite) != towrite) {
                 virReportSystemError(errno,
-                                     _("Unable to write to file %s"),
+                                     _("Unable to write to file %1$s"),
                                      file->basepath);
                 return -1;
             }
@@ -520,7 +520,7 @@ virRotatingFileReaderSeek(virRotatingFileReader *file,
         ret = lseek(entry->fd, offset, SEEK_SET);
         if (ret == (off_t)-1) {
             virReportSystemError(errno,
-                                 _("Unable to seek to inode %llu offset %llu"),
+                                 _("Unable to seek to inode %1$llu offset %2$llu"),
                                  (unsigned long long)inode, (unsigned long long)offset);
             return -1;
         }
@@ -533,7 +533,7 @@ virRotatingFileReaderSeek(virRotatingFileReader *file,
     ret = lseek(file->entries[0]->fd, offset, SEEK_SET);
     if (ret == (off_t)-1) {
         virReportSystemError(errno,
-                             _("Unable to seek to inode %llu offset %llu"),
+                             _("Unable to seek to inode %1$llu offset %2$llu"),
                              (unsigned long long)inode, (unsigned long long)offset);
         return -1;
     }
@@ -576,7 +576,7 @@ virRotatingFileReaderConsume(virRotatingFileReader *file,
         got = saferead(entry->fd, buf + ret, len);
         if (got < 0) {
             virReportSystemError(errno,
-                                 _("Unable to read from file %s"),
+                                 _("Unable to read from file %1$s"),
                                  entry->path);
             return -1;
         }

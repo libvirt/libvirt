@@ -185,7 +185,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to add port %s to OVS bridge %s"),
+                       _("Unable to add port %1$s to OVS bridge %2$s"),
                        ifname, brname);
         return -1;
     }
@@ -209,7 +209,7 @@ int virNetDevOpenvswitchRemovePort(const char *brname G_GNUC_UNUSED, const char 
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to delete port %s from OVS"), ifname);
+                       _("Unable to delete port %1$s from OVS"), ifname);
         return -1;
     }
 
@@ -238,8 +238,8 @@ int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
     /* Run the command */
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to run command to get OVS port data for "
-                         "interface %s"), ifname);
+                       _("Unable to run command to get OVS port data for interface %1$s"),
+                       ifname);
         return -1;
     }
 
@@ -276,8 +276,8 @@ int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
     /* Run the command */
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to run command to set OVS port data for "
-                         "interface %s"), ifname);
+                       _("Unable to run command to set OVS port data for interface %1$s"),
+                       ifname);
         return -1;
     }
 
@@ -443,8 +443,8 @@ virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
 
     if (virCommandRun(cmd, &exitstatus) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to run command to get OVS master for "
-                         "interface %s"), ifname);
+                       _("Unable to run command to get OVS master for interface %1$s"),
+                       ifname);
         return -1;
     }
 
@@ -614,7 +614,7 @@ int virNetDevOpenvswitchUpdateVlan(const char *ifname,
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to set vlan configuration on port %s"), ifname);
+                       _("Unable to set vlan configuration on port %1$s"), ifname);
         return -1;
     }
 
@@ -730,7 +730,7 @@ virNetDevOpenvswitchInterfaceClearRxQos(const char *ifname)
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to reset ingress on port %s"), ifname);
+                       _("Unable to reset ingress on port %1$s"), ifname);
         return -1;
     }
 
@@ -806,10 +806,10 @@ virNetDevOpenvswitchInterfaceSetTxQos(const char *ifname,
     if (virCommandRun(cmd, NULL) < 0) {
         if (queue_uuid && *queue_uuid) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to set queue configuration on port %s"), ifname);
+                           _("Unable to set queue configuration on port %1$s"), ifname);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to create and set qos configuration on port %s"), ifname);
+                           _("Unable to create and set qos configuration on port %1$s"), ifname);
         }
         return -1;
     }
@@ -829,7 +829,7 @@ virNetDevOpenvswitchInterfaceSetTxQos(const char *ifname,
         virCommandAddArgList(qoscmd, vmid_ex_id, ifname_ex_id, NULL);
         if (virCommandRun(qoscmd, NULL) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to set qos configuration on port %s"), ifname);
+                           _("Unable to set qos configuration on port %1$s"), ifname);
             return -1;
         }
     }
@@ -853,7 +853,7 @@ virNetDevOpenvswitchInterfaceSetRxQos(const char *ifname,
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to set vlan configuration on port %s"), ifname);
+                       _("Unable to set vlan configuration on port %1$s"), ifname);
         return -1;
     }
 

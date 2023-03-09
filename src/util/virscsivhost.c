@@ -80,7 +80,7 @@ virSCSIVHostOpenVhostSCSI(int *vhostfd)
 {
     if (!virFileExists(VHOST_SCSI_DEVICE)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("vhost-scsi device file '%s' cannot be found"),
+                       _("vhost-scsi device file '%1$s' cannot be found"),
                        VHOST_SCSI_DEVICE);
         return -1;
     }
@@ -88,7 +88,7 @@ virSCSIVHostOpenVhostSCSI(int *vhostfd)
     *vhostfd = open(VHOST_SCSI_DEVICE, O_RDWR);
 
     if (*vhostfd < 0) {
-        virReportSystemError(errno, _("Failed to open %s"), VHOST_SCSI_DEVICE);
+        virReportSystemError(errno, _("Failed to open %1$s"), VHOST_SCSI_DEVICE);
         return -1;
     }
 
@@ -174,7 +174,7 @@ virSCSIVHostDeviceListAdd(virSCSIVHostDeviceList *list,
 {
     if (virSCSIVHostDeviceListFind(list, dev)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Device %s is already in use"), dev->name);
+                       _("Device %1$s is already in use"), dev->name);
         return -1;
     }
     VIR_APPEND_ELEMENT(list->devs, list->count, dev);

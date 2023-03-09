@@ -173,7 +173,7 @@ virScaleInteger(unsigned long long *value, const char *suffix,
     if (!suffix || !*suffix) {
         if (!scale) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("invalid scale %llu"), scale);
+                           _("invalid scale %1$llu"), scale);
             return -1;
         }
         suffix = "";
@@ -189,7 +189,7 @@ virScaleInteger(unsigned long long *value, const char *suffix,
             base = 1000;
         } else {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("unknown suffix '%s'"), suffix);
+                           _("unknown suffix '%1$s'"), suffix);
             return -1;
         }
         scale = 1;
@@ -214,13 +214,13 @@ virScaleInteger(unsigned long long *value, const char *suffix,
             break;
         default:
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("unknown suffix '%s'"), suffix);
+                           _("unknown suffix '%1$s'"), suffix);
             return -1;
         }
     }
 
     if (*value && *value > (limit / scale)) {
-        virReportError(VIR_ERR_OVERFLOW, _("value too large: %llu%s"),
+        virReportError(VIR_ERR_OVERFLOW, _("value too large: %1$llu%2$s"),
                        *value, suffix);
         return -1;
     }
@@ -575,7 +575,7 @@ virGetUserEnt(uid_t uid, char **name, gid_t *group, char **dir, char **shell, bo
             goto cleanup;
 
         virReportSystemError(rc,
-                             _("Failed to find user record for uid '%u'"),
+                             _("Failed to find user record for uid '%1$u'"),
                              (unsigned int) uid);
         goto cleanup;
     } else if (pw == NULL) {
@@ -583,7 +583,7 @@ virGetUserEnt(uid_t uid, char **name, gid_t *group, char **dir, char **shell, bo
             goto cleanup;
 
         virReportError(VIR_ERR_SYSTEM_ERROR,
-                       _("Failed to find user record for uid '%u'"),
+                       _("Failed to find user record for uid '%1$u'"),
                        (unsigned int) uid);
         goto cleanup;
     }
@@ -640,11 +640,11 @@ static char *virGetGroupEnt(gid_t gid)
     if (rc != 0 || gr == NULL) {
         if (rc != 0) {
             virReportSystemError(rc,
-                                 _("Failed to find group record for gid '%u'"),
+                                 _("Failed to find group record for gid '%1$u'"),
                                  (unsigned int) gid);
         } else {
             virReportError(VIR_ERR_SYSTEM_ERROR,
-                           _("Failed to find group record for gid '%u'"),
+                           _("Failed to find group record for gid '%1$u'"),
                            (unsigned int) gid);
         }
 
@@ -757,7 +757,7 @@ virGetUserID(const char *user, uid_t *uid)
 
     if (virStrToLong_ui(user, NULL, 10, &uint_uid) < 0 ||
         ((uid_t) uint_uid) != uint_uid) {
-        virReportError(VIR_ERR_INVALID_ARG, _("Failed to parse user '%s'"),
+        virReportError(VIR_ERR_INVALID_ARG, _("Failed to parse user '%1$s'"),
                        user);
         return -1;
     }
@@ -837,7 +837,7 @@ virGetGroupID(const char *group, gid_t *gid)
 
     if (virStrToLong_ui(group, NULL, 10, &uint_gid) < 0 ||
         ((gid_t) uint_gid) != uint_gid) {
-        virReportError(VIR_ERR_INVALID_ARG, _("Failed to parse group '%s'"),
+        virReportError(VIR_ERR_INVALID_ARG, _("Failed to parse group '%1$s'"),
                        group);
         return -1;
     }
@@ -950,7 +950,7 @@ virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups G_GNUC_UNUSED,
 {
     if (gid != (gid_t)-1 && setregid(gid, gid) < 0) {
         virReportSystemError(errno,
-                             _("cannot change to '%u' group"),
+                             _("cannot change to '%1$u' group"),
                              (unsigned int) gid);
         return -1;
     }
@@ -965,7 +965,7 @@ virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups G_GNUC_UNUSED,
 
     if (uid != (uid_t)-1 && setreuid(uid, uid) < 0) {
         virReportSystemError(errno,
-                             _("cannot change to uid to '%u'"),
+                             _("cannot change to uid to '%1$u'"),
                              (unsigned int) uid);
         return -1;
     }
@@ -1161,7 +1161,7 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
             capng_clear(CAPNG_SELECT_CAPS);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot apply process capabilities %d"), capng_ret);
+                           _("cannot apply process capabilities %1$d"), capng_ret);
             return -1;
         }
     }
@@ -1188,8 +1188,7 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
         if (capBits & (1ULL << i)) {
             if (prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_RAISE, i, 0, 0) < 0) {
                 virReportSystemError(errno,
-                                     _("prctl failed to enable '%s' in the "
-                                       "AMBIENT set"),
+                                     _("prctl failed to enable '%1$s' in the AMBIENT set"),
                                      capstr);
                 return -1;
             }
@@ -1215,7 +1214,7 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
 
     if ((capng_ret = capng_apply(CAPNG_SELECT_CAPS)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot apply process capabilities %d"), capng_ret);
+                       _("cannot apply process capabilities %1$d"), capng_ret);
         return -1;
     }
 
@@ -1273,7 +1272,7 @@ virValidateWWN(const char *wwn)
 
     if (i != 16 || p[i]) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Malformed wwn: %s"), wwn);
+                       _("Malformed wwn: %1$s"), wwn);
         return false;
     }
 
@@ -1308,7 +1307,7 @@ virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
     sep = strchr(tmp_label, ':');
     if (sep == NULL) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Failed to parse uid and gid from '%s'"),
+                       _("Failed to parse uid and gid from '%1$s'"),
                        label);
         goto cleanup;
     }

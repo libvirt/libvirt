@@ -146,7 +146,7 @@ virURIParse(const char *uri)
     if (!xmluri) {
         /* libxml2 does not tell us what failed. Grr :-( */
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse URI %s"), uri);
+                       _("Unable to parse URI %1$s"), uri);
         return NULL;
     }
 
@@ -302,16 +302,15 @@ virURIFindAliasMatch(char *const*aliases, const char *alias,
 
         if (!(offset = strchr(*aliases, '='))) {
             virReportError(VIR_ERR_CONF_SYNTAX,
-                           _("Malformed 'uri_aliases' config entry '%s', "
-                             "expected 'alias=uri://host/path'"), *aliases);
+                           _("Malformed 'uri_aliases' config entry '%1$s', expected 'alias=uri://host/path'"),
+                           *aliases);
             return -1;
         }
 
         safe = strspn(*aliases, URI_ALIAS_CHARS);
         if (safe < (offset - *aliases)) {
             virReportError(VIR_ERR_CONF_SYNTAX,
-                           _("Malformed 'uri_aliases' config entry '%s', "
-                             "aliases may only contain 'a-Z, 0-9, _, -'"),
+                           _("Malformed 'uri_aliases' config entry '%1$s', aliases may only contain 'a-Z, 0-9, _, -'"),
                            *aliases);
             return -1;
         }
@@ -387,7 +386,7 @@ virURIGetParam(virURI *uri, const char *name)
     }
 
     virReportError(VIR_ERR_INVALID_ARG,
-                   _("Missing URI parameter '%s'"), name);
+                   _("Missing URI parameter '%1$s'"), name);
     return NULL;
 }
 
