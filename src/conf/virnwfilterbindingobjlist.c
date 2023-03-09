@@ -169,11 +169,11 @@ virNWFilterBindingObjListAddLocked(virNWFilterBindingObjList *bindings,
     if (binding) {
         if (virNWFilterBindingObjGetRemoving(binding)) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("binding '%s' is already being removed"),
+                           _("binding '%1$s' is already being removed"),
                            def->portdevname);
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("binding '%s' already exists"),
+                           _("binding '%1$s' already exists"),
                            def->portdevname);
         }
         goto error;
@@ -272,7 +272,7 @@ virNWFilterBindingObjListLoadStatus(virNWFilterBindingObjList *bindings,
     def = virNWFilterBindingObjGetDef(obj);
     if (virHashLookup(bindings->objs, def->portdevname) != NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected binding %s already exists"),
+                       _("unexpected binding %1$s already exists"),
                        def->portdevname);
         goto error;
     }
@@ -321,7 +321,7 @@ virNWFilterBindingObjListLoadAllConfigs(virNWFilterBindingObjList *bindings,
         if (binding)
             virNWFilterBindingObjEndAPI(&binding);
         else
-            VIR_ERROR(_("Failed to load config for binding '%s'"), entry->d_name);
+            VIR_ERROR(_("Failed to load config for binding '%1$s'"), entry->d_name);
     }
 
     virObjectRWUnlock(bindings);

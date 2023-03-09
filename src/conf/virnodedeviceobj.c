@@ -554,8 +554,7 @@ virNodeDeviceFindFCParentHost(virNodeDeviceObj *obj)
 
     if (!cap) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Parent device %s is not capable "
-                         "of vport operations"),
+                       _("Parent device %1$s is not capable of vport operations"),
                        obj->def->name);
         return -1;
     }
@@ -574,7 +573,7 @@ virNodeDeviceObjListGetParentHostByParent(virNodeDeviceObjList *devs,
 
     if (!(obj = virNodeDeviceObjListFindByName(devs, parent_name))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not find parent device for '%s'"),
+                       _("Could not find parent device for '%1$s'"),
                        dev_name);
         return -1;
     }
@@ -599,7 +598,7 @@ virNodeDeviceObjListGetParentHostByWWNs(virNodeDeviceObjList *devs,
     if (!(obj = virNodeDeviceObjListFindByWWNs(devs, parent_wwnn,
                                                parent_wwpn))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not find parent device for '%s'"),
+                       _("Could not find parent device for '%1$s'"),
                        dev_name);
         return -1;
     }
@@ -622,7 +621,7 @@ virNodeDeviceObjListGetParentHostByFabricWWN(virNodeDeviceObjList *devs,
 
     if (!(obj = virNodeDeviceObjListFindByFabricWWN(devs, parent_fabric_wwn))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not find parent device for '%s'"),
+                       _("Could not find parent device for '%1$s'"),
                        dev_name);
         return -1;
     }

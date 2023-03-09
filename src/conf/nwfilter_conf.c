@@ -2009,7 +2009,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
 
             if (!found || rc) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("%s has illegal value %s"),
+                               _("%1$s has illegal value %2$s"),
                                att[idx].name, prop);
                 rc = -1;
             }
@@ -2115,10 +2115,8 @@ virNWFilterRuleValidate(virNWFilterRuleDef *rule)
             }
             if (ret < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("%s rule with port specification requires "
-                                 "protocol specification with protocol to be "
-                                 "either one of tcp(6), udp(17), dccp(33), or "
-                                 "sctp(132)"), protocol);
+                               _("%1$s rule with port specification requires protocol specification with protocol to be either one of tcp(6), udp(17), dccp(33), or sctp(132)"),
+                               protocol);
             }
         }
         break;
@@ -2485,8 +2483,7 @@ virNWFilterIsValidChainName(const char *chainname)
 {
     if (strlen(chainname) > MAX_CHAIN_SUFFIX_SIZE) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Name of chain is longer than "
-                         "%u characters"),
+                       _("Name of chain is longer than %1$u characters"),
                        MAX_CHAIN_SUFFIX_SIZE);
         return false;
     }
@@ -2532,8 +2529,7 @@ virNWFilterIsAllowedChain(const char *chainname)
     }
 
     virBufferAsprintf(&buf,
-                      _("Invalid chain name '%s'. Please use a chain name "
-                      "called '%s' or any of the following prefixes: "),
+                      _("Invalid chain name '%1$s'. Please use a chain name called '%2$s' or any of the following prefixes: "),
                       chainname,
                       virNWFilterChainSuffixTypeToString(
                           VIR_NWFILTER_CHAINSUFFIX_ROOT));
@@ -2579,15 +2575,14 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
     if (chain_pri_s) {
         if (virStrToLong_i(chain_pri_s, NULL, 10, &chain_priority) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Could not parse chain priority '%s'"),
+                           _("Could not parse chain priority '%1$s'"),
                            chain_pri_s);
             return NULL;
         }
         if (chain_priority < NWFILTER_MIN_FILTER_PRIORITY ||
             chain_priority > NWFILTER_MAX_FILTER_PRIORITY) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Priority '%d' is outside valid "
-                             "range of [%d,%d]"),
+                           _("Priority '%1$d' is outside valid range of [%2$d,%3$d]"),
                            chain_priority,
                            NWFILTER_MIN_FILTER_PRIORITY,
                            NWFILTER_MAX_FILTER_PRIORITY);
@@ -2713,7 +2708,7 @@ virNWFilterDeleteDef(const char *configDir,
 
     if (unlink(configFile) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot remove config for %s"),
+                       _("cannot remove config for %1$s"),
                        def->name);
         return -1;
     }
@@ -2792,7 +2787,7 @@ virNWFilterRuleDefDetailsFormat(virBuffer *buf,
             if (att[i].formatter && !(flags & NWFILTER_ENTRY_ITEM_FLAG_HAS_VAR)) {
                if (!att[i].formatter(buf, def, item)) {
                   virReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("formatter for %s %s reported error"),
+                                 _("formatter for %1$s %2$s reported error"),
                                  type,
                                  att[i].name);
                    return;

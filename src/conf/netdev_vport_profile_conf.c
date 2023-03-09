@@ -43,7 +43,7 @@ virNetDevVPortProfileParse(xmlNodePtr node, unsigned int flags)
     if ((virtPortType = virXMLPropString(node, "type")) &&
         (virtPort->virtPortType = virNetDevVPortTypeFromString(virtPortType)) <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown virtualport type %s"), virtPortType);
+                       _("unknown virtualport type %1$s"), virtPortType);
         return NULL;
     }
 

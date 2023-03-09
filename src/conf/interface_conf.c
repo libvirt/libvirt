@@ -142,7 +142,7 @@ virInterfaceDefParseStartMode(virInterfaceDef *def,
         def->startmode = VIR_INTERFACE_START_NONE;
     } else {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("unknown interface startmode %s"), tmp);
+                       _("unknown interface startmode %1$s"), tmp);
         return -1;
     }
     return 0;
@@ -172,7 +172,7 @@ virInterfaceDefParseBondMode(xmlXPathContextPtr ctxt)
         return VIR_INTERFACE_BOND_BALALB;
     }
 
-    virReportError(VIR_ERR_XML_ERROR, _("unknown bonding mode %s"), tmp);
+    virReportError(VIR_ERR_XML_ERROR, _("unknown bonding mode %1$s"), tmp);
     return -1;
 }
 
@@ -190,7 +190,7 @@ virInterfaceDefParseBondMiiCarrier(xmlXPathContextPtr ctxt)
         return VIR_INTERFACE_BOND_MII_NETIF;
     }
 
-    virReportError(VIR_ERR_XML_ERROR, _("unknown mii bonding carrier %s"), tmp);
+    virReportError(VIR_ERR_XML_ERROR, _("unknown mii bonding carrier %1$s"), tmp);
     return -1;
 }
 
@@ -210,7 +210,7 @@ virInterfaceDefParseBondArpValid(xmlXPathContextPtr ctxt)
         return VIR_INTERFACE_BOND_ARP_ALL;
     }
 
-    virReportError(VIR_ERR_XML_ERROR, _("unknown arp bonding validate %s"), tmp);
+    virReportError(VIR_ERR_XML_ERROR, _("unknown arp bonding validate %1$s"), tmp);
     return -1;
 }
 
@@ -370,7 +370,8 @@ virInterfaceDefParseIfAdressing(virInterfaceDef *def,
                 return -1;
         } else {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("unsupported protocol family '%s'"), proto->family);
+                           _("unsupported protocol family '%1$s'"),
+                           proto->family);
             return -1;
         }
         def->protos[def->nprotos++] = g_steal_pointer(&proto);
@@ -399,7 +400,7 @@ virInterfaceDefParseBridge(virInterfaceDef *def,
             def->data.bridge.stp = 0;
         } else {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("bridge interface stp should be on or off got %s"),
+                           _("bridge interface stp should be on or off got %1$s"),
                            tmp);
             return 0;
         }
@@ -585,7 +586,7 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
         || (parentIfType == VIR_INTERFACE_TYPE_VLAN))
         {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("interface has unsupported type '%s'"),
+                       _("interface has unsupported type '%1$s'"),
                        virInterfaceTypeToString(type));
         return NULL;
     }
@@ -895,7 +896,7 @@ virInterfaceDefDevFormat(virBuffer *buf,
 
     if (!(type = virInterfaceTypeToString(def->type))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected interface type %d"), def->type);
+                       _("unexpected interface type %1$d"), def->type);
         return -1;
     }
 

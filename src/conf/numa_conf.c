@@ -180,7 +180,7 @@ virDomainNumatuneNodeParseXML(virDomainNuma *numa,
 
         if (mem_node->nodeset) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Multiple memnode elements with cellid %u"),
+                           _("Multiple memnode elements with cellid %1$u"),
                            cellid);
             return -1;
         }
@@ -211,7 +211,7 @@ virDomainNumatuneNodeParseXML(virDomainNuma *numa,
 
         if (virBitmapIsAllClear(mem_node->nodeset)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Invalid value of 'nodeset': %s"), tmp);
+                           _("Invalid value of 'nodeset': %1$s"), tmp);
             return -1;
         }
     }
@@ -247,14 +247,14 @@ virDomainNumatuneParseXML(virDomainNuma *numa,
         if ((modestr = virXMLPropString(node, "mode")) &&
             (mode = virDomainNumatuneMemModeTypeFromString(modestr)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported NUMA memory tuning mode '%s'"), modestr);
+                           _("Unsupported NUMA memory tuning mode '%1$s'"), modestr);
             return -1;
         }
 
         if ((placementstr = virXMLPropString(node, "placement")) &&
             (placement = virDomainNumatunePlacementTypeFromString(placementstr)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported NUMA memory placement mode '%s'"), placementstr);
+                           _("Unsupported NUMA memory placement mode '%1$s'"), placementstr);
             return -1;
         }
 
@@ -264,7 +264,7 @@ virDomainNumatuneParseXML(virDomainNuma *numa,
 
             if (virBitmapIsAllClear(nodeset)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Invalid value of 'nodeset': %s"), nodesetstr);
+                               _("Invalid value of 'nodeset': %1$s"), nodesetstr);
                 return -1;
             }
         }
@@ -507,7 +507,7 @@ virDomainNumatuneSet(virDomainNuma *numa,
     if (mode != -1 &&
         (mode < 0 || mode >= VIR_DOMAIN_NUMATUNE_MEM_LAST)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported numatune mode '%d'"),
+                       _("Unsupported numatune mode '%1$d'"),
                        mode);
         return -1;
     }
@@ -515,7 +515,7 @@ virDomainNumatuneSet(virDomainNuma *numa,
     if (placement != -1 &&
         (placement < 0 || placement >= VIR_DOMAIN_NUMATUNE_PLACEMENT_LAST)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported numatune placement '%d'"),
+                       _("Unsupported numatune placement '%1$d'"),
                        mode);
         return -1;
     }
@@ -732,8 +732,7 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNuma *def,
         /* The "id" needs to be within numa/cell range */
         if (sibling_id >= ndistances) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("'sibling_id %d' does not refer to a "
-                             "valid cell within NUMA 'cell id %d'"),
+                           _("'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"),
                            sibling_id, cur_cell);
             goto cleanup;
         }
@@ -752,8 +751,7 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNuma *def,
             (sibling_id != cur_cell &&
              sibling_value == LOCAL_DISTANCE)) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("'value %d' is invalid for "
-                             "'sibling id %d' under NUMA 'cell id %d'"),
+                           _("'value %1$d' is invalid for 'sibling id %2$d' under NUMA 'cell id %3$d'"),
                            sibling_value, sibling_id, cur_cell);
             goto cleanup;
         }
@@ -826,8 +824,7 @@ virDomainNumaDefNodeCacheParseXML(virDomainNuma *def,
 
         if (!(tmp = virXMLPropString(nodes[i], "level"))) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Missing 'level' attribute in cache "
-                             "element for NUMA node %d"),
+                           _("Missing 'level' attribute in cache element for NUMA node %1$d"),
                            cur_cell);
             return -1;
         }
@@ -835,8 +832,7 @@ virDomainNumaDefNodeCacheParseXML(virDomainNuma *def,
         if (virStrToLong_uip(tmp, NULL, 10, &level) < 0 ||
             level == 0) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid 'level' attribute in cache "
-                             "element for NUMA node %d"),
+                           _("Invalid 'level' attribute in cache element for NUMA node %1$d"),
                            cur_cell);
             return -1;
         }
@@ -844,15 +840,14 @@ virDomainNumaDefNodeCacheParseXML(virDomainNuma *def,
 
         if (!(tmp = virXMLPropString(nodes[i], "associativity"))) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Missing 'associativity' attribute in cache "
-                             "element for NUMA node %d"),
+                           _("Missing 'associativity' attribute in cache element for NUMA node %1$d"),
                            cur_cell);
             return -1;
         }
 
         if ((associativity = virNumaCacheAssociativityTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid cache associativity '%s'"),
+                           _("Invalid cache associativity '%1$s'"),
                            tmp);
             return -1;
         }
@@ -860,14 +855,13 @@ virDomainNumaDefNodeCacheParseXML(virDomainNuma *def,
 
         if (!(tmp = virXMLPropString(nodes[i], "policy"))) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Missing 'policy' attribute in cache "
-                             "element for NUMA node %d"),
+                           _("Missing 'policy' attribute in cache element for NUMA node %1$d"),
                            cur_cell);
         }
 
         if ((policy = virNumaCachePolicyTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid cache policy '%s'"),
+                           _("Invalid cache policy '%1$s'"),
                            tmp);
             return -1;
         }
@@ -932,7 +926,7 @@ virDomainNumaDefParseXML(virDomainNuma *def,
 
         if (def->mem_nodes[cur_cell].mem) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Duplicate NUMA cell info for cell id '%u'"),
+                           _("Duplicate NUMA cell info for cell id '%1$u'"),
                            cur_cell);
             return -1;
         }
@@ -956,7 +950,7 @@ virDomainNumaDefParseXML(virDomainNuma *def,
             if (virBitmapOverlaps(def->mem_nodes[j].cpumask,
                                   def->mem_nodes[cur_cell].cpumask)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("NUMA cells %u and %zu have overlapping vCPU ids"),
+                               _("NUMA cells %1$u and %2$zu have overlapping vCPU ids"),
                                cur_cell, j);
                 return -1;
             }
@@ -1133,7 +1127,7 @@ virDomainNumaDefValidate(const virDomainNuma *def)
 
             if (virBitmapIsBitSet(levelsSeen, cache->level)) {
                 virReportError(VIR_ERR_XML_ERROR,
-                               _("Cache level '%u' already defined"),
+                               _("Cache level '%1$u' already defined"),
                                cache->level);
                 return -1;
             }
@@ -1259,8 +1253,7 @@ virDomainNumaCheckABIStability(virDomainNuma *src,
 
     if (virDomainNumaGetNodeCount(src) != virDomainNumaGetNodeCount(tgt)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target NUMA node count '%zu' doesn't match "
-                         "source '%zu'"),
+                       _("Target NUMA node count '%1$zu' doesn't match source '%2$zu'"),
                        virDomainNumaGetNodeCount(tgt),
                        virDomainNumaGetNodeCount(src));
         return false;
@@ -1270,8 +1263,8 @@ virDomainNumaCheckABIStability(virDomainNuma *src,
         if (virDomainNumaGetNodeMemorySize(src, i) !=
             virDomainNumaGetNodeMemorySize(tgt, i)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Size of target NUMA node %zu (%llu) doesn't "
-                             "match source (%llu)"), i,
+                           _("Size of target NUMA node %1$zu (%2$llu) doesn't match source (%3$llu)"),
+                           i,
                            virDomainNumaGetNodeMemorySize(tgt, i),
                            virDomainNumaGetNodeMemorySize(src, i));
             return false;
@@ -1280,8 +1273,8 @@ virDomainNumaCheckABIStability(virDomainNuma *src,
         if (!virBitmapEqual(virDomainNumaGetNodeCpumask(src, i),
                             virDomainNumaGetNodeCpumask(tgt, i))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Processor mask of target NUMA node %zu doesn't "
-                             "match source"), i);
+                           _("Processor mask of target NUMA node %1$zu doesn't match source"),
+                           i);
             return false;
         }
 
@@ -1289,8 +1282,8 @@ virDomainNumaCheckABIStability(virDomainNuma *src,
             if (virDomainNumaGetNodeDistance(src, i, j) !=
                 virDomainNumaGetNodeDistance(tgt, i, j)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Target NUMA distance from %zu to %zu "
-                                 "doesn't match source"), i, j);
+                               _("Target NUMA distance from %1$zu to %2$zu doesn't match source"),
+                               i, j);
 
                 return false;
             }
@@ -1407,8 +1400,7 @@ virDomainNumaSetNodeDistance(virDomainNuma *numa,
 
     if (node >= numa->nmem_nodes) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Argument 'node' %zu outranges "
-                         "defined number of NUMA nodes"),
+                       _("Argument 'node' %1$zu outranges defined number of NUMA nodes"),
                        node);
         return -1;
     }
@@ -1431,15 +1423,14 @@ virDomainNumaSetNodeDistance(virDomainNuma *numa,
     if (value < LOCAL_DISTANCE ||
         value > UNREACHABLE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Distance value of %d is not in valid range"),
+                       _("Distance value of %1$d is not in valid range"),
                        value);
         return -1;
     }
 
     if (value == LOCAL_DISTANCE && node != cellid) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Distance value %d under node %zu is "
-                         "LOCAL_DISTANCE and should be set to 10"),
+                       _("Distance value %1$d under node %2$zu is LOCAL_DISTANCE and should be set to 10"),
                        value, node);
         return -1;
     }
@@ -1461,7 +1452,7 @@ virDomainNumaSetNodeDistanceCount(virDomainNuma *numa,
     distances = numa->mem_nodes[node].distances;
     if (distances) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot alter an existing nmem_nodes distances set for node: %zu"),
+                       _("Cannot alter an existing nmem_nodes distances set for node: %1$zu"),
                        node);
         return 0;
     }

@@ -46,7 +46,7 @@ virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRate *rate)
     if (average) {
         if (virStrToLong_ullp(average, NULL, 10, &rate->average) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("could not convert bandwidth average value '%s'"),
+                           _("could not convert bandwidth average value '%1$s'"),
                            average);
             return -1;
         }
@@ -64,21 +64,21 @@ virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRate *rate)
 
     if (peak && virStrToLong_ullp(peak, NULL, 10, &rate->peak) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("could not convert bandwidth peak value '%s'"),
+                       _("could not convert bandwidth peak value '%1$s'"),
                        peak);
         return -1;
     }
 
     if (burst && virStrToLong_ullp(burst, NULL, 10, &rate->burst) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("could not convert bandwidth burst value '%s'"),
+                       _("could not convert bandwidth burst value '%1$s'"),
                        burst);
         return -1;
     }
 
     if (floor && virStrToLong_ullp(floor, NULL, 10, &rate->floor) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("could not convert bandwidth floor value '%s'"),
+                       _("could not convert bandwidth floor value '%1$s'"),
                        floor);
         return -1;
     }
@@ -128,7 +128,7 @@ virNetDevBandwidthParse(virNetDevBandwidth **bandwidth,
         }
         if (virStrToLong_ui(class_id_prop, NULL, 10, class_id) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to parse class id '%s'"),
+                           _("Unable to parse class id '%1$s'"),
                            class_id_prop);
             return -1;
         }

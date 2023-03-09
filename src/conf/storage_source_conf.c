@@ -259,7 +259,7 @@ virStorageAuthDefParse(xmlNodePtr node,
          */
         if ((authdef->authType = virStorageAuthTypeFromString(authtype)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown auth type '%s'"), authtype);
+                           _("unknown auth type '%1$s'"), authtype);
             return NULL;
         }
     }
@@ -360,14 +360,14 @@ virStoragePRDefParseXML(xmlXPathContextPtr ctxt)
 
     if (type && STRNEQ(type, "unix")) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("unsupported connection type for <reservations/>: %s"),
+                       _("unsupported connection type for <reservations/>: %1$s"),
                        type);
         goto cleanup;
     }
 
     if (mode && STRNEQ(mode, "client")) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("unsupported connection mode for <reservations/>: %s"),
+                       _("unsupported connection mode for <reservations/>: %1$s"),
                        mode);
         goto cleanup;
     }
@@ -648,7 +648,7 @@ virStorageSourceNetCookieValidate(virStorageNetCookieDef *def)
     if (virStringHasChars(def->name, virStorageSourceCookieValueInvalidChars) ||
         virStringHasChars(def->name, virStorageSourceCookieNameInvalidChars)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("cookie name '%s' contains invalid characters"),
+                       _("cookie name '%1$s' contains invalid characters"),
                        def->name);
         return -1;
     }
@@ -657,7 +657,7 @@ virStorageSourceNetCookieValidate(virStorageNetCookieDef *def)
     if (val[0] == '"') {
         if (val[len - 1] != '"') {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("value of cookie '%s' contains invalid characters"),
+                           _("value of cookie '%1$s' contains invalid characters"),
                            def->name);
             return -1;
         }
@@ -669,7 +669,7 @@ virStorageSourceNetCookieValidate(virStorageNetCookieDef *def)
     /* check invalid characters in value */
     if (virStringHasChars(checkval, virStorageSourceCookieValueInvalidChars)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("value of cookie '%s' contains invalid characters"),
+                       _("value of cookie '%1$s' contains invalid characters"),
                        def->name);
         return -1;
     }
@@ -690,7 +690,8 @@ virStorageSourceNetCookiesValidate(virStorageSource *src)
 
         for (j = i + 1; j < src->ncookies; j++) {
             if (STREQ(src->cookies[i]->name, src->cookies[j]->name)) {
-                virReportError(VIR_ERR_XML_ERROR, _("duplicate cookie '%s'"),
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("duplicate cookie '%1$s'"),
                                src->cookies[i]->name);
                 return -1;
             }

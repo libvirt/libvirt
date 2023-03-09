@@ -235,7 +235,7 @@ virDomainMomentAssignDef(virDomainMomentObjList *moments,
 
     if (virHashLookup(moments->objs, def->name) != NULL) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("domain moment %s already exists"),
+                       _("domain moment %1$s already exists"),
                        def->name);
         return NULL;
     }
@@ -539,21 +539,21 @@ virDomainMomentCheckCycles(virDomainMomentObjList *list,
     if (def->parent_name) {
         if (STREQ(def->name, def->parent_name)) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("cannot set moment %s as its own parent"),
+                           _("cannot set moment %1$s as its own parent"),
                            def->name);
             return -1;
         }
         other = virDomainMomentFindByName(list, def->parent_name);
         if (!other) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("parent %s for moment %s not found"),
+                           _("parent %1$s for moment %2$s not found"),
                            def->parent_name, def->name);
             return -1;
         }
         while (other->def->parent_name) {
             if (STREQ(other->def->parent_name, def->name)) {
                 virReportError(VIR_ERR_INVALID_ARG,
-                               _("parent %s would create cycle to %s"),
+                               _("parent %1$s would create cycle to %2$s"),
                                other->def->name, def->name);
                 return -1;
             }

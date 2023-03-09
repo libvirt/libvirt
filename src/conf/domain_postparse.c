@@ -144,7 +144,7 @@ virDomainDefPostParseTimer(virDomainDef *def)
             timer->name == VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK) {
             if (timer->tickpolicy) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("timer %s doesn't support setting of timer tickpolicy"),
+                               _("timer %1$s doesn't support setting of timer tickpolicy"),
                                virDomainTimerNameTypeToString(timer->name));
                 return -1;
             }
@@ -162,14 +162,14 @@ virDomainDefPostParseTimer(virDomainDef *def)
         if (timer->name != VIR_DOMAIN_TIMER_NAME_TSC) {
             if (timer->frequency != 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("timer %s doesn't support setting of timer frequency"),
+                               _("timer %1$s doesn't support setting of timer frequency"),
                                virDomainTimerNameTypeToString(timer->name));
                 return -1;
              }
 
             if (timer->mode) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("timer %s doesn't support setting of timer mode"),
+                               _("timer %1$s doesn't support setting of timer mode"),
                                virDomainTimerNameTypeToString(timer->name));
                 return -1;
              }
@@ -179,7 +179,7 @@ virDomainDefPostParseTimer(virDomainDef *def)
             timer->name != VIR_DOMAIN_TIMER_NAME_RTC) {
             if (timer->track != VIR_DOMAIN_TIMER_TRACK_NONE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("timer %s doesn't support setting of timer track"),
+                               _("timer %1$s doesn't support setting of timer track"),
                                virDomainTimerNameTypeToString(timer->name));
                 return -1;
             }
@@ -325,7 +325,7 @@ virDomainHostdevDefPostParse(virDomainHostdevDef *dev,
                                               VIR_DOMAIN_DISK_BUS_SCSI,
                                               addr)) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("SCSI host address controller='%u' bus='%u' target='%u' unit='%u' in use by a SCSI disk"),
+                           _("SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by a SCSI disk"),
                            addr->controller, addr->bus,
                            addr->target, addr->unit);
             return -1;
@@ -342,7 +342,7 @@ virDomainHostdevDefPostParse(virDomainHostdevDef *dev,
             (model == VIR_MDEV_MODEL_TYPE_VFIO_CCW &&
              dev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Unsupported address type '%s' with mediated device model '%s'"),
+                           _("Unsupported address type '%1$s' with mediated device model '%2$s'"),
                            virDomainDeviceAddressTypeToString(dev->info->type),
                            virMediatedDeviceModelTypeToString(model));
             return -1;
@@ -375,7 +375,7 @@ virDomainChrIsaSerialDefPostParse(virDomainDef *def)
         if (isa_serial_count++ >= VIR_MAX_ISA_SERIAL_PORTS ||
             def->serials[i]->target.port >= VIR_MAX_ISA_SERIAL_PORTS) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Maximum supported number of ISA serial ports is '%d'"),
+                           _("Maximum supported number of ISA serial ports is '%1$d'"),
                            VIR_MAX_ISA_SERIAL_PORTS);
             return -1;
         }
@@ -383,7 +383,7 @@ virDomainChrIsaSerialDefPostParse(virDomainDef *def)
         if (def->serials[i]->target.port != -1) {
             if (used_serial_port[def->serials[i]->target.port]) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("target port '%d' already allocated"),
+                               _("target port '%1$d' already allocated"),
                                def->serials[i]->target.port);
                 return -1;
             }
@@ -826,7 +826,7 @@ virDomainDefPostParseCheckFeatures(virDomainDef *def,
     if (UNSUPPORTED(VIR_DOMAIN_DEF_FEATURE_NAME_SLASH)) {
         if (def->name && strchr(def->name, '/')) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("name %s cannot contain '/'"), def->name);
+                           _("name %1$s cannot contain '/'"), def->name);
             return -1;
         }
     }
@@ -865,7 +865,7 @@ virDomainDeviceDefPostParseCheckFeatures(virDomainDeviceDef *dev,
         dev->type == VIR_DOMAIN_DEVICE_NET &&
         dev->data.net->modelstr) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("driver does not support net model '%s'"),
+                       _("driver does not support net model '%1$s'"),
                        dev->data.net->modelstr);
         return -1;
     }
@@ -874,7 +874,7 @@ virDomainDeviceDefPostParseCheckFeatures(virDomainDeviceDef *dev,
         dev->data.disk->src->fdgroup &&
         UNSUPPORTED(VIR_DOMAIN_DEF_FEATURE_DISK_FD)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("driver does not support FD passing for disk '%s'"),
+                       _("driver does not support FD passing for disk '%1$s'"),
                        dev->data.disk->dst);
         return -1;
     }
@@ -983,7 +983,7 @@ virDomainVcpuDefPostParse(virDomainDef *def)
         case VIR_TRISTATE_BOOL_NO:
             if (!vcpu->online) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("vcpu '%zu' is both offline and not hotpluggable"), i);
+                               _("vcpu '%1$zu' is both offline and not hotpluggable"), i);
                 return -1;
             }
             break;
@@ -1040,7 +1040,7 @@ virDomainDefCollectBootOrder(virDomainDef *def G_GNUC_UNUSED,
 
     if (virHashLookup(bootHash, order)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("boot order '%s' used for more than one device"),
+                       _("boot order '%1$s' used for more than one device"),
                        order);
         return -1;
     }
@@ -1150,7 +1150,7 @@ virDomainDefRejectDuplicateControllers(virDomainDef *def)
 
         if (virBitmapIsBitSet(bitmaps[cont->type], cont->idx)) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Multiple '%s' controllers with index '%d'"),
+                           _("Multiple '%1$s' controllers with index '%2$d'"),
                            virDomainControllerTypeToString(cont->type),
                            cont->idx);
             goto cleanup;
@@ -1179,7 +1179,7 @@ virDomainDefRejectDuplicatePanics(virDomainDef *def)
         virDomainPanicModel model = def->panics[i]->model;
         if (exists[model]) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Multiple panic devices with model '%s'"),
+                           _("Multiple panic devices with model '%1$s'"),
                            virDomainPanicModelTypeToString(model));
             return -1;
         }

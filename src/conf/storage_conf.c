@@ -309,7 +309,7 @@ virStoragePoolTypeInfoLookup(int type)
             return &poolTypeInfo[i];
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("missing backend for pool type %d"), type);
+                   _("missing backend for pool type %1$d"), type);
     return NULL;
 }
 
@@ -554,7 +554,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
 
         if (source->format < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown pool format type %s"), format);
+                           _("unknown pool format type %1$s"), format);
             return -1;
         }
     }
@@ -638,15 +638,14 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         if ((source->format != VIR_STORAGE_POOL_NETFS_NFS) &&
             (source->format != VIR_STORAGE_POOL_NETFS_AUTO)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("storage pool protocol ver unsupported for "
-                             "pool type '%s'"),
+                           _("storage pool protocol ver unsupported for pool type '%1$s'"),
                            virStoragePoolFormatFileSystemNetTypeToString(source->format));
             return -1;
         }
 
         if (strchr(source->protocolVer, ',')) {
             virReportError(VIR_ERR_XML_DETAIL,
-                           _("storage pool protocol ver '%s' must not contain ','"),
+                           _("storage pool protocol ver '%1$s' must not contain ','"),
                            source->protocolVer);
             return -1;
         }
@@ -766,7 +765,7 @@ virStoragePoolDefRefreshParse(xmlXPathContextPtr ctxt,
 
     if ((tmp = virStorageVolDefRefreshAllocationTypeFromString(allocation)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown storage pool volume refresh allocation type %s"),
+                       _("unknown storage pool volume refresh allocation type %1$s"),
                        allocation);
         return -1;
     }
@@ -865,7 +864,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
 
     if (strchr(def->name, '/')) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("name %s cannot contain '/'"), def->name);
+                       _("name %1$s cannot contain '/'"), def->name);
         return NULL;
     }
 
@@ -1052,7 +1051,7 @@ virStoragePoolSourceFormat(virBuffer *buf,
         const char *format = (options->formatToString)(src->format);
         if (!format) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown pool format number %d"),
+                           _("unknown pool format number %1$d"),
                            src->format);
             return -1;
         }
@@ -1275,7 +1274,7 @@ virStorageVolDefParseXML(virStoragePoolDef *pool,
     if (type) {
         if ((def->type = virStorageVolTypeFromString(type)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown volume type '%s'"), type);
+                           _("unknown volume type '%1$s'"), type);
             return NULL;
         }
     }
@@ -1296,7 +1295,7 @@ virStorageVolDefParseXML(virStoragePoolDef *pool,
 
             if (def->target.backingStore->format < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown volume format type %s"), format);
+                               _("unknown volume format type %1$s"), format);
                 return NULL;
             }
         }
@@ -1342,7 +1341,7 @@ virStorageVolDefParseXML(virStoragePoolDef *pool,
 
         if (def->target.format < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown volume format type %s"), format);
+                           _("unknown volume format type %1$s"), format);
             return NULL;
         }
     }
@@ -1386,7 +1385,8 @@ virStorageVolDefParseXML(virStoragePoolDef *pool,
             int f = virStorageFileFeatureTypeFromString((const char*)nodes[i]->name);
 
             if (f < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("unsupported feature %s"),
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported feature %1$s"),
                                (const char*)nodes[i]->name);
                 return NULL;
             }
@@ -1446,7 +1446,7 @@ virStorageVolTargetDefFormat(virStorageVolOptions *options,
         const char *format = (options->formatToString)(def->format);
         if (!format) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown volume format number %d"),
+                           _("unknown volume format number %1$d"),
                            def->format);
             return -1;
         }

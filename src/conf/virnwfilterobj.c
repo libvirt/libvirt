@@ -190,13 +190,13 @@ virNWFilterObjListFindInstantiateFilter(virNWFilterObjList *nwfilters,
 
     if (!(obj = virNWFilterObjListFindByName(nwfilters, filtername))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("referenced filter '%s' is missing"), filtername);
+                       _("referenced filter '%1$s' is missing"), filtername);
         return NULL;
     }
 
     if (virNWFilterObjWantRemoved(obj)) {
         virReportError(VIR_ERR_NO_NWFILTER,
-                       _("Filter '%s' is in use."), filtername);
+                       _("Filter '%1$s' is in use."), filtername);
         virNWFilterObjUnlock(obj);
         return NULL;
     }
@@ -305,8 +305,7 @@ virNWFilterObjListAssignDef(virNWFilterObjList *nwfilters,
 
         if (STRNEQ(def->name, objdef->name)) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("filter with same UUID but different name "
-                             "('%s') already exists"),
+                           _("filter with same UUID but different name ('%1$s') already exists"),
                            objdef->name);
             virNWFilterObjUnlock(obj);
             return NULL;
@@ -317,7 +316,7 @@ virNWFilterObjListAssignDef(virNWFilterObjList *nwfilters,
             objdef = obj->def;
             virUUIDFormat(objdef->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("filter '%s' already exists with uuid %s"),
+                           _("filter '%1$s' already exists with uuid %2$s"),
                            def->name, uuidstr);
             virNWFilterObjUnlock(obj);
             return NULL;
@@ -576,8 +575,7 @@ virNWFilterObjListLoadConfig(virNWFilterObjList *nwfilters,
 
     if (STRNEQ(name, def->name)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("network filter config filename '%s' "
-                         "does not match name '%s'"),
+                       _("network filter config filename '%1$s' does not match name '%2$s'"),
                        configFile, def->name);
         goto error;
     }

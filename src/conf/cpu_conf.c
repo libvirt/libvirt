@@ -416,7 +416,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
 
             if (def->mode < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Invalid mode attribute '%s'"),
+                               _("Invalid mode attribute '%1$s'"),
                                cpuMode);
                 return -1;
             }
@@ -465,7 +465,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
         }
         if ((def->arch = virArchFromString(arch)) == VIR_ARCH_NONE) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown architecture %s"), arch);
+                           _("Unknown architecture %1$s"), arch);
             return -1;
         }
 
@@ -537,7 +537,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
                                         ctxt))) {
             if (strlen(vendor_id) != VIR_CPU_VENDOR_ID_LENGTH) {
                 virReportError(VIR_ERR_XML_ERROR,
-                               _("vendor_id must be exactly %d characters long"),
+                               _("vendor_id must be exactly %1$d characters long"),
                                VIR_CPU_VENDOR_ID_LENGTH);
                 return -1;
             }
@@ -634,7 +634,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
         for (j = 0; j < i; j++) {
             if (STREQ(name, def->features[j].name)) {
                 virReportError(VIR_ERR_XML_ERROR,
-                               _("CPU feature '%s' specified more than once"),
+                               _("CPU feature '%1$s' specified more than once"),
                                name);
                 return -1;
             }
@@ -707,7 +707,7 @@ virCPUDefFormatBufFull(virBuffer *buf,
 
         if (!(tmp = virCPUModeTypeToString(def->mode))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unexpected CPU mode %d"), def->mode);
+                           _("Unexpected CPU mode %1$d"), def->mode);
             return -1;
         }
         virBufferAsprintf(&attributeBuf, " mode='%s'", tmp);
@@ -715,7 +715,7 @@ virCPUDefFormatBufFull(virBuffer *buf,
         if (def->mode == VIR_CPU_MODE_CUSTOM) {
             if (!(tmp = virCPUMatchTypeToString(def->match))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unexpected CPU match policy %d"),
+                               _("Unexpected CPU match policy %1$d"),
                                def->match);
                 return -1;
             }
@@ -778,7 +778,7 @@ virCPUDefFormatBuf(virBuffer *buf,
             fallback = virCPUFallbackTypeToString(def->fallback);
             if (!fallback) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unexpected CPU fallback value: %d"),
+                               _("Unexpected CPU fallback value: %1$d"),
                                def->fallback);
                 return -1;
             }
@@ -861,7 +861,7 @@ virCPUDefFormatBuf(virBuffer *buf,
             policy = virCPUFeaturePolicyTypeToString(feature->policy);
             if (!policy) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unexpected CPU feature policy %d"),
+                               _("Unexpected CPU feature policy %1$d"),
                                feature->policy);
                 return -1;
             }
@@ -906,7 +906,7 @@ virCPUDefAddFeatureInternal(virCPUDef *def,
         case VIR_CPU_ADD_FEATURE_MODE_EXCLUSIVE:
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("CPU feature '%s' specified more than once"),
+                           _("CPU feature '%1$s' specified more than once"),
                            name);
             return -1;
         }
@@ -1039,71 +1039,71 @@ virCPUDefIsEqual(virCPUDef *src,
     }
 
     if (src->type != dst->type) {
-        MISMATCH(_("Target CPU type %s does not match source %s"),
+        MISMATCH(_("Target CPU type %1$s does not match source %2$s"),
                  virCPUTypeToString(dst->type),
                  virCPUTypeToString(src->type));
         return false;
     }
 
     if (src->mode != dst->mode) {
-        MISMATCH(_("Target CPU mode %s does not match source %s"),
+        MISMATCH(_("Target CPU mode %1$s does not match source %2$s"),
                  virCPUModeTypeToString(dst->mode),
                  virCPUModeTypeToString(src->mode));
         return false;
     }
 
     if (src->check != dst->check) {
-        MISMATCH(_("Target CPU check %s does not match source %s"),
+        MISMATCH(_("Target CPU check %1$s does not match source %2$s"),
                  virCPUCheckTypeToString(dst->check),
                  virCPUCheckTypeToString(src->check));
         return false;
     }
 
     if (src->arch != dst->arch) {
-        MISMATCH(_("Target CPU arch %s does not match source %s"),
+        MISMATCH(_("Target CPU arch %1$s does not match source %2$s"),
                  virArchToString(dst->arch),
                  virArchToString(src->arch));
         return false;
     }
 
     if (STRNEQ_NULLABLE(src->model, dst->model)) {
-        MISMATCH(_("Target CPU model %s does not match source %s"),
+        MISMATCH(_("Target CPU model %1$s does not match source %2$s"),
                  NULLSTR(dst->model), NULLSTR(src->model));
         return false;
     }
 
     if (STRNEQ_NULLABLE(src->vendor, dst->vendor)) {
-        MISMATCH(_("Target CPU vendor %s does not match source %s"),
+        MISMATCH(_("Target CPU vendor %1$s does not match source %2$s"),
                  NULLSTR(dst->vendor), NULLSTR(src->vendor));
         return false;
     }
 
     if (STRNEQ_NULLABLE(src->vendor_id, dst->vendor_id)) {
-        MISMATCH(_("Target CPU vendor id %s does not match source %s"),
+        MISMATCH(_("Target CPU vendor id %1$s does not match source %2$s"),
                  NULLSTR(dst->vendor_id), NULLSTR(src->vendor_id));
         return false;
     }
 
     if (src->sockets != dst->sockets) {
-        MISMATCH(_("Target CPU sockets %d does not match source %d"),
+        MISMATCH(_("Target CPU sockets %1$d does not match source %2$d"),
                  dst->sockets, src->sockets);
         return false;
     }
 
     if (src->dies != dst->dies) {
-        MISMATCH(_("Target CPU dies %d does not match source %d"),
+        MISMATCH(_("Target CPU dies %1$d does not match source %2$d"),
                  dst->dies, src->dies);
         return false;
     }
 
     if (src->cores != dst->cores) {
-        MISMATCH(_("Target CPU cores %d does not match source %d"),
+        MISMATCH(_("Target CPU cores %1$d does not match source %2$d"),
                  dst->cores, src->cores);
         return false;
     }
 
     if (src->threads != dst->threads) {
-        MISMATCH(_("Target CPU threads %d does not match source %d"),
+        MISMATCH(_("Target CPU threads %1$d does not match source %2$d"),
                  dst->threads, src->threads);
         return false;
     }
@@ -1118,20 +1118,20 @@ virCPUDefIsEqual(virCPUDef *src,
     }
 
     if (src->nfeatures != dst->nfeatures) {
-        MISMATCH(_("Target CPU feature count %zu does not match source %zu"),
+        MISMATCH(_("Target CPU feature count %1$zu does not match source %2$zu"),
                  dst->nfeatures, src->nfeatures);
         return false;
     }
 
     for (i = 0; i < src->nfeatures; i++) {
         if (STRNEQ(src->features[i].name, dst->features[i].name)) {
-            MISMATCH(_("Target CPU feature %s does not match source %s"),
+            MISMATCH(_("Target CPU feature %1$s does not match source %2$s"),
                      dst->features[i].name, src->features[i].name);
             return false;
         }
 
         if (src->features[i].policy != dst->features[i].policy) {
-            MISMATCH(_("Target CPU feature policy %s does not match source %s"),
+            MISMATCH(_("Target CPU feature policy %1$s does not match source %2$s"),
                      virCPUFeaturePolicyTypeToString(dst->features[i].policy),
                      virCPUFeaturePolicyTypeToString(src->features[i].policy));
             return false;

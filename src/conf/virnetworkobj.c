@@ -543,7 +543,7 @@ virNetworkObjAssignDefLocked(virNetworkObjList *nets,
         if (STRNEQ(obj->def->name, def->name)) {
             virUUIDFormat(obj->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("network '%s' is already defined with uuid %s"),
+                           _("network '%1$s' is already defined with uuid %2$s"),
                            obj->def->name, uuidstr);
             goto cleanup;
         }
@@ -552,7 +552,7 @@ virNetworkObjAssignDefLocked(virNetworkObjList *nets,
             /* UUID & name match, but if network is already active, refuse it */
             if (virNetworkObjIsActive(obj)) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("network is already active as '%s'"),
+                               _("network is already active as '%1$s'"),
                                obj->def->name);
                 goto cleanup;
             }
@@ -566,7 +566,7 @@ virNetworkObjAssignDefLocked(virNetworkObjList *nets,
             virObjectLock(obj);
             virUUIDFormat(obj->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("network '%s' already exists with uuid %s"),
+                           _("network '%1$s' already exists with uuid %2$s"),
                            def->name, uuidstr);
             goto cleanup;
         }
@@ -862,8 +862,7 @@ virNetworkLoadState(virNetworkObjList *nets,
 
     if (STRNEQ(name, def->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Network config filename '%s'"
-                         " does not match network name '%s'"),
+                       _("Network config filename '%1$s' does not match network name '%2$s'"),
                        configFile, def->name);
         return NULL;
     }
@@ -888,7 +887,7 @@ virNetworkLoadState(virNetworkObjList *nets,
         if (floor_sum &&
             virStrToLong_ull(floor_sum, NULL, 10, &floor_sum_val) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Malformed 'floor_sum' attribute: %s"),
+                           _("Malformed 'floor_sum' attribute: %1$s"),
                            floor_sum);
             return NULL;
         }
@@ -902,7 +901,7 @@ virNetworkLoadState(virNetworkObjList *nets,
                 int flag = virNetworkTaintTypeFromString(str);
                 if (flag < 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("Unknown taint flag %s"), str);
+                                   _("Unknown taint flag %1$s"), str);
                     return NULL;
                 }
                 /* Compute taint mask here. The network object does not
@@ -961,8 +960,7 @@ virNetworkLoadConfig(virNetworkObjList *nets,
 
     if (STRNEQ(name, def->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Network config filename '%s'"
-                         " does not match network name '%s'"),
+                       _("Network config filename '%1$s' does not match network name '%2$s'"),
                        configFile, def->name);
         return NULL;
     }
@@ -1105,7 +1103,7 @@ virNetworkObjDeleteConfig(const char *configDir,
 
     if (unlink(configFile) < 0) {
         virReportSystemError(errno,
-                             _("cannot remove config file '%s'"),
+                             _("cannot remove config file '%1$s'"),
                              configFile);
         return -1;
     }
@@ -1565,7 +1563,7 @@ virNetworkObjAddPort(virNetworkObj *net,
 
     if (virHashLookup(net->ports, uuidstr)) {
         virReportError(VIR_ERR_NETWORK_PORT_EXIST,
-                       _("Network port with UUID %s already exists"),
+                       _("Network port with UUID %1$s already exists"),
                        uuidstr);
         return -1;
     }
@@ -1596,7 +1594,7 @@ virNetworkObjLookupPort(virNetworkObj *net,
 
     if (!(ret = virHashLookup(net->ports, uuidstr))) {
         virReportError(VIR_ERR_NO_NETWORK_PORT,
-                       _("Network port with UUID %s does not exist"),
+                       _("Network port with UUID %1$s does not exist"),
                        uuidstr);
         return NULL;
     }
@@ -1618,7 +1616,7 @@ virNetworkObjDeletePort(virNetworkObj *net,
 
     if (!(portdef = virHashLookup(net->ports, uuidstr))) {
         virReportError(VIR_ERR_NO_NETWORK_PORT,
-                       _("Network port with UUID %s does not exist"),
+                       _("Network port with UUID %1$s does not exist"),
                        uuidstr);
         return -1;
     }

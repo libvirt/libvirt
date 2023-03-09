@@ -102,7 +102,7 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     }
     if (virUUIDParse(uuid, def->uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse UUID '%s'"), uuid);
+                       _("Unable to parse UUID '%1$s'"), uuid);
         return NULL;
     }
 
@@ -123,7 +123,7 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
 
     if (virUUIDParse(uuid, def->owneruuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse UUID '%s'"), uuid);
+                       _("Unable to parse UUID '%1$s'"), uuid);
         return NULL;
     }
 
@@ -143,7 +143,7 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     }
     if (virMacAddrParse(mac, &def->mac) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse MAC '%s'"), mac);
+                       _("Unable to parse MAC '%1$s'"), mac);
         return NULL;
     }
 
@@ -196,8 +196,8 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
             (def->plug.bridge.macTableManager =
              virNetworkBridgeMACTableManagerTypeFromString(macmgr)) <= 0) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid macTableManager setting '%s' "
-                             "in network port"), macmgr);
+                           _("Invalid macTableManager setting '%1$s' in network port"),
+                           macmgr);
             return NULL;
         }
         break;
@@ -213,7 +213,7 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
             (def->plug.direct.mode =
              virNetDevMacVLanModeTypeFromString(mode)) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid mode setting '%s' in network port"), mode);
+                           _("Invalid mode setting '%1$s' in network port"), mode);
             return NULL;
         }
         break;
@@ -424,7 +424,7 @@ virNetworkPortDefDeleteStatus(virNetworkPortDef *def,
 
     if (unlink(path) < 0 && errno != ENOENT) {
         virReportSystemError(errno,
-                             _("Unable to delete %s"), path);
+                             _("Unable to delete %1$s"), path);
         return -1;
     }
 

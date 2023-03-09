@@ -272,7 +272,7 @@ virCCWDeviceAddressParseXML(xmlNodePtr node,
 
     if (!virCCWDeviceAddressIsValid(addr)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid specification for virtio ccw address: cssid='0x%x' ssid='0x%x' devno='0x%04x'"),
+                       _("Invalid specification for virtio ccw address: cssid='0x%1$x' ssid='0x%2$x' devno='0x%3$04x'"),
                        addr->cssid, addr->ssid, addr->devno);
         return -1;
     }

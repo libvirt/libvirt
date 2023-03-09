@@ -153,7 +153,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
     if (src->type == VIR_STORAGE_TYPE_VOLUME ||
         src->type == VIR_STORAGE_TYPE_DIR) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("unsupported disk snapshot type '%s'"),
+                       _("unsupported disk snapshot type '%1$s'"),
                        virStorageTypeToString(src->type));
         return -1;
     }
@@ -170,7 +170,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
     if ((driver = virXPathString("string(./driver/@type)", ctxt)) &&
         (src->format = virStorageFileFormatTypeFromString(driver)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk snapshot driver '%s'"), driver);
+                           _("unknown disk snapshot driver '%1$s'"), driver);
             return -1;
     }
 
@@ -183,7 +183,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
     /* validate that the passed path is absolute */
     if (virStorageSourceIsRelative(src)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("disk snapshot image path '%s' must be absolute"),
+                       _("disk snapshot image path '%1$s' must be absolute"),
                        src->path);
         return -1;
     }
@@ -259,7 +259,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
         def->state = virDomainSnapshotStateTypeFromString(state);
         if (def->state <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Invalid state '%s' in domain snapshot XML"),
+                           _("Invalid state '%1$s' in domain snapshot XML"),
                            state);
             return NULL;
         }
@@ -336,7 +336,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     if (def->memorysnapshotfile &&
         def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("memory filename '%s' requires external snapshot"),
+                       _("memory filename '%1$s' requires external snapshot"),
                        def->memorysnapshotfile);
         return NULL;
     }
@@ -360,7 +360,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     /* verify that memory path is absolute */
     if (def->memorysnapshotfile && !g_path_is_absolute(def->memorysnapshotfile)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("memory snapshot file path (%s) must be absolute"),
+                       _("memory snapshot file path (%1$s) must be absolute"),
                        def->memorysnapshotfile);
         return NULL;
     }
@@ -434,8 +434,7 @@ virDomainSnapshotRedefineValidate(virDomainSnapshotDef *def,
     if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) &&
         def->state != VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("disk-only flag for snapshot %s requires "
-                         "disk-snapshot state"),
+                       _("disk-only flag for snapshot %1$s requires disk-snapshot state"),
                        def->parent.name);
         return -1;
     }
@@ -445,7 +444,7 @@ virDomainSnapshotRedefineValidate(virDomainSnapshotDef *def,
 
         virUUIDFormat(domain_uuid, uuidstr);
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("definition for snapshot %s must use uuid %s"),
+                       _("definition for snapshot %1$s must use uuid %2$s"),
                        def->parent.name, uuidstr);
         return -1;
     }
@@ -458,8 +457,7 @@ virDomainSnapshotRedefineValidate(virDomainSnapshotDef *def,
             (def->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
              def->state == VIR_DOMAIN_SNAPSHOT_PAUSED)) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("cannot change between online and offline "
-                             "snapshot state in snapshot %s"),
+                           _("cannot change between online and offline snapshot state in snapshot %1$s"),
                            def->parent.name);
             return -1;
         }
@@ -467,8 +465,7 @@ virDomainSnapshotRedefineValidate(virDomainSnapshotDef *def,
         if ((otherdef->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT) !=
             (def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT)) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("cannot change between disk only and "
-                             "full system in snapshot %s"),
+                           _("cannot change between disk only and full system in snapshot %1$s"),
                            def->parent.name);
             return -1;
         }
@@ -512,25 +509,21 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def)
 
         if (disk->src->type != VIR_STORAGE_TYPE_FILE) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("cannot generate external snapshot name "
-                             "for disk '%s' on a '%s' device"),
+                           _("cannot generate external snapshot name for disk '%1$s' on a '%2$s' device"),
                            disk->name, virStorageTypeToString(disk->src->type));
             return -1;
         }
 
         if (!(origpath = virDomainDiskGetSource(def->parent.dom->disks[i]))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("cannot generate external snapshot name "
-                             "for disk '%s' without source"),
+                           _("cannot generate external snapshot name for disk '%1$s' without source"),
                            disk->name);
             return -1;
         }
 
         if (stat(origpath, &sb) < 0 || !S_ISREG(sb.st_mode)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("source for disk '%s' is not a regular "
-                             "file; refusing to generate external "
-                             "snapshot name"),
+                           _("source for disk '%1$s' is not a regular file; refusing to generate external snapshot name"),
                            disk->name);
             return -1;
         }
@@ -549,8 +542,7 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def)
         for (j = 0; j < i; j++) {
             if (STREQ_NULLABLE(disk->src->path, def->disks[j].src->path)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("cannot generate external snapshot name for "
-                                 "disk '%s': collision with disk '%s'"),
+                               _("cannot generate external snapshot name for disk '%1$s': collision with disk '%2$s'"),
                                disk->name, def->disks[j].name);
                 return -1;
             }
@@ -637,13 +629,13 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
 
         if (!domdisk) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("no disk named '%s'"), snapdisk->name);
+                           _("no disk named '%1$s'"), snapdisk->name);
             return -1;
         }
 
         if (virHashHasEntry(map, domdisk->dst)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("disk '%s' specified twice"),
+                           _("disk '%1$s' specified twice"),
                            snapdisk->name);
             return -1;
         }
@@ -664,7 +656,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
                    !(snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NO &&
                      domdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NO)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("disk '%s' must use snapshot mode '%s'"),
+                           _("disk '%1$s' must use snapshot mode '%2$s'"),
                            snapdisk->name,
                            virDomainSnapshotLocationTypeToString(default_snapshot));
             return -1;
@@ -673,8 +665,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
         if (snapdisk->src->path &&
             snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("file '%s' for disk '%s' requires "
-                             "use of external snapshot mode"),
+                           _("file '%1$s' for disk '%2$s' requires use of external snapshot mode"),
                            snapdisk->src->path, snapdisk->name);
             return -1;
         }

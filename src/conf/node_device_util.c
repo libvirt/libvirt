@@ -49,7 +49,7 @@ virNodeDeviceGetParentName(virConnectPtr conn,
 
     if (!(device = virNodeDeviceLookupByName(conn, nodedev_name))) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Cannot find '%s' in node device database"),
+                       _("Cannot find '%1$s' in node device database"),
                        nodedev_name);
         return NULL;
     }
@@ -123,7 +123,7 @@ virNodeDeviceCreateVport(virStorageAdapterFCHost *fchost)
      */
     if (!skip_capable_check && !virVHBAPathExists(NULL, parent_host)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("parent '%s' specified for vHBA does not exist"),
+                       _("parent '%1$s' specified for vHBA does not exist"),
                        parent_hoststr);
         return NULL;
     }
@@ -174,7 +174,7 @@ virNodeDeviceDeleteVport(virConnectPtr conn,
     /* Find our vHBA by searching the fc_host sysfs tree for our wwnn/wwpn */
     if (!(name = virVHBAGetHostByWWN(NULL, fchost->wwnn, fchost->wwpn))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to find fc_host for wwnn='%s' and wwpn='%s'"),
+                       _("Failed to find fc_host for wwnn='%1$s' and wwpn='%2$s'"),
                        fchost->wwnn, fchost->wwpn);
         return -1;
     }

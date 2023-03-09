@@ -61,7 +61,7 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
     type = virSecretUsageTypeFromString(type_str);
     if (type < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown secret usage type %s"), type_str);
+                       _("unknown secret usage type %1$s"), type_str);
         return -1;
     }
     def->usage_type = type;
@@ -116,7 +116,7 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected secret usage type %d"),
+                       _("unexpected secret usage type %1$d"),
                        def->usage_type);
         return -1;
     }
@@ -200,7 +200,7 @@ virSecretDefFormatUsage(virBuffer *buf,
     type = virSecretUsageTypeToString(def->usage_type);
     if (type == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected secret usage type %d"),
+                       _("unexpected secret usage type %1$d"),
                        def->usage_type);
         return -1;
     }
@@ -232,7 +232,7 @@ virSecretDefFormatUsage(virBuffer *buf,
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected secret usage type %d"),
+                       _("unexpected secret usage type %1$d"),
                        def->usage_type);
         return -1;
     }

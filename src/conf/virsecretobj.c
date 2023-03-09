@@ -344,8 +344,7 @@ virSecretObjListAdd(virSecretObjList *secrets,
 
         if (STRNEQ_NULLABLE(objdef->usage_id, (*newdef)->usage_id)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("a secret with UUID %s is already defined for "
-                             "use with %s"),
+                           _("a secret with UUID %1$s is already defined for use with %2$s"),
                            uuidstr, objdef->usage_id);
             goto cleanup;
         }
@@ -371,8 +370,7 @@ virSecretObjListAdd(virSecretObjList *secrets,
             objdef = obj->def;
             virUUIDFormat(objdef->uuid, uuidstr);
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("a secret with UUID %s already defined for "
-                             "use with %s"),
+                           _("a secret with UUID %1$s already defined for use with %2$s"),
                            uuidstr, (*newdef)->usage_id);
             goto cleanup;
         }
@@ -644,7 +642,7 @@ virSecretObjDeleteConfig(virSecretObj *obj)
 
     if (!def->isephemeral &&
         unlink(obj->configFile) < 0 && errno != ENOENT) {
-        virReportSystemError(errno, _("cannot unlink '%s'"),
+        virReportSystemError(errno, _("cannot unlink '%1$s'"),
                              obj->configFile);
         return -1;
     }
@@ -725,7 +723,7 @@ virSecretObjGetValue(virSecretObj *obj)
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(def->uuid, uuidstr);
         virReportError(VIR_ERR_NO_SECRET,
-                       _("secret '%s' does not have a value"), uuidstr);
+                       _("secret '%1$s' does not have a value"), uuidstr);
         return NULL;
     }
 
@@ -799,7 +797,7 @@ virSecretLoadValidateUUID(virSecretDef *def,
 
     if (!virStringMatchesNameSuffix(file, uuidstr, ".xml")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("<uuid> does not match secret file name '%s'"),
+                       _("<uuid> does not match secret file name '%1$s'"),
                        file);
         return -1;
     }
@@ -820,20 +818,20 @@ virSecretLoadValue(virSecretObj *obj)
             ret = 0;
             goto cleanup;
         }
-        virReportSystemError(errno, _("cannot open '%s'"),
+        virReportSystemError(errno, _("cannot open '%1$s'"),
                              obj->base64File);
         goto cleanup;
     }
 
     if (fstat(fd, &st) < 0) {
-        virReportSystemError(errno, _("cannot stat '%s'"),
+        virReportSystemError(errno, _("cannot stat '%1$s'"),
                              obj->base64File);
         goto cleanup;
     }
 
     if ((size_t)st.st_size != st.st_size) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("'%s' file does not fit in memory"),
+                       _("'%1$s' file does not fit in memory"),
                        obj->base64File);
         goto cleanup;
     }
@@ -841,7 +839,7 @@ virSecretLoadValue(virSecretObj *obj)
     contents = g_new0(char, st.st_size + 1);
 
     if (saferead(fd, contents, st.st_size) != st.st_size) {
-        virReportSystemError(errno, _("cannot read '%s'"),
+        virReportSystemError(errno, _("cannot read '%1$s'"),
                              obj->base64File);
         goto cleanup;
     }
@@ -914,7 +912,7 @@ virSecretLoadAllConfigs(virSecretObjList *secrets,
             continue;
 
         if (!(obj = virSecretLoad(secrets, de->d_name, path, configDir))) {
-            VIR_ERROR(_("Error reading secret: %s"),
+            VIR_ERROR(_("Error reading secret: %1$s"),
                       virGetLastErrorMessage());
             VIR_FREE(path);
             continue;

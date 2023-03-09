@@ -159,7 +159,7 @@ virNWFilterBindingObjSave(const virNWFilterBindingObj *obj,
 
     if (g_mkdir_with_parents(statusDir, 0777) < 0) {
         virReportSystemError(errno,
-                             _("cannot create config directory '%s'"),
+                             _("cannot create config directory '%1$s'"),
                              statusDir);
         return -1;
     }
@@ -185,7 +185,7 @@ virNWFilterBindingObjDelete(const virNWFilterBindingObj *obj,
     if (unlink(filename) < 0 &&
         errno != ENOENT) {
         virReportSystemError(errno,
-                             _("Unable to remove status '%s' for nwfilter binding %s'"),
+                             _("Unable to remove status '%1$s' for nwfilter binding %2$s'"),
                              filename, obj->def->portdevname);
         return -1;
     }

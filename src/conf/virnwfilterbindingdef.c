@@ -113,7 +113,7 @@ virNWFilterBindingDefParseXML(xmlXPathContextPtr ctxt)
 
     if (virUUIDParse(uuid, ret->owneruuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse UUID '%s'"), uuid);
+                       _("Unable to parse UUID '%1$s'"), uuid);
         VIR_FREE(uuid);
         goto cleanup;
     }
@@ -128,7 +128,7 @@ virNWFilterBindingDefParseXML(xmlXPathContextPtr ctxt)
 
     if (virMacAddrParse(mac, &ret->mac) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse MAC '%s'"), mac);
+                       _("Unable to parse MAC '%1$s'"), mac);
         VIR_FREE(mac);
         goto cleanup;
     }

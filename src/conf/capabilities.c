@@ -713,7 +713,7 @@ virCapabilitiesDomainDataLookupInternal(virCaps *caps,
             virBufferAsprintf(&buf, "%s", _("any configuration"));
 
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("could not find capabilities for %s"),
+                       _("could not find capabilities for %1$s"),
                        virBufferCurrentContent(&buf));
         return ret;
     }
@@ -1398,8 +1398,7 @@ virCapabilitiesHostNUMAGetCellCpus(virCapsHostNUMA *caps,
     for (cpu = 0; cell && cpu < cell->ncpus; cpu++) {
         if (virBitmapSetBit(cpumask, cell->cpus[cpu].id) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cpu '%u' in node '%zu' is out of range "
-                             "of the provided bitmap"),
+                           _("Cpu '%1$u' in node '%2$zu' is out of range of the provided bitmap"),
                            cell->cpus[cpu].id, node);
             return -1;
         }
@@ -1560,7 +1559,7 @@ virCapabilitiesGetNodeCacheReadFileUint(const char *prefix,
     if (rv < 0) {
         if (rv == -2) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("File '%s' does not exist"),
+                           _("File '%1$s' does not exist"),
                            path);
         }
         return -1;
@@ -1582,7 +1581,7 @@ virCapabilitiesGetNodeCacheReadFileUllong(const char *prefix,
     if (rv < 0) {
         if (rv == -2) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("File '%s' does not exist"),
+                           _("File '%1$s' does not exist"),
                            path);
         }
         return -1;
@@ -1629,7 +1628,7 @@ virCapabilitiesGetNodeCache(int node,
 
         if (virStrToLong_ui(dname, NULL, 10, &cache.level) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to parse %s"),
+                           _("unable to parse %1$s"),
                            entry->d_name);
             return -1;
         }
@@ -1655,7 +1654,7 @@ virCapabilitiesGetNodeCache(int node,
         case 2: cache.associativity = VIR_NUMA_CACHE_ASSOCIATIVITY_NONE; break;
         default:
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unknown indexing value '%u'"),
+                               _("unknown indexing value '%1$u'"),
                                indexing);
                 return -1;
         }
@@ -1671,7 +1670,7 @@ virCapabilitiesGetNodeCache(int node,
         case 2: cache.policy = VIR_NUMA_CACHE_POLICY_NONE; break;
         default:
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unknown write_policy value '%u'"),
+                               _("unknown write_policy value '%1$u'"),
                                write_policy);
                 return -1;
         }
@@ -1851,7 +1850,7 @@ virCapabilitiesHostNUMAInitInterconnectsNode(GArray *interconnects,
 
         if (virStrToLong_ui(dname, NULL, 10, &initNode) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to parse %s"),
+                           _("unable to parse %1$s"),
                            entry->d_name);
             return -1;
         }
@@ -1915,7 +1914,7 @@ virCapabilitiesHostNUMAInitInterconnects(virCapsHostNUMA *caps)
 
         if (virStrToLong_ui(dname, NULL, 10, &node) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to parse %s"),
+                           _("unable to parse %1$s"),
                            entry->d_name);
             return -1;
         }
@@ -2260,7 +2259,7 @@ virCapabilitiesInitCaches(virCaps *caps)
             kernel_type = virCacheKernelTypeFromString(type);
             if (kernel_type < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unknown cache type '%s'"), type);
+                               _("Unknown cache type '%1$s'"), type);
                 return -1;
             }
 

@@ -575,7 +575,7 @@ virDomainEventNew(virClass *klass,
 
     if (!virClassIsDerivedFrom(klass, virDomainEventClass)) {
         virReportInvalidArg(klass,
-                            _("Class %s must derive from virDomainEvent"),
+                            _("Class %1$s must derive from virDomainEvent"),
                             virClassName(klass));
         return NULL;
     }
@@ -2395,7 +2395,7 @@ virDomainQemuMonitorEventStateRegisterID(virConnectPtr conn,
             data->regex = g_regex_new(event, cflags, 0, &err);
             if (!data->regex) {
                 virReportError(VIR_ERR_INVALID_ARG,
-                               _("failed to compile regex '%s': %s"),
+                               _("failed to compile regex '%1$s': %2$s"),
                                event, err->message);
                 VIR_FREE(data);
                 return -1;

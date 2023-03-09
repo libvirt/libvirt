@@ -208,16 +208,14 @@ virStorageAdapterValidateFCHost(virStorageAdapterFCHost *fchost)
 
     if ((fchost->parent_wwnn && !fchost->parent_wwpn)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("when providing parent_wwnn='%s', the "
-                         "parent_wwpn must also be provided"),
+                       _("when providing parent_wwnn='%1$s', the parent_wwpn must also be provided"),
                        fchost->parent_wwnn);
         return -1;
     }
 
     if (!fchost->parent_wwnn && fchost->parent_wwpn) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("when providing parent_wwpn='%s', the "
-                         "parent_wwnn must also be provided"),
+                       _("when providing parent_wwpn='%1$s', the parent_wwnn must also be provided"),
                        fchost->parent_wwpn);
         return -1;
     }

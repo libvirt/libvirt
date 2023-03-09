@@ -115,8 +115,7 @@ static int virChrdevLockFileCreate(const char *dev)
     if (virPidFileReadPathIfAlive(path, &pid, NULL) == 0 && pid >= 0) {
         /* the process exists, the lockfile is valid */
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Requested device '%s' is locked by "
-                         "lock file '%s' held by process %lld"),
+                       _("Requested device '%1$s' is locked by lock file '%2$s' held by process %3$lld"),
                        dev, path, (long long) pid);
         return -1;
     } else {
@@ -142,8 +141,7 @@ static int virChrdevLockFileCreate(const char *dev)
             return 0;
         }
         virReportSystemError(errno,
-                             _("Couldn't create lock file for "
-                               "device '%s' in path '%s'"),
+                             _("Couldn't create lock file for device '%1$s' in path '%2$s'"),
                              dev, path);
         return -1;
     }
@@ -151,8 +149,7 @@ static int virChrdevLockFileCreate(const char *dev)
     /* write the pid to the file */
     if (safewrite(lockfd, pidStr, strlen(pidStr)) < 0) {
         virReportSystemError(errno,
-                             _("Couldn't write to lock file for "
-                               "device '%s' in path '%s'"),
+                             _("Couldn't write to lock file for device '%1$s' in path '%2$s'"),
                              dev, path);
         unlink(path);
         return -1;
@@ -340,7 +337,7 @@ int virChrdevOpen(virChrdevs *devs,
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported device type '%s'"),
+                       _("Unsupported device type '%1$s'"),
                        virDomainChrTypeToString(source->type));
         return -1;
     }
@@ -405,7 +402,7 @@ int virChrdevOpen(virChrdevs *devs,
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported device type '%s'"),
+                       _("Unsupported device type '%1$s'"),
                        virDomainChrTypeToString(source->type));
         goto error;
     }

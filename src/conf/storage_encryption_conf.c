@@ -159,7 +159,7 @@ virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
 
     if ((ret->type = virStorageEncryptionSecretTypeFromString(type_str)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown volume encryption secret type %s"),
+                       _("unknown volume encryption secret type %1$s"),
                        type_str);
         goto cleanup;
     }
@@ -237,7 +237,7 @@ virStorageEncryptionParseNode(xmlNodePtr node,
     if ((encdef->format =
          virStorageEncryptionFormatTypeFromString(format_str)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown volume encryption format type %s"),
+                       _("unknown volume encryption format type %1$s"),
                        format_str);
         goto cleanup;
     }

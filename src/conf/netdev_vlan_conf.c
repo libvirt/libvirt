@@ -65,7 +65,7 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
 
         if (def->tag[i] > 4095) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("vlan tag id %u too large (maximum 4095)"), def->tag[i]);
+                           _("vlan tag id %1$u too large (maximum 4095)"), def->tag[i]);
             goto cleanup;
         }
 
@@ -100,8 +100,8 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
         if (!def->trunk) {
             if (nTags > 1) {
                 virReportError(VIR_ERR_XML_ERROR,
-                               _("invalid \"trunk='%s'\" in <vlan> - trunk='yes' "
-                                 "is required for more than one vlan tag"), trunk);
+                               _("invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than one vlan tag"),
+                               trunk);
                 goto cleanup;
             }
             if (def->nativeMode != 0) {
@@ -113,8 +113,8 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
             /* allow (but discard) "trunk='no' if there is a single tag */
             if (STRCASENEQ(trunk, "no")) {
                 virReportError(VIR_ERR_XML_ERROR,
-                               _("invalid \"trunk='%s'\" in <vlan> "
-                                 "- must be yes or no"), trunk);
+                               _("invalid \"trunk='%1$s'\" in <vlan> - must be yes or no"),
+                               trunk);
                 goto cleanup;
             }
         }

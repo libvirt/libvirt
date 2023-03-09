@@ -368,7 +368,7 @@ virDomainObjBeginJobInternal(virDomainObj *obj,
 
         virUUIDFormat(obj->def->uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s' (%s)"),
+                       _("no domain with matching uuid '%1$s' (%2$s)"),
                        uuidstr, obj->def->name);
         goto cleanup;
     }
@@ -461,18 +461,15 @@ virDomainObjBeginJobInternal(virDomainObj *obj,
     if (errno == ETIMEDOUT) {
         if (blocker && agentBlocker) {
             virReportError(VIR_ERR_OPERATION_TIMEOUT,
-                           _("cannot acquire state change "
-                             "lock (held by monitor=%s agent=%s)"),
+                           _("cannot acquire state change lock (held by monitor=%1$s agent=%2$s)"),
                            blocker, agentBlocker);
         } else if (blocker) {
             virReportError(VIR_ERR_OPERATION_TIMEOUT,
-                           _("cannot acquire state change "
-                             "lock (held by monitor=%s)"),
+                           _("cannot acquire state change lock (held by monitor=%1$s)"),
                            blocker);
         } else if (agentBlocker) {
             virReportError(VIR_ERR_OPERATION_TIMEOUT,
-                           _("cannot acquire state change "
-                             "lock (held by agent=%s)"),
+                           _("cannot acquire state change lock (held by agent=%1$s)"),
                            agentBlocker);
         } else {
             virReportError(VIR_ERR_OPERATION_TIMEOUT, "%s",
@@ -483,21 +480,15 @@ virDomainObjBeginJobInternal(virDomainObj *obj,
                jobObj->jobsQueued > jobObj->maxQueuedJobs) {
         if (blocker && agentBlocker) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("cannot acquire state change "
-                             "lock (held by monitor=%s agent=%s) "
-                             "due to max_queued limit"),
+                           _("cannot acquire state change lock (held by monitor=%1$s agent=%2$s) due to max_queued limit"),
                            blocker, agentBlocker);
         } else if (blocker) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("cannot acquire state change "
-                             "lock (held by monitor=%s) "
-                             "due to max_queued limit"),
+                           _("cannot acquire state change lock (held by monitor=%1$s) due to max_queued limit"),
                            blocker);
         } else if (agentBlocker) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("cannot acquire state change "
-                             "lock (held by agent=%s) "
-                             "due to max_queued limit"),
+                           _("cannot acquire state change lock (held by agent=%1$s) due to max_queued limit"),
                            agentBlocker);
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -569,7 +560,7 @@ virDomainObjBeginNestedJob(virDomainObj *obj,
 {
     if (asyncJob != obj->job->asyncJob) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected async job %d type expected %d"),
+                       _("unexpected async job %1$d type expected %2$d"),
                        asyncJob, obj->job->asyncJob);
         return -1;
     }

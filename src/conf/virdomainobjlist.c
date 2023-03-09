@@ -280,14 +280,14 @@ virDomainObjListAddLocked(virDomainObjList *doms,
     if ((vm = virDomainObjListFindByUUIDLocked(doms, (*def)->uuid))) {
         if (vm->removing) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("domain '%s' is already being removed"),
+                           _("domain '%1$s' is already being removed"),
                            vm->def->name);
             goto error;
         } else if (STRNEQ(vm->def->name, (*def)->name)) {
             /* UUID matches, but if names don't match, refuse it */
             virUUIDFormat(vm->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("domain '%s' is already defined with uuid %s"),
+                           _("domain '%1$s' is already defined with uuid %2$s"),
                            vm->def->name, uuidstr);
             goto error;
         }
@@ -296,13 +296,13 @@ virDomainObjListAddLocked(virDomainObjList *doms,
             /* UUID & name match, but if VM is already active, refuse it */
             if (virDomainObjIsActive(vm)) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("domain '%s' is already active"),
+                               _("domain '%1$s' is already active"),
                                vm->def->name);
                 goto error;
             }
             if (!vm->persistent) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("domain '%s' is already being started"),
+                               _("domain '%1$s' is already being started"),
                                vm->def->name);
                 goto error;
             }
@@ -317,7 +317,7 @@ virDomainObjListAddLocked(virDomainObjList *doms,
         if ((vm = virDomainObjListFindByNameLocked(doms, (*def)->name))) {
             virUUIDFormat(vm->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("domain '%s' already exists with uuid %s"),
+                           _("domain '%1$s' already exists with uuid %2$s"),
                            (*def)->name, uuidstr);
             goto error;
         }
@@ -443,7 +443,7 @@ virDomainObjListRename(virDomainObjList *doms,
 
     if (virHashLookup(doms->objsName, new_name) != NULL) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("domain with name '%s' already exists"),
+                       _("domain with name '%1$s' already exists"),
                        new_name);
         goto cleanup;
     }
@@ -539,7 +539,7 @@ virDomainObjListLoadStatus(virDomainObjList *doms,
 
     if (virHashLookup(doms->objs, uuidstr) != NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected domain %s already exists"),
+                       _("unexpected domain %1$s already exists"),
                        obj->def->name);
         goto error;
     }
@@ -608,7 +608,7 @@ virDomainObjListLoadAllConfigs(virDomainObjList *doms,
                 dom->persistent = 1;
             virDomainObjEndAPI(&dom);
         } else {
-            VIR_ERROR(_("Failed to load config for domain '%s'"), entry->d_name);
+            VIR_ERROR(_("Failed to load config for domain '%1$s'"), entry->d_name);
         }
     }
 
@@ -1007,7 +1007,7 @@ virDomainObjListConvert(virDomainObjList *domlist,
 
             virObjectRWUnlock(domlist);
             virReportError(VIR_ERR_NO_DOMAIN,
-                           _("no domain with matching uuid '%s' (%s)"),
+                           _("no domain with matching uuid '%1$s' (%2$s)"),
                            uuidstr, dom->name);
             goto error;
         }

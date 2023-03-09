@@ -283,13 +283,13 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDef *chkdef)
 
         if (!domdisk) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("no disk named '%s'"), chkdisk->name);
+                           _("no disk named '%1$s'"), chkdisk->name);
             return -1;
         }
 
         if (virHashHasEntry(map, domdisk->dst)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("disk '%s' specified twice"),
+                           _("disk '%1$s' specified twice"),
                            chkdisk->name);
             return -1;
         }
@@ -301,7 +301,7 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDef *chkdef)
              domdisk->src->readonly) &&
             chkdisk->type != VIR_DOMAIN_CHECKPOINT_TYPE_NONE) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("disk '%s' is empty or readonly"),
+                           _("disk '%1$s' is empty or readonly"),
                            chkdisk->name);
             return -1;
         }
@@ -471,7 +471,7 @@ virDomainCheckpointRedefinePrep(virDomainObj *vm,
             char uuidstr[VIR_UUID_STRING_BUFLEN];
             virUUIDFormat(vm->def->uuid, uuidstr);
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("definition for checkpoint %s must use uuid %s"),
+                           _("definition for checkpoint %1$s must use uuid %2$s"),
                            def->parent.name, uuidstr);
             return -1;
         }
