@@ -241,7 +241,7 @@ qemuMonitorOpenUnix(const char *monitor)
     addr.sun_family = AF_UNIX;
     if (virStrcpyStatic(addr.sun_path, monitor) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Monitor path %s too big for destination"), monitor);
+                       _("Monitor path %1$s too big for destination"), monitor);
         return -1;
     }
 
@@ -401,7 +401,7 @@ qemuMonitorIORead(qemuMonitor *mon)
     if (avail < 1024) {
         if (mon->bufferLength >= QEMU_MONITOR_MAX_RESPONSE) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("QEMU monitor reply exceeds buffer size (%d bytes)"),
+                           _("QEMU monitor reply exceeds buffer size (%1$d bytes)"),
                            QEMU_MONITOR_MAX_RESPONSE);
             return -1;
         }
@@ -506,7 +506,7 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
         if (!error && !mon->goteof &&
             cond & G_IO_ERR) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid file descriptor while waiting for monitor (vm='%s')"), mon->domainName);
+                           _("Invalid file descriptor while waiting for monitor (vm='%1$s')"), mon->domainName);
             mon->goteof = true;
         }
     }
@@ -532,7 +532,7 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
         } else {
             if (virGetLastErrorCode() == VIR_ERR_OK && !mon->goteof)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Error while processing monitor IO (vm='%s')"), mon->domainName);
+                               _("Error while processing monitor IO (vm='%1$s')"), mon->domainName);
             virCopyLastError(&mon->lastError);
             virResetLastError();
         }
@@ -636,7 +636,7 @@ qemuMonitorOpenInternal(virDomainObj *vm,
     mon->socket = g_socket_new_from_fd(fd, &gerr);
     if (!mon->socket) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to create socket object: %s"),
+                       _("Unable to create socket object: %1$s"),
                        gerr->message);
         goto cleanup;
     }
@@ -684,7 +684,7 @@ qemuMonitorOpen(virDomainObj *vm,
 
     if (config->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to handle monitor type: %s"),
+                       _("unable to handle monitor type: %1$s"),
                        virDomainChrTypeToString(config->type));
         return NULL;
     }
@@ -851,7 +851,7 @@ qemuMonitorSend(qemuMonitor *mon,
     }
     if (mon->goteof) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("End of file from qemu monitor (vm='%s')"), mon->domainName);
+                       _("End of file from qemu monitor (vm='%1$s')"), mon->domainName);
         return -1;
     }
 
@@ -865,7 +865,7 @@ qemuMonitorSend(qemuMonitor *mon,
     while (!mon->msg->finished) {
         if (virCondWait(&mon->notify, &mon->parent.lock) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to wait on monitor condition (vm='%s')"), mon->domainName);
+                           _("Unable to wait on monitor condition (vm='%1$s')"), mon->domainName);
             goto cleanup;
         }
     }
@@ -1010,8 +1010,8 @@ qemuMonitorUpdateVideoMemorySize(qemuMonitor *mon,
     if (rc < 0) {
         if (rc == -2)
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to find QOM Object path for "
-                             "device '%s'"), videoName);
+                           _("Failed to find QOM Object path for device '%1$s'"),
+                           videoName);
         return -1;
     }
 
@@ -1040,8 +1040,8 @@ qemuMonitorUpdateVideoVram64Size(qemuMonitor *mon,
     if (rc < 0) {
         if (rc == -2)
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to find QOM Object path for "
-                             "device '%s'"), videoName);
+                           _("Failed to find QOM Object path for device '%1$s'"),
+                           videoName);
         return -1;
     }
 
@@ -1897,7 +1897,7 @@ qemuMonitorBlockIOStatusToError(const char *status)
 
     if (st < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown block IO status: %s"), status);
+                       _("unknown block IO status: %1$s"), status);
         return -1;
     }
 
@@ -2046,7 +2046,7 @@ qemuMonitorTypeToProtocol(int type)
         return "spice";
     default:
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("unsupported protocol type %s"),
+                       _("unsupported protocol type %1$s"),
                        virDomainGraphicsTypeToString(type));
         return NULL;
     }
@@ -2683,7 +2683,7 @@ qemuMonitorAddObject(qemuMonitor *mon,
 
     if (!id || !type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing alias or qom-type for qemu object '%s'"),
+                       _("missing alias or qom-type for qemu object '%1$s'"),
                        NULLSTR(type));
         return -1;
     }

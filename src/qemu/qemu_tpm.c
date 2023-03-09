@@ -179,7 +179,7 @@ qemuTPMEmulatorCreateStorage(virDomainTPMDef *tpm,
     /* allow others to cd into this dir */
     if (g_mkdir_with_parents(swtpmStorageDir, 0711) < 0) {
         virReportSystemError(errno,
-                             _("Could not create TPM directory %s"),
+                             _("Could not create TPM directory %1$s"),
                              swtpmStorageDir);
         return -1;
     }
@@ -192,7 +192,7 @@ qemuTPMEmulatorCreateStorage(virDomainTPMDef *tpm,
     if (virDirCreate(storagepath, 0700, swtpm_user, swtpm_group,
                      VIR_DIR_CREATE_ALLOW_EXIST) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not create directory %s as %u:%d"),
+                       _("Could not create directory %1$s as %2$u:%3$d"),
                        storagepath, swtpm_user, swtpm_group);
         return -1;
     }
@@ -294,8 +294,7 @@ qemuTPMCreateConfigFiles(const char *swtpm_setup)
         return -1;
     if (exitstatus != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not run '%s' to create config files. "
-                         "exitstatus: %d;\nError: %s"),
+                       _("Could not run '%1$s' to create config files. exitstatus: %2$d;\nError: %3$s"),
                           swtpm_setup, exitstatus, errbuf);
         return -1;
     }
@@ -323,8 +322,8 @@ qemuTPMVirCommandAddEncryption(virCommand *cmd,
 
     if (!virTPMSwtpmSetupCapsGet(VIR_TPM_SWTPM_SETUP_FEATURE_CMDARG_PWDFILE_FD)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-            _("%s does not support passing a passphrase using a file "
-              "descriptor"), swtpm_setup);
+                       _("%1$s does not support passing a passphrase using a file descriptor"),
+                       swtpm_setup);
         return -1;
     }
 
@@ -436,8 +435,7 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
 
     if (virCommandRun(cmd, &exitstatus) < 0 || exitstatus != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not run '%s'. exitstatus: %d; "
-                         "Check error log '%s' for details."),
+                       _("Could not run '%1$s'. exitstatus: %2$d; Check error log '%3$s' for details."),
                           swtpm_setup, exitstatus, logfile);
         return -1;
     }
@@ -523,8 +521,7 @@ qemuTPMEmulatorReconfigure(const char *storagepath,
 
     if (virCommandRun(cmd, &exitstatus) < 0 || exitstatus != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not run '%s --reconfigure'. exitstatus: %d; "
-                         "Check error log '%s' for details."),
+                       _("Could not run '%1$s --reconfigure'. exitstatus: %2$d; Check error log '%3$s' for details."),
                           swtpm_setup, exitstatus, logfile);
         return -1;
     }
@@ -636,8 +633,8 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     if (tpm->data.emulator.hassecretuuid) {
         if (!virTPMSwtpmCapsGet(VIR_TPM_SWTPM_FEATURE_CMDARG_PWD_FD)) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                  _("%s does not support passing passphrase via file descriptor"),
-                  swtpm);
+                           _("%1$s does not support passing passphrase via file descriptor"),
+                           swtpm);
             goto error;
         }
 
@@ -674,8 +671,8 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
          */
         if (incomingMigration && on_shared_storage) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                _("%s (on destination side) does not support the --migration option needed for migration with shared storage"),
-                   swtpm);
+                           _("%1$s (on destination side) does not support the --migration option needed for migration with shared storage"),
+                           swtpm);
             goto error;
         }
     }
@@ -809,7 +806,7 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDef *tpm,
     /* ... and make sure it can be accessed by swtpm_user */
     if (chown(tpm->data.emulator.logfile, swtpm_user, swtpm_group) < 0) {
         virReportSystemError(errno,
-                             _("Could not chown on swtpm logfile %s"),
+                             _("Could not chown on swtpm logfile %1$s"),
                              tpm->data.emulator.logfile);
         return -1;
     }
@@ -989,7 +986,7 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
                                  _("swtpm died unexpectedly"));
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("swtpm died and reported: %s"), errbuf);
+                           _("swtpm died and reported: %1$s"), errbuf);
         }
         goto error;
     }

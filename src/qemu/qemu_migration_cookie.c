@@ -188,14 +188,14 @@ qemuDomainExtractTLSSubject(const char *certdir)
 
     if (virFileReadAll(certfile, 8192, &pemdata) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to read server cert %s"), certfile);
+                       _("unable to read server cert %1$s"), certfile);
         return NULL;
     }
 
     rc = gnutls_x509_crt_init(&cert);
     if (rc < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot initialize cert object: %s"),
+                       _("cannot initialize cert object: %1$s"),
                        gnutls_strerror(rc));
         return NULL;
     }
@@ -206,7 +206,7 @@ qemuDomainExtractTLSSubject(const char *certdir)
     rc = gnutls_x509_crt_import(cert, &pemdatum, GNUTLS_X509_FMT_PEM);
     if (rc < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot load cert data from %s: %s"),
+                       _("cannot load cert data from %1$s: %2$s"),
                        certfile, gnutls_strerror(rc));
         return NULL;
     }
@@ -219,7 +219,7 @@ qemuDomainExtractTLSSubject(const char *certdir)
     }
     if (rc != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot get cert distinguished name: %s"),
+                       _("cannot get cert distinguished name: %1$s"),
                        gnutls_strerror(rc));
         return NULL;
     }
@@ -287,8 +287,8 @@ qemuMigrationCookieNetworkAlloc(virQEMUDriver *driver G_GNUC_UNUSED,
                 if (virNetDevOpenvswitchGetMigrateData(&mig->net[i].portdata,
                                                        netptr->ifname) != 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("Unable to run command to get OVS port data for "
-                                         "interface %s"), netptr->ifname);
+                                       _("Unable to run command to get OVS port data for interface %1$s"),
+                                       netptr->ifname);
                         return NULL;
                 }
                 break;
@@ -910,7 +910,7 @@ qemuMigrationCookieGraphicsXMLParse(xmlXPathContextPtr ctxt)
     }
     if ((grap->type = virDomainGraphicsTypeFromString(graphicstype)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown graphics type %s"), graphicstype);
+                       _("unknown graphics type %1$s"), graphicstype);
         return NULL;
     }
     if (virXPathInt("string(./graphics/@port)", ctxt, &grap->port) < 0) {
@@ -987,7 +987,7 @@ qemuMigrationCookieNBDXMLParse(xmlXPathContextPtr ctxt)
     port = virXPathString("string(./nbd/@port)", ctxt);
     if (port && virStrToLong_i(port, NULL, 10, &ret->port) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Malformed nbd port '%s'"),
+                       _("Malformed nbd port '%1$s'"),
                        port);
         return NULL;
     }
@@ -1015,7 +1015,7 @@ qemuMigrationCookieNBDXMLParse(xmlXPathContextPtr ctxt)
                 virStrToLong_ull(capacity, NULL, 10,
                                  &ret->disks[i].capacity) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Malformed disk capacity: '%s'"),
+                               _("Malformed disk capacity: '%1$s'"),
                                NULLSTR(capacity));
                 return NULL;
             }
@@ -1180,13 +1180,13 @@ qemuMigrationCookieXMLParseMandatoryFeatures(xmlXPathContextPtr ctxt,
 
         if ((val = qemuMigrationCookieFlagTypeFromString(str)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown migration cookie feature %s"), str);
+                           _("Unknown migration cookie feature %1$s"), str);
             return -1;
         }
 
         if ((flags & (1 << val)) == 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unsupported migration cookie feature %s"), str);
+                           _("Unsupported migration cookie feature %1$s"), str);
             return -1;
         }
     }
@@ -1279,7 +1279,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookie *mig,
     }
     if (STRNEQ(name, mig->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Incoming cookie data had unexpected name %s vs %s"),
+                       _("Incoming cookie data had unexpected name %1$s vs %2$s"),
                        name, mig->name);
         return -1;
     }
@@ -1293,7 +1293,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookie *mig,
     virUUIDFormat(mig->uuid, localdomuuid);
     if (STRNEQ(uuid, localdomuuid)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Incoming cookie data had unexpected UUID %s vs %s"),
+                       _("Incoming cookie data had unexpected UUID %1$s vs %2$s"),
                        uuid, localdomuuid);
         return -1;
     }
@@ -1321,7 +1321,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookie *mig,
     }
     if (memcmp(mig->remoteHostuuid, mig->localHostuuid, VIR_UUID_BUFLEN) == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Attempt to migrate guest to the same host %s"),
+                       _("Attempt to migrate guest to the same host %1$s"),
                        hostuuid);
         return -1;
     }
@@ -1527,14 +1527,14 @@ qemuMigrationCookieParse(virQEMUDriver *driver,
         if (!mig->lockDriver) {
             if (virLockManagerPluginUsesState(driver->lockManager)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Missing %s lock state for migration cookie"),
+                               _("Missing %1$s lock state for migration cookie"),
                                virLockManagerPluginGetName(driver->lockManager));
                 return NULL;
             }
         } else if (STRNEQ(mig->lockDriver,
                           virLockManagerPluginGetName(driver->lockManager))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Source host lock driver %s different from target %s"),
+                           _("Source host lock driver %1$s different from target %2$s"),
                            mig->lockDriver,
                            virLockManagerPluginGetName(driver->lockManager));
             return NULL;
@@ -1567,7 +1567,7 @@ qemuMigrationCookieBlockDirtyBitmapsMatchDisks(virDomainDef *def,
 
         if (!(disk->disk = virDomainDiskByTarget(def, disk->target))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Can't find disk '%s' in domain definition"),
+                           _("Can't find disk '%1$s' in domain definition"),
                            disk->target);
             return -1;
         }

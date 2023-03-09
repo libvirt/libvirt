@@ -158,7 +158,7 @@ int qemuExtVhostUserGPUStart(virQEMUDriver *driver,
     rc = virPidFileReadPath(pidfile, &pid);
     if (rc < 0) {
         virReportSystemError(-rc,
-                             _("Unable to read vhost-user-gpu pidfile '%s'"),
+                             _("Unable to read vhost-user-gpu pidfile '%1$s'"),
                              pidfile);
         goto cleanup;
     }

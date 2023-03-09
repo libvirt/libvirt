@@ -68,7 +68,7 @@ qemuDomainGetSCSIControllerModel(const virDomainDef *def,
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90;
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Unable to determine model for SCSI controller idx=%d"),
+                   _("Unable to determine model for SCSI controller idx=%1$d"),
                    cont->idx);
     return -1;
 }
@@ -116,7 +116,7 @@ qemuDomainFindSCSIControllerModel(const virDomainDef *def,
 
     if (!(cont = virDomainDeviceFindSCSIController(def, &info->addr.drive))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to find a SCSI controller for idx=%d"),
+                       _("unable to find a SCSI controller for idx=%1$d"),
                        info->addr.drive.controller);
         return -1;
     }
@@ -207,7 +207,7 @@ qemuDomainAssignSpaprVIOAddress(virDomainDef *def,
     while (ret != 0) {
         if (user_reg) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("spapr-vio address %#llx already in use"),
+                           _("spapr-vio address %1$#llx already in use"),
                            info->addr.spaprvio.reg);
             return -EEXIST;
         }
@@ -1710,8 +1710,8 @@ qemuDomainPCIAddressSetCreate(virDomainDef *def,
 
         if (idx >= addrs->nbuses) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Inappropriate new pci controller index %zu "
-                             "exceeds addrs array length"), idx);
+                           _("Inappropriate new pci controller index %1$zu exceeds addrs array length"),
+                           idx);
             goto error;
         }
 
@@ -2306,7 +2306,7 @@ qemuDomainAssignDevicePCISlots(virDomainDef *def,
 
         if (!virDeviceInfoPCIAddressIsWanted(&def->disks[i]->info)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("virtio disk cannot have an address of type '%s'"),
+                           _("virtio disk cannot have an address of type '%1$s'"),
                            virDomainDeviceAddressTypeToString(def->disks[i]->info.type));
             return -1;
         }
@@ -2807,8 +2807,7 @@ qemuDomainAssignPCIAddresses(virDomainDef *def,
             if (contIndex < 0) {
                 /* this should never happen - we just added it */
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Could not find auto-added %s controller "
-                                 "with index %zu"),
+                               _("Could not find auto-added %1$s controller with index %2$zu"),
                                virDomainControllerModelPCITypeToString(bus->model),
                                i);
                 goto cleanup;
@@ -2896,10 +2895,7 @@ qemuDomainAssignPCIAddresses(virDomainDef *def,
                     options->busNr = qemuDomainAddressFindNewBusNr(def);
                 if (options->busNr == -1) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("No free busNr lower than current "
-                                     "lowest busNr is available to "
-                                     "auto-assign to bus %d. Must be "
-                                     "manually assigned"),
+                                   _("No free busNr lower than current lowest busNr is available to auto-assign to bus %1$d. Must be manually assigned"),
                                    addr->bus);
                     goto cleanup;
                 }
@@ -2923,7 +2919,7 @@ qemuDomainAssignPCIAddresses(virDomainDef *def,
                 }
                 if (options->targetIndex == -1) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("No usable target index found for %d"),
+                                   _("No usable target index found for %1$d"),
                                    addr->bus);
                     goto cleanup;
                 }
@@ -2943,9 +2939,7 @@ qemuDomainAssignPCIAddresses(virDomainDef *def,
             if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE &&
                 idx <= addr->bus) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("PCI controller at index %d (0x%02x) has "
-                                 "bus='0x%02x', but index must be "
-                                 "larger than bus"),
+                               _("PCI controller at index %1$d (0x%2$02x) has bus='0x%3$02x', but index must be larger than bus"),
                                idx, idx, addr->bus);
                 goto cleanup;
             }

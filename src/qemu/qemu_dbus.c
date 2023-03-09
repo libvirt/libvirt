@@ -190,7 +190,7 @@ qemuDBusStart(virQEMUDriver *driver,
 
     if (!virFileIsExecutable(cfg->dbusDaemonName)) {
         virReportSystemError(errno,
-                             _("'%s' is not a suitable dbus-daemon"),
+                             _("'%1$s' is not a suitable dbus-daemon"),
                              cfg->dbusDaemonName);
         return -1;
     }
@@ -203,7 +203,7 @@ qemuDBusStart(virQEMUDriver *driver,
     sockpath = qemuDBusCreateSocketPath(cfg, shortName);
 
     if (qemuDBusWriteConfig(configfile, sockpath) < 0) {
-        virReportSystemError(errno, _("Failed to write '%s'"), configfile);
+        virReportSystemError(errno, _("Failed to write '%1$s'"), configfile);
         return -1;
     }
 
@@ -222,7 +222,7 @@ qemuDBusStart(virQEMUDriver *driver,
 
     if (virPidFileReadPath(pidfile, &cpid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("dbus-daemon %s didn't show up"),
+                       _("dbus-daemon %1$s didn't show up"),
                        cfg->dbusDaemonName);
         goto cleanup;
     }
@@ -240,11 +240,11 @@ qemuDBusStart(virQEMUDriver *driver,
 
         if (saferead(errfd, errbuf, sizeof(errbuf) - 1) < 0) {
             virReportSystemError(errno,
-                                 _("dbus-daemon %s died unexpectedly"),
+                                 _("dbus-daemon %1$s died unexpectedly"),
                                  cfg->dbusDaemonName);
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("dbus-daemon died and reported: %s"), errbuf);
+                           _("dbus-daemon died and reported: %1$s"), errbuf);
         }
 
         goto cleanup;
@@ -252,7 +252,7 @@ qemuDBusStart(virQEMUDriver *driver,
 
     if (!virFileExists(sockpath)) {
         virReportError(VIR_ERR_OPERATION_TIMEOUT,
-                       _("DBus daemon %s didn't show up"),
+                       _("DBus daemon %1$s didn't show up"),
                        cfg->dbusDaemonName);
         goto cleanup;
     }

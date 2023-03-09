@@ -172,14 +172,14 @@ virQEMUSaveDataWrite(virQEMUSaveData *data,
 
     if (safewrite(fd, header, sizeof(*header)) != sizeof(*header)) {
         virReportSystemError(errno,
-                             _("failed to write header to domain save file '%s'"),
+                             _("failed to write header to domain save file '%1$s'"),
                              path);
         return -1;
     }
 
     if (safewrite(fd, data->xml, xml_len) != xml_len) {
         virReportSystemError(errno,
-                             _("failed to write domain xml to '%s'"),
+                             _("failed to write domain xml to '%1$s'"),
                              path);
         return -1;
     }
@@ -187,14 +187,14 @@ virQEMUSaveDataWrite(virQEMUSaveData *data,
     if (data->cookie &&
         safewrite(fd, data->cookie, cookie_len) != cookie_len) {
         virReportSystemError(errno,
-                             _("failed to write cookie to '%s'"),
+                             _("failed to write cookie to '%1$s'"),
                              path);
         return -1;
     }
 
     if (safewrite(fd, zeros, zerosLen) != zerosLen) {
         virReportSystemError(errno,
-                             _("failed to write padding to '%s'"),
+                             _("failed to write padding to '%1$s'"),
                              path);
         return -1;
     }
@@ -215,7 +215,7 @@ virQEMUSaveDataFinish(virQEMUSaveData *data,
     if (safewrite(*fd, header, sizeof(*header)) != sizeof(*header) ||
         VIR_CLOSE(*fd) < 0) {
         virReportSystemError(errno,
-                             _("failed to write header to domain save file '%s'"),
+                             _("failed to write header to domain save file '%1$s'"),
                              path);
         return -1;
     }
@@ -232,7 +232,7 @@ qemuSaveImageGetCompressionCommand(virQEMUSaveFormat compression)
 
     if (!prog) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Invalid compressed save format %d"),
+                       _("Invalid compressed save format %1$d"),
                        compression);
         return NULL;
     }
@@ -304,7 +304,7 @@ qemuSaveImageCreate(virQEMUDriver *driver,
      * trigger a single page of file system cache pollution, but
      * that's acceptable.  */
     if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, _("unable to close %s"), path);
+        virReportSystemError(errno, _("unable to close %1$s"), path);
         goto cleanup;
     }
 
@@ -387,8 +387,7 @@ qemuSaveImageGetCompressionProgram(const char *imageFormat,
                      styleFormat);
         else
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("Invalid %s image format specified "
-                             "in configuration file"),
+                           _("Invalid %1$s image format specified in configuration file"),
                            styleFormat);
     } else {
         if (use_raw_on_fail)
@@ -397,8 +396,7 @@ qemuSaveImageGetCompressionProgram(const char *imageFormat,
                      styleFormat);
         else
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("Compression program for %s image format "
-                             "in configuration file isn't available"),
+                           _("Compression program for %1$s image format in configuration file isn't available"),
                            styleFormat);
     }
 
@@ -473,7 +471,7 @@ qemuSaveImageOpen(virQEMUDriver *driver,
         if (unlink_corrupt) {
             if (unlink(path) < 0) {
                 virReportSystemError(errno,
-                                     _("cannot remove corrupt file: %s"),
+                                     _("cannot remove corrupt file: %1$s"),
                                      path);
                 return -1;
             } else {
@@ -491,7 +489,7 @@ qemuSaveImageOpen(virQEMUDriver *driver,
             if (unlink_corrupt) {
                 if (unlink(path) < 0) {
                     virReportSystemError(errno,
-                                         _("cannot remove corrupt file: %s"),
+                                         _("cannot remove corrupt file: %1$s"),
                                          path);
                     return -1;
                 } else {
@@ -516,14 +514,14 @@ qemuSaveImageOpen(virQEMUDriver *driver,
 
     if (header->version > QEMU_SAVE_VERSION) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("image version is not supported (%d > %d)"),
+                       _("image version is not supported (%1$d > %2$d)"),
                        header->version, QEMU_SAVE_VERSION);
         return -1;
     }
 
     if (header->data_len <= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("invalid header data length: %d"), header->data_len);
+                       _("invalid header data length: %1$d"), header->data_len);
         return -1;
     }
 
@@ -654,7 +652,7 @@ qemuSaveImageStartVM(virConnectPtr conn,
         virErrorRestore(&orig_err);
     }
     if (VIR_CLOSE(*fd) < 0) {
-        virReportSystemError(errno, _("cannot close file: %s"), path);
+        virReportSystemError(errno, _("cannot close file: %1$s"), path);
         rc = -1;
     }
 

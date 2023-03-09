@@ -221,7 +221,7 @@ qemuFDPassTransferMonitor(qemuFDPass *fdpass,
     for (i = 0; i < fdsets->nfdsets; i++) {
         if (fdsets->fdsets[i].id == fdpass->fdSetID) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("fdset '%u' is already in use by qemu"),
+                           _("fdset '%1$u' is already in use by qemu"),
                            fdpass->fdSetID);
             return -1;
         }

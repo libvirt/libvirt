@@ -49,7 +49,7 @@ qemuMonitorTextCreateSnapshot(qemuMonitor *mon,
         strstr(reply, "Error: ") ||
         (strstr(reply, "Error") && strstr(reply, "while writing VM"))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Failed to take snapshot: %s"), reply);
+                       _("Failed to take snapshot: %1$s"), reply);
         return -1;
     } else if (strstr(reply, "No block device can accept snapshots")) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -80,7 +80,7 @@ int qemuMonitorTextDeleteSnapshot(qemuMonitor *mon, const char *name)
                (strstr(reply, "Error") &&
                 strstr(reply, "while deleting snapshot"))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Failed to delete snapshot: %s"), reply);
+                       _("Failed to delete snapshot: %1$s"), reply);
         return -1;
     }
 

@@ -58,7 +58,7 @@ qemuBuildFileList(GHashTable *files, const char *dir)
         path = g_strdup_printf("%s/%s", dir, filename);
 
         if (stat(path, &sb) < 0) {
-            virReportSystemError(errno, _("Unable to access %s"), path);
+            virReportSystemError(errno, _("Unable to access %1$s"), path);
             return -1;
         }
 
@@ -141,7 +141,7 @@ qemuInteropFetchConfigs(const char *name,
 
         if ((len = virFileLength(path, -1)) < 0) {
             virReportSystemError(errno,
-                                 _("unable to get size of '%s'"),
+                                 _("unable to get size of '%1$s'"),
                                  path);
             return -1;
         }

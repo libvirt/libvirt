@@ -546,8 +546,7 @@ virQEMUDriverConfigLoadRemoteDisplayEntry(virQEMUDriverConfig *cfg,
          * to tell to vnc (usually subtract 5700, e.g. localhost:1
          * for port 5701) */
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: remote_websocket_port_min: port must be greater "
-                         "than or equal to %d"),
+                       _("%1$s: remote_websocket_port_min: port must be greater than or equal to %2$d"),
                         filename, QEMU_WEBSOCKET_PORT_MIN);
         return -1;
     }
@@ -557,16 +556,15 @@ virQEMUDriverConfigLoadRemoteDisplayEntry(virQEMUDriverConfig *cfg,
     if (cfg->webSocketPortMax > QEMU_WEBSOCKET_PORT_MAX ||
         cfg->webSocketPortMax < cfg->webSocketPortMin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("%s: remote_websocket_port_max: port must be between "
-                          "the minimal port and %d"),
+                        _("%1$s: remote_websocket_port_max: port must be between the minimal port and %2$d"),
                        filename, QEMU_WEBSOCKET_PORT_MAX);
         return -1;
     }
 
     if (cfg->webSocketPortMin > cfg->webSocketPortMax) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("%s: remote_websocket_port_min: min port must not be "
-                          "greater than max port"), filename);
+                        _("%1$s: remote_websocket_port_min: min port must not be greater than max port"),
+                        filename);
         return -1;
     }
 
@@ -577,8 +575,7 @@ virQEMUDriverConfigLoadRemoteDisplayEntry(virQEMUDriverConfig *cfg,
          * to tell to vnc (usually subtract 5900, e.g. localhost:1
          * for port 5901) */
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: remote_display_port_min: port must be greater "
-                         "than or equal to %d"),
+                       _("%1$s: remote_display_port_min: port must be greater than or equal to %2$d"),
                         filename, QEMU_REMOTE_PORT_MIN);
         return -1;
     }
@@ -588,16 +585,15 @@ virQEMUDriverConfigLoadRemoteDisplayEntry(virQEMUDriverConfig *cfg,
     if (cfg->remotePortMax > QEMU_REMOTE_PORT_MAX ||
         cfg->remotePortMax < cfg->remotePortMin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("%s: remote_display_port_max: port must be between "
-                          "the minimal port and %d"),
+                        _("%1$s: remote_display_port_max: port must be between the minimal port and %2$d"),
                        filename, QEMU_REMOTE_PORT_MAX);
         return -1;
     }
 
     if (cfg->remotePortMin > cfg->remotePortMax) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("%s: remote_display_port_min: min port must not be "
-                          "greater than max port"), filename);
+                        _("%1$s: remote_display_port_min: min port must not be greater than max port"),
+                        filename);
         return -1;
     }
 
@@ -686,7 +682,7 @@ virQEMUDriverConfigLoadProcessEntry(virQEMUDriverConfig *cfg,
             cfg->maxCore = ULLONG_MAX;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown core size '%s'"),
+                           _("Unknown core size '%1$s'"),
                            corestr);
             return -1;
         }
@@ -705,7 +701,7 @@ virQEMUDriverConfigLoadProcessEntry(virQEMUDriverConfig *cfg,
             cfg->stdioLogD = false;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown stdio handler %s"),
+                           _("Unknown stdio handler %1$s"),
                            stdioHandler);
             return -1;
         }
@@ -718,7 +714,7 @@ virQEMUDriverConfigLoadProcessEntry(virQEMUDriverConfig *cfg,
 
         if (val < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown sched_core value %s"),
+                           _("Unknown sched_core value %1$s"),
                            schedCore);
             return -1;
         }
@@ -794,7 +790,7 @@ virQEMUDriverConfigLoadNetworkEntry(virQEMUDriverConfig *cfg,
         return -1;
     if (cfg->migrationPortMin <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: migration_port_min: port must be greater than 0"),
+                       _("%1$s: migration_port_min: port must be greater than 0"),
                         filename);
         return -1;
     }
@@ -804,8 +800,7 @@ virQEMUDriverConfigLoadNetworkEntry(virQEMUDriverConfig *cfg,
     if (cfg->migrationPortMax > 65535 ||
         cfg->migrationPortMax < cfg->migrationPortMin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("%s: migration_port_max: port must be between "
-                          "the minimal port %d and 65535"),
+                        _("%1$s: migration_port_max: port must be between the minimal port %2$d and 65535"),
                        filename, cfg->migrationPortMin);
         return -1;
     }
@@ -817,8 +812,7 @@ virQEMUDriverConfigLoadNetworkEntry(virQEMUDriverConfig *cfg,
         (STRPREFIX(cfg->migrateHost, "localhost") ||
          virSocketAddrIsNumericLocalhost(cfg->migrateHost))) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("migration_host must not be the address of"
-                         " the local machine: %s"),
+                       _("migration_host must not be the address of the local machine: %1$s"),
                        cfg->migrateHost);
         return -1;
     }
@@ -830,8 +824,7 @@ virQEMUDriverConfigLoadNetworkEntry(virQEMUDriverConfig *cfg,
         (STRPREFIX(cfg->migrationAddress, "localhost") ||
          virSocketAddrIsNumericLocalhost(cfg->migrationAddress))) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("migration_address must not be the address of"
-                         " the local machine: %s"),
+                       _("migration_address must not be the address of the local machine: %1$s"),
                        cfg->migrationAddress);
         return -1;
     }
@@ -923,7 +916,7 @@ virQEMUDriverConfigLoadSecurityEntry(virQEMUDriverConfig *cfg,
             if (STREQ(cfg->securityDriverNames[i],
                       cfg->securityDriverNames[j])) {
                 virReportError(VIR_ERR_CONF_SYNTAX,
-                               _("Duplicate security driver %s"),
+                               _("Duplicate security driver %1$s"),
                                cfg->securityDriverNames[i]);
                 return -1;
             }
@@ -961,7 +954,7 @@ virQEMUDriverConfigLoadSecurityEntry(virQEMUDriverConfig *cfg,
             int ctl;
             if ((ctl = virCgroupControllerTypeFromString(controllers[i])) < 0) {
                 virReportError(VIR_ERR_CONF_SYNTAX,
-                               _("Unknown cgroup controller '%s'"),
+                               _("Unknown cgroup controller '%1$s'"),
                                controllers[i]);
                 return -1;
             }
@@ -987,7 +980,7 @@ virQEMUDriverConfigLoadSecurityEntry(virQEMUDriverConfig *cfg,
 
             if (ns < 0) {
                 virReportError(VIR_ERR_CONF_SYNTAX,
-                               _("Unknown namespace: %s"),
+                               _("Unknown namespace: %1$s"),
                                namespaces[i]);
                 return -1;
             }
@@ -1000,14 +993,14 @@ virQEMUDriverConfigLoadSecurityEntry(virQEMUDriverConfig *cfg,
 
             if (!qemuDomainNamespaceAvailable(ns)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("%s namespace is not available"),
+                               _("%1$s namespace is not available"),
                                namespaces[i]);
                 return -1;
             }
 
             if (virBitmapSetBit(cfg->namespaces, ns) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to enable namespace: %s"),
+                               _("Unable to enable namespace: %1$s"),
                                namespaces[i]);
                 return -1;
             }
@@ -1158,8 +1151,7 @@ virQEMUDriverConfigValidate(virQEMUDriverConfig *cfg)
     if (cfg->defaultTLSx509certdirPresent) {
         if (!virFileExists(cfg->defaultTLSx509certdir)) {
             virReportError(VIR_ERR_CONF_SYNTAX,
-                           _("default_tls_x509_cert_dir directory '%s' "
-                             "does not exist"),
+                           _("default_tls_x509_cert_dir directory '%1$s' does not exist"),
                            cfg->defaultTLSx509certdir);
             return -1;
         }
@@ -1168,7 +1160,7 @@ virQEMUDriverConfigValidate(virQEMUDriverConfig *cfg)
     if (cfg->vncTLSx509certdir &&
         !virFileExists(cfg->vncTLSx509certdir)) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("vnc_tls_x509_cert_dir directory '%s' does not exist"),
+                       _("vnc_tls_x509_cert_dir directory '%1$s' does not exist"),
                        cfg->vncTLSx509certdir);
         return -1;
     }
@@ -1176,7 +1168,7 @@ virQEMUDriverConfigValidate(virQEMUDriverConfig *cfg)
     if (cfg->spiceTLSx509certdir &&
         !virFileExists(cfg->spiceTLSx509certdir)) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("spice_tls_x509_cert_dir directory '%s' does not exist"),
+                       _("spice_tls_x509_cert_dir directory '%1$s' does not exist"),
                        cfg->spiceTLSx509certdir);
         return -1;
     }
@@ -1184,7 +1176,7 @@ virQEMUDriverConfigValidate(virQEMUDriverConfig *cfg)
     if (cfg->chardevTLSx509certdir &&
         !virFileExists(cfg->chardevTLSx509certdir)) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("chardev_tls_x509_cert_dir directory '%s' does not exist"),
+                       _("chardev_tls_x509_cert_dir directory '%1$s' does not exist"),
                        cfg->chardevTLSx509certdir);
         return -1;
     }
@@ -1192,7 +1184,7 @@ virQEMUDriverConfigValidate(virQEMUDriverConfig *cfg)
     if (cfg->migrateTLSx509certdir &&
         !virFileExists(cfg->migrateTLSx509certdir)) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("migrate_tls_x509_cert_dir directory '%s' does not exist"),
+                       _("migrate_tls_x509_cert_dir directory '%1$s' does not exist"),
                        cfg->migrateTLSx509certdir);
         return -1;
     }
@@ -1200,7 +1192,7 @@ virQEMUDriverConfigValidate(virQEMUDriverConfig *cfg)
     if (cfg->backupTLSx509certdir &&
         !virFileExists(cfg->backupTLSx509certdir)) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("backup_tls_x509_cert_dir directory '%s' does not exist"),
+                       _("backup_tls_x509_cert_dir directory '%1$s' does not exist"),
                        cfg->backupTLSx509certdir);
         return -1;
     }
@@ -1208,7 +1200,7 @@ virQEMUDriverConfigValidate(virQEMUDriverConfig *cfg)
     if (cfg->vxhsTLSx509certdir &&
         !virFileExists(cfg->vxhsTLSx509certdir)) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("vxhs_tls_x509_cert_dir directory '%s' does not exist"),
+                       _("vxhs_tls_x509_cert_dir directory '%1$s' does not exist"),
                        cfg->vxhsTLSx509certdir);
         return -1;
     }
@@ -1216,7 +1208,7 @@ virQEMUDriverConfigValidate(virQEMUDriverConfig *cfg)
     if (cfg->nbdTLSx509certdir &&
         !virFileExists(cfg->nbdTLSx509certdir)) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("nbd_tls_x509_cert_dir directory '%s' does not exist"),
+                       _("nbd_tls_x509_cert_dir directory '%1$s' does not exist"),
                        cfg->nbdTLSx509certdir);
         return -1;
     }
@@ -1457,21 +1449,21 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriver *driver,
 
     if (!virQEMUCapsIsArchSupported(qemuCaps, arch)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Emulator '%s' does not support arch '%s'"),
+                       _("Emulator '%1$s' does not support arch '%2$s'"),
                        path, virArchToString(arch));
         return NULL;
     }
 
     if (!virQEMUCapsIsVirtTypeSupported(qemuCaps, virttype)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Emulator '%s' does not support virt type '%s'"),
+                       _("Emulator '%1$s' does not support virt type '%2$s'"),
                        path, virDomainVirtTypeToString(virttype));
         return NULL;
     }
 
     if (!virQEMUCapsIsMachineSupported(qemuCaps, virttype, machine)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Emulator '%s' does not support machine type '%s'"),
+                       _("Emulator '%1$s' does not support machine type '%2$s'"),
                        path, NULLSTR(machine));
         return NULL;
     }
@@ -1567,8 +1559,7 @@ qemuGetDomainHupageMemPath(virQEMUDriver *driver,
 
     if (i == cfg->nhugetlbfs) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to find any usable hugetlbfs "
-                         "mount for %llu KiB"),
+                       _("Unable to find any usable hugetlbfs mount for %1$llu KiB"),
                        pagesize);
         return -1;
     }
@@ -1652,7 +1643,7 @@ qemuHugepageMakeBasedir(virQEMUDriver *driver,
 
     if (g_mkdir_with_parents(hugepagePath, 0777) < 0) {
         virReportSystemError(errno,
-                             _("unable to create hugepage path %s"),
+                             _("unable to create hugepage path %1$s"),
                              hugepagePath);
         return -1;
     }

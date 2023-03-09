@@ -87,7 +87,7 @@ qemuCheckpointObjFromName(virDomainObj *vm,
     chk = virDomainCheckpointFindByName(vm->checkpoints, name);
     if (!chk)
         virReportError(VIR_ERR_NO_DOMAIN_CHECKPOINT,
-                       _("no domain checkpoint with matching name '%s'"),
+                       _("no domain checkpoint with matching name '%1$s'"),
                        name);
 
     return chk;
@@ -121,7 +121,7 @@ qemuCheckpointWriteMetadata(virDomainObj *vm,
 
     chkDir = g_strdup_printf("%s/%s", checkpointDir, vm->def->name);
     if (g_mkdir_with_parents(chkDir, 0777) < 0) {
-        virReportSystemError(errno, _("cannot create checkpoint directory '%s'"),
+        virReportSystemError(errno, _("cannot create checkpoint directory '%1$s'"),
                              chkDir);
         return -1;
     }
@@ -164,7 +164,7 @@ qemuCheckpointDiscardDiskBitmaps(virStorageSource *src,
 
     if (!found) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("bitmap '%s' not found in backing chain of '%s'"),
+                       _("bitmap '%1$s' not found in backing chain of '%2$s'"),
                        delbitmap, diskdst);
         return -1;
     }
@@ -205,7 +205,7 @@ qemuCheckpointDiscardBitmaps(virDomainObj *vm,
 
         if (!chkdisk->bitmap) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("missing bitmap name for disk '%s' of checkpoint '%s'"),
+                           _("missing bitmap name for disk '%1$s' of checkpoint '%2$s'"),
                            chkdisk->name, chkdef->parent.name);
             return -1;
         }
@@ -357,15 +357,14 @@ qemuCheckpointPrepare(virQEMUDriver *driver,
 
         if (STRNEQ(disk->bitmap, def->parent.name)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("bitmap for disk '%s' must match checkpoint name '%s'"),
+                           _("bitmap for disk '%1$s' must match checkpoint name '%2$s'"),
                            disk->name, def->parent.name);
             return -1;
         }
 
         if (vm->def->disks[i]->src->format != VIR_STORAGE_FILE_QCOW2) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("checkpoint for disk %s unsupported "
-                             "for storage type %s"),
+                           _("checkpoint for disk %1$s unsupported for storage type %2$s"),
                            disk->name,
                            virStorageFileFormatTypeToString(
                                vm->def->disks[i]->src->format));
@@ -431,7 +430,7 @@ qemuCheckpointRedefineValidateBitmaps(virDomainObj *vm,
         if (!qemuBlockBitmapChainIsValid(domdisk->src, chkdef->parent.name,
                                          blockNamedNodeData)) {
             virReportError(VIR_ERR_CHECKPOINT_INCONSISTENT,
-                           _("missing or broken bitmap '%s' for disk '%s'"),
+                           _("missing or broken bitmap '%1$s' for disk '%2$s'"),
                            chkdef->parent.name, domdisk->dst);
             return -1;
         }
@@ -547,7 +546,7 @@ qemuCheckpointCreateFinalize(virQEMUDriver *driver,
         /* if writing of metadata fails, error out rather than trying
          * to silently carry on without completing the checkpoint */
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to save metadata for checkpoint %s"),
+                       _("unable to save metadata for checkpoint %1$s"),
                        chk->def->name);
         qemuCheckpointRollbackMetadata(vm, chk);
         return -1;
@@ -889,7 +888,7 @@ qemuCheckpointDelete(virDomainObj *vm,
                                                 driver->xmlopt,
                                                 cfg->checkpointDir) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("failed to set checkpoint '%s' as current"),
+                                   _("failed to set checkpoint '%1$s' as current"),
                                    chk->def->name);
                     virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
                     goto endjob;

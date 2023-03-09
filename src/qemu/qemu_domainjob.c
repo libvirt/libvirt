@@ -725,7 +725,7 @@ qemuDomainObjPrivateXMLParseJob(virDomainObj *vm,
 
         if ((type = virDomainJobTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown job type %s"), tmp);
+                           _("Unknown job type %1$s"), tmp);
             return -1;
         }
         VIR_FREE(tmp);
@@ -738,7 +738,7 @@ qemuDomainObjPrivateXMLParseJob(virDomainObj *vm,
 
         if ((async = virDomainAsyncJobTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown async job type %s"), tmp);
+                           _("Unknown async job type %1$s"), tmp);
             return -1;
         }
         VIR_FREE(tmp);
@@ -748,7 +748,7 @@ qemuDomainObjPrivateXMLParseJob(virDomainObj *vm,
             vm->job->phase = qemuDomainAsyncJobPhaseFromString(async, tmp);
             if (vm->job->phase < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unknown job phase %s"), tmp);
+                               _("Unknown job phase %1$s"), tmp);
                 return -1;
             }
             VIR_FREE(tmp);

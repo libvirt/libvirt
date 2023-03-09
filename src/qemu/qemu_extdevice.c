@@ -49,7 +49,7 @@ qemuExtDeviceLogCommand(virQEMUDriver *driver,
         return -1;
 
     return qemuDomainLogAppendMessage(driver, vm,
-                                      _("%s: Starting external device: %s\n%s\n"),
+                                      _("%1$s: Starting external device: %2$s\n%3$s\n"),
                                       timestamp, info, cmds);
 }
 

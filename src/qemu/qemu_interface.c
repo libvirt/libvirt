@@ -339,7 +339,7 @@ qemuCreateInBridgePortWithHelper(virQEMUDriverConfig *cfg,
     }
 
     if (!virFileIsExecutable(cfg->bridgeHelperName)) {
-        virReportSystemError(errno, _("'%s' is not a suitable bridge helper"),
+        virReportSystemError(errno, _("'%1$s' is not a suitable bridge helper"),
                              cfg->bridgeHelperName);
         return -1;
     }
@@ -377,7 +377,7 @@ qemuCreateInBridgePortWithHelper(virQEMUDriverConfig *cfg,
             errstr = g_strdup_printf("stderr=%s", errbuf);
 
         virReportSystemError(errno,
-                             _("%s: failed to communicate with bridge helper: %s"),
+                             _("%1$s: failed to communicate with bridge helper: %2$s"),
                              cmdstr,
                              NULLSTR_EMPTY(errstr));
         VIR_FREE(errstr);
@@ -650,7 +650,7 @@ qemuInterfaceVDPAConnect(virDomainNetDef *net)
 
     if ((fd = open(net->data.vdpa.devicepath, O_RDWR)) < 0) {
         virReportSystemError(errno,
-                             _("Unable to open '%s' for vdpa device"),
+                             _("Unable to open '%1$s' for vdpa device"),
                              net->data.vdpa.devicepath);
         return -1;
     }

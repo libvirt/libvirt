@@ -171,7 +171,7 @@ qemuSetupImagePathCgroup(virDomainObj *vm,
     if (virDevMapperGetTargets(path, &targetPaths) < 0 &&
         errno != ENOSYS) {
         virReportSystemError(errno,
-                             _("Unable to get devmapper targets for %s"),
+                             _("Unable to get devmapper targets for %1$s"),
                              path);
         return -1;
     }
@@ -865,7 +865,7 @@ qemuSetupCgroupAppid(virDomainObj *vm)
 
     if (virFileWriteStr(path, appid, 0) < 0) {
         virReportSystemError(errno,
-                             _("Unable to write '%s' to '%s'"), appid, path);
+                             _("Unable to write '%1$s' to '%2$s'"), appid, path);
         return -1;
     }
 

@@ -175,7 +175,7 @@ qemuBlockJobRegister(qemuBlockJobData *job,
 
     if (disk && QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("disk '%s' has a blockjob assigned"), disk->dst);
+                       _("disk '%1$s' has a blockjob assigned"), disk->dst);
         return -1;
     }
 

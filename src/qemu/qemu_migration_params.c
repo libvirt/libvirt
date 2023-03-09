@@ -330,7 +330,7 @@ qemuMigrationParamsCheckType(qemuMigrationParam param,
 {
     if (qemuMigrationParamInfo[param].type != type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Type mismatch for '%s' migration parameter"),
+                       _("Type mismatch for '%1$s' migration parameter"),
                        qemuMigrationParamTypeToString(param));
         return -1;
     }
@@ -363,7 +363,7 @@ qemuMigrationParamsGetTPInt(qemuMigrationParams *migParams,
         unsigned int max = UINT_MAX / unit;
         if (migParams->params[param].value.i > max) {
             virReportError(VIR_ERR_OVERFLOW,
-                           _("migration parameter '%s' must be less than %u"),
+                           _("migration parameter '%1$s' must be less than %2$u"),
                            name, max + 1);
             return -1;
         }
@@ -424,7 +424,7 @@ qemuMigrationParamsGetTPULL(qemuMigrationParams *migParams,
         unsigned long long max = ULLONG_MAX / unit;
         if (migParams->params[param].value.ull > max) {
             virReportError(VIR_ERR_OVERFLOW,
-                           _("migration parameter '%s' must be less than %llu"),
+                           _("migration parameter '%1$s' must be less than %2$llu"),
                            name, max + 1);
             return -1;
         }
@@ -523,14 +523,14 @@ qemuMigrationParamsSetCompression(virTypedParameterPtr params,
         method = qemuMigrationCompressMethodTypeFromString(params[i].value.s);
         if (method < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Unsupported compression method '%s'"),
+                           _("Unsupported compression method '%1$s'"),
                            params[i].value.s);
             return -1;
         }
 
         if (migParams->compMethods & (1ULL << method)) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Compression method '%s' is specified twice"),
+                           _("Compression method '%1$s' is specified twice"),
                            params[i].value.s);
             return -1;
         }
@@ -1229,7 +1229,7 @@ qemuMigrationParamsCheck(virDomainObj *vm,
 
         if (state && !qemuMigrationCapsGet(vm, cap)) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                           _("Migration option '%s' is not supported by QEMU binary"),
+                           _("Migration option '%1$s' is not supported by QEMU binary"),
                            qemuMigrationCapabilityTypeToString(cap));
             return -1;
         }
@@ -1398,14 +1398,14 @@ qemuMigrationParamsParse(xmlXPathContextPtr ctxt,
 
         if ((param = qemuMigrationParamTypeFromString(name)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown migration parameter '%s'"), name);
+                           _("unknown migration parameter '%1$s'"), name);
             return -1;
         }
         pv = &params->params[param];
 
         if (!(value = virXMLPropString(nodes[i], "value"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("missing value for migration parameter '%s'"),
+                           _("missing value for migration parameter '%1$s'"),
                            name);
             return -1;
         }
@@ -1431,7 +1431,7 @@ qemuMigrationParamsParse(xmlXPathContextPtr ctxt,
 
         if (rc < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("invalid value '%s' for migration parameter '%s'"),
+                           _("invalid value '%1$s' for migration parameter '%2$s'"),
                            value, name);
             return -1;
         }

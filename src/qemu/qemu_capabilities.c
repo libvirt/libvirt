@@ -1811,7 +1811,7 @@ int virQEMUCapsGetDefaultVersion(virCaps *caps,
             VIR_DOMAIN_OSTYPE_HVM, hostarch, VIR_DOMAIN_VIRT_NONE,
             NULL, NULL))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot find suitable emulator for %s"),
+                       _("Cannot find suitable emulator for %1$s"),
                        virArchToString(hostarch));
         return -1;
     }
@@ -3669,8 +3669,7 @@ virQEMUCapsInitCPUModelS390(virQEMUCaps *qemuCaps,
     if (!modelInfo) {
         if (type == VIR_DOMAIN_VIRT_KVM) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("missing host CPU model info from QEMU "
-                             "capabilities for binary %s"),
+                           _("missing host CPU model info from QEMU capabilities for binary %1$s"),
                            qemuCaps->binary);
             return -1;
         }
@@ -4038,8 +4037,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
                 prop->value.string = virXMLPropString(ctxt->node, "value");
                 if (!prop->value.string) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("invalid string value for '%s' host CPU "
-                                     "model property in QEMU capabilities cache"),
+                                   _("invalid string value for '%1$s' host CPU model property in QEMU capabilities cache"),
                                    prop->name);
                     return -1;
                 }
@@ -4049,8 +4047,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
                 if (virXPathLongLong("string(./@value)", ctxt,
                                      &prop->value.number) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("invalid number value for '%s' host CPU "
-                                     "model property in QEMU capabilities cache"),
+                                   _("invalid number value for '%1$s' host CPU model property in QEMU capabilities cache"),
                                    prop->name);
                     return -1;
                 }
@@ -4109,7 +4106,7 @@ virQEMUCapsLoadCPUModels(virArch arch,
         if ((strUsable = virXMLPropString(nodes[i], "usable")) &&
             (usable = virDomainCapsCPUUsableTypeFromString(strUsable)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown value '%s' in attribute 'usable'"),
+                           _("unknown value '%1$s' in attribute 'usable'"),
                            strUsable);
             return -1;
         }
@@ -4461,7 +4458,7 @@ virQEMUCapsParseHypervCapabilities(virQEMUCaps *qemuCaps,
 
         if ((val = virDomainHypervTypeFromString(name)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported HyperV Enlightenment feature: %s"),
+                           _("unsupported HyperV Enlightenment feature: %1$s"),
                            name);
             return -1;
         }
@@ -4501,7 +4498,7 @@ virQEMUCapsParseFlags(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
         flag = virQEMUCapsTypeFromString(str);
         if (flag < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown qemu capabilities flag %s"), str);
+                           _("Unknown qemu capabilities flag %1$s"), str);
             return -1;
         }
 
@@ -4601,7 +4598,7 @@ virQEMUCapsValidateEmulator(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
 
     if (STRNEQ(str, qemuCaps->binary)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Expected caps for '%s' but saw '%s'"),
+                       _("Expected caps for '%1$s' but saw '%2$s'"),
                        qemuCaps->binary, str);
         return -1;
     }
@@ -4622,7 +4619,7 @@ virQEMUCapsValidateArch(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
     }
     if (!(qemuCaps->arch = virArchFromString(str))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown arch %s in QEMU capabilities cache"), str);
+                       _("unknown arch %1$s in QEMU capabilities cache"), str);
         return -1;
     }
 
@@ -5132,7 +5129,7 @@ virQEMUCapsSaveFile(void *data,
 
     if (virFileWriteStr(filename, xml, 0600) < 0) {
         virReportSystemError(errno,
-                             _("Failed to save '%s' for '%s'"),
+                             _("Failed to save '%1$s' for '%2$s'"),
                              filename, qemuCaps->binary);
         return -1;
     }
@@ -5263,7 +5260,7 @@ virQEMUCapsKVMUsable(virQEMUCapsCachePriv *priv)
     if (stat(kvm_device, &sb) < 0) {
         if (errno != ENOENT) {
             virReportSystemError(errno,
-                                 _("Failed to stat %s"), kvm_device);
+                                 _("Failed to stat %1$s"), kvm_device);
         }
         return false;
     }
@@ -5460,7 +5457,7 @@ virQEMUCapsInitQMPArch(virQEMUCaps *qemuCaps,
 
     if ((qemuCaps->arch = virQEMUCapsArchFromString(archstr)) == VIR_ARCH_NONE) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown QEMU arch %s"), archstr);
+                       _("Unknown QEMU arch %1$s"), archstr);
         return -1;
     }
 
@@ -5605,7 +5602,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCaps *qemuCaps,
     if (major < QEMU_MIN_MAJOR ||
         (major == QEMU_MIN_MAJOR && minor < QEMU_MIN_MINOR)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("QEMU version >= %d.%d.%d is required, but %d.%d.%d found"),
+                       _("QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"),
                        QEMU_MIN_MAJOR, QEMU_MIN_MINOR, QEMU_MIN_MICRO,
                        major, minor, micro);
         return -1;
@@ -5706,7 +5703,7 @@ virQEMUCapsLogProbeFailure(const char *binary)
                   VIR_LOG_WARN,
                   __FILE__, __LINE__, __func__,
                   meta,
-                  _("Failed to probe capabilities for %s: %s"),
+                  _("Failed to probe capabilities for %1$s: %2$s"),
                   binary, virGetLastErrorMessage());
 }
 
@@ -5781,7 +5778,7 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
     /* We would also want to check faccessat if we cared about ACLs,
      * but we don't.  */
     if (stat(binary, &sb) < 0) {
-        virReportSystemError(errno, _("Cannot check QEMU binary %s"),
+        virReportSystemError(errno, _("Cannot check QEMU binary %1$s"),
                              binary);
         return NULL;
     }
@@ -5792,14 +5789,14 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
      * in a sub-process so it's hard to feed back a useful error.
      */
     if (!virFileIsExecutable(binary)) {
-        virReportSystemError(errno, _("QEMU binary %s is not executable"),
+        virReportSystemError(errno, _("QEMU binary %1$s is not executable"),
                              binary);
         return NULL;
     }
 
     if (virFileExists(QEMU_MODDIR)) {
         if (stat(QEMU_MODDIR, &sb) < 0) {
-            virReportSystemError(errno, _("Cannot check QEMU module directory %s"),
+            virReportSystemError(errno, _("Cannot check QEMU module directory %1$s"),
                                  QEMU_MODDIR);
             return NULL;
         }
@@ -6040,14 +6037,14 @@ virQEMUCapsCacheLookupDefault(virFileCache *cache,
     if (virttypeStr &&
         (virttype = virDomainVirtTypeFromString(virttypeStr)) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("unknown virttype: %s"), virttypeStr);
+                       _("unknown virttype: %1$s"), virttypeStr);
         return NULL;
     }
 
     if (archStr &&
         (arch = virArchFromString(archStr)) == VIR_ARCH_NONE) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("unknown architecture: %s"), archStr);
+                       _("unknown architecture: %1$s"), archStr);
         return NULL;
     }
 
@@ -6057,7 +6054,7 @@ virQEMUCapsCacheLookupDefault(virFileCache *cache,
     }
     if (!binary) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unable to find any emulator to serve '%s' architecture"),
+                       _("unable to find any emulator to serve '%1$s' architecture"),
                        archStr);
         return NULL;
     }
@@ -6073,8 +6070,7 @@ virQEMUCapsCacheLookupDefault(virFileCache *cache,
           (ARCH_IS_ARM(arch) && ARCH_IS_ARM(arch_from_caps)) ||
           (ARCH_IS_S390(arch) && ARCH_IS_S390(arch_from_caps)))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("architecture from emulator '%s' doesn't "
-                         "match given architecture '%s'"),
+                       _("architecture from emulator '%1$s' doesn't match given architecture '%2$s'"),
                        virArchToString(arch_from_caps),
                        virArchToString(arch));
         return NULL;
@@ -6087,7 +6083,7 @@ virQEMUCapsCacheLookupDefault(virFileCache *cache,
 
     if (virQEMUCapsTypeIsAccelerated(virttype) && capsType == VIR_DOMAIN_VIRT_QEMU) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("the accel '%s' is not supported by '%s' on this host"),
+                       _("the accel '%1$s' is not supported by '%2$s' on this host"),
                        virQEMUCapsAccelStr(virttype), binary);
         return NULL;
     }
@@ -6098,7 +6094,7 @@ virQEMUCapsCacheLookupDefault(virFileCache *cache,
 
         if (!virQEMUCapsIsMachineSupported(qemuCaps, virttype, machine)) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("the machine '%s' is not supported by emulator '%s'"),
+                           _("the machine '%1$s' is not supported by emulator '%2$s'"),
                            machine, binary);
             return NULL;
         }

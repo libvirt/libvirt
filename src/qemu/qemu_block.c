@@ -44,7 +44,7 @@ qemuBlockNodeNameValidate(const char *nn)
 
     if (strlen(nn) >= qemuBlockNodeNameBufSize) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("node-name '%s' too long for qemu"), nn);
+                       _("node-name '%1$s' too long for qemu"), nn);
         return -1;
     }
 
@@ -80,7 +80,7 @@ qemuBlockStorageSourceGetURI(virStorageSource *src)
 
     if (src->nhosts != 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("protocol '%s' accepts only one host"),
+                       _("protocol '%1$s' accepts only one host"),
                        virStorageNetProtocolTypeToString(src->protocol));
         return NULL;
     }
@@ -153,7 +153,7 @@ qemuBlockStorageSourceBuildJSONSocketAddress(virStorageNetHostDef *host)
     case VIR_STORAGE_NET_HOST_TRANS_RDMA:
     case VIR_STORAGE_NET_HOST_TRANS_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("transport protocol '%s' is not yet supported"),
+                       _("transport protocol '%1$s' is not yet supported"),
                        virStorageNetHostTransportTypeToString(host->transport));
         return NULL;
     }
@@ -469,7 +469,7 @@ qemuBlockStorageSourceGetISCSIProps(virStorageSource *src,
         *(lunStr++) = '\0';
         if (virStrToLong_ui(lunStr, NULL, 10, &lun) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot parse target for lunStr '%s'"),
+                           _("cannot parse target for lunStr '%1$s'"),
                            target);
             return NULL;
         }
@@ -880,7 +880,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
 
     case VIR_STORAGE_TYPE_VOLUME:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("storage source pool '%s' volume '%s' is not translated"),
+                       _("storage source pool '%1$s' volume '%2$s' is not translated"),
                        src->srcpool->pool, src->srcpool->volume);
         return NULL;
 
@@ -1226,7 +1226,7 @@ qemuBlockStorageSourceGetBlockdevFormatProps(virStorageSource *src)
     case VIR_STORAGE_FILE_ISO:
     case VIR_STORAGE_FILE_DIR:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("mishandled storage format '%s'"),
+                       _("mishandled storage format '%1$s'"),
                        virStorageFileFormatTypeToString(src->format));
         return NULL;
 
@@ -1285,7 +1285,7 @@ qemuBlockStorageSourceGetBlockdevProps(virStorageSource *src,
         } else {
             if (virStorageSourceIsBacking(backingStore)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("storage format '%s' does not support backing store"),
+                               _("storage format '%1$s' does not support backing store"),
                                virStorageFileFormatTypeToString(src->format));
                 return NULL;
             }
@@ -2231,7 +2231,7 @@ qemuBlockStorageSourceCreateGetFormatProps(virStorageSource *src,
     case VIR_STORAGE_FILE_AUTO:
     case VIR_STORAGE_FILE_NONE:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("mishandled storage format '%s'"),
+                       _("mishandled storage format '%1$s'"),
                        virStorageFileFormatTypeToString(src->format));
         return -1;
 
@@ -2385,7 +2385,7 @@ qemuBlockStorageSourceCreateGeneric(virDomainObj *vm,
                            _("blockdev-create job was cancelled"));
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("failed to format image: '%s'"), NULLSTR(job->errmsg));
+                           _("failed to format image: '%1$s'"), NULLSTR(job->errmsg));
         }
         goto cleanup;
     }
@@ -2454,7 +2454,7 @@ qemuBlockStorageSourceCreateFormat(virDomainObj *vm,
 
     if (!createformatprops) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("can't create storage format '%s'"),
+                       _("can't create storage format '%1$s'"),
                        virStorageFileFormatTypeToString(src->format));
         return -1;
     }
@@ -2585,7 +2585,7 @@ qemuBlockStorageSourceCreateDetectSize(GHashTable *blockNamedNodeData,
 
     if (!(entry = virHashLookup(blockNamedNodeData, templ->nodeformat))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to update capacity data for block node '%s'"),
+                       _("failed to update capacity data for block node '%1$s'"),
                        templ->nodeformat);
         return -1;
     }
@@ -3315,7 +3315,7 @@ qemuBlockCommit(virDomainObj *vm,
 
     if (virStorageSourceIsEmpty(disk->src)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("disk %s has no source file to be committed"),
+                       _("disk %1$s has no source file to be committed"),
                        disk->dst);
         return NULL;
     }
@@ -3330,20 +3330,20 @@ qemuBlockCommit(virDomainObj *vm,
         /* XXX Should we auto-pivot when COMMIT_ACTIVE is not specified? */
         if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_ACTIVE)) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("commit of '%s' active layer requires active flag"),
+                           _("commit of '%1$s' active layer requires active flag"),
                            disk->dst);
             return NULL;
         }
     } else if (flags & VIR_DOMAIN_BLOCK_COMMIT_ACTIVE) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("active commit requested but '%s' is not active"),
+                       _("active commit requested but '%1$s' is not active"),
                        topSource->path);
         return NULL;
     }
 
     if (!virStorageSourceHasBacking(topSource)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("top '%s' in chain for '%s' has no backing file"),
+                       _("top '%1$s' in chain for '%2$s' has no backing file"),
                        topSource->path, disk->src->path);
         return NULL;
     }
@@ -3351,8 +3351,7 @@ qemuBlockCommit(virDomainObj *vm,
     if ((flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW) &&
         baseSource != topSource->backingStore) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("base '%s' is not immediately below '%s' in chain "
-                         "for '%s'"),
+                       _("base '%1$s' is not immediately below '%2$s' in chain for '%3$s'"),
                        baseSource->path, topSource->path, disk->src->path);
         return NULL;
     }
@@ -3481,7 +3480,7 @@ qemuBlockPivot(virDomainObj *vm,
 
     if (job->state != QEMU_BLOCKJOB_STATE_READY) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
-                       _("block job '%s' not ready for pivot yet"),
+                       _("block job '%1$s' not ready for pivot yet"),
                        job->name);
         return -1;
     }
@@ -3490,7 +3489,7 @@ qemuBlockPivot(virDomainObj *vm,
     case QEMU_BLOCKJOB_TYPE_NONE:
     case QEMU_BLOCKJOB_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid job type '%d'"), job->type);
+                       _("invalid job type '%1$d'"), job->type);
         return -1;
 
     case QEMU_BLOCKJOB_TYPE_PULL:
@@ -3500,7 +3499,7 @@ qemuBlockPivot(virDomainObj *vm,
     case QEMU_BLOCKJOB_TYPE_CREATE:
     case QEMU_BLOCKJOB_TYPE_BROKEN:
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("job type '%s' does not support pivot"),
+                       _("job type '%1$s' does not support pivot"),
                        qemuBlockjobTypeToString(job->type));
         return -1;
 

@@ -206,7 +206,7 @@ qemuBackupDiskPrepareOneBitmaps(struct qemuBackupDiskData *dd,
                                      dd->backupdisk->incremental,
                                      blockNamedNodeData)) {
         virReportError(VIR_ERR_CHECKPOINT_INCONSISTENT,
-                       _("missing or broken bitmap '%s' for disk '%s'"),
+                       _("missing or broken bitmap '%1$s' for disk '%2$s'"),
                        dd->backupdisk->incremental, dd->domdisk->dst);
         return -1;
     }
@@ -256,7 +256,7 @@ qemuBackupDiskPrepareDataOne(virDomainObj *vm,
 
     if (!(dd->domdisk = virDomainDiskByTarget(vm->def, dd->backupdisk->name))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("no disk named '%s'"), dd->backupdisk->name);
+                       _("no disk named '%1$s'"), dd->backupdisk->name);
         return -1;
     }
 
@@ -268,7 +268,7 @@ qemuBackupDiskPrepareDataOne(virDomainObj *vm,
     } else if (dd->store->format != VIR_STORAGE_FILE_QCOW2) {
         if (pull) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("pull mode backup for disk '%s' requires qcow2 driver"),
+                           _("pull mode backup for disk '%1$s' requires qcow2 driver"),
                            dd->backupdisk->name);
             return -1;
         }
@@ -298,7 +298,7 @@ qemuBackupDiskPrepareDataOne(virDomainObj *vm,
          * has corresponding bitmap. */
         if (!virDomainCheckpointFindByName(vm->checkpoints, dd->backupdisk->incremental)) {
             virReportError(VIR_ERR_NO_DOMAIN_CHECKPOINT,
-                           _("Checkpoint '%s' for incremental backup of disk '%s' not found"),
+                           _("Checkpoint '%1$s' for incremental backup of disk '%2$s' not found"),
                            dd->backupdisk->incremental, dd->backupdisk->name);
             return -1;
         }
@@ -428,7 +428,7 @@ qemuBackupDiskPrepareOneStorage(virDomainObj *vm,
 
         if (virFileExists(dd->store->path)) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("store '%s' for backup of '%s' exists"),
+                           _("store '%1$s' for backup of '%2$s' exists"),
                            dd->store->path, dd->domdisk->dst);
             return -1;
         }
@@ -440,7 +440,7 @@ qemuBackupDiskPrepareOneStorage(virDomainObj *vm,
 
         if (virStorageSourceCreate(dd->store) < 0) {
             virReportSystemError(errno,
-                                 _("failed to create image file '%s'"),
+                                 _("failed to create image file '%1$s'"),
                                  NULLSTR(dd->store->path));
             return -1;
         }

@@ -101,7 +101,7 @@ qemuSlirpNewForHelper(const char *helper)
     slirp = qemuSlirpNew();
     if (!slirp) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to allocate slirp for '%s'"), helper);
+                       _("Failed to allocate slirp for '%1$s'"), helper);
         return NULL;
     }
 
@@ -113,7 +113,7 @@ qemuSlirpNewForHelper(const char *helper)
     if (!(doc = virJSONValueFromString(output)) ||
         !(featuresJSON = virJSONValueObjectGetArray(doc, "features"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to parse json capabilities '%s'"),
+                       _("unable to parse json capabilities '%1$s'"),
                        helper);
         return NULL;
     }
@@ -331,7 +331,7 @@ qemuSlirpStart(virDomainObj *vm,
     rc = virPidFileReadPath(pidfile, &pid);
     if (rc < 0) {
         virReportSystemError(-rc,
-                             _("Unable to read slirp pidfile '%s'"),
+                             _("Unable to read slirp pidfile '%1$s'"),
                              pidfile);
         goto error;
     }

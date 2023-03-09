@@ -229,7 +229,7 @@ qemuPasstStart(virDomainObj *vm,
         } else {
             /* validation guarantees this will never happen */
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid portForward proto value %u"), pf->proto);
+                           _("Invalid portForward proto value %1$u"), pf->proto);
             return -1;
         }
 
