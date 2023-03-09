@@ -21,7 +21,7 @@
 #
 # NOTE: This directly references specific structures and places in the
 #       kernel source code. It is expected that this example will need to be
-#       editted to match the kernel you intend to run it against.
+#       edited to match the kernel you intend to run it against.
 #
 # The captured VMSA will be printed to the console in hex format,
 # and can be converted to the required binary format by feeding
@@ -42,8 +42,8 @@ function dump_vmsa(addr:long) {
 }
 
 # This line number will need to be updated for the specific kernel
-# version that is being probed. The line that needs to be targetted
-# is the one beween the call to clflush_cache_range(...) and the
+# version that is being probed. The line that needs to be targeted
+# is the one between the call to clflush_cache_range(...) and the
 # call to sev_issue_cmd(kvm, SEV_CMD_LAUNCH_UPDATE...).
 #
 # Line 635 is correct for Linux v6.3

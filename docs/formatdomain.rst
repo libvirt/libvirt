@@ -7576,7 +7576,7 @@ feature is planned for a future version of libvirt.
 
 Having multiple watchdogs is usually not something very common, but be aware
 that this might happen, for example, when an implicit watchdog device is added
-as part of another device.  For example whe iTCO watchdog being part of the ich9
+as part of another device.  For example the iTCO watchdog being part of the ich9
 southbridge, which is used with the q35 machine type. :since:`Since 9.1.0`
 
 ::

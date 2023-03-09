@@ -476,7 +476,7 @@ qemuTestCapsCacheInsertImpl(virFileCache *cache,
     size_t i;
 
     if (virQEMUCapsGetArch(caps) != VIR_ARCH_NONE) {
-        /* all tests using real caps or arcitecture are expected to call:
+        /* all tests using real caps or architecture are expected to call:
          *
          *  virFileCacheClear(driver.qemuCapsCache);
          *

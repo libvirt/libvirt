@@ -330,7 +330,7 @@ virStorageSourceChainLookup(virStorageSource *chain,
  *
  * Looks up a storage source definition corresponding to @base in @chain.
  *
- * Returns virStorageSource withing chain or NULL if not found.
+ * Returns virStorageSource within chain or NULL if not found.
  */
 virStorageSource *
 virStorageSourceChainLookupBySource(virStorageSource *chain,

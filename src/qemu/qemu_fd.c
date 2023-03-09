@@ -98,7 +98,7 @@ qemuFDPassNew(const char *prefix,
 
 /**
  * qemuFDPassNewPassed:
- * @fdSetID: ID of an FDset which was allready passed to qemu
+ * @fdSetID: ID of an FDset which was already passed to qemu
  *
  * Create qemuFDPass pointing to an already passed FD. Useful to use with
  * qemuFDPassTransferMonitorRollback, when restoring after restart.

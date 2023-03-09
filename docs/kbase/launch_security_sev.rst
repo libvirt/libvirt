@@ -460,7 +460,7 @@ With it launched, it is possible to query the launch measurement::
   sev-build-id   : 15
   sev-policy     : 3
 
-The techiques required to validate the measurement reported are beyond the
+The techniques required to validate the measurement reported are beyond the
 scope of this document. Fortunately, libvirt provides a tool that can be used
 to perform this validation::
 
