@@ -176,7 +176,8 @@ virCHMonitorBuildDiskJson(virJSONValue *disks, virDomainDiskDef *diskdef)
         }
         if (diskdef->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Only virtio bus types are supported for '%s'"), diskdef->src->path);
+                           _("Only virtio bus types are supported for '%1$s'"),
+                           diskdef->src->path);
             return -1;
         }
         if (virJSONValueObjectAppendString(disk, "path", diskdef->src->path) < 0)
@@ -253,7 +254,7 @@ virCHMonitorBuildNetJson(virJSONValue *nets,
 
                 if (virSocketAddrPrefixToNetmask(ip->prefix, &netmask, AF_INET) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Failed to translate net prefix %d to netmask"),
+                                   _("Failed to translate net prefix %1$d to netmask"),
                                    ip->prefix);
                     return -1;
                 }
@@ -331,7 +332,7 @@ virCHMonitorBuildNetJson(virJSONValue *nets,
     if (netdef->driver.virtio.rx_queue_size || netdef->driver.virtio.tx_queue_size) {
         if (netdef->driver.virtio.rx_queue_size != netdef->driver.virtio.tx_queue_size) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-               _("virtio rx_queue_size option %d is not same with tx_queue_size %d"),
+               _("virtio rx_queue_size option %1$d is not same with tx_queue_size %2$d"),
                netdef->driver.virtio.rx_queue_size,
                netdef->driver.virtio.tx_queue_size);
             return -1;
@@ -388,7 +389,7 @@ virCHMonitorBuildDeviceJson(virJSONValue *devices,
         path = g_strdup_printf("/sys/bus/pci/devices/%s/", name);
         if (!virFileExists(path)) {
             virReportError(VIR_ERR_DEVICE_MISSING,
-                           _("host pci device %s not found"), path);
+                           _("host pci device %1$s not found"), path);
             return -1;
         }
         if (virJSONValueObjectAppendString(device, "path", path) < 0)
@@ -481,28 +482,28 @@ chMonitorCreateSocket(const char *socket_path)
     addr.sun_family = AF_UNIX;
     if (virStrcpyStatic(addr.sun_path, socket_path) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("UNIX socket path '%s' too long"),
+                       _("UNIX socket path '%1$s' too long"),
                        socket_path);
         goto error;
     }
 
     if (unlink(socket_path) < 0 && errno != ENOENT) {
         virReportSystemError(errno,
-                             _("Unable to unlink %s"),
+                             _("Unable to unlink %1$s"),
                              socket_path);
         goto error;
     }
 
     if (bind(fd, (struct sockaddr *)&addr, addrlen) < 0) {
         virReportSystemError(errno,
-                             _("Unable to bind to UNIX socket path '%s'"),
+                             _("Unable to bind to UNIX socket path '%1$s'"),
                              socket_path);
         goto error;
     }
 
     if (listen(fd, 1) < 0) {
         virReportSystemError(errno,
-                             _("Unable to listen to UNIX socket path '%s'"),
+                             _("Unable to listen to UNIX socket path '%1$s'"),
                              socket_path);
         goto error;
     }
@@ -543,7 +544,7 @@ virCHMonitorNew(virDomainObj *vm, const char *socketdir)
     mon->socketpath = g_strdup_printf("%s/%s-socket", socketdir, vm->def->name);
     if (g_mkdir_with_parents(socketdir, 0777) < 0) {
         virReportSystemError(errno,
-                             _("Cannot create socket directory '%s'"),
+                             _("Cannot create socket directory '%1$s'"),
                              socketdir);
         return NULL;
     }
@@ -553,7 +554,7 @@ virCHMonitorNew(virDomainObj *vm, const char *socketdir)
     socket_fd = chMonitorCreateSocket(mon->socketpath);
     if (socket_fd < 0) {
         virReportSystemError(errno,
-                             _("Cannot create socket '%s'"),
+                             _("Cannot create socket '%1$s'"),
                              mon->socketpath);
         return NULL;
     }
@@ -619,7 +620,7 @@ virCHMonitorCurlPerform(CURL *handle)
 
     if (errorCode != CURLE_OK) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("curl_easy_perform() returned an error: %s (%d)"),
+                       _("curl_easy_perform() returned an error: %1$s (%2$d)"),
                        curl_easy_strerror(errorCode), errorCode);
         return -1;
     }
@@ -629,8 +630,8 @@ virCHMonitorCurlPerform(CURL *handle)
 
     if (errorCode != CURLE_OK) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an "
-                         "error: %s (%d)"), curl_easy_strerror(errorCode),
+                       _("curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"),
+                       curl_easy_strerror(errorCode),
                        errorCode);
         return -1;
     }

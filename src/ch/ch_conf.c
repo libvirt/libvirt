@@ -202,7 +202,7 @@ chExtractVersion(virCHDriver *driver)
 
     if (virStringParseVersion(&version, tmp, true) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse cloud-hypervisor version: %s"), tmp);
+                       _("Unable to parse cloud-hypervisor version: %1$s"), tmp);
         return -1;
     }
 

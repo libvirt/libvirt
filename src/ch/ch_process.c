@@ -67,7 +67,7 @@ virCHProcessUpdateConsoleDevice(virDomainObj *vm,
     dev = virJSONValueObjectGet(config, device);
     if (!dev) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing '%s' in 'config' from cloud-hypervisor"),
+                       _("missing '%1$s' in 'config' from cloud-hypervisor"),
                        device);
         return;
     }
@@ -75,7 +75,7 @@ virCHProcessUpdateConsoleDevice(virDomainObj *vm,
     file = virJSONValueObjectGet(dev, "file");
     if (!file) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing 'file' in '%s' from cloud-hypervisor"),
+                       _("missing 'file' in '%1$s' from cloud-hypervisor"),
                        device);
         return;
     }
@@ -83,7 +83,7 @@ virCHProcessUpdateConsoleDevice(virDomainObj *vm,
     path = virJSONValueGetString(file);
     if (!path) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to parse contents of 'file' field in '%s' from cloud-hypervisor"),
+                       _("unable to parse contents of 'file' field in '%1$s' from cloud-hypervisor"),
                        device);
         return;
     }

@@ -631,7 +631,7 @@ static virDomainPtr chDomainLookupByID(virConnectPtr conn,
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching id '%d'"), id);
+                       _("no domain with matching id '%1$d'"), id);
         goto cleanup;
     }
 
@@ -656,7 +656,7 @@ static virDomainPtr chDomainLookupByName(virConnectPtr conn,
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching name '%s'"), name);
+                       _("no domain with matching name '%1$s'"), name);
         goto cleanup;
     }
 
@@ -683,7 +683,7 @@ static virDomainPtr chDomainLookupByUUID(virConnectPtr conn,
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+                       _("no domain with matching uuid '%1$s'"), uuidstr);
         goto cleanup;
     }
 
@@ -817,14 +817,14 @@ chDomainOpenConsole(virDomainPtr dom,
      }
 
      if (!chr) {
-          virReportError(VIR_ERR_INTERNAL_ERROR, _("cannot find character device %s"),
+          virReportError(VIR_ERR_INTERNAL_ERROR, _("cannot find character device %1$s"),
                          NULLSTR(dev_name));
           goto cleanup;
      }
 
      if (chr->source->type != VIR_DOMAIN_CHR_TYPE_PTY) {
           virReportError(VIR_ERR_INTERNAL_ERROR,
-                         _("character device %s is not using a PTY"),
+                         _("character device %1$s is not using a PTY"),
                          dev_name ? dev_name : NULLSTR(chr->info.alias));
           goto cleanup;
      }
@@ -930,7 +930,7 @@ chConnectSupportsFeature(virConnectPtr conn,
         case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
         case VIR_DRV_FEATURE_FD_PASSING:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Global feature %d should have already been handled"),
+                           _("Global feature %1$d should have already been handled"),
                            feature);
             return -1;
         case VIR_DRV_FEATURE_MIGRATION_V2:
@@ -1158,7 +1158,7 @@ chDomainPinVcpuLive(virDomainObj *vm,
 
     if (!(vcpuinfo = virDomainDefGetVcpu(def, vcpu))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("vcpu %d is out of range of live cpu count %d"),
+                       _("vcpu %1$d is out of range of live cpu count %2$d"),
                        vcpu, virDomainDefGetVcpusMax(def));
         return -1;
     }
@@ -1228,7 +1228,7 @@ chDomainPinVcpuFlags(virDomainPtr dom,
     if (persistentDef &&
         !(vcpuinfo = virDomainDefGetVcpu(persistentDef, vcpu))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("vcpu %d is out of range of persistent cpu count %d"),
+                       _("vcpu %1$d is out of range of persistent cpu count %2$d"),
                        vcpu, virDomainDefGetVcpus(persistentDef));
         goto endjob;
     }
@@ -1609,7 +1609,7 @@ chDomainSetNumaParameters(virDomainPtr dom,
 
             if (mode < 0 || mode >= VIR_DOMAIN_NUMATUNE_MEM_LAST) {
                 virReportError(VIR_ERR_INVALID_ARG,
-                               _("unsupported numatune mode: '%d'"), mode);
+                               _("unsupported numatune mode: '%1$d'"), mode);
                 goto cleanup;
             }
 
@@ -1620,7 +1620,7 @@ chDomainSetNumaParameters(virDomainPtr dom,
 
             if (virBitmapIsAllClear(nodeset)) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("Invalid nodeset of 'numatune': %s"),
+                               _("Invalid nodeset of 'numatune': %1$s"),
                                param->value.s);
                 goto cleanup;
             }
