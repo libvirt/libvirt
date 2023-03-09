@@ -81,7 +81,7 @@ vzDomObjFromDomain(virDomainPtr domain)
     if (!vm) {
         virUUIDFormat(domain->uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s' (%s)"),
+                       _("no domain with matching uuid '%1$s' (%2$s)"),
                        uuidstr, domain->name);
         return NULL;
     }
@@ -202,15 +202,15 @@ vzCheckDiskAddressDriveUnsupportedParams(virDomainDiskDef *disk)
     if (drive->controller > 0) {
         /* We have only one controller of each type */
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Invalid drive address of disk %s, vz driver "
-                         "supports only one controller."), disk->dst);
+                       _("Invalid drive address of disk %1$s, vz driver supports only one controller."),
+                       disk->dst);
         return -1;
     }
 
     if (drive->target > 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Invalid drive address of disk %s, vz driver "
-                         "supports only target 0."), disk->dst);
+                       _("Invalid drive address of disk %1$s, vz driver supports only target 0."),
+                       disk->dst);
         return -1;
     }
 
@@ -218,8 +218,7 @@ vzCheckDiskAddressDriveUnsupportedParams(virDomainDiskDef *disk)
     case VIR_DOMAIN_DISK_BUS_IDE:
         if (drive->unit > 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Invalid drive address of disk %s, vz driver "
-                             "supports only units 0-1 for IDE bus."),
+                           _("Invalid drive address of disk %1$s, vz driver supports only units 0-1 for IDE bus."),
                            disk->dst);
             return -1;
         }
@@ -228,8 +227,7 @@ vzCheckDiskAddressDriveUnsupportedParams(virDomainDiskDef *disk)
     case VIR_DOMAIN_DISK_BUS_SATA:
         if (drive->bus > 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Invalid drive address of disk %s, vz driver "
-                             "supports only bus 0 for SATA and SCSI bus."),
+                           _("Invalid drive address of disk %1$s, vz driver supports only bus 0 for SATA and SCSI bus."),
                            disk->dst);
             return -1;
         }
@@ -250,15 +248,14 @@ vzCheckDiskAddressDriveUnsupportedParams(virDomainDiskDef *disk)
 
     if (virDiskNameToBusDeviceIndex(disk, &busIdx, &devIdx) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot convert disk '%s' to bus/device index"),
+                       _("cannot convert disk '%1$s' to bus/device index"),
                        disk->dst);
         return -1;
     }
 
     if (busIdx != drive->bus || devIdx != drive->unit) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Invalid drive address of disk %s, vz driver "
-                         "does not support non default name mappings."),
+                       _("Invalid drive address of disk %1$s, vz driver does not support non default name mappings."),
                        disk->dst);
         return -1;
     }
@@ -418,7 +415,7 @@ vzCheckUnsupportedDisk(const virDomainDef *def,
     if (virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_NONE &&
         virDomainDiskGetFormat(disk) != diskFormat) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported format of disk %s"),
+                       _("Unsupported format of disk %1$s"),
                        disk->src->path);
         return -1;
     }
@@ -430,7 +427,7 @@ vzCheckUnsupportedDisk(const virDomainDef *def,
 
     if (vzCaps->diskBuses[i] == VIR_DOMAIN_DISK_BUS_LAST) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported disk bus type %s"),
+                       _("Unsupported disk bus type %1$s"),
                        virDomainDiskBusTypeToString(disk->bus));
         return -1;
     }
@@ -454,7 +451,7 @@ vzCheckUnsupportedControllers(const virDomainDef *def, struct _vzCapabilities *v
 
         if (vzCaps->controllerTypes[j] == VIR_DOMAIN_CONTROLLER_TYPE_LAST) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported controller type %s"),
+                           _("Unsupported controller type %1$s"),
                            virDomainControllerTypeToString(controller->type));
             return -1;
         }
@@ -465,7 +462,7 @@ vzCheckUnsupportedControllers(const virDomainDef *def, struct _vzCapabilities *v
             controller->model != vzCaps->scsiControllerModel) {
 
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Unsupported SCSI controller model %s"),
+                               _("Unsupported SCSI controller model %1$s"),
                                virDomainControllerModelSCSITypeToString(controller->model));
                 return -1;
         }
@@ -485,7 +482,7 @@ int vzGetDefaultSCSIModel(struct _vzDriver *driver,
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown SCSI controller model %s"),
+                       _("Unknown SCSI controller model %1$s"),
                        virDomainControllerModelSCSITypeToString(
                            driver->vzCaps.scsiControllerModel));
         return -1;

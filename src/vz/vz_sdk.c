@@ -84,7 +84,7 @@ logPrlErrorHelper(PRL_RESULT err, const char *filename,
 
     virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INTERNAL_ERROR,
                          filename, funcname, linenr,
-                         _("%s %s"), msg1, msg2);
+                         _("%1$s %2$s"), msg1, msg2);
 
     VIR_FREE(msg1);
     VIR_FREE(msg2);
@@ -131,7 +131,7 @@ logPrlEventErrorHelper(PRL_HANDLE event, const char *filename,
 
     virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INTERNAL_ERROR,
                          filename, funcname, linenr,
-                         _("%s %s"), msg1, msg2);
+                         _("%1$s %2$s"), msg1, msg2);
     VIR_FREE(msg1);
     VIR_FREE(msg2);
 }
@@ -463,7 +463,7 @@ prlsdkSdkDomainLookupByUUID(struct _vzDriver *driver, const unsigned char *uuid)
                               PGVC_SEARCH_BY_UUID, &sdkdom) < 0) {
         virUUIDFormat(uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+                       _("no domain with matching uuid '%1$s'"), uuidstr);
         return PRL_INVALID_HANDLE;
     }
 
@@ -478,7 +478,7 @@ prlsdkSdkDomainLookupByName(struct _vzDriver *driver, const char *name)
     if (prlsdkSdkDomainLookup(driver, name,
                               PGVC_SEARCH_BY_NAME, &sdkdom) < 0) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching name '%s'"), name);
+                       _("no domain with matching name '%1$s'"), name);
         return PRL_INVALID_HANDLE;
     }
 
@@ -609,7 +609,7 @@ prlsdkGetDiskId(PRL_HANDLE disk, virDomainDiskBus *bus, char **dst)
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown disk bus: %X"), ifType);
+                       _("Unknown disk bus: %1$X"), ifType);
         return -1;
     }
 
@@ -724,7 +724,7 @@ prlsdkGetFSInfo(PRL_HANDLE prldisk,
             goto cleanup;
         if (STRNEQ("libvirt", uri->scheme)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown uri scheme: '%s'"),
+                           _("Unknown uri scheme: '%1$s'"),
                            uri->scheme);
             goto cleanup;
         }
@@ -732,17 +732,17 @@ prlsdkGetFSInfo(PRL_HANDLE prldisk,
         if (!(matches = g_strsplit(uri->path, "/", 0)) ||
             !matches[0]) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("splitting StorageUrl failed %s"), uri->path);
+                           _("splitting StorageUrl failed %1$s"), uri->path);
             goto cleanup;
         }
         if (!matches[1]) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("can't identify pool in uri %s "), uri->path);
+                           _("can't identify pool in uri %1$s "), uri->path);
             goto cleanup;
         }
         if (!matches[2]) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("can't identify volume in uri %s"), uri->path);
+                           _("can't identify volume in uri %1$s"), uri->path);
             goto cleanup;
         }
         fs->type = VIR_DOMAIN_FS_TYPE_VOLUME;
@@ -1068,7 +1068,7 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDef *net, bool isCt)
             break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown adapter type: %X"), type);
+                           _("Unknown adapter type: %1$X"), type);
             return -1;
         }
     }
@@ -1185,7 +1185,7 @@ prlsdkGetSerialInfo(PRL_HANDLE serialPort, virDomainChrDef *chr)
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown serial type: %X"), emulatedType);
+                       _("Unknown serial type: %1$X"), emulatedType);
         return -1;
     }
 
@@ -1450,7 +1450,7 @@ prlsdkConvertDomainType(PRL_HANDLE sdkdom, virDomainDef *def)
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown domain type: %X"), domainType);
+                       _("Unknown domain type: %1$X"), domainType);
         return -1;
     }
 
@@ -1475,7 +1475,7 @@ prlsdkConvertCpuMode(PRL_HANDLE sdkdom, virDomainDef *def)
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown CPU mode: %X"), cpuMode);
+                       _("Unknown CPU mode: %1$X"), cpuMode);
         return -1;
     }
 
@@ -1600,7 +1600,7 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
     dev = prlsdkGetDevByDevIndex(sdkdom, sdkType, sdkIndex);
     if (dev == PRL_INVALID_HANDLE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Can't find boot device of type: %d, device index: %d"),
+                       _("Can't find boot device of type: %1$d, device index: %2$d"),
                        sdkType, sdkIndex);
         return -1;
     }
@@ -1617,13 +1617,13 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
             break;
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported disk type %d"), sdkType);
+                           _("Unsupported disk type %1$d"), sdkType);
             goto cleanup;
         }
 
         if (!(disk = virFindDiskBootIndex(def, device, bootIndex))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Can't find boot device of type: %s, index: %d"),
+                           _("Can't find boot device of type: %1$s, index: %2$d"),
                            virDomainDiskDeviceTypeToString(device), bootIndex);
             goto cleanup;
         }
@@ -1642,7 +1642,7 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
 
         if (bootIndex >= def->nnets) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Can't find network boot device for index: %d"),
+                           _("Can't find network boot device for index: %1$d"),
                            bootIndex);
             goto cleanup;
         }
@@ -1653,7 +1653,7 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unexpected device type %d"), sdkType);
+                       _("Unexpected device type %1$d"), sdkType);
         goto cleanup;
     }
 
@@ -1732,7 +1732,7 @@ prlsdkConvertBootOrderVm(PRL_HANDLE sdkdom, virDomainDef *def)
             break;
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unexpected boot device type %i"), sdkType);
+                           _("Unexpected boot device type %1$i"), sdkType);
             goto cleanup;
         }
 
@@ -1835,7 +1835,7 @@ prlsdkLoadDomain(struct _vzDriver *driver,
     if (autostart != PAO_VM_START_ON_LOAD &&
         autostart != PAO_VM_START_MANUAL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown autostart mode: %X"), autostart);
+                       _("Unknown autostart mode: %1$X"), autostart);
         return NULL;
     }
 
@@ -2801,8 +2801,7 @@ static int prlsdkCheckSerialUnsupportedParams(virDomainChrDef *chr)
    if (chr->source->type == VIR_DOMAIN_CHR_TYPE_TCP &&
         chr->source->data.tcp.protocol != VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Protocol '%s' is not supported for "
-                         "tcp character device."),
+                       _("Protocol '%1$s' is not supported for tcp character device."),
                        virDomainChrTcpProtocolTypeToString(chr->source->data.tcp.protocol));
         return -1;
     }
@@ -3151,8 +3150,7 @@ static int prlsdkConfigureGateways(PRL_HANDLE sdknet, virDomainNetDef *net)
             break;
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported address family %d "
-                             "Only IPv4 or IPv6 default gateway"),
+                           _("Unsupported address family %1$d Only IPv4 or IPv6 default gateway"),
                            VIR_SOCKET_ADDR_FAMILY(gateway));
 
             return -1;
@@ -3354,7 +3352,7 @@ prlsdkFindNetByMAC(PRL_HANDLE sdkdom, virMacAddr *mac)
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("No net with mac '%s'"), virMacAddrFormat(mac, virMac));
+                   _("No net with mac '%1$s'"), virMacAddrFormat(mac, virMac));
 
  cleanup:
     PrlHandle_Free(adapter);
@@ -3502,7 +3500,7 @@ prlsdkGetDisk(PRL_HANDLE sdkdom, virDomainDiskDef *disk)
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("No disk with bus '%s' and target '%s'"),
+                   _("No disk with bus '%1$s' and target '%2$s'"),
                    virDomainDiskBusTypeToString(disk->bus), disk->dst);
     return PRL_INVALID_HANDLE;
 
@@ -3581,7 +3579,7 @@ prlsdkAttachDevice(struct _vzDriver *driver,
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("attaching device type '%s' is unsupported"),
+                       _("attaching device type '%1$s' is unsupported"),
                        virDomainDeviceTypeToString(dev->type));
         return -1;
     }
@@ -3671,7 +3669,7 @@ prlsdkDetachDevice(struct _vzDriver *driver G_GNUC_UNUSED,
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("detaching device type '%s' is unsupported"),
+                       _("detaching device type '%1$s' is unsupported"),
                        virDomainDeviceTypeToString(dev->type));
         goto cleanup;
     }
@@ -3751,7 +3749,7 @@ prlsdkUpdateDevice(struct _vzDriver *driver,
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("updating device type '%s' is unsupported"),
+                       _("updating device type '%1$s' is unsupported"),
                        virDomainDeviceTypeToString(dev->type));
         return -1;
     }
@@ -3878,7 +3876,7 @@ prlsdkSetBootOrderVm(PRL_HANDLE sdkdom, virDomainDef *def)
         case VIR_DOMAIN_BOOT_LAST:
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported boot device type: '%s'"),
+                           _("Unsupported boot device type: '%1$s'"),
                            virDomainBootTypeToString(virType));
             return -1;
         }
@@ -3965,7 +3963,7 @@ prlsdkDoApplyConfig(struct _vzDriver *driver,
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown CPU mode: %s"),
+                       _("Unknown CPU mode: %1$s"),
                        virArchToString(def->os.arch));
         goto error;
     }
@@ -4111,8 +4109,8 @@ virStorageTranslatePoolLocal(virConnectPtr conn, virStorageSource *src)
         return -1;
     if (virStoragePoolIsActive(pool) != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("storage pool '%s' containing volume '%s' "
-                         "is not active"), src->srcpool->pool,
+                       _("storage pool '%1$s' containing volume '%2$s' is not active"),
+                       src->srcpool->pool,
                        src->srcpool->volume);
         goto cleanup;
     }
@@ -4125,7 +4123,7 @@ virStorageTranslatePoolLocal(virConnectPtr conn, virStorageSource *src)
 
     if (info.type != VIR_STORAGE_VOL_PLOOP) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported volume format '%s'"),
+                       _("Unsupported volume format '%1$s'"),
                        virStorageVolTypeToString(info.type));
         goto cleanup;
     }
@@ -4398,7 +4396,7 @@ prlsdkGetBlockStats(PRL_HANDLE sdkstats,
         case VIR_DOMAIN_DISK_BUS_LAST:
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown disk bus: %X"), disk->bus);
+                           _("Unknown disk bus: %1$X"), disk->bus);
             goto cleanup;
         }
     }
@@ -4453,7 +4451,7 @@ prlsdkFindNetByPath(PRL_HANDLE sdkdom, const char *path)
 
     if (net == PRL_INVALID_HANDLE)
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid path, '%s' is not a known interface"), path);
+                       _("invalid path, '%1$s' is not a known interface"), path);
     return net;
 
  error:
@@ -4627,7 +4625,7 @@ prlsdkParseDateTime(const char *str)
         /* second */
         virStrToLong_i(tmp+1, &tmp, 10, &sec) < 0 || *tmp != '\0') {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected DateTime format: '%s'"), str);
+                       _("unexpected DateTime format: '%1$s'"), str);
         return -1;
     }
 
@@ -4712,7 +4710,7 @@ prlsdkParseSnapshotTree(const char *treexml)
             def->state = VIR_DOMAIN_SHUTOFF;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected snapshot state: %s"), xmlstr);
+                           _("unexpected snapshot state: %1$s"), xmlstr);
         }
         VIR_FREE(xmlstr);
 

@@ -44,7 +44,7 @@
         char uuidstr[VIR_UUID_STRING_BUFLEN]; \
         virUUIDFormat(domain->uuid, uuidstr); \
         virReportError(VIR_ERR_NO_DOMAIN, \
-                       _("no domain with matching uuid '%s'"), uuidstr); \
+                       _("no domain with matching uuid '%1$s'"), uuidstr); \
     } while (0)
 
 #define PARALLELS_DOMAIN_ROUTED_NETWORK_NAME   "host-routed"
