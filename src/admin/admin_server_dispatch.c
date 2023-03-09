@@ -78,7 +78,7 @@ remoteAdmClientNew(virNetServerClient *client G_GNUC_UNUSED,
               (long long)clientuid);
 
     if (geteuid() != clientuid) {
-        virReportRestrictedError(_("Disallowing client %lld with uid %lld"),
+        virReportRestrictedError(_("Disallowing client %1$lld with uid %2$lld"),
                                  (long long)clientpid,
                                  (long long)clientuid);
         return NULL;
@@ -258,7 +258,7 @@ adminDispatchServerSetThreadpoolParameters(virNetServer *server G_GNUC_UNUSED,
 
     if (!(srv = virNetDaemonGetServer(priv->dmn, args->srv.name))) {
         virReportError(VIR_ERR_NO_SERVER,
-                       _("no server with matching name '%s' found"),
+                       _("no server with matching name '%1$s' found"),
                        args->srv.name);
         goto cleanup;
     }
@@ -303,14 +303,14 @@ adminDispatchClientGetInfo(virNetServer *server G_GNUC_UNUSED,
 
     if (!(srv = virNetDaemonGetServer(priv->dmn, args->clnt.srv.name))) {
         virReportError(VIR_ERR_NO_SERVER,
-                       _("no server with matching name '%s' found"),
+                       _("no server with matching name '%1$s' found"),
                        args->clnt.srv.name);
         goto cleanup;
     }
 
     if (!(clnt = virNetServerGetClient(srv, args->clnt.id))) {
         virReportError(VIR_ERR_NO_CLIENT,
-                       _("no client with matching id '%llu' found"),
+                       _("no client with matching id '%1$llu' found"),
                        (unsigned long long) args->clnt.id);
         goto cleanup;
     }
@@ -390,7 +390,7 @@ adminDispatchServerSetClientLimits(virNetServer *server G_GNUC_UNUSED,
 
     if (!(srv = virNetDaemonGetServer(priv->dmn, args->srv.name))) {
         virReportError(VIR_ERR_NO_SERVER,
-                       _("no server with matching name '%s' found"),
+                       _("no server with matching name '%1$s' found"),
                        args->srv.name);
         goto cleanup;
     }

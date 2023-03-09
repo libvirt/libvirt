@@ -116,7 +116,7 @@ getSocketPath(virURI *uri)
             sock_path = g_strdup(param->value);
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown URI parameter '%s'"), param->name);
+                           _("Unknown URI parameter '%1$s'"), param->name);
             return NULL;
         }
     }
@@ -134,7 +134,7 @@ getSocketPath(virURI *uri)
             legacy = true;
         } else if (!STRPREFIX(uri->scheme, "virt")) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported URI scheme '%s'"),
+                           _("Unsupported URI scheme '%1$s'"),
                            uri->scheme);
             return NULL;
         }
@@ -151,7 +151,7 @@ getSocketPath(virURI *uri)
             sock_path = g_strdup_printf("%s/%s", rundir, sockbase);
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Invalid URI path '%s', try '/system'"),
+                           _("Invalid URI path '%1$s', try '/system'"),
                            NULLSTR_EMPTY(uri->path));
             return NULL;
         }
