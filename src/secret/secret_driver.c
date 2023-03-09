@@ -83,7 +83,7 @@ secretObjFromSecret(virSecretPtr secret)
     virUUIDFormat(secret->uuid, uuidstr);
     if (!(obj = virSecretObjListFindByUUID(driver->secrets, uuidstr))) {
         virReportError(VIR_ERR_NO_SECRET,
-                       _("no secret with matching uuid '%s'"), uuidstr);
+                       _("no secret with matching uuid '%1$s'"), uuidstr);
         return NULL;
     }
     return obj;
@@ -164,7 +164,7 @@ secretLookupByUUID(virConnectPtr conn,
     virUUIDFormat(uuid, uuidstr);
     if (!(obj = virSecretObjListFindByUUID(driver->secrets, uuidstr))) {
         virReportError(VIR_ERR_NO_SECRET,
-                       _("no secret with matching uuid '%s'"), uuidstr);
+                       _("no secret with matching uuid '%1$s'"), uuidstr);
         goto cleanup;
     }
 
@@ -195,7 +195,7 @@ secretLookupByUsage(virConnectPtr conn,
     if (!(obj = virSecretObjListFindByUsage(driver->secrets,
                                             usageType, usageID))) {
         virReportError(VIR_ERR_NO_SECRET,
-                       _("no secret with matching usage '%s'"), usageID);
+                       _("no secret with matching usage '%1$s'"), usageID);
         goto cleanup;
     }
 
@@ -524,13 +524,13 @@ secretStateInitialize(bool privileged,
     }
 
     if (g_mkdir_with_parents(driver->configDir, S_IRWXU) < 0) {
-        virReportSystemError(errno, _("cannot create config directory '%s'"),
+        virReportSystemError(errno, _("cannot create config directory '%1$s'"),
                              driver->configDir);
         goto error;
     }
 
     if (g_mkdir_with_parents(driver->stateDir, S_IRWXU) < 0) {
-        virReportSystemError(errno, _("cannot create state directory '%s'"),
+        virReportSystemError(errno, _("cannot create state directory '%1$s'"),
                              driver->stateDir);
         goto error;
     }
@@ -594,8 +594,7 @@ secretConnectOpen(virConnectPtr conn,
 
         if (STRNEQ(root, driver->embeddedRoot)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot open embedded driver at path '%s', "
-                             "already open with path '%s'"),
+                           _("Cannot open embedded driver at path '%1$s', already open with path '%2$s'"),
                            root, driver->embeddedRoot);
             return VIR_DRV_OPEN_ERROR;
         }
