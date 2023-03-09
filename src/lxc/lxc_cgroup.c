@@ -382,7 +382,7 @@ virCgroup *virLXCCgroupCreate(virDomainDef *def,
 
     if (!g_path_is_absolute(def->resource->partition)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Resource partition '%s' must start with '/'"),
+                       _("Resource partition '%1$s' must start with '/'"),
                        def->resource->partition);
         return NULL;
     }

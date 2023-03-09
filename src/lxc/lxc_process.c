@@ -404,7 +404,7 @@ static int virLXCProcessSetupNamespaceName(virLXCDriver *driver,
     vm = virDomainObjListFindByName(driver->domains, name);
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching name '%s'"), name);
+                       _("No domain with matching name '%1$s'"), name);
         return -1;
     }
 
@@ -420,7 +420,7 @@ static int virLXCProcessSetupNamespaceName(virLXCDriver *driver,
 
     if ((fd = open(path, O_RDONLY)) < 0) {
         virReportSystemError(errno,
-                             _("failed to open ns %s"),
+                             _("failed to open ns %1$s"),
                              virLXCDomainNamespaceTypeToString(ns_type));
         goto cleanup;
     }
@@ -438,7 +438,7 @@ static int virLXCProcessSetupNamespacePID(int ns_type, const char *name)
     int fd = open(path, O_RDONLY);
     if (fd < 0) {
         virReportSystemError(errno,
-                             _("failed to open ns %s"),
+                             _("failed to open ns %1$s"),
                              virLXCDomainNamespaceTypeToString(ns_type));
         return -1;
     }
@@ -461,7 +461,7 @@ static int virLXCProcessSetupNamespaceNet(int ns_type, const char *name)
     fd = open(path, O_RDONLY);
     if (fd < 0) {
         virReportSystemError(errno,
-                             _("failed to open netns %s"), name);
+                             _("failed to open netns %1$s"), name);
         return -1;
     }
     return fd;
@@ -600,7 +600,7 @@ virLXCProcessSetupInterfaces(virLXCDriver *driver,
         case VIR_DOMAIN_NET_TYPE_VDS:
         case VIR_DOMAIN_NET_TYPE_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unsupported network type %s"),
+                           _("Unsupported network type %1$s"),
                            virDomainNetTypeToString(type));
             goto cleanup;
 
@@ -752,7 +752,7 @@ virLXCProcessGetNsInode(pid_t pid,
 
     if (stat(path, &sb) < 0) {
         virReportSystemError(errno,
-                             _("Unable to stat %s"), path);
+                             _("Unable to stat %1$s"), path);
         return -1;
     }
 
@@ -883,7 +883,7 @@ int virLXCProcessStop(virLXCDriver *driver,
          * libvirt_lxc process */
         if (virProcessKillPainfully(vm->pid, true) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Processes %d refused to die"), (int)vm->pid);
+                           _("Processes %1$d refused to die"), (int)vm->pid);
             return -1;
         }
     }
@@ -1049,7 +1049,7 @@ virLXCProcessReadLogOutputData(virDomainObj *vm,
 
         if (got == buflen-1) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Out of space while reading log output: %s"),
+                           _("Out of space while reading log output: %1$s"),
                            buf);
             return -1;
         }
@@ -1062,7 +1062,7 @@ virLXCProcessReadLogOutputData(virDomainObj *vm,
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Timed out while reading log output: %s"),
+                   _("Timed out while reading log output: %1$s"),
                    buf);
 
     return -1;
@@ -1080,14 +1080,14 @@ virLXCProcessReadLogOutput(virDomainObj *vm,
 
     if ((fd = open(logfile, O_RDONLY)) < 0) {
         virReportSystemError(errno,
-                             _("Unable to open log file %s"),
+                             _("Unable to open log file %1$s"),
                              logfile);
         return -1;
     }
 
     if (lseek(fd, pos, SEEK_SET) < 0) {
         virReportSystemError(errno,
-                             _("Unable to seek log file %s to %llu"),
+                             _("Unable to seek log file %1$s to %2$llu"),
                              logfile, (unsigned long long)pos);
         return -1;
     }
@@ -1127,7 +1127,7 @@ virLXCProcessReportStartupLogError(virDomainObj *vm,
         return 0;
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("guest failed to start: %s"), errbuf);
+                   _("guest failed to start: %1$s"), errbuf);
 
     return -1;
 }
@@ -1238,7 +1238,7 @@ int virLXCProcessStart(virLXCDriver * driver,
 
     if (g_mkdir_with_parents(cfg->logDir, 0777) < 0) {
         virReportSystemError(errno,
-                             _("Cannot create log directory '%s'"),
+                             _("Cannot create log directory '%1$s'"),
                              cfg->logDir);
         return -1;
     }
@@ -1349,7 +1349,7 @@ int virLXCProcessStart(virLXCDriver * driver,
     if ((logfd = open(logfile, O_WRONLY | O_APPEND | O_CREAT,
              S_IRUSR|S_IWUSR)) < 0) {
         virReportSystemError(errno,
-                             _("Failed to open '%s'"),
+                             _("Failed to open '%1$s'"),
                              logfile);
         goto cleanup;
     }
@@ -1410,7 +1410,7 @@ int virLXCProcessStart(virLXCDriver * driver,
         /* In case there isn't an error in the logs report one based on the exit status */
         if (WIFEXITED(status)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("guest failed to start: unexpected exit status %d"),
+                           _("guest failed to start: unexpected exit status %1$d"),
                            WEXITSTATUS(status));
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1425,7 +1425,7 @@ int virLXCProcessStart(virLXCDriver * driver,
             goto cleanup;
 
         /* In case there isn't an error in the logs report that we failed to read the pidfile */
-        virReportSystemError(-r, _("Failed to read pid file %s"), pidfile);
+        virReportSystemError(-r, _("Failed to read pid file %1$s"), pidfile);
         goto cleanup;
     }
 
@@ -1477,7 +1477,7 @@ int virLXCProcessStart(virLXCDriver * driver,
 
     if (!priv->cgroup) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No valid cgroup for machine %s"),
+                       _("No valid cgroup for machine %1$s"),
                        vm->def->name);
         goto cleanup;
     }
@@ -1568,7 +1568,7 @@ virLXCProcessAutostartDomain(virDomainObj *vm,
     virDomainAuditStart(vm, "booted", rc >= 0);
 
     if (rc < 0) {
-        VIR_ERROR(_("Failed to autostart VM '%s': %s"),
+        VIR_ERROR(_("Failed to autostart VM '%1$s': %2$s"),
                   vm->def->name,
                   virGetLastErrorMessage());
         return -1;
@@ -1668,7 +1668,7 @@ virLXCProcessReconnectDomain(virDomainObj *vm,
 
         if (!priv->cgroup) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("No valid cgroup for machine %s"),
+                           _("No valid cgroup for machine %1$s"),
                            vm->def->name);
             goto error;
         }

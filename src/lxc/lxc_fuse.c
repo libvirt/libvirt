@@ -208,7 +208,7 @@ lxcProcReadMeminfo(char *hostpath,
 
     fp = fopen(hostpath, "r");
     if (fp == NULL) {
-        virReportSystemError(errno, _("Cannot open %s"), hostpath);
+        virReportSystemError(errno, _("Cannot open %1$s"), hostpath);
         return -errno;
     }
 
@@ -373,7 +373,7 @@ lxcSetupFuse(struct virLXCFuse **f,
     fuse->mountpoint = g_strdup_printf("%s/%s.fuse/", LXC_STATE_DIR, def->name);
 
     if (g_mkdir_with_parents(fuse->mountpoint, 0777) < 0) {
-        virReportSystemError(errno, _("Cannot create %s"),
+        virReportSystemError(errno, _("Cannot create %1$s"),
                              fuse->mountpoint);
         goto error;
     }

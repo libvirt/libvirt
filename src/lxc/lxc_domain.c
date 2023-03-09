@@ -112,7 +112,7 @@ lxcDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
         if ((feature = virLXCDomainNamespaceTypeFromString(
                  (const char *)nodes[i]->name)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported Namespace feature: %s"),
+                           _("unsupported Namespace feature: %1$s"),
                            nodes[i]->name);
             goto cleanup;
         }
@@ -127,7 +127,7 @@ lxcDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
         if ((lxcDef->ns_source[feature] =
              virLXCDomainNamespaceSourceTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown LXC namespace source '%s'"),
+                           _("Unknown LXC namespace source '%1$s'"),
                            tmp);
             goto cleanup;
         }
@@ -313,7 +313,7 @@ lxcDomainInitctlCallback(pid_t pid G_GNUC_UNUSED,
             if (errno == ENOENT)
                 continue;
 
-            virReportSystemError(errno, _("Unable to stat %s"), fifo);
+            virReportSystemError(errno, _("Unable to stat %1$s"), fifo);
             return -1;
         }
 
@@ -361,7 +361,7 @@ virLXCDomainSetRunlevel(virDomainObj *vm,
             if (errno == ENOENT)
                 continue;
 
-            virReportSystemError(errno, _("Unable to stat %s"), fifo);
+            virReportSystemError(errno, _("Unable to stat %1$s"), fifo);
             goto cleanup;
         }
 

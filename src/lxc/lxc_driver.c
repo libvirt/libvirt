@@ -104,7 +104,7 @@ lxcDomObjFromDomain(virDomainPtr domain)
     if (!vm) {
         virUUIDFormat(domain->uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s' (%s)"),
+                       _("no domain with matching uuid '%1$s' (%2$s)"),
                        uuidstr, domain->name);
         return NULL;
     }
@@ -137,7 +137,7 @@ static virDrvOpenStatus lxcConnectOpen(virConnectPtr conn,
         STRNEQ(conn->uri->path, "/") &&
         STRNEQ(conn->uri->path, "/system")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unexpected LXC URI path '%s', try lxc:///system"),
+                       _("Unexpected LXC URI path '%1$s', try lxc:///system"),
                        conn->uri->path);
         return VIR_DRV_OPEN_ERROR;
     }
@@ -216,7 +216,7 @@ static virDomainPtr lxcDomainLookupByID(virConnectPtr conn,
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching id %d"), id);
+                       _("No domain with matching id %1$d"), id);
         goto cleanup;
     }
 
@@ -243,7 +243,7 @@ static virDomainPtr lxcDomainLookupByUUID(virConnectPtr conn,
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+                       _("No domain with matching uuid '%1$s'"), uuidstr);
         goto cleanup;
     }
 
@@ -267,7 +267,7 @@ static virDomainPtr lxcDomainLookupByName(virConnectPtr conn,
     vm = virDomainObjListFindByName(driver->domains, name);
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching name '%s'"), name);
+                       _("No domain with matching name '%1$s'"), name);
         goto cleanup;
     }
 
@@ -932,7 +932,7 @@ static char *lxcConnectDomainXMLFromNative(virConnectPtr conn,
 
     if (STRNEQ(nativeFormat, LXC_CONFIG_FORMAT)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("unsupported config type %s"), nativeFormat);
+                       _("unsupported config type %1$s"), nativeFormat);
         return NULL;
     }
 
@@ -1223,7 +1223,7 @@ static int lxcNodeGetSecurityModel(virConnectPtr conn,
     if (virStrcpy(secmodel->model, caps->host.secModels[0].model,
                   VIR_SECURITY_MODEL_BUFLEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("security model string exceeds max %d bytes"),
+                       _("security model string exceeds max %1$d bytes"),
                        VIR_SECURITY_MODEL_BUFLEN - 1);
         return -1;
     }
@@ -1231,7 +1231,7 @@ static int lxcNodeGetSecurityModel(virConnectPtr conn,
     if (virStrcpy(secmodel->doi, caps->host.secModels[0].doi,
                   VIR_SECURITY_DOI_BUFLEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("security DOI string exceeds max %d bytes"),
+                       _("security DOI string exceeds max %1$d bytes"),
                        VIR_SECURITY_DOI_BUFLEN-1);
         return -1;
     }
@@ -1499,7 +1499,7 @@ static int lxcStateInitialize(bool privileged,
 
     if (g_mkdir_with_parents(cfg->stateDir, 0777) < 0) {
         virReportSystemError(errno,
-                             _("Failed to mkdir %s"),
+                             _("Failed to mkdir %1$s"),
                              cfg->stateDir);
         goto cleanup;
     }
@@ -1621,7 +1621,7 @@ lxcConnectSupportsFeature(virConnectPtr conn, int feature)
     case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
     case VIR_DRV_FEATURE_FD_PASSING:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Global feature %d should have already been handled"),
+                       _("Global feature %1$d should have already been handled"),
                        feature);
         return -1;
     case VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION:
@@ -1649,7 +1649,7 @@ static int lxcConnectGetVersion(virConnectPtr conn, unsigned long *version)
         return -1;
 
     if (virStringParseVersion(version, ver.release, true) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("Unknown release: %s"), ver.release);
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Unknown release: %1$s"), ver.release);
         return -1;
     }
 
@@ -1688,7 +1688,7 @@ lxcDomainInterfaceAddresses(virDomainPtr dom,
 
     default:
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                       _("Unknown IP address data source %d"),
+                       _("Unknown IP address data source %1$d"),
                        source);
         break;
     }
@@ -2051,13 +2051,13 @@ lxcDomainBlockStats(virDomainPtr dom,
 
     if (!(disk = virDomainDiskByName(vm->def, path, false))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid path: %s"), path);
+                       _("invalid path: %1$s"), path);
         goto endjob;
     }
 
     if (!disk->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing disk device alias name for %s"), disk->dst);
+                       _("missing disk device alias name for %1$s"), disk->dst);
         goto endjob;
     }
 
@@ -2135,13 +2135,13 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
     } else {
         if (!(disk = virDomainDiskByName(vm->def, path, false))) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("invalid path: %s"), path);
+                           _("invalid path: %1$s"), path);
             goto endjob;
         }
 
         if (!disk->info.alias) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("missing disk device alias name for %s"), disk->dst);
+                           _("missing disk device alias name for %1$s"), disk->dst);
             goto endjob;
         }
 
@@ -2474,21 +2474,21 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
     if (autostart) {
         if (g_mkdir_with_parents(cfg->autostartDir, 0777) < 0) {
             virReportSystemError(errno,
-                                 _("Cannot create autostart directory %s"),
+                                 _("Cannot create autostart directory %1$s"),
                                  cfg->autostartDir);
             goto endjob;
         }
 
         if (symlink(configFile, autostartLink) < 0) {
             virReportSystemError(errno,
-                                 _("Failed to create symlink '%s' to '%s'"),
+                                 _("Failed to create symlink '%1$s' to '%2$s'"),
                                  autostartLink, configFile);
             goto endjob;
         }
     } else {
         if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
             virReportSystemError(errno,
-                                 _("Failed to delete symlink '%s'"),
+                                 _("Failed to delete symlink '%1$s'"),
                                  autostartLink);
             goto endjob;
         }
@@ -2724,14 +2724,14 @@ lxcDomainOpenConsole(virDomainPtr dom,
 
     if (!chr) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot find console device '%s'"),
+                       _("cannot find console device '%1$s'"),
                        dev_name ? dev_name : _("default"));
         goto cleanup;
     }
 
     if (chr->source->type != VIR_DOMAIN_CHR_TYPE_PTY) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("character device %s is not using a PTY"),
+                       _("character device %1$s is not using a PTY"),
                        dev_name ? dev_name : NULLSTR(chr->info.alias));
         goto cleanup;
     }
@@ -2762,7 +2762,7 @@ lxcDomainSendProcessSignal(virDomainPtr dom,
 
     if (signum >= VIR_DOMAIN_PROCESS_SIGNAL_LAST) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("signum value %d is out of range"),
+                       _("signum value %1$d is out of range"),
                        signum);
         return -1;
     }
@@ -2806,7 +2806,7 @@ lxcDomainSendProcessSignal(virDomainPtr dom,
      */
     if (kill(victim, signum) < 0) {
         virReportSystemError(errno,
-                             _("Unable to send %d signal to process %d"),
+                             _("Unable to send %1$d signal to process %2$d"),
                              signum, victim);
         goto endjob;
     }
@@ -2891,7 +2891,7 @@ lxcDomainShutdownFlags(virDomainPtr dom,
         if (kill(priv->initpid, SIGTERM) < 0 &&
             errno != ESRCH) {
             virReportSystemError(errno,
-                                 _("Unable to send SIGTERM to init pid %llu"),
+                                 _("Unable to send SIGTERM to init pid %1$llu"),
                                  (long long)priv->initpid);
             goto endjob;
         }
@@ -2966,7 +2966,7 @@ lxcDomainReboot(virDomainPtr dom,
         if (kill(priv->initpid, SIGHUP) < 0 &&
             errno != ESRCH) {
             virReportSystemError(errno,
-                                 _("Unable to send SIGTERM to init pid %llu"),
+                                 _("Unable to send SIGTERM to init pid %1$llu"),
                                  (long long)priv->initpid);
             goto endjob;
         }
@@ -2997,7 +2997,7 @@ lxcDomainAttachDeviceConfig(virDomainDef *vmdef,
         disk = dev->data.disk;
         if (virDomainDiskIndexByName(vmdef, disk->dst, true) >= 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("target %s already exists."), disk->dst);
+                           _("target %1$s already exists."), disk->dst);
             return -1;
         }
         virDomainDiskInsert(vmdef, disk);
@@ -3144,7 +3144,7 @@ lxcDomainDetachDeviceConfig(virDomainDef *vmdef,
         disk = dev->data.disk;
         if (!(det_disk = virDomainDiskRemoveByName(vmdef, disk->dst))) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("no target device %s"), disk->dst);
+                           _("no target device %1$s"), disk->dst);
             return -1;
         }
         virDomainDiskDefFree(det_disk);
@@ -3228,7 +3228,7 @@ lxcDomainAttachDeviceMknodHelper(pid_t pid G_GNUC_UNUSED,
 
     if (virFileMakeParentPath(data->file) < 0) {
         virReportSystemError(errno,
-                             _("Unable to create %s"), data->file);
+                             _("Unable to create %1$s"), data->file);
         goto cleanup;
     }
 
@@ -3243,7 +3243,7 @@ lxcDomainAttachDeviceMknodHelper(pid_t pid G_GNUC_UNUSED,
               data->file, major(data->dev), minor(data->dev));
     if (mknod(data->file, data->mode, data->dev) < 0) {
         virReportSystemError(errno,
-                             _("Unable to create device %s"),
+                             _("Unable to create device %1$s"),
                              data->file);
         goto cleanup;
     }
@@ -3301,7 +3301,7 @@ lxcDomainAttachDeviceMknodHelper(pid_t pid G_GNUC_UNUSED,
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unexpected device type %d"),
+                       _("Unexpected device type %1$d"),
                        data->def->type);
         goto cleanup;
     }
@@ -3359,7 +3359,7 @@ lxcDomainAttachDeviceUnlinkHelper(pid_t pid G_GNUC_UNUSED,
     VIR_DEBUG("Unlinking %s", path);
     if (unlink(path) < 0 && errno != ENOENT) {
         virReportSystemError(errno,
-                             _("Unable to remove device %s"), path);
+                             _("Unable to remove device %1$s"), path);
         return -1;
     }
 
@@ -3423,19 +3423,19 @@ lxcDomainAttachDeviceDiskLive(virLXCDriver *driver,
 
     if (virDomainDiskIndexByName(vm->def, def->dst, true) >= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("target %s already exists"), def->dst);
+                       _("target %1$s already exists"), def->dst);
         goto cleanup;
     }
 
     if (stat(src, &sb) < 0) {
         virReportSystemError(errno,
-                             _("Unable to access %s"), src);
+                             _("Unable to access %1$s"), src);
         goto cleanup;
     }
 
     if (!S_ISBLK(sb.st_mode)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Disk source %s must be a block device"),
+                       _("Disk source %1$s must be a block device"),
                        src);
         goto cleanup;
     }
@@ -3648,13 +3648,13 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriver *driver,
 
     if (stat(src, &sb) < 0) {
         virReportSystemError(errno,
-                             _("Unable to access %s"), src);
+                             _("Unable to access %1$s"), src);
         goto cleanup;
     }
 
     if (!S_ISCHR(sb.st_mode)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("USB source %s was not a character device"),
+                       _("USB source %1$s was not a character device"),
                        src);
         goto cleanup;
     }
@@ -3717,14 +3717,14 @@ lxcDomainAttachDeviceHostdevStorageLive(virLXCDriver *driver,
 
     if (stat(def->source.caps.u.storage.block, &sb) < 0) {
         virReportSystemError(errno,
-                             _("Unable to access %s"),
+                             _("Unable to access %1$s"),
                              def->source.caps.u.storage.block);
         goto cleanup;
     }
 
     if (!S_ISBLK(sb.st_mode)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Hostdev source %s must be a block device"),
+                       _("Hostdev source %1$s must be a block device"),
                        def->source.caps.u.storage.block);
         goto cleanup;
     }
@@ -3790,14 +3790,14 @@ lxcDomainAttachDeviceHostdevMiscLive(virLXCDriver *driver,
 
     if (stat(def->source.caps.u.misc.chardev, &sb) < 0) {
         virReportSystemError(errno,
-                             _("Unable to access %s"),
+                             _("Unable to access %1$s"),
                              def->source.caps.u.misc.chardev);
         goto cleanup;
     }
 
     if (!S_ISCHR(sb.st_mode)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Hostdev source %s must be a block device"),
+                       _("Hostdev source %1$s must be a block device"),
                        def->source.caps.u.misc.chardev);
         goto cleanup;
     }
@@ -3850,7 +3850,7 @@ lxcDomainAttachDeviceHostdevSubsysLive(virLXCDriver *driver,
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported host device type %s"),
+                       _("Unsupported host device type %1$s"),
                        virDomainHostdevSubsysTypeToString(dev->data.hostdev->source.subsys.type));
         return -1;
     }
@@ -3871,7 +3871,7 @@ lxcDomainAttachDeviceHostdevCapsLive(virLXCDriver *driver,
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported host device type %s"),
+                       _("Unsupported host device type %1$s"),
                        virDomainHostdevCapsTypeToString(dev->data.hostdev->source.caps.type));
         return -1;
     }
@@ -3906,7 +3906,7 @@ lxcDomainAttachDeviceHostdevLive(virLXCDriver *driver,
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported host device mode %s"),
+                       _("Unsupported host device mode %1$s"),
                        virDomainHostdevModeTypeToString(dev->data.hostdev->mode));
         return -1;
     }
@@ -3966,7 +3966,7 @@ lxcDomainAttachDeviceLive(virLXCDriver *driver,
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("device type '%s' cannot be attached"),
+                       _("device type '%1$s' cannot be attached"),
                        virDomainDeviceTypeToString(dev->type));
         break;
     }
@@ -3995,7 +3995,7 @@ lxcDomainDetachDeviceDiskLive(virDomainObj *vm,
                                         dev->data.disk->dst,
                                         false)) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("disk %s not found"), dev->data.disk->dst);
+                       _("disk %1$s not found"), dev->data.disk->dst);
         return -1;
     }
 
@@ -4193,7 +4193,7 @@ lxcDomainDetachDeviceHostdevStorageLive(virDomainObj *vm,
                                     dev->data.hostdev,
                                     &def)) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("hostdev %s not found"),
+                       _("hostdev %1$s not found"),
                        dev->data.hostdev->source.caps.u.storage.block);
         return -1;
     }
@@ -4240,7 +4240,7 @@ lxcDomainDetachDeviceHostdevMiscLive(virDomainObj *vm,
                                     dev->data.hostdev,
                                     &def)) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("hostdev %s not found"),
+                       _("hostdev %1$s not found"),
                        dev->data.hostdev->source.caps.u.misc.chardev);
         return -1;
     }
@@ -4280,7 +4280,7 @@ lxcDomainDetachDeviceHostdevSubsysLive(virLXCDriver *driver,
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported host device type %s"),
+                       _("Unsupported host device type %1$s"),
                        virDomainHostdevSubsysTypeToString(dev->data.hostdev->source.subsys.type));
         return -1;
     }
@@ -4300,7 +4300,7 @@ lxcDomainDetachDeviceHostdevCapsLive(virDomainObj *vm,
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported host device type %s"),
+                       _("Unsupported host device type %1$s"),
                        virDomainHostdevCapsTypeToString(dev->data.hostdev->source.caps.type));
         return -1;
     }
@@ -4329,7 +4329,7 @@ lxcDomainDetachDeviceHostdevLive(virLXCDriver *driver,
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported host device mode %s"),
+                       _("Unsupported host device mode %1$s"),
                        virDomainHostdevModeTypeToString(dev->data.hostdev->mode));
         return -1;
     }
@@ -4382,7 +4382,7 @@ lxcDomainDetachDeviceLive(virLXCDriver *driver,
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("device type '%s' cannot be detached"),
+                       _("device type '%1$s' cannot be detached"),
                        virDomainDeviceTypeToString(dev->type));
         break;
     }
@@ -5064,7 +5064,7 @@ lxcDomainGetHostname(virDomainPtr dom,
 
     if (!hostname) {
         virReportError(VIR_ERR_NO_HOSTNAME,
-                       _("no hostname found for domain %s"),
+                       _("no hostname found for domain %1$s"),
                        vm->def->name);
         goto endjob;
     }

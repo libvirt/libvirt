@@ -221,7 +221,7 @@ lxcConvertSize(const char *size, unsigned long long *value)
 
     if (STREQ(unit, "%")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("can't convert relative size: '%s'"),
+                       _("can't convert relative size: '%1$s'"),
                        size);
         return -1;
     } else {
@@ -233,7 +233,7 @@ lxcConvertSize(const char *size, unsigned long long *value)
 
  error:
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("failed to convert size: '%s'"),
+                   _("failed to convert size: '%1$s'"),
                    size);
     return -1;
 }
@@ -543,7 +543,7 @@ lxcNetworkParseDataIPs(const char *name,
         virStrToLong_ui(ipparts[1], NULL, 10, &ip->prefix) < 0) {
 
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Invalid CIDR address: '%s'"), value->str);
+                       _("Invalid CIDR address: '%1$s'"), value->str);
         return -1;
     }
 
@@ -772,7 +772,7 @@ lxcCreateConsoles(virDomainDef *def, virConf *properties)
     }
 
     if (virStrToLong_i(value, NULL, 10, &nbttys) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("failed to parse int: '%s'"),
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("failed to parse int: '%1$s'"),
                        value);
         return -1;
     }
@@ -815,7 +815,7 @@ lxcIdmapWalkCallback(const char *name, virConfValue *value, void *data)
 
     if (sscanf(value->str, "%c %lu %lu %lu", &type,
                &target, &start, &count) != 4) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("invalid %s: '%s'"),
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("invalid %1$s: '%2$s'"),
                        name, value->str);
         return -1;
     }
@@ -903,7 +903,7 @@ lxcSetCpuTune(virDomainDef *def, virConf *properties)
 
  error:
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("failed to parse integer: '%s'"), value);
+                   _("failed to parse integer: '%1$s'"), value);
     return -1;
 }
 
@@ -955,7 +955,7 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValue *value, void *data)
 
     if (!parts[0] || !parts[1]) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid %s value: '%s'"),
+                       _("invalid %1$s value: '%2$s'"),
                        name, value->str);
         return -1;
     }
@@ -978,34 +978,34 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValue *value, void *data)
     if (STREQ(name, "lxc.cgroup.blkio.device_weight")) {
         if (virStrToLong_ui(parts[1], NULL, 10, &device->weight) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to parse device weight: '%s'"), parts[1]);
+                           _("failed to parse device weight: '%1$s'"), parts[1]);
             return -1;
         }
     } else if (STREQ(name, "lxc.cgroup.blkio.throttle.read_bps_device")) {
         if (virStrToLong_ull(parts[1], NULL, 10, &device->rbps) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to parse read_bps_device: '%s'"),
+                           _("failed to parse read_bps_device: '%1$s'"),
                            parts[1]);
             return -1;
         }
     } else if (STREQ(name, "lxc.cgroup.blkio.throttle.write_bps_device")) {
         if (virStrToLong_ull(parts[1], NULL, 10, &device->wbps) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to parse write_bps_device: '%s'"),
+                           _("failed to parse write_bps_device: '%1$s'"),
                            parts[1]);
             return -1;
         }
     } else if (STREQ(name, "lxc.cgroup.blkio.throttle.read_iops_device")) {
         if (virStrToLong_ui(parts[1], NULL, 10, &device->riops) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to parse read_iops_device: '%s'"),
+                           _("failed to parse read_iops_device: '%1$s'"),
                            parts[1]);
             return -1;
         }
     } else if (STREQ(name, "lxc.cgroup.blkio.throttle.write_iops_device")) {
         if (virStrToLong_ui(parts[1], NULL, 10, &device->wiops) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to parse write_iops_device: '%s'"),
+                           _("failed to parse write_iops_device: '%1$s'"),
                            parts[1]);
             return -1;
         }
@@ -1025,7 +1025,7 @@ lxcSetBlkioTune(virDomainDef *def, virConf *properties)
                               &value) > 0) {
         if (virStrToLong_ui(value, NULL, 10, &def->blkio.weight) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to parse integer: '%s'"), value);
+                           _("failed to parse integer: '%1$s'"), value);
             return -1;
         }
     }
