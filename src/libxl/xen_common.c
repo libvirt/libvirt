@@ -59,7 +59,7 @@ xenConfigGetBool(virConf *conf,
         *value = STREQ(val->str, "1") ? 1 : 0;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("config value %s was malformed"), name);
+                       _("config value %1$s was malformed"), name);
         return -1;
     }
     return 0;
@@ -88,12 +88,12 @@ xenConfigGetULong(virConf *conf,
     } else if (val->type == VIR_CONF_STRING) {
         if (virStrToLong_ul(val->str, NULL, 10, value) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("config value %s was malformed"), name);
+                           _("config value %1$s was malformed"), name);
             return -1;
         }
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("config value %s was malformed"), name);
+                       _("config value %1$s was malformed"), name);
         return -1;
     }
     return 0;
@@ -122,12 +122,12 @@ xenConfigGetULongLong(virConf *conf,
     } else if (val->type == VIR_CONF_STRING) {
         if (virStrToLong_ull(val->str, NULL, 10, value) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("config value %s was malformed"), name);
+                           _("config value %1$s was malformed"), name);
             return -1;
         }
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("config value %s was malformed"), name);
+                       _("config value %1$s was malformed"), name);
         return -1;
     }
     return 0;
@@ -150,7 +150,7 @@ xenConfigCopyStringInternal(virConf *conf,
         if (allowMissing)
             return 0;
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("config value %s was missing"), name);
+                       _("config value %1$s was missing"), name);
         return -1;
     }
 
@@ -203,13 +203,13 @@ xenConfigGetUUID(virConf *conf, const char *name, unsigned char *uuid)
 
     if (!string) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("%s can't be empty"), name);
+                       _("%1$s can't be empty"), name);
         return -1;
     }
 
     if (virUUIDParse(string, uuid) < 0) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("%s not parseable"), string);
+                       _("%1$s not parseable"), string);
         return -1;
     }
 
@@ -249,7 +249,7 @@ xenConfigSetInt(virConf *conf, const char *setting, long long l)
     virConfValue *value = NULL;
 
     if ((long)l != l) {
-        virReportError(VIR_ERR_OVERFLOW, _("failed to store %lld to %s"),
+        virReportError(VIR_ERR_OVERFLOW, _("failed to store %1$lld to %2$s"),
                        l, setting);
         return -1;
     }
@@ -340,7 +340,7 @@ xenParseEventsActions(virConf *conf, virDomainDef *def)
 
     if ((def->onPoweroff = virDomainLifecycleActionTypeFromString(on_poweroff)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected value %s for on_poweroff"), on_poweroff);
+                       _("unexpected value %1$s for on_poweroff"), on_poweroff);
         return -1;
     }
 
@@ -349,7 +349,7 @@ xenParseEventsActions(virConf *conf, virDomainDef *def)
 
     if ((def->onReboot = virDomainLifecycleActionTypeFromString(on_reboot)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected value %s for on_reboot"), on_reboot);
+                       _("unexpected value %1$s for on_reboot"), on_reboot);
         return -1;
     }
 
@@ -358,7 +358,7 @@ xenParseEventsActions(virConf *conf, virDomainDef *def)
 
     if ((def->onCrash = virDomainLifecycleActionTypeFromString(on_crash)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected value %s for on_crash"), on_crash);
+                       _("unexpected value %1$s for on_crash"), on_crash);
         return -1;
     }
 
@@ -401,7 +401,7 @@ xenParsePCI(char *entry)
     str = tokens[nexttoken];
     if (!(nextstr = strchr(str, '.'))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Malformed PCI address %s"), str);
+                       _("Malformed PCI address %1$s"), str);
         return NULL;
     }
     *nextstr = '\0';
@@ -427,7 +427,7 @@ xenParsePCI(char *entry)
 
             if (!(val = strchr(options[i], '='))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Malformed PCI options %s"), str);
+                               _("Malformed PCI options %1$s"), str);
                 return NULL;
             }
             *val = '\0';
@@ -587,7 +587,7 @@ xenParseHypervisorFeatures(virConf *conf, virDomainDef *def)
             def->xen_passthrough_mode = VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SHARE_PT;
         } else {
             virReportError(VIR_ERR_CONF_SYNTAX,
-                           _("Invalid passthrough mode %s"), passthrough);
+                           _("Invalid passthrough mode %1$s"), passthrough);
         }
     }
 
@@ -711,7 +711,7 @@ xenParseVfb(virConf *conf, virDomainDef *def)
 
             if (virStrcpyStatic(vfb, *vfbs) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("VFB %s too big for destination"),
+                               _("VFB %1$s too big for destination"),
                                *vfbs);
                 goto cleanup;
             }
@@ -745,7 +745,7 @@ xenParseVfb(virConf *conf, virDomainDef *def)
                         if (virStrToLong_i(key + 11, NULL, 10,
                                            &graphics->data.vnc.port) < 0) {
                             virReportError(VIR_ERR_INTERNAL_ERROR,
-                                           _("invalid vncdisplay value '%s'"),
+                                           _("invalid vncdisplay value '%1$s'"),
                                            key + 11);
                             goto cleanup;
                         }
@@ -826,7 +826,7 @@ xenParseSxprChar(const char *value,
         } else {
             if ((def->source->type = virDomainChrTypeFromString(prefix)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unknown chr device type '%s'"), prefix);
+                               _("unknown chr device type '%1$s'"), prefix);
                 goto error;
             }
         }
@@ -1095,19 +1095,19 @@ xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
     regex = g_regex_new(vif_bytes_per_sec_re, 0, 0, &err);
     if (!regex) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to compile regex %s"), err->message);
+                       _("Failed to compile regex %1$s"), err->message);
         return -1;
     }
 
     if (!g_regex_match(regex, trate, 0, NULL)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid rate '%s' specified"), rate);
+                       _("Invalid rate '%1$s' specified"), rate);
         return -1;
     }
 
     if (virStrToLong_ull(rate, &suffix, 10, &tmp)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to parse rate '%s'"), rate);
+                       _("Failed to parse rate '%1$s'"), rate);
         return -1;
     }
 
@@ -1178,7 +1178,7 @@ xenParseVif(char *entry, const char *vif_typename)
     if (mac) {
         if (virMacAddrParse(mac, &net->mac) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("malformed mac address '%s'"), mac);
+                           _("malformed mac address '%1$s'"), mac);
             goto cleanup;
         }
     }
@@ -1376,7 +1376,7 @@ xenParseGeneralMeta(virConf *conf, virDomainDef *def, virCaps *caps)
             def->os.type = VIR_DOMAIN_OSTYPE_HVM;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("type %s is not supported"), str);
+                           _("type %1$s is not supported"), str);
             return -1;
         }
     } else {
@@ -1439,7 +1439,7 @@ xenParseConfigCommon(virConf *conf,
             return -1;
     } else {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("unsupported config type %s"), nativeFormat);
+                       _("unsupported config type %1$s"), nativeFormat);
         return -1;
     }
 
@@ -1527,7 +1527,7 @@ xenFormatSxprChr(virDomainChrDef *def,
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unsupported chr device type '%s'"), type);
+                       _("unsupported chr device type '%1$s'"), type);
         return -1;
     }
 
@@ -1657,7 +1657,7 @@ xenFormatNet(virConnectPtr conn,
         virObjectUnref(network);
         if (!bridge) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("network %s is not active"),
+                           _("network %1$s is not active"),
                            net->data.network.name);
             return -1;
         }
@@ -1679,7 +1679,7 @@ xenFormatNet(virConnectPtr conn,
     case VIR_DOMAIN_NET_TYPE_VDPA:
     case VIR_DOMAIN_NET_TYPE_NULL:
     case VIR_DOMAIN_NET_TYPE_VDS:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Unsupported net type '%s'"),
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Unsupported net type '%1$s'"),
                        virDomainNetTypeToString(net->type));
         return -1;
 
@@ -1859,7 +1859,7 @@ xenFormatTimeOffset(virConf *conf, virDomainDef *def)
             break;
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported clock offset='%s'"),
+                           _("unsupported clock offset='%1$s'"),
                            virDomainClockOffsetTypeToString(def->clock.offset));
             return -1;
         }
@@ -1876,7 +1876,7 @@ xenFormatTimeOffset(virConf *conf, virDomainDef *def)
             break;
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported clock offset='%s'"),
+                           _("unsupported clock offset='%1$s'"),
                            virDomainClockOffsetTypeToString(def->clock.offset));
             return -1;
         }
@@ -1896,7 +1896,7 @@ xenFormatEventActions(virConf *conf, virDomainDef *def)
 
     if (!(lifecycle = virDomainLifecycleActionTypeToString(def->onPoweroff))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected lifecycle action %d"), def->onPoweroff);
+                       _("unexpected lifecycle action %1$d"), def->onPoweroff);
         return -1;
     }
     if (xenConfigSetString(conf, "on_poweroff", lifecycle) < 0)
@@ -1905,7 +1905,7 @@ xenFormatEventActions(virConf *conf, virDomainDef *def)
 
     if (!(lifecycle = virDomainLifecycleActionTypeToString(def->onReboot))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected lifecycle action %d"), def->onReboot);
+                       _("unexpected lifecycle action %1$d"), def->onReboot);
         return -1;
     }
     if (xenConfigSetString(conf, "on_reboot", lifecycle) < 0)
@@ -1914,7 +1914,7 @@ xenFormatEventActions(virConf *conf, virDomainDef *def)
 
     if (!(lifecycle = virDomainLifecycleActionTypeToString(def->onCrash))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected lifecycle action %d"), def->onCrash);
+                       _("unexpected lifecycle action %1$d"), def->onCrash);
         return -1;
     }
     if (xenConfigSetString(conf, "on_crash", lifecycle) < 0)
@@ -2122,7 +2122,7 @@ xenFormatHypervisorFeatures(virConf *conf, virDomainDef *def)
                     return -1;
             } else {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported timer type (name) '%s'"),
+                               _("unsupported timer type (name) '%1$s'"),
                                virDomainTimerNameTypeToString(def->clock.timers[i]->name));
                 return -1;
             }
@@ -2135,7 +2135,7 @@ xenFormatHypervisorFeatures(virConf *conf, virDomainDef *def)
         case VIR_DOMAIN_TIMER_NAME_PIT:
         case VIR_DOMAIN_TIMER_NAME_ARMVTIMER:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported timer type (name) '%s'"),
+                           _("unsupported timer type (name) '%1$s'"),
                            virDomainTimerNameTypeToString(def->clock.timers[i]->name));
             return -1;
 
@@ -2284,7 +2284,7 @@ xenFormatSound(virConf *conf, virDomainDef *def)
     for (i = 0; i < def->nsounds; i++) {
         if (!(model = virDomainSoundModelTypeToString(def->sounds[i]->model))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected sound model %d"),
+                           _("unexpected sound model %1$d"),
                            def->sounds[i]->model);
             return -1;
         }
@@ -2368,7 +2368,7 @@ xenFormatConfigCommon(virConf *conf,
             return -1;
     } else {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("unsupported config type %s"), nativeFormat);
+                       _("unsupported config type %1$s"), nativeFormat);
         return -1;
     }
 

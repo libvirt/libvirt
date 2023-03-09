@@ -153,8 +153,7 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDef *dev,
         /* forbid capabilities mode hostdev in this kind of hypervisor */
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("hostdev mode 'capabilities' is not "
-                             "supported in %s"),
+                           _("hostdev mode 'capabilities' is not supported in %1$s"),
                            virDomainVirtTypeToString(def->virtType));
             return -1;
         }
@@ -339,7 +338,7 @@ libxlDomainDefValidate(const virDomainDef *def,
             case VIR_DOMAIN_SOUND_MODEL_ICH9:
             case VIR_DOMAIN_SOUND_MODEL_LAST:
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                        _("unsupported audio model %s"),
+                        _("unsupported audio model %1$s"),
                         virDomainSoundModelTypeToString(snd->model));
                 return -1;
         }
@@ -379,7 +378,7 @@ libxlDomainShutdownHandleRestart(libxlDriverPrivate *driver,
     libxlDomainDestroyInternal(driver, vm);
     libxlDomainCleanup(driver, vm);
     if (libxlDomainStartNew(driver, vm, false) < 0) {
-        VIR_ERROR(_("Failed to restart VM '%s': %s"),
+        VIR_ERROR(_("Failed to restart VM '%1$s': %2$s"),
                   vm->def->name, virGetLastErrorMessage());
     }
 }
@@ -489,8 +488,7 @@ libxlDomainShutdownThread(void *opaque)
 
         if (libxlRetrieveDomainConfigurationWrapper(cfg->ctx, vm->def->id,
                                                     &d_config) != 0) {
-            VIR_ERROR(_("Failed to retrieve config for VM '%s'. "
-                        "Unable to perform soft reset. Destroying VM"),
+            VIR_ERROR(_("Failed to retrieve config for VM '%1$s'. Unable to perform soft reset. Destroying VM"),
                       vm->def->name);
             libxlDomainShutdownHandleDestroy(driver, vm);
             goto endjob;
@@ -503,7 +501,7 @@ libxlDomainShutdownThread(void *opaque)
 
         if (libxl_domain_soft_reset(cfg->ctx, &d_config, vm->def->id,
                                     NULL, NULL) != 0) {
-            VIR_ERROR(_("Failed to soft reset VM '%s'. Destroying VM"),
+            VIR_ERROR(_("Failed to soft reset VM '%1$s'. Destroying VM"),
                       vm->def->name);
             libxlDomainShutdownHandleDestroy(driver, vm);
             goto endjob;
@@ -675,7 +673,7 @@ libxlDomainSaveImageOpen(libxlDriverPrivate *driver,
 
     if ((fd = virFileOpenAs(from, O_RDONLY, 0, -1, -1, 0)) < 0) {
         virReportSystemError(-fd,
-                             _("Failed to open domain image file '%s'"), from);
+                             _("Failed to open domain image file '%1$s'"), from);
         goto error;
     }
 
@@ -692,14 +690,14 @@ libxlDomainSaveImageOpen(libxlDriverPrivate *driver,
 
     if (hdr.version > LIBXL_SAVE_VERSION) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("image version is not supported (%d > %d)"),
+                       _("image version is not supported (%1$d > %2$d)"),
                        hdr.version, LIBXL_SAVE_VERSION);
         goto error;
     }
 
     if (hdr.xmlLen <= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("invalid XML length: %d"), hdr.xmlLen);
+                       _("invalid XML length: %1$d"), hdr.xmlLen);
         goto error;
     }
 
@@ -1256,11 +1254,11 @@ libxlDomainStartPerform(libxlDriverPrivate *driver,
     if (libxlret) {
         if (restore_fd < 0)
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("libxenlight failed to create new domain '%s'"),
+                           _("libxenlight failed to create new domain '%1$s'"),
                            d_config.c_info.name);
         else
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("libxenlight failed to restore domain '%s'"),
+                           _("libxenlight failed to restore domain '%1$s'"),
                            d_config.c_info.name);
         goto cleanup;
     }
@@ -1399,7 +1397,7 @@ libxlDomainStartNew(libxlDriverPrivate *driver,
             virUUIDFormat(vm->def->uuid, vm_uuidstr);
             virUUIDFormat(def->uuid, def_uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("cannot restore domain '%s' uuid %s from a file which belongs to domain '%s' uuid %s"),
+                           _("cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain '%3$s' uuid %4$s"),
                            vm->def->name, vm_uuidstr, def->name, def_uuidstr);
             goto cleanup;
         }

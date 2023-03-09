@@ -279,7 +279,7 @@ xenParseXLCPUID(virConf *conf, virDomainDef *def)
 
     if (STRNEQ(cpuid_pairs[0], "host")) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("cpuid starting with %s is not supported, only libxl format is"),
+                       _("cpuid starting with %1$s is not supported, only libxl format is"),
                        cpuid_pairs[0]);
         return -1;
     }
@@ -290,7 +290,7 @@ xenParseXLCPUID(virConf *conf, virDomainDef *def)
             return -1;
         if (!name_and_value[0] || !name_and_value[1]) {
             virReportError(VIR_ERR_CONF_SYNTAX,
-                           _("Invalid libxl cpuid key=value element: %s"),
+                           _("Invalid libxl cpuid key=value element: %1$s"),
                            cpuid_pairs[i]);
             return -1;
         }
@@ -306,7 +306,7 @@ xenParseXLCPUID(virConf *conf, virDomainDef *def)
             policy = VIR_CPU_FEATURE_OPTIONAL;
         } else {
             virReportError(VIR_ERR_CONF_SYNTAX,
-                           _("Invalid libxl cpuid value: %s"),
+                           _("Invalid libxl cpuid value: %1$s"),
                            cpuid_pairs[i]);
             return -1;
         }
@@ -439,7 +439,7 @@ xenParseXLVnuma(virConf *conf,
                 if (!str ||
                    !(data = strrchr(str, '='))) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("vnuma vnode invalid format '%s'"),
+                                   _("vnuma vnode invalid format '%1$s'"),
                                    str);
                     return -1;
                 }
@@ -452,7 +452,7 @@ xenParseXLVnuma(virConf *conf,
                         if ((virStrToLong_ui(data, NULL, 10, &cellid) < 0) ||
                             (cellid >= nr_nodes)) {
                             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                           _("vnuma vnode %zu contains invalid pnode value '%s'"),
+                                           _("vnuma vnode %1$zu contains invalid pnode value '%2$s'"),
                                            vnodeCnt, data);
                             return -1;
                         }
@@ -482,7 +482,7 @@ xenParseXLVnuma(virConf *conf,
 
                         if (ndistances != nr_nodes) {
                             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("vnuma pnode %d configured '%s' (count %zu) doesn't fit the number of specified vnodes %zu"),
+                                       _("vnuma pnode %1$d configured '%2$s' (count %3$zu) doesn't fit the number of specified vnodes %4$zu"),
                                        pnode, str, ndistances, nr_nodes);
                             return -1;
                         }
@@ -498,7 +498,7 @@ xenParseXLVnuma(virConf *conf,
 
                     } else {
                         virReportError(VIR_ERR_CONF_SYNTAX,
-                                       _("Invalid vnuma configuration for vnode %zu"),
+                                       _("Invalid vnuma configuration for vnode %1$zu"),
                                        vnodeCnt);
                         return -1;
                     }
@@ -511,7 +511,7 @@ xenParseXLVnuma(virConf *conf,
             (cpumask == NULL) ||
             (kbsize == 0)) {
             virReportError(VIR_ERR_CONF_SYNTAX,
-                           _("Incomplete vnuma configuration for vnode %zu"),
+                           _("Incomplete vnuma configuration for vnode %1$zu"),
                            vnodeCnt);
             return -1;
         }
@@ -525,7 +525,7 @@ xenParseXLVnuma(virConf *conf,
 
     if (def->maxvcpus < vcpus) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("vnuma configuration contains %zu vcpus, which is greater than %zu maxvcpus"),
+                       _("vnuma configuration contains %1$zu vcpus, which is greater than %2$zu maxvcpus"),
                        vcpus, def->maxvcpus);
         return -1;
     }
@@ -698,7 +698,7 @@ xenParseXLDisk(virConf *conf, virDomainDef *def)
 
                 default:
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("disk image format not supported: %s"),
+                                   _("disk image format not supported: %1$s"),
                                    libxl_disk_format_to_string(libxldisk.format));
                     goto fail;
                 }
@@ -725,7 +725,7 @@ xenParseXLDisk(virConf *conf, virDomainDef *def)
 #endif
                 default:
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("disk backend not supported: %s"),
+                                   _("disk backend not supported: %1$s"),
                                    libxl_disk_backend_to_string(libxldisk.backend));
                     goto fail;
                 }
@@ -775,7 +775,7 @@ xenParseXLInputDevs(virConf *conf, virDomainDef *def)
         while (val) {
             if (val->type != VIR_CONF_STRING) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("config value %s was malformed"),
+                               _("config value %1$s was malformed"),
                                "usbdevice");
                 return -1;
             }
@@ -1457,14 +1457,14 @@ xenFormatXLDiskSrcNet(virStorageSource *src)
     case VIR_STORAGE_NET_PROTOCOL_LAST:
     case VIR_STORAGE_NET_PROTOCOL_NONE:
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("Unsupported network block protocol '%s'"),
+                       _("Unsupported network block protocol '%1$s'"),
                        virStorageNetProtocolTypeToString(src->protocol));
         return NULL;
 
     case VIR_STORAGE_NET_PROTOCOL_RBD:
         if (strchr(src->path, ':')) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("':' not allowed in RBD source volume name '%s'"),
+                           _("':' not allowed in RBD source volume name '%1$s'"),
                            src->path);
             return NULL;
         }

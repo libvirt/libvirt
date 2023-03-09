@@ -471,7 +471,7 @@ libxlDomainMigrationPrepareAny(virConnectPtr dconn,
 
     if ((*mig)->xenMigStreamVer > LIBXL_SAVE_VERSION) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("Xen migration stream version '%d' is not supported on this host"),
+                       _("Xen migration stream version '%1$d' is not supported on this host"),
                        (*mig)->xenMigStreamVer);
         return -1;
     }
@@ -702,14 +702,14 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
 
         if (uri == NULL) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("unable to parse URI: %s"),
+                           _("unable to parse URI: %1$s"),
                            uri_in);
             goto endjob;
         }
 
         if (uri->server == NULL) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("missing host in migration URI: %s"),
+                           _("missing host in migration URI: %1$s"),
                            uri_in);
             goto endjob;
         }

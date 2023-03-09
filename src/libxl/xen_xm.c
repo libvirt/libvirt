@@ -186,7 +186,7 @@ xenParseXMDisk(char *entry, int hvm)
             VIR_FREE(driverType);
             if (virDomainDiskGetFormat(disk) <= 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unknown driver type %s"),
+                               _("Unknown driver type %1$s"),
                                src);
                 goto error;
             }
@@ -297,7 +297,7 @@ xenFormatXMDisk(virConfValue *list,
                 break;
             default:
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unsupported disk type %s"),
+                               _("unsupported disk type %1$s"),
                                virStorageTypeToString(virDomainDiskGetType(disk)));
                 return -1;
             }
