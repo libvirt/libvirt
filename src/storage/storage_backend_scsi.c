@@ -63,7 +63,7 @@ virStorageBackendSCSITriggerRescan(uint32_t host)
 
     if (fd < 0) {
         virReportSystemError(errno,
-                             _("Could not open '%s' to trigger host scan"),
+                             _("Could not open '%1$s' to trigger host scan"),
                              path);
         return -1;
     }
@@ -72,7 +72,7 @@ virStorageBackendSCSITriggerRescan(uint32_t host)
                   LINUX_SYSFS_SCSI_HOST_SCAN_STRING,
                   sizeof(LINUX_SYSFS_SCSI_HOST_SCAN_STRING)) < 0) {
         virReportSystemError(errno,
-                             _("Write to '%s' to trigger host scan failed"),
+                             _("Write to '%1$s' to trigger host scan failed"),
                              path);
         return -1;
     }
@@ -184,8 +184,8 @@ getAdapterName(virStorageAdapter *adapter)
 
         if (!(name = virVHBAGetHostByWWN(NULL, fchost->wwnn, fchost->wwpn))) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Failed to find SCSI host with wwnn='%s', "
-                             "wwpn='%s'"), fchost->wwnn, fchost->wwpn);
+                           _("Failed to find SCSI host with wwnn='%1$s', wwpn='%2$s'"),
+                           fchost->wwnn, fchost->wwpn);
         }
     }
 
@@ -215,7 +215,7 @@ checkName(const char *name)
         return true;
 
     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                   _("the wwnn/wwpn for '%s' are assigned to an HBA"), name);
+                   _("the wwnn/wwpn for '%1$s' are assigned to an HBA"), name);
     return false;
 }
 
@@ -242,14 +242,14 @@ checkParent(const char *name,
 
     if (virSCSIHostGetNumber(parent_name, &host_num) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("parent '%s' is not properly formatted"),
+                       _("parent '%1$s' is not properly formatted"),
                        parent_name);
         goto cleanup;
     }
 
     if (!virVHBAPathExists(NULL, host_num)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("parent '%s' is not an fc_host for the wwnn/wwpn"),
+                       _("parent '%1$s' is not an fc_host for the wwnn/wwpn"),
                        parent_name);
         goto cleanup;
     }
@@ -261,8 +261,7 @@ checkParent(const char *name,
 
     if (STRNEQ(parent_name, vhba_parent)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Parent attribute '%s' does not match parent '%s' "
-                         "determined for the '%s' wwnn/wwpn lookup."),
+                       _("Parent attribute '%1$s' does not match parent '%2$s' determined for the '%3$s' wwnn/wwpn lookup."),
                        parent_name, vhba_parent, name);
         goto cleanup;
     }

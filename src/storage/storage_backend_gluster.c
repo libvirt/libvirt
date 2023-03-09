@@ -82,14 +82,14 @@ virStorageBackendGlusterOpen(virStoragePoolObj *pool)
      * subdirectory within the volume name.  */
     if (strchr(name, '/')) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("gluster pool name '%s' must not contain /"),
+                       _("gluster pool name '%1$s' must not contain /"),
                        name);
         return NULL;
     }
     if (dir) {
         if (*dir != '/') {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("gluster pool path '%s' must start with /"),
+                           _("gluster pool path '%1$s' must start with /"),
                            dir);
             return NULL;
         }
@@ -113,7 +113,7 @@ virStorageBackendGlusterOpen(virStoragePoolObj *pool)
     /* Actually connect to glfs */
     if (!(ret->vol = glfs_new(ret->volname))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to create glfs object for '%s'"), ret->volname);
+                       _("failed to create glfs object for '%1$s'"), ret->volname);
         goto error;
     }
 
@@ -122,13 +122,13 @@ virStorageBackendGlusterOpen(virStoragePoolObj *pool)
         glfs_init(ret->vol) < 0) {
         g_autofree char *uri = NULL;
         uri = virURIFormat(ret->uri);
-        virReportSystemError(errno, _("failed to connect to %s"), NULLSTR(uri));
+        virReportSystemError(errno, _("failed to connect to %1$s"), NULLSTR(uri));
         goto error;
     }
 
     if (glfs_chdir(ret->vol, ret->dir) < 0) {
         virReportSystemError(errno,
-                             _("failed to change to directory '%s' in '%s'"),
+                             _("failed to change to directory '%1$s' in '%2$s'"),
                              ret->dir, ret->volname);
         goto error;
     }
@@ -159,7 +159,7 @@ virStorageBackendGlusterRead(glfs_fd_t *fd,
             continue;
         if (r < 0) {
             VIR_FREE(*buf);
-            virReportSystemError(errno, _("unable to read '%s'"), name);
+            virReportSystemError(errno, _("unable to read '%1$s'"), name);
             return r;
         }
         if (r == 0)
@@ -234,7 +234,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterState *state,
             VIR_WARN("ignoring dangling symlink '%s'", name);
             ret = 0;
         } else {
-            virReportSystemError(errno, _("cannot stat '%s'"), name);
+            virReportSystemError(errno, _("cannot stat '%1$s'"), name);
         }
         return ret;
     }
@@ -259,7 +259,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterState *state,
      * of fifos, so there's nothing it would protect us from. */
     if (!(fd = glfs_open(state->vol, name, O_RDONLY | O_NOCTTY))) {
         /* A dangling symlink now implies a TOCTTOU race; report it.  */
-        virReportSystemError(errno, _("cannot open volume '%s'"), name);
+        virReportSystemError(errno, _("cannot open volume '%1$s'"), name);
         goto cleanup;
     }
 
@@ -334,7 +334,7 @@ virStorageBackendGlusterRefreshPool(virStoragePoolObj *pool)
      */
 
     if (!(dir = glfs_opendir(state->vol, state->dir))) {
-        virReportSystemError(errno, _("cannot open path '%s' in '%s'"),
+        virReportSystemError(errno, _("cannot open path '%1$s' in '%2$s'"),
                              state->dir, state->volname);
         goto cleanup;
     }
@@ -350,13 +350,13 @@ virStorageBackendGlusterRefreshPool(virStoragePoolObj *pool)
             goto cleanup;
     }
     if (errno) {
-        virReportSystemError(errno, _("failed to read directory '%s' in '%s'"),
+        virReportSystemError(errno, _("failed to read directory '%1$s' in '%2$s'"),
                              state->dir, state->volname);
         goto cleanup;
     }
 
     if (glfs_statvfs(state->vol, state->dir, &sb) < 0) {
-        virReportSystemError(errno, _("cannot statvfs path '%s' in '%s'"),
+        virReportSystemError(errno, _("cannot statvfs path '%1$s' in '%2$s'"),
                              state->dir, state->volname);
         goto cleanup;
     }
@@ -393,8 +393,7 @@ virStorageBackendGlusterVolDelete(virStoragePoolObj *pool,
     case VIR_STORAGE_VOL_PLOOP:
     case VIR_STORAGE_VOL_LAST:
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("removing of '%s' volumes is not supported "
-                         "by the gluster backend: %s"),
+                       _("removing of '%1$s' volumes is not supported by the gluster backend: %2$s"),
                        virStorageVolTypeToString(vol->type),
                        vol->target.path);
         goto cleanup;
@@ -407,7 +406,7 @@ virStorageBackendGlusterVolDelete(virStoragePoolObj *pool,
         if (glfs_unlink(state->vol, vol->name) < 0) {
             if (errno != ENOENT) {
                 virReportSystemError(errno,
-                                     _("cannot remove gluster volume file '%s'"),
+                                     _("cannot remove gluster volume file '%1$s'"),
                                      vol->target.path);
                 goto cleanup;
             }
@@ -421,7 +420,7 @@ virStorageBackendGlusterVolDelete(virStoragePoolObj *pool,
         if (glfs_rmdir(state->vol, vol->target.path) < 0) {
             if (errno != ENOENT) {
                 virReportSystemError(errno,
-                                     _("cannot remove gluster volume dir '%s'"),
+                                     _("cannot remove gluster volume dir '%1$s'"),
                                      vol->target.path);
                 goto cleanup;
             }
@@ -475,7 +474,7 @@ virStorageBackendGlusterFindPoolSources(const char *srcSpec,
 
     if (rc == 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("no storage pools were found on host '%s'"),
+                       _("no storage pools were found on host '%1$s'"),
                        source->hosts[0].name);
         goto cleanup;
     }

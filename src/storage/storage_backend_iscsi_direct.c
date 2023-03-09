@@ -52,7 +52,7 @@ virISCSIDirectCreateContext(const char* initiator_iqn)
     iscsi = iscsi_create_context(initiator_iqn);
     if (!iscsi)
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to create iscsi context for %s"),
+                       _("Failed to create iscsi context for %1$s"),
                        initiator_iqn);
     return iscsi;
 }
@@ -124,7 +124,7 @@ virStorageBackendISCSIDirectSetAuth(struct iscsi_context *iscsi,
                                          authdef->username, secret_str) < 0) {
         virSecureErase(secret_str, secret_size);
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to set credential: %s"),
+                       _("Failed to set credential: %1$s"),
                        iscsi_get_error(iscsi));
         return -1;
     }
@@ -140,21 +140,21 @@ virISCSIDirectSetContext(struct iscsi_context *iscsi,
 {
     if (iscsi_init_transport(iscsi, TCP_TRANSPORT) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to init transport: %s"),
+                       _("Failed to init transport: %1$s"),
                        iscsi_get_error(iscsi));
         return -1;
     }
     if (session == ISCSI_SESSION_NORMAL) {
         if (iscsi_set_targetname(iscsi, target_name) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to set target name: %s"),
+                           _("Failed to set target name: %1$s"),
                            iscsi_get_error(iscsi));
             return -1;
         }
     }
     if (iscsi_set_session_type(iscsi, session) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to set session type: %s"),
+                       _("Failed to set session type: %1$s"),
                        iscsi_get_error(iscsi));
         return -1;
     }
@@ -167,13 +167,13 @@ virISCSIDirectConnect(struct iscsi_context *iscsi,
 {
     if (iscsi_connect_sync(iscsi, portal) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to connect: %s"),
+                       _("Failed to connect: %1$s"),
                        iscsi_get_error(iscsi));
         return -1;
     }
     if (iscsi_login_sync(iscsi) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to login: %s"),
+                       _("Failed to login: %1$s"),
                        iscsi_get_error(iscsi));
         return -1;
     }
@@ -195,7 +195,7 @@ virISCSIDirectTestUnitReady(struct iscsi_context *iscsi,
     do {
         if (!(task = iscsi_testunitready_sync(iscsi, lun))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed testunitready: %s"),
+                           _("Failed testunitready: %1$s"),
                            iscsi_get_error(iscsi));
             goto cleanup;
         }
@@ -210,7 +210,7 @@ virISCSIDirectTestUnitReady(struct iscsi_context *iscsi,
 
     if (task->status != SCSI_STATUS_GOOD) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed testunitready: %s"),
+                       _("Failed testunitready: %1$s"),
                        iscsi_get_error(iscsi));
         goto cleanup;
     }
@@ -250,14 +250,14 @@ virISCSIDirectGetVolumeCapacity(struct iscsi_context *iscsi,
     if (!(task = iscsi_inquiry_sync(iscsi, lun, 0, 0, 64)) ||
         task->status != SCSI_STATUS_GOOD) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to send inquiry command: %s"),
+                       _("Failed to send inquiry command: %1$s"),
                        iscsi_get_error(iscsi));
         goto cleanup;
     }
 
     if (!(inq = scsi_datain_unmarshall(task))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to unmarshall reply: %s"),
+                       _("Failed to unmarshall reply: %1$s"),
                        iscsi_get_error(iscsi));
         goto cleanup;
     }
@@ -270,14 +270,14 @@ virISCSIDirectGetVolumeCapacity(struct iscsi_context *iscsi,
         if (!(task = iscsi_readcapacity16_sync(iscsi, lun)) ||
             task->status != SCSI_STATUS_GOOD) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to get capacity of lun: %s"),
+                           _("Failed to get capacity of lun: %1$s"),
                            iscsi_get_error(iscsi));
             goto cleanup;
         }
 
         if (!(rc16 = scsi_datain_unmarshall(task))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to unmarshall reply: %s"),
+                           _("Failed to unmarshall reply: %1$s"),
                            iscsi_get_error(iscsi));
             goto cleanup;
         }
@@ -343,7 +343,7 @@ virISCSIDirectReportLuns(virStoragePoolObj *pool,
 
     if (!(task = iscsi_reportluns_sync(iscsi, 0, 16))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to reportluns: %s"),
+                       _("Failed to reportluns: %1$s"),
                        iscsi_get_error(iscsi));
         goto cleanup;
     }
@@ -354,7 +354,7 @@ virISCSIDirectReportLuns(virStoragePoolObj *pool,
         scsi_free_scsi_task(task);
         if (!(task = iscsi_reportluns_sync(iscsi, 0, full_size))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to reportluns: %s"),
+                           _("Failed to reportluns: %1$s"),
                            iscsi_get_error(iscsi));
             goto cleanup;
         }
@@ -362,7 +362,7 @@ virISCSIDirectReportLuns(virStoragePoolObj *pool,
 
     if (!(list = scsi_datain_unmarshall(task))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to unmarshall reportluns: %s"),
+                       _("Failed to unmarshall reportluns: %1$s"),
                        iscsi_get_error(iscsi));
         goto cleanup;
     }
@@ -390,13 +390,13 @@ virISCSIDirectDisconnect(struct iscsi_context *iscsi)
 
     if (iscsi_logout_sync(iscsi) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to logout: %s"),
+                       _("Failed to logout: %1$s"),
                        iscsi_get_error(iscsi));
         goto cleanup;
     }
     if (iscsi_disconnect(iscsi) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to disconnect: %s"),
+                       _("Failed to disconnect: %1$s"),
                        iscsi_get_error(iscsi));
         goto cleanup;
     }
@@ -420,7 +420,7 @@ virISCSIDirectUpdateTargets(struct iscsi_context *iscsi,
 
     if (!(addr = iscsi_discovery_sync(iscsi))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to discover session: %s"),
+                       _("Failed to discover session: %1$s"),
                        iscsi_get_error(iscsi));
         return -1;
     }
@@ -588,7 +588,7 @@ virStorageBackendISCSIDirectGetLun(virStorageVolDef *vol,
     if (!(name = STRSKIP(vol->name, VOL_NAME_PREFIX)) ||
         virStrToLong_i(name, NULL, 10, lun) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid volume name %s"), vol->name);
+                       _("Invalid volume name %1$s"), vol->name);
         return -1;
     }
 
@@ -625,7 +625,7 @@ virStorageBackendISCSIDirectVolWipeZero(virStorageVolDef *vol,
         if (!task ||
             task->status != SCSI_STATUS_GOOD) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to write to LUN %d: %s"),
+                           _("failed to write to LUN %1$d: %2$s"),
                            lun, iscsi_get_error(iscsi));
             scsi_free_scsi_task(task);
             return -1;
@@ -671,7 +671,7 @@ virStorageBackenISCSIDirectWipeVol(virStoragePoolObj *pool,
     case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33:
     case VIR_STORAGE_VOL_WIPE_ALG_RANDOM:
     case VIR_STORAGE_VOL_WIPE_ALG_LAST:
-        virReportError(VIR_ERR_INVALID_ARG, _("unsupported algorithm %d"),
+        virReportError(VIR_ERR_INVALID_ARG, _("unsupported algorithm %1$d"),
                        algorithm);
         goto cleanup;
     }

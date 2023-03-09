@@ -149,7 +149,7 @@ virStorageBackendRegister(virStorageBackend *backend)
 
     if (virStorageBackendsCount >= VIR_STORAGE_BACKENDS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Too many drivers, cannot register storage backend '%s'"),
+                       _("Too many drivers, cannot register storage backend '%1$s'"),
                        virStoragePoolTypeToString(backend->type));
         return -1;
     }
@@ -169,7 +169,7 @@ virStorageBackendForType(int type)
             return virStorageBackends[i];
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("missing backend for pool type %d (%s)"),
+                   _("missing backend for pool type %1$d (%2$s)"),
                    type, NULLSTR(virStoragePoolTypeToString(type)));
     return NULL;
 }

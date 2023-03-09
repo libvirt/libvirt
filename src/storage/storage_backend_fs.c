@@ -62,13 +62,13 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(char **const groups,
 
     if (!(name = strrchr(path, '/'))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid netfs path (no /): %s"), path);
+                       _("invalid netfs path (no /): %1$s"), path);
         return -1;
     }
     name += 1;
     if (*name == '\0') {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid netfs path (ends in /): %s"), path);
+                       _("invalid netfs path (ends in /): %1$s"), path);
         return -1;
     }
 
@@ -168,7 +168,7 @@ virStorageBackendFileSystemNetFindPoolSources(const char *srcSpec,
     /* If both fail, then we won't return an empty list - return an error */
     if (retNFS < 0 && retGluster == 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("no storage pools were found on host '%s'"),
+                       _("no storage pools were found on host '%1$s'"),
                        state.host);
         goto cleanup;
     }
@@ -247,7 +247,7 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObj *pool)
 
     if ((mtab = fopen(_PATH_MOUNTED, "r")) == NULL) {
         virReportSystemError(errno,
-                             _("cannot read mount list '%s'"),
+                             _("cannot read mount list '%1$s'"),
                              _PATH_MOUNTED);
         goto cleanup;
     }
@@ -409,8 +409,7 @@ virStorageBackendExecuteMKFS(const char *device,
 
     if (!mkfs) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("mkfs is not available on this platform: "
-                         "Failed to make filesystem of type '%s' on device '%s'"),
+                       _("mkfs is not available on this platform: Failed to make filesystem of type '%1$s' on device '%2$s'"),
                        format, device);
         return -1;
     }
@@ -448,7 +447,7 @@ virStorageBackendMakeFileSystem(virStoragePoolObj *pool,
 
     if (def->source.devices == NULL) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("No source device specified when formatting pool '%s'"),
+                       _("No source device specified when formatting pool '%1$s'"),
                        def->name);
         return -1;
     }
@@ -460,7 +459,7 @@ virStorageBackendMakeFileSystem(virStoragePoolObj *pool,
     virObjectUnlock(pool);
     if (!virFileExists(device)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Source device does not exist when formatting pool '%s'"),
+                       _("Source device does not exist when formatting pool '%1$s'"),
                        def->name);
         goto error;
     }

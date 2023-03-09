@@ -100,7 +100,7 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObj *pool,
      */
     if (STRNEQ(vol->name, partname)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid partition name '%s', expected '%s'"),
+                       _("invalid partition name '%1$s', expected '%2$s'"),
                        vol->name, partname);
 
         /* Let's see if by chance parthelper created a name that won't be
@@ -436,7 +436,7 @@ virStorageBackendDiskRefreshPool(virStoragePoolObj *pool)
 
     if (!virFileExists(def->source.devices[0].path)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("device path '%s' doesn't exist"),
+                       _("device path '%1$s' doesn't exist"),
                        def->source.devices[0].path);
         return -1;
     }
@@ -462,7 +462,7 @@ virStorageBackendDiskStartPool(virStoragePoolObj *pool)
 
     if (!virFileExists(path)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("device path '%s' doesn't exist"), path);
+                       _("device path '%1$s' doesn't exist"), path);
         return -1;
     }
 
@@ -814,7 +814,7 @@ virStorageBackendDiskDeleteVol(virStoragePoolObj *pool,
 
     if (!vol->target.path) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("volume target path empty for source path '%s'"),
+                       _("volume target path empty for source path '%1$s'"),
                       src_path);
         return -1;
     }
@@ -829,7 +829,7 @@ virStorageBackendDiskDeleteVol(virStoragePoolObj *pool,
     } else {
         if (virFileResolveLink(vol->target.path, &devpath) < 0) {
             virReportSystemError(errno,
-                                 _("Couldn't read volume target path '%s'"),
+                                 _("Couldn't read volume target path '%1$s'"),
                                  vol->target.path);
             return -1;
         }
@@ -840,8 +840,8 @@ virStorageBackendDiskDeleteVol(virStoragePoolObj *pool,
 
     if (!STRPREFIX(dev_name, srcname)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Volume path '%s' did not start with parent "
-                         "pool source device name."), dev_name);
+                       _("Volume path '%1$s' did not start with parent pool source device name."),
+                       dev_name);
         return -1;
     }
 
@@ -854,8 +854,8 @@ virStorageBackendDiskDeleteVol(virStoragePoolObj *pool,
 
     if (*part_num == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse partition number from target "
-                         "'%s'"), dev_name);
+                       _("cannot parse partition number from target '%1$s'"),
+                       dev_name);
         return -1;
     }
 
@@ -986,7 +986,7 @@ virStorageBackendDiskVolWipe(virStoragePoolObj *pool,
 
     /* Wiping an extended partition is not support */
     virReportError(VIR_ERR_NO_SUPPORT,
-                   _("cannot wipe extended partition '%s'"),
+                   _("cannot wipe extended partition '%1$s'"),
                    vol->target.path);
     return -1;
 }

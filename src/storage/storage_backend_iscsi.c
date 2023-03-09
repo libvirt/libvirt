@@ -105,7 +105,7 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
                 return 0;
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Failed to parse target '%s'"), dirent->d_name);
+                               _("Failed to parse target '%1$s'"), dirent->d_name);
                 return -1;
             }
         }
@@ -113,8 +113,8 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
 
     if (direrr == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to get host number for iSCSI session "
-                         "with path '%s'"), sysfs_path);
+                       _("Failed to get host number for iSCSI session with path '%1$s'"),
+                       sysfs_path);
         return -1;
     }
 
