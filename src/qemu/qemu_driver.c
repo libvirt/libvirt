@@ -188,7 +188,7 @@ qemuAutostartDomain(virDomainObj *vm,
         if (qemuProcessBeginJob(vm, VIR_DOMAIN_JOB_OPERATION_START,
                                 flags) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to start job on VM '%s': %s"),
+                           _("Failed to start job on VM '%1$s': %2$s"),
                            vm->def->name, virGetLastErrorMessage());
             goto cleanup;
         }
@@ -196,7 +196,7 @@ qemuAutostartDomain(virDomainObj *vm,
         if (qemuDomainObjStart(NULL, driver, vm, flags,
                                VIR_ASYNC_JOB_START) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to autostart VM '%s': %s"),
+                           _("Failed to autostart VM '%1$s': %2$s"),
                            vm->def->name, virGetLastErrorMessage());
         }
 
@@ -370,7 +370,7 @@ qemuDomainSnapshotLoad(virDomainObj *vm,
         if (virFileReadAll(fullpath, 1024*1024*1, &xmlStr) < 0) {
             /* Nothing we can do here, skip this one */
             virReportSystemError(errno,
-                                 _("Failed to read snapshot file %s"),
+                                 _("Failed to read snapshot file %1$s"),
                                  fullpath);
             continue;
         }
@@ -382,7 +382,7 @@ qemuDomainSnapshotLoad(virDomainObj *vm,
         if (snapdef == NULL) {
             /* Nothing we can do here, skip this one */
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to parse snapshot XML from file '%s'"),
+                           _("Failed to parse snapshot XML from file '%1$s'"),
                            fullpath);
             continue;
         }
@@ -391,20 +391,20 @@ qemuDomainSnapshotLoad(virDomainObj *vm,
         if (cur && snap) {
             if (current)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Too many snapshots claiming to be current for domain %s"),
+                               _("Too many snapshots claiming to be current for domain %1$s"),
                                vm->def->name);
             current = snap;
         }
     }
     if (direrr < 0)
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to fully read directory %s"),
+                       _("Failed to fully read directory %1$s"),
                        snapDir);
 
     virDomainSnapshotSetCurrent(vm->snapshots, current);
     if (virDomainSnapshotUpdateRelations(vm->snapshots) < 0)
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Snapshots have inconsistent relations for domain %s"),
+                       _("Snapshots have inconsistent relations for domain %1$s"),
                        vm->def->name);
 
     /* FIXME: qemu keeps internal track of snapshots.  We can get access
@@ -465,7 +465,7 @@ qemuDomainCheckpointLoad(virDomainObj *vm,
         if (virFileReadAll(fullpath, 1024*1024*1, &xmlStr) < 0) {
             /* Nothing we can do here, skip this one */
             virReportSystemError(errno,
-                                 _("Failed to read checkpoint file %s"),
+                                 _("Failed to read checkpoint file %1$s"),
                                  fullpath);
             continue;
         }
@@ -482,12 +482,12 @@ qemuDomainCheckpointLoad(virDomainObj *vm,
     }
     if (direrr < 0)
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to fully read directory %s"),
+                       _("Failed to fully read directory %1$s"),
                        chkDir);
 
     if (virDomainCheckpointUpdateRelations(vm->checkpoints, &current) < 0)
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Checkpoints have inconsistent relations for domain %s"),
+                       _("Checkpoints have inconsistent relations for domain %1$s"),
                        vm->def->name);
     virDomainCheckpointSetCurrent(vm->checkpoints, current);
 
@@ -610,69 +610,69 @@ qemuStateInitialize(bool privileged,
         goto error;
 
     if (g_mkdir_with_parents(cfg->stateDir, 0777) < 0) {
-        virReportSystemError(errno, _("Failed to create state dir %s"),
+        virReportSystemError(errno, _("Failed to create state dir %1$s"),
                              cfg->stateDir);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->libDir, 0777) < 0) {
-        virReportSystemError(errno, _("Failed to create lib dir %s"),
+        virReportSystemError(errno, _("Failed to create lib dir %1$s"),
                              cfg->libDir);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->cacheDir, 0777) < 0) {
-        virReportSystemError(errno, _("Failed to create cache dir %s"),
+        virReportSystemError(errno, _("Failed to create cache dir %1$s"),
                              cfg->cacheDir);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->saveDir, 0777) < 0) {
-        virReportSystemError(errno, _("Failed to create save dir %s"),
+        virReportSystemError(errno, _("Failed to create save dir %1$s"),
                              cfg->saveDir);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->snapshotDir, 0777) < 0) {
-        virReportSystemError(errno, _("Failed to create snapshot dir %s"),
+        virReportSystemError(errno, _("Failed to create snapshot dir %1$s"),
                              cfg->snapshotDir);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->checkpointDir, 0777) < 0) {
-        virReportSystemError(errno, _("Failed to create checkpoint dir %s"),
+        virReportSystemError(errno, _("Failed to create checkpoint dir %1$s"),
                              cfg->checkpointDir);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->autoDumpPath, 0777) < 0) {
-        virReportSystemError(errno, _("Failed to create dump dir %s"),
+        virReportSystemError(errno, _("Failed to create dump dir %1$s"),
                              cfg->autoDumpPath);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->channelTargetDir, 0777) < 0) {
-        virReportSystemError(errno, _("Failed to create channel target dir %s"),
+        virReportSystemError(errno, _("Failed to create channel target dir %1$s"),
                              cfg->channelTargetDir);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->nvramDir, 0777) < 0) {
-        virReportSystemError(errno, _("Failed to create nvram dir %s"),
+        virReportSystemError(errno, _("Failed to create nvram dir %1$s"),
                              cfg->nvramDir);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->memoryBackingDir, 0777) < 0) {
-        virReportSystemError(errno, _("Failed to create memory backing dir %s"),
+        virReportSystemError(errno, _("Failed to create memory backing dir %1$s"),
                              cfg->memoryBackingDir);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->slirpStateDir, 0777) < 0) {
-        virReportSystemError(errno, _("Failed to create slirp state dir %s"),
+        virReportSystemError(errno, _("Failed to create slirp state dir %1$s"),
                              cfg->slirpStateDir);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->passtStateDir, 0777) < 0) {
-        virReportSystemError(errno, _("Failed to create passt state dir %s"),
+        virReportSystemError(errno, _("Failed to create passt state dir %1$s"),
                              cfg->passtStateDir);
         goto error;
     }
 
     if (virDirCreate(cfg->dbusStateDir, 0770, cfg->user, cfg->group,
                      VIR_DIR_CREATE_ALLOW_EXIST) < 0) {
-        virReportSystemError(errno, _("Failed to create dbus state dir %s"),
+        virReportSystemError(errno, _("Failed to create dbus state dir %1$s"),
                              cfg->dbusStateDir);
         goto error;
     }
@@ -694,7 +694,7 @@ qemuStateInitialize(bool privileged,
    if (cfg->macFilter) {
         if (!(qemu_driver->ebtables = ebtablesContextNew("qemu"))) {
             virReportSystemError(errno,
-                                 _("failed to enable mac filter in '%s'"),
+                                 _("failed to enable mac filter in '%1$s'"),
                                  __FILE__);
             goto error;
         }
@@ -747,35 +747,35 @@ qemuStateInitialize(bool privileged,
 
         if (chown(cfg->libDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
-                                 _("unable to set ownership of '%s' to user %d:%d"),
+                                 _("unable to set ownership of '%1$s' to user %2$d:%3$d"),
                                  cfg->libDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }
         if (chown(cfg->saveDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
-                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 _("unable to set ownership of '%1$s' to %2$d:%3$d"),
                                  cfg->saveDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }
         if (chown(cfg->snapshotDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
-                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 _("unable to set ownership of '%1$s' to %2$d:%3$d"),
                                  cfg->snapshotDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }
         if (chown(cfg->checkpointDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
-                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 _("unable to set ownership of '%1$s' to %2$d:%3$d"),
                                  cfg->checkpointDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }
         if (chown(cfg->autoDumpPath, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
-                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 _("unable to set ownership of '%1$s' to %2$d:%3$d"),
                                  cfg->autoDumpPath, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
@@ -784,42 +784,42 @@ qemuStateInitialize(bool privileged,
 
         if (chown(channeldir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
-                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 _("unable to set ownership of '%1$s' to %2$d:%3$d"),
                                  channeldir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }
         if (chown(cfg->channelTargetDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
-                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 _("unable to set ownership of '%1$s' to %2$d:%3$d"),
                                  cfg->channelTargetDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }
         if (chown(cfg->nvramDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
-                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 _("unable to set ownership of '%1$s' to %2$d:%3$d"),
                                  cfg->nvramDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }
         if (chown(cfg->memoryBackingDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
-                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 _("unable to set ownership of '%1$s' to %2$d:%3$d"),
                                  cfg->memoryBackingDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }
         if (chown(cfg->slirpStateDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
-                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 _("unable to set ownership of '%1$s' to %2$d:%3$d"),
                                  cfg->slirpStateDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }
         if (chown(cfg->passtStateDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
-                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 _("unable to set ownership of '%1$s' to %2$d:%3$d"),
                                  cfg->passtStateDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
@@ -1131,8 +1131,7 @@ static virDrvOpenStatus qemuConnectOpen(virConnectPtr conn,
 
         if (STRNEQ(root, qemu_driver->embeddedRoot)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot open embedded driver at path '%s', "
-                             "already open with path '%s'"),
+                           _("Cannot open embedded driver at path '%1$s', already open with path '%2$s'"),
                            root, qemu_driver->embeddedRoot);
             return VIR_DRV_OPEN_ERROR;
         }
@@ -1182,7 +1181,7 @@ qemuConnectSupportsFeature(virConnectPtr conn, int feature)
     case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
     case VIR_DRV_FEATURE_FD_PASSING:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Global feature %d should have already been handled"),
+                       _("Global feature %1$d should have already been handled"),
                        feature);
         return -1;
     case VIR_DRV_FEATURE_MIGRATION_V2:
@@ -1264,7 +1263,7 @@ qemuConnectGetMaxVcpus(virConnectPtr conn G_GNUC_UNUSED, const char *type)
         return virHostCPUGetKVMMaxVCPUs();
 
     virReportError(VIR_ERR_INVALID_ARG,
-                   _("unknown type '%s'"), type);
+                   _("unknown type '%1$s'"), type);
     return -1;
 }
 
@@ -1305,7 +1304,7 @@ qemuGetSchedstatDelay(unsigned long long *cpudelay,
 
     if (sscanf(buf, "%*u %llu", cpudelay) != 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse schedstat info at '%s'"),
+                       _("Unable to parse schedstat info at '%1$s'"),
                        path);
         return -1;
     }
@@ -1400,7 +1399,7 @@ static virDomainPtr qemuDomainLookupByID(virConnectPtr conn,
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching id %d"), id);
+                       _("no domain with matching id %1$d"), id);
         goto cleanup;
     }
 
@@ -1427,7 +1426,7 @@ static virDomainPtr qemuDomainLookupByUUID(virConnectPtr conn,
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+                       _("no domain with matching uuid '%1$s'"), uuidstr);
         goto cleanup;
     }
 
@@ -1452,7 +1451,7 @@ static virDomainPtr qemuDomainLookupByName(virConnectPtr conn,
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching name '%s'"), name);
+                       _("no domain with matching name '%1$s'"), name);
         goto cleanup;
     }
 
@@ -2439,7 +2438,7 @@ static int qemuDomainSendKey(virDomainPtr domain,
                                                keycodes[i]);
             if (keycode < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot translate keycode %u of %s codeset to qnum keycode"),
+                               _("cannot translate keycode %1$u of %2$s codeset to qnum keycode"),
                                keycodes[i],
                                virKeycodeSetTypeToString(codeset));
                 return -1;
@@ -2985,7 +2984,7 @@ qemuDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 
     if (unlink(name) < 0) {
         virReportSystemError(errno,
-                             _("Failed to remove managed save file '%s'"),
+                             _("Failed to remove managed save file '%1$s'"),
                              name);
         goto cleanup;
     }
@@ -3025,7 +3024,7 @@ qemuDumpWaitForCompletion(virDomainObj *vm)
     if (privJobCurrent->stats.dump.status == QEMU_MONITOR_DUMP_STATUS_FAILED) {
         if (vm->job->error)
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("memory-only dump failed: %s"),
+                           _("memory-only dump failed: %1$s"),
                            vm->job->error);
         else
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -3063,8 +3062,7 @@ qemuDumpToFd(virQEMUDriver *driver,
 
         if (rc <= 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("unsupported dumpformat '%s' "
-                             "for this QEMU binary"),
+                           _("unsupported dumpformat '%1$s' for this QEMU binary"),
                            dumpformat);
             qemuDomainObjExitMonitor(vm);
             return -1;
@@ -3127,7 +3125,7 @@ doCoreDump(virQEMUDriver *driver,
     if (dump_flags & VIR_DUMP_MEMORY_ONLY) {
         if (!(memory_dump_format = qemuDumpFormatTypeToString(dumpformat))) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("unknown dumpformat '%d'"), dumpformat);
+                           _("unknown dumpformat '%1$d'"), dumpformat);
             goto cleanup;
         }
 
@@ -3156,7 +3154,7 @@ doCoreDump(virQEMUDriver *driver,
 
     if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
-                             _("unable to close file %s"),
+                             _("unable to close file %1$s"),
                              path);
         goto cleanup;
     }
@@ -3362,7 +3360,7 @@ qemuDomainScreenshot(virDomainPtr dom,
     tmp = g_strdup_printf("%s/qemu.screendump.XXXXXX", priv->libDir);
 
     if ((tmp_fd = g_mkstemp_full(tmp, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
-        virReportSystemError(errno, _("g_mkstemp(\"%s\") failed"), tmp);
+        virReportSystemError(errno, _("g_mkstemp(\"%1$s\") failed"), tmp);
         goto endjob;
     }
     unlink_tmp = true;
@@ -3377,7 +3375,7 @@ qemuDomainScreenshot(virDomainPtr dom,
     qemuDomainObjExitMonitor(vm);
 
     if (VIR_CLOSE(tmp_fd) < 0) {
-        virReportSystemError(errno, _("unable to close %s"), tmp);
+        virReportSystemError(errno, _("unable to close %1$s"), tmp);
         goto endjob;
     }
 
@@ -4111,8 +4109,7 @@ qemuDomainSetVcpusAgent(virDomainObj *vm,
 
     if (nvcpus > virDomainDefGetVcpus(vm->def)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("requested vcpu count is greater than the count "
-                         "of enabled vcpus in the domain: %d > %d"),
+                       _("requested vcpu count is greater than the count of enabled vcpus in the domain: %1$d > %2$d"),
                        nvcpus, virDomainDefGetVcpus(vm->def));
         goto cleanup;
     }
@@ -4282,7 +4279,7 @@ qemuDomainPinVcpuLive(virDomainObj *vm,
 
     if (!(vcpuinfo = virDomainDefGetVcpu(def, vcpu))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("vcpu %d is out of range of live cpu count %d"),
+                       _("vcpu %1$d is out of range of live cpu count %2$d"),
                        vcpu, virDomainDefGetVcpusMax(def));
         goto cleanup;
     }
@@ -4367,7 +4364,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     if (persistentDef &&
         !(vcpuinfo = virDomainDefGetVcpu(persistentDef, vcpu))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("vcpu %d is out of range of persistent cpu count %d"),
+                       _("vcpu %1$d is out of range of persistent cpu count %2$d"),
                        vcpu, virDomainDefGetVcpus(persistentDef));
         goto endjob;
     }
@@ -4878,7 +4875,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
 
         if (!(iothrid = virDomainIOThreadIDFind(def, iothread_id))) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("iothread %d not found"), iothread_id);
+                           _("iothread %1$d not found"), iothread_id);
             goto endjob;
         }
 
@@ -4890,8 +4887,8 @@ qemuDomainPinIOThread(virDomainPtr dom,
                 goto endjob;
             if (virDomainCgroupSetupCpusetCpus(cgroup_iothread, pcpumap) < 0) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("failed to set cpuset.cpus in cgroup"
-                                 " for iothread %d"), iothread_id);
+                               _("failed to set cpuset.cpus in cgroup for iothread %1$d"),
+                               iothread_id);
                 goto endjob;
             }
         }
@@ -4923,7 +4920,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
 
         if (!(iothrid = virDomainIOThreadIDFind(persistentDef, iothread_id))) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("iothreadid %d not found"), iothread_id);
+                           _("iothreadid %1$d not found"), iothread_id);
             goto endjob;
         }
 
@@ -4989,8 +4986,7 @@ qemuDomainHotplugAddIOThread(virDomainObj *vm,
 
     if (new_niothreads != exp_niothreads) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("got wrong number of IOThread ids from QEMU monitor. "
-                         "got %d, wanted %d"),
+                       _("got wrong number of IOThread ids from QEMU monitor. got %1$d, wanted %2$d"),
                        new_niothreads, exp_niothreads);
         goto cleanup;
     }
@@ -5006,7 +5002,7 @@ qemuDomainHotplugAddIOThread(virDomainObj *vm,
 
     if (idx == new_niothreads) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot find new IOThread '%u' in QEMU monitor."),
+                       _("cannot find new IOThread '%1$u' in QEMU monitor."),
                        iothread_id);
         goto cleanup;
     }
@@ -5121,8 +5117,7 @@ qemuDomainHotplugDelIOThread(virDomainObj *vm,
 
     if (new_niothreads != exp_niothreads) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("got wrong number of IOThread ids from QEMU monitor. "
-                         "got %d, wanted %d"),
+                       _("got wrong number of IOThread ids from QEMU monitor. got %1$d, wanted %2$d"),
                        new_niothreads, exp_niothreads);
         goto cleanup;
     }
@@ -5241,28 +5236,28 @@ qemuDomainIOThreadParseParams(virTypedParameterPtr params,
 
     if (iothread->set_poll_max_ns && iothread->poll_max_ns > INT_MAX) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("poll-max-ns (%llu) must be less than or equal to %d"),
+                       _("poll-max-ns (%1$llu) must be less than or equal to %2$d"),
                        iothread->poll_max_ns, INT_MAX);
         return -1;
     }
 
     if (iothread->set_poll_grow && iothread->poll_grow > INT_MAX) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("poll-grow (%u) must be less than or equal to %d"),
+                       _("poll-grow (%1$u) must be less than or equal to %2$d"),
                          iothread->poll_grow, INT_MAX);
         return -1;
     }
 
     if (iothread->set_poll_shrink && iothread->poll_shrink > INT_MAX) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("poll-shrink (%u) must be less than or equal to %d"),
+                       _("poll-shrink (%1$u) must be less than or equal to %2$d"),
                        iothread->poll_shrink, INT_MAX);
         return -1;
     }
 
     if (iothread->set_thread_pool_min && iothread->thread_pool_min < -1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("thread_pool_min (%d) must be equal to or greater than -1"),
+                       _("thread_pool_min (%1$d) must be equal to or greater than -1"),
                        iothread->thread_pool_min);
         return -1;
     }
@@ -5270,7 +5265,7 @@ qemuDomainIOThreadParseParams(virTypedParameterPtr params,
     if (iothread->set_thread_pool_max &&
         (iothread->thread_pool_max < -1 || iothread->thread_pool_max == 0)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("thread_pool_max (%d) must be a positive number or -1"),
+                       _("thread_pool_max (%1$d) must be a positive number or -1"),
                        iothread->thread_pool_max);
         return -1;
     }
@@ -5306,7 +5301,7 @@ qemuDomainIOThreadValidate(virDomainIOThreadIDDef *iothreaddef,
     if (iothread.set_thread_pool_min) {
         if (live && iothread.thread_pool_min < 0) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("thread_pool_min (%d) must be equal to or greater than 0 for live change"),
+                           _("thread_pool_min (%1$d) must be equal to or greater than 0 for live change"),
                            iothread.thread_pool_min);
             return -1;
         }
@@ -5317,7 +5312,7 @@ qemuDomainIOThreadValidate(virDomainIOThreadIDDef *iothreaddef,
     if (iothread.set_thread_pool_max) {
         if (live && iothread.thread_pool_max < 0) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("thread_pool_max (%d) must be equal to or greater than 0 for live change"),
+                           _("thread_pool_max (%1$d) must be equal to or greater than 0 for live change"),
                            iothread.thread_pool_max);
             return -1;
         }
@@ -5327,7 +5322,7 @@ qemuDomainIOThreadValidate(virDomainIOThreadIDDef *iothreaddef,
 
     if (thread_pool_min > thread_pool_max) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("thread_pool_min (%d) can't be greater than thread_pool_max (%d)"),
+                       _("thread_pool_min (%1$d) can't be greater than thread_pool_max (%2$d)"),
                        thread_pool_min, thread_pool_max);
         return -1;
     }
@@ -5398,7 +5393,7 @@ qemuDomainChgIOThread(virQEMUDriver *driver,
 
             if (!iothreaddef) {
                 virReportError(VIR_ERR_INVALID_ARG,
-                               _("cannot find IOThread '%u' in iothreadids"),
+                               _("cannot find IOThread '%1$u' in iothreadids"),
                                iothread.iothread_id);
                 goto endjob;
             }
@@ -5441,7 +5436,7 @@ qemuDomainChgIOThread(virQEMUDriver *driver,
 
             if (!iothreaddef) {
                 virReportError(VIR_ERR_INVALID_ARG,
-                               _("cannot find IOThread '%u' in iothreadids"),
+                               _("cannot find IOThread '%1$u' in iothreadids"),
                                iothread.iothread_id);
                 goto endjob;
             }
@@ -5712,7 +5707,7 @@ static int qemuNodeGetSecurityModel(virConnectPtr conn,
     if (virStrcpy(secmodel->model, caps->host.secModels[0].model,
                   VIR_SECURITY_MODEL_BUFLEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("security model string exceeds max %d bytes"),
+                       _("security model string exceeds max %1$d bytes"),
                        VIR_SECURITY_MODEL_BUFLEN - 1);
         return -1;
     }
@@ -5720,7 +5715,7 @@ static int qemuNodeGetSecurityModel(virConnectPtr conn,
     if (virStrcpy(secmodel->doi, caps->host.secModels[0].doi,
                   VIR_SECURITY_DOI_BUFLEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("security DOI string exceeds max %d bytes"),
+                       _("security DOI string exceeds max %1$d bytes"),
                        VIR_SECURITY_DOI_BUFLEN - 1);
         return -1;
     }
@@ -5960,7 +5955,7 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
         goto cleanup;
 
     if (lseek(fd, 0, SEEK_SET) != 0) {
-        virReportSystemError(errno, _("cannot seek in '%s'"), path);
+        virReportSystemError(errno, _("cannot seek in '%1$s'"), path);
         goto cleanup;
     }
 
@@ -5968,7 +5963,7 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
         goto cleanup;
 
     if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, _("failed to write header data to '%s'"), path);
+        virReportSystemError(errno, _("failed to write header data to '%1$s'"), path);
         goto cleanup;
     }
 
@@ -6112,8 +6107,7 @@ qemuDomainObjRestore(virConnectPtr conn,
         virUUIDFormat(vm->def->uuid, vm_uuidstr);
         virUUIDFormat(def->uuid, def_uuidstr);
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("cannot restore domain '%s' uuid %s from a file"
-                         " which belongs to domain '%s' uuid %s"),
+                       _("cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain '%3$s' uuid %4$s"),
                        vm->def->name, vm_uuidstr,
                        def->name, def_uuidstr);
         goto cleanup;
@@ -6241,7 +6235,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
 
     if (STRNEQ(format, QEMU_CONFIG_FORMAT_ARGV)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("unsupported config type %s"), format);
+                       _("unsupported config type %1$s"), format);
         return NULL;
     }
 
@@ -6345,7 +6339,7 @@ qemuDomainObjStart(virConnectPtr conn,
         if (force_boot) {
             if (unlink(managed_save) < 0) {
                 virReportSystemError(errno,
-                                     _("cannot remove managed save file %s"),
+                                     _("cannot remove managed save file %1$s"),
                                      managed_save);
                 return ret;
             }
@@ -6586,8 +6580,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
         (nsnapshots = virDomainSnapshotObjListNum(vm->snapshots, NULL, 0))) {
         if (!(flags & VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("cannot delete inactive domain with %d "
-                             "snapshots"),
+                           _("cannot delete inactive domain with %1$d snapshots"),
                            nsnapshots);
             goto endjob;
         }
@@ -6599,8 +6592,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
                                                  NULL, flags)) > 0) {
         if (!(flags & VIR_DOMAIN_UNDEFINE_CHECKPOINTS_METADATA)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("cannot delete inactive domain with %d "
-                             "checkpoints"),
+                           _("cannot delete inactive domain with %1$d checkpoints"),
                            ncheckpoints);
             goto endjob;
         }
@@ -6635,7 +6627,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
         if ((flags & VIR_DOMAIN_UNDEFINE_NVRAM)) {
             if (unlink(nvram_path) < 0) {
                 virReportSystemError(errno,
-                                     _("failed to remove nvram: %s"),
+                                     _("failed to remove nvram: %1$s"),
                                      nvram_path);
                 goto endjob;
             }
@@ -6828,7 +6820,7 @@ qemuDomainAttachDeviceLive(virDomainObj *vm,
     case VIR_DOMAIN_DEVICE_CRYPTO:
     case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("live attach of device '%s' is not supported"),
+                       _("live attach of device '%1$s' is not supported"),
                        virDomainDeviceTypeToString(dev->type));
         break;
     }
@@ -6862,7 +6854,7 @@ qemuDomainChangeDiskLive(virDomainObj *vm,
 
     if (!(orig_disk = virDomainDiskByTarget(vm->def, disk->dst))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("disk '%s' not found"), disk->dst);
+                       _("disk '%1$s' not found"), disk->dst);
         return -1;
     }
 
@@ -6926,7 +6918,7 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory of model '%s'"),
+                       _("cannot modify memory of model '%1$s'"),
                        virDomainMemoryModelTypeToString(oldDef->model));
         return false;
         break;
@@ -6934,7 +6926,7 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
 
     if (oldDef->model != newDef->model) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory model from '%s' to '%s'"),
+                       _("cannot modify memory model from '%1$s' to '%2$s'"),
                        virDomainMemoryModelTypeToString(oldDef->model),
                        virDomainMemoryModelTypeToString(newDef->model));
         return false;
@@ -6942,7 +6934,7 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
 
     if (oldDef->access != newDef->access) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory access from '%s' to '%s'"),
+                       _("cannot modify memory access from '%1$s' to '%2$s'"),
                        virDomainMemoryAccessTypeToString(oldDef->access),
                        virDomainMemoryAccessTypeToString(newDef->access));
         return false;
@@ -6950,7 +6942,7 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
 
     if (oldDef->discard != newDef->discard) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory discard from '%s' to '%s'"),
+                       _("cannot modify memory discard from '%1$s' to '%2$s'"),
                        virTristateBoolTypeToString(oldDef->discard),
                        virTristateBoolTypeToString(newDef->discard));
         return false;
@@ -6965,7 +6957,7 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
 
     if (oldDef->pagesize != newDef->pagesize) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory pagesize from '%llu' to '%llu'"),
+                       _("cannot modify memory pagesize from '%1$llu' to '%2$llu'"),
                        oldDef->pagesize,
                        newDef->pagesize);
         return false;
@@ -6973,7 +6965,7 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
 
     if (STRNEQ_NULLABLE(oldDef->nvdimmPath, newDef->nvdimmPath)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory path from '%s' to '%s'"),
+                       _("cannot modify memory path from '%1$s' to '%2$s'"),
                        NULLSTR(oldDef->nvdimmPath),
                        NULLSTR(newDef->nvdimmPath));
         return false;
@@ -6981,41 +6973,41 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
 
     if (oldDef->alignsize != newDef->alignsize) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory align size from '%llu' to '%llu'"),
+                       _("cannot modify memory align size from '%1$llu' to '%2$llu'"),
                        oldDef->alignsize, newDef->alignsize);
         return false;
     }
 
     if (oldDef->nvdimmPmem != newDef->nvdimmPmem) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory pmem from '%d' to '%d'"),
+                       _("cannot modify memory pmem from '%1$d' to '%2$d'"),
                        oldDef->nvdimmPmem, newDef->nvdimmPmem);
         return false;
     }
 
     if (oldDef->targetNode != newDef->targetNode) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory targetNode from '%d' to '%d'"),
+                       _("cannot modify memory targetNode from '%1$d' to '%2$d'"),
                        oldDef->targetNode, newDef->targetNode);
         return false;
     }
 
     if (oldDef->size != newDef->size) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory size from '%llu' to '%llu'"),
+                       _("cannot modify memory size from '%1$llu' to '%2$llu'"),
                        oldDef->size, newDef->size);
         return false;
     }
 
     if (oldDef->labelsize != newDef->labelsize) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory label size from '%llu' to '%llu'"),
+                       _("cannot modify memory label size from '%1$llu' to '%2$llu'"),
                        oldDef->labelsize, newDef->labelsize);
         return false;
     }
     if (oldDef->blocksize != newDef->blocksize) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory block size from '%llu' to '%llu'"),
+                       _("cannot modify memory block size from '%1$llu' to '%2$llu'"),
                        oldDef->blocksize, newDef->blocksize);
         return false;
     }
@@ -7052,7 +7044,7 @@ qemuDomainChangeMemoryLive(virQEMUDriver *driver G_GNUC_UNUSED,
     oldDef = virDomainMemoryFindByDeviceInfo(vm->def, &dev->data.memory->info, NULL);
     if (!oldDef) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("memory '%s' not found"), dev->data.memory->info.alias);
+                       _("memory '%1$s' not found"), dev->data.memory->info.alias);
         return -1;
     }
 
@@ -7140,7 +7132,7 @@ qemuDomainUpdateDeviceLive(virDomainObj *vm,
     case VIR_DOMAIN_DEVICE_CRYPTO:
     case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("live update of device '%s' is not supported"),
+                       _("live update of device '%1$s' is not supported"),
                        virDomainDeviceTypeToString(dev->type));
         return -1;
     }
@@ -7186,7 +7178,7 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
         disk = dev->data.disk;
         if (virDomainDiskIndexByName(vmdef, disk->dst, true) >= 0) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("target %s already exists"), disk->dst);
+                           _("target %1$s already exists"), disk->dst);
             return -1;
         }
         if (virDomainDiskTranslateSourcePool(disk) < 0)
@@ -7227,7 +7219,7 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
         lease = dev->data.lease;
         if (virDomainLeaseIndex(vmdef, lease) >= 0) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("Lease %s in lockspace %s already exists"),
+                           _("Lease %1$s in lockspace %2$s already exists"),
                            lease->key, NULLSTR(lease->lockspace));
             return -1;
         }
@@ -7243,7 +7235,7 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
             virDomainControllerFind(vmdef, controller->type,
                                     controller->idx) >= 0) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("controller index='%d' already exists"),
+                           _("controller index='%1$d' already exists"),
                            controller->idx);
             return -1;
         }
@@ -7353,7 +7345,7 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
     case VIR_DOMAIN_DEVICE_CRYPTO:
     case VIR_DOMAIN_DEVICE_LAST:
          virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                        _("persistent attach of device '%s' is not supported"),
+                        _("persistent attach of device '%1$s' is not supported"),
                         virDomainDeviceTypeToString(dev->type));
          return -1;
     }
@@ -7392,7 +7384,7 @@ qemuDomainDetachDeviceConfig(virDomainDef *vmdef,
         disk = dev->data.disk;
         if (!(det_disk = virDomainDiskRemoveByName(vmdef, disk->dst))) {
             virReportError(VIR_ERR_DEVICE_MISSING,
-                           _("no target device %s"), disk->dst);
+                           _("no target device %1$s"), disk->dst);
             return -1;
         }
         virDomainDiskDefFree(det_disk);
@@ -7433,7 +7425,7 @@ qemuDomainDetachDeviceConfig(virDomainDef *vmdef,
         lease = dev->data.lease;
         if (!(det_lease = virDomainLeaseRemove(vmdef, lease))) {
             virReportError(VIR_ERR_DEVICE_MISSING,
-                           _("Lease %s in lockspace %s does not exist"),
+                           _("Lease %1$s in lockspace %2$s does not exist"),
                            lease->key, NULLSTR(lease->lockspace));
             return -1;
         }
@@ -7560,7 +7552,7 @@ qemuDomainDetachDeviceConfig(virDomainDef *vmdef,
     case VIR_DOMAIN_DEVICE_CRYPTO:
     case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("persistent detach of device '%s' is not supported"),
+                       _("persistent detach of device '%1$s' is not supported"),
                        virDomainDeviceTypeToString(dev->type));
         return -1;
     }
@@ -7590,7 +7582,7 @@ qemuDomainUpdateDeviceConfig(virDomainDef *vmdef,
         newDisk = dev->data.disk;
         if ((pos = virDomainDiskIndexByName(vmdef, newDisk->dst, false)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("target %s doesn't exist."), newDisk->dst);
+                           _("target %1$s doesn't exist."), newDisk->dst);
             return -1;
         }
 
@@ -7610,7 +7602,7 @@ qemuDomainUpdateDeviceConfig(virDomainDef *vmdef,
         pos = qemuDomainFindGraphicsIndex(vmdef, newGraphics);
         if (pos < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("cannot find existing graphics type '%s' device to modify"),
+                           _("cannot find existing graphics type '%1$s' device to modify"),
                            virDomainGraphicsTypeToString(newGraphics->type));
             return -1;
         }
@@ -7686,7 +7678,7 @@ qemuDomainUpdateDeviceConfig(virDomainDef *vmdef,
     case VIR_DOMAIN_DEVICE_CRYPTO:
     case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("persistent update of device '%s' is not supported"),
+                       _("persistent update of device '%1$s' is not supported"),
                        virDomainDeviceTypeToString(dev->type));
         return -1;
     }
@@ -8225,14 +8217,14 @@ static int qemuDomainSetAutostart(virDomainPtr dom,
         if (autostart) {
             if (g_mkdir_with_parents(cfg->autostartDir, 0777) < 0) {
                 virReportSystemError(errno,
-                                     _("cannot create autostart directory %s"),
+                                     _("cannot create autostart directory %1$s"),
                                      cfg->autostartDir);
                 goto endjob;
             }
 
             if (symlink(configFile, autostartLink) < 0) {
                 virReportSystemError(errno,
-                                     _("Failed to create symlink '%s' to '%s'"),
+                                     _("Failed to create symlink '%1$s' to '%2$s'"),
                                      autostartLink, configFile);
                 goto endjob;
             }
@@ -8241,7 +8233,7 @@ static int qemuDomainSetAutostart(virDomainPtr dom,
                 errno != ENOENT &&
                 errno != ENOTDIR) {
                 virReportSystemError(errno,
-                                     _("Failed to delete symlink '%s'"),
+                                     _("Failed to delete symlink '%1$s'"),
                                      autostartLink);
                 goto endjob;
             }
@@ -8757,7 +8749,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
 
             if (mode < 0 || mode >= VIR_DOMAIN_NUMATUNE_MEM_LAST) {
                 virReportError(VIR_ERR_INVALID_ARG,
-                               _("unsupported numatune mode: '%d'"), mode);
+                               _("unsupported numatune mode: '%1$d'"), mode);
                 goto cleanup;
             }
 
@@ -8768,7 +8760,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
 
             if (virBitmapIsAllClear(nodeset)) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("Invalid nodeset of 'numatune': %s"),
+                               _("Invalid nodeset of 'numatune': %1$s"),
                                param->value.s);
                 goto cleanup;
             }
@@ -9175,7 +9167,7 @@ qemuSetIOThreadsBWLive(virDomainObj *vm, virCgroup *cgroup,
 #define SCHED_RANGE_CHECK(VAR, NAME, MIN, MAX) \
     if (((VAR) > 0 && (VAR) < (MIN)) || (VAR) > (MAX)) { \
         virReportError(VIR_ERR_INVALID_ARG, \
-                       _("value of '%s' is out of range [%lld, %lld]"), \
+                       _("value of '%1$s' is out of range [%2$lld, %3$lld]"), \
                        NAME, MIN, MAX); \
         rc = -1; \
         goto endjob; \
@@ -9728,7 +9720,7 @@ qemuDomainBlockResize(virDomainPtr dom,
     if ((flags & VIR_DOMAIN_BLOCK_RESIZE_BYTES) == 0) {
         if (size > ULLONG_MAX / 1024) {
             virReportError(VIR_ERR_OVERFLOW,
-                           _("size must be less than %llu"),
+                           _("size must be less than %1$llu"),
                            ULLONG_MAX / 1024);
             return -1;
         }
@@ -9751,7 +9743,7 @@ qemuDomainBlockResize(virDomainPtr dom,
 
     if (!(disk = virDomainDiskByName(vm->def, path, false))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("disk '%s' was not found in the domain config"), path);
+                       _("disk '%1$s' was not found in the domain config"), path);
         goto endjob;
     }
 
@@ -9770,7 +9762,7 @@ qemuDomainBlockResize(virDomainPtr dom,
 
     if (virStorageSourceIsEmpty(disk->src) || disk->src->readonly) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("can't resize empty or readonly disk '%s'"),
+                       _("can't resize empty or readonly disk '%1$s'"),
                        disk->dst);
         goto endjob;
     }
@@ -9844,7 +9836,7 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
 
     if (*path) {
         if (!(disk = virDomainDiskByName(vm->def, path, false))) {
-            virReportError(VIR_ERR_INVALID_ARG, _("invalid path: %s"), path);
+            virReportError(VIR_ERR_INVALID_ARG, _("invalid path: %1$s"), path);
             return -1;
         }
 
@@ -9861,7 +9853,7 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
 
         if (!entryname) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("missing disk device alias name for %s"), disk->dst);
+                           _("missing disk device alias name for %1$s"), disk->dst);
             return -1;
         }
     }
@@ -9884,7 +9876,7 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
 
         if (!(stats = virHashLookup(blockstats, entryname))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot find statistics for device '%s'"), entryname);
+                           _("cannot find statistics for device '%1$s'"), entryname);
             return -1;
         }
 
@@ -9916,7 +9908,7 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
 
             if (!(stats = virHashLookup(blockstats, entryname))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot find statistics for device '%s'"), entryname);
+                               _("cannot find statistics for device '%1$s'"), entryname);
                 return -1;
             }
 
@@ -10024,7 +10016,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
         long long tmp; \
         if (VIR_ASSIGN_IS_OVERFLOW(tmp, (blockstats->VAR))) { \
             virReportError(VIR_ERR_OVERFLOW, \
-                           _("value of '%s' is too large"), NAME); \
+                           _("value of '%1$s' is too large"), NAME); \
             goto endjob; \
         } \
         if (virTypedParameterAssign(params + nstats, NAME, \
@@ -10189,8 +10181,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
 
     if (!qosSupported) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("setting bandwidth on interfaces of "
-                         "type '%s' is not implemented yet"),
+                       _("setting bandwidth on interfaces of type '%1$s' is not implemented yet"),
                        virDomainNetTypeToString(actualType));
         goto endjob;
     }
@@ -10262,8 +10253,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
 
                 virMacAddrFormat(&net->mac, ifmac);
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                               _("Invalid use of 'floor' on interface with MAC address %s "
-                               "- 'floor' is only supported for interface type 'network' with forward type 'nat', 'route', 'open' or none"),
+                               _("Invalid use of 'floor' on interface with MAC address %1$s - 'floor' is only supported for interface type 'network' with forward type 'nat', 'route', 'open' or none"),
                                ifmac);
                 goto endjob;
             }
@@ -10570,7 +10560,7 @@ qemuDomainBlockPeek(virDomainPtr dom,
 
     if (disk->src->format != VIR_STORAGE_FILE_RAW) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("peeking is only supported for disk with 'raw' format not '%s'"),
+                       _("peeking is only supported for disk with 'raw' format not '%1$s'"),
                        virStorageFileFormatTypeToString(disk->src->format));
         goto cleanup;
     }
@@ -10588,8 +10578,7 @@ qemuDomainBlockPeek(virDomainPtr dom,
     if ((nread = virStorageSourceRead(disk->src, offset, size, &tmpbuf)) < 0) {
         if (nread == -2) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("storage file reading is not supported for "
-                             "storage type %s (protocol: %s)"),
+                           _("storage file reading is not supported for storage type %1$s (protocol: %2$s)"),
                            virStorageTypeToString(disk->src->type),
                            virStorageNetProtocolTypeToString(disk->src->protocol));
         }
@@ -10598,7 +10587,7 @@ qemuDomainBlockPeek(virDomainPtr dom,
 
     if (nread < size) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("'%s' starting from %llu has only %zd bytes available"),
+                       _("'%1$s' starting from %2$llu has only %3$zd bytes available"),
                        path, offset, nread);
         goto cleanup;
     }
@@ -10653,7 +10642,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
     /* Create a temporary filename. */
     if ((fd = g_mkstemp_full(tmp, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
         virReportSystemError(errno,
-                             _("g_mkstemp(\"%s\") failed"), tmp);
+                             _("g_mkstemp(\"%1$s\") failed"), tmp);
         goto endjob;
     }
 
@@ -10676,8 +10665,8 @@ qemuDomainMemoryPeek(virDomainPtr dom,
     /* Read the memory file into buffer. */
     if (saferead(fd, buffer, size) == (ssize_t)-1) {
         virReportSystemError(errno,
-                             _("failed to read temporary file "
-                               "created with template %s"), tmp);
+                             _("failed to read temporary file created with template %1$s"),
+                             tmp);
         goto endjob;
     }
 
@@ -10732,7 +10721,7 @@ qemuDomainStorageOpenStat(virQEMUDriver *driver G_GNUC_UNUSED,
             return -1;
 
         if (fstat(*ret_fd, ret_sb) < 0) {
-            virReportSystemError(errno, _("cannot stat file '%s'"), src->path);
+            virReportSystemError(errno, _("cannot stat file '%1$s'"), src->path);
             VIR_FORCE_CLOSE(*ret_fd);
             return -1;
         }
@@ -10745,7 +10734,7 @@ qemuDomainStorageOpenStat(virQEMUDriver *driver G_GNUC_UNUSED,
 
         if (virStorageSourceStat(src, ret_sb) < 0) {
             virStorageSourceDeinit(src);
-            virReportSystemError(errno, _("failed to stat remote file '%s'"),
+            virReportSystemError(errno, _("failed to stat remote file '%1$s'"),
                                  NULLSTR(src->path));
             return -1;
         }
@@ -10864,7 +10853,7 @@ qemuStorageLimitsRefresh(virQEMUDriver *driver,
 
     if (virStorageSourceIsLocalStorage(src)) {
         if ((len = virFileReadHeaderFD(fd, VIR_STORAGE_MAX_HEADER, &buf)) < 0) {
-            virReportSystemError(errno, _("cannot read header '%s'"),
+            virReportSystemError(errno, _("cannot read header '%1$s'"),
                                  src->path);
             goto cleanup;
         }
@@ -10924,7 +10913,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
 
     if (!(disk = virDomainDiskByName(vm->def, path, false))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid path %s not assigned to domain"), path);
+                       _("invalid path %1$s not assigned to domain"), path);
         goto endjob;
     }
 
@@ -10936,7 +10925,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
 
     if (virStorageSourceIsEmpty(disk->src)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("disk '%s' does not currently have a source assigned"),
+                       _("disk '%1$s' does not currently have a source assigned"),
                        path);
         goto endjob;
     }
@@ -11127,7 +11116,7 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
 
     if (virLockManagerPluginUsesState(driver->lockManager)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot use migrate v2 protocol with lock manager %s"),
+                       _("Cannot use migrate v2 protocol with lock manager %1$s"),
                        virLockManagerPluginGetName(driver->lockManager));
         return -1;
     }
@@ -11181,7 +11170,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
 
     if (virLockManagerPluginUsesState(driver->lockManager)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot use migrate v2 protocol with lock manager %s"),
+                       _("Cannot use migrate v2 protocol with lock manager %1$s"),
                        virLockManagerPluginGetName(driver->lockManager));
         return -1;
     }
@@ -11224,7 +11213,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
 
     if (virLockManagerPluginUsesState(driver->lockManager)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot use migrate v2 protocol with lock manager %s"),
+                       _("Cannot use migrate v2 protocol with lock manager %1$s"),
                        virLockManagerPluginGetName(driver->lockManager));
         goto cleanup;
     }
@@ -11279,7 +11268,7 @@ qemuDomainMigrateFinish2(virConnectPtr dconn,
     vm = virDomainObjListFindByName(driver->domains, dname);
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching name '%s'"), dname);
+                       _("no domain with matching name '%1$s'"), dname);
         qemuMigrationDstErrorReport(driver, dname);
         return NULL;
     }
@@ -11814,7 +11803,7 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
     vm = virDomainObjListFindByName(driver->domains, dname);
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching name '%s'"), dname);
+                       _("no domain with matching name '%1$s'"), dname);
         qemuMigrationDstErrorReport(driver, dname);
         return NULL;
     }
@@ -11862,7 +11851,7 @@ qemuDomainMigrateFinish3Params(virConnectPtr dconn,
     vm = virDomainObjListFindByName(driver->domains, dname);
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching name '%s'"), dname);
+                       _("no domain with matching name '%1$s'"), dname);
         qemuMigrationDstErrorReport(driver, dname);
         return NULL;
     }
@@ -11948,7 +11937,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
      * the previously supported 'kvm' driver is provided below. */
     if (STRNEQ(driverName, "vfio") && STRNEQ(driverName, "kvm")) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("unknown driver name '%s'"), driverName);
+                       _("unknown driver name '%1$s'"), driverName);
         return -1;
     }
 
@@ -12108,8 +12097,7 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
 
     if (!hvCPU || hvCPU->fallback != VIR_CPU_FALLBACK_FORBID) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("QEMU '%s' does not support reporting CPU model for "
-                         "virttype '%s'"),
+                       _("QEMU '%1$s' does not support reporting CPU model for virttype '%2$s'"),
                        virQEMUCapsGetBinary(qemuCaps),
                        virDomainVirtTypeToString(virttype));
         goto cleanup;
@@ -12140,8 +12128,8 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
                                             hvCPU, cpu, failIncompatible);
     } else {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("comparing with the hypervisor CPU is not supported "
-                         "for arch %s"), virArchToString(arch));
+                       _("comparing with the hypervisor CPU is not supported for arch %1$s"),
+                       virArchToString(arch));
     }
 
  cleanup:
@@ -12247,18 +12235,18 @@ qemuConnectCPUModelBaseline(virQEMUCaps *qemuCaps,
     for (i = 0; i < ncpus; i++) {
         if (!cpus[i]) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("invalid CPU definition at index %zu"), i);
+                           _("invalid CPU definition at index %1$zu"), i);
             return NULL;
         }
         if (!cpus[i]->model) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("no CPU model specified at index %zu"), i);
+                           _("no CPU model specified at index %1$zu"), i);
             return NULL;
         }
 
         if (!virDomainCapsCPUModelsGet(cpuModels, cpus[i]->model)) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("CPU model '%s' not supported by hypervisor"),
+                           _("CPU model '%1$s' not supported by hypervisor"),
                            cpus[i]->model);
             return NULL;
         }
@@ -12346,8 +12334,7 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
     if (!(cpuModels = virQEMUCapsGetCPUModels(qemuCaps, virttype, NULL, NULL)) ||
         cpuModels->nmodels == 0) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("QEMU '%s' does not support any CPU models for "
-                         "virttype '%s'"),
+                       _("QEMU '%1$s' does not support any CPU models for virttype '%2$s'"),
                        virQEMUCapsGetBinary(qemuCaps),
                        virDomainVirtTypeToString(virttype));
         goto cleanup;
@@ -12379,8 +12366,8 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
             goto cleanup;
     } else {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("computing baseline hypervisor CPU is not supported "
-                         "for arch %s"), virArchToString(arch));
+                       _("computing baseline hypervisor CPU is not supported for arch %1$s"),
+                       virArchToString(arch));
         goto cleanup;
     }
 
@@ -12464,7 +12451,7 @@ qemuDomainGetJobInfoDumpStats(virDomainObj *vm,
     case QEMU_MONITOR_DUMP_STATUS_FAILED:
     case QEMU_MONITOR_DUMP_STATUS_LAST:
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("dump query failed, status=%d"),
+                       _("dump query failed, status=%1$d"),
                        privJob->stats.dump.status);
         return -1;
         break;
@@ -13001,7 +12988,7 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
 
     if (bandwidth > max) {
         virReportError(VIR_ERR_OVERFLOW,
-                       _("bandwidth must be less than %llu"), max + 1);
+                       _("bandwidth must be less than %1$llu"), max + 1);
         goto cleanup;
     }
 
@@ -13085,8 +13072,7 @@ qemuDomainMigrationGetPostcopyBandwidth(virDomainObj *vm,
 
     if (bw > ULONG_MAX) {
         virReportError(VIR_ERR_OVERFLOW,
-                       _("bandwidth %llu is greater than %lu which is the "
-                         "maximum value supported by this API"),
+                       _("bandwidth %1$llu is greater than %2$lu which is the maximum value supported by this API"),
                        bw, ULONG_MAX);
         goto cleanup;
     }
@@ -13452,7 +13438,7 @@ qemuDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
 
     if (!snap->def->parent_name) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
-                       _("snapshot '%s' does not have a parent"),
+                       _("snapshot '%1$s' does not have a parent"),
                        snap->def->name);
         goto cleanup;
     }
@@ -13757,7 +13743,7 @@ qemuDomainCheckpointGetParent(virDomainCheckpointPtr checkpoint,
 
     if (!chk->def->parent_name) {
         virReportError(VIR_ERR_NO_DOMAIN_CHECKPOINT,
-                       _("checkpoint '%s' does not have a parent"),
+                       _("checkpoint '%1$s' does not have a parent"),
                        chk->def->name);
         goto cleanup;
     }
@@ -13980,14 +13966,14 @@ qemuDomainOpenConsole(virDomainPtr dom,
 
     if (!chr) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot find character device %s"),
+                       _("cannot find character device %1$s"),
                        NULLSTR(dev_name));
         goto cleanup;
     }
 
     if (chr->source->type != VIR_DOMAIN_CHR_TYPE_PTY) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("character device %s is not using a PTY"),
+                       _("character device %1$s is not using a PTY"),
                        dev_name ? dev_name : NULLSTR(chr->info.alias));
         goto cleanup;
     }
@@ -14051,14 +14037,14 @@ qemuDomainOpenChannel(virDomainPtr dom,
 
     if (!chr) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot find channel %s"),
+                       _("cannot find channel %1$s"),
                        NULLSTR(name));
         goto cleanup;
     }
 
     if (chr->source->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("channel %s is not using a UNIX socket"),
+                       _("channel %1$s is not using a UNIX socket"),
                        name ? name : NULLSTR(chr->info.alias));
         goto cleanup;
     }
@@ -14151,7 +14137,7 @@ qemuDomainBlockPullCommon(virDomainObj *vm,
     if (!(flags & VIR_DOMAIN_BLOCK_PULL_BANDWIDTH_BYTES)) {
         if (speed > LLONG_MAX >> 20) {
             virReportError(VIR_ERR_OVERFLOW,
-                           _("bandwidth must be less than %llu"),
+                           _("bandwidth must be less than %1$llu"),
                            LLONG_MAX >> 20);
             goto endjob;
         }
@@ -14225,7 +14211,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
 
     if (!(job = qemuBlockJobDiskGetJob(disk))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("disk %s does not have an active block job"), disk->dst);
+                       _("disk %1$s does not have an active block job"), disk->dst);
         goto endjob;
     }
 
@@ -14234,7 +14220,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     if (job->state == QEMU_BLOCKJOB_STATE_ABORTING ||
         job->state == QEMU_BLOCKJOB_STATE_PIVOTING) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("block job on disk '%s' is still being ended"),
+                       _("block job on disk '%1$s' is still being ended"),
                        disk->dst);
         goto endjob;
     }
@@ -14274,11 +14260,11 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
             job->state == QEMU_BLOCKJOB_STATE_FAILED) {
             if (job->errmsg) {
                 virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("block job '%s' failed while pivoting: %s"),
+                               _("block job '%1$s' failed while pivoting: %2$s"),
                                job->name, job->errmsg);
             } else {
                 virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("block job '%s' failed while pivoting"),
+                               _("block job '%1$s' failed while pivoting"),
                                job->name);
             }
 
@@ -14344,7 +14330,7 @@ qemuBlockJobInfoTranslate(qemuMonitorBlockJobInfo *rawInfo,
     info->bandwidth = rawInfo->bandwidth;
     if (info->bandwidth != rawInfo->bandwidth) {
         virReportError(VIR_ERR_OVERFLOW,
-                       _("bandwidth %llu cannot be represented in result"),
+                       _("bandwidth %1$llu cannot be represented in result"),
                        rawInfo->bandwidth);
         return -1;
     }
@@ -14431,7 +14417,7 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
     if (!(flags & VIR_DOMAIN_BLOCK_JOB_SPEED_BANDWIDTH_BYTES)) {
         if (speed > LLONG_MAX >> 20) {
             virReportError(VIR_ERR_OVERFLOW,
-                           _("bandwidth must be less than %llu"),
+                           _("bandwidth must be less than %1$llu"),
                            LLONG_MAX >> 20);
             return -1;
         }
@@ -14455,7 +14441,7 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
 
     if (!(job = qemuBlockJobDiskGetJob(disk))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("disk %s does not have an active block job"), disk->dst);
+                       _("disk %1$s does not have an active block job"), disk->dst);
         goto endjob;
     }
 
@@ -14496,14 +14482,14 @@ qemuDomainBlockCopyValidateMirror(virStorageSource *mirror,
 
         if (*reuse || desttype == VIR_STORAGE_TYPE_BLOCK) {
             virReportSystemError(errno,
-                                 _("missing destination file for disk %s: %s"),
+                                 _("missing destination file for disk %1$s: %2$s"),
                                  dst, mirror->path);
             return -1;
         }
     } else {
         if (virStorageSourceStat(mirror, &st) < 0) {
             virReportSystemError(errno,
-                                 _("unable to stat block copy target '%s'"),
+                                 _("unable to stat block copy target '%1$s'"),
                                  mirror->path);
             return -1;
         }
@@ -14515,16 +14501,14 @@ qemuDomainBlockCopyValidateMirror(virStorageSource *mirror,
         } else {
             if (st.st_size && !(*reuse)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("external destination file for disk %s already "
-                                 "exists and is not a block device: %s"),
+                               _("external destination file for disk %1$s already exists and is not a block device: %2$s"),
                                dst, mirror->path);
                 return -1;
             }
 
             if (desttype == VIR_STORAGE_TYPE_BLOCK) {
                 virReportError(VIR_ERR_INVALID_ARG,
-                               _("blockdev flag requested for disk %s, but file "
-                                 "'%s' is not a block device"),
+                               _("blockdev flag requested for disk %1$s, but file '%2$s' is not a block device"),
                                dst, mirror->path);
                 return -1;
             }
@@ -14630,8 +14614,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
 
     if (bandwidth > LLONG_MAX) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("bandwidth must be less than "
-                         "'%llu' bytes/s (%llu MiB/s)"),
+                       _("bandwidth must be less than '%1$llu' bytes/s (%2$llu MiB/s)"),
                        LLONG_MAX, LLONG_MAX >> 20);
         return -1;
     }
@@ -14689,8 +14672,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
      * file is not possible */
     if (mirror_shallow && !existing && mirror->format == VIR_STORAGE_FILE_RAW) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("shallow copy of disk '%s' into a raw file "
-                         "is not possible"),
+                       _("shallow copy of disk '%1$s' into a raw file is not possible"),
                        disk->dst);
         goto endjob;
     }
@@ -14942,7 +14924,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     if (!(flags & VIR_DOMAIN_BLOCK_REBASE_BANDWIDTH_BYTES)) {
         if (speed > LLONG_MAX >> 20) {
             virReportError(VIR_ERR_OVERFLOW,
-                           _("bandwidth must be less than %llu"),
+                           _("bandwidth must be less than %1$llu"),
                            LLONG_MAX >> 20);
             goto cleanup;
         }
@@ -15021,7 +15003,7 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
             if (sizeof(unsigned long)< sizeof(bandwidth) &&
                 param->value.ul > ULONG_MAX * (1ULL << 20)) {
                 virReportError(VIR_ERR_OVERFLOW,
-                               _("bandwidth must be less than %llu bytes"),
+                               _("bandwidth must be less than %1$llu bytes"),
                                ULONG_MAX * (1ULL << 20));
                 goto cleanup;
             }
@@ -15107,7 +15089,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_BANDWIDTH_BYTES)) {
         if (speed > LLONG_MAX >> 20) {
             virReportError(VIR_ERR_OVERFLOW,
-                           _("bandwidth must be less than %llu"),
+                           _("bandwidth must be less than %1$llu"),
                            LLONG_MAX >> 20);
             goto endjob;
         }
@@ -15173,7 +15155,7 @@ qemuDomainOpenGraphics(virDomainPtr dom,
 
     if (idx >= vm->def->ngraphics) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No graphics backend with index %d"), idx);
+                       _("No graphics backend with index %1$d"), idx);
         goto endjob;
     }
     switch (vm->def->graphics[idx]->type) {
@@ -15191,7 +15173,7 @@ qemuDomainOpenGraphics(virDomainPtr dom,
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"),
+                       _("Can only open VNC, SPICE or D-Bus p2p graphics backends, not %1$s"),
                        virDomainGraphicsTypeToString(vm->def->graphics[idx]->type));
         goto endjob;
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
@@ -15244,7 +15226,7 @@ qemuDomainOpenGraphicsFD(virDomainPtr dom,
 
     if (idx >= vm->def->ngraphics) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No graphics backend with index %d"), idx);
+                       _("No graphics backend with index %1$d"), idx);
         goto cleanup;
     }
     switch (vm->def->graphics[idx]->type) {
@@ -15262,7 +15244,7 @@ qemuDomainOpenGraphicsFD(virDomainPtr dom,
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"),
+                       _("Can only open VNC, SPICE or D-Bus p2p graphics backends, not %1$s"),
                        virDomainGraphicsTypeToString(vm->def->graphics[idx]->type));
         goto cleanup;
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
@@ -15565,8 +15547,8 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
         if (param->value.ul > QEMU_BLOCK_IOTUNE_MAX) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                           _("block I/O throttle limit value must"
-                             " be no more than %llu"), QEMU_BLOCK_IOTUNE_MAX);
+                           _("block I/O throttle limit value must be no more than %1$llu"),
+                           QEMU_BLOCK_IOTUNE_MAX);
             goto endjob;
         }
 
@@ -15682,21 +15664,18 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
                 if (!info.val) { \
                     if (QEMU_BLOCK_IOTUNE_SET_##_bool) { \
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
-                                       _("cannot reset '%s' when " \
-                                         "'%s' is set"), \
+                                       _("cannot reset '%1$s' when '%2$s' is set"), \
                                        #val, #val "_max"); \
                     } else { \
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
-                                       _("value '%s' cannot be set if " \
-                                         "'%s' is not set"), \
+                                       _("value '%1$s' cannot be set if '%2$s' is not set"), \
                                        #val "_max", #val); \
                     } \
                     goto endjob; \
                 } \
                 if (info.val##_max < info.val) { \
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
-                                   _("value '%s' cannot be " \
-                                     "smaller than '%s'"), \
+                                   _("value '%1$s' cannot be smaller than '%2$s'"), \
                                    #val "_max", #val); \
                     goto endjob; \
                 } \
@@ -15741,7 +15720,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     if (persistentDef) {
         if (!(conf_disk = virDomainDiskByName(persistentDef, path, true))) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("missing persistent configuration for disk '%s'"),
+                           _("missing persistent configuration for disk '%1$s'"),
                            path);
             goto endjob;
         }
@@ -15857,7 +15836,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     if (persistentDef) {
         if (!(disk = virDomainDiskByName(persistentDef, path, true))) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("disk '%s' was not found in the domain config"),
+                           _("disk '%1$s' was not found in the domain config"),
                            path);
             goto endjob;
         }
@@ -16253,7 +16232,7 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
           target == VIR_NODE_SUSPEND_TARGET_DISK ||
           target == VIR_NODE_SUSPEND_TARGET_HYBRID)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Unknown suspend target: %u"),
+                       _("Unknown suspend target: %1$u"),
                        target);
         return -1;
     }
@@ -16620,7 +16599,7 @@ qemuConnectGetCPUModelNames(virConnectPtr conn,
 
     if (!(arch = virArchFromString(archName))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("cannot find architecture %s"),
+                       _("cannot find architecture %1$s"),
                        archName);
         return -1;
     }
@@ -16747,7 +16726,7 @@ qemuDomainGetHostname(virDomainPtr dom,
 
     if (!hostname) {
         virReportError(VIR_ERR_NO_HOSTNAME,
-                       _("no hostname found for domain %s"),
+                       _("no hostname found for domain %1$s"),
                        vm->def->name);
         goto cleanup;
     }
@@ -18433,7 +18412,7 @@ qemuDomainGetStatsCheckSupport(unsigned int *stats,
     if (enforce &&
         *stats & ~supportedstats) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                       _("Stats types bits 0x%x are not supported by this daemon or QEMU"),
+                       _("Stats types bits 0x%1$x are not supported by this daemon or QEMU"),
                        *stats & ~supportedstats);
         return -1;
     }
@@ -18811,7 +18790,7 @@ qemuDomainInterfaceAddresses(virDomainPtr dom,
 
     default:
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                       _("Unknown IP address data source %d"),
+                       _("Unknown IP address data source %1$d"),
                        source);
         break;
     }
@@ -18938,7 +18917,7 @@ qemuDomainRenameCallback(virDomainObj *vm,
 
     if (strchr(new_name, '/')) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("name %s cannot contain '/'"), new_name);
+                       _("name %1$s cannot contain '/'"), new_name);
         return -1;
     }
 
@@ -18964,7 +18943,7 @@ qemuDomainRenameCallback(virDomainObj *vm,
 
         if (symlink(new_dom_cfg_file, new_dom_autostart_link) < 0) {
             virReportSystemError(errno,
-                                 _("Failed to create symlink '%s' to '%s'"),
+                                 _("Failed to create symlink '%1$s' to '%2$s'"),
                                  new_dom_autostart_link, new_dom_cfg_file);
             return -1;
         }
@@ -19090,8 +19069,8 @@ qemuDomainGetGuestVcpusParams(virTypedParameterPtr *params,
     for (i = 0; i < ninfo; i++) {
         if (virBitmapSetBit(vcpus, info[i].id) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("vcpu id '%u' reported by guest agent is out of "
-                             "range"), info[i].id);
+                           _("vcpu id '%1$u' reported by guest agent is out of range"),
+                           info[i].id);
             goto cleanup;
         }
 
@@ -19222,7 +19201,7 @@ qemuDomainSetGuestVcpus(virDomainPtr dom,
 
         if (!state && !info[i].offlinable) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("vCPU '%u' is not offlinable"), info[i].id);
+                           _("vCPU '%1$u' is not offlinable"), info[i].id);
             goto endjob;
         }
 
@@ -19235,7 +19214,7 @@ qemuDomainSetGuestVcpus(virDomainPtr dom,
     if (!virBitmapIsAllClear(map)) {
         char *tmp = virBitmapFormat(map);
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("guest is missing vCPUs '%s'"), NULLSTR(tmp));
+                       _("guest is missing vCPUs '%1$s'"), NULLSTR(tmp));
         VIR_FREE(tmp);
         goto endjob;
     }
@@ -19303,7 +19282,7 @@ qemuDomainSetVcpu(virDomainPtr dom,
     if (persistentDef) {
         if (lastvcpu >= virDomainDefGetVcpusMax(persistentDef)) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("vcpu %zd is not present in persistent config"),
+                           _("vcpu %1$zd is not present in persistent config"),
                            lastvcpu);
             goto endjob;
         }
@@ -19312,7 +19291,7 @@ qemuDomainSetVcpu(virDomainPtr dom,
     if (def) {
         if (lastvcpu >= virDomainDefGetVcpusMax(def)) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("vcpu %zd is not present in live config"),
+                           _("vcpu %1$zd is not present in live config"),
                            lastvcpu);
             goto endjob;
         }
@@ -19878,7 +19857,7 @@ qemuDomainGetGuestInfoCheckSupport(unsigned int types,
 
     if (types != *supportedTypes) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("unsupported guest information types '0x%x'"),
+                       _("unsupported guest information types '0x%1$x'"),
                        types & ~qemuDomainGetGuestInfoSupportedTypes);
         return -1;
     }
@@ -20285,8 +20264,7 @@ qemuDomainAgentSetResponseTimeout(virDomainPtr dom,
 
     if (timeout < VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("guest agent timeout '%d' is "
-                         "less than the minimum '%d'"),
+                       _("guest agent timeout '%1$d' is less than the minimum '%2$d'"),
                        timeout, VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN);
         return -1;
     }
@@ -20445,7 +20423,7 @@ qemuDomainStartDirtyRateCalc(virDomainPtr dom,
     if (seconds < MIN_DIRTYRATE_CALC_PERIOD ||
         seconds > MAX_DIRTYRATE_CALC_PERIOD) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("seconds=%d is invalid, please choose value within [%d, %d]."),
+                       _("seconds=%1$d is invalid, please choose value within [%2$d, %3$d]."),
                        seconds,
                        MIN_DIRTYRATE_CALC_PERIOD,
                        MAX_DIRTYRATE_CALC_PERIOD);
@@ -20563,7 +20541,7 @@ qemuDomainFDAssociate(virDomainPtr domain,
     for (i = 0; i < new->nfds; i++) {
         if ((new->fds[i] = dup(fds[i])) < 0) {
             virReportSystemError(errno,
-                                 _("failed to duplicate passed fd with index '%zu'"),
+                                 _("failed to duplicate passed fd with index '%1$zu'"),
                                  i);
             goto cleanup;
         }
