@@ -117,7 +117,7 @@ virLogManagerProtocolDispatchDomainReadLogFile(virNetServer *server G_GNUC_UNUSE
 
     if (args->maxlen > VIR_LOG_MANAGER_PROTOCOL_STRING_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Requested data len %llu is larger than maximum %d"),
+                       _("Requested data len %1$llu is larger than maximum %2$d"),
                        (unsigned long long)args->maxlen,
                        VIR_LOG_MANAGER_PROTOCOL_STRING_MAX);
         goto cleanup;

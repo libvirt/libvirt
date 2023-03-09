@@ -190,7 +190,7 @@ virLogDaemonNewServerPostExecRestart(virNetDaemon *dmn,
                                               dmn);
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unexpected server name '%s' during restart"),
+                       _("Unexpected server name '%1$s' during restart"),
                        name);
         return NULL;
     }
@@ -336,14 +336,14 @@ virLogDaemonClientNew(virNetServerClient *client,
 
     if (!privileged) {
         if (geteuid() != clientuid) {
-            virReportRestrictedError(_("Disallowing client %llu with uid %llu"),
+            virReportRestrictedError(_("Disallowing client %1$llu with uid %2$llu"),
                                      (unsigned long long)priv->clientPid,
                                      (unsigned long long)clientuid);
             goto error;
         }
     } else {
         if (clientuid != 0) {
-            virReportRestrictedError(_("Disallowing client %llu with uid %llu"),
+            virReportRestrictedError(_("Disallowing client %1$llu with uid %2$llu"),
                                      (unsigned long long)priv->clientPid,
                                      (unsigned long long)clientuid);
             goto error;
@@ -518,7 +518,7 @@ virLogDaemonPreExecRestart(const char *state_file,
 
     if (virFileWriteStr(state_file, state, 0700) < 0) {
         virReportSystemError(errno,
-                             _("Unable to save state file %s"), state_file);
+                             _("Unable to save state file %1$s"), state_file);
         return -1;
     }
 
@@ -540,7 +540,7 @@ virLogDaemonUsage(const char *argv0, bool privileged)
     fprintf(stderr,
             _("\n"
               "Usage:\n"
-              "  %s [options]\n"
+              "  %1$s [options]\n"
               "\n"
               "Options:\n"
               "  -h | --help            Display program help:\n"
@@ -559,13 +559,13 @@ virLogDaemonUsage(const char *argv0, bool privileged)
                   "  Default paths:\n"
                   "\n"
                   "    Configuration file (unless overridden by -f):\n"
-                  "      %s/libvirt/virtlogd.conf\n"
+                  "      %1$s/libvirt/virtlogd.conf\n"
                   "\n"
                   "    Sockets:\n"
-                  "      %s/libvirt/virtlogd-sock\n"
+                  "      %2$s/libvirt/virtlogd-sock\n"
                   "\n"
                   "    PID file (unless overridden by -p):\n"
-                  "      %s/virtlogd.pid\n"
+                  "      %3$s/virtlogd.pid\n"
                   "\n"),
                 SYSCONFDIR,
                 RUNSTATEDIR,
@@ -625,7 +625,7 @@ int main(int argc, char **argv) {
 
     if (virGettextInitialize() < 0 ||
         virErrorInitialize() < 0) {
-        fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
+        fprintf(stderr, _("%1$s: initialization failed\n"), argv[0]);
         exit(EXIT_FAILURE);
     }
 
@@ -705,7 +705,7 @@ int main(int argc, char **argv) {
     /* Read the config file if it exists */
     if (remote_config_file &&
         virLogDaemonConfigLoadFile(config, remote_config_file, implicit_conf) < 0) {
-        VIR_ERROR(_("Can't load config file: %s: %s"),
+        VIR_ERROR(_("Can't load config file: %1$s: %2$s"),
                   virGetLastErrorMessage(), remote_config_file);
         exit(EXIT_FAILURE);
     }
@@ -764,7 +764,7 @@ int main(int argc, char **argv) {
         old_umask = umask(077);
     VIR_DEBUG("Ensuring run dir '%s' exists", run_dir);
     if (g_mkdir_with_parents(run_dir, 0777) < 0) {
-        VIR_ERROR(_("unable to create rundir %s: %s"), run_dir,
+        VIR_ERROR(_("unable to create rundir %1$s: %2$s"), run_dir,
                   g_strerror(errno));
         ret = VIR_DAEMON_ERR_RUNDIR;
         umask(old_umask);
@@ -790,13 +790,13 @@ int main(int argc, char **argv) {
 
         if (godaemon) {
             if (chdir("/") < 0) {
-                VIR_ERROR(_("cannot change to root directory: %s"),
+                VIR_ERROR(_("cannot change to root directory: %1$s"),
                           g_strerror(errno));
                 goto cleanup;
             }
 
             if ((statuswrite = virDaemonForkIntoBackground(argv[0])) < 0) {
-                VIR_ERROR(_("Failed to fork as daemon: %s"),
+                VIR_ERROR(_("Failed to fork as daemon: %1$s"),
                           g_strerror(errno));
                 goto cleanup;
             }

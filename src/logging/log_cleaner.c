@@ -87,7 +87,7 @@ virLogCleanerParseFilename(const char *path,
 
     if (virStrToLong_i(rotated_index_str, NULL, 10, rotated_index) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to parse rotated index from '%s'"),
+                       _("Failed to parse rotated index from '%1$s'"),
                        rotated_index_str);
         return NULL;
     }

@@ -354,7 +354,7 @@ virLogHandlerDomainOpenLogFile(virLogHandler *handler,
         if (STREQ(virRotatingFileWriterGetPath(handler->files[i]->file),
                   path)) {
             virReportSystemError(EBUSY,
-                                 _("Cannot open log file: '%s'"),
+                                 _("Cannot open log file: '%1$s'"),
                                  path);
             goto error;
         }
@@ -471,7 +471,7 @@ virLogHandlerDomainGetLogFilePosition(virLogHandler *handler,
 
     if (!file) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No open log file %s"),
+                       _("No open log file %1$s"),
                        path);
         goto cleanup;
     }
