@@ -70,7 +70,7 @@ hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
 
     if (lastError != WS_LASTERR_OK) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Transport error during %s: %s (%d)"),
+                       _("Transport error during %1$s: %2$s (%3$d)"),
                        detail, wsman_transport_get_last_error_string(lastError),
                        lastError);
         return -1;
@@ -80,14 +80,14 @@ hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
      * 400 (Bad Request) or 500 (Internal Server Error) */
     if (responseCode != 200 && responseCode != 400 && responseCode != 500) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unexpected HTTP response during %s: %d"),
+                       _("Unexpected HTTP response during %1$s: %2$d"),
                        detail, responseCode);
         return -1;
     }
 
     if (response == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Empty response during %s"), detail);
+                       _("Empty response during %1$s"), detail);
         return -1;
     }
 
@@ -98,8 +98,7 @@ hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
         wsmc_get_fault_data(response, fault);
 
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("SOAP fault during %s: code '%s', subcode '%s', "
-                         "reason '%s', detail '%s'"),
+                       _("SOAP fault during %1$s: code '%2$s', subcode '%3$s', reason '%4$s', detail '%5$s'"),
                        detail, NULLSTR(fault->code), NULLSTR(fault->subcode),
                        NULLSTR(fault->reason), NULLSTR(fault->fault_detail));
 
@@ -556,7 +555,7 @@ hypervSerializeEmbeddedParam(hypervParam *p, const char *resourceUri,
 
     if (!(xmlNodeParam = ws_xml_add_child(*methodNode, resourceUri, p->embedded.name,
                                           NULL))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not add child node %s"),
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not add child node %1$s"),
                        p->embedded.name);
         return -1;
     }
@@ -780,11 +779,11 @@ hypervInvokeMethod(hypervPrivate *priv,
 
         if (faultReason)
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("WS-Management fault during %s invocation: %s"),
+                           _("WS-Management fault during %1$s invocation: %2$s"),
                            params->method, faultReason);
         else
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not get return value for %s invocation"),
+                           _("Could not get return value for %1$s invocation"),
                            params->method);
 
         return -1;
@@ -801,7 +800,7 @@ hypervInvokeMethod(hypervPrivate *priv,
         instanceID = ws_xml_get_xpath_value(response, jobcode_instance_xpath);
         if (!instanceID) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not get instance ID for %s invocation"),
+                           _("Could not get instance ID for %1$s invocation"),
                            params->method);
             return -1;
         }
@@ -854,11 +853,11 @@ hypervInvokeMethod(hypervPrivate *priv,
         }
         if (!completed && timeout < 0) {
             virReportError(VIR_ERR_OPERATION_TIMEOUT,
-                           _("Timeout waiting for %s invocation"), params->method);
+                           _("Timeout waiting for %1$s invocation"), params->method);
             return -1;
         }
     } else if (returnCode != CIM_RETURNCODE_COMPLETED_WITH_NO_ERROR) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("Invocation of %s returned an error: %s (%d)"),
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Invocation of %1$s returned an error: %2$s (%3$d)"),
                        params->method, hypervReturnCodeToString(returnCode),
                        returnCode);
         return -1;
@@ -1155,14 +1154,14 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
 
     if (returnValue == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not lookup %s for %s invocation"),
+                       _("Could not lookup %1$s for %2$s invocation"),
                        "ReturnValue", "RequestStateChange");
         return -1;
     }
 
     if (virStrToLong_i(returnValue, NULL, 10, &returnCode) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not parse return code from '%s'"), returnValue);
+                       _("Could not parse return code from '%1$s'"), returnValue);
         return -1;
     }
 
@@ -1172,7 +1171,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
 
         if (instanceID == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not lookup %s for %s invocation"),
+                           _("Could not lookup %1$s for %2$s invocation"),
                            "InstanceID", "RequestStateChange");
             return -1;
         }
@@ -1189,7 +1188,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
 
             if (concreteJob == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Could not lookup %s for %s invocation"),
+                               _("Could not lookup %1$s for %2$s invocation"),
                                "Msvm_ConcreteJob", "RequestStateChange");
                 return -1;
             }
@@ -1214,20 +1213,20 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
             case MSVM_CONCRETEJOB_JOBSTATE_EXCEPTION:
             case MSVM_CONCRETEJOB_JOBSTATE_SERVICE:
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Concrete job for %s invocation is in error state"),
+                               _("Concrete job for %1$s invocation is in error state"),
                                "RequestStateChange");
                 return -1;
 
             default:
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Concrete job for %s invocation is in unknown state"),
+                               _("Concrete job for %1$s invocation is in unknown state"),
                                "RequestStateChange");
                 return -1;
             }
         }
     } else if (returnCode != CIM_RETURNCODE_COMPLETED_WITH_NO_ERROR) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invocation of %s returned an error: %s (%d)"),
+                       _("Invocation of %1$s returned an error: %2$s (%3$d)"),
                        "RequestStateChange", hypervReturnCodeToString(returnCode),
                        returnCode);
         return -1;
@@ -1330,7 +1329,7 @@ hypervMsvmComputerSystemToDomain(virConnectPtr conn,
 
     if (virUUIDParse(computerSystem->data->Name, uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not parse UUID from string '%s'"),
+                       _("Could not parse UUID from string '%1$s'"),
                        computerSystem->data->Name);
         return -1;
     }
@@ -1364,7 +1363,7 @@ hypervMsvmComputerSystemFromUUID(hypervPrivate *priv, const char *uuid,
         return -1;
 
     if (!*computerSystem) {
-        virReportError(VIR_ERR_NO_DOMAIN, _("No domain with UUID %s"), uuid);
+        virReportError(VIR_ERR_NO_DOMAIN, _("No domain with UUID %1$s"), uuid);
         return -1;
     }
 
@@ -1429,7 +1428,7 @@ hypervGetResourceAllocationSD(hypervPrivate *priv,
 
     if (!*data) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not look up resource allocation setting data with virtual system instance ID '%s'"),
+                       _("Could not look up resource allocation setting data with virtual system instance ID '%1$s'"),
                        id);
         return -1;
     }
@@ -1447,7 +1446,7 @@ hypervGetProcessorSD(hypervPrivate *priv,
 
     if (!*data) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not look up processor setting data with virtual system instance ID '%s'"),
+                       _("Could not look up processor setting data with virtual system instance ID '%1$s'"),
                        id);
         return -1;
     }

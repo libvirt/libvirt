@@ -69,7 +69,7 @@ hypervGetProcessorsByName(hypervPrivate *priv, const char *name,
 
     if (!processorList) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not look up processor(s) on '%s'"),
+                       _("Could not look up processor(s) on '%1$s'"),
                        name);
         return -1;
     }
@@ -155,7 +155,7 @@ hypervGetVirtualSystemByID(hypervPrivate *priv, int id,
         return -1;
 
     if (*computerSystemList == NULL) {
-        virReportError(VIR_ERR_NO_DOMAIN, _("No domain with ID %d"), id);
+        virReportError(VIR_ERR_NO_DOMAIN, _("No domain with ID %1$d"), id);
         return -1;
     }
 
@@ -179,7 +179,7 @@ hypervGetVirtualSystemByName(hypervPrivate *priv, const char *name,
 
     if (*computerSystemList == NULL) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with name %s"), name);
+                       _("No domain with name %1$s"), name);
         return -1;
     }
 
@@ -250,7 +250,7 @@ hypervLookupHostSystemBiosUuid(hypervPrivate *priv, unsigned char *uuid)
 
     if (virUUIDParse(computerSystem->data->UUID, uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not parse UUID from string '%s'"),
+                       _("Could not parse UUID from string '%1$s'"),
                        computerSystem->data->UUID);
         return -1;
     }
@@ -384,7 +384,7 @@ hypervGetDeviceParentRasdFromDeviceId(const char *parentDeviceId,
         return 0;
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Failed to locate parent device with ID '%s'"),
+                   _("Failed to locate parent device with ID '%1$s'"),
                    parentDeviceId);
 
     return -1;
@@ -424,13 +424,13 @@ hypervDomainCreateSCSIController(virDomainPtr domain, virDomainControllerDef *de
     if (def->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT &&
         def->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported SCSI controller model '%d'"), def->model);
+                       _("Unsupported SCSI controller model '%1$d'"), def->model);
         return -1;
     }
 
     if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported SCSI controller address type '%d'"), def->info.type);
+                       _("Unsupported SCSI controller address type '%1$d'"), def->info.type);
         return -1;
     }
 
@@ -1327,7 +1327,7 @@ hypervDomainDefParseVirtualExtent(hypervPrivate *priv,
         disk->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unrecognized controller type %d"),
+                       _("Unrecognized controller type %1$d"),
                        controller->data->ResourceType);
         goto cleanup;
     }
@@ -1773,7 +1773,7 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
 
     if (!os) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get version information for host %s"),
+                       _("Could not get version information for host %1$s"),
                        conn->uri->server);
         goto cleanup;
     }
@@ -1818,7 +1818,7 @@ hypervConnectGetVersion(virConnectPtr conn, unsigned long *version)
 
     if (hypervParseVersionString(priv->version, &major, &minor, &micro) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not parse version from '%s'"),
+                       _("Could not parse version from '%1$s'"),
                        priv->version);
         return -1;
     }
@@ -1842,7 +1842,7 @@ hypervConnectGetVersion(virConnectPtr conn, unsigned long *version)
      */
     if (major > 99 || minor > 99 || micro > 999999) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not produce packed version number from '%s'"),
+                       _("Could not produce packed version number from '%1$s'"),
                        priv->version);
         return -1;
     }
@@ -1891,7 +1891,7 @@ hypervConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
 
     if (!processorSettingData) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get maximum definition of Msvm_ProcessorSettingData for host %s"),
+                       _("Could not get maximum definition of Msvm_ProcessorSettingData for host %1$s"),
                        conn->uri->server);
         return -1;
     }
@@ -1943,7 +1943,7 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     /* Fill struct */
     if (virStrcpyStatic(info->model, processorList->data->Name) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("CPU model %s too long for destination"),
+                       _("CPU model %1$s too long for destination"),
                        processorList->data->Name);
         return -1;
     }
@@ -2059,7 +2059,7 @@ hypervDomainLookupByName(virConnectPtr conn, const char *name)
 
     if (computerSystem->next) {
         virReportError(VIR_ERR_MULTIPLE_DOMAINS,
-                       _("Multiple domains exist with the name '%s': repeat the request using a UUID"),
+                       _("Multiple domains exist with the name '%1$s': repeat the request using a UUID"),
                        name);
         return NULL;
     }
@@ -2127,7 +2127,7 @@ hypervDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
     if (hypervGetWmiClass(Msvm_ShutdownComponent, &shutdown) < 0 ||
         !shutdown) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Could not get Msvm_ShutdownComponent for domain with UUID '%s'"),
+                       _("Could not get Msvm_ShutdownComponent for domain with UUID '%1$s'"),
                        uuid);
         return -1;
     }
@@ -2464,7 +2464,7 @@ hypervDomainScreenshot(virDomainPtr domain,
         temporaryDirectory = "/tmp";
     temporaryFile = g_strdup_printf("%s/libvirt.hyperv.screendump.XXXXXX", temporaryDirectory);
     if ((fd = g_mkstemp_full(temporaryFile, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
-        virReportSystemError(errno, _("g_mkstemp(\"%s\") failed"), temporaryFile);
+        virReportSystemError(errno, _("g_mkstemp(\"%1$s\") failed"), temporaryFile);
         goto cleanup;
     }
     unlinkTemporaryFile = true;
@@ -2705,7 +2705,7 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     if (virUUIDParse(computerSystem->data->Name, def->uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not parse UUID from string '%s'"),
+                       _("Could not parse UUID from string '%1$s'"),
                        computerSystem->data->Name);
         return NULL;
     }
@@ -2928,7 +2928,7 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
     if ((domain = hypervDomainLookupByUUID(conn, def->uuid))) {
         char uuid_string[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(domain->uuid, uuid_string);
-        virReportError(VIR_ERR_DOM_EXIST, _("Domain already exists with UUID '%s'"), uuid_string);
+        virReportError(VIR_ERR_DOM_EXIST, _("Domain already exists with UUID '%1$s'"), uuid_string);
 
         // Don't use the 'exit' label, since we don't want to delete the existing domain.
         virObjectUnref(domain);
@@ -2978,7 +2978,7 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
     /* Attach serials */
     for (i = 0; i < def->nserials; i++) {
         if (hypervDomainAttachSerial(domain, def->serials[i]) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not attach serial port %zu"), i);
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not attach serial port %1$zu"), i);
             goto error;
         }
     }
@@ -2986,7 +2986,7 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
     /* Attach networks */
     for (i = 0; i < def->nnets; i++) {
         if (hypervDomainAttachSyntheticEthernetAdapter(domain, def->nets[i], hostname) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not attach network %zu"), i);
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not attach network %1$zu"), i);
             goto error;
         }
     }
@@ -3133,7 +3133,7 @@ hypervDomainAttachDeviceFlags(virDomainPtr domain, const char *xml, unsigned int
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Attaching devices of type %d is not implemented"), dev->type);
+                       _("Attaching devices of type %1$d is not implemented"), dev->type);
         return -1;
     }
 
@@ -3290,7 +3290,7 @@ hypervNodeGetFreeMemory(virConnectPtr conn)
 
     if (!operatingSystem) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get free memory for host %s"),
+                       _("Could not get free memory for host %1$s"),
                        conn->uri->server);
         return 0;
     }
@@ -3732,7 +3732,7 @@ hypervDebugHandler(const char *message, debug_level_e level,
     case DEBUG_LEVEL_ERROR:
     case DEBUG_LEVEL_CRITICAL:
     case DEBUG_LEVEL_ALWAYS:
-        VIR_ERROR(_("openwsman: %s"), message);
+        VIR_ERROR(_("openwsman: %1$s"), message);
         break;
 
     case DEBUG_LEVEL_WARNING:

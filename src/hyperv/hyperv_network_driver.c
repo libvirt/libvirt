@@ -40,7 +40,7 @@ hypervMsvmVirtualSwitchToNetwork(virConnectPtr conn, Msvm_VirtualEthernetSwitch 
 
     if (virUUIDParse(virtualSwitch->data->Name, uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not parse UUID from string '%s'"),
+                       _("Could not parse UUID from string '%1$s'"),
                        virtualSwitch->data->Name);
         return NULL;
     }
@@ -64,7 +64,7 @@ hypervNetworkLookup(virConnectPtr conn, const char *property, const char *value)
 
     if (!virtualSwitch) {
         virReportError(VIR_ERR_NO_NETWORK,
-                       _("No network found with property '%s' = '%s'"), property, value);
+                       _("No network found with property '%1$s' = '%2$s'"), property, value);
         return NULL;
     }
 
