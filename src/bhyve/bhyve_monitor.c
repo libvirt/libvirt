@@ -120,7 +120,7 @@ bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
 
     if (watch != mon->watch || kq != mon->kq) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("event from unexpected fd %d!=%d / watch %d!=%d"),
+                       _("event from unexpected fd %1$d!=%2$d / watch %3$d!=%4$d"),
                        mon->kq, kq, mon->watch, watch);
         return;
     }
@@ -142,7 +142,7 @@ bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
     if (kev.filter == EVFILT_PROC && (kev.fflags & NOTE_EXIT) != 0) {
         if ((pid_t)kev.ident != vm->pid) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("event from unexpected proc %ju!=%ju"),
+                           _("event from unexpected proc %1$ju!=%2$ju"),
                            (uintmax_t)vm->pid, (uintmax_t)kev.ident);
             return;
         }
@@ -151,7 +151,7 @@ bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
         status = kev.data;
         if (WIFSIGNALED(status) && WCOREDUMP(status)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Guest %s got signal %d and crashed"),
+                           _("Guest %1$s got signal %2$d and crashed"),
                            name, WTERMSIG(status));
             virBhyveProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED);
         } else if (WIFEXITED(status)) {

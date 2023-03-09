@@ -74,7 +74,7 @@ bhyveBuildNetArgStr(const virDomainDef *def,
         brname = g_strdup(virDomainNetGetActualBridgeName(net));
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Network type %d is not supported"),
+                       _("Network type %1$d is not supported"),
                        virDomainNetGetActualType(net));
         goto cleanup;
     }
@@ -553,7 +553,7 @@ bhyveBuildSoundArgStr(const virDomainDef *def G_GNUC_UNUSED,
         case VIR_DOMAIN_AUDIO_TYPE_FILE:
         case VIR_DOMAIN_AUDIO_TYPE_DBUS:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported audio backend '%s'"),
+                           _("unsupported audio backend '%1$s'"),
                            virDomainAudioTypeTypeToString(audio->type));
             return -1;
         case VIR_DOMAIN_AUDIO_TYPE_LAST:
@@ -589,7 +589,7 @@ bhyveBuildFSArgStr(const virDomainDef *def G_GNUC_UNUSED,
     case VIR_DOMAIN_FS_TYPE_VOLUME:
     case VIR_DOMAIN_FS_TYPE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unsupported filesystem type '%s'"),
+                       _("unsupported filesystem type '%1$s'"),
                        virDomainFSTypeToString(fs->type));
         return -1;
     }
@@ -606,7 +606,7 @@ bhyveBuildFSArgStr(const virDomainDef *def G_GNUC_UNUSED,
     case VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP:
     case VIR_DOMAIN_FS_DRIVER_TYPE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unsupported filesystem driver '%s'"),
+                       _("unsupported filesystem driver '%1$s'"),
                        virDomainFSDriverTypeToString(fs->fsdriver));
         return -1;
     }
@@ -620,7 +620,7 @@ bhyveBuildFSArgStr(const virDomainDef *def G_GNUC_UNUSED,
     case VIR_DOMAIN_FS_ACCESSMODE_DEFAULT:
     case VIR_DOMAIN_FS_ACCESSMODE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unsupported filesystem accessmode '%s'"),
+                       _("unsupported filesystem accessmode '%1$s'"),
                        virDomainFSAccessModeTypeToString(fs->accessmode));
         return -1;
     }
@@ -723,7 +723,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
         break;
     default:
          virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                        _("unsupported clock offset '%s'"),
+                        _("unsupported clock offset '%1$s'"),
                         virDomainClockOffsetTypeToString(def->clock.offset));
          return NULL;
     }
@@ -874,7 +874,7 @@ virBhyveProcessBuildCustomLoaderCmd(virDomainDef *def)
 
     if (def->os.bootloaderArgs == NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Custom loader requires explicit %s configuration"),
+                       _("Custom loader requires explicit %1$s configuration"),
                        "bootloader_args");
         return NULL;
     }
@@ -1059,7 +1059,7 @@ virBhyveGetBootDisk(virDomainDef *def)
         case VIR_DOMAIN_BOOT_LAST:
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Cannot boot from device %s"),
+                           _("Cannot boot from device %1$s"),
                            virDomainBootTypeToString(def->os.bootDevs[0]));
             return NULL;
         }
@@ -1080,7 +1080,7 @@ virBhyveGetBootDisk(virDomainDef *def)
 
         if (match == NULL) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Cannot find boot device of requested type %s"),
+                           _("Cannot find boot device of requested type %1$s"),
                            virDomainBootTypeToString(def->os.bootDevs[0]));
             return NULL;
         }

@@ -281,8 +281,8 @@ bhyveParseBhyveLPCArg(virDomainDef *def,
 
         if (!STRPREFIX(param, "/dev/nmdm")) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("Failed to set com port %s: does not start with "
-                             "'/dev/nmdm'."), type);
+                           _("Failed to set com port %1$s: does not start with '/dev/nmdm'."),
+                           type);
                 goto error;
         }
 
@@ -301,8 +301,7 @@ bhyveParseBhyveLPCArg(virDomainDef *def,
                 break;
             default:
                 virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("Failed to set slave for %s: last letter not "
-                                 "'A' or 'B'"),
+                               _("Failed to set slave for %1$s: last letter not 'A' or 'B'"),
                                NULLSTR(chr->source->data.nmdm.master));
                 goto error;
         }
@@ -314,8 +313,8 @@ bhyveParseBhyveLPCArg(virDomainDef *def,
             break;
         default:
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("Failed to parse %s: only com1 and com2"
-                             " supported."), type);
+                           _("Failed to parse %1$s: only com1 and com2 supported."),
+                           type);
             goto error;
             break;
         }
@@ -515,7 +514,7 @@ bhyveParsePCINet(virDomainDef *def,
 
     if (virMacAddrParse(mac, &net->mac) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to parse mac address '%s'"),
+                       _("unable to parse mac address '%1$s'"),
                        mac);
         goto cleanup;
      }
@@ -716,7 +715,7 @@ bhyveParseBhyvePCIArg(virDomainDef *def,
 
 #define CONSUME_ARG(var) \
     if ((opti + 1) == argc) { \
-        virReportError(VIR_ERR_INVALID_ARG, _("Missing argument for '%s'"), \
+        virReportError(VIR_ERR_INVALID_ARG, _("Missing argument for '%1$s'"), \
                        argv[opti]); \
         return -1; \
     } \
@@ -800,7 +799,7 @@ bhyveParseBhyveCommandLine(virDomainDef *def,
             CONSUME_ARG(arg);
             if (virUUIDParse(arg, def->uuid) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Cannot parse UUID '%s'"), arg);
+                               _("Cannot parse UUID '%1$s'"), arg);
                 return -1;
             }
             break;

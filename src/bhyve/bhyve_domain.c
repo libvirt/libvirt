@@ -114,7 +114,7 @@ bhyveDomainDiskDefAssignAddress(struct _bhyveConn *driver,
 
     if (idx < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Unknown disk name '%s' and no address specified"),
+                       _("Unknown disk name '%1$s' and no address specified"),
                        def->dst);
         return -1;
     }
