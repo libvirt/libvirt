@@ -279,7 +279,7 @@ virCgroupV2ParseControllersFile(virCgroup *group,
 
     rc = virFileReadAll(contFile, 1024 * 1024, &contStr);
     if (rc < 0) {
-        virReportSystemError(errno, _("Unable to read from '%s'"), contFile);
+        virReportSystemError(errno, _("Unable to read from '%1$s'"), contFile);
         return -1;
     }
 
@@ -360,7 +360,7 @@ virCgroupV2PathOfController(virCgroup *group,
 {
     if (!virCgroupV2HasController(group, controller)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("v2 controller '%s' is not available"),
+                       _("v2 controller '%1$s' is not available"),
                        virCgroupV2ControllerTypeToString(controller));
         return -1;
     }
@@ -398,7 +398,7 @@ virCgroupV2EnableController(virCgroup *group,
     if (virFileWriteStr(path, val, 0) < 0) {
         if (report) {
             virReportSystemError(errno,
-                                 _("Failed to enable controller '%s' for '%s'"),
+                                 _("Failed to enable controller '%1$s' for '%2$s'"),
                                  val, path);
         }
         return -2;
@@ -439,7 +439,7 @@ virCgroupV2MakeGroup(virCgroup *parent,
 
     if (!virFileExists(path) &&
         (!create || (mkdir(path, 0755) < 0 && errno != EEXIST))) {
-        virReportSystemError(errno, _("Failed to create v2 cgroup '%s'"),
+        virReportSystemError(errno, _("Failed to create v2 cgroup '%1$s'"),
                              path);
         return -1;
     }
@@ -590,7 +590,7 @@ virCgroupV2BindMount(virCgroup *group,
     VIR_DEBUG("Mounting cgroups at '%s'", group->unified.mountPoint);
 
     if (g_mkdir_with_parents(group->unified.mountPoint, 0777) < 0) {
-        virReportSystemError(errno, _("Unable to create directory %s"),
+        virReportSystemError(errno, _("Unable to create directory %1$s"),
                              group->unified.mountPoint);
         return -1;
     }
@@ -598,7 +598,7 @@ virCgroupV2BindMount(virCgroup *group,
     src = g_strdup_printf("%s%s", oldroot, group->unified.mountPoint);
 
     if (mount(src, group->unified.mountPoint, "none", MS_BIND, NULL) < 0) {
-        virReportSystemError(errno, _("Failed to bind cgroup '%s' on '%s'"),
+        virReportSystemError(errno, _("Failed to bind cgroup '%1$s' on '%2$s'"),
                              src, group->unified.mountPoint);
         return -1;
     }
@@ -622,7 +622,7 @@ virCgroupV2SetOwner(virCgroup *cgroup,
         return -1;
 
     if (chown(base, uid, gid) < 0) {
-        virReportSystemError(errno, _("cannot chown '%s' to (%u, %u)"),
+        virReportSystemError(errno, _("cannot chown '%1$s' to (%2$u, %3$u)"),
                              base, uid, gid);
         return -1;
     }
@@ -710,7 +710,7 @@ virCgroupV2GetBlkioWeight(virCgroup *group,
 
     if (virStrToLong_ui(tmp, &tmp, 10, weight) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse '%s' as an integer"),
+                       _("Unable to parse '%1$s' as an integer"),
                        tmp);
         return -1;
     }
@@ -763,7 +763,7 @@ virCgroupV2GetBlkioIoServiced(virCgroup *group,
             p1 += strlen(value_names[i]);
             if (virStrToLong_ll(p1, &p1, 10, &stats_val) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Cannot parse byte '%s' stat '%s'"),
+                               _("Cannot parse byte '%1$s' stat '%2$s'"),
                                value_names[i], p1);
                 return -1;
             }
@@ -771,7 +771,7 @@ virCgroupV2GetBlkioIoServiced(virCgroup *group,
             if (stats_val < 0 ||
                 (stats_val > 0 && *value_ptrs[i] > (LLONG_MAX - stats_val))) {
                 virReportError(VIR_ERR_OVERFLOW,
-                               _("Sum of byte '%s' stat overflows"),
+                               _("Sum of byte '%1$s' stat overflows"),
                                value_names[i]);
                 return -1;
             }
@@ -820,7 +820,7 @@ virCgroupV2GetBlkioIoDeviceServiced(virCgroup *group,
 
     if (!(p1 = strstr(str1, str2))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot find byte stats for block device '%s'"),
+                       _("Cannot find byte stats for block device '%1$s'"),
                        str2);
         return -1;
     }
@@ -828,7 +828,7 @@ virCgroupV2GetBlkioIoDeviceServiced(virCgroup *group,
     for (i = 0; i < G_N_ELEMENTS(value_names); i++) {
         if (!(p1 = strstr(p1, value_names[i]))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot find byte '%s' stats for block device '%s'"),
+                           _("Cannot find byte '%1$s' stats for block device '%2$s'"),
                            value_names[i], str2);
             return -1;
         }
@@ -836,7 +836,7 @@ virCgroupV2GetBlkioIoDeviceServiced(virCgroup *group,
         p1 += strlen(value_names[i]);
         if (virStrToLong_ll(p1, &p1, 10, value_ptrs[i]) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot parse '%s' stat '%s'"),
+                           _("Cannot parse '%1$s' stat '%2$s'"),
                            value_names[i], p1);
             return -1;
         }
@@ -915,7 +915,7 @@ virCgroupV2GetBlkioDeviceWeight(virCgroup *group,
         *weight = 0;
     } else if (virStrToLong_ui(str, &tmp, 10, weight) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse '%s' as an integer"),
+                       _("Unable to parse '%1$s' as an integer"),
                        str);
         return -1;
     }
@@ -973,7 +973,7 @@ virCgroupV2GetBlkioDeviceReadIops(virCgroup *group,
     } else {
         if (!(tmp = strstr(str, name))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to find '%s' limit for block device '%s'"),
+                           _("Unable to find '%1$s' limit for block device '%2$s'"),
                            name, path);
             return -1;
         }
@@ -983,7 +983,7 @@ virCgroupV2GetBlkioDeviceReadIops(virCgroup *group,
             *riops = 0;
         } else if (virStrToLong_ui(tmp, &tmp, 10, riops) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to parse '%s' as an integer"),
+                           _("Unable to parse '%1$s' as an integer"),
                            str);
             return -1;
         }
@@ -1042,7 +1042,7 @@ virCgroupV2GetBlkioDeviceWriteIops(virCgroup *group,
     } else {
         if (!(tmp = strstr(str, name))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to find '%s' limit for block device '%s'"),
+                           _("Unable to find '%1$s' limit for block device '%2$s'"),
                            name, path);
             return -1;
         }
@@ -1052,7 +1052,7 @@ virCgroupV2GetBlkioDeviceWriteIops(virCgroup *group,
             *wiops = 0;
         } else if (virStrToLong_ui(tmp, &tmp, 10, wiops) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to parse '%s' as an integer"),
+                           _("Unable to parse '%1$s' as an integer"),
                            str);
             return -1;
         }
@@ -1111,7 +1111,7 @@ virCgroupV2GetBlkioDeviceReadBps(virCgroup *group,
     } else {
         if (!(tmp = strstr(str, name))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to find '%s' limit for block device '%s'"),
+                           _("Unable to find '%1$s' limit for block device '%2$s'"),
                            name, path);
             return -1;
         }
@@ -1121,7 +1121,7 @@ virCgroupV2GetBlkioDeviceReadBps(virCgroup *group,
             *rbps = 0;
         } else if (virStrToLong_ull(tmp, &tmp, 10, rbps) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to parse '%s' as an integer"),
+                           _("Unable to parse '%1$s' as an integer"),
                            str);
             return -1;
         }
@@ -1180,7 +1180,7 @@ virCgroupV2GetBlkioDeviceWriteBps(virCgroup *group,
     } else {
         if (!(tmp = strstr(str, name))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to find '%s' limit for block device '%s'"),
+                           _("Unable to find '%1$s' limit for block device '%2$s'"),
                            name, path);
             return -1;
         }
@@ -1190,7 +1190,7 @@ virCgroupV2GetBlkioDeviceWriteBps(virCgroup *group,
             *wbps = 0;
         } else if (virStrToLong_ull(tmp, &tmp, 10, wbps) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to parse '%s' as an integer"),
+                           _("Unable to parse '%1$s' as an integer"),
                            str);
             return -1;
         }
@@ -1208,7 +1208,7 @@ virCgroupV2SetMemory(virCgroup *group,
 
     if (kb > maxkb) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Memory '%llu' must be less than %llu"),
+                       _("Memory '%1$llu' must be less than %2$llu"),
                        kb, maxkb);
         return -1;
     }
@@ -1271,7 +1271,7 @@ virCgroupV2GetMemoryStat(virCgroup *group,
 
         if (virStrToLong_ull(valueStr + 1, NULL, 10, &value) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to parse '%s' as an integer"),
+                           _("Unable to parse '%1$s' as an integer"),
                            valueStr + 1);
             return -1;
         }
@@ -1348,7 +1348,7 @@ virCgroupV2GetMemoryHardLimit(virCgroup *group,
 
     if (virStrToLong_ull(value, NULL, 10, &max) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to parse value '%s' as number."),
+                       _("Failed to parse value '%1$s' as number."),
                        value);
         return -1;
     }
@@ -1369,7 +1369,7 @@ virCgroupV2SetMemorySoftLimit(virCgroup *group,
 
     if (kb > maxkb) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Memory '%llu' must be less than %llu"),
+                       _("Memory '%1$llu' must be less than %2$llu"),
                        kb, maxkb);
         return -1;
     }
@@ -1407,7 +1407,7 @@ virCgroupV2GetMemorySoftLimit(virCgroup *group,
 
     if (virStrToLong_ull(value, NULL, 10, &high) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to parse value '%s' as number."),
+                       _("Failed to parse value '%1$s' as number."),
                        value);
         return -1;
     }
@@ -1428,7 +1428,7 @@ virCgroupV2SetMemSwapHardLimit(virCgroup *group,
 
     if (kb > maxkb) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Memory '%llu' must be less than %llu"),
+                       _("Memory '%1$llu' must be less than %2$llu"),
                        kb, maxkb);
         return -1;
     }
@@ -1467,7 +1467,7 @@ virCgroupV2GetMemSwapHardLimit(virCgroup *group,
 
     if (virStrToLong_ull(value, NULL, 10, &max) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to parse value '%s' as number."),
+                       _("Failed to parse value '%1$s' as number."),
                        value);
         return -1;
     }
@@ -1502,7 +1502,7 @@ virCgroupV2SetCpuShares(virCgroup *group,
     if (shares < VIR_CGROUPV2_WEIGHT_MIN ||
         shares > VIR_CGROUPV2_WEIGHT_MAX) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("shares '%llu' must be in range [%llu, %llu]"),
+                       _("shares '%1$llu' must be in range [%2$llu, %3$llu]"),
                        shares,
                        VIR_CGROUPV2_WEIGHT_MIN,
                        VIR_CGROUPV2_WEIGHT_MAX);
@@ -1542,7 +1542,7 @@ virCgroupV2SetCpuCfsPeriod(virCgroup *group,
     if (cfs_period < VIR_CGROUP_CPU_PERIOD_MIN ||
         cfs_period > VIR_CGROUP_CPU_PERIOD_MAX) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("cfs_period '%llu' must be in range (%llu, %llu)"),
+                       _("cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"),
                        VIR_CGROUP_CPU_PERIOD_MIN,
                        VIR_CGROUP_CPU_PERIOD_MAX,
                        cfs_period);
@@ -1588,7 +1588,7 @@ virCgroupV2GetCpuCfsPeriod(virCgroup *group,
 
     if (virStrToLong_ull(tmp, &tmp, 10, cfs_period) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to parse value '%s' from cpu.max."), str);
+                       _("Failed to parse value '%1$s' from cpu.max."), str);
         return -1;
     }
 
@@ -1604,7 +1604,7 @@ virCgroupV2SetCpuCfsQuota(virCgroup *group,
         (cfs_quota < VIR_CGROUP_CPU_QUOTA_MIN ||
          cfs_quota > VIR_CGROUP_CPU_QUOTA_MAX)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("cfs_quota '%lld' must be in range (%llu, %llu)"),
+                       _("cfs_quota '%1$lld' must be in range (%2$llu, %3$llu)"),
                        cfs_quota,
                        VIR_CGROUP_CPU_QUOTA_MIN,
                        VIR_CGROUP_CPU_QUOTA_MAX);
@@ -1642,7 +1642,7 @@ virCgroupV2GetCpuCfsQuota(virCgroup *group,
 
     if (virStrToLong_ll(str, &tmp, 10, cfs_quota) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to parse value '%s' from cpu.max."), str);
+                       _("Failed to parse value '%1$s' from cpu.max."), str);
         return -1;
     }
 
@@ -1679,14 +1679,14 @@ virCgroupV2GetCpuacctUsage(virCgroup *group,
 
     if (!(tmp = strstr(str, "usage_usec "))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse cpu usage stat '%s'"), str);
+                       _("cannot parse cpu usage stat '%1$s'"), str);
         return -1;
     }
     tmp += strlen("usage_usec ");
 
     if (virStrToLong_ull(tmp, &tmp, 10, usage) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to parse value '%s' as number."), tmp);
+                       _("Failed to parse value '%1$s' as number."), tmp);
         return -1;
     }
 
@@ -1713,27 +1713,27 @@ virCgroupV2GetCpuacctStat(virCgroup *group,
 
     if (!(tmp = strstr(str, "user_usec "))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse cpu user stat '%s'"), str);
+                       _("cannot parse cpu user stat '%1$s'"), str);
         return -1;
     }
     tmp += strlen("user_usec ");
 
     if (virStrToLong_ull(tmp, &tmp, 10, &userVal) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to parse value '%s' as number."), tmp);
+                       _("Failed to parse value '%1$s' as number."), tmp);
         return -1;
     }
 
     if (!(tmp = strstr(str, "system_usec "))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse cpu sys stat '%s'"), str);
+                       _("cannot parse cpu sys stat '%1$s'"), str);
         return -1;
     }
     tmp += strlen("system_usec ");
 
     if (virStrToLong_ull(tmp, &tmp, 10, &sysVal) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to parse value '%s' as number."), tmp);
+                       _("Failed to parse value '%1$s' as number."), tmp);
         return -1;
     }
 

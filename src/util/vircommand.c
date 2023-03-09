@@ -372,7 +372,7 @@ getDevNull(int *null)
 {
     if (*null == -1 && (*null = open("/dev/null", O_RDWR|O_CLOEXEC)) < 0) {
         virReportSystemError(errno,
-                             _("cannot open %s"),
+                             _("cannot open %1$s"),
                              "/dev/null");
         return -1;
     }
@@ -428,7 +428,7 @@ virCommandHandshakeChild(virCommand *cmd)
     }
     if (c != '1') {
         virReportSystemError(EINVAL,
-                             _("Unexpected confirm code '%c' from parent"),
+                             _("Unexpected confirm code '%1$c' from parent"),
                              c);
         return -1;
     }
@@ -453,7 +453,7 @@ virExecCommon(virCommand *cmd, gid_t *groups, int ngroups)
     if (cmd->schedCore > 0 &&
         virProcessSchedCoreShareFrom(cmd->schedCore) < 0) {
         virReportSystemError(errno,
-                             _("Unable to run among %llu"),
+                             _("Unable to run among %1$llu"),
                              (unsigned long long) cmd->schedCore);
         return -1;
     }
@@ -472,7 +472,7 @@ virExecCommon(virCommand *cmd, gid_t *groups, int ngroups)
         VIR_DEBUG("Running child in %s", cmd->pwd);
         if (chdir(cmd->pwd) < 0) {
             virReportSystemError(errno,
-                                 _("Unable to change to %s"), cmd->pwd);
+                                 _("Unable to change to %1$s"), cmd->pwd);
             return -1;
         }
     }
@@ -501,7 +501,7 @@ virCommandMassCloseGetFDsLinux(virCommand *cmd G_GNUC_UNUSED,
 
         if (virStrToLong_i(entry->d_name, NULL, 10, &fd) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to parse FD: %s"),
+                           _("unable to parse FD: %1$s"),
                            entry->d_name);
             return -1;
         }
@@ -568,7 +568,7 @@ virCommandMassClose(virCommand *cmd,
             int tmpfd = fd;
             VIR_MASS_CLOSE(tmpfd);
         } else if (virSetInherit(fd, true) < 0) {
-            virReportSystemError(errno, _("failed to preserve fd %d"), fd);
+            virReportSystemError(errno, _("failed to preserve fd %1$d"), fd);
             return -1;
         }
     }
@@ -621,7 +621,7 @@ virCommandMassClose(virCommand *cmd,
             int tmpfd = fd;
             VIR_MASS_CLOSE(tmpfd);
         } else if (virSetInherit(fd, true) < 0) {
-            virReportSystemError(errno, _("failed to preserve fd %d"), fd);
+            virReportSystemError(errno, _("failed to preserve fd %1$d"), fd);
             return -1;
         }
     }
@@ -867,8 +867,7 @@ virExec(virCommand *cmd)
         VIR_DEBUG("Setting child security label to %s", cmd->seLinuxLabel);
         if (setexeccon_raw(cmd->seLinuxLabel) == -1) {
             virReportSystemError(errno,
-                                 _("unable to set SELinux security context "
-                                   "'%s' for '%s'"),
+                                 _("unable to set SELinux security context '%1$s' for '%2$s'"),
                                  cmd->seLinuxLabel, cmd->args[0]);
             if (security_getenforce() == 1)
                 goto fork_error;
@@ -880,8 +879,7 @@ virExec(virCommand *cmd)
         VIR_DEBUG("Setting child AppArmor profile to %s", cmd->appArmorProfile);
         if (aa_change_profile(cmd->appArmorProfile) < 0) {
             virReportSystemError(errno,
-                                 _("unable to set AppArmor profile '%s' "
-                                   "for '%s'"),
+                                 _("unable to set AppArmor profile '%1$s' for '%2$s'"),
                                  cmd->appArmorProfile, cmd->args[0]);
             goto fork_error;
         }
@@ -904,7 +902,7 @@ virExec(virCommand *cmd)
 
     ret = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
     virReportSystemError(errno,
-                         _("cannot execute binary %s"),
+                         _("cannot execute binary %1$s"),
                          cmd->args[0]);
 
  fork_error:
@@ -2182,7 +2180,7 @@ virCommandGetBinaryPath(virCommand *cmd)
 
     if (!(cmd->binaryPath = virFindFileInPath(cmd->args[0]))) {
         virReportSystemError(ENOENT,
-                             _("Cannot find '%s' in path"),
+                             _("Cannot find '%1$s' in path"),
                              cmd->args[0]);
         return NULL;
     }
@@ -2369,7 +2367,7 @@ int virCommandExec(virCommand *cmd, gid_t *groups, int ngroups)
     execve(cmd->args[0], cmd->args, cmd->env);
 
     virReportSystemError(errno,
-                         _("cannot execute binary %s"),
+                         _("cannot execute binary %1$s"),
                          cmd->args[0]);
     return -1;
 }
@@ -2584,7 +2582,7 @@ virCommandRunAsync(virCommand *cmd, pid_t *pid)
 
     if (cmd->pid != -1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("command is already running as pid %lld"),
+                       _("command is already running as pid %1$lld"),
                        (long long) cmd->pid);
         goto cleanup;
     }
@@ -2596,7 +2594,7 @@ virCommandRunAsync(virCommand *cmd, pid_t *pid)
     }
     if (cmd->pwd && (cmd->flags & VIR_EXEC_DAEMON)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("daemonized command cannot set working directory %s"),
+                       _("daemonized command cannot set working directory %1$s"),
                        cmd->pwd);
         goto cleanup;
     }
@@ -2750,7 +2748,7 @@ virCommandWait(virCommand *cmd, int *exitstatus)
             bool haveErrMsg = cmd->errbuf && *cmd->errbuf && (*cmd->errbuf)[0];
 
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Child process (%s) unexpected %s%s%s"),
+                           _("Child process (%1$s) unexpected %2$s%3$s%4$s"),
                            str ? str : cmd->args[0], NULLSTR(st),
                            haveErrMsg ? ": " : "",
                            haveErrMsg ? *cmd->errbuf : "");
@@ -3260,7 +3258,7 @@ virCommandRunRegex(virCommand *cmd,
         reg[i] = g_regex_new(regex[i], G_REGEX_OPTIMIZE, 0, &err);
         if (!reg[i]) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to compile regex %s"), err->message);
+                           _("Failed to compile regex %1$s"), err->message);
             for (j = 0; j < i; j++)
                 g_regex_unref(reg[j]);
             VIR_FREE(reg);
@@ -3426,7 +3424,7 @@ virCommandRunRegex(virCommand *cmd G_GNUC_UNUSED,
                    int *exitstatus G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("%s not implemented on Win32"), __FUNCTION__);
+                   _("%1$s not implemented on Win32"), __FUNCTION__);
     return -1;
 }
 
@@ -3437,7 +3435,7 @@ virCommandRunNul(virCommand *cmd G_GNUC_UNUSED,
                  void *data G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("%s not implemented on Win32"), __FUNCTION__);
+                   _("%1$s not implemented on Win32"), __FUNCTION__);
     return -1;
 }
 #endif /* WIN32 */

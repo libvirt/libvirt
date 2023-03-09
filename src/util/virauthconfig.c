@@ -109,7 +109,7 @@ virAuthConfigLookup(virAuthConfig *auth,
 
     if (!(authcred = g_key_file_get_string(auth->keyfile, authgroup, "credentials", NULL))) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("Missing item 'credentials' in group '%s' in '%s'"),
+                       _("Missing item 'credentials' in group '%1$s' in '%2$s'"),
                        authgroup, auth->path);
         return -1;
     }
@@ -118,7 +118,7 @@ virAuthConfigLookup(virAuthConfig *auth,
 
     if (!g_key_file_has_group(auth->keyfile, credgroup)) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("Missing group 'credentials-%s' referenced from group '%s' in '%s'"),
+                       _("Missing group 'credentials-%1$s' referenced from group '%2$s' in '%3$s'"),
                        authcred, authgroup, auth->path);
         return -1;
     }

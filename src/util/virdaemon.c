@@ -123,14 +123,14 @@ virDaemonForkIntoBackground(const char *argv0)
 
             if (ret != 1) {
                 fprintf(stderr,
-                        _("%s: error: unable to determine if daemon is "
-                          "running: %s\n"), argv0,
+                        _("%1$s: error: unable to determine if daemon is running: %2$s\n"),
+                        argv0,
                         g_strerror(errno));
                 exit(EXIT_FAILURE);
             } else if (status != 0) {
                 fprintf(stderr,
-                        _("%s: error: %s. Check /var/log/messages or run without "
-                          "--daemon for more info.\n"), argv0,
+                        _("%1$s: error: %2$s. Check /var/log/messages or run without --daemon for more info.\n"),
+                        argv0,
                         virDaemonErrTypeToString(status));
                 exit(EXIT_FAILURE);
             }

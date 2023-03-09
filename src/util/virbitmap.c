@@ -478,7 +478,7 @@ virBitmapParseInternal(const char *str,
 
  error:
     virReportError(VIR_ERR_INVALID_ARG,
-                   _("Failed to parse bitmap '%s'"), str);
+                   _("Failed to parse bitmap '%1$s'"), str);
     return -1;
 }
 
@@ -996,7 +996,7 @@ virBitmapNewString(const char *string)
 
     if (strspn(string, "0123456789abcdefABCDEF") != len) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Invalid hexadecimal string '%s'"), string);
+                       _("Invalid hexadecimal string '%1$s'"), string);
         return NULL;
     }
 

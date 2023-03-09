@@ -56,14 +56,14 @@ virCryptoHashBuf(virCryptoHash hash,
     int rc;
     if (hash >= VIR_CRYPTO_HASH_LAST) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Unknown crypto hash %d"), hash);
+                       _("Unknown crypto hash %1$d"), hash);
         return -1;
     }
 
     rc = gnutls_hash_fast(hashinfo[hash].algorithm, input, strlen(input), output);
     if (rc < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to compute hash of data: %s"),
+                       _("Unable to compute hash of data: %1$s"),
                        gnutls_strerror(rc));
         return -1;
     }
@@ -133,7 +133,7 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
     if ((rc = gnutls_cipher_init(&handle, gnutls_enc_alg,
                                  &enc_key, &iv_buf)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to initialize cipher: '%s'"),
+                       _("failed to initialize cipher: '%1$s'"),
                        gnutls_strerror(rc));
         return -1;
     }
@@ -160,7 +160,7 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
     if (rc < 0) {
         virSecureErase(ciphertext, ciphertextlen);
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to encrypt the data: '%s'"),
+                       _("failed to encrypt the data: '%1$s'"),
                        gnutls_strerror(rc));
         return -1;
     }
@@ -202,14 +202,14 @@ virCryptoEncryptData(virCryptoCipher algorithm,
     case VIR_CRYPTO_CIPHER_AES256CBC:
         if (enckeylen != 32) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("AES256CBC encryption invalid keylen=%zu"),
+                           _("AES256CBC encryption invalid keylen=%1$zu"),
                            enckeylen);
             return -1;
         }
 
         if (ivlen != 16) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("AES256CBC initialization vector invalid len=%zu"),
+                           _("AES256CBC initialization vector invalid len=%1$zu"),
                            ivlen);
             return -1;
         }
@@ -230,6 +230,6 @@ virCryptoEncryptData(virCryptoCipher algorithm,
     }
 
     virReportError(VIR_ERR_INVALID_ARG,
-                   _("algorithm=%d is not supported"), algorithm);
+                   _("algorithm=%1$d is not supported"), algorithm);
     return -1;
 }

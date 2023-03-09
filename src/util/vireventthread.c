@@ -162,7 +162,7 @@ virEventThreadStart(virEventThread *evt, const char *name)
     if (!evt->thread) {
         virEventThreadDataFree(data);
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to start event thread: %s"),
+                       _("Unable to start event thread: %1$s"),
                        gerr->message);
         return -1;
     }

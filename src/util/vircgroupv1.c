@@ -230,7 +230,7 @@ virCgroupV1ResolveMountLink(const char *mntDir,
     dirName = strrchr(tmp, '/');
     if (!dirName) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing '/' separator in cgroup mount '%s'"), tmp);
+                       _("Missing '/' separator in cgroup mount '%1$s'"), tmp);
         return -1;
     }
 
@@ -246,7 +246,7 @@ virCgroupV1ResolveMountLink(const char *mntDir,
             VIR_WARN("Controller %s co-mounted at %s is missing symlink at %s",
                      typeStr, tmp, linkSrc);
         } else {
-            virReportSystemError(errno, _("Cannot stat %s"), linkSrc);
+            virReportSystemError(errno, _("Cannot stat %1$s"), linkSrc);
             return -1;
         }
     } else {
@@ -409,7 +409,7 @@ virCgroupV1ValidatePlacement(virCgroup *group,
 
         if (!group->legacy[i].placement) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not find placement for v1 controller %s"),
+                           _("Could not find placement for v1 controller %1$s"),
                            virCgroupV1ControllerTypeToString(i));
             return -1;
         }
@@ -478,7 +478,7 @@ virCgroupV1DetectControllers(virCgroup *group,
                     if (STREQ_NULLABLE(group->legacy[i].mountPoint,
                                        group->legacy[j].mountPoint)) {
                         virReportSystemError(EINVAL,
-                                             _("V1 controller '%s' is not wanted, but '%s' is co-mounted"),
+                                             _("V1 controller '%1$s' is not wanted, but '%2$s' is co-mounted"),
                                              virCgroupV1ControllerTypeToString(i),
                                              virCgroupV1ControllerTypeToString(j));
                         return -1;
@@ -547,14 +547,14 @@ virCgroupV1PathOfController(virCgroup *group,
 {
     if (group->legacy[controller].mountPoint == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("v1 controller '%s' is not mounted"),
+                       _("v1 controller '%1$s' is not mounted"),
                        virCgroupV1ControllerTypeToString(controller));
         return -1;
     }
 
     if (group->legacy[controller].placement == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("v1 controller '%s' is not enabled for group"),
+                       _("v1 controller '%1$s' is not enabled for group"),
                        virCgroupV1ControllerTypeToString(controller));
         return -1;
     }
@@ -670,7 +670,7 @@ virCgroupV1MakeGroup(virCgroup *parent,
                     continue;
                 } else {
                     virReportSystemError(errno,
-                                         _("Failed to create v1 controller %s for group"),
+                                         _("Failed to create v1 controller %1$s for group"),
                                          virCgroupV1ControllerTypeToString(i));
                     return -1;
                 }
@@ -828,7 +828,7 @@ virCgroupV1IdentifyRoot(virCgroup *group)
             continue;
         if (!(tmp = strrchr(group->legacy[i].mountPoint, '/'))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not find directory separator in %s"),
+                           _("Could not find directory separator in %1$s"),
                            group->legacy[i].mountPoint);
             return NULL;
         }
@@ -860,7 +860,7 @@ virCgroupV1BindMount(virCgroup *group,
 
     if (g_mkdir_with_parents(root, 0777) < 0) {
         virReportSystemError(errno,
-                             _("Unable to create directory %s"),
+                             _("Unable to create directory %1$s"),
                              root);
         return -1;
     }
@@ -869,7 +869,7 @@ virCgroupV1BindMount(virCgroup *group,
 
     if (mount("tmpfs", root, "tmpfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, opts) < 0) {
         virReportSystemError(errno,
-                             _("Failed to mount %s on %s type %s"),
+                             _("Failed to mount %1$s on %2$s type %3$s"),
                              "tmpfs", root, "tmpfs");
         return -1;
     }
@@ -886,7 +886,7 @@ virCgroupV1BindMount(virCgroup *group,
                       group->legacy[i].mountPoint);
             if (g_mkdir_with_parents(group->legacy[i].mountPoint, 0777) < 0) {
                 virReportSystemError(errno,
-                                     _("Unable to create directory %s"),
+                                     _("Unable to create directory %1$s"),
                                      group->legacy[i].mountPoint);
                 return -1;
             }
@@ -894,7 +894,7 @@ virCgroupV1BindMount(virCgroup *group,
             if (mount(src, group->legacy[i].mountPoint, "none", MS_BIND,
                       NULL) < 0) {
                 virReportSystemError(errno,
-                                     _("Failed to bind cgroup '%s' on '%s'"),
+                                     _("Failed to bind cgroup '%1$s' on '%2$s'"),
                                      src, group->legacy[i].mountPoint);
                 return -1;
             }
@@ -907,7 +907,7 @@ virCgroupV1BindMount(virCgroup *group,
             if (symlink(group->legacy[i].mountPoint,
                         group->legacy[i].linkPoint) < 0) {
                 virReportSystemError(errno,
-                                     _("Unable to symlink directory %s to %s"),
+                                     _("Unable to symlink directory %1$s to %2$s"),
                                      group->legacy[i].mountPoint,
                                      group->legacy[i].linkPoint);
                 return -1;
@@ -952,7 +952,7 @@ virCgroupV1SetOwner(virCgroup *cgroup,
 
             if (chown(entry, uid, gid) < 0) {
                 virReportSystemError(errno,
-                                     _("cannot chown '%s' to (%u, %u)"),
+                                     _("cannot chown '%1$s' to (%2$u, %3$u)"),
                                      entry, uid, gid);
                 return -1;
             }
@@ -962,7 +962,7 @@ virCgroupV1SetOwner(virCgroup *cgroup,
 
         if (chown(base, uid, gid) < 0) {
             virReportSystemError(errno,
-                                 _("cannot chown '%s' to (%u, %u)"),
+                                 _("cannot chown '%1$s' to (%2$u, %3$u)"),
                                  base, uid, gid);
             return -1;
         }
@@ -1042,7 +1042,7 @@ virCgroupV1GetBlkioWeight(virCgroup *group,
 
     if (virStrToLong_ui(value, NULL, 10, weight) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse '%s' as an integer"),
+                       _("Unable to parse '%1$s' as an integer"),
                        value);
         return -1;
     }
@@ -1102,7 +1102,7 @@ virCgroupV1GetBlkioIoServiced(virCgroup *group,
             p1 += strlen(value_names[i]);
             if (virStrToLong_ll(p1, &p1, 10, &stats_val) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Cannot parse byte %sstat '%s'"),
+                               _("Cannot parse byte %1$sstat '%2$s'"),
                                value_names[i],
                                p1);
                 return -1;
@@ -1112,7 +1112,7 @@ virCgroupV1GetBlkioIoServiced(virCgroup *group,
                 (stats_val > 0 && *bytes_ptrs[i] > (LLONG_MAX - stats_val)))
             {
                 virReportError(VIR_ERR_OVERFLOW,
-                               _("Sum of byte %sstat overflows"),
+                               _("Sum of byte %1$sstat overflows"),
                                value_names[i]);
                 return -1;
             }
@@ -1123,7 +1123,7 @@ virCgroupV1GetBlkioIoServiced(virCgroup *group,
             p2 += strlen(value_names[i]);
             if (virStrToLong_ll(p2, &p2, 10, &stats_val) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Cannot parse %srequest stat '%s'"),
+                               _("Cannot parse %1$srequest stat '%2$s'"),
                                value_names[i],
                                p2);
                 return -1;
@@ -1133,7 +1133,7 @@ virCgroupV1GetBlkioIoServiced(virCgroup *group,
                 (stats_val > 0 && *requests_ptrs[i] > (LLONG_MAX - stats_val)))
             {
                 virReportError(VIR_ERR_OVERFLOW,
-                               _("Sum of %srequest stat overflows"),
+                               _("Sum of %1$srequest stat overflows"),
                                value_names[i]);
                 return -1;
             }
@@ -1188,14 +1188,14 @@ virCgroupV1GetBlkioIoDeviceServiced(virCgroup *group,
 
     if (!(p1 = strstr(str1, str3))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot find byte stats for block device '%s'"),
+                       _("Cannot find byte stats for block device '%1$s'"),
                        str3);
         return -1;
     }
 
     if (!(p2 = strstr(str2, str3))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot find request stats for block device '%s'"),
+                       _("Cannot find request stats for block device '%1$s'"),
                        str3);
         return -1;
     }
@@ -1203,28 +1203,28 @@ virCgroupV1GetBlkioIoDeviceServiced(virCgroup *group,
     for (i = 0; i < G_N_ELEMENTS(value_names); i++) {
         if (!(p1 = strstr(p1, value_names[i]))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot find byte %sstats for block device '%s'"),
+                           _("Cannot find byte %1$sstats for block device '%2$s'"),
                            value_names[i], str3);
             return -1;
         }
 
         if (virStrToLong_ll(p1 + strlen(value_names[i]), &p1, 10, bytes_ptrs[i]) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot parse %sstat '%s'"),
+                           _("Cannot parse %1$sstat '%2$s'"),
                            value_names[i], p1 + strlen(value_names[i]));
             return -1;
         }
 
         if (!(p2 = strstr(p2, value_names[i]))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot find request %sstats for block device '%s'"),
+                           _("Cannot find request %1$sstats for block device '%2$s'"),
                            value_names[i], str3);
             return -1;
         }
 
         if (virStrToLong_ll(p2 + strlen(value_names[i]), &p2, 10, requests_ptrs[i]) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot parse %sstat '%s'"),
+                           _("Cannot parse %1$sstat '%2$s'"),
                            value_names[i], p2 + strlen(value_names[i]));
             return -1;
         }
@@ -1302,7 +1302,7 @@ virCgroupV1GetBlkioDeviceWeight(virCgroup *group,
         *weight = 0;
     } else if (virStrToLong_ui(str, NULL, 10, weight) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse '%s' as an integer"),
+                       _("Unable to parse '%1$s' as an integer"),
                        str);
         return -1;
     }
@@ -1353,7 +1353,7 @@ virCgroupV1GetBlkioDeviceReadIops(virCgroup *group,
         *riops = 0;
     } else if (virStrToLong_ui(str, NULL, 10, riops) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse '%s' as an integer"),
+                       _("Unable to parse '%1$s' as an integer"),
                        str);
         return -1;
     }
@@ -1404,7 +1404,7 @@ virCgroupV1GetBlkioDeviceWriteIops(virCgroup *group,
         *wiops = 0;
     } else if (virStrToLong_ui(str, NULL, 10, wiops) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse '%s' as an integer"),
+                       _("Unable to parse '%1$s' as an integer"),
                        str);
         return -1;
     }
@@ -1455,7 +1455,7 @@ virCgroupV1GetBlkioDeviceReadBps(virCgroup *group,
         *rbps = 0;
     } else if (virStrToLong_ull(str, NULL, 10, rbps) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse '%s' as an integer"),
+                       _("Unable to parse '%1$s' as an integer"),
                        str);
         return -1;
     }
@@ -1506,7 +1506,7 @@ virCgroupV1GetBlkioDeviceWriteBps(virCgroup *group,
         *wbps = 0;
     } else if (virStrToLong_ull(str, NULL, 10, wbps) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse '%s' as an integer"),
+                       _("Unable to parse '%1$s' as an integer"),
                        str);
         return -1;
     }
@@ -1567,7 +1567,7 @@ virCgroupV1SetMemory(virCgroup *group,
 
     if (kb > maxkb) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Memory '%llu' must be less than %llu"),
+                       _("Memory '%1$llu' must be less than %2$llu"),
                        kb, maxkb);
         return -1;
     }
@@ -1710,7 +1710,7 @@ virCgroupV1SetMemorySoftLimit(virCgroup *group,
 
     if (kb > maxkb) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Memory '%llu' must be less than %llu"),
+                       _("Memory '%1$llu' must be less than %2$llu"),
                        kb, maxkb);
         return -1;
     }
@@ -1755,7 +1755,7 @@ virCgroupV1SetMemSwapHardLimit(virCgroup *group,
 
     if (kb > maxkb) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Memory '%llu' must be less than %llu"),
+                       _("Memory '%1$llu' must be less than %2$llu"),
                        kb, maxkb);
         return -1;
     }
@@ -1906,7 +1906,7 @@ virCgroupV1SetCpuShares(virCgroup *group,
     if (shares < VIR_CGROUP_CPU_SHARES_MIN ||
         shares > VIR_CGROUP_CPU_SHARES_MAX) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("shares '%llu' must be in range [%llu, %llu]"),
+                       _("shares '%1$llu' must be in range [%2$llu, %3$llu]"),
                        shares,
                        VIR_CGROUP_CPU_SHARES_MIN,
                        VIR_CGROUP_CPU_SHARES_MAX);
@@ -1942,7 +1942,7 @@ virCgroupV1SetCpuCfsPeriod(virCgroup *group,
     if (cfs_period < VIR_CGROUP_CPU_PERIOD_MIN ||
         cfs_period > VIR_CGROUP_CPU_PERIOD_MAX) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("cfs_period '%llu' must be in range (%llu, %llu)"),
+                       _("cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"),
                        cfs_period,
                        VIR_CGROUP_CPU_PERIOD_MIN,
                        VIR_CGROUP_CPU_PERIOD_MAX);
@@ -1973,7 +1973,7 @@ virCgroupV1SetCpuCfsQuota(virCgroup *group,
         (cfs_quota < VIR_CGROUP_CPU_QUOTA_MIN ||
          cfs_quota > VIR_CGROUP_CPU_QUOTA_MAX)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("cfs_quota '%lld' must be in range (%llu, %llu)"),
+                       _("cfs_quota '%1$lld' must be in range (%2$llu, %3$llu)"),
                        cfs_quota,
                        VIR_CGROUP_CPU_QUOTA_MIN,
                        VIR_CGROUP_CPU_QUOTA_MAX);
@@ -2049,14 +2049,14 @@ virCgroupV1GetCpuacctStat(virCgroup *group,
     if (!(p = STRSKIP(str, "user ")) ||
         virStrToLong_ull(p, &p, 10, user) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot parse user stat '%s'"),
+                       _("Cannot parse user stat '%1$s'"),
                        p);
         return -1;
     }
     if (!(p = STRSKIP(p, "\nsystem ")) ||
         virStrToLong_ull(p, NULL, 10, sys) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot parse sys stat '%s'"),
+                       _("Cannot parse sys stat '%1$s'"),
                        p);
         return -1;
     }

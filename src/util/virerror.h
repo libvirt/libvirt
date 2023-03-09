@@ -76,7 +76,7 @@ void virReportSystemErrorFull(int domcode,
                       #argname, \
                       NULL, \
                       0, 0, \
-                      _("%s in %s must be NULL"), \
+                      _("%1$s in %2$s must be NULL"), \
                       #argname, __FUNCTION__)
 #define virReportInvalidNonNullArg(argname) \
     virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__, \
@@ -87,7 +87,7 @@ void virReportSystemErrorFull(int domcode,
                       #argname, \
                       NULL, \
                       0, 0, \
-                      _("%s in %s must not be NULL"), \
+                      _("%1$s in %2$s must not be NULL"), \
                       #argname, __FUNCTION__)
 #define virReportInvalidEmptyStringArg(argname) \
     virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__, \
@@ -98,7 +98,7 @@ void virReportSystemErrorFull(int domcode,
                       #argname, \
                       NULL, \
                       0, 0, \
-                      _("string %s in %s must not be empty"), \
+                      _("string %1$s in %2$s must not be empty"), \
                       #argname, __FUNCTION__)
 #define virReportInvalidPositiveArg(argname) \
     virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__, \
@@ -109,7 +109,7 @@ void virReportSystemErrorFull(int domcode,
                       #argname, \
                       NULL, \
                       0, 0, \
-                      _("%s in %s must be greater than zero"), \
+                      _("%1$s in %2$s must be greater than zero"), \
                       #argname, __FUNCTION__)
 #define virReportInvalidNonZeroArg(argname) \
     virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__, \
@@ -120,7 +120,7 @@ void virReportSystemErrorFull(int domcode,
                       #argname, \
                       NULL, \
                       0, 0, \
-                      _("%s in %s must not be zero"), \
+                      _("%1$s in %2$s must not be zero"), \
                       #argname, __FUNCTION__)
 #define virReportInvalidZeroArg(argname) \
     virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__, \
@@ -131,7 +131,7 @@ void virReportSystemErrorFull(int domcode,
                       #argname, \
                       NULL, \
                       0, 0, \
-                      _("%s in %s must be zero"), \
+                      _("%1$s in %2$s must be zero"), \
                       #argname, __FUNCTION__)
 #define virReportInvalidNonNegativeArg(argname) \
     virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__, \
@@ -142,7 +142,7 @@ void virReportSystemErrorFull(int domcode,
                       #argname, \
                       NULL, \
                       0, 0, \
-                      _("%s in %s must be zero or greater"), \
+                      _("%1$s in %2$s must be zero or greater"), \
                       #argname, __FUNCTION__)
 #define virReportInvalidArg(argname, fmt, ...) \
     virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__, \

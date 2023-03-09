@@ -248,7 +248,7 @@ virInsertElementsN(void *ptrptr,
         at = *countptr;
     } else if (at > *countptr) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("out of bounds index - count %zu at %zu"),
+                       _("out of bounds index - count %1$zu at %2$zu"),
                        *countptr, at);
         return -1;
     }

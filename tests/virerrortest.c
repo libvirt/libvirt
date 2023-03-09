@@ -29,8 +29,11 @@ virErrorTestMsgFormatInfoOne(const char *msg)
     char *next;
     int ret = 0;
 
+    if (STREQ(msg, "%s"))
+        return 0;
+
     for (next = (char *)msg; (next = strchr(next, '%')); next++) {
-        if (next[1] != 's') {
+        if (!STRPREFIX(next + 1, "1$s")) {
             VIR_TEST_VERBOSE("\nerror message '%s' contains disallowed printf modifiers", msg);
             ret = -1;
         } else {
@@ -44,7 +47,7 @@ virErrorTestMsgFormatInfoOne(const char *msg)
     }
 
     if (!found) {
-        VIR_TEST_VERBOSE("\nerror message '%s' does not contain any %%s modifiers", msg);
+        VIR_TEST_VERBOSE("\nerror message '%s' does not contain correct %%s modifiers", msg);
         ret = -1;
     }
 

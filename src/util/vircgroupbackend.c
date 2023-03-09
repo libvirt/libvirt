@@ -43,7 +43,7 @@ virCgroupBackendRegister(virCgroupBackend *backend)
 {
     if (virCgroupBackends[backend->type]) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cgroup backend '%s' already registered."),
+                       _("Cgroup backend '%1$s' already registered."),
                        virCgroupBackendTypeToString(backend->type));
         return;
     }

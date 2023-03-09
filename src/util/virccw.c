@@ -64,7 +64,7 @@ virCCWDeviceAddressFromString(const char *address)
                                            &ccw->ssid,
                                            &ccw->devno) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to parse CCW address '%s'"),
+                       _("Failed to parse CCW address '%1$s'"),
                        address);
         return NULL;
     }

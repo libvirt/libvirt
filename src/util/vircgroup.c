@@ -353,7 +353,7 @@ virCgroupDetectPlacement(virCgroup *group,
     mapping = fopen(procfile, "r");
     if (mapping == NULL) {
         virReportSystemError(errno,
-                             _("Unable to open '%s'"),
+                             _("Unable to open '%1$s'"),
                              procfile);
         goto cleanup;
     }
@@ -464,14 +464,14 @@ virCgroupGetBlockDevString(const char *path)
 
     if (stat(path, &sb) < 0) {
         virReportSystemError(errno,
-                             _("Path '%s' is not accessible"),
+                             _("Path '%1$s' is not accessible"),
                              path);
         return NULL;
     }
 
     if (!S_ISBLK(sb.st_mode)) {
         virReportSystemError(EINVAL,
-                             _("Path '%s' must be a block device"),
+                             _("Path '%1$s' must be a block device"),
                              path);
         return NULL;
     }
@@ -524,12 +524,12 @@ virCgroupSetValueRaw(const char *path,
         if (errno == EINVAL &&
             (tmp = strrchr(path, '/'))) {
             virReportSystemError(errno,
-                                 _("Invalid value '%s' for '%s'"),
+                                 _("Invalid value '%1$s' for '%2$s'"),
                                  value, tmp + 1);
             return -1;
         }
         virReportSystemError(errno,
-                             _("Unable to write to '%s'"), path);
+                             _("Unable to write to '%1$s'"), path);
         return -1;
     }
 
@@ -549,7 +549,7 @@ virCgroupGetValueRaw(const char *path,
 
     if ((rc = virFileReadAll(path, 1024*1024, value)) < 0) {
         virReportSystemError(errno,
-                             _("Unable to read from '%s'"), path);
+                             _("Unable to read from '%1$s'"), path);
         return -1;
     }
 
@@ -656,7 +656,7 @@ virCgroupGetValueI64(virCgroup *group,
 
     if (virStrToLong_ll(strval, NULL, 10, value) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse '%s' as an integer"),
+                       _("Unable to parse '%1$s' as an integer"),
                        strval);
         return -1;
     }
@@ -678,7 +678,7 @@ virCgroupGetValueU64(virCgroup *group,
 
     if (virStrToLong_ull(strval, NULL, 10, value) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse '%s' as an integer"),
+                       _("Unable to parse '%1$s' as an integer"),
                        strval);
         return -1;
     }
@@ -947,7 +947,7 @@ virCgroupNewPartition(const char *path,
 
     if (!g_path_is_absolute(path)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Partition path '%s' must start with '/'"),
+                       _("Partition path '%1$s' must start with '/'"),
                        path);
         return -1;
     }
@@ -1125,7 +1125,7 @@ virCgroupNewThread(virCgroup *domain,
         break;
     case VIR_CGROUP_THREAD_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected name value %d"), nameval);
+                       _("unexpected name value %1$d"), nameval);
         return -1;
     }
 
@@ -1508,7 +1508,7 @@ virCgroupPathOfController(virCgroup *group,
 {
     if (controller >= VIR_CGROUP_CONTROLLER_LAST) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid controller id '%d'"), controller);
+                       _("Invalid controller id '%1$d'"), controller);
         return -1;
     }
 
@@ -2187,7 +2187,7 @@ virCgroupAllowDevicePath(virCgroup *group,
             return 1;
 
         virReportSystemError(errno,
-                             _("Path '%s' is not accessible"),
+                             _("Path '%1$s' is not accessible"),
                              path);
         return -1;
     }
@@ -2254,7 +2254,7 @@ virCgroupDenyDevicePath(virCgroup *group,
             return 1;
 
         virReportSystemError(errno,
-                             _("Path '%s' is not accessible"),
+                             _("Path '%1$s' is not accessible"),
                              path);
         return -1;
     }
@@ -2383,7 +2383,7 @@ virCgroupGetPercpuStats(virCgroup *group,
 
     if (start_cpu >= total_cpus) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("start_cpu %d larger than maximum of %d"),
+                       _("start_cpu %1$d larger than maximum of %2$d"),
                        start_cpu, total_cpus - 1);
         return -1;
     }
@@ -2582,7 +2582,7 @@ virCgroupRemoveRecursively(char *grppath)
         if (errno == ENOENT)
             return 0;
         rc = -errno;
-        VIR_ERROR(_("Unable to open %s (%d)"), grppath, errno);
+        VIR_ERROR(_("Unable to open %1$s (%2$d)"), grppath, errno);
         return rc;
     }
 
@@ -2601,13 +2601,13 @@ virCgroupRemoveRecursively(char *grppath)
     }
     if (direrr < 0) {
         rc = -errno;
-        VIR_ERROR(_("Failed to readdir for %s (%d)"), grppath, errno);
+        VIR_ERROR(_("Failed to readdir for %1$s (%2$d)"), grppath, errno);
     }
 
     VIR_DEBUG("Removing cgroup %s", grppath);
     if (rmdir(grppath) != 0 && errno != ENOENT) {
         rc = -errno;
-        VIR_ERROR(_("Unable to remove %s (%d)"), grppath, errno);
+        VIR_ERROR(_("Unable to remove %1$s (%2$d)"), grppath, errno);
     }
 
     return rc;
@@ -2677,7 +2677,7 @@ virCgroupKillInternal(virCgroup *group,
             }
 
             virReportSystemError(errno,
-                                 _("Failed to read %s"),
+                                 _("Failed to read %1$s"),
                                  keypath);
             goto cleanup;
         } else {
@@ -2688,7 +2688,7 @@ virCgroupKillInternal(virCgroup *group,
                     if (feof(fp))
                         break;
                     virReportSystemError(errno,
-                                         _("Failed to read %s"),
+                                         _("Failed to read %1$s"),
                                          keypath);
                     goto cleanup;
                 }
@@ -2701,7 +2701,7 @@ virCgroupKillInternal(virCgroup *group,
                 if (kill((pid_t)*pid_value, signum) < 0) {
                     if (errno != ESRCH) {
                         virReportSystemError(errno,
-                                             _("Failed to kill process %lld"),
+                                             _("Failed to kill process %1$lld"),
                                              *pid_value);
                         goto cleanup;
                     }
@@ -3025,7 +3025,7 @@ virCgroupGetInode(virCgroup *cgroup)
         return -1;
 
     if (stat(path, &st) < 0) {
-        virReportSystemError(errno, _("failed to get stat for '%s'"), path);
+        virReportSystemError(errno, _("failed to get stat for '%1$s'"), path);
         return -1;
     }
 

@@ -106,7 +106,7 @@ virConfErrorHelper(const char *file, const char *func, size_t line,
     /* Construct the string 'filename:line: info' if we have that. */
     if (ctxt && ctxt->filename) {
         virReportErrorHelper(VIR_FROM_CONF, error, file, func, line,
-                             _("%s:%d: %s"), ctxt->filename, ctxt->line, info);
+                             _("%1$s:%2$d: %3$s"), ctxt->filename, ctxt->line, info);
     } else {
         virReportErrorHelper(VIR_FROM_CONF, error, file, func, line,
                              "%s", info);
@@ -870,7 +870,7 @@ int virConfGetValueString(virConf *conf,
 
     if (cval->type != VIR_CONF_STRING) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: expected a string for '%s' parameter"),
+                       _("%1$s: expected a string for '%2$s' parameter"),
                        conf->filename, setting);
         return -1;
     }
@@ -924,7 +924,7 @@ int virConfGetValueStringList(virConf *conf,
         for (len = 0, eval = cval->list; eval; len++, eval = eval->next) {
             if (eval->type != VIR_CONF_STRING) {
                 virReportError(VIR_ERR_CONF_SYNTAX,
-                               _("%s: expected a string list for '%s' parameter"),
+                               _("%1$s: expected a string list for '%2$s' parameter"),
                                conf->filename, setting);
                 return -1;
             }
@@ -950,8 +950,8 @@ int virConfGetValueStringList(virConf *conf,
     case VIR_CONF_NONE:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        compatString ?
-                       _("%s: expected a string or string list for '%s' parameter") :
-                       _("%s: expected a string list for '%s' parameter"),
+                       _("%1$s: expected a string or string list for '%2$s' parameter") :
+                       _("%1$s: expected a string list for '%2$s' parameter"),
                        conf->filename, setting);
         return -1;
 
@@ -994,14 +994,14 @@ int virConfGetValueBool(virConf *conf,
 
     if (cval->type != VIR_CONF_ULLONG) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: expected a bool for '%s' parameter"),
+                       _("%1$s: expected a bool for '%2$s' parameter"),
                        conf->filename, setting);
         return -1;
     }
 
     if (((unsigned long long)cval->l) > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: value for '%s' parameter must be 0 or 1"),
+                       _("%1$s: value for '%2$s' parameter must be 0 or 1"),
                        conf->filename, setting);
         return -1;
     }
@@ -1043,14 +1043,14 @@ int virConfGetValueInt(virConf *conf,
     if (cval->type != VIR_CONF_LLONG &&
         cval->type != VIR_CONF_ULLONG) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: expected a signed integer for '%s' parameter"),
+                       _("%1$s: expected a signed integer for '%2$s' parameter"),
                        conf->filename, setting);
         return -1;
     }
 
     if (cval->l > INT_MAX || cval->l < INT_MIN) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: value for '%s' parameter must be in range %d:%d"),
+                       _("%1$s: value for '%2$s' parameter must be in range %3$d:%4$d"),
                        conf->filename, setting, INT_MIN, INT_MAX);
         return -1;
     }
@@ -1091,14 +1091,14 @@ int virConfGetValueUInt(virConf *conf,
 
     if (cval->type != VIR_CONF_ULLONG) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: expected an unsigned integer for '%s' parameter"),
+                       _("%1$s: expected an unsigned integer for '%2$s' parameter"),
                        conf->filename, setting);
         return -1;
     }
 
     if (((unsigned long long)cval->l) > UINT_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: value for '%s' parameter must be in range 0:%u"),
+                       _("%1$s: value for '%2$s' parameter must be in range 0:%3$u"),
                        conf->filename, setting, UINT_MAX);
         return -1;
     }
@@ -1139,7 +1139,7 @@ int virConfGetValueSizeT(virConf *conf,
 
     if (cval->type != VIR_CONF_ULLONG) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: expected an unsigned integer for '%s' parameter"),
+                       _("%1$s: expected an unsigned integer for '%2$s' parameter"),
                        conf->filename, setting);
         return -1;
     }
@@ -1147,7 +1147,7 @@ int virConfGetValueSizeT(virConf *conf,
 #if ULLONG_MAX > SIZE_MAX
     if (((unsigned long long)cval->l) > SIZE_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: value for '%s' parameter must be in range 0:%zu"),
+                       _("%1$s: value for '%2$s' parameter must be in range 0:%3$zu"),
                        conf->filename, setting, SIZE_MAX);
         return -1;
     }
@@ -1190,7 +1190,7 @@ int virConfGetValueSSizeT(virConf *conf,
     if (cval->type == VIR_CONF_ULLONG) {
         if (((unsigned long long)cval->l) > SSIZE_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s: value for '%s' parameter must be in range %zd:%zd"),
+                           _("%1$s: value for '%2$s' parameter must be in range %3$zd:%4$zd"),
                            conf->filename, setting, (ssize_t)-SSIZE_MAX - 1, (ssize_t)SSIZE_MAX);
             return -1;
         }
@@ -1198,14 +1198,14 @@ int virConfGetValueSSizeT(virConf *conf,
 #if SSIZE_MAX < LLONG_MAX
         if (cval->l < (-SSIZE_MAX - 1) || cval->l > SSIZE_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s: value for '%s' parameter must be in range %zd:%zd"),
+                           _("%1$s: value for '%2$s' parameter must be in range %3$zd:%4$zd"),
                            conf->filename, setting, (ssize_t)-SSIZE_MAX - 1, (ssize_t)SSIZE_MAX);
             return -1;
         }
 #endif
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: expected a signed integer for '%s' parameter"),
+                       _("%1$s: expected a signed integer for '%2$s' parameter"),
                        conf->filename, setting);
         return -1;
     }
@@ -1247,13 +1247,13 @@ int virConfGetValueLLong(virConf *conf,
     if (cval->type == VIR_CONF_ULLONG) {
         if (((unsigned long long)cval->l) > LLONG_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s: value for '%s' parameter must be in range %lld:%lld"),
+                           _("%1$s: value for '%2$s' parameter must be in range %3$lld:%4$lld"),
                            conf->filename, setting, LLONG_MIN, LLONG_MAX);
             return -1;
         }
     } else if (cval->type != VIR_CONF_LLONG) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: expected a signed integer for '%s' parameter"),
+                       _("%1$s: expected a signed integer for '%2$s' parameter"),
                        conf->filename, setting);
         return -1;
     }
@@ -1293,7 +1293,7 @@ int virConfGetValueULLong(virConf *conf,
 
     if (cval->type != VIR_CONF_ULLONG) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: expected an unsigned integer for '%s' parameter"),
+                       _("%1$s: expected an unsigned integer for '%2$s' parameter"),
                        conf->filename, setting);
         return -1;
     }
@@ -1332,7 +1332,7 @@ virConfSetValue(virConf *conf,
 
     if (*value && (*value)->type == VIR_CONF_STRING && !(*value)->str) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("expecting a value for value of type %s"),
+                       _("expecting a value for value of type %1$s"),
                        virConfTypeToString(VIR_CONF_STRING));
         g_clear_pointer(value, virConfFreeValue);
         return -1;

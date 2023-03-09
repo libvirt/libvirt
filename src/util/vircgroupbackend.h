@@ -466,13 +466,13 @@ virCgroupBackendForController(virCgroup *group,
         virCgroupBackend *backend = virCgroupBackendForController(group, controller); \
         if (!backend) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           _("failed to get cgroup backend for '%s' controller '%u'"), \
+                           _("failed to get cgroup backend for '%1$s' controller '%2$u'"), \
                            #func, controller); \
             return ret; \
         } \
         if (!backend->func) { \
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, \
-                           _("operation '%s' not supported for backend '%s'"), \
+                           _("operation '%1$s' not supported for backend '%2$s'"), \
                            #func, virCgroupBackendTypeToString(backend->type)); \
             return ret; \
         } \

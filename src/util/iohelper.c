@@ -44,9 +44,9 @@ G_GNUC_NORETURN static void
 usage(int status)
 {
     if (status) {
-        fprintf(stderr, _("%s: try --help for more details"), program_name);
+        fprintf(stderr, _("%1$s: try --help for more details"), program_name);
     } else {
-        printf(_("Usage: %s FILENAME FD"), program_name);
+        printf(_("Usage: %1$s FILENAME FD"), program_name);
     }
     exit(status);
 }
@@ -61,7 +61,7 @@ main(int argc, char **argv)
 
     if (virGettextInitialize() < 0 ||
         virErrorInitialize() < 0) {
-        fprintf(stderr, _("%s: initialization failed"), program_name);
+        fprintf(stderr, _("%1$s: initialization failed"), program_name);
         exit(EXIT_FAILURE);
     }
 
@@ -71,7 +71,7 @@ main(int argc, char **argv)
         usage(EXIT_SUCCESS);
     if (argc == 3) { /* FILENAME FD */
         if (virStrToLong_i(argv[2], NULL, 10, &fd) < 0) {
-            fprintf(stderr, _("%s: malformed fd %s"),
+            fprintf(stderr, _("%1$s: malformed fd %2$s"),
                     program_name, argv[3]);
             exit(EXIT_FAILURE);
         }
@@ -85,7 +85,7 @@ main(int argc, char **argv)
     return 0;
 
  error:
-    fprintf(stderr, _("%s: failure with %s: %s"),
+    fprintf(stderr, _("%1$s: failure with %2$s: %3$s"),
             program_name, path, virGetLastErrorMessage());
     exit(EXIT_FAILURE);
 }

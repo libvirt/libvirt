@@ -230,7 +230,7 @@ addnhostsSave(dnsmasqAddnHostsfile *addnhostsfile)
                              addnhostsfile->nhosts);
 
     if (err < 0) {
-        virReportSystemError(-err, _("cannot write config file '%s'"),
+        virReportSystemError(-err, _("cannot write config file '%1$s'"),
                              addnhostsfile->path);
         return -1;
     }
@@ -245,7 +245,7 @@ genericFileDelete(char *path)
         return 0;
 
     if (unlink(path) < 0) {
-        virReportSystemError(errno, _("cannot remove config file '%s'"),
+        virReportSystemError(errno, _("cannot remove config file '%1$s'"),
                              path);
         return -1;
     }
@@ -400,7 +400,7 @@ hostsfileSave(dnsmasqHostsfile *hostsfile)
                              hostsfile->nhosts);
 
     if (err < 0) {
-        virReportSystemError(-err, _("cannot write config file '%s'"),
+        virReportSystemError(-err, _("cannot write config file '%1$s'"),
                              hostsfile->path);
         return -1;
     }
@@ -509,7 +509,7 @@ dnsmasqSave(const dnsmasqContext *ctx)
     int ret = 0;
 
     if (g_mkdir_with_parents(ctx->config_dir, 0777) < 0) {
-        virReportSystemError(errno, _("cannot create config directory '%s'"),
+        virReportSystemError(errno, _("cannot create config directory '%1$s'"),
                              ctx->config_dir);
         return -1;
     }
@@ -556,8 +556,7 @@ dnsmasqReload(pid_t pid G_GNUC_UNUSED)
 #ifndef WIN32
     if (kill(pid, SIGHUP) != 0) {
         virReportSystemError(errno,
-                             _("Failed to make dnsmasq (PID: %d)"
-                               " reload config files."),
+                             _("Failed to make dnsmasq (PID: %1$d) reload config files."),
                              pid);
         return -1;
     }
@@ -617,7 +616,7 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
 
     if (version < DNSMASQ_MIN_MAJOR * 1000000 + DNSMASQ_MIN_MINOR * 1000) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("dnsmasq version >= %u.%u required but %lu.%lu found"),
+                       _("dnsmasq version >= %1$u.%2$u required but %3$lu.%4$lu found"),
                        DNSMASQ_MIN_MAJOR, DNSMASQ_MIN_MINOR,
                        version / 1000000,
                        version % 1000000 / 1000);
@@ -636,7 +635,7 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
     else
         len = p - buf;
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("cannot parse %s version number in '%.*s'"),
+                   _("cannot parse %1$s version number in '%3$.*2$s'"),
                    caps->binaryPath, len, buf);
     return -1;
 

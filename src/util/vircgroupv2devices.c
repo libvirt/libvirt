@@ -297,7 +297,7 @@ virCgroupV2DevicesAttachProg(virCgroup *group,
 
     cgroupfd = open(path, O_RDONLY);
     if (cgroupfd < 0) {
-        virReportSystemError(errno, _("unable to open '%s'"), path);
+        virReportSystemError(errno, _("unable to open '%1$s'"), path);
         goto cleanup;
     }
 
@@ -375,7 +375,7 @@ virCgroupV2DevicesDetectProg(virCgroup *group)
 
     cgroupfd = open(path, O_RDONLY);
     if (cgroupfd < 0) {
-        virReportSystemError(errno, _("unable to open '%s'"), path);
+        virReportSystemError(errno, _("unable to open '%1$s'"), path);
         return -1;
     }
 
