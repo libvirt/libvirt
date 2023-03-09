@@ -155,6 +155,7 @@ potfile:
     - meson setup build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
     - ninja -C build libvirt-pot-dep
     - ninja -C build libvirt-pot
+    - ninja -C build libvirt-pot-check
     - cp po/libvirt.pot libvirt.pot
   artifacts:
     expose_as: 'Potfile'
