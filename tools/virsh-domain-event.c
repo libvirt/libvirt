@@ -327,7 +327,7 @@ virshEventGenericPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event '%s' for domain '%s'\n"),
+    virBufferAsprintf(&buf, _("event '%1$s' for domain '%2$s'\n"),
                       ((virshDomEventData *) opaque)->cb->name,
                       virDomainGetName(dom));
     virshEventPrint(opaque, &buf);
@@ -342,7 +342,7 @@ virshEventLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'lifecycle' for domain '%s': %s %s\n"),
+    virBufferAsprintf(&buf, _("event 'lifecycle' for domain '%1$s': %2$s %3$s\n"),
                       virDomainGetName(dom),
                       virshDomainEventToString(event),
                       virshDomainEventDetailToString(event, detail));
@@ -357,7 +357,7 @@ virshEventRTCChangePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'rtc-change' for domain '%s': %lld\n"),
+    virBufferAsprintf(&buf, _("event 'rtc-change' for domain '%1$s': %2$lld\n"),
                       virDomainGetName(dom),
                       utcoffset);
     virshEventPrint(opaque, &buf);
@@ -371,7 +371,7 @@ virshEventWatchdogPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'watchdog' for domain '%s': %s\n"),
+    virBufferAsprintf(&buf, _("event 'watchdog' for domain '%1$s': %2$s\n"),
                       virDomainGetName(dom),
                       virshDomainEventWatchdogToString(action));
     virshEventPrint(opaque, &buf);
@@ -387,7 +387,7 @@ virshEventIOErrorPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'io-error' for domain '%s': %s (%s) %s\n"),
+    virBufferAsprintf(&buf, _("event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"),
                       virDomainGetName(dom),
                       srcPath,
                       devAlias,
@@ -408,8 +408,8 @@ virshEventGraphicsPrint(virConnectPtr conn G_GNUC_UNUSED,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    virBufferAsprintf(&buf, _("event 'graphics' for domain '%s': "
-                              "%s local[%s %s %s] remote[%s %s %s] %s\n"),
+    virBufferAsprintf(&buf, _("event 'graphics' for domain '%1$s': "
+                              "%2$s local[%3$s %4$s %5$s] remote[%6$s %7$s %8$s] %9$s\n"),
                       virDomainGetName(dom),
                       virshGraphicsPhaseToString(phase),
                       virshGraphicsAddressToString(local->family),
@@ -438,8 +438,8 @@ virshEventIOErrorReasonPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'io-error-reason' for domain '%s': "
-                              "%s (%s) %s due to %s\n"),
+    virBufferAsprintf(&buf, _("event 'io-error-reason' for domain '%1$s': "
+                              "%2$s (%3$s) %4$s due to %5$s\n"),
                       virDomainGetName(dom),
                       srcPath,
                       devAlias,
@@ -458,7 +458,7 @@ virshEventBlockJobPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event '%s' for domain '%s': %s for %s %s\n"),
+    virBufferAsprintf(&buf, _("event '%1$s' for domain '%2$s': %3$s for %4$s %5$s\n"),
                       ((virshDomEventData *) opaque)->cb->name,
                       virDomainGetName(dom),
                       virshDomainBlockJobToString(type),
@@ -478,8 +478,8 @@ virshEventDiskChangePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'disk-change' for domain '%s' disk %s: "
-                              "%s -> %s: %s\n"),
+    virBufferAsprintf(&buf, _("event 'disk-change' for domain '%1$s' disk %2$s: "
+                              "%3$s -> %4$s: %5$s\n"),
                       virDomainGetName(dom),
                       alias,
                       NULLSTR(oldSrc),
@@ -497,7 +497,7 @@ virshEventTrayChangePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'tray-change' for domain '%s' disk %s: %s\n"),
+    virBufferAsprintf(&buf, _("event 'tray-change' for domain '%1$s' disk %2$s: %3$s\n"),
                       virDomainGetName(dom),
                       alias,
                       virshDomainEventTrayChangeToString(reason));
@@ -523,7 +523,7 @@ virshEventBalloonChangePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'balloon-change' for domain '%s': %lluKiB\n"),
+    virBufferAsprintf(&buf, _("event 'balloon-change' for domain '%1$s': %2$lluKiB\n"),
                       virDomainGetName(dom),
                       actual);
     virshEventPrint(opaque, &buf);
@@ -537,7 +537,7 @@ virshEventDeviceRemovedPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'device-removed' for domain '%s': %s\n"),
+    virBufferAsprintf(&buf, _("event 'device-removed' for domain '%1$s': %2$s\n"),
                       virDomainGetName(dom),
                       alias);
     virshEventPrint(opaque, &buf);
@@ -551,7 +551,7 @@ virshEventDeviceAddedPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'device-added' for domain '%s': %s\n"),
+    virBufferAsprintf(&buf, _("event 'device-added' for domain '%1$s': %2$s\n"),
                       virDomainGetName(dom),
                       alias);
     virshEventPrint(opaque, &buf);
@@ -568,7 +568,7 @@ virshEventTunablePrint(virConnectPtr conn G_GNUC_UNUSED,
     size_t i;
     char *value;
 
-    virBufferAsprintf(&buf, _("event 'tunable' for domain '%s':\n"),
+    virBufferAsprintf(&buf, _("event 'tunable' for domain '%1$s':\n"),
                       virDomainGetName(dom));
     for (i = 0; i < nparams; i++) {
         value = virTypedParameterToString(&params[i]);
@@ -604,8 +604,8 @@ virshEventAgentLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'agent-lifecycle' for domain '%s': state: "
-                              "'%s' reason: '%s'\n"),
+    virBufferAsprintf(&buf, _("event 'agent-lifecycle' for domain '%1$s': state: "
+                              "'%2$s' reason: '%3$s'\n"),
                       virDomainGetName(dom),
                       UNKNOWNSTR(virshEventAgentLifecycleStateTypeToString(state)),
                       UNKNOWNSTR(virshEventAgentLifecycleReasonTypeToString(reason)));
@@ -620,8 +620,8 @@ virshEventMigrationIterationPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'migration-iteration' for domain '%s': "
-                              "iteration: '%d'\n"),
+    virBufferAsprintf(&buf, _("event 'migration-iteration' for domain '%1$s': "
+                              "iteration: '%2$d'\n"),
                       virDomainGetName(dom),
                       iteration);
 
@@ -638,7 +638,7 @@ virshEventJobCompletedPrint(virConnectPtr conn G_GNUC_UNUSED,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    virBufferAsprintf(&buf, _("event 'job-completed' for domain '%s':\n"),
+    virBufferAsprintf(&buf, _("event 'job-completed' for domain '%1$s':\n"),
                       virDomainGetName(dom));
     for (i = 0; i < nparams; i++) {
         g_autofree char *value = virTypedParameterToString(&params[i]);
@@ -657,7 +657,7 @@ virshEventDeviceRemovalFailedPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'device-removal-failed' for domain '%s': %s\n"),
+    virBufferAsprintf(&buf, _("event 'device-removal-failed' for domain '%1$s': %2$s\n"),
                       virDomainGetName(dom),
                       alias);
     virshEventPrint(opaque, &buf);
@@ -679,7 +679,7 @@ virshEventMetadataChangePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'metadata-change' for domain '%s': type %s, uri %s\n"),
+    virBufferAsprintf(&buf, _("event 'metadata-change' for domain '%1$s': type %2$s, uri %3$s\n"),
                       virDomainGetName(dom),
                       UNKNOWNSTR(virshEventMetadataChangeTypeTypeToString(type)),
                       NULLSTR(nsuri));
@@ -698,8 +698,8 @@ virshEventBlockThresholdPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'block-threshold' for domain '%s': "
-                              "dev: %s(%s) %llu %llu\n"),
+    virBufferAsprintf(&buf, _("event 'block-threshold' for domain '%1$s': "
+                              "dev: %2$s(%3$s) %4$llu %5$llu\n"),
                       virDomainGetName(dom),
                       dev, NULLSTR(path), threshold, excess);
     virshEventPrint(opaque, &buf);
@@ -730,13 +730,11 @@ virshEventMemoryFailurePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'memory-failure' for domain '%s':\n"
-                              "recipient: %s\naction: %s\n"),
+    virBufferAsprintf(&buf, _("event 'memory-failure' for domain '%1$s':\nrecipient: %2$s\naction: %3$s\n"),
                       virDomainGetName(dom),
                       UNKNOWNSTR(virshEventMemoryFailureRecipientTypeTypeToString(recipient)),
                       UNKNOWNSTR(virshEventMemoryFailureActionTypeTypeToString(action)));
-    virBufferAsprintf(&buf, _("flags:\n"
-                              "\taction required: %d\n\trecursive: %d\n"),
+    virBufferAsprintf(&buf, _("flags:\n\taction required: %1$d\n\trecursive: %2$d\n"),
                       !!(flags & VIR_DOMAIN_MEMORY_FAILURE_ACTION_REQUIRED),
                       !!(flags & VIR_DOMAIN_MEMORY_FAILURE_RECURSIVE));
 
@@ -754,8 +752,7 @@ virshEventMemoryDeviceSizeChangePrint(virConnectPtr conn G_GNUC_UNUSED,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf,
-                      _("event 'memory-device-size-change' for domain '%s':\n"
-                        "alias: %s\nsize: %llu\n"),
+                      _("event 'memory-device-size-change' for domain '%1$s':\nalias: %2$s\nsize: %3$llu\n"),
                       virDomainGetName(dom), alias, size);
 
     virshEventPrint(opaque, &buf);
@@ -932,7 +929,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (ndata == 0) {
-        vshError(ctl, _("unknown event type %s"), eventName);
+        vshError(ctl, _("unknown event type %1$s"), eventName);
         return false;
     }
 
@@ -975,7 +972,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
     default:
         goto cleanup;
     }
-    vshPrint(ctl, _("events received: %d\n"), count);
+    vshPrint(ctl, _("events received: %1$d\n"), count);
     if (count)
         ret = true;
 

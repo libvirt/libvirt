@@ -248,7 +248,7 @@ virshFetchPassFdsList(vshControl *ctl,
         return 0;
 
     if (!(fdlist = g_strsplit(fdopt, ",", -1))) {
-        vshError(ctl, _("Unable to split FD list '%s'"), fdopt);
+        vshError(ctl, _("Unable to split FD list '%1$s'"), fdopt);
         return -1;
     }
 
@@ -257,7 +257,7 @@ virshFetchPassFdsList(vshControl *ctl,
 
     for (i = 0; i < nfds; i++) {
         if (virStrToLong_i(fdlist[i], NULL, 10, fds + i) < 0) {
-            vshError(ctl, _("Unable to parse FD number '%s'"), fdlist[i]);
+            vshError(ctl, _("Unable to parse FD number '%1$s'"), fdlist[i]);
             return -1;
         }
     }
@@ -405,7 +405,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
         rv = virDomainAttachDevice(dom, buffer);
 
     if (rv < 0) {
-        vshError(ctl, _("Failed to attach device from %s"), from);
+        vshError(ctl, _("Failed to attach device from %1$s"), from);
         return false;
     }
 
@@ -677,7 +677,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     if (stype &&
         (type = virshAttachDiskSourceTypeFromString(stype)) < 0) {
-        vshError(ctl, _("Unknown source type: '%s'"), stype);
+        vshError(ctl, _("Unknown source type: '%1$s'"), stype);
         return false;
     }
 
@@ -701,7 +701,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (mode && STRNEQ(mode, "readonly") && STRNEQ(mode, "shareable")) {
-        vshError(ctl, _("No support for %s in command 'attach-disk'"), mode);
+        vshError(ctl, _("No support for %1$s in command 'attach-disk'"), mode);
         return false;
     }
 
@@ -902,7 +902,7 @@ VIR_ENUM_IMPL(virshDomainInterfaceSourceMode,
         if (index < ntok && \
             *tok[index] != '\0' && \
             virStrToLong_ullp(tok[index], NULL, 10, &rate->name) < 0) { \
-            vshError(ctl, _("field '%s' is malformed"), #name); \
+            vshError(ctl, _("field '%1$s' is malformed"), #name); \
             return -1; \
         } \
     } while (0)
@@ -919,7 +919,7 @@ virshParseRateStr(vshControl *ctl,
         return -1;
 
     if ((ntok = g_strv_length(tok)) > 4) {
-        vshError(ctl, _("Rate string '%s' has too many fields"), rateStr);
+        vshError(ctl, _("Rate string '%1$s' has too many fields"), rateStr);
         return -1;
     }
 
@@ -978,14 +978,14 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
     /* check interface type */
     if ((int)(typ = virDomainNetTypeFromString(type)) < 0) {
-        vshError(ctl, _("No support for %s in command 'attach-interface'"),
+        vshError(ctl, _("No support for %1$s in command 'attach-interface'"),
                  type);
         return false;
     }
 
     if (sourceModeStr &&
         (sourceMode = virshDomainInterfaceSourceModeTypeFromString(sourceModeStr)) < 0) {
-        vshError(ctl, _("Invalid source mode: %s"), sourceModeStr);
+        vshError(ctl, _("Invalid source mode: %1$s"), sourceModeStr);
         return false;
     }
 
@@ -1036,7 +1036,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         struct virshAddress addr = { 0 };
 
         if (virshAddressParse(pciaddrstr, false, &addr) < 0) {
-            vshError(ctl, _("cannot parse pci address '%s' for network interface"),
+            vshError(ctl, _("cannot parse pci address '%1$s' for network interface"),
                      source);
             return false;
         }
@@ -1070,7 +1070,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     case VIR_DOMAIN_NET_TYPE_NULL:
     case VIR_DOMAIN_NET_TYPE_VDS:
     case VIR_DOMAIN_NET_TYPE_LAST:
-        vshError(ctl, _("No support for %s in command 'attach-interface'"),
+        vshError(ctl, _("No support for %1$s in command 'attach-interface'"),
                  type);
         return false;
         break;
@@ -1183,16 +1183,16 @@ cmdAutostart(vshControl *ctl, const vshCmd *cmd)
 
     if (virDomainSetAutostart(dom, autostart) < 0) {
         if (autostart)
-            vshError(ctl, _("Failed to mark domain '%s' as autostarted"), name);
+            vshError(ctl, _("Failed to mark domain '%1$s' as autostarted"), name);
         else
-            vshError(ctl, _("Failed to unmark domain '%s' as autostarted"), name);
+            vshError(ctl, _("Failed to unmark domain '%1$s' as autostarted"), name);
         return false;
     }
 
     if (autostart)
-        vshPrintExtra(ctl, _("Domain '%s' marked as autostarted\n"), name);
+        vshPrintExtra(ctl, _("Domain '%1$s' marked as autostarted\n"), name);
     else
-        vshPrintExtra(ctl, _("Domain '%s' unmarked as autostarted\n"), name);
+        vshPrintExtra(ctl, _("Domain '%1$s' unmarked as autostarted\n"), name);
 
     return true;
 }
@@ -1610,7 +1610,7 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
         goto cleanup;
     } else if (rv > 0) {
         if (weight <= 0) {
-            vshError(ctl, _("Invalid value of %d for I/O weight"), weight);
+            vshError(ctl, _("Invalid value of %1$d for I/O weight"), weight);
             goto cleanup;
         }
         if (virTypedParamsAddUInt(&params, &nparams, &maxparams,
@@ -1936,7 +1936,7 @@ virshBlockJobWait(virshBlockJobWaitData *data)
 #endif /* !WIN32 */
 
         if (result < 0) {
-            vshError(data->ctl, _("failed to query job for disk %s"), data->dev);
+            vshError(data->ctl, _("failed to query job for disk %1$s"), data->dev);
             goto cleanup;
         }
 
@@ -1978,7 +1978,7 @@ virshBlockJobWait(virshBlockJobWaitData *data)
 
         if (intCaught || (data->timeout && (curr - start > data->timeout))) {
             if (virDomainBlockJobAbort(data->dom, data->dev, abort_flags) < 0) {
-                vshError(data->ctl, _("failed to abort job for disk '%s'"),
+                vshError(data->ctl, _("failed to abort job for disk '%1$s'"),
                          data->dev);
                 goto cleanup;
             }
@@ -2205,14 +2205,14 @@ cmdBlockcommit(vshControl *ctl, const vshCmd *cmd)
         if (pivot) {
             abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT;
             if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
-                vshError(ctl, _("failed to pivot job for disk %s"), path);
+                vshError(ctl, _("failed to pivot job for disk %1$s"), path);
                 goto cleanup;
             }
 
             vshPrintExtra(ctl, "\n%s", _("Successfully pivoted"));
         } else if (finish) {
             if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
-                vshError(ctl, _("failed to finish job for disk %s"), path);
+                vshError(ctl, _("failed to finish job for disk %1$s"), path);
                 goto cleanup;
             }
 
@@ -2451,7 +2451,7 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
                      * ullong bytes/s; make sure we don't overflow */
                     unsigned long long limit = MIN(ULONG_MAX, ULLONG_MAX >> 20);
                     if (bandwidth > limit) {
-                        vshError(ctl, _("bandwidth must be less than %llu"), limit);
+                        vshError(ctl, _("bandwidth must be less than %1$llu"), limit);
                         goto cleanup;
                     }
 
@@ -2546,14 +2546,14 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
     if (pivot) {
         abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT;
         if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
-            vshError(ctl, _("failed to pivot job for disk %s"), path);
+            vshError(ctl, _("failed to pivot job for disk %1$s"), path);
             goto cleanup;
         }
 
         vshPrintExtra(ctl, "\n%s", _("Successfully pivoted"));
     } else if (finish) {
         if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
-            vshError(ctl, _("failed to finish job for disk %s"), path);
+            vshError(ctl, _("failed to finish job for disk %1$s"), path);
             goto cleanup;
         }
 
@@ -2669,7 +2669,7 @@ virshBlockJobInfo(vshControl *ctl,
         if (!raw) {
             speed <<= 20;
             if (speed >> 20 != info.bandwidth) {
-                vshError(ctl, _("overflow in converting %ld MiB/s to bytes\n"),
+                vshError(ctl, _("overflow in converting %1$ld MiB/s to bytes\n"),
                          info.bandwidth);
                 return false;
             }
@@ -2678,12 +2678,12 @@ virshBlockJobInfo(vshControl *ctl,
 
     if (rc == 0) {
         if (!raw)
-            vshPrintExtra(ctl, _("No current block job for %s"), path);
+            vshPrintExtra(ctl, _("No current block job for %1$s"), path);
         return true;
     }
 
     if (raw) {
-        vshPrint(ctl, _(" type=%s\n bandwidth=%lu\n cur=%llu\n end=%llu\n"),
+        vshPrint(ctl, _(" type=%1$s\n bandwidth=%2$lu\n cur=%3$llu\n end=%4$llu\n"),
                  virshDomainBlockJobTypeToString(info.type),
                  info.bandwidth, info.cur, info.end);
     } else {
@@ -2692,7 +2692,7 @@ virshBlockJobInfo(vshControl *ctl,
         if (speed) {
             const char *unit;
             double val = vshPrettyCapacity(speed, &unit);
-            vshPrint(ctl, _("    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"),
+            vshPrint(ctl, _("    Bandwidth limit: %1$llu bytes/s (%2$-.3lf %3$s/s)"),
                      speed, val, unit);
         }
         vshPrint(ctl, "\n");
@@ -2986,11 +2986,11 @@ cmdBlockresize(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainBlockResize(dom, path, size, flags) < 0) {
-        vshError(ctl, _("Failed to resize block device '%s'"), path);
+        vshError(ctl, _("Failed to resize block device '%1$s'"), path);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Block device '%s' is resized"), path);
+    vshPrintExtra(ctl, _("Block device '%1$s' is resized"), path);
     return true;
 }
 
@@ -3049,8 +3049,8 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom,
         return false;
     }
 
-    vshPrintExtra(ctl, _("Connected to domain '%s'\n"), virDomainGetName(dom));
-    vshPrintExtra(ctl, _("Escape character is %s"), priv->escapeChar);
+    vshPrintExtra(ctl, _("Connected to domain '%1$s'\n"), virDomainGetName(dom));
+    vshPrintExtra(ctl, _("Escape character is %1$s"), priv->escapeChar);
     if (priv->escapeChar[0] == '^')
         vshPrintExtra(ctl, " (Ctrl + %c)", priv->escapeChar[1]);
     vshPrintExtra(ctl, "\n");
@@ -3150,7 +3150,7 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (STRNEQ(state, "up") && STRNEQ(state, "down")) {
-        vshError(ctl, _("invalid link state '%s'"), state);
+        vshError(ctl, _("invalid link state '%1$s'"), state);
         return false;
     }
 
@@ -3192,7 +3192,7 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (!ifaceNode) {
-        vshError(ctl, _("interface '%s' not found"), iface);
+        vshError(ctl, _("interface '%1$s' not found"), iface);
         return false;
     }
 
@@ -3318,7 +3318,7 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
          * only accepts UINT */
         if (inbound.average > UINT_MAX || inbound.peak > UINT_MAX ||
             inbound.burst > UINT_MAX) {
-            vshError(ctl, _("inbound rate larger than maximum %u"),
+            vshError(ctl, _("inbound rate larger than maximum %1$u"),
                      UINT_MAX);
             goto cleanup;
         }
@@ -3358,7 +3358,7 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         if (outbound.average > UINT_MAX || outbound.peak > UINT_MAX ||
             outbound.burst > UINT_MAX) {
-            vshError(ctl, _("outbound rate larger than maximum %u"),
+            vshError(ctl, _("outbound rate larger than maximum %1$u"),
                      UINT_MAX);
             goto cleanup;
         }
@@ -3462,11 +3462,11 @@ cmdSuspend(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainSuspend(dom) != 0) {
-        vshError(ctl, _("Failed to suspend domain '%s'"), name);
+        vshError(ctl, _("Failed to suspend domain '%1$s'"), name);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Domain '%s' suspended\n"), name);
+    vshPrintExtra(ctl, _("Domain '%1$s' suspended\n"), name);
     return true;
 }
 
@@ -3528,12 +3528,12 @@ cmdDomPMSuspend(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virDomainPMSuspendForDuration(dom, suspendTarget, duration, 0) < 0) {
-        vshError(ctl, _("Domain '%s' could not be suspended"),
+        vshError(ctl, _("Domain '%1$s' could not be suspended"),
                  virDomainGetName(dom));
         return false;
     }
 
-    vshPrintExtra(ctl, _("Domain '%s' successfully suspended"),
+    vshPrintExtra(ctl, _("Domain '%1$s' successfully suspended"),
              virDomainGetName(dom));
 
     return true;
@@ -3570,12 +3570,12 @@ cmdDomPMWakeup(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainPMWakeup(dom, flags) < 0) {
-        vshError(ctl, _("Domain '%s' could not be woken up"),
+        vshError(ctl, _("Domain '%1$s' could not be woken up"),
                  virDomainGetName(dom));
         return false;
     }
 
-    vshPrintExtra(ctl, _("Domain '%s' successfully woken up"),
+    vshPrintExtra(ctl, _("Domain '%1$s' successfully woken up"),
                   virDomainGetName(dom));
 
     return true;
@@ -3858,7 +3858,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
                 if (!source) {
                     vshError(ctl,
-                             _("Missing storage volume name for disk '%s'"),
+                             _("Missing storage volume name for disk '%1$s'"),
                              target);
                     continue;
                 }
@@ -3866,7 +3866,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
                 if (!(storagepool = virStoragePoolLookupByName(priv->conn,
                                                                pool))) {
                     vshError(ctl,
-                             _("Storage pool '%s' for volume '%s' not found."),
+                             _("Storage pool '%1$s' for volume '%2$s' not found."),
                              pool, target);
                     vshResetLibvirtError();
                     continue;
@@ -3880,8 +3880,8 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
             if (!vol.vol) {
                 vshError(ctl,
-                         _("Storage volume '%s'(%s) is not managed by libvirt. "
-                           "Remove it manually.\n"), target, source);
+                         _("Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually.\n"),
+                         target, source);
                 vshResetLibvirtError();
                 continue;
             }
@@ -3897,8 +3897,8 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
             for (i = 0; i < nvol_list; i++) {
                 if (vol_list[i]) {
                     vshError(ctl,
-                             _("Volume '%s' was not found in domain's "
-                               "definition.\n"), vol_list[i]);
+                             _("Volume '%1$s' was not found in domain's definition.\n"),
+                             vol_list[i]);
                     found = true;
                 }
             }
@@ -3945,10 +3945,10 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
      * without support for the newer flags.  Oh well.  */
     if (has_snapshots_metadata) {
         if (snapshots_metadata)
-            vshError(ctl, _("Unable to remove metadata of %d snapshots"),
+            vshError(ctl, _("Unable to remove metadata of %1$d snapshots"),
                      has_snapshots_metadata);
         else
-            vshError(ctl, _("Refusing to undefine while %d snapshots exist"),
+            vshError(ctl, _("Refusing to undefine while %1$d snapshots exist"),
                      has_snapshots_metadata);
 
         goto cleanup;
@@ -3958,10 +3958,10 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
  out:
     if (rc == 0) {
-        vshPrintExtra(ctl, _("Domain '%s' has been undefined\n"), name);
+        vshPrintExtra(ctl, _("Domain '%1$s' has been undefined\n"), name);
         ret = true;
     } else {
-        vshError(ctl, _("Failed to undefine domain '%s'"), name);
+        vshError(ctl, _("Failed to undefine domain '%1$s'"), name);
         goto cleanup;
     }
 
@@ -3969,7 +3969,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     if (nvols) {
         for (i = 0; i < nvols; i++) {
             if (wipe_storage) {
-                vshPrintExtra(ctl, _("Wiping volume '%s'(%s) ... "),
+                vshPrintExtra(ctl, _("Wiping volume '%1$s'(%2$s) ... "),
                               vols[i].target, vols[i].source);
                 fflush(stdout);
                 if (virStorageVolWipe(vols[i].vol, 0) < 0) {
@@ -3983,11 +3983,11 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
             /* delete the volume */
             if (virStorageVolDelete(vols[i].vol, vol_flags) < 0) {
-                vshError(ctl, _("Failed to remove storage volume '%s'(%s)"),
+                vshError(ctl, _("Failed to remove storage volume '%1$s'(%2$s)"),
                          vols[i].target, vols[i].source);
                 ret = false;
             } else {
-                vshPrintExtra(ctl, _("Volume '%s'(%s) removed.\n"),
+                vshPrintExtra(ctl, _("Volume '%1$s'(%2$s) removed.\n"),
                               vols[i].target, vols[i].source);
             }
         }
@@ -4140,12 +4140,12 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (rc < 0) {
-        vshError(ctl, _("Failed to start domain '%s'"), virDomainGetName(dom));
+        vshError(ctl, _("Failed to start domain '%1$s'"), virDomainGetName(dom));
         return false;
     }
 
  started:
-    vshPrintExtra(ctl, _("Domain '%s' started\n"),
+    vshPrintExtra(ctl, _("Domain '%1$s' started\n"),
                   virDomainGetName(dom));
 #ifndef WIN32
     if (console && !cmdRunConsole(ctl, dom, NULL, 0))
@@ -4250,7 +4250,7 @@ doSave(void *opaque)
     }
 
     if (rc < 0) {
-        vshError(ctl, _("Failed to save domain '%s' to %s"), name, to);
+        vshError(ctl, _("Failed to save domain '%1$s' to %2$s"), name, to);
         goto out;
     }
 
@@ -4505,7 +4505,7 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
     virThreadJoin(&workerThread);
 
     if (!data.ret)
-        vshPrintExtra(ctl, _("\nDomain '%s' saved to %s\n"), name, to);
+        vshPrintExtra(ctl, _("\nDomain '%1$s' saved to %2$s\n"), name, to);
 
     return !data.ret;
 }
@@ -4632,11 +4632,11 @@ cmdSaveImageDefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainSaveImageDefineXML(priv->conn, file, xml, flags) < 0) {
-        vshError(ctl, _("Failed to update %s"), file);
+        vshError(ctl, _("Failed to update %1$s"), file);
         return false;
     }
 
-    vshPrintExtra(ctl, _("State file %s updated.\n"), file);
+    vshPrintExtra(ctl, _("State file %1$s updated.\n"), file);
     return true;
 }
 
@@ -4697,8 +4697,8 @@ cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
     virDomainSaveImageGetXMLDesc(priv->conn, file, getxml_flags)
 #define EDIT_NOT_CHANGED \
     do { \
-        vshPrintExtra(ctl, _("Saved image %s XML configuration " \
-                             "not changed.\n"), file); \
+        vshPrintExtra(ctl, _("Saved image %1$s XML configuration not changed.\n"), \
+                      file); \
         ret = true; \
         goto edit_cleanup; \
     } while (0)
@@ -4706,7 +4706,7 @@ cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
     (virDomainSaveImageDefineXML(priv->conn, file, doc_edited, define_flags) == 0)
 #include "virsh-edit.c"
 
-    vshPrintExtra(ctl, _("State file %s edited.\n"), file);
+    vshPrintExtra(ctl, _("State file %1$s edited.\n"), file);
     ret = true;
 
  cleanup:
@@ -4779,7 +4779,7 @@ doManagedsave(void *opaque)
         goto out;
 
     if (virDomainManagedSave(dom, flags) < 0) {
-        vshError(ctl, _("Failed to save domain '%s' state"), name);
+        vshError(ctl, _("Failed to save domain '%1$s' state"), name);
         goto out;
     }
 
@@ -4826,7 +4826,7 @@ cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
     virThreadJoin(&workerThread);
 
     if (!data.ret)
-        vshPrintExtra(ctl, _("\nDomain '%s' state saved by libvirt\n"), name);
+        vshPrintExtra(ctl, _("\nDomain '%1$s' state saved by libvirt\n"), name);
 
     return !data.ret;
 }
@@ -4866,18 +4866,18 @@ cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (hassave == 0) {
-        vshPrintExtra(ctl, _("Domain '%s' has no manage save image; removal skipped"),
+        vshPrintExtra(ctl, _("Domain '%1$s' has no manage save image; removal skipped"),
                       name);
         return true;
     }
 
     if (virDomainManagedSaveRemove(dom, 0) < 0) {
-        vshError(ctl, _("Failed to remove managed save image for domain '%s'"),
+        vshError(ctl, _("Failed to remove managed save image for domain '%1$s'"),
                  name);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Removed managedsave image for domain '%s'"), name);
+    vshPrintExtra(ctl, _("Removed managedsave image for domain '%1$s'"), name);
 
     return true;
 }
@@ -4930,8 +4930,8 @@ cmdManagedSaveEdit(vshControl *ctl, const vshCmd *cmd)
 #define EDIT_GET_XML virDomainManagedSaveGetXMLDesc(dom, getxml_flags)
 #define EDIT_NOT_CHANGED \
     do { \
-        vshPrintExtra(ctl, _("Managed save image of domain '%s' XML configuration " \
-                             "not changed.\n"), virDomainGetName(dom)); \
+        vshPrintExtra(ctl, _("Managed save image of domain '%1$s' XML configuration not changed.\n"), \
+                      virDomainGetName(dom)); \
         ret = true; \
         goto edit_cleanup; \
     } while (0)
@@ -4939,7 +4939,7 @@ cmdManagedSaveEdit(vshControl *ctl, const vshCmd *cmd)
     (virDomainManagedSaveDefineXML(dom, doc_edited, define_flags) == 0)
 #include "virsh-edit.c"
 
-    vshPrintExtra(ctl, _("Managed save image of Domain '%s' XML configuration edited.\n"),
+    vshPrintExtra(ctl, _("Managed save image of Domain '%1$s' XML configuration edited.\n"),
                   virDomainGetName(dom));
     ret = true;
 
@@ -5060,12 +5060,12 @@ cmdManagedSaveDefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainManagedSaveDefineXML(dom, xml, flags) < 0) {
-        vshError(ctl, _("Failed to update %s XML configuration"),
+        vshError(ctl, _("Failed to update %1$s XML configuration"),
                         virDomainGetName(dom));
         return false;
     }
 
-    vshPrintExtra(ctl, _("Managed save state file of domain '%s' updated.\n"),
+    vshPrintExtra(ctl, _("Managed save state file of domain '%1$s' updated.\n"),
                          virDomainGetName(dom));
     return true;
 }
@@ -5131,7 +5131,7 @@ cmdSchedInfoUpdateOne(vshControl *ctl,
         return 0;
     }
 
-    vshError(ctl, _("invalid scheduler option: %s"), field);
+    vshError(ctl, _("invalid scheduler option: %1$s"), field);
     return -1;
 }
 
@@ -5370,11 +5370,11 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (rc < 0) {
-        vshError(ctl, _("Failed to restore domain from %s"), from);
+        vshError(ctl, _("Failed to restore domain from %1$s"), from);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Domain restored from %s\n"), from);
+    vshPrintExtra(ctl, _("Domain restored from %1$s\n"), from);
     return true;
 }
 
@@ -5482,9 +5482,8 @@ doDump(void *opaque)
 
         if (vshCommandOptStringQuiet(ctl, cmd, "format", &format) > 0) {
             if ((dumpformat = virshDomainCoreDumpFormatTypeFromString(format)) < 0) {
-                vshError(ctl, _("format '%s' is not supported, expecting "
-                                "'kdump-zlib', 'kdump-lzo', 'kdump-snappy', "
-                                "'win-dmp' or 'elf'"), format);
+                vshError(ctl, _("format '%1$s' is not supported, expecting 'kdump-zlib', 'kdump-lzo', 'kdump-snappy', 'win-dmp' or 'elf'"),
+                         format);
                 goto out;
             }
         }
@@ -5492,12 +5491,12 @@ doDump(void *opaque)
 
     if (dumpformat != VIR_DOMAIN_CORE_DUMP_FORMAT_RAW) {
         if (virDomainCoreDumpWithFormat(dom, to, dumpformat, flags) < 0) {
-            vshError(ctl, _("Failed to core dump domain '%s' to %s"), name, to);
+            vshError(ctl, _("Failed to core dump domain '%1$s' to %2$s"), name, to);
             goto out;
         }
     } else {
         if (virDomainCoreDump(dom, to, flags) < 0) {
-            vshError(ctl, _("Failed to core dump domain '%s' to %s"), name, to);
+            vshError(ctl, _("Failed to core dump domain '%1$s' to %2$s"), name, to);
             goto out;
         }
     }
@@ -5551,7 +5550,7 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
     if (data.ret)
         return false;
 
-    vshPrintExtra(ctl, _("\nDomain '%s' dumped to %s\n"), name, to);
+    vshPrintExtra(ctl, _("\nDomain '%1$s' dumped to %2$s\n"), name, to);
 
     return true;
 }
@@ -5639,7 +5638,7 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
 
     mime = virDomainScreenshot(dom, st, screen, flags);
     if (!mime) {
-        vshError(ctl, _("could not take a screenshot of %s"), name);
+        vshError(ctl, _("could not take a screenshot of %1$s"), name);
         goto cleanup;
     }
 
@@ -5652,7 +5651,7 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
     if ((fd = open(file, O_WRONLY|O_CREAT|O_EXCL, 0666)) < 0) {
         if (errno != EEXIST ||
             (fd = open(file, O_WRONLY|O_TRUNC, 0666)) < 0) {
-            vshError(ctl, _("cannot create file %s"), file);
+            vshError(ctl, _("cannot create file %1$s"), file);
             goto cleanup;
         }
     } else {
@@ -5663,21 +5662,21 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
     cbdata.fd = fd;
 
     if (virStreamRecvAll(st, virshStreamSink, &cbdata) < 0) {
-        vshError(ctl, _("could not receive data from domain '%s'"), name);
+        vshError(ctl, _("could not receive data from domain '%1$s'"), name);
         goto cleanup;
     }
 
     if (VIR_CLOSE(fd) < 0) {
-        vshError(ctl, _("cannot close file %s"), file);
+        vshError(ctl, _("cannot close file %1$s"), file);
         goto cleanup;
     }
 
     if (virStreamFinish(st) < 0) {
-        vshError(ctl, _("cannot close stream on domain '%s'"), name);
+        vshError(ctl, _("cannot close stream on domain '%1$s'"), name);
         goto cleanup;
     }
 
-    vshPrintExtra(ctl, _("Screenshot saved to %s, with type of %s"), file, mime);
+    vshPrintExtra(ctl, _("Screenshot saved to %1$s, with type of %2$s"), file, mime);
     ret = true;
 
  cleanup:
@@ -5764,13 +5763,13 @@ cmdSetLifecycleAction(vshControl *ctl, const vshCmd *cmd)
     }
 
     if ((tmpVal = virshDomainLifecycleTypeFromString(typeStr)) < 0) {
-        vshError(ctl, _("Invalid lifecycle type '%s'."), typeStr);
+        vshError(ctl, _("Invalid lifecycle type '%1$s'."), typeStr);
         return false;
     }
     type = tmpVal;
 
     if ((tmpVal = virshDomainLifecycleActionTypeFromString(actionStr)) < 0) {
-        vshError(ctl, _("Invalid lifecycle action '%s'."), actionStr);
+        vshError(ctl, _("Invalid lifecycle action '%1$s'."), actionStr);
         return false;
     }
     action = tmpVal;
@@ -5842,7 +5841,7 @@ cmdSetUserPassword(vshControl *ctl, const vshCmd *cmd)
     if (virDomainSetUserPassword(dom, user, password, flags) < 0)
         return false;
 
-    vshPrintExtra(ctl, _("Password set successfully for %s in %s"), user, name);
+    vshPrintExtra(ctl, _("Password set successfully for %1$s in %2$s"), user, name);
     return true;
 }
 /*
@@ -5873,11 +5872,11 @@ cmdResume(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainResume(dom) != 0) {
-        vshError(ctl, _("Failed to resume domain '%s'"), name);
+        vshError(ctl, _("Failed to resume domain '%1$s'"), name);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Domain '%s' resumed\n"), name);
+    vshPrintExtra(ctl, _("Domain '%1$s' resumed\n"), name);
     return true;
 }
 
@@ -5937,9 +5936,8 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
         } else if (STREQ(mode, "paravirt")) {
             flags |= VIR_DOMAIN_SHUTDOWN_PARAVIRT;
         } else {
-            vshError(ctl, _("Unknown mode %s value, expecting "
-                            "'acpi', 'agent', 'initctl', 'signal', "
-                            "or 'paravirt'"), mode);
+            vshError(ctl, _("Unknown mode %1$s value, expecting 'acpi', 'agent', 'initctl', 'signal', or 'paravirt'"),
+                     mode);
             return false;
         }
         tmp++;
@@ -5954,11 +5952,11 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
         rv = virDomainShutdown(dom);
 
     if (rv != 0) {
-        vshError(ctl, _("Failed to shutdown domain '%s'"), name);
+        vshError(ctl, _("Failed to shutdown domain '%1$s'"), name);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Domain '%s' is being shutdown\n"), name);
+    vshPrintExtra(ctl, _("Domain '%1$s' is being shutdown\n"), name);
     return true;
 }
 
@@ -6017,9 +6015,8 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
         } else if (STREQ(mode, "paravirt")) {
             flags |= VIR_DOMAIN_REBOOT_PARAVIRT;
         } else {
-            vshError(ctl, _("Unknown mode %s value, expecting "
-                            "'acpi', 'agent', 'initctl', 'signal' "
-                            "or 'paravirt'"), mode);
+            vshError(ctl, _("Unknown mode %1$s value, expecting 'acpi', 'agent', 'initctl', 'signal' or 'paravirt'"),
+                     mode);
             return false;
         }
         tmp++;
@@ -6029,11 +6026,11 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainReboot(dom, flags) != 0) {
-        vshError(ctl, _("Failed to reboot domain '%s'"), name);
+        vshError(ctl, _("Failed to reboot domain '%1$s'"), name);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Domain '%s' is being rebooted\n"), name);
+    vshPrintExtra(ctl, _("Domain '%1$s' is being rebooted\n"), name);
     return true;
 }
 
@@ -6065,11 +6062,11 @@ cmdReset(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainReset(dom, 0) != 0) {
-        vshError(ctl, _("Failed to reset domain '%s'"), name);
+        vshError(ctl, _("Failed to reset domain '%1$s'"), name);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Domain '%s' was reset\n"), name);
+    vshPrintExtra(ctl, _("Domain '%1$s' was reset\n"), name);
     return true;
 }
 
@@ -6762,7 +6759,7 @@ virshVcpuinfoPrintAffinity(vshControl *ctl,
     if (pretty) {
         if (!(str = virBitmapDataFormat(cpumap, VIR_CPU_MAPLEN(maxcpu))))
             return -1;
-        vshPrint(ctl, _("%s (out of %d)"), str, maxcpu);
+        vshPrint(ctl, _("%1$s (out of %2$d)"), str, maxcpu);
     } else {
         for (i = 0; i < maxcpu; i++) {
             if (VIR_CPU_USED(cpumap, i))
@@ -7026,11 +7023,11 @@ virshVcpuPinQuery(vshControl *ctl,
             (!(flags & VIR_DOMAIN_AFFECT_CONFIG) &&
              virDomainIsActive(dom) == 1))
             vshError(ctl,
-                     _("vcpu %d is out of range of live cpu count %d"),
+                     _("vcpu %1$d is out of range of live cpu count %2$d"),
                      vcpu, ncpus);
         else
             vshError(ctl,
-                     _("vcpu %d is out of range of persistent cpu count %d"),
+                     _("vcpu %1$d is out of range of persistent cpu count %2$d"),
                      vcpu, ncpus);
         return false;
     }
@@ -7081,12 +7078,12 @@ virshParseCPUList(vshControl *ctl, int *cpumaplen,
 
         if (virBitmapParse(cpulist, &map, 1024) < 0 ||
             virBitmapIsAllClear(map)) {
-            vshError(ctl, _("Invalid cpulist '%s'"), cpulist);
+            vshError(ctl, _("Invalid cpulist '%1$s'"), cpulist);
             return NULL;
         }
         lastcpu = virBitmapLastSetBit(map);
         if (lastcpu >= maxcpu) {
-            vshError(ctl, _("CPU %d in cpulist '%s' exceed the maxcpu %d"),
+            vshError(ctl, _("CPU %1$d in cpulist '%2$s' exceed the maxcpu %3$d"),
                      lastcpu, cpulist, maxcpu);
             return NULL;
         }
@@ -7786,7 +7783,7 @@ cmdIOThreadAdd(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptInt(ctl, cmd, "id", &iothread_id) < 0)
         return false;
     if (iothread_id <= 0) {
-        vshError(ctl, _("Invalid IOThread id value: '%d'"), iothread_id);
+        vshError(ctl, _("Invalid IOThread id value: '%1$d'"), iothread_id);
         return false;
     }
 
@@ -7876,7 +7873,7 @@ cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptInt(ctl, cmd, "id", &id) < 0)
         goto cleanup;
     if (id <= 0) {
-        vshError(ctl, _("Invalid IOThread id value: '%d'"), id);
+        vshError(ctl, _("Invalid IOThread id value: '%1$d'"), id);
         goto cleanup;
     }
 
@@ -7986,7 +7983,7 @@ cmdIOThreadDel(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptInt(ctl, cmd, "id", &iothread_id) < 0)
         return false;
     if (iothread_id <= 0) {
-        vshError(ctl, _("Invalid IOThread id value: '%d'"), iothread_id);
+        vshError(ctl, _("Invalid IOThread id value: '%1$d'"), iothread_id);
         return false;
     }
 
@@ -8102,7 +8099,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
 
     if (show_count < 0 || show_count > max_id) {
         if (show_count > max_id)
-            vshPrint(ctl, _("Only %d CPUs available to show\n"), max_id);
+            vshPrint(ctl, _("Only %1$d CPUs available to show\n"), max_id);
         show_count = max_id - cpu;
     }
 
@@ -8172,7 +8169,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     return ret;
 
  failed_stats:
-    vshError(ctl, _("Failed to retrieve CPU statistics for domain '%s'"),
+    vshError(ctl, _("Failed to retrieve CPU statistics for domain '%1$s'"),
              virDomainGetName(dom));
     goto cleanup;
 }
@@ -8260,11 +8257,11 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
         dom = virDomainCreateXML(priv->conn, buffer, flags);
 
     if (!dom) {
-        vshError(ctl, _("Failed to create domain from %s"), from);
+        vshError(ctl, _("Failed to create domain from %1$s"), from);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Domain '%s' created from %s\n"),
+    vshPrintExtra(ctl, _("Domain '%1$s' created from %2$s\n"),
                   virDomainGetName(dom), from);
 #ifndef WIN32
     if (console)
@@ -8319,11 +8316,11 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
         dom = virDomainDefineXML(priv->conn, buffer);
 
     if (!dom) {
-        vshError(ctl, _("Failed to define domain from %s"), from);
+        vshError(ctl, _("Failed to define domain from %1$s"), from);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Domain '%s' defined from %s\n"),
+    vshPrintExtra(ctl, _("Domain '%1$s' defined from %2$s\n"),
                   virDomainGetName(dom), from);
     return true;
 }
@@ -8376,11 +8373,11 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
        result = virDomainDestroy(dom);
 
     if (result < 0) {
-        vshError(ctl, _("Failed to destroy domain '%s'"), name);
+        vshError(ctl, _("Failed to destroy domain '%1$s'"), name);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Domain '%s' destroyed\n"), name);
+    vshPrintExtra(ctl, _("Domain '%1$s' destroyed\n"), name);
     return true;
 }
 
@@ -8538,9 +8535,9 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%s", desc);
         } else {
             if (title)
-                vshPrintExtra(ctl, _("No title for domain: %s"), virDomainGetName(dom));
+                vshPrintExtra(ctl, _("No title for domain: %1$s"), virDomainGetName(dom));
             else
-                vshPrintExtra(ctl, _("No description for domain: %s"), virDomainGetName(dom));
+                vshPrintExtra(ctl, _("No description for domain: %1$s"), virDomainGetName(dom));
         }
     }
 
@@ -8795,7 +8792,7 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
 
     codeset = virKeycodeSetTypeFromString(codeset_option);
     if (codeset < 0) {
-        vshError(ctl, _("unknown codeset: '%s'"), codeset_option);
+        vshError(ctl, _("unknown codeset: '%1$s'"), codeset_option);
         return false;
     }
 
@@ -8807,7 +8804,7 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
 
         if ((keycode = virshKeyCodeGetInt(opt->data)) < 0) {
             if ((keycode = virKeycodeValueFromString(codeset, opt->data)) < 0) {
-                vshError(ctl, _("invalid keycode: '%s'"), opt->data);
+                vshError(ctl, _("invalid keycode: '%1$s'"), opt->data);
                 return false;
             }
         }
@@ -8907,7 +8904,7 @@ cmdSendProcessSignal(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if ((signum = getSignalNumber(signame)) < 0) {
-        vshError(ctl, _("malformed signal name: %s"), signame);
+        vshError(ctl, _("malformed signal name: %1$s"), signame);
         return false;
     }
 
@@ -9327,7 +9324,7 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
 
 #define PARSE_MEMTUNE_PARAM(NAME, FIELD) \
     if ((rc = virshMemtuneGetSize(ctl, cmd, NAME, &tmpVal)) < 0) { \
-        vshError(ctl, _("Unable to parse integer parameter %s"), NAME); \
+        vshError(ctl, _("Unable to parse integer parameter %1$s"), NAME); \
         goto cleanup; \
     } \
     if (rc == 1) { \
@@ -9603,7 +9600,7 @@ cmdNumatune(vshControl * ctl, const vshCmd * cmd)
          */
         if ((m = virDomainNumatuneMemModeTypeFromString(mode)) < 0 &&
             virStrToLong_i(mode, NULL, 0, &m) < 0) {
-            vshError(ctl, _("Invalid mode: %s"), mode);
+            vshError(ctl, _("Invalid mode: %1$s"), mode);
             goto cleanup;
         }
 
@@ -9992,7 +9989,7 @@ cmdQemuMonitorCommandQMPWrap(vshControl *ctl,
         virBufferAddLit(&buf, "}");
 
         if (!(arguments = virJSONValueFromString(virBufferCurrentContent(&buf)))) {
-            vshError(ctl, _("failed to wrap arguments '%s' into a QMP command wrapper"),
+            vshError(ctl, _("failed to wrap arguments '%1$s' into a QMP command wrapper"),
                      fullargs);
             return NULL;
         }
@@ -10232,7 +10229,7 @@ cmdQemuMonitorEvent(vshControl *ctl, const vshCmd *cmd)
     default:
         goto cleanup;
     }
-    vshPrint(ctl, _("events received: %d\n"), data.count);
+    vshPrint(ctl, _("events received: %1$d\n"), data.count);
     if (data.count)
         ret = true;
 
@@ -10280,11 +10277,11 @@ cmdQemuAttach(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (!(dom = virDomainQemuAttach(priv->conn, pid_value, flags))) {
-        vshError(ctl, _("Failed to attach to pid %u"), pid_value);
+        vshError(ctl, _("Failed to attach to pid %1$u"), pid_value);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Domain '%s' attached to pid %u\n"),
+    vshPrintExtra(ctl, _("Domain '%1$s' attached to pid %2$u\n"),
                   virDomainGetName(dom), pid_value);
     return true;
 }
@@ -11247,7 +11244,7 @@ doMigrate(void *opaque)
         g_autofree char *xml = NULL;
 
         if (virFileReadAll(opt, VSH_MAX_XML_FILE, &xml) < 0) {
-            vshError(ctl, _("cannot read file '%s'"), opt);
+            vshError(ctl, _("cannot read file '%1$s'"), opt);
             goto save_error;
         }
 
@@ -11263,7 +11260,7 @@ doMigrate(void *opaque)
         g_autofree char *xml = NULL;
 
         if (virFileReadAll(opt, VSH_MAX_XML_FILE, &xml) < 0) {
-            vshError(ctl, _("cannot read file '%s'"), opt);
+            vshError(ctl, _("cannot read file '%1$s'"), opt);
             goto save_error;
         }
 
@@ -11697,7 +11694,7 @@ cmdMigrateCompCache(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     value = vshPrettyCapacity(size, &unit);
-    vshPrint(ctl, _("Compression cache: %.3lf %s"), value, unit);
+    vshPrint(ctl, _("Compression cache: %1$.3lf %2$s"), value, unit);
 
     return true;
 }
@@ -11874,7 +11871,7 @@ virshGetDBusDisplay(vshControl *ctl, xmlXPathContext *ctxt)
         return g_strdup_printf("dbus+unix://%s", addr + 10);
     }
 
-    vshError(ctl, _("'%s' D-Bus address is not handled"), addr);
+    vshError(ctl, _("'%1$s' D-Bus address is not handled"), addr);
     return NULL;
 }
 
@@ -12073,7 +12070,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 
     if (!ret) {
         if (type)
-            vshError(ctl, _("No graphical display with type '%s' found"), type);
+            vshError(ctl, _("No graphical display with type '%1$s' found"), type);
         else
             vshError(ctl, _("No graphical display found"));
     }
@@ -12230,7 +12227,7 @@ cmdDomHostname(vshControl *ctl, const vshCmd *cmd)
         int source = virshDomainHostnameSourceTypeFromString(sourcestr);
 
         if (source < 0) {
-            vshError(ctl, _("Unknown data source '%s'"), sourcestr);
+            vshError(ctl, _("Unknown data source '%1$s'"), sourcestr);
             return false;
         }
 
@@ -12323,7 +12320,7 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
         ret = virDomainDetachDevice(dom, buffer);
 
     if (ret < 0) {
-        vshError(ctl, _("Failed to detach device from %s"), from);
+        vshError(ctl, _("Failed to detach device from %1$s"), from);
         return false;
     }
 
@@ -12384,7 +12381,7 @@ cmdDetachDeviceAlias(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainDetachDeviceAlias(dom, alias, flags) < 0) {
-        vshError(ctl, _("Failed to detach device with alias %s"), alias);
+        vshError(ctl, _("Failed to detach device with alias %1$s"), alias);
         return false;
     }
 
@@ -12461,7 +12458,7 @@ cmdUpdateDevice(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_DEVICE_MODIFY_FORCE;
 
     if (virDomainUpdateDeviceFlags(dom, buffer, flags) < 0) {
-        vshError(ctl, _("Failed to update device from %s"), from);
+        vshError(ctl, _("Failed to update device from %1$s"), from);
         return false;
     }
 
@@ -12532,7 +12529,7 @@ virshDomainDetachInterface(char *doc,
     }
 
     if ((nnodes = virXPathNodeSet(xpath, ctxt, &nodes)) <= 0) {
-        vshError(ctl, _("No interface found whose type is %s"), type);
+        vshError(ctl, _("No interface found whose type is %1$s"), type);
         return false;
     }
 
@@ -12547,9 +12544,8 @@ virshDomainDetachInterface(char *doc,
                 if (virMacAddrCompare(tmp_mac, mac) == 0) {
                     if (matchNode) {
                         /* this is the 2nd match, so it's ambiguous */
-                        vshError(ctl, _("Domain has multiple interfaces matching "
-                                        "MAC address %s. You must use detach-device and "
-                                        "specify the device pci address to remove it."),
+                        vshError(ctl, _("Domain has multiple interfaces matching MAC address %1$s. "
+                                        "You must use detach-device and specify the device pci address to remove it."),
                                  mac);
                         return false;
                     }
@@ -12560,7 +12556,7 @@ virshDomainDetachInterface(char *doc,
         }
     } else {
         if (nnodes > 1) {
-            vshError(ctl, _("Domain has %zd interfaces. Please specify which one to detach using --mac"),
+            vshError(ctl, _("Domain has %1$zd interfaces. Please specify which one to detach using --mac"),
                      nnodes);
             return false;
         }
@@ -12569,7 +12565,7 @@ virshDomainDetachInterface(char *doc,
     }
 
     if (!matchNode) {
-        vshError(ctl, _("No interface with MAC address %s was found"), mac);
+        vshError(ctl, _("No interface with MAC address %1$s was found"), mac);
         return false;
     }
 
@@ -12750,7 +12746,7 @@ virshFindDisk(const char *doc,
         }
     }
 
-    vshError(NULL, _("No disk found whose source path or target is %s"), path);
+    vshError(NULL, _("No disk found whose source path or target is %1$s"), path);
 
     return NULL;
 }
@@ -12789,7 +12785,7 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
 
     if (!(STREQ_NULLABLE(device_type, "cdrom") ||
           STREQ_NULLABLE(device_type, "floppy"))) {
-        vshError(NULL, _("The disk device '%s' is not removable"), target);
+        vshError(NULL, _("The disk device '%1$s' is not removable"), target);
         return NULL;
     }
 
@@ -12823,7 +12819,7 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
 
     if (type == VIRSH_UPDATE_DISK_XML_EJECT) {
         if (!source) {
-            vshError(NULL, _("The disk device '%s' doesn't have media"), target);
+            vshError(NULL, _("The disk device '%1$s' doesn't have media"), target);
             return NULL;
         }
 
@@ -12843,7 +12839,7 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
             source_path = virXMLPropString(source, "name");
 
         if (source_path && type == VIRSH_UPDATE_DISK_XML_INSERT) {
-            vshError(NULL, _("The disk device '%s' already has media"), target);
+            vshError(NULL, _("The disk device '%1$s' already has media"), target);
             return NULL;
         }
 
@@ -13042,7 +13038,7 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
 #define EDIT_GET_XML virDomainGetXMLDesc(dom, query_flags)
 #define EDIT_NOT_CHANGED \
     do { \
-        vshPrintExtra(ctl, _("Domain '%s' XML configuration not changed.\n"), \
+        vshPrintExtra(ctl, _("Domain '%1$s' XML configuration not changed.\n"), \
                       virDomainGetName(dom)); \
         ret = true; \
         goto edit_cleanup; \
@@ -13057,7 +13053,7 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
 #include "virsh-edit.c"
 #undef EDIT_RELAX
 
-    vshPrintExtra(ctl, _("Domain '%s' XML configuration edited.\n"),
+    vshPrintExtra(ctl, _("Domain '%1$s' XML configuration edited.\n"),
                   virDomainGetName(dom_edited));
 
     ret = true;
@@ -13217,7 +13213,7 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virDomainUpdateDeviceFlags(dom, disk_xml, flags) != 0) {
-        vshError(ctl, _("Failed to complete action %s on media"), action);
+        vshError(ctl, _("Failed to complete action %1$s on media"), action);
         return false;
     }
 
@@ -13315,7 +13311,7 @@ cmdDomFSFreeze(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    vshPrintExtra(ctl, _("Froze %d filesystem(s)\n"), count);
+    vshPrintExtra(ctl, _("Froze %1$d filesystem(s)\n"), count);
     return true;
 }
 
@@ -13360,7 +13356,7 @@ cmdDomFSThaw(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    vshPrintExtra(ctl, _("Thawed %d filesystem(s)\n"), count);
+    vshPrintExtra(ctl, _("Thawed %1$d filesystem(s)\n"), count);
     return true;
 }
 
@@ -13712,7 +13708,7 @@ cmdSetUserSSHKeys(vshControl *ctl, const vshCmd *cmd)
 
         nkeys = g_strv_length(keys);
         if (nkeys == 0) {
-            vshError(ctl, _("File %s contains no keys"), from);
+            vshError(ctl, _("File %1$s contains no keys"), from);
             return false;
         }
     }
@@ -13785,7 +13781,7 @@ cmdDomDirtyRateCalc(vshControl *ctl, const vshCmd *cmd)
         int mode = virshDomainDirtyRateCalcModeTypeFromString(modestr);
 
         if (mode < 0) {
-            vshError(ctl, _("Unknown calculation mode '%s'"), modestr);
+            vshError(ctl, _("Unknown calculation mode '%1$s'"), modestr);
             return false;
         }
 

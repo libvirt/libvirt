@@ -59,10 +59,10 @@ virshCheckpointCreate(vshControl *ctl,
     }
 
     if (from)
-        vshPrintExtra(ctl, _("Domain checkpoint %s created from '%s'"),
+        vshPrintExtra(ctl, _("Domain checkpoint %1$s created from '%2$s'"),
                       name, from);
     else
-        vshPrintExtra(ctl, _("Domain checkpoint %s created"), name);
+        vshPrintExtra(ctl, _("Domain checkpoint %1$s created"), name);
 
     return true;
 }
@@ -179,7 +179,7 @@ virshParseCheckpointDiskspec(vshControl *ctl,
     ret = 0;
  cleanup:
     if (ret < 0)
-        vshError(ctl, _("unable to parse diskspec: %s"), str);
+        vshError(ctl, _("unable to parse diskspec: %1$s"), str);
     return ret;
 }
 
@@ -293,7 +293,7 @@ virshLookupCheckpoint(vshControl *ctl,
     if (chkname) {
         *chk = virDomainCheckpointLookupByName(dom, chkname, 0);
     } else {
-        vshError(ctl, _("--%s is required"), arg);
+        vshError(ctl, _("--%1$s is required"), arg);
         return -1;
     }
     if (!*chk) {
@@ -354,7 +354,7 @@ cmdCheckpointEdit(vshControl *ctl,
 #define EDIT_NOT_CHANGED \
     do { \
         vshPrintExtra(ctl, \
-                      _("Checkpoint %s XML configuration not changed.\n"), \
+                      _("Checkpoint %1$s XML configuration not changed.\n"), \
                       name); \
         ret = true; \
         goto edit_cleanup; \
@@ -365,16 +365,16 @@ cmdCheckpointEdit(vshControl *ctl,
 
     edited_name = virDomainCheckpointGetName(edited);
     if (STREQ(name, edited_name)) {
-        vshPrintExtra(ctl, _("Checkpoint %s edited.\n"), name);
+        vshPrintExtra(ctl, _("Checkpoint %1$s edited.\n"), name);
     } else {
         unsigned int delete_flags = VIR_DOMAIN_CHECKPOINT_DELETE_METADATA_ONLY;
 
         if (virDomainCheckpointDelete(edited, delete_flags) < 0) {
             vshReportError(ctl);
-            vshError(ctl, _("Failed to clean up %s"), edited_name);
+            vshError(ctl, _("Failed to clean up %1$s"), edited_name);
             goto cleanup;
         }
-        vshError(ctl, _("Cannot rename checkpoint %s to %s"),
+        vshError(ctl, _("Cannot rename checkpoint %1$s to %2$s"),
                  name, edited_name);
         goto cleanup;
     }
@@ -383,7 +383,7 @@ cmdCheckpointEdit(vshControl *ctl,
 
  cleanup:
     if (!ret && name)
-        vshError(ctl, _("Failed to update %s"), name);
+        vshError(ctl, _("Failed to update %1$s"), name);
     return ret;
 }
 
@@ -705,7 +705,7 @@ cmdCheckpointList(vshControl *ctl,
         if (vshCommandOptBool(cmd, option)) { \
             if (tree) { \
                 vshError(ctl, \
-                         _("--%s and --tree are mutually exclusive"), \
+                         _("--%1$s and --tree are mutually exclusive"), \
                          option); \
                 return false; \
             } \
@@ -944,7 +944,7 @@ cmdCheckpointParent(vshControl *ctl,
     if (virshGetCheckpointParent(ctl, checkpoint, &parent) < 0)
         return false;
     if (!parent) {
-        vshError(ctl, _("checkpoint '%s' has no parent"), name);
+        vshError(ctl, _("checkpoint '%1$s' has no parent"), name);
         return false;
     }
 
@@ -1016,11 +1016,11 @@ cmdCheckpointDelete(vshControl *ctl,
 
     if (virDomainCheckpointDelete(checkpoint, flags) == 0) {
         if (flags & VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY)
-            vshPrintExtra(ctl, _("Domain checkpoint %s children deleted\n"), name);
+            vshPrintExtra(ctl, _("Domain checkpoint %1$s children deleted\n"), name);
         else
-            vshPrintExtra(ctl, _("Domain checkpoint %s deleted\n"), name);
+            vshPrintExtra(ctl, _("Domain checkpoint %1$s deleted\n"), name);
     } else {
-        vshError(ctl, _("Failed to delete checkpoint %s"), name);
+        vshError(ctl, _("Failed to delete checkpoint %1$s"), name);
         return false;
     }
 

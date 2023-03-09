@@ -97,7 +97,7 @@ virshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
     }
 
     if (!network)
-        vshError(ctl, _("failed to get network '%s'"), n);
+        vshError(ctl, _("failed to get network '%1$s'"), n);
 
     return network;
 }
@@ -126,7 +126,7 @@ virshCommandOptNetworkPort(vshControl *ctl, const vshCmd *cmd,
     port = virNetworkPortLookupByUUIDString(net, n);
 
     if (!port)
-        vshError(ctl, _("failed to get network port '%s'"), n);
+        vshError(ctl, _("failed to get network port '%1$s'"), n);
 
     return port;
 }
@@ -167,16 +167,16 @@ cmdNetworkAutostart(vshControl *ctl, const vshCmd *cmd)
 
     if (virNetworkSetAutostart(network, autostart) < 0) {
         if (autostart)
-            vshError(ctl, _("failed to mark network %s as autostarted"), name);
+            vshError(ctl, _("failed to mark network %1$s as autostarted"), name);
         else
-            vshError(ctl, _("failed to unmark network %s as autostarted"), name);
+            vshError(ctl, _("failed to unmark network %1$s as autostarted"), name);
         return false;
     }
 
     if (autostart)
-        vshPrintExtra(ctl, _("Network %s marked as autostarted\n"), name);
+        vshPrintExtra(ctl, _("Network %1$s marked as autostarted\n"), name);
     else
-        vshPrintExtra(ctl, _("Network %s unmarked as autostarted\n"), name);
+        vshPrintExtra(ctl, _("Network %1$s unmarked as autostarted\n"), name);
 
     return true;
 }
@@ -227,11 +227,11 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
         network = virNetworkCreateXML(priv->conn, buffer);
 
     if (!network) {
-        vshError(ctl, _("Failed to create network from %s"), from);
+        vshError(ctl, _("Failed to create network from %1$s"), from);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Network %s created from %s\n"),
+    vshPrintExtra(ctl, _("Network %1$s created from %2$s\n"),
                   virNetworkGetName(network), from);
     return true;
 }
@@ -283,11 +283,11 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
         network = virNetworkDefineXML(priv->conn, buffer);
 
     if (!network) {
-        vshError(ctl, _("Failed to define network from %s"), from);
+        vshError(ctl, _("Failed to define network from %1$s"), from);
         return false;
     }
 
-    vshPrintExtra(ctl, _("Network %s defined from %s\n"),
+    vshPrintExtra(ctl, _("Network %1$s defined from %2$s\n"),
                   virNetworkGetName(network), from);
     return true;
 }
@@ -321,9 +321,9 @@ cmdNetworkDestroy(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virNetworkDestroy(network) == 0) {
-        vshPrintExtra(ctl, _("Network %s destroyed\n"), name);
+        vshPrintExtra(ctl, _("Network %1$s destroyed\n"), name);
     } else {
-        vshError(ctl, _("Failed to destroy network %s"), name);
+        vshError(ctl, _("Failed to destroy network %1$s"), name);
         ret = false;
     }
 
@@ -866,9 +866,9 @@ cmdNetworkStart(vshControl *ctl, const vshCmd *cmd)
          return false;
 
     if (virNetworkCreate(network) == 0) {
-        vshPrintExtra(ctl, _("Network %s started\n"), name);
+        vshPrintExtra(ctl, _("Network %1$s started\n"), name);
     } else {
-        vshError(ctl, _("Failed to start network %s"), name);
+        vshError(ctl, _("Failed to start network %1$s"), name);
         ret = false;
     }
     return ret;
@@ -903,9 +903,9 @@ cmdNetworkUndefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virNetworkUndefine(network) == 0) {
-        vshPrintExtra(ctl, _("Network %s has been undefined\n"), name);
+        vshPrintExtra(ctl, _("Network %1$s has been undefined\n"), name);
     } else {
-        vshError(ctl, _("Failed to undefine network %s"), name);
+        vshError(ctl, _("Failed to undefine network %1$s"), name);
         ret = false;
     }
 
@@ -996,7 +996,7 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
     } else {
         command = virshNetworkUpdateCommandTypeFromString(commandStr);
         if (command <= 0) {
-            vshError(ctl, _("unrecognized command name '%s'"), commandStr);
+            vshError(ctl, _("unrecognized command name '%1$s'"), commandStr);
             goto cleanup;
         }
     }
@@ -1006,7 +1006,7 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
 
     section = virshNetworkSectionTypeFromString(sectionStr);
     if (section <= 0) {
-        vshError(ctl, _("unrecognized section name '%s'"), sectionStr);
+        vshError(ctl, _("unrecognized section name '%1$s'"), sectionStr);
         goto cleanup;
     }
 
@@ -1043,27 +1043,26 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
 
     if (virNetworkUpdate(network, command,
                          section, parentIndex, xml, flags) < 0) {
-        vshError(ctl, _("Failed to update network %s"),
+        vshError(ctl, _("Failed to update network %1$s"),
                  virNetworkGetName(network));
         goto cleanup;
     }
 
     if (config) {
         if (live)
-            vshPrintExtra(ctl, _("Updated network %s persistent config and "
-                                 "live state"),
+            vshPrintExtra(ctl, _("Updated network %1$s persistent config and live state"),
                           virNetworkGetName(network));
         else
-            vshPrintExtra(ctl, _("Updated network %s persistent config"),
+            vshPrintExtra(ctl, _("Updated network %1$s persistent config"),
                           virNetworkGetName(network));
     } else if (live) {
-        vshPrintExtra(ctl, _("Updated network %s live state"),
+        vshPrintExtra(ctl, _("Updated network %1$s live state"),
                       virNetworkGetName(network));
     } else if (virNetworkIsActive(network)) {
-        vshPrintExtra(ctl, _("Updated network %s live state"),
+        vshPrintExtra(ctl, _("Updated network %1$s live state"),
                       virNetworkGetName(network));
     } else {
-        vshPrintExtra(ctl, _("Updated network %s persistent config"),
+        vshPrintExtra(ctl, _("Updated network %1$s persistent config"),
                       virNetworkGetName(network));
     }
 
@@ -1158,7 +1157,7 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
 #define EDIT_GET_XML virshNetworkGetXMLDesc(network)
 #define EDIT_NOT_CHANGED \
     do { \
-        vshPrintExtra(ctl, _("Network %s XML configuration not changed.\n"), \
+        vshPrintExtra(ctl, _("Network %1$s XML configuration not changed.\n"), \
                       virNetworkGetName(network)); \
         ret = true; \
         goto edit_cleanup; \
@@ -1167,7 +1166,7 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
     (network_edited = virNetworkDefineXML(priv->conn, doc_edited))
 #include "virsh-edit.c"
 
-    vshPrintExtra(ctl, _("Network %s XML configuration edited.\n"),
+    vshPrintExtra(ctl, _("Network %1$s XML configuration edited.\n"),
                   virNetworkGetName(network_edited));
 
     ret = true;
@@ -1227,11 +1226,11 @@ vshEventLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
         if (virTimeStringNowRaw(timestamp) < 0)
             timestamp[0] = '\0';
 
-        vshPrint(data->ctl, _("%s: event 'lifecycle' for network %s: %s\n"),
+        vshPrint(data->ctl, _("%1$s: event 'lifecycle' for network %2$s: %3$s\n"),
                  timestamp,
                  virNetworkGetName(net), virshNetworkEventToString(event));
     } else {
-        vshPrint(data->ctl, _("event 'lifecycle' for network %s: %s\n"),
+        vshPrint(data->ctl, _("event 'lifecycle' for network %1$s: %2$s\n"),
                  virNetworkGetName(net), virshNetworkEventToString(event));
     }
 
@@ -1312,7 +1311,7 @@ cmdNetworkEvent(vshControl *ctl, const vshCmd *cmd)
         if (STREQ(eventName, virshNetworkEventCallbacks[event].name))
             break;
     if (event == VIR_NETWORK_EVENT_ID_LAST) {
-        vshError(ctl, _("unknown event type %s"), eventName);
+        vshError(ctl, _("unknown event type %1$s"), eventName);
         return false;
     }
 
@@ -1345,7 +1344,7 @@ cmdNetworkEvent(vshControl *ctl, const vshCmd *cmd)
     default:
         goto cleanup;
     }
-    vshPrint(ctl, _("events received: %d\n"), data.count);
+    vshPrint(ctl, _("events received: %1$d\n"), data.count);
     if (data.count)
         ret = true;
 
@@ -1417,7 +1416,7 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if ((nleases = virNetworkGetDHCPLeases(network, mac, &leases, flags)) < 0) {
-        vshError(ctl, _("Failed to get leases info for %s"), name);
+        vshError(ctl, _("Failed to get leases info for %1$s"), name);
         goto cleanup;
     }
 
@@ -1523,10 +1522,10 @@ cmdNetworkPortCreate(vshControl *ctl, const vshCmd *cmd)
     if (port != NULL) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virNetworkPortGetUUIDString(port, uuidstr);
-        vshPrintExtra(ctl, _("Network port %s created from %s\n"),
+        vshPrintExtra(ctl, _("Network port %1$s created from %2$s\n"),
                       uuidstr, from);
     } else {
-        vshError(ctl, _("Failed to create network from %s"), from);
+        vshError(ctl, _("Failed to create network from %1$s"), from);
         goto cleanup;
     }
 
@@ -1635,10 +1634,10 @@ cmdNetworkPortDelete(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (virNetworkPortDelete(port, 0) < 0) {
-        vshError(ctl, _("Failed to delete network port %s"), uuidstr);
+        vshError(ctl, _("Failed to delete network port %1$s"), uuidstr);
         goto cleanup;
     } else {
-        vshPrintExtra(ctl, _("Network port %s deleted\n"), uuidstr);
+        vshPrintExtra(ctl, _("Network port %1$s deleted\n"), uuidstr);
     }
 
     ret = true;
