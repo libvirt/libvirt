@@ -249,19 +249,6 @@ if conf.has('WITH_QEMU')
   domaincapstest_link_whole += [ test_utils_qemu_lib ]
 endif
 
-vircapstest_link_with = []
-vircapstest_link_whole = []
-vircapstest_sources = [ 'vircapstest.c' ]
-if conf.has('WITH_LXC')
-  vircapstest_link_with += [ lxc_driver_impl_lib ]
-  vircapstest_link_whole += [ test_utils_lxc_lib ]
-endif
-if conf.has('WITH_QEMU')
-  vircapstest_link_with += [ qemu_driver_impl ]
-  vircapstest_link_whole += [ test_utils_qemu_lib ]
-  vircapstest_sources += [ qemu_dtrace_gen_objects ]
-endif
-
 tests += [
   { 'name': 'commandtest' },
   { 'name': 'cputest', 'link_with': cputest_link_with, 'link_whole': cputest_link_whole },
@@ -285,7 +272,6 @@ tests += [
   { 'name': 'virauthconfigtest' },
   { 'name': 'virbitmaptest' },
   { 'name': 'virbuftest' },
-  { 'name': 'vircapstest', 'sources': vircapstest_sources, 'link_with': vircapstest_link_with, 'link_whole': vircapstest_link_whole },
   { 'name': 'vircgrouptest' },
   { 'name': 'virconftest' },
   { 'name': 'vircryptotest' },
