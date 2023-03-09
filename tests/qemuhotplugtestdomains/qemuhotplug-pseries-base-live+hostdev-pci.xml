@@ -8,6 +8,9 @@
     <type arch='ppc64' machine='pseries'>hvm</type>
     <boot dev='hd'/>
   </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>POWER9</model>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
@@ -24,7 +27,7 @@
       <target index='1'/>
       <alias name='pci.1'/>
     </controller>
-    <controller type='usb' index='0'>
+    <controller type='usb' index='0' model='pci-ohci'>
       <alias name='usb'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </controller>
