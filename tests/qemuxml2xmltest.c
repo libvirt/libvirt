@@ -575,12 +575,8 @@ mymain(void)
             QEMU_CAPS_PCI_OHCI,
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_NEC_USB_XHCI);
-    DO_TEST("ppc64-usb-controller",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_PCI_OHCI);
-    DO_TEST("ppc64-usb-controller-legacy",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_PIIX3_USB_UHCI);
+    DO_TEST_CAPS_ARCH_LATEST("ppc64-usb-controller", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("ppc64-usb-controller-legacy", "ppc64");
     DO_TEST("usb-port-missing", QEMU_CAPS_USB_HUB);
     DO_TEST("usb-redir", QEMU_CAPS_USB_REDIR,
             QEMU_CAPS_SPICE,
@@ -1017,14 +1013,10 @@ mymain(void)
     /* SVE aarch64 CPU features work on modern QEMU */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-features-sve", "aarch64");
 
-    DO_TEST("memory-hotplug-ppc64-nonuma", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM,
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
+    DO_TEST_CAPS_ARCH_LATEST("memory-hotplug-ppc64-nonuma", "ppc64");
     DO_TEST_FULL("memory-hotplug-ppc64-nonuma-abi-update", "", WHEN_BOTH,
                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
-                 ARG_QEMU_CAPS,
-                 QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM,
-                 QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                 QEMU_CAPS_LAST, ARG_END);
+                 ARG_CAPS_ARCH, "ppc64", ARG_CAPS_VER, "latest", ARG_END);
     DO_TEST_NOCAPS("memory-hotplug");
     DO_TEST("memory-hotplug-dimm", QEMU_CAPS_DEVICE_PC_DIMM);
     DO_TEST_CAPS_LATEST("memory-hotplug-dimm-addr");
@@ -1035,14 +1027,10 @@ mymain(void)
     DO_TEST("memory-hotplug-nvdimm-pmem", QEMU_CAPS_DEVICE_NVDIMM);
     DO_TEST("memory-hotplug-nvdimm-readonly", QEMU_CAPS_DEVICE_NVDIMM,
                                               QEMU_CAPS_DEVICE_NVDIMM_UNARMED);
-    DO_TEST("memory-hotplug-nvdimm-ppc64", QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                                           QEMU_CAPS_DEVICE_NVDIMM);
+    DO_TEST_CAPS_ARCH_LATEST("memory-hotplug-nvdimm-ppc64", "ppc64");
     DO_TEST_FULL("memory-hotplug-nvdimm-ppc64-abi-update", "", WHEN_BOTH,
                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
-                 ARG_QEMU_CAPS,
-                 QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                 QEMU_CAPS_DEVICE_NVDIMM,
-                 QEMU_CAPS_LAST, ARG_END);
+                 ARG_CAPS_ARCH, "ppc64", ARG_CAPS_VER, "latest", ARG_END);
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-pmem");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-mem");
 

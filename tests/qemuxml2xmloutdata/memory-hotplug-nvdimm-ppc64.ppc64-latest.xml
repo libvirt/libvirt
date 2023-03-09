@@ -9,7 +9,8 @@
     <type arch='ppc64' machine='pseries'>hvm</type>
     <boot dev='hd'/>
   </os>
-  <cpu>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>POWER9</model>
     <topology sockets='2' dies='1' cores='1' threads='1'/>
     <numa>
       <cell id='0' cpus='0-1' memory='1048576' unit='KiB'/>

@@ -9,6 +9,9 @@
     <type arch='ppc64' machine='pseries'>hvm</type>
     <boot dev='hd'/>
   </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>POWER9</model>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
