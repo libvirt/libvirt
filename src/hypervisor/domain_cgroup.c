@@ -166,7 +166,7 @@ virDomainCgroupSetupDomainBlkioParameters(virCgroup *cgroup,
                     }
                 }
             } else {
-                virReportError(VIR_ERR_INVALID_ARG, _("Unknown blkio parameter %s"),
+                virReportError(VIR_ERR_INVALID_ARG, _("Unknown blkio parameter %1$s"),
                                param->field);
                 ret = -1;
                 virBlkioDeviceArrayClear(devices, ndevices);
@@ -370,7 +370,7 @@ virDomainCgroupInitCgroup(const char *prefix,
 
     if (!g_path_is_absolute(vm->def->resource->partition)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Resource partition '%s' must start with '/'"),
+                       _("Resource partition '%1$s' must start with '/'"),
                        vm->def->resource->partition);
         return -1;
     }

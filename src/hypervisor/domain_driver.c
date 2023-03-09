@@ -151,7 +151,7 @@ virDomainDriverMergeBlkioDevice(virBlkioDevice **dest_array,
                 } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)) {
                     dest->wbps = src->wbps;
                 } else {
-                    virReportError(VIR_ERR_INVALID_ARG, _("Unknown parameter %s"),
+                    virReportError(VIR_ERR_INVALID_ARG, _("Unknown parameter %1$s"),
                                    type);
                     return -1;
                 }
@@ -256,7 +256,7 @@ virDomainDriverParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
                 goto number_error;
         } else {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("unknown parameter '%s'"), type);
+                           _("unknown parameter '%1$s'"), type);
             goto cleanup;
         }
 
@@ -279,13 +279,13 @@ virDomainDriverParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
 
  parse_error:
     virReportError(VIR_ERR_INVALID_ARG,
-                   _("unable to parse blkio device '%s' '%s'"),
+                   _("unable to parse blkio device '%1$s' '%2$s'"),
                    type, blkioDeviceStr);
     goto cleanup;
 
  number_error:
     virReportError(VIR_ERR_INVALID_ARG,
-                   _("invalid value '%s' for parameter '%s' of device '%s'"),
+                   _("invalid value '%1$s' for parameter '%2$s' of device '%3$s'"),
                    temp, type, result[i].path);
 
  cleanup:
@@ -362,7 +362,7 @@ virDomainDriverNodeDeviceGetPCIInfo(virNodeDeviceDef *def,
 
     if (!cap) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("device %s is not a PCI device"), def->name);
+                       _("device %1$s is not a PCI device"), def->name);
         return -1;
     }
 
@@ -525,7 +525,7 @@ virDomainDriverAddIOThreadCheck(virDomainDef *def,
 {
     if (virDomainIOThreadIDFind(def, iothread_id)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("an IOThread is already using iothread_id '%u'"),
+                       _("an IOThread is already using iothread_id '%1$u'"),
                        iothread_id);
         return -1;
     }
@@ -548,7 +548,7 @@ virDomainDriverDelIOThreadCheck(virDomainDef *def,
 
     if (!virDomainIOThreadIDFind(def, iothread_id)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("cannot find IOThread '%u' in iothreadids list"),
+                       _("cannot find IOThread '%1$u' in iothreadids list"),
                        iothread_id);
         return -1;
     }
@@ -556,8 +556,7 @@ virDomainDriverDelIOThreadCheck(virDomainDef *def,
     for (i = 0; i < def->ndisks; i++) {
         if (def->disks[i]->iothread == iothread_id) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("cannot remove IOThread %u since it "
-                             "is being used by disk '%s'"),
+                           _("cannot remove IOThread %1$u since it is being used by disk '%2$s'"),
                            iothread_id, def->disks[i]->dst);
             return -1;
         }
@@ -566,8 +565,7 @@ virDomainDriverDelIOThreadCheck(virDomainDef *def,
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->iothread == iothread_id) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("cannot remove IOThread '%u' since it "
-                             "is being used by controller"),
+                           _("cannot remove IOThread '%1$u' since it is being used by controller"),
                            iothread_id);
             return -1;
         }
