@@ -427,6 +427,7 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
     } else {
         virCommandAddArgList(cmd,
                              "--tpm-state", storagepath,
+                             "--logfile", logfile,
                              "--overwrite",
                              NULL);
     }
