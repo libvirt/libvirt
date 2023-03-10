@@ -6595,6 +6595,30 @@ qemuAppendLoadparmMachineParm(virBuffer *buf,
             return;
         }
     }
+
+    for (i = 0; i< def->nhostdevs; i++) {
+        virDomainHostdevDef *hostdev = def->hostdevs[i];
+        virDomainHostdevSubsys *subsys = &hostdev->source.subsys;
+        virDomainHostdevSubsysMediatedDev *mdevsrc = &subsys->u.mdev;
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+
+        /* Only get the load parameter from a bootable disk */
+        if (subsys->type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV &&
+            subsys->type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
+            continue;
+
+        /* For MDEV hostdevs, only CCW types are bootable */
+        if (subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV &&
+            mdevsrc->model != VIR_MDEV_MODEL_TYPE_VFIO_CCW)
+            continue;
+
+        if (hostdev->info->bootIndex == 1 && hostdev->info->loadparm) {
+            virBufferAsprintf(buf, ",loadparm=%s", hostdev->info->loadparm);
+            return;
+        }
+    }
 }
 
 

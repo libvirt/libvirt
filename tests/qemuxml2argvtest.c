@@ -2629,6 +2629,7 @@ mymain(void)
 
     DO_TEST_NOCAPS("machine-loadparm-s390");
     DO_TEST_NOCAPS("machine-loadparm-net-s390");
+    DO_TEST_CAPS_ARCH_LATEST("machine-loadparm-hostdev", "s390x");
     DO_TEST_NOCAPS("machine-loadparm-multiple-disks-nets-s390");
     DO_TEST_PARSE_ERROR_NOCAPS("machine-loadparm-s390-char-invalid");
     DO_TEST_PARSE_ERROR_NOCAPS("machine-loadparm-s390-len-invalid");
