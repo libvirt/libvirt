@@ -22,3 +22,4 @@ LimitNOFILE=1024:524288
 
 [Install]
 Also=virtlockd.socket
+Also=virtlockd-admin.socket
