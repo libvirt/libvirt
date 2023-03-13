@@ -86,7 +86,8 @@ char *qemuAliasFromHostdev(const virDomainHostdevDef *hostdev);
 char *qemuDomainGetMasterKeyAlias(void);
 
 char *qemuAliasForSecret(const char *parentalias,
-                         const char *obj);
+                         const char *obj,
+                         size_t secret_idx);
 
 char *qemuAliasTLSObjFromSrcAlias(const char *srcAlias)
     ATTRIBUTE_NONNULL(1);

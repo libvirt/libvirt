@@ -1317,6 +1317,7 @@ qemuDomainSecretInfoSetup(qemuDomainObjPrivate *priv,
  * @priv: pointer to domain private object
  * @srcalias: Alias of the disk/hostdev used to generate the secret alias
  * @secretuse: specific usage for the secret (may be NULL if main object is using it)
+ * @secret_idx: secret index number (0 in the case of a single secret)
  * @usageType: The virSecretUsageType
  * @username: username to use for authentication (may be NULL)
  * @seclookupdef: Pointer to seclookupdef data
@@ -1329,12 +1330,13 @@ static qemuDomainSecretInfo *
 qemuDomainSecretInfoSetupFromSecret(qemuDomainObjPrivate *priv,
                                     const char *srcalias,
                                     const char *secretuse,
+                                    size_t secret_idx,
                                     virSecretUsageType usageType,
                                     const char *username,
                                     virSecretLookupTypeDef *seclookupdef)
 {
     qemuDomainSecretInfo *secinfo;
-    g_autofree char *alias = qemuAliasForSecret(srcalias, secretuse);
+    g_autofree char *alias = qemuAliasForSecret(srcalias, secretuse, secret_idx);
     g_autofree uint8_t *secret = NULL;
     size_t secretlen = 0;
     VIR_IDENTITY_AUTORESTORE virIdentity *oldident = virIdentityElevateCurrent();
@@ -1384,7 +1386,7 @@ qemuDomainSecretInfoTLSNew(qemuDomainObjPrivate *priv,
     }
     seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_UUID;
 
-    return qemuDomainSecretInfoSetupFromSecret(priv, srcAlias, NULL,
+    return qemuDomainSecretInfoSetupFromSecret(priv, srcAlias, NULL, 0,
                                                VIR_SECRET_USAGE_TYPE_TLS,
                                                NULL, &seclookupdef);
 }
@@ -1411,7 +1413,7 @@ qemuDomainSecretStorageSourcePrepareCookies(qemuDomainObjPrivate *priv,
                                             virStorageSource *src,
                                             const char *aliasprotocol)
 {
-    g_autofree char *secretalias = qemuAliasForSecret(aliasprotocol, "httpcookie");
+    g_autofree char *secretalias = qemuAliasForSecret(aliasprotocol, "httpcookie", 0);
     g_autofree char *cookies = qemuBlockStorageSourceGetCookieString(src);
 
     return qemuDomainSecretInfoSetup(priv, secretalias, NULL,
@@ -1460,7 +1462,7 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivate *priv,
             usageType = VIR_SECRET_USAGE_TYPE_CEPH;
 
         if (!(srcPriv->secinfo = qemuDomainSecretInfoSetupFromSecret(priv, aliasprotocol,
-                                                                     "auth",
+                                                                     "auth", 0,
                                                                      usageType,
                                                                      src->auth->username,
                                                                      &src->auth->seclookupdef)))
@@ -1469,7 +1471,7 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivate *priv,
 
     if (hasEnc) {
         if (!(srcPriv->encinfo = qemuDomainSecretInfoSetupFromSecret(priv, aliasformat,
-                                                                     "encryption",
+                                                                     "encryption", 0,
                                                                      VIR_SECRET_USAGE_TYPE_VOLUME,
                                                                      NULL,
                                                                      &src->encryption->secrets[0]->seclookupdef)))
@@ -11185,7 +11187,7 @@ qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
 
                 if (!(srcPriv->secinfo = qemuDomainSecretInfoSetupFromSecret(priv,
                                                                              backendalias,
-                                                                             NULL,
+                                                                             NULL, 0,
                                                                              usageType,
                                                                              src->auth->username,
                                                                              &src->auth->seclookupdef)))

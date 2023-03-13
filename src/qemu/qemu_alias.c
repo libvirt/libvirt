@@ -813,17 +813,19 @@ qemuDomainGetMasterKeyAlias(void)
 /* qemuAliasForSecret:
  * @parentalias: alias of the parent object
  * @obj: optional sub-object of the parent device the secret is for
+ * @secret_idx: secret index number (0 in the case of a single secret)
  *
  * Generate alias for a secret object used by @parentalias device or one of
  * the dependencies of the device described by @obj.
  */
 char *
 qemuAliasForSecret(const char *parentalias,
-                   const char *obj)
+                   const char *obj,
+                   size_t secret_idx)
 {
     if (obj)
-        return g_strdup_printf("%s-%s-secret0", parentalias, obj);
-    return g_strdup_printf("%s-secret0", parentalias);
+        return g_strdup_printf("%s-%s-secret%lu", parentalias, obj, secret_idx);
+    return g_strdup_printf("%s-secret%lu", parentalias, secret_idx);
 }
 
 /* qemuAliasTLSObjFromSrcAlias

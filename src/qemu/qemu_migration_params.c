@@ -1129,7 +1129,7 @@ qemuMigrationParamsResetTLS(virDomainObj *vm,
         return;
 
     tlsAlias = qemuAliasTLSObjFromSrcAlias(QEMU_MIGRATION_TLS_ALIAS_BASE);
-    secAlias = qemuAliasForSecret(QEMU_MIGRATION_TLS_ALIAS_BASE, NULL);
+    secAlias = qemuAliasForSecret(QEMU_MIGRATION_TLS_ALIAS_BASE, NULL, 0);
 
     qemuDomainDelTLSObjects(vm, asyncJob, secAlias, tlsAlias);
     g_clear_pointer(&QEMU_DOMAIN_PRIVATE(vm)->migSecinfo, qemuDomainSecretInfoFree);
