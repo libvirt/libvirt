@@ -41,6 +41,11 @@ v9.2.0 (unreleased)
     present in the host policy, so it might only work with upcoming operating
     systems and not with existing ones.
 
+  * xen: Support custom UEFI firmware paths
+
+    The Xen libxl driver now supports specifying a custom UEFI firmware path.
+    Previously the Xen default was used in all cases.
+
 * **Bug fixes**
 
   * qemu: Fix validation of the HPET timer
