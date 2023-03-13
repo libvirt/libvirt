@@ -670,6 +670,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 445 */
     QEMU_CAPS_NETDEV_STREAM_RECONNECT, /* -netdev stream supports reconnect */
     QEMU_CAPS_VIRTIO_GPU_BLOB, /* -device virtio-gpu-*.blob= */
+    QEMU_CAPS_RBD_ENCRYPTION_LAYERING, /* layered encryption support for Ceph RBD */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
