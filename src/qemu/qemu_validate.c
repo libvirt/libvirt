@@ -1781,8 +1781,7 @@ qemuValidateNetSupportsCoalesce(virDomainNetType type)
  */
 static int
 qemuValidateDomainDefVhostUserRequireSharedMemory(const virDomainDef *def,
-                                                  const char *name,
-                                                  virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+                                                  const char *name)
 {
     size_t numa_nodes = virDomainNumaGetNodeCount(def->numa);
     size_t i;
@@ -3354,8 +3353,7 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
             return -1;
         }
 
-        if (qemuValidateDomainDefVhostUserRequireSharedMemory(def, "vhostuser",
-                                                              qemuCaps) < 0) {
+        if (qemuValidateDomainDefVhostUserRequireSharedMemory(def, "vhostuser") < 0) {
             return -1;
         }
     }
@@ -4521,8 +4519,7 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
                            _("virtiofs does not support fmode and dmode"));
             return -1;
         }
-        if (qemuValidateDomainDefVhostUserRequireSharedMemory(def, "virtiofs",
-                                                              qemuCaps) < 0) {
+        if (qemuValidateDomainDefVhostUserRequireSharedMemory(def, "virtiofs") < 0) {
             return -1;
         }
         if (fs->info.bootIndex &&
