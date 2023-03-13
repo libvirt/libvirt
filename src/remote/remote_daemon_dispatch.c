@@ -7332,7 +7332,7 @@ remoteDispatchDomainAuthorizedSshKeysGet(virNetServer *server G_GNUC_UNUSED,
 
     if (nkeys > REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of keys %d, which exceeds max liit: %d"),
+                       _("Number of keys %d, which exceeds max limit: %d"),
                        nkeys, REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX);
         goto cleanup;
     }
@@ -7369,7 +7369,7 @@ remoteDispatchDomainAuthorizedSshKeysSet(virNetServer *server G_GNUC_UNUSED,
 
     if (args->keys.keys_len > REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of keys %d, which exceeds max liit: %d"),
+                       _("Number of keys %d, which exceeds max limit: %d"),
                        args->keys.keys_len, REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX);
         goto cleanup;
     }
