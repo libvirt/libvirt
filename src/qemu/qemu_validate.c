@@ -1782,16 +1782,12 @@ qemuValidateNetSupportsCoalesce(virDomainNetType type)
 static int
 qemuValidateDomainDefVhostUserRequireSharedMemory(const virDomainDef *def,
                                                   const char *name,
-                                                  virQEMUCaps *qemuCaps)
+                                                  virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
-    const char *defaultRAMId = virQEMUCapsGetMachineDefaultRAMid(qemuCaps,
-                                                                 def->virtType,
-                                                                 def->os.machine);
     size_t numa_nodes = virDomainNumaGetNodeCount(def->numa);
     size_t i;
 
-    if (numa_nodes == 0 &&
-        !(defaultRAMId && def->mem.access == VIR_DOMAIN_MEMORY_ACCESS_SHARED)) {
+    if (numa_nodes == 0 && def->mem.access != VIR_DOMAIN_MEMORY_ACCESS_SHARED) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("'%s' requires shared memory"), name);
         return -1;
