@@ -692,6 +692,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "netdev.stream.reconnect", /* QEMU_CAPS_NETDEV_STREAM_RECONNECT */
               "virtio-gpu.blob", /* QEMU_CAPS_VIRTIO_GPU_BLOB */
               "rbd-encryption-layering", /* QEMU_CAPS_RBD_ENCRYPTION_LAYERING */
+              "rbd-encryption-luks-any", /* QEMU_CAPS_RBD_ENCRYPTION_LUKS_ANY */
     );
 
 
@@ -1558,6 +1559,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+file/aio/^io_uring", QEMU_CAPS_AIO_IO_URING },
     { "blockdev-add/arg-type/+rbd/encrypt", QEMU_CAPS_RBD_ENCRYPTION },
     { "blockdev-add/arg-type/+rbd/encrypt/parent", QEMU_CAPS_RBD_ENCRYPTION_LAYERING },
+    { "blockdev-add/arg-type/+rbd/encrypt/format/^luks-any", QEMU_CAPS_RBD_ENCRYPTION_LUKS_ANY },
     { "blockdev-add/arg-type/+nbd/tls-hostname", QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME },
     { "blockdev-snapshot/$allow-write-only-overlay", QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY },
     { "chardev-add/arg-type/backend/+socket/data/reconnect", QEMU_CAPS_CHARDEV_RECONNECT },

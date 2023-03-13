@@ -205,6 +205,7 @@
   <flag name='netdev.stream.reconnect'/>
   <flag name='virtio-gpu.blob'/>
   <flag name='rbd-encryption-layering'/>
+  <flag name='rbd-encryption-luks-any'/>
   <version>7002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>
