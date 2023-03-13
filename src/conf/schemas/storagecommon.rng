@@ -14,6 +14,7 @@
           <value>qcow</value>
           <value>luks</value>
           <value>luks2</value>
+          <value>luks-any</value>
         </choice>
       </attribute>
       <optional>

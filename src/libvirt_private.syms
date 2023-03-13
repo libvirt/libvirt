@@ -1095,6 +1095,7 @@ virStorageVolTypeToString;
 
 # conf/storage_encryption_conf.h
 virStorageEncryptionFormat;
+virStorageEncryptionFormatTypeToString;
 virStorageEncryptionFree;
 virStorageEncryptionParseNode;
 

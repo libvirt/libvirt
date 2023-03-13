@@ -1251,6 +1251,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-rbd-encryption");
     DO_TEST_CAPS_VER_PARSE_ERROR("disk-network-rbd-encryption-layering", "7.2.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd-encryption-layering");
+    DO_TEST_CAPS_VER_PARSE_ERROR("disk-network-rbd-encryption-luks-any", "7.2.0");
+    DO_TEST_CAPS_LATEST("disk-network-rbd-encryption-luks-any");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-encryption-wrong");
     DO_TEST_CAPS_LATEST("disk-network-rbd-no-colon");
     /* qemu-6.0 is the last qemu version supporting sheepdog */

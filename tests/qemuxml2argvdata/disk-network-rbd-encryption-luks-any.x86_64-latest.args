@@ -1,0 +1,37 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-encryptdisk \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-encryptdisk/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-encryptdisk/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-encryptdisk/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=encryptdisk,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-encryptdisk/master-key.aes"}' \
+-machine pc-i440fx-2.1,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
+-accel tcg \
+-cpu qemu64 \
+-m 1024 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":1073741824}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 496898a6-e6ff-f7c8-5dc2-3cf410945ee9 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-object '{"qom-type":"secret","id":"libvirt-1-format-encryption-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
+-blockdev '{"driver":"rbd","pool":"pool","image":"image","server":[{"host":"mon1.example.org","port":"6321"},{"host":"mon2.example.org","port":"6322"},{"host":"mon3.example.org","port":"6322"}],"encrypt":{"format":"luks-any","key-secret":"libvirt-1-format-encryption-secret0"},"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x2","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

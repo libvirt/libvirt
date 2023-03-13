@@ -575,6 +575,10 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
                 encformat = "luks2";
                 break;
 
+            case VIR_STORAGE_ENCRYPTION_FORMAT_LUKS_ANY:
+                encformat = "luks-any";
+                break;
+
             case VIR_STORAGE_ENCRYPTION_FORMAT_QCOW:
             case VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT:
             case VIR_STORAGE_ENCRYPTION_FORMAT_LAST:
@@ -1052,10 +1056,8 @@ qemuBlockStorageSourceGetCryptoProps(virStorageSource *src,
         break;
 
     case VIR_STORAGE_ENCRYPTION_FORMAT_LUKS2:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("luks2 is currently not supported by the qemu encryption engine"));
-        return -1;
-
+    case VIR_STORAGE_ENCRYPTION_FORMAT_LUKS_ANY:
+        /* validation code asserts the above cases are impossible */
     case VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT:
     case VIR_STORAGE_ENCRYPTION_FORMAT_LAST:
     default:
