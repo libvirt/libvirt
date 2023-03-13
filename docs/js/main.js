@@ -54,21 +54,16 @@ function advancedsearch(e) {
         }
     }
 
+    form.setAttribute("action", "https://google.com/search");
+    newq.setAttribute("name", "q");
+
     if (what == "website") {
-        form.setAttribute("action", "https://google.com/search");
-        newq.setAttribute("name", "q");
         newq.value = "site:libvirt.org " + q.value;
     } else if (what == "wiki") {
-        form.setAttribute("action", "https://wiki.libvirt.org/index.php");
-        newq.setAttribute("name", "search");
-        newq.value = q.value;
+        newq.value = "site:wiki.libvirt.org " + q.value;
     } else if (what == "devs") {
-        form.setAttribute("action", "https://google.com/search");
-        newq.setAttribute("name", "q");
         newq.value = "site:redhat.com/archives/libvir-list " + q.value;
     } else if (what == "users") {
-        form.setAttribute("action", "https://google.com/search");
-        newq.setAttribute("name", "q");
         newq.value = "site:redhat.com/archives/libvirt-users " + q.value;
     }
 
