@@ -1311,6 +1311,7 @@ qemuBlockStorageSourceGetBlockdevStorageSliceProps(virStorageSource *src)
 void
 qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachData *data)
 {
+    size_t i;
     if (!data)
         return;
 
@@ -1320,12 +1321,16 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachData *data)
     virJSONValueFree(data->prmgrProps);
     virJSONValueFree(data->authsecretProps);
     virJSONValueFree(data->httpcookiesecretProps);
-    virJSONValueFree(data->encryptsecretProps);
+    for (i = 0; i < data->encryptsecretCount; ++i) {
+        virJSONValueFree(data->encryptsecretProps[i]);
+        g_free(data->encryptsecretAlias[i]);
+    }
     virJSONValueFree(data->tlsProps);
     virJSONValueFree(data->tlsKeySecretProps);
     g_free(data->tlsAlias);
     g_free(data->tlsKeySecretAlias);
     g_free(data->authsecretAlias);
+    g_free(data->encryptsecretProps);
     g_free(data->encryptsecretAlias);
     g_free(data->httpcookiesecretAlias);
     g_free(data->driveCmd);
@@ -1436,10 +1441,12 @@ static int
 qemuBlockStorageSourceAttachApplyFormatDeps(qemuMonitor *mon,
                                             qemuBlockStorageSourceAttachData *data)
 {
-    if (data->encryptsecretProps &&
-        qemuMonitorAddObject(mon, &data->encryptsecretProps,
-                             &data->encryptsecretAlias) < 0)
-        return -1;
+    size_t i;
+    for (i = 0; i < data->encryptsecretCount; ++i) {
+        if (qemuMonitorAddObject(mon, &data->encryptsecretProps[i],
+                                 &data->encryptsecretAlias[i]) < 0)
+            return -1;
+    }
 
     return 0;
 }
@@ -1525,6 +1532,7 @@ qemuBlockStorageSourceAttachRollback(qemuMonitor *mon,
                                      qemuBlockStorageSourceAttachData *data)
 {
     virErrorPtr orig_err;
+    size_t i;
 
     virErrorPreserveLast(&orig_err);
 
@@ -1550,8 +1558,10 @@ qemuBlockStorageSourceAttachRollback(qemuMonitor *mon,
     if (data->authsecretAlias)
         ignore_value(qemuMonitorDelObject(mon, data->authsecretAlias, false));
 
-    if (data->encryptsecretAlias)
-        ignore_value(qemuMonitorDelObject(mon, data->encryptsecretAlias, false));
+    for (i = 0; i < data->encryptsecretCount; ++i) {
+        if (data->encryptsecretAlias[i])
+            ignore_value(qemuMonitorDelObject(mon, data->encryptsecretAlias[i], false));
+    }
 
     if (data->httpcookiesecretAlias)
         ignore_value(qemuMonitorDelObject(mon, data->httpcookiesecretAlias, false));
@@ -1606,8 +1616,12 @@ qemuBlockStorageSourceDetachPrepare(virStorageSource *src)
         if (srcpriv->secinfo)
             data->authsecretAlias = g_strdup(srcpriv->secinfo->alias);
 
-        if (srcpriv->encinfo)
-            data->encryptsecretAlias = g_strdup(srcpriv->encinfo->alias);
+        if (srcpriv->encinfo) {
+            data->encryptsecretCount = 1;
+            data->encryptsecretProps = g_new0(virJSONValue *, 1);
+            data->encryptsecretAlias = g_new0(char *, 1);
+            data->encryptsecretAlias[0] = g_strdup(srcpriv->encinfo->alias);
+        }
 
         if (srcpriv->httpcookie)
             data->httpcookiesecretAlias = g_strdup(srcpriv->httpcookie->alias);

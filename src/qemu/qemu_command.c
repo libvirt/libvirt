@@ -2108,14 +2108,20 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommand *cmd,
                                                  virQEMUCaps *qemuCaps)
 {
     char *tmp;
+    size_t i;
 
     if (qemuBuildObjectCommandline(cmd, data->prmgrProps, qemuCaps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->authsecretProps, qemuCaps) < 0 ||
-        qemuBuildObjectCommandline(cmd, data->encryptsecretProps, qemuCaps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->httpcookiesecretProps, qemuCaps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->tlsKeySecretProps, qemuCaps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->tlsProps, qemuCaps) < 0)
         return -1;
+
+    for (i = 0; i < data->encryptsecretCount; ++i) {
+        if (qemuBuildObjectCommandline(cmd, data->encryptsecretProps[i], qemuCaps) < 0) {
+            return -1;
+        }
+    }
 
     if (data->driveCmd)
         virCommandAddArgList(cmd, "-drive", data->driveCmd, NULL);
@@ -10770,9 +10776,14 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSource *src,
             qemuBuildSecretInfoProps(srcpriv->secinfo, &data->authsecretProps) < 0)
             return -1;
 
-        if (srcpriv->encinfo &&
-            qemuBuildSecretInfoProps(srcpriv->encinfo, &data->encryptsecretProps) < 0)
-            return -1;
+        if (srcpriv->encinfo) {
+            data->encryptsecretCount = 1;
+            data->encryptsecretProps = g_new0(virJSONValue *, 1);
+            data->encryptsecretAlias = g_new0(char *, 1);
+
+           if (qemuBuildSecretInfoProps(srcpriv->encinfo, &data->encryptsecretProps[0]) < 0)
+               return -1;
+        }
 
         if (srcpriv->httpcookie &&
             qemuBuildSecretInfoProps(srcpriv->httpcookie, &data->httpcookiesecretProps) < 0)

@@ -1336,9 +1336,15 @@ qemuBlockJobProcessEventConcludedCreate(virQEMUDriver *driver,
     /* the format node part was not attached yet, so we don't need to detach it */
     backend->formatAttached = false;
     if (job->data.create.storage) {
+        size_t i;
+
         backend->storageAttached = false;
         backend->storageSliceAttached = false;
+        for (i = 0; i < backend->encryptsecretCount; ++i) {
+            VIR_FREE(backend->encryptsecretAlias[i]);
+        }
         VIR_FREE(backend->encryptsecretAlias);
+        VIR_FREE(backend->encryptsecretProps);
     }
 
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
