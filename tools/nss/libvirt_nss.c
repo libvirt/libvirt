@@ -53,6 +53,7 @@
 
 #define LIBVIRT_ALIGN(x) (((x) + __SIZEOF_POINTER__ - 1) & ~(__SIZEOF_POINTER__ - 1))
 #define FAMILY_ADDRESS_SIZE(family) ((family) == AF_INET6 ? 16 : 4)
+#define G_N_ELEMENTS(Array) (sizeof(Array) / sizeof(*(Array)))
 
 static int
 leaseAddressSorter(const void *a,
@@ -595,7 +596,7 @@ nss_module_register(const char *name __attribute__((unused)),
                     unsigned int *size,
                     nss_module_unregister_fn *unregister)
 {
-    *size = sizeof(methods) / sizeof(methods[0]);
+    *size = G_N_ELEMENTS(methods);
     *unregister = NULL;
     return methods;
 }

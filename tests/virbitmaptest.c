@@ -271,7 +271,7 @@ test4c(const void *data G_GNUC_UNUSED)
     if (virBitmapNextSetBit(bitmap, i) != -1)
         return -1;
 
-    j = sizeof(bitsPos)/sizeof(int) - 1;
+    j = G_N_ELEMENTS(bitsPos) - 1;
 
     if (virBitmapLastSetBit(bitmap) != bitsPos[j])
         return -1;
@@ -328,7 +328,7 @@ test5(const void *v G_GNUC_UNUSED)
 
     i = 0;
     j = -1;
-    while (i < sizeof(bits)/sizeof(int) &&
+    while (i < G_N_ELEMENTS(bits) &&
            (j = virBitmapNextSetBit(bitmap, j)) >= 0) {
         if (j != bits[i++])
             return -1;

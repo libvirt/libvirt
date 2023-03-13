@@ -186,7 +186,7 @@ testVirNetDevSetVfMac(const void *opaque G_GNUC_UNUSED)
           .macaddr = { .addr = { 0, 0, 0, 7, 7, 7 } }, .allow_retry = true, .rc = -EINVAL },
     };
 
-    for (i = 0; i < sizeof(testCases) / sizeof(struct testCase); ++i) {
+    for (i = 0; i < G_N_ELEMENTS(testCases); ++i) {
        rc = virNetDevSetVfMac(testCases[i].ifname, testCases[i].vf_num,
                               &testCases[i].macaddr, &testCases[i].allow_retry);
        if (rc != testCases[i].rc) {
@@ -252,14 +252,14 @@ testVirNetDevSetVfVlan(const void *opaque G_GNUC_UNUSED)
         { .ifname = "fakeiface-ok", .vf_num = 1, .rc = 0 },
     };
 
-    for (i = 0; i < sizeof(testCases) / sizeof(struct testCase); ++i) {
+    for (i = 0; i < G_N_ELEMENTS(testCases); ++i) {
        rc = virNetDevSetVfVlan(testCases[i].ifname, testCases[i].vf_num, &testCases[i].vlan_id);
        if (rc != testCases[i].rc) {
            return -1;
        }
     }
 
-    for (i = 0; i < sizeof(nullVLANTestCases) / sizeof(struct nullVlanTestCase); ++i) {
+    for (i = 0; i < G_N_ELEMENTS(nullVLANTestCases); ++i) {
        rc = virNetDevSetVfVlan(nullVLANTestCases[i].ifname, nullVLANTestCases[i].vf_num, NULL);
        if (rc != nullVLANTestCases[i].rc) {
            return -1;
@@ -292,7 +292,7 @@ testVirNetDevSetVfConfig(const void *opaque G_GNUC_UNUSED)
         { .ifname = "fakeiface-nomacerror-novlanerror", .rc = 0 },
     };
 
-    for (i = 0; i < sizeof(testCases) / sizeof(struct testCase); ++i) {
+    for (i = 0; i < G_N_ELEMENTS(testCases); ++i) {
        rc = virNetDevSetVfConfig(testCases[i].ifname, vfNum, &mac, &vlanid, allowRetry);
        if (rc != testCases[i].rc) {
            return -1;

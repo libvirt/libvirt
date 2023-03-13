@@ -30,6 +30,7 @@
 
 #include "configmake.h"
 
+#define G_N_ELEMENTS(Array) (sizeof(Array) / sizeof(*(Array)))
 #define VIR_INT64_STR_BUFLEN 21
 
 int main(int argc, char **argv) {
@@ -69,7 +70,7 @@ int main(int argc, char **argv) {
     newargv[nargs++] = gidstr;
     newargv[nargs++] = NULL;
 
-    assert(nargs <= (sizeof(newargv)/sizeof(newargv[0])));
+    assert(nargs <= G_N_ELEMENTS(newargv));
 
     if (term &&
         asprintf(&(newenv[0]), "TERM=%s", term) < 0) {

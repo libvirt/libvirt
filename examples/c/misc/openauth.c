@@ -7,6 +7,8 @@
 #include <libvirt/libvirt.h>
 #include <libvirt/virterror.h>
 
+#define G_N_ELEMENTS(Array) (sizeof(Array) / sizeof(*(Array)))
+
 static void
 showError(virConnectPtr conn)
 {
@@ -205,7 +207,7 @@ static int credTypes[] = {
 /* The auth struct that will be passed to virConnectOpenAuth */
 static virConnectAuth auth = {
     credTypes,
-    sizeof(credTypes) / sizeof(int),
+    G_N_ELEMENTS(credTypes),
     authCallback,
     NULL, /* cbdata will be initialized in main */
 };

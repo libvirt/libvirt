@@ -192,7 +192,7 @@ static int virConnectCredTypeDefault[] = {
 
 static virConnectAuth virConnectAuthDefault = {
     virConnectCredTypeDefault,
-    sizeof(virConnectCredTypeDefault)/sizeof(int),
+    G_N_ELEMENTS(virConnectCredTypeDefault),
     virConnectAuthCallbackDefault,
     NULL,
 };
