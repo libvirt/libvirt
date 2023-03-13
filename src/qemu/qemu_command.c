@@ -1603,7 +1603,7 @@ qemuBuildDriveSourceStr(virDomainDiskDef *disk,
 {
     virStorageType actualType = virStorageSourceGetActualType(disk->src);
     qemuDomainStorageSourcePrivate *srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
-    qemuDomainSecretInfo *encinfo = NULL;
+    qemuDomainSecretInfo **encinfo = NULL;
     g_autoptr(virJSONValue) srcprops = NULL;
     bool rawluks = false;
 
@@ -1647,12 +1647,12 @@ qemuBuildDriveSourceStr(virDomainDiskDef *disk,
 
     if (encinfo) {
         if (disk->src->format == VIR_STORAGE_FILE_RAW) {
-            virBufferAsprintf(buf, "key-secret=%s,", encinfo->alias);
+            virBufferAsprintf(buf, "key-secret=%s,", encinfo[0]->alias);
             rawluks = true;
         } else if (disk->src->format == VIR_STORAGE_FILE_QCOW2 &&
                    disk->src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
             virBufferAddLit(buf, "encrypt.format=luks,");
-            virBufferAsprintf(buf, "encrypt.key-secret=%s,", encinfo->alias);
+            virBufferAsprintf(buf, "encrypt.key-secret=%s,", encinfo[0]->alias);
         }
     }
 
@@ -10777,12 +10777,16 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSource *src,
             return -1;
 
         if (srcpriv->encinfo) {
-            data->encryptsecretCount = 1;
-            data->encryptsecretProps = g_new0(virJSONValue *, 1);
-            data->encryptsecretAlias = g_new0(char *, 1);
+            size_t i;
 
-           if (qemuBuildSecretInfoProps(srcpriv->encinfo, &data->encryptsecretProps[0]) < 0)
-               return -1;
+            data->encryptsecretCount = srcpriv->enccount;
+            data->encryptsecretProps = g_new0(virJSONValue *, srcpriv->enccount);
+            data->encryptsecretAlias = g_new0(char *, srcpriv->enccount);
+
+            for (i = 0; i < srcpriv->enccount; ++i) {
+                if (qemuBuildSecretInfoProps(srcpriv->encinfo[i], &data->encryptsecretProps[i]) < 0)
+                    return -1;
+            }
         }
 
         if (srcpriv->httpcookie &&

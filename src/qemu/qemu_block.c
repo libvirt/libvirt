@@ -582,7 +582,7 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
 
         if (virJSONValueObjectAdd(&encrypt,
                                   "s:format", encformat,
-                                  "s:key-secret", srcPriv->encinfo->alias,
+                                  "s:key-secret", srcPriv->encinfo[0]->alias,
                                   NULL) < 0)
             return NULL;
     }
@@ -979,7 +979,8 @@ qemuBlockStorageSourceGetFormatLUKSProps(virStorageSource *src,
 {
     qemuDomainStorageSourcePrivate *srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
 
-    if (!srcPriv || !srcPriv->encinfo || !srcPriv->encinfo->alias) {
+    /* validation ensures that the qemu encryption engine accepts only a single secret */
+    if (!srcPriv || !srcPriv->encinfo || !srcPriv->encinfo[0]->alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing secret info for 'luks' driver"));
         return -1;
@@ -987,7 +988,7 @@ qemuBlockStorageSourceGetFormatLUKSProps(virStorageSource *src,
 
     if (virJSONValueObjectAdd(&props,
                               "s:driver", "luks",
-                              "s:key-secret", srcPriv->encinfo->alias,
+                              "s:key-secret", srcPriv->encinfo[0]->alias,
                               NULL) < 0)
         return -1;
 
@@ -1053,9 +1054,10 @@ qemuBlockStorageSourceGetCryptoProps(virStorageSource *src,
         return -1;
     }
 
+    /* validation ensures that the qemu encryption engine accepts only a single secret */
     return virJSONValueObjectAdd(encprops,
                                  "s:format", encformat,
-                                 "s:key-secret", srcpriv->encinfo->alias,
+                                 "s:key-secret", srcpriv->encinfo[0]->alias,
                                  NULL);
 }
 
@@ -1617,10 +1619,15 @@ qemuBlockStorageSourceDetachPrepare(virStorageSource *src)
             data->authsecretAlias = g_strdup(srcpriv->secinfo->alias);
 
         if (srcpriv->encinfo) {
-            data->encryptsecretCount = 1;
-            data->encryptsecretProps = g_new0(virJSONValue *, 1);
-            data->encryptsecretAlias = g_new0(char *, 1);
-            data->encryptsecretAlias[0] = g_strdup(srcpriv->encinfo->alias);
+            size_t i;
+
+            data->encryptsecretCount = srcpriv->enccount;
+            data->encryptsecretProps = g_new0(virJSONValue *, srcpriv->enccount);
+            data->encryptsecretAlias = g_new0(char *, srcpriv->enccount);
+
+            for (i = 0; i < srcpriv->enccount; ++i) {
+                data->encryptsecretAlias[i] = g_strdup(srcpriv->encinfo[i]->alias);
+            }
         }
 
         if (srcpriv->httpcookie)
@@ -1986,7 +1993,7 @@ qemuBlockStorageSourceCreateGetEncryptionLUKS(virStorageSource *src,
 
     if (srcpriv &&
         srcpriv->encinfo)
-        keysecret = srcpriv->encinfo->alias;
+        keysecret = srcpriv->encinfo[0]->alias;
 
     if (virJSONValueObjectAdd(&props,
                               "s:key-secret", keysecret,

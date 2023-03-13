@@ -296,7 +296,8 @@ struct _qemuDomainStorageSourcePrivate {
     qemuDomainSecretInfo *secinfo;
 
     /* data required for decryption of encrypted storage source */
-    qemuDomainSecretInfo *encinfo;
+    size_t enccount;
+    qemuDomainSecretInfo **encinfo;
 
     /* secure passthrough of the http cookie */
     qemuDomainSecretInfo *httpcookie;

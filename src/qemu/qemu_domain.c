@@ -872,7 +872,13 @@ qemuDomainStorageSourcePrivateDispose(void *obj)
     qemuDomainStorageSourcePrivate *priv = obj;
 
     g_clear_pointer(&priv->secinfo, qemuDomainSecretInfoFree);
-    g_clear_pointer(&priv->encinfo, qemuDomainSecretInfoFree);
+    if (priv->encinfo) {
+        size_t i;
+        for (i = 0; i < priv->enccount; ++i) {
+            g_clear_pointer(&priv->encinfo[i], qemuDomainSecretInfoFree);
+        }
+        VIR_FREE(priv->encinfo);
+    }
     g_clear_pointer(&priv->httpcookie, qemuDomainSecretInfoFree);
     g_clear_pointer(&priv->tlsKeySecret, qemuDomainSecretInfoFree);
     g_clear_pointer(&priv->fdpass, qemuFDPassFree);
@@ -1401,7 +1407,13 @@ qemuDomainSecretDiskDestroy(virDomainDiskDef *disk)
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
         if ((srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(n))) {
             qemuDomainSecretInfoDestroy(srcPriv->secinfo);
-            qemuDomainSecretInfoDestroy(srcPriv->encinfo);
+            if (srcPriv->encinfo) {
+                size_t i;
+
+                for (i = 0; i < srcPriv->enccount; ++i) {
+                    qemuDomainSecretInfoDestroy(srcPriv->encinfo[i]);
+                }
+            }
             qemuDomainSecretInfoDestroy(srcPriv->tlsKeySecret);
         }
     }
@@ -1470,12 +1482,19 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivate *priv,
     }
 
     if (hasEnc) {
-        if (!(srcPriv->encinfo = qemuDomainSecretInfoSetupFromSecret(priv, aliasformat,
-                                                                     "encryption", 0,
-                                                                     VIR_SECRET_USAGE_TYPE_VOLUME,
-                                                                     NULL,
-                                                                     &src->encryption->secrets[0]->seclookupdef)))
-              return -1;
+        size_t nsecrets = src->encryption->nsecrets;
+        size_t i;
+
+        srcPriv->enccount = nsecrets;
+        srcPriv->encinfo = g_new0(qemuDomainSecretInfo *, nsecrets);
+        for (i = 0; i < nsecrets; ++i) {
+            if (!(srcPriv->encinfo[i] = qemuDomainSecretInfoSetupFromSecret(priv, aliasformat,
+                                                                            "encryption", i,
+                                                                            VIR_SECRET_USAGE_TYPE_VOLUME,
+                                                                            NULL,
+                                                                            &src->encryption->secrets[i]->seclookupdef)))
+                return -1;
+        }
     }
 
     if (src->ncookies &&
@@ -1964,13 +1983,14 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
                                   virStorageSource *src)
 {
     qemuDomainStorageSourcePrivate *priv;
+    g_autofree xmlNodePtr *encnodes = NULL;
     g_autofree char *authalias = NULL;
-    g_autofree char *encalias = NULL;
     g_autofree char *httpcookiealias = NULL;
     g_autofree char *tlskeyalias = NULL;
     g_autofree char *thresholdEventWithIndex = NULL;
     bool fdsetPresent = false;
     unsigned int fdSetID;
+    int enccount;
 
     src->nodestorage = virXPathString("string(./nodenames/nodename[@type='storage']/@name)", ctxt);
     src->nodeformat = virXPathString("string(./nodenames/nodename[@type='format']/@name)", ctxt);
@@ -1983,13 +2003,14 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
         src->pr->mgralias = virXPathString("string(./reservations/@mgralias)", ctxt);
 
     authalias = virXPathString("string(./objects/secret[@type='auth']/@alias)", ctxt);
-    encalias = virXPathString("string(./objects/secret[@type='encryption']/@alias)", ctxt);
+    if ((enccount = virXPathNodeSet("./objects/secret[@type='encryption']", ctxt, &encnodes)) < 0)
+        return -1;
     httpcookiealias = virXPathString("string(./objects/secret[@type='httpcookie']/@alias)", ctxt);
     tlskeyalias = virXPathString("string(./objects/secret[@type='tlskey']/@alias)", ctxt);
 
     fdsetPresent = virXPathUInt("string(./fdsets/fdset[@type='storage']/@id)", ctxt, &fdSetID) == 0;
 
-    if (authalias || encalias || httpcookiealias || tlskeyalias || fdsetPresent) {
+    if (authalias || (enccount > 0) || httpcookiealias || tlskeyalias || fdsetPresent) {
         if (!src->privateData &&
             !(src->privateData = qemuDomainStorageSourcePrivateNew()))
             return -1;
@@ -1999,8 +2020,24 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
         if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->secinfo, &authalias) < 0)
             return -1;
 
-        if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->encinfo, &encalias) < 0)
-            return -1;
+        if (enccount > 0) {
+            size_t i;
+
+            priv->enccount = enccount;
+            priv->encinfo = g_new0(qemuDomainSecretInfo *, enccount);
+            for (i = 0; i < enccount; ++i) {
+                g_autofree char *encalias = NULL;
+
+                if (!(encalias = virXMLPropString(encnodes[i], "alias"))) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("missing alias on encryption secret #%lu"), i);
+                    return -1;
+                }
+
+                if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->encinfo[i], &encalias) < 0)
+                    return -1;
+            }
+        }
 
         if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->httpcookie, &httpcookiealias) < 0)
             return -1;
@@ -2061,10 +2098,13 @@ qemuStorageSourcePrivateDataFormat(virStorageSource *src,
         return -1;
 
     if (srcPriv) {
+        size_t i;
         unsigned int fdSetID;
 
         qemuStorageSourcePrivateDataFormatSecinfo(&objectsChildBuf, srcPriv->secinfo, "auth");
-        qemuStorageSourcePrivateDataFormatSecinfo(&objectsChildBuf, srcPriv->encinfo, "encryption");
+        for (i = 0; i < srcPriv->enccount; ++i) {
+            qemuStorageSourcePrivateDataFormatSecinfo(&objectsChildBuf, srcPriv->encinfo[i], "encryption");
+        }
         qemuStorageSourcePrivateDataFormatSecinfo(&objectsChildBuf, srcPriv->httpcookie, "httpcookie");
         qemuStorageSourcePrivateDataFormatSecinfo(&objectsChildBuf, srcPriv->tlsKeySecret, "tlskey");
 
@@ -5639,9 +5679,14 @@ qemuDomainDeviceDiskDefPostParseRestoreSecAlias(virDomainDiskDef *disk,
     }
 
     if (restoreEncSecret) {
+        if (!priv->encinfo) {
+            priv->enccount = 1;
+            priv->encinfo = g_new0(qemuDomainSecretInfo *, 1);
+        }
+
         encalias = g_strdup_printf("%s-luks-secret0", disk->info.alias);
 
-        if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->encinfo, &encalias) < 0)
+        if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->encinfo[0], &encalias) < 0)
             return -1;
     }
 
