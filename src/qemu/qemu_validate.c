@@ -3346,6 +3346,14 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
             return -1;
     }
 
+    if (disk->bus == VIR_DOMAIN_DISK_BUS_SD &&
+        disk->src && disk->src->encryption && disk->src->encryption->nsecrets > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("sd card '%s' does not support multiple encryption secrets"),
+                       disk->dst);
+        return -1;
+    }
+
     if (disk->src->type == VIR_STORAGE_TYPE_VHOST_USER) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_USER_BLK)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

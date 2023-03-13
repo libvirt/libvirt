@@ -325,6 +325,7 @@ mymain(void)
     DO_TEST_NOCAPS("disk-network-gluster");
     DO_TEST_NOCAPS("disk-network-rbd");
     DO_TEST_CAPS_LATEST("disk-network-rbd-encryption");
+    DO_TEST_CAPS_LATEST("disk-network-rbd-encryption-layering");
     DO_TEST_NOCAPS("disk-network-source-auth");
     DO_TEST_NOCAPS("disk-network-sheepdog");
     DO_TEST_NOCAPS("disk-network-vxhs");

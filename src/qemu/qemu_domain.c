@@ -5198,6 +5198,12 @@ qemuDomainValidateStorageSource(virStorageSource *src,
                         return -1;
                 }
 
+                if (src->encryption->nsecrets > 1) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("qemu encryption engine expects only a single secret"));
+                    return -1;
+                }
+
                 break;
 
             case VIR_STORAGE_ENCRYPTION_ENGINE_LIBRBD:
@@ -5212,6 +5218,14 @@ qemuDomainValidateStorageSource(virStorageSource *src,
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("librbd encryption is supported only with RBD backed disks"));
                     return -1;
+                }
+
+                if (src->encryption->nsecrets > 1) {
+                    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_RBD_ENCRYPTION_LAYERING)) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("librbd encryption layering is not supported by this QEMU binary"));
+                        return -1;
+                    }
                 }
                 break;
 

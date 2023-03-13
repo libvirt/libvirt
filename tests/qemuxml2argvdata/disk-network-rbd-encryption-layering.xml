@@ -1,0 +1,41 @@
+<domain type='qemu'>
+  <name>encryptdisk</name>
+  <uuid>496898a6-e6ff-f7c8-5dc2-3cf410945ee9</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>524288</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc-i440fx-2.1'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='rbd' name='pool/image'>
+        <host name='mon1.example.org' port='6321'/>
+        <host name='mon2.example.org' port='6322'/>
+        <host name='mon3.example.org' port='6322'/>
+        <encryption format='luks' engine='librbd'>
+          <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80fb0'/>
+          <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
+          <secret type='passphrase' uuid='f52a81b2-424e-490c-823d-6bd4235bc572'/>
+        </encryption>
+      </source>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <controller type='usb' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>

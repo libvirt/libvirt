@@ -28,7 +28,10 @@ network disks. If the engine tag is not specified, the ``qemu`` engine will be
 used by default (assuming the qemu driver is used). Note that ``librbd`` engine
 is currently only supported by the qemu VM driver, and is not supported by the
 storage driver. Furthermore, the storage driver currently ignores the ``engine``
-tag.
+tag. :since:`since 9.3.0` RBD layered encryption is supported. Layered
+encryption requires a secret per each encrypted layer. The first secret
+corresponds to the (child) image itself, the second secret to the parent image,
+and so forth.
 
 The ``encryption`` tag can currently contain a sequence of ``secret`` tags, each
 with mandatory attributes ``type`` and either ``uuid`` or ``usage`` (
@@ -55,7 +58,8 @@ added to libvirt.
 The ``luks`` format is specific to a luks encrypted volume and the secret is
 used in order to either encrypt during volume creation or decrypt the volume for
 usage by the domain. A single ``<secret type='passphrase'...>`` element is
-expected. :since:`Since 2.1.0` .
+expected (except for the case of RBD layered encryption mentioned above).
+:since:`Since 2.1.0` .
 
 For volume creation, it is possible to specify the encryption algorithm used to
 encrypt the luks volume. The following two optional elements may be provided for
@@ -102,7 +106,8 @@ can only be applied to RBD network disks (RBD images). Since the ``librbd``
 engine is currently not supported by the libvirt storage driver, you cannot use
 it to control such disks. However, pre-formatted RBD luks2 disks can be loaded
 to a qemu VM using the qemu VM driver. A single
-``<secret type='passphrase'...>`` element is expected.
+``<secret type='passphrase'...>`` element is expected (except for the case of
+RBD layered encryption mentioned above).
 
 Examples
 --------

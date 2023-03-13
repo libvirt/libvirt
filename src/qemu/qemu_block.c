@@ -564,6 +564,8 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
 
     if (src->encryption &&
         src->encryption->engine == VIR_STORAGE_ENCRYPTION_ENGINE_LIBRBD) {
+        size_t i;
+
         switch ((virStorageEncryptionFormatType) src->encryption->format) {
             case VIR_STORAGE_ENCRYPTION_FORMAT_LUKS:
                 encformat = "luks";
@@ -580,11 +582,19 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
                 break;
         }
 
-        if (virJSONValueObjectAdd(&encrypt,
-                                  "s:format", encformat,
-                                  "s:key-secret", srcPriv->encinfo[0]->alias,
-                                  NULL) < 0)
-            return NULL;
+        for (i = src->encryption->nsecrets; i > 0; --i) {
+            g_autoptr(virJSONValue) new = NULL;
+
+            /* we consume the lower layer 'encrypt' into a new object */
+            if (virJSONValueObjectAdd(&new,
+                                      "s:format", encformat,
+                                      "s:key-secret", srcPriv->encinfo[i-1]->alias,
+                                      "A:parent", &encrypt,
+                                      NULL) < 0)
+                return NULL;
+
+            encrypt = g_steal_pointer(&new);
+        }
     }
 
     if (virJSONValueObjectAdd(&ret,
