@@ -15,7 +15,7 @@ other languages:
 -  **Java**: Daniel Veillard develops `Java bindings <java.html>`__.
 
 -  **OCaml**: Richard Jones develops `OCaml
-   bindings <https://libvirt.org/ocaml/>`__.
+   bindings <https://ocaml.libvirt.org/>`__.
 
 -  **Perl**: Daniel Berrange develops `Perl
    bindings <https://search.cpan.org/dist/Sys-Virt/>`__.

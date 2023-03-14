@@ -81,7 +81,7 @@ Application development
    `c# <csharp.html>`__,
    `go <https://pkg.go.dev/libvirt.org/go/libvirt>`__ (`all go modules <golang.html>`__),
    `java <java.html>`__,
-   `ocaml <https://libvirt.org/ocaml/>`__,
+   `ocaml <https://ocaml.libvirt.org/>`__,
    `perl <https://search.cpan.org/dist/Sys-Virt/>`__,
    `python <python.html>`__,
    `php <https://php.libvirt.org>`__,
