@@ -144,7 +144,7 @@ Integration modules
     -
 
   * - Console Proxy
-    - `libvirt <https://download.libvirt.org/consoleproxy/>`__
+    -
     - `gitlab <https://gitlab.com/libvirt/libvirt-console-proxy>`__
     - `issues <https://gitlab.com/libvirt/libvirt-console-proxy/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-console-proxy>`__
