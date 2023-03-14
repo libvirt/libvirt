@@ -206,9 +206,9 @@
   <flag name='virtio-gpu.blob'/>
   <flag name='rbd-encryption-layering'/>
   <flag name='rbd-encryption-luks-any'/>
-  <version>7002050</version>
+  <version>8000000</version>
   <microcodeVersion>43100244</microcodeVersion>
-  <package>v7.2.0-2146-g2946e1af27</package>
+  <package>v8.0.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -1637,9 +1637,9 @@
   <machine type='kvm' name='pc-q35-2.8' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-2.10' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-6.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-q35-7.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-q35-4.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-6.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='microvm' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='microvm.ram' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-4.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
@@ -3432,9 +3432,9 @@
   <machine type='tcg' name='pc-q35-2.8' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-2.10' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-6.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-q35-7.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-q35-4.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-6.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='microvm' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='microvm.ram' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-4.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
