@@ -90,6 +90,18 @@ qemuAssignDeviceChrAlias(virDomainDef *def,
     if (chr->info.alias)
         return 0;
 
+    /* Some crazy backcompat for consoles. Look into
+     * virDomainDefAddConsoleCompat() for more explanation. */
+    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL &&
+        def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
+        def->consoles[0] == chr &&
+        def->nserials &&
+        def->serials[0]->info.alias) {
+        chr->info.alias = g_strdup(def->serials[0]->info.alias);
+        return 0;
+    }
+
     switch ((virDomainChrDeviceType)chr->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
         prefix = "parallel";
