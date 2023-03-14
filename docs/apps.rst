@@ -205,7 +205,7 @@ Libraries
 `Ruby Libvirt Object bindings <https://github.com/ohadlevy/virt#readme>`__
    Allows using simple ruby objects to manipulate hypervisors, guests,
    storage, network etc. It is based on top of the `native ruby
-   bindings <https://libvirt.org/ruby>`__.
+   bindings <https://ruby.libvirt.org/>`__.
 
 LiveCD / Appliances
 -------------------

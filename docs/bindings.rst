@@ -47,7 +47,7 @@ other languages:
    page.
 
 -  **Ruby**: Chris Lalancette develops `Ruby
-   bindings <https://libvirt.org/ruby/>`__.
+   bindings <https://ruby.libvirt.org/>`__.
 
 Integration API modules:
 

@@ -85,7 +85,7 @@ Application development
    `perl <https://search.cpan.org/dist/Sys-Virt/>`__,
    `python <python.html>`__,
    `php <https://php.libvirt.org>`__,
-   `ruby <https://libvirt.org/ruby/>`__
+   `ruby <https://ruby.libvirt.org/>`__
    and integration API modules for
    `D-Bus <dbus.html>`__
 
