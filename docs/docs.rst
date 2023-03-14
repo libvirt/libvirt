@@ -84,7 +84,7 @@ Application development
    `ocaml <https://libvirt.org/ocaml/>`__,
    `perl <https://search.cpan.org/dist/Sys-Virt/>`__,
    `python <python.html>`__,
-   `php <php.html>`__,
+   `php <https://php.libvirt.org>`__,
    `ruby <https://libvirt.org/ruby/>`__
    and integration API modules for
    `D-Bus <dbus.html>`__

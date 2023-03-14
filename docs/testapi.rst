@@ -24,7 +24,7 @@ using one or more test case to define a given test scenario.
 For more details you can look at:
 
 -  A `documentation
-   PDF <https://libvirt.org/sources/libvirt-test-API/Libvirt-test-API.pdf>`__
+   PDF <https://download.libvirt.org/libvirt-test-API/Libvirt-test-API.pdf>`__
    file describing the test suite and how to write test cases and test
    scenarios.
 

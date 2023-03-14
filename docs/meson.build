@@ -95,7 +95,6 @@ docs_rst_files = [
   'nss',
   'pci-addresses',
   'pci-hotplug',
-  'php',
   'platforms',
   'programming-languages',
   'python',
