@@ -16,11 +16,10 @@ Getting it
 
 The latest versions of the libvirt Java bindings can be downloaded from:
 
--  `libvirt.org FTP server <ftp://libvirt.org/libvirt/java/>`__
--  `libvirt.org HTTP server <https://libvirt.org/sources/java/>`__
+-  `libvirt.org HTTP server <https://download.libvirt.org/java/>`__
 
-A maven repository is located at https://libvirt.org/maven2/ which you can use
-to include this in your maven projects.
+A maven repository is located at https://download.libvirt.org/maven2/ which you
+can use to include this in your maven projects.
 
 GIT source repository
 ---------------------
@@ -68,8 +67,8 @@ become
 
 There is of course some functions where the mapping is less direct and using
 extra classes to map complex arguments. The
-`Javadoc <https://libvirt.org/sources/java/javadoc>`__ is available online or as
-part of a separate libvirt-java-javadoc package.
+`Javadoc <https://libvirt.gitlab.io/libvirt-java/javadoc>`__ is available online
+or as part of a separate libvirt-java-javadoc package.
 
 So let's look at a simple example inspired from the ``test.java`` test found in
 ``src`` in the source tree:
@@ -123,6 +122,6 @@ pom.xml
    <repositories>
      <repository>
        <id>libvirt-org</id>
-       <url>https://libvirt.org/maven2</url>
+       <url>https://download.libvirt.org/maven2</url>
      </repository>
    </repositories>
