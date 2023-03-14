@@ -86,4 +86,4 @@ SEE ALSO
 ========
 
 virsh(1), `online PKI setup instructions <https://libvirt.org/remote.html>`_,
-`https://www.libvirt.org/ <https://www.libvirt.org/>`_
+`https://libvirt.org/ <https://libvirt.org/>`_

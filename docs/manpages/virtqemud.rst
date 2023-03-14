@@ -232,5 +232,5 @@ SEE ALSO
 ========
 
 virsh(1), libvirtd(8),
-`https://www.libvirt.org/daemons.html <https://www.libvirt.org/daemons.html>`_,
-`https://www.libvirt.org/drvqemu.html <https://www.libvirt.org/drvqemu.html>`_
+`https://libvirt.org/daemons.html <https://libvirt.org/daemons.html>`_,
+`https://libvirt.org/drvqemu.html <https://libvirt.org/drvqemu.html>`_

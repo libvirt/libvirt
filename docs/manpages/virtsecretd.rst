@@ -209,5 +209,5 @@ SEE ALSO
 ========
 
 virsh(1), libvirtd(8),
-`https://www.libvirt.org/daemons.html <https://www.libvirt.org/daemons.html>`_,
-`https://www.libvirt.org/drvsecret.html <https://www.libvirt.org/drvsecret.html>`_
+`https://libvirt.org/daemons.html <https://libvirt.org/daemons.html>`_,
+`https://libvirt.org/drvsecret.html <https://libvirt.org/drvsecret.html>`_

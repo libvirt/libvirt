@@ -210,5 +210,5 @@ SEE ALSO
 ========
 
 virsh(1), libvirtd(8),
-`https://www.libvirt.org/daemons.html <https://www.libvirt.org/daemons.html>`_,
-`https://www.libvirt.org/drvnwfilter.html <https://www.libvirt.org/drvnwfilter.html>`_
+`https://libvirt.org/daemons.html <https://libvirt.org/daemons.html>`_,
+`https://libvirt.org/drvnwfilter.html <https://libvirt.org/drvnwfilter.html>`_

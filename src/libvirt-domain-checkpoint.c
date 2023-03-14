@@ -114,7 +114,7 @@ virDomainCheckpointGetConnect(virDomainCheckpointPtr checkpoint)
  * kicking off a backup job with virDomainBackupBegin(); however, it
  * is also possible to start a checkpoint without a backup.
  *
- * See https://www.libvirt.org/formatcheckpoint.html#checkpoint-xml
+ * See https://libvirt.org/formatcheckpoint.html#checkpoint-xml
  * for more details on @xmlDesc. In particular, some hypervisors may require
  * particular disk formats, such as qcow2, in order to support this
  * command; where @xmlDesc can be used to limit the checkpoint to a working

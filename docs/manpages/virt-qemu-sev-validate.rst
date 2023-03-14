@@ -663,4 +663,4 @@ SEE ALSO
 ========
 
 virsh(1), `SEV launch security usage <https://libvirt.org/kbase/launch_security_sev.html>`_,
-`https://www.libvirt.org/ <https://www.libvirt.org/>`_
+`https://libvirt.org/ <https://libvirt.org/>`_

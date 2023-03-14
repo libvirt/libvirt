@@ -296,4 +296,4 @@ SEE ALSO
 ========
 
 virsh(1), virt-install(1), virt-xml-validate(1), virt-top(1),
-virt-df(1), `https://www.libvirt.org/ <https://www.libvirt.org/>`_
+virt-df(1), `https://libvirt.org/ <https://libvirt.org/>`_

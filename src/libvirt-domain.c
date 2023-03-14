@@ -13628,7 +13628,7 @@ virDomainAgentSetResponseTimeout(virDomainPtr domain,
  *
  * virDomainBackupGetXMLDesc() can be called to learn actual
  * values selected.  For more information, see
- * https://www.libvirt.org/formatbackup.html#backup-xml
+ * https://libvirt.org/formatbackup.html#backup-xml
  *
  * The @checkpointXML parameter is optional; if non-NULL, then libvirt
  * behaves as if virDomainCheckpointCreateXML() were called to create

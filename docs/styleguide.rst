@@ -181,4 +181,4 @@ RST documents created as manual pages must have the following structure
   ========
 
   ...other man page links....
-  `https://www.libvirt.org/ <https://www.libvirt.org/>`_
+  `https://libvirt.org/ <https://libvirt.org/>`_

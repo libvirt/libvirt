@@ -91,7 +91,7 @@ NOTES
 =====
 
 The ``virt-admin`` supports both the monolithic ``libvirtd`` daemon and the
-`modular daemons <https://www.libvirt.org/daemons.html#modular-driver-daemons>`__
+`modular daemons <https://libvirt.org/daemons.html#modular-driver-daemons>`__
 whichever is in use by your system. The connection *URI* used with
 ``-c/--connect`` or the `connect`_ command is based on the name of the
 controlled daemon e.g.: ``virtqemud:///system``, ``libvirtd:///system``.
