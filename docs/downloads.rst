@@ -45,7 +45,7 @@ Language bindings
     - Resources
 
   * - C#
-    - `libvirt <https://download.libvirt.org/csharp/>`__
+    -
     - `gitlab <https://gitlab.com/libvirt/libvirt-csharp>`__
     - `issues <https://gitlab.com/libvirt/libvirt-csharp/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-csharp>`__
