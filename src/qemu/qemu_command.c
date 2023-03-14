@@ -3437,19 +3437,21 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
             return -1;
     }
 
-    /* Make sure the requested nodeset is sensible */
-    if (nodemask && !virNumaNodesetIsAvailable(nodemask))
-        return -1;
-
-    /* If mode is "restrictive", we should only use cgroups setting allowed memory
-     * nodes, and skip passing the host-nodes and policy parameters to QEMU command
-     * line which means we will use system default memory policy. */
-    if (nodemask && mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
-        if (virJSONValueObjectAdd(&props,
-                                  "m:host-nodes", nodemask,
-                                  "S:policy", qemuNumaPolicyTypeToString(mode),
-                                  NULL) < 0)
+    if (nodemask) {
+        /* Make sure the requested nodeset is sensible */
+        if (!virNumaNodesetIsAvailable(nodemask))
             return -1;
+
+        /* If mode is "restrictive", we should only use cgroups setting allowed memory
+         * nodes, and skip passing the host-nodes and policy parameters to QEMU command
+         * line which means we will use system default memory policy. */
+        if (mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
+            if (virJSONValueObjectAdd(&props,
+                                      "m:host-nodes", nodemask,
+                                      "S:policy", qemuNumaPolicyTypeToString(mode),
+                                      NULL) < 0)
+                return -1;
+        }
     }
 
     /* If none of the following is requested... */
