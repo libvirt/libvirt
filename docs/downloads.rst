@@ -24,7 +24,7 @@ Libvirt
     - Resources
 
   * - libvirt
-    - `libvirt <https://libvirt.org/sources/>`__
+    - `libvirt <https://download.libvirt.org/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt>`__
     - `issues <https://gitlab.com/libvirt/libvirt/-/issues>`__
     - `github <https://github.com/libvirt/libvirt>`__
@@ -45,7 +45,7 @@ Language bindings
     - Resources
 
   * - C#
-    - `libvirt <https://libvirt.org/sources/csharp/>`__
+    - `libvirt <https://download.libvirt.org/csharp/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-csharp>`__
     - `issues <https://gitlab.com/libvirt/libvirt-csharp/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-csharp>`__
@@ -59,14 +59,14 @@ Language bindings
     - `api ref <https://pkg.go.dev/libvirt.org/go/libvirt>`__
 
   * - Java
-    - `libvirt <https://libvirt.org/sources/java/>`__
+    - `libvirt <https://download.libvirt.org/java/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-java>`__
     - `issues <https://gitlab.com/libvirt/libvirt-java/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-java>`__
     -
 
   * - OCaml
-    - `libvirt <https://libvirt.org/sources/ocaml/>`__
+    - `libvirt <https://download.libvirt.org/ocaml/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-ocaml>`__
     - `issues <https://gitlab.com/libvirt/libvirt-ocaml/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-ocaml>`__
@@ -81,14 +81,14 @@ Language bindings
       `changes <https://libvirt.org/git/?p=libvirt-perl.git;a=blob;f=Changes;hb=HEAD>`__
 
   * - PHP
-    - `libvirt <https://libvirt.org/sources/php/>`__
+    - `libvirt <https://download.libvirt.org/php/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-php>`__
     - `issues <https://gitlab.com/libvirt/libvirt-php/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-php>`__
     -
 
   * - Python
-    - `libvirt <https://libvirt.org/sources/python/>`__
+    - `libvirt <https://download.libvirt.org/python/>`__
       `pypi <https://pypi.python.org/pypi/libvirt-python>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-python>`__
     - `issues <https://gitlab.com/libvirt/libvirt-python/-/issues>`__
@@ -96,7 +96,7 @@ Language bindings
     -
 
   * - Ruby
-    - `libvirt <https://libvirt.org/sources/ruby/>`__
+    - `libvirt <https://download.libvirt.org/ruby/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-ruby>`__
     - `issues <https://gitlab.com/libvirt/libvirt-ruby/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-ruby>`__
@@ -123,7 +123,7 @@ Integration modules
     - Resources
 
   * - GLib / GConfig / GObject
-    - `libvirt <https://libvirt.org/sources/glib/>`__
+    - `libvirt <https://download.libvirt.org/glib/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-glib>`__
     - `issues <https://gitlab.com/libvirt/libvirt-glib/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-glib>`__
@@ -137,42 +137,42 @@ Integration modules
     - `api ref <https://pkg.go.dev/libvirt.org/go/libvirtxml>`__
 
   * - D-Bus
-    - `libvirt <https://libvirt.org/sources/dbus/>`__
+    - `libvirt <https://download.libvirt.org/dbus/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-dbus>`__
     - `issues <https://gitlab.com/libvirt/libvirt-dbus/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-dbus>`__
     -
 
   * - Console Proxy
-    - `libvirt <https://libvirt.org/sources/consoleproxy/>`__
+    - `libvirt <https://download.libvirt.org/consoleproxy/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-console-proxy>`__
     - `issues <https://gitlab.com/libvirt/libvirt-console-proxy/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-console-proxy>`__
     -
 
   * - CIM provider
-    - `libvirt <https://libvirt.org/sources/CIM/>`__
+    - `libvirt <https://download.libvirt.org/CIM/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-cim>`__
     - `issues <https://gitlab.com/libvirt/libvirt-cim/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-cim>`__
     -
 
   * - CIM utils
-    - `libvirt <https://libvirt.org/sources/CIM/>`__
+    - `libvirt <https://download.libvirt.org/CIM/>`__
     - `gitlab <https://gitlab.com/libvirt/libcmpiutil>`__
     - `issues <https://gitlab.com/libvirt/libcmpiutil/-/issues>`__
     - `github <https://github.com/libvirt/libcmpiutil>`__
     -
 
   * - SNMP
-    - `libvirt <https://libvirt.org/sources/snmp/>`__
+    - `libvirt <https://download.libvirt.org/snmp/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-snmp>`__
     - `issues <https://gitlab.com/libvirt/libvirt-snmp/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-snmp>`__
     -
 
   * - Application Sandbox
-    - `libvirt <https://libvirt.org/sources/sandbox/>`__
+    - `libvirt <https://download.libvirt.org/sandbox/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-sandbox>`__
     - `issues <https://gitlab.com/libvirt/libvirt-sandbox/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-sandbox>`__
@@ -191,7 +191,7 @@ Testing
     - GIT Mirrors
 
   * - TCK
-    - `libvirt <https://libvirt.org/sources/tck/>`__
+    - `libvirt <https://download.libvirt.org/tck/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-tck>`__
     - `issues <https://gitlab.com/libvirt/libvirt-tck/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-tck>`__
@@ -252,7 +252,7 @@ Most modules have releases made available for download on the project site via
 HTTPS. Some modules are instead made available at alternative locations, for
 example, the Perl binding is made available only on CPAN.
 
--  `libvirt.org HTTPS server <https://libvirt.org/sources/>`__
+-  `libvirt.org HTTPS server <https://download.libvirt.org/>`__
 
 Primary release schedule
 ------------------------
@@ -354,7 +354,7 @@ following key is currently used to generate the GPG signatures:
    Fingerprint=453B 6531 0595 5628 5547  1199 CA68 BE80 1008 4C9C
 
 It can be downloaded from `this
-site <https://libvirt.org/sources/gpg_key.asc>`__ or from public GPG key
+site <https://download.libvirt.org/gpg_key.asc>`__ or from public GPG key
 servers.
 
 Releases prior to libvirt-6.6 were signed with the following GPG key:
