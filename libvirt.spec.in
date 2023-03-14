@@ -765,6 +765,7 @@ Requires: numad
     %endif
     %if (0%{?fedora} >= 36) || (0%{?rhel} >= 9)
 Recommends: passt
+Recommends: passt-selinux
     %endif
 
 %description daemon-driver-qemu
