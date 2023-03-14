@@ -35,6 +35,12 @@ v9.2.0 (unreleased)
     when the domain is defined, and its results are stored in the domain XML
     to be reused, unchanged, for all subsequent boots.
 
+  * qemu: passt now works when SELinux/AppArmor is enabled
+
+    In the case of SELinux, this requires passt-specific support code to be
+    present in the host policy, so it might only work with upcoming operating
+    systems and not with existing ones.
+
 * **Bug fixes**
 
   * qemu: Fix validation of the HPET timer
