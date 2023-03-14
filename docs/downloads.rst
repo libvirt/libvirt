@@ -52,7 +52,7 @@ Language bindings
     -
 
   * - Go
-    - `libvirt <https://libvirt.org/go/libvirt>`__
+    - `pkg.go.dev <https://pkg.go.dev/libvirt.org/go/libvirt>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-go-module>`__
     - `issues <https://gitlab.com/libvirt/libvirt-go-module/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-go-module>`__
@@ -130,7 +130,7 @@ Integration modules
     -
 
   * - Go XML
-    - `libvirt <https://libvirt.org/go/libvirtxml>`__
+    - `pkg.go.dev <https://pkg.go.dev/libvirt.org/go/libvirtxml>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-go-xml-module>`__
     - `issues <https://gitlab.com/libvirt/libvirt-go-xml-module/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-go-xml-module>`__
