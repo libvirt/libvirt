@@ -1,1 +1,1 @@
-loader attribute 'readonly' cannot be specified when firmware autoselection is enabled
+operation failed: Unable to find any firmware to satisfy 'efi'

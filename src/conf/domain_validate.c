@@ -1609,44 +1609,6 @@ virDomainDefOSValidate(const virDomainDef *def,
         if (!loader)
             return 0;
 
-        if (loader->readonly) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("loader attribute 'readonly' cannot be specified "
-                             "when firmware autoselection is enabled"));
-            return -1;
-        }
-        if (loader->type) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("loader attribute 'type' cannot be specified "
-                             "when firmware autoselection is enabled"));
-            return -1;
-        }
-        if (loader->path) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("loader path cannot be specified "
-                             "when firmware autoselection is enabled"));
-            return -1;
-        }
-        if (loader->nvramTemplate) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("nvram attribute 'template' cannot be specified "
-                             "when firmware autoselection is enabled"));
-            return -1;
-        }
-
-        /* We need to accept 'yes' here because the initial implementation
-         * of firmware autoselection used it as a way to request a firmware
-         * with Secure Boot support, so the error message is technically
-         * incorrect; however, we want to discourage people from using this
-         * attribute at all, so it's fine to be a bit more aggressive than
-         * it would be strictly required :) */
-        if (loader->secure == VIR_TRISTATE_BOOL_NO) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("loader attribute 'secure' cannot be specified "
-                             "when firmware autoselection is enabled"));
-            return -1;
-        }
-
         if (loader->nvram && def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_EFI) {
             virReportError(VIR_ERR_XML_DETAIL,
                            _("firmware type '%s' does not support nvram"),

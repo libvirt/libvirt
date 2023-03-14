@@ -1118,9 +1118,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-auto-efi-stateless");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-secure");
-    DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-efi-loader-insecure");
-    DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-efi-loader-path");
-    DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-efi-loader-path-nonstandard");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-insecure");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-path");
+    DO_TEST_CAPS_LATEST_FAILURE("firmware-auto-efi-loader-path-nonstandard");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-secboot");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-no-secboot");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-enrolled-keys");
