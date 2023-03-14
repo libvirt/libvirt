@@ -4,7 +4,7 @@
   <memory unit='KiB'>1048576</memory>
   <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu placement='static'>1</vcpu>
-  <os>
+  <os firmware='efi'>
     <type arch='aarch64' machine='virt-4.0'>hvm</type>
     <loader readonly='yes' type='pflash' format='qcow2'>/usr/share/AAVMF/AAVMF_CODE.qcow2</loader>
     <nvram template='/usr/share/AAVMF/AAVMF_VARS.qcow2' format='qcow2'>/var/lib/libvirt/qemu/nvram/guest_VARS.qcow2</nvram>

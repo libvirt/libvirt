@@ -1593,9 +1593,6 @@ qemuFirmwareFillDomainModern(virQEMUDriver *driver,
     if (qemuFirmwareEnableFeaturesModern(cfg, def, theone) < 0)
         goto cleanup;
 
-    def->os.firmware = VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
-    VIR_FREE(def->os.firmwareFeatures);
-
     ret = 0;
 
  cleanup:
