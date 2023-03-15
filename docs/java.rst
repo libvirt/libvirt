@@ -67,7 +67,7 @@ become
 
 There is of course some functions where the mapping is less direct and using
 extra classes to map complex arguments. The
-`Javadoc <https://libvirt.gitlab.io/libvirt-java/javadoc>`__ is available online
+`Javadoc <https://java.libvirt.org/javadoc>`__ is available online
 or as part of a separate libvirt-java-javadoc package.
 
 So let's look at a simple example inspired from the ``test.java`` test found in
