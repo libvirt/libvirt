@@ -6,6 +6,10 @@
   <vcpu placement='static'>1</vcpu>
   <os firmware='efi'>
     <type arch='aarch64' machine='virt-6.0'>hvm</type>
+    <firmware>
+      <feature enabled='no' name='enrolled-keys'/>
+      <feature enabled='no' name='secure-boot'/>
+    </firmware>
     <loader readonly='yes' type='pflash' format='qcow2'>/usr/share/AAVMF/AAVMF_CODE.qcow2</loader>
     <nvram template='/usr/share/AAVMF/AAVMF_VARS.qcow2' format='qcow2'>/var/lib/libvirt/qemu/nvram/guest_VARS.qcow2</nvram>
     <boot dev='hd'/>

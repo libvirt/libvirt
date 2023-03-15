@@ -4,8 +4,11 @@
   <memory unit='KiB'>1048576</memory>
   <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu placement='static'>1</vcpu>
-  <os>
+  <os firmware='efi'>
     <type arch='x86_64' machine='pc-i440fx-4.0'>hvm</type>
+    <firmware>
+      <feature enabled='no' name='secure-boot'/>
+    </firmware>
     <loader readonly='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
     <nvram type='network'>
       <source protocol='iscsi' name='iqn.2013-07.com.example:iscsi-nopool'>

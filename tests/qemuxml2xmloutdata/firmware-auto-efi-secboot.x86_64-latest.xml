@@ -7,6 +7,7 @@
   <os firmware='efi'>
     <type arch='x86_64' machine='pc-q35-4.0'>hvm</type>
     <firmware>
+      <feature enabled='yes' name='enrolled-keys'/>
       <feature enabled='yes' name='secure-boot'/>
     </firmware>
     <loader readonly='yes' secure='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.secboot.fd</loader>

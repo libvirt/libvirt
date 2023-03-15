@@ -1011,6 +1011,25 @@ qemuFirmwareOSInterfaceTypeFromOsDefFirmware(virDomainOsDefFirmware fw)
 }
 
 
+static virDomainOsDefFirmware
+qemuFirmwareOSInterfaceTypeToOsDefFirmware(qemuFirmwareOSInterface interface)
+{
+    switch (interface) {
+    case QEMU_FIRMWARE_OS_INTERFACE_BIOS:
+        return VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS;
+    case QEMU_FIRMWARE_OS_INTERFACE_UEFI:
+        return VIR_DOMAIN_OS_DEF_FIRMWARE_EFI;
+    case QEMU_FIRMWARE_OS_INTERFACE_UBOOT:
+    case QEMU_FIRMWARE_OS_INTERFACE_OPENFIRMWARE:
+    case QEMU_FIRMWARE_OS_INTERFACE_NONE:
+    case QEMU_FIRMWARE_OS_INTERFACE_LAST:
+        break;
+    }
+
+    return VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
+}
+
+
 static qemuFirmwareOSInterface
 qemuFirmwareOSInterfaceTypeFromOsDefLoaderType(virDomainLoader type)
 {
@@ -1068,6 +1087,46 @@ qemuFirmwareEnsureNVRAM(virDomainDef *def,
     loader->nvram->path = g_strdup_printf("%s/%s_VARS%s",
                                           cfg->nvramDir, def->name,
                                           ext ? ext : "");
+}
+
+
+
+/**
+ * qemuFirmwareSetOsFeatures:
+ * @def: domain definition
+ * @secureBoot: whether the 'secure-boot' feature is enabled
+ * @enrolledKeys: whether the 'enrolled-keys' feature is enabled
+ *
+ * Set firmware features for @def to match those declared by the JSON
+ * descriptor that was found to match autoselection requirements.
+ */
+static void
+qemuFirmwareSetOsFeatures(virDomainDef *def,
+                          bool secureBoot,
+                          bool enrolledKeys)
+{
+    int *features = def->os.firmwareFeatures;
+    virDomainLoaderDef *loader = def->os.loader;
+
+    if (!features) {
+        features = g_new0(int, VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_LAST);
+        def->os.firmwareFeatures = features;
+    }
+
+    features[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_SECURE_BOOT] = virTristateBoolFromBool(secureBoot);
+    features[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_ENROLLED_KEYS] = virTristateBoolFromBool(enrolledKeys);
+
+    /* If the NVRAM template is blank at this point and we're not dealing
+     * with a stateless firmware image, then it means that the NVRAM file
+     * is not local. In this scenario we can't really make any assumptions
+     * about its contents, so it's preferable to leave the state of the
+     * enrolled-keys feature unspecified */
+    if (loader &&
+        loader->type == VIR_DOMAIN_LOADER_TYPE_PFLASH &&
+        loader->stateless != VIR_TRISTATE_BOOL_YES &&
+        !loader->nvramTemplate) {
+        features[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_ENROLLED_KEYS] = VIR_TRISTATE_BOOL_ABSENT;
+    }
 }
 
 
@@ -1294,6 +1353,8 @@ qemuFirmwareEnableFeaturesModern(virQEMUDriverConfig *cfg,
     const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;
     virDomainLoaderDef *loader = NULL;
     virStorageFileFormat format;
+    bool hasSecureBoot = false;
+    bool hasEnrolledKeys = false;
     size_t i;
 
     switch (fw->mapping.device) {
@@ -1368,18 +1429,37 @@ qemuFirmwareEnableFeaturesModern(virQEMUDriverConfig *cfg,
             def->os.loader->secure = VIR_TRISTATE_BOOL_YES;
             break;
 
-        case QEMU_FIRMWARE_FEATURE_NONE:
+        case QEMU_FIRMWARE_FEATURE_SECURE_BOOT:
+            hasSecureBoot = true;
+            break;
+
+        case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
+            hasEnrolledKeys = true;
+            break;
+
         case QEMU_FIRMWARE_FEATURE_ACPI_S3:
         case QEMU_FIRMWARE_FEATURE_ACPI_S4:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV_ES:
-        case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
-        case QEMU_FIRMWARE_FEATURE_SECURE_BOOT:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
+        case QEMU_FIRMWARE_FEATURE_NONE:
         case QEMU_FIRMWARE_FEATURE_LAST:
             break;
         }
+    }
+
+    if (!def->os.firmware) {
+        /* If a firmware type for autoselection was not already present,
+         * pick the first reasonable one from the descriptor list */
+        for (i = 0; i < fw->ninterfaces; i++) {
+            def->os.firmware = qemuFirmwareOSInterfaceTypeToOsDefFirmware(fw->interfaces[i]);
+            if (def->os.firmware)
+                break;
+        }
+    }
+    if (def->os.firmware) {
+        qemuFirmwareSetOsFeatures(def, hasSecureBoot, hasEnrolledKeys);
     }
 
     return 0;

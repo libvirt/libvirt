@@ -4,8 +4,12 @@
   <memory unit='KiB'>1048576</memory>
   <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu placement='static'>1</vcpu>
-  <os>
+  <os firmware='efi'>
     <type arch='x86_64' machine='pc-q35-4.0'>hvm</type>
+    <firmware>
+      <feature enabled='yes' name='enrolled-keys'/>
+      <feature enabled='yes' name='secure-boot'/>
+    </firmware>
     <loader readonly='yes' secure='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.secboot.fd</loader>
     <nvram template='/usr/share/OVMF/OVMF_VARS.secboot.fd'>/path/to/guest_VARS.fd</nvram>
     <boot dev='hd'/>

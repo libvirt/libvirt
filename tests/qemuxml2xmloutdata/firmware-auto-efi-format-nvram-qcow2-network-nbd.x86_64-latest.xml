@@ -6,6 +6,9 @@
   <vcpu placement='static'>1</vcpu>
   <os firmware='efi'>
     <type arch='x86_64' machine='pc-i440fx-4.0'>hvm</type>
+    <firmware>
+      <feature enabled='no' name='secure-boot'/>
+    </firmware>
     <loader readonly='yes' type='pflash' format='qcow2'>/usr/share/OVMF/OVMF_CODE.qcow2</loader>
     <nvram type='network' format='qcow2'>
       <source protocol='nbd' name='bar'>
