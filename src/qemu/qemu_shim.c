@@ -26,6 +26,7 @@
 
 #include "virfile.h"
 #include "virgettext.h"
+#include "viridentity.h"
 #include "virthread.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -133,6 +134,7 @@ qemuShimQuench(void *userData G_GNUC_UNUSED,
 
 int main(int argc, char **argv)
 {
+    g_autoptr(virIdentity) sysident = NULL;
     GThread *eventLoopThread = NULL;
     virConnectPtr conn = NULL;
     virConnectPtr sconn = NULL;
@@ -190,6 +192,9 @@ int main(int argc, char **argv)
     }
 
     virSetErrorFunc(NULL, qemuShimQuench);
+
+    sysident = virIdentityGetSystem();
+    virIdentitySetCurrent(sysident);
 
     if (verbose)
         g_printerr("%s: %lld: initializing signal handlers\n",
