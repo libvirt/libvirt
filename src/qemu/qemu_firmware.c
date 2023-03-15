@@ -1635,7 +1635,6 @@ int
 qemuFirmwareFillDomain(virQEMUDriver *driver,
                        virDomainDef *def)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainLoaderDef *loader = def->os.loader;
     virStorageSource *nvram = loader ? loader->nvram : NULL;
     bool autoSelection = (def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_NONE);
@@ -1675,33 +1674,6 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
     if (!autoSelection &&
         (!loader || (loader && loader->type == VIR_DOMAIN_LOADER_TYPE_ROM))) {
         return 0;
-    }
-
-    /* For UEFI with firmware autoselection disabled, even if some of
-     * the information is missing we might still be able to avoid
-     * having to look at firmware descriptors */
-    if (!autoSelection &&
-        virDomainDefHasOldStyleROUEFI(def) &&
-        loader->path) {
-
-        /* For stateless firmwares, the firmware path is all we need */
-        if (loader->stateless == VIR_TRISTATE_BOOL_YES)
-            return 0;
-
-        /* If the path to the NVRAM file is already provided and it
-         * points to a non-local source, we don't need to look up any
-         * other information */
-        if (loader->nvram && !virStorageSourceIsLocalStorage(loader->nvram))
-            return 0;
-
-        /* If we have the path to both the firmware itself and the
-         * corresponding NVRAM template we might still need to
-         * generate a path to the domain-specific NVRAM file, but
-         * otherwise we're good to go */
-        if (loader->nvramTemplate) {
-            qemuFirmwareEnsureNVRAM(def, cfg, loader->format);
-            return 0;
-        }
     }
 
     /* Look for the information we need in firmware descriptors */
