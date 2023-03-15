@@ -101,12 +101,6 @@ virDomainDefPostParseOs(virDomainDef *def)
                            _("firmware feature 'enrolled-keys' cannot be enabled when firmware feature 'secure-boot' is disabled"));
             return -1;
         }
-
-        /* For all non-broken firmware builds, enrolled-keys implies
-         * secure-boot, and having the Secure Boot keys in the NVRAM file
-         * when the firmware doesn't support the Secure Boot feature doesn't
-         * make sense anyway. Reflect this fact explicitly in the XML */
-        def->os.firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_SECURE_BOOT] = VIR_TRISTATE_BOOL_YES;
     }
 
     if (!def->os.loader)
