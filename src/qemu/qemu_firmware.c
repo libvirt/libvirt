@@ -945,6 +945,55 @@ qemuFirmwareMatchesMachineArch(const qemuFirmware *fw,
 }
 
 
+/**
+ * qemuFirmwareMatchesPaths:
+ * @fw: firmware definition
+ * @loader: loader definition
+ * @kernelPath: path to kernel image
+ *
+ * Checks whether @fw is compatible with the information provided as
+ * part of the domain definition.
+ *
+ * Returns: true if @fw is compatible with @loader and @kernelPath,
+ *          false otherwise
+ */
+static bool
+qemuFirmwareMatchesPaths(const qemuFirmware *fw,
+                         const virDomainLoaderDef *loader,
+                         const char *kernelPath)
+{
+    const qemuFirmwareMappingFlash *flash = &fw->mapping.data.flash;
+    const qemuFirmwareMappingKernel *kernel = &fw->mapping.data.kernel;
+    const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;
+
+    switch (fw->mapping.device) {
+    case QEMU_FIRMWARE_DEVICE_FLASH:
+        if (loader && loader->path &&
+            STRNEQ(loader->path, flash->executable.filename))
+            return false;
+        if (loader && loader->nvramTemplate &&
+            STRNEQ(loader->nvramTemplate, flash->nvram_template.filename))
+            return false;
+        break;
+    case QEMU_FIRMWARE_DEVICE_MEMORY:
+        if (loader && loader->path &&
+            STRNEQ(loader->path, memory->filename))
+            return false;
+        break;
+    case QEMU_FIRMWARE_DEVICE_KERNEL:
+        if (kernelPath &&
+            STRNEQ(kernelPath, kernel->filename))
+            return false;
+        break;
+    case QEMU_FIRMWARE_DEVICE_NONE:
+    case QEMU_FIRMWARE_DEVICE_LAST:
+        return false;
+    }
+
+    return true;
+}
+
+
 static qemuFirmwareOSInterface
 qemuFirmwareOSInterfaceTypeFromOsDefFirmware(virDomainOsDefFirmware fw)
 {
@@ -1047,16 +1096,6 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
 
     if (want == QEMU_FIRMWARE_OS_INTERFACE_NONE && loader) {
         want = qemuFirmwareOSInterfaceTypeFromOsDefLoaderType(loader->type);
-
-        if (fw->mapping.device != QEMU_FIRMWARE_DEVICE_FLASH ||
-            STRNEQ(loader->path, fw->mapping.data.flash.executable.filename)) {
-            VIR_DEBUG("Not matching FW interface %s or loader "
-                      "path '%s' for user provided path '%s'",
-                      qemuFirmwareDeviceTypeToString(fw->mapping.device),
-                      fw->mapping.data.flash.executable.filename,
-                      loader->path);
-            return false;
-        }
     }
 
     for (i = 0; i < fw->ninterfaces; i++) {
@@ -1066,6 +1105,11 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
 
     if (i == fw->ninterfaces) {
         VIR_DEBUG("No matching interface in '%s'", path);
+        return false;
+    }
+
+    if (!qemuFirmwareMatchesPaths(fw, def->os.loader, def->os.kernel)) {
+        VIR_DEBUG("No matching path in '%s'", path);
         return false;
     }
 
