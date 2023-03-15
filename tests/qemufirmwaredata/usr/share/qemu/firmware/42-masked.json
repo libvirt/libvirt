@@ -1,0 +1,37 @@
+{
+    "description": "bad firmware used to test descriptor masking",
+    "interface-types": [
+        "uefi"
+    ],
+    "mapping": {
+        "device": "flash",
+        "mode": "split",
+        "executable": {
+            "filename": "/bad/executable/should/have/been/masked.fd",
+            "format": "raw"
+        },
+        "nvram-template": {
+            "filename": "/bad/nvram/template/should/have/been/masked.fd",
+            "format": "raw"
+        }
+    },
+    "targets": [
+        {
+            "architecture": "x86_64",
+            "machines": [
+                "pc-*",
+                "pc-q35-*"
+            ]
+        }
+    ],
+    "features": [
+        "acpi-s3",
+        "amd-sev",
+        "requires-smm",
+        "secure-boot",
+        "verbose-dynamic"
+    ],
+    "tags": [
+
+    ]
+}

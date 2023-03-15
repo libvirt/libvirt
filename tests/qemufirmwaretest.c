@@ -72,6 +72,7 @@ testFWPrecedence(const void *opaque G_GNUC_UNUSED)
         PREFIX "/share/qemu/firmware/45-ovmf-sev-stateless.json",
         PREFIX "/share/qemu/firmware/50-ovmf-sb-keys.json",
         PREFIX "/share/qemu/firmware/55-ovmf-sb-combined.json",
+        PREFIX "/share/qemu/firmware/60-ovmf-sb.json",
         PREFIX "/share/qemu/firmware/61-ovmf.json",
         PREFIX "/share/qemu/firmware/65-ovmf-qcow2.json",
         PREFIX "/share/qemu/firmware/66-aavmf-qcow2.json",
@@ -270,6 +271,7 @@ mymain(void)
                       "/usr/share/OVMF/OVMF_CODE.secboot.fd:/usr/share/OVMF/OVMF_VARS.secboot.fd:"
                       "/usr/share/OVMF/OVMF.sev.fd:NULL:"
                       "/usr/share/OVMF/OVMF.secboot.fd:NULL:"
+                      "/usr/share/OVMF/OVMF_CODE.secboot.fd:/usr/share/OVMF/OVMF_VARS.fd:"
                       "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd:"
                       "/usr/share/OVMF/OVMF_CODE.qcow2:/usr/share/OVMF/OVMF_VARS.qcow2",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
