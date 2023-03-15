@@ -81,7 +81,7 @@ Use this name for the PID file, overriding the default value.
 ``-t``, ``--timeout *SECONDS*``
 
 Exit after timeout period (in seconds), provided there are neither any client
-connections nor any running domains.
+connections nor any ephemeral secrets.
 
 ``-v``, ``--verbose``
 
