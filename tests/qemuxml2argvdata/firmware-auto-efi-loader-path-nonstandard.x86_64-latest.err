@@ -1,1 +1,1 @@
-loader attribute 'type' cannot be specified when firmware autoselection is enabled
+loader attribute 'readonly' cannot be specified when firmware autoselection is enabled
