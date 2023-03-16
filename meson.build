@@ -404,6 +404,26 @@ cc_flags += [
   '-Wwrite-strings',
 ]
 
+if cc.get_id() == 'clang'
+    # Stop CLang from doing inter-procedural analysis of calls
+    # between functions in the same compilation unit. Such an
+    # optimization has been know to break the test suite by
+    # making assumptions that a return value is a constant.
+    # This makes it impossible to mock certain functions with
+    # replacement definitions via LD_PRELOAD that have different
+    # semantics.
+    #
+    # This is a bit of a big hammer, but alternatives don't work:
+    #
+    #  - 'weak' attribute - weak symbols get dropped from
+    #    when the .a libs are combined into the .so
+    #    see commit 407a281a8e2b6c5078ba1148535663ea64fd9314
+    #
+    #  - 'noipa' attribute - only available with GCC currently
+    #    https://reviews.llvm.org/D101011
+    cc_flags += [ '-fsemantic-interposition' ]
+endif
+
 supported_cc_flags = []
 if get_option('warning_level') == '2'
   supported_cc_flags = cc.get_supported_arguments(cc_flags)
