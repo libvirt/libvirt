@@ -1812,7 +1812,7 @@ elsif ($mode eq "client") {
         }
 
         if ($structprefix eq "admin") {
-            print "    VIR_LOCK_GUARD lock = virObjectLockGuard(&priv);\n";
+            print "    VIR_LOCK_GUARD lock = virObjectLockGuard(priv);\n";
         } else {
             print "    VIR_LOCK_GUARD lock = remoteDriverLock(priv);\n";
         }
