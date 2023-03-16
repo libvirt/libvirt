@@ -206,23 +206,7 @@ mymain(void)
     if (testQemuCapsIterate(".replies", doCapsTest, &data) < 0)
         return EXIT_FAILURE;
 
-    /*
-     * Run "tests/qemucapsprobe /path/to/qemu/binary >foo.replies"
-     * to generate updated or new *.replies data files.
-     *
-     * If you manually edit replies files you can run
-     * VIR_TEST_REGENERATE_OUTPUT=1 tests/qemucapabilitiesnumbering
-     * to fix the replies ids. The tool also allows for programmatic
-     * modification of the replies file.
-     *
-     * Once a replies file has been generated and tweaked if necessary,
-     * you can drop it into tests/qemucapabilitiesdata/ (with a sensible
-     * name - look at what's already there for inspiration) and test
-     * programs will automatically pick it up.
-     *
-     * To generate the corresponding output files after a new replies
-     * file has been added, run "VIR_TEST_REGENERATE_OUTPUT=1 ninja test".
-     */
+    /* See documentation in qemucapabilitiesdata/README.rst */
 
     testQemuDataReset(&data);
 
