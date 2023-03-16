@@ -1196,6 +1196,11 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
                       "but firmware '%s' requires it to be enabled", path);
             return false;
         }
+        if (loader && loader->secure == VIR_TRISTATE_BOOL_NO) {
+            VIR_DEBUG("Domain doesn't restrict pflash programming to SMM, "
+                      "but firmware '%s' requires use of SMM", path);
+            return false;
+        }
     } else {
         if (loader && loader->secure == VIR_TRISTATE_BOOL_YES) {
             VIR_DEBUG("Domain restricts pflash programming to SMM, "
