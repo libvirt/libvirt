@@ -19,13 +19,14 @@
 # Yang Yulin <yylteam@icloud.com>, 2022.
 # Daniel P. Berrange <berrange@redhat.com>, 2022.
 # Jan Tomko <jtomko@redhat.com>, 2022.
+# Jiri Denemark <jdenemar@redhat.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-02-22 13:50+0000\n"
-"PO-Revision-Date: 2023-03-06 16:20+0000\n"
-"Last-Translator: Ludek Janda <ljanda@redhat.com>\n"
+"PO-Revision-Date: 2023-03-14 16:11+0000\n"
+"Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -739,7 +740,8 @@ msgstr "%s uri uuid 动作\n"
 msgid ""
 "%s with index %d is configured for a NUMA node (%d) not present in the "
 "domain's <cpu><numa> array (%zu)"
-msgstr "为 NUMA 节点(%d)配置的索引为 %d 的 %s 在域的 <cpu><numa> 数组(%zu)中不存在"
+msgstr "为 NUMA 节点(%3$d)配置的索引为 %2$d 的 %1$s 在域的 <cpu><numa> "
+"数组(%4$zu)中不存在"
 
 #, c-format
 msgid ""
@@ -2134,7 +2136,7 @@ msgstr "只能为 'ide' 总线而不是 '%s' 设置 CHS 转换模式"
 
 #, fuzzy, c-format
 msgid "CPU %d in cpulist '%s' exceed the maxcpu %d"
-msgstr "cpulist '%s' 中的 CPU %d 超出了 maxcpu %d"
+msgstr "cpulist '%2$s' 中的 CPU %1$d 超出了 maxcpu %3$d"
 
 msgid "CPU Affinity"
 msgstr "CPU 亲和性"
@@ -2367,7 +2369,7 @@ msgstr "缓存级别 '%u' 已定义"
 
 #, fuzzy, c-format
 msgid "Cache with id %u does not exists for level %d"
-msgstr "级别 %d 不存在 id 为 %u 的缓存"
+msgstr "级别 %2$d 不存在 id 为 %1$u 的缓存"
 
 msgid "Calculate a vm's memory dirty rate"
 msgstr "计算虚拟机的内存脏率"
@@ -3084,7 +3086,7 @@ msgstr "无法解析套接字服务 '%s'：%s"
 
 #, fuzzy, c-format
 msgid "Cannot parse start time %s for pid %d"
-msgstr "无法解析 pid %d 的启动时间 %s"
+msgstr "无法解析 pid %2$d 的启动时间 %1$s"
 
 #, c-format
 msgid "Cannot parse sys stat '%s'"
@@ -3101,15 +3103,17 @@ msgstr "无法解析元素 <address> 的 uuid 属性"
 msgid ""
 "Cannot plug '%s' interface into '%s' because new combined inbound floor=%llu "
 "would overcommit average=%llu on network '%s'"
-msgstr "无法将 '%s' 接口插入 '%s'，因为新合并的入站 floor=%llu 将在网络 '%s' "
-"上过度承诺 average=%llu"
+msgstr ""
+"无法将 '%1$s' 接口插入 '%2$s'，因为新合并的入站 floor=%3$llu 将在网络 '%5$s' "
+"上过度承诺 average=%4$llu"
 
 #, fuzzy, c-format
 msgid ""
 "Cannot plug '%s' interface into '%s' because new combined inbound floor=%llu "
 "would overcommit peak=%llu on network '%s'"
-msgstr "无法将 '%s' 接口插入 '%s'，因为新合并的入站 floor=%llu 将在网络 '%s' "
-"上过度承诺 peak=%llu"
+msgstr ""
+"无法将 '%1$s' 接口插入 '%2$s'，因为新合并的入站 floor=%3$llu 将在网络 '%5$s' "
+"上过度承诺 peak=%4$llu"
 
 #, c-format
 msgid "Cannot print data type %x"
@@ -3199,7 +3203,7 @@ msgstr "无法在 '%s' 上设置接口 MAC"
 
 #, fuzzy, c-format
 msgid "Cannot set interface MAC to %s for ifname %s vf %d"
-msgstr "无法为 ifname %s vf %d 将接口 MAC 设为 %s"
+msgstr "无法为 ifname %2$s vf %3$d 将接口 MAC 设为 %1$s"
 
 #, c-format
 msgid "Cannot set interface MAC to %s on '%s'"
@@ -3215,7 +3219,7 @@ msgstr "无法在 '%s' 中设定接口标签"
 
 #, fuzzy, c-format
 msgid "Cannot set interface vlanid to %d for ifname %s vf %d"
-msgstr "无法为 ifname %s vf %d 将接口 vlanid 设为%d"
+msgstr "无法为 ifname %2$s vf %3$d 将接口 vlanid 设为%1$d"
 
 msgid "Cannot set memory higher than max memory"
 msgstr "无法将内存设置为高于最大内存"
@@ -3919,7 +3923,7 @@ msgstr "无法找到 %s"
 
 #, fuzzy, c-format
 msgid "Could not find %s controller with index %d required for device"
-msgstr "无法找到设备所需的索引为 %d 的 %s 控制器"
+msgstr "无法找到设备所需的索引为 %2$d 的 %1$s 控制器"
 
 #, c-format
 msgid "Could not find %s with name '%s'"
@@ -3957,7 +3961,7 @@ msgstr "无法找到 Msvm_DiskDrive 对象"
 msgid ""
 "Could not find PCI controller with index '%u' required for device at address "
 "'%s'"
-msgstr "无法为地址 '%s' 处的设备找到所需的索引为 '%u' 的 PCI 控制器。"
+msgstr "无法为地址 '%2$s' 处的设备找到所需的索引为 '%1$u' 的 PCI 控制器。"
 
 #, c-format
 msgid "Could not find PhysicalNic with key '%s'"
@@ -3985,7 +3989,7 @@ msgstr "无法找到任何具有 vport 功能的设备"
 
 #, fuzzy, c-format
 msgid "Could not find auto-added %s controller with index %zu"
-msgstr "无法找到索引为 %zu 的自动添加的 %s 控制器"
+msgstr "无法找到索引为 %2$zu 的自动添加的 %1$s 控制器"
 
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
@@ -5113,13 +5117,13 @@ msgstr "设备 '%s' 未被识别，需要构建"
 
 #, fuzzy, c-format
 msgid "Device alias was not set for %s controller with index %d "
-msgstr "对索引为 %d 的 %s 控制器没有设置设备别名 "
+msgstr "对索引为 %2$d 的 %1$s 控制器没有设置设备别名 "
 
 #, fuzzy, c-format
 msgid ""
 "Device alias was not set for PCI controller with index '%u' required for "
 "device at address '%s'"
-msgstr "对地址 '%s' 处的设备所需的索引为 '%u' 的 PCI 控制器没有设置设备别名"
+msgstr "对地址 '%2$s' 处的设备所需的索引为 '%1$u' 的 PCI 控制器没有设置设备别名"
 
 msgid "Device attached successfully\n"
 msgstr "成功附加设备\n"
@@ -5274,7 +5278,7 @@ msgstr "显示该节点的 CPU 总数，在线 CPU 数以及在线 CPU 列表。
 #, fuzzy, c-format
 msgid ""
 "Distance value %d under node %zu is LOCAL_DISTANCE and should be set to 10"
-msgstr "节点 %zu 下的距离值 %d 为 LOCAL_DISTANCE，应该被设为 10"
+msgstr "节点 %2$zu 下的距离值 %1$d 为 LOCAL_DISTANCE，应该被设为 10"
 
 #, c-format
 msgid "Distance value of %d is not in valid range"
@@ -7331,7 +7335,7 @@ msgstr "将 %s 在 %s 类型 %s 中挂载失败"
 
 #, fuzzy, c-format
 msgid "Failed to mount %s on %s type %s flags=0x%x"
-msgstr "在 %s 类型 %s flags=0x%x 上挂载 %s 失败"
+msgstr "在 %2$s 类型 %3$s flags=0x%4$x 上挂载 %1$s 失败"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -7609,7 +7613,7 @@ msgstr "重新附加设备 %s 失败"
 
 #, fuzzy, c-format
 msgid "Failed to re-mount %s on %s flags=0x%x"
-msgstr "在 %s flags=0x%x 上重新挂载 %s 失败"
+msgstr "在 %2$s flags=0x%3$x 上重新挂载 %1$s 失败"
 
 #, c-format
 msgid "Failed to read %s"
@@ -7886,7 +7890,7 @@ msgstr "将域 '%s' 保存为 %s 失败"
 
 #, fuzzy, c-format
 msgid "Failed to seek to %llu bytes to the end in volume with path '%s'"
-msgstr "在路径为 '%s' 的卷中查找距离末尾的 %llu 字节失败"
+msgstr "在路径为 '%2$s' 的卷中查找距离末尾的 %1$llu 字节失败"
 
 #, c-format
 msgid "Failed to seek to the start in volume with path '%s'"
@@ -12076,7 +12080,7 @@ msgstr "在池中没有用于卷 '%s' 的足够可用空间"
 msgid ""
 "Not enough room for allocation of %llu bytes for level %u cache %u scope "
 "type '%s'"
-msgstr "没有足够的空间来为级别 %u 缓存 %u 范围类型 '%s' 分配 %llu 字节"
+msgstr "没有足够的空间来为级别 %2$u 缓存 %3$u 范围类型 '%4$s' 分配 %1$llu 字节"
 
 msgid "Not enough space left in storage pool"
 msgstr "存储池中没有足够的空间"
@@ -12581,7 +12585,7 @@ msgstr "POST操作失败: %s"
 #, fuzzy, c-format
 msgid ""
 "PTR domain for %s network with prefix %u cannot be automatically created"
-msgstr "不能为前缀为 %u 的 %s 网络自动创建 PTR 域"
+msgstr "不能为前缀为 %2$u 的 %1$s 网络自动创建 PTR 域"
 
 msgid "PTY device is not yet assigned"
 msgstr "PTY 设备尚未分配"
@@ -13212,8 +13216,8 @@ msgstr "请求的卷 '%s' 不在池 '%s' 中"
 msgid ""
 "Required option '%s' is not set for PCI controller with index '%d', model "
 "'%s' and modelName '%s'"
-msgstr "没有为索引为 '%d'、型号为 '%s' 和 modelName 为 '%s' 的 PCI 控制器设置必选项 "
-"'%s'"
+msgstr "没有为索引为 '%2$d'、型号为 '%3$s' 和 modelName 为 '%4$s' 的 PCI "
+"控制器设置必选项 '%1$s'"
 
 #, c-format
 msgid ""
@@ -15636,7 +15640,7 @@ msgstr "客户端数量 '%d' 已超过限制 '%d'"
 
 #, fuzzy, c-format
 msgid "Too many disks in fsinfo: %zd for limit %d"
-msgstr "fsinfo 中有太多的磁盘：对于限制 %d 来说为 %zd"
+msgstr "fsinfo 中有太多的磁盘：对于限制 %2$d 来说为 %1$zd"
 
 msgid "Too many domain elements in migration cookie"
 msgstr "迁移 cookie 中有太多的域元素"
@@ -16199,7 +16203,8 @@ msgstr "无法计算数据的哈希：%s"
 msgid ""
 "Unable to configure VF %d of PF '%s' because the PF is not online. Please "
 "change host network config to put the PF online."
-msgstr "无法配置 PF '%s' 的 VF %d，因为 PF 不在线。请更改主机网络配置以使 PF 在线。"
+msgstr "无法配置 PF '%2$s' 的 VF %1$d，因为 PF 不在线。请更改主机网络配置以使 PF "
+"在线。"
 
 msgid "Unable to configure libxl's memory management parameters"
 msgstr "无法配置 libxl 的内存管理参数"
@@ -18158,7 +18163,7 @@ msgstr "未知的 LXC 命名空间源 '%s'"
 
 #, fuzzy, c-format
 msgid "Unknown PCI header type '%d' for device '%s'"
-msgstr "设备 '%s' 的未知的 PCI 标头类型 '%d'"
+msgstr "设备 '%2$s' 的未知的 PCI 标头类型 '%1$d'"
 
 msgid "Unknown Partition Type, requires build --overwrite"
 msgstr "未知的分区类型，需要 build --overwrite"
@@ -18958,7 +18963,7 @@ msgstr "VCPU:"
 msgid ""
 "VF %d of PF '%s' is not bound to a net driver, so its MAC address cannot be "
 "set to %s"
-msgstr "PF '%s' 的 VF %d 没有绑定到网络驱动程序，因此其 MAC 地址不能设为 %s"
+msgstr "PF '%2$s' 的 VF %1$d 没有绑定到网络驱动程序，因此其 MAC 地址不能设为 %3$s"
 
 #, c-format
 msgid "VFB %s too big for destination"
@@ -19845,7 +19850,7 @@ msgstr "坏路径名"
 
 #, fuzzy, c-format
 msgid "bad prefix %d for network %s when  checking range %s - %s"
-msgstr "检查范围 %s - %s 时，网络 %s 的错误前缀 %d"
+msgstr "检查范围 %3$s - %4$s 时，网络 %2$s 的错误前缀 %1$d"
 
 msgid "balloon device cannot be disabled"
 msgstr "无法禁用 balloon 设备"
@@ -20382,7 +20387,7 @@ msgstr "无法添加重定向 USB 设备：USB 设备对这个域禁用"
 
 #, fuzzy, c-format
 msgid "cannot allocate %llu bytes in file '%s'"
-msgstr "无法在文件 '%s' 中分配 %llu 字节"
+msgstr "无法在文件 '%2$s' 中分配 %1$llu 字节"
 
 msgid "cannot allocate nlhandle for netlink"
 msgstr "无法为 netlink 分配 nlhandle"
@@ -21675,11 +21680,11 @@ msgstr "无法将 CPU 型号 %s 转换为支持的型号"
 
 #, fuzzy, c-format
 msgid "cannot translate keycode %u of %s codeset to qnum keycode"
-msgstr "无法将 %s codeset 的 keycode %u 转换为 qnum keycode"
+msgstr "无法将 %2$s codeset 的 keycode %1$u 转换为 qnum keycode"
 
 #, fuzzy, c-format
 msgid "cannot translate keycode %u of %s codeset to xt keycode"
-msgstr "无法将 %s codeset 的 keycode %u 转换为 xt keycode"
+msgstr "无法将 %2$s codeset 的 keycode %1$u 转换为 xt keycode"
 
 msgid "cannot unblock signals"
 msgstr "无法取消信号阻断"
@@ -22418,7 +22423,7 @@ msgstr "无法决定该域的最大 vcpu"
 
 #, fuzzy, c-format
 msgid "could not find backing store index '%u' in chain for '%s'"
-msgstr "无法在 '%s' 的链中找到后备存储索引 '%u'"
+msgstr "无法在 '%2$s' 的链中找到后备存储索引 '%1$u'"
 
 msgid "could not find base disk source in disk source chain"
 msgstr "无法在磁盘源链中找到基本磁盘源"
@@ -24064,7 +24069,7 @@ msgstr "加密仅支持 'raw' 和 'qcow2' 镜像格式"
 
 #, fuzzy, c-format
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
-msgstr "网络 %s/%d 中范围 %s - %s 的末尾是广播地址"
+msgstr "网络 %3$s/%4$d 中范围 %1$s - %2$s 的末尾是广播地址"
 
 msgid "enforce requested stats parameters"
 msgstr "强制请求的 stats 参数"
@@ -25500,7 +25505,7 @@ msgstr "无法检索 XML"
 msgid ""
 "failed to retrieve client identity information for client '%llu' connected "
 "to server '%s'"
-msgstr "无法检索连接到服务器 '%s'的客户端 '%llu' 的客户端身份信息"
+msgstr "无法检索连接到服务器 '%2$s'的客户端 '%1$llu' 的客户端身份信息"
 
 msgid "failed to retrieve credentials"
 msgstr "无法检索凭证"
@@ -27365,7 +27370,7 @@ msgstr "网络设备保存的配置文件 '%s' 中无效的 json : '%.60s'"
 
 #, fuzzy, c-format
 msgid "invalid keycode %u of %s codeset"
-msgstr "%s codeset 的无效的 keycode %u"
+msgstr "%2$s codeset 的无效的 keycode %1$u"
 
 #, c-format
 msgid "invalid keycode: '%s'"
@@ -31150,7 +31155,7 @@ msgstr "对象 props 不能为 NULL"
 
 #, fuzzy, c-format
 msgid "object size %zu of %s is not larger than parent class %zu"
-msgstr "%s 的对象大小 %zu 不能大于父类 %zu"
+msgstr "%2$s 的对象大小 %1$zu 不能大于父类 %3$zu"
 
 msgid "occupied"
 msgstr "已占用"
@@ -31555,7 +31560,7 @@ msgstr "页面大小 %u 不可用"
 
 #, fuzzy, c-format
 msgid "page size %u is not available on node %d"
-msgstr "节点 %d 上的页面大小 %u 不可用"
+msgstr "节点 %2$d 上的页面大小 %1$u 不可用"
 
 msgid "page size (in kibibytes)"
 msgstr "页面大小（以 kibibytes 为单位）"
@@ -33678,7 +33683,7 @@ msgstr "启动单元 %d 溢出（0 - %d）"
 
 #, fuzzy, c-format
 msgid "start of range %s - %s in network %s/%d is the network address"
-msgstr "网络 %s/%d 中范围 %s - %s 的开始是网络地址"
+msgstr "网络 %3$s/%4$d 中范围 %1$s - %2$s 的开始是网络地址"
 
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
@@ -34431,11 +34436,11 @@ msgstr "用于限制 '%d' 的太多参数 '%d'"
 
 #, fuzzy, c-format
 msgid "too many parameters '%u' for limit '%d'"
-msgstr "用于限制 '%d' 的太多参数 '%u'"
+msgstr "用于限制 '%2$d' 的太多参数 '%1$u'"
 
 #, fuzzy, c-format
 msgid "too many parameters '%u' for nparams '%d'"
-msgstr "用于 nparams '%d' 的太多参数 '%u'"
+msgstr "用于 nparams '%2$d' 的太多参数 '%1$u'"
 
 #, c-format
 msgid ""
@@ -35604,7 +35609,7 @@ msgstr "%s 中意外的迁移状态"
 
 #, fuzzy, c-format
 msgid "unexpected mode 0x%x for %s"
-msgstr "%s 的意外的模式 0x%x"
+msgstr "%2$s 的意外的模式 0x%1$x"
 
 #, c-format
 msgid "unexpected model name value %d"
@@ -35871,7 +35876,7 @@ msgstr "未知的绑定模式类型 %s"
 
 #, fuzzy, c-format
 msgid "unknown capability type '%d' for '%s'"
-msgstr "'%s' 的未知的能力类型 '%d'"
+msgstr "'%2$s' 的未知的能力类型 '%1$d'"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -36419,7 +36424,7 @@ msgstr "不支持的 cpu 功能 '%s'"
 
 #, fuzzy, c-format
 msgid "unsupported data type '%c' for arg '%s'"
-msgstr "参数 '%s' 的不支持的数据类型 '%c'"
+msgstr "参数 '%2$s' 的不支持的数据类型 '%1$c'"
 
 #, c-format
 msgid "unsupported device type %s 0%o"
