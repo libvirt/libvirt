@@ -316,7 +316,7 @@ inject a disk password on success:
        --api-minor 24 \
        --build-id 13 \
        --policy 3 \
-       --disk-password passwd.txt \
+       --inject-secret 736869e5-84f0-4973-92ec-06879ce3da0b:passwd.txt \
        --secret-header secret-header.b64 \
        --secret-payload secret-payload.b64
 
@@ -393,7 +393,7 @@ inject a disk password on success:
        --firmware OVMF.sev.fd \
        --tk this-guest-tk.bin \
        --domain fedora34x86_64 \
-       --disk-password passwd.txt
+       --inject-secret 736869e5-84f0-4973-92ec-06879ce3da0b:passwd.txt
 
 Fetch from local libvirt
 ------------------------
@@ -454,7 +454,7 @@ inject a disk password on success:
        --insecure \
        --tk this-guest-tk.bin \
        --domain fedora34x86_64 \
-       --disk-password passwd.txt
+       --inject-secret 736869e5-84f0-4973-92ec-06879ce3da0b:passwd.txt
 
 COMMON MISTAKES CHECKLIST
 =========================
