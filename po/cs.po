@@ -10,13 +10,14 @@
 # Pavel Borecki <pavel.borecki@gmail.com>, 2018, 2019
 # Daniel Berrange <dan-zanata@berrange.com>, 2019
 # Matej Cepl <mcepl@cepl.eu>, 2021.
+# Daniel P. Berrange <berrange@redhat.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-02-22 13:50+0000\n"
-"PO-Revision-Date: 2021-07-21 11:38+0000\n"
-"Last-Translator: Matej Cepl <mcepl@cepl.eu>\n"
+"PO-Revision-Date: 2023-03-11 18:20+0000\n"
+"Last-Translator: Daniel P. Berrange <berrange@redhat.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/cs/>\n"
 "Language: cs\n"
@@ -24,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.7.2\n"
+"X-Generator: Weblate 4.15.2\n"
 
 msgid ""
 "\n"
