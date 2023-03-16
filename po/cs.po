@@ -11,13 +11,14 @@
 # Daniel Berrange <dan-zanata@berrange.com>, 2019
 # Matej Cepl <mcepl@cepl.eu>, 2021.
 # Daniel P. Berrange <berrange@redhat.com>, 2023.
+# Jan Tomko <jtomko@redhat.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-02-22 13:50+0000\n"
-"PO-Revision-Date: 2023-03-11 18:20+0000\n"
-"Last-Translator: Daniel P. Berrange <berrange@redhat.com>\n"
+"PO-Revision-Date: 2023-03-13 12:29+0000\n"
+"Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/cs/>\n"
 "Language: cs\n"
@@ -30278,7 +30279,7 @@ msgid ""
 "missing 'volume', 'path' or 'server' attribute in JSON backing definition "
 "for gluster volume"
 msgstr ""
-"V JSON definici gluster svazku, na kterém je založeno, chybí chybí atribut "
+"V JSON definici gluster svazku, na kterém je založeno, chybí atribut "
 "'volume' (svazek), 'path' (popis umístění) nebo 'server'"
 
 msgid "missing <target> element for <memory> device"
