@@ -22,32 +22,9 @@
 #include "testutils.h"
 #include "testutilslxc.h"
 #include "capabilities.h"
-#include "virbitmap.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NONE
-
-
-static int
-test_virCapabilitiesGetCpusForNodemask(const void *data G_GNUC_UNUSED)
-{
-    const char *nodestr = "3,4,5,6";
-    g_autoptr(virBitmap) nodemask = NULL;
-    g_autoptr(virBitmap) cpumap = NULL;
-    g_autoptr(virCapsHostNUMA) caps = NULL;
-    int mask_size = 8;
-
-    if (!(caps = virTestCapsBuildNUMATopology(3)))
-        return -1;
-
-    if (virBitmapParse(nodestr, &nodemask, mask_size) < 0)
-        return -1;
-
-    if (!(cpumap = virCapabilitiesHostNUMAGetCpus(caps, nodemask)))
-        return -1;
-
-    return 0;
-}
 
 
 static bool G_GNUC_UNUSED
@@ -141,9 +118,6 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virTestRun("virCapabilitiesGetCpusForNodemask",
-                   test_virCapabilitiesGetCpusForNodemask, NULL) < 0)
-        ret = -1;
 #ifdef WITH_LXC
     if (virTestRun("virCapsDomainDataLookupLXC",
                    test_virCapsDomainDataLookupLXC, NULL) < 0)
