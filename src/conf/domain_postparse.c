@@ -93,16 +93,6 @@ virDomainDefPostParseMemory(virDomainDef *def,
 static int
 virDomainDefPostParseOs(virDomainDef *def)
 {
-    if (def->os.firmwareFeatures &&
-        def->os.firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_ENROLLED_KEYS] == VIR_TRISTATE_BOOL_YES) {
-
-        if (def->os.firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_SECURE_BOOT] == VIR_TRISTATE_BOOL_NO) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("firmware feature 'enrolled-keys' cannot be enabled when firmware feature 'secure-boot' is disabled"));
-            return -1;
-        }
-    }
-
     if (!def->os.loader)
         return 0;
 
