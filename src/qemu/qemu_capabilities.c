@@ -1015,7 +1015,7 @@ virQEMUCapsInitGuest(virCaps *caps,
 }
 
 
-static int
+static void
 virQEMUCapsGetMachineTypesCaps(virQEMUCaps *qemuCaps,
                                size_t *nmachines,
                                virCapsGuestMachine ***machines)
@@ -1037,7 +1037,7 @@ virQEMUCapsGetMachineTypesCaps(virQEMUCaps *qemuCaps,
     *nmachines = accel->nmachineTypes;
 
     if (*nmachines == 0)
-        return 0;
+        return;
 
     array = g_ptr_array_sized_new(*nmachines);
 
@@ -1093,8 +1093,6 @@ virQEMUCapsGetMachineTypesCaps(virQEMUCaps *qemuCaps,
     *machines = g_new0(virCapsGuestMachine *, array->len);
     for (i = 0; i < array->len; ++i)
         (*machines)[i] = g_ptr_array_index(array, i);
-
-    return 0;
 }
 
 
@@ -1112,8 +1110,7 @@ virQEMUCapsInitGuestFromBinary(virCaps *caps,
     if (!binary)
         return 0;
 
-    if (virQEMUCapsGetMachineTypesCaps(qemuCaps, &nmachines, &machines) < 0)
-        goto cleanup;
+    virQEMUCapsGetMachineTypesCaps(qemuCaps, &nmachines, &machines);
 
     /* We register kvm as the base emulator too, since we can
      * just give -no-kvm to disable acceleration if required */
@@ -1159,8 +1156,6 @@ virQEMUCapsInitGuestFromBinary(virCaps *caps,
     }
 
     ret = 0;
-
- cleanup:
 
     virCapabilitiesFreeMachines(machines, nmachines);
 
