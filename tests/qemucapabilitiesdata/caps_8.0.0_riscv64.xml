@@ -144,7 +144,6 @@
   <flag name='pvpanic-pci'/>
   <flag name='virtio-gpu.blob'/>
   <version>7002050</version>
-  <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>
   <package>v7.2.0-333-g222059a0fc</package>
   <arch>riscv64</arch>

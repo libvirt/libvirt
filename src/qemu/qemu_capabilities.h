@@ -704,7 +704,6 @@ virArch virQEMUCapsGetArch(virQEMUCaps *qemuCaps);
 unsigned int virQEMUCapsGetVersion(virQEMUCaps *qemuCaps);
 const char *virQEMUCapsGetPackage(virQEMUCaps *qemuCaps);
 
-unsigned int virQEMUCapsGetKVMVersion(virQEMUCaps *qemuCaps);
 int virQEMUCapsAddCPUDefinitions(virQEMUCaps *qemuCaps,
                                  virDomainVirtType type,
                                  const char **name,

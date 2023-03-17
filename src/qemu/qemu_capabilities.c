@@ -760,7 +760,6 @@ struct _virQEMUCaps {
     virBitmap *flags;
 
     unsigned int version;
-    unsigned int kvmVersion;
     unsigned int libvirtVersion;
     unsigned int microcodeVersion;
     char *hostCPUSignature;
@@ -1992,7 +1991,6 @@ virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps)
     ret->flags = virBitmapNewCopy(qemuCaps->flags);
 
     ret->version = qemuCaps->version;
-    ret->kvmVersion = qemuCaps->kvmVersion;
     ret->microcodeVersion = qemuCaps->microcodeVersion;
     ret->hostCPUSignature = g_strdup(qemuCaps->hostCPUSignature);
 
@@ -2142,12 +2140,6 @@ virArch virQEMUCapsGetArch(virQEMUCaps *qemuCaps)
 unsigned int virQEMUCapsGetVersion(virQEMUCaps *qemuCaps)
 {
     return qemuCaps->version;
-}
-
-
-unsigned int virQEMUCapsGetKVMVersion(virQEMUCaps *qemuCaps)
-{
-    return qemuCaps->kvmVersion;
 }
 
 
@@ -4703,12 +4695,6 @@ virQEMUCapsLoadCache(virArch hostArch,
         return -1;
     }
 
-    if (virXPathUInt("string(./kvmVersion)", ctxt, &qemuCaps->kvmVersion) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("missing version in QEMU capabilities cache"));
-        return -1;
-    }
-
     if (virXPathUInt("string(./microcodeVersion)", ctxt,
                      &qemuCaps->microcodeVersion) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -5045,9 +5031,6 @@ virQEMUCapsFormatCache(virQEMUCaps *qemuCaps)
 
     virBufferAsprintf(&buf, "<version>%d</version>\n",
                       qemuCaps->version);
-
-    virBufferAsprintf(&buf, "<kvmVersion>%d</kvmVersion>\n",
-                      qemuCaps->kvmVersion);
 
     virBufferAsprintf(&buf, "<microcodeVersion>%u</microcodeVersion>\n",
                       qemuCaps->microcodeVersion);

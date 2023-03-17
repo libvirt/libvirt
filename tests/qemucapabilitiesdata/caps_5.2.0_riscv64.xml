@@ -124,7 +124,6 @@
   <flag name='usb-host.guest-resets-all'/>
   <flag name='virtio-crypto'/>
   <version>5002000</version>
-  <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>
   <package>v5.2.0</package>
   <arch>riscv64</arch>

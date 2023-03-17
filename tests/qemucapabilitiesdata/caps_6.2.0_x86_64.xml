@@ -190,7 +190,6 @@
   <flag name='pvpanic-pci'/>
   <flag name='virtio-gpu.blob'/>
   <version>6002000</version>
-  <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>
   <package>v6.2.0</package>
   <arch>x86_64</arch>

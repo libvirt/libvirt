@@ -48,7 +48,6 @@
   <flag name='input-linux'/>
   <flag name='memory-backend-file.prealloc-threads'/>
   <version>5001000</version>
-  <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>
   <package>qemu-5.1.0-5.fc33</package>
   <arch>sparc</arch>

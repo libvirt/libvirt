@@ -76,7 +76,6 @@
   <flag name='usb-host.guest-resets-all'/>
   <flag name='virtio-crypto'/>
   <version>4002000</version>
-  <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100242</microcodeVersion>
   <package>qemu-4.2.0-20200115.0.1e4aa2da.fc31</package>
   <arch>s390x</arch>

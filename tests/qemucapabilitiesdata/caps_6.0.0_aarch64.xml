@@ -141,7 +141,6 @@
   <flag name='virtio-crypto'/>
   <flag name='pvpanic-pci'/>
   <version>6000000</version>
-  <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700242</microcodeVersion>
   <package>v6.0.0</package>
   <arch>aarch64</arch>

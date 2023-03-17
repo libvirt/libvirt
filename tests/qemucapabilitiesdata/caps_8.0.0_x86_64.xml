@@ -207,7 +207,6 @@
   <flag name='rbd-encryption-layering'/>
   <flag name='rbd-encryption-luks-any'/>
   <version>7002050</version>
-  <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>
   <package>v7.2.0-2146-g2946e1af27</package>
   <arch>x86_64</arch>
