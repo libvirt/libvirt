@@ -766,6 +766,12 @@ static int
 qemuValidateDomainDefBoot(const virDomainDef *def,
                           virQEMUCaps *qemuCaps)
 {
+    if (def->os.bootloader || def->os.bootloaderArgs) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("bootloader is not supported by QEMU"));
+        return -1;
+    }
+
     if (def->os.loader) {
         if (def->os.loader->secure == VIR_TRISTATE_BOOL_YES) {
             /* These are the QEMU implementation limitations. But we

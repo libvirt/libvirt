@@ -4474,12 +4474,6 @@ qemuDomainDefBootPostParse(virDomainDef *def,
 {
     bool abiUpdate = !!(parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE);
 
-    if (def->os.bootloader || def->os.bootloaderArgs) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("bootloader is not supported by QEMU"));
-        return -1;
-    }
-
     /* Firmware selection can fail for a number of reasons, but the
      * most likely one is that the requested configuration contains
      * mistakes or includes constraints that are impossible to
