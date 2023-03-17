@@ -27382,6 +27382,7 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     const char *type = NULL;
     int n;
     size_t i;
+    bool migratable = !!(flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE);
 
     virCheckFlags(VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS |
                   VIR_DOMAIN_DEF_FORMAT_STATUS |
@@ -27476,7 +27477,7 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     }
 
     virBufferAddLit(buf, "<os");
-    if (def->os.firmware)
+    if (def->os.firmware && !migratable)
         virBufferAsprintf(buf, " firmware='%s'",
                           virDomainOsDefFirmwareTypeToString(def->os.firmware));
     virBufferAddLit(buf, ">\n");
@@ -27499,7 +27500,7 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
         virBufferAsprintf(buf, ">%s</type>\n",
                           virDomainOSTypeToString(def->os.type));
 
-    if (def->os.firmwareFeatures) {
+    if (def->os.firmwareFeatures && !migratable) {
         virBufferAddLit(buf, "<firmware>\n");
         virBufferAdjustIndent(buf, 2);
 
