@@ -1964,7 +1964,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PPC64("pseries-nvram");
     DO_TEST_CAPS_LATEST_PPC64("pseries-usb-kbd");
     DO_TEST_CAPS_LATEST_PPC64("pseries-cpu-exact");
-    DO_TEST_PARSE_ERROR_NOCAPS("pseries-no-parallel");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("pseries-no-parallel", "ppc64");
     DO_TEST_CAPS_LATEST_PPC64("pseries-cpu-le");
 
     qemuTestSetHostArch(&driver, VIR_ARCH_PPC64);
@@ -1990,9 +1990,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PPC64("pseries-phb-numa-node");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("pseries-default-phb-numa-node",
                                          "ppc64");
-    DO_TEST_PARSE_ERROR_NOCAPS("pseries-phb-invalid-target-index-1");
-    DO_TEST_PARSE_ERROR_NOCAPS("pseries-phb-invalid-target-index-2");
-    DO_TEST_PARSE_ERROR_NOCAPS("pseries-phb-invalid-target-index-3");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("pseries-phb-invalid-target-index-1", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("pseries-phb-invalid-target-index-2", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("pseries-phb-invalid-target-index-3", "ppc64");
 
     DO_TEST_CAPS_LATEST_PPC64("pseries-many-devices");
     DO_TEST_CAPS_LATEST_PPC64("pseries-many-buses-1");
@@ -2014,7 +2014,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PPC64("pseries-console-native");
     DO_TEST_CAPS_LATEST_PPC64("pseries-console-virtio");
     DO_TEST_PARSE_ERROR_NOCAPS("pseries-serial-invalid-machine");
-    DO_TEST_PARSE_ERROR_NOCAPS("pseries-spaprvio-invalid");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("pseries-spaprvio-invalid", "ppc64");
 
     DO_TEST("mach-virt-serial-native",
             QEMU_CAPS_DEVICE_PL011);
@@ -2463,8 +2463,7 @@ mymain(void)
             QEMU_CAPS_KVM);
     DO_TEST_PARSE_ERROR("aarch64-gic-not-virt",
                         QEMU_CAPS_KVM);
-    DO_TEST_PARSE_ERROR("aarch64-gic-not-arm",
-                        QEMU_CAPS_KVM);
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("aarch64-gic-not-arm", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-kvm-32-on-64", "aarch64");
     DO_TEST("aarch64-pci-serial",
             QEMU_CAPS_DEVICE_PCI_SERIAL,
@@ -2607,17 +2606,8 @@ mymain(void)
                  ARG_CAPS_ARCH, "ppc64", ARG_CAPS_VER, "latest",
                  ARG_END);
 
-    DO_TEST_PARSE_ERROR("ppc64-tpmproxy-double",
-                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                        QEMU_CAPS_PCI_OHCI,
-                        QEMU_CAPS_DEVICE_TPM_PASSTHROUGH,
-                        QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY);
-
-    DO_TEST_PARSE_ERROR("ppc64-tpm-double",
-                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                        QEMU_CAPS_PCI_OHCI,
-                        QEMU_CAPS_DEVICE_TPM_PASSTHROUGH,
-                        QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY);
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("ppc64-tpmproxy-double", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("ppc64-tpm-double", "ppc64");
 
     DO_TEST_CAPS_LATEST_PPC64("ppc64-tpmproxy-single");
     DO_TEST_CAPS_LATEST_PPC64("ppc64-tpmproxy-with-tpm");
@@ -2661,8 +2651,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-iommu-invalid-address");
 
     DO_TEST("cpu-hotplug-startup", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
-    DO_TEST_PARSE_ERROR("cpu-hotplug-granularity",
-                        QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("cpu-hotplug-granularity", "ppc64");
 
     DO_TEST_CAPS_LATEST("virtio-options");
     DO_TEST_CAPS_LATEST("virtio-options-controller-iommu");
