@@ -3175,13 +3175,39 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
     }
 
     if (disk->src->type == VIR_STORAGE_TYPE_VHOST_USER) {
+        const char *vhosttype = virStorageTypeToString(disk->src->type);
+
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_USER_BLK)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("vhostuser disk is not supported with this QEMU binary"));
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("%1$s disk is not supported with this QEMU binary"),
+                           vhosttype);
             return -1;
         }
 
-        if (qemuValidateDomainDefVhostUserRequireSharedMemory(def, "vhostuser") < 0) {
+        if (qemuValidateDomainDefVhostUserRequireSharedMemory(def, vhosttype) < 0)
+            return -1;
+    }
+
+    if (disk->src->type == VIR_STORAGE_TYPE_VHOST_VDPA) {
+        const char *vhosttype = virStorageTypeToString(disk->src->type);
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_BLK_VHOST_VDPA)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("%1$s disk is not supported with this QEMU binary"),
+                           vhosttype);
+            return -1;
+        }
+
+        if (qemuValidateDomainDefVhostUserRequireSharedMemory(def, vhosttype) < 0)
+            return -1;
+
+        if (disk->cachemode != VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
+            disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("disk type '%1$s' requires cache mode '%2$s' or '%3$s'"),
+                           virStorageTypeToString(disk->src->type),
+                           virDomainDiskCacheTypeToString(VIR_DOMAIN_DISK_CACHE_DIRECTSYNC),
+                           virDomainDiskCacheTypeToString(VIR_DOMAIN_DISK_CACHE_DISABLE));
             return -1;
         }
     }

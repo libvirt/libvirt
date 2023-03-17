@@ -709,6 +709,17 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
             break;
         }
 
+        case ARG_VDPA_FD: {
+            const char *vdpadev = va_arg(argptr, char *);
+            int vdpafd = va_arg(argptr, unsigned int);
+
+            if (!info->args.vdpafds)
+                info->args.vdpafds = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
+
+            g_hash_table_insert(info->args.vdpafds, g_strdup(vdpadev), GINT_TO_POINTER(vdpafd));
+            break;
+        }
+
         case ARG_END:
         default:
             info->args.invalidarg = true;

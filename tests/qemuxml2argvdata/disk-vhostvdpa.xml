@@ -1,0 +1,21 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <memoryBacking>
+    <access mode='shared'/>
+  </memoryBacking>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='vhostvdpa' device='disk'>
+      <driver name='qemu' type='raw' cache='none'/>
+      <source dev='/dev/vhost-vdpa-0'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+  </devices>
+</domain>

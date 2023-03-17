@@ -6821,6 +6821,28 @@ qemuProcessPrepareLaunchSecurityGuestInput(virDomainObj *vm)
 
 
 static int
+qemuProcessPrepareHostStorageSourceVDPA(virStorageSource *src,
+                                        qemuDomainObjPrivate *priv)
+{
+    qemuDomainStorageSourcePrivate *srcpriv = NULL;
+    virStorageType actualType = virStorageSourceGetActualType(src);
+    int vdpafd = -1;
+
+    if (actualType != VIR_STORAGE_TYPE_VHOST_VDPA)
+        return 0;
+
+    if ((vdpafd = qemuVDPAConnect(src->vdpadev)) < 0)
+        return -1;
+
+    srcpriv = qemuDomainStorageSourcePrivateFetch(src);
+
+    srcpriv->fdpass = qemuFDPassNew(src->nodestorage, priv);
+    qemuFDPassAddFD(srcpriv->fdpass, &vdpafd, "-vdpa");
+    return 0;
+}
+
+
+static int
 qemuProcessPrepareHostStorage(virQEMUDriver *driver,
                               virDomainObj *vm,
                               unsigned int flags)
@@ -6854,6 +6876,18 @@ qemuProcessPrepareHostStorage(virQEMUDriver *driver,
             continue;
 
         return -1;
+    }
+
+    /* connect to any necessary vdpa block devices */
+    for (i = vm->def->ndisks; i > 0; i--) {
+        size_t idx = i - 1;
+        virDomainDiskDef *disk = vm->def->disks[idx];
+        virStorageSource *src;
+
+        for (src = disk->src; virStorageSourceIsBacking(src); src = src->backingStore) {
+            if (qemuProcessPrepareHostStorageSourceVDPA(src, vm->privateData) < 0)
+                return -1;
+        }
     }
 
     return 0;

@@ -778,6 +778,20 @@ qemuBlockStorageSourceGetNVMeProps(virStorageSource *src)
 }
 
 
+static virJSONValue *
+qemuBlockStorageSourceGetVhostVdpaProps(virStorageSource *src)
+{
+    virJSONValue *ret = NULL;
+    qemuDomainStorageSourcePrivate *srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+
+    ignore_value(virJSONValueObjectAdd(&ret,
+                                       "s:driver", "virtio-blk-vhost-vdpa",
+                                       "s:path", qemuFDPassGetPath(srcpriv->fdpass),
+                                       NULL));
+    return ret;
+}
+
+
 static int
 qemuBlockStorageSourceGetBlockdevGetCacheProps(virStorageSource *src,
                                                virJSONValue *props)
@@ -874,9 +888,9 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
         break;
 
     case VIR_STORAGE_TYPE_VHOST_VDPA:
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("vhostvdpa disk type not yet supported"));
-        return NULL;
+        if (!(fileprops = qemuBlockStorageSourceGetVhostVdpaProps(src)))
+            return NULL;
+        break;
 
     case VIR_STORAGE_TYPE_VHOST_USER:
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

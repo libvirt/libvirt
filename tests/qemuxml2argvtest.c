@@ -304,6 +304,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *disk = vm->def->disks[i];
+        virStorageSource *src;
 
         /* host cdrom requires special treatment in qemu, mock it */
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
@@ -311,6 +312,37 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
             virStorageSourceIsBlockLocal(disk->src) &&
             STREQ(disk->src->path, "/dev/cdrom"))
             disk->src->hostcdrom = true;
+
+        if (info->args.vdpafds) {
+            for (src = disk->src; virStorageSourceIsBacking(src); src = src->backingStore) {
+                gpointer value;
+
+                if (src->type != VIR_STORAGE_TYPE_VHOST_VDPA)
+                    continue;
+
+                if ((value = g_hash_table_lookup(info->args.vdpafds, src->vdpadev))) {
+                    int fd = GPOINTER_TO_INT(value);
+                    qemuDomainStorageSourcePrivate *srcpriv;
+                    VIR_AUTOCLOSE fakefd = open("/dev/zero", O_RDWR);
+
+                    if (fcntl(fd, F_GETFD) != -1) {
+                        fprintf(stderr, "fd '%d' is already in use\n", fd);
+                        abort();
+                    }
+
+                    if (dup2(fakefd, fd) < 0) {
+                        fprintf(stderr, "failed to duplicate fake fd: %s",
+                                g_strerror(errno));
+                        abort();
+                    }
+
+                    srcpriv = qemuDomainStorageSourcePrivateFetch(src);
+
+                    srcpriv->fdpass = qemuFDPassNew(src->nodestorage, priv);
+                    qemuFDPassAddFD(srcpriv->fdpass, &fd, "-vdpa");
+                }
+            }
+        }
     }
 
     if (vm->def->vsock) {
@@ -1129,6 +1161,8 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-vhostuser-numa", "4.2.0");
     DO_TEST_CAPS_LATEST("disk-vhostuser-numa");
     DO_TEST_CAPS_LATEST("disk-vhostuser");
+    DO_TEST_CAPS_ARCH_LATEST_FULL("disk-vhostvdpa", "x86_64",
+                                  ARG_VDPA_FD, "/dev/vhost-vdpa-0", 801);
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-device-lun-type-invalid");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-attaching-partition-nosupport");
     DO_TEST_CAPS_LATEST("disk-usb-device");
