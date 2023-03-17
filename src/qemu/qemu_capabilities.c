@@ -984,15 +984,14 @@ virQEMUCapsGetDefaultEmulator(virArch hostarch,
 }
 
 
-static int
+static void
 virQEMUCapsInitGuest(virCaps *caps,
                      virFileCache *cache,
                      virArch hostarch,
                      virArch guestarch)
 {
-    char *binary = NULL;
-    virQEMUCaps *qemuCaps = NULL;
-    int ret = -1;
+    g_autofree char *binary = NULL;
+    g_autoptr(virQEMUCaps) qemuCaps = NULL;
 
     binary = virQEMUCapsGetDefaultEmulator(hostarch, guestarch);
 
@@ -1000,17 +999,11 @@ virQEMUCapsInitGuest(virCaps *caps,
     if (binary) {
         if (!(qemuCaps = virQEMUCapsCacheLookup(cache, binary))) {
             virResetLastError();
-            VIR_FREE(binary);
+            return;
         }
     }
 
     virQEMUCapsInitGuestFromBinary(caps, binary, qemuCaps, guestarch);
-    ret = 0;
-
-    VIR_FREE(binary);
-    virObjectUnref(qemuCaps);
-
-    return ret;
 }
 
 
@@ -1194,10 +1187,7 @@ virQEMUCapsInit(virFileCache *cache)
      * if a qemu-system-$ARCH binary can't be found
      */
     for (i = 0; i < VIR_ARCH_LAST; i++)
-        if (virQEMUCapsInitGuest(caps, cache,
-                                 hostarch,
-                                 i) < 0)
-            return NULL;
+        virQEMUCapsInitGuest(caps, cache, hostarch, i);
 
     return g_steal_pointer(&caps);
 }
