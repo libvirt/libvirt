@@ -947,7 +947,7 @@ bhyveParseCommandLineString(const char* nativeConfig,
     def->virtType = VIR_DOMAIN_VIRT_BHYVE;
     if (virUUIDGenerate(def->uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to generate uuid"));
+                       _("Failed to generate UUID"));
         return NULL;
     }
     def->id = -1;
