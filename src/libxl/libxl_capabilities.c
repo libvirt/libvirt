@@ -463,26 +463,32 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCaps *caps)
 
     for (i = 0; i < nr_guest_archs; ++i) {
         virCapsGuest *guest;
-        char const *const xen_machines[] = {
-            guest_archs[i].hvm ? "xenfv" :
-                (guest_archs[i].pvh ? "xenpvh" : "xenpv")};
         virCapsGuestMachine **machines;
+        virDomainOSType ostype = VIR_DOMAIN_OSTYPE_XEN;
+        const char *loader = NULL;
 
-        if ((machines = virCapabilitiesAllocMachines(xen_machines, 1)) == NULL)
-            return -1;
+        if (guest_archs[i].hvm) {
+            char const *const xen_machines[] = { "xenfv", NULL };
 
-        guest = virCapabilitiesAddGuest(caps,
-                                        guest_archs[i].hvm ? VIR_DOMAIN_OSTYPE_HVM :
-                                        (guest_archs[i].pvh ? VIR_DOMAIN_OSTYPE_XENPVH :
-                                         VIR_DOMAIN_OSTYPE_XEN),
-                                        guest_archs[i].arch,
+            ostype = VIR_DOMAIN_OSTYPE_HVM;
+            loader = LIBXL_FIRMWARE_DIR "/hvmloader";
+
+            machines = virCapabilitiesAllocMachines(xen_machines, 1);
+        } else if (guest_archs[i].pvh) {
+            char const *const xen_machines[] = { "xenpvh", NULL };
+
+            ostype = VIR_DOMAIN_OSTYPE_XENPVH;
+            machines = virCapabilitiesAllocMachines(xen_machines, 1);
+        } else {
+            char const *const xen_machines[] = { "xenpv", NULL };
+
+            ostype = VIR_DOMAIN_OSTYPE_XEN;
+            machines = virCapabilitiesAllocMachines(xen_machines, 1);
+        }
+
+        guest = virCapabilitiesAddGuest(caps, ostype, guest_archs[i].arch,
                                         LIBXL_EXECBIN_DIR "/qemu-system-i386",
-                                        (guest_archs[i].hvm ?
-                                         LIBXL_FIRMWARE_DIR "/hvmloader" :
-                                         NULL),
-                                        1,
-                                        machines);
-        machines = NULL;
+                                        loader, 1, machines);
 
         virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN,
                                       NULL, NULL, 0, NULL);
