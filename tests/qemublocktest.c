@@ -242,6 +242,7 @@ testQemuDiskXMLToJSONFakeSecrets(virStorageSource *src)
 
         srcpriv->encinfo[0]->alias = g_strdup_printf("%s-encalias",
                                                      NULLSTR(src->nodeformat));
+        srcpriv->enccount = 1;
     }
 
     return 0;
