@@ -697,6 +697,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 450 */
               "run-with.async-teardown", /* QEMU_CAPS_RUN_WITH_ASYNC_TEARDOWN */
+              "virtio-blk-vhost-vdpa", /* QEMU_CAPS_DEVICE_VIRTIO_BLK_VHOST_VDPA */
     );
 
 
@@ -1531,6 +1532,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+rbd/encrypt/format/^luks-any", QEMU_CAPS_RBD_ENCRYPTION_LUKS_ANY },
     { "blockdev-add/arg-type/+nbd/tls-hostname", QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME },
     { "blockdev-add/arg-type/+qcow2/discard-no-unref", QEMU_CAPS_QCOW2_DISCARD_NO_UNREF },
+    { "blockdev-add/arg-type/+virtio-blk-vhost-vdpa/$fdset", QEMU_CAPS_DEVICE_VIRTIO_BLK_VHOST_VDPA},
     { "blockdev-snapshot/$allow-write-only-overlay", QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY },
     { "chardev-add/arg-type/backend/+socket/data/reconnect", QEMU_CAPS_CHARDEV_RECONNECT },
     { "device_add/$json-cli-hotplug", QEMU_CAPS_DEVICE_JSON },
