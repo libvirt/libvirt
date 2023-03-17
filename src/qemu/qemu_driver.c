@@ -8232,7 +8232,7 @@ static int qemuDomainSetAutostart(virDomainPtr dom,
 
             if (symlink(configFile, autostartLink) < 0) {
                 virReportSystemError(errno,
-                                     _("Failed to create symlink '%s to '%s'"),
+                                     _("Failed to create symlink '%s' to '%s'"),
                                      autostartLink, configFile);
                 goto endjob;
             }
@@ -18964,7 +18964,7 @@ qemuDomainRenameCallback(virDomainObj *vm,
 
         if (symlink(new_dom_cfg_file, new_dom_autostart_link) < 0) {
             virReportSystemError(errno,
-                                 _("Failed to create symlink '%s to '%s'"),
+                                 _("Failed to create symlink '%s' to '%s'"),
                                  new_dom_autostart_link, new_dom_cfg_file);
             return -1;
         }

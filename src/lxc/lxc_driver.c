@@ -2481,7 +2481,7 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
 
         if (symlink(configFile, autostartLink) < 0) {
             virReportSystemError(errno,
-                                 _("Failed to create symlink '%s to '%s'"),
+                                 _("Failed to create symlink '%s' to '%s'"),
                                  autostartLink, configFile);
             goto endjob;
         }
