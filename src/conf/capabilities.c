@@ -405,25 +405,6 @@ virCapabilitiesAllocMachines(const char *const *names,
 }
 
 /**
- * virCapabilitiesFreeMachines:
- * @machines: table of vircapsGuestMachinePtr
- *
- * Free a table of virCapsGuestMachine *
- */
-void
-virCapabilitiesFreeMachines(virCapsGuestMachine **machines,
-                            int nmachines)
-{
-    size_t i;
-    if (!machines)
-        return;
-    for (i = 0; i < nmachines && machines[i]; i++) {
-        g_clear_pointer(&machines[i], virCapabilitiesFreeGuestMachine);
-    }
-    g_free(machines);
-}
-
-/**
  * virCapabilitiesAddGuest:
  * @caps: capabilities to extend
  * @ostype: guest operating system type, of enum VIR_DOMAIN_OSTYPE

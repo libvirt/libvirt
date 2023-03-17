@@ -64,7 +64,6 @@ virCapabilitiesDomainDataLookup;
 virCapabilitiesDomainSupported;
 virCapabilitiesFormatXML;
 virCapabilitiesFreeGuest;
-virCapabilitiesFreeMachines;
 virCapabilitiesGetNodeInfo;
 virCapabilitiesHostInitIOMMU;
 virCapabilitiesHostNUMAAddCell;
