@@ -2030,7 +2030,7 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
 
                 if (!(encalias = virXMLPropString(encnodes[i], "alias"))) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("missing alias on encryption secret #%lu"), i);
+                                   _("missing alias on encryption secret #%zu"), i);
                     return -1;
                 }
 

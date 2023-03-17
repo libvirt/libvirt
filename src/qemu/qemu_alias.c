@@ -824,8 +824,8 @@ qemuAliasForSecret(const char *parentalias,
                    size_t secret_idx)
 {
     if (obj)
-        return g_strdup_printf("%s-%s-secret%lu", parentalias, obj, secret_idx);
-    return g_strdup_printf("%s-secret%lu", parentalias, secret_idx);
+        return g_strdup_printf("%s-%s-secret%zu", parentalias, obj, secret_idx);
+    return g_strdup_printf("%s-secret%zu", parentalias, secret_idx);
 }
 
 /* qemuAliasTLSObjFromSrcAlias
