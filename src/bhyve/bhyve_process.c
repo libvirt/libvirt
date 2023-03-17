@@ -145,7 +145,7 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
     if (unlink(driver->pidfile) < 0 &&
         errno != ENOENT) {
         virReportSystemError(errno,
-                             _("Cannot remove state PID file %s"),
+                             _("Cannot remove stale PID file %s"),
                              driver->pidfile);
         goto cleanup;
     }
