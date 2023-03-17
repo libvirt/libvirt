@@ -819,10 +819,10 @@ bool virQEMUCapsSupportsGICVersion(virQEMUCaps *qemuCaps,
 const char *virQEMUCapsGetPreferredMachine(virQEMUCaps *qemuCaps,
                                            virDomainVirtType virtType);
 
-int virQEMUCapsInitGuestFromBinary(virCaps *caps,
-                                   const char *binary,
-                                   virQEMUCaps *qemuCaps,
-                                   virArch guestarch);
+void virQEMUCapsInitGuestFromBinary(virCaps *caps,
+                                    const char *binary,
+                                    virQEMUCaps *qemuCaps,
+                                    virArch guestarch);
 
 int virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
                               virArch hostarch,

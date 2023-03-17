@@ -102,13 +102,7 @@ testGetCaps(char *capsData, const testQemuData *data)
         return NULL;
     }
 
-    if (virQEMUCapsInitGuestFromBinary(caps,
-                                       binary,
-                                       qemuCaps,
-                                       arch) < 0) {
-        fprintf(stderr, "failed to create the capabilities from qemu");
-        return NULL;
-    }
+    virQEMUCapsInitGuestFromBinary(caps, binary, qemuCaps, arch);
 
     return g_steal_pointer(&caps);
 }

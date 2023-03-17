@@ -1004,9 +1004,8 @@ virQEMUCapsInitGuest(virCaps *caps,
         }
     }
 
-    ret = virQEMUCapsInitGuestFromBinary(caps,
-                                         binary, qemuCaps,
-                                         guestarch);
+    virQEMUCapsInitGuestFromBinary(caps, binary, qemuCaps, guestarch);
+    ret = 0;
 
     VIR_FREE(binary);
     virObjectUnref(qemuCaps);
@@ -1096,7 +1095,7 @@ virQEMUCapsGetMachineTypesCaps(virQEMUCaps *qemuCaps,
 }
 
 
-int
+void
 virQEMUCapsInitGuestFromBinary(virCaps *caps,
                                const char *binary,
                                virQEMUCaps *qemuCaps,
@@ -1107,7 +1106,7 @@ virQEMUCapsInitGuestFromBinary(virCaps *caps,
     size_t nmachines = 0;
 
     if (!binary)
-        return 0;
+        return;
 
     virQEMUCapsGetMachineTypesCaps(qemuCaps, &nmachines, &machines);
 
@@ -1150,8 +1149,6 @@ virQEMUCapsInitGuestFromBinary(virCaps *caps,
         virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_PAE);
         virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_NONPAE);
     }
-
-    return 0;
 }
 
 
