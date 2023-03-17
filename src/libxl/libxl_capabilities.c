@@ -464,6 +464,7 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCaps *caps)
     for (i = 0; i < nr_guest_archs; ++i) {
         virCapsGuest *guest;
         virCapsGuestMachine **machines;
+        int nmachines;
         virDomainOSType ostype = VIR_DOMAIN_OSTYPE_XEN;
         const char *loader = NULL;
 
@@ -473,22 +474,22 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCaps *caps)
             ostype = VIR_DOMAIN_OSTYPE_HVM;
             loader = LIBXL_FIRMWARE_DIR "/hvmloader";
 
-            machines = virCapabilitiesAllocMachines(xen_machines, 1);
+            machines = virCapabilitiesAllocMachines(xen_machines, &nmachines);
         } else if (guest_archs[i].pvh) {
             char const *const xen_machines[] = { "xenpvh", NULL };
 
             ostype = VIR_DOMAIN_OSTYPE_XENPVH;
-            machines = virCapabilitiesAllocMachines(xen_machines, 1);
+            machines = virCapabilitiesAllocMachines(xen_machines, &nmachines);
         } else {
             char const *const xen_machines[] = { "xenpv", NULL };
 
             ostype = VIR_DOMAIN_OSTYPE_XEN;
-            machines = virCapabilitiesAllocMachines(xen_machines, 1);
+            machines = virCapabilitiesAllocMachines(xen_machines, &nmachines);
         }
 
         guest = virCapabilitiesAddGuest(caps, ostype, guest_archs[i].arch,
                                         LIBXL_EXECBIN_DIR "/qemu-system-i386",
-                                        loader, 1, machines);
+                                        loader, nmachines, machines);
 
         virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN,
                                       NULL, NULL, 0, NULL);

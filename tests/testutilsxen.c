@@ -16,13 +16,13 @@ testXLInitCaps(void)
     virCapsGuestMachine **machines;
     int nmachines;
     static const char *const x86_machines[] = {
-        "xenfv"
+        "xenfv", NULL,
     };
     static const char *const xen_machines[] = {
-        "xenpv",
+        "xenpv", NULL,
     };
     static const char *const pvh_machines[] = {
-        "xenpvh",
+        "xenpvh", NULL,
     };
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
@@ -31,48 +31,36 @@ testXLInitCaps(void)
 
     caps->host.cpu = virCPUDefCopy(&cpuDefaultData);
 
-    nmachines = G_N_ELEMENTS(x86_machines);
-    if ((machines = virCapabilitiesAllocMachines(x86_machines, nmachines)) == NULL)
-        goto cleanup;
+    machines = virCapabilitiesAllocMachines(x86_machines, &nmachines);
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
                                     VIR_ARCH_X86_64,
                                     "/usr/lib/xen/bin/qemu-system-i386",
                                     "/usr/lib/xen/boot/hvmloader",
                                     nmachines, machines);
-    machines = NULL;
+
     virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN,
                                   NULL, NULL, 0, NULL);
-    nmachines = G_N_ELEMENTS(xen_machines);
-    if ((machines = virCapabilitiesAllocMachines(xen_machines, nmachines)) == NULL)
-        goto cleanup;
 
+    machines = virCapabilitiesAllocMachines(xen_machines, &nmachines);
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_XEN,
                                     VIR_ARCH_X86_64,
                                     "/usr/lib/xen/bin/qemu-system-i386",
                                     NULL,
                                     nmachines, machines);
-    machines = NULL;
 
     virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN,
                                   NULL, NULL, 0, NULL);
-    nmachines = G_N_ELEMENTS(pvh_machines);
-    if ((machines = virCapabilitiesAllocMachines(pvh_machines, nmachines)) == NULL)
-        goto cleanup;
 
+    machines = virCapabilitiesAllocMachines(pvh_machines, &nmachines);
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_XENPVH,
                                     VIR_ARCH_X86_64,
                                     "/usr/lib/xen/bin/qemu-system-i386",
                                     NULL,
                                     nmachines, machines);
-    machines = NULL;
 
     virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN,
                                   NULL, NULL, 0, NULL);
     return g_steal_pointer(&caps);
-
- cleanup:
-    virCapabilitiesFreeMachines(machines, nmachines);
-    return NULL;
 }
 
 

@@ -261,7 +261,7 @@ virCapabilitiesHostNUMAAddCell(virCapsHostNUMA *caps,
 
 virCapsGuestMachine **
 virCapabilitiesAllocMachines(const char *const *names,
-                             int nnames);
+                             int *nnames);
 void
 virCapabilitiesFreeMachines(virCapsGuestMachine **machines,
                             int nmachines);

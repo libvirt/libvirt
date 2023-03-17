@@ -158,7 +158,7 @@ static int
 testQemuAddGuest(virCaps *caps,
                  virArch arch)
 {
-    size_t nmachines;
+    int nmachines;
     virCapsGuestMachine **machines = NULL;
     virCapsGuest *guest;
     virArch emu_arch = arch;
@@ -169,18 +169,10 @@ testQemuAddGuest(virCaps *caps,
     if (qemu_emulators[emu_arch] == NULL)
         return 0;
 
-    nmachines = g_strv_length((gchar **)qemu_machines[emu_arch]);
-    machines = virCapabilitiesAllocMachines(qemu_machines[emu_arch],
-                                            nmachines);
-    if (machines == NULL)
-        goto error;
-
+    machines = virCapabilitiesAllocMachines(qemu_machines[emu_arch], &nmachines);
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
                                     arch, qemu_emulators[emu_arch],
                                     NULL, nmachines, machines);
-
-    machines = NULL;
-    nmachines = 0;
 
     if (arch == VIR_ARCH_I686 ||
         arch == VIR_ARCH_X86_64)
@@ -189,21 +181,12 @@ testQemuAddGuest(virCaps *caps,
     virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
                                   NULL, NULL, 0, NULL);
 
-    nmachines = g_strv_length((char **)qemu_machines[emu_arch]);
-    machines = virCapabilitiesAllocMachines(qemu_machines[emu_arch],
-                                            nmachines);
-    if (machines == NULL)
-        goto error;
-
+    machines = virCapabilitiesAllocMachines(qemu_machines[emu_arch], &nmachines);
     virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
                                   qemu_emulators[emu_arch],
                                   NULL, nmachines, machines);
 
     return 0;
-
- error:
-    virCapabilitiesFreeMachines(machines, nmachines);
-    return -1;
 }
 
 

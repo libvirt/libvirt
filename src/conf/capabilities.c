@@ -380,21 +380,23 @@ virCapabilitiesHostNUMAAddCell(virCapsHostNUMA *caps,
 
 /**
  * virCapabilitiesAllocMachines:
- * @machines: machine variants for emulator ('pc', or 'isapc', etc)
- * @nmachines: number of machine variants for emulator
+ * @machines: NULL-terminated list of machine variants for emulator ('pc', or 'isapc', etc)
+ * @nmachines: filled with number of machine variants for emulator
  *
  * Allocate a table of virCapsGuestMachine *from the supplied table
  * of machine names.
  */
 virCapsGuestMachine **
-virCapabilitiesAllocMachines(const char *const *names, int nnames)
+virCapabilitiesAllocMachines(const char *const *names,
+                             int *nnames)
 {
     virCapsGuestMachine **machines;
     size_t i;
 
-    machines = g_new0(virCapsGuestMachine *, nnames);
+    *nnames = g_strv_length((gchar **)names);
+    machines = g_new0(virCapsGuestMachine *, *nnames);
 
-    for (i = 0; i < nnames; i++) {
+    for (i = 0; i < *nnames; i++) {
         machines[i] = g_new0(virCapsGuestMachine, 1);
         machines[i]->name = g_strdup(names[i]);
     }
