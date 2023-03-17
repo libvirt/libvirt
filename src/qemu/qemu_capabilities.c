@@ -1105,7 +1105,6 @@ virQEMUCapsInitGuestFromBinary(virCaps *caps,
     virCapsGuest *guest;
     virCapsGuestMachine **machines = NULL;
     size_t nmachines = 0;
-    int ret = -1;
 
     if (!binary)
         return 0;
@@ -1117,9 +1116,6 @@ virQEMUCapsInitGuestFromBinary(virCaps *caps,
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
                                     guestarch, binary,
                                     NULL, nmachines, machines);
-
-    machines = NULL;
-    nmachines = 0;
 
     /* CPU selection is always available, because all QEMU versions
      * we support can use at least '-cpu host' */
@@ -1155,11 +1151,7 @@ virQEMUCapsInitGuestFromBinary(virCaps *caps,
         virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_NONPAE);
     }
 
-    ret = 0;
-
-    virCapabilitiesFreeMachines(machines, nmachines);
-
-    return ret;
+    return 0;
 }
 
 
