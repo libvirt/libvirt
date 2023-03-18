@@ -1392,7 +1392,7 @@ qemuNamespaceMknodPaths(virDomainObj *vm G_GNUC_UNUSED,
                         bool *created G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
-                         _("Namespaces are not supported on this platform."));
+                         _("Namespaces are not supported on this platform"));
     return -1;
 }
 

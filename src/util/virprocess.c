@@ -708,7 +708,7 @@ int virProcessSetNamespaces(size_t nfdlist G_GNUC_UNUSED,
                             int *fdlist G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
-                         _("Namespaces are not supported on this platform."));
+                         _("Namespaces are not supported on this platform"));
     return -1;
 }
 #endif
@@ -1491,7 +1491,7 @@ int
 virProcessSetupPrivateMountNS(void)
 {
     virReportSystemError(ENOSYS, "%s",
-                         _("Namespaces are not supported on this platform."));
+                         _("Namespaces are not supported on this platform"));
     return -1;
 }
 
@@ -1499,7 +1499,7 @@ int
 virProcessNamespaceAvailable(unsigned int ns G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
-                         _("Namespaces are not supported on this platform."));
+                         _("Namespaces are not supported on this platform"));
     return -1;
 }
 
