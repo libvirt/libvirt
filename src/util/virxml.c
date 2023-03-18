@@ -864,7 +864,7 @@ virXPathBoolean(const char *xpath,
 
     if ((ctxt == NULL) || (xpath == NULL)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Invalid parameter to virXPathBoolean()"));
+                       "%s", _("Invalid parameter"));
         return -1;
     }
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
@@ -917,7 +917,7 @@ virXPathNode(const char *xpath,
 
     if ((ctxt == NULL) || (xpath == NULL)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Invalid parameter to virXPathNode()"));
+                       "%s", _("Invalid parameter"));
         return NULL;
     }
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
@@ -952,7 +952,7 @@ virXPathNodeSet(const char *xpath,
 
     if ((ctxt == NULL) || (xpath == NULL)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Invalid parameter to virXPathNodeSet()"));
+                       "%s", _("Invalid parameter"));
         return -1;
     }
 
