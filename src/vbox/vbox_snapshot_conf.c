@@ -952,11 +952,6 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachine *machine,
                        _("Machine is null"));
         goto cleanup;
     }
-    if (filePath == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Filepath is null"));
-        goto cleanup;
-    }
     xml = xmlNewDoc(BAD_CAST "1.0");
     if (!xml)
         abort();
