@@ -5220,7 +5220,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
             rc = gVBoxAPI.UIMedium.GetId(medium, &parentiid);
             if (NS_FAILED(rc)) {
                 vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("Unable to get hardDisk Id"));
+                                _("Unable to get hard disk id"));
                 goto cleanup;
             }
             gVBoxAPI.UIID.vboxIIDToUtf8(data, &parentiid, &parentUuid);
@@ -6946,7 +6946,7 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                 rc = gVBoxAPI.UIMedium.GetId(medium, &parentiid);
                 if (NS_FAILED(rc)) {
                     vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                    _("Unable to get hardDisk Id"));
+                                    _("Unable to get hard disk id"));
                     goto cleanup;
                 }
                 gVBoxAPI.UIID.vboxIIDToUtf8(data, &parentiid, &parentUuid);
