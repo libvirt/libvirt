@@ -78,7 +78,7 @@ Language bindings
     - `issues <https://gitlab.com/libvirt/libvirt-perl/-/issues>`__
     - `github <https://github.com/libvirt/libvirt-perl>`__
     - `api ref <https://metacpan.org/release/Sys-Virt/>`__
-      `changes <https://libvirt.org/git/?p=libvirt-perl.git;a=blob;f=Changes;hb=HEAD>`__
+      `changes <https://gitlab.com/libvirt/libvirt-perl/-/blob/master/Changes>`__
 
   * - PHP
     - `libvirt <https://download.libvirt.org/php/>`__
