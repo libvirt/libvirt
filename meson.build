@@ -534,12 +534,7 @@ elif host_machine.system() == 'darwin'
   # macOS libraries don't support symbol versioning
   version_script_flags = ''
 else
-  test_file = '@0@/src/libvirt_qemu.syms'.format(meson.project_source_root())
-  if cc.has_link_argument('-Wl,--version-script=@0@'.format(test_file))
-    version_script_flags = '-Wl,--version-script='
-  else
-    error('No supported version script link argument found.')
-  endif
+  version_script_flags = '-Wl,--version-script='
 endif
 
 libvirt_flat_namespace = []
