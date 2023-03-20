@@ -2178,7 +2178,6 @@ virCapabilitiesInitCaches(virCaps *caps)
         int rv = -1;
         g_autoptr(DIR) dirp = NULL;
         g_autofree char *path = g_strdup_printf("%s/cpu/cpu%zd/cache/", SYSFS_SYSTEM_PATH, pos);
-        g_autoptr(virCapsHostCacheBank) bank = NULL;
 
         rv = virDirOpenIfExists(&dirp, path);
         if (rv < 0)
@@ -2189,6 +2188,7 @@ virCapabilitiesInitCaches(virCaps *caps)
 
         while ((rv = virDirRead(dirp, &ent, path)) > 0) {
             g_autofree char *type = NULL;
+            g_autoptr(virCapsHostCacheBank) bank = NULL;
             int kernel_type;
             unsigned int level;
             int ret;
