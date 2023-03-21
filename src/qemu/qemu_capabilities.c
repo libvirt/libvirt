@@ -497,10 +497,10 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "mch", /* QEMU_CAPS_DEVICE_MCH */
               "mch.extended-tseg-mbytes", /* QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES */
               "sev-guest", /* QEMU_CAPS_SEV_GUEST */
-              "machine.pseries.cap-hpt-max-page-size", /* QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE */
+              "machine.pseries.cap-hpt-max-page-size", /* X_QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE */
 
               /* 310 */
-              "machine.pseries.cap-htm", /* QEMU_CAPS_MACHINE_PSERIES_CAP_HTM */
+              "machine.pseries.cap-htm", /* X_QEMU_CAPS_MACHINE_PSERIES_CAP_HTM */
               "usb-storage.werror", /* X_QEMU_CAPS_USB_STORAGE_WERROR */
               "egl-headless", /* QEMU_CAPS_EGL_HEADLESS */
               "vfio-pci.display", /* QEMU_CAPS_VFIO_PCI_DISPLAY */
@@ -514,7 +514,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "iothread.poll-max-ns", /* X_QEMU_CAPS_IOTHREAD_POLLING */
 
               /* 320 */
-              "machine.pseries.cap-nested-hv", /* QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV */
+              "machine.pseries.cap-nested-hv", /* X_QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV */
               "egl-headless.rendernode", /* QEMU_CAPS_EGL_HEADLESS_RENDERNODE */
               "memory-backend-file.align", /* X_QEMU_CAPS_OBJECT_MEMORY_FILE_ALIGN */
               "memory-backend-file.pmem", /* QEMU_CAPS_OBJECT_MEMORY_FILE_PMEM */
@@ -546,7 +546,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "query-cpu-model-baseline", /* QEMU_CAPS_QUERY_CPU_MODEL_BASELINE */
               "query-cpu-model-comparison", /* QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON */
               "ramfb", /* QEMU_CAPS_DEVICE_RAMFB */
-              "machine.pseries.cap-ccf-assist", /* QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST */
+              "machine.pseries.cap-ccf-assist", /* X_QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST */
 
               /* 345 */
               "arm-max-cpu", /* QEMU_CAPS_ARM_MAX_CPU */
@@ -574,11 +574,11 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio.packed", /* X_QEMU_CAPS_VIRTIO_PACKED_QUEUES */
               "pcie-root-port.hotplug", /* QEMU_CAPS_PCIE_ROOT_PORT_HOTPLUG */
               "aio.io_uring", /* QEMU_CAPS_AIO_IO_URING */
-              "machine.pseries.cap-cfpc", /* QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC */
+              "machine.pseries.cap-cfpc", /* X_QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC */
 
               /* 365 */
-              "machine.pseries.cap-sbbc", /* QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC */
-              "machine.pseries.cap-ibs", /* QEMU_CAPS_MACHINE_PSERIES_CAP_IBS */
+              "machine.pseries.cap-sbbc", /* X_QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC */
+              "machine.pseries.cap-ibs", /* X_QEMU_CAPS_MACHINE_PSERIES_CAP_IBS */
               "tcg", /* QEMU_CAPS_TCG */
               "virtio-blk-pci.scsi.default.disabled", /* QEMU_CAPS_VIRTIO_BLK_SCSI_DEFAULT_DISABLED */
               "pvscsi", /* QEMU_CAPS_SCSI_PVSCSI */
@@ -1716,13 +1716,6 @@ static virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsPSeries[] = {
-    { "cap-hpt-max-page-size", QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE },
-    { "cap-htm", QEMU_CAPS_MACHINE_PSERIES_CAP_HTM },
-    { "cap-nested-hv", QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV },
-    { "cap-ccf-assist", QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST },
-    { "cap-cfpc", QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC },
-    { "cap-sbbc", QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC },
-    { "cap-ibs", QEMU_CAPS_MACHINE_PSERIES_CAP_IBS },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsVirt[] = {

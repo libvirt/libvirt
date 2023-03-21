@@ -88,13 +88,10 @@
   <flag name='hda-output'/>
   <flag name='vhost-vsock'/>
   <flag name='tpm-emulator'/>
-  <flag name='machine.pseries.cap-hpt-max-page-size'/>
-  <flag name='machine.pseries.cap-htm'/>
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
   <flag name='memory-backend-memfd'/>
   <flag name='memory-backend-memfd.hugetlb'/>
-  <flag name='machine.pseries.cap-nested-hv'/>
   <flag name='egl-headless.rendernode'/>
   <flag name='memory-backend-file.pmem'/>
   <flag name='nvdimm.unarmed'/>
@@ -106,7 +103,6 @@
   <flag name='vhost-user-gpu'/>
   <flag name='vhost-user-vga'/>
   <flag name='incremental-backup'/>
-  <flag name='machine.pseries.cap-ccf-assist'/>
   <flag name='drive-nvme'/>
   <flag name='smp-dies'/>
   <flag name='i8042'/>
@@ -119,9 +115,6 @@
   <flag name='fsdev.multidevs'/>
   <flag name='pcie-root-port.hotplug'/>
   <flag name='aio.io_uring'/>
-  <flag name='machine.pseries.cap-cfpc'/>
-  <flag name='machine.pseries.cap-sbbc'/>
-  <flag name='machine.pseries.cap-ibs'/>
   <flag name='tcg'/>
   <flag name='virtio-blk-pci.scsi.default.disabled'/>
   <flag name='pvscsi'/>
