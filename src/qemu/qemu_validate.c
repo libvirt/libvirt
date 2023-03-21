@@ -39,8 +39,6 @@ static int
 qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
                                     int feature)
 {
-    const char *str;
-
     if (def->features[feature] == VIR_TRISTATE_SWITCH_ABSENT)
         return 0;
 
@@ -59,8 +57,7 @@ qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
             break;
 
         if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE) {
-            str = virDomainHPTResizingTypeToString(def->hpt_resizing);
-            if (!str) {
+            if (!virDomainHPTResizingTypeToString(def->hpt_resizing)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Invalid setting for HPT resizing"));
                 return -1;
@@ -69,33 +66,15 @@ qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
         break;
 
     case VIR_DOMAIN_FEATURE_HTM:
-        str = virTristateSwitchTypeToString(def->features[feature]);
-        if (!str) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Invalid setting for HTM state"));
-            return -1;
-        }
-
-        break;
-
     case VIR_DOMAIN_FEATURE_NESTED_HV:
-        str = virTristateSwitchTypeToString(def->features[feature]);
-        if (!str) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Invalid setting for nested HV state"));
-            return -1;
-        }
-
-        break;
-
     case VIR_DOMAIN_FEATURE_CCF_ASSIST:
-        str = virTristateSwitchTypeToString(def->features[feature]);
-        if (!str) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Invalid setting for ccf-assist state"));
+        if (!virTristateSwitchTypeToString(def->features[feature])) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Invalid setting for pseries feature '%1$s'"),
+                           virDomainFeatureTypeToString(feature));
+
             return -1;
         }
-
         break;
 
     case VIR_DOMAIN_FEATURE_CFPC:
