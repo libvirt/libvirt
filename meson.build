@@ -2035,8 +2035,18 @@ subdir('src')
 
 subdir('tools')
 
-build_tests = not get_option('tests').disabled()
-if build_tests
+build_tests = [ not get_option('tests').disabled() ]
+if build_tests[0] and \
+   cc.get_id() == 'clang' and \
+   not supported_cc_flags.contains('-fsemantic-interposition') \
+   and get_option('optimization') != '0'
+   # If CLang doesn't support -fsemantic-interposition then our
+   # mocking doesn't work. The best we can do is to not run the
+   # test suite.
+   build_tests = [ false, '!!! Forcibly disabling tests because CLang lacks -fsemantic-interposition. Update CLang or disable optimization !!!' ]
+endif
+
+if build_tests[0]
   subdir('tests')
 endif
 
