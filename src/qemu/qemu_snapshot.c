@@ -2456,8 +2456,8 @@ qemuSnapshotUpdateDisksSingle(virDomainMomentObj *snap,
 {
     virDomainDiskDef *disk = NULL;
 
-    if (!(disk = qemuDomainDiskByName(def, snapDisk->name)))
-        return -1;
+    if (!(disk = virDomainDiskByName(def, snapDisk->name, true)))
+        return 0;
 
     if (virDomainSnapshotIsExternal(snap)) {
         virDomainDiskDef *parentDisk = NULL;
