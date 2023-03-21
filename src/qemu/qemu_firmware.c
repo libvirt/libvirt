@@ -1296,6 +1296,8 @@ qemuFirmwareEnableFeaturesModern(virQEMUDriverConfig *cfg,
         loader = def->os.loader;
 
         loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
+
+        VIR_FREE(loader->path);
         loader->path = g_strdup(memory->filename);
 
         VIR_DEBUG("decided on loader '%s'",
@@ -1474,6 +1476,8 @@ qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
 
         loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
         loader->readonly = VIR_TRISTATE_BOOL_YES;
+
+        VIR_FREE(loader->nvramTemplate);
         loader->nvramTemplate = g_strdup(cfg->firmwares[i]->nvram);
 
         qemuFirmwareEnsureNVRAM(def, cfg, VIR_STORAGE_FILE_RAW);
