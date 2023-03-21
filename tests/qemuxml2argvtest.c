@@ -2001,6 +2001,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PPC64("pseries-hostdevs-2");
     DO_TEST_CAPS_LATEST_PPC64("pseries-hostdevs-3");
 
+    DO_TEST_CAPS_ARCH_VER("pseries-features", "ppc64", "4.2.0");
     DO_TEST_CAPS_LATEST_PPC64("pseries-features");
 
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE */
