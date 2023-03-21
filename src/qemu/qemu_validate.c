@@ -41,8 +41,10 @@ qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
 {
     const char *str;
 
-    if (def->features[feature] != VIR_TRISTATE_SWITCH_ABSENT &&
-        !qemuDomainIsPSeries(def)) {
+    if (def->features[feature] == VIR_TRISTATE_SWITCH_ABSENT)
+        return 0;
+
+    if (!qemuDomainIsPSeries(def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("The '%1$s' feature is not supported for architecture '%2$s' or machine type '%3$s'"),
                        virDomainFeatureTypeToString(feature),
@@ -50,9 +52,6 @@ qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
                        def->os.machine);
         return -1;
     }
-
-    if (def->features[feature] == VIR_TRISTATE_SWITCH_ABSENT)
-        return 0;
 
     switch (feature) {
     case VIR_DOMAIN_FEATURE_HPT:
