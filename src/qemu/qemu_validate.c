@@ -37,7 +37,6 @@ VIR_LOG_INIT("qemu.qemu_validate");
 
 static int
 qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
-                                    virQEMUCaps *qemuCaps,
                                     int feature)
 {
     const char *str;
@@ -68,25 +67,9 @@ qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
                 return -1;
             }
         }
-
-        if (def->hpt_maxpagesize > 0 &&
-            !virQEMUCapsGet(qemuCaps,
-                            QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Configuring the page size for HPT guests "
-                             "is not supported by this QEMU binary"));
-            return -1;
-        }
         break;
 
     case VIR_DOMAIN_FEATURE_HTM:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_HTM)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("HTM configuration is not supported by this "
-                             "QEMU binary"));
-            return -1;
-        }
-
         str = virTristateSwitchTypeToString(def->features[feature]);
         if (!str) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -97,13 +80,6 @@ qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
         break;
 
     case VIR_DOMAIN_FEATURE_NESTED_HV:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Nested HV configuration is not supported by "
-                             "this QEMU binary"));
-            return -1;
-        }
-
         str = virTristateSwitchTypeToString(def->features[feature]);
         if (!str) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -114,13 +90,6 @@ qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
         break;
 
     case VIR_DOMAIN_FEATURE_CCF_ASSIST:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("ccf-assist configuration is not supported by "
-                           "this QEMU binary"));
-            return -1;
-        }
-
         str = virTristateSwitchTypeToString(def->features[feature]);
         if (!str) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -131,33 +100,8 @@ qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
         break;
 
     case VIR_DOMAIN_FEATURE_CFPC:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("cfpc configuration is not supported by "
-                             "this QEMU binary"));
-            return -1;
-        }
-
-        break;
-
     case VIR_DOMAIN_FEATURE_SBBC:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("sbbc configuration is not supported by "
-                             "this QEMU binary"));
-            return -1;
-        }
-
-        break;
-
     case VIR_DOMAIN_FEATURE_IBS:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_IBS)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("ibs configuration is not supported by "
-                             "this QEMU binary"));
-            return -1;
-        }
-
         break;
     }
 
@@ -195,7 +139,7 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
         case VIR_DOMAIN_FEATURE_CFPC:
         case VIR_DOMAIN_FEATURE_SBBC:
         case VIR_DOMAIN_FEATURE_IBS:
-            if (qemuValidateDomainDefPSeriesFeature(def, qemuCaps, i) < 0)
+            if (qemuValidateDomainDefPSeriesFeature(def, i) < 0)
                 return -1;
             break;
 
