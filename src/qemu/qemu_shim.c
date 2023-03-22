@@ -214,10 +214,18 @@ int main(int argc, char **argv)
         }
         tmproot = true;
 
-    } else if (g_mkdir_with_parents(root, 0755) < 0) {
-        g_printerr("%s: cannot create dir: %s\n",
-                   argv[0], g_strerror(errno));
-        goto cleanup;
+    } else {
+        if (!g_path_is_absolute(root)) {
+            g_printerr("%s: the root directory must be an absolute path\n",
+                       argv[0]);
+            goto cleanup;
+        }
+
+        if (g_mkdir_with_parents(root, 0755) < 0) {
+            g_printerr("%s: cannot create dir: %s\n",
+                       argv[0], g_strerror(errno));
+            goto cleanup;
+        }
     }
 
     if (chmod(root, 0755) < 0) {
