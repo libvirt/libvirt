@@ -388,6 +388,15 @@ int virHostValidateIOMMU(const char *hvname,
             return VIR_HOST_VALIDATE_FAILURE(VIR_HOST_VALIDATE_NOTE);
         }
         virHostMsgPass();
+    } else if (ARCH_IS_ARM(arch)) {
+        if (access("/sys/firmware/acpi/tables/IORT", F_OK) == 0) {
+            virHostMsgPass();
+        } else {
+            virHostMsgFail(level,
+                           "No ACPI IORT table found, IOMMU not "
+                           "supported by this hardware platform");
+            return VIR_HOST_VALIDATE_FAILURE(level);
+        }
     } else {
         virHostMsgFail(level,
                        "Unknown if this platform has IOMMU support");
