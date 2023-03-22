@@ -8,13 +8,13 @@
 # Toni Rantala <trantalafilo@gmail.com>, 2017
 # Daniel P. Berrange <berrange@redhat.com>, 2020.
 # Ricky Tigg <ricky.tigg@gmail.com>, 2020, 2021.
-# Jan Kuparinen <copper_fin@hotmail.com>, 2021, 2022.
+# Jan Kuparinen <copper_fin@hotmail.com>, 2021, 2022, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-02-22 13:50+0000\n"
-"PO-Revision-Date: 2022-12-22 19:20+0000\n"
+"PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15\n"
+"X-Generator: Weblate 4.15.2\n"
 
 msgid ""
 "\n"
@@ -721,6 +721,8 @@ msgid ""
 "%s:\n"
 "%s%c"
 msgstr ""
+"%s:\n"
+"%s%c"
 
 #, c-format
 msgid "%s: %s"
@@ -15675,7 +15677,7 @@ msgid "Transition started"
 msgstr "Siirtymä aloitettu"
 
 msgid "Transport"
-msgstr ""
+msgstr "Kuljetus"
 
 #, c-format
 msgid "Transport error during %s: %s (%d)"
@@ -24056,7 +24058,7 @@ msgid "empty json array"
 msgstr ""
 
 msgid "empty path"
-msgstr ""
+msgstr "tyhjä polku"
 
 msgid "empty rbd option name specified"
 msgstr ""
