@@ -21,13 +21,14 @@
 # Côme Borsoi <fedora@borsoi.fr>, 2020.
 # Franck Ridel <fridel@protonmail.com>, 2021.
 # Ludek Janda <ljanda@redhat.com>, 2023.
+# grimst <grimaitres@gmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-02-22 13:50+0000\n"
-"PO-Revision-Date: 2023-03-16 14:26+0000\n"
-"Last-Translator: Ludek Janda <ljanda@redhat.com>\n"
+"PO-Revision-Date: 2023-03-22 15:20+0000\n"
+"Last-Translator: grimst <grimaitres@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fr/>\n"
 "Language: fr\n"
@@ -293,18 +294,18 @@ msgstr ""
 "\n"
 "%s mode [options] [fichier supplémentaire] [< def.xml]\n"
 "\n"
-"  Modes:\n"
-"    -a | --add                     load profile\n"
-"    -c | --create                  create profile from template\n"
-"    -D | --delete                  unload profile and delete generated "
-"rules\n"
-"    -r | --replace                 reload profile\n"
-"    -R | --remove                  unload profile\n"
-"  Options:\n"
-"    -d | --dryrun                  dry run\n"
+"  Modes :\n"
+"    -a | --add                     charger le profil\n"
+"    -c | --create                  créer un profil à partir d'un template\n"
+"    -D | --delete                  décharger le profil et supprimer les "
+"règle générées\n"
+"    -r | --replace                 recharger le profil\n"
+"    -R | --remove                  décharger le profil\n"
+"  Options :\n"
+"    -d | --dryrun                  mode simulation\n"
 "    -u | --uuid <uuid> uuid (nom du profil)\n"
 "    -h | --help cette aide\n"
-"  Fichier supplémentaire :\n"
+"  Fichier supplémentaire :\n"
 "    -f | --add-file <file> ajouter un fichier à un profil généré à partir de "
 "XML\n"
 "    -F | --append-file <file> ajouter un fichier à un profil existant\n"
@@ -511,10 +512,10 @@ msgid ""
 "from stored identity. Please verify the new host key '%s' to avoid possible "
 "man in the middle attack. The key is stored in '%s'."
 msgstr ""
-"! !! LA VÉRIFICATION DE LA CLÉ DE L'HÔTE SSH A ÉCHOUÉ !!! : L'identité de "
-"l'hôte '%s:%d' diffère de l'identité enregistrée. Veuillez vérifier la "
-"nouvelle clé de l'hôte '%s' pour éviter une éventuelle attaque d’un "
-"intercepteur. La clé est stockée dans '%s'."
+"!!!LA VÉRIFICATION DE LA CLÉ DE L'HÔTE SSH A ÉCHOUÉE : L'identité de l'hôte "
+"'%s : %d' diffère de l'identité enregistrée. Veuillez vérifier la nouvelle "
+"clé de l'hôte '%s' pour éviter une éventuelle attaque d’un intercepteur. La "
+"clé est stockée dans '%s'."
 
 #, c-format
 msgid "$%s value should be between 0 and %d"
@@ -688,12 +689,12 @@ msgid ""
 "%s model of watchdog is part of the machine and cannot have any address set."
 msgstr ""
 "Le modèle de surveillance %s fait partie de la machine et ne peut pas avoir "
-"d'adresse définie"
+"d'adresse définie."
 
 #, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
 msgstr ""
-"Le modèle de surveillance %s est virtuel et ne peut pas aller sur un bus"
+"Le modèle de surveillance %s est virtuel et ne peut pas aller sur un bus."
 
 #, c-format
 msgid "%s module is not loaded, "
@@ -778,7 +779,7 @@ msgstr "%s : %s"
 
 #, c-format
 msgid "%s: %s: unsupported auth %s"
-msgstr "%s: %s: auth non prise en charge %s"
+msgstr "%s : %s : auth non prise en charge %s"
 
 #, c-format
 msgid "%s: '%s' does not exist"
@@ -787,33 +788,33 @@ msgstr "%s : ’%s’ n’existe pas"
 #, c-format
 msgid "%s: Address '%s' in route definition is not a network address"
 msgstr ""
-"%s: L'adresse '%s' dans la définition de la route n'est pas une adresse "
+"%s : L'adresse '%s' dans la définition de la route n'est pas une adresse "
 "réseau"
 
 #, c-format
 msgid "%s: Bad gateway address '%s' in route definition"
-msgstr "%s: Mauvaise adresse de passerelle '%s' dans la définition de la route"
+msgstr "%s : Mauvaise adresse de passerelle '%s' dans la définition de la route"
 
 #, c-format
 msgid "%s: Bad netmask address '%s' in route definition"
 msgstr ""
-"%s: Mauvaise adresse de masque de réseau '%s' dans la définition de la route"
+"%s : Mauvaise adresse de masque de réseau '%s' dans la définition de la route"
 
 #, c-format
 msgid "%s: Bad network address '%s' in route definition"
-msgstr "%s: Mauvaise adresse réseau '%s' dans la définition de la route"
+msgstr "%s : Mauvaise adresse réseau '%s' dans la définition de la route"
 
 #, c-format
 msgid "%s: Cannot request read and write flags together"
 msgstr ""
-"%s: Impossible de demander les indicateurs de lecture et d'écriture ensemble"
+"%s : Impossible de demander les indicateurs de lecture et d'écriture ensemble"
 
 #, c-format
 msgid ""
 "%s: Error converting address '%s' with netmask '%s' to network-address in "
 "route definition"
 msgstr ""
-"%s: Erreur de conversion de l'adresse '%s' avec masque de réseau '%s' en "
+"%s : Erreur de conversion de l'adresse '%s' avec masque de réseau '%s' en "
 "adresse réseau dans la définition de route"
 
 #, c-format
@@ -821,76 +822,77 @@ msgid ""
 "%s: Error converting address '%s' with prefix %u to network-address in route "
 "definition"
 msgstr ""
-"%s: Erreur de conversion de l'adresse '%s' avec le préfixe %u en adresse de "
+"%s : Erreur de conversion de l'adresse '%s' avec le préfixe %u en adresse de "
 "réseau dans la définition de route"
 
 #, c-format
 msgid "%s: File '%s' is too large\n"
-msgstr "%s: Le fichier '%s' est trop grand\n"
+msgstr "%s : Le fichier '%s' est trop grand\n"
 
 #, c-format
 msgid "%s: IPv4 family specified for non-IPv4 address '%s' in route definition"
 msgstr ""
-"%s: Famille IPv4 spécifiée pour l'adresse non-IPv4 '%s' dans la définition "
+"%s : Famille IPv4 spécifiée pour l'adresse non-IPv4 '%s' dans la définition "
 "de l’itinéraire"
 
 #, c-format
 msgid "%s: IPv4 family specified for non-IPv4 gateway '%s' in route definition"
 msgstr ""
-"%s: Famille IPv4 spécifiée pour une passerelle non-IPv4 '%s' dans la "
+"%s : Famille IPv4 spécifiée pour une passerelle non-IPv4 '%s' dans la "
 "définition de l’itinéraire"
 
 #, c-format
 msgid "%s: Invalid netmask '%s' for address '%s' (both must be IPv4)"
 msgstr ""
-"%s: Masque de réseau non valide '%s' pour l'adresse '%s' (les deux doivent "
+"%s : Masque de réseau non valide '%s' pour l'adresse '%s' (les deux doivent "
 "être IPv4)"
 
 #, c-format
 msgid "%s: Invalid prefix %u specified in route definition, must be 0 - 128"
 msgstr ""
-"%s: Préfixe non valide %u spécifié dans la définition de l’itinéraire, doit "
+"%s : Préfixe non valide %u spécifié dans la définition de l’itinéraire, doit "
 "être 0 - 128"
 
 #, c-format
 msgid "%s: Invalid prefix %u specified in route definition, must be 0 - 32"
 msgstr ""
-"%s: Préfixe non valide %u spécifié dans la définition de l’itinéraire, doit "
+"%s : Préfixe non valide %u spécifié dans la définition de l’itinéraire, doit "
 "être 0 - 32"
 
 #, c-format
 msgid "%s: Missing required address attribute in route definition"
 msgstr ""
-"%s: Attribut d'adresse requis manquant dans la définition de l’itinéraire"
+"%s : Attribut d'adresse requis manquant dans la définition de l’itinéraire"
 
 #, c-format
 msgid "%s: Missing required gateway attribute in route definition"
 msgstr ""
-"%s: Attribut de passerelle requis manquant dans la définition de l'itinéraire"
+"%s : Attribut de passerelle requis manquant dans la définition de "
+"l'itinéraire"
 
 #, c-format
 msgid "%s: No family specified for non-IPv4 address '%s' in route definition"
 msgstr ""
-"%s: Aucune famille n'est spécifiée pour l'adresse non-IPv4 '%s' dans la "
+"%s : Aucune famille n'est spécifiée pour l'adresse non-IPv4 '%s' dans la "
 "définition de l’itinéraire"
 
 #, c-format
 msgid "%s: No family specified for non-IPv4 gateway '%s' in route definition"
 msgstr ""
-"%s: Aucune famille n'est spécifiée pour la passerelle non-IPv4 '%s' dans la "
+"%s : Aucune famille n'est spécifiée pour la passerelle non-IPv4 '%s' dans la "
 "définition de l’itinéraire"
 
 #, c-format
 msgid "%s: Route definition cannot have both a prefix and a netmask"
 msgstr ""
-"%s: La définition de l’itinéraire ne peut pas avoir à la fois un préfixe et "
+"%s : La définition de l’itinéraire ne peut pas avoir à la fois un préfixe et "
 "un masque de réseau"
 
 #, c-format
 msgid ""
 "%s: Specifying netmask invalid for IPv6 address '%s' in route definition"
 msgstr ""
-"%s: La spécification du masque de réseau n'est pas valide pour l'adresse "
+"%s : La spécification du masque de réseau n'est pas valide pour l'adresse "
 "IPv6 '%s' dans la définition de l’itinéraire"
 
 #, c-format
@@ -898,24 +900,24 @@ msgid ""
 "%s: Starting external device: %s\n"
 "%s\n"
 msgstr ""
-"%s: Démarrage du périphérique externe : %s\n"
+"%s : Démarrage du périphérique externe : %s\n"
 "%s\n"
 
 #, c-format
 msgid "%s: Unrecognized family '%s' in route definition"
-msgstr "%s: Famille non reconnue '%s' dans la définition de l'itinéraire"
+msgstr "%s : Famille non reconnue '%s' dans la définition de l'itinéraire"
 
 #, c-format
 msgid "%s: cannot connect to '%s': %s\n"
-msgstr "%s: Impossible de se connecter à '%s' : %s\n"
+msgstr "%s : Impossible de se connecter à '%s' : %s\n"
 
 #, c-format
 msgid "%s: cannot parse URI transport '%s': %s\n"
-msgstr "%s: impossible d’analyser l’ URI transport '%s' : %s\n"
+msgstr "%s : impossible d’analyser l’ URI transport '%s' : %s\n"
 
 #, c-format
 msgid "%s: could not proxy traffic: %s\n"
-msgstr "%s: proxy trafic impossible : %s\n"
+msgstr "%s : traffic à travers le proxy impossible : %s\n"
 
 #, c-format
 msgid "%s: error: %s%c"
@@ -935,64 +937,64 @@ msgstr "%s : erreur : impossible de déterminer si le daemon fonctionne : %s\
 
 #, c-format
 msgid "%s: event '%s' for node device %s\n"
-msgstr "%s: événement '%s' pour le noeud de périphérique %s\n"
+msgstr "%s : événement '%s' pour le noeud de périphérique %s\n"
 
 #, c-format
 msgid "%s: event '%s' for secret %s\n"
-msgstr "%s: événement '%s' pour le secret %s\n"
+msgstr "%s : événement '%s' pour le secret %s\n"
 
 #, c-format
 msgid "%s: event '%s' for storage pool %s\n"
-msgstr "%s: événement '%s' pour le pool de stockage %s\n"
+msgstr "%s : événement '%s' pour le pool de stockage %s\n"
 
 #, c-format
 msgid "%s: event 'lifecycle' for network %s: %s\n"
-msgstr "%s: cycle de vie d'un événement pour le réseau %s: %s\n"
+msgstr "%s : cycle de vie d'un événement pour le réseau %s : %s\n"
 
 #, c-format
 msgid "%s: event 'lifecycle' for node device %s: %s\n"
-msgstr "%s: événement 'cycle de vie' pour le périphérique du nœud %s: %s\n"
+msgstr "%s : événement 'cycle de vie' pour le périphérique du nœud %s : %s\n"
 
 #, c-format
 msgid "%s: event 'lifecycle' for secret %s: %s\n"
-msgstr "%s: événement \"cycle de vie\" pour le secret %s: %s\n"
+msgstr "%s : événement \"cycle de vie\" pour le secret %s : %s\n"
 
 #, c-format
 msgid "%s: event 'lifecycle' for storage pool %s: %s\n"
-msgstr "%s: événement 'cycle de vie' pour le pool de stockage %s: %s\n"
+msgstr "%s : événement 'cycle de vie' pour le pool de stockage %s : %s\n"
 
 #, c-format
 msgid "%s: expected a bool for '%s' parameter"
-msgstr "%s: on attendait une expression booléenne pour le paramètre '%s'"
+msgstr "%s : on attendait une expression booléenne pour le paramètre '%s'"
 
 #, c-format
 msgid "%s: expected a signed integer for '%s' parameter"
-msgstr "%s: on attendait un nombre entier signé pour le paramètre '%s'"
+msgstr "%s : on attendait un nombre entier signé pour le paramètre '%s'"
 
 #, c-format
 msgid "%s: expected a string for '%s' parameter"
-msgstr "%s: on attendait une chaîne de caractères pour le paramètre '%s'"
+msgstr "%s : on attendait une chaîne de caractères pour le paramètre '%s'"
 
 #, c-format
 msgid "%s: expected a string list for '%s' parameter"
-msgstr "%s: on attendait une liste de chaînes pour le paramètre '%s'"
+msgstr "%s : on attendait une liste de chaînes pour le paramètre '%s'"
 
 #, c-format
 msgid "%s: expected a string or string list for '%s' parameter"
 msgstr ""
-"%s: on attendait une chaîne ou une liste de chaînes pour le paramètre '%s'"
+"%s : on attendait une chaîne ou une liste de chaînes pour le paramètre '%s'"
 
 #, c-format
 msgid "%s: expected an unsigned integer for '%s' parameter"
-msgstr "%s: on attendait un entier non signé pour le paramètre '%s'"
+msgstr "%s : on attendait un entier non signé pour le paramètre '%s'"
 
 #, c-format
 msgid "%s: failed to communicate with bridge helper: %s"
-msgstr "%s: échec de la communication avec l'aide-passerelle : %s"
+msgstr "%s : échec de la communication avec l'aide-passerelle : %s"
 
 #, c-format
 msgid "%s: failed to generate UNIX socket path"
-msgstr "%s: échec de la génération du chemin de la socket UNIX"
+msgstr "%s : échec de la génération du chemin de la socket UNIX"
 
 #, c-format
 msgid "%s: failed to read temporary file: %s"
@@ -1004,7 +1006,7 @@ msgstr "%s : impossible d’écrire dans le fichier journal : %s"
 
 #, c-format
 msgid "%s: failure with %s: %s"
-msgstr "%s: échec avec %s: %s"
+msgstr "%s : échec avec %s : %s"
 
 #, c-format
 msgid "%s: initialization failed"
@@ -1017,38 +1019,38 @@ msgstr "%s : l’initialisation a échoué\n"
 #, c-format
 msgid "%s: ipv6 family specified for non-IPv6 address '%s' in route definition"
 msgstr ""
-"%s: famille ipv6 spécifiée pour l'adresse non-IPv6 '%s' dans la définition "
+"%s : famille ipv6 spécifiée pour l'adresse non-IPv6 '%s' dans la définition "
 "de l’itinéraire"
 
 #, c-format
 msgid ""
 "%s: ipv6 specified for non-IPv6 gateway address '%s' in route definition"
 msgstr ""
-"%s: ipv6 spécifié pour l'adresse de passerelle non-IPv6 '%s' dans la "
+"%s : ipv6 spécifié pour l'adresse de passerelle non-IPv6 '%s' dans la "
 "définition de l’itinéraire"
 
 #, c-format
 msgid "%s: malformed fd %s"
-msgstr "%s: fd malformé %s"
+msgstr "%s : fd malformé %s"
 
 #, c-format
 msgid ""
 "%s: migration_port_max: port must be between the minimal port %d and 65535"
 msgstr ""
-"%s: migration_port_max : le port doit être compris entre le port minimal %d "
+"%s : migration_port_max : le port doit être compris entre le port minimal %d "
 "et 65535"
 
 #, c-format
 msgid "%s: migration_port_min: port must be greater than 0"
-msgstr "%s: migration_port_min : le port doit être supérieur à 0"
+msgstr "%s : migration_port_min : le port doit être supérieur à 0"
 
 #, c-format
 msgid "%s: must be run as root\n"
-msgstr "%s: doit être exécuté en tant que racine\n"
+msgstr "%s : doit être exécuté en tant que racine\n"
 
 #, c-format
 msgid "%s: must not be run setuid root\n"
-msgstr "%s: ne doit pas être exécuté setuid root\n"
+msgstr "%s : ne doit pas être exécuté setuid root\n"
 
 #, c-format
 msgid "%s: passthrough input device has no source"
@@ -1064,12 +1066,12 @@ msgstr ""
 #, c-format
 msgid "%s: remote_display_port_min: min port must not be greater than max port"
 msgstr ""
-"%s: remote_display_port_min : le port min ne doit pas être supérieur au port "
-"max"
+"%s : remote_display_port_min : le port min ne doit pas être supérieur au "
+"port max"
 
 #, c-format
 msgid "%s: remote_display_port_min: port must be greater than or equal to %d"
-msgstr "%s: remote_display_port_min : le port doit être supérieur ou égal à %d"
+msgstr "%s : remote_display_port_min : le port doit être supérieur ou égal à %d"
 
 #, c-format
 msgid ""
@@ -1082,21 +1084,21 @@ msgstr ""
 msgid ""
 "%s: remote_websocket_port_min: min port must not be greater than max port"
 msgstr ""
-"%s: remote_websocket_port_min : le port min ne doit pas être supérieur au "
+"%s : remote_websocket_port_min : le port min ne doit pas être supérieur au "
 "port max"
 
 #, c-format
 msgid "%s: remote_websocket_port_min: port must be greater than or equal to %d"
 msgstr ""
-"%s: remote_websocket_port_min : le port doit être supérieur ou égal à %d"
+"%s : remote_websocket_port_min : le port doit être supérieur ou égal à %d"
 
 #, c-format
 msgid ""
 "%s: temporary filename contains shell meta or other unacceptable characters "
 "(is $TMPDIR wrong?)"
 msgstr ""
-"%s: le nom du fichier temporaire contient des méta shell ou d'autres "
-"caractères inacceptables ( $TMPDIR est-il correct ?)"
+"%s : le nom du fichier temporaire contient des méta shell ou d'autres "
+"caractères inacceptables ( $TMPDIR est-il correct ?)"
 
 #, c-format
 msgid "%s: too many command line arguments\n"
@@ -1104,19 +1106,19 @@ msgstr "%s : trop d’arguments sur la ligne de commande\n"
 
 #, c-format
 msgid "%s: try --help for more details"
-msgstr "%s: essayez --help pour plus de détails"
+msgstr "%s : essayez --help pour plus de détails"
 
 #, c-format
 msgid "%s: try --help for more details\n"
-msgstr "%s: essayez --help pour plus de détails\n"
+msgstr "%s : essayez --help pour plus de détails\n"
 
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
-msgstr "%s: transport URI inattendu '%s'\n"
+msgstr "%s : transport URI inattendu '%s'\n"
 
 #, c-format
 msgid "%s: unknown remote mode '%s'"
-msgstr "%s: mode de télécommande inconnu '%s'"
+msgstr "%s : mode distant inconnu '%s'"
 
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
@@ -1149,7 +1151,7 @@ msgstr "%sLa valeur du paramètre '%s' doit être comprise dans la plage 0 :%zu"
 
 #, c-format
 msgid "%s: warning: %s%c"
-msgstr "%s: avertissement : %s%c"
+msgstr "%s : avertissement : %s%c"
 
 #, c-format
 msgid "%s:%d: %s"
@@ -1581,7 +1583,7 @@ msgid "(storage_volume_definition)"
 msgstr "(storage_volume_definition)"
 
 msgid "(test driver)"
-msgstr "(test driver)"
+msgstr "(pilote de test)"
 
 msgid "(volume_definition)"
 msgstr "(volume_definition)"
@@ -1799,7 +1801,7 @@ msgstr ""
 "charge la configuration de vlan"
 
 msgid "? - print this help"
-msgstr "? - imprimer cette aide"
+msgstr "?- imprimer cette aide"
 
 msgid "A close callback is already registered"
 msgstr "Un rappel de fermeture est déjà enregistré"
@@ -1951,7 +1953,7 @@ msgstr "Allocation :"
 
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr ""
-"Permet de définir ou de modifier la description ou le titre d'un domaine"
+"Permet de définir ou de modifier la description ou le titre d'un domaine."
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "Une erreur s'est produite, mais la cause est inconnue"
@@ -2061,7 +2063,7 @@ msgid ""
 "config size '%llu'"
 msgstr ""
 "La connexion d'un périphérique de mémoire de taille '%llu' dépasserait la "
-"taille maxMemory de la configuration du domaine '%llu'."
+"taille maxMemory de la configuration du domaine '%llu'"
 
 #, c-format
 msgid "Attempt to create %s without specifying mode"
@@ -2656,7 +2658,7 @@ msgstr "Impossible de se connecter à $uri. Ignorer."
 
 #, c-format
 msgid "Can't create %s container: %s"
-msgstr "Impossible de créer le conteneur %s: %s"
+msgstr "Impossible de créer %s le conteneur : %s"
 
 msgid "Can't create initial configuration"
 msgstr "Impossible de créer la configuration initiale"
@@ -2674,7 +2676,7 @@ msgid "Can't determine page size"
 msgstr "Impossible de déterminer la taille de la page"
 
 msgid "Can't determine pid file path."
-msgstr "Impossible de déterminer le chemin du fichier pid"
+msgstr "Impossible de déterminer le chemin du fichier pid."
 
 msgid "Can't determine restart state file path"
 msgstr "Impossible de déterminer le chemin du fichier d'état de redémarrage"
@@ -3084,8 +3086,7 @@ msgstr "Impossible de trouver l'heure de début pour le pid %d"
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr ""
-"Impossible de trouver un modèle de CPU approprié pour les données données "
-"données"
+"Impossible de trouver un modèle de CPU approprié pour les données fournies"
 
 #, c-format
 msgid "Cannot find suitable emulator for %s"
@@ -3438,7 +3439,7 @@ msgstr "Impossible de redimensionner la mémoire maximale sur un domaine actif"
 
 #, c-format
 msgid "Cannot resolve %s address: %s"
-msgstr "Impossible de résoudre l'adresse %s: %s"
+msgstr "Impossible de résoudre %s l'adresse : %s"
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "Impossible d'exécuter la console interactive sans un TTY de contrôle"
@@ -3482,7 +3483,7 @@ msgstr "Impossible de définir le MAC de l'interface sur %s pour ifname %s vf %d
 
 #, c-format
 msgid "Cannot set interface MAC to %s on '%s'"
-msgstr "Impossible de définir l'interface MAC sur %s sur '%s'"
+msgstr "Impossible de définir l'interface MAC pour %s sur '%s'"
 
 #, c-format
 msgid "Cannot set interface MTU on '%s'"
@@ -3656,7 +3657,7 @@ msgid "Chain name contains invalid characters"
 msgstr "Le nom de la chaîne contient des caractères non valides"
 
 msgid "Change bottom limit to number of workers."
-msgstr "Modifier la limite inférieure en fonction du nombre de workers"
+msgstr "Modifier la limite inférieure en fonction du nombre de workers."
 
 msgid "Change lifecycle actions for the guest domain."
 msgstr "Modifier les actions du cycle de vie pour le domaine invité."
@@ -3768,8 +3769,9 @@ msgstr ""
 msgid "Checkpoint Delete"
 msgstr "Suppression du point de contrôle"
 
+#, fuzzy
 msgid "Checkpoint Dump XML"
-msgstr "Checkpoint Dump XML"
+msgstr "Fiches de contrôle XML"
 
 msgid "Checkpoint List"
 msgstr "Liste des points de contrôle"
@@ -4848,7 +4850,7 @@ msgstr ""
 #, c-format
 msgid "Could not parse barrier of '%s' from config for container %d"
 msgstr ""
-"Impossible d'analyser la barrière de '%s' de la configuration du conteneur %d"
+"Impossible d'analyser la barrière '%s' de la configuration du conteneur %d"
 
 #, c-format
 msgid "Could not parse chain priority '%s'"
@@ -5003,7 +5005,7 @@ msgid ""
 "Could not run '%s --reconfigure'. exitstatus: %d; Check error log '%s' for "
 "details."
 msgstr ""
-"Impossible d'exécuter '%s --reconfigure' exitstatus : %d; Consultez le "
+"Impossible d'exécuter '%s --reconfigure' exitstatus : %d ; Consultez le "
 "journal des erreurs '%s' pour plus de détails."
 
 #, c-format
@@ -5012,14 +5014,14 @@ msgid ""
 "Error: %s"
 msgstr ""
 "Impossible d'exécuter '%s' pour créer des fichiers de configuration. "
-"exitstatus : %d;\n"
-"Erreur : %s"
+"exitstatus : %d ;\n"
+"Erreur : %s"
 
 #, c-format
 msgid "Could not run '%s'. exitstatus: %d; Check error log '%s' for details."
 msgstr ""
-"Impossible d'exécuter '%s'. exitstatus : %d; Vérifiez le journal des erreurs "
-"'%s' pour plus de détails."
+"Impossible d'exécuter '%s'. exitstatus : %d ; Vérifiez le journal des "
+"erreurs '%s' pour plus de détails."
 
 #, c-format
 msgid "Could not search in datastore '%s': %s"
@@ -5057,7 +5059,7 @@ msgstr "Impossible de définir le nombre de vCPUs"
 
 #, c-format
 msgid "Could not set number of virtual CPUs to %d: %s"
-msgstr "Impossible de définir le nombre de CPU virtuels à %d: %s"
+msgstr "Impossible de définir le nombre de CPU virtuels à %d : %s"
 
 #, c-format
 msgid "Could not set reservation to %lld MHz, expecting positive value"
@@ -5093,7 +5095,7 @@ msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
 msgstr "Impossible de démarrer 'vhost-user-gpu'. exitstatus : %d"
 
 msgid "Could not start 'virtiofsd'"
-msgstr "Impossible de lancer 'virtiofsd'."
+msgstr "Impossible de lancer 'virtiofsd'"
 
 #, c-format
 msgid "Could not start dbus-daemon. exitstatus: %d"
@@ -5156,8 +5158,9 @@ msgstr "Le processeur '%u' du nœud '%zu' est hors de portée du bitmap fourni"
 msgid "Crashed"
 msgstr "Échoué"
 
+#, fuzzy
 msgid "Crashloaded"
-msgstr "Crashloaded"
+msgstr "Chargement d'urgence"
 
 msgid "Create a checkpoint from XML"
 msgstr "Créer un point de passage depuis le XML"
@@ -5185,19 +5188,19 @@ msgstr ""
 "machine virtuelle."
 
 msgid "Create a domain."
-msgstr "Créer un domaine"
+msgstr "Créer un domaine."
 
 msgid "Create a network port."
 msgstr "Créer un port réseau."
 
 msgid "Create a network."
-msgstr "Créer un réseau"
+msgstr "Créer un réseau."
 
 msgid "Create a new network filter binding."
 msgstr "Créer une nouvelle liaison de filtre réseau."
 
 msgid "Create a pool."
-msgstr "Créer un pool"
+msgstr "Créer un pool."
 
 msgid "Create a restore point for interfaces settings"
 msgstr "Créer un point de restauration pour les paramètres de l’interface"
@@ -5336,13 +5339,13 @@ msgid "Define a device by an xml file on a node"
 msgstr "Définir un périphérique par un fichier xml sur un nœud"
 
 msgid "Define a domain."
-msgstr "Définir un domaine"
+msgstr "Définir un domaine."
 
 msgid "Define a new network filter or update an existing one."
 msgstr "Définir un nouveau filtre réseau ou mettre à jour un filtre existant."
 
 msgid "Define a pool."
-msgstr "Définir un pool"
+msgstr "Définir un pool."
 
 msgid "Define or modify a persistent physical host interface."
 msgstr "Définir ou modifier une interface hôte physique persistante."
@@ -5377,10 +5380,10 @@ msgid "Delete a given network filter binding."
 msgstr "Supprime une liaison de filtre réseau donnée."
 
 msgid "Delete a given pool."
-msgstr "Détruire le pool indiqué"
+msgstr "Détruire le pool indiqué."
 
 msgid "Delete a given vol."
-msgstr "Détruire le volume indiqué"
+msgstr "Détruire le volume indiqué."
 
 msgid "Delete an IOThread from the guest domain."
 msgstr "Supprime un IOThread du domaine invité."
@@ -5587,12 +5590,13 @@ msgstr "N'a pas trouvé le périphérique USB %04x:%04x bus :%u périphérique :
 msgid "Did not find USB device bus:%u device:%u"
 msgstr "N'a pas trouvé le bus de périphérique USB :%u périphérique :%u"
 
+#, fuzzy
 msgid ""
 "Different bind and connect parameters for udp character device is not "
 "supported."
 msgstr ""
-"Différents paramètres bind et connect pour le périphérique de caractère udp "
-"ne sont pas pris en charge"
+"Différents paramètres de liaison et de connexion pour le dispositif de "
+"caractère UDP ne sont pas pris en charge."
 
 msgid "Different inbound and outbound bandwidth is unsupported"
 msgstr ""
@@ -5701,7 +5705,7 @@ msgid ""
 "Distance value %d under node %zu is LOCAL_DISTANCE and should be set to 10"
 msgstr ""
 "La valeur de distance %d sous le nœud %zu est LOCAL_DISTANCE et doit être "
-"fixée à 10."
+"fixée à 10"
 
 #, c-format
 msgid "Distance value of %d is not in valid range"
@@ -6726,7 +6730,7 @@ msgstr "Échec de l'ajout du périphérique PCI %s à la liste inactive"
 
 #, c-format
 msgid "Failed to add capability %s: %d"
-msgstr "Échec de l'ajout de la capacité %s: %d"
+msgstr "Échec de l'ajout de la capacité %s : %d"
 
 #, c-format
 msgid ""
@@ -6765,7 +6769,7 @@ msgstr "Impossible d'appliquer les capacités : %d"
 
 #, c-format
 msgid "Failed to apply firewall rules %s: %s"
-msgstr "Échec de l'application des règles du pare-feu %s: %s"
+msgstr "Échec de l'application des règles du pare-feu %s : %s"
 
 #, c-format
 msgid "Failed to attach device from %s"
@@ -7176,7 +7180,7 @@ msgid "Failed to create v2 cgroup '%s'"
 msgstr "Échec de la création du cgroup v2 '%s'"
 
 msgid "Failed to create vbox driver object."
-msgstr "Échec de la création de l'objet pilote vbox"
+msgstr "Échec de la création de l'objet pilote vbox."
 
 #, c-format
 msgid "Failed to create vol %s"
@@ -7654,7 +7658,7 @@ msgid "Failed to initialize TLS session: %s"
 msgstr "Échec de l'initialisation de la session TLS : %s"
 
 msgid "Failed to initialize cgroup backend."
-msgstr "Échec de l'initialisation du backend cgroup"
+msgstr "Échec de l'initialisation du backend cgroup."
 
 msgid "Failed to initialize host cpu features"
 msgstr "Échec de l'initialisation des caractéristiques du processeur hôte"
@@ -7780,7 +7784,7 @@ msgstr "Échec du chargement du module stub PCI %s"
 #, c-format
 msgid "Failed to load PCI stub module %s: administratively prohibited"
 msgstr ""
-"Impossible de charger le module PCI stub %s: interdit administrativement"
+"Impossible de charger le module PCI stub %s : interdit administrativement"
 
 #, c-format
 msgid "Failed to load config for binding '%s'"
@@ -7802,7 +7806,7 @@ msgstr "Échec du chargement du module nbd : interdit par l'administration"
 
 #, c-format
 msgid "Failed to load plugin %s: %s"
-msgstr "Échec du chargement du plugin %s: %s"
+msgstr "Échec du chargement du plugin %s : %s"
 
 #, c-format
 msgid "Failed to locate parent device with ID '%s'"
@@ -7834,7 +7838,7 @@ msgstr "Le répertoire %s n'est pas accessible en lecture seule"
 #, c-format
 msgid "Failed to make dnsmasq (PID: %d) reload config files."
 msgstr ""
-"Échec du rechargement des fichiers de configuration par dnsmasq (PID : %d)"
+"Échec du rechargement des fichiers de configuration par dnsmasq (PID : %d)."
 
 msgid "Failed to make domain persistent after migration"
 msgstr "Impossible de rendre le domaine persistant après la migration"
@@ -7979,7 +7983,7 @@ msgstr "Impossible d'ouvrir le tty %s"
 
 #, c-format
 msgid "Failed to parse %s: only com1 and com2 supported."
-msgstr "Échec de l'analyse de %s: seuls com1 et com2 sont pris en charge."
+msgstr "Échec de l'analyse de %s : seuls com1 et com2 sont pris en charge."
 
 #, c-format
 msgid "Failed to parse CCW address '%s'"
@@ -8113,7 +8117,7 @@ msgstr "Échec de l'analyse de la sortie vzlist"
 
 #, c-format
 msgid "Failed to parse wwn '%s' as number"
-msgstr "Échec de l'analyse de la chaîne de caractères '%s' en tant que nombre."
+msgstr "Échec de l'analyse de la chaîne de caractères '%s' en tant que nombre"
 
 #, c-format
 msgid "Failed to pin vcpu '%d' with libxenlight"
@@ -8128,7 +8132,7 @@ msgstr "Impossible de pré-allouer de l'espace pour le fichier '%s'"
 
 #, c-format
 msgid "Failed to probe capabilities for %s: %s"
-msgstr "Échec de la recherche de capacités pour %s: %s"
+msgstr "Échec de la recherche de capacités pour %s : %s"
 
 #, c-format
 msgid "Failed to probe for format type '%s'"
@@ -8268,7 +8272,7 @@ msgstr "Impossible de libérer le verrou : %s"
 
 #, c-format
 msgid "Failed to remove capability %s: %d"
-msgstr "Échec de la suppression de la capacité %s: %d"
+msgstr "Échec de la suppression de la capacité %s : %d"
 
 msgid "Failed to remove domain managed save image"
 msgstr "Échec de la suppression de l'image de sauvegarde gérée par le domaine"
@@ -8470,11 +8474,11 @@ msgstr "Échec de la sérialisation du cliché"
 
 #, c-format
 msgid "Failed to set %s for %s: value too large"
-msgstr "Échec de la définition de %s pour %s: valeur trop grande"
+msgstr "Échec de la définition de %s pour %s : valeur trop grande"
 
 #, c-format
 msgid "Failed to set TLS session priority to %s: %s"
-msgstr "Échec de la définition de la priorité de la session TLS à %s: %s"
+msgstr "Échec de la définition de la priorité de la session TLS à %s : %s"
 
 #, c-format
 msgid "Failed to set attributes from %s"
@@ -8500,8 +8504,8 @@ msgstr "Échec de la mise en place de l'indicateur close-on-exec '%s'"
 #, c-format
 msgid "Failed to set com port %s: does not start with '/dev/nmdm'."
 msgstr ""
-"Impossible de définir le port de communication %s: ne commence pas par '/dev/"
-"nmdm'."
+"Impossible de définir le port de communication %s : ne commence pas par '/"
+"dev/nmdm'."
 
 #, c-format
 msgid "Failed to set credential: %s"
@@ -8601,8 +8605,8 @@ msgstr "Échec de la définition du type de session : %s"
 #, c-format
 msgid "Failed to set slave for %s: last letter not 'A' or 'B'"
 msgstr ""
-"Impossible de définir l'esclave pour %s: la dernière lettre n'est pas 'A' ou "
-"'B'"
+"Impossible de définir l'esclave pour %s : la dernière lettre n'est pas 'A' "
+"ou 'B'"
 
 msgid "Failed to set stp attribute in xml document"
 msgstr "Échec de la définition de l'attribut stp dans le document xml"
@@ -8939,7 +8943,7 @@ msgstr "Le fichier ’%s’ est de type inconnu"
 
 #, c-format
 msgid "File '%s/%s/%s' does not exist."
-msgstr "Le fichier '%s/%s/%s' n'existe pas"
+msgstr "Le fichier '%s/%s/%s' n'existe pas."
 
 msgid "File bandwidth:"
 msgstr "La bande passante des fichiers :"
@@ -9119,7 +9123,7 @@ msgid "Found unexpected controller model '%s' for disk '%s'"
 msgstr "Le modèle de contrôleur '%s' pour le disque '%s' est inattendu"
 
 msgid "Freeze domain's mounted filesystems."
-msgstr "Geler les systèmes de fichiers montés du domaine"
+msgstr "Geler les systèmes de fichiers montés du domaine."
 
 #, c-format
 msgid "Froze %d filesystem(s)\n"
@@ -9144,7 +9148,7 @@ msgstr "Erreur lors de l’appel système GNUTLS"
 msgid "Get block device size info for a domain."
 msgstr ""
 "Obtenir des informations sur la taille du périphérique de bloc pour un "
-"domaine"
+"domaine."
 
 msgid ""
 "Get device block stats for a running domain. See man page or use --human for "
@@ -10193,11 +10197,11 @@ msgstr "Type de contrôleur non valide pour le LUN"
 
 #, c-format
 msgid "Invalid cpuNum in %s"
-msgstr "Invalid cpuNum in %s"
+msgstr "cpuNum in %s invalide"
 
 #, c-format
 msgid "Invalid cpuid[%zu]"
-msgstr "Invalid cpuid[%zu]"
+msgstr "cpuid[%zu] invalide"
 
 #, c-format
 msgid "Invalid cpulist '%s'"
@@ -10323,9 +10327,7 @@ msgid "Invalid file descriptor while waiting for monitor (vm='%s')"
 msgstr "Descripteur de fichier non valide en attente du moniteur (vm='%s')"
 
 msgid "Invalid firmware name"
-msgstr ""
-"Nom du firm de l'inval inval inval inval inval inval inval inval inval inval "
-"inval inval inval inval"
+msgstr "Nom du firmware invalide"
 
 #, c-format
 msgid "Invalid floppy device name: %s"
@@ -10571,7 +10573,7 @@ msgstr "Numéro de port non valide : %s"
 
 #, c-format
 msgid "Invalid port range '%u-%u'."
-msgstr "Plage de ports non valide '%u-%u'"
+msgstr "Plage de ports non valide '%u-%u'."
 
 #, c-format
 msgid "Invalid portForward proto value %u"
@@ -10838,10 +10840,10 @@ msgid "Invalid vendor element in CPU model %s"
 msgstr "Élément fournisseur non valide dans le modèle de CPU %s"
 
 msgid "Invalid virNetLibsshSession *"
-msgstr "Invalid virNetLibsshSession *"
+msgstr "Invalide virNetLibsshSession *"
 
 msgid "Invalid virNetSSHSession *"
-msgstr "Invalid virNetSSHSession *"
+msgstr "Invalide virNetSSHSession *"
 
 #, c-format
 msgid "Invalid vnuma configuration for vnode %zu"
@@ -10860,14 +10862,14 @@ msgid "Invocation of %s returned an error: %s (%d)"
 msgstr "L'invocation de %s renvoie une erreur : %s (%d)"
 
 msgid "Invoke fstrim on domain's mounted filesystems."
-msgstr "Invoque fstrim sur les systèmes de fichiers montés du domaine"
+msgstr "Invoque fstrim sur les systèmes de fichiers montés du domaine."
 
 msgid "Iteration:"
 msgstr "Itération :"
 
 #, c-format
 msgid "Iterator ID exceeds maximum ID of %u"
-msgstr "Iterator ID exceeds maximum ID of %u"
+msgstr "L'ID de l'itérateur dépasse l'ID maximum de %u"
 
 msgid "JSON array -> commandline conversion function not provided"
 msgstr "Tableau JSON -> fonction de conversion en ligne de commande non fournie"
@@ -11174,7 +11176,7 @@ msgstr "Tableau de fichiers malformés"
 
 #, c-format
 msgid "Malformed format for filter '%s'"
-msgstr "Format malformé pour le filtre '%s'."
+msgstr "Format malformé pour le filtre '%s'"
 
 #, c-format
 msgid "Malformed format for log output '%s'"
@@ -12079,7 +12081,7 @@ msgstr "Chemin de bloc de l'hôte de stockage manquant"
 
 #, c-format
 msgid "Missing storage volume name for disk '%s'"
-msgstr "Nom de volume de stockage manquant pour le disque '%s'."
+msgstr "Nom de volume de stockage manquant pour le disque '%s'"
 
 #, c-format
 msgid "Missing udev property '%s' on '%s'"
@@ -12347,7 +12349,7 @@ msgid "Namespaces are not supported on this platform"
 msgstr "Les espaces de noms ne sont pas pris en charge sur cette plate-forme"
 
 msgid "Namespaces are not supported on this platform."
-msgstr "Les espaces de noms ne sont pas pris en charge sur cette plate-forme"
+msgstr "Les espaces de noms ne sont pas pris en charge sur cette plate-forme."
 
 msgid "Nested HV configuration is not supported by this QEMU binary"
 msgstr ""
@@ -12916,7 +12918,7 @@ msgstr "Pas de zPCI %s à réserver"
 
 #, c-format
 msgid "Node %d:\n"
-msgstr "Noeud %d:\n"
+msgstr "Noeud %d :\n"
 
 #, c-format
 msgid "Node %zu out of range"
@@ -13020,7 +13022,7 @@ msgstr "Non pris en charge sur cette plateforme"
 
 #, sh-format
 msgid "Not suspending transient guests on URI: $uri: "
-msgstr "Ne pas suspendre les invités transitoires sur l'URI : $uri: "
+msgstr "Ne pas suspendre les invités transitoires sur l'URI : $uri : "
 
 msgid "Now in mirroring phase"
 msgstr "Maintenant dans la phase de miroir"
@@ -13201,7 +13203,7 @@ msgid "Only mac option can be specified for virt-net"
 msgstr "Seule l'option mac peut être spécifiée pour virt-net"
 
 msgid "Only native iomode is supported by vz driver."
-msgstr "Seul le mode iomode natif est pris en charge par le pilote vz"
+msgstr "Seul le mode iomode natif est pris en charge par le pilote vz."
 
 #, c-format
 msgid ""
@@ -13383,7 +13385,7 @@ msgstr "D'autres tâches sont en attente pour ce domaine"
 
 #, c-format
 msgid "Our own certificate %s failed validation against %s: %s"
-msgstr "Notre propre certificat %s a échoué à la validation contre %s: %s"
+msgstr "Notre propre certificat %s a échoué à la validation contre %s : %s"
 
 msgid "Out of memory"
 msgstr "Mémoire saturée"
@@ -13412,7 +13414,7 @@ msgid "Output the IP address and port number for the graphical display."
 msgstr "Indiquer l'adresse IP et le numéro de port pour l'affichage graphique."
 
 msgid "Output the device for the TTY console."
-msgstr "Afficher le périphérique pour la console TTY"
+msgstr "Afficher le périphérique pour la console TTY."
 
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "Afficher les informations du domaine comme flux XML vers stdout."
@@ -13531,7 +13533,7 @@ msgstr ""
 msgid "PCI host devices must use 'pci' or 'unassigned' address type"
 msgstr ""
 "Les périphériques hôtes PCI doivent utiliser le type d'adresse 'pci' ou "
-"'unassigned'."
+"'unassigned'"
 
 msgid "PID file (unless overridden by -p):"
 msgstr "Fichier PID (sauf s'il est remplacé par -p) :"
@@ -13595,7 +13597,7 @@ msgid "Parameter '%s' is not supported by this kernel"
 msgstr "Le paramètre '%s' n'est pas pris en charge par ce noyau"
 
 msgid "Parameter 'min_guarantee' not supported by QEMU."
-msgstr "Paramètre 'min_guarantee' non pris en charge par QEMU"
+msgstr "Paramètre 'min_guarantee' non pris en charge par QEMU."
 
 msgid "Parent"
 msgstr "Parent"
@@ -13606,7 +13608,7 @@ msgid ""
 "wwnn/wwpn lookup."
 msgstr ""
 "L'attribut parent '%s' ne correspond pas au parent '%s' déterminé pour la "
-"recherche wwnn/wwpn '%s'"
+"recherche wwnn/wwpn '%s'."
 
 #, c-format
 msgid "Parent device %s is not capable of vport operations"
@@ -13727,7 +13729,7 @@ msgid "Physical:"
 msgstr "Physique :"
 
 msgid "Pin domain IOThreads to host physical CPUs."
-msgstr "Pin domain IOThreads to host physical CPUs."
+msgstr "Épingler les VCPU d'un domaine pour héberger des CPU physiques."
 
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "Épingler les VCPU d’un domaine pour héberger des CPU physiques."
@@ -13858,8 +13860,8 @@ msgid ""
 "Prints global help, command specific help, or help for a\n"
 "    group of related commands"
 msgstr ""
-"Imprime l'aide globale, l'aide spécifique à une commande ou l'aide pour un "
-"groupe de commandes apparentées"
+"Imprime l'aide globale, l'aide spécifique à une commande\n"
+"ou l'aide pour un groupe de commandes apparentées."
 
 msgid ""
 "Prints global help, command specific help, or help for a group of related "
@@ -14296,7 +14298,7 @@ msgstr "Le chemin du moniteur Resctrl est déjà défini sur '%s'"
 msgid "Reset node device before or after assigning to a domain."
 msgstr ""
 "Réinitialiser le périphérique de nœud avant ou après l'avoir assigné à un "
-"domaine"
+"domaine."
 
 msgid "Reset the target domain as if by power button"
 msgstr ""
@@ -14347,7 +14349,7 @@ msgid "Restoring of leases failed on interface '%s'"
 msgstr "La restauration des locations a échoué sur l'interface '%s'"
 
 msgid "Resume a previously suspended domain."
-msgstr "Réactiver un domaine précédemment suspendu"
+msgstr "Réactiver un domaine précédemment suspendu."
 
 msgid "Resume operation failed"
 msgstr "Échec de l'opération de reprise"
@@ -14360,7 +14362,7 @@ msgstr "Reprise après l'échec du dump"
 
 #, sh-format
 msgid "Resuming guest $name: "
-msgstr "Reprise de l'invité $name: "
+msgstr "Reprise de l'invité $name : "
 
 #, sh-format
 msgid "Resuming guests on $uri URI..."
@@ -14435,7 +14437,7 @@ msgstr ""
 "Renvoie des informations sur les travaux en cours d'exécution sur un domaine."
 
 msgid "Returns list of domains."
-msgstr "Renvoie la liste des domaines"
+msgstr "Renvoie la liste des domaines."
 
 msgid "Returns list of network filter bindings."
 msgstr "Renvoie la liste des liens entre les filtres réseau."
@@ -14453,7 +14455,7 @@ msgid "Returns list of physical host interfaces."
 msgstr "Renvoie la liste des interfaces physiques de l'hôte."
 
 msgid "Returns list of pools."
-msgstr "Renvoie la liste des pools"
+msgstr "Renvoie la liste des pools."
 
 msgid "Returns list of vols by pool."
 msgstr "Renvoie la liste des volume par pool."
@@ -14481,7 +14483,7 @@ msgid "Route address '%s' conflicts with IP address for '%s'"
 msgstr "L'adresse de route '%s' est en conflit avec l'adresse IP de '%s'"
 
 msgid "Run a reboot command in the target domain."
-msgstr "Exécuter une commande de redémarrage dans le domaine cible"
+msgstr "Exécuter une commande de redémarrage dans le domaine cible."
 
 msgid "Run an arbitrary command in a lxc guest namespace; use at your own risk"
 msgstr ""
@@ -14497,7 +14499,7 @@ msgid "Run as a daemon & write PID file"
 msgstr "Exécuter comme un démon et écrire le fichier PID"
 
 msgid "Run shutdown in the target domain."
-msgstr "Exécuter la commande shutdown dans le domaine cible"
+msgstr "Exécuter la commande shutdown dans le domaine cible."
 
 #, c-format
 msgid "Running against daemon: %d.%d.%d\n"
@@ -14649,7 +14651,7 @@ msgstr "La taille du SMM TSEG doit être divisible par 1 MiB"
 #, c-format
 msgid "SOAP fault during %s: code '%s', subcode '%s', reason '%s', detail '%s'"
 msgstr ""
-"Erreur SOAP pendant %s: code '%s', subcode '%s', reason '%s', detail '%s'"
+"Erreur SOAP pendant %s : code '%s', subcode '%s', reason '%s', detail '%s'"
 
 msgid "SSH Agent did not provide any authentication identity"
 msgstr "L'agent SSH n'a pas fourni d'identité d'authentification"
@@ -14681,11 +14683,11 @@ msgstr "SVE désactivé, mais longueurs des vecteurs SVE fournies"
 
 #, c-format
 msgid "Sanlock helper arguments are longer than %d: '%s'"
-msgstr "Les arguments des helper Sanlock sont plus longs que %d: '%s'"
+msgstr "Les arguments des helper Sanlock sont plus longs que %d : '%s'"
 
 #, c-format
 msgid "Sanlock helper path is longer than %d: '%s'"
-msgstr "Le chemin de l'aide Sanlock est plus long que %d: '%s'"
+msgstr "Le chemin de l'aide Sanlock est plus long que %d : '%s'"
 
 msgid "Sanlock plugin is not initialized"
 msgstr "Le plugin Sanlock n'est pas initialisé"
@@ -14700,10 +14702,10 @@ msgid ""
 "    be started from this saved state."
 msgstr ""
 "Sauvegarder et détruire un domaine en cours d'exécution, afin qu'il puisse "
-"redémarrer à partir du même état à un moment ultérieur.  Lorsque la commande "
-"virsh 'start' est\n"
-"    est exécutée pour le domaine, celui-ci sera automatiquement\n"
-"    démarré à partir de cet état sauvegardé."
+"redémarrer à partir\n"
+"du même état à un moment ultérieur.  Lorsque la commande virsh 'start' est "
+"exécutée pour le domaine, celui-ci sera automatiquement démarré à partir de "
+"cet état sauvegardé."
 
 msgid "Save the RAM state of a running domain."
 msgstr "Sauvegarder l'état de la RAM d'un domaine en cours d'exécution."
@@ -15357,7 +15359,7 @@ msgstr ""
 "    n'est présent."
 
 msgid "Start a network."
-msgstr "Démarrer un réseau"
+msgstr "Démarrer un réseau."
 
 msgid "Start a pool."
 msgstr "Démarrer un pool."
@@ -15613,7 +15615,7 @@ msgid "Support only one IPv6 default gateway"
 msgstr "Ne supporte que la passerelle IPv6 par défaut"
 
 msgid "Suspend a running domain."
-msgstr "Suspendre un domaine en cours d’exécution"
+msgstr "Suspendre un domaine en cours d’exécution."
 
 msgid "Suspend duration in seconds, at least 60"
 msgstr "Durée de la suspension en secondes, au moins 60"
@@ -15647,7 +15649,7 @@ msgstr "Suspendu"
 
 #, sh-format
 msgid "Suspending $name: "
-msgstr "Suspendre $name: "
+msgstr "Suspendre $name : "
 
 #, sh-format
 msgid "Suspending guests on $uri URI..."
@@ -16879,7 +16881,7 @@ msgid "The vbox driver does not support %s disk device"
 msgstr "Le pilote vbox ne prend pas en charge le périphérique de disque %s"
 
 msgid "There are no more free CCW devnos."
-msgstr "Il n'y a plus de devnos CCW gratuits"
+msgstr "Il n'y a plus de devnos CCW gratuits."
 
 #, c-format
 msgid "There is no more free %s."
@@ -17109,7 +17111,7 @@ msgstr "Trop de niveaux de liens symboliques : %s"
 
 #, c-format
 msgid "Too many migration parameters '%d' for limit '%d'"
-msgstr "Trop de paramètres de migration '%d' pour la limite '%d'."
+msgstr "Trop de paramètres de migration '%d' pour la limite '%d'"
 
 #, c-format
 msgid "Too many model names '%d' for limit '%d'"
@@ -17188,7 +17190,7 @@ msgstr "Transport"
 
 #, c-format
 msgid "Transport error during %s: %s (%d)"
-msgstr "Erreur de transport pendant %s: %s (%d)"
+msgstr "Erreur de transport pendant %s : %s (%d)"
 
 msgid "Tried to write socket in error state"
 msgstr "Tentative d'écriture d'un socket en état d'erreur"
@@ -17389,7 +17391,7 @@ msgstr "Impossible d'y accéder %s"
 
 #, c-format
 msgid "Unable to access cache '%s' for '%s'"
-msgstr "Impossible d'accéder au cache '%s' pour '%s'."
+msgstr "Impossible d'accéder au cache '%s' pour '%s'"
 
 #, c-format
 msgid "Unable to access config file %s"
@@ -17451,7 +17453,7 @@ msgstr "Impossible d'ajouter un lockspace %s"
 
 #, c-format
 msgid "Unable to add lockspace %s: %s"
-msgstr "Impossible d'ajouter le lockspace %s: %s"
+msgstr "Impossible d'ajouter le lockspace %s : %s"
 
 msgid "Unable to add media registry other media"
 msgstr "Impossible d'ajouter le registre des médias d'autres médias"
@@ -17752,7 +17754,7 @@ msgid ""
 "Unable to create lockspace %s: parent directory does not exist or is not a "
 "directory"
 msgstr ""
-"Impossible de créer un espace de verrouillage %s: le répertoire parent "
+"Impossible de créer un espace de verrouillage %s : le répertoire parent "
 "n'existe pas ou n'est pas un répertoire"
 
 msgid "Unable to create media registry"
@@ -18404,7 +18406,7 @@ msgstr "Impossible d'initialiser la location %s"
 
 #, c-format
 msgid "Unable to initialize lease %s: %s"
-msgstr "Impossible d'initialiser la location %s: %s"
+msgstr "Impossible d'initialiser la location %s : %s"
 
 #, c-format
 msgid "Unable to initialize lockspace %s"
@@ -18412,7 +18414,7 @@ msgstr "Impossible d'initialiser le lockspace %s"
 
 #, c-format
 msgid "Unable to initialize lockspace %s: %s"
-msgstr "Impossible d'initialiser le lockspace %s: %s"
+msgstr "Impossible d'initialiser le lockspace %s : %s"
 
 msgid "Unable to initialize lockspace mutex"
 msgstr "Impossible d'initialiser le lockspace mutex"
@@ -18605,7 +18607,7 @@ msgstr "Impossible d'analyser le MAC '%s'"
 
 #, c-format
 msgid "Unable to parse RNG %s: %s"
-msgstr "Impossible d'analyser le RNG %s: %s"
+msgstr "Impossible d'analyser le RNG %s : %s"
 
 #, c-format
 msgid "Unable to parse URI %s"
@@ -18654,7 +18656,7 @@ msgstr "Impossible d'analyser l'état du verrou %s"
 
 #, c-format
 msgid "Unable to parse lock state %s: %s"
-msgstr "Impossible d'analyser l'état de verrouillage %s: %s"
+msgstr "Impossible d'analyser l'état de verrouillage %s : %s"
 
 msgid "Unable to parse ovs-vsctl output"
 msgstr "Impossible d'analyser la sortie de ovs-vsctl"
@@ -18751,7 +18753,7 @@ msgstr "Impossible de demander la taille du secteur %s"
 
 #, c-format
 msgid "Unable to query sector size %s: %s"
-msgstr "Impossible d'interroger la taille du secteur %s: %s"
+msgstr "Impossible d'interroger la taille du secteur %s : %s"
 
 msgid "Unable to query tap interface name"
 msgstr "Impossible de demander le nom de l'interface de connexion"
@@ -18916,7 +18918,7 @@ msgstr "Impossible de demander une personnalité pour %s sur %s"
 
 #, c-format
 msgid "Unable to reset PCI device %s: %s"
-msgstr "Impossible de réinitialiser le périphérique PCI %s: %s"
+msgstr "Impossible de réinitialiser le périphérique PCI %s : %s"
 
 #, c-format
 msgid "Unable to reset ingress on port %s"
@@ -19235,16 +19237,16 @@ msgstr "Impossible de définir la configuration du vlan sur le port %s"
 
 #, c-format
 msgid "Unable to set x509 CA certificate: %s: %s"
-msgstr "Impossible de définir le certificat CA x509 : %s: %s"
+msgstr "Impossible de définir le certificat CA x509 : %s : %s"
 
 #, c-format
 msgid "Unable to set x509 certificate revocation list: %s: %s"
 msgstr ""
-"Impossible de définir la liste de révocation du certificat x509 : %s: %s"
+"Impossible de définir la liste de révocation du certificat x509 : %s : %s"
 
 #, c-format
 msgid "Unable to set x509 key and certificate: %s, %s: %s"
-msgstr "Impossible de définir la clé et le certificat x509 : %s, %s: %s"
+msgstr "Impossible de définir la clé et le certificat x509 : %s, %s : %s"
 
 #, c-format
 msgid "Unable to split FD list '%s'"
@@ -19316,7 +19318,7 @@ msgid "Unable to unregister machine"
 msgstr "Impossible de désenregistrer la machine"
 
 msgid "Unable to update server's tls related files."
-msgstr "Impossible de mettre à jour les fichiers relatifs à tls du serveur"
+msgstr "Impossible de mettre à jour les fichiers relatifs à tls du serveur."
 
 #, c-format
 msgid ""
@@ -19374,7 +19376,7 @@ msgstr "Impossible d'écrire de '%s' à '%s'"
 
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
-msgstr "Impossible d'écrire le fichier pid '%s/%s.pid'"
+msgstr "Impossible d'écrire le fichier PID '%s/%s.pid'"
 
 #, c-format
 msgid "Unable to write to %s"
@@ -19432,7 +19434,7 @@ msgid "Undefine the configuration for a persistent network."
 msgstr "Redéfinir la configuration d'un réseau persistant."
 
 msgid "Undefine the configuration for an inactive pool."
-msgstr "Redéfinir la configuration d’un pool inactif"
+msgstr "Redéfinir la configuration d’un pool inactif."
 
 msgid "Undefined"
 msgstr "Redéfini"
@@ -19466,7 +19468,7 @@ msgstr "Code de réponse HTTP inattendu %lu"
 
 #, c-format
 msgid "Unexpected HTTP response during %s: %d"
-msgstr "Réponse HTTP inattendue pendant %s: %d"
+msgstr "Réponse HTTP inattendue pendant  %s : %d"
 
 #, c-format
 msgid "Unexpected IDE controller model %d"
@@ -20019,7 +20021,7 @@ msgstr "Type de backend firewalld non reconnu : %s"
 
 #, c-format
 msgid "Unrecognized value in %s: %s"
-msgstr "Valeur non comptabilisée sur %s: %s"
+msgstr "Valeur non comptabilisée sur %s : %s"
 
 msgid "Unsafe migration"
 msgstr "Migration non sécurisée"
@@ -20360,7 +20362,7 @@ msgid "Unusual value in %s/devices/%s/class: %s"
 msgstr "Valeur inhabituelle dans %s/devices/%s/class : %s"
 
 msgid "Update device from an XML <file>."
-msgstr "Mise à jour du périphérique à partir d'un XML <file>"
+msgstr "Mise à jour d'un périphérique depuis un fichier XML <file>."
 
 msgid "Update the media"
 msgstr "Mettez à jour les médias"
@@ -20737,7 +20739,7 @@ msgstr "WARN"
 
 #, c-format
 msgid "WS-Management fault during %s invocation: %s"
-msgstr "Défaillance de WS-Management pendant l'invocation de %s: %s"
+msgstr "Défaillance de WS-Management pendant l'invocation de %s : %s"
 
 #, sh-format
 msgid "Waiting for %d guests to shut down, %d seconds left\\n"
@@ -22583,7 +22585,7 @@ msgstr "Impossible de trouver le nom du groupe de volumes logiques '%s'"
 
 #, c-format
 msgid "cannot find new IOThread '%u' in QEMU monitor."
-msgstr "ne trouve pas de nouveau IOThread '%u' dans le moniteur QEMU"
+msgstr "ne trouve pas de nouveau IOThread '%u' dans le moniteur QEMU."
 
 #, c-format
 msgid "cannot find newly created volume '%s'"
@@ -22817,7 +22819,7 @@ msgstr "ne peut pas charger le profil AppArmor '%s'"
 
 #, c-format
 msgid "cannot load cert data from %s: %s"
-msgstr "Impossible de charger les données du certificat à partir de %s: %s"
+msgstr "Impossible de charger les données du certificat à partir de %s : %s"
 
 #, c-format
 msgid "cannot lookup default selinux label for tap fd %d"
@@ -23056,11 +23058,11 @@ msgstr "Impossible d’analyser le paramètre interfaceid en tant qu’uuid"
 
 #, c-format
 msgid "cannot parse json %s: %s"
-msgstr "Impossible d'analyser le json %s: %s"
+msgstr "Impossible d'analyser le json %s : %s"
 
 #, c-format
 msgid "cannot parse json %s: unterminated string/map/array"
-msgstr "Impossible d’analyser json %s: string/map/array non terminé"
+msgstr "Impossible d’analyser json %s : string/map/array non terminé"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -23482,7 +23484,7 @@ msgstr "ne peut pas statuer le fichier '%s'"
 
 #, c-format
 msgid "cannot stat path '%s'"
-msgstr "impossible de statuer le chemin %s :"
+msgstr "impossible de statuer le chemin '%s'"
 
 #, c-format
 msgid "cannot stat tap fd %d"
@@ -23639,7 +23641,7 @@ msgstr ""
 
 #, c-format
 msgid "cd: %s: %s"
-msgstr "cd : %s: %s"
+msgstr "cd : %s : %s"
 
 msgid "cd: command valid only in interactive mode"
 msgstr "cd : commande valable uniquement en mode interactif"
@@ -23826,7 +23828,7 @@ msgstr "La réponse de chardev-add n'avait pas de chemin d'accès au pty"
 
 #, c-format
 msgid "chardev_tls_x509_cert_dir directory '%s' does not exist"
-msgstr "chardev_tls_x509_cert_dir directory '%s' does not exist"
+msgstr "chardev_tls_x509_cert_dir répertoire '%s' n'existe pas"
 
 msgid "check attribute specified for CPU with no model"
 msgstr "vérifier l'attribut spécifié pour les CPU sans modèle"
@@ -23922,7 +23924,7 @@ msgid "client which to retrieve identity information for"
 msgstr "client qui doit récupérer les informations d'identité pour"
 
 msgid "clone a volume."
-msgstr "cloner un volume"
+msgstr "cloner un volume."
 
 msgid "clone name"
 msgstr "nom du clone"
@@ -23930,7 +23932,8 @@ msgstr "nom du clone"
 #, c-format
 msgid "close: %s: failed to write or close temporary file: %s"
 msgstr ""
-"close : %s: échec de l'écriture ou de la fermeture du fichier temporaire : %s"
+"fermeture : %s : échec de l'écriture ou de la fermeture du fichier "
+"temporaire : %s"
 
 msgid "closed"
 msgstr "fermé"
@@ -24760,7 +24763,7 @@ msgstr ""
 msgid "creation of non-raw file images is not supported without qemu-img."
 msgstr ""
 "La création d'images de fichiers non bruts n'est pas prise en charge sans "
-"qemu-img"
+"qemu-img."
 
 msgid "creation of pid file requires daemonized command"
 msgstr "la création du fichier pid nécessite une commande démonisée"
@@ -24896,7 +24899,7 @@ msgstr "par défaut"
 
 #, c-format
 msgid "default_tls_x509_cert_dir directory '%s' does not exist"
-msgstr "default_tls_x509_cert_dir directory '%s' does not exist"
+msgstr "default_tls_x509_cert_dir répertoire '%s' n'existe pas"
 
 msgid "define (but don't start) a domain from an XML file"
 msgstr "définir (mais ne pas démarrer) un domaine depuis un fichier XML"
@@ -25227,7 +25230,7 @@ msgid ""
 "dirty-bitmap, dirty-ring' can be specified."
 msgstr ""
 "Mode de calcul du taux de pages compromises, l'une ou l'autre de ces 3 "
-"options 'page-sampling, dirty-bitmap, dirty-ring' peut être spécifiée"
+"options 'page-sampling, dirty-bitmap, dirty-ring' peut être spécifiée."
 
 msgid "dirty ring must be power of 2 and ranges [1024, 65536]"
 msgstr "dirty-ring doit être une puissance de 2 et s'étend sur [1024, 65536]"
@@ -25242,7 +25245,7 @@ msgstr ""
 msgid "dirty-ring calculation mode requires dirty-ring feature enabled."
 msgstr ""
 "Le mode de calcul dirty-ring nécessite que la fonction dirty-ring soit "
-"activée"
+"activée."
 
 msgid "disable"
 msgstr "désactiver"
@@ -25349,15 +25352,15 @@ msgstr "Le backend disque n'est pas pris en charge : %s"
 
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
-msgstr "Le bus de disque '%s' ne peut pas être débranché à chaud"
+msgstr "Le bus de disque '%s' ne peut pas être débranché à chaud."
 
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
-msgstr "Le bus de disque '%s' ne peut pas être branché à chaud"
+msgstr "Le bus de disque '%s' ne peut pas être branché à chaud."
 
 #, c-format
 msgid "disk bus '%s' cannot be updated."
-msgstr "Le bus de disque '%s' ne peut pas être mis à jour"
+msgstr "Le bus de disque '%s' ne peut pas être mis à jour."
 
 #, c-format
 msgid "disk bus '%s' doesn't support transiend disk backing image sharing"
@@ -25835,10 +25838,10 @@ msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare n’a pas paramétré URI"
 
 msgid "domainMigratePrepare2 did not set uri"
-msgstr "domainMigratePrepare2 did not set uri"
+msgstr "domainMigratePrepare2 n'a pas défini l'URI"
 
 msgid "domainMigratePrepare3 did not set uri"
-msgstr "domainMigratePrepare3 did not set uri"
+msgstr "domainMigratePrepare3 n'a pas défini l'URI"
 
 msgid "domains in 'doms' array must belong to a single connection"
 msgstr "les domaines du tableau 'doms' doivent appartenir à une seule connexion"
@@ -25891,7 +25894,7 @@ msgstr "vidange de la mémoire du domaine uniquement"
 
 #, c-format
 msgid "dump query failed, status=%d"
-msgstr "dump query failed, status=%d"
+msgstr "La requête de vidage a échoué, status=%d."
 
 msgid "dump the core of a domain to a file for analysis"
 msgstr "vider l’espace mémoire d’un domaine dans un fichier pour analyse"
@@ -25914,7 +25917,7 @@ msgstr "dup2(stdout) a échoué"
 
 #, c-format
 msgid "duplicate 'id' found in '%s'"
-msgstr "duplicate 'id' found in '%s'"
+msgstr "doublon 'id' trouvé dans '%s'"
 
 #, c-format
 msgid "duplicate blkio device path '%s'"
@@ -25930,22 +25933,22 @@ msgstr "domaine en double '%s'"
 
 #, c-format
 msgid "duplicate iothread id '%u' found"
-msgstr "duplicate iothread id '%u' found"
+msgstr "doublon id iothread '%u' trouvé"
 
 #, c-format
 msgid "duplicate iothreadpin for same iothread '%u'"
-msgstr "duplicate iothreadpin for same iothread '%u'"
+msgstr "iothreadpin à double pour le même iothread '%u'"
 
 #, c-format
 msgid "duplicate key '%s'"
 msgstr "clé dupliquée '%s'"
 
 msgid "duplicate native vlan setting"
-msgstr "duplicate native vlan setting"
+msgstr "paramètre vlan natif à double"
 
 #, c-format
 msgid "duplicate vcpu order '%u'"
-msgstr "duplicate vcpu order '%u'"
+msgstr "ordre vcpu '%u' à double"
 
 #, c-format
 msgid "duplicate vcpupin for vcpu '%d'"
@@ -26234,7 +26237,7 @@ msgid "error while suspending the domain"
 msgstr "erreur lors de la suspension du domaine"
 
 msgid "error: "
-msgstr "erreur :"
+msgstr "erreur : "
 
 msgid "error_policy is not supported with vhostuser disk"
 msgstr "error_policy n'est pas pris en charge avec le disque vhostuser"
@@ -26301,7 +26304,8 @@ msgstr "événement 'device-removed' pour le domaine '%s' : %s\n"
 
 #, c-format
 msgid "event 'disk-change' for domain '%s' disk %s: %s -> %s: %s\n"
-msgstr "événement 'disk-change' pour le domaine '%s' disque %s: %s -> %s: %s\n"
+msgstr ""
+"événement 'disk-change' pour le domaine '%s' disque %s : %s -> %s : %s\n"
 
 #, c-format
 msgid ""
@@ -26328,19 +26332,19 @@ msgstr "événement 'lifecycle' pour le domaine '%s' : %s %s\n"
 
 #, c-format
 msgid "event 'lifecycle' for network %s: %s\n"
-msgstr "cycle de vie de l'événement pour le réseau %s: %s\n"
+msgstr "événement 'lifecycle' pour le réseau %s : %s\n"
 
 #, c-format
 msgid "event 'lifecycle' for node device %s: %s\n"
-msgstr "événement 'cycle de vie' pour le périphérique de nœud %s: %s\n"
+msgstr "événement 'lifecycle' pour le périphérique de nœud %s : %s\n"
 
 #, c-format
 msgid "event 'lifecycle' for secret %s: %s\n"
-msgstr "événement \"cycle de vie\" pour le secret %s: %s\n"
+msgstr "événement 'lifecycle' pour le secret %s : %s\n"
 
 #, c-format
 msgid "event 'lifecycle' for storage pool %s: %s\n"
-msgstr "événement 'cycle de vie' pour le pool de stockage %s: %s\n"
+msgstr "événement 'lifecycle' pour le pool de stockage %s : %s\n"
 
 #, c-format
 msgid ""
@@ -26377,7 +26381,7 @@ msgstr "événement 'rtc-change' pour le domaine '%s' : %lld\n"
 
 #, c-format
 msgid "event 'tray-change' for domain '%s' disk %s: %s\n"
-msgstr "événement 'tray-change' pour le domaine '%s' disque %s: %s\n"
+msgstr "événement 'tray-change' pour le domaine '%s' disque %s : %s\n"
 
 #, c-format
 msgid "event 'tunable' for domain '%s':\n"
@@ -26489,10 +26493,10 @@ msgid "expecting a name"
 msgstr "nom attendu"
 
 msgid "expecting a pci:0000.00.00.00 or ccw:00.0.0000 address."
-msgstr "adresse pci:0000.00.00.00 ou ccw:00.0.0000 attendue"
+msgstr "adresse pci:0000.00.00.00 ou ccw:00.0.0000 attendue."
 
 msgid "expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address."
-msgstr "adresse scsi:00.00.00 ou usb:00.00 ou sata:00.00.00 attendue"
+msgstr "adresse scsi:00.00.00 ou usb:00.00 ou sata:00.00.00 attendue."
 
 msgid "expecting a separator"
 msgstr "séparateur attendu"
@@ -26515,7 +26519,7 @@ msgid "expecting an assignment"
 msgstr "affectation attendue"
 
 msgid "expecting an ide:00.00.00 address."
-msgstr "adresse ide:00.00.00 attendue"
+msgstr "adresse ide:00.00.00 attendue."
 
 #, c-format
 msgid "expecting root element of '%s', not '%s'"
@@ -26751,7 +26755,7 @@ msgstr "n'a pas réussi à créer %s"
 
 #, c-format
 msgid "failed to create (start) interface %s: %s%s%s"
-msgstr "échec de la création (démarrage) de l'interface %s: %s%s%s"
+msgstr "échec de la création (démarrage) de l'interface %s : %s%s%s"
 
 #, c-format
 msgid "failed to create RBD snapshot %s@%s"
@@ -26868,7 +26872,7 @@ msgstr "échec de la suppression de root hds du volume '%s'"
 
 #, c-format
 msgid "failed to destroy (stop) interface %s: %s%s%s"
-msgstr "n’a pas pu détruire (arrêter) l'interface %s: %s%s%s"
+msgstr "n’a pas pu détruire (arrêter) l'interface %s : %s%s%s"
 
 msgid "failed to determine host name"
 msgstr "échec de la détermination du nom d'hôte"
@@ -27125,7 +27129,7 @@ msgstr "n’a pas pu obtenir le statut de '%s'"
 
 #, c-format
 msgid "failed to get status of interface %s: %s%s%s"
-msgstr "n’a pas pu obtenir le statut de l'interface %s: %s%s%s"
+msgstr "n’a pas pu obtenir le statut de l'interface %s : %s%s%s"
 
 msgid "failed to get storage pool capabilities"
 msgstr "n’a pas pu obtenir les capacités du pool de stockage"
@@ -27508,7 +27512,7 @@ msgstr "échec de la lecture de l'en-tête libxl"
 
 #, c-format
 msgid "failed to read metadata length in '%s'"
-msgstr "Échec de la lecture de la longueur des métadonnées dans '%s'"
+msgstr "échec de la lecture de la longueur des métadonnées dans '%s'"
 
 msgid "failed to read qemu header"
 msgstr "échec de la lecture de l'en-tête de qemu"
@@ -27521,7 +27525,7 @@ msgid "failed to reboot domain"
 msgstr "échec du redémarrage du domaine"
 
 msgid "failed to receive device from udev monitor"
-msgstr "n'a pas réussi à recevoir le périphérique du moniteur udev"
+msgstr "échec à recevoir le périphérique du moniteur udev"
 
 msgid "failed to regenerate genid"
 msgstr "échec de la régénération de genid"
@@ -27554,7 +27558,7 @@ msgstr "échec de la modification de taille de l’image RBD '%s'"
 
 #, c-format
 msgid "failed to resolve '%s'"
-msgstr "ne parvient pas à résoudre '%s'"
+msgstr "échec pour résoudre : %s"
 
 msgid ""
 "failed to resolve relative backing name: base image is not in backing chain"
@@ -27564,7 +27568,7 @@ msgstr ""
 
 #, c-format
 msgid "failed to resolve symlink %s: %s"
-msgstr "échec de la résolution du lien symbolique %s: %s"
+msgstr "échec de la résolution du lien symbolique %s : %s"
 
 msgid "failed to resume domain"
 msgstr "échec de la reprise du domaine"
@@ -27598,13 +27602,13 @@ msgstr ""
 
 #, c-format
 msgid "failed to rollback transaction: %s%s%s"
-msgstr "a échoué à annuler la transaction : %s%s%s"
+msgstr "échec de l'annulation de la transaction : %s%s%s"
 
 msgid "failed to run apparmor_parser"
 msgstr "échec de l'exécution de apparmor_parser"
 
 msgid "failed to save content"
-msgstr "impossible d’enregistrer le contenu"
+msgstr "échec à enregistrer le contenu"
 
 #, c-format
 msgid "failed to seek in log file %s"
@@ -27612,18 +27616,18 @@ msgstr "échec de la recherche dans le fichier journal %s"
 
 #, c-format
 msgid "failed to seek to end of %s"
-msgstr "n'a pas cherché à atteindre la fin de %s"
+msgstr "échec de la recherche de la fin de %s"
 
 msgid "failed to serialize S-Expr"
-msgstr "impossible de sérialiser S-Expr"
+msgstr "échec de la sérialisation de S-Expr"
 
 #, c-format
 msgid "failed to serialize S-Expr: %s"
-msgstr "impossible de sérialiser S-Expr : %s"
+msgstr "échec de la sérialisation de S-Expr : %s"
 
 #, c-format
 msgid "failed to set %s"
-msgstr "n'a pas réussi à mettre en place %s"
+msgstr "échec à définir %s"
 
 #, c-format
 msgid "failed to set RADOS option: %s"
@@ -27651,7 +27655,7 @@ msgid "failed to set gluster volfile server '%s'"
 msgstr "échec de la configuration du serveur gluster volfile '%s'"
 
 msgid "failed to set guest cid"
-msgstr "ne parvient pas à définir le cid de l'invité"
+msgstr "échec pour définir le cid de l'invité"
 
 msgid "failed to setup stderr file handle"
 msgstr "échec de la configuration du gestionnaire de fichier stderr"
@@ -27672,21 +27676,21 @@ msgstr "échec de l'évaluation du fichier distant '%s'"
 msgid "failed to stat the RADOS cluster"
 msgstr "a échoué à statuer sur le cluster RADOS"
 
-#, c-format
+#, c-format, fuzzy
 msgid "failed to stat the RADOS pool '%s'"
-msgstr "a échoué à statuer sur le pool RADOS '%s'"
+msgstr "échec à statuer sur le pool RADOS '%s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "failed to stat the RBD image %s"
-msgstr "a échoué à statuer sur l'image RBD %s"
+msgstr "échec à statuer sur l'image RBD %s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "failed to stat the RBD image '%s'"
-msgstr "n'a pas réussi à statuer sur l'image RBD \"%s\""
+msgstr "échec à statuer la taille de l'image RBD '%s'"
 
 #, c-format
 msgid "failed to store %lld to %s"
-msgstr "n'a pas réussi à enregistrer %lld à %s"
+msgstr "échec à stocker %lld dans %s"
 
 msgid "failed to suspend domain"
 msgstr "échec de la suspension du domaine"
@@ -27703,7 +27707,7 @@ msgstr "échec de l'umount de devfs sur /dev"
 
 #, c-format
 msgid "failed to undefine interface %s: %s%s%s"
-msgstr "n’a pas pu redéfinir l'interface %s: %s%s%s"
+msgstr "échec pour redéfinir l'interface %s : %s%s%s"
 
 #, c-format
 msgid "failed to unmark device %s as autostarted"
@@ -27815,7 +27819,7 @@ msgstr "impossible d’écrire dans le fichier journal"
 
 #, c-format
 msgid "failed to write to LUN %d: %s"
-msgstr "échec de l'écriture sur le LUN %d: %s"
+msgstr "échec de l'écriture sur le LUN %d : %s"
 
 msgid "failed to write to profile"
 msgstr "échec de l'écriture dans le profil"
@@ -27951,7 +27955,7 @@ msgstr "le filtre '%s' existe déjà avec l'uuid %s"
 
 #, c-format
 msgid "filter '%s' learning value '%s' invalid."
-msgstr "filtre '%s' apprentissage valeur '%s' non valide"
+msgstr "filtre '%s' apprentissage valeur '%s' non valide."
 
 msgid "filter binding has no MAC address"
 msgstr "la liaison du filtre n'a pas d'adresse MAC"
@@ -28159,7 +28163,7 @@ msgid "force migration even if it may be unsafe"
 msgstr "forcer la migration même si elle peut être dangereuse"
 
 msgid "forcefully stop a physical host interface."
-msgstr "arrêter de force une interface hôte physique"
+msgstr "arrêter de force une interface hôte physique."
 
 #, c-format
 msgid ""
@@ -28834,7 +28838,7 @@ msgid "in shutdown"
 msgstr "en arrêt"
 
 msgid "inaccessible"
-msgstr "inaccessible"
+msgstr "hors de portée"
 
 #, c-format
 msgid "inaccessible backing store volume %s"
@@ -28927,7 +28931,7 @@ msgid "initiator iqn for underlying storage"
 msgstr "initiateur iqn pour le stockage sous-jacent"
 
 msgid "inject"
-msgstr "inject"
+msgstr "injecter"
 
 msgid "inject-nmi"
 msgstr "inject-nmi"
@@ -29188,11 +29192,11 @@ msgstr ""
 
 #, c-format
 msgid "invalid %s value: '%s'"
-msgstr "Valeur non valide de %s: '%s'"
+msgstr "Valeur non valide de %s : '%s'"
 
 #, c-format
 msgid "invalid %s: '%s'"
-msgstr "Valeur non valide %s: '%s'"
+msgstr "Valeur non valide %s : '%s'"
 
 #, c-format
 msgid "invalid '=' after option --%s"
@@ -29407,7 +29411,7 @@ msgstr "capacité capability_filters non valide '%s'"
 
 #, c-format
 msgid "invalid char in %s: %c"
-msgstr "caractère non valide dans %s: %c"
+msgstr "caractère non valide dans %s : %c"
 
 #, c-format
 msgid ""
@@ -29448,7 +29452,7 @@ msgstr "valeur non valide du cssid '%s' pour '%s'"
 #, c-format
 msgid "invalid device API '%s' for device %s: device only supports '%s'"
 msgstr ""
-"invalid device API '%s' for device %s: le périphérique ne supporte que '%s'"
+"invalid device API '%s' for device %s : le périphérique ne supporte que '%s'"
 
 #, c-format
 msgid "invalid devno value '%s' for '%s'"
@@ -30716,7 +30720,7 @@ msgstr "version GIC malformée dans le cache des capacités de QEMU"
 
 #, c-format
 msgid "malformed QAPI schema when querying '%s' of '%s'"
-msgstr "schéma QAPI malformé lors de l'interrogation de '%s' de '%s'"
+msgstr "schéma QAPI malformé lors de l'interrogation '%s' de '%s'"
 
 msgid "malformed QMP schema"
 msgstr "schéma QMP malformé"
@@ -30796,7 +30800,7 @@ msgstr "mode octal non conforme"
 
 #, c-format
 msgid "malformed output of %s: %s"
-msgstr "sortie malformée de %s: %s"
+msgstr "sortie malformée de %s : %s"
 
 msgid "malformed owner element"
 msgstr "propriétaire de l’élément non conforme"
@@ -30864,7 +30868,7 @@ msgid "malformed volume extent stripes value"
 msgstr "valeur malformée des bandes d'étendue de volume"
 
 msgid "malformed/missing addr in dimm memory info"
-msgstr "malformed/missing addr in dimm memory info"
+msgstr "adresse malformée/manquante dans les informations sur la mémoire dimm"
 
 msgid "malformed/missing hotpluggable in dimm memory info"
 msgstr "hotplugglables malformée/manquante dans l’info de la mémoire dimm"
@@ -31191,7 +31195,7 @@ msgstr "migrer : Délai d'attente inattendu pour la migration hors ligne"
 
 #, c-format
 msgid "migrate_tls_x509_cert_dir directory '%s' does not exist"
-msgstr "migrate_tls_x509_cert_dir directory '%s' does not exist"
+msgstr "migrate_tls_x509_cert_dir répertoire '%s' n'existe pas"
 
 msgid "migrated"
 msgstr "migré"
@@ -31682,7 +31686,7 @@ msgstr "élément de décodage manquant dans le modèle CPU %s"
 
 #, c-format
 msgid "missing destination file for disk %s: %s"
-msgstr "fichier de destination manquant pour le disque %s: %s"
+msgstr "fichier de destination manquant pour le disque %s : %s"
 
 msgid "missing dev attribute in <interface> element"
 msgstr "attribut dev manquant dans l'élément <interface>"
@@ -31755,7 +31759,7 @@ msgstr "entrée manquante dans les formats de vidage pris en charge"
 
 #, c-format
 msgid "missing existing file for disk %s: %s"
-msgstr "fichier existant manquant pour le disque %s: %s"
+msgstr "manque la présence d'un fichier pour le disque %s : %s"
 
 msgid "missing external TPM backend source type"
 msgstr "type de source de backend TPM externe manquant"
@@ -32388,7 +32392,7 @@ msgid "mount is not supported on this platform."
 msgstr "mount n'est pas pris en charge sur cette plate-forme"
 
 msgid "mount move is not supported on this platform."
-msgstr "mount move n'est pas pris en charge sur cette plateforme"
+msgstr "mount move n'est pas pris en charge sur cette plateforme."
 
 #, c-format
 msgid "mount point not found: %s"
@@ -32622,7 +32626,7 @@ msgstr ""
 
 #, c-format
 msgid "network '%s' does not have a bridge name."
-msgstr "Le réseau '%s' n'a pas de nom de pont"
+msgstr "Le réseau '%s' n'a pas de nom de pont."
 
 #, c-format
 msgid "network '%s' doesn't have PCI device %04x:%02x:%02x.%x in use by domain"
@@ -33257,7 +33261,7 @@ msgid "no replacement string in template"
 msgstr "pas de chaîne de remplacement dans le modèle"
 
 msgid "no running guests."
-msgstr "aucun invité courant"
+msgstr "aucun invités en cours d'exécution."
 
 msgid "no screens to take screenshot from"
 msgstr "pas d'écran pour faire des captures d'écran"
@@ -33375,10 +33379,10 @@ msgid "no tls service found, unable to update tls files"
 msgstr "aucun service tls trouvé, impossible de mettre à jour les fichiers tls"
 
 msgid "no transaction running, nothing to be committed."
-msgstr "aucune transaction en cours, rien à valider"
+msgstr "aucune transaction en cours d'exécution, rien à valider."
 
 msgid "no transaction running, nothing to rollback."
-msgstr "aucune transaction en cours, rien à annuler"
+msgstr "aucune transaction en cours d'exécution, rien à annuler."
 
 #, c-format
 msgid "no unused %s names available"
@@ -33890,7 +33894,7 @@ msgstr "seul snapshot=no est pris en charge avec le disque vhostuser"
 msgid "only source type 'unix' is supported for external TPM device"
 msgstr ""
 "seul le type de source 'unix' est pris en charge pour le périphérique TPM "
-"externe."
+"externe"
 
 msgid "only supports mount filesystem type"
 msgstr "ne prend en charge que le type de système de fichiers de montage"
@@ -34158,7 +34162,7 @@ msgstr ""
 "VSH_OFLAG_REQ"
 
 msgid "parameter=value"
-msgstr "parameter=value"
+msgstr "paramètre=valeur"
 
 #, c-format
 msgid "parent %s for moment %s not found"
@@ -34257,18 +34261,18 @@ msgstr "mis en pause"
 
 #, c-format
 msgid "pcap_compile: %s"
-msgstr "pcap_compile: %s"
+msgstr "pcap_compile : %s"
 
 msgid "pcap_create failed"
 msgstr "pcap_create a échoué"
 
 #, c-format
 msgid "pcap_setdirection: %s"
-msgstr "pcap_setdirection: %s"
+msgstr "pcap_setdirection : %s"
 
 #, c-format
 msgid "pcap_setfilter: %s"
-msgstr "pcap_setfilter: %s"
+msgstr "pcap_setfilter : %s"
 
 #, c-format
 msgid "pci backend driver '%s' is not supported"
@@ -34451,7 +34455,7 @@ msgstr "le pool '%s' existe déjà avec l'uuid %s"
 
 #, c-format
 msgid "pool '%s' has asynchronous jobs running."
-msgstr "Le pool '%s' a des travaux asynchrones en cours"
+msgstr "Le pool '%s' a des travaux asynchrones en cours d'exécution."
 
 #, c-format
 msgid "pool '%s' is already defined with uuid %s"
@@ -34706,13 +34710,13 @@ msgstr ""
 "modification"
 
 msgid "prints by percentage during 1 second."
-msgstr "imprime en pourcentage pendant 1 seconde"
+msgstr "imprime en pourcentage pendant 1 seconde."
 
 msgid "prints specified cell statistics only."
-msgstr "imprime uniquement les statistiques de la cellule spécifiée"
+msgstr "imprime uniquement les statistiques de la cellule spécifiée."
 
 msgid "prints specified cpu statistics only."
-msgstr "imprime uniquement les statistiques cpu spécifiées"
+msgstr "imprime uniquement les statistiques cpu spécifiées."
 
 msgid "process exited while connecting to monitor"
 msgstr "le processus s'est arrêté pendant la connexion au moniteur"
@@ -34863,7 +34867,7 @@ msgstr ""
 
 #, c-format
 msgid "qom-get invalid object property type %d"
-msgstr "qom-get invalid object property type %d"
+msgstr "type de propriété d'objet qom-get invalide %d"
 
 msgid "qom-get reply was missing return data"
 msgstr "La réponse de qom-get n'avait pas de données de retour"
@@ -35784,7 +35788,7 @@ msgstr "le pilote d'état secret n'est pas actif"
 
 #, c-format
 msgid "secret with uuid %s is of type '%s' not expected '%s' type"
-msgstr "le secret avec l'uuid %s est du type '%s' type non attendu '%s'"
+msgstr "le secret avec l'uuid %s est de type '%s', type non attendu '%s'"
 
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
@@ -36600,7 +36604,7 @@ msgstr "le volume de stockage %s existe déjà"
 
 #, c-format
 msgid "storage volume name '%s' already in use."
-msgstr "Le nom du volume de stockage '%s' est déjà utilisé"
+msgstr "Le nom du volume de stockage '%s' est déjà utilisé."
 
 #, c-format
 msgid "store '%s' for backup of '%s' exists"
@@ -37175,8 +37179,7 @@ msgstr "temps d'attente pour ouvrir le plateau de '%s'"
 
 msgid "timeout is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
-"Le délai d'attente n'est pris en charge que par les protocoles "
-"HTTP(S)/FTP(s)."
+"Le délai d'attente n'est pris en charge que par les protocoles HTTP(S)/FTP(s)"
 
 msgid "timeout must be positive"
 msgstr "le délai doit être positif"
@@ -37710,7 +37713,7 @@ msgstr ""
 "modification)"
 
 msgid "udev_monitor_new_from_netlink returned NULL"
-msgstr "udev_monitor_new_from_netlink returned NULL"
+msgstr "udev_monitor_new_from_netlink a retourné NULL"
 
 msgid "uid and gid should be mapped both"
 msgstr "uid et gid doivent être mappés tous les deux"
@@ -37812,7 +37815,7 @@ msgid ""
 "by %d domains."
 msgstr ""
 "Impossible de supprimer l'interface '%s' dans le réseau '%s'. Elle est "
-"actuellement utilisée par les domaines %d"
+"actuellement utilisée par les domaines %d."
 
 #, c-format
 msgid "unable to determine access mode of %s"
@@ -38169,7 +38172,8 @@ msgstr "Impossible de définir les attributs du tty : %s"
 
 #, c-format
 msgid "unable to set user and group to '%ld:%ld' on '%s'"
-msgstr "Impossible de définir l'utilisateur et le groupe sur '%ld:%ld' sur '%s'"
+msgstr ""
+"Impossible de définir l'utilisateur et le groupe pour '%ld:%ld' sur '%s'"
 
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "impossible de définir les indicateurs vnet ou multiqueue sur macvtap"
@@ -38196,7 +38200,7 @@ msgstr "impossible de statuer sur le descripteur de fichier %d path %s"
 
 #, c-format
 msgid "unable to stat for disk %s: %s"
-msgstr "impossible de statuer sur le disque %s: %s"
+msgstr "impossible de statuer pour le disque %s : %s"
 
 #, c-format
 msgid "unable to stat: %s"
@@ -39313,11 +39317,11 @@ msgstr "configuration non prise en charge : %s"
 
 #, c-format
 msgid "unsupported connection mode for <reservations/>: %s"
-msgstr "Mode de connexion non pris en charge pour <reservations/>: %s"
+msgstr "Mode de connexion non pris en charge pour <reservations/> : %s"
 
 #, c-format
 msgid "unsupported connection type for <reservations/>: %s"
-msgstr "Type de connexion non pris en charge pour <reservations/>: %s"
+msgstr "Type de connexion non pris en charge pour <reservations/> : %s"
 
 #, c-format
 msgid "unsupported console target type %s"
@@ -39698,7 +39702,7 @@ msgstr ""
 msgid "using unix socket and remote server '%s' is not supported."
 msgstr ""
 "l'utilisation d'une socket unix et du serveur distant '%s' n'est pas prise "
-"en charge"
+"en charge."
 
 #, c-format
 msgid "uuidstr in %s must be a valid UUID"
@@ -39938,7 +39942,7 @@ msgid "vcpupin cpumask differs from default cpumask"
 msgstr "vcpupin cpumask diffère du cpumask par défaut"
 
 msgid "vcpupin: Missing vCPU number in pin mode."
-msgstr "vcpupin : numéro de vCPU manquant en mode pin"
+msgstr "vcpupin : numéro de vCPU manquant en mode pin."
 
 #, c-format
 msgid ""
@@ -40362,7 +40366,7 @@ msgstr "vnuma vnode %zu contient une valeur de pnode non valide '%s'"
 
 #, c-format
 msgid "vnuma vnode invalid format '%s'"
-msgstr "vnuma vnode invalid format '%s'"
+msgstr "vnuma vnode format invalide '%s'"
 
 msgid "vol information in XML"
 msgstr "informations du volume en XML"
@@ -40372,11 +40376,11 @@ msgstr "nom, clé ou chemin de volume"
 
 #, c-format
 msgid "volume '%s' is still being allocated."
-msgstr "le volume '%s' est toujours en cours d'allocation"
+msgstr "le volume '%s' est toujours en cours d'allocation."
 
 #, c-format
 msgid "volume '%s' is still in use."
-msgstr "Le volume '%s' est toujours utilisé"
+msgstr "Le volume '%s' est toujours utilisé."
 
 msgid "volume capacity required for this storage pool"
 msgstr "la capacité de volume requise pour ce pool de stockage"
@@ -40618,7 +40622,7 @@ msgstr ""
 
 #, c-format
 msgid "write: %s: failed to write to temporary file: %s"
-msgstr "write : %s: échec de l'écriture dans un fichier temporaire : %s"
+msgstr "écrire : %s: échec de l'écriture dans un fichier temporaire : %s"
 
 #, c-format
 msgid "writing %llu bytes failed on RBD image %s at offset %llu"
@@ -40660,7 +40664,7 @@ msgid "y - yes, start editor again"
 msgstr "y - yes, recommencer l'éditeur"
 
 msgid "yes"
-msgstr "yes"
+msgstr "oui"
 
 #, c-format
 msgid "zPCI %s %o is already reserved"
