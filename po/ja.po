@@ -21,7 +21,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-02-22 13:50+0000\n"
-"PO-Revision-Date: 2023-03-14 14:56+0000\n"
+"PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ja/>\n"
@@ -2714,7 +2714,7 @@ msgstr "ストレージファイル '%s' にアクセスできません"
 
 #, fuzzy, c-format
 msgid "Cannot access storage file '%s' (as uid:%u, gid:%u)"
-msgstr "(uid:%2$u、gid:%3$u として) ストレージファイル '%2$s' にアクセスできません"
+msgstr "(uid:%2$u、gid:%3$u として) ストレージファイル '%1$s' にアクセスできません"
 
 msgid "Cannot add CURL handle to a multi handle twice"
 msgstr "複数のハンドルに CURL ハンドルを二度追加できません"
