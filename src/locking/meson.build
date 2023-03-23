@@ -174,7 +174,7 @@ if conf.has('WITH_LIBVIRTD')
     qemu_lockd_conf = configure_file(
       input: 'lockd.conf',
       output: 'qemu-lockd.conf',
-      copy: true,
+      configuration: configmake_conf,
     )
     virt_conf_files += qemu_lockd_conf
     virt_test_aug_files += {
@@ -191,7 +191,7 @@ if conf.has('WITH_LIBVIRTD')
     libxl_lockd_conf = configure_file(
       input: 'lockd.conf',
       output: 'libxl-lockd.conf',
-      copy: true,
+      configuration: configmake_conf,
     )
     virt_conf_files += libxl_lockd_conf
   endif
@@ -203,7 +203,7 @@ if conf.has('WITH_LIBVIRTD')
       qemu_sanlock_conf = configure_file(
         input: 'sanlock.conf',
         output: 'qemu-sanlock.conf',
-        copy: true,
+        configuration: configmake_conf,
       )
       virt_conf_files += qemu_sanlock_conf
       virt_test_aug_files += {
@@ -220,7 +220,7 @@ if conf.has('WITH_LIBVIRTD')
       libxl_sanlock_conf = configure_file(
         input: 'sanlock.conf',
         output: 'libxl-sanlock.conf',
-        copy: true,
+        configuration: configmake_conf,
       )
       virt_conf_files += libxl_sanlock_conf
     endif

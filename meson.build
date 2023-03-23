@@ -11,6 +11,9 @@ project(
   ],
 )
 
+if meson.version().version_compare('>=0.64.0')
+  fs = import('fs')
+endif
 
 # figure out if we are building from git
 

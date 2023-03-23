@@ -84,7 +84,7 @@ if conf.has('WITH_NETWORK')
   configure_file(
     input: 'default.xml.in',
     output: '@BASENAME@',
-    copy: true,
+    configuration: configmake_conf,
     install: true,
     install_dir: confdir / 'qemu' / 'networks',
   )
