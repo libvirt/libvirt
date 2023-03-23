@@ -871,8 +871,7 @@ endif
 
 # generic build dependencies
 
-# FIXME rewrite to use dependency()
-acl_dep = cc.find_library('acl', required: false)
+acl_dep = dependency('libacl', required: false)
 if acl_dep.found()
   conf.set('WITH_LIBACL', 1)
 endif
