@@ -118,18 +118,18 @@ codestyle_prebuilt_env:
     - .codestyle_job
     - .gitlab_native_build_job_prebuilt_env
   needs:
-    - job: x86_64-opensuse-leap-153-container
+    - job: x86_64-opensuse-leap-154-container
       optional: true
   variables:
-    NAME: opensuse-leap-153
+    NAME: opensuse-leap-154
 
 codestyle_local_env:
   extends:
     - .codestyle_job
     - .gitlab_native_build_job_local_env
   variables:
-    IMAGE: registry.opensuse.org/opensuse/leap:15.3
-    NAME: opensuse-leap-153
+    IMAGE: registry.opensuse.org/opensuse/leap:15.4
+    NAME: opensuse-leap-154
 
 
 # This artifact published by this job is downloaded to push to Weblate

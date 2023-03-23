@@ -77,13 +77,6 @@ x86_64-fedora-rawhide-container:
     NAME: fedora-rawhide
 
 
-x86_64-opensuse-leap-153-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    NAME: opensuse-leap-153
-
-
 x86_64-opensuse-leap-154-container:
   extends: .container_job
   allow_failure: false

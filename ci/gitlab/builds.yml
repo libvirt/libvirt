@@ -285,26 +285,6 @@ x86_64-fedora-rawhide-clang-local-env:
     RPM: skip
 
 
-x86_64-opensuse-leap-153-prebuilt-env:
-  extends: .native_build_job_prebuilt_env
-  needs:
-    - job: x86_64-opensuse-leap-153-container
-      optional: true
-  allow_failure: false
-  variables:
-    NAME: opensuse-leap-153
-    RPM: skip
-
-x86_64-opensuse-leap-153-local-env:
-  extends: .native_build_job_local_env
-  needs: []
-  allow_failure: false
-  variables:
-    IMAGE: registry.opensuse.org/opensuse/leap:15.3
-    NAME: opensuse-leap-153
-    RPM: skip
-
-
 x86_64-opensuse-leap-154-prebuilt-env:
   extends: .native_build_job_prebuilt_env
   needs:
