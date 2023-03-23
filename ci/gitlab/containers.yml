@@ -84,6 +84,13 @@ x86_64-opensuse-leap-153-container:
     NAME: opensuse-leap-153
 
 
+x86_64-opensuse-leap-154-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: opensuse-leap-154
+
+
 x86_64-opensuse-tumbleweed-container:
   extends: .container_job
   allow_failure: true

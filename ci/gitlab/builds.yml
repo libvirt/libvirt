@@ -305,6 +305,26 @@ x86_64-opensuse-leap-153-local-env:
     RPM: skip
 
 
+x86_64-opensuse-leap-154-prebuilt-env:
+  extends: .native_build_job_prebuilt_env
+  needs:
+    - job: x86_64-opensuse-leap-154-container
+      optional: true
+  allow_failure: false
+  variables:
+    NAME: opensuse-leap-154
+    RPM: skip
+
+x86_64-opensuse-leap-154-local-env:
+  extends: .native_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    IMAGE: registry.opensuse.org/opensuse/leap:15.4
+    NAME: opensuse-leap-154
+    RPM: skip
+
+
 x86_64-opensuse-tumbleweed-prebuilt-env:
   extends: .native_build_job_prebuilt_env
   needs:
