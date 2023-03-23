@@ -1175,6 +1175,8 @@ if not get_option('sanlock').disabled()
       conf.set('WITH_SANLOCK_STRERROR', 1)
     endif
   endif
+else
+  sanlock_dep = dependency('', required: false)
 endif
 
 sasl_version = '2.1.26'
@@ -2209,7 +2211,7 @@ libs_summary = {
   'libssh': libssh_dep.found(),
   'libssh2': libssh2_dep.found(),
   'libutil': libutil_dep.found(),
-  'netcf': conf.has('WITH_NETCF'),
+  'netcf': netcf_dep.found(),
   'NLS': have_gnu_gettext_tools,
   'numactl': numactl_dep.found(),
   'openwsman': openwsman_dep.found(),
@@ -2218,7 +2220,7 @@ libs_summary = {
   'polkit': conf.has('WITH_POLKIT'),
   'rbd': rbd_dep.found(),
   'readline': readline_dep.found(),
-  'sanlock': conf.has('WITH_SANLOCK'),
+  'sanlock': sanlock_dep.found(),
   'sasl': sasl_dep.found(),
   'selinux': selinux_dep.found(),
   'udev': udev_dep.found(),
