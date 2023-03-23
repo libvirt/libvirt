@@ -1095,8 +1095,7 @@ else
   intl_dep = dependency('', required: false)
 endif
 
-# FIXME rewrite to use dependency() once we can use 2.0.14
-numactl_dep = cc.find_library('numa', required: get_option('numactl'))
+numactl_dep = dependency('numa', required: get_option('numactl'))
 if numactl_dep.found()
   conf.set('WITH_NUMACTL', 1)
   if cc.has_function('numa_set_preferred_many', dependencies: numactl_dep)
