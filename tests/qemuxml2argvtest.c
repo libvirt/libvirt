@@ -1703,9 +1703,13 @@ mymain(void)
     DO_TEST("balloon-device-deflate",
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
     DO_TEST_CAPS_ARCH_LATEST("balloon-ccw-deflate", "s390x");
-    DO_TEST("balloon-mmio-deflate",
-            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
-            QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
+    DO_TEST_FULL("balloon-mmio-deflate", ".aarch64-latest",
+                 ARG_CAPS_ARCH, "aarch64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_QEMU_CAPS_DEL,
+                 QEMU_CAPS_OBJECT_GPEX, QEMU_CAPS_DEVICE_PCI_BRIDGE,
+                 QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_DEVICE_IOH3420,
+                 QEMU_CAPS_LAST, ARG_END);
     DO_TEST("balloon-device-deflate-off",
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
     DO_TEST_NOCAPS("balloon-device-auto");
