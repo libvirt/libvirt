@@ -837,7 +837,7 @@ x86_64-freebsd-12:
   needs: []
   allow_failure: false
   variables:
-    CIRRUS_VM_IMAGE_NAME: freebsd-12-3
+    CIRRUS_VM_IMAGE_NAME: freebsd-12-4
     CIRRUS_VM_IMAGE_SELECTOR: image_family
     CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
     INSTALL_COMMAND: pkg install -y
