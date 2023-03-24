@@ -11,6 +11,9 @@
   <features>
     <gic version='2'/>
   </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>cortex-a15</model>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
@@ -18,6 +21,7 @@
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
     <controller type='usb' index='0' model='none'/>
+    <controller type='pci' index='0' model='pcie-root'/>
     <serial type='pty'>
       <target type='system-serial' port='0'>
         <model name='pl011'/>
