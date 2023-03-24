@@ -865,7 +865,6 @@ aarch64-macos-12:
   needs: []
   allow_failure: false
   variables:
-    CFLAGS: -O0
     CIRRUS_VM_IMAGE_NAME: ghcr.io/cirruslabs/macos-monterey-base:latest
     CIRRUS_VM_IMAGE_SELECTOR: image
     CIRRUS_VM_INSTANCE_TYPE: macos_instance
