@@ -9,10 +9,12 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-aarch64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes \
--machine virt,usb=off,gic-version=2,dump-guest-core=off \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
+-machine virt,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram \
 -accel tcg \
+-cpu cortex-a15 \
 -m 214 \
+-object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":224395264}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
@@ -25,6 +27,9 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device qemu-xhci,id=usb,bus=pcie.0,addr=0x1 \
+-device '{"driver":"qemu-xhci","id":"usb","bus":"pcie.0","addr":"0x1"}' \
+-device '{"driver":"nec-usb-xhci","id":"usb1","bus":"pcie.0","addr":"0x2"}' \
+-device '{"driver":"qemu-xhci","id":"usb2","bus":"pcie.0","addr":"0x3"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

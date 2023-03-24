@@ -2554,14 +2554,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PPC64("ppc64-tpmproxy-single");
     DO_TEST_CAPS_LATEST_PPC64("ppc64-tpmproxy-with-tpm");
 
-    DO_TEST("aarch64-usb-controller-qemu-xhci",
-            QEMU_CAPS_OBJECT_GPEX,
-            QEMU_CAPS_NEC_USB_XHCI,
-            QEMU_CAPS_DEVICE_QEMU_XHCI);
-
-    DO_TEST("aarch64-usb-controller-nec-xhci",
-            QEMU_CAPS_OBJECT_GPEX,
-            QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-usb-controller", "aarch64");
 
     DO_TEST_CAPS_ARCH_LATEST("sparc-minimal", "sparc");
 
