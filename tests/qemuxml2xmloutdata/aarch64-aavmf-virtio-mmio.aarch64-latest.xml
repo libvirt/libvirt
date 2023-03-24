@@ -35,6 +35,7 @@
     <controller type='virtio-serial' index='0'>
       <address type='virtio-mmio'/>
     </controller>
+    <controller type='pci' index='0' model='pcie-root'/>
     <interface type='user'>
       <mac address='52:54:00:09:a4:37'/>
       <model type='virtio'/>

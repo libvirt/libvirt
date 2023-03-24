@@ -920,35 +920,13 @@ mymain(void)
     DO_TEST_NOCAPS("smbios-multiple-type2");
     DO_TEST_NOCAPS("smbios-type-fwcfg");
 
-    DO_TEST("aarch64-aavmf-virtio-mmio",
-            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
-            QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-aavmf-virtio-mmio", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virtio-pci-default", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virtio-pci-manual-addresses", "aarch64");
-    DO_TEST("aarch64-video-virtio-gpu-pci",
-            QEMU_CAPS_OBJECT_GPEX,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE, QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU);
-    DO_TEST("aarch64-pci-serial",
-            QEMU_CAPS_DEVICE_PCI_SERIAL,
-            QEMU_CAPS_OBJECT_GPEX,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT);
-    DO_TEST("aarch64-traditional-pci",
-            QEMU_CAPS_OBJECT_GPEX,
-            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PCI_SERIAL);
-    DO_TEST("aarch64-video-default",
-            QEMU_CAPS_OBJECT_GPEX,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_VNC);
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-video-virtio-gpu-pci", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-pci-serial", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-traditional-pci", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-video-default", "aarch64");
 
     DO_TEST_FULL("aarch64-gic-none", ".aarch64-latest", WHEN_BOTH,
                  ARG_CAPS_ARCH, "aarch64", ARG_CAPS_VER, "latest",
