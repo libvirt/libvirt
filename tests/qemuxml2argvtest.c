@@ -1747,27 +1747,16 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdev-mdev-display-ramfb-multiple");
     DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-wrong-arch",
                         QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("hostdev-vfio-zpci",
-            QEMU_CAPS_DEVICE_VFIO_PCI,
-            QEMU_CAPS_DEVICE_ZPCI);
+    DO_TEST_CAPS_ARCH_LATEST("hostdev-vfio-zpci", "s390x");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("hostdev-vfio-zpci-invalid-uid-valid-fid", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("hostdev-vfio-zpci-multidomain-many", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("hostdev-vfio-zpci-autogenerate", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("hostdev-vfio-zpci-autogenerate-uids", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("hostdev-vfio-zpci-autogenerate-fids", "s390x");
-    DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-uid-set-zero",
-                        QEMU_CAPS_DEVICE_VFIO_PCI,
-                        QEMU_CAPS_DEVICE_ZPCI);
-    DO_TEST("hostdev-vfio-zpci-boundaries",
-            QEMU_CAPS_DEVICE_VFIO_PCI,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_ZPCI);
-    DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-duplicate",
-                        QEMU_CAPS_DEVICE_VFIO_PCI,
-                        QEMU_CAPS_DEVICE_ZPCI);
-    DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-set-zero",
-                        QEMU_CAPS_DEVICE_VFIO_PCI,
-                        QEMU_CAPS_DEVICE_ZPCI);
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("hostdev-vfio-zpci-uid-set-zero", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("hostdev-vfio-zpci-boundaries", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("hostdev-vfio-zpci-duplicate", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("hostdev-vfio-zpci-set-zero", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("hostdev-vfio-zpci-ccw-memballoon", "s390x");
 
     DO_TEST("pci-rom", QEMU_CAPS_DEVICE_VFIO_PCI);
@@ -1775,17 +1764,12 @@ mymain(void)
     DO_TEST_NOCAPS("pci-rom-disabled-invalid");
 
     DO_TEST_CAPS_ARCH_LATEST("hostdev-subsys-mdev-vfio-ccw", "s390x");
-    DO_TEST_CAPS_ARCH_LATEST("hostdev-subsys-mdev-vfio-ccw-boot",
-                             "s390x");
-    DO_TEST_PARSE_ERROR("hostdev-subsys-mdev-vfio-ccw-duplicate-address",
-            QEMU_CAPS_DEVICE_VFIO_CCW);
-    DO_TEST_PARSE_ERROR("hostdev-subsys-mdev-vfio-ccw-invalid-address",
-            QEMU_CAPS_DEVICE_VFIO_CCW);
+    DO_TEST_CAPS_ARCH_LATEST("hostdev-subsys-mdev-vfio-ccw-boot", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("hostdev-subsys-mdev-vfio-ccw-duplicate-address", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("hostdev-subsys-mdev-vfio-ccw-invalid-address", "s390x");
 
-    DO_TEST_CAPS_ARCH_LATEST("hostdev-subsys-mdev-vfio-ap",
-                             "s390x");
-    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("hostdev-subsys-mdev-vfio-ap-boot-fail",
-                                         "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("hostdev-subsys-mdev-vfio-ap", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("hostdev-subsys-mdev-vfio-ap-boot-fail", "s390x");
 
     DO_TEST_FULL("restore-v2", "",
                  ARG_MIGRATE_FROM, "exec:cat",
@@ -2121,16 +2105,13 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("s390-allow-bogus-usb-none", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("s390-allow-bogus-usb-controller", "s390x");
 
-    DO_TEST_NOCAPS("s390-panic-no-address");
-    DO_TEST_PARSE_ERROR_NOCAPS("s390-panic-address");
-    DO_TEST_NOCAPS("s390-panic-missing");
-    DO_TEST_PARSE_ERROR_NOCAPS("s390-no-parallel");
-    DO_TEST("s390-serial", QEMU_CAPS_DEVICE_SCLPCONSOLE);
-    DO_TEST("s390-serial-2",
-            QEMU_CAPS_DEVICE_SCLPCONSOLE,
-            QEMU_CAPS_DEVICE_SCLPLMCONSOLE);
-    DO_TEST("s390-serial-console",
-            QEMU_CAPS_DEVICE_SCLPCONSOLE);
+    DO_TEST_CAPS_ARCH_LATEST("s390-panic-no-address", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("s390-panic-address", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("s390-panic-missing", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("s390-no-parallel", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("s390-serial", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("s390-serial-2", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("s390-serial-console", "s390x");
 
     DO_TEST_CAPS_ARCH_LATEST("ppc-dtb", "ppc");
     DO_TEST_CAPS_ARCH_LATEST("ppce500-serial", "ppc");
@@ -2331,8 +2312,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hostdev-scsi-lsi");
     DO_TEST_CAPS_LATEST("hostdev-scsi-virtio-scsi");
 
-    DO_TEST("hostdev-scsi-vhost-scsi-ccw",
-            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DEVICE_VHOST_SCSI);
+    DO_TEST_CAPS_ARCH_LATEST("hostdev-scsi-vhost-scsi-ccw", "s390x");
     DO_TEST("hostdev-scsi-vhost-scsi-pci",
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_VHOST_SCSI);
@@ -2692,18 +2672,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("tseg-i440fx");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("tseg-invalid-size");
 
-    DO_TEST("video-virtio-gpu-ccw",
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VNC,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW);
-
-    DO_TEST("input-virtio-ccw",
-            QEMU_CAPS_VIRTIO_KEYBOARD,
-            QEMU_CAPS_VIRTIO_MOUSE,
-            QEMU_CAPS_VIRTIO_TABLET,
-            QEMU_CAPS_DEVICE_VIRTIO_KEYBOARD_CCW,
-            QEMU_CAPS_DEVICE_VIRTIO_MOUSE_CCW,
-            QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW);
+    DO_TEST_CAPS_ARCH_LATEST("video-virtio-gpu-ccw", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("input-virtio-ccw", "s390x");
 
     DO_TEST_CAPS_LATEST("vhost-vsock");
     DO_TEST_CAPS_LATEST("vhost-vsock-auto");
