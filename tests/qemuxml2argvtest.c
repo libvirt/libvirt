@@ -2406,8 +2406,12 @@ mymain(void)
     DO_TEST_GIC("aarch64-gic-none-v2", GIC_V2);
     DO_TEST_GIC("aarch64-gic-none-v3", GIC_V3);
     DO_TEST_GIC("aarch64-gic-none-both", GIC_BOTH);
-    qemuTestSetHostArch(&driver, VIR_ARCH_AARCH64);
-    DO_TEST_FULL("aarch64-gic-none-tcg", "", ARG_GIC, GIC_BOTH, ARG_END);
+    DO_TEST_FULL("aarch64-gic-none-tcg", "",
+                 ARG_GIC, GIC_BOTH,
+                 ARG_CAPS_ARCH, "aarch64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_KVM, QEMU_CAPS_LAST,
+                 ARG_END);
     DO_TEST_FULL("aarch64-gic-default", ".aarch64-4.2.0",
                  ARG_GIC, GIC_NONE,
                  ARG_CAPS_ARCH, "aarch64",
@@ -2433,11 +2437,8 @@ mymain(void)
     DO_TEST_GIC("aarch64-gic-host", GIC_V2);
     DO_TEST_GIC("aarch64-gic-host", GIC_V3);
     DO_TEST_GIC("aarch64-gic-host", GIC_BOTH);
-    qemuTestSetHostArch(&driver, VIR_ARCH_AARCH64);
-    DO_TEST_PARSE_ERROR("aarch64-gic-invalid",
-            QEMU_CAPS_KVM);
-    DO_TEST_PARSE_ERROR("aarch64-gic-not-virt",
-                        QEMU_CAPS_KVM);
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("aarch64-gic-invalid", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("aarch64-gic-not-virt", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("aarch64-gic-not-arm", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-kvm-32-on-64", "aarch64");
     DO_TEST("aarch64-pci-serial",
