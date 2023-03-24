@@ -1871,11 +1871,8 @@ mymain(void)
     DO_TEST("cpu-host-passthrough", QEMU_CAPS_KVM);
     DO_TEST_FAILURE("cpu-qemu-host-passthrough", QEMU_CAPS_KVM);
 
-    qemuTestSetHostArch(&driver, VIR_ARCH_S390X);
-    DO_TEST("cpu-s390-zEC12", QEMU_CAPS_KVM);
-    DO_TEST("cpu-s390-features", QEMU_CAPS_KVM, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION);
-    DO_TEST_FAILURE("cpu-s390-features", QEMU_CAPS_KVM);
-    qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
+    DO_TEST_CAPS_ARCH_LATEST("cpu-s390-zEC12", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("cpu-s390-features", "s390x");
 
     qemuTestSetHostCPU(&driver, driver.hostarch, qemuTestGetCPUDef(QEMU_CPU_DEF_HASWELL));
     DO_TEST("cpu-Haswell", QEMU_CAPS_KVM);
