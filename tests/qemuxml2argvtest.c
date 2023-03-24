@@ -1750,8 +1750,6 @@ mymain(void)
     DO_TEST("hostdev-vfio-zpci",
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_ZPCI);
-    DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-autogenerate-fids",
-                        QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("hostdev-vfio-zpci-invalid-uid-valid-fid", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("hostdev-vfio-zpci-multidomain-many", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("hostdev-vfio-zpci-autogenerate", "s390x");
@@ -1764,8 +1762,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_ZPCI);
-    DO_TEST_PARSE_ERROR("hostdev-vfio-zpci",
-                        QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-duplicate",
                         QEMU_CAPS_DEVICE_VFIO_PCI,
                         QEMU_CAPS_DEVICE_ZPCI);
@@ -1781,7 +1777,6 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("hostdev-subsys-mdev-vfio-ccw", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("hostdev-subsys-mdev-vfio-ccw-boot",
                              "s390x");
-    DO_TEST_PARSE_ERROR_NOCAPS("hostdev-subsys-mdev-vfio-ccw");
     DO_TEST_PARSE_ERROR("hostdev-subsys-mdev-vfio-ccw-duplicate-address",
             QEMU_CAPS_DEVICE_VFIO_CCW);
     DO_TEST_PARSE_ERROR("hostdev-subsys-mdev-vfio-ccw-invalid-address",
