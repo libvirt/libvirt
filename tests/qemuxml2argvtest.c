@@ -915,10 +915,13 @@ mymain(void)
 # define DO_TEST_NOCAPS(name) \
     DO_TEST_FULL(name, "",  ARG_END)
 
-# define DO_TEST_GIC(name, gic, ...) \
+/* GIC tests use 'latest' capabilities */
+# define DO_TEST_GIC(name, gic) \
     DO_TEST_FULL(name, "", \
                  ARG_GIC, gic, \
-                 ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END)
+                 ARG_CAPS_ARCH, "aarch64", \
+                 ARG_CAPS_VER, "latest", \
+                 ARG_END)
 
 # define DO_TEST_FAILURE(name, ...) \
     DO_TEST_FULL(name, "", \
@@ -2400,13 +2403,10 @@ mymain(void)
                  ARG_CAPS_ARCH, "aarch64",
                  ARG_CAPS_VER, "latest",
                  ARG_END);
+    DO_TEST_GIC("aarch64-gic-none-v2", GIC_V2);
+    DO_TEST_GIC("aarch64-gic-none-v3", GIC_V3);
+    DO_TEST_GIC("aarch64-gic-none-both", GIC_BOTH);
     qemuTestSetHostArch(&driver, VIR_ARCH_AARCH64);
-    DO_TEST_GIC("aarch64-gic-none-v2", GIC_V2,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-none-v3", GIC_V3,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-none-both", GIC_BOTH,
-            QEMU_CAPS_KVM);
     DO_TEST_FULL("aarch64-gic-none-tcg", "", ARG_GIC, GIC_BOTH, ARG_END);
     DO_TEST_FULL("aarch64-gic-default", ".aarch64-4.2.0",
                  ARG_GIC, GIC_NONE,
@@ -2418,37 +2418,22 @@ mymain(void)
                  ARG_CAPS_ARCH, "aarch64",
                  ARG_CAPS_VER, "latest",
                  ARG_END);
+    DO_TEST_GIC("aarch64-gic-default-v2", GIC_V2);
+    DO_TEST_GIC("aarch64-gic-default-v3", GIC_V3);
+    DO_TEST_GIC("aarch64-gic-default-both", GIC_BOTH);
+    DO_TEST_GIC("aarch64-gic-v2", GIC_NONE);
+    DO_TEST_GIC("aarch64-gic-v2", GIC_V2);
+    DO_TEST_GIC("aarch64-gic-v2", GIC_V3);
+    DO_TEST_GIC("aarch64-gic-v2", GIC_BOTH);
+    DO_TEST_GIC("aarch64-gic-v3", GIC_NONE);
+    DO_TEST_GIC("aarch64-gic-v3", GIC_V2);
+    DO_TEST_GIC("aarch64-gic-v3", GIC_V3);
+    DO_TEST_GIC("aarch64-gic-v3", GIC_BOTH);
+    DO_TEST_GIC("aarch64-gic-host", GIC_NONE);
+    DO_TEST_GIC("aarch64-gic-host", GIC_V2);
+    DO_TEST_GIC("aarch64-gic-host", GIC_V3);
+    DO_TEST_GIC("aarch64-gic-host", GIC_BOTH);
     qemuTestSetHostArch(&driver, VIR_ARCH_AARCH64);
-    DO_TEST_GIC("aarch64-gic-default-v2", GIC_V2,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-default-v3", GIC_V3,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-default-both", GIC_BOTH,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-v2", GIC_NONE,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-v2", GIC_V2,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-v2", GIC_V3,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-v2", GIC_BOTH,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-v3", GIC_NONE,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-v3", GIC_V2,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-v3", GIC_V3,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-v3", GIC_BOTH,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-host", GIC_NONE,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-host", GIC_V2,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-host", GIC_V3,
-            QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-host", GIC_BOTH,
-            QEMU_CAPS_KVM);
     DO_TEST_PARSE_ERROR("aarch64-gic-invalid",
             QEMU_CAPS_KVM);
     DO_TEST_PARSE_ERROR("aarch64-gic-not-virt",
