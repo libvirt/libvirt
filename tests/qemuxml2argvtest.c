@@ -2362,13 +2362,6 @@ mymain(void)
        specified. */
     DO_TEST_CAPS_ARCH_VER("aarch64-virtio-pci-default", "aarch64", "4.2.0");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virtio-pci-default", "aarch64");
-    DO_TEST("aarch64-virt-2.6-virtio-pci-default",
-            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
-            QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM,
-            QEMU_CAPS_OBJECT_GPEX, QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PL011,
-            QEMU_CAPS_DEVICE_IOH3420);
     /* Example of using virtio-pci with no explicit PCI controller
        but with manual PCI addresses */
     DO_TEST("aarch64-virtio-pci-manual-addresses",
