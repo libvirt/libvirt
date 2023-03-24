@@ -701,7 +701,8 @@ esxConnectToVCenter(esxPrivate *priv,
     if (conn->uri->user) {
         username = g_strdup(conn->uri->user);
     } else {
-        if (!(username = virAuthGetUsername(conn, auth, "esx", "administrator",
+        if (!(username = virAuthGetUsername(conn, auth, "esx",
+                                            "administrator@vsphere.local",
                                             hostname)))
             return -1;
     }
