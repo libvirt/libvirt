@@ -2390,8 +2390,17 @@ mymain(void)
     DO_TEST("aarch64-cpu-passthrough",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_KVM);
-    DO_TEST_GIC("aarch64-gic-none", GIC_NONE,
-            QEMU_CAPS_KVM);
+    DO_TEST_FULL("aarch64-gic-none", ".aarch64-4.2.0",
+                 ARG_GIC, GIC_NONE,
+                 ARG_CAPS_ARCH, "aarch64",
+                 ARG_CAPS_VER, "4.2.0",
+                 ARG_END);
+    DO_TEST_FULL("aarch64-gic-none", ".aarch64-latest",
+                 ARG_GIC, GIC_NONE,
+                 ARG_CAPS_ARCH, "aarch64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_END);
+    qemuTestSetHostArch(&driver, VIR_ARCH_AARCH64);
     DO_TEST_GIC("aarch64-gic-none-v2", GIC_V2,
             QEMU_CAPS_KVM);
     DO_TEST_GIC("aarch64-gic-none-v3", GIC_V3,
@@ -2399,8 +2408,17 @@ mymain(void)
     DO_TEST_GIC("aarch64-gic-none-both", GIC_BOTH,
             QEMU_CAPS_KVM);
     DO_TEST_FULL("aarch64-gic-none-tcg", "", ARG_GIC, GIC_BOTH, ARG_END);
-    DO_TEST_GIC("aarch64-gic-default", GIC_NONE,
-            QEMU_CAPS_KVM);
+    DO_TEST_FULL("aarch64-gic-default", ".aarch64-4.2.0",
+                 ARG_GIC, GIC_NONE,
+                 ARG_CAPS_ARCH, "aarch64",
+                 ARG_CAPS_VER, "4.2.0",
+                 ARG_END);
+    DO_TEST_FULL("aarch64-gic-default", ".aarch64-latest",
+                 ARG_GIC, GIC_NONE,
+                 ARG_CAPS_ARCH, "aarch64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_END);
+    qemuTestSetHostArch(&driver, VIR_ARCH_AARCH64);
     DO_TEST_GIC("aarch64-gic-default-v2", GIC_V2,
             QEMU_CAPS_KVM);
     DO_TEST_GIC("aarch64-gic-default-v3", GIC_V3,
