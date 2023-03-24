@@ -1,0 +1,37 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-guest \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-guest/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-guest/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
+/usr/bin/qemu-system-aarch64 \
+-name guest=guest,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-guest/master-key.aes"}' \
+-machine virt,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram \
+-accel tcg \
+-cpu cortex-a15 \
+-m 512 \
+-object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":536870912}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-no-acpi \
+-boot strict=on \
+-device '{"driver":"pcie-root-port","port":8,"chassis":1,"id":"pci.1","bus":"pcie.0","multifunction":true,"addr":"0x1"}' \
+-device '{"driver":"pcie-root-port","port":9,"chassis":2,"id":"pci.2","bus":"pcie.0","addr":"0x1.0x1"}' \
+-device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.1","addr":"0x0"}' \
+-chardev pty,id=charconsole0 \
+-device '{"driver":"virtconsole","chardev":"charconsole0","id":"console0"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

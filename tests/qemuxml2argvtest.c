@@ -1999,28 +1999,14 @@ mymain(void)
     DO_TEST_PARSE_ERROR_NOCAPS("pseries-serial-invalid-machine");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("pseries-spaprvio-invalid", "ppc64");
 
-    DO_TEST("mach-virt-serial-native",
-            QEMU_CAPS_DEVICE_PL011);
-    DO_TEST("mach-virt-serial+console-native",
-            QEMU_CAPS_DEVICE_PL011);
-    DO_TEST("mach-virt-serial-compat",
-            QEMU_CAPS_DEVICE_PL011);
-    DO_TEST("mach-virt-serial-pci",
-            QEMU_CAPS_OBJECT_GPEX,
-            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PCI_SERIAL);
-    DO_TEST("mach-virt-serial-usb",
-            QEMU_CAPS_OBJECT_GPEX,
-            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
-            QEMU_CAPS_DEVICE_QEMU_XHCI,
-            QEMU_CAPS_DEVICE_USB_SERIAL);
-    DO_TEST("mach-virt-console-native",
-            QEMU_CAPS_DEVICE_PL011);
-    DO_TEST("mach-virt-console-virtio",
-            QEMU_CAPS_DEVICE_VIRTIO_MMIO);
-    DO_TEST_PARSE_ERROR_NOCAPS("mach-virt-serial-invalid-machine");
+    DO_TEST_CAPS_ARCH_LATEST("mach-virt-serial-native", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("mach-virt-serial+console-native", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("mach-virt-serial-compat", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("mach-virt-serial-pci", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("mach-virt-serial-usb", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("mach-virt-console-native", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("mach-virt-console-virtio", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("mach-virt-serial-invalid-machine", "x86_64");
 
     DO_TEST("video-device-pciaddr-default",
             QEMU_CAPS_KVM,
