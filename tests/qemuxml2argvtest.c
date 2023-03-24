@@ -2119,7 +2119,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("tpm-emulator-tpm2-pstate");
     DO_TEST_CAPS_LATEST_PPC64("tpm-emulator-spapr");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-tpm", "aarch64");
-    DO_TEST_PARSE_ERROR_NOCAPS("aarch64-tpm-wrong-model");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("aarch64-tpm-wrong-model", "aarch64");
     DO_TEST_CAPS_LATEST("tpm-external");
 
     g_setenv(TEST_TPM_ENV_VAR, TPM_VER_2_0, true);
@@ -2359,24 +2359,11 @@ mymain(void)
     /* Example of using virtio-pci with no explicit PCI controller
        but with manual PCI addresses */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virtio-pci-manual-addresses", "aarch64");
-    DO_TEST("aarch64-video-virtio-gpu-pci",
-            QEMU_CAPS_OBJECT_GPEX,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE, QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU);
-    DO_TEST("aarch64-video-default",
-            QEMU_CAPS_OBJECT_GPEX,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE, QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU, QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_VNC);
-    DO_TEST("aarch64-aavmf-virtio-mmio",
-            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
-            QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
-    DO_TEST("aarch64-virt-default-nic",
-            QEMU_CAPS_DEVICE_VIRTIO_MMIO);
-    qemuTestSetHostArch(&driver, VIR_ARCH_AARCH64);
-    DO_TEST("aarch64-cpu-passthrough",
-            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
-            QEMU_CAPS_KVM);
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-video-virtio-gpu-pci", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-video-default", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-aavmf-virtio-mmio", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-default-nic", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-cpu-passthrough", "aarch64");
     DO_TEST_FULL("aarch64-gic-none", ".aarch64-4.2.0",
                  ARG_GIC, GIC_NONE,
                  ARG_CAPS_ARCH, "aarch64",
@@ -2425,19 +2412,8 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("aarch64-gic-not-virt", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("aarch64-gic-not-arm", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-kvm-32-on-64", "aarch64");
-    DO_TEST("aarch64-pci-serial",
-            QEMU_CAPS_DEVICE_PCI_SERIAL,
-            QEMU_CAPS_OBJECT_GPEX,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT);
-    DO_TEST("aarch64-traditional-pci",
-            QEMU_CAPS_OBJECT_GPEX,
-            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PCI_SERIAL);
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-pci-serial", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-traditional-pci", "aarch64");
 
     /* aarch64 doesn't support the same CPU features as x86 */
     DO_TEST_CAPS_ARCH_LATEST_FAILURE("aarch64-features-wrong", "aarch64");
