@@ -2545,34 +2545,16 @@ mymain(void)
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-pmem");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-mem");
 
-    DO_TEST("machine-aeskeywrap-on-caps",
-            QEMU_CAPS_VIRTIO_SCSI);
-
-    DO_TEST("machine-aeskeywrap-on-cap",
-            QEMU_CAPS_VIRTIO_SCSI);
-
-    DO_TEST("machine-aeskeywrap-off-caps",
-            QEMU_CAPS_VIRTIO_SCSI);
-
-    DO_TEST("machine-aeskeywrap-off-cap",
-            QEMU_CAPS_VIRTIO_SCSI);
-
-    DO_TEST("machine-deakeywrap-on-caps",
-            QEMU_CAPS_VIRTIO_SCSI);
-
-    DO_TEST("machine-deakeywrap-on-cap",
-            QEMU_CAPS_VIRTIO_SCSI);
-
-    DO_TEST("machine-deakeywrap-off-caps",
-            QEMU_CAPS_VIRTIO_SCSI);
-
-    DO_TEST("machine-deakeywrap-off-cap",
-            QEMU_CAPS_VIRTIO_SCSI);
-
-    DO_TEST("machine-keywrap-none-caps",
-            QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("machine-keywrap-none",
-            QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_CAPS_ARCH_LATEST("machine-aeskeywrap-on-caps", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("machine-aeskeywrap-on-cap", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("machine-aeskeywrap-off-caps", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("machine-aeskeywrap-off-cap", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("machine-deakeywrap-on-caps", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("machine-deakeywrap-on-cap", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("machine-deakeywrap-off-caps", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("machine-deakeywrap-off-cap", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("machine-keywrap-none-caps", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("machine-keywrap-none", "s390x");
 
     DO_TEST_NOCAPS("machine-loadparm-s390");
     DO_TEST_NOCAPS("machine-loadparm-net-s390");
