@@ -1,5 +1,5 @@
-<domain type='qemu'>
-  <name>QEMUGuest1</name>
+<domain type='kvm'>
+  <name>test</name>
   <uuid>9aa4b45c-b9dd-45ef-91fe-862b27b4231f</uuid>
   <memory unit='KiB'>262144</memory>
   <currentMemory unit='KiB'>262144</currentMemory>
@@ -8,6 +8,7 @@
     <type arch='s390x' machine='s390-ccw-virtio'>hvm</type>
     <boot dev='hd'/>
   </os>
+  <cpu mode='host-model' check='partial'/>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
@@ -17,6 +18,7 @@
     <controller type='virtio-serial' index='0'>
       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0000'/>
     </controller>
+    <controller type='pci' index='0' model='pci-root'/>
     <console type='pty'>
       <target type='virtio' port='0'/>
     </console>

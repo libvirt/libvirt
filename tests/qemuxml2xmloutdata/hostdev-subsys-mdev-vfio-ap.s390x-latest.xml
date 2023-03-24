@@ -8,21 +8,24 @@
     <type arch='s390x' machine='s390-ccw-virtio'>hvm</type>
     <boot dev='hd'/>
   </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu</model>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-s390x</emulator>
+    <controller type='pci' index='0' model='pci-root'/>
     <audio id='1' type='none'/>
-    <hostdev mode='subsystem' type='mdev' managed='no' model='vfio-ccw'>
+    <hostdev mode='subsystem' type='mdev' managed='no' model='vfio-ap'>
       <source>
         <address uuid='90c6c135-ad44-41d0-b1b7-bae47de48627'/>
       </source>
-      <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0000'/>
     </hostdev>
     <memballoon model='virtio'>
-      <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0001'/>
+      <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0000'/>
     </memballoon>
     <panic model='s390'/>
   </devices>

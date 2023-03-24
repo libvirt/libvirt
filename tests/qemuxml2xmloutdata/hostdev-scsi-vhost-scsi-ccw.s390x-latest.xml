@@ -1,0 +1,40 @@
+<domain type='qemu'>
+  <name>QEMUGuest2</name>
+  <uuid>c7a5fdbd-edaf-9466-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='s390x' machine='s390-ccw-virtio'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-s390x</emulator>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source dev='/dev/HostVG/QEMUGuest2'/>
+      <target dev='hda' bus='virtio'/>
+      <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0000'/>
+    </disk>
+    <controller type='scsi' index='0' model='virtio-scsi'>
+      <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0001'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <audio id='1' type='none'/>
+    <hostdev mode='subsystem' type='scsi_host' managed='no'>
+      <source protocol='vhost' wwpn='naa.5123456789abcde0'/>
+      <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0002'/>
+    </hostdev>
+    <memballoon model='virtio'>
+      <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0003'/>
+    </memballoon>
+    <panic model='s390'/>
+  </devices>
+</domain>
