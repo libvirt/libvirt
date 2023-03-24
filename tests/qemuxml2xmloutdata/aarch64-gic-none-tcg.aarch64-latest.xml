@@ -1,5 +1,5 @@
-<domain type='kvm'>
-  <name>aarch64test</name>
+<domain type='qemu'>
+  <name>guest</name>
   <uuid>6ba410c5-1e5c-4d57-bee7-2228e7ffa32f</uuid>
   <memory unit='KiB'>1048576</memory>
   <currentMemory unit='KiB'>1048576</currentMemory>
@@ -11,7 +11,9 @@
   <features>
     <gic version='2'/>
   </features>
-  <cpu mode='host-passthrough' check='none'/>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='allow'>cortex-a57</model>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
@@ -19,6 +21,7 @@
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
     <controller type='usb' index='0' model='none'/>
+    <controller type='pci' index='0' model='pcie-root'/>
     <audio id='1' type='none'/>
     <memballoon model='none'/>
   </devices>
