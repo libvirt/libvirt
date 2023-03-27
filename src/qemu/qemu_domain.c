@@ -4474,6 +4474,23 @@ qemuDomainDefBootPostParse(virDomainDef *def,
 {
     bool abiUpdate = !!(parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE);
 
+    /* If we're loading an existing configuration from disk, we
+     * should try as hard as possible to preserve historical
+     * behavior. In particular, firmware autoselection being enabled
+     * could never have resulted, before libvirt 9.2.0, in anything
+     * but a raw firmware image being selected.
+     *
+     * In order to ensure that existing domains keep working even if
+     * a firmware descriptor for a build with a different format is
+     * given higher priority, explicitly add this requirement to the
+     * definition before performing firmware selection */
+    if (!abiUpdate && def->os.firmware) {
+        if (!def->os.loader)
+            def->os.loader = virDomainLoaderDefNew();
+        if (!def->os.loader->format)
+            def->os.loader->format = VIR_STORAGE_FILE_RAW;
+    }
+
     /* Firmware selection can fail for a number of reasons, but the
      * most likely one is that the requested configuration contains
      * mistakes or includes constraints that are impossible to
