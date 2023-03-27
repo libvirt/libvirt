@@ -176,7 +176,8 @@ virAuthGetUsernamePath(const char *path,
         cred.result = NULL;
         cred.resultlen = 0;
 
-        if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
+        if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0 ||
+            !cred.result) {
             virReportError(VIR_ERR_AUTH_FAILED, "%s",
                            _("Username request failed"));
             VIR_FREE(cred.result);
@@ -310,7 +311,8 @@ virAuthAskCredential(virConnectAuthPtr auth,
 
     ret->prompt = prompt;
 
-    if (auth->cb(ret, 1, auth->cbdata) < 0) {
+    if (auth->cb(ret, 1, auth->cbdata) < 0 ||
+        !ret->result) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("failed to retrieve user response for authentication callback"));
         return NULL;
