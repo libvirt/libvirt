@@ -890,6 +890,11 @@ mymain(void)
 # define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ARG_END)
 
+# define DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE(name, arch) \
+    DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, \
+                                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE, \
+                                  ARG_END)
+
 # define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ARG_END)
 
