@@ -737,7 +737,7 @@ virNetSSHAuthenticateKeyboardInteractive(virNetSSHSession *sess,
     if (!sess->cred || !sess->cred->cb) {
         virReportError(VIR_ERR_SSH, "%s",
                        _("Can't perform keyboard-interactive authentication: "
-                         "Authentication callback not provided "));
+                         "Authentication callback not provided"));
         return -1;
     }
 

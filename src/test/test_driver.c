@@ -3979,7 +3979,7 @@ testDomainSetBlockIoTune(virDomainPtr dom,
     do { \
         if (info.FIELD > info.FIELD_MAX) { \
             virReportError(VIR_ERR_INVALID_ARG, \
-                           _("%1$s cannot be set higher than %2$s "), \
+                           _("%1$s cannot be set higher than %2$s"), \
                              #FIELD, #FIELD_MAX); \
             goto cleanup; \
         } \

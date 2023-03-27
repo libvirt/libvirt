@@ -501,7 +501,7 @@ cmdSrvThreadpoolSet(vshControl *ctl, const vshCmd *cmd)
     if (!nparams) {
         vshError(ctl, "%s",
                  _("At least one of options --min-workers, --max-workers, "
-                   "--priority-workers is mandatory "));
+                   "--priority-workers is mandatory"));
             goto cleanup;
     }
 
