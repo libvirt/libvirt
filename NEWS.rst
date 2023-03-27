@@ -60,6 +60,17 @@ v9.2.0 (unreleased)
     so, as affinity to NUMA nodes inaccessible to emulator thread might have
     been requested.
 
+  * rpc: fix typo in admin code generation
+
+    Fix the bug in the remote ``virt-admin`` code generator, that resulted
+    in a crash. Introduced in libvirt 9.1.0.
+
+  * qemu: relax shared memory check for vhostuser daemons
+
+    Fix hotplug of virtiofs ``filesystem`` after restarting libvirtd.
+    Before, libvirtd would incorrectly complain about missing shared
+    memory.
+
 
 v9.1.0 (2023-03-01)
 ===================
