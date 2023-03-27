@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-02-22 13:50+0000\n"
+"POT-Creation-Date: 2023-03-24 16:18+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -502,20 +502,12 @@ msgid "%s is not an executable"
 msgstr "QEMU బైనరీ %s నిర్వర్తించదగది కాదు"
 
 #, fuzzy, c-format
-msgid "%s is not available with this QEMU binary"
-msgstr "ఈ QEMU బైనరీ తో అచేతనమైన భాగస్వామ్య మెమొరీ అందుబాటులోలేదు"
-
-#, fuzzy, c-format
 msgid "%s is not supported by this QEMU binary"
 msgstr "ఈ QEMU బైనరీ చేత డిస్కార్డ్ తోడ్పాటునీయదు"
 
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "%s పొడవు గరిష్టానికన్నా ఎక్కువగా వుంది: %d > %d"
-
-#, c-format
-msgid "%s memory device info is not handled yet"
-msgstr ""
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -1004,6 +996,10 @@ msgid "'%s' file does not fit in memory"
 msgstr "'%s' దస్త్రము మెమొరీనందు అమరదు"
 
 #, c-format
+msgid "'%s' is currently not supported by the qemu encryption engine"
+msgstr ""
+
+#, c-format
 msgid "'%s' is not a VF device"
 msgstr ""
 
@@ -1064,15 +1060,15 @@ msgstr ""
 msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
 
+msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr ""
-
-msgid "'can-offline' missing in reply of guest-get-vcpus"
-msgstr "guest-get-vcpus యొక్క ప్రత్యుత్తరం నందు 'can-offline' దొరకలేదు"
 
 #, fuzzy
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
@@ -3119,10 +3115,6 @@ msgstr "ఇంతకుముందు జతచేసి వుండకపో�
 msgid "Cannot remove stale PID file %s"
 msgstr "స్టేల్ PID ఫైల్ %s తీసివేయలేదు"
 
-#, fuzzy, c-format
-msgid "Cannot remove state PID file %s"
-msgstr "స్టేల్ PID ఫైల్ %s తీసివేయలేదు"
-
 msgid "Cannot remove uninitialized CURL handle from a multi handle"
 msgstr "సిద్దీకరించని CURL హాండిల్ ను బహుళ హాండిల్ నుండి తీసివేయలేదు"
 
@@ -4732,24 +4724,8 @@ msgstr "మూలపు dirను దస్త్రవ్యవస్థ కొ
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
 
-#, c-format
-msgid "Could not start 'passt': %s"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "Could not start 'slirp'. exitstatus: %d"
-msgstr "డొమైన్ ప్రారంభించలేక పోయింది: %s"
-
-#, c-format
-msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
-msgstr ""
-
 #, fuzzy
 msgid "Could not start 'virtiofsd'"
-msgstr "డొమైన్ ప్రారంభించలేక పోయింది: %s"
-
-#, fuzzy, c-format
-msgid "Could not start dbus-daemon. exitstatus: %d"
 msgstr "డొమైన్ ప్రారంభించలేక పోయింది: %s"
 
 #, c-format
@@ -6713,10 +6689,6 @@ msgid "Failed to create state dir '%s'"
 msgstr "ఫైల్ '%s' సృష్టించుటకు విఫలమైంది"
 
 #, c-format
-msgid "Failed to create symlink '%s to '%s'"
-msgstr "సిమ్‌లింకు  %s నుండి ' %s'కు సృష్టించుటలో విఫలమైంది"
-
-#, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "సిమ్‌లింకు '%s'ను %sకుసృష్టించుటలో విఫలమైంది"
 
@@ -7060,10 +7032,6 @@ msgstr "UUIDను వుద్భవించుటలో విఫలమైం
 
 #, fuzzy
 msgid "Failed to generate genid"
-msgstr "uuid జనియింపచేయుటలో విఫలమైంది"
-
-#, fuzzy
-msgid "Failed to generate uuid"
 msgstr "uuid జనియింపచేయుటలో విఫలమైంది"
 
 #, c-format
@@ -8532,12 +8500,6 @@ msgstr "యునిక్స్ సాకెట్లు యీ ప్లాట
 msgid "File total:"
 msgstr "మొత్తం ఫైలు:"
 
-msgid "Filepath is Null"
-msgstr ""
-
-msgid "Filepath is null"
-msgstr ""
-
 msgid "Filesystem driver type not supported"
 msgstr "ఫైల్‌సిస్టమ్ డ్రైవర్ రకం తోడ్పాటులేదు"
 
@@ -8624,6 +8586,10 @@ msgstr "ఇచ్చిన నెట్వర్కును బలవంతం�
 
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr "ఇచ్చిన పూల్ బలవంతంగా ఆపుచేయి. పూల్ నందలి రా దత్తాంశం అంటనిది"
+
+#, c-format
+msgid "Format mismatch: loader.format='%s' nvram.format='%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Format of device '%s' does not match the expected format '%s'"
@@ -9139,18 +9105,6 @@ msgstr "ఆపరేషన్ అనునది పరికరం కొరక
 #, fuzzy, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr "ఈ అతిధేయపై నమ్‌పాడ్ అందుబాటులోలేదు"
-
-#, fuzzy
-msgid "IOThreads not supported for this QEMU"
-msgstr "ఈ QEMU బైనరీ చేత %s తోడ్పాటునీయబడదు"
-
-#, fuzzy
-msgid "IOThreads not supported with this binary"
-msgstr "SATA ఈ QEMU బైనరీతో మద్దతించబడదు"
-
-#, fuzzy
-msgid "IOThreads polling is not supported for this QEMU"
-msgstr "ఈ QEMU బైనరీ చేత nvram పరికరం తోడ్పాటునీయదు"
 
 #, fuzzy
 msgid "IP address"
@@ -9985,15 +9939,6 @@ msgstr "ఇంకా సంభాలించని విలువ '%s' VMX ప
 
 msgid "Invalid parameter"
 msgstr "సరికాని పారామితి"
-
-msgid "Invalid parameter to virXPathBoolean()"
-msgstr "virXPathBoolean()కు చెల్లని పారామితి"
-
-msgid "Invalid parameter to virXPathNode()"
-msgstr "virXPathNode()కు చెల్లని పారామితి"
-
-msgid "Invalid parameter to virXPathNodeSet()"
-msgstr "virXPathNodeSet()కు చెల్లని పారామితి"
 
 #, fuzzy
 msgid "Invalid parameter type passed to free"
@@ -11754,10 +11699,6 @@ msgid "Namespaces are not supported on this platform"
 msgstr "యునిక్స్ సాకెట్లు యీ ప్లాట్‌ఫాం పైన తోడ్పాటులేదు"
 
 #, fuzzy
-msgid "Namespaces are not supported on this platform."
-msgstr "యునిక్స్ సాకెట్లు యీ ప్లాట్‌ఫాం పైన తోడ్పాటులేదు"
-
-#, fuzzy
 msgid "Nested HV configuration is not supported by this QEMU binary"
 msgstr "QEMU బైనరీ చేత కుదించిన మైగ్రేషన్ తోడ్పాటునిచ్చుటలేదు"
 
@@ -12441,7 +12382,7 @@ msgid "Number of interfaces, %d exceeds the max limit: %d"
 msgstr ""
 
 #, c-format
-msgid "Number of keys %d, which exceeds max liit: %d"
+msgid "Number of keys %d, which exceeds max limit: %d"
 msgstr ""
 
 #, c-format
@@ -13314,10 +13255,6 @@ msgstr "nbd బదిలీ '%s' కు తోడ్పాటునీయదు"
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "QEMU బైనరీ %s నిర్వర్తించదగది కాదు"
-
-msgid ""
-"QEMU binary does not support CPU host-passthrough for armv7l on aarch64 host"
-msgstr ""
 
 #, fuzzy
 msgid "QEMU does not support SEV guest"
@@ -16735,13 +16672,13 @@ msgstr "JSON ఫార్మాటర్ సృష్టించలేదు"
 msgid "Unable to create KVM vCPU for TSC probing"
 msgstr "JSON ఫార్మాటర్ సృష్టించలేదు"
 
-#, fuzzy, c-format
-msgid "Unable to create RNG parser for %s"
-msgstr "JSON పార్సర్ సృష్టించలేదు"
+#, c-format
+msgid "Unable to create RelaxNG parser for schema '%s'"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to create RNG validation context %s"
-msgstr "selinux సందర్భం సృష్టించలేదు: %s"
+#, c-format
+msgid "Unable to create RelaxNG validation context for schema '%s'"
+msgstr ""
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "ఈ ప్లాట్‌ఫాం పైన TAP పరికరాలు సృష్టించలేక పోయింది"
@@ -17129,6 +17066,10 @@ msgid "Unable to get LVM key for %s"
 msgstr "%s కొరకు LVM కీ పొందలేదు"
 
 #, c-format
+msgid "Unable to get NUMA node of cpu %zd"
+msgstr ""
+
+#, c-format
 msgid "Unable to get SCSI key for %s"
 msgstr "%s కొరకు SCSI కీ పొందలేదు"
 
@@ -17280,9 +17221,6 @@ msgstr "డిస్కు సమాచారాన్ని పొందటం�
 #, fuzzy
 msgid "Unable to get hard disk id"
 msgstr "బ్రిడ్జ్ %s %s పొందలేదు"
-
-msgid "Unable to get hardDisk Id"
-msgstr ""
 
 msgid "Unable to get host SEV information"
 msgstr ""
@@ -17672,9 +17610,9 @@ msgstr "memspec పార్స్ చేయలేదు: %s"
 msgid "Unable to parse MAC '%s'"
 msgstr "URI %s పార్స్ చేయలేదు"
 
-#, fuzzy, c-format
-msgid "Unable to parse RNG %s: %s"
-msgstr "URI %s పార్స్ చేయలేదు"
+#, c-format
+msgid "Unable to parse RelaxNG schema '%s': %s"
+msgstr ""
 
 #, c-format
 msgid "Unable to parse URI %s"
@@ -19329,6 +19267,10 @@ msgid "Unsupported listen type"
 msgstr "తోడ్పాటులేని వర్ట్ రకం"
 
 #, c-format
+msgid "Unsupported loader format '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported migration cookie feature %s"
 msgstr "తోడ్పాటులేని మైగ్రేషన్ కుకీ విశేషణం %s"
 
@@ -19365,6 +19307,10 @@ msgstr "తోడ్పాటులేని ఫార్వార్డ్ ర�
 #, fuzzy, c-format
 msgid "Unsupported numatune placement '%d'"
 msgstr "తోడ్పాటులేని CPU ప్లేస్‌మెంట్ రీతి '%s'"
+
+#, c-format
+msgid "Unsupported nvram format '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported object type %d"
@@ -20172,6 +20118,9 @@ msgstr "మద్దతీయని ఆకృతీకరణ"
 
 #, c-format
 msgid "ap-domain value '%s' is out of range for '%s'"
+msgstr ""
+
+msgid "api error"
 msgstr ""
 
 msgid "apparmor_parser exited with error"
@@ -21984,26 +21933,6 @@ msgstr "టైప్‌ఐడివర్షన్ పారామితి య�
 
 #, fuzzy, c-format
 msgid "cannot parse vcpu index '%s'"
-msgstr "వీడియో ram '%s'ను పార్శ్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse video heads '%s'"
-msgstr "వీడియో హెడ్సు '%s'ను పార్స్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse video ram '%s'"
-msgstr "వీడియో ram '%s'ను పార్శ్ చేయలేదు"
-
-#, fuzzy, c-format
-msgid "cannot parse video vgamem '%s'"
-msgstr "వీడియో ram '%s'ను పార్శ్ చేయలేదు"
-
-#, fuzzy, c-format
-msgid "cannot parse video vram '%s'"
-msgstr "వీడియో ram '%s'ను పార్శ్ చేయలేదు"
-
-#, fuzzy, c-format
-msgid "cannot parse video vram64 '%s'"
 msgstr "వీడియో ram '%s'ను పార్శ్ చేయలేదు"
 
 #, fuzzy, c-format
@@ -24470,9 +24399,6 @@ msgid "domain event callback %d not registered"
 msgstr "డొమైన్ ఘటన %d నమోదుకాలేదు"
 
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
-msgstr ""
-
-msgid "domain has SMM turned off but chosen firmware requires it"
 msgstr ""
 
 #, fuzzy
@@ -27468,9 +27394,8 @@ msgstr "'%d' రకపు నిర్వచనాన్ని నకలుత�
 msgid "hotplug of watchdog of model %s is not supported"
 msgstr "పరికరం '%s' యొక్క లైవ్ అనుబందం తోడ్పాటునీయదు"
 
-#, fuzzy
-msgid "hpet timer is not supported"
-msgstr "హబ్ రకం %s తోడ్పాటునీయదు"
+msgid "hpet timer is not supported by this architecture"
+msgstr ""
 
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr ""
@@ -28835,6 +28760,9 @@ msgstr ""
 msgid "librbd encryption is supported only with RBD backed disks"
 msgstr ""
 
+msgid "librbd encryption layering is not supported by this QEMU binary"
+msgstr ""
+
 #, fuzzy
 msgid "libssh transport error"
 msgstr "SSH బదిలీ దోషం"
@@ -29308,24 +29236,6 @@ msgstr ""
 msgid "live update of device '%s' is not supported"
 msgstr "పరికరం '%s' యొక్క లైవ్ నవీకరణ తోడ్పాటునీయదు"
 
-msgid ""
-"loader attribute 'readonly' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
-
-msgid ""
-"loader attribute 'secure' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-
-msgid ""
-"loader attribute 'type' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-
-msgid "loader path cannot be specified when firmware autoselection is enabled"
-msgstr ""
-
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
 msgstr ""
@@ -29346,7 +29256,7 @@ msgstr ""
 msgid "lower boundary for worker thread pool"
 msgstr ""
 
-msgid "luks2 is currently not supported by the qemu encryption engine"
+msgid "luks-any encryption is not supported by this QEMU binary"
 msgstr ""
 
 msgid "lxc state driver is not active"
@@ -29381,6 +29291,10 @@ msgstr "మిషన్ ఆపివుంది, కనుక దాని వ�
 
 #, c-format
 msgid "machine type '%s'"
+msgstr ""
+
+#, c-format
+msgid "machine type '%s' does not support ACPI"
 msgstr ""
 
 msgid "machine type (/domain/os/type/@machine)"
@@ -29489,9 +29403,6 @@ msgstr "తప్పుగారూపొందిన ipset ఫ్లాగ్�
 #, c-format
 msgid "malformed mac address '%s'"
 msgstr "తప్పుగావున్న mac చిరునామా '%s'"
-
-msgid "malformed machine cpu count in QEMU capabilities cache"
-msgstr ""
 
 #, fuzzy
 msgid "malformed mtu size"
@@ -30291,6 +30202,10 @@ msgstr "మూలపు పరికరము తప్పిపోయినద�
 msgid "missing alias for network device"
 msgstr "మూలపు పరికరము తప్పిపోయినది"
 
+#, c-format
+msgid "missing alias on encryption secret #%zu"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
 msgstr "డొమైన్ ఆబ్జక్టు కొరకు దొరకని పేరు పారామితి"
@@ -30587,10 +30502,6 @@ msgstr "లీజ్ కొరకు 'key' మూలకం దొరకట్ల
 #, fuzzy
 msgid "missing listen element for spice graphics"
 msgstr "లీజ్ కొరకు 'key' మూలకం దొరకట్లేదు"
-
-#, fuzzy
-msgid "missing machine name in QEMU capabilities cache"
-msgstr "దొరకని మైగ్రేషన్ సామర్ధ్యం పేరు"
 
 #, c-format
 msgid "missing mapping in '%s'"
@@ -31394,6 +31305,10 @@ msgstr ""
 msgid ""
 "network device saved config file '%s' has unexpected contents, missing both "
 "'MAC' and 'adminMAC': '%.60s'"
+msgstr ""
+
+#, c-format
+msgid "network device type '%s' is not supported by this hypervisor"
 msgstr ""
 
 #, fuzzy, c-format
@@ -32294,11 +32209,6 @@ msgstr "ఈ QEMU బైనరీ తో అచేతనమైన భాగస్
 
 msgid "nvram address type must be spaprvio"
 msgstr "nvram చిరునామా రకం తప్పక spaprvio కావాలి"
-
-msgid ""
-"nvram attribute 'template' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "ఈ QEMU బైనరీ చేత nvram పరికరం తోడ్పాటునీయదు"
@@ -33463,6 +33373,9 @@ msgstr ""
 msgid "qemu emulator '%s' does not support xen"
 msgstr "qemu ఎమ్యులేటర్ '%s' xenను మద్దతించుటలేదు"
 
+msgid "qemu encryption engine expects only a single secret"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "qemu monitor event callback %d not registered"
 msgstr "డొమైన్ ఘటన %d నమోదుకాలేదు"
@@ -33480,6 +33393,9 @@ msgstr "qemu స్థితి డ్రైవర్ క్రియాశీ�
 #, fuzzy
 msgid "qemu unexpectedly closed the monitor"
 msgstr "అనుకోని కోడ్ పాత్"
+
+msgid "qemu-machines reply has malformed 'acpi data"
+msgstr ""
 
 #, fuzzy
 msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
@@ -33786,6 +33702,9 @@ msgstr "తప్పుగారూపొందిన మానిటర్ స�
 
 msgid "received unexpected cookie with P2P migration"
 msgstr "P2P మైగ్రేషన్‌తో అనుకోని కుకీ స్వీకరించెను"
+
+msgid "reconnect delay is supported only with NBD protocol"
+msgstr ""
 
 #, fuzzy
 msgid "recv handler failed"
@@ -34339,6 +34258,10 @@ msgid "scripts are not supported on interfaces of type %s"
 msgstr "%s రకం యొక్క ఇంటర్ఫేసులపై స్క్రిప్ట్స్ తోడ్పాటునీయబడవు"
 
 msgid "scsi-block 'lun' devices do not support the serial property"
+msgstr ""
+
+#, c-format
+msgid "sd card '%s' does not support multiple encryption secrets"
 msgstr ""
 
 #, fuzzy, c-format
@@ -35589,6 +35512,9 @@ msgstr "ఈ QEMU బైనరీ స్మార్టుకార్డు అ�
 msgid "this QEMU binary lacks smartcard passthrough mode support"
 msgstr "ఈ QEMU బైనరీ స్మార్టుకార్డ్ పాస్‌త్రూ రీతి తోడ్పాటు కలిగిలేదు"
 
+msgid "this QEMU does not support 'blob' for virtio-gpu devices"
+msgstr ""
+
 #, fuzzy
 msgid "this QEMU does not support 'vhost-user' video device"
 msgstr "ps2 బస్ అనునది %s ఇన్‌పుట్ పరికరమును మద్దతీయుటలేదు"
@@ -36171,6 +36097,10 @@ msgid "unable control COW flag on '%s'"
 msgstr ""
 
 #, c-format
+msgid "unable create new SELinux label based on label '%s' and file '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable get directory flags on '%s'"
 msgstr ""
 
@@ -36356,6 +36286,13 @@ msgstr "PID %d రక్షణ సందర్భమును పొందలే
 #, fuzzy, c-format
 msgid "unable to get PID %d uid and gid via sysctl"
 msgstr "PID %d రక్షణ సందర్భమును పొందలేక పోయింది"
+
+#, c-format
+msgid "unable to get SELinux context for '%s'"
+msgstr ""
+
+msgid "unable to get SELinux context for current process"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to get SELinux context of %s"
@@ -37566,10 +37503,6 @@ msgstr "చెల్లని రూల్ చర్య యాట్రిబ్
 msgid "unknown vhost-user type: '%s'"
 msgstr "తెలియని మూలం రకం: '%s'"
 
-#, c-format
-msgid "unknown video model '%s'"
-msgstr "తెలియని వీడియో రీతి '%s'"
-
 #, fuzzy, c-format
 msgid "unknown virttype: %s"
 msgstr "తెలియని రకము '%s'"
@@ -37880,10 +37813,6 @@ msgid "unsupported flags: (0x%x)"
 msgstr "తోడ్పాటులేని ఫ్లాగ్స్: (0x%x)"
 
 #, fuzzy, c-format
-msgid "unsupported flash format '%s'"
-msgstr "తోడ్పాటులేని ఆకృతీకరణ ఫార్మాట్ '%s'"
-
-#, fuzzy, c-format
 msgid "unsupported format %s"
 msgstr "తోడ్పాటులేని విశేషణం %s"
 
@@ -37938,10 +37867,6 @@ msgstr "తోడ్పాటులేని ఫార్వార్డ్ ర�
 #, c-format
 msgid "unsupported nvram disk type '%s'"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unsupported nvram template format '%s'"
-msgstr "తోడ్పాటునీయని rtc టైమర్ ట్రాక్ '%s'"
 
 msgid "unsupported option"
 msgstr "తోడ్పాటులేని ఐచ్చికం రకం"
@@ -38450,6 +38375,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "video type %s is not supported by libxl"
 msgstr "నెట్వర్కు రకము %d మద్దతీయుటలేదు"
+
+#, c-format
+msgid "video type '%s' does not support blob resources"
+msgstr ""
 
 #, c-format
 msgid "video type '%s' doesn't support multiple 'heads'"
@@ -39078,6 +39007,106 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "%s is not available with this QEMU binary"
+#~ msgstr "ఈ QEMU బైనరీ తో అచేతనమైన భాగస్వామ్య మెమొరీ అందుబాటులోలేదు"
+
+#~ msgid "'can-offline' missing in reply of guest-get-vcpus"
+#~ msgstr "guest-get-vcpus యొక్క ప్రత్యుత్తరం నందు 'can-offline' దొరకలేదు"
+
+#, fuzzy
+#~ msgid "Cannot remove state PID file %s"
+#~ msgstr "స్టేల్ PID ఫైల్ %s తీసివేయలేదు"
+
+#, fuzzy
+#~ msgid "Could not start 'slirp'. exitstatus: %d"
+#~ msgstr "డొమైన్ ప్రారంభించలేక పోయింది: %s"
+
+#, fuzzy
+#~ msgid "Could not start dbus-daemon. exitstatus: %d"
+#~ msgstr "డొమైన్ ప్రారంభించలేక పోయింది: %s"
+
+#~ msgid "Failed to create symlink '%s to '%s'"
+#~ msgstr "సిమ్‌లింకు  %s నుండి ' %s'కు సృష్టించుటలో విఫలమైంది"
+
+#, fuzzy
+#~ msgid "Failed to generate uuid"
+#~ msgstr "uuid జనియింపచేయుటలో విఫలమైంది"
+
+#, fuzzy
+#~ msgid "IOThreads not supported for this QEMU"
+#~ msgstr "ఈ QEMU బైనరీ చేత %s తోడ్పాటునీయబడదు"
+
+#, fuzzy
+#~ msgid "IOThreads not supported with this binary"
+#~ msgstr "SATA ఈ QEMU బైనరీతో మద్దతించబడదు"
+
+#, fuzzy
+#~ msgid "IOThreads polling is not supported for this QEMU"
+#~ msgstr "ఈ QEMU బైనరీ చేత nvram పరికరం తోడ్పాటునీయదు"
+
+#~ msgid "Invalid parameter to virXPathBoolean()"
+#~ msgstr "virXPathBoolean()కు చెల్లని పారామితి"
+
+#~ msgid "Invalid parameter to virXPathNode()"
+#~ msgstr "virXPathNode()కు చెల్లని పారామితి"
+
+#~ msgid "Invalid parameter to virXPathNodeSet()"
+#~ msgstr "virXPathNodeSet()కు చెల్లని పారామితి"
+
+#, fuzzy
+#~ msgid "Namespaces are not supported on this platform."
+#~ msgstr "యునిక్స్ సాకెట్లు యీ ప్లాట్‌ఫాం పైన తోడ్పాటులేదు"
+
+#, fuzzy
+#~ msgid "Unable to create RNG parser for %s"
+#~ msgstr "JSON పార్సర్ సృష్టించలేదు"
+
+#, fuzzy
+#~ msgid "Unable to create RNG validation context %s"
+#~ msgstr "selinux సందర్భం సృష్టించలేదు: %s"
+
+#, fuzzy
+#~ msgid "Unable to parse RNG %s: %s"
+#~ msgstr "URI %s పార్స్ చేయలేదు"
+
+#~ msgid "cannot parse video heads '%s'"
+#~ msgstr "వీడియో హెడ్సు '%s'ను పార్స్ చేయలేదు"
+
+#~ msgid "cannot parse video ram '%s'"
+#~ msgstr "వీడియో ram '%s'ను పార్శ్ చేయలేదు"
+
+#, fuzzy
+#~ msgid "cannot parse video vgamem '%s'"
+#~ msgstr "వీడియో ram '%s'ను పార్శ్ చేయలేదు"
+
+#, fuzzy
+#~ msgid "cannot parse video vram '%s'"
+#~ msgstr "వీడియో ram '%s'ను పార్శ్ చేయలేదు"
+
+#, fuzzy
+#~ msgid "cannot parse video vram64 '%s'"
+#~ msgstr "వీడియో ram '%s'ను పార్శ్ చేయలేదు"
+
+#, fuzzy
+#~ msgid "hpet timer is not supported"
+#~ msgstr "హబ్ రకం %s తోడ్పాటునీయదు"
+
+#, fuzzy
+#~ msgid "missing machine name in QEMU capabilities cache"
+#~ msgstr "దొరకని మైగ్రేషన్ సామర్ధ్యం పేరు"
+
+#~ msgid "unknown video model '%s'"
+#~ msgstr "తెలియని వీడియో రీతి '%s'"
+
+#, fuzzy
+#~ msgid "unsupported flash format '%s'"
+#~ msgstr "తోడ్పాటులేని ఆకృతీకరణ ఫార్మాట్ '%s'"
+
+#, fuzzy
+#~ msgid "unsupported nvram template format '%s'"
+#~ msgstr "తోడ్పాటునీయని rtc టైమర్ ట్రాక్ '%s'"
 
 #, fuzzy
 #~ msgid "'disk' missing in reply of guest-get-fsinfo"

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-02-22 13:50+0000\n"
+"POT-Creation-Date: 2023-03-24 16:18+0000\n"
 "PO-Revision-Date: 2015-03-03 07:52+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (http://www.transifex.com/projects/p/fedora/language/"
@@ -452,20 +452,12 @@ msgid "%s is not an executable"
 msgstr ""
 
 #, c-format
-msgid "%s is not available with this QEMU binary"
-msgstr ""
-
-#, c-format
 msgid "%s is not supported by this QEMU binary"
 msgstr ""
 
 #, fuzzy, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "vCPU бафер дужине мапе је прешао свој максимум: %d > %d"
-
-#, c-format
-msgid "%s memory device info is not handled yet"
-msgstr ""
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -945,6 +937,10 @@ msgid "'%s' file does not fit in memory"
 msgstr ""
 
 #, c-format
+msgid "'%s' is currently not supported by the qemu encryption engine"
+msgstr ""
+
+#, c-format
 msgid "'%s' is not a VF device"
 msgstr ""
 
@@ -1004,14 +1000,14 @@ msgstr ""
 msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
 
+msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
-msgstr ""
-
-msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr ""
 
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
@@ -2984,10 +2980,6 @@ msgstr ""
 msgid "Cannot remove stale PID file %s"
 msgstr "не могу да уклоним подешавање за %s"
 
-#, fuzzy, c-format
-msgid "Cannot remove state PID file %s"
-msgstr "не могу да уклоним подешавање за %s"
-
 msgid "Cannot remove uninitialized CURL handle from a multi handle"
 msgstr ""
 
@@ -4572,23 +4564,7 @@ msgstr ""
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
 
-#, c-format
-msgid "Could not start 'passt': %s"
-msgstr ""
-
-#, c-format
-msgid "Could not start 'slirp'. exitstatus: %d"
-msgstr ""
-
-#, c-format
-msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
-msgstr ""
-
 msgid "Could not start 'virtiofsd'"
-msgstr ""
-
-#, c-format
-msgid "Could not start dbus-daemon. exitstatus: %d"
 msgstr ""
 
 #, fuzzy, c-format
@@ -6528,10 +6504,6 @@ msgid "Failed to create state dir '%s'"
 msgstr "Неуспело прављење диска из %s"
 
 #, fuzzy, c-format
-msgid "Failed to create symlink '%s to '%s'"
-msgstr "Неуспело чување домена %s у %s"
-
-#, fuzzy, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "Неуспело чување домена %s у %s"
 
@@ -6886,10 +6858,6 @@ msgstr "Неуспешно прављење UUID"
 #, fuzzy
 msgid "Failed to generate genid"
 msgstr "Неуспешно прављење UUID"
-
-#, fuzzy
-msgid "Failed to generate uuid"
-msgstr "не могу да генеришем uuid"
 
 #, fuzzy, c-format
 msgid "Failed to get %s minor number"
@@ -8419,12 +8387,6 @@ msgstr ""
 msgid "File total:"
 msgstr ""
 
-msgid "Filepath is Null"
-msgstr ""
-
-msgid "Filepath is null"
-msgstr ""
-
 #, fuzzy
 msgid "Filesystem driver type not supported"
 msgstr "Врста мреже %d није подржана"
@@ -8511,6 +8473,10 @@ msgid "Forcefully stop a given network."
 msgstr ""
 
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
+msgstr ""
+
+#, c-format
+msgid "Format mismatch: loader.format='%s' nvram.format='%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -9001,15 +8967,6 @@ msgstr ""
 
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
-msgstr ""
-
-msgid "IOThreads not supported for this QEMU"
-msgstr ""
-
-msgid "IOThreads not supported with this binary"
-msgstr ""
-
-msgid "IOThreads polling is not supported for this QEMU"
 msgstr ""
 
 #, fuzzy
@@ -9843,15 +9800,6 @@ msgstr ""
 #, fuzzy
 msgid "Invalid parameter"
 msgstr "Неважећи параметар за virXPathNode()"
-
-msgid "Invalid parameter to virXPathBoolean()"
-msgstr "Неважећи параметар за virXPathBoolean()"
-
-msgid "Invalid parameter to virXPathNode()"
-msgstr "Неважећи параметар за virXPathNode()"
-
-msgid "Invalid parameter to virXPathNodeSet()"
-msgstr "Неважећи параметар за virXPathNodeSet()"
 
 #, fuzzy
 msgid "Invalid parameter type passed to free"
@@ -11572,9 +11520,6 @@ msgstr "Име:"
 msgid "Namespaces are not supported on this platform"
 msgstr ""
 
-msgid "Namespaces are not supported on this platform."
-msgstr ""
-
 msgid "Nested HV configuration is not supported by this QEMU binary"
 msgstr ""
 
@@ -12240,7 +12185,7 @@ msgid "Number of interfaces, %d exceeds the max limit: %d"
 msgstr ""
 
 #, c-format
-msgid "Number of keys %d, which exceeds max liit: %d"
+msgid "Number of keys %d, which exceeds max limit: %d"
 msgstr ""
 
 #, c-format
@@ -13070,10 +13015,6 @@ msgstr ""
 
 #, c-format
 msgid "QEMU binary %s is not executable"
-msgstr ""
-
-msgid ""
-"QEMU binary does not support CPU host-passthrough for armv7l on aarch64 host"
 msgstr ""
 
 msgid "QEMU does not support SEV guest"
@@ -16452,13 +16393,13 @@ msgstr ""
 msgid "Unable to create KVM vCPU for TSC probing"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to create RNG parser for %s"
-msgstr "Неуспело прављење мреже из %s"
+#, c-format
+msgid "Unable to create RelaxNG parser for schema '%s'"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to create RNG validation context %s"
-msgstr "Неуспело прављење контекст SASL клијента: %d (%s)"
+#, c-format
+msgid "Unable to create RelaxNG validation context for schema '%s'"
+msgstr ""
 
 msgid "Unable to create TAP devices on this platform"
 msgstr ""
@@ -16847,6 +16788,10 @@ msgstr "Неуспело поновно покретање домена %s"
 msgid "Unable to get LVM key for %s"
 msgstr "неуспело добављање мреже „%s“"
 
+#, c-format
+msgid "Unable to get NUMA node of cpu %zd"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to get SCSI key for %s"
 msgstr "неуспело добављање мреже „%s“"
@@ -16994,9 +16939,6 @@ msgstr "Неуспело добављање података о диску"
 #, fuzzy
 msgid "Unable to get hard disk id"
 msgstr "не могу да генеришем uuid"
-
-msgid "Unable to get hardDisk Id"
-msgstr ""
 
 msgid "Unable to get host SEV information"
 msgstr ""
@@ -17390,9 +17332,9 @@ msgstr ""
 msgid "Unable to parse MAC '%s'"
 msgstr "Неуспело рашчлањивање режима „%s“"
 
-#, fuzzy, c-format
-msgid "Unable to parse RNG %s: %s"
-msgstr "Неуспело рашчлањивање режима „%s“"
+#, c-format
+msgid "Unable to parse RelaxNG schema '%s': %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to parse URI %s"
@@ -19037,6 +18979,10 @@ msgstr ""
 msgid "Unsupported listen type"
 msgstr "неподржана врста аутентификације %d"
 
+#, c-format
+msgid "Unsupported loader format '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported migration cookie feature %s"
 msgstr "неподржана врста аутентификације %d"
@@ -19074,6 +19020,10 @@ msgstr "магистрала за унос %s није подржана"
 #, fuzzy, c-format
 msgid "Unsupported numatune placement '%d'"
 msgstr "неподржана врста аутентификације %d"
+
+#, c-format
+msgid "Unsupported nvram format '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unsupported object type %d"
@@ -19872,6 +19822,9 @@ msgstr "подаци о домену"
 
 #, c-format
 msgid "ap-domain value '%s' is out of range for '%s'"
+msgstr ""
+
+msgid "api error"
 msgstr ""
 
 msgid "apparmor_parser exited with error"
@@ -21644,26 +21597,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "cannot parse vcpu index '%s'"
 msgstr "не могу да рашчланим место завршетка уређаја"
-
-#, fuzzy, c-format
-msgid "cannot parse video heads '%s'"
-msgstr "не могу да рашчланим место завршетка уређаја"
-
-#, fuzzy, c-format
-msgid "cannot parse video ram '%s'"
-msgstr "не могу да уклоним подешавање за %s"
-
-#, fuzzy, c-format
-msgid "cannot parse video vgamem '%s'"
-msgstr "не могу да рашчланим место завршетка уређаја"
-
-#, fuzzy, c-format
-msgid "cannot parse video vram '%s'"
-msgstr "не могу да уклоним подешавање за %s"
-
-#, c-format
-msgid "cannot parse video vram64 '%s'"
-msgstr ""
 
 #, c-format
 msgid "cannot parse vlan tag '%s' from file '%s'"
@@ -24108,9 +24041,6 @@ msgid "domain event callback %d not registered"
 msgstr ""
 
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
-msgstr ""
-
-msgid "domain has SMM turned off but chosen firmware requires it"
 msgstr ""
 
 msgid "domain has active block job"
@@ -27124,9 +27054,8 @@ msgstr ""
 msgid "hotplug of watchdog of model %s is not supported"
 msgstr "Врста мреже %d није подржана"
 
-#, fuzzy
-msgid "hpet timer is not supported"
-msgstr "Врста мреже %d није подржана"
+msgid "hpet timer is not supported by this architecture"
+msgstr ""
 
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr ""
@@ -28474,6 +28403,9 @@ msgstr ""
 msgid "librbd encryption is supported only with RBD backed disks"
 msgstr ""
 
+msgid "librbd encryption layering is not supported by this QEMU binary"
+msgstr ""
+
 msgid "libssh transport error"
 msgstr ""
 
@@ -28953,24 +28885,6 @@ msgstr ""
 msgid "live update of device '%s' is not supported"
 msgstr "Врста мреже %d није подржана"
 
-msgid ""
-"loader attribute 'readonly' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
-
-msgid ""
-"loader attribute 'secure' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-
-msgid ""
-"loader attribute 'type' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-
-msgid "loader path cannot be specified when firmware autoselection is enabled"
-msgstr ""
-
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
 msgstr ""
@@ -28991,7 +28905,7 @@ msgstr ""
 msgid "lower boundary for worker thread pool"
 msgstr ""
 
-msgid "luks2 is currently not supported by the qemu encryption engine"
+msgid "luks-any encryption is not supported by this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -29029,6 +28943,10 @@ msgstr ""
 
 #, c-format
 msgid "machine type '%s'"
+msgstr ""
+
+#, c-format
+msgid "machine type '%s' does not support ACPI"
 msgstr ""
 
 msgid "machine type (/domain/os/type/@machine)"
@@ -29140,9 +29058,6 @@ msgstr "Лоша величина %s"
 #, fuzzy, c-format
 msgid "malformed mac address '%s'"
 msgstr "неисправна MAC адреса: %s"
-
-msgid "malformed machine cpu count in QEMU capabilities cache"
-msgstr ""
 
 #, fuzzy
 msgid "malformed mtu size"
@@ -29936,6 +29851,10 @@ msgid "missing alias for network device"
 msgstr "недостаје уређај извора"
 
 #, c-format
+msgid "missing alias on encryption secret #%zu"
+msgstr ""
+
+#, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
 msgstr ""
 
@@ -30228,9 +30147,6 @@ msgid "missing listen element for graphics"
 msgstr "недостаје root елемент"
 
 msgid "missing listen element for spice graphics"
-msgstr ""
-
-msgid "missing machine name in QEMU capabilities cache"
 msgstr ""
 
 #, c-format
@@ -31044,6 +30960,10 @@ msgstr ""
 msgid ""
 "network device saved config file '%s' has unexpected contents, missing both "
 "'MAC' and 'adminMAC': '%.60s'"
+msgstr ""
+
+#, c-format
+msgid "network device type '%s' is not supported by this hypervisor"
 msgstr ""
 
 #, fuzzy, c-format
@@ -31928,11 +31848,6 @@ msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr ""
 
 msgid "nvram address type must be spaprvio"
-msgstr ""
-
-msgid ""
-"nvram attribute 'template' cannot be specified when firmware autoselection "
-"is enabled"
 msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
@@ -33059,6 +32974,9 @@ msgstr ""
 msgid "qemu emulator '%s' does not support xen"
 msgstr "наредба „%s“ не подржава опцију --%s"
 
+msgid "qemu encryption engine expects only a single secret"
+msgstr ""
+
 #, c-format
 msgid "qemu monitor event callback %d not registered"
 msgstr ""
@@ -33075,6 +32993,9 @@ msgid "qemu state driver is not active"
 msgstr "складиште није активно"
 
 msgid "qemu unexpectedly closed the monitor"
+msgstr ""
+
+msgid "qemu-machines reply has malformed 'acpi data"
 msgstr ""
 
 msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
@@ -33364,6 +33285,9 @@ msgid "received malformed monitor, check the XML definition"
 msgstr ""
 
 msgid "received unexpected cookie with P2P migration"
+msgstr ""
+
+msgid "reconnect delay is supported only with NBD protocol"
 msgstr ""
 
 msgid "recv handler failed"
@@ -33919,6 +33843,10 @@ msgid "scripts are not supported on interfaces of type %s"
 msgstr ""
 
 msgid "scsi-block 'lun' devices do not support the serial property"
+msgstr ""
+
+#, c-format
+msgid "sd card '%s' does not support multiple encryption secrets"
 msgstr ""
 
 #, c-format
@@ -35141,6 +35069,9 @@ msgstr ""
 msgid "this QEMU binary lacks smartcard passthrough mode support"
 msgstr ""
 
+msgid "this QEMU does not support 'blob' for virtio-gpu devices"
+msgstr ""
+
 #, fuzzy
 msgid "this QEMU does not support 'vhost-user' video device"
 msgstr "ps2 магистрала не подржава %s уређај за унос"
@@ -35705,6 +35636,10 @@ msgid "unable control COW flag on '%s'"
 msgstr ""
 
 #, c-format
+msgid "unable create new SELinux label based on label '%s' and file '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable get directory flags on '%s'"
 msgstr ""
 
@@ -35887,6 +35822,13 @@ msgstr ""
 
 #, c-format
 msgid "unable to get PID %d uid and gid via sysctl"
+msgstr ""
+
+#, c-format
+msgid "unable to get SELinux context for '%s'"
+msgstr ""
+
+msgid "unable to get SELinux context for current process"
 msgstr ""
 
 #, fuzzy, c-format
@@ -37117,10 +37059,6 @@ msgid "unknown vhost-user type: '%s'"
 msgstr "непозната врста ауторизације %s"
 
 #, fuzzy, c-format
-msgid "unknown video model '%s'"
-msgstr "неочекивана наредба: „%s“"
-
-#, fuzzy, c-format
 msgid "unknown virttype: %s"
 msgstr "непозната врста „%s“"
 
@@ -37434,10 +37372,6 @@ msgid "unsupported flags: (0x%x)"
 msgstr "магистрала за унос %s није подржана"
 
 #, fuzzy, c-format
-msgid "unsupported flash format '%s'"
-msgstr "магистрала за унос %s није подржана"
-
-#, fuzzy, c-format
 msgid "unsupported format %s"
 msgstr "магистрала за унос %s није подржана"
 
@@ -37492,10 +37426,6 @@ msgstr "магистрала за унос %s није подржана"
 #, c-format
 msgid "unsupported nvram disk type '%s'"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unsupported nvram template format '%s'"
-msgstr "магистрала за унос %s није подржана"
 
 #, fuzzy
 msgid "unsupported option"
@@ -38003,6 +37933,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "video type %s is not supported by libxl"
 msgstr "Врста мреже %d није подржана"
+
+#, c-format
+msgid "video type '%s' does not support blob resources"
+msgstr ""
 
 #, c-format
 msgid "video type '%s' doesn't support multiple 'heads'"
@@ -38615,6 +38549,71 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <ниска>"
+
+#, fuzzy
+#~ msgid "Cannot remove state PID file %s"
+#~ msgstr "не могу да уклоним подешавање за %s"
+
+#, fuzzy
+#~ msgid "Failed to create symlink '%s to '%s'"
+#~ msgstr "Неуспело чување домена %s у %s"
+
+#, fuzzy
+#~ msgid "Failed to generate uuid"
+#~ msgstr "не могу да генеришем uuid"
+
+#~ msgid "Invalid parameter to virXPathBoolean()"
+#~ msgstr "Неважећи параметар за virXPathBoolean()"
+
+#~ msgid "Invalid parameter to virXPathNode()"
+#~ msgstr "Неважећи параметар за virXPathNode()"
+
+#~ msgid "Invalid parameter to virXPathNodeSet()"
+#~ msgstr "Неважећи параметар за virXPathNodeSet()"
+
+#, fuzzy
+#~ msgid "Unable to create RNG parser for %s"
+#~ msgstr "Неуспело прављење мреже из %s"
+
+#, fuzzy
+#~ msgid "Unable to create RNG validation context %s"
+#~ msgstr "Неуспело прављење контекст SASL клијента: %d (%s)"
+
+#, fuzzy
+#~ msgid "Unable to parse RNG %s: %s"
+#~ msgstr "Неуспело рашчлањивање режима „%s“"
+
+#, fuzzy
+#~ msgid "cannot parse video heads '%s'"
+#~ msgstr "не могу да рашчланим место завршетка уређаја"
+
+#, fuzzy
+#~ msgid "cannot parse video ram '%s'"
+#~ msgstr "не могу да уклоним подешавање за %s"
+
+#, fuzzy
+#~ msgid "cannot parse video vgamem '%s'"
+#~ msgstr "не могу да рашчланим место завршетка уређаја"
+
+#, fuzzy
+#~ msgid "cannot parse video vram '%s'"
+#~ msgstr "не могу да уклоним подешавање за %s"
+
+#, fuzzy
+#~ msgid "hpet timer is not supported"
+#~ msgstr "Врста мреже %d није подржана"
+
+#, fuzzy
+#~ msgid "unknown video model '%s'"
+#~ msgstr "неочекивана наредба: „%s“"
+
+#, fuzzy
+#~ msgid "unsupported flash format '%s'"
+#~ msgstr "магистрала за унос %s није подржана"
+
+#, fuzzy
+#~ msgid "unsupported nvram template format '%s'"
+#~ msgstr "магистрала за унос %s није подржана"
 
 #, fuzzy
 #~ msgid "Could not get device type, rc=%08x"

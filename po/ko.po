@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-02-22 13:50+0000\n"
+"POT-Creation-Date: 2023-03-24 16:18+0000\n"
 "PO-Revision-Date: 2023-02-27 14:20+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -628,20 +628,12 @@ msgid "%s is not an executable"
 msgstr "%s는 실행 할 수 없습니다"
 
 #, c-format
-msgid "%s is not available with this QEMU binary"
-msgstr "%s는 QEMU 바이너리를 사용 할 수 없습니다"
-
-#, c-format
 msgid "%s is not supported by this QEMU binary"
 msgstr "%s는 이 QEMU 바이너리에서 지원되지 않습니다"
 
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "%s는 최대보다 길이를 초과: %d > %d"
-
-#, c-format
-msgid "%s memory device info is not handled yet"
-msgstr "%s 메모리 장치 정보는 아직 다루지 않습니다"
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -1142,6 +1134,10 @@ msgid "'%s' file does not fit in memory"
 msgstr "'%s' 파일은 메모리에 들어갈 수 없습니다"
 
 #, c-format
+msgid "'%s' is currently not supported by the qemu encryption engine"
+msgstr ""
+
+#, c-format
 msgid "'%s' is not a VF device"
 msgstr "'%s'는 VF 장치가 아닙니다"
 
@@ -1203,15 +1199,15 @@ msgstr "'ramfb' 비디오 장치에는 'address'가 지원되지 않습니다"
 msgid "'address' must be specified for scsi hostdev source"
 msgstr "scsi hostdev 소스에는 'address'가 지정되어야 합니다"
 
+msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr "'arch' 요소는 'match' 속성'에 'cpu' 요소안에서 사용 될 수 없습니다"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'캐쉬'는 존재하지 않는 NUMA 노드 캐쉬를 나타냅니다"
-
-msgid "'can-offline' missing in reply of guest-get-vcpus"
-msgstr "guest-get-vcpus의 응답에 'can-offline'이 누락됨"
 
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
 msgstr "'cmd_per_lun'는 virtio-scsi 제어기에서만 지원합니다"
@@ -2573,7 +2569,8 @@ msgstr "env 경로에서 prlctl 명령어를 찾을 수 없습니다"
 #, c-format
 msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"
-msgstr "파일의 UUID를 harddisk/dvd/floppy로 연결 하는데 가져 올 수 없습니다: %s"
+msgstr ""
+"파일의 UUID를 harddisk/dvd/floppy로 연결 하는데 가져 올 수 없습니다: %s"
 
 msgid "Can't initialize Parallels SDK"
 msgstr "Parallels SDK를 초기화 할 수 없습니다"
@@ -3241,10 +3238,6 @@ msgstr ""
 #, c-format
 msgid "Cannot remove stale PID file %s"
 msgstr "stale PID 파일%s을 제거 할 수 없음"
-
-#, c-format
-msgid "Cannot remove state PID file %s"
-msgstr "%s 상태 PID 파일을 제거할 수 없음"
 
 msgid "Cannot remove uninitialized CURL handle from a multi handle"
 msgstr "멀티 핸들에서 초기화되지 않은 CURL 핸들을 제거 할 수 없습니다"
@@ -4831,24 +4824,8 @@ msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
 "xmlNodeParam에 대한 wsman 명칭공간 주소 (namespace) 를 설정할 수 없습니다"
 
-#, c-format
-msgid "Could not start 'passt': %s"
-msgstr "'passt'를 시작 할 수 없습니다: %s"
-
-#, c-format
-msgid "Could not start 'slirp'. exitstatus: %d"
-msgstr "'slirp'를 시작 할 수 없습니다. 종료상태: %d"
-
-#, c-format
-msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
-msgstr "'vhost-user-gpu'를 시작할 수 없습니다. 종료 상태: %d"
-
 msgid "Could not start 'virtiofsd'"
 msgstr "'virtiofsd'를 시작할 수 없습니다"
-
-#, c-format
-msgid "Could not start dbus-daemon. exitstatus: %d"
-msgstr "dbus-데몬을 시작 할 수 없습니다. 종료상태: %d"
 
 #, c-format
 msgid "Could not start domain: %s"
@@ -6795,10 +6772,6 @@ msgid "Failed to create state dir '%s'"
 msgstr "상태 디렉토리 '%s'를 작성하지 못했습니다"
 
 #, c-format
-msgid "Failed to create symlink '%s to '%s'"
-msgstr "심볼릭 링크 '%s'를 '%s'에 대해 생성하는 데 실패"
-
-#, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "심볼릭 링크 '%s'를 '%s'에 대해 만들 수 없음"
 
@@ -7137,9 +7110,6 @@ msgstr "UUID 생성 실패"
 
 msgid "Failed to generate genid"
 msgstr "genid 생성에 실패하였습니다"
-
-msgid "Failed to generate uuid"
-msgstr "uuid 생성에 실패하였습니다"
 
 #, c-format
 msgid "Failed to get %s minor number"
@@ -8596,12 +8566,6 @@ msgstr "이 기술환경에서는 파일 스트림이 지원되지 않습니다"
 msgid "File total:"
 msgstr "전체 파일:"
 
-msgid "Filepath is Null"
-msgstr "파일경로가 비어있습니다"
-
-msgid "Filepath is null"
-msgstr "파일경로가 비어있습니다"
-
 msgid "Filesystem driver type not supported"
 msgstr "파일시스템 드라이버 유형이 지원되지 않습니다"
 
@@ -8690,6 +8654,10 @@ msgstr "주어진 네트워크를 강제로 중지합니다."
 
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr "지정된 풀을 강제로 중지합니다. 풀에서 단순 자료는 그대로 유지됩니다"
+
+#, c-format
+msgid "Format mismatch: loader.format='%s' nvram.format='%s'"
+msgstr ""
 
 #, c-format
 msgid "Format of device '%s' does not match the expected format '%s'"
@@ -9203,15 +9171,6 @@ msgstr "지원되는 장치에서 사용할 IOThread"
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr "IOThreads는 버스 %s 대상 %s에 사용할 수 없습니다"
-
-msgid "IOThreads not supported for this QEMU"
-msgstr "이 QEMU에 대해 지원되지 않는 IOThreads"
-
-msgid "IOThreads not supported with this binary"
-msgstr "이 바이너리에서는 IOThreads가 지원되지 않습니다"
-
-msgid "IOThreads polling is not supported for this QEMU"
-msgstr "IOThreads 폴링은 이 QEMU에 지원되지 않음"
 
 msgid "IP address"
 msgstr "IP 주소"
@@ -10063,15 +10022,6 @@ msgstr ""
 
 msgid "Invalid parameter"
 msgstr "잘못된 매개 변수"
-
-msgid "Invalid parameter to virXPathBoolean()"
-msgstr "virXPathBoolean()에 잘못된 매개변수 전달"
-
-msgid "Invalid parameter to virXPathNode()"
-msgstr "virXPathNode()에 잘못된 매개변수 전달"
-
-msgid "Invalid parameter to virXPathNodeSet()"
-msgstr "virXPathNodeSet()에 잘못된 매개변수 전달"
 
 msgid "Invalid parameter type passed to free"
 msgstr "free에 잘못된 매개변수 유형이 전달되었습니다"
@@ -11769,9 +11719,6 @@ msgstr "이름:"
 msgid "Namespaces are not supported on this platform"
 msgstr "이름공간(namespaces)이 본 기반을 지원하지 않습니다"
 
-msgid "Namespaces are not supported on this platform."
-msgstr "이름공간(namespaces)이 본 기반을 지원하지 않습니다."
-
 msgid "Nested HV configuration is not supported by this QEMU binary"
 msgstr "중첩된 HV 구성은 이 QEMU 바이너리에서는 지원되지 않음"
 
@@ -12430,8 +12377,8 @@ msgid "Number of interfaces, %d exceeds the max limit: %d"
 msgstr "인터페이스 수, %d가 최대 제한을 초과함: %d"
 
 #, c-format
-msgid "Number of keys %d, which exceeds max liit: %d"
-msgstr "최대 제한을 초과하는 키 %d개의 수: %d"
+msgid "Number of keys %d, which exceeds max limit: %d"
+msgstr ""
 
 #, c-format
 msgid "Number of leases is %d, which exceeds max limit: %d"
@@ -13277,12 +13224,6 @@ msgstr "QEMU NBD 서버는 TLS 전송을 지원하지 않습니다"
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "QEMU 바이너리 %s를 실행할 수 없습니다"
-
-msgid ""
-"QEMU binary does not support CPU host-passthrough for armv7l on aarch64 host"
-msgstr ""
-"QEMU 바이너리는 arch64 호스트에서 armv7l에 대한 CPU 호스트 패스스루를 지원하"
-"지 않습니다"
 
 msgid "QEMU does not support SEV guest"
 msgstr "QEMU는 SEV 게스트를 지원하지 않습니다"
@@ -16678,12 +16619,12 @@ msgid "Unable to create KVM vCPU for TSC probing"
 msgstr "TSC 프로빙을 위한 KVM vCPU를 생성할 수 없음"
 
 #, c-format
-msgid "Unable to create RNG parser for %s"
-msgstr "%s를 위한 RNG 구문분석을 생성 할 수 없습니다"
+msgid "Unable to create RelaxNG parser for schema '%s'"
+msgstr ""
 
 #, c-format
-msgid "Unable to create RNG validation context %s"
-msgstr "RNG 유효성 내용 %s를 생성 할 수 없습니다"
+msgid "Unable to create RelaxNG validation context for schema '%s'"
+msgstr ""
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "이 기술환경에서 탭 장치를 생성 할 수 없습니다"
@@ -17059,6 +17000,10 @@ msgid "Unable to get LVM key for %s"
 msgstr "%s의 LVM 키를 가져 올 수 없습니다"
 
 #, c-format
+msgid "Unable to get NUMA node of cpu %zd"
+msgstr ""
+
+#, c-format
 msgid "Unable to get SCSI key for %s"
 msgstr "%s의 SCSI 키를 가져 올 수 없습니다"
 
@@ -17190,9 +17135,6 @@ msgstr "하드 디스크 형식을 가져올 수 없습니다"
 
 msgid "Unable to get hard disk id"
 msgstr "하드 디스크 id를 가져 올 수 없습니다"
-
-msgid "Unable to get hardDisk Id"
-msgstr "하드디스크 ID를 가져 올 수 없습니다"
 
 msgid "Unable to get host SEV information"
 msgstr "호스트 SEV 정보를 가져 올 수 없습니다"
@@ -17562,8 +17504,8 @@ msgid "Unable to parse MAC '%s'"
 msgstr "MAC '%s'를 구문 분석 할 수 없습니다"
 
 #, c-format
-msgid "Unable to parse RNG %s: %s"
-msgstr "RNG %s: %s 구문 분석 할 수 없음"
+msgid "Unable to parse RelaxNG schema '%s': %s"
+msgstr ""
 
 #, c-format
 msgid "Unable to parse URI %s"
@@ -19174,6 +19116,10 @@ msgid "Unsupported listen type"
 msgstr "지원되지 않는 청취 유형"
 
 #, c-format
+msgid "Unsupported loader format '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported migration cookie feature %s"
 msgstr "지원되지 않는 이전 쿠키 기능 %s"
 
@@ -19210,6 +19156,10 @@ msgstr "지원되지 않는 numatune 방식 '%d'"
 #, c-format
 msgid "Unsupported numatune placement '%d'"
 msgstr "지원되지 않는 numatune 배치 '%d'"
+
+#, c-format
+msgid "Unsupported nvram format '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported object type %d"
@@ -20021,6 +19971,9 @@ msgstr "모든 구성"
 #, c-format
 msgid "ap-domain value '%s' is out of range for '%s'"
 msgstr "ap-도메인 값 '%s'가 '%s'의 범위를 벗어났습니다"
+
+msgid "api error"
+msgstr ""
 
 msgid "apparmor_parser exited with error"
 msgstr "AppArmor_구문분석기가 오류로 종료되었습니다"
@@ -21799,26 +21752,6 @@ msgstr "typeidversion 매개 변수 값을 구문 분석할 수 없음"
 #, c-format
 msgid "cannot parse vcpu index '%s'"
 msgstr "vcpu 인덱스 '%s'을(를) 구문 분석할 수 없습니다"
-
-#, c-format
-msgid "cannot parse video heads '%s'"
-msgstr "비디오 헤드 '%s'를 구문분석 할 수 없음"
-
-#, c-format
-msgid "cannot parse video ram '%s'"
-msgstr "비디오 램 '%s'을 구문 분석할 수 없음"
-
-#, c-format
-msgid "cannot parse video vgamem '%s'"
-msgstr "비디오 램 '%s'를 구문 분석 할 수 없음"
-
-#, c-format
-msgid "cannot parse video vram '%s'"
-msgstr "비디오 가상램 '%s'을 구문 분석 할 수 없음"
-
-#, c-format
-msgid "cannot parse video vram64 '%s'"
-msgstr "비디오 가상램64 '%s'를 구문 분석 할 수 없음"
 
 #, c-format
 msgid "cannot parse vlan tag '%s' from file '%s'"
@@ -24228,9 +24161,6 @@ msgstr "도메인 이벤트 콜백 %d이(가) 등록되지 않았습니다"
 
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
 msgstr "도메인에 'invtsc' CPU 기능이 있지만 TSC 주파수가 지정되지 않았습니다"
-
-msgid "domain has SMM turned off but chosen firmware requires it"
-msgstr "도메인에 SMM이 꺼져 있지만 선택한 펌웨어에는 SMM이 필요합니다"
 
 msgid "domain has active block job"
 msgstr "도메인에 활성 차단 작업이 있습니다"
@@ -27141,8 +27071,8 @@ msgstr "인터페이스 유형 %s의 핫플러그가 아직 구현되지 않았�
 msgid "hotplug of watchdog of model %s is not supported"
 msgstr "%s 모델의 watchdog 핫플러그가 지원되지 않습니다"
 
-msgid "hpet timer is not supported"
-msgstr "hpet 타이머는 지원되지 않습니다"
+msgid "hpet timer is not supported by this architecture"
+msgstr ""
 
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr "http 쿠키는 HTTP(S) 프로토콜에서만 지원됩니다"
@@ -28489,6 +28419,9 @@ msgstr "librbd 암호화는 이 QEMU 바이너리에서 지원되지 않습니�
 msgid "librbd encryption is supported only with RBD backed disks"
 msgstr "librbd 암호화는 RDB로 백업된 디스크로만 지원됩니다"
 
+msgid "librbd encryption layering is not supported by this QEMU binary"
+msgstr ""
+
 msgid "libssh transport error"
 msgstr "libssh 전송 오류"
 
@@ -28928,28 +28861,6 @@ msgstr "라이브 스냅샷 생성은 전체 시스템 스냅샷 중에만 지�
 msgid "live update of device '%s' is not supported"
 msgstr "장치 '%s'의 라이브 업데이트가 지원되지 않습니다"
 
-msgid ""
-"loader attribute 'readonly' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
-"로더 속성 '읽기전용'은 펌웨어가 자동선택이 활성화 되었을 때에 지정 될 수 없습"
-"니다"
-
-msgid ""
-"loader attribute 'secure' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-"로더 속성 '보안'은 펌웨어 자동선택이 활성화 되었을 때에 지정 될 수 없습니다"
-
-msgid ""
-"loader attribute 'type' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-"로더 속성 '유형'은 펌웨어가 자동선택이 활성화 되었을 때에 지정 될 수 없습니다"
-
-msgid "loader path cannot be specified when firmware autoselection is enabled"
-msgstr "로더 경로는 펌웨어 자동선택이 활성화 되었을 때에 지정 될 수 없습니다"
-
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
 msgstr "loadparm 값 '%s'는 1 ~ 8개의 문자 사이여야 합니다"
@@ -28970,8 +28881,8 @@ msgstr "원샷이 보다는, 타임아웃 또는 인터럽트까지 루프"
 msgid "lower boundary for worker thread pool"
 msgstr "작업자 쓰레드 풀의 최저 한계"
 
-msgid "luks2 is currently not supported by the qemu encryption engine"
-msgstr "luks2는 현재 qemu 암호화 엔진에서 지원되지 않습니다"
+msgid "luks-any encryption is not supported by this QEMU binary"
+msgstr ""
 
 msgid "lxc state driver is not active"
 msgstr "lxc 상태 드라이버가 작동중이 아닙니다"
@@ -29008,6 +28919,10 @@ msgstr "기계가 일시 중지되었으므로 전원을 끌 수 없습니다"
 #, c-format
 msgid "machine type '%s'"
 msgstr "기계 유형 '%s'"
+
+#, c-format
+msgid "machine type '%s' does not support ACPI"
+msgstr ""
 
 msgid "machine type (/domain/os/type/@machine)"
 msgstr "머신 유형(/domain/os/type/@machine)"
@@ -29110,9 +29025,6 @@ msgstr "잘못된 ipset 플래그"
 #, c-format
 msgid "malformed mac address '%s'"
 msgstr "잘못된 MAC 주소 '%s'"
-
-msgid "malformed machine cpu count in QEMU capabilities cache"
-msgstr "QEMU 기능 캐시의 잘못된 컴퓨터 CPU 수"
 
 msgid "malformed mtu size"
 msgstr "잘못된 mtu 크기"
@@ -29874,6 +29786,10 @@ msgid "missing alias for network device"
 msgstr "네트워크 장치에 대한 별칭 누락"
 
 #, c-format
+msgid "missing alias on encryption secret #%zu"
+msgstr ""
+
+#, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
 msgstr "qemu 개체 '%s'에 대한 별칭 또는 qom 유형이 없습니다"
 
@@ -30137,9 +30053,6 @@ msgstr "그래픽에 대한 청취 요소 누락"
 
 msgid "missing listen element for spice graphics"
 msgstr "향신료 그래픽에 대한 청취 요소 누락"
-
-msgid "missing machine name in QEMU capabilities cache"
-msgstr "QEMU 기능 캐시에서 누락된 시스템 이름"
 
 #, c-format
 msgid "missing mapping in '%s'"
@@ -30936,6 +30849,10 @@ msgid ""
 msgstr ""
 "네트워크 장치에 저장된 구성 파일 '%s'에 예기치 않은 내용이 있습니다. 'MAC' "
 "및 'adminMAC' 모두 누락됨: '%.60s'"
+
+#, c-format
+msgid "network device type '%s' is not supported by this hypervisor"
+msgstr ""
 
 #, c-format
 msgid "network device with mac %s already exists"
@@ -31793,13 +31710,6 @@ msgstr "이 QEMU 바이너리에서는 nvdimm 읽기 전용 속성을 사용 할
 
 msgid "nvram address type must be spaprvio"
 msgstr "nvram 주소 유형은 spaprvio여야 합니다"
-
-msgid ""
-"nvram attribute 'template' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
-"vnram 속성 '템플릿트'는 펌웨어 자동선택이 활성화 되었을 때에 지정 될 수 없습"
-"니다"
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "nvram 장치는 이 QEMU 바이너리에서 지원되지 않습니다"
@@ -32920,6 +32830,9 @@ msgstr ""
 msgid "qemu emulator '%s' does not support xen"
 msgstr "qeum 에뮬레이터 '%s'가 xen을 지원하지 않습니다"
 
+msgid "qemu encryption engine expects only a single secret"
+msgstr ""
+
 #, c-format
 msgid "qemu monitor event callback %d not registered"
 msgstr "qemu 모니터 이벤트 콜백 %d가 등록되지 않았습니다"
@@ -32936,6 +32849,9 @@ msgstr "qemu 상태 드라이버가 실행중이 아닙니다"
 
 msgid "qemu unexpectedly closed the monitor"
 msgstr "qemu가 예기치 않게 모니터를 닫았습니다"
+
+msgid "qemu-machines reply has malformed 'acpi data"
+msgstr ""
 
 msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
 msgstr "qemu-machines 응답에 잘못된 'numa-mem 지원' 데이터가 있습니다"
@@ -33223,6 +33139,9 @@ msgstr "잘못된 형식의 모니터 수신, XML 정의 확인"
 
 msgid "received unexpected cookie with P2P migration"
 msgstr "P2P 이전과 함께 예상치 않은 쿠키를 받았습니다"
+
+msgid "reconnect delay is supported only with NBD protocol"
+msgstr ""
 
 msgid "recv handler failed"
 msgstr "recv 핸들러 실패"
@@ -33754,6 +33673,10 @@ msgstr "스트립트는 유형 %s의 인터페이스에서 지원되지 않음"
 
 msgid "scsi-block 'lun' devices do not support the serial property"
 msgstr "scsi-block 'lun' 장치는 직렬 속성을 지원하지 않습니다"
+
+#, c-format
+msgid "sd card '%s' does not support multiple encryption secrets"
+msgstr ""
 
 #, c-format
 msgid "seclabel for model %s is already provided"
@@ -34874,7 +34797,8 @@ msgid "the new password"
 msgstr "새 비밀번호"
 
 msgid "the passt network backend is not supported with this QEMU binary"
-msgstr "passt 네트워크 백엔드는 이와 같은 QEMU 바이너리와 함께 지원되지 않습니다"
+msgstr ""
+"passt 네트워크 백엔드는 이와 같은 QEMU 바이너리와 함께 지원되지 않습니다"
 
 msgid "the password is already encrypted"
 msgstr "암호는 이미 암호화되어 있습니다"
@@ -34974,6 +34898,9 @@ msgstr "이 QEMU 바이너리에는 스마트 카드 호스트 모드 지원이 
 
 msgid "this QEMU binary lacks smartcard passthrough mode support"
 msgstr "이 QEMU 바이너리에는 스마트 카드 통과 모드 지원이 없습니다"
+
+msgid "this QEMU does not support 'blob' for virtio-gpu devices"
+msgstr ""
 
 msgid "this QEMU does not support 'vhost-user' video device"
 msgstr "QEMU는 'vhost-user'는 비디오 장치를 지원하지 않습니다"
@@ -35593,6 +35520,10 @@ msgid "unable control COW flag on '%s'"
 msgstr "'%s'에서 COW 플래그를 제어할 수 없습니다"
 
 #, c-format
+msgid "unable create new SELinux label based on label '%s' and file '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable get directory flags on '%s'"
 msgstr "'%s'에서 디렉토리 플래그를 가져올 수 없습니다"
 
@@ -35774,6 +35705,13 @@ msgstr "PID %d 보안 문맥을 얻을 수 없음"
 #, c-format
 msgid "unable to get PID %d uid and gid via sysctl"
 msgstr "sysctl을 통해 PID %d uid 및 gid를 가져올 수 없습니다"
+
+#, c-format
+msgid "unable to get SELinux context for '%s'"
+msgstr ""
+
+msgid "unable to get SELinux context for current process"
+msgstr ""
 
 #, c-format
 msgid "unable to get SELinux context of %s"
@@ -36964,10 +36902,6 @@ msgid "unknown vhost-user type: '%s'"
 msgstr "알 수 없는 가상 호스트 사용자 유형: '%s'"
 
 #, c-format
-msgid "unknown video model '%s'"
-msgstr "알려지지 않은 비디오 모델 '%s'"
-
-#, c-format
 msgid "unknown virttype: %s"
 msgstr "알 수 없는 가상 유형: %s"
 
@@ -37277,10 +37211,6 @@ msgid "unsupported flags: (0x%x)"
 msgstr "지원되지 않는 플래그: (0x%x)"
 
 #, c-format
-msgid "unsupported flash format '%s'"
-msgstr "지원되지 않는 플래시 형식 '%s'"
-
-#, c-format
 msgid "unsupported format %s"
 msgstr "지원되지 않는 형식 %s"
 
@@ -37333,10 +37263,6 @@ msgstr "지원되지 않는 numatune 방식: '%d'"
 #, c-format
 msgid "unsupported nvram disk type '%s'"
 msgstr "지원되지 않는 vnram 디스크 유형 '%s'"
-
-#, c-format
-msgid "unsupported nvram template format '%s'"
-msgstr "지원되지 않는 nvram 템플릿 형식 '%s'"
 
 msgid "unsupported option"
 msgstr "지원되지 않는 옵션"
@@ -37847,6 +37773,10 @@ msgid "video type %s is not supported by libxl"
 msgstr "비디오 유형 %s는 libxl에서 지원되지 않습니다"
 
 #, c-format
+msgid "video type '%s' does not support blob resources"
+msgstr ""
+
+#, c-format
 msgid "video type '%s' doesn't support multiple 'heads'"
 msgstr "비디오 유형 '%s'는 다중 'heads'를 지원하지 않습니다"
 
@@ -38317,7 +38247,8 @@ msgstr "와치독에는 모델명이 포함되어야 합니다"
 
 msgid ""
 "watchdogs with different actions are not supported with this QEMU binary"
-msgstr "다른 동작을 갖는 와치독은 이와 같은 QEMU 바이너리 함께 지원되지 않습니다"
+msgstr ""
+"다른 동작을 갖는 와치독은 이와 같은 QEMU 바이너리 함께 지원되지 않습니다"
 
 msgid "webSocket"
 msgstr "웹소켓"
@@ -38465,6 +38396,157 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "%s is not available with this QEMU binary"
+#~ msgstr "%s는 QEMU 바이너리를 사용 할 수 없습니다"
+
+#~ msgid "%s memory device info is not handled yet"
+#~ msgstr "%s 메모리 장치 정보는 아직 다루지 않습니다"
+
+#~ msgid "'can-offline' missing in reply of guest-get-vcpus"
+#~ msgstr "guest-get-vcpus의 응답에 'can-offline'이 누락됨"
+
+#~ msgid "Cannot remove state PID file %s"
+#~ msgstr "%s 상태 PID 파일을 제거할 수 없음"
+
+#~ msgid "Could not start 'passt': %s"
+#~ msgstr "'passt'를 시작 할 수 없습니다: %s"
+
+#~ msgid "Could not start 'slirp'. exitstatus: %d"
+#~ msgstr "'slirp'를 시작 할 수 없습니다. 종료상태: %d"
+
+#~ msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
+#~ msgstr "'vhost-user-gpu'를 시작할 수 없습니다. 종료 상태: %d"
+
+#~ msgid "Could not start dbus-daemon. exitstatus: %d"
+#~ msgstr "dbus-데몬을 시작 할 수 없습니다. 종료상태: %d"
+
+#~ msgid "Failed to create symlink '%s to '%s'"
+#~ msgstr "심볼릭 링크 '%s'를 '%s'에 대해 생성하는 데 실패"
+
+#~ msgid "Failed to generate uuid"
+#~ msgstr "uuid 생성에 실패하였습니다"
+
+#~ msgid "Filepath is Null"
+#~ msgstr "파일경로가 비어있습니다"
+
+#~ msgid "Filepath is null"
+#~ msgstr "파일경로가 비어있습니다"
+
+#~ msgid "IOThreads not supported for this QEMU"
+#~ msgstr "이 QEMU에 대해 지원되지 않는 IOThreads"
+
+#~ msgid "IOThreads not supported with this binary"
+#~ msgstr "이 바이너리에서는 IOThreads가 지원되지 않습니다"
+
+#~ msgid "IOThreads polling is not supported for this QEMU"
+#~ msgstr "IOThreads 폴링은 이 QEMU에 지원되지 않음"
+
+#~ msgid "Invalid parameter to virXPathBoolean()"
+#~ msgstr "virXPathBoolean()에 잘못된 매개변수 전달"
+
+#~ msgid "Invalid parameter to virXPathNode()"
+#~ msgstr "virXPathNode()에 잘못된 매개변수 전달"
+
+#~ msgid "Invalid parameter to virXPathNodeSet()"
+#~ msgstr "virXPathNodeSet()에 잘못된 매개변수 전달"
+
+#~ msgid "Namespaces are not supported on this platform."
+#~ msgstr "이름공간(namespaces)이 본 기반을 지원하지 않습니다."
+
+#~ msgid "Number of keys %d, which exceeds max liit: %d"
+#~ msgstr "최대 제한을 초과하는 키 %d개의 수: %d"
+
+#~ msgid ""
+#~ "QEMU binary does not support CPU host-passthrough for armv7l on aarch64 "
+#~ "host"
+#~ msgstr ""
+#~ "QEMU 바이너리는 arch64 호스트에서 armv7l에 대한 CPU 호스트 패스스루를 지원"
+#~ "하지 않습니다"
+
+#~ msgid "Unable to create RNG parser for %s"
+#~ msgstr "%s를 위한 RNG 구문분석을 생성 할 수 없습니다"
+
+#~ msgid "Unable to create RNG validation context %s"
+#~ msgstr "RNG 유효성 내용 %s를 생성 할 수 없습니다"
+
+#~ msgid "Unable to get hardDisk Id"
+#~ msgstr "하드디스크 ID를 가져 올 수 없습니다"
+
+#~ msgid "Unable to parse RNG %s: %s"
+#~ msgstr "RNG %s: %s 구문 분석 할 수 없음"
+
+#~ msgid "cannot parse video heads '%s'"
+#~ msgstr "비디오 헤드 '%s'를 구문분석 할 수 없음"
+
+#~ msgid "cannot parse video ram '%s'"
+#~ msgstr "비디오 램 '%s'을 구문 분석할 수 없음"
+
+#~ msgid "cannot parse video vgamem '%s'"
+#~ msgstr "비디오 램 '%s'를 구문 분석 할 수 없음"
+
+#~ msgid "cannot parse video vram '%s'"
+#~ msgstr "비디오 가상램 '%s'을 구문 분석 할 수 없음"
+
+#~ msgid "cannot parse video vram64 '%s'"
+#~ msgstr "비디오 가상램64 '%s'를 구문 분석 할 수 없음"
+
+#~ msgid "domain has SMM turned off but chosen firmware requires it"
+#~ msgstr "도메인에 SMM이 꺼져 있지만 선택한 펌웨어에는 SMM이 필요합니다"
+
+#~ msgid "hpet timer is not supported"
+#~ msgstr "hpet 타이머는 지원되지 않습니다"
+
+#~ msgid ""
+#~ "loader attribute 'readonly' cannot be specified when firmware "
+#~ "autoselection is enabled"
+#~ msgstr ""
+#~ "로더 속성 '읽기전용'은 펌웨어가 자동선택이 활성화 되었을 때에 지정 될 수 "
+#~ "없습니다"
+
+#~ msgid ""
+#~ "loader attribute 'secure' cannot be specified when firmware autoselection "
+#~ "is enabled"
+#~ msgstr ""
+#~ "로더 속성 '보안'은 펌웨어 자동선택이 활성화 되었을 때에 지정 될 수 없습니"
+#~ "다"
+
+#~ msgid ""
+#~ "loader attribute 'type' cannot be specified when firmware autoselection "
+#~ "is enabled"
+#~ msgstr ""
+#~ "로더 속성 '유형'은 펌웨어가 자동선택이 활성화 되었을 때에 지정 될 수 없습"
+#~ "니다"
+
+#~ msgid ""
+#~ "loader path cannot be specified when firmware autoselection is enabled"
+#~ msgstr ""
+#~ "로더 경로는 펌웨어 자동선택이 활성화 되었을 때에 지정 될 수 없습니다"
+
+#~ msgid "luks2 is currently not supported by the qemu encryption engine"
+#~ msgstr "luks2는 현재 qemu 암호화 엔진에서 지원되지 않습니다"
+
+#~ msgid "malformed machine cpu count in QEMU capabilities cache"
+#~ msgstr "QEMU 기능 캐시의 잘못된 컴퓨터 CPU 수"
+
+#~ msgid "missing machine name in QEMU capabilities cache"
+#~ msgstr "QEMU 기능 캐시에서 누락된 시스템 이름"
+
+#~ msgid ""
+#~ "nvram attribute 'template' cannot be specified when firmware "
+#~ "autoselection is enabled"
+#~ msgstr ""
+#~ "vnram 속성 '템플릿트'는 펌웨어 자동선택이 활성화 되었을 때에 지정 될 수 없"
+#~ "습니다"
+
+#~ msgid "unknown video model '%s'"
+#~ msgstr "알려지지 않은 비디오 모델 '%s'"
+
+#~ msgid "unsupported flash format '%s'"
+#~ msgstr "지원되지 않는 플래시 형식 '%s'"
+
+#~ msgid "unsupported nvram template format '%s'"
+#~ msgstr "지원되지 않는 nvram 템플릿 형식 '%s'"
 
 #~ msgid "'disk' missing in reply of guest-get-fsinfo"
 #~ msgstr "guest-get-fsinfo의 응답에서 '디스크'가 누락됨"

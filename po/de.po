@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-02-22 13:50+0000\n"
+"POT-Creation-Date: 2023-03-24 16:18+0000\n"
 "PO-Revision-Date: 2022-12-24 15:20+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/libvirt/"
@@ -519,22 +519,12 @@ msgid "%s is not an executable"
 msgstr "QEMU Programmdatei %s ist nicht ausführbar"
 
 #, fuzzy, c-format
-msgid "%s is not available with this QEMU binary"
-msgstr ""
-"Deaktivieren gemeinsamen Speicher ist mit dieser QEMU-Programmdatei nicht "
-"verfügbar"
-
-#, fuzzy, c-format
 msgid "%s is not supported by this QEMU binary"
 msgstr "discard wird von dieser QEMU-Programmdatei nicht unterstützt"
 
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "%s Länge größer als Höchstwert: %d > %d"
-
-#, c-format
-msgid "%s memory device info is not handled yet"
-msgstr ""
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -1050,6 +1040,10 @@ msgid "'%s' file does not fit in memory"
 msgstr "'%s'-Datei passt nicht in den Speicher"
 
 #, c-format
+msgid "'%s' is currently not supported by the qemu encryption engine"
+msgstr ""
+
+#, c-format
 msgid "'%s' is not a VF device"
 msgstr ""
 
@@ -1110,15 +1104,15 @@ msgstr ""
 msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
 
+msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr ""
-
-msgid "'can-offline' missing in reply of guest-get-vcpus"
-msgstr "'can-offline' fehlt in Antwort auf guest-get-vcpus"
 
 #, fuzzy
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
@@ -3205,10 +3199,6 @@ msgstr ""
 msgid "Cannot remove stale PID file %s"
 msgstr "Kann abgelaufene PID-Datei %s nicht entfernen"
 
-#, fuzzy, c-format
-msgid "Cannot remove state PID file %s"
-msgstr "Kann abgelaufene PID-Datei %s nicht entfernen"
-
 msgid "Cannot remove uninitialized CURL handle from a multi handle"
 msgstr ""
 "Kann un-initialisierte CURL-Handle nicht von einer Multi-Handle entfernen"
@@ -4866,24 +4856,8 @@ msgstr "Quellverzeichnis für das Dateisystem konnte nicht eingestellt werden"
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
 
-#, c-format
-msgid "Could not start 'passt': %s"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "Could not start 'slirp'. exitstatus: %d"
-msgstr "Domain konnte nicht gestartet werden: %s"
-
-#, c-format
-msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
-msgstr ""
-
 #, fuzzy
 msgid "Could not start 'virtiofsd'"
-msgstr "Domain konnte nicht gestartet werden: %s"
-
-#, fuzzy, c-format
-msgid "Could not start dbus-daemon. exitstatus: %d"
 msgstr "Domain konnte nicht gestartet werden: %s"
 
 #, c-format
@@ -6921,10 +6895,6 @@ msgid "Failed to create state dir '%s'"
 msgstr "Konnte Datei '%s' nicht erstellen"
 
 #, c-format
-msgid "Failed to create symlink '%s to '%s'"
-msgstr "Erstellen des symbolischen Links '%s' zu '%s' fehlgeschlagen"
-
-#, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "Erstellen des symbolischen Links '%s' zu '%s' fehlgeschlagen"
 
@@ -7271,10 +7241,6 @@ msgstr "UUID-Generierung fehlgeschlagen"
 
 #, fuzzy
 msgid "Failed to generate genid"
-msgstr "UUID generieren fehlgeschlagen"
-
-#, fuzzy
-msgid "Failed to generate uuid"
 msgstr "UUID generieren fehlgeschlagen"
 
 #, c-format
@@ -8769,12 +8735,6 @@ msgstr "UNIX Sockets werden auf dieser Plattform nicht unterstützt"
 msgid "File total:"
 msgstr "Datei gesamt:"
 
-msgid "Filepath is Null"
-msgstr ""
-
-msgid "Filepath is null"
-msgstr ""
-
 msgid "Filesystem driver type not supported"
 msgstr "Datei-System Treiber Typ wird nicht unterstützt"
 
@@ -8865,6 +8825,10 @@ msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr ""
 "GewaltsamesAnhalten eines bestimmten Pools. Rohdaten im Pool bleiben "
 "unberührt"
+
+#, c-format
+msgid "Format mismatch: loader.format='%s' nvram.format='%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Format of device '%s' does not match the expected format '%s'"
@@ -9393,18 +9357,6 @@ msgstr "Operation ist nicht unterstützt für Einheit: %s"
 #, fuzzy, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr "NUMAD ist auf diesem Host nicht verfügbar"
-
-#, fuzzy
-msgid "IOThreads not supported for this QEMU"
-msgstr "%s in dieser QEMU-Binärdatei nicht unterstützt"
-
-#, fuzzy
-msgid "IOThreads not supported with this binary"
-msgstr "SATA wird im Zusammenhang mit dieser QEMU-Binärdatei nicht unterstützt"
-
-#, fuzzy
-msgid "IOThreads polling is not supported for this QEMU"
-msgstr "nvram Einheit wird von dieser QEMU-Programmdatei nicht unterstützt"
 
 #, fuzzy
 msgid "IP address"
@@ -10262,15 +10214,6 @@ msgstr ""
 
 msgid "Invalid parameter"
 msgstr "Ungültiger Parameter"
-
-msgid "Invalid parameter to virXPathBoolean()"
-msgstr "Ungültiger Parameter für virXPathBoolean()"
-
-msgid "Invalid parameter to virXPathNode()"
-msgstr "Ungültiger Parameter für PrintDlgEx"
-
-msgid "Invalid parameter to virXPathNodeSet()"
-msgstr "Ungültiger Parameter für virXPathNodeSet()"
 
 #, fuzzy
 msgid "Invalid parameter type passed to free"
@@ -12071,10 +12014,6 @@ msgid "Namespaces are not supported on this platform"
 msgstr "UNIX Sockets werden auf dieser Plattform nicht unterstützt"
 
 #, fuzzy
-msgid "Namespaces are not supported on this platform."
-msgstr "UNIX Sockets werden auf dieser Plattform nicht unterstützt"
-
-#, fuzzy
 msgid "Nested HV configuration is not supported by this QEMU binary"
 msgstr ""
 "Komprimierte Migration wird von dieser QEMU-Programmdatei nicht unterstützt"
@@ -12777,7 +12716,7 @@ msgid "Number of interfaces, %d exceeds the max limit: %d"
 msgstr ""
 
 #, c-format
-msgid "Number of keys %d, which exceeds max liit: %d"
+msgid "Number of keys %d, which exceeds max limit: %d"
 msgstr ""
 
 #, c-format
@@ -13671,10 +13610,6 @@ msgstr "NBD nicht unterstützt Transport '%s'"
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "QEMU Programmdatei %s ist nicht ausführbar"
-
-msgid ""
-"QEMU binary does not support CPU host-passthrough for armv7l on aarch64 host"
-msgstr ""
 
 #, fuzzy
 msgid "QEMU does not support SEV guest"
@@ -17229,13 +17164,13 @@ msgstr "JSON Formatter kann nicht erstellt werden"
 msgid "Unable to create KVM vCPU for TSC probing"
 msgstr "JSON Formatter kann nicht erstellt werden"
 
-#, fuzzy, c-format
-msgid "Unable to create RNG parser for %s"
-msgstr "JSON Parser kann nicht erstellt werden"
+#, c-format
+msgid "Unable to create RelaxNG parser for schema '%s'"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to create RNG validation context %s"
-msgstr "Sicherheitskontext %s konnte nicht erstellt werden"
+#, c-format
+msgid "Unable to create RelaxNG validation context for schema '%s'"
+msgstr ""
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "Kann TAP Einheiten auf dieser Plattform nicht erstellen"
@@ -17625,6 +17560,10 @@ msgid "Unable to get LVM key for %s"
 msgstr "Kann LVM Schlüssel für %s nicht erhalten"
 
 #, c-format
+msgid "Unable to get NUMA node of cpu %zd"
+msgstr ""
+
+#, c-format
 msgid "Unable to get SCSI key for %s"
 msgstr "Kann SCSI Schlüssel für %s nicht erhalten"
 
@@ -17776,9 +17715,6 @@ msgstr "Abruf der Platteninformationen gescheitert"
 #, fuzzy
 msgid "Unable to get hard disk id"
 msgstr "Kann Bridge %s %s nicht ermitteln"
-
-msgid "Unable to get hardDisk Id"
-msgstr ""
 
 msgid "Unable to get host SEV information"
 msgstr ""
@@ -18172,9 +18108,9 @@ msgstr "memspec konnte nicht analysiert werden: %s"
 msgid "Unable to parse MAC '%s'"
 msgstr "URI %s konnte nicht analysiert werden"
 
-#, fuzzy, c-format
-msgid "Unable to parse RNG %s: %s"
-msgstr "URI %s konnte nicht analysiert werden"
+#, c-format
+msgid "Unable to parse RelaxNG schema '%s': %s"
+msgstr ""
 
 #, c-format
 msgid "Unable to parse URI %s"
@@ -19849,6 +19785,10 @@ msgid "Unsupported listen type"
 msgstr "Nicht unterstützter virt Typ"
 
 #, c-format
+msgid "Unsupported loader format '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported migration cookie feature %s"
 msgstr "Nicht unterstütztes Migrations-Cookie Feature %s"
 
@@ -19886,6 +19826,10 @@ msgstr "Nicht unterstützter Vorwärts-Modus '%s'"
 #, fuzzy, c-format
 msgid "Unsupported numatune placement '%d'"
 msgstr "Nicht unterstützter CPU Anordnungs-Modus '%s'"
+
+#, c-format
+msgid "Unsupported nvram format '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported object type %d"
@@ -20719,6 +20663,9 @@ msgstr "Nicht unterstützte Konfiguration"
 
 #, c-format
 msgid "ap-domain value '%s' is out of range for '%s'"
+msgstr ""
+
+msgid "api error"
 msgstr ""
 
 msgid "apparmor_parser exited with error"
@@ -22567,26 +22514,6 @@ msgstr "Wert von »typeidversion«-Parameter kann nicht verarbeitet werden"
 
 #, fuzzy, c-format
 msgid "cannot parse vcpu index '%s'"
-msgstr "Video-RAM '%s' kann nicht geparst werden"
-
-#, c-format
-msgid "cannot parse video heads '%s'"
-msgstr "Video-Köpfe '%s' können nicht geparst werden"
-
-#, c-format
-msgid "cannot parse video ram '%s'"
-msgstr "Video-RAM '%s' kann nicht geparst werden"
-
-#, fuzzy, c-format
-msgid "cannot parse video vgamem '%s'"
-msgstr "Video-RAM '%s' kann nicht geparst werden"
-
-#, fuzzy, c-format
-msgid "cannot parse video vram '%s'"
-msgstr "Video-RAM '%s' kann nicht geparst werden"
-
-#, fuzzy, c-format
-msgid "cannot parse video vram64 '%s'"
 msgstr "Video-RAM '%s' kann nicht geparst werden"
 
 #, fuzzy, c-format
@@ -25116,9 +25043,6 @@ msgid "domain event callback %d not registered"
 msgstr "Domainereignis %d nicht registriert"
 
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
-msgstr ""
-
-msgid "domain has SMM turned off but chosen firmware requires it"
 msgstr ""
 
 #, fuzzy
@@ -28141,9 +28065,8 @@ msgstr "Kopieren Definition des '%d' Typ ist noch nicht implementiert."
 msgid "hotplug of watchdog of model %s is not supported"
 msgstr "Direktes anhängen von Device '%s' wird nicht unterstützt"
 
-#, fuzzy
-msgid "hpet timer is not supported"
-msgstr "Hub Typ %s nicht unterstützt"
+msgid "hpet timer is not supported by this architecture"
+msgstr ""
 
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr ""
@@ -29517,6 +29440,9 @@ msgstr ""
 msgid "librbd encryption is supported only with RBD backed disks"
 msgstr ""
 
+msgid "librbd encryption layering is not supported by this QEMU binary"
+msgstr ""
+
 #, fuzzy
 msgid "libssh transport error"
 msgstr "SSH Transport-Fehler"
@@ -29989,24 +29915,6 @@ msgstr ""
 msgid "live update of device '%s' is not supported"
 msgstr "Direktes Update der Einheit '%s' wird nicht unterstützt"
 
-msgid ""
-"loader attribute 'readonly' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
-
-msgid ""
-"loader attribute 'secure' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-
-msgid ""
-"loader attribute 'type' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-
-msgid "loader path cannot be specified when firmware autoselection is enabled"
-msgstr ""
-
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
 msgstr ""
@@ -30027,7 +29935,7 @@ msgstr ""
 msgid "lower boundary for worker thread pool"
 msgstr ""
 
-msgid "luks2 is currently not supported by the qemu encryption engine"
+msgid "luks-any encryption is not supported by this QEMU binary"
 msgstr ""
 
 msgid "lxc state driver is not active"
@@ -30064,6 +29972,10 @@ msgstr "Maschine pausiert, kann nicht heruntergefahren werden"
 
 #, c-format
 msgid "machine type '%s'"
+msgstr ""
+
+#, c-format
+msgid "machine type '%s' does not support ACPI"
 msgstr ""
 
 msgid "machine type (/domain/os/type/@machine)"
@@ -30172,9 +30084,6 @@ msgstr "Fehlerhafte ipset Flags"
 #, c-format
 msgid "malformed mac address '%s'"
 msgstr "Fehlerhafte MAC-Adresse '%s'"
-
-msgid "malformed machine cpu count in QEMU capabilities cache"
-msgstr ""
 
 #, fuzzy
 msgid "malformed mtu size"
@@ -30973,6 +30882,10 @@ msgstr "Quellen-Gerät fehlt"
 msgid "missing alias for network device"
 msgstr "Quellen-Gerät fehlt"
 
+#, c-format
+msgid "missing alias on encryption secret #%zu"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
 msgstr "Fehlender Namens-Parameter für Domain-Objekt"
@@ -31269,10 +31182,6 @@ msgstr "Fehlendes 'key' Element für Leasing"
 #, fuzzy
 msgid "missing listen element for spice graphics"
 msgstr "Fehlendes 'key' Element für Leasing"
-
-#, fuzzy
-msgid "missing machine name in QEMU capabilities cache"
-msgstr "Fehlender Migrations-Fähigkeiten Name"
 
 #, c-format
 msgid "missing mapping in '%s'"
@@ -32103,6 +32012,10 @@ msgstr ""
 msgid ""
 "network device saved config file '%s' has unexpected contents, missing both "
 "'MAC' and 'adminMAC': '%.60s'"
+msgstr ""
+
+#, c-format
+msgid "network device type '%s' is not supported by this hypervisor"
 msgstr ""
 
 #, fuzzy, c-format
@@ -33025,11 +32938,6 @@ msgstr ""
 
 msgid "nvram address type must be spaprvio"
 msgstr "nvram Adressen-Typ muss spaprvio sein"
-
-msgid ""
-"nvram attribute 'template' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "nvram Einheit wird von dieser QEMU-Programmdatei nicht unterstützt"
@@ -34207,6 +34115,9 @@ msgstr ""
 msgid "qemu emulator '%s' does not support xen"
 msgstr "Qemu-Emulator '%s' unterstützt kein Xen"
 
+msgid "qemu encryption engine expects only a single secret"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "qemu monitor event callback %d not registered"
 msgstr "Domainereignis %d nicht registriert"
@@ -34224,6 +34135,9 @@ msgstr "qemu-Status-Treiber nicht aktiv"
 #, fuzzy
 msgid "qemu unexpectedly closed the monitor"
 msgstr "Unerwarteter Code Pfad"
+
+msgid "qemu-machines reply has malformed 'acpi data"
+msgstr ""
 
 #, fuzzy
 msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
@@ -34531,6 +34445,9 @@ msgstr "Fehlerhaften Monitor empfangen, überprüfen der XML-Definition"
 
 msgid "received unexpected cookie with P2P migration"
 msgstr "Erhielt unerwartetes Cookie bei P2P Migration"
+
+msgid "reconnect delay is supported only with NBD protocol"
+msgstr ""
 
 #, fuzzy
 msgid "recv handler failed"
@@ -35117,6 +35034,10 @@ msgid "scripts are not supported on interfaces of type %s"
 msgstr "Scripts werden auf Schnittstellen vom Typ %s nicht  unterstützt"
 
 msgid "scsi-block 'lun' devices do not support the serial property"
+msgstr ""
+
+#, c-format
+msgid "sd card '%s' does not support multiple encryption secrets"
 msgstr ""
 
 #, fuzzy, c-format
@@ -36394,6 +36315,9 @@ msgid "this QEMU binary lacks smartcard passthrough mode support"
 msgstr ""
 "Dieser QEMU-Binärdatei fehlt Smartcard Weiterleitungsmodus Unterstützung"
 
+msgid "this QEMU does not support 'blob' for virtio-gpu devices"
+msgstr ""
+
 #, fuzzy
 msgid "this QEMU does not support 'vhost-user' video device"
 msgstr "PS/2-Bus unterstützt %s-Eingabegerät nicht"
@@ -36994,6 +36918,10 @@ msgid "unable control COW flag on '%s'"
 msgstr ""
 
 #, c-format
+msgid "unable create new SELinux label based on label '%s' and file '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable get directory flags on '%s'"
 msgstr ""
 
@@ -37180,6 +37108,13 @@ msgstr "Kann keinen PID %d Sicherheitskontext abrufen"
 #, fuzzy, c-format
 msgid "unable to get PID %d uid and gid via sysctl"
 msgstr "Kann keinen PID %d Sicherheitskontext abrufen"
+
+#, c-format
+msgid "unable to get SELinux context for '%s'"
+msgstr ""
+
+msgid "unable to get SELinux context for current process"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to get SELinux context of %s"
@@ -38393,10 +38328,6 @@ msgstr "unbekannter Regel-Aktions Attributwert"
 msgid "unknown vhost-user type: '%s'"
 msgstr "Unbekannter Quellen-Typ '%s'"
 
-#, c-format
-msgid "unknown video model '%s'"
-msgstr "Unbekanntes Video-Modell '%s'"
-
 #, fuzzy, c-format
 msgid "unknown virttype: %s"
 msgstr "Unbekannter Typ '%s'"
@@ -38707,10 +38638,6 @@ msgid "unsupported flags: (0x%x)"
 msgstr "Nicht unterstützte Flags: (0x%x)"
 
 #, fuzzy, c-format
-msgid "unsupported flash format '%s'"
-msgstr "Nicht unterstütztes Konfigurationsformat »%s«"
-
-#, fuzzy, c-format
 msgid "unsupported format %s"
 msgstr "Nicht unterstützte Funktion %s"
 
@@ -38765,10 +38692,6 @@ msgstr "Nicht unterstützter Vorwärts-Modus '%s'"
 #, c-format
 msgid "unsupported nvram disk type '%s'"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unsupported nvram template format '%s'"
-msgstr "nicht unterstützte RTC Zeitgeber Spur '%s'"
 
 msgid "unsupported option"
 msgstr "Nicht unterstützte Option"
@@ -39280,6 +39203,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "video type %s is not supported by libxl"
 msgstr "Netzwerktyp %d wird nicht unterstützt"
+
+#, c-format
+msgid "video type '%s' does not support blob resources"
+msgstr ""
 
 #, c-format
 msgid "video type '%s' doesn't support multiple 'heads'"
@@ -39923,6 +39850,109 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "%s is not available with this QEMU binary"
+#~ msgstr ""
+#~ "Deaktivieren gemeinsamen Speicher ist mit dieser QEMU-Programmdatei nicht "
+#~ "verfügbar"
+
+#~ msgid "'can-offline' missing in reply of guest-get-vcpus"
+#~ msgstr "'can-offline' fehlt in Antwort auf guest-get-vcpus"
+
+#, fuzzy
+#~ msgid "Cannot remove state PID file %s"
+#~ msgstr "Kann abgelaufene PID-Datei %s nicht entfernen"
+
+#, fuzzy
+#~ msgid "Could not start 'slirp'. exitstatus: %d"
+#~ msgstr "Domain konnte nicht gestartet werden: %s"
+
+#, fuzzy
+#~ msgid "Could not start dbus-daemon. exitstatus: %d"
+#~ msgstr "Domain konnte nicht gestartet werden: %s"
+
+#~ msgid "Failed to create symlink '%s to '%s'"
+#~ msgstr "Erstellen des symbolischen Links '%s' zu '%s' fehlgeschlagen"
+
+#, fuzzy
+#~ msgid "Failed to generate uuid"
+#~ msgstr "UUID generieren fehlgeschlagen"
+
+#, fuzzy
+#~ msgid "IOThreads not supported for this QEMU"
+#~ msgstr "%s in dieser QEMU-Binärdatei nicht unterstützt"
+
+#, fuzzy
+#~ msgid "IOThreads not supported with this binary"
+#~ msgstr ""
+#~ "SATA wird im Zusammenhang mit dieser QEMU-Binärdatei nicht unterstützt"
+
+#, fuzzy
+#~ msgid "IOThreads polling is not supported for this QEMU"
+#~ msgstr "nvram Einheit wird von dieser QEMU-Programmdatei nicht unterstützt"
+
+#~ msgid "Invalid parameter to virXPathBoolean()"
+#~ msgstr "Ungültiger Parameter für virXPathBoolean()"
+
+#~ msgid "Invalid parameter to virXPathNode()"
+#~ msgstr "Ungültiger Parameter für PrintDlgEx"
+
+#~ msgid "Invalid parameter to virXPathNodeSet()"
+#~ msgstr "Ungültiger Parameter für virXPathNodeSet()"
+
+#, fuzzy
+#~ msgid "Namespaces are not supported on this platform."
+#~ msgstr "UNIX Sockets werden auf dieser Plattform nicht unterstützt"
+
+#, fuzzy
+#~ msgid "Unable to create RNG parser for %s"
+#~ msgstr "JSON Parser kann nicht erstellt werden"
+
+#, fuzzy
+#~ msgid "Unable to create RNG validation context %s"
+#~ msgstr "Sicherheitskontext %s konnte nicht erstellt werden"
+
+#, fuzzy
+#~ msgid "Unable to parse RNG %s: %s"
+#~ msgstr "URI %s konnte nicht analysiert werden"
+
+#~ msgid "cannot parse video heads '%s'"
+#~ msgstr "Video-Köpfe '%s' können nicht geparst werden"
+
+#~ msgid "cannot parse video ram '%s'"
+#~ msgstr "Video-RAM '%s' kann nicht geparst werden"
+
+#, fuzzy
+#~ msgid "cannot parse video vgamem '%s'"
+#~ msgstr "Video-RAM '%s' kann nicht geparst werden"
+
+#, fuzzy
+#~ msgid "cannot parse video vram '%s'"
+#~ msgstr "Video-RAM '%s' kann nicht geparst werden"
+
+#, fuzzy
+#~ msgid "cannot parse video vram64 '%s'"
+#~ msgstr "Video-RAM '%s' kann nicht geparst werden"
+
+#, fuzzy
+#~ msgid "hpet timer is not supported"
+#~ msgstr "Hub Typ %s nicht unterstützt"
+
+#, fuzzy
+#~ msgid "missing machine name in QEMU capabilities cache"
+#~ msgstr "Fehlender Migrations-Fähigkeiten Name"
+
+#~ msgid "unknown video model '%s'"
+#~ msgstr "Unbekanntes Video-Modell '%s'"
+
+#, fuzzy
+#~ msgid "unsupported flash format '%s'"
+#~ msgstr "Nicht unterstütztes Konfigurationsformat »%s«"
+
+#, fuzzy
+#~ msgid "unsupported nvram template format '%s'"
+#~ msgstr "nicht unterstützte RTC Zeitgeber Spur '%s'"
 
 #, fuzzy
 #~ msgid "'disk' missing in reply of guest-get-fsinfo"

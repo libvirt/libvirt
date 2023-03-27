@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-02-22 13:50+0000\n"
+"POT-Creation-Date: 2023-03-24 16:18+0000\n"
 "PO-Revision-Date: 2023-03-14 16:11+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -636,20 +636,12 @@ msgid "%s is not an executable"
 msgstr "%s 不能执行"
 
 #, c-format
-msgid "%s is not available with this QEMU binary"
-msgstr "此 QEMU 二进制文件中没有 %s"
-
-#, c-format
 msgid "%s is not supported by this QEMU binary"
 msgstr "此 QEMU 二进制文件不支持 %s"
 
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "%s 长度超过上限：%d > %d"
-
-#, c-format
-msgid "%s memory device info is not handled yet"
-msgstr "%s 内存设备信息尚未处理"
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -740,8 +732,9 @@ msgstr "%s uri uuid 动作\n"
 msgid ""
 "%s with index %d is configured for a NUMA node (%d) not present in the "
 "domain's <cpu><numa> array (%zu)"
-msgstr "为 NUMA 节点(%3$d)配置的索引为 %2$d 的 %1$s 在域的 <cpu><numa> "
-"数组(%4$zu)中不存在"
+msgstr ""
+"为 NUMA 节点(%3$d)配置的索引为 %2$d 的 %1$s 在域的 <cpu><numa> 数组(%4$zu)中"
+"不存在"
 
 #, c-format
 msgid ""
@@ -1142,6 +1135,10 @@ msgid "'%s' file does not fit in memory"
 msgstr "内存中放不下 '%s' 文件"
 
 #, c-format
+msgid "'%s' is currently not supported by the qemu encryption engine"
+msgstr ""
+
+#, c-format
 msgid "'%s' is not a VF device"
 msgstr "'%s' 不是一个 VF 设备"
 
@@ -1201,15 +1198,15 @@ msgstr "'ramfb' 视频设备不支持 'address'"
 msgid "'address' must be specified for scsi hostdev source"
 msgstr "对于 scsi hostdev 源，必须指定 'address'"
 
+msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr "'arch' 元素不能在 'cpu' 元素与 'match' 属性一同使用"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'cache' 指的是不存在的 NUMA 节点缓存"
-
-msgid "'can-offline' missing in reply of guest-get-vcpus"
-msgstr "guest-get-vcpus 回复中缺少 'can-offline'"
 
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
 msgstr "'cmd_per_lun' 只被 virtio-scsi 控制器支持"
@@ -1595,7 +1592,8 @@ msgstr "<active_pcr_banks/> 需要 TPM 版本 '%s'"
 msgid ""
 "<address>, <interface>, and <pf> elements of <forward> in network %s are "
 "mutually exclusive"
-msgstr "网络 %s 中的 <forward> 的 <address>, <interface>, 和 <pf> 元素是相互排斥的"
+msgstr ""
+"网络 %s 中的 <forward> 的 <address>, <interface>, 和 <pf> 元素是相互排斥的"
 
 msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr "目前只有 'rbd' 磁盘支持 <config> 元素"
@@ -2026,8 +2024,8 @@ msgid ""
 "Bit 29 (Long Mode) of HostSystem property 'hardware.cpuFeature[].edx' with "
 "value '%s' has unexpected value '%c', expecting '0' or '1'"
 msgstr ""
-"主机系统属性 'hardware.cpuFeature[].edx' 的字节 29（长模式）值 '%s' "
-"中有意外值 '%c' ，应为 '0' 或者 '1'"
+"主机系统属性 'hardware.cpuFeature[].edx' 的字节 29（长模式）值 '%s' 中有意外"
+"值 '%c' ，应为 '0' 或者 '1'"
 
 msgid "Block Commit"
 msgstr "块指派"
@@ -3143,10 +3141,6 @@ msgstr "无法在没有添加 CURL 句柄的情况下从多句柄中删除 CURL 
 #, c-format
 msgid "Cannot remove stale PID file %s"
 msgstr "无法删除停滞 PID 文件 %s"
-
-#, c-format
-msgid "Cannot remove state PID file %s"
-msgstr "无法删除状态 PID 文件 %s"
 
 msgid "Cannot remove uninitialized CURL handle from a multi handle"
 msgstr "无法从多句柄中删除未初始化的 CURL 句柄"
@@ -4706,24 +4700,8 @@ msgstr "无法为文件系统设置源目录"
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr "无法为 xmlNodeParam 设置 wsman 命名空间地址"
 
-#, c-format
-msgid "Could not start 'passt': %s"
-msgstr "无法启动 'passt': %s"
-
-#, c-format
-msgid "Could not start 'slirp'. exitstatus: %d"
-msgstr "无法启动 'slirp'。 exitstatus: %d"
-
-#, c-format
-msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
-msgstr "无法启动 'vhost-user-gpu'。 exitstatus: %d"
-
 msgid "Could not start 'virtiofsd'"
 msgstr "无法启动 'virtiofsd'"
-
-#, c-format
-msgid "Could not start dbus-daemon. exitstatus: %d"
-msgstr "无法启动 dbus-daemon。 exitstatus：%d"
 
 #, c-format
 msgid "Could not start domain: %s"
@@ -5123,7 +5101,8 @@ msgstr "对索引为 %2$d 的 %1$s 控制器没有设置设备别名 "
 msgid ""
 "Device alias was not set for PCI controller with index '%u' required for "
 "device at address '%s'"
-msgstr "对地址 '%2$s' 处的设备所需的索引为 '%1$u' 的 PCI 控制器没有设置设备别名"
+msgstr ""
+"对地址 '%2$s' 处的设备所需的索引为 '%1$u' 的 PCI 控制器没有设置设备别名"
 
 msgid "Device attached successfully\n"
 msgstr "成功附加设备\n"
@@ -6614,10 +6593,6 @@ msgid "Failed to create state dir '%s'"
 msgstr "创建状态目录 '%s' 失败"
 
 #, c-format
-msgid "Failed to create symlink '%s to '%s'"
-msgstr "为 '%s' 创建符号链接 '%s' 失败"
-
-#, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "为 '%s' 创建符号链接 '%s' 失败"
 
@@ -6953,9 +6928,6 @@ msgstr "生成 UUID 失败"
 
 msgid "Failed to generate genid"
 msgstr "生成 genid 失败"
-
-msgid "Failed to generate uuid"
-msgstr "生成 uuid 失败"
 
 #, c-format
 msgid "Failed to get %s minor number"
@@ -8390,12 +8362,6 @@ msgstr "此平台不支持文件流"
 msgid "File total:"
 msgstr "文件总数："
 
-msgid "Filepath is Null"
-msgstr "Filepath 为 Null"
-
-msgid "Filepath is null"
-msgstr "Filepath 为 null"
-
 msgid "Filesystem driver type not supported"
 msgstr "不支持的文件系统驱动程序"
 
@@ -8480,6 +8446,10 @@ msgstr "强制停止给定网络。"
 
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr "强制停止给定的池。不损坏该池中的原始数据。"
+
+#, c-format
+msgid "Format mismatch: loader.format='%s' nvram.format='%s'"
+msgstr ""
 
 #, c-format
 msgid "Format of device '%s' does not match the expected format '%s'"
@@ -8978,15 +8948,6 @@ msgstr "支持的设备使用的 IOThread"
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr "IOThreads 不适用于总线 %s 目标 %s"
-
-msgid "IOThreads not supported for this QEMU"
-msgstr "此 QEMU 不支持 IOThreads"
-
-msgid "IOThreads not supported with this binary"
-msgstr "这个二进制文件不支持 IOThreads"
-
-msgid "IOThreads polling is not supported for this QEMU"
-msgstr "此 QEMU 不支持 IOThreads 轮询"
 
 msgid "IP address"
 msgstr "IP 地址"
@@ -9803,15 +9764,6 @@ msgstr "设备类型 '%s' 的 VMX 条目'%s' 的无效的或尚未处理的值 '
 
 msgid "Invalid parameter"
 msgstr "无效参数"
-
-msgid "Invalid parameter to virXPathBoolean()"
-msgstr "virXPathBoolean() 的无效参数"
-
-msgid "Invalid parameter to virXPathNode()"
-msgstr "virXPathNode() 的无效参数"
-
-msgid "Invalid parameter to virXPathNodeSet()"
-msgstr "virXPathNodeSet() 的无效参数"
 
 msgid "Invalid parameter type passed to free"
 msgstr "传递给 free 的无效的参数类型"
@@ -11470,9 +11422,6 @@ msgstr "名称："
 msgid "Namespaces are not supported on this platform"
 msgstr "此平台上不支持命名空间"
 
-msgid "Namespaces are not supported on this platform."
-msgstr "此平台上不支持命名空间。"
-
 msgid "Nested HV configuration is not supported by this QEMU binary"
 msgstr "此 QEMU 二进制文件不支持嵌套 HV 配置"
 
@@ -12124,8 +12073,8 @@ msgid "Number of interfaces, %d exceeds the max limit: %d"
 msgstr "接口个数，%d 超过上限：%d"
 
 #, c-format
-msgid "Number of keys %d, which exceeds max liit: %d"
-msgstr "密钥 %d 的数量超过最大限制：%d"
+msgid "Number of keys %d, which exceeds max limit: %d"
+msgstr ""
 
 #, c-format
 msgid "Number of leases is %d, which exceeds max limit: %d"
@@ -12946,10 +12895,6 @@ msgstr "QEMU NBD 服务器不支持 TLS 传输"
 msgid "QEMU binary %s is not executable"
 msgstr "QEMU 二进制文件 %s 不能执行"
 
-msgid ""
-"QEMU binary does not support CPU host-passthrough for armv7l on aarch64 host"
-msgstr "QEMU 二进制文件不支持 aarch64 主机上的 armv7l 的 CPU host-passthrough"
-
 msgid "QEMU does not support SEV guest"
 msgstr "QEMU 不支持 SEV 客户机"
 
@@ -13216,8 +13161,9 @@ msgstr "请求的卷 '%s' 不在池 '%s' 中"
 msgid ""
 "Required option '%s' is not set for PCI controller with index '%d', model "
 "'%s' and modelName '%s'"
-msgstr "没有为索引为 '%2$d'、型号为 '%3$s' 和 modelName 为 '%4$s' 的 PCI "
-"控制器设置必选项 '%1$s'"
+msgstr ""
+"没有为索引为 '%2$d'、型号为 '%3$s' 和 modelName 为 '%4$s' 的 PCI 控制器设置必"
+"选项 '%1$s'"
 
 #, c-format
 msgid ""
@@ -15241,7 +15187,8 @@ msgstr "'passt' 后端只能用于接口 type='user'"
 msgid ""
 "The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
 "'exclude' is specified"
-msgstr "如果指定了 'end'、'to' 或 'exclude'，则 'portForward' 的 'range' 属性需要 "
+msgstr ""
+"如果指定了 'end'、'to' 或 'exclude'，则 'portForward' 的 'range' 属性需要 "
 "'start' 属性"
 
 #, c-format
@@ -16203,8 +16150,9 @@ msgstr "无法计算数据的哈希：%s"
 msgid ""
 "Unable to configure VF %d of PF '%s' because the PF is not online. Please "
 "change host network config to put the PF online."
-msgstr "无法配置 PF '%2$s' 的 VF %1$d，因为 PF 不在线。请更改主机网络配置以使 PF "
-"在线。"
+msgstr ""
+"无法配置 PF '%2$s' 的 VF %1$d，因为 PF 不在线。请更改主机网络配置以使 PF 在"
+"线。"
 
 msgid "Unable to configure libxl's memory management parameters"
 msgstr "无法配置 libxl 的内存管理参数"
@@ -16242,12 +16190,12 @@ msgid "Unable to create KVM vCPU for TSC probing"
 msgstr "无法为 TSC 探测创建 KVM vCPU"
 
 #, c-format
-msgid "Unable to create RNG parser for %s"
-msgstr "无法为 %s 创建 RNG 解析器"
+msgid "Unable to create RelaxNG parser for schema '%s'"
+msgstr ""
 
 #, c-format
-msgid "Unable to create RNG validation context %s"
-msgstr "无法创建 RNG 验证上下文 %s"
+msgid "Unable to create RelaxNG validation context for schema '%s'"
+msgstr ""
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "无法在这个平台中生成 TAP 设备"
@@ -16621,6 +16569,10 @@ msgid "Unable to get LVM key for %s"
 msgstr "无法为 %s 获取 LVM 密钥"
 
 #, c-format
+msgid "Unable to get NUMA node of cpu %zd"
+msgstr ""
+
+#, c-format
 msgid "Unable to get SCSI key for %s"
 msgstr "无法为 %s 获得 SCSI 密钥"
 
@@ -16752,9 +16704,6 @@ msgstr "无法获取硬盘格式"
 
 msgid "Unable to get hard disk id"
 msgstr "无法获取硬盘 ID"
-
-msgid "Unable to get hardDisk Id"
-msgstr "无法获取 hardDisk Id"
 
 msgid "Unable to get host SEV information"
 msgstr "无法获取主机 SEV 信息"
@@ -17124,8 +17073,8 @@ msgid "Unable to parse MAC '%s'"
 msgstr "无法解析 MAC '%s'"
 
 #, c-format
-msgid "Unable to parse RNG %s: %s"
-msgstr "无法解析 RNG %s ：%s"
+msgid "Unable to parse RelaxNG schema '%s': %s"
+msgstr ""
 
 #, c-format
 msgid "Unable to parse URI %s"
@@ -18728,6 +18677,10 @@ msgid "Unsupported listen type"
 msgstr "不支持的侦听类型"
 
 #, c-format
+msgid "Unsupported loader format '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported migration cookie feature %s"
 msgstr "不支持的迁移 cookie 功能 %s"
 
@@ -18763,6 +18716,10 @@ msgstr "不支持的 numatune 模式 '%d'"
 #, c-format
 msgid "Unsupported numatune placement '%d'"
 msgstr "不支持的 numatune 分配 '%d'"
+
+#, c-format
+msgid "Unsupported nvram format '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported object type %d"
@@ -18963,7 +18920,8 @@ msgstr "VCPU:"
 msgid ""
 "VF %d of PF '%s' is not bound to a net driver, so its MAC address cannot be "
 "set to %s"
-msgstr "PF '%2$s' 的 VF %1$d 没有绑定到网络驱动程序，因此其 MAC 地址不能设为 %3$s"
+msgstr ""
+"PF '%2$s' 的 VF %1$d 没有绑定到网络驱动程序，因此其 MAC 地址不能设为 %3$s"
 
 #, c-format
 msgid "VFB %s too big for destination"
@@ -19555,6 +19513,9 @@ msgstr "任何配置"
 #, c-format
 msgid "ap-domain value '%s' is out of range for '%s'"
 msgstr "ap-domain 值 '%s' 超出了 '%s' 范围。"
+
+msgid "api error"
+msgstr ""
 
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser 出错并退出"
@@ -21301,26 +21262,6 @@ msgstr "无法解析 typeidversion 参数值"
 #, c-format
 msgid "cannot parse vcpu index '%s'"
 msgstr "无法解析 vcpu 索引 '%s'"
-
-#, c-format
-msgid "cannot parse video heads '%s'"
-msgstr "无法解析影像头 '%s'"
-
-#, c-format
-msgid "cannot parse video ram '%s'"
-msgstr "无法解析显存 '%s'"
-
-#, c-format
-msgid "cannot parse video vgamem '%s'"
-msgstr "无法解析视频 vgamen '%s'"
-
-#, c-format
-msgid "cannot parse video vram '%s'"
-msgstr "无法解析视频 vram '%s'"
-
-#, c-format
-msgid "cannot parse video vram64 '%s'"
-msgstr "无法解析视频 vram64 '%s'"
 
 #, c-format
 msgid "cannot parse vlan tag '%s' from file '%s'"
@@ -23688,9 +23629,6 @@ msgstr "域事件回叫 %d 未注册"
 
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
 msgstr "域有 'invtsc' CPU 功能，但未指定 TSC 频率"
-
-msgid "domain has SMM turned off but chosen firmware requires it"
-msgstr "域关闭了 SMM，但选择的固件需要它"
 
 msgid "domain has active block job"
 msgstr "域有活动的块作业"
@@ -26563,8 +26501,8 @@ msgstr "%s 的接口类型的热插拔尚未实现"
 msgid "hotplug of watchdog of model %s is not supported"
 msgstr "不支持型号 %s 的 watchdog 的热插拔"
 
-msgid "hpet timer is not supported"
-msgstr "不支持 hpet 计时器"
+msgid "hpet timer is not supported by this architecture"
+msgstr ""
 
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr "HTTP Cookie 只支持 HTTP(S)协议"
@@ -27879,6 +27817,9 @@ msgstr "此 QEMU 二进制文件不支持 librbd 加密"
 msgid "librbd encryption is supported only with RBD backed disks"
 msgstr "只有 RBD 支持的磁盘才支持 librbd 加密"
 
+msgid "librbd encryption layering is not supported by this QEMU binary"
+msgstr ""
+
 msgid "libssh transport error"
 msgstr "libssh 传输错误"
 
@@ -28316,24 +28257,6 @@ msgstr "仅在全系统快照过程中支持实时快照创建"
 msgid "live update of device '%s' is not supported"
 msgstr "不支持即时更新设备 '%s'"
 
-msgid ""
-"loader attribute 'readonly' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr "当启用固件自动选择时，无法指定加载程序属性 'readonly'"
-
-msgid ""
-"loader attribute 'secure' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr "当启用固件自动选择时，无法指定加载程序属性 'secure'"
-
-msgid ""
-"loader attribute 'type' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr "当启用固件自动选择时，无法指定加载程序属性 'type'"
-
-msgid "loader path cannot be specified when firmware autoselection is enabled"
-msgstr "当启用固件自动选择时，无法指定加载程序路径"
-
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
 msgstr "loadparm 值 '%s' 必须在 1 到 8 个字符之间"
@@ -28354,8 +28277,8 @@ msgstr "循环直到超时或中断，不是一次执行"
 msgid "lower boundary for worker thread pool"
 msgstr "worker 线程池的下限"
 
-msgid "luks2 is currently not supported by the qemu encryption engine"
-msgstr "qemu 加密引擎目前不支持 luks2"
+msgid "luks-any encryption is not supported by this QEMU binary"
+msgstr ""
 
 msgid "lxc state driver is not active"
 msgstr "lxc 状态驱动程序未激活"
@@ -28390,6 +28313,10 @@ msgstr "机器已挂起，因此无法关闭。"
 #, c-format
 msgid "machine type '%s'"
 msgstr "机器类型 '%s'"
+
+#, c-format
+msgid "machine type '%s' does not support ACPI"
+msgstr ""
 
 msgid "machine type (/domain/os/type/@machine)"
 msgstr "机器类型 (/domain/os/type/@machine)"
@@ -28492,9 +28419,6 @@ msgstr "格式错误 ipset 标志"
 #, c-format
 msgid "malformed mac address '%s'"
 msgstr "格式错误 mac 地址 '%s'"
-
-msgid "malformed machine cpu count in QEMU capabilities cache"
-msgstr "QEMU 功能缓存中格式错误的机器 cpu 数"
 
 msgid "malformed mtu size"
 msgstr "格式错误的 mtu 大小"
@@ -29240,6 +29164,10 @@ msgid "missing alias for network device"
 msgstr "缺少网络设备的别名"
 
 #, c-format
+msgid "missing alias on encryption secret #%zu"
+msgstr ""
+
+#, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
 msgstr "缺少 qemu 对象 '%s' 的别名或 qom-type"
 
@@ -29503,9 +29431,6 @@ msgstr "缺少图形的 listen 元素"
 
 msgid "missing listen element for spice graphics"
 msgstr "缺少 spice 图形的 listen 元素"
-
-msgid "missing machine name in QEMU capabilities cache"
-msgstr "QEMU 功能 XML 中缺少机器名称"
 
 #, c-format
 msgid "missing mapping in '%s'"
@@ -30277,6 +30202,10 @@ msgid ""
 "'MAC' and 'adminMAC': '%.60s'"
 msgstr ""
 "网络设备保存的配置文件 '%s' 有意外的内容，缺少 'MAC' 和 'adminMAC': '%.60s'"
+
+#, c-format
+msgid "network device type '%s' is not supported by this hypervisor"
+msgstr ""
 
 #, c-format
 msgid "network device with mac %s already exists"
@@ -31132,11 +31061,6 @@ msgstr "此 QEMU 二进制文件没有 NVDIMM readonly 属性"
 
 msgid "nvram address type must be spaprvio"
 msgstr "nvram 地址类型必须为 spaprvio"
-
-msgid ""
-"nvram attribute 'template' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr "固件自动选择启用时，无法指定 nvram 属性 'template'"
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 nvram 设备"
@@ -32243,6 +32167,9 @@ msgstr ""
 msgid "qemu emulator '%s' does not support xen"
 msgstr "qemu 模拟器 '%s' 不支持 xen"
 
+msgid "qemu encryption engine expects only a single secret"
+msgstr ""
+
 #, c-format
 msgid "qemu monitor event callback %d not registered"
 msgstr "未注册 qemu 监视事件回叫 %d"
@@ -32259,6 +32186,9 @@ msgstr "qemu 状态驱动程序不活跃"
 
 msgid "qemu unexpectedly closed the monitor"
 msgstr "QEMU 意外关闭了监控"
+
+msgid "qemu-machines reply has malformed 'acpi data"
+msgstr ""
 
 msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
 msgstr "qemu-machines 回复有格式错误的 'numa-mem-supported' 数据"
@@ -32543,6 +32473,9 @@ msgstr "收到不正常监视器，请查看 XML 定义"
 
 msgid "received unexpected cookie with P2P migration"
 msgstr "收到 P2P 迁移中的意外 cookie"
+
+msgid "reconnect delay is supported only with NBD protocol"
+msgstr ""
 
 msgid "recv handler failed"
 msgstr "recv 处理程序失败"
@@ -33071,6 +33004,10 @@ msgid "scsi-block 'lun' devices do not support the serial property"
 msgstr "SCSI-block 'lun' 设备不支持 serial 属性"
 
 #, c-format
+msgid "sd card '%s' does not support multiple encryption secrets"
+msgstr ""
+
+#, c-format
 msgid "seclabel for model %s is already provided"
 msgstr "已为型号 %s 提供 seclabel"
 
@@ -33330,11 +33267,11 @@ msgstr "只有 scsi 主机设备支持 sgio"
 msgid "sgx epc isn't supported by this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 sgx epc"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "sgx epc size %lld on host node %d is less than requested size %lld"
 msgstr "主机节点 %d 上的 sgx epc 大小 %lld 小于请求的大小 %lld"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
 msgstr "主机节点 %zd 上的 sgx epc 大小 %lld 小于请求的大小 %lld"
 
@@ -34253,6 +34190,9 @@ msgstr "这个 QEMU 二进制缺少智能卡主机模型支持"
 msgid "this QEMU binary lacks smartcard passthrough mode support"
 msgstr "这个 QEMU 二进制缺少智能卡转移模型支持"
 
+msgid "this QEMU does not support 'blob' for virtio-gpu devices"
+msgstr ""
+
 msgid "this QEMU does not support 'vhost-user' video device"
 msgstr "此 QEMU 不支持 'vhost-user' 视频设备"
 
@@ -34836,6 +34776,10 @@ msgid "unable control COW flag on '%s'"
 msgstr "无法控制 '%s' 上的 COW 标志"
 
 #, c-format
+msgid "unable create new SELinux label based on label '%s' and file '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable get directory flags on '%s'"
 msgstr "无法获得 '%s' 上的标志"
 
@@ -35015,6 +34959,13 @@ msgstr "无法获取 PID %d 安全上下文"
 #, c-format
 msgid "unable to get PID %d uid and gid via sysctl"
 msgstr "无法通过 sysctl 获得 PID %d uid 和 gid"
+
+#, c-format
+msgid "unable to get SELinux context for '%s'"
+msgstr ""
+
+msgid "unable to get SELinux context for current process"
+msgstr ""
 
 #, c-format
 msgid "unable to get SELinux context of %s"
@@ -36203,10 +36154,6 @@ msgid "unknown vhost-user type: '%s'"
 msgstr "未知的 vhost-user 类型: '%s'"
 
 #, c-format
-msgid "unknown video model '%s'"
-msgstr "未知的视频型号 '%s'"
-
-#, c-format
 msgid "unknown virttype: %s"
 msgstr "未知的 virttype: %s"
 
@@ -36504,17 +36451,13 @@ msgstr "不支持的文件系统类型 '%s'"
 msgid "unsupported flags (0x%x)"
 msgstr "不支持的标签 (0x%x)"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "unsupported flags (0x%x) in function %s"
 msgstr "功能 %s 中不支持的标记 (0x%x)"
 
 #, c-format
 msgid "unsupported flags: (0x%x)"
 msgstr "不支持的标签：(0x%x)"
-
-#, c-format
-msgid "unsupported flash format '%s'"
-msgstr "不支持的闪存格式 '%s'"
 
 #, c-format
 msgid "unsupported format %s"
@@ -36569,10 +36512,6 @@ msgstr "不支持的 numatune 模式: '%d'"
 #, c-format
 msgid "unsupported nvram disk type '%s'"
 msgstr "不支持 nvram 磁盘类型 '%s'"
-
-#, c-format
-msgid "unsupported nvram template format '%s'"
-msgstr "不支持的 nvram 模板格式 '%s'"
 
 msgid "unsupported option"
 msgstr "不支持的选项"
@@ -37069,6 +37008,10 @@ msgstr "视频分辨率值必须大于 0"
 #, c-format
 msgid "video type %s is not supported by libxl"
 msgstr "libxl 不支持显卡类型 %s"
+
+#, c-format
+msgid "video type '%s' does not support blob resources"
+msgstr ""
 
 #, c-format
 msgid "video type '%s' doesn't support multiple 'heads'"
@@ -37670,6 +37613,147 @@ msgstr "请求网络 %s 的区 %s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "%s is not available with this QEMU binary"
+#~ msgstr "此 QEMU 二进制文件中没有 %s"
+
+#~ msgid "%s memory device info is not handled yet"
+#~ msgstr "%s 内存设备信息尚未处理"
+
+#~ msgid "'can-offline' missing in reply of guest-get-vcpus"
+#~ msgstr "guest-get-vcpus 回复中缺少 'can-offline'"
+
+#~ msgid "Cannot remove state PID file %s"
+#~ msgstr "无法删除状态 PID 文件 %s"
+
+#~ msgid "Could not start 'passt': %s"
+#~ msgstr "无法启动 'passt': %s"
+
+#~ msgid "Could not start 'slirp'. exitstatus: %d"
+#~ msgstr "无法启动 'slirp'。 exitstatus: %d"
+
+#~ msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
+#~ msgstr "无法启动 'vhost-user-gpu'。 exitstatus: %d"
+
+#~ msgid "Could not start dbus-daemon. exitstatus: %d"
+#~ msgstr "无法启动 dbus-daemon。 exitstatus：%d"
+
+#~ msgid "Failed to create symlink '%s to '%s'"
+#~ msgstr "为 '%s' 创建符号链接 '%s' 失败"
+
+#~ msgid "Failed to generate uuid"
+#~ msgstr "生成 uuid 失败"
+
+#~ msgid "Filepath is Null"
+#~ msgstr "Filepath 为 Null"
+
+#~ msgid "Filepath is null"
+#~ msgstr "Filepath 为 null"
+
+#~ msgid "IOThreads not supported for this QEMU"
+#~ msgstr "此 QEMU 不支持 IOThreads"
+
+#~ msgid "IOThreads not supported with this binary"
+#~ msgstr "这个二进制文件不支持 IOThreads"
+
+#~ msgid "IOThreads polling is not supported for this QEMU"
+#~ msgstr "此 QEMU 不支持 IOThreads 轮询"
+
+#~ msgid "Invalid parameter to virXPathBoolean()"
+#~ msgstr "virXPathBoolean() 的无效参数"
+
+#~ msgid "Invalid parameter to virXPathNode()"
+#~ msgstr "virXPathNode() 的无效参数"
+
+#~ msgid "Invalid parameter to virXPathNodeSet()"
+#~ msgstr "virXPathNodeSet() 的无效参数"
+
+#~ msgid "Namespaces are not supported on this platform."
+#~ msgstr "此平台上不支持命名空间。"
+
+#~ msgid "Number of keys %d, which exceeds max liit: %d"
+#~ msgstr "密钥 %d 的数量超过最大限制：%d"
+
+#~ msgid ""
+#~ "QEMU binary does not support CPU host-passthrough for armv7l on aarch64 "
+#~ "host"
+#~ msgstr ""
+#~ "QEMU 二进制文件不支持 aarch64 主机上的 armv7l 的 CPU host-passthrough"
+
+#~ msgid "Unable to create RNG parser for %s"
+#~ msgstr "无法为 %s 创建 RNG 解析器"
+
+#~ msgid "Unable to create RNG validation context %s"
+#~ msgstr "无法创建 RNG 验证上下文 %s"
+
+#~ msgid "Unable to get hardDisk Id"
+#~ msgstr "无法获取 hardDisk Id"
+
+#~ msgid "Unable to parse RNG %s: %s"
+#~ msgstr "无法解析 RNG %s ：%s"
+
+#~ msgid "cannot parse video heads '%s'"
+#~ msgstr "无法解析影像头 '%s'"
+
+#~ msgid "cannot parse video ram '%s'"
+#~ msgstr "无法解析显存 '%s'"
+
+#~ msgid "cannot parse video vgamem '%s'"
+#~ msgstr "无法解析视频 vgamen '%s'"
+
+#~ msgid "cannot parse video vram '%s'"
+#~ msgstr "无法解析视频 vram '%s'"
+
+#~ msgid "cannot parse video vram64 '%s'"
+#~ msgstr "无法解析视频 vram64 '%s'"
+
+#~ msgid "domain has SMM turned off but chosen firmware requires it"
+#~ msgstr "域关闭了 SMM，但选择的固件需要它"
+
+#~ msgid "hpet timer is not supported"
+#~ msgstr "不支持 hpet 计时器"
+
+#~ msgid ""
+#~ "loader attribute 'readonly' cannot be specified when firmware "
+#~ "autoselection is enabled"
+#~ msgstr "当启用固件自动选择时，无法指定加载程序属性 'readonly'"
+
+#~ msgid ""
+#~ "loader attribute 'secure' cannot be specified when firmware autoselection "
+#~ "is enabled"
+#~ msgstr "当启用固件自动选择时，无法指定加载程序属性 'secure'"
+
+#~ msgid ""
+#~ "loader attribute 'type' cannot be specified when firmware autoselection "
+#~ "is enabled"
+#~ msgstr "当启用固件自动选择时，无法指定加载程序属性 'type'"
+
+#~ msgid ""
+#~ "loader path cannot be specified when firmware autoselection is enabled"
+#~ msgstr "当启用固件自动选择时，无法指定加载程序路径"
+
+#~ msgid "luks2 is currently not supported by the qemu encryption engine"
+#~ msgstr "qemu 加密引擎目前不支持 luks2"
+
+#~ msgid "malformed machine cpu count in QEMU capabilities cache"
+#~ msgstr "QEMU 功能缓存中格式错误的机器 cpu 数"
+
+#~ msgid "missing machine name in QEMU capabilities cache"
+#~ msgstr "QEMU 功能 XML 中缺少机器名称"
+
+#~ msgid ""
+#~ "nvram attribute 'template' cannot be specified when firmware "
+#~ "autoselection is enabled"
+#~ msgstr "固件自动选择启用时，无法指定 nvram 属性 'template'"
+
+#~ msgid "unknown video model '%s'"
+#~ msgstr "未知的视频型号 '%s'"
+
+#~ msgid "unsupported flash format '%s'"
+#~ msgstr "不支持的闪存格式 '%s'"
+
+#~ msgid "unsupported nvram template format '%s'"
+#~ msgstr "不支持的 nvram 模板格式 '%s'"
 
 #~ msgid "'disk' missing in reply of guest-get-fsinfo"
 #~ msgstr "guest-get-fsinfo 回复中缺少 'disk'"

@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-02-22 13:50+0000\n"
+"POT-Creation-Date: 2023-03-24 16:18+0000\n"
 "PO-Revision-Date: 2023-02-23 17:20+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -24,8 +24,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 4.15.2\n"
 
 msgid ""
@@ -645,20 +645,12 @@ msgid "%s is not an executable"
 msgstr "%s не є виконуваним файлом"
 
 #, c-format
-msgid "%s is not available with this QEMU binary"
-msgstr "%s є недоступним, якщо використовується цей виконуваний файл QEMU"
-
-#, c-format
 msgid "%s is not supported by this QEMU binary"
 msgstr "у цьому виконуваному файлі QEMU не передбачено підтримки %s"
 
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "Довжина %s перевищує максимальну можливу: %d > %d"
-
-#, c-format
-msgid "%s memory device info is not handled yet"
-msgstr "Обробки даних пристрою пам'яті %s ще не передбачено"
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -1195,6 +1187,10 @@ msgid "'%s' file does not fit in memory"
 msgstr "недостатньо пам'яті для файла «%s»"
 
 #, c-format
+msgid "'%s' is currently not supported by the qemu encryption engine"
+msgstr ""
+
+#, c-format
 msgid "'%s' is not a VF device"
 msgstr "«%s» не є пристроєм VF"
 
@@ -1256,6 +1252,9 @@ msgstr "підтримки «address» для відеопристроїв «ram
 msgid "'address' must be specified for scsi hostdev source"
 msgstr "для джерела scsi слід вказати елементи «address»"
 
+msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
@@ -1263,9 +1262,6 @@ msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "«cache» посилається на кеш вузлів NUMA, якого не існує"
-
-msgid "'can-offline' missing in reply of guest-get-vcpus"
-msgstr "у відповіді guest-get-vcpus пропущено «can-offline»"
 
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
 msgstr "підтримку «cmd_per_lun» передбачено лише для контролерів virtio-scsi"
@@ -3387,10 +3383,6 @@ msgstr ""
 msgid "Cannot remove stale PID file %s"
 msgstr "Не вдалося вилучити застарілий файл PID %s"
 
-#, c-format
-msgid "Cannot remove state PID file %s"
-msgstr "Не вдалося вилучити файл PID стану, %s"
-
 msgid "Cannot remove uninitialized CURL handle from a multi handle"
 msgstr ""
 "Не можна вилучати неініціалізований дескриптор CURL з мультидескриптора"
@@ -5056,24 +5048,8 @@ msgstr "Не вдалось вказати каталог джерела для 
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr "Не вдалося встановити адресу простору назв wsman для xmlNodeParam"
 
-#, c-format
-msgid "Could not start 'passt': %s"
-msgstr "Не вдалося запустити «passt»: %s"
-
-#, c-format
-msgid "Could not start 'slirp'. exitstatus: %d"
-msgstr "Не вдалося запустити «slirp». Стан виходу: %d"
-
-#, c-format
-msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
-msgstr "Не вдалося запустити «vhost-user-gpu». Стан виходу: %d"
-
 msgid "Could not start 'virtiofsd'"
 msgstr "Не вдалося запустити «virtiofsd»"
-
-#, c-format
-msgid "Could not start dbus-daemon. exitstatus: %d"
-msgstr "Не вдалося запустити dbus-daemon. Стан виходу: %d"
 
 #, c-format
 msgid "Could not start domain: %s"
@@ -7081,10 +7057,6 @@ msgid "Failed to create state dir '%s'"
 msgstr "Не вдалося створити каталог стану «%s»"
 
 #, c-format
-msgid "Failed to create symlink '%s to '%s'"
-msgstr "Не вдалось створити символьне посилання «%s» до «%s»"
-
-#, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "Помилка при створенні символічного посилання «%s» на «%s»"
 
@@ -7432,9 +7404,6 @@ msgstr "Помилка при генерації UUID"
 
 msgid "Failed to generate genid"
 msgstr "Не вдалося створити genid"
-
-msgid "Failed to generate uuid"
-msgstr "Помилка при генерації UUID"
 
 #, c-format
 msgid "Failed to get %s minor number"
@@ -8931,12 +8900,6 @@ msgstr "На цій платформі не передбачено підтри�
 msgid "File total:"
 msgstr "Загалом файлів:"
 
-msgid "Filepath is Null"
-msgstr "Значення Filepath є порожнім"
-
-msgid "Filepath is null"
-msgstr "Значення Filepath є порожнім"
-
 msgid "Filesystem driver type not supported"
 msgstr "Підтримки типу драйвера файлової системи не передбачено"
 
@@ -9032,6 +8995,10 @@ msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr ""
 "Завершити роботу вказаного буфера. Необроблені дані з буфера не "
 "вилучатимуться."
+
+#, c-format
+msgid "Format mismatch: loader.format='%s' nvram.format='%s'"
+msgstr ""
 
 #, c-format
 msgid "Format of device '%s' does not match the expected format '%s'"
@@ -9577,15 +9544,6 @@ msgstr "IOThread, який буде використано підтримува�
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr "IOThreads є недоступними для каналу %s призначення %s"
-
-msgid "IOThreads not supported for this QEMU"
-msgstr "у цій версії QEMU не передбачено IOThreads"
-
-msgid "IOThreads not supported with this binary"
-msgstr "підтримки IOThreads у цьому виконуваному файлі не передбачено"
-
-msgid "IOThreads polling is not supported for this QEMU"
-msgstr "Для цього QEMU не передбачено підтримки опитування IOThreads"
 
 msgid "IP address"
 msgstr "IP-адреса"
@@ -10459,15 +10417,6 @@ msgstr ""
 
 msgid "Invalid parameter"
 msgstr "Некоректний параметр"
-
-msgid "Invalid parameter to virXPathBoolean()"
-msgstr "virXPathBoolean() передано некоректний параметр"
-
-msgid "Invalid parameter to virXPathNode()"
-msgstr "virXPathNode() передано некоректний параметр"
-
-msgid "Invalid parameter to virXPathNodeSet()"
-msgstr "virXPathNodeSet() передано некоректний параметр"
 
 msgid "Invalid parameter type passed to free"
 msgstr "Free передано параметр некоректного типу"
@@ -12272,9 +12221,6 @@ msgstr "Назва:"
 msgid "Namespaces are not supported on this platform"
 msgstr "На цій платформі не передбачено підтримки просторів назв"
 
-msgid "Namespaces are not supported on this platform."
-msgstr "На цій платформі не передбачено підтримки просторів назв."
-
 msgid "Nested HV configuration is not supported by this QEMU binary"
 msgstr ""
 "Підтримки вкладеної конфігурації гіпервізорів не передбачено у цьому "
@@ -12956,8 +12902,8 @@ msgstr ""
 "Кількість інтерфейсів, %d, перевищує обмеження на максимальну кількість: %d"
 
 #, c-format
-msgid "Number of keys %d, which exceeds max liit: %d"
-msgstr "Кількість ключів %d — перевищення максимального обмеження: %d"
+msgid "Number of keys %d, which exceeds max limit: %d"
+msgstr ""
 
 #, c-format
 msgid "Number of leases is %d, which exceeds max limit: %d"
@@ -13863,12 +13809,6 @@ msgstr "на сервері NBD QEMU не передбачено підтрим�
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "Виконуваний файл QEMU %s не є виконуваним"
-
-msgid ""
-"QEMU binary does not support CPU host-passthrough for armv7l on aarch64 host"
-msgstr ""
-"виконуваний файл QEMU не підтримує host-passthrough процесорів для armv7l на "
-"основних системах aarch64"
 
 msgid "QEMU does not support SEV guest"
 msgstr "у QEMU не передбачено підтримки гостьових систем SEV"
@@ -17600,12 +17540,12 @@ msgid "Unable to create KVM vCPU for TSC probing"
 msgstr "Не вдалося створити віртуальний процесор KVM для зондування TSC"
 
 #, c-format
-msgid "Unable to create RNG parser for %s"
-msgstr "Не вдалося створити обробник RNG для %s"
+msgid "Unable to create RelaxNG parser for schema '%s'"
+msgstr ""
 
 #, c-format
-msgid "Unable to create RNG validation context %s"
-msgstr "Не вдалося створити контекст перевірки RNG, %s"
+msgid "Unable to create RelaxNG validation context for schema '%s'"
+msgstr ""
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "На цій платформі створення пристроїв TAP неможливе"
@@ -17987,6 +17927,10 @@ msgid "Unable to get LVM key for %s"
 msgstr "Не вдалося отримати ключ LVM для %s"
 
 #, c-format
+msgid "Unable to get NUMA node of cpu %zd"
+msgstr ""
+
+#, c-format
 msgid "Unable to get SCSI key for %s"
 msgstr "Не вдалося отримати ключ SCSI для %s"
 
@@ -18122,9 +18066,6 @@ msgstr "Не вдалося отримати дані щодо формату ж
 
 msgid "Unable to get hard disk id"
 msgstr "Не вдалося отримати ідентифікатор жорсткого диска"
-
-msgid "Unable to get hardDisk Id"
-msgstr "Не вдалося отримати ідентифікатор hardDisk"
 
 msgid "Unable to get host SEV information"
 msgstr "Не вдалося отримати відомості SEV вузла"
@@ -18499,8 +18440,8 @@ msgid "Unable to parse MAC '%s'"
 msgstr "Не вдалося обробити MAC «%s»"
 
 #, c-format
-msgid "Unable to parse RNG %s: %s"
-msgstr "Не вдалося обробити RNG, %s: %s"
+msgid "Unable to parse RelaxNG schema '%s': %s"
+msgstr ""
 
 #, c-format
 msgid "Unable to parse URI %s"
@@ -20143,6 +20084,10 @@ msgid "Unsupported listen type"
 msgstr "Непідтримуваний тип очікування (listen)"
 
 #, c-format
+msgid "Unsupported loader format '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported migration cookie feature %s"
 msgstr "Непідтримувана можливість куки перенесення %s"
 
@@ -20180,6 +20125,10 @@ msgstr "Непідтримуваний режим numatune, «%d»"
 #, c-format
 msgid "Unsupported numatune placement '%d'"
 msgstr "Непідтримуване розташовування numatune, «%d»"
+
+#, c-format
+msgid "Unsupported nvram format '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported object type %d"
@@ -21037,6 +20986,9 @@ msgstr "будь-які налаштування"
 #, c-format
 msgid "ap-domain value '%s' is out of range for '%s'"
 msgstr "Значення ap-domain «%s» не потрапляє до діапазону для «%s»"
+
+msgid "api error"
+msgstr ""
 
 msgid "apparmor_parser exited with error"
 msgstr "Програма apparmor_parser завершила роботу повідомленням про помилку"
@@ -22936,26 +22888,6 @@ msgstr "не вдалося обробити значення параметра
 #, c-format
 msgid "cannot parse vcpu index '%s'"
 msgstr "не вдалося обробити значення індексу віртуального процесора, «%s»"
-
-#, c-format
-msgid "cannot parse video heads '%s'"
-msgstr "неможливо розібрати кількість відеоадаптерів «%s»"
-
-#, c-format
-msgid "cannot parse video ram '%s'"
-msgstr "неможливо розібрати кількість відеопам'яті «%s»"
-
-#, c-format
-msgid "cannot parse video vgamem '%s'"
-msgstr "не вдалося обробити запис vgamem відео, «%s»"
-
-#, c-format
-msgid "cannot parse video vram '%s'"
-msgstr "не вдалося обробити запис об'єму відеопам'яті, «%s»"
-
-#, c-format
-msgid "cannot parse video vram64 '%s'"
-msgstr "не вдалося обробити запис об'єму vram64, «%s»"
 
 #, c-format
 msgid "cannot parse vlan tag '%s' from file '%s'"
@@ -25478,9 +25410,6 @@ msgstr "зворотний виклик події домену %d не заре
 
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
 msgstr "домен має можливість процесора «invtsc», але частоту TSC не вказано"
-
-msgid "domain has SMM turned off but chosen firmware requires it"
-msgstr "у домені вимкнено SMM, але вибрана мікропрограма його потребує"
 
 msgid "domain has active block job"
 msgstr "у домені є активне блокове завдання"
@@ -28515,8 +28444,8 @@ msgstr ""
 "підтримки з'єднання у «гарячому» режимі засобу спостереження моделі %s не "
 "передбачено"
 
-msgid "hpet timer is not supported"
-msgstr "підтримки таймера hpet не передбачено"
+msgid "hpet timer is not supported by this architecture"
+msgstr ""
 
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr "підтримку кук http передбачено лише у поєднанні з протоколом HTTP(S)"
@@ -29922,6 +29851,9 @@ msgstr ""
 msgid "librbd encryption is supported only with RBD backed disks"
 msgstr "підтримку шифрування librbd передбачено лише із дисками на основі RBD"
 
+msgid "librbd encryption layering is not supported by this QEMU binary"
+msgstr ""
+
 msgid "libssh transport error"
 msgstr "Помилка передавання даних libssh"
 
@@ -30383,32 +30315,6 @@ msgid "live update of device '%s' is not supported"
 msgstr ""
 "підтримки інтерактивного оновлення даних щодо пристрою «%s» не передбачено"
 
-msgid ""
-"loader attribute 'readonly' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
-"не можна встановлювати атрибут «readonly», якщо увімкнено автоматичний вибір "
-"мікропрограми"
-
-msgid ""
-"loader attribute 'secure' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-"не можна встановлювати атрибут «secure» завантажувача, якщо увімкнено "
-"автоматичний вибір мікропрограми"
-
-msgid ""
-"loader attribute 'type' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-"не можна встановлювати атрибут «type» завантажувача, якщо увімкнено "
-"автоматичний вибір мікропрограми"
-
-msgid "loader path cannot be specified when firmware autoselection is enabled"
-msgstr ""
-"не можна вказувати шлях завантажувача, якщо увімкнено автоматичний вибір "
-"мікропрограми"
-
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
 msgstr ""
@@ -30434,8 +30340,8 @@ msgstr ""
 msgid "lower boundary for worker thread pool"
 msgstr "нижня межа для буфера потоків засобу обробки"
 
-msgid "luks2 is currently not supported by the qemu encryption engine"
-msgstr "у поточній версії рушія шифрування QEMU не передбачено підтримки luks2"
+msgid "luks-any encryption is not supported by this QEMU binary"
+msgstr ""
 
 msgid "lxc state driver is not active"
 msgstr "драйвер стану lxc не активний"
@@ -30475,6 +30381,10 @@ msgstr "роботу машини призупинено, отже її не м�
 #, c-format
 msgid "machine type '%s'"
 msgstr "тип архітектури «%s»"
+
+#, c-format
+msgid "machine type '%s' does not support ACPI"
+msgstr ""
 
 msgid "machine type (/domain/os/type/@machine)"
 msgstr "тип машини (/домен/система/тип/@машина)"
@@ -30585,11 +30495,6 @@ msgstr "помилкове форматування прапорців ipset"
 #, c-format
 msgid "malformed mac address '%s'"
 msgstr "помилкове форматування MAC-адреси «%s»"
-
-msgid "malformed machine cpu count in QEMU capabilities cache"
-msgstr ""
-"помилкове форматування запису кількості процесорів на комп'ютері у кеші "
-"можливостей QEMU"
 
 msgid "malformed mtu size"
 msgstr "помилкове форматування розміру mtu"
@@ -31424,6 +31329,10 @@ msgid "missing alias for network device"
 msgstr "немає альтернативної назви для пристрою мережі"
 
 #, c-format
+msgid "missing alias on encryption secret #%zu"
+msgstr ""
+
+#, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
 msgstr "не вказано alias або qom-type для об'єкта qemu «%s»"
 
@@ -31697,9 +31606,6 @@ msgstr "пропущено елемент очікування (listen) для �
 
 msgid "missing listen element for spice graphics"
 msgstr "пропущено елемент очікування (listen) для графіки spice"
-
-msgid "missing machine name in QEMU capabilities cache"
-msgstr "у записі кешу можливостей QEMU не вистачає назви машини"
 
 #, c-format
 msgid "missing mapping in '%s'"
@@ -32540,6 +32446,10 @@ msgid ""
 msgstr ""
 "у збереженому файлі налаштувань для мережевого пристрою «%s» містяться "
 "неочікувані дані, немає ні «MAC», ні «adminMAC»: «%.60s»"
+
+#, c-format
+msgid "network device type '%s' is not supported by this hypervisor"
+msgstr ""
 
 #, c-format
 msgid "network device with mac %s already exists"
@@ -33427,13 +33337,6 @@ msgstr ""
 
 msgid "nvram address type must be spaprvio"
 msgstr "адреса nvram має належати до типу spaprvio"
-
-msgid ""
-"nvram attribute 'template' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
-"не можна встановлювати атрибут «template» nvram, якщо увімкнено автоматичний "
-"вибір мікропрограми"
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr ""
@@ -34641,6 +34544,9 @@ msgstr ""
 msgid "qemu emulator '%s' does not support xen"
 msgstr "Емулятором QEMU «%s» не підтримується xen"
 
+msgid "qemu encryption engine expects only a single secret"
+msgstr ""
+
 #, c-format
 msgid "qemu monitor event callback %d not registered"
 msgstr "зворотній виклик %d події монітора qemu не зареєстровано"
@@ -34659,6 +34565,9 @@ msgstr "драйвер стану qemu не активний"
 
 msgid "qemu unexpectedly closed the monitor"
 msgstr "qemu неочікувано завершив роботу монітора"
+
+msgid "qemu-machines reply has malformed 'acpi data"
+msgstr ""
 
 msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
 msgstr ""
@@ -34972,6 +34881,9 @@ msgstr ""
 
 msgid "received unexpected cookie with P2P migration"
 msgstr "з перенесенням P2P отримано неочікувану куку"
+
+msgid "reconnect delay is supported only with NBD protocol"
+msgstr ""
 
 msgid "recv handler failed"
 msgstr "помилка отримання обробника"
@@ -35537,6 +35449,10 @@ msgstr "підтримки скриптів на інтерфейсах типу
 msgid "scsi-block 'lun' devices do not support the serial property"
 msgstr ""
 "у блокових пристроїв scsi «lun» не передбачено підтримки властивості serial"
+
+#, c-format
+msgid "sd card '%s' does not support multiple encryption secrets"
+msgstr ""
 
 #, c-format
 msgid "seclabel for model %s is already provided"
@@ -36644,7 +36560,8 @@ msgstr ""
 "у виконуваному файлі QEMU не передбачено підтримки пристроїв паніки ISA"
 
 msgid "the QEMU binary does not support the PCI pvpanic device"
-msgstr "у виконуваному файлі QEMU не передбачено підтримки пристрою PCI pvpanic"
+msgstr ""
+"у виконуваному файлі QEMU не передбачено підтримки пристрою PCI pvpanic"
 
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
@@ -36825,6 +36742,9 @@ msgid "this QEMU binary lacks smartcard passthrough mode support"
 msgstr ""
 "у цьому виконуваному файлі QEMU немає підтримки режиму передавання даних "
 "смарт-картки"
+
+msgid "this QEMU does not support 'blob' for virtio-gpu devices"
+msgstr ""
 
 msgid "this QEMU does not support 'vhost-user' video device"
 msgstr "у цьому QEMU не передбачено підтримки відеопристроїв «vhost-user»"
@@ -37463,6 +37383,10 @@ msgid "unable control COW flag on '%s'"
 msgstr "не вдалося виконати керування прапорцем COW на «%s»"
 
 #, c-format
+msgid "unable create new SELinux label based on label '%s' and file '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable get directory flags on '%s'"
 msgstr "не вдалося отримати прапорці каталогів на «%s»"
 
@@ -37646,6 +37570,13 @@ msgstr "не вдалося отримати контекст безпеки PID
 #, c-format
 msgid "unable to get PID %d uid and gid via sysctl"
 msgstr "не вдалося отримати uid та gid для PID %d за допомогою sysctl"
+
+#, c-format
+msgid "unable to get SELinux context for '%s'"
+msgstr ""
+
+msgid "unable to get SELinux context for current process"
+msgstr ""
 
 #, c-format
 msgid "unable to get SELinux context of %s"
@@ -38840,10 +38771,6 @@ msgid "unknown vhost-user type: '%s'"
 msgstr "невідомий тип vhost-user: «%s»"
 
 #, c-format
-msgid "unknown video model '%s'"
-msgstr "невідома модель відеоадаптера «%s»"
-
-#, c-format
 msgid "unknown virttype: %s"
 msgstr "невідоме значення virttype: %s"
 
@@ -39155,10 +39082,6 @@ msgid "unsupported flags: (0x%x)"
 msgstr "непідтримувані прапорці: (0x%x)"
 
 #, c-format
-msgid "unsupported flash format '%s'"
-msgstr "непідтримуваний формат flash «%s»"
-
-#, c-format
 msgid "unsupported format %s"
 msgstr "непідтримуваний формат %s"
 
@@ -39212,10 +39135,6 @@ msgstr "непідтримуваний режим numatune: «%d»"
 #, c-format
 msgid "unsupported nvram disk type '%s'"
 msgstr "непідтримуваний тип диска nvram «%s»"
-
-#, c-format
-msgid "unsupported nvram template format '%s'"
-msgstr "непідтримуваний формат шаблону nvram «%s»"
 
 msgid "unsupported option"
 msgstr "непідтримуваний параметр"
@@ -39764,6 +39683,10 @@ msgstr "значення роздільності відео мають пере
 #, c-format
 msgid "video type %s is not supported by libxl"
 msgstr "підтримки типу відео %s у libxl не передбачено"
+
+#, c-format
+msgid "video type '%s' does not support blob resources"
+msgstr ""
 
 #, c-format
 msgid "video type '%s' doesn't support multiple 'heads'"
@@ -40423,6 +40346,161 @@ msgstr "надійшов запит щодо зони %s для мережі %s,
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <рядок>}..."
+
+#~ msgid "%s is not available with this QEMU binary"
+#~ msgstr "%s є недоступним, якщо використовується цей виконуваний файл QEMU"
+
+#~ msgid "%s memory device info is not handled yet"
+#~ msgstr "Обробки даних пристрою пам'яті %s ще не передбачено"
+
+#~ msgid "'can-offline' missing in reply of guest-get-vcpus"
+#~ msgstr "у відповіді guest-get-vcpus пропущено «can-offline»"
+
+#~ msgid "Cannot remove state PID file %s"
+#~ msgstr "Не вдалося вилучити файл PID стану, %s"
+
+#~ msgid "Could not start 'passt': %s"
+#~ msgstr "Не вдалося запустити «passt»: %s"
+
+#~ msgid "Could not start 'slirp'. exitstatus: %d"
+#~ msgstr "Не вдалося запустити «slirp». Стан виходу: %d"
+
+#~ msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
+#~ msgstr "Не вдалося запустити «vhost-user-gpu». Стан виходу: %d"
+
+#~ msgid "Could not start dbus-daemon. exitstatus: %d"
+#~ msgstr "Не вдалося запустити dbus-daemon. Стан виходу: %d"
+
+#~ msgid "Failed to create symlink '%s to '%s'"
+#~ msgstr "Не вдалось створити символьне посилання «%s» до «%s»"
+
+#~ msgid "Failed to generate uuid"
+#~ msgstr "Помилка при генерації UUID"
+
+#~ msgid "Filepath is Null"
+#~ msgstr "Значення Filepath є порожнім"
+
+#~ msgid "Filepath is null"
+#~ msgstr "Значення Filepath є порожнім"
+
+#~ msgid "IOThreads not supported for this QEMU"
+#~ msgstr "у цій версії QEMU не передбачено IOThreads"
+
+#~ msgid "IOThreads not supported with this binary"
+#~ msgstr "підтримки IOThreads у цьому виконуваному файлі не передбачено"
+
+#~ msgid "IOThreads polling is not supported for this QEMU"
+#~ msgstr "Для цього QEMU не передбачено підтримки опитування IOThreads"
+
+#~ msgid "Invalid parameter to virXPathBoolean()"
+#~ msgstr "virXPathBoolean() передано некоректний параметр"
+
+#~ msgid "Invalid parameter to virXPathNode()"
+#~ msgstr "virXPathNode() передано некоректний параметр"
+
+#~ msgid "Invalid parameter to virXPathNodeSet()"
+#~ msgstr "virXPathNodeSet() передано некоректний параметр"
+
+#~ msgid "Namespaces are not supported on this platform."
+#~ msgstr "На цій платформі не передбачено підтримки просторів назв."
+
+#~ msgid "Number of keys %d, which exceeds max liit: %d"
+#~ msgstr "Кількість ключів %d — перевищення максимального обмеження: %d"
+
+#~ msgid ""
+#~ "QEMU binary does not support CPU host-passthrough for armv7l on aarch64 "
+#~ "host"
+#~ msgstr ""
+#~ "виконуваний файл QEMU не підтримує host-passthrough процесорів для armv7l "
+#~ "на основних системах aarch64"
+
+#~ msgid "Unable to create RNG parser for %s"
+#~ msgstr "Не вдалося створити обробник RNG для %s"
+
+#~ msgid "Unable to create RNG validation context %s"
+#~ msgstr "Не вдалося створити контекст перевірки RNG, %s"
+
+#~ msgid "Unable to get hardDisk Id"
+#~ msgstr "Не вдалося отримати ідентифікатор hardDisk"
+
+#~ msgid "Unable to parse RNG %s: %s"
+#~ msgstr "Не вдалося обробити RNG, %s: %s"
+
+#~ msgid "cannot parse video heads '%s'"
+#~ msgstr "неможливо розібрати кількість відеоадаптерів «%s»"
+
+#~ msgid "cannot parse video ram '%s'"
+#~ msgstr "неможливо розібрати кількість відеопам'яті «%s»"
+
+#~ msgid "cannot parse video vgamem '%s'"
+#~ msgstr "не вдалося обробити запис vgamem відео, «%s»"
+
+#~ msgid "cannot parse video vram '%s'"
+#~ msgstr "не вдалося обробити запис об'єму відеопам'яті, «%s»"
+
+#~ msgid "cannot parse video vram64 '%s'"
+#~ msgstr "не вдалося обробити запис об'єму vram64, «%s»"
+
+#~ msgid "domain has SMM turned off but chosen firmware requires it"
+#~ msgstr "у домені вимкнено SMM, але вибрана мікропрограма його потребує"
+
+#~ msgid "hpet timer is not supported"
+#~ msgstr "підтримки таймера hpet не передбачено"
+
+#~ msgid ""
+#~ "loader attribute 'readonly' cannot be specified when firmware "
+#~ "autoselection is enabled"
+#~ msgstr ""
+#~ "не можна встановлювати атрибут «readonly», якщо увімкнено автоматичний "
+#~ "вибір мікропрограми"
+
+#~ msgid ""
+#~ "loader attribute 'secure' cannot be specified when firmware autoselection "
+#~ "is enabled"
+#~ msgstr ""
+#~ "не можна встановлювати атрибут «secure» завантажувача, якщо увімкнено "
+#~ "автоматичний вибір мікропрограми"
+
+#~ msgid ""
+#~ "loader attribute 'type' cannot be specified when firmware autoselection "
+#~ "is enabled"
+#~ msgstr ""
+#~ "не можна встановлювати атрибут «type» завантажувача, якщо увімкнено "
+#~ "автоматичний вибір мікропрограми"
+
+#~ msgid ""
+#~ "loader path cannot be specified when firmware autoselection is enabled"
+#~ msgstr ""
+#~ "не можна вказувати шлях завантажувача, якщо увімкнено автоматичний вибір "
+#~ "мікропрограми"
+
+#~ msgid "luks2 is currently not supported by the qemu encryption engine"
+#~ msgstr ""
+#~ "у поточній версії рушія шифрування QEMU не передбачено підтримки luks2"
+
+#~ msgid "malformed machine cpu count in QEMU capabilities cache"
+#~ msgstr ""
+#~ "помилкове форматування запису кількості процесорів на комп'ютері у кеші "
+#~ "можливостей QEMU"
+
+#~ msgid "missing machine name in QEMU capabilities cache"
+#~ msgstr "у записі кешу можливостей QEMU не вистачає назви машини"
+
+#~ msgid ""
+#~ "nvram attribute 'template' cannot be specified when firmware "
+#~ "autoselection is enabled"
+#~ msgstr ""
+#~ "не можна встановлювати атрибут «template» nvram, якщо увімкнено "
+#~ "автоматичний вибір мікропрограми"
+
+#~ msgid "unknown video model '%s'"
+#~ msgstr "невідома модель відеоадаптера «%s»"
+
+#~ msgid "unsupported flash format '%s'"
+#~ msgstr "непідтримуваний формат flash «%s»"
+
+#~ msgid "unsupported nvram template format '%s'"
+#~ msgstr "непідтримуваний формат шаблону nvram «%s»"
 
 #~ msgid "'disk' missing in reply of guest-get-fsinfo"
 #~ msgstr "у відповіді guest-get-fsinfo пропущено «disk»"

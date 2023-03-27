@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-02-22 13:50+0000\n"
+"POT-Creation-Date: 2023-03-24 16:18+0000\n"
 "PO-Revision-Date: 2015-02-27 01:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/libvirt/language/"
@@ -578,20 +578,12 @@ msgid "%s is not an executable"
 msgstr "QEMU बाइनरि %s चालवण्याजोगी नाही"
 
 #, fuzzy, c-format
-msgid "%s is not available with this QEMU binary"
-msgstr "ह्या QEMU बाइनरितर्फे असमर्थीत शेअर्ड मेमरि अनुपलब्ध आहे"
-
-#, fuzzy, c-format
 msgid "%s is not supported by this QEMU binary"
 msgstr "ह्या QEMU बाइनरितर्फे डिसकार्ड समर्थीत नाही"
 
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "%s लांबी कमाल पेक्षा जास्त आहे: %d > %d"
-
-#, c-format
-msgid "%s memory device info is not handled yet"
-msgstr ""
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -1081,6 +1073,10 @@ msgid "'%s' file does not fit in memory"
 msgstr "'%s' फाइल स्मृतीत बसत नाही"
 
 #, c-format
+msgid "'%s' is currently not supported by the qemu encryption engine"
+msgstr ""
+
+#, c-format
 msgid "'%s' is not a VF device"
 msgstr ""
 
@@ -1141,15 +1137,15 @@ msgstr ""
 msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
 
+msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr "'arch' एलिमेंटचा वापर 'cpu' एलिमेंट अंतर्गत 'match' गुणधर्मसह करणे अशक्य"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr ""
-
-msgid "'can-offline' missing in reply of guest-get-vcpus"
-msgstr "guest-get-vcpusच्या प्रतिसादात 'can-offline' आढळले नाही"
 
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
 msgstr "'cmd_per_lun' फक्त virtio-scsi कंट्रोलरमार्फत समर्थीत आहे"
@@ -3173,10 +3169,6 @@ msgstr "पूर्वी समाविष्ट न केलेले CURL 
 msgid "Cannot remove stale PID file %s"
 msgstr "स्टेल PID फाइल %s काढून टाकणे अशक्य"
 
-#, c-format
-msgid "Cannot remove state PID file %s"
-msgstr "स्तर PID फाइल %s काढून टाकणे अशक्य"
-
 msgid "Cannot remove uninitialized CURL handle from a multi handle"
 msgstr "अनइनिशिअलाइज्ड् CURL हँडलला मल्टि हँडलपासून काढून टाकणे अशक्य"
 
@@ -4785,24 +4777,8 @@ msgstr "फाइल प्रणाली करिता स्त्रोत
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
 
-#, c-format
-msgid "Could not start 'passt': %s"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "Could not start 'slirp'. exitstatus: %d"
-msgstr "डोमेन: %s सुरू करणे अशक्य"
-
-#, c-format
-msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
-msgstr ""
-
 #, fuzzy
 msgid "Could not start 'virtiofsd'"
-msgstr "डोमेन: %s सुरू करणे अशक्य"
-
-#, fuzzy, c-format
-msgid "Could not start dbus-daemon. exitstatus: %d"
 msgstr "डोमेन: %s सुरू करणे अशक्य"
 
 #, c-format
@@ -6768,10 +6744,6 @@ msgid "Failed to create state dir '%s'"
 msgstr "स्तर डिरेक्ट्री '%s' निर्माण करण्यास अपयशी"
 
 #, c-format
-msgid "Failed to create symlink '%s to '%s'"
-msgstr "'%2$s' करिता '%1$s' symlink बनवण्यास अपयशी"
-
-#, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "'%2$s' करिता symlink '%1$s' निर्माण करण्यास अपयशी"
 
@@ -7113,10 +7085,6 @@ msgstr "UUID निर्माण करण्यास अपयशी"
 
 #, fuzzy
 msgid "Failed to generate genid"
-msgstr "uuid निर्माण करण्यास अपयशी"
-
-#, fuzzy
-msgid "Failed to generate uuid"
 msgstr "uuid निर्माण करण्यास अपयशी"
 
 #, c-format
@@ -8576,12 +8544,6 @@ msgstr "या प्लॅटफॉर्मवर नेमस्पेसे�
 msgid "File total:"
 msgstr "फाइल एकूण:"
 
-msgid "Filepath is Null"
-msgstr "फाइलमार्ग Null आहे"
-
-msgid "Filepath is null"
-msgstr "फाइलमार्ग null आहे"
-
 msgid "Filesystem driver type not supported"
 msgstr "फाइलसिस्टम ड्राइव्हर प्रकार समर्थीत नाही"
 
@@ -8669,6 +8631,10 @@ msgstr "जबरनरित्या नेटवर्कला बंद क
 
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr "जबरनरित्या दिलेल्या पूलला बंद करा. पूलमधील रॉ डाटाचा वापर केला जात नाही"
+
+#, c-format
+msgid "Format mismatch: loader.format='%s' nvram.format='%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Format of device '%s' does not match the expected format '%s'"
@@ -9186,17 +9152,6 @@ msgstr "समर्थीत साधनमार्फत वापरण्�
 #, fuzzy, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr "ह्या यजमानवर numad उपलब्ध नाही"
-
-msgid "IOThreads not supported for this QEMU"
-msgstr "या QEMU करिता IOThreads समर्थीत नाही"
-
-#, fuzzy
-msgid "IOThreads not supported with this binary"
-msgstr "QEMU बाइनरीसह SATA समर्थीत नाही"
-
-#, fuzzy
-msgid "IOThreads polling is not supported for this QEMU"
-msgstr "या QEMU करिता IOThreads समर्थीत नाही"
 
 msgid "IP address"
 msgstr "IP पत्ता"
@@ -10033,15 +9988,6 @@ msgstr ""
 
 msgid "Invalid parameter"
 msgstr "अवैध घटक"
-
-msgid "Invalid parameter to virXPathBoolean()"
-msgstr "virXPathBoolean() करिता अवैध बाब"
-
-msgid "Invalid parameter to virXPathNode()"
-msgstr "virXPathNode() करिता अवैध बाब"
-
-msgid "Invalid parameter to virXPathNodeSet()"
-msgstr "virXPathNodeSet() करिता अवैध बाब"
 
 #, fuzzy
 msgid "Invalid parameter type passed to free"
@@ -11797,9 +11743,6 @@ msgstr "नाव:"
 msgid "Namespaces are not supported on this platform"
 msgstr "या प्लॅटफॉर्मवर नेमस्पेसेस समर्थीत नाही."
 
-msgid "Namespaces are not supported on this platform."
-msgstr "या प्लॅटफॉर्मवर नेमस्पेसेस समर्थीत नाही."
-
 #, fuzzy
 msgid "Nested HV configuration is not supported by this QEMU binary"
 msgstr "QEMU बाइनरितर्फे कम्प्रेस्ड् स्थानांतरन समर्थीत नाही"
@@ -12481,7 +12424,7 @@ msgid "Number of interfaces, %d exceeds the max limit: %d"
 msgstr "लिसेजची संख्या %d आहे, जे कमाल मर्यादा: %d पेक्षा जास्त आहे"
 
 #, c-format
-msgid "Number of keys %d, which exceeds max liit: %d"
+msgid "Number of keys %d, which exceeds max limit: %d"
 msgstr ""
 
 #, c-format
@@ -13345,10 +13288,6 @@ msgstr "nbd ट्रांसपोर्ट '%s'करिता समर्�
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "QEMU बाइनरि %s चालवण्याजोगी नाही"
-
-msgid ""
-"QEMU binary does not support CPU host-passthrough for armv7l on aarch64 host"
-msgstr ""
 
 #, fuzzy
 msgid "QEMU does not support SEV guest"
@@ -16743,13 +16682,13 @@ msgstr "JSON फॉरमॅटर निर्माम करणे अशक�
 msgid "Unable to create KVM vCPU for TSC probing"
 msgstr "JSON फॉरमॅटर निर्माम करणे अशक्य"
 
-#, fuzzy, c-format
-msgid "Unable to create RNG parser for %s"
-msgstr "JSON पार्सर निर्माण करणे अशक्य"
+#, c-format
+msgid "Unable to create RelaxNG parser for schema '%s'"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to create RNG validation context %s"
-msgstr "selinux संदर्भ निर्माण करणे अशक्य: %s"
+#, c-format
+msgid "Unable to create RelaxNG validation context for schema '%s'"
+msgstr ""
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "ह्या प्लॅटफॉर्मवर TAP साधने निर्माण करणे अशक्य"
@@ -17134,6 +17073,10 @@ msgid "Unable to get LVM key for %s"
 msgstr "%s करिता LVM कि प्राप्त करणे अशक्य"
 
 #, c-format
+msgid "Unable to get NUMA node of cpu %zd"
+msgstr ""
+
+#, c-format
 msgid "Unable to get SCSI key for %s"
 msgstr "%s करिता SCSI कि प्राप्त करण्यास अशक्य"
 
@@ -17276,9 +17219,6 @@ msgstr "हार्ड डिस्क रूपण प्राप्ति �
 
 msgid "Unable to get hard disk id"
 msgstr "हार्ड डिस्क id प्राप्ति अशक्य"
-
-msgid "Unable to get hardDisk Id"
-msgstr ""
 
 msgid "Unable to get host SEV information"
 msgstr ""
@@ -17657,9 +17597,9 @@ msgstr "पेज आकार वाचणे अशक्य: %s"
 msgid "Unable to parse MAC '%s'"
 msgstr "%s %s वाचणे अशक्य"
 
-#, fuzzy, c-format
-msgid "Unable to parse RNG %s: %s"
-msgstr "%s %s वाचणे अशक्य"
+#, c-format
+msgid "Unable to parse RelaxNG schema '%s': %s"
+msgstr ""
 
 #, c-format
 msgid "Unable to parse URI %s"
@@ -19306,6 +19246,10 @@ msgid "Unsupported listen type"
 msgstr "असमर्थीत virt प्रकार"
 
 #, c-format
+msgid "Unsupported loader format '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported migration cookie feature %s"
 msgstr "असमर्थीत माइग्रेशन कूकि गुणविशेष %s"
 
@@ -19342,6 +19286,10 @@ msgstr "असमर्थीत numatune मोड '%d'"
 #, c-format
 msgid "Unsupported numatune placement '%d'"
 msgstr "असमर्थीत numatune प्लेसमेंट '%d'"
+
+#, c-format
+msgid "Unsupported nvram format '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported object type %d"
@@ -20154,6 +20102,9 @@ msgstr "असमर्थीत संरचना"
 
 #, c-format
 msgid "ap-domain value '%s' is out of range for '%s'"
+msgstr ""
+
+msgid "api error"
 msgstr ""
 
 msgid "apparmor_parser exited with error"
@@ -21947,26 +21898,6 @@ msgstr "typeidversion घटकाचे मूल्य वाचणे अश�
 
 #, fuzzy, c-format
 msgid "cannot parse vcpu index '%s'"
-msgstr "चलचित्र ram '%s' वाचण्यास अशक्य"
-
-#, c-format
-msgid "cannot parse video heads '%s'"
-msgstr "चलचित्र हेड्स् '%s' वाचण्यास अपयशी"
-
-#, c-format
-msgid "cannot parse video ram '%s'"
-msgstr "चलचित्र ram '%s' वाचण्यास अशक्य"
-
-#, fuzzy, c-format
-msgid "cannot parse video vgamem '%s'"
-msgstr "चलचित्र ram '%s' वाचण्यास अशक्य"
-
-#, fuzzy, c-format
-msgid "cannot parse video vram '%s'"
-msgstr "चलचित्र ram '%s' वाचण्यास अशक्य"
-
-#, fuzzy, c-format
-msgid "cannot parse video vram64 '%s'"
 msgstr "चलचित्र ram '%s' वाचण्यास अशक्य"
 
 #, fuzzy, c-format
@@ -24426,9 +24357,6 @@ msgid "domain event callback %d not registered"
 msgstr "डोमेन इव्हेंट कॉलबॅक %d ची नोंदणी केली नाही"
 
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
-msgstr ""
-
-msgid "domain has SMM turned off but chosen firmware requires it"
 msgstr ""
 
 msgid "domain has active block job"
@@ -27403,8 +27331,8 @@ msgstr "'%d' प्रकारच्या वर्णनचे प्रत �
 msgid "hotplug of watchdog of model %s is not supported"
 msgstr "साधन '%s'चे लाइव्ह अटॅच समर्थीत नाही"
 
-msgid "hpet timer is not supported"
-msgstr "hpet टाइमर समर्थीत नाही"
+msgid "hpet timer is not supported by this architecture"
+msgstr ""
 
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr ""
@@ -28758,6 +28686,9 @@ msgstr ""
 msgid "librbd encryption is supported only with RBD backed disks"
 msgstr ""
 
+msgid "librbd encryption layering is not supported by this QEMU binary"
+msgstr ""
+
 #, fuzzy
 msgid "libssh transport error"
 msgstr "SSH ट्रांस्पोर्ट त्रुटी"
@@ -29217,24 +29148,6 @@ msgstr ""
 msgid "live update of device '%s' is not supported"
 msgstr "साधन '%s'ची लाइव्ह सुधारणा समर्थीत नाही"
 
-msgid ""
-"loader attribute 'readonly' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
-
-msgid ""
-"loader attribute 'secure' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-
-msgid ""
-"loader attribute 'type' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-
-msgid "loader path cannot be specified when firmware autoselection is enabled"
-msgstr ""
-
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
 msgstr ""
@@ -29255,7 +29168,7 @@ msgstr "एका टप्प्याऐवजी, वेळसमाप्त
 msgid "lower boundary for worker thread pool"
 msgstr ""
 
-msgid "luks2 is currently not supported by the qemu encryption engine"
+msgid "luks-any encryption is not supported by this QEMU binary"
 msgstr ""
 
 msgid "lxc state driver is not active"
@@ -29290,6 +29203,10 @@ msgstr "मशीनला थांबली, म्हणून बंद क�
 
 #, c-format
 msgid "machine type '%s'"
+msgstr ""
+
+#, c-format
+msgid "machine type '%s' does not support ACPI"
 msgstr ""
 
 msgid "machine type (/domain/os/type/@machine)"
@@ -29401,9 +29318,6 @@ msgstr "सदोषीत ipset फ्लॅग्स्"
 #, c-format
 msgid "malformed mac address '%s'"
 msgstr "सदोषीत mac पत्ता '%s'"
-
-msgid "malformed machine cpu count in QEMU capabilities cache"
-msgstr "QEMU क्षमता कॅशे अंतर्गत सदोषीत मशीन cpu प्रमाण"
 
 #, fuzzy
 msgid "malformed mtu size"
@@ -30196,6 +30110,10 @@ msgstr "न आढळलेले स्त्रोत साधन"
 msgid "missing alias for network device"
 msgstr "न आढळलेले स्त्रोत साधन"
 
+#, c-format
+msgid "missing alias on encryption secret #%zu"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
 msgstr "डोमेन ऑब्जेक्टकरिता नाव घटक आढळले नाही"
@@ -30482,9 +30400,6 @@ msgstr "लिज्करिता 'key' घटक आढळले नाही
 #, fuzzy
 msgid "missing listen element for spice graphics"
 msgstr "लिज्करिता 'key' घटक आढळले नाही"
-
-msgid "missing machine name in QEMU capabilities cache"
-msgstr "QEMU क्षमता कॅशे अंतर्गत मशीन नाव आढळले नाही"
 
 #, c-format
 msgid "missing mapping in '%s'"
@@ -31287,6 +31202,10 @@ msgstr ""
 msgid ""
 "network device saved config file '%s' has unexpected contents, missing both "
 "'MAC' and 'adminMAC': '%.60s'"
+msgstr ""
+
+#, c-format
+msgid "network device type '%s' is not supported by this hypervisor"
 msgstr ""
 
 #, fuzzy, c-format
@@ -32178,11 +32097,6 @@ msgstr "ह्या QEMU बाइनरितर्फे असमर्थ�
 
 msgid "nvram address type must be spaprvio"
 msgstr "nvram पत्ता प्रकार spaprvio पाहिजे"
-
-msgid ""
-"nvram attribute 'template' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "nvram साधन ह्या QEMU बाइनरितर्फे समर्थीत नाही"
@@ -33338,6 +33252,9 @@ msgstr ""
 msgid "qemu emulator '%s' does not support xen"
 msgstr "qemu इम्यूलेटर '%s' xen करिता समर्थन पुरवत नाही"
 
+msgid "qemu encryption engine expects only a single secret"
+msgstr ""
+
 #, c-format
 msgid "qemu monitor event callback %d not registered"
 msgstr "qemu मॉनिटर इव्हेंट कॉलबॅक %d ची नोंदणीकृत नाही"
@@ -33355,6 +33272,9 @@ msgstr "qemu स्तर ड्राइव्हर सक्रीय ना�
 #, fuzzy
 msgid "qemu unexpectedly closed the monitor"
 msgstr "अनपेक्षित कोड मार्ग"
+
+msgid "qemu-machines reply has malformed 'acpi data"
+msgstr ""
 
 #, fuzzy
 msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
@@ -33657,6 +33577,9 @@ msgstr "सदोषीत मॉनिटर प्राप्त, XML वर�
 
 msgid "received unexpected cookie with P2P migration"
 msgstr "P2P माइग्रेशनसह अनपेक्षित कूकि प्राप्त"
+
+msgid "reconnect delay is supported only with NBD protocol"
+msgstr ""
 
 #, fuzzy
 msgid "recv handler failed"
@@ -34205,6 +34128,10 @@ msgid "scripts are not supported on interfaces of type %s"
 msgstr "प्रकार %s च्या इंटरफेसवर स्क्रिप्टस् समर्थीत नाही"
 
 msgid "scsi-block 'lun' devices do not support the serial property"
+msgstr ""
+
+#, c-format
+msgid "sd card '%s' does not support multiple encryption secrets"
 msgstr ""
 
 #, fuzzy, c-format
@@ -35443,6 +35370,9 @@ msgstr "ह्या QEMU बाइनरिमध्ये स्मार्�
 msgid "this QEMU binary lacks smartcard passthrough mode support"
 msgstr "ह्या QEMU बाइनरिमध्ये स्मार्टकार्ड पासथ्रु मोड समर्थीत नाही"
 
+msgid "this QEMU does not support 'blob' for virtio-gpu devices"
+msgstr ""
+
 #, fuzzy
 msgid "this QEMU does not support 'vhost-user' video device"
 msgstr "ps2 बस %s इंपुट साधन करिता समर्थन पुरवित नाही"
@@ -36021,6 +35951,10 @@ msgid "unable control COW flag on '%s'"
 msgstr ""
 
 #, c-format
+msgid "unable create new SELinux label based on label '%s' and file '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable get directory flags on '%s'"
 msgstr ""
 
@@ -36205,6 +36139,13 @@ msgstr "PID %d सुरक्षा संदर्भ प्राप्त �
 #, fuzzy, c-format
 msgid "unable to get PID %d uid and gid via sysctl"
 msgstr "PID %d सुरक्षा संदर्भ प्राप्त करणे अशक्य"
+
+#, c-format
+msgid "unable to get SELinux context for '%s'"
+msgstr ""
+
+msgid "unable to get SELinux context for current process"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to get SELinux context of %s"
@@ -37413,10 +37354,6 @@ msgid "unknown vhost-user type: '%s'"
 msgstr "अपरिचीत वॉल्युम प्रकार '%s'"
 
 #, c-format
-msgid "unknown video model '%s'"
-msgstr "अपरिचीत चलचित्र मॉडेल '%s'"
-
-#, c-format
 msgid "unknown virttype: %s"
 msgstr "अपरिचीत virttype: %s"
 
@@ -37724,10 +37661,6 @@ msgid "unsupported flags: (0x%x)"
 msgstr "असमर्थीत फ्लॅग्स्: (0x%x)"
 
 #, fuzzy, c-format
-msgid "unsupported flash format '%s'"
-msgstr "असमर्थीत काँफिग रूपण '%s'"
-
-#, fuzzy, c-format
 msgid "unsupported format %s"
 msgstr "असमर्थीत गुणविशेष %s"
 
@@ -37782,10 +37715,6 @@ msgstr "असमर्थीत numatune मोड: '%d'"
 #, c-format
 msgid "unsupported nvram disk type '%s'"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unsupported nvram template format '%s'"
-msgstr "असमर्थीत rtc टाइमर ट्रॅक '%s'"
 
 msgid "unsupported option"
 msgstr "असमर्थीत पर्याय"
@@ -38294,6 +38223,10 @@ msgstr "%s, %s अंतर्गत शून्यपेक्षा मोठ
 #, fuzzy, c-format
 msgid "video type %s is not supported by libxl"
 msgstr "नेटवर्क प्रकार %d समर्थीत नाही"
+
+#, c-format
+msgid "video type '%s' does not support blob resources"
+msgstr ""
 
 #, c-format
 msgid "video type '%s' doesn't support multiple 'heads'"
@@ -38919,6 +38852,110 @@ msgstr "डिस्क %s करिता blockdev फ्लॅगसाठी 
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "%s is not available with this QEMU binary"
+#~ msgstr "ह्या QEMU बाइनरितर्फे असमर्थीत शेअर्ड मेमरि अनुपलब्ध आहे"
+
+#~ msgid "'can-offline' missing in reply of guest-get-vcpus"
+#~ msgstr "guest-get-vcpusच्या प्रतिसादात 'can-offline' आढळले नाही"
+
+#~ msgid "Cannot remove state PID file %s"
+#~ msgstr "स्तर PID फाइल %s काढून टाकणे अशक्य"
+
+#, fuzzy
+#~ msgid "Could not start 'slirp'. exitstatus: %d"
+#~ msgstr "डोमेन: %s सुरू करणे अशक्य"
+
+#, fuzzy
+#~ msgid "Could not start dbus-daemon. exitstatus: %d"
+#~ msgstr "डोमेन: %s सुरू करणे अशक्य"
+
+#~ msgid "Failed to create symlink '%s to '%s'"
+#~ msgstr "'%2$s' करिता '%1$s' symlink बनवण्यास अपयशी"
+
+#, fuzzy
+#~ msgid "Failed to generate uuid"
+#~ msgstr "uuid निर्माण करण्यास अपयशी"
+
+#~ msgid "Filepath is Null"
+#~ msgstr "फाइलमार्ग Null आहे"
+
+#~ msgid "Filepath is null"
+#~ msgstr "फाइलमार्ग null आहे"
+
+#~ msgid "IOThreads not supported for this QEMU"
+#~ msgstr "या QEMU करिता IOThreads समर्थीत नाही"
+
+#, fuzzy
+#~ msgid "IOThreads not supported with this binary"
+#~ msgstr "QEMU बाइनरीसह SATA समर्थीत नाही"
+
+#, fuzzy
+#~ msgid "IOThreads polling is not supported for this QEMU"
+#~ msgstr "या QEMU करिता IOThreads समर्थीत नाही"
+
+#~ msgid "Invalid parameter to virXPathBoolean()"
+#~ msgstr "virXPathBoolean() करिता अवैध बाब"
+
+#~ msgid "Invalid parameter to virXPathNode()"
+#~ msgstr "virXPathNode() करिता अवैध बाब"
+
+#~ msgid "Invalid parameter to virXPathNodeSet()"
+#~ msgstr "virXPathNodeSet() करिता अवैध बाब"
+
+#~ msgid "Namespaces are not supported on this platform."
+#~ msgstr "या प्लॅटफॉर्मवर नेमस्पेसेस समर्थीत नाही."
+
+#, fuzzy
+#~ msgid "Unable to create RNG parser for %s"
+#~ msgstr "JSON पार्सर निर्माण करणे अशक्य"
+
+#, fuzzy
+#~ msgid "Unable to create RNG validation context %s"
+#~ msgstr "selinux संदर्भ निर्माण करणे अशक्य: %s"
+
+#, fuzzy
+#~ msgid "Unable to parse RNG %s: %s"
+#~ msgstr "%s %s वाचणे अशक्य"
+
+#~ msgid "cannot parse video heads '%s'"
+#~ msgstr "चलचित्र हेड्स् '%s' वाचण्यास अपयशी"
+
+#~ msgid "cannot parse video ram '%s'"
+#~ msgstr "चलचित्र ram '%s' वाचण्यास अशक्य"
+
+#, fuzzy
+#~ msgid "cannot parse video vgamem '%s'"
+#~ msgstr "चलचित्र ram '%s' वाचण्यास अशक्य"
+
+#, fuzzy
+#~ msgid "cannot parse video vram '%s'"
+#~ msgstr "चलचित्र ram '%s' वाचण्यास अशक्य"
+
+#, fuzzy
+#~ msgid "cannot parse video vram64 '%s'"
+#~ msgstr "चलचित्र ram '%s' वाचण्यास अशक्य"
+
+#~ msgid "hpet timer is not supported"
+#~ msgstr "hpet टाइमर समर्थीत नाही"
+
+#~ msgid "malformed machine cpu count in QEMU capabilities cache"
+#~ msgstr "QEMU क्षमता कॅशे अंतर्गत सदोषीत मशीन cpu प्रमाण"
+
+#~ msgid "missing machine name in QEMU capabilities cache"
+#~ msgstr "QEMU क्षमता कॅशे अंतर्गत मशीन नाव आढळले नाही"
+
+#~ msgid "unknown video model '%s'"
+#~ msgstr "अपरिचीत चलचित्र मॉडेल '%s'"
+
+#, fuzzy
+#~ msgid "unsupported flash format '%s'"
+#~ msgstr "असमर्थीत काँफिग रूपण '%s'"
+
+#, fuzzy
+#~ msgid "unsupported nvram template format '%s'"
+#~ msgstr "असमर्थीत rtc टाइमर ट्रॅक '%s'"
 
 #, fuzzy
 #~ msgid "'disk' missing in reply of guest-get-fsinfo"

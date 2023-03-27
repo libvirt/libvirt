@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-02-22 13:50+0000\n"
+"POT-Creation-Date: 2023-03-24 16:18+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -541,8 +541,9 @@ msgstr ""
 msgid ""
 "%s (on destination side) does not support the --migration option needed for "
 "migration with shared storage"
-msgstr "%s (移行先側) は、共有ストレージを使用した移行に必要な --migration "
-"オプションをサポートしていません"
+msgstr ""
+"%s (移行先側) は、共有ストレージを使用した移行に必要な --migration オプション"
+"をサポートしていません"
 
 #, c-format
 msgid "%s (out of %d)"
@@ -644,20 +645,12 @@ msgid "%s is not an executable"
 msgstr "%s は実行可能ではありません"
 
 #, c-format
-msgid "%s is not available with this QEMU binary"
-msgstr "%s は、この QEMU バイナリーでは使用できません"
-
-#, c-format
 msgid "%s is not supported by this QEMU binary"
 msgstr "この QEMU バイナリーでは、%s はサポートされません"
 
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "%s の長さが最大値よりも大きいです: %d > %d"
-
-#, c-format
-msgid "%s memory device info is not handled yet"
-msgstr "%s メモリーデバイス情報はまだ処理されていません"
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -678,8 +671,9 @@ msgstr "ウォッチドッグの %s モデルは q35 マシンの一部です"
 #, c-format
 msgid ""
 "%s model of watchdog is part of the machine and cannot have any address set."
-msgstr "ウォッチドッグの %s "
-"モデルはマシンの一部であり、アドレスを設定することはできません。"
+msgstr ""
+"ウォッチドッグの %s モデルはマシンの一部であり、アドレスを設定することはでき"
+"ません。"
 
 #, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
@@ -750,8 +744,8 @@ msgid ""
 "%s with index %d is configured for a NUMA node (%d) not present in the "
 "domain's <cpu><numa> array (%zu)"
 msgstr ""
-"インデックス %2$d 付きの %1$s は、ドメインの <cpu><numa> 配列 (%4$zu) "
-"に存在しない NUMA ノード (%3$d) 用に設定されます"
+"インデックス %2$d 付きの %1$s は、ドメインの <cpu><numa> 配列 (%4$zu) に存在"
+"しない NUMA ノード (%3$d) 用に設定されます"
 
 #, c-format
 msgid ""
@@ -1179,6 +1173,10 @@ msgid "'%s' file does not fit in memory"
 msgstr "'%s' ファイルはメモリー内に収まりません"
 
 #, c-format
+msgid "'%s' is currently not supported by the qemu encryption engine"
+msgstr ""
+
+#, c-format
 msgid "'%s' is not a VF device"
 msgstr "'%s' は VF デバイスではありません"
 
@@ -1240,15 +1238,15 @@ msgstr "'address' は 'ramfb' ビデオデバイスではサポートされま�
 msgid "'address' must be specified for scsi hostdev source"
 msgstr "scsi hostdev ソースには、'address' を指定する必要があります"
 
+msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr "'arch' 要素は 'match' 属性を持つ 'cpu' 要素の内部では使用できません"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'cache' は、存在しない NUMA ノードキャッシュを指します"
-
-msgid "'can-offline' missing in reply of guest-get-vcpus"
-msgstr "guest-get-vcpus の応答に 'can-offline' がありません"
 
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
 msgstr "'cmd_per_lun' は virtio-scsi コントローラでのみサポートされます"
@@ -1382,8 +1380,9 @@ msgstr "'queues' は virtio-scsi のみによりサポートされます"
 msgid ""
 "'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
-msgstr "'reconnect' 属性で <interface type='vhostuser'> の 'server' "
-"モードはサポートされません"
+msgstr ""
+"'reconnect' 属性で <interface type='vhostuser'> の 'server' モードはサポート"
+"されません"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -2345,8 +2344,9 @@ msgstr "mode='%s' で CPU の最大物理アドレスビット数指定は使用
 msgid ""
 "CPU maximum physical address bits specification is not supported for '%s' "
 "architecture"
-msgstr "'%s' アーキテクチャーで CPU "
-"最大物理アドレスビット指定はサポートされていません"
+msgstr ""
+"'%s' アーキテクチャーで CPU 最大物理アドレスビット指定はサポートされていませ"
+"ん"
 
 #, c-format
 msgid ""
@@ -2620,8 +2620,9 @@ msgstr "PATH 環境において prlctl コマンドを見つけられません"
 #, c-format
 msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s"
-msgstr "ハードディスク/DVD/フロッピーとしてアタッチするファイルの UUID "
-"を取得できません: %s"
+msgstr ""
+"ハードディスク/DVD/フロッピーとしてアタッチするファイルの UUID を取得できませ"
+"ん: %s"
 
 msgid "Can't initialize Parallels SDK"
 msgstr "Parallels SDK を初期化できません"
@@ -2654,7 +2655,8 @@ msgstr "認証を実行できません: 認証のコールバックが指定さ�
 msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
 "not provided "
-msgstr "キーボード対話式認証を実行できません: 認証のコールバックが指定されていません "
+msgstr ""
+"キーボード対話式認証を実行できません: 認証のコールバックが指定されていません "
 
 #, c-format
 msgid "Can't read %s"
@@ -2705,7 +2707,8 @@ msgstr "ストレージファイル '%s' のバッキングファイル '%s' に
 #, fuzzy, c-format
 msgid ""
 "Cannot access backing file '%s' of storage file '%s' (as uid:%u, gid:%u)"
-msgstr "(uid:%3$u、gid:%4$u として) ストレージファイル '%2$s' のバッキングファイル "
+msgstr ""
+"(uid:%3$u、gid:%4$u として) ストレージファイル '%2$s' のバッキングファイル "
 "'%1$s' にアクセスできません"
 
 #, c-format
@@ -2714,7 +2717,8 @@ msgstr "ストレージファイル '%s' にアクセスできません"
 
 #, fuzzy, c-format
 msgid "Cannot access storage file '%s' (as uid:%u, gid:%u)"
-msgstr "(uid:%2$u、gid:%3$u として) ストレージファイル '%1$s' にアクセスできません"
+msgstr ""
+"(uid:%2$u、gid:%3$u として) ストレージファイル '%1$s' にアクセスできません"
 
 msgid "Cannot add CURL handle to a multi handle twice"
 msgstr "複数のハンドルに CURL ハンドルを二度追加できません"
@@ -3254,18 +3258,18 @@ msgid ""
 "Cannot plug '%s' interface into '%s' because new combined inbound floor=%llu "
 "would overcommit average=%llu on network '%s'"
 msgstr ""
-"新しい結合されたインバウンド floor=%3$llu が、ネットワーク '%5$s' の "
-"average=%4$llu をオーバーコミットするため、'%1$s' インターフェイスを '%2$s' "
-"にプラグインすることができません"
+"新しい結合されたインバウンド floor=%3$llu が、ネットワーク '%5$s' の average="
+"%4$llu をオーバーコミットするため、'%1$s' インターフェイスを '%2$s' にプラグ"
+"インすることができません"
 
 #, fuzzy, c-format
 msgid ""
 "Cannot plug '%s' interface into '%s' because new combined inbound floor=%llu "
 "would overcommit peak=%llu on network '%s'"
 msgstr ""
-"新しい結合されたインバウンド floor=%3$llu が、ネットワーク '%5$s' の peak=%4$"
-"llu をオーバーコミットするため、'%1$s' インターフェイスを '%2$s' "
-"にプラグインすることができません"
+"新しい結合されたインバウンド floor=%3$llu が、ネットワーク '%5$s' の peak="
+"%4$llu をオーバーコミットするため、'%1$s' インターフェイスを '%2$s' にプラグ"
+"インすることができません"
 
 #, c-format
 msgid "Cannot print data type %x"
@@ -3297,10 +3301,6 @@ msgstr ""
 #, c-format
 msgid "Cannot remove stale PID file %s"
 msgstr "期限切れの PID ファイル %s を削除できません"
-
-#, c-format
-msgid "Cannot remove state PID file %s"
-msgstr "状態 PID ファイル %sを削除できません"
 
 msgid "Cannot remove uninitialized CURL handle from a multi handle"
 msgstr "複数のハンドルから初期化されていない CURL ハンドルを削除できません"
@@ -3361,7 +3361,7 @@ msgstr "'%s' においてインターフェイスの MAC アドレスを設定�
 msgid "Cannot set interface MAC to %s for ifname %s vf %d"
 msgstr "ifname %2$s vf %3$d の %1$s にインターフェイス MAC を設定できません"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Cannot set interface MAC to %s on '%s'"
 msgstr "'%s' の %s にインターフェイス MAC をに設定できません"
 
@@ -3976,7 +3976,8 @@ msgstr "シリアルポート %zu を接続できませんでした"
 
 #, c-format
 msgid "Could not attach the file as harddisk/dvd/floppy: %s"
-msgstr "ファイルをハードディスク/DVD/フロッピーとしてアタッチできませんでした: %s"
+msgstr ""
+"ファイルをハードディスク/DVD/フロッピーとしてアタッチできませんでした: %s"
 
 msgid "Could not build CURL header list"
 msgstr "CURL ヘッダーリストを構築できませんでした"
@@ -4106,8 +4107,9 @@ msgstr "%s を見つけられませんでした"
 
 #, fuzzy, c-format
 msgid "Could not find %s controller with index %d required for device"
-msgstr "デバイスに必要なインデックス %2$d を持つ %1$s "
-"コントローラーが見つかりませんでした"
+msgstr ""
+"デバイスに必要なインデックス %2$d を持つ %1$s コントローラーが見つかりません"
+"でした"
 
 #, c-format
 msgid "Could not find %s with name '%s'"
@@ -4145,8 +4147,9 @@ msgstr "Msvm_DiskDrive オブジェクトを見つけられませんでした"
 msgid ""
 "Could not find PCI controller with index '%u' required for device at address "
 "'%s'"
-msgstr "アドレス '%2$s' のデバイスに必要なインデックス '%1$u' の PCI "
-"コントローラーを見つけられませんでした"
+msgstr ""
+"アドレス '%2$s' のデバイスに必要なインデックス '%1$u' の PCI コントローラーを"
+"見つけられませんでした"
 
 #, c-format
 msgid "Could not find PhysicalNic with key '%s'"
@@ -4174,8 +4177,9 @@ msgstr "vport 対応デバイスが見つかりませんでした"
 
 #, fuzzy, c-format
 msgid "Could not find auto-added %s controller with index %zu"
-msgstr "インデックス %2$zu を持つ自動追加された %1$s "
-"コントローラーが見つかりませんでした"
+msgstr ""
+"インデックス %2$zu を持つ自動追加された %1$s コントローラーが見つかりませんで"
+"した"
 
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
@@ -4911,24 +4915,8 @@ msgstr "ファイルシステム用のソースディレクトリーを設定で
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr "xmlNodeParam の wsman 名前空間アドレスを設定できませんでした"
 
-#, c-format
-msgid "Could not start 'passt': %s"
-msgstr "'passt' を開始できませんでした: %s"
-
-#, c-format
-msgid "Could not start 'slirp'. exitstatus: %d"
-msgstr "'slirp' を開始できませんでした。exitstatus: %d"
-
-#, c-format
-msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
-msgstr "'vhost-user-gpu' を開始できませんでした。exitstatus: %d"
-
 msgid "Could not start 'virtiofsd'"
 msgstr "'virtiofsd' を開始できませんでした"
-
-#, c-format
-msgid "Could not start dbus-daemon. exitstatus: %d"
-msgstr "dbus-daemon を開始できませんでした。exitstatus: %d"
 
 #, c-format
 msgid "Could not start domain: %s"
@@ -4978,7 +4966,8 @@ msgstr "デバイス '%s' 向けロックファイルをパス '%s' に書き込
 
 #, fuzzy, c-format
 msgid "Cpu '%u' in node '%zu' is out of range of the provided bitmap"
-msgstr "ノード '%2$zu' の CPU '%1$u' が提供されたビットマップの範囲外にあります"
+msgstr ""
+"ノード '%2$zu' の CPU '%1$u' が提供されたビットマップの範囲外にあります"
 
 msgid "Crashed"
 msgstr "クラッシュした"
@@ -5336,8 +5325,9 @@ msgstr "デバイス '%s' が認識されないため、ビルドが必要です
 
 #, fuzzy, c-format
 msgid "Device alias was not set for %s controller with index %d "
-msgstr "インデックス %2$d を持つ %1$s "
-"コントローラーにデバイスエイリアスは設定されませんでした "
+msgstr ""
+"インデックス %2$d を持つ %1$s コントローラーにデバイスエイリアスは設定されま"
+"せんでした "
 
 #, c-format
 msgid ""
@@ -5508,8 +5498,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid ""
 "Distance value %d under node %zu is LOCAL_DISTANCE and should be set to 10"
-msgstr "ノード %2$zu の下の距離値 %1$d は、LOCAL_DISTANCE であり、10 "
-"に設定する必要があります"
+msgstr ""
+"ノード %2$zu の下の距離値 %1$d は、LOCAL_DISTANCE であり、10 に設定する必要が"
+"あります"
 
 #, c-format
 msgid "Distance value of %d is not in valid range"
@@ -5702,8 +5693,9 @@ msgstr "ドメインには停止に対するサポートがありません"
 #, c-format
 msgid ""
 "Domain has %zd interfaces. Please specify which one to detach using --mac"
-msgstr "ドメインには %zd インターフェイスがあります。--mac "
-"を使用してデタッチするインターフェイスを指定してください"
+msgstr ""
+"ドメインには %zd インターフェイスがあります。--mac を使用してデタッチするイン"
+"ターフェイスを指定してください"
 
 #, c-format
 msgid ""
@@ -6917,10 +6909,6 @@ msgid "Failed to create state dir '%s'"
 msgstr "状態ディレクトリー '%s' の作成に失敗しました"
 
 #, c-format
-msgid "Failed to create symlink '%s to '%s'"
-msgstr "'%s' へのシンボリックリンク '%s の作成に失敗しました"
-
-#, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "'%s' へのシンボリックリンク '%s' の作成に失敗しました"
 
@@ -7267,9 +7255,6 @@ msgstr "UUID の生成に失敗しました"
 
 msgid "Failed to generate genid"
 msgstr "genid の生成に失敗しました"
-
-msgid "Failed to generate uuid"
-msgstr "uuid の生成に失敗しました"
 
 #, c-format
 msgid "Failed to get %s minor number"
@@ -8744,12 +8729,6 @@ msgstr "このプラットフォームではファイルストリームはサポ
 msgid "File total:"
 msgstr "合計ファイル:"
 
-msgid "Filepath is Null"
-msgstr "ファイルパスは Null です"
-
-msgid "Filepath is null"
-msgstr "ファイルパスは null です"
-
 msgid "Filesystem driver type not supported"
 msgstr "ファイルシステムドライバータイプはサポートされません"
 
@@ -8845,6 +8824,10 @@ msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr ""
 "与えられたプールを強制的に停止します。プールにある raw データは変更されていま"
 "せん"
+
+#, c-format
+msgid "Format mismatch: loader.format='%s' nvram.format='%s'"
+msgstr ""
 
 #, c-format
 msgid "Format of device '%s' does not match the expected format '%s'"
@@ -9371,15 +9354,6 @@ msgstr "サポートされるデバイスで使用される IOThread"
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr "バス %s ターゲット %s では IOThreads は使用できません"
-
-msgid "IOThreads not supported for this QEMU"
-msgstr "この QEMU 用にサポートされない IOThreads"
-
-msgid "IOThreads not supported with this binary"
-msgstr "このバイナリーでは、IOThreads はサポートされません"
-
-msgid "IOThreads polling is not supported for this QEMU"
-msgstr "この QEMU では、IOThreads ポーリングはサポートされません"
 
 msgid "IP address"
 msgstr "IP アドレス"
@@ -10253,15 +10227,6 @@ msgstr ""
 msgid "Invalid parameter"
 msgstr "無効なパラメーター"
 
-msgid "Invalid parameter to virXPathBoolean()"
-msgstr "virXPathBoolean() への無効なパラメーター"
-
-msgid "Invalid parameter to virXPathNode()"
-msgstr "virXPathNode() への無効なパラメーター"
-
-msgid "Invalid parameter to virXPathNodeSet()"
-msgstr "virXPathNodeSet() への無効なパラメーター"
-
 msgid "Invalid parameter type passed to free"
 msgstr "free に渡された無効なパラメータータイプ"
 
@@ -10475,7 +10440,8 @@ msgstr "要素 '%s': '%s' の属性 '%s' の無効な値。整数値が予想さ
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected long long "
 "integer value"
-msgstr "要素 '%s': '%s' の属性 '%s' の無効な値。長整数型の値が予想されていました"
+msgstr ""
+"要素 '%s': '%s' の属性 '%s' の無効な値。長整数型の値が予想されていました"
 
 #, c-format
 msgid ""
@@ -11994,9 +11960,6 @@ msgstr "名前:"
 msgid "Namespaces are not supported on this platform"
 msgstr "このプラットフォームでは名前空間はサポートされません"
 
-msgid "Namespaces are not supported on this platform."
-msgstr "このプラットフォームでは名前空間はサポートされません。"
-
 msgid "Nested HV configuration is not supported by this QEMU binary"
 msgstr "この QEMU バイナリーでは、ネストされた HV 設定はサポートされません"
 
@@ -12615,8 +12578,9 @@ msgstr "ボリューム '%s' 用のプールに十分な空き領域がありま
 msgid ""
 "Not enough room for allocation of %llu bytes for level %u cache %u scope "
 "type '%s'"
-msgstr "レベル %2$u キャッシュ %3$u スコープタイプ '%4$s' 用に %1$llu "
-"バイトを割り当てるための十分なスペースがありません"
+msgstr ""
+"レベル %2$u キャッシュ %3$u スコープタイプ '%4$s' 用に %1$llu バイトを割り当"
+"てるための十分なスペースがありません"
 
 msgid "Not enough space left in storage pool"
 msgstr "ストレージプールに十分なスペースが残っていません"
@@ -12660,8 +12624,8 @@ msgid "Number of interfaces, %d exceeds the max limit: %d"
 msgstr "インターフェイスの数、%d は最大制限を超えています: %d"
 
 #, c-format
-msgid "Number of keys %d, which exceeds max liit: %d"
-msgstr "キーの数 %d、最大制限を超えています: %d"
+msgid "Number of keys %d, which exceeds max limit: %d"
+msgstr ""
 
 #, c-format
 msgid "Number of leases is %d, which exceeds max limit: %d"
@@ -12688,7 +12652,8 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Numeric value '%u' for <%s> option is malformed or out of range"
-msgstr "<%2$s> オプションの数値 '%1$u' が不正な形式であるか、または範囲外にあります"
+msgstr ""
+"<%2$s> オプションの数値 '%1$u' が不正な形式であるか、または範囲外にあります"
 
 msgid "OS Type:"
 msgstr "OS タイプ:"
@@ -13161,7 +13126,8 @@ msgstr "POST 操作は失敗しました: %s"
 #, fuzzy, c-format
 msgid ""
 "PTR domain for %s network with prefix %u cannot be automatically created"
-msgstr "接頭辞が %2$u の %1$s ネットワークの PTR ドメインは、自動作成できません"
+msgstr ""
+"接頭辞が %2$u の %1$s ネットワークの PTR ドメインは、自動作成できません"
 
 msgid "PTY device is not yet assigned"
 msgstr "PTY デバイスはまだ割り当てられていません"
@@ -13538,12 +13504,6 @@ msgstr "QEMU NBD サーバーは、TLS トランスポートをサポートし�
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "QEMU バイナリー %s が実行可能ではありません"
-
-msgid ""
-"QEMU binary does not support CPU host-passthrough for armv7l on aarch64 host"
-msgstr ""
-"QEMU バイナリーは、aarch64 ホスト上の armv7l の CPU ホストパススルーをサポー"
-"トしません"
 
 msgid "QEMU does not support SEV guest"
 msgstr "QEMU は SEV ゲストをサポートしません"
@@ -14068,7 +14028,8 @@ msgid "S3 state is disabled for this domain"
 msgstr "このドメインに対して S3 状態が無効化されています"
 
 msgid "S390 PV launch security is not supported by this host or kernel"
-msgstr "このホストまたはカーネルでは、S390 PV 起動セキュリティーはサポートされません"
+msgstr ""
+"このホストまたはカーネルでは、S390 PV 起動セキュリティーはサポートされません"
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr ""
@@ -14625,8 +14586,9 @@ msgstr "シェル '%s' は絶対パスを持つ必要があります"
 msgid ""
 "Shortcut for calling the command with a single CPU model and no additional "
 "features"
-msgstr "シングル CPU "
-"モデルでコマンドを呼び出すためのショートカットで、追加機能はありません"
+msgstr ""
+"シングル CPU モデルでコマンドを呼び出すためのショートカットで、追加機能はあり"
+"ません"
 
 msgid "Should define both master and slave path attributes for nmdm device"
 msgstr ""
@@ -15704,8 +15666,9 @@ msgstr ""
 
 #, c-format
 msgid "Target domain watchdog device count %zu does not match source %zu"
-msgstr "ターゲットドメインのウォッチドッグデバイス数 %zu がソースの %zu "
-"と一致しません"
+msgstr ""
+"ターゲットドメインのウォッチドッグデバイス数 %zu がソースの %zu と一致しませ"
+"ん"
 
 msgid "Target filesystem access mode does not match source"
 msgstr "ターゲットのファイルシステムのアクセスモードがソースと一致しません"
@@ -16196,13 +16159,15 @@ msgstr "最小リース時間は 2 分より長くする必要があります"
 msgid ""
 "The number of virtual CPU address bits cannot exceed the number supported by "
 "the host CPU"
-msgstr "仮想 CPU アドレスビットの数は、ホスト CPU "
-"でサポートされている数を超えることができません。"
+msgstr ""
+"仮想 CPU アドレスビットの数は、ホスト CPU でサポートされている数を超えること"
+"ができません。"
 
 msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
-msgstr "クライアントの最大合計数は、認証を待機しているクライアントの数を下回ることは"
+msgstr ""
+"クライアントの最大合計数は、認証を待機しているクライアントの数を下回ることは"
 "できません。"
 
 msgid "The read only disk has no parent"
@@ -17016,8 +16981,8 @@ msgid ""
 "Unable to configure VF %d of PF '%s' because the PF is not online. Please "
 "change host network config to put the PF online."
 msgstr ""
-"PF がオンラインでないため、PF '%2$s' の VF %1$d を設定できません。PF "
-"をオンラインにするために、ホストネットワークの設定を変更してください。"
+"PF がオンラインでないため、PF '%2$s' の VF %1$d を設定できません。PF をオンラ"
+"インにするために、ホストネットワークの設定を変更してください。"
 
 msgid "Unable to configure libxl's memory management parameters"
 msgstr "libxl のメモリー管理パラメータを設定できません"
@@ -17055,12 +17020,12 @@ msgid "Unable to create KVM vCPU for TSC probing"
 msgstr "TSC プロービング用の KVM vCPU を作成できません"
 
 #, c-format
-msgid "Unable to create RNG parser for %s"
-msgstr "%s に対する RNG パーサーを作成できません"
+msgid "Unable to create RelaxNG parser for schema '%s'"
+msgstr ""
 
 #, c-format
-msgid "Unable to create RNG validation context %s"
-msgstr "RNG 検証コンテキスト %s を作成できません"
+msgid "Unable to create RelaxNG validation context for schema '%s'"
+msgstr ""
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "このプラットフォームにおいて TAP デバイスを作成できません"
@@ -17438,6 +17403,10 @@ msgid "Unable to get LVM key for %s"
 msgstr "%s の LVM キーを取得できません"
 
 #, c-format
+msgid "Unable to get NUMA node of cpu %zd"
+msgstr ""
+
+#, c-format
 msgid "Unable to get SCSI key for %s"
 msgstr "%s の SCSI キーを取得できません"
 
@@ -17568,9 +17537,6 @@ msgid "Unable to get hard disk format"
 msgstr "ハードディスクフォーマットを取得できません"
 
 msgid "Unable to get hard disk id"
-msgstr "ハードディスク ID を取得できません"
-
-msgid "Unable to get hardDisk Id"
 msgstr "ハードディスク ID を取得できません"
 
 msgid "Unable to get host SEV information"
@@ -17943,8 +17909,8 @@ msgid "Unable to parse MAC '%s'"
 msgstr "MAC '%s' を解析できません"
 
 #, c-format
-msgid "Unable to parse RNG %s: %s"
-msgstr "RNG %s を解析できません: %s"
+msgid "Unable to parse RelaxNG schema '%s': %s"
+msgstr ""
 
 #, c-format
 msgid "Unable to parse URI %s"
@@ -19570,6 +19536,10 @@ msgid "Unsupported listen type"
 msgstr "サポートされないリッスンタイプ"
 
 #, c-format
+msgid "Unsupported loader format '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported migration cookie feature %s"
 msgstr "サポートされないマイグレーションクッキー機能 %s"
 
@@ -19607,6 +19577,10 @@ msgstr "サポートされない numatune モード '%d'"
 #, c-format
 msgid "Unsupported numatune placement '%d'"
 msgstr "サポートされない numatune の配置 '%d'"
+
+#, c-format
+msgid "Unsupported nvram format '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported object type %d"
@@ -20450,6 +20424,9 @@ msgstr "任意の設定"
 msgid "ap-domain value '%s' is out of range for '%s'"
 msgstr "ap-domain 値 '%s' は '%s' の範囲外にあります"
 
+msgid "api error"
+msgstr ""
+
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser がエラー終了しました"
 
@@ -20759,8 +20736,9 @@ msgstr "不正なパス名です"
 
 #, fuzzy, c-format
 msgid "bad prefix %d for network %s when  checking range %s - %s"
-msgstr "範囲 %3$s - %4$s をチェックする際に、ネットワーク %2$s の接頭辞 %1$d "
-"が正しくありません"
+msgstr ""
+"範囲 %3$s - %4$s をチェックする際に、ネットワーク %2$s の接頭辞 %1$d が正しく"
+"ありません"
 
 msgid "balloon device cannot be disabled"
 msgstr "バルーンデバイスを無効にすることはできません"
@@ -20852,7 +20830,8 @@ msgstr "ブロック I/O スロットル制限値は、%llu 以下でなけれ�
 
 #, c-format
 msgid "block commit failed while deleting disk '%s' snapshot: '%s'"
-msgstr "ディスク '%s' スナップショットの削除中にブロックコミットに失敗しました: '%s'"
+msgstr ""
+"ディスク '%s' スナップショットの削除中にブロックコミットに失敗しました: '%s'"
 
 msgid "block copy still active"
 msgstr "ブロックコピーがまだ動作中です"
@@ -21131,14 +21110,16 @@ msgstr ""
 "ザードライバーによって異なります"
 
 msgid "can't add memory backend as guest has no NUMA nodes configured"
-msgstr "ゲストに NUMA "
-"ノードが設定されていないため、メモリーバックエンドを追加できません"
+msgstr ""
+"ゲストに NUMA ノードが設定されていないため、メモリーバックエンドを追加できま"
+"せん"
 
 #, fuzzy, c-format
 msgid ""
 "can't add memory backend for guest node '%d' as the guest has only '%zu' "
 "NUMA nodes configured"
-msgstr "ゲストには '%2$zu' NUMA ノードのみが設定されているため、ゲストノード '%1$d' "
+msgstr ""
+"ゲストには '%2$zu' NUMA ノードのみが設定されているため、ゲストノード '%1$d' "
 "のメモリーバックエンドを追加できません"
 
 msgid "can't change link state: device alias not found"
@@ -21590,7 +21571,8 @@ msgid "cannot delete domain snapshot for running domain"
 msgstr "実行中のドメインに対してドメインのスナップショットを削除できません"
 
 msgid "cannot delete external snapshots when there is another active block job"
-msgstr "別のアクティブなブロックジョブがある場合、外部スナップショットは削除できませ"
+msgstr ""
+"別のアクティブなブロックジョブがある場合、外部スナップショットは削除できませ"
 "ん"
 
 #, c-format
@@ -22260,26 +22242,6 @@ msgstr "typeidversion パラメーターの値を解析できません"
 #, c-format
 msgid "cannot parse vcpu index '%s'"
 msgstr "vcpu インデックス '%s' を解析できません"
-
-#, c-format
-msgid "cannot parse video heads '%s'"
-msgstr "video heads '%s' を解析できません"
-
-#, c-format
-msgid "cannot parse video ram '%s'"
-msgstr "video ram '%s' を解析できません"
-
-#, c-format
-msgid "cannot parse video vgamem '%s'"
-msgstr "ビデオ vgamem '%s' を解析できません"
-
-#, c-format
-msgid "cannot parse video vram '%s'"
-msgstr "ビデオ vram '%s' を解析できません"
-
-#, c-format
-msgid "cannot parse video vram64 '%s'"
-msgstr "ビデオ vram64 '%s' を解析できません"
 
 #, c-format
 msgid "cannot parse vlan tag '%s' from file '%s'"
@@ -23410,8 +23372,9 @@ msgstr "ドメインの最大仮想 CPU 数を決定できません"
 
 #, fuzzy, c-format
 msgid "could not find backing store index '%u' in chain for '%s'"
-msgstr "'%2$s' のチェーンのバッキングストアのインデックス '%1$u' "
-"が見つかりませんでした"
+msgstr ""
+"'%2$s' のチェーンのバッキングストアのインデックス '%1$u' が見つかりませんでし"
+"た"
 
 msgid "could not find base disk source in disk source chain"
 msgstr "ディスクソースチェーンにベースディスクソースが見つかりませんでした"
@@ -24058,11 +24021,13 @@ msgstr "指定されたネットワークポートを削除します"
 
 msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
-msgstr "親として内部スナップショットを持つ外部スナップショットの削除はサポートされて"
+msgstr ""
+"親として内部スナップショットを持つ外部スナップショットの削除はサポートされて"
 "いません"
 
 msgid "deletion of external and internal children disk snapshots not supported"
-msgstr "外部および内部の子ディスクスナップショットの削除はサポートされていません"
+msgstr ""
+"外部および内部の子ディスクスナップショットの削除はサポートされていません"
 
 msgid "deletion of external children disk snapshots not supported"
 msgstr "外部子ディスクスナップショットの削除はサポートされていません"
@@ -24314,7 +24279,8 @@ msgstr "破棄は vhostuser ディスクではサポートされません"
 
 #, fuzzy, c-format
 msgid "discarding %llu bytes failed on RBD image %s at offset %llu"
-msgstr "%1$llu バイトの廃棄は、オフセット %3$llu の RBD イメージ %2$s で失敗しました"
+msgstr ""
+"%1$llu バイトの廃棄は、オフセット %3$llu の RBD イメージ %2$s で失敗しました"
 
 msgid "disconnect"
 msgstr "切断"
@@ -24457,8 +24423,9 @@ msgstr "ディスク形式 %s がサポートされません"
 msgid ""
 "disk image '%s' for internal snapshot '%s' is not the same as disk image "
 "currently used by VM"
-msgstr "内部スナップショット '%s' のディスクイメージ '%s' "
-"と、仮想マシンが現在使用しているディスクイメージは異なります。"
+msgstr ""
+"内部スナップショット '%s' のディスクイメージ '%s' と、仮想マシンが現在使用し"
+"ているディスクイメージは異なります。"
 
 #, c-format
 msgid "disk image format not supported: %s"
@@ -24739,11 +24706,6 @@ msgstr "ドメインイベントコールバック %d は登録されていま�
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
 msgstr ""
 "ドメインには 'invtsc' CPU 機能がありますが、TSC 周波数が指定されていません"
-
-msgid "domain has SMM turned off but chosen firmware requires it"
-msgstr ""
-"ドメインで SMM がオフになっていますが、選択したファームウェアではこれが必要で"
-"す"
 
 msgid "domain has active block job"
 msgstr "ドメインにアクティブなブロックジョブがあります"
@@ -25130,8 +25092,9 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
-msgstr "ネットワーク %3$s/%4$d の範囲 %1$s - %2$s "
-"の終わりはブロードキャストアドレスです"
+msgstr ""
+"ネットワーク %3$s/%4$d の範囲 %1$s - %2$s の終わりはブロードキャストアドレス"
+"です"
 
 msgid "enforce requested stats parameters"
 msgstr "要求された統計パラメーターを適用します"
@@ -26603,8 +26566,9 @@ msgstr "XML の取得に失敗しました"
 msgid ""
 "failed to retrieve client identity information for client '%llu' connected "
 "to server '%s'"
-msgstr "サーバー '%2$s' に接続しているクライアント '%1$llu' のクライアント ID "
-"情報の取得に失敗しました"
+msgstr ""
+"サーバー '%2$s' に接続しているクライアント '%1$llu' のクライアント ID 情報の"
+"取得に失敗しました"
 
 msgid "failed to retrieve credentials"
 msgstr "認証情報の取得に失敗しました"
@@ -27056,7 +27020,8 @@ msgstr "終了ステップは、マイグレーションがキャンセルされ
 
 #, c-format
 msgid "finishing block job failed while deleting disk '%s' snapshot: '%s'"
-msgstr "ディスク '%s' スナップショットの削除中にブロックジョブの終了に失敗しました: "
+msgstr ""
+"ディスク '%s' スナップショットの削除中にブロックジョブの終了に失敗しました: "
 "'%s'"
 
 msgid ""
@@ -27364,7 +27329,8 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "got wrong number of IOThread pids from QEMU monitor. got %d, wanted %zu"
-msgstr "QEMU モニターから間違った数の IOThread pid を取得しました。必要なのは %2$zu "
+msgstr ""
+"QEMU モニターから間違った数の IOThread pid を取得しました。必要なのは %2$zu "
 "でしたが、取得したのは %1$d でした"
 
 msgid "gracefully shutdown a domain"
@@ -27694,8 +27660,8 @@ msgstr "%s のインターフェイスタイプのホットプラグは、まだ
 msgid "hotplug of watchdog of model %s is not supported"
 msgstr "モデル %s のウォッチドッグのホットプラグはサポートされていません"
 
-msgid "hpet timer is not supported"
-msgstr "hpet タイマーはサポートされていません"
+msgid "hpet timer is not supported by this architecture"
+msgstr ""
 
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr "http cookie は、HTTP(S) プロトコルでのみサポートされます"
@@ -27770,8 +27736,9 @@ msgstr "IOMMU がカーネルによって有効になっている場合"
 #, c-format
 msgid ""
 "if using CPU maximum physical address mode='%s', bits= must be specified too"
-msgstr "CPU 最大物理アドレス mode='%s' を使用している場合、bit= "
-"も指定する必要があります"
+msgstr ""
+"CPU 最大物理アドレス mode='%s' を使用している場合、bit= も指定する必要があり"
+"ます"
 
 #, c-format
 msgid "ifkey \"%s\" has no req"
@@ -29073,6 +29040,9 @@ msgid "librbd encryption is supported only with RBD backed disks"
 msgstr ""
 "librbd の暗号化は RBD でバックアップされたディスクでのみサポートされています"
 
+msgid "librbd encryption layering is not supported by this QEMU binary"
+msgstr ""
+
 msgid "libssh transport error"
 msgstr "libssh トランスポートエラー"
 
@@ -29522,32 +29492,6 @@ msgstr ""
 msgid "live update of device '%s' is not supported"
 msgstr "デバイス '%s' の動的更新はサポートされません"
 
-msgid ""
-"loader attribute 'readonly' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
-"ファームウェアの自動選択が有効な場合、loader 属性に 'readonly' を指定できませ"
-"ん"
-
-msgid ""
-"loader attribute 'secure' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-"ファームウェアの自動選択機能が有効な場合は、loader 属性に 'secure' を指定でき"
-"ません"
-
-msgid ""
-"loader attribute 'type' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-"ファームウェアの自動選択が有効な場合は、ローダー属性の 'type' が指定できませ"
-"ん"
-
-msgid "loader path cannot be specified when firmware autoselection is enabled"
-msgstr ""
-"ファームウェアの自動選択機能が有効な場合は、ローダーパスを指定することはでき"
-"ません"
-
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
 msgstr "loadparm 値 '%s' は 1 から 8 文字までの間でなければなりません"
@@ -29569,8 +29513,8 @@ msgstr "ワンショットではなく、タイムアウトまたは割り込み
 msgid "lower boundary for worker thread pool"
 msgstr "ワーカスレッドプールの下限値"
 
-msgid "luks2 is currently not supported by the qemu encryption engine"
-msgstr "luks2 は現在、qemu 暗号化エンジンではサポートされていません"
+msgid "luks-any encryption is not supported by this QEMU binary"
+msgstr ""
 
 msgid "lxc state driver is not active"
 msgstr "lxc 状態ドライバーが有効ではありません"
@@ -29607,6 +29551,10 @@ msgstr "マシンが一時停止されているの、電源を切れません"
 #, c-format
 msgid "machine type '%s'"
 msgstr "マシンタイプ '%s'"
+
+#, c-format
+msgid "machine type '%s' does not support ACPI"
+msgstr ""
 
 msgid "machine type (/domain/os/type/@machine)"
 msgstr "マシンタイプ (/domain/os/type/@machine)"
@@ -29710,9 +29658,6 @@ msgstr "不正な形式の ipset フラグ"
 #, c-format
 msgid "malformed mac address '%s'"
 msgstr "不正な形式の MAC アドレス '%s'"
-
-msgid "malformed machine cpu count in QEMU capabilities cache"
-msgstr "QEMU ケイパビリティーキャッシュ内の不正な形式のマシン cpu 数"
 
 msgid "malformed mtu size"
 msgstr "不正な形式の mtu サイズ"
@@ -30158,7 +30103,8 @@ msgid "migration of domain %s is not in post-copy phase"
 msgstr "ドメイン移動 %s はコピー後のフェーズではありません"
 
 msgid "migration of non-shared disks requested but NBD is not set up"
-msgstr "共有されていないディスクの移行が要求されましたが、NBD が設定されていません"
+msgstr ""
+"共有されていないディスクの移行が要求されましたが、NBD が設定されていません"
 
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
@@ -30479,7 +30425,8 @@ msgstr ""
 "QEMU ケイパビリティーキャッシュに SEV プラットフォームデータがありません"
 
 msgid "missing SGX platform data in QEMU capabilities cache"
-msgstr "QEMU ケイパビリティーキャッシュに SGX プラットフォームデータがありません"
+msgstr ""
+"QEMU ケイパビリティーキャッシュに SGX プラットフォームデータがありません"
 
 msgid "missing TPM device backend"
 msgstr "TPM デバイスバックエンドがありません"
@@ -30496,6 +30443,10 @@ msgstr "メモリーデバイスのエイリアスがありません"
 
 msgid "missing alias for network device"
 msgstr "ネットワークデバイスのエイリアスがありません"
+
+#, c-format
+msgid "missing alias on encryption secret #%zu"
+msgstr ""
 
 #, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
@@ -30767,9 +30718,6 @@ msgstr "グラフィックの listen 要素がありません"
 msgid "missing listen element for spice graphics"
 msgstr "spice グラフィックの listen 要素がありません"
 
-msgid "missing machine name in QEMU capabilities cache"
-msgstr "QEMU ケイパビリティーキャッシュにマシン名がありません"
-
 #, c-format
 msgid "missing mapping in '%s'"
 msgstr "'%s' にマッピングがありません"
@@ -30835,16 +30783,19 @@ msgstr ""
 "す"
 
 msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
-msgstr "QEMU ケイパビリティーキャッシュの SGX プラットフォーム flc "
-"が存在しないか、無効になっています"
+msgstr ""
+"QEMU ケイパビリティーキャッシュの SGX プラットフォーム flc が存在しないか、無"
+"効になっています"
 
 msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
-msgstr "QEMU ケイパビリティーキャッシュの SGX プラットフォーム sgx1 "
-"が存在しないか、無効になっています"
+msgstr ""
+"QEMU ケイパビリティーキャッシュの SGX プラットフォーム sgx1 が存在しないか、"
+"無効になっています"
 
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
-msgstr "QEMU ケイパビリティーキャッシュの SGX プラットフォーム sgx2 "
-"が存在しないか、無効になっています"
+msgstr ""
+"QEMU ケイパビリティーキャッシュの SGX プラットフォーム sgx2 が存在しないか、"
+"無効になっています"
 
 msgid "missing or invalid cpuid-input-eax in CPU data"
 msgstr "CPU データに cpuid-input-eax がありません、または無効です"
@@ -30874,8 +30825,9 @@ msgstr ""
 
 msgid ""
 "missing or malformed SGX platform section_size in QEMU capabilities cache"
-msgstr "QEMU ケイパビリティーキャッシュの SGX プラットフォーム section_size "
-"が存在しないか、不正な形式になっています"
+msgstr ""
+"QEMU ケイパビリティーキャッシュの SGX プラットフォーム section_size が存在し"
+"ないか、不正な形式になっています"
 
 msgid "missing or malformed session-uuid element in migration data"
 msgstr ""
@@ -31601,6 +31553,10 @@ msgid ""
 msgstr ""
 "ネットワークデバイスが保存した設定ファイル '%s' に予期しない内容がありま"
 "す、'MAC' と 'adminMAC': '%.60s' の両方がありません"
+
+#, c-format
+msgid "network device type '%s' is not supported by this hypervisor"
+msgstr ""
 
 #, c-format
 msgid "network device with mac %s already exists"
@@ -32475,13 +32431,6 @@ msgstr ""
 msgid "nvram address type must be spaprvio"
 msgstr "nvram アドレスタイプは spaprvio である必要があります"
 
-msgid ""
-"nvram attribute 'template' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
-"ファームウェアの自動選択が有効な場合、nvram 属性のテンプレートが指定できませ"
-"ん"
-
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "nvram デバイスは、この QEMU バイナリーにおいてサポートされません"
 
@@ -32499,7 +32448,8 @@ msgstr "オブジェクトプロパティーは NULL にできない"
 
 #, fuzzy, c-format
 msgid "object size %zu of %s is not larger than parent class %zu"
-msgstr "%2$s のオブジェクトサイズ %1$zu は、親クラス %3$zu より大きくありません"
+msgstr ""
+"%2$s のオブジェクトサイズ %1$zu は、親クラス %3$zu より大きくありません"
 
 msgid "occupied"
 msgstr "占有済み"
@@ -33460,8 +33410,9 @@ msgid "print XML document rather than detach the interface"
 msgstr "インターフェイスをデタッチするのではなく、XML ドキュメントを出力します"
 
 msgid "print XML document rather than set the interface link state"
-msgstr "インターフェイスリンクの状態を設定するのではなく、XML "
-"ドキュメントを出力します"
+msgstr ""
+"インターフェイスリンクの状態を設定するのではなく、XML ドキュメントを出力しま"
+"す"
 
 msgid "print XML document, but don't define/create"
 msgstr "XML ドキュメントを出力しますが、定義/作成はしません"
@@ -33645,6 +33596,9 @@ msgstr ""
 msgid "qemu emulator '%s' does not support xen"
 msgstr "QEMU エミュレーター '%s' が Xen をサポートしません"
 
+msgid "qemu encryption engine expects only a single secret"
+msgstr ""
+
 #, c-format
 msgid "qemu monitor event callback %d not registered"
 msgstr "qemu モニターイベントコールバッ ク%d は登録されていません"
@@ -33661,6 +33615,9 @@ msgstr "QEMU 状態ドライバーが活動中ではありません"
 
 msgid "qemu unexpectedly closed the monitor"
 msgstr "qemu が予期せずモニターを閉じました"
+
+msgid "qemu-machines reply has malformed 'acpi data"
+msgstr ""
 
 msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
 msgstr ""
@@ -33812,7 +33769,8 @@ msgid "query-sgx-capabilities reply was missing 'node' field"
 msgstr "query-sev-capabilities の応答に 'node' フィールドがありませんでした"
 
 msgid "query-sgx-capabilities reply was missing 'section-size' field"
-msgstr "query-sev-capabilities の応答に 'section-size' フィールドがありませんでした"
+msgstr ""
+"query-sev-capabilities の応答に 'section-size' フィールドがありませんでした"
 
 msgid "query-sgx-capabilities reply was missing 'sgx1' field"
 msgstr "query-sev-capabilities の応答に 'sgx1' フィールドがありませんでした"
@@ -33955,6 +33913,9 @@ msgstr "不正な形式のモニターを受信しました、XML 定義を確�
 
 msgid "received unexpected cookie with P2P migration"
 msgstr "P2P マイグレーションで予期しないクッキーを受信しました"
+
+msgid "reconnect delay is supported only with NBD protocol"
+msgstr ""
 
 msgid "recv handler failed"
 msgstr "recv ハンドラーが失敗しました"
@@ -34500,6 +34461,10 @@ msgid "scsi-block 'lun' devices do not support the serial property"
 msgstr "scsi-block' lun' デバイスは、シリアルプロパティーをサポートしません"
 
 #, c-format
+msgid "sd card '%s' does not support multiple encryption secrets"
+msgstr ""
+
+#, c-format
 msgid "seclabel for model %s is already provided"
 msgstr "モデル %s の seclabel はすでに提供されています"
 
@@ -34777,15 +34742,17 @@ msgstr "sgio は scsi ホストデバイスでのみサポートされます"
 msgid "sgx epc isn't supported by this QEMU binary"
 msgstr "sgx epc はこの QEMU バイナリーではサポートされていません"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "sgx epc size %lld on host node %d is less than requested size %lld"
-msgstr "ホストノード %d の sgx epc サイズ %lld が要求されたサイズ %lld "
-"を下回っています"
+msgstr ""
+"ホストノード %d の sgx epc サイズ %lld が要求されたサイズ %lld を下回っていま"
+"す"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "sgx epc size %lld on host node %zd is less than requested size %lld"
-msgstr "ホストノード %zd の sgx epc サイズ %lld が要求されたサイズ %lld "
-"を下回っています"
+msgstr ""
+"ホストノード %zd の sgx epc サイズ %lld が要求されたサイズ %lld を下回ってい"
+"ます"
 
 msgid "sgx-epc memory info data is missing 'memdev'"
 msgstr "sgx-epc メモリー情報データに 'memdev' がありません"
@@ -34973,12 +34940,14 @@ msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr "スナップショット '%s' にドメイン '%s' のロールバック情報がありません"
 
 msgid "snapshot VM disk source and parent disk source are not the same"
-msgstr "スナップショット仮想マシンのディスクソースと親ディスクソースが異なります"
+msgstr ""
+"スナップショット仮想マシンのディスクソースと親ディスクソースが異なります"
 
 #, c-format
 msgid "snapshot disk '%s' was target of not completed snapshot delete"
-msgstr "スナップショットディスク '%s' "
-"は、未完了のスナップショット削除動作の対象でした"
+msgstr ""
+"スナップショットディスク '%s' は、未完了のスナップショット削除動作の対象でし"
+"た"
 
 msgid "snapshot information"
 msgstr "スナップショット情報"
@@ -35158,7 +35127,8 @@ msgstr "セル %d を開始、範囲外です (0-%d)"
 
 #, fuzzy, c-format
 msgid "start of range %s - %s in network %s/%d is the network address"
-msgstr "ネットワーク %3$s/%4$d の範囲 %1$s - %2$s の開始は、ネットワークアドレスです"
+msgstr ""
+"ネットワーク %3$s/%4$d の範囲 %1$s - %2$s の開始は、ネットワークアドレスです"
 
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
@@ -35659,7 +35629,8 @@ msgid "the new password"
 msgstr "新しいパスワード"
 
 msgid "the passt network backend is not supported with this QEMU binary"
-msgstr "この QEMU バイナリーでは、passt ネットワークバックエンドはサポートされません"
+msgstr ""
+"この QEMU バイナリーでは、passt ネットワークバックエンドはサポートされません"
 
 msgid "the password is already encrypted"
 msgstr "パスワードはすでに暗号化されています"
@@ -35762,6 +35733,9 @@ msgstr "この QEMU バイナリーはスマートカードのホストモード
 msgid "this QEMU binary lacks smartcard passthrough mode support"
 msgstr ""
 "この QEMU バイナリーはスマートカードのパススルーモードをサポートしません"
+
+msgid "this QEMU does not support 'blob' for virtio-gpu devices"
+msgstr ""
 
 msgid "this QEMU does not support 'vhost-user' video device"
 msgstr "この QEMU は、'vhost-user' ビデオデバイスをサポートしません"
@@ -36388,6 +36362,10 @@ msgid "unable control COW flag on '%s'"
 msgstr "'%s' の COW フラグを制御できません"
 
 #, c-format
+msgid "unable create new SELinux label based on label '%s' and file '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable get directory flags on '%s'"
 msgstr "'%s' でディレクトリーフラグを取得できません"
 
@@ -36570,6 +36548,13 @@ msgstr "PID %d のセキュリティコンテキストを取得できません"
 #, c-format
 msgid "unable to get PID %d uid and gid via sysctl"
 msgstr "sysctl を介して PID %d uid と gid を取得できません"
+
+#, c-format
+msgid "unable to get SELinux context for '%s'"
+msgstr ""
+
+msgid "unable to get SELinux context for current process"
+msgstr ""
 
 #, c-format
 msgid "unable to get SELinux context of %s"
@@ -37764,10 +37749,6 @@ msgid "unknown vhost-user type: '%s'"
 msgstr "不明な vhost-user タイプ: '%s'"
 
 #, c-format
-msgid "unknown video model '%s'"
-msgstr "不明なビデオモデル '%s'"
-
-#, c-format
 msgid "unknown virttype: %s"
 msgstr "不明な virttype: %s"
 
@@ -38073,17 +38054,13 @@ msgstr "サポートされないファイルシステムタイプ '%s'"
 msgid "unsupported flags (0x%x)"
 msgstr "サポートされないフラグ (0x%x)"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "unsupported flags (0x%x) in function %s"
 msgstr "関数 %s でサポートされないフラグ (0x%x)"
 
 #, c-format
 msgid "unsupported flags: (0x%x)"
 msgstr "未サポートのフラグ: (0x%x)"
-
-#, c-format
-msgid "unsupported flash format '%s'"
-msgstr "サポートされないフラッシュ形式 '%s'"
 
 #, c-format
 msgid "unsupported format %s"
@@ -38138,10 +38115,6 @@ msgstr "サポートされない numatune モード: '%d'"
 #, c-format
 msgid "unsupported nvram disk type '%s'"
 msgstr "サポートされない nvram ディスクタイプ '%s'"
-
-#, c-format
-msgid "unsupported nvram template format '%s'"
-msgstr "サポートされない nvram テンプレート形式 '%s'"
 
 msgid "unsupported option"
 msgstr "サポートされないオプションです"
@@ -38658,6 +38631,10 @@ msgid "video type %s is not supported by libxl"
 msgstr "ビデオタイプ %s は libxl ではサポートされません"
 
 #, c-format
+msgid "video type '%s' does not support blob resources"
+msgstr ""
+
+#, c-format
 msgid "video type '%s' doesn't support multiple 'heads'"
 msgstr "ビデオタイプ '%s' は複数の 'heads' をサポートしません"
 
@@ -38960,8 +38937,8 @@ msgid ""
 "vmplayer does not support libvirt suspend/resume (vmware pause/unpause) "
 "operation "
 msgstr ""
-"vmplayer は libvirt の suspend/resume (vmware の pause/unpause) "
-"操作をサポートしません "
+"vmplayer は libvirt の suspend/resume (vmware の pause/unpause) 操作をサポー"
+"トしません "
 
 msgid "vmport is not available with this QEMU binary"
 msgstr "この QEMU バイナリーでは、vmport は使用できません"
@@ -39150,8 +39127,9 @@ msgstr "watchdog はモデル名を含まなければいけません"
 
 msgid ""
 "watchdogs with different actions are not supported with this QEMU binary"
-msgstr "この QEMU "
-"バイナリーでは、さまざまなアクションを持つウォッチドッグはサポートされません"
+msgstr ""
+"この QEMU バイナリーでは、さまざまなアクションを持つウォッチドッグはサポート"
+"されません"
 
 msgid "webSocket"
 msgstr "webSocket"
@@ -39306,6 +39284,160 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "%s is not available with this QEMU binary"
+#~ msgstr "%s は、この QEMU バイナリーでは使用できません"
+
+#~ msgid "%s memory device info is not handled yet"
+#~ msgstr "%s メモリーデバイス情報はまだ処理されていません"
+
+#~ msgid "'can-offline' missing in reply of guest-get-vcpus"
+#~ msgstr "guest-get-vcpus の応答に 'can-offline' がありません"
+
+#~ msgid "Cannot remove state PID file %s"
+#~ msgstr "状態 PID ファイル %sを削除できません"
+
+#~ msgid "Could not start 'passt': %s"
+#~ msgstr "'passt' を開始できませんでした: %s"
+
+#~ msgid "Could not start 'slirp'. exitstatus: %d"
+#~ msgstr "'slirp' を開始できませんでした。exitstatus: %d"
+
+#~ msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
+#~ msgstr "'vhost-user-gpu' を開始できませんでした。exitstatus: %d"
+
+#~ msgid "Could not start dbus-daemon. exitstatus: %d"
+#~ msgstr "dbus-daemon を開始できませんでした。exitstatus: %d"
+
+#~ msgid "Failed to create symlink '%s to '%s'"
+#~ msgstr "'%s' へのシンボリックリンク '%s の作成に失敗しました"
+
+#~ msgid "Failed to generate uuid"
+#~ msgstr "uuid の生成に失敗しました"
+
+#~ msgid "Filepath is Null"
+#~ msgstr "ファイルパスは Null です"
+
+#~ msgid "Filepath is null"
+#~ msgstr "ファイルパスは null です"
+
+#~ msgid "IOThreads not supported for this QEMU"
+#~ msgstr "この QEMU 用にサポートされない IOThreads"
+
+#~ msgid "IOThreads not supported with this binary"
+#~ msgstr "このバイナリーでは、IOThreads はサポートされません"
+
+#~ msgid "IOThreads polling is not supported for this QEMU"
+#~ msgstr "この QEMU では、IOThreads ポーリングはサポートされません"
+
+#~ msgid "Invalid parameter to virXPathBoolean()"
+#~ msgstr "virXPathBoolean() への無効なパラメーター"
+
+#~ msgid "Invalid parameter to virXPathNode()"
+#~ msgstr "virXPathNode() への無効なパラメーター"
+
+#~ msgid "Invalid parameter to virXPathNodeSet()"
+#~ msgstr "virXPathNodeSet() への無効なパラメーター"
+
+#~ msgid "Namespaces are not supported on this platform."
+#~ msgstr "このプラットフォームでは名前空間はサポートされません。"
+
+#~ msgid "Number of keys %d, which exceeds max liit: %d"
+#~ msgstr "キーの数 %d、最大制限を超えています: %d"
+
+#~ msgid ""
+#~ "QEMU binary does not support CPU host-passthrough for armv7l on aarch64 "
+#~ "host"
+#~ msgstr ""
+#~ "QEMU バイナリーは、aarch64 ホスト上の armv7l の CPU ホストパススルーをサ"
+#~ "ポートしません"
+
+#~ msgid "Unable to create RNG parser for %s"
+#~ msgstr "%s に対する RNG パーサーを作成できません"
+
+#~ msgid "Unable to create RNG validation context %s"
+#~ msgstr "RNG 検証コンテキスト %s を作成できません"
+
+#~ msgid "Unable to get hardDisk Id"
+#~ msgstr "ハードディスク ID を取得できません"
+
+#~ msgid "Unable to parse RNG %s: %s"
+#~ msgstr "RNG %s を解析できません: %s"
+
+#~ msgid "cannot parse video heads '%s'"
+#~ msgstr "video heads '%s' を解析できません"
+
+#~ msgid "cannot parse video ram '%s'"
+#~ msgstr "video ram '%s' を解析できません"
+
+#~ msgid "cannot parse video vgamem '%s'"
+#~ msgstr "ビデオ vgamem '%s' を解析できません"
+
+#~ msgid "cannot parse video vram '%s'"
+#~ msgstr "ビデオ vram '%s' を解析できません"
+
+#~ msgid "cannot parse video vram64 '%s'"
+#~ msgstr "ビデオ vram64 '%s' を解析できません"
+
+#~ msgid "domain has SMM turned off but chosen firmware requires it"
+#~ msgstr ""
+#~ "ドメインで SMM がオフになっていますが、選択したファームウェアではこれが必"
+#~ "要です"
+
+#~ msgid "hpet timer is not supported"
+#~ msgstr "hpet タイマーはサポートされていません"
+
+#~ msgid ""
+#~ "loader attribute 'readonly' cannot be specified when firmware "
+#~ "autoselection is enabled"
+#~ msgstr ""
+#~ "ファームウェアの自動選択が有効な場合、loader 属性に 'readonly' を指定でき"
+#~ "ません"
+
+#~ msgid ""
+#~ "loader attribute 'secure' cannot be specified when firmware autoselection "
+#~ "is enabled"
+#~ msgstr ""
+#~ "ファームウェアの自動選択機能が有効な場合は、loader 属性に 'secure' を指定"
+#~ "できません"
+
+#~ msgid ""
+#~ "loader attribute 'type' cannot be specified when firmware autoselection "
+#~ "is enabled"
+#~ msgstr ""
+#~ "ファームウェアの自動選択が有効な場合は、ローダー属性の 'type' が指定できま"
+#~ "せん"
+
+#~ msgid ""
+#~ "loader path cannot be specified when firmware autoselection is enabled"
+#~ msgstr ""
+#~ "ファームウェアの自動選択機能が有効な場合は、ローダーパスを指定することはで"
+#~ "きません"
+
+#~ msgid "luks2 is currently not supported by the qemu encryption engine"
+#~ msgstr "luks2 は現在、qemu 暗号化エンジンではサポートされていません"
+
+#~ msgid "malformed machine cpu count in QEMU capabilities cache"
+#~ msgstr "QEMU ケイパビリティーキャッシュ内の不正な形式のマシン cpu 数"
+
+#~ msgid "missing machine name in QEMU capabilities cache"
+#~ msgstr "QEMU ケイパビリティーキャッシュにマシン名がありません"
+
+#~ msgid ""
+#~ "nvram attribute 'template' cannot be specified when firmware "
+#~ "autoselection is enabled"
+#~ msgstr ""
+#~ "ファームウェアの自動選択が有効な場合、nvram 属性のテンプレートが指定できま"
+#~ "せん"
+
+#~ msgid "unknown video model '%s'"
+#~ msgstr "不明なビデオモデル '%s'"
+
+#~ msgid "unsupported flash format '%s'"
+#~ msgstr "サポートされないフラッシュ形式 '%s'"
+
+#~ msgid "unsupported nvram template format '%s'"
+#~ msgstr "サポートされない nvram テンプレート形式 '%s'"
 
 #~ msgid "'disk' missing in reply of guest-get-fsinfo"
 #~ msgstr "guest-get-fsinfo の応答に 'disk' がありません"

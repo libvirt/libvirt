@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-02-22 13:50+0000\n"
+"POT-Creation-Date: 2023-03-24 16:18+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -512,20 +512,12 @@ msgid "%s is not an executable"
 msgstr "QEMU ബൈനറി %s എക്സിക്യൂട്ടബിളല്ല"
 
 #, fuzzy, c-format
-msgid "%s is not available with this QEMU binary"
-msgstr "ഈ QEMU ലൈബ്രറിയില്‍ പങ്കിടുന്ന മെമ്മറി പ്രവര്‍ത്തന രഹിതമാക്കുന്നതു് ലഭ്യമല്ല"
-
-#, fuzzy, c-format
 msgid "%s is not supported by this QEMU binary"
 msgstr "ഈ QEMU ബൈനറി discard പിന്തുണയ്ക്കുന്നില്ല"
 
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "%s വ്യാപ്തി ഏറ്റവും കൂടിയതിനേക്കാള്‍ കൂടുതല്‍: %d > %d"
-
-#, c-format
-msgid "%s memory device info is not handled yet"
-msgstr ""
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -1020,6 +1012,10 @@ msgid "'%s' file does not fit in memory"
 msgstr "'%s' ഫയല്‍ മെമ്മറിയില്‍ പാകമാകുന്നില്ല"
 
 #, c-format
+msgid "'%s' is currently not supported by the qemu encryption engine"
+msgstr ""
+
+#, c-format
 msgid "'%s' is not a VF device"
 msgstr ""
 
@@ -1080,15 +1076,15 @@ msgstr ""
 msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
 
+msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr ""
-
-msgid "'can-offline' missing in reply of guest-get-vcpus"
-msgstr "'can-offline', guest-get-vcpus-ന്റെ മറുപടിയില്‍ ലഭ്യമല്ല"
 
 #, fuzzy
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
@@ -3145,10 +3141,6 @@ msgstr ""
 msgid "Cannot remove stale PID file %s"
 msgstr "സ്റ്റെയില്‍ പിഐഡി ഫയല്‍ %s നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#, fuzzy, c-format
-msgid "Cannot remove state PID file %s"
-msgstr "സ്റ്റെയില്‍ പിഐഡി ഫയല്‍ %s നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
 msgid "Cannot remove uninitialized CURL handle from a multi handle"
 msgstr "മള്‍ട്ടി ഹാന്‍ഡിലില്‍ നിന്നും തയ്യാറാകാത്ത CURL നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
@@ -4768,24 +4760,8 @@ msgstr "ഫയല്‍സിസ്റ്റത്തിനുള്ള സോ�
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
 
-#, c-format
-msgid "Could not start 'passt': %s"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "Could not start 'slirp'. exitstatus: %d"
-msgstr "ഡൊമെയിന്‍ ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല: %s"
-
-#, c-format
-msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
-msgstr ""
-
 #, fuzzy
 msgid "Could not start 'virtiofsd'"
-msgstr "ഡൊമെയിന്‍ ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല: %s"
-
-#, fuzzy, c-format
-msgid "Could not start dbus-daemon. exitstatus: %d"
 msgstr "ഡൊമെയിന്‍ ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല: %s"
 
 #, c-format
@@ -6785,10 +6761,6 @@ msgid "Failed to create state dir '%s'"
 msgstr "ഫയല്‍ '%s' തയ്യാറാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
 #, c-format
-msgid "Failed to create symlink '%s to '%s'"
-msgstr "'%s -> '%s' സിംലിങ്ക് ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
-
-#, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "സിംലിങ്ക് '%s' -> '%s' ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
 
@@ -7134,10 +7106,6 @@ msgstr "UUID ലഭ്യമാക്കുന്നതില്‍ പരാജ
 
 #, fuzzy
 msgid "Failed to generate genid"
-msgstr "uuid തയ്യാറാക്കുന്നതില്‍ പരാജയം"
-
-#, fuzzy
-msgid "Failed to generate uuid"
 msgstr "uuid തയ്യാറാക്കുന്നതില്‍ പരാജയം"
 
 #, c-format
@@ -8617,12 +8585,6 @@ msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ യൂണിക്സ�
 msgid "File total:"
 msgstr "മൊത്തത്തിലുള്ള ഫയല്‍:"
 
-msgid "Filepath is Null"
-msgstr ""
-
-msgid "Filepath is null"
-msgstr ""
-
 msgid "Filesystem driver type not supported"
 msgstr "ഫയല്‍സിസ്റ്റം ഡ്രൈവര്‍ തരം പിന്തുണയ്ക്കുന്നില്ല"
 
@@ -8711,6 +8673,10 @@ msgstr "നെറ്റ്‌വര്‍ക്ക് നിര്‍ബന്�
 
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr "ഒരു പൂള്‍ നിര്‍ബന്ധമായി നിര്‍ത്തുക. പൂളിലുള്ള ഡാറ്റയെ തൊടില്ല"
+
+#, c-format
+msgid "Format mismatch: loader.format='%s' nvram.format='%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Format of device '%s' does not match the expected format '%s'"
@@ -9232,18 +9198,6 @@ msgstr "ഡിവൈസിനു് പ്രക്രിയ പിന്തു�
 #, fuzzy, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr "ഈ ഹോസ്റ്റില്‍ numad ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "IOThreads not supported for this QEMU"
-msgstr "ഈ QEMU ബൈനറിയില്‍ %s പിന്തുണയ്ക്കുന്നില്ല"
-
-#, fuzzy
-msgid "IOThreads not supported with this binary"
-msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക്കില്ല"
-
-#, fuzzy
-msgid "IOThreads polling is not supported for this QEMU"
-msgstr "ഈ ക്യൂഇഎംയു ബൈനറി nvram ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
 
 #, fuzzy
 msgid "IP address"
@@ -10092,15 +10046,6 @@ msgstr ""
 
 msgid "Invalid parameter"
 msgstr "തെറ്റായ പരാമീറ്റര്‍"
-
-msgid "Invalid parameter to virXPathBoolean()"
-msgstr "virXPathBoolean()-ലേക്കുള്ള തെറ്റായ പരാമീറ്റര്‍"
-
-msgid "Invalid parameter to virXPathNode()"
-msgstr "virXPathNode()-ലേക്കുള്ള തെറ്റായ പരാമീറ്റര്‍"
-
-msgid "Invalid parameter to virXPathNodeSet()"
-msgstr "virXPathNodeSet()-ലേക്കു് തെറ്റായ പരാമീറ്റര്‍"
 
 #, fuzzy
 msgid "Invalid parameter type passed to free"
@@ -11869,10 +11814,6 @@ msgid "Namespaces are not supported on this platform"
 msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ യൂണിക്സ് സോക്കറ്റുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
 #, fuzzy
-msgid "Namespaces are not supported on this platform."
-msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ യൂണിക്സ് സോക്കറ്റുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
-
-#, fuzzy
 msgid "Nested HV configuration is not supported by this QEMU binary"
 msgstr "ക്യൂഇഎംയു ബൈനറി കമ്പ്രസ്സ്ഡ് മൈഗ്രേഷന്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
@@ -12558,7 +12499,7 @@ msgid "Number of interfaces, %d exceeds the max limit: %d"
 msgstr ""
 
 #, c-format
-msgid "Number of keys %d, which exceeds max liit: %d"
+msgid "Number of keys %d, which exceeds max limit: %d"
 msgstr ""
 
 #, c-format
@@ -13443,10 +13384,6 @@ msgstr "nbd '%s' ട്രാന്‍പോര്‍ട്ട് പിന്�
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "QEMU ബൈനറി %s എക്സിക്യൂട്ടബിളല്ല"
-
-msgid ""
-"QEMU binary does not support CPU host-passthrough for armv7l on aarch64 host"
-msgstr ""
 
 #, fuzzy
 msgid "QEMU does not support SEV guest"
@@ -16917,13 +16854,13 @@ msgstr "ജേസണ്‍ ഫോര്‍മാറ്റര്‍ ഉണ്ട�
 msgid "Unable to create KVM vCPU for TSC probing"
 msgstr "ജേസണ്‍ ഫോര്‍മാറ്റര്‍ ഉണ്ടാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#, fuzzy, c-format
-msgid "Unable to create RNG parser for %s"
-msgstr "ജേസണ്‍ പാര്‍സര്‍ ഉണ്ടാക്കുവാന്‍ സാധ്യമായില്ല"
+#, c-format
+msgid "Unable to create RelaxNG parser for schema '%s'"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to create RNG validation context %s"
-msgstr "ഇതിനുള്ള selinux കോണ്ടെക്സ്റ്റ് തയ്യാറാക്കുവാനായില്ല: %s"
+#, c-format
+msgid "Unable to create RelaxNG validation context for schema '%s'"
+msgstr ""
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ ടാപ് ഉപകരണങ്ങള്‍ ഉണ്ടാക്കാന്‍ സാധിയ്ക്കുന്നില്ല"
@@ -17313,6 +17250,10 @@ msgid "Unable to get LVM key for %s"
 msgstr "%s-നുള്ള എല്‍വിഎം കീ കാണുന്നില്ല"
 
 #, c-format
+msgid "Unable to get NUMA node of cpu %zd"
+msgstr ""
+
+#, c-format
 msgid "Unable to get SCSI key for %s"
 msgstr "%s-നുള്ള സ്കസി കീ കാണുന്നില്ല"
 
@@ -17464,9 +17405,6 @@ msgstr "ഡിസ്കിന്റെ വിവരം ലഭ്യമാക്�
 #, fuzzy
 msgid "Unable to get hard disk id"
 msgstr "%s %s എന്ന ബ്രിഡ്ജ് കിട്ടിയില്ല"
-
-msgid "Unable to get hardDisk Id"
-msgstr ""
 
 msgid "Unable to get host SEV information"
 msgstr ""
@@ -17856,9 +17794,9 @@ msgstr "memspec പാഴ്സ് ചെയ്യുവാന്‍ സാധ�
 msgid "Unable to parse MAC '%s'"
 msgstr "%s എന്ന യുആര്‍ഐ മനസ്സിലായില്ല"
 
-#, fuzzy, c-format
-msgid "Unable to parse RNG %s: %s"
-msgstr "%s എന്ന യുആര്‍ഐ മനസ്സിലായില്ല"
+#, c-format
+msgid "Unable to parse RelaxNG schema '%s': %s"
+msgstr ""
 
 #, c-format
 msgid "Unable to parse URI %s"
@@ -19520,6 +19458,10 @@ msgid "Unsupported listen type"
 msgstr "പിന്തുണയില്ലാത്ത വിര്‍ട്ട് തരം"
 
 #, c-format
+msgid "Unsupported loader format '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported migration cookie feature %s"
 msgstr "പിന്തുണയ്ക്കാത്ത മൈഗ്രേഷന്‍ കുക്കി വിശേഷത %s"
 
@@ -19556,6 +19498,10 @@ msgstr "പിന്തുണയ്ക്കാത്ത ഫോര്‍വേ�
 #, fuzzy, c-format
 msgid "Unsupported numatune placement '%d'"
 msgstr "പിന്തുണയ്ക്കാത്ത സിപിയു പ്ലെയിസ്മെന്റ് മോഡ് '%s'"
+
+#, c-format
+msgid "Unsupported nvram format '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported object type %d"
@@ -20364,6 +20310,9 @@ msgstr "പിന്തുണയില്ലാത്ത ക്രമീകര�
 
 #, c-format
 msgid "ap-domain value '%s' is out of range for '%s'"
+msgstr ""
+
+msgid "api error"
 msgstr ""
 
 msgid "apparmor_parser exited with error"
@@ -22189,26 +22138,6 @@ msgstr "typeidversion പരാമീറ്ററിന്റെ മൂല്ല
 
 #, fuzzy, c-format
 msgid "cannot parse vcpu index '%s'"
-msgstr "വീഡിയോ ram '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "cannot parse video heads '%s'"
-msgstr "വീഡിയോ heads '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "cannot parse video ram '%s'"
-msgstr "വീഡിയോ ram '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#, fuzzy, c-format
-msgid "cannot parse video vgamem '%s'"
-msgstr "വീഡിയോ ram '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#, fuzzy, c-format
-msgid "cannot parse video vram '%s'"
-msgstr "വീഡിയോ ram '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#, fuzzy, c-format
-msgid "cannot parse video vram64 '%s'"
 msgstr "വീഡിയോ ram '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 #, fuzzy, c-format
@@ -24695,9 +24624,6 @@ msgid "domain event callback %d not registered"
 msgstr "ഡൊമെയിന്‍ ഇവന്റ് %d രജിസ്ടര്‍ ചെയ്തിട്ടില്ല"
 
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
-msgstr ""
-
-msgid "domain has SMM turned off but chosen firmware requires it"
 msgstr ""
 
 #, fuzzy
@@ -27701,9 +27627,8 @@ msgstr "'%d' തരത്തിന്റെ നിര്‍വചനം പക�
 msgid "hotplug of watchdog of model %s is not supported"
 msgstr "'%s' ഡിവൈസിന്റെ ലൈവ് അറ്റാച്ച് പിന്തുണയ്ക്കുന്നില്ല"
 
-#, fuzzy
-msgid "hpet timer is not supported"
-msgstr "hub തരം %s പിന്തുണയ്ക്കുന്നില്ല"
+msgid "hpet timer is not supported by this architecture"
+msgstr ""
 
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr ""
@@ -29072,6 +28997,9 @@ msgstr ""
 msgid "librbd encryption is supported only with RBD backed disks"
 msgstr ""
 
+msgid "librbd encryption layering is not supported by this QEMU binary"
+msgstr ""
+
 #, fuzzy
 msgid "libssh transport error"
 msgstr "എസ്എസ്എച്ച് ഗതാഗതത്തില്‍ പിശക്"
@@ -29543,24 +29471,6 @@ msgstr ""
 msgid "live update of device '%s' is not supported"
 msgstr "'%s' ഡിവൈസിന്റെ ലൈവ് പരിഷ്കരണം പിന്തുണയ്ക്കുന്നില്ല"
 
-msgid ""
-"loader attribute 'readonly' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
-
-msgid ""
-"loader attribute 'secure' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-
-msgid ""
-"loader attribute 'type' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-
-msgid "loader path cannot be specified when firmware autoselection is enabled"
-msgstr ""
-
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
 msgstr ""
@@ -29581,7 +29491,7 @@ msgstr ""
 msgid "lower boundary for worker thread pool"
 msgstr ""
 
-msgid "luks2 is currently not supported by the qemu encryption engine"
+msgid "luks-any encryption is not supported by this QEMU binary"
 msgstr ""
 
 msgid "lxc state driver is not active"
@@ -29616,6 +29526,10 @@ msgstr "സിസ്റ്റം തല്‍ക്കാലത്തേക്�
 
 #, c-format
 msgid "machine type '%s'"
+msgstr ""
+
+#, c-format
+msgid "machine type '%s' does not support ACPI"
 msgstr ""
 
 msgid "machine type (/domain/os/type/@machine)"
@@ -29724,9 +29638,6 @@ msgstr "തെറ്റായ ipset ഫ്ലാഗുകള്‍"
 #, c-format
 msgid "malformed mac address '%s'"
 msgstr "തെറ്റായ mac വിലാസം '%s'"
-
-msgid "malformed machine cpu count in QEMU capabilities cache"
-msgstr ""
 
 #, fuzzy
 msgid "malformed mtu size"
@@ -30517,6 +30428,10 @@ msgstr "സോഴ്സ് ഡിവൈസ് ലഭ്യമല്ല"
 msgid "missing alias for network device"
 msgstr "സോഴ്സ് ഡിവൈസ് ലഭ്യമല്ല"
 
+#, c-format
+msgid "missing alias on encryption secret #%zu"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
 msgstr "ഡൊമെയിന്‍ വസ്തുവില്‍ പേരു് പരാമീറ്റര്‍ ലഭ്യമല്ല"
@@ -30813,10 +30728,6 @@ msgstr "ലീസില്‍ 'key' എലമെന്റ് ലഭ്യമല�
 #, fuzzy
 msgid "missing listen element for spice graphics"
 msgstr "ലീസില്‍ 'key' എലമെന്റ് ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "missing machine name in QEMU capabilities cache"
-msgstr "മൈഗ്രേഷന്‍ വിശേഷത നാമം ലഭ്യമല്ല"
 
 #, c-format
 msgid "missing mapping in '%s'"
@@ -31628,6 +31539,10 @@ msgstr ""
 msgid ""
 "network device saved config file '%s' has unexpected contents, missing both "
 "'MAC' and 'adminMAC': '%.60s'"
+msgstr ""
+
+#, c-format
+msgid "network device type '%s' is not supported by this hypervisor"
 msgstr ""
 
 #, fuzzy, c-format
@@ -32528,11 +32443,6 @@ msgstr "ഈ QEMU ലൈബ്രറിയില്‍ പങ്കിടുന�
 
 msgid "nvram address type must be spaprvio"
 msgstr "nvram വിലാസ തരം spaprvio ആയിരിയ്ക്കണം"
-
-msgid ""
-"nvram attribute 'template' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "ഈ ക്യൂഇഎംയു ബൈനറി nvram ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
@@ -33697,6 +33607,9 @@ msgstr ""
 msgid "qemu emulator '%s' does not support xen"
 msgstr "കെമു എമുലേറ്റര്‍ '%s', xen-നെ പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "qemu encryption engine expects only a single secret"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "qemu monitor event callback %d not registered"
 msgstr "ഡൊമെയിന്‍ ഇവന്റ് %d രജിസ്ടര്‍ ചെയ്തിട്ടില്ല"
@@ -33714,6 +33627,9 @@ msgstr "qemu സ്റ്റേറ്റ് ‍ഡ്രൈവര്‍ സജ�
 #, fuzzy
 msgid "qemu unexpectedly closed the monitor"
 msgstr "അപ്രതീക്ഷിതമായ കോഡ് പാഥ്"
+
+msgid "qemu-machines reply has malformed 'acpi data"
+msgstr ""
 
 #, fuzzy
 msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
@@ -34020,6 +33936,9 @@ msgstr "പിശകുള്ള മോണിറ്റര്‍ ലഭ്യമ�
 
 msgid "received unexpected cookie with P2P migration"
 msgstr "P2P മൈഗ്രേഷനൊപ്പം അപ്രതീക്ഷിതമായ കുക്കി ലഭിച്ചിരിയ്ക്കുന്നു"
+
+msgid "reconnect delay is supported only with NBD protocol"
+msgstr ""
 
 #, fuzzy
 msgid "recv handler failed"
@@ -34578,6 +34497,10 @@ msgid "scripts are not supported on interfaces of type %s"
 msgstr "%s തരത്തിലുള്ള വിനിമയതലങ്ങള്‍ക്ക് ആജ്ഞാലേഖന (സ്ക്രിപ്റ്റ്) പിന്തുണ ലഭ്യമല്ല"
 
 msgid "scsi-block 'lun' devices do not support the serial property"
+msgstr ""
+
+#, c-format
+msgid "sd card '%s' does not support multiple encryption secrets"
 msgstr ""
 
 #, fuzzy, c-format
@@ -35833,6 +35756,9 @@ msgstr "ഈ QEMU ബൈനറിക്ക് സ്മാര്‍ട്ട്�
 msgid "this QEMU binary lacks smartcard passthrough mode support"
 msgstr "ഈ QEMU ബൈനറിക്ക് സ്മാര്‍ട്ട്കാര്‍ഡ് പാസ്ത്രൂ മോഡ് പിന്തുണ ഇല്ല "
 
+msgid "this QEMU does not support 'blob' for virtio-gpu devices"
+msgstr ""
+
 #, fuzzy
 msgid "this QEMU does not support 'vhost-user' video device"
 msgstr "ps2 ബസ്  %s ഇന്‍പുട്ട് ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
@@ -36416,6 +36342,10 @@ msgid "unable control COW flag on '%s'"
 msgstr ""
 
 #, c-format
+msgid "unable create new SELinux label based on label '%s' and file '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable get directory flags on '%s'"
 msgstr ""
 
@@ -36601,6 +36531,13 @@ msgstr "PID %d സുരരക്ഷാ കോണ്‍ടെക്സ്റ്�
 #, fuzzy, c-format
 msgid "unable to get PID %d uid and gid via sysctl"
 msgstr "PID %d സുരരക്ഷാ കോണ്‍ടെക്സ്റ്റ്ലഭ്യമാക്കുവാന്‍‍ സാധ്യമല്."
+
+#, c-format
+msgid "unable to get SELinux context for '%s'"
+msgstr ""
+
+msgid "unable to get SELinux context for current process"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to get SELinux context of %s"
@@ -37810,10 +37747,6 @@ msgstr "അജ്ഞാതമായ നിയമ നടപടി സവിശേ
 msgid "unknown vhost-user type: '%s'"
 msgstr "അപരിചിതമായ ശ്രോതസ്സ് തരം: '%s'"
 
-#, c-format
-msgid "unknown video model '%s'"
-msgstr "അപരിചിതമായ വീഡിയോ മാതൃക '%s'"
-
 #, fuzzy, c-format
 msgid "unknown virttype: %s"
 msgstr "അപരിചിതമായ രീതി %s"
@@ -38124,10 +38057,6 @@ msgid "unsupported flags: (0x%x)"
 msgstr "പിന്തണയില്ലാത്ത ഫ്ലാഗുകള്‍: (0x%x)"
 
 #, fuzzy, c-format
-msgid "unsupported flash format '%s'"
-msgstr "അപ്രതീക്ഷിതമായ ക്രമീകരണ ശൈലി '%s'"
-
-#, fuzzy, c-format
 msgid "unsupported format %s"
 msgstr "പിന്തുണയ്ക്കാത്ത വിശേഷത %s"
 
@@ -38182,10 +38111,6 @@ msgstr "പിന്തുണയ്ക്കാത്ത ഫോര്‍വേ�
 #, c-format
 msgid "unsupported nvram disk type '%s'"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unsupported nvram template format '%s'"
-msgstr "പിന്തുണയ്ക്കാത്ത rtc ടൈമര്‍ ട്രാക്ക് '%s'"
 
 msgid "unsupported option"
 msgstr "പിന്തുണയ്ക്കാത്ത ഐച്ഛികം"
@@ -38694,6 +38619,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "video type %s is not supported by libxl"
 msgstr "നെറ്റ്‌വര്‍ക്ക് തരം %d-യ്ക്കുള്ള പിന്തുണ ലഭ്യമല്ല"
+
+#, c-format
+msgid "video type '%s' does not support blob resources"
+msgstr ""
 
 #, c-format
 msgid "video type '%s' doesn't support multiple 'heads'"
@@ -39323,6 +39252,106 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "%s is not available with this QEMU binary"
+#~ msgstr "ഈ QEMU ലൈബ്രറിയില്‍ പങ്കിടുന്ന മെമ്മറി പ്രവര്‍ത്തന രഹിതമാക്കുന്നതു് ലഭ്യമല്ല"
+
+#~ msgid "'can-offline' missing in reply of guest-get-vcpus"
+#~ msgstr "'can-offline', guest-get-vcpus-ന്റെ മറുപടിയില്‍ ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "Cannot remove state PID file %s"
+#~ msgstr "സ്റ്റെയില്‍ പിഐഡി ഫയല്‍ %s നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "Could not start 'slirp'. exitstatus: %d"
+#~ msgstr "ഡൊമെയിന്‍ ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല: %s"
+
+#, fuzzy
+#~ msgid "Could not start dbus-daemon. exitstatus: %d"
+#~ msgstr "ഡൊമെയിന്‍ ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല: %s"
+
+#~ msgid "Failed to create symlink '%s to '%s'"
+#~ msgstr "'%s -> '%s' സിംലിങ്ക് ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
+
+#, fuzzy
+#~ msgid "Failed to generate uuid"
+#~ msgstr "uuid തയ്യാറാക്കുന്നതില്‍ പരാജയം"
+
+#, fuzzy
+#~ msgid "IOThreads not supported for this QEMU"
+#~ msgstr "ഈ QEMU ബൈനറിയില്‍ %s പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy
+#~ msgid "IOThreads not supported with this binary"
+#~ msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക്കില്ല"
+
+#, fuzzy
+#~ msgid "IOThreads polling is not supported for this QEMU"
+#~ msgstr "ഈ ക്യൂഇഎംയു ബൈനറി nvram ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
+
+#~ msgid "Invalid parameter to virXPathBoolean()"
+#~ msgstr "virXPathBoolean()-ലേക്കുള്ള തെറ്റായ പരാമീറ്റര്‍"
+
+#~ msgid "Invalid parameter to virXPathNode()"
+#~ msgstr "virXPathNode()-ലേക്കുള്ള തെറ്റായ പരാമീറ്റര്‍"
+
+#~ msgid "Invalid parameter to virXPathNodeSet()"
+#~ msgstr "virXPathNodeSet()-ലേക്കു് തെറ്റായ പരാമീറ്റര്‍"
+
+#, fuzzy
+#~ msgid "Namespaces are not supported on this platform."
+#~ msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ യൂണിക്സ് സോക്കറ്റുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy
+#~ msgid "Unable to create RNG parser for %s"
+#~ msgstr "ജേസണ്‍ പാര്‍സര്‍ ഉണ്ടാക്കുവാന്‍ സാധ്യമായില്ല"
+
+#, fuzzy
+#~ msgid "Unable to create RNG validation context %s"
+#~ msgstr "ഇതിനുള്ള selinux കോണ്ടെക്സ്റ്റ് തയ്യാറാക്കുവാനായില്ല: %s"
+
+#, fuzzy
+#~ msgid "Unable to parse RNG %s: %s"
+#~ msgstr "%s എന്ന യുആര്‍ഐ മനസ്സിലായില്ല"
+
+#~ msgid "cannot parse video heads '%s'"
+#~ msgstr "വീഡിയോ heads '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "cannot parse video ram '%s'"
+#~ msgstr "വീഡിയോ ram '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "cannot parse video vgamem '%s'"
+#~ msgstr "വീഡിയോ ram '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "cannot parse video vram '%s'"
+#~ msgstr "വീഡിയോ ram '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "cannot parse video vram64 '%s'"
+#~ msgstr "വീഡിയോ ram '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "hpet timer is not supported"
+#~ msgstr "hub തരം %s പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy
+#~ msgid "missing machine name in QEMU capabilities cache"
+#~ msgstr "മൈഗ്രേഷന്‍ വിശേഷത നാമം ലഭ്യമല്ല"
+
+#~ msgid "unknown video model '%s'"
+#~ msgstr "അപരിചിതമായ വീഡിയോ മാതൃക '%s'"
+
+#, fuzzy
+#~ msgid "unsupported flash format '%s'"
+#~ msgstr "അപ്രതീക്ഷിതമായ ക്രമീകരണ ശൈലി '%s'"
+
+#, fuzzy
+#~ msgid "unsupported nvram template format '%s'"
+#~ msgstr "പിന്തുണയ്ക്കാത്ത rtc ടൈമര്‍ ട്രാക്ക് '%s'"
 
 #, fuzzy
 #~ msgid "'disk' missing in reply of guest-get-fsinfo"

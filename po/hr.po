@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 8.8.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-02-22 13:50+0000\n"
+"POT-Creation-Date: 2023-03-24 16:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -429,19 +429,11 @@ msgid "%s is not an executable"
 msgstr ""
 
 #, c-format
-msgid "%s is not available with this QEMU binary"
-msgstr ""
-
-#, c-format
 msgid "%s is not supported by this QEMU binary"
 msgstr ""
 
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
-msgstr ""
-
-#, c-format
-msgid "%s memory device info is not handled yet"
 msgstr ""
 
 #, c-format
@@ -922,6 +914,10 @@ msgid "'%s' file does not fit in memory"
 msgstr ""
 
 #, c-format
+msgid "'%s' is currently not supported by the qemu encryption engine"
+msgstr ""
+
+#, c-format
 msgid "'%s' is not a VF device"
 msgstr ""
 
@@ -981,14 +977,14 @@ msgstr ""
 msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
 
+msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
-msgstr ""
-
-msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr ""
 
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
@@ -2905,10 +2901,6 @@ msgstr ""
 msgid "Cannot remove stale PID file %s"
 msgstr ""
 
-#, c-format
-msgid "Cannot remove state PID file %s"
-msgstr ""
-
 msgid "Cannot remove uninitialized CURL handle from a multi handle"
 msgstr ""
 
@@ -4457,23 +4449,7 @@ msgstr ""
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
 
-#, c-format
-msgid "Could not start 'passt': %s"
-msgstr ""
-
-#, c-format
-msgid "Could not start 'slirp'. exitstatus: %d"
-msgstr ""
-
-#, c-format
-msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
-msgstr ""
-
 msgid "Could not start 'virtiofsd'"
-msgstr ""
-
-#, c-format
-msgid "Could not start dbus-daemon. exitstatus: %d"
 msgstr ""
 
 #, c-format
@@ -6333,10 +6309,6 @@ msgid "Failed to create state dir '%s'"
 msgstr ""
 
 #, c-format
-msgid "Failed to create symlink '%s to '%s'"
-msgstr ""
-
-#, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr ""
 
@@ -6671,9 +6643,6 @@ msgid "Failed to generate UUID"
 msgstr ""
 
 msgid "Failed to generate genid"
-msgstr ""
-
-msgid "Failed to generate uuid"
 msgstr ""
 
 #, c-format
@@ -8108,12 +8077,6 @@ msgstr ""
 msgid "File total:"
 msgstr ""
 
-msgid "Filepath is Null"
-msgstr ""
-
-msgid "Filepath is null"
-msgstr ""
-
 msgid "Filesystem driver type not supported"
 msgstr ""
 
@@ -8197,6 +8160,10 @@ msgid "Forcefully stop a given network."
 msgstr ""
 
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
+msgstr ""
+
+#, c-format
+msgid "Format mismatch: loader.format='%s' nvram.format='%s'"
 msgstr ""
 
 #, c-format
@@ -8668,15 +8635,6 @@ msgstr ""
 
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
-msgstr ""
-
-msgid "IOThreads not supported for this QEMU"
-msgstr ""
-
-msgid "IOThreads not supported with this binary"
-msgstr ""
-
-msgid "IOThreads polling is not supported for this QEMU"
 msgstr ""
 
 msgid "IP address"
@@ -9490,15 +9448,6 @@ msgid ""
 msgstr ""
 
 msgid "Invalid parameter"
-msgstr ""
-
-msgid "Invalid parameter to virXPathBoolean()"
-msgstr ""
-
-msgid "Invalid parameter to virXPathNode()"
-msgstr ""
-
-msgid "Invalid parameter to virXPathNodeSet()"
 msgstr ""
 
 msgid "Invalid parameter type passed to free"
@@ -11152,9 +11101,6 @@ msgstr ""
 msgid "Namespaces are not supported on this platform"
 msgstr ""
 
-msgid "Namespaces are not supported on this platform."
-msgstr ""
-
 msgid "Nested HV configuration is not supported by this QEMU binary"
 msgstr ""
 
@@ -11805,7 +11751,7 @@ msgid "Number of interfaces, %d exceeds the max limit: %d"
 msgstr ""
 
 #, c-format
-msgid "Number of keys %d, which exceeds max liit: %d"
+msgid "Number of keys %d, which exceeds max limit: %d"
 msgstr ""
 
 #, c-format
@@ -12619,10 +12565,6 @@ msgstr ""
 
 #, c-format
 msgid "QEMU binary %s is not executable"
-msgstr ""
-
-msgid ""
-"QEMU binary does not support CPU host-passthrough for armv7l on aarch64 host"
 msgstr ""
 
 msgid "QEMU does not support SEV guest"
@@ -15874,11 +15816,11 @@ msgid "Unable to create KVM vCPU for TSC probing"
 msgstr ""
 
 #, c-format
-msgid "Unable to create RNG parser for %s"
+msgid "Unable to create RelaxNG parser for schema '%s'"
 msgstr ""
 
 #, c-format
-msgid "Unable to create RNG validation context %s"
+msgid "Unable to create RelaxNG validation context for schema '%s'"
 msgstr ""
 
 msgid "Unable to create TAP devices on this platform"
@@ -16251,6 +16193,10 @@ msgid "Unable to get LVM key for %s"
 msgstr ""
 
 #, c-format
+msgid "Unable to get NUMA node of cpu %zd"
+msgstr ""
+
+#, c-format
 msgid "Unable to get SCSI key for %s"
 msgstr ""
 
@@ -16381,9 +16327,6 @@ msgid "Unable to get hard disk format"
 msgstr ""
 
 msgid "Unable to get hard disk id"
-msgstr ""
-
-msgid "Unable to get hardDisk Id"
 msgstr ""
 
 msgid "Unable to get host SEV information"
@@ -16754,7 +16697,7 @@ msgid "Unable to parse MAC '%s'"
 msgstr ""
 
 #, c-format
-msgid "Unable to parse RNG %s: %s"
+msgid "Unable to parse RelaxNG schema '%s': %s"
 msgstr ""
 
 #, c-format
@@ -18355,6 +18298,10 @@ msgid "Unsupported listen type"
 msgstr ""
 
 #, c-format
+msgid "Unsupported loader format '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported migration cookie feature %s"
 msgstr ""
 
@@ -18389,6 +18336,10 @@ msgstr ""
 
 #, c-format
 msgid "Unsupported numatune placement '%d'"
+msgstr ""
+
+#, c-format
+msgid "Unsupported nvram format '%s'"
 msgstr ""
 
 #, c-format
@@ -19160,6 +19111,9 @@ msgstr ""
 
 #, c-format
 msgid "ap-domain value '%s' is out of range for '%s'"
+msgstr ""
+
+msgid "api error"
 msgstr ""
 
 msgid "apparmor_parser exited with error"
@@ -20899,26 +20853,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot parse vcpu index '%s'"
-msgstr ""
-
-#, c-format
-msgid "cannot parse video heads '%s'"
-msgstr ""
-
-#, c-format
-msgid "cannot parse video ram '%s'"
-msgstr ""
-
-#, c-format
-msgid "cannot parse video vgamem '%s'"
-msgstr ""
-
-#, c-format
-msgid "cannot parse video vram '%s'"
-msgstr ""
-
-#, c-format
-msgid "cannot parse video vram64 '%s'"
 msgstr ""
 
 #, c-format
@@ -23278,9 +23212,6 @@ msgid "domain event callback %d not registered"
 msgstr ""
 
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
-msgstr ""
-
-msgid "domain has SMM turned off but chosen firmware requires it"
 msgstr ""
 
 msgid "domain has active block job"
@@ -26132,7 +26063,7 @@ msgstr ""
 msgid "hotplug of watchdog of model %s is not supported"
 msgstr ""
 
-msgid "hpet timer is not supported"
+msgid "hpet timer is not supported by this architecture"
 msgstr ""
 
 msgid "http cookies are supported only with HTTP(S) protocol"
@@ -27445,6 +27376,9 @@ msgstr ""
 msgid "librbd encryption is supported only with RBD backed disks"
 msgstr ""
 
+msgid "librbd encryption layering is not supported by this QEMU binary"
+msgstr ""
+
 msgid "libssh transport error"
 msgstr ""
 
@@ -27882,24 +27816,6 @@ msgstr ""
 msgid "live update of device '%s' is not supported"
 msgstr ""
 
-msgid ""
-"loader attribute 'readonly' cannot be specified when firmware autoselection "
-"is enabled"
-msgstr ""
-
-msgid ""
-"loader attribute 'secure' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-
-msgid ""
-"loader attribute 'type' cannot be specified when firmware autoselection is "
-"enabled"
-msgstr ""
-
-msgid "loader path cannot be specified when firmware autoselection is enabled"
-msgstr ""
-
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
 msgstr ""
@@ -27920,7 +27836,7 @@ msgstr ""
 msgid "lower boundary for worker thread pool"
 msgstr ""
 
-msgid "luks2 is currently not supported by the qemu encryption engine"
+msgid "luks-any encryption is not supported by this QEMU binary"
 msgstr ""
 
 msgid "lxc state driver is not active"
@@ -27955,6 +27871,10 @@ msgstr ""
 
 #, c-format
 msgid "machine type '%s'"
+msgstr ""
+
+#, c-format
+msgid "machine type '%s' does not support ACPI"
 msgstr ""
 
 msgid "machine type (/domain/os/type/@machine)"
@@ -28057,9 +27977,6 @@ msgstr ""
 
 #, c-format
 msgid "malformed mac address '%s'"
-msgstr ""
-
-msgid "malformed machine cpu count in QEMU capabilities cache"
 msgstr ""
 
 msgid "malformed mtu size"
@@ -28806,6 +28723,10 @@ msgid "missing alias for network device"
 msgstr ""
 
 #, c-format
+msgid "missing alias on encryption secret #%zu"
+msgstr ""
+
+#, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
 msgstr ""
 
@@ -29068,9 +28989,6 @@ msgid "missing listen element for graphics"
 msgstr ""
 
 msgid "missing listen element for spice graphics"
-msgstr ""
-
-msgid "missing machine name in QEMU capabilities cache"
 msgstr ""
 
 #, c-format
@@ -29832,6 +29750,10 @@ msgstr ""
 msgid ""
 "network device saved config file '%s' has unexpected contents, missing both "
 "'MAC' and 'adminMAC': '%.60s'"
+msgstr ""
+
+#, c-format
+msgid "network device type '%s' is not supported by this hypervisor"
 msgstr ""
 
 #, c-format
@@ -30683,11 +30605,6 @@ msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr ""
 
 msgid "nvram address type must be spaprvio"
-msgstr ""
-
-msgid ""
-"nvram attribute 'template' cannot be specified when firmware autoselection "
-"is enabled"
 msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
@@ -31792,6 +31709,9 @@ msgstr ""
 msgid "qemu emulator '%s' does not support xen"
 msgstr ""
 
+msgid "qemu encryption engine expects only a single secret"
+msgstr ""
+
 #, c-format
 msgid "qemu monitor event callback %d not registered"
 msgstr ""
@@ -31807,6 +31727,9 @@ msgid "qemu state driver is not active"
 msgstr ""
 
 msgid "qemu unexpectedly closed the monitor"
+msgstr ""
+
+msgid "qemu-machines reply has malformed 'acpi data"
 msgstr ""
 
 msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
@@ -32091,6 +32014,9 @@ msgid "received malformed monitor, check the XML definition"
 msgstr ""
 
 msgid "received unexpected cookie with P2P migration"
+msgstr ""
+
+msgid "reconnect delay is supported only with NBD protocol"
 msgstr ""
 
 msgid "recv handler failed"
@@ -32614,6 +32540,10 @@ msgid "scripts are not supported on interfaces of type %s"
 msgstr ""
 
 msgid "scsi-block 'lun' devices do not support the serial property"
+msgstr ""
+
+#, c-format
+msgid "sd card '%s' does not support multiple encryption secrets"
 msgstr ""
 
 #, c-format
@@ -33793,6 +33723,9 @@ msgstr ""
 msgid "this QEMU binary lacks smartcard passthrough mode support"
 msgstr ""
 
+msgid "this QEMU does not support 'blob' for virtio-gpu devices"
+msgstr ""
+
 msgid "this QEMU does not support 'vhost-user' video device"
 msgstr ""
 
@@ -34345,6 +34278,10 @@ msgid "unable control COW flag on '%s'"
 msgstr ""
 
 #, c-format
+msgid "unable create new SELinux label based on label '%s' and file '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable get directory flags on '%s'"
 msgstr ""
 
@@ -34523,6 +34460,13 @@ msgstr ""
 
 #, c-format
 msgid "unable to get PID %d uid and gid via sysctl"
+msgstr ""
+
+#, c-format
+msgid "unable to get SELinux context for '%s'"
+msgstr ""
+
+msgid "unable to get SELinux context for current process"
 msgstr ""
 
 #, c-format
@@ -35710,10 +35654,6 @@ msgid "unknown vhost-user type: '%s'"
 msgstr ""
 
 #, c-format
-msgid "unknown video model '%s'"
-msgstr ""
-
-#, c-format
 msgid "unknown virttype: %s"
 msgstr ""
 
@@ -36018,10 +35958,6 @@ msgid "unsupported flags: (0x%x)"
 msgstr ""
 
 #, c-format
-msgid "unsupported flash format '%s'"
-msgstr ""
-
-#, c-format
 msgid "unsupported format %s"
 msgstr ""
 
@@ -36073,10 +36009,6 @@ msgstr ""
 
 #, c-format
 msgid "unsupported nvram disk type '%s'"
-msgstr ""
-
-#, c-format
-msgid "unsupported nvram template format '%s'"
 msgstr ""
 
 msgid "unsupported option"
@@ -36571,6 +36503,10 @@ msgstr ""
 
 #, c-format
 msgid "video type %s is not supported by libxl"
+msgstr ""
+
+#, c-format
+msgid "video type '%s' does not support blob resources"
 msgstr ""
 
 #, c-format
