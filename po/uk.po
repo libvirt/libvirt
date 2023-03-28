@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-03-24 16:18+0000\n"
-"PO-Revision-Date: 2023-02-23 17:20+0000\n"
+"PO-Revision-Date: 2023-03-28 14:20+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -24,8 +24,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 4.15.2\n"
 
 msgid ""
@@ -1188,7 +1188,7 @@ msgstr "недостатньо пам'яті для файла «%s»"
 
 #, c-format
 msgid "'%s' is currently not supported by the qemu encryption engine"
-msgstr ""
+msgstr "У поточній версії підтримки «%s» у рушії шифрування qemu не передбачено"
 
 #, c-format
 msgid "'%s' is not a VF device"
@@ -1253,7 +1253,7 @@ msgid "'address' must be specified for scsi hostdev source"
 msgstr "для джерела scsi слід вказати елементи «address»"
 
 msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
-msgstr ""
+msgstr "на цій архітектурі не можна скористатися «aes-key-wrap»/«dea-key-wrap»"
 
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
@@ -8998,7 +8998,7 @@ msgstr ""
 
 #, c-format
 msgid "Format mismatch: loader.format='%s' nvram.format='%s'"
-msgstr ""
+msgstr "Невідповідність форматів: loader.format='%s' nvram.format='%s'"
 
 #, c-format
 msgid "Format of device '%s' does not match the expected format '%s'"
@@ -12903,7 +12903,7 @@ msgstr ""
 
 #, c-format
 msgid "Number of keys %d, which exceeds max limit: %d"
-msgstr ""
+msgstr "Кількість ключів %d, яка перевищує верхню межу: %d"
 
 #, c-format
 msgid "Number of leases is %d, which exceeds max limit: %d"
@@ -17541,11 +17541,11 @@ msgstr "Не вдалося створити віртуальний процес
 
 #, c-format
 msgid "Unable to create RelaxNG parser for schema '%s'"
-msgstr ""
+msgstr "Не вдалося створити обробник RelaxNG для схеми «%s»"
 
 #, c-format
 msgid "Unable to create RelaxNG validation context for schema '%s'"
-msgstr ""
+msgstr "Не вдалося створити контекст перевірки RelaxNG для схеми «%s»"
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "На цій платформі створення пристроїв TAP неможливе"
@@ -17928,7 +17928,7 @@ msgstr "Не вдалося отримати ключ LVM для %s"
 
 #, c-format
 msgid "Unable to get NUMA node of cpu %zd"
-msgstr ""
+msgstr "Не вдалося отримати вузол NUMA для процесора %zd"
 
 #, c-format
 msgid "Unable to get SCSI key for %s"
@@ -18441,7 +18441,7 @@ msgstr "Не вдалося обробити MAC «%s»"
 
 #, c-format
 msgid "Unable to parse RelaxNG schema '%s': %s"
-msgstr ""
+msgstr "Не вдалося обробити схему RelaxNG «%s»: %s"
 
 #, c-format
 msgid "Unable to parse URI %s"
@@ -20085,7 +20085,7 @@ msgstr "Непідтримуваний тип очікування (listen)"
 
 #, c-format
 msgid "Unsupported loader format '%s'"
-msgstr ""
+msgstr "Непідтримуваний формат завантажувача «%s»"
 
 #, c-format
 msgid "Unsupported migration cookie feature %s"
@@ -20128,7 +20128,7 @@ msgstr "Непідтримуване розташовування numatune, «%d
 
 #, c-format
 msgid "Unsupported nvram format '%s'"
-msgstr ""
+msgstr "Непідтримуваний формат nvram «%s»"
 
 #, c-format
 msgid "Unsupported object type %d"
@@ -20988,7 +20988,7 @@ msgid "ap-domain value '%s' is out of range for '%s'"
 msgstr "Значення ap-domain «%s» не потрапляє до діапазону для «%s»"
 
 msgid "api error"
-msgstr ""
+msgstr "помилка програмного інтерфейсу"
 
 msgid "apparmor_parser exited with error"
 msgstr "Програма apparmor_parser завершила роботу повідомленням про помилку"
@@ -28445,7 +28445,7 @@ msgstr ""
 "передбачено"
 
 msgid "hpet timer is not supported by this architecture"
-msgstr ""
+msgstr "на цій архітектурі не передбачено підтримки hpet-таймерів"
 
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr "підтримку кук http передбачено лише у поєднанні з протоколом HTTP(S)"
@@ -29853,6 +29853,8 @@ msgstr "підтримку шифрування librbd передбачено л
 
 msgid "librbd encryption layering is not supported by this QEMU binary"
 msgstr ""
+"у цьому виконуваному файлі QEMU не передбачено підтримки нашаровування "
+"шифрувань librbd"
 
 msgid "libssh transport error"
 msgstr "Помилка передавання даних libssh"
@@ -30342,6 +30344,7 @@ msgstr "нижня межа для буфера потоків засобу об
 
 msgid "luks-any encryption is not supported by this QEMU binary"
 msgstr ""
+"у цьому виконуваному файлі QEMU не передбачено підтримки шифрування luks-any"
 
 msgid "lxc state driver is not active"
 msgstr "драйвер стану lxc не активний"
@@ -30384,7 +30387,7 @@ msgstr "тип архітектури «%s»"
 
 #, c-format
 msgid "machine type '%s' does not support ACPI"
-msgstr ""
+msgstr "для типу комп'ютера «%s» не передбачено підтримки ACPI"
 
 msgid "machine type (/domain/os/type/@machine)"
 msgstr "тип машини (/домен/система/тип/@машина)"
@@ -31330,7 +31333,7 @@ msgstr "немає альтернативної назви для пристро
 
 #, c-format
 msgid "missing alias on encryption secret #%zu"
-msgstr ""
+msgstr "не надано альтернативи для реєстраційного запису шифрування %zu"
 
 #, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
@@ -32450,6 +32453,7 @@ msgstr ""
 #, c-format
 msgid "network device type '%s' is not supported by this hypervisor"
 msgstr ""
+"у цьому гіпервізорі не передбачено підтримки мережевих пристроїв типу «%s»"
 
 #, c-format
 msgid "network device with mac %s already exists"
@@ -34545,7 +34549,7 @@ msgid "qemu emulator '%s' does not support xen"
 msgstr "Емулятором QEMU «%s» не підтримується xen"
 
 msgid "qemu encryption engine expects only a single secret"
-msgstr ""
+msgstr "рушій шифрування qemu очікує на надання лише одного ключа шифрування"
 
 #, c-format
 msgid "qemu monitor event callback %d not registered"
@@ -34567,7 +34571,7 @@ msgid "qemu unexpectedly closed the monitor"
 msgstr "qemu неочікувано завершив роботу монітора"
 
 msgid "qemu-machines reply has malformed 'acpi data"
-msgstr ""
+msgstr "помилкове форматування даних acpi у відповіді qemu-machines"
 
 msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
 msgstr ""
@@ -34884,6 +34888,8 @@ msgstr "з перенесенням P2P отримано неочікувану 
 
 msgid "reconnect delay is supported only with NBD protocol"
 msgstr ""
+"затримку перед повторним з'єднанням передбачено, лише якщо використано "
+"протокол NBD"
 
 msgid "recv handler failed"
 msgstr "помилка отримання обробника"
@@ -35452,7 +35458,7 @@ msgstr ""
 
 #, c-format
 msgid "sd card '%s' does not support multiple encryption secrets"
-msgstr ""
+msgstr "для sd-картки «%s» не передбачено підтримки декількох ключів шифрування"
 
 #, c-format
 msgid "seclabel for model %s is already provided"
@@ -36744,7 +36750,7 @@ msgstr ""
 "смарт-картки"
 
 msgid "this QEMU does not support 'blob' for virtio-gpu devices"
-msgstr ""
+msgstr "у цьому QEMU не передбачено підтримки «blob» для пристроїв virtio-gpu"
 
 msgid "this QEMU does not support 'vhost-user' video device"
 msgstr "у цьому QEMU не передбачено підтримки відеопристроїв «vhost-user»"
@@ -37384,7 +37390,7 @@ msgstr "не вдалося виконати керування прапорце
 
 #, c-format
 msgid "unable create new SELinux label based on label '%s' and file '%s'"
-msgstr ""
+msgstr "не вдалося створити мітку SELinux на основі мітки «%s» і файла «%s»"
 
 #, c-format
 msgid "unable get directory flags on '%s'"
@@ -37573,10 +37579,10 @@ msgstr "не вдалося отримати uid та gid для PID %d за д�
 
 #, c-format
 msgid "unable to get SELinux context for '%s'"
-msgstr ""
+msgstr "не вдалося отримати контекст SELinux для «%s»"
 
 msgid "unable to get SELinux context for current process"
-msgstr ""
+msgstr "не вдалося отримати контекст SELinux для поточного процесу"
 
 #, c-format
 msgid "unable to get SELinux context of %s"
@@ -39687,6 +39693,8 @@ msgstr "підтримки типу відео %s у libxl не передбач
 #, c-format
 msgid "video type '%s' does not support blob resources"
 msgstr ""
+"для типу відео «%s» не передбачено підтримки ресурсів, які є великими "
+"двійковими об'єктами"
 
 #, c-format
 msgid "video type '%s' doesn't support multiple 'heads'"
