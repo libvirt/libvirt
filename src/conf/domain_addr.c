@@ -962,21 +962,19 @@ virDomainPCIAddressSetExtensionFree(virDomainZPCIAddressIds *zpciIds)
 }
 
 
-static int
+static void
 virDomainPCIAddressSetExtensionAlloc(virDomainPCIAddressSet *addrs,
                                      virPCIDeviceAddressExtensionFlags extFlags)
 {
     if (extFlags & VIR_PCI_ADDRESS_EXTENSION_ZPCI) {
         if (addrs->zpciIds)
-            return 0;
+            return;
 
         addrs->zpciIds = g_new0(virDomainZPCIAddressIds, 1);
 
         addrs->zpciIds->uids = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, NULL);
         addrs->zpciIds->fids = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, NULL);
     }
-
-    return 0;
 }
 
 
@@ -990,14 +988,9 @@ virDomainPCIAddressSetAlloc(unsigned int nbuses,
     addrs->buses = g_new0(virDomainPCIAddressBus, nbuses);
     addrs->nbuses = nbuses;
 
-    if (virDomainPCIAddressSetExtensionAlloc(addrs, extFlags) < 0)
-        goto error;
+    virDomainPCIAddressSetExtensionAlloc(addrs, extFlags);
 
     return addrs;
-
- error:
-    virDomainPCIAddressSetFree(addrs);
-    return NULL;
 }
 
 
