@@ -3627,6 +3627,7 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
                               "T:unarmed", unarmed,
                               "s:memdev", memdev,
                               "B:prealloc", prealloc,
+                              "P:memaddr", mem->address,
                               "s:id", mem->info.alias,
                               NULL) < 0)
         return NULL;

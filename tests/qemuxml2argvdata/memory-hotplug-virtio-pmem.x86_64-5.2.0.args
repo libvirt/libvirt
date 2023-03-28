@@ -30,7 +30,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -object memory-backend-file,id=memvirtiopmem0,mem-path=/tmp/virtio_pmem,share=on,size=536870912 \
--device virtio-pmem-pci,memdev=memvirtiopmem0,id=virtiopmem0,bus=pci.0,addr=0x5 \
+-device virtio-pmem-pci,memdev=memvirtiopmem0,memaddr=5368709120,id=virtiopmem0,bus=pci.0,addr=0x5 \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device ide-hd,bus=ide.0,unit=0,drive=libvirt-1-format,id=ide0-0-0,bootindex=1 \

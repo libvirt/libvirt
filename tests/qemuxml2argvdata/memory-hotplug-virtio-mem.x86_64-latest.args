@@ -32,7 +32,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -object '{"qom-type":"memory-backend-ram","id":"memvirtiomem0","reserve":false,"size":1073741824}' \
 -device '{"driver":"virtio-mem-pci","node":0,"block-size":2097152,"requested-size":536870912,"memdev":"memvirtiomem0","id":"virtiomem0","bus":"pci.0","addr":"0x2"}' \
 -object '{"qom-type":"memory-backend-file","id":"memvirtiomem1","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1","reserve":false,"size":2147483648,"host-nodes":[1,2,3],"policy":"bind"}' \
--device '{"driver":"virtio-mem-pci","node":0,"block-size":2097152,"requested-size":1073741824,"memdev":"memvirtiomem1","prealloc":true,"id":"virtiomem1","bus":"pci.1","addr":"0x1"}' \
+-device '{"driver":"virtio-mem-pci","node":0,"block-size":2097152,"requested-size":1073741824,"memdev":"memvirtiomem1","prealloc":true,"memaddr":5637144576,"id":"virtiomem1","bus":"pci.1","addr":"0x1"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-format","id":"ide0-0-0","bootindex":1}' \
