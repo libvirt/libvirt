@@ -7268,6 +7268,7 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:
         case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
             /* While 'id' attribute is marked as optional in QEMU's QAPI
              * specification, Libvirt always sets it. Thus we can fail if not
              * present. */
@@ -7308,11 +7309,19 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
                     return -1;
 
                 }
-            } else if (model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM) {
+            } else if (model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM ||
+                       model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM) {
                 if (virJSONValueObjectGetNumberUlong(dimminfo, "size",
                                                      &meminfo->size) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("malformed/missing size in virtio memory info"));
+                    return -1;
+                }
+
+                if (virJSONValueObjectGetNumberUlong(dimminfo, "memaddr",
+                                                     &meminfo->address) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("malformed/missing memaddr in virtio memory info"));
                     return -1;
                 }
             }
@@ -7339,7 +7348,6 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
             }
             break;
 
-        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
         case VIR_DOMAIN_MEMORY_MODEL_NONE:
         case VIR_DOMAIN_MEMORY_MODEL_LAST:
             /* type not handled yet */

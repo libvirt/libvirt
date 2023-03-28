@@ -8544,7 +8544,11 @@ qemuDomainUpdateMemoryDeviceInfo(virDomainObj *vm,
 
         switch (mem->model) {
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-            mem->currentsize = VIR_DIV_UP(dimm->size, 1024);
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+            if (mem->model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM) {
+                mem->currentsize = VIR_DIV_UP(dimm->size, 1024);
+            }
+            mem->address = dimm->address;
             break;
 
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:
@@ -8554,7 +8558,6 @@ qemuDomainUpdateMemoryDeviceInfo(virDomainObj *vm,
             mem->info.addr.dimm.base = dimm->address;
             break;
 
-        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
         case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
         case VIR_DOMAIN_MEMORY_MODEL_NONE:
         case VIR_DOMAIN_MEMORY_MODEL_LAST:
