@@ -47,6 +47,7 @@
       </source>
       <target>
         <size unit='KiB'>524288</size>
+        <address base='0x140000000'/>
       </target>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </memory>

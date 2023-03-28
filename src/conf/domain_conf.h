@@ -2652,6 +2652,8 @@ struct _virDomainMemoryDef {
     unsigned long long currentsize; /* kibibytes, valid for VIRTIO_MEM and
                                        active domain only, only to report never
                                        parse */
+    unsigned long long address; /* address where memory is mapped, valid for
+                                   VIRTIO_PMEM and VIRTIO_MEM only. */
     bool readonly; /* valid only for NVDIMM */
 
     /* required for QEMU NVDIMM ppc64 support */

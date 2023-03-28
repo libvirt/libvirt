@@ -8129,6 +8129,7 @@ Example: usage of the memory devices
        </source>
        <target>
          <size unit='KiB'>524288</size>
+         <address base='0x140000000'/>
        </target>
      </memory>
      <memory model='virtio-mem'>
@@ -8142,6 +8143,7 @@ Example: usage of the memory devices
          <block unit='KiB'>2048</block>
          <requested unit='KiB'>1048576</requested>
          <current unit='KiB'>524288</current>
+         <address base='0x150000000'/>
        </target>
      </memory>
      <memory model='sgx-epc'>
@@ -8284,6 +8286,11 @@ Example: usage of the memory devices
      reflects the current size of the corresponding virtio memory device. The
      element is formatted into live XML and never parsed, i.e. it is
      output-only element.
+
+   ``address``
+     For ``virtio-mem`` and ``virtio-pmem`` only.
+     The physical address in memory, where device is mapped. :since:`Since
+     9.4.0`
 
 
 IOMMU devices

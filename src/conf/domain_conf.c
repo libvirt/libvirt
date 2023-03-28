@@ -13318,6 +13318,7 @@ virDomainMemoryTargetDefParseXML(xmlNodePtr node,
                                  virDomainMemoryDef *def)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
+    xmlNodePtr addrNode = NULL;
     int rv;
 
     ctxt->node = node;
@@ -13363,14 +13364,25 @@ virDomainMemoryTargetDefParseXML(xmlNodePtr node,
         if (virDomainParseMemory("./requested", "./requested/@unit", ctxt,
                                  &def->requestedsize, false, false) < 0)
             return -1;
+
+        addrNode = virXPathNode("./address", ctxt);
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        addrNode = virXPathNode("./address", ctxt);
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
-    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         break;
+    }
+
+    if (addrNode &&
+        virXMLPropULongLong(addrNode, "base", 16,
+                            VIR_XML_PROP_NONE, &def->address) < 0) {
+        return -1;
     }
 
     return 0;
@@ -20952,6 +20964,13 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDef *src,
         return false;
     }
 
+    if (src->address != dst->address) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target memory device address '0x%1$llx' doesn't match source memory device address '0x%2$llx'"),
+                       dst->address, src->address);
+        return false;
+    }
+
     if (src->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
         if (src->labelsize != dst->labelsize) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -25119,6 +25138,9 @@ virDomainMemoryTargetDefFormat(virBuffer *buf,
                               def->currentsize);
         }
     }
+
+    if (def->address)
+        virBufferAsprintf(&childBuf, "<address base='0x%llx'/>\n", def->address);
 
     virXMLFormatElement(buf, "target", NULL, &childBuf);
 }

@@ -2355,6 +2355,12 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
                            _("requested size must be an integer multiple of block size"));
             return -1;
         }
+
+        if (mem->address % mem->blocksize != 0) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("memory device address must be aligned to blocksize"));
+            return -1;
+        }
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:

@@ -7177,6 +7177,13 @@
             <empty/>
           </element>
         </optional>
+        <optional>
+          <element name="address">
+            <attribute name="base">
+              <ref name="hexuint"/>
+            </attribute>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>
