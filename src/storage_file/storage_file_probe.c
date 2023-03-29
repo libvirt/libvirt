@@ -586,8 +586,8 @@ vmdk4GetBackingStore(char **res,
         return BACKING_STORE_INVALID;
 
     len = buf_size - 0x200;
-    if (len > VIR_STORAGE_MAX_HEADER)
-        len = VIR_STORAGE_MAX_HEADER;
+    if (len >= VIR_STORAGE_MAX_HEADER)
+        len = VIR_STORAGE_MAX_HEADER - 1;
     memcpy(desc, buf + 0x200, len);
     desc[len] = '\0';
     start = strstr(desc, prefix);
