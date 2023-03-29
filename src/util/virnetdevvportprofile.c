@@ -577,8 +577,7 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
                    virUUIDFormat(instanceId, instanceIdStr);
 
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Could not find vf/instanceId %u/%s "
-                                 " in netlink response"),
+                               _("Could not find vf/instanceId %u/%s in netlink response"),
                                vf, instanceIdStr);
 
                 /* go through all the entries again. This seems tedious,

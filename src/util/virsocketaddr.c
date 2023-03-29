@@ -906,8 +906,7 @@ virSocketAddrGetRange(virSocketAddr *start, virSocketAddr *end,
             virSocketAddrPrefixToNetmask(prefix, &netmask,
                                          VIR_SOCKET_ADDR_FAMILY(network)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("bad prefix %d for network %s when "
-                             " checking range %s - %s"),
+                           _("bad prefix %d for network %s when checking range %s - %s"),
                            prefix, netStr, startStr, endStr);
             return -1;
         }

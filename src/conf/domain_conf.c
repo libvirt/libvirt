@@ -14881,8 +14881,7 @@ virDomainControllerAliasFind(const virDomainDef *def,
     }
     if (!def->controllers[contIndex]->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Device alias was not set for %s controller "
-                         "with index %d "),
+                       _("Device alias was not set for %s controller with index %d"),
                        contTypeStr, idx);
         return NULL;
     }
