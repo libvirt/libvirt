@@ -19585,8 +19585,7 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfo *src,
             src->addr.pci.slot != dst->addr.pci.slot ||
             src->addr.pci.function != dst->addr.pci.function) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Target device PCI address " VIR_PCI_DEVICE_ADDRESS_FMT
-                             "does not match source " VIR_PCI_DEVICE_ADDRESS_FMT),
+                           _("Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:%02x.%d"),
                            dst->addr.pci.domain, dst->addr.pci.bus,
                            dst->addr.pci.slot, dst->addr.pci.function,
                            src->addr.pci.domain, src->addr.pci.bus,

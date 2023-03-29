@@ -3082,8 +3082,7 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivate *driver,
 
     if (virDomainHostdevFind(vm->def, hostdev, &found) >= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("target pci device " VIR_PCI_DEVICE_ADDRESS_FMT
-                         " already exists"),
+                       _("target pci device %04x:%02x:%02x.%d already exists"),
                        pcisrc->addr.domain, pcisrc->addr.bus,
                        pcisrc->addr.slot, pcisrc->addr.function);
         goto cleanup;
@@ -3101,8 +3100,7 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivate *driver,
 
     if (libxl_device_pci_add(cfg->ctx, vm->def->id, &pcidev, 0) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("libxenlight failed to attach pci device "
-                         VIR_PCI_DEVICE_ADDRESS_FMT),
+                       _("libxenlight failed to attach pci device %04x:%02x:%02x.%d"),
                        pcisrc->addr.domain, pcisrc->addr.bus,
                        pcisrc->addr.slot, pcisrc->addr.function);
         goto error;
@@ -3659,8 +3657,7 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivate *driver,
     idx = virDomainHostdevFind(vm->def, hostdev, &detach);
     if (idx < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("host pci device " VIR_PCI_DEVICE_ADDRESS_FMT
-                         " not found"),
+                       _("host pci device %04x:%02x:%02x.%d not found"),
                        pcisrc->addr.domain, pcisrc->addr.bus,
                        pcisrc->addr.slot, pcisrc->addr.function);
         goto cleanup;
@@ -3668,8 +3665,7 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivate *driver,
 
     if (libxlIsMultiFunctionDevice(vm->def, detach->info)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("cannot hot unplug multifunction PCI device: "
-                         VIR_PCI_DEVICE_ADDRESS_FMT),
+                       _("cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"),
                        pcisrc->addr.domain, pcisrc->addr.bus,
                        pcisrc->addr.slot, pcisrc->addr.function);
         goto error;
@@ -3681,8 +3677,7 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivate *driver,
 
     if (libxl_device_pci_remove(cfg->ctx, vm->def->id, &pcidev, 0) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("libxenlight failed to detach pci device "
-                         VIR_PCI_DEVICE_ADDRESS_FMT),
+                       _("libxenlight failed to detach pci device %04x:%02x:%02x.%d"),
                        pcisrc->addr.domain, pcisrc->addr.bus,
                        pcisrc->addr.slot, pcisrc->addr.function);
         goto error;

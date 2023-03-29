@@ -5520,8 +5520,7 @@ qemuDomainDetachPrepHostdev(virDomainObj *vm,
         switch (subsys->type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             virReportError(VIR_ERR_DEVICE_MISSING,
-                           _("host pci device " VIR_PCI_DEVICE_ADDRESS_FMT
-                             " not found"),
+                           _("host pci device %04x:%02x:%02x.%d not found"),
                            pcisrc->addr.domain, pcisrc->addr.bus,
                            pcisrc->addr.slot, pcisrc->addr.function);
             break;
@@ -6024,8 +6023,7 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
 
     if (qemuIsMultiFunctionDevice(vm->def, info)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("cannot hot unplug %s device with multifunction PCI guest address: "
-                         VIR_PCI_DEVICE_ADDRESS_FMT),
+                       _("cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:%02x.%d"),
                        virDomainDeviceTypeToString(detach.type),
                        info->addr.pci.domain, info->addr.pci.bus,
                        info->addr.pci.slot, info->addr.pci.function);
@@ -6040,9 +6038,7 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
                                                     info->addr.pci.bus);
         if (controllerIdx < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("cannot hot unplug %s device with PCI guest address: "
-                             VIR_PCI_DEVICE_ADDRESS_FMT
-                             " - controller not found"),
+                           _("cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - controller not found"),
                            virDomainDeviceTypeToString(detach.type),
                            info->addr.pci.domain, info->addr.pci.bus,
                            info->addr.pci.slot, info->addr.pci.function);
@@ -6052,9 +6048,7 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
         controller = vm->def->controllers[controllerIdx];
         if (controller->opts.pciopts.hotplug == VIR_TRISTATE_SWITCH_OFF) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("cannot hot unplug %s device with PCI guest address: "
-                             VIR_PCI_DEVICE_ADDRESS_FMT
-                             " - not allowed by controller"),
+                           _("cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not allowed by controller"),
                            virDomainDeviceTypeToString(detach.type),
                            info->addr.pci.domain, info->addr.pci.bus,
                            info->addr.pci.slot, info->addr.pci.function);
