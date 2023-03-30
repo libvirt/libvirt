@@ -65,10 +65,6 @@ else
 endif
 
 
-virgdbusmock_dep = declare_dependency(
-  compile_args: [ '-DGIO_COMPILATION' ]
-)
-
 # mock_libs:
 #   each entry is a dictionary with following items:
 #   * name - mock library name which is also used as default source file name (required)
@@ -105,7 +101,7 @@ endif
 
 if host_machine.system() != 'windows'
   mock_libs += [
-    { 'name': 'virgdbusmock', 'deps': [ virgdbusmock_dep] },
+    { 'name': 'virgdbusmock' },
   ]
 endif
 
