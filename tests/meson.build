@@ -82,7 +82,6 @@ mock_libs = [
   { 'name': 'virdnsmasqmock' },
   { 'name': 'virfilecachemock' },
   { 'name': 'virfirewallmock' },
-  { 'name': 'virgdbusmock', 'deps': [ virgdbusmock_dep] },
   { 'name': 'virhostcpumock' },
   { 'name': 'virhostdevmock' },
   { 'name': 'virnetdaemonmock' },
@@ -101,6 +100,12 @@ if host_machine.system() == 'linux'
     { 'name': 'virnetdevbandwidthmock' },
     { 'name': 'virtestmock' },
     { 'name': 'virusbmock' },
+  ]
+endif
+
+if host_machine.system() != 'windows'
+  mock_libs += [
+    { 'name': 'virgdbusmock', 'deps': [ virgdbusmock_dep] },
   ]
 endif
 
