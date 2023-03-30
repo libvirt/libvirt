@@ -2606,13 +2606,7 @@ virDomainHostdevDefClear(virDomainHostdevDef *def)
     if (!def)
         return;
 
-    /* Free all resources in the hostdevdef. Currently the only
-     * such resource is the virDomainDeviceInfo.
-     */
-
-    /* If there is a parentnet device object, it will handle freeing
-     * def->info.
-     */
+    /* Device info is freed elsewhere with 'parentnet' if present. */
     if (!def->parentnet)
         virDomainDeviceInfoFree(def->info);
 
