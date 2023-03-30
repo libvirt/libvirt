@@ -461,7 +461,6 @@ virDomainGraphicsVNCSharePolicyTypeFromString;
 virDomainGraphicsVNCSharePolicyTypeToString;
 virDomainHasNet;
 virDomainHostdevCapsTypeToString;
-virDomainHostdevDefClear;
 virDomainHostdevDefFree;
 virDomainHostdevDefNew;
 virDomainHostdevFind;

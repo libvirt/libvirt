@@ -2587,6 +2587,75 @@ void virDomainFSDefFree(virDomainFSDef *def)
     g_free(def);
 }
 
+
+static void
+virDomainHostdevSubsysSCSIClear(virDomainHostdevSubsysSCSI *scsisrc)
+{
+    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+        g_clear_pointer(&scsisrc->u.iscsi.src, virObjectUnref);
+    } else {
+        VIR_FREE(scsisrc->u.host.adapter);
+        g_clear_pointer(&scsisrc->u.host.src, virObjectUnref);
+    }
+}
+
+
+static void
+virDomainHostdevDefClear(virDomainHostdevDef *def)
+{
+    if (!def)
+        return;
+
+    /* Free all resources in the hostdevdef. Currently the only
+     * such resource is the virDomainDeviceInfo.
+     */
+
+    /* If there is a parentnet device object, it will handle freeing
+     * def->info.
+     */
+    if (!def->parentnet)
+        virDomainDeviceInfoFree(def->info);
+
+    virDomainNetTeamingInfoFree(def->teaming);
+
+    switch (def->mode) {
+    case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
+        switch ((virDomainHostdevCapsType) def->source.caps.type) {
+        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
+            VIR_FREE(def->source.caps.u.storage.block);
+            break;
+        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
+            VIR_FREE(def->source.caps.u.misc.chardev);
+            break;
+        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
+            VIR_FREE(def->source.caps.u.net.ifname);
+            virNetDevIPInfoClear(&def->source.caps.u.net.ip);
+            break;
+        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST:
+            break;
+        }
+        break;
+    case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
+        switch ((virDomainHostdevSubsysType) def->source.subsys.type) {
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+            virDomainHostdevSubsysSCSIClear(&def->source.subsys.u.scsi);
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+            VIR_FREE(def->source.subsys.u.scsi_host.wwpn);
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+            g_clear_pointer(&def->source.subsys.u.pci.origstates, virBitmapFree);
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
+            break;
+        }
+        break;
+    }
+}
+
+
 void
 virDomainActualNetDefFree(virDomainActualNetDef *def)
 {
@@ -3326,72 +3395,6 @@ virDomainHostdevDefNew(void)
     return def;
 }
 
-
-static void
-virDomainHostdevSubsysSCSIClear(virDomainHostdevSubsysSCSI *scsisrc)
-{
-    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
-        g_clear_pointer(&scsisrc->u.iscsi.src, virObjectUnref);
-    } else {
-        VIR_FREE(scsisrc->u.host.adapter);
-        g_clear_pointer(&scsisrc->u.host.src, virObjectUnref);
-    }
-}
-
-
-void virDomainHostdevDefClear(virDomainHostdevDef *def)
-{
-    if (!def)
-        return;
-
-    /* Free all resources in the hostdevdef. Currently the only
-     * such resource is the virDomainDeviceInfo.
-     */
-
-    /* If there is a parentnet device object, it will handle freeing
-     * def->info.
-     */
-    if (!def->parentnet)
-        virDomainDeviceInfoFree(def->info);
-
-    virDomainNetTeamingInfoFree(def->teaming);
-
-    switch (def->mode) {
-    case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
-        switch ((virDomainHostdevCapsType) def->source.caps.type) {
-        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
-            VIR_FREE(def->source.caps.u.storage.block);
-            break;
-        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
-            VIR_FREE(def->source.caps.u.misc.chardev);
-            break;
-        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
-            VIR_FREE(def->source.caps.u.net.ifname);
-            virNetDevIPInfoClear(&def->source.caps.u.net.ip);
-            break;
-        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST:
-            break;
-        }
-        break;
-    case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
-        switch ((virDomainHostdevSubsysType) def->source.subsys.type) {
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-            virDomainHostdevSubsysSCSIClear(&def->source.subsys.u.scsi);
-            break;
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
-            VIR_FREE(def->source.subsys.u.scsi_host.wwpn);
-            break;
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-            g_clear_pointer(&def->source.subsys.u.pci.origstates, virBitmapFree);
-            break;
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
-            break;
-        }
-        break;
-    }
-}
 
 static virDomainTPMDef *
 virDomainTPMDefNew(virDomainXMLOption *xmlopt)
