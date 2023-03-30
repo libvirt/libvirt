@@ -3384,7 +3384,7 @@ void virDomainHostdevDefClear(virDomainHostdevDef *def)
             VIR_FREE(def->source.subsys.u.scsi_host.wwpn);
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-            virBitmapFree(def->source.subsys.u.pci.origstates);
+            g_clear_pointer(&def->source.subsys.u.pci.origstates, virBitmapFree);
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
