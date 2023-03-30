@@ -325,6 +325,14 @@ Web applications
    `cockpit-machines <https://github.com/cockpit-project/cockpit-machines>`__
    it can create and manage virtual machines via libvirt.
 
+Backup
+------
+
+`virtnbdbackup <https://github.com/abbbi/virtnbdbackup>`__
+   Backup utility for libvirt, using the latest changed block tracking features:
+   Create online, thin provisioned full and incremental or differential backups
+   of your kvm/qemu virtual machines.
+
 Other
 -----
 
