@@ -788,10 +788,6 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-# if 0
-VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virgdbus"),
-                      VIR_TEST_MOCK("virfirewall"))
-# endif
 VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virfirewall"))
 
 #else /* ! defined (__linux__) */
