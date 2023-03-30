@@ -87,7 +87,7 @@ function install_buildenv() {
             libyajl-dev:s390x \
             systemtap-sdt-dev:s390x
     mkdir -p /usr/local/share/meson/cross
-    echo "[binaries]\n\
+    printf "[binaries]\n\
 c = '/usr/bin/s390x-linux-gnu-gcc'\n\
 ar = '/usr/bin/s390x-linux-gnu-gcc-ar'\n\
 strip = '/usr/bin/s390x-linux-gnu-strip'\n\
@@ -97,7 +97,7 @@ pkgconfig = '/usr/bin/s390x-linux-gnu-pkg-config'\n\
 system = 'linux'\n\
 cpu_family = 's390x'\n\
 cpu = 's390x'\n\
-endian = 'big'" > /usr/local/share/meson/cross/s390x-linux-gnu
+endian = 'big'\n" > /usr/local/share/meson/cross/s390x-linux-gnu
     dpkg-query --showformat '${Package}_${Version}_${Architecture}\n' --show > /packages.txt
     mkdir -p /usr/libexec/ccache-wrappers
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/s390x-linux-gnu-cc

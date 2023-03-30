@@ -87,7 +87,7 @@ function install_buildenv() {
             libyajl-dev:mipsel \
             systemtap-sdt-dev:mipsel
     mkdir -p /usr/local/share/meson/cross
-    echo "[binaries]\n\
+    printf "[binaries]\n\
 c = '/usr/bin/mipsel-linux-gnu-gcc'\n\
 ar = '/usr/bin/mipsel-linux-gnu-gcc-ar'\n\
 strip = '/usr/bin/mipsel-linux-gnu-strip'\n\
@@ -97,7 +97,7 @@ pkgconfig = '/usr/bin/mipsel-linux-gnu-pkg-config'\n\
 system = 'linux'\n\
 cpu_family = 'mips'\n\
 cpu = 'mipsel'\n\
-endian = 'little'" > /usr/local/share/meson/cross/mipsel-linux-gnu
+endian = 'little'\n" > /usr/local/share/meson/cross/mipsel-linux-gnu
     dpkg-query --showformat '${Package}_${Version}_${Architecture}\n' --show > /packages.txt
     mkdir -p /usr/libexec/ccache-wrappers
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/mipsel-linux-gnu-cc

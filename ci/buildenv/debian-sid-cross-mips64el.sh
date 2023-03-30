@@ -87,7 +87,7 @@ function install_buildenv() {
             libyajl-dev:mips64el \
             systemtap-sdt-dev:mips64el
     mkdir -p /usr/local/share/meson/cross
-    echo "[binaries]\n\
+    printf "[binaries]\n\
 c = '/usr/bin/mips64el-linux-gnuabi64-gcc'\n\
 ar = '/usr/bin/mips64el-linux-gnuabi64-gcc-ar'\n\
 strip = '/usr/bin/mips64el-linux-gnuabi64-strip'\n\
@@ -97,7 +97,7 @@ pkgconfig = '/usr/bin/mips64el-linux-gnuabi64-pkg-config'\n\
 system = 'linux'\n\
 cpu_family = 'mips64'\n\
 cpu = 'mips64el'\n\
-endian = 'little'" > /usr/local/share/meson/cross/mips64el-linux-gnuabi64
+endian = 'little'\n" > /usr/local/share/meson/cross/mips64el-linux-gnuabi64
     dpkg-query --showformat '${Package}_${Version}_${Architecture}\n' --show > /packages.txt
     mkdir -p /usr/libexec/ccache-wrappers
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/mips64el-linux-gnuabi64-cc

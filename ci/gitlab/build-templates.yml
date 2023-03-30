@@ -181,7 +181,7 @@
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
       changes:
         - ci/gitlab/container-templates.yml
-        - ci/containers/$NAME.Dockerfile
+        - ci/containers/$NAME-cross-$CROSS.Dockerfile
       when: never
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $JOB_OPTIONAL'
       when: manual
@@ -197,7 +197,7 @@
   stage: builds
   interruptible: true
   before_script:
-    - source ci/buildenv/$NAME.sh
+    - source ci/buildenv/$NAME-cross-$CROSS.sh
     - install_buildenv
     - cat /packages.txt
   rules:
@@ -237,13 +237,13 @@
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $JOB_OPTIONAL'
       changes:
         - ci/gitlab/container-templates.yml
-        - ci/containers/$NAME.Dockerfile
+        - ci/containers/$NAME-cross-$CROSS.Dockerfile
       when: manual
       allow_failure: true
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
       changes:
         - ci/gitlab/container-templates.yml
-        - ci/containers/$NAME.Dockerfile
+        - ci/containers/$NAME-cross-$CROSS.Dockerfile
       when: on_success
 
     # upstream+forks: merge requests targeting non-default branches
@@ -266,6 +266,7 @@
     - source ci/cirrus/$NAME.vars
     - sed -e "s|[@]CI_REPOSITORY_URL@|$CI_REPOSITORY_URL|g"
           -e "s|[@]CI_COMMIT_REF_NAME@|$CI_COMMIT_REF_NAME|g"
+          -e "s|[@]CI_MERGE_REQUEST_REF_PATH@|$CI_MERGE_REQUEST_REF_PATH|g"
           -e "s|[@]CI_COMMIT_SHA@|$CI_COMMIT_SHA|g"
           -e "s|[@]CIRRUS_VM_INSTANCE_TYPE@|$CIRRUS_VM_INSTANCE_TYPE|g"
           -e "s|[@]CIRRUS_VM_IMAGE_SELECTOR@|$CIRRUS_VM_IMAGE_SELECTOR|g"

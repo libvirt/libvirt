@@ -88,7 +88,7 @@ function install_buildenv() {
             libyajl-dev:arm64 \
             systemtap-sdt-dev:arm64
     mkdir -p /usr/local/share/meson/cross
-    echo "[binaries]\n\
+    printf "[binaries]\n\
 c = '/usr/bin/aarch64-linux-gnu-gcc'\n\
 ar = '/usr/bin/aarch64-linux-gnu-gcc-ar'\n\
 strip = '/usr/bin/aarch64-linux-gnu-strip'\n\
@@ -98,7 +98,7 @@ pkgconfig = '/usr/bin/aarch64-linux-gnu-pkg-config'\n\
 system = 'linux'\n\
 cpu_family = 'aarch64'\n\
 cpu = 'aarch64'\n\
-endian = 'little'" > /usr/local/share/meson/cross/aarch64-linux-gnu
+endian = 'little'\n" > /usr/local/share/meson/cross/aarch64-linux-gnu
     dpkg-query --showformat '${Package}_${Version}_${Architecture}\n' --show > /packages.txt
     mkdir -p /usr/libexec/ccache-wrappers
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/aarch64-linux-gnu-cc
