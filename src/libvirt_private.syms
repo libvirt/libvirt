@@ -3414,7 +3414,6 @@ virStringToUpper;
 virStringTrimOptionalNewline;
 virStrToDouble;
 virStrToLong_i;
-virStrToLong_l;
 virStrToLong_ll;
 virStrToLong_ui;
 virStrToLong_uip;

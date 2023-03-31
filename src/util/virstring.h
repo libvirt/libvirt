@@ -38,11 +38,6 @@ int virStrToLong_uip(char const *s,
                      int base,
                      unsigned int *result)
     G_GNUC_WARN_UNUSED_RESULT;
-int virStrToLong_l(char const *s,
-                   char **end_ptr,
-                   int base,
-                   long *result)
-    G_GNUC_WARN_UNUSED_RESULT;
 int virStrToLong_ul(char const *s,
                     char **end_ptr,
                     int base,

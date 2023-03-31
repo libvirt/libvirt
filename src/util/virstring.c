@@ -113,24 +113,7 @@ virStrToLong_uip(char const *s, char **end_ptr, int base, unsigned int *result)
     return 0;
 }
 
-/* Just like virStrToLong_i, above, but produce a "long" value.  */
-int
-virStrToLong_l(char const *s, char **end_ptr, int base, long *result)
-{
-    long int val;
-    char *p;
-    int err;
-
-    errno = 0;
-    val = strtol(s, &p, base); /* exempt from syntax-check */
-    err = (errno || (!end_ptr && *p) || p == s);
-    if (end_ptr)
-        *end_ptr = p;
-    if (err)
-        return -1;
-    *result = val;
-    return 0;
-}
+/* virStrToLong_l is intentionally skipped, consider virStrToLong_ll instead */
 
 /* Just like virStrToLong_i, above, but produce an "unsigned long"
  * value.  This version allows twos-complement wraparound of negative
