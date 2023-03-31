@@ -9937,7 +9937,7 @@ qemuDomainMemoryStatsInternal(virDomainObj *vm,
 
 {
     int ret = -1;
-    long rss;
+    unsigned long long rss;
 
     if (virDomainObjCheckActive(vm) < 0)
         return -1;

@@ -23,6 +23,7 @@
 #include <config.h>
 
 #include <fcntl.h>
+#include <limits.h>
 #include <signal.h>
 #ifndef WIN32
 # include <sys/wait.h>
@@ -1739,7 +1740,7 @@ virProcessGetStatInfo(unsigned long long *cpuTime,
                       unsigned long long *userTime,
                       unsigned long long *sysTime,
                       int *lastCpu,
-                      long *vm_rss,
+                      unsigned long long *vm_rss,
                       pid_t pid,
                       pid_t tid)
 {
@@ -1748,14 +1749,16 @@ virProcessGetStatInfo(unsigned long long *cpuTime,
     unsigned long long stime = 0;
     const unsigned long long jiff2nsec = 1000ull * 1000ull * 1000ull /
                                          (unsigned long long) sysconf(_SC_CLK_TCK);
-    long rss = 0;
+    const long pagesize = virGetSystemPageSizeKB();
+    unsigned long long rss = 0;
     int cpu = 0;
 
     if (!proc_stat ||
         virStrToLong_ullp(proc_stat[VIR_PROCESS_STAT_UTIME], NULL, 10, &utime) < 0 ||
         virStrToLong_ullp(proc_stat[VIR_PROCESS_STAT_STIME], NULL, 10, &stime) < 0 ||
-        virStrToLong_l(proc_stat[VIR_PROCESS_STAT_RSS], NULL, 10, &rss) < 0 ||
-        virStrToLong_i(proc_stat[VIR_PROCESS_STAT_PROCESSOR], NULL, 10, &cpu) < 0) {
+        virStrToLong_ullp(proc_stat[VIR_PROCESS_STAT_RSS], NULL, 10, &rss) < 0 ||
+        virStrToLong_i(proc_stat[VIR_PROCESS_STAT_PROCESSOR], NULL, 10, &cpu) < 0 ||
+        rss > ULLONG_MAX / pagesize) {
         VIR_WARN("cannot parse process status data");
     }
 
@@ -1771,10 +1774,10 @@ virProcessGetStatInfo(unsigned long long *cpuTime,
         *lastCpu = cpu;
 
     if (vm_rss)
-        *vm_rss = rss * virGetSystemPageSizeKB();
+        *vm_rss = rss * pagesize;
 
 
-    VIR_DEBUG("Got status for %d/%d user=%llu sys=%llu cpu=%d rss=%ld",
+    VIR_DEBUG("Got status for %d/%d user=%llu sys=%llu cpu=%d rss=%lld",
               (int) pid, tid, utime, stime, cpu, rss);
 
     return 0;
@@ -1851,7 +1854,7 @@ virProcessGetStatInfo(unsigned long long *cpuTime,
                       unsigned long long *userTime,
                       unsigned long long *sysTime,
                       int *lastCpu,
-                      long *vm_rss,
+                      unsigned long long *vm_rss,
                       pid_t pid G_GNUC_UNUSED,
                       pid_t tid G_GNUC_UNUSED)
 {
