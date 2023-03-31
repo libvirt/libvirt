@@ -150,7 +150,7 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-    VIR_CRYPTO_ENCRYPT(VIR_CRYPTO_CIPHER_AES256CBC, "aes265cbc",
+    VIR_CRYPTO_ENCRYPT(VIR_CRYPTO_CIPHER_AES256CBC, "aes256cbc",
                        secretdata, 7, expected_ciphertext, 16);
 
 #undef VIR_CRYPTO_ENCRYPT
