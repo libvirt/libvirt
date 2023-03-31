@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-03-24 16:18+0000\n"
-"PO-Revision-Date: 2023-02-27 14:20+0000\n"
+"PO-Revision-Date: 2023-03-31 08:20+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -12378,7 +12378,7 @@ msgstr "인터페이스 수, %d가 최대 제한을 초과함: %d"
 
 #, c-format
 msgid "Number of keys %d, which exceeds max limit: %d"
-msgstr ""
+msgstr "최대 제한을 초과하는 키 %d의 수: %d"
 
 #, c-format
 msgid "Number of leases is %d, which exceeds max limit: %d"
@@ -28420,7 +28420,7 @@ msgid "librbd encryption is supported only with RBD backed disks"
 msgstr "librbd 암호화는 RDB로 백업된 디스크로만 지원됩니다"
 
 msgid "librbd encryption layering is not supported by this QEMU binary"
-msgstr ""
+msgstr "librbd 암호 계층화는이 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "libssh transport error"
 msgstr "libssh 전송 오류"
@@ -28882,7 +28882,7 @@ msgid "lower boundary for worker thread pool"
 msgstr "작업자 쓰레드 풀의 최저 한계"
 
 msgid "luks-any encryption is not supported by this QEMU binary"
-msgstr ""
+msgstr "luks-any 암호화는 이 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "lxc state driver is not active"
 msgstr "lxc 상태 드라이버가 작동중이 아닙니다"
@@ -35708,7 +35708,7 @@ msgstr "sysctl을 통해 PID %d uid 및 gid를 가져올 수 없습니다"
 
 #, c-format
 msgid "unable to get SELinux context for '%s'"
-msgstr ""
+msgstr "'%s'를 위해 SELinux 문맥을 가져 올 수 없음"
 
 msgid "unable to get SELinux context for current process"
 msgstr ""
