@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-03-24 16:18+0000\n"
-"PO-Revision-Date: 2023-03-31 08:20+0000\n"
+"PO-Revision-Date: 2023-04-01 08:03+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/cs/>\n"
@@ -1883,7 +1883,7 @@ msgstr ""
 "Argumenty pod prvkem memnode neodpovídají existujícím NUMA buňkám hosta"
 
 msgid "At least one NUMA node has to have CPUs"
-msgstr ""
+msgstr "Je třeba, aby alespoň jeden NUMA uzel měl procesory"
 
 msgid "At least one PTY console is required"
 msgstr "Je vyžadována alespoň jedna PTY konzole"
@@ -1935,7 +1935,7 @@ msgstr "Připojené zařízení %s nemá typ"
 
 #, c-format
 msgid "Attaching devices of type %d is not implemented"
-msgstr ""
+msgstr "Připojování zařízení typu %d není implementováno"
 
 #, c-format
 msgid ""
@@ -14492,9 +14492,8 @@ msgstr "Vypnutí hosta $name se nepodařilo dokončit v časovém limitu."
 msgid "Shutting down guests on $uri URI..."
 msgstr "Vypínání hostů na URI $uri…"
 
-#, fuzzy
 msgid "Signal handling not available on this platform"
-msgstr "numad není na tomto stroji k dispozici"
+msgstr "Obsluha signálů není na této platformě k dispozici"
 
 #, c-format
 msgid ""
@@ -14549,7 +14548,7 @@ msgid "Snapshot List"
 msgstr "Seznam zachycených stavů"
 
 msgid "Snapshot delete"
-msgstr ""
+msgstr "Smazat zachycený stav"
 
 msgid "Snapshot is Null"
 msgstr "Zachycený stav je prázdný"
