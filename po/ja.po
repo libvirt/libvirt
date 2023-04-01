@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -4282,8 +4282,8 @@ msgid "Could not find variable '%s' in iterator"
 msgstr "反復子に変数 '%s' を見つけられませんでした"
 
 #, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
-msgstr "netlink の応答で vf/instanceId %u/%s が見つかりませんでした"
+msgid "Could not find vf/instanceId %u/%s in netlink response"
+msgstr ""
 
 #, c-format
 msgid "Could not find volume with name: %s"
@@ -5323,11 +5323,9 @@ msgstr "デバイス '%s' はアクティブではありません"
 msgid "Device '%s' is unrecognized, requires build"
 msgstr "デバイス '%s' が認識されないため、ビルドが必要です"
 
-#, fuzzy, c-format
-msgid "Device alias was not set for %s controller with index %d "
+#, c-format
+msgid "Device alias was not set for %s controller with index %d"
 msgstr ""
-"インデックス %2$d を持つ %1$s コントローラーにデバイスエイリアスは設定されま"
-"せんでした "
 
 #, c-format
 msgid ""
@@ -15367,8 +15365,11 @@ msgstr "ターゲットコントローラータイプ %s がソース %s と一�
 msgid "Target controller vectors %d does not match source %d"
 msgstr "ターゲットコントローラーベクトル %d がソース %d と一致しません"
 
-msgid "Target device PCI address "
-msgstr "ターゲットデバイスの PCI アドレス "
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -20734,11 +20735,9 @@ msgstr "不正な名前"
 msgid "bad pathname"
 msgstr "不正なパス名です"
 
-#, fuzzy, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
+#, c-format
+msgid "bad prefix %d for network %s when checking range %s - %s"
 msgstr ""
-"範囲 %3$s - %4$s をチェックする際に、ネットワーク %2$s の接頭辞 %1$d が正しく"
-"ありません"
 
 msgid "balloon device cannot be disabled"
 msgstr "バルーンデバイスを無効にすることはできません"
@@ -21882,17 +21881,26 @@ msgid "cannot halt after transient domain snapshot"
 msgstr "一時ドメインのスナップショット後に停止できません"
 
 #, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
-msgstr "PCI ゲストアドレスで %s デバイスをホットアンプラグできません: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
+msgstr ""
 
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
 msgstr ""
-"マルチファンクション PCI ゲストアドレスで %s デバイスをホットアンプラグできま"
-"せん: "
 
-msgid "cannot hot unplug multifunction PCI device: "
-msgstr "マルチファンクション PCI デバイスをホットアンプラグできません: "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
+msgstr ""
 
 msgid "cannot initialize agent condition"
 msgstr "エージェント条件を初期化できません"
@@ -27538,8 +27546,9 @@ msgstr "ホストマイグレーション TLS ディレクトリーが設定さ�
 msgid "host name for source of disk device"
 msgstr "ディスクデバイスのソースのホスト名"
 
-msgid "host pci device "
-msgstr "ホスト pci デバイス "
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
+msgstr ""
 
 #, c-format
 msgid "host pci device %s not found"
@@ -29105,8 +29114,9 @@ msgstr "libxenlight がディスク '%s' の接続に失敗しました"
 msgid "libxenlight failed to attach network device"
 msgstr "libxenlight がネットワークデバイスを接続できませんでした"
 
-msgid "libxenlight failed to attach pci device "
-msgstr "libxenlight が pci デバイスを接続できませんでした "
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
@@ -29136,8 +29146,9 @@ msgstr "libxenlight がディスク '%s' の切断に失敗しました"
 msgid "libxenlight failed to detach network device"
 msgstr "libxenlight がネットワークデバイスの切断に失敗しました"
 
-msgid "libxenlight failed to detach pci device "
-msgstr "libxenlight が pci デバイスの切断に失敗しました "
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -35480,8 +35491,9 @@ msgstr "ターゲットネットワーク名"
 msgid "target of disk device"
 msgstr "ディスクデバイスのターゲット"
 
-msgid "target pci device "
-msgstr "ターゲット pci デバイス "
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
+msgstr ""
 
 #, c-format
 msgid "target port '%d' already allocated"
@@ -39284,6 +39296,47 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Could not find vf/instanceId %u/%s  in netlink response"
+#~ msgstr "netlink の応答で vf/instanceId %u/%s が見つかりませんでした"
+
+#, fuzzy
+#~ msgid "Device alias was not set for %s controller with index %d "
+#~ msgstr ""
+#~ "インデックス %2$d を持つ %1$s コントローラーにデバイスエイリアスは設定され"
+#~ "ませんでした "
+
+#~ msgid "Target device PCI address "
+#~ msgstr "ターゲットデバイスの PCI アドレス "
+
+#, fuzzy
+#~ msgid "bad prefix %d for network %s when  checking range %s - %s"
+#~ msgstr ""
+#~ "範囲 %3$s - %4$s をチェックする際に、ネットワーク %2$s の接頭辞 %1$d が正"
+#~ "しくありません"
+
+#~ msgid "cannot hot unplug %s device with PCI guest address: "
+#~ msgstr "PCI ゲストアドレスで %s デバイスをホットアンプラグできません: "
+
+#~ msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+#~ msgstr ""
+#~ "マルチファンクション PCI ゲストアドレスで %s デバイスをホットアンプラグで"
+#~ "きません: "
+
+#~ msgid "cannot hot unplug multifunction PCI device: "
+#~ msgstr "マルチファンクション PCI デバイスをホットアンプラグできません: "
+
+#~ msgid "host pci device "
+#~ msgstr "ホスト pci デバイス "
+
+#~ msgid "libxenlight failed to attach pci device "
+#~ msgstr "libxenlight が pci デバイスを接続できませんでした "
+
+#~ msgid "libxenlight failed to detach pci device "
+#~ msgstr "libxenlight が pci デバイスの切断に失敗しました "
+
+#~ msgid "target pci device "
+#~ msgstr "ターゲット pci デバイス "
 
 #~ msgid "%s is not available with this QEMU binary"
 #~ msgstr "%s は、この QEMU バイナリーでは使用できません"

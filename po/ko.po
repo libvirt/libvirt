@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2023-04-01 08:03+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -4199,8 +4199,8 @@ msgid "Could not find variable '%s' in iterator"
 msgstr "반복자에서 변수 '%s'를 값을 찾을 수 없음"
 
 #, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
-msgstr "netlink 응답에서 vf/instanceId %u/%s을(를) 찾을 수 없습니다"
+msgid "Could not find vf/instanceId %u/%s in netlink response"
+msgstr ""
 
 #, c-format
 msgid "Could not find volume with name: %s"
@@ -5225,8 +5225,8 @@ msgid "Device '%s' is unrecognized, requires build"
 msgstr "장치 '%s'를인식할 수 없습니다. 빌드가 필요합니다"
 
 #, c-format
-msgid "Device alias was not set for %s controller with index %d "
-msgstr "장치 별명이 '%s' 제어기(색인 '%d'인)에 대한 설정이 없습니다 "
+msgid "Device alias was not set for %s controller with index %d"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -15027,8 +15027,11 @@ msgstr "대상 컨트롤러 유형 %s이 소스 %s와 일치하지 않음"
 msgid "Target controller vectors %d does not match source %d"
 msgstr "대상 컨트롤러 벡터 %d가 소스 %d와 일치하지 않음"
 
-msgid "Target device PCI address "
-msgstr "대상 장치 PCI 주소 "
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -20272,8 +20275,8 @@ msgid "bad pathname"
 msgstr "잘못된 경로 이름"
 
 #, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
-msgstr "잘못된 접두사 %d(네트워크 %s에 대한)  (범위 %s - %s를 점검 중일 때)"
+msgid "bad prefix %d for network %s when checking range %s - %s"
+msgstr ""
 
 msgid "balloon device cannot be disabled"
 msgstr "풍선 장치는 비활성화할 수 없습니다"
@@ -21393,15 +21396,26 @@ msgid "cannot halt after transient domain snapshot"
 msgstr "임시 도메인의 스냅샷 이후에는 중지 할 수 없습니다"
 
 #, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
-msgstr "PCI 게스트 주소가 있는 %s 장치를 핫 언플러그할 수 없습니다 "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
+msgstr ""
 
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
-msgstr "다기능 PCI 게스트 주소가 있는 %s 장치를 핫 언플러그할 수 없습니다: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
+msgstr ""
 
-msgid "cannot hot unplug multifunction PCI device: "
-msgstr "다기능 PCI 장치를 핫 언플러그할 수 없음: "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
+msgstr ""
 
 msgid "cannot initialize agent condition"
 msgstr "에이전트 조건을 초기화 할 수 없음"
@@ -26951,8 +26965,9 @@ msgstr "호스트 이전 TLS 디렉토리가 구성되지 않았습니다"
 msgid "host name for source of disk device"
 msgstr "디스크 장치 소스의 호스트 이름"
 
-msgid "host pci device "
-msgstr "호스트 PCI 장치 "
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
+msgstr ""
 
 #, c-format
 msgid "host pci device %s not found"
@@ -28479,8 +28494,9 @@ msgstr "libxenlight가 디스크 '%s'를 연결하지 못했습니다"
 msgid "libxenlight failed to attach network device"
 msgstr "libxenlight가 네트워크 장치를 연결하지 못했습니다"
 
-msgid "libxenlight failed to attach pci device "
-msgstr "libxenlight가 pci 장치를 연결하지 못했습니다 "
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
@@ -28509,8 +28525,9 @@ msgstr "libxenlight가 디스크 '%s'를 분리하지 못했습니다"
 msgid "libxenlight failed to detach network device"
 msgstr "libxenlight가 네트워크 장치를 분리하지 못했습니다"
 
-msgid "libxenlight failed to detach pci device "
-msgstr "libxenlight가 pci 장치를 분리하지 못했습니다 "
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -34657,8 +34674,9 @@ msgstr "대상 네트워크 이름"
 msgid "target of disk device"
 msgstr "디스크 장치의 대상"
 
-msgid "target pci device "
-msgstr "대상 PCI 장치 "
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
+msgstr ""
 
 #, c-format
 msgid "target port '%d' already allocated"
@@ -35521,7 +35539,8 @@ msgstr "'%s'에서 COW 플래그를 제어할 수 없습니다"
 
 #, c-format
 msgid "unable create new SELinux label based on label '%s' and file '%s'"
-msgstr "이름표 '%s' 및 파일 '%s'에서 기반한 신규 SELinux 이름표를 생성 할 수 없습니다"
+msgstr ""
+"이름표 '%s' 및 파일 '%s'에서 기반한 신규 SELinux 이름표를 생성 할 수 없습니다"
 
 #, c-format
 msgid "unable get directory flags on '%s'"
@@ -38396,6 +38415,39 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Could not find vf/instanceId %u/%s  in netlink response"
+#~ msgstr "netlink 응답에서 vf/instanceId %u/%s을(를) 찾을 수 없습니다"
+
+#~ msgid "Device alias was not set for %s controller with index %d "
+#~ msgstr "장치 별명이 '%s' 제어기(색인 '%d'인)에 대한 설정이 없습니다 "
+
+#~ msgid "Target device PCI address "
+#~ msgstr "대상 장치 PCI 주소 "
+
+#~ msgid "bad prefix %d for network %s when  checking range %s - %s"
+#~ msgstr "잘못된 접두사 %d(네트워크 %s에 대한)  (범위 %s - %s를 점검 중일 때)"
+
+#~ msgid "cannot hot unplug %s device with PCI guest address: "
+#~ msgstr "PCI 게스트 주소가 있는 %s 장치를 핫 언플러그할 수 없습니다 "
+
+#~ msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+#~ msgstr "다기능 PCI 게스트 주소가 있는 %s 장치를 핫 언플러그할 수 없습니다: "
+
+#~ msgid "cannot hot unplug multifunction PCI device: "
+#~ msgstr "다기능 PCI 장치를 핫 언플러그할 수 없음: "
+
+#~ msgid "host pci device "
+#~ msgstr "호스트 PCI 장치 "
+
+#~ msgid "libxenlight failed to attach pci device "
+#~ msgstr "libxenlight가 pci 장치를 연결하지 못했습니다 "
+
+#~ msgid "libxenlight failed to detach pci device "
+#~ msgstr "libxenlight가 pci 장치를 분리하지 못했습니다 "
+
+#~ msgid "target pci device "
+#~ msgstr "대상 PCI 장치 "
 
 #~ msgid "%s is not available with this QEMU binary"
 #~ msgstr "%s는 QEMU 바이너리를 사용 할 수 없습니다"

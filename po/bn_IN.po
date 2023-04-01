@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2020-06-24 14:36+0000\n"
 "Last-Translator: Akarshan Biswas <akarshan.biswas@gmail.com>\n"
 "Language-Team: Bengali (India) <https://translate.fedoraproject.org/projects/"
@@ -4048,9 +4048,9 @@ msgstr "'%s' পরিবর্তনশীলের জন্য মান খ�
 msgid "Could not find variable '%s' in iterator"
 msgstr "ইটিরেটরে পরিবর্তনশীল '%s' পাওয়া যায়নি"
 
-#, fuzzy, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
-msgstr "ইটিরেটরে পরিবর্তনশীল '%s' পাওয়া যায়নি"
+#, c-format
+msgid "Could not find vf/instanceId %u/%s in netlink response"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not find volume with name: %s"
@@ -5118,9 +5118,9 @@ msgstr ""
 msgid "Device '%s' is unrecognized, requires build"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Device alias was not set for %s controller with index %d "
-msgstr "একাধিক '%s' কন্ট্রোলার সূচি '%d' সমেত"
+#, c-format
+msgid "Device alias was not set for %s controller with index %d"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -15116,9 +15116,11 @@ msgstr "টার্গেট কন্ট্রোলার ধরন %s %s স
 msgid "Target controller vectors %d does not match source %d"
 msgstr "টার্গেট কন্ট্রোলার ভেক্টর %d %d সোর্সের সংগে মেলে না"
 
-#, fuzzy
-msgid "Target device PCI address "
-msgstr "উদ্দিষ্ট ডিভাইসের প্রকৃতি"
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -20553,7 +20555,7 @@ msgid "bad pathname"
 msgstr ""
 
 #, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
+msgid "bad prefix %d for network %s when checking range %s - %s"
 msgstr ""
 
 msgid "balloon device cannot be disabled"
@@ -21706,14 +21708,25 @@ msgid "cannot halt after transient domain snapshot"
 msgstr "স্বল্পকাল স্থায়ী (ট্রান্সিয়েন্ট) ডোমেইনের ব্যাখ্যা বাতিল করা সম্ভব নয়"
 
 #, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
 msgstr ""
 
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
 msgstr ""
 
-msgid "cannot hot unplug multifunction PCI device: "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
 msgstr ""
 
 #, fuzzy
@@ -27483,9 +27496,9 @@ msgstr ""
 msgid "host name for source of disk device"
 msgstr ""
 
-#, fuzzy
-msgid "host pci device "
-msgstr "ব্লক ডিভাইস"
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
+msgstr ""
 
 #, c-format
 msgid "host pci device %s not found"
@@ -29049,9 +29062,9 @@ msgstr "ডিস্ক সংযুক্ত করতে ব্যর্থ"
 msgid "libxenlight failed to attach network device"
 msgstr "%s পুনরায় সংযুক্ত করতে ব্যর্থ"
 
-#, fuzzy
-msgid "libxenlight failed to attach pci device "
-msgstr "%s পুনরায় সংযুক্ত করতে ব্যর্থ"
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
@@ -29080,9 +29093,9 @@ msgstr "ডিস্ক বিচ্ছিন্ন করতে ব্যর্
 msgid "libxenlight failed to detach network device"
 msgstr "ইন্টারফেস বিচ্ছিন্ন করতে ব্যর্থ"
 
-#, fuzzy
-msgid "libxenlight failed to detach pci device "
-msgstr "%s থেকে ডিভাইস বিচ্ছিন্ন করতে ব্যর্থ"
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -35542,9 +35555,9 @@ msgstr "উদ্দিষ্ট নেটওয়ার্কের নাম"
 msgid "target of disk device"
 msgstr "ডিস্ক ডিভাইসের গন্তব্য"
 
-#, fuzzy
-msgid "target pci device "
-msgstr "উদ্দিষ্ট ডিভাইসের প্রকৃতি"
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
+msgstr ""
 
 #, c-format
 msgid "target port '%d' already allocated"
@@ -39305,6 +39318,34 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s <string>]"
+
+#, fuzzy
+#~ msgid "Could not find vf/instanceId %u/%s  in netlink response"
+#~ msgstr "ইটিরেটরে পরিবর্তনশীল '%s' পাওয়া যায়নি"
+
+#, fuzzy
+#~ msgid "Device alias was not set for %s controller with index %d "
+#~ msgstr "একাধিক '%s' কন্ট্রোলার সূচি '%d' সমেত"
+
+#, fuzzy
+#~ msgid "Target device PCI address "
+#~ msgstr "উদ্দিষ্ট ডিভাইসের প্রকৃতি"
+
+#, fuzzy
+#~ msgid "host pci device "
+#~ msgstr "ব্লক ডিভাইস"
+
+#, fuzzy
+#~ msgid "libxenlight failed to attach pci device "
+#~ msgstr "%s পুনরায় সংযুক্ত করতে ব্যর্থ"
+
+#, fuzzy
+#~ msgid "libxenlight failed to detach pci device "
+#~ msgstr "%s থেকে ডিভাইস বিচ্ছিন্ন করতে ব্যর্থ"
+
+#, fuzzy
+#~ msgid "target pci device "
+#~ msgstr "উদ্দিষ্ট ডিভাইসের প্রকৃতি"
 
 #, fuzzy
 #~ msgid "%s is not available with this QEMU binary"

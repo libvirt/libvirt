@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2022-12-05 13:44+0000\n"
 "Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -4248,8 +4248,8 @@ msgid "Could not find variable '%s' in iterator"
 msgstr "Kunde inte hitta variabeln %s i iteratorn"
 
 #, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
-msgstr "Kunde inte hitta vf/instanceId %u/%s i netlink-svaret"
+msgid "Could not find vf/instanceId %u/%s in netlink response"
+msgstr ""
 
 #, c-format
 msgid "Could not find volume with name: %s"
@@ -5293,8 +5293,8 @@ msgid "Device '%s' is unrecognized, requires build"
 msgstr "Enheten ”%s” känns inte igen, kräver ett bygge"
 
 #, c-format
-msgid "Device alias was not set for %s controller with index %d "
-msgstr "Enhetsalias var inte satt för styrenheten %s med index %d "
+msgid "Device alias was not set for %s controller with index %d"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -15218,8 +15218,11 @@ msgstr "Målstyrenhetstypen %s stämmer inte med källan %s"
 msgid "Target controller vectors %d does not match source %d"
 msgstr "Målstyrenhetsvektorerna %d stämmer inte med källan %d"
 
-msgid "Target device PCI address "
-msgstr "Målenhetens PCI-adress "
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -20486,7 +20489,7 @@ msgid "bad pathname"
 msgstr "felaktig sökväg"
 
 #, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
+msgid "bad prefix %d for network %s when checking range %s - %s"
 msgstr ""
 
 msgid "balloon device cannot be disabled"
@@ -21598,14 +21601,25 @@ msgid "cannot halt after transient domain snapshot"
 msgstr ""
 
 #, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
 msgstr ""
 
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
 msgstr ""
 
-msgid "cannot hot unplug multifunction PCI device: "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
 msgstr ""
 
 #, fuzzy
@@ -27260,9 +27274,9 @@ msgstr ""
 msgid "host name for source of disk device"
 msgstr ""
 
-#, fuzzy
-msgid "host pci device "
-msgstr "blockenhet"
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
+msgstr ""
 
 #, c-format
 msgid "host pci device %s not found"
@@ -28792,9 +28806,9 @@ msgstr "libxenlight misslyckades att återställa domänen ”%s”"
 msgid "libxenlight failed to attach network device"
 msgstr "libxenlight misslyckades att återställa domänen ”%s”"
 
-#, fuzzy
-msgid "libxenlight failed to attach pci device "
-msgstr "libxenlight misslyckades att återställa domänen ”%s”"
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
@@ -28824,9 +28838,9 @@ msgstr "libxenlight misslyckades att återställa domänen ”%s”"
 msgid "libxenlight failed to detach network device"
 msgstr "libxenlight misslyckades att återställa domänen ”%s”"
 
-#, fuzzy
-msgid "libxenlight failed to detach pci device "
-msgstr "libxenlight misslyckades att återställa domänen ”%s”"
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -35132,9 +35146,9 @@ msgstr "målets nätverksnamn"
 msgid "target of disk device"
 msgstr "mål för diskenhet"
 
-#, fuzzy
-msgid "target pci device "
-msgstr "målenhetstyp"
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
+msgstr ""
 
 #, c-format
 msgid "target port '%d' already allocated"
@@ -38822,6 +38836,31 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <sträng>"
+
+#~ msgid "Could not find vf/instanceId %u/%s  in netlink response"
+#~ msgstr "Kunde inte hitta vf/instanceId %u/%s i netlink-svaret"
+
+#~ msgid "Device alias was not set for %s controller with index %d "
+#~ msgstr "Enhetsalias var inte satt för styrenheten %s med index %d "
+
+#~ msgid "Target device PCI address "
+#~ msgstr "Målenhetens PCI-adress "
+
+#, fuzzy
+#~ msgid "host pci device "
+#~ msgstr "blockenhet"
+
+#, fuzzy
+#~ msgid "libxenlight failed to attach pci device "
+#~ msgstr "libxenlight misslyckades att återställa domänen ”%s”"
+
+#, fuzzy
+#~ msgid "libxenlight failed to detach pci device "
+#~ msgstr "libxenlight misslyckades att återställa domänen ”%s”"
+
+#, fuzzy
+#~ msgid "target pci device "
+#~ msgstr "målenhetstyp"
 
 #~ msgid "%s is not available with this QEMU binary"
 #~ msgstr "%s är inte tillgängligt med denna QEMU-binär"

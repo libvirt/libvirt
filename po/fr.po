@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: grimst <grimaitres@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -4443,8 +4443,8 @@ msgid "Could not find variable '%s' in iterator"
 msgstr "Impossible de trouver la variable '%s' dans l'itérateur"
 
 #, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
-msgstr "Impossible de trouver vf/instanceId %u/%s dans la réponse netlink"
+msgid "Could not find vf/instanceId %u/%s in netlink response"
+msgstr ""
 
 #, c-format
 msgid "Could not find volume with name: %s"
@@ -5512,10 +5512,8 @@ msgid "Device '%s' is unrecognized, requires build"
 msgstr "Le périphérique '%s' n'est pas reconnu, il faut le construire"
 
 #, c-format
-msgid "Device alias was not set for %s controller with index %d "
+msgid "Device alias was not set for %s controller with index %d"
 msgstr ""
-"L'alias du périphérique n'a pas été défini pour le contrôleur %s avec "
-"l'index %d "
 
 #, c-format
 msgid ""
@@ -15936,8 +15934,11 @@ msgid "Target controller vectors %d does not match source %d"
 msgstr ""
 "Les vecteurs de contrôleurs cibles %d ne correspondent pas à la source %d"
 
-msgid "Target device PCI address "
-msgstr "Adresse PCI du périphérique cible "
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -21531,10 +21532,8 @@ msgid "bad pathname"
 msgstr "mauvais chemin d'accès"
 
 #, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
+msgid "bad prefix %d for network %s when checking range %s - %s"
 msgstr ""
-"mauvais préfixe %d pour le réseau %s lors de la vérification de la gamme %s "
-"- %s"
 
 msgid "balloon device cannot be disabled"
 msgstr "le périphérique de ballon ne peut pas être désactivé"
@@ -22747,19 +22746,26 @@ msgid "cannot halt after transient domain snapshot"
 msgstr "ne peut s'arrêter après un instantané transitoire du domaine"
 
 #, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
 msgstr ""
-"Impossible de débrancher à chaud le périphérique %s avec une adresse PCI "
-"invitée : "
 
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
 msgstr ""
-"Impossible de débrancher à chaud le périphérique %s avec une adresse invitée "
-"PCI multifonction : "
 
-msgid "cannot hot unplug multifunction PCI device: "
-msgstr "Impossible de débrancher à chaud le périphérique PCI multifonction : "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
+msgstr ""
 
 msgid "cannot initialize agent condition"
 msgstr "ne peut pas initialiser la condition d'agent"
@@ -28579,8 +28585,9 @@ msgstr "le répertoire TLS de la migration des hôtes n'est pas configuré"
 msgid "host name for source of disk device"
 msgstr "nom d'hôte pour la source de l'unité de disque"
 
-msgid "host pci device "
-msgstr "host pci device "
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
+msgstr ""
 
 #, c-format
 msgid "host pci device %s not found"
@@ -30181,8 +30188,9 @@ msgstr "libxenlight n'a pas réussi à attacher le disque '%s'"
 msgid "libxenlight failed to attach network device"
 msgstr "libxenlight n'a pas réussi à attacher le périphérique réseau"
 
-msgid "libxenlight failed to attach pci device "
-msgstr "libxenlight n'a pas réussi à attacher le périphérique pci "
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
@@ -30214,8 +30222,9 @@ msgstr "libxenlight n'a pas réussi à détacher le disque '%s'"
 msgid "libxenlight failed to detach network device"
 msgstr "libxenlight n'a pas réussi à détacher le périphérique réseau"
 
-msgid "libxenlight failed to detach pci device "
-msgstr "libxenlight n'a pas réussi à détacher le périphérique pci "
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -36812,8 +36821,9 @@ msgstr "nom du réseau cible"
 msgid "target of disk device"
 msgstr "cible du périphérique disque"
 
-msgid "target pci device "
-msgstr "périphérique pci cible "
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
+msgstr ""
 
 #, c-format
 msgid "target port '%d' already allocated"
@@ -40702,6 +40712,48 @@ msgstr "zone %s demandée pour le réseau %s mais firewalld n'est pas actif"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Could not find vf/instanceId %u/%s  in netlink response"
+#~ msgstr "Impossible de trouver vf/instanceId %u/%s dans la réponse netlink"
+
+#~ msgid "Device alias was not set for %s controller with index %d "
+#~ msgstr ""
+#~ "L'alias du périphérique n'a pas été défini pour le contrôleur %s avec "
+#~ "l'index %d "
+
+#~ msgid "Target device PCI address "
+#~ msgstr "Adresse PCI du périphérique cible "
+
+#~ msgid "bad prefix %d for network %s when  checking range %s - %s"
+#~ msgstr ""
+#~ "mauvais préfixe %d pour le réseau %s lors de la vérification de la gamme "
+#~ "%s - %s"
+
+#~ msgid "cannot hot unplug %s device with PCI guest address: "
+#~ msgstr ""
+#~ "Impossible de débrancher à chaud le périphérique %s avec une adresse PCI "
+#~ "invitée : "
+
+#~ msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+#~ msgstr ""
+#~ "Impossible de débrancher à chaud le périphérique %s avec une adresse "
+#~ "invitée PCI multifonction : "
+
+#~ msgid "cannot hot unplug multifunction PCI device: "
+#~ msgstr ""
+#~ "Impossible de débrancher à chaud le périphérique PCI multifonction : "
+
+#~ msgid "host pci device "
+#~ msgstr "host pci device "
+
+#~ msgid "libxenlight failed to attach pci device "
+#~ msgstr "libxenlight n'a pas réussi à attacher le périphérique pci "
+
+#~ msgid "libxenlight failed to detach pci device "
+#~ msgstr "libxenlight n'a pas réussi à détacher le périphérique pci "
+
+#~ msgid "target pci device "
+#~ msgstr "périphérique pci cible "
 
 #~ msgid "%s is not available with this QEMU binary"
 #~ msgstr "%s n'est pas disponible avec ce binaire QEMU"

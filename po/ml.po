@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -4121,9 +4121,9 @@ msgstr "ഐറ്ററേറ്ററില്‍ വേരിയബിള്�
 msgid "Could not find variable '%s' in iterator"
 msgstr "ഐറ്ററേറ്ററില്‍ വേരിയബിള്‍ '%s' ലഭ്യമായില്ല"
 
-#, fuzzy, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
-msgstr "netlink മറുപടിയില്‍ VF %d-നുള്ള IFLA_VF_INFO"
+#, c-format
+msgid "Could not find vf/instanceId %u/%s in netlink response"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not find volume with name: %s"
@@ -5167,11 +5167,9 @@ msgstr ""
 msgid "Device '%s' is unrecognized, requires build"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Device alias was not set for %s controller with index %d "
+#, c-format
+msgid "Device alias was not set for %s controller with index %d"
 msgstr ""
-"%u സൂചികയുള്ള പിസിഐ കണ്ട്രോളറിനുള്ള പിസിഐയ്ക്കു് ഡിവൈസിന്റെ വിളിപ്പേരു് സജ്ജമല്ല, %s "
-"വിലാസത്തില്‍ ഡിവൈസിനു് ആവശ്യമുണ്ടു്"
 
 #, c-format
 msgid ""
@@ -15247,9 +15245,11 @@ msgstr "ലക്ഷ്യമായ കണ്ട്രോള്ളര്‍ %s �
 msgid "Target controller vectors %d does not match source %d"
 msgstr "ലക്ഷ്യമായ കണ്ട്രോള്ളര്‍ വെക്റെഴ്സ് %d ഉറവിടം %d-ഉമായി യോജിക്കുന്നില്ല"
 
-#, fuzzy
-msgid "Target device PCI address "
-msgstr "ഇന്റര്‍ഫെയിസ് ഡിവൈസ് (മാക് വിലാസം): %s"
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -20626,7 +20626,7 @@ msgid "bad pathname"
 msgstr "തെറ്റായ പാഥ്‌നാമം"
 
 #, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
+msgid "bad prefix %d for network %s when checking range %s - %s"
 msgstr ""
 
 #, fuzzy
@@ -21772,15 +21772,26 @@ msgstr "സ്ഥായിയല്ലാത്ത ഡൊമൈന്‍ സ്�
 msgid "cannot halt after transient domain snapshot"
 msgstr "ട്രാന്‍സിയന്റ് ഡൊമെയിന്‍ സ്നാപ്പ്ഷോട്ടിനു് ശേഷം നിര്‍ത്തുവാന്‍ സാധ്യമല്ല"
 
-#, fuzzy, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
-msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് ഗസ്റ്റ് പിസിഐ വിലാസത്തില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
-
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
 msgstr ""
 
-msgid "cannot hot unplug multifunction PCI device: "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
+msgstr ""
+
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
 msgstr ""
 
 #, fuzzy
@@ -27505,9 +27516,9 @@ msgstr ""
 msgid "host name for source of disk device"
 msgstr ""
 
-#, fuzzy
-msgid "host pci device "
-msgstr "ബ്ളോക്ക് ഡിവൈസ്"
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
+msgstr ""
 
 #, c-format
 msgid "host pci device %s not found"
@@ -29060,9 +29071,9 @@ msgstr "ഡിസ്ക് '%s' ചേര്‍ക്കുന്നതില്
 msgid "libxenlight failed to attach network device"
 msgstr "ഡിസ്ക് '%s' ചേര്‍ക്കുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
 
-#, fuzzy
-msgid "libxenlight failed to attach pci device "
-msgstr "ഡിസ്ക് '%s' ചേര്‍ക്കുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
@@ -29092,9 +29103,9 @@ msgstr "ഡിസ്ക് '%s' വേര്‍പെടുത്തുന്ന
 msgid "libxenlight failed to detach network device"
 msgstr "ഡിസ്ക് '%s' വേര്‍പെടുത്തുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
 
-#, fuzzy
-msgid "libxenlight failed to detach pci device "
-msgstr "ഡിസ്ക് '%s' വേര്‍പെടുത്തുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -35512,9 +35523,9 @@ msgstr "ലക്ഷ്യമായ നെറ്റ്‌വറ്‍ക്ക�
 msgid "target of disk device"
 msgstr "ഡിസ്ക് ഡിവൈസിന്റെ ലക്ഷ്യം"
 
-#, fuzzy
-msgid "target pci device "
-msgstr "ലക്ഷ്യമായ ഡിവൈസ് ഏത് തരം"
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
+msgstr ""
 
 #, c-format
 msgid "target port '%d' already allocated"
@@ -39252,6 +39263,40 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Could not find vf/instanceId %u/%s  in netlink response"
+#~ msgstr "netlink മറുപടിയില്‍ VF %d-നുള്ള IFLA_VF_INFO"
+
+#, fuzzy
+#~ msgid "Device alias was not set for %s controller with index %d "
+#~ msgstr ""
+#~ "%u സൂചികയുള്ള പിസിഐ കണ്ട്രോളറിനുള്ള പിസിഐയ്ക്കു് ഡിവൈസിന്റെ വിളിപ്പേരു് സജ്ജമല്ല, %s "
+#~ "വിലാസത്തില്‍ ഡിവൈസിനു് ആവശ്യമുണ്ടു്"
+
+#, fuzzy
+#~ msgid "Target device PCI address "
+#~ msgstr "ഇന്റര്‍ഫെയിസ് ഡിവൈസ് (മാക് വിലാസം): %s"
+
+#, fuzzy
+#~ msgid "cannot hot unplug %s device with PCI guest address: "
+#~ msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് ഗസ്റ്റ് പിസിഐ വിലാസത്തില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "host pci device "
+#~ msgstr "ബ്ളോക്ക് ഡിവൈസ്"
+
+#, fuzzy
+#~ msgid "libxenlight failed to attach pci device "
+#~ msgstr "ഡിസ്ക് '%s' ചേര്‍ക്കുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
+
+#, fuzzy
+#~ msgid "libxenlight failed to detach pci device "
+#~ msgstr "ഡിസ്ക് '%s' വേര്‍പെടുത്തുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
+
+#, fuzzy
+#~ msgid "target pci device "
+#~ msgstr "ലക്ഷ്യമായ ഡിവൈസ് ഏത് തരം"
 
 #, fuzzy
 #~ msgid "%s is not available with this QEMU binary"

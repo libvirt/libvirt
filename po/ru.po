@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2023-03-08 19:06+0000\n"
 "Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -4293,8 +4293,8 @@ msgid "Could not find variable '%s' in iterator"
 msgstr "Не удалось найти переменную «%s»  в итераторе"
 
 #, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
-msgstr "Не удалось найти vf/instanceId %u/%s в ответе netlink"
+msgid "Could not find vf/instanceId %u/%s in netlink response"
+msgstr ""
 
 #, c-format
 msgid "Could not find volume with name: %s"
@@ -5322,9 +5322,8 @@ msgid "Device '%s' is unrecognized, requires build"
 msgstr "Устройство «%s» не распознано, требуется команда build"
 
 #, c-format
-msgid "Device alias was not set for %s controller with index %d "
+msgid "Device alias was not set for %s controller with index %d"
 msgstr ""
-"Для контроллера %s с индексом %d не задано альтернативное название устройства"
 
 #, c-format
 msgid ""
@@ -15382,8 +15381,11 @@ msgstr "%s не соответствует типу исходного конт�
 msgid "Target controller vectors %d does not match source %d"
 msgstr "%d не соответствует числу векторов исходного контроллера %d"
 
-msgid "Target device PCI address "
-msgstr "Адрес PCI устройства в системе назначения"
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -20761,8 +20763,8 @@ msgid "bad pathname"
 msgstr "недопустимый путь"
 
 #, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
-msgstr "ошибочный префикс %d для сети %s при проверке диапазона %s — %s"
+msgid "bad prefix %d for network %s when checking range %s - %s"
+msgstr ""
 
 msgid "balloon device cannot be disabled"
 msgstr "устройство дополнительной памяти нельзя отключить"
@@ -21942,20 +21944,26 @@ msgid "cannot halt after transient domain snapshot"
 msgstr "нельзя остановить после создания снимка временного домена"
 
 #, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
 msgstr ""
-"невозможно отключить в «горячем» режиме устройство %s с адресом PCI гостевой "
-"системы: "
 
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
 msgstr ""
-"невозможно отключить в «горячем» режиме устройство %s с многофункциональным "
-"адресом PCI гостевой системы: "
 
-msgid "cannot hot unplug multifunction PCI device: "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
 msgstr ""
-"невозможно отключить в «горячем» режиме многофункциональное устройство PCI: "
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
+msgstr ""
 
 msgid "cannot initialize agent condition"
 msgstr "не удалось инициализировать состояние агента"
@@ -27588,8 +27596,9 @@ msgstr "каталог миграции TLS основной системы не
 msgid "host name for source of disk device"
 msgstr ""
 
-msgid "host pci device "
-msgstr "устройство PCI основной системы"
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
+msgstr ""
 
 #, c-format
 msgid "host pci device %s not found"
@@ -29169,8 +29178,9 @@ msgstr "libxenlight не удалось подключить диск «%s»"
 msgid "libxenlight failed to attach network device"
 msgstr "libxenlight не удалось подключить сетевое устройство"
 
-msgid "libxenlight failed to attach pci device "
-msgstr "libxenlight не удалось подключить устройство PCI"
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
@@ -29200,8 +29210,9 @@ msgstr "libxenlight не удалось отсоединить диск «%s»"
 msgid "libxenlight failed to detach network device"
 msgstr "libxenlight не удалось отсоединить сетевое устройство"
 
-msgid "libxenlight failed to detach pci device "
-msgstr "libxenlight не удалось отсоединить устройство PCI"
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -35561,8 +35572,9 @@ msgstr "имя целевой сети"
 msgid "target of disk device"
 msgstr "устройство в домене"
 
-msgid "target pci device "
-msgstr "устройство PCI системы назначения"
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
+msgstr ""
 
 #, c-format
 msgid "target port '%d' already allocated"
@@ -39385,6 +39397,47 @@ msgstr "поступил запрос о зоне %s для сети %s, но fi
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <строка>}..."
+
+#~ msgid "Could not find vf/instanceId %u/%s  in netlink response"
+#~ msgstr "Не удалось найти vf/instanceId %u/%s в ответе netlink"
+
+#~ msgid "Device alias was not set for %s controller with index %d "
+#~ msgstr ""
+#~ "Для контроллера %s с индексом %d не задано альтернативное название "
+#~ "устройства"
+
+#~ msgid "Target device PCI address "
+#~ msgstr "Адрес PCI устройства в системе назначения"
+
+#~ msgid "bad prefix %d for network %s when  checking range %s - %s"
+#~ msgstr "ошибочный префикс %d для сети %s при проверке диапазона %s — %s"
+
+#~ msgid "cannot hot unplug %s device with PCI guest address: "
+#~ msgstr ""
+#~ "невозможно отключить в «горячем» режиме устройство %s с адресом PCI "
+#~ "гостевой системы: "
+
+#~ msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+#~ msgstr ""
+#~ "невозможно отключить в «горячем» режиме устройство %s с "
+#~ "многофункциональным адресом PCI гостевой системы: "
+
+#~ msgid "cannot hot unplug multifunction PCI device: "
+#~ msgstr ""
+#~ "невозможно отключить в «горячем» режиме многофункциональное устройство "
+#~ "PCI: "
+
+#~ msgid "host pci device "
+#~ msgstr "устройство PCI основной системы"
+
+#~ msgid "libxenlight failed to attach pci device "
+#~ msgstr "libxenlight не удалось подключить устройство PCI"
+
+#~ msgid "libxenlight failed to detach pci device "
+#~ msgstr "libxenlight не удалось отсоединить устройство PCI"
+
+#~ msgid "target pci device "
+#~ msgstr "устройство PCI системы назначения"
 
 #~ msgid "%s is not available with this QEMU binary"
 #~ msgstr "%s недоступен, если используется этот исполняемый файл QEMU"

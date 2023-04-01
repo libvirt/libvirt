@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2023-03-14 16:11+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -4086,8 +4086,8 @@ msgid "Could not find variable '%s' in iterator"
 msgstr "无法在迭代器中找到变量 '%s'"
 
 #, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
-msgstr "无法在 netlink 响应中找到 vf/instanceId %u/%s"
+msgid "Could not find vf/instanceId %u/%s in netlink response"
+msgstr ""
 
 #, c-format
 msgid "Could not find volume with name: %s"
@@ -5093,9 +5093,9 @@ msgstr "设备 '%s' 没有处于活动状态"
 msgid "Device '%s' is unrecognized, requires build"
 msgstr "设备 '%s' 未被识别，需要构建"
 
-#, fuzzy, c-format
-msgid "Device alias was not set for %s controller with index %d "
-msgstr "对索引为 %2$d 的 %1$s 控制器没有设置设备别名 "
+#, c-format
+msgid "Device alias was not set for %s controller with index %d"
+msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -14647,8 +14647,11 @@ msgstr "目标控制器类型 %s 与源 %s 不匹配"
 msgid "Target controller vectors %d does not match source %d"
 msgstr "目标控制器矢量 %d 与源 %d 不匹配"
 
-msgid "Target device PCI address "
-msgstr "目标设备 PCI 地址 "
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -19809,9 +19812,9 @@ msgstr "坏名字"
 msgid "bad pathname"
 msgstr "坏路径名"
 
-#, fuzzy, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
-msgstr "检查范围 %3$s - %4$s 时，网络 %2$s 的错误前缀 %1$d"
+#, c-format
+msgid "bad prefix %d for network %s when checking range %s - %s"
+msgstr ""
 
 msgid "balloon device cannot be disabled"
 msgstr "无法禁用 balloon 设备"
@@ -20906,15 +20909,26 @@ msgid "cannot halt after transient domain snapshot"
 msgstr "无法停止临时域快照"
 
 #, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
-msgstr "无法热插拔带有 PCI 客户机地址的 %s 设备： "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
+msgstr ""
 
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
-msgstr "无法热插拔带有多功能 PCI 客户机地址的 %s 设备： "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
+msgstr ""
 
-msgid "cannot hot unplug multifunction PCI device: "
-msgstr "无法热插拔多功能 PCI 设备： "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
+msgstr ""
 
 msgid "cannot initialize agent condition"
 msgstr "无法初始化代理条件"
@@ -26383,8 +26397,9 @@ msgstr "未配置主机迁移 TLS 目录"
 msgid "host name for source of disk device"
 msgstr "磁盘设备源的主机名"
 
-msgid "host pci device "
-msgstr "主机 pci 设备 "
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
+msgstr ""
 
 #, c-format
 msgid "host pci device %s not found"
@@ -27876,8 +27891,9 @@ msgstr "libxenlight 附加磁盘 '%s' 失败"
 msgid "libxenlight failed to attach network device"
 msgstr "libxenlight 无法附加网络设备"
 
-msgid "libxenlight failed to attach pci device "
-msgstr "libxenlight 无法附加 pci 设备 "
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
@@ -27905,8 +27921,9 @@ msgstr "libxenlight 分离磁盘 '%s' 失败"
 msgid "libxenlight failed to detach network device"
 msgstr "libxenlight 无法分离网络设备"
 
-msgid "libxenlight failed to detach pci device "
-msgstr "libxenlight 无法分离 pci 设备 "
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -33961,8 +33978,9 @@ msgstr "目标网络名称"
 msgid "target of disk device"
 msgstr "磁盘设备目标"
 
-msgid "target pci device "
-msgstr "目标 pci 设备 "
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
+msgstr ""
 
 #, c-format
 msgid "target port '%d' already allocated"
@@ -37613,6 +37631,41 @@ msgstr "请求网络 %s 的区 %s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Could not find vf/instanceId %u/%s  in netlink response"
+#~ msgstr "无法在 netlink 响应中找到 vf/instanceId %u/%s"
+
+#, fuzzy
+#~ msgid "Device alias was not set for %s controller with index %d "
+#~ msgstr "对索引为 %2$d 的 %1$s 控制器没有设置设备别名 "
+
+#~ msgid "Target device PCI address "
+#~ msgstr "目标设备 PCI 地址 "
+
+#, fuzzy
+#~ msgid "bad prefix %d for network %s when  checking range %s - %s"
+#~ msgstr "检查范围 %3$s - %4$s 时，网络 %2$s 的错误前缀 %1$d"
+
+#~ msgid "cannot hot unplug %s device with PCI guest address: "
+#~ msgstr "无法热插拔带有 PCI 客户机地址的 %s 设备： "
+
+#~ msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+#~ msgstr "无法热插拔带有多功能 PCI 客户机地址的 %s 设备： "
+
+#~ msgid "cannot hot unplug multifunction PCI device: "
+#~ msgstr "无法热插拔多功能 PCI 设备： "
+
+#~ msgid "host pci device "
+#~ msgstr "主机 pci 设备 "
+
+#~ msgid "libxenlight failed to attach pci device "
+#~ msgstr "libxenlight 无法附加 pci 设备 "
+
+#~ msgid "libxenlight failed to detach pci device "
+#~ msgstr "libxenlight 无法分离 pci 设备 "
+
+#~ msgid "target pci device "
+#~ msgstr "目标 pci 设备 "
 
 #~ msgid "%s is not available with this QEMU binary"
 #~ msgstr "此 QEMU 二进制文件中没有 %s"

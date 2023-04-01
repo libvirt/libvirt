@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2018-02-24 11:19+0000\n"
 "Last-Translator: Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>\n"
 "Language-Team: Catalan (http://www.transifex.com/projects/p/libvirt/language/"
@@ -3941,7 +3941,7 @@ msgid "Could not find variable '%s' in iterator"
 msgstr ""
 
 #, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
+msgid "Could not find vf/instanceId %u/%s in netlink response"
 msgstr ""
 
 #, c-format
@@ -4975,7 +4975,7 @@ msgid "Device '%s' is unrecognized, requires build"
 msgstr ""
 
 #, c-format
-msgid "Device alias was not set for %s controller with index %d "
+msgid "Device alias was not set for %s controller with index %d"
 msgstr ""
 
 #, c-format
@@ -14809,9 +14809,11 @@ msgstr ""
 msgid "Target controller vectors %d does not match source %d"
 msgstr ""
 
-#, fuzzy
-msgid "Target device PCI address "
-msgstr "tipus de dispositiu destí"
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -20180,7 +20182,7 @@ msgid "bad pathname"
 msgstr ""
 
 #, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
+msgid "bad prefix %d for network %s when checking range %s - %s"
 msgstr ""
 
 msgid "balloon device cannot be disabled"
@@ -21289,14 +21291,25 @@ msgid "cannot halt after transient domain snapshot"
 msgstr ""
 
 #, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
 msgstr ""
 
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
 msgstr ""
 
-msgid "cannot hot unplug multifunction PCI device: "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
 msgstr ""
 
 msgid "cannot initialize agent condition"
@@ -26977,9 +26990,9 @@ msgstr ""
 msgid "host name for source of disk device"
 msgstr ""
 
-#, fuzzy
-msgid "host pci device "
-msgstr "dispositiu de blocs"
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
+msgstr ""
 
 #, c-format
 msgid "host pci device %s not found"
@@ -28491,9 +28504,9 @@ msgstr "No s'ha pogut adjuntar el dispositiu des de %s"
 msgid "libxenlight failed to attach network device"
 msgstr ""
 
-#, fuzzy
-msgid "libxenlight failed to attach pci device "
-msgstr "No s'ha pogut adjuntar el dispositiu des de %s"
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
@@ -28522,9 +28535,9 @@ msgstr "no s'ha pogut obtenir el domini '%s'"
 msgid "libxenlight failed to detach network device"
 msgstr "no s'ha pogut obtenir la xarxa '%s'"
 
-#, fuzzy
-msgid "libxenlight failed to detach pci device "
-msgstr "No s'ha pogut desvincular el dispositiu de %s"
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -34820,9 +34833,9 @@ msgstr "nom de xarxa"
 msgid "target of disk device"
 msgstr "destí del dispositiu de disc"
 
-#, fuzzy
-msgid "target pci device "
-msgstr "tipus de dispositiu destí"
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
+msgstr ""
 
 #, c-format
 msgid "target port '%d' already allocated"
@@ -38516,6 +38529,26 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <cadena>"
+
+#, fuzzy
+#~ msgid "Target device PCI address "
+#~ msgstr "tipus de dispositiu destí"
+
+#, fuzzy
+#~ msgid "host pci device "
+#~ msgstr "dispositiu de blocs"
+
+#, fuzzy
+#~ msgid "libxenlight failed to attach pci device "
+#~ msgstr "No s'ha pogut adjuntar el dispositiu des de %s"
+
+#, fuzzy
+#~ msgid "libxenlight failed to detach pci device "
+#~ msgstr "No s'ha pogut desvincular el dispositiu de %s"
+
+#, fuzzy
+#~ msgid "target pci device "
+#~ msgstr "tipus de dispositiu destí"
 
 #, fuzzy
 #~ msgid "Cannot remove state PID file %s"

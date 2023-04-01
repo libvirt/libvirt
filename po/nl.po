@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -4055,7 +4055,7 @@ msgid "Could not find variable '%s' in iterator"
 msgstr "Kan bestand type '%s' niet vinden"
 
 #, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
+msgid "Could not find vf/instanceId %u/%s in netlink response"
 msgstr ""
 
 #, fuzzy, c-format
@@ -5122,7 +5122,7 @@ msgid "Device '%s' is unrecognized, requires build"
 msgstr ""
 
 #, c-format
-msgid "Device alias was not set for %s controller with index %d "
+msgid "Device alias was not set for %s controller with index %d"
 msgstr ""
 
 #, c-format
@@ -15246,9 +15246,11 @@ msgstr "pool type '%s' ondersteund geen bron ontdekking"
 msgid "Target controller vectors %d does not match source %d"
 msgstr ""
 
-#, fuzzy
-msgid "Target device PCI address "
-msgstr "doel apparaat type"
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -20738,7 +20740,7 @@ msgid "bad pathname"
 msgstr "slechte padnaam"
 
 #, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
+msgid "bad prefix %d for network %s when checking range %s - %s"
 msgstr ""
 
 #, fuzzy
@@ -21889,14 +21891,25 @@ msgid "cannot halt after transient domain snapshot"
 msgstr "kan overgang domein definitie niet ongedaan maken"
 
 #, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
 msgstr ""
 
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
 msgstr ""
 
-msgid "cannot hot unplug multifunction PCI device: "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
 msgstr ""
 
 #, fuzzy
@@ -27651,9 +27664,9 @@ msgstr ""
 msgid "host name for source of disk device"
 msgstr ""
 
-#, fuzzy
-msgid "host pci device "
-msgstr "blok apparaat"
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
+msgstr ""
 
 #, c-format
 msgid "host pci device %s not found"
@@ -29216,9 +29229,9 @@ msgstr "libxenlight kon geen nieuw domein '%s' aanmaken"
 msgid "libxenlight failed to attach network device"
 msgstr "libxenlight kon geen nieuw domein '%s' aanmaken"
 
-#, fuzzy
-msgid "libxenlight failed to attach pci device "
-msgstr "libxenlight kon geen nieuw domein '%s' aanmaken"
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
@@ -29248,9 +29261,9 @@ msgstr "libxenlight kon geen nieuw domein '%s' aanmaken"
 msgid "libxenlight failed to detach network device"
 msgstr "libxenlight kon geen nieuw domein '%s' aanmaken"
 
-#, fuzzy
-msgid "libxenlight failed to detach pci device "
-msgstr "libxenlight kon geen nieuw domein '%s' aanmaken"
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -35733,9 +35746,9 @@ msgstr "doel netwerk naam"
 msgid "target of disk device"
 msgstr "doel van schijf apparaat"
 
-#, fuzzy
-msgid "target pci device "
-msgstr "doel apparaat type"
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
+msgstr ""
 
 #, c-format
 msgid "target port '%d' already allocated"
@@ -39473,6 +39486,26 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <tekenreeks>"
+
+#, fuzzy
+#~ msgid "Target device PCI address "
+#~ msgstr "doel apparaat type"
+
+#, fuzzy
+#~ msgid "host pci device "
+#~ msgstr "blok apparaat"
+
+#, fuzzy
+#~ msgid "libxenlight failed to attach pci device "
+#~ msgstr "libxenlight kon geen nieuw domein '%s' aanmaken"
+
+#, fuzzy
+#~ msgid "libxenlight failed to detach pci device "
+#~ msgstr "libxenlight kon geen nieuw domein '%s' aanmaken"
+
+#, fuzzy
+#~ msgid "target pci device "
+#~ msgstr "doel apparaat type"
 
 #, fuzzy
 #~ msgid "%s is not available with this QEMU binary"

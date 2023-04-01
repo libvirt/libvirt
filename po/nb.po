@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2015-02-24 05:43+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Norwegian Bokmål (http://www.transifex.com/projects/p/fedora/"
@@ -3883,7 +3883,7 @@ msgid "Could not find variable '%s' in iterator"
 msgstr ""
 
 #, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
+msgid "Could not find vf/instanceId %u/%s in netlink response"
 msgstr ""
 
 #, c-format
@@ -4892,7 +4892,7 @@ msgid "Device '%s' is unrecognized, requires build"
 msgstr ""
 
 #, c-format
-msgid "Device alias was not set for %s controller with index %d "
+msgid "Device alias was not set for %s controller with index %d"
 msgstr ""
 
 #, c-format
@@ -14549,7 +14549,10 @@ msgstr ""
 msgid "Target controller vectors %d does not match source %d"
 msgstr ""
 
-msgid "Target device PCI address "
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
 msgstr ""
 
 #, c-format
@@ -19724,7 +19727,7 @@ msgid "bad pathname"
 msgstr ""
 
 #, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
+msgid "bad prefix %d for network %s when checking range %s - %s"
 msgstr ""
 
 msgid "balloon device cannot be disabled"
@@ -20817,14 +20820,25 @@ msgid "cannot halt after transient domain snapshot"
 msgstr ""
 
 #, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
 msgstr ""
 
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
 msgstr ""
 
-msgid "cannot hot unplug multifunction PCI device: "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
 msgstr ""
 
 msgid "cannot initialize agent condition"
@@ -26409,7 +26423,8 @@ msgstr ""
 msgid "host name for source of disk device"
 msgstr ""
 
-msgid "host pci device "
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
 msgstr ""
 
 #, c-format
@@ -27904,7 +27919,8 @@ msgstr ""
 msgid "libxenlight failed to attach network device"
 msgstr ""
 
-msgid "libxenlight failed to attach pci device "
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
 msgstr ""
 
 #, c-format
@@ -27933,7 +27949,8 @@ msgstr ""
 msgid "libxenlight failed to detach network device"
 msgstr ""
 
-msgid "libxenlight failed to detach pci device "
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
 msgstr ""
 
 #, c-format
@@ -34115,7 +34132,8 @@ msgstr "nettverksnavn"
 msgid "target of disk device"
 msgstr ""
 
-msgid "target pci device "
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
 msgstr ""
 
 #, c-format

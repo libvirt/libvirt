@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2023-04-01 08:03+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -42,8 +42,8 @@ msgid ""
 "  (specify help <group> for details about the commands in the group)\n"
 msgstr ""
 "\n"
-"  (napište help <skupina příkazů> pro podrobnosti o příkazech v dané skupině)"
-"\n"
+"  (napište help <skupina příkazů> pro podrobnosti o příkazech v dané "
+"skupině)\n"
 
 msgid ""
 "\n"
@@ -1525,8 +1525,8 @@ msgstr "-------------------------------------------------"
 msgid ""
 "--async requires at least one of --timeout, --wait, --pivot, or --finish"
 msgstr ""
-"--async vyžaduje přinejmenším jedno z --timeout, --wait, --pivot nebo "
-"--finish"
+"--async vyžaduje přinejmenším jedno z --timeout, --wait, --pivot nebo --"
+"finish"
 
 msgid ""
 "--async requires at least one of --timeout, --wait, --pivot, or --keep-"
@@ -1562,8 +1562,8 @@ msgstr ""
 msgid ""
 "--verbose requires at least one of --timeout, --wait, --pivot, or --finish"
 msgstr ""
-"--verbose vyžaduje přinejmenším jedno z --timeout, --wait, --pivot nebo "
-"--finish"
+"--verbose vyžaduje přinejmenším jedno z --timeout, --wait, --pivot nebo --"
+"finish"
 
 msgid ""
 "--verbose requires at least one of --timeout, --wait, --pivot, or --keep-"
@@ -4221,8 +4221,8 @@ msgid "Could not find variable '%s' in iterator"
 msgstr "V iterátoru se nedaří nalézt proměnnou „%s“"
 
 #, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
-msgstr "V netlink odpovědi nenalezeno vf/instanceId %u/%s"
+msgid "Could not find vf/instanceId %u/%s in netlink response"
+msgstr ""
 
 #, c-format
 msgid "Could not find volume with name: %s"
@@ -5249,9 +5249,8 @@ msgid "Device '%s' is unrecognized, requires build"
 msgstr "Zařízení „%s“ není rozpoznáno, vyžaduje sestavení"
 
 #, c-format
-msgid "Device alias was not set for %s controller with index %d "
+msgid "Device alias was not set for %s controller with index %d"
 msgstr ""
-"Pro řadič %s s pořadovým číslem %d nebyl nastaven alternativní název zařízení"
 
 #, c-format
 msgid ""
@@ -15211,8 +15210,11 @@ msgstr "Typ %s cílového řadiče se neshoduje se zdrojovým %s"
 msgid "Target controller vectors %d does not match source %d"
 msgstr "Vektory %d cílového řadiče neodpovídají zdrojovým %d"
 
-msgid "Target device PCI address "
-msgstr "PCI adresa cílového zařízení"
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -20540,8 +20542,8 @@ msgid "bad pathname"
 msgstr "nesprávný popis umístění"
 
 #, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
-msgstr "chybná předpona %d pro síť %s při kontrole rozsahu %s - %s"
+msgid "bad prefix %d for network %s when checking range %s - %s"
+msgstr ""
 
 msgid "balloon device cannot be disabled"
 msgstr "výplňové zařízení paměti není možné vypnout"
@@ -21686,20 +21688,27 @@ msgstr "není možné zastavit po zachycení stavu přechodné domény"
 msgid "cannot halt after transient domain snapshot"
 msgstr "není možné zastavit po zachyceném stavu přechodné domény"
 
-#, fuzzy, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
 msgstr ""
-"není možné odpojit za chodu zařízení %s s adresou složeného PCI zařízení "
-"hosta:"
 
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
 msgstr ""
-"není možné odpojit za chodu zařízení %s s adresou složeného PCI zařízení "
-"hosta:"
 
-msgid "cannot hot unplug multifunction PCI device: "
-msgstr "není možné odpojit za chodu složené PCI zařízení:"
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
+msgstr ""
 
 #, fuzzy
 msgid "cannot initialize agent condition"
@@ -27351,8 +27360,9 @@ msgstr "TLS složka stěhování hostitele není nastavena"
 msgid "host name for source of disk device"
 msgstr ""
 
-msgid "host pci device "
-msgstr "pci zařízení hostitele"
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
+msgstr ""
 
 #, c-format
 msgid "host pci device %s not found"
@@ -28910,8 +28920,9 @@ msgstr "libxenlight se nepodařilo připojit disk „%s“"
 msgid "libxenlight failed to attach network device"
 msgstr "libxenlight se nepodařilo připojit síťové zařízení"
 
-msgid "libxenlight failed to attach pci device "
-msgstr "libxenlight se nepodařilo připojit pci zařízení"
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
@@ -28940,8 +28951,9 @@ msgstr "libxenlight se nepodařilo odpojit disk „%s“"
 msgid "libxenlight failed to detach network device"
 msgstr "libxenlight se nepodařilo odpojit síťové rozhraní"
 
-msgid "libxenlight failed to detach pci device "
-msgstr "libxenlight se nepodařilo odpojit pci zařízení"
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -35278,8 +35290,9 @@ msgstr "název cílové sítě"
 msgid "target of disk device"
 msgstr "cíl diskového zařízení"
 
-msgid "target pci device "
-msgstr "cílové pci zařízení"
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
+msgstr ""
 
 #, c-format
 msgid "target port '%d' already allocated"
@@ -39066,6 +39079,46 @@ msgstr "zóna %s vyžadována pro sít %s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <řetězec>}…"
+
+#~ msgid "Could not find vf/instanceId %u/%s  in netlink response"
+#~ msgstr "V netlink odpovědi nenalezeno vf/instanceId %u/%s"
+
+#~ msgid "Device alias was not set for %s controller with index %d "
+#~ msgstr ""
+#~ "Pro řadič %s s pořadovým číslem %d nebyl nastaven alternativní název "
+#~ "zařízení"
+
+#~ msgid "Target device PCI address "
+#~ msgstr "PCI adresa cílového zařízení"
+
+#~ msgid "bad prefix %d for network %s when  checking range %s - %s"
+#~ msgstr "chybná předpona %d pro síť %s při kontrole rozsahu %s - %s"
+
+#, fuzzy
+#~ msgid "cannot hot unplug %s device with PCI guest address: "
+#~ msgstr ""
+#~ "není možné odpojit za chodu zařízení %s s adresou složeného PCI zařízení "
+#~ "hosta:"
+
+#~ msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+#~ msgstr ""
+#~ "není možné odpojit za chodu zařízení %s s adresou složeného PCI zařízení "
+#~ "hosta:"
+
+#~ msgid "cannot hot unplug multifunction PCI device: "
+#~ msgstr "není možné odpojit za chodu složené PCI zařízení:"
+
+#~ msgid "host pci device "
+#~ msgstr "pci zařízení hostitele"
+
+#~ msgid "libxenlight failed to attach pci device "
+#~ msgstr "libxenlight se nepodařilo připojit pci zařízení"
+
+#~ msgid "libxenlight failed to detach pci device "
+#~ msgstr "libxenlight se nepodařilo odpojit pci zařízení"
+
+#~ msgid "target pci device "
+#~ msgstr "cílové pci zařízení"
 
 #~ msgid "%s is not available with this QEMU binary"
 #~ msgstr "%s není s touto binárkou QEMU k dispozici"

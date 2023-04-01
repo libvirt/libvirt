@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2015-02-27 04:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -4152,9 +4152,9 @@ msgstr "ପ୍ରାଚଳ '%s' ପାଇଁ ମୂଲ୍ୟ ପାଇଲା ନ
 msgid "Could not find variable '%s' in iterator"
 msgstr "ପୂନରାବର୍ତ୍ତକରେ '%s'କୁ ଖୋଜି ପାଇଲା ନାହିଁ"
 
-#, fuzzy, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
-msgstr "VF %d ପାଇଁ netlink ଉତ୍ତରରେ IFLA_VF_INFO କୁ ପାଇଲା ନାହିଁ"
+#, c-format
+msgid "Could not find vf/instanceId %u/%s in netlink response"
+msgstr ""
 
 #, c-format
 msgid "Could not find volume with name: %s"
@@ -5192,9 +5192,9 @@ msgstr ""
 msgid "Device '%s' is unrecognized, requires build"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Device alias was not set for %s controller with index %d "
-msgstr "ଏକାଧିକ '%s' ନିୟନ୍ତ୍ରକଗୁଡ଼ିକ ଅନୁକ୍ରମଣିକା '%d' ସହିତ "
+#, c-format
+msgid "Device alias was not set for %s controller with index %d"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -15131,9 +15131,11 @@ msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ନିୟନ୍ତ୍ରକ ପ୍ରକ�
 msgid "Target controller vectors %d does not match source %d"
 msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ନିୟନ୍ତ୍ରକ ଭେକ୍ଟର %d ଉତ୍ସ %d ସହିତ ମିଶୁ ନାହିଁ"
 
-#, fuzzy
-msgid "Target device PCI address "
-msgstr "ଅନ୍ତରାପୃଷ୍ଠ ଉପକରଣ (MAC ଠିକଣା)"
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -20458,7 +20460,7 @@ msgid "bad pathname"
 msgstr "ଖରାପ ପଥ ନାମ"
 
 #, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
+msgid "bad prefix %d for network %s when checking range %s - %s"
 msgstr ""
 
 #, fuzzy
@@ -21595,15 +21597,26 @@ msgstr "ଅସ୍ଥାୟୀ ଡମେନର ଆଶୁଚିତ୍ର ପରେ
 msgid "cannot halt after transient domain snapshot"
 msgstr "ଅସ୍ଥାୟୀ ଡମେନ ଆଶୁଚିତ୍ର ପରେ ଅଟକି ପାରିବେ ନାହିଁ"
 
-#, fuzzy, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
-msgstr "ନେଟୱର୍କ ଉପକରଣ ଅତିଥି PCI ଠିକଣାକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
-
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
 msgstr ""
 
-msgid "cannot hot unplug multifunction PCI device: "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
+msgstr ""
+
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
 msgstr ""
 
 #, fuzzy
@@ -27291,9 +27304,9 @@ msgstr ""
 msgid "host name for source of disk device"
 msgstr ""
 
-#, fuzzy
-msgid "host pci device "
-msgstr "ଖଣ୍ଡ ଉପକରଣ"
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
+msgstr ""
 
 #, c-format
 msgid "host pci device %s not found"
@@ -28832,9 +28845,9 @@ msgstr "ଡିସ୍କ '%s'କୁ libxenlight ସଂଲଗ୍ନ କରିବ�
 msgid "libxenlight failed to attach network device"
 msgstr "libxenlight ନେଟୱର୍କ ଉପକରଣକୁ ସଂଲଗ୍ନ କରିବାରେ ବିଫଳ"
 
-#, fuzzy
-msgid "libxenlight failed to attach pci device "
-msgstr "libxenlight ନେଟୱର୍କ ଉପକରଣକୁ ସଂଲଗ୍ନ କରିବାରେ ବିଫଳ"
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
@@ -28863,9 +28876,9 @@ msgstr "ଡିସ୍କ '%s'କୁ libxenlight ପୃଥକ କରିବାର�
 msgid "libxenlight failed to detach network device"
 msgstr "libxenlight ନେଟୱର୍କ ଉପକରଣକୁ ପୃଥକ କରିବାରେ ବିଫଳ"
 
-#, fuzzy
-msgid "libxenlight failed to detach pci device "
-msgstr "libxenlight ନେଟୱର୍କ ଉପକରଣକୁ ପୃଥକ କରିବାରେ ବିଫଳ"
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -35241,9 +35254,9 @@ msgstr "ଲକ୍ଷ୍ଯସ୍ଥ ନେଟୱାର୍କ ନାମ"
 msgid "target of disk device"
 msgstr "ଡିସ୍କ ଉପକରଣର ଲକ୍ଷ୍ଯ"
 
-#, fuzzy
-msgid "target pci device "
-msgstr "ଲକ୍ଷ୍ଯ ଉପକରଣ ପ୍ରକାର"
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
+msgstr ""
 
 #, c-format
 msgid "target port '%d' already allocated"
@@ -38964,6 +38977,38 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Could not find vf/instanceId %u/%s  in netlink response"
+#~ msgstr "VF %d ପାଇଁ netlink ଉତ୍ତରରେ IFLA_VF_INFO କୁ ପାଇଲା ନାହିଁ"
+
+#, fuzzy
+#~ msgid "Device alias was not set for %s controller with index %d "
+#~ msgstr "ଏକାଧିକ '%s' ନିୟନ୍ତ୍ରକଗୁଡ଼ିକ ଅନୁକ୍ରମଣିକା '%d' ସହିତ "
+
+#, fuzzy
+#~ msgid "Target device PCI address "
+#~ msgstr "ଅନ୍ତରାପୃଷ୍ଠ ଉପକରଣ (MAC ଠିକଣା)"
+
+#, fuzzy
+#~ msgid "cannot hot unplug %s device with PCI guest address: "
+#~ msgstr "ନେଟୱର୍କ ଉପକରଣ ଅତିଥି PCI ଠିକଣାକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
+
+#, fuzzy
+#~ msgid "host pci device "
+#~ msgstr "ଖଣ୍ଡ ଉପକରଣ"
+
+#, fuzzy
+#~ msgid "libxenlight failed to attach pci device "
+#~ msgstr "libxenlight ନେଟୱର୍କ ଉପକରଣକୁ ସଂଲଗ୍ନ କରିବାରେ ବିଫଳ"
+
+#, fuzzy
+#~ msgid "libxenlight failed to detach pci device "
+#~ msgstr "libxenlight ନେଟୱର୍କ ଉପକରଣକୁ ପୃଥକ କରିବାରେ ବିଫଳ"
+
+#, fuzzy
+#~ msgid "target pci device "
+#~ msgstr "ଲକ୍ଷ୍ଯ ଉପକରଣ ପ୍ରକାର"
 
 #, fuzzy
 #~ msgid "%s is not available with this QEMU binary"

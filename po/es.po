@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2022-01-30 17:16+0000\n"
 "Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -4221,9 +4221,9 @@ msgstr "No se pudo hallar el valor para la variable '%s'"
 msgid "Could not find variable '%s' in iterator"
 msgstr "No se pudo hallar la variable '%s' en iterador"
 
-#, fuzzy, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
-msgstr "No se encontró IFLA_VF_INFO para VF %d en respuesta de netlink"
+#, c-format
+msgid "Could not find vf/instanceId %u/%s in netlink response"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not find volume with name: %s"
@@ -5297,9 +5297,9 @@ msgstr ""
 msgid "Device '%s' is unrecognized, requires build"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Device alias was not set for %s controller with index %d "
-msgstr "Múltiples controladors  '%s' con índice '%d'"
+#, c-format
+msgid "Device alias was not set for %s controller with index %d"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -15585,9 +15585,11 @@ msgstr "El tipo de controlador elegido %s no coincide con la fuente %s"
 msgid "Target controller vectors %d does not match source %d"
 msgstr "Los vectores del controlador elegido %d no coinciden con la fuente %d"
 
-#, fuzzy
-msgid "Target device PCI address "
-msgstr "Dispositivo de interfaz (Dirección MAC)"
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -21062,7 +21064,7 @@ msgid "bad pathname"
 msgstr "Nombre de ruta errado"
 
 #, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
+msgid "bad prefix %d for network %s when checking range %s - %s"
 msgstr ""
 
 #, fuzzy
@@ -22243,15 +22245,26 @@ msgstr "No se puede deterne después de toma de pantalla de dominio transitorio"
 msgid "cannot halt after transient domain snapshot"
 msgstr "No se puede detener la toma de pantalla de dominio transitorio"
 
-#, fuzzy, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
-msgstr "No se puede modificar dirección PCI de huésped de dispositivo de red"
-
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
 msgstr ""
 
-msgid "cannot hot unplug multifunction PCI device: "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
+msgstr ""
+
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
 msgstr ""
 
 #, fuzzy
@@ -28041,9 +28054,9 @@ msgstr ""
 msgid "host name for source of disk device"
 msgstr ""
 
-#, fuzzy
-msgid "host pci device "
-msgstr "dispositivo de bloque"
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
+msgstr ""
 
 #, c-format
 msgid "host pci device %s not found"
@@ -29609,9 +29622,9 @@ msgstr "libxenlight falló al conectar disco '%s'"
 msgid "libxenlight failed to attach network device"
 msgstr "libxenlight falló al conectar disco '%s'"
 
-#, fuzzy
-msgid "libxenlight failed to attach pci device "
-msgstr "libxenlight falló al conectar disco '%s'"
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
@@ -29641,9 +29654,9 @@ msgstr "libxenlight falló al desconectar disco '%s'"
 msgid "libxenlight failed to detach network device"
 msgstr "libxenlight falló al desconectar disco '%s'"
 
-#, fuzzy
-msgid "libxenlight failed to detach pci device "
-msgstr "libxenlight falló al desconectar disco '%s'"
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -36196,9 +36209,9 @@ msgstr "nombre de la red elegida"
 msgid "target of disk device"
 msgstr "destino del dispositivo de disco"
 
-#, fuzzy
-msgid "target pci device "
-msgstr "tipo de dispositivo de disco"
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
+msgstr ""
 
 #, c-format
 msgid "target port '%d' already allocated"
@@ -39979,6 +39992,39 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Could not find vf/instanceId %u/%s  in netlink response"
+#~ msgstr "No se encontró IFLA_VF_INFO para VF %d en respuesta de netlink"
+
+#, fuzzy
+#~ msgid "Device alias was not set for %s controller with index %d "
+#~ msgstr "Múltiples controladors  '%s' con índice '%d'"
+
+#, fuzzy
+#~ msgid "Target device PCI address "
+#~ msgstr "Dispositivo de interfaz (Dirección MAC)"
+
+#, fuzzy
+#~ msgid "cannot hot unplug %s device with PCI guest address: "
+#~ msgstr ""
+#~ "No se puede modificar dirección PCI de huésped de dispositivo de red"
+
+#, fuzzy
+#~ msgid "host pci device "
+#~ msgstr "dispositivo de bloque"
+
+#, fuzzy
+#~ msgid "libxenlight failed to attach pci device "
+#~ msgstr "libxenlight falló al conectar disco '%s'"
+
+#, fuzzy
+#~ msgid "libxenlight failed to detach pci device "
+#~ msgstr "libxenlight falló al desconectar disco '%s'"
+
+#, fuzzy
+#~ msgid "target pci device "
+#~ msgstr "tipo de dispositivo de disco"
 
 #, fuzzy
 #~ msgid "%s is not available with this QEMU binary"

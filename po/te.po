@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -4092,9 +4092,9 @@ msgstr "వేరియబుల్ '%s' కొరకు విలువ కన�
 msgid "Could not find variable '%s' in iterator"
 msgstr "వేరియబుల్ '%s' ను ఇటరేటర్ నందు కనుగొనలేక పోయింది"
 
-#, fuzzy, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
-msgstr "నెట్‌లింక్ స్పందన నందు VF %d కొరకు IFLA_VF_INFO కనుగొనలేక పోయింది"
+#, c-format
+msgid "Could not find vf/instanceId %u/%s in netlink response"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not find volume with name: %s"
@@ -5128,9 +5128,9 @@ msgstr ""
 msgid "Device '%s' is unrecognized, requires build"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Device alias was not set for %s controller with index %d "
-msgstr "బహుళ '%s' నియంత్రికలు విషయసూచి '%d' తో"
+#, c-format
+msgid "Device alias was not set for %s controller with index %d"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -15092,9 +15092,11 @@ msgstr "లక్ష్యపు నియంత్రిక రకం %s మూ
 msgid "Target controller vectors %d does not match source %d"
 msgstr "లక్ష్యపు నియంత్రిక శీర్షాలు %d మూలం  %d తో సరిపోలడంలేదు"
 
-#, fuzzy
-msgid "Target device PCI address "
-msgstr "ఇంటర్ఫేస్ పరికరం (MAC చిరునామా)"
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -20427,7 +20429,7 @@ msgid "bad pathname"
 msgstr "చెడ్డ పాత్‌పేరు"
 
 #, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
+msgid "bad prefix %d for network %s when checking range %s - %s"
 msgstr ""
 
 #, fuzzy
@@ -21569,15 +21571,26 @@ msgstr "అస్థిర డొమైన్ యొక్క స్నాప్
 msgid "cannot halt after transient domain snapshot"
 msgstr "అస్థిర డొమైన్ స్నాప్‌షాట్ తరువాత హాల్ట్ చేయలేదు"
 
-#, fuzzy, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
-msgstr "నెట్వర్కు పరికరం PCI చిరునామా సవరించలేదు"
-
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
 msgstr ""
 
-msgid "cannot hot unplug multifunction PCI device: "
+#, c-format
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
+msgstr ""
+
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
 msgstr ""
 
 #, fuzzy
@@ -27274,9 +27287,9 @@ msgstr ""
 msgid "host name for source of disk device"
 msgstr ""
 
-#, fuzzy
-msgid "host pci device "
-msgstr "నిరోధక పరికరం"
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
+msgstr ""
 
 #, c-format
 msgid "host pci device %s not found"
@@ -28823,9 +28836,9 @@ msgstr "డిస్కు '%s' అనుబందించుటకు libxenli
 msgid "libxenlight failed to attach network device"
 msgstr "డిస్కు '%s' అనుబందించుటకు libxenlight విఫలమైంది"
 
-#, fuzzy
-msgid "libxenlight failed to attach pci device "
-msgstr "డిస్కు '%s' అనుబందించుటకు libxenlight విఫలమైంది"
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
@@ -28855,9 +28868,9 @@ msgstr "డిస్కు '%s' విడదీయుటకు libxenlight వ�
 msgid "libxenlight failed to detach network device"
 msgstr "డిస్కు '%s' విడదీయుటకు libxenlight విఫలమైంది"
 
-#, fuzzy
-msgid "libxenlight failed to detach pci device "
-msgstr "డిస్కు '%s' విడదీయుటకు libxenlight విఫలమైంది"
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
+msgstr ""
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -35269,9 +35282,9 @@ msgstr "లక్ష్య నెట్వర్కు నామము"
 msgid "target of disk device"
 msgstr "డిస్కు పరికరం యొక్క లక్ష్యం"
 
-#, fuzzy
-msgid "target pci device "
-msgstr "లక్ష్య పరికరం రకం"
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
+msgstr ""
 
 #, c-format
 msgid "target port '%d' already allocated"
@@ -39007,6 +39020,38 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Could not find vf/instanceId %u/%s  in netlink response"
+#~ msgstr "నెట్‌లింక్ స్పందన నందు VF %d కొరకు IFLA_VF_INFO కనుగొనలేక పోయింది"
+
+#, fuzzy
+#~ msgid "Device alias was not set for %s controller with index %d "
+#~ msgstr "బహుళ '%s' నియంత్రికలు విషయసూచి '%d' తో"
+
+#, fuzzy
+#~ msgid "Target device PCI address "
+#~ msgstr "ఇంటర్ఫేస్ పరికరం (MAC చిరునామా)"
+
+#, fuzzy
+#~ msgid "cannot hot unplug %s device with PCI guest address: "
+#~ msgstr "నెట్వర్కు పరికరం PCI చిరునామా సవరించలేదు"
+
+#, fuzzy
+#~ msgid "host pci device "
+#~ msgstr "నిరోధక పరికరం"
+
+#, fuzzy
+#~ msgid "libxenlight failed to attach pci device "
+#~ msgstr "డిస్కు '%s' అనుబందించుటకు libxenlight విఫలమైంది"
+
+#, fuzzy
+#~ msgid "libxenlight failed to detach pci device "
+#~ msgstr "డిస్కు '%s' విడదీయుటకు libxenlight విఫలమైంది"
+
+#, fuzzy
+#~ msgid "target pci device "
+#~ msgstr "లక్ష్య పరికరం రకం"
 
 #, fuzzy
 #~ msgid "%s is not available with this QEMU binary"
