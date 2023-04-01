@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-01 08:30+0000\n"
+"POT-Creation-Date: 2023-04-01 11:38+0200\n"
 "PO-Revision-Date: 2015-02-26 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -372,13 +372,13 @@ msgstr ""
 
 #, c-format
 msgid ""
-"!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' differs "
-"from stored identity. Please verify the new host key '%3$s' to avoid possible "
-"man in the middle attack. The key is stored in '%4$s'."
+"!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' "
+"differs from stored identity. Please verify the new host key '%3$s' to avoid "
+"possible man in the middle attack. The key is stored in '%4$s'."
 msgstr ""
-"!!! SSH হস্ট কি' সতাসত্য নিৰূপণ ব্যৰ্থ হল !!!: হস্ট '%1$s:%2$d' ৰ পৰিচয়সংৰক্ষিত পৰিচয়ৰ "
-"পৰা পৃথক। মাজৰ আক্ৰমণৰ সম্ভাব্য man প্ৰতিৰোধ কৰিবলে অনুগ্ৰহ কৰি নতুন হস্ট কি' '%3$s' "
-"সতাসত্য নিৰূপণ কৰক।  কি' '%4$s' ত সংৰক্ষিত।"
+"!!! SSH হস্ট কি' সতাসত্য নিৰূপণ ব্যৰ্থ হল !!!: হস্ট '%1$s:%2$d' ৰ পৰিচয়সংৰক্ষিত "
+"পৰিচয়ৰ পৰা পৃথক। মাজৰ আক্ৰমণৰ সম্ভাব্য man প্ৰতিৰোধ কৰিবলে অনুগ্ৰহ কৰি নতুন হস্ট কি' "
+"'%3$s' সতাসত্য নিৰূপণ কৰক।  কি' '%4$s' ত সংৰক্ষিত।"
 
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
@@ -401,13 +401,15 @@ msgid "%1$s %2$s '%3$s' has an unsupported type '%4$s'"
 msgstr "%1$s %2$s '%3$s' ৰ অসমৰ্থিত ধৰণ '%4$s'"
 
 #, c-format
-msgid "%1$s %2$s '%3$s' has unsupported type '%4$s', expecting '%5$s' or '%6$s'"
-msgstr "%1$s %2$s '%3$s' ত অসমৰ্থিত ধৰণ '%4$s' আছে, আশা কৰা হৈছে '%5$s' অথবা '%6$s'"
+msgid ""
+"%1$s %2$s '%3$s' has unsupported type '%4$s', expecting '%5$s' or '%6$s'"
+msgstr ""
+"%1$s %2$s '%3$s' ত অসমৰ্থিত ধৰণ '%4$s' আছে, আশা কৰা হৈছে '%5$s' অথবা '%6$s'"
 
 #, c-format
 msgid ""
-"%1$s (on destination side) does not support the --migration option needed for "
-"migration with shared storage"
+"%1$s (on destination side) does not support the --migration option needed "
+"for migration with shared storage"
 msgstr ""
 
 #, c-format
@@ -451,10 +453,11 @@ msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
 msgstr "নেটৱৰ্ক '%1$s' ত non-IPv4 ঠিকনা '%2$s' ৰ বাবে %3$s পৰিয়াল ধাৰ্য্যত"
 
 #, c-format
-msgid "%1$s forwarding requested, but no IP address provided for network '%2$s'"
+msgid ""
+"%1$s forwarding requested, but no IP address provided for network '%2$s'"
 msgstr ""
-"%1$s আগবঢ়োৱা অনুৰোধ কৰা হৈছে, কিন্তু নেটৱৰ্ক '%2$s' ৰ বাবে কোনো IP ঠিকনা প্ৰদান কৰা "
-"হোৱা নাই"
+"%1$s আগবঢ়োৱা অনুৰোধ কৰা হৈছে, কিন্তু নেটৱৰ্ক '%2$s' ৰ বাবে কোনো IP ঠিকনা প্ৰদান "
+"কৰা হোৱা নাই"
 
 #, c-format
 msgid "%1$s graphics are not supported with this QEMU"
@@ -530,7 +533,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"%1$s model of watchdog is part of the machine and cannot have any address set."
+"%1$s model of watchdog is part of the machine and cannot have any address "
+"set."
 msgstr ""
 
 #, c-format
@@ -645,14 +649,14 @@ msgstr "%1$s: পঢ়া আৰু লিখা ফ্লেগসমূহ এ�
 
 #, fuzzy, c-format
 msgid ""
-"%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address in "
-"route definition"
+"%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address "
+"in route definition"
 msgstr "নেটৱৰ্ক '%s' ৰ পথ বিৱৰণত অবৈধ নেটমাস্ক অথবা IP ঠিকনা"
 
 #, c-format
 msgid ""
-"%1$s: Error converting address '%2$s' with prefix %3$u to network-address in route "
-"definition"
+"%1$s: Error converting address '%2$s' with prefix %3$u to network-address in "
+"route definition"
 msgstr ""
 
 #, c-format
@@ -660,19 +664,23 @@ msgid "%1$s: File '%2$s' is too large\n"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "%1$s: IPv4 family specified for non-IPv4 address '%2$s' in route definition"
+msgid ""
+"%1$s: IPv4 family specified for non-IPv4 address '%2$s' in route definition"
 msgstr "নেটৱৰ্ক '%s' ত non-IPv4 ঠিকনা '%s' ৰ বাবে %s পৰিয়াল ধাৰ্য্যত"
 
 #, fuzzy, c-format
-msgid "%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
+msgid ""
+"%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr "নেটৱৰ্ক '%s' ত non-IPv4 ঠিকনা '%s' ৰ বাবে %s পৰিয়াল ধাৰ্য্যত"
 
 #, fuzzy, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
-msgstr "নেটৱৰ্ক '%1$s' ত ঠিকনা '%2$s' ৰ বাবে অবৈধ নেটমাস্ক '%3$s'(দুয়ো IPv4 হব লাগিব)"
+msgstr ""
+"নেটৱৰ্ক '%1$s' ত ঠিকনা '%2$s' ৰ বাবে অবৈধ নেটমাস্ক '%3$s'(দুয়ো IPv4 হব লাগিব)"
 
 #, c-format
-msgid "%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 128"
+msgid ""
+"%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 128"
 msgstr ""
 
 #, c-format
@@ -688,11 +696,13 @@ msgid "%1$s: Missing required gateway attribute in route definition"
 msgstr "portgroup ত প্ৰয়োজনীয় নাম বৈশিষ্ট্য নাই"
 
 #, fuzzy, c-format
-msgid "%1$s: No family specified for non-IPv4 address '%2$s' in route definition"
+msgid ""
+"%1$s: No family specified for non-IPv4 address '%2$s' in route definition"
 msgstr "নেটৱৰ্ক '%s' ত non-IPv4 ঠিকনা '%s' ৰ বাবে %s পৰিয়াল ধাৰ্য্যত"
 
 #, fuzzy, c-format
-msgid "%1$s: No family specified for non-IPv4 gateway '%2$s' in route definition"
+msgid ""
+"%1$s: No family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr "নেটৱৰ্ক '%s' ত non-IPv4 ঠিকনা '%s' ৰ বাবে %s পৰিয়াল ধাৰ্য্যত"
 
 #, fuzzy, c-format
@@ -735,8 +745,8 @@ msgid ""
 "%1$s: error: %2$s. Check /var/log/messages or run without --daemon for more "
 "info.\n"
 msgstr ""
-"%1$s: ত্ৰুটি: %2$s। /var/log/messages নিৰীক্ষণ কৰক অথবা অধিক তথ্যৰ বাবে --daemon ৰ "
-"বাহিৰে চলাওক।\n"
+"%1$s: ত্ৰুটি: %2$s। /var/log/messages নিৰীক্ষণ কৰক অথবা অধিক তথ্যৰ বাবে --daemon "
+"ৰ বাহিৰে চলাওক।\n"
 
 #, c-format
 msgid "%1$s: error: unable to determine if daemon is running: %2$s\n"
@@ -823,7 +833,8 @@ msgid "%1$s: initialization failed\n"
 msgstr "%1$s: আৰম্ভ কৰা ব্যৰ্থ হল\n"
 
 #, fuzzy, c-format
-msgid "%1$s: ipv6 family specified for non-IPv6 address '%2$s' in route definition"
+msgid ""
+"%1$s: ipv6 family specified for non-IPv6 address '%2$s' in route definition"
 msgstr "নেটৱৰ্ক '%s' ত non-IPv4 ঠিকনা '%s' ৰ বাবে %s পৰিয়াল ধাৰ্য্যত"
 
 #, fuzzy, c-format
@@ -837,7 +848,8 @@ msgstr "%1$s: ক্ষতিগ্ৰস্থ fd %2$s"
 
 #, fuzzy, c-format
 msgid ""
-"%1$s: migration_port_max: port must be between the minimal port %2$d and 65535"
+"%1$s: migration_port_max: port must be between the minimal port %2$d and "
+"65535"
 msgstr "%1$s: remote_display_port_max: পোৰ্ট নূন্যতম পোৰ্ট আৰু %2$d ৰ মাজত হব লাগিব"
 
 #, fuzzy, c-format
@@ -862,18 +874,22 @@ msgid ""
 msgstr "%1$s: remote_display_port_max: পোৰ্ট নূন্যতম পোৰ্ট আৰু %2$d ৰ মাজত হব লাগিব"
 
 #, c-format
-msgid "%1$s: remote_display_port_min: min port must not be greater than max port"
+msgid ""
+"%1$s: remote_display_port_min: min port must not be greater than max port"
 msgstr ""
 "%1$s: remote_display_port_min: নূন্যতম পোৰ্ট সৰ্বাধিক পোৰ্টতকে ডাঙৰ হব নোৱাৰিব"
 
 #, c-format
-msgid "%1$s: remote_display_port_min: port must be greater than or equal to %2$d"
+msgid ""
+"%1$s: remote_display_port_min: port must be greater than or equal to %2$d"
 msgstr "%1$s: remote_display_port_min: পোৰ্ট %2$d কে ডাঙৰ অথবা সমান হব লাগিব"
 
 #, c-format
 msgid ""
-"%1$s: remote_websocket_port_max: port must be between the minimal port and %2$d"
-msgstr "%1$s: remote_websocket_port_max: পোৰ্ট নূন্যতম পোৰ্ট আৰু %2$d ৰ মাজত হব লাগিব"
+"%1$s: remote_websocket_port_max: port must be between the minimal port and "
+"%2$d"
+msgstr ""
+"%1$s: remote_websocket_port_max: পোৰ্ট নূন্যতম পোৰ্ট আৰু %2$d ৰ মাজত হব লাগিব"
 
 #, c-format
 msgid ""
@@ -881,13 +897,15 @@ msgid ""
 msgstr "%1$s: remote_websocket_port_min: min পোৰ্ট max পোৰ্টতকৈ ডাঙৰ হব লাগিব"
 
 #, c-format
-msgid "%1$s: remote_websocket_port_min: port must be greater than or equal to %2$d"
-msgstr "%1$s: remote_websocket_port_min: পোৰ্ট %2$d ত কৈ ডাঙৰ অথবা সমান হব লাগিব"
+msgid ""
+"%1$s: remote_websocket_port_min: port must be greater than or equal to %2$d"
+msgstr ""
+"%1$s: remote_websocket_port_min: পোৰ্ট %2$d ত কৈ ডাঙৰ অথবা সমান হব লাগিব"
 
 #, c-format
 msgid ""
-"%1$s: temporary filename contains shell meta or other unacceptable characters "
-"(is $TMPDIR wrong?)"
+"%1$s: temporary filename contains shell meta or other unacceptable "
+"characters (is $TMPDIR wrong?)"
 msgstr ""
 "%1$s: অস্থায়ী ফাইলত shell meta বা অন্য গ্ৰহণ কৰিব নোৱাৰা আখৰ আছে ($TMPDIR ভীল "
 "নেকি ?)"
@@ -1109,8 +1127,8 @@ msgstr "guest-get-vcpus ৰ উত্তৰত 'online' নাই"
 
 #, c-format
 msgid ""
-"'incremental' backup mode of disk '%1$s' requires setting 'incremental' field "
-"for disk or backup"
+"'incremental' backup mode of disk '%1$s' requires setting 'incremental' "
+"field for disk or backup"
 msgstr ""
 
 msgid "'initiator' refers to a non-existent NUMA node"
@@ -1150,7 +1168,8 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid ""
-"'mode' of Xen passthrough feature differs: source: '%1$s', destination: '%2$s'"
+"'mode' of Xen passthrough feature differs: source: '%1$s', destination: "
+"'%2$s'"
 msgstr "বৈশিষ্ট্য '%s' ৰ অৱস্থা পৃথক হয়: উৎস: '%s', গন্তব্য: '%s'"
 
 #, c-format
@@ -1220,7 +1239,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"
+msgid ""
+"'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"
 msgstr ""
 
 msgid "'socket' attribute is valid only for listen type 'socket'"
@@ -1493,10 +1513,11 @@ msgid "<domainbackup> must specify TCP port for now"
 msgstr ""
 
 #, c-format
-msgid "<forward dev='%1$s'> must match first <interface dev='%2$s'/> in network %3$s"
+msgid ""
+"<forward dev='%1$s'> must match first <interface dev='%2$s'/> in network %3$s"
 msgstr ""
-"<forward dev='%1$s'> এ নেটৱৰ্ক %2$s ত প্ৰথম <interface dev='%3$s'/> ৰ সৈতে মিল খাব "
-"লাগিব"
+"<forward dev='%1$s'> এ নেটৱৰ্ক %2$s ত প্ৰথম <interface dev='%3$s'/> ৰ সৈতে মিল "
+"খাব লাগিব"
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr ""
@@ -1528,29 +1549,29 @@ msgid ""
 "<virtualport type='%1$s'> not supported for network '%2$s' which uses IP "
 "forwarding"
 msgstr ""
-"এটা ব্ৰিজ ডিভাইচ ব্যৱহাৰ কৰা নেটৱৰ্ক '%1$s' ৰ বাবে <virtualport type='%2$s'> সমৰ্থিত "
-"নহয়"
-
-#, c-format
-msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses a bridge "
-"device"
-msgstr ""
-"এটা ব্ৰিজ ডিভাইচ ব্যৱহাৰ কৰা নেটৱৰ্ক '%1$s' ৰ বাবে <virtualport type='%2$s'> সমৰ্থিত "
-"নহয়"
-
-#, c-format
-msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses a macvtap "
-"device"
-msgstr ""
-"এটা macvtap  ডিভাইচ ব্যৱহাৰ কৰা নেটৱৰ্ক '%1$s' ৰ বাবে <virtualport type='%2$s'> "
+"এটা ব্ৰিজ ডিভাইচ ব্যৱহাৰ কৰা নেটৱৰ্ক '%1$s' ৰ বাবে <virtualport type='%2$s'> "
 "সমৰ্থিত নহয়"
 
 #, c-format
 msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses an SR-IOV "
-"Virtual Function via PCI passthrough"
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses a "
+"bridge device"
+msgstr ""
+"এটা ব্ৰিজ ডিভাইচ ব্যৱহাৰ কৰা নেটৱৰ্ক '%1$s' ৰ বাবে <virtualport type='%2$s'> "
+"সমৰ্থিত নহয়"
+
+#, c-format
+msgid ""
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses a "
+"macvtap device"
+msgstr ""
+"এটা macvtap  ডিভাইচ ব্যৱহাৰ কৰা নেটৱৰ্ক '%1$s' ৰ বাবে <virtualport "
+"type='%2$s'> সমৰ্থিত নহয়"
+
+#, c-format
+msgid ""
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses an SR-"
+"IOV Virtual Function via PCI passthrough"
 msgstr ""
 "PCI পাছথ্ৰুৰে এটা SR-IOV ভাৰছুৱেল ফলন ব্যৱহাৰ কৰা নেটৱৰ্ক '%1$s' ৰ বাবে "
 "<virtualport type='%2$s'> সমৰ্থিত নহয়"
@@ -1583,7 +1604,8 @@ msgid "A different callback was requested"
 msgstr "এটা ভিন্ন কলবেক অনুৰোধ কৰা হৈছিল"
 
 #, c-format
-msgid "A domain definition can have no more than one cipher node with name %1$s"
+msgid ""
+"A domain definition can have no more than one cipher node with name %1$s"
 msgstr ""
 
 #, fuzzy
@@ -1600,8 +1622,8 @@ msgstr "এটা বন্ধ কলবেক ইতিমধ্যে ৰে�
 
 #, c-format
 msgid ""
-"A network with forward mode='%1$s' can specify a bridge name or a forward dev, "
-"but not both (network '%2$s')"
+"A network with forward mode='%1$s' can specify a bridge name or a forward "
+"dev, but not both (network '%2$s')"
 msgstr ""
 "forward অৱস্থা='%1$s' ৰ সৈতে এটা নেটৱাৰ্কে এটা ব্ৰিজ নাম অথবা এটা forward dev "
 "ধাৰ্য্য কৰিব পাৰিব কিন্তু দুয়ো নহয় (নেটৱৰ্ক '%2$s')"
@@ -1649,7 +1671,8 @@ msgstr "ডোমেইনৰ বৰ্তমান চলমান কাৰ্
 
 #, c-format
 msgid "Accept SSH host key with hash '%1$s' for host '%2$s:%3$d' (%4$s/%5$s)?"
-msgstr "হেশ '%1$s' ৰ সৈতে SSH হস্ট কি' গ্ৰহণ কৰিব নে হস্ট '%2$s:%3$d' (%4$s/%5$s)?"
+msgstr ""
+"হেশ '%1$s' ৰ সৈতে SSH হস্ট কি' গ্ৰহণ কৰিব নে হস্ট '%2$s:%3$d' (%4$s/%5$s)?"
 
 msgid "Access denied"
 msgstr "অভিগম নাকচ কৰা হৈছে"
@@ -1660,7 +1683,8 @@ msgstr "স্নুপ অনুৰোধৰ সক্ৰিয়কৰণ আন
 
 #, c-format
 msgid "Active %1$s devices on bus with %2$s, not doing bus reset"
-msgstr "%1$s সক্ৰিয় ডিভাইচ %2$s ৰ সৈতে বাচত উপস্থিত, বাচ পুনৰায় নিৰ্ধাৰণ কৰা হৈছে না"
+msgstr ""
+"%1$s সক্ৰিয় ডিভাইচ %2$s ৰ সৈতে বাচত উপস্থিত, বাচ পুনৰায় নিৰ্ধাৰণ কৰা হৈছে না"
 
 #, fuzzy
 msgid "Active Block Commit"
@@ -1791,10 +1815,8 @@ msgstr ""
 #, c-format
 msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
-"definition in network '%1$s' "
+"definition in network '%1$s'"
 msgstr ""
-"নেটৱৰ্ক '%1$s' স্থিৰ হস্ট বিৱৰণৰ বাবে নাম, mac, অথবা ip বৈশিষ্ট্যৰ অন্তত এটা ধাৰ্য্য "
-"কৰিব লাগিব"
 
 msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
@@ -2010,7 +2032,8 @@ msgstr "বাউন্ড কৰা"
 #, c-format
 msgid "Bridge '%1$s' has no QoS set, therefore unable to set 'floor' on '%2$s'"
 msgstr ""
-"ব্ৰিজ '%1$s' ৰ কোনো QoS সংহতি কৰা নাই, সেয়েহে '%2$s' ত 'floor' সংহতি কৰিবলে অক্ষম"
+"ব্ৰিজ '%1$s' ৰ কোনো QoS সংহতি কৰা নাই, সেয়েহে '%2$s' ত 'floor' সংহতি কৰিবলে "
+"অক্ষম"
 
 #, c-format
 msgid "Bridge generation exceeded max id %1$d"
@@ -2167,7 +2190,8 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid ""
-"CPU mode '%1$s' for %2$s %3$s domain on %4$s host is not supported by hypervisor"
+"CPU mode '%1$s' for %2$s %3$s domain on %4$s host is not supported by "
+"hypervisor"
 msgstr "CPU আৰ্হি %s হাইপাৰভাইছৰ দ্বাৰা সমৰ্থিত নহয়"
 
 #, c-format
@@ -2284,8 +2308,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cache allocation of size %1$llu is smaller than the minimum allowed allocation "
-"%2$llu"
+"Cache allocation of size %1$llu is smaller than the minimum allowed "
+"allocation %2$llu"
 msgstr ""
 
 #, fuzzy, c-format
@@ -2511,7 +2535,8 @@ msgstr "অভিগম কৰিব নোৱাৰা backing store volume %s"
 
 #, c-format
 msgid ""
-"Cannot access backing file '%1$s' of storage file '%2$s' (as uid:%3$u, gid:%4$u)"
+"Cannot access backing file '%1$s' of storage file '%2$s' (as uid:%3$u, gid:"
+"%4$u)"
 msgstr ""
 
 #, fuzzy, c-format
@@ -2923,7 +2948,8 @@ msgid "Cannot open /proc/cgroups"
 msgstr "/proc/cgroups খোলিব নোৱাৰি"
 
 #, c-format
-msgid "Cannot open embedded driver at path '%1$s', already open with path '%2$s'"
+msgid ""
+"Cannot open embedded driver at path '%1$s', already open with path '%2$s'"
 msgstr ""
 
 #, c-format
@@ -3090,14 +3116,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor=%3$llu "
-"would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
+"%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor=%3$llu "
-"would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
+"%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -3440,8 +3466,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes and "
-"enabling forwarding  without accept_ra set to 2 will cause the kernel to "
+"Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes "
+"and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
 msgstr ""
 
@@ -3545,7 +3571,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "Colliding cache allocations for cache level '%1$u' id '%2$u', type '%3$s'"
+msgid ""
+"Colliding cache allocations for cache level '%1$u' id '%2$u', type '%3$s'"
 msgstr ""
 
 msgid "Commit aborted"
@@ -3611,7 +3638,8 @@ msgstr "সংকোচন অভাৰফ্ল':"
 
 #, c-format
 msgid ""
-"Compression program for %1$s image format in configuration file isn't available"
+"Compression program for %1$s image format in configuration file isn't "
+"available"
 msgstr ""
 
 msgid "Compute baseline CPU for a set of given CPUs."
@@ -3637,7 +3665,8 @@ msgstr ""
 
 #, c-format
 msgid "Config entry '%1$s' must represent a boolean value (true|false)"
-msgstr "সংৰূপ প্ৰৱিষ্টি '%1$s' এ এটা বুলিয়ান মান (true|false) প্ৰতিনিদ্ধিত্ব কৰিব লাগিব"
+msgstr ""
+"সংৰূপ প্ৰৱিষ্টি '%1$s' এ এটা বুলিয়ান মান (true|false) প্ৰতিনিদ্ধিত্ব কৰিব লাগিব"
 
 #, c-format
 msgid "Config entry '%1$s' must represent an integer value"
@@ -3665,8 +3694,8 @@ msgstr "বুট কৰাৰ সময়ত এটা পুল নিজেই 
 
 #, c-format
 msgid ""
-"Configuring the '%1$s' timer is not supported for virtType=%2$s arch=%3$s machine="
-"%4$s guests"
+"Configuring the '%1$s' timer is not supported for virtType=%2$s arch=%3$s "
+"machine=%4$s guests"
 msgstr ""
 
 #, fuzzy, c-format
@@ -3978,8 +4007,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Could not find PCI controller with index '%1$u' required for device at address "
-"'%2$s'"
+"Could not find PCI controller with index '%1$u' required for device at "
+"address '%2$s'"
 msgstr ""
 
 #, c-format
@@ -4210,13 +4239,15 @@ msgstr "%s আৱাহনৰ বাবে %s চাব নোৱাৰি"
 msgid ""
 "Could not get interface information for '%1$s', which is a enslaved in bond "
 "'%2$s'"
-msgstr "'%1$s' ৰ বাবে আন্তঃপৃষ্ঠ তথ্য প্ৰাপ্ত কৰিব পৰা নগল, যি বান্ধনী '%2$s' ত বান্ধীত"
+msgstr ""
+"'%1$s' ৰ বাবে আন্তঃপৃষ্ঠ তথ্য প্ৰাপ্ত কৰিব পৰা নগল, যি বান্ধনী '%2$s' ত বান্ধীত"
 
 #, c-format
 msgid ""
 "Could not get interface information for '%1$s', which is a member of bridge "
 "'%2$s'"
-msgstr "'%1$s' ৰ বাবে আন্তঃপৃষ্ঠ তথ্য প্ৰাপ্ত কৰিব পৰা নগল, যি ব্ৰিজ '%2$s' ৰ এটা সদস্য"
+msgstr ""
+"'%1$s' ৰ বাবে আন্তঃপৃষ্ঠ তথ্য প্ৰাপ্ত কৰিব পৰা নগল, যি ব্ৰিজ '%2$s' ৰ এটা সদস্য"
 
 #, fuzzy
 msgid "Could not get interface list"
@@ -4385,7 +4416,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Could not look up processor setting data with virtual system instance ID '%1$s'"
+"Could not look up processor setting data with virtual system instance ID "
+"'%1$s'"
 msgstr ""
 
 #, c-format
@@ -4519,7 +4551,8 @@ msgid "Could not parse VPS ID %1$s"
 msgstr "VPS ID %1$s ৰ বিশ্লেষণ কৰিব পৰা ন'গ'ল"
 
 #, c-format
-msgid "Could not parse barrier and limit of '%1$s' from config for container %2$d"
+msgid ""
+"Could not parse barrier and limit of '%1$s' from config for container %2$d"
 msgstr "সংৰূপৰ পৰা '%1$s' ৰ বাধা আৰু সীমা বিশ্লেষণ কৰিব পৰা নগল বৈয়াম %2$d"
 
 #, c-format
@@ -4678,8 +4711,8 @@ msgstr "স্নেপশ্বট '%1$s' লে উভতি যাব নো�
 
 #, c-format
 msgid ""
-"Could not run '%1$s --reconfigure'. exitstatus: %2$d; Check error log '%3$s' for "
-"details."
+"Could not run '%1$s --reconfigure'. exitstatus: %2$d; Check error log '%3$s' "
+"for details."
 msgstr ""
 
 #, c-format
@@ -4689,7 +4722,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "Could not run '%1$s'. exitstatus: %2$d; Check error log '%3$s' for details."
+msgid ""
+"Could not run '%1$s'. exitstatus: %2$d; Check error log '%3$s' for details."
 msgstr ""
 
 #, c-format
@@ -4706,7 +4740,8 @@ msgstr "ডিস্ক কুটা সংহতি কৰিব পৰা ন�
 msgid ""
 "Could not set limit to %1$lld MHz, expecting positive value or -1 (unlimited)"
 msgstr ""
-"সীমাক %1$lld MHz লে সংহতি কৰিব নোৱাৰি, ধনাত্মক মান অথবা -1 (অসীমিত) আশা কৰা হৈছে"
+"সীমাক %1$lld MHz লে সংহতি কৰিব নোৱাৰি, ধনাত্মক মান অথবা -1 (অসীমিত) আশা কৰা "
+"হৈছে"
 
 #, c-format
 msgid "Could not set max-memory to %1$lu kilobytes: %2$s"
@@ -4739,8 +4774,8 @@ msgid ""
 "Could not set shares to %1$d, expecting positive value or -1 (low), -2 "
 "(normal) or -3 (high)"
 msgstr ""
-"শেয়াৰসমূহক %1$d লে সংহতি কৰিব নোৱাৰি, ধণাত্মক মান অথবা -1 (নিম্ন), -2 (স্বাভাৱিক) "
-"অথবা -3 (উচ্চ)"
+"শেয়াৰসমূহক %1$d লে সংহতি কৰিব নোৱাৰি, ধণাত্মক মান অথবা -1 (নিম্ন), -2 "
+"(স্বাভাৱিক) অথবা -3 (উচ্চ)"
 
 msgid "Could not set the source dir for the filesystem"
 msgstr "ফাইলপ্ৰণালীৰ কাৰণে উৎসৰ পঞ্জিকা নিৰ্ধাৰণ কৰিব পৰা ন'গ'ল"
@@ -4927,12 +4962,13 @@ msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
 "network '%2$s'"
 msgstr ""
-"নেটৱৰ্ক '%1$s' ত সেৱা '%2$s' ৰ বাবে লক্ষ্যৰ অবিহনে DNS SRV পৰ্ট বৈশিষ্ট্যৰ অনুমতি নাই"
+"নেটৱৰ্ক '%1$s' ত সেৱা '%2$s' ৰ বাবে লক্ষ্যৰ অবিহনে DNS SRV পৰ্ট বৈশিষ্ট্যৰ অনুমতি "
+"নাই"
 
 #, c-format
 msgid ""
-"DNS SRV priority attribute not permitted without target for service '%1$s' in "
-"network '%2$s'"
+"DNS SRV priority attribute not permitted without target for service '%1$s' "
+"in network '%2$s'"
 msgstr ""
 "নেটৱৰ্ক '%1$s' ত সেৱা '%2$s' ৰ বাবে লক্ষ্যৰ অবিহনে DNS SRV প্ৰাথমিকতা অনুমোদিত নহয়"
 
@@ -4944,7 +4980,8 @@ msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
 "network '%2$s'"
 msgstr ""
-"নেটৱৰ্ক '%1$s' ত সেৱা '%2$s' ৰ বাবে লক্ষ্যৰ অবিহনে DNS SRV পৰ্ট বৈশিষ্ট্যৰ অনুমতি নাই"
+"নেটৱৰ্ক '%1$s' ত সেৱা '%2$s' ৰ বাবে লক্ষ্যৰ অবিহনে DNS SRV পৰ্ট বৈশিষ্ট্যৰ অনুমতি "
+"নাই"
 
 msgid "DNS TXT records cannot be modified, only added or deleted"
 msgstr "DNS TXT ৰেকৰ্ডসমূহ পৰিবৰ্তন কৰিব নোৱাৰি, কেৱল যোগ কৰিব অথবা মচিব পাৰিব"
@@ -4963,7 +5000,8 @@ msgid "Datastore has unexpected type '%1$s'"
 msgstr "তথ্যসংগ্ৰহৰ অপ্ৰত্যাশিত ধৰণ '%1$s'"
 
 #, c-format
-msgid "Datastore path '%1$s' doesn't have expected format '[<datastore>] <path>'"
+msgid ""
+"Datastore path '%1$s' doesn't have expected format '[<datastore>] <path>'"
 msgstr "তথ্যসংগ্ৰহ পথ '%1$s' ৰ প্ৰত্যাশিত বিন্যাস '[<datastore>] <path>' নাই"
 
 #, c-format
@@ -5113,7 +5151,8 @@ msgstr "%1$s ডিভাইচ বৰ্তমানে ব্যৱহৃত �
 #, c-format
 msgid "Device %1$s is behind a switch lacking ACS and cannot be assigned"
 msgstr ""
-"%1$s ডিভাইচটি এটা ACS বিহীন চুইচৰ পিছত স্থাপন কৰা হৈছে আৰু ইয়াক ধাৰ্য কৰা সম্ভৱ নহয়"
+"%1$s ডিভাইচটি এটা ACS বিহীন চুইচৰ পিছত স্থাপন কৰা হৈছে আৰু ইয়াক ধাৰ্য কৰা সম্ভৱ "
+"নহয়"
 
 #, c-format
 msgid "Device %1$s is not a bridge"
@@ -5329,7 +5368,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Distance value %1$d under node %2$zu is LOCAL_DISTANCE and should be set to 10"
+"Distance value %1$d under node %2$zu is LOCAL_DISTANCE and should be set to "
+"10"
 msgstr ""
 
 #, fuzzy, c-format
@@ -5529,11 +5569,11 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Domain has multiple interfaces matching MAC address %1$s. You must use detach-"
-"device and specify the device pci address to remove it."
+"Domain has multiple interfaces matching MAC address %1$s. You must use "
+"detach-device and specify the device pci address to remove it."
 msgstr ""
-"ডমেইনৰ MAC ঠিকনা %1$s ৰ সৈতে মিল থকা কেইবাটাও আন্তঃপৃষ্ঠ আছে। আপুনি detach-device "
-"ব্যৱহাৰ কৰিব লাগিব আৰু ইয়াক আতৰাবলে ডিভাইচ pci ধাৰ্য্য কৰিব লাগিব।"
+"ডমেইনৰ MAC ঠিকনা %1$s ৰ সৈতে মিল থকা কেইবাটাও আন্তঃপৃষ্ঠ আছে। আপুনি detach-"
+"device ব্যৱহাৰ কৰিব লাগিব আৰু ইয়াক আতৰাবলে ডিভাইচ pci ধাৰ্য্য কৰিব লাগিব।"
 
 msgid "Domain has no current snapshot"
 msgstr "ডমেইনৰ কোনো বৰ্তমান স্নেপশ্বট নাই"
@@ -6050,7 +6090,8 @@ msgstr ""
 "VI API ধৰণ 'HostAgent' অথবা 'VirtualCenter' আশা কৰা হৈছে কিন্তু প্ৰাপ্ত হল '%1$s'"
 
 #, c-format
-msgid "Expecting VMX entry '%1$s' to be 'ata-hardDisk' or 'disk' but found '%2$s'"
+msgid ""
+"Expecting VMX entry '%1$s' to be 'ata-hardDisk' or 'disk' but found '%2$s'"
 msgstr ""
 "VMX প্ৰবিষ্টি '%1$s' ক 'ata-hardDisk' অথবা 'disk' হবলে আশা কৰা হৈছে কিন্তু প্ৰাপ্ত "
 "হল '%2$s'"
@@ -6065,20 +6106,22 @@ msgstr ""
 
 #, c-format
 msgid "Expecting VMX entry '%1$s' to be 'cdrom-image' but found '%2$s'"
-msgstr "VMX প্ৰৱিষ্টি '%1$s' ক 'cdrom-image' হবলে আশা কৰা হৈছিল কিন্তু প্ৰাপ্ত হল '%2$s'"
+msgstr ""
+"VMX প্ৰৱিষ্টি '%1$s' ক 'cdrom-image' হবলে আশা কৰা হৈছিল কিন্তু প্ৰাপ্ত হল '%2$s'"
 
 #, c-format
 msgid "Expecting VMX entry '%1$s' to be 'device' or 'file' but found '%2$s'"
 msgstr ""
-"VMX প্ৰৱিষ্টি '%1$s' ক 'device' অথবা 'file' হবলে আশা কৰা হৈছিল কিন্তু প্ৰাপ্ত হল '%2$s'"
+"VMX প্ৰৱিষ্টি '%1$s' ক 'device' অথবা 'file' হবলে আশা কৰা হৈছিল কিন্তু প্ৰাপ্ত হল "
+"'%2$s'"
 
 #, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'device', 'file' or 'pipe' or 'network' but "
 "found '%2$s'"
 msgstr ""
-"VMX প্ৰৱিষ্টি '%1$s' ক 'device', 'file' অথবা 'pipe' অথবা 'network' হবলে আশা কৰা "
-"হৈছিল কিন্তু প্ৰাপ্ত হল '%2$s'"
+"VMX প্ৰৱিষ্টি '%1$s' ক 'device', 'file' অথবা 'pipe' অথবা 'network' হবলে আশা "
+"কৰা হৈছিল কিন্তু প্ৰাপ্ত হল '%2$s'"
 
 #, c-format
 msgid ""
@@ -6089,24 +6132,25 @@ msgstr ""
 "কিন্তু প্ৰাপ্ত হল '%2$s'"
 
 #, c-format
-msgid "Expecting VMX entry '%1$s' to be 'scsi-hardDisk' or 'disk' but found '%2$s'"
+msgid ""
+"Expecting VMX entry '%1$s' to be 'scsi-hardDisk' or 'disk' but found '%2$s'"
 msgstr ""
-"VMX প্ৰবিষ্টি '%1$s' ক 'scsi-hardDisk' অথবা 'disk' হবলে আশা কৰা হৈছে কিন্তু প্ৰাপ্ত "
-"হল '%2$s'"
+"VMX প্ৰবিষ্টি '%1$s' ক 'scsi-hardDisk' অথবা 'disk' হবলে আশা কৰা হৈছে কিন্তু "
+"প্ৰাপ্ত হল '%2$s'"
 
 #, c-format
 msgid "Expecting VMX entry '%1$s' to be 'server' or 'client' but found '%2$s'"
 msgstr ""
-"VMX প্ৰৱিষ্টি '%1$s' ক  'server' অথবা 'client'  হবলে আশা কৰা হৈছিল কিন্তু প্ৰাপ্ত হল "
-"'%2$s'"
+"VMX প্ৰৱিষ্টি '%1$s' ক  'server' অথবা 'client'  হবলে আশা কৰা হৈছিল কিন্তু প্ৰাপ্ত "
+"হল '%2$s'"
 
 #, fuzzy, c-format
 msgid ""
-"Expecting VMX entry '%1$s' to be 'vlance' or 'vmxnet' or 'vmxnet3' or 'e1000' "
-"or 'e1000e' but found '%2$s'"
+"Expecting VMX entry '%1$s' to be 'vlance' or 'vmxnet' or 'vmxnet3' or "
+"'e1000' or 'e1000e' but found '%2$s'"
 msgstr ""
-"VMX প্ৰৱিষ্টি '%1$s' ক 'device', 'file' অথবা 'pipe' অথবা 'network' হবলে আশা কৰা "
-"হৈছিল কিন্তু প্ৰাপ্ত হল '%2$s'"
+"VMX প্ৰৱিষ্টি '%1$s' ক 'device', 'file' অথবা 'pipe' অথবা 'network' হবলে আশা "
+"কৰা হৈছিল কিন্তু প্ৰাপ্ত হল '%2$s'"
 
 #, c-format
 msgid "Expecting VMX entry '%1$s' to be MAC address but found '%2$s'"
@@ -6114,7 +6158,8 @@ msgstr "VMX প্ৰৱিষ্টি '%1$s' ক MAC ঠিকনা হবল
 
 #, c-format
 msgid "Expecting VMX entry 'config.version' to be 8 but found %1$lld"
-msgstr "VMX প্ৰবিষ্টি 'config.version' ক 8 হবলে আশা কৰা হৈছিল কিন্তু প্ৰাপ্ত হল %1$lld"
+msgstr ""
+"VMX প্ৰবিষ্টি 'config.version' ক 8 হবলে আশা কৰা হৈছিল কিন্তু প্ৰাপ্ত হল %1$lld"
 
 #, c-format
 msgid ""
@@ -6157,7 +6202,8 @@ msgstr ""
 #, fuzzy, c-format
 msgid ""
 "Expecting VMX entry 'virtualHW.version' to be 4 or higher but found %1$lld"
-msgstr "VMX প্ৰবিষ্টি 'config.version' ক 8 হবলে আশা কৰা হৈছিল কিন্তু প্ৰাপ্ত হল %1$lld"
+msgstr ""
+"VMX প্ৰবিষ্টি 'config.version' ক 8 হবলে আশা কৰা হৈছিল কিন্তু প্ৰাপ্ত হল %1$lld"
 
 #, fuzzy, c-format
 msgid "Expecting domain XML CPU mode 'custom' but found '%1$s'"
@@ -6180,8 +6226,8 @@ msgid ""
 "Expecting domain XML attribute 'cpuset' of entry 'vcpu' to contain at least "
 "%1$d CPU(s)"
 msgstr ""
-"প্ৰৱিষ্টি 'vcpu' ৰ ডমেইন XML বৈশিষ্ট্য 'cpuset' ক অন্তত %1$d CPU(s) অন্তৰ্ভুক্ত কৰিবলে "
-"আশা কৰা হৈছে"
+"প্ৰৱিষ্টি 'vcpu' ৰ ডমেইন XML বৈশিষ্ট্য 'cpuset' ক অন্তত %1$d CPU(s) অন্তৰ্ভুক্ত "
+"কৰিবলে আশা কৰা হৈছে"
 
 msgid ""
 "Expecting domain XML attribute 'dev' of entry 'devices/disk/target' to start "
@@ -6235,7 +6281,8 @@ msgstr ""
 
 #, c-format
 msgid "Expecting source '%1$s' of first file-based harddisk to be a VMDK image"
-msgstr "প্ৰথম ফাইল-ভিত্তিয় হাৰ্ডডিস্কৰ ৰ উৎস '%1$s' ক এটা VMDK ছবি বুলি আশা কৰা হৈছে"
+msgstr ""
+"প্ৰথম ফাইল-ভিত্তিয় হাৰ্ডডিস্কৰ ৰ উৎস '%1$s' ক এটা VMDK ছবি বুলি আশা কৰা হৈছে"
 
 #, c-format
 msgid "Expecting type '%1$s' but found '%2$s'"
@@ -6347,10 +6394,10 @@ msgstr "%s ৰ পৰা PCI ডিভাইচ '%s' ৰ বান্ধন আ�
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "ক্ষমতা প্ৰয়োগ কৰিবলৈ ব্যৰ্থ: %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
-"Failed to add driver '%1$s' to driver_override  interface of PCI device '%2$s'"
-msgstr "আন্তঃপৃষ্ঠ %1$s ৰ বাবে IP ঠিকনা ক্যাশলে IP ঠিকনা %2$s যোগ কৰিবলে ব্যৰ্থ"
+"Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
+msgstr ""
 
 msgid "Failed to add netlink event handle watch"
 msgstr "নেটলিঙ্ক ঘটনা হেণ্ডেল ৱাছ যোগ কৰিবলে ব্যৰ্থ"
@@ -8522,13 +8569,15 @@ msgid ""
 "File descriptor returned by udev %1$d does not match node device file "
 "descriptor %2$d"
 msgstr ""
-"udev %1$d দ্বাৰা প্ৰদান কৰা ফাইল বিৱৰক ন'ড ডিভাইচ ফাইল বিৱৰক %2$d ৰ সৈতে মিল নাখায়"
+"udev %1$d দ্বাৰা প্ৰদান কৰা ফাইল বিৱৰক ন'ড ডিভাইচ ফাইল বিৱৰক %2$d ৰ সৈতে মিল "
+"নাখায়"
 
 #, c-format
 msgid ""
 "File name '%1$s' doesn't have expected format '/vmfs/volumes/<datastore>/"
 "<path>'"
-msgstr "ফাইল নাম '%1$s' ৰ প্ৰত্যাশিত বিন্যাস '/vmfs/volumes/<datastore>/<path>' নাই"
+msgstr ""
+"ফাইল নাম '%1$s' ৰ প্ৰত্যাশিত বিন্যাস '/vmfs/volumes/<datastore>/<path>' নাই"
 
 #, c-format
 msgid "File name '%1$s' refers to non-existing datastore '%2$s'"
@@ -8658,8 +8707,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Found duplicate drive address for disk with target name '%1$s' controller='%2$u' "
-"bus='%3$u' target='%4$u' unit='%5$u'"
+"Found duplicate drive address for disk with target name '%1$s' "
+"controller='%2$u' bus='%3$u' target='%4$u' unit='%5$u'"
 msgstr ""
 
 #, c-format
@@ -8911,14 +8960,14 @@ msgstr "HTTP প্ৰতিক্ৰিয়া ক'ড %1$d  কলৰ বাব
 
 #, c-format
 msgid ""
-"HTTP response code %1$d for call to '%2$s'. Fault is unknown, XPath evaluation "
-"failed"
+"HTTP response code %1$d for call to '%2$s'. Fault is unknown, XPath "
+"evaluation failed"
 msgstr "HTTP প্ৰতিক্ৰিয়া ক'ড %1$d কল '%2$s'। ভুল অজ্ঞাত, XPath বিশ্লেষণ ব্যৰ্থ হল"
 
 #, c-format
 msgid ""
-"HTTP response code %1$d for call to '%2$s'. Fault is unknown, deserialization "
-"failed"
+"HTTP response code %1$d for call to '%2$s'. Fault is unknown, "
+"deserialization failed"
 msgstr "HTTP প্ৰতিক্ৰিয়া ক'ড %1$d কল  '%2$s'। ভুল অজ্ঞাত, অক্ৰমিকৰণ ব্যৰ্থ হল"
 
 #, c-format
@@ -8969,7 +9018,8 @@ msgid "Host CPU is a superset of CPU described in %1$s\n"
 msgstr "%1$s ত বৰ্ণিত CPU ৰ সকলো গুণৰ অধিক গুণ হোস্ট CPU ত উপস্থিত আছে\n"
 
 #, c-format
-msgid "Host CPU model does not match required CPU vendor %1$s or(and) model %2$s"
+msgid ""
+"Host CPU model does not match required CPU vendor %1$s or(and) model %2$s"
 msgstr ""
 
 #, c-format
@@ -9040,7 +9090,8 @@ msgid "Hybrid-Suspend"
 msgstr "Hybrid-Suspend"
 
 #, c-format
-msgid "HyperV spinlock retry count differs: source: '%1$u', destination: '%2$u'"
+msgid ""
+"HyperV spinlock retry count differs: source: '%1$u', destination: '%2$u'"
 msgstr "HyperV spinlock পুনৰ চেষ্টা গণনা পৃথক: উৎস: '%1$u', গন্তব্য: '%2$u'"
 
 msgid "HyperV spinlock retry count must be at least 4095"
@@ -9060,7 +9111,8 @@ msgstr "vendor_id ঠিক %1$d আখৰ দীঘল হব লাগিব"
 
 #, fuzzy, c-format
 msgid ""
-"Hyperv features are not supported for architecture '%1$s' or machine type '%2$s'"
+"Hyperv features are not supported for architecture '%1$s' or machine type "
+"'%2$s'"
 msgstr "ধৰণ %s ৰ আন্তঃপৃষ্ঠসমূহৰ বাবে স্ক্ৰিপ্টসমূহ সমৰ্থিত নহয়"
 
 #, fuzzy
@@ -9214,7 +9266,8 @@ msgid "Ignoring guests on $uri URI"
 msgstr "$uri URI ত অতিথিসকল উপেক্ষা কৰা হৈছে"
 
 #, c-format
-msgid "Image file for %1$s %2$s '%3$s' has unsupported suffix, expecting '%4$s'"
+msgid ""
+"Image file for %1$s %2$s '%3$s' has unsupported suffix, expecting '%4$s'"
 msgstr "%1$s %2$s '%3$s' ৰ বাবে ছবি ফাইলৰ অনুসৰ্গ অসমৰ্থিত, আশা কৰা হৈছে '%4$s'"
 
 msgid "In use"
@@ -9242,8 +9295,8 @@ msgstr "এটা নিষ্ক্ৰিয় নে'টৱৰ্কৰ বি�
 
 #, c-format
 msgid ""
-"Inconsistent SCSI controller model ('%1$s' is not '%2$s') for SCSI controller "
-"index %3$d"
+"Inconsistent SCSI controller model ('%1$s' is not '%2$s') for SCSI "
+"controller index %3$d"
 msgstr "অস্থিৰ SCSI নিয়ন্ত্ৰক আৰ্হি ('%1$s' এটা  '%2$s' নহয়) SCSI নিয়ন্ত্ৰক সূচী %3$d"
 
 msgid "Incorrect data type"
@@ -9548,7 +9601,8 @@ msgid "Invalid address for a USB device"
 msgstr "এটা USB ঠিকনাৰ বাবে অবৈধ ঠিকনা"
 
 #, fuzzy, c-format
-msgid "Invalid address type '%1$s' for the disk '%2$s' with the bus type '%3$s'"
+msgid ""
+"Invalid address type '%1$s' for the disk '%2$s' with the bus type '%3$s'"
 msgstr "প্ৰাচল '%1$s' ৰ বাবে অবৈধ ধৰণ '%2$s', প্ৰত্যাশিত '%3$s'"
 
 msgid "Invalid address."
@@ -9579,8 +9633,8 @@ msgstr ""
 #, c-format
 msgid ""
 "Invalid attempt to set network interface host-side IP route and/or address "
-"info on interface of type '%1$s'. This is only supported on interfaces of type "
-"'ethernet'"
+"info on interface of type '%1$s'. This is only supported on interfaces of "
+"type 'ethernet'"
 msgstr ""
 
 msgid "Invalid attempt to set peer IP for guest"
@@ -9647,8 +9701,8 @@ msgstr "ডিভাইচৰ প্ৰকৃতি বৈধ নহয়: %s"
 
 #, c-format
 msgid ""
-"Invalid chain name '%1$s'. Please use a chain name called '%2$s' or any of the "
-"following prefixes: "
+"Invalid chain name '%1$s'. Please use a chain name called '%2$s' or any of "
+"the following prefixes: "
 msgstr ""
 "অবৈধ শৃংখল নাম '%1$s'। অনুগ্ৰহ কৰি '%2$s' নামৰ এটা শৃংখল নাম ব্যৱহাৰ কৰক অথবা "
 "নিম্নলিখিত উপসৰ্গৰ যিকোনো এটা ব্যৱহাৰ কৰক:"
@@ -9751,8 +9805,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid drive address of disk %1$s, vz driver supports only bus 0 for SATA and "
-"SCSI bus."
+"Invalid drive address of disk %1$s, vz driver supports only bus 0 for SATA "
+"and SCSI bus."
 msgstr ""
 
 #, c-format
@@ -9766,8 +9820,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid drive address of disk %1$s, vz driver supports only units 0-1 for IDE "
-"bus."
+"Invalid drive address of disk %1$s, vz driver supports only units 0-1 for "
+"IDE bus."
 msgstr ""
 
 #, c-format
@@ -9947,8 +10001,10 @@ msgstr "নেটৱৰ্ক '%1$s' ত অবৈধ multicast ব্ৰিজ 
 
 #, c-format
 msgid ""
-"Invalid netmask '%1$s' for address '%2$s' in network '%3$s' (both must be IPv4)"
-msgstr "নেটৱৰ্ক '%1$s' ত ঠিকনা '%2$s' ৰ বাবে অবৈধ নেটমাস্ক '%3$s'(দুয়ো IPv4 হব লাগিব)"
+"Invalid netmask '%1$s' for address '%2$s' in network '%3$s' (both must be "
+"IPv4)"
+msgstr ""
+"নেটৱৰ্ক '%1$s' ত ঠিকনা '%2$s' ৰ বাবে অবৈধ নেটমাস্ক '%3$s'(দুয়ো IPv4 হব লাগিব)"
 
 #, c-format
 msgid "Invalid netmask '%1$s' in network '%2$s'"
@@ -9991,10 +10047,11 @@ msgstr "অবৈধ পোৰ্ট: %1$s"
 
 #, c-format
 msgid ""
-"Invalid or not yet handled value '%1$s' for VMX entry '%2$s' for device type '%3$s'"
+"Invalid or not yet handled value '%1$s' for VMX entry '%2$s' for device type "
+"'%3$s'"
 msgstr ""
-"ডিভাইচ ধৰণ '%1$s' ৰ বাবে VMX প্ৰৱিষ্টি '%2$s' ৰ বাবে অবৈধ অথবা এতিয়াও অনিয়ন্ত্ৰিত "
-"মান '%3$s'"
+"ডিভাইচ ধৰণ '%1$s' ৰ বাবে VMX প্ৰৱিষ্টি '%2$s' ৰ বাবে অবৈধ অথবা এতিয়াও "
+"অনিয়ন্ত্ৰিত মান '%3$s'"
 
 msgid "Invalid parameter"
 msgstr "অবৈধ প্ৰাচল"
@@ -10147,7 +10204,8 @@ msgid ""
 msgstr "নেটৱৰ্ক '%1$s' IPv6 স্থিৰ হস্ট বিৱৰণত MAC ঠিকনা '%2$s' ধাৰ্য্য কৰাটো অবৈধ"
 
 #, c-format
-msgid "Invalid type '%1$s' requested for parameter '%2$s', actual type is '%3$s'"
+msgid ""
+"Invalid type '%1$s' requested for parameter '%2$s', actual type is '%3$s'"
 msgstr "প্ৰাচল '%1$s' ৰ বাবে অবৈধ ধৰণ '%2$s' অনুৰোধ কৰা হৈছে, প্ৰকৃত ধৰণ হল '%3$s'"
 
 #, fuzzy, c-format
@@ -10173,11 +10231,11 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid use of 'floor' on interface with MAC address %1$s - network '%2$s' has "
-"no inbound QoS set"
+"Invalid use of 'floor' on interface with MAC address %1$s - network '%2$s' "
+"has no inbound QoS set"
 msgstr ""
-"MAC ঠিকনা %1$s - নেটৱৰ্ক '%2$s' ৰ সৈতে আন্তঃপৃষ্ঠত 'floor' ৰ অবৈধ ব্যৱহাৰৰ কোনো আহি "
-"থকা QoS সংহতি নাই"
+"MAC ঠিকনা %1$s - নেটৱৰ্ক '%2$s' ৰ সৈতে আন্তঃপৃষ্ঠত 'floor' ৰ অবৈধ ব্যৱহাৰৰ কোনো "
+"আহি থকা QoS সংহতি নাই"
 
 #, c-format
 msgid "Invalid uuid '%1$s' for new mdev device"
@@ -10200,19 +10258,20 @@ msgid "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'."
 msgstr ""
 
 #, c-format
-msgid "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected UUID"
+msgid ""
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected UUID"
 msgstr ""
 
 #, c-format
 msgid ""
-"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected integer "
-"value"
-msgstr ""
-
-#, c-format
-msgid ""
-"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected long long "
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected "
 "integer value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected long "
+"long integer value"
 msgstr ""
 
 #, c-format
@@ -10228,7 +10287,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"
+msgid ""
+"Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"
 msgstr ""
 
 #, c-format
@@ -10329,7 +10389,8 @@ msgid "JSON backing volume definition '%1$s' lacks driver name"
 msgstr ""
 
 #, c-format
-msgid "JSON backing volume definition '%1$s' must not have nested format drivers"
+msgid ""
+"JSON backing volume definition '%1$s' must not have nested format drivers"
 msgstr ""
 
 msgid "JSON string array contains non-string element"
@@ -10550,8 +10611,8 @@ msgid ""
 "Malformed 'uri_aliases' config entry '%1$s', aliases may only contain 'a-Z, "
 "0-9, _, -'"
 msgstr ""
-"ক্ষতিগ্ৰস্থ 'uri_aliases' সংৰূপ প্ৰৱিষ্টি '%1$s', এলিয়াচসমূহে অন্তৰ্ভুক্ত কৰিব পাৰে 'a-Z, "
-"0-9, _, -'"
+"ক্ষতিগ্ৰস্থ 'uri_aliases' সংৰূপ প্ৰৱিষ্টি '%1$s', এলিয়াচসমূহে অন্তৰ্ভুক্ত কৰিব পাৰে 'a-"
+"Z, 0-9, _, -'"
 
 #, c-format
 msgid ""
@@ -10865,7 +10926,8 @@ msgid "Migration failed. Domain is not running on destination host"
 msgstr "অফলাইন প্ৰব্ৰজন গন্তব্য হস্ট দ্বাৰা সমৰ্থিত নহয়"
 
 #, fuzzy, c-format
-msgid "Migration failed. No domain on destination host with matching name '%1$s'"
+msgid ""
+"Migration failed. No domain on destination host with matching name '%1$s'"
 msgstr "মিল খোৱা নাম '%1$s' ৰ সৈতে কোনো ডমেইন স্নেপশ্বট নাই"
 
 msgid "Migration graphics data already present"
@@ -11338,7 +11400,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Missing or invalid element %1$zu of 'unicast' list in query-rx-filter response"
+"Missing or invalid element %1$zu of 'unicast' list in query-rx-filter "
+"response"
 msgstr ""
 
 #, c-format
@@ -11406,7 +11469,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Missing required dev attribute in <forward> <interface> element of network %1$s"
+"Missing required dev attribute in <forward> <interface> element of network "
+"%1$s"
 msgstr "নেটৱৰ্ক %1$s ৰ <forward> <interface> উপাদানত প্ৰয়োজনীয় dev বৈশিষ্ট্য নাই"
 
 #, c-format
@@ -11563,15 +11627,16 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Multiple USB devices for %1$x:%2$x were found, but none of them is at bus:%3$u "
-"device:%4$u"
+"Multiple USB devices for %1$x:%2$x were found, but none of them is at bus:"
+"%3$u device:%4$u"
 msgstr ""
-"%1$x:%2$x ৰ বাবে একাধিক USB ডিভাইচসমূহ প্ৰাপ্ত হৈছিল, কিন্তু সিহতৰ এটাও বাচ:%3$u ডিভাইচ:"
-"%4$u ত নাই"
+"%1$x:%2$x ৰ বাবে একাধিক USB ডিভাইচসমূহ প্ৰাপ্ত হৈছিল, কিন্তু সিহতৰ এটাও বাচ:%3$u "
+"ডিভাইচ:%4$u ত নাই"
 
 #, c-format
 msgid "Multiple USB devices for %1$x:%2$x, use <address> to specify one"
-msgstr "%1$x:%2$x ৰ বাবে একাধিক USB ডিভাইচ, এটাক ধাৰ্য্য কৰিবলে <address> ব্যৱহাৰ কৰক"
+msgstr ""
+"%1$x:%2$x ৰ বাবে একাধিক USB ডিভাইচ, এটাক ধাৰ্য্য কৰিবলে <address> ব্যৱহাৰ কৰক"
 
 #, c-format
 msgid "Multiple definitions of CPU model '%1$s'"
@@ -12398,8 +12463,8 @@ msgstr "'%1$s' ভলিউমৰ কাৰণে পুলত যথেষ্�
 
 #, c-format
 msgid ""
-"Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u scope "
-"type '%4$s'"
+"Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u "
+"scope type '%4$s'"
 msgstr ""
 
 #, fuzzy
@@ -12576,7 +12641,8 @@ msgid ""
 msgstr "কেৱল ইমুলেটেড CPUs উপলব্ধ আছে, পৰিৱেশন গুৰুতৰভাৱে সীমিত থাকিব"
 
 #, fuzzy, c-format
-msgid "Only end address '%1$s' specified in <nat> in <forward> in network '%2$s'"
+msgid ""
+"Only end address '%1$s' specified in <nat> in <forward> in network '%2$s'"
 msgstr "নেটৱৰ্ক '%1$s' ৰ <forward> ৰ <nat> ত বেয়া ipv4 অন্ত ঠিকনা '%2$s'"
 
 msgid "Only file based or volume based filesystems are supported by vz driver."
@@ -12613,7 +12679,8 @@ msgid "Only one <pf> element is allowed in <forward> of network %1$s"
 msgstr "নেটৱৰ্ক %1$s ৰ <forward> ত কেৱল এটা <pf> উপাদান অনুমোদিত"
 
 #, c-format
-msgid "Only one <port> element is allowed in <nat> in <forward> in network %1$s"
+msgid ""
+"Only one <port> element is allowed in <nat> in <forward> in network %1$s"
 msgstr "নেটৱৰ্ক %1$s ৰ <forward> ৰ <nat> ত কেৱল <port> উপাদান অনুমোদিত"
 
 msgid "Only one IPv4 address per interface is allowed"
@@ -12672,7 +12739,8 @@ msgid "Only scsi disk supports vendor and product"
 msgstr "কেৱল scsi ডিস্কে বিক্ৰেতা আৰু উৎপাদন সমৰ্থন কৰে"
 
 #, fuzzy, c-format
-msgid "Only start address '%1$s' specified in <nat> in <forward> in network '%2$s'"
+msgid ""
+"Only start address '%1$s' specified in <nat> in <forward> in network '%2$s'"
 msgstr "নেটৱৰ্ক '%1$s' ৰ <forward> ৰ <nat> ত বেয়া ipv4 আৰম্ভণি ঠিকনা '%2$s'"
 
 #, fuzzy
@@ -12725,8 +12793,8 @@ msgstr "অবস্থান:"
 
 #, fuzzy, c-format
 msgid ""
-"Option '%1$s' has invalid value for PCI controller with index '%2$d', model '%3$s' "
-"and modelName '%4$s'"
+"Option '%1$s' has invalid value for PCI controller with index '%2$d', model "
+"'%3$s' and modelName '%4$s'"
 msgstr ""
 "ডিভাইচৰ বাবে প্ৰয়োজনীয় সূচী %u ৰ সৈতে PCI নিয়ন্ত্ৰকৰ বাবে ডিভাইচ এলিয়াচ সংহতি "
 "কৰা হোৱা নাছিল, ঠিকনা %s"
@@ -12737,8 +12805,8 @@ msgstr "vhost-net এই QEMU বাইনাৰিৰ সৈতে সমৰ্
 
 #, fuzzy, c-format
 msgid ""
-"Option '%1$s' is not valid for PCI controller with index '%2$d', model '%3$s' and "
-"modelName '%4$s'"
+"Option '%1$s' is not valid for PCI controller with index '%2$d', model "
+"'%3$s' and modelName '%4$s'"
 msgstr ""
 "ডিভাইচৰ বাবে প্ৰয়োজনীয় সূচী %u ৰ সৈতে PCI নিয়ন্ত্ৰকৰ বাবে ডিভাইচ এলিয়াচ সংহতি "
 "কৰা হোৱা নাছিল, ঠিকনা %s"
@@ -12846,8 +12914,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"PCI controller at index %1$d (0x%2$02x) has bus='0x%3$02x', but index must be "
-"larger than bus"
+"PCI controller at index %1$d (0x%2$02x) has bus='0x%3$02x', but index must "
+"be larger than bus"
 msgstr ""
 
 #, c-format
@@ -12880,9 +12948,11 @@ msgstr "FDC নিয়ন্ত্ৰক সূচী %1$d [0] বিস্তা
 
 #, c-format
 msgid ""
-"PCI device %1$04x:%2$02x:%3$02x.%4$x allocated from network %5$s is already in use by "
-"domain %6$s"
-msgstr "PCI ডিভাইচ %1$04x:%2$02x:%3$02x.%4$x আবন্টিত নেটৱৰ্ক %5$s ইতিমধ্যে ব্যৱহৃত  ডমেইন %6$s"
+"PCI device %1$04x:%2$02x:%3$02x.%4$x allocated from network %5$s is already "
+"in use by domain %6$s"
+msgstr ""
+"PCI ডিভাইচ %1$04x:%2$02x:%3$02x.%4$x আবন্টিত নেটৱৰ্ক %5$s ইতিমধ্যে ব্যৱহৃত  ডমেইন "
+"%6$s"
 
 #, fuzzy, c-format
 msgid "PCI device %1$s is in use"
@@ -12897,7 +12967,9 @@ msgid "PCI device %1$s is not assignable"
 msgstr "PCI ডিভাইচ %1$s ধাৰ্য্য কৰিব পৰা নহয়"
 
 #, fuzzy, c-format
-msgid "PCI device '%1$04x:%2$02x:%3$02x.%4$x' can only be listed once in network %5$s"
+msgid ""
+"PCI device '%1$04x:%2$02x:%3$02x.%4$x' can only be listed once in network "
+"%5$s"
 msgstr "PCI ডিভাইচ %04x:%02x:%02x.%x আবন্টিত নেটৱৰ্ক %s ইতিমধ্যে ব্যৱহৃত  ডমেইন %s"
 
 #, fuzzy
@@ -12978,8 +13050,8 @@ msgstr "উপধায়ক"
 
 #, c-format
 msgid ""
-"Parent attribute '%1$s' does not match parent '%2$s' determined for the '%3$s' "
-"wwnn/wwpn lookup."
+"Parent attribute '%1$s' does not match parent '%2$s' determined for the "
+"'%3$s' wwnn/wwpn lookup."
 msgstr ""
 
 #, c-format
@@ -13064,15 +13136,16 @@ msgstr ""
 msgid ""
 "Pending question blocks virtual machine execution, question is '%1$s', "
 "possible answers are %2$s"
-msgstr "বাকি থকা প্ৰশ্ন খণ্ড ভাৰছুৱেল মেচিন এক্সিকিউষণ, প্ৰশ্ন '%1$s', সম্ভাব্য উত্তৰ %2$s"
+msgstr ""
+"বাকি থকা প্ৰশ্ন খণ্ড ভাৰছুৱেল মেচিন এক্সিকিউষণ, প্ৰশ্ন '%1$s', সম্ভাব্য উত্তৰ %2$s"
 
 #, c-format
 msgid ""
 "Pending question blocks virtual machine execution, question is '%1$s', "
 "possible answers are %2$s, but no default answer is specified"
 msgstr ""
-"বাকি থকা প্ৰশ্ন খণ্ড ভাৰছুৱেল মেচিন এক্সিকিউষণ, প্ৰশ্ন '%1$s', সম্ভাব্য উত্তৰসমূহ হল %2$s, "
-"কিন্তু কোনো অবিকল্পিত উত্তৰ ধাৰ্য্য কৰা হোৱা নাই"
+"বাকি থকা প্ৰশ্ন খণ্ড ভাৰছুৱেল মেচিন এক্সিকিউষণ, প্ৰশ্ন '%1$s', সম্ভাব্য উত্তৰসমূহ হল "
+"%2$s, কিন্তু কোনো অবিকল্পিত উত্তৰ ধাৰ্য্য কৰা হোৱা নাই"
 
 msgid "Per-node binding is not compatible with automatic NUMA placement."
 msgstr "প্ৰতি-ন'ড বাইণ্ডিং স্বচালিত NUMA উপস্থাপনৰ সৈতে সংগত নহয়।"
@@ -13407,12 +13480,14 @@ msgstr "প্ৰশ্ন প্ৰাচল 'proxy' এ এটা হস্ট
 
 #, c-format
 msgid ""
-"Query parameter 'proxy' has unexpected port value '%1$s' (should be [1..65535])"
+"Query parameter 'proxy' has unexpected port value '%1$s' (should be "
+"[1..65535])"
 msgstr "প্ৰশ্নৰ প্ৰাচল 'proxy' ৰ অপ্ৰত্যাশিত পোৰ্ট মান '%1$s' ([1..65535] হব লাগে)"
 
 #, c-format
 msgid ""
-"Query parameter 'transport' has unexpected value '%1$s' (should be http|https)"
+"Query parameter 'transport' has unexpected value '%1$s' (should be http|"
+"https)"
 msgstr "প্ৰশ্ন প্ৰাচল 'transport' ৰ অপ্ৰত্যাশিত মান '%1$s' (http|https হব লাগে)"
 
 msgid "Query, adjust speed, or cancel active block operations."
@@ -13563,9 +13638,9 @@ msgstr "এটা সংৰক্ষিত অৱস্থা ফাইলৰ �
 
 #, c-format
 msgid ""
-"Requested TSC frequency %1$llu Hz is outside tolerance range ([%2$llu, %3$llu] Hz) "
-"around host frequency %4$llu Hz and TSC scaling is not supported by the host "
-"CPU"
+"Requested TSC frequency %1$llu Hz is outside tolerance range ([%2$llu, "
+"%3$llu] Hz) around host frequency %4$llu Hz and TSC scaling is not supported "
+"by the host CPU"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13573,7 +13648,8 @@ msgid "Requested data len %1$llu is larger than maximum %2$d"
 msgstr "start_cpu %d, %d ৰ সৰ্বাধিকতকে ডাঙৰ"
 
 #, c-format
-msgid "Requested device '%1$s' is locked by lock file '%2$s' held by process %3$lld"
+msgid ""
+"Requested device '%1$s' is locked by lock file '%2$s' held by process %3$lld"
 msgstr "অনুৰোধ কৰা ডিভাইচ '%1$s' লক ফাইল '%2$s' দ্বাৰা লক কৰা আছে প্ৰক্ৰিয়া %3$lld"
 
 msgid "Requested metadata element is not present"
@@ -13603,15 +13679,16 @@ msgstr "অনুৰোধ কৰা কাৰ্য্য অবৈধ: %s"
 
 #, fuzzy, c-format
 msgid ""
-"Required option '%1$s' is not set for PCI controller with index '%2$d', model "
-"'%3$s' and modelName '%4$s'"
+"Required option '%1$s' is not set for PCI controller with index '%2$d', "
+"model '%3$s' and modelName '%4$s'"
 msgstr ""
 "ডিভাইচৰ বাবে প্ৰয়োজনীয় সূচী %u ৰ সৈতে PCI নিয়ন্ত্ৰকৰ বাবে ডিভাইচ এলিয়াচ সংহতি "
 "কৰা হোৱা নাছিল, ঠিকনা %s"
 
 #, c-format
 msgid ""
-"Resctrl ID must be set before determining resctrl parentpath='%1$s' prefix='%2$s'"
+"Resctrl ID must be set before determining resctrl parentpath='%1$s' "
+"prefix='%2$s'"
 msgstr ""
 
 #, c-format
@@ -13908,20 +13985,20 @@ msgstr "SCSI ডিস্ক সূচী ('%1$s' ৰ পৰা বিশ্ল�
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by a "
-"SCSI disk"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by a SCSI disk"
 msgstr ""
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by "
-"another SCSI disk"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by another SCSI disk"
 msgstr ""
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by "
-"another SCSI host device"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by another SCSI host device"
 msgstr ""
 
 msgid "SCSI host device doesn't support managed mode"
@@ -13963,8 +14040,11 @@ msgid "SMM TSEG size must be divisible by 1 MiB"
 msgstr ""
 
 #, c-format
-msgid "SOAP fault during %1$s: code '%2$s', subcode '%3$s', reason '%4$s', detail '%5$s'"
-msgstr "%1$s: ক'ড '%2$s' ৰ সময়ত SOAP ত্ৰুটি, চাবক'ড '%3$s', কাৰণ '%4$s', বিৱৰণ '%5$s'"
+msgid ""
+"SOAP fault during %1$s: code '%2$s', subcode '%3$s', reason '%4$s', detail "
+"'%5$s'"
+msgstr ""
+"%1$s: ক'ড '%2$s' ৰ সময়ত SOAP ত্ৰুটি, চাবক'ড '%3$s', কাৰণ '%4$s', বিৱৰণ '%5$s'"
 
 msgid "SSH Agent did not provide any authentication identity"
 msgstr "SSH সহায়কে কোনো প্ৰমাণীকৰণ পৰিচয় প্ৰদান নকৰিলে"
@@ -14029,7 +14109,8 @@ msgid "Saved image %1$s XML configuration not changed.\n"
 msgstr "সংৰক্ষিত ছবি %1$s XML সংৰূপ পৰিবৰ্তন কৰা হোৱা নাই।\n"
 
 #, c-format
-msgid "Scaled numeric value '%1$s' for <%2$s> option is malformed or out of range"
+msgid ""
+"Scaled numeric value '%1$s' for <%2$s> option is malformed or out of range"
 msgstr ""
 
 #, c-format
@@ -14340,8 +14421,8 @@ msgid ""
 "Setting security context '%1$s' on '%2$s' not supported. Consider setting "
 "virt_use_nfs"
 msgstr ""
-"'%1$s' ত সুৰক্ষা পৰিপ্ৰেক্ষতিত '%2$s' সংহতি কৰাটো সমৰ্থিত নহয়। virt_use_nfs সংহতি কৰি "
-"চাওক"
+"'%1$s' ত সুৰক্ষা পৰিপ্ৰেক্ষতিত '%2$s' সংহতি কৰাটো সমৰ্থিত নহয়। virt_use_nfs সংহতি "
+"কৰি চাওক"
 
 #, fuzzy
 msgid "Setting security labels is not supported by vz driver."
@@ -14451,7 +14532,8 @@ msgstr "numad এই হস্টত উপলব্ধ নহয়"
 
 #, fuzzy, c-format
 msgid ""
-"Size of SMM TSEG size differs: source: '%1$llu %2$s', destination: '%3$llu %4$s'"
+"Size of SMM TSEG size differs: source: '%1$llu %2$s', destination: '%3$llu "
+"%4$s'"
 msgstr "KVM বৈশিষ্ট্য '%s' ৰ অৱস্থা পৃথক হয়: উৎস: '%s', গন্তব্য: '%s'"
 
 #, fuzzy, c-format
@@ -14662,7 +14744,8 @@ msgstr "অৱস্থা ফাইল %1$s আপডেইট কৰা হল
 msgid ""
 "State of HyperV enlightenment feature '%1$s' differs: source: '%2$s', "
 "destination: '%3$s'"
-msgstr "HyperV এনলাইটমেণ্ট বৈশিষ্ট্য '%1$s' ৰ অৱস্থা পৃথক: উৎস: '%2$s', গন্তব্য: '%3$s'"
+msgstr ""
+"HyperV এনলাইটমেণ্ট বৈশিষ্ট্য '%1$s' ৰ অৱস্থা পৃথক: উৎস: '%2$s', গন্তব্য: '%3$s'"
 
 #, fuzzy, c-format
 msgid ""
@@ -14671,11 +14754,13 @@ msgid ""
 msgstr "HyperV এনলাইটমেণ্ট বৈশিষ্ট্য '%s' ৰ অৱস্থা পৃথক: উৎস: '%s', গন্তব্য: '%s'"
 
 #, c-format
-msgid "State of KVM feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
+msgid ""
+"State of KVM feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
 msgstr "KVM বৈশিষ্ট্য '%1$s' ৰ অৱস্থা পৃথক হয়: উৎস: '%2$s', গন্তব্য: '%3$s'"
 
 #, fuzzy, c-format
-msgid "State of Xen feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
+msgid ""
+"State of Xen feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
 msgstr "বৈশিষ্ট্য '%1$s' ৰ অৱস্থা পৃথক হয়: উৎস: '%2$s', গন্তব্য: '%3$s'"
 
 #, c-format
@@ -14684,21 +14769,25 @@ msgstr "বৈশিষ্ট্য '%1$s' ৰ অৱস্থা পৃথক �
 
 #, fuzzy, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s', destination: '%5$s,%6$s=%7$s'"
+"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s', destination: "
+"'%5$s,%6$s=%7$s'"
 msgstr "বৈশিষ্ট্য '%s' ৰ অৱস্থা পৃথক হয়: উৎস: '%s', গন্তব্য: '%s'"
 
 #, fuzzy, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s,%5$s=%6$llu', destination: '%7$s,"
-"%8$s=%9$s,%10$s=%11$llu'"
+"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s,%5$s=%6$llu', "
+"destination: '%7$s,%8$s=%9$s,%10$s=%11$llu'"
 msgstr "বৈশিষ্ট্য '%s' ৰ অৱস্থা পৃথক হয়: উৎস: '%s', গন্তব্য: '%s'"
 
 #, fuzzy, c-format
-msgid "State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s=%5$s'"
+msgid ""
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
+"%5$s'"
 msgstr "বৈশিষ্ট্য '%s' ৰ অৱস্থা পৃথক হয়: উৎস: '%s', গন্তব্য: '%s'"
 
 #, fuzzy, c-format
-msgid "State of vCPU '%1$zu' differs between source and destination definitions"
+msgid ""
+"State of vCPU '%1$zu' differs between source and destination definitions"
 msgstr "বৈশিষ্ট্য '%s' ৰ অৱস্থা পৃথক হয়: উৎস: '%s', গন্তব্য: '%s'"
 
 msgid "State:"
@@ -14714,7 +14803,8 @@ msgstr ""
 msgid ""
 "Static host definition in IPv6 network '%1$s' must have id or name attribute"
 msgstr ""
-"IPv6 নেটৱৰ্ক '%1$s' ত স্থিৰ হস্ট বিৱৰণৰ বাবে আইডি অথবা নাম বৈশিষ্ট্য থকাটো প্ৰয়োজনীয়"
+"IPv6 নেটৱৰ্ক '%1$s' ত স্থিৰ হস্ট বিৱৰণৰ বাবে আইডি অথবা নাম বৈশিষ্ট্য থকাটো "
+"প্ৰয়োজনীয়"
 
 #, c-format
 msgid "Stats %1$s too big for destination"
@@ -14751,7 +14841,8 @@ msgstr "সংৰক্ষণ পুল ইতিমধ্যে নিৰ্ম
 
 #, c-format
 msgid "Storage pool config filename '%1$s' does not match pool name '%2$s'"
-msgstr "সংগ্ৰহস্থলৰ পুল বিন্যাসৰ ফাইল '%1$s' ৰ নাম, পুলৰ নাম '%2$s' ৰ সৈতে সুসংগত নহয়"
+msgstr ""
+"সংগ্ৰহস্থলৰ পুল বিন্যাসৰ ফাইল '%1$s' ৰ নাম, পুলৰ নাম '%2$s' ৰ সৈতে সুসংগত নহয়"
 
 msgid "Storage pool not found"
 msgstr "ভঁৰালৰ পুল পোৱা ন'গ'ল"
@@ -14769,7 +14860,8 @@ msgstr "সংৰক্ষণ পুল প্ৰৌব ব্যৰ্থ হ�
 
 #, fuzzy, c-format
 msgid "Storage pool state file '%1$s' does not match pool name '%2$s'"
-msgstr "সংগ্ৰহস্থলৰ পুল বিন্যাসৰ ফাইল '%1$s' ৰ নাম, পুলৰ নাম '%2$s' ৰ সৈতে সুসংগত নহয়"
+msgstr ""
+"সংগ্ৰহস্থলৰ পুল বিন্যাসৰ ফাইল '%1$s' ৰ নাম, পুলৰ নাম '%2$s' ৰ সৈতে সুসংগত নহয়"
 
 #, c-format
 msgid "Storage source %1$s must be a block device"
@@ -14801,7 +14893,8 @@ msgid "Storage volume not found: %1$s"
 msgstr "ভঁৰালৰ সমষ্টি পোৱা ন'গ'ল: %1$s"
 
 #, c-format
-msgid "Stream data too long to send (%1$zu bytes needed, %2$zu bytes available)"
+msgid ""
+"Stream data too long to send (%1$zu bytes needed, %2$zu bytes available)"
 msgstr "স্ট্ৰিম তথ্য পঠাবলে অত্যাধিক দীঘল (%1$zu বাইট প্ৰয়োজনীয়, %2$zu বাইট উপলব্ধ)"
 
 msgid "Stream has untransferred data left"
@@ -15056,12 +15149,14 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid ""
-"Target NVDIMM alignment '%1$llu' doesn't match source NVDIMM alignment '%2$llu'"
+"Target NVDIMM alignment '%1$llu' doesn't match source NVDIMM alignment "
+"'%2$llu'"
 msgstr "লক্ষ্য ডমেইন নাম '%s' এ উৎস '%s' ৰ সৈতে মিল নাখায়"
 
 #, fuzzy, c-format
 msgid ""
-"Target NVDIMM label size '%1$llu' doesn't match source NVDIMM label size '%2$llu'"
+"Target NVDIMM label size '%1$llu' doesn't match source NVDIMM label size "
+"'%2$llu'"
 msgstr "লক্ষ্য RNG আৰ্হি '%s' এ উৎস '%s' ৰ সৈতে মিল নাখায়"
 
 #, fuzzy
@@ -15107,7 +15202,8 @@ msgid "Target USB product ID does not match source"
 msgstr "লক্ষ্য USB উৎপাদন ID উৎসৰ সৈতে মিল নাখায়"
 
 #, c-format
-msgid "Target USB redirection filter rule count %1$zu does not match source %2$zu"
+msgid ""
+"Target USB redirection filter rule count %1$zu does not match source %2$zu"
 msgstr "লক্ষ্য USB পুনৰনিৰ্দেশ ফিল্টাৰ নিয়ম গণনা %1$zu উৎস %2$zu ৰ সৈতে মিল নাখায়"
 
 msgid "Target USB vendor ID does not match source"
@@ -15124,13 +15220,14 @@ msgstr "লক্ষ্য ইতিমধ্যে অস্তিত্বব�
 
 #, fuzzy, c-format
 msgid ""
-"Target balloon autodeflate attribute value '%1$s' does not match source '%2$s'"
+"Target balloon autodeflate attribute value '%1$s' does not match source "
+"'%2$s'"
 msgstr "লক্ষ্য বেলুন আৰ্হি %1$s উৎস %2$s ৰ সৈতে মিল নাখায়"
 
 #, c-format
 msgid ""
-"Target balloon freePageReporting attribute value '%1$s' does not match source "
-"'%2$s'"
+"Target balloon freePageReporting attribute value '%1$s' does not match "
+"source '%2$s'"
 msgstr ""
 
 #, c-format
@@ -15183,8 +15280,8 @@ msgstr "লক্ষ্য নিয়ন্ত্ৰক সদিশসমূহ 
 
 #, c-format
 msgid ""
-"Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source %5$04x:%6$02x:"
-"%7$02x.%8$d"
+"Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
+"%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
 
 #, c-format
@@ -15208,8 +15305,11 @@ msgid "Target device dimm slot %1$u does not match source %2$u"
 msgstr "লক্ষ্য হস্ট ডিভাইচ অৱস্থা %s উৎস %s ৰ সৈতে মিল নাখায়"
 
 #, c-format
-msgid "Target device drive address %1$d:%2$d:%3$d does not match source %4$d:%5$d:%6$d"
-msgstr "লক্ষ্য ডিভাইচ ড্ৰাইভ ঠিকনা %1$d:%2$d:%3$d উৎস %4$d:%5$d:%6$d ৰ সৈতে মিল নাখায়"
+msgid ""
+"Target device drive address %1$d:%2$d:%3$d does not match source %4$d:%5$d:"
+"%6$d"
+msgstr ""
+"লক্ষ্য ডিভাইচ ড্ৰাইভ ঠিকনা %1$d:%2$d:%3$d উৎস %4$d:%5$d:%6$d ৰ সৈতে মিল নাখায়"
 
 #, fuzzy, c-format
 msgid "Target device iommu option '%1$s' does not match source '%2$s'"
@@ -15232,8 +15332,11 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Target device virtio serial address %1$d:%2$d:%3$d does not match source %4$d:%5$d:%6$d"
-msgstr "লক্ষ্য ডিভাইচ virtio ক্ৰমিক ঠিকনা %1$d:%2$d:%3$d উৎস %4$d:%5$d:%6$d ৰ সৈতে মিল নাখায়"
+"Target device virtio serial address %1$d:%2$d:%3$d does not match source "
+"%4$d:%5$d:%6$d"
+msgstr ""
+"লক্ষ্য ডিভাইচ virtio ক্ৰমিক ঠিকনা %1$d:%2$d:%3$d উৎস %4$d:%5$d:%6$d ৰ সৈতে মিল "
+"নাখায়"
 
 #, c-format
 msgid "Target disk %1$s does not match source %2$s"
@@ -15280,7 +15383,8 @@ msgid ""
 msgstr ""
 
 #, fuzzy, c-format
-msgid "Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
 msgstr "লক্ষ্য ডমেইন নাম '%1$s' এ উৎস '%2$s' ৰ সৈতে মিল নাখায়"
 
 #, fuzzy
@@ -15288,7 +15392,8 @@ msgid "Target domain IOMMU device count does not match source"
 msgstr "লক্ষ্য ডমেইন RNG ডিভাইচ গণনা %zu উৎস %zu ৰ সৈতে মিল নাখায়"
 
 #, fuzzy, c-format
-msgid "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
 msgstr "লক্ষ্য ডমেইন নাম '%1$s' এ উৎস '%2$s' ৰ সৈতে মিল নাখায়"
 
 #, fuzzy, c-format
@@ -15297,7 +15402,8 @@ msgid ""
 msgstr "লক্ষ্য ডমেইন নাম '%1$s' এ উৎস '%2$s' ৰ সৈতে মিল নাখায়"
 
 #, fuzzy, c-format
-msgid "Target domain IOMMU device iotlb value '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device iotlb value '%1$s' does not match source '%2$s'"
 msgstr "লক্ষ্য ডমেইন নাম '%1$s' এ উৎস '%2$s' ৰ সৈতে মিল নাখায়"
 
 #, fuzzy, c-format
@@ -15321,8 +15427,10 @@ msgid "Target domain TPM device count %1$zu does not match source %2$zu"
 msgstr ""
 
 #, c-format
-msgid "Target domain USB redirection filter count %1$d does not match source %2$d"
-msgstr "লক্ষ্য ডমেইন USB পুনৰনিৰ্দেশ ফিল্টাৰ নিয়ম গণনা %1$d উৎস %2$d ৰ সৈতে মিল নাখায়"
+msgid ""
+"Target domain USB redirection filter count %1$d does not match source %2$d"
+msgstr ""
+"লক্ষ্য ডমেইন USB পুনৰনিৰ্দেশ ফিল্টাৰ নিয়ম গণনা %1$d উৎস %2$d ৰ সৈতে মিল নাখায়"
 
 #, c-format
 msgid "Target domain architecture %1$s does not match source %2$s"
@@ -15408,7 +15516,8 @@ msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr "লক্ষ্য ডমেইন সমান্তৰাল পৰ্ট গণনা %1$zu উৎস %2$zu ৰ সৈতে মিল নাখায়"
 
 #, c-format
-msgid "Target domain redirected devices count %1$zu does not match source %2$zu"
+msgid ""
+"Target domain redirected devices count %1$zu does not match source %2$zu"
 msgstr "লক্ষ্য ডমেইন পুনৰনিৰ্দেশ ডিভাইচ গণনা %1$zu উৎস %2$zu ৰ সৈতে মিল নাখায়"
 
 #, fuzzy
@@ -15420,7 +15529,8 @@ msgid "Target domain serial port count %1$zu does not match source %2$zu"
 msgstr "লক্ষ্য ডমেইন ক্ৰমিক পৰ্ট গণনা %1$zu উৎস %2$zu ৰ সৈতে মিল নাখায়"
 
 #, fuzzy, c-format
-msgid "Target domain shared memory device count %1$zu does not match source %2$zu"
+msgid ""
+"Target domain shared memory device count %1$zu does not match source %2$zu"
 msgstr "লক্ষ্য ডমেইন হস্ট ডিভাইচ গণনা %1$zu উৎস %2$zu ৰ সৈতে মিল নাখায়"
 
 #, c-format
@@ -15572,8 +15682,8 @@ msgstr "লক্ষ্য পুনৰনিৰ্দেশিত ডিভা�
 
 #, c-format
 msgid ""
-"Target redirected device source type %1$s does not match source device source "
-"type %2$s"
+"Target redirected device source type %1$s does not match source device "
+"source type %2$s"
 msgstr ""
 "লক্ষ্য পুনৰনিৰ্দেশ ডিভাইচ উৎস ধৰণ %1$s উৎস ডিভাইচ উৎস ধৰণ %2$s ৰ সৈতে মিল নাখায়"
 
@@ -15711,7 +15821,8 @@ msgstr "nvram ডিভাইচ এই QEMU বাইনাৰি দ্বা�
 
 #, fuzzy, c-format
 msgid ""
-"The '%1$s' feature is not supported for architecture '%2$s' or machine type '%3$s'"
+"The '%1$s' feature is not supported for architecture '%2$s' or machine type "
+"'%3$s'"
 msgstr "ধৰণ %s ৰ আন্তঃপৃষ্ঠসমূহৰ বাবে ফিল্টাৰসমূহ সমৰ্থিত নহয়"
 
 #, c-format
@@ -15807,16 +15918,18 @@ msgstr "প্ৰমাণপত্ৰ %1$s মৌলিক বাধাসম�
 
 #, c-format
 msgid ""
-"The certificate %1$s basic constraints show a CA, but we need one for a client"
+"The certificate %1$s basic constraints show a CA, but we need one for a "
+"client"
 msgstr ""
 "প্ৰমাণপত্ৰ %1$s মৌলিক বাধাসমূহে এটা CA দেখুৱায়, কিন্তু আমি ক্লাএণ্টৰ বাবে এটা বিচাৰো"
 
 #, c-format
 msgid ""
-"The certificate %1$s basic constraints show a CA, but we need one for a server"
+"The certificate %1$s basic constraints show a CA, but we need one for a "
+"server"
 msgstr ""
-"প্ৰমাণপত্ৰ %1$s ৰ মৌলিক বাধাসমূহে এটা CA দেখুৱায়, কিন্তু আমাৰ এটা চাৰ্ভাৰৰ বাবে এটাৰ "
-"প্ৰয়োজন আছে"
+"প্ৰমাণপত্ৰ %1$s ৰ মৌলিক বাধাসমূহে এটা CA দেখুৱায়, কিন্তু আমাৰ এটা চাৰ্ভাৰৰ বাবে "
+"এটাৰ প্ৰয়োজন আছে"
 
 #, c-format
 msgid "The certificate %1$s is missing basic constraints for a CA"
@@ -15852,15 +15965,16 @@ msgstr "নে'টৱৰ্ক ফাইলৰ নাম বিশ্লেষ�
 
 #, fuzzy, c-format
 msgid ""
-"The device at PCI address %1$s cannot be plugged into the PCI controller with "
-"index='%2$d'. It requires a controller that accepts a %3$s."
+"The device at PCI address %1$s cannot be plugged into the PCI controller "
+"with index='%2$d'. It requires a controller that accepts a %3$s."
 msgstr ""
 "ডিভাইচৰ বাবে প্ৰয়োজনীয় সূচী %u ৰ সৈতে PCI নিয়ন্ত্ৰকৰ বাবে ডিভাইচ এলিয়াচ সংহতি "
 "কৰা হোৱা নাছিল, ঠিকনা %s"
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags 0x"
+"%2$.2x"
 msgstr ""
 
 #, c-format
@@ -16730,8 +16844,8 @@ msgstr "লক অৱস্থা %1$s বিশ্লেষণ কৰিবল�
 
 #, c-format
 msgid ""
-"Unable to configure VF %1$d of PF '%2$s' because the PF is not online. Please "
-"change host network config to put the PF online."
+"Unable to configure VF %1$d of PF '%2$s' because the PF is not online. "
+"Please change host network config to put the PF online."
 msgstr ""
 
 msgid "Unable to configure libxl's memory management parameters"
@@ -18436,11 +18550,13 @@ msgstr "TLS সমনীয়া সতা সত্য নিৰূপণ কৰ�
 
 #, c-format
 msgid "Unable to verify client certificate %1$s against CA certificate %2$s"
-msgstr "CA প্ৰমাণপত্ৰ %1$s ৰ পৰিৱৰ্তে ক্লাএণ্ট প্ৰমাণপত্ৰ %2$s সতা সত্য নিৰূপণ কৰিবলে অক্ষম"
+msgstr ""
+"CA প্ৰমাণপত্ৰ %1$s ৰ পৰিৱৰ্তে ক্লাএণ্ট প্ৰমাণপত্ৰ %2$s সতা সত্য নিৰূপণ কৰিবলে অক্ষম"
 
 #, c-format
 msgid "Unable to verify server certificate %1$s against CA certificate %2$s"
-msgstr "CA প্ৰমাণপত্ৰ %1$s ৰ পৰিবৰ্তে চাৰ্ভাৰ প্ৰমাণপত্ৰ %2$s সতা সত্য নিৰূপণ কৰিবলে অক্ষম"
+msgstr ""
+"CA প্ৰমাণপত্ৰ %1$s ৰ পৰিবৰ্তে চাৰ্ভাৰ প্ৰমাণপত্ৰ %2$s সতা সত্য নিৰূপণ কৰিবলে অক্ষম"
 
 msgid "Unable to wait for child process"
 msgstr "ছাইল্ড প্ৰক্ৰিয়াৰ বাবে অপেক্ষা কৰিবলে অক্ষম"
@@ -19604,8 +19720,8 @@ msgstr "VCPU:"
 
 #, c-format
 msgid ""
-"VF %1$d of PF '%2$s' is not bound to a net driver, so its MAC address cannot be "
-"set to %3$s"
+"VF %1$d of PF '%2$s' is not bound to a net driver, so its MAC address cannot "
+"be set to %3$s"
 msgstr ""
 
 #, c-format
@@ -19992,11 +20108,13 @@ msgstr "এটা পুনৰবিৱৰিত স্নেপশ্বটৰ 
 
 #, c-format
 msgid "a secret with UUID %1$s already defined for use with %2$s"
-msgstr "%1$s UUID সহ এটা গোপনীয় তথ্যে %2$s ৰ সৈতে ব্যৱহাৰৰ বাবে পূৰ্বেই নিৰ্ধাৰিত হৈছে"
+msgstr ""
+"%1$s UUID সহ এটা গোপনীয় তথ্যে %2$s ৰ সৈতে ব্যৱহাৰৰ বাবে পূৰ্বেই নিৰ্ধাৰিত হৈছে"
 
 #, c-format
 msgid "a secret with UUID %1$s is already defined for use with %2$s"
-msgstr "%1$s UUID সহ এটা গোপনীয় তথ্যে %2$s ৰ সৈতে ব্যৱহাৰৰ বাবে পূৰ্বেই নিৰ্ধাৰিত হৈছে"
+msgstr ""
+"%1$s UUID সহ এটা গোপনীয় তথ্যে %2$s ৰ সৈতে ব্যৱহাৰৰ বাবে পূৰ্বেই নিৰ্ধাৰিত হৈছে"
 
 #, fuzzy
 msgid "a slirp-helper cannot be migrated"
@@ -20240,7 +20358,8 @@ msgid "architecture"
 msgstr "স্থাপত্য"
 
 #, fuzzy, c-format
-msgid "architecture from emulator '%1$s' doesn't match given architecture '%2$s'"
+msgid ""
+"architecture from emulator '%1$s' doesn't match given architecture '%2$s'"
 msgstr "সংৰূপ %1$s ৰ পৰা আন্তঃপৃষ্ঠ নাম প্ৰদান কৰা নাম %2$s ৰ সৈতে মিল নাখায়"
 
 #, c-format
@@ -20269,11 +20388,13 @@ msgid "arguments to echo"
 msgstr "echo কৰিবলে তৰ্কসমূহ"
 
 #, fuzzy, c-format
-msgid "array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo 'disk' data"
+msgid ""
+"array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo 'disk' data"
 msgstr "guest-get-vcpus ত এৰে উপাদানত return মান নাছিল"
 
 #, fuzzy, c-format
-msgid "array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo return data"
+msgid ""
+"array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo return data"
 msgstr "guest-get-vcpus ত এৰে উপাদানত return মান নাছিল"
 
 msgid "array element missing in guest-get-disks return value"
@@ -20340,31 +20461,39 @@ msgstr "ক্ৰমিক কনচৌল সংলগ্ন কৰাটো �
 #, c-format
 msgid ""
 "attempt to merge virtualports with mismatched instanceids ('%1$s' and '%2$s')"
-msgstr "অমিল instanceids ('%1$s' আৰু '%2$s') ৰ সৈতে virtualports একত্ৰিত কৰাৰ চেষ্টা"
+msgstr ""
+"অমিল instanceids ('%1$s' আৰু '%2$s') ৰ সৈতে virtualports একত্ৰিত কৰাৰ চেষ্টা"
 
 #, c-format
 msgid ""
-"attempt to merge virtualports with mismatched interfaceids ('%1$s' and '%2$s')"
-msgstr "অমিল interfaceids ('%1$s' আৰু '%2$s') ৰ সৈতে virtualports একত্ৰিত কৰাৰ চেষ্টা"
+"attempt to merge virtualports with mismatched interfaceids ('%1$s' and "
+"'%2$s')"
+msgstr ""
+"অমিল interfaceids ('%1$s' আৰু '%2$s') ৰ সৈতে virtualports একত্ৰিত কৰাৰ চেষ্টা"
 
 #, c-format
-msgid "attempt to merge virtualports with mismatched managerids (%1$d and %2$d)"
-msgstr "অমিল থকা managerids (%1$d আৰু %2$d) ৰ সৈতে ভাৰছুৱেলপোৰ্টসমূহ একত্ৰিত কৰাৰ চেষ্টা"
+msgid ""
+"attempt to merge virtualports with mismatched managerids (%1$d and %2$d)"
+msgstr ""
+"অমিল থকা managerids (%1$d আৰু %2$d) ৰ সৈতে ভাৰছুৱেলপোৰ্টসমূহ একত্ৰিত কৰাৰ চেষ্টা"
 
 #, c-format
 msgid ""
 "attempt to merge virtualports with mismatched profileids ('%1$s' and '%2$s')"
-msgstr "অমিল  profileids ('%1$s' আৰু '%2$s') ৰ সৈতে virtualports একত্ৰিত কৰাৰ চেষ্টা"
+msgstr ""
+"অমিল  profileids ('%1$s' আৰু '%2$s') ৰ সৈতে virtualports একত্ৰিত কৰাৰ চেষ্টা"
 
 #, c-format
 msgid "attempt to merge virtualports with mismatched typeids (%1$d and %2$d)"
-msgstr "অমিল থকা typeids (%1$d আৰু %2$d) ৰ সৈতে ভাৰছুৱেলপোৰ্টসমূহ একত্ৰিত কৰাৰ চেষ্টা"
+msgstr ""
+"অমিল থকা typeids (%1$d আৰু %2$d) ৰ সৈতে ভাৰছুৱেলপোৰ্টসমূহ একত্ৰিত কৰাৰ চেষ্টা"
 
 #, c-format
 msgid ""
 "attempt to merge virtualports with mismatched typeidversions (%1$d and %2$d)"
 msgstr ""
-"অমিল থকা typeidversions (%1$d আৰু %2$d) ৰ সৈতে ভাৰছুৱেলপোৰ্টসমূহ একত্ৰিত কৰাৰ চেষ্টা"
+"অমিল থকা typeidversions (%1$d আৰু %2$d) ৰ সৈতে ভাৰছুৱেলপোৰ্টসমূহ একত্ৰিত কৰাৰ "
+"চেষ্টা"
 
 #, c-format
 msgid "attempt to merge virtualports with mismatched types (%1$s and %2$s)"
@@ -20547,8 +20676,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"bandwidth %1$llu is greater than %2$lu which is the maximum value supported by "
-"this API"
+"bandwidth %1$llu is greater than %2$lu which is the maximum value supported "
+"by this API"
 msgstr ""
 
 #, fuzzy, c-format
@@ -20820,7 +20949,8 @@ msgstr ""
 "ব্ৰিজ সংযোগমাধ্যমৰ stp ৰ ক্ষেত্ৰত on বা off মান উপস্থিত থাকা আৱশ্য, %1$s প্ৰাপ্ত হৈছে"
 
 #, fuzzy, c-format
-msgid "bridge macTableManager setting not allowed in %1$s mode (network '%2$s')"
+msgid ""
+"bridge macTableManager setting not allowed in %1$s mode (network '%2$s')"
 msgstr "%1$s অৱস্থাত ব্ৰিজ নামৰ অনুমতি নাই (নেটৱৰ্ক '%2$s')"
 
 #, c-format
@@ -21074,7 +21204,8 @@ msgstr "অৱস্থা পৰিবৰ্তনৰ লক প্ৰাপ্
 
 #, fuzzy, c-format
 msgid ""
-"cannot acquire state change lock (held by monitor=%1$s) due to max_queued limit"
+"cannot acquire state change lock (held by monitor=%1$s) due to max_queued "
+"limit"
 msgstr "max_queued সীমাৰ বাবে অৱস্থা পৰিবৰ্তন লক প্ৰাপ্ত কৰিব নোৱাৰি"
 
 msgid "cannot acquire state change lock due to max_queued limit"
@@ -21122,7 +21253,8 @@ msgid "cannot change between disk only and full system in snapshot %1$s"
 msgstr "স্নেপশ্বট %1$s ত অনলাইন আৰু অফলাইন স্নেপশ্বট অৱস্থা পৰিবৰ্তন কৰিব নোৱাৰি"
 
 #, c-format
-msgid "cannot change between online and offline snapshot state in snapshot %1$s"
+msgid ""
+"cannot change between online and offline snapshot state in snapshot %1$s"
 msgstr "স্নেপশ্বট %1$s ত অনলাইন আৰু অফলাইন স্নেপশ্বট অৱস্থা পৰিবৰ্তন কৰিব নোৱাৰি"
 
 #, c-format
@@ -21568,8 +21700,10 @@ msgid "cannot generate dac user and group id for domain %1$s"
 msgstr "ডমেইন %1$s ৰ বাবে dac ব্যৱহাৰকাৰী আৰু দল আইডি সৃজন কৰিব নোৱাৰি"
 
 #, c-format
-msgid "cannot generate external snapshot name for disk '%1$s' on a '%2$s' device"
-msgstr "এটা '%1$s' ডিভাইচত ডিস্ক '%2$s' ৰ বাবে বহিৰ্তম স্নেপশ্বট নাম সৃজন কৰিব নোৱাৰি"
+msgid ""
+"cannot generate external snapshot name for disk '%1$s' on a '%2$s' device"
+msgstr ""
+"এটা '%1$s' ডিভাইচত ডিস্ক '%2$s' ৰ বাবে বহিৰ্তম স্নেপশ্বট নাম সৃজন কৰিব নোৱাৰি"
 
 #, c-format
 msgid "cannot generate external snapshot name for disk '%1$s' without source"
@@ -21579,7 +21713,8 @@ msgstr "উৎসৰ অবিহনে ডিস্ক '%1$s' ৰ বাবে 
 msgid ""
 "cannot generate external snapshot name for disk '%1$s': collision with disk "
 "'%2$s'"
-msgstr "এটা '%1$s' ডিভাইচত ডিস্ক '%2$s' ৰ বাবে বহিৰ্তম স্নেপশ্বট নাম সৃজন কৰিব নোৱাৰি"
+msgstr ""
+"এটা '%1$s' ডিভাইচত ডিস্ক '%2$s' ৰ বাবে বহিৰ্তম স্নেপশ্বট নাম সৃজন কৰিব নোৱাৰি"
 
 #, c-format
 msgid "cannot get CPU affinity of process %1$d"
@@ -21677,20 +21812,20 @@ msgstr "পৰিবৰ্তনশীল ডমেইন স্নেপশ্�
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x.%5$d - "
-"controller not found"
+"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
+"%5$d - controller not found"
 msgstr ""
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x.%5$d - not "
-"allowed by controller"
+"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
+"%5$d - not allowed by controller"
 msgstr ""
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:%3$02x:"
-"%4$02x.%5$d"
+"cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:"
+"%3$02x:%4$02x.%5$d"
 msgstr ""
 
 #, c-format
@@ -22247,10 +22382,11 @@ msgstr "%1$s চালক লিংক মীমাংসা কৰিবলৈ 
 
 #, c-format
 msgid ""
-"cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain '%3$s' "
-"uuid %4$s"
+"cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain "
+"'%3$s' uuid %4$s"
 msgstr ""
-"ডমেইন '%1$s' uuid %2$s ৰ এটা ফাইলৰ পৰা ডমেইন '%3$s' uuid %4$s পুনৰুদ্ধাৰ কৰিব নোৱাৰি"
+"ডমেইন '%1$s' uuid %2$s ৰ এটা ফাইলৰ পৰা ডমেইন '%3$s' uuid %4$s পুনৰুদ্ধাৰ কৰিব "
+"নোৱাৰি"
 
 msgid "cannot restore domain snapshot for running domain"
 msgstr "চলি থকা ডমেইনৰ বাবে ডমেইন স্নেপশ্বট পুনৰুদ্ধাৰ কৰিব নোৱাৰি"
@@ -23446,16 +23582,16 @@ msgid ""
 "couldn't find a portgroup entry in network '%1$s' matching <portgroup "
 "name='%2$s'>"
 msgstr ""
-"নেটৱৰ্ক '%1$s' ত <portgroup name='%2$s'> ৰ সৈতে মিল খোৱা এটা পোৰ্টগ্ৰুপ প্ৰৱিষ্টি পোৱা "
-"নগল"
+"নেটৱৰ্ক '%1$s' ত <portgroup name='%2$s'> ৰ সৈতে মিল খোৱা এটা পোৰ্টগ্ৰুপ প্ৰৱিষ্টি "
+"পোৱা নগল"
 
 #, c-format
 msgid ""
 "couldn't find an interface entry in network '%1$s' matching <interface "
 "dev='%2$s'>"
 msgstr ""
-"নেটৱৰ্ক '%1$s' ত <interface dev='%2$s'> ৰ সৈতে মিল খোৱা এটা আন্তঃপৃষ্ঠ প্ৰৱিষ্টি পোৱা "
-"নগল"
+"নেটৱৰ্ক '%1$s' ত <interface dev='%2$s'> ৰ সৈতে মিল খোৱা এটা আন্তঃপৃষ্ঠ প্ৰৱিষ্টি "
+"পোৱা নগল"
 
 #, c-format
 msgid "couldn't find interface named '%1$s'"
@@ -23495,11 +23631,11 @@ msgstr "নেটৱৰ্ক '%1$s' ত এটা মিল খোৱা dhcp �
 
 #, c-format
 msgid ""
-"couldn't locate an existing dhcp host entry with \"mac='%1$s'\" \"name='%2$s'\" "
-"\"ip='%3$s'\" in network '%4$s'"
+"couldn't locate an existing dhcp host entry with \"mac='%1$s'\" "
+"\"name='%2$s'\" \"ip='%3$s'\" in network '%4$s'"
 msgstr ""
-"নেটৱাৰ্ক '%1$s' ত \"mac='%2$s'\" \"name='%3$s'\" \"ip='%4$s'\" ৰ সৈতে এটা স্থায়ী dhcp "
-"হস্ট প্ৰবিষ্টি অৱস্থিত কৰিব পৰা নগল"
+"নেটৱাৰ্ক '%1$s' ত \"mac='%2$s'\" \"name='%3$s'\" \"ip='%4$s'\" ৰ সৈতে এটা "
+"স্থায়ী dhcp হস্ট প্ৰবিষ্টি অৱস্থিত কৰিব পৰা নগল"
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %1$s"
@@ -23514,9 +23650,11 @@ msgstr ""
 "নেটৱৰ্ক '%2$s'"
 
 #, c-format
-msgid "couldn't update dhcp host entry - no <ip> element found in network '%1$s'"
+msgid ""
+"couldn't update dhcp host entry - no <ip> element found in network '%1$s'"
 msgstr ""
-"dhcp হস্ট প্ৰৱিষ্টি আপডেইট কৰিব পৰা নগল - নেটৱৰ্ক '%1$s' কোনো <ip> উপাদান পোৱা নগল"
+"dhcp হস্ট প্ৰৱিষ্টি আপডেইট কৰিব পৰা নগল - নেটৱৰ্ক '%1$s' কোনো <ip> উপাদান পোৱা "
+"নগল"
 
 #, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
@@ -23649,8 +23787,10 @@ msgstr ""
 
 #, c-format
 msgid ""
-"curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned an error: %1$s (%2$d) : %3$s"
-msgstr "curl_easy_getinfo(CURLINFO_REDIRECT_URL) এ এটা ত্ৰুটি দিলে: %1$s (%2$d) : %3$s"
+"curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned an error: %1$s (%2$d) : "
+"%3$s"
+msgstr ""
+"curl_easy_getinfo(CURLINFO_REDIRECT_URL) এ এটা ত্ৰুটি দিলে: %1$s (%2$d) : %3$s"
 
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned a negative response code"
@@ -23658,12 +23798,14 @@ msgstr ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) এ এটা ঋণাত্মক প্ৰতিক্ৰিয়া ক'ড দিলে"
 
 #, c-format
-msgid "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"
+msgid ""
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"
 msgstr ""
 
 #, c-format
 msgid ""
-"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d) : %3$s"
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d) : "
+"%3$s"
 msgstr ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) এ এটা ত্ৰুটি দিলে: %1$s (%2$d) : %3$s"
 
@@ -24080,7 +24222,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"dirty ring size of KVM feature '%1$s' differs: source: '%2$d', destination: '%3$d'"
+"dirty ring size of KVM feature '%1$s' differs: source: '%2$d', destination: "
+"'%3$d'"
 msgstr ""
 
 msgid "dirty-ring calculation mode requires dirty-ring feature enabled."
@@ -25116,7 +25259,8 @@ msgid "event '%1$s' for storage pool %2$s\n"
 msgstr "অজ্ঞাত ভঁৰাল পুলৰ ধৰণ %s"
 
 #, c-format
-msgid "event 'agent-lifecycle' for domain '%1$s': state: '%2$s' reason: '%3$s'\n"
+msgid ""
+"event 'agent-lifecycle' for domain '%1$s': state: '%2$s' reason: '%3$s'\n"
 msgstr ""
 
 #, c-format
@@ -25124,7 +25268,8 @@ msgid "event 'balloon-change' for domain '%1$s': %2$lluKiB\n"
 msgstr ""
 
 #, c-format
-msgid "event 'block-threshold' for domain '%1$s': dev: %2$s(%3$s) %4$llu %5$llu\n"
+msgid ""
+"event 'block-threshold' for domain '%1$s': dev: %2$s(%3$s) %4$llu %5$llu\n"
 msgstr ""
 
 #, c-format
@@ -25145,7 +25290,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"event 'graphics' for domain '%1$s': %2$s local[%3$s %4$s %5$s] remote[%6$s %7$s %8$s] %9$s\n"
+"event 'graphics' for domain '%1$s': %2$s local[%3$s %4$s %5$s] remote[%6$s "
+"%7$s %8$s] %9$s\n"
 msgstr ""
 
 #, c-format
@@ -25153,7 +25299,8 @@ msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
+msgid ""
+"event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
 msgstr ""
 
 #, c-format
@@ -25374,7 +25521,8 @@ msgid ""
 "external destination file for disk %1$s already exists and is not a block "
 "device: %2$s"
 msgstr ""
-"ডিস্ক %1$s ৰ বাবে বহিৰ্তম গন্তব্য ফাইল ইতিমধ্যে অস্তিত্ববান আৰু এটা খণ্ড ডিভাইচ নহয়: %2$s"
+"ডিস্ক %1$s ৰ বাবে বহিৰ্তম গন্তব্য ফাইল ইতিমধ্যে অস্তিত্ববান আৰু এটা খণ্ড ডিভাইচ নহয়: "
+"%2$s"
 
 #, fuzzy, c-format
 msgid "external inactive snapshots are not supported on '%1$s' disks"
@@ -25382,8 +25530,8 @@ msgstr "%d বহিৰ্তম ডিস্ক স্নেপশ্বটস�
 
 #, c-format
 msgid ""
-"external inactive snapshots are not supported on 'network' disks using '%1$s' "
-"protocol"
+"external inactive snapshots are not supported on 'network' disks using "
+"'%1$s' protocol"
 msgstr ""
 
 msgid "external memory snapshots require a filename"
@@ -25391,8 +25539,8 @@ msgstr "বহিৰ্তম মেমৰি স্নেপশ্বটসম�
 
 #, c-format
 msgid ""
-"external snapshot file for disk %1$s already exists and is not a block device: "
-"%2$s"
+"external snapshot file for disk %1$s already exists and is not a block "
+"device: %2$s"
 msgstr ""
 "ডিস্ক %1$s ৰ বাবে বহিৰ্তম স্নেপশ্বট ফাইল ইতিমধ্যে অস্তিত্ববান আৰু ই এটা খণ্ড ডিভাইচ "
 "নহয়:  %2$s"
@@ -25461,8 +25609,8 @@ msgstr ""
 msgid ""
 "failed to add new filter rules to '%1$s' - attempting to restore old rules"
 msgstr ""
-"'%1$s' লে নতুন ফিল্টাৰ নিয়মসমূহ যোগ কৰিবলে ব্যৰ্থ - পুৰনি নিয়মসমূহ পুনৰুদ্ধাৰ কৰাৰ চেষ্টা "
-"কৰা হৈছে"
+"'%1$s' লে নতুন ফিল্টাৰ নিয়মসমূহ যোগ কৰিবলে ব্যৰ্থ - পুৰনি নিয়মসমূহ পুনৰুদ্ধাৰ কৰাৰ "
+"চেষ্টা কৰা হৈছে"
 
 msgid "failed to add subsystem filter"
 msgstr ""
@@ -26721,7 +26869,8 @@ msgstr "ফাইল %1$s অস্তিত্ববান নহয়"
 
 #, c-format
 msgid "file '%1$s' for disk '%2$s' requires use of external snapshot mode"
-msgstr "ডিস্ক '%1$s' ৰ বাবে ফাইল '%2$s' ৰ বহিৰ্তম স্নেপশ্বট অৱস্থা ব্যৱহাৰ কৰাটো প্ৰয়োজন"
+msgstr ""
+"ডিস্ক '%1$s' ৰ বাবে ফাইল '%2$s' ৰ বহিৰ্তম স্নেপশ্বট অৱস্থা ব্যৱহাৰ কৰাটো প্ৰয়োজন"
 
 msgid "file containing XML CPU descriptions"
 msgstr "XML CPU ৰ বিৱৰণ ধাৰণকৰ্তা এটা ফাইল"
@@ -27018,8 +27167,8 @@ msgstr "নিম্নৰেখিত সংৰক্ষণৰ বাবে ব
 
 #, c-format
 msgid ""
-"format of backing image '%1$s' of image '%2$s' was not specified in the image "
-"metadata (See https://libvirt.org/kbase/backing_chains.html for "
+"format of backing image '%1$s' of image '%2$s' was not specified in the "
+"image metadata (See https://libvirt.org/kbase/backing_chains.html for "
 "troubleshooting)"
 msgstr ""
 
@@ -27192,11 +27341,13 @@ msgid "got unknown HTTP error code %1$s"
 msgstr "অজ্ঞাত টাইমাৰ অৱস্থা '%1$s'"
 
 #, c-format
-msgid "got wrong number of IOThread ids from QEMU monitor. got %1$d, wanted %2$d"
+msgid ""
+"got wrong number of IOThread ids from QEMU monitor. got %1$d, wanted %2$d"
 msgstr ""
 
 #, c-format
-msgid "got wrong number of IOThread pids from QEMU monitor. got %1$d, wanted %2$zu"
+msgid ""
+"got wrong number of IOThread pids from QEMU monitor. got %1$d, wanted %2$zu"
 msgstr ""
 
 msgid "gracefully shutdown a domain"
@@ -27251,8 +27402,8 @@ msgstr "হস্ট CPU কঠোৰভাৱে অতিথি CPU ৰ সৈ
 
 #, c-format
 msgid ""
-"guest CPU doesn't match specification: extra features: %1$s, missing features: "
-"%2$s"
+"guest CPU doesn't match specification: extra features: %1$s, missing "
+"features: %2$s"
 msgstr ""
 
 #, c-format
@@ -27607,7 +27758,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"if using CPU maximum physical address mode='%1$s', bits= must be specified too"
+"if using CPU maximum physical address mode='%1$s', bits= must be specified "
+"too"
 msgstr ""
 
 #, c-format
@@ -27790,8 +27942,8 @@ msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
 "libvir-list@redhat.com"
 msgstr ""
-"%1$s ত পূৰ্ণসংখ্যা অভাৰফ্লো। অনুগ্ৰহ কৰি libvir-list@redhat.com ত libvirt উন্নয়ন দলক "
-"যোগাযোগ কৰক"
+"%1$s ত পূৰ্ণসংখ্যা অভাৰফ্লো। অনুগ্ৰহ কৰি libvir-list@redhat.com ত libvirt উন্নয়ন "
+"দলক যোগাযোগ কৰক"
 
 #, fuzzy, c-format
 msgid ""
@@ -27818,7 +27970,8 @@ msgstr "ধৰণ %s ৰ আন্তঃপৃষ্ঠসমূহৰ বাব
 
 #, fuzzy, c-format
 msgid ""
-"interface %1$s - filterref is not supported for network interfaces of type %2$s"
+"interface %1$s - filterref is not supported for network interfaces of type "
+"%2$s"
 msgstr "ধৰণ %s ৰ আন্তঃপৃষ্ঠসমূহৰ বাবে ফিল্টাৰসমূহ সমৰ্থিত নহয়"
 
 #, fuzzy, c-format
@@ -27829,7 +27982,8 @@ msgstr "ধৰণ %s ৰ আন্তঃপৃষ্ঠসমূহৰ বাব
 
 #, fuzzy, c-format
 msgid ""
-"interface %1$s - multiqueue is not supported for network interfaces of type %2$s"
+"interface %1$s - multiqueue is not supported for network interfaces of type "
+"%2$s"
 msgstr "ধৰণ %s ৰ আন্তঃপৃষ্ঠসমূহৰ বাবে ফিল্টাৰসমূহ সমৰ্থিত নহয়"
 
 #, c-format
@@ -27942,8 +28096,8 @@ msgstr "%d বহিৰ্তম ডিস্ক স্নেপশ্বটস�
 
 #, c-format
 msgid ""
-"internal inactive snapshots are not supported on 'network' disks using '%1$s' "
-"protocol"
+"internal inactive snapshots are not supported on 'network' disks using "
+"'%1$s' protocol"
 msgstr ""
 
 msgid "internal parse requested with NULL current"
@@ -27975,8 +28129,8 @@ msgstr "<vlan> ত অবৈধ \"trunk='%1$s'\" - yes বা no নহয়"
 
 #, c-format
 msgid ""
-"invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than one "
-"vlan tag"
+"invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than "
+"one vlan tag"
 msgstr ""
 "<vlan> ত অবৈধ \"trunk='%1$s'\" - এটাতকে অধিক vlan টেগৰ বাবে trunk='yes' ৰ "
 "প্ৰয়োজন"
@@ -28213,7 +28367,8 @@ msgstr "নেটৱাৰ্ক '%1$s' ৰ DNS SRV ত প্ৰটোকল �
 
 #, c-format
 msgid ""
-"invalid character in service attribute '%1$s' in DNS SRV record of network '%2$s'"
+"invalid character in service attribute '%1$s' in DNS SRV record of network "
+"'%2$s'"
 msgstr "নেটৱাৰ্ক '%1$s' ৰ DNS SRV ৰেকৰ্ডত সেৱা বৈশিষ্ট্য '%2$s' ত অবৈধ আখৰ"
 
 msgid "invalid cipher size for TLS session"
@@ -28400,7 +28555,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"invalid mac address '%1$s' in 'unicast-table' array in query-rx-filter response"
+"invalid mac address '%1$s' in 'unicast-table' array in query-rx-filter "
+"response"
 msgstr ""
 
 #, fuzzy, c-format
@@ -29830,7 +29986,8 @@ msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
 msgstr ""
 
 #, c-format
-msgid "memory device slot '%1$u' is already being used by another memory device"
+msgid ""
+"memory device slot '%1$u' is already being used by another memory device"
 msgstr ""
 
 msgid "memory device target node"
@@ -30786,7 +30943,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"missing required protocol attribute in DNS SRV record '%1$s' of network '%2$s'"
+"missing required protocol attribute in DNS SRV record '%1$s' of network "
+"'%2$s'"
 msgstr "নেটৱাৰ্ক '%1$s' ৰ DNS SRV ৰেকৰ্ড '%2$s' ত প্ৰয়োজনীয় প্ৰটোকল বৈশিষ্ট্য নাই"
 
 #, c-format
@@ -30795,7 +30953,8 @@ msgstr "নেটৱাৰ্ক '%1$s' ৰ DNS SRV ৰেকৰ্ডত প্
 
 #, c-format
 msgid ""
-"missing required value attribute in DNS TXT record named '%1$s' of network %2$s"
+"missing required value attribute in DNS TXT record named '%1$s' of network "
+"%2$s"
 msgstr "নেটৱৰ্ক %1$s ৰ DNS TXT ৰেকৰ্ড নাম '%2$s' ৰ প্ৰয়োজনীয় মান বৈশিষ্ট্য নাই"
 
 msgid "missing required virtualport type"
@@ -31147,7 +31306,8 @@ msgid "multidevs is not supported with this QEMU binary"
 msgstr "এই QEMU বাইনাৰি দ্বাৰা SATA সমৰ্থিত হয়"
 
 #, fuzzy, c-format
-msgid "multiple <portgroup> elements with the same name (%1$s) in network '%2$s'"
+msgid ""
+"multiple <portgroup> elements with the same name (%1$s) in network '%2$s'"
 msgstr "নেটৱৰ্ক '%s' ত এটা IPv6 নেটৱৰ্কত অসমৰ্থিত <tftp> উপাদান"
 
 #, c-format
@@ -31339,8 +31499,8 @@ msgstr "নেটৱৰ্ক '%1$s' ৰ ডমেইন দ্বাৰা dev=
 
 #, c-format
 msgid ""
-"network '%1$s' claims the PCI device at domain=%2$d bus=%3$d slot=%4$d function=%5$d "
-"is already in use by a different network port"
+"network '%1$s' claims the PCI device at domain=%2$d bus=%3$d slot=%4$d "
+"function=%5$d is already in use by a different network port"
 msgstr ""
 
 #, c-format
@@ -31348,13 +31508,20 @@ msgid "network '%1$s' does not have a bridge name."
 msgstr "নে'টৱৰ্ক '%1$s' ৰ এটা bridge নাম নাই।"
 
 #, c-format
-msgid "network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by domain"
-msgstr "নেটৱৰ্ক '%1$s' ৰ ডমেইন দ্বাৰা এটা PCI ডিভাইচ %2$04x:%3$02x:%4$02x.%5$x ব্যৱহাৰত নাই"
+msgid ""
+"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by "
+"domain"
+msgstr ""
+"নেটৱৰ্ক '%1$s' ৰ ডমেইন দ্বাৰা এটা PCI ডিভাইচ %2$04x:%3$02x:%4$02x.%5$x ব্যৱহাৰত "
+"নাই"
 
 #, fuzzy, c-format
 msgid ""
-"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by network port"
-msgstr "নেটৱৰ্ক '%1$s' ৰ ডমেইন দ্বাৰা এটা PCI ডিভাইচ %2$04x:%3$02x:%4$02x.%5$x ব্যৱহাৰত নাই"
+"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by "
+"network port"
+msgstr ""
+"নেটৱৰ্ক '%1$s' ৰ ডমেইন দ্বাৰা এটা PCI ডিভাইচ %2$04x:%3$02x:%4$02x.%5$x ব্যৱহাৰত "
+"নাই"
 
 #, fuzzy, c-format
 msgid "network '%1$s' doesn't have an IP address"
@@ -31374,17 +31541,18 @@ msgstr "নেটৱৰ্ক '%1$s' ৰ পথ বিৱৰণত অবৈধ 
 
 #, c-format
 msgid ""
-"network '%1$s' has forward mode '%2$s'  but lists a device by PCI address in the "
-"device pool. This is only supported for networks with forward mode 'hostdev'"
+"network '%1$s' has forward mode '%2$s' but lists a device by PCI address in "
+"the device pool. This is only supported for networks with forward mode "
+"'hostdev'"
 msgstr ""
 
 #, c-format
 msgid ""
-"network '%1$s' has multiple default <portgroup> elements (%2$s and %3$s), but only "
-"one default is allowed"
+"network '%1$s' has multiple default <portgroup> elements (%2$s and %3$s), "
+"but only one default is allowed"
 msgstr ""
-"নেটৱৰ্ক '%1$s' ৰ একাধিক অবিকল্পিত উপাদান (%2$s and %3$s) আছে, কিন্তু কেৱল এটা অবিকল্পিত "
-"অনুমোদিত"
+"নেটৱৰ্ক '%1$s' ৰ একাধিক অবিকল্পিত উপাদান (%2$s and %3$s) আছে, কিন্তু কেৱল এটা "
+"অবিকল্পিত অনুমোদিত"
 
 #, c-format
 msgid "network '%1$s' has no associated interface or bridge"
@@ -31408,12 +31576,14 @@ msgstr "নে'টৱৰ্ক '%1$s' সক্ৰিয় নহয়"
 
 #, c-format
 msgid ""
-"network '%1$s' requires exclusive access to interfaces, but none are available"
+"network '%1$s' requires exclusive access to interfaces, but none are "
+"available"
 msgstr "নেটৱৰ্ক '%1$s' ৰ আন্তঃপৃষ্ঠসমূহলে সূকীয়া অভিগমৰ প্ৰয়োজন, কিন্তু কোনো উপলব্ধ নাই"
 
 #, c-format
 msgid ""
-"network '%1$s' uses a direct mode, but has no forward dev and no interface pool"
+"network '%1$s' uses a direct mode, but has no forward dev and no interface "
+"pool"
 msgstr ""
 "নেটৱৰ্ক '%1$s' এটা প্ৰত্যক্ষ অৱস্থা ব্যৱহাৰ কৰে, কিন্তু কোনো ফৰৱাৰ্ড dev আৰু কোনো "
 "আন্তঃপৃষ্ঠ পুল নাই"
@@ -31431,8 +31601,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"network device saved config file '%1$s' has unexpected contents, missing both "
-"'MAC' and 'adminMAC': '%2$.60s'"
+"network device saved config file '%1$s' has unexpected contents, missing "
+"both 'MAC' and 'adminMAC': '%2$.60s'"
 msgstr ""
 
 #, c-format
@@ -31718,7 +31888,8 @@ msgstr "'%1$s' ৰ কাৰণে কোনো ব্ল'ক ডিভাইচ
 
 #, c-format
 msgid "no call waiting for reply with prog %1$d vers %2$d serial %3$d"
-msgstr "prog %1$d vers %2$d serial %3$d ৰ সৈতে উত্তৰৰ বাবে অপেক্ষা কৰা কোনো কল নাই"
+msgstr ""
+"prog %1$d vers %2$d serial %3$d ৰ সৈতে উত্তৰৰ বাবে অপেক্ষা কৰা কোনো কল নাই"
 
 #, fuzzy
 msgid "no cgroup backend available"
@@ -31751,7 +31922,8 @@ msgstr "'%1$s' ৰ কাৰণে কোনো ডিভাইচৰ কাৰ�
 
 #, c-format
 msgid ""
-"no device found at address '%1$s' matching MAC address '%2$s' and alias '%3$s'"
+"no device found at address '%1$s' matching MAC address '%2$s' and alias "
+"'%3$s'"
 msgstr ""
 
 #, c-format
@@ -32489,7 +32661,8 @@ msgid "only connect if safe console handling is supported"
 msgstr "কেৱল সুৰক্ষিত কনচৌল হেণ্ডলিং সমৰ্থিত থাকিলে সংযোগ কৰিব"
 
 #, c-format
-msgid "only cpu feature policies 'require' and 'disable' are supported for %1$s"
+msgid ""
+"only cpu feature policies 'require' and 'disable' are supported for %1$s"
 msgstr ""
 
 msgid "only i686 and x86_64 guests support panic device of model 'hyperv'"
@@ -33943,7 +34116,8 @@ msgid "removing block or network volumes is not supported: %1$s"
 msgstr "খণ্ড অথবা নেটৱৰ্ক ভলিউমসমূহ আতৰোৱা সমৰ্থিত নহয়: %1$s"
 
 #, fuzzy, c-format
-msgid "removing of '%1$s' volumes is not supported by the gluster backend: %2$s"
+msgid ""
+"removing of '%1$s' volumes is not supported by the gluster backend: %2$s"
 msgstr "খণ্ড অথবা নেটৱৰ্ক ভলিউমসমূহ আতৰোৱা সমৰ্থিত নহয়: %s"
 
 #, fuzzy
@@ -34086,18 +34260,21 @@ msgid ""
 "requested vcpu count is greater than the count of enabled vcpus in the "
 "domain: %1$d > %2$d"
 msgstr ""
-"ডোমেইনৰ বাবে নিৰ্ধাৰিত সৰ্বাধিক vcpu ৰ পৰা অনুৰোধ কৰা vcpu ৰ সংখ্যা অধিক: %1$d > %2$d"
+"ডোমেইনৰ বাবে নিৰ্ধাৰিত সৰ্বাধিক vcpu ৰ পৰা অনুৰোধ কৰা vcpu ৰ সংখ্যা অধিক: %1$d > "
+"%2$d"
 
 #, c-format
 msgid ""
-"requested vcpus is greater than max allowable vcpus for the domain: %1$d > %2$d"
+"requested vcpus is greater than max allowable vcpus for the domain: %1$d > "
+"%2$d"
 msgstr ""
-"ডোমেইনৰ বাবে নিৰ্ধাৰিত সৰ্বাধিক vcpu ৰ পৰা অনুৰোধ কৰা vcpu ৰ সংখ্যা অধিক: %1$d > %2$d"
+"ডোমেইনৰ বাবে নিৰ্ধাৰিত সৰ্বাধিক vcpu ৰ পৰা অনুৰোধ কৰা vcpu ৰ সংখ্যা অধিক: %1$d > "
+"%2$d"
 
 #, fuzzy, c-format
 msgid ""
-"requested vcpus is greater than max allowable vcpus for the live domain: %1$u "
-"> %2$u"
+"requested vcpus is greater than max allowable vcpus for the live domain: "
+"%1$u > %2$u"
 msgstr ""
 "ডোমেইনৰ বাবে নিৰ্ধাৰিত সৰ্বাধিক vcpu ৰ পৰা অনুৰোধ কৰা vcpu ৰ সংখ্যা অধিক: %d > %d"
 
@@ -34448,8 +34625,8 @@ msgid ""
 "security label driver mismatch: '%1$s' model configured for domain, but "
 "hypervisor driver is '%2$s'."
 msgstr ""
-"নিৰাপত্তাৰ লেবেল চালকে অমিল: ডোমেইনৰ ক্ষেত্ৰত '%1$s' মডেল বিন্যাসাৰ কৰা হৈছে কিন্তু "
-"হাইপাৰ্ভাইছৰ চালক হ'ল '%2$s'।"
+"নিৰাপত্তাৰ লেবেল চালকে অমিল: ডোমেইনৰ ক্ষেত্ৰত '%1$s' মডেল বিন্যাসাৰ কৰা হৈছে "
+"কিন্তু হাইপাৰ্ভাইছৰ চালক হ'ল '%2$s'।"
 
 #, c-format
 msgid "security label exceeds maximum length: %1$d"
@@ -34517,7 +34694,8 @@ msgid "server which to list connected clients from"
 msgstr ""
 
 #, c-format
-msgid "service attribute '%1$s' in network '%2$s' is too long, limit is %3$d bytes"
+msgid ""
+"service attribute '%1$s' in network '%2$s' is too long, limit is %3$d bytes"
 msgstr "নেটৱাৰ্ক '%1$s' ত সেৱা বৈশিষ্ট্য '%2$s' অতি দীঘল, সীমা হল %3$d বাইট"
 
 msgid "set a secret value"
@@ -34669,11 +34847,13 @@ msgid "sgx epc isn't supported by this QEMU binary"
 msgstr ""
 
 #, c-format
-msgid "sgx epc size %1$lld on host node %2$d is less than requested size %3$lld"
+msgid ""
+"sgx epc size %1$lld on host node %2$d is less than requested size %3$lld"
 msgstr ""
 
 #, c-format
-msgid "sgx epc size %1$lld on host node %2$zd is less than requested size %3$lld"
+msgid ""
+"sgx epc size %1$lld on host node %2$zd is less than requested size %3$lld"
 msgstr ""
 
 msgid "sgx-epc memory info data is missing 'memdev'"
@@ -35595,13 +35775,13 @@ msgid ""
 "there is an existing dhcp host entry in network '%1$s' that matches \"<host "
 "mac='%2$s' name='%3$s' ip='%4$s'/>\""
 msgstr ""
-"নেটৱৰ্ক '%1$s' ত এটা স্থায়ি dhcp হস্ট প্ৰৱিষ্টি আছে যি \"<host mac='%2$s' name='%3$s' "
-"ip='%4$s'/>\" ৰ সৈতে মিল খায়"
+"নেটৱৰ্ক '%1$s' ত এটা স্থায়ি dhcp হস্ট প্ৰৱিষ্টি আছে যি \"<host mac='%2$s' "
+"name='%3$s' ip='%4$s'/>\" ৰ সৈতে মিল খায়"
 
 #, c-format
 msgid ""
-"there is an existing dhcp range entry in network '%1$s' that matches \"<range "
-"start='%2$s' end='%3$s'/>\""
+"there is an existing dhcp range entry in network '%1$s' that matches "
+"\"<range start='%2$s' end='%3$s'/>\""
 msgstr ""
 "নেটৱৰ্ক '%1$s' ত এটা স্থায়ী dhcp বিস্তাৰ প্ৰবিষ্টি আছে যি \"<range start='%2$s' "
 "end='%3$s'/>\" ৰ সৈতে মিল খায়"
@@ -35611,16 +35791,16 @@ msgid ""
 "there is an existing interface entry in network '%1$s' that matches "
 "\"<interface dev='%2$s'>\""
 msgstr ""
-"নেটৱৰ্ক '%1$s' ত এটা স্থায়ী আন্তঃপৃষ্ঠ প্ৰৱিষ্টি আছে যি \"<interface dev='%2$s'>\" ৰ "
-"সৈতে মিল নাখায়"
+"নেটৱৰ্ক '%1$s' ত এটা স্থায়ী আন্তঃপৃষ্ঠ প্ৰৱিষ্টি আছে যি \"<interface dev='%2$s'>\" "
+"ৰ সৈতে মিল নাখায়"
 
 #, c-format
 msgid ""
 "there is an existing portgroup entry in network '%1$s' that matches "
 "\"<portgroup name='%2$s'>\""
 msgstr ""
-"নেটৱৰ্ক '%1$s' ত \"<portgroup name='%2$s'>\" ৰ সৈতে মিল খোৱা এটা স্থায়ী পোৰ্টগ্ৰুপ "
-"প্ৰৱিষ্টি আছে"
+"নেটৱৰ্ক '%1$s' ত \"<portgroup name='%2$s'>\" ৰ সৈতে মিল খোৱা এটা স্থায়ী "
+"পোৰ্টগ্ৰুপ প্ৰৱিষ্টি আছে"
 
 msgid "there is another transaction running."
 msgstr "অন্য এটা লেন দেন চলি আছে।"
@@ -35715,7 +35895,8 @@ msgid "thread_pool_max (%1$d) must be a positive number or -1"
 msgstr ""
 
 #, c-format
-msgid "thread_pool_max (%1$d) must be equal to or greater than 0 for live change"
+msgid ""
+"thread_pool_max (%1$d) must be equal to or greater than 0 for live change"
 msgstr ""
 
 msgid "thread_pool_max must be a positive integer"
@@ -35730,7 +35911,8 @@ msgid "thread_pool_min (%1$d) must be equal to or greater than -1"
 msgstr ""
 
 #, c-format
-msgid "thread_pool_min (%1$d) must be equal to or greater than 0 for live change"
+msgid ""
+"thread_pool_min (%1$d) must be equal to or greater than 0 for live change"
 msgstr ""
 
 msgid ""
@@ -35856,14 +36038,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' for "
-"'virDomainCheckpointListAllChildren'"
+"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' "
+"for 'virDomainCheckpointListAllChildren'"
 msgstr ""
 
 #, c-format
 msgid ""
-"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' for "
-"'virDomainListAllCheckpoints'"
+"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' "
+"for 'virDomainListAllCheckpoints'"
 msgstr ""
 
 #, c-format
@@ -36317,11 +36499,9 @@ msgstr "epoll fd সৃষ্টি কৰিবলে অক্ষম"
 
 #, c-format
 msgid ""
-"unable to delete interface '%1$s' in network '%2$s'. It is currently being used  "
-"by %3$d domains."
+"unable to delete interface '%1$s' in network '%2$s'. It is currently being "
+"used by %3$d domains."
 msgstr ""
-"নেটৱৰ্ক '%1$s' ত আন্তঃপষ্ঠ '%2$s' মচিবলে অক্ষম। ইয়াক বৰ্তমানে %3$d ডমেইনসমূহ দ্বাৰা "
-"ব্যৱহাৰ কৰা হৈছে।"
 
 #, c-format
 msgid "unable to determine access mode of %1$s"
@@ -36528,7 +36708,8 @@ msgid "unable to parse blkio device '%1$s' '%2$s'"
 msgstr "%1$s PCI ডিভাইচ পুনৰায় নিৰ্ধাৰণ কৰিবলৈ ব্যৰ্থ: %2$s"
 
 #, c-format
-msgid "unable to parse contents of 'file' field in '%1$s' from cloud-hypervisor"
+msgid ""
+"unable to parse contents of 'file' field in '%1$s' from cloud-hypervisor"
 msgstr ""
 
 #, c-format
@@ -36662,7 +36843,8 @@ msgstr "'%1$s' ৰ মালিকানা %2$d লৈ স্থাপন ক�
 #, c-format
 msgid "unable to set ownership of '%1$s' to user %2$d:%3$d"
 msgstr ""
-"'%1$s' ৰ মালিকানা ব্যৱহাৰকৰ্তা %2$d ৰ বাবে স্থাপন কৰিবলৈ ব্যৰ্থ:%3$d নিৰ্ধাৰণ কৰিবলৈ ব্যৰ্থ"
+"'%1$s' ৰ মালিকানা ব্যৱহাৰকৰ্তা %2$d ৰ বাবে স্থাপন কৰিবলৈ ব্যৰ্থ:%3$d নিৰ্ধাৰণ "
+"কৰিবলৈ ব্যৰ্থ"
 
 msgid "unable to set pipe size"
 msgstr ""
@@ -36952,8 +37134,10 @@ msgid "unexpected domain type %1$d"
 msgstr "অপ্ৰত্যাশিত ডোমেইনৰ প্ৰকৃতি %1$d"
 
 #, c-format
-msgid "unexpected element <%1$s>, expecting <%2$s>, while updating network '%3$s'"
-msgstr "নেটৱৰ্ক '%1$s' আপডেইট কৰোতে, অপ্ৰত্যাশিত উপাদান <%2$s>, আশা কৰা হৈছে <%3$s>"
+msgid ""
+"unexpected element <%1$s>, expecting <%2$s>, while updating network '%3$s'"
+msgstr ""
+"নেটৱৰ্ক '%1$s' আপডেইট কৰোতে, অপ্ৰত্যাশিত উপাদান <%2$s>, আশা কৰা হৈছে <%3$s>"
 
 msgid "unexpected encryption engine"
 msgstr ""
@@ -38112,7 +38296,8 @@ msgid "usage:"
 msgstr "ব্যৱহাৰ:"
 
 #, c-format
-msgid "usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"
+msgid ""
+"usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"
 msgstr ""
 
 msgid "usb device not found"
@@ -38383,8 +38568,8 @@ msgstr "উত্তৰত return তথ্য নাছিল"
 
 #, c-format
 msgid ""
-"vcpu '%1$zu' was not selected but it belongs to hotpluggable entity '%2$zd-%3$zd' "
-"which was partially selected"
+"vcpu '%1$zu' was not selected but it belongs to hotpluggable entity '%2$zd-"
+"%3$zd' which was partially selected"
 msgstr ""
 
 msgid "vcpu 0 can't be offline"
@@ -38590,12 +38775,15 @@ msgstr "virInterfaceDefFormat অজ্ঞাত startmode"
 #, c-format
 msgid ""
 "virNWFilterDHCPSnoopReq ifname map failed on interface \"%1$s\" key \"%2$s\""
-msgstr "virNWFilterDHCPSnoopReq ifname মেপ আন্তঃপৃষ্ঠ \"%1$s\" কি' \"%2$s\" ত ব্যৰ্থ হল"
+msgstr ""
+"virNWFilterDHCPSnoopReq ifname মেপ আন্তঃপৃষ্ঠ \"%1$s\" কি' \"%2$s\" ত ব্যৰ্থ হল"
 
 #, c-format
-msgid "virNWFilterDHCPSnoopReq req add failed on interface \"%1$s\" ifkey \"%2$s\""
+msgid ""
+"virNWFilterDHCPSnoopReq req add failed on interface \"%1$s\" ifkey \"%2$s\""
 msgstr ""
-"virNWFilterDHCPSnoopReq req যোগ কৰাটো আন্তঃপৃষ্ঠ \"%1$s\" ifkey \"%2$s\" ত ব্যৰ্থ হল"
+"virNWFilterDHCPSnoopReq req যোগ কৰাটো আন্তঃপৃষ্ঠ \"%1$s\" ifkey \"%2$s\" ত ব্যৰ্থ "
+"হল"
 
 #, c-format
 msgid "virNWFilterDHCPSnoopReq virThreadCreate failed on interface '%1$s'"
@@ -38626,7 +38814,8 @@ msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext ৰ কোনো parseFileName ফলন সংহতি নাই"
 
 #, fuzzy, c-format
-msgid "virtio (non-)transitional models are not supported for address type=%1$s"
+msgid ""
+"virtio (non-)transitional models are not supported for address type=%1$s"
 msgstr "vport কাৰ্য্য '%s' সমৰ্থিত নহয় হস্ট %d"
 
 #, fuzzy, c-format
@@ -38686,7 +38875,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "virtio-net teaming transient interface must be type='hostdev', not '%1$s'"
+msgid ""
+"virtio-net teaming transient interface must be type='hostdev', not '%1$s'"
 msgstr ""
 
 msgid "virtio-pmem does not support NUMA nodes"
@@ -38757,7 +38947,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"virtualport type %1$s is currently not supported on interfaces of type hostdev"
+"virtualport type %1$s is currently not supported on interfaces of type "
+"hostdev"
 msgstr "ভাৰছুৱেলপোৰ্ট ধৰণ %1$s বৰ্তমানে ধৰণ hostdev ৰ আন্তঃপৃষ্ঠসমূহত সমৰ্থিত নহয়"
 
 #, c-format
@@ -38822,7 +39013,8 @@ msgstr "'%1$s' টেমপ্লেট বৰ্তমানে নাইাই
 
 #, c-format
 msgid ""
-"vnuma configuration contains %1$zu vcpus, which is greater than %2$zu maxvcpus"
+"vnuma configuration contains %1$zu vcpus, which is greater than %2$zu "
+"maxvcpus"
 msgstr ""
 
 #, c-format
@@ -39002,11 +39194,13 @@ msgid "when providing parent wwpn='%1$s', the wwnn must also be provided"
 msgstr ""
 
 #, c-format
-msgid "when providing parent_wwnn='%1$s', the parent_wwpn must also be provided"
+msgid ""
+"when providing parent_wwnn='%1$s', the parent_wwpn must also be provided"
 msgstr ""
 
 #, c-format
-msgid "when providing parent_wwpn='%1$s', the parent_wwnn must also be provided"
+msgid ""
+"when providing parent_wwpn='%1$s', the parent_wwnn must also be provided"
 msgstr ""
 
 msgid "where to dump the core"
@@ -39136,6 +39330,26 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid ""
+#~ "At least one of name, mac, or ip attribute must be specified for static "
+#~ "host definition in network '%1$s' "
+#~ msgstr ""
+#~ "নেটৱৰ্ক '%1$s' স্থিৰ হস্ট বিৱৰণৰ বাবে নাম, mac, অথবা ip বৈশিষ্ট্যৰ অন্তত এটা "
+#~ "ধাৰ্য্য কৰিব লাগিব"
+
+#, fuzzy
+#~ msgid ""
+#~ "Failed to add driver '%1$s' to driver_override  interface of PCI device "
+#~ "'%2$s'"
+#~ msgstr "আন্তঃপৃষ্ঠ %1$s ৰ বাবে IP ঠিকনা ক্যাশলে IP ঠিকনা %2$s যোগ কৰিবলে ব্যৰ্থ"
+
+#~ msgid ""
+#~ "unable to delete interface '%1$s' in network '%2$s'. It is currently "
+#~ "being used  by %3$d domains."
+#~ msgstr ""
+#~ "নেটৱৰ্ক '%1$s' ত আন্তঃপষ্ঠ '%2$s' মচিবলে অক্ষম। ইয়াক বৰ্তমানে %3$d ডমেইনসমূহ "
+#~ "দ্বাৰা ব্যৱহাৰ কৰা হৈছে।"
 
 #, fuzzy
 #~ msgid "Could not find vf/instanceId %u/%s  in netlink response"

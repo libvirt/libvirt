@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-01 08:30+0000\n"
+"POT-Creation-Date: 2023-04-01 11:38+0200\n"
 "PO-Revision-Date: 2015-02-27 07:08+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
@@ -373,13 +373,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' differs "
-"from stored identity. Please verify the new host key '%3$s' to avoid possible "
-"man in the middle attack. The key is stored in '%4$s'."
+"!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' "
+"differs from stored identity. Please verify the new host key '%3$s' to avoid "
+"possible man in the middle attack. The key is stored in '%4$s'."
 msgstr ""
 "!!! SSH ಆತಿಥೇಯ ಕೀಲಿ ಪರಿಶೀಲನೆಯು ವಿಫಲಗೊಂಡಿದೆ !!!: '%1$s:%2$d' ಆತಿಥೇಯದ ಗುರುತು "
 "ಶೇಖರಿಸಿಡಲಾದುದಕ್ಕಿಂತ ಭಿನ್ನವಾಗಿದೆ. ನಡುವಿನಲ್ಲಿ  ಯಾರೋ ಧಾಳಿಕೋರರು ಇರುವ ಸಾಧ್ಯತೆಯನ್ನು "
-"ತಪ್ಪಿಸಲು ಹೊಸ ಆತಿಥೇಯ ಕೀಲಿ '%3$s' ಅನ್ನು ಬಳಸಿ. ಕೀಲಿಯನ್ನು '%4$s' ನಲ್ಲಿ ಶೇಖರಿಸಿ ಇಡಲಾಗಿದೆ."
+"ತಪ್ಪಿಸಲು ಹೊಸ ಆತಿಥೇಯ ಕೀಲಿ '%3$s' ಅನ್ನು ಬಳಸಿ. ಕೀಲಿಯನ್ನು '%4$s' ನಲ್ಲಿ ಶೇಖರಿಸಿ "
+"ಇಡಲಾಗಿದೆ."
 
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
@@ -402,15 +403,16 @@ msgid "%1$s %2$s '%3$s' has an unsupported type '%4$s'"
 msgstr "%s ಹಾರ್ಡ್-ಡಿಸ್ಕ್ '%s' ಬೆಂಬಲವಿರದ ಕ್ಯಾಶ್ ಕ್ರಮ '%s' ಅನ್ನು ಹೊಂದಿದೆ"
 
 #, fuzzy, c-format
-msgid "%1$s %2$s '%3$s' has unsupported type '%4$s', expecting '%5$s' or '%6$s'"
+msgid ""
+"%1$s %2$s '%3$s' has unsupported type '%4$s', expecting '%5$s' or '%6$s'"
 msgstr ""
 "'%s' ಫ್ಲಾಪಿಯು ಬೆಂಬಲವಿರದ ಬಗೆ '%s' ಅನ್ನು ಹೊಂದಿದೆ, '%s' ಅಥವ '%s' ಅನ್ನು "
 "ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ"
 
 #, c-format
 msgid ""
-"%1$s (on destination side) does not support the --migration option needed for "
-"migration with shared storage"
+"%1$s (on destination side) does not support the --migration option needed "
+"for migration with shared storage"
 msgstr ""
 
 #, c-format
@@ -452,10 +454,12 @@ msgstr ""
 #, c-format
 msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
 msgstr ""
-"'%1$s' ಕುಟುಂಬವನ್ನು IPv4 ವಿಳಾಸವಾಗಿರದ '%2$s' ಗಾಗಿ ಸೂಚಿಸಲಾಗಿದೆ ('%3$s' ಜಾಲಬಂಧದಲ್ಲಿ)"
+"'%1$s' ಕುಟುಂಬವನ್ನು IPv4 ವಿಳಾಸವಾಗಿರದ '%2$s' ಗಾಗಿ ಸೂಚಿಸಲಾಗಿದೆ ('%3$s' "
+"ಜಾಲಬಂಧದಲ್ಲಿ)"
 
 #, c-format
-msgid "%1$s forwarding requested, but no IP address provided for network '%2$s'"
+msgid ""
+"%1$s forwarding requested, but no IP address provided for network '%2$s'"
 msgstr ""
 "%1$s ಫಾರ್ವಾರ್ಡಿಂಗ್‌ಗಾಗಿ ಮನವಿ ಸಲ್ಲಿಸಲಾಗಿದೆ, ಆದರೆ '%2$s' ಜಾಲಬಂಧಕ್ಕಾಗಿ ಯಾವುದೆ IP ಯನ್ನು "
 "ಒದಗಿಸಲಾಗಿಲ್ಲ"
@@ -534,7 +538,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"%1$s model of watchdog is part of the machine and cannot have any address set."
+"%1$s model of watchdog is part of the machine and cannot have any address "
+"set."
 msgstr ""
 
 #, c-format
@@ -650,15 +655,15 @@ msgstr "%1$s: ಓದುವ ಮತ್ತು ಬರೆಯುವ ಫ್ಲಾಗ್
 
 #, fuzzy, c-format
 msgid ""
-"%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address in "
-"route definition"
+"%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address "
+"in route definition"
 msgstr ""
 "'%s' ಜಾಲಬಂಧವು ರೌಟ್‌ ವಿವರಣೆಯಲ್ಲಿ ಒಂದು ಅಮಾನ್ಯವಾದ ನೆಟ್‌ಮಾಸ್ಕ್ ಅಥವ IP ವಿಳಾಸವನ್ನು ಹೊಂದಿದೆ"
 
 #, c-format
 msgid ""
-"%1$s: Error converting address '%2$s' with prefix %3$u to network-address in route "
-"definition"
+"%1$s: Error converting address '%2$s' with prefix %3$u to network-address in "
+"route definition"
 msgstr ""
 
 #, c-format
@@ -666,23 +671,26 @@ msgid "%1$s: File '%2$s' is too large\n"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "%1$s: IPv4 family specified for non-IPv4 address '%2$s' in route definition"
+msgid ""
+"%1$s: IPv4 family specified for non-IPv4 address '%2$s' in route definition"
 msgstr ""
 "'%s' ಕುಟುಂಬವನ್ನು IPv4 ವಿಳಾಸವಾಗಿರದ '%s' ಗಾಗಿ ಸೂಚಿಸಲಾಗಿದೆ ('%s' ಜಾಲಬಂಧದಲ್ಲಿ)"
 
 #, fuzzy, c-format
-msgid "%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
+msgid ""
+"%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr ""
 "'%s' ಕುಟುಂಬವನ್ನು IPv4 ವಿಳಾಸವಾಗಿರದ '%s' ಗಾಗಿ ಸೂಚಿಸಲಾಗಿದೆ ('%s' ಜಾಲಬಂಧದಲ್ಲಿ)"
 
 #, fuzzy, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
 msgstr ""
-"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ ಅಮಾನ್ಯವಾದ ನೆಟ್‌ಮಾಸ್ಕ್ '%2$s' ಇದೆ, '%3$s' ವಿಳಾಸಕ್ಕಾಗಿ (ಎರಡೂ ಸಹ IPv4 "
-"ಆಗಿರಬೇಕು)"
+"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ ಅಮಾನ್ಯವಾದ ನೆಟ್‌ಮಾಸ್ಕ್ '%2$s' ಇದೆ, '%3$s' ವಿಳಾಸಕ್ಕಾಗಿ (ಎರಡೂ ಸಹ "
+"IPv4 ಆಗಿರಬೇಕು)"
 
 #, c-format
-msgid "%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 128"
+msgid ""
+"%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 128"
 msgstr ""
 
 #, c-format
@@ -698,12 +706,14 @@ msgid "%1$s: Missing required gateway attribute in route definition"
 msgstr "portgroup ನಲ್ಲಿನ ಅಗತ್ಯವಾದ ಹೆಸರಿನ ಗುಣವೈಶಿಷ್ಟ್ಯವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
 #, fuzzy, c-format
-msgid "%1$s: No family specified for non-IPv4 address '%2$s' in route definition"
+msgid ""
+"%1$s: No family specified for non-IPv4 address '%2$s' in route definition"
 msgstr ""
 "'%s' ಕುಟುಂಬವನ್ನು IPv4 ವಿಳಾಸವಾಗಿರದ '%s' ಗಾಗಿ ಸೂಚಿಸಲಾಗಿದೆ ('%s' ಜಾಲಬಂಧದಲ್ಲಿ)"
 
 #, fuzzy, c-format
-msgid "%1$s: No family specified for non-IPv4 gateway '%2$s' in route definition"
+msgid ""
+"%1$s: No family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr ""
 "'%s' ಕುಟುಂಬವನ್ನು IPv4 ವಿಳಾಸವಾಗಿರದ '%s' ಗಾಗಿ ಸೂಚಿಸಲಾಗಿದೆ ('%s' ಜಾಲಬಂಧದಲ್ಲಿ)"
 
@@ -836,7 +846,8 @@ msgid "%1$s: initialization failed\n"
 msgstr "%1$s: ಆರಂಭಗೊಳಿಕೆಯು ವಿಫಲಗೊಂಡಿದೆ\n"
 
 #, fuzzy, c-format
-msgid "%1$s: ipv6 family specified for non-IPv6 address '%2$s' in route definition"
+msgid ""
+"%1$s: ipv6 family specified for non-IPv6 address '%2$s' in route definition"
 msgstr ""
 "'%s' ಕುಟುಂಬವನ್ನು IPv4 ವಿಳಾಸವಾಗಿರದ '%s' ಗಾಗಿ ಸೂಚಿಸಲಾಗಿದೆ ('%s' ಜಾಲಬಂಧದಲ್ಲಿ)"
 
@@ -844,7 +855,8 @@ msgstr ""
 msgid ""
 "%1$s: ipv6 specified for non-IPv6 gateway address '%2$s' in route definition"
 msgstr ""
-"IPv6 ಅಲ್ಲದ '%1$s' ಎಂಬ ವಿಳಾಸಕ್ಕಾಗಿ 'ipv6' ಕುಟುಂಬವನ್ನು ಸೂಚಿಸಲಾಗಿಲ್ಲ ('%2$s' ಜಾಲಬಂಧದಲ್ಲಿ)"
+"IPv6 ಅಲ್ಲದ '%1$s' ಎಂಬ ವಿಳಾಸಕ್ಕಾಗಿ 'ipv6' ಕುಟುಂಬವನ್ನು ಸೂಚಿಸಲಾಗಿಲ್ಲ ('%2$s' "
+"ಜಾಲಬಂಧದಲ್ಲಿ)"
 
 #, c-format
 msgid "%1$s: malformed fd %2$s"
@@ -852,9 +864,11 @@ msgstr "%1$s: ತಪ್ಪು fd %2$s"
 
 #, fuzzy, c-format
 msgid ""
-"%1$s: migration_port_max: port must be between the minimal port %2$d and 65535"
+"%1$s: migration_port_max: port must be between the minimal port %2$d and "
+"65535"
 msgstr ""
-"%1$s: remote_display_port_max: ಸಂಪರ್ಕಸ್ಥಾನವು ಕನಿಷ್ಟ ಸಂಪರ್ಕಸ್ಥಾನ ಮತ್ತು %2$d ನಡುವೆ ಇರಬೇಕು"
+"%1$s: remote_display_port_max: ಸಂಪರ್ಕಸ್ಥಾನವು ಕನಿಷ್ಟ ಸಂಪರ್ಕಸ್ಥಾನ ಮತ್ತು %2$d ನಡುವೆ "
+"ಇರಬೇಕು"
 
 #, fuzzy, c-format
 msgid "%1$s: migration_port_min: port must be greater than 0"
@@ -878,23 +892,27 @@ msgstr "%s ಎಂಬ ಗುರಿ ಇನ್‌ಪುಟ್ ಸಾಧನದ ಬ�
 msgid ""
 "%1$s: remote_display_port_max: port must be between the minimal port and %2$d"
 msgstr ""
-"%1$s: remote_display_port_max: ಸಂಪರ್ಕಸ್ಥಾನವು ಕನಿಷ್ಟ ಸಂಪರ್ಕಸ್ಥಾನ ಮತ್ತು %2$d ನಡುವೆ ಇರಬೇಕು"
+"%1$s: remote_display_port_max: ಸಂಪರ್ಕಸ್ಥಾನವು ಕನಿಷ್ಟ ಸಂಪರ್ಕಸ್ಥಾನ ಮತ್ತು %2$d ನಡುವೆ "
+"ಇರಬೇಕು"
 
 #, c-format
-msgid "%1$s: remote_display_port_min: min port must not be greater than max port"
+msgid ""
+"%1$s: remote_display_port_min: min port must not be greater than max port"
 msgstr ""
 "%1$s: remote_display_port_min: ಕನಿಷ್ಟ ಸಂಪರ್ಕಸ್ಥಾನವು ಗರಿಷ್ಟ ಸಂಪರ್ಕಸ್ಥಾನಕ್ಕಿಂತ "
 "ದೊಡ್ಡದಾಗಿರಬಾರದು."
 
 #, c-format
-msgid "%1$s: remote_display_port_min: port must be greater than or equal to %2$d"
+msgid ""
+"%1$s: remote_display_port_min: port must be greater than or equal to %2$d"
 msgstr ""
 "%1$s: remote_display_port_min: ಸಂಪರ್ಕಸ್ಥಾನವು %2$d ಕ್ಕಿಂತ ದೊಡ್ಡದಾಗಿರಬೇಕು ಅಥವ "
 "ಸಮನಾಗಿರಬೇಕು ."
 
 #, c-format
 msgid ""
-"%1$s: remote_websocket_port_max: port must be between the minimal port and %2$d"
+"%1$s: remote_websocket_port_max: port must be between the minimal port and "
+"%2$d"
 msgstr ""
 "%1$s: remote_websocket_port_max: ಸಂಪರ್ಕಸ್ಥಾನವು ಕನಿಷ್ಟ ಸಂಪರ್ಕಸ್ಥಾನ ಮತ್ತು %2$d ನಡುವೆ "
 "ಇರಬೇಕು"
@@ -907,15 +925,16 @@ msgstr ""
 "ದೊಡ್ಡದಾಗಿರಬಾರದು."
 
 #, c-format
-msgid "%1$s: remote_websocket_port_min: port must be greater than or equal to %2$d"
+msgid ""
+"%1$s: remote_websocket_port_min: port must be greater than or equal to %2$d"
 msgstr ""
 "%1$s: remote_websocket_port_min: ಸಂಪರ್ಕಸ್ಥಾನವು %2$d ಕ್ಕಿಂತ ದೊಡ್ಡದಾಗಿರಬೇಕು ಅಥವ "
 "ಸಮನಾಗಿರಬೇಕು."
 
 #, c-format
 msgid ""
-"%1$s: temporary filename contains shell meta or other unacceptable characters "
-"(is $TMPDIR wrong?)"
+"%1$s: temporary filename contains shell meta or other unacceptable "
+"characters (is $TMPDIR wrong?)"
 msgstr ""
 "%1$s: ತಾತ್ಕಾಲಿಕ ಕಡತದ ಹೆಸರು ಶೆಲ್ ಮೆಟಾ ಅಥವ ಬೇರೆ ಒಪ್ಪಿಗೆ ಇಲ್ಲದ ಅಕ್ಷರಗಳನ್ನು "
 "ಹೊಂದಿದೆ($TMPDIR ತಪ್ಪಾಗಿದೆಯೆ?)"
@@ -1136,8 +1155,8 @@ msgstr "guest-get-vcpus ನ ಪ್ರತ್ಯುತ್ತರದಲ್ಲಿ 'on
 
 #, c-format
 msgid ""
-"'incremental' backup mode of disk '%1$s' requires setting 'incremental' field "
-"for disk or backup"
+"'incremental' backup mode of disk '%1$s' requires setting 'incremental' "
+"field for disk or backup"
 msgstr ""
 
 msgid "'initiator' refers to a non-existent NUMA node"
@@ -1177,7 +1196,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"'mode' of Xen passthrough feature differs: source: '%1$s', destination: '%2$s'"
+"'mode' of Xen passthrough feature differs: source: '%1$s', destination: "
+"'%2$s'"
 msgstr ""
 
 #, c-format
@@ -1251,7 +1271,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"
+msgid ""
+"'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"
 msgstr ""
 
 msgid "'socket' attribute is valid only for listen type 'socket'"
@@ -1528,10 +1549,11 @@ msgid "<domainbackup> must specify TCP port for now"
 msgstr ""
 
 #, c-format
-msgid "<forward dev='%1$s'> must match first <interface dev='%2$s'/> in network %3$s"
+msgid ""
+"<forward dev='%1$s'> must match first <interface dev='%2$s'/> in network %3$s"
 msgstr ""
-"<forward dev='%1$s'> ಎನ್ನುವುದು ಮೊದಲ <interface dev='%2$s'/> ಗೆ ಹೊಂದಾಣಿಕೆಯಾಗಬೇಕು "
-"(%3$s ಜಾಲಬಂಧದಲ್ಲಿ)"
+"<forward dev='%1$s'> ಎನ್ನುವುದು ಮೊದಲ <interface dev='%2$s'/> ಗೆ "
+"ಹೊಂದಾಣಿಕೆಯಾಗಬೇಕು (%3$s ಜಾಲಬಂಧದಲ್ಲಿ)"
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr ""
@@ -1563,30 +1585,32 @@ msgid ""
 "<virtualport type='%1$s'> not supported for network '%2$s' which uses IP "
 "forwarding"
 msgstr ""
-"<virtualport type='%1$s'> ಒಂದು ಬ್ರಿಜ್ ಸಾಧನವನ್ನು ಬಳಸುವ '%2$s' ಜಾಲಬಂಧಕ್ಕಾಗಿ ಬೆಂಬಲವಿಲ್ಲ"
+"<virtualport type='%1$s'> ಒಂದು ಬ್ರಿಜ್ ಸಾಧನವನ್ನು ಬಳಸುವ '%2$s' ಜಾಲಬಂಧಕ್ಕಾಗಿ "
+"ಬೆಂಬಲವಿಲ್ಲ"
 
 #, c-format
 msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses a bridge "
-"device"
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses a "
+"bridge device"
 msgstr ""
-"<virtualport type='%1$s'> ಒಂದು ಬ್ರಿಜ್ ಸಾಧನವನ್ನು ಬಳಸುವ '%2$s' ಜಾಲಬಂಧಕ್ಕಾಗಿ ಬೆಂಬಲವಿಲ್ಲ"
+"<virtualport type='%1$s'> ಒಂದು ಬ್ರಿಜ್ ಸಾಧನವನ್ನು ಬಳಸುವ '%2$s' ಜಾಲಬಂಧಕ್ಕಾಗಿ "
+"ಬೆಂಬಲವಿಲ್ಲ"
 
 #, c-format
 msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses a macvtap "
-"device"
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses a "
+"macvtap device"
 msgstr ""
 "<virtualport type='%1$s'> ಒಂದು macvtap ಸಾಧನವನ್ನು ಬಳಸುವ '%2$s' ಜಾಲಬಂಧಕ್ಕಾಗಿ "
 "ಬೆಂಬಲವಿಲ್ಲ"
 
 #, c-format
 msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses an SR-IOV "
-"Virtual Function via PCI passthrough"
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses an SR-"
+"IOV Virtual Function via PCI passthrough"
 msgstr ""
-"<virtualport type='%1$s'> PCI ಪಾಸ್‌ತ್ರೂ ಮೂಲಕ SR-IOV ವರ್ಚುವಲ್ ಫಂಕ್ಷನ್ ಅನ್ನು ಬಳಸುವ '%2$s' "
-"ಜಾಲಬಂಧಕ್ಕಾಗಿ ಬೆಂಬಲವಿಲ್ಲ"
+"<virtualport type='%1$s'> PCI ಪಾಸ್‌ತ್ರೂ ಮೂಲಕ SR-IOV ವರ್ಚುವಲ್ ಫಂಕ್ಷನ್ ಅನ್ನು ಬಳಸುವ "
+"'%2$s' ಜಾಲಬಂಧಕ್ಕಾಗಿ ಬೆಂಬಲವಿಲ್ಲ"
 
 #, c-format
 msgid "<virtualport> element unsupported for <interface type='%1$s'>"
@@ -1619,7 +1643,8 @@ msgid "A different callback was requested"
 msgstr "ವಿಭಿನ್ನವಾದ ಕಾಲ್‌ಬ್ಯಾಕ್‌ಗಾಗಿ ಮನವಿ ಸಲ್ಲಿಸಲಾಗಿದೆ"
 
 #, c-format
-msgid "A domain definition can have no more than one cipher node with name %1$s"
+msgid ""
+"A domain definition can have no more than one cipher node with name %1$s"
 msgstr ""
 
 #, fuzzy
@@ -1636,8 +1661,8 @@ msgstr "ಒಂದು ಹತ್ತಿರದ ಕಾಲ್‌ಬ್ಯಾಕ್ ಅ
 
 #, c-format
 msgid ""
-"A network with forward mode='%1$s' can specify a bridge name or a forward dev, "
-"but not both (network '%2$s')"
+"A network with forward mode='%1$s' can specify a bridge name or a forward "
+"dev, but not both (network '%2$s')"
 msgstr ""
 "forward mode='%1$s' ಹೊಂದಿರುವ ಒಂದು ಜಾಲಬಂಧವು ಒಂದು ಬ್ರಿಜ್‌ನ ಹೆಸರು ಅಥವ ಫಾರ್ವಾರ್ಡ್ dev "
 "ಅನ್ನು ಸೂಚಿಸಬಹುದು , ಆದರೆ ಎರಡನ್ನೂ ಒಟ್ಟಿಗೆ ಸೂಚಿಸುವಹಾಗಿಲ್ಲ (ಜಾಲಬಂಧ '%2$s')"
@@ -1686,8 +1711,8 @@ msgstr "ಪ್ರಸಕ್ತ ಚಾಲನೆಯಲ್ಲಿರುವ ಡೊಮ�
 #, c-format
 msgid "Accept SSH host key with hash '%1$s' for host '%2$s:%3$d' (%4$s/%5$s)?"
 msgstr ""
-"'%1$s' ಹ್ಯಾಶ್‌ನೊಂದಿಗೆ SSH ಆತಿಥೇಯ ಕೀಲಿಯನ್ನು ಅಂಗೀಕರಿಸಬೇಕು ('%2$s:%3$d' ಆತಿಥೇಯಕ್ಕಾಗಿ) (%4$s/"
-"%5$s)?"
+"'%1$s' ಹ್ಯಾಶ್‌ನೊಂದಿಗೆ SSH ಆತಿಥೇಯ ಕೀಲಿಯನ್ನು ಅಂಗೀಕರಿಸಬೇಕು ('%2$s:%3$d' "
+"ಆತಿಥೇಯಕ್ಕಾಗಿ) (%4$s/%5$s)?"
 
 msgid "Access denied"
 msgstr "ಅನುಮತಿಯನ್ನು ನಿರಾಕರಿಸಲಾಗಿದೆ"
@@ -1829,10 +1854,8 @@ msgstr ""
 #, c-format
 msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
-"definition in network '%1$s' "
+"definition in network '%1$s'"
 msgstr ""
-"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿನ ಸ್ಥಿರ ಆತಿಥೇಯ ವಿವರಣೆಗಾಗಿ ಕನಿಷ್ಟ ಒಂದು ಹೆಸರು, mac, ಅಥವ ip "
-"ಗುಣವೈಶಿಷ್ಟ್ಯವನ್ನು ಸೂಚಿಸುವುದು ಅತ್ಯಗತ್ಯ"
 
 msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
@@ -2218,7 +2241,8 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid ""
-"CPU mode '%1$s' for %2$s %3$s domain on %4$s host is not supported by hypervisor"
+"CPU mode '%1$s' for %2$s %3$s domain on %4$s host is not supported by "
+"hypervisor"
 msgstr "CPU ಮಾದರಿ '%s' ಹೈಪರ್ವೈಸಿರಿನಿಂದ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
 
 #, c-format
@@ -2336,8 +2360,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cache allocation of size %1$llu is smaller than the minimum allowed allocation "
-"%2$llu"
+"Cache allocation of size %1$llu is smaller than the minimum allowed "
+"allocation %2$llu"
 msgstr ""
 
 #, fuzzy, c-format
@@ -2376,7 +2400,8 @@ msgstr "%1$s ಗೆ ಅನಿರೀಕ್ಷಿತವಾದ ಕರೆಯ ಬಗ�
 
 #, c-format
 msgid "Call to %1$s for unexpected type '%2$s', expected '%3$s'"
-msgstr "%1$s ಗೆ ಅನಿರೀಕ್ಷಿತವಾದ ಕರೆಯ ಬಗೆಯು '%2$s' ಆಗಿದೆ, '%3$s' ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ"
+msgstr ""
+"%1$s ಗೆ ಅನಿರೀಕ್ಷಿತವಾದ ಕರೆಯ ಬಗೆಯು '%2$s' ಆಗಿದೆ, '%3$s' ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ"
 
 #, c-format
 msgid "Call to '%1$s' returned a list, expecting exactly one item"
@@ -2568,7 +2593,8 @@ msgstr "ನಿಲುಕಿಸಿಕೊಳ್ಳಲಾಗದ ಬೆಂಬಲಿ�
 
 #, c-format
 msgid ""
-"Cannot access backing file '%1$s' of storage file '%2$s' (as uid:%3$u, gid:%4$u)"
+"Cannot access backing file '%1$s' of storage file '%2$s' (as uid:%3$u, gid:"
+"%4$u)"
 msgstr ""
 
 #, fuzzy, c-format
@@ -2983,7 +3009,8 @@ msgid "Cannot open /proc/cgroups"
 msgstr "/proc/cgroups ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 #, c-format
-msgid "Cannot open embedded driver at path '%1$s', already open with path '%2$s'"
+msgid ""
+"Cannot open embedded driver at path '%1$s', already open with path '%2$s'"
 msgstr ""
 
 #, c-format
@@ -3150,14 +3177,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor=%3$llu "
-"would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
+"%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor=%3$llu "
-"would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
+"%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -3201,7 +3228,8 @@ msgstr "ಕಡತ '%1$s' ಅನ್ನು '%2$s' ಎಂದು ಮರುಹೆಸ�
 #, c-format
 msgid "Cannot rename interface '%1$s' to '%2$s' on this platform"
 msgstr ""
-"ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ ಸಂಪರ್ಕಸಾಧನವನ್ನು '%1$s' ಇಂದ '%2$s' ಎಂಬುದಕ್ಕೆ ಮರುಹೆಸರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+"ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ ಸಂಪರ್ಕಸಾಧನವನ್ನು '%1$s' ಇಂದ '%2$s' ಎಂಬುದಕ್ಕೆ ಮರುಹೆಸರಿಸಲು "
+"ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 #, fuzzy
 msgid "Cannot resize the max memory on an active domain"
@@ -3306,7 +3334,8 @@ msgstr "'%1$s' stat ಮಾಡಲಾಗಿಲ್ಲ"
 #, c-format
 msgid "Cannot undefine HostVirtualSwitch that has a '%1$s' port"
 msgstr ""
-"ಒಂದು '%1$s' ಸಂಪರ್ಕಸ್ಥಾನವನ್ನು ಹೊಂದಿರದ HostVirtualSwitch ವಿವರಣೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಿಲ್ಲ"
+"ಒಂದು '%1$s' ಸಂಪರ್ಕಸ್ಥಾನವನ್ನು ಹೊಂದಿರದ HostVirtualSwitch ವಿವರಣೆಯನ್ನು "
+"ರದ್ದುಗೊಳಿಸಲಾಗಿಲ್ಲ"
 
 msgid "Cannot undefine transient domain"
 msgstr "ಅಸ್ಥಿರ ಡೊಮೇನ್‌ ಅನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -3504,8 +3533,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes and "
-"enabling forwarding  without accept_ra set to 2 will cause the kernel to "
+"Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes "
+"and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
 msgstr ""
 
@@ -3609,7 +3638,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "Colliding cache allocations for cache level '%1$u' id '%2$u', type '%3$s'"
+msgid ""
+"Colliding cache allocations for cache level '%1$u' id '%2$u', type '%3$s'"
 msgstr ""
 
 msgid "Commit aborted"
@@ -3675,7 +3705,8 @@ msgstr "ಸಂಕುಚನೆ ಮಿತಿಮಿರಿಕೆಗಳು:"
 
 #, c-format
 msgid ""
-"Compression program for %1$s image format in configuration file isn't available"
+"Compression program for %1$s image format in configuration file isn't "
+"available"
 msgstr ""
 
 msgid "Compute baseline CPU for a set of given CPUs."
@@ -3729,8 +3760,8 @@ msgstr "ಬೂಟ್ ಸಮಯದಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವ�
 
 #, c-format
 msgid ""
-"Configuring the '%1$s' timer is not supported for virtType=%2$s arch=%3$s machine="
-"%4$s guests"
+"Configuring the '%1$s' timer is not supported for virtType=%2$s arch=%3$s "
+"machine=%4$s guests"
 msgstr ""
 
 #, fuzzy, c-format
@@ -4042,8 +4073,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Could not find PCI controller with index '%1$u' required for device at address "
-"'%2$s'"
+"Could not find PCI controller with index '%1$u' required for device at "
+"address '%2$s'"
 msgstr ""
 
 #, c-format
@@ -4453,7 +4484,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Could not look up processor setting data with virtual system instance ID '%1$s'"
+"Could not look up processor setting data with virtual system instance ID "
+"'%1$s'"
 msgstr ""
 
 #, c-format
@@ -4592,8 +4624,10 @@ msgid "Could not parse VPS ID %1$s"
 msgstr "VPS ID %1$s ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 #, c-format
-msgid "Could not parse barrier and limit of '%1$s' from config for container %2$d"
-msgstr "'%1$s' ನ ತಡೆಯನ್ನು ಮತ್ತು ಮಿತಿಯನ್ನು ಕಂಟೈನರ್ %2$d ಗಾಗಿನ ಸಂರಚನೆಯಿಂದ ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
+msgid ""
+"Could not parse barrier and limit of '%1$s' from config for container %2$d"
+msgstr ""
+"'%1$s' ನ ತಡೆಯನ್ನು ಮತ್ತು ಮಿತಿಯನ್ನು ಕಂಟೈನರ್ %2$d ಗಾಗಿನ ಸಂರಚನೆಯಿಂದ ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
 
 #, c-format
 msgid "Could not parse barrier of '%1$s' from config for container %2$d"
@@ -4751,8 +4785,8 @@ msgstr "'%1$s' ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ಗೆ ಮರಳಲು 
 
 #, c-format
 msgid ""
-"Could not run '%1$s --reconfigure'. exitstatus: %2$d; Check error log '%3$s' for "
-"details."
+"Could not run '%1$s --reconfigure'. exitstatus: %2$d; Check error log '%3$s' "
+"for details."
 msgstr ""
 
 #, c-format
@@ -4762,7 +4796,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "Could not run '%1$s'. exitstatus: %2$d; Check error log '%3$s' for details."
+msgid ""
+"Could not run '%1$s'. exitstatus: %2$d; Check error log '%3$s' for details."
 msgstr ""
 
 #, c-format
@@ -4814,8 +4849,8 @@ msgid ""
 "Could not set shares to %1$d, expecting positive value or -1 (low), -2 "
 "(normal) or -3 (high)"
 msgstr ""
-"ಹಂಚಿಕೆಗಳನ್ನು %1$d ಗೆ ಹೊಂದಿಸಲಾಗಿಲ್ಲ,ಧನಾತ್ಮಕ ಮೌಲ್ಯ ಅಥವ -1 (ಕಡಿಮೆ), -2 (ಸಾಮಾನ್ಯ) ಅಥವ -3 "
-"ಅನ್ನು (ಅತಿಹೆಚ್ಚು) ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ"
+"ಹಂಚಿಕೆಗಳನ್ನು %1$d ಗೆ ಹೊಂದಿಸಲಾಗಿಲ್ಲ,ಧನಾತ್ಮಕ ಮೌಲ್ಯ ಅಥವ -1 (ಕಡಿಮೆ), -2 (ಸಾಮಾನ್ಯ) ಅಥವ "
+"-3 ಅನ್ನು (ಅತಿಹೆಚ್ಚು) ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ"
 
 msgid "Could not set the source dir for the filesystem"
 msgstr "ಕಡತವ್ಯವಸ್ಥೆಗಾಗಿ ಆಕರ ಕೋಶವನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -5006,8 +5041,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"DNS SRV priority attribute not permitted without target for service '%1$s' in "
-"network '%2$s'"
+"DNS SRV priority attribute not permitted without target for service '%1$s' "
+"in network '%2$s'"
 msgstr ""
 
 msgid "DNS SRV records cannot be modified, only added or deleted"
@@ -5038,7 +5073,8 @@ msgid "Datastore has unexpected type '%1$s'"
 msgstr "ದತ್ತಶೇಖರಣೆಯ ಬಗೆ '%1$s' ಅನ್ನು ಹೊಂದಿದೆ"
 
 #, c-format
-msgid "Datastore path '%1$s' doesn't have expected format '[<datastore>] <path>'"
+msgid ""
+"Datastore path '%1$s' doesn't have expected format '[<datastore>] <path>'"
 msgstr ""
 "ದತ್ತಶೇಖರಣೆ (ಡೇಟಾಸ್ಟೋರ್) '%1$s' ನಿರೀಕ್ಷಿತವಾದ ವಿನ್ಯಾಸ '[<datastore>] <path>' ಅನ್ನು "
 "ಹೊಂದಿಲ್ಲ"
@@ -5337,7 +5373,8 @@ msgstr ""
 
 #, c-format
 msgid "Disk address %1$d:%2$d:%3$d doesn't match target device '%4$s'"
-msgstr "ಡಿಸ್ಕ್ ವಿಳಾಸ %1$d:%2$d:%3$d ಎನ್ನುವುದು ಗುರಿ ಸಾಧನ '%4$s' ಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಡಿಸ್ಕ್ ವಿಳಾಸ %1$d:%2$d:%3$d ಎನ್ನುವುದು ಗುರಿ ಸಾಧನ '%4$s' ಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 msgid "Disk attached successfully\n"
 msgstr "ಡಿಸ್ಕನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಜೋಡಿಸಲಾಗಿದೆ\n"
@@ -5407,7 +5444,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Distance value %1$d under node %2$zu is LOCAL_DISTANCE and should be set to 10"
+"Distance value %1$d under node %2$zu is LOCAL_DISTANCE and should be set to "
+"10"
 msgstr ""
 
 #, fuzzy, c-format
@@ -5608,8 +5646,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Domain has multiple interfaces matching MAC address %1$s. You must use detach-"
-"device and specify the device pci address to remove it."
+"Domain has multiple interfaces matching MAC address %1$s. You must use "
+"detach-device and specify the device pci address to remove it."
 msgstr ""
 "%1$s ಎಂಬ MAC ವಿಳಾಸಕ್ಕೆ ಹೊಂದಿಕೆಯಾಗುವ ಅನೇಕ ಸಂಪರ್ಕಸಾಧನಗಳನ್ನು ಡೊಮೇನ್ ಹೊಂದಿದೆ. ನೀವು "
 "ಸಾಧನವನ್ನು ಕಳಚಿ ನಂತರ ಅದನ್ನು ತೆಗೆದುಹಾಕು ಸಾಧನ pci ವಿಳಾಸವನ್ನು ಸೂಚಿಸಬೇಕಾಗುತ್ತದೆ."
@@ -6131,10 +6169,11 @@ msgstr ""
 "ಕಂಡುಬಂದಿದೆ"
 
 #, c-format
-msgid "Expecting VMX entry '%1$s' to be 'ata-hardDisk' or 'disk' but found '%2$s'"
+msgid ""
+"Expecting VMX entry '%1$s' to be 'ata-hardDisk' or 'disk' but found '%2$s'"
 msgstr ""
-"VMX ನಮೂದು '%1$s' ಎನ್ನುವುದು 'ata-hardDisk' ಅಥವ 'disk' ಎಂದು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು ಆದರೆ "
-"'%2$s' ಕಂಡುಬಂದಿದೆ"
+"VMX ನಮೂದು '%1$s' ಎನ್ನುವುದು 'ata-hardDisk' ಅಥವ 'disk' ಎಂದು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು "
+"ಆದರೆ '%2$s' ಕಂಡುಬಂದಿದೆ"
 
 #, c-format
 msgid ""
@@ -6153,8 +6192,8 @@ msgstr ""
 #, c-format
 msgid "Expecting VMX entry '%1$s' to be 'device' or 'file' but found '%2$s'"
 msgstr ""
-"VMX ನಮೂದು '%1$s' ಎನ್ನುವುದು 'device' ಅಥವ 'file' ಎಂದು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು ಆದರೆ '%2$s' "
-"ಕಂಡುಬಂದಿದೆ"
+"VMX ನಮೂದು '%1$s' ಎನ್ನುವುದು 'device' ಅಥವ 'file' ಎಂದು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು ಆದರೆ "
+"'%2$s' ಕಂಡುಬಂದಿದೆ"
 
 #, c-format
 msgid ""
@@ -6169,25 +6208,26 @@ msgid ""
 "Expecting VMX entry '%1$s' to be 'generated' or 'static' or 'vpx' but found "
 "'%2$s'"
 msgstr ""
-"VMX ನಮೂದು '%1$s' ಎನ್ನುವುದು  'generated'  ಅಥವ 'static' ಅಥವ 'vpx' ಆಗಿರುತ್ತದೆ ಎಂದು "
-"ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು ಆದರೆ '%2$s' ಕಂಡುಬಂದಿದೆ"
+"VMX ನಮೂದು '%1$s' ಎನ್ನುವುದು  'generated'  ಅಥವ 'static' ಅಥವ 'vpx' ಆಗಿರುತ್ತದೆ "
+"ಎಂದು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು ಆದರೆ '%2$s' ಕಂಡುಬಂದಿದೆ"
 
 #, c-format
-msgid "Expecting VMX entry '%1$s' to be 'scsi-hardDisk' or 'disk' but found '%2$s'"
+msgid ""
+"Expecting VMX entry '%1$s' to be 'scsi-hardDisk' or 'disk' but found '%2$s'"
 msgstr ""
-"VMX ನಮೂದು '%1$s' ಎನ್ನುವುದು 'scsi-hardDisk' ಅಥವ 'disk' ಎಂದು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು ಆದರೆ "
-"'%2$s' ಕಂಡುಬಂದಿದೆ"
+"VMX ನಮೂದು '%1$s' ಎನ್ನುವುದು 'scsi-hardDisk' ಅಥವ 'disk' ಎಂದು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು "
+"ಆದರೆ '%2$s' ಕಂಡುಬಂದಿದೆ"
 
 #, c-format
 msgid "Expecting VMX entry '%1$s' to be 'server' or 'client' but found '%2$s'"
 msgstr ""
-"VMX ನಮೂದು '%1$s' ಎನ್ನುವುದು 'server' ಅಥವ 'client' ಎಂದು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು ಆದರೆ '%2$s' "
-"ಕಂಡುಬಂದಿದೆ"
+"VMX ನಮೂದು '%1$s' ಎನ್ನುವುದು 'server' ಅಥವ 'client' ಎಂದು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು ಆದರೆ "
+"'%2$s' ಕಂಡುಬಂದಿದೆ"
 
 #, fuzzy, c-format
 msgid ""
-"Expecting VMX entry '%1$s' to be 'vlance' or 'vmxnet' or 'vmxnet3' or 'e1000' "
-"or 'e1000e' but found '%2$s'"
+"Expecting VMX entry '%1$s' to be 'vlance' or 'vmxnet' or 'vmxnet3' or "
+"'e1000' or 'e1000e' but found '%2$s'"
 msgstr ""
 "VMX ನಮೂದು '%1$s' ಎನ್ನುವುದು 'device', 'file' ಅಥವ 'pipe' ಅಥವ 'network' ಎಂದು "
 "ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು ಆದರೆ '%2$s' ಕಂಡುಬಂದಿದೆ"
@@ -6195,8 +6235,8 @@ msgstr ""
 #, c-format
 msgid "Expecting VMX entry '%1$s' to be MAC address but found '%2$s'"
 msgstr ""
-"VMX ನಮೂದು '%1$s' ಎನ್ನುವುದು MAC ವಿಳಾಸ ಆಗಿರುತ್ತದೆ ಎಂದು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು ಆದರೆ '%2$s' "
-"ಕಂಡುಬಂದಿದೆ"
+"VMX ನಮೂದು '%1$s' ಎನ್ನುವುದು MAC ವಿಳಾಸ ಆಗಿರುತ್ತದೆ ಎಂದು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು ಆದರೆ "
+"'%2$s' ಕಂಡುಬಂದಿದೆ"
 
 #, c-format
 msgid "Expecting VMX entry 'config.version' to be 8 but found %1$lld"
@@ -6327,7 +6367,8 @@ msgstr ""
 
 #, c-format
 msgid "Expecting source '%1$s' of first file-based harddisk to be a VMDK image"
-msgstr "'%1$s' ನ ಮೊದಲ ಕಡತ-ಆಧರಿತವಾದ ಹಾರ್ಡ್-ಡಿಸ್ಕ್ ಒಂದು VMDK ಆಗಿರುವಂತೆ ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ"
+msgstr ""
+"'%1$s' ನ ಮೊದಲ ಕಡತ-ಆಧರಿತವಾದ ಹಾರ್ಡ್-ಡಿಸ್ಕ್ ಒಂದು VMDK ಆಗಿರುವಂತೆ ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ"
 
 #, c-format
 msgid "Expecting type '%1$s' but found '%2$s'"
@@ -6442,11 +6483,10 @@ msgstr "PCI ಸಾಧನ '%s' ಅನ್ನು %s ಇಂದ ಅನ್‌ಬೈಂ
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "ಸಾಮರ್ಥ್ಯಗಳನ್ನು ಅನ್ವಯಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
-"Failed to add driver '%1$s' to driver_override  interface of PCI device '%2$s'"
+"Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
 msgstr ""
-"%1$s ಎಂಬ IP ವಿಳಾಸವನ್ನು %2$s ಸಂಪರ್ಕಸಾಧನಕ್ಕಾಗಿನ IP ವಿಳಾಸದ ಕ್ಯಾಶ್‌ಗೆ ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲತೆ"
 
 msgid "Failed to add netlink event handle watch"
 msgstr "ನೆಟ್‌ಲಿಂಕ್ ಘಟನೆ ಹಿಡಿಕೆ ನೋಡುವಿಕೆಯನ್ನು ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -6591,11 +6631,13 @@ msgstr "%1$s ಅನ್ನು ಸ್ವಚ್ಛಗೊಳಿಸುವಲ್ಲಿ
 
 #, c-format
 msgid "Failed to clear security context for agent for %1$s"
-msgstr "'%1$s' ಗಾಗಿನ ಮಧ್ಯವರ್ತಿಗಾಗಿ ಸುರಕ್ಷತಾ ಸನ್ನಿವೇಶವನ್ನು ತೆಗೆದುಹಾಕುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+msgstr ""
+"'%1$s' ಗಾಗಿನ ಮಧ್ಯವರ್ತಿಗಾಗಿ ಸುರಕ್ಷತಾ ಸನ್ನಿವೇಶವನ್ನು ತೆಗೆದುಹಾಕುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
 msgid "Failed to clear security context for monitor for %1$s"
-msgstr "'%1$s' ಗಾಗಿನ ಮಾನಿಟರಿಗಾಗಿ ಸುರಕ್ಷತಾ ಸನ್ನಿವೇಶವನ್ನು ತೆಗೆದುಹಾಕುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+msgstr ""
+"'%1$s' ಗಾಗಿನ ಮಾನಿಟರಿಗಾಗಿ ಸುರಕ್ಷತಾ ಸನ್ನಿವೇಶವನ್ನು ತೆಗೆದುಹಾಕುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
 msgid "Failed to clone vol from %1$s"
@@ -7030,8 +7072,8 @@ msgstr "%1$s (%2$d) ಗಾಗಿ readdir ಮಾಡುವಲ್ಲಿ ವಿಫ�
 #, c-format
 msgid "Failed to determine if %1$u:%2$u:%3$u:%4$u is a Direct-Access LUN"
 msgstr ""
-"%1$u:%2$u:%3$u:%4$u ಯು ಒಂದು ನೇರ-ನಿಲುಕಣೆ LUN ಆಗಿದೆಯೆ ಎಂದು ಪತ್ತೆ ಮಾಡುವಲ್ಲಿ ವಿಫಲತೆ "
-"ಉಂಟಾಗಿದೆ"
+"%1$u:%2$u:%3$u:%4$u ಯು ಒಂದು ನೇರ-ನಿಲುಕಣೆ LUN ಆಗಿದೆಯೆ ಎಂದು ಪತ್ತೆ ಮಾಡುವಲ್ಲಿ "
+"ವಿಫಲತೆ ಉಂಟಾಗಿದೆ"
 
 #, fuzzy, c-format
 msgid "Failed to determine prefix for IP address '%1$s'"
@@ -7095,7 +7137,8 @@ msgstr "%1$s ಸಾಧನವನ್ನು ಕಳಚಲು ವಿಫಲಗೊಂ�
 
 #, c-format
 msgid "Failed to find SCSI host with wwnn='%1$s', wwpn='%2$s'"
-msgstr "wwnn='%1$s', wwpn='%2$s' ದೊಂದಿಗೆ SCSI ಆತಿಥೇಯವನ್ನು ಪತ್ತೆ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+msgstr ""
+"wwnn='%1$s', wwpn='%2$s' ದೊಂದಿಗೆ SCSI ಆತಿಥೇಯವನ್ನು ಪತ್ತೆ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 msgid "Failed to find a node driver"
 msgstr "ನೋಡ್ ಚಾಲಕವನ್ನು ಪತ್ತೆ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -7124,7 +7167,8 @@ msgstr "ಯಾವುದೆ %1$s ಪೂಲ್ ಆಕರಗಳನ್ನು ಪತ�
 
 #, fuzzy, c-format
 msgid "Failed to find fc_host for wwnn='%1$s' and wwpn='%2$s'"
-msgstr "wwnn='%1$s', wwpn='%2$s' ದೊಂದಿಗೆ SCSI ಆತಿಥೇಯವನ್ನು ಪತ್ತೆ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+msgstr ""
+"wwnn='%1$s', wwpn='%2$s' ದೊಂದಿಗೆ SCSI ಆತಿಥೇಯವನ್ನು ಪತ್ತೆ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
 msgid "Failed to find group record for gid '%1$u'"
@@ -7306,7 +7350,8 @@ msgstr "ಪೂಲ್ ಸ್ಥಿರ ಮಾಹಿತಿಯನ್ನು ಪಡೆ
 
 #, c-format
 msgid "Failed to get scheduler id for domain '%1$d' with libxenlight"
-msgstr "libxenlight ನೊಂದಿಗೆ '%1$d' ಡೊಮೇನ್‌ಗಾಗಿ ಅನುಸೂಚಕದ id ಯನ್ನು ಪಡೆಯಲು ವಿಫಲಗೊಂಡಿದೆ"
+msgstr ""
+"libxenlight ನೊಂದಿಗೆ '%1$d' ಡೊಮೇನ್‌ಗಾಗಿ ಅನುಸೂಚಕದ id ಯನ್ನು ಪಡೆಯಲು ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
 msgid "Failed to get scheduler parameters for domain '%1$d' with libxenlight"
@@ -8124,8 +8169,8 @@ msgstr "iscsi ಸಂಪರ್ಕಸಾಧನವನ್ನು ರಚಿಸುವ�
 #, c-format
 msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
 msgstr ""
-"iscsi ಸಂಪರ್ಕಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು '%1$s' ಆದೇಶಯನ್ನು IQN '%2$s' ದೊಂದಿಗೆ ಚಲಾಯಿಸುವಲ್ಲಿ "
-"ವಿಫಲಗೊಂಡಿದೆ"
+"iscsi ಸಂಪರ್ಕಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು '%1$s' ಆದೇಶಯನ್ನು IQN '%2$s' ದೊಂದಿಗೆ "
+"ಚಲಾಯಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #, fuzzy, c-format
 msgid "Failed to save '%1$s' for '%2$s'"
@@ -8251,7 +8296,8 @@ msgstr "ಡೊಮೇನ್‌ಗಾಗಿ ಮೆಮೊರಿ ಮಿತಿಯನ�
 
 #, c-format
 msgid "Failed to set memory for domain '%1$d' with libxenlight"
-msgstr "libxenlight ನೊಂದಿಗೆ '%1$d' ಡೊಮೇನ್‌ಗಾಗಿ ಮೆಮೊರಿಯನ್ನು ಹೊಂದಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+msgstr ""
+"libxenlight ನೊಂದಿಗೆ '%1$d' ಡೊಮೇನ್‌ಗಾಗಿ ಮೆಮೊರಿಯನ್ನು ಹೊಂದಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
 msgid "Failed to set new attached interface name to '%1$s' in xml document"
@@ -8278,7 +8324,8 @@ msgstr "%1$s ಸಾಧನಕ್ಕಾಗಿ ಕೋಶವನ್ನು ನಿರ�
 #, c-format
 msgid "Failed to set scheduler parameters for domain '%1$d' with libxenlight"
 msgstr ""
-"libxenlight ನೊಂದಿಗೆ '%1$d' ಡೊಮೇನ್‌ಗಾಗಿ ಅನುಸೂಚಕದ ನಿಯತಾಂಕವನ್ನು ಹೊಂದಿಸಲು ವಿಫಲಗೊಂಡಿದೆ"
+"libxenlight ನೊಂದಿಗೆ '%1$d' ಡೊಮೇನ್‌ಗಾಗಿ ಅನುಸೂಚಕದ ನಿಯತಾಂಕವನ್ನು ಹೊಂದಿಸಲು "
+"ವಿಫಲಗೊಂಡಿದೆ"
 
 msgid "Failed to set secret value"
 msgstr "ಸೀಕ್ರೆಟ್ ಮೌಲ್ಯವನ್ನು ಹೊಂದಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -8308,7 +8355,8 @@ msgstr "ಸಂಪರ್ಕಸಾಧನ %1$s ಅನ್ನು ಆರಂಭಿಸ�
 
 #, c-format
 msgid "Failed to set vcpus for domain '%1$d' with libxenlight"
-msgstr "libxenlight ನೊಂದಿಗೆ '%1$d' ಡೊಮೇನ್‌ಗಾಗಿ vcpus ಅನ್ನು ಹೊಂದಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+msgstr ""
+"libxenlight ನೊಂದಿಗೆ '%1$d' ಡೊಮೇನ್‌ಗಾಗಿ vcpus ಅನ್ನು ಹೊಂದಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #, fuzzy
 msgid "Failed to setup keepalive on connection\n"
@@ -8431,7 +8479,8 @@ msgstr "'%1$s' ಕಡತವನ್ನು ತುಂಡರಿಸುವಲ್ಲಿ 
 
 #, c-format
 msgid "Failed to truncate volume with path '%1$s' to %2$ju bytes"
-msgstr "'%1$s' ಎಂಬ ಮಾರ್ಗದೊಂದಿಗಿನ ಪರಿಮಾಣವನ್ನು %2$ju ಬೈಟ್‌ಗೆ ತುಂಡರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+msgstr ""
+"'%1$s' ಎಂಬ ಮಾರ್ಗದೊಂದಿಗಿನ ಪರಿಮಾಣವನ್ನು %2$ju ಬೈಟ್‌ಗೆ ತುಂಡರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
 msgid "Failed to truncate volume with path '%1$s' to 0 bytes"
@@ -8492,7 +8541,8 @@ msgstr "%s ಪ್ಲಗ್‌ಇನ್ ಅನ್ನು ಲೋಡ್ ಮಾಡು
 #, c-format
 msgid "Failed to unmount '%1$s' and could not detach subtree '%2$s'"
 msgstr ""
-"'%1$s' ಅನ್ನು ಇಳಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ ಮತ್ತು ಉಪವೃಕ್ಷ '%2$s' ಅನ್ನು ಕಿತ್ತುಹಾಕಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+"'%1$s' ಅನ್ನು ಇಳಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ ಮತ್ತು ಉಪವೃಕ್ಷ '%2$s' ಅನ್ನು ಕಿತ್ತುಹಾಕಲು "
+"ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 #, c-format
 msgid "Failed to unmount '%1$s' and could not unmount old root '%2$s'"
@@ -8587,7 +8637,8 @@ msgstr "ದಾಖಲೆ ಔಟ್‌ಪುಟ್ ಅನ್ನು ಓದುವಾ
 #, c-format
 msgid "Family 'ipv6' specified for non-IPv6 address '%1$s' in network '%2$s'"
 msgstr ""
-"IPv6 ಅಲ್ಲದ '%1$s' ಎಂಬ ವಿಳಾಸಕ್ಕಾಗಿ 'ipv6' ಕುಟುಂಬವನ್ನು ಸೂಚಿಸಲಾಗಿಲ್ಲ ('%2$s' ಜಾಲಬಂಧದಲ್ಲಿ)"
+"IPv6 ಅಲ್ಲದ '%1$s' ಎಂಬ ವಿಳಾಸಕ್ಕಾಗಿ 'ipv6' ಕುಟುಂಬವನ್ನು ಸೂಚಿಸಲಾಗಿಲ್ಲ ('%2$s' "
+"ಜಾಲಬಂಧದಲ್ಲಿ)"
 
 #, c-format
 msgid "Feature %1$s required by CPU model %2$s not found"
@@ -8646,7 +8697,8 @@ msgid ""
 "File descriptor returned by udev %1$d does not match node device file "
 "descriptor %2$d"
 msgstr ""
-"udev %1$d ಇಂದ ಬಂದ ಕಡತ ವಿವರಣೆಗಾರವು ಸಾಧನ ಕಡತ ವಿವರಣೆಗಾರ %2$d ಕ್ಕೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+"udev %1$d ಇಂದ ಬಂದ ಕಡತ ವಿವರಣೆಗಾರವು ಸಾಧನ ಕಡತ ವಿವರಣೆಗಾರ %2$d ಕ್ಕೆ "
+"ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
 msgid ""
@@ -8773,7 +8825,8 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Format of device '%1$s' does not match the expected format '%2$s'"
-msgstr "ಜಾಲಬಂಧ ಸಂರಚನಾ ಕಡತದ ಹೆಸರು '%1$s', '%2$s' ಜಾಲಬಂಧ ಹೆಸರಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
+msgstr ""
+"ಜಾಲಬಂಧ ಸಂರಚನಾ ಕಡತದ ಹೆಸರು '%1$s', '%2$s' ಜಾಲಬಂಧ ಹೆಸರಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
 
 #, c-format
 msgid ""
@@ -8790,8 +8843,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Found duplicate drive address for disk with target name '%1$s' controller='%2$u' "
-"bus='%3$u' target='%4$u' unit='%5$u'"
+"Found duplicate drive address for disk with target name '%1$s' "
+"controller='%2$u' bus='%3$u' target='%4$u' unit='%5$u'"
 msgstr ""
 
 #, c-format
@@ -9043,16 +9096,16 @@ msgstr "HTTP ಪ್ರತಿಕ್ರಿಯೆ ಸಂಕೇತ %1$d ಅನ್ನ
 
 #, c-format
 msgid ""
-"HTTP response code %1$d for call to '%2$s'. Fault is unknown, XPath evaluation "
-"failed"
+"HTTP response code %1$d for call to '%2$s'. Fault is unknown, XPath "
+"evaluation failed"
 msgstr ""
-"HTTP ಪ್ರತಿಕ್ರಿಯೆ ಸಂಕೇತ %1$d ಅನ್ನು, '%2$s' ಎಂಬ ಕರೆಗೆ. ತಪ್ಪು ಏನೆಂದು ತಿಳಿದಿಲ್ಲ, XPath "
-"ವಿಶ್ಲೇಷಣೆ ವಿಫಲಗೊಂಡಿದೆ"
+"HTTP ಪ್ರತಿಕ್ರಿಯೆ ಸಂಕೇತ %1$d ಅನ್ನು, '%2$s' ಎಂಬ ಕರೆಗೆ. ತಪ್ಪು ಏನೆಂದು ತಿಳಿದಿಲ್ಲ, "
+"XPath ವಿಶ್ಲೇಷಣೆ ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
 msgid ""
-"HTTP response code %1$d for call to '%2$s'. Fault is unknown, deserialization "
-"failed"
+"HTTP response code %1$d for call to '%2$s'. Fault is unknown, "
+"deserialization failed"
 msgstr ""
 "HTTP ಪ್ರತಿಕ್ರಿಯೆ ಸಂಕೇತ %1$d ಅನ್ನು, '%2$s' ಎಂಬ ಕರೆಗೆ. ತಪ್ಪು ಏನೆಂದು ತಿಳಿದಿಲ್ಲ, "
 "ಡಿಸಿರಿಯಲೈಸೇಶನ್ ವಿಶ್ಲೇಷಣೆ ವಿಫಲಗೊಂಡಿದೆ"
@@ -9105,7 +9158,8 @@ msgid "Host CPU is a superset of CPU described in %1$s\n"
 msgstr "ಆತಿಥೇಯ CPU %1$s ನಲ್ಲಿ ವಿವರಿಸಲಾದ CPU ವಿನ ಒಂದು ಸೂಪರ್ಸೆಟ್\n"
 
 #, c-format
-msgid "Host CPU model does not match required CPU vendor %1$s or(and) model %2$s"
+msgid ""
+"Host CPU model does not match required CPU vendor %1$s or(and) model %2$s"
 msgstr ""
 
 #, c-format
@@ -9177,7 +9231,8 @@ msgid "Hybrid-Suspend"
 msgstr "ಹೈಬ್ರಿಡ್‌-ಅಮಾನತುಗೊಳಿಕೆ"
 
 #, fuzzy, c-format
-msgid "HyperV spinlock retry count differs: source: '%1$u', destination: '%2$u'"
+msgid ""
+"HyperV spinlock retry count differs: source: '%1$u', destination: '%2$u'"
 msgstr "HyperV ಸ್ಪಿನ್‌ಲಾಕ್ ಮರುಪ್ರಯತ್ನದ ಎಣಿಕೆಯು ಕನಿಷ್ಟ 4095 ಆಗಿರಬೇಕು"
 
 msgid "HyperV spinlock retry count must be at least 4095"
@@ -9197,7 +9252,8 @@ msgstr "vendor_id ಕನಿಷ್ಟ %1$d ಅಕ್ಷರಗಳಷ್ಟು ದ�
 
 #, fuzzy, c-format
 msgid ""
-"Hyperv features are not supported for architecture '%1$s' or machine type '%2$s'"
+"Hyperv features are not supported for architecture '%1$s' or machine type "
+"'%2$s'"
 msgstr "%s ಬಗೆಯ ಸಂಪರ್ಕಸಾಧನಗಳಲ್ಲಿ ಸ್ಕ್ರಿಪ್ಟುಗಳಿಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 
 #, fuzzy
@@ -9351,7 +9407,8 @@ msgid "Ignoring guests on $uri URI"
 msgstr "$uri URI ನಲ್ಲಿನ ಅತಿಥಿಗಳನ್ನು ಕಡೆಗಣಿಸಲಾಗುತ್ತಿದೆ..."
 
 #, fuzzy, c-format
-msgid "Image file for %1$s %2$s '%3$s' has unsupported suffix, expecting '%4$s'"
+msgid ""
+"Image file for %1$s %2$s '%3$s' has unsupported suffix, expecting '%4$s'"
 msgstr ""
 "ಪರಿಮಾಣದ ಹೆಸರು '%s' ಬೆಂಬಲವಿರದ ಸಫಿಕ್ಸ್ ಅನ್ನು ಹೊಂದಿದೆ, '.vmdk' ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು"
 
@@ -9380,11 +9437,11 @@ msgstr "ಒಂದು ಜಾಲಬಂಧಕ್ಕಾಗಿ ಸಂರಚನೆಯ�
 
 #, c-format
 msgid ""
-"Inconsistent SCSI controller model ('%1$s' is not '%2$s') for SCSI controller "
-"index %3$d"
+"Inconsistent SCSI controller model ('%1$s' is not '%2$s') for SCSI "
+"controller index %3$d"
 msgstr ""
-"ಅಸ್ಥಿರವಾದ SCSI ನಿಯಂತ್ರಕ ಸೂಚಿ ಮಾದರಿ ('%1$s' ಎನ್ನುವುದು '%2$s' ಆಗಿಲ್ಲ), SCSI ನಿಯಂತ್ರಕ "
-"ಸೂಚಿ %3$d ಗಾಗಿ"
+"ಅಸ್ಥಿರವಾದ SCSI ನಿಯಂತ್ರಕ ಸೂಚಿ ಮಾದರಿ ('%1$s' ಎನ್ನುವುದು '%2$s' ಆಗಿಲ್ಲ), SCSI "
+"ನಿಯಂತ್ರಕ ಸೂಚಿ %3$d ಗಾಗಿ"
 
 msgid "Incorrect data type"
 msgstr "ಸರಿಯಲ್ಲದ ದತ್ತಾಂಶದ ಬಗೆ"
@@ -9508,7 +9565,8 @@ msgstr ""
 #, c-format
 msgid "Interface name from config %1$s doesn't match given supplied name %2$s"
 msgstr ""
-"%1$s ಎಂಬ ಸಂರಚನಾ ಕಡತದ ಸಂಪರ್ಕಸಾಧನದ ಹೆಸರು ಒದಗಿಸಲಾದ %2$s ಎಂಬ ಹೆಸರಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
+"%1$s ಎಂಬ ಸಂರಚನಾ ಕಡತದ ಸಂಪರ್ಕಸಾಧನದ ಹೆಸರು ಒದಗಿಸಲಾದ %2$s ಎಂಬ ಹೆಸರಿಗೆ "
+"ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
 
 #, fuzzy
 msgid "Interface name not provided"
@@ -9691,7 +9749,8 @@ msgid "Invalid address for a USB device"
 msgstr "ಒಂದು USB ಸಾಧನಕ್ಕಾಗಿ ಅಮಾನ್ಯವಾದ ವಿಳಾಸ"
 
 #, fuzzy, c-format
-msgid "Invalid address type '%1$s' for the disk '%2$s' with the bus type '%3$s'"
+msgid ""
+"Invalid address type '%1$s' for the disk '%2$s' with the bus type '%3$s'"
 msgstr "ಅಮಾನ್ಯವಾದ ಬಗೆ '%1$s',  '%2$s' ನಿಯತಾಂಕಕ್ಕಾಗಿ, '%3$s' ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು"
 
 msgid "Invalid address."
@@ -9722,8 +9781,8 @@ msgstr ""
 #, c-format
 msgid ""
 "Invalid attempt to set network interface host-side IP route and/or address "
-"info on interface of type '%1$s'. This is only supported on interfaces of type "
-"'ethernet'"
+"info on interface of type '%1$s'. This is only supported on interfaces of "
+"type 'ethernet'"
 msgstr ""
 
 msgid "Invalid attempt to set peer IP for guest"
@@ -9790,8 +9849,8 @@ msgstr "ಅಮಾನ್ಯವಾದ ಪ್ರಮಾಣಪತ್ರ"
 
 #, c-format
 msgid ""
-"Invalid chain name '%1$s'. Please use a chain name called '%2$s' or any of the "
-"following prefixes: "
+"Invalid chain name '%1$s'. Please use a chain name called '%2$s' or any of "
+"the following prefixes: "
 msgstr ""
 "ಅಮಾನ್ಯವಾದ ಸರಣಿಯ ಹೆಸರು '%1$s'. ದಯವಿಟ್ಟು '%2$s' ಎಂಬ ಹೆಸರಿನ ಸರಣಿಯನ್ನು ಬಳಸಿ ಅಥವ ಈ "
 "ಕೆಳಗಿನವುಗಳಲ್ಲಿ ಯಾವುದಾದರೂ ಪ್ರಿಫಿಕ್ಸುಗಳನ್ನು ಬಳಸಿ: "
@@ -9895,8 +9954,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid drive address of disk %1$s, vz driver supports only bus 0 for SATA and "
-"SCSI bus."
+"Invalid drive address of disk %1$s, vz driver supports only bus 0 for SATA "
+"and SCSI bus."
 msgstr ""
 
 #, c-format
@@ -9910,8 +9969,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid drive address of disk %1$s, vz driver supports only units 0-1 for IDE "
-"bus."
+"Invalid drive address of disk %1$s, vz driver supports only units 0-1 for "
+"IDE bus."
 msgstr ""
 
 #, fuzzy, c-format
@@ -10091,10 +10150,11 @@ msgstr "ಅಮಾನ್ಯವಾದ ಮಲ್ಟಿಕ್ಯಾಸ್ಟ್ ಬ�
 
 #, c-format
 msgid ""
-"Invalid netmask '%1$s' for address '%2$s' in network '%3$s' (both must be IPv4)"
+"Invalid netmask '%1$s' for address '%2$s' in network '%3$s' (both must be "
+"IPv4)"
 msgstr ""
-"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ ಅಮಾನ್ಯವಾದ ನೆಟ್‌ಮಾಸ್ಕ್ '%2$s' ಇದೆ, '%3$s' ವಿಳಾಸಕ್ಕಾಗಿ (ಎರಡೂ ಸಹ IPv4 "
-"ಆಗಿರಬೇಕು)"
+"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ ಅಮಾನ್ಯವಾದ ನೆಟ್‌ಮಾಸ್ಕ್ '%2$s' ಇದೆ, '%3$s' ವಿಳಾಸಕ್ಕಾಗಿ (ಎರಡೂ ಸಹ "
+"IPv4 ಆಗಿರಬೇಕು)"
 
 #, c-format
 msgid "Invalid netmask '%1$s' in network '%2$s'"
@@ -10137,7 +10197,8 @@ msgstr "ಅಮಾನ್ಯವಾದ ಸಂಪರ್ಕಸ್ಥಾನಗಳು :
 
 #, fuzzy, c-format
 msgid ""
-"Invalid or not yet handled value '%1$s' for VMX entry '%2$s' for device type '%3$s'"
+"Invalid or not yet handled value '%1$s' for VMX entry '%2$s' for device type "
+"'%3$s'"
 msgstr "ಇನ್ನೂ ಸಹ ನಿಭಾಯಿಸಲಾಗದೆ ಇರುವ ಮೌಲ್ಯ '%s' (VMX ನಮೂದು '%s' ಗಾಗಿ)"
 
 msgid "Invalid parameter"
@@ -10293,10 +10354,11 @@ msgstr ""
 "ಅಮಾನ್ಯವಾಗಿದೆ"
 
 #, c-format
-msgid "Invalid type '%1$s' requested for parameter '%2$s', actual type is '%3$s'"
+msgid ""
+"Invalid type '%1$s' requested for parameter '%2$s', actual type is '%3$s'"
 msgstr ""
-"ಅಮಾನ್ಯವಾದ ಬಗೆ '%1$s' ಅನ್ನು  '%2$s' ನಿಯತಾಂಕಕ್ಕಾಗಿ ಮನವಿ ಮಾಡಲಾಗಿದೆ, ನಿಜವಾದ ಬಗೆಯ '%3$s' "
-"ಆಗಿದೆ"
+"ಅಮಾನ್ಯವಾದ ಬಗೆ '%1$s' ಅನ್ನು  '%2$s' ನಿಯತಾಂಕಕ್ಕಾಗಿ ಮನವಿ ಮಾಡಲಾಗಿದೆ, ನಿಜವಾದ ಬಗೆಯ "
+"'%3$s' ಆಗಿದೆ"
 
 #, fuzzy, c-format
 msgid "Invalid unsigned integer value '%1$s' in file '%2$s'"
@@ -10321,8 +10383,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid use of 'floor' on interface with MAC address %1$s - network '%2$s' has "
-"no inbound QoS set"
+"Invalid use of 'floor' on interface with MAC address %1$s - network '%2$s' "
+"has no inbound QoS set"
 msgstr ""
 "MAC ವಿಳಾಸ %1$s ಅನ್ನು ಹೊಂದಿರುವ ಸಂಪರ್ಕಸಾಧನದಲ್ಲಿ 'floor' ನ ಅಮಾನ್ಯವಾದ ಬಳಕೆ - '%2$s' "
 "ಜಾಲಬಂಧವು ಯಾವುದೆ ಒಳಬರುವ QoS ಸೆಟ್ ಅನ್ನು ಹೊಂದಿಲ್ಲ"
@@ -10348,19 +10410,20 @@ msgid "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'."
 msgstr ""
 
 #, c-format
-msgid "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected UUID"
+msgid ""
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected UUID"
 msgstr ""
 
 #, c-format
 msgid ""
-"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected integer "
-"value"
-msgstr ""
-
-#, c-format
-msgid ""
-"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected long long "
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected "
 "integer value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected long "
+"long integer value"
 msgstr ""
 
 #, c-format
@@ -10376,7 +10439,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"
+msgid ""
+"Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"
 msgstr ""
 
 #, c-format
@@ -10393,7 +10457,8 @@ msgstr "'%1$s' ಸ್ಥಳಕ್ಕಾಗಿ ಅಮಾನ್ಯವಾದ ಮೌ
 
 #, c-format
 msgid "Invalid value for field '%1$s': expected unsigned int"
-msgstr "'%1$s' ಸ್ಥಳಕ್ಕಾಗಿ ಅಮಾನ್ಯವಾದ ಮೌಲ್ಯ: ನಿಗದಿಪಡಿಸದೆ ಇರುವ int ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು"
+msgstr ""
+"'%1$s' ಸ್ಥಳಕ್ಕಾಗಿ ಅಮಾನ್ಯವಾದ ಮೌಲ್ಯ: ನಿಗದಿಪಡಿಸದೆ ಇರುವ int ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು"
 
 #, c-format
 msgid "Invalid value for field '%1$s': expected unsigned long long"
@@ -10477,7 +10542,8 @@ msgid "JSON backing volume definition '%1$s' lacks driver name"
 msgstr ""
 
 #, c-format
-msgid "JSON backing volume definition '%1$s' must not have nested format drivers"
+msgid ""
+"JSON backing volume definition '%1$s' must not have nested format drivers"
 msgstr ""
 
 msgid "JSON string array contains non-string element"
@@ -10701,8 +10767,8 @@ msgid ""
 "Malformed 'uri_aliases' config entry '%1$s', aliases may only contain 'a-Z, "
 "0-9, _, -'"
 msgstr ""
-"ತಪ್ಪಾದ 'uri_aliases' ಸಂರಚನಾ ನಮೂದು '%1$s', ಅಲಿಯಾಸ್‌ಗಳು ಕೇವಲ 'a-Z, 0-9, _, -' ಅನ್ನು "
-"ಮಾತ್ರ ಹೊಂದಿರಲು ಸಾಧ್ಯವಿರುತ್ತದೆ"
+"ತಪ್ಪಾದ 'uri_aliases' ಸಂರಚನಾ ನಮೂದು '%1$s', ಅಲಿಯಾಸ್‌ಗಳು ಕೇವಲ 'a-Z, 0-9, _, -' "
+"ಅನ್ನು ಮಾತ್ರ ಹೊಂದಿರಲು ಸಾಧ್ಯವಿರುತ್ತದೆ"
 
 #, c-format
 msgid ""
@@ -11021,7 +11087,8 @@ msgid "Migration failed. Domain is not running on destination host"
 msgstr "ಆಫ್‌ಲೈನ್ ವರ್ಗಾವಣೆಯನ್ನು ಗುರಿ ಆತಿಥೇಯವು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
 
 #, fuzzy, c-format
-msgid "Migration failed. No domain on destination host with matching name '%1$s'"
+msgid ""
+"Migration failed. No domain on destination host with matching name '%1$s'"
 msgstr "%1$s ಹೆಸರಿಗೆ ಹೊಂದಿಕೆಯಾಗುವ ಯಾವುದೆ ಡೊಮೇನ್‌ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಇಲ್ಲ"
 
 msgid "Migration graphics data already present"
@@ -11339,7 +11406,8 @@ msgstr "JSON ಕಡತದಿಂದ ಲಾಕ್‌ಸ್ಪೇಸಸ್ ದತ�
 #, c-format
 msgid "Missing group 'credentials-%1$s' referenced from group '%2$s' in '%3$s'"
 msgstr ""
-"'credentials-%1$s' ಗುಂಪು ಕಾಣಿಸುತ್ತಿಲ್ಲ, '%2$s' ಗುಂಪಿನಿಂದ ('%3$s' ನಲ್ಲಿನ) ಉಲ್ಲೇಖಿಸಲಾದ"
+"'credentials-%1$s' ಗುಂಪು ಕಾಣಿಸುತ್ತಿಲ್ಲ, '%2$s' ಗುಂಪಿನಿಂದ ('%3$s' ನಲ್ಲಿನ) "
+"ಉಲ್ಲೇಖಿಸಲಾದ"
 
 #, c-format
 msgid "Missing hostname in network '%1$s' DNS HOST record"
@@ -11347,7 +11415,8 @@ msgstr "'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ DNS HOST ರೆಕಾರ್ಡ�
 
 #, c-format
 msgid "Missing ip and hostname in network '%1$s' DNS HOST record"
-msgstr "'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ DNS HOST ರೆಕಾರ್ಡಿನಲ್ಲಿ ip ಮತ್ತು ಆತಿಥೇಯ ಹೆಸರು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+msgstr ""
+"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ DNS HOST ರೆಕಾರ್ಡಿನಲ್ಲಿ ip ಮತ್ತು ಆತಿಥೇಯ ಹೆಸರು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
 msgid "Missing isClient data in JSON document"
 msgstr "JSON ದಸ್ತಾವೇಜಿನಲ್ಲಿ isClient ದತ್ತಾಂಶವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
@@ -11496,7 +11565,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Missing or invalid element %1$zu of 'unicast' list in query-rx-filter response"
+"Missing or invalid element %1$zu of 'unicast' list in query-rx-filter "
+"response"
 msgstr ""
 
 #, c-format
@@ -11566,7 +11636,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Missing required dev attribute in <forward> <interface> element of network %1$s"
+"Missing required dev attribute in <forward> <interface> element of network "
+"%1$s"
 msgstr ""
 "'%1$s' ಜಾಲಬಂಧದ <forward> <interface> ನಲ್ಲಿ ಅಗತ್ಯವಿರುವ dev ಗುಣವೈಶಿಷ್ಟ್ಯವು "
 "ಕಾಣಿಸುತ್ತಿಲ್ಲ"
@@ -11726,17 +11797,17 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Multiple USB devices for %1$x:%2$x were found, but none of them is at bus:%3$u "
-"device:%4$u"
+"Multiple USB devices for %1$x:%2$x were found, but none of them is at bus:"
+"%3$u device:%4$u"
 msgstr ""
-"%1$x:%2$x ಗಾಗಿ ಅನೇಕ USB ಸಾಧನಗಳು ಕಂಡುಬಂದಿವೆ, ಆದರೆ ಅವುಗಳಲ್ಲಿ ಯಾವುದೂ ಸಹ ಬಸ್‌ನಲ್ಲಿ ಇಲ್ಲ :"
-"%3$u ಸಾಧನ:%4$u"
+"%1$x:%2$x ಗಾಗಿ ಅನೇಕ USB ಸಾಧನಗಳು ಕಂಡುಬಂದಿವೆ, ಆದರೆ ಅವುಗಳಲ್ಲಿ ಯಾವುದೂ ಸಹ ಬಸ್‌ನಲ್ಲಿ "
+"ಇಲ್ಲ :%3$u ಸಾಧನ:%4$u"
 
 #, c-format
 msgid "Multiple USB devices for %1$x:%2$x, use <address> to specify one"
 msgstr ""
-"%1$x:%2$x ಗಾಗಿ ಅನೇಕ USB ಸಾಧನಗಳು ಕಂಡುಬಂದಿವೆ, ಅವುಗಳಲ್ಲಿ ಒಂದನ್ನು ಸೂಚಿಸಲು <address> "
-"ಅನ್ನು ಬಳಸಿ"
+"%1$x:%2$x ಗಾಗಿ ಅನೇಕ USB ಸಾಧನಗಳು ಕಂಡುಬಂದಿವೆ, ಅವುಗಳಲ್ಲಿ ಒಂದನ್ನು ಸೂಚಿಸಲು "
+"<address> ಅನ್ನು ಬಳಸಿ"
 
 #, c-format
 msgid "Multiple definitions of CPU model '%1$s'"
@@ -11994,7 +12065,8 @@ msgstr "ಜಾಲಬಂಧ ಸಂರಚನೆ ಬದಲಾವಣೆ ವ್ಯವ
 
 #, c-format
 msgid "Network config filename '%1$s' does not match network name '%2$s'"
-msgstr "ಜಾಲಬಂಧ ಸಂರಚನಾ ಕಡತದ ಹೆಸರು '%1$s', '%2$s' ಜಾಲಬಂಧ ಹೆಸರಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
+msgstr ""
+"ಜಾಲಬಂಧ ಸಂರಚನಾ ಕಡತದ ಹೆಸರು '%1$s', '%2$s' ಜಾಲಬಂಧ ಹೆಸರಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
 
 #, c-format
 msgid "Network device %1$s already exists"
@@ -12566,8 +12638,8 @@ msgstr "ಪರಿಮಾಣ '%1$s' ಕ್ಕಾಗಿ ಪೂಲ್‌ನಲ್ಲ
 
 #, c-format
 msgid ""
-"Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u scope "
-"type '%4$s'"
+"Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u "
+"scope type '%4$s'"
 msgstr ""
 
 #, fuzzy
@@ -12746,7 +12818,8 @@ msgstr ""
 "ಕೇವಲ ಎಮ್ಯುಲೇಟ್ ಮಾಡಲಾದ CPUಗಳು ಮಾತ್ರ ಲಭ್ಯವಿದೆ, ಕಾರ್ಯಕ್ಷಮತೆಯು ಗಮನಾರ್ಹವಾಗಿ ಮಿತಿಗೊಳ್ಳುತ್ತದೆ"
 
 #, fuzzy, c-format
-msgid "Only end address '%1$s' specified in <nat> in <forward> in network '%2$s'"
+msgid ""
+"Only end address '%1$s' specified in <nat> in <forward> in network '%2$s'"
 msgstr ""
 "'%1$s' <forward> ನಲ್ಲಿನ <nat> ನಲ್ಲಿ ತಪ್ಪು ipv4 ಅಂತ್ಯದ ವಿಳಾಸ ('%2$s' ಜಾಲಬಂಧದಲ್ಲಿ)"
 
@@ -12773,8 +12846,8 @@ msgstr ""
 msgid ""
 "Only one <address> element is allowed in <nat> in <forward> in network %1$s"
 msgstr ""
-"%1$s ಜಾಲಬಂಧದಲ್ಲಿನ <forward> ನ <nat> ನಲ್ಲಿ ಕೇವಲ ಒಂದೇ ಒಂದು <address> ಘಟಕಕ್ಕೆ ಅನುಮತಿ "
-"ಇರುತ್ತದೆ"
+"%1$s ಜಾಲಬಂಧದಲ್ಲಿನ <forward> ನ <nat> ನಲ್ಲಿ ಕೇವಲ ಒಂದೇ ಒಂದು <address> ಘಟಕಕ್ಕೆ "
+"ಅನುಮತಿ ಇರುತ್ತದೆ"
 
 #, c-format
 msgid "Only one <nat> element is allowed in <forward> of network %1$s"
@@ -12785,7 +12858,8 @@ msgid "Only one <pf> element is allowed in <forward> of network %1$s"
 msgstr "%1$s ಜಾಲಬಂಧದ <forward> ನಲ್ಲಿ ಕೇವಲ ಒಂದೇ ಒಂದು <pf> ಘಟಕಕ್ಕೆ ಅನುಮತಿ ಇರುತ್ತದೆ"
 
 #, c-format
-msgid "Only one <port> element is allowed in <nat> in <forward> in network %1$s"
+msgid ""
+"Only one <port> element is allowed in <nat> in <forward> in network %1$s"
 msgstr ""
 "%1$s ಜಾಲಬಂಧದಲ್ಲಿನ <forward> ನ <nat> ನಲ್ಲಿ ಕೇವಲ ಒಂದೇ ಒಂದು <port> ಘಟಕಕ್ಕೆ ಅನುಮತಿ "
 "ಇರುತ್ತದೆ"
@@ -12845,7 +12919,8 @@ msgid "Only scsi disk supports vendor and product"
 msgstr "ಕೇವಲ scsi ಡಿಸ್ಕ್ ಮಾತ್ರ ಮಾರಾಟಗಾರ ಮತ್ತು ಉತ್ಪನ್ನವನ್ನು ಬೆಂಬಲಿಸುತ್ತವೆ"
 
 #, fuzzy, c-format
-msgid "Only start address '%1$s' specified in <nat> in <forward> in network '%2$s'"
+msgid ""
+"Only start address '%1$s' specified in <nat> in <forward> in network '%2$s'"
 msgstr ""
 "'%1$s' <forward> ನಲ್ಲಿನ <nat> ನಲ್ಲಿ ತಪ್ಪು ipv4 ಆರಂಭದ ವಿಳಾಸ ('%2$s' ಜಾಲಬಂಧದಲ್ಲಿ)"
 
@@ -12899,8 +12974,8 @@ msgstr "ಸ್ಥಳ:"
 
 #, c-format
 msgid ""
-"Option '%1$s' has invalid value for PCI controller with index '%2$d', model '%3$s' "
-"and modelName '%4$s'"
+"Option '%1$s' has invalid value for PCI controller with index '%2$d', model "
+"'%3$s' and modelName '%4$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -12909,8 +12984,8 @@ msgstr "ಈ QEMU ಬೈನರಿಯೊಂದಿಗೆ vhost-net ಗೆ ಬೆಂ
 
 #, c-format
 msgid ""
-"Option '%1$s' is not valid for PCI controller with index '%2$d', model '%3$s' and "
-"modelName '%4$s'"
+"Option '%1$s' is not valid for PCI controller with index '%2$d', model "
+"'%3$s' and modelName '%4$s'"
 msgstr ""
 
 #, c-format
@@ -12944,7 +13019,8 @@ msgstr "ಈ ಡೊಮೇನ್‌ಗಾಗಿ ಇತರೆ ಕಾರ್ಯಗಳ
 
 #, c-format
 msgid "Our own certificate %1$s failed validation against %2$s: %3$s"
-msgstr "ನಮ್ಮದೆ ಆದ %1$s ಎಂಬ ಪ್ರಮಾಣಪತ್ರವನ್ನು %2$s ಯೊಂದಿಗೆ ಪರಿಶೀಲಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %3$s"
+msgstr ""
+"ನಮ್ಮದೆ ಆದ %1$s ಎಂಬ ಪ್ರಮಾಣಪತ್ರವನ್ನು %2$s ಯೊಂದಿಗೆ ಪರಿಶೀಲಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %3$s"
 
 msgid "Out of memory"
 msgstr "ಸಾಕಷ್ಟು ಮೆಮೊರಿ ಇಲ್ಲ"
@@ -13017,8 +13093,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"PCI controller at index %1$d (0x%2$02x) has bus='0x%3$02x', but index must be "
-"larger than bus"
+"PCI controller at index %1$d (0x%2$02x) has bus='0x%3$02x', but index must "
+"be larger than bus"
 msgstr ""
 
 #, c-format
@@ -13051,11 +13127,11 @@ msgstr "FDE ನಿಯಂತ್ರಕ ಸೂಚಿ %1$d ವ್ಯಾಪ್ತಿ�
 
 #, c-format
 msgid ""
-"PCI device %1$04x:%2$02x:%3$02x.%4$x allocated from network %5$s is already in use by "
-"domain %6$s"
+"PCI device %1$04x:%2$02x:%3$02x.%4$x allocated from network %5$s is already "
+"in use by domain %6$s"
 msgstr ""
-"%1$04x:%2$02x:%3$02x.%4$x ಎಂಬ PCI ಸಾಧನವನ್ನು %5$s ಜಾಲಬಂಧದಿಂದ ನಿಯೋಜಿಸಲಾಗಿದೆ ಆದರೆ ಅದು %6$s "
-"ಡೊಮೇನ್‌ನಿಂದ ಈಗಾಗಲೆ ಬಳಕೆಯಲ್ಲಿದೆ"
+"%1$04x:%2$02x:%3$02x.%4$x ಎಂಬ PCI ಸಾಧನವನ್ನು %5$s ಜಾಲಬಂಧದಿಂದ ನಿಯೋಜಿಸಲಾಗಿದೆ "
+"ಆದರೆ ಅದು %6$s ಡೊಮೇನ್‌ನಿಂದ ಈಗಾಗಲೆ ಬಳಕೆಯಲ್ಲಿದೆ"
 
 #, fuzzy, c-format
 msgid "PCI device %1$s is in use"
@@ -13070,7 +13146,9 @@ msgid "PCI device %1$s is not assignable"
 msgstr "PCI ಸಾಧನ %1$s ಅನ್ನು ನಿಯೋಜಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ"
 
 #, fuzzy, c-format
-msgid "PCI device '%1$04x:%2$02x:%3$02x.%4$x' can only be listed once in network %5$s"
+msgid ""
+"PCI device '%1$04x:%2$02x:%3$02x.%4$x' can only be listed once in network "
+"%5$s"
 msgstr ""
 "%04x:%02x:%02x.%x ಎಂಬ PCI ಸಾಧನವನ್ನು %s ಜಾಲಬಂಧದಿಂದ ನಿಯೋಜಿಸಲಾಗಿದೆ ಆದರೆ ಅದು %s "
 "ಡೊಮೇನ್‌ನಿಂದ ಈಗಾಗಲೆ ಬಳಕೆಯಲ್ಲಿದೆ"
@@ -13154,8 +13232,8 @@ msgstr "ಮೂಲ"
 
 #, c-format
 msgid ""
-"Parent attribute '%1$s' does not match parent '%2$s' determined for the '%3$s' "
-"wwnn/wwpn lookup."
+"Parent attribute '%1$s' does not match parent '%2$s' determined for the "
+"'%3$s' wwnn/wwpn lookup."
 msgstr ""
 
 #, c-format
@@ -13251,8 +13329,8 @@ msgid ""
 "possible answers are %2$s, but no default answer is specified"
 msgstr ""
 "ಬಾಕಿ ಇರುವ ಪ್ರಶ್ನೆಯ ವಿಭಾಗಗಳು ವರ್ಚುವಲ್ ಗಣಕದ ಕಾರ್ಯನಿರ್ವಹಣೆಯನ್ನು ತಡೆಯುತ್ತದೆ, ಪ್ರಶ್ನೆಯು "
-"'%1$s' ಆಗಿದೆ, ಸಾಧ್ಯವಿರುವ ಉತ್ತರಗಳೆಂದರೆ %2$s ಆಗಿದೆ, ಆದರೆ ಯಾವುದೆ ಪೂರ್ವನಿಯೋಜಿತ ಉತ್ತರವನ್ನು "
-"ಸೂಚಿಸಲಾಗಿಲ್ಲ"
+"'%1$s' ಆಗಿದೆ, ಸಾಧ್ಯವಿರುವ ಉತ್ತರಗಳೆಂದರೆ %2$s ಆಗಿದೆ, ಆದರೆ ಯಾವುದೆ ಪೂರ್ವನಿಯೋಜಿತ "
+"ಉತ್ತರವನ್ನು ಸೂಚಿಸಲಾಗಿಲ್ಲ"
 
 #, fuzzy
 msgid "Per-node binding is not compatible with automatic NUMA placement."
@@ -13587,22 +13665,24 @@ msgid ""
 "Query parameter 'proxy' contains unexpected type '%1$s' (should be (http|"
 "socks(|4|4a|5))"
 msgstr ""
-"ಮನವಿ ಸಲ್ಲಿಸಲಾದ 'proxy' ಅನಿರೀಕ್ಷಿತ ಬಗೆ '%1$s' ಅನ್ನು ಹೊಂದಿದೆ (ಅದು http|socks(|4|4a|"
-"5) ಆಗಿರಬೇಕು)"
+"ಮನವಿ ಸಲ್ಲಿಸಲಾದ 'proxy' ಅನಿರೀಕ್ಷಿತ ಬಗೆ '%1$s' ಅನ್ನು ಹೊಂದಿದೆ (ಅದು http|socks(|4|"
+"4a|5) ಆಗಿರಬೇಕು)"
 
 msgid "Query parameter 'proxy' doesn't contain a hostname"
 msgstr "ಮನವಿ ನಿಯತಾಂಕವ 'proxy' ಎಂಬುದು ಒಂದು ಆತಿಥೇಯ ಹೆಸರನ್ನು ಹೊಂದಿಲ್ಲ"
 
 #, c-format
 msgid ""
-"Query parameter 'proxy' has unexpected port value '%1$s' (should be [1..65535])"
+"Query parameter 'proxy' has unexpected port value '%1$s' (should be "
+"[1..65535])"
 msgstr ""
 "ಮನವಿ ಸಲ್ಲಿಸಲಾದ 'proxy' ಅನಿರೀಕ್ಷಿತ ಸಂಪರ್ಕಸ್ಥಾನ ಮೌಲ್ಯ '%1$s' ಅನ್ನು ಹೊಂದಿದೆ (ಅದು "
 "[1..65535] ಆಗಿರಬೇಕು)"
 
 #, c-format
 msgid ""
-"Query parameter 'transport' has unexpected value '%1$s' (should be http|https)"
+"Query parameter 'transport' has unexpected value '%1$s' (should be http|"
+"https)"
 msgstr ""
 "ಮನವಿ ಸಲ್ಲಿಸಲಾದ 'transport' ಅನಿರೀಕ್ಷಿತ ಮೌಲ್ಯ '%1$s' ಅನ್ನು ಹೊಂದಿದೆ (ಅದು http|https "
 "ಆಗಿರಬೇಕು)"
@@ -13756,9 +13836,9 @@ msgstr "ಉಳಿಸಲಾದ ಸ್ಥಿತಿಯ ಕಡತದೊಂದಿಗ�
 
 #, c-format
 msgid ""
-"Requested TSC frequency %1$llu Hz is outside tolerance range ([%2$llu, %3$llu] Hz) "
-"around host frequency %4$llu Hz and TSC scaling is not supported by the host "
-"CPU"
+"Requested TSC frequency %1$llu Hz is outside tolerance range ([%2$llu, "
+"%3$llu] Hz) around host frequency %4$llu Hz and TSC scaling is not supported "
+"by the host CPU"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13766,10 +13846,11 @@ msgid "Requested data len %1$llu is larger than maximum %2$d"
 msgstr "start_cpu %d ಎನ್ನುವುದು %d ನ ಗರಿಷ್ಟಕ್ಕಿಂತ ದೊಡ್ಡದಾಗಿದೆ"
 
 #, c-format
-msgid "Requested device '%1$s' is locked by lock file '%2$s' held by process %3$lld"
+msgid ""
+"Requested device '%1$s' is locked by lock file '%2$s' held by process %3$lld"
 msgstr ""
-"ಮನವಿ ಮಾಡಿದ ಸಾಧನ '%1$s' ಅನ್ನು ಲಾಕ್ ಕಡತದ '%2$s' ಇಂದ ಲಾಕ್ ಮಾಡಲಾಗಿದೆ (%3$lld ಪ್ರಕ್ರಿಯೆಯಿಂದ "
-"ತಡೆಹಿಡಿಯಲಾಗಿರುವ)"
+"ಮನವಿ ಮಾಡಿದ ಸಾಧನ '%1$s' ಅನ್ನು ಲಾಕ್ ಕಡತದ '%2$s' ಇಂದ ಲಾಕ್ ಮಾಡಲಾಗಿದೆ (%3$lld "
+"ಪ್ರಕ್ರಿಯೆಯಿಂದ ತಡೆಹಿಡಿಯಲಾಗಿರುವ)"
 
 msgid "Requested metadata element is not present"
 msgstr "ಮನವಿ ಮಾಡಲಾದ ಮೆಟಡೇಟಾ ಘಟಕವು ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ"
@@ -13798,13 +13879,14 @@ msgstr "ಮನವಿಸಲ್ಲಿಸಲಾದ ಕಾರ್ಯಾಚರಣೆ�
 
 #, c-format
 msgid ""
-"Required option '%1$s' is not set for PCI controller with index '%2$d', model "
-"'%3$s' and modelName '%4$s'"
+"Required option '%1$s' is not set for PCI controller with index '%2$d', "
+"model '%3$s' and modelName '%4$s'"
 msgstr ""
 
 #, c-format
 msgid ""
-"Resctrl ID must be set before determining resctrl parentpath='%1$s' prefix='%2$s'"
+"Resctrl ID must be set before determining resctrl parentpath='%1$s' "
+"prefix='%2$s'"
 msgstr ""
 
 #, c-format
@@ -14101,20 +14183,20 @@ msgstr "SCSI ಡಿಸ್ಕ್ ಸೂಚಿ ('%1$s' ಇಂದ ಪಾರ್ಸ�
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by a "
-"SCSI disk"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by a SCSI disk"
 msgstr ""
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by "
-"another SCSI disk"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by another SCSI disk"
 msgstr ""
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by "
-"another SCSI host device"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by another SCSI host device"
 msgstr ""
 
 msgid "SCSI host device doesn't support managed mode"
@@ -14156,9 +14238,12 @@ msgid "SMM TSEG size must be divisible by 1 MiB"
 msgstr ""
 
 #, c-format
-msgid "SOAP fault during %1$s: code '%2$s', subcode '%3$s', reason '%4$s', detail '%5$s'"
+msgid ""
+"SOAP fault during %1$s: code '%2$s', subcode '%3$s', reason '%4$s', detail "
+"'%5$s'"
 msgstr ""
-"%1$s ಸಮಯದಲ್ಲಿ SOAP ವಿಫಲತೆ: ಸಂಕೇತ '%2$s', ಉಪಸಂಕೇತ '%3$s', ಕಾರಣ '%4$s', ವಿವರಣೆ '%5$s'"
+"%1$s ಸಮಯದಲ್ಲಿ SOAP ವಿಫಲತೆ: ಸಂಕೇತ '%2$s', ಉಪಸಂಕೇತ '%3$s', ಕಾರಣ '%4$s', ವಿವರಣೆ "
+"'%5$s'"
 
 msgid "SSH Agent did not provide any authentication identity"
 msgstr "SSH ಮಧ್ಯವರ್ತಿಯು ಯಾವುದೆ ದೃಢೀಕರಣ ಗುರುತನ್ನು ಒದಗಿಸಿಲ್ಲ"
@@ -14223,7 +14308,8 @@ msgid "Saved image %1$s XML configuration not changed.\n"
 msgstr "ಉಳಿಸಲಾದ ಚಿತ್ರಿಕೆ %1$s XML ಸಂರಚನೆಯನ್ನು ಬದಲಾಯಿಸಲಾಗಿಲ್ಲ.\n"
 
 #, c-format
-msgid "Scaled numeric value '%1$s' for <%2$s> option is malformed or out of range"
+msgid ""
+"Scaled numeric value '%1$s' for <%2$s> option is malformed or out of range"
 msgstr ""
 
 #, c-format
@@ -14643,7 +14729,8 @@ msgstr "numad ಈ ಆತಿಥೇಯದಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ"
 
 #, c-format
 msgid ""
-"Size of SMM TSEG size differs: source: '%1$llu %2$s', destination: '%3$llu %4$s'"
+"Size of SMM TSEG size differs: source: '%1$llu %2$s', destination: '%3$llu "
+"%4$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -14864,11 +14951,13 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "State of KVM feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
+msgid ""
+"State of KVM feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
 msgstr ""
 
 #, c-format
-msgid "State of Xen feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
+msgid ""
+"State of Xen feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
 msgstr ""
 
 #, c-format
@@ -14877,21 +14966,25 @@ msgstr ""
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s', destination: '%5$s,%6$s=%7$s'"
+"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s', destination: "
+"'%5$s,%6$s=%7$s'"
 msgstr ""
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s,%5$s=%6$llu', destination: '%7$s,"
-"%8$s=%9$s,%10$s=%11$llu'"
+"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s,%5$s=%6$llu', "
+"destination: '%7$s,%8$s=%9$s,%10$s=%11$llu'"
 msgstr ""
 
 #, c-format
-msgid "State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s=%5$s'"
+msgid ""
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
+"%5$s'"
 msgstr ""
 
 #, c-format
-msgid "State of vCPU '%1$zu' differs between source and destination definitions"
+msgid ""
+"State of vCPU '%1$zu' differs between source and destination definitions"
 msgstr ""
 
 msgid "State:"
@@ -14901,15 +14994,15 @@ msgstr "ಸ್ಥಿತಿ:"
 msgid ""
 "Static host definition in IPv4 network '%1$s' must have mac or name attribute"
 msgstr ""
-"'%1$s' ಎಂಬ ipv4 ಜಾಲಬಂಧದಲ್ಲಿ ಸ್ಥಿರ ಆತಿಥೇಯ ವಿವರಣೆಯು ಮ್ಯಾಕ್ ಅಥವ ಹೆಸರಿನ ಗುಣವೈಶಿಷ್ಟ್ಯವನ್ನು "
-"ಹೊಂದಿರಬೇಕು"
+"'%1$s' ಎಂಬ ipv4 ಜಾಲಬಂಧದಲ್ಲಿ ಸ್ಥಿರ ಆತಿಥೇಯ ವಿವರಣೆಯು ಮ್ಯಾಕ್ ಅಥವ ಹೆಸರಿನ "
+"ಗುಣವೈಶಿಷ್ಟ್ಯವನ್ನು ಹೊಂದಿರಬೇಕು"
 
 #, c-format
 msgid ""
 "Static host definition in IPv6 network '%1$s' must have id or name attribute"
 msgstr ""
-"'%1$s' ಎಂಬ ipv6 ಜಾಲಬಂಧದಲ್ಲಿ ಸ್ಥಿರ ಆತಿಥೇಯ ವಿವರಣೆಯು ಮ್ಯಾಕ್ ಅಥವ ಹೆಸರಿನ ಗುಣವೈಶಿಷ್ಟ್ಯವನ್ನು "
-"ಹೊಂದಿರಬೇಕು"
+"'%1$s' ಎಂಬ ipv6 ಜಾಲಬಂಧದಲ್ಲಿ ಸ್ಥಿರ ಆತಿಥೇಯ ವಿವರಣೆಯು ಮ್ಯಾಕ್ ಅಥವ ಹೆಸರಿನ "
+"ಗುಣವೈಶಿಷ್ಟ್ಯವನ್ನು ಹೊಂದಿರಬೇಕು"
 
 #, c-format
 msgid "Stats %1$s too big for destination"
@@ -14947,7 +15040,8 @@ msgstr "ಶೇಖರಣಾ ಪೂಲ್ ಈಗಾಗಲೆ ನಿರ್ಮಿಸ
 #, c-format
 msgid "Storage pool config filename '%1$s' does not match pool name '%2$s'"
 msgstr ""
-"'%1$s' ಎಂಬ ಶೇಖರಣಾ ಪೂಲ್ ಸಂರಚನಾ ಕಡತದ ಹೆಸರು '%2$s' ಎಂಬ ಪೂಲ್‌ ಹೆಸರಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
+"'%1$s' ಎಂಬ ಶೇಖರಣಾ ಪೂಲ್ ಸಂರಚನಾ ಕಡತದ ಹೆಸರು '%2$s' ಎಂಬ ಪೂಲ್‌ ಹೆಸರಿಗೆ "
+"ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
 
 msgid "Storage pool not found"
 msgstr "ಶೇಖರಣಾ ಪೂಲ್ ಕಂಡುಬಂದಿಲ್ಲ"
@@ -14966,7 +15060,8 @@ msgstr "ಶೇಖರಣಾ ಪೂಲ್ ತನಿಖೆ ವಿಫಲಗೊಂಡ
 #, fuzzy, c-format
 msgid "Storage pool state file '%1$s' does not match pool name '%2$s'"
 msgstr ""
-"'%1$s' ಎಂಬ ಶೇಖರಣಾ ಪೂಲ್ ಸಂರಚನಾ ಕಡತದ ಹೆಸರು '%2$s' ಎಂಬ ಪೂಲ್‌ ಹೆಸರಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
+"'%1$s' ಎಂಬ ಶೇಖರಣಾ ಪೂಲ್ ಸಂರಚನಾ ಕಡತದ ಹೆಸರು '%2$s' ಎಂಬ ಪೂಲ್‌ ಹೆಸರಿಗೆ "
+"ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
 
 #, c-format
 msgid "Storage source %1$s must be a block device"
@@ -14998,7 +15093,8 @@ msgid "Storage volume not found: %1$s"
 msgstr "ಶೇಖರಣಾ ಪರಿಮಾಣವು ಕಂಡುಬಂದಿಲ್ಲ: %1$s"
 
 #, c-format
-msgid "Stream data too long to send (%1$zu bytes needed, %2$zu bytes available)"
+msgid ""
+"Stream data too long to send (%1$zu bytes needed, %2$zu bytes available)"
 msgstr ""
 "ಸ್ಟ್ರೀಮ್ ದತ್ತಾಂಶವು ಕಳುಹಿಸಲು ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ (%1$zu ಬೈಟ್‌ಗಳ ಅಗತ್ಯವಿದೆ, %2$zu ಬೈಟ್‌ಗಳು "
 "ಲಭ್ಯವಿದೆ)"
@@ -15257,12 +15353,14 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid ""
-"Target NVDIMM alignment '%1$llu' doesn't match source NVDIMM alignment '%2$llu'"
+"Target NVDIMM alignment '%1$llu' doesn't match source NVDIMM alignment "
+"'%2$llu'"
 msgstr "'%s' ಎಂಬ ಗುರಿ ಡೊಮೈನ್ ಹೆಸರು '%s'ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy, c-format
 msgid ""
-"Target NVDIMM label size '%1$llu' doesn't match source NVDIMM label size '%2$llu'"
+"Target NVDIMM label size '%1$llu' doesn't match source NVDIMM label size "
+"'%2$llu'"
 msgstr "ಗುರಿ RNG '%s' ಎಂಬ ಮಾದರಿಯು '%s' ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy
@@ -15308,7 +15406,8 @@ msgid "Target USB product ID does not match source"
 msgstr "ಗುರಿ USB ಉತ್ಪನ್ನ ID ಯು ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
-msgid "Target USB redirection filter rule count %1$zu does not match source %2$zu"
+msgid ""
+"Target USB redirection filter rule count %1$zu does not match source %2$zu"
 msgstr ""
 "ಗುರಿ USB ಮರುನಿರ್ದೇಶನ ಫಿಲ್ಟರ್ ನಿಯಮದ ಎಣಿಕೆ %1$zu ಮೂಲ %2$zu ಕ್ಕೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
@@ -15326,13 +15425,14 @@ msgstr "ಗುರಿಯು ಈಗಾಗಲೆ ಅಸ್ತಿತ್ವದಲ್�
 
 #, fuzzy, c-format
 msgid ""
-"Target balloon autodeflate attribute value '%1$s' does not match source '%2$s'"
+"Target balloon autodeflate attribute value '%1$s' does not match source "
+"'%2$s'"
 msgstr "ಗುರಿ ಬಲೂನ್ %1$s ಎಂಬ ಮಾದರಿಯು %2$s ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
 msgid ""
-"Target balloon freePageReporting attribute value '%1$s' does not match source "
-"'%2$s'"
+"Target balloon freePageReporting attribute value '%1$s' does not match "
+"source '%2$s'"
 msgstr ""
 
 #, c-format
@@ -15373,7 +15473,8 @@ msgstr "ಗುರಿ ನಿಯಂತ್ರಕ ಮಾದರಿ %1$d ಎಂಬು�
 
 #, c-format
 msgid "Target controller ports %1$d does not match source %2$d"
-msgstr "ಗುರಿ ನಿಯಂತ್ರಕ ಸಂಪರ್ಕಸ್ಥಾನಗಳು %1$d ಎಂಬುದು %2$d ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ನಿಯಂತ್ರಕ ಸಂಪರ್ಕಸ್ಥಾನಗಳು %1$d ಎಂಬುದು %2$d ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
 msgid "Target controller type %1$s does not match source %2$s"
@@ -15385,8 +15486,8 @@ msgstr "ಗುರಿ ನಿಯಂತ್ರಕ ವೆಕ್ಟರ್ %1$d ಎಂ�
 
 #, c-format
 msgid ""
-"Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source %5$04x:%6$02x:"
-"%7$02x.%8$d"
+"Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
+"%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
 
 #, c-format
@@ -15399,7 +15500,8 @@ msgstr "ಗುರಿ ಸಾಧನದ ವಿಳಾಸ %1$s ಎಂಬ ಬಗೆಯ
 
 #, c-format
 msgid "Target device ccid address %1$d:%2$d does not match source %3$d:%4$d"
-msgstr "%1$d:%2$d ಎಂಬ ಗುರಿ ಸಾಧನದ ccid ವಿಳಾಸವು %3$d:%4$d ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"%1$d:%2$d ಎಂಬ ಗುರಿ ಸಾಧನದ ccid ವಿಳಾಸವು %3$d:%4$d ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy, c-format
 msgid "Target device dimm base address '%1$llx' does not match source '%2$llx'"
@@ -15410,7 +15512,9 @@ msgid "Target device dimm slot %1$u does not match source %2$u"
 msgstr "ಗುರಿ ಆತಿಥೇಯ ಸಾಧನ ಕ್ರಮ %s ಎಂಬುದು %s ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
-msgid "Target device drive address %1$d:%2$d:%3$d does not match source %4$d:%5$d:%6$d"
+msgid ""
+"Target device drive address %1$d:%2$d:%3$d does not match source %4$d:%5$d:"
+"%6$d"
 msgstr ""
 "%1$d:%2$d:%3$d ಎಂಬ ಗುರಿ ಸಾಧನದ ಡ್ರೈವ್‌ ವಿಳಾಸವು %4$d:%5$d:%6$d ಎಂಬ ಮೂಲದೊಂದಿಗೆ "
 "ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
@@ -15421,7 +15525,8 @@ msgstr "'%1$s' ಎಂಬ ಗುರಿ ಡೊಮೈನ್ ಹೆಸರು '%2$s'�
 
 #, fuzzy, c-format
 msgid "Target device isa address %1$d:%2$d does not match source %3$d:%4$d"
-msgstr "%1$d:%2$d ಎಂಬ ಗುರಿ ಸಾಧನದ ccid ವಿಳಾಸವು %3$d:%4$d ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"%1$d:%2$d ಎಂಬ ಗುರಿ ಸಾಧನದ ccid ವಿಳಾಸವು %3$d:%4$d ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy, c-format
 msgid "Target device packed option '%1$s' does not match source '%2$s'"
@@ -15436,10 +15541,11 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Target device virtio serial address %1$d:%2$d:%3$d does not match source %4$d:%5$d:%6$d"
+"Target device virtio serial address %1$d:%2$d:%3$d does not match source "
+"%4$d:%5$d:%6$d"
 msgstr ""
-"%1$d:%2$d:%3$d ಎಂಬ ಗುರಿ ಸಾಧನದ virtio ಸರಣಿ ವಿಳಾಸವು %4$d:%5$d:%6$d ಎಂಬ ಮೂಲದೊಂದಿಗೆ "
-"ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+"%1$d:%2$d:%3$d ಎಂಬ ಗುರಿ ಸಾಧನದ virtio ಸರಣಿ ವಿಳಾಸವು %4$d:%5$d:%6$d ಎಂಬ "
+"ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
 msgid "Target disk %1$s does not match source %2$s"
@@ -15486,7 +15592,8 @@ msgid ""
 msgstr ""
 
 #, fuzzy, c-format
-msgid "Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
 msgstr "'%1$s' ಎಂಬ ಗುರಿ ಡೊಮೈನ್ ಹೆಸರು '%2$s'ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy
@@ -15494,7 +15601,8 @@ msgid "Target domain IOMMU device count does not match source"
 msgstr "ಗುರಿ ಡೊಮೈನ್ ಹಬ್ ಸಾಧನ ಎಣಿಕೆ %zu ಎಂಬುದು %zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy, c-format
-msgid "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
 msgstr "'%1$s' ಎಂಬ ಗುರಿ ಡೊಮೈನ್ ಹೆಸರು '%2$s'ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy, c-format
@@ -15503,7 +15611,8 @@ msgid ""
 msgstr "'%1$s' ಎಂಬ ಗುರಿ ಡೊಮೈನ್ ಹೆಸರು '%2$s'ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy, c-format
-msgid "Target domain IOMMU device iotlb value '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device iotlb value '%1$s' does not match source '%2$s'"
 msgstr "'%1$s' ಎಂಬ ಗುರಿ ಡೊಮೈನ್ ಹೆಸರು '%2$s'ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy, c-format
@@ -15516,7 +15625,8 @@ msgstr "%1$s ಎಂಬ ಗುರಿ ಡೊಮೈನ್ OS ಬಗೆಯು %2$s �
 
 #, fuzzy, c-format
 msgid "Target domain RNG device count %1$zu does not match source %2$zu"
-msgstr "ಗುರಿ ಡೊಮೈನ್ ಹಬ್ ಸಾಧನ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ಡೊಮೈನ್ ಹಬ್ ಸಾಧನ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
 msgid "Target domain SMBIOS mode %1$s does not match source %2$s"
@@ -15527,8 +15637,10 @@ msgid "Target domain TPM device count %1$zu does not match source %2$zu"
 msgstr ""
 
 #, c-format
-msgid "Target domain USB redirection filter count %1$d does not match source %2$d"
-msgstr "ಗುರಿ ಡೊಮೇನ್ USB ಮರುನಿರ್ದೇಶನ ಫಿಲ್ಟರ್ ಎಣಿಕೆ %1$d ಮೂಲ %2$d ಕ್ಕೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgid ""
+"Target domain USB redirection filter count %1$d does not match source %2$d"
+msgstr ""
+"ಗುರಿ ಡೊಮೇನ್ USB ಮರುನಿರ್ದೇಶನ ಫಿಲ್ಟರ್ ಎಣಿಕೆ %1$d ಮೂಲ %2$d ಕ್ಕೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
 msgid "Target domain architecture %1$s does not match source %2$s"
@@ -15544,14 +15656,16 @@ msgstr "ಗುರಿ ಡೊಮೈನ್ ಕನ್ಸೋಲ್ ಎಣಿಕೆ %1
 
 #, c-format
 msgid "Target domain controller count %1$zu does not match source %2$zu"
-msgstr "ಗುರಿ ಡೊಮೈನ್ ನಿಯಂತ್ರಕ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ಡೊಮೈನ್ ನಿಯಂತ್ರಕ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 msgid "Target domain count of sysinfo does not match source"
 msgstr ""
 
 #, c-format
 msgid "Target domain current memory %1$lld does not match source %2$lld"
-msgstr "ಗುರಿ ಡೊಮೈನ್ ಪ್ರಸಕ್ತ ಮೆಮೊರಿ %1$lld ಎಂಬುದು %2$lld ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ಡೊಮೈನ್ ಪ್ರಸಕ್ತ ಮೆಮೊರಿ %1$lld ಎಂಬುದು %2$lld ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
 msgid "Target domain disk count %1$zu does not match source %2$zu"
@@ -15559,7 +15673,8 @@ msgstr "ಗುರಿ ಡೊಮೈನ್ ಡಿಸ್ಕ್‍ ಎಣಿಕೆ %1
 
 #, c-format
 msgid "Target domain filesystem count %1$zu does not match source %2$zu"
-msgstr "ಗುರಿ ಡೊಮೈನ್ ಕಡತವ್ಯವಸ್ಥೆ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ಡೊಮೈನ್ ಕಡತವ್ಯವಸ್ಥೆ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy, c-format
 msgid "Target domain genid %1$s does not match source %2$s"
@@ -15572,7 +15687,8 @@ msgstr ""
 
 #, c-format
 msgid "Target domain hub device count %1$zu does not match source %2$zu"
-msgstr "ಗುರಿ ಡೊಮೈನ್ ಹಬ್ ಸಾಧನ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ಡೊಮೈನ್ ಹಬ್ ಸಾಧನ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
 msgid "Target domain input device count %1$zu does not match source %2$zu"
@@ -15585,11 +15701,13 @@ msgstr "ಗುರಿ ಡೊಮೈನ್ virt %1$s ಎಂಬ ಬಗೆಯು %2$s
 
 #, c-format
 msgid "Target domain max memory %1$lld does not match source %2$lld"
-msgstr "ಗುರಿ ಡೊಮೈನ್ ಗರಿಷ್ಟ ಮೆಮೊರಿ %1$lld ಎಂಬುದು %2$lld ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ಡೊಮೈನ್ ಗರಿಷ್ಟ ಮೆಮೊರಿ %1$lld ಎಂಬುದು %2$lld ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
 msgid "Target domain memory balloon count %1$d does not match source %2$d"
-msgstr "ಗುರಿ ಡೊಮೈನ್ ಮೆಮೊರಿ ಬಲೂನ್ ಎಣಿಕೆ %1$d ಎಂಬುದು %2$d ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ಡೊಮೈನ್ ಮೆಮೊರಿ ಬಲೂನ್ ಎಣಿಕೆ %1$d ಎಂಬುದು %2$d ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy, c-format
 msgid "Target domain memory device count %1$zu does not match source %2$zu"
@@ -15606,7 +15724,8 @@ msgstr "'%1$s' ಎಂಬ ಗುರಿ ಡೊಮೈನ್ ಹೆಸರು '%2$s'�
 
 #, c-format
 msgid "Target domain net card count %1$zu does not match source %2$zu"
-msgstr "ಗುರಿ ಡೊಮೈನ್ ನೆಟ್ ಕಾರ್ಡ್ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ಡೊಮೈನ್ ನೆಟ್ ಕಾರ್ಡ್ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy, c-format
 msgid "Target domain panic device count %1$zu does not match source %2$zu"
@@ -15616,10 +15735,12 @@ msgstr ""
 #, c-format
 msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr ""
-"ಗುರಿ ಡೊಮೈನ್ ಅನುಕ್ರಮ ಸಮಾನಾಂತರ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+"ಗುರಿ ಡೊಮೈನ್ ಅನುಕ್ರಮ ಸಮಾನಾಂತರ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ "
+"ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy, c-format
-msgid "Target domain redirected devices count %1$zu does not match source %2$zu"
+msgid ""
+"Target domain redirected devices count %1$zu does not match source %2$zu"
 msgstr ""
 "ಗುರಿ ಡೊಮೈನ್ ಇನ್‌ಪುಟ್ ಸಾಧನ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
@@ -15630,10 +15751,12 @@ msgstr "ಗುರಿ ಡೊಮೈನ್ uuid %s ಎಂಬುದು %s ಮೂಲ�
 #, c-format
 msgid "Target domain serial port count %1$zu does not match source %2$zu"
 msgstr ""
-"ಗುರಿ ಡೊಮೈನ್ ಅನುಕ್ರಮ ಸಂಪರ್ಕಸ್ಥಾನ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+"ಗುರಿ ಡೊಮೈನ್ ಅನುಕ್ರಮ ಸಂಪರ್ಕಸ್ಥಾನ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ "
+"ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy, c-format
-msgid "Target domain shared memory device count %1$zu does not match source %2$zu"
+msgid ""
+"Target domain shared memory device count %1$zu does not match source %2$zu"
 msgstr ""
 "ಗುರಿ ಡೊಮೈನ್ ಆತಿಥೇಯ ಸಾಧನ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
@@ -15644,7 +15767,8 @@ msgstr ""
 
 #, c-format
 msgid "Target domain sound card count %1$zu does not match source %2$zu"
-msgstr "ಗುರಿ ಡೊಮೈನ್ ಧ್ವನಿ ಕಾರ್ಡ್ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ಡೊಮೈನ್ ಧ್ವನಿ ಕಾರ್ಡ್ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 msgid "Target domain timers do not match source"
 msgstr "ಗುರಿ ಡೊಮೈನ್ ಟೈಮರುಗಳು ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
@@ -15685,7 +15809,8 @@ msgstr "ಗುರಿ ಕಡತವ್ಯವಸ್ಥೆ ನಿಲುಕಣಾ ಕ
 #, c-format
 msgid "Target filesystem guest target %1$s does not match source %2$s"
 msgstr ""
-"ಗುರಿ ಕಡತವ್ಯವಸ್ಥೆ ಅತಿಥಿ ಗುರಿಯಾದ %1$s ಎನ್ನುವುದು %2$s ಎಂಬ ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+"ಗುರಿ ಕಡತವ್ಯವಸ್ಥೆ ಅತಿಥಿ ಗುರಿಯಾದ %1$s ಎನ್ನುವುದು %2$s ಎಂಬ ಮೂಲದೊಂದಿಗೆ "
+"ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy
 msgid "Target filesystem model does not match source"
@@ -15697,7 +15822,8 @@ msgstr "ಗುರಿ ಆತಿಥೇಯ ಸಾಧನ ಕ್ರಮ %1$s ಎಂಬ
 
 #, c-format
 msgid "Target host device subsystem %1$s does not match source %2$s"
-msgstr "ಗುರಿ ಆತಿಥೇಯ ಸಾಧನ ಉಪವ್ಯವಸ್ಥೆ %1$s ಎಂಬುದು %2$s ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ಆತಿಥೇಯ ಸಾಧನ ಉಪವ್ಯವಸ್ಥೆ %1$s ಎಂಬುದು %2$s ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
 msgid "Target hub device type %1$s does not match source %2$s"
@@ -15766,7 +15892,8 @@ msgstr "ಗುರಿ ಜಾಲಬಂಧ ಕಾರ್ಡ್ mac %s ಎಂಬ ಮ�
 
 #, c-format
 msgid "Target network card mac %1$s does not match source %2$s"
-msgstr "ಗುರಿ ಜಾಲಬಂಧ ಕಾರ್ಡ್ mac %1$s ಎಂಬ ಮಾದರಿಯು %2$s ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ಜಾಲಬಂಧ ಕಾರ್ಡ್ mac %1$s ಎಂಬ ಮಾದರಿಯು %2$s ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
 msgid "Target network card model %1$s does not match source %2$s"
@@ -15789,8 +15916,8 @@ msgstr "%1$s ಎಂಬ ಗುರಿ ಇನ್‌ಪುಟ್ ಸಾಧನದ ಬ
 
 #, fuzzy, c-format
 msgid ""
-"Target redirected device source type %1$s does not match source device source "
-"type %2$s"
+"Target redirected device source type %1$s does not match source device "
+"source type %2$s"
 msgstr "%1$s ಎಂಬ ಬಗೆಯ ಗುರಿ ಇನ್‌ಪುಟ್ ಸಾಧನವು %2$s ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
@@ -15839,7 +15966,8 @@ msgstr "ಗುರಿ sysinfo %1$s ಎನ್ನುವುದು %2$s ಆಕರದ�
 
 #, fuzzy, c-format
 msgid "Target sysinfo base board count '%1$zu' does not match source '%2$zu'"
-msgstr "ಗುರಿ ಡೊಮೈನ್ ನೆಟ್ ಕಾರ್ಡ್ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ಡೊಮೈನ್ ನೆಟ್ ಕಾರ್ಡ್ ಎಣಿಕೆ %1$zu ಎಂಬುದು %2$zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 msgid "Target sysinfo does not match source"
 msgstr "ಗುರಿ sysinfo ಆಕರದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
@@ -15862,11 +15990,13 @@ msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಡಿಸ್ಕ್‍ ವಿಳಾಸ�
 
 #, c-format
 msgid "Target video card 2d accel %1$u does not match source %2$u"
-msgstr "ಗುರಿ ವಿಡಿಯೊ ಕಾರ್ಡ್ 2d accel %1$u ಎಂಬುದು %2$u ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ವಿಡಿಯೊ ಕಾರ್ಡ್ 2d accel %1$u ಎಂಬುದು %2$u ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
 msgid "Target video card 3d accel %1$u does not match source %2$u"
-msgstr "ಗುರಿ ವಿಡಿಯೊ ಕಾರ್ಡ್ 3d accel %1$u ಎಂಬುದು %2$u ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+msgstr ""
+"ಗುರಿ ವಿಡಿಯೊ ಕಾರ್ಡ್ 3d accel %1$u ಎಂಬುದು %2$u ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 msgid "Target video card acceleration does not match source"
 msgstr "ಗುರಿ ವಿಡಿಯೊ ಕಾರ್ಡ್ ವೇಗವರ್ಧಕವು ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
@@ -15927,7 +16057,8 @@ msgstr "ಈ QEMU ಬೈನರಿಯಿಂದ nvram ಸಾಧನಕ್ಕೆ ಬ�
 
 #, fuzzy, c-format
 msgid ""
-"The '%1$s' feature is not supported for architecture '%2$s' or machine type '%3$s'"
+"The '%1$s' feature is not supported for architecture '%2$s' or machine type "
+"'%3$s'"
 msgstr "%s ಬಗೆಯ ಸಂಪರ್ಕಸಾಧನಗಳಲ್ಲಿ ಫಿಲ್ಟರುಗಳಿಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 
 #, c-format
@@ -16005,7 +16136,8 @@ msgstr ""
 
 #, c-format
 msgid "The QEMU executable %1$s does not support TPM backend type %2$s"
-msgstr "QEMU ಎಕ್ಸಿಗ್ಯೂಟೆಬಲ್ %1$s ಎನ್ನುವುದು TPM ಬ್ಯಾಕೆಂಡ್ ಬಗೆ %2$s ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
+msgstr ""
+"QEMU ಎಕ್ಸಿಗ್ಯೂಟೆಬಲ್ %1$s ಎನ್ನುವುದು TPM ಬ್ಯಾಕೆಂಡ್ ಬಗೆ %2$s ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
 
 #, c-format
 msgid "The QEMU executable %1$s does not support TPM model %2$s"
@@ -16023,14 +16155,16 @@ msgstr "%1$s ಮೂಲಭೂತ ಪ್ರಮಾಣಪತ್ರ ನಿರ್ಬ�
 
 #, c-format
 msgid ""
-"The certificate %1$s basic constraints show a CA, but we need one for a client"
+"The certificate %1$s basic constraints show a CA, but we need one for a "
+"client"
 msgstr ""
 "%1$s ಮೂಲಭೂತ ಪ್ರಮಾಣಪತ್ರ ನಿರ್ಬಂಧಗಳು ಒಂದು CA ಅನ್ನು ತೋರಿಸಿವೆ, ಆದರೆ ನಮಗೆ ಒಂದಕ್ಕಿಂತ "
 "ಹೆಚ್ಚಿನ ಕ್ಲೈಂಟ್‌ನ ಅಗತ್ಯವಿದೆ"
 
 #, c-format
 msgid ""
-"The certificate %1$s basic constraints show a CA, but we need one for a server"
+"The certificate %1$s basic constraints show a CA, but we need one for a "
+"server"
 msgstr ""
 "%1$s ಮೂಲಭೂತ ಪ್ರಮಾಣಪತ್ರ ನಿರ್ಬಂಧಗಳು ಒಂದು CA ಅನ್ನು ತೋರಿಸಿವೆ, ಆದರೆ ನಮಗೆ ಒಂದಕ್ಕಿಂತ "
 "ಹೆಚ್ಚಿನ ಪೂರೈಕೆಗಣಕದ ಅಗತ್ಯವಿದೆ"
@@ -16068,13 +16202,14 @@ msgstr "ಬಹಳ ಉದ್ದದ ಜಾಲಬಂಧದ ಸಾಧನದ ಹೆ�
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s cannot be plugged into the PCI controller with "
-"index='%2$d'. It requires a controller that accepts a %3$s."
+"The device at PCI address %1$s cannot be plugged into the PCI controller "
+"with index='%2$d'. It requires a controller that accepts a %3$s."
 msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags 0x"
+"%2$.2x"
 msgstr ""
 
 #, c-format
@@ -16331,7 +16466,8 @@ msgstr "ಶೀರ್ಷಿಕೆ"
 #, c-format
 msgid "To enable ip%1$stables filtering for the VM do 'echo 1 > %2$s'"
 msgstr ""
-"VM ಗಾಗಿ ip%1$stables ಫಿಲ್ಟರ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು 'echo 1 > %2$s' ಅನ್ನು ಮಾಡಿ"
+"VM ಗಾಗಿ ip%1$stables ಫಿಲ್ಟರ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು 'echo 1 > %2$s' ಅನ್ನು "
+"ಮಾಡಿ"
 
 msgid "Too long bridge device name"
 msgstr "ಬಹಳ ಉದ್ದದ ಬ್ರಿಡ್ಜ್‌ ಸಾಧನದ ಹೆಸರು"
@@ -16951,8 +17087,8 @@ msgstr "ಲಾಕ್ ಸ್ಥಿತಿ %1$s ಅನ್ನು ಪಾರ್ಸ್ 
 
 #, c-format
 msgid ""
-"Unable to configure VF %1$d of PF '%2$s' because the PF is not online. Please "
-"change host network config to put the PF online."
+"Unable to configure VF %1$d of PF '%2$s' because the PF is not online. "
+"Please change host network config to put the PF online."
 msgstr ""
 
 msgid "Unable to configure libxl's memory management parameters"
@@ -18670,7 +18806,8 @@ msgstr "ಕ್ಲೈಂಟ್‌ನ ಪ್ರಮಾಣಪತ್ರ %1$s ಅನ�
 
 #, c-format
 msgid "Unable to verify server certificate %1$s against CA certificate %2$s"
-msgstr "ಪೂರೈಕೆಗಣಕದ ಪ್ರಮಾಣಪತ್ರ %1$s ಅನ್ನು CA ಪ್ರಮಾಣಪತ್ರ %2$s ದೊಂದಿಗೆ ಹೋಲಿಕೆ ಮಾಡಲಾಗಿಲ್ಲ"
+msgstr ""
+"ಪೂರೈಕೆಗಣಕದ ಪ್ರಮಾಣಪತ್ರ %1$s ಅನ್ನು CA ಪ್ರಮಾಣಪತ್ರ %2$s ದೊಂದಿಗೆ ಹೋಲಿಕೆ ಮಾಡಲಾಗಿಲ್ಲ"
 
 msgid "Unable to wait for child process"
 msgstr "ಚೈಲ್ಡ್ ಪ್ರಕ್ರಿಯೆಗಾಗಿ ಕಾಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -19832,8 +19969,8 @@ msgstr "VCPU:"
 
 #, c-format
 msgid ""
-"VF %1$d of PF '%2$s' is not bound to a net driver, so its MAC address cannot be "
-"set to %3$s"
+"VF %1$d of PF '%2$s' is not bound to a net driver, so its MAC address cannot "
+"be set to %3$s"
 msgstr ""
 
 #, c-format
@@ -19992,7 +20129,8 @@ msgstr "'%1$s' ಪರಿಮಾಣದ ಹೆಸರು ನಿರೀಕ್ಷಿತ
 #, c-format
 msgid "Volume name '%1$s' has unsupported suffix, expecting '.vmdk'"
 msgstr ""
-"ಪರಿಮಾಣದ ಹೆಸರು '%1$s' ಬೆಂಬಲವಿರದ ಸಫಿಕ್ಸ್ ಅನ್ನು ಹೊಂದಿದೆ, '.vmdk' ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು"
+"ಪರಿಮಾಣದ ಹೆಸರು '%1$s' ಬೆಂಬಲವಿರದ ಸಫಿಕ್ಸ್ ಅನ್ನು ಹೊಂದಿದೆ, '.vmdk' ಅನ್ನು "
+"ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು"
 
 #, c-format
 msgid "Volume path '%1$s' did not start with parent pool source device name."
@@ -20069,7 +20207,8 @@ msgstr ""
 
 #, c-format
 msgid "Write of '%1$s' to '%2$s' during vport create/delete failed"
-msgstr "vport ರಚಿಸುವ/ಅಳಿಸುವ ಸಮಯದಲ್ಲಿ '%1$s' ಅನ್ನು '%2$s' ಗೆ ಬರೆಯುವಿಕೆಯು ವಿಫಲಗೊಂಡಿದೆ"
+msgstr ""
+"vport ರಚಿಸುವ/ಅಳಿಸುವ ಸಮಯದಲ್ಲಿ '%1$s' ಅನ್ನು '%2$s' ಗೆ ಬರೆಯುವಿಕೆಯು ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
 msgid "Write to '%1$s' to trigger host scan failed"
@@ -20221,12 +20360,14 @@ msgstr "ಮರಳಿ ವಿವರಿಸಲಾದ ಸ್ನ್ಯಾಪ್‌ಶ�
 #, c-format
 msgid "a secret with UUID %1$s already defined for use with %2$s"
 msgstr ""
-"UUID %1$s ಯನ್ನು ಹೊಂದಿರುವ ಒಂದು ಸೀಕ್ರೆಟ್‌ ಅನ್ನು %2$s ನೊಂದಿಗೆ ಬಳಸಲು ಈಗಾಗಲೆ ಸೂಚಿಸಲಾಗಿದೆ"
+"UUID %1$s ಯನ್ನು ಹೊಂದಿರುವ ಒಂದು ಸೀಕ್ರೆಟ್‌ ಅನ್ನು %2$s ನೊಂದಿಗೆ ಬಳಸಲು ಈಗಾಗಲೆ "
+"ಸೂಚಿಸಲಾಗಿದೆ"
 
 #, c-format
 msgid "a secret with UUID %1$s is already defined for use with %2$s"
 msgstr ""
-"UUID %1$s ಯನ್ನು ಹೊಂದಿರುವ ಒಂದು ಸೀಕ್ರೆಟ್‌ ಅನ್ನು %2$s ನೊಂದಿಗೆ ಬಳಸಲು ಈಗಾಗಲೆ ಸೂಚಿಸಲಾಗಿದೆ"
+"UUID %1$s ಯನ್ನು ಹೊಂದಿರುವ ಒಂದು ಸೀಕ್ರೆಟ್‌ ಅನ್ನು %2$s ನೊಂದಿಗೆ ಬಳಸಲು ಈಗಾಗಲೆ "
+"ಸೂಚಿಸಲಾಗಿದೆ"
 
 #, fuzzy
 msgid "a slirp-helper cannot be migrated"
@@ -20472,9 +20613,11 @@ msgid "architecture"
 msgstr "ಗೊತ್ತಿರದ ಆರ್ಕಿಟೆಕ್ಚರ್ %s"
 
 #, fuzzy, c-format
-msgid "architecture from emulator '%1$s' doesn't match given architecture '%2$s'"
+msgid ""
+"architecture from emulator '%1$s' doesn't match given architecture '%2$s'"
 msgstr ""
-"%1$s ಎಂಬ ಸಂರಚನಾ ಕಡತದ ಸಂಪರ್ಕಸಾಧನದ ಹೆಸರು ಒದಗಿಸಲಾದ %2$s ಎಂಬ ಹೆಸರಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
+"%1$s ಎಂಬ ಸಂರಚನಾ ಕಡತದ ಸಂಪರ್ಕಸಾಧನದ ಹೆಸರು ಒದಗಿಸಲಾದ %2$s ಎಂಬ ಹೆಸರಿಗೆ "
+"ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
 
 #, c-format
 msgid "argument key '%1$s' is too short or malformed"
@@ -20502,11 +20645,13 @@ msgid "arguments to echo"
 msgstr "ಪ್ರತಿಧ್ವನಿಸಲು ಆರ್ಗ್ಯುಮೆಂಟುಗಳು"
 
 #, fuzzy, c-format
-msgid "array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo 'disk' data"
+msgid ""
+"array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo 'disk' data"
 msgstr "guest-get-vcpus ಮರಳಿಸಲಾದ ಮೌಲ್ಯದಲ್ಲಿ ವ್ಯೂಹದ (ಅರೇ) ಘಟಕವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
 #, fuzzy, c-format
-msgid "array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo return data"
+msgid ""
+"array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo return data"
 msgstr "guest-get-vcpus ಮರಳಿಸಲಾದ ಮೌಲ್ಯದಲ್ಲಿ ವ್ಯೂಹದ (ಅರೇ) ಘಟಕವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
 msgid "array element missing in guest-get-disks return value"
@@ -20574,18 +20719,20 @@ msgstr "ಅನುಕ್ರಮಿತ ಕನ್ಸೋಲ್ ಅನ್ನು ಲಗ
 msgid ""
 "attempt to merge virtualports with mismatched instanceids ('%1$s' and '%2$s')"
 msgstr ""
-"ಹೊಂದಿಕೆಯಾಗದ instanceids ವರ್ಚುವಲ್‌ಪೋರ್ಟುಗಳನ್ನು ವಿಲೀನಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ ('%1$s' "
-"ಮತ್ತು '%2$s')"
+"ಹೊಂದಿಕೆಯಾಗದ instanceids ವರ್ಚುವಲ್‌ಪೋರ್ಟುಗಳನ್ನು ವಿಲೀನಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ "
+"('%1$s' ಮತ್ತು '%2$s')"
 
 #, c-format
 msgid ""
-"attempt to merge virtualports with mismatched interfaceids ('%1$s' and '%2$s')"
+"attempt to merge virtualports with mismatched interfaceids ('%1$s' and "
+"'%2$s')"
 msgstr ""
 "ಹೊಂದಿಕೆಯಾಗದ interfaceids ವರ್ಚುವಲ್‌ಪೋರ್ಟುಗಳನ್ನು ವಿಲೀನಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ "
 "('%1$s' ಮತ್ತು '%2$s)"
 
 #, c-format
-msgid "attempt to merge virtualports with mismatched managerids (%1$d and %2$d)"
+msgid ""
+"attempt to merge virtualports with mismatched managerids (%1$d and %2$d)"
 msgstr ""
 "ಹೊಂದಿಕೆಯಾಗದ managerids ಯೊಂದಿಗಿನ ವರ್ಚುವಲ್‌ಪೋರ್ಟುಗಳನ್ನು ವಿಲೀನಗೊಳಿಸಲು "
 "ಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ (%1$d ಮತ್ತು %2$d)"
@@ -20594,8 +20741,8 @@ msgstr ""
 msgid ""
 "attempt to merge virtualports with mismatched profileids ('%1$s' and '%2$s')"
 msgstr ""
-"ಹೊಂದಿಕೆಯಾಗದ profileids ವರ್ಚುವಲ್‌ಪೋರ್ಟುಗಳನ್ನು ವಿಲೀನಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ ('%1$s' "
-"ಮತ್ತು '%2$s)"
+"ಹೊಂದಿಕೆಯಾಗದ profileids ವರ್ಚುವಲ್‌ಪೋರ್ಟುಗಳನ್ನು ವಿಲೀನಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ "
+"('%1$s' ಮತ್ತು '%2$s)"
 
 #, c-format
 msgid "attempt to merge virtualports with mismatched typeids (%1$d and %2$d)"
@@ -20613,8 +20760,8 @@ msgstr ""
 #, c-format
 msgid "attempt to merge virtualports with mismatched types (%1$s and %2$s)"
 msgstr ""
-"ಹೊಂದಿಕೆಯಾಗದ ಬಗೆಗಳಲ್ಲಿ ವರ್ಚುವಲ್‌ಪೋರ್ಟುಗಳನ್ನು ವಿಲೀನಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ (%1$s ಮತ್ತು "
-"%2$s)"
+"ಹೊಂದಿಕೆಯಾಗದ ಬಗೆಗಳಲ್ಲಿ ವರ್ಚುವಲ್‌ಪೋರ್ಟುಗಳನ್ನು ವಿಲೀನಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ (%1$s "
+"ಮತ್ತು %2$s)"
 
 #, c-format
 msgid "audio ID %1$u is used multiple times"
@@ -20793,8 +20940,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"bandwidth %1$llu is greater than %2$lu which is the maximum value supported by "
-"this API"
+"bandwidth %1$llu is greater than %2$lu which is the maximum value supported "
+"by this API"
 msgstr ""
 
 #, fuzzy, c-format
@@ -20818,7 +20965,8 @@ msgstr "ಬ್ಯಾಂಡ್‌ವಿಡ್ತ್ %llu ಗಿಂತ ಕಡಿ�
 
 #, c-format
 msgid "base '%1$s' is not immediately below '%2$s' in chain for '%3$s'"
-msgstr "ಮೂಲ '%1$s' ಎನ್ನುವುದು ಸರಣಿಯಲ್ಲಿ '%2$s' ಗಿಂತ ತಕ್ಷಣದ ಕೆಳಗಡೆ ಇಲ್ಲ ('%3$s' ಗಾಗಿ)"
+msgstr ""
+"ಮೂಲ '%1$s' ಎನ್ನುವುದು ಸರಣಿಯಲ್ಲಿ '%2$s' ಗಿಂತ ತಕ್ಷಣದ ಕೆಳಗಡೆ ಇಲ್ಲ ('%3$s' ಗಾಗಿ)"
 
 msgid "base64-encoded secret value"
 msgstr "base64-ಎನ್‌ಕೋಡ್ ಆದಂತಹ ಸೀಕ್ರೆಟ್ ಮೌಲ್ಯ"
@@ -21066,7 +21214,8 @@ msgid "bridge interface stp should be on or off got %1$s"
 msgstr "ಬ್ರಿಡ್ಜ್ ಸಂಪರ್ಕಸಾಧನ stp ಯು ಆನ್‌ ಅಥವ ಆಫ್‌ ಆಗಿರಬೇಕು %1$s ಪಡೆದಿದೆ"
 
 #, fuzzy, c-format
-msgid "bridge macTableManager setting not allowed in %1$s mode (network '%2$s')"
+msgid ""
+"bridge macTableManager setting not allowed in %1$s mode (network '%2$s')"
 msgstr "%1$s ಕ್ರಮದಲ್ಲಿ ಬ್ರಿಜ್ ಹೆಸರಿಗೆ ಅನುಮತಿ ಇಲ್ಲ (ಜಾಲಬಂಧ '%2$s')"
 
 #, c-format
@@ -21320,7 +21469,8 @@ msgstr "ಸ್ಥಿತಿ ಬದಲಾವಣೆ ಲಾಕ್ ಅನ್ನು �
 
 #, fuzzy, c-format
 msgid ""
-"cannot acquire state change lock (held by monitor=%1$s) due to max_queued limit"
+"cannot acquire state change lock (held by monitor=%1$s) due to max_queued "
+"limit"
 msgstr "max_queued ಮಿತಿಯ ಕಾರಣದಿಂದಾಗಿ ಸ್ಥಿತಿ ಬದಲಾವಣೆ ಲಾಕ್ ಅನ್ನು ಪಡೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 msgid "cannot acquire state change lock due to max_queued limit"
@@ -21370,7 +21520,8 @@ msgstr ""
 "%1$s ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ನಲ್ಲಿ ಆನ್‌ಲೈನ್ ಮತ್ತು ಆಫ್‌ಲೈನ್ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ ಸ್ಥಿತಿಯ ನಡುವೆ ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ"
 
 #, c-format
-msgid "cannot change between online and offline snapshot state in snapshot %1$s"
+msgid ""
+"cannot change between online and offline snapshot state in snapshot %1$s"
 msgstr ""
 "%1$s ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ನಲ್ಲಿ ಆನ್‌ಲೈನ್ ಮತ್ತು ಆಫ್‌ಲೈನ್ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ ಸ್ಥಿತಿಯ ನಡುವೆ ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ"
 
@@ -21394,7 +21545,8 @@ msgstr "spice ಗ್ರಾಫಿಕ್ಸುಗಳಲ್ಲಿ ಸಂಪರ್�
 
 #, c-format
 msgid "cannot change network interface mac address from %1$s to %2$s"
-msgstr "ಜಾಲಬಂಧ ಸಂಪರ್ಕಸಾಧನದ ಮ್ಯಾಕ್ ವಿಳಾಸವನ್ನು %1$s ಇಂದ %2$s ಎಂಬುದಕ್ಕೆ ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ"
+msgstr ""
+"ಜಾಲಬಂಧ ಸಂಪರ್ಕಸಾಧನದ ಮ್ಯಾಕ್ ವಿಳಾಸವನ್ನು %1$s ಇಂದ %2$s ಎಂಬುದಕ್ಕೆ ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ"
 
 #, c-format
 msgid "cannot change network interface type to '%1$s'"
@@ -21821,7 +21973,8 @@ msgid "cannot generate dac user and group id for domain %1$s"
 msgstr "%1$s ಡೊಮೇನ್‌ಗಾಗಿ dac ಬಳಕೆದಾರ ಮತ್ತು ಗುಂಪನ್ನು ಉತ್ಪಾದಿಸಲಾಗಿಲ್ಲ"
 
 #, fuzzy, c-format
-msgid "cannot generate external snapshot name for disk '%1$s' on a '%2$s' device"
+msgid ""
+"cannot generate external snapshot name for disk '%1$s' on a '%2$s' device"
 msgstr "ಆಕರವಿಲ್ಲದೆ '%s' ಡಿಸ್ಕಿಗಾಗಿ ಬಾಹ್ಯ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಹೆಸರನ್ನು ಉತ್ಪಾದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 #, c-format
@@ -21930,20 +22083,20 @@ msgstr "ಅಸ್ಥಿರ ಡೊಮೇನ್‌ನ ಸ್ನ್ಯಾಪ್‌�
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x.%5$d - "
-"controller not found"
+"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
+"%5$d - controller not found"
 msgstr ""
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x.%5$d - not "
-"allowed by controller"
+"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
+"%5$d - not allowed by controller"
 msgstr ""
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:%3$02x:"
-"%4$02x.%5$d"
+"cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:"
+"%3$02x:%4$02x.%5$d"
 msgstr ""
 
 #, c-format
@@ -22498,11 +22651,11 @@ msgstr "ಚಾಲಕ ಕೊಂಡಿ %1$s ಅನ್ನು ಪರಿಹರಿಸ�
 
 #, c-format
 msgid ""
-"cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain '%3$s' "
-"uuid %4$s"
+"cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain "
+"'%3$s' uuid %4$s"
 msgstr ""
-"ಡೊಮೇನ್‌ '%1$s' uuid %2$s ಅನ್ನು '%3$s' uuid %4$s ಗೆ ಸೇರಿದ ಒಂದು ಕಡತದಿಂದ ಮರಳಿ ಸ್ಥಾಪಿಸಲು "
-"ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+"ಡೊಮೇನ್‌ '%1$s' uuid %2$s ಅನ್ನು '%3$s' uuid %4$s ಗೆ ಸೇರಿದ ಒಂದು ಕಡತದಿಂದ ಮರಳಿ "
+"ಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 msgid "cannot restore domain snapshot for running domain"
 msgstr "ಚಾಲನೆಯಲ್ಲಿರುವ ಡೊಮೇನ್‌ಗಾಗಿ ಡೊಮೇನ್ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿಲ್ಲ"
@@ -23701,16 +23854,16 @@ msgid ""
 "couldn't find a portgroup entry in network '%1$s' matching <portgroup "
 "name='%2$s'>"
 msgstr ""
-"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ <portgroup name='%2$s'> ಗೆ ತಾಳೆಯಾಗುವ ಒಂದು ಸಂಪರ್ಕಸ್ಥಾನಸಮೂಹ ನಮೂದು "
-"ಕಂಡುಬಂದಿಲ್ಲ"
+"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ <portgroup name='%2$s'> ಗೆ ತಾಳೆಯಾಗುವ ಒಂದು ಸಂಪರ್ಕಸ್ಥಾನಸಮೂಹ "
+"ನಮೂದು ಕಂಡುಬಂದಿಲ್ಲ"
 
 #, c-format
 msgid ""
 "couldn't find an interface entry in network '%1$s' matching <interface "
 "dev='%2$s'>"
 msgstr ""
-"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ \"<interface dev='%2$s'>\" ಗೆ ತಾಳೆಯಾಗುವ ಒಂದು ಸಂಪರ್ಕಸಾಧನ ನಮೂದು "
-"ಕಂಡುಬಂದಿಲ್ಲ"
+"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ \"<interface dev='%2$s'>\" ಗೆ ತಾಳೆಯಾಗುವ ಒಂದು ಸಂಪರ್ಕಸಾಧನ "
+"ನಮೂದು ಕಂಡುಬಂದಿಲ್ಲ"
 
 #, c-format
 msgid "couldn't find interface named '%1$s'"
@@ -23742,16 +23895,18 @@ msgstr "ಹೊಂದಿಕೆಯಾಗುವ TXT HOST ದಾಖಲೆಯನ್�
 
 #, c-format
 msgid "couldn't locate a matching dhcp host entry in network '%1$s'"
-msgstr "ಹೊಂದಿಕೆಯಾಗುವ dhcp ಆತಿಥೇಯ ನಮೂದನ್ನು '%1$s' ಜಾಲಬಂಧದಲ್ಲಿ ಪತ್ತೆಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+msgstr ""
+"ಹೊಂದಿಕೆಯಾಗುವ dhcp ಆತಿಥೇಯ ನಮೂದನ್ನು '%1$s' ಜಾಲಬಂಧದಲ್ಲಿ ಪತ್ತೆಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 #, c-format
 msgid "couldn't locate a matching dhcp range entry in network '%1$s'"
-msgstr "ಹೊಂದಿಕೆಯಾಗುವ dhcp ವ್ಯಾಪ್ತಿಯ ನಮೂದನ್ನು '%1$s' ಜಾಲಬಂಧದಲ್ಲಿ ಪತ್ತೆಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+msgstr ""
+"ಹೊಂದಿಕೆಯಾಗುವ dhcp ವ್ಯಾಪ್ತಿಯ ನಮೂದನ್ನು '%1$s' ಜಾಲಬಂಧದಲ್ಲಿ ಪತ್ತೆಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 #, fuzzy, c-format
 msgid ""
-"couldn't locate an existing dhcp host entry with \"mac='%1$s'\" \"name='%2$s'\" "
-"\"ip='%3$s'\" in network '%4$s'"
+"couldn't locate an existing dhcp host entry with \"mac='%1$s'\" "
+"\"name='%2$s'\" \"ip='%3$s'\" in network '%4$s'"
 msgstr "ಹೊಂದಿಕೆಯಾಗುವ dhcp ಆತಿಥೇಯ ನಮೂದನ್ನು '%s' ಜಾಲಬಂಧದಲ್ಲಿ ಪತ್ತೆಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 #, c-format
@@ -23767,7 +23922,8 @@ msgstr ""
 "ಜಾಲಬಂಧದಲ್ಲಿ ಯಾವುದೆ <ip> ಕಂಡುಬಂದಿಲ್ಲ"
 
 #, c-format
-msgid "couldn't update dhcp host entry - no <ip> element found in network '%1$s'"
+msgid ""
+"couldn't update dhcp host entry - no <ip> element found in network '%1$s'"
 msgstr ""
 "dhcp ಆತಿಥೇಯ ನಮೂದನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ - '%1$s' ಜಾಲಬಂಧದಲ್ಲಿ ಯಾವುದೆ <ip> "
 "ಕಂಡುಬಂದಿಲ್ಲ"
@@ -23901,7 +24057,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned an error: %1$s (%2$d) : %3$s"
+"curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned an error: %1$s (%2$d) : "
+"%3$s"
 msgstr ""
 "curl_easy_getinfo(CURLINFO_REDIRECT_URL) ಎನ್ನುವುದು ದೋಷವನ್ನು ಮರಳಿಸಿದೆ: %1$s "
 "(%2$d) : %3$s"
@@ -23912,12 +24069,14 @@ msgstr ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) ಋಣಾತ್ಮಕ ಪ್ರತಿಕ್ರಿಯೆ ಸಂಕೇತವನ್ನು ಮರಳಿಸಿದೆ"
 
 #, c-format
-msgid "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"
+msgid ""
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"
 msgstr ""
 
 #, c-format
 msgid ""
-"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d) : %3$s"
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d) : "
+"%3$s"
 msgstr ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) ಎನ್ನುವುದು ದೋಷವನ್ನು ಮರಳಿಸಿದೆ: %1$s "
 "(%2$d) : %3$s"
@@ -24203,7 +24362,8 @@ msgstr "dev->name ಬಫರ್ ಮಿತಿಮೀರಿಕೆ: %1$.3d:%2$.3d"
 
 #, c-format
 msgid "device %1$s iommu_group symlink %2$s has invalid group number %3$s"
-msgstr "ಸಾಧನ %1$s iommu_group symlink %2$s ಅಮಾನ್ಯವಾದ ಗುಂಪಿನ ಸಂಖ್ಯೆ %3$s ಅನ್ನು ಹೊಂದಿದೆ"
+msgstr ""
+"ಸಾಧನ %1$s iommu_group symlink %2$s ಅಮಾನ್ಯವಾದ ಗುಂಪಿನ ಸಂಖ್ಯೆ %3$s ಅನ್ನು ಹೊಂದಿದೆ"
 
 #, fuzzy, c-format
 msgid "device %1$s is already in use"
@@ -24216,8 +24376,8 @@ msgstr "ಸಾಧನ %1$s ವು ಒಂದು PCI ಸಾಧನವಾಗಿಲ್
 #, fuzzy, c-format
 msgid "device '%1$s' in network '%2$s' is not an SR-IOV Virtual Function"
 msgstr ""
-"<virtualport type='%1$s'> PCI ಪಾಸ್‌ತ್ರೂ ಮೂಲಕ SR-IOV ವರ್ಚುವಲ್ ಫಂಕ್ಷನ್ ಅನ್ನು ಬಳಸುವ '%2$s' "
-"ಜಾಲಬಂಧಕ್ಕಾಗಿ ಬೆಂಬಲವಿಲ್ಲ"
+"<virtualport type='%1$s'> PCI ಪಾಸ್‌ತ್ರೂ ಮೂಲಕ SR-IOV ವರ್ಚುವಲ್ ಫಂಕ್ಷನ್ ಅನ್ನು ಬಳಸುವ "
+"'%2$s' ಜಾಲಬಂಧಕ್ಕಾಗಿ ಬೆಂಬಲವಿಲ್ಲ"
 
 #, fuzzy, c-format
 msgid "device API '%1$s' not supported yet"
@@ -24338,7 +24498,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"dirty ring size of KVM feature '%1$s' differs: source: '%2$d', destination: '%3$d'"
+"dirty ring size of KVM feature '%1$s' differs: source: '%2$d', destination: "
+"'%3$d'"
 msgstr ""
 
 msgid "dirty-ring calculation mode requires dirty-ring feature enabled."
@@ -25376,7 +25537,8 @@ msgid "event '%1$s' for storage pool %2$s\n"
 msgstr "ಅಜ್ಞಾತವಾದ ಶೇಖರಣಾ ಪೂಲ್ %s ಬಗೆ"
 
 #, c-format
-msgid "event 'agent-lifecycle' for domain '%1$s': state: '%2$s' reason: '%3$s'\n"
+msgid ""
+"event 'agent-lifecycle' for domain '%1$s': state: '%2$s' reason: '%3$s'\n"
 msgstr ""
 
 #, c-format
@@ -25384,7 +25546,8 @@ msgid "event 'balloon-change' for domain '%1$s': %2$lluKiB\n"
 msgstr ""
 
 #, c-format
-msgid "event 'block-threshold' for domain '%1$s': dev: %2$s(%3$s) %4$llu %5$llu\n"
+msgid ""
+"event 'block-threshold' for domain '%1$s': dev: %2$s(%3$s) %4$llu %5$llu\n"
 msgstr ""
 
 #, c-format
@@ -25405,7 +25568,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"event 'graphics' for domain '%1$s': %2$s local[%3$s %4$s %5$s] remote[%6$s %7$s %8$s] %9$s\n"
+"event 'graphics' for domain '%1$s': %2$s local[%3$s %4$s %5$s] remote[%6$s "
+"%7$s %8$s] %9$s\n"
 msgstr ""
 
 #, c-format
@@ -25413,7 +25577,8 @@ msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
+msgid ""
+"event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
 msgstr ""
 
 #, c-format
@@ -25561,8 +25726,8 @@ msgstr "ಯುನಿಕ್ಯಾಸ್ಟ್‍ ಮ್ಯಾಕ್ ವಿಳಾ�
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s' in network '%2$s'"
 msgstr ""
-"ಯುನಿಕ್ಯಾಸ್ಟ್‍ ಮ್ಯಾಕ್ ವಿಳಾಸ ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು, '%1$s' ಜಾಲಬಂಧದಲ್ಲಿ ಮಲ್ಟಿಕ್ಯಾಸ್ಟ್‍ '%2$s' "
-"ಕಂಡುಬಂದಿದೆ"
+"ಯುನಿಕ್ಯಾಸ್ಟ್‍ ಮ್ಯಾಕ್ ವಿಳಾಸ ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು, '%1$s' ಜಾಲಬಂಧದಲ್ಲಿ ಮಲ್ಟಿಕ್ಯಾಸ್ಟ್‍ "
+"'%2$s' ಕಂಡುಬಂದಿದೆ"
 
 #, c-format
 msgid "expecting %1$zu consoles, but got %2$zu tty file handlers"
@@ -25645,8 +25810,8 @@ msgstr "%d ಬಾಹ್ಯ ಡಿಸ್ಕ್ ಸ್ನ್ಯಾಪ್‌ಶಾ�
 
 #, c-format
 msgid ""
-"external inactive snapshots are not supported on 'network' disks using '%1$s' "
-"protocol"
+"external inactive snapshots are not supported on 'network' disks using "
+"'%1$s' protocol"
 msgstr ""
 
 msgid "external memory snapshots require a filename"
@@ -25654,10 +25819,11 @@ msgstr "ಹೊರಗಿನ ಮೆಮೊರಿ ಸ್ನ್ಯಾಪ್‌ಶಾ�
 
 #, c-format
 msgid ""
-"external snapshot file for disk %1$s already exists and is not a block device: "
-"%2$s"
+"external snapshot file for disk %1$s already exists and is not a block "
+"device: %2$s"
 msgstr ""
-"%1$s ಡಿಸ್ಕಿಗಾಗಿ ಬಾಹ್ಯ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಈಗಾಗಲೆ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ ಮತ್ತು ಒಂದು ಬ್ಲಾಕ್ ಸಾಧನವಾಗಿಲ್ಲ: %2$s"
+"%1$s ಡಿಸ್ಕಿಗಾಗಿ ಬಾಹ್ಯ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಈಗಾಗಲೆ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ ಮತ್ತು ಒಂದು ಬ್ಲಾಕ್ ಸಾಧನವಾಗಿಲ್ಲ: "
+"%2$s"
 
 #, c-format
 msgid "external snapshot format for disk %1$s is unsupported: %2$s"
@@ -25969,7 +26135,8 @@ msgstr "ಪರಿಮಾಣ '%s/%s' ಅನ್ನು ರಚಿಸುವಲ್ಲ�
 
 #, c-format
 msgid "failed to destroy (stop) interface %1$s: %2$s%3$s%4$s"
-msgstr "ಸಂಪರ್ಕಸಾಧನ %1$s ವನ್ನು ನಾಶಗೊಳಿಸುವಲ್ಲಿ (ನಿಲ್ಲಿಸುವಲ್ಲಿ) ವಿಫಲಗೊಂಡಿದೆ: %2$s%3$s%4$s"
+msgstr ""
+"ಸಂಪರ್ಕಸಾಧನ %1$s ವನ್ನು ನಾಶಗೊಳಿಸುವಲ್ಲಿ (ನಿಲ್ಲಿಸುವಲ್ಲಿ) ವಿಫಲಗೊಂಡಿದೆ: %2$s%3$s%4$s"
 
 msgid "failed to determine host name"
 msgstr ""
@@ -26833,8 +27000,8 @@ msgstr ""
 #, c-format
 msgid "failed to unmark network %1$s as autostarted"
 msgstr ""
-"ಜಾಲಬಂಧ %1$s ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆರಂಭಿಸು ಎಂದು ಗುರುತು ಹಾಕದ್ದನ್ನು ತೆಗೆಯುವಲ್ಲಿ ವಿಫಲತೆ "
-"ಉಂಟಾಗಿದೆ"
+"ಜಾಲಬಂಧ %1$s ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆರಂಭಿಸು ಎಂದು ಗುರುತು ಹಾಕದ್ದನ್ನು ತೆಗೆಯುವಲ್ಲಿ "
+"ವಿಫಲತೆ ಉಂಟಾಗಿದೆ"
 
 #, c-format
 msgid "failed to unmark pool %1$s as autostarted"
@@ -27294,8 +27461,8 @@ msgstr "ಕೆಳಗಿರುವ ಶೇಖರಣೆಗಾಗಿನ ವಿನ್�
 
 #, c-format
 msgid ""
-"format of backing image '%1$s' of image '%2$s' was not specified in the image "
-"metadata (See https://libvirt.org/kbase/backing_chains.html for "
+"format of backing image '%1$s' of image '%2$s' was not specified in the "
+"image metadata (See https://libvirt.org/kbase/backing_chains.html for "
 "troubleshooting)"
 msgstr ""
 
@@ -27458,7 +27625,8 @@ msgstr "ವಿಭಾಗ ಮಾರ್ಗ '%1$s' ಎನ್ನುವುದು '/' �
 
 #, c-format
 msgid "got unexpected RPC call prog %1$d vers %2$d proc %3$d type %4$d"
-msgstr "prog %1$d vers %2$d proc %3$d type %4$d ಇಂದ ಅನಿರೀಕ್ಷಿತವಾದ RPC ಕರೆ ಬಂದಿದೆ"
+msgstr ""
+"prog %1$d vers %2$d proc %3$d type %4$d ಇಂದ ಅನಿರೀಕ್ಷಿತವಾದ RPC ಕರೆ ಬಂದಿದೆ"
 
 #, fuzzy
 msgid "got unknown HTTP error code"
@@ -27469,11 +27637,13 @@ msgid "got unknown HTTP error code %1$s"
 msgstr "ಅಜ್ಞಾತ ಟೈಮರ್ ಕ್ರಮ '%1$s'"
 
 #, c-format
-msgid "got wrong number of IOThread ids from QEMU monitor. got %1$d, wanted %2$d"
+msgid ""
+"got wrong number of IOThread ids from QEMU monitor. got %1$d, wanted %2$d"
 msgstr ""
 
 #, c-format
-msgid "got wrong number of IOThread pids from QEMU monitor. got %1$d, wanted %2$zu"
+msgid ""
+"got wrong number of IOThread pids from QEMU monitor. got %1$d, wanted %2$zu"
 msgstr ""
 
 msgid "gracefully shutdown a domain"
@@ -27528,8 +27698,8 @@ msgstr "ಆತಿಥೇಯ CPU ಅತಿಥಿ CPU ಗೆ ನಿಖರವಾಗ�
 
 #, c-format
 msgid ""
-"guest CPU doesn't match specification: extra features: %1$s, missing features: "
-"%2$s"
+"guest CPU doesn't match specification: extra features: %1$s, missing "
+"features: %2$s"
 msgstr ""
 
 #, c-format
@@ -27700,7 +27870,8 @@ msgstr ""
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %1$d > %2$d"
 msgstr ""
-"ಮ್ಯಾಪಿನ ಬಫರಿನ ಉದ್ದವು ಗರಿಷ್ಟ ಮಿತಿಯನ್ನು ಮೀರಿದೆ ಎಂದು ಆತಿಥೇಯವು ವರದಿ ಮಾಡಿದೆ : %1$d > %2$d"
+"ಮ್ಯಾಪಿನ ಬಫರಿನ ಉದ್ದವು ಗರಿಷ್ಟ ಮಿತಿಯನ್ನು ಮೀರಿದೆ ಎಂದು ಆತಿಥೇಯವು ವರದಿ ಮಾಡಿದೆ : %1$d > "
+"%2$d"
 
 #, c-format
 msgid "host reports too many vCPUs: %1$d > %2$d"
@@ -27888,7 +28059,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"if using CPU maximum physical address mode='%1$s', bits= must be specified too"
+"if using CPU maximum physical address mode='%1$s', bits= must be specified "
+"too"
 msgstr ""
 
 #, c-format
@@ -28100,7 +28272,8 @@ msgstr "%s ಬಗೆಯ ಸಂಪರ್ಕಸಾಧನಗಳಲ್ಲಿ ಫಿ�
 
 #, fuzzy, c-format
 msgid ""
-"interface %1$s - filterref is not supported for network interfaces of type %2$s"
+"interface %1$s - filterref is not supported for network interfaces of type "
+"%2$s"
 msgstr "%s ಬಗೆಯ ಸಂಪರ್ಕಸಾಧನಗಳಲ್ಲಿ ಫಿಲ್ಟರುಗಳಿಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 
 #, fuzzy, c-format
@@ -28111,7 +28284,8 @@ msgstr "%s ಬಗೆಯ ಸಂಪರ್ಕಸಾಧನಗಳಲ್ಲಿ ಫಿ�
 
 #, fuzzy, c-format
 msgid ""
-"interface %1$s - multiqueue is not supported for network interfaces of type %2$s"
+"interface %1$s - multiqueue is not supported for network interfaces of type "
+"%2$s"
 msgstr "%s ಬಗೆಯ ಸಂಪರ್ಕಸಾಧನಗಳಲ್ಲಿ ಫಿಲ್ಟರುಗಳಿಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 
 #, c-format
@@ -28225,8 +28399,8 @@ msgstr "%d ಬಾಹ್ಯ ಡಿಸ್ಕ್ ಸ್ನ್ಯಾಪ್‌ಶಾ�
 
 #, c-format
 msgid ""
-"internal inactive snapshots are not supported on 'network' disks using '%1$s' "
-"protocol"
+"internal inactive snapshots are not supported on 'network' disks using "
+"'%1$s' protocol"
 msgstr ""
 
 msgid "internal parse requested with NULL current"
@@ -28258,8 +28432,8 @@ msgstr "<vlan> ನಲ್ಲಿ ಅಮಾನ್ಯವಾದ \"trunk='%1$s'\" - �
 
 #, c-format
 msgid ""
-"invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than one "
-"vlan tag"
+"invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than "
+"one vlan tag"
 msgstr ""
 "<vlan> ನಲ್ಲಿ ಅಮಾನ್ಯವಾದ \"trunk='%1$s'\" - ಒಂದಕ್ಕಿಂತ ಹೆಚ್ಚಿನ  vlak ಟ್ಯಾಗ್‌ನಲ್ಲಿ "
 "trunk='yes' ಅಗತ್ಯವಿದೆ"
@@ -28497,7 +28671,8 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid ""
-"invalid character in service attribute '%1$s' in DNS SRV record of network '%2$s'"
+"invalid character in service attribute '%1$s' in DNS SRV record of network "
+"'%2$s'"
 msgstr ""
 "%s ಜಾಲಬಂಧದ DNS TXT ರೆಕಾರ್ಡಿನಲ್ಲಿನ ಅಗತ್ಯವಾದ ಹೆಸರಿನ ಗುಣವೈಶಿಷ್ಟ್ಯವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
@@ -28688,7 +28863,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"invalid mac address '%1$s' in 'unicast-table' array in query-rx-filter response"
+"invalid mac address '%1$s' in 'unicast-table' array in query-rx-filter "
+"response"
 msgstr ""
 
 #, fuzzy, c-format
@@ -30134,7 +30310,8 @@ msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
 msgstr ""
 
 #, c-format
-msgid "memory device slot '%1$u' is already being used by another memory device"
+msgid ""
+"memory device slot '%1$u' is already being used by another memory device"
 msgstr ""
 
 msgid "memory device target node"
@@ -31100,7 +31277,8 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid ""
-"missing required protocol attribute in DNS SRV record '%1$s' of network '%2$s'"
+"missing required protocol attribute in DNS SRV record '%1$s' of network "
+"'%2$s'"
 msgstr ""
 "'%1$s' ಹೆಸರಿನ (%2$s ಜಾಲಬಂಧದ) DNS TXT ರೆಕಾರ್ಡಿನಲ್ಲಿನ ಅಗತ್ಯವಾದ ಮೌಲ್ಯದ ಗುಣವೈಶಿಷ್ಟ್ಯವು "
 "ಕಾಣಿಸುತ್ತಿಲ್ಲ"
@@ -31112,7 +31290,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"missing required value attribute in DNS TXT record named '%1$s' of network %2$s"
+"missing required value attribute in DNS TXT record named '%1$s' of network "
+"%2$s"
 msgstr ""
 "'%1$s' ಹೆಸರಿನ (%2$s ಜಾಲಬಂಧದ) DNS TXT ರೆಕಾರ್ಡಿನಲ್ಲಿನ ಅಗತ್ಯವಾದ ಮೌಲ್ಯದ ಗುಣವೈಶಿಷ್ಟ್ಯವು "
 "ಕಾಣಿಸುತ್ತಿಲ್ಲ"
@@ -31466,7 +31645,8 @@ msgid "multidevs is not supported with this QEMU binary"
 msgstr "ಈ QEMU ಬೈನರಿಯೊಂದಿಗೆ SATAಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 
 #, fuzzy, c-format
-msgid "multiple <portgroup> elements with the same name (%1$s) in network '%2$s'"
+msgid ""
+"multiple <portgroup> elements with the same name (%1$s) in network '%2$s'"
 msgstr "'%s' ಜಾಲಬಂಧದಲ್ಲಿನ ಒಂದು IPv6 ಘಟಕದಲ್ಲಿ ಬೆಂಬಲವಿರದ <tftp> ಘಟಕ"
 
 #, c-format
@@ -31661,8 +31841,8 @@ msgstr "'%1$s' ಜಾಲಬಂಧವು ಡೊಮೇನ್‌ನಿಂದ ಬಳ
 
 #, c-format
 msgid ""
-"network '%1$s' claims the PCI device at domain=%2$d bus=%3$d slot=%4$d function=%5$d "
-"is already in use by a different network port"
+"network '%1$s' claims the PCI device at domain=%2$d bus=%3$d slot=%4$d "
+"function=%5$d is already in use by a different network port"
 msgstr ""
 
 #, c-format
@@ -31670,15 +31850,20 @@ msgid "network '%1$s' does not have a bridge name."
 msgstr "ಜಾಲಬಂಧ '%1$s' ವು ಒಂದು ಬ್ರಿಡ್ಜ್ ಹೆಸರನ್ನು ಹೊಂದಿಲ್ಲ."
 
 #, c-format
-msgid "network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by domain"
+msgid ""
+"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by "
+"domain"
 msgstr ""
-"'%1$s' ಜಾಲಬಂಧವು ಡೊಮೇನ್‌ನಿಂದ ಬಳಸಲಾಗುತ್ತಿರುವ PCI ಸಾಧನ %2$04x:%3$02x:%4$02x.%5$x ಅನ್ನು ಹೊಂದಿಲ್ಲ"
+"'%1$s' ಜಾಲಬಂಧವು ಡೊಮೇನ್‌ನಿಂದ ಬಳಸಲಾಗುತ್ತಿರುವ PCI ಸಾಧನ %2$04x:%3$02x:%4$02x.%5$x "
+"ಅನ್ನು ಹೊಂದಿಲ್ಲ"
 
 #, fuzzy, c-format
 msgid ""
-"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by network port"
+"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by "
+"network port"
 msgstr ""
-"'%1$s' ಜಾಲಬಂಧವು ಡೊಮೇನ್‌ನಿಂದ ಬಳಸಲಾಗುತ್ತಿರುವ PCI ಸಾಧನ %2$04x:%3$02x:%4$02x.%5$x ಅನ್ನು ಹೊಂದಿಲ್ಲ"
+"'%1$s' ಜಾಲಬಂಧವು ಡೊಮೇನ್‌ನಿಂದ ಬಳಸಲಾಗುತ್ತಿರುವ PCI ಸಾಧನ %2$04x:%3$02x:%4$02x.%5$x "
+"ಅನ್ನು ಹೊಂದಿಲ್ಲ"
 
 #, fuzzy, c-format
 msgid "network '%1$s' doesn't have an IP address"
@@ -31699,17 +31884,18 @@ msgstr ""
 
 #, c-format
 msgid ""
-"network '%1$s' has forward mode '%2$s'  but lists a device by PCI address in the "
-"device pool. This is only supported for networks with forward mode 'hostdev'"
+"network '%1$s' has forward mode '%2$s' but lists a device by PCI address in "
+"the device pool. This is only supported for networks with forward mode "
+"'hostdev'"
 msgstr ""
 
 #, c-format
 msgid ""
-"network '%1$s' has multiple default <portgroup> elements (%2$s and %3$s), but only "
-"one default is allowed"
+"network '%1$s' has multiple default <portgroup> elements (%2$s and %3$s), "
+"but only one default is allowed"
 msgstr ""
-"'%1$s' ಜಾಲಬಂಧವು ಅನೇಕ ಪೂರ್ವನಿಯೋಜಿತ <portgroup> ಘಟಕಗಳನ್ನು (%2$s ಮತ್ತು %3$s) ಹೊಂದಿದೆ, "
-"ಆದರೆ ಕೇವಲ ಒಂದು ಪೂರ್ವನಿಯೋಜಿತಕ್ಕೆ ಮಾತ್ರ ಅನುಮತಿಸಲಾಗುತ್ತದೆ"
+"'%1$s' ಜಾಲಬಂಧವು ಅನೇಕ ಪೂರ್ವನಿಯೋಜಿತ <portgroup> ಘಟಕಗಳನ್ನು (%2$s ಮತ್ತು %3$s) "
+"ಹೊಂದಿದೆ, ಆದರೆ ಕೇವಲ ಒಂದು ಪೂರ್ವನಿಯೋಜಿತಕ್ಕೆ ಮಾತ್ರ ಅನುಮತಿಸಲಾಗುತ್ತದೆ"
 
 #, c-format
 msgid "network '%1$s' has no associated interface or bridge"
@@ -31733,14 +31919,16 @@ msgstr "ಜಾಲಬಂಧವು %1$s ಸಕ್ರಿಯವಾಗಿಲ್ಲ"
 
 #, c-format
 msgid ""
-"network '%1$s' requires exclusive access to interfaces, but none are available"
+"network '%1$s' requires exclusive access to interfaces, but none are "
+"available"
 msgstr ""
 "ಸಂಪರ್ಕಸಾಧನಗಳಿಗೆ '%1$s' ಜಾಲಬಂಧಕ್ಕೆ ಮೀಸಲಿಡಲಾದ ಪ್ರವೇಶಾಧಿಕಾರದ ಅಗತ್ಯವಿದೆ, ಆದರೆ ಯಾವುವೂ "
 "ಲಭ್ಯವಿಲ್ಲ"
 
 #, c-format
 msgid ""
-"network '%1$s' uses a direct mode, but has no forward dev and no interface pool"
+"network '%1$s' uses a direct mode, but has no forward dev and no interface "
+"pool"
 msgstr ""
 "'%1$s' ಜಾಲಬಂಧವು ಒಂದು ನೇರವಾದ ಸ್ಥಿತಿಯನ್ನು ಬಳಸುತ್ತದೆ, ಆದರೆ ಅದು ಯಾವುದೆ ಫಾರ್ವಾರ್ಡ್ dev "
 "ಆಗಲಿ ಮತ್ತು ಯಾವುದೆ ಸಂಪರ್ಕಸಾಧನ ಪೂಲ್ ಅನ್ನು ಹೊಂದಿಲ್ಲ"
@@ -31758,8 +31946,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"network device saved config file '%1$s' has unexpected contents, missing both "
-"'MAC' and 'adminMAC': '%2$.60s'"
+"network device saved config file '%1$s' has unexpected contents, missing "
+"both 'MAC' and 'adminMAC': '%2$.60s'"
 msgstr ""
 
 #, c-format
@@ -31784,7 +31972,8 @@ msgstr "ಜಾಲಬಂಧ ಫಿಲ್ಟರಿನ ಹೆಸರು ಅಥವ uu
 
 #, c-format
 msgid "network filter config filename '%1$s' does not match name '%2$s'"
-msgstr "ಜಾಲಬಂಧ ಫಿಲ್ಟರ್ ಸಂರಚನಾ ಕಡತದ ಹೆಸರು '%1$s', '%2$s' ಎಂಬ ಹೆಸರಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
+msgstr ""
+"ಜಾಲಬಂಧ ಫಿಲ್ಟರ್ ಸಂರಚನಾ ಕಡತದ ಹೆಸರು '%1$s', '%2$s' ಎಂಬ ಹೆಸರಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
 
 msgid "network filter information in XML"
 msgstr "XML ನಲ್ಲಿ ಜಾಲಬಂಧ ಫಿಲ್ಟರ್ ಮಾಹಿತಿ"
@@ -32022,11 +32211,13 @@ msgstr ""
 
 #, c-format
 msgid "no WWNN supplied for '%1$s', and auto-generation failed"
-msgstr "'%1$s' ಗಾಗಿ ಯಾವುದೆ WWNN ಅನ್ನು ಒದಗಿಸಲಾಗಿಲ್ಲ, ಮತ್ತು ಸ್ವಯಂ-ಉತ್ಪತ್ತಿಯು ವಿಫಲಗೊಂಡಿದೆ"
+msgstr ""
+"'%1$s' ಗಾಗಿ ಯಾವುದೆ WWNN ಅನ್ನು ಒದಗಿಸಲಾಗಿಲ್ಲ, ಮತ್ತು ಸ್ವಯಂ-ಉತ್ಪತ್ತಿಯು ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
 msgid "no WWPN supplied for '%1$s', and auto-generation failed"
-msgstr "'%1$s' ಗಾಗಿ ಯಾವುದೆ WWPN ಅನ್ನು ಒದಗಿಸಲಾಗಿಲ್ಲ, ಮತ್ತು ಸ್ವಯಂ-ಉತ್ಪತ್ತಿಯು ವಿಫಲಗೊಂಡಿದೆ"
+msgstr ""
+"'%1$s' ಗಾಗಿ ಯಾವುದೆ WWPN ಅನ್ನು ಒದಗಿಸಲಾಗಿಲ್ಲ, ಮತ್ತು ಸ್ವಯಂ-ಉತ್ಪತ್ತಿಯು ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
 msgid "no assigned pty for device %1$s"
@@ -32082,7 +32273,8 @@ msgstr "'%1$s' ಗಾಗಿ ಯಾವುದೆ ಸಾಧನ ಸಾಮರ್ಥ�
 
 #, c-format
 msgid ""
-"no device found at address '%1$s' matching MAC address '%2$s' and alias '%3$s'"
+"no device found at address '%1$s' matching MAC address '%2$s' and alias "
+"'%3$s'"
 msgstr ""
 
 #, c-format
@@ -32823,7 +33015,8 @@ msgid "only connect if safe console handling is supported"
 msgstr "ಸುರಕ್ಷಿತ ಕನ್ಸೋಲ್ ನಿಭಾಯಿಸುವಿಕೆಗೆ ಬೆಂಬಲವಿದ್ದಲ್ಲಿ ಮಾತ್ರ ಸಂಪರ್ಕಸಾಧಿಸು"
 
 #, c-format
-msgid "only cpu feature policies 'require' and 'disable' are supported for %1$s"
+msgid ""
+"only cpu feature policies 'require' and 'disable' are supported for %1$s"
 msgstr ""
 
 msgid "only i686 and x86_64 guests support panic device of model 'hyperv'"
@@ -33738,11 +33931,13 @@ msgstr "profileid ನಿಯತಾಂಕವು ಬಹಳ ಉದ್ದವಾಗಿ
 
 #, c-format
 msgid "program mismatch (actual %1$x, expected %2$x)"
-msgstr "ಪ್ರೊಗ್ರಾಂ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ (ನಿಜವಾದದ್ದು %1$x, ಆದರೆ %2$x ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು)"
+msgstr ""
+"ಪ್ರೊಗ್ರಾಂ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ (ನಿಜವಾದದ್ದು %1$x, ಆದರೆ %2$x ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು)"
 
 #, fuzzy, c-format
 msgid "program mismatch in event (actual 0x%1$x, expected 0x%2$x)"
-msgstr "ಪ್ರೊಗ್ರಾಂ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ (ನಿಜವಾದದ್ದು %1$x, ಆದರೆ %2$x ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು)"
+msgstr ""
+"ಪ್ರೊಗ್ರಾಂ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ (ನಿಜವಾದದ್ದು %1$x, ಆದರೆ %2$x ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು)"
 
 #, fuzzy, c-format
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
@@ -34285,7 +34480,8 @@ msgid "removing block or network volumes is not supported: %1$s"
 msgstr "ಖಂಡ ಅಥವ ಜಾಲಬಂಧ ಪರಿಮಾಣಗಳನ್ನು ತೆಗೆದುಹಾಕುವುದನ್ನು ಬೆಂಬಲಿಸಲಾಗುವುದಿಲ್ಲ: %1$s"
 
 #, fuzzy, c-format
-msgid "removing of '%1$s' volumes is not supported by the gluster backend: %2$s"
+msgid ""
+"removing of '%1$s' volumes is not supported by the gluster backend: %2$s"
 msgstr "ಖಂಡ ಅಥವ ಜಾಲಬಂಧ ಪರಿಮಾಣಗಳನ್ನು ತೆಗೆದುಹಾಕುವುದನ್ನು ಬೆಂಬಲಿಸಲಾಗುವುದಿಲ್ಲ: %s"
 
 #, fuzzy
@@ -34428,20 +34624,21 @@ msgid ""
 "requested vcpu count is greater than the count of enabled vcpus in the "
 "domain: %1$d > %2$d"
 msgstr ""
-"ಡೊಮೇನ್‌ಗಾಗಿ, ಗರಿಷ್ಟ ಅನುಮತಿ ಇರುವ vcpus ಮನವಿ ಸಲ್ಲಿಸಲಾದ vcpus ಗಿಂತ ದೊಡ್ಡದಾಗಿದೆ: %1$d > "
-"%2$d"
+"ಡೊಮೇನ್‌ಗಾಗಿ, ಗರಿಷ್ಟ ಅನುಮತಿ ಇರುವ vcpus ಮನವಿ ಸಲ್ಲಿಸಲಾದ vcpus ಗಿಂತ ದೊಡ್ಡದಾಗಿದೆ: %1$d "
+"> %2$d"
 
 #, c-format
 msgid ""
-"requested vcpus is greater than max allowable vcpus for the domain: %1$d > %2$d"
-msgstr ""
-"ಡೊಮೇನ್‌ಗಾಗಿ, ಗರಿಷ್ಟ ಅನುಮತಿ ಇರುವ vcpus ಮನವಿ ಸಲ್ಲಿಸಲಾದ vcpus ಗಿಂತ ದೊಡ್ಡದಾಗಿದೆ: %1$d > "
+"requested vcpus is greater than max allowable vcpus for the domain: %1$d > "
 "%2$d"
+msgstr ""
+"ಡೊಮೇನ್‌ಗಾಗಿ, ಗರಿಷ್ಟ ಅನುಮತಿ ಇರುವ vcpus ಮನವಿ ಸಲ್ಲಿಸಲಾದ vcpus ಗಿಂತ ದೊಡ್ಡದಾಗಿದೆ: %1$d "
+"> %2$d"
 
 #, fuzzy, c-format
 msgid ""
-"requested vcpus is greater than max allowable vcpus for the live domain: %1$u "
-"> %2$u"
+"requested vcpus is greater than max allowable vcpus for the live domain: "
+"%1$u > %2$u"
 msgstr ""
 "ಡೊಮೇನ್‌ಗಾಗಿ, ಗರಿಷ್ಟ ಅನುಮತಿ ಇರುವ vcpus ಮನವಿ ಸಲ್ಲಿಸಲಾದ vcpus ಗಿಂತ ದೊಡ್ಡದಾಗಿದೆ: %d > "
 "%d"
@@ -34863,7 +35060,8 @@ msgid "server which to list connected clients from"
 msgstr ""
 
 #, c-format
-msgid "service attribute '%1$s' in network '%2$s' is too long, limit is %3$d bytes"
+msgid ""
+"service attribute '%1$s' in network '%2$s' is too long, limit is %3$d bytes"
 msgstr ""
 
 msgid "set a secret value"
@@ -35014,11 +35212,13 @@ msgid "sgx epc isn't supported by this QEMU binary"
 msgstr ""
 
 #, c-format
-msgid "sgx epc size %1$lld on host node %2$d is less than requested size %3$lld"
+msgid ""
+"sgx epc size %1$lld on host node %2$d is less than requested size %3$lld"
 msgstr ""
 
 #, c-format
-msgid "sgx epc size %1$lld on host node %2$zd is less than requested size %3$lld"
+msgid ""
+"sgx epc size %1$lld on host node %2$zd is less than requested size %3$lld"
 msgstr ""
 
 msgid "sgx-epc memory info data is missing 'memdev'"
@@ -35257,8 +35457,8 @@ msgid ""
 "source for disk '%1$s' is not a regular file; refusing to generate external "
 "snapshot name"
 msgstr ""
-"'%1$s' ಡಿಸ್ಕಿಗಾಗಿನ ಆಕರವು ಒಂದು ಸಾಮಾನ್ಯವಾದ ಕಡತವಲ್ಲ, ಬಾಹ್ಯ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಹೆಸರನ್ನು ಉತ್ಪಾದಿಸಲು "
-"ನಿರಾಕರಿಸಲಾಗುತ್ತಿದೆ"
+"'%1$s' ಡಿಸ್ಕಿಗಾಗಿನ ಆಕರವು ಒಂದು ಸಾಮಾನ್ಯವಾದ ಕಡತವಲ್ಲ, ಬಾಹ್ಯ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಹೆಸರನ್ನು "
+"ಉತ್ಪಾದಿಸಲು ನಿರಾಕರಿಸಲಾಗುತ್ತಿದೆ"
 
 #, fuzzy
 msgid "source media is a block device"
@@ -35411,7 +35611,8 @@ msgstr "ಮೌಲ್ಯವು ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ: %llu%
 
 #, fuzzy, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
-msgstr "ಪ್ರೊಗ್ರಾಂ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ (ನಿಜವಾದದ್ದು %1$x, ಆದರೆ %2$x ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು)"
+msgstr ""
+"ಪ್ರೊಗ್ರಾಂ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ (ನಿಜವಾದದ್ದು %1$x, ಆದರೆ %2$x ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು)"
 
 msgid "stopped, with no saved guests"
 msgstr "ನಿಲ್ಲಿಸಲಾಗಿದೆ, ಉಳಿಸಲಾದ ಅತಿಥಿಗಳಿಲ್ಲದೆ"
@@ -35960,30 +36161,32 @@ msgid ""
 "there is an existing dhcp host entry in network '%1$s' that matches \"<host "
 "mac='%2$s' name='%3$s' ip='%4$s'/>\""
 msgstr ""
-"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ \"<host mac='%2$s' name='%3$s' ip='%4$s'/>\" ಗೆ ತಾಳೆಯಾಗುವ ಒಂದು "
-"dhcp ಆತಿಥೇಯವು ಇದೆ"
+"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ \"<host mac='%2$s' name='%3$s' ip='%4$s'/>\" ಗೆ ತಾಳೆಯಾಗುವ "
+"ಒಂದು dhcp ಆತಿಥೇಯವು ಇದೆ"
 
 #, c-format
 msgid ""
-"there is an existing dhcp range entry in network '%1$s' that matches \"<range "
-"start='%2$s' end='%3$s'/>\""
+"there is an existing dhcp range entry in network '%1$s' that matches "
+"\"<range start='%2$s' end='%3$s'/>\""
 msgstr ""
-"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ \"<range start='%2$s' end='%3$s'/>\" ಗೆ ತಾಳೆಯಾಗುವ ಒಂದು dhcp "
-"ವ್ಯಾಪ್ತಿಯು ಇದೆ"
+"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ \"<range start='%2$s' end='%3$s'/>\" ಗೆ ತಾಳೆಯಾಗುವ ಒಂದು "
+"dhcp ವ್ಯಾಪ್ತಿಯು ಇದೆ"
 
 #, c-format
 msgid ""
 "there is an existing interface entry in network '%1$s' that matches "
 "\"<interface dev='%2$s'>\""
 msgstr ""
-"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ \"<interface dev='%2$s'>\" ಗೆ ತಾಳೆಯಾಗುವ ಒಂದು ಸಂಪರ್ಕಸಾಧನವು ಇದೆ"
+"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ \"<interface dev='%2$s'>\" ಗೆ ತಾಳೆಯಾಗುವ ಒಂದು ಸಂಪರ್ಕಸಾಧನವು "
+"ಇದೆ"
 
 #, c-format
 msgid ""
 "there is an existing portgroup entry in network '%1$s' that matches "
 "\"<portgroup name='%2$s'>\""
 msgstr ""
-"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ \"<portgroup name='%2$s'>\" ಗೆ ತಾಳೆಯಾಗುವ ಒಂದು ಸಂಪರ್ಕಸ್ಥಾನಸಮೂಹವಿದೆ"
+"'%1$s' ಜಾಲಬಂಧದಲ್ಲಿ \"<portgroup name='%2$s'>\" ಗೆ ತಾಳೆಯಾಗುವ ಒಂದು "
+"ಸಂಪರ್ಕಸ್ಥಾನಸಮೂಹವಿದೆ"
 
 msgid "there is another transaction running."
 msgstr "ಇನ್ನೊಂದು ವ್ಯವಹಾರವು ಈಗಾಗಲೆ ಚಾಲನೆಯಲ್ಲಿದೆ."
@@ -36079,7 +36282,8 @@ msgid "thread_pool_max (%1$d) must be a positive number or -1"
 msgstr ""
 
 #, c-format
-msgid "thread_pool_max (%1$d) must be equal to or greater than 0 for live change"
+msgid ""
+"thread_pool_max (%1$d) must be equal to or greater than 0 for live change"
 msgstr ""
 
 msgid "thread_pool_max must be a positive integer"
@@ -36094,7 +36298,8 @@ msgid "thread_pool_min (%1$d) must be equal to or greater than -1"
 msgstr ""
 
 #, c-format
-msgid "thread_pool_min (%1$d) must be equal to or greater than 0 for live change"
+msgid ""
+"thread_pool_min (%1$d) must be equal to or greater than 0 for live change"
 msgstr ""
 
 msgid ""
@@ -36220,14 +36425,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' for "
-"'virDomainCheckpointListAllChildren'"
+"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' "
+"for 'virDomainCheckpointListAllChildren'"
 msgstr ""
 
 #, c-format
 msgid ""
-"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' for "
-"'virDomainListAllCheckpoints'"
+"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' "
+"for 'virDomainListAllCheckpoints'"
 msgstr ""
 
 #, c-format
@@ -36564,7 +36769,8 @@ msgstr "%1$s ಹಬ್‌ ಬಗೆಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 
 #, fuzzy, c-format
 msgid "type mismatch in event (actual 0x%1$x, expected 0x%2$x)"
-msgstr "ಪ್ರೊಗ್ರಾಂ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ (ನಿಜವಾದದ್ದು %1$x, ಆದರೆ %2$x ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು)"
+msgstr ""
+"ಪ್ರೊಗ್ರಾಂ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ (ನಿಜವಾದದ್ದು %1$x, ಆದರೆ %2$x ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು)"
 
 msgid "type of source (block|file|network)"
 msgstr ""
@@ -36685,11 +36891,9 @@ msgstr "epoll fd ಅನ್ನು ನಿರ್ಮಿಸಲಾಗಿಲ್ಲ"
 
 #, c-format
 msgid ""
-"unable to delete interface '%1$s' in network '%2$s'. It is currently being used  "
-"by %3$d domains."
+"unable to delete interface '%1$s' in network '%2$s'. It is currently being "
+"used by %3$d domains."
 msgstr ""
-"'%1$s' ಸಂಪರ್ಕಸಾಧನವನ್ನು ಅಳಿಸಲು '%2$s' ಜಾಲಬಂಧದಲ್ಲಿ ಸಾಧ್ಯವಾಗಿಲ್ಲ. ಇದನ್ನು ಪ್ರಸಕ್ತ %3$d "
-"ಡೊಮೇನ್‌ಗಳಿಂದ ಬಳಸಲಾಗುತ್ತಿದೆ."
 
 #, c-format
 msgid "unable to determine access mode of %1$s"
@@ -36897,7 +37101,8 @@ msgid "unable to parse blkio device '%1$s' '%2$s'"
 msgstr "PCI ಸಾಧನ %1$s ಅನ್ನು ಮರಳಿ ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: %2$s"
 
 #, c-format
-msgid "unable to parse contents of 'file' field in '%1$s' from cloud-hypervisor"
+msgid ""
+"unable to parse contents of 'file' field in '%1$s' from cloud-hypervisor"
 msgstr ""
 
 #, c-format
@@ -37061,7 +37266,8 @@ msgstr "tty ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಹೊಂದಿಸಲ�
 
 #, c-format
 msgid "unable to set user and group to '%1$ld:%2$ld' on '%3$s'"
-msgstr " '%1$ld:%2$ld' ಕ್ಕೆ ಬಳಕೆದಾರ ಮತ್ತು ಗುಂಪನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ ('%3$s' ನಲ್ಲಿ)"
+msgstr ""
+" '%1$ld:%2$ld' ಕ್ಕೆ ಬಳಕೆದಾರ ಮತ್ತು ಗುಂಪನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ ('%3$s' ನಲ್ಲಿ)"
 
 #, fuzzy
 msgid "unable to set vnet or multiqueue flags on macvtap"
@@ -37319,8 +37525,10 @@ msgid "unexpected domain type %1$d"
 msgstr "ಅನಿರೀಕ್ಷಿತ ಡೊಮೇನ್‌ ಬಗೆ %1$d"
 
 #, c-format
-msgid "unexpected element <%1$s>, expecting <%2$s>, while updating network '%3$s'"
-msgstr "ಅನಿರೀಕ್ಷಿತ ಘಟಕ <%1$s>, <%2$s> ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು, '%3$s' ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡುವಾಗ"
+msgid ""
+"unexpected element <%1$s>, expecting <%2$s>, while updating network '%3$s'"
+msgstr ""
+"ಅನಿರೀಕ್ಷಿತ ಘಟಕ <%1$s>, <%2$s> ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು, '%3$s' ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡುವಾಗ"
 
 msgid "unexpected encryption engine"
 msgstr ""
@@ -38073,7 +38281,8 @@ msgstr ""
 #, c-format
 msgid "unreachable static route gateway '%1$s' specified for network '%2$s'"
 msgstr ""
-"ತಲುಪಲು ಸಾಧ್ಯವಾಗದೆ ಇರುವ ಸ್ಥಿರ ರೌಟ್‌ ಗೇಟ್‌ವೇ '%1$s' ಅನ್ನು '%2$s' ಜಾಲಬಂಧಕ್ಕಾಗಿ ಸೂಚಿಸಲಾಗಿದೆ"
+"ತಲುಪಲು ಸಾಧ್ಯವಾಗದೆ ಇರುವ ಸ್ಥಿರ ರೌಟ್‌ ಗೇಟ್‌ವೇ '%1$s' ಅನ್ನು '%2$s' ಜಾಲಬಂಧಕ್ಕಾಗಿ "
+"ಸೂಚಿಸಲಾಗಿದೆ"
 
 #, c-format
 msgid "unrecognized command name '%1$s'"
@@ -38483,7 +38692,8 @@ msgid "usage:"
 msgstr "ಬಳಕೆ:"
 
 #, c-format
-msgid "usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"
+msgid ""
+"usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"
 msgstr ""
 
 msgid "usb device not found"
@@ -38571,7 +38781,8 @@ msgstr ""
 
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
-msgstr "ಯುನಿಕ್ಸ್ ಸಾಕೆಟ್ ಅನ್ನು ಮತ್ತು ದೂರಸ್ಥ ಪೂರೈಕೆಗಣಕ '%1$s' ಅನ್ನು ಬಳಸುವುದಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ."
+msgstr ""
+"ಯುನಿಕ್ಸ್ ಸಾಕೆಟ್ ಅನ್ನು ಮತ್ತು ದೂರಸ್ಥ ಪೂರೈಕೆಗಣಕ '%1$s' ಅನ್ನು ಬಳಸುವುದಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ."
 
 #, c-format
 msgid "uuidstr in %1$s must be a valid UUID"
@@ -38753,8 +38964,8 @@ msgstr "ಪ್ರತ್ಯುತ್ತರದಲ್ಲಿ ಮರಳಿಸಲಾ�
 
 #, c-format
 msgid ""
-"vcpu '%1$zu' was not selected but it belongs to hotpluggable entity '%2$zd-%3$zd' "
-"which was partially selected"
+"vcpu '%1$zu' was not selected but it belongs to hotpluggable entity '%2$zd-"
+"%3$zd' which was partially selected"
 msgstr ""
 
 msgid "vcpu 0 can't be offline"
@@ -38967,14 +39178,16 @@ msgstr ""
 "ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
-msgid "virNWFilterDHCPSnoopReq req add failed on interface \"%1$s\" ifkey \"%2$s\""
+msgid ""
+"virNWFilterDHCPSnoopReq req add failed on interface \"%1$s\" ifkey \"%2$s\""
 msgstr ""
 "\"%1$s\" ifkey \"%2$s\" ಸಂಪರ್ಕಸಾಧನದಲ್ಲಿ virNWFilterDHCPSnoopReq req ಸೇರಿಸುವಿಕೆ "
 "ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
 msgid "virNWFilterDHCPSnoopReq virThreadCreate failed on interface '%1$s'"
-msgstr "'%1$s' ಸಂಪರ್ಕಸಾಧನದಲ್ಲಿ virNWFilterDHCPSnoopReq virThreadCreate ವಿಫಲಗೊಂಡಿದೆ"
+msgstr ""
+"'%1$s' ಸಂಪರ್ಕಸಾಧನದಲ್ಲಿ virNWFilterDHCPSnoopReq virThreadCreate ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad lease file line %1$d corrupt"
@@ -39004,7 +39217,8 @@ msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext ಯಾವುದೆ parseFileName ಕ್ರಿಯೆಯ ಸೆಟ್ ಅನ್ನು ಹೊಂದಿಲ್ಲ"
 
 #, fuzzy, c-format
-msgid "virtio (non-)transitional models are not supported for address type=%1$s"
+msgid ""
+"virtio (non-)transitional models are not supported for address type=%1$s"
 msgstr "vport ಕಾರ್ಯಾಚರಣೆ '%s' ಅನ್ನು host%d ಕ್ಕಾಗಿ ಬೆಂಬಲಿಸಲಾಗುವುದಿಲ್ಲ"
 
 #, fuzzy, c-format
@@ -39063,7 +39277,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "virtio-net teaming transient interface must be type='hostdev', not '%1$s'"
+msgid ""
+"virtio-net teaming transient interface must be type='hostdev', not '%1$s'"
 msgstr ""
 
 msgid "virtio-pmem does not support NUMA nodes"
@@ -39134,7 +39349,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"virtualport type %1$s is currently not supported on interfaces of type hostdev"
+"virtualport type %1$s is currently not supported on interfaces of type "
+"hostdev"
 msgstr ""
 "%1$s virtualport ಬಗೆಯು ಪ್ರಸಕ್ತ hostdev ಬಗೆಯ ಸಂಪರ್ಕಸಾಧನಗಳಲ್ಲಿ ಬೆಂಬಲಿಸಲಾಗುವುದಿಲ್ಲ"
 
@@ -39202,7 +39418,8 @@ msgstr "ನಮೂನೆ '%1$s' ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ"
 
 #, c-format
 msgid ""
-"vnuma configuration contains %1$zu vcpus, which is greater than %2$zu maxvcpus"
+"vnuma configuration contains %1$zu vcpus, which is greater than %2$zu "
+"maxvcpus"
 msgstr ""
 
 #, c-format
@@ -39380,11 +39597,13 @@ msgid "when providing parent wwpn='%1$s', the wwnn must also be provided"
 msgstr ""
 
 #, c-format
-msgid "when providing parent_wwnn='%1$s', the parent_wwpn must also be provided"
+msgid ""
+"when providing parent_wwnn='%1$s', the parent_wwpn must also be provided"
 msgstr ""
 
 #, c-format
-msgid "when providing parent_wwpn='%1$s', the parent_wwnn must also be provided"
+msgid ""
+"when providing parent_wwpn='%1$s', the parent_wwnn must also be provided"
 msgstr ""
 
 msgid "where to dump the core"
@@ -39515,6 +39734,28 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid ""
+#~ "At least one of name, mac, or ip attribute must be specified for static "
+#~ "host definition in network '%1$s' "
+#~ msgstr ""
+#~ "'%1$s' ಜಾಲಬಂಧದಲ್ಲಿನ ಸ್ಥಿರ ಆತಿಥೇಯ ವಿವರಣೆಗಾಗಿ ಕನಿಷ್ಟ ಒಂದು ಹೆಸರು, mac, ಅಥವ ip "
+#~ "ಗುಣವೈಶಿಷ್ಟ್ಯವನ್ನು ಸೂಚಿಸುವುದು ಅತ್ಯಗತ್ಯ"
+
+#, fuzzy
+#~ msgid ""
+#~ "Failed to add driver '%1$s' to driver_override  interface of PCI device "
+#~ "'%2$s'"
+#~ msgstr ""
+#~ "%1$s ಎಂಬ IP ವಿಳಾಸವನ್ನು %2$s ಸಂಪರ್ಕಸಾಧನಕ್ಕಾಗಿನ IP ವಿಳಾಸದ ಕ್ಯಾಶ್‌ಗೆ ಸೇರಿಸುವಲ್ಲಿ "
+#~ "ವಿಫಲತೆ"
+
+#~ msgid ""
+#~ "unable to delete interface '%1$s' in network '%2$s'. It is currently "
+#~ "being used  by %3$d domains."
+#~ msgstr ""
+#~ "'%1$s' ಸಂಪರ್ಕಸಾಧನವನ್ನು ಅಳಿಸಲು '%2$s' ಜಾಲಬಂಧದಲ್ಲಿ ಸಾಧ್ಯವಾಗಿಲ್ಲ. ಇದನ್ನು ಪ್ರಸಕ್ತ "
+#~ "%3$d ಡೊಮೇನ್‌ಗಳಿಂದ ಬಳಸಲಾಗುತ್ತಿದೆ."
 
 #, fuzzy
 #~ msgid "Could not find vf/instanceId %u/%s  in netlink response"

@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-01 08:30+0000\n"
+"POT-Creation-Date: 2023-04-01 11:38+0200\n"
 "PO-Revision-Date: 2023-03-14 16:11+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -506,12 +506,12 @@ msgstr ""
 
 #, c-format
 msgid ""
-"!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' differs "
-"from stored identity. Please verify the new host key '%3$s' to avoid possible "
-"man in the middle attack. The key is stored in '%4$s'."
+"!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' "
+"differs from stored identity. Please verify the new host key '%3$s' to avoid "
+"possible man in the middle attack. The key is stored in '%4$s'."
 msgstr ""
-"!!! SSH 主机密钥验证失败 !!!: 主机 '%1$s:%2$d' 的身份验证与保存的身份不符。请确认"
-"新主机密钥 '%3$s' 以避免可能的中间人攻击。该密钥保存在 '%4$s'。"
+"!!! SSH 主机密钥验证失败 !!!: 主机 '%1$s:%2$d' 的身份验证与保存的身份不符。请"
+"确认新主机密钥 '%3$s' 以避免可能的中间人攻击。该密钥保存在 '%4$s'。"
 
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
@@ -534,13 +534,14 @@ msgid "%1$s %2$s '%3$s' has an unsupported type '%4$s'"
 msgstr "%1$s %2$s '%3$s' 不支持 '%4$s' 类型"
 
 #, c-format
-msgid "%1$s %2$s '%3$s' has unsupported type '%4$s', expecting '%5$s' or '%6$s'"
+msgid ""
+"%1$s %2$s '%3$s' has unsupported type '%4$s', expecting '%5$s' or '%6$s'"
 msgstr "%1$s %2$s '%3$s' 不支持 '%4$s' 类型，应为 '%5$s' 或者 '%6$s'"
 
 #, c-format
 msgid ""
-"%1$s (on destination side) does not support the --migration option needed for "
-"migration with shared storage"
+"%1$s (on destination side) does not support the --migration option needed "
+"for migration with shared storage"
 msgstr "%1$s（在目标端）不支持使用共享存储进行迁移所需的 --migration 选项"
 
 #, c-format
@@ -584,7 +585,8 @@ msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
 msgstr "网络 '%1$s' 为非 IPv4 地址 '%2$s' 指定 %3$s 产品线"
 
 #, c-format
-msgid "%1$s forwarding requested, but no IP address provided for network '%2$s'"
+msgid ""
+"%1$s forwarding requested, but no IP address provided for network '%2$s'"
 msgstr "%1$s 转发请求，但没有为网络 '%2$s' 提供 IP地址"
 
 #, c-format
@@ -661,7 +663,8 @@ msgstr "%1$s 型号的 watchdog 只是 q35 机器的一部分"
 
 #, c-format
 msgid ""
-"%1$s model of watchdog is part of the machine and cannot have any address set."
+"%1$s model of watchdog is part of the machine and cannot have any address "
+"set."
 msgstr "%1$s 型号的 watchdog 是机器的一部分，不能有任何地址集。"
 
 #, c-format
@@ -721,8 +724,8 @@ msgid ""
 "%1$s rule with port specification requires protocol specification with "
 "protocol to be either one of tcp(6), udp(17), dccp(33), or sctp(132)"
 msgstr ""
-"附带端口说明的 %1$s 规则需要协议说明，该协议可以是 tcp(6)、udp(17)、dccp(33) 或"
-"者 sctp(132) 之一"
+"附带端口说明的 %1$s 规则需要协议说明，该协议可以是 tcp(6)、udp(17)、dccp(33) "
+"或者 sctp(132) 之一"
 
 #, c-format
 msgid "%1$s uri uuid action\n"
@@ -778,27 +781,31 @@ msgstr "%1$s：无法同时请求 read 和 write 标签"
 
 #, c-format
 msgid ""
-"%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address in "
-"route definition"
+"%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address "
+"in route definition"
 msgstr ""
-"%1$s：将地址 '%2$s' 使用子网掩码 '%3$s' 转换为路由定义中的 network-address 时出错"
+"%1$s：将地址 '%2$s' 使用子网掩码 '%3$s' 转换为路由定义中的 network-address 时"
+"出错"
 
 #, c-format
 msgid ""
-"%1$s: Error converting address '%2$s' with prefix %3$u to network-address in route "
-"definition"
-msgstr "%1$s：将地址 '%2$s' 使用前缀 %3$u 转换为路由定义中的 network-address 时出错"
+"%1$s: Error converting address '%2$s' with prefix %3$u to network-address in "
+"route definition"
+msgstr ""
+"%1$s：将地址 '%2$s' 使用前缀 %3$u 转换为路由定义中的 network-address 时出错"
 
 #, c-format
 msgid "%1$s: File '%2$s' is too large\n"
 msgstr "%1$s: 文件 '%2$s' 太大\n"
 
 #, c-format
-msgid "%1$s: IPv4 family specified for non-IPv4 address '%2$s' in route definition"
+msgid ""
+"%1$s: IPv4 family specified for non-IPv4 address '%2$s' in route definition"
 msgstr "%1$s：路由定义中没有为非 IPv4 地址 '%2$s' 指定 IPv4 产品线"
 
 #, c-format
-msgid "%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
+msgid ""
+"%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr "%1$s：路由定义中没有为非 IPv4 网关 '%2$s' 指定 IPv4 产品线"
 
 #, c-format
@@ -806,7 +813,8 @@ msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
 msgstr "%1$s：地址 '%2$s' 的无效子网掩码 '%3$s'（二者必须都为 IPv4）"
 
 #, c-format
-msgid "%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 128"
+msgid ""
+"%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 128"
 msgstr "%1$s：路由定义中的无效前缀 %2$u，必须为 0-128"
 
 #, c-format
@@ -822,11 +830,13 @@ msgid "%1$s: Missing required gateway attribute in route definition"
 msgstr "%1$s：路由定义中缺少所需 gateway 属性"
 
 #, c-format
-msgid "%1$s: No family specified for non-IPv4 address '%2$s' in route definition"
+msgid ""
+"%1$s: No family specified for non-IPv4 address '%2$s' in route definition"
 msgstr "%1$s：路由定义中没有为非 IPv4 地址 '%2$s' 指定产品线"
 
 #, c-format
-msgid "%1$s: No family specified for non-IPv4 gateway '%2$s' in route definition"
+msgid ""
+"%1$s: No family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr "%1$s：路由定义中没有为非 IPv4 网关 '%2$s' 指定产品线"
 
 #, c-format
@@ -871,8 +881,8 @@ msgid ""
 "%1$s: error: %2$s. Check /var/log/messages or run without --daemon for more "
 "info.\n"
 msgstr ""
-"%1$s：错误：%2$s。查看 /var/log/messages 或者运行不带 --daemon 的命令查看更多信"
-"息。\n"
+"%1$s：错误：%2$s。查看 /var/log/messages 或者运行不带 --daemon 的命令查看更多"
+"信息。\n"
 
 #, c-format
 msgid "%1$s: error: unable to determine if daemon is running: %2$s\n"
@@ -959,7 +969,8 @@ msgid "%1$s: initialization failed\n"
 msgstr "%1$s：初始化失败\n"
 
 #, c-format
-msgid "%1$s: ipv6 family specified for non-IPv6 address '%2$s' in route definition"
+msgid ""
+"%1$s: ipv6 family specified for non-IPv6 address '%2$s' in route definition"
 msgstr "%1$s：路由定义中没有为非 IPv6 网关 '%2$s' 指定 IPv6 产品线"
 
 #, c-format
@@ -973,7 +984,8 @@ msgstr "%1$s: 受损的 fd %2$s"
 
 #, c-format
 msgid ""
-"%1$s: migration_port_max: port must be between the minimal port %2$d and 65535"
+"%1$s: migration_port_max: port must be between the minimal port %2$d and "
+"65535"
 msgstr "%1$s: migration_port_max: 端口必须在最小端口 %2$d 和 65535 之间"
 
 #, c-format
@@ -998,16 +1010,19 @@ msgid ""
 msgstr "%1$s: remote_display_port_min: 端口必须介于最小端口和 %2$d 之间"
 
 #, c-format
-msgid "%1$s: remote_display_port_min: min port must not be greater than max port"
+msgid ""
+"%1$s: remote_display_port_min: min port must not be greater than max port"
 msgstr "%1$s: remote_display_port_min: 最小端口不得大于最大端口"
 
 #, c-format
-msgid "%1$s: remote_display_port_min: port must be greater than or equal to %2$d"
+msgid ""
+"%1$s: remote_display_port_min: port must be greater than or equal to %2$d"
 msgstr "%1$s: remote_display_port_min: 端口必须大于或者等于 %2$d"
 
 #, c-format
 msgid ""
-"%1$s: remote_websocket_port_max: port must be between the minimal port and %2$d"
+"%1$s: remote_websocket_port_max: port must be between the minimal port and "
+"%2$d"
 msgstr "%1$s: remote_websocket_port_max: 端口必须介于最小端口和 %2$d 之间"
 
 #, c-format
@@ -1016,13 +1031,14 @@ msgid ""
 msgstr "%1$s: remote_websocket_port_min: 最小端口不得大于最大端口"
 
 #, c-format
-msgid "%1$s: remote_websocket_port_min: port must be greater than or equal to %2$d"
+msgid ""
+"%1$s: remote_websocket_port_min: port must be greater than or equal to %2$d"
 msgstr "%1$s: remote_websocket_port_min: 端口必须大于或者等于 %2$d"
 
 #, c-format
 msgid ""
-"%1$s: temporary filename contains shell meta or other unacceptable characters "
-"(is $TMPDIR wrong?)"
+"%1$s: temporary filename contains shell meta or other unacceptable "
+"characters (is $TMPDIR wrong?)"
 msgstr ""
 "%1$s：临时文件名包含 shell 中的元字符或者其它不能接受的字符（$TMPDIR 错误？）"
 
@@ -1237,11 +1253,11 @@ msgstr "guest-get-host-name 回复中缺少 'host-name'"
 
 #, c-format
 msgid ""
-"'incremental' backup mode of disk '%1$s' requires setting 'incremental' field "
-"for disk or backup"
+"'incremental' backup mode of disk '%1$s' requires setting 'incremental' "
+"field for disk or backup"
 msgstr ""
-"'incremental' backup mode of disk '%1$s' 需要为磁盘或者备份设置 'incremental' "
-"字段"
+"'incremental' backup mode of disk '%1$s' 需要为磁盘或者备份设置 "
+"'incremental' 字段"
 
 msgid "'initiator' refers to a non-existent NUMA node"
 msgstr "'initiator' 指的是不存在的 NUMA 节点"
@@ -1275,7 +1291,8 @@ msgstr "'max_workers' 必须大于 0"
 
 #, c-format
 msgid ""
-"'mode' of Xen passthrough feature differs: source: '%1$s', destination: '%2$s'"
+"'mode' of Xen passthrough feature differs: source: '%1$s', destination: "
+"'%2$s'"
 msgstr "Xen 直通功能的模式不同：源: '%1$s', 目标: '%2$s'"
 
 #, c-format
@@ -1342,7 +1359,8 @@ msgstr ""
 "当内存元素中的模式是 'restrictive' 时，memnode 元素中需要 'restrictive' 模式"
 
 #, c-format
-msgid "'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"
+msgid ""
+"'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"
 msgstr "'sibling_id %1$d' 不指向 NUMA '单元 id %2$d' 中的有效单元"
 
 msgid "'socket' attribute is valid only for listen type 'socket'"
@@ -1602,8 +1620,10 @@ msgid "<domainbackup> must specify TCP port for now"
 msgstr "<domainbackup> 现在必须指定 TCP 端口"
 
 #, c-format
-msgid "<forward dev='%1$s'> must match first <interface dev='%2$s'/> in network %3$s"
-msgstr "<forward dev='%1$s'> 必须与网络 %2$s 中的第一个 <interface dev='%3$s'/> 匹配"
+msgid ""
+"<forward dev='%1$s'> must match first <interface dev='%2$s'/> in network %3$s"
+msgstr ""
+"<forward dev='%1$s'> 必须与网络 %2$s 中的第一个 <interface dev='%3$s'/> 匹配"
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr "<hostdev> 属性 'display' 仅支持 model='vfio-pci'"
@@ -1638,23 +1658,23 @@ msgstr "<virtualport type='%1$s'> 不支持使用 IP 转发的网络 '%2$s'"
 
 #, c-format
 msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses a bridge "
-"device"
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses a "
+"bridge device"
 msgstr "<virtualport type='%1$s'> 不支持使用桥接设备的网络 '%2$s'"
 
 #, c-format
 msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses a macvtap "
-"device"
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses a "
+"macvtap device"
 msgstr "<virtualport type='%1$s'> 不支持使用 macvtap 设备的网络 '%2$s'"
 
 #, c-format
 msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses an SR-IOV "
-"Virtual Function via PCI passthrough"
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses an SR-"
+"IOV Virtual Function via PCI passthrough"
 msgstr ""
-"<virtualport type='%1$s'> 不支持使用通过 PCI passthrough 的 SR-IOV 虚拟功能的网"
-"络 '%2$s'"
+"<virtualport type='%1$s'> 不支持使用通过 PCI passthrough 的 SR-IOV 虚拟功能的"
+"网络 '%2$s'"
 
 #, c-format
 msgid "<virtualport> element unsupported for <interface type='%1$s'>"
@@ -1682,7 +1702,8 @@ msgid "A different callback was requested"
 msgstr "要求使用不同的 callback"
 
 #, c-format
-msgid "A domain definition can have no more than one cipher node with name %1$s"
+msgid ""
+"A domain definition can have no more than one cipher node with name %1$s"
 msgstr "域定义不能有多个具有名称 %1$s 的密码节点"
 
 msgid "A interface driver is already registered"
@@ -1696,11 +1717,11 @@ msgstr "网络过滤器驱动程序已注册"
 
 #, c-format
 msgid ""
-"A network with forward mode='%1$s' can specify a bridge name or a forward dev, "
-"but not both (network '%2$s')"
+"A network with forward mode='%1$s' can specify a bridge name or a forward "
+"dev, but not both (network '%2$s')"
 msgstr ""
-"可为转发模式为 '%1$s' 的网络指定一个桥接名称或者转发 dev，但不能两个都指定（网"
-"络 '%2$s'）"
+"可为转发模式为 '%1$s' 的网络指定一个桥接名称或者转发 dev，但不能两个都指定"
+"（网络 '%2$s'）"
 
 msgid "A node device driver is already registered"
 msgstr "节点设备驱动程序已注册"
@@ -1872,8 +1893,8 @@ msgstr "启用内存热插拔时，必须至少配置一个 numa 节点"
 #, c-format
 msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
-"definition in network '%1$s' "
-msgstr "必须在网络 '%1$s' 的静态主机定义中至少指定 name、mac 或者 ip 属性之一 "
+"definition in network '%1$s'"
+msgstr ""
 
 msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
@@ -2024,8 +2045,8 @@ msgid ""
 "Bit 29 (Long Mode) of HostSystem property 'hardware.cpuFeature[].edx' with "
 "value '%1$s' has unexpected value '%2$c', expecting '0' or '1'"
 msgstr ""
-"主机系统属性 'hardware.cpuFeature[].edx' 的字节 29（长模式）值 '%1$s' 中有意外"
-"值 '%2$c' ，应为 '0' 或者 '1'"
+"主机系统属性 'hardware.cpuFeature[].edx' 的字节 29（长模式）值 '%1$s' 中有意"
+"外值 '%2$c' ，应为 '0' 或者 '1'"
 
 msgid "Block Commit"
 msgstr "块指派"
@@ -2231,7 +2252,8 @@ msgstr "'%1$s' 架构不支持 CPU 最大物理地址位规格"
 
 #, c-format
 msgid ""
-"CPU mode '%1$s' for %2$s %3$s domain on %4$s host is not supported by hypervisor"
+"CPU mode '%1$s' for %2$s %3$s domain on %4$s host is not supported by "
+"hypervisor"
 msgstr "hypervisor 不支持 %1$s 主机上 %2$s %3$s 域的 CPU 模式 '%4$s'"
 
 #, c-format
@@ -2345,8 +2367,8 @@ msgstr "大小为 %1$llu 的缓存分配不能被粒度 %2$llu 整除"
 
 #, c-format
 msgid ""
-"Cache allocation of size %1$llu is smaller than the minimum allowed allocation "
-"%2$llu"
+"Cache allocation of size %1$llu is smaller than the minimum allowed "
+"allocation %2$llu"
 msgstr "大小为 %1$llu 的缓存分配小于最小允许的分配 %2$llu"
 
 #, c-format
@@ -2563,8 +2585,10 @@ msgstr "无法访问存储文件 '%1$s' 的后端文件 '%2$s'"
 
 #, c-format
 msgid ""
-"Cannot access backing file '%1$s' of storage file '%2$s' (as uid:%3$u, gid:%4$u)"
-msgstr "无法访问存储文件 '%1$s' 的后端文件 '%2$s' （以 uid:%3$u, gid:%4$u 身份）"
+"Cannot access backing file '%1$s' of storage file '%2$s' (as uid:%3$u, gid:"
+"%4$u)"
+msgstr ""
+"无法访问存储文件 '%1$s' 的后端文件 '%2$s' （以 uid:%3$u, gid:%4$u 身份）"
 
 #, c-format
 msgid "Cannot access storage file '%1$s'"
@@ -2950,7 +2974,8 @@ msgid "Cannot open /proc/cgroups"
 msgstr "无法打开 /proc/cgroups"
 
 #, c-format
-msgid "Cannot open embedded driver at path '%1$s', already open with path '%2$s'"
+msgid ""
+"Cannot open embedded driver at path '%1$s', already open with path '%2$s'"
 msgstr "无法打开路径 '%1$s' 处的已经使用路径 '%2$s' 打开的内嵌驱动程序。"
 
 #, c-format
@@ -3099,16 +3124,16 @@ msgstr "无法解析元素 <address> 的 uuid 属性"
 
 #, fuzzy, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor=%3$llu "
-"would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
+"%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 "无法将 '%1$s' 接口插入 '%2$s'，因为新合并的入站 floor=%3$llu 将在网络 '%5$s' "
 "上过度承诺 average=%4$llu"
 
 #, fuzzy, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor=%3$llu "
-"would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
+"%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 "无法将 '%1$s' 接口插入 '%2$s'，因为新合并的入站 floor=%3$llu 将在网络 '%5$s' "
 "上过度承诺 peak=%4$llu"
@@ -3435,12 +3460,10 @@ msgstr "检查是否载入 'kvm-intel' 或者 'kvm-amd' 模块以及 BIOS 是否
 
 #, c-format
 msgid ""
-"Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes and "
-"enabling forwarding  without accept_ra set to 2 will cause the kernel to "
+"Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes "
+"and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
 msgstr ""
-"检查主机设置：接口 %1$s 有内核自动配置的 IPv6 路由，并且在未将 accept_ra 设为 "
-"2 的情况下启用转发将导致内核刷新它们，从而破坏了网络。"
 
 #, c-format
 msgid "Checkpoint %1$s XML configuration not changed.\n"
@@ -3542,7 +3565,8 @@ msgid ""
 msgstr "Cloud-Hypervisor 版本太旧了（v15.0 是最低支持版本）"
 
 #, c-format
-msgid "Colliding cache allocations for cache level '%1$u' id '%2$u', type '%3$s'"
+msgid ""
+"Colliding cache allocations for cache level '%1$u' id '%2$u', type '%3$s'"
 msgstr "缓存级别 '%1$u' id '%2$u', 类型 '%3$s'的缓存分配冲突"
 
 msgid "Commit aborted"
@@ -3604,7 +3628,8 @@ msgstr "压缩流量："
 
 #, c-format
 msgid ""
-"Compression program for %1$s image format in configuration file isn't available"
+"Compression program for %1$s image format in configuration file isn't "
+"available"
 msgstr "配置文件中 %1$s 镜像格式的压缩程序未提供"
 
 msgid "Compute baseline CPU for a set of given CPUs."
@@ -3655,8 +3680,8 @@ msgstr "将某个池设置为在引导时自动启动。"
 
 #, c-format
 msgid ""
-"Configuring the '%1$s' timer is not supported for virtType=%2$s arch=%3$s machine="
-"%4$s guests"
+"Configuring the '%1$s' timer is not supported for virtType=%2$s arch=%3$s "
+"machine=%4$s guests"
 msgstr "virtType=%1$s arch=%2$s machine=%3$s 客户机不支持配置 '%4$s' 计时器"
 
 #, c-format
@@ -3953,8 +3978,8 @@ msgstr "无法找到 Msvm_DiskDrive 对象"
 
 #, fuzzy, c-format
 msgid ""
-"Could not find PCI controller with index '%1$u' required for device at address "
-"'%2$s'"
+"Could not find PCI controller with index '%1$u' required for device at "
+"address '%2$s'"
 msgstr "无法为地址 '%2$s' 处的设备找到所需的索引为 '%1$u' 的 PCI 控制器。"
 
 #, c-format
@@ -4339,7 +4364,8 @@ msgstr "无法查找处于不活跃状态的虚拟机"
 
 #, c-format
 msgid ""
-"Could not look up processor setting data with virtual system instance ID '%1$s'"
+"Could not look up processor setting data with virtual system instance ID "
+"'%1$s'"
 msgstr "无法查找虚拟系统实例 ID 为 '%1$s' 的处理器设置数据"
 
 #, c-format
@@ -4472,7 +4498,8 @@ msgid "Could not parse VPS ID %1$s"
 msgstr "无法解析 VPS ID %1$s"
 
 #, c-format
-msgid "Could not parse barrier and limit of '%1$s' from config for container %2$d"
+msgid ""
+"Could not parse barrier and limit of '%1$s' from config for container %2$d"
 msgstr "'%1$s' 屏障和限制无法从 config 中为容器 %2$d 解析"
 
 #, c-format
@@ -4629,11 +4656,11 @@ msgstr "无法转换为快照 '%1$s': %2$s"
 
 #, c-format
 msgid ""
-"Could not run '%1$s --reconfigure'. exitstatus: %2$d; Check error log '%3$s' for "
-"details."
+"Could not run '%1$s --reconfigure'. exitstatus: %2$d; Check error log '%3$s' "
+"for details."
 msgstr ""
-"无法运行 '%1$s --reconfigure'. exitstatus: %2$d; 请检查错误日志 '%3$s' 以获得详细信"
-"息。"
+"无法运行 '%1$s --reconfigure'. exitstatus: %2$d; 请检查错误日志 '%3$s' 以获得"
+"详细信息。"
 
 #, c-format
 msgid ""
@@ -4644,8 +4671,10 @@ msgstr ""
 "Error: %3$s"
 
 #, c-format
-msgid "Could not run '%1$s'. exitstatus: %2$d; Check error log '%3$s' for details."
-msgstr "无法运行 '%1$s'。 exitstatus: %2$d; 请检查错误日志 '%3$s' 以获得详细信息。"
+msgid ""
+"Could not run '%1$s'. exitstatus: %2$d; Check error log '%3$s' for details."
+msgstr ""
+"无法运行 '%1$s'。 exitstatus: %2$d; 请检查错误日志 '%3$s' 以获得详细信息。"
 
 #, c-format
 msgid "Could not search in datastore '%1$s': %2$s"
@@ -4868,14 +4897,16 @@ msgstr "无法修改 DNS HOST 记录，只能添加或者删除。"
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
 "network '%2$s'"
-msgstr "没有用于网络 '%1$s' 中服务 '%2$s' 的目标，则不允许使用 DNS SRV port 属性。"
+msgstr ""
+"没有用于网络 '%1$s' 中服务 '%2$s' 的目标，则不允许使用 DNS SRV port 属性。"
 
 #, c-format
 msgid ""
-"DNS SRV priority attribute not permitted without target for service '%1$s' in "
-"network '%2$s'"
+"DNS SRV priority attribute not permitted without target for service '%1$s' "
+"in network '%2$s'"
 msgstr ""
-"没有用于网络 '%1$s' 中服务 '%2$s' 的目标，则不允许使用 DNS SRV pirority 属性。"
+"没有用于网络 '%1$s' 中服务 '%2$s' 的目标，则不允许使用 DNS SRV pirority 属"
+"性。"
 
 msgid "DNS SRV records cannot be modified, only added or deleted"
 msgstr "无法修改 DNS SRV 记录，只能添加或者删除。"
@@ -4904,7 +4935,8 @@ msgid "Datastore has unexpected type '%1$s'"
 msgstr "Datastore 有意外类型 '%1$s'"
 
 #, c-format
-msgid "Datastore path '%1$s' doesn't have expected format '[<datastore>] <path>'"
+msgid ""
+"Datastore path '%1$s' doesn't have expected format '[<datastore>] <path>'"
 msgstr "Datastore 路径 ‘%1$s’ 不包含应有的格式 '[<datastore>] <path>'"
 
 #, c-format
@@ -5256,7 +5288,8 @@ msgstr "显示该节点的 CPU 总数，在线 CPU 数以及在线 CPU 列表。
 
 #, fuzzy, c-format
 msgid ""
-"Distance value %1$d under node %2$zu is LOCAL_DISTANCE and should be set to 10"
+"Distance value %1$d under node %2$zu is LOCAL_DISTANCE and should be set to "
+"10"
 msgstr "节点 %2$zu 下的距离值 %1$d 为 LOCAL_DISTANCE，应该被设为 10"
 
 #, c-format
@@ -5446,11 +5479,11 @@ msgstr "域有 %1$zd 个接口。请使用 --mac 指定要分离的接口。"
 
 #, c-format
 msgid ""
-"Domain has multiple interfaces matching MAC address %1$s. You must use detach-"
-"device and specify the device pci address to remove it."
+"Domain has multiple interfaces matching MAC address %1$s. You must use "
+"detach-device and specify the device pci address to remove it."
 msgstr ""
-"域有多个接口与 MAC 地址 %1$s 映射。您必须使用 detach-device 并指定要删除的设备 "
-"pci 地址。"
+"域有多个接口与 MAC 地址 %1$s 映射。您必须使用 detach-device 并指定要删除的设"
+"备 pci 地址。"
 
 msgid "Domain has no current snapshot"
 msgstr "域没有当前快照"
@@ -5939,7 +5972,8 @@ msgid "Expecting VI API type 'HostAgent' or 'VirtualCenter' but found '%1$s'"
 msgstr "应为 VI API 类型 'HostAgent' 或者 'VirtualCenter'，但找到的是 '%1$s'。"
 
 #, c-format
-msgid "Expecting VMX entry '%1$s' to be 'ata-hardDisk' or 'disk' but found '%2$s'"
+msgid ""
+"Expecting VMX entry '%1$s' to be 'ata-hardDisk' or 'disk' but found '%2$s'"
 msgstr "VMX 条目 '%1$s' 应为 'ata-hardDisk' 或者 'disk'，但却显示 '%2$s'。"
 
 #, c-format
@@ -5974,7 +6008,8 @@ msgstr ""
 "VMX 条目 '%1$s' 应为 'generated' 或者 'static' 或者 'vpx' 但却显示为 '%2$s'"
 
 #, c-format
-msgid "Expecting VMX entry '%1$s' to be 'scsi-hardDisk' or 'disk' but found '%2$s'"
+msgid ""
+"Expecting VMX entry '%1$s' to be 'scsi-hardDisk' or 'disk' but found '%2$s'"
 msgstr "VMX 条目 '%1$s' 应为 'scsi-hardDisk' 或者 'disk'，但却显示 '%2$s'。"
 
 #, c-format
@@ -5983,8 +6018,8 @@ msgstr "VMX 条目 '%1$s' 应为 'server' 或者 'client'但却显示为 '%2$s'"
 
 #, c-format
 msgid ""
-"Expecting VMX entry '%1$s' to be 'vlance' or 'vmxnet' or 'vmxnet3' or 'e1000' "
-"or 'e1000e' but found '%2$s'"
+"Expecting VMX entry '%1$s' to be 'vlance' or 'vmxnet' or 'vmxnet3' or "
+"'e1000' or 'e1000e' but found '%2$s'"
 msgstr ""
 "预期 VMX 条目 '%1$s' 是 'vlance' 或 'vmxnet' 或 'vmxnet3' 或 'e1000' 或 "
 "'e1000e'，但发现是 '%2$s'"
@@ -6020,8 +6055,8 @@ msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to contain at least as many values "
 "as 'numvcpus' (%1$lld) but found only %2$u value(s)"
 msgstr ""
-"预期 VMX 条目 'sched.cpu.affinity' 至少包含与 'numvcpus'(%1$lld) 一样多的值 ，"
-"但只发现了 %2$u 值"
+"预期 VMX 条目 'sched.cpu.affinity' 至少包含与 'numvcpus'(%1$lld) 一样多的"
+"值 ，但只发现了 %2$u 值"
 
 #, c-format
 msgid ""
@@ -6049,7 +6084,8 @@ msgid ""
 "Expecting domain XML attribute 'arch' of entry 'os/type' to be 'i686' or "
 "'x86_64' but found '%1$s'"
 msgstr ""
-"条目 'os/type' 的域 XML 属性 'arch' 应为 'i686' 或者 'x86_64' 但却显示为 '%1$s'"
+"条目 'os/type' 的域 XML 属性 'arch' 应为 'i686' 或者 'x86_64' 但却显示为 "
+"'%1$s'"
 
 #, c-format
 msgid ""
@@ -6208,8 +6244,8 @@ msgstr "添加功能 %1$s 失败：%2$d"
 
 #, c-format
 msgid ""
-"Failed to add driver '%1$s' to driver_override  interface of PCI device '%2$s'"
-msgstr "将驱动程序 '%1$s' 添加到 PCI 设备 '%2$s' 的 driver_override 接口失败"
+"Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
+msgstr ""
 
 msgid "Failed to add netlink event handle watch"
 msgstr "添加 netlink 事件句柄观察失败"
@@ -8470,11 +8506,11 @@ msgstr "找到要运行的其他探测，探测可能不正确"
 
 #, c-format
 msgid ""
-"Found duplicate drive address for disk with target name '%1$s' controller='%2$u' "
-"bus='%3$u' target='%4$u' unit='%5$u'"
+"Found duplicate drive address for disk with target name '%1$s' "
+"controller='%2$u' bus='%3$u' target='%4$u' unit='%5$u'"
 msgstr ""
-"找到具有目标名称为 '%1$s' controller='%2$u' bus='%3$u' target='%4$u' unit='%5$u' 的磁盘"
-"的重复驱动器地址"
+"找到具有目标名称为 '%1$s' controller='%2$u' bus='%3$u' target='%4$u' "
+"unit='%5$u' 的磁盘的重复驱动器地址"
 
 #, c-format
 msgid "Found invalid device link '%1$s' in '%2$s'"
@@ -8710,15 +8746,16 @@ msgstr "%1$d 是调用 '%2$s' 的 HTTP 响应代码"
 
 #, c-format
 msgid ""
-"HTTP response code %1$d for call to '%2$s'. Fault is unknown, XPath evaluation "
-"failed"
+"HTTP response code %1$d for call to '%2$s'. Fault is unknown, XPath "
+"evaluation failed"
 msgstr "%1$d 是调用 '%2$s' 的 HTTP 响应代码。未知错误，XPath 评估失败。"
 
 #, c-format
 msgid ""
-"HTTP response code %1$d for call to '%2$s'. Fault is unknown, deserialization "
-"failed"
-msgstr "%1$d 是调用 '%2$s' 的 HTTP 响应代码。未知错误，deserialization 评估失败。"
+"HTTP response code %1$d for call to '%2$s'. Fault is unknown, "
+"deserialization failed"
+msgstr ""
+"%1$d 是调用 '%2$s' 的 HTTP 响应代码。未知错误，deserialization 评估失败。"
 
 #, c-format
 msgid "HTTP response code %1$d for call to '%2$s'. Fault: %3$s - %4$s"
@@ -8766,7 +8803,8 @@ msgid "Host CPU is a superset of CPU described in %1$s\n"
 msgstr "主机 CPU 是 %1$s 中描述的 CPU 的超集\n"
 
 #, c-format
-msgid "Host CPU model does not match required CPU vendor %1$s or(and) model %2$s"
+msgid ""
+"Host CPU model does not match required CPU vendor %1$s or(and) model %2$s"
 msgstr "主机 CPU 型号与所需的 CPU 供应商 %1$s 或(和)型号%2$s 不匹配"
 
 #, c-format
@@ -8837,7 +8875,8 @@ msgid "Hybrid-Suspend"
 msgstr "Hybrid-Suspend"
 
 #, c-format
-msgid "HyperV spinlock retry count differs: source: '%1$u', destination: '%2$u'"
+msgid ""
+"HyperV spinlock retry count differs: source: '%1$u', destination: '%2$u'"
 msgstr "HyperV 旋转锁重试计数不同：源：'%1$u'，目标：'%2$u'"
 
 msgid "HyperV spinlock retry count must be at least 4095"
@@ -8856,7 +8895,8 @@ msgstr "HyperV vendor_id 值不能超过 %1$d 个字符。"
 
 #, c-format
 msgid ""
-"Hyperv features are not supported for architecture '%1$s' or machine type '%2$s'"
+"Hyperv features are not supported for architecture '%1$s' or machine type "
+"'%2$s'"
 msgstr "构架 '%1$s' 或机器类型 '%2$s' 不支持 HyperV 功能"
 
 msgid "I/O Error"
@@ -9001,7 +9041,8 @@ msgid "Ignoring guests on $uri URI"
 msgstr "忽略 $uri URI 中的虚拟机"
 
 #, c-format
-msgid "Image file for %1$s %2$s '%3$s' has unsupported suffix, expecting '%4$s'"
+msgid ""
+"Image file for %1$s %2$s '%3$s' has unsupported suffix, expecting '%4$s'"
 msgstr "%1$s %2$s '%3$s' 的镜像文件有不受支持的后缀，预期是 '%4$s'"
 
 msgid "In use"
@@ -9028,8 +9069,8 @@ msgstr "vnode %1$zu 的不完整的 vnuma 配置"
 
 #, c-format
 msgid ""
-"Inconsistent SCSI controller model ('%1$s' is not '%2$s') for SCSI controller "
-"index %3$d"
+"Inconsistent SCSI controller model ('%1$s' is not '%2$s') for SCSI "
+"controller index %3$d"
 msgstr "SCSI 控制器索引 %1$s 不一致的 SCSI 控制器型号（'%2$s' 不是 '%3$d'）"
 
 msgid "Incorrect data type"
@@ -9323,7 +9364,8 @@ msgid "Invalid address for a USB device"
 msgstr "USB 设备的无效地址"
 
 #, c-format
-msgid "Invalid address type '%1$s' for the disk '%2$s' with the bus type '%3$s'"
+msgid ""
+"Invalid address type '%1$s' for the disk '%2$s' with the bus type '%3$s'"
 msgstr "总线类型为 '%1$s' 的磁盘 '%2$s' 的无效的地址类型 '%3$s'"
 
 msgid "Invalid address."
@@ -9354,11 +9396,11 @@ msgstr "尝试设置网络接口客户机端 IP 路由无效，QEMU 不支持"
 #, c-format
 msgid ""
 "Invalid attempt to set network interface host-side IP route and/or address "
-"info on interface of type '%1$s'. This is only supported on interfaces of type "
-"'ethernet'"
+"info on interface of type '%1$s'. This is only supported on interfaces of "
+"type 'ethernet'"
 msgstr ""
-"尝试对类型为 '%1$s' 的接口设置网络接口主机端 IP 路由和/或地址信息无效。这只支持"
-"类型为 'ethernet' 的接口。"
+"尝试对类型为 '%1$s' 的接口设置网络接口主机端 IP 路由和/或地址信息无效。这只支"
+"持类型为 'ethernet' 的接口。"
 
 msgid "Invalid attempt to set peer IP for guest"
 msgstr "尝试为客户机设置对等 IP 无效"
@@ -9423,9 +9465,10 @@ msgstr "无效证书"
 
 #, c-format
 msgid ""
-"Invalid chain name '%1$s'. Please use a chain name called '%2$s' or any of the "
-"following prefixes: "
-msgstr "无效链名称 '%1$s'。请使用 '%2$s' 作为链名称，或者使用以下任何一个前缀： "
+"Invalid chain name '%1$s'. Please use a chain name called '%2$s' or any of "
+"the following prefixes: "
+msgstr ""
+"无效链名称 '%1$s'。请使用 '%2$s' 作为链名称，或者使用以下任何一个前缀： "
 
 #, c-format
 msgid "Invalid character '%1$c' in id '%2$s' of network '%3$s'"
@@ -9523,8 +9566,8 @@ msgstr "磁盘 %1$s 的无效的驱动器地址，vz 驱动程序不支持非默
 
 #, c-format
 msgid ""
-"Invalid drive address of disk %1$s, vz driver supports only bus 0 for SATA and "
-"SCSI bus."
+"Invalid drive address of disk %1$s, vz driver supports only bus 0 for SATA "
+"and SCSI bus."
 msgstr ""
 "磁盘 %1$s 的无效的驱动器地址，vz 驱动程序只支持 SATA 和 SCSI 总线的总线 0。"
 
@@ -9539,8 +9582,8 @@ msgstr "磁盘 %1$s 的无效的驱动器地址，vz 驱动程序只支持目标
 
 #, c-format
 msgid ""
-"Invalid drive address of disk %1$s, vz driver supports only units 0-1 for IDE "
-"bus."
+"Invalid drive address of disk %1$s, vz driver supports only units 0-1 for "
+"IDE bus."
 msgstr "磁盘 %1$s 的无效的驱动器地址，vz 驱动程序只支持 IDE 总线的单元 0-1。"
 
 #, c-format
@@ -9717,8 +9760,10 @@ msgstr "网络 '%1$s' 中的无效多播桥接 mac 地址 '%2$s'"
 
 #, c-format
 msgid ""
-"Invalid netmask '%1$s' for address '%2$s' in network '%3$s' (both must be IPv4)"
-msgstr "网络 '%1$s'中包含地址 '%2$s' 的无效子网掩码 '%3$s'（二者必须都为 IPv4）"
+"Invalid netmask '%1$s' for address '%2$s' in network '%3$s' (both must be "
+"IPv4)"
+msgstr ""
+"网络 '%1$s'中包含地址 '%2$s' 的无效子网掩码 '%3$s'（二者必须都为 IPv4）"
 
 #, c-format
 msgid "Invalid netmask '%1$s' in network '%2$s'"
@@ -9759,7 +9804,8 @@ msgstr "无效的 nvram 格式：'%1$s'"
 
 #, c-format
 msgid ""
-"Invalid or not yet handled value '%1$s' for VMX entry '%2$s' for device type '%3$s'"
+"Invalid or not yet handled value '%1$s' for VMX entry '%2$s' for device type "
+"'%3$s'"
 msgstr "设备类型 '%1$s' 的 VMX 条目'%2$s' 的无效的或尚未处理的值 '%3$s'"
 
 msgid "Invalid parameter"
@@ -9863,7 +9909,8 @@ msgstr "无效的源模式：%1$s"
 msgid ""
 "Invalid specification for virtio ccw address: cssid='0x%1$x' ssid='0x%2$x' "
 "devno='0x%3$04x'"
-msgstr "virtio ccw 地址的无效规范：cssid='0x%1$x' ssid='0x%2$x' devno='0x%3$04x'"
+msgstr ""
+"virtio ccw 地址的无效规范：cssid='0x%1$x' ssid='0x%2$x' devno='0x%3$04x'"
 
 #, c-format
 msgid "Invalid state '%1$s' in domain snapshot XML"
@@ -9905,7 +9952,8 @@ msgid ""
 msgstr "在网络 '%1$s' IPv6 静态主机定义中无法指定 MAC 地址 '%2$s'"
 
 #, c-format
-msgid "Invalid type '%1$s' requested for parameter '%2$s', actual type is '%3$s'"
+msgid ""
+"Invalid type '%1$s' requested for parameter '%2$s', actual type is '%3$s'"
 msgstr "参数 '%1$s' 的无效所需类型 '%2$s'，应为 '%3$s'。"
 
 #, c-format
@@ -9931,9 +9979,10 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid use of 'floor' on interface with MAC address %1$s - network '%2$s' has "
-"no inbound QoS set"
-msgstr "对 MAC 地址为 %1$s 的接口使用 'floor' 无效 - 网络 '%2$s' 没有进站 QoS 集"
+"Invalid use of 'floor' on interface with MAC address %1$s - network '%2$s' "
+"has no inbound QoS set"
+msgstr ""
+"对 MAC 地址为 %1$s 的接口使用 'floor' 无效 - 网络 '%2$s' 没有进站 QoS 集"
 
 #, c-format
 msgid "Invalid uuid '%1$s' for new mdev device"
@@ -9956,20 +10005,22 @@ msgid "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'."
 msgstr "元素 '%1$s' 中属性 '%2$s' 的无效值: '%3$s'"
 
 #, c-format
-msgid "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected UUID"
+msgid ""
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected UUID"
 msgstr "元素 '%1$s' 中属性 '%2$s' 的无效值: '%3$s' 。需要是 UUID"
 
 #, c-format
 msgid ""
-"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected integer "
-"value"
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected "
+"integer value"
 msgstr "元素 '%1$s' 中属性 '%2$s' 的无效值: '%3$s' 。期望为整数值"
 
 #, c-format
 msgid ""
-"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected long long "
-"integer value"
-msgstr "元素 '%1$s' 中属性 '%2$s' 的无效值: '%3$s' 。需要为 long long intege 值"
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected long "
+"long integer value"
+msgstr ""
+"元素 '%1$s' 中属性 '%2$s' 的无效值: '%3$s' 。需要为 long long intege 值"
 
 #, c-format
 msgid ""
@@ -9984,7 +10035,8 @@ msgid ""
 msgstr "元素 '%1$s' 中的属性 '%2$s' 的无效值：'%3$s'。期望为非负值"
 
 #, c-format
-msgid "Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"
+msgid ""
+"Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"
 msgstr "元素 '%1$s' 中属性 '%2$s' 的无效值：不允许为 0"
 
 #, c-format
@@ -10084,7 +10136,8 @@ msgid "JSON backing volume definition '%1$s' lacks driver name"
 msgstr "JSON 后端卷定义 '%1$s' 缺少驱动程序名称"
 
 #, c-format
-msgid "JSON backing volume definition '%1$s' must not have nested format drivers"
+msgid ""
+"JSON backing volume definition '%1$s' must not have nested format drivers"
 msgstr "JSON 后端卷定义 '%1$s' 不得有嵌套格式驱动程序"
 
 msgid "JSON string array contains non-string element"
@@ -10582,7 +10635,8 @@ msgid "Migration failed. Domain is not running on destination host"
 msgstr "迁移失败。域没有在目标主机上运行"
 
 #, c-format
-msgid "Migration failed. No domain on destination host with matching name '%1$s'"
+msgid ""
+"Migration failed. No domain on destination host with matching name '%1$s'"
 msgstr "迁移失败。目标主机上没有与名称 '%1$s' 映射的域。"
 
 msgid "Migration graphics data already present"
@@ -10968,7 +11022,8 @@ msgstr "在 query-rx-filter 响应中缺少或无效的 'broadcast-allowed'"
 msgid ""
 "Missing or invalid 'end' attribute in <port> in <nat> in <forward> in "
 "network %1$s"
-msgstr "在网络 %1$s 中 <forward> 中 <nat> 中的<port> 中缺少或者无效的 'end' 属性"
+msgstr ""
+"在网络 %1$s 中 <forward> 中 <nat> 中的<port> 中缺少或者无效的 'end' 属性"
 
 msgid "Missing or invalid 'main-mac' in query-rx-filter response"
 msgstr "在 query-rx-filter 响应中缺少或无效的 'main-mac'"
@@ -11023,7 +11078,8 @@ msgstr "query-rx-filter 响应中 'multicast' 列表的元素 %1$zu 缺少或无
 
 #, c-format
 msgid ""
-"Missing or invalid element %1$zu of 'unicast' list in query-rx-filter response"
+"Missing or invalid element %1$zu of 'unicast' list in query-rx-filter "
+"response"
 msgstr "query-rx-filter 响应中 'unicast' 列表的元素 %1$zu 缺少或无效"
 
 #, c-format
@@ -11089,7 +11145,8 @@ msgstr "在元素 '%1$s' 缺少所需的属性 '%2$s'"
 
 #, c-format
 msgid ""
-"Missing required dev attribute in <forward> <interface> element of network %1$s"
+"Missing required dev attribute in <forward> <interface> element of network "
+"%1$s"
 msgstr "网络 %1$s 的 <forward> <interface> 元素中缺少所需的 dev 属性"
 
 #, c-format
@@ -11239,8 +11296,8 @@ msgstr "找到多个 IPv6 dhcp 字段 -- 每个网络中只为单一 IPv6 地址
 
 #, c-format
 msgid ""
-"Multiple USB devices for %1$x:%2$x were found, but none of them is at bus:%3$u "
-"device:%4$u"
+"Multiple USB devices for %1$x:%2$x were found, but none of them is at bus:"
+"%3$u device:%4$u"
 msgstr "为 %1$x:%2$x 找到多个 USB 设备，但没有一个在总线 %3$u 设备 %4$u 中"
 
 #, c-format
@@ -12027,8 +12084,8 @@ msgstr "在池中没有用于卷 '%1$s' 的足够可用空间"
 
 #, fuzzy, c-format
 msgid ""
-"Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u scope "
-"type '%4$s'"
+"Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u "
+"scope type '%4$s'"
 msgstr "没有足够的空间来为级别 %2$u 缓存 %3$u 范围类型 '%4$s' 分配 %1$llu 字节"
 
 msgid "Not enough space left in storage pool"
@@ -12193,7 +12250,8 @@ msgid ""
 msgstr "只有模拟的 CPU，性能会受到很大限制。"
 
 #, c-format
-msgid "Only end address '%1$s' specified in <nat> in <forward> in network '%2$s'"
+msgid ""
+"Only end address '%1$s' specified in <nat> in <forward> in network '%2$s'"
 msgstr "仅在网络 '%1$s' 中 <forward> 中的 <nat> 中指定结束地址 '%2$s'"
 
 msgid "Only file based or volume based filesystems are supported by vz driver."
@@ -12228,7 +12286,8 @@ msgid "Only one <pf> element is allowed in <forward> of network %1$s"
 msgstr "网络 %1$s 的 <forward> 中只允许使用一个 <pf> 元素"
 
 #, c-format
-msgid "Only one <port> element is allowed in <nat> in <forward> in network %1$s"
+msgid ""
+"Only one <port> element is allowed in <nat> in <forward> in network %1$s"
 msgstr "网络 %1$s 中 <forward> 中的 <nat> 中只允许使用一个 <port> 元素"
 
 msgid "Only one IPv4 address per interface is allowed"
@@ -12280,7 +12339,8 @@ msgid "Only scsi disk supports vendor and product"
 msgstr "只有 scsi 磁盘支持 vendor 和 product"
 
 #, c-format
-msgid "Only start address '%1$s' specified in <nat> in <forward> in network '%2$s'"
+msgid ""
+"Only start address '%1$s' specified in <nat> in <forward> in network '%2$s'"
 msgstr "仅在网络 '%1$s' 中 <forward> 中的 <nat> 中指定起始地址 '%2$s'"
 
 msgid "Only tap devices supported"
@@ -12330,11 +12390,11 @@ msgstr "操作："
 
 #, c-format
 msgid ""
-"Option '%1$s' has invalid value for PCI controller with index '%2$d', model '%3$s' "
-"and modelName '%4$s'"
+"Option '%1$s' has invalid value for PCI controller with index '%2$d', model "
+"'%3$s' and modelName '%4$s'"
 msgstr ""
-"选项 '%1$s' 对索引为 '%2$d' ，型号为 '%3$s' 和 modelName 为 '%4$s'的 PCI 控制器有无效"
-"的值"
+"选项 '%1$s' 对索引为 '%2$d' ，型号为 '%3$s' 和 modelName 为 '%4$s'的 PCI 控制"
+"器有无效的值"
 
 #, c-format
 msgid "Option '%1$s' is not supported by '%2$s' device with this QEMU binary"
@@ -12342,10 +12402,11 @@ msgstr "带有这个 QEMU 二进制的 '%1$s' 设备不支持选项 '%2$s'"
 
 #, c-format
 msgid ""
-"Option '%1$s' is not valid for PCI controller with index '%2$d', model '%3$s' and "
-"modelName '%4$s'"
+"Option '%1$s' is not valid for PCI controller with index '%2$d', model "
+"'%3$s' and modelName '%4$s'"
 msgstr ""
-"选项 '%1$s' 对索引为 '%2$d'，型号为 '%3$s' 和 modelName 为'%4$s' 的 PCI 控制器无效"
+"选项 '%1$s' 对索引为 '%2$d'，型号为 '%3$s' 和 modelName 为'%4$s' 的 PCI 控制"
+"器无效"
 
 #, c-format
 msgid "Option --%1$s is required by option --%2$s"
@@ -12448,9 +12509,10 @@ msgstr "此平台上不提供 PCI VPD 报告"
 
 #, c-format
 msgid ""
-"PCI controller at index %1$d (0x%2$02x) has bus='0x%3$02x', but index must be "
-"larger than bus"
-msgstr "在索引 %1$d (0x%2$02x)处的 PCI 控制器具有 bus='0x%3$02x'，但索引必须大于总线"
+"PCI controller at index %1$d (0x%2$02x) has bus='0x%3$02x', but index must "
+"be larger than bus"
+msgstr ""
+"在索引 %1$d (0x%2$02x)处的 PCI 控制器具有 bus='0x%3$02x'，但索引必须大于总线"
 
 #, c-format
 msgid "PCI controller busNr '%1$d' out of range - must be 1-254"
@@ -12481,9 +12543,10 @@ msgstr "PCI 控制器目标索引 '%1$d' 超出范围 - 必须为 0-30"
 
 #, c-format
 msgid ""
-"PCI device %1$04x:%2$02x:%3$02x.%4$x allocated from network %5$s is already in use by "
-"domain %6$s"
-msgstr "PCI 设备 %1$04x:%2$02x:%3$02x.%4$x 是为网络 %5$s 分配，但已被域 %6$s 使用。"
+"PCI device %1$04x:%2$02x:%3$02x.%4$x allocated from network %5$s is already "
+"in use by domain %6$s"
+msgstr ""
+"PCI 设备 %1$04x:%2$02x:%3$02x.%4$x 是为网络 %5$s 分配，但已被域 %6$s 使用。"
 
 #, c-format
 msgid "PCI device %1$s is in use"
@@ -12498,7 +12561,9 @@ msgid "PCI device %1$s is not assignable"
 msgstr "PCI 设备 %1$s 不可分配"
 
 #, c-format
-msgid "PCI device '%1$04x:%2$02x:%3$02x.%4$x' can only be listed once in network %5$s"
+msgid ""
+"PCI device '%1$04x:%2$02x:%3$02x.%4$x' can only be listed once in network "
+"%5$s"
 msgstr "PCI 设备 '%1$04x:%2$02x:%3$02x.%4$x' 只能在网络 %5$s 中列出一次"
 
 msgid "PCI host devices must use 'pci' or 'unassigned' address type"
@@ -12571,8 +12636,8 @@ msgstr "上级"
 
 #, c-format
 msgid ""
-"Parent attribute '%1$s' does not match parent '%2$s' determined for the '%3$s' "
-"wwnn/wwpn lookup."
+"Parent attribute '%1$s' does not match parent '%2$s' determined for the "
+"'%3$s' wwnn/wwpn lookup."
 msgstr "父属性 '%1$s' 与决定 '%2$s' wwnn/wwpn 查找的父属性 '%3$s' 不匹配。"
 
 #, c-format
@@ -12661,7 +12726,8 @@ msgid ""
 "Pending question blocks virtual machine execution, question is '%1$s', "
 "possible answers are %2$s, but no default answer is specified"
 msgstr ""
-"等待处理的问题阻碍虚拟机执行，问题为 '%1$s'，答案为 %2$s，但没有指定默认答案。"
+"等待处理的问题阻碍虚拟机执行，问题为 '%1$s'，答案为 %2$s，但没有指定默认答"
+"案。"
 
 msgid "Per-node binding is not compatible with automatic NUMA placement."
 msgstr "按节点绑定与自动 NUMA 分配不兼容"
@@ -12978,12 +13044,14 @@ msgstr "查询参数 ‘proxy’ 不包含主机名"
 
 #, c-format
 msgid ""
-"Query parameter 'proxy' has unexpected port value '%1$s' (should be [1..65535])"
+"Query parameter 'proxy' has unexpected port value '%1$s' (should be "
+"[1..65535])"
 msgstr "查询参数 'proxy' 包含意外端口值 ‘%1$s’ (应在 [1..65535] 之间)"
 
 #, c-format
 msgid ""
-"Query parameter 'transport' has unexpected value '%1$s' (should be http|https)"
+"Query parameter 'transport' has unexpected value '%1$s' (should be http|"
+"https)"
 msgstr "查询参数 'transport' 包含意外值 ‘%1$s’ (应为 http|https)"
 
 msgid "Query, adjust speed, or cancel active block operations."
@@ -13119,19 +13187,20 @@ msgstr "替换与域 XML 关联的保存的状态文件"
 
 #, c-format
 msgid ""
-"Requested TSC frequency %1$llu Hz is outside tolerance range ([%2$llu, %3$llu] Hz) "
-"around host frequency %4$llu Hz and TSC scaling is not supported by the host "
-"CPU"
+"Requested TSC frequency %1$llu Hz is outside tolerance range ([%2$llu, "
+"%3$llu] Hz) around host frequency %4$llu Hz and TSC scaling is not supported "
+"by the host CPU"
 msgstr ""
-"请求的 TSC 频率 %1$llu Hz 超出了主机频率 %2$llu Hz 的容忍范围 ([%3$llu, %4$llu] "
-"Hz) ，且主机 CPU 不支持 TSC 扩展。"
+"请求的 TSC 频率 %1$llu Hz 超出了主机频率 %2$llu Hz 的容忍范围 ([%3$llu, "
+"%4$llu] Hz) ，且主机 CPU 不支持 TSC 扩展。"
 
 #, c-format
 msgid "Requested data len %1$llu is larger than maximum %2$d"
 msgstr "请求的数据长度 %1$llu 大于最大值 %2$d"
 
 #, c-format
-msgid "Requested device '%1$s' is locked by lock file '%2$s' held by process %3$lld"
+msgid ""
+"Requested device '%1$s' is locked by lock file '%2$s' held by process %3$lld"
 msgstr "请求的设备 '%1$s' 文件 '%2$s' 锁定，该文件由进程 %3$lld 锁定"
 
 msgid "Requested metadata element is not present"
@@ -13159,15 +13228,16 @@ msgstr "请求的卷 '%1$s' 不在池 '%2$s' 中"
 
 #, fuzzy, c-format
 msgid ""
-"Required option '%1$s' is not set for PCI controller with index '%2$d', model "
-"'%3$s' and modelName '%4$s'"
+"Required option '%1$s' is not set for PCI controller with index '%2$d', "
+"model '%3$s' and modelName '%4$s'"
 msgstr ""
 "没有为索引为 '%2$d'、型号为 '%3$s' 和 modelName 为 '%4$s' 的 PCI 控制器设置必"
 "选项 '%1$s'"
 
 #, c-format
 msgid ""
-"Resctrl ID must be set before determining resctrl parentpath='%1$s' prefix='%2$s'"
+"Resctrl ID must be set before determining resctrl parentpath='%1$s' "
+"prefix='%2$s'"
 msgstr "在确定 resctrl parentpath='%1$s' prefix='%2$s' 之前必须设置 Resctrl ID"
 
 #, c-format
@@ -13453,27 +13523,27 @@ msgstr "SCSI 磁盘索引 (从 '%1$s' 中解析获得) 太大"
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by a "
-"SCSI disk"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by a SCSI disk"
 msgstr ""
-"SCSI 主机地址 controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' 被一个 SCSI 磁盘"
-"使用"
+"SCSI 主机地址 controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' 被一个 "
+"SCSI 磁盘使用"
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by "
-"another SCSI disk"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by another SCSI disk"
 msgstr ""
-"SCSI 主机地址 controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' 被另一个 SCSI 磁"
-"盘使用"
+"SCSI 主机地址 controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' 被另一"
+"个 SCSI 磁盘使用"
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by "
-"another SCSI host device"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by another SCSI host device"
 msgstr ""
-"SCSI 主机地址 controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' 被另一个 SCSI 主"
-"机设备使用"
+"SCSI 主机地址 controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' 被另一"
+"个 SCSI 主机设备使用"
 
 msgid "SCSI host device doesn't support managed mode"
 msgstr "SCSI 主机设备不支持管理的模式"
@@ -13512,8 +13582,11 @@ msgid "SMM TSEG size must be divisible by 1 MiB"
 msgstr "SMM TSEG 必须可被 1 MiB 整除"
 
 #, c-format
-msgid "SOAP fault during %1$s: code '%2$s', subcode '%3$s', reason '%4$s', detail '%5$s'"
-msgstr "%1$s 过程中的 SOAP 错误：代码 '%2$s'，子代码 '%3$s'，理由 '%4$s'，详情 '%5$s'"
+msgid ""
+"SOAP fault during %1$s: code '%2$s', subcode '%3$s', reason '%4$s', detail "
+"'%5$s'"
+msgstr ""
+"%1$s 过程中的 SOAP 错误：代码 '%2$s'，子代码 '%3$s'，理由 '%4$s'，详情 '%5$s'"
 
 msgid "SSH Agent did not provide any authentication identity"
 msgstr "SSH 代理未提供任何认证身份"
@@ -13577,9 +13650,11 @@ msgid "Saved image %1$s XML configuration not changed.\n"
 msgstr "未更改保存的映像 %1$s XML 配置。\n"
 
 #, c-format
-msgid "Scaled numeric value '%1$s' for <%2$s> option is malformed or out of range"
+msgid ""
+"Scaled numeric value '%1$s' for <%2$s> option is malformed or out of range"
 msgstr ""
-"转换数值 '%1$s' 时发现格式错误或结果超出了范围，因此不能做为选项 <%2$s> 的参数"
+"转换数值 '%1$s' 时发现格式错误或结果超出了范围，因此不能做为选项 <%2$s> 的参"
+"数"
 
 #, c-format
 msgid ""
@@ -13956,7 +14031,8 @@ msgstr "这个平台上不提供信号处理"
 
 #, c-format
 msgid ""
-"Size of SMM TSEG size differs: source: '%1$llu %2$s', destination: '%3$llu %4$s'"
+"Size of SMM TSEG size differs: source: '%1$llu %2$s', destination: '%3$llu "
+"%4$s'"
 msgstr "SMM TSEG 的大小不同： 源: '%1$llu %2$s, 目标: '%3$llu %4$s'"
 
 #, c-format
@@ -14159,11 +14235,13 @@ msgid ""
 msgstr "HyperV stimer 直接功能的状态不同：源: '%1$s', 目标: '%2$s'"
 
 #, c-format
-msgid "State of KVM feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
+msgid ""
+"State of KVM feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
 msgstr "KVM 功能 '%1$s' 的状态不同：源：'%2$s'，目标：'%3$s'"
 
 #, c-format
-msgid "State of Xen feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
+msgid ""
+"State of Xen feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
 msgstr "Xen 功能 '%1$s' 的状态不同：源: '%2$s', 目标: '%3$s'"
 
 #, c-format
@@ -14172,21 +14250,27 @@ msgstr "功能 '%1$s' 状态不同：源为：'%2$s'，目标设备为：'%3$s'"
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s', destination: '%5$s,%6$s=%7$s'"
+"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s', destination: "
+"'%5$s,%6$s=%7$s'"
 msgstr "功能 '%1$s' 的状态不同：源：'%2$s,%3$s=%4$s'，目标：'%5$s,%6$s=%7$s'"
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s,%5$s=%6$llu', destination: '%7$s,"
-"%8$s=%9$s,%10$s=%11$llu'"
-msgstr "功能 '%1$s' 的状态不同：源：'%2$s,%3$s=%4$s,%5$s=%6$llu'，目标：'%7$s,%8$s=%9$s,%10$s=%11$llu'"
+"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s,%5$s=%6$llu', "
+"destination: '%7$s,%8$s=%9$s,%10$s=%11$llu'"
+msgstr ""
+"功能 '%1$s' 的状态不同：源：'%2$s,%3$s=%4$s,%5$s=%6$llu'，目标：'%7$s,%8$s="
+"%9$s,%10$s=%11$llu'"
 
 #, c-format
-msgid "State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s=%5$s'"
+msgid ""
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
+"%5$s'"
 msgstr "功能 '%1$s' 的状态不同：源：'%2$s=%3$s，目标：'%4$s=%5$s'"
 
 #, c-format
-msgid "State of vCPU '%1$zu' differs between source and destination definitions"
+msgid ""
+"State of vCPU '%1$zu' differs between source and destination definitions"
 msgstr "vCPU '%1$zu' 的状态在源和目标定义之间有所不同"
 
 msgid "State:"
@@ -14284,7 +14368,8 @@ msgid "Storage volume not found: %1$s"
 msgstr "未找到存储卷: %1$s"
 
 #, c-format
-msgid "Stream data too long to send (%1$zu bytes needed, %2$zu bytes available)"
+msgid ""
+"Stream data too long to send (%1$zu bytes needed, %2$zu bytes available)"
 msgstr "流数据太长无法发送（需要 %1$zu 字节，只有 %2$zu 字节可用）"
 
 msgid "Stream has untransferred data left"
@@ -14529,12 +14614,14 @@ msgstr "目标 NVDIMM UUID 与源 NVDIMM 不匹配"
 
 #, c-format
 msgid ""
-"Target NVDIMM alignment '%1$llu' doesn't match source NVDIMM alignment '%2$llu'"
+"Target NVDIMM alignment '%1$llu' doesn't match source NVDIMM alignment "
+"'%2$llu'"
 msgstr "目标 NVDIMM 对齐 '%1$llu' 与源 NVDIMM 对齐 '%2$llu' 不匹配"
 
 #, c-format
 msgid ""
-"Target NVDIMM label size '%1$llu' doesn't match source NVDIMM label size '%2$llu'"
+"Target NVDIMM label size '%1$llu' doesn't match source NVDIMM label size "
+"'%2$llu'"
 msgstr "目标 NVDIMM 标签大小 '%1$llu' 与源 NVDIMM 标签大小 '%2$llu' 不匹配"
 
 msgid "Target NVDIMM pmem flag doesn't match source NVDIMM pmem flag"
@@ -14575,7 +14662,8 @@ msgid "Target USB product ID does not match source"
 msgstr "目标 USB 产品 ID 与源不映射"
 
 #, c-format
-msgid "Target USB redirection filter rule count %1$zu does not match source %2$zu"
+msgid ""
+"Target USB redirection filter rule count %1$zu does not match source %2$zu"
 msgstr "目标 USB 重新定向过滤器规则技术 %1$zu 与源 %2$zu 不映射"
 
 msgid "Target USB vendor ID does not match source"
@@ -14592,13 +14680,14 @@ msgstr "目标已存在"
 
 #, c-format
 msgid ""
-"Target balloon autodeflate attribute value '%1$s' does not match source '%2$s'"
+"Target balloon autodeflate attribute value '%1$s' does not match source "
+"'%2$s'"
 msgstr "目标 balloon autodeflate 属性值 '%1$s' 与源 '%2$s' 不匹配"
 
 #, c-format
 msgid ""
-"Target balloon freePageReporting attribute value '%1$s' does not match source "
-"'%2$s'"
+"Target balloon freePageReporting attribute value '%1$s' does not match "
+"source '%2$s'"
 msgstr "目标 balloon freePageReporting 属性值 '%1$s' 与源 '%2$s' 不匹配"
 
 #, c-format
@@ -14649,8 +14738,8 @@ msgstr "目标控制器矢量 %1$d 与源 %2$d 不匹配"
 
 #, c-format
 msgid ""
-"Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source %5$04x:%6$02x:"
-"%7$02x.%8$d"
+"Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
+"%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
 
 #, c-format
@@ -14674,7 +14763,9 @@ msgid "Target device dimm slot %1$u does not match source %2$u"
 msgstr "目标设备 dimm 槽 %1$u 与源 %2$u 不匹配"
 
 #, c-format
-msgid "Target device drive address %1$d:%2$d:%3$d does not match source %4$d:%5$d:%6$d"
+msgid ""
+"Target device drive address %1$d:%2$d:%3$d does not match source %4$d:%5$d:"
+"%6$d"
 msgstr "目标设备驱动地址 %1$d:%2$d:%3$d 与源 %4$d:%5$d:%6$d 不匹配"
 
 #, c-format
@@ -14698,7 +14789,8 @@ msgstr "目标设备 virtio 选项与源不匹配"
 
 #, c-format
 msgid ""
-"Target device virtio serial address %1$d:%2$d:%3$d does not match source %4$d:%5$d:%6$d"
+"Target device virtio serial address %1$d:%2$d:%3$d does not match source "
+"%4$d:%5$d:%6$d"
 msgstr "目标设备 virtio 串口地址 %1$d:%2$d:%3$d 与源 %4$d:%5$d:%6$d 不匹配"
 
 #, c-format
@@ -14746,14 +14838,16 @@ msgid ""
 msgstr "目标域 IOMMU 设备 aw_bits 值 '%1$d' 与源 '%2$d' 不匹配"
 
 #, c-format
-msgid "Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
 msgstr "目标域 IOMMU 设备缓存模式 '%1$s' 与源 '%2$s' 不匹配"
 
 msgid "Target domain IOMMU device count does not match source"
 msgstr "目标域 IOMMU 设备数与源不匹配"
 
 #, c-format
-msgid "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
 msgstr "目标域 IOMMU 设备 eim 值 '%1$s' 与源 '%2$s' 不匹配"
 
 #, c-format
@@ -14762,7 +14856,8 @@ msgid ""
 msgstr "目标域 IOMMU 设备 intremap 值 '%1$s' 与源 '%2$s' 不匹配"
 
 #, c-format
-msgid "Target domain IOMMU device iotlb value '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device iotlb value '%1$s' does not match source '%2$s'"
 msgstr "目标域 IOMMU 设备 iotlb 值 '%1$s' 与源 '%2$s' 不匹配"
 
 #, c-format
@@ -14786,7 +14881,8 @@ msgid "Target domain TPM device count %1$zu does not match source %2$zu"
 msgstr "目标域 TPM 设备数 %1$zu 与源 %2$zu 不匹配"
 
 #, c-format
-msgid "Target domain USB redirection filter count %1$d does not match source %2$d"
+msgid ""
+"Target domain USB redirection filter count %1$d does not match source %2$d"
 msgstr "目标域 USB 重新定向过滤器计数 %1$d 与源 %2$d 不匹配"
 
 #, c-format
@@ -14873,7 +14969,8 @@ msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr "目标域并口端口计数 %1$zu 与源 %2$zu 不映射"
 
 #, c-format
-msgid "Target domain redirected devices count %1$zu does not match source %2$zu"
+msgid ""
+"Target domain redirected devices count %1$zu does not match source %2$zu"
 msgstr "目标域重新定向设备计数 %1$zu 与源 %2$zu 不映射"
 
 msgid "Target domain requested genid does not match source"
@@ -14884,7 +14981,8 @@ msgid "Target domain serial port count %1$zu does not match source %2$zu"
 msgstr "目标域串口端口计数 %1$zu 与源 %2$zu 不映射"
 
 #, c-format
-msgid "Target domain shared memory device count %1$zu does not match source %2$zu"
+msgid ""
+"Target domain shared memory device count %1$zu does not match source %2$zu"
 msgstr "目标域共享内存设备计数 %1$zu 与源 %2$zu 不映射"
 
 #, c-format
@@ -15033,8 +15131,8 @@ msgstr "目标重新定向设备总线 %1$s 与源 %2$s 不匹配"
 
 #, c-format
 msgid ""
-"Target redirected device source type %1$s does not match source device source "
-"type %2$s"
+"Target redirected device source type %1$s does not match source device "
+"source type %2$s"
 msgstr "目标重新定向设备源类型 %1$s 与源设备源类型 %2$s 不匹配"
 
 #, c-format
@@ -15167,7 +15265,8 @@ msgstr "这个 QEMU 二进制文件不支持 '%1$s' 设备"
 
 #, c-format
 msgid ""
-"The '%1$s' feature is not supported for architecture '%2$s' or machine type '%3$s'"
+"The '%1$s' feature is not supported for architecture '%2$s' or machine type "
+"'%3$s'"
 msgstr "'%1$s' 功能不支持构架 '%2$s' 或机器类型 '%3$s'"
 
 #, c-format
@@ -15267,12 +15366,14 @@ msgstr "证书 %1$s 基本约束未显示一个 CA。"
 
 #, c-format
 msgid ""
-"The certificate %1$s basic constraints show a CA, but we need one for a client"
+"The certificate %1$s basic constraints show a CA, but we need one for a "
+"client"
 msgstr "证书 %1$s 基本约束显示一个 CA，但我们的客户端还需要一个。"
 
 #, c-format
 msgid ""
-"The certificate %1$s basic constraints show a CA, but we need one for a server"
+"The certificate %1$s basic constraints show a CA, but we need one for a "
+"server"
 msgstr "证书 %1$s 基本约束显示一个 CA，但我们的服务器还需要一个。"
 
 #, c-format
@@ -15308,15 +15409,16 @@ msgstr "%1$s 处的设备没有网络设备名称"
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s cannot be plugged into the PCI controller with "
-"index='%2$d'. It requires a controller that accepts a %3$s."
+"The device at PCI address %1$s cannot be plugged into the PCI controller "
+"with index='%2$d'. It requires a controller that accepts a %3$s."
 msgstr ""
-"PCI 地址 %1$s 处的设备不能插入到 index='%2$d' 的 PCI 控制器中。它需要一个接受 %3$s "
-"的控制器。"
+"PCI 地址 %1$s 处的设备不能插入到 index='%2$d' 的 PCI 控制器中。它需要一个接"
+"受 %3$s 的控制器。"
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags 0x"
+"%2$.2x"
 msgstr "PCI 地址 %1$s 处的设备具有未识别的连接类型标志 0x%2$.2x"
 
 #, c-format
@@ -15328,14 +15430,16 @@ msgid ""
 "The device at PCI address %1$s requires hotplug capability, but the PCI "
 "controller with index='%2$d' doesn't support hotplug"
 msgstr ""
-"PCI 地址 %1$s 处的设备需要热插拔功能，但 index='%2$d' 的 PCI 控制器不支持热插拔"
+"PCI 地址 %1$s 处的设备需要热插拔功能，但 index='%2$d' 的 PCI 控制器不支持热插"
+"拔"
 
 #, c-format
 msgid ""
 "The device at PCI address %1$s was auto-assigned this address, but the PCI "
 "controller with index='%2$d' doesn't allow auto-assignment"
 msgstr ""
-"PCI 地址 %1$s 处的设备是自动签名的，但 index='%2$d' 的 PCI 控制器不允许自动分配"
+"PCI 地址 %1$s 处的设备是自动签名的，但 index='%2$d' 的 PCI 控制器不允许自动分"
+"配"
 
 #, c-format
 msgid "The disk device '%1$s' already has media"
@@ -15493,7 +15597,8 @@ msgid ""
 "This host is managed by a vCenter with IP address %1$s, but a mismatching "
 "vCenter '%2$s' (%3$s) has been specified"
 msgstr ""
-"此主机由 IP 地址为 %1$s 的 vCenter 管理，但指定了不匹配的 vCenter '%2$s'(%3$s)"
+"此主机由 IP 地址为 %1$s 的 vCenter 管理，但指定了不匹配的 vCenter "
+"'%2$s'(%3$s)"
 
 msgid "This host is not managed by a vCenter"
 msgstr "这台主机不是由 vCenter 管理"
@@ -16151,8 +16256,8 @@ msgstr "无法计算数据的哈希：%1$s"
 
 #, fuzzy, c-format
 msgid ""
-"Unable to configure VF %1$d of PF '%2$s' because the PF is not online. Please "
-"change host network config to put the PF online."
+"Unable to configure VF %1$d of PF '%2$s' because the PF is not online. "
+"Please change host network config to put the PF online."
 msgstr ""
 "无法配置 PF '%2$s' 的 VF %1$d，因为 PF 不在线。请更改主机网络配置以使 PF 在"
 "线。"
@@ -18452,7 +18557,8 @@ msgid ""
 "Unsupported <bandwidth> element in network '%1$s' in portgroup '%2$s' with "
 "forward mode='%3$s'"
 msgstr ""
-"在 forward mode='%1$s' 的端口组 '%2$s' 中的网络 '%3$s' 中不支持的 <bandwidth> 元素"
+"在 forward mode='%1$s' 的端口组 '%2$s' 中的网络 '%3$s' 中不支持的 "
+"<bandwidth> 元素"
 
 #, c-format
 msgid "Unsupported <dns> element in network %1$s with forward mode='%2$s'"
@@ -18921,8 +19027,8 @@ msgstr "VCPU:"
 
 #, fuzzy, c-format
 msgid ""
-"VF %1$d of PF '%2$s' is not bound to a net driver, so its MAC address cannot be "
-"set to %3$s"
+"VF %1$d of PF '%2$s' is not bound to a net driver, so its MAC address cannot "
+"be set to %3$s"
 msgstr ""
 "PF '%2$s' 的 VF %1$d 没有绑定到网络驱动程序，因此其 MAC 地址不能设为 %3$s"
 
@@ -19530,7 +19636,8 @@ msgid "architecture"
 msgstr "架构"
 
 #, c-format
-msgid "architecture from emulator '%1$s' doesn't match given architecture '%2$s'"
+msgid ""
+"architecture from emulator '%1$s' doesn't match given architecture '%2$s'"
 msgstr "模拟器 '%1$s' 中的架构与给定的构架 '%2$s' 不匹配"
 
 #, c-format
@@ -19559,11 +19666,13 @@ msgid "arguments to echo"
 msgstr "需要进行重新编码的字符串"
 
 #, c-format
-msgid "array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo 'disk' data"
+msgid ""
+"array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo 'disk' data"
 msgstr "guest-get-fsinfo 'disk' 数据中缺少 '%1$zd' 的 数组元素 '%2$zd'"
 
 #, c-format
-msgid "array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo return data"
+msgid ""
+"array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo return data"
 msgstr "guest-get-fsinfo 返回数据中缺少 '%1$zd' 的 数组元素 '%2$zd'"
 
 msgid "array element missing in guest-get-disks return value"
@@ -19631,11 +19740,13 @@ msgstr "尝试将虚拟端口与未匹配 instanceids（'%1$s' 和 '%2$s'）合�
 
 #, c-format
 msgid ""
-"attempt to merge virtualports with mismatched interfaceids ('%1$s' and '%2$s')"
+"attempt to merge virtualports with mismatched interfaceids ('%1$s' and "
+"'%2$s')"
 msgstr "尝试将虚拟端口与未匹配 interfaceids（'%1$s' 和 '%2$s'）合并"
 
 #, c-format
-msgid "attempt to merge virtualports with mismatched managerids (%1$d and %2$d)"
+msgid ""
+"attempt to merge virtualports with mismatched managerids (%1$d and %2$d)"
 msgstr "尝试将虚拟端口与未匹配类型（%1$d 和 %2$d）合并"
 
 #, c-format
@@ -19825,8 +19936,8 @@ msgstr "带宽 %1$llu 无法在结果中表示"
 
 #, c-format
 msgid ""
-"bandwidth %1$llu is greater than %2$lu which is the maximum value supported by "
-"this API"
+"bandwidth %1$llu is greater than %2$lu which is the maximum value supported "
+"by this API"
 msgstr "带宽 %1$llu 大于 %2$lu，这是这个 API 所支持的最大值"
 
 #, c-format
@@ -20094,7 +20205,8 @@ msgid "bridge interface stp should be on or off got %1$s"
 msgstr "应该打开或者关闭桥接接口获得 %1$s"
 
 #, c-format
-msgid "bridge macTableManager setting not allowed in %1$s mode (network '%2$s')"
+msgid ""
+"bridge macTableManager setting not allowed in %1$s mode (network '%2$s')"
 msgstr "%1$s 模式（网络 '%2$s'）中不允许使用桥接 macTableManager 设置"
 
 #, c-format
@@ -20333,7 +20445,8 @@ msgstr "无法获取状态更改锁（由 monitor=%1$s 持有）"
 
 #, c-format
 msgid ""
-"cannot acquire state change lock (held by monitor=%1$s) due to max_queued limit"
+"cannot acquire state change lock (held by monitor=%1$s) due to max_queued "
+"limit"
 msgstr "由于 max_queued 的限制，无法获取状态更改锁（由 monitor=%1$s 持有）"
 
 msgid "cannot acquire state change lock due to max_queued limit"
@@ -20380,7 +20493,8 @@ msgid "cannot change between disk only and full system in snapshot %1$s"
 msgstr "无法在快照 %1$s 中只在磁盘和全系统之间进行更改"
 
 #, c-format
-msgid "cannot change between online and offline snapshot state in snapshot %1$s"
+msgid ""
+"cannot change between online and offline snapshot state in snapshot %1$s"
 msgstr "无法在快照 %1$s 中更改在线好离线快照状态"
 
 #, c-format
@@ -20812,7 +20926,8 @@ msgid "cannot generate dac user and group id for domain %1$s"
 msgstr "无法为域 %1$s 生成 dac 用户 id 和组 id"
 
 #, c-format
-msgid "cannot generate external snapshot name for disk '%1$s' on a '%2$s' device"
+msgid ""
+"cannot generate external snapshot name for disk '%1$s' on a '%2$s' device"
 msgstr "无法为 '%1$s 设备中的磁盘 '%2$s 生成外部快照名称"
 
 #, c-format
@@ -20910,20 +21025,20 @@ msgstr "无法停止临时域快照"
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x.%5$d - "
-"controller not found"
+"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
+"%5$d - controller not found"
 msgstr ""
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x.%5$d - not "
-"allowed by controller"
+"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
+"%5$d - not allowed by controller"
 msgstr ""
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:%3$02x:"
-"%4$02x.%5$d"
+"cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:"
+"%3$02x:%4$02x.%5$d"
 msgstr ""
 
 #, c-format
@@ -21463,8 +21578,8 @@ msgstr "无法解析驱动程序链接 %1$s"
 
 #, c-format
 msgid ""
-"cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain '%3$s' "
-"uuid %4$s"
+"cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain "
+"'%3$s' uuid %4$s"
 msgstr "无法从属于域 '%1$s' uuid %2$s 的文件中保存域 '%3$s' uuid %4$s"
 
 msgid "cannot restore domain snapshot for running domain"
@@ -22609,13 +22724,15 @@ msgstr "无法在 netlink 响应中为 VF %1$d 缺少 IFLA_VF_INFO"
 msgid ""
 "couldn't find a portgroup entry in network '%1$s' matching <portgroup "
 "name='%2$s'>"
-msgstr "无法在网络 '%1$s' 中找到与 <portgroup name='%2$s'> 匹配的 portgroup 条目"
+msgstr ""
+"无法在网络 '%1$s' 中找到与 <portgroup name='%2$s'> 匹配的 portgroup 条目"
 
 #, c-format
 msgid ""
 "couldn't find an interface entry in network '%1$s' matching <interface "
 "dev='%2$s'>"
-msgstr "无法在网络 '%1$s' 中找到与 <interface dev='%2$s'> 匹配的 interface 条目"
+msgstr ""
+"无法在网络 '%1$s' 中找到与 <interface dev='%2$s'> 匹配的 interface 条目"
 
 #, c-format
 msgid "couldn't find interface named '%1$s'"
@@ -22655,11 +22772,11 @@ msgstr "无法在网络 '%1$s' 中找到匹配的 dhcp range 条目"
 
 #, c-format
 msgid ""
-"couldn't locate an existing dhcp host entry with \"mac='%1$s'\" \"name='%2$s'\" "
-"\"ip='%3$s'\" in network '%4$s'"
+"couldn't locate an existing dhcp host entry with \"mac='%1$s'\" "
+"\"name='%2$s'\" \"ip='%3$s'\" in network '%4$s'"
 msgstr ""
-"无法在网络 '%1$s' 中使用 \"mac='%2$s'\" \"name='%3$s'\" \"ip='%4$s'\" 定位现有 dhcp "
-"主机条目"
+"无法在网络 '%1$s' 中使用 \"mac='%2$s'\" \"name='%3$s'\" \"ip='%4$s'\" 定位现"
+"有 dhcp 主机条目"
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %1$s"
@@ -22672,7 +22789,8 @@ msgid ""
 msgstr "无法更新 dhcp host 条目 - <ip> 元素未出现在索引 %1$d 网络 '%2$s' 中"
 
 #, c-format
-msgid "couldn't update dhcp host entry - no <ip> element found in network '%1$s'"
+msgid ""
+"couldn't update dhcp host entry - no <ip> element found in network '%1$s'"
 msgstr "无法更新 dhcp host 条目 - 在网络 '%1$s' 中没有找到 <ip> 元素"
 
 #, c-format
@@ -22798,21 +22916,26 @@ msgstr "不支持加密类型 %1$s"
 
 #, c-format
 msgid ""
-"curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned an error: %1$s (%2$d) : %3$s"
-msgstr "curl_easy_getinfo(CURLINFO_REDIRECT_URL) 返回一个错误：%1$s (%2$d) : %3$s"
+"curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned an error: %1$s (%2$d) : "
+"%3$s"
+msgstr ""
+"curl_easy_getinfo(CURLINFO_REDIRECT_URL) 返回一个错误：%1$s (%2$d) : %3$s"
 
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned a negative response code"
 msgstr "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) 返回消极响应代码"
 
 #, c-format
-msgid "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"
+msgid ""
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"
 msgstr "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) 返回一个错误：%1$s (%2$d)"
 
 #, c-format
 msgid ""
-"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d) : %3$s"
-msgstr "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) 返回一个错误：%1$s (%2$d) : %3$s"
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d) : "
+"%3$s"
+msgstr ""
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) 返回一个错误：%1$s (%2$d) : %3$s"
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %1$s (%2$d)"
@@ -23207,7 +23330,8 @@ msgstr "脏环必须是 2 的幂，范围为 [1024, 65536]"
 
 #, c-format
 msgid ""
-"dirty ring size of KVM feature '%1$s' differs: source: '%2$d', destination: '%3$d'"
+"dirty ring size of KVM feature '%1$s' differs: source: '%2$d', destination: "
+"'%3$d'"
 msgstr "KVM 功能 '%1$s' 的脏环大小不同：源: '%2$d', 目标: '%3$d'"
 
 msgid "dirty-ring calculation mode requires dirty-ring feature enabled."
@@ -24201,7 +24325,8 @@ msgid "event '%1$s' for storage pool %2$s\n"
 msgstr "存储池 %1$s 的事件 '%2$s'\n"
 
 #, c-format
-msgid "event 'agent-lifecycle' for domain '%1$s': state: '%2$s' reason: '%3$s'\n"
+msgid ""
+"event 'agent-lifecycle' for domain '%1$s': state: '%2$s' reason: '%3$s'\n"
 msgstr "域 '%1$s' 的事件 'agent-lifecycle' : 状态: '%2$s' 原因: '%3$s'\n"
 
 #, c-format
@@ -24209,7 +24334,8 @@ msgid "event 'balloon-change' for domain '%1$s': %2$lluKiB\n"
 msgstr "域 '%1$s' 的事件 'balloon-change': %2$lluKiB\n"
 
 #, c-format
-msgid "event 'block-threshold' for domain '%1$s': dev: %2$s(%3$s) %4$llu %5$llu\n"
+msgid ""
+"event 'block-threshold' for domain '%1$s': dev: %2$s(%3$s) %4$llu %5$llu\n"
 msgstr "域 '%1$s' 的事件 'block-threshold': dev: %2$s(%3$s) %4$llu %5$llu\n"
 
 #, c-format
@@ -24230,15 +24356,19 @@ msgstr "域 '%1$s' 磁盘 %2$s 的事件 'disk-change': %3$s -> %4$s: %5$s\n"
 
 #, c-format
 msgid ""
-"event 'graphics' for domain '%1$s': %2$s local[%3$s %4$s %5$s] remote[%6$s %7$s %8$s] %9$s\n"
-msgstr "域 '%1$s' 的事件 'graphics' : %2$s local[%3$s %4$s %5$s] remote[%6$s %7$s %8$s] %9$s\n"
+"event 'graphics' for domain '%1$s': %2$s local[%3$s %4$s %5$s] remote[%6$s "
+"%7$s %8$s] %9$s\n"
+msgstr ""
+"域 '%1$s' 的事件 'graphics' : %2$s local[%3$s %4$s %5$s] remote[%6$s %7$s "
+"%8$s] %9$s\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"
 msgstr "域 '%1$s' 的事件 'io-error' : %2$s (%3$s) %4$s\n"
 
 #, c-format
-msgid "event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
+msgid ""
+"event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
 msgstr "域 '%1$s' 的事件 'io-error-reason': %2$s (%3$s) %4$s 由于 %5$s\n"
 
 #, c-format
@@ -24464,8 +24594,8 @@ msgstr "对 '%1$s' 磁盘不支持外部不活跃的快照"
 
 #, c-format
 msgid ""
-"external inactive snapshots are not supported on 'network' disks using '%1$s' "
-"protocol"
+"external inactive snapshots are not supported on 'network' disks using "
+"'%1$s' protocol"
 msgstr "对使用 '%1$s' 协议的 'network' 磁盘不支持外部不活跃的快照"
 
 msgid "external memory snapshots require a filename"
@@ -24473,8 +24603,8 @@ msgstr "外部内存快照需要一个文件名"
 
 #, c-format
 msgid ""
-"external snapshot file for disk %1$s already exists and is not a block device: "
-"%2$s"
+"external snapshot file for disk %1$s already exists and is not a block "
+"device: %2$s"
 msgstr "磁盘 %1$s 的外部快照已存在，且不是块设备：%2$s"
 
 #, c-format
@@ -26012,8 +26142,8 @@ msgid ""
 "format '%1$s' is not supported, expecting 'kdump-zlib', 'kdump-lzo', 'kdump-"
 "snappy', 'win-dmp' or 'elf'"
 msgstr ""
-"格式 '%1$s' 不支持, 期望 'kdump-zlib', 'kdump-lzo', 'kdump-snappy', 'win-dmp' "
-"或 'elf'"
+"格式 '%1$s' 不支持, 期望 'kdump-zlib', 'kdump-lzo', 'kdump-snappy', 'win-"
+"dmp' 或 'elf'"
 
 msgid "format features only available with qcow2"
 msgstr "只有在 qcow2 中可使用格式功能"
@@ -26023,8 +26153,8 @@ msgstr "基础存储的格式"
 
 #, c-format
 msgid ""
-"format of backing image '%1$s' of image '%2$s' was not specified in the image "
-"metadata (See https://libvirt.org/kbase/backing_chains.html for "
+"format of backing image '%1$s' of image '%2$s' was not specified in the "
+"image metadata (See https://libvirt.org/kbase/backing_chains.html for "
 "troubleshooting)"
 msgstr ""
 "镜像 '%1$s' 的后备镜像 '%2$s' 的格式没有在镜像元数据中指定（请参见 https://"
@@ -26188,11 +26318,13 @@ msgid "got unknown HTTP error code %1$s"
 msgstr "得到未知的 HTTP 错误代码 %1$s"
 
 #, c-format
-msgid "got wrong number of IOThread ids from QEMU monitor. got %1$d, wanted %2$d"
+msgid ""
+"got wrong number of IOThread ids from QEMU monitor. got %1$d, wanted %2$d"
 msgstr "得到 QEMU monitor. got %1$d 中错误的 IOThread id 号。实际想要 %2$d"
 
 #, c-format
-msgid "got wrong number of IOThread pids from QEMU monitor. got %1$d, wanted %2$zu"
+msgid ""
+"got wrong number of IOThread pids from QEMU monitor. got %1$d, wanted %2$zu"
 msgstr "得到 QEMU monitor. got %1$d 中错误的 IOThread pids 号。实际想要 %2$zu"
 
 msgid "gracefully shutdown a domain"
@@ -26249,8 +26381,8 @@ msgstr "客户机 CPU 与规范不匹配：额外的功能：%1$s"
 
 #, c-format
 msgid ""
-"guest CPU doesn't match specification: extra features: %1$s, missing features: "
-"%2$s"
+"guest CPU doesn't match specification: extra features: %1$s, missing "
+"features: %2$s"
 msgstr "客户机 CPU 与规范不匹配：额外的功能：%1$s，缺失的功能：%2$s"
 
 #, c-format
@@ -26468,8 +26600,8 @@ msgid ""
 "hostdev network '%1$s' lists '%2$s' in the device pool, but hostdev networks "
 "require all devices to be listed by PCI address, not network device name"
 msgstr ""
-"hostdev 网络 '%1$s' 列出了设备池中的 '%2$s'，但 hostdev 网络要求所有设备都可由 "
-"PCI 地址列出，而不是网络设备名称"
+"hostdev 网络 '%1$s' 列出了设备池中的 '%2$s'，但 hostdev 网络要求所有设备都可"
+"由 PCI 地址列出，而不是网络设备名称"
 
 #, c-format
 msgid "hostdev subsys type '%1$s' not supported"
@@ -26589,7 +26721,8 @@ msgstr "内核中是否打开了IOMMU功能"
 
 #, c-format
 msgid ""
-"if using CPU maximum physical address mode='%1$s', bits= must be specified too"
+"if using CPU maximum physical address mode='%1$s', bits= must be specified "
+"too"
 msgstr "如果使用 CPU 最大物理地址模式='%1$s'，则必须同时指定 bits="
 
 #, c-format
@@ -26793,7 +26926,8 @@ msgstr "接口 %1$s - 自定义 tap 设备路径不支持类型为 %2$s 的网�
 
 #, c-format
 msgid ""
-"interface %1$s - filterref is not supported for network interfaces of type %2$s"
+"interface %1$s - filterref is not supported for network interfaces of type "
+"%2$s"
 msgstr "接口 %1$s - filterref 不支持类型为 %2$s 的网络接口"
 
 #, c-format
@@ -26804,7 +26938,8 @@ msgstr "接口 %1$s - filterref 不支持 virtualport 类型为%2$s 的网络接
 
 #, c-format
 msgid ""
-"interface %1$s - multiqueue is not supported for network interfaces of type %2$s"
+"interface %1$s - multiqueue is not supported for network interfaces of type "
+"%2$s"
 msgstr "接口 %1$s - 多队列不支持类型为 %2$s 的网络接口"
 
 #, c-format
@@ -26910,8 +27045,8 @@ msgstr "'%1$s' 磁盘不支持内部不活跃的快照"
 
 #, c-format
 msgid ""
-"internal inactive snapshots are not supported on 'network' disks using '%1$s' "
-"protocol"
+"internal inactive snapshots are not supported on 'network' disks using "
+"'%1$s' protocol"
 msgstr "使用 '%1$s' 协议的 'network' 磁盘不支持内部不活跃的快照"
 
 msgid "internal parse requested with NULL current"
@@ -26942,8 +27077,8 @@ msgstr "<vlan> 中无效的 \"trunk='%1$s'\" -- 必须是 yes 或 no"
 
 #, c-format
 msgid ""
-"invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than one "
-"vlan tag"
+"invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than "
+"one vlan tag"
 msgstr ""
 "<vlan> 中无效的 \"trunk='%1$s'\" -- 有一个以上的 vlan 标签要求 trunk='yes'"
 
@@ -27176,7 +27311,8 @@ msgstr "网络 '%1$s' 的 DNS SRV 记录中的 protocol 属性 '%2$s' 有无效�
 
 #, c-format
 msgid ""
-"invalid character in service attribute '%1$s' in DNS SRV record of network '%2$s'"
+"invalid character in service attribute '%1$s' in DNS SRV record of network "
+"'%2$s'"
 msgstr "网络 '%1$s' 的 DNS SRV 记录中的 service 属性 '%2$s' 有无效字符"
 
 msgid "invalid cipher size for TLS session"
@@ -27354,11 +27490,13 @@ msgstr "无效的 loadparm 值 '%1$s'，期望为 [a-zA-Z0-9.]集合中的字符
 msgid ""
 "invalid mac address '%1$s' in 'multicast-table' array in query-rx-filter "
 "response"
-msgstr "query-rx-filter 响应中 'multicast-table' 数组中的无效的 mac 地址 '%1$s'"
+msgstr ""
+"query-rx-filter 响应中 'multicast-table' 数组中的无效的 mac 地址 '%1$s'"
 
 #, c-format
 msgid ""
-"invalid mac address '%1$s' in 'unicast-table' array in query-rx-filter response"
+"invalid mac address '%1$s' in 'unicast-table' array in query-rx-filter "
+"response"
 msgstr "query-rx-filter 响应中 'unicast-table' 数组中的无效的 mac 地址 '%1$s'"
 
 #, c-format
@@ -28716,7 +28854,8 @@ msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
 msgstr "内存设备槽 '%1$u' 超过了槽数 '%2$u'"
 
 #, c-format
-msgid "memory device slot '%1$u' is already being used by another memory device"
+msgid ""
+"memory device slot '%1$u' is already being used by another memory device"
 msgstr "内存设备槽 '%1$u' 已被另一个内存设备使用"
 
 msgid "memory device target node"
@@ -29075,7 +29214,8 @@ msgstr "offset='absolute' 的时钟缺少 'start' 属性"
 msgid ""
 "missing 'start' attribute in <address> element in <nat> in <forward> in "
 "network %1$s"
-msgstr "网络 %1$s 中 <forward> 中的 <nat> 中的 <address> 元素中缺少 'start' 属性"
+msgstr ""
+"网络 %1$s 中 <forward> 中的 <nat> 中的 <address> 元素中缺少 'start' 属性"
 
 msgid "missing 'state' attribute"
 msgstr "缺少 'state' 属性"
@@ -29600,7 +29740,8 @@ msgstr "hostdev teaming 元素中缺少所需的 persistent 属性"
 
 #, c-format
 msgid ""
-"missing required protocol attribute in DNS SRV record '%1$s' of network '%2$s'"
+"missing required protocol attribute in DNS SRV record '%1$s' of network "
+"'%2$s'"
 msgstr "网络 '%1$s' 的 DNS SRV 记录 '%2$s' 中缺少所需 protocol 属性"
 
 #, c-format
@@ -29609,7 +29750,8 @@ msgstr "网络 '%1$s' 的 DNS SRV 记录中缺少所需 service 属性"
 
 #, c-format
 msgid ""
-"missing required value attribute in DNS TXT record named '%1$s' of network %2$s"
+"missing required value attribute in DNS TXT record named '%1$s' of network "
+"%2$s"
 msgstr "网络 %1$s 的 DNS TXT 记录 named '%2$s' 缺少所需 value 属性"
 
 msgid "missing required virtualport type"
@@ -29845,7 +29987,8 @@ msgstr "mkdir(\"%1$s\")"
 msgid ""
 "mkfs is not available on this platform: Failed to make filesystem of type "
 "'%1$s' on device '%2$s'"
-msgstr "在此平台上不提供 mkfs：无法在设备 '%1$s' 上创建类型为 '%2$s' 的文件系统"
+msgstr ""
+"在此平台上不提供 mkfs：无法在设备 '%1$s' 上创建类型为 '%2$s' 的文件系统"
 
 msgid "mode attribute of <source/> element"
 msgstr "<source/> 元素的 mode 属性"
@@ -29932,14 +30075,15 @@ msgid ""
 "mtu size only allowed in open, route, nat, and isolated mode, not in %1$s "
 "(network '%2$s')"
 msgstr ""
-"只在 open、route、nat 和 isolated 模式中允许 MTU 大小，在 %1$s（网络 '%2$s'）中不"
-"允许"
+"只在 open、route、nat 和 isolated 模式中允许 MTU 大小，在 %1$s（网络 '%2$s'）"
+"中不允许"
 
 msgid "multidevs is not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 multidevs"
 
 #, c-format
-msgid "multiple <portgroup> elements with the same name (%1$s) in network '%2$s'"
+msgid ""
+"multiple <portgroup> elements with the same name (%1$s) in network '%2$s'"
 msgstr "网络 '%1$s' 中具有相同名称（%2$s）的多个<portgroup> 元素"
 
 #, c-format
@@ -30124,23 +30268,26 @@ msgstr "网络 '%1$s' 声明 dev='%2$s' 已被不同的端口使用"
 
 #, c-format
 msgid ""
-"network '%1$s' claims the PCI device at domain=%2$d bus=%3$d slot=%4$d function=%5$d "
-"is already in use by a different network port"
+"network '%1$s' claims the PCI device at domain=%2$d bus=%3$d slot=%4$d "
+"function=%5$d is already in use by a different network port"
 msgstr ""
-"网络 '%1$s' 声明位于 domain=%2$d bus=%3$d slot=%4$d function=%5$d 的 PCI 设备已被不同的"
-"网络端口使用"
+"网络 '%1$s' 声明位于 domain=%2$d bus=%3$d slot=%4$d function=%5$d 的 PCI 设备"
+"已被不同的网络端口使用"
 
 #, c-format
 msgid "network '%1$s' does not have a bridge name."
 msgstr "网络 '%1$s' 没有桥接名称。"
 
 #, c-format
-msgid "network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by domain"
+msgid ""
+"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by "
+"domain"
 msgstr "另外 '%1$s' 没有域使用的 PCI 设备 %2$04x:%3$02x:%4$02x.%5$x"
 
 #, c-format
 msgid ""
-"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by network port"
+"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by "
+"network port"
 msgstr "网络 '%1$s' 没有 PCI 设备 %2$04x:%3$02x:%4$02x.%5$x 被网络端口使用"
 
 #, c-format
@@ -30161,18 +30308,18 @@ msgstr "网络 '%1$s' 在路由定义中有一个无效子网掩码或者 IP 地
 
 #, c-format
 msgid ""
-"network '%1$s' has forward mode '%2$s'  but lists a device by PCI address in the "
-"device pool. This is only supported for networks with forward mode 'hostdev'"
+"network '%1$s' has forward mode '%2$s' but lists a device by PCI address in "
+"the device pool. This is only supported for networks with forward mode "
+"'hostdev'"
 msgstr ""
-"网络 '%1$s' 具有 forward 模式 '%2$s'，但根据设备池中的 PCI 地址列出了设备。这只支"
-"持 forward 模式为 'hostdev' 的网络"
 
 #, c-format
 msgid ""
-"network '%1$s' has multiple default <portgroup> elements (%2$s and %3$s), but only "
-"one default is allowed"
+"network '%1$s' has multiple default <portgroup> elements (%2$s and %3$s), "
+"but only one default is allowed"
 msgstr ""
-"网络 '%1$s' 有多个默认 <portgroup> 元素（%2$s 和 %3$s），但只允许有一个默认元素。"
+"网络 '%1$s' 有多个默认 <portgroup> 元素（%2$s 和 %3$s），但只允许有一个默认元"
+"素。"
 
 #, c-format
 msgid "network '%1$s' has no associated interface or bridge"
@@ -30196,12 +30343,14 @@ msgstr "网络 '%1$s' 未激活"
 
 #, c-format
 msgid ""
-"network '%1$s' requires exclusive access to interfaces, but none are available"
+"network '%1$s' requires exclusive access to interfaces, but none are "
+"available"
 msgstr "网络 '%1$s' 需要对接口的单独访问，但没有可用接口。"
 
 #, c-format
 msgid ""
-"network '%1$s' uses a direct mode, but has no forward dev and no interface pool"
+"network '%1$s' uses a direct mode, but has no forward dev and no interface "
+"pool"
 msgstr "网络 '%1$s' 使用直接模式，但没有转发 dev 也没有接口池。"
 
 #, c-format
@@ -30215,10 +30364,11 @@ msgstr "使用不透明 shell 脚本的网络配置"
 
 #, c-format
 msgid ""
-"network device saved config file '%1$s' has unexpected contents, missing both "
-"'MAC' and 'adminMAC': '%2$.60s'"
+"network device saved config file '%1$s' has unexpected contents, missing "
+"both 'MAC' and 'adminMAC': '%2$.60s'"
 msgstr ""
-"网络设备保存的配置文件 '%1$s' 有意外的内容，缺少 'MAC' 和 'adminMAC': '%2$.60s'"
+"网络设备保存的配置文件 '%1$s' 有意外的内容，缺少 'MAC' 和 'adminMAC': "
+"'%2$.60s'"
 
 #, c-format
 msgid "network device type '%1$s' is not supported by this hypervisor"
@@ -30521,7 +30671,8 @@ msgstr "'%1$s' 没有设备容量"
 
 #, c-format
 msgid ""
-"no device found at address '%1$s' matching MAC address '%2$s' and alias '%3$s'"
+"no device found at address '%1$s' matching MAC address '%2$s' and alias "
+"'%3$s'"
 msgstr "在地址 '%1$s' 处没有找到与 MAC 地址 '%2$s' 和别名 '%3$s' 匹配的设备"
 
 #, c-format
@@ -30883,8 +31034,8 @@ msgid ""
 "node '%1$s' has unexpected NULL content. This could be caused by malformed "
 "input, or a memory allocation failure"
 msgstr ""
-"节点 '%1$s' 有意外的 NULL 内容。这可能是因为格式错误的输入，或者内存分配失败造"
-"成的"
+"节点 '%1$s' 有意外的 NULL 内容。这可能是因为格式错误的输入，或者内存分配失败"
+"造成的"
 
 #, c-format
 msgid "node '%1$s' has unexpected type %2$d"
@@ -31222,7 +31373,8 @@ msgid "only connect if safe console handling is supported"
 msgstr "只有在支持安全控制台处理时方可连接"
 
 #, c-format
-msgid "only cpu feature policies 'require' and 'disable' are supported for %1$s"
+msgid ""
+"only cpu feature policies 'require' and 'disable' are supported for %1$s"
 msgstr "cpu 功能策略的 'require' 和 'disable'只支持 %1$s"
 
 msgid "only i686 and x86_64 guests support panic device of model 'hyperv'"
@@ -32603,7 +32755,8 @@ msgid "removing block or network volumes is not supported: %1$s"
 msgstr "不支持删除块或者网络卷：%1$s"
 
 #, c-format
-msgid "removing of '%1$s' volumes is not supported by the gluster backend: %2$s"
+msgid ""
+"removing of '%1$s' volumes is not supported by the gluster backend: %2$s"
 msgstr "gluster 后端不支持删除 '%1$s' 卷：%2$s"
 
 msgid "rename a domain"
@@ -32733,13 +32886,14 @@ msgstr "请求的 vcpu 数大于域中启用的 vcpus 数：%1$d> %2$d"
 
 #, c-format
 msgid ""
-"requested vcpus is greater than max allowable vcpus for the domain: %1$d > %2$d"
+"requested vcpus is greater than max allowable vcpus for the domain: %1$d > "
+"%2$d"
 msgstr "需要的 vcpu 大于该域最多允许的 vcpu：%1$d > %2$d"
 
 #, c-format
 msgid ""
-"requested vcpus is greater than max allowable vcpus for the live domain: %1$u "
-"> %2$u"
+"requested vcpus is greater than max allowable vcpus for the live domain: "
+"%1$u > %2$u"
 msgstr "请求的 vcpu 大于活动域的最大允许的 vcpu：%1$u > %2$u"
 
 #, c-format
@@ -33144,7 +33298,8 @@ msgid "server which to list connected clients from"
 msgstr "指明需要列出哪一个server上的已连接的客户端"
 
 #, c-format
-msgid "service attribute '%1$s' in network '%2$s' is too long, limit is %3$d bytes"
+msgid ""
+"service attribute '%1$s' in network '%2$s' is too long, limit is %3$d bytes"
 msgstr "网络 '%1$s' 找到 service 属性 '%2$s' 太长，应限制在 %3$d 字节以内。"
 
 msgid "set a secret value"
@@ -33285,11 +33440,13 @@ msgid "sgx epc isn't supported by this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 sgx epc"
 
 #, fuzzy, c-format
-msgid "sgx epc size %1$lld on host node %2$d is less than requested size %3$lld"
+msgid ""
+"sgx epc size %1$lld on host node %2$d is less than requested size %3$lld"
 msgstr "主机节点 %d 上的 sgx epc 大小 %lld 小于请求的大小 %lld"
 
 #, fuzzy, c-format
-msgid "sgx epc size %1$lld on host node %2$zd is less than requested size %3$lld"
+msgid ""
+"sgx epc size %1$lld on host node %2$zd is less than requested size %3$lld"
 msgstr "主机节点 %zd 上的 sgx epc 大小 %lld 小于请求的大小 %lld"
 
 msgid "sgx-epc memory info data is missing 'memdev'"
@@ -34034,8 +34191,8 @@ msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
 msgstr ""
-"当 <address> 或者 <pf> 子元素在网络 %1$s 中存在时，不能使用 <forward> 'dev' 属"
-"性"
+"当 <address> 或者 <pf> 子元素在网络 %1$s 中存在时，不能使用 <forward> 'dev' "
+"属性"
 
 msgid "the CPU is incompatible with host CPU"
 msgstr "CPU 与主机 CPU 不兼容"
@@ -34171,14 +34328,16 @@ msgid ""
 "there is an existing dhcp host entry in network '%1$s' that matches \"<host "
 "mac='%2$s' name='%3$s' ip='%4$s'/>\""
 msgstr ""
-"网络 '%1$s' 中有一个 dhcp host 条目与 \"<host mac='%2$s' name='%3$s' ip='%4$s'/>\""
+"网络 '%1$s' 中有一个 dhcp host 条目与 \"<host mac='%2$s' name='%3$s' "
+"ip='%4$s'/>\""
 
 #, c-format
 msgid ""
-"there is an existing dhcp range entry in network '%1$s' that matches \"<range "
-"start='%2$s' end='%3$s'/>\""
+"there is an existing dhcp range entry in network '%1$s' that matches "
+"\"<range start='%2$s' end='%3$s'/>\""
 msgstr ""
-"网络 '%1$s' 中有一个 dhcp range 条目与 \"<range start='%2$s' end='%3$s'/>\" 匹配"
+"网络 '%1$s' 中有一个 dhcp range 条目与 \"<range start='%2$s' end='%3$s'/>\" "
+"匹配"
 
 #, c-format
 msgid ""
@@ -34277,7 +34436,8 @@ msgid "thread_pool_max (%1$d) must be a positive number or -1"
 msgstr "thread_pool_max(%1$d)必须是正数或 -1"
 
 #, c-format
-msgid "thread_pool_max (%1$d) must be equal to or greater than 0 for live change"
+msgid ""
+"thread_pool_max (%1$d) must be equal to or greater than 0 for live change"
 msgstr "对于实时更改，thread_pool_max(%1$d)必须等于或大于 0"
 
 msgid "thread_pool_max must be a positive integer"
@@ -34292,7 +34452,8 @@ msgid "thread_pool_min (%1$d) must be equal to or greater than -1"
 msgstr "thread_pool_min(%1$d)必须等于或大于 -1"
 
 #, c-format
-msgid "thread_pool_min (%1$d) must be equal to or greater than 0 for live change"
+msgid ""
+"thread_pool_min (%1$d) must be equal to or greater than 0 for live change"
 msgstr "对于实时更改，thread_pool_min(%1$d)必须等于或大于 0"
 
 msgid ""
@@ -34404,45 +34565,47 @@ msgstr "用于 nparams '%2$d' 的太多参数 '%1$u'"
 msgid ""
 "too many remote clients: %1$d > %2$d,in parameter 'clients' for "
 "'virServerListClients'"
-msgstr "太多远程客户端：%1$d> %2$d,在 'virServerListClients'的参数 'clients' 中"
+msgstr ""
+"太多远程客户端：%1$d> %2$d,在 'virServerListClients'的参数 'clients' 中"
 
 #, c-format
 msgid ""
-"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' for "
-"'virDomainCheckpointListAllChildren'"
+"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' "
+"for 'virDomainCheckpointListAllChildren'"
 msgstr ""
 "太多远程 domain_checkpoints：%1$d> %2$d ，在 "
 "'virDomainCheckpointListAllChildren'的参数 'checkpoints' 中"
 
 #, c-format
 msgid ""
-"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' for "
-"'virDomainListAllCheckpoints'"
+"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' "
+"for 'virDomainListAllCheckpoints'"
 msgstr ""
-"太多的远程 domain_checkpoints: %1$d> %2$d 在 'virDomainListAllCheckpoints' 的参"
-"数 'checkpoints' 中"
+"太多的远程 domain_checkpoints: %1$d> %2$d 在 'virDomainListAllCheckpoints' 的"
+"参数 'checkpoints' 中"
 
 #, c-format
 msgid ""
 "too many remote domain_snapshots: %1$d > %2$d,in parameter 'snapshots' for "
 "'virDomainListAllSnapshots'"
 msgstr ""
-"太多的远程 domain_snapshots: %1$d > %2$d，在 'virDomainListAllSnapshots' 的参数 "
-"'snapshots' 中"
+"太多的远程 domain_snapshots: %1$d > %2$d，在 'virDomainListAllSnapshots' 的参"
+"数 'snapshots' 中"
 
 #, c-format
 msgid ""
 "too many remote domain_snapshots: %1$d > %2$d,in parameter 'snapshots' for "
 "'virDomainSnapshotListAllChildren'"
 msgstr ""
-"太多远程 domain_snapshots：%1$d> %2$d,在 'virDomainSnapshotListAllChildren' 的参"
-"数 'snapshots' 中"
+"太多远程 domain_snapshots：%1$d> %2$d,在 'virDomainSnapshotListAllChildren' "
+"的参数 'snapshots' 中"
 
 #, c-format
 msgid ""
 "too many remote domains: %1$d > %2$d,in parameter 'domains' for "
 "'virConnectListAllDomains'"
-msgstr "太多远程域：%1$d> %2$d,在 'virConnectListAllDomains' 的参数 'domains' 中"
+msgstr ""
+"太多远程域：%1$d> %2$d,在 'virConnectListAllDomains' 的参数 'domains' 中"
 
 #, c-format
 msgid ""
@@ -34456,13 +34619,15 @@ msgid ""
 "too many remote network_ports: %1$d > %2$d,in parameter 'ports' for "
 "'virNetworkListAllPorts'"
 msgstr ""
-"太多远程 network_ports：%1$d> %2$d,在 'virNetworkListAllPorts' 的参数 'ports' 中"
+"太多远程 network_ports：%1$d> %2$d,在 'virNetworkListAllPorts' 的参数 "
+"'ports' 中"
 
 #, c-format
 msgid ""
 "too many remote networks: %1$d > %2$d,in parameter 'nets' for "
 "'virConnectListAllNetworks'"
-msgstr "太多远程网络：%1$d> %2$d,在 'virConnectListAllNetworks' 的参数 'nets' 中"
+msgstr ""
+"太多远程网络：%1$d> %2$d,在 'virConnectListAllNetworks' 的参数 'nets' 中"
 
 #, c-format
 msgid ""
@@ -34477,37 +34642,39 @@ msgid ""
 "too many remote nwfilter_bindings: %1$d > %2$d,in parameter 'bindings' for "
 "'virConnectListAllNWFilterBindings'"
 msgstr ""
-"太多远程 nwfilter_bindings: %1$d > %2$d,在 'virConnectListAllNWFilterBindings' 的"
-"参数 'bindings' 中"
+"太多远程 nwfilter_bindings: %1$d > %2$d,在 "
+"'virConnectListAllNWFilterBindings' 的参数 'bindings' 中"
 
 #, c-format
 msgid ""
 "too many remote nwfilters: %1$d > %2$d,in parameter 'filters' for "
 "'virConnectListAllNWFilters'"
 msgstr ""
-"太多远程 nwfilters: %1$d > %2$d,在 'virConnectListAllNWFilters' 的参数 'filters' "
-"中"
+"太多远程 nwfilters: %1$d > %2$d,在 'virConnectListAllNWFilters' 的参数 "
+"'filters' 中"
 
 #, c-format
 msgid ""
 "too many remote secrets: %1$d > %2$d,in parameter 'secrets' for "
 "'virConnectListAllSecrets'"
 msgstr ""
-"太多远程 secret: %1$d> %2$d ，在 'virConnectListAllSecrets' 的参数 'secrets' 中"
+"太多远程 secret: %1$d> %2$d ，在 'virConnectListAllSecrets' 的参数 'secrets' "
+"中"
 
 #, c-format
 msgid ""
 "too many remote servers: %1$d > %2$d,in parameter 'servers' for "
 "'virConnectListServers'"
-msgstr "太多远程服务器：%1$d> %2$d,在 'virConnectListServers' 的参数 'servers' 中"
+msgstr ""
+"太多远程服务器：%1$d> %2$d,在 'virConnectListServers' 的参数 'servers' 中"
 
 #, c-format
 msgid ""
 "too many remote storage_pools: %1$d > %2$d,in parameter 'pools' for "
 "'virConnectListAllStoragePools'"
 msgstr ""
-"太多远程 storage_pools: %1$d > %2$d,在 'virConnectListAllStoragePools' 的参数 "
-"'pools' 中"
+"太多远程 storage_pools: %1$d > %2$d,在 'virConnectListAllStoragePools' 的参"
+"数 'pools' 中"
 
 #, c-format
 msgid ""
@@ -34522,47 +34689,53 @@ msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListDefinedDomains'"
 msgstr ""
-"太多远程字符串：%1$d> %2$d,在 'virConnectListDefinedDomains' 的参数 'names' 中"
+"太多远程字符串：%1$d> %2$d,在 'virConnectListDefinedDomains' 的参数 'names' "
+"中"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListDefinedInterfaces'"
 msgstr ""
-"太多远程字符串：%1$d> %2$d,在 'virConnectListDefinedInterfaces' 的参数 'names' 中"
+"太多远程字符串：%1$d> %2$d,在 'virConnectListDefinedInterfaces' 的参数 "
+"'names' 中"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListDefinedNetworks'"
 msgstr ""
-"太多远程字符串：%1$d> %2$d,在 'virConnectListDefinedNetworks' 的参数 'names' 中"
+"太多远程字符串：%1$d> %2$d,在 'virConnectListDefinedNetworks' 的参数 'names' "
+"中"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListDefinedStoragePools'"
 msgstr ""
-"太多远程字符串：%1$d> %2$d,在 'virConnectListDefinedStoragePools' 的参数 'names' "
-"中"
+"太多远程字符串：%1$d> %2$d,在 'virConnectListDefinedStoragePools' 的参数 "
+"'names' 中"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListInterfaces'"
-msgstr "太多远程字符串：%1$d> %2$d,在 'virConnectListInterfaces' 的参数 'names' 中"
+msgstr ""
+"太多远程字符串：%1$d> %2$d,在 'virConnectListInterfaces' 的参数 'names' 中"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListNWFilters'"
-msgstr "太多远程字符串：%1$d> %2$d,在 'virConnectListNWFilters' 的参数 'names' 中"
+msgstr ""
+"太多远程字符串：%1$d> %2$d,在 'virConnectListNWFilters' 的参数 'names' 中"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListNetworks'"
-msgstr "太多远程字符串：%1$d> %2$d,在 'virConnectListNetworks' 的参数 'names' 中"
+msgstr ""
+"太多远程字符串：%1$d> %2$d,在 'virConnectListNetworks' 的参数 'names' 中"
 
 #, c-format
 msgid ""
@@ -34590,7 +34763,8 @@ msgstr ""
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virNodeDeviceListCaps'"
-msgstr "太多远程字符串：%1$d> %2$d,在 'virNodeDeviceListCaps' 的参数 'names' 中"
+msgstr ""
+"太多远程字符串：%1$d> %2$d,在 'virNodeDeviceListCaps' 的参数 'names' 中"
 
 #, c-format
 msgid ""
@@ -34609,7 +34783,8 @@ msgstr ""
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'uuids' for "
 "'virConnectListSecrets'"
-msgstr "太多远程字符串：%1$d> %2$d,在 'virConnectListSecrets' 的参数 'uuids' 中"
+msgstr ""
+"太多远程字符串：%1$d> %2$d,在 'virConnectListSecrets' 的参数 'uuids' 中"
 
 msgid "too many secrets for luks encryption"
 msgstr "太多 luks 加密的 secret"
@@ -34886,9 +35061,9 @@ msgstr "无法创建卷 XML"
 
 #, c-format
 msgid ""
-"unable to delete interface '%1$s' in network '%2$s'. It is currently being used  "
-"by %3$d domains."
-msgstr "无法删除网络 '%1$s' 中的接口 '%2$s'。它目前由 %3$d 域使用。"
+"unable to delete interface '%1$s' in network '%2$s'. It is currently being "
+"used by %3$d domains."
+msgstr ""
 
 #, c-format
 msgid "unable to determine access mode of %1$s"
@@ -35091,7 +35266,8 @@ msgid "unable to parse blkio device '%1$s' '%2$s'"
 msgstr "无法解析 blkio 设备 '%1$s' '%2$s'"
 
 #, c-format
-msgid "unable to parse contents of 'file' field in '%1$s' from cloud-hypervisor"
+msgid ""
+"unable to parse contents of 'file' field in '%1$s' from cloud-hypervisor"
 msgstr "无法解析 cloud-hypervisor 中 '%1$s' 中的 'file' 字段的内容"
 
 #, c-format
@@ -35500,7 +35676,8 @@ msgid "unexpected domain type %1$d"
 msgstr "意外的域类型 %1$d"
 
 #, c-format
-msgid "unexpected element <%1$s>, expecting <%2$s>, while updating network '%3$s'"
+msgid ""
+"unexpected element <%1$s>, expecting <%2$s>, while updating network '%3$s'"
 msgstr "意外的元素 <%1$s>, 期望 <%2$s>,而更新了网络 '%3$s'"
 
 msgid "unexpected encryption engine"
@@ -36265,8 +36442,8 @@ msgid ""
 "unsupported <bandwidth> element in <portgroup name='%1$s'> of network '%2$s' "
 "with forward mode='%3$s'"
 msgstr ""
-"forward mode='%1$s' 的网络 '%2$s' 的<portgroup name='%3$s'> 中不支持的 <bandwidth> "
-"元素"
+"forward mode='%1$s' 的网络 '%2$s' 的<portgroup name='%3$s'> 中不支持的 "
+"<bandwidth> 元素"
 
 #, c-format
 msgid "unsupported CPU cache level for mode '%1$s'"
@@ -36646,7 +36823,8 @@ msgid "usage:"
 msgstr "用法："
 
 #, c-format
-msgid "usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"
+msgid ""
+"usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"
 msgstr "usb 控制器类型 '%1$s' 不支持带有此 QEMU 二进制的 'ports'"
 
 msgid "usb device not found"
@@ -36910,8 +37088,8 @@ msgstr "vcpu '%1$zu' 缺少热插拔数据"
 
 #, c-format
 msgid ""
-"vcpu '%1$zu' was not selected but it belongs to hotpluggable entity '%2$zd-%3$zd' "
-"which was partially selected"
+"vcpu '%1$zu' was not selected but it belongs to hotpluggable entity '%2$zd-"
+"%3$zd' which was partially selected"
 msgstr "没有选择 vcpu '%1$zu' ，但是它属于部分选择的热插拔实体 '%2$zd-%3$zd'"
 
 msgid "vcpu 0 can't be offline"
@@ -37111,10 +37289,12 @@ msgstr "virInterfaceDefFormat 未知启动模式"
 #, c-format
 msgid ""
 "virNWFilterDHCPSnoopReq ifname map failed on interface \"%1$s\" key \"%2$s\""
-msgstr "接口 \"%1$s\" 密钥 \"%2$s\" 中的 virNWFilterDHCPSnoopReq ifname map 失败"
+msgstr ""
+"接口 \"%1$s\" 密钥 \"%2$s\" 中的 virNWFilterDHCPSnoopReq ifname map 失败"
 
 #, c-format
-msgid "virNWFilterDHCPSnoopReq req add failed on interface \"%1$s\" ifkey \"%2$s\""
+msgid ""
+"virNWFilterDHCPSnoopReq req add failed on interface \"%1$s\" ifkey \"%2$s\""
 msgstr "接口 \"%1$s\" ifkey \"%2$s\" 中的 virNWFilterDHCPSnoopReq req add 失败"
 
 #, c-format
@@ -37146,7 +37326,8 @@ msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext 中没有设定 parseFileName 功能"
 
 #, c-format
-msgid "virtio (non-)transitional models are not supported for address type=%1$s"
+msgid ""
+"virtio (non-)transitional models are not supported for address type=%1$s"
 msgstr "virtio（非）转换型号不支持地址类型=%1$s"
 
 #, c-format
@@ -37204,7 +37385,8 @@ msgstr ""
 "virtio-net teaming 持久性接口必须是 <model type='virtio'/>，而不是 '%1$s'"
 
 #, c-format
-msgid "virtio-net teaming transient interface must be type='hostdev', not '%1$s'"
+msgid ""
+"virtio-net teaming transient interface must be type='hostdev', not '%1$s'"
 msgstr "virtio-net 团队临时接口必须是 type='hostdev'，而不是 '%1$s'"
 
 msgid "virtio-pmem does not support NUMA nodes"
@@ -37267,7 +37449,8 @@ msgstr "虚拟化类型(/domain/@type)"
 
 #, c-format
 msgid ""
-"virtualport type %1$s is currently not supported on interfaces of type hostdev"
+"virtualport type %1$s is currently not supported on interfaces of type "
+"hostdev"
 msgstr "hostdev 类型中目前不支持虚拟端口类型 %1$s"
 
 #, c-format
@@ -37327,7 +37510,8 @@ msgstr "vnc_tls_x509_cert_dir 目录 '%1$s' 不存在"
 
 #, c-format
 msgid ""
-"vnuma configuration contains %1$zu vcpus, which is greater than %2$zu maxvcpus"
+"vnuma configuration contains %1$zu vcpus, which is greater than %2$zu "
+"maxvcpus"
 msgstr "vnuma 配置包含 %1$zu 个 vcpu，大于 %2$zu 个 maxvcpus"
 
 #, c-format
@@ -37501,11 +37685,13 @@ msgid "when providing parent wwpn='%1$s', the wwnn must also be provided"
 msgstr "当提供父 wwpn='%1$s' 时，也必须提供 wwnn"
 
 #, c-format
-msgid "when providing parent_wwnn='%1$s', the parent_wwpn must also be provided"
+msgid ""
+"when providing parent_wwnn='%1$s', the parent_wwpn must also be provided"
 msgstr "当提供 parent_wwnn='%1$s' 时，也必须提供 parent_wwpn"
 
 #, c-format
-msgid "when providing parent_wwpn='%1$s', the parent_wwnn must also be provided"
+msgid ""
+"when providing parent_wwpn='%1$s', the parent_wwnn must also be provided"
 msgstr "当提供 parent_wwpn='%1$s' 时，也必须提供 parent_wwnn"
 
 msgid "where to dump the core"
@@ -37631,6 +37817,39 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid ""
+#~ "At least one of name, mac, or ip attribute must be specified for static "
+#~ "host definition in network '%1$s' "
+#~ msgstr ""
+#~ "必须在网络 '%1$s' 的静态主机定义中至少指定 name、mac 或者 ip 属性之一 "
+
+#~ msgid ""
+#~ "Check the host setup: interface %1$s has kernel autoconfigured IPv6 "
+#~ "routes and enabling forwarding  without accept_ra set to 2 will cause the "
+#~ "kernel to flush them, breaking networking."
+#~ msgstr ""
+#~ "检查主机设置：接口 %1$s 有内核自动配置的 IPv6 路由，并且在未将 accept_ra "
+#~ "设为 2 的情况下启用转发将导致内核刷新它们，从而破坏了网络。"
+
+#~ msgid ""
+#~ "Failed to add driver '%1$s' to driver_override  interface of PCI device "
+#~ "'%2$s'"
+#~ msgstr ""
+#~ "将驱动程序 '%1$s' 添加到 PCI 设备 '%2$s' 的 driver_override 接口失败"
+
+#~ msgid ""
+#~ "network '%1$s' has forward mode '%2$s'  but lists a device by PCI address "
+#~ "in the device pool. This is only supported for networks with forward mode "
+#~ "'hostdev'"
+#~ msgstr ""
+#~ "网络 '%1$s' 具有 forward 模式 '%2$s'，但根据设备池中的 PCI 地址列出了设"
+#~ "备。这只支持 forward 模式为 'hostdev' 的网络"
+
+#~ msgid ""
+#~ "unable to delete interface '%1$s' in network '%2$s'. It is currently "
+#~ "being used  by %3$d domains."
+#~ msgstr "无法删除网络 '%1$s' 中的接口 '%2$s'。它目前由 %3$d 域使用。"
 
 #~ msgid "Could not find vf/instanceId %u/%s  in netlink response"
 #~ msgstr "无法在 netlink 响应中找到 vf/instanceId %u/%s"

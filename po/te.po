@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-01 08:30+0000\n"
+"POT-Creation-Date: 2023-04-01 11:38+0200\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -371,13 +371,13 @@ msgstr ""
 
 #, c-format
 msgid ""
-"!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' differs "
-"from stored identity. Please verify the new host key '%3$s' to avoid possible "
-"man in the middle attack. The key is stored in '%4$s'."
+"!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' "
+"differs from stored identity. Please verify the new host key '%3$s' to avoid "
+"possible man in the middle attack. The key is stored in '%4$s'."
 msgstr ""
-"!!! SSH అతిధేయ కీ పరిశీలన విఫలమైంది !!!: అతిధేయ '%1$s:%2$d' యొక్క గుర్తింపు నిల్వవున్న గుర్తింపుతో "
-"విభేదించుతోంది. మద్యంతర దాడి తప్పించుటకు దయచేసి కొత్త అతిధేయ కీ '%3$s' పరిశీలించుము. ఆ కీ '%4$s' నందు "
-"నిల్వవుంది."
+"!!! SSH అతిధేయ కీ పరిశీలన విఫలమైంది !!!: అతిధేయ '%1$s:%2$d' యొక్క గుర్తింపు నిల్వవున్న "
+"గుర్తింపుతో విభేదించుతోంది. మద్యంతర దాడి తప్పించుటకు దయచేసి కొత్త అతిధేయ కీ '%3$s' పరిశీలించుము. ఆ "
+"కీ '%4$s' నందు నిల్వవుంది."
 
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
@@ -400,13 +400,14 @@ msgid "%1$s %2$s '%3$s' has an unsupported type '%4$s'"
 msgstr "%s హార్డుడిస్క్ '%s' తోడ్పాటులేని క్యాచీ రీతి '%s' కలిగివుంది"
 
 #, fuzzy, c-format
-msgid "%1$s %2$s '%3$s' has unsupported type '%4$s', expecting '%5$s' or '%6$s'"
+msgid ""
+"%1$s %2$s '%3$s' has unsupported type '%4$s', expecting '%5$s' or '%6$s'"
 msgstr "ఫ్లాపీ '%s' తోడ్పాటులేని రకం '%s' కలిగివుంది, కావలిసింది '%s' లేదా '%s'"
 
 #, c-format
 msgid ""
-"%1$s (on destination side) does not support the --migration option needed for "
-"migration with shared storage"
+"%1$s (on destination side) does not support the --migration option needed "
+"for migration with shared storage"
 msgstr ""
 
 #, c-format
@@ -450,7 +451,8 @@ msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
 msgstr "%1$s ఫ్యామిలీ non-IPv4 చిరునామా '%2$s' కొరకు నెట్వర్కు '%3$s' నందు తెలుపబడెను"
 
 #, c-format
-msgid "%1$s forwarding requested, but no IP address provided for network '%2$s'"
+msgid ""
+"%1$s forwarding requested, but no IP address provided for network '%2$s'"
 msgstr "%1$s ఫార్వార్డింగ్ అభ్యర్ధించబడెను, అయితే నెట్వర్కు '%2$s' కొరకు ఏ ఐపి చిరునామా అందించలేదు"
 
 #, c-format
@@ -527,7 +529,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"%1$s model of watchdog is part of the machine and cannot have any address set."
+"%1$s model of watchdog is part of the machine and cannot have any address "
+"set."
 msgstr ""
 
 #, c-format
@@ -640,14 +643,14 @@ msgstr "%1$s: అనునది చదువు మరియు వ్రాయ
 
 #, fuzzy, c-format
 msgid ""
-"%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address in "
-"route definition"
+"%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address "
+"in route definition"
 msgstr "నెట్వర్కు '%s' చెల్లని నెట్‌మాస్క్ లేదా ఐపి చిరునామాను రౌట్ నిర్వచనం నందు కలిగివుంది"
 
 #, c-format
 msgid ""
-"%1$s: Error converting address '%2$s' with prefix %3$u to network-address in route "
-"definition"
+"%1$s: Error converting address '%2$s' with prefix %3$u to network-address in "
+"route definition"
 msgstr ""
 
 #, c-format
@@ -655,19 +658,23 @@ msgid "%1$s: File '%2$s' is too large\n"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "%1$s: IPv4 family specified for non-IPv4 address '%2$s' in route definition"
+msgid ""
+"%1$s: IPv4 family specified for non-IPv4 address '%2$s' in route definition"
 msgstr "%s ఫ్యామిలీ non-IPv4 చిరునామా '%s' కొరకు నెట్వర్కు '%s' నందు తెలుపబడెను"
 
 #, fuzzy, c-format
-msgid "%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
+msgid ""
+"%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr "%s ఫ్యామిలీ non-IPv4 చిరునామా '%s' కొరకు నెట్వర్కు '%s' నందు తెలుపబడెను"
 
 #, fuzzy, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
-msgstr "చెల్లని నెట్‌మాస్క్ '%1$s' చిరునామా '%2$s' కొరకు నెట్వర్కు '%3$s' నందు (రెండూ తప్పక IPv4 కావాలి)"
+msgstr ""
+"చెల్లని నెట్‌మాస్క్ '%1$s' చిరునామా '%2$s' కొరకు నెట్వర్కు '%3$s' నందు (రెండూ తప్పక IPv4 కావాలి)"
 
 #, c-format
-msgid "%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 128"
+msgid ""
+"%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 128"
 msgstr ""
 
 #, c-format
@@ -683,11 +690,13 @@ msgid "%1$s: Missing required gateway attribute in route definition"
 msgstr "portgroup నందు కావలసిన పేరు యాట్రిబ్యూట్ దొరకలేదు"
 
 #, fuzzy, c-format
-msgid "%1$s: No family specified for non-IPv4 address '%2$s' in route definition"
+msgid ""
+"%1$s: No family specified for non-IPv4 address '%2$s' in route definition"
 msgstr "%s ఫ్యామిలీ non-IPv4 చిరునామా '%s' కొరకు నెట్వర్కు '%s' నందు తెలుపబడెను"
 
 #, fuzzy, c-format
-msgid "%1$s: No family specified for non-IPv4 gateway '%2$s' in route definition"
+msgid ""
+"%1$s: No family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr "%s ఫ్యామిలీ non-IPv4 చిరునామా '%s' కొరకు నెట్వర్కు '%s' నందు తెలుపబడెను"
 
 #, fuzzy, c-format
@@ -818,7 +827,8 @@ msgid "%1$s: initialization failed\n"
 msgstr "%1$s: సిద్థీకరణ విఫలమైంది\n"
 
 #, fuzzy, c-format
-msgid "%1$s: ipv6 family specified for non-IPv6 address '%2$s' in route definition"
+msgid ""
+"%1$s: ipv6 family specified for non-IPv6 address '%2$s' in route definition"
 msgstr "%s ఫ్యామిలీ non-IPv4 చిరునామా '%s' కొరకు నెట్వర్కు '%s' నందు తెలుపబడెను"
 
 #, fuzzy, c-format
@@ -832,7 +842,8 @@ msgstr "%1$s: తప్పుగారూపొందిన fd %2$s"
 
 #, fuzzy, c-format
 msgid ""
-"%1$s: migration_port_max: port must be between the minimal port %2$d and 65535"
+"%1$s: migration_port_max: port must be between the minimal port %2$d and "
+"65535"
 msgstr ""
 "%1$s: remote_display_port_max: పోర్టు అనునది తప్పక కనీసపోర్టుకు మరియు %2$d మధ్యన వుండాలి"
 
@@ -859,32 +870,38 @@ msgstr ""
 "%1$s: remote_display_port_max: పోర్టు అనునది తప్పక కనీసపోర్టుకు మరియు %2$d మధ్యన వుండాలి"
 
 #, c-format
-msgid "%1$s: remote_display_port_min: min port must not be greater than max port"
+msgid ""
+"%1$s: remote_display_port_min: min port must not be greater than max port"
 msgstr "%1$s: remote_display_port_min: కనిష్ట పోర్టు గరిష్ట పోర్టు కన్నా యెక్కువ కాకూడదు"
 
 #, c-format
-msgid "%1$s: remote_display_port_min: port must be greater than or equal to %2$d"
+msgid ""
+"%1$s: remote_display_port_min: port must be greater than or equal to %2$d"
 msgstr "%1$s: remote_display_port_min: పోర్టు అనునది %2$d కన్నా యెక్కువ లేదా సమానం కావాలి"
 
 #, c-format
 msgid ""
-"%1$s: remote_websocket_port_max: port must be between the minimal port and %2$d"
+"%1$s: remote_websocket_port_max: port must be between the minimal port and "
+"%2$d"
 msgstr ""
-"%1$s: remote_websocket_port_max: పోర్ట్ అనునది కనీసపు పోర్ట్ మరియు %2$d కు మద్యది అయివుండాలి"
+"%1$s: remote_websocket_port_max: పోర్ట్ అనునది కనీసపు పోర్ట్ మరియు %2$d కు మద్యది "
+"అయివుండాలి"
 
 #, c-format
 msgid ""
 "%1$s: remote_websocket_port_min: min port must not be greater than max port"
-msgstr "%1$s: remote_websocket_port_min: కనిష్ట పోర్ట్ అనునది గరిష్ట పోర్ట్ కన్నా పెద్దది కాకూడదు"
+msgstr ""
+"%1$s: remote_websocket_port_min: కనిష్ట పోర్ట్ అనునది గరిష్ట పోర్ట్ కన్నా పెద్దది కాకూడదు"
 
 #, c-format
-msgid "%1$s: remote_websocket_port_min: port must be greater than or equal to %2$d"
+msgid ""
+"%1$s: remote_websocket_port_min: port must be greater than or equal to %2$d"
 msgstr "%1$s: remote_websocket_port_min: పోర్ట్ %2$d కన్నా పెద్దది లేదా సమానం కావాలి"
 
 #, c-format
 msgid ""
-"%1$s: temporary filename contains shell meta or other unacceptable characters "
-"(is $TMPDIR wrong?)"
+"%1$s: temporary filename contains shell meta or other unacceptable "
+"characters (is $TMPDIR wrong?)"
 msgstr "%1$s: తాత్కాలిక దస్త్రనామము షెల్ మెటా లేదా యితర ఆమోదించని అక్షరాలను కలిగివుంది($TMPDIR తప్పా?)"
 
 #, c-format
@@ -1103,8 +1120,8 @@ msgstr "guest-get-vcpus యొక్క ప్రత్యుత్తరం న
 
 #, c-format
 msgid ""
-"'incremental' backup mode of disk '%1$s' requires setting 'incremental' field "
-"for disk or backup"
+"'incremental' backup mode of disk '%1$s' requires setting 'incremental' "
+"field for disk or backup"
 msgstr ""
 
 msgid "'initiator' refers to a non-existent NUMA node"
@@ -1144,7 +1161,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"'mode' of Xen passthrough feature differs: source: '%1$s', destination: '%2$s'"
+"'mode' of Xen passthrough feature differs: source: '%1$s', destination: "
+"'%2$s'"
 msgstr ""
 
 #, c-format
@@ -1214,7 +1232,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"
+msgid ""
+"'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"
 msgstr ""
 
 msgid "'socket' attribute is valid only for listen type 'socket'"
@@ -1489,7 +1508,8 @@ msgid "<domainbackup> must specify TCP port for now"
 msgstr ""
 
 #, c-format
-msgid "<forward dev='%1$s'> must match first <interface dev='%2$s'/> in network %3$s"
+msgid ""
+"<forward dev='%1$s'> must match first <interface dev='%2$s'/> in network %3$s"
 msgstr ""
 "<forward dev='%1$s'> తప్పకుండా నెట్వర్కు %2$s నందలి <interface dev='%3$s'/> తో సరిపోలాలి"
 
@@ -1528,27 +1548,27 @@ msgstr ""
 
 #, c-format
 msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses a bridge "
-"device"
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses a "
+"bridge device"
 msgstr ""
 "<virtualport type='%1$s'> అనునది నెట్వర్కు '%2$s' కొరకు తోడ్పాటు నీయదు అది బ్రిడ్జ్ పరికరం "
 "వుపయోగించును"
 
 #, c-format
 msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses a macvtap "
-"device"
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses a "
+"macvtap device"
 msgstr ""
-"<virtualport type='%1$s'> అనునది నెట్వర్కు '%2$s' కొరకు తోడ్పాటునీయదు అది macvtap పరికరం "
-"వుపయోగించును"
+"<virtualport type='%1$s'> అనునది నెట్వర్కు '%2$s' కొరకు తోడ్పాటునీయదు అది macvtap "
+"పరికరం వుపయోగించును"
 
 #, c-format
 msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses an SR-IOV "
-"Virtual Function via PCI passthrough"
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses an SR-"
+"IOV Virtual Function via PCI passthrough"
 msgstr ""
-"<virtualport type='%1$s'> అనునది నెట్వర్కు '%2$s' కొరకు తోడ్పాటునీయదు అది SR-IOV వర్చ్యువల్ "
-"ఫంక్షన్‌ను PCI పాస్‌త్రూ ద్వారా వుపయోగించును"
+"<virtualport type='%1$s'> అనునది నెట్వర్కు '%2$s' కొరకు తోడ్పాటునీయదు అది SR-IOV "
+"వర్చ్యువల్ ఫంక్షన్‌ను PCI పాస్‌త్రూ ద్వారా వుపయోగించును"
 
 #, c-format
 msgid "<virtualport> element unsupported for <interface type='%1$s'>"
@@ -1577,7 +1597,8 @@ msgid "A different callback was requested"
 msgstr "ఒక విభిన్న కాల్‌బాక్ అభ్యర్ధించబడెను"
 
 #, c-format
-msgid "A domain definition can have no more than one cipher node with name %1$s"
+msgid ""
+"A domain definition can have no more than one cipher node with name %1$s"
 msgstr ""
 
 #, fuzzy
@@ -1594,8 +1615,8 @@ msgstr "ఒక క్లోజ్ కాల్‌బాక్ యిప్పట
 
 #, c-format
 msgid ""
-"A network with forward mode='%1$s' can specify a bridge name or a forward dev, "
-"but not both (network '%2$s')"
+"A network with forward mode='%1$s' can specify a bridge name or a forward "
+"dev, but not both (network '%2$s')"
 msgstr ""
 "ఒక నెట్వర్కు అనునది ఫార్వార్డ్ mode='%1$s' తో వొక బ్రిడ్జ్ పేరు లేదా ఫార్వార్డ్ dev తెలుపగలదు, అయితే "
 "రెంటినీ కాదు (నెట్వర్కు '%2$s')"
@@ -1781,9 +1802,8 @@ msgstr ""
 #, c-format
 msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
-"definition in network '%1$s' "
+"definition in network '%1$s'"
 msgstr ""
-"పేరు, మాక్, లేదా ఐపిలలో వొక యాట్రిబ్యూట్‌ను నెట్వర్కు '%1$s' నందు స్టాటిక్ అతిధేయి నిర్వచనం కొరకు తెలుపాలి"
 
 msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
@@ -1912,11 +1932,13 @@ msgstr "%1$s విలువ చదువలేదు"
 
 #, c-format
 msgid "Bad ipv4 end address '%1$s' in <nat> in <forward> in network '%2$s'"
-msgstr "చెడ్డ ipv4 ముగింపు చిరునామా '%1$s' నెట్వర్కు '%2$s' నందలి <forward> నందలి <nat> నందు"
+msgstr ""
+"చెడ్డ ipv4 ముగింపు చిరునామా '%1$s' నెట్వర్కు '%2$s' నందలి <forward> నందలి <nat> నందు"
 
 #, c-format
 msgid "Bad ipv4 start address '%1$s' in <nat> in <forward> in network '%2$s'"
-msgstr "చెడ్డ ipv4 ప్రారంభ చిరునామా '%1$s' నెట్వర్కు '%2$s' నందలి <forward> నందలి <nat> నందు"
+msgstr ""
+"చెడ్డ ipv4 ప్రారంభ చిరునామా '%1$s' నెట్వర్కు '%2$s' నందలి <forward> నందలి <nat> నందు"
 
 #, c-format
 msgid "Bad prefix name '%1$s' for resctrl monitor"
@@ -2157,7 +2179,8 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid ""
-"CPU mode '%1$s' for %2$s %3$s domain on %4$s host is not supported by hypervisor"
+"CPU mode '%1$s' for %2$s %3$s domain on %4$s host is not supported by "
+"hypervisor"
 msgstr "CPU రకం %s హైపర్విజర్‌ చే తోడ్పాటునీయదు"
 
 #, c-format
@@ -2275,8 +2298,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cache allocation of size %1$llu is smaller than the minimum allowed allocation "
-"%2$llu"
+"Cache allocation of size %1$llu is smaller than the minimum allowed "
+"allocation %2$llu"
 msgstr ""
 
 #, fuzzy, c-format
@@ -2498,7 +2521,8 @@ msgstr "యాక్సిస్ చేయలేని బ్యాకింగ�
 
 #, c-format
 msgid ""
-"Cannot access backing file '%1$s' of storage file '%2$s' (as uid:%3$u, gid:%4$u)"
+"Cannot access backing file '%1$s' of storage file '%2$s' (as uid:%3$u, gid:"
+"%4$u)"
 msgstr ""
 
 #, fuzzy, c-format
@@ -2877,7 +2901,8 @@ msgstr "ప్రస్తుత గుర్తింపు కొరకు త
 msgid ""
 "Cannot instantiate filter due to unresolvable variables or unavailable list "
 "elements: %1$s"
-msgstr "రిజాల్వ్ చేయలేని వేరియబుల్స్ మరియు అందుబాటులోలేని జాబితా మూలకాల కారణంగా ఫిల్టర్‌ను సిద్దంచేయలేదు: %1$s"
+msgstr ""
+"రిజాల్వ్ చేయలేని వేరియబుల్స్ మరియు అందుబాటులోలేని జాబితా మూలకాల కారణంగా ఫిల్టర్‌ను సిద్దంచేయలేదు: %1$s"
 
 #, fuzzy
 msgid "Cannot lock resctrl"
@@ -2909,7 +2934,8 @@ msgid "Cannot open /proc/cgroups"
 msgstr "/proc/cgroups తెరువలేదు"
 
 #, c-format
-msgid "Cannot open embedded driver at path '%1$s', already open with path '%2$s'"
+msgid ""
+"Cannot open embedded driver at path '%1$s', already open with path '%2$s'"
 msgstr ""
 
 #, c-format
@@ -3076,14 +3102,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor=%3$llu "
-"would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
+"%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor=%3$llu "
-"would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
+"%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -3420,8 +3446,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes and "
-"enabling forwarding  without accept_ra set to 2 will cause the kernel to "
+"Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes "
+"and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
 msgstr ""
 
@@ -3525,7 +3551,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "Colliding cache allocations for cache level '%1$u' id '%2$u', type '%3$s'"
+msgid ""
+"Colliding cache allocations for cache level '%1$u' id '%2$u', type '%3$s'"
 msgstr ""
 
 msgid "Commit aborted"
@@ -3591,7 +3618,8 @@ msgstr "కుదింపు దాటిపోతోంది:"
 
 #, c-format
 msgid ""
-"Compression program for %1$s image format in configuration file isn't available"
+"Compression program for %1$s image format in configuration file isn't "
+"available"
 msgstr ""
 
 msgid "Compute baseline CPU for a set of given CPUs."
@@ -3645,8 +3673,8 @@ msgstr "బూట్ నందు స్వయంచాలకంగా పూల
 
 #, c-format
 msgid ""
-"Configuring the '%1$s' timer is not supported for virtType=%2$s arch=%3$s machine="
-"%4$s guests"
+"Configuring the '%1$s' timer is not supported for virtType=%2$s arch=%3$s "
+"machine=%4$s guests"
 msgstr ""
 
 #, fuzzy, c-format
@@ -3956,8 +3984,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Could not find PCI controller with index '%1$u' required for device at address "
-"'%2$s'"
+"Could not find PCI controller with index '%1$u' required for device at "
+"address '%2$s'"
 msgstr ""
 
 #, c-format
@@ -4363,7 +4391,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Could not look up processor setting data with virtual system instance ID '%1$s'"
+"Could not look up processor setting data with virtual system instance ID "
+"'%1$s'"
 msgstr ""
 
 #, c-format
@@ -4497,7 +4526,8 @@ msgid "Could not parse VPS ID %1$s"
 msgstr "VPS ID %1$s పార్శ్ చేయలేక పోయింది"
 
 #, c-format
-msgid "Could not parse barrier and limit of '%1$s' from config for container %2$d"
+msgid ""
+"Could not parse barrier and limit of '%1$s' from config for container %2$d"
 msgstr "'%1$s' యొక్క బారియర్ మరియు పరిమితి ఆకృతీకరణ నుండి కంటైనర్ %2$d కొరకు పార్స్ చేయలేక పోయింది"
 
 #, c-format
@@ -4656,8 +4686,8 @@ msgstr "స్నాప్‌షాట్ '%1$s' తిప్పివుంచ�
 
 #, c-format
 msgid ""
-"Could not run '%1$s --reconfigure'. exitstatus: %2$d; Check error log '%3$s' for "
-"details."
+"Could not run '%1$s --reconfigure'. exitstatus: %2$d; Check error log '%3$s' "
+"for details."
 msgstr ""
 
 #, c-format
@@ -4667,7 +4697,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "Could not run '%1$s'. exitstatus: %2$d; Check error log '%3$s' for details."
+msgid ""
+"Could not run '%1$s'. exitstatus: %2$d; Check error log '%3$s' for details."
 msgstr ""
 
 #, c-format
@@ -4906,8 +4937,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"DNS SRV priority attribute not permitted without target for service '%1$s' in "
-"network '%2$s'"
+"DNS SRV priority attribute not permitted without target for service '%1$s' "
+"in network '%2$s'"
 msgstr ""
 
 msgid "DNS SRV records cannot be modified, only added or deleted"
@@ -4936,7 +4967,8 @@ msgid "Datastore has unexpected type '%1$s'"
 msgstr "డాటాస్టోర్ అనుకోని '%1$s' రకం కలిగివుంది"
 
 #, c-format
-msgid "Datastore path '%1$s' doesn't have expected format '[<datastore>] <path>'"
+msgid ""
+"Datastore path '%1$s' doesn't have expected format '[<datastore>] <path>'"
 msgstr "డాటాస్టోర్ పాత్ '%1$s' అనుకొన్న ఫార్మాట్  '[<datastore>] <path>' కలిగిలేదు"
 
 #, c-format
@@ -5297,7 +5329,8 @@ msgstr "CPUల నోడ్ల మొత్తం సంఖ్యను ప్�
 
 #, c-format
 msgid ""
-"Distance value %1$d under node %2$zu is LOCAL_DISTANCE and should be set to 10"
+"Distance value %1$d under node %2$zu is LOCAL_DISTANCE and should be set to "
+"10"
 msgstr ""
 
 #, fuzzy, c-format
@@ -5495,11 +5528,11 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Domain has multiple interfaces matching MAC address %1$s. You must use detach-"
-"device and specify the device pci address to remove it."
+"Domain has multiple interfaces matching MAC address %1$s. You must use "
+"detach-device and specify the device pci address to remove it."
 msgstr ""
-"సరిపోలు MAC చిరునామా %1$s కలిగిన బహుళ ఇంటర్ఫేసులను డొమైన్ కలిగివుంది. మీరు తప్పక detach-device "
-"వుపయోగించాలి మరియు దానిని తీసివేయుటకు పరికర pci చిరునామా తెలుపాలి."
+"సరిపోలు MAC చిరునామా %1$s కలిగిన బహుళ ఇంటర్ఫేసులను డొమైన్ కలిగివుంది. మీరు తప్పక detach-"
+"device వుపయోగించాలి మరియు దానిని తీసివేయుటకు పరికర pci చిరునామా తెలుపాలి."
 
 msgid "Domain has no current snapshot"
 msgstr "డొమైన్ ప్రస్తుత స్నాప్‌షాట్ కలిగిలేదు"
@@ -6011,7 +6044,8 @@ msgid "Expecting VI API type 'HostAgent' or 'VirtualCenter' but found '%1$s'"
 msgstr "VI API రకం 'HostAgent' లేదా 'VirtualCenter' కావలిసింది అయితే '%1$s' కనుగొన్నది"
 
 #, c-format
-msgid "Expecting VMX entry '%1$s' to be 'ata-hardDisk' or 'disk' but found '%2$s'"
+msgid ""
+"Expecting VMX entry '%1$s' to be 'ata-hardDisk' or 'disk' but found '%2$s'"
 msgstr "VMX ప్రవేశం '%1$s' ను 'ata-hardDisk' లేదా 'disk' అనుకొంది అయితే '%2$s' కనుగొంది"
 
 #, c-format
@@ -6035,18 +6069,20 @@ msgid ""
 "Expecting VMX entry '%1$s' to be 'device', 'file' or 'pipe' or 'network' but "
 "found '%2$s'"
 msgstr ""
-"VMX ప్రవేశం '%1$s' ను 'device', 'file' లేదా 'pipe' లేదా 'network'  గా అనుకొంది అయితే '%2$s' "
-"కనుగొంది"
+"VMX ప్రవేశం '%1$s' ను 'device', 'file' లేదా 'pipe' లేదా 'network'  గా అనుకొంది అయితే "
+"'%2$s' కనుగొంది"
 
 #, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'generated' or 'static' or 'vpx' but found "
 "'%2$s'"
 msgstr ""
-"VMX ప్రవేశం '%1$s' ను 'generated' లేదా 'static' లేదా 'vpx' గా అనుకొంది అయితే '%2$s' కనుగొంది"
+"VMX ప్రవేశం '%1$s' ను 'generated' లేదా 'static' లేదా 'vpx' గా అనుకొంది అయితే '%2$s' "
+"కనుగొంది"
 
 #, c-format
-msgid "Expecting VMX entry '%1$s' to be 'scsi-hardDisk' or 'disk' but found '%2$s'"
+msgid ""
+"Expecting VMX entry '%1$s' to be 'scsi-hardDisk' or 'disk' but found '%2$s'"
 msgstr "VMX ప్రవేశం '%1$s' ను 'scsi-hardDisk' లేదా 'disk' అనుకొంది అయితే '%2$s' కనుగొంది"
 
 #, c-format
@@ -6055,11 +6091,11 @@ msgstr "VMX ప్రవేశం '%1$s' ను 'server' లేదా 'client' �
 
 #, fuzzy, c-format
 msgid ""
-"Expecting VMX entry '%1$s' to be 'vlance' or 'vmxnet' or 'vmxnet3' or 'e1000' "
-"or 'e1000e' but found '%2$s'"
+"Expecting VMX entry '%1$s' to be 'vlance' or 'vmxnet' or 'vmxnet3' or "
+"'e1000' or 'e1000e' but found '%2$s'"
 msgstr ""
-"VMX ప్రవేశం '%1$s' ను 'device', 'file' లేదా 'pipe' లేదా 'network'  గా అనుకొంది అయితే '%2$s' "
-"కనుగొంది"
+"VMX ప్రవేశం '%1$s' ను 'device', 'file' లేదా 'pipe' లేదా 'network'  గా అనుకొంది అయితే "
+"'%2$s' కనుగొంది"
 
 #, c-format
 msgid "Expecting VMX entry '%1$s' to be MAC address but found '%2$s'"
@@ -6131,8 +6167,8 @@ msgid ""
 "Expecting domain XML attribute 'cpuset' of entry 'vcpu' to contain at least "
 "%1$d CPU(s)"
 msgstr ""
-"'vcpu' ప్రవేశం యొక్క డొమైన్ XML ఏట్రిబ్యూట్ 'cpuset' ను కనీసం వొక %1$d CPU(లు) కలిగివుంటుందని "
-"అనుకొంది"
+"'vcpu' ప్రవేశం యొక్క డొమైన్ XML ఏట్రిబ్యూట్ 'cpuset' ను కనీసం వొక %1$d CPU(లు) "
+"కలిగివుంటుందని అనుకొంది"
 
 msgid ""
 "Expecting domain XML attribute 'dev' of entry 'devices/disk/target' to start "
@@ -6296,10 +6332,10 @@ msgstr "PCI పరికరం '%s' ను %s నుండి అన్‌బై
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "సామర్ధ్యములను ఆపాదించుటలో విఫలమైంది: %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
-"Failed to add driver '%1$s' to driver_override  interface of PCI device '%2$s'"
-msgstr "ఐపి చిరునామా %1$s ను ఐపి చిరునామా క్యాచీకు ఇంటర్ఫేస్ %2$s కొరకు జతచేయటలో విఫలమైంది"
+"Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
+msgstr ""
 
 msgid "Failed to add netlink event handle watch"
 msgstr "నెట్‌లింక్ ఈవెంట్ హాండిల్ వాచ్ జతచేయుటకు విఫలమైంది"
@@ -8610,8 +8646,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Found duplicate drive address for disk with target name '%1$s' controller='%2$u' "
-"bus='%3$u' target='%4$u' unit='%5$u'"
+"Found duplicate drive address for disk with target name '%1$s' "
+"controller='%2$u' bus='%3$u' target='%4$u' unit='%5$u'"
 msgstr ""
 
 #, c-format
@@ -8861,15 +8897,16 @@ msgstr "HTTP స్పందన కోడ్ %1$d '%2$s' కాల్ కు"
 
 #, c-format
 msgid ""
-"HTTP response code %1$d for call to '%2$s'. Fault is unknown, XPath evaluation "
-"failed"
+"HTTP response code %1$d for call to '%2$s'. Fault is unknown, XPath "
+"evaluation failed"
 msgstr "HTTP స్పందన కోడ్ %1$d  '%2$s' కాల్ చేయుటకు. లోపం తెలియదు, XPath యెవాల్యూషన్ విఫలమైంది"
 
 #, c-format
 msgid ""
-"HTTP response code %1$d for call to '%2$s'. Fault is unknown, deserialization "
-"failed"
-msgstr "HTTP స్పందన కోడ్ %1$d  '%2$s' కాల్ చేయుటకు. లోపం తెలియదు, deserialization విఫలమైంది"
+"HTTP response code %1$d for call to '%2$s'. Fault is unknown, "
+"deserialization failed"
+msgstr ""
+"HTTP స్పందన కోడ్ %1$d  '%2$s' కాల్ చేయుటకు. లోపం తెలియదు, deserialization విఫలమైంది"
 
 #, c-format
 msgid "HTTP response code %1$d for call to '%2$s'. Fault: %3$s - %4$s"
@@ -8919,7 +8956,8 @@ msgid "Host CPU is a superset of CPU described in %1$s\n"
 msgstr "హోస్టు CPU అనునది %1$s నందు విశదీకృతమైన CPUకు సూపర్‌సెట్\n"
 
 #, c-format
-msgid "Host CPU model does not match required CPU vendor %1$s or(and) model %2$s"
+msgid ""
+"Host CPU model does not match required CPU vendor %1$s or(and) model %2$s"
 msgstr ""
 
 #, c-format
@@ -8989,7 +9027,8 @@ msgid "Hybrid-Suspend"
 msgstr "హైబ్రిడ్-సస్పెండ్"
 
 #, fuzzy, c-format
-msgid "HyperV spinlock retry count differs: source: '%1$u', destination: '%2$u'"
+msgid ""
+"HyperV spinlock retry count differs: source: '%1$u', destination: '%2$u'"
 msgstr "HyperV స్పిన్‌లాక్ పునఃప్రయత్న లెక్క తప్పకుండా కనీసం 4095 వుండాలి"
 
 msgid "HyperV spinlock retry count must be at least 4095"
@@ -9009,7 +9048,8 @@ msgstr "అమ్మకందారు ఐడి తప్పక %1$d అక్�
 
 #, fuzzy, c-format
 msgid ""
-"Hyperv features are not supported for architecture '%1$s' or machine type '%2$s'"
+"Hyperv features are not supported for architecture '%1$s' or machine type "
+"'%2$s'"
 msgstr "%s రకం యొక్క ఇంటర్ఫేసులపై స్క్రిప్ట్స్ తోడ్పాటునీయబడవు"
 
 #, fuzzy
@@ -9159,7 +9199,8 @@ msgid "Ignoring guests on $uri URI"
 msgstr "$uri URI పైన అతిథులను విస్మరిస్తోంది"
 
 #, fuzzy, c-format
-msgid "Image file for %1$s %2$s '%3$s' has unsupported suffix, expecting '%4$s'"
+msgid ""
+"Image file for %1$s %2$s '%3$s' has unsupported suffix, expecting '%4$s'"
 msgstr "వాల్యూమ్ పేరు '%s' తోడ్పాటులేని సఫిక్స్ కలిగివుంది, కావలసింది '.vmdk'"
 
 msgid "In use"
@@ -9187,9 +9228,10 @@ msgstr "XML ఆకృతీకరణను నెట్వర్కు కొర
 
 #, c-format
 msgid ""
-"Inconsistent SCSI controller model ('%1$s' is not '%2$s') for SCSI controller "
-"index %3$d"
-msgstr "అస్థిరమైన SCSI నియంత్రిక రీతి ('%1$s' అనేది '%2$s' కాదు) SCSI నియంత్రిక విషయసూచి %3$d కొరకు"
+"Inconsistent SCSI controller model ('%1$s' is not '%2$s') for SCSI "
+"controller index %3$d"
+msgstr ""
+"అస్థిరమైన SCSI నియంత్రిక రీతి ('%1$s' అనేది '%2$s' కాదు) SCSI నియంత్రిక విషయసూచి %3$d కొరకు"
 
 msgid "Incorrect data type"
 msgstr "సరికాని డాటా టైపు"
@@ -9455,7 +9497,8 @@ msgstr "fd %d చెల్లనిది %s కొరకు"
 
 #, c-format
 msgid "Invalid STP state value %1$d received for '%2$s'. Must be -1, 0, or 1."
-msgstr "చెల్లని STP స్థితి విలువ %1$d అనునది '%2$s' కొరకు స్వీకరించెను. తప్పక -1, 0, లేదా 1 కావాలి."
+msgstr ""
+"చెల్లని STP స్థితి విలువ %1$d అనునది '%2$s' కొరకు స్వీకరించెను. తప్పక -1, 0, లేదా 1 కావాలి."
 
 #, fuzzy, c-format
 msgid "Invalid URI path '%1$s', try '/system'"
@@ -9492,7 +9535,8 @@ msgid "Invalid address for a USB device"
 msgstr "USB పరికరం కొరకు చెల్లని చిరునామా"
 
 #, fuzzy, c-format
-msgid "Invalid address type '%1$s' for the disk '%2$s' with the bus type '%3$s'"
+msgid ""
+"Invalid address type '%1$s' for the disk '%2$s' with the bus type '%3$s'"
 msgstr "చెల్లని రకం '%1$s' పారామితి '%2$s' కొరకు, కావలసింది '%3$s'"
 
 msgid "Invalid address."
@@ -9523,8 +9567,8 @@ msgstr ""
 #, c-format
 msgid ""
 "Invalid attempt to set network interface host-side IP route and/or address "
-"info on interface of type '%1$s'. This is only supported on interfaces of type "
-"'ethernet'"
+"info on interface of type '%1$s'. This is only supported on interfaces of "
+"type 'ethernet'"
 msgstr ""
 
 msgid "Invalid attempt to set peer IP for guest"
@@ -9591,8 +9635,8 @@ msgstr "చెల్లని దృవీకరణపత్రము"
 
 #, c-format
 msgid ""
-"Invalid chain name '%1$s'. Please use a chain name called '%2$s' or any of the "
-"following prefixes: "
+"Invalid chain name '%1$s'. Please use a chain name called '%2$s' or any of "
+"the following prefixes: "
 msgstr ""
 "చెల్లని చైన్ పేరు '%1$s'. '%2$s' గా పిలువబడే చైన్ పేరును వుపయోగించు లేదా కింది ప్రిఫిక్సెస్‌లో యేదో వొకటి:"
 
@@ -9695,8 +9739,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid drive address of disk %1$s, vz driver supports only bus 0 for SATA and "
-"SCSI bus."
+"Invalid drive address of disk %1$s, vz driver supports only bus 0 for SATA "
+"and SCSI bus."
 msgstr ""
 
 #, c-format
@@ -9710,8 +9754,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid drive address of disk %1$s, vz driver supports only units 0-1 for IDE "
-"bus."
+"Invalid drive address of disk %1$s, vz driver supports only units 0-1 for "
+"IDE bus."
 msgstr ""
 
 #, fuzzy, c-format
@@ -9890,8 +9934,10 @@ msgstr "చెల్లని మల్టీకాస్ట్ బ్రిడ�
 
 #, c-format
 msgid ""
-"Invalid netmask '%1$s' for address '%2$s' in network '%3$s' (both must be IPv4)"
-msgstr "చెల్లని నెట్‌మాస్క్ '%1$s' చిరునామా '%2$s' కొరకు నెట్వర్కు '%3$s' నందు (రెండూ తప్పక IPv4 కావాలి)"
+"Invalid netmask '%1$s' for address '%2$s' in network '%3$s' (both must be "
+"IPv4)"
+msgstr ""
+"చెల్లని నెట్‌మాస్క్ '%1$s' చిరునామా '%2$s' కొరకు నెట్వర్కు '%3$s' నందు (రెండూ తప్పక IPv4 కావాలి)"
 
 #, c-format
 msgid "Invalid netmask '%1$s' in network '%2$s'"
@@ -9934,7 +9980,8 @@ msgstr "చెల్లని పోర్టులు: %1$s"
 
 #, fuzzy, c-format
 msgid ""
-"Invalid or not yet handled value '%1$s' for VMX entry '%2$s' for device type '%3$s'"
+"Invalid or not yet handled value '%1$s' for VMX entry '%2$s' for device type "
+"'%3$s'"
 msgstr "ఇంకా సంభాలించని విలువ '%s' VMX ప్రవేశం '%s' కొరకు"
 
 msgid "Invalid parameter"
@@ -10085,10 +10132,12 @@ msgstr "USB పరికరం కొరకు చెల్లని చిర�
 msgid ""
 "Invalid to specify MAC address '%1$s' in network '%2$s' IPv6 static host "
 "definition"
-msgstr "MAC చిరునామా '%1$s' ను నెట్వర్కు '%2$s' IPv6 స్టాటిక్ అతిధేయ నిర్వచనం నందు తెలుపుట చెల్లదు"
+msgstr ""
+"MAC చిరునామా '%1$s' ను నెట్వర్కు '%2$s' IPv6 స్టాటిక్ అతిధేయ నిర్వచనం నందు తెలుపుట చెల్లదు"
 
 #, c-format
-msgid "Invalid type '%1$s' requested for parameter '%2$s', actual type is '%3$s'"
+msgid ""
+"Invalid type '%1$s' requested for parameter '%2$s', actual type is '%3$s'"
 msgstr "చెల్లని రకం '%1$s' పారామితి '%2$s' కొరకు అభ్యర్ధించినది, యథార్ధ రకం '%3$s'"
 
 #, fuzzy, c-format
@@ -10114,11 +10163,11 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid use of 'floor' on interface with MAC address %1$s - network '%2$s' has "
-"no inbound QoS set"
+"Invalid use of 'floor' on interface with MAC address %1$s - network '%2$s' "
+"has no inbound QoS set"
 msgstr ""
-"MAC చిరునామా %1$s తో ఇంటర్ఫేస్ పైన 'floor' యొక్క చెల్లని వినియోగం - నెట్వర్కు '%2$s' యెటువంటి యిన్‌బౌండ్ "
-"QoS అమర్చిలేదు"
+"MAC చిరునామా %1$s తో ఇంటర్ఫేస్ పైన 'floor' యొక్క చెల్లని వినియోగం - నెట్వర్కు '%2$s' యెటువంటి "
+"యిన్‌బౌండ్ QoS అమర్చిలేదు"
 
 #, c-format
 msgid "Invalid uuid '%1$s' for new mdev device"
@@ -10141,19 +10190,20 @@ msgid "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'."
 msgstr ""
 
 #, c-format
-msgid "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected UUID"
+msgid ""
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected UUID"
 msgstr ""
 
 #, c-format
 msgid ""
-"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected integer "
-"value"
-msgstr ""
-
-#, c-format
-msgid ""
-"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected long long "
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected "
 "integer value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected long "
+"long integer value"
 msgstr ""
 
 #, c-format
@@ -10169,7 +10219,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"
+msgid ""
+"Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"
 msgstr ""
 
 #, c-format
@@ -10270,7 +10321,8 @@ msgid "JSON backing volume definition '%1$s' lacks driver name"
 msgstr ""
 
 #, c-format
-msgid "JSON backing volume definition '%1$s' must not have nested format drivers"
+msgid ""
+"JSON backing volume definition '%1$s' must not have nested format drivers"
 msgstr ""
 
 msgid "JSON string array contains non-string element"
@@ -10490,7 +10542,8 @@ msgid ""
 "Malformed 'uri_aliases' config entry '%1$s', aliases may only contain 'a-Z, "
 "0-9, _, -'"
 msgstr ""
-"చెడ్డ 'uri_aliases' ఆకృతీకరణ ప్రవేశం '%1$s', ఎలియాసిస్ 'a-Z, 0-9, _, -' మాత్రమే కలిగివుండగలవు"
+"చెడ్డ 'uri_aliases' ఆకృతీకరణ ప్రవేశం '%1$s', ఎలియాసిస్ 'a-Z, 0-9, _, -' మాత్రమే "
+"కలిగివుండగలవు"
 
 #, c-format
 msgid ""
@@ -10802,7 +10855,8 @@ msgid "Migration failed. Domain is not running on destination host"
 msgstr "గమ్యపు అతిధేయ చే ఆఫ్‌లైన్ మైగ్రేషన్ తోడ్పాటులేదు"
 
 #, fuzzy, c-format
-msgid "Migration failed. No domain on destination host with matching name '%1$s'"
+msgid ""
+"Migration failed. No domain on destination host with matching name '%1$s'"
 msgstr "సరిపోలు పేరు '%1$s' తో డొమైన్ స్నాప్‌షాట్ లేదు"
 
 msgid "Migration graphics data already present"
@@ -11120,7 +11174,8 @@ msgstr "JSON ఫైలు నుండి దొరకని లాక్‌స�
 #, c-format
 msgid "Missing group 'credentials-%1$s' referenced from group '%2$s' in '%3$s'"
 msgstr ""
-"సమూహ 'credentials-%1$s' దొరకలేదు ఇది '%2$s' సమూహం '%3$s' నందలి దానినుండి రిఫరెన్స్ చేయబడింది"
+"సమూహ 'credentials-%1$s' దొరకలేదు ఇది '%2$s' సమూహం '%3$s' నందలి దానినుండి రిఫరెన్స్ "
+"చేయబడింది"
 
 #, c-format
 msgid "Missing hostname in network '%1$s' DNS HOST record"
@@ -11277,7 +11332,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Missing or invalid element %1$zu of 'unicast' list in query-rx-filter response"
+"Missing or invalid element %1$zu of 'unicast' list in query-rx-filter "
+"response"
 msgstr ""
 
 #, c-format
@@ -11346,7 +11402,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Missing required dev attribute in <forward> <interface> element of network %1$s"
+"Missing required dev attribute in <forward> <interface> element of network "
+"%1$s"
 msgstr ""
 "నెట్వర్కు %1$s యొక్క <forward> <interface> మూలకం నందు కావలసిన dev ఏట్రిబ్యూట్ దొరకలేదు"
 
@@ -11505,10 +11562,11 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Multiple USB devices for %1$x:%2$x were found, but none of them is at bus:%3$u "
-"device:%4$u"
+"Multiple USB devices for %1$x:%2$x were found, but none of them is at bus:"
+"%3$u device:%4$u"
 msgstr ""
-"బహుళ USB పరికరాలు %1$x:%2$x కొరకు కనుగొనబడెను, అయితే వాటిలో యేవీ bus:%3$u device:%4$u వద్ద లేవు"
+"బహుళ USB పరికరాలు %1$x:%2$x కొరకు కనుగొనబడెను, అయితే వాటిలో యేవీ bus:%3$u device:%4$u "
+"వద్ద లేవు"
 
 #, c-format
 msgid "Multiple USB devices for %1$x:%2$x, use <address> to specify one"
@@ -12333,8 +12391,8 @@ msgstr "వాల్యూమ్ '%1$s' కొరకు పూల్‌నంద
 
 #, c-format
 msgid ""
-"Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u scope "
-"type '%4$s'"
+"Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u "
+"scope type '%4$s'"
 msgstr ""
 
 #, fuzzy
@@ -12511,8 +12569,10 @@ msgid ""
 msgstr "ఎమ్యులేటెడ్ CPUలు మాత్రమే అందుబాటులోవున్నాయి, పనితనం అనునది చెప్పుగోదగ్గట్లు పరిమితమగును"
 
 #, fuzzy, c-format
-msgid "Only end address '%1$s' specified in <nat> in <forward> in network '%2$s'"
-msgstr "చెడ్డ ipv4 ముగింపు చిరునామా '%1$s' నెట్వర్కు '%2$s' నందలి <forward> నందలి <nat> నందు"
+msgid ""
+"Only end address '%1$s' specified in <nat> in <forward> in network '%2$s'"
+msgstr ""
+"చెడ్డ ipv4 ముగింపు చిరునామా '%1$s' నెట్వర్కు '%2$s' నందలి <forward> నందలి <nat> నందు"
 
 msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr ""
@@ -12537,7 +12597,8 @@ msgstr ""
 msgid ""
 "Only one <address> element is allowed in <nat> in <forward> in network %1$s"
 msgstr ""
-"ఒక <address> మూలకం మాత్రమే నెట్వర్కు %1$s నందలి <forward> నందలి <nat> నందు అనుమతించబడును"
+"ఒక <address> మూలకం మాత్రమే నెట్వర్కు %1$s నందలి <forward> నందలి <nat> నందు "
+"అనుమతించబడును"
 
 #, c-format
 msgid "Only one <nat> element is allowed in <forward> of network %1$s"
@@ -12548,7 +12609,8 @@ msgid "Only one <pf> element is allowed in <forward> of network %1$s"
 msgstr "ఒక <pf> మూలకం మాత్రమే నెట్వర్కు %1$s నందలి <forward> నందు అనుమతించబడును"
 
 #, c-format
-msgid "Only one <port> element is allowed in <nat> in <forward> in network %1$s"
+msgid ""
+"Only one <port> element is allowed in <nat> in <forward> in network %1$s"
 msgstr ""
 "ఒక <port> మూలకం మాత్రమే నెట్వర్కు %1$s నందలి <forward> నందలి <nat> నందు అనుమతించబడును"
 
@@ -12607,8 +12669,10 @@ msgid "Only scsi disk supports vendor and product"
 msgstr "scsi డిస్కు మాత్రమే అమ్మకందారి మరియు వుత్పత్తి తోడ్పాటునిచ్చును"
 
 #, fuzzy, c-format
-msgid "Only start address '%1$s' specified in <nat> in <forward> in network '%2$s'"
-msgstr "చెడ్డ ipv4 ప్రారంభ చిరునామా '%1$s' నెట్వర్కు '%2$s' నందలి <forward> నందలి <nat> నందు"
+msgid ""
+"Only start address '%1$s' specified in <nat> in <forward> in network '%2$s'"
+msgstr ""
+"చెడ్డ ipv4 ప్రారంభ చిరునామా '%1$s' నెట్వర్కు '%2$s' నందలి <forward> నందలి <nat> నందు"
 
 #, fuzzy
 msgid "Only tap devices supported"
@@ -12660,8 +12724,8 @@ msgstr "స్ఠానము:"
 
 #, c-format
 msgid ""
-"Option '%1$s' has invalid value for PCI controller with index '%2$d', model '%3$s' "
-"and modelName '%4$s'"
+"Option '%1$s' has invalid value for PCI controller with index '%2$d', model "
+"'%3$s' and modelName '%4$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -12670,8 +12734,8 @@ msgstr "vhost-net అనునది ఈ QEMU బైనరీతో తోడ్
 
 #, c-format
 msgid ""
-"Option '%1$s' is not valid for PCI controller with index '%2$d', model '%3$s' and "
-"modelName '%4$s'"
+"Option '%1$s' is not valid for PCI controller with index '%2$d', model "
+"'%3$s' and modelName '%4$s'"
 msgstr ""
 
 #, c-format
@@ -12777,8 +12841,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"PCI controller at index %1$d (0x%2$02x) has bus='0x%3$02x', but index must be "
-"larger than bus"
+"PCI controller at index %1$d (0x%2$02x) has bus='0x%3$02x', but index must "
+"be larger than bus"
 msgstr ""
 
 #, c-format
@@ -12811,11 +12875,11 @@ msgstr "FDC నియంత్రిక విషయసూచి %1$d అను�
 
 #, c-format
 msgid ""
-"PCI device %1$04x:%2$02x:%3$02x.%4$x allocated from network %5$s is already in use by "
-"domain %6$s"
+"PCI device %1$04x:%2$02x:%3$02x.%4$x allocated from network %5$s is already "
+"in use by domain %6$s"
 msgstr ""
-"PCI పరికరం %1$04x:%2$02x:%3$02x.%4$x నెట్వర్కు %5$s నుండి కేటాయించినది యిప్పటికే డొమైన్ %6$s నందు వుపయోగంలో "
-"వుంది"
+"PCI పరికరం %1$04x:%2$02x:%3$02x.%4$x నెట్వర్కు %5$s నుండి కేటాయించినది యిప్పటికే డొమైన్ %6$s "
+"నందు వుపయోగంలో వుంది"
 
 #, fuzzy, c-format
 msgid "PCI device %1$s is in use"
@@ -12830,7 +12894,9 @@ msgid "PCI device %1$s is not assignable"
 msgstr "PCI పరికరం %1$s అనునది అప్పగించదగునది కాదు"
 
 #, fuzzy, c-format
-msgid "PCI device '%1$04x:%2$02x:%3$02x.%4$x' can only be listed once in network %5$s"
+msgid ""
+"PCI device '%1$04x:%2$02x:%3$02x.%4$x' can only be listed once in network "
+"%5$s"
 msgstr ""
 "PCI పరికరం %04x:%02x:%02x.%x నెట్వర్కు %s నుండి కేటాయించినది యిప్పటికే డొమైన్ %s నందు వుపయోగంలో "
 "వుంది"
@@ -12914,8 +12980,8 @@ msgstr "పేరెంట్"
 
 #, c-format
 msgid ""
-"Parent attribute '%1$s' does not match parent '%2$s' determined for the '%3$s' "
-"wwnn/wwpn lookup."
+"Parent attribute '%1$s' does not match parent '%2$s' determined for the "
+"'%3$s' wwnn/wwpn lookup."
 msgstr ""
 
 #, c-format
@@ -13008,8 +13074,8 @@ msgid ""
 "Pending question blocks virtual machine execution, question is '%1$s', "
 "possible answers are %2$s, but no default answer is specified"
 msgstr ""
-"వాయిదాలో వున్న ప్రశ్న వర్చ్యువల్ మిషన్ నిర్వర్తనంను నిరోధిస్తోంది, ప్రశ్న '%1$s', సాధ్యమగు సమాధానాలు %2$s, "
-"అయితే అప్రమేయ సమాధానం తెలుపలేదు"
+"వాయిదాలో వున్న ప్రశ్న వర్చ్యువల్ మిషన్ నిర్వర్తనంను నిరోధిస్తోంది, ప్రశ్న '%1$s', సాధ్యమగు సమాధానాలు "
+"%2$s, అయితే అప్రమేయ సమాధానం తెలుపలేదు"
 
 #, fuzzy
 msgid "Per-node binding is not compatible with automatic NUMA placement."
@@ -13335,19 +13401,22 @@ msgstr "క్వరీ పారామితి 'no_verify' అనుకోన�
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%1$s' (should be (http|"
 "socks(|4|4a|5))"
-msgstr "క్వరీ పారామితి 'proxy' అనుకోని విలువ '%1$s' కలిగివుంది (http|socks(|4|4a|5) అయివుండాలి)"
+msgstr ""
+"క్వరీ పారామితి 'proxy' అనుకోని విలువ '%1$s' కలిగివుంది (http|socks(|4|4a|5) అయివుండాలి)"
 
 msgid "Query parameter 'proxy' doesn't contain a hostname"
 msgstr "క్వరీ పారామితి 'proxy' అతిధేయిపేరు కలిగిలేదు"
 
 #, c-format
 msgid ""
-"Query parameter 'proxy' has unexpected port value '%1$s' (should be [1..65535])"
+"Query parameter 'proxy' has unexpected port value '%1$s' (should be "
+"[1..65535])"
 msgstr "క్వరీ పారామితి 'proxy' అనునది అనుకోని పోర్ట్ విలువ '%1$s' కలిగివుంది ([1..65535] అవ్వాలి)"
 
 #, c-format
 msgid ""
-"Query parameter 'transport' has unexpected value '%1$s' (should be http|https)"
+"Query parameter 'transport' has unexpected value '%1$s' (should be http|"
+"https)"
 msgstr "క్వరీ పారామితి 'transport' అనుకోని విలువ '%1$s' కలిగివుంది (http|https అయివుండాలి)"
 
 msgid "Query, adjust speed, or cancel active block operations."
@@ -13493,9 +13562,9 @@ msgstr "దాచిన స్థితి ఫైలుతో సంభంది
 
 #, c-format
 msgid ""
-"Requested TSC frequency %1$llu Hz is outside tolerance range ([%2$llu, %3$llu] Hz) "
-"around host frequency %4$llu Hz and TSC scaling is not supported by the host "
-"CPU"
+"Requested TSC frequency %1$llu Hz is outside tolerance range ([%2$llu, "
+"%3$llu] Hz) around host frequency %4$llu Hz and TSC scaling is not supported "
+"by the host CPU"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13503,7 +13572,8 @@ msgid "Requested data len %1$llu is larger than maximum %2$d"
 msgstr "start_cpu %d అనునది గరిష్ట %d కన్నా పెద్దది"
 
 #, c-format
-msgid "Requested device '%1$s' is locked by lock file '%2$s' held by process %3$lld"
+msgid ""
+"Requested device '%1$s' is locked by lock file '%2$s' held by process %3$lld"
 msgstr "అభ్యర్ధించిన పరికరం '%1$s' అనునది లాక్ ఫైల్ '%2$s' తో ప్రోసెస్ %3$lld చే లాకైంది"
 
 msgid "Requested metadata element is not present"
@@ -13533,13 +13603,14 @@ msgstr "అభ్యర్దించిన ఆపరేషన్ చెల్�
 
 #, c-format
 msgid ""
-"Required option '%1$s' is not set for PCI controller with index '%2$d', model "
-"'%3$s' and modelName '%4$s'"
+"Required option '%1$s' is not set for PCI controller with index '%2$d', "
+"model '%3$s' and modelName '%4$s'"
 msgstr ""
 
 #, c-format
 msgid ""
-"Resctrl ID must be set before determining resctrl parentpath='%1$s' prefix='%2$s'"
+"Resctrl ID must be set before determining resctrl parentpath='%1$s' "
+"prefix='%2$s'"
 msgstr ""
 
 #, c-format
@@ -13832,20 +13903,20 @@ msgstr "SCSI డిస్కు విషయసూచి ('%1$s' నుండి
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by a "
-"SCSI disk"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by a SCSI disk"
 msgstr ""
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by "
-"another SCSI disk"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by another SCSI disk"
 msgstr ""
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by "
-"another SCSI host device"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by another SCSI host device"
 msgstr ""
 
 msgid "SCSI host device doesn't support managed mode"
@@ -13887,7 +13958,9 @@ msgid "SMM TSEG size must be divisible by 1 MiB"
 msgstr ""
 
 #, c-format
-msgid "SOAP fault during %1$s: code '%2$s', subcode '%3$s', reason '%4$s', detail '%5$s'"
+msgid ""
+"SOAP fault during %1$s: code '%2$s', subcode '%3$s', reason '%4$s', detail "
+"'%5$s'"
 msgstr "%1$s నందు SOAP లోపం: కోడ్ '%2$s', సబ్‌కోడ్ '%3$s', కారణం '%4$s', వివరం '%5$s'"
 
 msgid "SSH Agent did not provide any authentication identity"
@@ -13953,7 +14026,8 @@ msgid "Saved image %1$s XML configuration not changed.\n"
 msgstr "దాచిన చిత్రం %1$s XML ఆకృతీకరణ మార్చలేదు.\n"
 
 #, c-format
-msgid "Scaled numeric value '%1$s' for <%2$s> option is malformed or out of range"
+msgid ""
+"Scaled numeric value '%1$s' for <%2$s> option is malformed or out of range"
 msgstr ""
 
 #, c-format
@@ -14257,7 +14331,8 @@ msgid ""
 "Setting security context '%1$s' on '%2$s' not supported. Consider setting "
 "virt_use_nfs"
 msgstr ""
-"రక్షణ సందర్భం '%1$s' ను '%2$s' పైన అమర్చుటకు తోడ్పాటులేదు. virt_use_nfs అమర్పును పరిగణించు"
+"రక్షణ సందర్భం '%1$s' ను '%2$s' పైన అమర్చుటకు తోడ్పాటులేదు. virt_use_nfs అమర్పును "
+"పరిగణించు"
 
 #, fuzzy
 msgid "Setting security labels is not supported by vz driver."
@@ -14366,7 +14441,8 @@ msgstr "ఈ అతిధేయపై నమ్‌పాడ్ అందుబా
 
 #, c-format
 msgid ""
-"Size of SMM TSEG size differs: source: '%1$llu %2$s', destination: '%3$llu %4$s'"
+"Size of SMM TSEG size differs: source: '%1$llu %2$s', destination: '%3$llu "
+"%4$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -14586,11 +14662,13 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "State of KVM feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
+msgid ""
+"State of KVM feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
 msgstr ""
 
 #, c-format
-msgid "State of Xen feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
+msgid ""
+"State of Xen feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
 msgstr ""
 
 #, c-format
@@ -14599,21 +14677,25 @@ msgstr ""
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s', destination: '%5$s,%6$s=%7$s'"
+"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s', destination: "
+"'%5$s,%6$s=%7$s'"
 msgstr ""
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s,%5$s=%6$llu', destination: '%7$s,"
-"%8$s=%9$s,%10$s=%11$llu'"
+"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s,%5$s=%6$llu', "
+"destination: '%7$s,%8$s=%9$s,%10$s=%11$llu'"
 msgstr ""
 
 #, c-format
-msgid "State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s=%5$s'"
+msgid ""
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
+"%5$s'"
 msgstr ""
 
 #, c-format
-msgid "State of vCPU '%1$zu' differs between source and destination definitions"
+msgid ""
+"State of vCPU '%1$zu' differs between source and destination definitions"
 msgstr ""
 
 msgid "State:"
@@ -14628,7 +14710,8 @@ msgstr ""
 #, c-format
 msgid ""
 "Static host definition in IPv6 network '%1$s' must have id or name attribute"
-msgstr "IPv6 నెట్వర్కు '%1$s' నందలి స్టాటిక్ అతిధేయ నిర్వచనం తప్పక ఐడి లేదా పేరు యాట్రిబ్యూట్ కలిగివుండాలి"
+msgstr ""
+"IPv6 నెట్వర్కు '%1$s' నందలి స్టాటిక్ అతిధేయ నిర్వచనం తప్పక ఐడి లేదా పేరు యాట్రిబ్యూట్ కలిగివుండాలి"
 
 #, c-format
 msgid "Stats %1$s too big for destination"
@@ -14713,8 +14796,10 @@ msgid "Storage volume not found: %1$s"
 msgstr "నిల్వ వాల్యూమ్ కనబడలేదు: %1$s"
 
 #, c-format
-msgid "Stream data too long to send (%1$zu bytes needed, %2$zu bytes available)"
-msgstr "పంపుటకు స్ట్రీమ్ దత్తాంశం మరీ పొడవైనది (%1$zu బైట్లు అవసరం, %2$zu బైట్లు అందుబాటులో వున్నాయి)"
+msgid ""
+"Stream data too long to send (%1$zu bytes needed, %2$zu bytes available)"
+msgstr ""
+"పంపుటకు స్ట్రీమ్ దత్తాంశం మరీ పొడవైనది (%1$zu బైట్లు అవసరం, %2$zu బైట్లు అందుబాటులో వున్నాయి)"
 
 msgid "Stream has untransferred data left"
 msgstr ""
@@ -14967,12 +15052,14 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid ""
-"Target NVDIMM alignment '%1$llu' doesn't match source NVDIMM alignment '%2$llu'"
+"Target NVDIMM alignment '%1$llu' doesn't match source NVDIMM alignment "
+"'%2$llu'"
 msgstr "లక్ష్యపు డొమైన్ పేరు '%s' మూలం '%s' తో సరిపోలుటలేదు"
 
 #, fuzzy, c-format
 msgid ""
-"Target NVDIMM label size '%1$llu' doesn't match source NVDIMM label size '%2$llu'"
+"Target NVDIMM label size '%1$llu' doesn't match source NVDIMM label size "
+"'%2$llu'"
 msgstr "లక్ష్యపు RNG రీతి ''%s మూలం %s తో సరిపోలడం లేదు'"
 
 #, fuzzy
@@ -15018,7 +15105,8 @@ msgid "Target USB product ID does not match source"
 msgstr "లక్ష్యపు USB ఉత్పత్తి ఐడి మూలం తో సరిపోలలేదు"
 
 #, c-format
-msgid "Target USB redirection filter rule count %1$zu does not match source %2$zu"
+msgid ""
+"Target USB redirection filter rule count %1$zu does not match source %2$zu"
 msgstr "లక్ష్యపు USB రీడైరెక్షన్ ఫిల్టర్ నియమం లెక్క %1$zu మూలం %2$zu తో సరిపోలలేదు"
 
 msgid "Target USB vendor ID does not match source"
@@ -15035,13 +15123,14 @@ msgstr "లక్ష్యము యిప్పటికే వుంది"
 
 #, fuzzy, c-format
 msgid ""
-"Target balloon autodeflate attribute value '%1$s' does not match source '%2$s'"
+"Target balloon autodeflate attribute value '%1$s' does not match source "
+"'%2$s'"
 msgstr "లక్ష్యపు బెలూన్ రీతి %1$s మూలం %2$s తో సరిపోలడంలేదు"
 
 #, c-format
 msgid ""
-"Target balloon freePageReporting attribute value '%1$s' does not match source "
-"'%2$s'"
+"Target balloon freePageReporting attribute value '%1$s' does not match "
+"source '%2$s'"
 msgstr ""
 
 #, c-format
@@ -15094,8 +15183,8 @@ msgstr "లక్ష్యపు నియంత్రిక శీర్షా�
 
 #, c-format
 msgid ""
-"Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source %5$04x:%6$02x:"
-"%7$02x.%8$d"
+"Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
+"%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
 
 #, c-format
@@ -15119,7 +15208,9 @@ msgid "Target device dimm slot %1$u does not match source %2$u"
 msgstr "లక్ష్యపు అతిధేయ పరికరం రీతి %s మూలం %s తో సరిపోలడంలేదు"
 
 #, c-format
-msgid "Target device drive address %1$d:%2$d:%3$d does not match source %4$d:%5$d:%6$d"
+msgid ""
+"Target device drive address %1$d:%2$d:%3$d does not match source %4$d:%5$d:"
+"%6$d"
 msgstr "లక్ష్యపు పరికర డ్రైవ్ చిరునామా %1$d:%2$d:%3$d మూలం %4$d:%5$d:%6$d తో సరిపోలడంలేదు"
 
 #, fuzzy, c-format
@@ -15143,8 +15234,10 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Target device virtio serial address %1$d:%2$d:%3$d does not match source %4$d:%5$d:%6$d"
-msgstr "లక్ష్యపు పరికరం virtio సీరియల్ చిరునామా %1$d:%2$d:%3$d మూలం %4$d:%5$d:%6$d తో సరిపోలడంలేదు"
+"Target device virtio serial address %1$d:%2$d:%3$d does not match source "
+"%4$d:%5$d:%6$d"
+msgstr ""
+"లక్ష్యపు పరికరం virtio సీరియల్ చిరునామా %1$d:%2$d:%3$d మూలం %4$d:%5$d:%6$d తో సరిపోలడంలేదు"
 
 #, c-format
 msgid "Target disk %1$s does not match source %2$s"
@@ -15191,7 +15284,8 @@ msgid ""
 msgstr ""
 
 #, fuzzy, c-format
-msgid "Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
 msgstr "లక్ష్యపు డొమైన్ పేరు '%1$s' మూలం '%2$s' తో సరిపోలుటలేదు"
 
 #, fuzzy
@@ -15199,7 +15293,8 @@ msgid "Target domain IOMMU device count does not match source"
 msgstr "లక్ష్యపు డొమైన్ హబ్ పరికరం లెక్క %zu మూలం %zu తో సరిపోలడంలేదు"
 
 #, fuzzy, c-format
-msgid "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
 msgstr "లక్ష్యపు డొమైన్ పేరు '%1$s' మూలం '%2$s' తో సరిపోలుటలేదు"
 
 #, fuzzy, c-format
@@ -15208,7 +15303,8 @@ msgid ""
 msgstr "లక్ష్యపు డొమైన్ పేరు '%1$s' మూలం '%2$s' తో సరిపోలుటలేదు"
 
 #, fuzzy, c-format
-msgid "Target domain IOMMU device iotlb value '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device iotlb value '%1$s' does not match source '%2$s'"
 msgstr "లక్ష్యపు డొమైన్ పేరు '%1$s' మూలం '%2$s' తో సరిపోలుటలేదు"
 
 #, fuzzy, c-format
@@ -15232,7 +15328,8 @@ msgid "Target domain TPM device count %1$zu does not match source %2$zu"
 msgstr ""
 
 #, c-format
-msgid "Target domain USB redirection filter count %1$d does not match source %2$d"
+msgid ""
+"Target domain USB redirection filter count %1$d does not match source %2$d"
 msgstr "లక్ష్యపు డొమైన్ USB రీడైరెక్షన్ ఫిల్టర్ లెక్క %1$d మూలం %2$d తో సరిపోలలేదు"
 
 #, c-format
@@ -15319,7 +15416,8 @@ msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr "లక్ష్యపు డొమైన్ సమాంతర పోర్ట్ లెక్క %1$zu మూలం %2$zu తో సరిపోలడంలేదు"
 
 #, fuzzy, c-format
-msgid "Target domain redirected devices count %1$zu does not match source %2$zu"
+msgid ""
+"Target domain redirected devices count %1$zu does not match source %2$zu"
 msgstr "లక్ష్యపు డొమైన్ ఇన్పుట్ పరికరం లెక్క %1$zu మూలం %2$zu తో సరిపోలడంలేదు"
 
 #, fuzzy
@@ -15331,7 +15429,8 @@ msgid "Target domain serial port count %1$zu does not match source %2$zu"
 msgstr "లక్ష్యపు డొమైన్ సీరియల్ పోర్ట్ లెక్క %1$zu మూలం %2$zu తో సరిపోలడంలేదు"
 
 #, fuzzy, c-format
-msgid "Target domain shared memory device count %1$zu does not match source %2$zu"
+msgid ""
+"Target domain shared memory device count %1$zu does not match source %2$zu"
 msgstr "లక్ష్యపు డొమైన్ హోస్ట్ పరికరం లెక్క %1$zu మూలం %2$zu తో సరిపోలడంలేదు"
 
 #, c-format
@@ -15482,8 +15581,8 @@ msgstr "లక్ష్యపు యిన్పుట్ పరికరం బ
 
 #, fuzzy, c-format
 msgid ""
-"Target redirected device source type %1$s does not match source device source "
-"type %2$s"
+"Target redirected device source type %1$s does not match source device "
+"source type %2$s"
 msgstr "లక్ష్యపు యిన్పుట్ పరికర రకం %1$s మూలం %2$s తో సరిపోలడంలేదు"
 
 #, c-format
@@ -15620,7 +15719,8 @@ msgstr "ఈ QEMU బైనరీ చేత nvram పరికరం తోడ్
 
 #, fuzzy, c-format
 msgid ""
-"The '%1$s' feature is not supported for architecture '%2$s' or machine type '%3$s'"
+"The '%1$s' feature is not supported for architecture '%2$s' or machine type "
+"'%3$s'"
 msgstr "%s రకం యొక్క ఇంటర్ఫేసెస్ పైన వడపోతలు తోడ్పాటునీయవు"
 
 #, c-format
@@ -15715,12 +15815,14 @@ msgstr "ధృవీకరణపత్రం %1$s ప్రాథమిక న�
 
 #, c-format
 msgid ""
-"The certificate %1$s basic constraints show a CA, but we need one for a client"
+"The certificate %1$s basic constraints show a CA, but we need one for a "
+"client"
 msgstr "ధృవీకరణపత్రం %1$s ప్రాధమిక నిభందనలు CA ను చూపును, అయితే మనకు వొక్కో క్లైంట్‌కు వొకటికావాలి"
 
 #, c-format
 msgid ""
-"The certificate %1$s basic constraints show a CA, but we need one for a server"
+"The certificate %1$s basic constraints show a CA, but we need one for a "
+"server"
 msgstr "ధృవీకరణపత్రం %1$s ప్రాధమిక నిభందనలు CA ను చూపును, అయితే మనకు వొక్కో సేవికకు వొకటికావాలి"
 
 #, c-format
@@ -15756,13 +15858,14 @@ msgstr "మరీ పొడవైన నెట్వర్కు పరికర
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s cannot be plugged into the PCI controller with "
-"index='%2$d'. It requires a controller that accepts a %3$s."
+"The device at PCI address %1$s cannot be plugged into the PCI controller "
+"with index='%2$d'. It requires a controller that accepts a %3$s."
 msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags 0x"
+"%2$.2x"
 msgstr ""
 
 #, c-format
@@ -16631,8 +16734,8 @@ msgstr "లాక్ స్థితిని పార్స్ చేయలే
 
 #, c-format
 msgid ""
-"Unable to configure VF %1$d of PF '%2$s' because the PF is not online. Please "
-"change host network config to put the PF online."
+"Unable to configure VF %1$d of PF '%2$s' because the PF is not online. "
+"Please change host network config to put the PF online."
 msgstr ""
 
 msgid "Unable to configure libxl's memory management parameters"
@@ -19503,8 +19606,8 @@ msgstr "VCPU:"
 
 #, c-format
 msgid ""
-"VF %1$d of PF '%2$s' is not bound to a net driver, so its MAC address cannot be "
-"set to %3$s"
+"VF %1$d of PF '%2$s' is not bound to a net driver, so its MAC address cannot "
+"be set to %3$s"
 msgstr ""
 
 #, c-format
@@ -20136,7 +20239,8 @@ msgid "architecture"
 msgstr "తెలియని ఆకృతి %s"
 
 #, fuzzy, c-format
-msgid "architecture from emulator '%1$s' doesn't match given architecture '%2$s'"
+msgid ""
+"architecture from emulator '%1$s' doesn't match given architecture '%2$s'"
 msgstr "ఆకృతీకరణ %1$s నుండి ఇంటర్ఫేస్ పేరు ఇచ్చిన పేరు %2$s తో పోలుటలేదు"
 
 #, c-format
@@ -20165,11 +20269,13 @@ msgid "arguments to echo"
 msgstr "echo కు ఆర్గుమెంట్స్"
 
 #, fuzzy, c-format
-msgid "array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo 'disk' data"
+msgid ""
+"array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo 'disk' data"
 msgstr "guest-get-vcpus రిటర్న్ విలువ నందు ఎరే మూలకం దొరకలేదు"
 
 #, fuzzy, c-format
-msgid "array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo return data"
+msgid ""
+"array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo return data"
 msgstr "guest-get-vcpus రిటర్న్ విలువ నందు ఎరే మూలకం దొరకలేదు"
 
 msgid "array element missing in guest-get-disks return value"
@@ -20240,11 +20346,13 @@ msgstr "సరిపోలని ఇన్‌స్టాన్సుఐడి�
 
 #, c-format
 msgid ""
-"attempt to merge virtualports with mismatched interfaceids ('%1$s' and '%2$s')"
+"attempt to merge virtualports with mismatched interfaceids ('%1$s' and "
+"'%2$s')"
 msgstr "సరిపోలని ఇంటర్ఫేస్ఐడిలు ('%1$s' మరియు '%2$s') తో వర్చ్యువల్‌పోర్ట్స్ మిళితం చేయుటకు యత్నం"
 
 #, c-format
-msgid "attempt to merge virtualports with mismatched managerids (%1$d and %2$d)"
+msgid ""
+"attempt to merge virtualports with mismatched managerids (%1$d and %2$d)"
 msgstr "సరిపోలని మేనేజ్‌గ్రిడ్స్ (%1$d మరియు %2$d) తో వర్చ్యువల్‌పోర్ట్స్ మిళితం చేయుటకు యత్నం"
 
 #, c-format
@@ -20442,8 +20550,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"bandwidth %1$llu is greater than %2$lu which is the maximum value supported by "
-"this API"
+"bandwidth %1$llu is greater than %2$lu which is the maximum value supported "
+"by this API"
 msgstr ""
 
 #, fuzzy, c-format
@@ -20715,7 +20823,8 @@ msgid "bridge interface stp should be on or off got %1$s"
 msgstr "బ్రిడ్జు యింటర్ఫేస్ stp ఆన్ లేక ఆఫ్‌గా వుండాలి %1$s పొందింది"
 
 #, fuzzy, c-format
-msgid "bridge macTableManager setting not allowed in %1$s mode (network '%2$s')"
+msgid ""
+"bridge macTableManager setting not allowed in %1$s mode (network '%2$s')"
 msgstr "%1$s రీతినందు బ్రడ్జ్ పేరు అనుమతించబడదు (నెట్వర్కు '%2$s')"
 
 #, c-format
@@ -20966,7 +21075,8 @@ msgstr "స్థితి మారు లాక్‌ను పొందలే
 
 #, fuzzy, c-format
 msgid ""
-"cannot acquire state change lock (held by monitor=%1$s) due to max_queued limit"
+"cannot acquire state change lock (held by monitor=%1$s) due to max_queued "
+"limit"
 msgstr "max_queued పరిమితి కారణంగా స్టేట్ చేంజ్ లాక్ పొందలేదు"
 
 msgid "cannot acquire state change lock due to max_queued limit"
@@ -21014,7 +21124,8 @@ msgid "cannot change between disk only and full system in snapshot %1$s"
 msgstr "స్నాప్‌షాట్ %1$s నందు ఆన్‌లైన్ మరియు ఆఫ్‌లైన్ స్నాప్‌షాట్ స్థితి మధ్యన మారలేదు"
 
 #, c-format
-msgid "cannot change between online and offline snapshot state in snapshot %1$s"
+msgid ""
+"cannot change between online and offline snapshot state in snapshot %1$s"
 msgstr "స్నాప్‌షాట్ %1$s నందు ఆన్‌లైన్ మరియు ఆఫ్‌లైన్ స్నాప్‌షాట్ స్థితి మధ్యన మారలేదు"
 
 #, c-format
@@ -21464,7 +21575,8 @@ msgid "cannot generate dac user and group id for domain %1$s"
 msgstr "డొమైన్ %1$s కొరకు dac వాడుకరి మరియు సమూహ ఐడి జనియింపచేయలేదు"
 
 #, fuzzy, c-format
-msgid "cannot generate external snapshot name for disk '%1$s' on a '%2$s' device"
+msgid ""
+"cannot generate external snapshot name for disk '%1$s' on a '%2$s' device"
 msgstr "డిస్కు '%s' కొరకు మూలం లేకుండా బహిర్గత స్నాప్‌షాట్ పేరు జనియింపచేయలేము"
 
 #, c-format
@@ -21573,20 +21685,20 @@ msgstr "అస్థిర డొమైన్ స్నాప్‌షాట్ 
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x.%5$d - "
-"controller not found"
+"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
+"%5$d - controller not found"
 msgstr ""
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x.%5$d - not "
-"allowed by controller"
+"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
+"%5$d - not allowed by controller"
 msgstr ""
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:%3$02x:"
-"%4$02x.%5$d"
+"cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:"
+"%3$02x:%4$02x.%5$d"
 msgstr ""
 
 #, c-format
@@ -22140,8 +22252,8 @@ msgstr "డ్రైవర్ లింకు %1$sను పరిష్కర�
 
 #, c-format
 msgid ""
-"cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain '%3$s' "
-"uuid %4$s"
+"cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain "
+"'%3$s' uuid %4$s"
 msgstr "డొమైన్ '%1$s' uuid %2$s ఫైలు డొమైన్ '%3$s' uuid %4$s కు చెందినదాన్ని తిరిగివుంచలేము"
 
 msgid "cannot restore domain snapshot for running domain"
@@ -23337,13 +23449,15 @@ msgid ""
 "couldn't find a portgroup entry in network '%1$s' matching <portgroup "
 "name='%2$s'>"
 msgstr ""
-"నెట్వర్కు '%1$s' నందు <portgroup name='%2$s'> తో సరిపోలు portgroup ప్రవేశం కనుగొనలేక పోయింది"
+"నెట్వర్కు '%1$s' నందు <portgroup name='%2$s'> తో సరిపోలు portgroup ప్రవేశం కనుగొనలేక "
+"పోయింది"
 
 #, c-format
 msgid ""
 "couldn't find an interface entry in network '%1$s' matching <interface "
 "dev='%2$s'>"
-msgstr "నెట్వర్కు '%1$s' నందు <interface dev='%2$s'> పోలు వొక ఇంటర్ఫేస్ ప్రవేశం కనుగొనలేక పోయింది"
+msgstr ""
+"నెట్వర్కు '%1$s' నందు <interface dev='%2$s'> పోలు వొక ఇంటర్ఫేస్ ప్రవేశం కనుగొనలేక పోయింది"
 
 #, c-format
 msgid "couldn't find interface named '%1$s'"
@@ -23383,8 +23497,8 @@ msgstr "నెట్వర్కు '%1$s' నందు ఒక సరిపో�
 
 #, fuzzy, c-format
 msgid ""
-"couldn't locate an existing dhcp host entry with \"mac='%1$s'\" \"name='%2$s'\" "
-"\"ip='%3$s'\" in network '%4$s'"
+"couldn't locate an existing dhcp host entry with \"mac='%1$s'\" "
+"\"name='%2$s'\" \"ip='%3$s'\" in network '%4$s'"
 msgstr "నెట్వర్కు '%s' నందు సరిపోలు dhcp అతిధేయి ప్రవేశం గుర్తించలేక పోయింది"
 
 #, c-format
@@ -23396,11 +23510,12 @@ msgid ""
 "couldn't update dhcp host entry - no <ip> element found at index %1$d in "
 "network '%2$s'"
 msgstr ""
-"dhcp అతిధేయి ప్రవేశంను నవీకరించలేక పోయింది - <ip> మూలకం విషయసూచి %1$d వద్ద నెట్వర్కు '%2$s' నందు "
-"కనుగొనబడలేదు"
+"dhcp అతిధేయి ప్రవేశంను నవీకరించలేక పోయింది - <ip> మూలకం విషయసూచి %1$d వద్ద నెట్వర్కు '%2$s' "
+"నందు కనుగొనబడలేదు"
 
 #, c-format
-msgid "couldn't update dhcp host entry - no <ip> element found in network '%1$s'"
+msgid ""
+"couldn't update dhcp host entry - no <ip> element found in network '%1$s'"
 msgstr ""
 "dhcp అతిధేయి ప్రవేశంను నవీకరించలేక పోయింది - <ip> మూలకం నెట్వర్కు '%1$s' నందు కనుగొనబడలేదు"
 
@@ -23533,7 +23648,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned an error: %1$s (%2$d) : %3$s"
+"curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned an error: %1$s (%2$d) : "
+"%3$s"
 msgstr "curl_easy_getinfo(CURLINFO_REDIRECT_URL) దోషం యిచ్చెను: %1$s (%2$d) : %3$s"
 
 msgid ""
@@ -23541,13 +23657,16 @@ msgid ""
 msgstr "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) ఋణ స్పందన కోడ్ యిచ్చెను"
 
 #, c-format
-msgid "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"
+msgid ""
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"
 msgstr ""
 
 #, c-format
 msgid ""
-"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d) : %3$s"
-msgstr "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) దోషం యిచ్చెను: %1$s (%2$d) : %3$s"
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d) : "
+"%3$s"
+msgstr ""
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) దోషం యిచ్చెను: %1$s (%2$d) : %3$s"
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %1$s (%2$d)"
@@ -23841,8 +23960,8 @@ msgstr "పరికరము %1$s PCI పరికరము కాదు"
 #, fuzzy, c-format
 msgid "device '%1$s' in network '%2$s' is not an SR-IOV Virtual Function"
 msgstr ""
-"<virtualport type='%1$s'> అనునది నెట్వర్కు '%2$s' కొరకు తోడ్పాటునీయదు అది SR-IOV వర్చ్యువల్ "
-"ఫంక్షన్‌ను PCI పాస్‌త్రూ ద్వారా వుపయోగించును"
+"<virtualport type='%1$s'> అనునది నెట్వర్కు '%2$s' కొరకు తోడ్పాటునీయదు అది SR-IOV "
+"వర్చ్యువల్ ఫంక్షన్‌ను PCI పాస్‌త్రూ ద్వారా వుపయోగించును"
 
 #, fuzzy, c-format
 msgid "device API '%1$s' not supported yet"
@@ -23959,7 +24078,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"dirty ring size of KVM feature '%1$s' differs: source: '%2$d', destination: '%3$d'"
+"dirty ring size of KVM feature '%1$s' differs: source: '%2$d', destination: "
+"'%3$d'"
 msgstr ""
 
 msgid "dirty-ring calculation mode requires dirty-ring feature enabled."
@@ -24995,7 +25115,8 @@ msgid "event '%1$s' for storage pool %2$s\n"
 msgstr "తెలియని నిల్వ పూల్ రకము %s"
 
 #, c-format
-msgid "event 'agent-lifecycle' for domain '%1$s': state: '%2$s' reason: '%3$s'\n"
+msgid ""
+"event 'agent-lifecycle' for domain '%1$s': state: '%2$s' reason: '%3$s'\n"
 msgstr ""
 
 #, c-format
@@ -25003,7 +25124,8 @@ msgid "event 'balloon-change' for domain '%1$s': %2$lluKiB\n"
 msgstr ""
 
 #, c-format
-msgid "event 'block-threshold' for domain '%1$s': dev: %2$s(%3$s) %4$llu %5$llu\n"
+msgid ""
+"event 'block-threshold' for domain '%1$s': dev: %2$s(%3$s) %4$llu %5$llu\n"
 msgstr ""
 
 #, c-format
@@ -25024,7 +25146,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"event 'graphics' for domain '%1$s': %2$s local[%3$s %4$s %5$s] remote[%6$s %7$s %8$s] %9$s\n"
+"event 'graphics' for domain '%1$s': %2$s local[%3$s %4$s %5$s] remote[%6$s "
+"%7$s %8$s] %9$s\n"
 msgstr ""
 
 #, c-format
@@ -25032,7 +25155,8 @@ msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
+msgid ""
+"event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
 msgstr ""
 
 #, c-format
@@ -25179,7 +25303,8 @@ msgstr "unicast mac చిరునామా కావలసివుంది, 
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s' in network '%2$s'"
-msgstr "యూనికాస్ట్ mac చిరునామా కావలసివుంది, అయితే మల్టీకాస్ట్ '%1$s' ను నెట్వర్కు '%2$s' నందు కనుగొంది"
+msgstr ""
+"యూనికాస్ట్ mac చిరునామా కావలసివుంది, అయితే మల్టీకాస్ట్ '%1$s' ను నెట్వర్కు '%2$s' నందు కనుగొంది"
 
 #, c-format
 msgid "expecting %1$zu consoles, but got %2$zu tty file handlers"
@@ -25260,8 +25385,8 @@ msgstr "%d బాహ్య డిస్కు స్నాప్‌షాట్�
 
 #, c-format
 msgid ""
-"external inactive snapshots are not supported on 'network' disks using '%1$s' "
-"protocol"
+"external inactive snapshots are not supported on 'network' disks using "
+"'%1$s' protocol"
 msgstr ""
 
 msgid "external memory snapshots require a filename"
@@ -25269,8 +25394,8 @@ msgstr "బాహ్య మెమొరీ స్నాప్‌షాట్‌�
 
 #, c-format
 msgid ""
-"external snapshot file for disk %1$s already exists and is not a block device: "
-"%2$s"
+"external snapshot file for disk %1$s already exists and is not a block "
+"device: %2$s"
 msgstr "డిస్కు %1$s కొరకు బాహ్య స్నాప్‌షాట్ ఫైలు యిప్పటికే వుంది మరియు అది నిరోధక పరికరం కాదు: %2$s"
 
 #, c-format
@@ -26897,8 +27022,8 @@ msgstr "అండర్‌లేయింగ్ నిల్వకు ఫార�
 
 #, c-format
 msgid ""
-"format of backing image '%1$s' of image '%2$s' was not specified in the image "
-"metadata (See https://libvirt.org/kbase/backing_chains.html for "
+"format of backing image '%1$s' of image '%2$s' was not specified in the "
+"image metadata (See https://libvirt.org/kbase/backing_chains.html for "
 "troubleshooting)"
 msgstr ""
 
@@ -27070,11 +27195,13 @@ msgid "got unknown HTTP error code %1$s"
 msgstr "తెలియని సమయపాలకి రీతి '%1$s'"
 
 #, c-format
-msgid "got wrong number of IOThread ids from QEMU monitor. got %1$d, wanted %2$d"
+msgid ""
+"got wrong number of IOThread ids from QEMU monitor. got %1$d, wanted %2$d"
 msgstr ""
 
 #, c-format
-msgid "got wrong number of IOThread pids from QEMU monitor. got %1$d, wanted %2$zu"
+msgid ""
+"got wrong number of IOThread pids from QEMU monitor. got %1$d, wanted %2$zu"
 msgstr ""
 
 msgid "gracefully shutdown a domain"
@@ -27129,8 +27256,8 @@ msgstr "అతిధేయి CPU అనునది అతిథి CPU తో 
 
 #, c-format
 msgid ""
-"guest CPU doesn't match specification: extra features: %1$s, missing features: "
-"%2$s"
+"guest CPU doesn't match specification: extra features: %1$s, missing "
+"features: %2$s"
 msgstr ""
 
 #, c-format
@@ -27483,7 +27610,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"if using CPU maximum physical address mode='%1$s', bits= must be specified too"
+"if using CPU maximum physical address mode='%1$s', bits= must be specified "
+"too"
 msgstr ""
 
 #, c-format
@@ -27692,7 +27820,8 @@ msgstr "%s రకం యొక్క ఇంటర్ఫేసెస్ పైన
 
 #, fuzzy, c-format
 msgid ""
-"interface %1$s - filterref is not supported for network interfaces of type %2$s"
+"interface %1$s - filterref is not supported for network interfaces of type "
+"%2$s"
 msgstr "%s రకం యొక్క ఇంటర్ఫేసెస్ పైన వడపోతలు తోడ్పాటునీయవు"
 
 #, fuzzy, c-format
@@ -27703,7 +27832,8 @@ msgstr "%s రకం యొక్క ఇంటర్ఫేసెస్ పైన
 
 #, fuzzy, c-format
 msgid ""
-"interface %1$s - multiqueue is not supported for network interfaces of type %2$s"
+"interface %1$s - multiqueue is not supported for network interfaces of type "
+"%2$s"
 msgstr "%s రకం యొక్క ఇంటర్ఫేసెస్ పైన వడపోతలు తోడ్పాటునీయవు"
 
 #, c-format
@@ -27816,8 +27946,8 @@ msgstr "%d బాహ్య డిస్కు స్నాప్‌షాట్�
 
 #, c-format
 msgid ""
-"internal inactive snapshots are not supported on 'network' disks using '%1$s' "
-"protocol"
+"internal inactive snapshots are not supported on 'network' disks using "
+"'%1$s' protocol"
 msgstr ""
 
 msgid "internal parse requested with NULL current"
@@ -27849,8 +27979,8 @@ msgstr "చెల్లని \"trunk='%1$s'\" <vlan> నందు - తప్�
 
 #, c-format
 msgid ""
-"invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than one "
-"vlan tag"
+"invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than "
+"one vlan tag"
 msgstr ""
 "చెల్లని \"trunk='%1$s'\" <vlan> నందు - ఒకటి కన్నా యెక్కువ vlan టాగ్ కొరకు trunk='yes' "
 "అవసరం"
@@ -28087,7 +28217,8 @@ msgstr "నెట్వర్కు %s యొక్క DNS TXT రికార�
 
 #, fuzzy, c-format
 msgid ""
-"invalid character in service attribute '%1$s' in DNS SRV record of network '%2$s'"
+"invalid character in service attribute '%1$s' in DNS SRV record of network "
+"'%2$s'"
 msgstr "నెట్వర్కు %s యొక్క DNS TXT రికార్డ్ నందు కావలసిన పేరు యాట్రిబ్యూట్ దొరకలేదు"
 
 msgid "invalid cipher size for TLS session"
@@ -28276,7 +28407,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"invalid mac address '%1$s' in 'unicast-table' array in query-rx-filter response"
+"invalid mac address '%1$s' in 'unicast-table' array in query-rx-filter "
+"response"
 msgstr ""
 
 #, fuzzy, c-format
@@ -29718,7 +29850,8 @@ msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
 msgstr ""
 
 #, c-format
-msgid "memory device slot '%1$u' is already being used by another memory device"
+msgid ""
+"memory device slot '%1$u' is already being used by another memory device"
 msgstr ""
 
 msgid "memory device target node"
@@ -30096,7 +30229,8 @@ msgid ""
 "missing 'start' attribute in <address> element in <nat> in <forward> in "
 "network %1$s"
 msgstr ""
-"నెట్వర్కు %1$s నందలి <forward> నందలి <nat> నందలి <address> నందు దొరకని 'start' ఏట్రిబ్యూట్"
+"నెట్వర్కు %1$s నందలి <forward> నందలి <nat> నందలి <address> నందు దొరకని 'start' "
+"ఏట్రిబ్యూట్"
 
 #, fuzzy
 msgid "missing 'state' attribute"
@@ -30679,8 +30813,10 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid ""
-"missing required protocol attribute in DNS SRV record '%1$s' of network '%2$s'"
-msgstr "DNS TXT రికార్డ్ పేరు '%1$s' నందు కావలసిన విలువ యాట్రిబ్యూట్ దొరకలేదు యిది నెట్వర్కు %2$s ది"
+"missing required protocol attribute in DNS SRV record '%1$s' of network "
+"'%2$s'"
+msgstr ""
+"DNS TXT రికార్డ్ పేరు '%1$s' నందు కావలసిన విలువ యాట్రిబ్యూట్ దొరకలేదు యిది నెట్వర్కు %2$s ది"
 
 #, fuzzy, c-format
 msgid "missing required service attribute in DNS SRV record of network '%1$s'"
@@ -30688,8 +30824,10 @@ msgstr "నెట్వర్కు %1$s యొక్క DNS TXT రికార
 
 #, c-format
 msgid ""
-"missing required value attribute in DNS TXT record named '%1$s' of network %2$s"
-msgstr "DNS TXT రికార్డ్ పేరు '%1$s' నందు కావలసిన విలువ యాట్రిబ్యూట్ దొరకలేదు యిది నెట్వర్కు %2$s ది"
+"missing required value attribute in DNS TXT record named '%1$s' of network "
+"%2$s"
+msgstr ""
+"DNS TXT రికార్డ్ పేరు '%1$s' నందు కావలసిన విలువ యాట్రిబ్యూట్ దొరకలేదు యిది నెట్వర్కు %2$s ది"
 
 msgid "missing required virtualport type"
 msgstr "కావలసిన వర్చ్యువల్‌పోర్ట్ రకం దొరకలేదు"
@@ -31038,7 +31176,8 @@ msgid "multidevs is not supported with this QEMU binary"
 msgstr "SATA ఈ QEMU బైనరీతో మద్దతించబడదు"
 
 #, fuzzy, c-format
-msgid "multiple <portgroup> elements with the same name (%1$s) in network '%2$s'"
+msgid ""
+"multiple <portgroup> elements with the same name (%1$s) in network '%2$s'"
 msgstr "తోడ్పాటులేని <tftp> మూలకం IPv6 మూలకం నెట్వర్కు '%s' నందు"
 
 #, c-format
@@ -31059,7 +31198,8 @@ msgstr "సరిపోలు MAC చిరునామాతో బహుళ �
 msgid ""
 "multiple forwarding interfaces specified for network '%1$s', only one is "
 "supported"
-msgstr "నెట్వర్కు '%1$s' కొరకు బహుళ ఫార్వార్డింగ్ యింటర్ఫేసులు తెలుపబడెను, వొకటి మాత్రమే తోడ్పాటునిచ్చును"
+msgstr ""
+"నెట్వర్కు '%1$s' కొరకు బహుళ ఫార్వార్డింగ్ యింటర్ఫేసులు తెలుపబడెను, వొకటి మాత్రమే తోడ్పాటునిచ్చును"
 
 msgid "multiple interfaces with matching MAC address"
 msgstr "సరిపోలు MAC చిరునామాతో బహుళ యింటర్ఫేసులు"
@@ -31228,8 +31368,8 @@ msgstr "నెట్వర్కు '%1$s' అనునది డొమైన్
 
 #, c-format
 msgid ""
-"network '%1$s' claims the PCI device at domain=%2$d bus=%3$d slot=%4$d function=%5$d "
-"is already in use by a different network port"
+"network '%1$s' claims the PCI device at domain=%2$d bus=%3$d slot=%4$d "
+"function=%5$d is already in use by a different network port"
 msgstr ""
 
 #, c-format
@@ -31237,13 +31377,20 @@ msgid "network '%1$s' does not have a bridge name."
 msgstr "నెట్వర్కు '%1$s' బ్రిడ్జు నామమును కలిగిలేదు"
 
 #, c-format
-msgid "network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by domain"
-msgstr "నెట్వర్కు '%1$s' అనునది డొమైన్ చేత PCI పరికరం %2$04x:%3$02x:%4$02x.%5$x ను వుపయోగంలో కలిగిలేదు"
+msgid ""
+"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by "
+"domain"
+msgstr ""
+"నెట్వర్కు '%1$s' అనునది డొమైన్ చేత PCI పరికరం %2$04x:%3$02x:%4$02x.%5$x ను వుపయోగంలో "
+"కలిగిలేదు"
 
 #, fuzzy, c-format
 msgid ""
-"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by network port"
-msgstr "నెట్వర్కు '%1$s' అనునది డొమైన్ చేత PCI పరికరం %2$04x:%3$02x:%4$02x.%5$x ను వుపయోగంలో కలిగిలేదు"
+"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by "
+"network port"
+msgstr ""
+"నెట్వర్కు '%1$s' అనునది డొమైన్ చేత PCI పరికరం %2$04x:%3$02x:%4$02x.%5$x ను వుపయోగంలో "
+"కలిగిలేదు"
 
 #, fuzzy, c-format
 msgid "network '%1$s' doesn't have an IP address"
@@ -31263,14 +31410,15 @@ msgstr "నెట్వర్కు '%1$s' చెల్లని నెట్‌
 
 #, c-format
 msgid ""
-"network '%1$s' has forward mode '%2$s'  but lists a device by PCI address in the "
-"device pool. This is only supported for networks with forward mode 'hostdev'"
+"network '%1$s' has forward mode '%2$s' but lists a device by PCI address in "
+"the device pool. This is only supported for networks with forward mode "
+"'hostdev'"
 msgstr ""
 
 #, c-format
 msgid ""
-"network '%1$s' has multiple default <portgroup> elements (%2$s and %3$s), but only "
-"one default is allowed"
+"network '%1$s' has multiple default <portgroup> elements (%2$s and %3$s), "
+"but only one default is allowed"
 msgstr ""
 "నెట్వర్కు '%1$s' బహుళ అప్రమేయ <portgroup> మూలకాలు (%2$s మరియు %3$s) కలిగివుంది, అయితే వొక "
 "అప్రమేయం మాత్రమే అనుమతించబడును"
@@ -31297,12 +31445,14 @@ msgstr "నెట్వర్కు %1$s క్రియాశీలముగా
 
 #, c-format
 msgid ""
-"network '%1$s' requires exclusive access to interfaces, but none are available"
+"network '%1$s' requires exclusive access to interfaces, but none are "
+"available"
 msgstr "నెట్వర్కు '%1$s' కు యింటర్ఫేసుల కొరకు ప్రత్యేక యాక్సెస్ కావలెను, అయితే యేవీ అందుబాటులోలేవు"
 
 #, c-format
 msgid ""
-"network '%1$s' uses a direct mode, but has no forward dev and no interface pool"
+"network '%1$s' uses a direct mode, but has no forward dev and no interface "
+"pool"
 msgstr "నెట్వర్కు '%1$s' డైరెక్ట్ రీతి వుపయోగించును, అయితే ఫార్వార్డ్ dev మరియు యింటర్ఫేస్ పూల్ కలిగిలేదు"
 
 #, fuzzy, c-format
@@ -31316,8 +31466,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"network device saved config file '%1$s' has unexpected contents, missing both "
-"'MAC' and 'adminMAC': '%2$.60s'"
+"network device saved config file '%1$s' has unexpected contents, missing "
+"both 'MAC' and 'adminMAC': '%2$.60s'"
 msgstr ""
 
 #, c-format
@@ -31638,7 +31788,8 @@ msgstr "'%1$s' కొరకు ఏ పరికరము సామర్ధ్�
 
 #, c-format
 msgid ""
-"no device found at address '%1$s' matching MAC address '%2$s' and alias '%3$s'"
+"no device found at address '%1$s' matching MAC address '%2$s' and alias "
+"'%3$s'"
 msgstr ""
 
 #, c-format
@@ -32375,7 +32526,8 @@ msgid "only connect if safe console handling is supported"
 msgstr "సురక్షిత కన్సోల్ సంభాలన తోడ్పాటువుంటేనే అనుసంధానించు"
 
 #, c-format
-msgid "only cpu feature policies 'require' and 'disable' are supported for %1$s"
+msgid ""
+"only cpu feature policies 'require' and 'disable' are supported for %1$s"
 msgstr ""
 
 msgid "only i686 and x86_64 guests support panic device of model 'hyperv'"
@@ -33298,7 +33450,8 @@ msgstr "ప్రోగ్రామ్ సరిపోలలేదు (యథా
 
 #, fuzzy, c-format
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
-msgstr "DNS TXT రికార్డ్ పేరు '%1$s' నందు కావలసిన విలువ యాట్రిబ్యూట్ దొరకలేదు యిది నెట్వర్కు %2$s ది"
+msgstr ""
+"DNS TXT రికార్డ్ పేరు '%1$s' నందు కావలసిన విలువ యాట్రిబ్యూట్ దొరకలేదు యిది నెట్వర్కు %2$s ది"
 
 msgid "property with name 'id' can't be overridden"
 msgstr ""
@@ -33831,7 +33984,8 @@ msgid "removing block or network volumes is not supported: %1$s"
 msgstr "నిరోధక లేదా నెట్వర్కు వాల్యూమ్‌లను తీసివేయుటకు తోడ్పాటులేదు: %1$s"
 
 #, fuzzy, c-format
-msgid "removing of '%1$s' volumes is not supported by the gluster backend: %2$s"
+msgid ""
+"removing of '%1$s' volumes is not supported by the gluster backend: %2$s"
 msgstr "నిరోధక లేదా నెట్వర్కు వాల్యూమ్‌లను తీసివేయుటకు తోడ్పాటులేదు: %s"
 
 #, fuzzy
@@ -33977,13 +34131,14 @@ msgstr "అభ్యర్ధించిన vcpus డొమైన్‌కు �
 
 #, c-format
 msgid ""
-"requested vcpus is greater than max allowable vcpus for the domain: %1$d > %2$d"
+"requested vcpus is greater than max allowable vcpus for the domain: %1$d > "
+"%2$d"
 msgstr "అభ్యర్ధించిన vcpus డొమైన్‌కు అనుమతైన vcpus కన్నా యెక్కువ: %1$d > %2$d"
 
 #, fuzzy, c-format
 msgid ""
-"requested vcpus is greater than max allowable vcpus for the live domain: %1$u "
-"> %2$u"
+"requested vcpus is greater than max allowable vcpus for the live domain: "
+"%1$u > %2$u"
 msgstr "అభ్యర్ధించిన vcpus డొమైన్‌కు అనుమతైన vcpus కన్నా యెక్కువ: %d > %d"
 
 #, fuzzy, c-format
@@ -34400,7 +34555,8 @@ msgid "server which to list connected clients from"
 msgstr ""
 
 #, c-format
-msgid "service attribute '%1$s' in network '%2$s' is too long, limit is %3$d bytes"
+msgid ""
+"service attribute '%1$s' in network '%2$s' is too long, limit is %3$d bytes"
 msgstr ""
 
 msgid "set a secret value"
@@ -34551,11 +34707,13 @@ msgid "sgx epc isn't supported by this QEMU binary"
 msgstr ""
 
 #, c-format
-msgid "sgx epc size %1$lld on host node %2$d is less than requested size %3$lld"
+msgid ""
+"sgx epc size %1$lld on host node %2$d is less than requested size %3$lld"
 msgstr ""
 
 #, c-format
-msgid "sgx epc size %1$lld on host node %2$zd is less than requested size %3$lld"
+msgid ""
+"sgx epc size %1$lld on host node %2$zd is less than requested size %3$lld"
 msgstr ""
 
 msgid "sgx-epc memory info data is missing 'memdev'"
@@ -35338,8 +35496,8 @@ msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
 msgstr ""
-"నెట్వర్కు %1$s నందు <address> లేదా <pf> ఉప-మూలకాలు వున్నప్పుడు <forward> 'dev' ఏట్రిబ్యూట్ "
-"వుపయోగించలేము"
+"నెట్వర్కు %1$s నందు <address> లేదా <pf> ఉప-మూలకాలు వున్నప్పుడు <forward> 'dev' "
+"ఏట్రిబ్యూట్ వుపయోగించలేము"
 
 #, fuzzy
 msgid "the CPU is incompatible with host CPU"
@@ -35490,8 +35648,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"there is an existing dhcp range entry in network '%1$s' that matches \"<range "
-"start='%2$s' end='%3$s'/>\""
+"there is an existing dhcp range entry in network '%1$s' that matches "
+"\"<range start='%2$s' end='%3$s'/>\""
 msgstr ""
 "నెట్వర్కు '%1$s' నందు యిప్పటికే వున్న dhcp విస్తృతి ప్రవేశం వుంది అది \"<range start='%2$s' "
 "end='%3$s'/>\" తో సరిపోలుతోంది"
@@ -35501,7 +35659,8 @@ msgid ""
 "there is an existing interface entry in network '%1$s' that matches "
 "\"<interface dev='%2$s'>\""
 msgstr ""
-"నెట్వర్కు '%1$s' నందు \"<interface dev='%2$s'>\" ను పోలు వొక ఇంటర్ఫేస్ ప్రవేశం యిప్పటికే వుంది"
+"నెట్వర్కు '%1$s' నందు \"<interface dev='%2$s'>\" ను పోలు వొక ఇంటర్ఫేస్ ప్రవేశం యిప్పటికే "
+"వుంది"
 
 #, c-format
 msgid ""
@@ -35603,7 +35762,8 @@ msgid "thread_pool_max (%1$d) must be a positive number or -1"
 msgstr ""
 
 #, c-format
-msgid "thread_pool_max (%1$d) must be equal to or greater than 0 for live change"
+msgid ""
+"thread_pool_max (%1$d) must be equal to or greater than 0 for live change"
 msgstr ""
 
 msgid "thread_pool_max must be a positive integer"
@@ -35618,7 +35778,8 @@ msgid "thread_pool_min (%1$d) must be equal to or greater than -1"
 msgstr ""
 
 #, c-format
-msgid "thread_pool_min (%1$d) must be equal to or greater than 0 for live change"
+msgid ""
+"thread_pool_min (%1$d) must be equal to or greater than 0 for live change"
 msgstr ""
 
 msgid ""
@@ -35744,14 +35905,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' for "
-"'virDomainCheckpointListAllChildren'"
+"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' "
+"for 'virDomainCheckpointListAllChildren'"
 msgstr ""
 
 #, c-format
 msgid ""
-"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' for "
-"'virDomainListAllCheckpoints'"
+"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' "
+"for 'virDomainListAllCheckpoints'"
 msgstr ""
 
 #, c-format
@@ -36203,11 +36364,9 @@ msgstr "epoll fd సృష్టించలేదు"
 
 #, c-format
 msgid ""
-"unable to delete interface '%1$s' in network '%2$s'. It is currently being used  "
-"by %3$d domains."
+"unable to delete interface '%1$s' in network '%2$s'. It is currently being "
+"used by %3$d domains."
 msgstr ""
-"ఇంటర్ఫేస్ '%1$s' ను నెట్వర్కు '%2$s' నందు తొలగించలేక పోయింది. ఇది ప్రస్తుతం %3$d డొమైన్లచేత "
-"వుపయోగించబడుచున్నది."
 
 #, c-format
 msgid "unable to determine access mode of %1$s"
@@ -36415,7 +36574,8 @@ msgid "unable to parse blkio device '%1$s' '%2$s'"
 msgstr "PCI పరికరము %1$sను తిరిగివుంచలేక పోయింది: %2$s"
 
 #, c-format
-msgid "unable to parse contents of 'file' field in '%1$s' from cloud-hypervisor"
+msgid ""
+"unable to parse contents of 'file' field in '%1$s' from cloud-hypervisor"
 msgstr ""
 
 #, c-format
@@ -36836,7 +36996,8 @@ msgid "unexpected domain type %1$d"
 msgstr "అనుకోని డొమైన్ రకము %1$d"
 
 #, c-format
-msgid "unexpected element <%1$s>, expecting <%2$s>, while updating network '%3$s'"
+msgid ""
+"unexpected element <%1$s>, expecting <%2$s>, while updating network '%3$s'"
 msgstr "అనుకోని మూలకం <%1$s>, కావలిసింది <%2$s>, నెట్వర్కు '%3$s' నవీకరించునప్పుడు"
 
 msgid "unexpected encryption engine"
@@ -37999,7 +38160,8 @@ msgid "usage:"
 msgstr "వాడుక:"
 
 #, c-format
-msgid "usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"
+msgid ""
+"usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"
 msgstr ""
 
 msgid "usb device not found"
@@ -38269,8 +38431,8 @@ msgstr "ప్రత్యుత్తరంకు తిప్పియిచ�
 
 #, c-format
 msgid ""
-"vcpu '%1$zu' was not selected but it belongs to hotpluggable entity '%2$zd-%3$zd' "
-"which was partially selected"
+"vcpu '%1$zu' was not selected but it belongs to hotpluggable entity '%2$zd-"
+"%3$zd' which was partially selected"
 msgstr ""
 
 msgid "vcpu 0 can't be offline"
@@ -38480,7 +38642,8 @@ msgstr ""
 "virNWFilterDHCPSnoopReq ifname మాప్ అనునది యింటర్ఫేస్ \"%1$s\" పై విఫలమైంది కీ \"%2$s\""
 
 #, c-format
-msgid "virNWFilterDHCPSnoopReq req add failed on interface \"%1$s\" ifkey \"%2$s\""
+msgid ""
+"virNWFilterDHCPSnoopReq req add failed on interface \"%1$s\" ifkey \"%2$s\""
 msgstr ""
 "virNWFilterDHCPSnoopReq req add అనునది యింటర్ఫేస్ \"%1$s\" పై విఫలమైంది ifkey \"%2$s\""
 
@@ -38513,7 +38676,8 @@ msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext అనునది parseFileName ఫంక్షన్ సమితి కలిగిలేదు"
 
 #, fuzzy, c-format
-msgid "virtio (non-)transitional models are not supported for address type=%1$s"
+msgid ""
+"virtio (non-)transitional models are not supported for address type=%1$s"
 msgstr "vport ఆపరేషన్ '%s' అనునది host%d కొరకు తోడ్పాటునీయదు"
 
 #, fuzzy, c-format
@@ -38571,7 +38735,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "virtio-net teaming transient interface must be type='hostdev', not '%1$s'"
+msgid ""
+"virtio-net teaming transient interface must be type='hostdev', not '%1$s'"
 msgstr ""
 
 msgid "virtio-pmem does not support NUMA nodes"
@@ -38642,7 +38807,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"virtualport type %1$s is currently not supported on interfaces of type hostdev"
+"virtualport type %1$s is currently not supported on interfaces of type "
+"hostdev"
 msgstr "hostdev రకపు యింటర్ఫేసులపై వర్చ్యువల్‌పోర్ట్ రకం %1$s తోడ్పాటు ప్రస్తుతం లేదు"
 
 #, c-format
@@ -38708,7 +38874,8 @@ msgstr "మాదిరి '%1$s' లేదు"
 
 #, c-format
 msgid ""
-"vnuma configuration contains %1$zu vcpus, which is greater than %2$zu maxvcpus"
+"vnuma configuration contains %1$zu vcpus, which is greater than %2$zu "
+"maxvcpus"
 msgstr ""
 
 #, c-format
@@ -38886,11 +39053,13 @@ msgid "when providing parent wwpn='%1$s', the wwnn must also be provided"
 msgstr ""
 
 #, c-format
-msgid "when providing parent_wwnn='%1$s', the parent_wwpn must also be provided"
+msgid ""
+"when providing parent_wwnn='%1$s', the parent_wwpn must also be provided"
 msgstr ""
 
 #, c-format
-msgid "when providing parent_wwpn='%1$s', the parent_wwnn must also be provided"
+msgid ""
+"when providing parent_wwpn='%1$s', the parent_wwnn must also be provided"
 msgstr ""
 
 msgid "where to dump the core"
@@ -39020,6 +39189,26 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid ""
+#~ "At least one of name, mac, or ip attribute must be specified for static "
+#~ "host definition in network '%1$s' "
+#~ msgstr ""
+#~ "పేరు, మాక్, లేదా ఐపిలలో వొక యాట్రిబ్యూట్‌ను నెట్వర్కు '%1$s' నందు స్టాటిక్ అతిధేయి నిర్వచనం కొరకు "
+#~ "తెలుపాలి"
+
+#, fuzzy
+#~ msgid ""
+#~ "Failed to add driver '%1$s' to driver_override  interface of PCI device "
+#~ "'%2$s'"
+#~ msgstr "ఐపి చిరునామా %1$s ను ఐపి చిరునామా క్యాచీకు ఇంటర్ఫేస్ %2$s కొరకు జతచేయటలో విఫలమైంది"
+
+#~ msgid ""
+#~ "unable to delete interface '%1$s' in network '%2$s'. It is currently "
+#~ "being used  by %3$d domains."
+#~ msgstr ""
+#~ "ఇంటర్ఫేస్ '%1$s' ను నెట్వర్కు '%2$s' నందు తొలగించలేక పోయింది. ఇది ప్రస్తుతం %3$d డొమైన్లచేత "
+#~ "వుపయోగించబడుచున్నది."
 
 #, fuzzy
 #~ msgid "Could not find vf/instanceId %u/%s  in netlink response"

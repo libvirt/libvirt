@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-01 08:30+0000\n"
+"POT-Creation-Date: 2023-04-01 11:38+0200\n"
 "PO-Revision-Date: 2015-02-23 12:39+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hindi (http://www.transifex.com/projects/p/fedora/language/"
@@ -378,9 +378,9 @@ msgstr ""
 
 #, c-format
 msgid ""
-"!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' differs "
-"from stored identity. Please verify the new host key '%3$s' to avoid possible "
-"man in the middle attack. The key is stored in '%4$s'."
+"!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' "
+"differs from stored identity. Please verify the new host key '%3$s' to avoid "
+"possible man in the middle attack. The key is stored in '%4$s'."
 msgstr ""
 
 #, c-format
@@ -404,13 +404,14 @@ msgid "%1$s %2$s '%3$s' has an unsupported type '%4$s'"
 msgstr "अंतरफलक के पास असमर्थित प्रकार '%s' है"
 
 #, fuzzy, c-format
-msgid "%1$s %2$s '%3$s' has unsupported type '%4$s', expecting '%5$s' or '%6$s'"
+msgid ""
+"%1$s %2$s '%3$s' has unsupported type '%4$s', expecting '%5$s' or '%6$s'"
 msgstr "वॉल्यूम नाम '%s' के पास असमर्थित प्रत्यय है, '.vmdk' की आशा"
 
 #, c-format
 msgid ""
-"%1$s (on destination side) does not support the --migration option needed for "
-"migration with shared storage"
+"%1$s (on destination side) does not support the --migration option needed "
+"for migration with shared storage"
 msgstr ""
 
 #, c-format
@@ -454,7 +455,8 @@ msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
 msgstr "संजाल '%1$s' में '%2$s' गैर-IPv पता के लिए '%3$s' परिवार निर्दिष्ट"
 
 #, c-format
-msgid "%1$s forwarding requested, but no IP address provided for network '%2$s'"
+msgid ""
+"%1$s forwarding requested, but no IP address provided for network '%2$s'"
 msgstr "%1$s अग्रसारण निवेदित,लेकिन कोई IP पता संजाल '%2$s' के लिए नहीं दिया गया"
 
 #, c-format
@@ -531,7 +533,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"%1$s model of watchdog is part of the machine and cannot have any address set."
+"%1$s model of watchdog is part of the machine and cannot have any address "
+"set."
 msgstr ""
 
 #, c-format
@@ -644,14 +647,14 @@ msgstr "%1$s: झंडे पर एक साथ पढने और लिख
 
 #, c-format
 msgid ""
-"%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address in "
-"route definition"
+"%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address "
+"in route definition"
 msgstr ""
 
 #, c-format
 msgid ""
-"%1$s: Error converting address '%2$s' with prefix %3$u to network-address in route "
-"definition"
+"%1$s: Error converting address '%2$s' with prefix %3$u to network-address in "
+"route definition"
 msgstr ""
 
 #, c-format
@@ -659,20 +662,24 @@ msgid "%1$s: File '%2$s' is too large\n"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "%1$s: IPv4 family specified for non-IPv4 address '%2$s' in route definition"
+msgid ""
+"%1$s: IPv4 family specified for non-IPv4 address '%2$s' in route definition"
 msgstr "संजाल '%s' में '%s' गैर-IPv पता के लिए '%s' परिवार निर्दिष्ट"
 
 #, fuzzy, c-format
-msgid "%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
+msgid ""
+"%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr "संजाल '%s' में '%s' गैर-IPv पता के लिए '%s' परिवार निर्दिष्ट"
 
 #, fuzzy, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
 msgstr ""
-"पता  '%1$s' (दोनों IPv4 होना अनिवार्य है) के लिए संजाल '%2$s' के पास अवैध नेटमास्क '%3$s' है"
+"पता  '%1$s' (दोनों IPv4 होना अनिवार्य है) के लिए संजाल '%2$s' के पास अवैध नेटमास्क "
+"'%3$s' है"
 
 #, c-format
-msgid "%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 128"
+msgid ""
+"%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 128"
 msgstr ""
 
 #, c-format
@@ -688,11 +695,13 @@ msgid "%1$s: Missing required gateway attribute in route definition"
 msgstr "Portgroup में गुम आवश्यक नाम विशेषता"
 
 #, fuzzy, c-format
-msgid "%1$s: No family specified for non-IPv4 address '%2$s' in route definition"
+msgid ""
+"%1$s: No family specified for non-IPv4 address '%2$s' in route definition"
 msgstr "संजाल '%s' में '%s' गैर-IPv पता के लिए '%s' परिवार निर्दिष्ट"
 
 #, fuzzy, c-format
-msgid "%1$s: No family specified for non-IPv4 gateway '%2$s' in route definition"
+msgid ""
+"%1$s: No family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr "संजाल '%s' में '%s' गैर-IPv पता के लिए '%s' परिवार निर्दिष्ट"
 
 #, fuzzy, c-format
@@ -823,7 +832,8 @@ msgid "%1$s: initialization failed\n"
 msgstr "%1$s: आरंभीकरण असफल\n"
 
 #, fuzzy, c-format
-msgid "%1$s: ipv6 family specified for non-IPv6 address '%2$s' in route definition"
+msgid ""
+"%1$s: ipv6 family specified for non-IPv6 address '%2$s' in route definition"
 msgstr "संजाल '%s' में '%s' गैर-IPv पता के लिए '%s' परिवार निर्दिष्ट"
 
 #, fuzzy, c-format
@@ -837,7 +847,8 @@ msgstr "विरूपित आकार %s"
 
 #, c-format
 msgid ""
-"%1$s: migration_port_max: port must be between the minimal port %2$d and 65535"
+"%1$s: migration_port_max: port must be between the minimal port %2$d and "
+"65535"
 msgstr ""
 
 #, c-format
@@ -862,16 +873,19 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "%1$s: remote_display_port_min: min port must not be greater than max port"
-msgstr ""
-
-#, c-format
-msgid "%1$s: remote_display_port_min: port must be greater than or equal to %2$d"
+msgid ""
+"%1$s: remote_display_port_min: min port must not be greater than max port"
 msgstr ""
 
 #, c-format
 msgid ""
-"%1$s: remote_websocket_port_max: port must be between the minimal port and %2$d"
+"%1$s: remote_display_port_min: port must be greater than or equal to %2$d"
+msgstr ""
+
+#, c-format
+msgid ""
+"%1$s: remote_websocket_port_max: port must be between the minimal port and "
+"%2$d"
 msgstr ""
 
 #, c-format
@@ -880,15 +894,17 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "%1$s: remote_websocket_port_min: port must be greater than or equal to %2$d"
+msgid ""
+"%1$s: remote_websocket_port_min: port must be greater than or equal to %2$d"
 msgstr ""
 
 #, c-format
 msgid ""
-"%1$s: temporary filename contains shell meta or other unacceptable characters "
-"(is $TMPDIR wrong?)"
+"%1$s: temporary filename contains shell meta or other unacceptable "
+"characters (is $TMPDIR wrong?)"
 msgstr ""
-"%1$s: अस्थायी फाइल नाम में शेल मेटा समाहित है या दूसरे अस्वीकार्य वर्ण (क्या $TMPDIR गलत?)"
+"%1$s: अस्थायी फाइल नाम में शेल मेटा समाहित है या दूसरे अस्वीकार्य वर्ण (क्या $TMPDIR "
+"गलत?)"
 
 #, fuzzy, c-format
 msgid "%1$s: too many command line arguments\n"
@@ -1101,8 +1117,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"'incremental' backup mode of disk '%1$s' requires setting 'incremental' field "
-"for disk or backup"
+"'incremental' backup mode of disk '%1$s' requires setting 'incremental' "
+"field for disk or backup"
 msgstr ""
 
 msgid "'initiator' refers to a non-existent NUMA node"
@@ -1141,7 +1157,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"'mode' of Xen passthrough feature differs: source: '%1$s', destination: '%2$s'"
+"'mode' of Xen passthrough feature differs: source: '%1$s', destination: "
+"'%2$s'"
 msgstr ""
 
 #, c-format
@@ -1210,7 +1227,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"
+msgid ""
+"'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"
 msgstr ""
 
 msgid "'socket' attribute is valid only for listen type 'socket'"
@@ -1482,7 +1500,8 @@ msgid "<domainbackup> must specify TCP port for now"
 msgstr ""
 
 #, c-format
-msgid "<forward dev='%1$s'> must match first <interface dev='%2$s'/> in network %3$s"
+msgid ""
+"<forward dev='%1$s'> must match first <interface dev='%2$s'/> in network %3$s"
 msgstr "<forward dev='%s'> संजाल% s में पहले <interface dev='%s'/> से मेल खाना चाहिए"
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
@@ -1515,32 +1534,32 @@ msgid ""
 "<virtualport type='%1$s'> not supported for network '%2$s' which uses IP "
 "forwarding"
 msgstr ""
-"<virtualport type='%1$s'> संजाल '%2$s' को एक पुल युक्ति का उपयोग करता है, जिसके लिए "
-"समर्थित नहीं."
+"<virtualport type='%1$s'> संजाल '%2$s' को एक पुल युक्ति का उपयोग करता है, जिसके "
+"लिए समर्थित नहीं."
 
 #, c-format
 msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses a bridge "
-"device"
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses a "
+"bridge device"
 msgstr ""
-"<virtualport type='%1$s'> संजाल '%2$s' को एक पुल युक्ति का उपयोग करता है, जिसके लिए "
-"समर्थित नहीं."
+"<virtualport type='%1$s'> संजाल '%2$s' को एक पुल युक्ति का उपयोग करता है, जिसके "
+"लिए समर्थित नहीं."
 
 #, c-format
 msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses a macvtap "
-"device"
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses a "
+"macvtap device"
 msgstr ""
 "<virtualport type='%s'> संजाल '% s' को एक macvtap युक्ति का उपयोग करता है, जिसके "
 "लिए समर्थित नहीं"
 
 #, c-format
 msgid ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses an SR-IOV "
-"Virtual Function via PCI passthrough"
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses an SR-"
+"IOV Virtual Function via PCI passthrough"
 msgstr ""
-"<virtualport type='%1$s'> संजाल '%2$s' को पीसीआई पासथ्रू के माध्यम से एक SR-IOV आभासी "
-"समारोह का उपयोग करता है, जिसके लिए समर्थित नहीं."
+"<virtualport type='%1$s'> संजाल '%2$s' को पीसीआई पासथ्रू के माध्यम से एक SR-IOV "
+"आभासी समारोह का उपयोग करता है, जिसके लिए समर्थित नहीं."
 
 #, c-format
 msgid "<virtualport> element unsupported for <interface type='%1$s'>"
@@ -1557,7 +1576,8 @@ msgid ""
 "<vlan> element specified for network %1$s, whose type doesn't support vlan "
 "configuration"
 msgstr ""
-"संजाल %1$s, जिसका प्रकार के लिए निर्दिष्ट <vlan> तत्व VLAN विन्यास का समर्थन नहीं करता."
+"संजाल %1$s, जिसका प्रकार के लिए निर्दिष्ट <vlan> तत्व VLAN विन्यास का समर्थन नहीं "
+"करता."
 
 #, fuzzy
 msgid "? - print this help"
@@ -1570,7 +1590,8 @@ msgid "A different callback was requested"
 msgstr "एक अलग कॉलबैक अनुरोध किया गया था"
 
 #, c-format
-msgid "A domain definition can have no more than one cipher node with name %1$s"
+msgid ""
+"A domain definition can have no more than one cipher node with name %1$s"
 msgstr ""
 
 #, fuzzy
@@ -1587,8 +1608,8 @@ msgstr "एक करीबी कॉलबैक पहले से ही प
 
 #, c-format
 msgid ""
-"A network with forward mode='%1$s' can specify a bridge name or a forward dev, "
-"but not both (network '%2$s')"
+"A network with forward mode='%1$s' can specify a bridge name or a forward "
+"dev, but not both (network '%2$s')"
 msgstr ""
 "आगे मोड के साथ एक संजाल = '%1$s' को एक पुल के नाम या एक आगे dev, लेकिन दोनों नहीं "
 "(नेटवर्क %2$s) निर्दिष्ट कर सकते हैं"
@@ -1776,10 +1797,8 @@ msgstr ""
 #, c-format
 msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
-"definition in network '%1$s' "
+"definition in network '%1$s'"
 msgstr ""
-"कम के कम एक नाम, मैक, या ip विशेषता को संजाल '%1$s' के स्थैतिक मेजबान परिभाषा में "
-"निर्दिष्ट किया जाना चाहिए"
 
 msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
@@ -1933,8 +1952,8 @@ msgid ""
 "Bit 29 (Long Mode) of HostSystem property 'hardware.cpuFeature[].edx' with "
 "value '%1$s' has unexpected value '%2$c', expecting '0' or '1'"
 msgstr ""
-"मान '%1$s' के साथ HostSystem गुण 'hardware.cpuFeature[].edx' की बिट 29 (लंबी मोड) "
-"का अनपेक्षित मान '%2$c' है , '0 'या '1' की आशा"
+"मान '%1$s' के साथ HostSystem गुण 'hardware.cpuFeature[].edx' की बिट 29 (लंबी "
+"मोड) का अनपेक्षित मान '%2$c' है , '0 'या '1' की आशा"
 
 msgid "Block Commit"
 msgstr ""
@@ -2148,7 +2167,8 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid ""
-"CPU mode '%1$s' for %2$s %3$s domain on %4$s host is not supported by hypervisor"
+"CPU mode '%1$s' for %2$s %3$s domain on %4$s host is not supported by "
+"hypervisor"
 msgstr "सीपीयू मॉडल %s हाइपरविजर के द्वारा समर्थित नहीं है"
 
 #, fuzzy, c-format
@@ -2266,8 +2286,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cache allocation of size %1$llu is smaller than the minimum allowed allocation "
-"%2$llu"
+"Cache allocation of size %1$llu is smaller than the minimum allowed "
+"allocation %2$llu"
 msgstr ""
 
 #, fuzzy, c-format
@@ -2490,7 +2510,8 @@ msgstr "अनभिगम्य बैकिंग स्टोर वाल्
 
 #, c-format
 msgid ""
-"Cannot access backing file '%1$s' of storage file '%2$s' (as uid:%3$u, gid:%4$u)"
+"Cannot access backing file '%1$s' of storage file '%2$s' (as uid:%3$u, gid:"
+"%4$u)"
 msgstr ""
 
 #, fuzzy, c-format
@@ -2874,7 +2895,8 @@ msgstr "मॉनिटर स्थिति आरंभीकृत नही
 msgid ""
 "Cannot instantiate filter due to unresolvable variables or unavailable list "
 "elements: %1$s"
-msgstr "unresolvable चर या अनुपलब्ध सूची तत्वों के कारण फ़िल्टर इन्स्तांत नहीं कर सकते: %1$s"
+msgstr ""
+"unresolvable चर या अनुपलब्ध सूची तत्वों के कारण फ़िल्टर इन्स्तांत नहीं कर सकते: %1$s"
 
 #, fuzzy
 msgid "Cannot lock resctrl"
@@ -2908,7 +2930,8 @@ msgid "Cannot open /proc/cgroups"
 msgstr "%s को नहीं खोल सका"
 
 #, c-format
-msgid "Cannot open embedded driver at path '%1$s', already open with path '%2$s'"
+msgid ""
+"Cannot open embedded driver at path '%1$s', already open with path '%2$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -3075,14 +3098,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor=%3$llu "
-"would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
+"%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor=%3$llu "
-"would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
+"%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -3418,8 +3441,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes and "
-"enabling forwarding  without accept_ra set to 2 will cause the kernel to "
+"Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes "
+"and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
 msgstr ""
 
@@ -3521,7 +3544,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "Colliding cache allocations for cache level '%1$u' id '%2$u', type '%3$s'"
+msgid ""
+"Colliding cache allocations for cache level '%1$u' id '%2$u', type '%3$s'"
 msgstr ""
 
 #, fuzzy
@@ -3588,7 +3612,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Compression program for %1$s image format in configuration file isn't available"
+"Compression program for %1$s image format in configuration file isn't "
+"available"
 msgstr ""
 
 msgid "Compute baseline CPU for a set of given CPUs."
@@ -3642,8 +3667,8 @@ msgstr "बूट पर स्वतः आरंभ होने के लि
 
 #, c-format
 msgid ""
-"Configuring the '%1$s' timer is not supported for virtType=%2$s arch=%3$s machine="
-"%4$s guests"
+"Configuring the '%1$s' timer is not supported for virtType=%2$s arch=%3$s "
+"machine=%4$s guests"
 msgstr ""
 
 #, fuzzy, c-format
@@ -3956,8 +3981,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Could not find PCI controller with index '%1$u' required for device at address "
-"'%2$s'"
+"Could not find PCI controller with index '%1$u' required for device at "
+"address '%2$s'"
 msgstr ""
 
 #, c-format
@@ -4365,7 +4390,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Could not look up processor setting data with virtual system instance ID '%1$s'"
+"Could not look up processor setting data with virtual system instance ID "
+"'%1$s'"
 msgstr ""
 
 #, c-format
@@ -4499,7 +4525,8 @@ msgid "Could not parse VPS ID %1$s"
 msgstr "VPS ID %1$s विश्लेषित नहीं कर सका"
 
 #, fuzzy, c-format
-msgid "Could not parse barrier and limit of '%1$s' from config for container %2$d"
+msgid ""
+"Could not parse barrier and limit of '%1$s' from config for container %2$d"
 msgstr "'NETIF' को कंटेनर %d के लिए 'NETIF' से पढ़ नहीं सका"
 
 #, fuzzy, c-format
@@ -4659,8 +4686,8 @@ msgstr "स्नैपशॉट '%1$s' को पुरानी स्थि�
 
 #, c-format
 msgid ""
-"Could not run '%1$s --reconfigure'. exitstatus: %2$d; Check error log '%3$s' for "
-"details."
+"Could not run '%1$s --reconfigure'. exitstatus: %2$d; Check error log '%3$s' "
+"for details."
 msgstr ""
 
 #, c-format
@@ -4670,7 +4697,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "Could not run '%1$s'. exitstatus: %2$d; Check error log '%3$s' for details."
+msgid ""
+"Could not run '%1$s'. exitstatus: %2$d; Check error log '%3$s' for details."
 msgstr ""
 
 #, c-format
@@ -4914,8 +4942,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"DNS SRV priority attribute not permitted without target for service '%1$s' in "
-"network '%2$s'"
+"DNS SRV priority attribute not permitted without target for service '%1$s' "
+"in network '%2$s'"
 msgstr ""
 
 msgid "DNS SRV records cannot be modified, only added or deleted"
@@ -4944,7 +4972,8 @@ msgid "Datastore has unexpected type '%1$s'"
 msgstr "अंतरफलक के पास असमर्थित प्रकार '%1$s' है"
 
 #, c-format
-msgid "Datastore path '%1$s' doesn't have expected format '[<datastore>] <path>'"
+msgid ""
+"Datastore path '%1$s' doesn't have expected format '[<datastore>] <path>'"
 msgstr "Datastore पथ '%1$s' का अपेक्षित स्वरूप  '[<datastore>] <path>' नहीं है"
 
 #, c-format
@@ -5307,7 +5336,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Distance value %1$d under node %2$zu is LOCAL_DISTANCE and should be set to 10"
+"Distance value %1$d under node %2$zu is LOCAL_DISTANCE and should be set to "
+"10"
 msgstr ""
 
 #, fuzzy, c-format
@@ -5509,8 +5539,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Domain has multiple interfaces matching MAC address %1$s. You must use detach-"
-"device and specify the device pci address to remove it."
+"Domain has multiple interfaces matching MAC address %1$s. You must use "
+"detach-device and specify the device pci address to remove it."
 msgstr ""
 
 msgid "Domain has no current snapshot"
@@ -6026,10 +6056,12 @@ msgstr "प्रकार '%s' की आशा लेकिन '%s' पाय�
 
 #, c-format
 msgid "Expecting VI API type 'HostAgent' or 'VirtualCenter' but found '%1$s'"
-msgstr "VI API प्रकार 'HostAgent' or 'VirtualCenter' की आशा लेकिन '%1$s' पाया गया"
+msgstr ""
+"VI API प्रकार 'HostAgent' or 'VirtualCenter' की आशा लेकिन '%1$s' पाया गया"
 
 #, fuzzy, c-format
-msgid "Expecting VMX entry '%1$s' to be 'ata-hardDisk' or 'disk' but found '%2$s'"
+msgid ""
+"Expecting VMX entry '%1$s' to be 'ata-hardDisk' or 'disk' but found '%2$s'"
 msgstr "प्रकार 'ArrayOf' शुरू करने की आशा लेकिन '%s' पाया गया"
 
 #, fuzzy, c-format
@@ -6062,7 +6094,8 @@ msgstr ""
 "उत्पाद  'gsx' या 'esx' या 'embeddedEsx' या 'vpx' की आशा लेकिन '%s' पाया गया"
 
 #, fuzzy, c-format
-msgid "Expecting VMX entry '%1$s' to be 'scsi-hardDisk' or 'disk' but found '%2$s'"
+msgid ""
+"Expecting VMX entry '%1$s' to be 'scsi-hardDisk' or 'disk' but found '%2$s'"
 msgstr "प्रकार 'ArrayOf' शुरू करने की आशा लेकिन '%s' पाया गया"
 
 #, fuzzy, c-format
@@ -6071,8 +6104,8 @@ msgstr "VI API प्रकार 'HostAgent' or 'VirtualCenter' की आश�
 
 #, c-format
 msgid ""
-"Expecting VMX entry '%1$s' to be 'vlance' or 'vmxnet' or 'vmxnet3' or 'e1000' "
-"or 'e1000e' but found '%2$s'"
+"Expecting VMX entry '%1$s' to be 'vlance' or 'vmxnet' or 'vmxnet3' or "
+"'e1000' or 'e1000e' but found '%2$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -6288,10 +6321,10 @@ msgstr "युक्ति %s को %s के रूप %s में माउ�
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "क्षमता लागू करने में विफल: %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
-"Failed to add driver '%1$s' to driver_override  interface of PCI device '%2$s'"
-msgstr "अंतराफलक %1$s के लिए आई पी पते कैश को आई पी पता %2$s से जोड़ने में विफल"
+"Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to add netlink event handle watch"
@@ -8015,7 +8048,8 @@ msgstr "नया iscsi अंतरफलक बनाने के लिए '
 
 #, c-format
 msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
-msgstr "'%1$s' कमांड चलाने में विफल iscsi अंतरफलक को IQN '%2$s' के साथ अद्यतन करने के लिए"
+msgstr ""
+"'%1$s' कमांड चलाने में विफल iscsi अंतरफलक को IQN '%2$s' के साथ अद्यतन करने के लिए"
 
 #, fuzzy, c-format
 msgid "Failed to save '%1$s' for '%2$s'"
@@ -8533,13 +8567,15 @@ msgstr "शेष फाइल:"
 msgid ""
 "File descriptor returned by udev %1$d does not match node device file "
 "descriptor %2$d"
-msgstr "udev %1$d द्वारा लौटाया फाइल विवरक का मेल नोड युक्ति फाइल विवरक %2$d से नहीं है "
+msgstr ""
+"udev %1$d द्वारा लौटाया फाइल विवरक का मेल नोड युक्ति फाइल विवरक %2$d से नहीं है "
 
 #, c-format
 msgid ""
 "File name '%1$s' doesn't have expected format '/vmfs/volumes/<datastore>/"
 "<path>'"
-msgstr "फ़ाइल नाम '%1$s' का अपेक्षित स्वरूप  '/vmfs/volumes/<datastore>/<path>' नहीं है"
+msgstr ""
+"फ़ाइल नाम '%1$s' का अपेक्षित स्वरूप  '/vmfs/volumes/<datastore>/<path>' नहीं है"
 
 #, c-format
 msgid "File name '%1$s' refers to non-existing datastore '%2$s'"
@@ -8671,8 +8707,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Found duplicate drive address for disk with target name '%1$s' controller='%2$u' "
-"bus='%3$u' target='%4$u' unit='%5$u'"
+"Found duplicate drive address for disk with target name '%1$s' "
+"controller='%2$u' bus='%3$u' target='%4$u' unit='%5$u'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -8909,15 +8945,17 @@ msgstr "HTTP अनुक्रिया कोड %1$d कॉल के लि�
 
 #, c-format
 msgid ""
-"HTTP response code %1$d for call to '%2$s'. Fault is unknown, XPath evaluation "
-"failed"
-msgstr "HTTP अनुक्रिया कोड %1$d कॉल के लिए '%2$s' से. दोष अज्ञात है, XPath मूल्यांकनमें विफल"
+"HTTP response code %1$d for call to '%2$s'. Fault is unknown, XPath "
+"evaluation failed"
+msgstr ""
+"HTTP अनुक्रिया कोड %1$d कॉल के लिए '%2$s' से. दोष अज्ञात है, XPath मूल्यांकनमें विफल"
 
 #, c-format
 msgid ""
-"HTTP response code %1$d for call to '%2$s'. Fault is unknown, deserialization "
-"failed"
-msgstr "HTTP अनुक्रिया कोड %1$d कॉल के लिए '%2$s' से. दोष अज्ञात है,deserialization विफल"
+"HTTP response code %1$d for call to '%2$s'. Fault is unknown, "
+"deserialization failed"
+msgstr ""
+"HTTP अनुक्रिया कोड %1$d कॉल के लिए '%2$s' से. दोष अज्ञात है,deserialization विफल"
 
 #, c-format
 msgid "HTTP response code %1$d for call to '%2$s'. Fault: %3$s - %4$s"
@@ -8969,7 +9007,8 @@ msgid "Host CPU is a superset of CPU described in %1$s\n"
 msgstr "%1$s में वर्णित मेजबान CPU CPU का सुपरसेट है\n"
 
 #, c-format
-msgid "Host CPU model does not match required CPU vendor %1$s or(and) model %2$s"
+msgid ""
+"Host CPU model does not match required CPU vendor %1$s or(and) model %2$s"
 msgstr ""
 
 #, c-format
@@ -9039,7 +9078,8 @@ msgid "Hybrid-Suspend"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "HyperV spinlock retry count differs: source: '%1$u', destination: '%2$u'"
+msgid ""
+"HyperV spinlock retry count differs: source: '%1$u', destination: '%2$u'"
 msgstr "HyperV स्पिनलॉक पुनर्कोशिश को कम से कम 4095 होना चाहिए"
 
 msgid "HyperV spinlock retry count must be at least 4095"
@@ -9059,7 +9099,8 @@ msgstr "vendor_id को पूरा %1$d वर्ण लंबा है"
 
 #, fuzzy, c-format
 msgid ""
-"Hyperv features are not supported for architecture '%1$s' or machine type '%2$s'"
+"Hyperv features are not supported for architecture '%1$s' or machine type "
+"'%2$s'"
 msgstr "लिपियों प्रकार %s के अंतराफलक पर समर्थित नहीं है"
 
 #, fuzzy
@@ -9212,7 +9253,8 @@ msgid "Ignoring guests on $uri URI"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "Image file for %1$s %2$s '%3$s' has unsupported suffix, expecting '%4$s'"
+msgid ""
+"Image file for %1$s %2$s '%3$s' has unsupported suffix, expecting '%4$s'"
 msgstr "वॉल्यूम नाम '%s' के पास असमर्थित प्रत्यय है, '.vmdk' की आशा"
 
 msgid "In use"
@@ -9240,8 +9282,8 @@ msgstr "XML विन्यास को संजाल के लिए सं
 
 #, c-format
 msgid ""
-"Inconsistent SCSI controller model ('%1$s' is not '%2$s') for SCSI controller "
-"index %3$d"
+"Inconsistent SCSI controller model ('%1$s' is not '%2$s') for SCSI "
+"controller index %3$d"
 msgstr ""
 
 msgid "Incorrect data type"
@@ -9508,7 +9550,8 @@ msgstr "अवैध BIOS 'तिथि' प्रारूप"
 
 #, c-format
 msgid "Invalid STP state value %1$d received for '%2$s'. Must be -1, 0, or 1."
-msgstr "अवैध एसटीपी अवस्था मान %1$d '%2$s' के लिए प्राप्त किया. -1, 0, या 1 होना चाहिए."
+msgstr ""
+"अवैध एसटीपी अवस्था मान %1$d '%2$s' के लिए प्राप्त किया. -1, 0, या 1 होना चाहिए."
 
 #, fuzzy, c-format
 msgid "Invalid URI path '%1$s', try '/system'"
@@ -9545,7 +9588,8 @@ msgid "Invalid address for a USB device"
 msgstr "अवैध पता USB उपकरण के लिए"
 
 #, c-format
-msgid "Invalid address type '%1$s' for the disk '%2$s' with the bus type '%3$s'"
+msgid ""
+"Invalid address type '%1$s' for the disk '%2$s' with the bus type '%3$s'"
 msgstr ""
 
 msgid "Invalid address."
@@ -9576,8 +9620,8 @@ msgstr ""
 #, c-format
 msgid ""
 "Invalid attempt to set network interface host-side IP route and/or address "
-"info on interface of type '%1$s'. This is only supported on interfaces of type "
-"'ethernet'"
+"info on interface of type '%1$s'. This is only supported on interfaces of "
+"type 'ethernet'"
 msgstr ""
 
 msgid "Invalid attempt to set peer IP for guest"
@@ -9644,11 +9688,11 @@ msgstr "अवैध प्रमाणपत्र"
 
 #, c-format
 msgid ""
-"Invalid chain name '%1$s'. Please use a chain name called '%2$s' or any of the "
-"following prefixes: "
+"Invalid chain name '%1$s'. Please use a chain name called '%2$s' or any of "
+"the following prefixes: "
 msgstr ""
-"अवैध शृंखला नाम '%1$s'. शृंखला नाम '%2$s' नामक का प्रयोग करे या निम्नलिखित में से कोई एक "
-"प्रिफिक्स:"
+"अवैध शृंखला नाम '%1$s'. शृंखला नाम '%2$s' नामक का प्रयोग करे या निम्नलिखित में से कोई "
+"एक प्रिफिक्स:"
 
 #, c-format
 msgid "Invalid character '%1$c' in id '%2$s' of network '%3$s'"
@@ -9750,8 +9794,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid drive address of disk %1$s, vz driver supports only bus 0 for SATA and "
-"SCSI bus."
+"Invalid drive address of disk %1$s, vz driver supports only bus 0 for SATA "
+"and SCSI bus."
 msgstr ""
 
 #, c-format
@@ -9765,8 +9809,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid drive address of disk %1$s, vz driver supports only units 0-1 for IDE "
-"bus."
+"Invalid drive address of disk %1$s, vz driver supports only units 0-1 for "
+"IDE bus."
 msgstr ""
 
 #, fuzzy, c-format
@@ -9945,9 +9989,11 @@ msgstr "संजाल '%1$s' में अमान्य मल्टीक�
 
 #, c-format
 msgid ""
-"Invalid netmask '%1$s' for address '%2$s' in network '%3$s' (both must be IPv4)"
+"Invalid netmask '%1$s' for address '%2$s' in network '%3$s' (both must be "
+"IPv4)"
 msgstr ""
-"पता  '%1$s' (दोनों IPv4 होना अनिवार्य है) के लिए संजाल '%2$s' के पास अवैध नेटमास्क '%3$s' है"
+"पता  '%1$s' (दोनों IPv4 होना अनिवार्य है) के लिए संजाल '%2$s' के पास अवैध नेटमास्क "
+"'%3$s' है"
 
 #, fuzzy, c-format
 msgid "Invalid netmask '%1$s' in network '%2$s'"
@@ -9991,7 +10037,8 @@ msgstr "अवैध पोर्ट: %1$s"
 
 #, c-format
 msgid ""
-"Invalid or not yet handled value '%1$s' for VMX entry '%2$s' for device type '%3$s'"
+"Invalid or not yet handled value '%1$s' for VMX entry '%2$s' for device type "
+"'%3$s'"
 msgstr ""
 
 msgid "Invalid parameter"
@@ -10143,11 +10190,12 @@ msgid ""
 "Invalid to specify MAC address '%1$s' in network '%2$s' IPv6 static host "
 "definition"
 msgstr ""
-"अवैध नेटवर्क '%1$s' में आईपीवी 6 स्थिर होस्ट के परिभाषा में मैक पते '%2$s' को निर्दिष्ट करने के "
-"लिए"
+"अवैध नेटवर्क '%1$s' में आईपीवी 6 स्थिर होस्ट के परिभाषा में मैक पते '%2$s' को निर्दिष्ट "
+"करने के लिए"
 
 #, c-format
-msgid "Invalid type '%1$s' requested for parameter '%2$s', actual type is '%3$s'"
+msgid ""
+"Invalid type '%1$s' requested for parameter '%2$s', actual type is '%3$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -10171,8 +10219,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid use of 'floor' on interface with MAC address %1$s - network '%2$s' has "
-"no inbound QoS set"
+"Invalid use of 'floor' on interface with MAC address %1$s - network '%2$s' "
+"has no inbound QoS set"
 msgstr ""
 
 #, c-format
@@ -10196,19 +10244,20 @@ msgid "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'."
 msgstr ""
 
 #, c-format
-msgid "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected UUID"
+msgid ""
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected UUID"
 msgstr ""
 
 #, c-format
 msgid ""
-"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected integer "
-"value"
-msgstr ""
-
-#, c-format
-msgid ""
-"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected long long "
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected "
 "integer value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected long "
+"long integer value"
 msgstr ""
 
 #, c-format
@@ -10224,7 +10273,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"
+msgid ""
+"Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"
 msgstr ""
 
 #, fuzzy, c-format
@@ -10327,7 +10377,8 @@ msgid "JSON backing volume definition '%1$s' lacks driver name"
 msgstr ""
 
 #, c-format
-msgid "JSON backing volume definition '%1$s' must not have nested format drivers"
+msgid ""
+"JSON backing volume definition '%1$s' must not have nested format drivers"
 msgstr ""
 
 msgid "JSON string array contains non-string element"
@@ -10467,7 +10518,8 @@ msgstr "पथ %1$s के लिए Lockspace मौजूद नहीं ह�
 
 #, fuzzy, c-format
 msgid "Lockspace location %1$s exists, but is not a directory"
-msgstr "Lockspace %1$s बनाने में असमर्थ: मूल निर्देशिका मौजूद नहीं है या एक निर्देशिका नहीं है"
+msgstr ""
+"Lockspace %1$s बनाने में असमर्थ: मूल निर्देशिका मौजूद नहीं है या एक निर्देशिका नहीं है"
 
 #, c-format
 msgid "Lockspace path '%1$s' exceeded %2$d characters"
@@ -10554,7 +10606,8 @@ msgstr ""
 #, c-format
 msgid ""
 "Malformed 'uri_aliases' config entry '%1$s', expected 'alias=uri://host/path'"
-msgstr "विरूपित  'uri_aliases' config इंट्री '%1$s', अपेक्षित 'alias=uri://host/path'"
+msgstr ""
+"विरूपित  'uri_aliases' config इंट्री '%1$s', अपेक्षित 'alias=uri://host/path'"
 
 #, c-format
 msgid "Malformed PCI address %1$s"
@@ -10862,7 +10915,8 @@ msgid "Migration failed. Domain is not running on destination host"
 msgstr "ऑफ़लाइन प्रवास गंतव्य होस्ट के द्वारा समर्थित नहीं है"
 
 #, fuzzy, c-format
-msgid "Migration failed. No domain on destination host with matching name '%1$s'"
+msgid ""
+"Migration failed. No domain on destination host with matching name '%1$s'"
 msgstr "नाम '%1$s' से मेल खाते के साथ कोई डोमेन स्नैपशॉट नहीं "
 
 msgid "Migration graphics data already present"
@@ -11344,7 +11398,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Missing or invalid element %1$zu of 'unicast' list in query-rx-filter response"
+"Missing or invalid element %1$zu of 'unicast' list in query-rx-filter "
+"response"
 msgstr ""
 
 #, c-format
@@ -11416,7 +11471,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Missing required dev attribute in <forward> <interface> element of network %1$s"
+"Missing required dev attribute in <forward> <interface> element of network "
+"%1$s"
 msgstr "संजाल %1$s के <forward> <interface> तत्व में गुम आवश्यक dev विशेषता"
 
 #, c-format
@@ -11581,10 +11637,11 @@ msgstr "बहुल IPv4 खंड पाया, --dhcp प्रत्ये�
 
 #, c-format
 msgid ""
-"Multiple USB devices for %1$x:%2$x were found, but none of them is at bus:%3$u "
-"device:%4$u"
+"Multiple USB devices for %1$x:%2$x were found, but none of them is at bus:"
+"%3$u device:%4$u"
 msgstr ""
-"%1$x:%2$x के लिए एकाधिक USB ​​उपकरणों पाया है, लेकिन उनमें से कोई भी बस में नहीं है:%3$uयुक्ति:%4$u"
+"%1$x:%2$x के लिए एकाधिक USB ​​उपकरणों पाया है, लेकिन उनमें से कोई भी बस में नहीं है:"
+"%3$uयुक्ति:%4$u"
 
 #, c-format
 msgid "Multiple USB devices for %1$x:%2$x, use <address> to specify one"
@@ -12421,8 +12478,8 @@ msgstr "'%1$s' आयतन के लिए पूल में पर्या
 
 #, c-format
 msgid ""
-"Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u scope "
-"type '%4$s'"
+"Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u "
+"scope type '%4$s'"
 msgstr ""
 
 #, fuzzy
@@ -12600,7 +12657,8 @@ msgid ""
 msgstr ""
 
 #, fuzzy, c-format
-msgid "Only end address '%1$s' specified in <nat> in <forward> in network '%2$s'"
+msgid ""
+"Only end address '%1$s' specified in <nat> in <forward> in network '%2$s'"
 msgstr "बुरा ipv4 समाप्ति पता %1$s <nat> में <forward> में संजाल '%2$s' में"
 
 msgid "Only file based or volume based filesystems are supported by vz driver."
@@ -12636,7 +12694,8 @@ msgid "Only one <pf> element is allowed in <forward> of network %1$s"
 msgstr "केवल एक <pf> तत्व संजाल %1$s के <forward> में अनुमति दी है"
 
 #, c-format
-msgid "Only one <port> element is allowed in <nat> in <forward> in network %1$s"
+msgid ""
+"Only one <port> element is allowed in <nat> in <forward> in network %1$s"
 msgstr "केवल एक <port> तत्व संजाल %1$s में <forward> में <nat> में अनुमति दी है"
 
 msgid "Only one IPv4 address per interface is allowed"
@@ -12692,7 +12751,8 @@ msgid "Only scsi disk supports vendor and product"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "Only start address '%1$s' specified in <nat> in <forward> in network '%2$s'"
+msgid ""
+"Only start address '%1$s' specified in <nat> in <forward> in network '%2$s'"
 msgstr "बुरा ipv4 शुरू पते '%1$s' को <nat> में <forward> में संजाल '%2$s' में"
 
 #, fuzzy
@@ -12745,8 +12805,8 @@ msgstr "स्थानः"
 
 #, c-format
 msgid ""
-"Option '%1$s' has invalid value for PCI controller with index '%2$d', model '%3$s' "
-"and modelName '%4$s'"
+"Option '%1$s' has invalid value for PCI controller with index '%2$d', model "
+"'%3$s' and modelName '%4$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -12755,8 +12815,8 @@ msgstr "vhost-net इस QEMU द्विपदीय के साथ सम�
 
 #, c-format
 msgid ""
-"Option '%1$s' is not valid for PCI controller with index '%2$d', model '%3$s' and "
-"modelName '%4$s'"
+"Option '%1$s' is not valid for PCI controller with index '%2$d', model "
+"'%3$s' and modelName '%4$s'"
 msgstr ""
 
 #, c-format
@@ -12864,8 +12924,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"PCI controller at index %1$d (0x%2$02x) has bus='0x%3$02x', but index must be "
-"larger than bus"
+"PCI controller at index %1$d (0x%2$02x) has bus='0x%3$02x', but index must "
+"be larger than bus"
 msgstr ""
 
 #, c-format
@@ -12898,8 +12958,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"PCI device %1$04x:%2$02x:%3$02x.%4$x allocated from network %5$s is already in use by "
-"domain %6$s"
+"PCI device %1$04x:%2$02x:%3$02x.%4$x allocated from network %5$s is already "
+"in use by domain %6$s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -12915,7 +12975,9 @@ msgid "PCI device %1$s is not assignable"
 msgstr "PCI युक्ति %1$s आबंटित नहीं है"
 
 #, c-format
-msgid "PCI device '%1$04x:%2$02x:%3$02x.%4$x' can only be listed once in network %5$s"
+msgid ""
+"PCI device '%1$04x:%2$02x:%3$02x.%4$x' can only be listed once in network "
+"%5$s"
 msgstr ""
 
 #, fuzzy
@@ -12995,8 +13057,8 @@ msgstr "पैरेंट"
 
 #, c-format
 msgid ""
-"Parent attribute '%1$s' does not match parent '%2$s' determined for the '%3$s' "
-"wwnn/wwpn lookup."
+"Parent attribute '%1$s' does not match parent '%2$s' determined for the "
+"'%3$s' wwnn/wwpn lookup."
 msgstr ""
 
 #, c-format
@@ -13080,15 +13142,16 @@ msgstr "लंबित प्रश्न वर्चुअल मशीन �
 msgid ""
 "Pending question blocks virtual machine execution, question is '%1$s', "
 "possible answers are %2$s"
-msgstr "लंबित प्रश्न वर्चुअल मशीन को अवरुद्ध करते है ,प्रश्न '%1$s' है , संभावित उतर %2$s है,"
+msgstr ""
+"लंबित प्रश्न वर्चुअल मशीन को अवरुद्ध करते है ,प्रश्न '%1$s' है , संभावित उतर %2$s है,"
 
 #, c-format
 msgid ""
 "Pending question blocks virtual machine execution, question is '%1$s', "
 "possible answers are %2$s, but no default answer is specified"
 msgstr ""
-"लंबित प्रश्न वर्चुअल मशीन को अवरुद्ध करते है ,प्रश्न '%1$s' है , संभावित उतर %2$s है, लेकिन कोई "
-"वर्चुअल उत्तर नहीं निर्दिष्ट है "
+"लंबित प्रश्न वर्चुअल मशीन को अवरुद्ध करते है ,प्रश्न '%1$s' है , संभावित उतर %2$s है, लेकिन "
+"कोई वर्चुअल उत्तर नहीं निर्दिष्ट है "
 
 #, fuzzy
 msgid "Per-node binding is not compatible with automatic NUMA placement."
@@ -13406,28 +13469,31 @@ msgstr ""
 #, c-format
 msgid ""
 "Query parameter 'no_verify' has unexpected value '%1$s' (should be 0 or 1)"
-msgstr "क्वेरी पैरामीटर 'no_verify' का अप्रत्याशित मान '%1$s' (0 या 1 होना चाहिए) है "
+msgstr ""
+"क्वेरी पैरामीटर 'no_verify' का अप्रत्याशित मान '%1$s' (0 या 1 होना चाहिए) है "
 
 #, c-format
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%1$s' (should be (http|"
 "socks(|4|4a|5))"
 msgstr ""
-"क्वेरी पैरामीटर 'proxy' का अप्रत्याशित मान '%1$s' ((http|socks(|4|4a|5) होना चाहिए) "
-"है "
+"क्वेरी पैरामीटर 'proxy' का अप्रत्याशित मान '%1$s' ((http|socks(|4|4a|5) होना "
+"चाहिए) है "
 
 msgid "Query parameter 'proxy' doesn't contain a hostname"
 msgstr "क्वेरी पैरामीटर 'proxy' में hostname समाहित नहीं है"
 
 #, c-format
 msgid ""
-"Query parameter 'proxy' has unexpected port value '%1$s' (should be [1..65535])"
+"Query parameter 'proxy' has unexpected port value '%1$s' (should be "
+"[1..65535])"
 msgstr ""
 "क्वेरी पैरामीटर 'प्रॉक्सी' अप्रत्याशित पोर्ट मान '%1$s' है ([.. 65535 1] होना चाहिए)"
 
 #, c-format
 msgid ""
-"Query parameter 'transport' has unexpected value '%1$s' (should be http|https)"
+"Query parameter 'transport' has unexpected value '%1$s' (should be http|"
+"https)"
 msgstr ""
 "क्वेरी पैरामीटर 'transport' का अप्रत्याशित मान '%1$s' (http|https होना चाहिए) है "
 
@@ -13575,9 +13641,9 @@ msgstr "एक फाइल में सहेजे स्थिति मे�
 
 #, c-format
 msgid ""
-"Requested TSC frequency %1$llu Hz is outside tolerance range ([%2$llu, %3$llu] Hz) "
-"around host frequency %4$llu Hz and TSC scaling is not supported by the host "
-"CPU"
+"Requested TSC frequency %1$llu Hz is outside tolerance range ([%2$llu, "
+"%3$llu] Hz) around host frequency %4$llu Hz and TSC scaling is not supported "
+"by the host CPU"
 msgstr ""
 
 #, c-format
@@ -13585,10 +13651,11 @@ msgid "Requested data len %1$llu is larger than maximum %2$d"
 msgstr ""
 
 #, c-format
-msgid "Requested device '%1$s' is locked by lock file '%2$s' held by process %3$lld"
+msgid ""
+"Requested device '%1$s' is locked by lock file '%2$s' held by process %3$lld"
 msgstr ""
-"निवेदित युक्ति '%1$s' लॉक फ़ाइल '%2$s' में, %3$lld प्रक्रिया से, आयोजित द्वारा बंद कर दिया "
-"गया है"
+"निवेदित युक्ति '%1$s' लॉक फ़ाइल '%2$s' में, %3$lld प्रक्रिया से, आयोजित द्वारा बंद कर "
+"दिया गया है"
 
 msgid "Requested metadata element is not present"
 msgstr "अनुरोधित metadata तत्व मौजूद नहीं है"
@@ -13617,13 +13684,14 @@ msgstr "निवेदित क्रिया वैध नहीं है: 
 
 #, c-format
 msgid ""
-"Required option '%1$s' is not set for PCI controller with index '%2$d', model "
-"'%3$s' and modelName '%4$s'"
+"Required option '%1$s' is not set for PCI controller with index '%2$d', "
+"model '%3$s' and modelName '%4$s'"
 msgstr ""
 
 #, c-format
 msgid ""
-"Resctrl ID must be set before determining resctrl parentpath='%1$s' prefix='%2$s'"
+"Resctrl ID must be set before determining resctrl parentpath='%1$s' "
+"prefix='%2$s'"
 msgstr ""
 
 #, c-format
@@ -13924,20 +13992,20 @@ msgstr ""
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by a "
-"SCSI disk"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by a SCSI disk"
 msgstr ""
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by "
-"another SCSI disk"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by another SCSI disk"
 msgstr ""
 
 #, c-format
 msgid ""
-"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in use by "
-"another SCSI host device"
+"SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
+"use by another SCSI host device"
 msgstr ""
 
 #, fuzzy
@@ -13980,8 +14048,11 @@ msgid "SMM TSEG size must be divisible by 1 MiB"
 msgstr ""
 
 #, c-format
-msgid "SOAP fault during %1$s: code '%2$s', subcode '%3$s', reason '%4$s', detail '%5$s'"
-msgstr "SOAP दोष %1$s के दौरान: कोड '%2$s',सबकोड '%3$s',कारण  '%4$s',विवरण '%5$s'"
+msgid ""
+"SOAP fault during %1$s: code '%2$s', subcode '%3$s', reason '%4$s', detail "
+"'%5$s'"
+msgstr ""
+"SOAP दोष %1$s के दौरान: कोड '%2$s',सबकोड '%3$s',कारण  '%4$s',विवरण '%5$s'"
 
 msgid "SSH Agent did not provide any authentication identity"
 msgstr ""
@@ -14043,7 +14114,8 @@ msgid "Saved image %1$s XML configuration not changed.\n"
 msgstr "डोमेन %1$s XML विन्यास नहीं बदला.\n"
 
 #, c-format
-msgid "Scaled numeric value '%1$s' for <%2$s> option is malformed or out of range"
+msgid ""
+"Scaled numeric value '%1$s' for <%2$s> option is malformed or out of range"
 msgstr ""
 
 #, c-format
@@ -14462,7 +14534,8 @@ msgstr "CPU ट्यूनिंग इस होस्ट पर उपलब�
 
 #, c-format
 msgid ""
-"Size of SMM TSEG size differs: source: '%1$llu %2$s', destination: '%3$llu %4$s'"
+"Size of SMM TSEG size differs: source: '%1$llu %2$s', destination: '%3$llu "
+"%4$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -14682,11 +14755,13 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "State of KVM feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
+msgid ""
+"State of KVM feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
 msgstr ""
 
 #, c-format
-msgid "State of Xen feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
+msgid ""
+"State of Xen feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
 msgstr ""
 
 #, c-format
@@ -14695,21 +14770,25 @@ msgstr ""
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s', destination: '%5$s,%6$s=%7$s'"
+"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s', destination: "
+"'%5$s,%6$s=%7$s'"
 msgstr ""
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s,%5$s=%6$llu', destination: '%7$s,"
-"%8$s=%9$s,%10$s=%11$llu'"
+"State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s,%5$s=%6$llu', "
+"destination: '%7$s,%8$s=%9$s,%10$s=%11$llu'"
 msgstr ""
 
 #, c-format
-msgid "State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s=%5$s'"
+msgid ""
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
+"%5$s'"
 msgstr ""
 
 #, c-format
-msgid "State of vCPU '%1$zu' differs between source and destination definitions"
+msgid ""
+"State of vCPU '%1$zu' differs between source and destination definitions"
 msgstr ""
 
 msgid "State:"
@@ -14810,7 +14889,8 @@ msgid "Storage volume not found: %1$s"
 msgstr "भंडारण आयतन नहीं मिला: %1$s"
 
 #, c-format
-msgid "Stream data too long to send (%1$zu bytes needed, %2$zu bytes available)"
+msgid ""
+"Stream data too long to send (%1$zu bytes needed, %2$zu bytes available)"
 msgstr ""
 
 msgid "Stream has untransferred data left"
@@ -15059,12 +15139,14 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid ""
-"Target NVDIMM alignment '%1$llu' doesn't match source NVDIMM alignment '%2$llu'"
+"Target NVDIMM alignment '%1$llu' doesn't match source NVDIMM alignment "
+"'%2$llu'"
 msgstr "लक्ष्य डोमेन नाम  '%s' का मेल स्रोत '%s' से नहीं है"
 
 #, fuzzy, c-format
 msgid ""
-"Target NVDIMM label size '%1$llu' doesn't match source NVDIMM label size '%2$llu'"
+"Target NVDIMM label size '%1$llu' doesn't match source NVDIMM label size "
+"'%2$llu'"
 msgstr "लक्ष्य RNG मॉडल को '%s' से मेल नहीं खाता स्रोत '%s'"
 
 #, fuzzy
@@ -15110,7 +15192,8 @@ msgid "Target USB product ID does not match source"
 msgstr "लक्ष्य USB उत्पाद स्रोत आईडी से मेल नहीं खाता है"
 
 #, c-format
-msgid "Target USB redirection filter rule count %1$zu does not match source %2$zu"
+msgid ""
+"Target USB redirection filter rule count %1$zu does not match source %2$zu"
 msgstr "लक्ष्य CPU पुनर्दिशा फिल्टर नियम गणना %1$zu स्रोत %2$zu से मेल नहीं खाता है"
 
 msgid "Target USB vendor ID does not match source"
@@ -15127,13 +15210,14 @@ msgstr "लक्ष्य पहले से मौजूद है"
 
 #, fuzzy, c-format
 msgid ""
-"Target balloon autodeflate attribute value '%1$s' does not match source '%2$s'"
+"Target balloon autodeflate attribute value '%1$s' does not match source "
+"'%2$s'"
 msgstr "लक्ष्य बैलून मॉडल %1$s का मेल स्रोत %2$s से नहीं है"
 
 #, c-format
 msgid ""
-"Target balloon freePageReporting attribute value '%1$s' does not match source "
-"'%2$s'"
+"Target balloon freePageReporting attribute value '%1$s' does not match "
+"source '%2$s'"
 msgstr ""
 
 #, c-format
@@ -15186,8 +15270,8 @@ msgstr "लक्ष्य नियंत्रक सदिश %1$d का म
 
 #, c-format
 msgid ""
-"Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source %5$04x:%6$02x:"
-"%7$02x.%8$d"
+"Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
+"%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
 
 #, c-format
@@ -15211,7 +15295,9 @@ msgid "Target device dimm slot %1$u does not match source %2$u"
 msgstr "लक्ष्य होस्ट युक्ति मोड %s का मेल स्रोत %s से नहीं है"
 
 #, c-format
-msgid "Target device drive address %1$d:%2$d:%3$d does not match source %4$d:%5$d:%6$d"
+msgid ""
+"Target device drive address %1$d:%2$d:%3$d does not match source %4$d:%5$d:"
+"%6$d"
 msgstr "लक्ष्य युक्ति ड्राइव पता %1$d:%2$d:%3$d का मेल स्रोत %4$d:%5$d:%6$d से नहीं है"
 
 #, fuzzy, c-format
@@ -15235,8 +15321,10 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Target device virtio serial address %1$d:%2$d:%3$d does not match source %4$d:%5$d:%6$d"
-msgstr "लक्ष्य युक्ति virtio क्रम पता %1$d:%2$d:%3$d का मेल स्रोत %4$d:%5$d:%6$d से नहीं है"
+"Target device virtio serial address %1$d:%2$d:%3$d does not match source "
+"%4$d:%5$d:%6$d"
+msgstr ""
+"लक्ष्य युक्ति virtio क्रम पता %1$d:%2$d:%3$d का मेल स्रोत %4$d:%5$d:%6$d से नहीं है"
 
 #, c-format
 msgid "Target disk %1$s does not match source %2$s"
@@ -15283,7 +15371,8 @@ msgid ""
 msgstr ""
 
 #, fuzzy, c-format
-msgid "Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
 msgstr "लक्ष्य डोमेन नाम  '%1$s' का मेल स्रोत '%2$s' से नहीं है"
 
 #, fuzzy
@@ -15291,7 +15380,8 @@ msgid "Target domain IOMMU device count does not match source"
 msgstr "लक्ष्य डोमेन हब के युक्ति गणना %zu स्रोत %zu से मेल नहीं खाता"
 
 #, fuzzy, c-format
-msgid "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
 msgstr "लक्ष्य डोमेन नाम  '%1$s' का मेल स्रोत '%2$s' से नहीं है"
 
 #, fuzzy, c-format
@@ -15300,7 +15390,8 @@ msgid ""
 msgstr "लक्ष्य डोमेन नाम  '%1$s' का मेल स्रोत '%2$s' से नहीं है"
 
 #, fuzzy, c-format
-msgid "Target domain IOMMU device iotlb value '%1$s' does not match source '%2$s'"
+msgid ""
+"Target domain IOMMU device iotlb value '%1$s' does not match source '%2$s'"
 msgstr "लक्ष्य डोमेन नाम  '%1$s' का मेल स्रोत '%2$s' से नहीं है"
 
 #, fuzzy, c-format
@@ -15324,7 +15415,8 @@ msgid "Target domain TPM device count %1$zu does not match source %2$zu"
 msgstr ""
 
 #, c-format
-msgid "Target domain USB redirection filter count %1$d does not match source %2$d"
+msgid ""
+"Target domain USB redirection filter count %1$d does not match source %2$d"
 msgstr "लक्ष्य डोमेन यूएसबी पुनर्निदेशन फिल्टर गणना %1$d स्रोत %2$d से मेल नहीं खाता है"
 
 #, c-format
@@ -15411,7 +15503,8 @@ msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr "लक्ष्य डोमेन समानांतर पोर्ट गणना %1$zu का मेल स्रोत %2$zu से नहीं है"
 
 #, fuzzy, c-format
-msgid "Target domain redirected devices count %1$zu does not match source %2$zu"
+msgid ""
+"Target domain redirected devices count %1$zu does not match source %2$zu"
 msgstr "लक्ष्य डोमेन इनपुट डिवाइस गणना %1$zu स्रोत %2$zu से मेल नहीं खाता"
 
 #, fuzzy
@@ -15423,7 +15516,8 @@ msgid "Target domain serial port count %1$zu does not match source %2$zu"
 msgstr "लक्ष्य डोमेन क्रम पोर्ट गणना %1$zu का मेल स्रोत %2$zu से नहीं है"
 
 #, fuzzy, c-format
-msgid "Target domain shared memory device count %1$zu does not match source %2$zu"
+msgid ""
+"Target domain shared memory device count %1$zu does not match source %2$zu"
 msgstr "लक्ष्य डोमेन होस्ट के युक्ति गणना %1$zu स्रोत %2$zu से मेल नहीं खाता"
 
 #, c-format
@@ -15574,8 +15668,8 @@ msgstr "लक्ष्य इनपुट युक्ति बस %1$s का
 
 #, fuzzy, c-format
 msgid ""
-"Target redirected device source type %1$s does not match source device source "
-"type %2$s"
+"Target redirected device source type %1$s does not match source device "
+"source type %2$s"
 msgstr "लक्ष्य इनपुट युक्ति प्रकार %1$s का मेल स्रोत %2$s से नहीं है"
 
 #, c-format
@@ -15713,7 +15807,8 @@ msgstr "%1$s इस QEMU द्विपदीय में समर्थि�
 
 #, fuzzy, c-format
 msgid ""
-"The '%1$s' feature is not supported for architecture '%2$s' or machine type '%3$s'"
+"The '%1$s' feature is not supported for architecture '%2$s' or machine type "
+"'%3$s'"
 msgstr "लिपियों प्रकार %s के अंतराफलक पर समर्थित नहीं है"
 
 #, c-format
@@ -15742,7 +15837,8 @@ msgstr ""
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
 "%1$s"
-msgstr "<nat> तत्व केवल <forward> 'मोड' संजाल %1$s में 'नेट' जब इस्तेमाल किया जा सकता है"
+msgstr ""
+"<nat> तत्व केवल <forward> 'मोड' संजाल %1$s में 'नेट' जब इस्तेमाल किया जा सकता है"
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
@@ -15807,12 +15903,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The certificate %1$s basic constraints show a CA, but we need one for a client"
+"The certificate %1$s basic constraints show a CA, but we need one for a "
+"client"
 msgstr ""
 
 #, c-format
 msgid ""
-"The certificate %1$s basic constraints show a CA, but we need one for a server"
+"The certificate %1$s basic constraints show a CA, but we need one for a "
+"server"
 msgstr ""
 
 #, c-format
@@ -15848,13 +15946,14 @@ msgstr "बहुत लंबा संजाल युक्ति नाम"
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s cannot be plugged into the PCI controller with "
-"index='%2$d'. It requires a controller that accepts a %3$s."
+"The device at PCI address %1$s cannot be plugged into the PCI controller "
+"with index='%2$d'. It requires a controller that accepts a %3$s."
 msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags 0x"
+"%2$.2x"
 msgstr ""
 
 #, c-format
@@ -16726,8 +16825,8 @@ msgstr "लोक स्थिति %1$s विश्लेषण में अ
 
 #, c-format
 msgid ""
-"Unable to configure VF %1$d of PF '%2$s' because the PF is not online. Please "
-"change host network config to put the PF online."
+"Unable to configure VF %1$d of PF '%2$s' because the PF is not online. "
+"Please change host network config to put the PF online."
 msgstr ""
 
 msgid "Unable to configure libxl's memory management parameters"
@@ -16831,7 +16930,8 @@ msgstr "lockspace %1$s बनाने में असमर्थ"
 msgid ""
 "Unable to create lockspace %1$s: parent directory does not exist or is not a "
 "directory"
-msgstr "Lockspace %1$s बनाने में असमर्थ: मूल निर्देशिका मौजूद नहीं है या एक निर्देशिका नहीं है"
+msgstr ""
+"Lockspace %1$s बनाने में असमर्थ: मूल निर्देशिका मौजूद नहीं है या एक निर्देशिका नहीं है"
 
 #, fuzzy
 msgid "Unable to create media registry"
@@ -19669,8 +19769,8 @@ msgstr "VCPU:"
 
 #, c-format
 msgid ""
-"VF %1$d of PF '%2$s' is not bound to a net driver, so its MAC address cannot be "
-"set to %3$s"
+"VF %1$d of PF '%2$s' is not bound to a net driver, so its MAC address cannot "
+"be set to %3$s"
 msgstr ""
 
 #, c-format
@@ -20107,8 +20207,8 @@ msgid ""
 "active qemu domains require external disk snapshots; disk %1$s requested "
 "internal"
 msgstr ""
-"सक्रिय qemu डोमेन को बाहरी डिस्क स्नैपशॉट की आवश्यकता होती है, डिस्क %1$s आंतरिक अनुरोध "
-"किया"
+"सक्रिय qemu डोमेन को बाहरी डिस्क स्नैपशॉट की आवश्यकता होती है, डिस्क %1$s आंतरिक "
+"अनुरोध किया"
 
 #, fuzzy
 msgid "adapter name to be used for underlying storage"
@@ -20318,7 +20418,8 @@ msgid "architecture"
 msgstr "अज्ञात आर्किटेक्चर %s"
 
 #, fuzzy, c-format
-msgid "architecture from emulator '%1$s' doesn't match given architecture '%2$s'"
+msgid ""
+"architecture from emulator '%1$s' doesn't match given architecture '%2$s'"
 msgstr "लक्ष्य डोमेन नाम  '%1$s' का मेल स्रोत '%2$s' से नहीं है"
 
 #, c-format
@@ -20349,11 +20450,13 @@ msgid "arguments to echo"
 msgstr ""
 
 #, c-format
-msgid "array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo 'disk' data"
+msgid ""
+"array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo 'disk' data"
 msgstr ""
 
 #, c-format
-msgid "array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo return data"
+msgid ""
+"array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo return data"
 msgstr ""
 
 msgid "array element missing in guest-get-disks return value"
@@ -20422,11 +20525,13 @@ msgstr ""
 
 #, c-format
 msgid ""
-"attempt to merge virtualports with mismatched interfaceids ('%1$s' and '%2$s')"
+"attempt to merge virtualports with mismatched interfaceids ('%1$s' and "
+"'%2$s')"
 msgstr ""
 
 #, c-format
-msgid "attempt to merge virtualports with mismatched managerids (%1$d and %2$d)"
+msgid ""
+"attempt to merge virtualports with mismatched managerids (%1$d and %2$d)"
 msgstr ""
 
 #, c-format
@@ -20625,8 +20730,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"bandwidth %1$llu is greater than %2$lu which is the maximum value supported by "
-"this API"
+"bandwidth %1$llu is greater than %2$lu which is the maximum value supported "
+"by this API"
 msgstr ""
 
 #, fuzzy, c-format
@@ -20899,7 +21004,8 @@ msgid "bridge interface stp should be on or off got %1$s"
 msgstr "ब्रिज अंतरफलक stp को चालू या बंद रखना चाहिए %1$s"
 
 #, fuzzy, c-format
-msgid "bridge macTableManager setting not allowed in %1$s mode (network '%2$s')"
+msgid ""
+"bridge macTableManager setting not allowed in %1$s mode (network '%2$s')"
 msgstr "'%1$s' मोड (संजाल '%2$s') में पूल नाम स्वीकार्य नहीं है)"
 
 #, c-format
@@ -21151,7 +21257,8 @@ msgstr "स्थिति परिवर्तन लॉक पा नही�
 
 #, fuzzy, c-format
 msgid ""
-"cannot acquire state change lock (held by monitor=%1$s) due to max_queued limit"
+"cannot acquire state change lock (held by monitor=%1$s) due to max_queued "
+"limit"
 msgstr "स्थिति परिवर्तन लॉक पा नहीं सकता है max_queued सीमा के कारण"
 
 msgid "cannot acquire state change lock due to max_queued limit"
@@ -21201,7 +21308,8 @@ msgid "cannot change between disk only and full system in snapshot %1$s"
 msgstr "स्नैपशॉट %1$s में ऑनलाइन और ऑफलाइन स्नैपशॉट स्थिति के बीच परिवर्तित नहीं कर सकता"
 
 #, c-format
-msgid "cannot change between online and offline snapshot state in snapshot %1$s"
+msgid ""
+"cannot change between online and offline snapshot state in snapshot %1$s"
 msgstr "स्नैपशॉट %1$s में ऑनलाइन और ऑफलाइन स्नैपशॉट स्थिति के बीच परिवर्तित नहीं कर सकता"
 
 #, c-format
@@ -21654,7 +21762,8 @@ msgid "cannot generate dac user and group id for domain %1$s"
 msgstr "instanceid के लिए क्रमहीन uuid उत्पन्न नहीं कर सकता है"
 
 #, fuzzy, c-format
-msgid "cannot generate external snapshot name for disk '%1$s' on a '%2$s' device"
+msgid ""
+"cannot generate external snapshot name for disk '%1$s' on a '%2$s' device"
 msgstr "बिना स्रोत के डिस्क '%s' के लिए बाहरी स्नैपशॉट नाम उत्पन्न नहीं कर सका "
 
 #, c-format
@@ -21766,20 +21875,20 @@ msgstr "अस्थायी डोमेन स्नैपशॉट को �
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x.%5$d - "
-"controller not found"
+"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
+"%5$d - controller not found"
 msgstr ""
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x.%5$d - not "
-"allowed by controller"
+"cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
+"%5$d - not allowed by controller"
 msgstr ""
 
 #, c-format
 msgid ""
-"cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:%3$02x:"
-"%4$02x.%5$d"
+"cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:"
+"%3$02x:%4$02x.%5$d"
 msgstr ""
 
 #, c-format
@@ -22342,11 +22451,11 @@ msgstr "ड्राइवर लिंक %1$s हल कर नहीं स�
 
 #, c-format
 msgid ""
-"cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain '%3$s' "
-"uuid %4$s"
+"cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain "
+"'%3$s' uuid %4$s"
 msgstr ""
-"किसी फ़ाइल से डोमेन '%1$s' uuid %2$s को पुनर्स्थापित नहीं कर सकता जो डोमेन '%3$s' uuid %4$s "
-"से संबंधित है"
+"किसी फ़ाइल से डोमेन '%1$s' uuid %2$s को पुनर्स्थापित नहीं कर सकता जो डोमेन '%3$s' "
+"uuid %4$s से संबंधित है"
 
 #, fuzzy
 msgid "cannot restore domain snapshot for running domain"
@@ -23555,7 +23664,8 @@ msgid ""
 "couldn't find a portgroup entry in network '%1$s' matching <portgroup "
 "name='%2$s'>"
 msgstr ""
-"संजाल '%1$s' के मिलान <portgroup name='%2$s'> में एक portgroup प्रवेश नहीं मिल सकता है"
+"संजाल '%1$s' के मिलान <portgroup name='%2$s'> में एक portgroup प्रवेश नहीं मिल सकता "
+"है"
 
 #, c-format
 msgid ""
@@ -23602,8 +23712,8 @@ msgstr "संजाल '%1$s' में dhcp मेल खाता परि�
 
 #, fuzzy, c-format
 msgid ""
-"couldn't locate an existing dhcp host entry with \"mac='%1$s'\" \"name='%2$s'\" "
-"\"ip='%3$s'\" in network '%4$s'"
+"couldn't locate an existing dhcp host entry with \"mac='%1$s'\" "
+"\"name='%2$s'\" \"ip='%3$s'\" in network '%4$s'"
 msgstr "मेल खाता dhcp मेजबान प्रविष्टि '%s' संजाल में है"
 
 #, c-format
@@ -23615,11 +23725,12 @@ msgid ""
 "couldn't update dhcp host entry - no <ip> element found at index %1$d in "
 "network '%2$s'"
 msgstr ""
-"dhcp मेजबान प्रविष्टि को अद्यतन नहीं कर सका - no <ip> तत्व सूची %1$d '%2$s' संजाल में नहीं "
-"मिला"
+"dhcp मेजबान प्रविष्टि को अद्यतन नहीं कर सका - no <ip> तत्व सूची %1$d '%2$s' संजाल में "
+"नहीं मिला"
 
 #, c-format
-msgid "couldn't update dhcp host entry - no <ip> element found in network '%1$s'"
+msgid ""
+"couldn't update dhcp host entry - no <ip> element found in network '%1$s'"
 msgstr ""
 "dhcp मेजबान प्रविष्टि नहीं अद्यतन कर सका - no <ip> संजाल '%1$s' में कोई तत्व नहीं मिला"
 
@@ -23752,20 +23863,24 @@ msgstr ""
 
 #, c-format
 msgid ""
-"curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned an error: %1$s (%2$d) : %3$s"
-msgstr "curl_easy_getinfo(CURLINFO_REDIRECT_URL) त्रुटि के साथ लौटा: %1$s (%2$d) : %3$s"
+"curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned an error: %1$s (%2$d) : "
+"%3$s"
+msgstr ""
+"curl_easy_getinfo(CURLINFO_REDIRECT_URL) त्रुटि के साथ लौटा: %1$s (%2$d) : %3$s"
 
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned a negative response code"
 msgstr "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) ऋणात्मक अनुक्रिया कोड लौटाया"
 
 #, c-format
-msgid "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"
+msgid ""
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"
 msgstr ""
 
 #, c-format
 msgid ""
-"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d) : %3$s"
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d) : "
+"%3$s"
 msgstr ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) त्रुटि के साथ लौटा: %1$s (%2$d) : %3$s"
 
@@ -24064,8 +24179,8 @@ msgstr "%1$s युक्ति कोई PCI युक्ति नहीं �
 #, fuzzy, c-format
 msgid "device '%1$s' in network '%2$s' is not an SR-IOV Virtual Function"
 msgstr ""
-"<virtualport type='%1$s'> संजाल '%2$s' को पीसीआई पासथ्रू के माध्यम से एक SR-IOV आभासी "
-"समारोह का उपयोग करता है, जिसके लिए समर्थित नहीं."
+"<virtualport type='%1$s'> संजाल '%2$s' को पीसीआई पासथ्रू के माध्यम से एक SR-IOV "
+"आभासी समारोह का उपयोग करता है, जिसके लिए समर्थित नहीं."
 
 #, fuzzy, c-format
 msgid "device API '%1$s' not supported yet"
@@ -24180,7 +24295,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"dirty ring size of KVM feature '%1$s' differs: source: '%2$d', destination: '%3$d'"
+"dirty ring size of KVM feature '%1$s' differs: source: '%2$d', destination: "
+"'%3$d'"
 msgstr ""
 
 msgid "dirty-ring calculation mode requires dirty-ring feature enabled."
@@ -25223,7 +25339,8 @@ msgid "event '%1$s' for storage pool %2$s\n"
 msgstr "अज्ञात भंडार फूल प्रकार %s"
 
 #, c-format
-msgid "event 'agent-lifecycle' for domain '%1$s': state: '%2$s' reason: '%3$s'\n"
+msgid ""
+"event 'agent-lifecycle' for domain '%1$s': state: '%2$s' reason: '%3$s'\n"
 msgstr ""
 
 #, c-format
@@ -25231,7 +25348,8 @@ msgid "event 'balloon-change' for domain '%1$s': %2$lluKiB\n"
 msgstr ""
 
 #, c-format
-msgid "event 'block-threshold' for domain '%1$s': dev: %2$s(%3$s) %4$llu %5$llu\n"
+msgid ""
+"event 'block-threshold' for domain '%1$s': dev: %2$s(%3$s) %4$llu %5$llu\n"
 msgstr ""
 
 #, c-format
@@ -25252,7 +25370,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"event 'graphics' for domain '%1$s': %2$s local[%3$s %4$s %5$s] remote[%6$s %7$s %8$s] %9$s\n"
+"event 'graphics' for domain '%1$s': %2$s local[%3$s %4$s %5$s] remote[%6$s "
+"%7$s %8$s] %9$s\n"
 msgstr ""
 
 #, c-format
@@ -25260,7 +25379,8 @@ msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
+msgid ""
+"event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
 msgstr ""
 
 #, c-format
@@ -25485,8 +25605,8 @@ msgstr "%d बाह्य डिस्क स्नैपशॉट्स का
 
 #, c-format
 msgid ""
-"external inactive snapshots are not supported on 'network' disks using '%1$s' "
-"protocol"
+"external inactive snapshots are not supported on 'network' disks using "
+"'%1$s' protocol"
 msgstr ""
 
 msgid "external memory snapshots require a filename"
@@ -25494,9 +25614,10 @@ msgstr "बाह्य स्मृति स्नैपशॉट एक फ�
 
 #, c-format
 msgid ""
-"external snapshot file for disk %1$s already exists and is not a block device: "
-"%2$s"
-msgstr "डिस्क %1$s के लिए बाहरी स्नैपशॉट फ़ाइल पहले से मौजूद और एक ब्लॉक युक्ति नहीं:  %2$s"
+"external snapshot file for disk %1$s already exists and is not a block "
+"device: %2$s"
+msgstr ""
+"डिस्क %1$s के लिए बाहरी स्नैपशॉट फ़ाइल पहले से मौजूद और एक ब्लॉक युक्ति नहीं:  %2$s"
 
 #, c-format
 msgid "external snapshot format for disk %1$s is unsupported: %2$s"
@@ -27137,8 +27258,8 @@ msgstr "अंतःस्थित भंडार के लिए लक्�
 
 #, c-format
 msgid ""
-"format of backing image '%1$s' of image '%2$s' was not specified in the image "
-"metadata (See https://libvirt.org/kbase/backing_chains.html for "
+"format of backing image '%1$s' of image '%2$s' was not specified in the "
+"image metadata (See https://libvirt.org/kbase/backing_chains.html for "
 "troubleshooting)"
 msgstr ""
 
@@ -27313,11 +27434,13 @@ msgid "got unknown HTTP error code %1$s"
 msgstr "अज्ञात टाइमर मोड '%1$s'"
 
 #, c-format
-msgid "got wrong number of IOThread ids from QEMU monitor. got %1$d, wanted %2$d"
+msgid ""
+"got wrong number of IOThread ids from QEMU monitor. got %1$d, wanted %2$d"
 msgstr ""
 
 #, c-format
-msgid "got wrong number of IOThread pids from QEMU monitor. got %1$d, wanted %2$zu"
+msgid ""
+"got wrong number of IOThread pids from QEMU monitor. got %1$d, wanted %2$zu"
 msgstr ""
 
 msgid "gracefully shutdown a domain"
@@ -27371,8 +27494,8 @@ msgstr "मेजबान CPU सख्ती अतिथि सीपीय�
 
 #, c-format
 msgid ""
-"guest CPU doesn't match specification: extra features: %1$s, missing features: "
-"%2$s"
+"guest CPU doesn't match specification: extra features: %1$s, missing "
+"features: %2$s"
 msgstr ""
 
 #, c-format
@@ -27728,7 +27851,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"if using CPU maximum physical address mode='%1$s', bits= must be specified too"
+"if using CPU maximum physical address mode='%1$s', bits= must be specified "
+"too"
 msgstr ""
 
 #, c-format
@@ -27937,7 +28061,8 @@ msgstr "लिपियों प्रकार %s के अंतराफल
 
 #, fuzzy, c-format
 msgid ""
-"interface %1$s - filterref is not supported for network interfaces of type %2$s"
+"interface %1$s - filterref is not supported for network interfaces of type "
+"%2$s"
 msgstr "लिपियों प्रकार %s के अंतराफलक पर समर्थित नहीं है"
 
 #, fuzzy, c-format
@@ -27948,7 +28073,8 @@ msgstr "लिपियों प्रकार %s के अंतराफल
 
 #, fuzzy, c-format
 msgid ""
-"interface %1$s - multiqueue is not supported for network interfaces of type %2$s"
+"interface %1$s - multiqueue is not supported for network interfaces of type "
+"%2$s"
 msgstr "लिपियों प्रकार %s के अंतराफलक पर समर्थित नहीं है"
 
 #, c-format
@@ -28064,8 +28190,8 @@ msgstr "%d बाह्य डिस्क स्नैपशॉट्स का
 
 #, c-format
 msgid ""
-"internal inactive snapshots are not supported on 'network' disks using '%1$s' "
-"protocol"
+"internal inactive snapshots are not supported on 'network' disks using "
+"'%1$s' protocol"
 msgstr ""
 
 msgid "internal parse requested with NULL current"
@@ -28097,8 +28223,8 @@ msgstr "invalid \"trunk='%1$s'\" in <vlan> - जरूर हाँ या न�
 
 #, c-format
 msgid ""
-"invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than one "
-"vlan tag"
+"invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than "
+"one vlan tag"
 msgstr ""
 "अवैध \"trunk='%1$s'\" in <vlan> - trunk='yes' एक से अधिक vlan टैग के लिए जरूरी है"
 
@@ -28334,7 +28460,8 @@ msgstr "संजाल %s के DNS TXT रिकॉर्ड में ला
 
 #, fuzzy, c-format
 msgid ""
-"invalid character in service attribute '%1$s' in DNS SRV record of network '%2$s'"
+"invalid character in service attribute '%1$s' in DNS SRV record of network "
+"'%2$s'"
 msgstr "संजाल %s के DNS TXT रिकॉर्ड में लापता आवश्यक नाम विशेषता"
 
 msgid "invalid cipher size for TLS session"
@@ -28522,7 +28649,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"invalid mac address '%1$s' in 'unicast-table' array in query-rx-filter response"
+"invalid mac address '%1$s' in 'unicast-table' array in query-rx-filter "
+"response"
 msgstr ""
 
 #, fuzzy, c-format
@@ -30002,7 +30130,8 @@ msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
 msgstr ""
 
 #, c-format
-msgid "memory device slot '%1$u' is already being used by another memory device"
+msgid ""
+"memory device slot '%1$u' is already being used by another memory device"
 msgstr ""
 
 msgid "memory device target node"
@@ -30958,8 +31087,10 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid ""
-"missing required protocol attribute in DNS SRV record '%1$s' of network '%2$s'"
-msgstr "'%1$s' संजाल %2$s के नाम पर रखा गया DNS TXT रिकॉर्ड में लापता अपेक्षित मूल्य विशेषता"
+"missing required protocol attribute in DNS SRV record '%1$s' of network "
+"'%2$s'"
+msgstr ""
+"'%1$s' संजाल %2$s के नाम पर रखा गया DNS TXT रिकॉर्ड में लापता अपेक्षित मूल्य विशेषता"
 
 #, fuzzy, c-format
 msgid "missing required service attribute in DNS SRV record of network '%1$s'"
@@ -30967,8 +31098,10 @@ msgstr "संजाल %1$s के DNS TXT रिकॉर्ड में ल�
 
 #, c-format
 msgid ""
-"missing required value attribute in DNS TXT record named '%1$s' of network %2$s"
-msgstr "'%1$s' संजाल %2$s के नाम पर रखा गया DNS TXT रिकॉर्ड में लापता अपेक्षित मूल्य विशेषता"
+"missing required value attribute in DNS TXT record named '%1$s' of network "
+"%2$s"
+msgstr ""
+"'%1$s' संजाल %2$s के नाम पर रखा गया DNS TXT रिकॉर्ड में लापता अपेक्षित मूल्य विशेषता"
 
 msgid "missing required virtualport type"
 msgstr "अनुपस्थित के लिए virtualport प्रकार जरूरी"
@@ -31319,7 +31452,8 @@ msgid "multidevs is not supported with this QEMU binary"
 msgstr "SATA इस QEMU द्विपदीय के साथ समर्थित नहीं है"
 
 #, fuzzy, c-format
-msgid "multiple <portgroup> elements with the same name (%1$s) in network '%2$s'"
+msgid ""
+"multiple <portgroup> elements with the same name (%1$s) in network '%2$s'"
 msgstr "संजाल '%s' में एक IPv6 तत्व में असमर्थित <tftp> तत्व"
 
 #, c-format
@@ -31510,8 +31644,8 @@ msgstr "संजाल '%1$s' dev='%2$s' डोमेन द्वारा प
 
 #, c-format
 msgid ""
-"network '%1$s' claims the PCI device at domain=%2$d bus=%3$d slot=%4$d function=%5$d "
-"is already in use by a different network port"
+"network '%1$s' claims the PCI device at domain=%2$d bus=%3$d slot=%4$d "
+"function=%5$d is already in use by a different network port"
 msgstr ""
 
 #, c-format
@@ -31519,12 +31653,15 @@ msgid "network '%1$s' does not have a bridge name."
 msgstr "संजाल '%1$s' के पास एक ब्रिज नाम नहीं है"
 
 #, fuzzy, c-format
-msgid "network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by domain"
+msgid ""
+"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by "
+"domain"
 msgstr "संजाल '%s' dev='%s' डोमेन द्वारा प्रयोग में नहीं है"
 
 #, fuzzy, c-format
 msgid ""
-"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by network port"
+"network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by "
+"network port"
 msgstr "संजाल '%s' dev='%s' डोमेन द्वारा प्रयोग में नहीं है"
 
 #, fuzzy, c-format
@@ -31545,17 +31682,18 @@ msgstr "ब्रिज '%1$s' एक अवैध netmask या आईपी �
 
 #, c-format
 msgid ""
-"network '%1$s' has forward mode '%2$s'  but lists a device by PCI address in the "
-"device pool. This is only supported for networks with forward mode 'hostdev'"
+"network '%1$s' has forward mode '%2$s' but lists a device by PCI address in "
+"the device pool. This is only supported for networks with forward mode "
+"'hostdev'"
 msgstr ""
 
 #, c-format
 msgid ""
-"network '%1$s' has multiple default <portgroup> elements (%2$s and %3$s), but only "
-"one default is allowed"
+"network '%1$s' has multiple default <portgroup> elements (%2$s and %3$s), "
+"but only one default is allowed"
 msgstr ""
-"संजाल '%1$s' में कई डिफ़ॉल्ट <portgroup> तत्वों (%2$s और %3$s) से है, लेकिन केवल एक डिफ़ॉल्ट की "
-"अनुमति दी है."
+"संजाल '%1$s' में कई डिफ़ॉल्ट <portgroup> तत्वों (%2$s और %3$s) से है, लेकिन केवल एक "
+"डिफ़ॉल्ट की अनुमति दी है."
 
 #, c-format
 msgid "network '%1$s' has no associated interface or bridge"
@@ -31579,12 +31717,14 @@ msgstr "संजाल %1$s सक्रिय नहीं है"
 
 #, c-format
 msgid ""
-"network '%1$s' requires exclusive access to interfaces, but none are available"
+"network '%1$s' requires exclusive access to interfaces, but none are "
+"available"
 msgstr "'%1$s' संजाल अंतराफलक के लिए अनन्य पहुँच की आवश्यकता है, लेकिन कोई भी उपलब्ध हैं"
 
 #, c-format
 msgid ""
-"network '%1$s' uses a direct mode, but has no forward dev and no interface pool"
+"network '%1$s' uses a direct mode, but has no forward dev and no interface "
+"pool"
 msgstr ""
 "नेटवर्क '%1$s' सीधा मोड का उपयोग करता है, लेकिन कोई अग्रेषित dev और अंतराफलक पूल नहीं "
 
@@ -31600,8 +31740,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"network device saved config file '%1$s' has unexpected contents, missing both "
-"'MAC' and 'adminMAC': '%2$.60s'"
+"network device saved config file '%1$s' has unexpected contents, missing "
+"both 'MAC' and 'adminMAC': '%2$.60s'"
 msgstr ""
 
 #, c-format
@@ -31892,7 +32032,8 @@ msgstr "'%1$s' के लिए कोई ब्लॉक युक्ति प
 
 #, c-format
 msgid "no call waiting for reply with prog %1$d vers %2$d serial %3$d"
-msgstr " prog %1$d vers %2$d serial %3$d के साथ उत्तर के लिए कोई कॉल प्रतीक्षारत नहीं"
+msgstr ""
+" prog %1$d vers %2$d serial %3$d के साथ उत्तर के लिए कोई कॉल प्रतीक्षारत नहीं"
 
 #, fuzzy
 msgid "no cgroup backend available"
@@ -31927,7 +32068,8 @@ msgstr "'%1$s' के लिए कोई युक्ति क्षमता 
 
 #, c-format
 msgid ""
-"no device found at address '%1$s' matching MAC address '%2$s' and alias '%3$s'"
+"no device found at address '%1$s' matching MAC address '%2$s' and alias "
+"'%3$s'"
 msgstr ""
 
 #, c-format
@@ -32671,7 +32813,8 @@ msgid "only connect if safe console handling is supported"
 msgstr "केवल एक RNG बैकेंड समर्थित है"
 
 #, c-format
-msgid "only cpu feature policies 'require' and 'disable' are supported for %1$s"
+msgid ""
+"only cpu feature policies 'require' and 'disable' are supported for %1$s"
 msgstr ""
 
 msgid "only i686 and x86_64 guests support panic device of model 'hyperv'"
@@ -33594,7 +33737,8 @@ msgstr "प्रोग्राम बेमेल (वास्तविक %1
 
 #, fuzzy, c-format
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
-msgstr "'%1$s' संजाल %2$s के नाम पर रखा गया DNS TXT रिकॉर्ड में लापता अपेक्षित मूल्य विशेषता"
+msgstr ""
+"'%1$s' संजाल %2$s के नाम पर रखा गया DNS TXT रिकॉर्ड में लापता अपेक्षित मूल्य विशेषता"
 
 msgid "property with name 'id' can't be overridden"
 msgstr ""
@@ -34133,7 +34277,8 @@ msgid "removing block or network volumes is not supported: %1$s"
 msgstr "गैर-फाइल वॉल्यूम्स तैयार करना समर्थित नहीं है"
 
 #, fuzzy, c-format
-msgid "removing of '%1$s' volumes is not supported by the gluster backend: %2$s"
+msgid ""
+"removing of '%1$s' volumes is not supported by the gluster backend: %2$s"
 msgstr "%s वॉल्यूम्स तैयार करना समर्थित नहीं है"
 
 #, fuzzy
@@ -34274,13 +34419,14 @@ msgstr "निवेदित vcpus अधिकतम स्वीकार य
 
 #, c-format
 msgid ""
-"requested vcpus is greater than max allowable vcpus for the domain: %1$d > %2$d"
+"requested vcpus is greater than max allowable vcpus for the domain: %1$d > "
+"%2$d"
 msgstr "निवेदित vcpus अधिकतम स्वीकार योग्य vcpus से डोमेन के लिए अधिक है: %1$d > %2$d"
 
 #, fuzzy, c-format
 msgid ""
-"requested vcpus is greater than max allowable vcpus for the live domain: %1$u "
-"> %2$u"
+"requested vcpus is greater than max allowable vcpus for the live domain: "
+"%1$u > %2$u"
 msgstr "निवेदित vcpus अधिकतम स्वीकार योग्य vcpus से डोमेन के लिए अधिक है: %d > %d"
 
 #, fuzzy, c-format
@@ -34708,7 +34854,8 @@ msgid "server which to list connected clients from"
 msgstr ""
 
 #, c-format
-msgid "service attribute '%1$s' in network '%2$s' is too long, limit is %3$d bytes"
+msgid ""
+"service attribute '%1$s' in network '%2$s' is too long, limit is %3$d bytes"
 msgstr ""
 
 msgid "set a secret value"
@@ -34860,11 +35007,13 @@ msgid "sgx epc isn't supported by this QEMU binary"
 msgstr ""
 
 #, c-format
-msgid "sgx epc size %1$lld on host node %2$d is less than requested size %3$lld"
+msgid ""
+"sgx epc size %1$lld on host node %2$d is less than requested size %3$lld"
 msgstr ""
 
 #, c-format
-msgid "sgx epc size %1$lld on host node %2$zd is less than requested size %3$lld"
+msgid ""
+"sgx epc size %1$lld on host node %2$zd is less than requested size %3$lld"
 msgstr ""
 
 msgid "sgx-epc memory info data is missing 'memdev'"
@@ -35643,8 +35792,8 @@ msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
 msgstr ""
-"<address> या उप तत्वों <pf> संजाल %1$s में मौजूद हैं जब <forward> 'देव' विशेषता नहीं किया "
-"जा सकता"
+"<address> या उप तत्वों <pf> संजाल %1$s में मौजूद हैं जब <forward> 'देव' विशेषता नहीं "
+"किया जा सकता"
 
 #, fuzzy
 msgid "the CPU is incompatible with host CPU"
@@ -35782,20 +35931,21 @@ msgid ""
 "there is already at least one DNS SRV record matching all specified fields "
 "in network %1$s"
 msgstr ""
-"संजाल %1$s में सभी निर्दिष्ट क्षेत्रों मिलान में कम से कम एक DNS SRV रिकॉर्ड पहले से ही वहाँ है"
+"संजाल %1$s में सभी निर्दिष्ट क्षेत्रों मिलान में कम से कम एक DNS SRV रिकॉर्ड पहले से ही वहाँ "
+"है"
 
 #, c-format
 msgid ""
 "there is an existing dhcp host entry in network '%1$s' that matches \"<host "
 "mac='%2$s' name='%3$s' ip='%4$s'/>\""
 msgstr ""
-"वहाँ मौजूदा dhcp मेजबान प्रविष्टि संजाल '%1$s' में है जो \"<host mac='%2$s' name='%3$s' "
-"ip='%4$s'/>\" से मेल खाता है"
+"वहाँ मौजूदा dhcp मेजबान प्रविष्टि संजाल '%1$s' में है जो \"<host mac='%2$s' "
+"name='%3$s' ip='%4$s'/>\" से मेल खाता है"
 
 #, c-format
 msgid ""
-"there is an existing dhcp range entry in network '%1$s' that matches \"<range "
-"start='%2$s' end='%3$s'/>\""
+"there is an existing dhcp range entry in network '%1$s' that matches "
+"\"<range start='%2$s' end='%3$s'/>\""
 msgstr ""
 "एक बाहरी निकलता dhcp परिसर प्रविष्टि संजाल '%1$s' में है जो \"<range start='%2$s' "
 "end='%3$s'/>\" से मेल खाता है"
@@ -35910,7 +36060,8 @@ msgid "thread_pool_max (%1$d) must be a positive number or -1"
 msgstr ""
 
 #, c-format
-msgid "thread_pool_max (%1$d) must be equal to or greater than 0 for live change"
+msgid ""
+"thread_pool_max (%1$d) must be equal to or greater than 0 for live change"
 msgstr ""
 
 msgid "thread_pool_max must be a positive integer"
@@ -35925,7 +36076,8 @@ msgid "thread_pool_min (%1$d) must be equal to or greater than -1"
 msgstr ""
 
 #, c-format
-msgid "thread_pool_min (%1$d) must be equal to or greater than 0 for live change"
+msgid ""
+"thread_pool_min (%1$d) must be equal to or greater than 0 for live change"
 msgstr ""
 
 msgid ""
@@ -36048,14 +36200,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' for "
-"'virDomainCheckpointListAllChildren'"
+"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' "
+"for 'virDomainCheckpointListAllChildren'"
 msgstr ""
 
 #, c-format
 msgid ""
-"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' for "
-"'virDomainListAllCheckpoints'"
+"too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' "
+"for 'virDomainListAllCheckpoints'"
 msgstr ""
 
 #, c-format
@@ -36508,11 +36660,9 @@ msgstr "epoll fd बनाने में विफल"
 
 #, c-format
 msgid ""
-"unable to delete interface '%1$s' in network '%2$s'. It is currently being used  "
-"by %3$d domains."
+"unable to delete interface '%1$s' in network '%2$s'. It is currently being "
+"used by %3$d domains."
 msgstr ""
-"संजाल '%1$s' अंतरफलक '%2$s' को नष्ट करने में असमर्थ. यह वर्तमान में %3$d डोमेन द्वारा इस्तेमाल "
-"किया जा रहा है."
 
 #, c-format
 msgid "unable to determine access mode of %1$s"
@@ -36726,7 +36876,8 @@ msgid "unable to parse blkio device '%1$s' '%2$s'"
 msgstr "PCI युक्ति %1$s को फिर सेट करने में असमर्थ: %2$s"
 
 #, c-format
-msgid "unable to parse contents of 'file' field in '%1$s' from cloud-hypervisor"
+msgid ""
+"unable to parse contents of 'file' field in '%1$s' from cloud-hypervisor"
 msgstr ""
 
 #, fuzzy, c-format
@@ -37156,8 +37307,10 @@ msgid "unexpected domain type %1$d"
 msgstr "अप्रत्याशित डोमेन प्रकार %1$d"
 
 #, c-format
-msgid "unexpected element <%1$s>, expecting <%2$s>, while updating network '%3$s'"
-msgstr "अप्रत्याशित तत्व <%1$s>, प्रत्याशा <%2$s>, जब '%3$s' संजाल का अद्यतन कर रहा हो"
+msgid ""
+"unexpected element <%1$s>, expecting <%2$s>, while updating network '%3$s'"
+msgstr ""
+"अप्रत्याशित तत्व <%1$s>, प्रत्याशा <%2$s>, जब '%3$s' संजाल का अद्यतन कर रहा हो"
 
 msgid "unexpected encryption engine"
 msgstr ""
@@ -38325,7 +38478,8 @@ msgid "usage:"
 msgstr "प्रयोग:"
 
 #, c-format
-msgid "usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"
+msgid ""
+"usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"
 msgstr ""
 
 msgid "usb device not found"
@@ -38595,8 +38749,8 @@ msgstr "उत्तर में वापसी आँकड़ा अनु�
 
 #, c-format
 msgid ""
-"vcpu '%1$zu' was not selected but it belongs to hotpluggable entity '%2$zd-%3$zd' "
-"which was partially selected"
+"vcpu '%1$zu' was not selected but it belongs to hotpluggable entity '%2$zd-"
+"%3$zd' which was partially selected"
 msgstr ""
 
 msgid "vcpu 0 can't be offline"
@@ -38814,7 +38968,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "virNWFilterDHCPSnoopReq req add failed on interface \"%1$s\" ifkey \"%2$s\""
+msgid ""
+"virNWFilterDHCPSnoopReq req add failed on interface \"%1$s\" ifkey \"%2$s\""
 msgstr ""
 
 #, c-format
@@ -38847,7 +39002,8 @@ msgid "virVMXContext has no parseFileName function set"
 msgstr ""
 
 #, c-format
-msgid "virtio (non-)transitional models are not supported for address type=%1$s"
+msgid ""
+"virtio (non-)transitional models are not supported for address type=%1$s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -38905,7 +39061,8 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "virtio-net teaming transient interface must be type='hostdev', not '%1$s'"
+msgid ""
+"virtio-net teaming transient interface must be type='hostdev', not '%1$s'"
 msgstr ""
 
 msgid "virtio-pmem does not support NUMA nodes"
@@ -38976,7 +39133,8 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid ""
-"virtualport type %1$s is currently not supported on interfaces of type hostdev"
+"virtualport type %1$s is currently not supported on interfaces of type "
+"hostdev"
 msgstr "लिपियों प्रकार %1$s के अंतराफलक पर समर्थित नहीं है"
 
 #, c-format
@@ -39041,7 +39199,8 @@ msgstr "नमूना '%1$s' मौजूद नहीं है"
 
 #, c-format
 msgid ""
-"vnuma configuration contains %1$zu vcpus, which is greater than %2$zu maxvcpus"
+"vnuma configuration contains %1$zu vcpus, which is greater than %2$zu "
+"maxvcpus"
 msgstr ""
 
 #, c-format
@@ -39222,11 +39381,13 @@ msgid "when providing parent wwpn='%1$s', the wwnn must also be provided"
 msgstr ""
 
 #, c-format
-msgid "when providing parent_wwnn='%1$s', the parent_wwpn must also be provided"
+msgid ""
+"when providing parent_wwnn='%1$s', the parent_wwpn must also be provided"
 msgstr ""
 
 #, c-format
-msgid "when providing parent_wwpn='%1$s', the parent_wwnn must also be provided"
+msgid ""
+"when providing parent_wwpn='%1$s', the parent_wwnn must also be provided"
 msgstr ""
 
 msgid "where to dump the core"
@@ -39355,6 +39516,26 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid ""
+#~ "At least one of name, mac, or ip attribute must be specified for static "
+#~ "host definition in network '%1$s' "
+#~ msgstr ""
+#~ "कम के कम एक नाम, मैक, या ip विशेषता को संजाल '%1$s' के स्थैतिक मेजबान परिभाषा में "
+#~ "निर्दिष्ट किया जाना चाहिए"
+
+#, fuzzy
+#~ msgid ""
+#~ "Failed to add driver '%1$s' to driver_override  interface of PCI device "
+#~ "'%2$s'"
+#~ msgstr "अंतराफलक %1$s के लिए आई पी पते कैश को आई पी पता %2$s से जोड़ने में विफल"
+
+#~ msgid ""
+#~ "unable to delete interface '%1$s' in network '%2$s'. It is currently "
+#~ "being used  by %3$d domains."
+#~ msgstr ""
+#~ "संजाल '%1$s' अंतरफलक '%2$s' को नष्ट करने में असमर्थ. यह वर्तमान में %3$d डोमेन द्वारा "
+#~ "इस्तेमाल किया जा रहा है."
 
 #, fuzzy
 #~ msgid "Could not find vf/instanceId %u/%s  in netlink response"
