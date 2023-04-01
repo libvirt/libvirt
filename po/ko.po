@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-03-24 16:18+0000\n"
-"PO-Revision-Date: 2023-03-31 08:20+0000\n"
+"PO-Revision-Date: 2023-04-01 08:03+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -1135,7 +1135,7 @@ msgstr "'%s' 파일은 메모리에 들어갈 수 없습니다"
 
 #, c-format
 msgid "'%s' is currently not supported by the qemu encryption engine"
-msgstr ""
+msgstr "'%s'는 현재 qemu 암호화 엔진에서 지원되지 않습니다"
 
 #, c-format
 msgid "'%s' is not a VF device"
@@ -1200,7 +1200,7 @@ msgid "'address' must be specified for scsi hostdev source"
 msgstr "scsi hostdev 소스에는 'address'가 지정되어야 합니다"
 
 msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
-msgstr ""
+msgstr "'aes-key-wrap'/'dea-key-wrap'는 이와 같은 구조에서 사용 할 수 없습니다"
 
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
@@ -8657,7 +8657,7 @@ msgstr "지정된 풀을 강제로 중지합니다. 풀에서 단순 자료는 �
 
 #, c-format
 msgid "Format mismatch: loader.format='%s' nvram.format='%s'"
-msgstr ""
+msgstr "형식이 일치하지 않음: loader.format='%s' nvram.format='%s'"
 
 #, c-format
 msgid "Format of device '%s' does not match the expected format '%s'"
@@ -16620,11 +16620,11 @@ msgstr "TSC 프로빙을 위한 KVM vCPU를 생성할 수 없음"
 
 #, c-format
 msgid "Unable to create RelaxNG parser for schema '%s'"
-msgstr ""
+msgstr "계획 '%s'를 위해 RelaxNG 구문 분석기를 생성 할 수 없습니다"
 
 #, c-format
 msgid "Unable to create RelaxNG validation context for schema '%s'"
-msgstr ""
+msgstr "계획 '%s'를 위해 RelaxNG 유효성 문맥을 생성 할 수 없습니다"
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "이 기술환경에서 탭 장치를 생성 할 수 없습니다"
@@ -17001,7 +17001,7 @@ msgstr "%s의 LVM 키를 가져 올 수 없습니다"
 
 #, c-format
 msgid "Unable to get NUMA node of cpu %zd"
-msgstr ""
+msgstr "중앙처리장치 %zd의 NUMA 노드를 가져 올 수 없습니다"
 
 #, c-format
 msgid "Unable to get SCSI key for %s"
@@ -17505,7 +17505,7 @@ msgstr "MAC '%s'를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Unable to parse RelaxNG schema '%s': %s"
-msgstr ""
+msgstr "RelaxNG 계획 '%s'를 구문 분석 할 수 없습니다: %s"
 
 #, c-format
 msgid "Unable to parse URI %s"
@@ -19117,7 +19117,7 @@ msgstr "지원되지 않는 청취 유형"
 
 #, c-format
 msgid "Unsupported loader format '%s'"
-msgstr ""
+msgstr "지원하지 않는 적재기 형식 '%s'"
 
 #, c-format
 msgid "Unsupported migration cookie feature %s"
@@ -19159,7 +19159,7 @@ msgstr "지원되지 않는 numatune 배치 '%d'"
 
 #, c-format
 msgid "Unsupported nvram format '%s'"
-msgstr ""
+msgstr "지원되지 않는 nvram 형식 '%s'"
 
 #, c-format
 msgid "Unsupported object type %d"
@@ -19973,7 +19973,7 @@ msgid "ap-domain value '%s' is out of range for '%s'"
 msgstr "ap-도메인 값 '%s'가 '%s'의 범위를 벗어났습니다"
 
 msgid "api error"
-msgstr ""
+msgstr "api 오류"
 
 msgid "apparmor_parser exited with error"
 msgstr "AppArmor_구문분석기가 오류로 종료되었습니다"
@@ -27072,7 +27072,7 @@ msgid "hotplug of watchdog of model %s is not supported"
 msgstr "%s 모델의 watchdog 핫플러그가 지원되지 않습니다"
 
 msgid "hpet timer is not supported by this architecture"
-msgstr ""
+msgstr "hpet 타이머는 이와 같은 구조에서 지원되지 않습니다"
 
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr "http 쿠키는 HTTP(S) 프로토콜에서만 지원됩니다"
@@ -28922,7 +28922,7 @@ msgstr "기계 유형 '%s'"
 
 #, c-format
 msgid "machine type '%s' does not support ACPI"
-msgstr ""
+msgstr "장비 유형 '%s'는 ACPI를 지원하지 않습니다"
 
 msgid "machine type (/domain/os/type/@machine)"
 msgstr "머신 유형(/domain/os/type/@machine)"
@@ -29787,7 +29787,7 @@ msgstr "네트워크 장치에 대한 별칭 누락"
 
 #, c-format
 msgid "missing alias on encryption secret #%zu"
-msgstr ""
+msgstr "암호화 비밀 #%zu에서 누락된 별칭"
 
 #, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
@@ -30852,7 +30852,7 @@ msgstr ""
 
 #, c-format
 msgid "network device type '%s' is not supported by this hypervisor"
-msgstr ""
+msgstr "네트워크 장치 유형 '%s'는 이와 같은 하이버파이저에서 지원되지 않습니다"
 
 #, c-format
 msgid "network device with mac %s already exists"
@@ -32831,7 +32831,7 @@ msgid "qemu emulator '%s' does not support xen"
 msgstr "qeum 에뮬레이터 '%s'가 xen을 지원하지 않습니다"
 
 msgid "qemu encryption engine expects only a single secret"
-msgstr ""
+msgstr "qemu 암호화 엔진은 단일 암호만 예상합니다"
 
 #, c-format
 msgid "qemu monitor event callback %d not registered"
@@ -32851,7 +32851,7 @@ msgid "qemu unexpectedly closed the monitor"
 msgstr "qemu가 예기치 않게 모니터를 닫았습니다"
 
 msgid "qemu-machines reply has malformed 'acpi data"
-msgstr ""
+msgstr "qemu-장비는 잘못된 형식의 'acpi 자료를 갖습니다"
 
 msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
 msgstr "qemu-machines 응답에 잘못된 'numa-mem 지원' 데이터가 있습니다"
@@ -33141,7 +33141,7 @@ msgid "received unexpected cookie with P2P migration"
 msgstr "P2P 이전과 함께 예상치 않은 쿠키를 받았습니다"
 
 msgid "reconnect delay is supported only with NBD protocol"
-msgstr ""
+msgstr "재-연결 지연은 NBD 통신 규약만 지원됩니다"
 
 msgid "recv handler failed"
 msgstr "recv 핸들러 실패"
@@ -33676,7 +33676,7 @@ msgstr "scsi-block 'lun' 장치는 직렬 속성을 지원하지 않습니다"
 
 #, c-format
 msgid "sd card '%s' does not support multiple encryption secrets"
-msgstr ""
+msgstr "sd 카드 '%s'는 다중 암호화 비밀번호를 지원하지 않습니다"
 
 #, c-format
 msgid "seclabel for model %s is already provided"
@@ -34900,7 +34900,7 @@ msgid "this QEMU binary lacks smartcard passthrough mode support"
 msgstr "이 QEMU 바이너리에는 스마트 카드 통과 모드 지원이 없습니다"
 
 msgid "this QEMU does not support 'blob' for virtio-gpu devices"
-msgstr ""
+msgstr "이와 같은 QEMU는 virtio-gpu 장치를 위해 'blob'을 지원하지 않습니다"
 
 msgid "this QEMU does not support 'vhost-user' video device"
 msgstr "QEMU는 'vhost-user'는 비디오 장치를 지원하지 않습니다"
@@ -35521,7 +35521,7 @@ msgstr "'%s'에서 COW 플래그를 제어할 수 없습니다"
 
 #, c-format
 msgid "unable create new SELinux label based on label '%s' and file '%s'"
-msgstr ""
+msgstr "이름표 '%s' 및 파일 '%s'에서 기반한 신규 SELinux 이름표를 생성 할 수 없습니다"
 
 #, c-format
 msgid "unable get directory flags on '%s'"
@@ -35711,7 +35711,7 @@ msgid "unable to get SELinux context for '%s'"
 msgstr "'%s'를 위해 SELinux 문맥을 가져 올 수 없음"
 
 msgid "unable to get SELinux context for current process"
-msgstr ""
+msgstr "현재 프로세서를 위해 SELinux 문맥을 가져 올 수 없습니다"
 
 #, c-format
 msgid "unable to get SELinux context of %s"
@@ -37774,7 +37774,7 @@ msgstr "비디오 유형 %s는 libxl에서 지원되지 않습니다"
 
 #, c-format
 msgid "video type '%s' does not support blob resources"
-msgstr ""
+msgstr "비디오 유형 '%s'는 blob 자원을 지원하지 않습니다"
 
 #, c-format
 msgid "video type '%s' doesn't support multiple 'heads'"
