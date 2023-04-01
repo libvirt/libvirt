@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 9.2.0\n"
+"Project-Id-Version: libvirt 9.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-03-24 16:18+0000\n"
+"POT-Creation-Date: 2023-04-01 08:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -613,7 +613,7 @@ msgstr ""
 msgid "%s uri uuid action\n"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5550
+#: src/qemu/qemu_domain.c:5567
 #, c-format
 msgid ""
 "%s with index %d is configured for a NUMA node (%d) not present in the "
@@ -1068,12 +1068,12 @@ msgstr ""
 msgid "'%s' architecture is not supported by CPU driver"
 msgstr ""
 
-#: src/conf/domain_conf.c:17000
+#: src/conf/domain_conf.c:16999
 #, c-format
 msgid "'%s' attributes '%s' must not overlap"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3139 src/libxl/libxl_driver.c:3724
+#: src/libxl/libxl_driver.c:3137 src/libxl/libxl_driver.c:3719
 #: src/qemu/qemu_hotplug.c:770
 #, c-format
 msgid "'%s' controller cannot be hot plugged."
@@ -1084,7 +1084,7 @@ msgstr ""
 msgid "'%s' controller cannot be hot unplugged."
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5505
+#: src/qemu/qemu_domain.c:5522
 #, c-format
 msgid "'%s' controller only supports up to '%u' ports"
 msgstr ""
@@ -1348,7 +1348,7 @@ msgstr ""
 msgid "'%s' file does not fit in memory"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5185
+#: src/qemu/qemu_domain.c:5202
 #, c-format
 msgid "'%s' is currently not supported by the qemu encryption engine"
 msgstr ""
@@ -1358,7 +1358,7 @@ msgstr ""
 msgid "'%s' is not a VF device"
 msgstr ""
 
-#: src/conf/domain_conf.c:28904
+#: src/conf/domain_conf.c:28902
 #, c-format
 msgid "'%s' is not a known interface"
 msgstr ""
@@ -1394,7 +1394,7 @@ msgstr ""
 msgid "'%s' requires shared memory"
 msgstr ""
 
-#: src/conf/domain_conf.c:16965
+#: src/conf/domain_conf.c:16964
 #, c-format
 msgid "'%s' scheduler bitmap '%s' is empty"
 msgstr ""
@@ -1447,11 +1447,11 @@ msgstr ""
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5006
+#: src/qemu/qemu_domain.c:5023
 msgid "'cow' storage format is not supported"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5012
+#: src/qemu/qemu_domain.c:5029
 msgid ""
 "'directory' storage format is not directly supported by QEMU, use 'dir' disk "
 "type instead"
@@ -1525,7 +1525,7 @@ msgstr ""
 msgid "'max_workers' must be greater than 0"
 msgstr ""
 
-#: src/conf/domain_conf.c:20720
+#: src/conf/domain_conf.c:20718
 #, c-format
 msgid ""
 "'mode' of Xen passthrough feature differs: source: '%s', destination: '%s'"
@@ -1560,11 +1560,11 @@ msgstr ""
 msgid "'network' attribute is valid only for listen type 'network'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5140
+#: src/qemu/qemu_domain.c:5157
 msgid "'nfs' host must use TCP protocol"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5133
+#: src/qemu/qemu_domain.c:5150
 msgid "'nfs' protocol requires the usage of exactly one host"
 msgstr ""
 
@@ -1625,15 +1625,15 @@ msgstr ""
 msgid "'target' refers to a non-existent NUMA node"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5124
+#: src/qemu/qemu_domain.c:5141
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5269
+#: src/qemu/qemu_domain.c:5286
 msgid "'tlsHostname' field is not supported by this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5263
+#: src/qemu/qemu_domain.c:5280
 msgid "'tlsHostname' field is supported only with NBD disks"
 msgstr ""
 
@@ -1711,7 +1711,7 @@ msgstr ""
 msgid "(domain_checkpoint)"
 msgstr ""
 
-#: src/conf/domain_conf.c:19457 src/security/virt-aa-helper.c:577
+#: src/conf/domain_conf.c:19456 src/security/virt-aa-helper.c:577
 #: tools/virsh-domain.c:12529 tools/virsh-domain.c:12701 tools/virsh-util.c:390
 msgid "(domain_definition)"
 msgstr ""
@@ -1742,7 +1742,7 @@ msgstr ""
 msgid "(libxl_migration_cookie)"
 msgstr ""
 
-#: src/conf/domain_conf.c:29284
+#: src/conf/domain_conf.c:29282
 msgid "(metadata_xml)"
 msgstr ""
 
@@ -2151,7 +2151,7 @@ msgstr ""
 msgid "Active channel stream exists for this domain"
 msgstr ""
 
-#: src/ch/ch_driver.c:838 src/libxl/libxl_driver.c:4944
+#: src/ch/ch_driver.c:838 src/libxl/libxl_driver.c:4939
 #: src/qemu/qemu_driver.c:14003
 msgid "Active console session exists for this domain"
 msgstr ""
@@ -2160,7 +2160,7 @@ msgstr ""
 msgid "Active:"
 msgstr ""
 
-#: src/conf/domain_conf.c:29809
+#: src/conf/domain_conf.c:29807
 #, c-format
 msgid "Actual interface '%s' hostdev was not a PCI device"
 msgstr ""
@@ -2286,7 +2286,7 @@ msgstr ""
 msgid "At least one cgroup controller is required"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:9308
+#: src/qemu/qemu_domain.c:9325
 msgid ""
 "At least one numa node has to be configured when enabling memory hotplug"
 msgstr ""
@@ -2335,7 +2335,7 @@ msgstr ""
 msgid "Attaching devices of type %d is not implemented"
 msgstr ""
 
-#: src/conf/domain_conf.c:28035
+#: src/conf/domain_conf.c:28033
 #, c-format
 msgid ""
 "Attaching memory device with size '%llu' would exceed domain's maxMemory "
@@ -2643,7 +2643,7 @@ msgstr ""
 msgid "CPU Affinity:"
 msgstr ""
 
-#: src/conf/domain_conf.c:18647
+#: src/conf/domain_conf.c:18646
 msgid "CPU IDs in <numa> exceed the <vcpu> count"
 msgstr ""
 
@@ -2773,7 +2773,7 @@ msgstr ""
 msgid "CPU model %s too long for destination"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:6901
+#: src/qemu/qemu_domain.c:6918
 #, c-format
 msgid "CPU model '%s'"
 msgstr ""
@@ -2983,19 +2983,19 @@ msgstr ""
 msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19140
+#: src/conf/domain_conf.c:19139
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr ""
 
-#: src/conf/domain_conf.c:18896
+#: src/conf/domain_conf.c:18895
 msgid "Can't add USB input device. USB bus is disabled"
 msgstr ""
 
-#: src/conf/domain_conf.c:18553 src/conf/domain_conf.c:18561
+#: src/conf/domain_conf.c:18552 src/conf/domain_conf.c:18560
 msgid "Can't add another USB controller: USB is disabled for this domain"
 msgstr ""
 
-#: src/conf/domain_conf.c:18999
+#: src/conf/domain_conf.c:18998
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr ""
 
@@ -3274,7 +3274,7 @@ msgstr ""
 msgid "Cannot complete within timeout period"
 msgstr ""
 
-#: src/conf/domain_conf.c:29440 src/conf/domain_conf.c:29447
+#: src/conf/domain_conf.c:29438 src/conf/domain_conf.c:29445
 msgid "Cannot convert domain name to wide character string"
 msgstr ""
 
@@ -3283,7 +3283,7 @@ msgstr ""
 msgid "Cannot convert socket address to string: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:29455 src/conf/domain_conf.c:29464
+#: src/conf/domain_conf.c:29453 src/conf/domain_conf.c:29462
 msgid "Cannot convert wide character string back to multi-byte domain name"
 msgstr ""
 
@@ -3375,7 +3375,7 @@ msgstr ""
 msgid "Cannot delete file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6020
+#: src/qemu/qemu_hotplug.c:6019
 #, c-format
 msgid "Cannot detach %s device with no alias"
 msgstr ""
@@ -3425,7 +3425,7 @@ msgstr ""
 msgid "Cannot extract CPU definition from domain capabilities XML"
 msgstr ""
 
-#: src/conf/domain_conf.c:17725
+#: src/conf/domain_conf.c:17724
 msgid "Cannot extract cache nodes under cachetune"
 msgstr ""
 
@@ -3433,11 +3433,11 @@ msgstr ""
 msgid "Cannot extract memnode nodes"
 msgstr ""
 
-#: src/conf/domain_conf.c:18083
+#: src/conf/domain_conf.c:18082
 msgid "Cannot extract memory nodes under memorytune"
 msgstr ""
 
-#: src/conf/domain_conf.c:17593
+#: src/conf/domain_conf.c:17592
 msgid "Cannot extract monitor nodes"
 msgstr ""
 
@@ -3456,7 +3456,7 @@ msgstr ""
 msgid "Cannot find '%s' in path"
 msgstr ""
 
-#: src/conf/domain_conf.c:15957 src/conf/domain_conf.c:17033
+#: src/conf/domain_conf.c:15956 src/conf/domain_conf.c:17032
 #, c-format
 msgid "Cannot find 'iothread' : %u"
 msgstr ""
@@ -4275,7 +4275,7 @@ msgstr ""
 msgid "Changing destination XML is not supported"
 msgstr ""
 
-#: src/conf/domain_conf.c:20244
+#: src/conf/domain_conf.c:20242
 msgid ""
 "Changing device type to/from spicevmc would change default target channel "
 "name"
@@ -4883,7 +4883,7 @@ msgstr ""
 msgid "Could not create log directory"
 msgstr ""
 
-#: src/conf/domain_conf.c:17605
+#: src/conf/domain_conf.c:17604
 msgid "Could not create monitor"
 msgstr ""
 
@@ -5174,7 +5174,7 @@ msgstr ""
 
 #: src/util/virnetdevvportprofile.c:580
 #, c-format
-msgid "Could not find vf/instanceId %u/%s  in netlink response"
+msgid "Could not find vf/instanceId %u/%s in netlink response"
 msgstr ""
 
 #: src/esx/esx_storage_backend_iscsi.c:641
@@ -5182,15 +5182,15 @@ msgstr ""
 msgid "Could not find volume with name: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:24294
+#: src/conf/domain_conf.c:24292
 msgid "Could not format channel target type"
 msgstr ""
 
-#: src/conf/domain_conf.c:24339
+#: src/conf/domain_conf.c:24337
 msgid "Could not format console target type"
 msgstr ""
 
-#: src/conf/domain_conf.c:24351
+#: src/conf/domain_conf.c:24349
 msgid "Could not format serial target type"
 msgstr ""
 
@@ -6463,7 +6463,7 @@ msgstr ""
 
 #: src/conf/domain_conf.c:14884
 #, c-format
-msgid "Device alias was not set for %s controller with index %d "
+msgid "Device alias was not set for %s controller with index %d"
 msgstr ""
 
 #: src/qemu/qemu_command.c:360
@@ -6482,7 +6482,7 @@ msgstr ""
 msgid "Device attached to bridge %s has no name"
 msgstr ""
 
-#: src/conf/domain_conf.c:28004
+#: src/conf/domain_conf.c:28002
 msgid "Device configuration is not compatible: Domain has no USB bus support"
 msgstr ""
 
@@ -6608,7 +6608,7 @@ msgstr ""
 msgid "Disk detached successfully\n"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:7354
+#: src/qemu/qemu_domain.c:7371
 #, c-format
 msgid "Disk device '%s' does not support snapshotting"
 msgstr ""
@@ -6825,7 +6825,7 @@ msgid ""
 "and path for VMX file"
 msgstr ""
 
-#: src/conf/domain_conf.c:15433
+#: src/conf/domain_conf.c:15432
 msgid "Domain already contains a device with the same address"
 msgstr ""
 
@@ -7053,7 +7053,7 @@ msgstr ""
 msgid "Domain snapshot not found: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:18611
+#: src/conf/domain_conf.c:18610
 msgid "Domain title can't contain newlines"
 msgstr ""
 
@@ -7065,7 +7065,7 @@ msgstr ""
 msgid "Domain title updated successfully"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:5951
+#: src/libxl/libxl_driver.c:5946
 msgid "Domain-0 cannot be migrated"
 msgstr ""
 
@@ -7362,12 +7362,12 @@ msgstr ""
 msgid "Error creating initial configuration"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:11733
+#: src/qemu/qemu_domain.c:11750
 #, c-format
 msgid "Error from child process creating '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:11734
+#: src/qemu/qemu_domain.c:11751
 #, c-format
 msgid "Error from child process opening '%s'"
 msgstr ""
@@ -7519,8 +7519,8 @@ msgstr ""
 msgid "Expected a /dev path for '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:29604 src/conf/domain_conf.c:29646
-#: src/conf/domain_conf.c:29763
+#: src/conf/domain_conf.c:29602 src/conf/domain_conf.c:29644
+#: src/conf/domain_conf.c:29761
 #, c-format
 msgid "Expected an interface of type 'network' not '%s'"
 msgstr ""
@@ -7538,7 +7538,7 @@ msgstr ""
 msgid "Expected downtime:"
 msgstr ""
 
-#: src/conf/domain_conf.c:30188 src/storage/storage_backend_fs.c:153
+#: src/conf/domain_conf.c:30186 src/storage/storage_backend_fs.c:153
 #: src/storage/storage_backend_gluster.c:467
 #: src/storage/storage_backend_iscsi.c:57
 #: src/storage/storage_backend_iscsi.c:174
@@ -8162,7 +8162,7 @@ msgstr ""
 msgid "Failed to convert the command string to argv-lists"
 msgstr ""
 
-#: src/conf/domain_conf.c:29296 src/test/test_driver.c:231
+#: src/conf/domain_conf.c:29294 src/test/test_driver.c:231
 #: src/test/test_driver.c:860 src/util/virxml.c:1401
 msgid "Failed to copy XML node"
 msgstr ""
@@ -8267,13 +8267,13 @@ msgstr ""
 msgid "Failed to create dump dir %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:11747 src/storage/storage_util.c:427
+#: src/qemu/qemu_domain.c:11764 src/storage/storage_util.c:427
 #: src/util/virfile.c:578
 #, c-format
 msgid "Failed to create file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:11701
+#: src/qemu/qemu_domain.c:11718
 #, c-format
 msgid "Failed to create file '%s': couldn't determine fs type"
 msgstr ""
@@ -8374,7 +8374,7 @@ msgstr ""
 msgid "Failed to create state dir '%s'"
 msgstr ""
 
-#: src/bhyve/bhyve_driver.c:379 src/libxl/libxl_driver.c:4654
+#: src/bhyve/bhyve_driver.c:379 src/libxl/libxl_driver.c:4649
 #: src/lxc/lxc_driver.c:2484 src/network/bridge_driver.c:3598
 #: src/qemu/qemu_driver.c:8235 src/qemu/qemu_driver.c:18967
 #: src/storage/storage_driver.c:1391
@@ -8533,7 +8533,7 @@ msgstr ""
 msgid "Failed to delete snapshot: %s"
 msgstr ""
 
-#: src/bhyve/bhyve_driver.c:386 src/libxl/libxl_driver.c:4661
+#: src/bhyve/bhyve_driver.c:386 src/libxl/libxl_driver.c:4656
 #: src/lxc/lxc_driver.c:2491 src/network/bridge_driver.c:3605
 #: src/qemu/qemu_driver.c:8244 src/storage/storage_driver.c:1399
 #, c-format
@@ -8800,15 +8800,15 @@ msgstr ""
 msgid "Failed to fully read directory %s"
 msgstr ""
 
-#: src/bhyve/bhyve_parse_command.c:950 src/conf/domain_conf.c:17801
-#: src/conf/domain_conf.c:29613 src/conf/domain_conf.c:29774
+#: src/bhyve/bhyve_parse_command.c:950 src/conf/domain_conf.c:17800
+#: src/conf/domain_conf.c:29611 src/conf/domain_conf.c:29772
 #: src/conf/domain_postparse.c:625 src/conf/network_conf.c:1636
 #: src/conf/secret_conf.c:157 src/libxl/xen_common.c:197
 #: src/openvz/openvz_conf.c:926
 msgid "Failed to generate UUID"
 msgstr ""
 
-#: src/conf/domain_conf.c:17828
+#: src/conf/domain_conf.c:17827
 msgid "Failed to generate genid"
 msgstr ""
 
@@ -8956,12 +8956,12 @@ msgstr ""
 msgid "Failed to get pool persistence info"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4722
+#: src/libxl/libxl_driver.c:4717
 #, c-format
 msgid "Failed to get scheduler id for domain '%d' with libxenlight"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4772 src/libxl/libxl_driver.c:4849
+#: src/libxl/libxl_driver.c:4767 src/libxl/libxl_driver.c:4844
 #, c-format
 msgid "Failed to get scheduler parameters for domain '%d' with libxenlight"
 msgstr ""
@@ -9172,7 +9172,7 @@ msgstr ""
 msgid "Failed to list transient guests"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2574 src/libxl/libxl_driver.c:5230
+#: src/libxl/libxl_driver.c:2574 src/libxl/libxl_driver.c:5225
 #, c-format
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr ""
@@ -9395,7 +9395,7 @@ msgstr ""
 msgid "Failed to open domain image file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:11748 src/qemu/qemu_process.c:4628
+#: src/qemu/qemu_domain.c:11765 src/qemu/qemu_process.c:4628
 #: src/storage_file/storage_file_backend_fs.c:105
 #: src/storage_file/storage_file_backend_gluster.c:200
 #: src/storage_file/storage_file_probe.c:1007 src/util/virfile.c:1523
@@ -9403,7 +9403,7 @@ msgstr ""
 msgid "Failed to open file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:11703
+#: src/qemu/qemu_domain.c:11720
 #, c-format
 msgid "Failed to open file '%s': couldn't determine fs type"
 msgstr ""
@@ -9513,11 +9513,11 @@ msgstr ""
 msgid "Failed to parse memory"
 msgstr ""
 
-#: src/conf/domain_conf.c:17987
+#: src/conf/domain_conf.c:17986
 msgid "Failed to parse memory allocation threads"
 msgstr ""
 
-#: src/conf/domain_conf.c:17943
+#: src/conf/domain_conf.c:17942
 msgid "Failed to parse memory slot count"
 msgstr ""
 
@@ -10167,7 +10167,7 @@ msgstr ""
 msgid "Failed to set permissions for device %s"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4865
+#: src/libxl/libxl_driver.c:4860
 #, c-format
 msgid "Failed to set scheduler parameters for domain '%d' with libxenlight"
 msgstr ""
@@ -10412,7 +10412,7 @@ msgstr ""
 msgid "Failed to unescape command line string"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:11876 src/qemu/qemu_domain.c:11883
+#: src/qemu/qemu_domain.c:11893 src/qemu/qemu_domain.c:11900
 #, c-format
 msgid "Failed to unlink '%s'"
 msgstr ""
@@ -10767,7 +10767,7 @@ msgstr ""
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr ""
 
-#: src/conf/domain_conf.c:16895
+#: src/conf/domain_conf.c:16894
 #, c-format
 msgid "Format mismatch: loader.format='%s' nvram.format='%s'"
 msgstr ""
@@ -11003,7 +11003,7 @@ msgid "Gets statistics about one or more (or all) domains"
 msgstr ""
 
 #: src/ch/ch_driver.c:933 src/esx/esx_driver.c:1035
-#: src/libxl/libxl_driver.c:5850 src/lxc/lxc_driver.c:1624
+#: src/libxl/libxl_driver.c:5845 src/lxc/lxc_driver.c:1624
 #: src/network/bridge_driver.c:830 src/openvz/openvz_driver.c:1920
 #: src/qemu/qemu_driver.c:1185
 #, c-format
@@ -11232,25 +11232,25 @@ msgstr ""
 msgid "Hybrid-Suspend"
 msgstr ""
 
-#: src/conf/domain_conf.c:20665
+#: src/conf/domain_conf.c:20663
 #, c-format
 msgid "HyperV spinlock retry count differs: source: '%u', destination: '%u'"
 msgstr ""
 
-#: src/conf/domain_conf.c:16276
+#: src/conf/domain_conf.c:16275
 msgid "HyperV spinlock retry count must be at least 4095"
 msgstr ""
 
-#: src/conf/domain_conf.c:20676
+#: src/conf/domain_conf.c:20674
 #, c-format
 msgid "HyperV vendor_id differs: source: '%s', destination: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:16301
+#: src/conf/domain_conf.c:16300
 msgid "HyperV vendor_id value is invalid"
 msgstr ""
 
-#: src/conf/domain_conf.c:16293
+#: src/conf/domain_conf.c:16292
 #, c-format
 msgid "HyperV vendor_id value must not be more than %d characters."
 msgstr ""
@@ -11305,7 +11305,7 @@ msgstr ""
 msgid "IFLA_PORT_SELF is missing"
 msgstr ""
 
-#: src/util/virnetdevvportprofile.c:613
+#: src/util/virnetdevvportprofile.c:612
 msgid "IFLA_VF_PORTS is missing"
 msgstr ""
 
@@ -11429,11 +11429,11 @@ msgstr ""
 msgid "Id:"
 msgstr ""
 
-#: src/conf/domain_conf.c:17539
+#: src/conf/domain_conf.c:17538
 msgid "Identical vcpus found in same type monitors"
 msgstr ""
 
-#: src/conf/domain_conf.c:17734
+#: src/conf/domain_conf.c:17733
 msgid "Identical vcpus in cachetunes found"
 msgstr ""
 
@@ -11662,7 +11662,7 @@ msgid ""
 "only"
 msgstr ""
 
-#: src/conf/domain_conf.c:17425
+#: src/conf/domain_conf.c:17424
 #, c-format
 msgid "Invalid %s attribute 'vcpus' value '%s'"
 msgstr ""
@@ -12349,7 +12349,7 @@ msgstr ""
 msgid "Invalid mode: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:17616
+#: src/conf/domain_conf.c:17615
 #, c-format
 msgid "Invalid monitor cache level '%d'"
 msgstr ""
@@ -12758,8 +12758,8 @@ msgstr ""
 msgid "Invalid value of %d for I/O weight"
 msgstr ""
 
-#: src/conf/domain_conf.c:15929 src/conf/domain_conf.c:15973
-#: src/conf/domain_conf.c:16011 src/conf/domain_conf.c:17097
+#: src/conf/domain_conf.c:15928 src/conf/domain_conf.c:15972
+#: src/conf/domain_conf.c:16010 src/conf/domain_conf.c:17096
 #, c-format
 msgid "Invalid value of 'cpuset': %s"
 msgstr ""
@@ -12769,7 +12769,7 @@ msgstr ""
 msgid "Invalid value of 'nodemask': %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:16163 src/conf/numa_conf.c:214
+#: src/conf/domain_conf.c:16162 src/conf/numa_conf.c:214
 #: src/conf/numa_conf.c:267
 #, c-format
 msgid "Invalid value of 'nodeset': %s"
@@ -12902,7 +12902,7 @@ msgstr ""
 msgid "Lease %s in lockspace %s already exists"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7436 src/qemu/qemu_hotplug.c:5863
+#: src/qemu/qemu_driver.c:7436 src/qemu/qemu_hotplug.c:5862
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr ""
@@ -13491,7 +13491,7 @@ msgstr ""
 msgid "Migration failed. Domain is not running on destination host"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:6167 src/openvz/openvz_driver.c:2160
+#: src/libxl/libxl_driver.c:6162 src/openvz/openvz_driver.c:2160
 #, c-format
 msgid "Migration failed. No domain on destination host with matching name '%s'"
 msgstr ""
@@ -13546,7 +13546,7 @@ msgstr ""
 msgid "Minimum supported %s version is %s but found version '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:17419
+#: src/conf/domain_conf.c:17418
 #, c-format
 msgid "Missing %s attribute 'vcpus'"
 msgstr ""
@@ -13754,11 +13754,11 @@ msgstr ""
 msgid "Missing XPath expression"
 msgstr ""
 
-#: src/conf/domain_conf.c:17330
+#: src/conf/domain_conf.c:17329
 msgid "Missing acpi table type"
 msgstr ""
 
-#: src/conf/domain_conf.c:29754
+#: src/conf/domain_conf.c:29752
 #, c-format
 msgid "Missing actual data for interface '%s'"
 msgstr ""
@@ -13785,7 +13785,7 @@ msgstr ""
 msgid "Missing argument for '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:16955
+#: src/conf/domain_conf.c:16954
 #, c-format
 msgid "Missing attribute '%s' in element '%s'"
 msgstr ""
@@ -14292,7 +14292,7 @@ msgstr ""
 msgid "Model %s too big for destination"
 msgstr ""
 
-#: src/conf/domain_conf.c:28805
+#: src/conf/domain_conf.c:28803
 msgid "Model name contains invalid characters"
 msgstr ""
 
@@ -14305,7 +14305,7 @@ msgstr ""
 msgid "Monitor path %s too big for destination"
 msgstr ""
 
-#: src/conf/domain_conf.c:17526
+#: src/conf/domain_conf.c:17525
 msgid "Monitor vcpus conflicts with allocation"
 msgstr ""
 
@@ -14883,7 +14883,7 @@ msgstr ""
 msgid "No authentication methods supplied"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3219
+#: src/libxl/libxl_driver.c:3217
 msgid "No available USB controller and port, and failed to attach a new one"
 msgstr ""
 
@@ -14930,7 +14930,7 @@ msgstr ""
 msgid "No current identity to elevate"
 msgstr ""
 
-#: src/conf/domain_conf.c:17180
+#: src/conf/domain_conf.c:17179
 msgid "No data supplied for <initarg> element"
 msgstr ""
 
@@ -15001,7 +15001,7 @@ msgstr ""
 msgid "No domain with name %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4848
+#: src/qemu/qemu_domain.c:4865
 #, c-format
 msgid "No emulator found for arch '%s'"
 msgstr ""
@@ -15082,7 +15082,7 @@ msgstr ""
 msgid "No lxc environment type specified"
 msgstr ""
 
-#: src/conf/domain_conf.c:18577
+#: src/conf/domain_conf.c:18576
 msgid "No master USB controller specified"
 msgstr ""
 
@@ -15104,7 +15104,7 @@ msgstr ""
 msgid "No more available PCI slots"
 msgstr ""
 
-#: src/conf/domain_conf.c:17195
+#: src/conf/domain_conf.c:17194
 msgid "No name supplied for <initenv> element"
 msgstr ""
 
@@ -15259,7 +15259,7 @@ msgstr ""
 msgid "No valid cgroup for machine %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:17202
+#: src/conf/domain_conf.c:17201
 #, c-format
 msgid "No value supplied for <initenv name='%s'> element"
 msgstr ""
@@ -15279,7 +15279,7 @@ msgstr ""
 msgid "Node %d:\n"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:5048
+#: src/libxl/libxl_driver.c:5043
 #, c-format
 msgid "Node %zu out of range"
 msgstr ""
@@ -15419,7 +15419,7 @@ msgstr ""
 msgid "Now in synchronized phase"
 msgstr ""
 
-#: src/conf/domain_conf.c:18640
+#: src/conf/domain_conf.c:18639
 msgid "Number of CPUs in <numa> exceeds the <vcpu> count"
 msgstr ""
 
@@ -15521,7 +15521,7 @@ msgstr ""
 msgid "Only '%s' filesystem type is supported"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4766 src/libxl/libxl_driver.c:4843
+#: src/libxl/libxl_driver.c:4761 src/libxl/libxl_driver.c:4838
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr ""
 
@@ -15657,7 +15657,7 @@ msgstr ""
 msgid "Only one IPv6 address per interface is allowed"
 msgstr ""
 
-#: src/conf/domain_conf.c:17321
+#: src/conf/domain_conf.c:17320
 msgid "Only one acpi table is supported"
 msgstr ""
 
@@ -15909,7 +15909,7 @@ msgstr ""
 msgid "Output the vol information as an XML dump to stdout."
 msgstr ""
 
-#: src/conf/domain_conf.c:17455
+#: src/conf/domain_conf.c:17454
 msgid "Overlapping vcpus in resctrls"
 msgstr ""
 
@@ -16526,15 +16526,15 @@ msgstr ""
 msgid "QEMU does not support setting a launch secret"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:8681
+#: src/qemu/qemu_domain.c:8698
 msgid "QEMU guest agent is not available due to an error"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:8696
+#: src/qemu/qemu_domain.c:8713
 msgid "QEMU guest agent is not configured"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:8690
+#: src/qemu/qemu_domain.c:8707
 msgid "QEMU guest agent is not connected"
 msgstr ""
 
@@ -16547,7 +16547,7 @@ msgstr ""
 msgid "QEMU monitor was closed"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4634
+#: src/qemu/qemu_domain.c:4651
 msgid ""
 "QEMU reports invalid default CPU model \"host\" for non-kvm domain virt type"
 msgstr ""
@@ -16808,7 +16808,7 @@ msgstr ""
 msgid "Requested device '%s' is locked by lock file '%s' held by process %lld"
 msgstr ""
 
-#: src/conf/domain_conf.c:29242
+#: src/conf/domain_conf.c:29240
 msgid "Requested metadata element is not present"
 msgstr ""
 
@@ -17267,16 +17267,16 @@ msgstr ""
 msgid "SHUTDOWN_TIMEOUT must be equal or greater than 0"
 msgstr ""
 
-#: src/conf/domain_conf.c:20775
+#: src/conf/domain_conf.c:20773
 #, c-format
 msgid "SMM TSEG differs: source: %s, destination: '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4777
+#: src/qemu/qemu_domain.c:4794
 msgid "SMM TSEG is only supported with q35 machine type"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4789
+#: src/qemu/qemu_domain.c:4806
 msgid "SMM TSEG size must be divisible by 1 MiB"
 msgstr ""
 
@@ -17314,7 +17314,7 @@ msgid ""
 "STP filtering in %s direction with source MAC address set is not supported"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4702
+#: src/qemu/qemu_domain.c:4719
 msgid "SVE disabled, but SVE vector lengths provided"
 msgstr ""
 
@@ -17628,7 +17628,7 @@ msgstr ""
 msgid "Set the number of seconds to wait for a response from the guest agent."
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4783
+#: src/qemu/qemu_domain.c:4800
 msgid "Setting TSEG size is not supported with this QEMU binary"
 msgstr ""
 
@@ -17841,7 +17841,7 @@ msgstr ""
 msgid "Signal handling not available on this platform"
 msgstr ""
 
-#: src/conf/domain_conf.c:20790
+#: src/conf/domain_conf.c:20788
 #, c-format
 msgid ""
 "Size of SMM TSEG size differs: source: '%llu %s', destination: '%llu %s'"
@@ -18093,56 +18093,56 @@ msgstr ""
 msgid "State file %s updated.\n"
 msgstr ""
 
-#: src/conf/domain_conf.c:20650
+#: src/conf/domain_conf.c:20648
 #, c-format
 msgid ""
 "State of HyperV enlightenment feature '%s' differs: source: '%s', "
 "destination: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20693
+#: src/conf/domain_conf.c:20691
 #, c-format
 msgid ""
 "State of HyperV stimer direct feature differs: source: '%s', destination: "
 "'%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20745
+#: src/conf/domain_conf.c:20743
 #, c-format
 msgid "State of KVM feature '%s' differs: source: '%s', destination: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20706
+#: src/conf/domain_conf.c:20704
 #, c-format
 msgid "State of Xen feature '%s' differs: source: '%s', destination: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20505
+#: src/conf/domain_conf.c:20503
 #, c-format
 msgid "State of feature '%s' differs: source: '%s', destination: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20532 src/conf/domain_conf.c:20565
+#: src/conf/domain_conf.c:20530 src/conf/domain_conf.c:20563
 #, c-format
 msgid ""
 "State of feature '%s' differs: source: '%s,%s=%s', destination: '%s,%s=%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20548
+#: src/conf/domain_conf.c:20546
 #, c-format
 msgid ""
 "State of feature '%s' differs: source: '%s,%s=%s,%s=%llu', destination: '%s,"
 "%s=%s,%s=%llu'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20517 src/conf/domain_conf.c:20579
-#: src/conf/domain_conf.c:20591 src/conf/domain_conf.c:20603
-#: src/conf/domain_conf.c:20615
+#: src/conf/domain_conf.c:20515 src/conf/domain_conf.c:20577
+#: src/conf/domain_conf.c:20589 src/conf/domain_conf.c:20601
+#: src/conf/domain_conf.c:20613
 #, c-format
 msgid "State of feature '%s' differs: source: '%s=%s', destination: '%s=%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:21141
+#: src/conf/domain_conf.c:21139
 #, c-format
 msgid "State of vCPU '%zu' differs between source and destination definitions"
 msgstr ""
@@ -18432,7 +18432,7 @@ msgstr ""
 msgid "TLS migration is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:10367
+#: src/qemu/qemu_domain.c:10384
 #, c-format
 msgid "TLS transport is not supported for disk protocol '%s'"
 msgstr ""
@@ -18477,7 +18477,7 @@ msgstr ""
 msgid "Target"
 msgstr ""
 
-#: src/conf/domain_conf.c:19690
+#: src/conf/domain_conf.c:19688
 #, c-format
 msgid "Target ACPI index '%u' does not match source '%u'"
 msgstr ""
@@ -18574,105 +18574,105 @@ msgstr ""
 msgid "Target NUMA node count '%zu' doesn't match source '%zu'"
 msgstr ""
 
-#: src/conf/domain_conf.c:21034
+#: src/conf/domain_conf.c:21032
 msgid "Target NVDIMM UUID doesn't match source NVDIMM"
 msgstr ""
 
-#: src/conf/domain_conf.c:21010
+#: src/conf/domain_conf.c:21008
 #, c-format
 msgid ""
 "Target NVDIMM alignment '%llu' doesn't match source NVDIMM alignment '%llu'"
 msgstr ""
 
-#: src/conf/domain_conf.c:21002
+#: src/conf/domain_conf.c:21000
 #, c-format
 msgid ""
 "Target NVDIMM label size '%llu' doesn't match source NVDIMM label size '%llu'"
 msgstr ""
 
-#: src/conf/domain_conf.c:21018
+#: src/conf/domain_conf.c:21016
 msgid "Target NVDIMM pmem flag doesn't match source NVDIMM pmem flag"
 msgstr ""
 
-#: src/conf/domain_conf.c:21025
+#: src/conf/domain_conf.c:21023
 msgid "Target NVDIMM readonly flag doesn't match source NVDIMM readonly flag"
 msgstr ""
 
-#: src/conf/domain_conf.c:20353
+#: src/conf/domain_conf.c:20351
 #, c-format
 msgid "Target RNG model '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20878
+#: src/conf/domain_conf.c:20876
 msgid "Target TPM device model doesn't match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:20872
+#: src/conf/domain_conf.c:20870
 msgid "Target TPM device type doesn't match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:20886
+#: src/conf/domain_conf.c:20884
 msgid "Target TPM version doesn't match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:19552
+#: src/conf/domain_conf.c:19551
 #, c-format
 msgid "Target TSC frequency %llu does not match source %llu"
 msgstr ""
 
-#: src/conf/domain_conf.c:19559
+#: src/conf/domain_conf.c:19558
 #, c-format
 msgid "Target TSC mode %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:20442
+#: src/conf/domain_conf.c:20440
 msgid "Target USB Class code does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:20466
+#: src/conf/domain_conf.c:20464
 #, c-format
 msgid "Target USB allow '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20454
+#: src/conf/domain_conf.c:20452
 msgid "Target USB product ID does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:20431
+#: src/conf/domain_conf.c:20429
 #, c-format
 msgid "Target USB redirection filter rule count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:20448
+#: src/conf/domain_conf.c:20446
 msgid "Target USB vendor ID does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:20460
+#: src/conf/domain_conf.c:20458
 msgid "Target USB version does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:20893
+#: src/conf/domain_conf.c:20891
 msgid "Target active PCR banks doesn't match source"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3541 src/qemu/qemu_driver.c:7266
+#: src/libxl/libxl_driver.c:3539 src/qemu/qemu_driver.c:7266
 msgid "Target already exists"
 msgstr ""
 
-#: src/conf/domain_conf.c:20321
+#: src/conf/domain_conf.c:20319
 #, c-format
 msgid ""
 "Target balloon autodeflate attribute value '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20330
+#: src/conf/domain_conf.c:20328
 #, c-format
 msgid ""
 "Target balloon freePageReporting attribute value '%s' does not match source "
 "'%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20313
+#: src/conf/domain_conf.c:20311
 #, c-format
 msgid "Target balloon model %s does not match source %s"
 msgstr ""
@@ -18681,17 +18681,17 @@ msgstr ""
 msgid "Target base board does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:20255
+#: src/conf/domain_conf.c:20253
 #, c-format
 msgid "Target channel addr %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:20235
+#: src/conf/domain_conf.c:20233
 #, c-format
 msgid "Target channel name %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:20223
+#: src/conf/domain_conf.c:20221
 #, c-format
 msgid "Target channel type %s does not match source %s"
 msgstr ""
@@ -18700,467 +18700,470 @@ msgstr ""
 msgid "Target chassis does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:20275
+#: src/conf/domain_conf.c:20273
 #, c-format
 msgid "Target console type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19849
+#: src/conf/domain_conf.c:19847
 #, c-format
 msgid "Target controller index %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:19856
+#: src/conf/domain_conf.c:19854
 #, c-format
 msgid "Target controller model %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:19864 src/conf/domain_conf.c:19878
+#: src/conf/domain_conf.c:19862 src/conf/domain_conf.c:19876
 #, c-format
 msgid "Target controller ports %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:19841
+#: src/conf/domain_conf.c:19839
 #, c-format
 msgid "Target controller type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19871
+#: src/conf/domain_conf.c:19869
 #, c-format
 msgid "Target controller vectors %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:19589
-msgid "Target device PCI address "
+#: src/conf/domain_conf.c:19588
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%d does not match source %04x:%02x:"
+"%02x.%d"
 msgstr ""
 
-#: src/conf/domain_conf.c:19576
+#: src/conf/domain_conf.c:19575
 #, c-format
 msgid "Target device address type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19722
+#: src/conf/domain_conf.c:19720
 #, c-format
 msgid "Target device ats option '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:19633
+#: src/conf/domain_conf.c:19631
 #, c-format
 msgid "Target device ccid address %d:%d does not match source %d:%d"
 msgstr ""
 
-#: src/conf/domain_conf.c:19669
+#: src/conf/domain_conf.c:19667
 #, c-format
 msgid "Target device dimm base address '%llx' does not match source '%llx'"
 msgstr ""
 
-#: src/conf/domain_conf.c:19660
+#: src/conf/domain_conf.c:19658
 #, c-format
 msgid "Target device dimm slot %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:19604
+#: src/conf/domain_conf.c:19602
 #, c-format
 msgid "Target device drive address %d:%d:%d does not match source %d:%d:%d"
 msgstr ""
 
-#: src/conf/domain_conf.c:19714
+#: src/conf/domain_conf.c:19712
 #, c-format
 msgid "Target device iommu option '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:19647
+#: src/conf/domain_conf.c:19645
 #, c-format
 msgid "Target device isa address %d:%d does not match source %d:%d"
 msgstr ""
 
-#: src/conf/domain_conf.c:19730
+#: src/conf/domain_conf.c:19728
 #, c-format
 msgid "Target device packed option '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:19738
+#: src/conf/domain_conf.c:19736
 #, c-format
 msgid "Target device page_per_vq option '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:19708
+#: src/conf/domain_conf.c:19706
 msgid "Target device virtio options don't match the source"
 msgstr ""
 
-#: src/conf/domain_conf.c:19619
+#: src/conf/domain_conf.c:19617
 #, c-format
 msgid ""
 "Target device virtio serial address %d:%d:%d does not match source %d:%d:%d"
 msgstr ""
 
-#: src/conf/domain_conf.c:19770
+#: src/conf/domain_conf.c:19768
 #, c-format
 msgid "Target disk %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19792
+#: src/conf/domain_conf.c:19790
 msgid "Target disk access mode does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:19762
+#: src/conf/domain_conf.c:19760
 #, c-format
 msgid "Target disk bus %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19754
+#: src/conf/domain_conf.c:19752
 #, c-format
 msgid "Target disk device %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19798
+#: src/conf/domain_conf.c:19796
 #, c-format
 msgid "Target disk model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19813
+#: src/conf/domain_conf.c:19811
 #, c-format
 msgid "Target disk queue count %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:19820
+#: src/conf/domain_conf.c:19818
 #, c-format
 msgid "Target disk queue size %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:19806
+#: src/conf/domain_conf.c:19804
 #, c-format
 msgid "Target disk rotation rate %u RPM does not match source %u RPM"
 msgstr ""
 
-#: src/conf/domain_conf.c:19777
+#: src/conf/domain_conf.c:19775
 #, c-format
 msgid "Target disk serial %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19784
+#: src/conf/domain_conf.c:19782
 #, c-format
 msgid "Target disk wwn '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:21089
+#: src/conf/domain_conf.c:21087
 #, c-format
 msgid ""
 "Target domain IOMMU device aw_bits value '%d' does not match source '%d'"
 msgstr ""
 
-#: src/conf/domain_conf.c:21065
+#: src/conf/domain_conf.c:21063
 #, c-format
 msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:21580
+#: src/conf/domain_conf.c:21578
 msgid "Target domain IOMMU device count does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:21073
+#: src/conf/domain_conf.c:21071
 #, c-format
 msgid "Target domain IOMMU device eim value '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:21057
+#: src/conf/domain_conf.c:21055
 #, c-format
 msgid ""
 "Target domain IOMMU device intremap value '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:21081
+#: src/conf/domain_conf.c:21079
 #, c-format
 msgid "Target domain IOMMU device iotlb value '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:21049
+#: src/conf/domain_conf.c:21047
 #, c-format
 msgid "Target domain IOMMU device model '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:21233
+#: src/conf/domain_conf.c:21231
 #, c-format
 msgid "Target domain OS type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:21520
+#: src/conf/domain_conf.c:21518
 #, c-format
 msgid "Target domain RNG device count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21254
+#: src/conf/domain_conf.c:21252
 #, c-format
 msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:21555
+#: src/conf/domain_conf.c:21553
 #, c-format
 msgid "Target domain TPM device count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21480
+#: src/conf/domain_conf.c:21478
 #, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:21240
+#: src/conf/domain_conf.c:21238
 #, c-format
 msgid "Target domain architecture %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:21427
+#: src/conf/domain_conf.c:21425
 #, c-format
 msgid "Target domain channel count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21440
+#: src/conf/domain_conf.c:21438
 #, c-format
 msgid "Target domain console count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21302
+#: src/conf/domain_conf.c:21300
 #, c-format
 msgid "Target domain controller count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21280
+#: src/conf/domain_conf.c:21278
 msgid "Target domain count of sysinfo does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:20925
+#: src/conf/domain_conf.c:20923
 #, c-format
 msgid "Target domain current memory %lld does not match source %lld"
 msgstr ""
 
-#: src/conf/domain_conf.c:21291
+#: src/conf/domain_conf.c:21289
 #, c-format
 msgid "Target domain disk count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21315
+#: src/conf/domain_conf.c:21313
 #, c-format
 msgid "Target domain filesystem count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21206
+#: src/conf/domain_conf.c:21204
 #, c-format
 msgid "Target domain genid %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:21375
+#: src/conf/domain_conf.c:21373
 #, c-format
 msgid "Target domain host device count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21453
+#: src/conf/domain_conf.c:21451
 #, c-format
 msgid "Target domain hub device count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21339
+#: src/conf/domain_conf.c:21337
 #, c-format
 msgid "Target domain input device count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21247
+#: src/conf/domain_conf.c:21245
 #, c-format
 msgid "Target domain machine type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:20915
+#: src/conf/domain_conf.c:20913
 #, c-format
 msgid "Target domain max memory %lld does not match source %lld"
 msgstr ""
 
-#: src/conf/domain_conf.c:21507
+#: src/conf/domain_conf.c:21505
 #, c-format
 msgid "Target domain memory balloon count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:21568
+#: src/conf/domain_conf.c:21566
 #, c-format
 msgid "Target domain memory device count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:20943
+#: src/conf/domain_conf.c:20941
 #, c-format
 msgid "Target domain memory slots count '%u' doesn't match source '%u'"
 msgstr ""
 
-#: src/conf/domain_conf.c:21217
+#: src/conf/domain_conf.c:21215
 #, c-format
 msgid "Target domain name '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:21327
+#: src/conf/domain_conf.c:21325
 #, c-format
 msgid "Target domain net card count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21531
+#: src/conf/domain_conf.c:21529
 #, c-format
 msgid "Target domain panic device count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21414
+#: src/conf/domain_conf.c:21412
 #, c-format
 msgid "Target domain parallel port count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21465
+#: src/conf/domain_conf.c:21463
 #, c-format
 msgid "Target domain redirected devices count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21194
+#: src/conf/domain_conf.c:21192
 msgid "Target domain requested genid does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:21401
+#: src/conf/domain_conf.c:21399
 #, c-format
 msgid "Target domain serial port count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21543
+#: src/conf/domain_conf.c:21541
 #, c-format
 msgid "Target domain shared memory device count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21388
+#: src/conf/domain_conf.c:21386
 #, c-format
 msgid "Target domain smartcard count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21351
+#: src/conf/domain_conf.c:21349
 #, c-format
 msgid "Target domain sound card count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21265
+#: src/conf/domain_conf.c:21263
 msgid "Target domain timers do not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:21187
+#: src/conf/domain_conf.c:21185
 #, c-format
 msgid "Target domain uuid %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:21130
+#: src/conf/domain_conf.c:21128
 #, c-format
 msgid "Target domain vCPU max %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21363
+#: src/conf/domain_conf.c:21361
 #, c-format
 msgid "Target domain video card count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:21175
+#: src/conf/domain_conf.c:21173
 #, c-format
 msgid "Target domain virt type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:21591
+#: src/conf/domain_conf.c:21589
 msgid "Target domain vsock device count does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:21105
+#: src/conf/domain_conf.c:21103
 #, c-format
 msgid "Target domain vsock device model '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:21494
+#: src/conf/domain_conf.c:21492
 #, c-format
 msgid "Target domain watchdog device count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:19907
+#: src/conf/domain_conf.c:19905
 msgid "Target filesystem access mode does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:19900
+#: src/conf/domain_conf.c:19898
 #, c-format
 msgid "Target filesystem guest target %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19913
+#: src/conf/domain_conf.c:19911
 msgid "Target filesystem model does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:20132
+#: src/conf/domain_conf.c:20130
 #, c-format
 msgid "Target host device mode %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:20141
+#: src/conf/domain_conf.c:20139
 #, c-format
 msgid "Target host device subsystem %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:20375
+#: src/conf/domain_conf.c:20373
 #, c-format
 msgid "Target hub device type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:20003
+#: src/conf/domain_conf.c:20001
 #, c-format
 msgid "Target input device bus %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19995
+#: src/conf/domain_conf.c:19993
 #, c-format
 msgid "Target input device type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:20011
+#: src/conf/domain_conf.c:20009
 #, c-format
 msgid "Target input model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:20934
+#: src/conf/domain_conf.c:20932
 #, c-format
 msgid "Target maximum memory size '%llu' doesn't match source '%llu'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:8584
+#: src/qemu/qemu_domain.c:8601
 #, c-format
 msgid "Target memory device alias '%s' doesn't match source alias '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20985
+#: src/conf/domain_conf.c:20983
 #, c-format
 msgid ""
 "Target memory device block size '%llu' doesn't match source memory device "
 "block size '%llu'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20960
+#: src/conf/domain_conf.c:20958
 #, c-format
 msgid "Target memory device model '%s' doesn't match source model '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20993
+#: src/conf/domain_conf.c:20991
 #, c-format
 msgid ""
 "Target memory device requested size '%llu' doesn't match source memory "
 "device requested size '%llu'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20977
+#: src/conf/domain_conf.c:20975
 #, c-format
 msgid ""
 "Target memory device size '%llu' doesn't match source memory device size "
 "'%llu'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20969
+#: src/conf/domain_conf.c:20967
 #, c-format
 msgid ""
 "Target memory device targetNode '%d' doesn't match source targetNode '%d'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:8571
+#: src/qemu/qemu_domain.c:8588
 #, c-format
 msgid ""
 "Target memoryBacking source '%s' doesn't match source memoryBacking "
@@ -19172,17 +19175,17 @@ msgstr ""
 msgid "Target model '%s' requires target type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:19974
+#: src/conf/domain_conf.c:19972
 #, c-format
 msgid "Target network card MTU %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:19950
+#: src/conf/domain_conf.c:19948
 #, c-format
 msgid "Target network card mac %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19959 src/conf/domain_conf.c:19966
+#: src/conf/domain_conf.c:19957 src/conf/domain_conf.c:19964
 #, c-format
 msgid "Target network card model %s does not match source %s"
 msgstr ""
@@ -19191,67 +19194,67 @@ msgstr ""
 msgid "Target not found"
 msgstr ""
 
-#: src/conf/domain_conf.c:20807
+#: src/conf/domain_conf.c:20805
 #, c-format
 msgid "Target panic model '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20205
+#: src/conf/domain_conf.c:20203
 #, c-format
 msgid "Target parallel port %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:20394
+#: src/conf/domain_conf.c:20392
 #, c-format
 msgid "Target redirected device bus %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:20405
+#: src/conf/domain_conf.c:20403
 #, c-format
 msgid ""
 "Target redirected device source type %s does not match source device source "
 "type %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:20179
+#: src/conf/domain_conf.c:20177
 #, c-format
 msgid "Target serial model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:20187
+#: src/conf/domain_conf.c:20185
 #, c-format
 msgid "Target serial port %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:20171
+#: src/conf/domain_conf.c:20169
 #, c-format
 msgid "Target serial type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:20857
+#: src/conf/domain_conf.c:20855
 msgid "Target shared memory MSI configuration doesn't match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:20832
+#: src/conf/domain_conf.c:20830
 #, c-format
 msgid "Target shared memory model '%s' does not match source model '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20823
+#: src/conf/domain_conf.c:20821
 #, c-format
 msgid "Target shared memory role '%s' does not match source role '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20848
+#: src/conf/domain_conf.c:20846
 msgid "Target shared memory server usage doesn't match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:20841
+#: src/conf/domain_conf.c:20839
 #, c-format
 msgid "Target shared memory size '%llu' does not match source size '%llu'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20033
+#: src/conf/domain_conf.c:20031
 #, c-format
 msgid "Target sound card model %s does not match source %s"
 msgstr ""
@@ -19276,12 +19279,12 @@ msgstr ""
 msgid "Target sysinfo does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:19535
+#: src/conf/domain_conf.c:19534
 #, c-format
 msgid "Target timer %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19543
+#: src/conf/domain_conf.c:19542
 #, c-format
 msgid "Target timer presence '%s' does not match source '%s'"
 msgstr ""
@@ -19296,51 +19299,51 @@ msgstr ""
 msgid "Target type '%s' requires address type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20103
+#: src/conf/domain_conf.c:20101
 #, c-format
 msgid "Target video card 2d accel %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:20110
+#: src/conf/domain_conf.c:20108
 #, c-format
 msgid "Target video card 3d accel %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:20096
+#: src/conf/domain_conf.c:20094
 msgid "Target video card acceleration does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:20088
+#: src/conf/domain_conf.c:20086
 #, c-format
 msgid "Target video card heads %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:20052
+#: src/conf/domain_conf.c:20050
 #, c-format
 msgid "Target video card model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:20060
+#: src/conf/domain_conf.c:20058
 #, c-format
 msgid "Target video card ram %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:20081
+#: src/conf/domain_conf.c:20079
 #, c-format
 msgid "Target video card vgamem %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:20067
+#: src/conf/domain_conf.c:20065
 #, c-format
 msgid "Target video card vram %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:20074
+#: src/conf/domain_conf.c:20072
 #, c-format
 msgid "Target video card vram64 %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:20294
+#: src/conf/domain_conf.c:20292
 #, c-format
 msgid "Target watchdog model %s does not match source %s"
 msgstr ""
@@ -20227,7 +20230,7 @@ msgstr ""
 msgid "USB controller model '%s' not supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5496
+#: src/qemu/qemu_domain.c:5513
 #, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %s"
 msgstr ""
@@ -21131,7 +21134,7 @@ msgstr ""
 msgid "Unable to format SELinux context"
 msgstr ""
 
-#: src/conf/domain_conf.c:24305
+#: src/conf/domain_conf.c:24303
 msgid "Unable to format guestfwd port"
 msgstr ""
 
@@ -21850,7 +21853,7 @@ msgstr ""
 msgid "Unable to parse FD number '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:16638
+#: src/conf/domain_conf.c:16637
 msgid "Unable to parse HPT maxpagesize setting"
 msgstr ""
 
@@ -22110,7 +22113,7 @@ msgstr ""
 msgid "Unable to read from file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:7157
+#: src/qemu/qemu_domain.c:7174
 msgid "Unable to read from log file"
 msgstr ""
 
@@ -22391,7 +22394,7 @@ msgstr ""
 msgid "Unable to seek to data"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:7105
+#: src/qemu/qemu_domain.c:7122
 msgid "Unable to seek to end of domain logfile"
 msgstr ""
 
@@ -22446,7 +22449,7 @@ msgstr ""
 msgid "Unable to set IPV6_V6ONLY flag"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:12437 src/qemu/qemu_domain.c:12459
+#: src/qemu/qemu_domain.c:12454 src/qemu/qemu_domain.c:12476
 #: src/qemu/qemu_process.c:5961 src/util/vircommand.c:449
 msgid "Unable to set SCHED_CORE"
 msgstr ""
@@ -22819,7 +22822,7 @@ msgstr ""
 msgid "Unable to write to container pty"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:7110
+#: src/qemu/qemu_domain.c:7127
 msgid "Unable to write to domain logfile"
 msgstr ""
 
@@ -22938,7 +22941,7 @@ msgstr ""
 msgid "Unexpected LXC URI path '%s', try lxc:///system"
 msgstr ""
 
-#: src/conf/domain_conf.c:29830
+#: src/conf/domain_conf.c:29828
 msgid "Unexpected PCI backend 'xen'"
 msgstr ""
 
@@ -22995,7 +22998,7 @@ msgstr ""
 msgid "Unexpected device type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:22680
+#: src/conf/domain_conf.c:22678
 #, c-format
 msgid "Unexpected disk sgio mode '%d'"
 msgstr ""
@@ -23067,7 +23070,7 @@ msgstr ""
 msgid "Unexpected message type: %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:29854
+#: src/conf/domain_conf.c:29852
 #, c-format
 msgid "Unexpected network port type %s"
 msgstr ""
@@ -23118,7 +23121,7 @@ msgstr ""
 msgid "Unexpected signal received: %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:27041
+#: src/conf/domain_conf.c:27039
 #, c-format
 msgid "Unexpected state of feature '%s'"
 msgstr ""
@@ -23233,7 +23236,7 @@ msgstr ""
 msgid "Unknown URI parameter '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:17342
+#: src/conf/domain_conf.c:17341
 #, c-format
 msgid "Unknown acpi table type: %s"
 msgstr ""
@@ -23243,7 +23246,7 @@ msgstr ""
 msgid "Unknown adapter type: %X"
 msgstr ""
 
-#: src/conf/cpu_conf.c:468 src/conf/domain_conf.c:17903
+#: src/conf/cpu_conf.c:468 src/conf/domain_conf.c:17902
 #, c-format
 msgid "Unknown architecture %s"
 msgstr ""
@@ -23278,7 +23281,7 @@ msgstr ""
 msgid "Unknown cgroup controller '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:15118
+#: src/conf/domain_conf.c:15117
 #, c-format
 msgid "Unknown char device type: %d"
 msgstr ""
@@ -23651,7 +23654,7 @@ msgstr ""
 msgid "Unsupported <tftp> element in an IPv6 element in network '%s'"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:6341
+#: src/libxl/libxl_driver.c:6336
 #, c-format
 msgid "Unsupported IP address data source %d"
 msgstr ""
@@ -23920,7 +23923,7 @@ msgstr ""
 msgid "Unsupported listen type"
 msgstr ""
 
-#: src/bhyve/bhyve_firmware.c:85 src/conf/domain_conf.c:16865
+#: src/bhyve/bhyve_firmware.c:85 src/conf/domain_conf.c:16864
 #: src/libxl/libxl_conf.c:659 src/qemu/qemu_firmware.c:1735
 #, c-format
 msgid "Unsupported loader format '%s'"
@@ -23972,7 +23975,7 @@ msgstr ""
 msgid "Unsupported numatune placement '%d'"
 msgstr ""
 
-#: src/conf/domain_conf.c:16776 src/qemu/qemu_firmware.c:1743
+#: src/conf/domain_conf.c:16775 src/qemu/qemu_firmware.c:1743
 #, c-format
 msgid "Unsupported nvram format '%s'"
 msgstr ""
@@ -24349,7 +24352,7 @@ msgstr ""
 msgid "Virtual network portgroups are not supported by vz driver."
 msgstr ""
 
-#: src/util/virnetdevvportprofile.c:1352 src/util/virnetdevvportprofile.c:1364
+#: src/util/virnetdevvportprofile.c:1351 src/util/virnetdevvportprofile.c:1363
 msgid "Virtual port profile association not supported on this platform"
 msgstr ""
 
@@ -24588,7 +24591,7 @@ msgstr ""
 msgid "Xen migration stream version '%d' is not supported on this host"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:6404
+#: src/libxl/libxl_driver.c:6399
 msgid "Xen only supports 'xenpv', 'xenpvh' and 'xenfv' machines"
 msgstr ""
 
@@ -24661,7 +24664,7 @@ msgid ""
 "Only one default is allowed."
 msgstr ""
 
-#: src/conf/domain_conf.c:19091
+#: src/conf/domain_conf.c:19090
 msgid ""
 "a maximum of two TPM devices is supported, one of them being a TPM Proxy "
 "device"
@@ -24871,7 +24874,7 @@ msgstr ""
 msgid "all CPU models are accepted"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4572
+#: src/qemu/qemu_domain.c:4589
 msgid "all vcpus must have either set or unset order"
 msgstr ""
 
@@ -24882,7 +24885,7 @@ msgstr ""
 #: src/util/virnetdev.c:1579 src/util/virnetdev.c:3148
 #: src/util/virnetdev.c:3231 src/util/virnetdevbridge.c:1071
 #: src/util/virnetdevip.c:140 src/util/virnetdevip.c:363
-#: src/util/virnetdevvportprofile.c:841 src/util/virnetlink.c:49
+#: src/util/virnetdevvportprofile.c:840 src/util/virnetlink.c:49
 #: src/util/virnetlink.c:67 src/util/virnetlink.c:76
 msgid "allocated netlink buffer is too small"
 msgstr ""
@@ -24948,7 +24951,7 @@ msgstr ""
 msgid "an IOThread is already using iothread_id '%u'"
 msgstr ""
 
-#: src/conf/domain_conf.c:17880
+#: src/conf/domain_conf.c:17879
 msgid "an os <type> must be specified"
 msgstr ""
 
@@ -25275,11 +25278,11 @@ msgstr ""
 msgid "background job"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:7768
+#: src/qemu/qemu_domain.c:7785
 msgid "backing chains more than 200 layers deep are not supported"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:7764
+#: src/qemu/qemu_domain.c:7781
 #, c-format
 msgid ""
 "backing chains more than 200 layers deep are not supported for disk '%s'"
@@ -25358,7 +25361,7 @@ msgstr ""
 
 #: src/util/virsocketaddr.c:909
 #, c-format
-msgid "bad prefix %d for network %s when  checking range %s - %s"
+msgid "bad prefix %d for network %s when checking range %s - %s"
 msgstr ""
 
 #: src/libxl/libxl_conf.c:807
@@ -25527,17 +25530,17 @@ msgstr ""
 msgid "block job on disk '%s' is still being ended"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:11607
+#: src/qemu/qemu_domain.c:11624
 #, c-format
 msgid "block jobs are not supported on disk '%s' using bus 'sd'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:11614
+#: src/qemu/qemu_domain.c:11631
 #, c-format
 msgid "block jobs are not supported on transient disk '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:11621
+#: src/qemu/qemu_domain.c:11638
 #, c-format
 msgid "block jobs are not supported on vhostuser disk '%s'"
 msgstr ""
@@ -25641,7 +25644,7 @@ msgstr ""
 msgid "bool parameter '%s' of command '%s' has completer set"
 msgstr ""
 
-#: src/conf/domain_conf.c:27961
+#: src/conf/domain_conf.c:27959
 #, c-format
 msgid "boot order %u is already used by another device"
 msgstr ""
@@ -25742,7 +25745,7 @@ msgstr ""
 msgid "bridge zone not allowed in %s mode (network '%s')"
 msgstr ""
 
-#: src/util/virnetdevvportprofile.c:890
+#: src/util/virnetdevvportprofile.c:889
 msgid "buffer for root interface name is too small"
 msgstr ""
 
@@ -25890,7 +25893,7 @@ msgstr ""
 msgid "can't keep relative backing relationship"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:7333
+#: src/qemu/qemu_domain.c:7350
 #, c-format
 msgid "can't manipulate inactive snapshots of disk '%s'"
 msgstr ""
@@ -25900,39 +25903,39 @@ msgstr ""
 msgid "can't open session to the domain with id %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:18232
+#: src/conf/domain_conf.c:18231
 msgid "can't parse cputune emulator period value"
 msgstr ""
 
-#: src/conf/domain_conf.c:18239
+#: src/conf/domain_conf.c:18238
 msgid "can't parse cputune emulator quota value"
 msgstr ""
 
-#: src/conf/domain_conf.c:18218
+#: src/conf/domain_conf.c:18217
 msgid "can't parse cputune global period value"
 msgstr ""
 
-#: src/conf/domain_conf.c:18225
+#: src/conf/domain_conf.c:18224
 msgid "can't parse cputune global quota value"
 msgstr ""
 
-#: src/conf/domain_conf.c:18247
+#: src/conf/domain_conf.c:18246
 msgid "can't parse cputune iothread period value"
 msgstr ""
 
-#: src/conf/domain_conf.c:18254
+#: src/conf/domain_conf.c:18253
 msgid "can't parse cputune iothread quota value"
 msgstr ""
 
-#: src/conf/domain_conf.c:18204
+#: src/conf/domain_conf.c:18203
 msgid "can't parse cputune period value"
 msgstr ""
 
-#: src/conf/domain_conf.c:18211
+#: src/conf/domain_conf.c:18210
 msgid "can't parse cputune quota value"
 msgstr ""
 
-#: src/conf/domain_conf.c:18195
+#: src/conf/domain_conf.c:18194
 msgid "can't parse cputune shares value"
 msgstr ""
 
@@ -26290,7 +26293,7 @@ msgstr ""
 msgid "cannot create a vboxSnapshotXmlPtr"
 msgstr ""
 
-#: src/bhyve/bhyve_driver.c:372 src/libxl/libxl_driver.c:4647
+#: src/bhyve/bhyve_driver.c:372 src/libxl/libxl_driver.c:4642
 #: src/qemu/qemu_driver.c:8228 src/storage/storage_driver.c:1384
 #, c-format
 msgid "cannot create autostart directory %s"
@@ -26323,7 +26326,7 @@ msgstr ""
 msgid "cannot create config directory %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:28061 src/conf/network_conf.c:2609
+#: src/conf/domain_conf.c:28059 src/conf/network_conf.c:2609
 #: src/conf/virnwfilterbindingobj.c:162 src/nwfilter/nwfilter_driver.c:285
 #: src/nwfilter/nwfilter_driver.c:293 src/secret/secret_driver.c:527
 #: src/util/virdnsmasq.c:512
@@ -26365,7 +26368,7 @@ msgstr ""
 msgid "cannot create pipe for tunnelled migration"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:7289
+#: src/qemu/qemu_domain.c:7306
 #, c-format
 msgid "cannot create snapshot directory '%s'"
 msgstr ""
@@ -26466,47 +26469,47 @@ msgstr ""
 msgid "cannot extend file '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:18154
+#: src/conf/domain_conf.c:18153
 msgid "cannot extract blkiotune nodes"
 msgstr ""
 
-#: src/conf/domain_conf.c:18342
+#: src/conf/domain_conf.c:18341
 msgid "cannot extract cachetune nodes"
 msgstr ""
 
-#: src/conf/domain_conf.c:18840
+#: src/conf/domain_conf.c:18839
 msgid "cannot extract console devices"
 msgstr ""
 
-#: src/conf/domain_conf.c:18717
+#: src/conf/domain_conf.c:18716
 msgid "cannot extract device leases"
 msgstr ""
 
-#: src/conf/domain_conf.c:18269
+#: src/conf/domain_conf.c:18268
 msgid "cannot extract emulatorpin nodes"
 msgstr ""
 
-#: src/conf/domain_conf.c:18324
+#: src/conf/domain_conf.c:18323
 msgid "cannot extract emulatorsched nodes"
 msgstr ""
 
-#: src/conf/domain_conf.c:17995
+#: src/conf/domain_conf.c:17994
 msgid "cannot extract hugepages nodes"
 msgstr ""
 
-#: src/conf/domain_conf.c:18288
+#: src/conf/domain_conf.c:18287
 msgid "cannot extract iothreadpin nodes"
 msgstr ""
 
-#: src/conf/domain_conf.c:18312
+#: src/conf/domain_conf.c:18311
 msgid "cannot extract iothreadsched nodes"
 msgstr ""
 
-#: src/conf/domain_conf.c:18354
+#: src/conf/domain_conf.c:18353
 msgid "cannot extract memorytune nodes"
 msgstr ""
 
-#: src/conf/domain_conf.c:18665
+#: src/conf/domain_conf.c:18664
 msgid "cannot extract resource nodes"
 msgstr ""
 
@@ -26514,7 +26517,7 @@ msgstr ""
 msgid "cannot extract snapshot nodes"
 msgstr ""
 
-#: src/conf/domain_conf.c:18300
+#: src/conf/domain_conf.c:18299
 msgid "cannot extract vcpusched nodes"
 msgstr ""
 
@@ -26563,7 +26566,7 @@ msgstr ""
 msgid "cannot find channel %s"
 msgstr ""
 
-#: src/ch/ch_driver.c:820 src/libxl/libxl_driver.c:4924
+#: src/ch/ch_driver.c:820 src/libxl/libxl_driver.c:4919
 #: src/qemu/qemu_driver.c:13983
 #, c-format
 msgid "cannot find character device %s"
@@ -26574,7 +26577,7 @@ msgstr ""
 msgid "cannot find console device '%s'"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:5537
+#: src/libxl/libxl_driver.c:5532
 msgid "cannot find device number"
 msgstr ""
 
@@ -26795,18 +26798,30 @@ msgstr ""
 msgid "cannot halt after transient domain snapshot"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6043 src/qemu/qemu_hotplug.c:6055
+#: src/qemu/qemu_hotplug.c:6041
 #, c-format
-msgid "cannot hot unplug %s device with PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - "
+"controller not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6027
+#: src/qemu/qemu_hotplug.c:6051
 #, c-format
-msgid "cannot hot unplug %s device with multifunction PCI guest address: "
+msgid ""
+"cannot hot unplug %s device with PCI guest address: %04x:%02x:%02x.%d - not "
+"allowed by controller"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3671
-msgid "cannot hot unplug multifunction PCI device: "
+#: src/qemu/qemu_hotplug.c:6026
+#, c-format
+msgid ""
+"cannot hot unplug %s device with multifunction PCI guest address: %04x:%02x:"
+"%02x.%d"
+msgstr ""
+
+#: src/libxl/libxl_driver.c:3668
+#, c-format
+msgid "cannot hot unplug multifunction PCI device: %04x:%02x:%02x.%d"
 msgstr ""
 
 #: src/qemu/qemu_agent.c:610
@@ -26942,9 +26957,9 @@ msgstr ""
 msgid "cannot modify MTU"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:8282 src/qemu/qemu_domain.c:8294
-#: src/qemu/qemu_domain.c:8304 src/qemu/qemu_domain.c:8394
-#: src/qemu/qemu_domain.c:8419
+#: src/qemu/qemu_domain.c:8299 src/qemu/qemu_domain.c:8311
+#: src/qemu/qemu_domain.c:8321 src/qemu/qemu_domain.c:8411
+#: src/qemu/qemu_domain.c:8436
 #, c-format
 msgid "cannot modify field '%s' of the disk"
 msgstr ""
@@ -27093,7 +27108,7 @@ msgstr ""
 msgid "cannot open SELinux label_handle"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:5550
+#: src/libxl/libxl_driver.c:5545
 msgid "cannot open bus path"
 msgstr ""
 
@@ -27271,7 +27286,7 @@ msgstr ""
 msgid "cannot pass pipe for tunnelled migration"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:11537
+#: src/qemu/qemu_domain.c:11554
 msgid "cannot perform block operations while checkpoint exists"
 msgstr ""
 
@@ -27312,7 +27327,7 @@ msgstr ""
 msgid "cannot query both live and config at once"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:5559 tools/virsh-volume.c:675
+#: src/libxl/libxl_driver.c:5554 tools/virsh-volume.c:675
 #, c-format
 msgid "cannot read %s"
 msgstr ""
@@ -27417,7 +27432,7 @@ msgstr ""
 msgid "cannot remove checkpoint from inactive domain"
 msgstr ""
 
-#: src/conf/domain_conf.c:28126
+#: src/conf/domain_conf.c:28124
 #, c-format
 msgid "cannot remove config %s"
 msgstr ""
@@ -27560,7 +27575,7 @@ msgstr ""
 msgid "cannot set autostart for transient device"
 msgstr ""
 
-#: src/bhyve/bhyve_driver.c:357 src/libxl/libxl_driver.c:4632
+#: src/bhyve/bhyve_driver.c:357 src/libxl/libxl_driver.c:4627
 #: src/qemu/qemu_driver.c:8208
 msgid "cannot set autostart for transient domain"
 msgstr ""
@@ -27796,7 +27811,7 @@ msgstr ""
 msgid "cannot use namespaces in session mode"
 msgstr ""
 
-#: src/conf/domain_conf.c:28027 src/qemu/qemu_domain.c:9293
+#: src/conf/domain_conf.c:28025 src/qemu/qemu_domain.c:9310
 msgid ""
 "cannot use/hotplug a memory device when domain 'maxMemory' is not defined"
 msgstr ""
@@ -27991,11 +28006,11 @@ msgstr ""
 msgid "changing cpu placement mode is not supported by vz driver"
 msgstr ""
 
-#: src/conf/domain_conf.c:27995
+#: src/conf/domain_conf.c:27993
 msgid "changing device 'acpi index' is not allowed"
 msgstr ""
 
-#: src/conf/domain_conf.c:27989
+#: src/conf/domain_conf.c:27987
 msgid "changing device alias is not allowed"
 msgstr ""
 
@@ -28032,7 +28047,7 @@ msgstr ""
 msgid "channel target type not supported"
 msgstr ""
 
-#: src/ch/ch_driver.c:827 src/libxl/libxl_driver.c:4931
+#: src/ch/ch_driver.c:827 src/libxl/libxl_driver.c:4926
 #: src/lxc/lxc_driver.c:2734 src/qemu/qemu_driver.c:13990
 #, c-format
 msgid "character device %s is not using a PTY"
@@ -28151,7 +28166,7 @@ msgstr ""
 msgid "child reported (status=%d): %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5686
+#: src/qemu/qemu_hotplug.c:5685
 #, c-format
 msgid "chr type '%s' device not present in domain configuration"
 msgstr ""
@@ -28492,7 +28507,7 @@ msgstr ""
 msgid "control or query domain vcpu affinity"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3733 src/qemu/qemu_hotplug.c:5477
+#: src/libxl/libxl_driver.c:3728 src/qemu/qemu_hotplug.c:5477
 #, c-format
 msgid "controller %s:%d not found"
 msgstr ""
@@ -28833,7 +28848,7 @@ msgstr ""
 msgid "could not get parent of snapshot %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4517
+#: src/qemu/qemu_domain.c:4534
 #, c-format
 msgid "could not get preferred machine for %s type=%s"
 msgstr ""
@@ -29111,7 +29126,7 @@ msgstr ""
 msgid "cpu count too large"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6237
+#: src/qemu/qemu_hotplug.c:6231
 msgid "cpu hotplug is not supported"
 msgstr ""
 
@@ -29519,7 +29534,7 @@ msgstr ""
 msgid "deletion of external disk snapshots with children not supported"
 msgstr ""
 
-#: src/conf/domain_conf.c:30828
+#: src/conf/domain_conf.c:30826
 #, c-format
 msgid "deprecated configuration: %s"
 msgstr ""
@@ -29653,7 +29668,7 @@ msgstr ""
 msgid "device cannot be detached: device is busy"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3574 src/lxc/lxc_driver.c:3021
+#: src/libxl/libxl_driver.c:3572 src/lxc/lxc_driver.c:3021
 #: src/qemu/qemu_driver.c:7218 src/qemu/qemu_driver.c:7311
 #: src/qemu/qemu_driver.c:7322
 msgid "device is already in the domain configuration"
@@ -29687,14 +29702,14 @@ msgstr ""
 msgid "device not found: %s"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4013 src/libxl/libxl_driver.c:4033
+#: src/libxl/libxl_driver.c:4008 src/libxl/libxl_driver.c:4028
 #: src/lxc/lxc_driver.c:3168 src/qemu/qemu_driver.c:7414
 #: src/qemu/qemu_driver.c:7424 src/qemu/qemu_driver.c:7448
 #: src/qemu/qemu_hotplug.c:1937
 msgid "device not present in domain configuration"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6010
+#: src/qemu/qemu_hotplug.c:6009
 #, c-format
 msgid "device of type '%s' has no device info"
 msgstr ""
@@ -29709,22 +29724,22 @@ msgstr ""
 msgid "device to set threshold for"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3504 src/lxc/lxc_driver.c:3969
+#: src/libxl/libxl_driver.c:3502 src/lxc/lxc_driver.c:3969
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3976 src/lxc/lxc_driver.c:4385
+#: src/libxl/libxl_driver.c:3971 src/lxc/lxc_driver.c:4385
 #, c-format
 msgid "device type '%s' cannot be detached"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4128
+#: src/libxl/libxl_driver.c:4123
 #, c-format
 msgid "device type '%s' cannot be updated"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3345
+#: src/libxl/libxl_driver.c:3343
 #, c-format
 msgid "device type '%s' cannot hot unplugged"
 msgstr ""
@@ -29782,11 +29797,11 @@ msgid ""
 "dirty-bitmap, dirty-ring' can be specified."
 msgstr ""
 
-#: src/conf/domain_conf.c:16357
+#: src/conf/domain_conf.c:16356
 msgid "dirty ring must be power of 2 and ranges [1024, 65536]"
 msgstr ""
 
-#: src/conf/domain_conf.c:20762
+#: src/conf/domain_conf.c:20760
 #, c-format
 msgid ""
 "dirty ring size of KVM feature '%s' differs: source: '%d', destination: '%d'"
@@ -29857,13 +29872,13 @@ msgstr ""
 msgid "disk %s has no source file to be committed"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3308 src/lxc/lxc_driver.c:3998
+#: src/libxl/libxl_driver.c:3306 src/lxc/lxc_driver.c:3998
 #: src/qemu/qemu_hotplug.c:5295
 #, c-format
 msgid "disk %s not found"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:8438 src/qemu/qemu_domain.c:8447
+#: src/qemu/qemu_domain.c:8455 src/qemu/qemu_domain.c:8464
 #, c-format
 msgid "disk '%s' already in active block job"
 msgstr ""
@@ -29898,7 +29913,7 @@ msgstr ""
 msgid "disk '%s' not found"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:10109
+#: src/qemu/qemu_domain.c:10126
 #, c-format
 msgid "disk '%s' not found in domain"
 msgstr ""
@@ -29929,7 +29944,7 @@ msgstr ""
 msgid "disk backend not supported: %s"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3335
+#: src/libxl/libxl_driver.c:3333
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
 msgstr ""
@@ -29939,7 +29954,7 @@ msgstr ""
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4094
+#: src/libxl/libxl_driver.c:4089
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr ""
@@ -30071,7 +30086,7 @@ msgstr ""
 msgid "disk source can be changed only in removable drives"
 msgstr ""
 
-#: src/conf/domain_conf.c:30318
+#: src/conf/domain_conf.c:30316
 msgid "disk source mode is only valid when storage pool is of iscsi type"
 msgstr ""
 
@@ -30259,7 +30274,7 @@ msgstr ""
 msgid "domain '%s' is not processing incoming migration"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:6431
+#: src/qemu/qemu_domain.c:6448
 #, c-format
 msgid "domain '%s' is not running"
 msgstr ""
@@ -30393,7 +30408,7 @@ msgstr ""
 msgid "domain is marked for auto destroy"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:6291 src/qemu/qemu_domain.c:11815
+#: src/qemu/qemu_domain.c:6308 src/qemu/qemu_domain.c:11832
 msgid "domain is no longer running"
 msgstr ""
 
@@ -30412,8 +30427,8 @@ msgid "domain is not in suspend state"
 msgstr ""
 
 #: src/conf/domain_conf.c:4198 src/conf/domain_conf.c:4329
-#: src/conf/domain_conf.c:5232 src/qemu/qemu_domain.c:8674
-#: src/qemu/qemu_domain.c:12101 src/qemu/qemu_driver.c:1782
+#: src/conf/domain_conf.c:5232 src/qemu/qemu_domain.c:8691
+#: src/qemu/qemu_domain.c:12118 src/qemu/qemu_driver.c:1782
 #: src/qemu/qemu_driver.c:1814 src/qemu/qemu_driver.c:2091
 #: src/qemu/qemu_monitor.c:701 src/test/test_driver.c:2212
 msgid "domain is not running"
@@ -30646,12 +30661,12 @@ msgstr ""
 msgid "duplicate domain '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:15880
+#: src/conf/domain_conf.c:15879
 #, c-format
 msgid "duplicate iothread id '%u' found"
 msgstr ""
 
-#: src/conf/domain_conf.c:15980
+#: src/conf/domain_conf.c:15979
 #, c-format
 msgid "duplicate iothreadpin for same iothread '%u'"
 msgstr ""
@@ -30670,7 +30685,7 @@ msgstr ""
 msgid "duplicate vcpu order '%u'"
 msgstr ""
 
-#: src/conf/domain_conf.c:15920
+#: src/conf/domain_conf.c:15919
 #, c-format
 msgid "duplicate vcpupin for vcpu '%d'"
 msgstr ""
@@ -30764,7 +30779,7 @@ msgstr ""
 msgid "element"
 msgstr ""
 
-#: src/conf/domain_conf.c:17821
+#: src/conf/domain_conf.c:17820
 msgid "element 'genid' can only appear once"
 msgstr ""
 
@@ -30849,11 +30864,11 @@ msgstr ""
 msgid "encryption is not supported with vhostuser disk"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5177
+#: src/qemu/qemu_domain.c:5194
 msgid "encryption is supported only with 'raw' and 'qcow2' image format"
 msgstr ""
 
-#: src/util/virsocketaddr.c:954
+#: src/util/virsocketaddr.c:953
 #, c-format
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
 msgstr ""
@@ -30890,7 +30905,7 @@ msgstr ""
 msgid "error"
 msgstr ""
 
-#: src/util/virnetdevvportprofile.c:981
+#: src/util/virnetdevvportprofile.c:980
 #, c-format
 msgid "error %d during port-profile setlink on interface %s (%d)"
 msgstr ""
@@ -30953,7 +30968,7 @@ msgstr ""
 msgid "error dumping neighbor table"
 msgstr ""
 
-#: src/util/virnetdevvportprofile.c:815
+#: src/util/virnetdevvportprofile.c:814
 #, c-format
 msgid "error during virtual port configuration of ifindex %d"
 msgstr ""
@@ -30983,7 +30998,7 @@ msgstr ""
 msgid "error parsing IFLA_VF_INFO"
 msgstr ""
 
-#: src/util/virnetdevvportprofile.c:595
+#: src/util/virnetdevvportprofile.c:594
 msgid "error parsing IFLA_VF_PORT during error reporting"
 msgstr ""
 
@@ -31506,7 +31521,7 @@ msgstr ""
 msgid "failed to add device into new map"
 msgstr ""
 
-#: src/conf/domain_conf.c:29310
+#: src/conf/domain_conf.c:29308
 msgid "failed to add metadata to XML document"
 msgstr ""
 
@@ -31628,7 +31643,7 @@ msgstr ""
 msgid "failed to connect to the hypervisor"
 msgstr ""
 
-#: src/util/virsocketaddr.c:931
+#: src/util/virsocketaddr.c:930
 #, c-format
 msgid "failed to construct broadcast or network address for network %s/%d"
 msgstr ""
@@ -31738,7 +31753,7 @@ msgstr ""
 msgid "failed to create log dir '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:7043 src/qemu/qemu_domain.c:7210
+#: src/qemu/qemu_domain.c:7060 src/qemu/qemu_domain.c:7227
 #: src/qemu/qemu_virtiofs.c:231
 #, c-format
 msgid "failed to create logfile %s"
@@ -31827,7 +31842,7 @@ msgstr ""
 msgid "failed to determine loop exit status: %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:11096
+#: src/qemu/qemu_domain.c:11113
 #, c-format
 msgid "failed to duplicate file descriptor for fd group '%s'"
 msgstr ""
@@ -31882,7 +31897,7 @@ msgstr ""
 msgid "failed to find an empty memory slot"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6375
+#: src/qemu/qemu_hotplug.c:6369
 msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
@@ -31893,7 +31908,7 @@ msgstr ""
 msgid "failed to find data for block node '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:10708 src/qemu/qemu_domain.c:10744
+#: src/qemu/qemu_domain.c:10725 src/qemu/qemu_domain.c:10761
 #, c-format
 msgid "failed to find disk '%s'"
 msgstr ""
@@ -31955,12 +31970,12 @@ msgstr ""
 msgid "failed to get CPU model names"
 msgstr ""
 
-#: src/util/virsocketaddr.c:968
+#: src/util/virsocketaddr.c:967
 #, c-format
 msgid "failed to get IPv4 address for start or end of range %s - %s"
 msgstr ""
 
-#: src/util/virsocketaddr.c:999
+#: src/util/virsocketaddr.c:998
 #, c-format
 msgid "failed to get IPv6 address for start or end of range %s - %s"
 msgstr ""
@@ -32101,7 +32116,7 @@ msgstr ""
 msgid "failed to get parent pool"
 msgstr ""
 
-#: src/conf/domain_conf.c:28442
+#: src/conf/domain_conf.c:28440
 msgid "failed to get persistent definition object"
 msgstr ""
 
@@ -32333,7 +32348,7 @@ msgstr ""
 msgid "failed to open file"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:7066
+#: src/qemu/qemu_domain.c:7083
 #, c-format
 msgid "failed to open logfile %s"
 msgstr ""
@@ -32405,7 +32420,7 @@ msgstr ""
 msgid "failed to parse backing file location '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:10702
+#: src/qemu/qemu_domain.c:10719
 #, c-format
 msgid "failed to parse block device '%s'"
 msgstr ""
@@ -32739,7 +32754,7 @@ msgstr ""
 msgid "failed to save content"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:7078
+#: src/qemu/qemu_domain.c:7095
 #, c-format
 msgid "failed to seek in log file %s"
 msgstr ""
@@ -32773,7 +32788,7 @@ msgstr ""
 msgid "failed to set checkpoint '%s' as current"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:7048 src/qemu/qemu_domain.c:7071
+#: src/qemu/qemu_domain.c:7065 src/qemu/qemu_domain.c:7088
 #: src/qemu/qemu_virtiofs.c:236
 #, c-format
 msgid "failed to set close-on-exec flag on %s"
@@ -32851,7 +32866,7 @@ msgstr ""
 msgid "failed to take screenshot"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:7059
+#: src/qemu/qemu_domain.c:7076
 #, c-format
 msgid "failed to truncate %s"
 msgstr ""
@@ -33123,7 +33138,7 @@ msgstr ""
 msgid "file containing secret attributes in XML"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:11073
+#: src/qemu/qemu_domain.c:11090
 #, c-format
 msgid "file descriptor group '%s' was not associated with the domain"
 msgstr ""
@@ -33847,7 +33862,7 @@ msgstr ""
 msgid "host CPU vendor does not match required CPU vendor %s"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3782 src/libxl/libxl_driver.c:3800
+#: src/libxl/libxl_driver.c:3777 src/libxl/libxl_driver.c:3795
 #, c-format
 msgid "host USB device Busnum: %3x, Devnum: %3x not found"
 msgstr ""
@@ -33919,8 +33934,9 @@ msgstr ""
 msgid "host name for source of disk device"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3662 src/qemu/qemu_hotplug.c:5523
-msgid "host pci device "
+#: src/libxl/libxl_driver.c:3660 src/qemu/qemu_hotplug.c:5523
+#, c-format
+msgid "host pci device %04x:%02x:%02x.%d not found"
 msgstr ""
 
 #: src/ch/ch_monitor.c:391
@@ -33939,12 +33955,12 @@ msgstr ""
 msgid "host reports too many vCPUs: %d > %d"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5550
+#: src/qemu/qemu_hotplug.c:5549
 #, c-format
 msgid "host scsi device %s:%u:%u.%llu not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5544
+#: src/qemu/qemu_hotplug.c:5543
 #, c-format
 msgid "host scsi iSCSI path %s not found"
 msgstr ""
@@ -33957,12 +33973,12 @@ msgstr ""
 msgid "host transport for source of disk device"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5531
+#: src/qemu/qemu_hotplug.c:5530
 #, c-format
 msgid "host usb device %03d.%03d not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5535
+#: src/qemu/qemu_hotplug.c:5534
 #, c-format
 msgid "host usb device vendor=0x%.4x product=0x%.4x not found"
 msgstr ""
@@ -33993,7 +34009,7 @@ msgstr ""
 msgid "hostdev invalid secret type '%s'"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3264 src/libxl/libxl_driver.c:3836
+#: src/libxl/libxl_driver.c:3262 src/libxl/libxl_driver.c:3831
 #, c-format
 msgid "hostdev mode '%s' not supported"
 msgstr ""
@@ -34011,7 +34027,7 @@ msgid ""
 "require all devices to be listed by PCI address, not network device name"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3282
+#: src/libxl/libxl_driver.c:3280
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr ""
@@ -34040,7 +34056,7 @@ msgstr ""
 msgid "hot unplug is not supported for hostdev mode '%s'"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5628
+#: src/qemu/qemu_hotplug.c:5627
 #, c-format
 msgid "hot unplug of watchdog of model %s is not supported"
 msgstr ""
@@ -34055,7 +34071,7 @@ msgstr ""
 msgid "hotplug is not supported for hostdev subsys type '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:9236
+#: src/qemu/qemu_domain.c:9253
 #, c-format
 msgid "hotplug is not supported for the %s device"
 msgstr ""
@@ -34074,7 +34090,7 @@ msgstr ""
 msgid "hpet timer is not supported by this architecture"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5070
+#: src/qemu/qemu_domain.c:5087
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr ""
 
@@ -34083,7 +34099,7 @@ msgstr ""
 msgid "hub type %s not supported"
 msgstr ""
 
-#: src/conf/domain_conf.c:16152
+#: src/conf/domain_conf.c:16151
 msgid "hugepage size can't be zero"
 msgstr ""
 
@@ -34333,7 +34349,7 @@ msgid ""
 "API"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:8768
+#: src/qemu/qemu_domain.c:8785
 msgid "initial memory size overflowed after alignment"
 msgstr ""
 
@@ -34353,7 +34369,7 @@ msgstr ""
 msgid "inject-nmi"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5794
+#: src/qemu/qemu_hotplug.c:5793
 #, c-format
 msgid "input device on bus '%s' cannot be detached"
 msgstr ""
@@ -34422,33 +34438,33 @@ msgid ""
 "interface %s - bandwidth settings are not supported for hostdev interfaces"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4982
+#: src/qemu/qemu_domain.c:4999
 #, c-format
 msgid ""
 "interface %s - custom tap device path is not supported for network "
 "interfaces of type %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4964
+#: src/qemu/qemu_domain.c:4981
 #, c-format
 msgid ""
 "interface %s - filterref is not supported for network interfaces of type %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4971
+#: src/qemu/qemu_domain.c:4988
 #, c-format
 msgid ""
 "interface %s - filterref is not supported for network interfaces with "
 "virtualport type %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4946
+#: src/qemu/qemu_domain.c:4963
 #, c-format
 msgid ""
 "interface %s - multiqueue is not supported for network interfaces of type %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4990
+#: src/qemu/qemu_domain.c:5007
 #, c-format
 msgid ""
 "interface %s - teaming transient device must be type='hostdev', not '%s'"
@@ -34984,17 +35000,17 @@ msgstr ""
 msgid "invalid domain pointer in %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19391
+#: src/conf/domain_conf.c:19390
 #, c-format
 msgid "invalid domain state reason '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:28522
+#: src/conf/domain_conf.c:28520
 #, c-format
 msgid "invalid domain state: %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:17871
+#: src/conf/domain_conf.c:17870
 #, c-format
 msgid "invalid domain type %s"
 msgstr ""
@@ -35049,7 +35065,7 @@ msgstr ""
 msgid "invalid hostdev subsystem type"
 msgstr ""
 
-#: src/conf/domain_conf.c:15762
+#: src/conf/domain_conf.c:15761
 msgid "invalid idmap start/target/count settings"
 msgstr ""
 
@@ -35072,7 +35088,7 @@ msgstr ""
 msgid "invalid iommuGroup number attribute for '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:15855
+#: src/conf/domain_conf.c:15854
 #, c-format
 msgid "invalid iothreads count '%s'"
 msgstr ""
@@ -35279,7 +35295,7 @@ msgstr ""
 msgid "invalid path, '%s' is not a known interface"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:5608 src/lxc/lxc_driver.c:2054
+#: src/libxl/libxl_driver.c:5603 src/lxc/lxc_driver.c:2054
 #: src/lxc/lxc_driver.c:2138 src/qemu/qemu_driver.c:9847
 #: src/test/test_driver.c:5130 src/vz/vz_driver.c:1708 src/vz/vz_driver.c:3940
 #, c-format
@@ -35755,15 +35771,15 @@ msgstr ""
 msgid "library call failed: %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5208
+#: src/qemu/qemu_domain.c:5225
 msgid "librbd encryption is not supported by this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5215
+#: src/qemu/qemu_domain.c:5232
 msgid "librbd encryption is supported only with RBD backed disks"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5222
+#: src/qemu/qemu_domain.c:5239
 msgid "librbd encryption layering is not supported by this QEMU binary"
 msgstr ""
 
@@ -35828,7 +35844,7 @@ msgstr ""
 msgid "libxenlight does not support transient disks"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3165
+#: src/libxl/libxl_driver.c:3163
 msgid "libxenlight failed to attach USB controller"
 msgstr ""
 
@@ -35837,15 +35853,16 @@ msgstr ""
 msgid "libxenlight failed to attach disk '%s'"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3424
+#: src/libxl/libxl_driver.c:3422
 msgid "libxenlight failed to attach network device"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3104
-msgid "libxenlight failed to attach pci device "
+#: src/libxl/libxl_driver.c:3103
+#, c-format
+msgid "libxenlight failed to attach pci device %04x:%02x:%02x.%d"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3237
+#: src/libxl/libxl_driver.c:3235
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
 msgstr ""
@@ -35860,26 +35877,27 @@ msgstr ""
 msgid "libxenlight failed to create new domain '%s'"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3745
+#: src/libxl/libxl_driver.c:3740
 msgid "libxenlight failed to detach USB controller"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3807
+#: src/libxl/libxl_driver.c:3802
 #, c-format
 msgid "libxenlight failed to detach USB device Busnum: %3x, Devnum: %3x"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3320
+#: src/libxl/libxl_driver.c:3318
 #, c-format
 msgid "libxenlight failed to detach disk '%s'"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3892
+#: src/libxl/libxl_driver.c:3887
 msgid "libxenlight failed to detach network device"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3684
-msgid "libxenlight failed to detach pci device "
+#: src/libxl/libxl_driver.c:3680
+#, c-format
+msgid "libxenlight failed to detach pci device %04x:%02x:%02x.%d"
 msgstr ""
 
 #: src/libxl/libxl_conf.c:197
@@ -35905,8 +35923,8 @@ msgstr ""
 msgid "libxenlight state driver is not active"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:1744 src/libxl/libxl_driver.c:5190
-#: src/libxl/libxl_driver.c:5325
+#: src/libxl/libxl_driver.c:1744 src/libxl/libxl_driver.c:5185
+#: src/libxl/libxl_driver.c:5320
 #, c-format
 msgid "libxl_domain_info failed for domain '%d'"
 msgstr ""
@@ -35915,12 +35933,12 @@ msgstr ""
 msgid "libxl_get_cpu_topology failed"
 msgstr ""
 
-#: src/libxl/libxl_capabilities.c:217 src/libxl/libxl_driver.c:4522
+#: src/libxl/libxl_capabilities.c:217 src/libxl/libxl_driver.c:4517
 msgid "libxl_get_numainfo failed"
 msgstr ""
 
 #: src/libxl/libxl_conf.c:858 src/libxl/libxl_conf.c:2416
-#: src/libxl/libxl_driver.c:4492
+#: src/libxl/libxl_driver.c:4487
 msgid "libxl_get_physinfo_info failed"
 msgstr ""
 
@@ -36325,12 +36343,12 @@ msgstr ""
 msgid "live attach of shmem model '%s' is not supported"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5996
+#: src/qemu/qemu_hotplug.c:5995
 #, c-format
 msgid "live detach of device '%s' is not supported"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5600
+#: src/qemu/qemu_hotplug.c:5599
 #, c-format
 msgid "live detach of shmem model '%s' is not supported"
 msgstr ""
@@ -36387,7 +36405,7 @@ msgstr ""
 msgid "lower boundary for worker thread pool"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5235
+#: src/qemu/qemu_domain.c:5252
 msgid "luks-any encryption is not supported by this QEMU binary"
 msgstr ""
 
@@ -36431,7 +36449,7 @@ msgstr ""
 msgid "machine paused, so can't power it down"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:6874
+#: src/qemu/qemu_domain.c:6891
 #, c-format
 msgid "machine type '%s'"
 msgstr ""
@@ -36541,7 +36559,7 @@ msgstr ""
 msgid "malformed emulated GIC information in QEMU capabilities cache"
 msgstr ""
 
-#: src/conf/domain_conf.c:17835
+#: src/conf/domain_conf.c:17834
 msgid "malformed genid element"
 msgstr ""
 
@@ -36596,7 +36614,7 @@ msgstr ""
 
 #: src/util/virnetdev.c:1574 src/util/virnetdev.c:3157
 #: src/util/virnetdev.c:3240 src/util/virnetdevbridge.c:1066
-#: src/util/virnetdevvportprofile.c:836 src/util/virnetlink.c:434
+#: src/util/virnetdevvportprofile.c:835 src/util/virnetlink.c:434
 #: src/util/virnetlink.c:554 src/util/virnetlink.c:654
 #: src/util/virnetlink.c:703 src/util/virnetlink.c:749
 #: src/util/virnetlink.c:794
@@ -36651,7 +36669,7 @@ msgstr ""
 msgid "malformed signal name: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:13569 src/conf/domain_conf.c:17808
+#: src/conf/domain_conf.c:13569 src/conf/domain_conf.c:17807
 #: src/conf/network_conf.c:1642 src/conf/nwfilter_conf.c:2630
 #: src/conf/secret_conf.c:163 src/conf/storage_conf.c:882
 #: src/libxl/libxl_migration.c:196
@@ -36754,11 +36772,11 @@ msgstr ""
 msgid "match mode %s not supported"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5837
+#: src/qemu/qemu_hotplug.c:5836
 msgid "matching filesystem not found"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7533 src/qemu/qemu_hotplug.c:5784
+#: src/qemu/qemu_driver.c:7533 src/qemu/qemu_hotplug.c:5783
 msgid "matching input device not found"
 msgstr ""
 
@@ -36770,7 +36788,7 @@ msgstr ""
 msgid "matching shmem device was not found"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7543 src/qemu/qemu_hotplug.c:5820
+#: src/qemu/qemu_driver.c:7543 src/qemu/qemu_hotplug.c:5819
 msgid "matching vsock device not found"
 msgstr ""
 
@@ -36811,7 +36829,7 @@ msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:8775
+#: src/qemu/qemu_domain.c:8792
 msgid "maximum memory size overflowed after alignment"
 msgstr ""
 
@@ -36827,7 +36845,7 @@ msgstr ""
 msgid "maximum vcpu count of a live domain can't be modified"
 msgstr ""
 
-#: src/conf/domain_conf.c:17075
+#: src/conf/domain_conf.c:17074
 msgid "maximum vcpus count must be an integer"
 msgstr ""
 
@@ -36897,7 +36915,7 @@ msgstr ""
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5558 src/util/virmdev.c:146
+#: src/qemu/qemu_hotplug.c:5557 src/util/virmdev.c:146
 #, c-format
 msgid "mediated device '%s' not found"
 msgstr ""
@@ -36938,23 +36956,23 @@ msgstr ""
 msgid "memory device alias is not assigned"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:9159
+#: src/qemu/qemu_domain.c:9176
 #, c-format
 msgid ""
 "memory device base '0x%llx' is already being used by another memory device"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:9316
+#: src/qemu/qemu_domain.c:9333
 #, c-format
 msgid "memory device count '%u' exceeds slots count '%u'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:9199
+#: src/qemu/qemu_domain.c:9216
 #, c-format
 msgid "memory device slot '%u' exceeds slots count '%u'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:9150
+#: src/qemu/qemu_domain.c:9167
 #, c-format
 msgid "memory device slot '%u' is already being used by another memory device"
 msgstr ""
@@ -36963,7 +36981,7 @@ msgstr ""
 msgid "memory device target node"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:9345
+#: src/qemu/qemu_domain.c:9362
 msgid "memory device total size exceeds hotplug space"
 msgstr ""
 
@@ -37005,7 +37023,7 @@ msgstr ""
 msgid "memory size can't be changed unless domain is powered down"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:8754
+#: src/qemu/qemu_domain.c:8771
 #, c-format
 msgid "memory size of NUMA node '%zu' overflowed after alignment"
 msgstr ""
@@ -37032,7 +37050,7 @@ msgstr ""
 msgid "message"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5156 src/qemu/qemu_snapshot.c:685
+#: src/qemu/qemu_domain.c:5173 src/qemu/qemu_snapshot.c:685
 msgid "metadata cache max size control is supported only with qcow2 images"
 msgstr ""
 
@@ -37241,7 +37259,7 @@ msgstr ""
 msgid "minimum SSF levels lower than %d are not supported"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:6025
+#: src/qemu/qemu_domain.c:6042
 msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
 msgstr ""
 
@@ -37409,7 +37427,7 @@ msgstr ""
 msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr ""
 
-#: src/conf/domain_conf.c:18495
+#: src/conf/domain_conf.c:18494
 msgid "missing 'start' attribute for clock with offset='absolute'"
 msgstr ""
 
@@ -37428,7 +37446,7 @@ msgstr ""
 msgid "missing 'target' in iSCSI backing definition"
 msgstr ""
 
-#: src/conf/domain_conf.c:18486
+#: src/conf/domain_conf.c:18485
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr ""
 
@@ -37457,7 +37475,7 @@ msgstr ""
 msgid "missing 'value' attribute for 'qemu:property'"
 msgstr ""
 
-#: src/conf/domain_conf.c:16287
+#: src/conf/domain_conf.c:16286
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
 msgstr ""
 
@@ -37643,15 +37661,15 @@ msgstr ""
 msgid "missing cpuid-register in CPU data"
 msgstr ""
 
-#: src/conf/domain_conf.c:16002
+#: src/conf/domain_conf.c:16001
 msgid "missing cpuset for emulatorpin"
 msgstr ""
 
-#: src/conf/domain_conf.c:15964
+#: src/conf/domain_conf.c:15963
 msgid "missing cpuset for iothreadpin"
 msgstr ""
 
-#: src/conf/domain_conf.c:15914
+#: src/conf/domain_conf.c:15913
 msgid "missing cpuset for vcpupin"
 msgstr ""
 
@@ -37732,7 +37750,7 @@ msgstr ""
 msgid "missing domain name"
 msgstr ""
 
-#: src/conf/domain_conf.c:17866
+#: src/conf/domain_conf.c:17865
 msgid "missing domain type attribute"
 msgstr ""
 
@@ -37900,11 +37918,11 @@ msgstr ""
 msgid "missing listen element"
 msgstr ""
 
-#: src/conf/domain_conf.c:25623
+#: src/conf/domain_conf.c:25621
 msgid "missing listen element for graphics"
 msgstr ""
 
-#: src/conf/domain_conf.c:25743
+#: src/conf/domain_conf.c:25741
 msgid "missing listen element for spice graphics"
 msgstr ""
 
@@ -38438,17 +38456,17 @@ msgstr ""
 msgid "mode of device reading and writing"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5738
+#: src/qemu/qemu_hotplug.c:5737
 #, c-format
 msgid "model '%s' RNG device not present in domain configuration"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5762
+#: src/qemu/qemu_hotplug.c:5761
 #, c-format
 msgid "model '%s' memory device not present in the domain configuration"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5585
+#: src/qemu/qemu_hotplug.c:5584
 #, c-format
 msgid "model '%s' shmem device not present in domain configuration"
 msgstr ""
@@ -38903,7 +38921,7 @@ msgstr ""
 msgid "network device type '%s' is not supported by this hypervisor"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3393 src/libxl/libxl_driver.c:3553
+#: src/libxl/libxl_driver.c:3391 src/libxl/libxl_driver.c:3551
 #, c-format
 msgid "network device with mac %s already exists"
 msgstr ""
@@ -39111,7 +39129,7 @@ msgstr ""
 msgid "no FLR, PM reset or bus reset available"
 msgstr ""
 
-#: src/util/virnetdevvportprofile.c:626
+#: src/util/virnetdevvportprofile.c:625
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr ""
 
@@ -39299,7 +39317,7 @@ msgid ""
 "no device found at address '%s' matching MAC address '%s' and alias '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:29006
+#: src/conf/domain_conf.c:29004
 #, c-format
 msgid "no device found with alias %s"
 msgstr ""
@@ -39338,7 +39356,7 @@ msgstr ""
 msgid "no domain checkpoint with matching name '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:19373
+#: src/conf/domain_conf.c:19372
 msgid "no domain config"
 msgstr ""
 
@@ -39481,11 +39499,11 @@ msgstr ""
 msgid "no matching filesystem device was found"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7502 src/qemu/qemu_hotplug.c:5646
+#: src/qemu/qemu_driver.c:7502 src/qemu/qemu_hotplug.c:5645
 msgid "no matching redirdev was not found"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7524 src/qemu/qemu_hotplug.c:5620
+#: src/qemu/qemu_driver.c:7524 src/qemu/qemu_hotplug.c:5619
 msgid "no matching watchdog was found"
 msgstr ""
 
@@ -39729,7 +39747,7 @@ msgstr ""
 msgid "no system UUID supplied for '%s'"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4002 src/lxc/lxc_driver.c:3147
+#: src/libxl/libxl_driver.c:3997 src/lxc/lxc_driver.c:3147
 #: src/qemu/qemu_driver.c:7395
 #, c-format
 msgid "no target device %s"
@@ -39896,7 +39914,7 @@ msgstr ""
 msgid "not a hugetlbfs mount: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20776 src/conf/domain_conf.c:20777
+#: src/conf/domain_conf.c:20774 src/conf/domain_conf.c:20775
 msgid "not specified"
 msgstr ""
 
@@ -40109,7 +40127,7 @@ msgstr ""
 msgid "ok"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5165
+#: src/qemu/qemu_domain.c:5182
 msgid "old qcow/qcow2 encryption is not supported"
 msgstr ""
 
@@ -40126,11 +40144,11 @@ msgstr ""
 msgid "one of --list, --all, or --event <type> is required"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4590
+#: src/qemu/qemu_domain.c:4607
 msgid "online non-hotpluggable vcpus must be ordered in ascending order"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4581
+#: src/qemu/qemu_domain.c:4598
 msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr ""
@@ -40139,11 +40157,11 @@ msgstr ""
 msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:9182
+#: src/qemu/qemu_domain.c:9199
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:9228
+#: src/qemu/qemu_domain.c:9245
 #, c-format
 msgid "only 'pci' addresses are supported for the %s device"
 msgstr ""
@@ -40152,7 +40170,7 @@ msgstr ""
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:9215
+#: src/qemu/qemu_domain.c:9232
 msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr ""
 
@@ -40186,7 +40204,7 @@ msgstr ""
 msgid "only USB input devices are supported"
 msgstr ""
 
-#: src/conf/domain_conf.c:19248
+#: src/conf/domain_conf.c:19247
 msgid "only a single IOMMU device is supported"
 msgstr ""
 
@@ -40198,15 +40216,15 @@ msgstr ""
 msgid "only a single TPM non-proxy device is supported"
 msgstr ""
 
-#: src/conf/domain_conf.c:19041
+#: src/conf/domain_conf.c:19040
 msgid "only a single memory balloon device is supported"
 msgstr ""
 
-#: src/conf/domain_conf.c:19114
+#: src/conf/domain_conf.c:19113
 msgid "only a single nvram device is supported"
 msgstr ""
 
-#: src/conf/domain_conf.c:19264
+#: src/conf/domain_conf.c:19263
 msgid "only a single vsock device is supported"
 msgstr ""
 
@@ -40276,11 +40294,11 @@ msgstr ""
 msgid "only one crypto backend is supported"
 msgstr ""
 
-#: src/conf/domain_conf.c:18276
+#: src/conf/domain_conf.c:18275
 msgid "only one emulatorpin is supported"
 msgstr ""
 
-#: src/conf/domain_conf.c:18331
+#: src/conf/domain_conf.c:18330
 msgid "only one emulatorsched is supported"
 msgstr ""
 
@@ -40288,7 +40306,7 @@ msgstr ""
 msgid "only one filesystem supported"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6702
+#: src/qemu/qemu_hotplug.c:6696
 msgid "only one hotpluggable entity can be selected"
 msgstr ""
 
@@ -40304,11 +40322,11 @@ msgstr ""
 msgid "only one protocol element is allowed for character device"
 msgstr ""
 
-#: src/conf/domain_conf.c:18671
+#: src/conf/domain_conf.c:18670
 msgid "only one resource element is supported"
 msgstr ""
 
-#: src/conf/domain_conf.c:19169
+#: src/conf/domain_conf.c:19168
 msgid "only one set of redirection filter rule is supported"
 msgstr ""
 
@@ -40377,7 +40395,7 @@ msgstr ""
 msgid "only two source elements are allowed for character device"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3216 src/qemu/qemu_hotplug.c:5843
+#: src/qemu/qemu_hotplug.c:3216 src/qemu/qemu_hotplug.c:5842
 msgid "only virtiofs filesystems can be hotplugged"
 msgstr ""
 
@@ -40431,7 +40449,7 @@ msgstr ""
 msgid "operation forbidden: %s"
 msgstr ""
 
-#: src/util/virnetdevvportprofile.c:1083 src/util/virnetdevvportprofile.c:1192
+#: src/util/virnetdevvportprofile.c:1082 src/util/virnetdevvportprofile.c:1191
 #, c-format
 msgid "operation type %d not supported"
 msgstr ""
@@ -40831,12 +40849,12 @@ msgstr ""
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5529
+#: src/qemu/qemu_domain.c:5546
 msgid ""
 "pci-expander-bus controllers are only supported on 440fx-based machinetypes"
 msgstr ""
 
-#: src/bhyve/bhyve_domain.c:177 src/qemu/qemu_domain.c:5521
+#: src/bhyve/bhyve_domain.c:177 src/qemu/qemu_domain.c:5538
 msgid "pci-root and pcie-root controllers should have index 0"
 msgstr ""
 
@@ -40844,7 +40862,7 @@ msgstr ""
 msgid "pci-root and pcie-root controllers should not have an address"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5536
+#: src/qemu/qemu_domain.c:5553
 msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
@@ -40869,7 +40887,7 @@ msgstr ""
 msgid "per-device IO Weights, in the form of /path/to/device,weight,..."
 msgstr ""
 
-#: src/conf/domain_conf.c:28012 src/conf/domain_postparse.c:1065
+#: src/conf/domain_conf.c:28010 src/conf/domain_postparse.c:1065
 msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr ""
 
@@ -40931,7 +40949,7 @@ msgstr ""
 msgid "persistent attach of device '%s' is not supported"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3608 src/lxc/lxc_driver.c:3056
+#: src/libxl/libxl_driver.c:3606 src/lxc/lxc_driver.c:3056
 msgid "persistent attach of device is not supported"
 msgstr ""
 
@@ -40940,7 +40958,7 @@ msgstr ""
 msgid "persistent detach of device '%s' is not supported"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4066 src/lxc/lxc_driver.c:3203
+#: src/libxl/libxl_driver.c:4061 src/lxc/lxc_driver.c:3203
 msgid "persistent detach of device is not supported"
 msgstr ""
 
@@ -40953,7 +40971,7 @@ msgstr ""
 msgid "persistent update of device '%s' is not supported"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4190 src/lxc/lxc_driver.c:3122
+#: src/libxl/libxl_driver.c:4185 src/lxc/lxc_driver.c:3122
 msgid "persistent update of device is not supported"
 msgstr ""
 
@@ -40974,7 +40992,7 @@ msgstr ""
 msgid "pin all memory before starting RDMA live migration"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:5592
+#: src/libxl/libxl_driver.c:5587
 msgid "platform unsupported"
 msgstr ""
 
@@ -41092,7 +41110,7 @@ msgstr ""
 msgid "port UUID"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5147
+#: src/qemu/qemu_domain.c:5164
 msgid "port cannot be specified in 'nfs' protocol host"
 msgstr ""
 
@@ -41100,7 +41118,7 @@ msgstr ""
 msgid "port to use by target server for incoming disks migration"
 msgstr ""
 
-#: src/util/virnetdevvportprofile.c:993
+#: src/util/virnetdevvportprofile.c:992
 msgid "port-profile setlink timed out"
 msgstr ""
 
@@ -41440,7 +41458,7 @@ msgstr ""
 msgid "qemu agent didn't return an array of keys"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:9832 src/qemu/qemu_hotplug.c:6280
+#: src/qemu/qemu_domain.c:9849 src/qemu/qemu_hotplug.c:6274
 #, c-format
 msgid "qemu didn't report thread id for vcpu '%zu'"
 msgstr ""
@@ -41488,7 +41506,7 @@ msgstr ""
 msgid "qemu emulator '%s' does not support xen"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5199
+#: src/qemu/qemu_domain.c:5216
 msgid "qemu encryption engine expects only a single secret"
 msgstr ""
 
@@ -41497,7 +41515,7 @@ msgstr ""
 msgid "qemu monitor event callback %d not registered"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:9838 src/qemu/qemu_hotplug.c:6133
+#: src/qemu/qemu_domain.c:9855 src/qemu/qemu_hotplug.c:6127
 #, c-format
 msgid "qemu reported thread id for inactive vcpu '%zu'"
 msgstr ""
@@ -41552,7 +41570,7 @@ msgstr ""
 msgid "query information about the guest (via agent)"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5116
+#: src/qemu/qemu_domain.c:5133
 msgid "query is supported only with HTTP(S) protocols"
 msgstr ""
 
@@ -41779,22 +41797,22 @@ msgstr ""
 msgid "ram attribute only supported for video type qxl"
 msgstr ""
 
-#: src/util/virsocketaddr.c:919
+#: src/util/virsocketaddr.c:918
 #, c-format
 msgid "range %s - %s is not entirely within network %s/%d"
 msgstr ""
 
-#: src/util/virsocketaddr.c:988
+#: src/util/virsocketaddr.c:987
 #, c-format
 msgid "range %s - %s is reversed "
 msgstr ""
 
-#: src/util/virsocketaddr.c:980 src/util/virsocketaddr.c:1011
+#: src/util/virsocketaddr.c:979 src/util/virsocketaddr.c:1010
 #, c-format
 msgid "range %s - %s is too large (> 65535)"
 msgstr ""
 
-#: src/util/virsocketaddr.c:1019
+#: src/util/virsocketaddr.c:1018
 #, c-format
 msgid "range %s - %s start larger than end"
 msgstr ""
@@ -41853,7 +41871,7 @@ msgstr ""
 msgid "read-only connection"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5085
+#: src/qemu/qemu_domain.c:5102
 msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
 
@@ -41897,7 +41915,7 @@ msgstr ""
 msgid "received unexpected cookie with P2P migration"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5106
+#: src/qemu/qemu_domain.c:5123
 msgid "reconnect delay is supported only with NBD protocol"
 msgstr ""
 
@@ -42214,14 +42232,14 @@ msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6508
+#: src/qemu/qemu_hotplug.c:6502
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the live domain: %u "
 "> %u"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6516
+#: src/qemu/qemu_hotplug.c:6510
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the persistent "
@@ -42236,7 +42254,7 @@ msgstr ""
 msgid "resctrl locking is not supported on this platform"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5051
+#: src/qemu/qemu_domain.c:5068
 msgid "reservations not supported with this QEMU binary"
 msgstr ""
 
@@ -42721,7 +42739,7 @@ msgstr ""
 msgid "send skipHandler failed"
 msgstr ""
 
-#: src/util/virnetdevvportprofile.c:950
+#: src/util/virnetdevvportprofile.c:949
 msgid "sending of PortProfileRequest failed."
 msgstr ""
 
@@ -42987,12 +43005,12 @@ msgstr ""
 msgid "shmem element must contain 'name' attribute"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5416
+#: src/qemu/qemu_domain.c:5433
 #, c-format
 msgid "shmem model '%s' does not support size setting"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5401
+#: src/qemu/qemu_domain.c:5418
 #, c-format
 msgid "shmem model '%s' doesn't support msi"
 msgstr ""
@@ -43002,12 +43020,12 @@ msgstr ""
 msgid "shmem model '%s' is not supported by this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5408
+#: src/qemu/qemu_domain.c:5425
 #, c-format
 msgid "shmem model '%s' is supported only with server option disabled"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5393
+#: src/qemu/qemu_domain.c:5410
 #, c-format
 msgid "shmem model '%s' is supported only with server option enabled"
 msgstr ""
@@ -43120,7 +43138,7 @@ msgstr ""
 msgid "size must not exceed %zu"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:8794
+#: src/qemu/qemu_domain.c:8811
 #, c-format
 msgid "size of memory module '%zu' overflowed after alignment"
 msgstr ""
@@ -43294,7 +43312,7 @@ msgstr ""
 msgid "sparse files not supported"
 msgstr ""
 
-#: src/conf/domain_conf.c:20776 src/conf/domain_conf.c:20777
+#: src/conf/domain_conf.c:20774 src/conf/domain_conf.c:20775
 msgid "specified"
 msgstr ""
 
@@ -43363,7 +43381,7 @@ msgstr ""
 msgid "ssh protocol accepts only one host"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5060
+#: src/qemu/qemu_domain.c:5077
 msgid "ssl verification is supported only with HTTPS/FTPS protocol"
 msgstr ""
 
@@ -43391,14 +43409,14 @@ msgstr ""
 msgid "start a physical host interface."
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4529 src/util/virhostmem.c:743
+#: src/libxl/libxl_driver.c:4524 src/util/virhostmem.c:743
 #: src/util/virhostmem.c:788 src/util/virhostmem.c:863
 #: src/util/virhostmem.c:913
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr ""
 
-#: src/util/virsocketaddr.c:946
+#: src/util/virsocketaddr.c:945
 #, c-format
 msgid "start of range %s - %s in network %s/%d is the network address"
 msgstr ""
@@ -43454,16 +43472,16 @@ msgstr ""
 msgid "storage format '%s' does not support backing store"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5028
+#: src/qemu/qemu_domain.c:5045
 msgid "storage format 'fat' is supported only with 'dir' storage type"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5019
+#: src/qemu/qemu_domain.c:5036
 msgid ""
 "storage format 'iso' is not directly supported by QEMU, use 'raw' instead"
 msgstr ""
 
-#: src/conf/domain_conf.c:30295 src/vz/vz_sdk.c:4114
+#: src/conf/domain_conf.c:30293 src/vz/vz_sdk.c:4114
 #, c-format
 msgid "storage pool '%s' containing volume '%s' is not active"
 msgstr ""
@@ -43583,7 +43601,7 @@ msgstr ""
 msgid "storage state driver is not active"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5037
+#: src/qemu/qemu_domain.c:5054
 msgid "storage type 'dir' requires use of storage format 'fat'"
 msgstr ""
 
@@ -43759,7 +43777,7 @@ msgstr ""
 msgid "system:"
 msgstr ""
 
-#: src/conf/domain_conf.c:30816
+#: src/conf/domain_conf.c:30814
 #, c-format
 msgid "tainted: %s"
 msgstr ""
@@ -43787,28 +43805,28 @@ msgstr ""
 msgid "target %s already exists"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3527 src/lxc/lxc_driver.c:3000
+#: src/libxl/libxl_driver.c:3525 src/lxc/lxc_driver.c:3000
 #, c-format
 msgid "target %s already exists."
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4147 src/openvz/openvz_driver.c:1751
+#: src/libxl/libxl_driver.c:4142 src/openvz/openvz_driver.c:1751
 #: src/qemu/qemu_driver.c:7593
 #, c-format
 msgid "target %s doesn't exist."
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3153 src/qemu/qemu_hotplug.c:785
+#: src/libxl/libxl_driver.c:3151 src/qemu/qemu_hotplug.c:785
 #, c-format
 msgid "target %s:%d already exists"
 msgstr ""
 
-#: src/conf/domain_conf.c:29385
+#: src/conf/domain_conf.c:29383
 #, c-format
 msgid "target '%s' duplicated for disk sources '%s' and '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:9190 src/qemu/qemu_domain.c:9249
+#: src/qemu/qemu_domain.c:9207 src/qemu/qemu_domain.c:9266
 msgid "target NUMA node needs to be specified for memory device"
 msgstr ""
 
@@ -43861,7 +43879,8 @@ msgid "target of disk device"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3085
-msgid "target pci device "
+#, c-format
+msgid "target pci device %04x:%02x:%02x.%d already exists"
 msgstr ""
 
 #: src/conf/domain_postparse.c:386
@@ -43874,7 +43893,7 @@ msgstr ""
 msgid "target type must be specified for %s device"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6337 src/qemu/qemu_hotplug.c:6364
+#: src/qemu/qemu_hotplug.c:6331 src/qemu/qemu_hotplug.c:6358
 msgid "target vm vcpu granularity does not allow the desired vcpu count"
 msgstr ""
 
@@ -44164,7 +44183,7 @@ msgstr ""
 msgid "this QEMU version didn't provide SGX EPC NUMA info"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4152
+#: src/libxl/libxl_driver.c:4147
 msgid "this disk doesn't support update"
 msgstr ""
 
@@ -44206,7 +44225,7 @@ msgstr ""
 msgid "this platform is missing dlopen"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:10266
+#: src/qemu/qemu_domain.c:10283
 msgid "this qemu does not support TLS transport for NBD"
 msgstr ""
 
@@ -44226,7 +44245,7 @@ msgstr ""
 msgid "this qemu doesn't support the rng-random backend"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6688
+#: src/qemu/qemu_hotplug.c:6682
 msgid "this qemu version does not support specific vCPU hotplug"
 msgstr ""
 
@@ -44285,7 +44304,7 @@ msgstr ""
 msgid "timed out waiting to open tray of '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5097
+#: src/qemu/qemu_domain.c:5114
 msgid "timeout is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
 
@@ -45065,7 +45084,7 @@ msgstr ""
 msgid "unable to find ploop, please install ploop tools"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:7261 src/storage/storage_util.c:2329
+#: src/qemu/qemu_domain.c:7278 src/storage/storage_util.c:2329
 msgid "unable to find qemu-img"
 msgstr ""
 
@@ -45136,7 +45155,7 @@ msgstr ""
 msgid "unable to get node capabilities"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:5039
+#: src/libxl/libxl_driver.c:5034
 msgid "unable to get numa affinity"
 msgstr ""
 
@@ -45325,7 +45344,7 @@ msgstr ""
 msgid "unable to read domain master key file"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:12452
+#: src/qemu/qemu_domain.c:12469
 msgid "unable to read from pipe"
 msgstr ""
 
@@ -45602,7 +45621,7 @@ msgstr ""
 msgid "unexpected %s URI path '%s', try %s:///system"
 msgstr ""
 
-#: src/conf/domain_conf.c:21916
+#: src/conf/domain_conf.c:21914
 #, c-format
 msgid "unexpected %s action: %d"
 msgstr ""
@@ -45618,7 +45637,7 @@ msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr ""
 
 #: src/ch/ch_domain.c:185 src/conf/domain_postparse.c:723
-#: src/qemu/qemu_domain.c:6151
+#: src/qemu/qemu_domain.c:6168
 msgid "unexpected VIR_DOMAIN_DEVICE_NONE"
 msgstr ""
 
@@ -45634,12 +45653,12 @@ msgstr ""
 msgid "unexpected Xen URI path '%s', try xen:///system"
 msgstr ""
 
-#: src/conf/domain_conf.c:23018
+#: src/conf/domain_conf.c:23016
 #, c-format
 msgid "unexpected accessmode %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:23845
+#: src/conf/domain_conf.c:23843
 #, c-format
 msgid "unexpected actual net type %d"
 msgstr ""
@@ -45669,7 +45688,7 @@ msgstr ""
 msgid "unexpected async job %d type expected %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:24758
+#: src/conf/domain_conf.c:24756
 #, c-format
 msgid "unexpected audio type %d"
 msgstr ""
@@ -45679,7 +45698,7 @@ msgstr ""
 msgid "unexpected binding %s already exists"
 msgstr ""
 
-#: src/conf/domain_conf.c:27565
+#: src/conf/domain_conf.c:27563
 #, c-format
 msgid "unexpected boot device type %d"
 msgstr ""
@@ -45689,17 +45708,17 @@ msgstr ""
 msgid "unexpected bus type '%d'"
 msgstr ""
 
-#: src/conf/domain_conf.c:16444
+#: src/conf/domain_conf.c:16443
 #, c-format
 msgid "unexpected capability feature '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:24390 src/conf/domain_conf.c:24408
+#: src/conf/domain_conf.c:24388 src/conf/domain_conf.c:24406
 #, c-format
 msgid "unexpected char device type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:24133
+#: src/conf/domain_conf.c:24131
 #, c-format
 msgid "unexpected char type %d"
 msgstr ""
@@ -45717,12 +45736,12 @@ msgstr ""
 msgid "unexpected code path"
 msgstr ""
 
-#: src/conf/domain_conf.c:24496
+#: src/conf/domain_conf.c:24494
 #, c-format
 msgid "unexpected codec type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:22897
+#: src/conf/domain_conf.c:22895
 #, c-format
 msgid "unexpected controller type %d"
 msgstr ""
@@ -45737,22 +45756,22 @@ msgstr ""
 msgid "unexpected disk address type %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:22403
+#: src/conf/domain_conf.c:22401
 #, c-format
 msgid "unexpected disk backing store format %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:22675
+#: src/conf/domain_conf.c:22673
 #, c-format
 msgid "unexpected disk bus %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:22670
+#: src/conf/domain_conf.c:22668
 #, c-format
 msgid "unexpected disk device %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:22335 src/conf/domain_conf.c:22665
+#: src/conf/domain_conf.c:22333 src/conf/domain_conf.c:22663
 #, c-format
 msgid "unexpected disk type %d"
 msgstr ""
@@ -45767,7 +45786,7 @@ msgstr ""
 msgid "unexpected domain %s already exists"
 msgstr ""
 
-#: src/conf/domain_conf.c:27396
+#: src/conf/domain_conf.c:27394
 #, c-format
 msgid "unexpected domain type %d"
 msgstr ""
@@ -45785,12 +45804,12 @@ msgstr ""
 msgid "unexpected encryption format"
 msgstr ""
 
-#: src/conf/domain_conf.c:16502
+#: src/conf/domain_conf.c:16501
 #, c-format
 msgid "unexpected feature '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:23012
+#: src/conf/domain_conf.c:23010
 #, c-format
 msgid "unexpected filesystem type %d"
 msgstr ""
@@ -45805,34 +45824,34 @@ msgstr ""
 msgid "unexpected hostdev driver name type %d "
 msgstr ""
 
-#: src/conf/domain_conf.c:25968 src/conf/domain_conf.c:25993
+#: src/conf/domain_conf.c:25966 src/conf/domain_conf.c:25991
 #, c-format
 msgid "unexpected hostdev mode %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:23434 src/conf/domain_conf.c:25977
-#: src/conf/domain_conf.c:25986 src/libxl/libxl_driver.c:3850
-#: src/qemu/qemu_hotplug.c:5565
+#: src/conf/domain_conf.c:23432 src/conf/domain_conf.c:25975
+#: src/conf/domain_conf.c:25984 src/libxl/libxl_driver.c:3845
+#: src/qemu/qemu_hotplug.c:5564
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:26134
+#: src/conf/domain_conf.c:26132
 #, c-format
 msgid "unexpected hub type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:25351
+#: src/conf/domain_conf.c:25349
 #, c-format
 msgid "unexpected input bus type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:25364
+#: src/conf/domain_conf.c:25362
 #, c-format
 msgid "unexpected input model %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:25346
+#: src/conf/domain_conf.c:25344
 #, c-format
 msgid "unexpected input type %d"
 msgstr ""
@@ -45842,7 +45861,7 @@ msgstr ""
 msgid "unexpected interface type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:30209
+#: src/conf/domain_conf.c:30207
 #, c-format
 msgid "unexpected iscsi volume name '%s'"
 msgstr ""
@@ -45853,7 +45872,7 @@ msgstr ""
 msgid "unexpected lifecycle action %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:24855
+#: src/conf/domain_conf.c:24853
 #, c-format
 msgid "unexpected memballoon model %d"
 msgstr ""
@@ -45877,17 +45896,17 @@ msgstr ""
 msgid "unexpected mode 0x%x for %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:22855
+#: src/conf/domain_conf.c:22853
 #, c-format
 msgid "unexpected model name value %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:22906
+#: src/conf/domain_conf.c:22904
 #, c-format
 msgid "unexpected model type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:23024
+#: src/conf/domain_conf.c:23022
 #, c-format
 msgid "unexpected multidevs %d"
 msgstr ""
@@ -45897,8 +45916,8 @@ msgstr ""
 msgid "unexpected name value %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:23560 src/conf/domain_conf.c:23853
-#: src/conf/domain_conf.c:25613
+#: src/conf/domain_conf.c:23558 src/conf/domain_conf.c:23851
+#: src/conf/domain_conf.c:25611
 #, c-format
 msgid "unexpected net type %d"
 msgstr ""
@@ -45918,7 +45937,7 @@ msgstr ""
 msgid "unexpected nwfilter URI path '%s', try nwfilter:///system"
 msgstr ""
 
-#: src/conf/domain_conf.c:23267
+#: src/conf/domain_conf.c:23265
 #, c-format
 msgid "unexpected pci hostdev driver name type %d"
 msgstr ""
@@ -45954,12 +45973,12 @@ msgstr ""
 msgid "unexpected security label type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:24449
+#: src/conf/domain_conf.c:24447
 #, c-format
 msgid "unexpected smartcard type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:27598
+#: src/conf/domain_conf.c:27596
 #, c-format
 msgid "unexpected smbios mode %d"
 msgstr ""
@@ -45969,12 +45988,12 @@ msgstr ""
 msgid "unexpected snapshot state: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:24607 src/libxl/xen_common.c:2287
+#: src/conf/domain_conf.c:24605 src/libxl/xen_common.c:2287
 #, c-format
 msgid "unexpected sound model %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:23513
+#: src/conf/domain_conf.c:23511
 #, c-format
 msgid "unexpected source mode %d"
 msgstr ""
@@ -45984,7 +46003,7 @@ msgstr ""
 msgid "unexpected storage mode for '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:30361
+#: src/conf/domain_conf.c:30359
 #, c-format
 msgid "unexpected storage volume type '%s' for storage pool type '%s'"
 msgstr ""
@@ -46033,7 +46052,7 @@ msgstr ""
 msgid "unexpected value %s for on_reboot"
 msgstr ""
 
-#: src/conf/domain_conf.c:25265
+#: src/conf/domain_conf.c:25263
 #, c-format
 msgid "unexpected video model %d"
 msgstr ""
@@ -46042,12 +46061,12 @@ msgstr ""
 msgid "unexpected volume encryption secret type"
 msgstr ""
 
-#: src/conf/domain_conf.c:24914
+#: src/conf/domain_conf.c:24912
 #, c-format
 msgid "unexpected watchdog action %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:24908
+#: src/conf/domain_conf.c:24906
 #, c-format
 msgid "unexpected watchdog model %d"
 msgstr ""
@@ -46129,7 +46148,7 @@ msgstr ""
 msgid "unknown OS type %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:17886
+#: src/conf/domain_conf.c:17885
 #, c-format
 msgid "unknown OS type '%s'"
 msgstr ""
@@ -46184,7 +46203,7 @@ msgstr ""
 msgid "unknown architecture '%s'"
 msgstr ""
 
-#: src/bhyve/bhyve_driver.c:1593 src/libxl/libxl_driver.c:6391
+#: src/bhyve/bhyve_driver.c:1593 src/libxl/libxl_driver.c:6386
 #: src/qemu/qemu_capabilities.c:6050
 #, c-format
 msgid "unknown architecture: %s"
@@ -46253,17 +46272,17 @@ msgstr ""
 msgid "unknown chrdev type"
 msgstr ""
 
-#: src/conf/domain_conf.c:18442
+#: src/conf/domain_conf.c:18441
 #, c-format
 msgid "unknown clock adjustment '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:18473
+#: src/conf/domain_conf.c:18472
 #, c-format
 msgid "unknown clock basis '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:18426
+#: src/conf/domain_conf.c:18425
 #, c-format
 msgid "unknown clock offset '%s'"
 msgstr ""
@@ -46334,7 +46353,7 @@ msgstr ""
 msgid "unknown event type %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:17273
+#: src/conf/domain_conf.c:17272
 #, c-format
 msgid "unknown firmware value %s"
 msgstr ""
@@ -46426,22 +46445,22 @@ msgstr ""
 msgid "unknown ip address type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:17968
+#: src/conf/domain_conf.c:17967
 #, c-format
 msgid "unknown memoryBacking/access/mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:17978
+#: src/conf/domain_conf.c:17977
 #, c-format
 msgid "unknown memoryBacking/allocation/mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:17958
+#: src/conf/domain_conf.c:17957
 #, c-format
 msgid "unknown memoryBacking/source/type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:29212 src/conf/domain_conf.c:29261
+#: src/conf/domain_conf.c:29210 src/conf/domain_conf.c:29259
 #, c-format
 msgid "unknown metadata type '%d'"
 msgstr ""
@@ -46559,7 +46578,7 @@ msgstr ""
 msgid "unknown secret usage type %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:19321
+#: src/conf/domain_conf.c:19320
 #, c-format
 msgid "unknown smbios mode '%s'"
 msgstr ""
@@ -46651,7 +46670,7 @@ msgid "unknown vhost-user type: '%s'"
 msgstr ""
 
 #: src/bhyve/bhyve_driver.c:1579 src/bhyve/bhyve_driver.c:1586
-#: src/libxl/libxl_driver.c:6377 src/libxl/libxl_driver.c:6384
+#: src/libxl/libxl_driver.c:6372 src/libxl/libxl_driver.c:6379
 #: src/qemu/qemu_capabilities.c:6043
 #, c-format
 msgid "unknown virttype: %s"
@@ -46782,12 +46801,12 @@ msgstr ""
 msgid "unsupported CPU type: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:16253
+#: src/conf/domain_conf.c:16252
 #, c-format
 msgid "unsupported Hyper-V stimer feature: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:16219 src/qemu/qemu_capabilities.c:4464
+#: src/conf/domain_conf.c:16218 src/qemu/qemu_capabilities.c:4464
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
 msgstr ""
@@ -46797,7 +46816,7 @@ msgstr ""
 msgid "unsupported IPv6 address prefix='%u' - must be 64"
 msgstr ""
 
-#: src/conf/domain_conf.c:16333
+#: src/conf/domain_conf.c:16332
 #, c-format
 msgid "unsupported KVM feature: %s"
 msgstr ""
@@ -46819,12 +46838,12 @@ msgstr ""
 msgid "unsupported SSH key type"
 msgstr ""
 
-#: src/conf/domain_conf.c:16387
+#: src/conf/domain_conf.c:16386
 #, c-format
 msgid "unsupported Xen feature: %s"
 msgstr ""
 
-#: src/util/virsocketaddr.c:1026
+#: src/util/virsocketaddr.c:1025
 #, c-format
 msgid "unsupported address family for range %s - %s, must be ipv4 or ipv6"
 msgstr ""
@@ -46958,7 +46977,7 @@ msgstr ""
 msgid "unsupported disk device"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:5627
+#: src/libxl/libxl_driver.c:5622
 #, c-format
 msgid "unsupported disk driver %s"
 msgstr ""
@@ -46978,7 +46997,7 @@ msgstr ""
 msgid "unsupported disk type %s"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:5883
+#: src/libxl/libxl_driver.c:5878
 #, c-format
 msgid "unsupported driver name '%s'"
 msgstr ""
@@ -47045,7 +47064,7 @@ msgstr ""
 msgid "unsupported flags: (0x%x)"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:5619
+#: src/libxl/libxl_driver.c:5614
 #, c-format
 msgid "unsupported format %s"
 msgstr ""
@@ -47359,7 +47378,7 @@ msgstr ""
 msgid "user:"
 msgstr ""
 
-#: src/conf/domain_conf.c:30401
+#: src/conf/domain_conf.c:30399
 #, c-format
 msgid "using '%s' pools for backing 'volume' disks isn't yet supported"
 msgstr ""
@@ -47408,7 +47427,7 @@ msgstr ""
 msgid "vCPU '%u' is not present in domain definition"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6647
+#: src/qemu/qemu_hotplug.c:6641
 msgid "vCPU '0' can't be modified"
 msgstr ""
 
@@ -47563,7 +47582,7 @@ msgstr ""
 msgid "vcpu %zd is not present in persistent config"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6183
+#: src/qemu/qemu_hotplug.c:6177
 #, c-format
 msgid "vcpu '%u' can't be unplugged"
 msgstr ""
@@ -47573,26 +47592,26 @@ msgstr ""
 msgid "vcpu '%u' is not active"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6611
+#: src/qemu/qemu_hotplug.c:6605
 #, c-format
 msgid ""
 "vcpu '%zd' belongs to a larger hotpluggable entity, but siblings were not "
 "selected"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6595
+#: src/qemu/qemu_hotplug.c:6589
 #, c-format
 msgid "vcpu '%zd' can't be hotunplugged"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6664
+#: src/qemu/qemu_hotplug.c:6658
 #, c-format
 msgid ""
 "vcpu '%zd' can't be modified as it is followed by non-hotpluggable online "
 "vcpus"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6589
+#: src/qemu/qemu_hotplug.c:6583
 #, c-format
 msgid "vcpu '%zd' is already in requested state"
 msgstr ""
@@ -47607,25 +47626,25 @@ msgstr ""
 msgid "vcpu '%zu' is missing hotplug data"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6619
+#: src/qemu/qemu_hotplug.c:6613
 #, c-format
 msgid ""
 "vcpu '%zu' was not selected but it belongs to hotpluggable entity '%zd-%zd' "
 "which was partially selected"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4546
+#: src/qemu/qemu_domain.c:4563
 msgid "vcpu 0 can't be offline"
 msgstr ""
 
-#: src/conf/domain_conf.c:21148
+#: src/conf/domain_conf.c:21146
 #, c-format
 msgid ""
 "vcpu enable order of vCPU '%zu' differs between source and destination "
 "definitions"
 msgstr ""
 
-#: src/conf/domain_conf.c:17126
+#: src/conf/domain_conf.c:17125
 #, c-format
 msgid "vcpu id '%u' is out of range of maximum vcpu count"
 msgstr ""
@@ -47644,17 +47663,17 @@ msgstr ""
 msgid "vcpu order '%u' exceeds vcpu count"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:6198
+#: src/qemu/qemu_hotplug.c:6192
 msgid ""
 "vcpu unplug request timed out. Unplug result must be manually inspected in "
 "the domain"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4551
+#: src/qemu/qemu_domain.c:4568
 msgid "vcpu0 can't be hotpluggable"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4556
+#: src/qemu/qemu_domain.c:4573
 msgid "vcpu0 must be enabled first"
 msgstr ""
 
@@ -47673,11 +47692,11 @@ msgid ""
 "configuration"
 msgstr ""
 
-#: src/conf/domain_conf.c:17519
+#: src/conf/domain_conf.c:17518
 msgid "vcpus is empty"
 msgstr ""
 
-#: src/conf/domain_conf.c:17558
+#: src/conf/domain_conf.c:17557
 msgid "vcpus overlaps in resctrl groups"
 msgstr ""
 
@@ -48059,7 +48078,7 @@ msgstr ""
 msgid "virtiofsd died unexpectedly"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5043
+#: src/qemu/qemu_domain.c:5060
 msgid "virtual FAT storage can't be accessed in read-write mode"
 msgstr ""
 
