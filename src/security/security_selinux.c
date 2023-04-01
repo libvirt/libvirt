@@ -2261,7 +2261,7 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManager *mgr,
         if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdevsrc->uuidstr)))
             return ret;
 
-        ret = virSecuritySELinuxSetHostdevLabelHelper(vfiodev, true, &data);
+        ret = virSecuritySELinuxSetHostdevLabelHelper(vfiodev, false, &data);
         break;
     }
 
@@ -2489,7 +2489,7 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManager *mgr,
         if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdevsrc->uuidstr)))
             return -1;
 
-        ret = virSecuritySELinuxRestoreFileLabel(mgr, vfiodev, true);
+        ret = virSecuritySELinuxRestoreFileLabel(mgr, vfiodev, false);
         break;
     }
 

@@ -1309,7 +1309,7 @@ virSecurityDACSetHostdevLabel(virSecurityManager *mgr,
         if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdevsrc->uuidstr)))
             return -1;
 
-        ret = virSecurityDACSetHostdevLabelHelper(vfiodev, true, &cbdata);
+        ret = virSecurityDACSetHostdevLabelHelper(vfiodev, false, &cbdata);
         break;
     }
 
@@ -1465,7 +1465,7 @@ virSecurityDACRestoreHostdevLabel(virSecurityManager *mgr,
         if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdevsrc->uuidstr)))
             return -1;
 
-        ret = virSecurityDACRestoreFileLabel(mgr, vfiodev);
+        ret = virSecurityDACRestoreFileLabelInternal(mgr, NULL, vfiodev, false);
         break;
     }
 
