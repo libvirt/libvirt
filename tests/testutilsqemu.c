@@ -27,20 +27,14 @@ static virCPUDef *cpuPower10;
 
 
 static const char *qemu_emulators[VIR_ARCH_LAST] = {
-    [VIR_ARCH_X86_64] = "/usr/bin/qemu-system-x86_64",
-};
-
-static const char *const x86_64_machines[] = {
-    "pc", "q35", NULL
 };
 
 static const char *const *qemu_machines[VIR_ARCH_LAST] = {
-    [VIR_ARCH_X86_64] = x86_64_machines,
 };
 
 static const char *qemu_default_ram_id[VIR_ARCH_LAST] = {
-    [VIR_ARCH_X86_64] = "pc.ram",
 };
+
 
 char *
 virFindFileInPath(const char *file)
