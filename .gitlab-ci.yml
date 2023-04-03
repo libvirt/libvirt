@@ -6,6 +6,7 @@ stages:
   - builds
   - integration_tests
   - sanity_checks
+  - pages
 
 .script_variables: &script_variables |
   export CCACHE_BASEDIR="$(pwd)"
@@ -84,6 +85,23 @@ website_job:
   variables:
     NAME: almalinux-8
     TARGET_BASE_IMAGE: docker.io/library/almalinux:8
+
+# On push to master publish the website from 'website_job' via gitlab pages
+pages:
+  stage: pages
+  script:
+    - mv website public
+  dependencies:
+    - website_job
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == $RUN_UPSTREAM_NAMESPACE && $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: on_success
+    - when: never
+  artifacts:
+    expose_as: 'pages'
+    name: 'pages'
+    paths:
+      - public
 
 .codestyle_job:
   stage: sanity_checks
