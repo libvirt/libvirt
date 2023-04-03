@@ -922,7 +922,7 @@ int virTestMain(int argc,
 
     if (ret == EXIT_FAILURE && !virBitmapIsAllClear(failedTests)) {
         g_autofree char *failed = virBitmapFormat(failedTests);
-        fprintf(stderr, "Some tests failed. Run them using:\n");
+        fprintf(stderr, "%zu tests failed. Run them using:\n", virBitmapCountBits(failedTests));
         fprintf(stderr, "VIR_TEST_DEBUG=1 VIR_TEST_RANGE=%s %s\n", failed, argv[0]);
     }
 
