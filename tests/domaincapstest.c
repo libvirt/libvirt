@@ -326,7 +326,7 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
 
     if (STREQ(variant, "+hvf"))
         hvf = true;
-    else if (STREQ(variant, ""))
+    else if (STRNEQ(variant, ""))
         return 0;
 
     if (STREQ(arch, "x86_64")) {
