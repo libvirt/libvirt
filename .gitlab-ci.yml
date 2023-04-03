@@ -91,6 +91,7 @@ pages:
   stage: pages
   script:
     - mv website public
+    - cp .gitlab_pages_redirects public/_redirects
   dependencies:
     - website_job
   rules:
