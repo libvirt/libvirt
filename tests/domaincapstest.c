@@ -118,9 +118,8 @@ fillQemuCaps(virDomainCaps *domCaps,
         VIR_FREE(loader->values.values[--loader->values.nvalues]);
 
     if (fillStringValues(&loader->values,
-                         "/usr/share/AAVMF/AAVMF_CODE.fd",
-                         "/usr/share/AAVMF/AAVMF32_CODE.fd",
-                         "/usr/share/OVMF/OVMF_CODE.fd",
+                         "/obviously/fake/firmware1.fd",
+                         "/obviously/fake/firmware2.fd",
                          NULL) < 0)
         return -1;
 
