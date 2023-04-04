@@ -161,24 +161,24 @@ a single space following them before the opening bracket. E.g.
 
 ::
 
-  if(foo)   // Bad
-  if (foo)  // Good
+  if(foo)   /* Bad */
+  if (foo)  /* Good */
 
 Function implementations must **not** have any whitespace between
 the function name and the opening bracket. E.g.
 
 ::
 
-  int foo (int wizz)  // Bad
-  int foo(int wizz)   // Good
+  int foo (int wizz)  /* Bad */
+  int foo(int wizz)   /* Good */
 
 Function calls must **not** have any whitespace between the
 function name and the opening bracket. E.g.
 
 ::
 
-  bar = foo (wizz);  // Bad
-  bar = foo(wizz);   // Good
+  bar = foo (wizz);  /* Bad */
+  bar = foo(wizz);   /* Good */
 
 Function typedefs must **not** have any whitespace between the
 closing bracket of the function name and opening bracket of the
@@ -186,16 +186,16 @@ arg list. E.g.
 
 ::
 
-  typedef int (*foo) (int wizz);  // Bad
-  typedef int (*foo)(int wizz);   // Good
+  typedef int (*foo) (int wizz);  /* Bad */
+  typedef int (*foo)(int wizz);   /* Good */
 
 There must not be any whitespace immediately following any opening
 bracket, or immediately prior to any closing bracket. E.g.
 
 ::
 
-  int foo( int wizz );  // Bad
-  int foo(int wizz);    // Good
+  int foo( int wizz );  /* Bad */
+  int foo(int wizz);    /* Good */
 
 Commas
 ------
@@ -206,8 +206,8 @@ syntax-check'.
 
 ::
 
-  call(a,b ,c);// Bad
-  call(a, b, c); // Good
+  call(a,b ,c);     /* Bad */
+  call(a, b, c);    /* Good */
 
 When declaring an enum or using a struct initializer that occupies
 more than one line, use a trailing comma. That way, future edits
@@ -225,11 +225,11 @@ C99 allows trailing commas, remember that JSON and XDR do not.
 
   enum {
       VALUE_ONE,
-      VALUE_TWO // Bad
+      VALUE_TWO     /* Bad */
   };
   enum {
       VALUE_THREE,
-      VALUE_FOUR, // Good
+      VALUE_FOUR,   /* Good */
   };
 
 Semicolons
@@ -243,10 +243,10 @@ not enforced, loop counters generally use post-increment.
 
 ::
 
-  for (i = 0 ;i < limit ; ++i) { // Bad
-  for (i = 0; i < limit; i++) { // Good
-  for (;;) { // ok
-  while (1) { // Better
+  for (i = 0 ;i < limit ; ++i) {    /* Bad */
+  for (i = 0; i < limit; i++) {     /* Good */
+  for (;;) {                        /* ok */
+  while (1) {                       /* Better */
 
 Empty loop bodies are better represented with curly braces and a
 comment, although use of a semicolon is not currently rejected.
@@ -254,9 +254,9 @@ comment, although use of a semicolon is not currently rejected.
 ::
 
   while ((rc = waitpid(pid, &st, 0) == -1) &&
-         errno == EINTR); // ok
+         errno == EINTR);           /* ok */
   while ((rc = waitpid(pid, &st, 0) == -1) &&
-         errno == EINTR) { // Better
+         errno == EINTR) {          /* Better */
       /* nothing */
   }
 
@@ -271,19 +271,19 @@ single-\ *statement* loop: each has only one *line* in its body.
 
 ::
 
-  while (expr)             // single line body; {} is optional
+  while (expr)              /* single line body; {} is optional */
       single_line_stmt();
 
 ::
 
   while (expr(arg1,
-              arg2))      // indentation makes it obvious it is single line,
-      single_line_stmt(); // {} is optional (not enforced either way)
+              arg2))        /* indentation makes it obvious it is single line, */
+      single_line_stmt();   /* {} is optional (not enforced either way) */
 
 ::
 
   while (expr1 &&
-         expr2) {         // multi-line, at same indentation, {} required
+         expr2) {           /* multi-line, at same indentation, {} required */
       single_line_stmt();
   }
 
@@ -295,7 +295,7 @@ braces), thinking it is already a multi-statement loop:
 
 ::
 
-  while (true) // BAD! multi-line body with no braces
+  while (true)              /* BAD! multi-line body with no braces */
       /* comment... */
       single_line_stmt();
 
@@ -303,7 +303,7 @@ Do this instead:
 
 ::
 
-  while (true) { // Always put braces around a multi-line body.
+  while (true) {            /* Always put braces around a multi-line body. */
       /* comment... */
       single_line_stmt();
   }
@@ -325,8 +325,8 @@ To reiterate, don't do this:
 
 ::
 
-  if (expr)            // BAD: no braces around...
-      while (expr_2) { // ... a multi-line body
+  if (expr)                 /* BAD: no braces around... */
+      while (expr_2) {      /* ... a multi-line body */
           ...
       }
 
@@ -356,11 +356,11 @@ longer, multi-line block be the ``else`` block.
       ...
   }
   else
-      x = y;    // BAD: braceless "else" with braced "then",
-                // and short block last
+      x = y;    /* BAD: braceless "else" with braced "then",
+                 * and short block last */
 
   if (expr)
-      x = y;    // BAD: braceless "if" with braced "else"
+      x = y;    /* BAD: braceless "if" with braced "else" */
   else {
       ...
       ...
@@ -375,7 +375,7 @@ rather than after the more involved block:
 ::
 
   if (!expr) {
-    x = y; // putting the smaller block first is more readable
+    x = y;      /* putting the smaller block first is more readable */
   } else {
       ...
       ...
@@ -403,19 +403,19 @@ itself.
 
   void
   foo(int a, int b)
-  {                          // correct - function body
+  {                          /* correct - function body */
       int 2d[][] = {
-        {                    // correct - complex initialization
+        {                    /* correct - complex initialization */
           1, 2,
         },
       };
       if (a)
-      {                      // BAD: compound brace on its own line
+      {                      /* BAD: compound brace on its own line */
           do_stuff();
       }
-      {                      // correct - nested scope
+      {                      /* correct - nested scope */
           int tmp;
-          if (a < b) {       // correct - hanging brace
+          if (a < b) {       /* correct - hanging brace */
               tmp = b;
               b = a;
               a = tmp;
@@ -601,7 +601,7 @@ calling another function.
 
         x = y + 20;
 
-        char *z = NULL; // <===
+        char *z = NULL; /* <=== */
         ...
     }
 
