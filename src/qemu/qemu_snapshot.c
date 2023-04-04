@@ -2622,9 +2622,26 @@ qemuSnapshotFindParentSnapForDisk(virDomainMomentObj *snap,
 }
 
 
+/**
+ * qemuSnapshotDeleteExternalPrepareData:
+ * @vm: domain object
+ * @snap: snapshot object
+ * @merge: whether we are just deleting image or not
+ * @externalData: prepared data to delete external snapshot
+ *
+ * Validate if we can delete selected snapshot @snap and prepare all necessary
+ * data that will be used when deleting snapshot as @externalData.
+ *
+ * If @merge is set to true we will merge the deleted snapshot into parent one
+ * instead of just deleting it. This is necessary when operating on snapshot
+ * that has existing overlay files.
+ *
+ * Returns -1 on error, 0 on success.
+ */
 static int
 qemuSnapshotDeleteExternalPrepareData(virDomainObj *vm,
                                       virDomainMomentObj *snap,
+                                      bool merge,
                                       GSList **externalData)
 {
     ssize_t i;
@@ -2648,10 +2665,6 @@ qemuSnapshotDeleteExternalPrepareData(virDomainObj *vm,
         data = g_new0(qemuSnapshotDeleteExternalData, 1);
         data->snapDisk = snapDisk;
 
-        data->domDisk = qemuDomainDiskByName(vm->def, snapDisk->name);
-        if (!data->domDisk)
-            return -1;
-
         data->parentDomDisk = virDomainDiskByTarget(snapdef->parent.dom,
                                                     data->snapDisk->name);
         if (!data->parentDomDisk) {
@@ -2661,39 +2674,46 @@ qemuSnapshotDeleteExternalPrepareData(virDomainObj *vm,
             return -1;
         }
 
-        if (virDomainObjIsActive(vm)) {
-            data->diskSrc = virStorageSourceChainLookupBySource(data->domDisk->src,
-                                                                data->snapDisk->src,
-                                                                &data->prevDiskSrc);
-            if (!data->diskSrc)
+        if (merge) {
+            data->domDisk = qemuDomainDiskByName(vm->def, snapDisk->name);
+            if (!data->domDisk)
                 return -1;
 
-            if (!virStorageSourceIsSameLocation(data->diskSrc, data->snapDisk->src)) {
-                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                               _("VM disk source and snapshot disk source are not the same"));
-                return -1;
+            if (virDomainObjIsActive(vm)) {
+                data->diskSrc = virStorageSourceChainLookupBySource(data->domDisk->src,
+                                                                    data->snapDisk->src,
+                                                                    &data->prevDiskSrc);
+                if (!data->diskSrc)
+                    return -1;
+
+                if (!virStorageSourceIsSameLocation(data->diskSrc, data->snapDisk->src)) {
+                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                                   _("VM disk source and snapshot disk source are not the same"));
+                    return -1;
+                }
+
+                data->parentDiskSrc = data->diskSrc->backingStore;
+                if (!virStorageSourceIsBacking(data->parentDiskSrc)) {
+                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                                   _("failed to find parent disk source in backing chain"));
+                    return -1;
+                }
+
+                if (!virStorageSourceIsSameLocation(data->parentDiskSrc,
+                                                    data->parentDomDisk->src)) {
+                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                                   _("snapshot VM disk source and parent disk source are not the same"));
+                    return -1;
+                }
             }
 
-            data->parentDiskSrc = data->diskSrc->backingStore;
-            if (!virStorageSourceIsBacking(data->parentDiskSrc)) {
-                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                               _("failed to find parent disk source in backing chain"));
+            data->parentSnap = qemuSnapshotFindParentSnapForDisk(snap, data->snapDisk);
+
+            if (data->parentSnap && !virDomainSnapshotIsExternal(data->parentSnap)) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("deleting external snapshot that has internal snapshot as parent not supported"));
                 return -1;
             }
-
-            if (!virStorageSourceIsSameLocation(data->parentDiskSrc, data->parentDomDisk->src)) {
-                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                               _("snapshot VM disk source and parent disk source are not the same"));
-                return -1;
-            }
-        }
-
-        data->parentSnap = qemuSnapshotFindParentSnapForDisk(snap, data->snapDisk);
-
-        if (data->parentSnap && !virDomainSnapshotIsExternal(data->parentSnap)) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("deleting external snapshot that has internal snapshot as parent not supported"));
-            return -1;
         }
 
         ret = g_slist_prepend(ret, g_steal_pointer(&data));
@@ -2740,7 +2760,7 @@ qemuSnapshotDeleteExternalPrepare(virDomainObj *vm,
     }
 
     /* this also serves as validation whether the snapshot can be deleted */
-    if (qemuSnapshotDeleteExternalPrepareData(vm, snap, &tmpData) < 0)
+    if (qemuSnapshotDeleteExternalPrepareData(vm, snap, true, &tmpData) < 0)
         return -1;
 
     if (!virDomainObjIsActive(vm)) {
@@ -2755,7 +2775,7 @@ qemuSnapshotDeleteExternalPrepare(virDomainObj *vm,
 
         /* Call the prepare again as some data require that the VM is
          * running to get everything we need. */
-        if (qemuSnapshotDeleteExternalPrepareData(vm, snap, externalData) < 0)
+        if (qemuSnapshotDeleteExternalPrepareData(vm, snap, true, externalData) < 0)
             return -1;
     } else {
         qemuDomainJobPrivate *jobPriv = vm->job->privateData;
