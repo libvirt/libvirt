@@ -1,5 +1,6 @@
 util_sources = [
   'glibcompat.c',
+  'viracpi.c',
   'viralloc.c',
   'virarch.c',
   'virarptable.c',

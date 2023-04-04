@@ -1829,6 +1829,13 @@ vir_g_strdup_printf;
 vir_g_strdup_vprintf;
 
 
+# util/viracpi.c
+virAcpiHasSMMU;
+virAcpiParseIORT;
+virIORTNodeTypeTypeFromString;
+virIORTNodeTypeTypeToString;
+
+
 # util/viralloc.h
 virAppendElement;
 virDeleteElementsN;

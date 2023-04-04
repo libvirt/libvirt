@@ -244,6 +244,7 @@ src/storage_file/storage_source.c
 src/storage_file/storage_source_backingstore.c
 src/test/test_driver.c
 src/util/iohelper.c
+src/util/viracpi.c
 src/util/viralloc.c
 src/util/virarptable.c
 src/util/viraudit.c
