@@ -269,6 +269,7 @@ tests += [
   { 'name': 'storagevolxml2xmltest' },
   { 'name': 'sysinfotest' },
   { 'name': 'utiltest' },
+  { 'name': 'viracpitest' },
   { 'name': 'viralloctest' },
   { 'name': 'virauthconfigtest' },
   { 'name': 'virbitmaptest' },
