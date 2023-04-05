@@ -26,6 +26,7 @@
 #include <sys/utsname.h>
 #include <sys/stat.h>
 
+#include "viracpi.h"
 #include "viralloc.h"
 #include "vircgroup.h"
 #include "virfile.h"
@@ -389,13 +390,24 @@ int virHostValidateIOMMU(const char *hvname,
         }
         virHostMsgPass();
     } else if (ARCH_IS_ARM(arch)) {
-        if (access("/sys/firmware/acpi/tables/IORT", F_OK) == 0) {
-            virHostMsgPass();
-        } else {
+        if (access("/sys/firmware/acpi/tables/IORT", F_OK) != 0) {
             virHostMsgFail(level,
                            "No ACPI IORT table found, IOMMU not "
                            "supported by this hardware platform");
             return VIR_HOST_VALIDATE_FAILURE(level);
+        } else {
+            rc = virAcpiHasSMMU();
+            if (rc < 0) {
+                virHostMsgFail(level,
+                               "Failed to parse ACPI IORT table");
+                return VIR_HOST_VALIDATE_FAILURE(level);
+            } else if (rc == 0) {
+                virHostMsgFail(level,
+                               "No SMMU found");
+                return VIR_HOST_VALIDATE_FAILURE(level);
+            } else {
+                virHostMsgPass();
+            }
         }
     } else {
         virHostMsgFail(level,
