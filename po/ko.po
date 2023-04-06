@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-04-01 11:38+0200\n"
-"PO-Revision-Date: 2023-04-01 08:03+0000\n"
+"PO-Revision-Date: 2023-04-06 08:20+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -439,17 +439,17 @@ msgstr ""
 "\n"
 "syntax: %1$s [OPTIONS] [HVTYPE]\n"
 "\n"
-" Hypervisor types:\n"
+" 하이퍼바이저 유형:\n"
 "\n"
 "   - qemu\n"
 "   - lxc\n"
 "   - bhyve\n"
 "   - ch\n"
 "\n"
-" Options:\n"
-"   -h, --help     Display command line help\n"
-"   -v, --version  Display command version\n"
-"   -q, --quiet    Don't display progress information\n"
+" 옵션:\n"
+"   -h, --help     명령 줄 도움말을 표시합니다\n"
+"   -v, --version  명령 버전을 표시합니다\n"
+"   -q, --quiet    진행 정보를 표시하지 않습니다\n"
 "\n"
 
 #, c-format
@@ -1434,7 +1434,7 @@ msgid "(capabilities)"
 msgstr "(기능)"
 
 msgid "(definition_of_secret)"
-msgstr "(definition_of_secret)"
+msgstr "(비밀의_정의)"
 
 msgid "(device_definition)"
 msgstr "(장치 정의)"
@@ -1461,7 +1461,7 @@ msgid "(esx execute response)"
 msgstr "(esx 실행 결과)"
 
 msgid "(gluster_cli_output)"
-msgstr "(gluster_cli_output)"
+msgstr "(gluster_cli_출력)"
 
 msgid "(interface definition)"
 msgstr "(인터페이스 정의)"
@@ -1470,7 +1470,7 @@ msgid "(interface_definition)"
 msgstr "(인터페이스 정의)"
 
 msgid "(libxl_migration_cookie)"
-msgstr "(libxl_migration_cookie)"
+msgstr "(libxl_이전_쿠키)"
 
 msgid "(metadata_xml)"
 msgstr "(메타자료_xml)"
@@ -1482,13 +1482,13 @@ msgid "(networkport_definition)"
 msgstr "(네트워크포트_ 정의)"
 
 msgid "(node_device_definition)"
-msgstr "(node_device_definition)"
+msgstr "(노드_장치_정의)"
 
 msgid "(none)"
 msgstr "(없음)"
 
 msgid "(nwfilter_definition)"
-msgstr "(nwfilter_definition)"
+msgstr "(nwfilter_정의)"
 
 msgid "(nwfilterbinding_definition)"
 msgstr "(nwfilterbinding_정의)"
@@ -1497,7 +1497,7 @@ msgid "(nwfilterbinding_status)"
 msgstr "(nwfilter_정의)"
 
 msgid "(qemu_migration_cookie)"
-msgstr "(qemu_migration_cookie)"
+msgstr "(qemu_이전_쿠키)"
 
 msgid "(re)connect to hypervisor"
 msgstr "하이퍼바이저로 (재)연결"
@@ -1951,7 +1951,8 @@ msgstr ""
 msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
 "definition in network '%1$s'"
-msgstr ""
+msgstr "이름, MAC, 또는 ip 속성 중의 최소 하나는 네트워크 '%1$s'에서 고정 호스트 "
+"정의를 위해 지정되어야 합니다"
 
 msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
@@ -3461,7 +3462,7 @@ msgstr "용량:"
 
 msgid ""
 "Cardinality of list items must be the same for processing them in parallel"
-msgstr "목록 항목의 기수(cardinality)는 병렬 처리를 위해 동일해야 합니다."
+msgstr "목록 항목의 기수는 병렬 처리를 위해 동일해야 합니다"
 
 #, c-format
 msgid "Category range c%1$d-c%2$d too small"
@@ -3585,6 +3586,9 @@ msgid ""
 "and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
 msgstr ""
+"호스트 설정 점검: 연결장치 %1$s는 커널을 자동-구성되는 IPv6 경로를 갖고 있고 "
+"accept_ra를 2로 설정하지 않고 전달하는 활성화는 커널이 이를 가득차게 하여, "
+"네트워킹이 끊어집니다."
 
 #, c-format
 msgid "Checkpoint %1$s XML configuration not changed.\n"
@@ -4241,7 +4245,7 @@ msgstr "반복자에서 변수 '%1$s'를 값을 찾을 수 없음"
 
 #, c-format
 msgid "Could not find vf/instanceId %1$u/%2$s in netlink response"
-msgstr ""
+msgstr "넷링크 응답에서 vf/instanceId %1$u/%2$s를 찾을 수 없습니다"
 
 #, c-format
 msgid "Could not find volume with name: %1$s"
@@ -5275,7 +5279,7 @@ msgstr "장치 '%1$s'를인식할 수 없습니다. 빌드가 필요합니다"
 
 #, c-format
 msgid "Device alias was not set for %1$s controller with index %2$d"
-msgstr ""
+msgstr "장치 별칭은 색인 %2$d와 함께 %1$s 제어기를 위해 설정되지 않았습니다"
 
 #, c-format
 msgid ""
@@ -5431,7 +5435,7 @@ msgid "Display the system version information."
 msgstr "시스템 버전정보 보여주기."
 
 msgid "Display version information"
-msgstr "버전 정보 보기."
+msgstr "버전 정보 표시"
 
 msgid ""
 "Displays the node's total number of CPUs, the number of online CPUs and the "
@@ -6444,7 +6448,8 @@ msgstr "기능 추가에 실패 %1$s: %2$d"
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
-msgstr ""
+msgstr "PCI 장치 '%2$s'의 드라이버_재정의 연결장치로 드라이버 '%1$s'를 추가하는데 "
+"실패함"
 
 msgid "Failed to add netlink event handle watch"
 msgstr "netlink 이벤트 핸들 감시를 추가하지 못했습니다"
@@ -9423,11 +9428,11 @@ msgstr "인터페이스 %1$s가 정의되지 않았습니다\n"
 
 #, c-format
 msgid "Interface (dev: %1$s) not found."
-msgstr "연결잘치 (dev: %1$s)를 찾을 수 없음"
+msgstr "연결장치 (dev: %1$s)를 찾을 수 없음."
 
 #, c-format
 msgid "Interface (mac: %1$s) not found."
-msgstr "연결장치 (mac: %1$s)를 찾을 수 없음"
+msgstr "연결장치 (mac: %1$s)를 찾을 수 없음."
 
 msgid "Interface attached successfully\n"
 msgstr "인터페이스가 성공적으로 부착되었습니다\n"
@@ -9965,7 +9970,7 @@ msgstr "유효하지 않은 수명주기 동작: '%1$s'."
 
 #, c-format
 msgid "Invalid lifecycle type '%1$s'."
-msgstr "잘못된 수명주기 유형 '%1$s'"
+msgstr "잘못된 수명주기 유형 '%1$s'."
 
 #, c-format
 msgid "Invalid log destination '%1$s' for log output '%2$s'"
@@ -11691,7 +11696,7 @@ msgid "NULL JSON type can't be converted to commandline"
 msgstr "NULL JSON 유형은 명령줄로 변환할 수 없습니다"
 
 msgid "NULL NetworkDef"
-msgstr "NULL NetworkDef"
+msgstr "널(NULL) NetworkDef"
 
 #, c-format
 msgid "NULL argument - %1$p %2$p"
@@ -15157,6 +15162,8 @@ msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
+"대상 장치 PCI 주소 %1$04x:%2$02x:%3$02x.%4$d는 원천 %5$04x:%6$02x:%7$02x.%8$"
+"d과 일치하지 않습니다"
 
 #, c-format
 msgid "Target device address type %1$s does not match source %2$s"
@@ -16632,7 +16639,7 @@ msgid "Unable to change MaxMemorySize"
 msgstr "최대 메모리 크기를 변경할 수 없음"
 
 msgid "Unable to change balloon collection period."
-msgstr "풍선 수집 기간을 변경할 수 없습니다"
+msgstr "만기 수집 기간을 변경 할 수 없습니다."
 
 msgid "Unable to change blkio parameters"
 msgstr "blkio 매개 변수를 변경 할 수 없습니다"
@@ -19498,7 +19505,7 @@ msgstr "사용된 메모리:"
 
 #, c-format
 msgid "User %1$s doesn't exist"
-msgstr "사용자 %1$s가 존재하지 않습니다."
+msgstr "사용자 %1$s가 존재하지 않습니다"
 
 msgid "User namespace support is recommended"
 msgstr "사용자 네임스페이스 지원이 권장됩니다"
@@ -20441,7 +20448,7 @@ msgstr "잘못된 경로 이름"
 
 #, c-format
 msgid "bad prefix %1$d for network %2$s when checking range %3$s - %4$s"
-msgstr ""
+msgstr "점검 범위 %3$s - %4$s 일 때에 네트워크 %2$s를 위한 잘못된 접두사 %1$d"
 
 msgid "balloon device cannot be disabled"
 msgstr "풍선 장치는 비활성화할 수 없습니다"
@@ -21571,29 +21578,35 @@ msgid ""
 "cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
 "%5$d - controller not found"
 msgstr ""
+"PCI 게스트 주소: %2$04x:%3$02x:%4$02x.%5$d와 함께 %1$s 장치를 동작 중 제거 "
+"할 수 없습니다 - 제어기를 찾을 수 없음"
 
 #, c-format
 msgid ""
 "cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
 "%5$d - not allowed by controller"
 msgstr ""
+"PCI 게스트 주소: %2$04x:%3$02x:%4$02x.%5$d와 함께 %1$s 장치를 동작 중 제거 "
+"할 수 없습니다 - 제어기에서 허용하지 않음"
 
 #, c-format
 msgid ""
 "cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:"
 "%3$02x:%4$02x.%5$d"
 msgstr ""
+"다-기능 PCI 게스트 주소와 함께 %1$s 장치를 동작 중 제거 할 수 없습니다 : "
+"%2$04x:%3$02x:%4$02x.%5$d"
 
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %1$04x:%2$02x:%3$02x.%4$d"
-msgstr ""
+msgstr "다-기능 PCI 장치를 동작 중 제거 할 수 없습니다: %1$04x:%2$02x:%3$02x.%4$d"
 
 msgid "cannot initialize agent condition"
 msgstr "에이전트 조건을 초기화 할 수 없음"
 
 #, c-format
 msgid "cannot initialize cert object: %1$s"
-msgstr "인증 대상: %1$s를 초기화 할 수 없습니다."
+msgstr "인증 대상을 초기화 할 수 없습니다: %1$s"
 
 msgid "cannot initialize condition variable"
 msgstr "상태 변수를 초기화할 수 없습니다"
@@ -22811,7 +22824,7 @@ msgid "computing baseline hypervisor CPU is not supported for arch %1$s"
 msgstr "기본 하이퍼바이저 CPU 컴퓨팅은 아치 %1$s에 대해 지원되지 않습니다"
 
 msgid "config"
-msgstr "config"
+msgstr "설정"
 
 msgid "config data file to import from"
 msgstr "가져오기 할 설정 데이터 파일"
@@ -24026,7 +24039,7 @@ msgstr "지원되지 않는 디스크 백엔드: %1$s"
 
 #, c-format
 msgid "disk bus '%1$s' cannot be hot unplugged."
-msgstr "디스크 버스 '%1$s'는 언플러그 될 수 없습니다"
+msgstr "디스크 버스 '%1$s'는 동작 중 분리 될 수 없습니다."
 
 #, c-format
 msgid "disk bus '%1$s' cannot be hotplugged."
@@ -24034,7 +24047,7 @@ msgstr "디스크 버스 '%1$s'가 핫플러그 될 수 없습니다."
 
 #, c-format
 msgid "disk bus '%1$s' cannot be updated."
-msgstr "디스크 버스 '%1$s'을(를) 업데이트할 수 없습니다"
+msgstr "디스크 버스 '%1$s'는 최신화 할 수 없습니다."
 
 #, c-format
 msgid "disk bus '%1$s' doesn't support transiend disk backing image sharing"
@@ -25139,7 +25152,7 @@ msgid "expecting a name"
 msgstr "이름 예상하기"
 
 msgid "expecting a pci:0000.00.00.00 or ccw:00.0.0000 address."
-msgstr "예상되는 pci:0000.00.00.00 또는 ccw:00.0.0000 주소"
+msgstr "예상되는 pci:0000.00.00.00 또는 ccw:00.0.0000 주소."
 
 msgid "expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address."
 msgstr "예상되는 scsi:00.00.00 또는 usb:00.00 또는 sata:00.00.00 주소."
@@ -27166,7 +27179,7 @@ msgstr "디스크 장치 소스의 호스트 이름"
 
 #, c-format
 msgid "host pci device %1$04x:%2$02x:%3$02x.%4$d not found"
-msgstr ""
+msgstr "호스트 pci 장치 %1$04x:%2$02x:%3$02x.%4$d를 찾을 수 없음"
 
 #, c-format
 msgid "host pci device %1$s not found"
@@ -28705,7 +28718,7 @@ msgstr "libxenlight가 네트워크 장치를 연결하지 못했습니다"
 
 #, c-format
 msgid "libxenlight failed to attach pci device %1$04x:%2$02x:%3$02x.%4$d"
-msgstr ""
+msgstr "libxenlight가 pci 장치 %1$04x:%2$02x:%3$02x.%4$d를 연결하는데 실패함"
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%1$3x, Devnum:%2$3x"
@@ -28737,7 +28750,7 @@ msgstr "libxenlight가 네트워크 장치를 분리하지 못했습니다"
 
 #, c-format
 msgid "libxenlight failed to detach pci device %1$04x:%2$02x:%3$02x.%4$d"
-msgstr ""
+msgstr "libxenlight가 pci 장치 %1$04x:%2$02x:%3$02x.%4$d를 분리하는데 실패함"
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%1$s'"
@@ -31028,6 +31041,8 @@ msgid ""
 "the device pool. This is only supported for networks with forward mode "
 "'hostdev'"
 msgstr ""
+"네트워크 '%1$s'는 전달 방식 '%2$s'을 갖고 있지만 장치 풀의 PCI 주소에 의해 "
+"장치를 나열합니다. 이는 전달 방식 'hostdev'를 갖는 네트워크만 지원됩니다"
 
 #, c-format
 msgid ""
@@ -31779,7 +31794,7 @@ msgid "node cpu info not implemented on this platform"
 msgstr "이 기술환경에 구현되지 않은 노드 cpu 정보"
 
 msgid "node cpu map"
-msgstr "node cpu map"
+msgstr "노드 cpu 맵"
 
 #, c-format
 msgid "node device '%1$s' in %2$s must match connection"
@@ -32446,7 +32461,7 @@ msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
 msgstr "명령 '%1$s'의 매개변수 '%2$s'는 VSH_OFLAG_REQ 플래그를 사용해야 합니다"
 
 msgid "parameter=value"
-msgstr "parameter=value"
+msgstr "매개변수=값"
 
 #, c-format
 msgid "parent %1$s for moment %2$s not found"
@@ -34918,7 +34933,7 @@ msgstr "디스크 장치의 대상"
 
 #, c-format
 msgid "target pci device %1$04x:%2$02x:%3$02x.%4$d already exists"
-msgstr ""
+msgstr "대상 pci 장치 %1$04x:%2$02x:%3$02x.%4$d가 이미 존재합니다"
 
 #, c-format
 msgid "target port '%1$d' already allocated"
@@ -35879,7 +35894,8 @@ msgstr "볼륨 XML을 생성할 수 없습니다"
 msgid ""
 "unable to delete interface '%1$s' in network '%2$s'. It is currently being "
 "used by %3$d domains."
-msgstr ""
+msgstr "네트워크 '%2$s'에서 연결장치 '%1$s'를 삭제 할 수 없음. 이는 현재 %3$d "
+"도메인에 의해 사용 중입니다."
 
 #, c-format
 msgid "unable to determine access mode of %1$s"
