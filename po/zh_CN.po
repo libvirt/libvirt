@@ -16,7 +16,7 @@
 # Pany <geekpany@gmail.com>, 2021.
 # Ludek Janda <ljanda@redhat.com>, 2022, 2023.
 # zhanchun li <lzc777@126.com>, 2022.
-# Yang Yulin <yylteam@icloud.com>, 2022.
+# Yang Yulin <yylteam@icloud.com>, 2022, 2023.
 # Daniel P. Berrange <berrange@redhat.com>, 2022.
 # Jan Tomko <jtomko@redhat.com>, 2022.
 # Jiri Denemark <jdenemar@redhat.com>, 2023.
@@ -25,8 +25,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-04-01 11:38+0200\n"
-"PO-Revision-Date: 2023-03-14 16:11+0000\n"
-"Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
+"PO-Revision-Date: 2023-04-04 17:20+0000\n"
+"Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -731,13 +731,12 @@ msgstr ""
 msgid "%1$s uri uuid action\n"
 msgstr "%1$s uri uuid 动作\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s with index %2$d is configured for a NUMA node (%3$d) not present in the "
 "domain's <cpu><numa> array (%4$zu)"
-msgstr ""
-"为 NUMA 节点(%3$d)配置的索引为 %2$d 的 %1$s 在域的 <cpu><numa> 数组(%4$zu)中"
-"不存在"
+msgstr "为 NUMA 节点(%3$d)配置的索引为 %2$d 的 %1$s 在域的 <cpu><numa> "
+"数组(%4$zu)中不存在"
 
 #, c-format
 msgid ""
@@ -1152,7 +1151,7 @@ msgstr "内存中放不下 '%1$s' 文件"
 
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
-msgstr ""
+msgstr "QEMU 加密引擎当前不支持 '%1$s'"
 
 #, c-format
 msgid "'%1$s' is not a VF device"
@@ -1215,7 +1214,7 @@ msgid "'address' must be specified for scsi hostdev source"
 msgstr "对于 scsi hostdev 源，必须指定 'address'"
 
 msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
-msgstr ""
+msgstr "“AES-key-wrap”/“DEA-Key-wrap”在此体系结构上不可用"
 
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
@@ -1894,7 +1893,7 @@ msgstr "启用内存热插拔时，必须至少配置一个 numa 节点"
 msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
 "definition in network '%1$s'"
-msgstr ""
+msgstr "必须为网络 '%1$s' 中的静态主机定义指定至少一个名称、mac 或 ip 属性"
 
 msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
@@ -2153,9 +2152,9 @@ msgstr "不能为 '%1$s' 总线设置 CHS 几何图形"
 msgid "CHS translation mode can only be set for 'ide' bus not '%1$s'"
 msgstr "只能为 'ide' 总线而不是 '%1$s' 设置 CHS 转换模式"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU %1$d in cpulist '%2$s' exceed the maxcpu %3$d"
-msgstr "cpulist '%2$s' 中的 CPU %1$d 超出了 maxcpu %3$d"
+msgstr "CPU 列表 '%2$s' 中的 CPU %1$d 超过最大 CPU %3$d"
 
 msgid "CPU Affinity"
 msgstr "CPU 亲和性"
@@ -2387,7 +2386,7 @@ msgstr "缓存级别 %1$d id %2$u 不支持对范围类型 '%3$s' 进行性能�
 msgid "Cache level '%1$u' already defined"
 msgstr "缓存级别 '%1$u' 已定义"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cache with id %1$u does not exists for level %2$d"
 msgstr "级别 %2$d 不存在 id 为 %1$u 的缓存"
 
@@ -3107,7 +3106,7 @@ msgstr "无法解析插槽地址 '%1$s': %2$s"
 msgid "Cannot parse socket service '%1$s': %2$s"
 msgstr "无法解析套接字服务 '%1$s'：%2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot parse start time %1$s for pid %2$d"
 msgstr "无法解析 pid %2$d 的启动时间 %1$s"
 
@@ -3122,7 +3121,7 @@ msgstr "无法解析用户统计 '%1$s'"
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr "无法解析元素 <address> 的 uuid 属性"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
 "%3$llu would overcommit average=%4$llu on network '%5$s'"
@@ -3130,7 +3129,7 @@ msgstr ""
 "无法将 '%1$s' 接口插入 '%2$s'，因为新合并的入站 floor=%3$llu 将在网络 '%5$s' "
 "上过度承诺 average=%4$llu"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
 "%3$llu would overcommit peak=%4$llu on network '%5$s'"
@@ -3220,7 +3219,7 @@ msgstr "无法设定上下文 %1$s"
 msgid "Cannot set interface MAC on '%1$s'"
 msgstr "无法在 '%1$s' 上设置接口 MAC"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot set interface MAC to %1$s for ifname %2$s vf %3$d"
 msgstr "无法为 ifname %2$s vf %3$d 将接口 MAC 设为 %1$s"
 
@@ -3236,7 +3235,7 @@ msgstr "无法在 '%1$s' 设定接口 MTU"
 msgid "Cannot set interface flags on '%1$s'"
 msgstr "无法在 '%1$s' 中设定接口标签"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot set interface vlanid to %1$d for ifname %2$s vf %3$d"
 msgstr "无法为 ifname %2$s vf %3$d 将接口 vlanid 设为%1$d"
 
@@ -3464,6 +3463,8 @@ msgid ""
 "and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
 msgstr ""
+"检查主机设置：接口 %1$s 具有内核自动配置的 IPv6 路由，在不将 accept_ra "
+"设置为 2 的情况下启用转发将导致内核刷新它们，从而破坏网络。"
 
 #, c-format
 msgid "Checkpoint %1$s XML configuration not changed.\n"
@@ -3940,7 +3941,7 @@ msgstr "无法提取 vzctl 版本"
 msgid "Could not find %1$s"
 msgstr "无法找到 %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find %1$s controller with index %2$d required for device"
 msgstr "无法找到设备所需的索引为 %2$d 的 %1$s 控制器"
 
@@ -3976,11 +3977,11 @@ msgstr "无法找到名为 '%1$s' 的 HostVirtualSwitch"
 msgid "Could not find Msvm_DiskDrive object"
 msgstr "无法找到 Msvm_DiskDrive 对象"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Could not find PCI controller with index '%1$u' required for device at "
 "address '%2$s'"
-msgstr "无法为地址 '%2$s' 处的设备找到所需的索引为 '%1$u' 的 PCI 控制器。"
+msgstr "无法为地址 '%2$s' 处的设备找到所需的索引为 '%1$u' 的 PCI 控制器"
 
 #, c-format
 msgid "Could not find PhysicalNic with key '%1$s'"
@@ -4006,7 +4007,7 @@ msgstr "无法在 %1$s 处找到 PCI 设备下的任何网络设备"
 msgid "Could not find any vport capable device"
 msgstr "无法找到任何具有 vport 功能的设备"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find auto-added %1$s controller with index %2$zu"
 msgstr "无法找到索引为 %2$zu 的自动添加的 %1$s 控制器"
 
@@ -4112,7 +4113,7 @@ msgstr "无法在迭代器中找到变量 '%1$s'"
 
 #, c-format
 msgid "Could not find vf/instanceId %1$u/%2$s in netlink response"
-msgstr ""
+msgstr "在网络链接响应中找不到 vf/实例 ID %1$u/%2$s"
 
 #, c-format
 msgid "Could not find volume with name: %1$s"
@@ -5127,14 +5128,13 @@ msgstr "设备 '%1$s' 未被识别，需要构建"
 
 #, c-format
 msgid "Device alias was not set for %1$s controller with index %2$d"
-msgstr ""
+msgstr "未为索引为 %2$d 的 %1$s 控制器设置设备别名"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Device alias was not set for PCI controller with index '%1$u' required for "
 "device at address '%2$s'"
-msgstr ""
-"对地址 '%2$s' 处的设备所需的索引为 '%1$u' 的 PCI 控制器没有设置设备别名"
+msgstr "对地址 '%2$s' 处的设备所需的索引为 '%1$u' 的 PCI 控制器没有设置设备别名"
 
 msgid "Device attached successfully\n"
 msgstr "成功附加设备\n"
@@ -5286,7 +5286,7 @@ msgid ""
 "list of online CPUs."
 msgstr "显示该节点的 CPU 总数，在线 CPU 数以及在线 CPU 列表。"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Distance value %1$d under node %2$zu is LOCAL_DISTANCE and should be set to "
 "10"
@@ -6245,7 +6245,7 @@ msgstr "添加功能 %1$s 失败：%2$d"
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
-msgstr ""
+msgstr "无法将驱动程序“%1$s”添加到 PCI 设备“%2$s”的接口 driver_override"
 
 msgid "Failed to add netlink event handle watch"
 msgstr "添加 netlink 事件句柄观察失败"
@@ -7341,7 +7341,7 @@ msgstr "新建文件夹 %1$s 失败"
 msgid "Failed to mount %1$s on %2$s type %3$s"
 msgstr "将 %1$s 在 %2$s 类型 %3$s 中挂载失败"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mount %1$s on %2$s type %3$s flags=0x%4$x"
 msgstr "在 %2$s 类型 %3$s flags=0x%4$x 上挂载 %1$s 失败"
 
@@ -7619,7 +7619,7 @@ msgstr "重新附加 PCI 设备失败：%1$s"
 msgid "Failed to re-attach device %1$s"
 msgstr "重新附加设备 %1$s 失败"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to re-mount %1$s on %2$s flags=0x%3$x"
 msgstr "在 %2$s flags=0x%3$x 上重新挂载 %1$s 失败"
 
@@ -7896,7 +7896,7 @@ msgstr "保存域 '%1$s' 状态失败"
 msgid "Failed to save domain '%1$s' to %2$s"
 msgstr "将域 '%1$s' 保存为 %2$s 失败"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to seek to %1$llu bytes to the end in volume with path '%2$s'"
 msgstr "在路径为 '%2$s' 的卷中查找距离末尾的 %1$llu 字节失败"
 
@@ -8485,7 +8485,7 @@ msgstr "强制停止给定的池。不损坏该池中的原始数据。"
 
 #, c-format
 msgid "Format mismatch: loader.format='%1$s' nvram.format='%2$s'"
-msgstr ""
+msgstr "格式不匹配：loader.format='%1$s' nvram.format='%2$s'"
 
 #, c-format
 msgid "Format of device '%1$s' does not match the expected format '%2$s'"
@@ -12082,7 +12082,7 @@ msgstr "未传递足够的参数，没有设置任何内容"
 msgid "Not enough free space in pool for volume '%1$s'"
 msgstr "在池中没有用于卷 '%1$s' 的足够可用空间"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u "
 "scope type '%4$s'"
@@ -12131,7 +12131,7 @@ msgstr "接口个数，%1$d 超过上限：%2$d"
 
 #, c-format
 msgid "Number of keys %1$d, which exceeds max limit: %2$d"
-msgstr ""
+msgstr "超过最大限制的密钥数 %1$d：%2$d"
 
 #, c-format
 msgid "Number of leases is %1$d, which exceeds max limit: %2$d"
@@ -12596,10 +12596,10 @@ msgstr "POST操作失败"
 msgid "POST operation failed: %1$s"
 msgstr "POST操作失败: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "PTR domain for %1$s network with prefix %2$u cannot be automatically created"
-msgstr "不能为前缀为 %2$u 的 %1$s 网络自动创建 PTR 域"
+msgstr "无法自动创建前缀为 %2$u 的 %1$s 网络的 PTR 域"
 
 msgid "PTY device is not yet assigned"
 msgstr "PTY 设备尚未分配"
@@ -13226,13 +13226,11 @@ msgstr "所需操作无效：%1$s"
 msgid "Requested volume '%1$s' is not in pool '%2$s'"
 msgstr "请求的卷 '%1$s' 不在池 '%2$s' 中"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Required option '%1$s' is not set for PCI controller with index '%2$d', "
 "model '%3$s' and modelName '%4$s'"
-msgstr ""
-"没有为索引为 '%2$d'、型号为 '%3$s' 和 modelName 为 '%4$s' 的 PCI 控制器设置必"
-"选项 '%1$s'"
+msgstr "未为索引为“%2$d”、型号“%3$s”和型号名称为“%4$s”的 PCI 控制器设置必需选项“%1$s”"
 
 #, c-format
 msgid ""
@@ -14741,6 +14739,8 @@ msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
+"目标设备 PCI 地址 %1$04x:%2$02x:%3$02x.%4$d 与源地址 %5$04x:%6$02x:%7$02x.%8$"
+"d 不匹配"
 
 #, c-format
 msgid "Target device address type %1$s does not match source %2$s"
@@ -15693,7 +15693,7 @@ msgstr "要写入流中的字节太多"
 msgid "Too many clients '%1$d' for limit '%2$d'"
 msgstr "客户端数量 '%1$d' 已超过限制 '%2$d'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many disks in fsinfo: %1$zd for limit %2$d"
 msgstr "fsinfo 中有太多的磁盘：对于限制 %2$d 来说为 %1$zd"
 
@@ -16254,13 +16254,12 @@ msgstr "无法编译正则表达式"
 msgid "Unable to compute hash of data: %1$s"
 msgstr "无法计算数据的哈希：%1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Unable to configure VF %1$d of PF '%2$s' because the PF is not online. "
 "Please change host network config to put the PF online."
-msgstr ""
-"无法配置 PF '%2$s' 的 VF %1$d，因为 PF 不在线。请更改主机网络配置以使 PF 在"
-"线。"
+msgstr "无法配置 PF '%2$s' 的 VF %1$d，因为 PF 不在线。请更改主机网络配置以使 PF "
+"在线。"
 
 msgid "Unable to configure libxl's memory management parameters"
 msgstr "无法配置 libxl 的内存管理参数"
@@ -16299,11 +16298,11 @@ msgstr "无法为 TSC 探测创建 KVM vCPU"
 
 #, c-format
 msgid "Unable to create RelaxNG parser for schema '%1$s'"
-msgstr ""
+msgstr "无法为架构 '%1$s' 创建 RelaxNG 解析器"
 
 #, c-format
 msgid "Unable to create RelaxNG validation context for schema '%1$s'"
-msgstr ""
+msgstr "无法为架构 '%1$s' 创建 RelaxNG 验证上下文"
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "无法在这个平台中生成 TAP 设备"
@@ -16678,7 +16677,7 @@ msgstr "无法为 %1$s 获取 LVM 密钥"
 
 #, c-format
 msgid "Unable to get NUMA node of cpu %1$zd"
-msgstr ""
+msgstr "无法获取 CPU %1$zd 的 NUMA 节点"
 
 #, c-format
 msgid "Unable to get SCSI key for %1$s"
@@ -17182,7 +17181,7 @@ msgstr "无法解析 MAC '%1$s'"
 
 #, c-format
 msgid "Unable to parse RelaxNG schema '%1$s': %2$s"
-msgstr ""
+msgstr "无法解析 RelaxNG 架构 '%1$s'：%2$s"
 
 #, c-format
 msgid "Unable to parse URI %1$s"
@@ -18218,7 +18217,7 @@ msgstr "未知 JSON 回复 '%1$s'"
 msgid "Unknown LXC namespace source '%1$s'"
 msgstr "未知的 LXC 命名空间源 '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown PCI header type '%1$d' for device '%2$s'"
 msgstr "设备 '%2$s' 的未知的 PCI 标头类型 '%1$d'"
 
@@ -18787,7 +18786,7 @@ msgstr "不支持的侦听类型"
 
 #, c-format
 msgid "Unsupported loader format '%1$s'"
-msgstr ""
+msgstr "不支持的加载程序格式 '%1$s'"
 
 #, c-format
 msgid "Unsupported migration cookie feature %1$s"
@@ -18828,7 +18827,7 @@ msgstr "不支持的 numatune 分配 '%1$d'"
 
 #, c-format
 msgid "Unsupported nvram format '%1$s'"
-msgstr ""
+msgstr "不支持的 NVRAM 格式 '%1$s'"
 
 #, c-format
 msgid "Unsupported object type %1$d"
@@ -19025,12 +19024,11 @@ msgstr "VCPU"
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "VF %1$d of PF '%2$s' is not bound to a net driver, so its MAC address cannot "
 "be set to %3$s"
-msgstr ""
-"PF '%2$s' 的 VF %1$d 没有绑定到网络驱动程序，因此其 MAC 地址不能设为 %3$s"
+msgstr "PF '%2$s' 的 VF %1$d 没有绑定到网络驱动程序，因此其 MAC 地址不能设为 %3$s"
 
 #, c-format
 msgid "VFB %1$s too big for destination"
@@ -19624,7 +19622,7 @@ msgid "ap-domain value '%1$s' is out of range for '%2$s'"
 msgstr "ap-domain 值 '%1$s' 超出了 '%2$s' 范围。"
 
 msgid "api error"
-msgstr ""
+msgstr "接口错误"
 
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser 出错并退出"
@@ -19925,7 +19923,7 @@ msgstr "坏路径名"
 
 #, c-format
 msgid "bad prefix %1$d for network %2$s when checking range %3$s - %4$s"
-msgstr ""
+msgstr "检查范围 %3$s - %4$s 时网络 %2$s 的前缀 %1$d 错误"
 
 msgid "balloon device cannot be disabled"
 msgstr "无法禁用 balloon 设备"
@@ -20462,7 +20460,7 @@ msgstr "无法添加 netlink 成员"
 msgid "cannot add redirected USB device: USB is disabled for this domain"
 msgstr "无法添加重定向 USB 设备：USB 设备对这个域禁用"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot allocate %1$llu bytes in file '%2$s'"
 msgstr "无法在文件 '%2$s' 中分配 %1$llu 字节"
 
