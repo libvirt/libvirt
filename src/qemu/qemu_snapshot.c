@@ -749,11 +749,17 @@ qemuSnapshotPrepare(virDomainObj *vm,
      * - if the variable store is raw, the snapshot fails
      * - allowing a qcow2 image as the varstore would make it eligible to receive
      *   the vmstate dump, which would make it huge
-     * - offline snapshot would not snapshot the varstore at all
      *
-     * Avoid the issues by forbidding internal snapshot with pflash completely.
+     * While offline snapshot would not snapshot the varstore at all, this used
+     * to work as auto-detected UEFI firmware was not present in the offline
+     * definition. Since in most cases the varstore doesn't change it's usually
+     * not an issue. Allow this as there are existing users of this case.
+     *
+     * Avoid the issues by forbidding internal snapshot with pflash if the
+     * VM is active.
      */
-    if (found_internal &&
+    if (active &&
+        found_internal &&
         virDomainDefHasOldStyleUEFI(vm->def)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("internal snapshots of a VM with pflash based "
