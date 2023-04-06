@@ -2631,14 +2631,38 @@ static int
 virDomainGraphicsDefListensValidate(const virDomainGraphicsDef *def)
 {
     size_t i;
+    const char *graphicsType = virDomainGraphicsTypeToString(def->type);
 
     for (i = 0; i < def->nListens; i++) {
-        if (def->listens[i].type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK &&
-            !def->listens[i].network) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("'network' attribute is required for "
-                             "listen type 'network'"));
-            return -1;
+        switch (def->listens[i].type) {
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+            if (!def->listens[i].network) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("'network' attribute is required for listen type 'network'"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
+            if (def->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+                def->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("listen type 'socket' is not available for graphics type '%1$s'"),
+                               graphicsType);
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+            if (def->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
+                def->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("listen type 'none' is not available for graphics type '%1$s'"),
+                               graphicsType);
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
+            break;
         }
     }
 

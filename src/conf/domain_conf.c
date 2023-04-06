@@ -10986,7 +10986,6 @@ virDomainGraphicsAuthDefParseXML(xmlNodePtr node,
 /**
  * virDomainGraphicsListenDefParseXML:
  * @def: listen def pointer to be filled
- * @graphics: graphics def pointer
  * @node: xml node of <listen/> element
  * @parent: xml node of <graphics/> element
  * @flags: bit-wise or of VIR_DOMAIN_DEF_PARSE_*
@@ -10998,13 +10997,11 @@ virDomainGraphicsAuthDefParseXML(xmlNodePtr node,
  */
 static int
 virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDef *def,
-                                   virDomainGraphicsDef *graphics,
                                    xmlNodePtr node,
                                    xmlNodePtr parent,
                                    unsigned int flags)
 {
     int ret = -1;
-    const char *graphicsType = virDomainGraphicsTypeToString(graphics->type);
     g_autofree char *address = virXMLPropString(node, "address");
     g_autofree char *network = virXMLPropString(node, "network");
     g_autofree char *socketPath = virXMLPropString(node, "socket");
@@ -11020,31 +11017,6 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDef *def,
     if (virXMLPropEnum(node, "type", virDomainGraphicsListenTypeFromString,
                        VIR_XML_PROP_REQUIRED, &def->type) < 0)
         goto error;
-
-    switch (def->type) {
-    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
-        if (graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-            graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("listen type 'socket' is not available for graphics type '%1$s'"),
-                           graphicsType);
-            goto error;
-        }
-        break;
-    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
-        if (graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
-            graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("listen type 'none' is not available for graphics type '%1$s'"),
-                           graphicsType);
-            goto error;
-        }
-        break;
-    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
-        break;
-    }
 
     if (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
         if (address && addressCompat && STRNEQ(address, addressCompat)) {
@@ -11148,7 +11120,7 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDef *def,
         def->listens = g_new0(virDomainGraphicsListenDef, nListens);
 
         for (i = 0; i < nListens; i++) {
-            if (virDomainGraphicsListenDefParseXML(&def->listens[i], def,
+            if (virDomainGraphicsListenDefParseXML(&def->listens[i],
                                                    listenNodes[i],
                                                    i == 0 ? node : NULL,
                                                    flags) < 0)
