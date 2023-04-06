@@ -22,6 +22,7 @@
 
 #include <inttypes.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #define LIBVIRT_VIRACPIPRIV_H_ALLOW
 #include "internal.h"
