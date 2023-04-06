@@ -102,7 +102,7 @@ virAcpiParseIORTNodeHeader(int fd,
      * least size of header itself. */
     if (nodeHeader->len < sizeof(*nodeHeader)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("IORT table node type %1$s has invalid length: got %2$u, expected at least %3$lu"),
+                       _("IORT table node type %1$s has invalid length: got %2$u, expected at least %3$zu"),
                        NULLSTR(typeStr), (unsigned int)nodeHeader->len, sizeof(*nodeHeader));
         return -1;
     }
