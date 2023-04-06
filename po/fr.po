@@ -22,13 +22,14 @@
 # Franck Ridel <fridel@protonmail.com>, 2021.
 # Ludek Janda <ljanda@redhat.com>, 2023.
 # grimst <grimaitres@gmail.com>, 2023.
+# Jérémie Tarot <silopolis@gmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-04-01 11:38+0200\n"
-"PO-Revision-Date: 2023-03-22 15:20+0000\n"
-"Last-Translator: grimst <grimaitres@gmail.com>\n"
+"PO-Revision-Date: 2023-04-04 17:20+0000\n"
+"Last-Translator: Jérémie Tarot <silopolis@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fr/>\n"
 "Language: fr\n"
@@ -1233,6 +1234,7 @@ msgstr "le fichier ’%1$s’ ne tient pas en mémoire"
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
 msgstr ""
+"'%1$s' n'est actuellement pas supporté par le moteur de cryptage de qemu"
 
 #, c-format
 msgid "'%1$s' is not a VF device"
@@ -1300,6 +1302,7 @@ msgstr "L 'adresse' doit être spécifiée pour la source du hostdev scsi"
 
 msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
 msgstr ""
+"'aes-key-wrap'/'dea-key-wrap' n'est pas disponible sur cette architecture"
 
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
@@ -2053,6 +2056,8 @@ msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
 "definition in network '%1$s'"
 msgstr ""
+"Au moins un attribut parmi le nom, mac ou IP doit être spécifié pour la "
+"définition d'un hôte statique dans le réseau '%1$s'"
 
 msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
@@ -2293,7 +2298,7 @@ msgid "Bridge interface %1$s started\n"
 msgstr "Interface de pontage %1$s démarrée\n"
 
 msgid "Bridge:"
-msgstr "Pontage :"
+msgstr "Pont :"
 
 msgid "Buffer to small for ipset name"
 msgstr "Buffer trop petit pour le nom ipset"
@@ -2328,7 +2333,7 @@ msgid "Busy"
 msgstr "Occupé"
 
 msgid "CA certificate:"
-msgstr "Certificat CA :"
+msgstr "Certificat AC :"
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -3304,28 +3309,28 @@ msgid "Cannot parse 'memory.stat' cgroup file."
 msgstr "Impossible d'analyser le fichier cgroup 'memory.stat'."
 
 msgid "Cannot parse <HardDisk> 'format' attribute"
-msgstr "Impossible d’analyser l’attribut « format » <HardDisk>"
+msgstr "Impossible d’analyser l’attribut « format » de <HardDisk>"
 
 msgid "Cannot parse <HardDisk> 'location' attribute"
-msgstr "Impossible d’analyser l’attribut « location » <HardDisk>"
+msgstr "Impossible d’analyser l’attribut « location » de <HardDisk>"
 
 msgid "Cannot parse <HardDisk> 'uuid' attribute"
-msgstr "Impossible d’analyser l’attribut « uuid » <HardDisk>"
+msgstr "Impossible d’analyser l’attribut « uuid » de <HardDisk>"
 
 msgid "Cannot parse <Machine> 'currentSnapshot' attribute"
-msgstr "Impossible d’analyser l’attribut « currentSnapshot » <Machine>"
+msgstr "Impossible d’analyser l’attribut « currentSnapshot » de <Machine>"
 
 msgid "Cannot parse <Machine> 'lastStateChange' attribute"
-msgstr "Impossible d’analyser l’attribut « lastStateChange » <Machine>"
+msgstr "Impossible d’analyser l’attribut « lastStateChange » de <Machine>"
 
 msgid "Cannot parse <Machine> 'name' attribute"
-msgstr "Impossible d’analyser l’attribut « name » <Machine>"
+msgstr "Impossible d’analyser l’attribut « name » de <Machine>"
 
 msgid "Cannot parse <Machine> 'snapshotFolder' attribute"
-msgstr "Impossible d’analyser l’attribut « snapshotFolder » <Machine>"
+msgstr "Impossible d’analyser l’attribut « snapshotFolder » de <Machine>"
 
 msgid "Cannot parse <Machine> 'uuid' attribute"
-msgstr "Impossible d’analyser l’attribut « uuid » <Machine>"
+msgstr "Impossible d’analyser l’attribut « uuid » de <Machine>"
 
 msgid "Cannot parse <Machine> <Hardware> node"
 msgstr "Impossible d’analyser le nœud <Machine> <Hardware>"
@@ -3337,13 +3342,13 @@ msgid "Cannot parse <Machine> <StorageControllers> node"
 msgstr "Impossible d’analyser le nœud <Machine> <StorageControllers>"
 
 msgid "Cannot parse <Snapshot> 'name' attribute"
-msgstr "Impossible d’analyser l’attribut « name » <Snapshot>"
+msgstr "Impossible d’analyser l’attribut « name » de <Snapshot>"
 
 msgid "Cannot parse <Snapshot> 'timeStamp' attribute"
-msgstr "Impossible d’analyser l’attribut « timeStamp » <Snapshot>"
+msgstr "Impossible d’analyser l’attribut « timeStamp » de <Snapshot>"
 
 msgid "Cannot parse <Snapshot> 'uuid' attribute"
-msgstr "Impossible d’analyser l’attribut « uuid » <Snapshot>"
+msgstr "Impossible d’analyser l’attribut « uuid » de <Snapshot>"
 
 msgid "Cannot parse <Snapshot> <Hardware> node"
 msgstr "Impossible d’analyser le nœud <Snapshot> <Hardware>"
@@ -3355,7 +3360,7 @@ msgid "Cannot parse <VirtualBox> <Machine> node"
 msgstr "Impossible d’analyser le nœud <VirtualBox> <Machine>"
 
 msgid "Cannot parse <address> 'port' attribute"
-msgstr "Impossible d’analyser l’attribut « port » <address>"
+msgstr "Impossible d’analyser l’attribut « port » de <address>"
 
 #, c-format
 msgid "Cannot parse MAC address '%1$s' in network '%2$s'"
@@ -3797,8 +3802,8 @@ msgid ""
 "Check that the 'kvm-intel' or 'kvm-amd' modules are loaded & the BIOS has "
 "enabled virtualization"
 msgstr ""
-"Vérifier que les modules « kvm-intel » ou « kvm-amd » sont chargés et que le "
-"BIOS a l’option de virtualisation activée"
+"Vérifier que les modules « kvm-intel » ou « kvm-amd » sont chargés et que l’"
+"option de virtualisation est activée dans le BIOS"
 
 #, c-format
 msgid ""
@@ -3806,6 +3811,9 @@ msgid ""
 "and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
 msgstr ""
+"Vérifier la configuration de l'hôte : l'interface %1$s présente des routes "
+"IPv6 autoconfigurées par le noyau, et l'activation de la redirection sans "
+"\"accept_ra\" causera leur purge par le noyau, cassant ainsi le réseau."
 
 #, c-format
 msgid "Checkpoint %1$s XML configuration not changed.\n"
@@ -3824,9 +3832,8 @@ msgstr ""
 msgid "Checkpoint Delete"
 msgstr "Suppression du point de contrôle"
 
-#, fuzzy
 msgid "Checkpoint Dump XML"
-msgstr "Fiches de contrôle XML"
+msgstr "Capture XML de point de contrôle"
 
 msgid "Checkpoint List"
 msgstr "Liste des points de contrôle"
@@ -4500,7 +4507,7 @@ msgstr "Impossible de trouver la variable '%1$s' dans l'itérateur"
 
 #, c-format
 msgid "Could not find vf/instanceId %1$u/%2$s in netlink response"
-msgstr ""
+msgstr "Impossible de trouver vf/instanceId %1$u/%2$s dans la réponse netlink"
 
 #, c-format
 msgid "Could not find volume with name: %1$s"
@@ -5214,7 +5221,7 @@ msgstr "Échoué"
 
 #, fuzzy
 msgid "Crashloaded"
-msgstr "Chargement d'urgence"
+msgstr "Chargé sur incident"
 
 msgid "Create a checkpoint from XML"
 msgstr "Créer un point de passage depuis le XML"
@@ -5580,6 +5587,8 @@ msgstr "Le périphérique '%1$s' n'est pas reconnu, il faut le construire"
 #, c-format
 msgid "Device alias was not set for %1$s controller with index %2$d"
 msgstr ""
+"L'alias du périphérique n'a pas été défini pour le contrôleur %1$s avec "
+"l'index %2$d"
 
 #, c-format
 msgid ""
@@ -5644,12 +5653,11 @@ msgstr ""
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "N'a pas trouvé le bus de périphérique USB :%1$u périphérique :%2$u"
 
-#, fuzzy
 msgid ""
 "Different bind and connect parameters for udp character device is not "
 "supported."
 msgstr ""
-"Différents paramètres de liaison et de connexion pour le dispositif de "
+"Différents paramètres de liaison et de connexion pour un périphérique "
 "caractère UDP ne sont pas pris en charge."
 
 msgid "Different inbound and outbound bandwidth is unsupported"
@@ -6804,6 +6812,8 @@ msgstr "Échec de l'ajout de la capacité %1$s : %2$d"
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
 msgstr ""
+"Échec de l'ajout du pilote « %1$s » à l'interface driver_override du "
+"périphérique PCI « %2$s »"
 
 msgid "Failed to add netlink event handle watch"
 msgstr "Échec de l'ajout de la montre de l'événement netlink"
@@ -9161,7 +9171,7 @@ msgstr ""
 
 #, c-format
 msgid "Format mismatch: loader.format='%1$s' nvram.format='%2$s'"
-msgstr ""
+msgstr "Format discordant : loader.format='%1$s' nvram.format='%2$s'"
 
 #, c-format
 msgid "Format of device '%1$s' does not match the expected format '%2$s'"
@@ -11634,7 +11644,7 @@ msgid "Missing 'filename' in CPU map include"
 msgstr "Nom de fichier manquant dans l'inclusion de la carte CPU"
 
 msgid "Missing 'key' element for lease"
-msgstr "Élément « clé » manquant à la location"
+msgstr "Élément « clé » manquant pour le bail"
 
 #, c-format
 msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
@@ -11663,7 +11673,7 @@ msgstr ""
 "Attribut 'policy' manquant dans l'élément de cache pour le nœud NUMA %1$d"
 
 msgid "Missing 'runtime.powerState' property"
-msgstr "Propriété « runtime powerState » manquante"
+msgstr "Propriété « runtime.powerState» manquante"
 
 #, c-format
 msgid "Missing 'start' attribute in dhcp range for network '%1$s'"
@@ -13153,7 +13163,7 @@ msgstr "Le nombre d'interfaces, %1$d dépasse la limite maximale : %2$d"
 
 #, c-format
 msgid "Number of keys %1$d, which exceeds max limit: %2$d"
-msgstr ""
+msgstr "Nombre de touches %1$d, dépasse la limite maximale : %2$d"
 
 #, c-format
 msgid "Number of leases is %1$d, which exceeds max limit: %2$d"
@@ -16108,6 +16118,8 @@ msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
+"Adresse du périphérique PCI cible %1$04x:%2$02x:%3$02x.%4$d ne correspond "
+"pas à la source %5$04x:%6$02x:%7$02x.%8$d"
 
 #, c-format
 msgid "Target device address type %1$s does not match source %2$s"
@@ -17454,7 +17466,7 @@ msgid ""
 "       'quit' to quit\n"
 "\n"
 msgstr ""
-"Taper :  « help » pour l’aide ou « help » avec la commande\n"
+"Taper :  « help » pour l’aide des commandes\n"
 "         « quit » pour quitter\n"
 "\n"
 
@@ -17892,11 +17904,12 @@ msgstr "Impossible de créer une vCPU KVM pour le sondage TSC"
 
 #, c-format
 msgid "Unable to create RelaxNG parser for schema '%1$s'"
-msgstr ""
+msgstr "Impossible de créer l'analyseur RelaxNG pour le schéma « %1$s »"
 
 #, c-format
 msgid "Unable to create RelaxNG validation context for schema '%1$s'"
 msgstr ""
+"Impossible de créer le contexte de validation RelaxNG pour le schéma « %1$s »"
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "Impossible de créer des périphériques TAP sur cette plateforme"
@@ -18288,7 +18301,7 @@ msgstr "Impossible d'obtenir la clé LVM pour %1$s"
 
 #, c-format
 msgid "Unable to get NUMA node of cpu %1$zd"
-msgstr ""
+msgstr "Impossible d'obtenir les nœuds NUMA du CPU %1$zd"
 
 #, c-format
 msgid "Unable to get SCSI key for %1$s"
@@ -18809,7 +18822,7 @@ msgstr "Impossible d'analyser le MAC '%1$s'"
 
 #, c-format
 msgid "Unable to parse RelaxNG schema '%1$s': %2$s"
-msgstr ""
+msgstr "Impossible d'analyser le schéma RelaxNG « %1$s » : %2$s"
 
 #, c-format
 msgid "Unable to parse URI %1$s"
@@ -20489,7 +20502,7 @@ msgstr "Type d'écoute non pris en charge"
 
 #, c-format
 msgid "Unsupported loader format '%1$s'"
-msgstr ""
+msgstr "Format de chargeur non pris en charge « %1$s »"
 
 #, c-format
 msgid "Unsupported migration cookie feature %1$s"
@@ -20532,7 +20545,7 @@ msgstr "Placement non soutenu de la numatune '%1$d'"
 
 #, c-format
 msgid "Unsupported nvram format '%1$s'"
-msgstr ""
+msgstr "Format NVRAM non pris en charge « %1$s »"
 
 #, c-format
 msgid "Unsupported object type %1$d"
@@ -21416,7 +21429,7 @@ msgid "ap-domain value '%1$s' is out of range for '%2$s'"
 msgstr "la valeur ap-domaine '%1$s' est hors de portée pour '%2$s'"
 
 msgid "api error"
-msgstr ""
+msgstr "Erreur API"
 
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser s'est terminé avec une erreur"
@@ -21765,6 +21778,8 @@ msgstr "mauvais chemin d'accès"
 #, c-format
 msgid "bad prefix %1$d for network %2$s when checking range %3$s - %4$s"
 msgstr ""
+"Mauvais préfixe %1$d pour le réseau %2$s lors du contrôle de la plage %3$s - "
+"%4$s"
 
 msgid "balloon device cannot be disabled"
 msgstr "le périphérique de ballon ne peut pas être désactivé"
@@ -22993,22 +23008,30 @@ msgid ""
 "cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
 "%5$d - controller not found"
 msgstr ""
+"impossible de débrancher à chaud le périphérique PCI %1$s avec l'adresse PCI "
+"invité : %2$04x:%3$02x:%4$02x.%5$d - contrôleur introuvable"
 
 #, c-format
 msgid ""
 "cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
 "%5$d - not allowed by controller"
 msgstr ""
+"impossible de débrancher à chaud le périphérique PCI %1$s avec l'adresse PCI "
+"invité : %2$04x:%3$02x:%4$02x.%5$d - non autorisé par le contrôleur"
 
 #, c-format
 msgid ""
 "cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:"
 "%3$02x:%4$02x.%5$d"
 msgstr ""
+"impossible de débrancher à chaud le périphérique PCI %1$s avec l'adresse PCI "
+"multifonction invité : %2$04x:%3$02x:%4$02x.%5$d"
 
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
+"impossible de débrancher à chaud le périphérique PCI multifonction : "
+"%1$04x:%2$02x:%3$02x.%4$d"
 
 msgid "cannot initialize agent condition"
 msgstr "ne peut pas initialiser la condition d'agent"
@@ -27912,7 +27935,7 @@ msgstr "échec de la recherche dans le fichier journal %1$s"
 
 #, c-format
 msgid "failed to seek to end of %1$s"
-msgstr "échec de la recherche de la fin de %1$s"
+msgstr "échec de la recherche de la fin de '%1$s'"
 
 msgid "failed to serialize S-Expr"
 msgstr "échec de la sérialisation de S-Expr"
@@ -27945,7 +27968,7 @@ msgstr ""
 
 #, c-format
 msgid "failed to set cpuset.cpus in cgroup for iothread %1$d"
-msgstr "ne parvient pas à définir cpuset.cpus dans cgroup pour iothread %1$d"
+msgstr "ne parvient pas à définir cpuset.cpus dans cgroup pour iothread '%1$d'"
 
 #, c-format
 msgid "failed to set gluster volfile server '%1$s'"
@@ -27968,22 +27991,22 @@ msgstr "échec de l'arrêt de la VM invitée"
 
 #, c-format
 msgid "failed to stat remote file '%1$s'"
-msgstr "échec de l'évaluation du fichier distant '%1$s'"
+msgstr "échec de l'obtention de l'état du fichier distant '%1$s'"
 
 msgid "failed to stat the RADOS cluster"
-msgstr "a échoué à statuer sur le cluster RADOS"
+msgstr "échec de l'obtention de l'état du cluster RADOS"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat the RADOS pool '%1$s'"
-msgstr "échec à statuer sur le pool RADOS '%1$s'"
+msgstr "échec de l'obtention de l'état du pool RADOS '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat the RBD image %1$s"
-msgstr "échec à statuer sur l'image RBD %1$s"
+msgstr "échec de l'obtention de l'état de l'image RBD '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat the RBD image '%1$s'"
-msgstr "échec à statuer la taille de l'image RBD '%1$s'"
+msgstr "échec de l'obtention de l'état de l'image RBD '%1$s'"
 
 #, c-format
 msgid "failed to store %1$lld to %2$s"
@@ -28887,7 +28910,7 @@ msgstr "nom d'hôte pour la source de l'unité de disque"
 
 #, c-format
 msgid "host pci device %1$04x:%2$02x:%3$02x.%4$d not found"
-msgstr ""
+msgstr "Périphérique PCI hôte %1$04x:%2$02x:%3$02x.%4$d introuvable"
 
 #, c-format
 msgid "host pci device %1$s not found"
@@ -29013,7 +29036,7 @@ msgid "hotplug of watchdog of model %1$s is not supported"
 msgstr "le hotplug du modèle de surveillance %1$s n'est pas pris en charge"
 
 msgid "hpet timer is not supported by this architecture"
-msgstr ""
+msgstr "Horloge hpet non supportée par cette architecture"
 
 msgid "http cookies are supported only with HTTP(S) protocol"
 msgstr "les cookies http ne sont pris en charge que par le protocole HTTP(S)"
@@ -30437,6 +30460,8 @@ msgstr ""
 
 msgid "librbd encryption layering is not supported by this QEMU binary"
 msgstr ""
+"La superposition de couche de cryptage de librbd n'est pas supportée par ce "
+"binaire QEMU"
 
 msgid "libssh transport error"
 msgstr "erreur de transport de libssh"
@@ -30502,6 +30527,8 @@ msgstr "libxenlight n'a pas réussi à attacher le périphérique réseau"
 #, c-format
 msgid "libxenlight failed to attach pci device %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
+"libxenlight n'a pas réussi à attacher le périphérique PCI "
+"%1$04x:%2$02x:%3$02x.%4$d"
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%1$3x, Devnum:%2$3x"
@@ -30536,6 +30563,8 @@ msgstr "libxenlight n'a pas réussi à détacher le périphérique réseau"
 #, c-format
 msgid "libxenlight failed to detach pci device %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
+"libxenlight n'a pas réussi à détacher le périphérique PCI "
+"%1$04x:%2$02x:%3$02x.%4$d"
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%1$s'"
@@ -30932,7 +30961,7 @@ msgid "lower boundary for worker thread pool"
 msgstr "limite inférieure du pool de fils de travail"
 
 msgid "luks-any encryption is not supported by this QEMU binary"
-msgstr ""
+msgstr "Le cryptage par luks-any n'est pas supporté par ce binaire QEMU"
 
 msgid "lxc state driver is not active"
 msgstr "L'état de l'état lxc pilote n'est pas actif"
@@ -30974,7 +31003,7 @@ msgstr "type de machine '%1$s'"
 
 #, c-format
 msgid "machine type '%1$s' does not support ACPI"
-msgstr ""
+msgstr "Le type de machine '%1$s' ne supporte pas l'ACPI"
 
 msgid "machine type (/domain/os/type/@machine)"
 msgstr "type de machine (/domaine/os/type/@machine)"
@@ -31915,7 +31944,7 @@ msgstr "alias manquant pour le périphérique réseau"
 
 #, c-format
 msgid "missing alias on encryption secret #%1$zu"
-msgstr ""
+msgstr "alias manquant pour le secret de cryptage #%1$zu"
 
 #, c-format
 msgid "missing alias or qom-type for qemu object '%1$s'"
@@ -32995,6 +33024,9 @@ msgid ""
 "the device pool. This is only supported for networks with forward mode "
 "'hostdev'"
 msgstr ""
+"Le réseau '%1$s' a le mode de redirection '%2$s' mais liste un périphérique "
+"par son adresse PCI dans le pool de périphérique. Ceci n'est supporté que "
+"pour les périphériques avec le mode de redirection « hostdev »"
 
 #, c-format
 msgid ""
@@ -33062,6 +33094,7 @@ msgstr ""
 #, c-format
 msgid "network device type '%1$s' is not supported by this hypervisor"
 msgstr ""
+"Le type de périphérique réseau '%1$s' n'est pas supporté par cet hyperviseur"
 
 #, c-format
 msgid "network device with mac %1$s already exists"
@@ -35190,7 +35223,7 @@ msgid "qemu emulator '%1$s' does not support xen"
 msgstr "L'émulateur qemu '%1$s' ne prend pas en charge le xen"
 
 msgid "qemu encryption engine expects only a single secret"
-msgstr ""
+msgstr "Le moteur de cryptage de QEMU n'attends qu'un seul secret"
 
 #, c-format
 msgid "qemu monitor event callback %1$d not registered"
@@ -35210,7 +35243,7 @@ msgid "qemu unexpectedly closed the monitor"
 msgstr "qemu a fermé le moniteur de manière inattendue"
 
 msgid "qemu-machines reply has malformed 'acpi data"
-msgstr ""
+msgstr "La réponse qemu-machines présente des données ACPI malformées"
 
 msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
 msgstr ""
@@ -35536,7 +35569,7 @@ msgid "received unexpected cookie with P2P migration"
 msgstr "a reçu un cookie inattendu avec la migration P2P"
 
 msgid "reconnect delay is supported only with NBD protocol"
-msgstr ""
+msgstr "Le délai de reconnexion n'est supporté qu'avec le protocol NBD"
 
 msgid "recv handler failed"
 msgstr "échec de la gestion des recv"
@@ -36125,7 +36158,7 @@ msgstr ""
 
 #, c-format
 msgid "sd card '%1$s' does not support multiple encryption secrets"
-msgstr ""
+msgstr "La carte SD '%1$s' ne supporte pas les secrets de cryptage multiples"
 
 #, c-format
 msgid "seclabel for model %1$s is already provided"
@@ -37185,7 +37218,7 @@ msgstr "cible du périphérique disque"
 
 #, c-format
 msgid "target pci device %1$04x:%2$02x:%3$02x.%4$d already exists"
-msgstr ""
+msgstr "Le périphérique PCI cible %1$04x:%2$02x:%3$02x.%4$d existe déjà"
 
 #, c-format
 msgid "target port '%1$d' already allocated"
@@ -37449,7 +37482,7 @@ msgstr ""
 "ce binaire QEMU ne prend pas en charge le mode passthrough de la carte à puce"
 
 msgid "this QEMU does not support 'blob' for virtio-gpu devices"
-msgstr ""
+msgstr "Ce QEMU ne supporte pas « blob » pour les périphériques virtio-gpu"
 
 msgid "this QEMU does not support 'vhost-user' video device"
 msgstr "ce QEMU ne prend pas en charge le périphérique vidéo 'vhost-user'"
@@ -38122,6 +38155,8 @@ msgstr "Impossible de contrôler le indicateur COW sur '%1$s'"
 #, c-format
 msgid "unable create new SELinux label based on label '%1$s' and file '%2$s'"
 msgstr ""
+"Impossible de créer une nouvelle étiquette SELinux à partir de l'étiquette "
+"'%1$s' et du fichier '%2$s'"
 
 #, c-format
 msgid "unable get directory flags on '%1$s'"
@@ -38216,6 +38251,8 @@ msgid ""
 "unable to delete interface '%1$s' in network '%2$s'. It is currently being "
 "used by %3$d domains."
 msgstr ""
+"Impossible de supprimer l'interface '%1$s' du le réseau '%2$s'. Elle est "
+"actuellement utilisée par %3$d domaine(s)."
 
 #, c-format
 msgid "unable to determine access mode of %1$s"
@@ -38310,10 +38347,10 @@ msgstr "impossible d'obtenir le PID %1$d uid et gid via sysctl"
 
 #, c-format
 msgid "unable to get SELinux context for '%1$s'"
-msgstr ""
+msgstr "Impossible d'obtenir le contexte SELinux pour '%1$s'"
 
 msgid "unable to get SELinux context for current process"
-msgstr ""
+msgstr "Impossible d'obtenir le contexte SELinux pour le processus courant"
 
 #, c-format
 msgid "unable to get SELinux context of %1$s"
@@ -40430,7 +40467,7 @@ msgstr "le type de vidéo %1$s n'est pas pris en charge par libxl"
 
 #, c-format
 msgid "video type '%1$s' does not support blob resources"
-msgstr ""
+msgstr "Le type vidéo '%1$s' ne supporte pas les ressources « blob »"
 
 #, c-format
 msgid "video type '%1$s' doesn't support multiple 'heads'"
