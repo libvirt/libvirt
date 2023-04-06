@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-04-01 11:38+0200\n"
-"PO-Revision-Date: 2023-03-28 14:20+0000\n"
+"PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -24,8 +24,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 4.15.2\n"
 
 msgid ""
@@ -2025,6 +2025,8 @@ msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
 "definition in network '%1$s'"
 msgstr ""
+"Має бути вказано принаймні один атрибут — назву, mac-адресу або ip-адресу, — "
+"для визначення статичного вузла у мережі «%1$s»"
 
 msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
@@ -3765,6 +3767,10 @@ msgid ""
 "and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
 msgstr ""
+"Перевірка налаштувань вузла: для інтерфейсу %1$s визначено маршрути IPv6 на "
+"рівні автоматичного налаштовування ядра і вмикання переспрямування без "
+"встановлення accept_ra для 2 призведе до того, що ядро витре налаштування, "
+"що призведе до непрацездатності мережі."
 
 #, c-format
 msgid "Checkpoint %1$s XML configuration not changed.\n"
@@ -4450,7 +4456,7 @@ msgstr "Не вдалося знайти змінну «%1$s» у ітерато
 
 #, c-format
 msgid "Could not find vf/instanceId %1$u/%2$s in netlink response"
-msgstr ""
+msgstr "Не вдалося знайти vf/instanceId %1$u/%2$s у відповіді netlink"
 
 #, c-format
 msgid "Could not find volume with name: %1$s"
@@ -5522,6 +5528,7 @@ msgstr "Пристрій «%1$s» не розпізнано, потребує bu
 #, c-format
 msgid "Device alias was not set for %1$s controller with index %2$d"
 msgstr ""
+"Альтернативний пристрій не встановлено для контролера %1$s з індексом %2$d"
 
 #, c-format
 msgid ""
@@ -6729,6 +6736,8 @@ msgstr "Не вдалося додати можливість %1$s: %2$d"
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
 msgstr ""
+"Не вдалося додати драйвер «%1$s» для інтерфейсу driver_override пристрою PCI "
+"«%2$s»"
 
 msgid "Failed to add netlink event handle watch"
 msgstr "не вдалося додати спостереження за обробкою подій netlink"
@@ -15947,6 +15956,8 @@ msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
+"Адреса PCI %1$04x:%2$02x:%3$02x.%4$d пристрою призначення не відповідає "
+"адресі джерела — %5$04x:%6$02x:%7$02x.%8$d"
 
 #, c-format
 msgid "Target device address type %1$s does not match source %2$s"
@@ -21553,6 +21564,7 @@ msgstr "помилковий шлях"
 #, c-format
 msgid "bad prefix %1$d for network %2$s when checking range %3$s - %4$s"
 msgstr ""
+"помилковий префікс %1$d для мережі %2$s при перевірці діапазону %3$s - %4$s"
 
 msgid "balloon device cannot be disabled"
 msgstr "балонний пристрій не можна вимикати"
@@ -22760,22 +22772,30 @@ msgid ""
 "cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
 "%5$d - controller not found"
 msgstr ""
+"не вдалося від'єднати «угарячу» пристрій %1$s з гостьовою PCI-адресою "
+"%2$04x:%3$02x:%4$02x.%5$d — не знайдено контролер"
 
 #, c-format
 msgid ""
 "cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
 "%5$d - not allowed by controller"
 msgstr ""
+"не вдалося від'єднати «угарячу» пристрій %1$s з гостьовою PCI-адресою "
+"%2$04x:%3$02x:%4$02x.%5$d — заборонено контролером"
 
 #, c-format
 msgid ""
 "cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:"
 "%3$02x:%4$02x.%5$d"
 msgstr ""
+"не вдалося від'єднати «угарячу» пристрій %1$s із мультифункціональною "
+"гостьовою адресою PCI %2$04x:%3$02x:%4$02x.%5$d"
 
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
+"не вдалося від'єднати «угарячу» мультифункціональний пристрій PCI "
+"%1$04x:%2$02x:%3$02x.%4$d"
 
 msgid "cannot initialize agent condition"
 msgstr "не вдалося ініціалізувати умову агента"
@@ -28600,7 +28620,7 @@ msgstr "назва вузла для джерела дискового прис�
 
 #, c-format
 msgid "host pci device %1$04x:%2$02x:%3$02x.%4$d not found"
-msgstr ""
+msgstr "pci-пристрій основної системи %1$04x:%2$02x:%3$02x.%4$d не знайдено"
 
 #, c-format
 msgid "host pci device %1$s not found"
@@ -30227,7 +30247,7 @@ msgstr "libxenlight не вдалося долучити до системи м�
 
 #, c-format
 msgid "libxenlight failed to attach pci device %1$04x:%2$02x:%3$02x.%4$d"
-msgstr ""
+msgstr "libxenlight не вдалося долучити pci-пристрій %1$04x:%2$02x:%3$02x.%4$d"
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%1$3x, Devnum:%2$3x"
@@ -30260,6 +30280,7 @@ msgstr "libxenlight не вдалося від'єднати від систем�
 #, c-format
 msgid "libxenlight failed to detach pci device %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
+"libxenlight не вдалося від'єднати pci-пристрій %1$04x:%2$02x:%3$02x.%4$d"
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%1$s'"
@@ -32717,6 +32738,9 @@ msgid ""
 "the device pool. This is only supported for networks with forward mode "
 "'hostdev'"
 msgstr ""
+"мережа «%1$s» має режим переспрямовування «%2$s», але використовує пристрій "
+"у списку за PCI-адресою у буфері пристроїв. Підтримку передбачено лише для "
+"мереж із режимом переспрямовування «hostdev»"
 
 #, c-format
 msgid ""
@@ -36847,7 +36871,7 @@ msgstr "ціль для дискового пристрою"
 
 #, c-format
 msgid "target pci device %1$04x:%2$02x:%3$02x.%4$d already exists"
-msgstr ""
+msgstr "pci-пристрій %1$04x:%2$02x:%3$02x.%4$d призначення вже існує"
 
 #, c-format
 msgid "target port '%1$d' already allocated"
@@ -37854,6 +37878,8 @@ msgid ""
 "unable to delete interface '%1$s' in network '%2$s'. It is currently being "
 "used by %3$d domains."
 msgstr ""
+"не вдалося вилучити інтерфейс «%1$s» у мережі «%2$s». Його зараз "
+"використовують %3$d доменів."
 
 #, c-format
 msgid "unable to determine access mode of %1$s"
