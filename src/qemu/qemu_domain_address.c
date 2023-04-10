@@ -757,7 +757,8 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
         if (net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_TRANSITIONAL)
             return pciFlags;
 
-        if (net->model == VIR_DOMAIN_NET_MODEL_E1000E)
+        if (net->model == VIR_DOMAIN_NET_MODEL_E1000E ||
+            net->model == VIR_DOMAIN_NET_MODEL_IGB)
             return pcieFlags;
 
         /* the only time model can be "unknown" is for type='hostdev'

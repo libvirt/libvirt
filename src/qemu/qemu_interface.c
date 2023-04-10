@@ -241,6 +241,7 @@ qemuInterfaceIsVnetCompatModel(const virDomainNetDef *net)
 {
     return (virDomainNetIsVirtioModel(net) ||
             net->model == VIR_DOMAIN_NET_MODEL_E1000E ||
+            net->model == VIR_DOMAIN_NET_MODEL_IGB ||
             net->model == VIR_DOMAIN_NET_MODEL_VMXNET3);
 }
 

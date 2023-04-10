@@ -5409,6 +5409,7 @@ Typical values for QEMU and KVM include: ne2k_isa i82551 i82557b i82559er
 ne2k_pci pcnet rtl8139 e1000 virtio. :since:`Since 5.2.0` ,
 ``virtio-transitional`` and ``virtio-non-transitional`` values are supported.
 See `Virtio transitional devices`_ for more details.
+:since:`Since 9.3.0` igb is also supported.
 
 Setting NIC driver-specific options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
