@@ -866,6 +866,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-manual-bios");
     DO_TEST_CAPS_LATEST("firmware-manual-bios-stateless");
     DO_TEST_CAPS_LATEST("firmware-manual-efi");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-features");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-rw");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-rw-implicit");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-loader-secure");

@@ -17182,17 +17182,52 @@ virDomainDefParseBootKernelOptions(virDomainDef *def,
 
 static int
 virDomainDefParseBootFirmwareOptions(virDomainDef *def,
-                                     xmlXPathContextPtr ctxt)
+                                     xmlXPathContextPtr ctxt,
+                                     unsigned int flags)
 {
     g_autofree char *firmware = virXPathString("string(./os/@firmware)", ctxt);
     g_autofree xmlNodePtr *nodes = NULL;
     g_autofree int *features = NULL;
+    bool abiUpdate = !!(flags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE);
     int fw = 0;
     int n = 0;
     size_t i;
 
     if ((n = virXPathNodeSet("./os/firmware/feature", ctxt, &nodes)) < 0)
         return -1;
+
+    /* Migration compatibility kludge.
+     *
+     * Between 8.6.0 and 9.1.0 (extremes included), the migratable
+     * XML produced when feature-based firmware autoselection was
+     * enabled looked like
+     *
+     *   <os>
+     *     <firmware>
+     *       <feature name='foo' enabled='yes'/>
+     *
+     * Notice how there's no firmware='foo' attribute for the <os>
+     * element, meaning that firmware autoselection is disabled, and
+     * yet some <feature> elements, which are used to control the
+     * firmware autoselection process, are present. We don't consider
+     * this to be a valid combination, and want such a configuration
+     * to get rejected when submitted by users.
+     *
+     * In order to achieve that, while at the same time keeping
+     * migration coming from the libvirt versions listed above
+     * working, we can simply stop parsing early and ignore the
+     * <feature> tags when firmware autoselection is not enabled,
+     * *except* if we're defining a new domain.
+     *
+     * This is safe to do because the configuration will either come
+     * from another libvirt instance, in which case it will have a
+     * properly filled in <loader> element that contains enough
+     * information to successfully define and start the domain, or it
+     * will be a random configuration that lacks such information, in
+     * which case a different failure will be reported anyway.
+     */
+    if (n > 0 && !firmware && !abiUpdate)
+        return 0;
 
     if (n > 0)
         features = g_new0(int, VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_LAST);
@@ -17322,7 +17357,7 @@ virDomainDefParseBootOptions(virDomainDef *def,
     case VIR_DOMAIN_OSTYPE_HVM:
         virDomainDefParseBootKernelOptions(def, ctxt);
 
-        if (virDomainDefParseBootFirmwareOptions(def, ctxt) < 0)
+        if (virDomainDefParseBootFirmwareOptions(def, ctxt, flags) < 0)
             return -1;
 
         if (virDomainDefParseBootLoaderOptions(def, ctxt, xmlopt, flags) < 0)
