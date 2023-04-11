@@ -731,45 +731,34 @@ virNWFilterFormatParamAttributes(virBuffer *buf,
                                  GHashTable *table,
                                  const char *filterref)
 {
-    virHashKeyValuePair *items;
-    size_t i, j;
-    int card, numKeys;
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_autofree virHashKeyValuePair *items = NULL;
+    size_t i;
+    size_t nitems;
 
-    numKeys = virHashSize(table);
-
-    if (numKeys < 0) {
+    if (!(items = virHashGetItems(table, &nitems, true))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing filter parameter table"));
         return -1;
     }
 
-    items = virHashGetItems(table, NULL, true);
-    if (!items)
-        return -1;
+    virBufferAsprintf(&attrBuf, " filter='%s'", filterref);
 
-    virBufferAsprintf(buf, "<filterref filter='%s'", filterref);
-    if (numKeys) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 2);
-        for (i = 0; i < numKeys; i++) {
-            const virNWFilterVarValue *value = items[i].value;
+    for (i = 0; i < nitems; i++) {
+        const virNWFilterVarValue *value = items[i].value;
+        size_t npar = virNWFilterVarValueGetCardinality(value);
+        size_t j;
 
-            card = virNWFilterVarValueGetCardinality(value);
+        for (j = 0; j < npar; j++)
+            virBufferAsprintf(&childBuf,
+                              "<parameter name='%s' value='%s'/>\n",
+                              (const char *)items[i].key,
+                              virNWFilterVarValueGetNthValue(value, j));
 
-            for (j = 0; j < card; j++)
-                virBufferAsprintf(buf,
-                                  "<parameter name='%s' value='%s'/>\n",
-                                  (const char *)items[i].key,
-                                  virNWFilterVarValueGetNthValue(value, j));
-
-        }
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</filterref>\n");
-    } else {
-        virBufferAddLit(buf, "/>\n");
     }
 
-    VIR_FREE(items);
+    virXMLFormatElement(buf, "filterref", &attrBuf, &childBuf);
 
     return 0;
 }
