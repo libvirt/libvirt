@@ -298,7 +298,7 @@ virNWFilterIncludeDefFree(virNWFilterIncludeDef *inc)
     g_free(inc->filterref);
     g_free(inc);
 }
-
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNWFilterIncludeDef, virNWFilterIncludeDefFree);
 
 static void
 virNWFilterEntryFree(virNWFilterEntry *entry)
@@ -2031,27 +2031,15 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
 static virNWFilterIncludeDef *
 virNWFilterIncludeParse(xmlNodePtr cur)
 {
-    virNWFilterIncludeDef *ret;
+    g_autoptr(virNWFilterIncludeDef) ret = g_new0(virNWFilterIncludeDef, 1);
 
-    ret = g_new0(virNWFilterIncludeDef, 1);
+    if (!(ret->filterref = virXMLPropStringRequired(cur, "filter")))
+        return NULL;
 
-    ret->filterref = virXMLPropString(cur, "filter");
-    if (!ret->filterref) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s",
-                       _("rule node requires action attribute"));
-        goto err_exit;
-    }
+    if (!(ret->params = virNWFilterParseParamAttributes(cur)))
+        return NULL;
 
-    ret->params = virNWFilterParseParamAttributes(cur);
-    if (!ret->params)
-        goto err_exit;
-
-    return ret;
-
- err_exit:
-    virNWFilterIncludeDefFree(ret);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
 
 
