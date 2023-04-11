@@ -1062,6 +1062,7 @@ qemuStateCleanup(void)
     if (!qemu_driver)
         return -1;
 
+    virThreadPoolFree(qemu_driver->workerPool);
     virObjectUnref(qemu_driver->migrationErrors);
     virLockManagerPluginUnref(qemu_driver->lockManager);
     virSysinfoDefFree(qemu_driver->hostsysinfo);
@@ -1078,7 +1079,6 @@ qemuStateCleanup(void)
     ebtablesContextFree(qemu_driver->ebtables);
     VIR_FREE(qemu_driver->qemuImgBinary);
     virObjectUnref(qemu_driver->domains);
-    virThreadPoolFree(qemu_driver->workerPool);
 
     if (qemu_driver->lockFD != -1)
         virPidFileRelease(qemu_driver->config->stateDir, "driver", qemu_driver->lockFD);
