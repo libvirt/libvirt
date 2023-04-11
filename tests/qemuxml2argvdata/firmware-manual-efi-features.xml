@@ -5,10 +5,10 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='x86_64' machine='pc-i440fx-4.0'>hvm</type>
-    <loader readonly='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
     <firmware>
       <feature enabled='no' name='enrolled-keys'/>
     </firmware>
+    <loader readonly='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
   </os>
   <features>
     <acpi/>
