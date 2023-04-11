@@ -655,63 +655,61 @@ virNetworkDNSHostDefParseXML(const char *networkName,
                              virNetworkDNSHostDef *def,
                              bool partialOkay)
 {
-    xmlNodePtr cur;
-    g_autofree char *ip = NULL;
+    g_autofree xmlNodePtr *hostnameNodes = NULL;
+    size_t nhostnameNodes = virXMLNodeGetSubelementList(node, "hostname", &hostnameNodes);
+    size_t i;
+    g_auto(GStrv) hostnames = NULL;
+    g_autofree char *ip = virXMLPropString(node, "ip");
 
-    if (!(ip = virXMLPropString(node, "ip")) && !partialOkay) {
-        virReportError(VIR_ERR_XML_DETAIL,
-                       _("Missing IP address in network '%1$s' DNS HOST record"),
-                       networkName);
-        goto error;
-    }
+    if (nhostnameNodes > 0) {
+        hostnames = g_new0(char *, nhostnameNodes + 1);
 
-    if (ip && (virSocketAddrParse(&def->ip, ip, AF_UNSPEC) < 0)) {
-        virReportError(VIR_ERR_XML_DETAIL,
-                       _("Invalid IP address in network '%1$s' DNS HOST record"),
-                       networkName);
-        goto error;
-    }
+        for (i = 0; i < nhostnameNodes; i++) {
+            if (!(hostnames[i] = virXMLNodeContentString(hostnameNodes[i])))
+                return -1;
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE &&
-            virXMLNodeNameEqual(cur, "hostname")) {
-              if (cur->children != NULL) {
-                  g_autofree char *name = virXMLNodeContentString(cur);
-
-                  if (!name)
-                      goto error;
-
-                  if (!name[0]) {
-                      virReportError(VIR_ERR_XML_DETAIL,
-                                     _("Missing hostname in network '%1$s' DNS HOST record"),
-                                     networkName);
-                      goto error;
-                  }
-                  VIR_APPEND_ELEMENT(def->names, def->nnames, name);
-              }
+            if (*hostnames[i] == '\0') {
+                virReportError(VIR_ERR_XML_DETAIL,
+                               _("Missing hostname in network '%1$s' DNS HOST record"),
+                               networkName);
+                return -1;
+            }
         }
-        cur = cur->next;
-    }
-    if (def->nnames == 0 && !partialOkay) {
-        virReportError(VIR_ERR_XML_DETAIL,
-                       _("Missing hostname in network '%1$s' DNS HOST record"),
-                       networkName);
-        goto error;
-    }
-
-    if (!VIR_SOCKET_ADDR_VALID(&def->ip) && def->nnames == 0) {
-        virReportError(VIR_ERR_XML_DETAIL,
-                       _("Missing ip and hostname in network '%1$s' DNS HOST record"),
-                       networkName);
-        goto error;
+    } else {
+        if (!partialOkay) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("Missing hostname in network '%1$s' DNS HOST record"),
+                           networkName);
+            return -1;
+        }
     }
 
+    if (ip) {
+        if (virSocketAddrParse(&def->ip, ip, AF_UNSPEC) < 0) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("Invalid IP address in network '%1$s' DNS HOST record"),
+                           networkName);
+            return -1;
+        }
+    } else {
+        if (!partialOkay) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("Missing IP address in network '%1$s' DNS HOST record"),
+                           networkName);
+            return -1;
+        }
+
+        if (nhostnameNodes == 0) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("Missing ip and hostname in network '%1$s' DNS HOST record"),
+                           networkName);
+            return -1;
+        }
+    }
+
+    def->names = g_steal_pointer(&hostnames);
+    def->nnames = nhostnameNodes;
     return 0;
-
- error:
-    virNetworkDNSHostDefClear(def);
-    return -1;
 }
 
 
