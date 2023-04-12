@@ -12630,19 +12630,13 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
 static void
 virshDiskDropBackingStore(xmlNodePtr disk_node)
 {
-    xmlNodePtr tmp;
+    xmlNodePtr tmp = virXMLNodeGetSubelement(disk_node, "backingStore");
 
-    for (tmp = disk_node->children; tmp; tmp = tmp->next) {
-        if (tmp->type != XML_ELEMENT_NODE)
-            continue;
+    if (!tmp)
+        return;
 
-        if (virXMLNodeNameEqual(tmp, "backingStore")) {
-            xmlUnlinkNode(tmp);
-            xmlFreeNode(tmp);
-
-            return;
-        }
-    }
+    xmlUnlinkNode(tmp);
+    xmlFreeNode(tmp);
 }
 
 
@@ -12742,10 +12736,7 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
                    const char *target,
                    virshUpdateDiskXMLType type)
 {
-    xmlNodePtr tmp = NULL;
     xmlNodePtr source = NULL;
-    xmlNodePtr target_node = NULL;
-    xmlNodePtr text_node = NULL;
     g_autofree char *device_type = NULL;
     char *ret = NULL;
     g_autofree char *startupPolicy = NULL;
@@ -12762,33 +12753,7 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
         return NULL;
     }
 
-    /* find the current source subelement */
-    for (tmp = disk_node->children; tmp; tmp = tmp->next) {
-        /*
-         * Save the last text node before the <target/>.  The
-         * reasoning behind this is that the target node will be
-         * present in this case and also has a proper indentation.
-         */
-        if (!target_node && tmp->type == XML_TEXT_NODE)
-            text_node = tmp;
-
-        /*
-         * We need only element nodes from now on.
-         */
-        if (tmp->type != XML_ELEMENT_NODE)
-            continue;
-
-        if (!source && virXMLNodeNameEqual(tmp, "source"))
-            source = tmp;
-        else if (!target_node && virXMLNodeNameEqual(tmp, "target"))
-            target_node = tmp;
-
-        /*
-         * We've found all we needed.
-         */
-        if (source && target_node)
-            break;
-    }
+    source = virXMLNodeGetSubelement(disk_node, "source");
 
     if (type == VIRSH_UPDATE_DISK_XML_EJECT) {
         if (!source) {
@@ -12841,21 +12806,7 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
         if (startupPolicy)
             xmlNewProp(source, BAD_CAST "startupPolicy", BAD_CAST startupPolicy);
 
-        /*
-         * So that the output XML looks nice in case anyone calls
-         * 'change-media' with '--print-xml', let's attach the source
-         * before target...
-         */
-        xmlAddPrevSibling(target_node, source);
-
-        /*
-         * ... and duplicate the text node doing the indentation just
-         * so it's more easily readable.  And don't make it fatal.
-         */
-        if ((tmp = xmlCopyNode(text_node, 0))) {
-            if (!xmlAddPrevSibling(target_node, tmp))
-                xmlFreeNode(tmp);
-        }
+        xmlAddChild(disk_node, source);
     }
 
     if (!(ret = virXMLNodeToString(NULL, disk_node))) {
