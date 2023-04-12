@@ -581,6 +581,8 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def,
  * @default_snapshot: snapshot location to assign to disks which don't have any
  * @uniform_internal_snapshot: Require that for an internal snapshot all disks
  *                             take part in the internal snapshot
+ * @force_default_location: Always use @default_snapshot even if domain def
+ *                          has different default value
  *
  * Align snapdef->disks to domain definition, filling in any missing disks or
  * snapshot state defaults given by the domain, with a fallback to
@@ -598,6 +600,10 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def,
  * in the internal snapshot. This is for hypervisors where granularity of an
  * internal snapshot can't be controlled.
  *
+ * When @force_default_location is true we will always use @default_snapshot
+ * even if domain definition has different default set. This is required to
+ * create new snapshot definition when reverting external snapshots.
+ *
  * Convert paths to disk targets for uniformity.
  *
  * On error -1 is returned and a libvirt error is reported.
@@ -606,7 +612,8 @@ int
 virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
                             virDomainDef *existingDomainDef,
                             virDomainSnapshotLocation default_snapshot,
-                            bool uniform_internal_snapshot)
+                            bool uniform_internal_snapshot,
+                            bool force_default_location)
 {
     virDomainDef *domdef = snapdef->parent.dom;
     g_autoptr(GHashTable) map = virHashNew(NULL);
@@ -714,7 +721,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
         /* Don't snapshot empty drives */
         if (virStorageSourceIsEmpty(domdef->disks[i]->src))
             snapdisk->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NO;
-        else
+        else if (!force_default_location)
             snapdisk->snapshot = domdef->disks[i]->snapshot;
 
         snapdisk->src->type = VIR_STORAGE_TYPE_FILE;
@@ -970,8 +977,10 @@ virDomainSnapshotRedefinePrep(virDomainObj *vm,
         virDomainSnapshotDefIsExternal(snapdef))
         align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
 
-    if (virDomainSnapshotAlignDisks(snapdef, otherDomDef, align_location, true) < 0)
+    if (virDomainSnapshotAlignDisks(snapdef, otherDomDef, align_location,
+                                    true, false) < 0) {
         return -1;
+    }
 
     return 0;
 }

@@ -8724,7 +8724,7 @@ testDomainSnapshotAlignDisks(virDomainObj *vm,
                       VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
     }
 
-    return virDomainSnapshotAlignDisks(def, NULL, align_location, true);
+    return virDomainSnapshotAlignDisks(def, NULL, align_location, true, false);
 }
 
 
