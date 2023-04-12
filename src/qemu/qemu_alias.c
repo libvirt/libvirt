@@ -95,6 +95,7 @@ qemuAssignDeviceChrAlias(virDomainDef *def,
     if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
         chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL &&
         def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
+        def->nconsoles &&
         def->consoles[0] == chr &&
         def->nserials &&
         def->serials[0]->info.alias) {
