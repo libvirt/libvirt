@@ -1875,9 +1875,8 @@ qemuDomainChrInsertPreAlloced(virDomainDef *vmdef,
                               virDomainChrDef *chr)
 {
     virDomainChrInsertPreAlloced(vmdef, chr);
-    if (vmdef->nserials == 1 && vmdef->nconsoles == 0 &&
+    if (vmdef->nserials == 1 && vmdef->nconsoles == 1 &&
         chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
-        vmdef->nconsoles = 1;
 
         /* Create an console alias for the serial port */
         vmdef->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
