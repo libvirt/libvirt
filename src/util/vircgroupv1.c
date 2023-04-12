@@ -1051,6 +1051,132 @@ virCgroupV1GetBlkioWeight(virCgroup *group,
 }
 
 
+
+static int
+virCgroupV1GetBlkioIoServicedOne(virCgroup *group,
+                                 const char *field,
+                                 const char *devpath,
+                                 long long *dataRead,
+                                 long long *dataWrite)
+{
+    g_autofree char *serviced = NULL;
+    g_autofree char *filterWrite = NULL;
+    g_autofree char *filterRead = NULL;
+    unsigned long long tmpval;
+    char *tmp;
+    size_t len;
+
+    *dataRead = 0;
+    *dataWrite = 0;
+
+    if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_BLKIO, field, &serviced) < 0)
+        return -1;
+
+    if (devpath) {
+        g_autofree char *devstr = NULL;
+
+        if (!(devstr = virCgroupGetBlockDevString(devpath)))
+            return -1;
+
+        filterWrite = g_strdup_printf("%sWrite ", devstr);
+        filterRead = g_strdup_printf("%sRead ", devstr);
+
+        if (!strstr(serviced, filterWrite) ||
+            !strstr(serviced, filterRead)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"),
+                           field, devstr, devpath);
+            return -1;
+        }
+    } else {
+        filterWrite = g_strdup("Write ");
+        filterRead = g_strdup("Read ");
+    }
+
+    len = strlen(filterRead);
+
+    for (tmp = strstr(serviced, filterRead); tmp; tmp = strstr(tmp, filterRead)) {
+        char *cur = tmp;
+        tmp += len;
+
+        VIR_DEBUG("filter='%s' line='%.*s'", filterRead, (int) (strchr(tmp, '\n') - tmp), tmp);
+
+        if (virStrToLong_ullp(tmp, &tmp, 10, &tmpval) < 0) {
+            char *eol;
+
+            if ((eol = strchr(cur, '\n')))
+                *eol = '\0';
+
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot parse blkio cgroup (%1$s) entry '%2$s'"),
+                           field, cur);
+            return -1;
+        }
+
+        if (tmpval + *dataRead > LLONG_MAX) {
+            virReportError(VIR_ERR_OVERFLOW,
+                           _("overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"),
+                           field, filterRead);
+            return -1;
+        }
+
+        *dataRead += tmpval;
+    }
+
+    len = strlen(filterWrite);
+
+    for (tmp = strstr(serviced, filterWrite); tmp; tmp = strstr(tmp, filterWrite)) {
+        char *cur = tmp;
+        tmp += len;
+
+        VIR_DEBUG("filter='%s' line='%.*s'", filterWrite, (int) (strchr(cur, '\n') - cur), cur);
+
+        if (virStrToLong_ullp(tmp, &tmp, 10, &tmpval) < 0) {
+            char *eol;
+
+            if ((eol = strchr(cur, '\n')))
+                *eol = '\0';
+
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot parse blkio cgroup ('%1$s') entry '%2$s'"),
+                           field, cur);
+            return -1;
+        }
+
+        if (tmpval + *dataWrite > LLONG_MAX) {
+            virReportError(VIR_ERR_OVERFLOW,
+                           _("overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"),
+                           field, filterWrite);
+            return -1;
+        }
+
+        *dataWrite += tmpval;
+    }
+
+    return 0;
+}
+
+
+static int
+virCgroupV1GetBlkioIoServicedInternal(virCgroup *group,
+                                      const char *devpath,
+                                      long long *bytes_read,
+                                      long long *bytes_write,
+                                      long long *requests_read,
+                                      long long *requests_write)
+{
+    if (virCgroupV1GetBlkioIoServicedOne(group, "blkio.throttle.io_service_bytes",
+                                         devpath, bytes_read, bytes_write) < 0)
+        return -1;
+
+    if (virCgroupV1GetBlkioIoServicedOne(group, "blkio.throttle.io_serviced",
+                                         devpath, requests_read, requests_write) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 virCgroupV1GetBlkioIoServiced(virCgroup *group,
                               long long *bytes_read,
@@ -1058,90 +1184,9 @@ virCgroupV1GetBlkioIoServiced(virCgroup *group,
                               long long *requests_read,
                               long long *requests_write)
 {
-    long long stats_val;
-    g_autofree char *str1 = NULL;
-    g_autofree char *str2 = NULL;
-    char *p1 = NULL;
-    char *p2 = NULL;
-    size_t i;
-
-    const char *value_names[] = {
-        "Read ",
-        "Write "
-    };
-    long long *bytes_ptrs[] = {
-        bytes_read,
-        bytes_write
-    };
-    long long *requests_ptrs[] = {
-        requests_read,
-        requests_write
-    };
-
-    *bytes_read = 0;
-    *bytes_write = 0;
-    *requests_read = 0;
-    *requests_write = 0;
-
-    if (virCgroupGetValueStr(group,
-                             VIR_CGROUP_CONTROLLER_BLKIO,
-                             "blkio.throttle.io_service_bytes", &str1) < 0)
-        return -1;
-
-    if (virCgroupGetValueStr(group,
-                             VIR_CGROUP_CONTROLLER_BLKIO,
-                             "blkio.throttle.io_serviced", &str2) < 0)
-        return -1;
-
-    /* sum up all entries of the same kind, from all devices */
-    for (i = 0; i < G_N_ELEMENTS(value_names); i++) {
-        p1 = str1;
-        p2 = str2;
-
-        while ((p1 = strstr(p1, value_names[i]))) {
-            p1 += strlen(value_names[i]);
-            if (virStrToLong_ll(p1, &p1, 10, &stats_val) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Cannot parse byte %1$sstat '%2$s'"),
-                               value_names[i],
-                               p1);
-                return -1;
-            }
-
-            if (stats_val < 0 ||
-                (stats_val > 0 && *bytes_ptrs[i] > (LLONG_MAX - stats_val)))
-            {
-                virReportError(VIR_ERR_OVERFLOW,
-                               _("Sum of byte %1$sstat overflows"),
-                               value_names[i]);
-                return -1;
-            }
-            *bytes_ptrs[i] += stats_val;
-        }
-
-        while ((p2 = strstr(p2, value_names[i]))) {
-            p2 += strlen(value_names[i]);
-            if (virStrToLong_ll(p2, &p2, 10, &stats_val) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Cannot parse %1$srequest stat '%2$s'"),
-                               value_names[i],
-                               p2);
-                return -1;
-            }
-
-            if (stats_val < 0 ||
-                (stats_val > 0 && *requests_ptrs[i] > (LLONG_MAX - stats_val)))
-            {
-                virReportError(VIR_ERR_OVERFLOW,
-                               _("Sum of %1$srequest stat overflows"),
-                               value_names[i]);
-                return -1;
-            }
-            *requests_ptrs[i] += stats_val;
-        }
-    }
-
-    return 0;
+    return virCgroupV1GetBlkioIoServicedInternal(group, NULL,
+                                                 bytes_read, bytes_write,
+                                                 requests_read, requests_write);
 }
 
 
@@ -1153,84 +1198,9 @@ virCgroupV1GetBlkioIoDeviceServiced(virCgroup *group,
                                     long long *requests_read,
                                     long long *requests_write)
 {
-    g_autofree char *str1 = NULL;
-    g_autofree char *str2 = NULL;
-    g_autofree char *str3 = NULL;
-    char *p1 = NULL;
-    char *p2 = NULL;
-    size_t i;
-
-    const char *value_names[] = {
-        "Read ",
-        "Write "
-    };
-    long long *bytes_ptrs[] = {
-        bytes_read,
-        bytes_write
-    };
-    long long *requests_ptrs[] = {
-        requests_read,
-        requests_write
-    };
-
-    if (virCgroupGetValueStr(group,
-                             VIR_CGROUP_CONTROLLER_BLKIO,
-                             "blkio.throttle.io_service_bytes", &str1) < 0)
-        return -1;
-
-    if (virCgroupGetValueStr(group,
-                             VIR_CGROUP_CONTROLLER_BLKIO,
-                             "blkio.throttle.io_serviced", &str2) < 0)
-        return -1;
-
-    if (!(str3 = virCgroupGetBlockDevString(path)))
-        return -1;
-
-    if (!(p1 = strstr(str1, str3))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot find byte stats for block device '%1$s'"),
-                       str3);
-        return -1;
-    }
-
-    if (!(p2 = strstr(str2, str3))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot find request stats for block device '%1$s'"),
-                       str3);
-        return -1;
-    }
-
-    for (i = 0; i < G_N_ELEMENTS(value_names); i++) {
-        if (!(p1 = strstr(p1, value_names[i]))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot find byte %1$sstats for block device '%2$s'"),
-                           value_names[i], str3);
-            return -1;
-        }
-
-        if (virStrToLong_ll(p1 + strlen(value_names[i]), &p1, 10, bytes_ptrs[i]) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot parse %1$sstat '%2$s'"),
-                           value_names[i], p1 + strlen(value_names[i]));
-            return -1;
-        }
-
-        if (!(p2 = strstr(p2, value_names[i]))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot find request %1$sstats for block device '%2$s'"),
-                           value_names[i], str3);
-            return -1;
-        }
-
-        if (virStrToLong_ll(p2 + strlen(value_names[i]), &p2, 10, requests_ptrs[i]) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot parse %1$sstat '%2$s'"),
-                           value_names[i], p2 + strlen(value_names[i]));
-            return -1;
-        }
-    }
-
-    return 0;
+    return virCgroupV1GetBlkioIoServicedInternal(group, path,
+                                                 bytes_read, bytes_write,
+                                                 requests_read, requests_write);
 }
 
 
