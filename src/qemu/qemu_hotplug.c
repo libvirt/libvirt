@@ -4695,6 +4695,7 @@ qemuDomainRemoveChrDevice(virQEMUDriver *driver,
     virObjectEvent *event;
     g_autofree char *charAlias = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
+    virDomainChrDef *chrRemoved = NULL;
     int rc = 0;
 
     VIR_DEBUG("Removing character device %s from domain %p %s",
@@ -4728,17 +4729,24 @@ qemuDomainRemoveChrDevice(virQEMUDriver *driver,
     if (qemuDomainNamespaceTeardownChardev(vm, chr) < 0)
         VIR_WARN("Unable to remove chr device from /dev");
 
-    qemuDomainReleaseDeviceAddress(vm, &chr->info);
-    qemuDomainChrRemove(vm->def, chr);
+    if (!(chrRemoved = qemuDomainChrRemove(vm->def, chr))) {
+        /* At this point, we only have bad options. The device
+         * was successfully removed from QEMU, denied in CGropus,
+         * etc. and yet, we failed to remove it from domain
+         * definition. */
+        VIR_WARN("Unable to remove chr device from domain definition");
+    } else {
+        qemuDomainReleaseDeviceAddress(vm, &chrRemoved->info);
 
-    /* The caller does not emit the event, so we must do it here. Note
-     * that the event should be reported only after all backend
-     * teardown is completed.
-     */
-    event = virDomainEventDeviceRemovedNewFromObj(vm, chr->info.alias);
-    virObjectEventStateQueue(driver->domainEventState, event);
+        /* The caller does not emit the event, so we must do it here. Note
+         * that the event should be reported only after all backend
+         * teardown is completed.
+         */
+        event = virDomainEventDeviceRemovedNewFromObj(vm, chrRemoved->info.alias);
+        virObjectEventStateQueue(driver->domainEventState, event);
 
-    virDomainChrDefFree(chr);
+        virDomainChrDefFree(chrRemoved);
+    }
     return 0;
 }
 
