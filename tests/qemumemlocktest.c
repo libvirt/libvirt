@@ -97,6 +97,7 @@ mymain(void)
     DO_TEST("pc-hardlimit", 2147483648);
     DO_TEST("pc-locked", VIR_DOMAIN_MEMORY_PARAM_UNLIMITED);
     DO_TEST("pc-hostdev", 2147483648);
+    DO_TEST("pc-hostdev-nvme", 3221225472);
 
     DO_TEST("pc-hardlimit+locked", 2147483648);
     DO_TEST("pc-hardlimit+hostdev", 2147483648);

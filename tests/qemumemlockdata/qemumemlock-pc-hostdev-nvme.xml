@@ -1,0 +1,24 @@
+<domain type='kvm'>
+  <name>guest</name>
+  <memory unit='KiB'>1048576</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='nvme' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source type='pci' managed='yes' namespace='1'>
+        <address domain='0x0003' bus='0x02' slot='0x00' function='0x0'/>
+      </source>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0001' bus='0x01' slot='0x00' function='0x0'/>
+      </source>
+    </hostdev>
+  </devices>
+</domain>
