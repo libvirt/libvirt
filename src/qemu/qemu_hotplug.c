@@ -1937,8 +1937,10 @@ qemuDomainChrRemove(virDomainDef *vmdef,
             return NULL;
     }
 
-    if (removeCompat)
+    if (removeCompat) {
+        virDomainChrDefFree(vmdef->consoles[0]);
         VIR_DELETE_ELEMENT(vmdef->consoles, 0, vmdef->nconsoles);
+    }
 
     return ret;
 }
