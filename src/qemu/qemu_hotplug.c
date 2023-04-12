@@ -5693,6 +5693,16 @@ qemuDomainDetachDeviceChr(virQEMUDriver *driver,
         goto cleanup;
     }
 
+    if (vmdef->os.type == VIR_DOMAIN_OSTYPE_HVM &&
+        tmpChr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        (tmpChr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ||
+         tmpChr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE)) {
+        /* Raise this limitation once device removal works. */
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("detaching of <console/> is unsupported. Try corresponding <serial/> instead"));
+        goto cleanup;
+    }
+
     /* guestfwd channels are not really -device rather than
      * -netdev. We need to treat them slightly differently. */
     guestfwd = tmpChr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
