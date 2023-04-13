@@ -211,15 +211,19 @@ virshGraphicsPhaseToString(int phase)
 VIR_ENUM_DECL(virshGraphicsAddress);
 VIR_ENUM_IMPL(virshGraphicsAddress,
               VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_LAST,
-              N_("IPv4"),
-              N_("IPv6"),
-              N_("unix"));
+              "IPv4",
+              "IPv6",
+              "unix");
 
 static const char *
 virshGraphicsAddressToString(int family)
 {
     const char *str = virshGraphicsAddressTypeToString(family);
-    return str ? _(str) : _("unknown");
+
+    if (str)
+        return str;
+
+    return _("unknown");
 }
 
 VIR_ENUM_DECL(virshDomainBlockJobStatus);
