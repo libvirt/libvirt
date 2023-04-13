@@ -286,6 +286,33 @@ struct virshDomEventData {
 };
 typedef struct virshDomEventData virshDomEventData;
 
+
+static void G_GNUC_PRINTF(2, 3)
+virshEventPrintf(virshDomEventData *data,
+                 const char *fmt,
+                 ...)
+{
+    va_list ap;
+
+    if (!data->loop && *data->count)
+        return;
+
+    if (data->timestamp) {
+        char timestamp[VIR_TIME_STRING_BUFLEN] = "";
+
+        ignore_value(virTimeStringNowRaw(timestamp));
+        vshPrint(data->ctl, "%s: ", timestamp);
+    }
+
+    va_start(ap, fmt);
+    vshPrintVa(data->ctl, fmt, ap);
+    va_end(ap);
+
+    (*data->count)++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
 /**
  * virshEventPrint:
  *
@@ -305,24 +332,9 @@ virshEventPrint(virshDomEventData *data,
     if (!(msg = virBufferContentAndReset(buf)))
         return;
 
-    if (!data->loop && *data->count)
-        return;
-
-    if (data->timestamp) {
-        char timestamp[VIR_TIME_STRING_BUFLEN];
-
-        if (virTimeStringNowRaw(timestamp) < 0)
-            timestamp[0] = '\0';
-
-        vshPrint(data->ctl, "%s: %s", timestamp, msg);
-    } else {
-        vshPrint(data->ctl, "%s", msg);
-    }
-
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virshEventPrintf(data, "%s", msg);
 }
+
 
 static void
 virshEventGenericPrint(virConnectPtr conn G_GNUC_UNUSED,
