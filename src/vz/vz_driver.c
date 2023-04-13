@@ -4101,7 +4101,7 @@ vzStateInitialize(bool privileged,
         return VIR_DRV_STATE_INIT_ERROR;
 
     if (prlsdkInit() < 0) {
-        VIR_DEBUG("%s", _("Can't initialize Parallels SDK"));
+        VIR_DEBUG("Can't initialize Parallels SDK");
         return VIR_DRV_STATE_INIT_ERROR;
     }
 
@@ -4144,7 +4144,7 @@ vzRegister(void)
 
     prlctl_path = virFindFileInPath(PRLCTL);
     if (!prlctl_path) {
-        VIR_DEBUG("%s", _("Can't find prlctl command in the PATH env"));
+        VIR_DEBUG("Can't find prlctl command in the PATH env");
         return 0;
     }
 

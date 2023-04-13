@@ -1300,7 +1300,7 @@ virNetlinkGetNeighbor(void **nlData G_GNUC_UNUSED,
  */
 int virNetlinkEventServiceStop(unsigned int protocol G_GNUC_UNUSED)
 {
-    VIR_DEBUG("%s", _(unsupported));
+    VIR_DEBUG("%s", unsupported);
     return 0;
 }
 
@@ -1310,7 +1310,7 @@ int virNetlinkEventServiceStop(unsigned int protocol G_GNUC_UNUSED)
  */
 int virNetlinkEventServiceStopAll(void)
 {
-    VIR_DEBUG("%s", _(unsupported));
+    VIR_DEBUG("%s", unsupported);
     return 0;
 }
 
@@ -1321,7 +1321,7 @@ int virNetlinkEventServiceStopAll(void)
 int virNetlinkEventServiceStart(unsigned int protocol G_GNUC_UNUSED,
                                 unsigned int groups G_GNUC_UNUSED)
 {
-    VIR_DEBUG("%s", _(unsupported));
+    VIR_DEBUG("%s", unsupported);
     return 0;
 }
 
