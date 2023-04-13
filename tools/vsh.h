@@ -302,6 +302,10 @@ const vshCmdOpt *vshCommandOptArgv(vshControl *ctl, const vshCmd *cmd,
 bool vshCommandArgvParse(vshControl *ctl, int nargs, char **argv);
 int vshCommandOptTimeoutToMs(vshControl *ctl, const vshCmd *cmd, int *timeout);
 
+void vshPrintVa(vshControl *ctl,
+                const char *format,
+                va_list ap)
+    G_GNUC_PRINTF(2, 0);
 void vshPrint(vshControl *ctl, const char *format, ...)
     G_GNUC_PRINTF(2, 3);
 void vshPrintExtra(vshControl *ctl, const char *format, ...)

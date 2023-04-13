@@ -1865,34 +1865,46 @@ vshDebug(vshControl *ctl, int level, const char *format, ...)
     fflush(stdout);
 }
 
+
 void
-vshPrintExtra(vshControl *ctl, const char *format, ...)
+vshPrintVa(vshControl *ctl G_GNUC_UNUSED,
+           const char *format,
+           va_list ap)
 {
-    va_list ap;
     g_autofree char *str = NULL;
 
-    if (ctl && ctl->quiet)
-        return;
-
-    va_start(ap, format);
     str = g_strdup_vprintf(format, ap);
-    va_end(ap);
     fputs(str, stdout);
     fflush(stdout);
 }
 
 
 void
-vshPrint(vshControl *ctl G_GNUC_UNUSED, const char *format, ...)
+vshPrintExtra(vshControl *ctl,
+              const char *format,
+              ...)
 {
     va_list ap;
-    g_autofree char *str = NULL;
+
+    if (ctl && ctl->quiet)
+        return;
 
     va_start(ap, format);
-    str = g_strdup_vprintf(format, ap);
+    vshPrintVa(ctl, format, ap);
     va_end(ap);
-    fputs(str, stdout);
-    fflush(stdout);
+}
+
+
+void
+vshPrint(vshControl *ctl,
+         const char *format,
+         ...)
+{
+    va_list ap;
+
+    va_start(ap, format);
+    vshPrintVa(ctl, format, ap);
+    va_end(ap);
 }
 
 
