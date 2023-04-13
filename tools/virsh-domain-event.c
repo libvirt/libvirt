@@ -254,20 +254,6 @@ virshDomainEventDiskChangeToString(int reason)
     return str ? _(str) : _("unknown");
 }
 
-VIR_ENUM_DECL(virshDomainEventTrayChange);
-VIR_ENUM_IMPL(virshDomainEventTrayChange,
-              VIR_DOMAIN_EVENT_TRAY_CHANGE_LAST,
-              N_("opened"),
-              N_("closed"));
-
-static const char *
-virshDomainEventTrayChangeToString(int reason)
-{
-    const char *str = virshDomainEventTrayChangeTypeToString(reason);
-    return str ? _(str) : _("unknown");
-}
-
-
 struct virshDomainEventCallback {
     const char *name;
     virConnectDomainEventGenericCallback cb;
@@ -511,13 +497,23 @@ virshEventTrayChangePrint(virConnectPtr conn G_GNUC_UNUSED,
                           int reason,
                           void *opaque)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    switch ((virDomainEventTrayChangeReason) reason) {
+    case VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN:
+        virshEventPrintf(opaque, _("event 'tray-change' for domain '%1$s' disk %2$s: opened\n"),
+                         virDomainGetName(dom), alias);
+        break;
 
-    virBufferAsprintf(&buf, _("event 'tray-change' for domain '%1$s' disk %2$s: %3$s\n"),
-                      virDomainGetName(dom),
-                      alias,
-                      virshDomainEventTrayChangeToString(reason));
-    virshEventPrint(opaque, &buf);
+    case VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE:
+        virshEventPrintf(opaque, _("event 'tray-change' for domain '%1$s' disk %2$s: closed\n"),
+                         virDomainGetName(dom), alias);
+        break;
+
+    case VIR_DOMAIN_EVENT_TRAY_CHANGE_LAST:
+    default:
+        virshEventPrintf(opaque, _("event 'tray-change' for domain '%1$s' disk %2$s: unknown\n"),
+                         virDomainGetName(dom), alias);
+        break;
+    }
 }
 
 static void
