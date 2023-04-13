@@ -162,20 +162,6 @@ virshDomainEventDetailToString(int event, int detail)
     return str ? _(str) : _("unknown");
 }
 
-VIR_ENUM_DECL(virshDomainEventIOError);
-VIR_ENUM_IMPL(virshDomainEventIOError,
-              VIR_DOMAIN_EVENT_IO_ERROR_LAST,
-              N_("none"),
-              N_("pause"),
-              N_("report"));
-
-static const char *
-virshDomainEventIOErrorToString(int action)
-{
-    const char *str = virshDomainEventIOErrorTypeToString(action);
-    return str ? _(str) : _("unknown");
-}
-
 VIR_ENUM_DECL(virshGraphicsPhase);
 VIR_ENUM_IMPL(virshGraphicsPhase,
               VIR_DOMAIN_EVENT_GRAPHICS_LAST,
@@ -398,14 +384,25 @@ virshEventIOErrorPrint(virConnectPtr conn G_GNUC_UNUSED,
                        int action,
                        void *opaque)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-
-    virBufferAsprintf(&buf, _("event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"),
-                      virDomainGetName(dom),
-                      srcPath,
-                      devAlias,
-                      virshDomainEventIOErrorToString(action));
-    virshEventPrint(opaque, &buf);
+    switch ((virDomainEventIOErrorAction) action) {
+    case VIR_DOMAIN_EVENT_IO_ERROR_NONE:
+        virshEventPrintf(opaque, _("event 'io-error' for domain '%1$s': %2$s (%3$s) none\n"),
+                         virDomainGetName(dom), srcPath, devAlias);
+        break;
+    case VIR_DOMAIN_EVENT_IO_ERROR_PAUSE:
+        virshEventPrintf(opaque, _("event 'io-error' for domain '%1$s': %2$s (%3$s) pause\n"),
+                         virDomainGetName(dom), srcPath, devAlias);
+        break;
+    case VIR_DOMAIN_EVENT_IO_ERROR_REPORT:
+        virshEventPrintf(opaque, _("event 'io-error' for domain '%1$s': %2$s (%3$s) report\n"),
+                         virDomainGetName(dom), srcPath, devAlias);
+        break;
+    case VIR_DOMAIN_EVENT_IO_ERROR_LAST:
+    default:
+        virshEventPrintf(opaque, _("event 'io-error' for domain '%1$s': %2$s (%3$s) unknown\n"),
+                         virDomainGetName(dom), srcPath, devAlias);
+        break;
+    }
 }
 
 static void
@@ -449,16 +446,25 @@ virshEventIOErrorReasonPrint(virConnectPtr conn G_GNUC_UNUSED,
                              const char *reason,
                              void *opaque)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-
-    virBufferAsprintf(&buf, _("event 'io-error-reason' for domain '%1$s': "
-                              "%2$s (%3$s) %4$s due to %5$s\n"),
-                      virDomainGetName(dom),
-                      srcPath,
-                      devAlias,
-                      virshDomainEventIOErrorToString(action),
-                      reason);
-    virshEventPrint(opaque, &buf);
+    switch ((virDomainEventIOErrorAction) action) {
+    case VIR_DOMAIN_EVENT_IO_ERROR_NONE:
+        virshEventPrintf(opaque, _("event 'io-error' for domain '%1$s': %2$s (%3$s) none due to %4$s\n"),
+                         virDomainGetName(dom), srcPath, devAlias, reason);
+        break;
+    case VIR_DOMAIN_EVENT_IO_ERROR_PAUSE:
+        virshEventPrintf(opaque, _("event 'io-error' for domain '%1$s': %2$s (%3$s) pause due to %4$s\n"),
+                         virDomainGetName(dom), srcPath, devAlias, reason);
+        break;
+    case VIR_DOMAIN_EVENT_IO_ERROR_REPORT:
+        virshEventPrintf(opaque, _("event 'io-error' for domain '%1$s': %2$s (%3$s) report due to %4$s\n"),
+                         virDomainGetName(dom), srcPath, devAlias, reason);
+        break;
+    case VIR_DOMAIN_EVENT_IO_ERROR_LAST:
+    default:
+        virshEventPrintf(opaque, _("event 'io-error' for domain '%1$s': %2$s (%3$s) unknown due to %4$s\n"),
+                         virDomainGetName(dom), srcPath, devAlias, reason);
+        break;
+    }
 }
 
 static void
