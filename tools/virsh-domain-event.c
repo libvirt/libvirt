@@ -162,24 +162,6 @@ virshDomainEventDetailToString(int event, int detail)
     return str ? _(str) : _("unknown");
 }
 
-VIR_ENUM_DECL(virshDomainEventWatchdog);
-VIR_ENUM_IMPL(virshDomainEventWatchdog,
-              VIR_DOMAIN_EVENT_WATCHDOG_LAST,
-              N_("none"),
-              N_("pause"),
-              N_("reset"),
-              N_("poweroff"),
-              N_("shutdown"),
-              N_("debug"),
-              N_("inject-nmi"));
-
-static const char *
-virshDomainEventWatchdogToString(int action)
-{
-    const char *str = virshDomainEventWatchdogTypeToString(action);
-    return str ? _(str) : _("unknown");
-}
-
 VIR_ENUM_DECL(virshDomainEventIOError);
 VIR_ENUM_IMPL(virshDomainEventIOError,
               VIR_DOMAIN_EVENT_IO_ERROR_LAST,
@@ -371,12 +353,41 @@ virshEventWatchdogPrint(virConnectPtr conn G_GNUC_UNUSED,
                         int action,
                         void *opaque)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-
-    virBufferAsprintf(&buf, _("event 'watchdog' for domain '%1$s': %2$s\n"),
-                      virDomainGetName(dom),
-                      virshDomainEventWatchdogToString(action));
-    virshEventPrint(opaque, &buf);
+    switch ((virDomainEventWatchdogAction) action) {
+    case VIR_DOMAIN_EVENT_WATCHDOG_NONE:
+        virshEventPrintf(opaque, _("event 'watchdog' for domain '%1$s': none\n"),
+                         virDomainGetName(dom));
+        break;
+    case VIR_DOMAIN_EVENT_WATCHDOG_PAUSE:
+        virshEventPrintf(opaque, _("event 'watchdog' for domain '%1$s': pause\n"),
+                         virDomainGetName(dom));
+        break;
+    case VIR_DOMAIN_EVENT_WATCHDOG_RESET:
+        virshEventPrintf(opaque, _("event 'watchdog' for domain '%1$s': reset\n"),
+                         virDomainGetName(dom));
+        break;
+    case VIR_DOMAIN_EVENT_WATCHDOG_POWEROFF:
+        virshEventPrintf(opaque, _("event 'watchdog' for domain '%1$s': poweroff\n"),
+                         virDomainGetName(dom));
+        break;
+    case VIR_DOMAIN_EVENT_WATCHDOG_SHUTDOWN:
+        virshEventPrintf(opaque, _("event 'watchdog' for domain '%1$s': shutdown\n"),
+                         virDomainGetName(dom));
+        break;
+    case VIR_DOMAIN_EVENT_WATCHDOG_DEBUG:
+        virshEventPrintf(opaque, _("event 'watchdog' for domain '%1$s': debug\n"),
+                         virDomainGetName(dom));
+        break;
+    case VIR_DOMAIN_EVENT_WATCHDOG_INJECTNMI:
+        virshEventPrintf(opaque, _("event 'watchdog' for domain '%1$s': inject-nmi\n"),
+                         virDomainGetName(dom));
+        break;
+    case VIR_DOMAIN_EVENT_WATCHDOG_LAST:
+    default:
+        virshEventPrintf(opaque, _("event 'watchdog' for domain '%1$s': unknown\n"),
+                         virDomainGetName(dom));
+        break;
+    }
 }
 
 static void
