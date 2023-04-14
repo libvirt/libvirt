@@ -187,7 +187,7 @@
   <cpu type='kvm' name='arm1136-r2' typename='arm1136-r2-arm-cpu'/>
   <cpu type='kvm' name='pxa270-b0' typename='pxa270-b0-arm-cpu'/>
   <cpu type='kvm' name='pxa262' typename='pxa262-arm-cpu'/>
-  <machine type='kvm' name='integratorcp' maxCpus='1' defaultCPU='arm926-arm-cpu'/>
+  <machine type='kvm' name='virt-5.0' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='virt-4.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='mcimx7d-sabre' maxCpus='2'/>
   <machine type='kvm' name='imx25-pdk' maxCpus='1'/>
@@ -203,6 +203,7 @@
   <machine type='kvm' name='sbsa-ref' maxCpus='512' defaultCPU='cortex-a57-arm-cpu'/>
   <machine type='kvm' name='spitz' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu'/>
   <machine type='kvm' name='witherspoon-bmc' maxCpus='2'/>
+  <machine type='kvm' name='integratorcp' maxCpus='1' defaultCPU='arm926-arm-cpu'/>
   <machine type='kvm' name='virt-3.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='netduino2' maxCpus='1'/>
   <machine type='kvm' name='realview-eb-mpcore' maxCpus='4' defaultCPU='arm11mpcore-arm-cpu'/>
@@ -253,7 +254,6 @@
   <machine type='kvm' name='tacoma-bmc' maxCpus='2'/>
   <machine type='kvm' name='sx1' maxCpus='1' defaultCPU='ti925t-arm-cpu'/>
   <machine type='kvm' name='highbank' maxCpus='4'/>
-  <machine type='kvm' name='virt-5.0' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='musca-a' maxCpus='2' defaultCPU='cortex-m33-arm-cpu'/>
   <machine type='kvm' name='musca-b1' maxCpus='2' defaultCPU='cortex-m33-arm-cpu'/>
   <machine type='kvm' name='realview-eb' maxCpus='1' defaultCPU='arm926-arm-cpu'/>
@@ -321,7 +321,7 @@
   <cpu type='tcg' name='arm1136-r2' typename='arm1136-r2-arm-cpu'/>
   <cpu type='tcg' name='pxa270-b0' typename='pxa270-b0-arm-cpu'/>
   <cpu type='tcg' name='pxa262' typename='pxa262-arm-cpu'/>
-  <machine type='tcg' name='integratorcp' maxCpus='1' defaultCPU='arm926-arm-cpu'/>
+  <machine type='tcg' name='virt-5.0' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='virt-4.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='mcimx7d-sabre' maxCpus='2'/>
   <machine type='tcg' name='imx25-pdk' maxCpus='1'/>
@@ -337,6 +337,7 @@
   <machine type='tcg' name='sbsa-ref' maxCpus='512' defaultCPU='cortex-a57-arm-cpu'/>
   <machine type='tcg' name='spitz' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu'/>
   <machine type='tcg' name='witherspoon-bmc' maxCpus='2'/>
+  <machine type='tcg' name='integratorcp' maxCpus='1' defaultCPU='arm926-arm-cpu'/>
   <machine type='tcg' name='virt-3.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='netduino2' maxCpus='1'/>
   <machine type='tcg' name='realview-eb-mpcore' maxCpus='4' defaultCPU='arm11mpcore-arm-cpu'/>
@@ -387,7 +388,6 @@
   <machine type='tcg' name='tacoma-bmc' maxCpus='2'/>
   <machine type='tcg' name='sx1' maxCpus='1' defaultCPU='ti925t-arm-cpu'/>
   <machine type='tcg' name='highbank' maxCpus='4'/>
-  <machine type='tcg' name='virt-5.0' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='musca-a' maxCpus='2' defaultCPU='cortex-m33-arm-cpu'/>
   <machine type='tcg' name='musca-b1' maxCpus='2' defaultCPU='cortex-m33-arm-cpu'/>
   <machine type='tcg' name='realview-eb' maxCpus='1' defaultCPU='arm926-arm-cpu'/>

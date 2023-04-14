@@ -229,7 +229,7 @@
   <cpu type='hvf' name='arm1136-r2' typename='arm1136-r2-arm-cpu'/>
   <cpu type='hvf' name='pxa270-b0' typename='pxa270-b0-arm-cpu'/>
   <cpu type='hvf' name='pxa262' typename='pxa262-arm-cpu'/>
-  <machine type='hvf' name='integratorcp' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='integrator.ram'/>
+  <machine type='hvf' name='virt-7.0' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram'/>
   <machine type='hvf' name='raspi0' maxCpus='1' defaultRAMid='ram'/>
   <machine type='hvf' name='virt-4.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram'/>
   <machine type='hvf' name='mcimx7d-sabre' maxCpus='2' defaultRAMid='mcimx7d-sabre.ram'/>
@@ -251,6 +251,7 @@
   <machine type='hvf' name='spitz' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu'/>
   <machine type='hvf' name='virt-6.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram'/>
   <machine type='hvf' name='witherspoon-bmc' maxCpus='1' defaultRAMid='ram'/>
+  <machine type='hvf' name='integratorcp' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='integrator.ram'/>
   <machine type='hvf' name='virt-3.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram'/>
   <machine type='hvf' name='netduino2' maxCpus='1'/>
   <machine type='hvf' name='realview-eb-mpcore' maxCpus='4' defaultCPU='arm11mpcore-arm-cpu'/>
@@ -329,7 +330,6 @@
   <machine type='hvf' name='virt-2.8' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram'/>
   <machine type='hvf' name='virt-2.11' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram'/>
   <machine type='hvf' name='mps2-an521' maxCpus='2' defaultCPU='cortex-m33-arm-cpu' defaultRAMid='mps.ram'/>
-  <machine type='hvf' name='virt-7.0' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram'/>
   <machine type='hvf' name='terrier' maxCpus='1' defaultCPU='pxa270-c5-arm-cpu'/>
   <hostCPU type='tcg' model='max' migratability='no'>
     <property name='sve768' type='boolean' value='true'/>
@@ -394,7 +394,7 @@
   <cpu type='tcg' name='arm1136-r2' typename='arm1136-r2-arm-cpu'/>
   <cpu type='tcg' name='pxa270-b0' typename='pxa270-b0-arm-cpu'/>
   <cpu type='tcg' name='pxa262' typename='pxa262-arm-cpu'/>
-  <machine type='tcg' name='integratorcp' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='integrator.ram'/>
+  <machine type='tcg' name='virt-7.0' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram'/>
   <machine type='tcg' name='raspi0' maxCpus='1' defaultRAMid='ram'/>
   <machine type='tcg' name='virt-4.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram'/>
   <machine type='tcg' name='mcimx7d-sabre' maxCpus='2' defaultRAMid='mcimx7d-sabre.ram'/>
@@ -416,6 +416,7 @@
   <machine type='tcg' name='spitz' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu'/>
   <machine type='tcg' name='virt-6.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram'/>
   <machine type='tcg' name='witherspoon-bmc' maxCpus='1' defaultRAMid='ram'/>
+  <machine type='tcg' name='integratorcp' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='integrator.ram'/>
   <machine type='tcg' name='virt-3.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram'/>
   <machine type='tcg' name='netduino2' maxCpus='1'/>
   <machine type='tcg' name='realview-eb-mpcore' maxCpus='4' defaultCPU='arm11mpcore-arm-cpu'/>
@@ -494,7 +495,6 @@
   <machine type='tcg' name='virt-2.8' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram'/>
   <machine type='tcg' name='virt-2.11' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram'/>
   <machine type='tcg' name='mps2-an521' maxCpus='2' defaultCPU='cortex-m33-arm-cpu' defaultRAMid='mps.ram'/>
-  <machine type='tcg' name='virt-7.0' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram'/>
   <machine type='tcg' name='terrier' maxCpus='1' defaultCPU='pxa270-c5-arm-cpu'/>
   <gic version='3' kernel='yes' emulated='yes'/>
   <gic version='2' kernel='no' emulated='yes'/>

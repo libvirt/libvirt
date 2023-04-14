@@ -2687,10 +2687,10 @@ static const char *preferredMachines[] =
     NULL, /* VIR_ARCH_NONE (not a real arch :) */
     "clipper", /* VIR_ARCH_ALPHA */
     "integratorcp", /* VIR_ARCH_ARMV6L */
-    "integratorcp", /* VIR_ARCH_ARMV7L */
-    "integratorcp", /* VIR_ARCH_ARMV7B */
+    "virt", /* VIR_ARCH_ARMV7L */
+    "virt", /* VIR_ARCH_ARMV7B */
 
-    "integratorcp", /* VIR_ARCH_AARCH64 */
+    "virt", /* VIR_ARCH_AARCH64 */
     "axis-dev88", /* VIR_ARCH_CRIS */
     "pc", /* VIR_ARCH_I686 */
     NULL, /* VIR_ARCH_ITANIUM (doesn't exist in QEMU any more) */

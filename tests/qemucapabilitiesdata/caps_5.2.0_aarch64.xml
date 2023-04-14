@@ -195,7 +195,7 @@
   <cpu type='kvm' name='arm1136-r2' typename='arm1136-r2-arm-cpu'/>
   <cpu type='kvm' name='pxa270-b0' typename='pxa270-b0-arm-cpu'/>
   <cpu type='kvm' name='pxa262' typename='pxa262-arm-cpu'/>
-  <machine type='kvm' name='integratorcp' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='integrator.ram'/>
+  <machine type='kvm' name='virt-5.2' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram'/>
   <machine type='kvm' name='raspi0' maxCpus='1' defaultRAMid='ram'/>
   <machine type='kvm' name='virt-4.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram'/>
   <machine type='kvm' name='mcimx7d-sabre' maxCpus='2' defaultRAMid='mcimx7d-sabre.ram'/>
@@ -215,6 +215,7 @@
   <machine type='kvm' name='sbsa-ref' maxCpus='512' defaultCPU='cortex-a57-arm-cpu' defaultRAMid='sbsa-ref.ram'/>
   <machine type='kvm' name='spitz' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu'/>
   <machine type='kvm' name='witherspoon-bmc' maxCpus='1' defaultRAMid='ram'/>
+  <machine type='kvm' name='integratorcp' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='integrator.ram'/>
   <machine type='kvm' name='virt-3.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram'/>
   <machine type='kvm' name='netduino2' maxCpus='1'/>
   <machine type='kvm' name='realview-eb-mpcore' maxCpus='4' defaultCPU='arm11mpcore-arm-cpu'/>
@@ -232,7 +233,6 @@
   <machine type='kvm' name='virt-2.9' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram'/>
   <machine type='kvm' name='raspi1ap' maxCpus='1' defaultRAMid='ram'/>
   <machine type='kvm' name='palmetto-bmc' maxCpus='1' defaultRAMid='ram'/>
-  <machine type='kvm' name='virt-5.2' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram'/>
   <machine type='kvm' name='lm3s811evb' maxCpus='1' defaultCPU='cortex-m3-arm-cpu'/>
   <machine type='kvm' name='collie' maxCpus='1' defaultCPU='sa1110-arm-cpu' defaultRAMid='strongarm.sdram'/>
   <machine type='kvm' name='raspi3ap' maxCpus='4' defaultRAMid='ram'/>
@@ -340,7 +340,7 @@
   <cpu type='tcg' name='arm1136-r2' typename='arm1136-r2-arm-cpu'/>
   <cpu type='tcg' name='pxa270-b0' typename='pxa270-b0-arm-cpu'/>
   <cpu type='tcg' name='pxa262' typename='pxa262-arm-cpu'/>
-  <machine type='tcg' name='integratorcp' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='integrator.ram'/>
+  <machine type='tcg' name='virt-5.2' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram'/>
   <machine type='tcg' name='raspi0' maxCpus='1' defaultRAMid='ram'/>
   <machine type='tcg' name='virt-4.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram'/>
   <machine type='tcg' name='mcimx7d-sabre' maxCpus='2' defaultRAMid='mcimx7d-sabre.ram'/>
@@ -360,6 +360,7 @@
   <machine type='tcg' name='sbsa-ref' maxCpus='512' defaultCPU='cortex-a57-arm-cpu' defaultRAMid='sbsa-ref.ram'/>
   <machine type='tcg' name='spitz' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu'/>
   <machine type='tcg' name='witherspoon-bmc' maxCpus='1' defaultRAMid='ram'/>
+  <machine type='tcg' name='integratorcp' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='integrator.ram'/>
   <machine type='tcg' name='virt-3.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram'/>
   <machine type='tcg' name='netduino2' maxCpus='1'/>
   <machine type='tcg' name='realview-eb-mpcore' maxCpus='4' defaultCPU='arm11mpcore-arm-cpu'/>
@@ -377,7 +378,6 @@
   <machine type='tcg' name='virt-2.9' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram'/>
   <machine type='tcg' name='raspi1ap' maxCpus='1' defaultRAMid='ram'/>
   <machine type='tcg' name='palmetto-bmc' maxCpus='1' defaultRAMid='ram'/>
-  <machine type='tcg' name='virt-5.2' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram'/>
   <machine type='tcg' name='lm3s811evb' maxCpus='1' defaultCPU='cortex-m3-arm-cpu'/>
   <machine type='tcg' name='collie' maxCpus='1' defaultCPU='sa1110-arm-cpu' defaultRAMid='strongarm.sdram'/>
   <machine type='tcg' name='raspi3ap' maxCpus='4' defaultRAMid='ram'/>

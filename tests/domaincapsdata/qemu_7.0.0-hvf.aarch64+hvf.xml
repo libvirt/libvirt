@@ -1,11 +1,13 @@
 <domainCapabilities>
   <path>/usr/bin/qemu-system-aarch64</path>
   <domain>hvf</domain>
-  <machine>integratorcp</machine>
+  <machine>virt-7.0</machine>
   <arch>aarch64</arch>
   <iothreads supported='yes'/>
   <os supported='yes'>
-    <enum name='firmware'/>
+    <enum name='firmware'>
+      <value>efi</value>
+    </enum>
     <loader supported='yes'>
       <value>/usr/share/AAVMF/AAVMF_CODE.fd</value>
       <value>/usr/share/AAVMF/AAVMF32_CODE.fd</value>

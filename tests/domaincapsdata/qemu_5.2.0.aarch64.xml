@@ -1,12 +1,14 @@
 <domainCapabilities>
   <path>/usr/bin/qemu-system-aarch64</path>
   <domain>kvm</domain>
-  <machine>integratorcp</machine>
+  <machine>virt-5.2</machine>
   <arch>aarch64</arch>
-  <vcpu max='1'/>
+  <vcpu max='512'/>
   <iothreads supported='yes'/>
   <os supported='yes'>
-    <enum name='firmware'/>
+    <enum name='firmware'>
+      <value>efi</value>
+    </enum>
     <loader supported='yes'>
       <value>/usr/share/AAVMF/AAVMF_CODE.fd</value>
       <value>/usr/share/AAVMF/AAVMF32_CODE.fd</value>
@@ -196,7 +198,11 @@
     </crypto>
   </devices>
   <features>
-    <gic supported='no'/>
+    <gic supported='yes'>
+      <enum name='version'>
+        <value>3</value>
+      </enum>
+    </gic>
     <vmcoreinfo supported='yes'/>
     <genid supported='no'/>
     <backingStoreInput supported='yes'/>
