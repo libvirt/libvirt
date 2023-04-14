@@ -19,6 +19,12 @@ v9.3.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Change default machine type for ARM and RISC-V
+
+    ARM and RISC-V architectures now use the ``virt`` machine type by default.
+    The previous defaults were nearly unusable and had to be overridden in most
+    cases.
+
 * **Bug fixes**
 
 
