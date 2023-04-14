@@ -32,6 +32,7 @@
 #include "virstring.h"
 #include "virfile.h"
 #include "virenum.h"
+#include "virsh-util.h"
 
 /*
  * "capabilities" command
@@ -43,22 +44,40 @@ static const vshCmdInfo info_capabilities[] = {
     {.name = "desc",
      .data = N_("Returns capabilities of hypervisor/driver.")
     },
+   {.name = NULL}
+};
+
+static const vshCmdOptDef opts_capabilities[] = {
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
 static bool
-cmdCapabilities(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
+cmdCapabilities(vshControl *ctl, const vshCmd *cmd)
 {
     g_autofree char *caps = NULL;
     virshControl *priv = ctl->privData;
+    bool wrap = vshCommandOptBool(cmd, "wrap");
+    const char *xpath = NULL;
+
+    if (vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
+        return false;
 
     if ((caps = virConnectGetCapabilities(priv->conn)) == NULL) {
         vshError(ctl, "%s", _("failed to get capabilities"));
         return false;
     }
-    vshPrint(ctl, "%s\n", caps);
 
-    return true;
+    return virshDumpXML(ctl, caps, "capabilities", xpath, wrap);
 }
 
 /*
@@ -1785,7 +1804,7 @@ const vshCmdDef hostAndHypervisorCmds[] = {
     },
     {.name = "capabilities",
      .handler = cmdCapabilities,
-     .opts = NULL,
+     .opts = opts_capabilities,
      .info = info_capabilities,
      .flags = 0
     },
