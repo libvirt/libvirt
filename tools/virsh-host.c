@@ -112,6 +112,16 @@ static const vshCmdOptDef opts_domcapabilities[] = {
      .type = VSH_OT_STRING,
      .help = N_("machine type (/domain/os/type/@machine)"),
     },
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
@@ -123,13 +133,16 @@ cmdDomCapabilities(vshControl *ctl, const vshCmd *cmd)
     const char *emulatorbin = NULL;
     const char *arch = NULL;
     const char *machine = NULL;
+    const char *xpath = NULL;
     const unsigned int flags = 0; /* No flags so far */
+    bool wrap = vshCommandOptBool(cmd, "wrap");
     virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "virttype", &virttype) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "emulatorbin", &emulatorbin) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "arch", &arch) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "machine", &machine) < 0)
+        vshCommandOptStringReq(ctl, cmd, "machine", &machine) < 0 ||
+        vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
         return false;
 
     caps = virConnectGetDomainCapabilities(priv->conn, emulatorbin,
@@ -139,9 +152,7 @@ cmdDomCapabilities(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    vshPrint(ctl, "%s\n", caps);
-
-    return true;
+    return virshDumpXML(ctl, caps, "domcapabilities", xpath, wrap);
 }
 
 /*
