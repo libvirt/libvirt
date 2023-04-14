@@ -2503,9 +2503,6 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriver *driver,
 
     qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1);
 
-    if (qemuDomainPrepareHostdev(hostdev, priv) < 0)
-        goto cleanup;
-
     if (qemuProcessPrepareHostHostdev(hostdev) < 0)
         goto cleanup;
 
@@ -2786,6 +2783,9 @@ qemuDomainAttachHostDevice(virQEMUDriver *driver,
                        virDomainHostdevModeTypeToString(hostdev->mode));
         return -1;
     }
+
+    if (qemuDomainPrepareHostdev(hostdev, vm->privateData) < 0)
+        return -1;
 
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
