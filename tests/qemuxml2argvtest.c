@@ -404,28 +404,6 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
             disk->src->hostcdrom = true;
     }
 
-    for (i = 0; i < vm->def->nhostdevs; i++) {
-        virDomainHostdevDef *hostdev = vm->def->hostdevs[i];
-
-        if (virHostdevIsSCSIDevice(hostdev)) {
-            virDomainHostdevSubsysSCSI *scsisrc = &hostdev->source.subsys.u.scsi;
-
-            switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
-            case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
-                scsisrc->u.host.src->path = g_strdup("/dev/sg0");
-                break;
-
-            case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
-                break;
-
-            case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_LAST:
-            default:
-                virReportEnumRangeError(virDomainHostdevSCSIProtocolType, scsisrc->protocol);
-                return NULL;
-            }
-        }
-    }
-
     if (vm->def->vsock) {
         virDomainVsockDef *vsock = vm->def->vsock;
         qemuDomainVsockPrivate *vsockPriv =

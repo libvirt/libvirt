@@ -82,6 +82,16 @@ virSCSIVHostOpenVhostSCSI(int *vhostfd)
     return 0;
 }
 
+char *
+virSCSIDeviceGetSgName(const char *sysfs_prefix G_GNUC_UNUSED,
+                       const char *adapter G_GNUC_UNUSED,
+                       unsigned int bus G_GNUC_UNUSED,
+                       unsigned int target G_GNUC_UNUSED,
+                       unsigned long long unit G_GNUC_UNUSED)
+{
+    return g_strdup_printf("sg0");
+}
+
 int
 virNetDevTapCreate(char **ifname,
                    const char *tunpath G_GNUC_UNUSED,

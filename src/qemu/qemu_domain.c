@@ -11244,7 +11244,9 @@ qemuDomainPrepareHostdevSCSI(virDomainHostdevDef *hostdev,
                              qemuDomainObjPrivate *priv)
 {
     virDomainHostdevSubsysSCSI *scsisrc = &hostdev->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIHost *scsihostsrc = &scsisrc->u.host;
     virStorageSource *src = NULL;
+    g_autofree char *devstr = NULL;
 
     switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
     case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
@@ -11252,7 +11254,15 @@ qemuDomainPrepareHostdevSCSI(virDomainHostdevDef *hostdev,
         scsisrc->u.host.src = virStorageSourceNew();
         src = scsisrc->u.host.src;
 
+        if (!(devstr = virSCSIDeviceGetSgName(NULL,
+                                              scsihostsrc->adapter,
+                                              scsihostsrc->bus,
+                                              scsihostsrc->target,
+                                              scsihostsrc->unit)))
+            return -1;
+
         src->type = VIR_STORAGE_TYPE_BLOCK;
+        src->path = g_strdup_printf("/dev/%s", devstr);
 
         break;
 
