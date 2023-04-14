@@ -122,8 +122,8 @@
   <microcodeVersion>0</microcodeVersion>
   <package>v5.0.0</package>
   <arch>riscv64</arch>
-  <machine type='tcg' name='spike_v1.10' maxCpus='1'/>
   <machine type='tcg' name='virt' maxCpus='8' defaultCPU='rv64-riscv-cpu'/>
+  <machine type='tcg' name='spike_v1.10' maxCpus='1'/>
   <machine type='tcg' name='spike' maxCpus='1' default='yes' defaultCPU='rv64gcsu-v1.10.0-riscv-cpu'/>
   <machine type='tcg' name='sifive_e' maxCpus='1'/>
   <machine type='tcg' name='sifive_u' maxCpus='5'/>

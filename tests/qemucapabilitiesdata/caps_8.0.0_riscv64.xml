@@ -147,11 +147,11 @@
   <microcodeVersion>0</microcodeVersion>
   <package>v7.2.0-333-g222059a0fc</package>
   <arch>riscv64</arch>
-  <machine type='tcg' name='spike' maxCpus='8' default='yes' defaultCPU='rv64-riscv-cpu' numaMemSupported='yes' defaultRAMid='riscv.spike.ram'/>
+  <machine type='tcg' name='virt' maxCpus='512' defaultCPU='rv64-riscv-cpu' numaMemSupported='yes' defaultRAMid='riscv_virt_board.ram'/>
   <machine type='tcg' name='x-remote' maxCpus='1'/>
+  <machine type='tcg' name='spike' maxCpus='8' default='yes' defaultCPU='rv64-riscv-cpu' numaMemSupported='yes' defaultRAMid='riscv.spike.ram'/>
   <machine type='tcg' name='microchip-icicle-kit' maxCpus='5' defaultRAMid='microchip.icicle.kit.ram'/>
   <machine type='tcg' name='sifive_u' maxCpus='5' defaultCPU='sifive-u54-riscv-cpu' defaultRAMid='riscv.sifive.u.ram'/>
   <machine type='tcg' name='shakti_c' maxCpus='1' defaultCPU='shakti-c-riscv-cpu' defaultRAMid='riscv.shakti.c.ram'/>
   <machine type='tcg' name='sifive_e' maxCpus='1' defaultCPU='sifive-e51-riscv-cpu' defaultRAMid='riscv.sifive.e.ram'/>
-  <machine type='tcg' name='virt' maxCpus='512' defaultCPU='rv64-riscv-cpu' numaMemSupported='yes' defaultRAMid='riscv_virt_board.ram'/>
 </qemuCaps>

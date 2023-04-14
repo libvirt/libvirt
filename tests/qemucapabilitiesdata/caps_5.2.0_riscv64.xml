@@ -127,8 +127,8 @@
   <microcodeVersion>0</microcodeVersion>
   <package>v5.2.0</package>
   <arch>riscv64</arch>
-  <machine type='tcg' name='spike' maxCpus='8' default='yes' defaultCPU='rv64-riscv-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='virt' maxCpus='8' defaultCPU='rv64-riscv-cpu' numaMemSupported='yes'/>
+  <machine type='tcg' name='spike' maxCpus='8' default='yes' defaultCPU='rv64-riscv-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='sifive_e' maxCpus='1' defaultCPU='sifive-e51-riscv-cpu'/>
   <machine type='tcg' name='sifive_u' maxCpus='5' defaultCPU='sifive-u54-riscv-cpu'/>
   <machine type='tcg' name='microchip-icicle-kit' maxCpus='5'/>
