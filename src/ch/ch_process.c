@@ -262,6 +262,12 @@ virCHProcessSetupPid(virDomainObj *vm,
         if (virCgroupNewThread(priv->cgroup, nameval, id, true, &cgroup) < 0)
             goto cleanup;
 
+        /* Move the thread to the sub dir before changing the settings so that
+         * all take effect even with cgroupv2. */
+        VIR_INFO("Adding pid %d to cgroup", pid);
+        if (virCgroupAddThread(cgroup, pid) < 0)
+            goto cleanup;
+
         if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
             if (use_cpumask &&
                 virDomainCgroupSetupCpusetCpus(cgroup, use_cpumask) < 0)
@@ -274,12 +280,6 @@ virCHProcessSetupPid(virDomainObj *vm,
 
         if (virDomainCgroupSetupVcpuBW(cgroup, period, quota) < 0)
             goto cleanup;
-
-        /* Move the thread to the sub dir */
-        VIR_INFO("Adding pid %d to cgroup", pid);
-        if (virCgroupAddThread(cgroup, pid) < 0)
-            goto cleanup;
-
     }
 
     if (!affinity_cpumask)
