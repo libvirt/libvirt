@@ -2475,9 +2475,6 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriver *driver,
 
     qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1);
 
-    if (qemuProcessPrepareHostHostdev(hostdev) < 0)
-        goto cleanup;
-
     if (!(data = qemuBuildHostdevSCSIAttachPrepare(hostdev, &backendalias,
                                                    priv->qemuCaps)))
         goto cleanup;

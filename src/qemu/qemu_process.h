@@ -111,9 +111,6 @@ int qemuProcessPrepareDomain(virQEMUDriver *driver,
 
 int qemuProcessOpenVhostVsock(virDomainVsockDef *vsock);
 
-int qemuProcessPrepareHostHostdev(virDomainHostdevDef *hostdev);
-
-
 int qemuProcessPrepareHostBackendChardevHotplug(virDomainObj *vm,
                                                 virDomainDeviceDef *dev)
     G_NO_INLINE;

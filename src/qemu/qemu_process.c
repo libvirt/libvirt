@@ -6509,29 +6509,6 @@ qemuProcessPrepareDomainHostdevs(virDomainObj *vm,
 }
 
 
-int
-qemuProcessPrepareHostHostdev(virDomainHostdevDef *hostdev G_GNUC_UNUSED)
-{
-    return 0;
-}
-
-
-static int
-qemuProcessPrepareHostHostdevs(virDomainObj *vm)
-{
-    size_t i;
-
-    for (i = 0; i < vm->def->nhostdevs; i++) {
-        virDomainHostdevDef *hostdev = vm->def->hostdevs[i];
-
-        if (qemuProcessPrepareHostHostdev(hostdev) < 0)
-            return -1;
-    }
-
-    return 0;
-}
-
-
 /**
  * qemuProcessRebootAllowed:
  * @def: domain definition
@@ -7231,10 +7208,6 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
 
     VIR_DEBUG("Preparing disks (host)");
     if (qemuProcessPrepareHostStorage(driver, vm, flags) < 0)
-        return -1;
-
-    VIR_DEBUG("Preparing hostdevs (host-side)");
-    if (qemuProcessPrepareHostHostdevs(vm) < 0)
         return -1;
 
     VIR_DEBUG("Preparing external devices");

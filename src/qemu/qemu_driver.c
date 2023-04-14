@@ -6165,29 +6165,6 @@ static char
 }
 
 
-static int
-qemuConnectDomainXMLToNativePrepareHostHostdev(virDomainHostdevDef *hostdev G_GNUC_UNUSED)
-{
-    return 0;
-}
-
-
-static int
-qemuConnectDomainXMLToNativePrepareHost(virDomainObj *vm)
-{
-    size_t i;
-
-    for (i = 0; i < vm->def->nhostdevs; i++) {
-        virDomainHostdevDef *hostdev = vm->def->hostdevs[i];
-
-        if (qemuConnectDomainXMLToNativePrepareHostHostdev(hostdev) < 0)
-            return -1;
-    }
-
-    return 0;
-}
-
-
 static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
                                           const char *format,
                                           const char *xmlData,
@@ -6242,9 +6219,6 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
 
     if (qemuProcessCreatePretendCmdPrepare(driver, vm, NULL,
                                            VIR_QEMU_PROCESS_START_COLD) < 0)
-        return NULL;
-
-    if (qemuConnectDomainXMLToNativePrepareHost(vm) < 0)
         return NULL;
 
     if (!(cmd = qemuProcessCreatePretendCmdBuild(vm, NULL)))
