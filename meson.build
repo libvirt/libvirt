@@ -742,11 +742,15 @@ conf.set('SIZEOF_LONG', cc.sizeof('long'))
 
 # Where we look for daemons and admin binaries during configure
 
-libvirt_sbin_path = [
-  '/sbin',
-  '/usr/sbin',
-  '/usr/local/sbin',
-]
+libvirt_sbin_path = []
+
+if host_machine.system() != 'windows'
+  libvirt_sbin_path += [
+    '/sbin',
+    '/usr/sbin',
+    '/usr/local/sbin',
+  ]
+endif
 
 
 # required programs check
