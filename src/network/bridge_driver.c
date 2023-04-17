@@ -493,15 +493,19 @@ networkUpdateState(virNetworkObj *obj,
 
     /* Try and read dnsmasq pids of active networks */
     if (virNetworkObjIsActive(obj) && def->ips && (def->nips > 0)) {
+        const char *binpath = NULL;
         pid_t dnsmasqPid;
 
         if (networkSetMacMap(cfg, obj) < 0)
             return -1;
 
+        if (dnsmasq_caps)
+            binpath = dnsmasqCapsGetBinaryPath(dnsmasq_caps);
+
         ignore_value(virPidFileReadIfAlive(cfg->pidDir,
                                            def->name,
                                            &dnsmasqPid,
-                                           dnsmasqCapsGetBinaryPath(dnsmasq_caps)));
+                                           binpath));
         virNetworkObjSetDnsmasqPid(obj, dnsmasqPid);
     }
 
