@@ -117,6 +117,7 @@ virNetworkObjNew(void)
     ignore_value(virBitmapSetBit(obj->classIdMap, 2));
 
     obj->ports = virHashNew(virNetworkObjPortFree);
+    obj->dnsmasqPid = (pid_t)-1;
 
     virObjectLock(obj);
 
