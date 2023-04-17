@@ -700,7 +700,9 @@ virNetLibsshAuthenticate(virNetLibsshSession *sess)
             break;
         case VIR_NET_LIBSSH_AUTH_AGENT:
             /* try to authenticate using ssh-agent */
+#ifndef WIN32
             ret = ssh_userauth_agent(sess->session, NULL);
+#endif
             if (ret == SSH_AUTH_ERROR) {
                 errmsg = ssh_get_error(sess->session);
                 virReportError(VIR_ERR_LIBSSH,
@@ -861,8 +863,13 @@ virNetLibsshSessionAuthAddPasswordAuth(virNetLibsshSession *sess,
 }
 
 int
-virNetLibsshSessionAuthAddAgentAuth(virNetLibsshSession *sess)
+virNetLibsshSessionAuthAddAgentAuth(virNetLibsshSession *sess G_GNUC_UNUSED)
 {
+#ifdef WIN32
+    virReportError(VIR_ERR_LIBSSH, "%s",
+                   _("Agent authentication is not supported on this host"));
+    return -1;
+#else
     virNetLibsshAuthMethod *auth;
 
     virObjectLock(sess);
@@ -873,6 +880,7 @@ virNetLibsshSessionAuthAddAgentAuth(virNetLibsshSession *sess)
 
     virObjectUnlock(sess);
     return 0;
+#endif
 }
 
 int
