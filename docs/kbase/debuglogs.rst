@@ -16,6 +16,22 @@ server side that matters as nearly all interesting work takes place there.
 Moreover, libvirt catches stderr of all running domains. These can be useful as
 well.
 
+TL;DR - Enable debug logs for most common scenario
+===================================================
+
+This applies to the most common scenario of ``system`` instance of
+``virtqemud``. Log setting is not persisted, so a restart of ``virtqemud`` or
+the system clears this setting::
+
+   # virt-admin -c virtqemud:///system daemon-log-outputs "3:journald 1:file:/var/log/libvirt/libvirtd.log"
+   # virt-admin -c virtqemud:///system daemon-log-filters "3:remote 4:event 3:util.json 3:util.object 3:util.dbus 3:util.netlink 3:node_device 3:rpc 3:access 1:*"
+
+   # # optionally disable timeout of the daemon
+   # virt-admin -c virtqemud:///system daemon-timeout 0
+
+For any other configuration please read the rest of the document. If you want
+to persist the log level and log outputs settings edit
+``/etc/libvirt/virtqemud.conf`` and look for ``log-filters`` and ``log-outputs``
 
 Logging settings in libvirt
 ===========================
