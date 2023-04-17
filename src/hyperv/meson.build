@@ -17,7 +17,7 @@ hyperv_gen_sources = custom_target(
     'hyperv_wmi_classes.generated.typedef',
   ],
   command: [
-    meson_python_prog, python3_prog, hyperv_wmi_generator_prog,
+    hyperv_wmi_generator_prog,
     meson.project_source_root() / 'src',
     meson.project_build_root() / 'src',
   ],

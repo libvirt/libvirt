@@ -350,7 +350,7 @@ libvirt_syms = custom_target(
   input: [ public_sym_file ] + used_sym_files + generated_sym_files,
   output: 'libvirt.syms',
   command: [
-    meson_python_prog, python3_prog, meson_gen_sym_prog,
+    meson_gen_sym_prog,
     '@OUTPUT@', 'LIBVIRT_PRIVATE_' + meson.project_version(), '@INPUT@',
   ],
 )
@@ -361,7 +361,7 @@ if host_machine.system() == 'windows'
     input: libvirt_syms,
     output: 'libvirt.def',
     command: [
-      meson_python_prog, python3_prog, meson_gen_def_prog,
+      meson_gen_def_prog,
       '@INPUT@', '@OUTPUT@',
     ],
   )
@@ -417,7 +417,7 @@ if host_machine.system() == 'windows'
     input: libvirt_qemu_syms,
     output: 'libvirt_qemu.def',
     command: [
-      meson_python_prog, python3_prog, meson_gen_def_prog,
+      meson_gen_def_prog,
       '@INPUT@', '@OUTPUT@',
     ],
   )
@@ -476,7 +476,7 @@ if host_machine.system() == 'windows'
     input: libvirt_lxc_syms,
     output: 'libvirt_lxc.def',
     command: [
-      meson_python_prog, python3_prog, meson_gen_def_prog,
+      meson_gen_def_prog,
       '@INPUT@', '@OUTPUT@',
     ],
   )

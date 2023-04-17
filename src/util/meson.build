@@ -147,7 +147,7 @@ foreach name : keycode_list
     input: keymap_src_file,
     output: 'virkeycodetable_@0@.h'.format(name),
     command: [
-      meson_python_prog, python3_prog, keymap_gen_prog, 'code-table',
+      keymap_gen_prog, 'code-table',
       '--lang', 'stdc',
       '--varname', 'virKeyCodeTable_@0@'.format(name),
       '@INPUT@', name,
@@ -162,7 +162,7 @@ foreach name : keyname_list
     input: keymap_src_file,
     output: 'virkeynametable_@0@.h'.format(name),
     command: [
-      meson_python_prog, python3_prog, keymap_gen_prog, 'name-table',
+      keymap_gen_prog, 'name-table',
       '--lang', 'stdc',
       '--varname', 'virKeyNameTable_@0@'.format(name),
       '@INPUT@', name,

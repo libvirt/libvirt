@@ -123,7 +123,7 @@ aclperms_gen = custom_target(
   input: access_perm_h,
   output: 'aclperms.htmlinc',
   command: [
-    meson_python_prog, python3_prog, genaclperms_prog, '@INPUT@',
+    genaclperms_prog, '@INPUT@',
   ],
   capture: true,
 )
@@ -145,7 +145,7 @@ docs_api_generated = custom_target(
     'libvirt-admin-api.xml',
   ],
   command: [
-    meson_python_prog, python3_prog, apibuild_prog,
+    apibuild_prog,
     meson.current_source_dir(),
     meson.current_build_dir(),
   ],
@@ -264,8 +264,6 @@ hvsupport_html_in = custom_target(
   'hvsupport.html.in',
   output: 'hvsupport.html.in',
   command: [
-    meson_python_prog,
-    python3_prog,
     hvsupport_prog,
     meson.project_source_root(),
     meson.project_build_root(),

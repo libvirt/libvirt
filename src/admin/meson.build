@@ -68,7 +68,7 @@ libvirt_admin_syms = custom_target(
   ],
   output: 'libvirt_admin.syms',
   command: [
-    meson_python_prog, python3_prog, meson_gen_sym_prog,
+    meson_gen_sym_prog,
     '@OUTPUT@', 'LIBVIRT_ADMIN_PRIVATE_' + meson.project_version(), '@INPUT@',
   ],
 )
@@ -79,7 +79,7 @@ if host_machine.system() == 'windows'
     input: libvirt_admin_syms,
     output: 'libvirt_admin.def',
     command: [
-      meson_python_prog, python3_prog, meson_gen_def_prog,
+      meson_gen_def_prog,
       '@INPUT@', '@OUTPUT@',
     ],
   )
