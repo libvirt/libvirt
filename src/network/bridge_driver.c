@@ -1599,7 +1599,6 @@ networkRefreshDhcpDaemon(virNetworkDriverState *driver,
     if (dnsmasqSave(dctx) < 0)
         return -1;
 
-    dnsmasqPid = virNetworkObjGetDnsmasqPid(obj);
     return kill(dnsmasqPid, SIGHUP);
 
 }
