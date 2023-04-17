@@ -2028,6 +2028,7 @@ runutf8 = [ 'LC_ALL=', 'LANG=C', 'LC_CTYPE=en_US.UTF-8' ]
 
 top_inc_dir = include_directories('.')
 
+keycodemapdb = subproject('keycodemapdb')
 
 # include remaining subdirs
 

@@ -138,8 +138,8 @@ keyname_list = [
   'win32',
 ]
 
-keymap_gen_prog = find_program('keymap-gen', dirs: [meson.project_source_root() / 'src' / 'keycodemapdb' / 'tools' ])
-keymap_src_file = '@0@/src/keycodemapdb/data/keymaps.csv'.format(meson.project_source_root())
+keymap_gen_prog = find_program('keymap-gen')
+keymap_src_file = keycodemapdb.get_variable('keymaps_csv')
 
 foreach name : keycode_list
   keycode_gen_sources += custom_target(
