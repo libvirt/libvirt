@@ -563,28 +563,22 @@ virTypedParamsDeserialize(struct _virTypedParameterRemote *remote_params,
         param->type = remote_param->value.type;
         switch ((virTypedParameterType) param->type) {
         case VIR_TYPED_PARAM_INT:
-            param->value.i =
-                remote_param->value.remote_typed_param_value.i;
+            param->value.i = remote_param->value.remote_typed_param_value.i;
             break;
         case VIR_TYPED_PARAM_UINT:
-            param->value.ui =
-                remote_param->value.remote_typed_param_value.ui;
+            param->value.ui = remote_param->value.remote_typed_param_value.ui;
             break;
         case VIR_TYPED_PARAM_LLONG:
-            param->value.l =
-                remote_param->value.remote_typed_param_value.l;
+            param->value.l = remote_param->value.remote_typed_param_value.l;
             break;
         case VIR_TYPED_PARAM_ULLONG:
-            param->value.ul =
-                remote_param->value.remote_typed_param_value.ul;
+            param->value.ul = remote_param->value.remote_typed_param_value.ul;
             break;
         case VIR_TYPED_PARAM_DOUBLE:
-            param->value.d =
-                remote_param->value.remote_typed_param_value.d;
+            param->value.d = remote_param->value.remote_typed_param_value.d;
             break;
         case VIR_TYPED_PARAM_BOOLEAN:
-            param->value.b =
-                remote_param->value.remote_typed_param_value.b;
+            param->value.b = remote_param->value.remote_typed_param_value.b;
             break;
         case VIR_TYPED_PARAM_STRING:
             param->value.s = g_strdup(remote_param->value.remote_typed_param_value.s);
