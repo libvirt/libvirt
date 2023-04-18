@@ -1,0 +1,1 @@
+unsupported configuration: The <portForward> element can only be used with <interface type='user'> and its 'passt' backend

@@ -2097,6 +2097,15 @@ virDomainNetDefValidate(const virDomainNetDef *net)
         }
     }
 
+    if (net->nPortForwards > 0 &&
+        (net->type != VIR_DOMAIN_NET_TYPE_USER ||
+         (net->type == VIR_DOMAIN_NET_TYPE_USER &&
+          net->backend.type != VIR_DOMAIN_NET_BACKEND_PASST))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("The <portForward> element can only be used with <interface type='user'> and its 'passt' backend"));
+        return -1;
+    }
+
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         if (!virDomainNetIsVirtioModel(net)) {
