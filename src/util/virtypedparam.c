@@ -203,7 +203,7 @@ virTypedParameterToString(virTypedParameterPtr param)
 }
 
 
-static int
+static void
 virTypedParameterAssignValueVArgs(virTypedParameterPtr param,
                                   virTypedParameterType type,
                                   va_list ap,
@@ -240,30 +240,23 @@ virTypedParameterAssignValueVArgs(virTypedParameterPtr param,
             param->value.s = g_strdup("");
         break;
     case VIR_TYPED_PARAM_LAST:
-    default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected type %1$d for field %2$s"), type,
-                       NULLSTR(param->field));
-        return -1;
+        break;
     }
-
-    return 0;
 }
 
 
 static int
 virTypedParameterAssignValue(virTypedParameterPtr param,
-                             int type,
+                             virTypedParameterType type,
                              ...)
 {
-    int ret;
     va_list ap;
 
     va_start(ap, type);
-    ret = virTypedParameterAssignValueVArgs(param, type, ap, true);
+    virTypedParameterAssignValueVArgs(param, type, ap, true);
     va_end(ap);
 
-    return ret;
+    return 0;
 }
 
 
@@ -276,7 +269,6 @@ virTypedParameterAssign(virTypedParameterPtr param, const char *name,
                         int type, ...)
 {
     va_list ap;
-    int ret = -1;
 
     if (virStrcpyStatic(param->field, name) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("Field name '%1$s' too long"),
@@ -284,11 +276,18 @@ virTypedParameterAssign(virTypedParameterPtr param, const char *name,
         return -1;
     }
 
+    if (type < VIR_TYPED_PARAM_INT ||
+        type >= VIR_TYPED_PARAM_LAST) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected type %1$d for field %2$s"), type, name);
+        return -1;
+    }
+
     va_start(ap, type);
-    ret = virTypedParameterAssignValueVArgs(param, type, ap, false);
+    virTypedParameterAssignValueVArgs(param, type, ap, false);
     va_end(ap);
 
-    return ret;
+    return 0;
 }
 
 
