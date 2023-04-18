@@ -152,6 +152,12 @@ size_t
 virTypedParamListStealParams(virTypedParamList *list,
                              virTypedParameterPtr *params);
 
+int
+virTypedParamListFetch(virTypedParamList *list,
+                           virTypedParameterPtr *par,
+                           size_t *npar)
+    G_GNUC_WARN_UNUSED_RESULT;
+
 virTypedParamList *
 virTypedParamListFromParams(virTypedParameterPtr *params,
                             size_t nparams);

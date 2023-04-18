@@ -746,6 +746,32 @@ virTypedParamListFree(virTypedParamList *list)
 }
 
 
+/**
+ * virTypedParamListFetch:
+ *
+ * @list: virTypedParamList object
+ * @par: if not NULL filled with the typed parameters stored in @list
+ * @npar: if not NULL filled with the number of typed parameters stored in @list
+ *
+ * Checks that @list has no errors stored and optionally fills @par and @npar
+ * with a valid list of typed parameters. The typed parameters still belong to
+ * @list and will be freed together.
+ */
+int
+virTypedParamListFetch(virTypedParamList *list,
+                       virTypedParameterPtr *par,
+                       size_t *npar)
+{
+    if (par)
+        *par = list->par;
+
+    if (npar)
+        *npar = list->npar;
+
+    return 0;
+}
+
+
 size_t
 virTypedParamListStealParams(virTypedParamList *list,
                              virTypedParameterPtr *params)
