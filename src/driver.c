@@ -165,8 +165,13 @@ virGetConnectGeneric(virThreadLocal *threadPtr, const char *name)
             ident = virIdentityGetCurrent();
             if (ident) {
                 g_autoptr(virTypedParamList) tmp = virIdentityGetParameters(ident);
+                virTypedParameterPtr par;
+                size_t npar;
 
-                if (virConnectSetIdentity(conn, tmp->par, tmp->npar, 0) < 0)
+                if (virTypedParamListFetch(tmp, &par, &npar) < 0)
+                    goto error;
+
+                if (virConnectSetIdentity(conn, par, npar, 0) < 0)
                     goto error;
             }
         }
