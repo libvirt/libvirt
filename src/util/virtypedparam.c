@@ -245,7 +245,7 @@ virTypedParameterAssignValueVArgs(virTypedParameterPtr param,
 }
 
 
-static int
+static void
 virTypedParameterAssignValue(virTypedParameterPtr param,
                              virTypedParameterType type,
                              ...)
@@ -255,8 +255,6 @@ virTypedParameterAssignValue(virTypedParameterPtr param,
     va_start(ap, type);
     virTypedParameterAssignValueVArgs(param, type, ap, true);
     va_end(ap);
-
-    return 0;
 }
 
 
@@ -776,13 +774,11 @@ virTypedParamListAddInt(virTypedParamList *list,
                         const char *namefmt,
                         ...)
 {
-    virTypedParameterPtr par;
+    virTypedParameterPtr par = virTypedParamListExtend(list);
     va_list ap;
     int ret;
 
-    if (!(par = virTypedParamListExtend(list)) ||
-        virTypedParameterAssignValue(par, VIR_TYPED_PARAM_INT, value) < 0)
-        return -1;
+    virTypedParameterAssignValue(par, VIR_TYPED_PARAM_INT, value);
 
     va_start(ap, namefmt);
     ret = virTypedParamSetNameVPrintf(par, namefmt, ap);
@@ -798,13 +794,11 @@ virTypedParamListAddUInt(virTypedParamList *list,
                          const char *namefmt,
                          ...)
 {
-    virTypedParameterPtr par;
+    virTypedParameterPtr par = virTypedParamListExtend(list);
     va_list ap;
     int ret;
 
-    if (!(par = virTypedParamListExtend(list)) ||
-        virTypedParameterAssignValue(par, VIR_TYPED_PARAM_UINT, value) < 0)
-        return -1;
+    virTypedParameterAssignValue(par, VIR_TYPED_PARAM_UINT, value);
 
     va_start(ap, namefmt);
     ret = virTypedParamSetNameVPrintf(par, namefmt, ap);
@@ -820,13 +814,11 @@ virTypedParamListAddLLong(virTypedParamList *list,
                           const char *namefmt,
                           ...)
 {
-    virTypedParameterPtr par;
+    virTypedParameterPtr par = virTypedParamListExtend(list);
     va_list ap;
     int ret;
 
-    if (!(par = virTypedParamListExtend(list)) ||
-        virTypedParameterAssignValue(par, VIR_TYPED_PARAM_LLONG, value) < 0)
-        return -1;
+    virTypedParameterAssignValue(par, VIR_TYPED_PARAM_LLONG, value);
 
     va_start(ap, namefmt);
     ret = virTypedParamSetNameVPrintf(par, namefmt, ap);
@@ -842,13 +834,11 @@ virTypedParamListAddULLong(virTypedParamList *list,
                            const char *namefmt,
                            ...)
 {
-    virTypedParameterPtr par;
+    virTypedParameterPtr par = virTypedParamListExtend(list);
     va_list ap;
     int ret;
 
-    if (!(par = virTypedParamListExtend(list)) ||
-        virTypedParameterAssignValue(par, VIR_TYPED_PARAM_ULLONG, value) < 0)
-        return -1;
+    virTypedParameterAssignValue(par, VIR_TYPED_PARAM_ULLONG, value);
 
     va_start(ap, namefmt);
     ret = virTypedParamSetNameVPrintf(par, namefmt, ap);
@@ -864,13 +854,11 @@ virTypedParamListAddString(virTypedParamList *list,
                            const char *namefmt,
                            ...)
 {
-    virTypedParameterPtr par;
+    virTypedParameterPtr par = virTypedParamListExtend(list);
     va_list ap;
     int ret;
 
-    if (!(par = virTypedParamListExtend(list)) ||
-        virTypedParameterAssignValue(par, VIR_TYPED_PARAM_STRING, value) < 0)
-        return -1;
+    virTypedParameterAssignValue(par, VIR_TYPED_PARAM_STRING, value);
 
     va_start(ap, namefmt);
     ret = virTypedParamSetNameVPrintf(par, namefmt, ap);
@@ -886,13 +874,11 @@ virTypedParamListAddBoolean(virTypedParamList *list,
                             const char *namefmt,
                             ...)
 {
-    virTypedParameterPtr par;
+    virTypedParameterPtr par = virTypedParamListExtend(list);
     va_list ap;
     int ret;
 
-    if (!(par = virTypedParamListExtend(list)) ||
-        virTypedParameterAssignValue(par, VIR_TYPED_PARAM_BOOLEAN, value) < 0)
-        return -1;
+    virTypedParameterAssignValue(par, VIR_TYPED_PARAM_BOOLEAN, value);
 
     va_start(ap, namefmt);
     ret = virTypedParamSetNameVPrintf(par, namefmt, ap);
@@ -908,13 +894,11 @@ virTypedParamListAddDouble(virTypedParamList *list,
                            const char *namefmt,
                            ...)
 {
-    virTypedParameterPtr par;
+    virTypedParameterPtr par = virTypedParamListExtend(list);
     va_list ap;
     int ret;
 
-    if (!(par = virTypedParamListExtend(list)) ||
-        virTypedParameterAssignValue(par, VIR_TYPED_PARAM_DOUBLE, value) < 0)
-        return -1;
+    virTypedParameterAssignValue(par, VIR_TYPED_PARAM_DOUBLE, value);
 
     va_start(ap, namefmt);
     ret = virTypedParamSetNameVPrintf(par, namefmt, ap);
