@@ -9858,7 +9858,7 @@ testDomainGetStats(virConnectPtr conn,
     g_autoptr(virTypedParamList) params = NULL;
     size_t i;
 
-    params = g_new0(virTypedParamList, 1);
+    params = virTypedParamListNew();
 
     for (i = 0; testDomainGetStatsWorkers[i].func; i++) {
         if (stats & testDomainGetStatsWorkers[i].stats) {

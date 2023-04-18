@@ -76,7 +76,7 @@ adminServerGetThreadPoolParameters(virNetServer *srv,
     size_t freeWorkers;
     size_t nPrioWorkers;
     size_t jobQueueDepth;
-    g_autoptr(virTypedParamList) paramlist = g_new0(virTypedParamList, 1);
+    g_autoptr(virTypedParamList) paramlist = virTypedParamListNew();
 
     virCheckFlags(0, -1);
 
@@ -200,7 +200,7 @@ adminClientGetInfo(virNetServerClient *client,
     bool readonly;
     g_autofree char *sock_addr = NULL;
     const char *attr = NULL;
-    g_autoptr(virTypedParamList) paramlist = g_new0(virTypedParamList, 1);
+    g_autoptr(virTypedParamList) paramlist = virTypedParamListNew();
     g_autoptr(virIdentity) identity = NULL;
     int rc;
 
@@ -298,7 +298,7 @@ adminServerGetClientLimits(virNetServer *srv,
                            int *nparams,
                            unsigned int flags)
 {
-    g_autoptr(virTypedParamList) paramlist = g_new0(virTypedParamList, 1);
+    g_autoptr(virTypedParamList) paramlist = virTypedParamListNew();
 
     virCheckFlags(0, -1);
 

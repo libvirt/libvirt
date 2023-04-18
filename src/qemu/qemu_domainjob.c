@@ -478,7 +478,7 @@ qemuDomainBackupJobDataToParams(virDomainJobData *jobData,
 {
     qemuDomainJobDataPrivate *priv = jobData->privateData;
     qemuDomainBackupStats *stats = &priv->stats.backup;
-    g_autoptr(virTypedParamList) par = g_new0(virTypedParamList, 1);
+    g_autoptr(virTypedParamList) par = virTypedParamListNew();
 
     if (virTypedParamListAddInt(par, jobData->operation,
                                 VIR_DOMAIN_JOB_OPERATION) < 0)

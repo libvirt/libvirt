@@ -705,6 +705,13 @@ virTypedParamsSerialize(virTypedParameterPtr params,
 }
 
 
+virTypedParamList *
+virTypedParamListNew(void)
+{
+    return g_new0(virTypedParamList, 1);
+}
+
+
 void
 virTypedParamListFree(virTypedParamList *list)
 {
@@ -733,7 +740,7 @@ virTypedParamList *
 virTypedParamListFromParams(virTypedParameterPtr *params,
                             size_t nparams)
 {
-    virTypedParamList *l = g_new0(virTypedParamList, 1);
+    virTypedParamList *l = virTypedParamListNew();
 
     l->par = g_steal_pointer(params);
     l->npar = nparams;

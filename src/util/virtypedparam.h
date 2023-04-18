@@ -146,6 +146,7 @@ struct _virTypedParamList {
 void
 virTypedParamListFree(virTypedParamList *list);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virTypedParamList, virTypedParamListFree);
+virTypedParamList *virTypedParamListNew(void);
 
 size_t
 virTypedParamListStealParams(virTypedParamList *list,
