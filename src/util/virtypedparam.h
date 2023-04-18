@@ -143,9 +143,10 @@ virTypedParamListFree(virTypedParamList *list);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virTypedParamList, virTypedParamListFree);
 virTypedParamList *virTypedParamListNew(void);
 
-size_t
-virTypedParamListStealParams(virTypedParamList *list,
-                             virTypedParameterPtr *params);
+int
+virTypedParamListSteal(virTypedParamList *list,
+                       virTypedParameterPtr *par,
+                       int *npar);
 
 int
 virTypedParamListFetch(virTypedParamList *list,

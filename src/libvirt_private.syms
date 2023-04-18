@@ -3560,7 +3560,7 @@ virTypedParamListFetch;
 virTypedParamListFree;
 virTypedParamListFromParams;
 virTypedParamListNew;
-virTypedParamListStealParams;
+virTypedParamListSteal;
 virTypedParamsCheck;
 virTypedParamsCopy;
 virTypedParamsDeserialize;

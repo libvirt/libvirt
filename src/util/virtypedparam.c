@@ -779,18 +779,26 @@ virTypedParamListFetch(virTypedParamList *list,
 }
 
 
-size_t
-virTypedParamListStealParams(virTypedParamList *list,
-                             virTypedParameterPtr *params)
+int
+virTypedParamListSteal(virTypedParamList *list,
+                       virTypedParameterPtr *par,
+                       int *npar)
 {
-    size_t ret = list->npar;
+    size_t nparams;
 
-    *params = g_steal_pointer(&list->par);
+    if (virTypedParamListFetch(list, par, &nparams) < 0)
+        return -1;
+
+    /* most callers expect 'int', so help them out */
+    *npar = nparams;
+
+    list->par = NULL;
     list->npar = 0;
     list->par_alloc = 0;
 
-    return ret;
+    return 0;
 }
+
 
 virTypedParamList *
 virTypedParamListFromParams(virTypedParameterPtr *params,

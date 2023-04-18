@@ -113,7 +113,8 @@ adminServerGetThreadPoolParameters(virNetServer *srv,
                                  "%s", VIR_THREADPOOL_JOB_QUEUE_DEPTH) < 0)
         return -1;
 
-    *nparams = virTypedParamListStealParams(paramlist, params);
+    if (virTypedParamListSteal(paramlist, params, nparams) < 0)
+        return -1;
 
     return 0;
 }
@@ -279,7 +280,9 @@ adminClientGetInfo(virNetServerClient *client,
                                    "%s", VIR_CLIENT_INFO_SELINUX_CONTEXT) < 0)
         return -1;
 
-    *nparams = virTypedParamListStealParams(paramlist, params);
+    if (virTypedParamListSteal(paramlist, params, nparams) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -322,7 +325,8 @@ adminServerGetClientLimits(virNetServer *srv,
                                  "%s", VIR_SERVER_CLIENTS_UNAUTH_CURRENT) < 0)
         return -1;
 
-    *nparams = virTypedParamListStealParams(paramlist, params);
+    if (virTypedParamListSteal(paramlist, params, nparams) < 0)
+        return -1;
 
     return 0;
 }

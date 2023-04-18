@@ -9873,7 +9873,9 @@ testDomainGetStats(virConnectPtr conn,
                                   dom->def->uuid, dom->def->id)))
         return -1;
 
-    tmp->nparams = virTypedParamListStealParams(params, &tmp->params);
+    if (virTypedParamListSteal(params, &tmp->params, &tmp->nparams) < 0)
+        return -1;
+
     *record = g_steal_pointer(&tmp);
     return 0;
 }
