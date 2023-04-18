@@ -920,6 +920,42 @@ virTypedParamListAddULLong(virTypedParamList *list,
 }
 
 
+/**
+ * virTypedParamListAddUnsigned:
+ * @list: typed parameter list
+ * @value: value to add  (see below on details)
+ * @namefmt: formatting string for constructing the name of the added value
+ * @...: additional parameters to format the name
+ *
+ * Adds a new typed parameter to @list. The name of the parameter is formatted
+ * from @fmt.
+ *
+ * @value is added as VIR_TYPED_PARAM_UINT, unless it doesn't fit into the data
+ * type in which case it's added as VIR_TYPED_PARAM_ULLONG.
+ */
+void
+virTypedParamListAddUnsigned(virTypedParamList *list,
+                             unsigned long long value,
+                             const char *namefmt,
+                             ...)
+{
+    virTypedParameterPtr par = virTypedParamListExtend(list);
+    va_list ap;
+
+    if (value > UINT_MAX) {
+        virTypedParameterAssignValue(par, VIR_TYPED_PARAM_ULLONG, value);
+    } else {
+        unsigned int ival = value;
+
+        virTypedParameterAssignValue(par, VIR_TYPED_PARAM_UINT, ival);
+    }
+
+    va_start(ap, namefmt);
+    virTypedParamSetNameVPrintf(list, par, namefmt, ap);
+    va_end(ap);
+}
+
+
 void
 virTypedParamListAddString(virTypedParamList *list,
                            const char *value,

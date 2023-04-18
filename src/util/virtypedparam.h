@@ -187,6 +187,12 @@ virTypedParamListAddULLong(virTypedParamList *list,
                            ...)
     G_GNUC_PRINTF(3, 4);
 void
+virTypedParamListAddUnsigned(virTypedParamList *list,
+                             unsigned long long value,
+                             const char *namefmt,
+                             ...)
+    G_GNUC_PRINTF(3, 4);
+void
 virTypedParamListAddString(virTypedParamList *list,
                            const char *value,
                            const char *namefmt,
