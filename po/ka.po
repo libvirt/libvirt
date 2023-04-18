@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: libvirt 8.4.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-04-01 11:38+0200\n"
-"PO-Revision-Date: 2023-02-25 10:20+0000\n"
+"PO-Revision-Date: 2023-04-16 04:20+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ka/>\n"
@@ -2483,7 +2483,7 @@ msgstr ""
 
 #, c-format
 msgid "Cannot create socket directory '%1$s'"
-msgstr ""
+msgstr "სოკეტის საქაღალდის (%1$s) შექმნის შეცდომა"
 
 #, c-format
 msgid "Cannot create user runtime directory '%1$s'"
@@ -6203,7 +6203,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to create %1$s"
-msgstr ""
+msgstr "%1$s-ის შექმნის შეცდომა"
 
 #, c-format
 msgid "Failed to create '%1$s': %2$s"
@@ -6267,7 +6267,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to create file '%1$s'"
-msgstr ""
+msgstr "შეცდომა ფაილის (%1$s) შექმნისას"
 
 #, c-format
 msgid "Failed to create file '%1$s': couldn't determine fs type"
@@ -6321,7 +6321,7 @@ msgstr "პულის (%1$s) შექმნა შეუძლებელი
 
 #, c-format
 msgid "Failed to create pool from %1$s"
-msgstr ""
+msgstr "%1$s-დან პულის შექმნის შეცდომა"
 
 msgid "Failed to create reboot thread, killing domain"
 msgstr ""
@@ -6398,7 +6398,7 @@ msgstr "შეცდომა ტომის (%1$s) შექმნისას
 
 #, c-format
 msgid "Failed to create vol from %1$s"
-msgstr ""
+msgstr "%1$s-დან ტომის შექმნის შეცდომა"
 
 #, c-format
 msgid "Failed to define domain from %1$s"
@@ -6562,7 +6562,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to disconnect: %1$s"
-msgstr ""
+msgstr "გათიშვის შეცდომა: %1$s"
 
 #, c-format
 msgid "Failed to discover session: %1$s"
@@ -7136,7 +7136,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to open file '%1$s'"
-msgstr ""
+msgstr "'%1$s'-ის გახსნის შეცდომა"
 
 #, c-format
 msgid "Failed to open file '%1$s': couldn't determine fs type"
@@ -7346,11 +7346,11 @@ msgstr ""
 
 #, c-format
 msgid "Failed to read %1$s"
-msgstr ""
+msgstr "'%1$s'-ის წაკითხვის შეცდომა"
 
 #, c-format
 msgid "Failed to read '%1$s'"
-msgstr ""
+msgstr "'%1$s'-ის წაკითხვის შეცდომა"
 
 msgid "Failed to read /proc/mounts"
 msgstr ""
@@ -7384,7 +7384,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to read pidfile %1$s"
-msgstr ""
+msgstr "შეცდომა pidfile %1$s-ის წაკითხვისას"
 
 #, c-format
 msgid "Failed to read product/vendor ID for %1$s"
@@ -7603,7 +7603,7 @@ msgid "Failed to save '%1$s' for '%2$s'"
 msgstr ""
 
 msgid "Failed to save VM settings"
-msgstr ""
+msgstr "ვმ-ის პარამეტრების შენახვის შეცდომა"
 
 #, c-format
 msgid "Failed to save domain '%1$d' with libxenlight"
@@ -16266,7 +16266,7 @@ msgid "Unable to get ACLs on %1$s"
 msgstr ""
 
 msgid "Unable to get Capabilities"
-msgstr ""
+msgstr "შესაძლებლობების მიღების შეცდომა"
 
 #, c-format
 msgid "Unable to get Console object for domain %1$s"
@@ -16789,7 +16789,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to parse MAC '%1$s'"
-msgstr ""
+msgstr "MAC-ის (%1$s) დამუშავების შეცდომა"
 
 #, c-format
 msgid "Unable to parse RelaxNG schema '%1$s': %2$s"
@@ -16801,7 +16801,7 @@ msgstr "URI-ის (%1$s) დამუშავების შეცდომ�
 
 #, c-format
 msgid "Unable to parse UUID '%1$s'"
-msgstr ""
+msgstr "UUID-ის (%1$s) დამუშავების შეცდომა"
 
 #, c-format
 msgid "Unable to parse base SELinux context '%1$s'"
@@ -17854,7 +17854,7 @@ msgstr ""
 
 #, c-format
 msgid "Unknown URI parameter '%1$s'"
-msgstr ""
+msgstr "URI-ის უცნობი პარამეტრი %1$s"
 
 #, c-format
 msgid "Unknown acpi table type: %1$s"
@@ -18281,7 +18281,7 @@ msgstr ""
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
-msgstr ""
+msgstr "სიმბოლური მოწყობილობის მხარდაუჭერელი ტიპი '%1$s'"
 
 #, c-format
 msgid "Unsupported codeset '%1$d'"
@@ -18322,7 +18322,7 @@ msgstr ""
 
 #, c-format
 msgid "Unsupported device type %1$d"
-msgstr ""
+msgstr "მხარდაუჭერელი მოწყობილობის ტიპი '%1$d'"
 
 #, c-format
 msgid "Unsupported device type '%1$s'"
@@ -18344,7 +18344,7 @@ msgstr ""
 
 #, c-format
 msgid "Unsupported disk bus type %1$s"
-msgstr ""
+msgstr "დისკის მხარდაუჭერელი ტიპი %1$s"
 
 #, c-format
 msgid "Unsupported disk device type '%1$s'"
@@ -18371,7 +18371,7 @@ msgstr "გრაფიკის მხარდაუჭერელი ტი�
 
 #, c-format
 msgid "Unsupported host device mode %1$s"
-msgstr ""
+msgstr "მხარდაუჭერელი ჰოსტის მოწყობილობის რეჟიმი %1$s"
 
 #, c-format
 msgid "Unsupported host device type %1$s"
@@ -18383,7 +18383,7 @@ msgstr ""
 
 #, c-format
 msgid "Unsupported hostdev type %1$s"
-msgstr ""
+msgstr "მხარდაუჭერელი ჰოსტის მოწყობილობის ტიპი %1$s"
 
 #, c-format
 msgid "Unsupported interface '%1$s' for TPM 1.2"
@@ -19377,7 +19377,7 @@ msgstr "ავთენტიკაცია გაუქმდა"
 
 #, c-format
 msgid "authentication cancelled: %1$s"
-msgstr ""
+msgstr "ავთენტიკაცია გაუქმდა: %1$s"
 
 msgid "authentication failed"
 msgstr "ავთენტიკაციის შეცდომა"
@@ -20242,11 +20242,11 @@ msgstr ""
 
 #, c-format
 msgid "cannot create config directory %1$s"
-msgstr ""
+msgstr "კონფიგურაციის საქაღალდის (%1$s) შექმნის შეცდომა"
 
 #, c-format
 msgid "cannot create config directory '%1$s'"
-msgstr ""
+msgstr "ჟურნალის საქაღალდის (%1$s) შექმნის შეცდომა"
 
 #, c-format
 msgid "cannot create directory %1$s"
@@ -20283,7 +20283,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot create state directory '%1$s'"
-msgstr ""
+msgstr "მდგომარეობის საქაღალდის (%1$s) შექმნის შეცდომა"
 
 #, c-format
 msgid "cannot decode CPU data for %1$s architecture"
@@ -21631,7 +21631,7 @@ msgstr ""
 
 #, c-format
 msgid "child failed to create directory '%1$s'"
-msgstr ""
+msgstr "შვილის შეცდომა საქაღალდის შექმნისას '%1$s'"
 
 #, c-format
 msgid "child process failed to create file '%1$s'"
@@ -21887,7 +21887,7 @@ msgid "connection closed due to keepalive timeout"
 msgstr ""
 
 msgid "connection not open"
-msgstr ""
+msgstr "შეერთება ღია არაა"
 
 msgid "connection vcpu maximum"
 msgstr ""
@@ -23412,7 +23412,7 @@ msgid "domain must have at least one disk to perform checkpoints"
 msgstr ""
 
 msgid "domain name or uuid"
-msgstr ""
+msgstr "დომენის სახელი ან uuid"
 
 msgid "domain name, id or uuid"
 msgstr "დომენის სახელი, id, ან uuid"
@@ -24336,7 +24336,7 @@ msgstr ""
 
 #, c-format
 msgid "failed to create %1$s"
-msgstr ""
+msgstr "%1$s-ის შექმნის შეცდომა"
 
 #, c-format
 msgid "failed to create (start) interface %1$s: %2$s%3$s%4$s"
@@ -24862,7 +24862,7 @@ msgstr ""
 
 #, c-format
 msgid "failed to open netns %1$s"
-msgstr ""
+msgstr "შეცდომა netns-ის (%1$s) გახსნისას"
 
 #, c-format
 msgid "failed to open ns %1$s"
@@ -25047,7 +25047,7 @@ msgstr ""
 
 #, c-format
 msgid "failed to read '%1$s'"
-msgstr ""
+msgstr "'%1$s'-ის წაკითხვის შეცდომა"
 
 msgid "failed to read AppArmor template"
 msgstr ""
@@ -26235,7 +26235,7 @@ msgid "i - turn off validation and try to redefine again"
 msgstr ""
 
 msgid "iSCSI storage pool does not support volume creation"
-msgstr ""
+msgstr "iSCSI საცავის პულს ტომის შექმნის მხარდაჭერა არ გააჩნია"
 
 msgid "iSCSI storage pool does not support volume deletion"
 msgstr ""
@@ -27239,7 +27239,7 @@ msgstr ""
 
 #, c-format
 msgid "invalid tlsPort number: %1$s"
-msgstr ""
+msgstr "tlsPort-ის არასწორი ნომერი: %1$s"
 
 msgid "invalid transient"
 msgstr ""
@@ -34618,14 +34618,14 @@ msgstr ""
 
 #, c-format
 msgid "unable to get SELinux context for '%1$s'"
-msgstr ""
+msgstr "'%1$s'-სთვის SELinux-ის კონტექსტის მიღება შეუძლებელია"
 
 msgid "unable to get SELinux context for current process"
 msgstr ""
 
 #, c-format
 msgid "unable to get SELinux context of %1$s"
-msgstr ""
+msgstr "'%1$s'-ის SELinux-ის კონტექსტის მიღების შეცდომა"
 
 msgid "unable to get cpu account"
 msgstr ""
@@ -34642,7 +34642,7 @@ msgid "unable to get monitor count"
 msgstr ""
 
 msgid "unable to get node capabilities"
-msgstr ""
+msgstr "კვანძის შესაძლებლობების მიღების შეცდომა"
 
 msgid "unable to get numa affinity"
 msgstr ""
