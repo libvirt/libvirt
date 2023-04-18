@@ -852,7 +852,7 @@ virTypedParamListExtend(virTypedParamList *list)
 }
 
 
-int
+void
 virTypedParamListAddInt(virTypedParamList *list,
                         int value,
                         const char *namefmt,
@@ -866,12 +866,10 @@ virTypedParamListAddInt(virTypedParamList *list,
     va_start(ap, namefmt);
     virTypedParamSetNameVPrintf(list, par, namefmt, ap);
     va_end(ap);
-
-    return 0;
 }
 
 
-int
+void
 virTypedParamListAddUInt(virTypedParamList *list,
                          unsigned int value,
                          const char *namefmt,
@@ -885,12 +883,10 @@ virTypedParamListAddUInt(virTypedParamList *list,
     va_start(ap, namefmt);
     virTypedParamSetNameVPrintf(list, par, namefmt, ap);
     va_end(ap);
-
-    return 0;
 }
 
 
-int
+void
 virTypedParamListAddLLong(virTypedParamList *list,
                           long long value,
                           const char *namefmt,
@@ -904,12 +900,10 @@ virTypedParamListAddLLong(virTypedParamList *list,
     va_start(ap, namefmt);
     virTypedParamSetNameVPrintf(list, par, namefmt, ap);
     va_end(ap);
-
-    return 0;
 }
 
 
-int
+void
 virTypedParamListAddULLong(virTypedParamList *list,
                            unsigned long long value,
                            const char *namefmt,
@@ -923,12 +917,10 @@ virTypedParamListAddULLong(virTypedParamList *list,
     va_start(ap, namefmt);
     virTypedParamSetNameVPrintf(list, par, namefmt, ap);
     va_end(ap);
-
-    return 0;
 }
 
 
-int
+void
 virTypedParamListAddString(virTypedParamList *list,
                            const char *value,
                            const char *namefmt,
@@ -942,12 +934,10 @@ virTypedParamListAddString(virTypedParamList *list,
     va_start(ap, namefmt);
     virTypedParamSetNameVPrintf(list, par, namefmt, ap);
     va_end(ap);
-
-    return 0;
 }
 
 
-int
+void
 virTypedParamListAddBoolean(virTypedParamList *list,
                             bool value,
                             const char *namefmt,
@@ -961,12 +951,10 @@ virTypedParamListAddBoolean(virTypedParamList *list,
     va_start(ap, namefmt);
     virTypedParamSetNameVPrintf(list, par, namefmt, ap);
     va_end(ap);
-
-    return 0;
 }
 
 
-int
+void
 virTypedParamListAddDouble(virTypedParamList *list,
                            double value,
                            const char *namefmt,
@@ -980,6 +968,4 @@ virTypedParamListAddDouble(virTypedParamList *list,
     va_start(ap, namefmt);
     virTypedParamSetNameVPrintf(list, par, namefmt, ap);
     va_end(ap);
-
-    return 0;
 }

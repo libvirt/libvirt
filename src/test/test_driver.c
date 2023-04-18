@@ -9784,11 +9784,8 @@ static int
 testDomainGetStatsState(virDomainObj *dom,
                         virTypedParamList *params)
 {
-    if (virTypedParamListAddInt(params, dom->state.state, "state.state") < 0)
-        return -1;
-
-    if (virTypedParamListAddInt(params, dom->state.reason, "state.reason") < 0)
-        return -1;
+    virTypedParamListAddInt(params, dom->state.state, "state.state");
+    virTypedParamListAddInt(params, dom->state.reason, "state.reason");
 
     return 0;
 }
@@ -9810,24 +9807,17 @@ testDomainGetStatsIOThread(virDomainObj *dom,
         return 0;
     }
 
-    if (virTypedParamListAddUInt(params, niothreads, "iothread.count") < 0)
-        return -1;
+    virTypedParamListAddUInt(params, niothreads, "iothread.count");
 
     for (i = 0; i < niothreads; i++) {
         testIOThreadInfo iothread = g_array_index(priv->iothreads,
                                                   testIOThreadInfo, i);
-        if (virTypedParamListAddULLong(params, iothread.poll_max_ns,
-                                       "iothread.%u.poll-max-ns",
-                                       iothread.iothread_id) < 0)
-            return -1;
-        if (virTypedParamListAddUInt(params, iothread.poll_grow,
-                                     "iothread.%u.poll-grow",
-                                     iothread.iothread_id) < 0)
-            return -1;
-        if (virTypedParamListAddUInt(params, iothread.poll_shrink,
-                                     "iothread.%u.poll-shrink",
-                                     iothread.iothread_id) < 0)
-            return -1;
+        virTypedParamListAddULLong(params, iothread.poll_max_ns,
+                                   "iothread.%u.poll-max-ns", iothread.iothread_id);
+        virTypedParamListAddUInt(params, iothread.poll_grow,
+                                 "iothread.%u.poll-grow", iothread.iothread_id);
+        virTypedParamListAddUInt(params, iothread.poll_shrink,
+                                 "iothread.%u.poll-shrink", iothread.iothread_id);
     }
 
     return 0;

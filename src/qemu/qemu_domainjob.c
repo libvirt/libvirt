@@ -480,47 +480,26 @@ qemuDomainBackupJobDataToParams(virDomainJobData *jobData,
     qemuDomainBackupStats *stats = &priv->stats.backup;
     g_autoptr(virTypedParamList) par = virTypedParamListNew();
 
-    if (virTypedParamListAddInt(par, jobData->operation,
-                                VIR_DOMAIN_JOB_OPERATION) < 0)
-        return -1;
-
-    if (virTypedParamListAddULLong(par, jobData->timeElapsed,
-                                   VIR_DOMAIN_JOB_TIME_ELAPSED) < 0)
-        return -1;
+    virTypedParamListAddInt(par, jobData->operation, VIR_DOMAIN_JOB_OPERATION);
+    virTypedParamListAddULLong(par, jobData->timeElapsed, VIR_DOMAIN_JOB_TIME_ELAPSED);
 
     if (stats->transferred > 0 || stats->total > 0) {
-        if (virTypedParamListAddULLong(par, stats->total,
-                                       VIR_DOMAIN_JOB_DISK_TOTAL) < 0)
-            return -1;
-
-        if (virTypedParamListAddULLong(par, stats->transferred,
-                                       VIR_DOMAIN_JOB_DISK_PROCESSED) < 0)
-            return -1;
-
-        if (virTypedParamListAddULLong(par, stats->total - stats->transferred,
-                                       VIR_DOMAIN_JOB_DISK_REMAINING) < 0)
-            return -1;
+        virTypedParamListAddULLong(par, stats->total, VIR_DOMAIN_JOB_DISK_TOTAL);
+        virTypedParamListAddULLong(par, stats->transferred, VIR_DOMAIN_JOB_DISK_PROCESSED);
+        virTypedParamListAddULLong(par, stats->total - stats->transferred, VIR_DOMAIN_JOB_DISK_REMAINING);
     }
 
     if (stats->tmp_used > 0 || stats->tmp_total > 0) {
-        if (virTypedParamListAddULLong(par, stats->tmp_used,
-                                       VIR_DOMAIN_JOB_DISK_TEMP_USED) < 0)
-            return -1;
-
-        if (virTypedParamListAddULLong(par, stats->tmp_total,
-                                       VIR_DOMAIN_JOB_DISK_TEMP_TOTAL) < 0)
-            return -1;
+        virTypedParamListAddULLong(par, stats->tmp_used, VIR_DOMAIN_JOB_DISK_TEMP_USED);
+        virTypedParamListAddULLong(par, stats->tmp_total, VIR_DOMAIN_JOB_DISK_TEMP_TOTAL);
     }
 
-    if (jobData->status != VIR_DOMAIN_JOB_STATUS_ACTIVE &&
-        virTypedParamListAddBoolean(par,
-                                    jobData->status == VIR_DOMAIN_JOB_STATUS_COMPLETED,
-                                    VIR_DOMAIN_JOB_SUCCESS) < 0)
-        return -1;
+    if (jobData->status != VIR_DOMAIN_JOB_STATUS_ACTIVE)
+        virTypedParamListAddBoolean(par, jobData->status == VIR_DOMAIN_JOB_STATUS_COMPLETED,
+                                    VIR_DOMAIN_JOB_SUCCESS);
 
-    if (jobData->errmsg &&
-        virTypedParamListAddString(par, jobData->errmsg, VIR_DOMAIN_JOB_ERRMSG) < 0)
-        return -1;
+    if (jobData->errmsg)
+        virTypedParamListAddString(par, jobData->errmsg, VIR_DOMAIN_JOB_ERRMSG);
 
     if (virTypedParamListSteal(par, params, nparams) < 0)
         return -1;

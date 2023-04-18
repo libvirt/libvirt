@@ -162,45 +162,45 @@ void
 virTypedParamListConcat(virTypedParamList *to,
                         virTypedParamList **fromptr);
 
-int
+void
 virTypedParamListAddInt(virTypedParamList *list,
                         int value,
                         const char *namefmt,
                         ...)
-    G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
-int
+    G_GNUC_PRINTF(3, 4);
+void
 virTypedParamListAddUInt(virTypedParamList *list,
                          unsigned int value,
                          const char *namefmt,
                          ...)
-    G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
-int
+    G_GNUC_PRINTF(3, 4);
+void
 virTypedParamListAddLLong(virTypedParamList *list,
                           long long value,
                           const char *namefmt,
                           ...)
-    G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
-int
+    G_GNUC_PRINTF(3, 4);
+void
 virTypedParamListAddULLong(virTypedParamList *list,
                            unsigned long long value,
                            const char *namefmt,
                            ...)
-    G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
-int
+    G_GNUC_PRINTF(3, 4);
+void
 virTypedParamListAddString(virTypedParamList *list,
                            const char *value,
                            const char *namefmt,
                            ...)
-    G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
-int
+    G_GNUC_PRINTF(3, 4);
+void
 virTypedParamListAddBoolean(virTypedParamList *list,
                             bool value,
                             const char *namefmt,
                             ...)
-    G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
-int
+    G_GNUC_PRINTF(3, 4);
+void
 virTypedParamListAddDouble(virTypedParamList *list,
                            double value,
                            const char *namefmt,
                            ...)
-    G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
+    G_GNUC_PRINTF(3, 4);
