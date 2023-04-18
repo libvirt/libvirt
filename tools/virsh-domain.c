@@ -7846,14 +7846,13 @@ cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
     int id = 0;
-    bool ret = false;
     bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
-    virTypedParameterPtr params = NULL;
-    int nparams = 0;
-    int maxparams = 0;
+    g_autoptr(virTypedParamList) params = virTypedParamListNew();
+    virTypedParameterPtr par;
+    size_t npar = 0;
     unsigned long long poll_max;
     unsigned int poll_val;
     int thread_val;
@@ -7871,64 +7870,49 @@ cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptInt(ctl, cmd, "id", &id) < 0)
-        goto cleanup;
+        return false;
     if (id <= 0) {
         vshError(ctl, _("Invalid IOThread id value: '%1$d'"), id);
-        goto cleanup;
+        return false;
     }
 
-    poll_val = 0;
     if ((rc = vshCommandOptULongLong(ctl, cmd, "poll-max-ns", &poll_max)) < 0)
-        goto cleanup;
-    if (rc > 0 && virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                          VIR_DOMAIN_IOTHREAD_POLL_MAX_NS,
-                                          poll_max) < 0)
-        goto save_error;
+        return false;
+    if (rc > 0)
+        virTypedParamListAddULLong(params, poll_max, VIR_DOMAIN_IOTHREAD_POLL_MAX_NS);
 
-#define VSH_IOTHREAD_SET_UINT_PARAMS(opt, param) \
-    poll_val = 0; \
-    if ((rc = vshCommandOptUInt(ctl, cmd, opt, &poll_val)) < 0) \
-        goto cleanup; \
-    if (rc > 0 && \
-        virTypedParamsAddUInt(&params, &nparams, &maxparams, \
-                              param, poll_val) < 0) \
-        goto save_error;
+    if ((rc = vshCommandOptUInt(ctl, cmd, "poll-grow", &poll_val)) < 0)
+        return false;
+    if (rc > 0)
+        virTypedParamListAddUInt(params, poll_val, VIR_DOMAIN_IOTHREAD_POLL_GROW);
 
-    VSH_IOTHREAD_SET_UINT_PARAMS("poll-grow", VIR_DOMAIN_IOTHREAD_POLL_GROW)
-    VSH_IOTHREAD_SET_UINT_PARAMS("poll-shrink", VIR_DOMAIN_IOTHREAD_POLL_SHRINK)
+    if ((rc = vshCommandOptUInt(ctl, cmd, "poll-shrink", &poll_val)) < 0)
+        return false;
+    if (rc > 0)
+        virTypedParamListAddUInt(params, poll_val, VIR_DOMAIN_IOTHREAD_POLL_SHRINK);
 
-#undef VSH_IOTHREAD_SET_UINT_PARAMS
+    if ((rc = vshCommandOptInt(ctl, cmd, "thread-pool-min", &thread_val)) < 0)
+        return false;
+    if (rc > 0)
+        virTypedParamListAddInt(params, thread_val, VIR_DOMAIN_IOTHREAD_THREAD_POOL_MIN);
 
-#define VSH_IOTHREAD_SET_INT_PARAMS(opt, param) \
-    thread_val = -1; \
-    if ((rc = vshCommandOptInt(ctl, cmd, opt, &thread_val)) < 0) \
-        goto cleanup; \
-    if (rc > 0 && \
-        virTypedParamsAddInt(&params, &nparams, &maxparams, \
-                             param, thread_val) < 0) \
-        goto save_error;
+    if ((rc = vshCommandOptInt(ctl, cmd, "thread-pool-max", &thread_val)) < 0)
+        return false;
+    if (rc > 0)
+        virTypedParamListAddInt(params, thread_val, VIR_DOMAIN_IOTHREAD_THREAD_POOL_MAX);
 
-    VSH_IOTHREAD_SET_INT_PARAMS("thread-pool-min", VIR_DOMAIN_IOTHREAD_THREAD_POOL_MIN)
-    VSH_IOTHREAD_SET_INT_PARAMS("thread-pool-max", VIR_DOMAIN_IOTHREAD_THREAD_POOL_MAX)
-#undef VSH_IOTHREAD_SET_INT_PARAMS
+    if (virTypedParamListFetch(params, &par, &npar) < 0)
+        return false;
 
-    if (nparams == 0) {
+    if (npar == 0) {
         vshError(ctl, _("Not enough arguments passed, nothing to set"));
-        goto cleanup;
+        return false;
     }
 
-    if (virDomainSetIOThreadParams(dom, id, params, nparams, flags) < 0)
-        goto cleanup;
+    if (virDomainSetIOThreadParams(dom, id, par, npar, flags) < 0)
+        return false;
 
-    ret = true;
-
- cleanup:
-    virTypedParamsFree(params, nparams);
-    return ret;
-
- save_error:
-    vshSaveLibvirtError();
-    goto cleanup;
+    return true;
 }
 
 
