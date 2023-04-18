@@ -705,6 +705,13 @@ virTypedParamsSerialize(virTypedParameterPtr params,
 }
 
 
+struct _virTypedParamList {
+    virTypedParameterPtr par;
+    size_t npar;
+    size_t par_alloc;
+};
+
+
 virTypedParamList *
 virTypedParamListNew(void)
 {

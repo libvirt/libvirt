@@ -137,11 +137,6 @@ VIR_ENUM_DECL(virTypedParameter);
     } while (0)
 
 typedef struct _virTypedParamList virTypedParamList;
-struct _virTypedParamList {
-    virTypedParameterPtr par;
-    size_t npar;
-    size_t par_alloc;
-};
 
 void
 virTypedParamListFree(virTypedParamList *list);
