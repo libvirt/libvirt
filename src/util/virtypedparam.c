@@ -170,7 +170,7 @@ virTypedParameterToString(virTypedParameterPtr param)
 {
     char *value = NULL;
 
-    switch (param->type) {
+    switch ((virTypedParameterType) param->type) {
     case VIR_TYPED_PARAM_INT:
         value = g_strdup_printf("%d", param->value.i);
         break;
@@ -192,6 +192,7 @@ virTypedParameterToString(virTypedParameterPtr param)
     case VIR_TYPED_PARAM_STRING:
         value = g_strdup(param->value.s);
         break;
+    case VIR_TYPED_PARAM_LAST:
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected type %1$d for field %2$s"),
@@ -204,7 +205,7 @@ virTypedParameterToString(virTypedParameterPtr param)
 
 static int
 virTypedParameterAssignValueVArgs(virTypedParameterPtr param,
-                                  int type,
+                                  virTypedParameterType type,
                                   va_list ap,
                                   bool copystr)
 {
@@ -238,6 +239,7 @@ virTypedParameterAssignValueVArgs(virTypedParameterPtr param,
         if (!param->value.s)
             param->value.s = g_strdup("");
         break;
+    case VIR_TYPED_PARAM_LAST:
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected type %1$d for field %2$s"), type,
@@ -559,7 +561,7 @@ virTypedParamsDeserialize(struct _virTypedParameterRemote *remote_params,
         }
 
         param->type = remote_param->value.type;
-        switch (param->type) {
+        switch ((virTypedParameterType) param->type) {
         case VIR_TYPED_PARAM_INT:
             param->value.i =
                 remote_param->value.remote_typed_param_value.i;
@@ -587,6 +589,7 @@ virTypedParamsDeserialize(struct _virTypedParameterRemote *remote_params,
         case VIR_TYPED_PARAM_STRING:
             param->value.s = g_strdup(remote_param->value.remote_typed_param_value.s);
             break;
+        case VIR_TYPED_PARAM_LAST:
         default:
             virReportError(VIR_ERR_RPC, _("unknown parameter type: %1$d"),
                            param->type);
@@ -670,7 +673,7 @@ virTypedParamsSerialize(virTypedParameterPtr params,
          * depending on the calling side, i.e. server or client */
         val->field = g_strdup(param->field);
         val->value.type = param->type;
-        switch (param->type) {
+        switch ((virTypedParameterType) param->type) {
         case VIR_TYPED_PARAM_INT:
             val->value.remote_typed_param_value.i = param->value.i;
             break;
@@ -692,6 +695,7 @@ virTypedParamsSerialize(virTypedParameterPtr params,
         case VIR_TYPED_PARAM_STRING:
             val->value.remote_typed_param_value.s = g_strdup(param->value.s);
             break;
+        case VIR_TYPED_PARAM_LAST:
         default:
             virReportError(VIR_ERR_RPC, _("unknown parameter type: %1$d"),
                            param->type);
