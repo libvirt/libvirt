@@ -269,7 +269,6 @@ tests += [
   { 'name': 'storagevolxml2xmltest' },
   { 'name': 'sysinfotest' },
   { 'name': 'utiltest' },
-  { 'name': 'viracpitest' },
   { 'name': 'viralloctest' },
   { 'name': 'virauthconfigtest' },
   { 'name': 'virbitmaptest' },
@@ -307,6 +306,12 @@ tests += [
   { 'name': 'vshtabletest', 'link_with': [ libvirt_shell_lib ] },
   { 'name': 'virmigtest' },
 ]
+
+if host_machine.endian() == 'little'
+  tests += [
+    { 'name': 'viracpitest' },
+  ]
+endif
 
 if host_machine.system() == 'linux'
   tests += [
