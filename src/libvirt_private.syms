@@ -3555,6 +3555,7 @@ virTypedParamListAddLLong;
 virTypedParamListAddString;
 virTypedParamListAddUInt;
 virTypedParamListAddULLong;
+virTypedParamListConcat;
 virTypedParamListFree;
 virTypedParamListFromParams;
 virTypedParamListNew;

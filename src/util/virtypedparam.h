@@ -156,6 +156,10 @@ virTypedParamList *
 virTypedParamListFromParams(virTypedParameterPtr *params,
                             size_t nparams);
 
+void
+virTypedParamListConcat(virTypedParamList *to,
+                        virTypedParamList **fromptr);
+
 int
 virTypedParamListAddInt(virTypedParamList *list,
                         int value,

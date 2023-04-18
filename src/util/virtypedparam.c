@@ -712,6 +712,29 @@ virTypedParamListNew(void)
 }
 
 
+/**
+ * virTypedParamListConcat:
+ * @to: typed param list to concatenate into
+ * @fromptr: pointer to pointer to a typed param list to concatenate into @to
+ *
+ * Concatenates all params from the virTypedParamList pointed to by @fromptr
+ * into @to and deallocates the list pointed to by @fromptr and clears the
+ * variable.
+ */
+void
+virTypedParamListConcat(virTypedParamList *to,
+                        virTypedParamList **fromptr)
+{
+    g_autoptr(virTypedParamList) from = g_steal_pointer(fromptr);
+
+    VIR_RESIZE_N(to->par, to->par_alloc, to->npar, from->npar);
+
+    memcpy(to->par + to->npar, from->par, sizeof(*(to->par)) * from->npar);
+    to->npar += from->npar;
+    from->npar = 0;
+}
+
+
 void
 virTypedParamListFree(virTypedParamList *list)
 {
