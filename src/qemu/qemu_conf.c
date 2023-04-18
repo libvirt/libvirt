@@ -151,7 +151,7 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
         cfg->snapshotDir = g_strdup_printf("%s/snapshot", cfg->libDir);
         cfg->checkpointDir = g_strdup_printf("%s/checkpoint", cfg->libDir);
         cfg->autoDumpPath = g_strdup_printf("%s/dump", cfg->libDir);
-        cfg->channelTargetDir = g_strdup_printf("%s/channel/target", cfg->libDir);
+        cfg->channelTargetDir = g_strdup_printf("%s/channel", cfg->libDir);
         cfg->nvramDir = g_strdup_printf("%s/nvram", cfg->libDir);
         cfg->memoryBackingDir = g_strdup_printf("%s/ram", cfg->libDir);
     } else if (privileged) {
@@ -173,7 +173,7 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
         cfg->snapshotDir = g_strdup_printf("%s/snapshot", cfg->libDir);
         cfg->checkpointDir = g_strdup_printf("%s/checkpoint", cfg->libDir);
         cfg->autoDumpPath = g_strdup_printf("%s/dump", cfg->libDir);
-        cfg->channelTargetDir = g_strdup_printf("%s/channel/target", cfg->libDir);
+        cfg->channelTargetDir = g_strdup_printf("%s/channel", cfg->libDir);
         cfg->nvramDir = g_strdup_printf("%s/nvram", cfg->libDir);
         cfg->memoryBackingDir = g_strdup_printf("%s/ram", cfg->libDir);
         cfg->swtpmStorageDir = g_strdup_printf("%s/lib/libvirt/swtpm",
@@ -201,7 +201,7 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
         cfg->checkpointDir = g_strdup_printf("%s/qemu/checkpoint",
                                              cfg->configBaseDir);
         cfg->autoDumpPath = g_strdup_printf("%s/qemu/dump", cfg->configBaseDir);
-        cfg->channelTargetDir = g_strdup_printf("%s/qemu/channel/target",
+        cfg->channelTargetDir = g_strdup_printf("%s/qemu/channel",
                                                 cfg->configBaseDir);
         cfg->nvramDir = g_strdup_printf("%s/qemu/nvram", cfg->configBaseDir);
         cfg->memoryBackingDir = g_strdup_printf("%s/qemu/ram", cfg->configBaseDir);

@@ -1780,7 +1780,7 @@ qemuDomainSetPrivatePaths(virQEMUDriver *driver,
         priv->libDir = g_strdup_printf("%s/domain-%s", cfg->libDir, domname);
 
     if (!priv->channelTargetDir)
-        priv->channelTargetDir = g_strdup_printf("%s/domain-%s",
+        priv->channelTargetDir = g_strdup_printf("%s/%s",
                                                  cfg->channelTargetDir, domname);
 
     return 0;
@@ -5405,13 +5405,16 @@ qemuDomainDefaultNetModel(const virDomainDef *def,
  * Clear auto generated unix socket paths:
  *
  * libvirt 1.2.18 and older:
- *     {cfg->channelTargetDir}/{dom-name}.{target-name}
+ *     {cfg->channelTargetDir}/target/{dom-name}.{target-name}
  *
  * libvirt 1.2.19 - 1.3.2:
- *     {cfg->channelTargetDir}/domain-{dom-name}/{target-name}
+ *     {cfg->channelTargetDir}/target/domain-{dom-name}/{target-name}
  *
- * libvirt 1.3.3 and newer:
- *     {cfg->channelTargetDir}/domain-{dom-id}-{short-dom-name}/{target-name}
+ * libvirt 1.3.3 - 9.7.0:
+ *     {cfg->channelTargetDir}/target/domain-{dom-id}-{short-dom-name}/{target-name}
+ *
+ * libvirt 9.7.0 and newer:
+ *     {cfg->channelTargetDir}/{dom-id}-{short-dom-name}/{target-name}
  *
  * The unix socket path was stored in config XML until libvirt 1.3.0.
  * If someone specifies the same path as we generate, they shouldn't do it.
@@ -5437,7 +5440,7 @@ qemuDomainChrDefDropDefaultPath(virDomainChrDef *chr,
     cfg = virQEMUDriverGetConfig(driver);
 
     virBufferEscapeRegex(&buf, "^%s", cfg->channelTargetDir);
-    virBufferAddLit(&buf, "/([^/]+\\.)|(domain-[^/]+/)");
+    virBufferAddLit(&buf, "/(target/)?([^/]+\\.)|(domain-[^/]+/)|([0-9]+-[^/]+/)");
     virBufferEscapeRegex(&buf, "%s$", chr->target.name);
 
     regexp = virBufferContentAndReset(&buf);

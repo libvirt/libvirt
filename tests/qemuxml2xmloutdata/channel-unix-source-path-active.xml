@@ -41,6 +41,11 @@
       <target type='virtio' name='org.qemu.guest_agent.3'/>
       <address type='virtio-serial' controller='0' bus='0' port='4'/>
     </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/lib/libvirt/qemu/channel/1-QEMUGuest1/org.qemu.guest_agent.4'/>
+      <target type='virtio' name='org.qemu.guest_agent.4'/>
+      <address type='virtio-serial' controller='0' bus='0' port='5'/>
+    </channel>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
