@@ -17594,9 +17594,9 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
     g_autoptr(GHashTable) stats = NULL;
     qemuDomainObjPrivate *priv = dom->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    int count_index = -1;
     size_t visited = 0;
     bool visitBacking = !!(privflags & QEMU_DOMAIN_STATS_BACKING);
+    g_autoptr(virTypedParamList) blockparams = virTypedParamListNew();
 
     if (HAVE_JOB(privflags) && virDomainObjIsActive(dom)) {
         qemuDomainObjEnterMonitor(dom);
@@ -17613,21 +17613,17 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
             virResetLastError();
     }
 
-    /* When listing backing chains, it's easier to fix up the count
-     * after the iteration than it is to iterate twice; but we still
-     * want count listed first.  */
-    count_index = params->npar;
-    if (virTypedParamListAddUInt(params, 0, "block.count") < 0)
-        return -1;
-
     for (i = 0; i < dom->def->ndisks; i++) {
         if (qemuDomainGetStatsBlockExportDisk(dom->def->disks[i], stats,
-                                              params, &visited,
+                                              blockparams, &visited,
                                               visitBacking, driver, cfg, dom) < 0)
             return -1;
     }
 
-    params->par[count_index].value.ui = visited;
+    if (virTypedParamListAddUInt(params, visited, "block.count") < 0)
+        return -1;
+
+    virTypedParamListConcat(params, &blockparams);
 
     return 0;
 }
