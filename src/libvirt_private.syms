@@ -3567,6 +3567,7 @@ virTypedParamsCopy;
 virTypedParamsDeserialize;
 virTypedParamsFilter;
 virTypedParamsGetStringList;
+virTypedParamsGetUnsigned;
 virTypedParamsRemoteFree;
 virTypedParamsReplaceString;
 virTypedParamsSerialize;

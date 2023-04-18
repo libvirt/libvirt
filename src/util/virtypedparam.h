@@ -79,6 +79,11 @@ virTypedParamsFilter(virTypedParameterPtr params,
                      virTypedParameterPtr **ret)
     G_GNUC_WARN_UNUSED_RESULT;
 
+int
+virTypedParamsGetUnsigned(virTypedParameterPtr params,
+                          int nparams,
+                          const char *name,
+                          unsigned long long *value);
 
 int
 virTypedParameterAssign(virTypedParameterPtr param,

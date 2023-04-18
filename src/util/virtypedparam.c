@@ -457,6 +457,57 @@ virTypedParamsGetStringList(virTypedParameterPtr params,
 
 
 /**
+ * virTypedParamsGetUnsigned:
+ * @params: array of typed parameters
+ * @nparams: number of parameters in the @params array
+ * @name: name of the parameter to find
+ * @value: where to store the parameter's value
+ *
+ * Finds typed parameter called @name and store its 'unsigned long long' or
+ * 'unsigned int' value in @value.
+ *
+ * This is an internal variand which expects that the typed parameters were
+ * already validated by calling virTypedParamsValidate and the appropriate
+ * parameter has the expected type.
+ *
+ * Returns 1 on success, 0 when the parameter does not exist in @params, or
+ * -1 on invalid usage.
+ */
+int
+virTypedParamsGetUnsigned(virTypedParameterPtr params,
+                          int nparams,
+                          const char *name,
+                          unsigned long long *value)
+{
+    virTypedParameterPtr param;
+
+    if (!(param = virTypedParamsGet(params, nparams, name)))
+        return 0;
+
+    switch ((virTypedParameterType) param->type) {
+    case VIR_TYPED_PARAM_UINT:
+        *value = param->value.ui;
+        break;
+
+    case VIR_TYPED_PARAM_ULLONG:
+        *value = param->value.ul;
+        break;
+
+    case VIR_TYPED_PARAM_INT:
+    case VIR_TYPED_PARAM_LLONG:
+    case VIR_TYPED_PARAM_DOUBLE:
+    case VIR_TYPED_PARAM_BOOLEAN:
+    case VIR_TYPED_PARAM_STRING:
+    case VIR_TYPED_PARAM_LAST:
+    default:
+        return -1;
+    }
+
+    return 1;
+}
+
+
+/**
  * virTypedParamsRemoteFree:
  * @remote_params_val: array of typed parameters as specified by
  *                     (remote|admin)_protocol.h
