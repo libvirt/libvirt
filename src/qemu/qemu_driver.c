@@ -5234,27 +5234,6 @@ qemuDomainIOThreadParseParams(virTypedParameterPtr params,
     if (rc == 1)
         iothread->set_thread_pool_max = true;
 
-    if (iothread->set_poll_max_ns && iothread->poll_max_ns > INT_MAX) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("poll-max-ns (%1$llu) must be less than or equal to %2$d"),
-                       iothread->poll_max_ns, INT_MAX);
-        return -1;
-    }
-
-    if (iothread->set_poll_grow && iothread->poll_grow > INT_MAX) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("poll-grow (%1$u) must be less than or equal to %2$d"),
-                         iothread->poll_grow, INT_MAX);
-        return -1;
-    }
-
-    if (iothread->set_poll_shrink && iothread->poll_shrink > INT_MAX) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("poll-shrink (%1$u) must be less than or equal to %2$d"),
-                       iothread->poll_shrink, INT_MAX);
-        return -1;
-    }
-
     if (iothread->set_thread_pool_min && iothread->thread_pool_min < -1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("thread_pool_min (%1$d) must be equal to or greater than -1"),

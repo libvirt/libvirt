@@ -7128,13 +7128,6 @@ qemuMonitorJSONGetIOThreads(qemuMonitor *mon,
             goto cleanup;
         }
 
-        /* Fetch poll values (since QEMU 2.9 ) if available. QEMU
-         * stores these values as int64_t's; however, the qapi type
-         * is an int. The qapi/misc.json also mis-describes the grow
-         * and shrink values as pure add/remove values. The source
-         * util/aio-posix.c function aio_poll uses them as a factor
-         * or divisor in it's calculation. We will fetch and store
-         * them as defined in our structures. */
         if (virJSONValueObjectGetNumberUlong(child, "poll-max-ns",
                                              &info->poll_max_ns) == 0 &&
             virJSONValueObjectGetNumberUint(child, "poll-grow",
