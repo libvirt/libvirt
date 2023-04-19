@@ -7130,10 +7130,10 @@ qemuMonitorJSONGetIOThreads(qemuMonitor *mon,
 
         if (virJSONValueObjectGetNumberUlong(child, "poll-max-ns",
                                              &info->poll_max_ns) == 0 &&
-            virJSONValueObjectGetNumberUint(child, "poll-grow",
-                                            &info->poll_grow) == 0 &&
-            virJSONValueObjectGetNumberUint(child, "poll-shrink",
-                                            &info->poll_shrink) == 0)
+            virJSONValueObjectGetNumberUlong(child, "poll-grow",
+                                             &info->poll_grow) == 0 &&
+            virJSONValueObjectGetNumberUlong(child, "poll-shrink",
+                                             &info->poll_shrink) == 0)
             info->poll_valid = true;
     }
 
@@ -7161,18 +7161,20 @@ qemuMonitorJSONSetIOThread(qemuMonitor *mon,
 
     path = g_strdup_printf("/objects/iothread%u", iothreadInfo->iothread_id);
 
-#define VIR_IOTHREAD_SET_PROP(propName, propVal) \
+#define VIR_IOTHREAD_SET_PROP_UL(propName, propVal) \
     if (iothreadInfo->set_##propVal) { \
         memset(&prop, 0, sizeof(qemuMonitorJSONObjectProperty)); \
-        prop.type = QEMU_MONITOR_OBJECT_PROPERTY_INT; \
-        prop.val.iv = iothreadInfo->propVal; \
+        prop.type = QEMU_MONITOR_OBJECT_PROPERTY_ULONG; \
+        prop.val.ul = iothreadInfo->propVal; \
         if (qemuMonitorJSONSetObjectProperty(mon, path, propName, &prop) < 0) \
             return -1; \
     }
 
-    VIR_IOTHREAD_SET_PROP("poll-max-ns", poll_max_ns);
-    VIR_IOTHREAD_SET_PROP("poll-grow", poll_grow);
-    VIR_IOTHREAD_SET_PROP("poll-shrink", poll_shrink);
+    VIR_IOTHREAD_SET_PROP_UL("poll-max-ns", poll_max_ns);
+    VIR_IOTHREAD_SET_PROP_UL("poll-grow", poll_grow);
+    VIR_IOTHREAD_SET_PROP_UL("poll-shrink", poll_shrink);
+
+#undef VIR_IOTHREAD_SET_PROP_UL
 
     if (iothreadInfo->set_thread_pool_min &&
         iothreadInfo->set_thread_pool_max) {
@@ -7192,15 +7194,24 @@ qemuMonitorJSONSetIOThread(qemuMonitor *mon,
             setMaxFirst = true;
     }
 
-    if (setMaxFirst) {
-        VIR_IOTHREAD_SET_PROP("thread-pool-max", thread_pool_max);
-        VIR_IOTHREAD_SET_PROP("thread-pool-min", thread_pool_min);
-    } else {
-        VIR_IOTHREAD_SET_PROP("thread-pool-min", thread_pool_min);
-        VIR_IOTHREAD_SET_PROP("thread-pool-max", thread_pool_max);
+#define VIR_IOTHREAD_SET_PROP_INT(propName, propVal) \
+    if (iothreadInfo->set_##propVal) { \
+        memset(&prop, 0, sizeof(qemuMonitorJSONObjectProperty)); \
+        prop.type = QEMU_MONITOR_OBJECT_PROPERTY_INT; \
+        prop.val.iv = iothreadInfo->propVal; \
+        if (qemuMonitorJSONSetObjectProperty(mon, path, propName, &prop) < 0) \
+            return -1; \
     }
 
-#undef VIR_IOTHREAD_SET_PROP
+    if (setMaxFirst) {
+        VIR_IOTHREAD_SET_PROP_INT("thread-pool-max", thread_pool_max);
+        VIR_IOTHREAD_SET_PROP_INT("thread-pool-min", thread_pool_min);
+    } else {
+        VIR_IOTHREAD_SET_PROP_INT("thread-pool-min", thread_pool_min);
+        VIR_IOTHREAD_SET_PROP_INT("thread-pool-max", thread_pool_max);
+    }
+
+#undef VIR_IOTHREAD_SET_PROP_INT
 
     return 0;
 }

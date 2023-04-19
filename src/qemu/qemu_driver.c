@@ -5189,9 +5189,9 @@ qemuDomainIOThreadParseParams(virTypedParameterPtr params,
                                VIR_DOMAIN_IOTHREAD_POLL_MAX_NS,
                                VIR_TYPED_PARAM_ULLONG,
                                VIR_DOMAIN_IOTHREAD_POLL_GROW,
-                               VIR_TYPED_PARAM_UINT,
+                               VIR_TYPED_PARAM_UNSIGNED,
                                VIR_DOMAIN_IOTHREAD_POLL_SHRINK,
-                               VIR_TYPED_PARAM_UINT,
+                               VIR_TYPED_PARAM_UNSIGNED,
                                VIR_DOMAIN_IOTHREAD_THREAD_POOL_MIN,
                                VIR_TYPED_PARAM_INT,
                                VIR_DOMAIN_IOTHREAD_THREAD_POOL_MAX,
@@ -5206,16 +5206,16 @@ qemuDomainIOThreadParseParams(virTypedParameterPtr params,
     if (rc == 1)
         iothread->set_poll_max_ns = true;
 
-    if ((rc = virTypedParamsGetUInt(params, nparams,
-                                    VIR_DOMAIN_IOTHREAD_POLL_GROW,
-                                    &iothread->poll_grow)) < 0)
+    if ((rc = virTypedParamsGetUnsigned(params, nparams,
+                                        VIR_DOMAIN_IOTHREAD_POLL_GROW,
+                                        &iothread->poll_grow)) < 0)
         return -1;
     if (rc == 1)
         iothread->set_poll_grow = true;
 
-    if ((rc = virTypedParamsGetUInt(params, nparams,
-                                    VIR_DOMAIN_IOTHREAD_POLL_SHRINK,
-                                    &iothread->poll_shrink)) < 0)
+    if ((rc = virTypedParamsGetUnsigned(params, nparams,
+                                        VIR_DOMAIN_IOTHREAD_POLL_SHRINK,
+                                        &iothread->poll_shrink)) < 0)
         return -1;
     if (rc == 1)
         iothread->set_poll_shrink = true;
@@ -17535,12 +17535,12 @@ qemuDomainGetStatsIOThread(virQEMUDriver *driver G_GNUC_UNUSED,
             virTypedParamListAddULLong(params, iothreads[i]->poll_max_ns,
                                        "iothread.%u.poll-max-ns",
                                        iothreads[i]->iothread_id);
-            virTypedParamListAddUInt(params, iothreads[i]->poll_grow,
-                                     "iothread.%u.poll-grow",
-                                     iothreads[i]->iothread_id);
-            virTypedParamListAddUInt(params, iothreads[i]->poll_shrink,
-                                     "iothread.%u.poll-shrink",
-                                     iothreads[i]->iothread_id);
+            virTypedParamListAddUnsigned(params, iothreads[i]->poll_grow,
+                                         "iothread.%u.poll-grow",
+                                         iothreads[i]->iothread_id);
+            virTypedParamListAddUnsigned(params, iothreads[i]->poll_shrink,
+                                         "iothread.%u.poll-shrink",
+                                         iothreads[i]->iothread_id);
         }
     }
 

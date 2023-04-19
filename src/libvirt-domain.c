@@ -12449,14 +12449,18 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *     "iothread.<id>.poll-max-ns" - maximum polling time in ns as an unsigned
  *                                   long long. A 0 (zero) means polling is
  *                                   disabled.
- *     "iothread.<id>.poll-grow" - polling time factor as an unsigned int.
+ *     "iothread.<id>.poll-grow" - polling time factor as an unsigned int or
+ *                                 unsigned long long if exceeding range of
+ *                                 unsigned int.
  *                                 A 0 (zero) indicates to allow the underlying
  *                                 hypervisor to choose how to grow the
  *                                 polling time.
- *     "iothread.<id>.poll-shrink" - polling time divisor as an unsigned int.
- *                                 A 0 (zero) indicates to allow the underlying
- *                                 hypervisor to choose how to shrink the
- *                                 polling time.
+ *     "iothread.<id>.poll-shrink" - polling time divisor as an unsigned int or
+ *                                   unsigned long long if exceeding range of
+ *                                   unsigned int.
+ *                                   A 0 (zero) indicates to allow the underlying
+ *                                   hypervisor to choose how to shrink the
+ *                                   polling time.
  *
  * VIR_DOMAIN_STATS_MEMORY:
  *     Return memory bandwidth statistics and the usage information. The typed

@@ -2482,7 +2482,7 @@ int                  virDomainDelIOThread(virDomainPtr domain,
  * poll_grow and poll_shrink parameters provided. A value set too large
  * will cause more CPU time to be allocated the guest. A value set too
  * small will not provide enough cycles for the guest to process data.
- * The polling interval is not available for statistical purposes.
+ * Accepted type is VIR_TYPED_PARAM_ULLONG.
  *
  * Since: 4.10.0
  */
@@ -2495,6 +2495,7 @@ int                  virDomainDelIOThread(virDomainPtr domain,
  * use to grow its polling interval up to the poll_max_ns value. A value
  * of 0 (zero) allows the hypervisor to choose its own value. The algorithm
  * to use for adjustment is hypervisor specific.
+ * Accepted type is VIR_TYPED_PARAM_UINT or since 9.3.0 VIR_TYPED_PARAM_ULLONG.
  *
  * Since: 4.10.0
  */
@@ -2508,6 +2509,7 @@ int                  virDomainDelIOThread(virDomainPtr domain,
  * the poll_max_ns value. A value of 0 (zero) allows the hypervisor to
  * choose its own value. The algorithm to use for adjustment is hypervisor
  * specific.
+ * Accepted type is VIR_TYPED_PARAM_UINT or since 9.3.0 VIR_TYPED_PARAM_ULLONG.
  *
  * Since: 4.10.0
  */
