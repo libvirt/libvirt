@@ -12058,6 +12058,8 @@ virDomainAudioDefParseXML(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
     virDomainAudioDefFree(def);
     return NULL;
 }
+
+
 static virDomainWatchdogDef *
 virDomainWatchdogDefParseXML(virDomainXMLOption *xmlopt,
                              xmlNodePtr node,
