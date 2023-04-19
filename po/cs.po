@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-04-01 11:38+0200\n"
-"PO-Revision-Date: 2023-04-18 13:54+0000\n"
+"PO-Revision-Date: 2023-04-19 05:48+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/cs/>\n"
@@ -15872,6 +15872,8 @@ msgid ""
 "Target memory device requested size '%1$llu' doesn't match source memory "
 "device requested size '%2$llu'"
 msgstr ""
+"Požadovaná velikost cílového paměťového zařízení '%1$llu' se neshoduje s tou "
+"požadovanou na zdroji '%2$llu'"
 
 #, c-format
 msgid ""
@@ -15937,7 +15939,7 @@ msgstr ""
 
 #, c-format
 msgid "Target serial model %1$s does not match source %2$s"
-msgstr ""
+msgstr "Cílový model sériového portu %1$s se neshoduje s tím zdrojovým %2$s"
 
 #, c-format
 msgid "Target serial port %1$d does not match source %2$d"
@@ -15956,7 +15958,7 @@ msgstr "Cílový model sdílené paměti „%1$s“ neodpovídá zdrojovému mod
 
 #, c-format
 msgid "Target shared memory role '%1$s' does not match source role '%2$s'"
-msgstr ""
+msgstr "Role sdílené paměti na cíli '%1$s' se neshoduje s tou zdrojovou '%2$s'"
 
 msgid "Target shared memory server usage doesn't match source"
 msgstr "Využití cílové sdílené paměti serveru se neshoduje se zdrojovým"
@@ -15995,7 +15997,7 @@ msgstr "Cílový časovač %1$s se neshoduje se zdrojovým %2$s"
 
 #, c-format
 msgid "Target timer presence '%1$s' does not match source '%2$s'"
-msgstr ""
+msgstr "Přítomnost časovače v cíli '%1$s' neodpovídá zdrojové '%2$s'"
 
 #, c-format
 msgid "Target type '%1$s' cannot have an associated address"
@@ -16052,10 +16054,10 @@ msgid "Temporary disk space total:"
 msgstr "Dočasného diskového prostoru celkem:"
 
 msgid "Temporary disk space use:"
-msgstr ""
+msgstr "Využití prostor na dočasném disku:"
 
 msgid "That firmware name is reserved"
-msgstr ""
+msgstr "Takový název firmware je vyhrazen (nelze použít)"
 
 msgid "Thaw domain's mounted filesystems."
 msgstr "Rozmrazit připojené souborové systémy domény."
@@ -16066,7 +16068,7 @@ msgstr "Rozmrazeno %1$d souborových systémů\n"
 
 #, c-format
 msgid "The %1$s interface already exists"
-msgstr ""
+msgstr "Rozhraní %1$s už existuje"
 
 #, c-format
 msgid "The '%1$s' device is not supported by this QEMU binary"
@@ -16096,12 +16098,14 @@ msgstr ""
 "„%3$s“ podporován"
 
 msgid "The 'passt' backend can only be used with interface type='user'"
-msgstr ""
+msgstr "Podpůrnou vrstvu 'passt' je možné použít pouze s rozhraním type='user'"
 
 msgid ""
 "The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
 "'exclude' is specified"
 msgstr ""
+"'range' od 'portForward' vyžaduje atribut 'start', pokud je zadáno 'end', "
+"'to', nebo 'exclude'"
 
 #, c-format
 msgid ""
@@ -16120,7 +16124,7 @@ msgstr "Certifikát cert. autority %1$s ještě nezačal platit"
 
 #, c-format
 msgid "The CCW devno '%1$s' is in use already"
-msgstr ""
+msgstr "CCW devno '%1$s' je už v používání"
 
 #, c-format
 msgid ""
@@ -16158,6 +16162,8 @@ msgid ""
 "The PF device for VF %1$s has no network device name, cannot get virtual "
 "function info"
 msgstr ""
+"PF zařízení pro VF %1$s nemá název síťového zařízení, není možné získat "
+"informace o virtuální funkci"
 
 #, c-format
 msgid "The QEMU executable %1$s does not support TPM backend type %2$s"
@@ -16171,7 +16177,7 @@ msgid "The XML configuration was changed by another user."
 msgstr "XML nastavení bylo změněno jiným uživatelem."
 
 msgid "The associated audio is not of 'dbus' kind."
-msgstr ""
+msgstr "Asociovaný zvuk není druhu 'dbus'."
 
 #, c-format
 msgid "The certificate %1$s basic constraints do not show a CA"
@@ -16242,6 +16248,7 @@ msgstr ""
 #, c-format
 msgid "The device at PCI address %1$s needs to be an integrated device (bus=0)"
 msgstr ""
+"Je třeba, aby zařízení na PCI adrese %1$s bylo integrované zařízení (bus=0)"
 
 #, c-format
 msgid ""
@@ -16285,20 +16292,24 @@ msgid "The machine has no snapshot and it should have it"
 msgstr "Stroj nemá žádné zachycené stavy a přitom by měl mít"
 
 msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
-msgstr ""
+msgstr "Maximální hodnota pro 'start' <clock offset='absolute'> je 253402300799"
 
 msgid "The minimum lease time should be greater than 2 minutes"
-msgstr ""
+msgstr "Minimální doba zápůjčky by měla být delší než 2 minuty"
 
 msgid ""
 "The number of virtual CPU address bits cannot exceed the number supported by "
 "the host CPU"
 msgstr ""
+"Počet bitů adresy virtuálního procesoru nemůže překročit počet podporovaný "
+"procesorem hostitele"
 
 msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
 msgstr ""
+"Je třeba, aby celkový maximální počet klientů nebyl nižší než počet klientů "
+"čekajících na ověření se"
 
 msgid "The read only disk has no parent"
 msgstr "Disk pouze pro čtení nemá žádný nadřazený"
@@ -16376,10 +16387,10 @@ msgid "This QEMU doesn't support target greater than 7"
 msgstr "Toto QEMU nepodporuje cíl vyšší než 7"
 
 msgid "This QEMU doesn't support the AM53C974 (ESP) controller"
-msgstr ""
+msgstr "Toto QEMU nepodporuje řadič AM53C974 (ESP)"
 
 msgid "This QEMU doesn't support the DC390 (ESP) controller"
-msgstr ""
+msgstr "Toto QEMU nepodporuje řadič DC390 (ESP)"
 
 msgid "This QEMU doesn't support the LSI 53C895A SCSI controller"
 msgstr "Toto QEMU nepodporuje SCSI řadič LSI 53C895A"
@@ -16391,7 +16402,7 @@ msgid "This QEMU doesn't support the LSI SAS1078 (MegaRAID) controller"
 msgstr "Toto QEMU nepodporuje řadič LSI SAS1078 (MegaRAID)"
 
 msgid "This QEMU doesn't support the NCR53C90 (ESP) controller"
-msgstr ""
+msgstr "Toto QEMU nepodporuje řadič NCR53C90 (ESP)"
 
 msgid ""
 "This QEMU doesn't support the pvscsi (VMware paravirtual SCSI) controller"
@@ -16427,7 +16438,7 @@ msgid "This host is not managed by a vCenter"
 msgstr "Tento hostitel není spravován vCenter"
 
 msgid "This snapshot has children, please delete these snapshots before"
-msgstr ""
+msgstr "Tento zachycený stav má jemu podřízené – nejdříve smažte je"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Tento typ disku nelze odpojovat za chodu"
@@ -16523,7 +16534,7 @@ msgid "Too many disks in fsinfo: %1$zd for limit %2$d"
 msgstr "Příliš mnoho disků v fsinfo: %1$zd pro limit %2$d"
 
 msgid "Too many domain elements in migration cookie"
-msgstr ""
+msgstr "Příliš mnoho prvků doména v migrační cookie"
 
 #, c-format
 msgid "Too many domain_checkpoints '%1$d' for limit '%2$d'"
@@ -16730,7 +16741,7 @@ msgid "UEFI requires ACPI on this architecture"
 msgstr "UEFI na této architektuře potřebuje ACPI"
 
 msgid "UNIX disks URI does not include path"
-msgstr ""
+msgstr "URI UNIX disků neobsahuje popis umístění"
 
 msgid "UNIX socket address is required"
 msgstr "Je třeba adresy unixového soketu"
@@ -16753,24 +16764,24 @@ msgid "URI is missing the server part"
 msgstr "URI postrádá serverovou část"
 
 msgid "URI must be qemu:///embed"
-msgstr ""
+msgstr "Je třeba, aby URI bylo qemu:///embed"
 
 msgid "URI must be secret:///embed"
-msgstr ""
+msgstr "Je třeba, aby URI bylo secret:///embed"
 
 msgid "URI of the namespace"
 msgstr "URI jmenného prostoru"
 
 #, c-format
 msgid "URI scheme '%1$s' for embedded driver is not valid"
-msgstr ""
+msgstr "URI schéma '%1$s' pro vestavěný ovladač není platné"
 
 msgid "URI to use for disks migration (overrides --disks-port)"
-msgstr ""
+msgstr "URI které použít pro stěhování disků (přebíjí --disks-port)"
 
 #, c-format
 msgid "URI with tcp scheme did not provide a server part: %1$s"
-msgstr ""
+msgstr "URI s tcp schématem neposkytuje část ohledně serveru: %1$s"
 
 #, c-format
 msgid "USB bus %1$u requested but no controller with that index is present"
@@ -16780,7 +16791,7 @@ msgstr ""
 
 #, c-format
 msgid "USB controller model '%1$s' not supported in this QEMU binary"
-msgstr ""
+msgstr "Model USB řadiče '%1$s' není v této QEMU binárce podporován"
 
 #, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %1$s"
@@ -16866,6 +16877,8 @@ msgid ""
 "Unable to acquire PID file: %1$s\n"
 " errno=%2$d"
 msgstr ""
+"Nedaří se získat PID soubor: %1$s\n"
+" errno=%2$d"
 
 #, c-format
 msgid "Unable to acquire lock on '%1$s'"
@@ -17074,7 +17087,7 @@ msgid "Unable to close %1$s"
 msgstr "Nedaří se zavřít %1$s"
 
 msgid "Unable to close HardDisk"
-msgstr ""
+msgstr "Nedaří se zavřít HardDisk"
 
 msgid "Unable to close disk children"
 msgstr "Nedaří se zavřít podřízené disku"
@@ -17084,7 +17097,7 @@ msgstr "Nedaří se rekurzivně zavřít všechny disky"
 
 #, c-format
 msgid "Unable to close the VPD file, fd: %1$d"
-msgstr ""
+msgstr "Nedaří se zavřít VPD soubor, fd: %1$d"
 
 msgid "Unable to close the new medium"
 msgstr "Nepodařilo se zavřít nové médium"
@@ -17125,7 +17138,7 @@ msgid "Unable to create %1$s"
 msgstr "Nedaří se vytvořit %1$s"
 
 msgid "Unable to create HardDisk"
-msgstr ""
+msgstr "Nedaří se vytvořit HardDisk"
 
 msgid "Unable to create JSON formatter"
 msgstr "Nedaří se vytvořit formátování JSON"
@@ -17144,11 +17157,11 @@ msgstr ""
 
 #, c-format
 msgid "Unable to create RelaxNG parser for schema '%1$s'"
-msgstr ""
+msgstr "Nedaří se vytvořit RelaxNG parser pro schéma '%1$s'"
 
 #, c-format
 msgid "Unable to create RelaxNG validation context for schema '%1$s'"
-msgstr ""
+msgstr "Nedaří se vytvořit RelaxNG validační kontext pro schéma '%1$s'"
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "Na této platformě není možné vytvářet TAP rozhraní"
@@ -17249,6 +17262,8 @@ msgid ""
 "Unable to create: %1$s\n"
 " errno=%2$d"
 msgstr ""
+"Nedaří se vytvořit: %1$s\n"
+" errno=%2$d"
 
 msgid "Unable to decode header until len is received"
 msgstr "Záhlaví není možné dekódovat, dokud není obdržena délka"
@@ -17548,7 +17563,7 @@ msgid "Unable to get STP on %1$s on this platform"
 msgstr "Na této platformě není možné získat STP na %1$s"
 
 msgid "Unable to get VF net device stats on this platform"
-msgstr ""
+msgstr "Na této platformě se nedaří získat statistiky VF síťového zařízení"
 
 #, c-format
 msgid "Unable to get VLAN for interface %1$s"
@@ -18347,7 +18362,7 @@ msgstr "Nedaří se resetovat PCI zařízení %1$s: %2$s"
 
 #, c-format
 msgid "Unable to reset ingress on port %1$s"
-msgstr ""
+msgstr "Nedaří se resetovat ingress na portu %1$s"
 
 #, c-format
 msgid "Unable to resolve address '%1$s' service '%2$s': %3$s"
@@ -18386,7 +18401,7 @@ msgstr "Nedaří se číst parametry podprocesu"
 
 #, c-format
 msgid "Unable to run among %1$llu"
-msgstr ""
+msgstr "Nedaří se spustit mezi %1$llu"
 
 #, c-format
 msgid "Unable to run command to get OVS master for interface %1$s"
