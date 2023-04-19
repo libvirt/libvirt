@@ -7853,8 +7853,7 @@ cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virTypedParamList) params = virTypedParamListNew();
     virTypedParameterPtr par;
     size_t npar = 0;
-    unsigned long long poll_max;
-    unsigned int poll_val;
+    unsigned long long poll_val;
     int thread_val;
     int rc;
 
@@ -7876,20 +7875,20 @@ cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if ((rc = vshCommandOptULongLong(ctl, cmd, "poll-max-ns", &poll_max)) < 0)
+    if ((rc = vshCommandOptULongLong(ctl, cmd, "poll-max-ns", &poll_val)) < 0)
         return false;
     if (rc > 0)
-        virTypedParamListAddULLong(params, poll_max, VIR_DOMAIN_IOTHREAD_POLL_MAX_NS);
+        virTypedParamListAddULLong(params, poll_val, VIR_DOMAIN_IOTHREAD_POLL_MAX_NS);
 
-    if ((rc = vshCommandOptUInt(ctl, cmd, "poll-grow", &poll_val)) < 0)
+    if ((rc = vshCommandOptULongLong(ctl, cmd, "poll-grow", &poll_val)) < 0)
         return false;
     if (rc > 0)
-        virTypedParamListAddUInt(params, poll_val, VIR_DOMAIN_IOTHREAD_POLL_GROW);
+        virTypedParamListAddUnsigned(params, poll_val, VIR_DOMAIN_IOTHREAD_POLL_GROW);
 
-    if ((rc = vshCommandOptUInt(ctl, cmd, "poll-shrink", &poll_val)) < 0)
+    if ((rc = vshCommandOptULongLong(ctl, cmd, "poll-shrink", &poll_val)) < 0)
         return false;
     if (rc > 0)
-        virTypedParamListAddUInt(params, poll_val, VIR_DOMAIN_IOTHREAD_POLL_SHRINK);
+        virTypedParamListAddUnsigned(params, poll_val, VIR_DOMAIN_IOTHREAD_POLL_SHRINK);
 
     if ((rc = vshCommandOptInt(ctl, cmd, "thread-pool-min", &thread_val)) < 0)
         return false;
