@@ -1111,9 +1111,9 @@ static int
 qemuValidateDomainDefWatchdogs(const virDomainDef *def)
 {
     bool found_itco = false;
-    ssize_t i = 0;
+    size_t i = 0;
 
-    for (i = 1; i < def->nwatchdogs; i++) {
+    for (i = 0; i < def->nwatchdogs; i++) {
         /* We could theoretically support different watchdogs having dump and
          * pause, but let's be honest, we support multiple watchdogs only
          * because we need to be able to add a second, implicit one, not because
