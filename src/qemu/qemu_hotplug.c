@@ -724,12 +724,23 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
      * As there isn't anything sane to do if this fails, let's just return
      * success.
      */
-    if (rc == 0 &&
-        qemuDiskConfigBlkdeviotuneEnabled(disk)) {
+    if (rc == 0) {
         qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        if (qemuMonitorSetBlockIoThrottle(priv->mon, NULL, diskPriv->qomName,
-                                          &disk->blkdeviotune) < 0)
-            VIR_WARN("failed to set blkdeviotune for '%s' of '%s'", disk->dst, vm->def->name);
+        g_autoptr(GHashTable) blockinfo = NULL;
+
+        if (qemuDiskConfigBlkdeviotuneEnabled(disk)) {
+            if (qemuMonitorSetBlockIoThrottle(priv->mon, NULL, diskPriv->qomName,
+                                              &disk->blkdeviotune) < 0)
+                VIR_WARN("failed to set blkdeviotune for '%s' of '%s'", disk->dst, vm->def->name);
+        }
+
+        if ((blockinfo = qemuMonitorGetBlockInfo(priv->mon))) {
+            struct qemuDomainDiskInfo *diskinfo;
+
+            if ((diskinfo = virHashLookup(blockinfo, diskPriv->qomName))) {
+                qemuProcessRefreshDiskProps(disk, diskinfo);
+            }
+        }
     }
 
     qemuDomainObjExitMonitor(vm);
