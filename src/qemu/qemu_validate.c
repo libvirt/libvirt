@@ -26,6 +26,7 @@
 #include "qemu_domain.h"
 #include "qemu_process.h"
 #include "domain_conf.h"
+#include "virbitmap.h"
 #include "virlog.h"
 #include "virutil.h"
 
@@ -1110,18 +1111,24 @@ qemuValidateDomainDefTPMs(const virDomainDef *def)
 static int
 qemuValidateDomainDefWatchdogs(const virDomainDef *def)
 {
-    bool found_itco = false;
+    g_autoptr(virBitmap) watchdogs = virBitmapNew(VIR_DOMAIN_WATCHDOG_MODEL_LAST);
     size_t i = 0;
 
     for (i = 0; i < def->nwatchdogs; i++) {
+        if (def->watchdogs[i]->model == VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB)
+            continue;
 
-        if (def->watchdogs[i]->model == VIR_DOMAIN_WATCHDOG_MODEL_ITCO) {
-            if (found_itco) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Multiple iTCO watchdogs are not supported"));
-                return -1;
-            }
-            found_itco = true;
+        if (virBitmapIsBitSet(watchdogs, def->watchdogs[i]->model)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("domain can only have one watchdog with model '%1$s'"),
+                           virDomainWatchdogModelTypeToString(def->watchdogs[i]->model));
+            return -1;
+        }
+
+        if (virBitmapSetBit(watchdogs, def->watchdogs[i]->model) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Integrity error in watchdog models"));
+            return -1;
         }
     }
 
