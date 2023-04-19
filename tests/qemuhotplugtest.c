@@ -908,6 +908,9 @@ mymain(void)
     DO_TEST_DETACH("x86_64", "base-live", "watchdog-user-alias-full", false, false,
                    "device_del", QMP_DEVICE_DELETED("ua-UserWatchdog") QMP_OK);
 
+    /* attaching a watchdog with different action should fail */
+    DO_TEST_ATTACH("x86_64", "base-live+watchdog", "watchdog-reset", true, false, NULL);
+
     DO_TEST_ATTACH("x86_64", "base-live", "guestfwd", false, true,
                    "getfd", QMP_OK,
                    "chardev-add", QMP_OK,

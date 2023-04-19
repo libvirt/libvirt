@@ -1114,16 +1114,6 @@ qemuValidateDomainDefWatchdogs(const virDomainDef *def)
     size_t i = 0;
 
     for (i = 0; i < def->nwatchdogs; i++) {
-        /* We could theoretically support different watchdogs having dump and
-         * pause, but let's be honest, we support multiple watchdogs only
-         * because we need to be able to add a second, implicit one, not because
-         * it is a brilliant idea to have multiple watchdogs. */
-        if (def->watchdogs[i]->action != def->watchdogs[0]->action) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("watchdogs with different actions are not supported "
-                             "with this QEMU binary"));
-            return -1;
-        }
 
         if (def->watchdogs[i]->model == VIR_DOMAIN_WATCHDOG_MODEL_ITCO) {
             if (found_itco) {
@@ -2308,6 +2298,18 @@ static int
 qemuValidateDomainWatchdogDef(const virDomainWatchdogDef *dev,
                               const virDomainDef *def)
 {
+    /* We could theoretically support different watchdogs having dump and
+     * pause, but let's be honest, we support multiple watchdogs only
+     * because we need to be able to add a second, implicit one, not because
+     * it is a brilliant idea to have multiple watchdogs. */
+    if (def->nwatchdogs &&
+        def->watchdogs[0]->action != dev->action) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("watchdogs with different actions are not supported "
+                         "with this QEMU binary"));
+        return -1;
+    }
+
     switch ((virDomainWatchdogModel) dev->model) {
     case VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB:
         if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
