@@ -7315,6 +7315,19 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
             return -1;
         }
 
+        if (dev->data.watchdog->model != VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB) {
+            size_t i;
+
+            for (i = 0; i < vmdef->nwatchdogs; i++) {
+                if (vmdef->watchdogs[i]->model == dev->data.watchdog->model) {
+                    virReportError(VIR_ERR_OPERATION_INVALID,
+                                   _("domain can only have one watchdog with model '%1$s'"),
+                                   virDomainWatchdogModelTypeToString(vmdef->watchdogs[i]->model));
+                    return -1;
+                }
+            }
+        }
+
         VIR_APPEND_ELEMENT(vmdef->watchdogs, vmdef->nwatchdogs, dev->data.watchdog);
         break;
 
