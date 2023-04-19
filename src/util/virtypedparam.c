@@ -63,7 +63,6 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
     size_t j;
     const char *name;
     const char *last_name = NULL;
-    int type;
     size_t nkeys = 0;
     size_t nkeysalloc = 0;
     g_autofree virTypedParameterPtr sorted = NULL;
@@ -79,7 +78,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
 
     name = va_arg(ap, const char *);
     while (name) {
-        type = va_arg(ap, int);
+        int type = va_arg(ap, int);
         VIR_RESIZE_N(keys, nkeysalloc, nkeys, 1);
 
         if (virStrcpyStatic(keys[nkeys].field, name) < 0) {
@@ -105,6 +104,9 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
         if (STRNEQ(sorted[i].field, keys[j].field)) {
             j++;
         } else {
+            const char *expecttype = virTypedParameterTypeToString(keys[j].type);
+            int type = sorted[i].type;
+
             if (STREQ_NULLABLE(last_name, sorted[i].field) &&
                 !(keys[j].value.i & VIR_TYPED_PARAM_MULTIPLE)) {
                 virReportError(VIR_ERR_INVALID_ARG,
@@ -112,7 +114,15 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
                                sorted[i].field);
                 return -1;
             }
-            if (sorted[i].type != keys[j].type) {
+
+            if (keys[j].type == VIR_TYPED_PARAM_UNSIGNED &&
+                (type == VIR_TYPED_PARAM_UINT ||
+                 type == VIR_TYPED_PARAM_ULLONG)) {
+                type = VIR_TYPED_PARAM_UNSIGNED;
+                expecttype = "uint, ullong";
+            }
+
+            if (type != keys[j].type) {
                 const char *badtype;
 
                 badtype = virTypedParameterTypeToString(sorted[i].type);
@@ -120,8 +130,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
                     badtype = virTypedParameterTypeToString(0);
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("invalid type '%1$s' for parameter '%2$s', expected '%3$s'"),
-                               badtype, sorted[i].field,
-                               virTypedParameterTypeToString(keys[j].type));
+                               badtype, sorted[i].field, expecttype);
                 return -1;
             }
             last_name = sorted[i].field;

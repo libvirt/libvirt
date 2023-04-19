@@ -24,6 +24,15 @@
 #include "internal.h"
 #include "virenum.h"
 
+
+/**
+ * VIR_TYPED_PARAM_UNSIGNED:
+ *
+ * Special typed parameter type only used with virTypedParamsValidate to
+ * indicate that both VIR_TYPED_PARAM_UINT and VIR_TYPED_PARAM_ULLONG types
+ * are acceptable for given value.
+ */
+#define VIR_TYPED_PARAM_UNSIGNED (VIR_TYPED_PARAM_LAST + 1)
 /**
  * VIR_TYPED_PARAM_MULTIPLE:
  *
