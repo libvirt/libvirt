@@ -59,12 +59,15 @@ int
 virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
 {
     va_list ap;
-    int ret = -1;
-    size_t i, j;
-    const char *name, *last_name = NULL;
+    size_t i;
+    size_t j;
+    const char *name;
+    const char *last_name = NULL;
     int type;
-    size_t nkeys = 0, nkeysalloc = 0;
-    virTypedParameterPtr sorted = NULL, keys = NULL;
+    size_t nkeys = 0;
+    size_t nkeysalloc = 0;
+    g_autofree virTypedParameterPtr sorted = NULL;
+    g_autofree virTypedParameterPtr keys = NULL;
 
     va_start(ap, nparams);
 
@@ -82,7 +85,8 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
         if (virStrcpyStatic(keys[nkeys].field, name) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Field name '%1$s' too long"), name);
-            goto cleanup;
+            va_end(ap);
+            return -1;
         }
 
         keys[nkeys].type = type & ~VIR_TYPED_PARAM_MULTIPLE;
@@ -92,6 +96,8 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
         nkeys++;
         name = va_arg(ap, const char *);
     }
+
+    va_end(ap);
 
     qsort(keys, nkeys, sizeof(*keys), virTypedParamsSortName);
 
@@ -104,7 +110,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("parameter '%1$s' occurs multiple times"),
                                sorted[i].field);
-                goto cleanup;
+                return -1;
             }
             if (sorted[i].type != keys[j].type) {
                 const char *badtype;
@@ -116,7 +122,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
                                _("invalid type '%1$s' for parameter '%2$s', expected '%3$s'"),
                                badtype, sorted[i].field,
                                virTypedParameterTypeToString(keys[j].type));
-                goto cleanup;
+                return -1;
             }
             last_name = sorted[i].field;
             i++;
@@ -127,15 +133,10 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                        _("parameter '%1$s' not supported"),
                        sorted[i].field);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    va_end(ap);
-    VIR_FREE(sorted);
-    VIR_FREE(keys);
-    return ret;
+    return 0;
 }
 
 
