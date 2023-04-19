@@ -8673,6 +8673,29 @@ qemuProcessAutoDestroy(virDomainObj *dom,
 }
 
 
+void
+qemuProcessRefreshDiskProps(virDomainDiskDef *disk,
+                            struct qemuDomainDiskInfo *info)
+{
+    qemuDomainDiskPrivate *diskpriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+    if (info->removable) {
+        if (info->empty)
+            virDomainDiskEmptySource(disk);
+
+        if (info->tray) {
+            if (info->tray_open)
+                disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
+            else
+                disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
+        }
+    }
+
+    diskpriv->removable = info->removable;
+    diskpriv->tray = info->tray;
+}
+
+
 int
 qemuProcessRefreshDisks(virDomainObj *vm,
                         virDomainAsyncJob asyncJob)
@@ -8703,21 +8726,7 @@ qemuProcessRefreshDisks(virDomainObj *vm,
         if (!(info = virHashLookup(table, entryname)))
             continue;
 
-        if (info->removable) {
-            if (info->empty)
-                virDomainDiskEmptySource(disk);
-
-            if (info->tray) {
-                if (info->tray_open)
-                    disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
-                else
-                    disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
-            }
-        }
-
-        /* fill in additional data */
-        diskpriv->removable = info->removable;
-        diskpriv->tray = info->tray;
+        qemuProcessRefreshDiskProps(disk, info);
 
         if (diskpriv->tray &&
             old_tray_status != disk->tray_status) {
