@@ -8695,6 +8695,7 @@ qemuProcessRefreshDisks(virDomainObj *vm,
         qemuDomainDiskPrivate *diskpriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
         struct qemuDomainDiskInfo *info;
         const char *entryname = disk->info.alias;
+        virDomainDiskTray old_tray_status = disk->tray_status;
 
         if (diskpriv->qomName)
             entryname = diskpriv->qomName;
@@ -8703,31 +8704,32 @@ qemuProcessRefreshDisks(virDomainObj *vm,
             continue;
 
         if (info->removable) {
-            bool emitEvent = info->tray_open != disk->tray_status;
-            int reason;
-
             if (info->empty)
                 virDomainDiskEmptySource(disk);
 
             if (info->tray) {
-                if (info->tray_open) {
-                    reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN;
+                if (info->tray_open)
                     disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
-                } else {
-                    reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE;
+                else
                     disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
-                }
-
-                if (emitEvent) {
-                    virObjectEvent *event = virDomainEventTrayChangeNewFromObj(vm, disk->info.alias, reason);
-                    virObjectEventStateQueue(driver->domainEventState, event);
-                }
             }
         }
 
         /* fill in additional data */
         diskpriv->removable = info->removable;
         diskpriv->tray = info->tray;
+
+        if (diskpriv->tray &&
+            old_tray_status != disk->tray_status) {
+            virDomainEventTrayChangeReason reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN;
+            virObjectEvent *event;
+
+            if (disk->tray_status == VIR_DOMAIN_DISK_TRAY_CLOSED)
+                reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE;
+
+            event = virDomainEventTrayChangeNewFromObj(vm, disk->info.alias, reason);
+            virObjectEventStateQueue(driver->domainEventState, event);
+        }
     }
 
     return 0;
