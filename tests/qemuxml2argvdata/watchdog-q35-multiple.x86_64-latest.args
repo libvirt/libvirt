@@ -31,8 +31,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"pcie-root-port","port":9,"chassis":3,"id":"pci.3","bus":"pcie.0","addr":"0x1.0x1"}' \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.2","addr":"0x1"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device '{"driver":"ib700","id":"watchdog0"}' \
--device '{"driver":"i6300esb","id":"watchdog1","bus":"pci.2","addr":"0x2"}' \
+-device '{"driver":"i6300esb","id":"watchdog0","bus":"pci.2","addr":"0x2"}' \
+-device '{"driver":"i6300esb","id":"watchdog1","bus":"pci.2","addr":"0x3"}' \
 -global ICH9-LPC.noreboot=off \
 -watchdog-action poweroff \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \

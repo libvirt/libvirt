@@ -18,7 +18,7 @@
     <controller type='usb' index='0'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
-    <watchdog model='ib700' action='poweroff'/>
+    <watchdog model='i6300esb' action='poweroff'/>
     <watchdog model='i6300esb' action='poweroff'/>
     <memballoon model='none'/>
   </devices>

@@ -41,9 +41,11 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
-    <watchdog model='ib700' action='poweroff'/>
     <watchdog model='i6300esb' action='poweroff'>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x02' function='0x0'/>
+    </watchdog>
+    <watchdog model='i6300esb' action='poweroff'>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x03' function='0x0'/>
     </watchdog>
     <watchdog model='itco' action='poweroff'/>
     <memballoon model='none'/>

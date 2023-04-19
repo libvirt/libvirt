@@ -2320,6 +2320,13 @@ qemuValidateDomainWatchdogDef(const virDomainWatchdogDef *dev,
         break;
 
     case VIR_DOMAIN_WATCHDOG_MODEL_IB700:
+        if (!qemuDomainIsI440FX(def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("%1$s model of watchdog cannot be used with this machine type"),
+                           virDomainWatchdogModelTypeToString(dev->model));
+            return -1;
+        }
+
         if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("%1$s model of watchdog does not support configuring the address"),
