@@ -2929,7 +2929,7 @@ qemuDomainAttachWatchdog(virDomainObj *vm,
 
     if (watchdog->model != VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("hotplug of watchdog of model %1$s is not supported"),
+                       _("hotplug of watchdog model '%1$s' is not supported"),
                        virDomainWatchdogModelTypeToString(watchdog->model));
         goto cleanup;
     }
