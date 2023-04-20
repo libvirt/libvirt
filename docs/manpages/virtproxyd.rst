@@ -73,6 +73,9 @@ Or
 
    $ systemctl start virtproxyd-tcp.socket
 
+**Note**: The TCP socket uses plain unencrypted TCP connection and thus is
+insecure and should not be used.
+
 
 Traditional service mode
 ------------------------
