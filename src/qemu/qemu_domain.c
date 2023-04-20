@@ -5401,6 +5401,28 @@ qemuDomainDefaultNetModel(const virDomainDef *def,
 }
 
 
+
+static bool
+qemuDomainChrMatchDefaultPath(const char *prefix,
+                              const char *infix,
+                              const char *target,
+                              const char *path)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autofree char *regexp = NULL;
+
+    virBufferEscapeRegex(&buf, "^%s", prefix);
+    if (infix)
+        virBufferEscapeRegex(&buf, "%s", infix);
+    virBufferAddLit(&buf, "/(target/)?([^/]+\\.)|(domain-[^/]+/)|([0-9]+-[^/]+/)");
+    virBufferEscapeRegex(&buf, "%s$", target);
+
+    regexp = virBufferContentAndReset(&buf);
+
+    return virStringMatch(path, regexp);
+}
+
+
 /*
  * Clear auto generated unix socket paths:
  *
@@ -5421,6 +5443,9 @@ qemuDomainDefaultNetModel(const virDomainDef *def,
  *
  * This function clears the path for migration as well, so we need to clear
  * the path even if we are not storing it in the XML.
+ *
+ * Please note, as of libvirt 9.7.0 the channelTargetDir is no longer derived
+ * from cfg->libDir but rather cfg->stateDir.
  */
 static void
 qemuDomainChrDefDropDefaultPath(virDomainChrDef *chr,
@@ -5439,14 +5464,31 @@ qemuDomainChrDefDropDefaultPath(virDomainChrDef *chr,
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    virBufferEscapeRegex(&buf, "^%s", cfg->channelTargetDir);
-    virBufferAddLit(&buf, "/(target/)?([^/]+\\.)|(domain-[^/]+/)|([0-9]+-[^/]+/)");
-    virBufferEscapeRegex(&buf, "%s$", chr->target.name);
-
-    regexp = virBufferContentAndReset(&buf);
-
-    if (virStringMatch(chr->source->data.nix.path, regexp))
+    if (qemuDomainChrMatchDefaultPath(cfg->channelTargetDir,
+                                      NULL,
+                                      chr->target.name,
+                                      chr->source->data.nix.path)) {
         VIR_FREE(chr->source->data.nix.path);
+        return;
+    }
+
+    /* Previously, channelTargetDir was derived from cfg->libdir, or
+     * cfg->configBaseDir even. Try them too. */
+    if (qemuDomainChrMatchDefaultPath(cfg->libDir,
+                                      "/channel",
+                                      chr->target.name,
+                                      chr->source->data.nix.path)) {
+        VIR_FREE(chr->source->data.nix.path);
+        return;
+    }
+
+    if (qemuDomainChrMatchDefaultPath(cfg->configBaseDir,
+                                      "/qemu/channel",
+                                      chr->target.name,
+                                      chr->source->data.nix.path)) {
+        VIR_FREE(chr->source->data.nix.path);
+        return;
+    }
 }
 
 

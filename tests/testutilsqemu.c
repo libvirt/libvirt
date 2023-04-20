@@ -460,7 +460,7 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     VIR_FREE(cfg->libDir);
     cfg->libDir = g_strdup("/var/lib/libvirt/qemu");
     VIR_FREE(cfg->channelTargetDir);
-    cfg->channelTargetDir = g_strdup("/var/lib/libvirt/qemu/channel");
+    cfg->channelTargetDir = g_strdup("/var/run/libvirt/qemu/channel");
     VIR_FREE(cfg->memoryBackingDir);
     cfg->memoryBackingDir = g_strdup("/var/lib/libvirt/qemu/ram");
     VIR_FREE(cfg->nvramDir);

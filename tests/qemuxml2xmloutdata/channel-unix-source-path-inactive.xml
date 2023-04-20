@@ -42,6 +42,10 @@
       <target type='virtio' name='org.qemu.guest_agent.4'/>
       <address type='virtio-serial' controller='0' bus='0' port='5'/>
     </channel>
+    <channel type='unix'>
+      <target type='virtio' name='org.qemu.guest_agent.5'/>
+      <address type='virtio-serial' controller='0' bus='0' port='6'/>
+    </channel>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>

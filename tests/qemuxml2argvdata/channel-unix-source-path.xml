@@ -28,6 +28,10 @@
       <source mode='bind' path='/var/lib/libvirt/qemu/channel/1-QEMUGuest1/org.qemu.guest_agent.4'/>
       <target type='virtio' name='org.qemu.guest_agent.4'/>
     </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/qemu/channel/1-QEMUGuest1/org.qemu.guest_agent.5'/>
+      <target type='virtio' name='org.qemu.guest_agent.5'/>
+    </channel>
     <memballoon model='none'/>
   </devices>
 </domain>
