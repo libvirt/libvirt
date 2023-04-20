@@ -110,57 +110,6 @@ qemuHotplugCreateObjects(virDomainXMLOption *xmlopt,
 }
 
 static int
-testQemuHotplugUpdate(virDomainObj *vm,
-                      virDomainDeviceDef *dev)
-{
-    int ret = -1;
-
-    /* XXX Ideally, we would call qemuDomainUpdateDeviceLive here.  But that
-     * would require us to provide virConnectPtr and virDomainPtr (they're used
-     * in case of updating a disk device. So for now, we will proceed with
-     * breaking the function into pieces. If we ever learn how to fake those
-     * required object, we can replace this code then. */
-    switch (dev->type) {
-    case VIR_DOMAIN_DEVICE_GRAPHICS:
-        ret = qemuDomainChangeGraphics(&driver, vm, dev->data.graphics);
-        break;
-
-    case VIR_DOMAIN_DEVICE_DISK:
-    case VIR_DOMAIN_DEVICE_LEASE:
-    case VIR_DOMAIN_DEVICE_FS:
-    case VIR_DOMAIN_DEVICE_NET:
-    case VIR_DOMAIN_DEVICE_INPUT:
-    case VIR_DOMAIN_DEVICE_SOUND:
-    case VIR_DOMAIN_DEVICE_VIDEO:
-    case VIR_DOMAIN_DEVICE_HOSTDEV:
-    case VIR_DOMAIN_DEVICE_WATCHDOG:
-    case VIR_DOMAIN_DEVICE_CONTROLLER:
-    case VIR_DOMAIN_DEVICE_HUB:
-    case VIR_DOMAIN_DEVICE_REDIRDEV:
-    case VIR_DOMAIN_DEVICE_NONE:
-    case VIR_DOMAIN_DEVICE_SMARTCARD:
-    case VIR_DOMAIN_DEVICE_CHR:
-    case VIR_DOMAIN_DEVICE_MEMBALLOON:
-    case VIR_DOMAIN_DEVICE_NVRAM:
-    case VIR_DOMAIN_DEVICE_LAST:
-    case VIR_DOMAIN_DEVICE_RNG:
-    case VIR_DOMAIN_DEVICE_TPM:
-    case VIR_DOMAIN_DEVICE_PANIC:
-    case VIR_DOMAIN_DEVICE_SHMEM:
-    case VIR_DOMAIN_DEVICE_MEMORY:
-    case VIR_DOMAIN_DEVICE_IOMMU:
-    case VIR_DOMAIN_DEVICE_VSOCK:
-    case VIR_DOMAIN_DEVICE_AUDIO:
-    case VIR_DOMAIN_DEVICE_CRYPTO:
-        VIR_TEST_VERBOSE("device type '%s' cannot be updated",
-                virDomainDeviceTypeToString(dev->type));
-        break;
-    }
-
-    return ret;
-}
-
-static int
 testQemuHotplugCheckResult(virDomainObj *vm,
                            const char *expected,
                            const char *expectedFile,
@@ -300,7 +249,7 @@ testQemuHotplug(const void *data)
         break;
 
     case UPDATE:
-        ret = testQemuHotplugUpdate(vm, dev);
+        ret = qemuDomainUpdateDeviceLive(vm, dev, &driver, false);
     }
 
     virObjectLock(priv->mon);
@@ -633,8 +582,8 @@ mymain(void)
     DO_TEST_UPDATE("x86_64", "graphics-spice-listen-network", "graphics-spice-listen-network-password", false, false,
                    "set_password", QMP_OK, "expire_password", QMP_OK);
     cfg->spiceTLS = false;
-    /* Strange huh? Currently, only graphics can be updated :-P */
-    DO_TEST_UPDATE("x86_64", "disk-cdrom", "disk-cdrom-nochange", true, false, NULL);
+
+    DO_TEST_UPDATE("x86_64", "disk-cdrom", "disk-cdrom-nochange", false, false, NULL);
 
     DO_TEST_ATTACH("x86_64", "console-compat-2-live", "console-virtio", false, true,
                    "chardev-add", "{\"return\": {\"pty\": \"/dev/pts/26\"}}",
