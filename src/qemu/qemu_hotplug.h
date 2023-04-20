@@ -111,6 +111,10 @@ int qemuDomainAttachRNGDevice(virQEMUDriver *driver,
                               virDomainObj *vm,
                               virDomainRNGDef *rng);
 
+int qemuDomainAttachDeviceLive(virDomainObj *vm,
+                               virDomainDeviceDef *dev,
+                               virQEMUDriver *driver);
+
 int qemuDomainDetachDeviceLive(virDomainObj *vm,
                                virDomainDeviceDef *match,
                                virQEMUDriver *driver,
