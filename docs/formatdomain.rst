@@ -1207,7 +1207,10 @@ NUMA Node Tuning
    'restrictive', defaults to 'strict'. The value 'restrictive' specifies
    using system default policy and only cgroups is used to restrict the
    memory nodes, and it requires setting mode to 'restrictive' in ``memnode``
-   elements. Attribute ``nodeset`` specifies the NUMA nodes, using the same
+   elements (see quirk below).  This exists solely for the purpose of being able
+   to request movement of such memory for a running domain using ``virsh
+   numatune`` or ``virDomainSetNumaParameters` and is not guaranteed to happen.
+   Attribute ``nodeset`` specifies the NUMA nodes, using the same
    syntax as attribute ``cpuset`` of element ``vcpu``. Attribute ``placement`` (
    :since:`since 0.9.12` ) can be used to indicate the memory placement mode for
    domain process, its value can be either "static" or "auto", defaults to
@@ -1227,6 +1230,12 @@ NUMA Node Tuning
    addresses guest NUMA node for which the settings are applied. Attributes
    ``mode`` and ``nodeset`` have the same meaning and syntax as in ``memory``
    element. This setting is not compatible with automatic placement.
+   Note that for ``memnode`` this will only guide the memory access for the vCPU
+   threads or similar mechanism and is very hypervisor-specific.  This does not
+   guarantee the placement of the node's memory allocation.  For proper
+   restriction other means should be used (e.g. different mode, preallocated
+   hugepages).
+
    :since:`QEMU Since 1.2.7`
 
 
