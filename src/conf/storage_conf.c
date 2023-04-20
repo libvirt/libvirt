@@ -364,6 +364,7 @@ virStoragePoolOptionsFormatPool(virBuffer *buf,
                                 int type)
 {
     virStoragePoolOptions *poolOptions;
+    size_t i;
 
     if (!(poolOptions = virStoragePoolOptionsForPoolType(type)))
         return -1;
@@ -374,22 +375,17 @@ virStoragePoolOptionsFormatPool(virBuffer *buf,
     virBufferAddLit(buf, "<poolOptions>\n");
     virBufferAdjustIndent(buf, 2);
 
-    if (poolOptions->formatToString) {
-        size_t i;
+    virBufferAsprintf(buf, "<defaultFormat type='%s'/>\n",
+                      (poolOptions->formatToString)(poolOptions->defaultFormat));
 
-        virBufferAsprintf(buf, "<defaultFormat type='%s'/>\n",
-                          (poolOptions->formatToString)(poolOptions->defaultFormat));
+    virBufferAddLit(buf, "<enum name='sourceFormatType'>\n");
+    virBufferAdjustIndent(buf, 2);
 
-        virBufferAddLit(buf, "<enum name='sourceFormatType'>\n");
-        virBufferAdjustIndent(buf, 2);
+    for (i = 0; i < poolOptions->lastFormat; i++)
+        virBufferAsprintf(buf, "<value>%s</value>\n", (poolOptions->formatToString)(i));
 
-        for (i = 0; i < poolOptions->lastFormat; i++)
-            virBufferAsprintf(buf, "<value>%s</value>\n",
-                              (poolOptions->formatToString)(i));
-
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</enum>\n");
-    }
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</enum>\n");
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</poolOptions>\n");
