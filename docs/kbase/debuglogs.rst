@@ -25,9 +25,11 @@ the system clears this setting::
 
    # virt-admin -c virtqemud:///system daemon-log-outputs "3:journald 1:file:/var/log/libvirt/libvirtd.log"
    # virt-admin -c virtqemud:///system daemon-log-filters "3:remote 4:event 3:util.json 3:util.object 3:util.dbus 3:util.netlink 3:node_device 3:rpc 3:access 1:*"
-
-   # # optionally disable timeout of the daemon
    # virt-admin -c virtqemud:///system daemon-timeout 0
+
+The last command disabling timeout of the daemon is available since
+``libvirt-8.6.0``. With older versions make sure to reproduce the issue within
+120 seconds or have a VM running which prevents the daemon from timing out.
 
 For any other configuration please read the rest of the document. If you want
 to persist the log level and log outputs settings edit
