@@ -7070,10 +7070,9 @@ qemuDomainChangeMemoryLive(virQEMUDriver *driver G_GNUC_UNUSED,
 static int
 qemuDomainUpdateDeviceLive(virDomainObj *vm,
                            virDomainDeviceDef *dev,
-                           virDomainPtr dom,
+                           virQEMUDriver *driver,
                            bool force)
 {
-    virQEMUDriver *driver = dom->conn->privateData;
     virDomainDeviceDef oldDev = { .type = dev->type };
     int idx;
 
@@ -7939,7 +7938,7 @@ qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         /* virDomainDefCompatibleDevice call is delayed until we know the
          * device we're going to update. */
-        if ((ret = qemuDomainUpdateDeviceLive(vm, dev_live, dom, force)) < 0)
+        if ((ret = qemuDomainUpdateDeviceLive(vm, dev_live, driver, force)) < 0)
             goto endjob;
 
         qemuDomainSaveStatus(vm);
