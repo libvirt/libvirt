@@ -223,9 +223,8 @@ testQemuHotplug(const void *data)
     priv = vm->privateData;
     priv->mon = qemuMonitorTestGetMonitor(test_mon);
 
-    /* XXX We need to unlock the monitor here, as
-     * qemuDomainObjEnterMonitorInternal (called from qemuDomainChangeGraphics)
-     * tries to lock it again */
+    /* We need to unlock the monitor here, as any function below talks
+     * (transitively) on the monitor. */
     virObjectUnlock(priv->mon);
 
     switch (test->action) {
