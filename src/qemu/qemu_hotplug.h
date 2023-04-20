@@ -120,6 +120,11 @@ int qemuDomainDetachDeviceLive(virDomainObj *vm,
                                virQEMUDriver *driver,
                                bool async);
 
+int qemuDomainUpdateDeviceLive(virDomainObj *vm,
+                               virDomainDeviceDef *dev,
+                               virQEMUDriver *driver,
+                               bool force);
+
 void qemuDomainRemoveVcpuAlias(virDomainObj *vm,
                                const char *alias);
 

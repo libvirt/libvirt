@@ -6923,3 +6923,302 @@ qemuDomainChangeMemoryRequestedSize(virDomainObj *vm,
 
     return rc;
 }
+
+
+static int
+qemuDomainChangeDiskLive(virDomainObj *vm,
+                         virDomainDeviceDef *dev,
+                         virQEMUDriver *driver,
+                         bool force)
+{
+    virDomainDiskDef *disk = dev->data.disk;
+    virDomainDiskDef *orig_disk = NULL;
+    virDomainStartupPolicy origStartupPolicy;
+    virDomainDeviceDef oldDev = { .type = dev->type };
+
+    if (!(orig_disk = virDomainDiskByTarget(vm->def, disk->dst))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("disk '%1$s' not found"), disk->dst);
+        return -1;
+    }
+
+    oldDev.data.disk = orig_disk;
+    origStartupPolicy = orig_disk->startupPolicy;
+    if (virDomainDefCompatibleDevice(vm->def, dev, &oldDev,
+                                     VIR_DOMAIN_DEVICE_ACTION_UPDATE,
+                                     true) < 0)
+        return -1;
+
+    if (!qemuDomainDiskChangeSupported(disk, orig_disk))
+        return -1;
+
+    if (!virStorageSourceIsSameLocation(disk->src, orig_disk->src)) {
+        /* Disk source can be changed only for removable devices */
+        if (disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
+            disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk source can be changed only in removable "
+                             "drives"));
+            return -1;
+        }
+
+        /* update startup policy first before updating disk image */
+        orig_disk->startupPolicy = dev->data.disk->startupPolicy;
+
+        if (qemuDomainChangeEjectableMedia(driver, vm, orig_disk,
+                                           dev->data.disk->src, force) < 0) {
+            /* revert startup policy before failing */
+            orig_disk->startupPolicy = origStartupPolicy;
+            return -1;
+        }
+
+        dev->data.disk->src = NULL;
+    }
+
+    /* in case when we aren't updating disk source we update startup policy here */
+    orig_disk->startupPolicy = dev->data.disk->startupPolicy;
+    orig_disk->snapshot = dev->data.disk->snapshot;
+
+    return 0;
+}
+
+
+static bool
+qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
+                                         const virDomainMemoryDef *newDef)
+{
+    /* The only thing that is allowed to change is 'requestedsize' for
+     * virtio-mem model. Check if user isn't trying to sneak in change for
+     * something else. */
+
+    switch (oldDef->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot modify memory of model '%1$s'"),
+                       virDomainMemoryModelTypeToString(oldDef->model));
+        return false;
+        break;
+    }
+
+    if (oldDef->model != newDef->model) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot modify memory model from '%1$s' to '%2$s'"),
+                       virDomainMemoryModelTypeToString(oldDef->model),
+                       virDomainMemoryModelTypeToString(newDef->model));
+        return false;
+    }
+
+    if (oldDef->access != newDef->access) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot modify memory access from '%1$s' to '%2$s'"),
+                       virDomainMemoryAccessTypeToString(oldDef->access),
+                       virDomainMemoryAccessTypeToString(newDef->access));
+        return false;
+    }
+
+    if (oldDef->discard != newDef->discard) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot modify memory discard from '%1$s' to '%2$s'"),
+                       virTristateBoolTypeToString(oldDef->discard),
+                       virTristateBoolTypeToString(newDef->discard));
+        return false;
+    }
+
+    if (!virBitmapEqual(oldDef->sourceNodes,
+                        newDef->sourceNodes)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cannot modify memory source nodes"));
+        return false;
+    }
+
+    if (oldDef->pagesize != newDef->pagesize) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot modify memory pagesize from '%1$llu' to '%2$llu'"),
+                       oldDef->pagesize,
+                       newDef->pagesize);
+        return false;
+    }
+
+    if (STRNEQ_NULLABLE(oldDef->nvdimmPath, newDef->nvdimmPath)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot modify memory path from '%1$s' to '%2$s'"),
+                       NULLSTR(oldDef->nvdimmPath),
+                       NULLSTR(newDef->nvdimmPath));
+        return false;
+    }
+
+    if (oldDef->alignsize != newDef->alignsize) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot modify memory align size from '%1$llu' to '%2$llu'"),
+                       oldDef->alignsize, newDef->alignsize);
+        return false;
+    }
+
+    if (oldDef->nvdimmPmem != newDef->nvdimmPmem) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot modify memory pmem from '%1$d' to '%2$d'"),
+                       oldDef->nvdimmPmem, newDef->nvdimmPmem);
+        return false;
+    }
+
+    if (oldDef->targetNode != newDef->targetNode) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot modify memory targetNode from '%1$d' to '%2$d'"),
+                       oldDef->targetNode, newDef->targetNode);
+        return false;
+    }
+
+    if (oldDef->size != newDef->size) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot modify memory size from '%1$llu' to '%2$llu'"),
+                       oldDef->size, newDef->size);
+        return false;
+    }
+
+    if (oldDef->labelsize != newDef->labelsize) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot modify memory label size from '%1$llu' to '%2$llu'"),
+                       oldDef->labelsize, newDef->labelsize);
+        return false;
+    }
+    if (oldDef->blocksize != newDef->blocksize) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot modify memory block size from '%1$llu' to '%2$llu'"),
+                       oldDef->blocksize, newDef->blocksize);
+        return false;
+    }
+
+    /* requestedsize can change */
+
+    if (oldDef->readonly != newDef->readonly) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cannot modify memory pmem flag"));
+        return false;
+    }
+
+    if ((oldDef->uuid || newDef->uuid) &&
+        !(oldDef->uuid && newDef->uuid &&
+          memcmp(oldDef->uuid, newDef->uuid, VIR_UUID_BUFLEN) == 0)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cannot modify memory UUID"));
+        return false;
+    }
+
+    return true;
+}
+
+
+static int
+qemuDomainChangeMemoryLive(virQEMUDriver *driver G_GNUC_UNUSED,
+                           virDomainObj *vm,
+                           virDomainDeviceDef *dev)
+{
+    virDomainDeviceDef oldDev = { .type = VIR_DOMAIN_DEVICE_MEMORY };
+    virDomainMemoryDef *newDef = dev->data.memory;
+    virDomainMemoryDef *oldDef = NULL;
+
+    oldDef = virDomainMemoryFindByDeviceInfo(vm->def, &dev->data.memory->info, NULL);
+    if (!oldDef) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("memory '%1$s' not found"), dev->data.memory->info.alias);
+        return -1;
+    }
+
+    oldDev.data.memory = oldDef;
+
+    if (virDomainDefCompatibleDevice(vm->def, dev, &oldDev,
+                                     VIR_DOMAIN_DEVICE_ACTION_UPDATE,
+                                     true) < 0)
+        return -1;
+
+    if (!qemuDomainChangeMemoryLiveValidateChange(oldDef, newDef))
+        return -1;
+
+    if (qemuDomainChangeMemoryRequestedSize(vm, newDef->info.alias,
+                                            newDef->requestedsize) < 0)
+        return -1;
+
+    oldDef->requestedsize = newDef->requestedsize;
+    return 0;
+}
+
+
+int
+qemuDomainUpdateDeviceLive(virDomainObj *vm,
+                           virDomainDeviceDef *dev,
+                           virQEMUDriver *driver,
+                           bool force)
+{
+    virDomainDeviceDef oldDev = { .type = dev->type };
+    int idx;
+
+    switch ((virDomainDeviceType)dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, NULL);
+        return qemuDomainChangeDiskLive(vm, dev, driver, force);
+
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+        if ((idx = qemuDomainFindGraphicsIndex(vm->def, dev->data.graphics)) >= 0) {
+            oldDev.data.graphics = vm->def->graphics[idx];
+            if (virDomainDefCompatibleDevice(vm->def, dev, &oldDev,
+                                             VIR_DOMAIN_DEVICE_ACTION_UPDATE,
+                                             true) < 0)
+                return -1;
+        }
+
+        return qemuDomainChangeGraphics(driver, vm, dev->data.graphics);
+
+    case VIR_DOMAIN_DEVICE_NET:
+        if ((idx = virDomainNetFindIdx(vm->def, dev->data.net)) >= 0) {
+            oldDev.data.net = vm->def->nets[idx];
+            if (virDomainDefCompatibleDevice(vm->def, dev, &oldDev,
+                                             VIR_DOMAIN_DEVICE_ACTION_UPDATE,
+                                             true) < 0)
+                return -1;
+        }
+
+        return qemuDomainChangeNet(driver, vm, dev);
+
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        return qemuDomainChangeMemoryLive(driver, vm, dev);
+
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_VSOCK:
+    case VIR_DOMAIN_DEVICE_AUDIO:
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_LAST:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("live update of device '%1$s' is not supported"),
+                       virDomainDeviceTypeToString(dev->type));
+        return -1;
+    }
+
+    return -1;
+}
