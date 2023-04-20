@@ -154,7 +154,7 @@ testQemuHotplug(const void *data)
     bool keep = test->keep;
     unsigned int device_parse_flags = 0;
     virDomainObj *vm = NULL;
-    virDomainDeviceDef *dev = NULL;
+    g_autoptr(virDomainDeviceDef) dev = NULL;
     g_autoptr(qemuMonitorTest) test_mon = NULL;
     qemuDomainObjPrivate *priv = NULL;
 
@@ -229,11 +229,6 @@ testQemuHotplug(const void *data)
     switch (test->action) {
     case ATTACH:
         ret = qemuDomainAttachDeviceLive(vm, dev, &driver);
-        if (ret == 0) {
-            /* vm->def stolen dev->data.* so we just need to free the dev
-             * envelope */
-            VIR_FREE(dev);
-        }
         if (ret == 0 || fail)
             ret = testQemuHotplugCheckResult(vm, result_xml,
                                              result_filename, fail);
@@ -262,7 +257,6 @@ testQemuHotplug(const void *data)
         virObjectUnref(vm);
         test->vm = NULL;
     }
-    virDomainDeviceDefFree(dev);
     return ((ret < 0 && fail) || (!ret && !fail)) ? 0 : -1;
 }
 
