@@ -30,8 +30,8 @@ This daemon runs on virtualization hosts to provide management for network
 filters.
 
 The ``virtnwfilterd`` daemon only listens for requests on a local Unix domain
-socket. Remote off-host access and backwards compatibility with legacy
-clients expecting ``libvirtd`` is provided by the ``virtproxy`` daemon.
+socket. Remote access via TLS/TCP and backwards compatibility with legacy
+clients expecting ``libvirtd`` is provided by the ``virtproxyd`` daemon.
 
 Restarting ``virtnwfilterd`` does not interrupt running guests. Guests continue to
 operate and changes in their state will generally be picked up automatically
