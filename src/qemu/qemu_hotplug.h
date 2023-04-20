@@ -24,12 +24,6 @@
 #include "qemu_conf.h"
 #include "qemu_domain.h"
 
-int qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
-                                   virDomainObj *vm,
-                                   virDomainDiskDef *disk,
-                                   virStorageSource *newsrc,
-                                   bool force);
-
 void qemuDomainDelTLSObjects(virDomainObj *vm,
                              virDomainAsyncJob asyncJob,
                              const char *secAlias,
@@ -48,68 +42,17 @@ int qemuDomainGetTLSObjects(qemuDomainSecretInfo *secinfo,
                             virJSONValue **tlsProps,
                             virJSONValue **secProps);
 
-int qemuDomainAttachControllerDevice(virDomainObj *vm,
-                                     virDomainControllerDef *controller);
-int qemuDomainAttachDeviceDiskLive(virQEMUDriver *driver,
-                                   virDomainObj *vm,
-                                   virDomainDeviceDef *dev);
-
 int qemuDomainAttachDiskGeneric(virDomainObj *vm,
                                 virDomainDiskDef *disk,
                                 virDomainAsyncJob asyncJob);
 
-int qemuDomainAttachNetDevice(virQEMUDriver *driver,
-                              virDomainObj *vm,
-                              virDomainNetDef *net);
-int qemuDomainAttachRedirdevDevice(virQEMUDriver *driver,
-                                   virDomainObj *vm,
-                                   virDomainRedirdevDef *hostdev);
-int qemuDomainAttachHostDevice(virQEMUDriver *driver,
-                               virDomainObj *vm,
-                               virDomainHostdevDef *hostdev);
-int qemuDomainAttachShmemDevice(virDomainObj *vm,
-                                virDomainShmemDef *shmem);
-int qemuDomainAttachWatchdog(virDomainObj *vm,
-                             virDomainWatchdogDef *watchdog);
 int qemuDomainFindGraphicsIndex(virDomainDef *def,
                                 virDomainGraphicsDef *dev);
-int qemuDomainAttachMemory(virQEMUDriver *driver,
-                           virDomainObj *vm,
-                           virDomainMemoryDef *mem);
-int qemuDomainChangeGraphics(virQEMUDriver *driver,
-                             virDomainObj *vm,
-                             virDomainGraphicsDef *dev);
 int qemuDomainChangeGraphicsPasswords(virDomainObj *vm,
                                       int type,
                                       virDomainGraphicsAuthDef *auth,
                                       const char *defaultPasswd,
                                       int asyncJob);
-int qemuDomainChangeNet(virQEMUDriver *driver,
-                        virDomainObj *vm,
-                        virDomainDeviceDef *dev);
-int qemuDomainChangeNetLinkState(virDomainObj *vm,
-                                 virDomainNetDef *dev,
-                                 int linkstate);
-
-int qemuDomainAttachInputDevice(virDomainObj *vm,
-                                virDomainInputDef *input);
-
-int qemuDomainAttachVsockDevice(virDomainObj *vm,
-                                virDomainVsockDef *vsock);
-int
-qemuDomainAttachFSDevice(virQEMUDriver *driver,
-                         virDomainObj *vm,
-                         virDomainFSDef *fs);
-
-int qemuDomainAttachLease(virQEMUDriver *driver,
-                          virDomainObj *vm,
-                          virDomainLeaseDef *lease);
-int qemuDomainAttachChrDevice(virQEMUDriver *driver,
-                              virDomainObj *vm,
-                              virDomainDeviceDef *dev);
-int qemuDomainAttachRNGDevice(virQEMUDriver *driver,
-                              virDomainObj *vm,
-                              virDomainRNGDef *rng);
 
 int qemuDomainAttachDeviceLive(virDomainObj *vm,
                                virDomainDeviceDef *dev,
@@ -165,7 +108,3 @@ int qemuHotplugAttachDBusVMState(virQEMUDriver *driver,
 
 int qemuHotplugRemoveDBusVMState(virDomainObj *vm,
                                  virDomainAsyncJob asyncJob);
-
-int qemuDomainChangeMemoryRequestedSize(virDomainObj *vm,
-                                        const char *alias,
-                                        unsigned long long requestedsize);

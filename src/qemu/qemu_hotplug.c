@@ -75,6 +75,11 @@ VIR_LOG_INIT("qemu.qemu_hotplug");
 static void
 qemuDomainResetDeviceRemoval(virDomainObj *vm);
 
+static int
+qemuDomainAttachHostDevice(virQEMUDriver *driver,
+                           virDomainObj *vm,
+                           virDomainHostdevDef *hostdev);
+
 /**
  * qemuDomainDeleteDevice:
  * @vm: domain object
@@ -546,7 +551,7 @@ qemuDomainChangeMediaBlockdev(virDomainObj *vm,
  *
  * Returns 0 on success, -1 on error and reports libvirt error
  */
-int
+static int
 qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
                                virDomainObj *vm,
                                virDomainDiskDef *disk,
@@ -765,8 +770,9 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
 }
 
 
-int qemuDomainAttachControllerDevice(virDomainObj *vm,
-                                     virDomainControllerDef *controller)
+static int
+qemuDomainAttachControllerDevice(virDomainObj *vm,
+                                 virDomainControllerDef *controller)
 {
     int ret = -1;
     const char* type = virDomainControllerTypeToString(controller->type);
@@ -1044,7 +1050,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
  * This function handles all the necessary steps to attach a new storage source
  * to the VM.
  */
-int
+static int
 qemuDomainAttachDeviceDiskLive(virQEMUDriver *driver,
                                virDomainObj *vm,
                                virDomainDeviceDef *dev)
@@ -1088,7 +1094,7 @@ qemuDomainNetDeviceVportRemove(virDomainNetDef *net)
 }
 
 
-int
+static int
 qemuDomainAttachNetDevice(virQEMUDriver *driver,
                           virDomainObj *vm,
                           virDomainNetDef *net)
@@ -1779,9 +1785,10 @@ qemuDomainDelChardevTLSObjects(virQEMUDriver *driver,
 }
 
 
-int qemuDomainAttachRedirdevDevice(virQEMUDriver *driver,
-                                   virDomainObj *vm,
-                                   virDomainRedirdevDef *redirdev)
+static int
+qemuDomainAttachRedirdevDevice(virQEMUDriver *driver,
+                               virDomainObj *vm,
+                               virDomainRedirdevDef *redirdev)
 {
     int ret = -1;
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -2006,7 +2013,7 @@ qemuDomainAttachChrDeviceAssignAddr(virDomainObj *vm,
 }
 
 
-int
+static int
 qemuDomainAttachChrDevice(virQEMUDriver *driver,
                           virDomainObj *vm,
                           virDomainDeviceDef *dev)
@@ -2136,7 +2143,7 @@ qemuDomainAttachChrDevice(virQEMUDriver *driver,
 }
 
 
-int
+static int
 qemuDomainAttachRNGDevice(virQEMUDriver *driver,
                           virDomainObj *vm,
                           virDomainRNGDef *rng)
@@ -2251,7 +2258,7 @@ qemuDomainAttachRNGDevice(virQEMUDriver *driver,
  *
  * Returns 0 on success -1 on error.
  */
-int
+static int
 qemuDomainAttachMemory(virQEMUDriver *driver,
                        virDomainObj *vm,
                        virDomainMemoryDef *mem)
@@ -2768,7 +2775,7 @@ qemuDomainAttachMediatedDevice(virQEMUDriver *driver,
 }
 
 
-int
+static int
 qemuDomainAttachHostDevice(virQEMUDriver *driver,
                            virDomainObj *vm,
                            virDomainHostdevDef *hostdev)
@@ -2819,7 +2826,7 @@ qemuDomainAttachHostDevice(virQEMUDriver *driver,
 }
 
 
-int
+static int
 qemuDomainAttachShmemDevice(virDomainObj *vm,
                             virDomainShmemDef *shmem)
 {
@@ -2925,7 +2932,7 @@ qemuDomainAttachShmemDevice(virDomainObj *vm,
 }
 
 
-int
+static int
 qemuDomainAttachWatchdog(virDomainObj *vm,
                          virDomainWatchdogDef *watchdog)
 {
@@ -3028,7 +3035,7 @@ qemuDomainAttachWatchdog(virDomainObj *vm,
 }
 
 
-int
+static int
 qemuDomainAttachInputDevice(virDomainObj *vm,
                             virDomainInputDef *input)
 {
@@ -3130,7 +3137,7 @@ qemuDomainAttachInputDevice(virDomainObj *vm,
 }
 
 
-int
+static int
 qemuDomainAttachVsockDevice(virDomainObj *vm,
                             virDomainVsockDef *vsock)
 {
@@ -3207,7 +3214,7 @@ qemuDomainAttachVsockDevice(virDomainObj *vm,
 }
 
 
-int
+static int
 qemuDomainAttachFSDevice(virQEMUDriver *driver,
                          virDomainObj *vm,
                          virDomainFSDef *fs)
@@ -3300,7 +3307,7 @@ qemuDomainAttachFSDevice(virQEMUDriver *driver,
 }
 
 
-int
+static int
 qemuDomainAttachLease(virQEMUDriver *driver,
                       virDomainObj *vm,
                       virDomainLeaseDef *lease)
@@ -3608,9 +3615,10 @@ qemuDomainChangeNetFilter(virDomainObj *vm,
     return 0;
 }
 
-int qemuDomainChangeNetLinkState(virDomainObj *vm,
-                                 virDomainNetDef *dev,
-                                 int linkstate)
+static int
+qemuDomainChangeNetLinkState(virDomainObj *vm,
+                             virDomainNetDef *dev,
+                             int linkstate)
 {
     int ret = -1;
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -3638,7 +3646,7 @@ int qemuDomainChangeNetLinkState(virDomainObj *vm,
     return ret;
 }
 
-int
+static int
 qemuDomainChangeNet(virQEMUDriver *driver,
                     virDomainObj *vm,
                     virDomainDeviceDef *dev)
@@ -4244,7 +4252,7 @@ qemuDomainChangeGraphicsPasswords(virDomainObj *vm,
 }
 
 
-int
+static int
 qemuDomainChangeGraphics(virQEMUDriver *driver,
                          virDomainObj *vm,
                          virDomainGraphicsDef *dev)
@@ -6909,7 +6917,7 @@ qemuDomainSetVcpuInternal(virQEMUDriver *driver,
 }
 
 
-int
+static int
 qemuDomainChangeMemoryRequestedSize(virDomainObj *vm,
                                     const char *alias,
                                     unsigned long long requestedsize)
