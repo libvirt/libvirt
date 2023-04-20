@@ -1148,8 +1148,6 @@ chDomainPinVcpuLive(virDomainObj *vm,
     virDomainVcpuDef *vcpuinfo;
     virCHDomainObjPrivate *priv = vm->privateData;
 
-    g_autofree char *str = NULL;
-
     if (!virCHDomainHasVcpuPids(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("cpu affinity is not supported"));
@@ -1164,9 +1162,6 @@ chDomainPinVcpuLive(virDomainObj *vm,
     }
 
     if (!(tmpmap = virBitmapNewCopy(cpumap)))
-        return -1;
-
-    if (!(str = virBitmapFormat(cpumap)))
         return -1;
 
     if (vcpuinfo->online) {
