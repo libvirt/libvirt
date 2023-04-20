@@ -110,66 +110,6 @@ qemuHotplugCreateObjects(virDomainXMLOption *xmlopt,
 }
 
 static int
-testQemuHotplugAttach(virDomainObj *vm,
-                      virDomainDeviceDef *dev)
-{
-    int ret = -1;
-
-    switch (dev->type) {
-    case VIR_DOMAIN_DEVICE_DISK:
-        /* conn in only used for storage pool and secrets lookup so as long
-         * as we don't use any of them, passing NULL should be safe
-         */
-        ret = qemuDomainAttachDeviceDiskLive(&driver, vm, dev);
-        break;
-    case VIR_DOMAIN_DEVICE_CHR:
-        ret = qemuDomainAttachChrDevice(&driver, vm, dev);
-        break;
-    case VIR_DOMAIN_DEVICE_SHMEM:
-        ret = qemuDomainAttachShmemDevice(vm, dev->data.shmem);
-        break;
-    case VIR_DOMAIN_DEVICE_WATCHDOG:
-        ret = qemuDomainAttachWatchdog(vm, dev->data.watchdog);
-        break;
-    case VIR_DOMAIN_DEVICE_HOSTDEV:
-        ret = qemuDomainAttachHostDevice(&driver, vm, dev->data.hostdev);
-        break;
-    case VIR_DOMAIN_DEVICE_NET:
-        ret = qemuDomainAttachNetDevice(&driver, vm, dev->data.net);
-        break;
-
-    case VIR_DOMAIN_DEVICE_LEASE:
-    case VIR_DOMAIN_DEVICE_FS:
-    case VIR_DOMAIN_DEVICE_INPUT:
-    case VIR_DOMAIN_DEVICE_SOUND:
-    case VIR_DOMAIN_DEVICE_VIDEO:
-    case VIR_DOMAIN_DEVICE_CONTROLLER:
-    case VIR_DOMAIN_DEVICE_GRAPHICS:
-    case VIR_DOMAIN_DEVICE_HUB:
-    case VIR_DOMAIN_DEVICE_REDIRDEV:
-    case VIR_DOMAIN_DEVICE_NONE:
-    case VIR_DOMAIN_DEVICE_SMARTCARD:
-    case VIR_DOMAIN_DEVICE_MEMBALLOON:
-    case VIR_DOMAIN_DEVICE_NVRAM:
-    case VIR_DOMAIN_DEVICE_LAST:
-    case VIR_DOMAIN_DEVICE_RNG:
-    case VIR_DOMAIN_DEVICE_TPM:
-    case VIR_DOMAIN_DEVICE_PANIC:
-    case VIR_DOMAIN_DEVICE_MEMORY:
-    case VIR_DOMAIN_DEVICE_IOMMU:
-    case VIR_DOMAIN_DEVICE_VSOCK:
-    case VIR_DOMAIN_DEVICE_AUDIO:
-    case VIR_DOMAIN_DEVICE_CRYPTO:
-    default:
-        VIR_TEST_VERBOSE("device type '%s' cannot be attached",
-                virDomainDeviceTypeToString(dev->type));
-        break;
-    }
-
-    return ret;
-}
-
-static int
 testQemuHotplugUpdate(virDomainObj *vm,
                       virDomainDeviceDef *dev)
 {
@@ -325,6 +265,12 @@ testQemuHotplug(const void *data)
             goto cleanup;
     }
 
+    /* After successful attach, we list all aliases. We don't care for that in
+     * the test. Add a dummy reply. */
+    if (test->action == ATTACH &&
+        qemuMonitorTestAddItem(test_mon, "qom-list", "{\"return\":[]}") < 0)
+        goto cleanup;
+
     priv = vm->privateData;
     priv->mon = qemuMonitorTestGetMonitor(test_mon);
 
@@ -335,7 +281,7 @@ testQemuHotplug(const void *data)
 
     switch (test->action) {
     case ATTACH:
-        ret = testQemuHotplugAttach(vm, dev);
+        ret = qemuDomainAttachDeviceLive(vm, dev, &driver);
         if (ret == 0) {
             /* vm->def stolen dev->data.* so we just need to free the dev
              * envelope */
