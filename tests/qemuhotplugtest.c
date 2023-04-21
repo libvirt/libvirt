@@ -122,7 +122,6 @@ testQemuHotplugCheckResult(virDomainObj *vm,
                                 VIR_DOMAIN_DEF_FORMAT_SECURE);
     if (!actual)
         return -1;
-    vm->def->id = QEMU_HOTPLUG_TEST_DOMAIN_ID;
 
     if (STREQ(expected, actual)) {
         if (fail)
