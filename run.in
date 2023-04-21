@@ -40,9 +40,11 @@
 #
 # ----------------------------------------------------------------------
 
+import argparse
 import os
 import os.path
 import random
+import shutil
 import signal
 import subprocess
 import sys
@@ -59,14 +61,19 @@ def prepend(env, varname, extradir):
 
 here = "@abs_builddir@"
 
-if len(sys.argv) < 2:
-    print("syntax: %s BINARY [ARGS...]" % sys.argv[0], file=sys.stderr)
+parser = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+parser.add_argument('--selinux',
+                    action='store_true',
+                    help='Run in the appropriate selinux context')
+
+opts, args = parser.parse_known_args()
+
+if len(args) < 1:
+    print("syntax: %s [--selinux] BINARY [ARGS...]" % sys.argv[0], file=sys.stderr)
     sys.exit(1)
 
-prog = sys.argv[1]
-args = sys.argv[1:]
+prog = args[0]
 env = os.environ
-
 
 prepend(env, "LD_LIBRARY_PATH", os.path.join(here, "src"))
 prepend(env, "PKG_CONFIG_PATH", os.path.join(here, "src"))
@@ -130,10 +137,25 @@ def change_unit(name, action):
     return ret == 0
 
 
+def chcon(path, user, role, type):
+    print("Setting file context of {} to u={}, r={}, t={}...".format(progpath,
+                                                                     user,
+                                                                     role,
+                                                                     type))
+    ret = subprocess.call(["chcon", "-u", user, "-r", role, "-t", type, path])
+    return ret == 0
+
+
+def restorecon(path):
+    print("Restoring selinux context for {}...".format(path))
+    ret = subprocess.call(["restorecon", path])
+    return ret == 0
+
+
 try_stop_units = []
 if is_systemd_host():
     maybe_stopped_units = []
-    for arg in sys.argv:
+    for arg in args:
         name = os.path.basename(arg)
         if is_modular_daemon(name):
             # Only need to stop libvirtd or this specific modular unit
@@ -149,11 +171,10 @@ if is_systemd_host():
         if is_unit_active(unit):
             try_stop_units.append(unit)
 
-if len(try_stop_units) == 0:
+if len(try_stop_units) == 0 and not opts.selinux:
     # Run the program directly, replacing ourselves
     os.execvpe(prog, args, env)
 else:
-    print("Temporarily stopping systemd units...")
     stopped_units = []
 
     def sighandler(signum, frame):
@@ -164,12 +185,48 @@ else:
     signal.signal(signal.SIGQUIT, sighandler)
 
     try:
-        for unit in try_stop_units:
-            print(" > %s" % unit)
-            if not change_unit(unit, "stop"):
-                raise Exception("Unable to stop '%s'" % unit)
+        dorestorecon = False
+        progpath = shutil.which(prog)
+        if len(try_stop_units):
+            print("Temporarily stopping systemd units...")
 
-            stopped_units.append(unit)
+            for unit in try_stop_units:
+                print(" > %s" % unit)
+                if not change_unit(unit, "stop"):
+                    raise Exception("Unable to stop '%s'" % unit)
+
+                stopped_units.append(unit)
+
+        if opts.selinux:
+            # if using a wrapper command like 'gdb', setting the selinux
+            # context won't work because the wrapper command will not be a
+            # valid entrypoint for the virtd_t context
+            if os.path.basename(prog) not in ["libvirtd", *modular_daemons]:
+                raise Exception("'{}' is not recognized as a valid daemon. "
+                                "Selinux process context can only be set when "
+                                "executing a daemon directly without wrapper "
+                                "commands".format(prog))
+
+            if not progpath:
+                raise Exception("Can't find executable {} for selinux labeling"
+                                .format(prog))
+
+            if not progpath.startswith(os.path.abspath(here)):
+                raise Exception("Refusing to change selinux context of file "
+                                "'{}' outside build directory"
+                                .format(progpath))
+
+            # selinux won't allow us to transition to the virtd_t context from
+            # e.g. the user_home_t context (the likely label of the local
+            # executable file)
+            if not chcon(progpath, "system_u", "object_r", "virtd_exec_t"):
+                raise Exception("Failed to change selinux context of binary")
+            dorestorecon = True
+
+            args = ['runcon',
+                    '-u', 'system_u',
+                    '-r', 'system_r',
+                    '-t', 'virtd_t', *args]
 
         print("Running '%s'..." % str(" ".join(args)))
         ret = subprocess.call(args, env=env)
@@ -178,9 +235,12 @@ else:
     except Exception as e:
         print("%s" % e, file=sys.stderr)
     finally:
-        print("Re-starting original systemd units...")
-        stopped_units.reverse()
-        for unit in stopped_units:
-            print(" > %s" % unit)
-            if not change_unit(unit, "start"):
-                print(" ! unable to restart %s" % unit, file=sys.stderr)
+        if len(stopped_units):
+            print("Re-starting original systemd units...")
+            stopped_units.reverse()
+            for unit in stopped_units:
+                print(" > %s" % unit)
+                if not change_unit(unit, "start"):
+                    print(" ! unable to restart %s" % unit, file=sys.stderr)
+        if dorestorecon:
+            restorecon(progpath)
