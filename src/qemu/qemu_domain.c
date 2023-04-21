@@ -11292,6 +11292,53 @@ qemuDomainPrepareHostdevSCSI(virDomainHostdevDef *hostdev,
 }
 
 
+static int
+qemuDomainPrepareHostdevPCI(virDomainHostdevDef *hostdev,
+                            virQEMUCaps *qemuCaps)
+{
+    bool supportsPassthroughVFIO = qemuHostdevHostSupportsPassthroughVFIO();
+    virDomainHostdevSubsysPCIBackendType *backend = &hostdev->source.subsys.u.pci.backend;
+
+    /* assign defaults for hostdev passthrough */
+    switch (*backend) {
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
+        if (supportsPassthroughVFIO) {
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
+                *backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("VFIO PCI device assignment is not supported by this version of QEMU"));
+                return -1;
+            }
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("host doesn't support passthrough of host PCI devices"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
+        if (!supportsPassthroughVFIO) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("host doesn't support VFIO PCI passthrough"));
+            return false;
+        }
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("host doesn't support legacy PCI passthrough"));
+        return false;
+
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN:
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
+        break;
+    }
+
+    return true;
+}
+
+
 int
 qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
                          qemuDomainObjPrivate *priv)
@@ -11302,8 +11349,9 @@ qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
     switch ((virDomainHostdevSubsysType)hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
         return qemuDomainPrepareHostdevSCSI(hostdev, priv);
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+        return qemuDomainPrepareHostdevPCI(hostdev, priv->qemuCaps);
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:

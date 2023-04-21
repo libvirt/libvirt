@@ -1495,7 +1495,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
                                      &hostdev, 1, priv->qemuCaps, flags) < 0)
         return -1;
 
-    /* this could have been changed by qemuHostdevPreparePCIDevices */
+    /* this could have been changed by qemuDomainPrepareHostdevPCI() */
     backend = hostdev->source.subsys.u.pci.backend;
 
     switch (backend) {
