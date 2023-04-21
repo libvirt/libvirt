@@ -123,7 +123,7 @@ testQemuHotplugCheckResult(virDomainObj *vm,
     if (!actual)
         return -1;
 
-    if (STREQ(expected, actual)) {
+    if (STREQ_NULLABLE(expected, actual)) {
         if (fail)
             VIR_TEST_VERBOSE("domain XML should not match the expected result");
         ret = 0;
@@ -170,7 +170,9 @@ testQemuHotplug(const void *data)
         virTestLoadFile(device_filename, &device_xml) < 0)
         goto cleanup;
 
-    if (test->action == ATTACH &&
+    if (!fail &&
+        (test->action == ATTACH ||
+         test->action == UPDATE) &&
         virTestLoadFile(result_filename, &result_xml) < 0)
         goto cleanup;
 
@@ -243,6 +245,9 @@ testQemuHotplug(const void *data)
 
     case UPDATE:
         ret = qemuDomainUpdateDeviceLive(vm, dev, &driver, false);
+        if (ret == 0 || fail)
+            ret = testQemuHotplugCheckResult(vm, result_xml,
+                                             result_filename, fail);
     }
 
     virObjectLock(priv->mon);
