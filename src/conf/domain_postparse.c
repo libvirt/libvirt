@@ -649,6 +649,33 @@ virDomainFSDefPostParse(virDomainFSDef *fs)
     return 0;
 }
 
+static void
+virDomainInputDefPostParse(virDomainInputDef *input,
+                           const virDomainDef *def)
+{
+    if (input->bus == VIR_DOMAIN_INPUT_BUS_DEFAULT) {
+        if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
+            if ((input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
+                 input->type == VIR_DOMAIN_INPUT_TYPE_KBD) &&
+                (ARCH_IS_X86(def->os.arch) || def->os.arch == VIR_ARCH_NONE)) {
+            } else if (ARCH_IS_S390(def->os.arch) ||
+                       input->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
+                input->bus = VIR_DOMAIN_INPUT_BUS_VIRTIO;
+            } else if (input->type == VIR_DOMAIN_INPUT_TYPE_EVDEV) {
+                input->bus = VIR_DOMAIN_INPUT_BUS_NONE;
+            } else {
+                input->bus = VIR_DOMAIN_INPUT_BUS_USB;
+            }
+        } else if (def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
+                   def->os.type == VIR_DOMAIN_OSTYPE_XENPVH) {
+            input->bus = VIR_DOMAIN_INPUT_BUS_XEN;
+        } else {
+            if ((def->virtType == VIR_DOMAIN_VIRT_VZ ||
+                 def->virtType == VIR_DOMAIN_VIRT_PARALLELS))
+                input->bus = VIR_DOMAIN_INPUT_BUS_PARALLELS;
+        }
+    }
+}
 
 static int
 virDomainDeviceDefPostParseCommon(virDomainDeviceDef *dev,
@@ -701,6 +728,9 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_NET:
     case VIR_DOMAIN_DEVICE_INPUT:
+        virDomainInputDefPostParse(dev->data.input, def);
+        ret = 0;
+        break;
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_GRAPHICS:

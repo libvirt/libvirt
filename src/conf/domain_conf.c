@@ -905,6 +905,7 @@ VIR_ENUM_IMPL(virDomainInput,
 
 VIR_ENUM_IMPL(virDomainInputBus,
               VIR_DOMAIN_INPUT_BUS_LAST,
+              "default",
               "ps2",
               "usb",
               "xen",
@@ -10693,7 +10694,6 @@ virDomainPanicDefParseXML(virDomainXMLOption *xmlopt,
 /* Parse the XML definition for an input device */
 static virDomainInputDef *
 virDomainInputDefParseXML(virDomainXMLOption *xmlopt,
-                          const virDomainDef *dom,
                           xmlNodePtr node,
                           xmlXPathContextPtr ctxt,
                           unsigned int flags)
@@ -10733,35 +10733,12 @@ virDomainInputDefParseXML(virDomainXMLOption *xmlopt,
         goto error;
     }
 
-    if (bus) {
-        if ((def->bus = virDomainInputBusTypeFromString(bus)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown input bus type '%1$s'"), bus);
-            goto error;
-        }
-
-    } else {
-        if (dom->os.type == VIR_DOMAIN_OSTYPE_HVM) {
-            if ((def->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
-                def->type == VIR_DOMAIN_INPUT_TYPE_KBD) &&
-                (ARCH_IS_X86(dom->os.arch) || dom->os.arch == VIR_ARCH_NONE)) {
-                def->bus = VIR_DOMAIN_INPUT_BUS_PS2;
-            } else if (ARCH_IS_S390(dom->os.arch) ||
-                       def->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
-                def->bus = VIR_DOMAIN_INPUT_BUS_VIRTIO;
-            } else if (def->type == VIR_DOMAIN_INPUT_TYPE_EVDEV) {
-                def->bus = VIR_DOMAIN_INPUT_BUS_NONE;
-            } else {
-                def->bus = VIR_DOMAIN_INPUT_BUS_USB;
-            }
-        } else if (dom->os.type == VIR_DOMAIN_OSTYPE_XEN ||
-                   dom->os.type == VIR_DOMAIN_OSTYPE_XENPVH) {
-            def->bus = VIR_DOMAIN_INPUT_BUS_XEN;
-        } else {
-            if ((dom->virtType == VIR_DOMAIN_VIRT_VZ ||
-                 dom->virtType == VIR_DOMAIN_VIRT_PARALLELS))
-                def->bus = VIR_DOMAIN_INPUT_BUS_PARALLELS;
-        }
+    if (bus &&
+        ((def->bus = virDomainInputBusTypeFromString(bus)) < 0 ||
+         def->bus == VIR_DOMAIN_INPUT_BUS_DEFAULT)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown input bus type '%1$s'"), bus);
+        goto error;
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info, flags) < 0)
@@ -13768,7 +13745,7 @@ virDomainDeviceDefParse(const char *xmlStr,
             return NULL;
         break;
     case VIR_DOMAIN_DEVICE_INPUT:
-        if (!(dev->data.input = virDomainInputDefParseXML(xmlopt, def, node,
+        if (!(dev->data.input = virDomainInputDefParseXML(xmlopt, node,
                                                           ctxt, flags)))
             return NULL;
         break;
@@ -18874,7 +18851,6 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     for (i = 0; i < n; i++) {
         virDomainInputDef *input = virDomainInputDefParseXML(xmlopt,
-                                                             def,
                                                              nodes[i],
                                                              ctxt,
                                                              flags);

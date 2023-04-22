@@ -4345,6 +4345,7 @@ qemuBuildInputCommandLine(virCommand *cmd,
                 if (!(props = qemuBuildInputVirtioDevProps(def, input, qemuCaps)))
                     return -1;
 
+            case VIR_DOMAIN_INPUT_BUS_DEFAULT:
             case VIR_DOMAIN_INPUT_BUS_PS2:
             case VIR_DOMAIN_INPUT_BUS_XEN:
             case VIR_DOMAIN_INPUT_BUS_PARALLELS:

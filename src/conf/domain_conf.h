@@ -1510,6 +1510,7 @@ typedef enum {
 } virDomainInputType;
 
 typedef enum {
+    VIR_DOMAIN_INPUT_BUS_DEFAULT,
     VIR_DOMAIN_INPUT_BUS_PS2,
     VIR_DOMAIN_INPUT_BUS_USB,
     VIR_DOMAIN_INPUT_BUS_XEN,

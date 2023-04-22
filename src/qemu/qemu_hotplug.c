@@ -3064,6 +3064,7 @@ qemuDomainAttachInputDevice(virDomainObj *vm,
             goto cleanup;
         break;
 
+    case VIR_DOMAIN_INPUT_BUS_DEFAULT:
     case VIR_DOMAIN_INPUT_BUS_PS2:
     case VIR_DOMAIN_INPUT_BUS_XEN:
     case VIR_DOMAIN_INPUT_BUS_PARALLELS:
@@ -5810,6 +5811,7 @@ qemuDomainDetachPrepInput(virDomainObj *vm,
     *detach = input = vm->def->inputs[idx];
 
     switch ((virDomainInputBus) input->bus) {
+    case VIR_DOMAIN_INPUT_BUS_DEFAULT:
     case VIR_DOMAIN_INPUT_BUS_PS2:
     case VIR_DOMAIN_INPUT_BUS_XEN:
     case VIR_DOMAIN_INPUT_BUS_PARALLELS:
