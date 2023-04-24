@@ -11239,55 +11239,75 @@ qemuDomainPrepareDiskSource(virDomainDiskDef *disk,
 }
 
 
+static int
+qemuDomainPrepareHostdevSCSI(virDomainHostdevDef *hostdev,
+                             qemuDomainObjPrivate *priv)
+{
+    virDomainHostdevSubsysSCSI *scsisrc = &hostdev->source.subsys.u.scsi;
+    virStorageSource *src = NULL;
+
+    switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
+        virObjectUnref(scsisrc->u.host.src);
+        scsisrc->u.host.src = virStorageSourceNew();
+        src = scsisrc->u.host.src;
+
+        src->type = VIR_STORAGE_TYPE_BLOCK;
+
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
+        src = scsisrc->u.iscsi.src;
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainHostdevSCSIProtocolType, scsisrc->protocol);
+        return -1;
+    }
+
+    if (src) {
+        const char *backendalias = hostdev->info->alias;
+
+        src->readonly = hostdev->readonly;
+        src->id = qemuDomainStorageIDNew(priv);
+        src->nodestorage = g_strdup_printf("libvirt-%d-backend", src->id);
+        backendalias = src->nodestorage;
+
+        if (src->auth) {
+            virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
+            qemuDomainStorageSourcePrivate *srcPriv = qemuDomainStorageSourcePrivateFetch(src);
+
+            if (!(srcPriv->secinfo = qemuDomainSecretInfoSetupFromSecret(priv,
+                                                                         backendalias,
+                                                                         NULL, 0,
+                                                                         usageType,
+                                                                         src->auth->username,
+                                                                         &src->auth->seclookupdef)))
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 int
 qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
                          qemuDomainObjPrivate *priv)
 {
-    if (virHostdevIsSCSIDevice(hostdev)) {
-        virDomainHostdevSubsysSCSI *scsisrc = &hostdev->source.subsys.u.scsi;
-        virStorageSource *src = NULL;
+    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+        return 0;
 
-        switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
-        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
-            virObjectUnref(scsisrc->u.host.src);
-            scsisrc->u.host.src = virStorageSourceNew();
-            src = scsisrc->u.host.src;
-
-            src->type = VIR_STORAGE_TYPE_BLOCK;
-
-            break;
-
-        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
-            src = scsisrc->u.iscsi.src;
-            break;
-
-        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_LAST:
-        default:
-            virReportEnumRangeError(virDomainHostdevSCSIProtocolType, scsisrc->protocol);
-            return -1;
-        }
-
-        if (src) {
-            const char *backendalias = hostdev->info->alias;
-
-            src->readonly = hostdev->readonly;
-            src->id = qemuDomainStorageIDNew(priv);
-            src->nodestorage = g_strdup_printf("libvirt-%d-backend", src->id);
-            backendalias = src->nodestorage;
-
-            if (src->auth) {
-                virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
-                qemuDomainStorageSourcePrivate *srcPriv = qemuDomainStorageSourcePrivateFetch(src);
-
-                if (!(srcPriv->secinfo = qemuDomainSecretInfoSetupFromSecret(priv,
-                                                                             backendalias,
-                                                                             NULL, 0,
-                                                                             usageType,
-                                                                             src->auth->username,
-                                                                             &src->auth->seclookupdef)))
-                    return -1;
-            }
-        }
+    switch ((virDomainHostdevSubsysType)hostdev->source.subsys.type) {
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+        return qemuDomainPrepareHostdevSCSI(hostdev, priv);
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
+        break;
     }
 
     return 0;
