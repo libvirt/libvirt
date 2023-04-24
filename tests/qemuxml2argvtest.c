@@ -407,12 +407,6 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
     for (i = 0; i < vm->def->nhostdevs; i++) {
         virDomainHostdevDef *hostdev = vm->def->hostdevs[i];
 
-        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-            hostdev->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
-            hostdev->source.subsys.u.pci.backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
-        }
-
         if (virHostdevIsSCSIDevice(hostdev)) {
             virDomainHostdevSubsysSCSI *scsisrc = &hostdev->source.subsys.u.scsi;
 
