@@ -313,6 +313,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDef *def,
                 break;
             }
         default:
+        case VIR_DOMAIN_HOSTDEV_MODE_LAST:
             break;
         }
     }

@@ -1280,7 +1280,7 @@ qemuMigrationSrcIsAllowedHostdev(const virDomainDef *def)
      * forbidden. */
     for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDef *hostdev = def->hostdevs[i];
-        switch ((virDomainHostdevMode)hostdev->mode) {
+        switch (hostdev->mode) {
         case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot migrate a domain with <hostdev mode='capabilities'>"));

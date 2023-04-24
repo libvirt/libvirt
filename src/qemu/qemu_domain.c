@@ -10678,7 +10678,7 @@ qemuDomainGetHostdevPath(virDomainHostdevDef *dev,
     g_autofree char *tmpPath = NULL;
     int perm = 0;
 
-    switch ((virDomainHostdevMode) dev->mode) {
+    switch (dev->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
         switch ((virDomainHostdevSubsysType)dev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:

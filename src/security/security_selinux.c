@@ -2345,6 +2345,7 @@ virSecuritySELinuxSetHostdevLabel(virSecurityManager *mgr,
         return virSecuritySELinuxSetHostdevCapsLabel(mgr, def, dev, vroot);
 
     default:
+    case VIR_DOMAIN_HOSTDEV_MODE_LAST:
         return 0;
     }
 }
@@ -2567,6 +2568,7 @@ virSecuritySELinuxRestoreHostdevLabel(virSecurityManager *mgr,
         return virSecuritySELinuxRestoreHostdevCapsLabel(mgr, dev, vroot);
 
     default:
+    case VIR_DOMAIN_HOSTDEV_MODE_LAST:
         return 0;
     }
 }

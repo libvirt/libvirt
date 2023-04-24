@@ -2648,6 +2648,8 @@ virDomainHostdevDefClear(virDomainHostdevDef *def)
             break;
         }
         break;
+    case VIR_DOMAIN_HOSTDEV_MODE_LAST:
+        break;
     }
 }
 
@@ -12917,7 +12919,6 @@ virDomainHostdevDefParseXML(virDomainXMLOption *xmlopt,
 {
     virDomainHostdevDef *def;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    g_autofree char *mode = virXMLPropString(node, "mode");
     g_autofree char *type = virXMLPropString(node, "type");
 
     ctxt->node = node;
@@ -12925,15 +12926,11 @@ virDomainHostdevDefParseXML(virDomainXMLOption *xmlopt,
     if (!(def = virDomainHostdevDefNew()))
         goto error;
 
-    if (mode) {
-        if ((def->mode = virDomainHostdevModeTypeFromString(mode)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown hostdev mode '%1$s'"), mode);
-            goto error;
-        }
-    } else {
-        def->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
-    }
+    if (virXMLPropEnumDefault(node, "mode", virDomainHostdevModeTypeFromString,
+                              VIR_XML_PROP_NONE,
+                              &def->mode,
+                              VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) < 0)
+        goto error;
 
     switch (def->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
@@ -12947,6 +12944,7 @@ virDomainHostdevDefParseXML(virDomainXMLOption *xmlopt,
             goto error;
         break;
     default:
+    case VIR_DOMAIN_HOSTDEV_MODE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unexpected hostdev mode %1$d"), def->mode);
         goto error;
@@ -14182,6 +14180,8 @@ virDomainHostdevMatch(virDomainHostdevDef *a,
         return virDomainHostdevMatchSubsys(a, b);
     case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
         return virDomainHostdevMatchCaps(a, b);
+    case VIR_DOMAIN_HOSTDEV_MODE_LAST:
+        break;
     }
     return 0;
 }
@@ -26087,6 +26087,7 @@ virDomainHostdevDefFormat(virBuffer *buf,
         }
         break;
     default:
+    case VIR_DOMAIN_HOSTDEV_MODE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected hostdev mode %1$d"), def->mode);
         return -1;
@@ -26138,6 +26139,8 @@ virDomainHostdevDefFormat(virBuffer *buf,
     case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
         if (virDomainHostdevDefFormatCaps(buf, def) < 0)
             return -1;
+        break;
+    case VIR_DOMAIN_HOSTDEV_MODE_LAST:
         break;
     }
 

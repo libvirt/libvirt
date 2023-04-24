@@ -371,7 +371,7 @@ struct _virDomainHostdevDef {
      */
     virDomainNetDef *parentnet;
 
-    int mode; /* enum virDomainHostdevMode */
+    virDomainHostdevMode mode;
     virDomainStartupPolicy startupPolicy;
     bool managed;
     bool missing;

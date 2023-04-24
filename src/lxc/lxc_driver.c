@@ -3905,6 +3905,7 @@ lxcDomainAttachDeviceHostdevLive(virLXCDriver *driver,
         return lxcDomainAttachDeviceHostdevCapsLive(driver, vm, dev);
 
     default:
+    case VIR_DOMAIN_HOSTDEV_MODE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported host device mode %1$s"),
                        virDomainHostdevModeTypeToString(dev->data.hostdev->mode));
@@ -4328,6 +4329,7 @@ lxcDomainDetachDeviceHostdevLive(virLXCDriver *driver,
         return lxcDomainDetachDeviceHostdevCapsLive(vm, dev);
 
     default:
+    case VIR_DOMAIN_HOSTDEV_MODE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported host device mode %1$s"),
                        virDomainHostdevModeTypeToString(dev->data.hostdev->mode));

@@ -1837,6 +1837,7 @@ virLXCControllerSetupAllHostdevs(virLXCController *ctrl)
                 return -1;
             break;
         default:
+        case VIR_DOMAIN_HOSTDEV_MODE_LAST:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported host device mode %1$s"),
                            virDomainHostdevModeTypeToString(def->mode));

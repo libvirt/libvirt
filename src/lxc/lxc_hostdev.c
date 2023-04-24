@@ -100,6 +100,7 @@ int virLXCPrepareHostDevices(virLXCDriver *driver,
 
 
         default:
+        case VIR_DOMAIN_HOSTDEV_MODE_LAST:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported hostdev mode %1$s"),
                            virDomainHostdevModeTypeToString(dev->mode));
