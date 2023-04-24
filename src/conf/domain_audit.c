@@ -428,6 +428,8 @@ virDomainAuditHostdev(virDomainObj *vm, virDomainHostdevDef *hostdev,
                       virt, reason, vmname, uuidstr, device);
             break;
 
+        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
+        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST:
         default:
             VIR_WARN("Unexpected hostdev type while encoding audit message: %d",
                      hostdev->source.caps.type);

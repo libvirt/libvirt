@@ -2616,7 +2616,7 @@ virDomainHostdevDefClear(virDomainHostdevDef *def)
 
     switch (def->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
-        switch ((virDomainHostdevCapsType) def->source.caps.type) {
+        switch (def->source.caps.type) {
         case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
             VIR_FREE(def->source.caps.u.storage.block);
             break;
@@ -6502,7 +6502,7 @@ virDomainNetDefCoalesceFormatXML(virBuffer *buf,
 static int
 virDomainHostdevDefParseXMLCaps(xmlNodePtr node G_GNUC_UNUSED,
                                 xmlXPathContextPtr ctxt,
-                                const char *type,
+                                virDomainHostdevCapsType type,
                                 virDomainHostdevDef *def)
 {
     /* @type is passed in from the caller rather than read from the
@@ -6513,18 +6513,7 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node G_GNUC_UNUSED,
      * <hostdev>.  (the functions we're going to call expect address
      * type to already be known).
      */
-    if (!type) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("missing source address type"));
-        return -1;
-    }
-
-    if ((def->source.caps.type = virDomainHostdevCapsTypeFromString(type)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown host device source address type '%1$s'"),
-                       type);
-        return -1;
-    }
+    def->source.caps.type = type;
 
     if (!virXPathNode("./source", ctxt)) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -6560,6 +6549,7 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node G_GNUC_UNUSED,
                                        ctxt, &def->source.caps.u.net.ip) < 0)
             return -1;
         break;
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("address type='%1$s' not supported in hostdev interfaces"),
@@ -12920,6 +12910,7 @@ virDomainHostdevDefParseXML(virDomainXMLOption *xmlopt,
     virDomainHostdevDef *def;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *type = virXMLPropString(node, "type");
+    unsigned int typeU;
 
     ctxt->node = node;
 
@@ -12940,7 +12931,12 @@ virDomainHostdevDefParseXML(virDomainXMLOption *xmlopt,
         break;
     case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
         /* parse managed/mode/type, and the <source> element */
-        if (virDomainHostdevDefParseXMLCaps(node, ctxt, type, def) < 0)
+        if (virXMLPropEnum(node, "type",
+                           virDomainHostdevCapsTypeFromString,
+                           VIR_XML_PROP_REQUIRED, &typeU) < 0)
+            goto error;
+
+        if (virDomainHostdevDefParseXMLCaps(node, ctxt, typeU, def) < 0)
             goto error;
         break;
     default:
@@ -14163,6 +14159,8 @@ virDomainHostdevMatchCaps(virDomainHostdevDef *a,
         return virDomainHostdevMatchCapsMisc(a, b);
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
         return virDomainHostdevMatchCapsNet(a, b);
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST:
+        break;
     }
     return 0;
 }
@@ -23486,6 +23484,7 @@ virDomainHostdevDefFormatCaps(virBuffer *buf,
         virBufferEscapeString(buf, "<interface>%s</interface>\n",
                               def->source.caps.u.net.ifname);
         break;
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST:
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected hostdev type %1$d"),

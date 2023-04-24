@@ -1804,6 +1804,7 @@ virLXCControllerSetupHostdevCaps(virDomainDef *vmDef,
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
         return 0; /* case is handled in virLXCControllerMoveInterfaces */
 
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported host device mode %1$s"),

@@ -2315,6 +2315,8 @@ virSecuritySELinuxSetHostdevCapsLabel(virSecurityManager *mgr,
         break;
     }
 
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST:
     default:
         ret = 0;
         break;
@@ -2538,6 +2540,8 @@ virSecuritySELinuxRestoreHostdevCapsLabel(virSecurityManager *mgr,
         break;
     }
 
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST:
     default:
         ret = 0;
         break;

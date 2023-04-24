@@ -3869,6 +3869,8 @@ lxcDomainAttachDeviceHostdevCapsLive(virLXCDriver *driver,
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
         return lxcDomainAttachDeviceHostdevMiscLive(driver, vm, dev);
 
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported host device type %1$s"),
@@ -4299,6 +4301,8 @@ lxcDomainDetachDeviceHostdevCapsLive(virDomainObj *vm,
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
         return lxcDomainDetachDeviceHostdevMiscLive(vm, dev);
 
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported host device type %1$s"),

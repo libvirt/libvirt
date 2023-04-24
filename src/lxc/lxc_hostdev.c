@@ -90,6 +90,7 @@ int virLXCPrepareHostDevices(virLXCDriver *driver,
             case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
             case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
                 break;
+            case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST:
             default:
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Unsupported hostdev type %1$s"),

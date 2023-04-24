@@ -336,7 +336,7 @@ typedef enum {
 } virDomainHostdevCapsType;
 
 struct _virDomainHostdevCaps {
-    int type; /* enum virDOmainHostdevCapsType */
+    virDomainHostdevCapsType type;
     union {
         struct {
             char *block;
