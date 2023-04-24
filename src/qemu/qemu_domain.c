@@ -11331,7 +11331,14 @@ qemuDomainPrepareHostdevPCI(virDomainHostdevDef *hostdev,
         return false;
 
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("QEMU does not support device assignment mode '%1$s'"),
+                       virDomainHostdevSubsysPCIBackendTypeToString(*backend));
+        return false;
+
+    default:
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
+        virReportEnumRangeError(virDomainHostdevSubsysPCIBackendType, *backend);
         break;
     }
 
