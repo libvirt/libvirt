@@ -1483,7 +1483,6 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
     bool teardownlabel = false;
     bool teardowndevice = false;
     bool teardownmemlock = false;
-    int backend;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned int flags = 0;
 
@@ -1494,32 +1493,6 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
     if (qemuHostdevPreparePCIDevices(driver, vm->def->name, vm->def->uuid,
                                      &hostdev, 1, priv->qemuCaps, flags) < 0)
         return -1;
-
-    /* this could have been changed by qemuDomainPrepareHostdevPCI() */
-    backend = hostdev->source.subsys.u.pci.backend;
-
-    switch (backend) {
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("VFIO PCI device assignment is not "
-                             "supported by this version of qemu"));
-            goto error;
-        }
-        break;
-
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
-        break;
-
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN:
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("QEMU does not support device assignment mode '%1$s'"),
-                       virDomainHostdevSubsysPCIBackendTypeToString(backend));
-        goto error;
-        break;
-    }
 
     if (qemuDomainAdjustMaxMemLockHostdev(vm, hostdev) < 0)
         goto error;
@@ -1534,8 +1507,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
 
     if (qemuSecuritySetHostdevLabel(driver, vm, hostdev) < 0)
         goto error;
-    if (backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
-        teardownlabel = true;
+    teardownlabel = true;
 
     qemuAssignDeviceHostdevAlias(vm->def, &info->alias, -1);
 
