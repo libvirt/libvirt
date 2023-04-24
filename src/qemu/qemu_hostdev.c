@@ -181,7 +181,6 @@ qemuHostdevPreparePCIDevices(virQEMUDriver *driver,
                              const unsigned char *uuid,
                              virDomainHostdevDef **hostdevs,
                              int nhostdevs,
-                             virQEMUCaps *qemuCaps G_GNUC_UNUSED,
                              unsigned int flags)
 {
     return virHostdevPreparePCIDevices(driver->hostdevMgr,
@@ -261,7 +260,6 @@ qemuHostdevPrepareMediatedDevices(virQEMUDriver *driver,
 int
 qemuHostdevPrepareDomainDevices(virQEMUDriver *driver,
                                 virDomainDef *def,
-                                virQEMUCaps *qemuCaps,
                                 unsigned int flags)
 {
     if (!def->nhostdevs && !def->ndisks)
@@ -271,8 +269,7 @@ qemuHostdevPrepareDomainDevices(virQEMUDriver *driver,
         return -1;
 
     if (qemuHostdevPreparePCIDevices(driver, def->name, def->uuid,
-                                     def->hostdevs, def->nhostdevs,
-                                     qemuCaps, flags) < 0)
+                                     def->hostdevs, def->nhostdevs, flags) < 0)
         return -1;
 
     if (qemuHostdevPrepareUSBDevices(driver, def->name,

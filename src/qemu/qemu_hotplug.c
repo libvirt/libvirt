@@ -1490,8 +1490,8 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
 
     if (!cfg->relaxedACS)
         flags |= VIR_HOSTDEV_STRICT_ACS_CHECK;
-    if (qemuHostdevPreparePCIDevices(driver, vm->def->name, vm->def->uuid,
-                                     &hostdev, 1, priv->qemuCaps, flags) < 0)
+    if (qemuHostdevPreparePCIDevices(driver, vm->def->name,
+                                     vm->def->uuid, &hostdev, 1, flags) < 0)
         return -1;
 
     if (qemuDomainAdjustMaxMemLockHostdev(vm, hostdev) < 0)

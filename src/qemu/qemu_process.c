@@ -7164,8 +7164,7 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
         hostdev_flags |= VIR_HOSTDEV_STRICT_ACS_CHECK;
     if (flags & VIR_QEMU_PROCESS_START_NEW)
         hostdev_flags |= VIR_HOSTDEV_COLD_BOOT;
-    if (qemuHostdevPrepareDomainDevices(driver, vm->def, priv->qemuCaps,
-                                        hostdev_flags) < 0)
+    if (qemuHostdevPrepareDomainDevices(driver, vm->def, hostdev_flags) < 0)
         return -1;
 
     VIR_DEBUG("Preparing chr device backends");

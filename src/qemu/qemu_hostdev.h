@@ -52,7 +52,6 @@ int qemuHostdevPreparePCIDevices(virQEMUDriver *driver,
                                  const unsigned char *uuid,
                                  virDomainHostdevDef **hostdevs,
                                  int nhostdevs,
-                                 virQEMUCaps *qemuCaps,
                                  unsigned int flags);
 int qemuHostdevPrepareUSBDevices(virQEMUDriver *driver,
                                  const char *name,
@@ -73,7 +72,6 @@ int qemuHostdevPrepareMediatedDevices(virQEMUDriver *driver,
                                       int nhostdevs);
 int qemuHostdevPrepareDomainDevices(virQEMUDriver *driver,
                                     virDomainDef *def,
-                                    virQEMUCaps *qemuCaps,
                                     unsigned int flags);
 
 void qemuHostdevReAttachOneNVMeDisk(virQEMUDriver *driver,
