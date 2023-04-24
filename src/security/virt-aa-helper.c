@@ -1106,6 +1106,9 @@ get_files(vahControl * ctl)
                 break;
             }
 
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
             default:
                 rc = 0;
                 break;

@@ -353,7 +353,7 @@ virDomainAuditHostdev(virDomainObj *vm, virDomainHostdevDef *hostdev,
 
     switch (hostdev->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
-        switch ((virDomainHostdevSubsysType) hostdev->source.subsys.type) {
+        switch (hostdev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             address = virPCIDeviceAddressAsString(&pcisrc->addr);
             break;

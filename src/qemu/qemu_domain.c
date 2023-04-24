@@ -10680,7 +10680,7 @@ qemuDomainGetHostdevPath(virDomainHostdevDef *dev,
 
     switch (dev->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
-        switch ((virDomainHostdevSubsysType)dev->source.subsys.type) {
+        switch (dev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
                 if (!(tmpPath = virPCIDeviceAddressGetIOMMUGroupDev(&pcisrc->addr)))
@@ -11488,7 +11488,7 @@ qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
         return 0;
 
-    switch ((virDomainHostdevSubsysType)hostdev->source.subsys.type) {
+    switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
         return qemuDomainPrepareHostdevSCSI(hostdev, priv);
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:

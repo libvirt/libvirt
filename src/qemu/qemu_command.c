@@ -5141,7 +5141,7 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
             continue;
 
-        switch ((virDomainHostdevSubsysType) subsys->type) {
+        switch (subsys->type) {
         /* USB */
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
             if (!(devprops = qemuBuildUSBHostdevDevProps(def, hostdev, qemuCaps)))

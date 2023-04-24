@@ -1287,7 +1287,7 @@ qemuMigrationSrcIsAllowedHostdev(const virDomainDef *def)
             return false;
 
         case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
-            switch ((virDomainHostdevSubsysType)hostdev->source.subsys.type) {
+            switch (hostdev->source.subsys.type) {
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
                 /* USB devices can be "migrated" */
                 continue;

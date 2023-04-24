@@ -2791,6 +2791,7 @@ qemuDomainAttachHostDevice(virQEMUDriver *driver,
             return -1;
         break;
 
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("hotplug is not supported for hostdev subsys type '%1$s'"),
@@ -4680,7 +4681,7 @@ qemuDomainRemoveHostDevice(virQEMUDriver *driver,
     if (qemuDomainNamespaceTeardownHostdev(vm, hostdev) < 0)
         VIR_WARN("Unable to remove host device from /dev");
 
-    switch ((virDomainHostdevSubsysType)hostdev->source.subsys.type) {
+    switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         qemuDomainRemovePCIHostDevice(driver, vm, hostdev);
         /* QEMU might no longer need to lock as much memory, eg. we just
@@ -5726,6 +5727,7 @@ qemuDomainDetachPrepHostdev(virDomainObj *vm,
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
             break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected hostdev type %1$d"), subsys->type);

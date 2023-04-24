@@ -2632,7 +2632,7 @@ virDomainHostdevDefClear(virDomainHostdevDef *def)
         }
         break;
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
-        switch ((virDomainHostdevSubsysType) def->source.subsys.type) {
+        switch (def->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
             virDomainHostdevSubsysSCSIClear(&def->source.subsys.u.scsi);
             break;
@@ -6168,7 +6168,7 @@ virDomainHostdevSubsysMediatedDevDefParseXML(virDomainHostdevDef *def,
 static int
 virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
                                   xmlXPathContextPtr ctxt,
-                                  const char *type,
+                                  virDomainHostdevSubsysType type,
                                   virDomainHostdevDef *def,
                                   unsigned int flags,
                                   virDomainXMLOption *xmlopt)
@@ -6202,18 +6202,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
      * <hostdev>.  (the functions we're going to call expect address
      * type to already be known).
      */
-    if (!type) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("missing source address type"));
-        return -1;
-    }
-
-    if ((def->source.subsys.type = virDomainHostdevSubsysTypeFromString(type)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown host device source address type '%1$s'"),
-                       type);
-        return -1;
-    }
+    def->source.subsys.type = type;
 
     if (!(sourcenode = virXPathNode("./source", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -6322,6 +6311,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
             return -1;
         break;
 
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("address type='%1$s' not supported in hostdev interfaces"),
@@ -8868,6 +8858,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
         }
     } else if (actual->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         virDomainHostdevDef *hostdev = &actual->data.hostdev.def;
+        int type;
 
         hostdev->parentnet = parent;
         hostdev->info = &parent->info;
@@ -8879,8 +8870,16 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
         /* if not explicitly stated, source/vendor implies usb device */
         if (!addrtype && virXPathNode("./source/vendor", ctxt))
             addrtype = g_strdup("usb");
+
+        if ((type = virDomainHostdevSubsysTypeFromString(addrtype)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown host device source address type '%1$s'"),
+                           addrtype);
+            goto error;
+        }
+
         hostdev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
-        if (virDomainHostdevDefParseXMLSubsys(node, ctxt, addrtype,
+        if (virDomainHostdevDefParseXMLSubsys(node, ctxt, type,
                                               hostdev, flags, xmlopt) < 0) {
             goto error;
         }
@@ -9544,6 +9543,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV: {
         g_autofree char *addrtype = virXPathString("string(./source/address/@type)", ctxt);
+        int type;
 
         def->data.hostdev.def.parentnet = def;
         def->data.hostdev.def.info = &def->info;
@@ -9556,7 +9556,15 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         /* The helper function expects type to already be found and
          * passed in as a string, since it is in a different place in
          * NetDef vs HostdevDef. */
-        if (virDomainHostdevDefParseXMLSubsys(node, ctxt, addrtype,
+
+        if ((type = virDomainHostdevSubsysTypeFromString(addrtype)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown host device source address type '%1$s'"),
+                           addrtype);
+            return NULL;
+        }
+
+        if (virDomainHostdevDefParseXMLSubsys(node, ctxt, type,
                                               &def->data.hostdev.def,
                                               flags, xmlopt) < 0)
             return NULL;
@@ -12909,8 +12917,7 @@ virDomainHostdevDefParseXML(virDomainXMLOption *xmlopt,
 {
     virDomainHostdevDef *def;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    g_autofree char *type = virXMLPropString(node, "type");
-    unsigned int typeU;
+    unsigned int type;
 
     ctxt->node = node;
 
@@ -12926,6 +12933,10 @@ virDomainHostdevDefParseXML(virDomainXMLOption *xmlopt,
     switch (def->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
         /* parse managed/mode/type, and the <source> element */
+        if (virXMLPropEnum(node, "type",
+                           virDomainHostdevSubsysTypeFromString,
+                           VIR_XML_PROP_REQUIRED, &type) < 0)
+            goto error;
         if (virDomainHostdevDefParseXMLSubsys(node, ctxt, type, def, flags, xmlopt) < 0)
             goto error;
         break;
@@ -12933,10 +12944,10 @@ virDomainHostdevDefParseXML(virDomainXMLOption *xmlopt,
         /* parse managed/mode/type, and the <source> element */
         if (virXMLPropEnum(node, "type",
                            virDomainHostdevCapsTypeFromString,
-                           VIR_XML_PROP_REQUIRED, &typeU) < 0)
+                           VIR_XML_PROP_REQUIRED, &type) < 0)
             goto error;
 
-        if (virDomainHostdevDefParseXMLCaps(node, ctxt, typeU, def) < 0)
+        if (virDomainHostdevDefParseXMLCaps(node, ctxt, type, def) < 0)
             goto error;
         break;
     default:
@@ -12953,7 +12964,7 @@ virDomainHostdevDefParseXML(virDomainXMLOption *xmlopt,
             goto error;
     }
     if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
-        switch ((virDomainHostdevSubsysType) def->source.subsys.type) {
+        switch (def->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
             if (virXPathBoolean("boolean(./readonly)", ctxt))
                 def->readonly = true;
@@ -14087,7 +14098,7 @@ virDomainHostdevMatchSubsys(virDomainHostdevDef *a,
     if (a->source.subsys.type != b->source.subsys.type)
         return 0;
 
-    switch ((virDomainHostdevSubsysType) a->source.subsys.type) {
+    switch (a->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         return virDomainHostdevMatchSubsysPCI(a, b);
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
@@ -23436,7 +23447,7 @@ virDomainHostdevDefFormatSubsys(virBuffer *buf,
                                 bool includeTypeInAddr,
                                 virDomainXMLOption *xmlopt)
 {
-    switch ((virDomainHostdevSubsysType) def->source.subsys.type) {
+    switch (def->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         virDomainHostdevDefFormatSubsysUSB(buf, def, flags, includeTypeInAddr);
         return 0;

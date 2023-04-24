@@ -76,6 +76,11 @@ int virLXCPrepareHostDevices(virLXCDriver *driver,
             switch (dev->source.subsys.type) {
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
                 break;
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
             default:
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Unsupported hostdev type %1$s"),

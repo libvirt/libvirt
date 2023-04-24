@@ -3848,6 +3848,11 @@ lxcDomainAttachDeviceHostdevSubsysLive(virLXCDriver *driver,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         return lxcDomainAttachDeviceHostdevSubsysUSBLive(driver, vm, dev);
 
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported host device type %1$s"),
@@ -4281,6 +4286,11 @@ lxcDomainDetachDeviceHostdevSubsysLive(virLXCDriver *driver,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         return lxcDomainDetachDeviceHostdevUSBLive(driver, vm, dev);
 
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported host device type %1$s"),

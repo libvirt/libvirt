@@ -316,7 +316,7 @@ struct _virDomainHostdevSubsysSCSIVHost {
 };
 
 struct _virDomainHostdevSubsys {
-    int type; /* enum virDomainHostdevSubsysType */
+    virDomainHostdevSubsysType type;
     union {
         virDomainHostdevSubsysUSB usb;
         virDomainHostdevSubsysPCI pci;

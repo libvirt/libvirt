@@ -2448,7 +2448,7 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
     }
 
     if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
-        switch ((virDomainHostdevSubsysType) hostdev->source.subsys.type) {
+        switch (hostdev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
             if (hostdev->source.subsys.u.usb.guestReset &&
                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_HOST_GUESTS_RESETS_ALL)) {
