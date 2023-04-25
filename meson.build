@@ -1655,30 +1655,6 @@ if not get_option('driver_qemu').disabled()
     conf.set_quoted('QEMU_USER', qemu_user)
     conf.set_quoted('QEMU_GROUP', qemu_group)
 
-    qemu_bridge_prog = find_program(
-      'qemu-bridge-helper',
-      dirs: [ '/usr/libexec', '/usr/lib/qemu', '/usr/lib' ],
-      required: false
-    )
-    if qemu_bridge_prog.found()
-      qemu_bridge_path = qemu_bridge_prog.full_path()
-    else
-      qemu_bridge_path = '/usr/libexec/qemu-bridge-helper'
-    endif
-    conf.set_quoted('QEMU_BRIDGE_HELPER', qemu_bridge_path)
-
-    qemu_pr_prog = find_program(
-      'qemu-pr-helper',
-      dirs: [ '/usr/bin', '/usr/libexec' ],
-      required: false
-    )
-    if qemu_pr_prog.found()
-      qemu_pr_path = qemu_pr_prog.full_path()
-    else
-      qemu_pr_path = '/usr/bin/qemu-pr-helper'
-    endif
-    conf.set_quoted('QEMU_PR_HELPER', qemu_pr_path)
-
     qemu_slirp_prog = find_program(
       'slirp-helper',
       dirs: [ '/usr/bin', '/usr/libexec' ],
