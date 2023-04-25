@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-01 11:38+0200\n"
+"POT-Creation-Date: 2023-04-25 10:39+0000\n"
 "PO-Revision-Date: 2023-04-25 08:21+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -550,8 +550,8 @@ msgid "%1$s can't be empty"
 msgstr "%1$s får inte vara tom"
 
 #, c-format
-msgid "%1$s cannot be set higher than %2$s "
-msgstr "%1$s kan inte sättas högre än %2$s "
+msgid "%1$s cannot be set higher than %2$s"
+msgstr ""
 
 #, c-format
 msgid "%1$s cannot parse GID '%2$s'"
@@ -648,6 +648,10 @@ msgstr "%1$s längd är större än den maximala: %2$d > %3$d"
 #, c-format
 msgid "%1$s model of watchdog can go only on PCI bus"
 msgstr "%1$s-modell av vakthund kan bara gå via en PCI-buss"
+
+#, c-format
+msgid "%1$s model of watchdog cannot be used with this machine type"
+msgstr ""
 
 #, c-format
 msgid "%1$s model of watchdog does not support configuring the address"
@@ -1877,6 +1881,9 @@ msgid "After dumping core, failed to resume domain '%1$d' with libxenlight"
 msgstr ""
 "Efter minnesdumpen, misslyckades att återuppta domän ”%1$d” med libxenlight"
 
+msgid "Agent authentication is not supported on this host"
+msgstr ""
+
 msgid "Ain't nobody heard of that much cache level"
 msgstr "Det har väl ingen hört talas om så många cache-nivåer"
 
@@ -1981,10 +1988,8 @@ msgstr ""
 
 msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
-"mandatory "
+"mandatory"
 msgstr ""
-"Åtminstone en av flaggorna --min-workers, --max-workers, --priority-workers "
-"är obligatorisk "
 
 msgid "At least one tty is required"
 msgstr "Åtminstone en tty krävs"
@@ -2620,17 +2625,11 @@ msgstr "Kan inte hitta disken ”%1$s” i domändefinitionen"
 msgid "Can't find network boot device for index: %1$d"
 msgstr "Kan inte hitta nätverksstartenhet för index: %1$d"
 
-msgid "Can't find prlctl command in the PATH env"
-msgstr "Kan inte hitta prlctl-kommando i miljön PATH"
-
 #, c-format
 msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %1$s"
 msgstr ""
 "Kan inte få UUID:t för filen som skall kopplas som hårddisk/dvd/floppy: %1$s"
-
-msgid "Can't initialize Parallels SDK"
-msgstr "Kan inte initiera Parallels-SDK:n"
 
 msgid "Can't initialize access manager"
 msgstr "Kan inte initiera åtkomsthanteraren"
@@ -2660,10 +2659,8 @@ msgstr ""
 
 msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
-"not provided "
+"not provided"
 msgstr ""
-"Det går inte att utföra tangentbordsinteraktiv autentisering: inget "
-"autentiseringsåteranrop angivet "
 
 #, c-format
 msgid "Can't read %1$s"
@@ -2952,12 +2949,12 @@ msgid "Cannot find CPU vendor with vendor id 0x%1$02llx"
 msgstr "Kan inte hitta CPU-leverantören med leverantörs-id 0x%1$02llx"
 
 #, c-format
-msgid "Cannot find boot device of requested type %1$s"
-msgstr "Kan inte hitta en startenhet av den begärda typen %1$s"
+msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
+msgstr ""
 
 #, c-format
-msgid "Cannot find byte %1$sstats for block device '%2$s'"
-msgstr "Kan inte hitta statistik av typen %1$s för blockenheten ”%2$s”"
+msgid "Cannot find boot device of requested type %1$s"
+msgstr "Kan inte hitta en startenhet av den begärda typen %1$s"
 
 #, c-format
 msgid "Cannot find byte '%1$s' stats for block device '%2$s'"
@@ -2970,14 +2967,6 @@ msgstr "Kan inte hitta bytestatistik för blockenhet ”%1$s”"
 #, c-format
 msgid "Cannot find program %1$d version %2$d"
 msgstr "Kan inte hitta program %1$d version %2$d"
-
-#, c-format
-msgid "Cannot find request %1$sstats for block device '%2$s'"
-msgstr "Kan inte hitta begäransstatistik av typen %1$s för blockenhet ”%2$s”"
-
-#, c-format
-msgid "Cannot find request stats for block device '%1$s'"
-msgstr "Kan inte hitta begäransstatistick för blockenhet ”%1$s”"
 
 #, c-format
 msgid "Cannot find security driver '%1$s'"
@@ -3137,14 +3126,6 @@ msgid "Cannot open resctrl"
 msgstr "Kan inte öppna resctrl"
 
 #, c-format
-msgid "Cannot parse %1$srequest stat '%2$s'"
-msgstr "Kan inte tolka begäran %1$sstatus ”%2$s”"
-
-#, c-format
-msgid "Cannot parse %1$sstat '%2$s'"
-msgstr "Kan inte tolka %1$s status ”%2$s”"
-
-#, c-format
 msgid "Cannot parse '%1$s' stat '%2$s'"
 msgstr "Kan inte tolka ”%1$s” status ”%2$s”"
 
@@ -3222,8 +3203,12 @@ msgid "Cannot parse adapter '%1$s'"
 msgstr "Kan inte tolka adaptern ”%1$s”"
 
 #, c-format
-msgid "Cannot parse byte %1$sstat '%2$s'"
-msgstr "Kan inte tolka bytestatus %1$s ”%2$s”"
+msgid "Cannot parse blkio cgroup (%1$s) entry '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Cannot parse blkio cgroup ('%1$s') entry '%2$s'"
+msgstr ""
 
 #, c-format
 msgid "Cannot parse byte '%1$s' stat '%2$s'"
@@ -3875,11 +3860,6 @@ msgstr ""
 #, c-format
 msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
 msgstr "Konfiguration av timern ”%1$s” stödjs inte med denna QEMU-binär"
-
-msgid ""
-"Configuring the page size for HPT guests is not supported by this QEMU binary"
-msgstr ""
-"Konfiguration av sidstorlek för HPT-gäster stödjs inte av denna QEMU-binär"
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "Anslut den virtuella seriekonsolen för gästen"
@@ -9117,9 +9097,6 @@ msgstr "Gästagenten är inte tillgänglig för tillfället"
 msgid "HMAT is not supported with this QEMU"
 msgstr "HMAT stödjs inte med denna QEMU"
 
-msgid "HTM configuration is not supported by this QEMU binary"
-msgstr "HTM-konfiguration stödjs inte av denna QEMU-binär"
-
 #, c-format
 msgid "HTTP response code %1$d for call to '%2$s'"
 msgstr "HTTP-svarskod %1$d på anrop till ”%2$s”"
@@ -9367,6 +9344,18 @@ msgid ""
 msgstr ""
 "IOMMU omavbildning av avbrott kräver delad I/O APIC (ioapic driver=”qemu”)"
 
+msgid "IORT table header ended early"
+msgstr ""
+
+msgid "IORT table node header ended early"
+msgstr ""
+
+#, c-format
+msgid ""
+"IORT table node type %1$s has invalid length: got %2$u, expected at least "
+"%3$zu"
+msgstr ""
+
 msgid "IOThread ID"
 msgstr "IO-tråd ID"
 
@@ -9403,12 +9392,6 @@ msgstr ""
 
 msgid "IPC namespace support is required"
 msgstr "Stöd för IPC-namnrymder krävs"
-
-msgid "IPv4"
-msgstr "IPv4"
-
-msgid "IPv6"
-msgstr "IPv6"
 
 msgid "ISession object is null"
 msgstr "ISession-objektet är null"
@@ -9538,6 +9521,9 @@ msgstr "Den installerade bhyve-binären stödjer inte att definiera CPU-topologi
 #, c-format
 msgid "Instantiation of rules failed on interface '%1$s'"
 msgstr "Instantiering av regler misslyckades för gränssnittet ”%1$s”"
+
+msgid "Integrity error in watchdog models"
+msgstr ""
 
 msgid "Interface"
 msgstr "Gränssnitt"
@@ -10331,14 +10317,9 @@ msgstr "Felaktig säkerhetsetikett ”%1$s”"
 msgid "Invalid setting for HPT resizing"
 msgstr "Felaktig inställning för HPT-storleksändring"
 
-msgid "Invalid setting for HTM state"
-msgstr "Felaktig inställning för HTM-tillstånd"
-
-msgid "Invalid setting for ccf-assist state"
-msgstr "Felaktig inställning för ccf-assist-tillstånd"
-
-msgid "Invalid setting for nested HV state"
-msgstr "Felaktig inställning för nästat HV-tillstånd"
+#, c-format
+msgid "Invalid setting for pseries feature '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Invalid source mode: %1$s"
@@ -11821,9 +11802,6 @@ msgstr ""
 msgid "Multiple graphics devices are not supported"
 msgstr "Flera grafiska enheter stödjs inte"
 
-msgid "Multiple iTCO watchdogs are not supported"
-msgstr "Flera iTCO-vakthundar stödjs inte"
-
 msgid "Multiple interfaces attached to bridge"
 msgstr "Flera gränssnitt anslutna till bryggan"
 
@@ -11984,9 +11962,6 @@ msgstr "Namn:"
 
 msgid "Namespaces are not supported on this platform"
 msgstr "Namnrymder stödjs inte på denna plattform"
-
-msgid "Nested HV configuration is not supported by this QEMU binary"
-msgstr "Nästad HV-konfiguration stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "Network %1$s XML configuration edited.\n"
@@ -15022,14 +14997,6 @@ msgid "Successfully updated media."
 msgstr "Uppdaterade medium."
 
 #, c-format
-msgid "Sum of %1$srequest stat overflows"
-msgstr "Statistik för summan av %1$sbegäranden flödar över"
-
-#, c-format
-msgid "Sum of byte %1$sstat overflows"
-msgstr "Statistik för summan av byte %1$s flödar över"
-
-#, c-format
 msgid "Sum of byte '%1$s' stat overflows"
 msgstr "Statistik för summan av byte ”%1$s” flödar över"
 
@@ -15974,6 +15941,11 @@ msgid ""
 msgstr ""
 "Elementet <nat> kan endast användas när <forward> ”mode” är ”nat” i "
 "nätverket %1$s"
+
+msgid ""
+"The <portForward> element can only be used with <interface type='user'> and "
+"its 'passt' backend"
+msgstr ""
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
@@ -20521,6 +20493,9 @@ msgstr ""
 msgid "attempt to merge virtualports with mismatched types (%1$s and %2$s)"
 msgstr ""
 
+msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
+msgstr ""
+
 #, c-format
 msgid "audio ID %1$u is used multiple times"
 msgstr ""
@@ -22280,6 +22255,10 @@ msgid "cannot read mount list '%1$s'"
 msgstr "kan inte skriva konfigurationsfilen ”%1$s”"
 
 #, c-format
+msgid "cannot read node header '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "cannot receive data from volume %1$s"
 msgstr ""
 
@@ -22645,9 +22624,6 @@ msgstr ""
 msgid "capture disk state but not vm state"
 msgstr ""
 
-msgid "ccf-assist configuration is not supported by this QEMU binary"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "%1$s: %2$s"
@@ -22671,9 +22647,6 @@ msgstr ""
 
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
-msgstr ""
-
-msgid "cfpc configuration is not supported by this QEMU binary"
 msgstr ""
 
 #, c-format
@@ -22915,9 +22888,6 @@ msgstr "nätverksnamn"
 #, fuzzy, c-format
 msgid "close: %1$s: failed to write or close temporary file: %2$s"
 msgstr "%1$s: misslyckades att skriva loggfilen: %2$s"
-
-msgid "closed"
-msgstr "stängd"
 
 #, c-format
 msgid "coalesce settings on interface type %1$s are not supported"
@@ -23833,9 +23803,6 @@ msgstr ""
 msgid "dbus-daemon died and reported: %1$s"
 msgstr ""
 
-msgid "debug"
-msgstr "felsök"
-
 msgid "default"
 msgstr "standard"
 
@@ -24003,6 +23970,10 @@ msgid "detaching device type '%1$s' is unsupported"
 msgstr ""
 
 msgid "detaching network device from VM is unsupported"
+msgstr ""
+
+msgid ""
+"detaching of <console/> is unsupported. Try corresponding <serial/> instead"
 msgstr ""
 
 msgid "detaching serial console is not supported"
@@ -24448,7 +24419,7 @@ msgid "display the progress of save"
 msgstr ""
 
 #, c-format
-msgid "dnsmasq version >= %1$u.%2$u required but %3$lu.%4$lu found"
+msgid "dnsmasq version >= %1$u.%2$u required but %3$llu.%4$llu found"
 msgstr ""
 
 msgid "do not enable STP for this bridge"
@@ -24559,6 +24530,10 @@ msgstr ""
 #, fuzzy
 msgid "domain block device size information"
 msgstr "saknar enhetsinformation"
+
+#, c-format
+msgid "domain can only have one watchdog with model '%1$s'"
+msgstr ""
 
 msgid "domain capabilities"
 msgstr "domänförmågor"
@@ -25222,12 +25197,35 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none\n"
 msgstr ""
 
 #, c-format
-msgid ""
-"event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown due to %4$s\n"
 msgstr ""
 
 #, c-format
@@ -25281,7 +25279,15 @@ msgid "event 'rtc-change' for domain '%1$s': %2$lld\n"
 msgstr ""
 
 #, c-format
-msgid "event 'tray-change' for domain '%1$s' disk %2$s: %3$s\n"
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: closed\n"
+msgstr ""
+
+#, c-format
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: opened\n"
+msgstr ""
+
+#, c-format
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: unknown\n"
 msgstr ""
 
 #, c-format
@@ -25289,7 +25295,35 @@ msgid "event 'tunable' for domain '%1$s':\n"
 msgstr ""
 
 #, c-format
-msgid "event 'watchdog' for domain '%1$s': %2$s\n"
+msgid "event 'watchdog' for domain '%1$s': debug\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': inject-nmi\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': none\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': pause\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': poweroff\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': reset\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': shutdown\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': unknown\n"
 msgstr ""
 
 msgid "event callback already tracked"
@@ -27598,7 +27632,7 @@ msgid "hotplug of interface type of %1$s is not implemented yet"
 msgstr ""
 
 #, c-format
-msgid "hotplug of watchdog of model %1$s is not supported"
+msgid "hotplug of watchdog model '%1$s' is not supported"
 msgstr ""
 
 msgid "hpet timer is not supported by this architecture"
@@ -27658,10 +27692,6 @@ msgstr "iSCSI-lagringspool stödjer inte rensande av volymer"
 msgid "iSCSI usage specified, but target is missing"
 msgstr ""
 
-#, fuzzy
-msgid "ibs configuration is not supported by this QEMU binary"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
-
 msgid "idle"
 msgstr "overksam"
 
@@ -27672,12 +27702,6 @@ msgid "ids of vcpus to manipulate"
 msgstr ""
 
 msgid "if IOMMU is enabled by kernel"
-msgstr ""
-
-#, c-format
-msgid ""
-"if using CPU maximum physical address mode='%1$s', bits= must be specified "
-"too"
 msgstr ""
 
 #, c-format
@@ -27813,9 +27837,6 @@ msgid "initiator iqn for underlying storage"
 msgstr ""
 
 msgid "inject"
-msgstr ""
-
-msgid "inject-nmi"
 msgstr ""
 
 #, c-format
@@ -32266,9 +32287,6 @@ msgstr ""
 msgid "non unique alias detected: %1$s"
 msgstr ""
 
-msgid "none"
-msgstr "inget"
-
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr ""
 
@@ -32659,9 +32677,6 @@ msgstr ""
 msgid "open(\"%1$s\")"
 msgstr ""
 
-msgid "opened"
-msgstr "öppnad"
-
 #, c-format
 msgid "openwsman: %1$s"
 msgstr ""
@@ -32782,6 +32797,10 @@ msgstr ""
 
 #, c-format
 msgid "overflow in converting %1$ld MiB/s to bytes\n"
+msgstr ""
+
+#, c-format
+msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
 msgstr ""
 
 msgid "override the destination host name used for TLS verification"
@@ -32971,9 +32990,6 @@ msgstr ""
 
 msgid "path to secret data file is required"
 msgstr ""
-
-msgid "pause"
-msgstr "paus"
 
 msgid "paused"
 msgstr "stannad"
@@ -33253,9 +33269,6 @@ msgid "potentially unsafe use of host CPU passthrough"
 msgstr ""
 
 msgid "power-of-two granularity to use during the copy"
-msgstr ""
-
-msgid "poweroff"
 msgstr ""
 
 #, c-format
@@ -33541,12 +33554,6 @@ msgstr "nätverket %s är inte aktivt"
 msgid "qemu unexpectedly closed the monitor"
 msgstr ""
 
-msgid "qemu-machines reply has malformed 'acpi data"
-msgstr ""
-
-msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
-msgstr ""
-
 #, c-format
 msgid "qom-get invalid object property type %1$d"
 msgstr ""
@@ -33643,6 +33650,9 @@ msgstr ""
 msgid "query-machines reply data was missing 'name'"
 msgstr ""
 
+msgid "query-machines reply has malformed 'acpi data"
+msgstr ""
+
 msgid "query-machines reply has malformed 'alias' data"
 msgstr ""
 
@@ -33656,6 +33666,9 @@ msgid "query-machines reply has malformed 'default-ram-id' data"
 msgstr ""
 
 msgid "query-machines reply has malformed 'is-default' data"
+msgstr ""
+
+msgid "query-machines reply has malformed 'numa-mem-supported' data"
 msgstr ""
 
 msgid "query-memory-devices reply data doesn't contain enum data"
@@ -33965,9 +33978,6 @@ msgstr ""
 
 msgid "reply was missing return data"
 msgstr ""
-
-msgid "report"
-msgstr "rapportera"
 
 msgid "report active users"
 msgstr ""
@@ -34352,10 +34362,6 @@ msgstr "spara ett domäntillstånd till en fil"
 #, fuzzy, c-format
 msgid "saving domain '%1$s' to '%2$s': write failed"
 msgstr "spara ett domäntillstånd till en fil"
-
-#, fuzzy
-msgid "sbbc configuration is not supported by this QEMU binary"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
 
 #, c-format
 msgid "scheme and host are mandatory vz migration URI: %1$s"
@@ -39078,6 +39084,110 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "--%1$s <sträng>"
+
+#~ msgid "%1$s cannot be set higher than %2$s "
+#~ msgstr "%1$s kan inte sättas högre än %2$s "
+
+#~ msgid ""
+#~ "At least one of options --min-workers, --max-workers, --priority-workers "
+#~ "is mandatory "
+#~ msgstr ""
+#~ "Åtminstone en av flaggorna --min-workers, --max-workers, --priority-"
+#~ "workers är obligatorisk "
+
+#~ msgid "Can't find prlctl command in the PATH env"
+#~ msgstr "Kan inte hitta prlctl-kommando i miljön PATH"
+
+#~ msgid "Can't initialize Parallels SDK"
+#~ msgstr "Kan inte initiera Parallels-SDK:n"
+
+#~ msgid ""
+#~ "Can't perform keyboard-interactive authentication: Authentication "
+#~ "callback not provided "
+#~ msgstr ""
+#~ "Det går inte att utföra tangentbordsinteraktiv autentisering: inget "
+#~ "autentiseringsåteranrop angivet "
+
+#~ msgid "Cannot find byte %1$sstats for block device '%2$s'"
+#~ msgstr "Kan inte hitta statistik av typen %1$s för blockenheten ”%2$s”"
+
+#~ msgid "Cannot find request %1$sstats for block device '%2$s'"
+#~ msgstr ""
+#~ "Kan inte hitta begäransstatistik av typen %1$s för blockenhet ”%2$s”"
+
+#~ msgid "Cannot find request stats for block device '%1$s'"
+#~ msgstr "Kan inte hitta begäransstatistick för blockenhet ”%1$s”"
+
+#~ msgid "Cannot parse %1$srequest stat '%2$s'"
+#~ msgstr "Kan inte tolka begäran %1$sstatus ”%2$s”"
+
+#~ msgid "Cannot parse %1$sstat '%2$s'"
+#~ msgstr "Kan inte tolka %1$s status ”%2$s”"
+
+#~ msgid "Cannot parse byte %1$sstat '%2$s'"
+#~ msgstr "Kan inte tolka bytestatus %1$s ”%2$s”"
+
+#~ msgid ""
+#~ "Configuring the page size for HPT guests is not supported by this QEMU "
+#~ "binary"
+#~ msgstr ""
+#~ "Konfiguration av sidstorlek för HPT-gäster stödjs inte av denna QEMU-binär"
+
+#~ msgid "HTM configuration is not supported by this QEMU binary"
+#~ msgstr "HTM-konfiguration stödjs inte av denna QEMU-binär"
+
+#~ msgid "IPv4"
+#~ msgstr "IPv4"
+
+#~ msgid "IPv6"
+#~ msgstr "IPv6"
+
+#~ msgid "Invalid setting for HTM state"
+#~ msgstr "Felaktig inställning för HTM-tillstånd"
+
+#~ msgid "Invalid setting for ccf-assist state"
+#~ msgstr "Felaktig inställning för ccf-assist-tillstånd"
+
+#~ msgid "Invalid setting for nested HV state"
+#~ msgstr "Felaktig inställning för nästat HV-tillstånd"
+
+#~ msgid "Multiple iTCO watchdogs are not supported"
+#~ msgstr "Flera iTCO-vakthundar stödjs inte"
+
+#~ msgid "Nested HV configuration is not supported by this QEMU binary"
+#~ msgstr "Nästad HV-konfiguration stödjs inte av denna QEMU-binär"
+
+#~ msgid "Sum of %1$srequest stat overflows"
+#~ msgstr "Statistik för summan av %1$sbegäranden flödar över"
+
+#~ msgid "Sum of byte %1$sstat overflows"
+#~ msgstr "Statistik för summan av byte %1$s flödar över"
+
+#~ msgid "closed"
+#~ msgstr "stängd"
+
+#~ msgid "debug"
+#~ msgstr "felsök"
+
+#, fuzzy
+#~ msgid "ibs configuration is not supported by this QEMU binary"
+#~ msgstr "Extrahering av värdend stödjs inte på denna plattform"
+
+#~ msgid "none"
+#~ msgstr "inget"
+
+#~ msgid "opened"
+#~ msgstr "öppnad"
+
+#~ msgid "pause"
+#~ msgstr "paus"
+
+#~ msgid "report"
+#~ msgstr "rapportera"
+
+#, fuzzy
+#~ msgid "sbbc configuration is not supported by this QEMU binary"
+#~ msgstr "Extrahering av värdend stödjs inte på denna plattform"
 
 #~ msgid ""
 #~ "At least one of name, mac, or ip attribute must be specified for static "

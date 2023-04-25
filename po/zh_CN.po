@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-01 11:38+0200\n"
+"POT-Creation-Date: 2023-04-25 10:39+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -553,8 +553,8 @@ msgid "%1$s can't be empty"
 msgstr "%1$s 不能为空"
 
 #, c-format
-msgid "%1$s cannot be set higher than %2$s "
-msgstr "%1$s 不能高于 %2$s "
+msgid "%1$s cannot be set higher than %2$s"
+msgstr ""
 
 #, c-format
 msgid "%1$s cannot parse GID '%2$s'"
@@ -650,6 +650,10 @@ msgid "%1$s model of watchdog can go only on PCI bus"
 msgstr "watchdog 的 %1$s 模型只能在 PCI 总线运行"
 
 #, c-format
+msgid "%1$s model of watchdog cannot be used with this machine type"
+msgstr ""
+
+#, c-format
 msgid "%1$s model of watchdog does not support configuring the address"
 msgstr "watchdog 的 %1$s 模型不支持配置地址"
 
@@ -735,8 +739,9 @@ msgstr "%1$s uri uuid 动作\n"
 msgid ""
 "%1$s with index %2$d is configured for a NUMA node (%3$d) not present in the "
 "domain's <cpu><numa> array (%4$zu)"
-msgstr "为 NUMA 节点(%3$d)配置的索引为 %2$d 的 %1$s 在域的 <cpu><numa> "
-"数组(%4$zu)中不存在"
+msgstr ""
+"为 NUMA 节点(%3$d)配置的索引为 %2$d 的 %1$s 在域的 <cpu><numa> 数组(%4$zu)中"
+"不存在"
 
 #, c-format
 msgid ""
@@ -1812,6 +1817,9 @@ msgstr "进行自动 numa 分配时需要来自 numad 的提示"
 msgid "After dumping core, failed to resume domain '%1$d' with libxenlight"
 msgstr "转储 core 后，使用 libxenlight 恢复域 '%1$d' 失败"
 
+msgid "Agent authentication is not supported on this host"
+msgstr ""
+
 msgid "Ain't nobody heard of that much cache level"
 msgstr "没人听说过这么高的缓存级别"
 
@@ -1901,9 +1909,8 @@ msgstr "选项 --max-clients和--max-unauth-clients 中至少有 1 个是必需�
 
 msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
-"mandatory "
+"mandatory"
 msgstr ""
-"选项 --min-workers, --max-workers和 --priority-workers 中至少有 1 个是必需的 "
 
 msgid "At least one tty is required"
 msgstr "至少需要一个 tty"
@@ -2499,16 +2506,10 @@ msgstr "无法在域定义中找到磁盘 '%1$s'"
 msgid "Can't find network boot device for index: %1$d"
 msgstr "无法找到索引为 %1$d 的网络引导设"
 
-msgid "Can't find prlctl command in the PATH env"
-msgstr "无法在 PATH env 中找到 prlctl 命令"
-
 #, c-format
 msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %1$s"
 msgstr "无法获得要附加为 harddisk/dvd/floppy 的文件的 UUID ：%1$s"
-
-msgid "Can't initialize Parallels SDK"
-msgstr "无法初始化平行 SDK"
 
 msgid "Can't initialize access manager"
 msgstr "无法初始化访问管理器"
@@ -2537,8 +2538,8 @@ msgstr "无法执行认证：未提供认证回叫"
 
 msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
-"not provided "
-msgstr "无法执行键盘互动认证：未提供认证回叫 "
+"not provided"
+msgstr ""
 
 #, c-format
 msgid "Can't read %1$s"
@@ -2811,12 +2812,12 @@ msgid "Cannot find CPU vendor with vendor id 0x%1$02llx"
 msgstr "无法找到厂商 ID 0x 的 CPU 供应商%1$02llx"
 
 #, c-format
-msgid "Cannot find boot device of requested type %1$s"
-msgstr "无法找到请求类型为 %1$s 的引导设备"
+msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
+msgstr ""
 
 #, c-format
-msgid "Cannot find byte %1$sstats for block device '%2$s'"
-msgstr "无法找到块设备 '%1$s' 的字节 %2$sstats"
+msgid "Cannot find boot device of requested type %1$s"
+msgstr "无法找到请求类型为 %1$s 的引导设备"
 
 #, c-format
 msgid "Cannot find byte '%1$s' stats for block device '%2$s'"
@@ -2829,14 +2830,6 @@ msgstr "无法找到块设备 '%1$s' 的字节统计信息"
 #, c-format
 msgid "Cannot find program %1$d version %2$d"
 msgstr "无法找到程序 %1$d 版本 %2$d"
-
-#, c-format
-msgid "Cannot find request %1$sstats for block device '%2$s'"
-msgstr "无法找到块设备 '%1$s' 的请求 %2$sstats"
-
-#, c-format
-msgid "Cannot find request stats for block device '%1$s'"
-msgstr "无法找到块设备 '%1$s' 的请求统计信息"
 
 #, c-format
 msgid "Cannot find security driver '%1$s'"
@@ -2992,14 +2985,6 @@ msgid "Cannot open resctrl"
 msgstr "无法打开 resctrl"
 
 #, c-format
-msgid "Cannot parse %1$srequest stat '%2$s'"
-msgstr "无法解析 %1$srequest 统计信息 '%2$s'"
-
-#, c-format
-msgid "Cannot parse %1$sstat '%2$s'"
-msgstr "无法解析 %1$sstat '%2$s'"
-
-#, c-format
 msgid "Cannot parse '%1$s' stat '%2$s'"
 msgstr "无法解析 '%1$s' 统计信息 '%2$s'"
 
@@ -3077,8 +3062,12 @@ msgid "Cannot parse adapter '%1$s'"
 msgstr "无法解析适配器 '%1$s'"
 
 #, c-format
-msgid "Cannot parse byte %1$sstat '%2$s'"
-msgstr "无法解析字节 %1$sstat '%2$s'"
+msgid "Cannot parse blkio cgroup (%1$s) entry '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Cannot parse blkio cgroup ('%1$s') entry '%2$s'"
+msgstr ""
 
 #, c-format
 msgid "Cannot parse byte '%1$s' stat '%2$s'"
@@ -3463,8 +3452,8 @@ msgid ""
 "and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
 msgstr ""
-"检查主机设置：接口 %1$s 具有内核自动配置的 IPv6 路由，在不将 accept_ra "
-"设置为 2 的情况下启用转发将导致内核刷新它们，从而破坏网络。"
+"检查主机设置：接口 %1$s 具有内核自动配置的 IPv6 路由，在不将 accept_ra 设置"
+"为 2 的情况下启用转发将导致内核刷新它们，从而破坏网络。"
 
 #, c-format
 msgid "Checkpoint %1$s XML configuration not changed.\n"
@@ -3688,10 +3677,6 @@ msgstr "virtType=%1$s arch=%2$s machine=%3$s 客户机不支持配置 '%4$s' 计
 #, c-format
 msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持配置 '%1$s' 计时器"
-
-msgid ""
-"Configuring the page size for HPT guests is not supported by this QEMU binary"
-msgstr "此 QEMU 二进制文件不支持为 HPT 客户机配置页大小"
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "连接客户真实串行控制台"
@@ -5134,7 +5119,8 @@ msgstr "未为索引为 %2$d 的 %1$s 控制器设置设备别名"
 msgid ""
 "Device alias was not set for PCI controller with index '%1$u' required for "
 "device at address '%2$s'"
-msgstr "对地址 '%2$s' 处的设备所需的索引为 '%1$u' 的 PCI 控制器没有设置设备别名"
+msgstr ""
+"对地址 '%2$s' 处的设备所需的索引为 '%1$u' 的 PCI 控制器没有设置设备别名"
 
 msgid "Device attached successfully\n"
 msgstr "成功附加设备\n"
@@ -8737,9 +8723,6 @@ msgstr "现在无法使用虚拟机代理"
 msgid "HMAT is not supported with this QEMU"
 msgstr "此 QEMU 不支持 HMAT"
 
-msgid "HTM configuration is not supported by this QEMU binary"
-msgstr "此 QEMU 二进制文件不支持 HTM 配置"
-
 #, c-format
 msgid "HTTP response code %1$d for call to '%2$s'"
 msgstr "%1$d 是调用 '%2$s' 的 HTTP 响应代码"
@@ -8976,6 +8959,18 @@ msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr "IOMMU 中断重映射需要分离 I/O APIC(ioapic driver='qemu')"
 
+msgid "IORT table header ended early"
+msgstr ""
+
+msgid "IORT table node header ended early"
+msgstr ""
+
+#, c-format
+msgid ""
+"IORT table node type %1$s has invalid length: got %2$u, expected at least "
+"%3$zu"
+msgstr ""
+
 msgid "IOThread ID"
 msgstr "IOThread ID"
 
@@ -9008,12 +9003,6 @@ msgstr "必须提供 IP 参数因为缺少根据无法监听 IP 地址"
 
 msgid "IPC namespace support is required"
 msgstr "需要IPC namespace功能"
-
-msgid "IPv4"
-msgstr "IPv4"
-
-msgid "IPv6"
-msgstr "IPv6"
 
 msgid "ISession object is null"
 msgstr "ISession 对象为空"
@@ -9138,6 +9127,9 @@ msgstr "安装的 bhyve 二进制文件不支持定义 CPU 拓扑"
 #, c-format
 msgid "Instantiation of rules failed on interface '%1$s'"
 msgstr "接口 '%1$s' 中的规则实例化失败"
+
+msgid "Integrity error in watchdog models"
+msgstr ""
 
 msgid "Interface"
 msgstr "接口"
@@ -9892,14 +9884,9 @@ msgstr "无效安全标签 '%1$s'"
 msgid "Invalid setting for HPT resizing"
 msgstr "HPT 调整大小的无效的设置"
 
-msgid "Invalid setting for HTM state"
-msgstr "HTM 状态的无效设置"
-
-msgid "Invalid setting for ccf-assist state"
-msgstr "ccf-assist 状态的无效的设置"
-
-msgid "Invalid setting for nested HV state"
-msgstr "嵌套 HV 状态的无效的设置"
+#, c-format
+msgid "Invalid setting for pseries feature '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Invalid source mode: %1$s"
@@ -11316,9 +11303,6 @@ msgstr "名称为 '%1$s' 的多个域存在：使用 UUID 重复请求"
 msgid "Multiple graphics devices are not supported"
 msgstr "不支持多个图形设备"
 
-msgid "Multiple iTCO watchdogs are not supported"
-msgstr "不支持多 iTCO watchdog"
-
 msgid "Multiple interfaces attached to bridge"
 msgstr "附加到桥接的多个接口"
 
@@ -11478,9 +11462,6 @@ msgstr "名称："
 
 msgid "Namespaces are not supported on this platform"
 msgstr "此平台上不支持命名空间"
-
-msgid "Nested HV configuration is not supported by this QEMU binary"
-msgstr "此 QEMU 二进制文件不支持嵌套 HV 配置"
 
 #, c-format
 msgid "Network %1$s XML configuration edited.\n"
@@ -13230,7 +13211,8 @@ msgstr "请求的卷 '%1$s' 不在池 '%2$s' 中"
 msgid ""
 "Required option '%1$s' is not set for PCI controller with index '%2$d', "
 "model '%3$s' and modelName '%4$s'"
-msgstr "未为索引为“%2$d”、型号“%3$s”和型号名称为“%4$s”的 PCI 控制器设置必需选项“%1$s”"
+msgstr ""
+"未为索引为“%2$d”、型号“%3$s”和型号名称为“%4$s”的 PCI 控制器设置必需选项“%1$s”"
 
 #, c-format
 msgid ""
@@ -14392,14 +14374,6 @@ msgid "Successfully updated media."
 msgstr "成功更新介质。"
 
 #, c-format
-msgid "Sum of %1$srequest stat overflows"
-msgstr "%1$srequest 统计溢出的总和"
-
-#, c-format
-msgid "Sum of byte %1$sstat overflows"
-msgstr "字节 %1$sstat 溢出的总和"
-
-#, c-format
 msgid "Sum of byte '%1$s' stat overflows"
 msgstr "字节 '%1$s'统计溢出的总和"
 
@@ -14739,8 +14713,8 @@ msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
-"目标设备 PCI 地址 %1$04x:%2$02x:%3$02x.%4$d 与源地址 %5$04x:%6$02x:%7$02x.%8$"
-"d 不匹配"
+"目标设备 PCI 地址 %1$04x:%2$02x:%3$02x.%4$d 与源地址 %5$04x:%6$02x:%7$02x."
+"%8$d 不匹配"
 
 #, c-format
 msgid "Target device address type %1$s does not match source %2$s"
@@ -15298,6 +15272,11 @@ msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
 "%1$s"
 msgstr "只有网络 %1$s 中的 <forward> 'mode' 为 'nat' 时方可使用 <nat> 元素"
+
+msgid ""
+"The <portForward> element can only be used with <interface type='user'> and "
+"its 'passt' backend"
+msgstr ""
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
@@ -16258,8 +16237,9 @@ msgstr "无法计算数据的哈希：%1$s"
 msgid ""
 "Unable to configure VF %1$d of PF '%2$s' because the PF is not online. "
 "Please change host network config to put the PF online."
-msgstr "无法配置 PF '%2$s' 的 VF %1$d，因为 PF 不在线。请更改主机网络配置以使 PF "
-"在线。"
+msgstr ""
+"无法配置 PF '%2$s' 的 VF %1$d，因为 PF 不在线。请更改主机网络配置以使 PF 在"
+"线。"
 
 msgid "Unable to configure libxl's memory management parameters"
 msgstr "无法配置 libxl 的内存管理参数"
@@ -19028,7 +19008,8 @@ msgstr "VCPU:"
 msgid ""
 "VF %1$d of PF '%2$s' is not bound to a net driver, so its MAC address cannot "
 "be set to %3$s"
-msgstr "PF '%2$s' 的 VF %1$d 没有绑定到网络驱动程序，因此其 MAC 地址不能设为 %3$s"
+msgstr ""
+"PF '%2$s' 的 VF %1$d 没有绑定到网络驱动程序，因此其 MAC 地址不能设为 %3$s"
 
 #, c-format
 msgid "VFB %1$s too big for destination"
@@ -19764,6 +19745,9 @@ msgstr "尝试将虚拟端口与未匹配 typeidversions（%1$d 和 %2$d）合�
 #, c-format
 msgid "attempt to merge virtualports with mismatched types (%1$s and %2$s)"
 msgstr "尝试将虚拟端口与未匹配类型（%1$s 和 %2$s）合并"
+
+msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
+msgstr ""
 
 #, c-format
 msgid "audio ID %1$u is used multiple times"
@@ -21494,6 +21478,10 @@ msgid "cannot read mount list '%1$s'"
 msgstr "无法读取挂载列表 '%1$s'"
 
 #, c-format
+msgid "cannot read node header '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "cannot receive data from volume %1$s"
 msgstr "无法从卷 %1$s 中检索数据"
 
@@ -21848,9 +21836,6 @@ msgstr "如未设置 'delta' 或者 'shrink' 标签，%1$s 容量不能为 0。"
 msgid "capture disk state but not vm state"
 msgstr "捕获磁盘状态而不是 vm 状态"
 
-msgid "ccf-assist configuration is not supported by this QEMU binary"
-msgstr "此 QEMU 二进制文件不支持 ccf-assist 配置"
-
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
@@ -21874,9 +21859,6 @@ msgstr "%1$s 中的 cellNum 必须小于等于 %2$d"
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "%1$s 中的 cellNum 只接受负数 %2$d"
-
-msgid "cfpc configuration is not supported by this QEMU binary"
-msgstr "此 QEMU 二进制文件不支持 cfpc 配置"
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -22111,9 +22093,6 @@ msgstr "克隆名称"
 #, c-format
 msgid "close: %1$s: failed to write or close temporary file: %2$s"
 msgstr "关闭：%1$s：无法写入或者关闭临时文件：%2$s"
-
-msgid "closed"
-msgstr "已关闭"
 
 #, c-format
 msgid "coalesce settings on interface type %1$s are not supported"
@@ -23013,9 +22992,6 @@ msgstr "dbus-daemon %1$s 意外终止"
 msgid "dbus-daemon died and reported: %1$s"
 msgstr "dbus-daemon 终止并报告：%1$s"
 
-msgid "debug"
-msgstr "故障调试"
-
 msgid "default"
 msgstr "默认"
 
@@ -23178,6 +23154,10 @@ msgstr "不支持分离设备类型 '%1$s'"
 
 msgid "detaching network device from VM is unsupported"
 msgstr "不支持从虚拟机分离网络设备"
+
+msgid ""
+"detaching of <console/> is unsupported. Try corresponding <serial/> instead"
+msgstr ""
 
 msgid "detaching serial console is not supported"
 msgstr "不支持断开串口控制台"
@@ -23616,8 +23596,8 @@ msgid "display the progress of save"
 msgstr "显示保存进程"
 
 #, c-format
-msgid "dnsmasq version >= %1$u.%2$u required but %3$lu.%4$lu found"
-msgstr "需要 dnsmasq 版本 >= %1$u.%2$u ，但只找到了 %3$lu.%4$lu"
+msgid "dnsmasq version >= %1$u.%2$u required but %3$llu.%4$llu found"
+msgstr ""
 
 msgid "do not enable STP for this bridge"
 msgstr "无法为这个桥接启用 STP"
@@ -23725,6 +23705,10 @@ msgstr "域备份 XML"
 
 msgid "domain block device size information"
 msgstr "域块设备大小信息"
+
+#, c-format
+msgid "domain can only have one watchdog with model '%1$s'"
+msgstr ""
 
 msgid "domain capabilities"
 msgstr "域功能"
@@ -24361,13 +24345,36 @@ msgstr ""
 "%8$s] %9$s\n"
 
 #, c-format
-msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"
-msgstr "域 '%1$s' 的事件 'io-error' : %2$s (%3$s) %4$s\n"
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none\n"
+msgstr ""
 
 #, c-format
-msgid ""
-"event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
-msgstr "域 '%1$s' 的事件 'io-error-reason': %2$s (%3$s) %4$s 由于 %5$s\n"
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown due to %4$s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'job-completed' for domain '%1$s':\n"
@@ -24425,16 +24432,52 @@ msgid "event 'rtc-change' for domain '%1$s': %2$lld\n"
 msgstr "域 '%1$s' 的事件 'rtc-change' : %2$lld\n"
 
 #, c-format
-msgid "event 'tray-change' for domain '%1$s' disk %2$s: %3$s\n"
-msgstr "域 '%1$s' 磁盘 %2$s 的事件 'tray-change' : %3$s\n"
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: closed\n"
+msgstr ""
+
+#, c-format
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: opened\n"
+msgstr ""
+
+#, c-format
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: unknown\n"
+msgstr ""
 
 #, c-format
 msgid "event 'tunable' for domain '%1$s':\n"
 msgstr "域 '%1$s' 的事件 'tunable':\n"
 
 #, c-format
-msgid "event 'watchdog' for domain '%1$s': %2$s\n"
-msgstr "域 '%1$s' 的事件 'watchdog' : %2$s\n"
+msgid "event 'watchdog' for domain '%1$s': debug\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': inject-nmi\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': none\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': pause\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': poweroff\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': reset\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': shutdown\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': unknown\n"
+msgstr ""
 
 msgid "event callback already tracked"
 msgstr "已跟踪事件回叫"
@@ -26643,8 +26686,8 @@ msgid "hotplug of interface type of %1$s is not implemented yet"
 msgstr "%1$s 的接口类型的热插拔尚未实现"
 
 #, c-format
-msgid "hotplug of watchdog of model %1$s is not supported"
-msgstr "不支持型号 %1$s 的 watchdog 的热插拔"
+msgid "hotplug of watchdog model '%1$s' is not supported"
+msgstr ""
 
 msgid "hpet timer is not supported by this architecture"
 msgstr ""
@@ -26702,9 +26745,6 @@ msgstr "iSCSI 存储池不支持卷擦除"
 msgid "iSCSI usage specified, but target is missing"
 msgstr "已指定 iSCSI 用法，但缺少 target。"
 
-msgid "ibs configuration is not supported by this QEMU binary"
-msgstr "此 QEMU 二进制文件不支持 ibs 配置"
-
 msgid "idle"
 msgstr "闲置"
 
@@ -26716,12 +26756,6 @@ msgstr "要操作的 vcpus 的 id"
 
 msgid "if IOMMU is enabled by kernel"
 msgstr "内核中是否打开了IOMMU功能"
-
-#, c-format
-msgid ""
-"if using CPU maximum physical address mode='%1$s', bits= must be specified "
-"too"
-msgstr "如果使用 CPU 最大物理地址模式='%1$s'，则必须同时指定 bits="
 
 #, c-format
 msgid "ifkey \"%1$s\" has no req"
@@ -26855,9 +26889,6 @@ msgstr "底层存储的启动者 iqn"
 
 msgid "inject"
 msgstr "注入"
-
-msgid "inject-nmi"
-msgstr "inject-nmi"
 
 #, c-format
 msgid "input device on bus '%1$s' cannot be detached"
@@ -31104,9 +31135,6 @@ msgstr "如果 'placement' 是 'static' 则必须设定 NUMA 内存调试的 nod
 msgid "non unique alias detected: %1$s"
 msgstr "检测到非唯一别名：%1$s"
 
-msgid "none"
-msgstr "无"
-
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr "非零 ncpus 与 NULL cpus 不匹配"
 
@@ -31485,9 +31513,6 @@ msgstr "打开编辑器修改描述"
 msgid "open(\"%1$s\")"
 msgstr "open(\"%1$s\")"
 
-msgid "opened"
-msgstr "已打开"
-
 #, c-format
 msgid "openwsman: %1$s"
 msgstr "openwsman: %1$s"
@@ -31608,6 +31633,10 @@ msgstr "输出到 stderr"
 #, c-format
 msgid "overflow in converting %1$ld MiB/s to bytes\n"
 msgstr "将 %1$ld MiB/s 转换为字节时溢出\n"
+
+#, c-format
+msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
+msgstr ""
 
 msgid "override the destination host name used for TLS verification"
 msgstr "覆盖用于 TLS 验证的目的地主机名"
@@ -31794,9 +31823,6 @@ msgstr "需要 inputvol secret 数据文件的路径"
 
 msgid "path to secret data file is required"
 msgstr "需要 secret 数据文件的路径"
-
-msgid "pause"
-msgstr "暂停"
 
 msgid "paused"
 msgstr "已暂停"
@@ -32071,9 +32097,6 @@ msgstr "可能不安全地使用主机 CPU passthrough"
 
 msgid "power-of-two granularity to use during the copy"
 msgstr "复制期间使用 2 的幂颗粒度"
-
-msgid "poweroff"
-msgstr "关机"
 
 #, c-format
 msgid "pr helper %1$s didn't show up"
@@ -32354,12 +32377,6 @@ msgstr "qemu 状态驱动程序不活跃"
 msgid "qemu unexpectedly closed the monitor"
 msgstr "QEMU 意外关闭了监控"
 
-msgid "qemu-machines reply has malformed 'acpi data"
-msgstr ""
-
-msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
-msgstr "qemu-machines 回复有格式错误的 'numa-mem-supported' 数据"
-
 #, c-format
 msgid "qom-get invalid object property type %1$d"
 msgstr "qom-get 无效对象属性类型 %1$d"
@@ -32455,6 +32472,9 @@ msgstr "query-kvm 回复意外数据"
 msgid "query-machines reply data was missing 'name'"
 msgstr "query-machines 回复缺少 'name'"
 
+msgid "query-machines reply has malformed 'acpi data"
+msgstr ""
+
 msgid "query-machines reply has malformed 'alias' data"
 msgstr "query-machines 回复包含不正常 'alias' 数据"
 
@@ -32469,6 +32489,9 @@ msgstr "query-machines 回复有格式错误的 'default-ram-id' 数据"
 
 msgid "query-machines reply has malformed 'is-default' data"
 msgstr "query-machines 回复中包含不正常 'is-default' 数据"
+
+msgid "query-machines reply has malformed 'numa-mem-supported' data"
+msgstr ""
 
 msgid "query-memory-devices reply data doesn't contain enum data"
 msgstr "query-memory-devices 回复数据不包含枚举数据"
@@ -32775,9 +32798,6 @@ msgstr "答复数据缺少 'option' 名称或参数"
 
 msgid "reply was missing return data"
 msgstr "条目缺少返回值"
-
-msgid "report"
-msgstr "报告"
 
 msgid "report active users"
 msgstr "报告活跃的用户"
@@ -33138,9 +33158,6 @@ msgstr "将域 '%1$s' 保存到 '%2$s'：打开失败"
 #, c-format
 msgid "saving domain '%1$s' to '%2$s': write failed"
 msgstr "将域 '%1$s' 保存到 '%2$s'：写入失败"
-
-msgid "sbbc configuration is not supported by this QEMU binary"
-msgstr "此 QEMU 二进制文件不支持 sbbc 配置"
 
 #, c-format
 msgid "scheme and host are mandatory vz migration URI: %1$s"
@@ -37815,6 +37832,143 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "%1$s cannot be set higher than %2$s "
+#~ msgstr "%1$s 不能高于 %2$s "
+
+#~ msgid ""
+#~ "At least one of options --min-workers, --max-workers, --priority-workers "
+#~ "is mandatory "
+#~ msgstr ""
+#~ "选项 --min-workers, --max-workers和 --priority-workers 中至少有 1 个是必需"
+#~ "的 "
+
+#~ msgid "Can't find prlctl command in the PATH env"
+#~ msgstr "无法在 PATH env 中找到 prlctl 命令"
+
+#~ msgid "Can't initialize Parallels SDK"
+#~ msgstr "无法初始化平行 SDK"
+
+#~ msgid ""
+#~ "Can't perform keyboard-interactive authentication: Authentication "
+#~ "callback not provided "
+#~ msgstr "无法执行键盘互动认证：未提供认证回叫 "
+
+#~ msgid "Cannot find byte %1$sstats for block device '%2$s'"
+#~ msgstr "无法找到块设备 '%1$s' 的字节 %2$sstats"
+
+#~ msgid "Cannot find request %1$sstats for block device '%2$s'"
+#~ msgstr "无法找到块设备 '%1$s' 的请求 %2$sstats"
+
+#~ msgid "Cannot find request stats for block device '%1$s'"
+#~ msgstr "无法找到块设备 '%1$s' 的请求统计信息"
+
+#~ msgid "Cannot parse %1$srequest stat '%2$s'"
+#~ msgstr "无法解析 %1$srequest 统计信息 '%2$s'"
+
+#~ msgid "Cannot parse %1$sstat '%2$s'"
+#~ msgstr "无法解析 %1$sstat '%2$s'"
+
+#~ msgid "Cannot parse byte %1$sstat '%2$s'"
+#~ msgstr "无法解析字节 %1$sstat '%2$s'"
+
+#~ msgid ""
+#~ "Configuring the page size for HPT guests is not supported by this QEMU "
+#~ "binary"
+#~ msgstr "此 QEMU 二进制文件不支持为 HPT 客户机配置页大小"
+
+#~ msgid "HTM configuration is not supported by this QEMU binary"
+#~ msgstr "此 QEMU 二进制文件不支持 HTM 配置"
+
+#~ msgid "IPv4"
+#~ msgstr "IPv4"
+
+#~ msgid "IPv6"
+#~ msgstr "IPv6"
+
+#~ msgid "Invalid setting for HTM state"
+#~ msgstr "HTM 状态的无效设置"
+
+#~ msgid "Invalid setting for ccf-assist state"
+#~ msgstr "ccf-assist 状态的无效的设置"
+
+#~ msgid "Invalid setting for nested HV state"
+#~ msgstr "嵌套 HV 状态的无效的设置"
+
+#~ msgid "Multiple iTCO watchdogs are not supported"
+#~ msgstr "不支持多 iTCO watchdog"
+
+#~ msgid "Nested HV configuration is not supported by this QEMU binary"
+#~ msgstr "此 QEMU 二进制文件不支持嵌套 HV 配置"
+
+#~ msgid "Sum of %1$srequest stat overflows"
+#~ msgstr "%1$srequest 统计溢出的总和"
+
+#~ msgid "Sum of byte %1$sstat overflows"
+#~ msgstr "字节 %1$sstat 溢出的总和"
+
+#~ msgid "ccf-assist configuration is not supported by this QEMU binary"
+#~ msgstr "此 QEMU 二进制文件不支持 ccf-assist 配置"
+
+#~ msgid "cfpc configuration is not supported by this QEMU binary"
+#~ msgstr "此 QEMU 二进制文件不支持 cfpc 配置"
+
+#~ msgid "closed"
+#~ msgstr "已关闭"
+
+#~ msgid "debug"
+#~ msgstr "故障调试"
+
+#~ msgid "dnsmasq version >= %1$u.%2$u required but %3$lu.%4$lu found"
+#~ msgstr "需要 dnsmasq 版本 >= %1$u.%2$u ，但只找到了 %3$lu.%4$lu"
+
+#~ msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"
+#~ msgstr "域 '%1$s' 的事件 'io-error' : %2$s (%3$s) %4$s\n"
+
+#~ msgid ""
+#~ "event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
+#~ msgstr "域 '%1$s' 的事件 'io-error-reason': %2$s (%3$s) %4$s 由于 %5$s\n"
+
+#~ msgid "event 'tray-change' for domain '%1$s' disk %2$s: %3$s\n"
+#~ msgstr "域 '%1$s' 磁盘 %2$s 的事件 'tray-change' : %3$s\n"
+
+#~ msgid "event 'watchdog' for domain '%1$s': %2$s\n"
+#~ msgstr "域 '%1$s' 的事件 'watchdog' : %2$s\n"
+
+#~ msgid "hotplug of watchdog of model %1$s is not supported"
+#~ msgstr "不支持型号 %1$s 的 watchdog 的热插拔"
+
+#~ msgid "ibs configuration is not supported by this QEMU binary"
+#~ msgstr "此 QEMU 二进制文件不支持 ibs 配置"
+
+#~ msgid ""
+#~ "if using CPU maximum physical address mode='%1$s', bits= must be "
+#~ "specified too"
+#~ msgstr "如果使用 CPU 最大物理地址模式='%1$s'，则必须同时指定 bits="
+
+#~ msgid "inject-nmi"
+#~ msgstr "inject-nmi"
+
+#~ msgid "none"
+#~ msgstr "无"
+
+#~ msgid "opened"
+#~ msgstr "已打开"
+
+#~ msgid "pause"
+#~ msgstr "暂停"
+
+#~ msgid "poweroff"
+#~ msgstr "关机"
+
+#~ msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
+#~ msgstr "qemu-machines 回复有格式错误的 'numa-mem-supported' 数据"
+
+#~ msgid "report"
+#~ msgstr "报告"
+
+#~ msgid "sbbc configuration is not supported by this QEMU binary"
+#~ msgstr "此 QEMU 二进制文件不支持 sbbc 配置"
 
 #~ msgid ""
 #~ "At least one of name, mac, or ip attribute must be specified for static "

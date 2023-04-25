@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-01 11:38+0200\n"
+"POT-Creation-Date: 2023-04-25 10:39+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -24,8 +24,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 4.15.2\n"
 
 msgid ""
@@ -554,8 +554,8 @@ msgid "%1$s can't be empty"
 msgstr "%1$s не може бути порожнім"
 
 #, c-format
-msgid "%1$s cannot be set higher than %2$s "
-msgstr "%1$s не можна встановлювати у значення, яке є більшим за %2$s "
+msgid "%1$s cannot be set higher than %2$s"
+msgstr ""
 
 #, c-format
 msgid "%1$s cannot parse GID '%2$s'"
@@ -658,6 +658,10 @@ msgstr "Довжина %1$s перевищує максимальну можли
 #, c-format
 msgid "%1$s model of watchdog can go only on PCI bus"
 msgstr "Модель %1$s watchdog може стосуватися лише каналу PCI"
+
+#, c-format
+msgid "%1$s model of watchdog cannot be used with this machine type"
+msgstr ""
 
 #, c-format
 msgid "%1$s model of watchdog does not support configuring the address"
@@ -1932,6 +1936,9 @@ msgstr ""
 "Після створення дампу ядра не вдалося відновити роботу домену «%1$d» за "
 "допомогою libxenlight"
 
+msgid "Agent authentication is not supported on this host"
+msgstr ""
+
 msgid "Ain't nobody heard of that much cache level"
 msgstr "Ніхто не чув про такий високий рівень кешування"
 
@@ -2036,10 +2043,8 @@ msgstr ""
 
 msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
-"mandatory "
+"mandatory"
 msgstr ""
-"Обов'язково слід вказати принаймні один із параметрів --min-workers, --max-"
-"workers, --priority-workers "
 
 msgid "At least one tty is required"
 msgstr "Потрібно вказати принаймні один tty"
@@ -2709,20 +2714,12 @@ msgstr "Не вдалося знайти диск «%1$s» у визначені
 msgid "Can't find network boot device for index: %1$d"
 msgstr "Не вдалося знайти пристрій завантаження із мережі із індексом %1$d"
 
-msgid "Can't find prlctl command in the PATH env"
-msgstr ""
-"Не вдалося знайти програму prlctl у каталогах, описаних змінною середовища "
-"PATH"
-
 #, c-format
 msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %1$s"
 msgstr ""
 "Не вдалося отримати UUID файла для долучення як жорсткого диска, dvd або "
 "дискети: %1$s"
-
-msgid "Can't initialize Parallels SDK"
-msgstr "Не вдалося ініціалізувати SDK Parallels"
 
 msgid "Can't initialize access manager"
 msgstr "Не вдалося ініціалізувати засіб керування доступом"
@@ -2753,10 +2750,8 @@ msgstr ""
 
 msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
-"not provided "
+"not provided"
 msgstr ""
-"Не вдалося виконати інтерактивне розпізнавання за допомогою клавіатури: не "
-"надано функції розпізнавання за допомогою зворотного виклику "
 
 #, c-format
 msgid "Can't read %1$s"
@@ -3049,13 +3044,12 @@ msgstr ""
 "Не вдалося знайти виробника процесора із ідентифікатором виробника 0x%1$02llx"
 
 #, c-format
-msgid "Cannot find boot device of requested type %1$s"
-msgstr "Не вдалося знайти завантажувальний пристрій запитаного типу %1$s"
+msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
+msgstr ""
 
 #, c-format
-msgid "Cannot find byte %1$sstats for block device '%2$s'"
-msgstr ""
-"Не вдалося знайти байтову статистику щодо %1$s для блокового пристрою «%2$s»"
+msgid "Cannot find boot device of requested type %1$s"
+msgstr "Не вдалося знайти завантажувальний пристрій запитаного типу %1$s"
 
 #, c-format
 msgid "Cannot find byte '%1$s' stats for block device '%2$s'"
@@ -3071,17 +3065,6 @@ msgstr ""
 #, c-format
 msgid "Cannot find program %1$d version %2$d"
 msgstr "Не вдалося виявити програму %1$d версії %2$d"
-
-#, c-format
-msgid "Cannot find request %1$sstats for block device '%2$s'"
-msgstr ""
-"Не вдалося знайти статистичні дані щодо запитів дії %1$s для блокового "
-"пристрою «%2$s»"
-
-#, c-format
-msgid "Cannot find request stats for block device '%1$s'"
-msgstr ""
-"Не вдалося знайти статистичні дані щодо запитів для блокового пристрою «%1$s»"
 
 #, c-format
 msgid "Cannot find security driver '%1$s'"
@@ -3247,15 +3230,6 @@ msgid "Cannot open resctrl"
 msgstr "Не вдалося відкрити resctrl"
 
 #, c-format
-msgid "Cannot parse %1$srequest stat '%2$s'"
-msgstr ""
-"Не вдалося обробити запит %1$s щодо отримання статистичних даних «%2$s»"
-
-#, c-format
-msgid "Cannot parse %1$sstat '%2$s'"
-msgstr "Не вдалося обробити статистичні дані щодо дії %1$s «%2$s»"
-
-#, c-format
 msgid "Cannot parse '%1$s' stat '%2$s'"
 msgstr "Не вдалося обробити статистику «%1$s» «%2$s»"
 
@@ -3333,8 +3307,12 @@ msgid "Cannot parse adapter '%1$s'"
 msgstr "Не вдалося обробити запис адаптера «%1$s»"
 
 #, c-format
-msgid "Cannot parse byte %1$sstat '%2$s'"
-msgstr "Не вдалося обробити байтову статистику %1$s «%2$s»"
+msgid "Cannot parse blkio cgroup (%1$s) entry '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Cannot parse blkio cgroup ('%1$s') entry '%2$s'"
+msgstr ""
 
 #, c-format
 msgid "Cannot parse byte '%1$s' stat '%2$s'"
@@ -4017,12 +3995,6 @@ msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
 msgstr ""
 "Підтримки налаштовування таймера «%1$s» не передбачено для цього "
 "виконуваного файла QEMU"
-
-msgid ""
-"Configuring the page size for HPT guests is not supported by this QEMU binary"
-msgstr ""
-"Підтримки налаштовування розміру сторінки для гостьових систем HPT не "
-"передбачено у цьому виконуваному файлі QEMU"
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "З'єднатись з віртуальною послідовною консоллю гостьової системи"
@@ -9355,10 +9327,6 @@ msgstr "Агент гостьової системи зараз недоступ
 msgid "HMAT is not supported with this QEMU"
 msgstr "підтримки HMAT у цьому QEMU не передбачено"
 
-msgid "HTM configuration is not supported by this QEMU binary"
-msgstr ""
-"Підтримки налаштовування HTM не передбачено у цьому виконуваному файлі QEMU"
-
 #, c-format
 msgid "HTTP response code %1$d for call to '%2$s'"
 msgstr "Код відповіді HTTP %1$d для виклику до «%2$s»"
@@ -9626,6 +9594,18 @@ msgstr ""
 "зміна прив'язки переривань IOMMU потребує поділу APIC введення-виведення "
 "(ioapic driver='qemu')"
 
+msgid "IORT table header ended early"
+msgstr ""
+
+msgid "IORT table node header ended early"
+msgstr ""
+
+#, c-format
+msgid ""
+"IORT table node type %1$s has invalid length: got %2$u, expected at least "
+"%3$zu"
+msgstr ""
+
 msgid "IOThread ID"
 msgstr "Ідентифікатор IOThread"
 
@@ -9662,12 +9642,6 @@ msgstr ""
 
 msgid "IPC namespace support is required"
 msgstr "Потрібна підтримка простору назв IPC"
-
-msgid "IPv4"
-msgstr "IPv4"
-
-msgid "IPv6"
-msgstr "IPv6"
 
 msgid "ISession object is null"
 msgstr "Об'єкт ISession має значення null"
@@ -9805,6 +9779,9 @@ msgstr ""
 #, c-format
 msgid "Instantiation of rules failed on interface '%1$s'"
 msgstr "Помилка під час спроби конкретизації правил на інтерфейсі «%1$s»"
+
+msgid "Integrity error in watchdog models"
+msgstr ""
 
 msgid "Interface"
 msgstr "Інтерфейс"
@@ -10607,14 +10584,9 @@ msgstr "Некоректна мітка безпеки «%1$s»"
 msgid "Invalid setting for HPT resizing"
 msgstr "Некоректний параметр для зміни розмірів HPT"
 
-msgid "Invalid setting for HTM state"
-msgstr "Некоректне значення для стану HTM"
-
-msgid "Invalid setting for ccf-assist state"
-msgstr "Некоректне значення для стану ccf-assist"
-
-msgid "Invalid setting for nested HV state"
-msgstr "Некоректний параметр для вкладеного стану гіпервізора"
+#, c-format
+msgid "Invalid setting for pseries feature '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Invalid source mode: %1$s"
@@ -12171,9 +12143,6 @@ msgstr ""
 msgid "Multiple graphics devices are not supported"
 msgstr "Підтримки декількох графічних пристроїв не передбачено"
 
-msgid "Multiple iTCO watchdogs are not supported"
-msgstr "Підтримки декількох сторожових схем iTCO не передбачено"
-
 msgid "Multiple interfaces attached to bridge"
 msgstr "До містка долучено декілька інтерфейсів"
 
@@ -12344,11 +12313,6 @@ msgstr "Назва:"
 
 msgid "Namespaces are not supported on this platform"
 msgstr "На цій платформі не передбачено підтримки просторів назв"
-
-msgid "Nested HV configuration is not supported by this QEMU binary"
-msgstr ""
-"Підтримки вкладеної конфігурації гіпервізорів не передбачено у цьому "
-"виконуваному файлі QEMU"
 
 #, c-format
 msgid "Network %1$s XML configuration edited.\n"
@@ -15553,14 +15517,6 @@ msgid "Successfully updated media."
 msgstr "Носій успішно оновлено."
 
 #, c-format
-msgid "Sum of %1$srequest stat overflows"
-msgstr "Переповнення за сумою запиту щодо статистики %1$s"
-
-#, c-format
-msgid "Sum of byte %1$sstat overflows"
-msgstr "Переповнення за сумою байтів дії %1$s"
-
-#, c-format
 msgid "Sum of byte '%1$s' stat overflows"
 msgstr "Переповнення за статистичними даними суми байтів «%1$s»"
 
@@ -16702,6 +16658,11 @@ msgid ""
 msgstr ""
 "У мережі %1$s елемент <nat> можна використовувати, лише якщо атрибут «mode» "
 "<forward> має значення «nat»"
+
+msgid ""
+"The <portForward> element can only be used with <interface type='user'> and "
+"its 'passt' backend"
+msgstr ""
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
@@ -21392,6 +21353,9 @@ msgstr ""
 "спроба об'єднання віртуальних портів, що належать до невідповідних типів "
 "(%1$s і %2$s)"
 
+msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
+msgstr ""
+
 #, c-format
 msgid "audio ID %1$u is used multiple times"
 msgstr "ідентифікатор звуку %1$u використано декілька разів"
@@ -22772,16 +22736,16 @@ msgid ""
 "cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
 "%5$d - controller not found"
 msgstr ""
-"не вдалося від'єднати «угарячу» пристрій %1$s з гостьовою PCI-адресою "
-"%2$04x:%3$02x:%4$02x.%5$d — не знайдено контролер"
+"не вдалося від'єднати «угарячу» пристрій %1$s з гостьовою PCI-адресою %2$04x:"
+"%3$02x:%4$02x.%5$d — не знайдено контролер"
 
 #, c-format
 msgid ""
 "cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
 "%5$d - not allowed by controller"
 msgstr ""
-"не вдалося від'єднати «угарячу» пристрій %1$s з гостьовою PCI-адресою "
-"%2$04x:%3$02x:%4$02x.%5$d — заборонено контролером"
+"не вдалося від'єднати «угарячу» пристрій %1$s з гостьовою PCI-адресою %2$04x:"
+"%3$02x:%4$02x.%5$d — заборонено контролером"
 
 #, c-format
 msgid ""
@@ -22794,8 +22758,8 @@ msgstr ""
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
-"не вдалося від'єднати «угарячу» мультифункціональний пристрій PCI "
-"%1$04x:%2$02x:%3$02x.%4$d"
+"не вдалося від'єднати «угарячу» мультифункціональний пристрій PCI %1$04x:"
+"%2$02x:%3$02x.%4$d"
 
 msgid "cannot initialize agent condition"
 msgstr "не вдалося ініціалізувати умову агента"
@@ -23267,6 +23231,10 @@ msgid "cannot read mount list '%1$s'"
 msgstr "не вдалося прочитати список точок монтування «%1$s»"
 
 #, c-format
+msgid "cannot read node header '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "cannot receive data from volume %1$s"
 msgstr "не вдалося отримати дані з тому %1$s"
 
@@ -23652,11 +23620,6 @@ msgstr ""
 msgid "capture disk state but not vm state"
 msgstr "визначити стан диска, а не стан ВМ"
 
-msgid "ccf-assist configuration is not supported by this QEMU binary"
-msgstr ""
-"Підтримки налаштовування ccf-assist не передбачено у цьому виконуваному "
-"файлі QEMU"
-
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
@@ -23680,10 +23643,6 @@ msgstr "cellNum у %1$s має бути меншим або дорівнюват
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "cellNum у %1$s приймає %2$d лише як від'ємне значення"
-
-msgid "cfpc configuration is not supported by this QEMU binary"
-msgstr ""
-"Підтримки налаштовування cfpc не передбачено у цьому виконуваному файлі QEMU"
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -23941,9 +23900,6 @@ msgid "close: %1$s: failed to write or close temporary file: %2$s"
 msgstr ""
 "close: %1$s: не вдалося виконати запис або закрити файл тимчасових даних: "
 "%2$s"
-
-msgid "closed"
-msgstr "закрито"
 
 #, c-format
 msgid "coalesce settings on interface type %1$s are not supported"
@@ -24892,9 +24848,6 @@ msgstr "dbus-daemon %1$s несподівано завершила роботу"
 msgid "dbus-daemon died and reported: %1$s"
 msgstr "dbus-daemon завершила роботу і повідомила таке: %1$s"
 
-msgid "debug"
-msgstr "діагностика"
-
 msgid "default"
 msgstr "типовий"
 
@@ -25075,6 +25028,10 @@ msgstr "підтримки від'єднання пристроїв типу «%
 
 msgid "detaching network device from VM is unsupported"
 msgstr "підтримки від'єднання мережвих пристроїв від ВМ не передбачено"
+
+msgid ""
+"detaching of <console/> is unsupported. Try corresponding <serial/> instead"
+msgstr ""
 
 msgid "detaching serial console is not supported"
 msgstr "підтримки від'єднання послідовної консолі не передбачено"
@@ -25546,8 +25503,8 @@ msgid "display the progress of save"
 msgstr "показувати поступ збереження"
 
 #, c-format
-msgid "dnsmasq version >= %1$u.%2$u required but %3$lu.%4$lu found"
-msgstr "Версія dnsmasq >= %1$u.Потрібна %2$u, але знайдено лише %3$lu.%4$lu"
+msgid "dnsmasq version >= %1$u.%2$u required but %3$llu.%4$llu found"
+msgstr ""
 
 msgid "do not enable STP for this bridge"
 msgstr "не вмикати STP для цього містка"
@@ -25655,6 +25612,10 @@ msgstr "XML резервного копіювання домену"
 
 msgid "domain block device size information"
 msgstr "дані щодо розміру блокового пристрою домену"
+
+#, c-format
+msgid "domain can only have one watchdog with model '%1$s'"
+msgstr ""
 
 msgid "domain capabilities"
 msgstr "можливості домену"
@@ -26322,14 +26283,36 @@ msgstr ""
 "віддалений[%6$s %7$s %8$s] %9$s\n"
 
 #, c-format
-msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"
-msgstr "подія «io-error» для домену «%1$s»: %2$s (%3$s) %4$s\n"
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none\n"
+msgstr ""
 
 #, c-format
-msgid ""
-"event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none due to %4$s\n"
 msgstr ""
-"подія «io-error-reason» для домену «%1$s»: %2$s (%3$s) %4$s через %5$s\n"
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown due to %4$s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'job-completed' for domain '%1$s':\n"
@@ -26388,16 +26371,52 @@ msgid "event 'rtc-change' for domain '%1$s': %2$lld\n"
 msgstr "подія «rtc-change» для домену «%1$s»: %2$lld\n"
 
 #, c-format
-msgid "event 'tray-change' for domain '%1$s' disk %2$s: %3$s\n"
-msgstr "подія «tray-change» для домену «%1$s», диск %2$s: %3$s\n"
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: closed\n"
+msgstr ""
+
+#, c-format
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: opened\n"
+msgstr ""
+
+#, c-format
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: unknown\n"
+msgstr ""
 
 #, c-format
 msgid "event 'tunable' for domain '%1$s':\n"
 msgstr "подія «tunable» для домену «%1$s»:\n"
 
 #, c-format
-msgid "event 'watchdog' for domain '%1$s': %2$s\n"
-msgstr "подія «watchdog» для домену «%1$s»: %2$s\n"
+msgid "event 'watchdog' for domain '%1$s': debug\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': inject-nmi\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': none\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': pause\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': poweroff\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': reset\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': shutdown\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': unknown\n"
+msgstr ""
 
 msgid "event callback already tracked"
 msgstr "зворотний виклик події вже відстежено"
@@ -28752,10 +28771,8 @@ msgid "hotplug of interface type of %1$s is not implemented yet"
 msgstr "під'єднання «вгарячу» інтерфейсів типу %1$s ще не реалізовано"
 
 #, c-format
-msgid "hotplug of watchdog of model %1$s is not supported"
+msgid "hotplug of watchdog model '%1$s' is not supported"
 msgstr ""
-"підтримки з'єднання у «гарячому» режимі засобу спостереження моделі %1$s не "
-"передбачено"
 
 msgid "hpet timer is not supported by this architecture"
 msgstr "на цій архітектурі не передбачено підтримки hpet-таймерів"
@@ -28821,10 +28838,6 @@ msgstr ""
 msgid "iSCSI usage specified, but target is missing"
 msgstr "Вказано використання iSCSI, але не вказано призначення"
 
-msgid "ibs configuration is not supported by this QEMU binary"
-msgstr ""
-"Підтримки налаштовування ibs не передбачено у цьому виконуваному файлі QEMU"
-
 msgid "idle"
 msgstr "бездіяльний"
 
@@ -28836,14 +28849,6 @@ msgstr "ідентифікатори віртуальних процесорів
 
 msgid "if IOMMU is enabled by kernel"
 msgstr "якщо IOMMU увімкнено ядром"
-
-#, c-format
-msgid ""
-"if using CPU maximum physical address mode='%1$s', bits= must be specified "
-"too"
-msgstr ""
-"Якщо використано mode='%1$s' для максимальної фізичної адреси процесора, має "
-"бути також вказано bits="
 
 #, c-format
 msgid "ifkey \"%1$s\" has no req"
@@ -28994,9 +28999,6 @@ msgstr "iqn ініціатора для базового сховища дани
 
 msgid "inject"
 msgstr "вставити"
-
-msgid "inject-nmi"
-msgstr "nmi-ін'єкція"
 
 #, c-format
 msgid "input device on bus '%1$s' cannot be detached"
@@ -33570,9 +33572,6 @@ msgstr ""
 msgid "non unique alias detected: %1$s"
 msgstr "виявлено повторення альтернативної назви: %1$s"
 
-msgid "none"
-msgstr "немає"
-
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr "ненульове значення ncpus не відповідає значенню NULL cpus"
 
@@ -33996,9 +33995,6 @@ msgstr "відкрити редактор для внесення змін у о
 msgid "open(\"%1$s\")"
 msgstr "open(\"%1$s\")"
 
-msgid "opened"
-msgstr "відкрито"
-
 #, c-format
 msgid "openwsman: %1$s"
 msgstr "openwsman: %1$s"
@@ -34122,6 +34118,10 @@ msgstr "вивести повідомлення до stderr"
 #, c-format
 msgid "overflow in converting %1$ld MiB/s to bytes\n"
 msgstr "переповнення під час перетворення %1$ld МіБ/с на байти\n"
+
+#, c-format
+msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
+msgstr ""
 
 msgid "override the destination host name used for TLS verification"
 msgstr ""
@@ -34323,9 +34323,6 @@ msgstr "слід вказати шлях до файла даних ключів
 
 msgid "path to secret data file is required"
 msgstr "слід вказати шлях до файла даних ключів"
-
-msgid "pause"
-msgstr "призупинити"
 
 msgid "paused"
 msgstr "призупинено"
@@ -34629,9 +34626,6 @@ msgstr ""
 msgid "power-of-two granularity to use during the copy"
 msgstr ""
 "модульність (степінь двійки), якою слід скористатися під час копіювання"
-
-msgid "poweroff"
-msgstr "вимкнути"
 
 #, c-format
 msgid "pr helper %1$s didn't show up"
@@ -34939,14 +34933,6 @@ msgstr "драйвер стану qemu не активний"
 msgid "qemu unexpectedly closed the monitor"
 msgstr "qemu неочікувано завершив роботу монітора"
 
-msgid "qemu-machines reply has malformed 'acpi data"
-msgstr "помилкове форматування даних acpi у відповіді qemu-machines"
-
-msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
-msgstr ""
-"у відповіді qemu-machines містяться помилково форматовані дані «numa-mem-"
-"supported»"
-
 #, c-format
 msgid "qom-get invalid object property type %1$d"
 msgstr "некоректний тип властивості об'єкта qom-get, %1$d"
@@ -35048,6 +35034,9 @@ msgstr "query-kvm повернуто неочікувані дані"
 msgid "query-machines reply data was missing 'name'"
 msgstr "у даних відповіді query-machines не міститься поля «name»"
 
+msgid "query-machines reply has malformed 'acpi data"
+msgstr ""
+
 msgid "query-machines reply has malformed 'alias' data"
 msgstr "форматування даних «alias» у відповіді query-machines є помилковим"
 
@@ -35066,6 +35055,9 @@ msgstr ""
 msgid "query-machines reply has malformed 'is-default' data"
 msgstr ""
 "форматування даних «is-default» у відповіді query-machines є помилковим"
+
+msgid "query-machines reply has malformed 'numa-mem-supported' data"
+msgstr ""
 
 msgid "query-memory-devices reply data doesn't contain enum data"
 msgstr "дані відповіді query-memory-devices не містять даних переліку (enum)"
@@ -35409,9 +35401,6 @@ msgstr "у даних відповіді не вистачає назви «opti
 
 msgid "reply was missing return data"
 msgstr "у відповіді не міститься даних"
-
-msgid "report"
-msgstr "звіт"
 
 msgid "report active users"
 msgstr "вивести звіт щодо активних користувачів"
@@ -35793,10 +35782,6 @@ msgstr "збереження домену «%1$s» до «%2$s»: не вдал�
 #, c-format
 msgid "saving domain '%1$s' to '%2$s': write failed"
 msgstr "збереження домену «%1$s» до «%2$s»: не вдалося записати"
-
-msgid "sbbc configuration is not supported by this QEMU binary"
-msgstr ""
-"Підтримки налаштовування sbbc не передбачено у цьому виконуваному файлі QEMU"
 
 #, c-format
 msgid "scheme and host are mandatory vz migration URI: %1$s"
@@ -40772,6 +40757,178 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <рядок>}..."
+
+#~ msgid "%1$s cannot be set higher than %2$s "
+#~ msgstr "%1$s не можна встановлювати у значення, яке є більшим за %2$s "
+
+#~ msgid ""
+#~ "At least one of options --min-workers, --max-workers, --priority-workers "
+#~ "is mandatory "
+#~ msgstr ""
+#~ "Обов'язково слід вказати принаймні один із параметрів --min-workers, --"
+#~ "max-workers, --priority-workers "
+
+#~ msgid "Can't find prlctl command in the PATH env"
+#~ msgstr ""
+#~ "Не вдалося знайти програму prlctl у каталогах, описаних змінною "
+#~ "середовища PATH"
+
+#~ msgid "Can't initialize Parallels SDK"
+#~ msgstr "Не вдалося ініціалізувати SDK Parallels"
+
+#~ msgid ""
+#~ "Can't perform keyboard-interactive authentication: Authentication "
+#~ "callback not provided "
+#~ msgstr ""
+#~ "Не вдалося виконати інтерактивне розпізнавання за допомогою клавіатури: "
+#~ "не надано функції розпізнавання за допомогою зворотного виклику "
+
+#~ msgid "Cannot find byte %1$sstats for block device '%2$s'"
+#~ msgstr ""
+#~ "Не вдалося знайти байтову статистику щодо %1$s для блокового пристрою "
+#~ "«%2$s»"
+
+#~ msgid "Cannot find request %1$sstats for block device '%2$s'"
+#~ msgstr ""
+#~ "Не вдалося знайти статистичні дані щодо запитів дії %1$s для блокового "
+#~ "пристрою «%2$s»"
+
+#~ msgid "Cannot find request stats for block device '%1$s'"
+#~ msgstr ""
+#~ "Не вдалося знайти статистичні дані щодо запитів для блокового пристрою "
+#~ "«%1$s»"
+
+#~ msgid "Cannot parse %1$srequest stat '%2$s'"
+#~ msgstr ""
+#~ "Не вдалося обробити запит %1$s щодо отримання статистичних даних «%2$s»"
+
+#~ msgid "Cannot parse %1$sstat '%2$s'"
+#~ msgstr "Не вдалося обробити статистичні дані щодо дії %1$s «%2$s»"
+
+#~ msgid "Cannot parse byte %1$sstat '%2$s'"
+#~ msgstr "Не вдалося обробити байтову статистику %1$s «%2$s»"
+
+#~ msgid ""
+#~ "Configuring the page size for HPT guests is not supported by this QEMU "
+#~ "binary"
+#~ msgstr ""
+#~ "Підтримки налаштовування розміру сторінки для гостьових систем HPT не "
+#~ "передбачено у цьому виконуваному файлі QEMU"
+
+#~ msgid "HTM configuration is not supported by this QEMU binary"
+#~ msgstr ""
+#~ "Підтримки налаштовування HTM не передбачено у цьому виконуваному файлі "
+#~ "QEMU"
+
+#~ msgid "IPv4"
+#~ msgstr "IPv4"
+
+#~ msgid "IPv6"
+#~ msgstr "IPv6"
+
+#~ msgid "Invalid setting for HTM state"
+#~ msgstr "Некоректне значення для стану HTM"
+
+#~ msgid "Invalid setting for ccf-assist state"
+#~ msgstr "Некоректне значення для стану ccf-assist"
+
+#~ msgid "Invalid setting for nested HV state"
+#~ msgstr "Некоректний параметр для вкладеного стану гіпервізора"
+
+#~ msgid "Multiple iTCO watchdogs are not supported"
+#~ msgstr "Підтримки декількох сторожових схем iTCO не передбачено"
+
+#~ msgid "Nested HV configuration is not supported by this QEMU binary"
+#~ msgstr ""
+#~ "Підтримки вкладеної конфігурації гіпервізорів не передбачено у цьому "
+#~ "виконуваному файлі QEMU"
+
+#~ msgid "Sum of %1$srequest stat overflows"
+#~ msgstr "Переповнення за сумою запиту щодо статистики %1$s"
+
+#~ msgid "Sum of byte %1$sstat overflows"
+#~ msgstr "Переповнення за сумою байтів дії %1$s"
+
+#~ msgid "ccf-assist configuration is not supported by this QEMU binary"
+#~ msgstr ""
+#~ "Підтримки налаштовування ccf-assist не передбачено у цьому виконуваному "
+#~ "файлі QEMU"
+
+#~ msgid "cfpc configuration is not supported by this QEMU binary"
+#~ msgstr ""
+#~ "Підтримки налаштовування cfpc не передбачено у цьому виконуваному файлі "
+#~ "QEMU"
+
+#~ msgid "closed"
+#~ msgstr "закрито"
+
+#~ msgid "debug"
+#~ msgstr "діагностика"
+
+#~ msgid "dnsmasq version >= %1$u.%2$u required but %3$lu.%4$lu found"
+#~ msgstr "Версія dnsmasq >= %1$u.Потрібна %2$u, але знайдено лише %3$lu.%4$lu"
+
+#~ msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"
+#~ msgstr "подія «io-error» для домену «%1$s»: %2$s (%3$s) %4$s\n"
+
+#~ msgid ""
+#~ "event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
+#~ msgstr ""
+#~ "подія «io-error-reason» для домену «%1$s»: %2$s (%3$s) %4$s через %5$s\n"
+
+#~ msgid "event 'tray-change' for domain '%1$s' disk %2$s: %3$s\n"
+#~ msgstr "подія «tray-change» для домену «%1$s», диск %2$s: %3$s\n"
+
+#~ msgid "event 'watchdog' for domain '%1$s': %2$s\n"
+#~ msgstr "подія «watchdog» для домену «%1$s»: %2$s\n"
+
+#~ msgid "hotplug of watchdog of model %1$s is not supported"
+#~ msgstr ""
+#~ "підтримки з'єднання у «гарячому» режимі засобу спостереження моделі %1$s "
+#~ "не передбачено"
+
+#~ msgid "ibs configuration is not supported by this QEMU binary"
+#~ msgstr ""
+#~ "Підтримки налаштовування ibs не передбачено у цьому виконуваному файлі "
+#~ "QEMU"
+
+#~ msgid ""
+#~ "if using CPU maximum physical address mode='%1$s', bits= must be "
+#~ "specified too"
+#~ msgstr ""
+#~ "Якщо використано mode='%1$s' для максимальної фізичної адреси процесора, "
+#~ "має бути також вказано bits="
+
+#~ msgid "inject-nmi"
+#~ msgstr "nmi-ін'єкція"
+
+#~ msgid "none"
+#~ msgstr "немає"
+
+#~ msgid "opened"
+#~ msgstr "відкрито"
+
+#~ msgid "pause"
+#~ msgstr "призупинити"
+
+#~ msgid "poweroff"
+#~ msgstr "вимкнути"
+
+#~ msgid "qemu-machines reply has malformed 'acpi data"
+#~ msgstr "помилкове форматування даних acpi у відповіді qemu-machines"
+
+#~ msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
+#~ msgstr ""
+#~ "у відповіді qemu-machines містяться помилково форматовані дані «numa-mem-"
+#~ "supported»"
+
+#~ msgid "report"
+#~ msgstr "звіт"
+
+#~ msgid "sbbc configuration is not supported by this QEMU binary"
+#~ msgstr ""
+#~ "Підтримки налаштовування sbbc не передбачено у цьому виконуваному файлі "
+#~ "QEMU"
 
 #~ msgid ""
 #~ "At least one of name, mac, or ip attribute must be specified for static "

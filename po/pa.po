@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-01 11:38+0200\n"
+"POT-Creation-Date: 2023-04-25 10:39+0000\n"
 "PO-Revision-Date: 2015-03-01 05:31+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
@@ -421,9 +421,9 @@ msgstr ""
 msgid "%1$s can't be empty"
 msgstr "%1$s ਖਾਲੀ ਨਹੀਂ ਹੋ ਸਕਦਾ"
 
-#, fuzzy, c-format
-msgid "%1$s cannot be set higher than %2$s "
-msgstr "ਅਧਿਕਤਮ ਮੈਮੋਰੀ ਤੋਂ ਜਿਆਦਾ ਮੈਮੋਰੀ ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+#, c-format
+msgid "%1$s cannot be set higher than %2$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "%1$s cannot parse GID '%2$s'"
@@ -516,6 +516,10 @@ msgstr "%1$s ਲੰਬਾਈ ਅਧਿਕਤਮ ਤੋਂ ਜਿਆਦਾ ਹੈ
 
 #, c-format
 msgid "%1$s model of watchdog can go only on PCI bus"
+msgstr ""
+
+#, c-format
+msgid "%1$s model of watchdog cannot be used with this machine type"
 msgstr ""
 
 #, c-format
@@ -1724,6 +1728,9 @@ msgstr ""
 msgid "After dumping core, failed to resume domain '%1$d' with libxenlight"
 msgstr "ਕੋਰ ਨੂੰ ਸੁੱਟਣ ਤੋਂ ਬਾਅਦ, libxenlight ਨਾਲ ਡੋਮੇਨ '%1$d' ਨੂੰ ਮੁੜ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
 
+msgid "Agent authentication is not supported on this host"
+msgstr ""
+
 msgid "Ain't nobody heard of that much cache level"
 msgstr ""
 
@@ -1818,7 +1825,7 @@ msgstr ""
 
 msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
-"mandatory "
+"mandatory"
 msgstr ""
 
 #, fuzzy
@@ -2440,17 +2447,10 @@ msgstr ""
 msgid "Can't find network boot device for index: %1$d"
 msgstr "ਨੈੱਟਵਰਕ ਯੰਤਰ ਬੂਟ ਇੰਡੈਕਸ ਸੈਟਿੰਗਾਂ ਨਹੀਂ ਸੁਧਾਰ ਸਕਦਾ"
 
-msgid "Can't find prlctl command in the PATH env"
-msgstr "PATH env ਵਿੱਚ prlctl ਕਮਾਂਡ ਨਹੀਂ ਲੱਭੀ"
-
 #, c-format
 msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %1$s"
 msgstr ""
-
-#, fuzzy
-msgid "Can't initialize Parallels SDK"
-msgstr "ਦਖਲ ਪ੍ਰਬੰਧਕ ਨੂੰ ਸ਼ੁਰੂ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 msgid "Can't initialize access manager"
 msgstr "ਦਖਲ ਪ੍ਰਬੰਧਕ ਨੂੰ ਸ਼ੁਰੂ ਨਹੀਂ ਕਰ ਸਕਦਾ"
@@ -2479,9 +2479,8 @@ msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਅਮਲ ਵਿੱਚ ਨਹੀਂ ਲ�
 
 msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
-"not provided "
+"not provided"
 msgstr ""
-"keyboard-interactive ਪ੍ਰਮਾਣਿਕਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ: ਪ੍ਰਮਾਣਿਕਤਾ ਕਾਲਬੈਕ ਮੁਹੱਈਆ ਨਹੀਂ ਕਰਵਾਈ ਗਈ"
 
 #, fuzzy, c-format
 msgid "Can't read %1$s"
@@ -2765,13 +2764,13 @@ msgstr "PVR 0x%1$08x ਨਾਲ CPU ਮਾਡਲ ਨਹੀਂ ਲੱਭ ਸਕਦ
 msgid "Cannot find CPU vendor with vendor id 0x%1$02llx"
 msgstr ""
 
+#, c-format
+msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Cannot find boot device of requested type %1$s"
 msgstr "ਅਣਜਾਣ ਹੋਸਟ ਜੰਤਰ ਸਰੋਤ ਐਡਰੈੱਸ ਕਿਸਮ '%1$s'"
-
-#, fuzzy, c-format
-msgid "Cannot find byte %1$sstats for block device '%2$s'"
-msgstr "ਜੰਤਰ '%s' ਲਈ ਅੰਕੜੇ ਲੱਭ ਨਹੀਂ ਸਕਦਾ"
 
 #, fuzzy, c-format
 msgid "Cannot find byte '%1$s' stats for block device '%2$s'"
@@ -2784,14 +2783,6 @@ msgstr "ਜੰਤਰ '%1$s' ਲਈ ਅੰਕੜੇ ਲੱਭ ਨਹੀਂ ਸਕ
 #, c-format
 msgid "Cannot find program %1$d version %2$d"
 msgstr "ਪਰੋਗਰਾਮ %1$d ਵਰਜਨ %2$d ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-#, fuzzy, c-format
-msgid "Cannot find request %1$sstats for block device '%2$s'"
-msgstr "ਜੰਤਰ '%s' ਲਈ ਅੰਕੜੇ ਲੱਭ ਨਹੀਂ ਸਕਦਾ"
-
-#, fuzzy, c-format
-msgid "Cannot find request stats for block device '%1$s'"
-msgstr "ਜੰਤਰ '%1$s' ਲਈ ਅੰਕੜੇ ਲੱਭ ਨਹੀਂ ਸਕਦਾ"
 
 #, c-format
 msgid "Cannot find security driver '%1$s'"
@@ -2963,14 +2954,6 @@ msgid "Cannot open resctrl"
 msgstr "%s ਨਹੀਂ ਖੋਲ੍ਹ ਸਕਦਾ"
 
 #, fuzzy, c-format
-msgid "Cannot parse %1$srequest stat '%2$s'"
-msgstr "sys stat '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-#, fuzzy, c-format
-msgid "Cannot parse %1$sstat '%2$s'"
-msgstr "sys stat '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-#, fuzzy, c-format
 msgid "Cannot parse '%1$s' stat '%2$s'"
 msgstr "sys stat '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
@@ -3063,9 +3046,13 @@ msgstr "'%1$s' ਬਸ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 msgid "Cannot parse adapter '%1$s'"
 msgstr "'%1$s' ਅਡਾਪਟਰ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#, fuzzy, c-format
-msgid "Cannot parse byte %1$sstat '%2$s'"
-msgstr "sys stat '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+#, c-format
+msgid "Cannot parse blkio cgroup (%1$s) entry '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Cannot parse blkio cgroup ('%1$s') entry '%2$s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot parse byte '%1$s' stat '%2$s'"
@@ -3688,11 +3675,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
 msgstr "vhost-net ਨੂੰ ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
-
-#, fuzzy
-msgid ""
-"Configuring the page size for HPT guests is not supported by this QEMU binary"
-msgstr "ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਰੀ-ਬੂਟ ਸਮਾਂ ਮਿਆਦ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਹੈ"
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "ਗੈਸਟ ਲਈ ਵਰਚੁਅਲ ਸੀਰੀਅਲ ਕਨਸੋਲ ਜੁੜੋ"
@@ -8912,10 +8894,6 @@ msgstr "cpu affinity ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
 msgid "HMAT is not supported with this QEMU"
 msgstr ""
 
-#, fuzzy
-msgid "HTM configuration is not supported by this QEMU binary"
-msgstr "nvram ਯੰਤਰ ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
-
 #, c-format
 msgid "HTTP response code %1$d for call to '%2$s'"
 msgstr "HTTP ਰਿਸਪੌਂਸ ਕੋਡ %1$d '%2$s' ਨੂੰ ਕਾਲ ਲਈ"
@@ -9158,6 +9136,18 @@ msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr ""
 
+msgid "IORT table header ended early"
+msgstr ""
+
+msgid "IORT table node header ended early"
+msgstr ""
+
+#, c-format
+msgid ""
+"IORT table node type %1$s has invalid length: got %2$u, expected at least "
+"%3$zu"
+msgstr ""
+
 msgid "IOThread ID"
 msgstr ""
 
@@ -9193,12 +9183,6 @@ msgstr ""
 "IP ਗੁਣ ਲਾਜਮੀ ਮੁਹੱਈਆ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ ਕਿਉਂਕਿ ਗੁੰਮੇ ਹੋਏ ਸੰਦਾਂ ਕਰ ਕੇ IP ਪਤੇ ਨੂੰ ਟੋਹਣਾਂ ਕੰਮ ਨਹੀਂ ਕਰੇਗਾ"
 
 msgid "IPC namespace support is required"
-msgstr ""
-
-msgid "IPv4"
-msgstr ""
-
-msgid "IPv6"
 msgstr ""
 
 msgid "ISession object is null"
@@ -9331,6 +9315,9 @@ msgstr ""
 #, c-format
 msgid "Instantiation of rules failed on interface '%1$s'"
 msgstr "ਇੰਟਰਫੇਸ '%1$s' ਲੈਣ ਲਈ ਫੇਲ"
+
+msgid "Integrity error in watchdog models"
+msgstr ""
 
 msgid "Interface"
 msgstr "ਇੰਟਰਫੇਸ"
@@ -10097,17 +10084,9 @@ msgstr "ਗਲਤ ਸੁਰੱਖਿਆ ਲੇਬਲ '%1$s'"
 msgid "Invalid setting for HPT resizing"
 msgstr "ਗਲਤ vport ਕਾਰਵਾਈ"
 
-#, fuzzy
-msgid "Invalid setting for HTM state"
-msgstr "CPU ਸ਼ੁਰਆਤ ਲਈ ਅਢੁਕਵਾਂ ਮੁੱਲ"
-
-#, fuzzy
-msgid "Invalid setting for ccf-assist state"
-msgstr "ਗਲਤ vport ਕਾਰਵਾਈ"
-
-#, fuzzy
-msgid "Invalid setting for nested HV state"
-msgstr "ਅਸਕੇਪ ਸੀਕੁਇੰਸ ਲਈ ਗਲਤ ਸਤਰ '%s'"
+#, c-format
+msgid "Invalid setting for pseries feature '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Invalid source mode: %1$s"
@@ -11606,9 +11585,6 @@ msgstr ""
 msgid "Multiple graphics devices are not supported"
 msgstr "ਲੋੜੀਂਦੀ ਪ੍ਰਮਾਣਿਕਤਾ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ।"
 
-msgid "Multiple iTCO watchdogs are not supported"
-msgstr ""
-
 msgid "Multiple interfaces attached to bridge"
 msgstr "ਬਰਿੱਜ ਨਾਲ ਮਲਟੀਪਲ ਇੰਟਰਫੇਸ ਜੁੜੇ ਹਨ"
 
@@ -11776,10 +11752,6 @@ msgstr "ਨਾਂ:"
 #, fuzzy
 msgid "Namespaces are not supported on this platform"
 msgstr "ਇਸ ਪਲੇਟਫਾਰਮ ਤੇ ਕਾਰਜ ਯੂਨਿਕਸ ਸਾਕਟਾਂ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
-
-#, fuzzy
-msgid "Nested HV configuration is not supported by this QEMU binary"
-msgstr "ਸੁੰਗਾੜਿਆ ਹੋਇਆ ਪ੍ਰਵਾਸ QEMU ਬਾਈਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
 
 #, c-format
 msgid "Network %1$s XML configuration edited.\n"
@@ -14854,14 +14826,6 @@ msgid "Successfully updated media."
 msgstr "ਸਫਲਤਾ-ਪੂਰਵਕ pivot ਹੋਈ"
 
 #, c-format
-msgid "Sum of %1$srequest stat overflows"
-msgstr ""
-
-#, c-format
-msgid "Sum of byte %1$sstat overflows"
-msgstr ""
-
-#, c-format
 msgid "Sum of byte '%1$s' stat overflows"
 msgstr ""
 
@@ -15783,6 +15747,11 @@ msgid ""
 msgstr ""
 "<nat> ਤੱਥ ਸਿਰਫ਼ ਉਸ ਵੇਲੇ ਵਰਤਿਆ ਜਾ ਸਕਦਾ ਹੈ ਜਦੋਂ <forward> 'mode' ਨੈੱਟਵਰਕ %1$s ਵਿੱਚ 'nat' "
 "ਹੈ"
+
+msgid ""
+"The <portForward> element can only be used with <interface type='user'> and "
+"its 'passt' backend"
+msgstr ""
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
@@ -20413,6 +20382,9 @@ msgstr ""
 msgid "attempt to merge virtualports with mismatched types (%1$s and %2$s)"
 msgstr "virtualports ਨੂੰ ਬੇਮੇਲ ਕਿਸਮਾਂ (%1$s ਅਤੇ %2$s) ਨਾਲ ਰਲਗੱਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ"
 
+msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
+msgstr ""
+
 #, c-format
 msgid "audio ID %1$u is used multiple times"
 msgstr ""
@@ -22206,6 +22178,10 @@ msgid "cannot read mount list '%1$s'"
 msgstr "ਮਾਊਂਟ ਸੂਚੀ '%1$s' ਪੜ ਨਹੀਂ ਸਕਦਾ"
 
 #, c-format
+msgid "cannot read node header '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "cannot receive data from volume %1$s"
 msgstr "ਵਾਲੀਅਮ %1$s ਤੋਂ ਡਾਟਾ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
@@ -22576,10 +22552,6 @@ msgstr "%1$s ਵਿੱਚ ਵਿੱਤ 'delta' ਜਾਂ 'shrink' ਫਲੈਗ �
 msgid "capture disk state but not vm state"
 msgstr "ਡਿਸਕ ਹਾਲਾਤ ਕੈਪਚਰ ਕਰੋ ਪਰ vm ਹਾਲਾਤ ਨਹੀਂ"
 
-#, fuzzy
-msgid "ccf-assist configuration is not supported by this QEMU binary"
-msgstr "ਰੱਦ ਕਰਨਾ ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
-
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
@@ -22605,10 +22577,6 @@ msgstr "%1$s ਵਿੱਚ cellNum ਦਾ %2$d ਤੋਂ ਘੱਟ ਜਾਂ ਬ�
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "%1$s ਵਿੱਚ cellNum ਸਿਰਫ਼ %2$d ਨੂੰ ਰਿਣਾਤਮਕ ਮੁੱਲ ਵਜੋਂ ਸਵੀਕਾਰ ਕਰਦੀ ਹੈ"
-
-#, fuzzy
-msgid "cfpc configuration is not supported by this QEMU binary"
-msgstr "nvram ਯੰਤਰ ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -22861,9 +22829,6 @@ msgstr "ਕਲੋਨ ਨਾਂ"
 #, c-format
 msgid "close: %1$s: failed to write or close temporary file: %2$s"
 msgstr "close: %1$s: ਆਰਜੀ ਫਾਇਲ ਵਿੱਚ ਲਿਖਣ ਜਾਂ ਬੰਦ ਕਰਨ ਤੋਂ ਫੇਲ ਹੋਇਆ: %2$s"
-
-msgid "closed"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "coalesce settings on interface type %1$s are not supported"
@@ -23795,9 +23760,6 @@ msgstr ""
 msgid "dbus-daemon died and reported: %1$s"
 msgstr ""
 
-msgid "debug"
-msgstr ""
-
 msgid "default"
 msgstr "ਮੂਲ"
 
@@ -23970,6 +23932,10 @@ msgstr "'%1$s' ਯੰਤਰ ਦਾ ਜੀਵੰਤ ਨੱਥੀ ਤੋਂ ਹਟ
 #, fuzzy
 msgid "detaching network device from VM is unsupported"
 msgstr "ਨੈੱਟਵਰਕ ਯੰਤਰ ਕਿਸਮ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+
+msgid ""
+"detaching of <console/> is unsupported. Try corresponding <serial/> instead"
+msgstr ""
 
 msgid "detaching serial console is not supported"
 msgstr "ਸੀਰੀਅਲ ਕੰਸੋਲ ਨੂੰ ਨੱਥੀ ਤੋਂ ਹਟਾਉਣਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
@@ -24423,7 +24389,7 @@ msgid "display the progress of save"
 msgstr "ਸੰਭਾਲ ਦੀ ਤਰੱਕੀ ਪ੍ਰਦਰਸ਼ਿਤ ਕਰੋ"
 
 #, c-format
-msgid "dnsmasq version >= %1$u.%2$u required but %3$lu.%4$lu found"
+msgid "dnsmasq version >= %1$u.%2$u required but %3$llu.%4$llu found"
 msgstr ""
 
 msgid "do not enable STP for this bridge"
@@ -24537,6 +24503,10 @@ msgstr "ਡੋਮੇਨ ਸਨੈਪਸ਼ਾਟ XML"
 
 msgid "domain block device size information"
 msgstr "ਡੋਮੇਨ ਬਲਾਕ ਜੰਤਰ ਅਕਾਰ ਜਾਣਕਾਰੀ"
+
+#, c-format
+msgid "domain can only have one watchdog with model '%1$s'"
+msgstr ""
 
 #, fuzzy
 msgid "domain capabilities"
@@ -25198,12 +25168,35 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none\n"
 msgstr ""
 
 #, c-format
-msgid ""
-"event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown due to %4$s\n"
 msgstr ""
 
 #, c-format
@@ -25257,7 +25250,15 @@ msgid "event 'rtc-change' for domain '%1$s': %2$lld\n"
 msgstr ""
 
 #, c-format
-msgid "event 'tray-change' for domain '%1$s' disk %2$s: %3$s\n"
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: closed\n"
+msgstr ""
+
+#, c-format
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: opened\n"
+msgstr ""
+
+#, c-format
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: unknown\n"
 msgstr ""
 
 #, c-format
@@ -25265,7 +25266,35 @@ msgid "event 'tunable' for domain '%1$s':\n"
 msgstr ""
 
 #, c-format
-msgid "event 'watchdog' for domain '%1$s': %2$s\n"
+msgid "event 'watchdog' for domain '%1$s': debug\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': inject-nmi\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': none\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': pause\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': poweroff\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': reset\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': shutdown\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': unknown\n"
 msgstr ""
 
 msgid "event callback already tracked"
@@ -27576,9 +27605,9 @@ msgstr ""
 msgid "hotplug of interface type of %1$s is not implemented yet"
 msgstr "'%d' ਕਿਸਮ ਦੀ ਪਰਿਭਾਸ਼ਾ ਦੀ ਨਕਲ ਕਰਨਾ ਅਜੇ ਲਾਗੂ ਨਹੀਂ ਕੀਤਾ ਹੈ।"
 
-#, fuzzy, c-format
-msgid "hotplug of watchdog of model %1$s is not supported"
-msgstr "'%1$s' ਯੰਤਰ ਦੀ ਜੀਵੰਤ ਨੱਥੀ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+#, c-format
+msgid "hotplug of watchdog model '%1$s' is not supported"
+msgstr ""
 
 msgid "hpet timer is not supported by this architecture"
 msgstr ""
@@ -27638,10 +27667,6 @@ msgstr "iSCSI ਭੰਡਾਰਣ ਪੂਲ ਆਇਤਨ ਸਾਫ ਕਰਨ ਦ�
 msgid "iSCSI usage specified, but target is missing"
 msgstr "iSCSI ਵਰਤੋਂ ਦਰਸਾਈ ਗਈ ਹੈ, ਪਰ ਟਿਕਾਣਾ ਗੁੰਮ ਹੈ"
 
-#, fuzzy
-msgid "ibs configuration is not supported by this QEMU binary"
-msgstr "ਰੱਦ ਕਰਨਾ ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
-
 msgid "idle"
 msgstr "ਵਿਹਲਾ"
 
@@ -27652,12 +27677,6 @@ msgid "ids of vcpus to manipulate"
 msgstr ""
 
 msgid "if IOMMU is enabled by kernel"
-msgstr ""
-
-#, c-format
-msgid ""
-"if using CPU maximum physical address mode='%1$s', bits= must be specified "
-"too"
 msgstr ""
 
 #, c-format
@@ -27797,9 +27816,6 @@ msgid "initiator iqn for underlying storage"
 msgstr ""
 
 msgid "inject"
-msgstr ""
-
-msgid "inject-nmi"
 msgstr ""
 
 #, fuzzy, c-format
@@ -32291,10 +32307,6 @@ msgstr ""
 msgid "non unique alias detected: %1$s"
 msgstr ""
 
-#, fuzzy
-msgid "none"
-msgstr "(ਕੋਈ ਨਹੀਂ)"
-
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr "ਨਾਨ-ਜ਼ੀਰੋ ncpus, NULL cpus ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ"
 
@@ -32701,9 +32713,6 @@ msgstr "ਵਰਣਨ ਨੂੰ ਸੁਧਾਰਨ ਲਈ ਕੋਈ ਸੰਪਾ�
 msgid "open(\"%1$s\")"
 msgstr "open(\"%1$s\")"
 
-msgid "opened"
-msgstr ""
-
 #, c-format
 msgid "openwsman: %1$s"
 msgstr ""
@@ -32828,6 +32837,10 @@ msgstr ""
 
 #, c-format
 msgid "overflow in converting %1$ld MiB/s to bytes\n"
+msgstr ""
+
+#, c-format
+msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
 msgstr ""
 
 msgid "override the destination host name used for TLS verification"
@@ -33023,10 +33036,6 @@ msgstr ""
 
 msgid "path to secret data file is required"
 msgstr ""
-
-#, fuzzy
-msgid "pause"
-msgstr "ਵਿਰਾਮ ਹੈ"
 
 msgid "paused"
 msgstr "ਵਿਰਾਮ ਹੈ"
@@ -33312,9 +33321,6 @@ msgid "potentially unsafe use of host CPU passthrough"
 msgstr ""
 
 msgid "power-of-two granularity to use during the copy"
-msgstr ""
-
-msgid "poweroff"
 msgstr ""
 
 #, fuzzy, c-format
@@ -33606,13 +33612,6 @@ msgstr "qemu ਸਟੇਟ ਡਰਾਈਵਰ ਸਰਗਰਮ ਨਹੀਂ ਹੈ
 msgid "qemu unexpectedly closed the monitor"
 msgstr "ਅਚਾਨਕ mime ਕਿਸਮ"
 
-msgid "qemu-machines reply has malformed 'acpi data"
-msgstr ""
-
-#, fuzzy
-msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
-msgstr "query-machines ਜਵਾਬ ਵਿੱਚ ਗਲਤ ਬਣਤਰ ਵਾਲਾ 'cpu-max' ਡਾਟਾ ਹੈ"
-
 #, c-format
 msgid "qom-get invalid object property type %1$d"
 msgstr "qom-get ਅਢੁਕਵੀਂ ਆਬਜੈਕਟ ਗੁਣ ਕਿਸਮ %1$d"
@@ -33714,6 +33713,9 @@ msgstr "query-kvm ਨੇ ਜਵਾਬ ਵਿੱਚ ਅਣਕਿਆਸਿਆ ਡ�
 msgid "query-machines reply data was missing 'name'"
 msgstr "query-machines ਜਵਾਬ ਵਿੱਚ 'ਨਾਂ' ਗੁੰਮ ਸੀ"
 
+msgid "query-machines reply has malformed 'acpi data"
+msgstr ""
+
 msgid "query-machines reply has malformed 'alias' data"
 msgstr "query-machines ਜਵਾਬ ਵਿੱਚ ਗਲਤ ਬਣਤਰ ਵਾਲਾ 'ਉਪਨਾਮ' ਡਾਟਾ"
 
@@ -33729,6 +33731,9 @@ msgstr ""
 
 msgid "query-machines reply has malformed 'is-default' data"
 msgstr "query-machines ਜਵਾਬ ਵਿੱਚ ਗਲਤ ਬਣਤਰ ਵਾਲਾ 'ਮੂਲ ਹੈ' ਡਾਟਾ"
+
+msgid "query-machines reply has malformed 'numa-mem-supported' data"
+msgstr ""
 
 msgid "query-memory-devices reply data doesn't contain enum data"
 msgstr ""
@@ -34056,9 +34061,6 @@ msgstr ""
 
 msgid "reply was missing return data"
 msgstr "ਜਵਾਬ ਵਿੱਚ ਵਾਪਸੀ ਡਾਟਾ ਗੁੰਮ ਸੀ"
-
-msgid "report"
-msgstr ""
 
 msgid "report active users"
 msgstr ""
@@ -34438,10 +34440,6 @@ msgstr "saving domain '%1$s' to '%2$s': open failed"
 #, c-format
 msgid "saving domain '%1$s' to '%2$s': write failed"
 msgstr "saving domain '%1$s' to '%2$s': write failed"
-
-#, fuzzy
-msgid "sbbc configuration is not supported by this QEMU binary"
-msgstr "ਰੱਦ ਕਰਨਾ ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
 
 #, fuzzy, c-format
 msgid "scheme and host are mandatory vz migration URI: %1$s"
@@ -39242,6 +39240,106 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, fuzzy
+#~ msgid "%1$s cannot be set higher than %2$s "
+#~ msgstr "ਅਧਿਕਤਮ ਮੈਮੋਰੀ ਤੋਂ ਜਿਆਦਾ ਮੈਮੋਰੀ ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+
+#~ msgid "Can't find prlctl command in the PATH env"
+#~ msgstr "PATH env ਵਿੱਚ prlctl ਕਮਾਂਡ ਨਹੀਂ ਲੱਭੀ"
+
+#, fuzzy
+#~ msgid "Can't initialize Parallels SDK"
+#~ msgstr "ਦਖਲ ਪ੍ਰਬੰਧਕ ਨੂੰ ਸ਼ੁਰੂ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+
+#~ msgid ""
+#~ "Can't perform keyboard-interactive authentication: Authentication "
+#~ "callback not provided "
+#~ msgstr ""
+#~ "keyboard-interactive ਪ੍ਰਮਾਣਿਕਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ: ਪ੍ਰਮਾਣਿਕਤਾ ਕਾਲਬੈਕ ਮੁਹੱਈਆ ਨਹੀਂ "
+#~ "ਕਰਵਾਈ ਗਈ"
+
+#, fuzzy
+#~ msgid "Cannot find byte %1$sstats for block device '%2$s'"
+#~ msgstr "ਜੰਤਰ '%s' ਲਈ ਅੰਕੜੇ ਲੱਭ ਨਹੀਂ ਸਕਦਾ"
+
+#, fuzzy
+#~ msgid "Cannot find request %1$sstats for block device '%2$s'"
+#~ msgstr "ਜੰਤਰ '%s' ਲਈ ਅੰਕੜੇ ਲੱਭ ਨਹੀਂ ਸਕਦਾ"
+
+#, fuzzy
+#~ msgid "Cannot find request stats for block device '%1$s'"
+#~ msgstr "ਜੰਤਰ '%1$s' ਲਈ ਅੰਕੜੇ ਲੱਭ ਨਹੀਂ ਸਕਦਾ"
+
+#, fuzzy
+#~ msgid "Cannot parse %1$srequest stat '%2$s'"
+#~ msgstr "sys stat '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+
+#, fuzzy
+#~ msgid "Cannot parse %1$sstat '%2$s'"
+#~ msgstr "sys stat '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+
+#, fuzzy
+#~ msgid "Cannot parse byte %1$sstat '%2$s'"
+#~ msgstr "sys stat '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+
+#, fuzzy
+#~ msgid ""
+#~ "Configuring the page size for HPT guests is not supported by this QEMU "
+#~ "binary"
+#~ msgstr "ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਰੀ-ਬੂਟ ਸਮਾਂ ਮਿਆਦ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਹੈ"
+
+#, fuzzy
+#~ msgid "HTM configuration is not supported by this QEMU binary"
+#~ msgstr "nvram ਯੰਤਰ ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+
+#, fuzzy
+#~ msgid "Invalid setting for HTM state"
+#~ msgstr "CPU ਸ਼ੁਰਆਤ ਲਈ ਅਢੁਕਵਾਂ ਮੁੱਲ"
+
+#, fuzzy
+#~ msgid "Invalid setting for ccf-assist state"
+#~ msgstr "ਗਲਤ vport ਕਾਰਵਾਈ"
+
+#, fuzzy
+#~ msgid "Invalid setting for nested HV state"
+#~ msgstr "ਅਸਕੇਪ ਸੀਕੁਇੰਸ ਲਈ ਗਲਤ ਸਤਰ '%s'"
+
+#, fuzzy
+#~ msgid "Nested HV configuration is not supported by this QEMU binary"
+#~ msgstr "ਸੁੰਗਾੜਿਆ ਹੋਇਆ ਪ੍ਰਵਾਸ QEMU ਬਾਈਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+
+#, fuzzy
+#~ msgid "ccf-assist configuration is not supported by this QEMU binary"
+#~ msgstr "ਰੱਦ ਕਰਨਾ ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+
+#, fuzzy
+#~ msgid "cfpc configuration is not supported by this QEMU binary"
+#~ msgstr "nvram ਯੰਤਰ ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+
+#, fuzzy
+#~ msgid "hotplug of watchdog of model %1$s is not supported"
+#~ msgstr "'%1$s' ਯੰਤਰ ਦੀ ਜੀਵੰਤ ਨੱਥੀ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+
+#, fuzzy
+#~ msgid "ibs configuration is not supported by this QEMU binary"
+#~ msgstr "ਰੱਦ ਕਰਨਾ ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+
+#, fuzzy
+#~ msgid "none"
+#~ msgstr "(ਕੋਈ ਨਹੀਂ)"
+
+#, fuzzy
+#~ msgid "pause"
+#~ msgstr "ਵਿਰਾਮ ਹੈ"
+
+#, fuzzy
+#~ msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
+#~ msgstr "query-machines ਜਵਾਬ ਵਿੱਚ ਗਲਤ ਬਣਤਰ ਵਾਲਾ 'cpu-max' ਡਾਟਾ ਹੈ"
+
+#, fuzzy
+#~ msgid "sbbc configuration is not supported by this QEMU binary"
+#~ msgstr "ਰੱਦ ਕਰਨਾ ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
 
 #~ msgid ""
 #~ "At least one of name, mac, or ip attribute must be specified for static "

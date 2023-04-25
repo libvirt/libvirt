@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-01 11:38+0200\n"
+"POT-Creation-Date: 2023-04-25 10:39+0000\n"
 "PO-Revision-Date: 2023-02-13 12:20+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -423,8 +423,8 @@ msgid "%1$s can't be empty"
 msgstr "%1$s nie może być puste"
 
 #, c-format
-msgid "%1$s cannot be set higher than %2$s "
-msgstr "%1$s nie może być ustawione wyższe niż %2$s "
+msgid "%1$s cannot be set higher than %2$s"
+msgstr ""
 
 #, c-format
 msgid "%1$s cannot parse GID '%2$s'"
@@ -518,6 +518,10 @@ msgstr "długość %1$s przekracza maksimum: %2$d > %3$d"
 
 #, c-format
 msgid "%1$s model of watchdog can go only on PCI bus"
+msgstr ""
+
+#, c-format
+msgid "%1$s model of watchdog cannot be used with this machine type"
 msgstr ""
 
 #, c-format
@@ -1709,6 +1713,9 @@ msgstr ""
 "Ponowne uruchomienie domeny „%1$d” za pomocą biblioteki libxenlight się nie "
 "powiodło"
 
+msgid "Agent authentication is not supported on this host"
+msgstr ""
+
 msgid "Ain't nobody heard of that much cache level"
 msgstr ""
 
@@ -1801,7 +1808,7 @@ msgstr ""
 
 msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
-"mandatory "
+"mandatory"
 msgstr ""
 
 msgid "At least one tty is required"
@@ -2422,17 +2429,10 @@ msgstr ""
 msgid "Can't find network boot device for index: %1$d"
 msgstr ""
 
-msgid "Can't find prlctl command in the PATH env"
-msgstr ""
-
 #, c-format
 msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %1$s"
 msgstr ""
-
-#, fuzzy
-msgid "Can't initialize Parallels SDK"
-msgstr "nie można zainicjować zmiennej warunkowej"
 
 #, fuzzy
 msgid "Can't initialize access manager"
@@ -2463,7 +2463,7 @@ msgstr ""
 
 msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
-"not provided "
+"not provided"
 msgstr ""
 
 #, fuzzy, c-format
@@ -2757,12 +2757,12 @@ msgid "Cannot find CPU vendor with vendor id 0x%1$02llx"
 msgstr ""
 
 #, c-format
-msgid "Cannot find boot device of requested type %1$s"
+msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Cannot find byte %1$sstats for block device '%2$s'"
-msgstr "nie można odnaleźć statystyk dla urządzenia „%s”"
+#, c-format
+msgid "Cannot find boot device of requested type %1$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot find byte '%1$s' stats for block device '%2$s'"
@@ -2775,14 +2775,6 @@ msgstr "nie można odnaleźć statystyk dla urządzenia „%1$s”"
 #, c-format
 msgid "Cannot find program %1$d version %2$d"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Cannot find request %1$sstats for block device '%2$s'"
-msgstr "nie można odnaleźć statystyk dla urządzenia „%s”"
-
-#, fuzzy, c-format
-msgid "Cannot find request stats for block device '%1$s'"
-msgstr "nie można odnaleźć statystyk dla urządzenia „%1$s”"
 
 #, fuzzy, c-format
 msgid "Cannot find security driver '%1$s'"
@@ -2955,14 +2947,6 @@ msgid "Cannot open resctrl"
 msgstr "nie można otworzyć %s"
 
 #, fuzzy, c-format
-msgid "Cannot parse %1$srequest stat '%2$s'"
-msgstr "nie można przetworzyć graficznej pamięci RAM „%s”"
-
-#, fuzzy, c-format
-msgid "Cannot parse %1$sstat '%2$s'"
-msgstr "nie można wykonać stat „%s”"
-
-#, fuzzy, c-format
 msgid "Cannot parse '%1$s' stat '%2$s'"
 msgstr "nie można przetworzyć JSON %1$s: %2$s"
 
@@ -3053,9 +3037,13 @@ msgstr "Nie można przetworzyć UUID z „%1$s”"
 msgid "Cannot parse adapter '%1$s'"
 msgstr "nie można przetworzyć graficznej pamięci RAM „%1$s”"
 
-#, fuzzy, c-format
-msgid "Cannot parse byte %1$sstat '%2$s'"
-msgstr "nie można przetworzyć graficznej pamięci RAM „%s”"
+#, c-format
+msgid "Cannot parse blkio cgroup (%1$s) entry '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Cannot parse blkio cgroup ('%1$s') entry '%2$s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot parse byte '%1$s' stat '%2$s'"
@@ -3693,12 +3681,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
 msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
-
-#, fuzzy
-msgid ""
-"Configuring the page size for HPT guests is not supported by this QEMU binary"
-msgstr ""
-"opcja „tx” virtio-net-pci jest nieobsługiwana przez ten plik binarny QEMU"
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "Łączy wirtualną konsolę szeregową dla gościa"
@@ -9144,10 +9126,6 @@ msgstr ""
 msgid "HMAT is not supported with this QEMU"
 msgstr ""
 
-#, fuzzy
-msgid "HTM configuration is not supported by this QEMU binary"
-msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
-
 #, c-format
 msgid "HTTP response code %1$d for call to '%2$s'"
 msgstr "Kod odpowiedzi %1$d HTTP dla wywołania do „%2$s”"
@@ -9395,6 +9373,18 @@ msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr ""
 
+msgid "IORT table header ended early"
+msgstr ""
+
+msgid "IORT table node header ended early"
+msgstr ""
+
+#, c-format
+msgid ""
+"IORT table node type %1$s has invalid length: got %2$u, expected at least "
+"%3$zu"
+msgstr ""
+
 msgid "IOThread ID"
 msgstr ""
 
@@ -9432,12 +9422,6 @@ msgstr ""
 "prawdopodobnie z powodu braku narzędzi"
 
 msgid "IPC namespace support is required"
-msgstr ""
-
-msgid "IPv4"
-msgstr ""
-
-msgid "IPv6"
 msgstr ""
 
 msgid "ISession object is null"
@@ -9572,6 +9556,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Instantiation of rules failed on interface '%1$s'"
 msgstr "uzyskanie interfejsu „%1$s” się nie powiodło"
+
+msgid "Integrity error in watchdog models"
+msgstr ""
 
 #, fuzzy
 msgid "Interface"
@@ -10349,14 +10336,8 @@ msgstr "Nieprawidłowa etykieta bezpieczeństwa „%1$s”"
 msgid "Invalid setting for HPT resizing"
 msgstr ""
 
-#, fuzzy
-msgid "Invalid setting for HTM state"
-msgstr "Nieprawidłowy certyfikat"
-
-msgid "Invalid setting for ccf-assist state"
-msgstr ""
-
-msgid "Invalid setting for nested HV state"
+#, c-format
+msgid "Invalid setting for pseries feature '%1$s'"
 msgstr ""
 
 #, c-format
@@ -11861,9 +11842,6 @@ msgstr ""
 msgid "Multiple graphics devices are not supported"
 msgstr "Wielomonitorowe urządzenia graficzne są nieobsługiwane"
 
-msgid "Multiple iTCO watchdogs are not supported"
-msgstr ""
-
 #, fuzzy
 msgid "Multiple interfaces attached to bridge"
 msgstr "wiele interfejsów pasujących do adresów MAC"
@@ -12034,10 +12012,6 @@ msgstr "Nazwa:"
 #, fuzzy
 msgid "Namespaces are not supported on this platform"
 msgstr "Pokrewieństwo procesora procesu jest nieobsługiwane na tej platformie"
-
-#, fuzzy
-msgid "Nested HV configuration is not supported by this QEMU binary"
-msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
 
 #, fuzzy, c-format
 msgid "Network %1$s XML configuration edited.\n"
@@ -15130,14 +15104,6 @@ msgid "Successfully updated media."
 msgstr ""
 
 #, c-format
-msgid "Sum of %1$srequest stat overflows"
-msgstr ""
-
-#, c-format
-msgid "Sum of byte %1$sstat overflows"
-msgstr ""
-
-#, c-format
 msgid "Sum of byte '%1$s' stat overflows"
 msgstr ""
 
@@ -16077,6 +16043,11 @@ msgstr ""
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
 "%1$s"
+msgstr ""
+
+msgid ""
+"The <portForward> element can only be used with <interface type='user'> and "
+"its 'passt' backend"
 msgstr ""
 
 #, fuzzy, c-format
@@ -20832,6 +20803,9 @@ msgstr ""
 msgid "attempt to merge virtualports with mismatched types (%1$s and %2$s)"
 msgstr ""
 
+msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
+msgstr ""
+
 #, c-format
 msgid "audio ID %1$u is used multiple times"
 msgstr ""
@@ -22649,6 +22623,10 @@ msgstr "nie można odczytać nagłówka „%1$s”"
 msgid "cannot read mount list '%1$s'"
 msgstr "nie można odczytać listy montowania „%1$s”"
 
+#, c-format
+msgid "cannot read node header '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "cannot receive data from volume %1$s"
 msgstr "nie można zamknąć woluminu %1$s"
@@ -23029,10 +23007,6 @@ msgstr ""
 msgid "capture disk state but not vm state"
 msgstr ""
 
-#, fuzzy
-msgid "ccf-assist configuration is not supported by this QEMU binary"
-msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
-
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
@@ -23058,10 +23032,6 @@ msgstr ""
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr ""
-
-#, fuzzy
-msgid "cfpc configuration is not supported by this QEMU binary"
-msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -23320,9 +23290,6 @@ msgid "close: %1$s: failed to write or close temporary file: %2$s"
 msgstr ""
 "close: %1$s: zapisanie lub zamknięcie pliku tymczasowego się nie powiodło: "
 "%2$s"
-
-msgid "closed"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "coalesce settings on interface type %1$s are not supported"
@@ -24254,9 +24221,6 @@ msgstr ""
 msgid "dbus-daemon died and reported: %1$s"
 msgstr ""
 
-msgid "debug"
-msgstr ""
-
 msgid "default"
 msgstr ""
 
@@ -24430,6 +24394,10 @@ msgstr "typ podsystemu „hostdev” „%1$s” jest nieobsługiwany"
 #, fuzzy
 msgid "detaching network device from VM is unsupported"
 msgstr "obsługiwane jest tylko pojedyncze urządzenie watchdog"
+
+msgid ""
+"detaching of <console/> is unsupported. Try corresponding <serial/> instead"
+msgstr ""
 
 #, fuzzy
 msgid "detaching serial console is not supported"
@@ -24888,7 +24856,7 @@ msgid "display the progress of save"
 msgstr "Wyświetla postęp migracji"
 
 #, c-format
-msgid "dnsmasq version >= %1$u.%2$u required but %3$lu.%4$lu found"
+msgid "dnsmasq version >= %1$u.%2$u required but %3$llu.%4$llu found"
 msgstr ""
 
 #, fuzzy
@@ -25001,6 +24969,10 @@ msgstr "XML migawki domeny"
 
 msgid "domain block device size information"
 msgstr "informacje o rozmiarze urządzenia blokowego domeny"
+
+#, c-format
+msgid "domain can only have one watchdog with model '%1$s'"
+msgstr ""
 
 #, fuzzy
 msgid "domain capabilities"
@@ -25673,12 +25645,35 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none\n"
 msgstr ""
 
 #, c-format
-msgid ""
-"event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown due to %4$s\n"
 msgstr ""
 
 #, c-format
@@ -25733,7 +25728,15 @@ msgid "event 'rtc-change' for domain '%1$s': %2$lld\n"
 msgstr ""
 
 #, c-format
-msgid "event 'tray-change' for domain '%1$s' disk %2$s: %3$s\n"
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: closed\n"
+msgstr ""
+
+#, c-format
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: opened\n"
+msgstr ""
+
+#, c-format
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: unknown\n"
 msgstr ""
 
 #, c-format
@@ -25741,7 +25744,35 @@ msgid "event 'tunable' for domain '%1$s':\n"
 msgstr ""
 
 #, c-format
-msgid "event 'watchdog' for domain '%1$s': %2$s\n"
+msgid "event 'watchdog' for domain '%1$s': debug\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': inject-nmi\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': none\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': pause\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': poweroff\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': reset\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': shutdown\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': unknown\n"
 msgstr ""
 
 msgid "event callback already tracked"
@@ -28087,9 +28118,9 @@ msgstr ""
 msgid "hotplug of interface type of %1$s is not implemented yet"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "hotplug of watchdog of model %1$s is not supported"
-msgstr "tryb „hostdev” „%1$s” jest nieobsługiwany"
+#, c-format
+msgid "hotplug of watchdog model '%1$s' is not supported"
+msgstr ""
 
 msgid "hpet timer is not supported by this architecture"
 msgstr ""
@@ -28152,10 +28183,6 @@ msgstr "pula pamięci masowej nie obsługuje tworzenia woluminów"
 msgid "iSCSI usage specified, but target is missing"
 msgstr "podano użycie woluminu, ale brak ścieżki woluminu"
 
-#, fuzzy
-msgid "ibs configuration is not supported by this QEMU binary"
-msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
-
 msgid "idle"
 msgstr "bezczynne"
 
@@ -28167,12 +28194,6 @@ msgid "ids of vcpus to manipulate"
 msgstr ""
 
 msgid "if IOMMU is enabled by kernel"
-msgstr ""
-
-#, c-format
-msgid ""
-"if using CPU maximum physical address mode='%1$s', bits= must be specified "
-"too"
 msgstr ""
 
 #, c-format
@@ -28312,9 +28333,6 @@ msgid "initiator iqn for underlying storage"
 msgstr ""
 
 msgid "inject"
-msgstr ""
-
-msgid "inject-nmi"
 msgstr ""
 
 #, fuzzy, c-format
@@ -32882,10 +32900,6 @@ msgstr ""
 msgid "non unique alias detected: %1$s"
 msgstr ""
 
-#, fuzzy
-msgid "none"
-msgstr "(brak)"
-
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr "niezerowe nprocesory nie zgadzają się z PUSTYMI procesorami"
 
@@ -33308,9 +33322,6 @@ msgstr ""
 msgid "open(\"%1$s\")"
 msgstr "open(„%1$s”)"
 
-msgid "opened"
-msgstr ""
-
 #, c-format
 msgid "openwsman: %1$s"
 msgstr ""
@@ -33434,6 +33445,10 @@ msgstr ""
 
 #, c-format
 msgid "overflow in converting %1$ld MiB/s to bytes\n"
+msgstr ""
+
+#, c-format
+msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
 msgstr ""
 
 msgid "override the destination host name used for TLS verification"
@@ -33628,10 +33643,6 @@ msgstr ""
 
 msgid "path to secret data file is required"
 msgstr ""
-
-#, fuzzy
-msgid "pause"
-msgstr "wstrzymane"
 
 msgid "paused"
 msgstr "wstrzymane"
@@ -33915,9 +33926,6 @@ msgid "potentially unsafe use of host CPU passthrough"
 msgstr ""
 
 msgid "power-of-two granularity to use during the copy"
-msgstr ""
-
-msgid "poweroff"
 msgstr ""
 
 #, fuzzy, c-format
@@ -34208,12 +34216,6 @@ msgstr "sterownik stanu QEMU jest nieaktywny"
 msgid "qemu unexpectedly closed the monitor"
 msgstr ""
 
-msgid "qemu-machines reply has malformed 'acpi data"
-msgstr ""
-
-msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "qom-get invalid object property type %1$d"
 msgstr "Otrzymano nieprawidłowy rozmiar pamięci %1$d"
@@ -34312,6 +34314,9 @@ msgstr ""
 msgid "query-machines reply data was missing 'name'"
 msgstr ""
 
+msgid "query-machines reply has malformed 'acpi data"
+msgstr ""
+
 msgid "query-machines reply has malformed 'alias' data"
 msgstr ""
 
@@ -34325,6 +34330,9 @@ msgid "query-machines reply has malformed 'default-ram-id' data"
 msgstr ""
 
 msgid "query-machines reply has malformed 'is-default' data"
+msgstr ""
+
+msgid "query-machines reply has malformed 'numa-mem-supported' data"
 msgstr ""
 
 msgid "query-memory-devices reply data doesn't contain enum data"
@@ -34647,9 +34655,6 @@ msgstr ""
 #, fuzzy
 msgid "reply was missing return data"
 msgstr "brak zwrotnego stanu w odpowiedzi informacji o migracji"
-
-msgid "report"
-msgstr ""
 
 msgid "report active users"
 msgstr ""
@@ -35047,10 +35052,6 @@ msgstr "zapisywanie domeny „%1$s” do „%2$s”: otwarcie się nie powiodło
 #, c-format
 msgid "saving domain '%1$s' to '%2$s': write failed"
 msgstr "zapisywanie domeny „%1$s” do „%2$s”: zapisanie się nie powiodło"
-
-#, fuzzy
-msgid "sbbc configuration is not supported by this QEMU binary"
-msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
 
 #, c-format
 msgid "scheme and host are mandatory vz migration URI: %1$s"
@@ -39857,6 +39858,84 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <ciąg>}…"
+
+#~ msgid "%1$s cannot be set higher than %2$s "
+#~ msgstr "%1$s nie może być ustawione wyższe niż %2$s "
+
+#, fuzzy
+#~ msgid "Can't initialize Parallels SDK"
+#~ msgstr "nie można zainicjować zmiennej warunkowej"
+
+#, fuzzy
+#~ msgid "Cannot find byte %1$sstats for block device '%2$s'"
+#~ msgstr "nie można odnaleźć statystyk dla urządzenia „%s”"
+
+#, fuzzy
+#~ msgid "Cannot find request %1$sstats for block device '%2$s'"
+#~ msgstr "nie można odnaleźć statystyk dla urządzenia „%s”"
+
+#, fuzzy
+#~ msgid "Cannot find request stats for block device '%1$s'"
+#~ msgstr "nie można odnaleźć statystyk dla urządzenia „%1$s”"
+
+#, fuzzy
+#~ msgid "Cannot parse %1$srequest stat '%2$s'"
+#~ msgstr "nie można przetworzyć graficznej pamięci RAM „%s”"
+
+#, fuzzy
+#~ msgid "Cannot parse %1$sstat '%2$s'"
+#~ msgstr "nie można wykonać stat „%s”"
+
+#, fuzzy
+#~ msgid "Cannot parse byte %1$sstat '%2$s'"
+#~ msgstr "nie można przetworzyć graficznej pamięci RAM „%s”"
+
+#, fuzzy
+#~ msgid ""
+#~ "Configuring the page size for HPT guests is not supported by this QEMU "
+#~ "binary"
+#~ msgstr ""
+#~ "opcja „tx” virtio-net-pci jest nieobsługiwana przez ten plik binarny QEMU"
+
+#, fuzzy
+#~ msgid "HTM configuration is not supported by this QEMU binary"
+#~ msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
+
+#, fuzzy
+#~ msgid "Invalid setting for HTM state"
+#~ msgstr "Nieprawidłowy certyfikat"
+
+#, fuzzy
+#~ msgid "Nested HV configuration is not supported by this QEMU binary"
+#~ msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
+
+#, fuzzy
+#~ msgid "ccf-assist configuration is not supported by this QEMU binary"
+#~ msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
+
+#, fuzzy
+#~ msgid "cfpc configuration is not supported by this QEMU binary"
+#~ msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
+
+#, fuzzy
+#~ msgid "hotplug of watchdog of model %1$s is not supported"
+#~ msgstr "tryb „hostdev” „%1$s” jest nieobsługiwany"
+
+#, fuzzy
+#~ msgid "ibs configuration is not supported by this QEMU binary"
+#~ msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
+
+#, fuzzy
+#~ msgid "none"
+#~ msgstr "(brak)"
+
+#, fuzzy
+#~ msgid "pause"
+#~ msgstr "wstrzymane"
+
+#, fuzzy
+#~ msgid "sbbc configuration is not supported by this QEMU binary"
+#~ msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
 
 #, fuzzy
 #~ msgid ""

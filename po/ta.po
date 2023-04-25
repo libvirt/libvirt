@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-01 11:38+0200\n"
+"POT-Creation-Date: 2023-04-25 10:39+0000\n"
 "PO-Revision-Date: 2015-03-04 01:18+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (http://www.transifex.com/projects/p/libvirt/language/"
@@ -452,9 +452,9 @@ msgstr ""
 msgid "%1$s can't be empty"
 msgstr "%1$s காலியாக இருக்கக்கூடாது"
 
-#, fuzzy, c-format
-msgid "%1$s cannot be set higher than %2$s "
-msgstr "அதிகபட்ச நினைவகத்தை விட அதிக நினைவகம் அமைக்க முடியவில்லை"
+#, c-format
+msgid "%1$s cannot be set higher than %2$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "%1$s cannot parse GID '%2$s'"
@@ -549,6 +549,10 @@ msgstr "அதிகபட்ச நீளத்தை விட %1$s அதி�
 
 #, c-format
 msgid "%1$s model of watchdog can go only on PCI bus"
+msgstr ""
+
+#, c-format
+msgid "%1$s model of watchdog cannot be used with this machine type"
 msgstr ""
 
 #, c-format
@@ -1794,6 +1798,9 @@ msgstr ""
 "கோரை டம்ப் செய்த பிறகு, டொமைன் '%1$d' ஐ libxenlight கொண்டு மீண்டும் தொடங்குவதில் "
 "தோல்வியடைந்தது"
 
+msgid "Agent authentication is not supported on this host"
+msgstr ""
+
 msgid "Ain't nobody heard of that much cache level"
 msgstr ""
 
@@ -1892,7 +1899,7 @@ msgstr ""
 
 msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
-"mandatory "
+"mandatory"
 msgstr ""
 
 #, fuzzy
@@ -2521,17 +2528,10 @@ msgstr ""
 msgid "Can't find network boot device for index: %1$d"
 msgstr "பிணைய சாதன பூட் அட்டவணை அமைப்பை மாற்றியமைக்க முடியாது"
 
-msgid "Can't find prlctl command in the PATH env"
-msgstr "PATH env இல் prlctl கட்டளையைக் கண்டறிய முடியவில்லை"
-
 #, c-format
 msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %1$s"
 msgstr ""
-
-#, fuzzy
-msgid "Can't initialize Parallels SDK"
-msgstr "அணுகல் நிர்வாகியைத் தொடக்க முடியவில்லை"
 
 msgid "Can't initialize access manager"
 msgstr "அணுகல் நிர்வாகியைத் தொடக்க முடியவில்லை"
@@ -2560,10 +2560,8 @@ msgstr "அங்கீகரிப்பை மேற்கொள்ள மு�
 
 msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
-"not provided "
+"not provided"
 msgstr ""
-"விசைப்பலகை-இடைசெயல் தன்மை கொண்ட அங்கீகரிப்பை நிகழ்த்த முடியாது: அங்கீகரிப்பு கால்பேக் "
-"வழங்கப்படவில்லை"
 
 #, fuzzy, c-format
 msgid "Can't read %1$s"
@@ -2848,13 +2846,13 @@ msgstr "PVR 0x%1$08x கொண்ட CPU மாதிரியத்தைக்
 msgid "Cannot find CPU vendor with vendor id 0x%1$02llx"
 msgstr ""
 
+#, c-format
+msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Cannot find boot device of requested type %1$s"
 msgstr "வழங்கி சாதன மூல முகவரி வகை '%1$s' தெரியாதது"
-
-#, fuzzy, c-format
-msgid "Cannot find byte %1$sstats for block device '%2$s'"
-msgstr "சாதனம் '%s'க்கான புள்ளிவிவரங்களைத் தேட முடியவில்லை"
 
 #, fuzzy, c-format
 msgid "Cannot find byte '%1$s' stats for block device '%2$s'"
@@ -2867,14 +2865,6 @@ msgstr "சாதனம் '%1$s'க்கான புள்ளிவிவர�
 #, c-format
 msgid "Cannot find program %1$d version %2$d"
 msgstr "நிரல் %1$d பதிப்பு %2$d ஐக் கண்டறிய முடியவில்லை"
-
-#, fuzzy, c-format
-msgid "Cannot find request %1$sstats for block device '%2$s'"
-msgstr "சாதனம் '%s'க்கான புள்ளிவிவரங்களைத் தேட முடியவில்லை"
-
-#, fuzzy, c-format
-msgid "Cannot find request stats for block device '%1$s'"
-msgstr "சாதனம் '%1$s'க்கான புள்ளிவிவரங்களைத் தேட முடியவில்லை"
 
 #, c-format
 msgid "Cannot find security driver '%1$s'"
@@ -3047,14 +3037,6 @@ msgid "Cannot open resctrl"
 msgstr "%s ஐ திறக்க முடியவில்லை"
 
 #, fuzzy, c-format
-msgid "Cannot parse %1$srequest stat '%2$s'"
-msgstr "கணினி புள்ளிவிவரம் '%s' ஐப் பாகுபடுத்த முடியாது"
-
-#, fuzzy, c-format
-msgid "Cannot parse %1$sstat '%2$s'"
-msgstr "கணினி புள்ளிவிவரம் '%s' ஐப் பாகுபடுத்த முடியாது"
-
-#, fuzzy, c-format
 msgid "Cannot parse '%1$s' stat '%2$s'"
 msgstr "கணினி புள்ளிவிவரம் '%s' ஐப் பாகுபடுத்த முடியாது"
 
@@ -3147,9 +3129,13 @@ msgstr "பஸ் '%1$s' ஐ பாகுபடுத்த முடியவ�
 msgid "Cannot parse adapter '%1$s'"
 msgstr "அடாப்டர் '%1$s' ஐப் பாகுபடுத்த முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Cannot parse byte %1$sstat '%2$s'"
-msgstr "கணினி புள்ளிவிவரம் '%s' ஐப் பாகுபடுத்த முடியாது"
+#, c-format
+msgid "Cannot parse blkio cgroup (%1$s) entry '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Cannot parse blkio cgroup ('%1$s') entry '%2$s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot parse byte '%1$s' stat '%2$s'"
@@ -3777,11 +3763,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
 msgstr "இந்த QEMU பைனரியில் vhost-net க்கு ஆதரவில்லை"
-
-#, fuzzy
-msgid ""
-"Configuring the page size for HPT guests is not supported by this QEMU binary"
-msgstr "இந்த QEMU பைனரியில் மறுதொடக்க நேரக் கடப்புக்கு ஆதரவில்லை"
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "விருந்தினருக்கு மெய்நிகர் தொடர் பணியகத்தை இணைக்கவும்"
@@ -9060,10 +9041,6 @@ msgstr "தற்போது விருந்தினர் ஏஜன்ட�
 msgid "HMAT is not supported with this QEMU"
 msgstr ""
 
-#, fuzzy
-msgid "HTM configuration is not supported by this QEMU binary"
-msgstr "இந்த QEMU பைனரி nvram சாதனத்தை ஆதரிக்காது"
-
 #, c-format
 msgid "HTTP response code %1$d for call to '%2$s'"
 msgstr "'%2$s' க்கான அழைப்புக்கு HTTP பதிலளிப்புக் குறியீடு %1$d"
@@ -9312,6 +9289,18 @@ msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr ""
 
+msgid "IORT table header ended early"
+msgstr ""
+
+msgid "IORT table node header ended early"
+msgstr ""
+
+#, c-format
+msgid ""
+"IORT table node type %1$s has invalid length: got %2$u, expected at least "
+"%3$zu"
+msgstr ""
+
 msgid "IOThread ID"
 msgstr ""
 
@@ -9349,12 +9338,6 @@ msgstr ""
 "அளவுருவானது வழங்கப்பட வேண்டும்"
 
 msgid "IPC namespace support is required"
-msgstr ""
-
-msgid "IPv4"
-msgstr ""
-
-msgid "IPv6"
 msgstr ""
 
 msgid "ISession object is null"
@@ -9491,6 +9474,9 @@ msgstr ""
 #, c-format
 msgid "Instantiation of rules failed on interface '%1$s'"
 msgstr "இடைமுகம் '%1$s' இல் விதிகளை நிறுவுதல் தோல்வி"
+
+msgid "Integrity error in watchdog models"
+msgstr ""
 
 msgid "Interface"
 msgstr "இடைமுகம் "
@@ -10269,17 +10255,9 @@ msgstr "தவறான பாதுகாப்பு லேபில் '%1$s'
 msgid "Invalid setting for HPT resizing"
 msgstr "iothread '%s' க்கு தவறான அமைவு"
 
-#, fuzzy
-msgid "Invalid setting for HTM state"
-msgstr "iothread '%s' க்கு தவறான அமைவு"
-
-#, fuzzy
-msgid "Invalid setting for ccf-assist state"
-msgstr "iothread '%s' க்கு தவறான அமைவு"
-
-#, fuzzy
-msgid "Invalid setting for nested HV state"
-msgstr "iothread '%s' க்கு தவறான அமைவு"
+#, c-format
+msgid "Invalid setting for pseries feature '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Invalid source mode: %1$s"
@@ -11790,9 +11768,6 @@ msgstr ""
 msgid "Multiple graphics devices are not supported"
 msgstr "மல்டி-ஹெட் வீடியோ சாதனங்களுக்கு ஆதரவில்லை"
 
-msgid "Multiple iTCO watchdogs are not supported"
-msgstr ""
-
 msgid "Multiple interfaces attached to bridge"
 msgstr "பிரிட்ஜில் பல இடைமுகங்கள் இணைக்கப்பட்டுள்ளன"
 
@@ -11962,10 +11937,6 @@ msgstr "பெயர்:"
 #, fuzzy
 msgid "Namespaces are not supported on this platform"
 msgstr "UNIX சாக்கெட்டுகள் இந்த இயங்கு தளத்தில் ஆதரிக்கப்படாது"
-
-#, fuzzy
-msgid "Nested HV configuration is not supported by this QEMU binary"
-msgstr "QEMU பைனரி சுருக்கப்பட்ட இடப்பெயர்ப்பை ஆதரிக்காது"
 
 #, c-format
 msgid "Network %1$s XML configuration edited.\n"
@@ -15095,14 +15066,6 @@ msgid "Successfully updated media."
 msgstr "வெற்றிகரமாக பைவட்டாக்கப்பட்டது"
 
 #, c-format
-msgid "Sum of %1$srequest stat overflows"
-msgstr ""
-
-#, c-format
-msgid "Sum of byte %1$sstat overflows"
-msgstr ""
-
-#, c-format
 msgid "Sum of byte '%1$s' stat overflows"
 msgstr ""
 
@@ -16033,6 +15996,11 @@ msgid ""
 msgstr ""
 "பிணையம் %1$s இல் <forward> 'mode' ஆனது 'nat' என இருக்கையில் மட்டுமே <nat>  கூறைப் "
 "பயன்படுத்த முடியும்"
+
+msgid ""
+"The <portForward> element can only be used with <interface type='user'> and "
+"its 'passt' backend"
+msgstr ""
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
@@ -20690,6 +20658,9 @@ msgstr ""
 msgid "attempt to merge virtualports with mismatched types (%1$s and %2$s)"
 msgstr "மெய்நிகர் முனையங்களை பொருந்தாத வகைகளுடன் (%1$s மற்றும் %2$s) ஒன்றாக்கும் முயற்சி"
 
+msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
+msgstr ""
+
 #, c-format
 msgid "audio ID %1$u is used multiple times"
 msgstr ""
@@ -22491,6 +22462,10 @@ msgid "cannot read mount list '%1$s'"
 msgstr "பட்டியல் ஏற்ற %1$sஐ வாசிக்க இயலவில்லை"
 
 #, c-format
+msgid "cannot read node header '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "cannot receive data from volume %1$s"
 msgstr "பிரிவகம் %1$s இலிருந்து தரவைப் பெற முடியவில்லை"
 
@@ -22862,10 +22837,6 @@ msgstr ""
 msgid "capture disk state but not vm state"
 msgstr "வட்டு நிலையைப் பிடிக்கவும், vm நிலை தேவையில்லை"
 
-#, fuzzy
-msgid "ccf-assist configuration is not supported by this QEMU binary"
-msgstr "இந்த QEMU பைனரி அப்புறப்படுத்தலை ஆதரிக்காது"
-
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
@@ -22891,10 +22862,6 @@ msgstr ""
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "%1$s இல் உள்ள cellNum எதிர்க்குறி மதிப்பாக %2$d ஐ மட்டுமே ஏற்றுக்கொள்ளும்"
-
-#, fuzzy
-msgid "cfpc configuration is not supported by this QEMU binary"
-msgstr "இந்த QEMU பைனரியில் ஸ்பாஷ் நேர முடிவுக்கு ஆதரவில்லை"
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -23147,9 +23114,6 @@ msgstr "க்ளோன் பெயர்"
 #, c-format
 msgid "close: %1$s: failed to write or close temporary file: %2$s"
 msgstr "மூடவும்: %1$s: கோப்பினை எழுதி அல்லது மூடுவதில் தோல்வி: %2$s"
-
-msgid "closed"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "coalesce settings on interface type %1$s are not supported"
@@ -24085,9 +24049,6 @@ msgstr ""
 msgid "dbus-daemon died and reported: %1$s"
 msgstr ""
 
-msgid "debug"
-msgstr ""
-
 msgid "default"
 msgstr "முன்னிருப்பு"
 
@@ -24262,6 +24223,10 @@ msgstr "சாதனம் '%1$s' இன் நேரடி பிரித்�
 #, fuzzy
 msgid "detaching network device from VM is unsupported"
 msgstr "பிணைய சாதன வகைக்கு ஆதரவில்லை"
+
+msgid ""
+"detaching of <console/> is unsupported. Try corresponding <serial/> instead"
+msgstr ""
 
 msgid "detaching serial console is not supported"
 msgstr "வரிசை பணிமுனையத்தை பிரித்தெடுப்பதற்கு ஆதரவில்லை"
@@ -24721,7 +24686,7 @@ msgid "display the progress of save"
 msgstr "சேமிப்பின் செயல் நிலையைக் காண்பி"
 
 #, c-format
-msgid "dnsmasq version >= %1$u.%2$u required but %3$lu.%4$lu found"
+msgid "dnsmasq version >= %1$u.%2$u required but %3$llu.%4$llu found"
 msgstr ""
 
 msgid "do not enable STP for this bridge"
@@ -24835,6 +24800,10 @@ msgstr "டொமைன் ஸ்னாப்ஷாட் XML"
 
 msgid "domain block device size information"
 msgstr "டொமைன் ப்ளாக் சாதன அளவு தகவல்"
+
+#, c-format
+msgid "domain can only have one watchdog with model '%1$s'"
+msgstr ""
 
 #, fuzzy
 msgid "domain capabilities"
@@ -25496,12 +25465,35 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) %4$s\n"
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none\n"
 msgstr ""
 
 #, c-format
-msgid ""
-"event 'io-error-reason' for domain '%1$s': %2$s (%3$s) %4$s due to %5$s\n"
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report due to %4$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown\n"
+msgstr ""
+
+#, c-format
+msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown due to %4$s\n"
 msgstr ""
 
 #, c-format
@@ -25555,7 +25547,15 @@ msgid "event 'rtc-change' for domain '%1$s': %2$lld\n"
 msgstr ""
 
 #, c-format
-msgid "event 'tray-change' for domain '%1$s' disk %2$s: %3$s\n"
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: closed\n"
+msgstr ""
+
+#, c-format
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: opened\n"
+msgstr ""
+
+#, c-format
+msgid "event 'tray-change' for domain '%1$s' disk %2$s: unknown\n"
 msgstr ""
 
 #, c-format
@@ -25563,7 +25563,35 @@ msgid "event 'tunable' for domain '%1$s':\n"
 msgstr ""
 
 #, c-format
-msgid "event 'watchdog' for domain '%1$s': %2$s\n"
+msgid "event 'watchdog' for domain '%1$s': debug\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': inject-nmi\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': none\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': pause\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': poweroff\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': reset\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': shutdown\n"
+msgstr ""
+
+#, c-format
+msgid "event 'watchdog' for domain '%1$s': unknown\n"
 msgstr ""
 
 msgid "event callback already tracked"
@@ -27880,9 +27908,9 @@ msgstr ""
 msgid "hotplug of interface type of %1$s is not implemented yet"
 msgstr "'%d' வகை வரையறையை நகலெடுக்கும் வசதி இன்னும் செயல்படுத்தப்படவில்லை."
 
-#, fuzzy, c-format
-msgid "hotplug of watchdog of model %1$s is not supported"
-msgstr "சாதனம் '%1$s' இன் நேரடி இணைப்புக்கு ஆதரவில்லை"
+#, c-format
+msgid "hotplug of watchdog model '%1$s' is not supported"
+msgstr ""
 
 msgid "hpet timer is not supported by this architecture"
 msgstr ""
@@ -27944,10 +27972,6 @@ msgstr "iSCSI சேமிப்பக தொகுப்பகம் பிர�
 msgid "iSCSI usage specified, but target is missing"
 msgstr "iSCSI பயன்பாடு குறிப்பிடப்பட்டுள்ளது, ஆனால் இலக்கு விடுபட்டுள்ளது"
 
-#, fuzzy
-msgid "ibs configuration is not supported by this QEMU binary"
-msgstr "இந்த QEMU பைனரி அப்புறப்படுத்தலை ஆதரிக்காது"
-
 msgid "idle"
 msgstr "வெறுமை"
 
@@ -27958,12 +27982,6 @@ msgid "ids of vcpus to manipulate"
 msgstr ""
 
 msgid "if IOMMU is enabled by kernel"
-msgstr ""
-
-#, c-format
-msgid ""
-"if using CPU maximum physical address mode='%1$s', bits= must be specified "
-"too"
 msgstr ""
 
 #, c-format
@@ -28105,9 +28123,6 @@ msgid "initiator iqn for underlying storage"
 msgstr ""
 
 msgid "inject"
-msgstr ""
-
-msgid "inject-nmi"
 msgstr ""
 
 #, fuzzy, c-format
@@ -32601,10 +32616,6 @@ msgstr ""
 msgid "non unique alias detected: %1$s"
 msgstr ""
 
-#, fuzzy
-msgid "none"
-msgstr "(எதுவுமில்லை)"
-
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr "பூஜ்ஜியமில்லாத ncpus ஆனது NULL cpus உடன் பொருந்தவில்லை"
 
@@ -33011,9 +33022,6 @@ msgstr "விளக்கத்தை மாற்ற ஒரு திருத
 msgid "open(\"%1$s\")"
 msgstr "திற(\"%1$s\")"
 
-msgid "opened"
-msgstr ""
-
 #, c-format
 msgid "openwsman: %1$s"
 msgstr ""
@@ -33138,6 +33146,10 @@ msgstr ""
 
 #, c-format
 msgid "overflow in converting %1$ld MiB/s to bytes\n"
+msgstr ""
+
+#, c-format
+msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
 msgstr ""
 
 msgid "override the destination host name used for TLS verification"
@@ -33332,10 +33344,6 @@ msgstr ""
 
 msgid "path to secret data file is required"
 msgstr ""
-
-#, fuzzy
-msgid "pause"
-msgstr "இடை நிறுத்தப்பட்டது"
 
 msgid "paused"
 msgstr "இடை நிறுத்தப்பட்டது"
@@ -33625,9 +33633,6 @@ msgid "potentially unsafe use of host CPU passthrough"
 msgstr ""
 
 msgid "power-of-two granularity to use during the copy"
-msgstr ""
-
-msgid "poweroff"
 msgstr ""
 
 #, fuzzy, c-format
@@ -33923,13 +33928,6 @@ msgstr "qemu நிலை இயக்கி செயலில் இல்ல�
 msgid "qemu unexpectedly closed the monitor"
 msgstr "எதிர்பாராத குறியீடு பாதை"
 
-msgid "qemu-machines reply has malformed 'acpi data"
-msgstr ""
-
-#, fuzzy
-msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
-msgstr "query-machines பதிலளிப்பில் தவறாக வடிவமைக்கப்பட்ட 'cpu-max' தரவு உள்ளது"
-
 #, c-format
 msgid "qom-get invalid object property type %1$d"
 msgstr "qom-get செல்லுபடியாகாத பொருள் பண்பு வகை %1$d"
@@ -34032,6 +34030,9 @@ msgstr "query-kvm ஆனது எதிர்பாராத தரவை ப�
 msgid "query-machines reply data was missing 'name'"
 msgstr "க்வெரி-எந்திரங்கள் பதிலளிப்பு தரவில் 'பெயர்' இல்லை"
 
+msgid "query-machines reply has malformed 'acpi data"
+msgstr ""
+
 msgid "query-machines reply has malformed 'alias' data"
 msgstr "க்வெரி-எந்திரங்கள் பதிலளிப்பில் தவறாக வடிவமைக்கப்பட்ட 'alias' தரவு உள்ளது"
 
@@ -34047,6 +34048,9 @@ msgstr ""
 
 msgid "query-machines reply has malformed 'is-default' data"
 msgstr "க்வெரி-எந்திரங்கள் பதிலளிப்பில் தவறாக வடிவமைக்கப்பட்ட 'is-default' தரவு உள்ளது"
+
+msgid "query-machines reply has malformed 'numa-mem-supported' data"
+msgstr ""
 
 msgid "query-memory-devices reply data doesn't contain enum data"
 msgstr ""
@@ -34371,9 +34375,6 @@ msgstr ""
 
 msgid "reply was missing return data"
 msgstr "பதிலளிப்பில் திருப்பி வழங்கல் தரவு இல்லை"
-
-msgid "report"
-msgstr ""
 
 msgid "report active users"
 msgstr ""
@@ -34760,10 +34761,6 @@ msgstr " '%1$s' லிருந்து '%2$s' செயற்களத்த�
 #, c-format
 msgid "saving domain '%1$s' to '%2$s': write failed"
 msgstr "'%1$s' லிருந்து '%2$s' செயற்களத்தை சேமிக்கிறது: எழுவதில் தோல்வியுற்றது"
-
-#, fuzzy
-msgid "sbbc configuration is not supported by this QEMU binary"
-msgstr "இந்த QEMU பைனரி அப்புறப்படுத்தலை ஆதரிக்காது"
 
 #, fuzzy, c-format
 msgid "scheme and host are mandatory vz migration URI: %1$s"
@@ -39593,6 +39590,106 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, fuzzy
+#~ msgid "%1$s cannot be set higher than %2$s "
+#~ msgstr "அதிகபட்ச நினைவகத்தை விட அதிக நினைவகம் அமைக்க முடியவில்லை"
+
+#~ msgid "Can't find prlctl command in the PATH env"
+#~ msgstr "PATH env இல் prlctl கட்டளையைக் கண்டறிய முடியவில்லை"
+
+#, fuzzy
+#~ msgid "Can't initialize Parallels SDK"
+#~ msgstr "அணுகல் நிர்வாகியைத் தொடக்க முடியவில்லை"
+
+#~ msgid ""
+#~ "Can't perform keyboard-interactive authentication: Authentication "
+#~ "callback not provided "
+#~ msgstr ""
+#~ "விசைப்பலகை-இடைசெயல் தன்மை கொண்ட அங்கீகரிப்பை நிகழ்த்த முடியாது: அங்கீகரிப்பு கால்பேக் "
+#~ "வழங்கப்படவில்லை"
+
+#, fuzzy
+#~ msgid "Cannot find byte %1$sstats for block device '%2$s'"
+#~ msgstr "சாதனம் '%s'க்கான புள்ளிவிவரங்களைத் தேட முடியவில்லை"
+
+#, fuzzy
+#~ msgid "Cannot find request %1$sstats for block device '%2$s'"
+#~ msgstr "சாதனம் '%s'க்கான புள்ளிவிவரங்களைத் தேட முடியவில்லை"
+
+#, fuzzy
+#~ msgid "Cannot find request stats for block device '%1$s'"
+#~ msgstr "சாதனம் '%1$s'க்கான புள்ளிவிவரங்களைத் தேட முடியவில்லை"
+
+#, fuzzy
+#~ msgid "Cannot parse %1$srequest stat '%2$s'"
+#~ msgstr "கணினி புள்ளிவிவரம் '%s' ஐப் பாகுபடுத்த முடியாது"
+
+#, fuzzy
+#~ msgid "Cannot parse %1$sstat '%2$s'"
+#~ msgstr "கணினி புள்ளிவிவரம் '%s' ஐப் பாகுபடுத்த முடியாது"
+
+#, fuzzy
+#~ msgid "Cannot parse byte %1$sstat '%2$s'"
+#~ msgstr "கணினி புள்ளிவிவரம் '%s' ஐப் பாகுபடுத்த முடியாது"
+
+#, fuzzy
+#~ msgid ""
+#~ "Configuring the page size for HPT guests is not supported by this QEMU "
+#~ "binary"
+#~ msgstr "இந்த QEMU பைனரியில் மறுதொடக்க நேரக் கடப்புக்கு ஆதரவில்லை"
+
+#, fuzzy
+#~ msgid "HTM configuration is not supported by this QEMU binary"
+#~ msgstr "இந்த QEMU பைனரி nvram சாதனத்தை ஆதரிக்காது"
+
+#, fuzzy
+#~ msgid "Invalid setting for HTM state"
+#~ msgstr "iothread '%s' க்கு தவறான அமைவு"
+
+#, fuzzy
+#~ msgid "Invalid setting for ccf-assist state"
+#~ msgstr "iothread '%s' க்கு தவறான அமைவு"
+
+#, fuzzy
+#~ msgid "Invalid setting for nested HV state"
+#~ msgstr "iothread '%s' க்கு தவறான அமைவு"
+
+#, fuzzy
+#~ msgid "Nested HV configuration is not supported by this QEMU binary"
+#~ msgstr "QEMU பைனரி சுருக்கப்பட்ட இடப்பெயர்ப்பை ஆதரிக்காது"
+
+#, fuzzy
+#~ msgid "ccf-assist configuration is not supported by this QEMU binary"
+#~ msgstr "இந்த QEMU பைனரி அப்புறப்படுத்தலை ஆதரிக்காது"
+
+#, fuzzy
+#~ msgid "cfpc configuration is not supported by this QEMU binary"
+#~ msgstr "இந்த QEMU பைனரியில் ஸ்பாஷ் நேர முடிவுக்கு ஆதரவில்லை"
+
+#, fuzzy
+#~ msgid "hotplug of watchdog of model %1$s is not supported"
+#~ msgstr "சாதனம் '%1$s' இன் நேரடி இணைப்புக்கு ஆதரவில்லை"
+
+#, fuzzy
+#~ msgid "ibs configuration is not supported by this QEMU binary"
+#~ msgstr "இந்த QEMU பைனரி அப்புறப்படுத்தலை ஆதரிக்காது"
+
+#, fuzzy
+#~ msgid "none"
+#~ msgstr "(எதுவுமில்லை)"
+
+#, fuzzy
+#~ msgid "pause"
+#~ msgstr "இடை நிறுத்தப்பட்டது"
+
+#, fuzzy
+#~ msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
+#~ msgstr "query-machines பதிலளிப்பில் தவறாக வடிவமைக்கப்பட்ட 'cpu-max' தரவு உள்ளது"
+
+#, fuzzy
+#~ msgid "sbbc configuration is not supported by this QEMU binary"
+#~ msgstr "இந்த QEMU பைனரி அப்புறப்படுத்தலை ஆதரிக்காது"
 
 #~ msgid ""
 #~ "At least one of name, mac, or ip attribute must be specified for static "
