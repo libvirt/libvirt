@@ -1248,6 +1248,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("crypto-builtin");
 
     DO_TEST_CAPS_LATEST("cpu-phys-bits-limit");
+    DO_TEST_CAPS_LATEST("cpu-phys-bits-emulate-bare");
 
  cleanup:
     qemuTestDriverFree(&driver);

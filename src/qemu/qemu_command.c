@@ -6531,7 +6531,10 @@ qemuBuildCpuCommandLine(virCommand *cmd,
             break;
 
         case VIR_CPU_MAX_PHYS_ADDR_MODE_EMULATE:
-            virBufferAsprintf(&buf, ",phys-bits=%d", addr->bits);
+            if (addr->bits > 0)
+                virBufferAsprintf(&buf, ",phys-bits=%d", addr->bits);
+            else
+                virBufferAddLit(&buf, ",host-phys-bits=off");
             break;
 
         case VIR_CPU_MAX_PHYS_ADDR_MODE_LAST:

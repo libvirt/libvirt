@@ -269,13 +269,6 @@ qemuValidateDomainDefCpu(virQEMUDriver *driver,
             break;
 
         case VIR_CPU_MAX_PHYS_ADDR_MODE_EMULATE:
-            if (addr->bits == -1) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("if using CPU maximum physical address mode='%1$s', bits= must be specified too"),
-                               virCPUMaxPhysAddrModeTypeToString(VIR_CPU_MAX_PHYS_ADDR_MODE_EMULATE));
-                return -1;
-            }
-
             if (driver->hostcpu &&
                 driver->hostcpu->addr &&
                 cpu->addr->bits > driver->hostcpu->addr->bits) {

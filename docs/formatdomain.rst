@@ -1636,7 +1636,8 @@ In case no restrictions need to be put on CPU model and its features, a simpler
          passed through to the virtual CPUs
       ``emulate``
          The hypervisor will define a specific value for the number of bits
-         of physical addresses via the ``bits`` attribute, which is mandatory.
+         of physical addresses via the ``bits`` attribute, (optional
+         :since:`since 9.2.0`)
 	 The number of bits cannot exceed the number of physical address bits
 	 supported by the hypervisor.
 
