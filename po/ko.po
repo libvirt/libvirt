@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-04-01 11:38+0200\n"
-"PO-Revision-Date: 2023-04-06 08:20+0000\n"
+"PO-Revision-Date: 2023-04-25 08:21+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -9400,31 +9400,31 @@ msgid "Instantiation of rules failed on interface '%1$s'"
 msgstr "연결장치 '%1$s'에서 실패한 규칙의 인스턴스화"
 
 msgid "Interface"
-msgstr "인터페이스"
+msgstr "연결장치"
 
 #, c-format
 msgid "Interface %1$s XML configuration edited.\n"
-msgstr "인터페이스 %1$s XML 설정이 편집되었습니다.\n"
+msgstr "연결장치 %1$s XML 설정이 편집되었습니다.\n"
 
 #, c-format
 msgid "Interface %1$s XML configuration not changed.\n"
-msgstr "인터페이스 %1$s XML 설정이 변경되지 않았습니다.\n"
+msgstr "연결장치 %1$s XML 설정이 변경되지 않았습니다.\n"
 
 #, c-format
 msgid "Interface %1$s defined from %2$s\n"
-msgstr "인터페이스 %1$s(%2$s에서 정의됨)\n"
+msgstr "연결장치 %1$s(%2$s에서 정의됨)\n"
 
 #, c-format
 msgid "Interface %1$s destroyed\n"
-msgstr "인터페이스 %1$s가 파괴되었습니다\n"
+msgstr "연결장치 %1$s가 파괴되었습니다\n"
 
 #, c-format
 msgid "Interface %1$s started\n"
-msgstr "인터페이스 %1$s가 시작되었습니다\n"
+msgstr "연결장치 %1$s가 시작되었습니다\n"
 
 #, c-format
 msgid "Interface %1$s undefined\n"
-msgstr "인터페이스 %1$s가 정의되지 않았습니다\n"
+msgstr "연결장치 %1$s가 정의되지 않았습니다\n"
 
 #, c-format
 msgid "Interface (dev: %1$s) not found."
@@ -9435,35 +9435,35 @@ msgid "Interface (mac: %1$s) not found."
 msgstr "연결장치 (mac: %1$s)를 찾을 수 없음."
 
 msgid "Interface attached successfully\n"
-msgstr "인터페이스가 성공적으로 부착되었습니다\n"
+msgstr "연결장치가 성공적으로 부착되었습니다\n"
 
 msgid "Interface backend parameters are not supported by vz driver."
-msgstr "인터페이스 백엔드 매개변수는 vz 드라이버에서 지원되지 않습니다."
+msgstr "연결장치 백엔드 매개변수는 vz 드라이버에서 지원되지 않습니다."
 
 msgid "Interface detached successfully\n"
-msgstr "인터페이스가 성공적으로 탈착되었습니다\n"
+msgstr "연결장치가 성공적으로 분리되었습니다\n"
 
 msgid "Interface doesn't have any statistics"
 msgstr "연결장치에 어떤 통계도 가지고 있지 않습니다"
 
 #, c-format
 msgid "Interface name from config %1$s doesn't match given supplied name %2$s"
-msgstr "설정 %1$s에서 인터페이스 이름이 주어진 이름 %2$s과 일치하지 않습니다"
+msgstr "설정 %1$s에서 연결장치 이름이 주어진 이름 %2$s과 일치하지 않습니다"
 
 msgid "Interface name not provided"
-msgstr "인터페이스 이름이 제공되지 않았습니다"
+msgstr "연결장치 이름이 제공되지 않았습니다"
 
 msgid "Interface not found"
-msgstr "인터페이스를 찾을 수 없음"
+msgstr "연결장치를 찾을 수 없음"
 
 #, c-format
 msgid "Interface not found: %1$s"
-msgstr "인터페이스를 찾을 수 없음: %1$s"
+msgstr "연결장치를 찾을 수 없음: %1$s"
 
 msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
 "only"
-msgstr "인터페이스 유형 hostdev는 현재 SR-IOV 가상 기능에서만 지원됩니다"
+msgstr "연결장치 유형 hostdev는 현재 SR-IOV 가상 기능에서만 지원됩니다"
 
 #, c-format
 msgid "Invalid %1$s attribute 'vcpus' value '%2$s'"
@@ -9655,16 +9655,14 @@ msgstr ""
 msgid ""
 "Invalid attempt to set network interface guest-side IP route and/or address "
 "info, not supported by QEMU"
-msgstr ""
-"QEMU에서 지원하지 않는 네트워크 인터페이스 게스트 측 IP 경로 및/또는 주소 정"
-"보 설정에 대한 잘못된 시도"
+msgstr "QEMU에서 지원하지 않는 네트워크 연결장치 게스트 측 IP 경로 및/또는 주소 정보 "
+"설정에 대한 잘못된 시도"
 
 msgid ""
 "Invalid attempt to set network interface guest-side IP route, not supported "
 "by QEMU"
-msgstr ""
-"QEMU에서 지원하지 않는 네트워크 인터페이스 게스트 측 IP 이며, 경로 설정 시도"
-"가 잘못되었습니다"
+msgstr "QEMU에서 지원하지 않는 네트워크 연결장치 게스트-측 IP 이며, 경로 설정 시도가 "
+"잘못되었습니다"
 
 #, c-format
 msgid ""
@@ -9672,9 +9670,9 @@ msgid ""
 "info on interface of type '%1$s'. This is only supported on interfaces of "
 "type 'ethernet'"
 msgstr ""
-"네트워크 인터페이스 호스트 측 IP 경로 및/또는 '%1$s' 유형의 인터페이스에 대"
-"한 주소 정보를 설정하려는 시도가 잘못되었습니다. 이것은 '이더넷' 유형의 인터"
-"페이스에서만 지원됩니다"
+"네트워크 연결장치 호스트 측 IP 경로 및/또는 '%1$s' 유형의 연결장치에 대한 "
+"주소 정보를 설정하려는 시도가 잘못되었습니다. 이것은 '이더넷' 유형의 "
+"연결장치에서만 지원됩니다"
 
 msgid "Invalid attempt to set peer IP for guest"
 msgstr "게스트에 대한 피어 IP 설정 시도가 잘못되었습니다"
@@ -9879,7 +9877,7 @@ msgstr "잘못된 기간"
 
 #, c-format
 msgid "Invalid enslaved interface name '%1$s' seen for bond '%2$s'"
-msgstr "본드 '%1$s'에 대해 잘못된 종속 인터페이스 이름 '%2$s'이(가) 표시됨"
+msgstr "본드 '%1$s'에 대해 잘못된 종속 연결장치 이름 '%2$s'가 표시됨"
 
 msgid "Invalid environment name, it must begin with a letter or underscore"
 msgstr "잘못된 환경 이름입니다; 문자나 밑줄로 시작해야 합니다"
@@ -10266,17 +10264,17 @@ msgid ""
 "supported for interface type 'network' with forward type 'nat', 'route', "
 "'open' or none"
 msgstr ""
-"MAC 주소 %1$s가 있는 인터페이스에서 'floor' (바닥)의 잘못된 사용 - 'floor'는 "
-"순방향 유형 'NAT', '라우트', '개방' 또는 아무것도 없는 인터페이스 유형 '네트"
-"워크'에 대해서만 지원됩니다"
+"MAC 주소 %1$s가 있는 연결장치에서 'floor' (바닥)의 잘못된 사용 - 'floor'는 "
+"순방향 유형 'NAT', '라우트', '개방' 또는 아무것도 없는 연결장치 유형 "
+"'네트워크'에 대해서만 지원됩니다"
 
 #, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %1$s - network '%2$s' "
 "has no inbound QoS set"
 msgstr ""
-"MAC 주소가 %1$s인 인터페이스에서 'floor' (바닥)을 잘못 사용했습니다. 네트워"
-"크 '%2$s'에 인바운드 QoS가 설정되어 있지 않습니다"
+"MAC 주소가 %1$s인 연결장치에서 'floor' (바닥)을 잘못 사용했습니다. 네트워크 "
+"'%2$s'에 인바운드 QoS가 설정되어 있지 않습니다"
 
 #, c-format
 msgid "Invalid uuid '%1$s' for new mdev device"
@@ -10443,7 +10441,7 @@ msgstr "JSON 문자열 배열은 비-문자열 요소를 포함합니다"
 
 #, c-format
 msgid "Job submission failed on interface '%1$s'"
-msgstr "인터페이스 '%1$s'에서 작업 제출에 실패했습니다"
+msgstr "연결장치 '%1$s'에서 작업 제출에 실패했습니다"
 
 msgid "Job type:"
 msgstr "작업 유형:"
@@ -11092,7 +11090,7 @@ msgstr "hostdev 장치에서 <source> 요소가 누락되어 있음"
 
 msgid ""
 "Missing <source> element with bridge name in interface's <actual> element"
-msgstr "인터페이스의 <actual> 요소에 브리지 이름이 있는 누락된 <source> 요소"
+msgstr "연결장치의 <actual> 요소에 브릿지 이름이 있는 누락된 <source> 요소"
 
 msgid "Missing CPU architecture"
 msgstr "CPU 구조가 빠져있습니다"
@@ -11650,7 +11648,7 @@ msgid "Multiple iTCO watchdogs are not supported"
 msgstr "다중 iTCO 와치독은 지원되지 않습니다"
 
 msgid "Multiple interfaces attached to bridge"
-msgstr "브리지에 여러 인터페이스가 첨부되어 있습니다"
+msgstr "브릿지에 여러 연결장치가 첨부되어 있습니다"
 
 msgid "Multiple legacy USB controllers are not supported"
 msgstr "여러 레거시 USB 컨트롤러는 지원되지 않습니다"
@@ -12179,11 +12177,11 @@ msgid "No identity information available for client"
 msgstr "클라이언트에 사용할 수 있는 ID 정보가 없습니다"
 
 msgid "No interface attached to bridge"
-msgstr "브리지에 인터페이스가 첨부되어 있지 않습니다"
+msgstr "브릿지에 연결장치가 첨부되어 있지 않습니다"
 
 #, c-format
 msgid "No interface found whose type is %1$s"
-msgstr "유형이 %1$s인 인터페이스를 찾을 수 없습니다"
+msgstr "유형이 %1$s인 연결장치를 찾을 수 없습니다"
 
 #, c-format
 msgid "No interface with MAC address %1$s was found"
