@@ -1743,13 +1743,15 @@ virFindFileInPath(const char *file)
         return NULL;
 
     path = g_find_program_in_path(file);
-    if (!path)
-        return NULL;
 
-    /* Workaround for a bug in g_find_program_in_path() not returning absolute
-     * path as documented. TODO drop it once we require GLib >= 2.69.0
-     */
-    return g_canonicalize_filename(path, NULL);
+    if (path) {
+        /* Workaround for a bug in g_find_program_in_path() not returning absolute
+         * path as documented. TODO drop it once we require GLib >= 2.69.0
+         */
+        return g_canonicalize_filename(path, NULL);
+    }
+
+    return NULL;
 }
 
 
