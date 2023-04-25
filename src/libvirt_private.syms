@@ -2358,6 +2358,7 @@ virFileWrapperFdFree;
 virFileWrapperFdNew;
 virFileWriteStr;
 virFindFileInPath;
+virFindFileInPathFull;
 
 
 # util/virfilecache.h

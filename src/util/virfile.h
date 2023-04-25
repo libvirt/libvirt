@@ -189,6 +189,9 @@ int virFileIsLink(const char *linkpath)
 
 char *virFindFileInPath(const char *file)
     G_NO_INLINE;
+char *virFindFileInPathFull(const char *file,
+                            const char *const *extraDirs)
+    G_NO_INLINE;
 
 char *virFileFindResource(const char *filename,
                           const char *builddir,
