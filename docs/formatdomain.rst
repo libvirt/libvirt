@@ -1209,7 +1209,7 @@ NUMA Node Tuning
    memory nodes, and it requires setting mode to 'restrictive' in ``memnode``
    elements (see quirk below).  This exists solely for the purpose of being able
    to request movement of such memory for a running domain using ``virsh
-   numatune`` or ``virDomainSetNumaParameters` and is not guaranteed to happen.
+   numatune`` or ``virDomainSetNumaParameters`` and is not guaranteed to happen.
    Attribute ``nodeset`` specifies the NUMA nodes, using the same
    syntax as attribute ``cpuset`` of element ``vcpu``. Attribute ``placement`` (
    :since:`since 0.9.12` ) can be used to indicate the memory placement mode for
