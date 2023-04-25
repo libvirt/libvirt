@@ -2818,10 +2818,15 @@ qemuProcessStartPRDaemonHook(void *opaque)
 int
 qemuProcessStartManagedPRDaemon(virDomainObj *vm)
 {
+    const char *const prHelperDirs[] = {
+        "/usr/libexec",
+        NULL,
+    };
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     int errfd = -1;
+    g_autofree char *prHelperPath = NULL;
     g_autofree char *pidfile = NULL;
     g_autofree char *socketPath = NULL;
     pid_t cpid = -1;
@@ -2832,11 +2837,15 @@ qemuProcessStartManagedPRDaemon(virDomainObj *vm)
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    if (!virFileIsExecutable(cfg->prHelperName)) {
+    prHelperPath = virFindFileInPathFull(cfg->prHelperName, prHelperDirs);
+
+    if (!prHelperPath) {
         virReportSystemError(errno, _("'%1$s' is not a suitable pr helper"),
                              cfg->prHelperName);
         goto cleanup;
     }
+
+    VIR_DEBUG("Using qemu-pr-helper: %s", prHelperPath);
 
     if (!(pidfile = qemuProcessBuildPRHelperPidfilePath(vm)))
         goto cleanup;
@@ -2853,7 +2862,7 @@ qemuProcessStartManagedPRDaemon(virDomainObj *vm)
         goto cleanup;
     }
 
-    if (!(cmd = virCommandNewArgList(cfg->prHelperName,
+    if (!(cmd = virCommandNewArgList(prHelperPath,
                                      "-k", socketPath,
                                      NULL)))
         goto cleanup;
@@ -2881,7 +2890,7 @@ qemuProcessStartManagedPRDaemon(virDomainObj *vm)
     if (virPidFileReadPath(pidfile, &cpid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("pr helper %1$s didn't show up"),
-                       cfg->prHelperName);
+                       prHelperPath);
         goto cleanup;
     }
 
@@ -2899,7 +2908,7 @@ qemuProcessStartManagedPRDaemon(virDomainObj *vm)
         if (saferead(errfd, errbuf, sizeof(errbuf) - 1) < 0) {
             virReportSystemError(errno,
                                  _("pr helper %1$s died unexpectedly"),
-                                 cfg->prHelperName);
+                                 prHelperPath);
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("pr helper died and reported: %1$s"), errbuf);

@@ -327,7 +327,14 @@ qemuCreateInBridgePortWithHelper(virQEMUDriverConfig *cfg,
                                  int *tapfd,
                                  unsigned int flags)
 {
+    const char *const bridgeHelperDirs[] = {
+        "/usr/libexec",
+        "/usr/lib/qemu",
+        "/usr/lib",
+        NULL,
+    };
     g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *bridgeHelperPath = NULL;
     char *errbuf = NULL, *cmdstr = NULL;
     int pair[2] = { -1, -1 };
 
@@ -339,13 +346,17 @@ qemuCreateInBridgePortWithHelper(virQEMUDriverConfig *cfg,
         return -1;
     }
 
-    if (!virFileIsExecutable(cfg->bridgeHelperName)) {
+    bridgeHelperPath = virFindFileInPathFull(cfg->bridgeHelperName, bridgeHelperDirs);
+
+    if (!bridgeHelperPath) {
         virReportSystemError(errno, _("'%1$s' is not a suitable bridge helper"),
                              cfg->bridgeHelperName);
         return -1;
     }
 
-    cmd = virCommandNew(cfg->bridgeHelperName);
+    VIR_DEBUG("Using qemu-bridge-helper: %s", bridgeHelperPath);
+
+    cmd = virCommandNew(bridgeHelperPath);
     if (flags & VIR_NETDEV_TAP_CREATE_VNET_HDR)
         virCommandAddArgFormat(cmd, "--use-vnet");
     virCommandAddArgFormat(cmd, "--br=%s", brname);
