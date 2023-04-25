@@ -5,17 +5,17 @@
 # Translators:
 # Daniel <veillard@redhat.com>, 2011
 # denka <dennis@dennis.se>, 2014
-# Göran Uddeborg <goeran@uddeborg.se, 2011, 2020, 2021, 2022.
+# Göran Uddeborg <goeran@uddeborg.se, 2011, 2020, 2021, 2022, 2023.
 # Magnus Larsson <fedoratrans@gmail.com>, 2006, 2007, 2008
-# Göran Uddeborg <goeran@uddeborg.se>, 2015, 2017, 2020, 2021, 2022.
+# Göran Uddeborg <goeran@uddeborg.se>, 2015, 2017, 2020, 2021, 2022, 2023.
 # Jan Tomko <jtomko@redhat.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-04-01 11:38+0200\n"
-"PO-Revision-Date: 2022-12-05 13:44+0000\n"
-"Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
+"PO-Revision-Date: 2023-04-25 08:21+0000\n"
+"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
 "Language: sv\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2\n"
+"X-Generator: Weblate 4.15.2\n"
 
 msgid ""
 "\n"
@@ -659,13 +659,15 @@ msgstr "%1$s-modellen av vakthund tillåts bara för s390 och s390x"
 
 #, c-format
 msgid "%1$s model of watchdog is only part of q35 machine"
-msgstr ""
+msgstr "Modellen %1$s av vakthund är del endast av q35-maskiner"
 
 #, c-format
 msgid ""
 "%1$s model of watchdog is part of the machine and cannot have any address "
 "set."
 msgstr ""
+"Modellen %1$s av vakthund är del av maskinen och kan inte ha någon adress "
+"satt."
 
 #, c-format
 msgid "%1$s model of watchdog is virtual and cannot go on any bus."
@@ -957,7 +959,7 @@ msgstr "%1$s: misslyckades att kommuniciera med brygghjälparen: %2$s"
 
 #, c-format
 msgid "%1$s: failed to generate UNIX socket path"
-msgstr ""
+msgstr "%1$s: kunde inte generera en UNIX-uttagssökväg"
 
 #, c-format
 msgid "%1$s: failed to read temporary file: %2$s"
@@ -1084,7 +1086,7 @@ msgstr "%1$s: oväntad URI-transport ”%2$s”\n"
 
 #, c-format
 msgid "%1$s: unknown remote mode '%2$s'"
-msgstr ""
+msgstr "%1$s: okänt fjärrläge ”%2$s”"
 
 #, c-format
 msgid "%1$s: unsupported hypervisor name %2$s\n"
@@ -1178,7 +1180,7 @@ msgstr "filen ”%1$s” får inte plats i minnet"
 
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
-msgstr ""
+msgstr "”%1$s” stödjs för närvarande inte av qemus krypteringsmotor"
 
 #, c-format
 msgid "'%1$s' is not a VF device"
@@ -1242,7 +1244,7 @@ msgid "'address' must be specified for scsi hostdev source"
 msgstr "”address” måste anges för scsi-värdenhetskällan"
 
 msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
-msgstr ""
+msgstr "”aes-key-wrap”/”dea-key-wrap” är inte tillgängliga på denna arkitektur"
 
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
@@ -1267,7 +1269,7 @@ msgstr ""
 "”dir” istället"
 
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
-msgstr ""
+msgstr "”disk” saknas eller är inte en vektor i svaret på guest-get-fsinfo"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
@@ -1968,6 +1970,8 @@ msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
 "definition in network '%1$s'"
 msgstr ""
+"Åtminstone ett av attributen name, mac eller ip måste anges för statisk "
+"värddefinition i nätverket ”%1$s”"
 
 msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
@@ -2623,6 +2627,7 @@ msgstr "Kan inte hitta prlctl-kommando i miljön PATH"
 msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %1$s"
 msgstr ""
+"Kan inte få UUID:t för filen som skall kopplas som hårddisk/dvd/floppy: %1$s"
 
 msgid "Can't initialize Parallels SDK"
 msgstr "Kan inte initiera Parallels-SDK:n"
@@ -3626,6 +3631,10 @@ msgid ""
 "and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
 msgstr ""
+"Kontroller värdinställningen: gränssnittet %1$s har av kärnan "
+"autokonfigurerade IPv6-rutter och att aktivera vidarebefordran utan "
+"accept_ra satt till 2 kommer orsaka att kärnan tömmer dem, vilket gör sönder "
+"nätverket."
 
 #, c-format
 msgid "Checkpoint %1$s XML configuration not changed.\n"
@@ -3995,7 +4004,7 @@ msgstr "Kunde inte ansluta serieport %1$zu"
 
 #, c-format
 msgid "Could not attach the file as harddisk/dvd/floppy: %1$s"
-msgstr ""
+msgstr "Kunde inte koppla in filen som hårddisk/dvd/floppy: %1$s"
 
 msgid "Could not build CURL header list"
 msgstr "Kunde inte bygga CURL-huvudlista"
@@ -4297,7 +4306,7 @@ msgstr "Kunde inte hitta variabeln %1$s i iteratorn"
 
 #, c-format
 msgid "Could not find vf/instanceId %1$u/%2$s in netlink response"
-msgstr ""
+msgstr "Kunde inte hitta vf/instanceId %1$u/%2$s i netlink-svaret"
 
 #, c-format
 msgid "Could not find volume with name: %1$s"
@@ -4335,7 +4344,7 @@ msgid "Could not get EPR items"
 msgstr "Kunde inte få tag i EPR-element"
 
 msgid "Could not get IMedium"
-msgstr ""
+msgstr "Kunde inte få tag i IMedium"
 
 msgid "Could not get Msvm_DiskDrive default InstanceID"
 msgstr "Kunde inte standard InstanceID för Msvm_DiskDrive"
@@ -4365,13 +4374,13 @@ msgid "Could not get current time"
 msgstr "Kunde inte ta reda på aktuell tid"
 
 msgid "Could not get device port"
-msgstr ""
+msgstr "Kunde inte få tag i enhetsport"
 
 msgid "Could not get device slot"
-msgstr ""
+msgstr "Kunte inte få tag i enhetsfack"
 
 msgid "Could not get device type"
-msgstr ""
+msgstr "Kunde inte få tag i enhetstyp"
 
 #, c-format
 msgid "Could not get free memory for host %1$s"
@@ -4413,16 +4422,16 @@ msgid "Could not get iterator index for iterator ID %1$u"
 msgstr "Kunde inte få tag i iteratorindex för iterator-ID %1$u"
 
 msgid "Could not get list of Defined Domains"
-msgstr ""
+msgstr "Kunde inte få tag i listan över definierade domäner"
 
 msgid "Could not get list of Domains"
-msgstr ""
+msgstr "Kunde inte få tag i listan över domäner"
 
 msgid "Could not get list of domains"
-msgstr ""
+msgstr "Kunde inte få tag i listan över domäner"
 
 msgid "Could not get list of machines"
-msgstr ""
+msgstr "Kunde inte få tag i listan över maskiner"
 
 #, c-format
 msgid ""
@@ -4432,7 +4441,7 @@ msgstr ""
 "%1$s"
 
 msgid "Could not get medium storage location"
-msgstr ""
+msgstr "Kunde inte få tag i mediumlagringsplatsen"
 
 #, c-format
 msgid "Could not get members of bridge '%1$s'"
@@ -4446,17 +4455,17 @@ msgid "Could not get nth (%1$u) value of variable '%2$s'"
 msgstr "Kunde inte få n:e (%1$u) värdet på variabeln ”%2$s”"
 
 msgid "Could not get number of Defined Domains"
-msgstr ""
+msgstr "Kunde inte få tag i antalet definierade domäner"
 
 msgid "Could not get number of Domains"
-msgstr ""
+msgstr "Kunde inte få tag i antalet domäner"
 
 #, c-format
 msgid "Could not get parent of '%1$s'"
 msgstr "Kunde inte ta reda på föräldern till ”%1$s”"
 
 msgid "Could not get process ID of passt"
-msgstr ""
+msgstr "Kunde inte få tag i process-ID för passt"
 
 msgid "Could not get process id of swtpm"
 msgstr "Kunde inte få tag i process-id för swtpm"
@@ -4465,7 +4474,7 @@ msgid "Could not get process id of vhost-user-gpu"
 msgstr "Kunde inte få tag i process-id för vhost-user-gpu"
 
 msgid "Could not get read only state"
-msgstr ""
+msgstr "Kunde inte få tag i endast-läsbart-tillstånd"
 
 msgid "Could not get response"
 msgstr "Kunde inte få svar"
@@ -4494,10 +4503,10 @@ msgid "Could not get snapshot name"
 msgstr "Kunde inte få tag i ögonblicsbildsnamn"
 
 msgid "Could not get storage controller bus"
-msgstr ""
+msgstr "Kan inte få tag i lagringsstyrenhetsbuss"
 
 msgid "Could not get storage controller by name"
-msgstr ""
+msgstr "Kan inte få tag i lagringsstyrenhet efter namn"
 
 #, c-format
 msgid "Could not get syspath for parent of '%1$s'"
@@ -5076,7 +5085,7 @@ msgid "Creation of %1$s volumes is not supported"
 msgstr "Att skapa %1$s-volymer stödjs inte"
 
 msgid "Crypto device is missing alias"
-msgstr ""
+msgstr "Kryptoenheten saknar alias"
 
 msgid "Current memory size too large"
 msgstr "Aktuell minnesstorlek är för stor"
@@ -5351,7 +5360,7 @@ msgstr "Enheten ”%1$s” känns inte igen, kräver ett bygge"
 
 #, c-format
 msgid "Device alias was not set for %1$s controller with index %2$d"
-msgstr ""
+msgstr "Enhetsalias sattes inte för styrneheten %1$s med index %2$d"
 
 #, c-format
 msgid ""
@@ -5716,6 +5725,7 @@ msgstr "Domänen har inte stöd för sovläge"
 msgid ""
 "Domain has %1$zd interfaces. Please specify which one to detach using --mac"
 msgstr ""
+"Domänen har %1$zd gränssnitt. Ange vilket som skall kopplas ifrån med --mac"
 
 #, c-format
 msgid ""
@@ -5823,7 +5833,7 @@ msgstr "Domänögonblicksbilden %1$s raderad\n"
 
 #, c-format
 msgid "Domain snapshot %1$s reverted\n"
-msgstr ""
+msgstr "Domänens ögonblicksbild %1$s återställd\n"
 
 msgid "Domain snapshot not found"
 msgstr "Domänögonblicksbilden hittades inte"
@@ -6528,6 +6538,8 @@ msgstr "Misslyckades att lägga till förmågan %1$s: %2$d"
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
 msgstr ""
+"Misslyckades att lägga till drivrutinen ”%1$s” till gränssnittet "
+"driver_override hos PCI-enheten ”%2$s”"
 
 msgid "Failed to add netlink event handle watch"
 msgstr "Misslyckades att lägga till netlink-händelsehanteringsbavakning"
@@ -6538,6 +6550,7 @@ msgstr "Misslyckades att lägga till signalhanteringsbevakning"
 #, c-format
 msgid "Failed to add storage controller (name: %1$s, busType: %2$d)"
 msgstr ""
+"Misslyckades att lägga till lagringsstyrenhet (namn: %1$s, busstyp: %2$d)"
 
 #, c-format
 msgid "Failed to allocate PCI device list: %1$s"
@@ -6645,7 +6658,7 @@ msgid "Failed to change size of volume '%1$s' to %2$s"
 msgstr "Misslyckades att ändra storlek på volymen ”%1$s” till %2$s"
 
 msgid "Failed to change storage controller model"
-msgstr ""
+msgstr "Misslyckades att ändra lagringsstyrenhetsmodell"
 
 #, c-format
 msgid "Failed to chdir into %1$s"
@@ -6874,11 +6887,11 @@ msgid "Failed to create nvram dir %1$s"
 msgstr "Misslyckades att skapa nvram-katalogen %1$s"
 
 msgid "Failed to create or modify the state XML attribute"
-msgstr ""
+msgstr "Misslyckades att skapa eller ändra tillstånds-XML-attributet"
 
 #, c-format
 msgid "Failed to create passt state dir %1$s"
-msgstr ""
+msgstr "Misslyckades att skapa passt-tillståndskatalogen %1$s"
 
 #, c-format
 msgid "Failed to create pool %1$s"
@@ -7386,7 +7399,7 @@ msgid "Failed to get snapshot count"
 msgstr "Misslyckades hämta antal ögonblicksbilder"
 
 msgid "Failed to get storage controller name"
-msgstr ""
+msgstr "Misslyckades at få tag i lagringsstyrenhetens namn"
 
 msgid "Failed to get the number of active networks"
 msgstr "Misslyckades att hämta antalet aktiva nätverk"
@@ -7740,7 +7753,7 @@ msgstr "Misslyckades att öppna lagringsvolymen med sökväg ”%1$s”"
 
 #, c-format
 msgid "Failed to open the following disk/dvd/floppy to the machine: %1$s"
-msgstr ""
+msgstr "Misslyckades att öppna följande disk/dvd/floppy för maskinen: %1$s"
 
 #, c-format
 msgid "Failed to open tty %1$s"
@@ -7841,7 +7854,7 @@ msgstr "Misslyckades med att tolka hastigheten ”%1$s”"
 
 #, c-format
 msgid "Failed to parse rotated index from '%1$s'"
-msgstr ""
+msgstr "Misslyckades att tolka roterat index från ”%1$s”"
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%1$s'"
@@ -8169,7 +8182,7 @@ msgstr "Misslyckades med att hämta vcpu-tillståndsbitsavbildning"
 
 #, c-format
 msgid "Failed to revert snapshot %1$s"
-msgstr ""
+msgstr "Misslyckades att återställa ögonblicksbilden %1$s"
 
 msgid "Failed to rollback network config change transaction"
 msgstr ""
@@ -8196,7 +8209,7 @@ msgid "Failed to save '%1$s' for '%2$s'"
 msgstr "Misslyckades med att spara ”%1$s” för ”%2$s”"
 
 msgid "Failed to save VM settings"
-msgstr ""
+msgstr "Misslyckades att spara VM-inställningarna"
 
 #, c-format
 msgid "Failed to save domain '%1$d' with libxenlight"
@@ -8845,7 +8858,7 @@ msgstr "Framtvinga stopp av en given poo. Rådata i poolen rörs inte"
 
 #, c-format
 msgid "Format mismatch: loader.format='%1$s' nvram.format='%2$s'"
-msgstr ""
+msgstr "Formatet stämmer inte: loader.format=”%1$s” nvram.format=”%2$s”"
 
 #, c-format
 msgid "Format of device '%1$s' does not match the expected format '%2$s'"
@@ -9753,7 +9766,7 @@ msgstr "Felaktig adress ”%1$s” i <ip>"
 
 #, c-format
 msgid "Invalid address '%1$s' in <portForward>"
-msgstr ""
+msgstr "Felaktig adress ”%1$s” o <portForward>"
 
 #, c-format
 msgid "Invalid address '%1$s' in network '%2$s'"
@@ -10275,7 +10288,7 @@ msgstr "Felaktigt portintervall ”%1$u-%2$u”."
 
 #, c-format
 msgid "Invalid portForward proto value %1$u"
-msgstr ""
+msgstr "Felaktigt värde på portForward-protokoll %1$u"
 
 #, c-format
 msgid "Invalid prefix or netmask for '%1$s'"
@@ -10585,7 +10598,7 @@ msgstr ""
 "JSON-definition av stödvolymen ”%1$s” får inte ha nästade formatdrivrutiner"
 
 msgid "JSON string array contains non-string element"
-msgstr ""
+msgstr "JSON-strängvektorn innehåller element som inte är strängar"
 
 #, c-format
 msgid "Job submission failed on interface '%1$s'"
@@ -11809,7 +11822,7 @@ msgid "Multiple graphics devices are not supported"
 msgstr "Flera grafiska enheter stödjs inte"
 
 msgid "Multiple iTCO watchdogs are not supported"
-msgstr ""
+msgstr "Flera iTCO-vakthundar stödjs inte"
 
 msgid "Multiple interfaces attached to bridge"
 msgstr "Flera gränssnitt anslutna till bryggan"
@@ -12637,7 +12650,7 @@ msgstr "Antalet gränssnitt, %1$d överskrider maxgränsen: %2$d"
 
 #, c-format
 msgid "Number of keys %1$d, which exceeds max limit: %2$d"
-msgstr ""
+msgstr "Antalet nycklar %1$d, vilket överskrider maxgränsen: %2$d"
 
 #, c-format
 msgid "Number of leases is %1$d, which exceeds max limit: %2$d"
@@ -14674,7 +14687,7 @@ msgid "Snapshot List"
 msgstr "Ögonblicsbildslista"
 
 msgid "Snapshot delete"
-msgstr ""
+msgstr "Radera ögonblicksbild"
 
 msgid "Snapshot is Null"
 msgstr "Ögonblicsbilden är null"
@@ -15369,6 +15382,8 @@ msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
+"Målenhetens PCI-adress %1$04x:%2$02x:%3$02x.%4$d stämmer inte med källan "
+"%5$04x:%6$02x:%7$02x.%8$d"
 
 #, c-format
 msgid "Target device address type %1$s does not match source %2$s"
@@ -15662,7 +15677,7 @@ msgstr "Måldomänens vsock-enhetsmodell ”%1$s” stämmer inte med källan �
 
 #, c-format
 msgid "Target domain watchdog device count %1$zu does not match source %2$zu"
-msgstr ""
+msgstr "Måldomänens antal vakthundsenheter %1$zu stämmer inte med källan %2$zu"
 
 msgid "Target filesystem access mode does not match source"
 msgstr "Målfilsystemets åtkomstläge stämmer inte med källan"
@@ -15914,7 +15929,7 @@ msgstr "Töade %1$d filsystem\n"
 
 #, c-format
 msgid "The %1$s interface already exists"
-msgstr ""
+msgstr "Gränssnittet %1$s finns redan"
 
 #, c-format
 msgid "The '%1$s' device is not supported by this QEMU binary"
@@ -15945,7 +15960,7 @@ msgstr ""
 "eller maskintypen ”%3$s”"
 
 msgid "The 'passt' backend can only be used with interface type='user'"
-msgstr ""
+msgstr "Bakänden ”passt” kan endast användas med gränssnittstypen=”user”"
 
 msgid ""
 "The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
