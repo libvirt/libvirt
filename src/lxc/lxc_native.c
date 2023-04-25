@@ -375,18 +375,16 @@ lxcCreateNetDef(const char *type,
 }
 
 static virDomainHostdevDef *
-lxcCreateHostdevDef(int mode, int type, const char *data)
+lxcCreateHostdevDef(const char *data)
 {
     virDomainHostdevDef *hostdev = virDomainHostdevDefNew();
 
     if (!hostdev)
         return NULL;
 
-    hostdev->mode = mode;
-    hostdev->source.caps.type = type;
-
-    if (type == VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET)
-        hostdev->source.caps.u.net.ifname = g_strdup(data);
+    hostdev->mode = VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES;
+    hostdev->source.caps.type = VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET;
+    hostdev->source.caps.u.net.ifname = g_strdup(data);
 
     return hostdev;
 }
@@ -457,9 +455,7 @@ lxcAddNetworkDefinition(virDomainDef *def, lxcNetworkParseData *data)
                            _("Missing 'link' attribute for NIC"));
             goto error;
         }
-        if (!(hostdev = lxcCreateHostdevDef(VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES,
-                                            VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET,
-                                            data->link)))
+        if (!(hostdev = lxcCreateHostdevDef(data->link)))
             goto error;
 
         /* This still requires the user to manually setup the vlan interface
