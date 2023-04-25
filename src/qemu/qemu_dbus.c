@@ -252,7 +252,7 @@ qemuDBusStart(virQEMUDriver *driver,
 
     if (!virFileExists(sockpath)) {
         virReportError(VIR_ERR_OPERATION_TIMEOUT,
-                       _("DBus daemon %1$s didn't show up"),
+                       _("dbus-daemon %1$s didn't show up"),
                        cfg->dbusDaemonName);
         goto cleanup;
     }
