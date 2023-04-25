@@ -1788,7 +1788,7 @@ virLXCControllerSetupHostdevCaps(virDomainDef *vmDef,
                                  virDomainHostdevDef *def,
                                  virSecurityManager *securityDriver)
 {
-    switch (def->source.subsys.type) {
+    switch (def->source.caps.type) {
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
         return virLXCControllerSetupHostdevCapsStorage(vmDef,
                                                        def,
