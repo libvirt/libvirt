@@ -16438,7 +16438,10 @@ static int
 virDomainFeaturesCapabilitiesDefParse(virDomainDef *def,
                                       xmlNodePtr node)
 {
+    g_autofree xmlNodePtr *caps = NULL;
+    size_t ncaps = virXMLNodeGetSubelementList(node, NULL, &caps);
     virDomainCapabilitiesPolicy policy;
+    size_t i;
 
     if (virXMLPropEnumDefault(node, "policy",
                               virDomainCapabilitiesPolicyTypeFromString,
@@ -16448,25 +16451,23 @@ virDomainFeaturesCapabilitiesDefParse(virDomainDef *def,
 
     def->features[VIR_DOMAIN_FEATURE_CAPABILITIES] = policy;
 
-    node = xmlFirstElementChild(node);
-    while (node) {
+    for (i = 0; i < ncaps; i++) {
         virTristateSwitch state;
-        int val = virDomainProcessCapsFeatureTypeFromString((const char *)node->name);
+        int val = virDomainProcessCapsFeatureTypeFromString((const char *)caps[i]->name);
         if (val < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unexpected capability feature '%1$s'"), node->name);
+                           _("unexpected capability feature '%1$s'"), caps[i]->name);
             return -1;
         }
 
 
-        if (virXMLPropTristateSwitch(node, "state", VIR_XML_PROP_NONE, &state) < 0)
+        if (virXMLPropTristateSwitch(caps[i], "state", VIR_XML_PROP_NONE, &state) < 0)
             return -1;
 
         if (state == VIR_TRISTATE_SWITCH_ABSENT)
             state = VIR_TRISTATE_SWITCH_ON;
 
         def->caps_features[val] = state;
-        node = xmlNextElementSibling(node);
     }
 
     return 0;
