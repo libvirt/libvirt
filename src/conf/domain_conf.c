@@ -16331,24 +16331,24 @@ static int
 virDomainFeaturesKVMDefParse(virDomainDef *def,
                              xmlNodePtr node)
 {
-    g_autofree virDomainFeatureKVM *kvm = NULL;
+    g_autofree virDomainFeatureKVM *kvm = g_new0(virDomainFeatureKVM, 1);
+    g_autofree xmlNodePtr *feats = NULL;
+    size_t nfeats = virXMLNodeGetSubelementList(node, NULL, &feats);
+    size_t i;
 
-    kvm = g_new0(virDomainFeatureKVM, 1);
-
-    node = xmlFirstElementChild(node);
-    while (node) {
+    for (i = 0; i < nfeats; i++) {
         int feature;
         virTristateSwitch value;
 
-        feature = virDomainKVMTypeFromString((const char *)node->name);
+        feature = virDomainKVMTypeFromString((const char *)feats[i]->name);
         if (feature < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported KVM feature: %1$s"),
-                           node->name);
+                           feats[i]->name);
             return -1;
         }
 
-        if (virXMLPropTristateSwitch(node, "state", VIR_XML_PROP_REQUIRED,
+        if (virXMLPropTristateSwitch(feats[i], "state", VIR_XML_PROP_REQUIRED,
                                      &value) < 0)
             return -1;
 
@@ -16358,7 +16358,7 @@ virDomainFeaturesKVMDefParse(virDomainDef *def,
         if (feature == VIR_DOMAIN_KVM_DIRTY_RING &&
             value == VIR_TRISTATE_SWITCH_ON) {
 
-            if (virXMLPropUInt(node, "size", 0, VIR_XML_PROP_REQUIRED,
+            if (virXMLPropUInt(feats[i], "size", 0, VIR_XML_PROP_REQUIRED,
                                &kvm->dirty_ring_size) < 0) {
                 return -1;
             }
@@ -16372,8 +16372,6 @@ virDomainFeaturesKVMDefParse(virDomainDef *def,
                 return -1;
             }
         }
-
-        node = xmlNextElementSibling(node);
     }
 
     def->features[VIR_DOMAIN_FEATURE_KVM] = VIR_TRISTATE_SWITCH_ON;
