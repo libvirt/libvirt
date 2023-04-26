@@ -1722,21 +1722,22 @@ static void
 virshPrintJobProgress(const char *label, unsigned long long remaining,
                       unsigned long long total)
 {
-    int progress = 100;
+    double progress = 100.00;
 
     /* if remaining == 0 migration has completed */
     if (remaining != 0) {
-        /* use float to avoid overflow */
-        progress = (int)(100.0 - remaining * 100.0 / total);
-        if (progress >= 100) {
+        /* use double to avoid overflow */
+        progress = 100.00 - remaining * 100.00 / total;
+        if (progress >= 100.00) {
             /* migration has not completed, do not print [100 %] */
-            progress = 99;
+            progress = 99.99;
         }
     }
 
     /* see comments in vshError about why we must flush */
     fflush(stdout);
-    fprintf(stderr, "\r%s: [%3d %%]", label, progress);
+    /* avoid auto-round-off of double by keeping only 2 decimals */
+    fprintf(stderr, "\r%s: [%5.2f %%]", label, (int)(progress*100)/100.0);
     fflush(stderr);
 }
 
