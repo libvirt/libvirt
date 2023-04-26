@@ -1722,12 +1722,10 @@ static void
 virshPrintJobProgress(const char *label, unsigned long long remaining,
                       unsigned long long total)
 {
-    int progress;
+    int progress = 100;
 
-    if (remaining == 0) {
-        /* migration has completed */
-        progress = 100;
-    } else {
+    /* if remaining == 0 migration has completed */
+    if (remaining != 0) {
         /* use float to avoid overflow */
         progress = (int)(100.0 - remaining * 100.0 / total);
         if (progress >= 100) {
