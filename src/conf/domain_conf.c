@@ -16385,22 +16385,25 @@ static int
 virDomainFeaturesXENDefParse(virDomainDef *def,
                              xmlNodePtr node)
 {
+    g_autofree xmlNodePtr *feats = NULL;
+    size_t nfeats = virXMLNodeGetSubelementList(node, NULL, &feats);
+    size_t i;
+
     def->features[VIR_DOMAIN_FEATURE_XEN] = VIR_TRISTATE_SWITCH_ON;
 
-    node = xmlFirstElementChild(node);
-    while (node) {
+    for (i = 0; i < nfeats; i++) {
         int feature;
         virTristateSwitch value;
 
-        feature = virDomainXenTypeFromString((const char *)node->name);
+        feature = virDomainXenTypeFromString((const char *)feats[i]->name);
         if (feature < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported Xen feature: %1$s"),
-                           node->name);
+                           feats[i]->name);
             return -1;
         }
 
-        if (virXMLPropTristateSwitch(node, "state",
+        if (virXMLPropTristateSwitch(feats[i], "state",
                                      VIR_XML_PROP_REQUIRED, &value) < 0)
             return -1;
 
@@ -16414,7 +16417,7 @@ virDomainFeaturesXENDefParse(virDomainDef *def,
             if (value != VIR_TRISTATE_SWITCH_ON)
                 break;
 
-            if (virXMLPropEnum(node, "mode",
+            if (virXMLPropEnum(feats[i], "mode",
                                virDomainXenPassthroughModeTypeFromString,
                                VIR_XML_PROP_NONZERO,
                                &def->xen_passthrough_mode) < 0)
@@ -16424,8 +16427,6 @@ virDomainFeaturesXENDefParse(virDomainDef *def,
             case VIR_DOMAIN_XEN_LAST:
                 break;
         }
-
-        node = xmlNextElementSibling(node);
     }
 
     return 0;
