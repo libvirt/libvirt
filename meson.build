@@ -636,14 +636,14 @@ if host_machine.system() == 'freebsd'
 endif
 
 foreach name : headers
-  if cc.has_header(name)
+  if cc.check_header(name)
     conf.set('WITH_@0@'.format(name.underscorify().to_upper()), 1)
   endif
 endforeach
 
 # check for kernel header required by src/util/virnetdevbridge.c
 if host_machine.system() == 'linux'
-  if not cc.has_header('linux/sockios.h')
+  if not cc.check_header('linux/sockios.h')
     error('You must install kernel-headers in order to compile libvirt with QEMU or LXC support')
   endif
 endif
@@ -920,7 +920,7 @@ endif
 dlopen_use = host_machine.system() != 'windows'
 dlopen_dep = cc.find_library('dl', required: dlopen_use)
 if dlopen_dep.found()
-  if not cc.has_header('dlfcn.h')
+  if not cc.check_header('dlfcn.h')
     error('Unable to find dlfcn.h')
   endif
   conf.set('WITH_DLFCN_H', 1)
@@ -1052,7 +1052,7 @@ if not get_option('nls').disabled()
     error('gettext() is required to build libvirt')
   endif
 
-  if cc.has_header('libintl.h')
+  if cc.check_header('libintl.h')
     conf.set('WITH_LIBINTL_H', 1)
   elif get_option('nls').enabled()
     error('libintl.h is required to build libvirt')
@@ -1275,7 +1275,7 @@ if wireshark_dep.found()
 
   # Wireshark is installing ws_version.h since v2.9.0, but some distributions
   # are not shipping it.
-  if cc.has_header('wireshark/ws_version.h')
+  if cc.check_header('wireshark/ws_version.h')
     conf.set('WITH_WS_VERSION', 1)
   endif
 endif
@@ -1470,7 +1470,7 @@ if not get_option('driver_libxl').disabled() and conf.has('WITH_LIBVIRTD')
     endif
 
     # If building with libxl, use the libxl utility header and lib too
-    if cc.has_header('libxlutil.h')
+    if cc.check_header('libxlutil.h')
       conf.set('WITH_LIBXLUTIL_H', 1)
     endif
     xl_util_dep = dependency('xlutil')
@@ -1755,7 +1755,7 @@ if conf.has('WITH_LIBVIRTD')
       fs_enable = false
     endif
 
-    if fs_enable and not cc.has_header('mntent.h')
+    if fs_enable and not cc.check_header('mntent.h')
       if get_option('storage_fs').enabled()
         error('<mntent.h> is required for the FS storage driver')
       else
@@ -1962,7 +1962,7 @@ if not get_option('nss').disabled()
     endif
   endif
 
-  if use_nss and not cc.has_header('nss.h')
+  if use_nss and not cc.check_header('nss.h')
     if get_option('nss').enabled()
       error('Can\'t build nss plugin without nss.h')
     else
