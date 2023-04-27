@@ -77,11 +77,11 @@ x86_64-fedora-rawhide-container:
     NAME: fedora-rawhide
 
 
-x86_64-opensuse-leap-154-container:
+x86_64-opensuse-leap-15-container:
   extends: .container_job
   allow_failure: false
   variables:
-    NAME: opensuse-leap-154
+    NAME: opensuse-leap-15
 
 
 x86_64-opensuse-tumbleweed-container:

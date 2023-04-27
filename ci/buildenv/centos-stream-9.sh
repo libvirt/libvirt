@@ -68,9 +68,7 @@ function install_buildenv() {
         polkit \
         python3 \
         python3-docutils \
-        python3-pip \
-        python3-setuptools \
-        python3-wheel \
+        python3-flake8 \
         qemu-img \
         readline-devel \
         rpcgen \
@@ -88,7 +86,6 @@ function install_buildenv() {
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/clang
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/gcc
-    /usr/bin/pip3 install flake8
 }
 
 export CCACHE_WRAPPERSDIR="/usr/libexec/ccache-wrappers"

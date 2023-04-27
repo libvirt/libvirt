@@ -160,7 +160,7 @@ targets:
 
   freebsd-13: x86_64
 
-  opensuse-leap-154:
+  opensuse-leap-15:
     jobs:
       - arch: x86_64
         variables:
