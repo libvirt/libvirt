@@ -85,7 +85,6 @@ docs_rst_files = [
   'hacking',
   'hooks',
   'issue-handling',
-  'java',
   'libvirt-go',
   'libvirt-go-xml',
   'logging',
