@@ -12,7 +12,8 @@ other languages:
 -  **Go**: Daniel Berrange develops `Go
    bindings <https://pkg.go.dev/libvirt.org/go/libvirt>`__.
 
--  **Java**: Daniel Veillard develops `Java bindings <java.html>`__.
+-  **Java**: Daniel Veillard develops `Java bindings
+   <https://java.libvirt.org/>`__.
 
 -  **OCaml**: Richard Jones develops `OCaml
    bindings <https://ocaml.libvirt.org/>`__.
