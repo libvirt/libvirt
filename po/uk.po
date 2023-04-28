@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-04-25 10:39+0000\n"
-"PO-Revision-Date: 2023-04-04 17:20+0000\n"
+"PO-Revision-Date: 2023-04-28 04:20+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -24,8 +24,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 4.15.2\n"
 
 msgid ""
@@ -555,7 +555,7 @@ msgstr "%1$s не може бути порожнім"
 
 #, c-format
 msgid "%1$s cannot be set higher than %2$s"
-msgstr ""
+msgstr "Для %1$s не можна встановлювати значення, що перевищує %2$s"
 
 #, c-format
 msgid "%1$s cannot parse GID '%2$s'"
@@ -662,6 +662,7 @@ msgstr "Модель %1$s watchdog може стосуватися лише ка
 #, c-format
 msgid "%1$s model of watchdog cannot be used with this machine type"
 msgstr ""
+"Модель %1$s засобу спостереження не можна використовувати з цим типом машин"
 
 #, c-format
 msgid "%1$s model of watchdog does not support configuring the address"
@@ -1938,6 +1939,8 @@ msgstr ""
 
 msgid "Agent authentication is not supported on this host"
 msgstr ""
+"У цій основній системі не передбачено підтримки розпізнавання за допомогою "
+"агентів"
 
 msgid "Ain't nobody heard of that much cache level"
 msgstr "Ніхто не чув про такий високий рівень кешування"
@@ -2045,6 +2048,8 @@ msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
 "mandatory"
 msgstr ""
+"Обов'язковим є принаймні один з цих параметрів: --min-workers, --max-"
+"workers, --priority-workers"
 
 msgid "At least one tty is required"
 msgstr "Потрібно вказати принаймні один tty"
@@ -2752,6 +2757,8 @@ msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
 "not provided"
 msgstr ""
+"Неможливо виконати розпізнавання із інтерактивною клавіатурою: не надано "
+"зворотний виклик розпізнавання"
 
 #, c-format
 msgid "Can't read %1$s"
@@ -3046,6 +3053,8 @@ msgstr ""
 #, c-format
 msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
 msgstr ""
+"Не вдалося знайти статистичні дані cgroup blkio (%1$s) для блокового "
+"пристрою «%2$s» (%3$s)"
 
 #, c-format
 msgid "Cannot find boot device of requested type %1$s"
@@ -3308,11 +3317,11 @@ msgstr "Не вдалося обробити запис адаптера «%1$s�
 
 #, c-format
 msgid "Cannot parse blkio cgroup (%1$s) entry '%2$s'"
-msgstr ""
+msgstr "Не вдалося обробити запис cgroup blkio (%1$s) «%2$s»"
 
 #, c-format
 msgid "Cannot parse blkio cgroup ('%1$s') entry '%2$s'"
-msgstr ""
+msgstr "Не вдалося обробити запис cgroup blkio («%1$s») «%2$s»"
 
 #, c-format
 msgid "Cannot parse byte '%1$s' stat '%2$s'"
@@ -9595,16 +9604,18 @@ msgstr ""
 "(ioapic driver='qemu')"
 
 msgid "IORT table header ended early"
-msgstr ""
+msgstr "Передчасне завершення заголовка таблиці IORT"
 
 msgid "IORT table node header ended early"
-msgstr ""
+msgstr "Передчасне завершення заголовка вузла таблиці IORT"
 
 #, c-format
 msgid ""
 "IORT table node type %1$s has invalid length: got %2$u, expected at least "
 "%3$zu"
 msgstr ""
+"Тип вузла таблиці IORT %1$s має некоректну довжину: отримано %2$u, мало бути "
+"принаймніt %3$zu"
 
 msgid "IOThread ID"
 msgstr "Ідентифікатор IOThread"
@@ -9781,7 +9792,7 @@ msgid "Instantiation of rules failed on interface '%1$s'"
 msgstr "Помилка під час спроби конкретизації правил на інтерфейсі «%1$s»"
 
 msgid "Integrity error in watchdog models"
-msgstr ""
+msgstr "Помилка цілісності у моделях засобу спостереження"
 
 msgid "Interface"
 msgstr "Інтерфейс"
@@ -10586,7 +10597,7 @@ msgstr "Некоректний параметр для зміни розмірі
 
 #, c-format
 msgid "Invalid setting for pseries feature '%1$s'"
-msgstr ""
+msgstr "Некоректне значення для можливості pseries «%1$s»"
 
 #, c-format
 msgid "Invalid source mode: %1$s"
@@ -16663,6 +16674,8 @@ msgid ""
 "The <portForward> element can only be used with <interface type='user'> and "
 "its 'passt' backend"
 msgstr ""
+"Елемент <portForward> можна використовувати лише з <interface type='user'> і "
+"його модуль «passt»"
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
@@ -21355,6 +21368,8 @@ msgstr ""
 
 msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
 msgstr ""
+"підтримку атрибута «limit» передбачено лише для режиму maxphysaddr "
+"«passthrough»"
 
 #, c-format
 msgid "audio ID %1$u is used multiple times"
@@ -23232,7 +23247,7 @@ msgstr "не вдалося прочитати список точок монт�
 
 #, c-format
 msgid "cannot read node header '%1$s'"
-msgstr ""
+msgstr "не вдалося прочитати заголовок вузла «%1$s»"
 
 #, c-format
 msgid "cannot receive data from volume %1$s"
@@ -25032,6 +25047,8 @@ msgstr "підтримки від'єднання мережвих пристро
 msgid ""
 "detaching of <console/> is unsupported. Try corresponding <serial/> instead"
 msgstr ""
+"підтримки від'єднання <console/> не передбачено. Спробуйте замість цього "
+"відповідний <serial/>"
 
 msgid "detaching serial console is not supported"
 msgstr "підтримки від'єднання послідовної консолі не передбачено"
@@ -25504,7 +25521,7 @@ msgstr "показувати поступ збереження"
 
 #, c-format
 msgid "dnsmasq version >= %1$u.%2$u required but %3$llu.%4$llu found"
-msgstr ""
+msgstr "потрібна версія dnsmasq >= %1$u.%2$u, але знайдено лише %3$llu.%4$llu"
 
 msgid "do not enable STP for this bridge"
 msgstr "не вмикати STP для цього містка"
@@ -25615,7 +25632,7 @@ msgstr "дані щодо розміру блокового пристрою д�
 
 #, c-format
 msgid "domain can only have one watchdog with model '%1$s'"
-msgstr ""
+msgstr "у домену може бути лише один засіб спостереження з моделлю «%1$s»"
 
 msgid "domain capabilities"
 msgstr "можливості домену"
@@ -26284,35 +26301,36 @@ msgstr ""
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none\n"
-msgstr ""
+msgstr "подія «io-error» для домену «%1$s»: жодного %2$s (%3$s)\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none due to %4$s\n"
-msgstr ""
+msgstr "подія «io-error» для домену «%1$s»: %2$s (%3$s) немає через %4$s\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause\n"
-msgstr ""
+msgstr "подія «io-error» для домену «%1$s»: призупинено %2$s (%3$s)\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause due to %4$s\n"
 msgstr ""
+"подія «io-error» для домену «%1$s»: %2$s (%3$s) призупинено через %4$s\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report\n"
-msgstr ""
+msgstr "подія «io-error» для домену «%1$s»: звіт %2$s (%3$s)\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report due to %4$s\n"
-msgstr ""
+msgstr "подія «io-error» для домену «%1$s»: звіт %2$s (%3$s) через %4$s\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown\n"
-msgstr ""
+msgstr "подія «io-error» для домену «%1$s»: невідомий %2$s (%3$s)\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown due to %4$s\n"
-msgstr ""
+msgstr "подія «io-error» для домену «%1$s»: невідомий %2$s (%3$s) через %4$s\n"
 
 #, c-format
 msgid "event 'job-completed' for domain '%1$s':\n"
@@ -26372,15 +26390,15 @@ msgstr "подія «rtc-change» для домену «%1$s»: %2$lld\n"
 
 #, c-format
 msgid "event 'tray-change' for domain '%1$s' disk %2$s: closed\n"
-msgstr ""
+msgstr "подія «tray-change» для домену «%1$s», диск %2$s: закрито\n"
 
 #, c-format
 msgid "event 'tray-change' for domain '%1$s' disk %2$s: opened\n"
-msgstr ""
+msgstr "подія «tray-change» для домену «%1$s», диск %2$s: відкрито\n"
 
 #, c-format
 msgid "event 'tray-change' for domain '%1$s' disk %2$s: unknown\n"
-msgstr ""
+msgstr "подія «tray-change» для домену «%1$s», диск %2$s: невідомо\n"
 
 #, c-format
 msgid "event 'tunable' for domain '%1$s':\n"
@@ -26388,35 +26406,35 @@ msgstr "подія «tunable» для домену «%1$s»:\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': debug\n"
-msgstr ""
+msgstr "подія «watchdog» для домену «%1$s»: діагностика\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': inject-nmi\n"
-msgstr ""
+msgstr "подія «watchdog» для домену «%1$s»: inject-nmi\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': none\n"
-msgstr ""
+msgstr "подія «watchdog» для домену «%1$s»: немає\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': pause\n"
-msgstr ""
+msgstr "подія «watchdog» для домену «%1$s»: призупинка\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': poweroff\n"
-msgstr ""
+msgstr "подія «watchdog» для домену «%1$s»: вимикання\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': reset\n"
-msgstr ""
+msgstr "подія «watchdog» для домену «%1$s»: скидання\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': shutdown\n"
-msgstr ""
+msgstr "подія «watchdog» для домену «%1$s»: завершення роботи\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': unknown\n"
-msgstr ""
+msgstr "подія «watchdog» для домену «%1$s»: невідомо\n"
 
 msgid "event callback already tracked"
 msgstr "зворотний виклик події вже відстежено"
@@ -28772,7 +28790,7 @@ msgstr "під'єднання «вгарячу» інтерфейсів типу
 
 #, c-format
 msgid "hotplug of watchdog model '%1$s' is not supported"
-msgstr ""
+msgstr "підтримки інтерактивного вмикання моделі «%1$s» не передбачено"
 
 msgid "hpet timer is not supported by this architecture"
 msgstr "на цій архітектурі не передбачено підтримки hpet-таймерів"
@@ -34122,6 +34140,7 @@ msgstr "переповнення під час перетворення %1$ld М
 #, c-format
 msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
 msgstr ""
+"переповнення у сумі статистичних даних для поля cgroup blkio (%1$s) «%2$s»"
 
 msgid "override the destination host name used for TLS verification"
 msgstr ""
@@ -35035,7 +35054,7 @@ msgid "query-machines reply data was missing 'name'"
 msgstr "у даних відповіді query-machines не міститься поля «name»"
 
 msgid "query-machines reply has malformed 'acpi data"
-msgstr ""
+msgstr "у відповіді query-machines має помилкове форматування даних acpi"
 
 msgid "query-machines reply has malformed 'alias' data"
 msgstr "форматування даних «alias» у відповіді query-machines є помилковим"
@@ -35058,6 +35077,8 @@ msgstr ""
 
 msgid "query-machines reply has malformed 'numa-mem-supported' data"
 msgstr ""
+"у відповіді query-machines маємо помилкове форматування даних «numa-mem-"
+"supported»"
 
 msgid "query-memory-devices reply data doesn't contain enum data"
 msgstr "дані відповіді query-memory-devices не містять даних переліку (enum)"
