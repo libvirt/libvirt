@@ -46,6 +46,32 @@ virCPURiscv64ValidateFeatures(virCPUDef *cpu G_GNUC_UNUSED)
 }
 
 
+static int
+virCPURiscv64Update(virCPUDef *guest,
+                    const virCPUDef *host,
+                    bool relative)
+{
+    g_autoptr(virCPUDef) updated = virCPUDefCopyWithoutModel(guest);
+
+    if (!relative || guest->mode != VIR_CPU_MODE_HOST_MODEL)
+        return 0;
+
+    if (!host) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("unknown host CPU model"));
+        return -1;
+    }
+
+    updated->mode = VIR_CPU_MODE_CUSTOM;
+    virCPUDefCopyModel(updated, host, true);
+
+    virCPUDefStealModel(guest, updated, false);
+    guest->mode = VIR_CPU_MODE_CUSTOM;
+    guest->match = VIR_CPU_MATCH_EXACT;
+
+    return 0;
+}
+
 struct cpuArchDriver cpuDriverRiscv64 = {
     .name = "riscv64",
     .arch = archs,
@@ -54,6 +80,6 @@ struct cpuArchDriver cpuDriverRiscv64 = {
     .decode     = NULL,
     .encode     = NULL,
     .baseline   = NULL,
-    .update     = NULL,
+    .update     = virCPURiscv64Update,
     .validateFeatures = virCPURiscv64ValidateFeatures,
 };
