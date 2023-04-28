@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-04-25 10:39+0000\n"
-"PO-Revision-Date: 2023-04-25 08:21+0000\n"
+"PO-Revision-Date: 2023-04-28 04:20+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -546,7 +546,7 @@ msgstr "%1$s는 비워둘 수 없습니다"
 
 #, c-format
 msgid "%1$s cannot be set higher than %2$s"
-msgstr ""
+msgstr "%1$s는 %2$s 보다 높게 설정 할 수 없습니다"
 
 #, c-format
 msgid "%1$s cannot parse GID '%2$s'"
@@ -646,7 +646,7 @@ msgstr "와치독 %1$s 모델은 PCI 버스만 사용 할 수 있습니다"
 
 #, c-format
 msgid "%1$s model of watchdog cannot be used with this machine type"
-msgstr ""
+msgstr "와치독의 %1$s 모델은 이 장비 유형과 함께 사용 될 수 없습니다"
 
 #, c-format
 msgid "%1$s model of watchdog does not support configuring the address"
@@ -1869,7 +1869,7 @@ msgstr ""
 "코어를 버린후부터 도메인 '%1$d'를 libxenlight와 재개하는것을 실패했습니다"
 
 msgid "Agent authentication is not supported on this host"
-msgstr ""
+msgstr "대리 인증은 이 호스트에서 지원되지 않습니다"
 
 msgid "Ain't nobody heard of that much cache level"
 msgstr "그 누구도 그렇게 높은 캐쉬 수준에 대해 들은 적이 없습니다"
@@ -1971,7 +1971,8 @@ msgstr ""
 msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
 "mandatory"
-msgstr ""
+msgstr "옵션 --min-workers, --max-workers, --priority-workers 중 최소 하나는 필 수 "
+"입니다"
 
 msgid "At least one tty is required"
 msgstr "최소 하나의 전신인자기 (teletypewriter)은 필요합니다"
@@ -2643,7 +2644,7 @@ msgstr "인증을 수행할 수 없습니다: 인증 회신이 제공되지 않�
 msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
 "not provided"
-msgstr ""
+msgstr "키보드-대화형 인증을 수행 할 수 없습니다: 인증 되돌리기가 제공되지 않습니다"
 
 #, c-format
 msgid "Can't read %1$s"
@@ -2921,7 +2922,7 @@ msgstr "제조사 id 0x%1$02llx인 CPU 제조사를 찾을 수 없습니다"
 
 #, c-format
 msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
-msgstr ""
+msgstr "blkio cgroup 통계(%1$s)를 찾을 수 없습니다. (블록 장치 '%2$s' (%3$s)를 위한)"
 
 #, c-format
 msgid "Cannot find boot device of requested type %1$s"
@@ -3175,11 +3176,11 @@ msgstr "어댑터 '%1$s'를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Cannot parse blkio cgroup (%1$s) entry '%2$s'"
-msgstr ""
+msgstr "blkio cgroup (%1$s) 입력 '%2$s'을 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Cannot parse blkio cgroup ('%1$s') entry '%2$s'"
-msgstr ""
+msgstr "blkio cgroup ('%1$s') 입력 '%2$s'을 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Cannot parse byte '%1$s' stat '%2$s'"
@@ -9211,16 +9212,17 @@ msgstr ""
 "IOMMU 인터럽트 재매핑에는 분할 I/O APIC가 필요합니다(ioapic 드라이버='qemu')"
 
 msgid "IORT table header ended early"
-msgstr ""
+msgstr "IORT 테이블 헤더가 일찍 종료됨"
 
 msgid "IORT table node header ended early"
-msgstr ""
+msgstr "IORT 테이블 노드 헤더가 일찍 종료됨"
 
 #, c-format
 msgid ""
 "IORT table node type %1$s has invalid length: got %2$u, expected at least "
 "%3$zu"
-msgstr ""
+msgstr "IORT 테이블 노트 유형 %1$s가 유효한 길이가 아닙니다:%2$u를 가졌지만, 적어도 "
+"%3$zu 이상이어야 합니다"
 
 msgid "IOThread ID"
 msgstr "IO쓰레드 식별번호"
@@ -9386,7 +9388,7 @@ msgid "Instantiation of rules failed on interface '%1$s'"
 msgstr "연결장치 '%1$s'에서 실패한 규칙의 인스턴스화"
 
 msgid "Integrity error in watchdog models"
-msgstr ""
+msgstr "와치독 모델에서 무결성 오류"
 
 msgid "Interface"
 msgstr "연결장치"
@@ -10172,7 +10174,7 @@ msgstr "HPT 크기변경의 잘못된 설정"
 
 #, c-format
 msgid "Invalid setting for pseries feature '%1$s'"
-msgstr ""
+msgstr "pseries 기능 '%1$s'에 대한 잘못된 설정"
 
 #, c-format
 msgid "Invalid source mode: %1$s"
@@ -15735,6 +15737,8 @@ msgid ""
 "The <portForward> element can only be used with <interface type='user'> and "
 "its 'passt' backend"
 msgstr ""
+"<portForward> 요소는 <interface type='user'> 및 'passt' 백엔드와 함께만 사용 "
+"될 수 있습니다"
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
@@ -20263,7 +20267,7 @@ msgid "attempt to merge virtualports with mismatched types (%1$s and %2$s)"
 msgstr "유형이 일치하지 않는 가상 포트 병합 시도(%1$s 및 %2$s)"
 
 msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
-msgstr ""
+msgstr "속성 'limit'은 maxphysaddr 방식 'passthrough'용으로만 지원됩니다"
 
 #, c-format
 msgid "audio ID %1$u is used multiple times"
@@ -22035,7 +22039,7 @@ msgstr "'%1$s' 마운트 목록을 읽을 수 없음"
 
 #, c-format
 msgid "cannot read node header '%1$s'"
-msgstr ""
+msgstr "노드 헤더 '%1$s'를 읽을 수 없습니다"
 
 #, c-format
 msgid "cannot receive data from volume %1$s"
@@ -23743,7 +23747,8 @@ msgstr "VM에서 네트워크 장치 분리는 지원되지 않습니다"
 
 msgid ""
 "detaching of <console/> is unsupported. Try corresponding <serial/> instead"
-msgstr ""
+msgstr "<console/>의 분리하기는 지원되지 않습니다. 대신에 일치하는 <serial/>을 "
+"시도하세요"
 
 msgid "detaching serial console is not supported"
 msgstr "직렬 콘솔 분리는 지원되지 않습니다"
@@ -24196,7 +24201,7 @@ msgstr "저장 진행률 표시"
 
 #, c-format
 msgid "dnsmasq version >= %1$u.%2$u required but %3$llu.%4$llu found"
-msgstr ""
+msgstr "dnsmasq 버전 >= %1$u.%2$u가 필요하지만 %3$llu.%4$llu를 찾았습니다"
 
 msgid "do not enable STP for this bridge"
 msgstr "이 브리지에 대해 STP를 활성화하지 마십시오"
@@ -24307,7 +24312,7 @@ msgstr "도메인 블록 장치 크기 정보"
 
 #, c-format
 msgid "domain can only have one watchdog with model '%1$s'"
-msgstr ""
+msgstr "도메인은 모델 '%1$s'와 같이 하나의 와치독만을 가질 수 있습니다"
 
 msgid "domain capabilities"
 msgstr "도메인 기능"
@@ -24953,35 +24958,35 @@ msgstr ""
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none\n"
-msgstr ""
+msgstr "도메인 '%1$s': %2$s (%3$s)가 없는 사건 '입출력-오류'\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none due to %4$s\n"
-msgstr ""
+msgstr "도메인 '%1$s': %2$s (%3$s)가 없는 (%4$s로 인해) 사건 '입출력-오류'\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause\n"
-msgstr ""
+msgstr "도메인 '%1$s': %2$s (%3$s)가 중지된 사건 '입출력-오류'\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause due to %4$s\n"
-msgstr ""
+msgstr "도메인 '%1$s': %2$s (%3$s) 중지(%4$s로 인해)된 사건 '입출력-오류'\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report\n"
-msgstr ""
+msgstr "도메인 '%1$s': %2$s (%3$s) 보고를 위한 사건 '입출력-오류'\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report due to %4$s\n"
-msgstr ""
+msgstr "도메인 '%1$s': %2$s (%3$s) 보고(%4$s로 인해)를 위한 사건 '입출력-오류'\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown\n"
-msgstr ""
+msgstr "도메인 '%1$s': %2$s (%3$s)를 알지 못하는 사건 '입출력-오류'\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown due to %4$s\n"
-msgstr ""
+msgstr "도메인 '%1$s': %2$s (%3$s)를 알지 못하는(%4$s로 인해) 사건 '입출력-오류'\n"
 
 #, c-format
 msgid "event 'job-completed' for domain '%1$s':\n"
@@ -25041,15 +25046,15 @@ msgstr "도메인 '%1$s'에 대한 이벤트 'rtc-change': %2$lld\n"
 
 #, c-format
 msgid "event 'tray-change' for domain '%1$s' disk %2$s: closed\n"
-msgstr ""
+msgstr "도메인 '%1$s' 디스크 %2$s용 사건 '트레이-변경': 닫힘\n"
 
 #, c-format
 msgid "event 'tray-change' for domain '%1$s' disk %2$s: opened\n"
-msgstr ""
+msgstr "도메인 '%1$s' 디스크 %2$s용 사건 '트레이-변경': 열림\n"
 
 #, c-format
 msgid "event 'tray-change' for domain '%1$s' disk %2$s: unknown\n"
-msgstr ""
+msgstr "도메인 '%1$s' 디스크 %2$s용 사건 '트레이-변경': 알지 못함\n"
 
 #, c-format
 msgid "event 'tunable' for domain '%1$s':\n"
@@ -25057,35 +25062,35 @@ msgstr "도메인 '%1$s'에 대한 '조정 가능' 이벤트:\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': debug\n"
-msgstr ""
+msgstr "도메인 '%1$s'용 사건 '와치독': 디버그\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': inject-nmi\n"
-msgstr ""
+msgstr "도메인 '%1$s'용 사건 '와치독': inject-nmi\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': none\n"
-msgstr ""
+msgstr "도메인 '%1$s'용 사건 '와치독': 없음\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': pause\n"
-msgstr ""
+msgstr "도메인 '%1$s'용 사건 '와치독': 일시 중지\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': poweroff\n"
-msgstr ""
+msgstr "도메인 '%1$s'용 사건 '와치독': 전원종료\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': reset\n"
-msgstr ""
+msgstr "도메인 '%1$s'용 사건 '와치독': 리셋\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': shutdown\n"
-msgstr ""
+msgstr "도메인 '%1$s'용 사건 '와치독': 종료\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': unknown\n"
-msgstr ""
+msgstr "도메인 '%1$s'용 사건 '와치독': 알지 못함\n"
 
 msgid "event callback already tracked"
 msgstr "이벤트 콜백이 이미 추적되었습니다"
@@ -27333,7 +27338,7 @@ msgstr "인터페이스 유형 %1$s의 핫플러그가 아직 구현되지 않�
 
 #, c-format
 msgid "hotplug of watchdog model '%1$s' is not supported"
-msgstr ""
+msgstr "와치독 모델 '%1$s'의 핫플러그는 지원되지 않습니다"
 
 msgid "hpet timer is not supported by this architecture"
 msgstr "hpet 타이머는 이와 같은 구조에서 지원되지 않습니다"
@@ -32379,7 +32384,7 @@ msgstr "%1$ld MiB/s를 바이트로 변환하는 중 오버플로\n"
 
 #, c-format
 msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
-msgstr ""
+msgstr "blkio cgroup (%1$s) 부분 '%2$s'를 위한 통계 합계 초과"
 
 msgid "override the destination host name used for TLS verification"
 msgstr "TLS 확인에 사용되는 대상 호스트 이름 재정의"
@@ -33225,7 +33230,7 @@ msgid "query-machines reply data was missing 'name'"
 msgstr "쿼리 시스템 응답 데이터에 '이름'이 누락되었습니다"
 
 msgid "query-machines reply has malformed 'acpi data"
-msgstr ""
+msgstr "질의-장비 응답은 'acpi 자료 형식이 잘못되었습니다"
 
 msgid "query-machines reply has malformed 'alias' data"
 msgstr "쿼리 시스템 응답에 잘못된 '별칭' 데이터가 있습니다"
@@ -33243,7 +33248,7 @@ msgid "query-machines reply has malformed 'is-default' data"
 msgstr "쿼리 시스템 응답에 잘못된 '기본값' 데이터가 있습니다"
 
 msgid "query-machines reply has malformed 'numa-mem-supported' data"
-msgstr ""
+msgstr "질의-장비 응답은 'numa-mem-supported' 자료 형식이 잘못되었습니다"
 
 msgid "query-memory-devices reply data doesn't contain enum data"
 msgstr ""
