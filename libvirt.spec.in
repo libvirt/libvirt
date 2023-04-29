@@ -1213,6 +1213,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
 
 %meson \
            -Drunstatedir=%{_rundir} \
+           -Dinitconfdir=%{_sysconfdir}/sysconfig \
            %{?arg_qemu} \
            %{?arg_openvz} \
            %{?arg_lxc} \
