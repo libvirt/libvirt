@@ -76,6 +76,11 @@ if runstatedir == ''
   runstatedir = localstatedir / 'run'
 endif
 
+initconfdir = get_option('initconfdir')
+if initconfdir == ''
+  initconfdir = sysconfdir / 'sysconfig'
+endif
+
 bindir = prefix / get_option('bindir')
 datadir = prefix / get_option('datadir')
 includedir = prefix / get_option('includedir')

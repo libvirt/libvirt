@@ -3,6 +3,7 @@ option('packager', type: 'string', value: '', description: 'Extra packager name'
 option('packager_version', type: 'string', value: '', description: 'Extra packager version')
 option('system', type: 'boolean', value: false, description: 'Set install paths to system ones')
 option('runstatedir', type: 'string', value: '', description: 'State directory for temporary sockets, pid files, etc')
+option('initconfdir', type: 'string', value: '', description: 'directory for init script configuration files')
 option('expensive_tests', type: 'feature', value: 'auto', description: 'set the default for enabling expensive tests (long timeouts)')
 option('test_coverage', type: 'boolean', value: false, description: 'turn on code coverage instrumentation')
 option('git_werror', type: 'feature', value: 'auto', description: 'use -Werror if building from GIT')
