@@ -42,7 +42,7 @@ FILES
 ``libvirt-guests`` defines several variables to control service behavior.
 The default value of these variables can be overridden in:
 
-* ``@SYSCONFDIR@/sysconfig/libvirt-guests``
+* ``@INITCONFDIR@/libvirt-guests``
 
 The following variables are supported:
 

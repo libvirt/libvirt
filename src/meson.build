@@ -808,6 +808,7 @@ if conf.has('WITH_LIBVIRTD')
         'runstatedir': runstatedir,
         'sbindir': sbindir,
         'sysconfdir': sysconfdir,
+        'initconfdir': initconfdir,
         'name': unit['name'],
         'service': unit['service'],
         'sockprefix': unit['sockprefix'],

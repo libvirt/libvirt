@@ -14,7 +14,7 @@ Documentation=man:libvirt-guests(8)
 Documentation=https://libvirt.org
 
 [Service]
-EnvironmentFile=-@sysconfdir@/sysconfig/libvirt-guests
+EnvironmentFile=-@initconfdir@/libvirt-guests
 # Hack just call traditional service until we factor
 # out the code
 ExecStart=@libexecdir@/libvirt-guests.sh start

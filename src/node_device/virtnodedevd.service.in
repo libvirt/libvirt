@@ -14,7 +14,7 @@ Documentation=https://libvirt.org
 [Service]
 Type=notify
 Environment=VIRTNODEDEVD_ARGS="--timeout 120"
-EnvironmentFile=-@sysconfdir@/sysconfig/virtnodedevd
+EnvironmentFile=-@initconfdir@/virtnodedevd
 ExecStart=@sbindir@/virtnodedevd $VIRTNODEDEVD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure

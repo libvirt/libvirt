@@ -14,7 +14,7 @@ Documentation=https://libvirt.org
 [Service]
 Type=notify
 Environment=VIRTINTERFACED_ARGS="--timeout 120"
-EnvironmentFile=-@sysconfdir@/sysconfig/virtinterfaced
+EnvironmentFile=-@initconfdir@/virtinterfaced
 ExecStart=@sbindir@/virtinterfaced $VIRTINTERFACED_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure

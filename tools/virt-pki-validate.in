@@ -73,6 +73,7 @@ echo Found "$CERTOOL"
 #
 SYSCONFDIR="@sysconfdir@"
 PKI="$SYSCONFDIR/pki"
+INITCONFDIR="@initconfdir@"
 if [ ! -d "$PKI" ]
 then
     echo the $PKI directory is missing, it is usually
@@ -294,24 +295,24 @@ fi
 
 if [ "$SERVER" = "1" ]
 then
-    if [ -r "$SYSCONFDIR"/sysconfig/libvirtd ]
+    if [ -r "$INITCONFDIR"/libvirtd ]
     then
-        if grep "^LIBVIRTD_ARGS.*--listen" "$SYSCONFDIR"/sysconfig/libvirtd \
+        if grep "^LIBVIRTD_ARGS.*--listen" "$INITCONFDIR"/libvirtd \
             >/dev/null 2>&1
         then
             :
         else
-            echo Make sure "$SYSCONFDIR"/sysconfig/libvirtd is setup to listen to
+            echo Make sure "$INITCONFDIR"/libvirtd is setup to listen to
             echo TCP/IP connections and restart the libvirtd service
         fi
     fi
-    if [ -r "$SYSCONFDIR"/sysconfig/iptables ]
+    if [ -r "$INITCONFDIR"/iptables ]
     then
-        if grep "$PORT" "$SYSCONFDIR"/sysconfig/iptables >/dev/null 2>&1
+        if grep "$PORT" "$INITCONFDIR"/iptables >/dev/null 2>&1
         then
             :
         else
-            echo Make sure "$SYSCONFDIR"/sysconfig/iptables is setup to allow
+            echo Make sure "$INITCONFDIR"/iptables is setup to allow
             echo incoming TCP/IP connections on port $PORT and
             echo restart the iptables service
         fi

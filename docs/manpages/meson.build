@@ -88,6 +88,7 @@ endforeach
 docs_man_conf = configuration_data({
   'SYSCONFDIR': sysconfdir,
   'RUNSTATEDIR': runstatedir,
+  'INITCONFDIR': initconfdir,
   'VERSION': meson.project_version(),
 })
 

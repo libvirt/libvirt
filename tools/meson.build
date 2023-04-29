@@ -241,6 +241,7 @@ tools_conf = configuration_data({
   'sbindir': sbindir,
   'schemadir': pkgdatadir / 'schemas',
   'sysconfdir': sysconfdir,
+  'initconfdir': initconfdir,
 })
 
 configure_file(

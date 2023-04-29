@@ -18,7 +18,7 @@ Documentation=https://libvirt.org
 [Service]
 Type=notify
 Environment=VIRTCHD_ARGS="--timeout 120"
-EnvironmentFile=-@sysconfdir@/sysconfig/virtchd
+EnvironmentFile=-@initconfdir@/virtchd
 ExecStart=@sbindir@/virtchd $VIRTCHD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
