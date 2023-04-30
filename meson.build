@@ -1614,20 +1614,18 @@ if not get_option('driver_qemu').disabled()
         qemu_group = 'wheel'
       else
         os_release = run_command('grep', '-E', '^ID(_LIKE)*=', '/etc/os-release', check: false).stdout()
-        if os_release.contains('arch')
-          qemu_user = 'nobody'
-          qemu_group = 'nobody'
         # RHEL and CentOS both have ID_LIKE=fedora, SLES has ID_LIKE=suse
-        elif (os_release.contains('fedora') or
-              os_release.contains('gentoo') or
-              os_release.contains('suse'))
+        if (os_release.contains('fedora') or
+            os_release.contains('gentoo') or
+            os_release.contains('suse'))
           qemu_user = 'qemu'
           qemu_group = 'qemu'
         # Ubuntu has ID_LIKE=debian so we need to handle it first
         elif os_release.contains('ubuntu')
           qemu_user = 'libvirt-qemu'
           qemu_group = 'kvm'
-        elif os_release.contains('debian')
+        elif (os_release.contains('arch') or
+              os_release.contains('debian'))
           qemu_user = 'libvirt-qemu'
           qemu_group = 'libvirt-qemu'
         else
