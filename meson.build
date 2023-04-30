@@ -24,6 +24,11 @@ if git and not get_option('no_git')
 endif
 
 
+# detect operating system
+
+os_release = run_command('grep', '-E', '^ID(_LIKE)*=', '/etc/os-release', check: false).stdout()
+
+
 # prepare build configuration data
 
 conf = configuration_data()
@@ -1618,7 +1623,6 @@ if not get_option('driver_qemu').disabled()
         qemu_user = 'root'
         qemu_group = 'wheel'
       else
-        os_release = run_command('grep', '-E', '^ID(_LIKE)*=', '/etc/os-release', check: false).stdout()
         # RHEL and CentOS both have ID_LIKE=fedora, SLES has ID_LIKE=suse
         if (os_release.contains('fedora') or
             os_release.contains('gentoo') or
