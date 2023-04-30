@@ -83,7 +83,16 @@ endif
 
 initconfdir = get_option('initconfdir')
 if initconfdir == ''
-  initconfdir = sysconfdir / 'sysconfig'
+  if (os_release.contains('alpine') or
+      os_release.contains('arch') or
+      os_release.contains('gentoo'))
+    initconfdir = sysconfdir / 'conf.d'
+  # Ubuntu has ID_LIKE=debian
+  elif os_release.contains('debian')
+    initconfdir = sysconfdir / 'default'
+  else
+    initconfdir = sysconfdir / 'sysconfig'
+  endif
 endif
 
 bindir = prefix / get_option('bindir')
