@@ -17,6 +17,13 @@ v9.3.0 (unreleased)
 
 * **New features**
 
+  * qemu: Introduce support for ``igb`` network interface model
+
+    ``igb`` is a successor to the ``e1000e`` network device using PCIe interface.
+    It was introduced in QEMU 8.0
+
+  * qemu: Improve handling of maximum physical address configuration
+
 * **Improvements**
 
   * qemu: Change default machine type for ARM and RISC-V
@@ -25,7 +32,52 @@ v9.3.0 (unreleased)
     The previous defaults were nearly unusable and had to be overridden in most
     cases.
 
+  * Improve translatable strings format substitutions
+
+    All translatable error messages with substitution strings were converted to
+    use positional modifiers to allow translators to shuffle around words in
+    the translation. The translations in Weblate were also updated to match.
+
+  * qemu: Improve validation of ``watchdog`` devices
+
+    Certain invalid configurations of ``watchdog`` device are now properly
+    detected:
+
+     - hotplug of always-present platform watchdogs is forbidden
+     - ``iTCO`` watchdog can be configured only once
+     - ``ib700`` watchdog is allowed only on ``i440fx`` machines
+
+  * Improved output of ``virt-host-validate`` on ARM
+
+    Our validation tool now parses the ``IORT`` data on ARM to properly detect
+    presence of SMMU and other features.
+
 * **Bug fixes**
+
+  * qemu: Fix inactive internal snapshots of VM with UEFI firmware
+
+    Recent changes to UEFI firmware handling resulted into breaking support
+    for inactive internal snapshots of VMs with UEFI which historically worked.
+    (Although the intention was to disallow them together with active ones, but
+    the check did not work properly.)
+
+    Preserve existing functionality by allowing such snapshots explicitly.
+
+  * qemu: Properly configure locked memory limit for VMs with ``<disk type='nvme'``
+
+    The NVMe driver in qemu requires some memory to be locked. This was not
+    taken into account in the code which calculates the memory limits based
+    on devices present in the configuration
+
+  * Fix native build on win32
+
+    Various improvements to the build system now allow users to build the client
+    library of libvirt on win32 natively.
+
+  * qemu: Properly detect tray of hotplugged CD-ROM devices
+
+    Media in a CD-ROM device which was hotplugged could not be changed as the
+    presence of the tray was not detected properly on hotplug.
 
 
 v9.2.0 (2023-04-01)
