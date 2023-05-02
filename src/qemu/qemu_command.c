@@ -2802,7 +2802,7 @@ qemuBuildControllerDevProps(const virDomainDef *domainDef,
 
     *devprops = NULL;
 
-    switch ((virDomainControllerType)def->type) {
+    switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         if (!(props = qemuBuildControllerSCSIDevProps(def, qemuCaps)))
             return -1;

@@ -2473,7 +2473,7 @@ virDomainControllerDefNew(virDomainControllerType type)
     def->model = -1;
     def->idx = -1;
 
-    switch ((virDomainControllerType) def->type) {
+    switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
         def->opts.vioserial.ports = -1;
         def->opts.vioserial.vectors = -1;
@@ -8265,7 +8265,7 @@ static int
 virDomainControllerModelTypeFromString(const virDomainControllerDef *def,
                                        const char *model)
 {
-    switch ((virDomainControllerType)def->type) {
+    switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         return virDomainControllerModelSCSITypeFromString(model);
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
@@ -8293,7 +8293,7 @@ static const char *
 virDomainControllerModelTypeToString(virDomainControllerDef *def,
                                      int model)
 {
-    switch ((virDomainControllerType)def->type) {
+    switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         return virDomainControllerModelSCSITypeToString(model);
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
@@ -8324,7 +8324,7 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
                                unsigned int flags)
 {
     g_autoptr(virDomainControllerDef) def = NULL;
-    virDomainControllerType type = 0;
+    virDomainControllerType type = VIR_DOMAIN_CONTROLLER_TYPE_IDE;
     xmlNodePtr driver = NULL;
     g_autofree xmlNodePtr *targetNodes = NULL;
     int ntargetNodes = 0;
@@ -8539,6 +8539,13 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
         break;
     }
 
+    case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
+    case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
+    case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
+    case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
+    case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
+    case VIR_DOMAIN_CONTROLLER_TYPE_ISA:
+    case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
     default:
         break;
     }
@@ -16031,7 +16038,10 @@ virDomainEmulatorPinDefParseXML(xmlNodePtr node)
 
 
 virDomainControllerDef *
-virDomainDefAddController(virDomainDef *def, int type, int idx, int model)
+virDomainDefAddController(virDomainDef *def,
+                          virDomainControllerType type,
+                          int idx,
+                          int model)
 {
     virDomainControllerDef *cont;
 
@@ -16106,7 +16116,7 @@ virDomainDefAddUSBController(virDomainDef *def, int idx, int model)
 
 int
 virDomainDefMaybeAddController(virDomainDef *def,
-                               int type,
+                               virDomainControllerType type,
                                int idx,
                                int model)
 {
@@ -21719,7 +21729,7 @@ virDomainDefCheckABIStability(virDomainDef *src,
 
 static int
 virDomainDefAddDiskControllersForType(virDomainDef *def,
-                                      int controllerType,
+                                      virDomainControllerType controllerType,
                                       int diskBus)
 {
     size_t i;
@@ -22981,7 +22991,7 @@ virDomainControllerDefFormat(virBuffer *buf,
     if (model)
         virBufferEscapeString(&attrBuf, " model='%s'", model);
 
-    switch ((virDomainControllerType) def->type) {
+    switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
         if (def->opts.vioserial.ports != -1) {
             virBufferAsprintf(&attrBuf, " ports='%d'",

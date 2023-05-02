@@ -784,7 +784,7 @@ struct _virDomainXenbusControllerOpts {
 
 /* Stores the virtual disk controller configuration */
 struct _virDomainControllerDef {
-    int type;
+    virDomainControllerType type;
     int idx;
     int model; /* -1 == undef */
     unsigned int queues;
@@ -4280,12 +4280,15 @@ VIR_ENUM_DECL(virDomainCpuPlacementMode);
 VIR_ENUM_DECL(virDomainStartupPolicy);
 
 virDomainControllerDef *
-virDomainDefAddController(virDomainDef *def, int type, int idx, int model);
+virDomainDefAddController(virDomainDef *def,
+                          virDomainControllerType type,
+                          int idx,
+                          int model);
 int
 virDomainDefAddUSBController(virDomainDef *def, int idx, int model);
 int
 virDomainDefMaybeAddController(virDomainDef *def,
-                               int type,
+                               virDomainControllerType type,
                                int idx,
                                int model);
 int

@@ -608,7 +608,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_CONTROLLER: {
         virDomainControllerDef *cont = dev->data.controller;
 
-        switch ((virDomainControllerType)cont->type) {
+        switch (cont->type) {
         case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
             return virDomainPCIControllerModelToConnectType(cont->model);
 
@@ -1983,6 +1983,16 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDef *def,
                     cont->info.addr.pci.function = 0;
                 }
             }
+            break;
+
+        case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
+        case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
+        case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
+        case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
+        case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
+        case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
+        case VIR_DOMAIN_CONTROLLER_TYPE_ISA:
+        case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
             break;
         }
     }

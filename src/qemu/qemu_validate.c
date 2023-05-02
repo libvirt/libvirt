@@ -4036,7 +4036,7 @@ qemuValidateDomainDeviceDefController(const virDomainControllerDef *controller,
     if (qemuValidateDomainDeviceDefControllerAttributes(controller) < 0)
         return -1;
 
-    switch ((virDomainControllerType)controller->type) {
+    switch (controller->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
         ret = qemuValidateDomainDeviceDefControllerIDE(controller, def);
         break;

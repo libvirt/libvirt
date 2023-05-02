@@ -5534,7 +5534,7 @@ qemuDomainDiskControllerIsBusy(virDomainObj *vm,
             continue;
 
         /* check whether the disk uses this type controller */
-        switch ((virDomainControllerType) detach->type) {
+        switch (detach->type) {
         case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
             if (disk->bus != VIR_DOMAIN_DISK_BUS_IDE)
                 continue;
@@ -5599,7 +5599,7 @@ static bool
 qemuDomainControllerIsBusy(virDomainObj *vm,
                            virDomainControllerDef *detach)
 {
-    switch ((virDomainControllerType) detach->type) {
+    switch (detach->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
