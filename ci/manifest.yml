@@ -124,11 +124,6 @@ targets:
           paths:
             - libvirt-rpms
 
-      - arch: mingw32
-        builds: false
-
-      - arch: mingw64
-
   fedora-38:
     jobs:
       - arch: x86_64
@@ -136,6 +131,11 @@ targets:
           expire_in: 1 day
           paths:
             - libvirt-rpms
+
+      - arch: mingw32
+        builds: false
+
+      - arch: mingw64
 
   fedora-rawhide:
     jobs:
