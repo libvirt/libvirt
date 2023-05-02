@@ -12116,7 +12116,6 @@ virDomainRNGDefParseXML(virDomainXMLOption *xmlopt,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int nbackends;
     g_autofree xmlNodePtr *backends = NULL;
-    g_autofree char *backend = NULL;
     g_autofree char *type = NULL;
 
     def = g_new0(virDomainRNGDef, 1);
@@ -12151,19 +12150,14 @@ virDomainRNGDefParseXML(virDomainXMLOption *xmlopt,
         goto error;
     }
 
-    if (!(backend = virXMLPropString(backends[0], "model"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing RNG device backend model"));
+    if (virXMLPropEnum(backends[0], "model",
+                       virDomainRNGBackendTypeFromString,
+                       VIR_XML_PROP_REQUIRED,
+                       &def->backend) < 0) {
         goto error;
     }
 
-    if ((def->backend = virDomainRNGBackendTypeFromString(backend)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown RNG backend model '%1$s'"), backend);
-        goto error;
-    }
-
-    switch ((virDomainRNGBackend) def->backend) {
+    switch (def->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
         def->source.file = virXPathString("string(./backend)", ctxt);
         break;
@@ -15197,7 +15191,7 @@ virDomainRNGFind(virDomainDef *def,
         if (rng->rate != tmp->rate || rng->period != tmp->period)
             continue;
 
-        switch ((virDomainRNGBackend) rng->backend) {
+        switch (rng->backend) {
         case VIR_DOMAIN_RNG_BACKEND_RANDOM:
             if (STRNEQ_NULLABLE(rng->source.file, tmp->source.file))
                 continue;
@@ -25076,7 +25070,7 @@ virDomainRNGDefFormat(virBuffer *buf,
     }
     virBufferAsprintf(buf, "<backend model='%s'", backend);
 
-    switch ((virDomainRNGBackend) def->backend) {
+    switch (def->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
         virBufferEscapeString(buf, ">%s</backend>\n", def->source.file);
         break;
@@ -25117,7 +25111,7 @@ virDomainRNGDefFree(virDomainRNGDef *def)
     if (!def)
         return;
 
-    switch ((virDomainRNGBackend) def->backend) {
+    switch (def->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
         g_free(def->source.file);
         break;

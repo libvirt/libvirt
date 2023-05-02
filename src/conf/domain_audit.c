@@ -215,7 +215,7 @@ virDomainAuditRNG(virDomainObj *vm,
     const char *oldsrcpath = NULL;
 
     if (newDef) {
-        switch ((virDomainRNGBackend) newDef->backend) {
+        switch (newDef->backend) {
         case VIR_DOMAIN_RNG_BACKEND_RANDOM:
             newsrcpath = newDef->source.file;
             break;
@@ -231,7 +231,7 @@ virDomainAuditRNG(virDomainObj *vm,
     }
 
     if (oldDef) {
-        switch ((virDomainRNGBackend) oldDef->backend) {
+        switch (oldDef->backend) {
         case VIR_DOMAIN_RNG_BACKEND_RANDOM:
             oldsrcpath = oldDef->source.file;
             break;

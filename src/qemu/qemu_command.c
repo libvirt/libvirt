@@ -5361,7 +5361,7 @@ qemuBuildRNGBackendChrdev(virCommand *cmd,
 {
     g_autofree char *charAlias = qemuAliasChardevFromDevAlias(rng->info.alias);
 
-    switch ((virDomainRNGBackend) rng->backend) {
+    switch (rng->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
     case VIR_DOMAIN_RNG_BACKEND_BUILTIN:
     case VIR_DOMAIN_RNG_BACKEND_LAST:
@@ -5390,7 +5390,7 @@ qemuBuildRNGBackendProps(virDomainRNGDef *rng,
 
     objAlias = g_strdup_printf("obj%s", rng->info.alias);
 
-    switch ((virDomainRNGBackend) rng->backend) {
+    switch (rng->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
         if (qemuMonitorCreateObjectProps(props, "rng-random", objAlias,
                                          "s:filename", rng->source.file,

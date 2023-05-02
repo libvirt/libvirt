@@ -574,7 +574,7 @@ static int
 qemuDomainSetupRNG(virDomainRNGDef *rng,
                    GSList **paths)
 {
-    switch ((virDomainRNGBackend) rng->backend) {
+    switch (rng->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
         *paths = g_slist_prepend(*paths, g_strdup(rng->source.file));
         break;

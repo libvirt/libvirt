@@ -2610,7 +2610,7 @@ typedef enum {
 
 struct _virDomainRNGDef {
     virDomainRNGModel model;
-    int backend;
+    virDomainRNGBackend backend;
     unsigned int rate; /* bytes per period */
     unsigned int period; /* milliseconds */
 

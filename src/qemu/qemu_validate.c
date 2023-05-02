@@ -2154,7 +2154,7 @@ qemuValidateDomainRNGDef(const virDomainRNGDef *def,
 {
     virDomainCapsDeviceRNG rngCaps = { 0 };
 
-    switch ((virDomainRNGBackend) def->backend) {
+    switch (def->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_RANDOM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
