@@ -1760,7 +1760,7 @@ typedef enum {
 
 struct _virDomainWatchdogDef {
     virDomainWatchdogModel model;
-    int action;
+    virDomainWatchdogAction action;
     virDomainDeviceInfo info;
 };
 

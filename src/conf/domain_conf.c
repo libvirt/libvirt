@@ -12065,7 +12065,6 @@ virDomainWatchdogDefParseXML(virDomainXMLOption *xmlopt,
                              unsigned int flags)
 {
     virDomainWatchdogDef *def;
-    g_autofree char *action = NULL;
 
     def = g_new0(virDomainWatchdogDef, 1);
 
@@ -12076,16 +12075,12 @@ virDomainWatchdogDefParseXML(virDomainXMLOption *xmlopt,
         goto error;
     }
 
-    action = virXMLPropString(node, "action");
-    if (action == NULL) {
-        def->action = VIR_DOMAIN_WATCHDOG_ACTION_RESET;
-    } else {
-        def->action = virDomainWatchdogActionTypeFromString(action);
-        if (def->action < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown watchdog action '%1$s'"), action);
-            goto error;
-        }
+    if (virXMLPropEnumDefault(node, "action",
+                              virDomainWatchdogActionTypeFromString,
+                              VIR_XML_PROP_NONE,
+                              &def->action,
+                              VIR_DOMAIN_WATCHDOG_ACTION_RESET) < 0) {
+        goto error;
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info, flags) < 0)
