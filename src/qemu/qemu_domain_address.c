@@ -864,7 +864,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
          * are the same as virtio-scsi, so they should follow virtio logic
          */
         if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST) {
-            switch ((virDomainHostdevSubsysSCSIVHostModelType) hostdev->source.subsys.u.scsi_host.model) {
+            switch (hostdev->source.subsys.u.scsi_host.model) {
             case VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_TRANSITIONAL:
                 /* Transitional devices only work in conventional PCI slots */
                 return pciFlags;
