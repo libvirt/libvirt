@@ -527,6 +527,25 @@ qemuSnapshotPrepareDiskExternal(virDomainDiskDef *disk,
                                 bool active,
                                 bool reuse)
 {
+    if (!snapdisk->src->format) {
+        snapdisk->src->format = VIR_STORAGE_FILE_QCOW2;
+    } else if (snapdisk->src->format != VIR_STORAGE_FILE_QCOW2 &&
+               snapdisk->src->format != VIR_STORAGE_FILE_QED) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("external snapshot format for disk %1$s is unsupported: %2$s"),
+                       snapdisk->name,
+                       virStorageFileFormatTypeToString(snapdisk->src->format));
+        return -1;
+    }
+
+    if (snapdisk->src->metadataCacheMaxSize > 0) {
+        if (snapdisk->src->format != VIR_STORAGE_FILE_QCOW2) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("metadata cache max size control is supported only with qcow2 images"));
+            return -1;
+        }
+    }
+
     if (qemuTranslateSnapshotDiskSourcePool(snapdisk) < 0)
         return -1;
 
@@ -707,25 +726,6 @@ qemuSnapshotPrepare(virDomainObj *vm,
             break;
 
         case VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL:
-            if (!disk->src->format) {
-                disk->src->format = VIR_STORAGE_FILE_QCOW2;
-            } else if (disk->src->format != VIR_STORAGE_FILE_QCOW2 &&
-                       disk->src->format != VIR_STORAGE_FILE_QED) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("external snapshot format for disk %1$s is unsupported: %2$s"),
-                               disk->name,
-                               virStorageFileFormatTypeToString(disk->src->format));
-                return -1;
-            }
-
-            if (disk->src->metadataCacheMaxSize > 0) {
-                if (disk->src->format != VIR_STORAGE_FILE_QCOW2) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("metadata cache max size control is supported only with qcow2 images"));
-                    return -1;
-                }
-            }
-
             if (qemuSnapshotPrepareDiskExternal(dom_disk, disk, active, reuse) < 0)
                 return -1;
 
