@@ -245,6 +245,32 @@ x86_64-fedora-37-local-env:
       - libvirt-rpms
 
 
+x86_64-fedora-38-prebuilt-env:
+  extends: .native_build_job_prebuilt_env
+  needs:
+    - job: x86_64-fedora-38-container
+      optional: true
+  allow_failure: false
+  variables:
+    NAME: fedora-38
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - libvirt-rpms
+
+x86_64-fedora-38-local-env:
+  extends: .native_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    IMAGE: registry.fedoraproject.org/fedora:38
+    NAME: fedora-38
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - libvirt-rpms
+
+
 x86_64-fedora-rawhide-prebuilt-env:
   extends: .native_build_job_prebuilt_env
   needs:

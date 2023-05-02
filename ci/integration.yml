@@ -161,6 +161,46 @@ fedora-37-tests-local-env:
       artifacts: true
 
 
+.fedora-38-tests:
+  variables:
+    # needed by libvirt-gitlab-executor
+    DISTRO: fedora-38
+    # can be overridden in forks to set a different runner tag
+    LIBVIRT_CI_INTEGRATION_RUNNER_TAG: redhat-vm-host
+  tags:
+    - $LIBVIRT_CI_INTEGRATION_RUNNER_TAG
+
+fedora-38-tests-prebuilt-env:
+  extends:
+    - .integration_tests_prebuilt_env
+    - .fedora-38-tests
+  needs:
+    - x86_64-fedora-38-prebuilt-env
+    - project: libvirt/libvirt-perl
+      job: x86_64-fedora-38-prebuilt-env
+      ref: master
+      artifacts: true
+    - project: libvirt/libvirt-python
+      job: x86_64-fedora-38-prebuilt-env
+      ref: master
+      artifacts: true
+
+fedora-38-tests-local-env:
+  extends:
+    - .integration_tests_local_env
+    - .fedora-38-tests
+  needs:
+    - x86_64-fedora-38-local-env
+    - project: libvirt/libvirt-perl
+      job: x86_64-fedora-38-prebuilt-env
+      ref: master
+      artifacts: true
+    - project: libvirt/libvirt-python
+      job: x86_64-fedora-38-prebuilt-env
+      ref: master
+      artifacts: true
+
+
 .fedora-37-upstream-qemu-tests:
   variables:
     # needed by libvirt-gitlab-executor

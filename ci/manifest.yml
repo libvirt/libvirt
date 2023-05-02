@@ -137,6 +137,14 @@ targets:
 
       - arch: mingw64
 
+  fedora-38:
+    jobs:
+      - arch: x86_64
+        artifacts:
+          expire_in: 1 day
+          paths:
+            - libvirt-rpms
+
   fedora-rawhide:
     jobs:
       - arch: x86_64

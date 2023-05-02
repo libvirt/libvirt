@@ -70,6 +70,13 @@ x86_64-fedora-37-container:
     NAME: fedora-37
 
 
+x86_64-fedora-38-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: fedora-38
+
+
 x86_64-fedora-rawhide-container:
   extends: .container_job
   allow_failure: true
