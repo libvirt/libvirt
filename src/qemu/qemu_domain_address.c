@@ -927,7 +927,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
 
     case VIR_DOMAIN_DEVICE_WATCHDOG:
         /* only one model connects using PCI */
-        switch ((virDomainWatchdogModel) dev->data.watchdog->model) {
+        switch (dev->data.watchdog->model) {
         case VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB:
             return pciFlags;
 

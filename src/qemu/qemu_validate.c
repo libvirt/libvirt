@@ -2251,7 +2251,7 @@ qemuValidateDomainWatchdogDef(const virDomainWatchdogDef *dev,
         return -1;
     }
 
-    switch ((virDomainWatchdogModel) dev->model) {
+    switch (dev->model) {
     case VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB:
         if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
             dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {

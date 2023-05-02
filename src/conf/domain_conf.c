@@ -12065,21 +12065,14 @@ virDomainWatchdogDefParseXML(virDomainXMLOption *xmlopt,
                              unsigned int flags)
 {
     virDomainWatchdogDef *def;
-    g_autofree char *model = NULL;
     g_autofree char *action = NULL;
 
     def = g_new0(virDomainWatchdogDef, 1);
 
-    model = virXMLPropString(node, "model");
-    if (model == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("watchdog must contain model name"));
-        goto error;
-    }
-    def->model = virDomainWatchdogModelTypeFromString(model);
-    if (def->model < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown watchdog model '%1$s'"), model);
+    if (virXMLPropEnum(node, "model",
+                       virDomainWatchdogModelTypeFromString,
+                       VIR_XML_PROP_REQUIRED,
+                       &def->model) < 0) {
         goto error;
     }
 
