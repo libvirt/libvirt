@@ -1283,7 +1283,8 @@ virDomainDefHostdevValidate(const virDomainDef *def)
             }
         }
 
-        if (dev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV &&
+        if (dev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            dev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV &&
             dev->source.subsys.u.mdev.ramfb == VIR_TRISTATE_SWITCH_ON) {
             if (ramfbEnabled) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

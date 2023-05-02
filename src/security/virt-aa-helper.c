@@ -1049,6 +1049,10 @@ get_files(vahControl * ctl)
         if (ctl->def->hostdevs[i]) {
             virDomainHostdevDef *dev = ctl->def->hostdevs[i];
             virDomainHostdevSubsysUSB *usbsrc = &dev->source.subsys.u.usb;
+
+            if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+                continue;
+
             switch (dev->source.subsys.type) {
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
                 virUSBDevice *usb =
