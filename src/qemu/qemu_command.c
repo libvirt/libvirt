@@ -831,7 +831,7 @@ qemuBuildVirtioDevGetConfigDev(const virDomainDeviceDef *device,
             break;
 
         case VIR_DOMAIN_DEVICE_FS:
-            switch ((virDomainFSDriverType) device->data.fs->fsdriver) {
+            switch (device->data.fs->fsdriver) {
             case VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT:
             case VIR_DOMAIN_FS_DRIVER_TYPE_PATH:
             case VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE:
@@ -2434,7 +2434,7 @@ qemuBuildFilesystemCommandLine(virCommand *cmd,
     size_t i;
 
     for (i = 0; i < def->nfss; i++) {
-        switch ((virDomainFSDriverType) def->fss[i]->fsdriver) {
+        switch (def->fss[i]->fsdriver) {
         case VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT:
         case VIR_DOMAIN_FS_DRIVER_TYPE_PATH:
         case VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE:

@@ -4286,7 +4286,7 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
         return -1;
     }
 
-    switch ((virDomainFSDriverType) fs->fsdriver) {
+    switch (fs->fsdriver) {
     case VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT:
     case VIR_DOMAIN_FS_DRIVER_TYPE_PATH:
         break;
