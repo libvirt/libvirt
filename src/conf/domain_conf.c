@@ -12116,21 +12116,16 @@ virDomainRNGDefParseXML(virDomainXMLOption *xmlopt,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int nbackends;
     g_autofree xmlNodePtr *backends = NULL;
-    g_autofree char *model = NULL;
     g_autofree char *backend = NULL;
     g_autofree char *type = NULL;
 
     def = g_new0(virDomainRNGDef, 1);
 
-    if (!(model = virXMLPropString(node, "model"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s", _("missing RNG device model"));
+    if (virXMLPropEnum(node, "model",
+                       virDomainRNGModelTypeFromString,
+                       VIR_XML_PROP_REQUIRED,
+                       &def->model) < 0)
         goto error;
-    }
-
-    if ((def->model = virDomainRNGModelTypeFromString(model)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("unknown RNG model '%1$s'"), model);
-        goto error;
-    }
 
     ctxt->node = node;
 
