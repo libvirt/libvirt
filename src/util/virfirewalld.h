@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include "virfirewall.h"
+
 #define VIR_FIREWALL_FIREWALLD_SERVICE "org.fedoraproject.FirewallD1"
 
 typedef enum {
