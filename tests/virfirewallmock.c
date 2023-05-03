@@ -17,18 +17,10 @@
 #include <config.h>
 
 #include "internal.h"
-#include "virfile.h"
+#include "virfirewalld.h"
 
-char *
-virFindFileInPath(const char *file)
+int
+virFirewallDIsRegistered(void)
 {
-    if (file &&
-        (g_strrstr(file, "ebtables") ||
-         g_strrstr(file, "iptables") ||
-         g_strrstr(file, "ip6tables"))) {
-        return g_strdup(file);
-    }
-
-    /* We should not need any other binaries so return NULL. */
-    return NULL;
+    return -2;
 }
