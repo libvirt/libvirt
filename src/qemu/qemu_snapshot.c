@@ -2008,7 +2008,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
         /* Transitions 5, 6, 8, 9 */
         qemuProcessStop(driver, vm,
                         VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
-                        VIR_ASYNC_JOB_START, 0);
+                        VIR_ASYNC_JOB_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
         detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
         event = virDomainEventLifecycleNewFromObj(vm,
@@ -2033,7 +2033,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
 
     rc = qemuProcessStart(snapshot->domain->conn, driver, vm,
                           cookie ? cookie->cpu : NULL,
-                          VIR_ASYNC_JOB_START, NULL, -1, NULL, snap,
+                          VIR_ASYNC_JOB_SNAPSHOT, NULL, -1, NULL, snap,
                           VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                           start_flags);
     virDomainAuditStart(vm, "from-snapshot", rc >= 0);
@@ -2066,7 +2066,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
         }
         rc = qemuProcessStartCPUs(driver, vm,
                                   VIR_DOMAIN_RUNNING_FROM_SNAPSHOT,
-                                  VIR_ASYNC_JOB_START);
+                                  VIR_ASYNC_JOB_SNAPSHOT);
         if (rc < 0)
             return -1;
     }
@@ -2129,7 +2129,7 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
     if (virDomainObjIsActive(vm)) {
         /* Transitions 4, 7 */
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
-                        VIR_ASYNC_JOB_START, 0);
+                        VIR_ASYNC_JOB_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
         detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
         event = virDomainEventLifecycleNewFromObj(vm,
@@ -2156,7 +2156,7 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
         start_flags |= paused ? VIR_QEMU_PROCESS_START_PAUSED : 0;
 
         rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
-                              VIR_ASYNC_JOB_START, NULL, -1, NULL, NULL,
+                              VIR_ASYNC_JOB_SNAPSHOT, NULL, -1, NULL, NULL,
                               VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                               start_flags);
         virDomainAuditStart(vm, "from-snapshot", rc >= 0);
@@ -2223,10 +2223,11 @@ qemuSnapshotRevert(virDomainObj *vm,
         return -1;
     }
 
-    if (qemuProcessBeginJob(vm,
-                            VIR_DOMAIN_JOB_OPERATION_SNAPSHOT_REVERT,
-                            flags) < 0)
+    if (virDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_SNAPSHOT,
+                                  VIR_DOMAIN_JOB_OPERATION_SNAPSHOT_REVERT,
+                                  flags) < 0) {
         return -1;
+    }
 
     if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))
         goto endjob;
@@ -2276,7 +2277,7 @@ qemuSnapshotRevert(virDomainObj *vm,
     }
 
  endjob:
-    qemuProcessEndJob(vm);
+    virDomainObjEndAsyncJob(vm);
 
     return ret;
 }
