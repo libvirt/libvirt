@@ -18,6 +18,8 @@
 
 #include <config.h>
 
+#include <fcntl.h>
+
 #include "qemu_snapshot.h"
 
 #include "qemu_monitor.h"
@@ -1982,6 +1984,229 @@ qemuSnapshotRevertWriteMetadata(virDomainObj *vm,
 }
 
 
+/**
+ * qemuSnapshotRevertExternalPrepare:
+ * @vm: domain object
+ * @tmpsnapdef: temporary snapshot definition
+ * @snap: snapshot object we are reverting to
+ * @config: live domain definition
+ * @inactiveConfig: offline domain definition
+ * memsnapFD: pointer to store memory state file FD or NULL
+ * memsnapPath: pointer to store memory state file path or NULL
+ *
+ * Prepare new temporary snapshot definition @tmpsnapdef that will
+ * be used while creating new overlay files after reverting to snapshot
+ * @snap. In case we are reverting to snapshot with memory state it will
+ * open it and pass FD via @memsnapFD and path to the file via
+ * @memsnapPath, caller is responsible for freeing both @memsnapFD and
+ * memsnapPath.
+ *
+ * Returns 0 in success, -1 on error.
+ */
+static int
+qemuSnapshotRevertExternalPrepare(virDomainObj *vm,
+                                  virDomainSnapshotDef *tmpsnapdef,
+                                  virDomainMomentObj *snap,
+                                  virDomainDef *config,
+                                  virDomainDef *inactiveConfig,
+                                  int *memsnapFD,
+                                  char **memsnapPath)
+{
+    size_t i;
+    bool active = virDomainObjIsActive(vm);
+    virDomainDef *domdef = NULL;
+    virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
+
+    if (config) {
+        domdef = config;
+    } else {
+        domdef = inactiveConfig;
+    }
+
+    /* We need this to generate creation timestamp that is used as default
+     * snapshot name. */
+    if (virDomainMomentDefPostParse(&tmpsnapdef->parent) < 0)
+        return -1;
+
+    if (virDomainSnapshotAlignDisks(tmpsnapdef, domdef,
+                                    VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL,
+                                    false, true) < 0) {
+        return -1;
+    }
+
+    for (i = 0; i < tmpsnapdef->ndisks; i++) {
+        virDomainSnapshotDiskDef *snapdisk = &tmpsnapdef->disks[i];
+        virDomainDiskDef *domdisk = domdef->disks[i];
+
+        if (qemuSnapshotPrepareDiskExternal(domdisk, snapdisk, active, false) < 0)
+            return -1;
+    }
+
+    if (memsnapFD && memsnapPath && snapdef->memorysnapshotfile) {
+        virQEMUDriver *driver = ((qemuDomainObjPrivate *) vm->privateData)->driver;
+        g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+
+        *memsnapPath = snapdef->memorysnapshotfile;
+        *memsnapFD = qemuDomainOpenFile(cfg, NULL, *memsnapPath, O_RDONLY, NULL);
+    }
+
+    return 0;
+}
+
+
+/**
+ * qemuSnapshotRevertExternalActive:
+ * @vm: domain object
+ * @tmpsnapdef: temporary snapshot definition
+ *
+ * Creates a new disk overlays using the temporary snapshot
+ * definition @tmpsnapdef for running VM by calling QMP APIs.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+static int
+qemuSnapshotRevertExternalActive(virDomainObj *vm,
+                                 virDomainSnapshotDef *tmpsnapdef)
+{
+    size_t i;
+    g_autoptr(GHashTable) blockNamedNodeData = NULL;
+    g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
+
+    snapctxt = qemuSnapshotDiskContextNew(tmpsnapdef->ndisks, vm, VIR_ASYNC_JOB_SNAPSHOT);
+
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, VIR_ASYNC_JOB_SNAPSHOT)))
+        return -1;
+
+    for (i = 0; i < tmpsnapdef->ndisks; i++) {
+        if (qemuSnapshotDiskPrepareOne(snapctxt,
+                                       vm->def->disks[i],
+                                       tmpsnapdef->disks + i,
+                                       blockNamedNodeData,
+                                       false,
+                                       true) < 0)
+            return -1;
+    }
+
+    if (qemuSnapshotDiskCreate(snapctxt) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * qemuSnapshotRevertExternalInactive:
+ * @vm: domain object
+ * @tmpsnapdef: temporary snapshot definition
+ * @domdef: offline domain definition
+ *
+ * Creates a new disk overlays using the temporary snapshot
+ * definition @tmpsnapdef for offline VM by calling qemu-img.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+static int
+qemuSnapshotRevertExternalInactive(virDomainObj *vm,
+                                   virDomainSnapshotDef *tmpsnapdef,
+                                   virDomainDef *domdef)
+{
+    virQEMUDriver *driver = QEMU_DOMAIN_PRIVATE(vm)->driver;
+    g_autoptr(virBitmap) created = NULL;
+
+    created = virBitmapNew(tmpsnapdef->ndisks);
+
+    if (qemuSnapshotDomainDefUpdateDisk(domdef, tmpsnapdef, false) < 0)
+        return -1;
+
+    if (qemuSnapshotCreateQcow2Files(driver, domdef, tmpsnapdef, created) < 0) {
+        ssize_t bit = -1;
+        virErrorPtr err = NULL;
+
+        virErrorPreserveLast(&err);
+
+        while ((bit = virBitmapNextSetBit(created, bit)) >= 0) {
+            virDomainSnapshotDiskDef *snapdisk = &(tmpsnapdef->disks[bit]);
+
+            if (virStorageSourceInit(snapdisk->src) < 0 ||
+                virStorageSourceUnlink(snapdisk->src) < 0) {
+                VIR_WARN("Failed to remove snapshot image '%s'",
+                         snapdisk->src->path);
+            }
+        }
+
+        virErrorRestore(&err);
+
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * qemuSnapshotRevertExternalFinish:
+ * @vm: domain object
+ * @tmpsnapdef: temporary snapshot definition
+ * @snap: snapshot object we are reverting to
+ *
+ * Finishes disk overlay creation by removing existing overlays that
+ * will no longer be used if there are any and updating snapshot @snap
+ * metadata and current snapshot metadata so it can be saved once the
+ * revert is completed.
+ */
+static void
+qemuSnapshotRevertExternalFinish(virDomainObj *vm,
+                                 virDomainSnapshotDef *tmpsnapdef,
+                                 virDomainMomentObj *snap)
+{
+    size_t i;
+    virDomainMomentObj *curSnap = virDomainSnapshotGetCurrent(vm->snapshots);
+    virDomainSnapshotDef *curdef = virDomainSnapshotObjGetDef(curSnap);
+    virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
+
+    if (curdef->revertdisks) {
+        for (i = 0; i < curdef->nrevertdisks; i++) {
+            virDomainSnapshotDiskDef *snapdisk = &(curdef->revertdisks[i]);
+
+            if (virStorageSourceInit(snapdisk->src) < 0 ||
+                virStorageSourceUnlink(snapdisk->src) < 0) {
+                VIR_WARN("Failed to remove snapshot image '%s'",
+                         snapdisk->src->path);
+            }
+
+            virDomainSnapshotDiskDefClear(snapdisk);
+        }
+
+        g_clear_pointer(&curdef->revertdisks, g_free);
+        curdef->nrevertdisks = 0;
+    } else {
+        for (i = 0; i < curdef->ndisks; i++) {
+            virDomainSnapshotDiskDef *snapdisk = &(curdef->disks[i]);
+
+            if (virStorageSourceInit(snapdisk->src) < 0 ||
+                virStorageSourceUnlink(snapdisk->src) < 0) {
+                VIR_WARN("Failed to remove snapshot image '%s'",
+                         snapdisk->src->path);
+            }
+        }
+    }
+
+    if (snap->nchildren != 0) {
+        snapdef->revertdisks = g_steal_pointer(&tmpsnapdef->disks);
+        snapdef->nrevertdisks = tmpsnapdef->ndisks;
+        tmpsnapdef->ndisks = 0;
+    } else {
+        for (i = 0; i < snapdef->ndisks; i++) {
+            virDomainSnapshotDiskDefClear(&snapdef->disks[i]);
+        }
+        g_free(snapdef->disks);
+        snapdef->disks = g_steal_pointer(&tmpsnapdef->disks);
+        snapdef->ndisks = tmpsnapdef->ndisks;
+        tmpsnapdef->ndisks = 0;
+    }
+}
+
+
 static int
 qemuSnapshotRevertActive(virDomainObj *vm,
                          virDomainSnapshotPtr snapshot,
@@ -1996,10 +2221,14 @@ qemuSnapshotRevertActive(virDomainObj *vm,
 {
     virObjectEvent *event = NULL;
     virObjectEvent *event2 = NULL;
+    virDomainMomentObj *loadSnap = NULL;
+    VIR_AUTOCLOSE memsnapFD = -1;
+    char *memsnapPath = NULL;
     int detail;
     bool defined = false;
     qemuDomainSaveCookie *cookie = (qemuDomainSaveCookie *) snapdef->cookie;
     int rc;
+    g_autoptr(virDomainSnapshotDef) tmpsnapdef = NULL;
 
     start_flags |= VIR_QEMU_PROCESS_START_PAUSED;
 
@@ -2015,6 +2244,19 @@ qemuSnapshotRevertActive(virDomainObj *vm,
                                                   VIR_DOMAIN_EVENT_STOPPED,
                                                   detail);
         virObjectEventStateQueue(driver->domainEventState, event);
+    }
+
+    if (virDomainSnapshotIsExternal(snap)) {
+        if (!(tmpsnapdef = virDomainSnapshotDefNew()))
+            return -1;
+
+        if (qemuSnapshotRevertExternalPrepare(vm, tmpsnapdef, snap,
+                                              *config, *inactiveConfig,
+                                              &memsnapFD, &memsnapPath) < 0) {
+            return -1;
+        }
+    } else {
+        loadSnap = snap;
     }
 
     if (*inactiveConfig) {
@@ -2033,7 +2275,8 @@ qemuSnapshotRevertActive(virDomainObj *vm,
 
     rc = qemuProcessStart(snapshot->domain->conn, driver, vm,
                           cookie ? cookie->cpu : NULL,
-                          VIR_ASYNC_JOB_SNAPSHOT, NULL, -1, NULL, snap,
+                          VIR_ASYNC_JOB_SNAPSHOT, NULL, memsnapFD,
+                          memsnapPath, loadSnap,
                           VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                           start_flags);
     virDomainAuditStart(vm, "from-snapshot", rc >= 0);
@@ -2044,6 +2287,14 @@ qemuSnapshotRevertActive(virDomainObj *vm,
     virObjectEventStateQueue(driver->domainEventState, event);
     if (rc < 0)
         return -1;
+
+
+    if (virDomainSnapshotIsExternal(snap)) {
+        if (qemuSnapshotRevertExternalActive(vm, tmpsnapdef) < 0)
+            return -1;
+
+        qemuSnapshotRevertExternalFinish(vm, tmpsnapdef, snap);
+    }
 
     /* Touch up domain state.  */
     if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING) &&
@@ -2119,6 +2370,7 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
     int detail;
     bool defined = false;
     int rc;
+    g_autoptr(virDomainSnapshotDef) tmpsnapdef = NULL;
 
     /* Transitions 1, 4, 7 */
     /* Newer qemu -loadvm refuses to revert to the state of a snapshot
@@ -2138,9 +2390,27 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
         virObjectEventStateQueue(driver->domainEventState, event);
     }
 
-    if (qemuSnapshotInternalRevertInactive(driver, vm, snap) < 0) {
-        qemuDomainRemoveInactive(driver, vm, 0, false);
-        return -1;
+    if (virDomainSnapshotIsExternal(snap)) {
+        if (!(tmpsnapdef = virDomainSnapshotDefNew()))
+            return -1;
+
+        if (qemuSnapshotRevertExternalPrepare(vm, tmpsnapdef, snap,
+                                              NULL, *inactiveConfig,
+                                              NULL, NULL) < 0) {
+            return -1;
+        }
+
+        if (qemuSnapshotRevertExternalInactive(vm, tmpsnapdef,
+                                               *inactiveConfig) < 0) {
+            return -1;
+        }
+
+        qemuSnapshotRevertExternalFinish(vm, tmpsnapdef, snap);
+    } else {
+        if (qemuSnapshotInternalRevertInactive(driver, vm, snap) < 0) {
+            qemuDomainRemoveInactive(driver, vm, 0, false);
+            return -1;
+        }
     }
 
     if (*inactiveConfig) {
