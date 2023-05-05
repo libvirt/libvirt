@@ -310,7 +310,7 @@ BuildRequires: util-linux
 %if %{with_qemu}
 # For managing ACLs
 BuildRequires: libacl-devel
-# From QEMU RPMs
+# From QEMU RPMs, used by virstoragetest
 BuildRequires: /usr/bin/qemu-img
 %endif
 # For LVM drivers
