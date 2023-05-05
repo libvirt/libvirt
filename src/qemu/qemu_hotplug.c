@@ -921,9 +921,6 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
     if (virDomainDiskTranslateSourcePool(disk) < 0)
         goto cleanup;
 
-    if (qemuDomainDetermineDiskChain(driver, vm, disk, NULL) < 0)
-        goto cleanup;
-
     for (i = 0; i < vm->def->ndisks; i++) {
         if (virDomainDiskDefCheckDuplicateInfo(vm->def->disks[i], disk) < 0)
             goto cleanup;
@@ -1005,6 +1002,9 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         goto cleanup;
 
     if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
+        goto cleanup;
+
+    if (qemuDomainDetermineDiskChain(driver, vm, disk, NULL) < 0)
         goto cleanup;
 
     if (qemuHotplugAttachManagedPR(vm, disk->src, VIR_ASYNC_JOB_NONE) < 0)
