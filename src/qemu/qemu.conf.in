@@ -650,7 +650,9 @@
 # is used to create <source type='bridge'> interfaces when libvirtd is
 # running unprivileged.  libvirt invokes the helper directly, instead
 # of using "-netdev bridge", for security reasons.
-#bridge_helper = "/usr/libexec/qemu-bridge-helper"
+# If this is not an absolute path, the program will be searched for
+# in $PATH as well as a few additional directories.
+#bridge_helper = "qemu-bridge-helper"
 
 
 # If enabled, libvirt will have QEMU set its process name to
@@ -899,7 +901,9 @@
 
 # Path to the SCSI persistent reservations helper. This helper is
 # used whenever <reservations/> are enabled for SCSI LUN devices.
-#pr_helper = "/usr/bin/qemu-pr-helper"
+# If this is not an absolute path, the program will be searched for
+# in $PATH as well as a few additional directories.
+#pr_helper = "qemu-pr-helper"
 
 # Path to the SLIRP networking helper.
 #slirp_helper = "/usr/bin/slirp-helper"
