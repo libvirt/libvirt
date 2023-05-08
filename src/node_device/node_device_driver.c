@@ -1636,6 +1636,24 @@ virMdevctlListDefined(virNodeDeviceDef ***devs, char **errmsg)
 }
 
 
+static int
+virMdevctlListActive(virNodeDeviceDef ***devs, char **errmsg)
+{
+    int status;
+    g_autofree char *output = NULL;
+    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlListCommand(false, &output, errmsg);
+
+    if (virCommandRun(cmd, &status) < 0 || status != 0) {
+        return -1;
+    }
+
+    if (!output)
+        return -1;
+
+    return nodeDeviceParseMdevctlJSON(output, devs);
+}
+
+
 typedef struct _virMdevctlForEachData virMdevctlForEachData;
 struct _virMdevctlForEachData {
     int ndefs;
@@ -1699,6 +1717,8 @@ int
 nodeDeviceUpdateMediatedDevices(void)
 {
     g_autofree virNodeDeviceDef **defs = NULL;
+    g_autofree virNodeDeviceDef **act_defs = NULL;
+    int act_ndefs = 0;
     g_autofree char *errmsg = NULL;
     g_autofree char *mdevctl = NULL;
     virMdevctlForEachData data = { 0, };
@@ -1723,6 +1743,17 @@ nodeDeviceUpdateMediatedDevices(void)
 
     for (i = 0; i < data.ndefs; i++)
         if (nodeDeviceUpdateMediatedDevice(defs[i]) < 0)
+            return -1;
+
+    /* Update active/transient mdev devices */
+    if ((act_ndefs = virMdevctlListActive(&act_defs, &errmsg)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to query mdevs from mdevctl: %1$s"), errmsg);
+        return -1;
+    }
+
+    for (i = 0; i < act_ndefs; i++)
+        if (nodeDeviceUpdateMediatedDevice(act_defs[i]) < 0)
             return -1;
 
     return 0;
