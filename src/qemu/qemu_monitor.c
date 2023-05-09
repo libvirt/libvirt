@@ -513,15 +513,18 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
 
     if (error || mon->goteof) {
         if (hangup && mon->logFunc != NULL) {
+            g_autofree char *errmsg = NULL;
+
             /* Check if an error message from qemu is available and if so, use
              * it to overwrite the actual message. It's done only in early
              * startup phases or during incoming migration when the message
              * from qemu is certainly more interesting than a
              * "connection reset by peer" message.
              */
-            mon->logFunc(mon,
-                         _("qemu unexpectedly closed the monitor"),
-                         mon->logOpaque);
+
+            errmsg = g_strdup_printf(_("QEMU unexpectedly closed the monitor (vm='%1$s')"),
+                                     mon->domainName);
+            mon->logFunc(mon, errmsg, mon->logOpaque);
             virCopyLastError(&mon->lastError);
             virResetLastError();
         }
