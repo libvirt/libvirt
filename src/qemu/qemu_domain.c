@@ -9403,14 +9403,12 @@ ppc64VFIODeviceIsNV2Bridge(const char *device)
 /**
  * getPPC64MemLockLimitBytes:
  * @def: domain definition
- * @forceVFIO: force VFIO usage
  *
  * A PPC64 helper that calculates the memory locking limit in order for
  * the guest to operate properly.
  */
 static unsigned long long
-getPPC64MemLockLimitBytes(virDomainDef *def,
-                          bool forceVFIO)
+getPPC64MemLockLimitBytes(virDomainDef *def)
 {
     unsigned long long memKB = 0;
     unsigned long long baseLimit = 0;
@@ -9472,10 +9470,10 @@ getPPC64MemLockLimitBytes(virDomainDef *def,
                 8192;
 
     /* NVLink2 support in QEMU is a special case of the passthrough
-     * mechanics explained in the forceVFIO case below. The GPU RAM
-     * is placed with a gap after maxMemory. The current QEMU
-     * implementation puts the NVIDIA RAM above the PCI MMIO, which
-     * starts at 32TiB and is the MMIO reserved for the guest main RAM.
+     * mechanics explained below. The GPU RAM is placed with a gap after
+     * maxMemory. The current QEMU implementation puts the NVIDIA RAM
+     * above the PCI MMIO, which starts at 32TiB and is the MMIO
+     * reserved for the guest main RAM.
      *
      * This window ends at 64TiB, and this is where the GPUs are being
      * placed. The next available window size is at 128TiB, and
@@ -9496,7 +9494,7 @@ getPPC64MemLockLimitBytes(virDomainDef *def,
         passthroughLimit = maxMemory +
                            128 * (1ULL<<30) / 512 * nPCIHostBridges +
                            8192;
-    } else if (forceVFIO || qemuDomainNeedsVFIO(def) || virDomainDefHasVDPANet(def)) {
+    } else if (qemuDomainNeedsVFIO(def) || virDomainDefHasVDPANet(def)) {
         /* For regular (non-NVLink2 present) VFIO passthrough, the value
          * of passthroughLimit is:
          *
@@ -9580,20 +9578,16 @@ qemuDomainGetNumVDPANetDevices(const virDomainDef *def)
 /**
  * qemuDomainGetMemLockLimitBytes:
  * @def: domain definition
- * @forceVFIO: force VFIO calculation
  *
  * Calculate the memory locking limit that needs to be set in order for
  * the guest to operate properly. The limit depends on a number of factors,
  * including certain configuration options and less immediately apparent ones
  * such as the guest architecture or the use of certain devices.
- * The @forceVFIO argument can be used to tell this function will use VFIO even
- * though @def doesn't indicates so right now.
  *
  * Returns: the memory locking limit, or 0 if setting the limit is not needed
  */
 unsigned long long
-qemuDomainGetMemLockLimitBytes(virDomainDef *def,
-                               bool forceVFIO)
+qemuDomainGetMemLockLimitBytes(virDomainDef *def)
 {
     unsigned long long memKB = 0;
     int nvfio;
@@ -9615,7 +9609,7 @@ qemuDomainGetMemLockLimitBytes(virDomainDef *def,
         return VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
 
     if (ARCH_IS_PPC64(def->os.arch) && def->virtType == VIR_DOMAIN_VIRT_KVM)
-        return getPPC64MemLockLimitBytes(def, forceVFIO);
+        return getPPC64MemLockLimitBytes(def);
 
     nvfio = qemuDomainGetNumVFIOHostdevs(def);
     nnvme = qemuDomainGetNumNVMeDisks(def);
@@ -9638,7 +9632,7 @@ qemuDomainGetMemLockLimitBytes(virDomainDef *def,
      *
      * Note that this may not be valid for all platforms.
      */
-    if (forceVFIO || nvfio || nnvme || nvdpa) {
+    if (nvfio || nnvme || nvdpa) {
         /* At present, the full memory needs to be locked for each VFIO / VDPA
          * NVMe device. For VFIO devices, this only applies when there is a
          * vIOMMU present. Yes, this may result in a memory limit that is
@@ -9650,8 +9644,8 @@ qemuDomainGetMemLockLimitBytes(virDomainDef *def,
          */
         int factor = nvdpa + nnvme;
 
-        if (nvfio || forceVFIO) {
-            if (nvfio && def->iommu)
+        if (nvfio) {
+            if (def->iommu)
                 factor += nvfio;
             else
                 factor += 1;
@@ -9741,7 +9735,7 @@ int
 qemuDomainAdjustMaxMemLock(virDomainObj *vm)
 {
     return qemuDomainSetMaxMemLock(vm,
-                                   qemuDomainGetMemLockLimitBytes(vm->def, false),
+                                   qemuDomainGetMemLockLimitBytes(vm->def),
                                    &QEMU_DOMAIN_PRIVATE(vm)->originalMemlock);
 }
 

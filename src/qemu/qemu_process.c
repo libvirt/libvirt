@@ -7665,7 +7665,7 @@ qemuProcessLaunch(virConnectPtr conn,
 
     /* In some situations, eg. VFIO passthrough, QEMU might need to lock a
      * significant amount of memory, so we need to set the limit accordingly */
-    maxMemLock = qemuDomainGetMemLockLimitBytes(vm->def, false);
+    maxMemLock = qemuDomainGetMemLockLimitBytes(vm->def);
 
     /* For all these settings, zero indicates that the limit should
      * not be set explicitly and the default/inherited limit should

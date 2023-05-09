@@ -39,7 +39,7 @@ testCompareMemLock(const void *data)
         return -1;
     }
 
-    return virTestCompareToULL(info->memlock, qemuDomainGetMemLockLimitBytes(def, false));
+    return virTestCompareToULL(info->memlock, qemuDomainGetMemLockLimitBytes(def));
 }
 
 static int
