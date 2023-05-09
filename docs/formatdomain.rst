@@ -7209,9 +7209,9 @@ A virtual sound card can be attached to the host via the ``sound`` element.
 ``sound``
    The ``sound`` element has one mandatory attribute, ``model``, which specifies
    what real sound device is emulated. Valid values are specific to the
-   underlying hypervisor, though typical choices are 'sb16', 'es1370', 'pcspk',
-   'ac97' (:since:`Since 0.6.0`), 'ich6' (:since:`Since 0.8.8`), 'ich9'
-   (:since:`Since 1.1.3`), 'usb' (:since:`Since 1.2.8`) and 'ich7'
+   underlying hypervisor, though typical choices are ``sb16``, ``es1370``,
+   ``pcspk``, ``ac97`` (:since:`Since 0.6.0`), ``ich6`` (:since:`Since 0.8.8`),
+   ``ich9`` (:since:`Since 1.1.3`), ``usb`` (:since:`Since 1.2.8`) and ``ich7``
    (:since:`Since 6.7.0`, bhyve only).
 
 :since:`Since 0.9.13` , a sound element with ``ich6`` or ``ich9`` models can have
@@ -7221,9 +7221,9 @@ and recording.
 
 Valid values are:
 
--  'duplex' - advertise a line-in and a line-out
--  'micro' - advertise a speaker and a microphone
--  'output' - advertise a line-out :since:`Since 4.4.0`
+-  ``duplex`` - advertise a line-in and a line-out
+-  ``micro`` - advertise a speaker and a microphone
+-  ``output`` - advertise a line-out :since:`Since 4.4.0`
 
 ::
 
@@ -7264,8 +7264,8 @@ to the guest sound device.
 
 ``type``
    The required ``type`` attribute specifies audio backend type.
-   Currently, the supported values are 'none', 'alsa', 'coreaudio',
-   'dbus', jack', 'oss', 'pulseaudio', 'sdl', 'spice', 'file'.
+   Currently, the supported values are ``none``, ``alsa``, ``coreaudio``,
+   ``dbus``, ``jack``, ``oss``, ``pulseaudio``, ``sdl``, ``spice``, ``file``.
 
 ``id``
    Integer id of the audio device. Must be greater than 0.
@@ -7339,22 +7339,22 @@ is permitted with the following attributes.
 
 Note:
 If no ``<audio/>`` element is defined, and the ``graphics`` element is set to
-either 'vnc' or 'sdl', the libvirtd or virtqemud process will honor the following
-environment variables:
+either ``vnc`` or ``sdl``, the libvirtd or virtqemud process will honor the
+following environment variables:
 
 * ``SDL_AUDIODRIVER``
 
-  Valid values are 'pulseaudio', 'esd', 'alsa' or 'arts'.
+  Valid values are ``pulseaudio``, ``esd``, ``alsa`` or ``arts``.
 
 * ``QEMU_AUDIO_DRV``
 
-  Valid values are 'pa', 'none', 'alsa', 'coreaudio', 'jack', 'oss',
-  'sdl', 'spice' or 'wav'.
+  Valid values are ``pa``, ``none``, ``alsa``, ``coreaudio``, ``jack``, ``oss``,
+  ``sdl``, ``spice`` or ``wav``.
 
 None audio backend
 ^^^^^^^^^^^^^^^^^^
 
-The 'none' audio backend is a dummy backend that does not connect to
+The ``none`` audio backend is a dummy backend that does not connect to
 any host audio framework. It still allows a remote desktop server
 like VNC to send and receive audio though. This is the default backend
 when VNC graphics are enabled in QEMU.
@@ -7364,7 +7364,7 @@ when VNC graphics are enabled in QEMU.
 ALSA audio backend
 ^^^^^^^^^^^^^^^^^^
 
-The 'alsa' audio type uses the ALSA host audio device framework.
+The ``alsa`` audio type uses the ALSA host audio device framework.
 
 The following additional attributes are permitted on the ``<input>``
 and ``<output>`` elements
@@ -7386,7 +7386,7 @@ and ``<output>`` elements
 Coreaudio audio backend
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The 'coreaudio' audio backend delegates to a CoreAudio host audio framework
+The ``coreaudio`` audio backend delegates to a CoreAudio host audio framework
 for input and output on macOS.
 
 The following additional attributes are permitted on the ``<input>``
@@ -7409,7 +7409,7 @@ and ``<output>`` elements
 D-Bus audio backend
 ^^^^^^^^^^^^^^^^^^^
 
-The 'dbus' audio backend does not connect to any host audio framework. It
+The ``dbus`` audio backend does not connect to any host audio framework. It
 exports a D-Bus interface when associated with a D-Bus display.
 
 :since:`Since 8.4.0, qemu`
@@ -7417,7 +7417,7 @@ exports a D-Bus interface when associated with a D-Bus display.
 Jack audio backend
 ^^^^^^^^^^^^^^^^^^
 
-The 'jack' audio backend delegates to a Jack daemon for audio input
+The ``jack`` audio backend delegates to a Jack daemon for audio input
 and output.
 
 The following additional attributes are permitted on the ``<input>``
@@ -7453,7 +7453,7 @@ and ``<output>`` elements
 OSS audio backend
 ^^^^^^^^^^^^^^^^^
 
-The 'oss' audio type uses the OSS host audio device framework.
+The ``oss`` audio type uses the OSS host audio device framework.
 
 The following additional attributes are permitted on the ``<audio>``
 element
@@ -7501,7 +7501,7 @@ and ``<output>`` elements
 PulseAudio audio backend
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-The 'pulseaudio' audio backend delegates to a PulseAudio daemon audio input
+The ``pulseaudio`` audio backend delegates to a PulseAudio daemon audio input
 and output.
 
 The following additional attributes are permitted on the ``<audio>``
@@ -7538,7 +7538,7 @@ and ``<output>`` elements
 SDL audio backend
 ^^^^^^^^^^^^^^^^^
 
-The 'sdl' audio backend delegates to the SDL library for audio input
+The ``sdl`` audio backend delegates to the SDL library for audio input
 and output.
 
 The following additional attributes are permitted on the ``<audio>``
@@ -7547,7 +7547,7 @@ element
 * ``driver``
 
   SDL audio driver. The ``name`` attribute specifies SDL driver name,
-  one of 'esd', 'alsa', 'arts', 'pulseaudio'.
+  one of ``esd``, ``alsa``, ``arts``, ``pulseaudio``.
 
 The following additional attributes are permitted on the ``<input>``
 and ``<output>`` elements
@@ -7569,7 +7569,7 @@ and ``<output>`` elements
 Spice audio backend
 ^^^^^^^^^^^^^^^^^^^
 
-The 'spice' audio backend is similar to the 'none' backend in that
+The ``spice`` audio backend is similar to the ``none`` backend in that
 it does not connect to any host audio framework. It exclusively
 allows a SPICE server to send and receive audio. This is the default
 backend when SPICE graphics are enabled in QEMU.
@@ -7583,9 +7583,9 @@ backend when SPICE graphics are enabled in QEMU.
 File audio backend
 ^^^^^^^^^^^^^^^^^^
 
-The 'file' audio backend is an output only driver which records
+The ``file`` audio backend is an output only driver which records
 audio to a file. The file format is implementation defined, and
-defaults to 'WAV' with QEMU.
+defaults to ``WAV`` with QEMU.
 
 ::
 
