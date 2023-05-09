@@ -1691,11 +1691,8 @@ mymain(void)
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
     DO_TEST_NOCAPS("balloon-device-auto");
     DO_TEST_NOCAPS("balloon-device-period");
-    DO_TEST("sound-device",
-            QEMU_CAPS_HDA_DUPLEX, QEMU_CAPS_HDA_MICRO,
-            QEMU_CAPS_HDA_OUTPUT,
-            QEMU_CAPS_DEVICE_ICH9_INTEL_HDA,
-            QEMU_CAPS_OBJECT_USB_AUDIO);
+    DO_TEST_CAPS_VER("sound-device", "4.2.0");
+    DO_TEST_CAPS_LATEST("sound-device");
     DO_TEST_CAPS_LATEST("fs9p");
     DO_TEST_CAPS_ARCH_LATEST("fs9p-ccw", "s390x");
 
