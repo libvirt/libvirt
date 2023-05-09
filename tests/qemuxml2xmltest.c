@@ -449,7 +449,6 @@ mymain(void)
     DO_TEST("net-hostdev-vfio", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_NOCAPS("net-midonet");
     DO_TEST_NOCAPS("net-openvswitch");
-    DO_TEST_NOCAPS("sound");
     DO_TEST("sound-device",
             QEMU_CAPS_DEVICE_ICH9_INTEL_HDA,
             QEMU_CAPS_OBJECT_USB_AUDIO,

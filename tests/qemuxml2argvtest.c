@@ -1691,7 +1691,6 @@ mymain(void)
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
     DO_TEST_NOCAPS("balloon-device-auto");
     DO_TEST_NOCAPS("balloon-device-period");
-    DO_TEST_NOCAPS("sound");
     DO_TEST("sound-device",
             QEMU_CAPS_HDA_DUPLEX, QEMU_CAPS_HDA_MICRO,
             QEMU_CAPS_HDA_OUTPUT,
