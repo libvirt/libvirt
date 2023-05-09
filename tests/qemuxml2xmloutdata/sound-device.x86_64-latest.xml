@@ -52,7 +52,7 @@
       <codec type='output'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
     </sound>
-    <sound model='usb'/>
+    <sound model='usb' multichannel='yes'/>
     <audio id='1' type='none'/>
     <memballoon model='virtio'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>

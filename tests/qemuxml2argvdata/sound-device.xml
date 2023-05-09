@@ -34,7 +34,7 @@
       <codec type='duplex'/>
       <codec type='output'/>
     </sound>
-    <sound model='usb'/>
+    <sound model='usb' multichannel='yes'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

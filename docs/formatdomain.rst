@@ -7235,6 +7235,11 @@ Valid values are:
    </devices>
    ...
 
+:since:`Since 9.4.0` the ``usb`` sound device can be optionally switched into
+multi-channel mode by using the ``multichannel`` attribute::
+
+  <sound model='usb' multichannel='yes'/>
+
 Each ``sound`` element has an optional sub-element ``<address>`` which can tie
 the device to a particular PCI slot. See `Device Addresses`_.
 

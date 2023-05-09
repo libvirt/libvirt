@@ -4969,6 +4969,11 @@
           <value>usb</value>
         </choice>
       </attribute>
+      <optional>
+        <attribute name="multichannel">
+          <ref name="virYesNo"/>
+        </attribute>
+      </optional>
       <interleave>
         <optional>
           <ref name="alias"/>

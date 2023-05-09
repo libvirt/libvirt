@@ -11689,6 +11689,12 @@ virDomainSoundDefParseXML(virDomainXMLOption *xmlopt,
         }
     }
 
+    if (def->model == VIR_DOMAIN_SOUND_MODEL_USB) {
+        if (virXMLPropTristateBool(node, "multichannel", VIR_XML_PROP_NONE,
+                                   &def->multichannel) < 0)
+            return NULL;
+    }
+
     audioNode = virXPathNode("./audio", ctxt);
     if (audioNode) {
         if (virXMLPropUInt(audioNode, "id", 10,
@@ -11720,6 +11726,9 @@ virDomainSoundDefEquals(const virDomainSoundDef *a,
         if (a->codecs[i]->type != b->codecs[i]->type)
             return false;
     }
+
+    if (a->multichannel != b->multichannel)
+        return false;
 
     if (a->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
         !virDomainDeviceInfoAddressIsEqual(&a->info, &b->info))
@@ -20010,6 +20019,14 @@ virDomainSoundDefCheckABIStability(virDomainSoundDef *src,
         return false;
     }
 
+    if (src->multichannel != dst->multichannel) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target sound card multichannel setting '%1$s' does not match source '%2$s'"),
+                       virTristateBoolTypeToString(dst->multichannel),
+                       virTristateBoolTypeToString(src->multichannel));
+        return false;
+    }
+
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
         return false;
 
@@ -24530,6 +24547,12 @@ virDomainSoundDefFormat(virBuffer *buf,
     virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
     virBufferAsprintf(&attrBuf, " model='%s'",  model);
+
+    if (def->model == VIR_DOMAIN_SOUND_MODEL_USB &&
+        def->multichannel != VIR_TRISTATE_BOOL_ABSENT) {
+        virBufferAsprintf(&attrBuf, " multichannel='%s'",
+                          virTristateBoolTypeToString(def->multichannel));
+    }
 
     virXMLFormatElement(buf,  "sound", &attrBuf, &childBuf);
 

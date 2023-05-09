@@ -1596,6 +1596,10 @@ struct _virDomainSoundDef {
     size_t ncodecs;
     virDomainSoundCodecDef **codecs;
 
+    /* VIR_DOMAIN_SOUND_MODEL_USB can be optionally switched to
+     * multi-channel mode */
+    virTristateBool multichannel;
+
     unsigned int audioId;
 };
 

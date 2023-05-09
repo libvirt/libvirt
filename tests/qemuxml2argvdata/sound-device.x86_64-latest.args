@@ -44,7 +44,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"hda-micro","id":"sound7-codec0","bus":"sound7.0","cad":0,"audiodev":"audio1"}' \
 -device '{"driver":"hda-duplex","id":"sound7-codec1","bus":"sound7.0","cad":1,"audiodev":"audio1"}' \
 -device '{"driver":"hda-output","id":"sound7-codec2","bus":"sound7.0","cad":2,"audiodev":"audio1"}' \
--device '{"driver":"usb-audio","id":"sound8","audiodev":"audio1","bus":"usb.0","port":"1"}' \
+-device '{"driver":"usb-audio","id":"sound8","audiodev":"audio1","multi":true,"bus":"usb.0","port":"1"}' \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x8"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

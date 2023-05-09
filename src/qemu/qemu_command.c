@@ -4384,6 +4384,7 @@ qemuBuildSoundDevCmd(virCommand *cmd,
     g_autoptr(virJSONValue) props = NULL;
     const char *model = NULL;
     g_autofree char *audioid = NULL;
+    virTristateBool multichannel = VIR_TRISTATE_BOOL_ABSENT;
 
     switch (sound->model) {
     case VIR_DOMAIN_SOUND_MODEL_ES1370:
@@ -4397,6 +4398,7 @@ qemuBuildSoundDevCmd(virCommand *cmd,
         break;
     case VIR_DOMAIN_SOUND_MODEL_USB:
         model = "usb-audio";
+        multichannel = sound->multichannel;
         break;
     case VIR_DOMAIN_SOUND_MODEL_ICH9:
         model = "ich9-intel-hda";
@@ -4419,6 +4421,7 @@ qemuBuildSoundDevCmd(virCommand *cmd,
                               "s:driver", model,
                               "s:id", sound->info.alias,
                               "S:audiodev", audioid,
+                              "T:multi", multichannel,
                               NULL) < 0)
         return -1;
 
