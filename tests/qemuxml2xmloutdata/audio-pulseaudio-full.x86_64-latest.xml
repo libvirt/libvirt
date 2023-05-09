@@ -8,6 +8,9 @@
     <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='cdrom'/>
   </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
@@ -21,7 +24,7 @@
       <readonly/>
       <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
-    <controller type='usb' index='0'>
+    <controller type='usb' index='0' model='piix3-uhci'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
     <controller type='ide' index='0'>
@@ -30,11 +33,11 @@
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
-    <audio id='1' type='none'>
-      <input mixingEngine='yes' fixedSettings='yes' voices='1' bufferLength='100'>
+    <audio id='1' type='pulseaudio' serverName='acme.example.org'>
+      <input mixingEngine='yes' fixedSettings='yes' voices='1' bufferLength='100' name='fish' streamName='food' latency='100'>
         <settings frequency='44100' channels='2' format='s16'/>
       </input>
-      <output mixingEngine='yes' fixedSettings='yes' voices='2' bufferLength='200'>
+      <output mixingEngine='yes' fixedSettings='yes' voices='2' bufferLength='200' name='fish' streamName='food' latency='200'>
         <settings frequency='22050' channels='4' format='f32'/>
       </output>
     </audio>
