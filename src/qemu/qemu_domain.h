@@ -41,6 +41,7 @@
 #include "virdomainmomentobjlist.h"
 #include "virenum.h"
 #include "vireventthread.h"
+#include "storage_source_conf.h"
 
 #define QEMU_DOMAIN_FORMAT_LIVE_FLAGS \
     (VIR_DOMAIN_XML_SECURE)
@@ -859,6 +860,8 @@ int qemuDomainAdjustMaxMemLock(virDomainObj *vm,
                                bool forceVFIO);
 int qemuDomainAdjustMaxMemLockHostdev(virDomainObj *vm,
                                       virDomainHostdevDef *hostdev);
+int qemuDomainAdjustMaxMemLockNVMe(virDomainObj *vm,
+                                   virStorageSource *src);
 int qemuDomainSetMaxMemLock(virDomainObj *vm,
                             unsigned long long limit,
                             unsigned long long *origPtr);

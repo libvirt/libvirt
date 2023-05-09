@@ -8026,7 +8026,7 @@ qemuDomainStorageSourceAccessModifyNVMe(virQEMUDriver *driver,
         goto revoke;
     }
 
-    if (qemuDomainAdjustMaxMemLock(vm, true) < 0)
+    if (qemuDomainAdjustMaxMemLockNVMe(vm, src) < 0)
         goto revoke;
 
     revoke_maxmemlock = true;
@@ -9774,6 +9774,39 @@ qemuDomainAdjustMaxMemLockHostdev(virDomainObj *vm,
         ret = -1;
 
     vm->def->hostdevs[--(vm->def->nhostdevs)] = NULL;
+
+    return ret;
+}
+
+
+/**
+ * qemuDomainAdjustMaxMemLockNVMe:
+ * @vm: domain object
+ * @src: disk source
+ *
+ * Temporarily add the disk source to the domain definition,
+ * adjust the max memlock based in this new definition and
+ * restore the original definition.
+ *
+ * Returns: 0 on success,
+ *         -1 on failure.
+ */
+int
+qemuDomainAdjustMaxMemLockNVMe(virDomainObj *vm,
+                               virStorageSource *src)
+{
+    g_autofree virDomainDiskDef *disk = NULL;
+    int ret = 0;
+
+    disk = g_new0(virDomainDiskDef, 1);
+    disk->src = src;
+
+    VIR_APPEND_ELEMENT_COPY(vm->def->disks, vm->def->ndisks, disk);
+
+    if (qemuDomainAdjustMaxMemLock(vm, false) < 0)
+        ret = -1;
+
+    VIR_DELETE_ELEMENT_INPLACE(vm->def->disks, vm->def->ndisks - 1, vm->def->ndisks);
 
     return ret;
 }
