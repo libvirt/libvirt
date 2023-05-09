@@ -3569,6 +3569,7 @@ void virDomainSoundCodecDefFree(virDomainSoundCodecDef *def);
 ssize_t virDomainSoundDefFind(const virDomainDef *def,
                               const virDomainSoundDef *sound);
 void virDomainSoundDefFree(virDomainSoundDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainSoundDef, virDomainSoundDefFree);
 virDomainSoundDef *virDomainSoundDefRemove(virDomainDef *def, size_t idx);
 void virDomainAudioDefFree(virDomainAudioDef *def);
 void virDomainMemballoonDefFree(virDomainMemballoonDef *def);

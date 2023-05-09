@@ -11654,16 +11654,15 @@ virDomainSoundDefParseXML(virDomainXMLOption *xmlopt,
                           xmlXPathContextPtr ctxt,
                           unsigned int flags)
 {
-    virDomainSoundDef *def;
+    g_autoptr(virDomainSoundDef) def = g_new0(virDomainSoundDef, 1);
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr audioNode;
 
-    def = g_new0(virDomainSoundDef, 1);
     ctxt->node = node;
 
     if (virXMLPropEnum(node, "model", virDomainSoundModelTypeFromString,
                        VIR_XML_PROP_REQUIRED, &def->model) < 0)
-        goto error;
+        return NULL;
 
     if (virDomainSoundModelSupportsCodecs(def)) {
         int ncodecs;
@@ -11672,7 +11671,7 @@ virDomainSoundDefParseXML(virDomainXMLOption *xmlopt,
         /* parse the <codec> subelements for sound models that support it */
         ncodecs = virXPathNodeSet("./codec", ctxt, &codecNodes);
         if (ncodecs < 0)
-            goto error;
+            return NULL;
 
         if (ncodecs > 0) {
             size_t i;
@@ -11682,7 +11681,7 @@ virDomainSoundDefParseXML(virDomainXMLOption *xmlopt,
             for (i = 0; i < ncodecs; i++) {
                 virDomainSoundCodecDef *codec = virDomainSoundCodecDefParseXML(codecNodes[i]);
                 if (codec == NULL)
-                    goto error;
+                    return NULL;
 
                 codec->cad = def->ncodecs; /* that will do for now */
                 def->codecs[def->ncodecs++] = codec;
@@ -11695,17 +11694,13 @@ virDomainSoundDefParseXML(virDomainXMLOption *xmlopt,
         if (virXMLPropUInt(audioNode, "id", 10,
                            VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
                            &def->audioId) < 0)
-            goto error;
+            return NULL;
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info, flags) < 0)
-        goto error;
+        return NULL;
 
-    return def;
-
- error:
-    virDomainSoundDefFree(def);
-    return NULL;
+    return g_steal_pointer(&def);
 }
 
 
