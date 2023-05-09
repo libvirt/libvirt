@@ -995,19 +995,19 @@ mymain(void)
     /* Validate auto-creation of <audio> for legacy compat */
     g_setenv("QEMU_AUDIO_DRV", "sdl", TRUE);
     g_setenv("SDL_AUDIODRIVER", "esd", TRUE);
-    DO_TEST("audio-default-sdl", QEMU_CAPS_DEVICE_CIRRUS_VGA, QEMU_CAPS_SDL);
+    DO_TEST_CAPS_VER("audio-default-sdl", "4.2.0");
     DO_TEST_CAPS_LATEST("audio-default-sdl");
     g_unsetenv("QEMU_AUDIO_DRV");
     g_unsetenv("SDL_AUDIODRIVER");
 
     g_setenv("QEMU_AUDIO_DRV", "alsa", TRUE);
     driver.config->vncAllowHostAudio = true;
-    DO_TEST("audio-default-vnc",  QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_VER("audio-default-vnc", "4.2.0");
     DO_TEST_CAPS_LATEST("audio-default-vnc");
     driver.config->vncAllowHostAudio = false;
     g_unsetenv("QEMU_AUDIO_DRV");
 
-    DO_TEST("audio-default-spice",  QEMU_CAPS_SPICE, QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_VER("audio-default-spice", "4.2.0");
     DO_TEST_CAPS_LATEST("audio-default-spice");
 
     g_setenv("QEMU_AUDIO_DRV", "alsa", TRUE);
