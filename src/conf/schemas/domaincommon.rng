@@ -5186,6 +5186,26 @@
     <ref name="audiocommonchild"/>
   </define>
 
+  <define name="audiopipewire">
+    <ref name="audiocommonattr"/>
+    <optional>
+      <attribute name="name">
+        <data type="string"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="streamName">
+        <data type="string"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="latency">
+        <ref name="uint32"/>
+      </attribute>
+    </optional>
+    <ref name="audiocommonchild"/>
+  </define>
+
   <define name="audiopulseaudio">
     <ref name="audiocommonattr"/>
     <optional>
@@ -5358,6 +5378,28 @@
               <element name="output">
                 <ref name="audiooss"/>
               </element>
+            </optional>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>pipewire</value>
+          </attribute>
+          <interleave>
+            <optional>
+              <element name="input">
+                <ref name="audiopipewire"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="output">
+                <ref name="audiopipewire"/>
+              </element>
+            </optional>
+            <optional>
+              <attribute name="runtimeDir">
+                <ref name="filePath"/>
+              </attribute>
             </optional>
           </interleave>
         </group>

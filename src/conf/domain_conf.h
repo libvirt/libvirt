@@ -1579,6 +1579,7 @@ typedef enum {
     VIR_DOMAIN_AUDIO_TYPE_SPICE,
     VIR_DOMAIN_AUDIO_TYPE_FILE,
     VIR_DOMAIN_AUDIO_TYPE_DBUS,
+    VIR_DOMAIN_AUDIO_TYPE_PIPEWIRE,
 
     VIR_DOMAIN_AUDIO_TYPE_LAST
 } virDomainAudioType;
@@ -1654,6 +1655,13 @@ struct _virDomainAudioIOSDL {
     unsigned int bufferCount;
 };
 
+typedef struct _virDomainAudioIOPipewireAudio virDomainAudioIOPipewireAudio;
+struct _virDomainAudioIOPipewireAudio {
+    char *name;
+    char *streamName;
+    unsigned int latency;
+};
+
 struct _virDomainAudioDef {
     virDomainAudioType type;
 
@@ -1697,6 +1705,11 @@ struct _virDomainAudioDef {
         struct {
             char *path;
         } file;
+        struct {
+            virDomainAudioIOPipewireAudio input;
+            virDomainAudioIOPipewireAudio output;
+            char *runtimeDir;
+        } pipewire;
     } backend;
 };
 

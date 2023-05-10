@@ -957,6 +957,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("audio-coreaudio-minimal");
     DO_TEST_CAPS_LATEST("audio-oss-minimal");
     DO_TEST_CAPS_LATEST("audio-pulseaudio-minimal");
+    DO_TEST_CAPS_LATEST("audio-pipewire-minimal");
     DO_TEST_CAPS_LATEST("audio-sdl-minimal");
     DO_TEST_CAPS_LATEST("audio-spice-minimal");
     DO_TEST_CAPS_LATEST("audio-file-minimal");
@@ -967,6 +968,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("audio-coreaudio-best");
     DO_TEST_CAPS_LATEST("audio-oss-best");
     DO_TEST_CAPS_LATEST("audio-pulseaudio-best");
+    DO_TEST_CAPS_LATEST("audio-pipewire-best");
     DO_TEST_CAPS_LATEST("audio-sdl-best");
     DO_TEST_CAPS_LATEST("audio-spice-best");
     DO_TEST_CAPS_LATEST("audio-file-best");
@@ -978,6 +980,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("audio-jack-full");
     DO_TEST_CAPS_LATEST("audio-oss-full");
     DO_TEST_CAPS_LATEST("audio-pulseaudio-full");
+    DO_TEST_CAPS_LATEST("audio-pipewire-full");
     DO_TEST_CAPS_LATEST("audio-sdl-full");
     DO_TEST_CAPS_LATEST("audio-spice-full");
     DO_TEST_CAPS_LATEST("audio-file-full");

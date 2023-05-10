@@ -791,6 +791,7 @@ VIR_ENUM_IMPL(virDomainAudioType,
               "spice",
               "file",
               "dbus",
+              "pipewire",
 );
 
 VIR_ENUM_IMPL(virDomainAudioSDLDriver,
@@ -3230,6 +3231,13 @@ virDomainAudioIOPulseAudioFree(virDomainAudioIOPulseAudio *def)
     g_free(def->streamName);
 }
 
+static void
+virDomainAudioIOPipewireAudioFree(virDomainAudioIOPipewireAudio *def)
+{
+    g_free(def->name);
+    g_free(def->streamName);
+}
+
 void
 virDomainAudioDefFree(virDomainAudioDef *def)
 {
@@ -3272,6 +3280,12 @@ virDomainAudioDefFree(virDomainAudioDef *def)
 
     case VIR_DOMAIN_AUDIO_TYPE_FILE:
         g_free(def->backend.file.path);
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_PIPEWIRE:
+        virDomainAudioIOPipewireAudioFree(&def->backend.pipewire.input);
+        virDomainAudioIOPipewireAudioFree(&def->backend.pipewire.output);
+        g_free(def->backend.pipewire.runtimeDir);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_DBUS:
@@ -11920,6 +11934,21 @@ virDomainAudioSDLParse(virDomainAudioIOSDL *def,
 }
 
 
+static int
+virDomainAudioPipewireAudioParse(virDomainAudioIOPipewireAudio *def,
+                                 xmlNodePtr node)
+{
+    def->name = virXMLPropString(node, "name");
+    def->streamName = virXMLPropString(node, "streamName");
+
+    if (virXMLPropUInt(node, "latency", 10, VIR_XML_PROP_NONZERO,
+                       &def->latency) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static virDomainAudioDef *
 virDomainAudioDefParseXML(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
                           xmlNodePtr node,
@@ -12048,6 +12077,16 @@ virDomainAudioDefParseXML(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_DBUS:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_PIPEWIRE:
+        if (inputNode &&
+            virDomainAudioPipewireAudioParse(&def->backend.pipewire.input, inputNode) < 0)
+            goto error;
+        if (outputNode &&
+            virDomainAudioPipewireAudioParse(&def->backend.pipewire.output, outputNode) < 0)
+            goto error;
+        def->backend.pipewire.runtimeDir = virXMLPropString(node, "runtimeDir");
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
@@ -24839,6 +24878,18 @@ virDomainAudioSDLFormat(virDomainAudioIOSDL *def,
 }
 
 
+static void
+virDomainAudioPipewireAudioFormat(virDomainAudioIOPipewireAudio *def,
+                                  virBuffer *buf)
+{
+    virBufferEscapeString(buf, " name='%s'", def->name);
+    virBufferEscapeString(buf, " streamName='%s'", def->streamName);
+    if (def->latency)
+        virBufferAsprintf(buf, " latency='%u'", def->latency);
+
+}
+
+
 static int
 virDomainAudioDefFormat(virBuffer *buf,
                         virDomainAudioDef *def)
@@ -24919,6 +24970,12 @@ virDomainAudioDefFormat(virBuffer *buf,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_DBUS:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_PIPEWIRE:
+        virDomainAudioPipewireAudioFormat(&def->backend.pipewire.input, &inputBuf);
+        virDomainAudioPipewireAudioFormat(&def->backend.pipewire.output, &outputBuf);
+        virBufferEscapeString(&attrBuf, " runtimeDir='%s'", def->backend.pipewire.runtimeDir);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
@@ -29274,6 +29331,16 @@ virDomainAudioIOSDLIsEqual(virDomainAudioIOSDL *this,
 
 
 static bool
+virDomainAudioIOPipewireAudioIsEqual(virDomainAudioIOPipewireAudio *this,
+                                     virDomainAudioIOPipewireAudio *that)
+{
+    return STREQ_NULLABLE(this->name, that->name) &&
+        STREQ_NULLABLE(this->streamName, that->streamName) &&
+        this->latency == that->latency;
+}
+
+
+static bool
 virDomainAudioBackendIsEqual(virDomainAudioDef *this,
                              virDomainAudioDef *that)
 {
@@ -29332,6 +29399,12 @@ virDomainAudioBackendIsEqual(virDomainAudioDef *this,
 
     case VIR_DOMAIN_AUDIO_TYPE_FILE:
         return STREQ_NULLABLE(this->backend.file.path, that->backend.file.path);
+
+    case VIR_DOMAIN_AUDIO_TYPE_PIPEWIRE:
+        return virDomainAudioIOPipewireAudioIsEqual(&this->backend.pipewire.input,
+                                                    &that->backend.pipewire.input) &&
+            virDomainAudioIOPipewireAudioIsEqual(&this->backend.pipewire.output,
+                                                 &that->backend.pipewire.output);
 
     case VIR_DOMAIN_AUDIO_TYPE_DBUS:
     case VIR_DOMAIN_AUDIO_TYPE_LAST:

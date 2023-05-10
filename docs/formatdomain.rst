@@ -7368,7 +7368,8 @@ to the guest sound device.
 ``type``
    The required ``type`` attribute specifies audio backend type.
    Currently, the supported values are ``none``, ``alsa``, ``coreaudio``,
-   ``dbus``, ``jack``, ``oss``, ``pulseaudio``, ``sdl``, ``spice``, ``file``.
+   ``dbus``, ``jack``, ``oss``, ``pipewire``, ``pulseaudio``, ``sdl``,
+   ``spice``, ``file``.
 
 ``id``
    Integer id of the audio device. Must be greater than 0.
@@ -7452,7 +7453,7 @@ following environment variables:
 * ``QEMU_AUDIO_DRV``
 
   Valid values are ``pa``, ``none``, ``alsa``, ``coreaudio``, ``jack``, ``oss``,
-  ``sdl``, ``spice`` or ``wav``.
+  ``pipewire``, ``sdl``, ``spice`` or ``wav``.
 
 None audio backend
 ^^^^^^^^^^^^^^^^^^
@@ -7600,6 +7601,47 @@ and ``<output>`` elements
    </audio>
 
 :since:`Since 6.7.0, bhyve; Since 7.2.0, qemu`
+
+PipeWire audio backend
+^^^^^^^^^^^^^^^^^^^^^^
+
+The ``pipewire`` audio backend delegates to a PipeWire daemon audio input and
+output.
+
+The following additional attributes are permitted on the ``<input/>`` and
+``<output/>`` elements:
+
+* ``name``
+
+  The sink/source name to use
+
+* ``streamName``
+
+  The name to identify the stream associated with the VM
+
+* ``latency``
+
+  Desired latency for the server to target in microseconds
+
+::
+
+   <audio id="1" type="pipewire">
+     <input name="fish" streamName="food" latency="100"/>
+     <output name="fish" streamName="food" latency="200"/>
+   </audio>
+
+Optionally, path to pipewire daemon socket (aka ``PIPEWIRE_RUNTIME_DIR``) can
+be specified via ``runtimeDir`` attribute. This is useful when a domain under
+``qemu:///system`` wants to use session pipewire daemon, or vice versa.
+
+::
+
+   <audio id="1" type="pipewire" runtimeDir='/run/user/1000'>
+     <input name="fish" streamName="food" latency="100"/>
+     <output name="fish" streamName="food" latency="200"/>
+   </audio>
+
+:since:`Since 9.10.0, qemu`
 
 PulseAudio audio backend
 ^^^^^^^^^^^^^^^^^^^^^^^^

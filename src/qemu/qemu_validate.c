@@ -4403,6 +4403,7 @@ qemuValidateDomainDeviceDefAudio(virDomainAudioDef *audio,
     case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
     case VIR_DOMAIN_AUDIO_TYPE_SDL:
     case VIR_DOMAIN_AUDIO_TYPE_FILE:
+    case VIR_DOMAIN_AUDIO_TYPE_PIPEWIRE:
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_SPICE:
