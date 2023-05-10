@@ -7,13 +7,14 @@
 # Daniel  <veillard@redhat.com>, 2011
 # Gabor Egry <gaba@freemail.hu>, 2007
 # Balázs Meskó <meskobalazs@mailbox.org>, 2020.
+# Dankaházi (ifj.) István <dankahazi.istvan@gmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-04-25 10:39+0000\n"
-"PO-Revision-Date: 2020-07-20 15:17+0000\n"
-"Last-Translator: Balázs Meskó <meskobalazs@mailbox.org>\n"
+"PO-Revision-Date: 2023-05-10 12:20+0000\n"
+"Last-Translator: Dankaházi (ifj.) István <dankahazi.istvan@gmail.com>\n"
 "Language-Team: Hungarian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/hu/>\n"
 "Language: hu\n"
@@ -21,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.1.1\n"
+"X-Generator: Weblate 4.15.2\n"
 
 msgid ""
 "\n"
@@ -15566,12 +15567,9 @@ msgstr ""
 msgid "Time: %1$lld"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Time: %1$s"
-msgstr ""
-"\n"
-"(Idő: %.3f ms)\n"
-"\n"
+msgstr "Time: %1$s"
 
 #, fuzzy
 msgid "Timed out during operation"
