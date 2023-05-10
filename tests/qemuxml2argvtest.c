@@ -869,6 +869,9 @@ mymain(void)
     g_unsetenv("DYLD_FORCE_FLAT_NAMESPACE");
     g_unsetenv("QEMU_AUDIO_DRV");
     g_unsetenv("SDL_AUDIODRIVER");
+    g_unsetenv("PIPEWIRE_CORE");
+    g_unsetenv("PIPEWIRE_REMOTE");
+    g_unsetenv("PIPEWIRE_RUNTIME_DIR");
 
     DO_TEST_CAPS_LATEST("minimal");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("minimal-no-memory");
@@ -909,6 +912,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST("audio-jack-minimal");
     DO_TEST_CAPS_LATEST("audio-oss-minimal");
     DO_TEST_CAPS_LATEST("audio-pulseaudio-minimal");
+    g_setenv("PIPEWIRE_RUNTIME_DIR", "/run/user/1000", TRUE);
+    DO_TEST_CAPS_LATEST("audio-pipewire-minimal");
+    g_unsetenv("PIPEWIRE_RUNTIME_DIR");
     DO_TEST_CAPS_LATEST("audio-sdl-minimal");
     DO_TEST_CAPS_LATEST("audio-spice-minimal");
     DO_TEST_CAPS_LATEST("audio-file-minimal");
@@ -918,6 +924,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("audio-coreaudio-best");
     DO_TEST_CAPS_LATEST("audio-oss-best");
     DO_TEST_CAPS_LATEST("audio-pulseaudio-best");
+    DO_TEST_CAPS_LATEST("audio-pipewire-best");
     DO_TEST_CAPS_LATEST("audio-sdl-best");
     DO_TEST_CAPS_LATEST("audio-spice-best");
     DO_TEST_CAPS_LATEST("audio-file-best");
@@ -928,11 +935,14 @@ mymain(void)
     DO_TEST_CAPS_LATEST("audio-jack-full");
     DO_TEST_CAPS_LATEST("audio-oss-full");
     DO_TEST_CAPS_LATEST("audio-pulseaudio-full");
+    DO_TEST_CAPS_LATEST("audio-pipewire-full");
     DO_TEST_CAPS_LATEST("audio-sdl-full");
     DO_TEST_CAPS_LATEST("audio-spice-full");
     DO_TEST_CAPS_LATEST("audio-file-full");
 
+    g_setenv("PIPEWIRE_RUNTIME_DIR", "/run/user/1000", TRUE);
     DO_TEST_CAPS_LATEST("audio-many-backends");
+    g_unsetenv("PIPEWIRE_RUNTIME_DIR");
 
     /* Validate auto-creation of <audio> for legacy compat */
     g_setenv("QEMU_AUDIO_DRV", "sdl", TRUE);

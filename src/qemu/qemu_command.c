@@ -7834,6 +7834,68 @@ qemuBuildAudioSDLProps(virDomainAudioIOSDL *def,
 
 
 static int
+qemuBuildAudioPipewireAudioProps(virDomainAudioIOPipewireAudio *def,
+                                 virJSONValue **props)
+{
+    return virJSONValueObjectAdd(props,
+                                 "S:name", def->name,
+                                 "S:stream-name", def->streamName,
+                                 "p:latency", def->latency,
+                                 NULL);
+}
+
+
+static void
+qemuBuildAudioPipewireAudioEnv(virCommand *cmd,
+                               const char *runtimeDir)
+{
+    const char *envVars[] = { "PIPEWIRE_RUNTIME_DIR", "XDG_RUNTIME_DIR",
+                              "USERPROFILE" };
+    size_t i;
+
+    /* PipeWire needs access to its daemon socket. The socket name is
+     * configurable (core.name in pipewire.conf, or PIPEWIRE_CORE and
+     * PIPEWIRE_REMOTE env vars). If the socket name is not an absolute
+     * path, then the socket is looked for in the following directories
+     * (in order):
+     *
+     * - PIPEWIRE_RUNTIME_DIR
+     * - XDG_RUNTIME_DIR
+     * - USERPROFILE
+     *
+     * This order is defined in get_runtime_dir() from
+     * src/modules/module-protocol-native/local-socket.c from PipeWire's
+     * codebase.
+     *
+     * Now, PIPEWIRE_CORE and/or PIPEWIRE_REMOTE should be passed
+     * whenever present in the environment. But for the other three
+     * (socket location dirs):
+     *
+     * 1) set it to user defined value (@runtimeDir != NULL), or
+     * 2) we can add just the first existing one (basically mimic
+     *    get_runtime_dir() logic; @runtimeDir == NULL).
+     */
+
+    virCommandAddEnvPass(cmd, "PIPEWIRE_CORE");
+    virCommandAddEnvPass(cmd, "PIPEWIRE_REMOTE");
+
+    if (runtimeDir) {
+        virCommandAddEnvPair(cmd, "PIPEWIRE_RUNTIME_DIR", runtimeDir);
+    } else {
+        for (i = 0; i < G_N_ELEMENTS(envVars); i++) {
+            const char *value = getenv(envVars[i]);
+
+            if (!value)
+                continue;
+
+            virCommandAddEnvPair(cmd, envVars[i], value);
+            break;
+        }
+    }
+}
+
+
+static int
 qemuBuildAudioCommandLineArg(virCommand *cmd,
                              virDomainAudioDef *def)
 {
@@ -7939,6 +8001,13 @@ qemuBuildAudioCommandLineArg(virCommand *cmd,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_PIPEWIRE:
+        if (qemuBuildAudioPipewireAudioProps(&def->backend.pipewire.input, &in) < 0 ||
+            qemuBuildAudioPipewireAudioProps(&def->backend.pipewire.output, &out) < 0)
+            return -1;
+
+        qemuBuildAudioPipewireAudioEnv(cmd, def->backend.pipewire.runtimeDir);
+        break;
+
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainAudioType, def->type);

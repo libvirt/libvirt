@@ -51,6 +51,7 @@
     <audio id='1' type='none'/>
     <audio id='2' type='alsa'/>
     <audio id='3' type='pulseaudio'/>
+    <audio id='4' type='pipewire'/>
     <video>
       <model type='cirrus' vram='16384' heads='1' primary='yes'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
