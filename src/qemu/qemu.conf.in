@@ -909,7 +909,9 @@
 #slirp_helper = "/usr/bin/slirp-helper"
 
 # Path to the dbus-daemon
-#dbus_daemon = "/usr/bin/dbus-daemon"
+# If this is not an absolute path, the program will be searched for
+# in $PATH.
+#dbus_daemon = "dbus-daemon"
 
 # User for the swtpm TPM Emulator
 #
