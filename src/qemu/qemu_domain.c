@@ -8040,7 +8040,7 @@ qemuDomainStorageSourceAccessModifyNVMe(virQEMUDriver *driver,
 
  revoke:
     if (revoke_maxmemlock) {
-        if (qemuDomainAdjustMaxMemLock(vm, false) < 0)
+        if (qemuDomainAdjustMaxMemLock(vm) < 0)
             VIR_WARN("Unable to change max memlock limit");
     }
 
@@ -9726,12 +9726,9 @@ qemuDomainSetMaxMemLock(virDomainObj *vm,
 /**
  * qemuDomainAdjustMaxMemLock:
  * @vm: domain
- * @forceVFIO: apply VFIO requirements even if vm's def doesn't require it
  *
  * Adjust the memory locking limit for the QEMU process associated to @vm, in
- * order to comply with VFIO or architecture requirements. If @forceVFIO is
- * true then the limit is changed even if nothing in @vm's definition indicates
- * so.
+ * order to comply with VFIO or architecture requirements.
  *
  * The limit will not be changed unless doing so is needed; the first time
  * the limit is changed, the original (default) limit is stored in @vm and
@@ -9741,11 +9738,10 @@ qemuDomainSetMaxMemLock(virDomainObj *vm,
  * Returns: 0 on success, <0 on failure
  */
 int
-qemuDomainAdjustMaxMemLock(virDomainObj *vm,
-                           bool forceVFIO)
+qemuDomainAdjustMaxMemLock(virDomainObj *vm)
 {
     return qemuDomainSetMaxMemLock(vm,
-                                   qemuDomainGetMemLockLimitBytes(vm->def, forceVFIO),
+                                   qemuDomainGetMemLockLimitBytes(vm->def, false),
                                    &QEMU_DOMAIN_PRIVATE(vm)->originalMemlock);
 }
 
@@ -9770,7 +9766,7 @@ qemuDomainAdjustMaxMemLockHostdev(virDomainObj *vm,
     int ret = 0;
 
     vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
-    if (qemuDomainAdjustMaxMemLock(vm, false) < 0)
+    if (qemuDomainAdjustMaxMemLock(vm) < 0)
         ret = -1;
 
     vm->def->hostdevs[--(vm->def->nhostdevs)] = NULL;
@@ -9803,7 +9799,7 @@ qemuDomainAdjustMaxMemLockNVMe(virDomainObj *vm,
 
     VIR_APPEND_ELEMENT_COPY(vm->def->disks, vm->def->ndisks, disk);
 
-    if (qemuDomainAdjustMaxMemLock(vm, false) < 0)
+    if (qemuDomainAdjustMaxMemLock(vm) < 0)
         ret = -1;
 
     VIR_DELETE_ELEMENT_INPLACE(vm->def->disks, vm->def->ndisks - 1, vm->def->ndisks);

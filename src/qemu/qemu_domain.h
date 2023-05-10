@@ -856,8 +856,7 @@ void qemuDomainUpdateCurrentMemorySize(virDomainObj *vm);
 
 unsigned long long qemuDomainGetMemLockLimitBytes(virDomainDef *def,
                                                   bool forceVFIO);
-int qemuDomainAdjustMaxMemLock(virDomainObj *vm,
-                               bool forceVFIO);
+int qemuDomainAdjustMaxMemLock(virDomainObj *vm);
 int qemuDomainAdjustMaxMemLockHostdev(virDomainObj *vm,
                                       virDomainHostdevDef *hostdev);
 int qemuDomainAdjustMaxMemLockNVMe(virDomainObj *vm,
