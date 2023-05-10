@@ -1666,18 +1666,6 @@ if not get_option('driver_qemu').disabled()
       qemu_slirp_path = '/usr/bin/slirp-helper'
     endif
     conf.set_quoted('QEMU_SLIRP_HELPER', qemu_slirp_path)
-
-    qemu_dbus_daemon_prog = find_program(
-      'dbus-daemon',
-      dirs: [ '/usr/bin', '/usr/libexec' ],
-      required: false
-    )
-    if qemu_dbus_daemon_prog.found()
-      qemu_dbus_daemon_path = qemu_dbus_daemon_prog.full_path()
-    else
-      qemu_dbus_daemon_path = '/usr/bin/dbus-daemon'
-    endif
-    conf.set_quoted('QEMU_DBUS_DAEMON', qemu_dbus_daemon_path)
   endif
 endif
 
