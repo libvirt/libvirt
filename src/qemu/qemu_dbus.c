@@ -175,6 +175,7 @@ qemuDBusStart(virQEMUDriver *driver,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *dbusDaemonPath = NULL;
     g_autofree char *shortName = NULL;
     g_autofree char *pidfile = NULL;
     g_autofree char *configfile = NULL;
@@ -188,12 +189,15 @@ qemuDBusStart(virQEMUDriver *driver,
     if (priv->dbusDaemonRunning)
         return 0;
 
-    if (!virFileIsExecutable(cfg->dbusDaemonName)) {
+    dbusDaemonPath = virFindFileInPath(cfg->dbusDaemonName);
+    if (!dbusDaemonPath) {
         virReportSystemError(errno,
                              _("'%1$s' is not a suitable dbus-daemon"),
                              cfg->dbusDaemonName);
         return -1;
     }
+
+    VIR_DEBUG("Using dbus-daemon: %s", dbusDaemonPath);
 
     if (!(shortName = virDomainDefGetShortName(vm->def)))
         return -1;
@@ -210,7 +214,7 @@ qemuDBusStart(virQEMUDriver *driver,
     if (qemuSecurityDomainSetPathLabel(driver, vm, configfile, false) < 0)
         goto cleanup;
 
-    cmd = virCommandNew(cfg->dbusDaemonName);
+    cmd = virCommandNew(dbusDaemonPath);
     virCommandClearCaps(cmd);
     virCommandSetPidFile(cmd, pidfile);
     virCommandSetErrorFD(cmd, &errfd);
@@ -223,7 +227,7 @@ qemuDBusStart(virQEMUDriver *driver,
     if (virPidFileReadPath(pidfile, &cpid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("dbus-daemon %1$s didn't show up"),
-                       cfg->dbusDaemonName);
+                       dbusDaemonPath);
         goto cleanup;
     }
 
@@ -241,7 +245,7 @@ qemuDBusStart(virQEMUDriver *driver,
         if (saferead(errfd, errbuf, sizeof(errbuf) - 1) < 0) {
             virReportSystemError(errno,
                                  _("dbus-daemon %1$s died unexpectedly"),
-                                 cfg->dbusDaemonName);
+                                 dbusDaemonPath);
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("dbus-daemon died and reported: %1$s"), errbuf);
@@ -253,7 +257,7 @@ qemuDBusStart(virQEMUDriver *driver,
     if (!virFileExists(sockpath)) {
         virReportError(VIR_ERR_OPERATION_TIMEOUT,
                        _("dbus-daemon %1$s didn't show up"),
-                       cfg->dbusDaemonName);
+                       dbusDaemonPath);
         goto cleanup;
     }
 
