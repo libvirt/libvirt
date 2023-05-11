@@ -17,6 +17,11 @@ v9.10.0 (unreleased)
 
 * **New features**
 
+  * Introduce pipewire audio backend
+
+    The QEMU hypervisor driver now allows setting ``pipewire`` backend for
+    ``<audio/>`` device.
+
 * **Improvements**
 
 * **Bug fixes**
