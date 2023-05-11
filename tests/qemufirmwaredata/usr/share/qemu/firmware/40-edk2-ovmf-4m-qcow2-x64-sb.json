@@ -1,17 +1,18 @@
 {
-    "description": "OVMF with SB+SMM, SB enabled, MS certs enrolled",
+    "description": "OVMF with SB+SMM, empty varstore",
     "interface-types": [
         "uefi"
     ],
     "mapping": {
         "device": "flash",
+        "mode" : "split",
         "executable": {
-            "filename": "/usr/share/OVMF/OVMF_CODE.secboot.fd",
-            "format": "raw"
+            "filename": "/usr/share/edk2/ovmf/OVMF_CODE_4M.secboot.qcow2",
+            "format": "qcow2"
         },
         "nvram-template": {
-            "filename": "/usr/share/OVMF/OVMF_VARS.secboot.fd",
-            "format": "raw"
+            "filename": "/usr/share/edk2/ovmf/OVMF_VARS_4M.qcow2",
+            "format": "qcow2"
         }
     },
     "targets": [
@@ -24,8 +25,6 @@
     ],
     "features": [
         "acpi-s3",
-        "amd-sev",
-        "enrolled-keys",
         "requires-smm",
         "secure-boot",
         "verbose-dynamic"

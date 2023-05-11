@@ -5,13 +5,14 @@
     ],
     "mapping": {
         "device": "flash",
+        "mode" : "split",
         "executable": {
-            "filename": "/usr/share/AAVMF/AAVMF_CODE.fd",
-            "format": "raw"
+            "filename": "/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.qcow2",
+            "format": "qcow2"
         },
         "nvram-template": {
-            "filename": "/usr/share/AAVMF/AAVMF_VARS.fd",
-            "format": "raw"
+            "filename": "/usr/share/edk2/aarch64/vars-template-pflash.qcow2",
+            "format": "qcow2"
         }
     },
     "targets": [
@@ -26,10 +27,6 @@
 
     ],
     "tags": [
-        "-a AARCH64",
-        "-p ArmVirtPkg/ArmVirtQemu.dsc",
-        "-t GCC48",
-        "-b DEBUG",
-        "-D DEBUG_PRINT_ERROR_LEVEL=0x80000000"
+
     ]
 }

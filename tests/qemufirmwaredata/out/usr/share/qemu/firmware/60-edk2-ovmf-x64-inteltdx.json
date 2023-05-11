@@ -4,13 +4,9 @@
     ],
     "mapping": {
         "device": "flash",
-        "mode": "split",
+        "mode": "stateless",
         "executable": {
-            "filename": "/usr/share/OVMF/OVMF_CODE.secboot.fd",
-            "format": "raw"
-        },
-        "nvram-template": {
-            "filename": "/usr/share/OVMF/OVMF_VARS.secboot.fd",
+            "filename": "/usr/share/edk2/ovmf/OVMF.inteltdx.fd",
             "format": "raw"
         }
     },
@@ -23,11 +19,6 @@
         }
     ],
     "features": [
-        "acpi-s3",
-        "amd-sev",
-        "enrolled-keys",
-        "requires-smm",
-        "secure-boot",
         "verbose-dynamic"
     ]
 }

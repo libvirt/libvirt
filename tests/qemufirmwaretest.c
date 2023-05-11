@@ -67,16 +67,23 @@ testFWPrecedence(const void *opaque G_GNUC_UNUSED)
     g_autofree char *fakehome = NULL;
     g_auto(GStrv) fwList = NULL;
     const char *expected[] = {
-        PREFIX "/share/qemu/firmware/40-bios.json",
-        SYSCONFDIR "/qemu/firmware/40-ovmf-sb-keys.json",
-        PREFIX "/share/qemu/firmware/45-ovmf-sev-stateless.json",
-        PREFIX "/share/qemu/firmware/50-ovmf-sb-keys.json",
-        PREFIX "/share/qemu/firmware/55-ovmf-sb-combined.json",
-        PREFIX "/share/qemu/firmware/60-ovmf-sb.json",
-        PREFIX "/share/qemu/firmware/61-ovmf.json",
-        PREFIX "/share/qemu/firmware/65-ovmf-qcow2.json",
-        PREFIX "/share/qemu/firmware/66-aavmf-qcow2.json",
-        PREFIX "/share/qemu/firmware/70-aavmf.json",
+        SYSCONFDIR "/qemu/firmware/20-bios.json",
+        PREFIX "/share/qemu/firmware/30-edk2-ovmf-4m-qcow2-x64-sb-enrolled.json",
+        PREFIX "/share/qemu/firmware/31-edk2-ovmf-2m-raw-x64-sb-enrolled.json",
+        PREFIX "/share/qemu/firmware/40-edk2-ovmf-4m-qcow2-x64-sb.json",
+        PREFIX "/share/qemu/firmware/41-edk2-ovmf-2m-raw-x64-sb.json",
+        PREFIX "/share/qemu/firmware/50-edk2-aarch64-qcow2.json",
+        PREFIX "/share/qemu/firmware/50-edk2-ovmf-4m-qcow2-x64-nosb.json",
+        PREFIX "/share/qemu/firmware/50-edk2-ovmf-x64-microvm.json",
+        PREFIX "/share/qemu/firmware/51-edk2-aarch64-raw.json",
+        PREFIX "/share/qemu/firmware/51-edk2-ovmf-2m-raw-x64-nosb.json",
+        PREFIX "/share/qemu/firmware/52-edk2-aarch64-verbose-qcow2.json",
+        PREFIX "/share/qemu/firmware/53-edk2-aarch64-verbose-raw.json",
+        SYSCONFDIR "/qemu/firmware/59-combined.json",
+        PREFIX "/share/qemu/firmware/60-edk2-ovmf-x64-amdsev.json",
+        PREFIX "/share/qemu/firmware/60-edk2-ovmf-x64-inteltdx.json",
+        PREFIX "/share/qemu/firmware/90-combined.json",
+        PREFIX "/share/qemu/firmware/91-bios.json",
         NULL
     };
     const char **e;
@@ -231,15 +238,21 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-    DO_PARSE_TEST("usr/share/qemu/firmware/40-bios.json");
-    DO_PARSE_TEST("usr/share/qemu/firmware/45-ovmf-sev-stateless.json");
-    DO_PARSE_TEST("usr/share/qemu/firmware/50-ovmf-sb-keys.json");
-    DO_PARSE_TEST("usr/share/qemu/firmware/55-ovmf-sb-combined.json");
-    DO_PARSE_TEST("usr/share/qemu/firmware/60-ovmf-sb.json");
-    DO_PARSE_TEST("usr/share/qemu/firmware/61-ovmf.json");
-    DO_PARSE_TEST("usr/share/qemu/firmware/65-ovmf-qcow2.json");
-    DO_PARSE_TEST("usr/share/qemu/firmware/66-aavmf-qcow2.json");
-    DO_PARSE_TEST("usr/share/qemu/firmware/70-aavmf.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/30-edk2-ovmf-4m-qcow2-x64-sb-enrolled.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/31-edk2-ovmf-2m-raw-x64-sb-enrolled.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/40-edk2-ovmf-4m-qcow2-x64-sb.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/41-edk2-ovmf-2m-raw-x64-sb.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/50-edk2-aarch64-qcow2.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/50-edk2-ovmf-4m-qcow2-x64-nosb.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/50-edk2-ovmf-x64-microvm.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/51-edk2-aarch64-raw.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/51-edk2-ovmf-2m-raw-x64-nosb.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/52-edk2-aarch64-verbose-qcow2.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/53-edk2-aarch64-verbose-raw.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/60-edk2-ovmf-x64-amdsev.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/60-edk2-ovmf-x64-inteltdx.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/90-combined.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/91-bios.json");
 
     if (virTestRun("QEMU FW precedence test", testFWPrecedence, NULL) < 0)
         ret = -1;
@@ -259,8 +272,8 @@ mymain(void)
 
     DO_SUPPORTED_TEST("pc-i440fx-3.1", VIR_ARCH_X86_64, false,
                       "/usr/share/seabios/bios-256k.bin:NULL:"
-                      "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd:"
-                      "/usr/share/OVMF/OVMF_CODE.qcow2:/usr/share/OVMF/OVMF_VARS.qcow2",
+                      "/usr/share/edk2/ovmf/OVMF_CODE_4M.qcow2:/usr/share/edk2/ovmf/OVMF_VARS_4M.qcow2:"
+                      "/usr/share/edk2/ovmf/OVMF_CODE.fd:/usr/share/edk2/ovmf/OVMF_VARS.fd",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
     DO_SUPPORTED_TEST("pc-i440fx-3.1", VIR_ARCH_I686, false,
@@ -268,20 +281,25 @@ mymain(void)
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS);
     DO_SUPPORTED_TEST("pc-q35-3.1", VIR_ARCH_X86_64, true,
                       "/usr/share/seabios/bios-256k.bin:NULL:"
-                      "/usr/share/OVMF/OVMF_CODE.secboot.fd:/usr/share/OVMF/OVMF_VARS.secboot.fd:"
-                      "/usr/share/OVMF/OVMF.sev.fd:NULL:"
-                      "/usr/share/OVMF/OVMF.secboot.fd:NULL:"
-                      "/usr/share/OVMF/OVMF_CODE.secboot.fd:/usr/share/OVMF/OVMF_VARS.fd:"
-                      "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd:"
-                      "/usr/share/OVMF/OVMF_CODE.qcow2:/usr/share/OVMF/OVMF_VARS.qcow2",
+                      "/usr/share/edk2/ovmf/OVMF_CODE_4M.secboot.qcow2:/usr/share/edk2/ovmf/OVMF_VARS_4M.secboot.qcow2:"
+                      "/usr/share/edk2/ovmf/OVMF_CODE.secboot.fd:/usr/share/edk2/ovmf/OVMF_VARS.secboot.fd:"
+                      "/usr/share/edk2/ovmf/OVMF_CODE_4M.secboot.qcow2:/usr/share/edk2/ovmf/OVMF_VARS_4M.qcow2:"
+                      "/usr/share/edk2/ovmf/OVMF_CODE.secboot.fd:/usr/share/edk2/ovmf/OVMF_VARS.fd:"
+                      "/usr/share/edk2/ovmf/OVMF_CODE_4M.qcow2:/usr/share/edk2/ovmf/OVMF_VARS_4M.qcow2:"
+                      "/usr/share/edk2/ovmf/OVMF_CODE.fd:/usr/share/edk2/ovmf/OVMF_VARS.fd:"
+                      "/usr/share/edk2/ovmf/OVMF.secboot.fd:NULL:"
+                      "/usr/share/edk2/ovmf/OVMF.amdsev.fd:NULL:"
+                      "/usr/share/edk2/ovmf/OVMF.inteltdx.fd:NULL",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
     DO_SUPPORTED_TEST("pc-q35-3.1", VIR_ARCH_I686, false,
                       "/usr/share/seabios/bios-256k.bin:NULL",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS);
     DO_SUPPORTED_TEST("virt-3.1", VIR_ARCH_AARCH64, false,
-                      "/usr/share/AAVMF/AAVMF_CODE.qcow2:/usr/share/AAVMF/AAVMF_VARS.qcow2:"
-                      "/usr/share/AAVMF/AAVMF_CODE.fd:/usr/share/AAVMF/AAVMF_VARS.fd",
+                      "/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.qcow2:/usr/share/edk2/aarch64/vars-template-pflash.qcow2:"
+                      "/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw:/usr/share/edk2/aarch64/vars-template-pflash.raw:"
+                      "/usr/share/edk2/aarch64/QEMU_EFI-pflash.qcow2:/usr/share/edk2/aarch64/vars-template-pflash.qcow2:"
+                      "/usr/share/edk2/aarch64/QEMU_EFI-pflash.raw:/usr/share/edk2/aarch64/vars-template-pflash.raw",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
 
     virFileWrapperClearPrefixes();

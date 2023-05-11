@@ -9,7 +9,7 @@
     <firmware>
       <feature enabled='no' name='secure-boot'/>
     </firmware>
-    <loader readonly='yes' type='pflash' format='qcow2'>/usr/share/OVMF/OVMF_CODE.qcow2</loader>
+    <loader readonly='yes' type='pflash' format='qcow2'>/usr/share/edk2/ovmf/OVMF_CODE_4M.qcow2</loader>
     <nvram type='network' format='qcow2'>
       <source protocol='nbd' name='bar'>
         <host name='example.org' port='6000'/>

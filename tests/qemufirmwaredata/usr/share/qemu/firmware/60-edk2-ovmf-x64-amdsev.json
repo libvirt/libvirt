@@ -1,13 +1,13 @@
 {
-    "description": "OVMF with SB+SMM, SB enabled, MS certs enrolled",
+    "description": "OVMF with SEV-ES support",
     "interface-types": [
         "uefi"
     ],
     "mapping": {
         "device": "flash",
-	"mode": "combined",
+        "mode": "stateless",
         "executable": {
-            "filename": "/usr/share/OVMF/OVMF.secboot.fd",
+            "filename": "/usr/share/edk2/ovmf/OVMF.amdsev.fd",
             "format": "raw"
         }
     },
@@ -20,11 +20,9 @@
         }
     ],
     "features": [
-        "acpi-s3",
         "amd-sev",
-        "enrolled-keys",
-        "requires-smm",
-        "secure-boot",
+        "amd-sev-es",
+        "amd-sev-snp",
         "verbose-dynamic"
     ],
     "tags": [

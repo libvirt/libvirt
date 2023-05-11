@@ -10,8 +10,8 @@
       <feature enabled='yes' name='enrolled-keys'/>
       <feature enabled='yes' name='secure-boot'/>
     </firmware>
-    <loader readonly='yes' secure='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.secboot.fd</loader>
-    <nvram template='/usr/share/OVMF/OVMF_VARS.secboot.fd'>/path/to/guest_VARS.fd</nvram>
+    <loader readonly='yes' secure='yes' type='pflash'>/usr/share/edk2/ovmf/OVMF_CODE.secboot.fd</loader>
+    <nvram template='/usr/share/edk2/ovmf/OVMF_VARS.secboot.fd'>/path/to/guest_VARS.fd</nvram>
     <boot dev='hd'/>
   </os>
   <features>

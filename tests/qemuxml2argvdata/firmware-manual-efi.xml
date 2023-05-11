@@ -5,7 +5,7 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='x86_64' machine='pc-i440fx-4.0'>hvm</type>
-    <loader readonly='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
+    <loader readonly='yes' type='pflash'>/usr/share/edk2/ovmf/OVMF_CODE.fd</loader>
     <nvram>/path/to/guest_VARS.fd</nvram>
   </os>
   <features>

@@ -10,8 +10,8 @@
       <feature enabled='no' name='enrolled-keys'/>
       <feature enabled='no' name='secure-boot'/>
     </firmware>
-    <loader readonly='yes' type='pflash'>/usr/share/AAVMF/AAVMF_CODE.fd</loader>
-    <nvram template='/usr/share/AAVMF/AAVMF_VARS.fd'>/path/to/guest_VARS.fd</nvram>
+    <loader readonly='yes' type='pflash'>/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw</loader>
+    <nvram template='/usr/share/edk2/aarch64/vars-template-pflash.raw'>/path/to/guest_VARS.raw</nvram>
     <boot dev='hd'/>
   </os>
   <features>

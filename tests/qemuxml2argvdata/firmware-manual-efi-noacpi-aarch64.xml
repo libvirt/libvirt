@@ -5,8 +5,8 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='aarch64' machine='virt-4.0'>hvm</type>
-    <loader readonly='yes' type='pflash'>/usr/share/AAVMF/AAVMF_CODE.fd</loader>
-    <nvram>/path/to/guest_VARS.fd</nvram>
+    <loader readonly='yes' type='pflash'>/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw</loader>
+    <nvram>/path/to/guest_VARS.raw</nvram>
   </os>
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>

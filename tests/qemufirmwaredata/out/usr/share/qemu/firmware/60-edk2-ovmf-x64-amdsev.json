@@ -1,5 +1,4 @@
 {
-    "description": "OVMF for x86_64, with SEV, without SB, without SMM, with NO varstore",
     "interface-types": [
         "uefi"
     ],
@@ -7,7 +6,7 @@
         "device": "flash",
         "mode": "stateless",
         "executable": {
-            "filename": "/usr/share/OVMF/OVMF.sev.fd",
+            "filename": "/usr/share/edk2/ovmf/OVMF.amdsev.fd",
             "format": "raw"
         }
     },
@@ -20,12 +19,8 @@
         }
     ],
     "features": [
-        "acpi-s3",
         "amd-sev",
         "amd-sev-es",
         "verbose-dynamic"
-    ],
-    "tags": [
-
     ]
 }

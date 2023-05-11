@@ -10,8 +10,8 @@
       <feature enabled='yes' name='enrolled-keys'/>
       <feature enabled='yes' name='secure-boot'/>
     </firmware>
-    <loader readonly='yes' secure='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.secboot.fd</loader>
-    <nvram template='/usr/share/OVMF/OVMF_VARS.secboot.fd'>/var/lib/libvirt/qemu/nvram/guest_VARS.fd</nvram>
+    <loader readonly='yes' secure='yes' type='pflash' format='qcow2'>/usr/share/edk2/ovmf/OVMF_CODE_4M.secboot.qcow2</loader>
+    <nvram template='/usr/share/edk2/ovmf/OVMF_VARS_4M.secboot.qcow2' format='qcow2'>/var/lib/libvirt/qemu/nvram/guest_VARS.qcow2</nvram>
     <boot dev='hd'/>
   </os>
   <features>

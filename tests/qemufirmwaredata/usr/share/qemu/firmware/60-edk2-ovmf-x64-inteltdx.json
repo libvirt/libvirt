@@ -1,28 +1,29 @@
 {
+    "description": "OVMF with TDX support",
     "interface-types": [
         "uefi"
     ],
     "mapping": {
         "device": "flash",
-        "mode": "split",
+        "mode": "stateless",
         "executable": {
-            "filename": "/usr/share/AAVMF/AAVMF_CODE.fd",
-            "format": "raw"
-        },
-        "nvram-template": {
-            "filename": "/usr/share/AAVMF/AAVMF_VARS.fd",
+            "filename": "/usr/share/edk2/ovmf/OVMF.inteltdx.fd",
             "format": "raw"
         }
     },
     "targets": [
         {
-            "architecture": "aarch64",
+            "architecture": "x86_64",
             "machines": [
-                "virt-*"
+                "pc-q35-*"
             ]
         }
     ],
     "features": [
+        "intel-tdx",
+        "verbose-dynamic"
+    ],
+    "tags": [
 
     ]
 }

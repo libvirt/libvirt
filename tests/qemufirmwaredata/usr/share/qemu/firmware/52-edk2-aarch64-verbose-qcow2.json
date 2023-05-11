@@ -1,17 +1,17 @@
 {
-    "description": "UEFI firmware for ARM64 virtual machines (QCOW2 format)",
+    "description": "UEFI firmware for ARM64 virtual machines, verbose logs",
     "interface-types": [
         "uefi"
     ],
     "mapping": {
         "device": "flash",
-        "mode": "split",
+        "mode" : "split",
         "executable": {
-            "filename": "/usr/share/AAVMF/AAVMF_CODE.qcow2",
+            "filename": "/usr/share/edk2/aarch64/QEMU_EFI-pflash.qcow2",
             "format": "qcow2"
         },
         "nvram-template": {
-            "filename": "/usr/share/AAVMF/AAVMF_VARS.qcow2",
+            "filename": "/usr/share/edk2/aarch64/vars-template-pflash.qcow2",
             "format": "qcow2"
         }
     },
@@ -24,13 +24,9 @@
         }
     ],
     "features": [
-
+        "verbose-static"
     ],
     "tags": [
-        "-a AARCH64",
-        "-p ArmVirtPkg/ArmVirtQemu.dsc",
-        "-t GCC48",
-        "-b DEBUG",
-        "-D DEBUG_PRINT_ERROR_LEVEL=0x80000000"
+
     ]
 }

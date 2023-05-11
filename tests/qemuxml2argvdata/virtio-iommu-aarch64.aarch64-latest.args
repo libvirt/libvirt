@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -name guest=guest,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-guest/master-key.aes"}' \
--blockdev '{"driver":"file","filename":"/usr/share/AAVMF/AAVMF_CODE.fd","node-name":"libvirt-pflash0-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"file","filename":"/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw","node-name":"libvirt-pflash0-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,"driver":"raw","file":"libvirt-pflash0-storage"}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/qemu/nvram/guest_VARS.fd","node-name":"libvirt-pflash1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-pflash1-format","read-only":false,"driver":"raw","file":"libvirt-pflash1-storage"}' \
