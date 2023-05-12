@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-04-25 10:39+0000\n"
-"PO-Revision-Date: 2023-05-10 12:20+0000\n"
+"PO-Revision-Date: 2023-05-12 18:21+0000\n"
 "Last-Translator: Dankaházi (ifj.) István <dankahazi.istvan@gmail.com>\n"
 "Language-Team: Hungarian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/hu/>\n"
@@ -674,9 +674,9 @@ msgstr ""
 msgid "%1$s: could not proxy traffic: %2$s\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: error: %2$s%3$c"
-msgstr "hiba: "
+msgstr "%1$s: hiba: %2$s%3$c"
 
 #, c-format
 msgid ""
@@ -1584,9 +1584,8 @@ msgstr ""
 msgid "Active console session exists for this domain"
 msgstr ""
 
-#, fuzzy
 msgid "Active:"
-msgstr "aktív"
+msgstr "Aktív:"
 
 #, c-format
 msgid "Actual interface '%1$s' hostdev was not a PCI device"
@@ -1787,9 +1786,8 @@ msgstr ""
 msgid "Autostart"
 msgstr "Automatikus indítás"
 
-#, fuzzy
 msgid "Autostart:"
-msgstr "Automatikus indítás"
+msgstr "Automatikus indítás:"
 
 msgid "Available"
 msgstr ""
@@ -1959,9 +1957,8 @@ msgstr ""
 msgid "CPU %1$d in cpulist '%2$s' exceed the maxcpu %3$d"
 msgstr ""
 
-#, fuzzy
 msgid "CPU Affinity"
-msgstr "Processzor-affinitás:"
+msgstr "Processzor-affinitás"
 
 msgid "CPU Affinity:"
 msgstr "Processzor-affinitás:"
@@ -2083,9 +2080,8 @@ msgstr ""
 msgid "CPU model:"
 msgstr "Processzormodell:"
 
-#, fuzzy
 msgid "CPU models"
-msgstr "Processzormodell:"
+msgstr "CPU típusok"
 
 msgid "CPU socket topology has changed"
 msgstr ""
@@ -2096,9 +2092,8 @@ msgstr "Processzor-foglalat(ok):"
 msgid "CPU throttling rate increment for auto-convergence"
 msgstr ""
 
-#, fuzzy
 msgid "CPU time"
-msgstr "Processzoridő:"
+msgstr "Processzoridő"
 
 msgid "CPU time:"
 msgstr "Processzoridő:"
@@ -3456,9 +3451,8 @@ msgstr ""
 msgid "Configuration file"
 msgstr "művelet nem sikerült"
 
-#, fuzzy
 msgid "Configuration file (unless overridden by -f):"
-msgstr "formai hiba a beállítási fájlban"
+msgstr "Konfigurációs fájl (hacsak a -f nem írja felül):"
 
 msgid "Configure a domain to be automatically started at boot."
 msgstr ""
@@ -5669,9 +5663,8 @@ msgstr ""
 msgid "Error in xmlNewProp"
 msgstr ""
 
-#, fuzzy
 msgid "Error message:"
-msgstr "Nincs megadva hibaüzenet"
+msgstr "Hibaüzenet:"
 
 msgid "Error notify callback must be supplied"
 msgstr ""
@@ -6966,9 +6959,8 @@ msgstr ""
 msgid "Failed to get the number of active networks"
 msgstr "Inaktív hálózatok listázása nem sikerült"
 
-#, fuzzy
 msgid "Failed to get the number of active pools "
-msgstr "nem sikerült lekérdezni a felügyelő verzióját"
+msgstr "Nem sikerült lekérni az aktív készletek számát "
 
 #, fuzzy
 msgid "Failed to get the number of inactive networks"
@@ -9465,17 +9457,15 @@ msgstr ""
 msgid "Invalid disk read error policy: '%1$s'"
 msgstr ""
 
-#, fuzzy
 msgid "Invalid domain checkpoint"
-msgstr "érvénytelen tartománymutató itt:"
+msgstr "Érvénytelen internetes tartománynév ellenőrzési pont"
 
 #, fuzzy, c-format
 msgid "Invalid domain checkpoint: %1$s"
 msgstr "érvénytelen tartománymutató itt: %1$s"
 
-#, fuzzy
 msgid "Invalid domain snapshot"
-msgstr "érvénytelen tartománymutató itt:"
+msgstr "Érvénytelen internetes tartománynév pillanatkép"
 
 #, fuzzy, c-format
 msgid "Invalid domain snapshot: %1$s"
@@ -9485,9 +9475,8 @@ msgstr "érvénytelen tartománymutató itt: %1$s"
 msgid "Invalid domain state %1$s"
 msgstr "érvénytelen tartománymutató itt: %1$s"
 
-#, fuzzy
 msgid "Invalid domain supplied"
-msgstr "érvénytelen tartománymutató itt:"
+msgstr "Érvénytelen internetes tartománynév megadva"
 
 #, c-format
 msgid ""
@@ -9658,9 +9647,8 @@ msgstr "érvénytelen tartománymutató itt: %1$s"
 msgid "Invalid message prog=%1$d type=%2$d serial=%3$u proc=%4$d"
 msgstr ""
 
-#, fuzzy
 msgid "Invalid migration cookie"
-msgstr "érvénytelen tartománymutató itt:"
+msgstr "Érvénytelen migrációs süti"
 
 #, c-format
 msgid "Invalid mode attribute '%1$s'"
@@ -9702,11 +9690,10 @@ msgstr "'%s' hálózat lekérdezése nem sikerült"
 
 #, fuzzy
 msgid "Invalid network filter"
-msgstr "érvénytelen hálózati mutató ebben:"
+msgstr "Érvénytelen hálózati szabály"
 
-#, fuzzy
 msgid "Invalid network filter binding"
-msgstr "érvénytelen hálózati mutató ebben:"
+msgstr "Érvénytelen hálózati szűrő összerendelés"
 
 #, fuzzy, c-format
 msgid "Invalid network filter binding: %1$s"
@@ -9716,9 +9703,8 @@ msgstr "érvénytelen hálózati mutató ebben: %1$s"
 msgid "Invalid network filter: %1$s"
 msgstr "érvénytelen hálózati mutató ebben: %1$s"
 
-#, fuzzy
 msgid "Invalid network port pointer"
-msgstr "érvénytelen hálózati mutató ebben:"
+msgstr "Érvénytelen hálózati port mutató"
 
 #, fuzzy, c-format
 msgid "Invalid network port pointer: %1$s"
@@ -9805,9 +9791,8 @@ msgstr ""
 msgid "Invalid relative path '%1$s'"
 msgstr ""
 
-#, fuzzy
 msgid "Invalid resctrl monitor"
-msgstr "érvénytelen hálózati mutató ebben:"
+msgstr "Érvénytelen resctrl monitor"
 
 #, fuzzy
 msgid "Invalid secret"
@@ -10443,9 +10428,8 @@ msgstr ""
 msgid "Mediated host device assignment requires VFIO support"
 msgstr ""
 
-#, fuzzy
 msgid "Memory"
-msgstr "Max. memória:"
+msgstr "Memória"
 
 #, c-format
 msgid "Memory '%1$llu' must be less than %2$llu"
@@ -10930,9 +10914,8 @@ msgstr ""
 msgid "Missing network port bridge name"
 msgstr ""
 
-#, fuzzy
 msgid "Missing network port driver name"
-msgstr "érvénytelen hálózati mutató ebben:"
+msgstr "Hiányzik a hálózati port illesztőprogram neve"
 
 msgid "Missing network port link device name"
 msgstr ""
@@ -11321,9 +11304,8 @@ msgstr ""
 msgid "NULL value for field '%1$s'"
 msgstr ""
 
-#, fuzzy
 msgid "NUMA cell number"
-msgstr "NUMA-cella:"
+msgstr "NUMA cella száma"
 
 msgid "NUMA cell(s):"
 msgstr "NUMA-cella:"
@@ -11335,9 +11317,8 @@ msgstr ""
 msgid "NUMA distances defined without siblings"
 msgstr ""
 
-#, fuzzy
 msgid "NUMA free memory"
-msgstr "Felhasznált memória:"
+msgstr "NUMA szabad memória"
 
 msgid "NUMA free pages"
 msgstr ""
@@ -12331,9 +12312,8 @@ msgstr ""
 msgid "Operation not supported: %1$s"
 msgstr "művelet nem sikerült: %1$s"
 
-#, fuzzy
 msgid "Operation:"
-msgstr "művelet nem sikerült"
+msgstr "Művelet:"
 
 #, c-format
 msgid ""
@@ -13929,9 +13909,8 @@ msgstr ""
 msgid "Setup time:"
 msgstr "Processzoridő:"
 
-#, fuzzy
 msgid "Shared memory:\n"
-msgstr "Felhasznált memória:"
+msgstr "Megosztott memória:\n"
 
 #, c-format
 msgid "Shell '%1$s' should have absolute path"
@@ -15810,9 +15789,8 @@ msgstr ""
 msgid "Turn xbzrle compression on to tune it"
 msgstr ""
 
-#, fuzzy
 msgid "Type"
-msgstr "OS-típus:"
+msgstr "Típus"
 
 #, c-format
 msgid "Type mismatch for '%1$s' migration parameter"
@@ -15926,9 +15904,8 @@ msgstr ""
 msgid "UTS namespace support is required"
 msgstr ""
 
-#, fuzzy
 msgid "UUID"
-msgstr "UUID:"
+msgstr "UUID"
 
 msgid "UUID in config file malformed"
 msgstr ""
@@ -18164,9 +18141,9 @@ msgstr "ismeretlen gép"
 msgid "Unknown CPU feature %1$s"
 msgstr "ismeretlen OS-típus: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown CPU mode: %1$X"
-msgstr "Processzormodell:"
+msgstr "Ismeretlen CPU mód: %1$X"
 
 #, fuzzy, c-format
 msgid "Unknown CPU mode: %1$s"
@@ -18992,9 +18969,8 @@ msgstr ""
 msgid "V1 controller '%1$s' is not wanted, but '%2$s' is co-mounted"
 msgstr ""
 
-#, fuzzy
 msgid "VCPU"
-msgstr "VCPU:"
+msgstr "VCPU"
 
 msgid "VCPU:"
 msgstr "VCPU:"
@@ -19282,9 +19258,9 @@ msgstr ""
 msgid "XML does not contain expected 'cpu' element"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "XML error: %1$s"
-msgstr "hiba: "
+msgstr "XML hiba: %1$s"
 
 msgid "XML file"
 msgstr ""
@@ -22310,9 +22286,8 @@ msgstr ""
 msgid "connection closed due to keepalive timeout"
 msgstr ""
 
-#, fuzzy
 msgid "connection not open"
-msgstr "érvénytelen csatlakozás-mutató itt:"
+msgstr "kapcsolat nincs nyitva"
 
 msgid "connection vcpu maximum"
 msgstr ""
@@ -24251,9 +24226,8 @@ msgstr ""
 msgid "error copying profile name"
 msgstr ""
 
-#, fuzzy
 msgid "error count:"
-msgstr "hiba: "
+msgstr "hiba száma:"
 
 #, c-format
 msgid "error creating %1$s interface %2$s@%3$s (%4$s)"
@@ -25433,9 +25407,9 @@ msgstr "Nem sikerült megjelölni a(z) %1$s hálózatot automatikus indításra"
 msgid "failed to mark pool %1$s as autostarted"
 msgstr "Nem sikerült megjelölni a(z) %1$s hálózatot automatikus indításra"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to move file to %1$s "
-msgstr "a fájl megnyitása nem sikerült"
+msgstr "nem sikerült a fájlt a %1$s címre áthelyezni "
 
 #, c-format
 msgid "failed to obtain list of available servers from %1$s"
@@ -27467,9 +27441,8 @@ msgstr ""
 msgid "invalid UUID source: %1$s"
 msgstr ""
 
-#, fuzzy
 msgid "invalid VM definition"
-msgstr "érvénytelen tartománymutató itt:"
+msgstr "érvénytelen VM definíció"
 
 #, c-format
 msgid "invalid XML length: %1$d"
@@ -27530,7 +27503,7 @@ msgid ""
 msgstr ""
 
 msgid "invalid connection pointer in"
-msgstr "érvénytelen csatlakozás-mutató itt:"
+msgstr "érvénytelen kapcsolati mutató a"
 
 #, c-format
 msgid "invalid connection pointer in %1$s"
@@ -27565,7 +27538,7 @@ msgid "invalid dmode: '0%1$o'"
 msgstr ""
 
 msgid "invalid domain pointer in"
-msgstr "érvénytelen tartománymutató itt:"
+msgstr "érvénytelen internetes tartománynév mutató a"
 
 #, c-format
 msgid "invalid domain pointer in %1$s"
@@ -27575,9 +27548,9 @@ msgstr "érvénytelen tartománymutató itt: %1$s"
 msgid "invalid domain state reason '%1$s'"
 msgstr "érvénytelen tartománymutató itt: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid domain state: %1$d"
-msgstr "érvénytelen tartománymutató itt:"
+msgstr "érvénytelen internetes tartománynév állapot: %1$d"
 
 #, fuzzy, c-format
 msgid "invalid domain type %1$s"
@@ -27629,9 +27602,8 @@ msgstr ""
 msgid "invalid interface name %1$s"
 msgstr "érvénytelen tartománymutató itt: %1$s"
 
-#, fuzzy
 msgid "invalid interface pointer in"
-msgstr "érvénytelen hálózati mutató ebben:"
+msgstr "érvénytelen interfész mutató a"
 
 #, fuzzy, c-format
 msgid "invalid interface pointer in %1$s"
@@ -27672,9 +27644,8 @@ msgstr ""
 msgid "invalid keycode: '%1$s'"
 msgstr ""
 
-#, fuzzy
 msgid "invalid length for new profile"
-msgstr "érvénytelen hálózati mutató ebben:"
+msgstr "Érvénytelen hossz az új profilhoz"
 
 #, c-format
 msgid "invalid lifecycle action '%1$u'"
@@ -27710,9 +27681,8 @@ msgstr ""
 msgid "invalid master key read, size=%1$zd"
 msgstr ""
 
-#, fuzzy
 msgid "invalid microcode version"
-msgstr "érvénytelen csatlakozás-mutató itt:"
+msgstr "érvénytelen mikrókód verzió"
 
 msgid "invalid mode"
 msgstr ""
@@ -27741,7 +27711,7 @@ msgid "invalid netfs path (no /): %1$s"
 msgstr "érvénytelen hálózati mutató ebben: %1$s"
 
 msgid "invalid network pointer in"
-msgstr "érvénytelen hálózati mutató ebben:"
+msgstr "érvénytelen hálózati mutató ebben"
 
 #, c-format
 msgid "invalid network pointer in %1$s"
@@ -27769,9 +27739,8 @@ msgstr ""
 msgid "invalid node cpu threads value"
 msgstr ""
 
-#, fuzzy
 msgid "invalid node device pointer"
-msgstr "érvénytelen tartománymutató itt:"
+msgstr "érvénytelen csomópont eszközmutató"
 
 #, fuzzy, c-format
 msgid "invalid node device pointer in %1$s"
@@ -27889,17 +27858,15 @@ msgstr "érvénytelen hálózati mutató ebben: %1$s"
 msgid "invalid storage source index '%1$s'"
 msgstr "érvénytelen hálózati mutató ebben: %1$s"
 
-#, fuzzy
 msgid "invalid storage volume pointer in"
-msgstr "érvénytelen hálózati mutató ebben:"
+msgstr "érvénytelen tároló hálózati mutató"
 
 #, fuzzy, c-format
 msgid "invalid storage volume pointer in %1$s"
 msgstr "érvénytelen hálózati mutató ebben: %1$s"
 
-#, fuzzy
 msgid "invalid stream pointer"
-msgstr "érvénytelen hálózati mutató ebben:"
+msgstr "érvénytelen adatfolyam mutató"
 
 #, fuzzy, c-format
 msgid "invalid stream pointer in %1$s"
@@ -27915,9 +27882,8 @@ msgstr ""
 msgid "invalid tlsPort number: %1$s"
 msgstr "érvénytelen hálózati mutató ebben: %1$s"
 
-#, fuzzy
 msgid "invalid transient"
-msgstr "érvénytelen tartománymutató itt:"
+msgstr "érvénytelen átmenet"
 
 #, c-format
 msgid "invalid type '%1$s' for parameter '%2$s', expected '%3$s'"
@@ -28455,9 +28421,8 @@ msgstr ""
 msgid "list name of active pools only"
 msgstr "inaktív és aktív tartományok listázása"
 
-#, fuzzy
 msgid "list network filter bindings"
-msgstr "érvénytelen hálózati mutató ebben:"
+msgstr "listázza a hálózati szűrő kötéseket"
 
 #, fuzzy
 msgid "list network filters"
@@ -30975,9 +30940,8 @@ msgstr ""
 msgid "no config file for %1$s"
 msgstr "formai hiba a beállítási fájlban: %1$s"
 
-#, fuzzy
 msgid "no connection driver available"
-msgstr "érvénytelen csatlakozás-mutató itt:"
+msgstr "nincs elérhető kapcsolati illesztőprogram"
 
 #, fuzzy, c-format
 msgid "no connection driver available for %1$s"
