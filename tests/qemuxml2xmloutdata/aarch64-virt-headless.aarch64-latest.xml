@@ -16,7 +16,7 @@
       <feature enabled='no' name='secure-boot'/>
     </firmware>
     <loader readonly='yes' type='pflash'>/usr/share/AAVMF/AAVMF_CODE.fd</loader>
-    <nvram template='/usr/share/AAVMF/AAVMF_VARS.fd'>/some/user/nvram/path/guest_VARS.fd</nvram>
+    <nvram template='/usr/share/AAVMF/AAVMF_VARS.fd'>/path/to/guest_VARS.fd</nvram>
     <boot dev='hd'/>
   </os>
   <features>
