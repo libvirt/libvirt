@@ -125,6 +125,16 @@
 # endif
 #endif
 
+#if !defined(MOCK_STAT) && !defined(MOCK_STAT64) && \
+    !defined(MOCK___XSTAT) && !defined(MOCK___XSTAT64)
+# define MOCK_STAT
+#endif
+
+#if !defined(MOCK_LSTAT) && !defined(MOCK_LSTAT64) && \
+    !defined(MOCK___LXSTAT) && !defined(MOCK___LXSTAT64)
+# define MOCK_LSTAT
+#endif
+
 #ifdef MOCK_STAT
 static int (*real_stat)(const char *path, struct stat *sb);
 #endif
