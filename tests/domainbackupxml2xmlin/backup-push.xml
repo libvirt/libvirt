@@ -5,6 +5,7 @@
       <driver type='raw'/>
       <target file='/path/to/file'/>
     </disk>
+    <disk name='vdb' type='file' backupmode='full'/>
     <disk name='hda' backup='no'/>
   </disks>
 </domainbackup>

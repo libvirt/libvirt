@@ -424,7 +424,8 @@ virDomainBackupDefAssignStore(virDomainBackupDiskDef *disk,
         }
     }
 
-    if (!disk->store) {
+    if (!disk->store ||
+        virStorageSourceIsEmpty(disk->store)) {
         if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_FILE) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("refusing to generate file name for disk '%1$s'"),
@@ -432,7 +433,9 @@ virDomainBackupDefAssignStore(virDomainBackupDiskDef *disk,
             return -1;
         }
 
-        disk->store = virStorageSourceNew();
+        if (!disk->store)
+            disk->store = virStorageSourceNew();
+
         disk->store->type = VIR_STORAGE_TYPE_FILE;
         disk->store->path = g_strdup_printf("%s.%s", src->path, suffix);
     }

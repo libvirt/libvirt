@@ -5,6 +5,9 @@
       <driver type='raw'/>
       <target file='/path/to/file'/>
     </disk>
+    <disk name='vdb' backup='yes' type='file' backupmode='full'>
+      <target file='/fake/vdb.qcow2.SUFFIX'/>
+    </disk>
     <disk name='hda' backup='no'/>
     <disk name='vdextradisk' backup='no'/>
   </disks>
