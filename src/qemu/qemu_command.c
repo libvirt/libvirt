@@ -6797,6 +6797,12 @@ qemuAppendDomainFeaturesMachineParam(virBuffer *buf,
         virBufferAsprintf(buf, ",cap-ibs=%s", str);
     }
 
+    if (def->features[VIR_DOMAIN_FEATURE_MTE] != VIR_TRISTATE_SWITCH_ABSENT) {
+        const char *str;
+        str = virTristateSwitchTypeToString(def->features[VIR_DOMAIN_FEATURE_MTE]);
+        virBufferAsprintf(buf, ",mte=%s", str);
+    }
+
     return 0;
 }
 
