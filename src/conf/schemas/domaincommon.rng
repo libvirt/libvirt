@@ -6653,6 +6653,11 @@
           <optional>
             <ref name="tcgfeatures"/>
           </optional>
+          <optional>
+            <element name="mte">
+              <ref name="featurestate"/>
+            </element>
+          </optional>
         </interleave>
       </element>
     </optional>

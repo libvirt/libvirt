@@ -10,6 +10,7 @@
   </os>
   <features>
     <gic version='3'/>
+    <mte state='on'/>
   </features>
   <cpu mode='host-passthrough' check='none'/>
   <clock offset='utc'/>
