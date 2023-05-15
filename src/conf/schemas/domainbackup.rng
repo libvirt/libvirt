@@ -166,6 +166,10 @@
                   <value>no</value>
                 </attribute>
               </group>
+              <!-- Allow to plainly select a disk for backup without any other config -->
+              <group>
+                <ref name="backupAttr"/>
+              </group>
               <group>
                 <ref name="backupAttr"/>
                 <attribute name="type">

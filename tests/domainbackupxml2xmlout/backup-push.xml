@@ -8,6 +8,12 @@
     <disk name='vdb' backup='yes' type='file' backupmode='full'>
       <target file='/fake/vdb.qcow2.SUFFIX'/>
     </disk>
+    <disk name='vdc' backup='yes' type='file' backupmode='incremental' incremental='1525889631'>
+      <target file='/fake/vdc.qcow2.SUFFIX'/>
+    </disk>
+    <disk name='vdd' backup='yes' type='file' backupmode='incremental' incremental='1525889631'>
+      <target file='/fake/vdd.qcow2.SUFFIX'/>
+    </disk>
     <disk name='hda' backup='no'/>
     <disk name='vdextradisk' backup='no'/>
   </disks>
