@@ -4,10 +4,8 @@
   <memory unit='KiB'>4194304</memory>
   <currentMemory unit='KiB'>4194304</currentMemory>
   <vcpu placement='static'>2</vcpu>
-  <os>
-    <type arch='aarch64' machine='virt'>hvm</type>
-    <loader readonly='yes' type='pflash'>/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw</loader>
-    <nvram>/some/user/nvram/path/guest_VARS.fd</nvram>
+  <os firmware='efi'>
+    <type arch='aarch64' machine='virt-4.0'>hvm</type>
     <boot dev='hd'/>
   </os>
   <features>
