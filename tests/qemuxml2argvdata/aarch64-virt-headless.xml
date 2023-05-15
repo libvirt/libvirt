@@ -10,7 +10,7 @@
   <currentMemory>4194304</currentMemory>
   <vcpu>4</vcpu>
   <os>
-    <type arch='aarch64' machine='virt'>hvm</type>
+    <type arch='aarch64' machine='virt-4.0'>hvm</type>
     <loader readonly='yes' type='pflash'>/usr/share/AAVMF/AAVMF_CODE.fd</loader>
     <nvram>/some/user/nvram/path/guest_VARS.fd</nvram>
     <boot dev='hd'/>

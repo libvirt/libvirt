@@ -9,8 +9,12 @@
   <memory unit='KiB'>4194304</memory>
   <currentMemory unit='KiB'>4194304</currentMemory>
   <vcpu placement='static'>4</vcpu>
-  <os>
-    <type arch='aarch64' machine='virt'>hvm</type>
+  <os firmware='efi'>
+    <type arch='aarch64' machine='virt-4.0'>hvm</type>
+    <firmware>
+      <feature enabled='no' name='enrolled-keys'/>
+      <feature enabled='no' name='secure-boot'/>
+    </firmware>
     <loader readonly='yes' type='pflash'>/usr/share/AAVMF/AAVMF_CODE.fd</loader>
     <nvram template='/usr/share/AAVMF/AAVMF_VARS.fd'>/some/user/nvram/path/guest_VARS.fd</nvram>
     <boot dev='hd'/>
