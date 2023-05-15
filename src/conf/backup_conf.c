@@ -422,17 +422,19 @@ virDomainBackupDefAssignStore(virDomainBackupDiskDef *disk,
                            _("disk '%1$s' has no media"), disk->name);
             return -1;
         }
-    } else if (!disk->store) {
-        if (virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_FILE) {
-            disk->store = virStorageSourceNew();
-            disk->store->type = VIR_STORAGE_TYPE_FILE;
-            disk->store->path = g_strdup_printf("%s.%s", src->path, suffix);
-        } else {
+    }
+
+    if (!disk->store) {
+        if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_FILE) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("refusing to generate file name for disk '%1$s'"),
                            disk->name);
             return -1;
         }
+
+        disk->store = virStorageSourceNew();
+        disk->store->type = VIR_STORAGE_TYPE_FILE;
+        disk->store->path = g_strdup_printf("%s.%s", src->path, suffix);
     }
 
     return 0;
