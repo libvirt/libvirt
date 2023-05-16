@@ -327,6 +327,7 @@ div.panel,
 {
     width: 24%;
     margin-left: 7%;
+    margin-bottom: 2em;
     float: left;
     background: rgb(230, 230, 230);
 }
@@ -343,6 +344,7 @@ div.panel h2,
     background: rgb(0, 95, 97);
     color: rgb(255, 255, 255);
     text-align: center;
+    font-size: 1.6em;
 }
 
 #index.document h1 {
