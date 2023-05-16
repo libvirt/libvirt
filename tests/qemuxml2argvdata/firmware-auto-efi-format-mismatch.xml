@@ -6,7 +6,7 @@
   <os firmware='efi'>
     <type arch='x86_64' machine='pc-q35-4.0'>hvm</type>
     <loader format='qcow2'/>
-    <nvram>/path/to/guest_VARS.fd</nvram>
+    <nvram>/path/to/guest_VARS.qcow2</nvram>
   </os>
   <features>
     <acpi/>

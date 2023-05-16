@@ -3728,7 +3728,6 @@ virDomainLoaderDefNew(void)
     virDomainLoaderDef *def = NULL;
 
     def = g_new0(virDomainLoaderDef, 1);
-    def->format = VIR_STORAGE_FILE_RAW;
 
     return def;
 }
@@ -16771,10 +16770,11 @@ virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
 
     if (virXMLPropEnumDefault(nvramNode, "format",
                               virStorageFileFormatTypeFromString, VIR_XML_PROP_NONE,
-                              &format, VIR_STORAGE_FILE_RAW) < 0) {
+                              &format, VIR_STORAGE_FILE_NONE) < 0) {
         return -1;
     }
-    if (format != VIR_STORAGE_FILE_RAW &&
+    if (format &&
+        format != VIR_STORAGE_FILE_RAW &&
         format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Unsupported nvram format '%1$s'"),
@@ -16860,10 +16860,11 @@ virDomainLoaderDefParseXMLLoader(virDomainLoaderDef *loader,
 
     if (virXMLPropEnumDefault(loaderNode, "format",
                               virStorageFileFormatTypeFromString, VIR_XML_PROP_NONE,
-                              &format, VIR_STORAGE_FILE_RAW) < 0) {
+                              &format, VIR_STORAGE_FILE_NONE) < 0) {
         return -1;
     }
-    if (format != VIR_STORAGE_FILE_RAW &&
+    if (format &&
+        format != VIR_STORAGE_FILE_RAW &&
         format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Unsupported loader format '%1$s'"),
@@ -16894,7 +16895,9 @@ virDomainLoaderDefParseXML(virDomainLoaderDef *loader,
                                          loaderNode) < 0)
         return -1;
 
-    if (loader->nvram && loader->format != loader->nvram->format) {
+    if (loader->nvram &&
+        loader->format && loader->nvram->format &&
+        loader->format != loader->nvram->format) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Format mismatch: loader.format='%1$s' nvram.format='%2$s'"),
                        virStorageFileFormatTypeToString(loader->format),
@@ -26224,7 +26227,8 @@ virDomainLoaderDefFormatNvram(virBuffer *buf,
                 return -1;
         }
 
-        if (src->format != VIR_STORAGE_FILE_RAW) {
+        if (src->format &&
+            src->format != VIR_STORAGE_FILE_RAW) {
             virBufferEscapeString(&attrBuf, " format='%s'",
                                   virStorageFileFormatTypeToString(src->format));
         }
@@ -26262,7 +26266,8 @@ virDomainLoaderDefFormat(virBuffer *buf,
                           virTristateBoolTypeToString(loader->stateless));
     }
 
-    if (loader->format != VIR_STORAGE_FILE_RAW) {
+    if (loader->format &&
+        loader->format != VIR_STORAGE_FILE_RAW) {
         virBufferEscapeString(&loaderAttrBuf, " format='%s'",
                               virStorageFileFormatTypeToString(loader->format));
     }

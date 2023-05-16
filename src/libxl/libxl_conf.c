@@ -654,11 +654,16 @@ libxlMakeDomBuildInfo(virDomainDef *def,
             b_info->u.hvm.system_firmware = g_strdup(def->os.loader->path);
         }
 
-        if (def->os.loader && def->os.loader->format != VIR_STORAGE_FILE_RAW) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported loader format '%1$s'"),
-                           virStorageFileFormatTypeToString(def->os.loader->format));
-            return -1;
+        if (def->os.loader) {
+            if (!def->os.loader->format)
+                def->os.loader->format = VIR_STORAGE_FILE_RAW;
+
+            if (def->os.loader->format != VIR_STORAGE_FILE_RAW) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Unsupported loader format '%1$s'"),
+                               virStorageFileFormatTypeToString(def->os.loader->format));
+                return -1;
+            }
         }
 
         if (def->emulator) {

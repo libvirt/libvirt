@@ -43,6 +43,7 @@ xenParseXMOS(virConf *conf, virDomainDef *def)
         g_autofree char *boot = NULL;
 
         def->os.loader = virDomainLoaderDefNew();
+        def->os.loader->format = VIR_STORAGE_FILE_RAW;
 
         if (xenConfigCopyString(conf, "kernel", &def->os.loader->path) < 0)
             return -1;

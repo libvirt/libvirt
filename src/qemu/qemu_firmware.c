@@ -1082,6 +1082,11 @@ qemuFirmwareEnsureNVRAM(virDomainDef *def,
     if (loader->stateless == VIR_TRISTATE_BOOL_YES)
         return;
 
+    /* If the NVRAM format hasn't been set yet, inherit the same as
+     * the loader */
+    if (loader->nvram && !loader->nvram->format)
+        loader->nvram->format = loader->format;
+
     /* If the source already exists and is fully specified, including
      * the path, leave it alone */
     if (loader->nvram && loader->nvram->path)
@@ -1328,7 +1333,7 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
                       flash->executable.format);
             return false;
         }
-        if (loader &&
+        if (loader && loader->format &&
             STRNEQ(flash->executable.format, virStorageFileFormatTypeToString(loader->format))) {
             VIR_DEBUG("Discarding loader with mismatching flash format '%s' != '%s'",
                       flash->executable.format,
@@ -1342,7 +1347,7 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
                           flash->nvram_template.format);
                 return false;
             }
-            if (loader && loader->nvram &&
+            if (loader && loader->nvram && loader->nvram->format &&
                 STRNEQ(flash->nvram_template.format, virStorageFileFormatTypeToString(loader->nvram->format))) {
                 VIR_DEBUG("Discarding loader with mismatching nvram template format '%s' != '%s'",
                           flash->nvram_template.format,
@@ -1630,7 +1635,8 @@ qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
         return 1;
     }
 
-    if (loader->format != VIR_STORAGE_FILE_RAW) {
+    if (loader->format &&
+        loader->format != VIR_STORAGE_FILE_RAW) {
         VIR_DEBUG("Ignoring legacy entries for loader with flash format '%s'",
                   virStorageFileFormatTypeToString(loader->format));
         return 1;
@@ -1793,6 +1799,7 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
         return -1;
 
     if (loader &&
+        loader->format &&
         loader->format != VIR_STORAGE_FILE_RAW &&
         loader->format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1801,6 +1808,7 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
         return -1;
     }
     if (nvram &&
+        nvram->format &&
         nvram->format != VIR_STORAGE_FILE_RAW &&
         nvram->format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1831,8 +1839,19 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
          * CODE:NVRAM pairs that might have been provided at build
          * time */
         if (!autoSelection) {
-            if (qemuFirmwareFillDomainLegacy(driver, def) < 0)
+            if ((ret = qemuFirmwareFillDomainLegacy(driver, def)) < 0)
                 return -1;
+
+            /* If we've gotten this far without finding a match, it
+             * means that we're dealing with a set of completely
+             * custom paths. In that case, unless the user has
+             * specified otherwise, we have to assume that they're in
+             * raw format */
+            if (ret == 1) {
+                if (loader && !loader->format) {
+                    loader->format = VIR_STORAGE_FILE_RAW;
+                }
+            }
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("Unable to find any firmware to satisfy '%1$s'"),

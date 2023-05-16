@@ -80,6 +80,9 @@ bhyveFirmwareFillDomain(bhyveConn *driver,
     if (!def->os.loader)
         def->os.loader = virDomainLoaderDefNew();
 
+    if (!def->os.loader->format)
+        def->os.loader->format = VIR_STORAGE_FILE_RAW;
+
     if (def->os.loader->format != VIR_STORAGE_FILE_RAW) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported loader format '%1$s'"),
