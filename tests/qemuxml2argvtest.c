@@ -834,6 +834,9 @@ mymain(void)
 # define DO_TEST_CAPS_LATEST(name) \
     DO_TEST_CAPS_ARCH_LATEST(name, "x86_64")
 
+# define DO_TEST_CAPS_LATEST_ABI_UPDATE(name) \
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE(name, "x86_64")
+
 # define DO_TEST_CAPS_VER(name, ver) \
     DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
 
@@ -853,12 +856,20 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, \
                                   ARG_FLAGS, FLAG_EXPECT_FAILURE)
 
+# define DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE_FAILURE(name, arch) \
+    DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, \
+                                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE, \
+                                  ARG_FLAGS, FLAG_EXPECT_FAILURE)
+
 # define DO_TEST_CAPS_ARCH_VER_FAILURE(name, arch, ver) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, \
                                ARG_FLAGS, FLAG_EXPECT_FAILURE)
 
 # define DO_TEST_CAPS_LATEST_FAILURE(name) \
     DO_TEST_CAPS_ARCH_LATEST_FAILURE(name, "x86_64")
+
+# define DO_TEST_CAPS_LATEST_ABI_UPDATE_FAILURE(name) \
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE_FAILURE(name, "x86_64")
 
 # define DO_TEST_CAPS_VER_FAILURE(name, ver) \
     DO_TEST_CAPS_ARCH_VER_FAILURE(name, "x86_64", ver)
@@ -867,12 +878,20 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, \
                                   ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR)
 
+# define DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE_PARSE_ERROR(name, arch) \
+    DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, \
+                                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE, \
+                                  ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR)
+
 # define DO_TEST_CAPS_ARCH_VER_PARSE_ERROR(name, arch, ver) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, \
                                ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR)
 
 # define DO_TEST_CAPS_LATEST_PARSE_ERROR(name) \
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR(name, "x86_64")
+
+# define DO_TEST_CAPS_LATEST_ABI_UPDATE_PARSE_ERROR(name) \
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE_PARSE_ERROR(name, "x86_64")
 
 # define DO_TEST_CAPS_VER_PARSE_ERROR(name, ver) \
     DO_TEST_CAPS_ARCH_VER_PARSE_ERROR(name, "x86_64", ver)

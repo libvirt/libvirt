@@ -184,6 +184,9 @@ mymain(void)
 #define DO_TEST_CAPS_LATEST(name) \
     DO_TEST_CAPS_ARCH_LATEST(name, "x86_64")
 
+#define DO_TEST_CAPS_LATEST_ABI_UPDATE(name) \
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE(name, "x86_64")
+
 #define DO_TEST_CAPS_VER(name, ver) \
     DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
 
