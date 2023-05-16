@@ -20,7 +20,7 @@
     #search form {
        padding: 5px;
     }
-    body.index h1 {
+    #index h1 {
        display: none;
     }
     #jumplinks {
