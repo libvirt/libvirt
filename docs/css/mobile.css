@@ -87,6 +87,10 @@
     #body {
        margin-top: 180px;
     }
+    #documentation section,
+    #documentation .section,
+    #knowledge-base section,
+    #knowledge-base .section,
     div.panel {
        width: 80%;
        float: none;
