@@ -1708,15 +1708,10 @@ virNumaCacheFormat(virBuffer *buf,
         g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
         virBufferAsprintf(&attrBuf, " level='%u'", cache->level);
-        if (cache->associativity) {
-            virBufferAsprintf(&attrBuf, " associativity='%s'",
-                              virNumaCacheAssociativityTypeToString(cache->associativity));
-        }
-
-        if (cache->policy) {
-            virBufferAsprintf(&attrBuf, " policy='%s'",
-                              virNumaCachePolicyTypeToString(cache->policy));
-        }
+        virBufferAsprintf(&attrBuf, " associativity='%s'",
+                          virNumaCacheAssociativityTypeToString(cache->associativity));
+        virBufferAsprintf(&attrBuf, " policy='%s'",
+                          virNumaCachePolicyTypeToString(cache->policy));
 
         virBufferAsprintf(&childBuf,
                           "<size value='%llu' unit='KiB'/>\n",

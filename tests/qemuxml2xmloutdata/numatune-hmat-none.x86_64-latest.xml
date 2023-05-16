@@ -1,0 +1,55 @@
+<domain type='qemu'>
+  <name>QEMUGuest</name>
+  <uuid>c7a5fdb2-cdaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>8388608</memory>
+  <currentMemory unit='KiB'>8388608</currentMemory>
+  <vcpu placement='static'>12</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+    <numa>
+      <cell id='0' cpus='0-3' memory='2097152' unit='KiB'>
+        <cache level='1' associativity='none' policy='none'>
+          <size value='10' unit='KiB'/>
+          <line value='8' unit='B'/>
+        </cache>
+      </cell>
+      <cell id='1' cpus='4-7' memory='2097152' unit='KiB'/>
+      <cell id='2' cpus='8-11' memory='2097152' unit='KiB'/>
+      <cell id='3' memory='2097152' unit='KiB'/>
+      <cell id='4' memory='2097152' unit='KiB'/>
+      <cell id='5' memory='2097152' unit='KiB'/>
+      <interconnects>
+        <latency initiator='0' target='0' type='access' value='5'/>
+        <latency initiator='0' target='0' cache='1' type='access' value='10'/>
+        <bandwidth initiator='0' target='0' type='access' value='204800' unit='KiB'/>
+        <bandwidth initiator='0' target='0' cache='1' type='access' value='208896' unit='KiB'/>
+      </interconnects>
+    </numa>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0' model='piix3-uhci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>

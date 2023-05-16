@@ -855,6 +855,7 @@ mymain(void)
     DO_TEST_NOCAPS("numatune-distances");
     DO_TEST_NOCAPS("numatune-no-vcpu");
     DO_TEST("numatune-hmat", QEMU_CAPS_NUMA_HMAT);
+    DO_TEST_CAPS_LATEST("numatune-hmat-none");
     DO_TEST_CAPS_LATEST("numatune-memnode-restrictive-mode");
 
     DO_TEST_CAPS_LATEST("firmware-manual-bios");

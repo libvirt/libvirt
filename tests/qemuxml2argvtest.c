@@ -1875,6 +1875,7 @@ mymain(void)
     DO_TEST_NOCAPS("numatune-distances");
     DO_TEST_NOCAPS("numatune-no-vcpu");
     DO_TEST_CAPS_LATEST("numatune-hmat");
+    DO_TEST_CAPS_LATEST("numatune-hmat-none");
 
     DO_TEST_NOCAPS("numatune-auto-nodeset-invalid");
     DO_TEST_NOCAPS("numatune-auto-prefer");
