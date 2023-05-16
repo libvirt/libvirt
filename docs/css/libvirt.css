@@ -510,15 +510,6 @@ td.enumvalue {
     margin: 2px;
 }
 
-td.gitmirror {
-    font-size: smaller;
-    font-style: italic;
-}
-
-td.gitmirror a {
-    color: inherit;
-}
-
 th p, td p {
     margin-top: 0px;
     margin-bottom: 0px;
