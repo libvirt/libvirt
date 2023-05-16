@@ -158,11 +158,6 @@ h1 a, h2 a, h3 a, h4 a, h5 a {
     text-decoration: inherit;
 }
 
-#changelog .author {
-    color: #3c857c;
-    font-weight: bold;
-}
-
 p.image {
     text-align: center;
 }
