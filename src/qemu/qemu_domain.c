@@ -7890,8 +7890,10 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
         disksrc->format < VIR_STORAGE_FILE_BACKING) {
 
         /* terminate the chain for such images as the code below would do */
-        if (!disksrc->backingStore)
+        if (!disksrc->backingStore) {
             disksrc->backingStore = virStorageSourceNew();
+            disksrc->backingStore->detected = true;
+        }
 
         /* we assume that FD-passed disks always exist */
         if (virStorageSourceIsFD(disksrc))

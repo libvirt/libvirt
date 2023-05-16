@@ -1420,6 +1420,7 @@ virStorageSourceGetMetadataRecurse(virStorageSource *src,
     } else {
         /* add terminator */
         src->backingStore = virStorageSourceNew();
+        src->backingStore->detected = true;
     }
 
     return 0;
