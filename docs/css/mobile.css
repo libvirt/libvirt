@@ -92,7 +92,8 @@
     #knowledge-base section,
     #knowledge-base .section,
     div.panel {
-       width: 80%;
+       width: 100%;
+       margin-left: 0px;
        float: none;
        margin-bottom: 2em;
     }
