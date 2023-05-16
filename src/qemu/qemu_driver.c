@@ -2620,9 +2620,12 @@ qemuDomainGetControlInfo(virDomainPtr dom,
  */
 static int
 qemuDomainSaveInternal(virQEMUDriver *driver,
-                       virDomainObj *vm, const char *path,
-                       int compressed, virCommand *compressor,
-                       const char *xmlin, unsigned int flags)
+                       virDomainObj *vm,
+                       const char *path,
+                       int compressed,
+                       virCommand *compressor,
+                       const char *xmlin,
+                       unsigned int flags)
 {
     g_autofree char *xml = NULL;
     bool was_running = false;
@@ -2785,7 +2788,7 @@ qemuDomainManagedSaveHelper(virQEMUDriver *driver,
     VIR_INFO("Saving state of domain '%s' to '%s'", vm->def->name, path);
 
     if (qemuDomainSaveInternal(driver, vm, path, compressed,
-                                 compressor, dxml, flags) < 0)
+                               compressor, dxml, flags) < 0)
         return -1;
 
     vm->hasManagedSave = true;
