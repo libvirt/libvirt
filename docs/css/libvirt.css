@@ -158,10 +158,6 @@ h1 a, h2 a, h3 a, h4 a, h5 a {
     text-decoration: inherit;
 }
 
-p.image {
-    text-align: center;
-}
-
 table {
     border-collapse: collapse;
     min-width: 60%;
