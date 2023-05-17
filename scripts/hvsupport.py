@@ -345,9 +345,9 @@ for src in srcs:
 # have a bit of manual fixup todo with the per-driver versioning
 # and support matrix
 
-groups["virHypervisorDriver"]["apis"]["openAuth"] = \
+groups["virHypervisorDriver"]["apis"]["connectOpenAuth"] = \
     "virConnectOpenAuth"
-groups["virHypervisorDriver"]["apis"]["openReadOnly"] = \
+groups["virHypervisorDriver"]["apis"]["connectOpenReadOnly"] = \
     "virConnectOpenReadOnly"
 groups["virHypervisorDriver"]["apis"]["domainMigrate"] = \
     "virDomainMigrate"
