@@ -423,7 +423,15 @@ print('''<?xml version="1.0" encoding="UTF-8"?>
 <body id="hvsupport">
 <h1>libvirt API support matrix</h1>
 
-<ul id="toc"></ul>
+<nav class="contents" id="contents">
+<ul>
+''')
+
+for grp in sorted(groups.keys()):
+    print("<li><p><a href=\"#%s\">%s</a></p></li>" % (grp, groupheaders[grp]))
+
+print('''</ul>
+</nav>
 
 <p>
 This page documents which libvirt calls work on
