@@ -73,17 +73,6 @@
             <xsl:when test="html:html/html:body/html:main">
               <xsl:apply-templates select="/html:html/html:body/*" mode="content"/>
             </xsl:when>
-            <!-- for our older html-only files -->
-            <xsl:otherwise>
-              <div class="document">
-                <xsl:if test="html:html/html:body/@id">
-                  <xsl:attribute name="id">
-                    <xsl:value-of select="html:html/html:body/@id"/>
-                  </xsl:attribute>
-                </xsl:if>
-                <xsl:apply-templates select="/html:html/html:body/*" mode="content"/>
-              </div>
-            </xsl:otherwise>
           </xsl:choose>
         </div>
         <div id="nav">

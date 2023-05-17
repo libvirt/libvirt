@@ -450,7 +450,8 @@ for drv in list(drivers.keys()):
 print('''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<body id="hvsupport">
+<body>
+<div id="hvsupport" class="document">
 <h1>libvirt API support matrix</h1>
 
 <nav class="contents" id="contents">
@@ -536,4 +537,4 @@ for grp in sorted(groups.keys()):
 
     print("</tbody>\n</table>")
 
-print("</body>\n</html>")
+print("</div>\n</body>\n</html>")
