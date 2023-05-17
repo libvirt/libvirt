@@ -49,8 +49,19 @@ groupheaders = {
     "virStorageDriver": "Storage Pool APIs",
     "virSecretDriver": "Secret APIs",
     "virNWFilterDriver": "Network Filter APIs",
+    "commonapis": "Common driver APIs",
 }
 
+# List of common APIs used with all driver kinds
+commonapis = [
+    "virConnectOpen",
+    "virConnectClose",
+    "virConnectIsAlive",
+    "virConnectIsEncrypted",
+    "virConnectIsSecure",
+    "virConnectSupportsFeature",
+    "virConnectGetCapabilities",
+]
 
 srcs = []
 for root, dirs, files in os.walk(os.path.join(srcdir, "src")):
@@ -222,6 +233,10 @@ apis["virDomainMigrateConfirm3Params"] = {
 
 # Group name -> hash of APIs { fields -> api name }
 groups = {}
+groups["commonapis"] = {
+    "apis": {},
+    "drivers": {}
+}
 ingrp = None
 for drivertablefile in drivertablefiles:
     with open(drivertablefile) as fh:
@@ -244,7 +259,10 @@ for drivertablefile in drivertablefiles:
 
                     api = "vir" + name
                     if api in apis:
-                        groups[ingrp]["apis"][field] = api
+                        if api in commonapis:
+                            groups["commonapis"]["apis"][field] = api
+                        else:
+                            groups[ingrp]["apis"][field] = api
                     elif re.search(r"\w+(Open|Close|URIProbe)", api) is not None:
                         continue
                     else:
@@ -288,6 +306,9 @@ for src in srcs:
                             "Group %s already contains %s" % (ingrp, impl))
 
                     groups[ingrp]["drivers"][impl] = {}
+
+                    if impl not in groups["commonapis"]["drivers"]:
+                        groups["commonapis"]["drivers"][impl] = {}
             else:
                 callbackmatch = re.search(r"\s*\.(\w+)\s*=\s*(\w+)\s*,?\s*" +
                                           r"(?:/\*\s*(\d+\.\d+\.\d+)\s*" +
@@ -317,17 +338,22 @@ for src in srcs:
                             "Method %s in %s is missing version" %
                             (meth, src))
 
-                    if api not in groups[ingrp]["apis"]:
+                    if api in groups["commonapis"]["apis"]:
+                        groups["commonapis"]["drivers"][impl][api] = {
+                            "vers": vers,
+                            "deleted": deleted,
+                        }
+                    elif api in groups[ingrp]["apis"]:
+                        groups[ingrp]["drivers"][impl][api] = {
+                            "vers": vers,
+                            "deleted": deleted,
+                        }
+                    else:
                         if re.search(r"\w+(Open|Close|URIProbe)", api):
                             continue
 
                         raise Exception("Found unexpected method " +
                                         "%s in %s" % (api, ingrp))
-
-                    groups[ingrp]["drivers"][impl][api] = {
-                        "vers": vers,
-                        "deleted": deleted,
-                    }
 
                     if (api == "domainMigratePrepare" or
                             api == "domainMigratePrepare2" or
@@ -345,16 +371,16 @@ for src in srcs:
 # have a bit of manual fixup todo with the per-driver versioning
 # and support matrix
 
-groups["virHypervisorDriver"]["apis"]["connectOpenAuth"] = \
+groups["commonapis"]["apis"]["connectOpenAuth"] = \
     "virConnectOpenAuth"
-groups["virHypervisorDriver"]["apis"]["connectOpenReadOnly"] = \
+groups["commonapis"]["apis"]["connectOpenReadOnly"] = \
     "virConnectOpenReadOnly"
 groups["virHypervisorDriver"]["apis"]["domainMigrate"] = \
     "virDomainMigrate"
 
 openAuthVers = (0 * 1000 * 1000) + (4 * 1000) + 0
 
-drivers = groups["virHypervisorDriver"]["drivers"]
+drivers = groups["commonapis"]["drivers"]
 for drv in drivers.keys():
     openVersStr = drivers[drv]["connectOpen"]["vers"]
     openVers = 0
@@ -381,7 +407,7 @@ for drv in drivers.keys():
         "vers": vers,
     }
 
-
+drivers = groups["virHypervisorDriver"]["drivers"]
 # Another special case for the virDomainCreateLinux which was replaced
 # with virDomainCreateXML
 groups["virHypervisorDriver"]["apis"]["domainCreateLinux"] = \
@@ -389,7 +415,12 @@ groups["virHypervisorDriver"]["apis"]["domainCreateLinux"] = \
 
 createAPIVers = (0 * 1000 * 1000) + (0 * 1000) + 3
 
-for drv in drivers.keys():
+for drv in list(drivers.keys()):
+    # drop drivers from the "virHypervisorDriver" group which have only common APIs
+    if len(drivers[drv]) == 0:
+        drivers.pop(drv)
+        continue
+
     if "domainCreateXML" not in drivers[drv]:
         continue
     createVersStr = drivers[drv]["domainCreateXML"]["vers"]
@@ -413,7 +444,6 @@ for drv in drivers.keys():
     drivers[drv]["domainCreateLinux"] = {
         "vers": vers,
     }
-
 
 # Finally we generate the HTML file with the tables
 
