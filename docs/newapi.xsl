@@ -22,8 +22,6 @@
   <!-- Build keys for all symbols -->
   <xsl:key name="symbols" match="/api/symbols/*" use="@name"/>
 
-  <xsl:param name="indexfile" select="''"/>
-
   <!-- the target directory for the HTML output -->
   <xsl:variable name="htmldir">html</xsl:variable>
   <xsl:variable name="href_base">../</xsl:variable>
@@ -796,38 +794,7 @@
     </li>
   </xsl:template>
 
-  <xsl:template name="mainpage">
-    <xsl:variable name="title">Reference Manual for <xsl:value-of select="/api/@name"/></xsl:variable>
-    <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html&gt;
-</xsl:text>
-    <html>
-      <body>
-        <h1><xsl:value-of select="$title"/></h1>
-        <h2>Table of Contents</h2>
-        <ul>
-          <xsl:apply-templates select="/api/files/file" mode="toc"/>
-        </ul>
-      </body>
-    </html>
-  </xsl:template>
-
   <xsl:template match="/">
-    <!-- Save the main index.html as well as a couple of copies -->
-    <xsl:if test="$indexfile != ''">
-      <xsl:variable name="mainpage">
-        <xsl:call-template name="mainpage"/>
-      </xsl:variable>
-      <xsl:document
-        href="{concat($htmldir, '/', $indexfile)}"
-        method="xml"
-        indent="yes"
-        encoding="UTF-8">
-        <xsl:apply-templates select="exsl:node-set($mainpage)" mode="page">
-          <xsl:with-param name="timestamp" select="$timestamp"/>
-        </xsl:apply-templates>
-      </xsl:document>
-    </xsl:if>
-
     <xsl:for-each select="/api/files/file">
       <xsl:variable name="subpage">
         <xsl:apply-templates select="."/>
