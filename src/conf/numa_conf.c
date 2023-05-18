@@ -191,14 +191,6 @@ virDomainNumatuneNodeParseXML(virDomainNuma *numa,
                                   VIR_DOMAIN_NUMATUNE_MEM_STRICT) < 0)
             return -1;
 
-        if (numa->memory.mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE &&
-            mem_node->mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("'restrictive' mode is required in memnode element "
-                             "when mode is 'restrictive' in memory element"));
-            return -1;
-        }
-
         tmp = virXMLPropString(cur_node, "nodeset");
         if (!tmp) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -1082,6 +1074,14 @@ virDomainNumaDefValidate(const virDomainNuma *def)
     for (i = 0; i < def->nmem_nodes; i++) {
         const virDomainNumaNode *node = &def->mem_nodes[i];
         g_autoptr(virBitmap) levelsSeen = virBitmapNew(0);
+
+        if (virDomainNumatuneNodeSpecified(def, i) &&
+            def->memory.mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE &&
+            node->mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("'restrictive' mode is required in memnode element when mode is 'restrictive' in memory element"));
+            return -1;
+        }
 
         for (j = 0; j < node->ncaches; j++) {
             const virNumaCache *cache = &node->caches[j];
