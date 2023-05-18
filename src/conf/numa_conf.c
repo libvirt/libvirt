@@ -116,7 +116,7 @@ struct _virDomainNuma {
 
 
 bool
-virDomainNumatuneNodeSpecified(virDomainNuma *numatune,
+virDomainNumatuneNodeSpecified(const virDomainNuma *numatune,
                                int cellid)
 {
     if (numatune &&

@@ -210,7 +210,7 @@ int virDomainNumatuneSpecifiedMaxNode(virDomainNuma *numatune);
 bool virDomainNumatuneNodesetIsAvailable(virDomainNuma *numatune,
                                          virBitmap *auto_nodeset);
 
-bool virDomainNumatuneNodeSpecified(virDomainNuma *numatune,
+bool virDomainNumatuneNodeSpecified(const virDomainNuma *numatune,
                                     int cellid);
 
 int virDomainNumaDefParseXML(virDomainNuma *def, xmlXPathContextPtr ctxt);
