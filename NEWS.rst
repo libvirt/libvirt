@@ -17,6 +17,10 @@ v9.4.0 (unreleased)
 
 * **New features**
 
+  * qemu: Support compression for parallel migration
+
+    QEMU supports parallel migration to be compressed using either zstd or zlib.
+
 * **Improvements**
 
 * **Bug fixes**
