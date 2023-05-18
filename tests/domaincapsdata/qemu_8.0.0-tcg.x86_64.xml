@@ -93,6 +93,7 @@
       <model usable='no' vendor='Intel'>Skylake-Client-noTSX-IBRS</model>
       <model usable='no' vendor='Intel'>Skylake-Client-IBRS</model>
       <model usable='no' vendor='Intel'>Skylake-Client</model>
+      <model usable='no' vendor='Intel'>SapphireRapids</model>
       <model usable='no' vendor='Intel'>SandyBridge-IBRS</model>
       <model usable='no' vendor='Intel'>SandyBridge</model>
       <model usable='yes' vendor='Intel'>Penryn</model>
