@@ -1868,6 +1868,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("numatune-memnode");
     DO_TEST_PARSE_ERROR_NOCAPS("numatune-memnode-invalid-mode");
     DO_TEST_CAPS_LATEST("numatune-memnode-restrictive-mode");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("numatune-memnode-restrictive-mode-err-mixed");
     DO_TEST_CAPS_LATEST("numatune-system-memory");
 
     DO_TEST_NOCAPS("numatune-memnode-no-memory");

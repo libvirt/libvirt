@@ -1075,12 +1075,20 @@ virDomainNumaDefValidate(const virDomainNuma *def)
         const virDomainNumaNode *node = &def->mem_nodes[i];
         g_autoptr(virBitmap) levelsSeen = virBitmapNew(0);
 
-        if (virDomainNumatuneNodeSpecified(def, i) &&
-            def->memory.mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE &&
-            node->mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("'restrictive' mode is required in memnode element when mode is 'restrictive' in memory element"));
-            return -1;
+        if (virDomainNumatuneNodeSpecified(def, i)) {
+            if (def->memory.mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE &&
+                node->mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("'restrictive' mode is required in memnode element when mode is 'restrictive' in memory element"));
+                return -1;
+            }
+
+            if (node->mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE &&
+                def->memory.mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("'restrictive' mode is required in memory element when mode is 'restrictive' in memnode element"));
+                return -1;
+            }
         }
 
         for (j = 0; j < node->ncaches; j++) {

@@ -1,0 +1,41 @@
+<domain type='qemu'>
+  <name>QEMUGuest</name>
+  <uuid>9f4b6512-e73a-4a25-93e8-5307802821ce</uuid>
+  <memory unit='KiB'>24682468</memory>
+  <currentMemory unit='KiB'>24682468</currentMemory>
+  <vcpu placement='static'>32</vcpu>
+  <numatune>
+    <memory mode='interleave' nodeset='0-3'/>
+    <memnode cellid='0' mode='strict' nodeset='3'/>
+    <memnode cellid='2' mode='restrictive' nodeset='1-2'/>
+  </numatune>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+    <numa>
+      <cell id='0' cpus='0' memory='20002' unit='KiB'/>
+      <cell id='1' cpus='1-27,29' memory='660066' unit='KiB'/>
+      <cell id='2' cpus='28,30-31' memory='24002400' unit='KiB'/>
+    </numa>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0' model='piix3-uhci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>
