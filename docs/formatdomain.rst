@@ -6634,7 +6634,7 @@ Serial port
      <serial type='pty'>
        <target type='isa-debug'/>
        <address type='isa' iobase='0x402'/>
-     </console>
+     </serial>
 
    </devices>
    ...
