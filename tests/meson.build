@@ -605,6 +605,18 @@ foreach data : tests
   )
 endforeach
 
+test(
+  'qemu replies check',
+  python3_prog,
+  args: [
+    qemu_replies_tool_prog.full_path(),
+    '--repliesdir',
+    meson.project_source_root() / 'tests' / 'qemucapabilitiesdata'
+  ],
+  env: runutf8,
+  suite: 'script',
+)
+
 
 # helpers:
 #   each entry is a dictionary with following items:

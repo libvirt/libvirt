@@ -31,6 +31,7 @@ scripts = [
   'meson-timestamp.py',
   'mock-noinline.py',
   'prohibit-duplicate-header.py',
+  'qemu-replies-tool.py',
 ]
 
 foreach name : scripts
