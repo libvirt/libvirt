@@ -295,6 +295,9 @@ mymain(void)
     DO_SUPPORTED_TEST("pc-q35-3.1", VIR_ARCH_I686, false,
                       "/usr/share/seabios/bios-256k.bin:NULL",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS);
+    DO_SUPPORTED_TEST("microvm", VIR_ARCH_X86_64, false,
+                      "/usr/share/edk2/ovmf/MICROVM.fd:NULL",
+                      VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
     DO_SUPPORTED_TEST("virt-3.1", VIR_ARCH_AARCH64, false,
                       "/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.qcow2:/usr/share/edk2/aarch64/vars-template-pflash.qcow2:"
                       "/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw:/usr/share/edk2/aarch64/vars-template-pflash.raw:"
