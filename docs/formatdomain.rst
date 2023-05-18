@@ -6631,9 +6631,10 @@ Serial port
        <target port='0'/>
      </serial>
      <!-- Debug port for SeaBIOS / EDK II -->
-     <serial type='pty'>
+     <serial type='file'>
        <target type='isa-debug'/>
        <address type='isa' iobase='0x402'/>
+       <source path='/tmp/DOMAIN-ovmf.log'/>
      </serial>
 
    </devices>
