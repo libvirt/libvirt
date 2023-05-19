@@ -12674,3 +12674,29 @@ qemuDomainEvaluateCPUMask(const virDomainDef *def,
 
     return NULL;
 }
+
+
+void
+qemuDomainNumatuneMaybeFormatNodesetUnion(virDomainObj *vm,
+                                          virBitmap **nodeset,
+                                          char **nodesetStr)
+{
+    virDomainNuma *numatune = vm->def->numa;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virBitmap) unionMask = virBitmapNew(0);
+    ssize_t i;
+
+    for (i = -1; i < (ssize_t)virDomainNumaGetNodeCount(numatune); i++) {
+        virBitmap *tmp;
+
+        tmp = virDomainNumatuneGetNodeset(numatune, priv->autoNodeset, i);
+        if (tmp)
+            virBitmapUnion(unionMask, tmp);
+    }
+
+    if (nodesetStr)
+        *nodesetStr = virBitmapFormat(unionMask);
+
+    if (nodeset)
+        *nodeset = g_steal_pointer(&unionMask);
+}

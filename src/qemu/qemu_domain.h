@@ -1140,3 +1140,8 @@ virBitmap *
 qemuDomainEvaluateCPUMask(const virDomainDef *def,
                           virBitmap *cpumask,
                           virBitmap *autoCpuset);
+
+void
+qemuDomainNumatuneMaybeFormatNodesetUnion(virDomainObj *vm,
+                                          virBitmap **nodeset,
+                                          char **nodesetStr);
