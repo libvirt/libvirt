@@ -2553,6 +2553,7 @@ qemuProcessSetupPid(virDomainObj *vm,
                     virDomainThreadSchedParam *sched)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    virDomainNuma *numatune = vm->def->numa;
     virDomainNumatuneMemMode mem_mode;
     virCgroup *cgroup = NULL;
     virBitmap *use_cpumask = NULL;
@@ -2589,10 +2590,10 @@ qemuProcessSetupPid(virDomainObj *vm,
     if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) ||
         virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
 
-        if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
+        if (virDomainNumatuneGetMode(numatune, -1, &mem_mode) == 0 &&
             (mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT ||
              mem_mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) &&
-            virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
+            virDomainNumatuneMaybeFormatNodeset(numatune,
                                                 priv->autoNodeset,
                                                 &mem_mask, -1) < 0)
             goto cleanup;
@@ -2601,8 +2602,6 @@ qemuProcessSetupPid(virDomainObj *vm,
          * threads based on the node they are in as there is nothing else uses
          * for such restriction (e.g. numa_set_membind). */
         if (nameval == VIR_CGROUP_THREAD_VCPU) {
-            virDomainNuma *numatune = vm->def->numa;
-
             /* Look for the guest NUMA node of this vCPU */
             for (i = 0; i < virDomainNumaGetNodeCount(numatune); i++) {
                 virBitmap *node_cpus = virDomainNumaGetNodeCpumask(numatune, i);
