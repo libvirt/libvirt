@@ -3245,7 +3245,7 @@ qemuBuildMemoryGetPagesize(virQEMUDriverConfig *cfg,
  * @def: domain definition object
  * @mem: memory definition object
  * @force: forcibly use one of the backends
- * @nodemaskRet: [out] bitmap used to format .host-nodes attribute
+ * @nodemaskRet: [out] bitmap where the memory should be allocated
  *
  * Creates a configuration object that represents memory backend of given guest
  * NUMA node (domain @def and @mem). Use @priv->autoNodeset to fine tune the
@@ -3458,10 +3458,10 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
                                       "S:policy", qemuNumaPolicyTypeToString(mode),
                                       NULL) < 0)
                 return -1;
-
-            if (nodemaskRet)
-                *nodemaskRet = nodemask;
         }
+
+        if (nodemaskRet)
+            *nodemaskRet = nodemask;
     }
 
     /* If none of the following is requested... */
