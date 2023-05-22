@@ -673,24 +673,21 @@ qemuMonitorTestAddItemVerbatim(qemuMonitorTest *test,
                                const char *response)
 {
     struct qemuMonitorTestHandlerData *data;
+    char *reformatted = NULL;
+
+    if (!(reformatted = virJSONStringReformat(command, false)))
+        return -1;
 
     data = g_new0(struct qemuMonitorTestHandlerData, 1);
 
     data->response = g_strdup(response);
     data->cmderr = g_strdup(cmderr);
-
-    data->command_name = virJSONStringReformat(command, false);
-    if (!data->command_name)
-        goto error;
+    data->command_name = g_steal_pointer(&reformatted);
 
     return qemuMonitorTestAddHandler(test,
                                      command,
                                      qemuMonitorTestProcessCommandVerbatim,
                                      data, qemuMonitorTestHandlerDataFree);
-
- error:
-    qemuMonitorTestHandlerDataFree(data);
-    return -1;
 }
 
 
