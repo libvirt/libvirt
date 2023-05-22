@@ -81,13 +81,6 @@ qemuMonitorTestAddItemParams(qemuMonitorTest *test,
                              ...)
     G_GNUC_NULL_TERMINATED;
 
-int
-qemuMonitorTestAddItemExpect(qemuMonitorTest *test,
-                             const char *cmdname,
-                             const char *cmdargs,
-                             bool apostrophe,
-                             const char *response);
-
 #define qemuMonitorTestNewSimple(xmlopt) \
     qemuMonitorTestNew(xmlopt, NULL, NULL, NULL)
 #define qemuMonitorTestNewSchema(xmlopt, schema) \
