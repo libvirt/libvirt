@@ -596,19 +596,35 @@ testQemuMonitorJSONGetTPMModels(const void *opaque)
 
 
 struct qemuMonitorJSONTestAttachChardevData {
-    qemuMonitorTest *test;
     virDomainChrSourceDef *chr;
     const char *expectPty;
     bool fail;
+
+    virDomainXMLOption *xmlopt;
+    GHashTable *schema;
+    const char *expectargs;
+    const char *reply;
 };
 
 static int
 testQemuMonitorJSONAttachChardev(const void *opaque)
 {
     const struct qemuMonitorJSONTestAttachChardevData *data = opaque;
+    g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewSchema(data->xmlopt, data->schema);
     int rc;
 
-    if ((rc = qemuMonitorAttachCharDev(qemuMonitorTestGetMonitor(data->test),
+    if (!test)
+        return -1;
+
+    if (data->expectargs) {
+        g_autofree char *jsonreply = g_strdup_printf("{\"return\": {%s}}", NULLSTR_EMPTY(data->reply));
+
+        if (qemuMonitorTestAddItemExpect(test, "chardev-add",
+                                         data->expectargs, true, jsonreply) < 0)
+            return -1;
+    }
+
+    if ((rc = qemuMonitorAttachCharDev(qemuMonitorTestGetMonitor(test),
                                        "alias", data->chr)) < 0)
         goto cleanup;
 
@@ -643,36 +659,18 @@ qemuMonitorJSONTestAttachOneChardev(virDomainXMLOption *xmlopt,
                                     bool fail)
 
 {
-    struct qemuMonitorJSONTestAttachChardevData data = {0};
-    g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewSchema(xmlopt, schema);
-    g_autofree char *jsonreply = NULL;
-    g_autofree char *fulllabel = NULL;
+    struct qemuMonitorJSONTestAttachChardevData data = { .chr = chr,
+                                                         .fail = fail,
+                                                         .expectPty = expectPty,
+                                                         .expectargs = expectargs,
+                                                         .reply = reply,
+                                                         .xmlopt = xmlopt,
+                                                         .schema = schema };
+    g_autofree char *fulllabel = g_strdup_printf("qemuMonitorJSONTestAttachChardev(%s)", label);
 
-    if (!test)
-        return -1;
-
-    if (!reply)
-        reply = "";
-
-    jsonreply = g_strdup_printf("{\"return\": {%s}}", reply);
-
-    fulllabel = g_strdup_printf("qemuMonitorJSONTestAttachChardev(%s)", label);
-
-    if (expectargs &&
-        qemuMonitorTestAddItemExpect(test, "chardev-add",
-                                     expectargs, true, jsonreply) < 0)
-        return -1;
-
-    data.chr = chr;
-    data.fail = fail;
-    data.expectPty = expectPty;
-    data.test = test;
-
-    if (virTestRun(fulllabel, &testQemuMonitorJSONAttachChardev, &data) < 0)
-        return -1;
-
-    return 0;
+    return virTestRun(fulllabel, &testQemuMonitorJSONAttachChardev, &data);
 }
+
 
 static int
 qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
