@@ -552,16 +552,6 @@ static const char testQemuAgentCPUResponse[] =
     "   ]"
     "}";
 
-static const char testQemuAgentCPUArguments1[] =
-    "[{\"logical-id\":1,\"online\":false}]";
-
-static const char testQemuAgentCPUArguments2[] =
-    "[{\"logical-id\":1,\"online\":true},"
-     "{\"logical-id\":3,\"online\":true}]";
-
-static const char testQemuAgentCPUArguments3[] =
-    "[{\"logical-id\":3,\"online\":true}]";
-
 static int
 testQemuAgentCPU(const void *data)
 {
@@ -595,26 +585,36 @@ testQemuAgentCPU(const void *data)
     if (qemuAgentUpdateCPUInfo(2, cpuinfo, nvcpus) < 0)
         return -1;
 
-    if (qemuMonitorTestAddItemParams(test, "guest-set-vcpus",
-                                     "{ \"return\" : 1 }",
-                                     "vcpus", testQemuAgentCPUArguments1,
-                                     NULL) < 0)
+    if (qemuMonitorTestAddItemVerbatim(test,
+                                       "{\"execute\":\"guest-set-vcpus\","
+                                       " \"arguments\": {"
+                                       "     \"vcpus\":[{\"logical-id\":1,\"online\":false}]"
+                                       "}}",
+                                       NULL,
+                                       "{ \"return\" : 1 }") < 0)
         return -1;
 
     if (qemuAgentSetVCPUs(qemuMonitorTestGetAgent(test), cpuinfo, nvcpus) < 0)
         return -1;
 
     /* try to hotplug two, second one will fail */
-    if (qemuMonitorTestAddItemParams(test, "guest-set-vcpus",
-                                     "{ \"return\" : 1 }",
-                                     "vcpus", testQemuAgentCPUArguments2,
-                                     NULL) < 0)
+    if (qemuMonitorTestAddItemVerbatim(test,
+                                       "{\"execute\":\"guest-set-vcpus\","
+                                       " \"arguments\": {"
+                                       "     \"vcpus\":[{\"logical-id\":1,\"online\":true},"
+                                       "                {\"logical-id\":3,\"online\":true}]"
+                                       "}}",
+                                       NULL,
+                                       "{ \"return\" : 1 }") < 0)
         return -1;
 
-    if (qemuMonitorTestAddItemParams(test, "guest-set-vcpus",
-                                     "{ \"error\" : \"random error\" }",
-                                     "vcpus", testQemuAgentCPUArguments3,
-                                     NULL) < 0)
+    if (qemuMonitorTestAddItemVerbatim(test,
+                                       "{\"execute\":\"guest-set-vcpus\","
+                                       " \"arguments\": {"
+                                       "     \"vcpus\":[{\"logical-id\":3,\"online\":true}]"
+                                       "}}",
+                                       NULL,
+                                       "{ \"error\" : \"random error\" }") < 0)
         return -1;
 
     if (qemuAgentUpdateCPUInfo(4, cpuinfo, nvcpus) < 0)
