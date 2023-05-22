@@ -2000,7 +2000,6 @@ Hypervisors may allow certain CPU / machine features to be toggled on/off.
      <tcg>
        <tb-cache unit='MiB'>128</tb-cache>
      </tcg>
-     <mte state='on'/>
    </features>
    ...
 
@@ -2230,12 +2229,6 @@ are:
    =========== ============================================== =================================================== ==============
    tb-cache    The size of translation block cache size       an integer (a multiple of MiB)                      :since:`8.0.0`
    =========== ============================================== =================================================== ==============
-
-``mte``
-   Configure Memory Tagging Extensions for ARM guests. Possible values for the
-   ``state`` attribute are ``on`` and ``off``.  If the attribute is not
-   defined, the hypervisor default will be used. :since:`Since 9.4.0` (QEMU/KVM
-   only)
 
 Time keeping
 ------------
