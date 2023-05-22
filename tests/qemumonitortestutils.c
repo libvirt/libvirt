@@ -469,19 +469,10 @@ qemuMonitorTestItemGetPrivateData(qemuMonitorTestItem *item)
 }
 
 
-typedef struct _qemuMonitorTestCommandArgs qemuMonitorTestCommandArgs;
-struct _qemuMonitorTestCommandArgs {
-    char *argname;
-    char *argval;
-};
-
-
 struct qemuMonitorTestHandlerData {
     char *command_name;
     char *cmderr;
     char *response;
-    size_t nargs;
-    qemuMonitorTestCommandArgs *args;
     char *expectArgs;
 };
 
@@ -489,20 +480,13 @@ static void
 qemuMonitorTestHandlerDataFree(void *opaque)
 {
     struct qemuMonitorTestHandlerData *data = opaque;
-    size_t i;
 
     if (!data)
         return;
 
-    for (i = 0; i < data->nargs; i++) {
-        g_free(data->args[i].argname);
-        g_free(data->args[i].argval);
-    }
-
     g_free(data->command_name);
     g_free(data->cmderr);
     g_free(data->response);
-    g_free(data->args);
     g_free(data->expectArgs);
     g_free(data);
 }
@@ -740,122 +724,6 @@ qemuMonitorTestAddAgentSyncResponse(qemuMonitorTest *test)
                               NULL, NULL);
 
     return 0;
-}
-
-
-static int
-qemuMonitorTestProcessCommandWithArgs(qemuMonitorTest *test,
-                                      qemuMonitorTestItem *item,
-                                      const char *cmdstr)
-{
-    struct qemuMonitorTestHandlerData *data = item->opaque;
-    g_autoptr(virJSONValue) val = NULL;
-    virJSONValue *args;
-    virJSONValue *argobj;
-    const char *cmdname;
-    size_t i;
-
-    if (!(val = virJSONValueFromString(cmdstr)))
-        return -1;
-
-    if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
-        qemuMonitorTestError("Missing command name in %s", cmdstr);
-        return -1;
-    }
-
-    if (data->command_name &&
-        STRNEQ(data->command_name, cmdname)) {
-        qemuMonitorTestErrorInvalidCommand(data->command_name, cmdname);
-        return -1;
-    }
-
-    if (!(args = virJSONValueObjectGet(val, "arguments"))) {
-        qemuMonitorTestError("Missing arguments section for command '%s'",
-                             NULLSTR(data->command_name));
-        return -1;
-    }
-
-    /* validate the args */
-    for (i = 0; i < data->nargs; i++) {
-        qemuMonitorTestCommandArgs *arg = &data->args[i];
-        g_autofree char *argstr = NULL;
-
-        if (!(argobj = virJSONValueObjectGet(args, arg->argname))) {
-            qemuMonitorTestError("Missing argument '%s' for command '%s'",
-                                 arg->argname,
-                                 NULLSTR(data->command_name));
-            return -1;
-        }
-
-        /* convert the argument to string */
-        if (!(argstr = virJSONValueToString(argobj, false)))
-            return -1;
-
-        /* verify that the argument value is expected */
-        if (STRNEQ(argstr, arg->argval)) {
-            qemuMonitorTestError("Invalid value of argument '%s' of command '%s': "
-                                 "expected '%s' got '%s'",
-                                 arg->argname,
-                                 NULLSTR(data->command_name),
-                                 arg->argval, argstr);
-            return -1;
-        }
-    }
-
-    /* arguments checked out, return the response */
-    return qemuMonitorTestAddResponse(test, data->response);
-}
-
-
-
-/* this allows to add a responder that is able to check
- * a (shallow) structure of arguments for a command */
-int
-qemuMonitorTestAddItemParams(qemuMonitorTest *test,
-                             const char *cmdname,
-                             const char *response,
-                             ...)
-{
-    struct qemuMonitorTestHandlerData *data;
-    const char *argname;
-    const char *argval;
-    va_list args;
-
-    va_start(args, response);
-
-    data = g_new0(struct qemuMonitorTestHandlerData, 1);
-
-    data->command_name = g_strdup(cmdname);
-    data->response = g_strdup(response);
-
-    while ((argname = va_arg(args, char *))) {
-        size_t i;
-        if (!(argval = va_arg(args, char *))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "Missing argument value for argument '%s'",
-                           argname);
-            goto error;
-        }
-
-        i = data->nargs;
-        VIR_EXPAND_N(data->args, data->nargs, 1);
-        data->args[i].argname = g_strdup(argname);
-        data->args[i].argval = g_strdup(argval);
-    }
-
-    va_end(args);
-
-    qemuMonitorTestAddHandler(test,
-                              cmdname,
-                              qemuMonitorTestProcessCommandWithArgs,
-                              data, qemuMonitorTestHandlerDataFree);
-
-    return 0;
-
- error:
-    va_end(args);
-    qemuMonitorTestHandlerDataFree(data);
-    return -1;
 }
 
 

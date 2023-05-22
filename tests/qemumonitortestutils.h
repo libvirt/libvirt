@@ -74,13 +74,6 @@ qemuMonitorTestAddItemVerbatim(qemuMonitorTest *test,
 int
 qemuMonitorTestAddAgentSyncResponse(qemuMonitorTest *test);
 
-int
-qemuMonitorTestAddItemParams(qemuMonitorTest *test,
-                             const char *cmdname,
-                             const char *response,
-                             ...)
-    G_GNUC_NULL_TERMINATED;
-
 #define qemuMonitorTestNewSimple(xmlopt) \
     qemuMonitorTestNew(xmlopt, NULL, NULL, NULL)
 #define qemuMonitorTestNewSchema(xmlopt, schema) \
