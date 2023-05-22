@@ -161,7 +161,6 @@
   <flag name='virtio-crypto'/>
   <flag name='pvpanic-pci'/>
   <flag name='virtio-gpu.blob'/>
-  <flag name='machine.virt.mte'/>
   <version>6002092</version>
   <microcodeVersion>61700243</microcodeVersion>
   <package>v7.0.0-rc2</package>

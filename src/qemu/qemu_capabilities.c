@@ -693,7 +693,6 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-gpu.blob", /* QEMU_CAPS_VIRTIO_GPU_BLOB */
               "rbd-encryption-layering", /* QEMU_CAPS_RBD_ENCRYPTION_LAYERING */
               "rbd-encryption-luks-any", /* QEMU_CAPS_RBD_ENCRYPTION_LUKS_ANY */
-              "machine.virt.mte", /* QEMU_CAPS_MACHINE_VIRT_MTE */
     );
 
 
@@ -1721,7 +1720,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsPSeries[] = {
 
 static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsVirt[] = {
     { "iommu", QEMU_CAPS_MACHINE_VIRT_IOMMU },
-    { "mte", QEMU_CAPS_MACHINE_VIRT_MTE },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsGeneric[] = {
