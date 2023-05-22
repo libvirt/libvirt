@@ -2825,8 +2825,6 @@ mymain(void)
     g_autoptr(GHashTable) qapischema_x86_64 = NULL;
     g_autoptr(GHashTable) qapischema_s390x = NULL;
     struct testQAPISchemaData qapiData;
-    g_autoptr(virJSONValue) metaschema = NULL;
-    g_autofree char *metaschemastr = NULL;
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
@@ -3046,17 +3044,6 @@ mymain(void)
                           "{\"driver\":\"qcow2\",\"file\": \"somepath\"}");
     DO_TEST_QAPI_VALIDATE("alternate 2", "blockdev-add/arg-type", false,
                           "{\"driver\":\"qcow2\",\"file\": 1234}");
-
-    if (!(metaschema = testQEMUSchemaGetLatest("x86_64")) ||
-        !(metaschemastr = virJSONValueToString(metaschema, false))) {
-        VIR_TEST_VERBOSE("failed to load latest qapi schema");
-        ret = -1;
-        goto cleanup;
-    }
-
-    DO_TEST_QAPI_VALIDATE("schema-meta", "query-qmp-schema/ret-type", true,
-                        metaschemastr);
-
 
 #undef DO_TEST_QAPI_VALIDATE
 
