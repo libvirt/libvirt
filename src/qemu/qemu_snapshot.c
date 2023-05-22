@@ -1659,6 +1659,28 @@ qemuSnapshotCreateWriteMetadata(virDomainObj *vm,
 }
 
 
+static void
+qemuSnapshotClearRevertdisks(virDomainMomentObj *current)
+{
+    virDomainSnapshotDef *curdef = NULL;
+
+    if (!current)
+        return;
+
+    curdef = virDomainSnapshotObjGetDef(current);
+
+    if (curdef->revertdisks) {
+        size_t i;
+
+        for (i = 0; i < curdef->nrevertdisks; i++)
+            virDomainSnapshotDiskDefClear(&curdef->revertdisks[i]);
+
+        g_clear_pointer(&curdef->revertdisks, g_free);
+        curdef->nrevertdisks = 0;
+    }
+}
+
+
 static virDomainSnapshotPtr
 qemuSnapshotRedefine(virDomainObj *vm,
                      virDomainPtr domain,
@@ -1668,6 +1690,7 @@ qemuSnapshotRedefine(virDomainObj *vm,
                      unsigned int flags)
 {
     virDomainMomentObj *snap = NULL;
+    virDomainMomentObj *current = virDomainSnapshotGetCurrent(vm->snapshots);
     virDomainSnapshotPtr ret = NULL;
     g_autoptr(virDomainSnapshotDef) snapdef = virObjectRef(snapdeftmp);
 
@@ -1685,8 +1708,10 @@ qemuSnapshotRedefine(virDomainObj *vm,
      * makes sense, such as checking that qemu-img recognizes the
      * snapshot name in at least one of the domain's disks?  */
 
-    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT) {
+        qemuSnapshotClearRevertdisks(current);
         qemuSnapshotSetCurrent(vm, snap);
+    }
 
     if (qemuSnapshotCreateWriteMetadata(vm, snap, driver, cfg) < 0)
         goto error;
@@ -1765,6 +1790,7 @@ qemuSnapshotCreate(virDomainObj *vm,
     }
 
     if (!tmpsnap) {
+        qemuSnapshotClearRevertdisks(current);
         qemuSnapshotSetCurrent(vm, snap);
 
         if (qemuSnapshotCreateWriteMetadata(vm, snap, driver, cfg) < 0)
