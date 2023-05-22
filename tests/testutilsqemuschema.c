@@ -187,6 +187,10 @@ testQEMUSchemaValidateObjectMember(const char *key,
         return -1;
     }
 
+    /* validate that the member is not deprecated */
+    if ((rc = testQEMUSchemaValidateDeprecated(keymember, key, data->ctxt)) < 0)
+        return rc;
+
     /* lookup schema entry for keytype */
     if (!(keytype = virJSONValueObjectGetString(keymember, "type")) ||
         !(keyschema = virHashLookup(data->ctxt->schema, keytype))) {
