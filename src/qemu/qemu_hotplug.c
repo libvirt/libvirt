@@ -2247,6 +2247,7 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
     bool teardownlabel = false;
     bool teardowncgroup = false;
     bool teardowndevice = false;
+    bool restoreemulatorcgroup = false;
     g_autoptr(virJSONValue) props = NULL;
     virObjectEvent *event;
     int id;
@@ -2294,6 +2295,10 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
     if (qemuDomainAdjustMaxMemLock(vm) < 0)
         goto removedef;
 
+    if (qemuProcessSetupEmulator(vm, true) < 0)
+        goto removedef;
+    restoreemulatorcgroup = true;
+
     qemuDomainObjEnterMonitor(vm);
     if (qemuMonitorAddObject(priv->mon, &props, NULL) < 0)
         goto exit_monitor;
@@ -2332,6 +2337,9 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
         if (releaseaddr)
             qemuDomainReleaseMemoryDeviceSlot(vm, mem);
     }
+
+    if (restoreemulatorcgroup)
+        qemuProcessSetupEmulator(vm, false);
 
     virDomainMemoryDefFree(mem);
     return ret;

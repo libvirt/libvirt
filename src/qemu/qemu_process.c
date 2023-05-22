@@ -2701,7 +2701,7 @@ qemuProcessSetupPid(virDomainObj *vm,
 }
 
 
-static int
+int
 qemuProcessSetupEmulator(virDomainObj *vm,
                          bool unionMems)
 {
