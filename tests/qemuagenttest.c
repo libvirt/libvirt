@@ -197,10 +197,11 @@ testQemuAgentFSTrim(const void *data)
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
         return -1;
 
-    if (qemuMonitorTestAddItemParams(test, "guest-fstrim",
-                                     "{ \"return\" : {} }",
-                                     "minimum", "1337",
-                                     NULL) < 0)
+    if (qemuMonitorTestAddItemVerbatim(test,
+                                       "{\"execute\":\"guest-fstrim\","
+                                       " \"arguments\": {\"minimum\":1337}}",
+                                       NULL,
+                                       "{ \"return\" : {}}") < 0)
         return -1;
 
     if (qemuAgentFSTrim(qemuMonitorTestGetAgent(test), 1337) < 0)
