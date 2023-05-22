@@ -124,23 +124,14 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
 
         case VIR_DOMAIN_FEATURE_GIC:
         case VIR_DOMAIN_FEATURE_MTE:
-            if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT) {
-                if (!qemuDomainIsARMVirt(def)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("The '%1$s' feature is not supported for architecture '%2$s' or machine type '%3$s'"),
-                                   featureName,
-                                   virArchToString(def->os.arch),
-                                   def->os.machine);
-                    return -1;
-                }
-
-                if (i == VIR_DOMAIN_FEATURE_MTE &&
-                    !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_VIRT_MTE)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("The '%1$s' feature is not supported with this QEMU binary"),
-                                   featureName);
-                    return -1;
-                }
+            if (def->features[i] == VIR_TRISTATE_SWITCH_ON &&
+                !qemuDomainIsARMVirt(def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("The '%1$s' feature is not supported for architecture '%2$s' or machine type '%3$s'"),
+                               featureName,
+                               virArchToString(def->os.arch),
+                               def->os.machine);
+                return -1;
             }
             break;
 
