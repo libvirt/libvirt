@@ -30,7 +30,7 @@ typedef int (*qemuMonitorTestResponseCallback)(qemuMonitorTest *test,
                                                qemuMonitorTestItem *item,
                                                const char *message);
 
-int
+void
 qemuMonitorTestAddHandler(qemuMonitorTest *test,
                           const char *identifier,
                           qemuMonitorTestResponseCallback cb,

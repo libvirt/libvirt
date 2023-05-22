@@ -475,10 +475,9 @@ testQemuAgentShutdown(const void *data)
     priv.event = QEMU_AGENT_EVENT_SHUTDOWN;
     priv.mode = "halt";
 
-    if (qemuMonitorTestAddHandler(test, "guest-shutdown",
-                                  qemuAgentShutdownTestMonitorHandler,
-                                  &priv, NULL) < 0)
-        return -1;
+    qemuMonitorTestAddHandler(test, "guest-shutdown",
+                              qemuAgentShutdownTestMonitorHandler,
+                              &priv, NULL);
 
     if (qemuAgentShutdown(qemuMonitorTestGetAgent(test),
                           QEMU_AGENT_SHUTDOWN_HALT) < 0)
@@ -487,10 +486,9 @@ testQemuAgentShutdown(const void *data)
     priv.event = QEMU_AGENT_EVENT_SHUTDOWN;
     priv.mode = "powerdown";
 
-    if (qemuMonitorTestAddHandler(test, "guest-shutdown",
-                                  qemuAgentShutdownTestMonitorHandler,
-                                  &priv, NULL) < 0)
-        return -1;
+    qemuMonitorTestAddHandler(test, "guest-shutdown",
+                              qemuAgentShutdownTestMonitorHandler,
+                              &priv, NULL);
 
     if (qemuAgentShutdown(qemuMonitorTestGetAgent(test),
                           QEMU_AGENT_SHUTDOWN_POWERDOWN) < 0)
@@ -499,11 +497,10 @@ testQemuAgentShutdown(const void *data)
     priv.event = QEMU_AGENT_EVENT_RESET;
     priv.mode = "reboot";
 
-    if (qemuMonitorTestAddHandler(test,
-                                  "guest-shutdown",
-                                  qemuAgentShutdownTestMonitorHandler,
-                                  &priv, NULL) < 0)
-        return -1;
+    qemuMonitorTestAddHandler(test,
+                              "guest-shutdown",
+                              qemuAgentShutdownTestMonitorHandler,
+                              &priv, NULL);
 
     if (qemuAgentShutdown(qemuMonitorTestGetAgent(test),
                           QEMU_AGENT_SHUTDOWN_REBOOT) < 0)
@@ -691,10 +688,9 @@ testQemuAgentTimeout(const void *data)
     if (virTestGetExpensive() == 0)
         return EXIT_AM_SKIP;
 
-    if (qemuMonitorTestAddHandler(test, NULL,
-                                  qemuAgentTimeoutTestMonitorHandler,
-                                  NULL, NULL) < 0)
-        return -1;
+    qemuMonitorTestAddHandler(test, NULL,
+                              qemuAgentTimeoutTestMonitorHandler,
+                              NULL, NULL);
 
     if (qemuAgentFSFreeze(qemuMonitorTestGetAgent(test), NULL, 0) != -1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -706,11 +702,10 @@ testQemuAgentTimeout(const void *data)
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
         return -1;
 
-    if (qemuMonitorTestAddHandler(test,
-                                  NULL,
-                                  qemuAgentTimeoutTestMonitorHandler,
-                                  NULL, NULL) < 0)
-        return -1;
+    qemuMonitorTestAddHandler(test,
+                              NULL,
+                              qemuAgentTimeoutTestMonitorHandler,
+                              NULL, NULL);
 
     if (qemuAgentArbitraryCommand(qemuMonitorTestGetAgent(test),
                                   "{\"execute\":\"ble\"}",

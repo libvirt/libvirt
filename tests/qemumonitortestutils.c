@@ -441,7 +441,7 @@ qemuMonitorTestFree(qemuMonitorTest *test)
 }
 
 
-int
+void
 qemuMonitorTestAddHandler(qemuMonitorTest *test,
                           const char *identifier,
                           qemuMonitorTestResponseCallback cb,
@@ -460,8 +460,6 @@ qemuMonitorTestAddHandler(qemuMonitorTest *test,
     VIR_WITH_MUTEX_LOCK_GUARD(&test->lock) {
         VIR_APPEND_ELEMENT(test->items, test->nitems, item);
     }
-
-    return 0;
 }
 
 void *
@@ -604,10 +602,12 @@ qemuMonitorTestAddItem(qemuMonitorTest *test,
     data->command_name = g_strdup(command_name);
     data->response = g_strdup(response);
 
-    return qemuMonitorTestAddHandler(test,
-                                     command_name,
-                                     qemuMonitorTestProcessCommandDefault,
-                                     data, qemuMonitorTestHandlerDataFree);
+    qemuMonitorTestAddHandler(test,
+                              command_name,
+                              qemuMonitorTestProcessCommandDefault,
+                              data, qemuMonitorTestHandlerDataFree);
+
+    return 0;
 }
 
 
@@ -684,10 +684,12 @@ qemuMonitorTestAddItemVerbatim(qemuMonitorTest *test,
     data->cmderr = g_strdup(cmderr);
     data->command_name = g_steal_pointer(&reformatted);
 
-    return qemuMonitorTestAddHandler(test,
-                                     command,
-                                     qemuMonitorTestProcessCommandVerbatim,
-                                     data, qemuMonitorTestHandlerDataFree);
+    qemuMonitorTestAddHandler(test,
+                              command,
+                              qemuMonitorTestProcessCommandVerbatim,
+                              data, qemuMonitorTestHandlerDataFree);
+
+    return 0;
 }
 
 
@@ -732,10 +734,12 @@ qemuMonitorTestAddAgentSyncResponse(qemuMonitorTest *test)
         return -1;
     }
 
-    return qemuMonitorTestAddHandler(test,
-                                     "agent-sync",
-                                     qemuMonitorTestProcessGuestAgentSync,
-                                     NULL, NULL);
+    qemuMonitorTestAddHandler(test,
+                              "agent-sync",
+                              qemuMonitorTestProcessGuestAgentSync,
+                              NULL, NULL);
+
+    return 0;
 }
 
 
@@ -841,10 +845,12 @@ qemuMonitorTestAddItemParams(qemuMonitorTest *test,
 
     va_end(args);
 
-    return qemuMonitorTestAddHandler(test,
-                                     cmdname,
-                                     qemuMonitorTestProcessCommandWithArgs,
-                                     data, qemuMonitorTestHandlerDataFree);
+    qemuMonitorTestAddHandler(test,
+                              cmdname,
+                              qemuMonitorTestProcessCommandWithArgs,
+                              data, qemuMonitorTestHandlerDataFree);
+
+    return 0;
 
  error:
     va_end(args);
@@ -939,10 +945,12 @@ qemuMonitorTestAddItemExpect(qemuMonitorTest *test,
         }
     }
 
-    return qemuMonitorTestAddHandler(test,
-                                     cmdname,
-                                     qemuMonitorTestProcessCommandWithArgStr,
-                                     data, qemuMonitorTestHandlerDataFree);
+    qemuMonitorTestAddHandler(test,
+                              cmdname,
+                              qemuMonitorTestProcessCommandWithArgStr,
+                              data, qemuMonitorTestHandlerDataFree);
+
+    return 0;
 }
 
 
