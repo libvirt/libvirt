@@ -2036,14 +2036,16 @@ testQemuMonitorJSONqemuMonitorJSONSendKeyHoldtime(const void *opaque)
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
         return -1;
 
-    if (qemuMonitorTestAddItemParams(test, "send-key",
-                                     "{\"return\":{}}",
-                                     "hold-time", "31337",
-                                     "keys", "[{\"type\":\"number\",\"data\":43},"
-                                              "{\"type\":\"number\",\"data\":26},"
-                                              "{\"type\":\"number\",\"data\":46},"
-                                              "{\"type\":\"number\",\"data\":32}]",
-                                     NULL, NULL) < 0)
+    if (qemuMonitorTestAddItemVerbatim(test,
+                                       "{\"execute\":\"send-key\","
+                                       " \"arguments\":{\"keys\":[{\"type\":\"number\",\"data\":43},"
+                                       "                          {\"type\":\"number\",\"data\":26},"
+                                       "                          {\"type\":\"number\",\"data\":46},"
+                                       "                          {\"type\":\"number\",\"data\":32}],"
+                                       "                \"hold-time\":31337},"
+                                       " \"id\":\"libvirt-1\"}",
+                                       NULL,
+                                       "{ \"return\" : {}}") < 0)
         return -1;
 
     if (qemuMonitorJSONSendKey(qemuMonitorTestGetMonitor(test),
