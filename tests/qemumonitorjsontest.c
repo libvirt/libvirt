@@ -618,9 +618,18 @@ testQemuMonitorJSONAttachChardev(const void *opaque)
 
     if (data->expectargs) {
         g_autofree char *jsonreply = g_strdup_printf("{\"return\": {%s}}", NULLSTR_EMPTY(data->reply));
+        g_autofree char *jsoncommand = NULL;
+        char *n;
 
-        if (qemuMonitorTestAddItemExpect(test, "chardev-add",
-                                         data->expectargs, true, jsonreply) < 0)
+        jsoncommand = g_strdup_printf("{\"execute\": \"chardev-add\", \"arguments\": %s, \"id\" : \"libvirt-1\"}", data->expectargs);
+
+        /* data->expectargs has ' instead of " */
+        for (n = jsoncommand; *n; n++) {
+            if (*n == '\'')
+                *n = '"';
+        }
+
+        if (qemuMonitorTestAddItemVerbatim(test, jsoncommand, NULL, jsonreply) < 0)
             return -1;
     }
 
