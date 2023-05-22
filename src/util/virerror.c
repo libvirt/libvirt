@@ -775,9 +775,11 @@ void virRaiseErrorLog(const char *filename,
      * hate & thus disable that too. If the daemon has set
      * a priority filter though, we should always forward
      * all errors to the logging code.
+     * Similarly when debug priority is the default we want to log the error.
      */
     if (virLogGetNbOutputs() > 0 ||
-        virErrorLogPriorityFilter)
+        virErrorLogPriorityFilter ||
+        virLogGetDefaultPriority() == VIR_LOG_DEBUG)
         virLogMessage(&virLogSelf,
                       priority,
                       filename, linenr, funcname,
