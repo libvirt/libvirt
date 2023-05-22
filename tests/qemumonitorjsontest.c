@@ -1865,25 +1865,36 @@ testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *opaque)
     expectedInfo = (virDomainBlockIoTuneInfo) {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, NULL, 15, 16, 17, 18, 19, 20};
     expectedInfo.group_name = g_strdup("group14");
 
-    if (qemuMonitorTestAddItem(test, "query-block", queryBlockReply) < 0 ||
-        qemuMonitorTestAddItemParams(test, "block_set_io_throttle",
-                                     "{\"return\":{}}",
-                                     "device", "\"drive-virtio-disk1\"",
-                                     "bps", "1", "bps_rd", "2", "bps_wr", "3",
-                                     "iops", "4", "iops_rd", "5", "iops_wr", "6",
-                                     "bps_max", "7", "bps_rd_max", "8",
-                                     "bps_wr_max", "9",
-                                     "iops_max", "10", "iops_rd_max", "11",
-                                     "iops_wr_max", "12", "iops_size", "13",
-                                     "group", "\"group14\"",
-                                     "bps_max_length", "15",
-                                     "bps_rd_max_length", "16",
-                                     "bps_wr_max_length", "17",
-                                     "iops_max_length", "18",
-                                     "iops_rd_max_length", "19",
-                                     "iops_wr_max_length", "20",
-                                     NULL, NULL) < 0)
-        goto cleanup;
+    if (qemuMonitorTestAddItem(test, "query-block", queryBlockReply) < 0)
+        return -1;
+
+    if (qemuMonitorTestAddItemVerbatim(test,
+                                       "{\"execute\":\"block_set_io_throttle\","
+                                       " \"arguments\":{\"device\": \"drive-virtio-disk1\","
+                                       "                \"bps\": 1,"
+                                       "                \"bps_rd\": 2,"
+                                       "                \"bps_wr\": 3,"
+                                       "                \"iops\": 4,"
+                                       "                \"iops_rd\": 5,"
+                                       "                \"iops_wr\": 6,"
+                                       "                \"bps_max\": 7,"
+                                       "                \"bps_rd_max\": 8,"
+                                       "                \"bps_wr_max\": 9,"
+                                       "                \"iops_max\": 10,"
+                                       "                \"iops_rd_max\": 11,"
+                                       "                \"iops_wr_max\": 12,"
+                                       "                \"iops_size\": 13,"
+                                       "                \"group\": \"group14\","
+                                       "                \"bps_max_length\": 15,"
+                                       "                \"bps_rd_max_length\": 16,"
+                                       "                \"bps_wr_max_length\": 17,"
+                                       "                \"iops_max_length\": 18,"
+                                       "                \"iops_rd_max_length\": 19,"
+                                       "                \"iops_wr_max_length\": 20},"
+                                       " \"id\":\"libvirt-2\"}",
+                                       NULL,
+                                       "{ \"return\" : {}}") < 0)
+        return -1;
 
     if (qemuMonitorJSONGetBlockIoThrottle(qemuMonitorTestGetMonitor(test),
                                           "drive-virtio-disk0", NULL, &info) < 0)
