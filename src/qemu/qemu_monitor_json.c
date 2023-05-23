@@ -4596,7 +4596,6 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValue *io_throttle,
 #undef GET_THROTTLE_STATS_OPTIONAL
 
 int qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
-                                      const char *drivealias,
                                       const char *qomid,
                                       virDomainBlockIoTuneInfo *info)
 {
@@ -4604,8 +4603,7 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
     g_autoptr(virJSONValue) result = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("block_set_io_throttle",
-                                           "S:device", drivealias,
-                                           "S:id", qomid,
+                                           "s:id", qomid,
                                            "U:bps", info->total_bytes_sec,
                                            "U:bps_rd", info->read_bytes_sec,
                                            "U:bps_wr", info->write_bytes_sec,

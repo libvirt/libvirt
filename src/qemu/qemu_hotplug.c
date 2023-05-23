@@ -517,7 +517,7 @@ qemuDomainChangeMediaBlockdev(virDomainObj *vm,
     if (rc == 0 &&
         !virStorageSourceIsEmpty(newsrc) &&
         qemuDiskConfigBlkdeviotuneEnabled(disk)) {
-        rc = qemuMonitorSetBlockIoThrottle(priv->mon, NULL,
+        rc = qemuMonitorSetBlockIoThrottle(priv->mon,
                                            diskPriv->qomName,
                                            &disk->blkdeviotune);
     }
@@ -734,7 +734,7 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
         g_autoptr(GHashTable) blockinfo = NULL;
 
         if (qemuDiskConfigBlkdeviotuneEnabled(disk)) {
-            if (qemuMonitorSetBlockIoThrottle(priv->mon, NULL, diskPriv->qomName,
+            if (qemuMonitorSetBlockIoThrottle(priv->mon, diskPriv->qomName,
                                               &disk->blkdeviotune) < 0)
                 VIR_WARN("failed to set blkdeviotune for '%s' of '%s'", disk->dst, vm->def->name);
         }

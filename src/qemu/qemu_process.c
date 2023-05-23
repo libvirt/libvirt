@@ -7307,13 +7307,6 @@ qemuProcessSetupDiskThrottling(virDomainObj *vm,
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *disk = vm->def->disks[i];
-        qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        g_autofree char *drivealias = NULL;
-
-        if (!QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName) {
-            if (!(drivealias = qemuAliasDiskDriveFromDisk(disk)))
-                goto cleanup;
-        }
 
         /* Setting throttling for empty drives fails */
         if (virStorageSourceIsEmpty(disk->src))
@@ -7322,8 +7315,9 @@ qemuProcessSetupDiskThrottling(virDomainObj *vm,
         if (!qemuDiskConfigBlkdeviotuneEnabled(disk))
             continue;
 
-        if (qemuMonitorSetBlockIoThrottle(qemuDomainGetMonitor(vm), drivealias,
-                                          diskPriv->qomName, &disk->blkdeviotune) < 0)
+        if (qemuMonitorSetBlockIoThrottle(qemuDomainGetMonitor(vm),
+                                          QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName,
+                                          &disk->blkdeviotune) < 0)
             goto cleanup;
     }
 

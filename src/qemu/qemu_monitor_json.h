@@ -401,7 +401,6 @@ qemuMonitorJSONOpenGraphics(qemuMonitor *mon,
 
 int
 qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
-                                  const char *drivealias,
                                   const char *qomid,
                                   virDomainBlockIoTuneInfo *info);
 
