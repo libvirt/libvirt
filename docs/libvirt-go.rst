@@ -1,3 +1,6 @@
+.. meta::
+   :go-import: libvirt.org/libvirt-go git https://gitlab.com/libvirt/libvirt-go.git
+
 ================================================
 Obsolete libvirt Go Language API (no Go modules)
 ================================================

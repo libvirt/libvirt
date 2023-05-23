@@ -1,3 +1,6 @@
+.. meta::
+   :go-import: libvirt.org/go/libvirtxml git https://gitlab.com/libvirt/libvirt-go-xml-module.git
+
 ============================================
 Libvirt Go XML parsing API (with Go modules)
 ============================================

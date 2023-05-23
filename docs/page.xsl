@@ -44,17 +44,8 @@
         <meta name="theme-color" content="#ffffff"/>
         <title>libvirt: <xsl:value-of select="html:html/html:body//html:h1"/></title>
         <meta name="description" content="libvirt, virtualization, virtualization API"/>
-        <xsl:if test="$pagesrc = 'docs/libvirt-go.rst'">
-          <meta name="go-import" content="libvirt.org/libvirt-go git https://gitlab.com/libvirt/libvirt-go.git"/>
-        </xsl:if>
-        <xsl:if test="$pagesrc = 'docs/libvirt-go-xml.rst'">
-          <meta name="go-import" content="libvirt.org/libvirt-go-xml git https://gitlab.com/libvirt/libvirt-go-xml.git"/>
-        </xsl:if>
-        <xsl:if test="$pagesrc = 'docs/go/libvirt.rst'">
-          <meta name="go-import" content="libvirt.org/go/libvirt git https://gitlab.com/libvirt/libvirt-go-module.git"/>
-        </xsl:if>
-        <xsl:if test="$pagesrc = 'docs/go/libvirtxml.rst'">
-          <meta name="go-import" content="libvirt.org/go/libvirtxml git https://gitlab.com/libvirt/libvirt-go-xml-module.git"/>
+        <xsl:if test="/html:html/html:head/html:meta[@name='go-import']">
+            <meta name="go-import" content="{/html:html/html:head/html:meta[@name='go-import']/@content}"/>
         </xsl:if>
 
         <script type="text/javascript" src="{$href_base}js/main.js">

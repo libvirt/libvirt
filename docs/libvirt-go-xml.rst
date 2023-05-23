@@ -1,3 +1,6 @@
+.. meta::
+   :go-import: libvirt.org/libvirt-go-xml git https://gitlab.com/libvirt/libvirt-go-xml.git
+
 ===================================================
 Obsolete libvirt Go XML parsing API (no Go modules)
 ===================================================
