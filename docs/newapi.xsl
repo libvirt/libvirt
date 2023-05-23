@@ -286,6 +286,11 @@
   <xsl:template match="typedef[@type = 'enum']">
     <xsl:variable name="name" select="string(@name)"/>
     <h3><a id="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
+    <div class="description">
+    <xsl:call-template name="formattext">
+      <xsl:with-param name="text" select="info"/>
+    </xsl:call-template>
+    </div>
     <div class="api">
       <pre>
         <span class="keyword">enum</span><xsl:text> </xsl:text>
