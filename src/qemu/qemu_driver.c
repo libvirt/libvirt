@@ -15240,8 +15240,6 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     virDomainDef *def = NULL;
     virDomainDef *persistentDef = NULL;
     virDomainBlockIoTuneInfo reply = {0};
-    g_autofree char *drivealias = NULL;
-    const char *qdevid = NULL;
     int ret = -1;
     int maxparams;
 
@@ -15288,14 +15286,8 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
         if (!qemuDomainDiskBlockIoTuneIsSupported(disk))
             goto endjob;
 
-        if (QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName) {
-            qdevid = QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName;
-        } else {
-            if (!(drivealias = qemuAliasDiskDriveFromDisk(disk)))
-                goto endjob;
-        }
         qemuDomainObjEnterMonitor(vm);
-        rc = qemuMonitorGetBlockIoThrottle(priv->mon, drivealias, qdevid, &reply);
+        rc = qemuMonitorGetBlockIoThrottle(priv->mon, QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName, &reply);
         qemuDomainObjExitMonitor(vm);
 
         if (rc < 0)

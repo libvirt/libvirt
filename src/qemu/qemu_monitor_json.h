@@ -407,7 +407,6 @@ qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
 
 int
 qemuMonitorJSONGetBlockIoThrottle(qemuMonitor *mon,
-                                  const char *drivealias,
                                   const char *qdevid,
                                   virDomainBlockIoTuneInfo *reply);
 

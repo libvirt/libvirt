@@ -2988,16 +2988,14 @@ qemuMonitorSetBlockIoThrottle(qemuMonitor *mon,
 
 int
 qemuMonitorGetBlockIoThrottle(qemuMonitor *mon,
-                              const char *drivealias,
                               const char *qdevid,
                               virDomainBlockIoTuneInfo *reply)
 {
-    VIR_DEBUG("drivealias=%s, qdevid=%s, reply=%p",
-              NULLSTR(drivealias), NULLSTR(qdevid), reply);
+    VIR_DEBUG("qdevid=%s, reply=%p", NULLSTR(qdevid), reply);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONGetBlockIoThrottle(mon, drivealias, qdevid, reply);
+    return qemuMonitorJSONGetBlockIoThrottle(mon, qdevid, reply);
 }
 
 

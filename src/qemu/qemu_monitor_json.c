@@ -4517,7 +4517,6 @@ int qemuMonitorJSONOpenGraphics(qemuMonitor *mon,
     }
 static int
 qemuMonitorJSONBlockIoThrottleInfo(virJSONValue *io_throttle,
-                                   const char *drivealias,
                                    const char *qdevid,
                                    virDomainBlockIoTuneInfo *reply)
 {
@@ -4547,8 +4546,8 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValue *io_throttle,
             return -1;
         }
 
-        if ((drivealias && current_drive && STRNEQ(current_drive, drivealias)) ||
-            (qdevid && current_qdev && STRNEQ(current_qdev, qdevid)))
+        if (STRNEQ_NULLABLE(current_qdev, qdevid) &&
+            STRNEQ_NULLABLE(current_drive, qdevid))
             continue;
 
         found = true;
@@ -4587,7 +4586,7 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValue *io_throttle,
     if (!found) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot find throttling info for device '%1$s'"),
-                       drivealias ? drivealias : qdevid);
+                       qdevid);
         return -1;
     }
 
@@ -4640,7 +4639,6 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
 }
 
 int qemuMonitorJSONGetBlockIoThrottle(qemuMonitor *mon,
-                                      const char *drivealias,
                                       const char *qdevid,
                                       virDomainBlockIoTuneInfo *reply)
 {
@@ -4649,7 +4647,7 @@ int qemuMonitorJSONGetBlockIoThrottle(qemuMonitor *mon,
     if (!(devices = qemuMonitorJSONQueryBlock(mon)))
         return -1;
 
-    return qemuMonitorJSONBlockIoThrottleInfo(devices, drivealias, qdevid, reply);
+    return qemuMonitorJSONBlockIoThrottleInfo(devices, qdevid, reply);
 }
 
 int qemuMonitorJSONSystemWakeup(qemuMonitor *mon)

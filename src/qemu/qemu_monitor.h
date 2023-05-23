@@ -1057,7 +1057,6 @@ int qemuMonitorSetBlockIoThrottle(qemuMonitor *mon,
                                   virDomainBlockIoTuneInfo *info);
 
 int qemuMonitorGetBlockIoThrottle(qemuMonitor *mon,
-                                  const char *drivealias,
                                   const char *qdevid,
                                   virDomainBlockIoTuneInfo *reply);
 
