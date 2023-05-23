@@ -1870,7 +1870,7 @@ testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *opaque)
 
     if (qemuMonitorTestAddItemVerbatim(test,
                                        "{\"execute\":\"block_set_io_throttle\","
-                                       " \"arguments\":{\"device\": \"drive-virtio-disk1\","
+                                       " \"arguments\":{\"id\": \"drive-virtio-disk1\","
                                        "                \"bps\": 1,"
                                        "                \"bps_rd\": 2,"
                                        "                \"bps_wr\": 3,"
@@ -1904,7 +1904,7 @@ testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *opaque)
         goto cleanup;
 
     if (qemuMonitorJSONSetBlockIoThrottle(qemuMonitorTestGetMonitor(test),
-                                          "drive-virtio-disk1", NULL, &info) < 0)
+                                          NULL, "drive-virtio-disk1", &info) < 0)
         goto cleanup;
 
     ret = 0;
