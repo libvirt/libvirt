@@ -432,6 +432,9 @@
     <cpuid eax_in='0x07' ecx_in='0x01' eax='0x00800000'/>
   </feature>
 
+  <feature name='avx-vnni-int8'>
+    <cpuid eax_in='0x07' ecx_in='0x01' edx='0x00000010'/>
+  </feature>
   <feature name='avx-ne-convert'>
     <cpuid eax_in='0x07' ecx_in='0x01' edx='0x00000020'/>
   </feature>
