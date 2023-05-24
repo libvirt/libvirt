@@ -258,7 +258,7 @@
           </xsl:call-template>
         </span>
 	<xsl:text> </xsl:text>
-	<a id="{$name}"><xsl:value-of select="$name"/></a>
+	<a href="#{$name}"><xsl:value-of select="$name"/></a>
 	<xsl:text>
 </xsl:text>
       </xsl:otherwise>
@@ -321,6 +321,26 @@
         <xsl:text>}
 </xsl:text>
       </pre>
+    </div>
+  </xsl:template>
+
+  <xsl:template match="typedef">
+    <xsl:variable name="name" select="string(@name)"/>
+    <xsl:variable name="type" select="string(@type)"/>
+    <h3><a id="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
+    <div class="api">
+      <pre>
+        <span class="keyword">typedef</span><xsl:text> </xsl:text>
+        <xsl:value-of select="$type"/>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="$name"/>
+        <xsl:text>;</xsl:text>
+      </pre>
+    </div>
+    <div class="description">
+    <xsl:call-template name="formattext">
+      <xsl:with-param name="text" select="info"/>
+    </xsl:call-template>
     </div>
   </xsl:template>
 
