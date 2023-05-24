@@ -707,6 +707,9 @@
   <feature name='vgif'>
     <cpuid eax_in='0x8000000a' edx='0x00010000'/>
   </feature>
+  <feature name='vnmi'>
+    <cpuid eax_in='0x8000000a' edx='0x02000000'/>
+  </feature>
   <feature name='svme-addr-chk'>
     <cpuid eax_in='0x8000000a' edx='0x10000000'/>
   </feature>
