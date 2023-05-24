@@ -709,7 +709,8 @@ typedef virDomainInterfaceStatsStruct *virDomainInterfaceStatsPtr;
 /**
  * virDomainMemoryStatTags:
  *
- * Memory Statistics Tags:
+ * These represent values from inside of the guest (e.g. the same value would
+ * be read from '/proc/meminfo' and/or other files from inside the guest).
  *
  * Since: 0.7.5
  */
