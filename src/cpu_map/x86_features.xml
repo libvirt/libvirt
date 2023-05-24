@@ -712,6 +712,9 @@
   <feature name='lfence-always-serializing'>
     <cpuid eax_in='0x80000021' eax='0x00000004'/>
   </feature>
+  <feature name='null-sel-clr-base'>
+    <cpuid eax_in='0x80000021' eax='0x00000040'/>
+  </feature>
   <feature name='auto-ibrs'>
     <cpuid eax_in='0x80000021' eax='0x00000100'/>
   </feature>
