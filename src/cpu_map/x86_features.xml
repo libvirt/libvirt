@@ -428,6 +428,9 @@
   <feature name='amx-fp16'>
     <cpuid eax_in='0x07' ecx_in='0x01' eax='0x00200000'/>
   </feature>
+  <feature name='avx-ifma'>
+    <cpuid eax_in='0x07' ecx_in='0x01' eax='0x00800000'/>
+  </feature>
 
   <!-- Processor Extended State Enumeration sub leaf 1 -->
   <feature name='xsaveopt'>
