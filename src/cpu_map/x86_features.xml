@@ -646,6 +646,9 @@
   <feature name='amd-stibp'>
     <cpuid eax_in='0x80000008' ebx='0x00008000'/>
   </feature>
+  <feature name='stibp-always-on'>
+    <cpuid eax_in='0x80000008' ebx='0x00020000'/>
+  </feature>
   <feature name='amd-ssbd'>
     <cpuid eax_in='0x80000008' ebx='0x01000000'/>
   </feature>
