@@ -23,6 +23,7 @@
   <feature policy='require' name='intel-pt'/>
   <feature policy='require' name='md-clear'/>
   <feature policy='require' name='stibp'/>
+  <feature policy='require' name='flush-l1d'/>
   <feature policy='require' name='ssbd'/>
   <feature policy='require' name='xsaves'/>
   <feature policy='require' name='pdpe1gb'/>

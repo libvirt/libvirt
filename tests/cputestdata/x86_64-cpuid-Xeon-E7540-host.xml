@@ -21,6 +21,7 @@
   <feature name='dca'/>
   <feature name='x2apic'/>
   <feature name='stibp'/>
+  <feature name='flush-l1d'/>
   <feature name='ssbd'/>
   <feature name='rdtscp'/>
   <feature name='invtsc'/>

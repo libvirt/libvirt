@@ -26,6 +26,7 @@
   <feature name='intel-pt'/>
   <feature name='ospke'/>
   <feature name='md-clear'/>
+  <feature name='flush-l1d'/>
   <feature name='xsaves'/>
   <feature name='mbm_total'/>
   <feature name='mbm_local'/>

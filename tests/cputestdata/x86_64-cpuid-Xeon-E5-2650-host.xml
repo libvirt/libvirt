@@ -24,6 +24,7 @@
   <feature name='osxsave'/>
   <feature name='arat'/>
   <feature name='stibp'/>
+  <feature name='flush-l1d'/>
   <feature name='ssbd'/>
   <feature name='xsaveopt'/>
   <feature name='pdpe1gb'/>

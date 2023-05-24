@@ -24,6 +24,7 @@
   <feature name='intel-pt'/>
   <feature name='md-clear'/>
   <feature name='stibp'/>
+  <feature name='flush-l1d'/>
   <feature name='ssbd'/>
   <feature name='xsaves'/>
   <feature name='pdpe1gb'/>

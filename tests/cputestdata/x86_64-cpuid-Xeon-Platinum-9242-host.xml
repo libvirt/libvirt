@@ -27,6 +27,7 @@
   <feature name='ospke'/>
   <feature name='md-clear'/>
   <feature name='stibp'/>
+  <feature name='flush-l1d'/>
   <feature name='arch-capabilities'/>
   <feature name='xsaves'/>
   <feature name='mbm_total'/>

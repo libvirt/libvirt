@@ -19,6 +19,7 @@
   <feature policy='require' name='dca'/>
   <feature policy='require' name='x2apic'/>
   <feature policy='require' name='stibp'/>
+  <feature policy='require' name='flush-l1d'/>
   <feature policy='require' name='ssbd'/>
   <feature policy='require' name='rdtscp'/>
   <feature policy='require' name='invtsc'/>
