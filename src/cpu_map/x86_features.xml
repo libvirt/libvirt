@@ -633,6 +633,9 @@
   <feature name='amd-no-ssb'>
     <cpuid eax_in='0x80000008' ebx='0x04000000'/>
   </feature>
+  <feature name='amd-psfd'>
+    <cpuid eax_in='0x80000008' ebx='0x10000000'/>
+  </feature>
 
   <!-- SVM features -->
   <feature name='npt'>
