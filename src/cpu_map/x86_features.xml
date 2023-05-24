@@ -706,6 +706,9 @@
   </feature>
 
   <!-- cpuid level 0x80000021 ecx 0x0 features -->
+  <feature name='lfence-always-serializing'>
+    <cpuid eax_in='0x80000021' eax='0x00000004'/>
+  </feature>
   <feature name='auto-ibrs'>
     <cpuid eax_in='0x80000021' eax='0x00000100'/>
   </feature>
