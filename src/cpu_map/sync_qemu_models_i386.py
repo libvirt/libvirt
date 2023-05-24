@@ -208,7 +208,8 @@ def read_builtin_x86_defs(filename):
     """Extract content between begin_mark and end_mark from file `filename` as
     string, while expanding shorthand macros like "I486_FEATURES"."""
 
-    begin_mark = re.compile("^static( const)? X86CPUDefinition builtin_x86_defs\\[\\] = {$")
+    begin_mark = re.compile(
+        "^static( const)? X86CPUDefinition builtin_x86_defs\\[\\] = {$")
     end_mark = "};\n"
     shorthand = re.compile("^#define ([A-Z0-9_]+_FEATURES) (.*)$")
     lines = list()
