@@ -56,7 +56,6 @@
         <xsl:if test="$pagesrc = 'docs/go/libvirtxml.rst'">
           <meta name="go-import" content="libvirt.org/go/libvirtxml git https://gitlab.com/libvirt/libvirt-go-xml-module.git"/>
         </xsl:if>
-        <xsl:apply-templates select="/html:html/html:head/html:script" mode="content"/>
 
         <script type="text/javascript" src="{$href_base}js/main.js">
           <xsl:comment>// forces non-empty element</xsl:comment>
