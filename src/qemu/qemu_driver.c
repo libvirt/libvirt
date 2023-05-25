@@ -14764,11 +14764,12 @@ typedef enum {
 
 
 static bool
-qemuDomainDiskBlockIoTuneIsSupported(virStorageSource *src)
+qemuDomainDiskBlockIoTuneIsSupported(virDomainDiskDef *disk)
 {
-    if (virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_VHOST_USER) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("a block I/O throttling is not supported for vhostuser disk"));
+    if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER ||
+        disk->bus == VIR_DOMAIN_DISK_BUS_SD) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("block I/O throttling is not supported for disk '%1$s'"), disk->dst);
         return false;
     }
 
@@ -15107,7 +15108,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         if (!(disk = qemuDomainDiskByName(def, path)))
             goto endjob;
 
-        if (!qemuDomainDiskBlockIoTuneIsSupported(disk->src))
+        if (!qemuDomainDiskBlockIoTuneIsSupported(disk))
             goto endjob;
 
         if (QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName) {
@@ -15193,7 +15194,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             goto endjob;
         }
 
-        if (!qemuDomainDiskBlockIoTuneIsSupported(conf_disk->src))
+        if (!qemuDomainDiskBlockIoTuneIsSupported(conf_disk))
             goto endjob;
 
         conf_cur_info = qemuDomainFindGroupBlockIoTune(persistentDef, conf_disk, &info);
@@ -15284,7 +15285,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
         if (!(disk = qemuDomainDiskByName(def, path)))
             goto endjob;
 
-        if (!qemuDomainDiskBlockIoTuneIsSupported(disk->src))
+        if (!qemuDomainDiskBlockIoTuneIsSupported(disk))
             goto endjob;
 
         if (QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName) {
@@ -15309,7 +15310,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
             goto endjob;
         }
 
-        if (!qemuDomainDiskBlockIoTuneIsSupported(disk->src))
+        if (!qemuDomainDiskBlockIoTuneIsSupported(disk))
             goto endjob;
 
         reply = disk->blkdeviotune;

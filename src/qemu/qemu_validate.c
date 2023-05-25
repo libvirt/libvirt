@@ -3094,6 +3094,14 @@ qemuValidateDomainDeviceDefDiskBlkdeviotune(const virDomainDiskDef *disk,
         return -1;
     }
 
+    /* setting throttling for the SD card didn't work, refuse it explicitly */
+    if (disk->bus == VIR_DOMAIN_DISK_BUS_SD &&
+        qemuDiskConfigBlkdeviotuneEnabled(disk)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("<iotune> is not supported with bus='sd'"));
+        return -1;
+    }
+
     /* checking def here is only for calling from tests */
     if (disk->blkdeviotune.group_name) {
         size_t i;
