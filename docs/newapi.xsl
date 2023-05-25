@@ -733,24 +733,6 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template name="docomponents">
-    <xsl:apply-templates select="exports[@type='macro']">
-      <xsl:sort select='@symbol'/>
-    </xsl:apply-templates>
-    <xsl:apply-templates select="exports[@type='enum']">
-      <xsl:sort select='@symbol'/>
-    </xsl:apply-templates>
-    <xsl:apply-templates select="exports[@type='typedef']">
-      <xsl:sort select='@symbol'/>
-    </xsl:apply-templates>
-    <xsl:apply-templates select="exports[@type='struct']">
-      <xsl:sort select='@symbol'/>
-    </xsl:apply-templates>
-    <xsl:apply-templates select="exports[@type='function']">
-      <xsl:sort select='@symbol'/>
-    </xsl:apply-templates>
-  </xsl:template>
-
   <xsl:template match="file">
     <xsl:variable name="name" select="@name"/>
     <xsl:variable name="title">Module <xsl:value-of select="$name"/> from <xsl:value-of select="/api/@name"/></xsl:variable>
