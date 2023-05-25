@@ -6910,6 +6910,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
     for (i = 0; i < n; i++) {
         g_autofree char *model = NULL;
         g_autofree char *label = NULL;
+        int relabelSpecified;
         virTristateBool t;
 
         /* get model associated to this override */
@@ -6926,7 +6927,9 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
             seclabels[i]->model = g_steal_pointer(&model);
         }
 
-        if (virXMLPropTristateBool(list[i], "relabel", VIR_XML_PROP_NONE, &t) < 0)
+        relabelSpecified = virXMLPropTristateBool(list[i], "relabel",
+                                                  VIR_XML_PROP_NONE, &t);
+        if (relabelSpecified < 0)
             goto error;
 
         seclabels[i]->relabel = true;
@@ -6950,6 +6953,15 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
         if (seclabels[i]->label && !seclabels[i]->relabel) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Cannot specify a label if relabelling is turned off. model=%1$s"),
+                           NULLSTR(seclabels[i]->model));
+            goto error;
+        }
+
+        if (relabelSpecified > 0 &&
+            flags & VIR_DOMAIN_DEF_PARSE_INACTIVE &&
+            seclabels[i]->relabel && !seclabels[i]->label) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Cannot specify relabel if label is missing. model=%1$s"),
                            NULLSTR(seclabels[i]->model));
             goto error;
         }

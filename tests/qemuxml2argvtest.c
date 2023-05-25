@@ -1913,6 +1913,7 @@ mymain(void)
     DO_TEST_NOCAPS("seclabel-dac-none");
     DO_TEST_PARSE_ERROR_NOCAPS("seclabel-multiple");
     DO_TEST_PARSE_ERROR_NOCAPS("seclabel-device-duplicates");
+    DO_TEST_PARSE_ERROR_NOCAPS("seclabel-device-relabel-invalid");
 
     DO_TEST_CAPS_LATEST_PPC64("pseries-basic");
     DO_TEST_CAPS_LATEST_PPC64("pseries-vio");
