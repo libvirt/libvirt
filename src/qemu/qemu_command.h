@@ -208,7 +208,7 @@ qemuBuildZPCIDevProps(virDomainDeviceInfo *dev);
 int qemuNetworkPrepareDevices(virDomainDef *def);
 
 bool
-qemuDiskConfigBlkdeviotuneEnabled(virDomainDiskDef *disk);
+qemuDiskConfigBlkdeviotuneEnabled(const virDomainDiskDef *disk);
 
 virJSONValue *qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
     ATTRIBUTE_NONNULL(1);

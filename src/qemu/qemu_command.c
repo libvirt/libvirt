@@ -1550,7 +1550,7 @@ qemuBuildChardevCommand(virCommand *cmd,
 
 
 bool
-qemuDiskConfigBlkdeviotuneEnabled(virDomainDiskDef *disk)
+qemuDiskConfigBlkdeviotuneEnabled(const virDomainDiskDef *disk)
 {
     return !!disk->blkdeviotune.group_name ||
            virDomainBlockIoTuneInfoHasAny(&disk->blkdeviotune);
