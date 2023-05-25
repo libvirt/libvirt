@@ -210,7 +210,7 @@ endif
 docs_rst2html5_gen = generator(
   rst2html5_prog,
   output: '@BASENAME@.html.in',
-  arguments: [ '--stylesheet=', '--strict', '@INPUT@' ],
+  arguments: [ '--exit-status=1', '--stylesheet=', '--strict', '@INPUT@' ],
   capture: true,
 )
 
