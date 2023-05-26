@@ -1609,8 +1609,30 @@ qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
         loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
         loader->readonly = VIR_TRISTATE_BOOL_YES;
 
-        VIR_FREE(loader->nvramTemplate);
-        loader->nvramTemplate = g_strdup(cfg->firmwares[i]->nvram);
+        /* Only use the default template path if one hasn't been
+         * provided by the user.
+         *
+         * In addition to fully-custom templates, which are a valid
+         * use case, we could simply be in a situation where
+         * qemu.conf contains
+         *
+         *   nvram = [
+         *     "/path/to/OVMF_CODE.secboot.fd:/path/to/OVMF_VARS.fd",
+         *     "/path/to/OVMF_CODE.secboot.fd:/path/to/OVMF_VARS.secboot.fd"
+         *   ]
+         *
+         * and the domain has been configured as
+         *
+         *   <os>
+         *     <loader readonly='yes' type='pflash'>/path/to/OVMF_CODE.secboot.fd</loader>
+         *     <nvram template='/path/to/OVMF/OVMF_VARS.secboot.fd'>
+         *   </os>
+         *
+         * In this case, the global default is to have Secure Boot
+         * disabled, but the domain configuration explicitly enables
+         * it, and we shouldn't overrule this choice */
+        if (!loader->nvramTemplate)
+            loader->nvramTemplate = g_strdup(cfg->firmwares[i]->nvram);
 
         qemuFirmwareEnsureNVRAM(def, cfg, VIR_STORAGE_FILE_RAW);
 
