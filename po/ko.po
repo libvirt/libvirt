@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-25 10:39+0000\n"
+"POT-Creation-Date: 2023-05-26 06:46+0000\n"
 "PO-Revision-Date: 2023-04-28 04:20+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1377,6 +1377,11 @@ msgstr ""
 "'restrictive' 방식은 memnode 요소가 메모리 요소에서 'restrictive'일때 필요합"
 "니다"
 
+msgid ""
+"'restrictive' mode is required in memory element when mode is 'restrictive' "
+"in memnode element"
+msgstr ""
+
 #, c-format
 msgid ""
 "'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"
@@ -1971,8 +1976,9 @@ msgstr ""
 msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
 "mandatory"
-msgstr "옵션 --min-workers, --max-workers, --priority-workers 중 최소 하나는 필 수 "
-"입니다"
+msgstr ""
+"옵션 --min-workers, --max-workers, --priority-workers 중 최소 하나는 필 수 입"
+"니다"
 
 msgid "At least one tty is required"
 msgstr "최소 하나의 전신인자기 (teletypewriter)은 필요합니다"
@@ -2644,7 +2650,8 @@ msgstr "인증을 수행할 수 없습니다: 인증 회신이 제공되지 않�
 msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
 "not provided"
-msgstr "키보드-대화형 인증을 수행 할 수 없습니다: 인증 되돌리기가 제공되지 않습니다"
+msgstr ""
+"키보드-대화형 인증을 수행 할 수 없습니다: 인증 되돌리기가 제공되지 않습니다"
 
 #, c-format
 msgid "Can't read %1$s"
@@ -2922,7 +2929,8 @@ msgstr "제조사 id 0x%1$02llx인 CPU 제조사를 찾을 수 없습니다"
 
 #, c-format
 msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
-msgstr "blkio cgroup 통계(%1$s)를 찾을 수 없습니다. (블록 장치 '%2$s' (%3$s)를 위한)"
+msgstr ""
+"blkio cgroup 통계(%1$s)를 찾을 수 없습니다. (블록 장치 '%2$s' (%3$s)를 위한)"
 
 #, c-format
 msgid "Cannot find boot device of requested type %1$s"
@@ -3225,16 +3233,16 @@ msgstr "요소 <address>의 uuid 속성을 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 "'%1$s' 연결장치를 '%2$s'에 연결 할 수 없으며, 왜냐하면 새로 결합된 인바운드 "
 "floor=%3$llu는 평균= %4$llu를 초과 커밋(네트워크 '%5$s'에서)하기 때문입니다"
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 "'%1$s' 연결장치를 '%2$s'에 연결 할 수 없으며, 왜냐하면 신규 결합된 인바운드 "
 "floor=%3$llu는 peak=%4$llu를 오버커밋(네트워크 '%5$s'에서)하기 때문입니다"
@@ -3733,8 +3741,16 @@ msgid "Compression cache: %1$.3lf %2$s"
 msgstr "압축 캐쉬: %1$.3lf %2$s"
 
 #, c-format
+msgid "Compression method '%1$s' is only supported with parallel migration"
+msgstr ""
+
+#, c-format
 msgid "Compression method '%1$s' is specified twice"
 msgstr "압축 방법 '%1$s'가 2번 지정되었습니다"
+
+#, c-format
+msgid "Compression method '%1$s' isn't supported with parallel migration"
+msgstr ""
 
 msgid "Compression overflows:"
 msgstr "압축 오버플로우:"
@@ -5016,10 +5032,6 @@ msgstr "DAC 이미지 레이블을 확인할 수 없습니다"
 msgid "DAC seclabel couldn't be determined"
 msgstr "DAC seclabel을 결정할 수 없습니다"
 
-#, c-format
-msgid "DBus daemon %1$s didn't show up"
-msgstr "DBus 데몬 %1$s가 표시되지 않았습니다"
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "DNS 호스트 기록을 수정 할 수 없습니다. 추가 또는 삭제만 가능합니다"
 
@@ -6056,8 +6068,8 @@ msgstr "도메인 이름을 읽는 동안 오류가 발생했습니다"
 #, c-format
 msgid "Error while removing hostonly network interface, rc=%1$08x"
 msgstr ""
-"호스트 전용 네트워크 인터페이스를 제거하는 동안 오류가 발생했습니다. rc="
-"%1$08x"
+"호스트 전용 네트워크 인터페이스를 제거하는 동안 오류가 발생했습니다. "
+"rc=%1$08x"
 
 #, c-format
 msgid "Escape character is %1$s"
@@ -8555,9 +8567,6 @@ msgstr "대상에 비해 필드 커널 메모리가 너무 깁니다"
 msgid "Field name '%1$s' too long"
 msgstr "이름 '%1$s'가 너무 깁니다"
 
-msgid "Field name too long"
-msgstr "필드 이름이 너무 깁니다"
-
 #, c-format
 msgid "File %1$s contains no keys"
 msgstr "파일 %1$s에 아무런 키가 없습니다"
@@ -9221,7 +9230,8 @@ msgstr "IORT 테이블 노드 헤더가 일찍 종료됨"
 msgid ""
 "IORT table node type %1$s has invalid length: got %2$u, expected at least "
 "%3$zu"
-msgstr "IORT 테이블 노트 유형 %1$s가 유효한 길이가 아닙니다:%2$u를 가졌지만, 적어도 "
+msgstr ""
+"IORT 테이블 노트 유형 %1$s가 유효한 길이가 아닙니다:%2$u를 가졌지만, 적어도 "
 "%3$zu 이상이어야 합니다"
 
 msgid "IOThread ID"
@@ -9468,10 +9478,6 @@ msgid "Invalid 'cpu.max' data."
 msgstr "잘못된 'cpu.max' 자료."
 
 #, c-format
-msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
-msgstr "NUMA 노드 %1$d에 대한 캐쉬 요소의 잘못된 '레벨' 속성"
-
-#, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
 msgstr "잘못된 --with-loader-nvram 목록: %1$s"
 
@@ -9702,16 +9708,8 @@ msgid "Invalid bus type '%1$s' for floppy disk"
 msgstr "잘못된 플로피 디스크 버스 유형 '%1$s'"
 
 #, c-format
-msgid "Invalid cache associativity '%1$s'"
-msgstr "잘못된 캐쉬 연결성 '%1$s'"
-
-#, c-format
 msgid "Invalid cache id '%1$s'"
 msgstr "잘못된 캐쉬 ID '%1$s'"
-
-#, c-format
-msgid "Invalid cache policy '%1$s'"
-msgstr "잘못된 캐쉬 정책 '%1$s'"
 
 msgid "Invalid call"
 msgstr "잘못된 호출"
@@ -10185,8 +10183,8 @@ msgid ""
 "Invalid specification for virtio ccw address: cssid='0x%1$x' ssid='0x%2$x' "
 "devno='0x%3$04x'"
 msgstr ""
-"virtio ccw 주소에 대한 잘못된 지정: cssid='0x%1$x' ssid='0x%2$x' devno='0x"
-"%3$04x'"
+"virtio ccw 주소에 대한 잘못된 지정: cssid='0x%1$x' ssid='0x%2$x' "
+"devno='0x%3$04x'"
 
 #, c-format
 msgid "Invalid state '%1$s' in domain snapshot XML"
@@ -10998,10 +10996,6 @@ msgstr "ManagedEntityStatus를 검색하는 동안 '%1$s' 속성이 누락되어
 msgid "Missing '/' separator in cgroup mount '%1$s'"
 msgstr "cgroup 적재 '%1$s'에서 구분자 '/'가 누락됨"
 
-#, c-format
-msgid "Missing 'associativity' attribute in cache element for NUMA node %1$d"
-msgstr "NUMA 노드 %1$d의 캐시 요소에 '연관성' 속성이 없습니다"
-
 msgid "Missing 'domname' in JSON document"
 msgstr "JSON 문서에서 '도메인이름'이 누락되어 있음"
 
@@ -11021,10 +11015,6 @@ msgstr "CPU 맵에 누락된 '파일 이름' 포함"
 msgid "Missing 'key' element for lease"
 msgstr "임대의 'key' 요소가 누락되어 있음"
 
-#, c-format
-msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
-msgstr "NUMA 노드 %1$d의 캐쉬 요소에 '레벨' 속성이 없습니다"
-
 msgid "Missing 'link' attribute for NIC"
 msgstr "NIC에 대한 '링크' 속성 누락"
 
@@ -11040,10 +11030,6 @@ msgstr "JSON 문서에서 '경로' 부분이 누락되어 있음"
 
 msgid "Missing 'pipefd' in JSON document"
 msgstr "JSON 문서에서 'pipefd'가 누락되어 있음"
-
-#, c-format
-msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
-msgstr "NUMA 노드 %1$d의 캐시 요소에 '정책' 속성이 없습니다"
 
 msgid "Missing 'runtime.powerState' property"
 msgstr "'runtime.powerState' 속성이 누락되어 있음"
@@ -12041,6 +12027,9 @@ msgstr "일치하는 ID '%1$llu'에 클라이언트가 없음"
 msgid "No complete agent response found in %1$d bytes"
 msgstr "%1$d바이트에서 완전한 에이전트 응답을 찾을 수 없습니다"
 
+msgid "No compression algorithm selected for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "No current block job for %1$s"
 msgstr "%1$s에 대한 현재 블록 작업이 없습니다"
@@ -12637,6 +12626,10 @@ msgstr "오직 하나의 자식 <inbound> 요소만이 허용됨"
 
 msgid "Only one child <outbound> element allowed"
 msgstr "오직 하나의 자식 <outbound> 요소만이 허용됨"
+
+msgid ""
+"Only one compression method could be specified with parallel compression"
+msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "vfio-ap 모델의 hostdev는 하나만 지원됩니다"
@@ -13349,6 +13342,10 @@ msgstr ""
 
 msgid "QEMU reports migration is still running"
 msgstr "QEMU는 보고서 이전은 아직 동작 중입니다"
+
+#, c-format
+msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
+msgstr ""
 
 #, c-format
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
@@ -14648,8 +14645,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
-"%5$s'"
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: "
+"'%4$s=%5$s'"
 msgstr "기능 '%1$s'의 상태가 다릅니다: 소스: '%2$s=%3$s', 대상: '%4$s=%5$s'"
 
 #, c-format
@@ -15598,6 +15595,11 @@ msgid "Target sound card model %1$s does not match source %2$s"
 msgstr "대상 사운드 카드 모델 %1$s이 소스 %2$s와 일치하지 않음"
 
 #, c-format
+msgid ""
+"Target sound card multichannel setting '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
 msgstr "대상 sysinfo %1$s %2$s는 소스 %3$s와 일치하지 않습니다"
 
@@ -15866,8 +15868,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x"
-"%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags "
+"0x%2$.2x"
 msgstr ""
 "PCI 주소 %1$s의 장치에 인식할 수 없는 연결 유형 플래그 0x%2$.2x가 있습니다"
 
@@ -16329,6 +16331,12 @@ msgstr "병렬 이전을 켜서 이를 조정하세요"
 
 msgid "Turn xbzrle compression on to tune it"
 msgstr "xbzrle 압축을 켜서 조정하십시오"
+
+msgid "Turn zlib compression on to tune it"
+msgstr ""
+
+msgid "Turn zstd compression on to tune it"
+msgstr ""
 
 msgid "Type"
 msgstr "유형"
@@ -22788,6 +22796,12 @@ msgstr "완료"
 msgid "compress level for multithread compression"
 msgstr "다중 스레드 압축을 위한 압축 수준"
 
+msgid "compress level for zlib compression"
+msgstr ""
+
+msgid "compress level for zstd compression"
+msgstr ""
+
 msgid "compress repeated pages during live migration"
 msgstr "실시간 이전 중 반복되는 페이지 압축"
 
@@ -22830,9 +22844,6 @@ msgstr "vz 스냅샷에는 디스크 구성이 지원되지 않습니다"
 
 msgid "configuring memory location is not supported"
 msgstr "메모리 위치 구성은 지원되지 않습니다"
-
-msgid "configuring persistent polling values is not supported"
-msgstr "영구적인 폴링 값 구성이 지원되지 않습니다"
 
 msgid "conn must match stream connection"
 msgstr "conn은 스트림 연결과 일치해야 합니다"
@@ -23747,8 +23758,9 @@ msgstr "VM에서 네트워크 장치 분리는 지원되지 않습니다"
 
 msgid ""
 "detaching of <console/> is unsupported. Try corresponding <serial/> instead"
-msgstr "<console/>의 분리하기는 지원되지 않습니다. 대신에 일치하는 <serial/>을 "
-"시도하세요"
+msgstr ""
+"<console/>의 분리하기는 지원되지 않습니다. 대신에 일치하는 <serial/>을 시도하"
+"세요"
 
 msgid "detaching serial console is not supported"
 msgstr "직렬 콘솔 분리는 지원되지 않습니다"
@@ -24978,7 +24990,8 @@ msgstr "도메인 '%1$s': %2$s (%3$s) 보고를 위한 사건 '입출력-오류'
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report due to %4$s\n"
-msgstr "도메인 '%1$s': %2$s (%3$s) 보고(%4$s로 인해)를 위한 사건 '입출력-오류'\n"
+msgstr ""
+"도메인 '%1$s': %2$s (%3$s) 보고(%4$s로 인해)를 위한 사건 '입출력-오류'\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown\n"
@@ -24986,7 +24999,8 @@ msgstr "도메인 '%1$s': %2$s (%3$s)를 알지 못하는 사건 '입출력-오�
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown due to %4$s\n"
-msgstr "도메인 '%1$s': %2$s (%3$s)를 알지 못하는(%4$s로 인해) 사건 '입출력-오류'\n"
+msgstr ""
+"도메인 '%1$s': %2$s (%3$s)를 알지 못하는(%4$s로 인해) 사건 '입출력-오류'\n"
 
 #, c-format
 msgid "event 'job-completed' for domain '%1$s':\n"
@@ -32731,18 +32745,6 @@ msgid "poll failed in migration tunnel"
 msgstr "이전 터널에서 폴링 실패됨"
 
 #, c-format
-msgid "poll-grow (%1$u) must be less than or equal to %2$d"
-msgstr "poll-grow(%1$u)는 %2$d보다 작거나 같아야 합니다"
-
-#, c-format
-msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
-msgstr "poll-max-ns(%1$llu)는 %2$d보다 작거나 같아야 합니다"
-
-#, c-format
-msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
-msgstr "폴링 축소(%1$u)는 %2$d보다 작거나 같아야 합니다"
-
-#, c-format
 msgid "pool '%1$s' already exists with uuid %2$s"
 msgstr "풀 '%1$s'이 이미 uuid %2$s로 존재합니다"
 
@@ -33130,9 +33132,6 @@ msgstr "qemu가 잘못된 시간을 반환했습니다"
 
 msgid "qemu state driver is not active"
 msgstr "qemu 상태 드라이버가 실행중이 아닙니다"
-
-msgid "qemu unexpectedly closed the monitor"
-msgstr "qemu가 예기치 않게 모니터를 닫았습니다"
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -34046,8 +34045,8 @@ msgid "security model string exceeds max %1$d bytes"
 msgstr "보안 모델 문자열이 최대 %1$d 바이트를 넘어갑니다"
 
 msgid ""
-"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
-"\")"
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
+"\"dbus\")"
 msgstr "특정한 그래픽 장치를 선택(예제: \"vnc\", \"spice\", \"rdp\", \"dbus\")"
 
 msgid "send handler failed"
@@ -38707,6 +38706,56 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "DBus daemon %1$s didn't show up"
+#~ msgstr "DBus 데몬 %1$s가 표시되지 않았습니다"
+
+#~ msgid "Field name too long"
+#~ msgstr "필드 이름이 너무 깁니다"
+
+#, c-format
+#~ msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr "NUMA 노드 %1$d에 대한 캐쉬 요소의 잘못된 '레벨' 속성"
+
+#, c-format
+#~ msgid "Invalid cache associativity '%1$s'"
+#~ msgstr "잘못된 캐쉬 연결성 '%1$s'"
+
+#, c-format
+#~ msgid "Invalid cache policy '%1$s'"
+#~ msgstr "잘못된 캐쉬 정책 '%1$s'"
+
+#, c-format
+#~ msgid ""
+#~ "Missing 'associativity' attribute in cache element for NUMA node %1$d"
+#~ msgstr "NUMA 노드 %1$d의 캐시 요소에 '연관성' 속성이 없습니다"
+
+#, c-format
+#~ msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr "NUMA 노드 %1$d의 캐쉬 요소에 '레벨' 속성이 없습니다"
+
+#, c-format
+#~ msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
+#~ msgstr "NUMA 노드 %1$d의 캐시 요소에 '정책' 속성이 없습니다"
+
+#~ msgid "configuring persistent polling values is not supported"
+#~ msgstr "영구적인 폴링 값 구성이 지원되지 않습니다"
+
+#, c-format
+#~ msgid "poll-grow (%1$u) must be less than or equal to %2$d"
+#~ msgstr "poll-grow(%1$u)는 %2$d보다 작거나 같아야 합니다"
+
+#, c-format
+#~ msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
+#~ msgstr "poll-max-ns(%1$llu)는 %2$d보다 작거나 같아야 합니다"
+
+#, c-format
+#~ msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
+#~ msgstr "폴링 축소(%1$u)는 %2$d보다 작거나 같아야 합니다"
+
+#~ msgid "qemu unexpectedly closed the monitor"
+#~ msgstr "qemu가 예기치 않게 모니터를 닫았습니다"
 
 #~ msgid "%1$s cannot be set higher than %2$s "
 #~ msgstr "%1$s는 %2$s 보다 더 높게 설정 할 수 없습니다 "

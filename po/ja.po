@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-25 10:39+0000\n"
+"POT-Creation-Date: 2023-05-26 06:46+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -1422,6 +1422,11 @@ msgid ""
 msgstr ""
 "メモリー要素でモードが 'restrictive' の場合、memnode 要素で 'restrictive' "
 "モードが必要です"
+
+msgid ""
+"'restrictive' mode is required in memory element when mode is 'restrictive' "
+"in memnode element"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -3282,21 +3287,21 @@ msgstr "要素 <address> の uuid 属性を解析できません"
 
 #, fuzzy, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
-"新しい結合されたインバウンド floor=%3$llu が、ネットワーク '%5$s' の average="
-"%4$llu をオーバーコミットするため、'%1$s' インターフェイスを '%2$s' にプラグ"
-"インすることができません"
+"新しい結合されたインバウンド floor=%3$llu が、ネットワーク '%5$s' の "
+"average=%4$llu をオーバーコミットするため、'%1$s' インターフェイスを '%2$s' "
+"にプラグインすることができません"
 
 #, fuzzy, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
-"新しい結合されたインバウンド floor=%3$llu が、ネットワーク '%5$s' の peak="
-"%4$llu をオーバーコミットするため、'%1$s' インターフェイスを '%2$s' にプラグ"
-"インすることができません"
+"新しい結合されたインバウンド floor=%3$llu が、ネットワーク '%5$s' の "
+"peak=%4$llu をオーバーコミットするため、'%1$s' インターフェイスを '%2$s' にプ"
+"ラグインすることができません"
 
 #, c-format
 msgid "Cannot print data type %1$x"
@@ -3802,8 +3807,16 @@ msgid "Compression cache: %1$.3lf %2$s"
 msgstr "圧縮キャッシュ: %1$.3lf %2$s"
 
 #, c-format
+msgid "Compression method '%1$s' is only supported with parallel migration"
+msgstr ""
+
+#, c-format
 msgid "Compression method '%1$s' is specified twice"
 msgstr "圧縮方法 '%1$s' が 2 回指定されています"
+
+#, c-format
+msgid "Compression method '%1$s' isn't supported with parallel migration"
+msgstr ""
 
 msgid "Compression overflows:"
 msgstr "圧縮オーバーフロー:"
@@ -5102,10 +5115,6 @@ msgstr "DAC imagelabel を判別できませんでした"
 msgid "DAC seclabel couldn't be determined"
 msgstr "DAC seclabel を判別できませんでした"
 
-#, c-format
-msgid "DBus daemon %1$s didn't show up"
-msgstr "DBus デーモン %1$s が表示されませんでした"
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "DNS HOST レコードは更新できません、追加または削除のみできます"
 
@@ -6155,8 +6164,8 @@ msgstr "ドメイン名の読み込み中にエラーが発生しました"
 #, c-format
 msgid "Error while removing hostonly network interface, rc=%1$08x"
 msgstr ""
-"ホストオンリーネットワークインターフェイスの削除中にエラーが発生しました、rc="
-"%1$08x"
+"ホストオンリーネットワークインターフェイスの削除中にエラーが発生しました、"
+"rc=%1$08x"
 
 #, c-format
 msgid "Escape character is %1$s"
@@ -8709,9 +8718,6 @@ msgstr "kernel memory の項目が宛先に対して長すぎます"
 msgid "Field name '%1$s' too long"
 msgstr "フィールド名 '%1$s' が長すぎます"
 
-msgid "Field name too long"
-msgstr "フィールド名が長すぎます"
-
 #, c-format
 msgid "File %1$s contains no keys"
 msgstr "ファイル %1$s にはキーが含まれていません"
@@ -9654,10 +9660,6 @@ msgid "Invalid 'cpu.max' data."
 msgstr "無効な 'cpu.max' データ。"
 
 #, c-format
-msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
-msgstr "NUMA ノード %1$d のキャッシュ要素の無効な 'level' 属性"
-
-#, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
 msgstr "無効な --with-loader-nvram リスト: %1$s"
 
@@ -9893,16 +9895,8 @@ msgid "Invalid bus type '%1$s' for floppy disk"
 msgstr "無効なフロッピーディスクのバスタイプ '%1$s'"
 
 #, c-format
-msgid "Invalid cache associativity '%1$s'"
-msgstr "無効なキャッシュの結合規則 '%1$s'"
-
-#, c-format
 msgid "Invalid cache id '%1$s'"
 msgstr "無効なキャッシュ ID '%1$s'"
-
-#, c-format
-msgid "Invalid cache policy '%1$s'"
-msgstr "無効なキャッシュポリシー '%1$s'"
 
 msgid "Invalid call"
 msgstr "無効な呼び出し"
@@ -10383,8 +10377,8 @@ msgid ""
 "Invalid specification for virtio ccw address: cssid='0x%1$x' ssid='0x%2$x' "
 "devno='0x%3$04x'"
 msgstr ""
-"virtio ccw アドレスの指定が無効です: cssid='0x%1$x' ssid='0x%2$x' devno='0x"
-"%3$04x'"
+"virtio ccw アドレスの指定が無効です: cssid='0x%1$x' ssid='0x%2$x' "
+"devno='0x%3$04x'"
 
 #, c-format
 msgid "Invalid state '%1$s' in domain snapshot XML"
@@ -11232,10 +11226,6 @@ msgstr "ManagedEntityStatus を検索中に '%1$s' プロパティがありま�
 msgid "Missing '/' separator in cgroup mount '%1$s'"
 msgstr "cgroup のマウント '%1$s' に区切り文字 '/' がありません"
 
-#, c-format
-msgid "Missing 'associativity' attribute in cache element for NUMA node %1$d"
-msgstr "NUMA ノード %1$d のキャッシュ要素に 'associativity' 属性がありません"
-
 msgid "Missing 'domname' in JSON document"
 msgstr "JSON ドキュメントに 'domname' がありません"
 
@@ -11255,10 +11245,6 @@ msgstr "CPU マップ include に 'filename' がありません"
 msgid "Missing 'key' element for lease"
 msgstr "リースの 'key' 要素がありません"
 
-#, c-format
-msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
-msgstr "NUMA ノード %1$d のキャッシュ要素に 'level' 属性がありません"
-
 msgid "Missing 'link' attribute for NIC"
 msgstr "NIC の 'link' 属性がありません"
 
@@ -11274,10 +11260,6 @@ msgstr "JSON ドキュメントに 'path' フィールドがありません"
 
 msgid "Missing 'pipefd' in JSON document"
 msgstr "JSON ドキュメントに 'pipefd' がありません"
-
-#, c-format
-msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
-msgstr "NUMA ノード %1$d のキャッシュ要素に 'policy' 属性がありません"
 
 msgid "Missing 'runtime.powerState' property"
 msgstr "'runtime.powerState' プロパティーがありません"
@@ -12287,6 +12269,9 @@ msgstr "ID '%1$llu' に一致するクライアントがありません"
 msgid "No complete agent response found in %1$d bytes"
 msgstr "%1$d バイトに完全なエージェントの応答が見つかりませんでした"
 
+msgid "No compression algorithm selected for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "No current block job for %1$s"
 msgstr "%1$s の現在のブロックジョブはありません"
@@ -12897,6 +12882,10 @@ msgstr "1つの子 <inbound> 要素のみが許可されます"
 
 msgid "Only one child <outbound> element allowed"
 msgstr "1つの子 <outbound> 要素のみが許可されます"
+
+msgid ""
+"Only one compression method could be specified with parallel compression"
+msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "モデル vfio-ap の hostdev は 1 つだけサポートされます"
@@ -13634,6 +13623,10 @@ msgstr ""
 
 msgid "QEMU reports migration is still running"
 msgstr "QEMU はマイグレーションがまだ実行されていることを報告します"
+
+#, c-format
+msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
+msgstr ""
 
 #, c-format
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
@@ -14973,8 +14966,8 @@ msgid ""
 "State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s', destination: "
 "'%5$s,%6$s=%7$s'"
 msgstr ""
-"機能 '%1$s' の状態が異なります: 送信元: '%2$s,%3$s=%4$s'、送信先: '%5$s,%6$s="
-"%7$s'"
+"機能 '%1$s' の状態が異なります: 送信元: '%2$s,%3$s=%4$s'、送信先: '%5$s,"
+"%6$s=%7$s'"
 
 #, c-format
 msgid ""
@@ -14986,8 +14979,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
-"%5$s'"
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: "
+"'%4$s=%5$s'"
 msgstr ""
 "機能 '%1$s' の状態が異なります: 送信元: '%2$s=%3$s'、送信先: '%4$s=%5$s'"
 
@@ -15994,6 +15987,11 @@ msgid "Target sound card model %1$s does not match source %2$s"
 msgstr "ターゲットサウンドカードモデル %1$s がソース %2$s と一致しません"
 
 #, c-format
+msgid ""
+"Target sound card multichannel setting '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
 msgstr "ターゲットのシステム情報 %1$s %2$s がソースの %3$s と一致しません"
 
@@ -16265,8 +16263,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x"
-"%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags "
+"0x%2$.2x"
 msgstr ""
 "PCI アドレス %1$s のデバイスには、認識されていない接続タイプフラグ 0x%2$.2x "
 "があります"
@@ -16747,6 +16745,12 @@ msgstr "パラレルマイグレーションをオンにして調整します"
 
 msgid "Turn xbzrle compression on to tune it"
 msgstr "xbzrle 圧縮をオンにして調整します"
+
+msgid "Turn zlib compression on to tune it"
+msgstr ""
+
+msgid "Turn zstd compression on to tune it"
+msgstr ""
 
 msgid "Type"
 msgstr "種類"
@@ -21485,8 +21489,8 @@ msgid ""
 "cannot acquire state change lock (held by monitor=%1$s agent=%2$s) due to "
 "max_queued limit"
 msgstr ""
-"max_queued 制限により、状態変更ロックを獲得できません (monitor=%1$s agent="
-"%2$s が保持)"
+"max_queued 制限により、状態変更ロックを獲得できません (monitor=%1$s "
+"agent=%2$s が保持)"
 
 #, c-format
 msgid "cannot acquire state change lock (held by monitor=%1$s)"
@@ -23324,6 +23328,12 @@ msgstr "完了"
 msgid "compress level for multithread compression"
 msgstr "マルチスレッド圧縮の圧縮レベル"
 
+msgid "compress level for zlib compression"
+msgstr ""
+
+msgid "compress level for zstd compression"
+msgstr ""
+
 msgid "compress repeated pages during live migration"
 msgstr "ライブマイグレーション中の連続ページの圧縮"
 
@@ -23368,9 +23378,6 @@ msgstr "ディスクの設定は vz スナップショットではサポート�
 
 msgid "configuring memory location is not supported"
 msgstr "メモリーの場所の設定はサポートされていません"
-
-msgid "configuring persistent polling values is not supported"
-msgstr "永続的なポーリング値の設定はサポートされていません"
 
 msgid "conn must match stream connection"
 msgstr "conn はストリーム接続と一致する必要があります"
@@ -23848,8 +23855,8 @@ msgstr ""
 #, c-format
 msgid "couldn't find interface with MAC address '%1$s': %2$s%3$s%4$s"
 msgstr ""
-"MAC アドレス '%1$s' を持つインターフェイスが見つかりませんでした: %2$s%3$s"
-"%4$s"
+"MAC アドレス '%1$s' を持つインターフェイスが見つかりませんでした: "
+"%2$s%3$s%4$s"
 
 #, c-format
 msgid "couldn't locate a matching DNS HOST record in network %1$s"
@@ -33535,18 +33542,6 @@ msgid "poll failed in migration tunnel"
 msgstr "マイグレーショントンネルにおいてポーリングが失敗しました"
 
 #, c-format
-msgid "poll-grow (%1$u) must be less than or equal to %2$d"
-msgstr "poll-grow (%1$u) は %2$d 以下でなければなりません"
-
-#, c-format
-msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
-msgstr "poll-max-ns (%1$llu) は %2$d 以下である必要があります"
-
-#, c-format
-msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
-msgstr "poll-shrink (%1$u) は %2$d 以下である必要があります"
-
-#, c-format
 msgid "pool '%1$s' already exists with uuid %2$s"
 msgstr "プール '%1$s' はすでに UUID %2$s を持って定義されています"
 
@@ -33943,9 +33938,6 @@ msgstr "qemu が不正な時刻を返しました"
 
 msgid "qemu state driver is not active"
 msgstr "QEMU 状態ドライバーが活動中ではありません"
-
-msgid "qemu unexpectedly closed the monitor"
-msgstr "qemu が予期せずモニターを閉じました"
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -34880,8 +34872,8 @@ msgid "security model string exceeds max %1$d bytes"
 msgstr "セキュリティモデルの文字列が最大値 %1$d バイトを超過"
 
 msgid ""
-"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
-"\")"
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
+"\"dbus\")"
 msgstr "特定のグラフ表示の選択 (例: \"vnc\"、\"spice\"、\"rdp\"、\"dbus\")"
 
 msgid "send handler failed"
@@ -39067,15 +39059,15 @@ msgstr "virInterfaceDefFormat は不明なスタートモードです"
 msgid ""
 "virNWFilterDHCPSnoopReq ifname map failed on interface \"%1$s\" key \"%2$s\""
 msgstr ""
-"virNWFilterDHCPSnoopReq インターフェイス名のマップがインターフェイス \"%1$s"
-"\" キー \"%2$s\" において失敗しました"
+"virNWFilterDHCPSnoopReq インターフェイス名のマップがインターフェイス "
+"\"%1$s\" キー \"%2$s\" において失敗しました"
 
 #, c-format
 msgid ""
 "virNWFilterDHCPSnoopReq req add failed on interface \"%1$s\" ifkey \"%2$s\""
 msgstr ""
-"virNWFilterDHCPSnoopReq リクエスト追加がインターフェイス \"%1$s\" キー \"%2$s"
-"\" において失敗しました"
+"virNWFilterDHCPSnoopReq リクエスト追加がインターフェイス \"%1$s\" キー "
+"\"%2$s\" において失敗しました"
 
 #, c-format
 msgid "virNWFilterDHCPSnoopReq virThreadCreate failed on interface '%1$s'"
@@ -39648,6 +39640,57 @@ msgstr ""
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
 
+#, c-format
+#~ msgid "DBus daemon %1$s didn't show up"
+#~ msgstr "DBus デーモン %1$s が表示されませんでした"
+
+#~ msgid "Field name too long"
+#~ msgstr "フィールド名が長すぎます"
+
+#, c-format
+#~ msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr "NUMA ノード %1$d のキャッシュ要素の無効な 'level' 属性"
+
+#, c-format
+#~ msgid "Invalid cache associativity '%1$s'"
+#~ msgstr "無効なキャッシュの結合規則 '%1$s'"
+
+#, c-format
+#~ msgid "Invalid cache policy '%1$s'"
+#~ msgstr "無効なキャッシュポリシー '%1$s'"
+
+#, c-format
+#~ msgid ""
+#~ "Missing 'associativity' attribute in cache element for NUMA node %1$d"
+#~ msgstr ""
+#~ "NUMA ノード %1$d のキャッシュ要素に 'associativity' 属性がありません"
+
+#, c-format
+#~ msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr "NUMA ノード %1$d のキャッシュ要素に 'level' 属性がありません"
+
+#, c-format
+#~ msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
+#~ msgstr "NUMA ノード %1$d のキャッシュ要素に 'policy' 属性がありません"
+
+#~ msgid "configuring persistent polling values is not supported"
+#~ msgstr "永続的なポーリング値の設定はサポートされていません"
+
+#, c-format
+#~ msgid "poll-grow (%1$u) must be less than or equal to %2$d"
+#~ msgstr "poll-grow (%1$u) は %2$d 以下でなければなりません"
+
+#, c-format
+#~ msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
+#~ msgstr "poll-max-ns (%1$llu) は %2$d 以下である必要があります"
+
+#, c-format
+#~ msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
+#~ msgstr "poll-shrink (%1$u) は %2$d 以下である必要があります"
+
+#~ msgid "qemu unexpectedly closed the monitor"
+#~ msgstr "qemu が予期せずモニターを閉じました"
+
 #~ msgid "%1$s cannot be set higher than %2$s "
 #~ msgstr "%1$s は %2$s より高く設定することはできません "
 
@@ -40090,8 +40133,8 @@ msgstr "{[--%1$s] <string>}..."
 
 #~ msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
 #~ msgstr ""
-#~ "ストレージコントローラーの追加に失敗しました (名前: %s、busType: %d)、rc="
-#~ "%08x"
+#~ "ストレージコントローラーの追加に失敗しました (名前: %s、busType: %d)、"
+#~ "rc=%08x"
 
 #~ msgid "Failed to change storage controller model, rc=%08x"
 #~ msgstr "ストレージコントローラーモデルの変更に失敗しました、rc=%08x"
@@ -40102,8 +40145,8 @@ msgstr "{[--%1$s] <string>}..."
 #~ msgid ""
 #~ "Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
 #~ msgstr ""
-#~ "次のディスク/DVD/フロッピーをマシン: %s に開くことができませんでした、rc="
-#~ "%08x"
+#~ "次のディスク/DVD/フロッピーをマシン: %s に開くことができませんでした、"
+#~ "rc=%08x"
 
 #~ msgid "Failed to save VM settings, rc=%08x"
 #~ msgstr "VM 設定の保存に失敗しました、rc=%08x"

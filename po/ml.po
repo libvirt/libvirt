@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-25 10:39+0000\n"
+"POT-Creation-Date: 2023-05-26 06:46+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -462,8 +462,8 @@ msgstr "%1$s IPv4 അല്ലാത്ത '%2$s' വിലാസത്തില
 msgid ""
 "%1$s forwarding requested, but no IP address provided for network '%2$s'"
 msgstr ""
-"%1$s ഫോര്‍വേഡിങ് ആവശ്യപ്പെട്ടിരിക്കുന്നു, പക്ഷേ നെറ്റ്‌‌വര്‍ക്ക് '%2$s'-ന് ഐ.പി. വിലാസമൊന്നും നല്‍"
-"കിയിട്ടില്ല"
+"%1$s ഫോര്‍വേഡിങ് ആവശ്യപ്പെട്ടിരിക്കുന്നു, പക്ഷേ നെറ്റ്‌‌വര്‍ക്ക് '%2$s'-ന് ഐ.പി. വിലാസമൊന്നും "
+"നല്‍കിയിട്ടില്ല"
 
 #, c-format
 msgid "%1$s graphics are not supported with this QEMU"
@@ -1249,6 +1249,11 @@ msgid ""
 "in memory element"
 msgstr ""
 
+msgid ""
+"'restrictive' mode is required in memory element when mode is 'restrictive' "
+"in memnode element"
+msgstr ""
+
 #, c-format
 msgid ""
 "'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"
@@ -1982,8 +1987,8 @@ msgstr "ഡിസ്ക് ശൈലി %s പിന്തുണയ്ക്ക�
 #, c-format
 msgid "Before dumping core, failed to suspend domain '%1$d' with libxenlight"
 msgstr ""
-"കോര്‍ ഡമ്പ് ചെയ്യുന്നതിനു മുമ്പ്, libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%1$d' താല്‍ക്കാലികമായി നിര്‍"
-"ത്തിവെക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
+"കോര്‍ ഡമ്പ് ചെയ്യുന്നതിനു മുമ്പ്, libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%1$d' താല്‍ക്കാലികമായി "
+"നിര്‍ത്തിവെക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
 #, fuzzy
 msgid "Bhyve version does not support framebuffer"
@@ -2916,8 +2921,8 @@ msgid ""
 "Cannot instantiate filter due to unresolvable variables or unavailable list "
 "elements: %1$s"
 msgstr ""
-"തിരിച്ചറിയാനാവാത്ത വേരിയബിളുകളോ ലഭ്യമല്ലാത്ത ലിസ്റ്റ് അംഗങ്ങളോ കാരണം  ഫില്‍ട്ടര്‍ പ്രവര്‍"
-"ത്തനസജ്ജമാക്കാന്‍ സാധിച്ചില്ല : %1$s"
+"തിരിച്ചറിയാനാവാത്ത വേരിയബിളുകളോ ലഭ്യമല്ലാത്ത ലിസ്റ്റ് അംഗങ്ങളോ കാരണം  ഫില്‍ട്ടര്‍ "
+"പ്രവര്‍ത്തനസജ്ജമാക്കാന്‍ സാധിച്ചില്ല : %1$s"
 
 #, fuzzy
 msgid "Cannot lock resctrl"
@@ -3113,14 +3118,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -3147,8 +3152,8 @@ msgstr "ഡേറ്റാ ലഭ്യമാക്കുവാന്‍ സാ�
 msgid ""
 "Cannot remove CURL handle from a multi handle when it wasn't added before"
 msgstr ""
-"ഒരു മള്‍ട്ടി ഹാന്‍ഡിലില്‍ നിന്നുള്ള സിയുആര്‍എല്‍ ഹാന്‍ഡില്‍ നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല (മുമ്പു് ചേര്‍"
-"ക്കാത്തപ്പോള്‍)"
+"ഒരു മള്‍ട്ടി ഹാന്‍ഡിലില്‍ നിന്നുള്ള സിയുആര്‍എല്‍ ഹാന്‍ഡില്‍ നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല (മുമ്പു് "
+"ചേര്‍ക്കാത്തപ്പോള്‍)"
 
 #, c-format
 msgid "Cannot remove stale PID file %1$s"
@@ -3622,9 +3627,17 @@ msgstr "കമ്പ്രഷന്‍ കാഷ്:"
 msgid "Compression cache: %1$.3lf %2$s"
 msgstr "കമ്പ്രഷന്‍ കാഷ്: %1$.3lf %2$s"
 
+#, c-format
+msgid "Compression method '%1$s' is only supported with parallel migration"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Compression method '%1$s' is specified twice"
 msgstr "ഡിസ്ക് '%1$s' രണ്ടാമതും നല്‍കിയിരിയ്ക്കുന്നു"
+
+#, c-format
+msgid "Compression method '%1$s' isn't supported with parallel migration"
+msgstr ""
 
 msgid "Compression overflows:"
 msgstr "കമ്പ്രഷന്‍ ഓവര്‍ഫ്ലോസ്:"
@@ -4941,10 +4954,6 @@ msgstr ""
 msgid "DAC seclabel couldn't be determined"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "DBus daemon %1$s didn't show up"
-msgstr "ഡൊമെയിന്‍ %1$s ലഭ്യമല്ല"
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr ""
 "DNS HOST റിക്കോര്‍ഡുകളില്‍ മാറ്റങ്ങള്‍ വരുത്തുവാന്‍ സാധ്യമല്ല, ചേര്‍ക്കാം അല്ലെങ്കില്‍ വെട്ടിനീക്കാം"
@@ -5374,8 +5383,8 @@ msgstr "ഡൊമെയിന്‍ %1$s ലഭ്യമല്ല"
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
 msgstr ""
-"ഡൊമെയിന്‍ '%1$d' പ്രവര്‍ത്തിക്കേണ്ടതായുണ്ട്, കാരണം libxenlight അതിനെ താല്‍ക്കാലികമായി നിര്‍"
-"ത്തിവെക്കും"
+"ഡൊമെയിന്‍ '%1$d' പ്രവര്‍ത്തിക്കേണ്ടതായുണ്ട്, കാരണം libxenlight അതിനെ താല്‍ക്കാലികമായി "
+"നിര്‍ത്തിവെക്കും"
 
 #, c-format
 msgid "Domain '%1$s' XML configuration edited.\n"
@@ -8541,10 +8550,6 @@ msgstr "ലക്ഷ്യത്തെ അപേക്ഷിച്ച് ഫീ�
 msgid "Field name '%1$s' too long"
 msgstr "ഫീള്‍ഡ് നാമം '%1$s' വളരെ വലുതു്"
 
-#, fuzzy
-msgid "Field name too long"
-msgstr "ഫീള്‍ഡ് നാമം '%s' വളരെ വലുതു്"
-
 #, c-format
 msgid "File %1$s contains no keys"
 msgstr ""
@@ -9474,10 +9479,6 @@ msgid "Invalid 'cpu.max' data."
 msgstr "%s-ല്‍ തെറ്റായ cpuNum"
 
 #, c-format
-msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
-msgstr ""
-
-#, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
 msgstr ""
 
@@ -9694,17 +9695,9 @@ msgstr "ഡിസ്കിനു് തെറ്റായ ബസ് തരം '%
 msgid "Invalid bus type '%1$s' for floppy disk"
 msgstr "ഫ്ലോപ്പി ഡിസ്കിനു് തെറ്റായ ബസ് രീതി '%1$s'"
 
-#, c-format
-msgid "Invalid cache associativity '%1$s'"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Invalid cache id '%1$s'"
 msgstr "%1$s-ല്‍ തെറ്റായ cpuNum"
-
-#, c-format
-msgid "Invalid cache policy '%1$s'"
-msgstr ""
 
 msgid "Invalid call"
 msgstr "തെറ്റായ കോള്‍"
@@ -11014,10 +11007,6 @@ msgstr "ManagedEntityStatus-നായി തെരയുമ്പോള്‍ '%
 msgid "Missing '/' separator in cgroup mount '%1$s'"
 msgstr "cgroup മൌണ്ട് '%1$s'-ല്‍ '/' വിടവടയാളം ലഭ്യമല്ല"
 
-#, c-format
-msgid "Missing 'associativity' attribute in cache element for NUMA node %1$d"
-msgstr ""
-
 #, fuzzy
 msgid "Missing 'domname' in JSON document"
 msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ ശ്രോതസ്സുകള്‍ക്കുള്ള പേരു് ലഭ്യമല്ല"
@@ -11041,10 +11030,6 @@ msgstr "സിപിയു മോഡല്‍ %s-ല്‍ മുന്‍ഗാ
 msgid "Missing 'key' element for lease"
 msgstr "ലീസില്‍ 'key' എലമെന്റ് ലഭ്യമല്ല"
 
-#, c-format
-msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
-msgstr ""
-
 #, fuzzy
 msgid "Missing 'link' attribute for NIC"
 msgstr "NUMA സെല്ലില്‍ 'cpus' വിശേഷത ലഭ്യമല്ല"
@@ -11063,10 +11048,6 @@ msgstr "JSON അവസ്ഥയുടെ രേഖയില്‍ auth ഫീള
 #, fuzzy
 msgid "Missing 'pipefd' in JSON document"
 msgstr "JSON രേഖയില്‍ pid ഡേറ്റാ ലഭ്യമല്ല"
-
-#, c-format
-msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
-msgstr ""
 
 msgid "Missing 'runtime.powerState' property"
 msgstr "'runtime.powerState' വിശേഷത ലഭ്യമല്ല"
@@ -12103,6 +12084,9 @@ msgstr "ചേരുന്ന uuid '%s' ഉള്ള രഹസ്യം ലഭ�
 msgid "No complete agent response found in %1$d bytes"
 msgstr ""
 
+msgid "No compression algorithm selected for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "No current block job for %1$s"
 msgstr ""
@@ -12684,8 +12668,8 @@ msgstr "libxl ഒരു സീരിയല്‍ ഡിവൈസ് മാത്
 msgid ""
 "Only one <address> element is allowed in <nat> in <forward> in network %1$s"
 msgstr ""
-"ഒറ്റ <address> എലമെന്റ് മാത്രമേ <nat>-ല്‍ അനുവദിയ്ക്കുന്നുള്ളൂ, <forward>-ല്‍ %1$s നെറ്റ്‌വര്‍"
-"ക്കിലുള്ളതു്"
+"ഒറ്റ <address> എലമെന്റ് മാത്രമേ <nat>-ല്‍ അനുവദിയ്ക്കുന്നുള്ളൂ, <forward>-ല്‍ %1$s "
+"നെറ്റ്‌വര്‍ക്കിലുള്ളതു്"
 
 #, c-format
 msgid "Only one <nat> element is allowed in <forward> of network %1$s"
@@ -12730,6 +12714,10 @@ msgstr "ഒരു ചൈള്‍ഡ് <inbound> എലമെന്റ് അ�
 
 msgid "Only one child <outbound> element allowed"
 msgstr "ഒരു ചൈള്‍ഡ് <outbound> എലമെന്റ് അനുവദിയ്ക്കുന്നു"
+
+msgid ""
+"Only one compression method could be specified with parallel compression"
+msgstr ""
 
 #, fuzzy
 msgid "Only one hostdev of model vfio-ap is supported"
@@ -13462,6 +13450,10 @@ msgid ""
 msgstr ""
 
 msgid "QEMU reports migration is still running"
+msgstr ""
+
+#, c-format
+msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
 msgstr ""
 
 #, c-format
@@ -14812,8 +14804,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
-"%5$s'"
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: "
+"'%4$s=%5$s'"
 msgstr ""
 
 #, c-format
@@ -15770,6 +15762,11 @@ msgid "Target sound card model %1$s does not match source %2$s"
 msgstr "ലക്ഷ്യമായ സൗണ്ട് കാര്‍ഡ്‌ മോഡല്‍ %1$s ഉറവിടം %2$s-ഉമായി യോജിക്കുന്നില്ല"
 
 #, c-format
+msgid ""
+"Target sound card multichannel setting '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
 msgstr "ലക്ഷ്യത്തിലെ സിസിന്‍ഫോ %1$s  %2$s സ്രോതസ്സിലെ %3$s മായി പൊരുത്തപ്പെടുന്നില്ല"
 
@@ -16021,8 +16018,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x"
-"%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags "
+"0x%2$.2x"
 msgstr ""
 
 #, c-format
@@ -16486,6 +16483,12 @@ msgid "Turn parallel migration on to tune it"
 msgstr ""
 
 msgid "Turn xbzrle compression on to tune it"
+msgstr ""
+
+msgid "Turn zlib compression on to tune it"
+msgstr ""
+
+msgid "Turn zstd compression on to tune it"
 msgstr ""
 
 msgid "Type"
@@ -20555,8 +20558,8 @@ msgstr ""
 msgid ""
 "attempt to merge virtualports with mismatched typeidversions (%1$d and %2$d)"
 msgstr ""
-"പൊരുത്തമില്ലാത്ത ടൈപ്പ്ഐഡിപതിപ്പുകളുള്ള (%1$d ഉം %2$d ഉം) വിര്‍ച്ച്വല്‍ പോര്‍ട്ടുകള്‍ കൂട്ടിച്ചേര്‍"
-"ക്കാനുള്ള ശ്രമം"
+"പൊരുത്തമില്ലാത്ത ടൈപ്പ്ഐഡിപതിപ്പുകളുള്ള (%1$d ഉം %2$d ഉം) വിര്‍ച്ച്വല്‍ പോര്‍ട്ടുകള്‍ "
+"കൂട്ടിച്ചേര്‍ക്കാനുള്ള ശ്രമം"
 
 #, c-format
 msgid "attempt to merge virtualports with mismatched types (%1$s and %2$s)"
@@ -23145,6 +23148,12 @@ msgstr "വലി പൂര്‍ത്തിയാക്കിയിരിക�
 msgid "compress level for multithread compression"
 msgstr ""
 
+msgid "compress level for zlib compression"
+msgstr ""
+
+msgid "compress level for zstd compression"
+msgstr ""
+
 msgid "compress repeated pages during live migration"
 msgstr "ലൈവ് മൈഗ്രേഷനില്‍ ആവര്‍ത്തിച്ചുള്ള താളുകള്‍ കമ്പ്രസ്സ് ചെയ്യുക"
 
@@ -23189,10 +23198,6 @@ msgstr "മൌണ്ട് പോയിന്റ് നല്‍കുന്ന�
 #, fuzzy
 msgid "configuring memory location is not supported"
 msgstr "സീരിയല്‍ കണ്‍സോള്‍ ചേര്‍ക്കുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
-
-#, fuzzy
-msgid "configuring persistent polling values is not supported"
-msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ പരിഷ്കരണം പിന്തുണയ്ക്കുന്നില്ല"
 
 msgid "conn must match stream connection"
 msgstr ""
@@ -23657,8 +23662,8 @@ msgid ""
 "couldn't find an interface entry in network '%1$s' matching <interface "
 "dev='%2$s'>"
 msgstr ""
-" \"<interface dev='%1$s'>\"-മായി പൊരുത്തപ്പെടുന്നൊരു ഇന്റര്‍ഫെയിസ് എന്‍ട്രി നിലവില്‍ നെറ്റ്‌വര്‍"
-"ക്ക് '%2$s'-ല്‍ ലഭ്യമല്ല"
+" \"<interface dev='%1$s'>\"-മായി പൊരുത്തപ്പെടുന്നൊരു ഇന്റര്‍ഫെയിസ് എന്‍ട്രി നിലവില്‍ "
+"നെറ്റ്‌വര്‍ക്ക് '%2$s'-ല്‍ ലഭ്യമല്ല"
 
 #, c-format
 msgid "couldn't find interface named '%1$s'"
@@ -23858,8 +23863,8 @@ msgstr ""
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned a negative response code"
 msgstr ""
-"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) ഒരു നെഗറ്റീവ് റെസ്പോണ്‍സ് കോഡ് നല്‍"
-"കിയിരിയ്ക്കുന്നു"
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) ഒരു നെഗറ്റീവ് റെസ്പോണ്‍സ് കോഡ് "
+"നല്‍കിയിരിയ്ക്കുന്നു"
 
 #, c-format
 msgid ""
@@ -30416,8 +30421,8 @@ msgid ""
 "missing 'end' attribute in <address> element in <nat> in <forward> in "
 "network %1$s"
 msgstr ""
-"<address> എലമെന്റിലുള്ള 'end' വിശേഷത ലഭ്യമല്ല, <nat>-ല്‍, <forward> -ല്‍, %1$s നെറ്റ്‌വര്‍"
-"ക്കിലുള്ളതു്"
+"<address> എലമെന്റിലുള്ള 'end' വിശേഷത ലഭ്യമല്ല, <nat>-ല്‍, <forward> -ല്‍, %1$s "
+"നെറ്റ്‌വര്‍ക്കിലുള്ളതു്"
 
 #, fuzzy, c-format
 msgid "missing 'executable' in '%1$s'"
@@ -33409,18 +33414,6 @@ msgstr "മൈഗ്രേഷന്‍ ടണലില്‍ പൂള്‍ പ
 msgid "poll failed in migration tunnel"
 msgstr "മൈഗ്രേഷന്‍ ടണലില്‍ പൂള്‍ പരാജയപ്പെട്ടു"
 
-#, fuzzy, c-format
-msgid "poll-grow (%1$u) must be less than or equal to %2$d"
-msgstr "%s ലെ cellNum %d നു തുല്യമോ അതിനേക്കാള്‍ കുറവോ ആയിരിക്കണം "
-
-#, fuzzy, c-format
-msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
-msgstr "%s ലെ cellNum %d നു തുല്യമോ അതിനേക്കാള്‍ കുറവോ ആയിരിക്കണം "
-
-#, fuzzy, c-format
-msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
-msgstr "%s ലെ cellNum %d നു തുല്യമോ അതിനേക്കാള്‍ കുറവോ ആയിരിക്കണം "
-
 #, c-format
 msgid "pool '%1$s' already exists with uuid %2$s"
 msgstr "'%1$s' പൂള്‍ നിലവില്‍ uuid %2$s-യ്ക്കൊപ്പം നിലവിലുണ്ടു്"
@@ -33814,10 +33807,6 @@ msgstr ""
 
 msgid "qemu state driver is not active"
 msgstr "qemu സ്റ്റേറ്റ് ‍ഡ്രൈവര്‍ സജീവമല്ല"
-
-#, fuzzy
-msgid "qemu unexpectedly closed the monitor"
-msgstr "അപ്രതീക്ഷിതമായ കോഡ് പാഥ്"
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -34774,8 +34763,8 @@ msgid "security model string exceeds max %1$d bytes"
 msgstr "സുരക്ഷ മാതൃക സ്ട്രിങ് ഏറ്റവും കൂടിയ %1$d ബൈറ്റുകളേക്കാള്‍ കൂടുതല്‍"
 
 msgid ""
-"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
-"\")"
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
+"\"dbus\")"
 msgstr ""
 
 #, fuzzy
@@ -35268,8 +35257,8 @@ msgstr "മൌണ്ട് പോയിന്റ് നല്‍കുന്ന�
 msgid ""
 "spice TLS port set in XML configuration, but TLS is disabled in qemu.conf"
 msgstr ""
-"എക്സ് എം  എല്‍ ക്രമീകരണത്തില്‍ spice TLS സജ്ജമാക്കിയിട്ടുണ്ട്, പക്ഷേ qemu.conf ല്‍ TLS പ്രവര്‍"
-"ത്തനരഹിതമാക്കിയിരിക്കുകയാണ്"
+"എക്സ് എം  എല്‍ ക്രമീകരണത്തില്‍ spice TLS സജ്ജമാക്കിയിട്ടുണ്ട്, പക്ഷേ qemu.conf ല്‍ TLS "
+"പ്രവര്‍ത്തനരഹിതമാക്കിയിരിക്കുകയാണ്"
 
 msgid ""
 "spice defaultMode insecure requested in XML configuration, but plaintext "
@@ -35281,8 +35270,8 @@ msgid ""
 "spice defaultMode secure requested in XML configuration, but TLS connection "
 "is not available"
 msgstr ""
-"എക്സ് എം  എല്‍ ക്രമീകരണത്തില്‍ spice TLS സജ്ജമാക്കിയിട്ടുണ്ട്, പക്ഷേ qemu.conf ല്‍ TLS പ്രവര്‍"
-"ത്തനരഹിതമാക്കിയിരിക്കുകയാണ്"
+"എക്സ് എം  എല്‍ ക്രമീകരണത്തില്‍ spice TLS സജ്ജമാക്കിയിട്ടുണ്ട്, പക്ഷേ qemu.conf ല്‍ TLS "
+"പ്രവര്‍ത്തനരഹിതമാക്കിയിരിക്കുകയാണ്"
 
 msgid ""
 "spice insecure channels set in XML configuration, but plaintext connection "
@@ -35294,8 +35283,8 @@ msgid ""
 "spice secure channels set in XML configuration, but TLS connection is not "
 "available"
 msgstr ""
-"എക്സ് എം  എല്‍ ക്രമീകരണത്തില്‍ spice TLS സജ്ജമാക്കിയിട്ടുണ്ട്, പക്ഷേ qemu.conf ല്‍ TLS പ്രവര്‍"
-"ത്തനരഹിതമാക്കിയിരിക്കുകയാണ്"
+"എക്സ് എം  എല്‍ ക്രമീകരണത്തില്‍ spice TLS സജ്ജമാക്കിയിട്ടുണ്ട്, പക്ഷേ qemu.conf ല്‍ TLS "
+"പ്രവര്‍ത്തനരഹിതമാക്കിയിരിക്കുകയാണ്"
 
 #, c-format
 msgid "spice_tls_x509_cert_dir directory '%1$s' does not exist"
@@ -35756,8 +35745,8 @@ msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
 msgstr ""
-"<forward> 'dev' വിശേഷത  <address> അല്ലെങ്കില്‍ <pf> ഉപ എലമെന്റുകള്‍  %1$s നെറ്റ്‌വര്‍"
-"ക്കിലുള്ളപ്പോള്‍ ഉപയോഗിയ്ക്കുവാന്‍ സാധ്യമല്ല"
+"<forward> 'dev' വിശേഷത  <address> അല്ലെങ്കില്‍ <pf> ഉപ എലമെന്റുകള്‍  %1$s "
+"നെറ്റ്‌വര്‍ക്കിലുള്ളപ്പോള്‍ ഉപയോഗിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
 #, fuzzy
 msgid "the CPU is incompatible with host CPU"
@@ -35917,8 +35906,8 @@ msgid ""
 "there is an existing interface entry in network '%1$s' that matches "
 "\"<interface dev='%2$s'>\""
 msgstr ""
-" \"<interface dev='%1$s'>\"-മായി പൊരുത്തപ്പെടുന്നൊരു ഇന്റര്‍ഫെയിസ് എന്‍ട്രി നിലവില്‍ നെറ്റ്‌വര്‍"
-"ക്ക് '%2$s'-ലുണ്ടു്."
+" \"<interface dev='%1$s'>\"-മായി പൊരുത്തപ്പെടുന്നൊരു ഇന്റര്‍ഫെയിസ് എന്‍ട്രി നിലവില്‍ "
+"നെറ്റ്‌വര്‍ക്ക് '%2$s'-ലുണ്ടു്."
 
 #, c-format
 msgid ""
@@ -36427,8 +36416,8 @@ msgstr "ട്രാന്‍സിയന്റ് ഡൊമെയിനുക�
 msgid ""
 "transient domain needs to request run or pause to revert to inactive snapshot"
 msgstr ""
-"സജീവമല്ലാത്ത സ്നാപ്പ്ഷോട്ടിലേക്കു് തിരികെ പോകുന്നതിനായി പ്രവര്‍ത്തിപ്പിയ്ക്കുക അല്ലെങ്കില്‍ തല്‍"
-"ക്കാലത്തക്കു് നിര്‍ത്തുക എന്നു് ട്രാന്‍സിയന്റ് ഡൊമെയിന്‍ ആവശ്യപ്പടേണ്ടതുണ്ടു്"
+"സജീവമല്ലാത്ത സ്നാപ്പ്ഷോട്ടിലേക്കു് തിരികെ പോകുന്നതിനായി പ്രവര്‍ത്തിപ്പിയ്ക്കുക അല്ലെങ്കില്‍ "
+"തല്‍ക്കാലത്തക്കു് നിര്‍ത്തുക എന്നു് ട്രാന്‍സിയന്റ് ഡൊമെയിന്‍ ആവശ്യപ്പടേണ്ടതുണ്ടു്"
 
 msgid "transient domains do not have any persistent config"
 msgstr "ട്രാന്‍സിയന്റ് ഡൊമെയിനുകള്‍ക്കു് സ്ഥിരമായ ക്രമീകരണമില്ല"
@@ -38926,8 +38915,8 @@ msgstr "virNWFilterSnoopListDel പരാജയപ്പെട്ടു"
 #, c-format
 msgid "virNWFilterSnoopReqNew called with invalid key \"%1$s\" (%2$zu)"
 msgstr ""
-"virNWFilterSnoopReqNew സാധുവല്ലാത്ത  കീ ഉപയോഗിച്ച്  വിളിച്ചിരിക്കുന്നു  \"%1$s"
-"\" (%2$zu)"
+"virNWFilterSnoopReqNew സാധുവല്ലാത്ത  കീ ഉപയോഗിച്ച്  വിളിച്ചിരിക്കുന്നു  "
+"\"%1$s\" (%2$zu)"
 
 msgid "virSetUIDGID is not available"
 msgstr "virSetUIDGID ലഭ്യമല്ല"
@@ -39452,6 +39441,34 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, fuzzy, c-format
+#~ msgid "DBus daemon %1$s didn't show up"
+#~ msgstr "ഡൊമെയിന്‍ %1$s ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "Field name too long"
+#~ msgstr "ഫീള്‍ഡ് നാമം '%s' വളരെ വലുതു്"
+
+#, fuzzy
+#~ msgid "configuring persistent polling values is not supported"
+#~ msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ പരിഷ്കരണം പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy, c-format
+#~ msgid "poll-grow (%1$u) must be less than or equal to %2$d"
+#~ msgstr "%s ലെ cellNum %d നു തുല്യമോ അതിനേക്കാള്‍ കുറവോ ആയിരിക്കണം "
+
+#, fuzzy, c-format
+#~ msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
+#~ msgstr "%s ലെ cellNum %d നു തുല്യമോ അതിനേക്കാള്‍ കുറവോ ആയിരിക്കണം "
+
+#, fuzzy, c-format
+#~ msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
+#~ msgstr "%s ലെ cellNum %d നു തുല്യമോ അതിനേക്കാള്‍ കുറവോ ആയിരിക്കണം "
+
+#, fuzzy
+#~ msgid "qemu unexpectedly closed the monitor"
+#~ msgstr "അപ്രതീക്ഷിതമായ കോഡ് പാഥ്"
 
 #, fuzzy
 #~ msgid "%1$s cannot be set higher than %2$s "

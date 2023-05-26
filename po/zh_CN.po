@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-25 10:39+0000\n"
+"POT-Creation-Date: 2023-05-26 06:46+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1361,6 +1361,11 @@ msgid ""
 "in memory element"
 msgstr ""
 "当内存元素中的模式是 'restrictive' 时，memnode 元素中需要 'restrictive' 模式"
+
+msgid ""
+"'restrictive' mode is required in memory element when mode is 'restrictive' "
+"in memnode element"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -3112,16 +3117,16 @@ msgstr "无法解析元素 <address> 的 uuid 属性"
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 "无法将 '%1$s' 接口插入 '%2$s'，因为新合并的入站 floor=%3$llu 将在网络 '%5$s' "
 "上过度承诺 average=%4$llu"
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 "无法将 '%1$s' 接口插入 '%2$s'，因为新合并的入站 floor=%3$llu 将在网络 '%5$s' "
 "上过度承诺 peak=%4$llu"
@@ -3610,8 +3615,16 @@ msgid "Compression cache: %1$.3lf %2$s"
 msgstr "压缩缓存：%1$.3lf %2$s"
 
 #, c-format
+msgid "Compression method '%1$s' is only supported with parallel migration"
+msgstr ""
+
+#, c-format
 msgid "Compression method '%1$s' is specified twice"
 msgstr "压缩方法 '%1$s' 被指定了两次"
+
+#, c-format
+msgid "Compression method '%1$s' isn't supported with parallel migration"
+msgstr ""
 
 msgid "Compression overflows:"
 msgstr "压缩流量："
@@ -4871,10 +4884,6 @@ msgstr "无法确定 DAC imagelabel"
 
 msgid "DAC seclabel couldn't be determined"
 msgstr "无法确定 DAC seclabel"
-
-#, c-format
-msgid "DBus daemon %1$s didn't show up"
-msgstr "dbus 守护进程 %1$s 没有显示"
 
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "无法修改 DNS HOST 记录，只能添加或者删除。"
@@ -8327,9 +8336,6 @@ msgstr "对于目标来说内核内存字段太长"
 msgid "Field name '%1$s' too long"
 msgstr "字段名称 '%1$s' 过长"
 
-msgid "Field name too long"
-msgstr "字段名称过长"
-
 #, c-format
 msgid "File %1$s contains no keys"
 msgstr "文件 %1$s 没有包含密钥"
@@ -9209,10 +9215,6 @@ msgid "Invalid 'cpu.max' data."
 msgstr "无效的 'cpu.max' 数据。"
 
 #, c-format
-msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
-msgstr "NUMA 节点 %1$d 的 cache 元素中无效的 'level' 属性"
-
-#, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
 msgstr "无效的 --with-loader-nvram 列表：%1$s"
 
@@ -9429,16 +9431,8 @@ msgid "Invalid bus type '%1$s' for floppy disk"
 msgstr "软盘的无效总线类型 '%1$s'"
 
 #, c-format
-msgid "Invalid cache associativity '%1$s'"
-msgstr "无效的缓存关联 '%1$s'"
-
-#, c-format
 msgid "Invalid cache id '%1$s'"
 msgstr "无效的缓存 ID '%1$s'"
-
-#, c-format
-msgid "Invalid cache policy '%1$s'"
-msgstr "无效的缓存策略 '%1$s'"
 
 msgid "Invalid call"
 msgstr "无效调用"
@@ -10688,10 +10682,6 @@ msgstr "查找 ManagedEntityStatus 时缺少 '%1$s' 属性"
 msgid "Missing '/' separator in cgroup mount '%1$s'"
 msgstr "cgroup 挂载 '%1$s' 中缺少 '/' 分隔符"
 
-#, c-format
-msgid "Missing 'associativity' attribute in cache element for NUMA node %1$d"
-msgstr "NUMA 节点 %1$d 的 cache 元素中缺少 'associativity' 属性"
-
 msgid "Missing 'domname' in JSON document"
 msgstr "在 JSON 文档中缺少 'domname'"
 
@@ -10711,10 +10701,6 @@ msgstr "CPU 映射中缺少的 'filename' 包括"
 msgid "Missing 'key' element for lease"
 msgstr "缺少租约的 'key' 元素"
 
-#, c-format
-msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
-msgstr "NUMA 节点 %1$d 的 cache 元素中缺少 'level' 属性"
-
 msgid "Missing 'link' attribute for NIC"
 msgstr "NIC 缺少 'link' 属性"
 
@@ -10730,10 +10716,6 @@ msgstr "在 JSON 文档中缺少 'path' 字段"
 
 msgid "Missing 'pipefd' in JSON document"
 msgstr "在 JSON 文档中缺少 'pipefd'"
-
-#, c-format
-msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
-msgstr "NUMA 节点 %1$d 的 cache 元素中缺少 'policy' 属性"
 
 msgid "Missing 'runtime.powerState' property"
 msgstr "缺少 'runtime.powerState' 属性"
@@ -11709,6 +11691,9 @@ msgstr "没有与 ID '%1$llu' 匹配的客户端"
 msgid "No complete agent response found in %1$d bytes"
 msgstr "%1$d 字节中没有找到完整的代理响应"
 
+msgid "No compression algorithm selected for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "No current block job for %1$s"
 msgstr "没有 %1$s 的当前块作业"
@@ -12294,6 +12279,10 @@ msgstr "只允许一个子 <inbound> 元素"
 
 msgid "Only one child <outbound> element allowed"
 msgstr "只允许一个子 <outbound> 元素"
+
+msgid ""
+"Only one compression method could be specified with parallel compression"
+msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "仅支持型号 vfio-ap 的一个 hostdev。"
@@ -12983,6 +12972,10 @@ msgstr "QEMU 报告非 kvm 域 virt 类型的无效的默认 CPU 型号 \"host\"
 
 msgid "QEMU reports migration is still running"
 msgstr "QEMU 报告迁移仍在运行"
+
+#, c-format
+msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
+msgstr ""
 
 #, c-format
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
@@ -14239,13 +14232,13 @@ msgid ""
 "State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s,%5$s=%6$llu', "
 "destination: '%7$s,%8$s=%9$s,%10$s=%11$llu'"
 msgstr ""
-"功能 '%1$s' 的状态不同：源：'%2$s,%3$s=%4$s,%5$s=%6$llu'，目标：'%7$s,%8$s="
-"%9$s,%10$s=%11$llu'"
+"功能 '%1$s' 的状态不同：源：'%2$s,%3$s=%4$s,%5$s=%6$llu'，目标：'%7$s,"
+"%8$s=%9$s,%10$s=%11$llu'"
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
-"%5$s'"
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: "
+"'%4$s=%5$s'"
 msgstr "功能 '%1$s' 的状态不同：源：'%2$s=%3$s，目标：'%4$s=%5$s'"
 
 #, c-format
@@ -15144,6 +15137,11 @@ msgid "Target sound card model %1$s does not match source %2$s"
 msgstr "目标声卡型号 %1$s 与源 %2$s 不匹配"
 
 #, c-format
+msgid ""
+"Target sound card multichannel setting '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
 msgstr "目标系统信息 %1$s %2$s 与源 %3$s 不匹配"
 
@@ -15396,8 +15394,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x"
-"%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags "
+"0x%2$.2x"
 msgstr "PCI 地址 %1$s 处的设备具有未识别的连接类型标志 0x%2$.2x"
 
 #, c-format
@@ -15847,6 +15845,12 @@ msgstr "打开并行迁移以对其进行调优"
 
 msgid "Turn xbzrle compression on to tune it"
 msgstr "打开 xbzrle 压缩以对其进行调优"
+
+msgid "Turn zlib compression on to tune it"
+msgstr ""
+
+msgid "Turn zstd compression on to tune it"
+msgstr ""
 
 msgid "Type"
 msgstr "类型"
@@ -22213,6 +22217,12 @@ msgstr "已完成"
 msgid "compress level for multithread compression"
 msgstr "多线程压缩的压缩级别"
 
+msgid "compress level for zlib compression"
+msgstr ""
+
+msgid "compress level for zstd compression"
+msgstr ""
+
 msgid "compress repeated pages during live migration"
 msgstr "实时迁移过程中压缩重复的页"
 
@@ -22255,9 +22265,6 @@ msgstr "vz 快照不支持配置磁盘"
 
 msgid "configuring memory location is not supported"
 msgstr "不支持配置内存位置"
-
-msgid "configuring persistent polling values is not supported"
-msgstr "不支持配置持久轮询值"
 
 msgid "conn must match stream connection"
 msgstr "conn 必须与流连接匹配"
@@ -31983,18 +31990,6 @@ msgid "poll failed in migration tunnel"
 msgstr "迁移管道中的轮循失败"
 
 #, c-format
-msgid "poll-grow (%1$u) must be less than or equal to %2$d"
-msgstr "poll-grow(%1$u) 必须小于或等于 %2$d"
-
-#, c-format
-msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
-msgstr "poll-max-ns(%1$llu) 必须小于或等于 %2$d"
-
-#, c-format
-msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
-msgstr "poll-shrink(%1$u) 必须小于或等于 %2$d"
-
-#, c-format
 msgid "pool '%1$s' already exists with uuid %2$s"
 msgstr "池 ‘%1$s’ 已存在 uuid %2$s"
 
@@ -32373,9 +32368,6 @@ msgstr "QEMU 返回了格式错误的时间"
 
 msgid "qemu state driver is not active"
 msgstr "qemu 状态驱动程序不活跃"
-
-msgid "qemu unexpectedly closed the monitor"
-msgstr "QEMU 意外关闭了监控"
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -33278,8 +33270,8 @@ msgid "security model string exceeds max %1$d bytes"
 msgstr "安全性模式超过最大的 %1$d 字节"
 
 msgid ""
-"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
-"\")"
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
+"\"dbus\")"
 msgstr "选择特定的图形显示（例如：\"vnc\", \"spice\", \"rdp\", \"dbus\"）"
 
 msgid "send handler failed"
@@ -37832,6 +37824,56 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "DBus daemon %1$s didn't show up"
+#~ msgstr "dbus 守护进程 %1$s 没有显示"
+
+#~ msgid "Field name too long"
+#~ msgstr "字段名称过长"
+
+#, c-format
+#~ msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr "NUMA 节点 %1$d 的 cache 元素中无效的 'level' 属性"
+
+#, c-format
+#~ msgid "Invalid cache associativity '%1$s'"
+#~ msgstr "无效的缓存关联 '%1$s'"
+
+#, c-format
+#~ msgid "Invalid cache policy '%1$s'"
+#~ msgstr "无效的缓存策略 '%1$s'"
+
+#, c-format
+#~ msgid ""
+#~ "Missing 'associativity' attribute in cache element for NUMA node %1$d"
+#~ msgstr "NUMA 节点 %1$d 的 cache 元素中缺少 'associativity' 属性"
+
+#, c-format
+#~ msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr "NUMA 节点 %1$d 的 cache 元素中缺少 'level' 属性"
+
+#, c-format
+#~ msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
+#~ msgstr "NUMA 节点 %1$d 的 cache 元素中缺少 'policy' 属性"
+
+#~ msgid "configuring persistent polling values is not supported"
+#~ msgstr "不支持配置持久轮询值"
+
+#, c-format
+#~ msgid "poll-grow (%1$u) must be less than or equal to %2$d"
+#~ msgstr "poll-grow(%1$u) 必须小于或等于 %2$d"
+
+#, c-format
+#~ msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
+#~ msgstr "poll-max-ns(%1$llu) 必须小于或等于 %2$d"
+
+#, c-format
+#~ msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
+#~ msgstr "poll-shrink(%1$u) 必须小于或等于 %2$d"
+
+#~ msgid "qemu unexpectedly closed the monitor"
+#~ msgstr "QEMU 意外关闭了监控"
 
 #~ msgid "%1$s cannot be set higher than %2$s "
 #~ msgstr "%1$s 不能高于 %2$s "

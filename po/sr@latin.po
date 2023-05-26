@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-25 10:39+0000\n"
+"POT-Creation-Date: 2023-05-26 06:46+0000\n"
 "PO-Revision-Date: 2015-03-03 06:01+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (Latin) (http://www.transifex.com/projects/p/fedora/"
@@ -18,8 +18,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Zanata 4.6.2\n"
 
 msgid ""
@@ -1162,6 +1162,11 @@ msgstr ""
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
 "in memory element"
+msgstr ""
+
+msgid ""
+"'restrictive' mode is required in memory element when mode is 'restrictive' "
+"in memnode element"
 msgstr ""
 
 #, c-format
@@ -2952,14 +2957,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 
 #, c-format
@@ -3461,7 +3466,15 @@ msgid "Compression cache: %1$.3lf %2$s"
 msgstr ""
 
 #, c-format
+msgid "Compression method '%1$s' is only supported with parallel migration"
+msgstr ""
+
+#, c-format
 msgid "Compression method '%1$s' is specified twice"
+msgstr ""
+
+#, c-format
+msgid "Compression method '%1$s' isn't supported with parallel migration"
 msgstr ""
 
 msgid "Compression overflows:"
@@ -4744,10 +4757,6 @@ msgid "DAC imagelabel couldn't be determined"
 msgstr ""
 
 msgid "DAC seclabel couldn't be determined"
-msgstr ""
-
-#, c-format
-msgid "DBus daemon %1$s didn't show up"
 msgstr ""
 
 msgid "DNS HOST records cannot be modified, only added or deleted"
@@ -8353,9 +8362,6 @@ msgstr ""
 msgid "Field name '%1$s' too long"
 msgstr ""
 
-msgid "Field name too long"
-msgstr ""
-
 #, c-format
 msgid "File %1$s contains no keys"
 msgstr ""
@@ -9235,10 +9241,6 @@ msgid "Invalid 'cpu.max' data."
 msgstr ""
 
 #, c-format
-msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
-msgstr ""
-
-#, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
 msgstr ""
 
@@ -9453,17 +9455,9 @@ msgstr "Neispravna „%1$s“ vrsta magistrale za disketnu jedinicu"
 msgid "Invalid bus type '%1$s' for floppy disk"
 msgstr "Neispravna „%1$s“ vrsta magistrale za disketnu jedinicu"
 
-#, c-format
-msgid "Invalid cache associativity '%1$s'"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Invalid cache id '%1$s'"
 msgstr "neispravna putanja: %1$s"
-
-#, c-format
-msgid "Invalid cache policy '%1$s'"
-msgstr ""
 
 msgid "Invalid call"
 msgstr ""
@@ -10752,10 +10746,6 @@ msgstr ""
 msgid "Missing '/' separator in cgroup mount '%1$s'"
 msgstr ""
 
-#, c-format
-msgid "Missing 'associativity' attribute in cache element for NUMA node %1$d"
-msgstr ""
-
 msgid "Missing 'domname' in JSON document"
 msgstr ""
 
@@ -10775,10 +10765,6 @@ msgstr ""
 msgid "Missing 'key' element for lease"
 msgstr ""
 
-#, c-format
-msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
-msgstr ""
-
 #, fuzzy
 msgid "Missing 'link' attribute for NIC"
 msgstr "nedostaje osobina tipa domena"
@@ -10794,10 +10780,6 @@ msgid "Missing 'path' field in JSON document"
 msgstr ""
 
 msgid "Missing 'pipefd' in JSON document"
-msgstr ""
-
-#, c-format
-msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
 msgstr ""
 
 msgid "Missing 'runtime.powerState' property"
@@ -11812,6 +11794,9 @@ msgstr "nema domena koji se podudara sa uuid „%s“"
 msgid "No complete agent response found in %1$d bytes"
 msgstr ""
 
+msgid "No compression algorithm selected for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "No current block job for %1$s"
 msgstr ""
@@ -12400,6 +12385,10 @@ msgid "Only one child <inbound> element allowed"
 msgstr ""
 
 msgid "Only one child <outbound> element allowed"
+msgstr ""
+
+msgid ""
+"Only one compression method could be specified with parallel compression"
 msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
@@ -13095,6 +13084,10 @@ msgid ""
 msgstr ""
 
 msgid "QEMU reports migration is still running"
+msgstr ""
+
+#, c-format
+msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
 msgstr ""
 
 #, c-format
@@ -14387,8 +14380,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
-"%5$s'"
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: "
+"'%4$s=%5$s'"
 msgstr ""
 
 #, c-format
@@ -15345,6 +15338,11 @@ msgstr ""
 "„%2$s“"
 
 #, c-format
+msgid ""
+"Target sound card multichannel setting '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
 msgstr ""
 
@@ -15593,8 +15591,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x"
-"%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags "
+"0x%2$.2x"
 msgstr ""
 
 #, c-format
@@ -16049,6 +16047,12 @@ msgid "Turn parallel migration on to tune it"
 msgstr ""
 
 msgid "Turn xbzrle compression on to tune it"
+msgstr ""
+
+msgid "Turn zlib compression on to tune it"
+msgstr ""
+
+msgid "Turn zstd compression on to tune it"
 msgstr ""
 
 #, fuzzy
@@ -22604,6 +22608,12 @@ msgstr ""
 msgid "compress level for multithread compression"
 msgstr ""
 
+msgid "compress level for zlib compression"
+msgstr ""
+
+msgid "compress level for zstd compression"
+msgstr ""
+
 msgid "compress repeated pages during live migration"
 msgstr ""
 
@@ -22646,9 +22656,6 @@ msgid "configuring disks is not supported for vz snapshots"
 msgstr ""
 
 msgid "configuring memory location is not supported"
-msgstr ""
-
-msgid "configuring persistent polling values is not supported"
 msgstr ""
 
 msgid "conn must match stream connection"
@@ -32795,18 +32802,6 @@ msgid "poll failed in migration tunnel"
 msgstr ""
 
 #, c-format
-msgid "poll-grow (%1$u) must be less than or equal to %2$d"
-msgstr ""
-
-#, c-format
-msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
-msgstr ""
-
-#, c-format
-msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
-msgstr ""
-
-#, c-format
 msgid "pool '%1$s' already exists with uuid %2$s"
 msgstr ""
 
@@ -33189,9 +33184,6 @@ msgstr ""
 #, fuzzy
 msgid "qemu state driver is not active"
 msgstr "skladište nije aktivno"
-
-msgid "qemu unexpectedly closed the monitor"
-msgstr ""
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -34130,8 +34122,8 @@ msgid "security model string exceeds max %1$d bytes"
 msgstr ""
 
 msgid ""
-"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
-"\")"
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
+"\"dbus\")"
 msgstr ""
 
 msgid "send handler failed"

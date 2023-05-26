@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-25 10:39+0000\n"
+"POT-Creation-Date: 2023-05-26 06:46+0000\n"
 "PO-Revision-Date: 2023-04-28 04:20+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -1438,6 +1438,11 @@ msgid ""
 msgstr ""
 "режим «restrictive» є обов'язковим у елементі memnode, якщо у елементі "
 "memory встановлено режим «restrictive»"
+
+msgid ""
+"'restrictive' mode is required in memory element when mode is 'restrictive' "
+"in memnode element"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -3366,21 +3371,21 @@ msgstr "Не вдалося обробити атрибут uuid елемент�
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 "Не вдалося з'єднати інтерфейс «%1$s» із «%2$s», оскільки нове комбіноване "
-"нижнє значення вхідного потоку=%3$llu мало б перевизначити середнє значення="
-"%4$llu у мережі «%5$s»"
+"нижнє значення вхідного потоку=%3$llu мало б перевизначити середнє "
+"значення=%4$llu у мережі «%5$s»"
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 "Не вдалося з'єднати інтерфейс «%1$s» із «%2$s», оскільки нове комбіноване "
-"нижнє значення вхідного потоку=%3$llu мало б перевизначити пікове значення="
-"%4$llu у мережі «%5$s»"
+"нижнє значення вхідного потоку=%3$llu мало б перевизначити пікове "
+"значення=%4$llu у мережі «%5$s»"
 
 #, c-format
 msgid "Cannot print data type %1$x"
@@ -3926,8 +3931,16 @@ msgid "Compression cache: %1$.3lf %2$s"
 msgstr "Кеш стискання: %1$.3lf %2$s"
 
 #, c-format
+msgid "Compression method '%1$s' is only supported with parallel migration"
+msgstr ""
+
+#, c-format
 msgid "Compression method '%1$s' is specified twice"
 msgstr "Метод стискання «%1$s» вказано двічі"
+
+#, c-format
+msgid "Compression method '%1$s' isn't supported with parallel migration"
+msgstr ""
 
 msgid "Compression overflows:"
 msgstr "Переповнення стискання:"
@@ -5248,10 +5261,6 @@ msgstr "Не вдалося визначити мітку образу (imagelab
 
 msgid "DAC seclabel couldn't be determined"
 msgstr "не вдалося визначити мітку захисту (seclabel) DAC"
-
-#, c-format
-msgid "DBus daemon %1$s didn't show up"
-msgstr "Фонова служба D-Bus %1$s не з'явилася"
 
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "записи DNS HOST не можна змінювати, лише додавати і вилучати"
@@ -8904,9 +8913,6 @@ msgstr "Поле пам'яті ядра є занадто довгим для п
 msgid "Field name '%1$s' too long"
 msgstr "Назва поля, «%1$s», є занадто довгою"
 
-msgid "Field name too long"
-msgstr "Назва поля є занадто довгою"
-
 #, c-format
 msgid "File %1$s contains no keys"
 msgstr "У файлі %1$s не міститься ключів"
@@ -9874,10 +9880,6 @@ msgid "Invalid 'cpu.max' data."
 msgstr "Некоректні дані «cpu.max»."
 
 #, c-format
-msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
-msgstr "Некоректний атрибут «level» в елементі кешу для вузла NUMA %1$d"
-
-#, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
 msgstr "Некоректний список --with-loader-nvram: %1$s"
 
@@ -10110,16 +10112,8 @@ msgid "Invalid bus type '%1$s' for floppy disk"
 msgstr "Неправильний тип шини «%1$s» для дисковода"
 
 #, c-format
-msgid "Invalid cache associativity '%1$s'"
-msgstr "Некоректна асоціативність кешу «%1$s»"
-
-#, c-format
 msgid "Invalid cache id '%1$s'"
 msgstr "Некоректний ідентифікатор кешу «%1$s»"
-
-#, c-format
-msgid "Invalid cache policy '%1$s'"
-msgstr "Некоректні правила кешування «%1$s»"
 
 msgid "Invalid call"
 msgstr "Некоректний виклик"
@@ -10608,8 +10602,8 @@ msgid ""
 "Invalid specification for virtio ccw address: cssid='0x%1$x' ssid='0x%2$x' "
 "devno='0x%3$04x'"
 msgstr ""
-"Некоректна специфікація адреси ccw віртуального введення-виведення: cssid='0x"
-"%1$x' ssid='0x%2$x' devno='0x%3$04x'"
+"Некоректна специфікація адреси ccw віртуального введення-виведення: "
+"cssid='0x%1$x' ssid='0x%2$x' devno='0x%3$04x'"
 
 #, c-format
 msgid "Invalid state '%1$s' in domain snapshot XML"
@@ -11479,10 +11473,6 @@ msgstr "Під час пошуку ManagedEntityStatus не виявлено в�
 msgid "Missing '/' separator in cgroup mount '%1$s'"
 msgstr "У шляху монтування cgroup «%1$s» пропущено «/»"
 
-#, c-format
-msgid "Missing 'associativity' attribute in cache element for NUMA node %1$d"
-msgstr "Пропущено атрибут «associativity» в елементі кешу для вузла NUMA %1$d"
-
 msgid "Missing 'domname' in JSON document"
 msgstr "У документі JSON не вистачає даних «domname»"
 
@@ -11502,10 +11492,6 @@ msgstr "Пропущено «filename» у включенні карти про�
 msgid "Missing 'key' element for lease"
 msgstr "Не вказано елемента «key» для надання"
 
-#, c-format
-msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
-msgstr "Пропущено атрибут «level» в елементі кешу для вузла NUMA %1$d"
-
 msgid "Missing 'link' attribute for NIC"
 msgstr "Не вистачає атрибута «link» для NIC"
 
@@ -11521,10 +11507,6 @@ msgstr "У документі JSON пропущено поле «path»"
 
 msgid "Missing 'pipefd' in JSON document"
 msgstr "У документі JSON не вистачає «pipefd»"
-
-#, c-format
-msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
-msgstr "Пропущено атрибут «policy» в елементі кешу для вузла NUMA %1$d"
 
 msgid "Missing 'runtime.powerState' property"
 msgstr "Не вказано властивості «runtime.powerState»"
@@ -12578,6 +12560,9 @@ msgstr "Не знайдено клієнтів із ідентифікаторо
 msgid "No complete agent response found in %1$d bytes"
 msgstr "У %1$d байтах не знайдено повної відповіді агента"
 
+msgid "No compression algorithm selected for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "No current block job for %1$s"
 msgstr "Немає поточних блокових завдань для %1$s"
@@ -13216,6 +13201,10 @@ msgstr "Можна використовувати лише один дочірн
 
 msgid "Only one child <outbound> element allowed"
 msgstr "Можна використовувати лише один дочірній елемент <outbound>"
+
+msgid ""
+"Only one compression method could be specified with parallel compression"
+msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Передбачено підтримку пристроїв основної системи лише моделі vfio-ap"
@@ -13973,6 +13962,10 @@ msgstr ""
 
 msgid "QEMU reports migration is still running"
 msgstr "QEMU повідомляє про незавершене перенесення"
+
+#, c-format
+msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
+msgstr ""
 
 #, c-format
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
@@ -15382,8 +15375,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
-"%5$s'"
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: "
+"'%4$s=%5$s'"
 msgstr ""
 "Відмінності у даних щодо стану можливості «%1$s»: джерело: «%2$s=%3$s», "
 "призначення: «%4$s=%5$s»"
@@ -16512,6 +16505,11 @@ msgstr ""
 "Модель звукової картки призначення %1$s не відповідає моделі джерела %2$s"
 
 #, c-format
+msgid ""
+"Target sound card multichannel setting '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
 msgstr ""
 "Системна інформація призначення %1$s %2$s не відповідає даним джерела %3$s"
@@ -16807,11 +16805,11 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x"
-"%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags "
+"0x%2$.2x"
 msgstr ""
-"Пристрій із адресою PCI %1$s має нерозпізнані прапорці типу з'єднання, 0x"
-"%2$.2x"
+"Пристрій із адресою PCI %1$s має нерозпізнані прапорці типу з'єднання, "
+"0x%2$.2x"
 
 #, c-format
 msgid "The device at PCI address %1$s needs to be an integrated device (bus=0)"
@@ -17297,6 +17295,12 @@ msgstr "Увімкніть паралельне перенесення, щоб �
 
 msgid "Turn xbzrle compression on to tune it"
 msgstr "Увімкніть стискання xbzrle, щоб скоригувати його параметри"
+
+msgid "Turn zlib compression on to tune it"
+msgstr ""
+
+msgid "Turn zstd compression on to tune it"
+msgstr ""
 
 msgid "Type"
 msgstr "Тип"
@@ -22109,8 +22113,8 @@ msgstr ""
 #, c-format
 msgid "cannot acquire state change lock (held by monitor=%1$s agent=%2$s)"
 msgstr ""
-"не вдалося створити блокування зміни станів (утримується monitor=%1$s agent="
-"%2$s)"
+"не вдалося створити блокування зміни станів (утримується monitor=%1$s "
+"agent=%2$s)"
 
 #, c-format
 msgid ""
@@ -24045,6 +24049,12 @@ msgstr "завершено"
 msgid "compress level for multithread compression"
 msgstr "рівень стискання для багатопотокового стискання"
 
+msgid "compress level for zlib compression"
+msgstr ""
+
+msgid "compress level for zstd compression"
+msgstr ""
+
 msgid "compress repeated pages during live migration"
 msgstr "стискати повторювані сторінки під час інтерактивного перенесення"
 
@@ -24090,9 +24100,6 @@ msgstr "для знімків vz підтримки налаштовування
 
 msgid "configuring memory location is not supported"
 msgstr "підтримки налаштовування розташування у пам'яті не передбачено"
-
-msgid "configuring persistent polling values is not supported"
-msgstr "підтримки налаштовування сталих значень опитування не передбачено"
 
 msgid "conn must match stream connection"
 msgstr "conn має відповідати з'єднанню з потоковим передаванням даних"
@@ -34522,18 +34529,6 @@ msgid "poll failed in migration tunnel"
 msgstr "невдала спроба опитування у тунелі перенесення"
 
 #, c-format
-msgid "poll-grow (%1$u) must be less than or equal to %2$d"
-msgstr "poll-grow (%1$u) має не перевищувати %2$d"
-
-#, c-format
-msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
-msgstr "poll-max-ns (%1$llu) має не перевищувати %2$d"
-
-#, c-format
-msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
-msgstr "poll-shrink (%1$u) має не перевищувати %2$d"
-
-#, c-format
 msgid "pool '%1$s' already exists with uuid %2$s"
 msgstr "запис буфера «%1$s» вже існує з UUID %2$s"
 
@@ -34948,9 +34943,6 @@ msgstr "qemu повернуто значення часу із помилков�
 
 msgid "qemu state driver is not active"
 msgstr "драйвер стану qemu не активний"
-
-msgid "qemu unexpectedly closed the monitor"
-msgstr "qemu неочікувано завершив роботу монітора"
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -35929,8 +35921,8 @@ msgstr ""
 "довжина рядка моделі захисту перевищує максимальне значення у %1$d байтів"
 
 msgid ""
-"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
-"\")"
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
+"\"dbus\")"
 msgstr ""
 "виберіть певний графічний дисплей (наприклад, «vnc», «spice», «rdp», «dbus»)"
 
@@ -38509,8 +38501,8 @@ msgstr "неочікуваний тип домену %1$d"
 msgid ""
 "unexpected element <%1$s>, expecting <%2$s>, while updating network '%3$s'"
 msgstr ""
-"під час спроби оновлення запису мережі «%3$s» трапився неочікуваний елемент <"
-"%1$s>, мало бути <%2$s>"
+"під час спроби оновлення запису мережі «%3$s» трапився неочікуваний елемент "
+"<%1$s>, мало бути <%2$s>"
 
 msgid "unexpected encryption engine"
 msgstr "неочікуваний рушій шифрування"
@@ -40779,6 +40771,57 @@ msgstr ""
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <рядок>}..."
 
+#, c-format
+#~ msgid "DBus daemon %1$s didn't show up"
+#~ msgstr "Фонова служба D-Bus %1$s не з'явилася"
+
+#~ msgid "Field name too long"
+#~ msgstr "Назва поля є занадто довгою"
+
+#, c-format
+#~ msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr "Некоректний атрибут «level» в елементі кешу для вузла NUMA %1$d"
+
+#, c-format
+#~ msgid "Invalid cache associativity '%1$s'"
+#~ msgstr "Некоректна асоціативність кешу «%1$s»"
+
+#, c-format
+#~ msgid "Invalid cache policy '%1$s'"
+#~ msgstr "Некоректні правила кешування «%1$s»"
+
+#, c-format
+#~ msgid ""
+#~ "Missing 'associativity' attribute in cache element for NUMA node %1$d"
+#~ msgstr ""
+#~ "Пропущено атрибут «associativity» в елементі кешу для вузла NUMA %1$d"
+
+#, c-format
+#~ msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr "Пропущено атрибут «level» в елементі кешу для вузла NUMA %1$d"
+
+#, c-format
+#~ msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
+#~ msgstr "Пропущено атрибут «policy» в елементі кешу для вузла NUMA %1$d"
+
+#~ msgid "configuring persistent polling values is not supported"
+#~ msgstr "підтримки налаштовування сталих значень опитування не передбачено"
+
+#, c-format
+#~ msgid "poll-grow (%1$u) must be less than or equal to %2$d"
+#~ msgstr "poll-grow (%1$u) має не перевищувати %2$d"
+
+#, c-format
+#~ msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
+#~ msgstr "poll-max-ns (%1$llu) має не перевищувати %2$d"
+
+#, c-format
+#~ msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
+#~ msgstr "poll-shrink (%1$u) має не перевищувати %2$d"
+
+#~ msgid "qemu unexpectedly closed the monitor"
+#~ msgstr "qemu неочікувано завершив роботу монітора"
+
 #~ msgid "%1$s cannot be set higher than %2$s "
 #~ msgstr "%1$s не можна встановлювати у значення, яке є більшим за %2$s "
 
@@ -41247,8 +41290,8 @@ msgstr "{[--%1$s] <рядок>}..."
 
 #~ msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
 #~ msgstr ""
-#~ "Не вдалося додати контролер сховища даних (назва: %s, тип каналу: %d), rc="
-#~ "%08x"
+#~ "Не вдалося додати контролер сховища даних (назва: %s, тип каналу: %d), "
+#~ "rc=%08x"
 
 #~ msgid "Failed to change storage controller model, rc=%08x"
 #~ msgstr "Не вдалося змінити модель контролера сховища даних, rc=%08x"
@@ -41374,8 +41417,8 @@ msgstr "{[--%1$s] <рядок>}..."
 
 #~ msgid "could not set the number of virtual CPUs to: %u, rc=%08x"
 #~ msgstr ""
-#~ "не вдалося встановити кількість віртуальних процесорів у значення: %u, rc="
-#~ "%08x"
+#~ "не вдалося встановити кількість віртуальних процесорів у значення: %u, "
+#~ "rc=%08x"
 
 #~ msgid "domain already has a watchdog"
 #~ msgstr "домен вже має засіб спостереження"

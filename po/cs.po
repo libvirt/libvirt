@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-25 10:39+0000\n"
+"POT-Creation-Date: 2023-05-26 06:46+0000\n"
 "PO-Revision-Date: 2023-04-25 08:21+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1410,6 +1410,11 @@ msgid ""
 msgstr ""
 "pokud se v prvku memory nachází režim 'restrictive', pak je také v prvku "
 "memnode zapotřebí režimu 'restrictive'"
+
+msgid ""
+"'restrictive' mode is required in memory element when mode is 'restrictive' "
+"in memnode element"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -3281,16 +3286,16 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 "Není možné připojit rozhraní „%1$s“ do „%2$s“ protože nové kombinované "
 "inbound floor=%3$llu by překračovalo average=%4$llu na síti „%5$s“"
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 "Není možné připojit rozhraní „%1$s“ do „%2$s“ protože nové kombinované "
 "inbound floor=%3$llu by překračovalo peak=%4$llu na síti „%5$s“"
@@ -3809,8 +3814,16 @@ msgid "Compression cache: %1$.3lf %2$s"
 msgstr "Mezipaměť komprese: %1$.3lf %2$s"
 
 #, c-format
+msgid "Compression method '%1$s' is only supported with parallel migration"
+msgstr ""
+
+#, c-format
 msgid "Compression method '%1$s' is specified twice"
 msgstr "Metoda komprese „%1$s“ je zadána dvakrát"
+
+#, c-format
+msgid "Compression method '%1$s' isn't supported with parallel migration"
+msgstr ""
 
 msgid "Compression overflows:"
 msgstr "Přetečení komprese:"
@@ -3880,8 +3893,8 @@ msgid ""
 "Configuring the '%1$s' timer is not supported for virtType=%2$s arch=%3$s "
 "machine=%4$s guests"
 msgstr ""
-"Nastavování časovače „%1$s“ není pro hosty virtType=%2$s arch=%3$s machine="
-"%4$s podporována"
+"Nastavování časovače „%1$s“ není pro hosty virtType=%2$s arch=%3$s "
+"machine=%4$s podporována"
 
 #, c-format
 msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
@@ -5117,10 +5130,6 @@ msgstr "nepodařilo se zjistit DAC imagelabel"
 msgid "DAC seclabel couldn't be determined"
 msgstr "nepodařilo se zjistit DAC seclabel"
 
-#, c-format
-msgid "DBus daemon %1$s didn't show up"
-msgstr "Proces služby DBus %1$s se neukázal"
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "DNS HOST záznamy není možné upravovat – pouze přidávat nebo mazat"
 
@@ -6179,8 +6188,8 @@ msgstr "Chyba při čtení názvu domény"
 #, c-format
 msgid "Error while removing hostonly network interface, rc=%1$08x"
 msgstr ""
-"Chyba při odebírání síťového rozhraní pro komunikaci pouze s hostitelem, rc="
-"%1$08x"
+"Chyba při odebírání síťového rozhraní pro komunikaci pouze s hostitelem, "
+"rc=%1$08x"
 
 #, c-format
 msgid "Escape character is %1$s"
@@ -8714,9 +8723,6 @@ msgstr "Kolonka paměť jádra je pro cíl příliš dlouhá"
 msgid "Field name '%1$s' too long"
 msgstr "Název kolonky „%1$s“ je příliš dlouhý"
 
-msgid "Field name too long"
-msgstr "Obsah kolonky název je příliš dlouhý"
-
 #, c-format
 msgid "File %1$s contains no keys"
 msgstr "Soubor %1$s neobsahuje žádné klíče"
@@ -9648,10 +9654,6 @@ msgid "Invalid 'cpu.max' data."
 msgstr "Neplatná data 'cpu.max'."
 
 #, c-format
-msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
-msgstr "Neplatný atribut 'level' v prvku mezipaměti pro NUMA uzel %1$d"
-
-#, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
 msgstr "Neplatný seznam --with-loader-nvram: %1$s"
 
@@ -9891,16 +9893,8 @@ msgid "Invalid bus type '%1$s' for floppy disk"
 msgstr "Neplatný typ sběrnice „%1$s“ disketové mechaniky"
 
 #, c-format
-msgid "Invalid cache associativity '%1$s'"
-msgstr "Neplatná asociativnost mezipaměti '%1$s'"
-
-#, c-format
 msgid "Invalid cache id '%1$s'"
 msgstr "Neplatný identifikátor mezipaměti „%1$s“"
-
-#, c-format
-msgid "Invalid cache policy '%1$s'"
-msgstr "Neplatné pravidlo pro mezipaměť '%1$s'"
 
 msgid "Invalid call"
 msgstr "Neplatné volání"
@@ -11228,12 +11222,6 @@ msgstr ""
 msgid "Missing '/' separator in cgroup mount '%1$s'"
 msgstr "Chybí oddělovač „/“v cgroup připojení (mount) „%1$s“"
 
-#, c-format
-msgid "Missing 'associativity' attribute in cache element for NUMA node %1$d"
-msgstr ""
-"Chybějící atribut 'associativity' v prvku cache (mezipaměť) pro NUMA uzel "
-"%1$d"
-
 msgid "Missing 'domname' in JSON document"
 msgstr "V JSON dokumentu chybí 'domname'"
 
@@ -11253,12 +11241,6 @@ msgstr "v include mapy procesoru chybí 'filename'"
 msgid "Missing 'key' element for lease"
 msgstr "Chybí prvek pro zápůjčku „key“ (klíč)"
 
-#, c-format
-msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
-msgstr ""
-"Chybějící atribut 'level' (úroveň) v prvku cache (mezipaměť) pro NUMA uzel "
-"%1$d"
-
 msgid "Missing 'link' attribute for NIC"
 msgstr "Pro síťové rozhraní chybí atribut „link“"
 
@@ -11274,10 +11256,6 @@ msgstr "V JSON dokumentu chybí kolonka 'path'"
 
 msgid "Missing 'pipefd' in JSON document"
 msgstr "V JSON dokumentu chybí 'pipefd'"
-
-#, c-format
-msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
-msgstr "Chybí atribut 'policy' v prvku mezipaměti pro NUMA uzel %1$d"
 
 msgid "Missing 'runtime.powerState' property"
 msgstr "Chybí vlastnost 'runtime.powerState'"
@@ -12290,6 +12268,9 @@ msgstr "Žádný klient, který by měl identifikátor „%1$llu“"
 msgid "No complete agent response found in %1$d bytes"
 msgstr "V %1$d bajtech nenalezena úplná odpověď klienta"
 
+msgid "No compression algorithm selected for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "No current block job for %1$s"
 msgstr "Žádná aktuální bloková úloha pro %1$s"
@@ -12901,6 +12882,10 @@ msgstr "Je možné použít pouze jeden podřízený prvek <inbound>"
 
 msgid "Only one child <outbound> element allowed"
 msgstr "Je možné použít pouze jeden podřízený prvek <outbound>"
+
+msgid ""
+"Only one compression method could be specified with parallel compression"
+msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Je podporováno pouze jedno zařízení hostitele modelu vfio-ap"
@@ -13626,6 +13611,10 @@ msgstr ""
 
 msgid "QEMU reports migration is still running"
 msgstr "QEMU hlásí že stěhování stále ještě probíhá"
+
+#, c-format
+msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
+msgstr ""
 
 #, c-format
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
@@ -14959,8 +14948,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
-"%5$s'"
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: "
+"'%4$s=%5$s'"
 msgstr "Stav funkce „%1$s“ se liší: zdroj: „%2$s=%3$s“, cíl: „%4$s=%5$s“"
 
 #, c-format
@@ -15938,6 +15927,11 @@ msgid "Target sound card model %1$s does not match source %2$s"
 msgstr "Model %1$s cílové zvukové karty se neshoduje se zdrojovým %2$s"
 
 #, c-format
+msgid ""
+"Target sound card multichannel setting '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
 msgstr ""
 "Systémové informace (sysinfo) %1$s %2$s cíle se neshodují se zdrojovými %3$s"
@@ -16210,8 +16204,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x"
-"%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags "
+"0x%2$.2x"
 msgstr ""
 "Zařízení na PCI adrese %1$s má nerozpoznané příznaky typu připojení 0x%2$.2x"
 
@@ -16684,6 +16678,12 @@ msgstr "Aby bylo možné dolaďovat souběžné stěhování, je třeba ho zapno
 
 msgid "Turn xbzrle compression on to tune it"
 msgstr "Aby bylo možné dolaďovat xbzrle kompresi, je třeba ji zapnout"
+
+msgid "Turn zlib compression on to tune it"
+msgstr ""
+
+msgid "Turn zstd compression on to tune it"
+msgstr ""
 
 msgid "Type"
 msgstr "Typ"
@@ -23290,6 +23290,12 @@ msgstr "dokončeno"
 msgid "compress level for multithread compression"
 msgstr "míra komprese pro vícevláknovou kompresi"
 
+msgid "compress level for zlib compression"
+msgstr ""
+
+msgid "compress level for zstd compression"
+msgstr ""
+
 msgid "compress repeated pages during live migration"
 msgstr "při migraci za chodu komprimovat opakující se stránky paměti"
 
@@ -23334,9 +23340,6 @@ msgstr "nastavování disků není podporováno pro vz zachycené stavy"
 
 msgid "configuring memory location is not supported"
 msgstr "nastavování umístění paměti není podporováno"
-
-msgid "configuring persistent polling values is not supported"
-msgstr "nastavování trvalých hodnot dotazování není podporováno"
 
 msgid "conn must match stream connection"
 msgstr "je třeba, aby conn odpovídalo spojení proudu"
@@ -31757,8 +31760,8 @@ msgid ""
 "network '%1$s' claims the PCI device at domain=%2$d bus=%3$d slot=%4$d "
 "function=%5$d is already in use by a different network port"
 msgstr ""
-"síť „%1$s“ uvádí, že PCI zařízení na domain=%2$d bus=%3$d slot=%4$d function="
-"%5$d už je používáno jiným síťovým portem"
+"síť „%1$s“ uvádí, že PCI zařízení na domain=%2$d bus=%3$d slot=%4$d "
+"function=%5$d už je používáno jiným síťovým portem"
 
 #, c-format
 msgid "network '%1$s' does not have a bridge name."
@@ -33524,18 +33527,6 @@ msgid "poll failed in migration tunnel"
 msgstr "fond v migračním tunelu selhal"
 
 #, c-format
-msgid "poll-grow (%1$u) must be less than or equal to %2$d"
-msgstr "je třeba, aby poll-grow (%1$u) bylo nižší nebo rovno %2$d"
-
-#, c-format
-msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
-msgstr "je třeba, aby poll-max-ns (%1$llu) bylo nižší nebo rovno %2$d"
-
-#, c-format
-msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
-msgstr "je třeba, aby poll-shrink (%1$u) bylo nižší nebo rovno %2$d"
-
-#, c-format
 msgid "pool '%1$s' already exists with uuid %2$s"
 msgstr "úložiště „%1$s“ už existuje s uuid %2$s"
 
@@ -33923,9 +33914,6 @@ msgstr "qemu vrátilo čas v nesprávném tvaru"
 
 msgid "qemu state driver is not active"
 msgstr "ovladač stavu qemu není aktivní"
-
-msgid "qemu unexpectedly closed the monitor"
-msgstr "qemu neočekávaně ukončilo monitor"
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -34879,8 +34867,8 @@ msgid "security model string exceeds max %1$d bytes"
 msgstr "řetězec modelu zabezpečení přesahuje maximálních %1$d bajtů"
 
 msgid ""
-"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
-"\")"
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
+"\"dbus\")"
 msgstr ""
 "vyberte konkrétní grafické zobrazení (např. \"vnc\", \"spice\", \"rdp\", "
 "\"dbus\")"
@@ -39623,6 +39611,60 @@ msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <řetězec>}…"
+
+#, c-format
+#~ msgid "DBus daemon %1$s didn't show up"
+#~ msgstr "Proces služby DBus %1$s se neukázal"
+
+#~ msgid "Field name too long"
+#~ msgstr "Obsah kolonky název je příliš dlouhý"
+
+#, c-format
+#~ msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr "Neplatný atribut 'level' v prvku mezipaměti pro NUMA uzel %1$d"
+
+#, c-format
+#~ msgid "Invalid cache associativity '%1$s'"
+#~ msgstr "Neplatná asociativnost mezipaměti '%1$s'"
+
+#, c-format
+#~ msgid "Invalid cache policy '%1$s'"
+#~ msgstr "Neplatné pravidlo pro mezipaměť '%1$s'"
+
+#, c-format
+#~ msgid ""
+#~ "Missing 'associativity' attribute in cache element for NUMA node %1$d"
+#~ msgstr ""
+#~ "Chybějící atribut 'associativity' v prvku cache (mezipaměť) pro NUMA uzel "
+#~ "%1$d"
+
+#, c-format
+#~ msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr ""
+#~ "Chybějící atribut 'level' (úroveň) v prvku cache (mezipaměť) pro NUMA "
+#~ "uzel %1$d"
+
+#, c-format
+#~ msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
+#~ msgstr "Chybí atribut 'policy' v prvku mezipaměti pro NUMA uzel %1$d"
+
+#~ msgid "configuring persistent polling values is not supported"
+#~ msgstr "nastavování trvalých hodnot dotazování není podporováno"
+
+#, c-format
+#~ msgid "poll-grow (%1$u) must be less than or equal to %2$d"
+#~ msgstr "je třeba, aby poll-grow (%1$u) bylo nižší nebo rovno %2$d"
+
+#, c-format
+#~ msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
+#~ msgstr "je třeba, aby poll-max-ns (%1$llu) bylo nižší nebo rovno %2$d"
+
+#, c-format
+#~ msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
+#~ msgstr "je třeba, aby poll-shrink (%1$u) bylo nižší nebo rovno %2$d"
+
+#~ msgid "qemu unexpectedly closed the monitor"
+#~ msgstr "qemu neočekávaně ukončilo monitor"
 
 #~ msgid "%1$s cannot be set higher than %2$s "
 #~ msgstr "%1$s nemůže být nastaveno výše než %2$s "

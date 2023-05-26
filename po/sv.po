@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-25 10:39+0000\n"
+"POT-Creation-Date: 2023-05-26 06:46+0000\n"
 "PO-Revision-Date: 2023-04-25 08:21+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1401,6 +1401,11 @@ msgid ""
 msgstr ""
 "läget ”restrictive” krävs i memnode-elementet när läget är ”restrictive” i "
 "memory-elementet"
+
+msgid ""
+"'restrictive' mode is required in memory element when mode is 'restrictive' "
+"in memnode element"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -3253,8 +3258,8 @@ msgstr "Kan inte tolka attributet uuid i elementet <address>"
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 "Det går inte att plugga gränssnittet ”%1$s” i ”%2$s” eftersm det nya "
 "kombinerade ingående golvet=%3$llu skulle överboka genomsnittet=%4$llu på "
@@ -3262,8 +3267,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 "Det går inte att plugga gränssnittet ”%1$s” i ”%2$s” eftersm det nya "
 "kombinerade ingående golvet=%3$llu skulle överboka toppen=%4$llu på "
@@ -3783,8 +3788,16 @@ msgid "Compression cache: %1$.3lf %2$s"
 msgstr "Komprimerings-cache: %1$.3lf %2$s"
 
 #, c-format
+msgid "Compression method '%1$s' is only supported with parallel migration"
+msgstr ""
+
+#, c-format
 msgid "Compression method '%1$s' is specified twice"
 msgstr "Komprimeringsmetod ”%1$s” är angiven två gånger"
+
+#, c-format
+msgid "Compression method '%1$s' isn't supported with parallel migration"
+msgstr ""
 
 msgid "Compression overflows:"
 msgstr "Komprimeringspill:"
@@ -5088,10 +5101,6 @@ msgstr "DAC-avbildsetiketten kunde inte avgöras"
 
 msgid "DAC seclabel couldn't be determined"
 msgstr "DAC-säkerhetsetiketten kunde inte avgöras"
-
-#, c-format
-msgid "DBus daemon %1$s didn't show up"
-msgstr "DBus-demonen %1$s dök inte upp"
 
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "DNS HOST-poster kan inte ändras, endast läggas till eller tas bort"
@@ -8679,9 +8688,6 @@ msgstr "Fältkärnminnet är för långt för destinationen"
 msgid "Field name '%1$s' too long"
 msgstr "Fältnamnet ”%1$s” är för långt"
 
-msgid "Field name too long"
-msgstr "Fältnamnet är för långt"
-
 #, c-format
 msgid "File %1$s contains no keys"
 msgstr "Filen %1$s innehåller inga nycklar"
@@ -9607,10 +9613,6 @@ msgid "Invalid 'cpu.max' data."
 msgstr "Felaktig data till ”cpu.max”."
 
 #, c-format
-msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
-msgstr "Felaktigt attribut ”level” i cache-elementet för NUMA-nod %1$d"
-
-#, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
 msgstr "Felaktig lista till --with-loader-nvram: %1$s"
 
@@ -9842,16 +9844,8 @@ msgid "Invalid bus type '%1$s' for floppy disk"
 msgstr "Ogiltig busstyp ”%1$s” för diskett"
 
 #, c-format
-msgid "Invalid cache associativity '%1$s'"
-msgstr "Felaktig cache-associativitet ”%1$s”"
-
-#, c-format
 msgid "Invalid cache id '%1$s'"
 msgstr "Felaktigt cache-id ”%1$s”"
-
-#, c-format
-msgid "Invalid cache policy '%1$s'"
-msgstr "Felaktig cache-policy ”%1$s”"
 
 msgid "Invalid call"
 msgstr "Felaktigt anrop"
@@ -11164,10 +11158,6 @@ msgstr "Saknad egenskap ”%1$s” vid låsning för ManagedEntityStatus"
 msgid "Missing '/' separator in cgroup mount '%1$s'"
 msgstr "Saknad separator ”/” i cgroup-monteringen ”%1$s”"
 
-#, c-format
-msgid "Missing 'associativity' attribute in cache element for NUMA node %1$d"
-msgstr "Saknat attribut ”associativity” i cache-elementet för NUMA-nod %1$d"
-
 msgid "Missing 'domname' in JSON document"
 msgstr "Saknat ”domainname” i JSON-dokumentet"
 
@@ -11187,10 +11177,6 @@ msgstr "Saknat ”filename” i CPU-avbildningsinkluderingen"
 msgid "Missing 'key' element for lease"
 msgstr "Saknat ”key”-element för hyra"
 
-#, c-format
-msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
-msgstr "Saknat attribut ”level” i cache-elementet för NUMA-nod %1$d"
-
 msgid "Missing 'link' attribute for NIC"
 msgstr "Saknat attribut ”link” för NIC"
 
@@ -11206,10 +11192,6 @@ msgstr "Saknat fält ”path” i JSON-dokumentet"
 
 msgid "Missing 'pipefd' in JSON document"
 msgstr "Saknad ”pipefd” i JSON-dokumentet"
-
-#, c-format
-msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
-msgstr "Saknat attribut ”policy” i cache-elementet för NUMA-nod %1$d"
 
 msgid "Missing 'runtime.powerState' property"
 msgstr "Saknad egenskap ”runtime.powerState”"
@@ -12211,6 +12193,9 @@ msgstr "Ingen klient med matchande ID ”%1$llu”"
 msgid "No complete agent response found in %1$d bytes"
 msgstr "Inget fullständigt agentsvar fanns i %1$d byte"
 
+msgid "No compression algorithm selected for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "No current block job for %1$s"
 msgstr "Inget aktuellt blockjobb för %1$s"
@@ -12819,6 +12804,10 @@ msgstr "Endast ett barn-<inbound>-element är tillåtet"
 
 msgid "Only one child <outbound> element allowed"
 msgstr "Endast ett barn-<outbound>-element är tillåtet"
+
+msgid ""
+"Only one compression method could be specified with parallel compression"
+msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Endast en hostdev av modell vfio-ap stödjs"
@@ -13537,6 +13526,10 @@ msgstr ""
 
 msgid "QEMU reports migration is still running"
 msgstr "QEMU rapporterar att migreringen fortfarande pågår"
+
+#, c-format
+msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
+msgstr ""
 
 #, c-format
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
@@ -14849,13 +14842,13 @@ msgid ""
 "State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s,%5$s=%6$llu', "
 "destination: '%7$s,%8$s=%9$s,%10$s=%11$llu'"
 msgstr ""
-"Tillståndet hos funktionen ”%1$s” skiljer: källa: ”%2$s,%3$s=%4$s,%5$s="
-"%6$llu”, destination: ”%7$s,%8$s=%9$s,%10$s=%11$llu”"
+"Tillståndet hos funktionen ”%1$s” skiljer: källa: ”%2$s,%3$s=%4$s,"
+"%5$s=%6$llu”, destination: ”%7$s,%8$s=%9$s,%10$s=%11$llu”"
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
-"%5$s'"
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: "
+"'%4$s=%5$s'"
 msgstr ""
 "Tillståndet hos funktionen ”%1$s” skiljer: källa: ”%2$s=%3$s”, destination: "
 "”%4$s=%5$s”"
@@ -15809,6 +15802,11 @@ msgid "Target sound card model %1$s does not match source %2$s"
 msgstr "Målljudkortsmodellen %1$s stämmer inte med källan %2$s"
 
 #, c-format
+msgid ""
+"Target sound card multichannel setting '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
 msgstr "Mål-sysinfo %1$s %2$s matchar inte källan %3$s"
 
@@ -16073,8 +16071,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x"
-"%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags "
+"0x%2$.2x"
 msgstr "Enheten på PCI-adressen %1$s har okända anslutningstypflaggor 0x%2$.2x"
 
 #, c-format
@@ -16540,6 +16538,12 @@ msgstr "Slå på parallell migrering för att trimma den"
 
 msgid "Turn xbzrle compression on to tune it"
 msgstr "Slå på xbzrle-komprimering för att trimma den"
+
+msgid "Turn zlib compression on to tune it"
+msgstr ""
+
+msgid "Turn zstd compression on to tune it"
+msgstr ""
 
 msgid "Type"
 msgstr "Typ"
@@ -23009,6 +23013,12 @@ msgstr "färdig"
 msgid "compress level for multithread compression"
 msgstr ""
 
+msgid "compress level for zlib compression"
+msgstr ""
+
+msgid "compress level for zstd compression"
+msgstr ""
+
 msgid "compress repeated pages during live migration"
 msgstr ""
 
@@ -23051,9 +23061,6 @@ msgid "configuring disks is not supported for vz snapshots"
 msgstr ""
 
 msgid "configuring memory location is not supported"
-msgstr ""
-
-msgid "configuring persistent polling values is not supported"
 msgstr ""
 
 msgid "conn must match stream connection"
@@ -33153,18 +33160,6 @@ msgid "poll failed in migration tunnel"
 msgstr ""
 
 #, c-format
-msgid "poll-grow (%1$u) must be less than or equal to %2$d"
-msgstr ""
-
-#, c-format
-msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
-msgstr ""
-
-#, c-format
-msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
-msgstr ""
-
-#, c-format
 msgid "pool '%1$s' already exists with uuid %2$s"
 msgstr "poolen ”%1$s” finns redan med uuid %2$s"
 
@@ -33550,9 +33545,6 @@ msgstr ""
 #, fuzzy
 msgid "qemu state driver is not active"
 msgstr "nätverket %s är inte aktivt"
-
-msgid "qemu unexpectedly closed the monitor"
-msgstr ""
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -34483,8 +34475,8 @@ msgid "security model string exceeds max %1$d bytes"
 msgstr ""
 
 msgid ""
-"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
-"\")"
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
+"\"dbus\")"
 msgstr ""
 
 #, fuzzy
@@ -39085,6 +39077,38 @@ msgstr ""
 msgid "{[--%1$s] <string>}..."
 msgstr "--%1$s <sträng>"
 
+#, c-format
+#~ msgid "DBus daemon %1$s didn't show up"
+#~ msgstr "DBus-demonen %1$s dök inte upp"
+
+#~ msgid "Field name too long"
+#~ msgstr "Fältnamnet är för långt"
+
+#, c-format
+#~ msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr "Felaktigt attribut ”level” i cache-elementet för NUMA-nod %1$d"
+
+#, c-format
+#~ msgid "Invalid cache associativity '%1$s'"
+#~ msgstr "Felaktig cache-associativitet ”%1$s”"
+
+#, c-format
+#~ msgid "Invalid cache policy '%1$s'"
+#~ msgstr "Felaktig cache-policy ”%1$s”"
+
+#, c-format
+#~ msgid ""
+#~ "Missing 'associativity' attribute in cache element for NUMA node %1$d"
+#~ msgstr "Saknat attribut ”associativity” i cache-elementet för NUMA-nod %1$d"
+
+#, c-format
+#~ msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr "Saknat attribut ”level” i cache-elementet för NUMA-nod %1$d"
+
+#, c-format
+#~ msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
+#~ msgstr "Saknat attribut ”policy” i cache-elementet för NUMA-nod %1$d"
+
 #~ msgid "%1$s cannot be set higher than %2$s "
 #~ msgstr "%1$s kan inte sättas högre än %2$s "
 
@@ -39398,8 +39422,8 @@ msgstr "--%1$s <sträng>"
 
 #~ msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
 #~ msgstr ""
-#~ "Misslyckades att lägga till lagringsstyrenhet (namn: %s, busstyp: %d), rk="
-#~ "%08x"
+#~ "Misslyckades att lägga till lagringsstyrenhet (namn: %s, busstyp: %d), "
+#~ "rk=%08x"
 
 #~ msgid "Failed to change storage controller model, rc=%08x"
 #~ msgstr "Misslyckades att ändra styrenhetsmodellen för lagring, rk=%08x"

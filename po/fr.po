@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-25 10:39+0000\n"
+"POT-Creation-Date: 2023-05-26 06:46+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Jérémie Tarot <silopolis@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1347,8 +1347,8 @@ msgstr "Outil de ligne de commande 'gluster' non trouvé"
 
 msgid "'host-name' missing in guest-get-host-name reply"
 msgstr ""
-"Le nom de l'hôte est absent de la réponse à la question \"guest-get-host-name"
-"\""
+"Le nom de l'hôte est absent de la réponse à la question \"guest-get-host-"
+"name\""
 
 #, c-format
 msgid ""
@@ -1469,6 +1469,11 @@ msgid ""
 msgstr ""
 "Le mode ’restrictif’ est requis dans l'élément memnode lorsque le mode est "
 "’restrictif’ dans l'élément mémoire"
+
+msgid ""
+"'restrictive' mode is required in memory element when mode is 'restrictive' "
+"in memnode element"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -3083,8 +3088,8 @@ msgstr "Impossible de trouver le modèle de CPU avec PVR 0x%1$08x"
 #, c-format
 msgid "Cannot find CPU vendor with vendor id 0x%1$02llx"
 msgstr ""
-"Impossible de trouver le fournisseur de CPU avec l'id de fournisseur 0x"
-"%1$02llx"
+"Impossible de trouver le fournisseur de CPU avec l'id de fournisseur "
+"0x%1$02llx"
 
 #, c-format
 msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
@@ -3407,8 +3412,8 @@ msgstr "Impossible d'analyser l'attribut uuid d'un élément <address>"
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 "Impossible de brancher l'interface '%1$s' sur '%2$s' car la nouvelle "
 "interface combinée entrante floor=%3$llu surchargerait la moyenne=%4$llu sur "
@@ -3416,8 +3421,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 "Impossible de brancher l'interface '%1$s' sur '%2$s' car la nouvelle "
 "combinaison d'entrées floor=%3$llu surchargerait peak=%4$llu sur le réseau "
@@ -3562,8 +3567,8 @@ msgstr "Impossible de partager un handle CURL non initialisé"
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr ""
-"Impossible de spécifier une étiquette si le réétiquetage est éteint model="
-"%1$s"
+"Impossible de spécifier une étiquette si le réétiquetage est éteint "
+"model=%1$s"
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -3960,8 +3965,16 @@ msgid "Compression cache: %1$.3lf %2$s"
 msgstr "Cache de compression : %1$.3lf %2$s"
 
 #, c-format
+msgid "Compression method '%1$s' is only supported with parallel migration"
+msgstr ""
+
+#, c-format
 msgid "Compression method '%1$s' is specified twice"
 msgstr "La méthode de compression '%1$s' est spécifiée deux fois"
+
+#, c-format
+msgid "Compression method '%1$s' isn't supported with parallel migration"
+msgstr ""
 
 msgid "Compression overflows:"
 msgstr "La compression déborde :"
@@ -5300,10 +5313,6 @@ msgstr "DAC imagelabel n'a pas pu être déterminé"
 msgid "DAC seclabel couldn't be determined"
 msgstr "DAC seclabel n'a pas pu être déterminé"
 
-#, c-format
-msgid "DBus daemon %1$s didn't show up"
-msgstr "Le démon DBus %1$s n'est pas apparu"
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr ""
 "Les enregistrements DNS HOST ne peuvent pas être modifiés, mais seulement "
@@ -6389,8 +6398,8 @@ msgstr "Erreur lors de la lecture du nom de domaine"
 #, c-format
 msgid "Error while removing hostonly network interface, rc=%1$08x"
 msgstr ""
-"Erreur lors de la suppression d'une interface réseau réservée à l'hôte, rc="
-"%1$08x"
+"Erreur lors de la suppression d'une interface réseau réservée à l'hôte, "
+"rc=%1$08x"
 
 #, c-format
 msgid "Escape character is %1$s"
@@ -8981,9 +8990,6 @@ msgstr "La mémoire du noyau du champ est trop longue pour la destination"
 msgid "Field name '%1$s' too long"
 msgstr "Le nom du champ '%1$s' est trop long"
 
-msgid "Field name too long"
-msgstr "Le nom du champ est trop long"
-
 #, c-format
 msgid "File %1$s contains no keys"
 msgstr "Le fichier %1$s ne contient aucune clé"
@@ -9150,8 +9156,8 @@ msgstr "Format discordant : loader.format='%1$s' nvram.format='%2$s'"
 #, c-format
 msgid "Format of device '%1$s' does not match the expected format '%2$s'"
 msgstr ""
-"Le format du périphérique \"%1$s\" ne correspond pas au format attendu \"%2$s"
-"\""
+"Le format du périphérique \"%1$s\" ne correspond pas au format attendu "
+"\"%2$s\""
 
 #, c-format
 msgid ""
@@ -9962,11 +9968,6 @@ msgid "Invalid 'cpu.max' data."
 msgstr "Données 'cpu.max' non valides."
 
 #, c-format
-msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
-msgstr ""
-"Attribut 'level' non valide dans l'élément de cache pour le nœud NUMA %1$d"
-
-#, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
 msgstr "Liste --with-loader-nvram non valide : %1$s"
 
@@ -10206,16 +10207,8 @@ msgid "Invalid bus type '%1$s' for floppy disk"
 msgstr "Type de bus ’%1$s’ non valide pour un lecteur de disquette"
 
 #, c-format
-msgid "Invalid cache associativity '%1$s'"
-msgstr "Associativité du cache non valide '%1$s'"
-
-#, c-format
 msgid "Invalid cache id '%1$s'"
 msgstr "Identifiant de cache non valide '%1$s'"
-
-#, c-format
-msgid "Invalid cache policy '%1$s'"
-msgstr "Politique de cache non valide '%1$s'"
 
 msgid "Invalid call"
 msgstr "Appel non valide"
@@ -10702,8 +10695,8 @@ msgid ""
 "Invalid specification for virtio ccw address: cssid='0x%1$x' ssid='0x%2$x' "
 "devno='0x%3$04x'"
 msgstr ""
-"Spécification non valide pour l'adresse virtio ccw : cssid='0x%1$x' ssid='0x"
-"%2$x' devno='0x%3$04x'"
+"Spécification non valide pour l'adresse virtio ccw : cssid='0x%1$x' "
+"ssid='0x%2$x' devno='0x%3$04x'"
 
 #, c-format
 msgid "Invalid state '%1$s' in domain snapshot XML"
@@ -11596,12 +11589,6 @@ msgstr "Propriété '%1$s' manquante lors de la recherche de ManagedEntityStatus
 msgid "Missing '/' separator in cgroup mount '%1$s'"
 msgstr "Séparateur '/' manquant dans le montage cgroup '%1$s'"
 
-#, c-format
-msgid "Missing 'associativity' attribute in cache element for NUMA node %1$d"
-msgstr ""
-"Attribut 'associativity' manquant dans l'élément de cache pour le nœud NUMA "
-"%1$d"
-
 msgid "Missing 'domname' in JSON document"
 msgstr "Nom de domaine manquant dans le document JSON"
 
@@ -11621,11 +11608,6 @@ msgstr "Nom de fichier manquant dans l'inclusion de la carte CPU"
 msgid "Missing 'key' element for lease"
 msgstr "Élément « clé » manquant pour le bail"
 
-#, c-format
-msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
-msgstr ""
-"Attribut \"level\" manquant dans l'élément de cache pour le nœud NUMA %1$d"
-
 msgid "Missing 'link' attribute for NIC"
 msgstr "Attribut \"link\" manquant pour NIC"
 
@@ -11641,11 +11623,6 @@ msgstr "Champ \"path\" manquant dans le document JSON"
 
 msgid "Missing 'pipefd' in JSON document"
 msgstr "Manque 'pipefd' dans le document JSON"
-
-#, c-format
-msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
-msgstr ""
-"Attribut 'policy' manquant dans l'élément de cache pour le nœud NUMA %1$d"
 
 msgid "Missing 'runtime.powerState' property"
 msgstr "Propriété « runtime.powerState» manquante"
@@ -12700,6 +12677,9 @@ msgstr "Aucun client avec l'ID correspondant '%1$llu'"
 msgid "No complete agent response found in %1$d bytes"
 msgstr "Pas de réponse complète de l'agent trouvée dans %1$d bytes"
 
+msgid "No compression algorithm selected for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "No current block job for %1$s"
 msgstr "Aucun travail de blocage en cours pour %1$s"
@@ -13337,6 +13317,10 @@ msgstr "Un seul élément enfant <inbound> autorisé"
 
 msgid "Only one child <outbound> element allowed"
 msgstr "Un seul élément enfant <outbound> autorisé"
+
+msgid ""
+"Only one compression method could be specified with parallel compression"
+msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Un seul hostdev du modèle vfio-ap est pris en charge"
@@ -14104,6 +14088,10 @@ msgstr ""
 
 msgid "QEMU reports migration is still running"
 msgstr "QEMU rapporte que la migration est toujours en cours"
+
+#, c-format
+msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
+msgstr ""
 
 #, c-format
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
@@ -15553,8 +15541,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
-"%5$s'"
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: "
+"'%4$s=%5$s'"
 msgstr ""
 "L'état de l'élément '%1$s' diffère : source : '%2$s=%3$s', destination : "
 "'%4$s=%5$s'"
@@ -16652,6 +16640,11 @@ msgid "Target sound card model %1$s does not match source %2$s"
 msgstr "Le modèle de carte son cible %1$s ne correspond pas à la source %2$s"
 
 #, c-format
+msgid ""
+"Target sound card multichannel setting '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
 msgstr "Le sysinfo cible %1$s %2$s ne correspond pas à la source %3$s"
 
@@ -16926,8 +16919,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x"
-"%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags "
+"0x%2$.2x"
 msgstr ""
 "Le périphérique à l'adresse PCI %1$s a des indicateurs de type de connexion "
 "non reconnus 0x%2$.2x"
@@ -17414,6 +17407,12 @@ msgstr "Activez la migration parallèle pour la régler"
 
 msgid "Turn xbzrle compression on to tune it"
 msgstr "Activez la compression xbzrle pour le régler"
+
+msgid "Turn zlib compression on to tune it"
+msgstr ""
+
+msgid "Turn zstd compression on to tune it"
+msgstr ""
 
 msgid "Type"
 msgstr "Type"
@@ -22340,16 +22339,16 @@ msgstr ""
 #, c-format
 msgid "cannot acquire state change lock (held by monitor=%1$s)"
 msgstr ""
-"ne peut pas acquérir le verrou de changement d'état (détenu par le moniteur="
-"%1$s)"
+"ne peut pas acquérir le verrou de changement d'état (détenu par le "
+"moniteur=%1$s)"
 
 #, c-format
 msgid ""
 "cannot acquire state change lock (held by monitor=%1$s) due to max_queued "
 "limit"
 msgstr ""
-"ne peut pas acquérir le verrou de changement d'état (détenu par monitor="
-"%1$s) en raison de la limite max_queued"
+"ne peut pas acquérir le verrou de changement d'état (détenu par "
+"monitor=%1$s) en raison de la limite max_queued"
 
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr ""
@@ -24301,6 +24300,12 @@ msgstr "terminé"
 msgid "compress level for multithread compression"
 msgstr "niveau de compression pour la compression multithread"
 
+msgid "compress level for zlib compression"
+msgstr ""
+
+msgid "compress level for zstd compression"
+msgstr ""
+
 msgid "compress repeated pages during live migration"
 msgstr "compresser les pages répétées pendant la migration en direct"
 
@@ -24347,11 +24352,6 @@ msgstr ""
 
 msgid "configuring memory location is not supported"
 msgstr "la configuration de l'emplacement mémoire n'est pas prise en charge"
-
-msgid "configuring persistent polling values is not supported"
-msgstr ""
-"la configuration de valeurs d'interrogation persistantes n'est pas prise en "
-"charge"
 
 msgid "conn must match stream connection"
 msgstr "La connexion doit correspondre à la connexion du flux"
@@ -24904,8 +24904,8 @@ msgstr "impossible d'écrire le fichier de configuration de dnsmasq '%1$s'"
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr ""
-"La fonction \"cow\" ne peut être utilisée que pour les pools \"fs\" et \"dir"
-"\""
+"La fonction \"cow\" ne peut être utilisée que pour les pools \"fs\" et "
+"\"dir\""
 
 msgid "cpu affinity is not supported"
 msgstr "L'affinité du processeur n'est pas prise en charge"
@@ -32985,8 +32985,8 @@ msgid ""
 "network '%1$s' claims the PCI device at domain=%2$d bus=%3$d slot=%4$d "
 "function=%5$d is already in use by a different network port"
 msgstr ""
-"réseau '%1$s' affirme que le périphérique PCI à domain=%2$d bus=%3$d slot="
-"%4$d function=%5$d est déjà utilisé par un autre port réseau"
+"réseau '%1$s' affirme que le périphérique PCI à domain=%2$d bus=%3$d "
+"slot=%4$d function=%5$d est déjà utilisé par un autre port réseau"
 
 #, c-format
 msgid "network '%1$s' does not have a bridge name."
@@ -34816,18 +34816,6 @@ msgid "poll failed in migration tunnel"
 msgstr "échec poll dans le tunnel de migration"
 
 #, c-format
-msgid "poll-grow (%1$u) must be less than or equal to %2$d"
-msgstr "poll-grow (%1$u) doit être inférieur ou égal à %2$d"
-
-#, c-format
-msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
-msgstr "poll-max-ns (%1$llu) doit être inférieur ou égal à %2$d"
-
-#, c-format
-msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
-msgstr "poll-shrink (%1$u) doit être inférieur ou égal à %2$d"
-
-#, c-format
 msgid "pool '%1$s' already exists with uuid %2$s"
 msgstr "le pool '%1$s' existe déjà avec l'uuid %2$s"
 
@@ -35240,9 +35228,6 @@ msgstr "qemu a retourné un temps malformé"
 msgid "qemu state driver is not active"
 msgstr "Le pilote d'état de qemu n'est pas actif"
 
-msgid "qemu unexpectedly closed the monitor"
-msgstr "qemu a fermé le moniteur de manière inattendue"
-
 #, c-format
 msgid "qom-get invalid object property type %1$d"
 msgstr "type de propriété d'objet qom-get invalide %1$d"
@@ -35293,8 +35278,8 @@ msgstr "query-dirty-rate analyse syntaxique de 'vcpu-dirty-rate' en échec"
 
 msgid "query-dirty-rate reply was missing 'calc-time' data"
 msgstr ""
-"La réponse à la question \"query-dirty-rate\" manquait de données \"calc-time"
-"\""
+"La réponse à la question \"query-dirty-rate\" manquait de données \"calc-"
+"time\""
 
 msgid "query-dirty-rate reply was missing 'dirty-rate' data"
 msgstr "query-dirty-rate : la réponse manquait de données \"dirty-rate\""
@@ -36241,8 +36226,8 @@ msgid "security model string exceeds max %1$d bytes"
 msgstr "la chaîne du modèle de sécurité dépasse le maximum de %1$d octets"
 
 msgid ""
-"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
-"\")"
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
+"\"dbus\")"
 msgstr ""
 "sélectionner un affichage graphique particulier (par exemple, \"vnc\", "
 "\"spice\", \"rdp\", \"dbus\")"
@@ -40567,8 +40552,8 @@ msgstr ""
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad req add failed on interface \"%1$s\""
 msgstr ""
-"L’ajout de virNWFilterSnoopLeaseFileLoad req a échoué sur l'interface \"%1$s"
-"\""
+"L’ajout de virNWFilterSnoopLeaseFileLoad req a échoué sur l'interface "
+"\"%1$s\""
 
 msgid "virNWFilterSnoopListDel failed"
 msgstr "virNWFilterSnoopListDel failed"
@@ -41139,6 +41124,63 @@ msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "DBus daemon %1$s didn't show up"
+#~ msgstr "Le démon DBus %1$s n'est pas apparu"
+
+#~ msgid "Field name too long"
+#~ msgstr "Le nom du champ est trop long"
+
+#, c-format
+#~ msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr ""
+#~ "Attribut 'level' non valide dans l'élément de cache pour le nœud NUMA %1$d"
+
+#, c-format
+#~ msgid "Invalid cache associativity '%1$s'"
+#~ msgstr "Associativité du cache non valide '%1$s'"
+
+#, c-format
+#~ msgid "Invalid cache policy '%1$s'"
+#~ msgstr "Politique de cache non valide '%1$s'"
+
+#, c-format
+#~ msgid ""
+#~ "Missing 'associativity' attribute in cache element for NUMA node %1$d"
+#~ msgstr ""
+#~ "Attribut 'associativity' manquant dans l'élément de cache pour le nœud "
+#~ "NUMA %1$d"
+
+#, c-format
+#~ msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr ""
+#~ "Attribut \"level\" manquant dans l'élément de cache pour le nœud NUMA %1$d"
+
+#, c-format
+#~ msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
+#~ msgstr ""
+#~ "Attribut 'policy' manquant dans l'élément de cache pour le nœud NUMA %1$d"
+
+#~ msgid "configuring persistent polling values is not supported"
+#~ msgstr ""
+#~ "la configuration de valeurs d'interrogation persistantes n'est pas prise "
+#~ "en charge"
+
+#, c-format
+#~ msgid "poll-grow (%1$u) must be less than or equal to %2$d"
+#~ msgstr "poll-grow (%1$u) doit être inférieur ou égal à %2$d"
+
+#, c-format
+#~ msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
+#~ msgstr "poll-max-ns (%1$llu) doit être inférieur ou égal à %2$d"
+
+#, c-format
+#~ msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
+#~ msgstr "poll-shrink (%1$u) doit être inférieur ou égal à %2$d"
+
+#~ msgid "qemu unexpectedly closed the monitor"
+#~ msgstr "qemu a fermé le moniteur de manière inattendue"
 
 #~ msgid "%1$s cannot be set higher than %2$s "
 #~ msgstr "%1$s ne peut pas être réglé plus haut que %2$s "

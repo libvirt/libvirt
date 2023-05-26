@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-25 10:39+0000\n"
+"POT-Creation-Date: 2023-05-26 06:46+0000\n"
 "PO-Revision-Date: 2023-03-08 19:06+0000\n"
 "Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -26,8 +26,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 4.15.2\n"
 
 msgid ""
@@ -1404,6 +1404,11 @@ msgstr ""
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
 "in memory element"
+msgstr ""
+
+msgid ""
+"'restrictive' mode is required in memory element when mode is 'restrictive' "
+"in memnode element"
 msgstr ""
 
 #, c-format
@@ -3274,8 +3279,8 @@ msgstr "Не удалось обработать атрибут uuid элеме�
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 "Не удалось подключить интерфейс «%1$s» в «%2$s», так как новое "
 "комбинированное нижнее значение входного потока %3$llu переопределило бы "
@@ -3283,8 +3288,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 "Не удалось подключить интерфейс «%1$s» в «%2$s», так как новое "
 "комбинированное нижнее значение входного потока %3$llu переопределило бы "
@@ -3807,8 +3812,16 @@ msgid "Compression cache: %1$.3lf %2$s"
 msgstr "Кэш сжатия: %1$.3lf %2$s"
 
 #, c-format
+msgid "Compression method '%1$s' is only supported with parallel migration"
+msgstr ""
+
+#, c-format
 msgid "Compression method '%1$s' is specified twice"
 msgstr "Метод сжатия «%1$s» указан дважды"
+
+#, c-format
+msgid "Compression method '%1$s' isn't supported with parallel migration"
+msgstr ""
 
 msgid "Compression overflows:"
 msgstr "Переполнение сжатия:"
@@ -5100,10 +5113,6 @@ msgstr "Не удалось определить метку образа (imagel
 
 msgid "DAC seclabel couldn't be determined"
 msgstr "Не удалось определить метку безопасности (seclabel) DAC"
-
-#, c-format
-msgid "DBus daemon %1$s didn't show up"
-msgstr "Фоновая служба D-Bus %1$s не появилась в списке"
 
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "записи DNS HOST можно добавить или удалить, но нельзя изменить"
@@ -8675,9 +8684,6 @@ msgstr "Поле памяти ядра выходит за пределы доп
 msgid "Field name '%1$s' too long"
 msgstr "Имя поля «%1$s» превышает допустимую длину"
 
-msgid "Field name too long"
-msgstr "Слишком длинное имя поля"
-
 #, c-format
 msgid "File %1$s contains no keys"
 msgstr ""
@@ -9614,10 +9620,6 @@ msgid "Invalid 'cpu.max' data."
 msgstr "Недопустимые данные «cpu.max»."
 
 #, c-format
-msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
-msgstr "Недопустимый атрибут «level» в элементе кэша для узла NUMA %1$d"
-
-#, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
 msgstr "Недопустимый список --with-loader-nvram: %1$s"
 
@@ -9849,16 +9851,8 @@ msgid "Invalid bus type '%1$s' for floppy disk"
 msgstr "Недопустимый тип шины «%1$s» для дисковода"
 
 #, c-format
-msgid "Invalid cache associativity '%1$s'"
-msgstr "Некорректная ассоциативность кэша «%1$s»"
-
-#, c-format
 msgid "Invalid cache id '%1$s'"
 msgstr "Недопустимый идентификатор кэша «%1$s»"
-
-#, c-format
-msgid "Invalid cache policy '%1$s'"
-msgstr "Недопустимая политика кэша «%1$s»"
 
 msgid "Invalid call"
 msgstr "Недопустимый вызов"
@@ -11185,10 +11179,6 @@ msgstr ""
 msgid "Missing '/' separator in cgroup mount '%1$s'"
 msgstr "Отсутствует разделитель «/» в строке монтирования cgroup «%1$s»"
 
-#, c-format
-msgid "Missing 'associativity' attribute in cache element for NUMA node %1$d"
-msgstr "Отсутствует атрибут «associativity» в элементе кэша для узла NUMA %1$d"
-
 msgid "Missing 'domname' in JSON document"
 msgstr "Документ JSON не содержит «domname»"
 
@@ -11208,10 +11198,6 @@ msgstr "Отсутствует «filename» во включаемом файле
 msgid "Missing 'key' element for lease"
 msgstr "Секция <lease> должна содержать элемент «key»"
 
-#, c-format
-msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
-msgstr "Отсутствует атрибут «level» в элементе кэша для узла NUMA %1$d"
-
 msgid "Missing 'link' attribute for NIC"
 msgstr "Отсутствует атрибут «link» для NIC"
 
@@ -11227,10 +11213,6 @@ msgstr "Документ JSON не содержит поле «path»"
 
 msgid "Missing 'pipefd' in JSON document"
 msgstr "Документ JSON не содержит «pipefd»"
-
-#, c-format
-msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
-msgstr "Отсутствует атрибут «policy» в элементе кэша для узла NUMA %1$d"
 
 msgid "Missing 'runtime.powerState' property"
 msgstr "Свойство runtime.powerState отсутствует"
@@ -12266,6 +12248,9 @@ msgstr "Нет клиента с совпадающим идентификато
 msgid "No complete agent response found in %1$d bytes"
 msgstr "В %1$d байтах не найден полный ответ агента"
 
+msgid "No compression algorithm selected for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "No current block job for %1$s"
 msgstr "Нет текущих блочных задач для %1$s"
@@ -12896,6 +12881,10 @@ msgstr "разрешается только один вложенный элем
 
 msgid "Only one child <outbound> element allowed"
 msgstr "Разрешается только один вложенный элемент <outbound> "
+
+msgid ""
+"Only one compression method could be specified with parallel compression"
+msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Поддерживается только одно устройство основной системы модели vfio-ap"
@@ -13624,6 +13613,10 @@ msgstr ""
 "типа виртуализации домена, отличного от kvm"
 
 msgid "QEMU reports migration is still running"
+msgstr ""
+
+#, c-format
+msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
 msgstr ""
 
 #, c-format
@@ -14974,13 +14967,13 @@ msgid ""
 "State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s,%5$s=%6$llu', "
 "destination: '%7$s,%8$s=%9$s,%10$s=%11$llu'"
 msgstr ""
-"Состояние возможности «%1$s» различается: источник: «%2$s,%3$s=%4$s,%5$s="
-"%6$llu», назначение: «%7$s,%8$s=%9$s,%10$s=%11$llu»"
+"Состояние возможности «%1$s» различается: источник: «%2$s,%3$s=%4$s,"
+"%5$s=%6$llu», назначение: «%7$s,%8$s=%9$s,%10$s=%11$llu»"
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
-"%5$s'"
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: "
+"'%4$s=%5$s'"
 msgstr ""
 "Состояние возможности «%1$s» различается: источник: «%2$s=%3$s», назначение: "
 "«%4$s=%5$s»"
@@ -15984,6 +15977,11 @@ msgid "Target sound card model %1$s does not match source %2$s"
 msgstr "Модель целевой звуковой карты %1$s не соответствует источнику (%2$s)"
 
 #, c-format
+msgid ""
+"Target sound card multichannel setting '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
 msgstr ""
 "Системная информация назначения %1$s %2$s не соответствует источнику %3$s"
@@ -16251,11 +16249,11 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x"
-"%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags "
+"0x%2$.2x"
 msgstr ""
-"Устройство по адресу PCI %1$s имеет неизвестные флаги типа соединения 0x"
-"%2$.2x"
+"Устройство по адресу PCI %1$s имеет неизвестные флаги типа соединения "
+"0x%2$.2x"
 
 #, c-format
 msgid "The device at PCI address %1$s needs to be an integrated device (bus=0)"
@@ -16734,6 +16732,12 @@ msgstr "Включите параллельную миграцию, чтобы �
 
 msgid "Turn xbzrle compression on to tune it"
 msgstr "Включите сжатие xbzrle, чтобы настроить его параметры"
+
+msgid "Turn zlib compression on to tune it"
+msgstr ""
+
+msgid "Turn zstd compression on to tune it"
+msgstr ""
 
 msgid "Type"
 msgstr "Тип"
@@ -21481,30 +21485,30 @@ msgstr ""
 #, c-format
 msgid "cannot acquire state change lock (held by monitor=%1$s agent=%2$s)"
 msgstr ""
-"не удалось получить блокировку изменения состояния (удерживается monitor="
-"%1$s agent=%2$s)"
+"не удалось получить блокировку изменения состояния (удерживается "
+"monitor=%1$s agent=%2$s)"
 
 #, c-format
 msgid ""
 "cannot acquire state change lock (held by monitor=%1$s agent=%2$s) due to "
 "max_queued limit"
 msgstr ""
-"не удалось получить блокировку изменения состояния (удерживается monitor="
-"%1$s agent=%2$s) из-за ограничения max_queued"
+"не удалось получить блокировку изменения состояния (удерживается "
+"monitor=%1$s agent=%2$s) из-за ограничения max_queued"
 
 #, c-format
 msgid "cannot acquire state change lock (held by monitor=%1$s)"
 msgstr ""
-"не удалось получить блокировку изменения состояния (удерживается monitor="
-"%1$s)"
+"не удалось получить блокировку изменения состояния (удерживается "
+"monitor=%1$s)"
 
 #, c-format
 msgid ""
 "cannot acquire state change lock (held by monitor=%1$s) due to max_queued "
 "limit"
 msgstr ""
-"не удалось получить блокировку изменения состояния (удерживается monitor="
-"%1$s) из-за ограничения max_queued"
+"не удалось получить блокировку изменения состояния (удерживается "
+"monitor=%1$s) из-за ограничения max_queued"
 
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr ""
@@ -23385,6 +23389,12 @@ msgstr "завершено"
 msgid "compress level for multithread compression"
 msgstr "уровень сжатия для многопоточного сжатия"
 
+msgid "compress level for zlib compression"
+msgstr ""
+
+msgid "compress level for zstd compression"
+msgstr ""
+
 msgid "compress repeated pages during live migration"
 msgstr "сжимать повторяющиеся страницы при динамической миграции"
 
@@ -23429,9 +23439,6 @@ msgstr "настройка дисков не поддерживается для
 
 msgid "configuring memory location is not supported"
 msgstr "настройка расположения памяти не поддерживается"
-
-msgid "configuring persistent polling values is not supported"
-msgstr "настройка постоянных значений опроса не поддерживается"
 
 msgid "conn must match stream connection"
 msgstr "conn должно соответствовать соединению с потоковой передачей данных"
@@ -25712,8 +25719,8 @@ msgstr "идентификатор %1$d обратного вызова собы
 #, c-format
 msgid "event from unexpected fd %1$d!=%2$d / watch %3$d!=%4$d"
 msgstr ""
-"получено событие от недопустимого дескриптора %1$d!=%2$d. Внимание: %3$d!="
-"%4$d"
+"получено событие от недопустимого дескриптора %1$d!=%2$d. Внимание: %3$d!"
+"=%4$d"
 
 #, c-format
 msgid "event from unexpected proc %1$ju!=%2$ju"
@@ -33580,18 +33587,6 @@ msgid "poll failed in migration tunnel"
 msgstr "сбой опроса в туннеле миграции"
 
 #, c-format
-msgid "poll-grow (%1$u) must be less than or equal to %2$d"
-msgstr "poll-grow (%1$u) должно быть меньше или равно %2$d"
-
-#, c-format
-msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
-msgstr "poll-max-ns (%1$llu) должно быть меньше или равно %2$d"
-
-#, c-format
-msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
-msgstr "poll-shrink (%1$u) должно быть меньше или равно %2$d"
-
-#, c-format
 msgid "pool '%1$s' already exists with uuid %2$s"
 msgstr "пул «%1$s» уже существует (UUID: %2$s)"
 
@@ -33992,9 +33987,6 @@ msgstr "qemu вернул неверно сформированное значе
 
 msgid "qemu state driver is not active"
 msgstr "драйвер состояния QEMU не активен"
-
-msgid "qemu unexpectedly closed the monitor"
-msgstr "QEMU неожиданно завершил работу монитора"
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -34942,8 +34934,8 @@ msgid "security model string exceeds max %1$d bytes"
 msgstr "Длина строки модели безопасности превышает %1$d байт"
 
 msgid ""
-"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
-"\")"
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
+"\"dbus\")"
 msgstr ""
 
 msgid "send handler failed"
@@ -39712,6 +39704,57 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <строка>}..."
+
+#, c-format
+#~ msgid "DBus daemon %1$s didn't show up"
+#~ msgstr "Фоновая служба D-Bus %1$s не появилась в списке"
+
+#~ msgid "Field name too long"
+#~ msgstr "Слишком длинное имя поля"
+
+#, c-format
+#~ msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr "Недопустимый атрибут «level» в элементе кэша для узла NUMA %1$d"
+
+#, c-format
+#~ msgid "Invalid cache associativity '%1$s'"
+#~ msgstr "Некорректная ассоциативность кэша «%1$s»"
+
+#, c-format
+#~ msgid "Invalid cache policy '%1$s'"
+#~ msgstr "Недопустимая политика кэша «%1$s»"
+
+#, c-format
+#~ msgid ""
+#~ "Missing 'associativity' attribute in cache element for NUMA node %1$d"
+#~ msgstr ""
+#~ "Отсутствует атрибут «associativity» в элементе кэша для узла NUMA %1$d"
+
+#, c-format
+#~ msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
+#~ msgstr "Отсутствует атрибут «level» в элементе кэша для узла NUMA %1$d"
+
+#, c-format
+#~ msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
+#~ msgstr "Отсутствует атрибут «policy» в элементе кэша для узла NUMA %1$d"
+
+#~ msgid "configuring persistent polling values is not supported"
+#~ msgstr "настройка постоянных значений опроса не поддерживается"
+
+#, c-format
+#~ msgid "poll-grow (%1$u) must be less than or equal to %2$d"
+#~ msgstr "poll-grow (%1$u) должно быть меньше или равно %2$d"
+
+#, c-format
+#~ msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
+#~ msgstr "poll-max-ns (%1$llu) должно быть меньше или равно %2$d"
+
+#, c-format
+#~ msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
+#~ msgstr "poll-shrink (%1$u) должно быть меньше или равно %2$d"
+
+#~ msgid "qemu unexpectedly closed the monitor"
+#~ msgstr "QEMU неожиданно завершил работу монитора"
 
 #~ msgid "%1$s cannot be set higher than %2$s "
 #~ msgstr "%1$s нельзя установить в значение выше, чем %2$s "

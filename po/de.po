@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-25 10:39+0000\n"
+"POT-Creation-Date: 2023-05-26 06:46+0000\n"
 "PO-Revision-Date: 2022-12-24 15:20+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1279,6 +1279,11 @@ msgstr ""
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
 "in memory element"
+msgstr ""
+
+msgid ""
+"'restrictive' mode is required in memory element when mode is 'restrictive' "
+"in memnode element"
 msgstr ""
 
 #, c-format
@@ -3168,14 +3173,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -3694,9 +3699,17 @@ msgstr "Kompressions-Cache:"
 msgid "Compression cache: %1$.3lf %2$s"
 msgstr "Kompressions-Cache: %1$.3lf %2$s"
 
+#, c-format
+msgid "Compression method '%1$s' is only supported with parallel migration"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Compression method '%1$s' is specified twice"
 msgstr "Disk '%1$s' zweimal definiert"
+
+#, c-format
+msgid "Compression method '%1$s' isn't supported with parallel migration"
+msgstr ""
 
 msgid "Compression overflows:"
 msgstr "Kompressions Überlauf:"
@@ -5042,10 +5055,6 @@ msgstr ""
 
 msgid "DAC seclabel couldn't be determined"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "DBus daemon %1$s didn't show up"
-msgstr "Domain %1$s wurde nicht angezeigt"
 
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr ""
@@ -8693,10 +8702,6 @@ msgstr "Feld kernel memory zu lang für Ziel"
 msgid "Field name '%1$s' too long"
 msgstr "Feld-Name '%1$s' zu lang"
 
-#, fuzzy
-msgid "Field name too long"
-msgstr "Feld-Name '%s' zu lang"
-
 #, c-format
 msgid "File %1$s contains no keys"
 msgstr ""
@@ -9641,10 +9646,6 @@ msgid "Invalid 'cpu.max' data."
 msgstr "ungültige cpuNum in %s"
 
 #, c-format
-msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
-msgstr ""
-
-#, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
 msgstr ""
 
@@ -9862,17 +9863,9 @@ msgstr "Ungültiger Bus-Typ '%1$s' für Festplatte"
 msgid "Invalid bus type '%1$s' for floppy disk"
 msgstr "Ungültiger Bus-Typ '%1$s' oder Floppy-Disk"
 
-#, c-format
-msgid "Invalid cache associativity '%1$s'"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Invalid cache id '%1$s'"
 msgstr "ungültige cpuNum in %1$s"
-
-#, c-format
-msgid "Invalid cache policy '%1$s'"
-msgstr ""
 
 msgid "Invalid call"
 msgstr "Ungültiger Aufruf"
@@ -11213,10 +11206,6 @@ msgstr "Fehlende '%1$s' Eigenschaft bei der Suche nach ManagedEntityStatus"
 msgid "Missing '/' separator in cgroup mount '%1$s'"
 msgstr "Fehlendes '/' Trennzeichen auf cgroup Anschluss '%1$s'"
 
-#, c-format
-msgid "Missing 'associativity' attribute in cache element for NUMA node %1$d"
-msgstr ""
-
 #, fuzzy
 msgid "Missing 'domname' in JSON document"
 msgstr "Fehlender Ressourcen-Name in JSON Dokument"
@@ -11240,10 +11229,6 @@ msgstr "Fehlender Name des Vorgängers in CPU-Model %s"
 msgid "Missing 'key' element for lease"
 msgstr "Fehlendes 'key' Element für Leasing"
 
-#, c-format
-msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
-msgstr ""
-
 #, fuzzy
 msgid "Missing 'link' attribute for NIC"
 msgstr "Fehlendes 'cpus' Attribut in NUMA Zelle"
@@ -11262,10 +11247,6 @@ msgstr "Fehlendes auth Feld in JSON Status-Dokument"
 #, fuzzy
 msgid "Missing 'pipefd' in JSON document"
 msgstr "Fehlende pid Daten in JSON Dokument"
-
-#, c-format
-msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
-msgstr ""
 
 msgid "Missing 'runtime.powerState' property"
 msgstr "Fehlende »runtime.powerState«-Eigenschaft"
@@ -12320,6 +12301,9 @@ msgstr "Kein passendes Secret für uuid '%s'"
 msgid "No complete agent response found in %1$d bytes"
 msgstr ""
 
+msgid "No compression algorithm selected for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "No current block job for %1$s"
 msgstr ""
@@ -12956,6 +12940,10 @@ msgstr "Nur ein untergeordnetes <inbound> Element erlaubt"
 
 msgid "Only one child <outbound> element allowed"
 msgstr "Nur ein untergeordnetes <outbound> Element erlaubt"
+
+msgid ""
+"Only one compression method could be specified with parallel compression"
+msgstr ""
 
 #, fuzzy
 msgid "Only one hostdev of model vfio-ap is supported"
@@ -13695,6 +13683,10 @@ msgid ""
 msgstr ""
 
 msgid "QEMU reports migration is still running"
+msgstr ""
+
+#, c-format
+msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
 msgstr ""
 
 #, c-format
@@ -15081,8 +15073,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
-"%5$s'"
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: "
+"'%4$s=%5$s'"
 msgstr ""
 
 #, c-format
@@ -16080,6 +16072,11 @@ msgid "Target sound card model %1$s does not match source %2$s"
 msgstr "Ziel Soundkarten-Modell %1$s stimmt nicht mit der Quelle %2$s überein"
 
 #, c-format
+msgid ""
+"Target sound card multichannel setting '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
 msgstr "Ziel sysinfo %1$s %2$s stimmt nicht mit der Quelle %3$s überein"
 
@@ -16340,8 +16337,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x"
-"%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags "
+"0x%2$.2x"
 msgstr ""
 
 #, c-format
@@ -16806,6 +16803,12 @@ msgid "Turn parallel migration on to tune it"
 msgstr ""
 
 msgid "Turn xbzrle compression on to tune it"
+msgstr ""
+
+msgid "Turn zlib compression on to tune it"
+msgstr ""
+
+msgid "Turn zstd compression on to tune it"
 msgstr ""
 
 msgid "Type"
@@ -23552,6 +23555,12 @@ msgstr "Pull fertig"
 msgid "compress level for multithread compression"
 msgstr ""
 
+msgid "compress level for zlib compression"
+msgstr ""
+
+msgid "compress level for zstd compression"
+msgstr ""
+
 msgid "compress repeated pages during live migration"
 msgstr "Komprimieren wiederholte Seiten während der Live-Migration"
 
@@ -23598,10 +23607,6 @@ msgstr "Festlegen Anschlusspunkt ist derzeit nicht unterstützt"
 #, fuzzy
 msgid "configuring memory location is not supported"
 msgstr "Serielle Konsole anschließen wird nicht unterstützt"
-
-#, fuzzy
-msgid "configuring persistent polling values is not supported"
-msgstr "Anhaltendes Update der Einheit wird nicht unterstützt"
 
 msgid "conn must match stream connection"
 msgstr ""
@@ -24534,8 +24539,8 @@ msgstr "Zerstören (Anhalten) eines Pool"
 
 msgid "destroy a physical host interface (disable it / \"if-down\")"
 msgstr ""
-"Eine Schnittstelle des physischen Hosts entfernen (deaktivieren / \"if-down"
-"\")"
+"Eine Schnittstelle des physischen Hosts entfernen (deaktivieren / \"if-"
+"down\")"
 
 msgid "destroyed"
 msgstr "vernichtet"
@@ -33942,18 +33947,6 @@ msgstr "Abstimmung scheiterte im Migration Tunnel"
 msgid "poll failed in migration tunnel"
 msgstr "Abstimmung scheiterte im Migration Tunnel"
 
-#, fuzzy, c-format
-msgid "poll-grow (%1$u) must be less than or equal to %2$d"
-msgstr "cellNum in %s muss kleiner oder gleich sein zu %d"
-
-#, fuzzy, c-format
-msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
-msgstr "cellNum in %s muss kleiner oder gleich sein zu %d"
-
-#, fuzzy, c-format
-msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
-msgstr "cellNum in %s muss kleiner oder gleich sein zu %d"
-
 #, c-format
 msgid "pool '%1$s' already exists with uuid %2$s"
 msgstr "Pool »%1$s« existiert bereits mit UUID %2$s"
@@ -34352,10 +34345,6 @@ msgstr ""
 
 msgid "qemu state driver is not active"
 msgstr "qemu-Status-Treiber nicht aktiv"
-
-#, fuzzy
-msgid "qemu unexpectedly closed the monitor"
-msgstr "Unerwarteter Code Pfad"
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -35342,8 +35331,8 @@ msgid "security model string exceeds max %1$d bytes"
 msgstr "Sicherheitsmodell-String größer als die maximal erlaubten %1$d Bytes"
 
 msgid ""
-"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
-"\")"
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
+"\"dbus\")"
 msgstr ""
 
 #, fuzzy
@@ -39543,8 +39532,8 @@ msgstr "virNWFilterSnoopLeaseFileLoad Lease Datei, Zeile %1$d beschädigt"
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad req add failed on interface \"%1$s\""
 msgstr ""
-"virNWFilterSnoopLeaseFileLoad req add scheiterte auf der Schnittstelle \"%1$s"
-"\""
+"virNWFilterSnoopLeaseFileLoad req add scheiterte auf der Schnittstelle "
+"\"%1$s\""
 
 msgid "virNWFilterSnoopListDel failed"
 msgstr "virNWFilterSnoopListDel fehlgeschlagen"
@@ -40087,6 +40076,34 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, fuzzy, c-format
+#~ msgid "DBus daemon %1$s didn't show up"
+#~ msgstr "Domain %1$s wurde nicht angezeigt"
+
+#, fuzzy
+#~ msgid "Field name too long"
+#~ msgstr "Feld-Name '%s' zu lang"
+
+#, fuzzy
+#~ msgid "configuring persistent polling values is not supported"
+#~ msgstr "Anhaltendes Update der Einheit wird nicht unterstützt"
+
+#, fuzzy, c-format
+#~ msgid "poll-grow (%1$u) must be less than or equal to %2$d"
+#~ msgstr "cellNum in %s muss kleiner oder gleich sein zu %d"
+
+#, fuzzy, c-format
+#~ msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
+#~ msgstr "cellNum in %s muss kleiner oder gleich sein zu %d"
+
+#, fuzzy, c-format
+#~ msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
+#~ msgstr "cellNum in %s muss kleiner oder gleich sein zu %d"
+
+#, fuzzy
+#~ msgid "qemu unexpectedly closed the monitor"
+#~ msgstr "Unerwarteter Code Pfad"
 
 #, fuzzy
 #~ msgid "%1$s cannot be set higher than %2$s "

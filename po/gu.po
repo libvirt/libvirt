@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-04-25 10:39+0000\n"
+"POT-Creation-Date: 2023-05-26 06:46+0000\n"
 "PO-Revision-Date: 2015-02-23 06:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Gujarati (http://www.transifex.com/projects/p/libvirt/"
@@ -1241,6 +1241,11 @@ msgstr ""
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
 "in memory element"
+msgstr ""
+
+msgid ""
+"'restrictive' mode is required in memory element when mode is 'restrictive' "
+"in memnode element"
 msgstr ""
 
 #, c-format
@@ -3099,14 +3104,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit average=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
 
 #, c-format
 msgid ""
-"Cannot plug '%1$s' interface into '%2$s' because new combined inbound floor="
-"%3$llu would overcommit peak=%4$llu on network '%5$s'"
+"Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
+"floor=%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -3605,9 +3610,17 @@ msgstr "સંકોચન કેશ:"
 msgid "Compression cache: %1$.3lf %2$s"
 msgstr "સંકોચન કેશ: %1$.3lf %2$s"
 
+#, c-format
+msgid "Compression method '%1$s' is only supported with parallel migration"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Compression method '%1$s' is specified twice"
 msgstr "ડિસ્ક '%1$s' બે વાર સ્પષ્ટ થયેલ છે"
+
+#, c-format
+msgid "Compression method '%1$s' isn't supported with parallel migration"
+msgstr ""
 
 msgid "Compression overflows:"
 msgstr "સંકોચન ઓવરફ્લો:"
@@ -4917,10 +4930,6 @@ msgstr ""
 
 msgid "DAC seclabel couldn't be determined"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "DBus daemon %1$s didn't show up"
-msgstr "ડોમેઈન %1$s એ બતાવતુ ન હતુ"
 
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "DNS HOST રેકોર્ડને બદલી શકાતા નથી, ફક્ત ઉમેરાય અને કાઢી નંખાય છે"
@@ -8488,10 +8497,6 @@ msgstr "ક્ષેત્ર કર્નલ મેમરી લક્ષ્ય
 msgid "Field name '%1$s' too long"
 msgstr "ફાઇલ નામ '%1$s' ઘણી લાંબી છે"
 
-#, fuzzy
-msgid "Field name too long"
-msgstr "ફાઇલ નામ '%s' ઘણી લાંબી છે"
-
 #, c-format
 msgid "File %1$s contains no keys"
 msgstr ""
@@ -9413,10 +9418,6 @@ msgstr "રૂપરેખાંકન ફાઈલનું પદચ્છે�
 msgid "Invalid 'cpu.max' data."
 msgstr "%s માં અયોગ્ય cpuNum"
 
-#, c-format
-msgid "Invalid 'level' attribute in cache element for NUMA node %1$d"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
 msgstr "અયોગ્ય nvram બંધારણ: '%1$s'"
@@ -9635,17 +9636,9 @@ msgstr "ડિસ્ક માટે અયોગ્ય બસ પ્રકા�
 msgid "Invalid bus type '%1$s' for floppy disk"
 msgstr "ફ્લોપી ડિસ્ક માટે અયોગ્ય બસ પ્રકાર '%1$s'"
 
-#, c-format
-msgid "Invalid cache associativity '%1$s'"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Invalid cache id '%1$s'"
 msgstr "%1$s માં અયોગ્ય cpuNum"
-
-#, c-format
-msgid "Invalid cache policy '%1$s'"
-msgstr ""
 
 msgid "Invalid call"
 msgstr "અયોગ્ય કોલ"
@@ -10945,10 +10938,6 @@ msgstr "ગુમ થયેલ '%1$s' ગુણધર્મ જ્યારે M
 msgid "Missing '/' separator in cgroup mount '%1$s'"
 msgstr "cgroup માઉન્ટ '%1$s' માં ગુમ થયેલ '/' વિભાજક"
 
-#, c-format
-msgid "Missing 'associativity' attribute in cache element for NUMA node %1$d"
-msgstr ""
-
 #, fuzzy
 msgid "Missing 'domname' in JSON document"
 msgstr "JSON દસ્તાવેજમાં ગુમ થયેલ સ્ત્રોત નામ"
@@ -10972,10 +10961,6 @@ msgstr "CPU મોડેલ %s માં ગેરહાજર પૂર્વ�
 msgid "Missing 'key' element for lease"
 msgstr "લીઝ માટે ગુમ થયેલ 'કી' ઘટક"
 
-#, c-format
-msgid "Missing 'level' attribute in cache element for NUMA node %1$d"
-msgstr ""
-
 #, fuzzy
 msgid "Missing 'link' attribute for NIC"
 msgstr "NUMA સેલમાં ગુમ થયેલ 'cpus' ગુણધર્મ"
@@ -10994,10 +10979,6 @@ msgstr "JSON દસ્તાવેજ સ્થિતિમાં ગુમ થ�
 #, fuzzy
 msgid "Missing 'pipefd' in JSON document"
 msgstr "JSON દસ્તાવેજમાં ગુમ થયેલ pid માહિતી"
-
-#, c-format
-msgid "Missing 'policy' attribute in cache element for NUMA node %1$d"
-msgstr ""
 
 msgid "Missing 'runtime.powerState' property"
 msgstr "ગેરહાજર 'runtime.powerState' ગુણધર્મ"
@@ -12028,6 +12009,9 @@ msgstr "બંધબેસતી uuid '%s' સાથે ગુપ્તતા �
 msgid "No complete agent response found in %1$d bytes"
 msgstr ""
 
+msgid "No compression algorithm selected for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "No current block job for %1$s"
 msgstr ""
@@ -12648,6 +12632,10 @@ msgstr "ફક્ત એક બાળ <inbound> ઘટક પરવાનગી 
 
 msgid "Only one child <outbound> element allowed"
 msgstr "ફક્ત એક બાળ <outbound> ઘટક પરવાનગી મળેલ નથી"
+
+msgid ""
+"Only one compression method could be specified with parallel compression"
+msgstr ""
 
 #, fuzzy
 msgid "Only one hostdev of model vfio-ap is supported"
@@ -13369,6 +13357,10 @@ msgid ""
 msgstr ""
 
 msgid "QEMU reports migration is still running"
+msgstr ""
+
+#, c-format
+msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
 msgstr ""
 
 #, c-format
@@ -14705,8 +14697,8 @@ msgstr "HyperV જ્ઞાનપ્રાપ્તિ લક્ષણ '%s' ન�
 
 #, fuzzy, c-format
 msgid ""
-"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s="
-"%5$s'"
+"State of feature '%1$s' differs: source: '%2$s=%3$s', destination: "
+"'%4$s=%5$s'"
 msgstr "HyperV જ્ઞાનપ્રાપ્તિ લક્ષણ '%s' ની સ્થિતિ અલગ પડે છે: સ્ત્રોત: '%s', લક્ષ્ય: '%s'"
 
 #, c-format
@@ -15633,6 +15625,11 @@ msgid "Target sound card model %1$s does not match source %2$s"
 msgstr "લક્ષ્ય સાઉન્ડ કાર્ડ મોડલ %1$s સ્ત્રોત %2$s સાથે બંધબેસતુ નથી"
 
 #, c-format
+msgid ""
+"Target sound card multichannel setting '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
 msgstr "લક્ષ્ય sysinfo %1$s %2$s એ સ્ત્રોત %3$s સાથે બંધબેસતુ નથી"
 
@@ -15885,8 +15882,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The device at PCI address %1$s has unrecognized connection type flags 0x"
-"%2$.2x"
+"The device at PCI address %1$s has unrecognized connection type flags "
+"0x%2$.2x"
 msgstr ""
 
 #, c-format
@@ -16345,6 +16342,12 @@ msgid "Turn parallel migration on to tune it"
 msgstr ""
 
 msgid "Turn xbzrle compression on to tune it"
+msgstr ""
+
+msgid "Turn zlib compression on to tune it"
+msgstr ""
+
+msgid "Turn zstd compression on to tune it"
 msgstr ""
 
 msgid "Type"
@@ -22965,6 +22968,12 @@ msgstr "સમાપ્ત"
 msgid "compress level for multithread compression"
 msgstr ""
 
+msgid "compress level for zlib compression"
+msgstr ""
+
+msgid "compress level for zstd compression"
+msgstr ""
+
 msgid "compress repeated pages during live migration"
 msgstr "જીવંત સ્થળાંતર દરમ્યાન પુનરાવર્તિત થયેલ પાનાંને સંકોચો"
 
@@ -23009,10 +23018,6 @@ msgstr "માઉન્ટ પોઇંટને સ્પષ્ટ કરવા
 #, fuzzy
 msgid "configuring memory location is not supported"
 msgstr "માઉન્ટબિંદુને સ્પષ્ટ કરવાનું આધારભૂત નથી"
-
-#, fuzzy
-msgid "configuring persistent polling values is not supported"
-msgstr "ઉપકરણને નિરંતર સુધારવાનું આધારભૂત નથી"
 
 msgid "conn must match stream connection"
 msgstr ""
@@ -33185,18 +33190,6 @@ msgstr "સ્થળાંતર ટનલમાં પોલ નિષ્ફળ
 msgid "poll failed in migration tunnel"
 msgstr "સ્થળાંતર ટનલમાં પોલ નિષ્ફળ"
 
-#, fuzzy, c-format
-msgid "poll-grow (%1$u) must be less than or equal to %2$d"
-msgstr "%s માં cellNum એ %d કરતા ઓછુ અથવા સરખુ હોવુ જ જોઇએ"
-
-#, fuzzy, c-format
-msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
-msgstr "%s માં cellNum એ %d કરતા ઓછુ અથવા સરખુ હોવુ જ જોઇએ"
-
-#, fuzzy, c-format
-msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
-msgstr "%s માં cellNum એ %d કરતા ઓછુ અથવા સરખુ હોવુ જ જોઇએ"
-
 #, c-format
 msgid "pool '%1$s' already exists with uuid %2$s"
 msgstr "પુલ '%1$s' પહેલેથી જ uuid %2$s સાથે અસ્તિત્વ ધરાવે છે"
@@ -33590,10 +33583,6 @@ msgstr ""
 
 msgid "qemu state driver is not active"
 msgstr "qemu સ્થિતિ ડ્રાઇવર સક્રિય નથી"
-
-#, fuzzy
-msgid "qemu unexpectedly closed the monitor"
-msgstr "અનિચ્છનીય કોડ પાથ"
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -34547,8 +34536,8 @@ msgid "security model string exceeds max %1$d bytes"
 msgstr "સુરક્ષા મોડલ શબ્દમાળા એ મહત્તમ %1$d બાઇટોને વધારે છે"
 
 msgid ""
-"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
-"\")"
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
+"\"dbus\")"
 msgstr ""
 
 #, fuzzy
@@ -35687,8 +35676,8 @@ msgid ""
 "there is an existing interface entry in network '%1$s' that matches "
 "\"<interface dev='%2$s'>\""
 msgstr ""
-"ત્યાં હાલમાં નેટવર્ક '%1$s' માં હાલની ઇન્ટરફેસ નોંધણી છે કે જે  \"<interface dev='%2$s'>"
-"\" ને બંધબેસે છે"
+"ત્યાં હાલમાં નેટવર્ક '%1$s' માં હાલની ઇન્ટરફેસ નોંધણી છે કે જે  \"<interface "
+"dev='%2$s'>\" ને બંધબેસે છે"
 
 #, c-format
 msgid ""
@@ -39221,6 +39210,34 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, fuzzy, c-format
+#~ msgid "DBus daemon %1$s didn't show up"
+#~ msgstr "ડોમેઈન %1$s એ બતાવતુ ન હતુ"
+
+#, fuzzy
+#~ msgid "Field name too long"
+#~ msgstr "ફાઇલ નામ '%s' ઘણી લાંબી છે"
+
+#, fuzzy
+#~ msgid "configuring persistent polling values is not supported"
+#~ msgstr "ઉપકરણને નિરંતર સુધારવાનું આધારભૂત નથી"
+
+#, fuzzy, c-format
+#~ msgid "poll-grow (%1$u) must be less than or equal to %2$d"
+#~ msgstr "%s માં cellNum એ %d કરતા ઓછુ અથવા સરખુ હોવુ જ જોઇએ"
+
+#, fuzzy, c-format
+#~ msgid "poll-max-ns (%1$llu) must be less than or equal to %2$d"
+#~ msgstr "%s માં cellNum એ %d કરતા ઓછુ અથવા સરખુ હોવુ જ જોઇએ"
+
+#, fuzzy, c-format
+#~ msgid "poll-shrink (%1$u) must be less than or equal to %2$d"
+#~ msgstr "%s માં cellNum એ %d કરતા ઓછુ અથવા સરખુ હોવુ જ જોઇએ"
+
+#, fuzzy
+#~ msgid "qemu unexpectedly closed the monitor"
+#~ msgstr "અનિચ્છનીય કોડ પાથ"
 
 #, fuzzy
 #~ msgid "%1$s cannot be set higher than %2$s "
