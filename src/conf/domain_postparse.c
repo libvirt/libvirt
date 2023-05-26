@@ -725,12 +725,13 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDef *dev,
         ret = virDomainFSDefPostParse(dev->data.fs);
         break;
 
-    case VIR_DOMAIN_DEVICE_LEASE:
-    case VIR_DOMAIN_DEVICE_NET:
     case VIR_DOMAIN_DEVICE_INPUT:
         virDomainInputDefPostParse(dev->data.input, def);
         ret = 0;
         break;
+
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_NET:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
