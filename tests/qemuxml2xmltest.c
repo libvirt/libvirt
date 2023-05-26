@@ -886,7 +886,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-auto-bios-stateless");
     DO_TEST_CAPS_LATEST("firmware-auto-efi");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-stateless");
-    DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-secure");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-insecure");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-path");
@@ -898,6 +897,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-auto-efi-smm-off");
     DO_TEST_CAPS_ARCH_LATEST("firmware-auto-efi-aarch64", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("firmware-auto-efi-abi-update-aarch64", "aarch64");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-path");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-file");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-network-nbd");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-network-iscsi");
