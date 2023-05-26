@@ -971,9 +971,12 @@ qemuFirmwareMatchesPaths(const qemuFirmware *fw,
         if (loader && loader->path &&
             STRNEQ(loader->path, flash->executable.filename))
             return false;
-        if (loader && loader->nvramTemplate &&
-            STRNEQ(loader->nvramTemplate, flash->nvram_template.filename))
-            return false;
+        if (loader && loader->nvramTemplate) {
+            if (flash->mode != QEMU_FIRMWARE_FLASH_MODE_SPLIT)
+                return false;
+            if (STRNEQ(loader->nvramTemplate, flash->nvram_template.filename))
+                return false;
+        }
         break;
     case QEMU_FIRMWARE_DEVICE_MEMORY:
         if (loader && loader->path &&
