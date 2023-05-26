@@ -1046,14 +1046,18 @@ mymain(void)
                                   ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                                   ARG_END);
     DO_TEST_CAPS_LATEST("firmware-manual-efi-rw");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-rw-legacy-paths");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-rw-modern-paths");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-rw-implicit");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-loader-secure");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-loader-no-path");
+    DO_TEST_CAPS_LATEST_FAILURE("firmware-manual-efi-loader-path-nonstandard");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-secboot");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-no-enrolled-keys");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-no-secboot");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-stateless");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-template");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-template-nonstandard");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-nvram-template-stateless");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-iscsi");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-nbd");
@@ -1070,13 +1074,23 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("firmware-manual-noefi-noacpi-aarch64", "aarch64");
     DO_TEST_CAPS_LATEST("firmware-manual-noefi-noacpi-q35");
 
+    /* Ensure that legacy firmware paths keep working */
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-secboot-legacy-paths");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-no-enrolled-keys-legacy-paths");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-no-secboot-legacy-paths");
+    DO_TEST_CAPS_ARCH_LATEST("firmware-manual-efi-aarch64-legacy-paths", "aarch64");
+
     DO_TEST_CAPS_LATEST("firmware-auto-bios");
     DO_TEST_CAPS_LATEST("firmware-auto-bios-stateless");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-bios-not-stateless");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-bios-nvram");
     DO_TEST_CAPS_LATEST("firmware-auto-efi");
+    DO_TEST_CAPS_LATEST_ABI_UPDATE("firmware-auto-efi-abi-update");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-stateless");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-rw");
+    DO_TEST_CAPS_LATEST_ABI_UPDATE("firmware-auto-efi-rw-abi-update");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-secure");
+    DO_TEST_CAPS_LATEST_ABI_UPDATE("firmware-auto-efi-loader-secure-abi-update");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-insecure");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-path");
     DO_TEST_CAPS_LATEST_FAILURE("firmware-auto-efi-loader-path-nonstandard");
@@ -1089,6 +1103,8 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("firmware-auto-efi-aarch64", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("firmware-auto-efi-abi-update-aarch64", "aarch64");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-path");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-template");
+    DO_TEST_CAPS_LATEST_FAILURE("firmware-auto-efi-nvram-template-nonstandard");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-file");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-network-nbd");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-network-iscsi");
@@ -1098,6 +1114,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-auto-efi-format-nvram-qcow2-path");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-format-nvram-qcow2-network-nbd");
     DO_TEST_CAPS_ARCH_LATEST("firmware-auto-efi-format-loader-raw", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("firmware-auto-efi-format-loader-raw-abi-update", "aarch64");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-efi-format-mismatch");
 
     DO_TEST_NOCAPS("clock-utc");
