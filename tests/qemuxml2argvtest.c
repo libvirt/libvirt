@@ -1051,13 +1051,13 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-manual-efi-rw-implicit");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-loader-secure");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-loader-no-path");
-    DO_TEST_CAPS_LATEST_FAILURE("firmware-manual-efi-loader-path-nonstandard");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-loader-path-nonstandard");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-secboot");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-no-enrolled-keys");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-no-secboot");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-stateless");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-template");
-    DO_TEST_CAPS_LATEST_FAILURE("firmware-manual-efi-nvram-template-nonstandard");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-template-nonstandard");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-nvram-template-stateless");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-iscsi");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-nbd");
