@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-05-26 06:46+0000\n"
-"PO-Revision-Date: 2023-04-28 04:20+0000\n"
+"PO-Revision-Date: 2023-05-27 15:20+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.15.2\n"
+"X-Generator: Weblate 4.17\n"
 
 msgid ""
 "\n"
@@ -1443,6 +1443,8 @@ msgid ""
 "'restrictive' mode is required in memory element when mode is 'restrictive' "
 "in memnode element"
 msgstr ""
+"для елемента memory має бути вказано «restrictive», якщо для елемента "
+"memnode використано «restrictive»"
 
 #, c-format
 msgid ""
@@ -3933,6 +3935,8 @@ msgstr "Кеш стискання: %1$.3lf %2$s"
 #, c-format
 msgid "Compression method '%1$s' is only supported with parallel migration"
 msgstr ""
+"Підтримку методу стискання «%1$s» передбачено лише для паралельного "
+"перенесення"
 
 #, c-format
 msgid "Compression method '%1$s' is specified twice"
@@ -3941,6 +3945,7 @@ msgstr "Метод стискання «%1$s» вказано двічі"
 #, c-format
 msgid "Compression method '%1$s' isn't supported with parallel migration"
 msgstr ""
+"Підтримки методу стискання «%1$s» для паралельного перенесення не передбачено"
 
 msgid "Compression overflows:"
 msgstr "Переповнення стискання:"
@@ -12561,7 +12566,7 @@ msgid "No complete agent response found in %1$d bytes"
 msgstr "У %1$d байтах не знайдено повної відповіді агента"
 
 msgid "No compression algorithm selected for parallel migration"
-msgstr ""
+msgstr "Для паралельного перенесення не вибрано алгоритму стискання"
 
 #, c-format
 msgid "No current block job for %1$s"
@@ -13205,6 +13210,7 @@ msgstr "Можна використовувати лише один дочірн
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
+"Для паралельного перенесення може бути вказано лише один метод стискання"
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Передбачено підтримку пристроїв основної системи лише моделі vfio-ap"
@@ -13965,7 +13971,7 @@ msgstr "QEMU повідомляє про незавершене перенесе
 
 #, c-format
 msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
-msgstr ""
+msgstr "QEMU неочікувано закрив монітор (vm='%1$s')"
 
 #, c-format
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
@@ -16508,6 +16514,8 @@ msgstr ""
 msgid ""
 "Target sound card multichannel setting '%1$s' does not match source '%2$s'"
 msgstr ""
+"Параметр багатоканальності звукової картки призначення «%1$s» не збігається "
+"із джерелом «%2$s»"
 
 #, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
@@ -17297,10 +17305,10 @@ msgid "Turn xbzrle compression on to tune it"
 msgstr "Увімкніть стискання xbzrle, щоб скоригувати його параметри"
 
 msgid "Turn zlib compression on to tune it"
-msgstr ""
+msgstr "Увімкніть стискання zlib для коригування"
 
 msgid "Turn zstd compression on to tune it"
-msgstr ""
+msgstr "Увімкніть стискання zstd для коригування"
 
 msgid "Type"
 msgstr "Тип"
@@ -24050,10 +24058,10 @@ msgid "compress level for multithread compression"
 msgstr "рівень стискання для багатопотокового стискання"
 
 msgid "compress level for zlib compression"
-msgstr ""
+msgstr "рівень стискання для стискання zlib"
 
 msgid "compress level for zstd compression"
-msgstr ""
+msgstr "рівень стискання для стискання zstd"
 
 msgid "compress repeated pages during live migration"
 msgstr "стискати повторювані сторінки під час інтерактивного перенесення"
