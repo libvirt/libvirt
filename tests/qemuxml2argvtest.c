@@ -2438,10 +2438,7 @@ mymain(void)
     DO_TEST("memory-hotplug-dimm", QEMU_CAPS_DEVICE_PC_DIMM);
     DO_TEST_CAPS_LATEST("memory-hotplug-dimm-addr");
     DO_TEST_CAPS_ARCH_LATEST("memory-hotplug-ppc64-nonuma", "ppc64");
-    DO_TEST_FULL("memory-hotplug-ppc64-nonuma-abi-update", "",
-                 ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
-                 ARG_CAPS_ARCH, "ppc64", ARG_CAPS_VER, "latest",
-                 ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("memory-hotplug-ppc64-nonuma-abi-update", "ppc64");
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm");
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm-access");
     DO_TEST_CAPS_VER("memory-hotplug-nvdimm-label", "5.2.0");
@@ -2453,10 +2450,7 @@ mymain(void)
     DO_TEST_CAPS_VER("memory-hotplug-nvdimm-readonly", "5.2.0");
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm-readonly");
     DO_TEST_CAPS_ARCH_LATEST("memory-hotplug-nvdimm-ppc64", "ppc64");
-    DO_TEST_FULL("memory-hotplug-nvdimm-ppc64-abi-update", "",
-                 ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
-                 ARG_CAPS_ARCH, "ppc64", ARG_CAPS_VER, "latest",
-                 ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("memory-hotplug-nvdimm-ppc64-abi-update", "ppc64");
     DO_TEST_CAPS_VER("memory-hotplug-virtio-pmem", "5.2.0");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-pmem");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-mem");
@@ -2495,10 +2489,7 @@ mymain(void)
 
     DO_TEST_CAPS_ARCH_LATEST("ppc64-usb-controller", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-usb-controller-legacy", "ppc64");
-    DO_TEST_FULL("ppc64-usb-controller-qemu-xhci", "",
-                 ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
-                 ARG_CAPS_ARCH, "ppc64", ARG_CAPS_VER, "latest",
-                 ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("ppc64-usb-controller-qemu-xhci", "ppc64");
 
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("ppc64-tpmproxy-double", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("ppc64-tpm-double", "ppc64");

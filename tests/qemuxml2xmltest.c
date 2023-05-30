@@ -995,9 +995,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("aarch64-usb-controller", "aarch64");
 
     DO_TEST_CAPS_ARCH_LATEST("memory-hotplug-ppc64-nonuma", "ppc64");
-    DO_TEST_FULL("memory-hotplug-ppc64-nonuma-abi-update", "", WHEN_BOTH,
-                 ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
-                 ARG_CAPS_ARCH, "ppc64", ARG_CAPS_VER, "latest", ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("memory-hotplug-ppc64-nonuma-abi-update", "ppc64");
     DO_TEST_NOCAPS("memory-hotplug");
     DO_TEST("memory-hotplug-dimm", QEMU_CAPS_DEVICE_PC_DIMM);
     DO_TEST_CAPS_LATEST("memory-hotplug-dimm-addr");
@@ -1009,9 +1007,7 @@ mymain(void)
     DO_TEST("memory-hotplug-nvdimm-readonly", QEMU_CAPS_DEVICE_NVDIMM,
                                               QEMU_CAPS_DEVICE_NVDIMM_UNARMED);
     DO_TEST_CAPS_ARCH_LATEST("memory-hotplug-nvdimm-ppc64", "ppc64");
-    DO_TEST_FULL("memory-hotplug-nvdimm-ppc64-abi-update", "", WHEN_BOTH,
-                 ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
-                 ARG_CAPS_ARCH, "ppc64", ARG_CAPS_VER, "latest", ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("memory-hotplug-nvdimm-ppc64-abi-update", "ppc64");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-pmem");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-mem");
     DO_TEST_CAPS_LATEST("memory-hotplug-multiple");
