@@ -23,7 +23,44 @@ v9.4.0 (unreleased)
 
 * **Improvements**
 
+  * Adapt to musl-1.2.4
+
+    The latest version of musl stopped declaring some symbols that libvirt's
+    test suite used (for redirecting ``stat()`` family of functions), leaving
+    the tests broken. This is now fixed and the test suite works even with the
+    latest version of musl.
+
+  * conf: Introduce ``<address/>`` for virtio-mem and virtio-pmem
+
+    To ensure guest ABI stability, libvirt persists address for memory devices,
+    now including ``virtio-mem`` and ``virtio-pmem``. The address can be also
+    specified by user.
+
 * **Bug fixes**
+
+  * qemu: Account for NVMe disks when calculating memlock limit on hotplug
+
+    When no ``<hard_limit/>`` is set, libvirt still tries to guess a sensible
+    limit for memlock for domains. But this limit was not calculated properly
+    on a hotplug of ``<disk type='nvme'/>``.
+
+  * numa: Deny other memory modes than ``restrictive``` if a memnode is ``restrictive``
+
+    Due to a missing check it was possible to define a domain with incorrect
+    ``<numatune/>``. For instance it was possible to have a ``<memnode
+    mode="restrictive"/>`` and ``<memory/>`` of a different mode. This is now
+    forbidden and if either all ``<memnode/>``-s and ``<memory/>`` have to have
+    ``restrictive`` mode, or none.
+
+  * qemu: Start emulator thread with more generous ``cpuset.mems``
+
+    To ensure memory is allocated only from configured NUMA nodes, libvirt sets
+    up cpuset CGgroup controller, even before QEMU is executed. But this may
+    prevent QEMU from setting affinity of threads that allocate memory. Since
+    these threads are spawned from the emulator thread, the initial set up must
+    be more generous and include union of all host NUMA nodes that are allowed
+    in the domain definition. Once QEMU has allocated all its memory, the
+    emulator thread is restricted further, as it otherwise would be.
 
 
 v9.3.0 (2023-05-02)
