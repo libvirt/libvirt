@@ -18,8 +18,8 @@
 
 #include <config.h>
 
+#include "qemu/qemu_command.h"
 #include "qemu/qemu_hotplug.h"
-#include "qemu/qemu_interface.h"
 #include "qemu/qemu_process.h"
 #include "testutilsqemu.h"
 #include "conf/domain_conf.h"
@@ -94,7 +94,7 @@ qemuProcessKillManagedPRDaemon(virDomainObj *vm G_GNUC_UNUSED)
 }
 
 int
-qemuInterfaceVDPAConnect(virDomainNetDef *net G_GNUC_UNUSED)
+qemuVDPAConnect(const char *devicepath G_GNUC_UNUSED)
 {
     /* need a valid fd or sendmsg won't work. Just open /dev/null */
     return open("/dev/null", O_RDONLY);

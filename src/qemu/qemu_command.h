@@ -248,3 +248,4 @@ qemuBuildTPMOpenBackendFDs(const char *tpmdev,
 
 const char * qemuAudioDriverTypeToString(virDomainAudioType type);
 virDomainAudioType qemuAudioDriverTypeFromString(const char *str);
+int qemuVDPAConnect(const char *devicepath) G_NO_INLINE;

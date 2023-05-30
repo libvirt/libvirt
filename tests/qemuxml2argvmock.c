@@ -255,7 +255,7 @@ virNetDevBandwidthSetRootQDisc(const char *ifname G_GNUC_UNUSED,
 
 
 int
-qemuInterfaceVDPAConnect(virDomainNetDef *net G_GNUC_UNUSED)
+qemuVDPAConnect(const char *devicepath G_GNUC_UNUSED)
 {
     if (fcntl(1732, F_GETFD) != -1)
         abort();

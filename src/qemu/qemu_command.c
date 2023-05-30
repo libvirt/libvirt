@@ -8533,7 +8533,7 @@ qemuBuildInterfaceConnect(virDomainObj *vm,
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDPA:
-        if ((vdpafd = qemuInterfaceVDPAConnect(net)) < 0)
+        if ((vdpafd = qemuVDPAConnect(net->data.vdpa.devicepath)) < 0)
             return -1;
 
         netpriv->vdpafd = qemuFDPassNew(net->info.alias, priv);
@@ -10992,4 +10992,25 @@ qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSource *top,
         return NULL;
 
     return g_steal_pointer(&data);
+}
+
+
+/* qemuVDPAConnect:
+ * @devicepath: the path to the vdpa device
+ *
+ * returns: file descriptor of the vdpa device
+ */
+int
+qemuVDPAConnect(const char *devicepath)
+{
+    int fd;
+
+    if ((fd = open(devicepath, O_RDWR)) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to open '%1$s' for vdpa device"),
+                             devicepath);
+        return -1;
+    }
+
+    return fd;
 }
