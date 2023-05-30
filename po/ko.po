@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-05-26 06:46+0000\n"
-"PO-Revision-Date: 2023-04-28 04:20+0000\n"
+"PO-Revision-Date: 2023-05-30 05:20+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15.2\n"
+"X-Generator: Weblate 4.17\n"
 
 msgid ""
 "\n"
@@ -1373,14 +1373,14 @@ msgstr ""
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
 "in memory element"
-msgstr ""
-"'restrictive' 방식은 memnode 요소가 메모리 요소에서 'restrictive'일때 필요합"
-"니다"
+msgstr "'제한적' 방식은 방식이 메모리 요소에서 '제한적' 일 때 memnode 요소에서 "
+"필요합니다"
 
 msgid ""
 "'restrictive' mode is required in memory element when mode is 'restrictive' "
 "in memnode element"
-msgstr ""
+msgstr "'제한적' 방식은 방식이 memnode 요소에서 '제한적' 일 때 메모리 요소에서 "
+"필요합니다"
 
 #, c-format
 msgid ""
@@ -3742,7 +3742,7 @@ msgstr "압축 캐쉬: %1$.3lf %2$s"
 
 #, c-format
 msgid "Compression method '%1$s' is only supported with parallel migration"
-msgstr ""
+msgstr "압축 방법 '%1$s'은 병렬 이전과 함께만 지원됩니다"
 
 #, c-format
 msgid "Compression method '%1$s' is specified twice"
@@ -3750,7 +3750,7 @@ msgstr "압축 방법 '%1$s'가 2번 지정되었습니다"
 
 #, c-format
 msgid "Compression method '%1$s' isn't supported with parallel migration"
-msgstr ""
+msgstr "압축 방법 '%1$s'은 병렬 이전과 함께 지원되지 않습니다"
 
 msgid "Compression overflows:"
 msgstr "압축 오버플로우:"
@@ -12028,7 +12028,7 @@ msgid "No complete agent response found in %1$d bytes"
 msgstr "%1$d바이트에서 완전한 에이전트 응답을 찾을 수 없습니다"
 
 msgid "No compression algorithm selected for parallel migration"
-msgstr ""
+msgstr "병렬 이전을 위해 선택된 압축 알고리즘이 없습니다"
 
 #, c-format
 msgid "No current block job for %1$s"
@@ -12629,7 +12629,7 @@ msgstr "오직 하나의 자식 <outbound> 요소만이 허용됨"
 
 msgid ""
 "Only one compression method could be specified with parallel compression"
-msgstr ""
+msgstr "압축 방식 하나만 병렬 압축과 함께 지정 될 수 있습니다"
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "vfio-ap 모델의 hostdev는 하나만 지원됩니다"
@@ -13345,7 +13345,7 @@ msgstr "QEMU는 보고서 이전은 아직 동작 중입니다"
 
 #, c-format
 msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
-msgstr ""
+msgstr "QEMU가 갑자기 모니터를 닫았습니다 (vm='%1$s')"
 
 #, c-format
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
@@ -15597,7 +15597,7 @@ msgstr "대상 사운드 카드 모델 %1$s이 소스 %2$s와 일치하지 않�
 #, c-format
 msgid ""
 "Target sound card multichannel setting '%1$s' does not match source '%2$s'"
-msgstr ""
+msgstr "대상 사운드 카드 다중채널 설정 '%1$s'가 원천 '%2$s'와 일치하지 않습니다"
 
 #, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
@@ -16333,10 +16333,10 @@ msgid "Turn xbzrle compression on to tune it"
 msgstr "xbzrle 압축을 켜서 조정하십시오"
 
 msgid "Turn zlib compression on to tune it"
-msgstr ""
+msgstr "zlib 압축을 켜서 조정하세요"
 
 msgid "Turn zstd compression on to tune it"
-msgstr ""
+msgstr "zstd 압축을 켜서 조정하세요"
 
 msgid "Type"
 msgstr "유형"
@@ -22797,10 +22797,10 @@ msgid "compress level for multithread compression"
 msgstr "다중 스레드 압축을 위한 압축 수준"
 
 msgid "compress level for zlib compression"
-msgstr ""
+msgstr "zlib 압축을 위한 압축 수준"
 
 msgid "compress level for zstd compression"
-msgstr ""
+msgstr "zstd 압축을 위한 압축 수준"
 
 msgid "compress repeated pages during live migration"
 msgstr "실시간 이전 중 반복되는 페이지 압축"
