@@ -2857,29 +2857,32 @@ virNodeDeviceGetSCSIHostCaps(virNodeDevCapSCSIHost *scsi_host)
     }
 
     if (virVHBAIsVportCapable(NULL, scsi_host->host)) {
+        g_autofree char *max_vports = NULL;
+        g_autofree char *vports = NULL;
+
         scsi_host->flags |= VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS;
 
-        if (!(tmp = virVHBAGetConfig(NULL, scsi_host->host,
-                                     "max_npiv_vports"))) {
+        if (!(max_vports = virVHBAGetConfig(NULL, scsi_host->host,
+                                            "max_npiv_vports"))) {
             VIR_WARN("Failed to read max_npiv_vports for host%d",
                      scsi_host->host);
             goto cleanup;
         }
 
-        if (virStrToLong_i(tmp, NULL, 10, &scsi_host->max_vports) < 0) {
-            VIR_WARN("Failed to parse value of max_npiv_vports '%s'", tmp);
+        if (virStrToLong_i(max_vports, NULL, 10, &scsi_host->max_vports) < 0) {
+            VIR_WARN("Failed to parse value of max_npiv_vports '%s'", max_vports);
             goto cleanup;
         }
 
-        if (!(tmp = virVHBAGetConfig(NULL, scsi_host->host,
-                                      "npiv_vports_inuse"))) {
+        if (!(vports = virVHBAGetConfig(NULL, scsi_host->host,
+                                        "npiv_vports_inuse"))) {
             VIR_WARN("Failed to read npiv_vports_inuse for host%d",
                      scsi_host->host);
             goto cleanup;
         }
 
-        if (virStrToLong_i(tmp, NULL, 10, &scsi_host->vports) < 0) {
-            VIR_WARN("Failed to parse value of npiv_vports_inuse '%s'", tmp);
+        if (virStrToLong_i(vports, NULL, 10, &scsi_host->vports) < 0) {
+            VIR_WARN("Failed to parse value of npiv_vports_inuse '%s'", vports);
             goto cleanup;
         }
     }
