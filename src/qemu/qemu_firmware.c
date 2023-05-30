@@ -1295,6 +1295,13 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
             }
         }
 
+        if (loader &&
+            loader->readonly == VIR_TRISTATE_BOOL_NO &&
+            flash->mode != QEMU_FIRMWARE_FLASH_MODE_COMBINED) {
+            VIR_DEBUG("Discarding readonly loader");
+            return false;
+        }
+
         if (STRNEQ(flash->executable.format, "raw") &&
             STRNEQ(flash->executable.format, "qcow2")) {
             VIR_DEBUG("Discarding loader with unsupported flash format '%s'",
@@ -1590,6 +1597,11 @@ qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
     if (loader->type != VIR_DOMAIN_LOADER_TYPE_PFLASH) {
         VIR_DEBUG("Ignoring legacy entries for '%s' loader",
                   virDomainLoaderTypeToString(loader->type));
+        return 1;
+    }
+
+    if (loader->readonly == VIR_TRISTATE_BOOL_NO) {
+        VIR_DEBUG("Ignoring legacy entries for read-write loader");
         return 1;
     }
 
