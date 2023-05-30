@@ -9652,7 +9652,7 @@ qemuDomainGetNumNVMeDisks(const virDomainDef *def)
 
 
 static int
-qemuDomainGetNumVDPANetDevices(const virDomainDef *def)
+qemuDomainGetNumVDPADevices(const virDomainDef *def)
 {
     size_t i;
     int n = 0;
@@ -9660,6 +9660,14 @@ qemuDomainGetNumVDPANetDevices(const virDomainDef *def)
     for (i = 0; i < def->nnets; i++) {
         if (virDomainNetGetActualType(def->nets[i]) == VIR_DOMAIN_NET_TYPE_VDPA)
             n++;
+    }
+
+    for (i = 0; i < def->ndisks; i++) {
+        virStorageSource *src;
+        for (src = def->disks[i]->src; src; src = src->backingStore) {
+            if (src->type == VIR_STORAGE_TYPE_VHOST_VDPA)
+                n++;
+        }
     }
 
     return n;
@@ -9704,7 +9712,7 @@ qemuDomainGetMemLockLimitBytes(virDomainDef *def)
 
     nvfio = qemuDomainGetNumVFIOHostdevs(def);
     nnvme = qemuDomainGetNumNVMeDisks(def);
-    nvdpa = qemuDomainGetNumVDPANetDevices(def);
+    nvdpa = qemuDomainGetNumVDPADevices(def);
     /* For device passthrough using VFIO the guest memory and MMIO memory
      * regions need to be locked persistent in order to allow DMA.
      *
