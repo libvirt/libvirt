@@ -32,6 +32,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "virenum.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -1054,6 +1055,7 @@ qemuFirmwareOSInterfaceTypeFromOsDefLoaderType(virDomainLoader type)
  * qemuFirmwareEnsureNVRAM:
  * @def: domain definition
  * @driver: QEMU driver
+ * @abiUpdate: whether a new domain is being defined
  *
  * Make sure that a source for the NVRAM file exists, possibly by
  * creating it. This might involve automatically generating the
@@ -1061,7 +1063,8 @@ qemuFirmwareOSInterfaceTypeFromOsDefLoaderType(virDomainLoader type)
  */
 static void
 qemuFirmwareEnsureNVRAM(virDomainDef *def,
-                        virQEMUDriver *driver)
+                        virQEMUDriver *driver,
+                        bool abiUpdate)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainLoaderDef *loader = def->os.loader;
@@ -1091,8 +1094,25 @@ qemuFirmwareEnsureNVRAM(virDomainDef *def,
     loader->nvram->type = VIR_STORAGE_TYPE_FILE;
     loader->nvram->format = loader->format;
 
-    if (loader->nvram->format == VIR_STORAGE_FILE_RAW)
-        ext = ".fd";
+    if (loader->nvram->format == VIR_STORAGE_FILE_RAW) {
+        /* The extension used by raw edk2 builds has historically
+         * been .fd, but more recent aarch64 builds have started
+         * using the .raw extension instead.
+         *
+         * If we're defining a new domain, we should try to match the
+         * extension for the file backing its NVRAM store with the
+         * one used by the template to keep things nice and
+         * consistent.
+         *
+         * If we're loading an existing domain, however, we need to
+         * stick with the .fd extension to ensure compatibility */
+        if (abiUpdate &&
+            loader->nvramTemplate &&
+            virStringHasSuffix(loader->nvramTemplate, ".raw"))
+            ext = ".raw";
+        else
+            ext = ".fd";
+    }
     if (loader->nvram->format == VIR_STORAGE_FILE_QCOW2)
         ext = ".qcow2";
 
@@ -1729,6 +1749,7 @@ qemuFirmwareFillDomainModern(virQEMUDriver *driver,
  * qemuFirmwareFillDomain:
  * @driver: QEMU driver
  * @def: domain definition
+ * @abiUpdate: whether a new domain is being defined
  *
  * Perform firmware selection.
  *
@@ -1752,7 +1773,8 @@ qemuFirmwareFillDomainModern(virQEMUDriver *driver,
  */
 int
 qemuFirmwareFillDomain(virQEMUDriver *driver,
-                       virDomainDef *def)
+                       virDomainDef *def,
+                       bool abiUpdate)
 {
     virDomainLoaderDef *loader = def->os.loader;
     virStorageSource *nvram = loader ? loader->nvram : NULL;
@@ -1822,7 +1844,7 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
     /* Always ensure that the NVRAM path is present, even if we
      * haven't found a match: the configuration might simply be
      * referring to a custom firmware build */
-    qemuFirmwareEnsureNVRAM(def, driver);
+    qemuFirmwareEnsureNVRAM(def, driver, abiUpdate);
 
     return 0;
 }

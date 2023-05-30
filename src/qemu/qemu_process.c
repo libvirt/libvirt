@@ -6705,7 +6705,7 @@ qemuProcessPrepareDomain(virQEMUDriver *driver,
         return -1;
 
     VIR_DEBUG("Prepare bios/uefi paths");
-    if (qemuFirmwareFillDomain(driver, vm->def) < 0)
+    if (qemuFirmwareFillDomain(driver, vm->def, false) < 0)
         return -1;
     if (qemuDomainInitializePflashStorageSource(vm, cfg) < 0)
         return -1;

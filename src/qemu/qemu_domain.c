@@ -4505,7 +4505,7 @@ qemuDomainDefBootPostParse(virDomainDef *def,
      * to start the domain, qemuFirmwareFillDomain() will be run
      * again, fail in the same way, and at that point we'll have a
      * chance to inform the user of any issues */
-    if (qemuFirmwareFillDomain(driver, def) < 0) {
+    if (qemuFirmwareFillDomain(driver, def, abiUpdate) < 0) {
         if (abiUpdate) {
             return -1;
         } else {
