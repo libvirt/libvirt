@@ -1329,7 +1329,7 @@ typedef enum {
  * VIR_TYPED_PARAM_INT. Accepted values are in range 0-9. 0 is no compression,
  * 1 is maximum speed and 9 is maximum compression.
  *
- * Since: 9.1.0
+ * Since: 9.4.0
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION_ZLIB_LEVEL      "compression.zlib.level"
 
@@ -1340,7 +1340,7 @@ typedef enum {
  * VIR_TYPED_PARAM_INT. Accepted values are in range 0-20. 0 is no compression,
  * 1 is maximum speed and 20 is maximum compression.
  *
- * Since: 9.1.0
+ * Since: 9.4.0
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION_ZSTD_LEVEL      "compression.zstd.level"
 
