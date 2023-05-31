@@ -19,7 +19,7 @@ targets:
           RPM: skip
           CC: clang
 
-  alpine-315: x86_64
+  alpine-317: x86_64
 
   alpine-edge:
     jobs:

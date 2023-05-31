@@ -51,22 +51,22 @@ x86_64-almalinux-8-clang-local-env:
     RPM: skip
 
 
-x86_64-alpine-315-prebuilt-env:
+x86_64-alpine-317-prebuilt-env:
   extends: .native_build_job_prebuilt_env
   needs:
-    - job: x86_64-alpine-315-container
+    - job: x86_64-alpine-317-container
       optional: true
   allow_failure: false
   variables:
-    NAME: alpine-315
+    NAME: alpine-317
 
-x86_64-alpine-315-local-env:
+x86_64-alpine-317-local-env:
   extends: .native_build_job_local_env
   needs: []
   allow_failure: false
   variables:
-    IMAGE: docker.io/library/alpine:3.15
-    NAME: alpine-315
+    IMAGE: docker.io/library/alpine:3.17
+    NAME: alpine-317
 
 
 x86_64-alpine-edge-prebuilt-env:
