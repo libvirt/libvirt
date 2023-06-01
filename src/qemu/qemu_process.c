@@ -5834,6 +5834,13 @@ qemuProcessNetworkPrepareDevices(virQEMUDriver *driver,
                                net->data.network.name, def->name);
                 return -1;
             }
+
+            /* For hostdev present in qemuProcessPrepareDomain() phase this was
+             * done already, but this code runs after that, so we have to call
+             * it ourselves. */
+            if (qemuDomainPrepareHostdev(hostdev, priv) < 0)
+                return -1;
+
             if (virDomainHostdevInsert(def, hostdev) < 0)
                 return -1;
         } else if (actualType == VIR_DOMAIN_NET_TYPE_USER &&
