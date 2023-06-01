@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: libvirt 8.4.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-05-26 06:46+0000\n"
-"PO-Revision-Date: 2023-04-16 04:20+0000\n"
+"PO-Revision-Date: 2023-06-01 04:20+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ka/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.2\n"
+"X-Generator: Weblate 4.17\n"
 
 msgid ""
 "\n"
@@ -7374,7 +7374,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to read pid file %1$s"
-msgstr ""
+msgstr "შეცდომა pidfile %1$s-ის წაკითხვისას"
 
 #, c-format
 msgid "Failed to read pidfile %1$s"
@@ -18299,7 +18299,7 @@ msgid "Unsupported controller type: %1$s"
 msgstr ""
 
 msgid "Unsupported device type"
-msgstr ""
+msgstr "მხარდაუჭერელი მოწყობილობის ტიპი"
 
 #, c-format
 msgid "Unsupported device type %1$d"
