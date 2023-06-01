@@ -221,6 +221,7 @@ qemuPasstStart(virDomainObj *vm,
     for (i = 0; i < net->nPortForwards; i++) {
         virDomainNetPortForward *pf = net->portForwards[i];
         g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+        bool emitsep = false;
 
         if (pf->proto == VIR_DOMAIN_NET_PROTO_TCP) {
             virCommandAddArg(cmd, "--tcp-ports");
@@ -240,12 +241,16 @@ qemuPasstStart(virDomainObj *vm,
                 return -1;
 
             virBufferAddStr(&buf, addr);
-
-            if (pf->dev)
-                virBufferAsprintf(&buf, "%%%s", pf->dev);
-
-            virBufferAddChar(&buf, '/');
+            emitsep = true;
         }
+
+        if (pf->dev) {
+            virBufferAsprintf(&buf, "%%%s", pf->dev);
+            emitsep = true;
+        }
+
+        if (emitsep)
+            virBufferAddChar(&buf, '/');
 
         if (!pf->nRanges) {
             virBufferAddLit(&buf, "all");
