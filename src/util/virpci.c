@@ -280,6 +280,73 @@ virPCIDeviceGetCurrentDriverPathAndName(virPCIDevice *dev,
 }
 
 
+/**
+ * virPCIDeviceGetCurrentDriverNameAndType:
+ * @dev: virPCIDevice object to examine
+ * @drvName: returns name of driver bound to this device (if any)
+ * @drvType: returns type of driver if it is a known stub driver type
+ *
+ * Find the name of the driver bound to @dev (if any) and the type of
+ * the driver if it is a known/recognized "stub" driver (based on the
+ * driver name).
+ *
+ * There are vfio "variant" drivers that provide all the basic
+ * functionality of the standard vfio-pci driver as well as additional
+ * stuff. As of kernel 6.1, the vfio-pci driver and all vfio variant
+ * drivers can be identified (once the driver has been bound to a
+ * device) by looking for the subdirectory "vfio-dev" in the device's
+ * sysfs directory; for example, if the directory
+ * /sys/bus/pci/devices/0000:04:11.4/vfio-dev exists, then the driver
+ * that is currently bound to PCI device 0000:04:11.4 is either
+ * vfio-pci, or a vfio-pci variant driver.
+ *
+ * Return 0 on success, -1 on failure. If -1 is returned, then an error
+ * message has been logged.
+ */
+int
+virPCIDeviceGetCurrentDriverNameAndType(virPCIDevice *dev,
+                                        char **drvName,
+                                        virPCIStubDriver *drvType)
+{
+    g_autofree char *drvPath = NULL;
+    g_autofree char *vfioDevDir = NULL;
+    int tmpType;
+
+    if (virPCIDeviceGetCurrentDriverPathAndName(dev, &drvPath, drvName) < 0)
+        return -1;
+
+    if (!*drvName) {
+        *drvType = VIR_PCI_STUB_DRIVER_NONE;
+        return 0;
+    }
+
+    tmpType = virPCIStubDriverTypeFromString(*drvName);
+
+    if (tmpType > VIR_PCI_STUB_DRIVER_NONE) {
+        *drvType = tmpType;
+        return 0; /* exact match of a known driver name (or no name) */
+    }
+
+    /* If the sysfs directory of this device contains a directory
+     * named "vfio-dev" then the currently-bound driver is a vfio
+     * variant driver.
+     */
+
+    vfioDevDir = virPCIFile(dev->name, "vfio-dev");
+
+    if (virFileIsDir(vfioDevDir)) {
+        VIR_DEBUG("Driver %s is a vfio_pci driver", *drvName);
+        *drvType = VIR_PCI_STUB_DRIVER_VFIO;
+    } else {
+        VIR_DEBUG("Driver %s is NOT a vfio_pci driver, or kernel is too old",
+                  *drvName);
+        *drvType = VIR_PCI_STUB_DRIVER_NONE;
+    }
+
+    return 0;
+}
+
+
 static int
 virPCIDeviceConfigOpenInternal(virPCIDevice *dev, bool readonly, bool fatal)
 {
@@ -1007,8 +1074,8 @@ virPCIDeviceReset(virPCIDevice *dev,
                   virPCIDeviceList *activeDevs,
                   virPCIDeviceList *inactiveDevs)
 {
-    g_autofree char *drvPath = NULL;
     g_autofree char *drvName = NULL;
+    virPCIStubDriver drvType;
     int ret = -1;
     int fd = -1;
     int hdrType = -1;
@@ -1034,15 +1101,16 @@ virPCIDeviceReset(virPCIDevice *dev,
      * reset it whenever appropriate, so doing it ourselves would just
      * be redundant.
      */
-    if (virPCIDeviceGetCurrentDriverPathAndName(dev, &drvPath, &drvName) < 0)
+    if (virPCIDeviceGetCurrentDriverNameAndType(dev, &drvName, &drvType) < 0)
         goto cleanup;
 
-    if (virPCIStubDriverTypeFromString(drvName) == VIR_PCI_STUB_DRIVER_VFIO) {
-        VIR_DEBUG("Device %s is bound to vfio-pci - skip reset",
-                  dev->name);
+    if (drvType == VIR_PCI_STUB_DRIVER_VFIO) {
+
+        VIR_DEBUG("Device %s is bound to %s - skip reset", dev->name, drvName);
         ret = 0;
         goto cleanup;
     }
+
     VIR_DEBUG("Resetting device %s", dev->name);
 
     if ((fd = virPCIDeviceConfigOpenWrite(dev)) < 0)

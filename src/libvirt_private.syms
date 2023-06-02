@@ -3074,6 +3074,7 @@ virPCIDeviceFileIterate;
 virPCIDeviceFree;
 virPCIDeviceGetAddress;
 virPCIDeviceGetConfigPath;
+virPCIDeviceGetCurrentDriverNameAndType;
 virPCIDeviceGetCurrentDriverPathAndName;
 virPCIDeviceGetIOMMUGroupDev;
 virPCIDeviceGetIOMMUGroupList;

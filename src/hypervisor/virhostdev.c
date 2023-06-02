@@ -743,9 +743,8 @@ virHostdevPreparePCIDevicesImpl(virHostdevManager *mgr,
                                    mgr->inactivePCIHostdevs) < 0)
                 goto reattachdevs;
         } else {
-            g_autofree char *driverPath = NULL;
-            g_autofree char *driverName = NULL;
-            int stub;
+            g_autofree char *drvName = NULL;
+            virPCIStubDriver drvType;
 
             /* Unmanaged devices should already have been marked as
              * inactive: if that's the case, we can simply move on */
@@ -765,19 +764,17 @@ virHostdevPreparePCIDevicesImpl(virHostdevManager *mgr,
              *       information about active / inactive device across
              *       daemon restarts has been implemented */
 
-            if (virPCIDeviceGetCurrentDriverPathAndName(pci, &driverPath,
-                                                        &driverName) < 0) {
+            if (virPCIDeviceGetCurrentDriverNameAndType(pci, &drvName,
+                                                        &drvType) < 0) {
                 goto reattachdevs;
             }
 
-            stub = virPCIStubDriverTypeFromString(driverName);
-
-            if (stub > VIR_PCI_STUB_DRIVER_NONE &&
-                stub < VIR_PCI_STUB_DRIVER_LAST) {
+            if (drvType > VIR_PCI_STUB_DRIVER_NONE) {
 
                 /* The device is bound to a known stub driver: store this
                  * information and add a copy to the inactive list */
-                virPCIDeviceSetStubDriverType(pci, stub);
+                virPCIDeviceSetStubDriverType(pci, drvType);
+                virPCIDeviceSetStubDriverName(pci, drvName);
 
                 VIR_DEBUG("Adding PCI device %s to inactive list",
                           virPCIDeviceGetName(pci));
@@ -2291,18 +2288,13 @@ virHostdevPrepareOneNVMeDevice(virHostdevManager *hostdev_mgr,
     /* Let's check if all PCI devices are NVMe disks. */
     for (i = 0; i < virPCIDeviceListCount(pciDevices); i++) {
         virPCIDevice *pci = virPCIDeviceListGet(pciDevices, i);
-        g_autofree char *drvPath = NULL;
         g_autofree char *drvName = NULL;
-        int stub = VIR_PCI_STUB_DRIVER_NONE;
+        virPCIStubDriver drvType;
 
-        if (virPCIDeviceGetCurrentDriverPathAndName(pci, &drvPath, &drvName) < 0)
+        if (virPCIDeviceGetCurrentDriverNameAndType(pci, &drvName, &drvType) < 0)
             goto cleanup;
 
-        if (drvName)
-            stub = virPCIStubDriverTypeFromString(drvName);
-
-        if (stub == VIR_PCI_STUB_DRIVER_VFIO ||
-            STREQ_NULLABLE(drvName, "nvme"))
+        if (drvType == VIR_PCI_STUB_DRIVER_VFIO || STREQ_NULLABLE(drvName, "nvme"))
             continue;
 
         VIR_WARN("Suspicious NVMe disk assignment. PCI device "
