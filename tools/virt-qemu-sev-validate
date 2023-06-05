@@ -36,22 +36,23 @@
 
 import abc
 import argparse
-from base64 import b64decode, b64encode
-from hashlib import sha256
 import hmac
 import logging
 import os
 import re
 import socket
-from struct import pack
 import sys
 import traceback
+from base64 import b64decode, b64encode
+from hashlib import sha256
+from struct import pack
 from uuid import UUID
+
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
+import libvirt
 
 from lxml import etree
-import libvirt
 
 log = logging.getLogger()
 

@@ -2,16 +2,17 @@
 
 import argparse
 import array
-import libvirt
-import libvirt_qemu
+import fcntl
+import json
 import os
 import re
 import socket
 import sys
 import traceback
-import json
-import fcntl
 
+import libvirt
+
+import libvirt_qemu
 
 debug = False
 

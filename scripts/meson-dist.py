@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 import shutil
+import sys
 
 meson_build_root = sys.argv[1]
 file_name = sys.argv[2]

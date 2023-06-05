@@ -2,10 +2,11 @@
 
 import argparse
 import copy
-import lark
 import os
 import re
 import xml.etree.ElementTree
+
+import lark
 
 
 def translate_vendor(name):

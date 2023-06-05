@@ -16,10 +16,10 @@
 #
 # Check that external references between documentation HTML files are not broken.
 
-import sys
-import os
 import argparse
+import os
 import re
+import sys
 import xml.etree.ElementTree as ET
 
 ns = {'html': 'http://www.w3.org/1999/xhtml'}

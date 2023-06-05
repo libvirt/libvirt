@@ -10,7 +10,6 @@ import subprocess
 import sys
 import xml.etree.ElementTree
 
-
 _KEYS = {
     "cpuid": ["eax_in", "ecx_in"],
     "msr": ["index"],

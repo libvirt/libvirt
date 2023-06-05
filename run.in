@@ -44,8 +44,8 @@ import os
 import os.path
 import random
 import signal
-import sys
 import subprocess
+import sys
 
 
 # Function to intelligently prepend a path to an environment variable.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import sys
 import re
+import sys
 
 if len(sys.argv) != 2:
     print(f"usage: {sys.argv[0]} POTFILE", file=sys.stderr)

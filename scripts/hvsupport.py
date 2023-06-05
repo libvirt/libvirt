@@ -16,9 +16,9 @@
 # License along with this library.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-import sys
 import os.path
 import re
+import sys
 
 if len(sys.argv) != 3:
     print("syntax: %s TOP-SRCDIR TOP-BUILDDIR\n" % sys.argv[0], file=sys.stderr)

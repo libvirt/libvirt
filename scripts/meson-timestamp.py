@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-
 from datetime import datetime, timezone
 
 timestamp = os.environ.get('SOURCE_DATE_EPOCH', None)

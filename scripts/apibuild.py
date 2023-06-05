@@ -8,11 +8,11 @@
 # daniel@veillard.com
 #
 
-import os
-import sys
-import glob
-import re
 import argparse
+import glob
+import os
+import re
+import sys
 
 quiet = True
 warnings = 0

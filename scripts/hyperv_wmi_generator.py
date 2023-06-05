@@ -20,9 +20,9 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-import sys
 import os
 import os.path
+import sys
 
 separator = "/*" + ("*" * 50) + "*\n"
 wmi_classes_by_name = {}

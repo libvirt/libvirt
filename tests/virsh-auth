@@ -19,8 +19,8 @@
 
 import os
 import os.path
-import sys
 import subprocess
+import sys
 
 builddir = os.getenv("abs_top_builddir")
 if builddir is None:

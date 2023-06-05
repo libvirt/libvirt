@@ -1,8 +1,7 @@
 import json
 import pathlib
-import urllib.request
 import urllib.parse
-
+import urllib.request
 from typing import Dict, List
 
 
