@@ -22,6 +22,11 @@
       <source file='/tmp/usbdisk.img'/>
       <target dev='sda' bus='usb' removable='on'/>
     </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/scsidisk.img'/>
+      <target dev='sdb' bus='scsi' removable='on'/>
+    </disk>
+    <controller type='scsi' index='0' model='virtio-scsi'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

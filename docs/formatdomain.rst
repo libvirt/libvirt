@@ -3094,7 +3094,7 @@ paravirtualized driver is specified via the ``disk`` element.
    CDROM or Floppy disk), the value can be either "open" or "closed", defaults
    to "closed". NB, the value of ``tray`` could be updated while the domain is
    running. The optional attribute ``removable`` sets the removable flag for USB
-   disks, and its value can be either "on" or "off", defaulting to "off".
+   or SCSI disks, and its value can be either "on" or "off", defaulting to "off".
    The optional attribute ``rotation_rate`` sets the rotation rate of the
    storage for disks on a SCSI, IDE, or SATA bus. Values in the range 1025 to
    65534 are used to indicate rotational media speed in revolutions per minute.

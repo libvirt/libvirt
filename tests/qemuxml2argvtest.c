@@ -1227,7 +1227,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-device-lun-type-invalid");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-attaching-partition-nosupport");
     DO_TEST_CAPS_LATEST("disk-usb-device");
-    DO_TEST_CAPS_LATEST("disk-usb-device-removable");
+    DO_TEST_CAPS_LATEST("disk-device-removable");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-usb-pci");
     DO_TEST_CAPS_LATEST("disk-scsi");
     DO_TEST_CAPS_LATEST("disk-scsi-device-auto");

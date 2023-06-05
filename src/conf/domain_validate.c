@@ -881,9 +881,11 @@ virDomainDiskDefValidate(const virDomainDef *def,
     }
 
     if (disk->removable != VIR_TRISTATE_SWITCH_ABSENT &&
-        disk->bus != VIR_DOMAIN_DISK_BUS_USB) {
+        disk->bus != VIR_DOMAIN_DISK_BUS_USB &&
+        !(disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
+          disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("removable is only valid for usb disks"));
+                       _("removable is only valid for usb or scsi disks"));
         return -1;
     }
 

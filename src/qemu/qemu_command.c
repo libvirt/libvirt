@@ -1782,10 +1782,12 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
             driver = "scsi-block";
         } else {
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
                 driver = "scsi-cd";
-            else
+            } else {
                 driver = "scsi-hd";
+                removable = disk->removable;
+            }
 
             /* qemu historically used the name of -drive as one of the device
              * ids in the Vital Product Data Device Identification page if
