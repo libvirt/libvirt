@@ -4,6 +4,7 @@
 env:
   CI_REPOSITORY_URL: "@CI_REPOSITORY_URL@"
   CI_COMMIT_REF_NAME: "@CI_COMMIT_REF_NAME@"
+  CI_MERGE_REQUEST_REF_PATH: "@CI_MERGE_REQUEST_REF_PATH@"
   CI_COMMIT_SHA: "@CI_COMMIT_SHA@"
   PATH: "@PATH@"
   PKG_CONFIG_PATH: "@PKG_CONFIG_PATH@"
@@ -20,7 +21,7 @@ build_task:
     - if test -n "@PYPI_PKGS@" ; then @PIP3@ install @PYPI_PKGS@ ; fi
   clone_script:
     - git clone --depth 100 "$CI_REPOSITORY_URL" .
-    - git fetch origin "$CI_COMMIT_REF_NAME"
+    - git fetch origin "${CI_MERGE_REQUEST_REF_PATH:-$CI_COMMIT_REF_NAME}"
     - git reset --hard "$CI_COMMIT_SHA"
   build_script:
     - meson setup build
