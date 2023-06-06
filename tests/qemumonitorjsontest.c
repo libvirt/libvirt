@@ -3021,12 +3021,10 @@ mymain(void)
 
     DO_TEST_QAPI_VALIDATE("string", "trace-event-get-state/arg-type", true,
                           "{\"name\":\"test\"}");
-    DO_TEST_QAPI_VALIDATE("all attrs", "trace-event-get-state/arg-type", true,
-                          "{\"name\":\"test\", \"vcpu\":123}");
     DO_TEST_QAPI_VALIDATE("attr type mismatch", "trace-event-get-state/arg-type", false,
                           "{\"name\":123}");
     DO_TEST_QAPI_VALIDATE("missing mandatory attr", "trace-event-get-state/arg-type", false,
-                          "{\"vcpu\":123}");
+                          "{}");
     DO_TEST_QAPI_VALIDATE("attr name not present", "trace-event-get-state/arg-type", false,
                           "{\"name\":\"test\", \"blah\":123}");
     DO_TEST_QAPI_VALIDATE("variant", "blockdev-add/arg-type", true,
