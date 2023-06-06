@@ -236,5 +236,4 @@ void qemuProcessCleanupMigrationJob(virQEMUDriver *driver,
 void qemuProcessRefreshDiskProps(virDomainDiskDef *disk,
                                  struct qemuDomainDiskInfo *info);
 
-int qemuProcessSetupEmulator(virDomainObj *vm,
-                             bool unionMems);
+int qemuProcessSetupEmulator(virDomainObj *vm);

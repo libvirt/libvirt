@@ -2596,9 +2596,7 @@ qemuProcessSetupPid(virDomainObj *vm,
              mem_mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE)) {
 
             /* QEMU allocates its memory from the emulator thread. Thus it
-             * needs to access union of all host nodes configured. This is
-             * going to be replaced with proper value later in the startup
-             * process. */
+             * needs to access union of all host nodes configured. */
             if (unionMems &&
                 nameval == VIR_CGROUP_THREAD_EMULATOR &&
                 mem_mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
@@ -2702,15 +2700,14 @@ qemuProcessSetupPid(virDomainObj *vm,
 
 
 int
-qemuProcessSetupEmulator(virDomainObj *vm,
-                         bool unionMems)
+qemuProcessSetupEmulator(virDomainObj *vm)
 {
     return qemuProcessSetupPid(vm, vm->pid, VIR_CGROUP_THREAD_EMULATOR,
                                0, vm->def->cputune.emulatorpin,
                                vm->def->cputune.emulator_period,
                                vm->def->cputune.emulator_quota,
                                vm->def->cputune.emulatorsched,
-                               unionMems);
+                               true);
 }
 
 
@@ -7764,7 +7761,7 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting emulator tuning/settings");
-    if (qemuProcessSetupEmulator(vm, true) < 0)
+    if (qemuProcessSetupEmulator(vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting cgroup for external devices (if required)");
@@ -7825,10 +7822,6 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     if (qemuConnectAgent(driver, vm) < 0)
-        goto cleanup;
-
-    VIR_DEBUG("Fixing up emulator tuning/settings");
-    if (qemuProcessSetupEmulator(vm, false) < 0)
         goto cleanup;
 
     VIR_DEBUG("setting up hotpluggable cpus");

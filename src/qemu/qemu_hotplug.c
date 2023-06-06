@@ -2295,7 +2295,7 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
     if (qemuDomainAdjustMaxMemLock(vm) < 0)
         goto removedef;
 
-    if (qemuProcessSetupEmulator(vm, true) < 0)
+    if (qemuProcessSetupEmulator(vm) < 0)
         goto removedef;
     restoreemulatorcgroup = true;
 
@@ -2336,10 +2336,9 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
             VIR_WARN("Unable to remove memory device from /dev");
         if (releaseaddr)
             qemuDomainReleaseMemoryDeviceSlot(vm, mem);
+        if (restoreemulatorcgroup)
+            qemuProcessSetupEmulator(vm);
     }
-
-    if (restoreemulatorcgroup)
-        qemuProcessSetupEmulator(vm, false);
 
     virDomainMemoryDefFree(mem);
     return ret;
