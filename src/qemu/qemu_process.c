@@ -2598,7 +2598,6 @@ qemuProcessSetupPid(virDomainObj *vm,
             /* QEMU allocates its memory from the emulator thread. Thus it
              * needs to access union of all host nodes configured. */
             if (unionMems &&
-                nameval == VIR_CGROUP_THREAD_EMULATOR &&
                 mem_mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
                 qemuDomainNumatuneMaybeFormatNodesetUnion(vm, NULL, &mem_mask);
             } else {
@@ -5911,7 +5910,7 @@ qemuProcessSetupVcpu(virDomainObj *vm,
                             vm->def->cputune.period,
                             vm->def->cputune.quota,
                             &vcpu->sched,
-                            false) < 0)
+                            true) < 0)
         return -1;
 
     if (schedCore &&
@@ -6067,7 +6066,7 @@ qemuProcessSetupIOThread(virDomainObj *vm,
                                vm->def->cputune.iothread_period,
                                vm->def->cputune.iothread_quota,
                                &iothread->sched,
-                               false);
+                               true);
 }
 
 
