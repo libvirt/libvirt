@@ -2588,6 +2588,8 @@ typedef struct _qemuSnapshotDeleteExternalData {
     virStorageSource *parentDiskSrc; /* backing disk source of the @diskSrc */
     virStorageSource *prevDiskSrc; /* source of disk for which @diskSrc is
                                       backing disk */
+    GSList *disksWithBacking; /* list of storage source data for which the
+                                 deleted storage source is backing store */
     qemuBlockJobData *job;
     bool merge;
 } qemuSnapshotDeleteExternalData;
@@ -2600,6 +2602,7 @@ qemuSnapshotDeleteExternalDataFree(qemuSnapshotDeleteExternalData *data)
         return;
 
     virObjectUnref(data->job);
+    g_slist_free_full(data->disksWithBacking, g_free);
 
     g_free(data);
 }
@@ -2646,6 +2649,84 @@ qemuSnapshotFindParentSnapForDisk(virDomainMomentObj *snap,
     }
 
     return NULL;
+}
+
+
+struct _qemuSnapshotDisksWithBackingStoreData {
+    virStorageSource *diskSrc;
+    uid_t uid;
+    gid_t gid;
+};
+
+
+struct _qemuSnapshotDisksWithBackingStoreIterData {
+    virDomainMomentObj *current;
+    virStorageSource *diskSrc;
+    GSList **disksWithBacking;
+    virQEMUDriverConfig *cfg;
+};
+
+
+static int
+qemuSnapshotDiskHasBackingDisk(void *payload,
+                               const char *name G_GNUC_UNUSED,
+                               void *opaque)
+{
+    virDomainMomentObj *snap = payload;
+    virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
+    struct _qemuSnapshotDisksWithBackingStoreIterData *iterdata = opaque;
+    ssize_t i;
+
+    /* skip snapshots that are within the active snapshot tree as it will be handled
+     * by qemu */
+    if (virDomainMomentIsAncestor(iterdata->current, snap) || iterdata->current == snap)
+        return 0;
+
+    for (i = 0; i < snapdef->parent.dom->ndisks; i++) {
+        virDomainDiskDef *disk = snapdef->parent.dom->disks[i];
+        uid_t uid;
+        gid_t gid;
+
+        if (!virStorageSourceIsLocalStorage(disk->src))
+            continue;
+
+        qemuDomainGetImageIds(iterdata->cfg, snapdef->parent.dom, disk->src,
+                              NULL, &uid, &gid);
+
+        if (!disk->src->backingStore)
+            ignore_value(virStorageSourceGetMetadata(disk->src, uid, gid, 1, false));
+
+        if (virStorageSourceIsSameLocation(disk->src->backingStore, iterdata->diskSrc)) {
+            struct _qemuSnapshotDisksWithBackingStoreData *data =
+                g_new0(struct _qemuSnapshotDisksWithBackingStoreData, 1);
+
+            data->diskSrc = disk->src;
+            data->uid = uid;
+            data->gid = gid;
+
+            *iterdata->disksWithBacking = g_slist_prepend(*iterdata->disksWithBacking, data);
+        }
+    }
+
+    return 0;
+}
+
+
+static void
+qemuSnapshotGetDisksWithBackingStore(virDomainObj *vm,
+                                     virDomainMomentObj *snap,
+                                     qemuSnapshotDeleteExternalData *data)
+{
+    struct _qemuSnapshotDisksWithBackingStoreIterData iterData;
+    virQEMUDriver *driver = QEMU_DOMAIN_PRIVATE(vm)->driver;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+
+    iterData.current = virDomainSnapshotGetCurrent(vm->snapshots);
+    iterData.diskSrc = data->diskSrc;
+    iterData.disksWithBacking = &data->disksWithBacking;
+    iterData.cfg = cfg;
+
+    virDomainMomentForEachDescendant(snap, qemuSnapshotDiskHasBackingDisk, &iterData);
 }
 
 
@@ -2733,6 +2814,8 @@ qemuSnapshotDeleteExternalPrepareData(virDomainObj *vm,
                                    _("snapshot VM disk source and parent disk source are not the same"));
                     return -1;
                 }
+
+                qemuSnapshotGetDisksWithBackingStore(vm, snap, data);
             }
 
             data->parentSnap = qemuSnapshotFindParentSnapForDisk(snap, data->snapDisk);
@@ -3129,6 +3212,43 @@ qemuSnapshotSetInvalid(virDomainObj *vm,
 }
 
 
+static void
+qemuSnapshotUpdateBackingStore(virDomainObj *vm,
+                               qemuSnapshotDeleteExternalData *data)
+{
+    GSList *cur = NULL;
+    const char *qemuImgPath;
+    virQEMUDriver *driver = QEMU_DOMAIN_PRIVATE(vm)->driver;
+
+    if (!(qemuImgPath = qemuFindQemuImgBinary(driver)))
+        return;
+
+    for (cur = data->disksWithBacking; cur; cur = g_slist_next(cur)) {
+        struct _qemuSnapshotDisksWithBackingStoreData *backingData = cur->data;
+        g_autoptr(virCommand) cmd = NULL;
+
+        /* creates cmd line args: qemu-img create -f qcow2 -o */
+        if (!(cmd = virCommandNewArgList(qemuImgPath,
+                                         "rebase",
+                                         "-u",
+                                         "-F",
+                                         virStorageFileFormatTypeToString(data->parentDiskSrc->format),
+                                         "-f",
+                                         virStorageFileFormatTypeToString(backingData->diskSrc->format),
+                                         "-b",
+                                         data->parentDiskSrc->path,
+                                         backingData->diskSrc->path,
+                                         NULL)))
+            continue;
+
+        virCommandSetUID(cmd, backingData->uid);
+        virCommandSetGID(cmd, backingData->gid);
+
+        ignore_value(virCommandRun(cmd, NULL));
+    }
+}
+
+
 static int
 qemuSnapshotDiscardExternal(virDomainObj *vm,
                             virDomainMomentObj *snap,
@@ -3214,6 +3334,8 @@ qemuSnapshotDiscardExternal(virDomainObj *vm,
         }
 
         qemuBlockJobSyncEnd(vm, data->job, VIR_ASYNC_JOB_SNAPSHOT);
+
+        qemuSnapshotUpdateBackingStore(vm, data);
 
         if (qemuSnapshotSetInvalid(vm, data->parentSnap, data->snapDisk, false) < 0)
             goto error;
