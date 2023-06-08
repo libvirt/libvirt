@@ -4,7 +4,7 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM registry.opensuse.org/opensuse/leap:15.4
+FROM registry.opensuse.org/opensuse/leap:15.5
 
 RUN zypper update -y && \
     zypper install -y \
