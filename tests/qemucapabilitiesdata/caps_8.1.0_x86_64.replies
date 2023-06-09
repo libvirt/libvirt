@@ -21,7 +21,7 @@
       "minor": 0,
       "major": 8
     },
-    "package": "v8.0.0-1619-g369081c455"
+    "package": "v8.0.0-1739-g5f9dd6a8ce"
   },
   "id": "libvirt-2"
 }
@@ -10879,6 +10879,7 @@
       ],
       "meta-type": "object",
       "features": [
+        "fdset"
       ]
     },
     {
@@ -23993,16 +23994,16 @@
       "parent": "chardev-ringbuf"
     },
     {
-      "name": "Haswell-v3-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "i82557a",
+      "parent": "pci-device"
     },
     {
       "name": "vhost-user-scsi-pci-non-transitional",
       "parent": "vhost-user-scsi-pci-base"
     },
     {
-      "name": "i82557a",
-      "parent": "pci-device"
+      "name": "vmmouse",
+      "parent": "isa-device"
     },
     {
       "name": "chardev-udp",
@@ -24021,8 +24022,8 @@
       "parent": "virtio-scsi-pci-base"
     },
     {
-      "name": "vmmouse",
-      "parent": "isa-device"
+      "name": "Haswell-v3-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "migration",
@@ -24561,10 +24562,6 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "cryptodev-backend-lkcf",
-      "parent": "cryptodev-backend"
-    },
-    {
       "name": "apic",
       "parent": "apic-common"
     },
@@ -24657,11 +24654,11 @@
       "parent": "usb-device"
     },
     {
-      "name": "IvyBridge-x86_64-cpu",
+      "name": "SandyBridge-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
-      "name": "SandyBridge-v1-x86_64-cpu",
+      "name": "IvyBridge-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
@@ -25285,12 +25282,12 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "virtio-mmio",
-      "parent": "sys-bus-device"
-    },
-    {
       "name": "pentium2-x86_64-cpu",
       "parent": "x86_64-cpu"
+    },
+    {
+      "name": "virtio-mmio",
+      "parent": "sys-bus-device"
     },
     {
       "name": "Broadwell-v1-x86_64-cpu",
@@ -25653,10 +25650,6 @@
       "parent": "pci-host-bridge"
     },
     {
-      "name": "virtio-iommu-device",
-      "parent": "virtio-device"
-    },
-    {
       "name": "isa-debugcon",
       "parent": "isa-device"
     },
@@ -25689,8 +25682,8 @@
       "parent": "ivshmem-common"
     },
     {
-      "name": "PIIX3-xen",
-      "parent": "pci-piix3"
+      "name": "virtio-iommu-device",
+      "parent": "virtio-device"
     },
     {
       "name": "virtio-net-pci",
@@ -33543,7 +33536,8 @@
         "cldemote",
         "movdiri",
         "movdir64b",
-        "spec-ctrl"
+        "spec-ctrl",
+        "xsaves"
       ],
       "static": false,
       "migration-safe": true,
@@ -33560,6 +33554,7 @@
         "movdir64b",
         "spec-ctrl",
         "core-capability",
+        "xsaves",
         "split-lock-detect"
       ],
       "static": false,
@@ -33638,6 +33633,7 @@
         "avx512vl",
         "pku",
         "spec-ctrl",
+        "xsaves",
         "avx512f",
         "avx512f",
         "avx512f",
@@ -33824,7 +33820,8 @@
         "pcid",
         "erms",
         "invpcid",
-        "spec-ctrl"
+        "spec-ctrl",
+        "xsaves"
       ],
       "static": false,
       "migration-safe": true,
@@ -33956,6 +33953,7 @@
         "fzrm",
         "fsrs",
         "fsrc",
+        "xsaves",
         "xfd",
         "avx512f",
         "avx512f",
@@ -34009,6 +34007,7 @@
         "fzrm",
         "fsrs",
         "fsrc",
+        "xsaves",
         "xfd",
         "avx512f",
         "avx512f",
@@ -34340,6 +34339,7 @@
         "la57",
         "fsrm",
         "spec-ctrl",
+        "xsaves",
         "avx512f",
         "avx512f",
         "avx512f",
@@ -34376,6 +34376,7 @@
         "la57",
         "fsrm",
         "spec-ctrl",
+        "xsaves",
         "avx512f",
         "avx512f",
         "avx512f",
@@ -34707,6 +34708,7 @@
       "name": "EPYC-v4",
       "typename": "EPYC-v4-x86_64-cpu",
       "unavailable-features": [
+        "xsaves"
       ],
       "static": false,
       "migration-safe": true,
@@ -34716,6 +34718,7 @@
       "name": "EPYC-v3",
       "typename": "EPYC-v3-x86_64-cpu",
       "unavailable-features": [
+        "xsaves"
       ],
       "static": false,
       "migration-safe": true,
@@ -34753,7 +34756,8 @@
       "name": "EPYC-Rome-v3",
       "typename": "EPYC-Rome-v3-x86_64-cpu",
       "unavailable-features": [
-        "ibrs"
+        "ibrs",
+        "xsaves"
       ],
       "static": false,
       "migration-safe": true,
@@ -34763,7 +34767,8 @@
       "name": "EPYC-Rome-v2",
       "typename": "EPYC-Rome-v2-x86_64-cpu",
       "unavailable-features": [
-        "ibrs"
+        "ibrs",
+        "xsaves"
       ],
       "static": false,
       "migration-safe": true,
@@ -34773,6 +34778,7 @@
       "name": "EPYC-Rome-v1",
       "typename": "EPYC-Rome-v1-x86_64-cpu",
       "unavailable-features": [
+        "xsaves"
       ],
       "static": false,
       "migration-safe": true,
@@ -34782,6 +34788,7 @@
       "name": "EPYC-Rome",
       "typename": "EPYC-Rome-x86_64-cpu",
       "unavailable-features": [
+        "xsaves"
       ],
       "alias-of": "EPYC-Rome-v1",
       "static": false,
@@ -34803,6 +34810,7 @@
         "stibp-always-on",
         "amd-psfd",
         "no-nested-data-bp",
+        "xsaves",
         "pku"
       ],
       "static": false,
@@ -34819,6 +34827,7 @@
         "pku",
         "fsrm",
         "ibrs",
+        "xsaves",
         "pku"
       ],
       "static": false,
@@ -34835,6 +34844,7 @@
         "pku",
         "fsrm",
         "ibrs",
+        "xsaves",
         "pku"
       ],
       "alias-of": "EPYC-Milan-v1",
@@ -34882,6 +34892,7 @@
         "amd-psfd",
         "no-nested-data-bp",
         "auto-ibrs",
+        "xsaves",
         "avx512f",
         "avx512f",
         "avx512f",
@@ -34921,6 +34932,7 @@
         "amd-psfd",
         "no-nested-data-bp",
         "auto-ibrs",
+        "xsaves",
         "avx512f",
         "avx512f",
         "avx512f",
@@ -34945,6 +34957,7 @@
       "name": "Dhyana-v2",
       "typename": "Dhyana-v2-x86_64-cpu",
       "unavailable-features": [
+        "xsaves"
       ],
       "static": false,
       "migration-safe": true,
@@ -34974,7 +34987,8 @@
       "typename": "Denverton-v3-x86_64-cpu",
       "unavailable-features": [
         "erms",
-        "spec-ctrl"
+        "spec-ctrl",
+        "xsaves"
       ],
       "static": false,
       "migration-safe": true,
@@ -35038,6 +35052,7 @@
         "avx512vnni",
         "spec-ctrl",
         "avx512-bf16",
+        "xsaves",
         "avx512f",
         "avx512f",
         "avx512f",
@@ -35142,6 +35157,7 @@
         "pku",
         "avx512vnni",
         "spec-ctrl",
+        "xsaves",
         "avx512f",
         "avx512f",
         "avx512f",
@@ -37337,7 +37353,7 @@
         "vaes": false,
         "serialize": false,
         "movdir64b": false,
-        "xsaves": true,
+        "xsaves": false,
         "vmx-shadow-vmcs": false,
         "lm": true,
         "vmx-exit-save-preemption-timer": false,
@@ -37709,7 +37725,7 @@
         "vaes": false,
         "serialize": false,
         "movdir64b": false,
-        "xsaves": true,
+        "xsaves": false,
         "vmx-shadow-vmcs": false,
         "lm": true,
         "vmx-exit-save-preemption-timer": false,
@@ -38050,7 +38066,7 @@
         "sgx-tokenkey": false,
         "cldemote": false,
         "vmx-ept": false,
-        "hv-tlbflush-direct": false,
+        "hv-tlbflush-direct": true,
         "xfd": false,
         "hv-reenlightenment": true,
         "kvm-mmu": false,
@@ -38163,7 +38179,7 @@
         "popcnt": true,
         "vaes": false,
         "serialize": false,
-        "xsaves": true,
+        "xsaves": false,
         "movdir64b": false,
         "vmx-shadow-vmcs": false,
         "tcg-cpuid": true,
@@ -38264,7 +38280,7 @@
         "vmx-entry-load-efer": false,
         "level-func7": 0,
         "vmx-mtf": false,
-        "hv-tlbflush-ext": false,
+        "hv-tlbflush-ext": true,
         "pause_filter": true,
         "model-id": "AMD Ryzen 9 3900X 12-Core Processor            ",
         "sha-ni": true,

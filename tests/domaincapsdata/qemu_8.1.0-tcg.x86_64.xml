@@ -253,7 +253,6 @@
       </enum>
       <enum name='backendModel'>
         <value>builtin</value>
-        <value>lkcf</value>
       </enum>
     </crypto>
   </devices>
