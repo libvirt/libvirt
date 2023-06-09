@@ -11778,6 +11778,8 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
     virCPUDef *cpu = NULL;
     char *cpustr = NULL;
     g_auto(GStrv) features = NULL;
+    unsigned int physAddrSize = 0;
+    size_t i;
 
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
                   VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
@@ -11844,6 +11846,21 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
     if ((flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
         virCPUExpandFeatures(arch, cpu) < 0)
         goto cleanup;
+
+    for (i = 0; i < ncpus; i++) {
+        if (!cpus[i]->addr || cpus[i]->addr->limit == 0)
+            continue;
+
+        if (physAddrSize == 0 || cpus[i]->addr->limit < physAddrSize)
+            physAddrSize = cpus[i]->addr->limit;
+    }
+
+    if (physAddrSize > 0) {
+        cpu->addr = g_new0(virCPUMaxPhysAddrDef, 1);
+        cpu->addr->mode = VIR_CPU_MAX_PHYS_ADDR_MODE_PASSTHROUGH;
+        cpu->addr->limit = physAddrSize;
+        cpu->addr->bits = -1;
+    }
 
     cpustr = virCPUDefFormat(cpu, NULL);
 
