@@ -1638,9 +1638,10 @@ qemuBuildDriveSourceStr(virDomainDiskDef *disk,
     case VIR_STORAGE_TYPE_VHOST_USER:
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
-        break;
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("unsupported storage type for this code path"));
+        return -1;
     }
-
 
     virBufferAddLit(buf, ",");
 
