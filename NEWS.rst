@@ -26,6 +26,13 @@ v9.5.0 (unreleased)
     compatible with all hosts even if their supported physical address sizes
     differ.
 
+  * qemu: Allow configuring the ``discard-no-unref`` feature of ``qcow2`` driver
+
+    The new ``discard_no_unref`` attribute of the ``disk`` ``driver`` element
+    controls whether the ``qcow2`` driver in qemu unrefs clusters inside the
+    image on discard requests. Disabling cluster unrefing decreases fragmentation
+    of the image.
+
 * **Bug fixes**
 
 
