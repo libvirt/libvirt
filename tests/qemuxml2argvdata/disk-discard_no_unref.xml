@@ -1,0 +1,32 @@
+<domain type='qemu'>
+  <name>test</name>
+  <uuid>92d7a226-cfae-425b-a6d3-00bbf9ec5c9e</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='cdrom'/>
+    <boot dev='hd'/>
+    <bootmenu enable='yes'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <!-- For this disk, intentionally stress parser resilience to
+         atypical ordering -->
+    <disk device='disk'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+      <source file='/var/lib/libvirt/images/f14.img'/>
+      <target dev='vda' bus='virtio'/>
+      <driver discard='unmap' discard_no_unref='on' name='qemu' type='qcow2'/>
+    </disk>
+    <controller type='usb' index='0'/>
+    <controller type='ide' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

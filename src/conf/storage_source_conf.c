@@ -809,6 +809,7 @@ virStorageSourceCopy(const virStorageSource *src,
     def->cachemode = src->cachemode;
     def->discard = src->discard;
     def->detect_zeroes = src->detect_zeroes;
+    def->discard_no_unref = src->discard_no_unref;
     def->sslverify = src->sslverify;
     def->readahead = src->readahead;
     def->timeout = src->timeout;

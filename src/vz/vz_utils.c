@@ -347,6 +347,12 @@ vzCheckDiskUnsupportedParams(virDomainDiskDef *disk)
         return -1;
     }
 
+    if (disk->discard_no_unref) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Disk discard_no_unref is not supported by vz driver."));
+        return -1;
+    }
+
     if (disk->startupPolicy != VIR_DOMAIN_STARTUP_POLICY_DEFAULT) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting up disk startup policy is not "

@@ -1117,12 +1117,11 @@ qemuBlockStorageSourceGetFormatQcow2Props(virStorageSource *src,
      * see: qemu.git/docs/qcow2-cache.txt
      * https://git.qemu.org/?p=qemu.git;a=blob;f=docs/qcow2-cache.txt
      */
-    if (src->metadataCacheMaxSize > 0) {
-        if (virJSONValueObjectAdd(&props,
-                                  "U:cache-size", src->metadataCacheMaxSize,
-                                  NULL) < 0)
-            return -1;
-    }
+    if (virJSONValueObjectAdd(&props,
+                              "P:cache-size", src->metadataCacheMaxSize,
+                              "T:discard-no-unref", src->discard_no_unref,
+                              NULL) < 0)
+        return -1;
 
     return 0;
 }

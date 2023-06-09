@@ -11039,6 +11039,7 @@ qemuDomainPrepareDiskSourceData(virDomainDiskDef *disk,
     src->iomode = disk->iomode;
     src->cachemode = disk->cachemode;
     src->discard = disk->discard;
+    src->discard_no_unref = disk->discard_no_unref;
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
         src->floppyimg = true;

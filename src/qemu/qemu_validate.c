@@ -3266,6 +3266,13 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
         return -1;
     }
 
+    if (disk->discard_no_unref != VIR_TRISTATE_SWITCH_ABSENT &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_QCOW2_DISCARD_NO_UNREF)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("'discard_no_unref' is not supported by this QEMU binary"));
+        return -1;
+    }
+
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (qemuDomainValidateStorageSource(n, qemuCaps) < 0)
             return -1;

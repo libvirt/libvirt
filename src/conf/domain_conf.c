@@ -7826,6 +7826,10 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
     if (virXMLPropUInt(cur, "queue_size", 10, VIR_XML_PROP_NONE, &def->queue_size) < 0)
         return -1;
 
+    if (virXMLPropTristateSwitch(cur, "discard_no_unref", VIR_XML_PROP_NONE,
+                                 &def->discard_no_unref) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -22500,6 +22504,10 @@ virDomainDiskDefFormatDriver(virBuffer *buf,
     if (disk->detect_zeroes)
         virBufferAsprintf(&attrBuf, " detect_zeroes='%s'",
                           virDomainDiskDetectZeroesTypeToString(disk->detect_zeroes));
+
+    if (disk->discard_no_unref)
+        virBufferAsprintf(&attrBuf, " discard_no_unref='%s'",
+                          virTristateSwitchTypeToString(disk->discard_no_unref));
 
     if (disk->queues)
         virBufferAsprintf(&attrBuf, " queues='%u'", disk->queues);

@@ -1245,6 +1245,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-copy_on_read");
     DO_TEST_CAPS_LATEST("disk-discard");
     DO_TEST_CAPS_LATEST("disk-detect-zeroes");
+    DO_TEST_CAPS_LATEST("disk-discard_no_unref");
     DO_TEST_CAPS_LATEST("disk-snapshot");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-same-targets");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-missing-target-invalid");

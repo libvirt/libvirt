@@ -2517,6 +2517,11 @@
         <ref name="detect_zeroes"/>
       </optional>
       <optional>
+        <attribute name="discard_no_unref">
+          <ref name="virOnOff"/>
+        </attribute>
+      </optional>
+      <optional>
         <attribute name="queues">
           <ref name="positiveInteger"/>
         </attribute>

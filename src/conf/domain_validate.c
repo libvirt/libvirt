@@ -921,6 +921,20 @@ virDomainDiskDefValidate(const virDomainDef *def,
         return -1;
     }
 
+    if (disk->discard_no_unref == VIR_TRISTATE_SWITCH_ON) {
+        if (disk->src->format != VIR_STORAGE_FILE_QCOW2) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'discard_no_unref' only works with qcow2 disk format"));
+            return -1;
+        }
+
+        if (disk->src->readonly) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'discard_no_unref' is not compatible with read-only disk"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
