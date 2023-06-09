@@ -132,6 +132,9 @@
         <optional>
           <ref name="cpuVendor"/>
         </optional>
+        <optional>
+          <ref name="cpuMaxPhysAddr"/>
+        </optional>
         <zeroOrMore>
           <ref name="cpuFeature"/>
         </zeroOrMore>

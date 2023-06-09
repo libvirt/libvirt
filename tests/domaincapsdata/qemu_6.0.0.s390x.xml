@@ -38,6 +38,7 @@
     </mode>
     <mode name='host-model' supported='yes'>
       <model fallback='forbid'>gen15a-base</model>
+      <maxphysaddr mode='passthrough' limit='64'/>
       <feature policy='require' name='aen'/>
       <feature policy='require' name='cmmnt'/>
       <feature policy='require' name='vxpdeh'/>

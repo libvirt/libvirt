@@ -717,6 +717,8 @@ struct _virQEMUCapsHostCPUData {
      * probe QEMU or load the cache.
      */
     qemuMonitorCPUModelInfo *info;
+    /* Physical address size of the host CPU or 0 if unknown or not applicable. */
+    unsigned int physAddrSize;
     /* Host CPU definition reported in domain capabilities. */
     virCPUDef *reported;
     /* Migratable host CPU definition used for updating guest CPU. */
@@ -2236,6 +2238,7 @@ virQEMUCapsGetHostModel(virQEMUCaps *qemuCaps,
 static void
 virQEMUCapsSetHostModel(virQEMUCaps *qemuCaps,
                         virDomainVirtType type,
+                        unsigned int physAddrSize,
                         virCPUDef *reported,
                         virCPUDef *migratable,
                         virCPUDef *full)
@@ -2243,9 +2246,31 @@ virQEMUCapsSetHostModel(virQEMUCaps *qemuCaps,
     virQEMUCapsHostCPUData *cpuData;
 
     cpuData = &virQEMUCapsGetAccel(qemuCaps, type)->hostCPU;
+    cpuData->physAddrSize = physAddrSize;
     cpuData->reported = reported;
     cpuData->migratable = migratable;
     cpuData->full = full;
+}
+
+
+static virCPUMaxPhysAddrDef *
+virQEMUCapsGetHostPhysAddr(virQEMUCaps *qemuCaps,
+                           virDomainVirtType type)
+{
+    virQEMUCapsHostCPUData *cpuData;
+    virCPUMaxPhysAddrDef *addr = NULL;
+
+    cpuData = &virQEMUCapsGetAccel(qemuCaps, type)->hostCPU;
+
+    if (cpuData->physAddrSize != 0) {
+        addr = g_new0(virCPUMaxPhysAddrDef, 1);
+
+        addr->mode = VIR_CPU_MAX_PHYS_ADDR_MODE_PASSTHROUGH;
+        addr->limit = cpuData->physAddrSize;
+        addr->bits = -1;
+    }
+
+    return addr;
 }
 
 
@@ -3805,6 +3830,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
     virCPUDef *migCPU = NULL;
     virCPUDef *hostCPU = NULL;
     virCPUDef *fullCPU = NULL;
+    unsigned int physAddrSize = 0;
     size_t i;
     int rc;
 
@@ -3878,7 +3904,10 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
             goto error;
     }
 
-    virQEMUCapsSetHostModel(qemuCaps, type, cpu, migCPU, fullCPU);
+    if (virQEMUCapsTypeIsAccelerated(type))
+        virHostCPUGetPhysAddrSize(&physAddrSize);
+
+    virQEMUCapsSetHostModel(qemuCaps, type, physAddrSize, cpu, migCPU, fullCPU);
 
  cleanup:
     virCPUDefFree(cpuExpanded);
@@ -6224,6 +6253,8 @@ virQEMUCapsFillDomainCPUCaps(virQEMUCaps *qemuCaps,
         virCPUDef *cpu = virQEMUCapsGetHostModel(qemuCaps, domCaps->virttype,
                                                    VIR_QEMU_CAPS_HOST_CPU_REPORTED);
         domCaps->cpu.hostModel = virCPUDefCopy(cpu);
+        domCaps->cpu.hostModel->addr = virQEMUCapsGetHostPhysAddr(qemuCaps,
+                                                                  domCaps->virttype);
     }
 
     if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,

@@ -187,6 +187,7 @@ CPUs <formatdomain.html#cpu-model-and-topology>`__.
        <mode name='host-model' supported='yes'>
          <model fallback='allow'>Broadwell</model>
          <vendor>Intel</vendor>
+         <maxphysaddr mode="passthrough" limit="39"/>
          <feature policy='disable' name='aes'/>
          <feature policy='require' name='vmx'/>
        </mode>
@@ -218,7 +219,10 @@ more details about it:
    indicated by the ``fallback`` attribute of the ``model`` sub element:
    ``allow`` means not all specifics were accounted for and thus the CPU a guest
    will see may be different; ``forbid`` indicates that the CPU a guest will see
-   should match this CPU definition.
+   should match this CPU definition. The optional ``maxphysaddr`` element
+   reports physical address size of the host CPU if this value is available and
+   applicable for the requested domain type. This is useful for computing
+   baseline CPU definition which should be compatible with several hosts.
 ``custom``
    The ``mode`` element contains a list of supported CPU models, each described
    by a dedicated ``model`` element. The ``usable`` attribute specifies whether

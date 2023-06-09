@@ -43,6 +43,7 @@
     <mode name='host-model' supported='yes'>
       <model fallback='forbid'>EPYC-Rome</model>
       <vendor>AMD</vendor>
+      <maxphysaddr mode='passthrough' limit='64'/>
       <feature policy='require' name='x2apic'/>
       <feature policy='require' name='tsc-deadline'/>
       <feature policy='require' name='hypervisor'/>

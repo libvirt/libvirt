@@ -33,6 +33,7 @@
     <mode name='maximum' supported='no'/>
     <mode name='host-model' supported='yes'>
       <model fallback='allow'>POWER8</model>
+      <maxphysaddr mode='passthrough' limit='64'/>
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='unknown' vendor='IBM'>POWER10</model>

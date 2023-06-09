@@ -36,6 +36,13 @@ virHostCPUGetMicrocodeVersion(virArch hostArch G_GNUC_UNUSED)
     return 0;
 }
 
+int
+virHostCPUGetPhysAddrSize(unsigned int *size)
+{
+    *size = 64;
+    return 0;
+}
+
 #if WITH_QEMU
 static bool (*real_virQEMUCapsGetKVMSupportsSecureGuest)(virQEMUCaps *qemuCaps);
 

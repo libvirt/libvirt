@@ -44,6 +44,7 @@
     <mode name='host-model' supported='yes'>
       <model fallback='forbid'>Skylake-Client-IBRS</model>
       <vendor>Intel</vendor>
+      <maxphysaddr mode='passthrough' limit='64'/>
       <feature policy='require' name='ss'/>
       <feature policy='require' name='vmx'/>
       <feature policy='require' name='hypervisor'/>
