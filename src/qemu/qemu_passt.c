@@ -20,6 +20,8 @@
 
 #include <config.h>
 
+#include <fcntl.h>
+
 #include "qemu_dbus.h"
 #include "qemu_extdevice.h"
 #include "qemu_security.h"
@@ -136,8 +138,12 @@ void
 qemuPasstStop(virDomainObj *vm,
               virDomainNetDef *net)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
     g_autofree char *pidfile = qemuPasstCreatePidFilename(vm, net);
     g_autofree char *passtSocketName = qemuPasstCreateSocketPath(vm, net);
+
+    qemuSecurityDomainRestorePathLabel(driver, vm, net->backend.logFile);
 
     qemuPasstKill(pidfile, passtSocketName);
 }
@@ -166,10 +172,12 @@ qemuPasstStart(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *passtSocketName = qemuPasstCreateSocketPath(vm, net);
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *pidfile = qemuPasstCreatePidFilename(vm, net);
     char macaddr[VIR_MAC_STRING_BUFLEN];
+    bool needUnlink = false;
     size_t i;
 
     cmd = virCommandNew(PASST);
@@ -191,8 +199,25 @@ qemuPasstStart(virDomainObj *vm,
     if (net->sourceDev)
         virCommandAddArgList(cmd, "--interface", net->sourceDev, NULL);
 
-    if (net->backend.logFile)
+    if (net->backend.logFile) {
+        VIR_AUTOCLOSE logfd = -1;
+        /* The logFile location is not restricted to a per-domain directory. It
+         * can be anywhere. Pre-create it as passt may not have enough perms to
+         * do so. */
+        if (qemuDomainOpenFile(cfg, vm->def, net->backend.logFile,
+                               O_CREAT | O_TRUNC | O_APPEND | O_RDWR,
+                               &needUnlink) < 0) {
+            return -1;
+        }
+
+        if (qemuSecurityDomainSetPathLabel(driver, vm,
+                                           net->backend.logFile, false) < 0) {
+            goto error;
+        }
+
+        /* Worse, passt deliberately doesn't support FD passing. */
         virCommandAddArgList(cmd, "--log-file", net->backend.logFile, NULL);
+    }
 
     /* Add IP address info */
     for (i = 0; i < net->guestIP.nips; i++) {
@@ -203,7 +228,7 @@ qemuPasstStart(virDomainObj *vm,
          * a single IPv4 and single IPv6 address
          */
         if (!(addr = virSocketAddrFormat(&ip->address)))
-            return -1;
+            goto error;
 
         virCommandAddArgList(cmd, "--address", addr, NULL);
 
@@ -231,14 +256,14 @@ qemuPasstStart(virDomainObj *vm,
             /* validation guarantees this will never happen */
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid portForward proto value %1$u"), pf->proto);
-            return -1;
+            goto error;
         }
 
         if (VIR_SOCKET_ADDR_VALID(&pf->address)) {
             g_autofree char *addr = NULL;
 
             if (!(addr = virSocketAddrFormat(&pf->address)))
-                return -1;
+                goto error;
 
             virBufferAddStr(&buf, addr);
             emitsep = true;
@@ -284,7 +309,7 @@ qemuPasstStart(virDomainObj *vm,
 
 
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "passt") < 0)
-        return -1;
+        goto error;
 
     if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, true, NULL) < 0)
         goto error;
@@ -292,6 +317,11 @@ qemuPasstStart(virDomainObj *vm,
     return 0;
 
  error:
+    if (needUnlink && unlink(net->backend.logFile) < 0) {
+        VIR_WARN("Unable to unlink '%s': %s",
+                 net->backend.logFile, g_strerror(errno));
+    }
+
     qemuPasstKill(pidfile, passtSocketName);
     return -1;
 }
