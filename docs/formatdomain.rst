@@ -4903,7 +4903,7 @@ ports **with the exception of some subset**.
    <devices>
      ...
      <interface type='user'>
-       <backend type='passt' logFile='/var/log/passt.log'/>
+       <backend type='passt' logFile='/tmp/passt.log'/>
        <mac address="00:11:22:33:44:55"/>
        <source dev='eth0'/>
        <ip family='ipv4' address='172.17.2.4' prefix='24'/>
