@@ -2393,7 +2393,7 @@ virNWFilterRuleParse(xmlNodePtr node)
 
     if (nattrNodes > 0) {
         size_t i;
-        size_t attr;
+        size_t attr = 0;
 
         /* First we look up the type of the first valid element. The rest of
          * the parsing then only considers elements with same name. */
