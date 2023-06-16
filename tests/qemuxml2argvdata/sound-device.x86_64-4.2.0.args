@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes \
--machine pc-i440fx-4.2,usb=off,dump-guest-core=off \
+-machine pc-i440fx-4.2,usb=off,dump-guest-core=off,pcspk-audiodev=audio1 \
 -accel tcg \
 -cpu qemu64 \
 -m size=219136k \
@@ -28,7 +28,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -audiodev '{"id":"audio1","driver":"none"}' \
--soundhw pcspk \
 -device ES1370,id=sound1,audiodev=audio1,bus=pci.0,addr=0x2 \
 -device sb16,id=sound2,audiodev=audio1 \
 -device AC97,id=sound3,audiodev=audio1,bus=pci.0,addr=0x3 \

@@ -4478,31 +4478,30 @@ qemuBuildSoundCommandLine(virCommand *cmd,
     for (i = 0; i < def->nsounds; i++) {
         virDomainSoundDef *sound = def->sounds[i];
 
-        /* Sadly pcspk device doesn't use -device syntax. Fortunately
-         * we don't need to set any PCI address on it, so we don't
-         * mind too much */
-        if (sound->model == VIR_DOMAIN_SOUND_MODEL_PCSPK) {
-            virCommandAddArgList(cmd, "-soundhw", "pcspk", NULL);
-        } else {
-            if (qemuCommandAddExtDevice(cmd, &sound->info, def, qemuCaps) < 0)
-                return -1;
+        /* Sadly pcspk device doesn't use -device syntax. And it
+         * was handled already in qemuBuildMachineCommandLine().
+         */
+        if (sound->model == VIR_DOMAIN_SOUND_MODEL_PCSPK)
+            continue;
 
-            if (qemuBuildSoundDevCmd(cmd, def, sound, qemuCaps) < 0)
-                return -1;
+        if (qemuCommandAddExtDevice(cmd, &sound->info, def, qemuCaps) < 0)
+            return -1;
 
-            if (virDomainSoundModelSupportsCodecs(sound)) {
-                for (j = 0; j < sound->ncodecs; j++) {
-                    if (qemuBuildSoundCodecCmd(cmd, def, sound, sound->codecs[j],
-                                               qemuCaps) < 0)
-                        return -1;
-                }
+        if (qemuBuildSoundDevCmd(cmd, def, sound, qemuCaps) < 0)
+            return -1;
 
-                if (j == 0) {
-                    virDomainSoundCodecDef codec = { VIR_DOMAIN_SOUND_CODEC_TYPE_DUPLEX, 0 };
+        if (virDomainSoundModelSupportsCodecs(sound)) {
+            for (j = 0; j < sound->ncodecs; j++) {
+                if (qemuBuildSoundCodecCmd(cmd, def, sound, sound->codecs[j],
+                                           qemuCaps) < 0)
+                    return -1;
+            }
 
-                    if (qemuBuildSoundCodecCmd(cmd, def, sound, &codec, qemuCaps) < 0)
-                        return -1;
-                }
+            if (j == 0) {
+                virDomainSoundCodecDef codec = { VIR_DOMAIN_SOUND_CODEC_TYPE_DUPLEX, 0 };
+
+                if (qemuBuildSoundCodecCmd(cmd, def, sound, &codec, qemuCaps) < 0)
+                    return -1;
             }
         }
     }
@@ -7028,6 +7027,22 @@ qemuBuildMachineCommandLine(virCommand *cmd,
         case VIR_DOMAIN_TIMER_NAME_LAST:
             break;
         }
+    }
+
+    /* PC speaker is a bit different than the rest of sound cards
+     * which are handled in qemuBuildSoundCommandLine(). */
+    for (i = 0; i < def->nsounds; i++) {
+        const virDomainSoundDef *sound = def->sounds[i];
+        g_autofree char *audioid = NULL;
+
+        if (sound->model != VIR_DOMAIN_SOUND_MODEL_PCSPK)
+            continue;
+
+        if (!(audioid = qemuGetAudioIDString(def, sound->audioId)))
+            return -1;
+
+        virBufferAsprintf(&buf, ",pcspk-audiodev=%s", audioid);
+        break;
     }
 
     qemuBuildMachineACPI(&buf, def, qemuCaps);
