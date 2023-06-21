@@ -33,6 +33,7 @@
 #include "virnetserver.h"
 #include "virgdbus.h"
 #include "virhash.h"
+#include "virprocess.h"
 #include "virsystemd.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
@@ -150,6 +151,8 @@ virNetDaemonNew(void)
 
     dmn->privileged = geteuid() == 0;
     dmn->autoShutdownInhibitFd = -1;
+
+    virProcessActivateMaxFiles();
 
     if (virEventRegisterDefaultImpl() < 0)
         goto error;
