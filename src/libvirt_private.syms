@@ -3171,6 +3171,7 @@ virPortAllocatorSetUsed;
 
 # util/virprocess.h
 virProcessAbort;
+virProcessActivateMaxFiles;
 virProcessExitWithStatus;
 virProcessGetAffinity;
 virProcessGetMaxMemLock;
