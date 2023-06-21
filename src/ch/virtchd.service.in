@@ -9,7 +9,6 @@ After=network.target
 After=dbus.service
 After=apparmor.service
 After=remote-fs.target
-After=systemd-logind.service
 After=systemd-machined.service
 Documentation=man:virtchd(8)
 Documentation=https://libvirt.org
