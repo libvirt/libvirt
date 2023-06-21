@@ -13,7 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -machine s390-ccw-virtio,usb=off,dump-guest-core=off,memory-backend=s390.ram \
 -accel tcg \
 -cpu qemu \
--m 4096 \
+-m size=4194304k \
 -object '{"qom-type":"memory-backend-ram","id":"s390.ram","size":4294967296}' \
 -overcommit mem-lock=off \
 -smp 4,sockets=4,cores=1,threads=1 \

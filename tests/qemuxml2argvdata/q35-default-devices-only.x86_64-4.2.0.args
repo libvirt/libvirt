@@ -13,7 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.config \
 -machine pc-q35-4.2,usb=off,dump-guest-core=off \
 -accel tcg \
 -cpu qemu64 \
--m 2048 \
+-m size=2097152k \
 -overcommit mem-lock=off \
 -smp 2,sockets=2,cores=1,threads=1 \
 -uuid 11dbdcdd-4c3b-482b-8903-9bdb8c0a2774 \

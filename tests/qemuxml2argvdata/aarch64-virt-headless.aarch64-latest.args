@@ -17,7 +17,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -machine virt,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format \
 -accel tcg \
 -cpu cortex-a15 \
--m 4096 \
+-m size=4194304k \
 -object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":4294967296}' \
 -overcommit mem-lock=off \
 -smp 4,sockets=4,cores=1,threads=1 \

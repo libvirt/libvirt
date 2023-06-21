@@ -13,7 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -machine pseries,usb=off,dump-guest-core=off,memory-backend=ppc_spapr.ram,max-cpu-compat=power9 \
 -accel kvm \
 -cpu host \
--m 256 \
+-m size=262144k \
 -object '{"qom-type":"memory-backend-ram","id":"ppc_spapr.ram","size":268435456}' \
 -overcommit mem-lock=off \
 -smp 4,sockets=4,cores=1,threads=1 \

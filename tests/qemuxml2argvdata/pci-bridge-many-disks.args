@@ -13,7 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-lots-of-disks/.config \
 -machine pc,usb=off,dump-guest-core=off \
 -accel tcg \
 -cpu qemu64,kvmclock=off \
--m 3907 \
+-m size=4000768k \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 04872dc1-e1de-434b-ab21-e3e80e416349 \

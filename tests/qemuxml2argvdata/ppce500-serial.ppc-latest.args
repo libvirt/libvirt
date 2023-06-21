@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine ppce500,usb=off,dump-guest-core=off,memory-backend=mpc8544ds.ram \
 -accel tcg \
--m 256 \
+-m size=262144k \
 -object '{"qom-type":"memory-backend-ram","id":"mpc8544ds.ram","size":268435456}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

@@ -13,7 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -machine virt,usb=off,gic-version=3,dump-guest-core=off,memory-backend=mach-virt.ram \
 -accel kvm \
 -cpu host,sve512=on,sve384=off,sve256=on,sve128=on,sve=on \
--m 1024 \
+-m size=1048576k \
 -object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":1073741824}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

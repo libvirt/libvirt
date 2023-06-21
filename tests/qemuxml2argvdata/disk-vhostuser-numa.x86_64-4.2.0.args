@@ -13,7 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -machine pc-i440fx-4.2,usb=off,dump-guest-core=off \
 -accel tcg \
 -cpu qemu64 \
--m 14336 \
+-m size=14680064k \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -object memory-backend-file,id=ram-node0,mem-path=/var/lib/libvirt/qemu/ram/-1-QEMUGuest1/ram-node0,share=on,size=15032385536 \

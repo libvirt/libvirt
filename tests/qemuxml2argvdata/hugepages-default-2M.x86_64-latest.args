@@ -13,7 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-SomeDummyHugepagesGu/.config \
 -machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
 -accel tcg \
 -cpu qemu64 \
--m 1024 \
+-m size=1048576k \
 -object '{"qom-type":"memory-backend-file","id":"pc.ram","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-SomeDummyHugepagesGu","x-use-canonical-path-for-ramblock-id":false,"prealloc":true,"size":1073741824}' \
 -overcommit mem-lock=off \
 -smp 2,sockets=2,cores=1,threads=1 \

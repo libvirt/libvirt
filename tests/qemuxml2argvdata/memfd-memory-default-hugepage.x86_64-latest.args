@@ -13,7 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-instance-00000092/.config \
 -machine pc-i440fx-2.3,usb=off,dump-guest-core=off,acpi=off \
 -accel kvm \
 -cpu qemu64 \
--m 14336 \
+-m size=14680064k \
 -overcommit mem-lock=off \
 -smp 8,sockets=1,dies=1,cores=8,threads=1 \
 -object '{"qom-type":"thread-context","id":"tc-ram-node0","node-affinity":[3]}' \

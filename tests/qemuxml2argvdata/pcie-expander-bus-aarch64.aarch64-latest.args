@@ -13,7 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-pcie-expander-bus-te/.config \
 -machine virt,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram \
 -accel tcg \
 -cpu cortex-a15 \
--m 2048 \
+-m size=2097152k \
 -object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":2147483648}' \
 -overcommit mem-lock=off \
 -smp 16,sockets=16,cores=1,threads=1 \

@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-foo/.config \
 -object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-foo/master-key.aes \
 -machine pc,usb=off,dump-guest-core=off \
 -accel tcg \
--m 2048 \
+-m size=2097152k \
 -overcommit mem-lock=off \
 -smp 2,sockets=2,cores=1,threads=1 \
 -uuid 3c7c30b5-7866-4b05-8a29-efebccba52a0 \

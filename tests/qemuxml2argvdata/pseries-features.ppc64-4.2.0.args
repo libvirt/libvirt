@@ -13,7 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -machine pseries-4.2,usb=off,resize-hpt=required,cap-hpt-max-page-size=1048576k,cap-htm=on,cap-nested-hv=off,cap-ccf-assist=on,cap-cfpc=fixed,cap-sbbc=broken,cap-ibs=fixed-ccd,dump-guest-core=off \
 -accel tcg \
 -cpu POWER9 \
--m 512 \
+-m size=524288k \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \

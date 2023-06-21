@@ -13,7 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-pc/.config \
 -machine pc-i440fx-5.0,usb=off,dump-guest-core=off,acpi=off \
 -accel kvm \
 -cpu qemu64 \
--m 1024 \
+-m size=1048576k \
 -overcommit mem-lock=off \
 -smp 2,sockets=2,cores=1,threads=1 \
 -mem-prealloc \

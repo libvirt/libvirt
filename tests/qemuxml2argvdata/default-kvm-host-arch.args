@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-kvm/.config \
 -object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-kvm/master-key.aes \
 -machine pc,usb=off,dump-guest-core=off \
 -accel kvm \
--m 4096 \
+-m size=4194304k \
 -overcommit mem-lock=off \
 -smp 4,sockets=4,cores=1,threads=1 \
 -uuid d091ea82-29e6-2e34-3005-f02617b36e87 \

@@ -14,7 +14,7 @@ SDL_AUDIODRIVER=esd \
 -machine pc-i440fx-4.2,usb=off,dump-guest-core=off \
 -accel tcg \
 -cpu qemu64 \
--m 214 \
+-m size=219136k \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \

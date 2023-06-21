@@ -13,7 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -machine pc,usb=off,dump-guest-core=off \
 -accel kvm \
 -cpu Haswell,vme=on,ds=on,acpi=on,ss=on,ht=on,tm=on,pbe=on,dtes64=on,monitor=on,ds-cpl=on,vmx=on,smx=on,est=on,tm2=on,xtpr=on,pdcm=on,f16c=on,rdrand=on,pdpe1gb=on,abm=on,lahf-lm=on,invtsc=on,tsc-frequency=4567890000 \
--m 214 \
+-m size=219136k \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \

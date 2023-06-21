@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-pcie-expander-bus-te/.config \
 -object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-pcie-expander-bus-te/master-key.aes \
 -machine q35,usb=off,dump-guest-core=off \
 -accel tcg \
--m 214 \
+-m size=219136k \
 -overcommit mem-lock=off \
 -smp 16,sockets=2,cores=4,threads=2 \
 -numa node,nodeid=0,cpus=0-7,mem=107 \

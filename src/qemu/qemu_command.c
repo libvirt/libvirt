@@ -7244,20 +7244,28 @@ qemuBuildMemCommandLine(virCommand *cmd,
                         qemuDomainObjPrivate *priv)
 {
     const char *defaultRAMid = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    unsigned long long memsize = virDomainDefGetMemoryInitial(def);
 
     virCommandAddArg(cmd, "-m");
 
-    if (virDomainDefHasMemoryHotplug(def)) {
-        /* Use the 'k' suffix to let qemu handle the units */
-        virCommandAddArgFormat(cmd, "size=%lluk,slots=%u,maxmem=%lluk",
-                               virDomainDefGetMemoryInitial(def),
-                               def->mem.memory_slots,
-                               def->mem.max_memory);
+    /* Without memory hotplug we've historically supplied the memory size in
+     * mebibytes to qemu. Since the code will now use kibibytes we need to round
+     * it here too. */
+    if (!virDomainDefHasMemoryHotplug(def))
+        memsize &= ~0x1FF;
 
-    } else {
-       virCommandAddArgFormat(cmd, "%llu",
-                              virDomainDefGetMemoryInitial(def) / 1024);
+    virBufferAsprintf(&buf, "size=%lluk", memsize);
+
+    if (virDomainDefHasMemoryHotplug(def)) {
+        if (def->mem.memory_slots > 0)
+            virBufferAsprintf(&buf, ",slots=%u", def->mem.memory_slots);
+
+        if (def->mem.max_memory > 0)
+            virBufferAsprintf(&buf, ",maxmem=%lluk", def->mem.max_memory);
     }
+
+    virCommandAddArgBuffer(cmd, &buf);
 
     defaultRAMid = virQEMUCapsGetMachineDefaultRAMid(qemuCaps,
                                                      def->virtType,

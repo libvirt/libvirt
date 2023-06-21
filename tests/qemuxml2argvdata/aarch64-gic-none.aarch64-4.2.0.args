@@ -13,7 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-aarch64test/.config \
 -machine virt-4.2,usb=off,gic-version=3,dump-guest-core=off \
 -accel kvm \
 -cpu host \
--m 1024 \
+-m size=1048576k \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 6ba410c5-1e5c-4d57-bee7-2228e7ffa32f \

@@ -18,7 +18,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -accel kvm \
 -cpu qemu64 \
 -global driver=cfi.pflash01,property=secure,value=on \
--m 1024 \
+-m size=1048576k \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":1073741824}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

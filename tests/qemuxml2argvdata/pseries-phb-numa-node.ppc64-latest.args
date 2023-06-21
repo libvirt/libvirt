@@ -13,7 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -machine pseries,usb=off,dump-guest-core=off \
 -accel tcg \
 -cpu POWER9 \
--m 2048 \
+-m size=2097152k \
 -overcommit mem-lock=off \
 -smp 8,sockets=2,dies=1,cores=1,threads=4 \
 -object '{"qom-type":"memory-backend-ram","id":"ram-node0","size":1073741824,"host-nodes":[1],"policy":"bind"}' \

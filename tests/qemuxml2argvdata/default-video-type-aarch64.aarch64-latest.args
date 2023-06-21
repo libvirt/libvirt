@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-default-video-type-a/.config \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-default-video-type-a/master-key.aes"}' \
 -machine virt,usb=off,gic-version=3,dump-guest-core=off,memory-backend=mach-virt.ram \
 -accel kvm \
--m 1024 \
+-m size=1048576k \
 -object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":1073741824}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

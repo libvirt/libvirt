@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest/.config \
 -object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-QEMUGuest/master-key.aes \
 -machine pc,usb=off,dump-guest-core=off \
 -accel tcg \
--m 64 \
+-m size=65536k \
 -overcommit mem-lock=off \
 -smp 2,sockets=2,cores=1,threads=1 \
 -object memory-backend-ram,id=ram-node0,size=33554432,host-nodes=3,policy=preferred \

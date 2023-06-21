@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-redhat62sparc/.config \
 -object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-redhat62sparc/master-key.aes \
 -machine SS-5,usb=off,dump-guest-core=off \
 -accel tcg \
--m 500 \
+-m size=512000k \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 00010203-0405-4607-8809-0a0b0c0d0e0f \
