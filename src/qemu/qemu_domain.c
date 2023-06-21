@@ -9279,6 +9279,7 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
     unsigned int nmems = def->nmems;
     unsigned long long hotplugSpace;
     unsigned long long hotplugMemory = 0;
+    size_t slotsNeeded = 0;
     size_t i;
 
     hotplugSpace = def->mem.max_memory - virDomainDefGetMemoryInitial(def);
@@ -9289,6 +9290,20 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
 
         if (qemuDomainDefValidateMemoryHotplugDevice(mem, def) < 0)
             return -1;
+
+        switch (mem->model) {
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+            slotsNeeded++;
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        case VIR_DOMAIN_MEMORY_MODEL_NONE:
+            break;
+        }
     }
 
     if (!virDomainDefHasMemoryHotplug(def)) {
@@ -9315,19 +9330,14 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
         }
     }
 
-    if (nmems > def->mem.memory_slots) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("memory device count '%1$u' exceeds slots count '%2$u'"),
-                       nmems, def->mem.memory_slots);
-        return -1;
-    }
-
     for (i = 0; i < def->nmems; i++) {
         hotplugMemory += def->mems[i]->size;
 
         switch (def->mems[i]->model) {
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:
         case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+            slotsNeeded++;
+            G_GNUC_FALLTHROUGH;
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
             /* already existing devices don't need to be checked on hotplug */
@@ -9342,6 +9352,13 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
         case VIR_DOMAIN_MEMORY_MODEL_NONE:
             break;
         }
+    }
+
+    if (slotsNeeded > def->mem.memory_slots) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("count of memory devices requiring memory slots '%1$zu' exceeds slots count '%2$u'"),
+                       slotsNeeded, def->mem.memory_slots);
+        return -1;
     }
 
     if (hotplugMemory > hotplugSpace) {
