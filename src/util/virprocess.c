@@ -737,24 +737,6 @@ virProcessPrLimit(pid_t pid G_GNUC_UNUSED,
 #endif
 
 #if WITH_GETRLIMIT
-static int
-virProcessGetRLimit(int resource,
-                    struct rlimit *old_limit)
-{
-    return getrlimit(resource, old_limit);
-}
-#endif /* WITH_GETRLIMIT */
-
-#if WITH_SETRLIMIT
-static int
-virProcessSetRLimit(int resource,
-                    const struct rlimit *new_limit)
-{
-    return setrlimit(resource, new_limit);
-}
-#endif /* WITH_SETRLIMIT */
-
-#if WITH_GETRLIMIT
 static const char*
 virProcessLimitResourceToLabel(int resource)
 {
@@ -876,7 +858,7 @@ virProcessGetLimit(pid_t pid,
     if (virProcessGetLimitFromProc(pid, resource, old_limit) == 0)
         return 0;
 
-    if (same_process && virProcessGetRLimit(resource, old_limit) == 0)
+    if (same_process && getrlimit(resource, old_limit) == 0)
         return 0;
 
     return -1;
@@ -895,7 +877,7 @@ virProcessSetLimit(pid_t pid,
     if (virProcessPrLimit(pid, resource, new_limit, NULL) == 0)
         return 0;
 
-    if (same_process && virProcessSetRLimit(resource, new_limit) == 0)
+    if (same_process && setrlimit(resource, new_limit) == 0)
         return 0;
 
     return -1;
