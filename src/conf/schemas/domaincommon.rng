@@ -721,9 +721,11 @@
       <optional>
         <element name="maxMemory">
           <ref name="scaledInteger"/>
-          <attribute name="slots">
-            <ref name="unsignedInt"/>
-          </attribute>
+          <optional>
+            <attribute name="slots">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </optional>
         </element>
       </optional>
       <optional>

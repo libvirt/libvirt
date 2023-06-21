@@ -27416,9 +27416,16 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
         return -1;
 
     if (virDomainDefHasMemoryHotplug(def)) {
-        virBufferAsprintf(buf,
-                          "<maxMemory slots='%u' unit='KiB'>%llu</maxMemory>\n",
-                          def->mem.memory_slots, def->mem.max_memory);
+        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) contentBuf = VIR_BUFFER_INITIALIZER;
+
+        if (def->mem.memory_slots > 0)
+            virBufferAsprintf(&attrBuf, " slots='%u'", def->mem.memory_slots);
+
+        virBufferAddLit(&attrBuf, " unit='KiB'");
+        virBufferAsprintf(&contentBuf, "%llu", def->mem.max_memory);
+
+        virXMLFormatElementInternal(buf, "maxMemory", &attrBuf, &contentBuf, false, false);
     }
 
     virBufferAddLit(buf, "<memory");

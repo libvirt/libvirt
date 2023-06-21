@@ -72,10 +72,9 @@ virDomainDefPostParseMemory(virDomainDef *def,
         def->mem.cur_balloon == 0)
         def->mem.cur_balloon = virDomainDefGetMemoryTotal(def);
 
-    if ((def->mem.max_memory || def->mem.memory_slots) &&
-        !(def->mem.max_memory && def->mem.memory_slots)) {
+    if (def->mem.max_memory == 0 && def->mem.memory_slots > 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("both maximum memory size and memory slot count must be specified"));
+                       _("maximum memory size must be specified when specifying number of memory slots"));
         return -1;
     }
 
