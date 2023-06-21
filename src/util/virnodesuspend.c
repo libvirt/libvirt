@@ -249,6 +249,7 @@ virNodeSuspendSupportsTargetPMUtils(unsigned int target, bool *supported)
     * (i.e., the PM capability is supported)
     */
     *supported = (status == 0);
+    VIR_DEBUG("Node suspend pm-utils target %d: %d", target, *supported);
 
     return 0;
 }
@@ -257,6 +258,7 @@ static int
 virNodeSuspendSupportsTargetPMUtils(unsigned int target G_GNUC_UNUSED,
                                     bool *supported G_GNUC_UNUSED)
 {
+    VIR_DEBUG("Node suspend pm-utils target %d: unsupported platform", target);
     return -2;
 }
 #endif /* ! WITH_PM_UTILS */
@@ -282,6 +284,7 @@ virNodeSuspendSupportsTargetSystemd(unsigned int target, bool *supported)
         return ret;
     }
 
+    VIR_DEBUG("Node suspend systemd target %d: %d", target, ret);
     return ret;
 }
 
