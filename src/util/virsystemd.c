@@ -184,8 +184,20 @@ virSystemdHasLogind(void)
         return ret;
     }
 
+    /*
+     * Want to use logind if:
+     *   - logind is already running
+     * Or
+     *   - logind is not running, but this is a systemd host
+     *     (rely on dbus activation)
+     */
     if ((ret = virGDBusIsServiceRegistered("org.freedesktop.login1")) == -1)
         return ret;
+
+    if (ret == -2) {
+        if ((ret = virGDBusIsServiceRegistered("org.freedesktop.systemd1")) == -1)
+            return ret;
+    }
 
     g_atomic_int_set(&virSystemdHasLogindCachedValue, ret);
     return ret;
