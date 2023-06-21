@@ -214,6 +214,14 @@ virGlobalInit(void)
     if (virErrorInitialize() < 0)
         goto error;
 
+    /* Make glib initialize its own global state. See more:
+     *
+     *   https://gitlab.gnome.org/GNOME/glib/-/issues/3034
+     *
+     * TODO: Remove ASAP.
+     */
+    g_ascii_strtoull("0", NULL, 0);
+
     virFileActivateDirOverrideForLib();
 
     if (getuid() != geteuid() ||
