@@ -15,10 +15,10 @@ ExecReload=/bin/kill -USR1 $MAINPID
 # cause the machine to be fenced (rebooted), so make
 # sure we discourage OOM killer
 OOMScoreAdjust=-900
-# Needs to allow for max guests * average disks per guest
-# libvirtd.service written to expect 4096 guests, so if we
-# allow for 10 disks per guest, we get:
-LimitNOFILE=40960
+# Raise hard limits to match behaviour of systemd >= 240.
+# During startup, daemon will set soft limit to match hard limit
+# per systemd recommendations
+LimitNOFile=512000:1024
 
 [Install]
 Also=virtlockd.socket

@@ -29,11 +29,10 @@ ExecStart=@sbindir@/libvirtd $LIBVIRTD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure
-# At least 1 FD per guest, often 2 (eg qemu monitor + qemu agent).
-# eg if we want to support 4096 guests, we'll typically need 8192 FDs
-# If changing this, also consider virtlogd.service & virtlockd.service
-# limits which are also related to number of guests
-LimitNOFILE=8192
+# Raise hard limits to match behaviour of systemd >= 240.
+# During startup, daemon will set soft limit to match hard limit
+# per systemd recommendations
+LimitNOFile=512000:1024
 # The cgroups pids controller can limit the number of tasks started by
 # the daemon, which can limit the number of domains for some hypervisors.
 # A conservative default of 8 tasks per guest results in a TasksMax of
