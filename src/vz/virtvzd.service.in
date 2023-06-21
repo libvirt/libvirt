@@ -7,7 +7,6 @@ Requires=virtvzd-admin.socket
 After=network.target
 After=dbus.service
 After=apparmor.service
-After=local-fs.target
 After=remote-fs.target
 Documentation=man:virtvzd(8)
 Documentation=https://libvirt.org

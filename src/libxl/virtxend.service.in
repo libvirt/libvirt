@@ -8,7 +8,6 @@ Wants=virtlockd.socket
 After=network.target
 After=dbus.service
 After=apparmor.service
-After=local-fs.target
 After=remote-fs.target
 After=xencommons.service
 Conflicts=xendomains.service

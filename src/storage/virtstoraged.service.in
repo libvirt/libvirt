@@ -8,7 +8,6 @@ After=network.target
 After=dbus.service
 After=iscsid.service
 After=apparmor.service
-After=local-fs.target
 After=remote-fs.target
 Documentation=man:virtstoraged(8)
 Documentation=https://libvirt.org

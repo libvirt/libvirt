@@ -7,7 +7,6 @@ Requires=virtnodedevd-admin.socket
 After=network.target
 After=dbus.service
 After=apparmor.service
-After=local-fs.target
 Documentation=man:virtnodedevd(8)
 Documentation=https://libvirt.org
 

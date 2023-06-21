@@ -16,7 +16,6 @@ After=ip6tables.service
 After=dbus.service
 After=iscsid.service
 After=apparmor.service
-After=local-fs.target
 After=remote-fs.target
 After=systemd-logind.service
 After=systemd-machined.service
