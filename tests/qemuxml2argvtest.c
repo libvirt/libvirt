@@ -2461,6 +2461,7 @@ mymain(void)
     DO_TEST_CAPS_VER("memory-hotplug-virtio-pmem", "5.2.0");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-pmem");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-mem");
+    DO_TEST_CAPS_LATEST("memory-hotplug-multiple");
 
     DO_TEST_CAPS_ARCH_LATEST("machine-aeskeywrap-on-caps", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("machine-aeskeywrap-on-cap", "s390x");

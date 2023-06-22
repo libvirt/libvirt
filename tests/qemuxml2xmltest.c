@@ -1013,6 +1013,7 @@ mymain(void)
                  ARG_CAPS_ARCH, "ppc64", ARG_CAPS_VER, "latest", ARG_END);
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-pmem");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-mem");
+    DO_TEST_CAPS_LATEST("memory-hotplug-multiple");
 
     DO_TEST_NOCAPS("net-udp");
 
