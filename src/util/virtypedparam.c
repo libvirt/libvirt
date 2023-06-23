@@ -68,6 +68,10 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
     g_autofree virTypedParameterPtr sorted = NULL;
     g_autofree virTypedParameterPtr keys = NULL;
 
+    if (!nparams) {
+        return 0;
+    }
+
     va_start(ap, nparams);
 
     sorted = g_new0(virTypedParameter, nparams);
