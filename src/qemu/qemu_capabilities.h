@@ -672,6 +672,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_VIRTIO_GPU_BLOB, /* -device virtio-gpu-*.blob= */
     QEMU_CAPS_RBD_ENCRYPTION_LAYERING, /* layered encryption support for Ceph RBD */
     QEMU_CAPS_RBD_ENCRYPTION_LUKS_ANY, /* luks-any (LUKS and LUKS2) encryption format for Ceph RBD */
+    QEMU_CAPS_QCOW2_DISCARD_NO_UNREF, /* qcow2 block driver allows discards without unrefing the sector */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
