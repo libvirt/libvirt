@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-05-26 06:46+0000\n"
+"POT-Creation-Date: 2023-06-27 11:10+0000\n"
 "PO-Revision-Date: 2023-04-25 08:21+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1277,16 +1277,21 @@ msgstr ""
 "formát úložiště 'directory' (složka) není přímo v QEMU podporován – namísto "
 "toho použijte typ disku 'dir' (složka)"
 
+msgid "'discard_no_unref' is not compatible with read-only disk"
+msgstr ""
+
+msgid "'discard_no_unref' is not supported by this QEMU binary"
+msgstr ""
+
+msgid "'discard_no_unref' only works with qcow2 disk format"
+msgstr ""
+
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "„disk“ chybí nebo není pole v odpovědi z guest-get-fsinfo"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr "'extended_l2' nepodporováno v případě úrovně kompatibility %1$s"
-
-msgid "'floor' attribute allowed only in <inbound> element"
-msgstr ""
-"atribut 'floor' (dolní hodnota) je možné použít pouze v prvku <inbound>"
 
 msgid "'gluster' command line tool not found"
 msgstr "nástroj pro příkazový řádek „gluster“ nenalezen"
@@ -1695,6 +1700,9 @@ msgstr ""
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr "atribut 'display' v <hostdev> je podporován pouze s model='vfio-pci'"
+
+msgid "<iotune> is not supported with bus='sd'"
+msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> umožněno pouze pro lun zařízení"
@@ -3436,6 +3444,10 @@ msgstr "Není možné sdílet neinicializovanou obsluhu CURL"
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr "Není možná zadat štítek pokud je přeštítkovávání vypnuto. model=%1$s"
+
+#, c-format
+msgid "Cannot specify relabel if label is missing. model=%1$s"
+msgstr ""
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -5499,6 +5511,9 @@ msgstr "Disk úspěšně odpojen\n"
 #, c-format
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "Diskové zařízení „%1$s“ nepodporuje pořizování zachycených stavů"
+
+msgid "Disk discard_no_unref is not supported by vz driver."
+msgstr ""
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -12877,12 +12892,6 @@ msgstr ""
 "V rámci jednoho stroje je podporováno pouze jedno zařízení, ze kterého bude "
 "zaváděn systém"
 
-msgid "Only one child <inbound> element allowed"
-msgstr "Je možné použít pouze jeden podřízený prvek <inbound>"
-
-msgid "Only one child <outbound> element allowed"
-msgstr "Je možné použít pouze jeden podřízený prvek <outbound>"
-
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
@@ -15802,6 +15811,12 @@ msgstr "Model %1$s cílového vstupu se neshoduje se zdrojovým %2$s"
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr ""
 "Maximální velikost paměti „%1$llu“ cíle se neshoduje se zdrojovou „%2$llu“"
+
+#, c-format
+msgid ""
+"Target memory device address '0x%1$llx' doesn't match source memory device "
+"address '0x%2$llx'"
+msgstr ""
 
 #, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -20267,9 +20282,6 @@ msgstr ""
 "Pro připojení PCI řadiče s model='%1$s' je zapotřebí PCI slot, ale žádný "
 "není k dispozici a nemůže být přidán automaticky"
 
-msgid "a block I/O throttling is not supported for vhostuser disk"
-msgstr "regulace blokového vstupu/výstupu není pro vhostuser disk podporovaná"
-
 msgid "a device with the same address already exists "
 msgstr "zařízení s touto adresou už existuje "
 
@@ -20966,6 +20978,10 @@ msgstr ""
 "je třeba, aby hodnota limitu blokového vstup./výstupu nebyla vyšší než %1$llu"
 
 #, c-format
+msgid "block I/O throttling is not supported for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 "commit bloku se nezdařil při mazání zachyceného stavu disku '%1$s': '%2$s'"
@@ -21140,9 +21156,6 @@ msgstr "tento zavaděč není QEMU podporován"
 
 msgid "both interface name and type must not be NULL"
 msgstr "je třeba, aby ani název, ani typ rozhraní nebyly prázdné"
-
-msgid "both maximum memory size and memory slot count must be specified"
-msgstr "je třeba zadat jak maximum velikost paměti, tak počet paměťový slotů"
 
 #, c-format
 msgid "bridge %1$s doesn't exist"
@@ -23525,22 +23538,6 @@ msgstr "nelze se připojit ke Xen Store"
 msgid "could not connect to Xen Store %1$s"
 msgstr "nelze se připojit ke Xen Store %1$s"
 
-#, c-format
-msgid "could not convert bandwidth average value '%1$s'"
-msgstr "nedaří se převést hodnotu průměrné rychlosti „%1$s“"
-
-#, c-format
-msgid "could not convert bandwidth burst value '%1$s'"
-msgstr "nedaří se převést hodnotu „%1$s“ dávky přenosové rychlosti"
-
-#, c-format
-msgid "could not convert bandwidth floor value '%1$s'"
-msgstr "nedaří se převést hodnotu „%1$s“ dolní hodnoty přenosové rychlosti"
-
-#, c-format
-msgid "could not convert bandwidth peak value '%1$s'"
-msgstr "nedaří se převést hodnotu „%1$s“ špičky přenosové rychlosti"
-
 msgid "could not create profile"
 msgstr "nelze vytvořit profil"
 
@@ -23876,6 +23873,12 @@ msgstr ""
 #, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
 msgstr "nedaří se zapsat soubor s nastaveními pro dnsmasq „%1$s“"
+
+#, c-format
+msgid ""
+"count of memory devices requiring memory slots '%1$zu' exceeds slots count "
+"'%2$u'"
+msgstr ""
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr "funkci cow je možné použít jen pro fondy typu 'fs' a 'dir'"
@@ -28601,9 +28604,6 @@ msgstr "Neplatná hodnota ap-domain value '%1$s' pro '%2$s'"
 msgid "invalid argument"
 msgstr "neplatný argument"
 
-msgid "invalid argument supplied"
-msgstr "zadán neplatný argument"
-
 #, c-format
 msgid "invalid argument: %1$s"
 msgstr "neplatný argument: %1$s"
@@ -30066,6 +30066,9 @@ msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr ""
 "nesprávně formulovaná / chybějící memaddr v sgx-epc informacích o paměti"
 
+msgid "malformed/missing memaddr in virtio memory info"
+msgstr ""
+
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
 "nesprávně formulovaná / chybějící velikost v sgx-epc informacích o paměti"
@@ -30144,6 +30147,10 @@ msgid ""
 msgstr ""
 "je třeba, aby maximální velikost paměti byla rovna nebo vyšší než ta "
 "stávající"
+
+msgid ""
+"maximum memory size must be specified when specifying number of memory slots"
+msgstr ""
 
 msgid "maximum memory size overflowed after alignment"
 msgstr "maximální velikost paměti po zarovnání přetekla"
@@ -30232,6 +30239,9 @@ msgstr "atributy paměti: : [file=]název[,snapshot=typ]"
 msgid "memory device address is not supported for model '%1$s'"
 msgstr "adresa paměťového zařízení není podporována pro model '%1$s'"
 
+msgid "memory device address must be aligned to blocksize"
+msgstr ""
+
 msgid "memory device alias"
 msgstr "alternativní název paměťového zařízení"
 
@@ -30243,10 +30253,6 @@ msgid ""
 "memory device base '0x%1$llx' is already being used by another memory device"
 msgstr ""
 "základ paměťového zařízení '0x%1$llx' už je používán jiným takovým zařízením"
-
-#, c-format
-msgid "memory device count '%1$u' exceeds slots count '%2$u'"
-msgstr "počet paměťový zařízení „%1$u“ překračuje počet slotů „%2$u“"
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -34668,12 +34674,6 @@ msgstr "údaj o otáčkách je platný pouze pro sběrnici SCSI/IDE/SATA"
 msgid "rotation rate is only valid for disk device"
 msgstr "údaj o otáčkách je platný pouze pro disková zařízení"
 
-msgid "rule node requires action attribute"
-msgstr "uzlu pravidlo vyžaduje atribut action (akce)"
-
-msgid "rule node requires direction attribute"
-msgstr "uzel pravidla vyžaduje atribut směr"
-
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
@@ -37985,12 +37985,6 @@ msgstr "neznámý typ znakového zařízení pro přesměrování „%1$s“"
 msgid "unknown rng-random backend"
 msgstr "neznámá podpůrná vrstva pro rng-random"
 
-msgid "unknown rule action attribute value"
-msgstr "neznámá hodnota atributu akce pravidla"
-
-msgid "unknown rule direction attribute value"
-msgstr "neznámá hodnota atributu směru pravidla"
-
 #, c-format
 msgid "unknown secret type '%1$s'"
 msgstr "neznámý typ tajemství „%1$s“"
@@ -38490,6 +38484,9 @@ msgstr "nepodporovaná stavová hodnota"
 #, c-format
 msgid "unsupported storage pool event ID %1$d"
 msgstr "nepodporovaný identifikátor události fondu úložiště %1$d"
+
+msgid "unsupported storage type for this code path"
+msgstr ""
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -39611,6 +39608,59 @@ msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <řetězec>}…"
+
+#~ msgid "'floor' attribute allowed only in <inbound> element"
+#~ msgstr ""
+#~ "atribut 'floor' (dolní hodnota) je možné použít pouze v prvku <inbound>"
+
+#~ msgid "Only one child <inbound> element allowed"
+#~ msgstr "Je možné použít pouze jeden podřízený prvek <inbound>"
+
+#~ msgid "Only one child <outbound> element allowed"
+#~ msgstr "Je možné použít pouze jeden podřízený prvek <outbound>"
+
+#~ msgid "a block I/O throttling is not supported for vhostuser disk"
+#~ msgstr ""
+#~ "regulace blokového vstupu/výstupu není pro vhostuser disk podporovaná"
+
+#~ msgid "both maximum memory size and memory slot count must be specified"
+#~ msgstr ""
+#~ "je třeba zadat jak maximum velikost paměti, tak počet paměťový slotů"
+
+#, c-format
+#~ msgid "could not convert bandwidth average value '%1$s'"
+#~ msgstr "nedaří se převést hodnotu průměrné rychlosti „%1$s“"
+
+#, c-format
+#~ msgid "could not convert bandwidth burst value '%1$s'"
+#~ msgstr "nedaří se převést hodnotu „%1$s“ dávky přenosové rychlosti"
+
+#, c-format
+#~ msgid "could not convert bandwidth floor value '%1$s'"
+#~ msgstr "nedaří se převést hodnotu „%1$s“ dolní hodnoty přenosové rychlosti"
+
+#, c-format
+#~ msgid "could not convert bandwidth peak value '%1$s'"
+#~ msgstr "nedaří se převést hodnotu „%1$s“ špičky přenosové rychlosti"
+
+#~ msgid "invalid argument supplied"
+#~ msgstr "zadán neplatný argument"
+
+#, c-format
+#~ msgid "memory device count '%1$u' exceeds slots count '%2$u'"
+#~ msgstr "počet paměťový zařízení „%1$u“ překračuje počet slotů „%2$u“"
+
+#~ msgid "rule node requires action attribute"
+#~ msgstr "uzlu pravidlo vyžaduje atribut action (akce)"
+
+#~ msgid "rule node requires direction attribute"
+#~ msgstr "uzel pravidla vyžaduje atribut směr"
+
+#~ msgid "unknown rule action attribute value"
+#~ msgstr "neznámá hodnota atributu akce pravidla"
+
+#~ msgid "unknown rule direction attribute value"
+#~ msgstr "neznámá hodnota atributu směru pravidla"
 
 #, c-format
 #~ msgid "DBus daemon %1$s didn't show up"

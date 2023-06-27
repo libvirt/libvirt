@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-05-26 06:46+0000\n"
+"POT-Creation-Date: 2023-06-27 11:10+0000\n"
 "PO-Revision-Date: 2015-03-04 01:18+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1162,15 +1162,21 @@ msgid ""
 "type instead"
 msgstr ""
 
+msgid "'discard_no_unref' is not compatible with read-only disk"
+msgstr ""
+
+msgid "'discard_no_unref' is not supported by this QEMU binary"
+msgstr ""
+
+msgid "'discard_no_unref' only works with qcow2 disk format"
+msgstr ""
+
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr ""
-
-msgid "'floor' attribute allowed only in <inbound> element"
-msgstr "<inbound> கூறில் மட்டுமே 'floor' பண்புக்கூறு அனுமதிக்கப்படும்"
 
 #, fuzzy
 msgid "'gluster' command line tool not found"
@@ -1591,6 +1597,9 @@ msgstr ""
 "பொருந்த வேண்டும்"
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
+msgstr ""
+
+msgid "<iotune> is not supported with bus='sd'"
 msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
@@ -3326,6 +3335,10 @@ msgstr "துவக்கப்படாத CURL கையாளுதலைப
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr "ரிலேபிலிங் ஆஃப் செய்யப்பட்டிருந்தால் லேபிளைக் குறிப்பிட முடியாது. மாடல்=%1$s"
+
+#, c-format
+msgid "Cannot specify relabel if label is missing. model=%1$s"
+msgstr ""
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -5399,6 +5412,9 @@ msgstr "வட்டு வெற்றிகரமாக விடுவிக�
 #, c-format
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "வட்டு சாதனம் '%1$s' ஸ்னாப்ஷாட்டை ஆதரிக்காது"
+
+msgid "Disk discard_no_unref is not supported by vz driver."
+msgstr ""
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -12813,12 +12829,6 @@ msgstr ""
 msgid "Only one boot device is supported"
 msgstr "ஒரு பிரதான வீடியோ சாதனம் மட்டுமே ஆதரிக்கப்படும்"
 
-msgid "Only one child <inbound> element allowed"
-msgstr "ஒரே ஒரு சேய் உறுப்பு <inbound> கூறு மட்டுமே அனுமதிக்கப்படும்"
-
-msgid "Only one child <outbound> element allowed"
-msgstr "ஒரே ஒரு சேய் உறுப்பு <outbound> கூறு மட்டுமே அனுமதிக்கப்படும்"
-
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
@@ -15743,6 +15753,12 @@ msgstr "இலக்கு CPU மாடல் %1$s ஆனது மூலம்
 #, fuzzy, c-format
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr "இலக்கு டொமைன் அதிகபட்ச நினைவகம் %lld ஆனது மூலம் %lld உடன் பொருந்தவில்லை"
+
+#, c-format
+msgid ""
+"Target memory device address '0x%1$llx' doesn't match source memory device "
+"address '0x%2$llx'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -20236,9 +20252,6 @@ msgid ""
 "available, and it cannot be automatically added"
 msgstr ""
 
-msgid "a block I/O throttling is not supported for vhostuser disk"
-msgstr ""
-
 #, fuzzy
 msgid "a device with the same address already exists "
 msgstr "சாதனம் %s ஏற்கனவே உள்ளது"
@@ -20919,6 +20932,10 @@ msgid "block I/O throttle limit value must be no more than %1$llu"
 msgstr ""
 
 #, c-format
+msgid "block I/O throttling is not supported for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
@@ -21081,9 +21098,6 @@ msgstr "இந்த QEMU பைனரியில் மறுதொடக்�
 #, fuzzy
 msgid "both interface name and type must not be NULL"
 msgstr "virt_type மதிப்புரு NULL ஆக இருக்கக்கூடாது"
-
-msgid "both maximum memory size and memory slot count must be specified"
-msgstr ""
 
 #, c-format
 msgid "bridge %1$s doesn't exist"
@@ -23475,22 +23489,6 @@ msgstr "Xen Store உடன் இணைக்க முடியவில்ல
 msgid "could not connect to Xen Store %1$s"
 msgstr "Xen Store %1$s உடன் இணைக்க முடியவில்லை"
 
-#, c-format
-msgid "could not convert bandwidth average value '%1$s'"
-msgstr "பட்டையகல சராசரி மதிப்பு '%1$s' ஐ மாற்ற முடியவில்லை"
-
-#, c-format
-msgid "could not convert bandwidth burst value '%1$s'"
-msgstr "பட்டையகல வெடிப்பு மதிப்பு '%1$s' ஐ மாற்ற முடியவில்லை"
-
-#, c-format
-msgid "could not convert bandwidth floor value '%1$s'"
-msgstr "பட்டையகல ஃப்ளோர் மதிப்பு '%1$s' ஐ மாற்ற முடியவில்லை"
-
-#, c-format
-msgid "could not convert bandwidth peak value '%1$s'"
-msgstr "பட்டையகல உச்ச மதிப்பு '%1$s' ஐ மாற்ற முடியவில்லை"
-
 msgid "could not create profile"
 msgstr "விவரத்தொகுப்பை உருவாக்க முடியவில்லை"
 
@@ -23824,6 +23822,12 @@ msgstr ""
 #, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
 msgstr "Dnsmasq அமைவாக்கக் கோப்பு '%1$s' இல் எழுத முடியவில்லை"
+
+#, c-format
+msgid ""
+"count of memory devices requiring memory slots '%1$zu' exceeds slots count "
+"'%2$u'"
+msgstr ""
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr ""
@@ -28566,9 +28570,6 @@ msgstr ""
 msgid "invalid argument"
 msgstr "தவறான மதிப்புரு"
 
-msgid "invalid argument supplied"
-msgstr "தவறான அளவுரு வழங்கப்பட்டது"
-
 #, c-format
 msgid "invalid argument: %1$s"
 msgstr "தவறான மதிப்புரு: %1$s"
@@ -30040,6 +30041,9 @@ msgstr ""
 msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr ""
 
+msgid "malformed/missing memaddr in virtio memory info"
+msgstr ""
+
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
 
@@ -30114,6 +30118,10 @@ msgstr ""
 
 msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
+msgstr ""
+
+msgid ""
+"maximum memory size must be specified when specifying number of memory slots"
 msgstr ""
 
 #, fuzzy
@@ -30204,6 +30212,9 @@ msgstr "நினைவக பண்புருக்கள்: [file=]name[,sn
 msgid "memory device address is not supported for model '%1$s'"
 msgstr ""
 
+msgid "memory device address must be aligned to blocksize"
+msgstr ""
+
 msgid "memory device alias"
 msgstr ""
 
@@ -30214,10 +30225,6 @@ msgstr "PCI சாதனம் %s ஆனது நிர்ணயிக்கத
 #, c-format
 msgid ""
 "memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
-
-#, c-format
-msgid "memory device count '%1$u' exceeds slots count '%2$u'"
 msgstr ""
 
 #, c-format
@@ -34670,12 +34677,6 @@ msgstr ""
 msgid "rotation rate is only valid for disk device"
 msgstr ""
 
-msgid "rule node requires action attribute"
-msgstr "விதி கனுவுக்கு செயல் பண்புரு தேவை"
-
-msgid "rule node requires direction attribute"
-msgstr "விதி கனுவுக்கு திசை பண்புரு தேவை"
-
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
@@ -37965,12 +37966,6 @@ msgstr "தெரியாத redirdev எழுத்துக்குறி �
 msgid "unknown rng-random backend"
 msgstr ""
 
-msgid "unknown rule action attribute value"
-msgstr "விதி செயல் பண்புருவுக்கு தெரியாத மதிப்பு"
-
-msgid "unknown rule direction attribute value"
-msgstr "கனு திசை பண்புருவுக்கு தெரியாத மதிப்பு"
-
 #, fuzzy, c-format
 msgid "unknown secret type '%1$s'"
 msgstr "தெரியாத சாதன வகை '%1$s'"
@@ -38473,6 +38468,9 @@ msgstr "ஆதரிக்கப்படாத அம்சம் %s"
 #, fuzzy, c-format
 msgid "unsupported storage pool event ID %1$d"
 msgstr "ஆதரவில்லாத பிணைய நிகழ்வு ஐடி %1$d"
+
+msgid "unsupported storage type for this code path"
+msgstr ""
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -39576,6 +39574,46 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "'floor' attribute allowed only in <inbound> element"
+#~ msgstr "<inbound> கூறில் மட்டுமே 'floor' பண்புக்கூறு அனுமதிக்கப்படும்"
+
+#~ msgid "Only one child <inbound> element allowed"
+#~ msgstr "ஒரே ஒரு சேய் உறுப்பு <inbound> கூறு மட்டுமே அனுமதிக்கப்படும்"
+
+#~ msgid "Only one child <outbound> element allowed"
+#~ msgstr "ஒரே ஒரு சேய் உறுப்பு <outbound> கூறு மட்டுமே அனுமதிக்கப்படும்"
+
+#, c-format
+#~ msgid "could not convert bandwidth average value '%1$s'"
+#~ msgstr "பட்டையகல சராசரி மதிப்பு '%1$s' ஐ மாற்ற முடியவில்லை"
+
+#, c-format
+#~ msgid "could not convert bandwidth burst value '%1$s'"
+#~ msgstr "பட்டையகல வெடிப்பு மதிப்பு '%1$s' ஐ மாற்ற முடியவில்லை"
+
+#, c-format
+#~ msgid "could not convert bandwidth floor value '%1$s'"
+#~ msgstr "பட்டையகல ஃப்ளோர் மதிப்பு '%1$s' ஐ மாற்ற முடியவில்லை"
+
+#, c-format
+#~ msgid "could not convert bandwidth peak value '%1$s'"
+#~ msgstr "பட்டையகல உச்ச மதிப்பு '%1$s' ஐ மாற்ற முடியவில்லை"
+
+#~ msgid "invalid argument supplied"
+#~ msgstr "தவறான அளவுரு வழங்கப்பட்டது"
+
+#~ msgid "rule node requires action attribute"
+#~ msgstr "விதி கனுவுக்கு செயல் பண்புரு தேவை"
+
+#~ msgid "rule node requires direction attribute"
+#~ msgstr "விதி கனுவுக்கு திசை பண்புரு தேவை"
+
+#~ msgid "unknown rule action attribute value"
+#~ msgstr "விதி செயல் பண்புருவுக்கு தெரியாத மதிப்பு"
+
+#~ msgid "unknown rule direction attribute value"
+#~ msgstr "கனு திசை பண்புருவுக்கு தெரியாத மதிப்பு"
 
 #, fuzzy, c-format
 #~ msgid "DBus daemon %1$s didn't show up"

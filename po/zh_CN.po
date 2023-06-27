@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-05-26 06:46+0000\n"
+"POT-Creation-Date: 2023-06-27 11:10+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1239,15 +1239,21 @@ msgid ""
 "type instead"
 msgstr "QEMU 不直接支持 'directory' 存储格式，请使用 'dir' 磁盘类型"
 
+msgid "'discard_no_unref' is not compatible with read-only disk"
+msgstr ""
+
+msgid "'discard_no_unref' is not supported by this QEMU binary"
+msgstr ""
+
+msgid "'discard_no_unref' only works with qcow2 disk format"
+msgstr ""
+
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "在 guest-get-fsinfo 的回复中缺少 'disk' 或者不是一个阵列"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr "compat 级别 %1$s 不支持 'extended_l2'"
-
-msgid "'floor' attribute allowed only in <inbound> element"
-msgstr "只在 <inbound> 元素中可使用 'floor' 属性"
 
 msgid "'gluster' command line tool not found"
 msgstr "未找到 'gluster' 命令行工具"
@@ -1636,6 +1642,9 @@ msgstr ""
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr "<hostdev> 属性 'display' 仅支持 model='vfio-pci'"
+
+msgid "<iotune> is not supported with bus='sd'"
+msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> 只允许 lun 设备"
@@ -3258,6 +3267,10 @@ msgstr "无法共享未初始化的 CURL 句柄"
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr "如果关闭重新标记功能则无法指定标签。model=%1$s"
+
+#, c-format
+msgid "Cannot specify relabel if label is missing. model=%1$s"
+msgstr ""
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -5238,6 +5251,9 @@ msgstr "成功分离磁盘\n"
 #, c-format
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "磁盘设备 '%1$s' 不支持快照功能"
+
+msgid "Disk discard_no_unref is not supported by vz driver."
+msgstr ""
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -12274,12 +12290,6 @@ msgstr "只能指定 --table, --name 和 --uuid 中的指定一个参数。"
 msgid "Only one boot device is supported"
 msgstr "只支持一个引导设备"
 
-msgid "Only one child <inbound> element allowed"
-msgstr "只允许一个子 <inbound> 元素"
-
-msgid "Only one child <outbound> element allowed"
-msgstr "只允许一个子 <outbound> 元素"
-
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
@@ -15027,6 +15037,12 @@ msgstr "目标输入型号 %1$s 与源 %2$s 不匹配"
 #, c-format
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr "目标最大内存 '%1$llu' 与源 '%2$llu' 不匹配"
+
+#, c-format
+msgid ""
+"Target memory device address '0x%1$llx' doesn't match source memory device "
+"address '0x%2$llx'"
+msgstr ""
 
 #, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -19358,9 +19374,6 @@ msgid ""
 msgstr ""
 "需要 PCI 插槽来连接 PCI 控制器 model='%1$s'，但没有可用的，且无法自动添加"
 
-msgid "a block I/O throttling is not supported for vhostuser disk"
-msgstr "vhostuser 磁盘不支持块 I/O 节流"
-
 msgid "a device with the same address already exists "
 msgstr "具有相同地址的设备已经存在 "
 
@@ -19998,6 +20011,10 @@ msgid "block I/O throttle limit value must be no more than %1$llu"
 msgstr "块 I/O 节流限制值不能超过 %1$llu"
 
 #, c-format
+msgid "block I/O throttling is not supported for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr "删除磁盘 '%1$s' 快照时块提交失败：'%2$s'"
 
@@ -20156,9 +20173,6 @@ msgstr "QEMU 不支持引导装载程序"
 
 msgid "both interface name and type must not be NULL"
 msgstr "接口名称和类型不能为 NULL"
-
-msgid "both maximum memory size and memory slot count must be specified"
-msgstr "必须指定最大内存大小和内存插槽数"
 
 #, c-format
 msgid "bridge %1$s doesn't exist"
@@ -22440,22 +22454,6 @@ msgstr "不能连接Xen存储器"
 msgid "could not connect to Xen Store %1$s"
 msgstr "不能连接Xen存储器 %1$s"
 
-#, c-format
-msgid "could not convert bandwidth average value '%1$s'"
-msgstr "无法转换带宽平均值 '%1$s'"
-
-#, c-format
-msgid "could not convert bandwidth burst value '%1$s'"
-msgstr "无法转换带宽 burst 值 '%1$s'"
-
-#, c-format
-msgid "could not convert bandwidth floor value '%1$s'"
-msgstr "无法转换带宽 floor 值 '%1$s'"
-
-#, c-format
-msgid "could not convert bandwidth peak value '%1$s'"
-msgstr "无法转换带宽峰值 '%1$s'"
-
 msgid "could not create profile"
 msgstr "无法生成配置文件"
 
@@ -22780,6 +22778,12 @@ msgstr "无法更新 dhcp host 条目 - 在网络 '%1$s' 中没有找到 <ip> �
 #, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
 msgstr "无法写入 dnsmasq 配置文件 '%1$s'"
+
+#, c-format
+msgid ""
+"count of memory devices requiring memory slots '%1$zu' exceeds slots count "
+"'%2$u'"
+msgstr ""
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr "COW 功能只能用于 'fs' 和 'dir' 池"
@@ -27316,9 +27320,6 @@ msgstr "'%1$s' 的无效的 ap-domain 值 '%2$s'"
 msgid "invalid argument"
 msgstr "无效参数"
 
-msgid "invalid argument supplied"
-msgstr "提供的参数无效"
-
 #, c-format
 msgid "invalid argument: %1$s"
 msgstr "无效参数：%1$s"
@@ -28713,6 +28714,9 @@ msgstr "dimm 内存信息中格式错误的/丢失的热插拔"
 msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr "sgx-epc 内存信息中的 memaddr 格式不正确或缺失"
 
+msgid "malformed/missing memaddr in virtio memory info"
+msgstr ""
+
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr "sgx-epc 内存信息中大小的格式不正确或缺失"
 
@@ -28783,6 +28787,10 @@ msgstr "复制过程中最大的飞行数据量"
 msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
 msgstr "最大内存必须等于或大于实际内存"
+
+msgid ""
+"maximum memory size must be specified when specifying number of memory slots"
+msgstr ""
 
 msgid "maximum memory size overflowed after alignment"
 msgstr "对齐后溢出的最大内存"
@@ -28870,6 +28878,9 @@ msgstr "内存属性：[file=]name[,snapshot=type]"
 msgid "memory device address is not supported for model '%1$s'"
 msgstr "模型 '%1$s' 不支持内存设备地址"
 
+msgid "memory device address must be aligned to blocksize"
+msgstr ""
+
 msgid "memory device alias"
 msgstr "内存设备别名"
 
@@ -28880,10 +28891,6 @@ msgstr "内存设备别名未分配"
 msgid ""
 "memory device base '0x%1$llx' is already being used by another memory device"
 msgstr "内存设备基础 '0x%1$llx' 已被另一个内存设备使用"
-
-#, c-format
-msgid "memory device count '%1$u' exceeds slots count '%2$u'"
-msgstr "内存设备数 '%1$u' 超过了槽数 '%2$u'"
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -33072,12 +33079,6 @@ msgstr "轮转率仅对 SCSI/IDE/SATA 总线有效"
 msgid "rotation rate is only valid for disk device"
 msgstr "轮转率仅对磁盘设备有效"
 
-msgid "rule node requires action attribute"
-msgstr "rule 节点需要 action 属性"
-
-msgid "rule node requires direction attribute"
-msgstr "rule 节点需要 direction 属性"
-
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
@@ -36266,12 +36267,6 @@ msgstr "未知的 redirdev 字符设备类型 '%1$s'"
 msgid "unknown rng-random backend"
 msgstr "未知的 rng-random 后端"
 
-msgid "unknown rule action attribute value"
-msgstr "未知的规则 action 属性值"
-
-msgid "unknown rule direction attribute value"
-msgstr "未知的规则 direction 属性值"
-
 #, c-format
 msgid "unknown secret type '%1$s'"
 msgstr "未知的 secret 类型 '%1$s'"
@@ -36767,6 +36762,9 @@ msgstr "不支持的状态值"
 #, c-format
 msgid "unsupported storage pool event ID %1$d"
 msgstr "不支持的储存池事件 ID %1$d"
+
+msgid "unsupported storage type for this code path"
+msgstr ""
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -37824,6 +37822,56 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "'floor' attribute allowed only in <inbound> element"
+#~ msgstr "只在 <inbound> 元素中可使用 'floor' 属性"
+
+#~ msgid "Only one child <inbound> element allowed"
+#~ msgstr "只允许一个子 <inbound> 元素"
+
+#~ msgid "Only one child <outbound> element allowed"
+#~ msgstr "只允许一个子 <outbound> 元素"
+
+#~ msgid "a block I/O throttling is not supported for vhostuser disk"
+#~ msgstr "vhostuser 磁盘不支持块 I/O 节流"
+
+#~ msgid "both maximum memory size and memory slot count must be specified"
+#~ msgstr "必须指定最大内存大小和内存插槽数"
+
+#, c-format
+#~ msgid "could not convert bandwidth average value '%1$s'"
+#~ msgstr "无法转换带宽平均值 '%1$s'"
+
+#, c-format
+#~ msgid "could not convert bandwidth burst value '%1$s'"
+#~ msgstr "无法转换带宽 burst 值 '%1$s'"
+
+#, c-format
+#~ msgid "could not convert bandwidth floor value '%1$s'"
+#~ msgstr "无法转换带宽 floor 值 '%1$s'"
+
+#, c-format
+#~ msgid "could not convert bandwidth peak value '%1$s'"
+#~ msgstr "无法转换带宽峰值 '%1$s'"
+
+#~ msgid "invalid argument supplied"
+#~ msgstr "提供的参数无效"
+
+#, c-format
+#~ msgid "memory device count '%1$u' exceeds slots count '%2$u'"
+#~ msgstr "内存设备数 '%1$u' 超过了槽数 '%2$u'"
+
+#~ msgid "rule node requires action attribute"
+#~ msgstr "rule 节点需要 action 属性"
+
+#~ msgid "rule node requires direction attribute"
+#~ msgstr "rule 节点需要 direction 属性"
+
+#~ msgid "unknown rule action attribute value"
+#~ msgstr "未知的规则 action 属性值"
+
+#~ msgid "unknown rule direction attribute value"
+#~ msgstr "未知的规则 direction 属性值"
 
 #, c-format
 #~ msgid "DBus daemon %1$s didn't show up"

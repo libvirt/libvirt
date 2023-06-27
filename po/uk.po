@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-05-26 06:46+0000\n"
+"POT-Creation-Date: 2023-06-27 11:10+0000\n"
 "PO-Revision-Date: 2023-05-27 15:20+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -1306,15 +1306,21 @@ msgstr ""
 "безпосередньої підтримки формату сховища даних «directory» у QEMU не "
 "передбачено, скористайтеся замість нього типом диска «dir»"
 
+msgid "'discard_no_unref' is not compatible with read-only disk"
+msgstr ""
+
+msgid "'discard_no_unref' is not supported by this QEMU binary"
+msgstr ""
+
+msgid "'discard_no_unref' only works with qcow2 disk format"
+msgstr ""
+
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "пропущено «disk» або відповідь guest-get-fsinfo не є масивом"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr "підтримки «extended_l2» не передбачено із рівнем сумісності %1$s"
-
-msgid "'floor' attribute allowed only in <inbound> element"
-msgstr "атрибут «floor» можна використовувати лише у межах елемента <inbound>"
 
 msgid "'gluster' command line tool not found"
 msgstr "не знайдено інструмента командного рядка «gluster»"
@@ -1735,6 +1741,9 @@ msgstr ""
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr ""
 "підтримку атрибуту <hostdev> «display» передбачено лише з model='vfio-pci'"
+
+msgid "<iotune> is not supported with bus='sd'"
+msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> можна використовувати лише для пристроїв lun"
@@ -3525,6 +3534,10 @@ msgstr "Не можна відкривати доступ до неініціа�
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr "Неможливо вказати мітку, якщо зміну міток вимкнено. модель=%1$s"
+
+#, c-format
+msgid "Cannot specify relabel if label is missing. model=%1$s"
+msgstr ""
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -5648,6 +5661,9 @@ msgstr "Диск успішно від'єднано\n"
 #, c-format
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "Дисковим пристроєм «%1$s» не підтримується створення знімків"
+
+msgid "Disk discard_no_unref is not supported by vz driver."
+msgstr ""
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -13201,12 +13217,6 @@ msgstr ""
 msgid "Only one boot device is supported"
 msgstr "Передбачено підтримку лише одного пристрою завантаження"
 
-msgid "Only one child <inbound> element allowed"
-msgstr "Можна використовувати лише один дочірній елемент <inbound>"
-
-msgid "Only one child <outbound> element allowed"
-msgstr "Можна використовувати лише один дочірній елемент <outbound>"
-
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
@@ -16367,6 +16377,12 @@ msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr ""
 "Максимальний об'єм пам'яті призначення, «%1$llu», не відповідає об'єму "
 "джерела, «%2$llu»"
+
+#, c-format
+msgid ""
+"Target memory device address '0x%1$llx' doesn't match source memory device "
+"address '0x%2$llx'"
+msgstr ""
 
 #, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -20941,11 +20957,6 @@ msgstr ""
 "для під'єднання контролера PCI із значенням model='%1$s' потрібен слот PCI, "
 "але такі слоти недоступні і не можуть бути додані автоматично"
 
-msgid "a block I/O throttling is not supported for vhostuser disk"
-msgstr ""
-"для диска vhostuser не передбачено підтримки обмеження введення-виведення "
-"блоків"
-
 msgid "a device with the same address already exists "
 msgstr "пристрій із тією самою адресою вже існує "
 
@@ -21656,6 +21667,10 @@ msgstr ""
 "більшим за %1$llu"
 
 #, c-format
+msgid "block I/O throttling is not supported for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 "внесення блоку зазнало невдачі під час вилучення знімка диска «%1$s»: «%2$s»"
@@ -21833,10 +21848,6 @@ msgstr "підтримки завантажувача у QEMU не передб�
 
 msgid "both interface name and type must not be NULL"
 msgstr "хоч одне зі значень name або type має бути непорожнім"
-
-msgid "both maximum memory size and memory slot count must be specified"
-msgstr ""
-"слід вказати одночасно максимальний об'єм пам'яті і кількість слотів пам'яті"
 
 #, c-format
 msgid "bridge %1$s doesn't exist"
@@ -24287,24 +24298,6 @@ msgstr "не вдається з'єднатись зі сховищем Xen"
 msgid "could not connect to Xen Store %1$s"
 msgstr "не вдається з'єднатись зі сховищем Xen %1$s"
 
-#, c-format
-msgid "could not convert bandwidth average value '%1$s'"
-msgstr "не вдалося перетворити середнє значення пропускної здатності, «%1$s»"
-
-#, c-format
-msgid "could not convert bandwidth burst value '%1$s'"
-msgstr ""
-"не вдалося перетворити значення об'єму вибухової (burst) пропускної "
-"здатності, «%1$s»"
-
-#, c-format
-msgid "could not convert bandwidth floor value '%1$s'"
-msgstr "не вдалося перетворити значення нижнього рівня каналу, «%1$s»"
-
-#, c-format
-msgid "could not convert bandwidth peak value '%1$s'"
-msgstr "не вдалося перетворити значення пікової пропускної здатності, «%1$s»"
-
 msgid "could not create profile"
 msgstr "не вдалося створити профіль"
 
@@ -24639,6 +24632,12 @@ msgstr ""
 #, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
 msgstr "не вдалося записати файл налаштувань dnsmasq «%1$s»"
+
+#, c-format
+msgid ""
+"count of memory devices requiring memory slots '%1$zu' exceeds slots count "
+"'%2$u'"
+msgstr ""
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr "можливістю cow можна скористатися лише для буферів «fs» і «dir»"
@@ -29484,9 +29483,6 @@ msgstr "некоректне значення ap-domain, «%1$s», для «%2$s
 msgid "invalid argument"
 msgstr "некоректний аргумент"
 
-msgid "invalid argument supplied"
-msgstr "вказано некоректний аргумент"
-
 #, c-format
 msgid "invalid argument: %1$s"
 msgstr "помилковий аргумент: %1$s"
@@ -30977,6 +30973,9 @@ msgstr ""
 "помилкове форматування memaddr або його пропущено у даних щодо пам'яті sgx-"
 "epc"
 
+msgid "malformed/missing memaddr in virtio memory info"
+msgstr ""
+
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
 "помилкове форматуванян розміру або пропущений розмір у даних щодо пам'яті "
@@ -31056,6 +31055,10 @@ msgid ""
 msgstr ""
 "максимальний об'єм пам'яті має бути рівним або більшим за справжній об'єм "
 "пам'яті"
+
+msgid ""
+"maximum memory size must be specified when specifying number of memory slots"
+msgstr ""
 
 msgid "maximum memory size overflowed after alignment"
 msgstr "максимальний розмір пам'яті переповнив значення після вирівнювання"
@@ -31154,6 +31157,9 @@ msgid "memory device address is not supported for model '%1$s'"
 msgstr ""
 "підтримки адресування пам'яті пристрою для моделі «%1$s» не передбачено"
 
+msgid "memory device address must be aligned to blocksize"
+msgstr ""
+
 msgid "memory device alias"
 msgstr "альтернативна назва пристрою пам'яті"
 
@@ -31165,10 +31171,6 @@ msgid ""
 "memory device base '0x%1$llx' is already being used by another memory device"
 msgstr ""
 "база пристрою пам'яті «0x%1$llx» вже використовується іншим пристроєм пам'яті"
-
-#, c-format
-msgid "memory device count '%1$u' exceeds slots count '%2$u'"
-msgstr "кількість пристроїв пам'яті «%1$u» перевищує кількість слотів, «%2$u»"
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -35724,12 +35726,6 @@ msgstr "частота обертання має сенс лише для кан
 msgid "rotation rate is only valid for disk device"
 msgstr "частота обертання має сенс лише для дискових пристроїв"
 
-msgid "rule node requires action attribute"
-msgstr "У вузлі «rule» має бути атрибут «action»"
-
-msgid "rule node requires direction attribute"
-msgstr "У вузлі «rule» має бути атрибут «direction»"
-
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
@@ -39093,12 +39089,6 @@ msgstr "невідомий тип символьного пристрою redird
 msgid "unknown rng-random backend"
 msgstr "невідомий модуль rng-random"
 
-msgid "unknown rule action attribute value"
-msgstr "невідоме значення атрибута «action» правила"
-
-msgid "unknown rule direction attribute value"
-msgstr "невідоме значення атрибута «direction» правила"
-
 #, c-format
 msgid "unknown secret type '%1$s'"
 msgstr "невідомий тип ключа, «%1$s»"
@@ -39602,6 +39592,9 @@ msgstr "непідтримуване значення стану"
 #, c-format
 msgid "unsupported storage pool event ID %1$d"
 msgstr "непідтримуваний ідентифікатор події сховища даних, %1$d"
+
+msgid "unsupported storage type for this code path"
+msgstr ""
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -40778,6 +40771,66 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <рядок>}..."
+
+#~ msgid "'floor' attribute allowed only in <inbound> element"
+#~ msgstr ""
+#~ "атрибут «floor» можна використовувати лише у межах елемента <inbound>"
+
+#~ msgid "Only one child <inbound> element allowed"
+#~ msgstr "Можна використовувати лише один дочірній елемент <inbound>"
+
+#~ msgid "Only one child <outbound> element allowed"
+#~ msgstr "Можна використовувати лише один дочірній елемент <outbound>"
+
+#~ msgid "a block I/O throttling is not supported for vhostuser disk"
+#~ msgstr ""
+#~ "для диска vhostuser не передбачено підтримки обмеження введення-виведення "
+#~ "блоків"
+
+#~ msgid "both maximum memory size and memory slot count must be specified"
+#~ msgstr ""
+#~ "слід вказати одночасно максимальний об'єм пам'яті і кількість слотів "
+#~ "пам'яті"
+
+#, c-format
+#~ msgid "could not convert bandwidth average value '%1$s'"
+#~ msgstr ""
+#~ "не вдалося перетворити середнє значення пропускної здатності, «%1$s»"
+
+#, c-format
+#~ msgid "could not convert bandwidth burst value '%1$s'"
+#~ msgstr ""
+#~ "не вдалося перетворити значення об'єму вибухової (burst) пропускної "
+#~ "здатності, «%1$s»"
+
+#, c-format
+#~ msgid "could not convert bandwidth floor value '%1$s'"
+#~ msgstr "не вдалося перетворити значення нижнього рівня каналу, «%1$s»"
+
+#, c-format
+#~ msgid "could not convert bandwidth peak value '%1$s'"
+#~ msgstr ""
+#~ "не вдалося перетворити значення пікової пропускної здатності, «%1$s»"
+
+#~ msgid "invalid argument supplied"
+#~ msgstr "вказано некоректний аргумент"
+
+#, c-format
+#~ msgid "memory device count '%1$u' exceeds slots count '%2$u'"
+#~ msgstr ""
+#~ "кількість пристроїв пам'яті «%1$u» перевищує кількість слотів, «%2$u»"
+
+#~ msgid "rule node requires action attribute"
+#~ msgstr "У вузлі «rule» має бути атрибут «action»"
+
+#~ msgid "rule node requires direction attribute"
+#~ msgstr "У вузлі «rule» має бути атрибут «direction»"
+
+#~ msgid "unknown rule action attribute value"
+#~ msgstr "невідоме значення атрибута «action» правила"
+
+#~ msgid "unknown rule direction attribute value"
+#~ msgstr "невідоме значення атрибута «direction» правила"
 
 #, c-format
 #~ msgid "DBus daemon %1$s didn't show up"

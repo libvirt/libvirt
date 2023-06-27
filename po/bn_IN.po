@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-05-26 06:46+0000\n"
+"POT-Creation-Date: 2023-06-27 11:10+0000\n"
 "PO-Revision-Date: 2020-06-24 14:36+0000\n"
 "Last-Translator: Akarshan Biswas <akarshan.biswas@gmail.com>\n"
 "Language-Team: Bengali (India) <https://translate.fedoraproject.org/projects/"
@@ -1062,15 +1062,21 @@ msgid ""
 "type instead"
 msgstr ""
 
+msgid "'discard_no_unref' is not compatible with read-only disk"
+msgstr ""
+
+msgid "'discard_no_unref' is not supported by this QEMU binary"
+msgstr ""
+
+msgid "'discard_no_unref' only works with qcow2 disk format"
+msgstr ""
+
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr ""
-
-msgid "'floor' attribute allowed only in <inbound> element"
-msgstr "'floor' অ্যাট্রিবিউট শুধুমাত্র <inbound> উপাদানে অনুমোদিত"
 
 #, fuzzy
 msgid "'gluster' command line tool not found"
@@ -1477,6 +1483,9 @@ msgstr ""
 "নেটওয়ার্কে"
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
+msgstr ""
+
+msgid "<iotune> is not supported with bus='sd'"
 msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
@@ -3183,6 +3192,10 @@ msgstr ""
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr "পুনঃলেবেলিং বন্ধ করা হলে একটি লেবেল নির্দিষ্ট করতে পারে না। মডেল=%1$s"
+
+#, c-format
+msgid "Cannot specify relabel if label is missing. model=%1$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot stat %1$s"
@@ -5263,6 +5276,9 @@ msgstr "সাফল্যের সাথে ডিস্ক বিচ্ছি
 #, fuzzy, c-format
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "'%1$s' qemu এমুলেটর দ্বারা xen সমর্থিত হয় না"
+
+msgid "Disk discard_no_unref is not supported by vz driver."
+msgstr ""
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -12629,12 +12645,6 @@ msgstr ""
 msgid "Only one boot device is supported"
 msgstr "শুধুমাত্র একটি প্রাথমিক ডিভিও ডিভাইস সমর্থিত"
 
-msgid "Only one child <inbound> element allowed"
-msgstr "শুধুমাত্র একটি চাইল্ড <inbound> উপাদান অনুমোদিত"
-
-msgid "Only one child <outbound> element allowed"
-msgstr "শুধুমাত্র একটি চাইল্ড <outbound> উপাদান অনুমোদিত"
-
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
@@ -15488,6 +15498,12 @@ msgstr "টার্গেট CPU মডেল %1$s %2$s সোর্সের �
 #, fuzzy, c-format
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr "টার্গেট ডোমেন সর্বাধিক মেমরি %lld %lld সোর্সের সংগে মিলছে না"
+
+#, c-format
+msgid ""
+"Target memory device address '0x%1$llx' doesn't match source memory device "
+"address '0x%2$llx'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -20048,9 +20064,6 @@ msgid ""
 "available, and it cannot be automatically added"
 msgstr ""
 
-msgid "a block I/O throttling is not supported for vhostuser disk"
-msgstr ""
-
 msgid "a device with the same address already exists "
 msgstr ""
 
@@ -20726,6 +20739,10 @@ msgid "block I/O throttle limit value must be no more than %1$llu"
 msgstr ""
 
 #, c-format
+msgid "block I/O throttling is not supported for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
@@ -20887,9 +20904,6 @@ msgid "bootloader is not supported by QEMU"
 msgstr "hostdev মোড '%s' সমর্থিত নয়"
 
 msgid "both interface name and type must not be NULL"
-msgstr ""
-
-msgid "both maximum memory size and memory slot count must be specified"
 msgstr ""
 
 #, fuzzy, c-format
@@ -23301,22 +23315,6 @@ msgstr "Xen Store-র সাথে সংযোগ করতে ব্যর্�
 msgid "could not connect to Xen Store %1$s"
 msgstr "Xen Store %1$s-র সাথে সংযোগ করতে ব্যর্থ"
 
-#, c-format
-msgid "could not convert bandwidth average value '%1$s'"
-msgstr "ব্যান্ডউইথ গড় মান '%1$s' রূপান্তর করা যায়নি"
-
-#, c-format
-msgid "could not convert bandwidth burst value '%1$s'"
-msgstr "ব্যান্ডউইথ বার্স্ট মান '%1$s' রূপান্তর করা যায়নি"
-
-#, c-format
-msgid "could not convert bandwidth floor value '%1$s'"
-msgstr "ব্যান্ডউইথ ফ্লোর মান '%1$s' রূপান্তর করা যায়নি"
-
-#, c-format
-msgid "could not convert bandwidth peak value '%1$s'"
-msgstr "ব্যান্ডউইথ সর্বোচ্চ মান '%1$s' রূপান্তর করা যায়নি"
-
 #, fuzzy
 msgid "could not create profile"
 msgstr "'%s'-র প্রোফাইল মুছে ফেলতে ব্যর্থ"
@@ -23665,6 +23663,12 @@ msgstr ""
 #, fuzzy, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
 msgstr "কনফিগ ফাইল '%1$s' লিখতে ব্যর্থ"
+
+#, c-format
+msgid ""
+"count of memory devices requiring memory slots '%1$zu' exceeds slots count "
+"'%2$u'"
+msgstr ""
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr ""
@@ -28423,9 +28427,6 @@ msgstr ""
 msgid "invalid argument"
 msgstr "অবৈধ আর্গুমেন্ট"
 
-msgid "invalid argument supplied"
-msgstr "অবৈধ অার্গুমেন্ট সরবরাহ করা হয়েছে"
-
 #, fuzzy, c-format
 msgid "invalid argument: %1$s"
 msgstr "অবৈধ আর্গুমেন্ট"
@@ -29925,6 +29926,9 @@ msgstr ""
 msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr ""
 
+msgid "malformed/missing memaddr in virtio memory info"
+msgstr ""
+
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
 
@@ -30001,6 +30005,10 @@ msgstr ""
 
 msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
+msgstr ""
+
+msgid ""
+"maximum memory size must be specified when specifying number of memory slots"
 msgstr ""
 
 msgid "maximum memory size overflowed after alignment"
@@ -30099,6 +30107,9 @@ msgstr ""
 msgid "memory device address is not supported for model '%1$s'"
 msgstr ""
 
+msgid "memory device address must be aligned to blocksize"
+msgstr ""
+
 msgid "memory device alias"
 msgstr ""
 
@@ -30108,10 +30119,6 @@ msgstr ""
 #, c-format
 msgid ""
 "memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
-
-#, c-format
-msgid "memory device count '%1$u' exceeds slots count '%2$u'"
 msgstr ""
 
 #, c-format
@@ -34566,12 +34573,6 @@ msgstr ""
 msgid "rotation rate is only valid for disk device"
 msgstr ""
 
-msgid "rule node requires action attribute"
-msgstr "রুল নোডের কাজের অ্যাট্রিবিউটের প্রয়োজন"
-
-msgid "rule node requires direction attribute"
-msgstr "রুল নোডের ডিরেকশন অ্যাট্রিবিউটের প্রয়োজন"
-
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
@@ -37860,12 +37861,6 @@ msgstr "অজানা redirdev ক্যারেক্টার ডিভা�
 msgid "unknown rng-random backend"
 msgstr ""
 
-msgid "unknown rule action attribute value"
-msgstr "অজানা রুল অ্যাকশন অ্যাট্রিবিউট মান"
-
-msgid "unknown rule direction attribute value"
-msgstr "অজানা রুল ডিরেকশন অ্যাট্রিবিউট মান"
-
 #, fuzzy, c-format
 msgid "unknown secret type '%1$s'"
 msgstr "অজানা ডিভাইস ধরন '%1$s'"
@@ -38372,6 +38367,9 @@ msgstr "অসমর্থিত বৈশিষ্ট্য %s"
 #, fuzzy, c-format
 msgid "unsupported storage pool event ID %1$d"
 msgstr "অসমর্থিত ইভেন্ট অাইডি %1$d"
+
+msgid "unsupported storage type for this code path"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -39469,6 +39467,46 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "[--%1$s <string>]"
+
+#~ msgid "'floor' attribute allowed only in <inbound> element"
+#~ msgstr "'floor' অ্যাট্রিবিউট শুধুমাত্র <inbound> উপাদানে অনুমোদিত"
+
+#~ msgid "Only one child <inbound> element allowed"
+#~ msgstr "শুধুমাত্র একটি চাইল্ড <inbound> উপাদান অনুমোদিত"
+
+#~ msgid "Only one child <outbound> element allowed"
+#~ msgstr "শুধুমাত্র একটি চাইল্ড <outbound> উপাদান অনুমোদিত"
+
+#, c-format
+#~ msgid "could not convert bandwidth average value '%1$s'"
+#~ msgstr "ব্যান্ডউইথ গড় মান '%1$s' রূপান্তর করা যায়নি"
+
+#, c-format
+#~ msgid "could not convert bandwidth burst value '%1$s'"
+#~ msgstr "ব্যান্ডউইথ বার্স্ট মান '%1$s' রূপান্তর করা যায়নি"
+
+#, c-format
+#~ msgid "could not convert bandwidth floor value '%1$s'"
+#~ msgstr "ব্যান্ডউইথ ফ্লোর মান '%1$s' রূপান্তর করা যায়নি"
+
+#, c-format
+#~ msgid "could not convert bandwidth peak value '%1$s'"
+#~ msgstr "ব্যান্ডউইথ সর্বোচ্চ মান '%1$s' রূপান্তর করা যায়নি"
+
+#~ msgid "invalid argument supplied"
+#~ msgstr "অবৈধ অার্গুমেন্ট সরবরাহ করা হয়েছে"
+
+#~ msgid "rule node requires action attribute"
+#~ msgstr "রুল নোডের কাজের অ্যাট্রিবিউটের প্রয়োজন"
+
+#~ msgid "rule node requires direction attribute"
+#~ msgstr "রুল নোডের ডিরেকশন অ্যাট্রিবিউটের প্রয়োজন"
+
+#~ msgid "unknown rule action attribute value"
+#~ msgstr "অজানা রুল অ্যাকশন অ্যাট্রিবিউট মান"
+
+#~ msgid "unknown rule direction attribute value"
+#~ msgstr "অজানা রুল ডিরেকশন অ্যাট্রিবিউট মান"
 
 #, fuzzy
 #~ msgid "Field name too long"

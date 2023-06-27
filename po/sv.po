@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-05-26 06:46+0000\n"
+"POT-Creation-Date: 2023-06-27 11:10+0000\n"
 "PO-Revision-Date: 2023-04-25 08:21+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1272,15 +1272,21 @@ msgstr ""
 "lagringsformatet ”directory” stödjs inte direkt av QEMU, använd disktypen "
 "”dir” istället"
 
+msgid "'discard_no_unref' is not compatible with read-only disk"
+msgstr ""
+
+msgid "'discard_no_unref' is not supported by this QEMU binary"
+msgstr ""
+
+msgid "'discard_no_unref' only works with qcow2 disk format"
+msgstr ""
+
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "”disk” saknas eller är inte en vektor i svaret på guest-get-fsinfo"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr "'extended_l2' stödjs inte med kompatibilitetsnivå %1$s"
-
-msgid "'floor' attribute allowed only in <inbound> element"
-msgstr "attributet ”floor” är endast tillåtet i elementet <inbound>"
 
 msgid "'gluster' command line tool not found"
 msgstr "kommandoradsverktyget ”gluster” finns inte"
@@ -1685,6 +1691,9 @@ msgstr ""
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr "attributet ”display” i <hostdev> stödjs endast med model='vfio-pci'"
+
+msgid "<iotune> is not supported with bus='sd'"
+msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> är endast tillåtna för lun-enheter"
@@ -3407,6 +3416,10 @@ msgstr "Det går inte att dela ett oinitierat CURL-handtag"
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr ""
 "Det går inte att ange en etikett om omettikettering är avslaget, modell=%1$s"
+
+#, c-format
+msgid "Cannot specify relabel if label is missing. model=%1$s"
+msgstr ""
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -5471,6 +5484,9 @@ msgstr "Disken kopplades ifrån\n"
 #, c-format
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "Diskenheten ”%1$s” stöder inte att ta ögonblicksbilder"
+
+msgid "Disk discard_no_unref is not supported by vz driver."
+msgstr ""
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -12799,12 +12815,6 @@ msgstr "Endast ett argument från --table, --name och --uuid kan anges."
 msgid "Only one boot device is supported"
 msgstr "Endast en startenhet stödjs"
 
-msgid "Only one child <inbound> element allowed"
-msgstr "Endast ett barn-<inbound>-element är tillåtet"
-
-msgid "Only one child <outbound> element allowed"
-msgstr "Endast ett barn-<outbound>-element är tillåtet"
-
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
@@ -15677,6 +15687,12 @@ msgstr "Målinmatningsmodellen %1$s stämmer inte med källan %2$s"
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr ""
 "Målets maximala minnesstorlek ”%1$llu” stämmer inte med källan ”%2$llu”"
+
+#, c-format
+msgid ""
+"Target memory device address '0x%1$llx' doesn't match source memory device "
+"address '0x%2$llx'"
+msgstr ""
 
 #, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -20096,9 +20112,6 @@ msgid ""
 "available, and it cannot be automatically added"
 msgstr ""
 
-msgid "a block I/O throttling is not supported for vhostuser disk"
-msgstr ""
-
 msgid "a device with the same address already exists "
 msgstr ""
 
@@ -20750,6 +20763,10 @@ msgid "block I/O throttle limit value must be no more than %1$llu"
 msgstr ""
 
 #, c-format
+msgid "block I/O throttling is not supported for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
@@ -20907,9 +20924,6 @@ msgid "bootloader is not supported by QEMU"
 msgstr ""
 
 msgid "both interface name and type must not be NULL"
-msgstr ""
-
-msgid "both maximum memory size and memory slot count must be specified"
 msgstr ""
 
 #, c-format
@@ -23242,22 +23256,6 @@ msgstr "kunde inte ansluta till Xen Store"
 msgid "could not connect to Xen Store %1$s"
 msgstr "kunde inte ansluta till Xen Store %1$s"
 
-#, fuzzy, c-format
-msgid "could not convert bandwidth average value '%1$s'"
-msgstr "kunde inte ansluta till Xen Store %1$s"
-
-#, fuzzy, c-format
-msgid "could not convert bandwidth burst value '%1$s'"
-msgstr "Kunde inte hitta %s med namnet ”%s”"
-
-#, fuzzy, c-format
-msgid "could not convert bandwidth floor value '%1$s'"
-msgstr "kunde inte ansluta till Xen Store %1$s"
-
-#, fuzzy, c-format
-msgid "could not convert bandwidth peak value '%1$s'"
-msgstr "kunde inte ansluta till Xen Store %1$s"
-
 #, fuzzy
 msgid "could not create profile"
 msgstr "misslyckats med att skapa profil"
@@ -23589,6 +23587,12 @@ msgstr ""
 #, fuzzy, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
 msgstr "kan inte skriva konfigurationsfilen ”%1$s”"
+
+#, c-format
+msgid ""
+"count of memory devices requiring memory slots '%1$zu' exceeds slots count "
+"'%2$u'"
+msgstr ""
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr ""
@@ -28275,9 +28279,6 @@ msgstr ""
 msgid "invalid argument"
 msgstr "ogiltigt argument"
 
-msgid "invalid argument supplied"
-msgstr ""
-
 #, c-format
 msgid "invalid argument: %1$s"
 msgstr "ogiltigt argument: %1$s"
@@ -29735,6 +29736,9 @@ msgstr ""
 msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr ""
 
+msgid "malformed/missing memaddr in virtio memory info"
+msgstr ""
+
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
 
@@ -29810,6 +29814,10 @@ msgstr ""
 
 msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
+msgstr ""
+
+msgid ""
+"maximum memory size must be specified when specifying number of memory slots"
 msgstr ""
 
 msgid "maximum memory size overflowed after alignment"
@@ -29907,6 +29915,9 @@ msgstr ""
 msgid "memory device address is not supported for model '%1$s'"
 msgstr ""
 
+msgid "memory device address must be aligned to blocksize"
+msgstr ""
+
 msgid "memory device alias"
 msgstr ""
 
@@ -29916,10 +29927,6 @@ msgstr ""
 #, c-format
 msgid ""
 "memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
-
-#, c-format
-msgid "memory device count '%1$u' exceeds slots count '%2$u'"
 msgstr ""
 
 #, c-format
@@ -34272,14 +34279,6 @@ msgstr ""
 msgid "rotation rate is only valid for disk device"
 msgstr ""
 
-#, fuzzy
-msgid "rule node requires action attribute"
-msgstr "läget passthrough kräver ett attribut av teckenenhetstyp"
-
-#, fuzzy
-msgid "rule node requires direction attribute"
-msgstr "läget passthrough kräver ett attribut av teckenenhetstyp"
-
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
@@ -37500,13 +37499,6 @@ msgstr "okänd teckenenhetstyp: %1$s"
 msgid "unknown rng-random backend"
 msgstr ""
 
-msgid "unknown rule action attribute value"
-msgstr ""
-
-#, fuzzy
-msgid "unknown rule direction attribute value"
-msgstr "Kan inte tolka <address> ”function”-attributet"
-
 #, c-format
 msgid "unknown secret type '%1$s'"
 msgstr "okänd hemlighetstyp ”%1$s”"
@@ -38010,6 +38002,9 @@ msgstr "disktypen stödjs inte %s"
 #, fuzzy, c-format
 msgid "unsupported storage pool event ID %1$d"
 msgstr "ej stödd händelse-ID %1$d"
+
+msgid "unsupported storage type for this code path"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -39076,6 +39071,43 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "--%1$s <sträng>"
+
+#~ msgid "'floor' attribute allowed only in <inbound> element"
+#~ msgstr "attributet ”floor” är endast tillåtet i elementet <inbound>"
+
+#~ msgid "Only one child <inbound> element allowed"
+#~ msgstr "Endast ett barn-<inbound>-element är tillåtet"
+
+#~ msgid "Only one child <outbound> element allowed"
+#~ msgstr "Endast ett barn-<outbound>-element är tillåtet"
+
+#, fuzzy, c-format
+#~ msgid "could not convert bandwidth average value '%1$s'"
+#~ msgstr "kunde inte ansluta till Xen Store %1$s"
+
+#, fuzzy, c-format
+#~ msgid "could not convert bandwidth burst value '%1$s'"
+#~ msgstr "Kunde inte hitta %s med namnet ”%s”"
+
+#, fuzzy, c-format
+#~ msgid "could not convert bandwidth floor value '%1$s'"
+#~ msgstr "kunde inte ansluta till Xen Store %1$s"
+
+#, fuzzy, c-format
+#~ msgid "could not convert bandwidth peak value '%1$s'"
+#~ msgstr "kunde inte ansluta till Xen Store %1$s"
+
+#, fuzzy
+#~ msgid "rule node requires action attribute"
+#~ msgstr "läget passthrough kräver ett attribut av teckenenhetstyp"
+
+#, fuzzy
+#~ msgid "rule node requires direction attribute"
+#~ msgstr "läget passthrough kräver ett attribut av teckenenhetstyp"
+
+#, fuzzy
+#~ msgid "unknown rule direction attribute value"
+#~ msgstr "Kan inte tolka <address> ”function”-attributet"
 
 #, c-format
 #~ msgid "DBus daemon %1$s didn't show up"

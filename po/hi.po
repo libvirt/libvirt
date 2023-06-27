@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-05-26 06:46+0000\n"
+"POT-Creation-Date: 2023-06-27 11:10+0000\n"
 "PO-Revision-Date: 2015-02-23 12:39+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hindi (http://www.transifex.com/projects/p/fedora/language/"
@@ -1102,15 +1102,21 @@ msgid ""
 "type instead"
 msgstr ""
 
+msgid "'discard_no_unref' is not compatible with read-only disk"
+msgstr ""
+
+msgid "'discard_no_unref' is not supported by this QEMU binary"
+msgstr ""
+
+msgid "'discard_no_unref' only works with qcow2 disk format"
+msgstr ""
+
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr ""
-
-msgid "'floor' attribute allowed only in <inbound> element"
-msgstr "'फर्श' विशेषता केवल <inbound> तत्व में अनुमति दी गई"
 
 #, fuzzy
 msgid "'gluster' command line tool not found"
@@ -1514,6 +1520,9 @@ msgid ""
 msgstr "<forward dev='%s'> संजाल% s में पहले <interface dev='%s'/> से मेल खाना चाहिए"
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
+msgstr ""
+
+msgid "<iotune> is not supported with bus='sd'"
 msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
@@ -3232,6 +3241,10 @@ msgstr "आरंभीकृत CURL हैंडल को साझा नह
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr "लेबल को निर्दिष्ट नहीं कर सका अगर रिलेबलिंग  बंद कर दिया गया है. model=%1$s"
+
+#, c-format
+msgid "Cannot specify relabel if label is missing. model=%1$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot stat %1$s"
@@ -5281,6 +5294,9 @@ msgstr "डिस्क को सफलतापूर्वक अलग क�
 #, c-format
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "डिस्क युक्ति '%1$s' snapshotting का समर्थन नहीं करता है    "
+
+msgid "Disk discard_no_unref is not supported by vz driver."
+msgstr ""
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -12676,12 +12692,6 @@ msgstr ""
 msgid "Only one boot device is supported"
 msgstr "केवल एक प्राथमिक वीडियो युक्ति समर्थित है"
 
-msgid "Only one child <inbound> element allowed"
-msgstr "केवल एक शिशु <inbound>तत्व स्वीकार्य है"
-
-msgid "Only one child <outbound> element allowed"
-msgstr "केवल एक शिशु <outbound> तत्व स्वीकार्य है"
-
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
@@ -15555,6 +15565,12 @@ msgstr "लक्ष्य CPU मॉडल %1$s स्रोत %2$s से म
 #, fuzzy, c-format
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr "लक्ष्य डोमेन max मेमोरी %lld का मेल स्रोत %lld से नहीं है"
+
+#, c-format
+msgid ""
+"Target memory device address '0x%1$llx' doesn't match source memory device "
+"address '0x%2$llx'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -20101,9 +20117,6 @@ msgid ""
 "available, and it cannot be automatically added"
 msgstr ""
 
-msgid "a block I/O throttling is not supported for vhostuser disk"
-msgstr ""
-
 #, fuzzy
 msgid "a device with the same address already exists "
 msgstr "होस्ट के युक्ति पहले से मौजूद है"
@@ -20785,6 +20798,10 @@ msgid "block I/O throttle limit value must be no more than %1$llu"
 msgstr ""
 
 #, c-format
+msgid "block I/O throttling is not supported for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
@@ -20948,9 +20965,6 @@ msgstr "पुनर्निर्देशन बस %s QEMU द्वार�
 #, fuzzy
 msgid "both interface name and type must not be NULL"
 msgstr "अंतरफलक नाम %s बफर में फिट नहीं है"
-
-msgid "both maximum memory size and memory slot count must be specified"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "bridge %1$s doesn't exist"
@@ -23355,22 +23369,6 @@ msgstr "Xen भंडार में जोड़ नहीं जा सका
 msgid "could not connect to Xen Store %1$s"
 msgstr "Xen भंडार %1$s में जोड़ नहीं जा सका"
 
-#, c-format
-msgid "could not convert bandwidth average value '%1$s'"
-msgstr "बैंडविड्थ औसत मान '%1$s' में परिवर्तित नहीं कर सकता"
-
-#, c-format
-msgid "could not convert bandwidth burst value '%1$s'"
-msgstr "बैंडविड्थ फट मान '%1$s' में परिवर्तित नहीं कर सकता"
-
-#, c-format
-msgid "could not convert bandwidth floor value '%1$s'"
-msgstr "बैंडविड्थ मंजिल मान '%1$s' में परिवर्तित नहीं कर सकता"
-
-#, c-format
-msgid "could not convert bandwidth peak value '%1$s'"
-msgstr "बैंडविड्थ शिखर मान '%1$s' में परिवर्तित नहीं कर सकता"
-
 msgid "could not create profile"
 msgstr "प्रोफाइल नहीं बना सकते"
 
@@ -23709,6 +23707,12 @@ msgstr ""
 #, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
 msgstr "dnsmasq config फाइल नहीं लिख सकता '%1$s'"
+
+#, c-format
+msgid ""
+"count of memory devices requiring memory slots '%1$zu' exceeds slots count "
+"'%2$u'"
+msgstr ""
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr ""
@@ -28452,9 +28456,6 @@ msgstr ""
 msgid "invalid argument"
 msgstr "अवैध तर्क"
 
-msgid "invalid argument supplied"
-msgstr "अवैध तर्क की आपूर्ति"
-
 #, c-format
 msgid "invalid argument: %1$s"
 msgstr "अवैध आर्गुमेंट. %1$s"
@@ -29957,6 +29958,9 @@ msgstr ""
 msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr ""
 
+msgid "malformed/missing memaddr in virtio memory info"
+msgstr ""
+
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
 
@@ -30034,6 +30038,10 @@ msgstr ""
 
 msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
+msgstr ""
+
+msgid ""
+"maximum memory size must be specified when specifying number of memory slots"
 msgstr ""
 
 msgid "maximum memory size overflowed after alignment"
@@ -30132,6 +30140,9 @@ msgstr ""
 msgid "memory device address is not supported for model '%1$s'"
 msgstr ""
 
+msgid "memory device address must be aligned to blocksize"
+msgstr ""
+
 msgid "memory device alias"
 msgstr ""
 
@@ -30142,10 +30153,6 @@ msgstr "PCI युक्ति %s आबंटित नहीं है"
 #, c-format
 msgid ""
 "memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
-
-#, c-format
-msgid "memory device count '%1$u' exceeds slots count '%2$u'"
 msgstr ""
 
 #, c-format
@@ -34600,12 +34607,6 @@ msgstr ""
 msgid "rotation rate is only valid for disk device"
 msgstr ""
 
-msgid "rule node requires action attribute"
-msgstr "नियम नोड को क्रिया गुण की आवश्यकता है "
-
-msgid "rule node requires direction attribute"
-msgstr "नियम नोड को दिशा गुण की आवश्यकता है "
-
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
@@ -37890,12 +37891,6 @@ msgstr "अज्ञात redirdev वर्ण युक्ति प्रक
 msgid "unknown rng-random backend"
 msgstr ""
 
-msgid "unknown rule action attribute value"
-msgstr "अज्ञात नियम क्रिया गुण मान "
-
-msgid "unknown rule direction attribute value"
-msgstr "अज्ञात नियम दिशा गुण मान"
-
 #, fuzzy, c-format
 msgid "unknown secret type '%1$s'"
 msgstr "अज्ञात युक्ति प्रकार '%1$s'"
@@ -38400,6 +38395,9 @@ msgstr "असमर्थित डिस्क प्रकार %s"
 #, fuzzy, c-format
 msgid "unsupported storage pool event ID %1$d"
 msgstr "असमर्थित घटना आईडी %1$d"
+
+msgid "unsupported storage type for this code path"
+msgstr ""
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -39505,6 +39503,46 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "'floor' attribute allowed only in <inbound> element"
+#~ msgstr "'फर्श' विशेषता केवल <inbound> तत्व में अनुमति दी गई"
+
+#~ msgid "Only one child <inbound> element allowed"
+#~ msgstr "केवल एक शिशु <inbound>तत्व स्वीकार्य है"
+
+#~ msgid "Only one child <outbound> element allowed"
+#~ msgstr "केवल एक शिशु <outbound> तत्व स्वीकार्य है"
+
+#, c-format
+#~ msgid "could not convert bandwidth average value '%1$s'"
+#~ msgstr "बैंडविड्थ औसत मान '%1$s' में परिवर्तित नहीं कर सकता"
+
+#, c-format
+#~ msgid "could not convert bandwidth burst value '%1$s'"
+#~ msgstr "बैंडविड्थ फट मान '%1$s' में परिवर्तित नहीं कर सकता"
+
+#, c-format
+#~ msgid "could not convert bandwidth floor value '%1$s'"
+#~ msgstr "बैंडविड्थ मंजिल मान '%1$s' में परिवर्तित नहीं कर सकता"
+
+#, c-format
+#~ msgid "could not convert bandwidth peak value '%1$s'"
+#~ msgstr "बैंडविड्थ शिखर मान '%1$s' में परिवर्तित नहीं कर सकता"
+
+#~ msgid "invalid argument supplied"
+#~ msgstr "अवैध तर्क की आपूर्ति"
+
+#~ msgid "rule node requires action attribute"
+#~ msgstr "नियम नोड को क्रिया गुण की आवश्यकता है "
+
+#~ msgid "rule node requires direction attribute"
+#~ msgstr "नियम नोड को दिशा गुण की आवश्यकता है "
+
+#~ msgid "unknown rule action attribute value"
+#~ msgstr "अज्ञात नियम क्रिया गुण मान "
+
+#~ msgid "unknown rule direction attribute value"
+#~ msgstr "अज्ञात नियम दिशा गुण मान"
 
 #, fuzzy, c-format
 #~ msgid "DBus daemon %1$s didn't show up"

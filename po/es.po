@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-05-26 06:46+0000\n"
+"POT-Creation-Date: 2023-06-27 11:10+0000\n"
 "PO-Revision-Date: 2022-01-30 17:16+0000\n"
 "Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1160,15 +1160,21 @@ msgid ""
 "type instead"
 msgstr ""
 
+msgid "'discard_no_unref' is not compatible with read-only disk"
+msgstr ""
+
+msgid "'discard_no_unref' is not supported by this QEMU binary"
+msgstr ""
+
+msgid "'discard_no_unref' only works with qcow2 disk format"
+msgstr ""
+
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr ""
-
-msgid "'floor' attribute allowed only in <inbound> element"
-msgstr "atributo 'floor' permitido únicamente en elemento <inbound>"
 
 msgid "'gluster' command line tool not found"
 msgstr "No se encontró la herramienta de línea de órdenes «gluster»"
@@ -1582,6 +1588,9 @@ msgstr ""
 "red %3$s"
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
+msgstr ""
+
+msgid "<iotune> is not supported with bus='sd'"
 msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
@@ -3348,6 +3357,10 @@ msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr ""
 "No se puede especificar una etiqueta si el reetiquetado es turned off. "
 "model=%1$s"
+
+#, c-format
+msgid "Cannot specify relabel if label is missing. model=%1$s"
+msgstr ""
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -5457,6 +5470,9 @@ msgstr "El disco ha sido desmontado exitosamente\n"
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr ""
 "El dispositivo de disco '%1$s' no tiene soporte para capturas instantáneas"
+
+msgid "Disk discard_no_unref is not supported by vz driver."
+msgstr ""
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -12997,12 +13013,6 @@ msgstr ""
 msgid "Only one boot device is supported"
 msgstr "Solamente se admite un dispositivo de vídeo primario"
 
-msgid "Only one child <inbound> element allowed"
-msgstr "Solo se permite un elemento hijo <inbound> "
-
-msgid "Only one child <outbound> element allowed"
-msgstr "Solo se permite un elemento hijo <inbound> "
-
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
@@ -16063,6 +16073,12 @@ msgstr "El modelo %1$s de la CPU elegida no coincide con la fuente %2$s"
 #, fuzzy, c-format
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr "Destino de dominio máx de memoria %lld no coincide con fuente %lld"
+
+#, c-format
+msgid ""
+"Target memory device address '0x%1$llx' doesn't match source memory device "
+"address '0x%2$llx'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -20612,9 +20628,6 @@ msgid ""
 "available, and it cannot be automatically added"
 msgstr ""
 
-msgid "a block I/O throttling is not supported for vhostuser disk"
-msgstr ""
-
 #, fuzzy
 msgid "a device with the same address already exists "
 msgstr "el dominio con el nombre '%s' ya existe"
@@ -21296,6 +21309,10 @@ msgid "block I/O throttle limit value must be no more than %1$llu"
 msgstr ""
 
 #, c-format
+msgid "block I/O throttling is not supported for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
@@ -21465,9 +21482,6 @@ msgstr "Binario QEMU no soporta tiempo de espera de rearranque "
 #, fuzzy
 msgid "both interface name and type must not be NULL"
 msgstr "el argumento virt_type no debe ser NULL"
-
-msgid "both maximum memory size and memory slot count must be specified"
-msgstr ""
 
 #, c-format
 msgid "bridge %1$s doesn't exist"
@@ -23913,22 +23927,6 @@ msgstr "no se ha podido conectar con el Depósito Xen"
 msgid "could not connect to Xen Store %1$s"
 msgstr "no se ha podido conectar con el Depósito Xen %1$s"
 
-#, c-format
-msgid "could not convert bandwidth average value '%1$s'"
-msgstr "no se pudo convertir valor de promedio de ancho de banda '%1$s'"
-
-#, c-format
-msgid "could not convert bandwidth burst value '%1$s'"
-msgstr "no se pudo convertir valor de ráfaga de ancho de banda '%1$s'"
-
-#, c-format
-msgid "could not convert bandwidth floor value '%1$s'"
-msgstr "no se pudo convertir valor de piso de ancho de banda '%1$s'"
-
-#, c-format
-msgid "could not convert bandwidth peak value '%1$s'"
-msgstr "no se pudo convertir valor máximo de ancho de banda '%1$s'"
-
 msgid "could not create profile"
 msgstr "No se pudo crear perfil"
 
@@ -24268,6 +24266,12 @@ msgstr ""
 #, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
 msgstr "No se pudo escribir archivo dnsmasq config '%1$s'"
+
+#, c-format
+msgid ""
+"count of memory devices requiring memory slots '%1$zu' exceeds slots count "
+"'%2$u'"
+msgstr ""
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr ""
@@ -29063,9 +29067,6 @@ msgstr ""
 msgid "invalid argument"
 msgstr "Argumento inválido"
 
-msgid "invalid argument supplied"
-msgstr "Argumento proporcionado inválido"
-
 #, c-format
 msgid "invalid argument: %1$s"
 msgstr "Argumento inválido: %1$s"
@@ -30548,6 +30549,9 @@ msgstr ""
 msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr ""
 
+msgid "malformed/missing memaddr in virtio memory info"
+msgstr ""
+
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
 
@@ -30624,6 +30628,10 @@ msgstr ""
 
 msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
+msgstr ""
+
+msgid ""
+"maximum memory size must be specified when specifying number of memory slots"
 msgstr ""
 
 #, fuzzy
@@ -30717,6 +30725,9 @@ msgstr "atributos de memoria: [file=]name[,snapshot=type]"
 msgid "memory device address is not supported for model '%1$s'"
 msgstr ""
 
+msgid "memory device address must be aligned to blocksize"
+msgstr ""
+
 msgid "memory device alias"
 msgstr ""
 
@@ -30727,10 +30738,6 @@ msgstr "PCI device %s is not assignable"
 #, c-format
 msgid ""
 "memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
-
-#, c-format
-msgid "memory device count '%1$u' exceeds slots count '%2$u'"
 msgstr ""
 
 #, c-format
@@ -35287,12 +35294,6 @@ msgstr ""
 msgid "rotation rate is only valid for disk device"
 msgstr ""
 
-msgid "rule node requires action attribute"
-msgstr "la regla de nodo necesita el atributo de acción"
-
-msgid "rule node requires direction attribute"
-msgstr "la regla del nodo necesita el atributo dirección"
-
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
@@ -38622,12 +38623,6 @@ msgstr "Tipo de dispositivo de caracteres redirdev '%1$s' desconocido"
 msgid "unknown rng-random backend"
 msgstr ""
 
-msgid "unknown rule action attribute value"
-msgstr "El valor del atributo de acción de regla es desconocido"
-
-msgid "unknown rule direction attribute value"
-msgstr "El valor de atributo de dirección de regla es desconocido"
-
 #, fuzzy, c-format
 msgid "unknown secret type '%1$s'"
 msgstr "Tipo de dispositivo desconocido '%1$s'"
@@ -39136,6 +39131,9 @@ msgstr "Funcionalidad %s no tiene soporte"
 #, fuzzy, c-format
 msgid "unsupported storage pool event ID %1$d"
 msgstr "ID de evento %1$d no soportado"
+
+msgid "unsupported storage type for this code path"
+msgstr ""
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -40242,6 +40240,46 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "'floor' attribute allowed only in <inbound> element"
+#~ msgstr "atributo 'floor' permitido únicamente en elemento <inbound>"
+
+#~ msgid "Only one child <inbound> element allowed"
+#~ msgstr "Solo se permite un elemento hijo <inbound> "
+
+#~ msgid "Only one child <outbound> element allowed"
+#~ msgstr "Solo se permite un elemento hijo <inbound> "
+
+#, c-format
+#~ msgid "could not convert bandwidth average value '%1$s'"
+#~ msgstr "no se pudo convertir valor de promedio de ancho de banda '%1$s'"
+
+#, c-format
+#~ msgid "could not convert bandwidth burst value '%1$s'"
+#~ msgstr "no se pudo convertir valor de ráfaga de ancho de banda '%1$s'"
+
+#, c-format
+#~ msgid "could not convert bandwidth floor value '%1$s'"
+#~ msgstr "no se pudo convertir valor de piso de ancho de banda '%1$s'"
+
+#, c-format
+#~ msgid "could not convert bandwidth peak value '%1$s'"
+#~ msgstr "no se pudo convertir valor máximo de ancho de banda '%1$s'"
+
+#~ msgid "invalid argument supplied"
+#~ msgstr "Argumento proporcionado inválido"
+
+#~ msgid "rule node requires action attribute"
+#~ msgstr "la regla de nodo necesita el atributo de acción"
+
+#~ msgid "rule node requires direction attribute"
+#~ msgstr "la regla del nodo necesita el atributo dirección"
+
+#~ msgid "unknown rule action attribute value"
+#~ msgstr "El valor del atributo de acción de regla es desconocido"
+
+#~ msgid "unknown rule direction attribute value"
+#~ msgstr "El valor de atributo de dirección de regla es desconocido"
 
 #, fuzzy, c-format
 #~ msgid "DBus daemon %1$s didn't show up"

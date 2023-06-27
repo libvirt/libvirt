@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-05-26 06:46+0000\n"
+"POT-Creation-Date: 2023-06-27 11:10+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -1118,15 +1118,21 @@ msgid ""
 "type instead"
 msgstr ""
 
+msgid "'discard_no_unref' is not compatible with read-only disk"
+msgstr ""
+
+msgid "'discard_no_unref' is not supported by this QEMU binary"
+msgstr ""
+
+msgid "'discard_no_unref' only works with qcow2 disk format"
+msgstr ""
+
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr ""
-
-msgid "'floor' attribute allowed only in <inbound> element"
-msgstr "'floor' വിശേഷത <inbound> എലമെന്റില്‍ മാത്രം അനുവദിയ്ക്കുന്നുള്ളൂ"
 
 #, fuzzy
 msgid "'gluster' command line tool not found"
@@ -1538,6 +1544,9 @@ msgstr ""
 "നെറ്റ്‌വര്‍ക്കില്‍"
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
+msgstr ""
+
+msgid "<iotune> is not supported with bus='sd'"
 msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
@@ -3259,6 +3268,10 @@ msgstr "ആരംഭിയ്ക്കാത്ത CURL ഹാന്‍ഡില
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr "റീലേബലിങ് ഓഫ് എങ്കില്‍ ഒരു ലേബല്‍ നല്‍കുവാന്‍ സാധ്യമല്ല. മോഡല്‍=%1$s"
+
+#, c-format
+msgid "Cannot specify relabel if label is missing. model=%1$s"
+msgstr ""
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -5311,6 +5324,9 @@ msgstr "ഡിസ്ക് വിജയകരമായി വേര്‍പെ�
 #, c-format
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "ഡിസ്ക് ഡിവൈസ് '%1$s' സ്നാപ്പ്ഷോട്ട് പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "Disk discard_no_unref is not supported by vz driver."
+msgstr ""
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -12709,12 +12725,6 @@ msgstr ""
 msgid "Only one boot device is supported"
 msgstr "ഒറ്റ പ്രൈമറി വീഡിയോ ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
-msgid "Only one child <inbound> element allowed"
-msgstr "ഒരു ചൈള്‍ഡ് <inbound> എലമെന്റ് അനുവദിയ്ക്കുന്നു"
-
-msgid "Only one child <outbound> element allowed"
-msgstr "ഒരു ചൈള്‍ഡ് <outbound> എലമെന്റ് അനുവദിയ്ക്കുന്നു"
-
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
@@ -15650,6 +15660,12 @@ msgstr "ലക്ഷ്യത്തിലുള്ള സിപിയു മോ�
 #, fuzzy, c-format
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr "ലക്ഷ്യമായ മാക്സ് മെമ്മറി %lld ഉറവിടം %lld-ഉമായി യോജിക്കുന്നില്ല"
+
+#, c-format
+msgid ""
+"Target memory device address '0x%1$llx' doesn't match source memory device "
+"address '0x%2$llx'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -20138,9 +20154,6 @@ msgid ""
 "available, and it cannot be automatically added"
 msgstr ""
 
-msgid "a block I/O throttling is not supported for vhostuser disk"
-msgstr ""
-
 #, fuzzy
 msgid "a device with the same address already exists "
 msgstr "ഡിവൈസ് %s നിലവിലുണ്ടു്"
@@ -20824,6 +20837,10 @@ msgid "block I/O throttle limit value must be no more than %1$llu"
 msgstr ""
 
 #, c-format
+msgid "block I/O throttling is not supported for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
@@ -20986,9 +21003,6 @@ msgstr "ഈ QEMU ബൈനറി റീബൂട്ട് ടൈമൗട്ട�
 #, fuzzy
 msgid "both interface name and type must not be NULL"
 msgstr "virt_type ആര്‍ഗ്യുമെന്റ് NULL ആയിരിയ്ക്കരുതു്"
-
-msgid "both maximum memory size and memory slot count must be specified"
-msgstr ""
 
 #, c-format
 msgid "bridge %1$s doesn't exist"
@@ -23380,22 +23394,6 @@ msgstr "Xen സ്റ്റോറിലേക്ക് കണക്ട് ചെ
 msgid "could not connect to Xen Store %1$s"
 msgstr "Xen സ്റ്റോര്‍ %1$s-ലേക്ക് കണക്ട് ചെയ്യുവാന്‍ സാധ്യമായില്ല "
 
-#, c-format
-msgid "could not convert bandwidth average value '%1$s'"
-msgstr "ബാന്‍ഡ്‌വിഡ്ത് ആവറേജ് മൂല്ല്യം '%1$s' വേര്‍തിരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "could not convert bandwidth burst value '%1$s'"
-msgstr "ബാന്‍‍ഡ്‌വിഡ്ത് ബേസ്റ്റ് മൂല്ല്യം '%1$s' വേര്‍തിരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "could not convert bandwidth floor value '%1$s'"
-msgstr "ബാന്‍‍ഡ്‌വിഡ്ത് ഫ്ലോര്‍ മൂല്ല്യം '%1$s' വേര്‍തിരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "could not convert bandwidth peak value '%1$s'"
-msgstr "ബാന്‍‍ഡ്‌വിഡ്ത് പീക്ക് മൂല്ല്യം '%1$s' വേര്‍തിരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
-
 msgid "could not create profile"
 msgstr "പ്രൊഫൈല്‍ തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
 
@@ -23729,6 +23727,12 @@ msgstr ""
 #, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
 msgstr "dnsmasq ക്രമീകരണ ഫയല്‍ '%1$s' സൂക്ഷിയ്ക്കുവാനായില്ല"
+
+#, c-format
+msgid ""
+"count of memory devices requiring memory slots '%1$zu' exceeds slots count "
+"'%2$u'"
+msgstr ""
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr ""
@@ -28467,9 +28471,6 @@ msgstr ""
 msgid "invalid argument"
 msgstr "അസാധുവായ ആര്‍ഗ്യുമെന്റ്"
 
-msgid "invalid argument supplied"
-msgstr "തെറ്റായ ആര്‍ഗ്യുമെന്റ് നല്‍കിയിരിയ്ക്കുന്നു"
-
 #, c-format
 msgid "invalid argument: %1$s"
 msgstr "അസാധുവായ ആര്‍ഗ്യുമെന്റ്: %1$s"
@@ -29936,6 +29937,9 @@ msgstr ""
 msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr ""
 
+msgid "malformed/missing memaddr in virtio memory info"
+msgstr ""
+
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
 
@@ -30010,6 +30014,10 @@ msgstr ""
 
 msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
+msgstr ""
+
+msgid ""
+"maximum memory size must be specified when specifying number of memory slots"
 msgstr ""
 
 #, fuzzy
@@ -30100,6 +30108,9 @@ msgstr "മെമ്മറി വിശേഷതകള്‍: [file=]name[,snaps
 msgid "memory device address is not supported for model '%1$s'"
 msgstr ""
 
+msgid "memory device address must be aligned to blocksize"
+msgstr ""
+
 msgid "memory device alias"
 msgstr ""
 
@@ -30110,10 +30121,6 @@ msgstr "പിസിഐ ഡിവൈസ് %s അനുവദിയ്ക്ക�
 #, c-format
 msgid ""
 "memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
-
-#, c-format
-msgid "memory device count '%1$u' exceeds slots count '%2$u'"
 msgstr ""
 
 #, c-format
@@ -34562,12 +34569,6 @@ msgstr ""
 msgid "rotation rate is only valid for disk device"
 msgstr ""
 
-msgid "rule node requires action attribute"
-msgstr "നിയമ നോഡിന് നടപടി സവിശേഷതകള്‍ ആവശ്യമുണ്ട്"
-
-msgid "rule node requires direction attribute"
-msgstr "നിയമ നോഡിന് ദിശാ സവിശേഷതകള്‍ ആവശ്യമുണ്ട്"
-
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
@@ -37837,12 +37838,6 @@ msgstr "അപരിചിതമായ redirdev ക്യാരക്ടര്�
 msgid "unknown rng-random backend"
 msgstr ""
 
-msgid "unknown rule action attribute value"
-msgstr "അജ്ഞാതമായ നിയമ നടപടി സവിശേഷതാ മൂല്യം"
-
-msgid "unknown rule direction attribute value"
-msgstr "അജ്ഞാതമായ നിയമ ദിശാ സവിശേഷതാ മൂല്യം"
-
 #, fuzzy, c-format
 msgid "unknown secret type '%1$s'"
 msgstr "അപരിചിതമായ ഡിവൈസ് തരം '%1$s'"
@@ -38344,6 +38339,9 @@ msgstr "പിന്തുണയ്ക്കാത്ത വിശേഷത %s"
 #, fuzzy, c-format
 msgid "unsupported storage pool event ID %1$d"
 msgstr "പിന്തുണയില്ലാത്ത ഇവന്റ് ഐഡി %1$d"
+
+msgid "unsupported storage type for this code path"
+msgstr ""
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -39441,6 +39439,46 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "'floor' attribute allowed only in <inbound> element"
+#~ msgstr "'floor' വിശേഷത <inbound> എലമെന്റില്‍ മാത്രം അനുവദിയ്ക്കുന്നുള്ളൂ"
+
+#~ msgid "Only one child <inbound> element allowed"
+#~ msgstr "ഒരു ചൈള്‍ഡ് <inbound> എലമെന്റ് അനുവദിയ്ക്കുന്നു"
+
+#~ msgid "Only one child <outbound> element allowed"
+#~ msgstr "ഒരു ചൈള്‍ഡ് <outbound> എലമെന്റ് അനുവദിയ്ക്കുന്നു"
+
+#, c-format
+#~ msgid "could not convert bandwidth average value '%1$s'"
+#~ msgstr "ബാന്‍ഡ്‌വിഡ്ത് ആവറേജ് മൂല്ല്യം '%1$s' വേര്‍തിരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+#~ msgid "could not convert bandwidth burst value '%1$s'"
+#~ msgstr "ബാന്‍‍ഡ്‌വിഡ്ത് ബേസ്റ്റ് മൂല്ല്യം '%1$s' വേര്‍തിരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+#~ msgid "could not convert bandwidth floor value '%1$s'"
+#~ msgstr "ബാന്‍‍ഡ്‌വിഡ്ത് ഫ്ലോര്‍ മൂല്ല്യം '%1$s' വേര്‍തിരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+#~ msgid "could not convert bandwidth peak value '%1$s'"
+#~ msgstr "ബാന്‍‍ഡ്‌വിഡ്ത് പീക്ക് മൂല്ല്യം '%1$s' വേര്‍തിരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "invalid argument supplied"
+#~ msgstr "തെറ്റായ ആര്‍ഗ്യുമെന്റ് നല്‍കിയിരിയ്ക്കുന്നു"
+
+#~ msgid "rule node requires action attribute"
+#~ msgstr "നിയമ നോഡിന് നടപടി സവിശേഷതകള്‍ ആവശ്യമുണ്ട്"
+
+#~ msgid "rule node requires direction attribute"
+#~ msgstr "നിയമ നോഡിന് ദിശാ സവിശേഷതകള്‍ ആവശ്യമുണ്ട്"
+
+#~ msgid "unknown rule action attribute value"
+#~ msgstr "അജ്ഞാതമായ നിയമ നടപടി സവിശേഷതാ മൂല്യം"
+
+#~ msgid "unknown rule direction attribute value"
+#~ msgstr "അജ്ഞാതമായ നിയമ ദിശാ സവിശേഷതാ മൂല്യം"
 
 #, fuzzy, c-format
 #~ msgid "DBus daemon %1$s didn't show up"

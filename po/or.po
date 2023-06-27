@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-05-26 06:46+0000\n"
+"POT-Creation-Date: 2023-06-27 11:10+0000\n"
 "PO-Revision-Date: 2015-02-27 04:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1186,14 +1186,20 @@ msgid ""
 "type instead"
 msgstr ""
 
+msgid "'discard_no_unref' is not compatible with read-only disk"
+msgstr ""
+
+msgid "'discard_no_unref' is not supported by this QEMU binary"
+msgstr ""
+
+msgid "'discard_no_unref' only works with qcow2 disk format"
+msgstr ""
+
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
-msgstr ""
-
-msgid "'floor' attribute allowed only in <inbound> element"
 msgstr ""
 
 #, fuzzy
@@ -1600,6 +1606,9 @@ msgid ""
 msgstr ""
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
+msgstr ""
+
+msgid "<iotune> is not supported with bus='sd'"
 msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
@@ -3288,6 +3297,10 @@ msgstr "ଆରମ୍ଭ ହୋଇନଥିବା CURL ନିୟନ୍ତ୍ର�
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr "ଏକ ନାମପଟିକୁ ଉଲ୍ଲେଖ କରିପାରିବେ ନାହିଁ ଯଦି ପୁନଃ ନାମକରଣକୁ ଅଫ କରାଯାଏ। ମଡେଲ=%1$s"
+
+#, c-format
+msgid "Cannot specify relabel if label is missing. model=%1$s"
+msgstr ""
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -5334,6 +5347,9 @@ msgstr "ଡିସ୍କ ସଫଳତାର ସହିତ ପୃଥକ ହୋଇ�
 #, c-format
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "ଡିସ୍କ ଉପକରଣ '%1$s' ଆଶୁଚିତ୍ର ନେବାରେ ସହାୟତା କରିନଥାଏ"
+
+msgid "Disk discard_no_unref is not supported by vz driver."
+msgstr ""
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -12632,12 +12648,6 @@ msgstr "--table, --name ଏବଂ --uuid ମଧ୍ଯରୁ କେବଳ ଗୋ�
 msgid "Only one boot device is supported"
 msgstr "କେବଳ ଗୋଟିଏ ପ୍ରାଥମିକ ଭିଡ଼ିଓ ଉପକରଣ ସହାୟତା ପ୍ରାପ୍ତ"
 
-msgid "Only one child <inbound> element allowed"
-msgstr "କେବଳ ଗୋଟିଏ ତଳ ସ୍ତରୀୟ <inbound> ଉପାଦାନ ଅନୁମୋଦିତ"
-
-msgid "Only one child <outbound> element allowed"
-msgstr "କେବଳ ଗୋଟିଏ ତଳ ସ୍ତରୀୟ <outbound> ଉପାଦାନ ଅନୁମୋଦିତ"
-
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
@@ -15498,6 +15508,12 @@ msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ CPU ଧାରା %1$s ଉତ୍ସ %2$s �
 #, fuzzy, c-format
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ଡମେନ ସର୍ବାଧିକ ସ୍ମୃତିସ୍ଥାନ %lld ଉତ୍ସ %lld ସହିତ ମେଳ ଖାଉ ନାହିଁ"
+
+#, c-format
+msgid ""
+"Target memory device address '0x%1$llx' doesn't match source memory device "
+"address '0x%2$llx'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -19960,9 +19976,6 @@ msgid ""
 "available, and it cannot be automatically added"
 msgstr ""
 
-msgid "a block I/O throttling is not supported for vhostuser disk"
-msgstr ""
-
 #, fuzzy
 msgid "a device with the same address already exists "
 msgstr "ଉପକରଣ %s ପୂର୍ବରୁ ଅଛି"
@@ -20627,6 +20640,10 @@ msgid "block I/O throttle limit value must be no more than %1$llu"
 msgstr ""
 
 #, c-format
+msgid "block I/O throttling is not supported for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
@@ -20789,9 +20806,6 @@ msgstr "ଏହି QEMU ବାଇନାରୀ ଦ୍ୱାରା ପୁନଚା�
 #, fuzzy
 msgid "both interface name and type must not be NULL"
 msgstr "ଅନ୍ତରାପୃଷ୍ଠ  ନାମ %s ବଫରରେ ଖାପ ଖାଇନଥାଏ"
-
-msgid "both maximum memory size and memory slot count must be specified"
-msgstr ""
 
 #, c-format
 msgid "bridge %1$s doesn't exist"
@@ -23167,22 +23181,6 @@ msgstr "ଜେନ ଭଣ୍ଡାର ସହିତ ସଂଯୋଗ କରିପ�
 msgid "could not connect to Xen Store %1$s"
 msgstr "ଜେନ ଭଣ୍ଡାର %1$s ସହିତ ସଂଯୋଗ କରିପାରିଲା ନାହିଁ"
 
-#, fuzzy, c-format
-msgid "could not convert bandwidth average value '%1$s'"
-msgstr "nth (%u) ମୂଲ୍ୟ ପ୍ରାଚଳ '%s' ର  ପାଇଲା ନାହିଁ"
-
-#, fuzzy, c-format
-msgid "could not convert bandwidth burst value '%1$s'"
-msgstr "nth (%u) ମୂଲ୍ୟ ପ୍ରାଚଳ '%s' ର  ପାଇଲା ନାହିଁ"
-
-#, fuzzy, c-format
-msgid "could not convert bandwidth floor value '%1$s'"
-msgstr "'%1$s' ର ପ୍ରମୂଖ ପାଇଁ syspath ପାଇଲା ନାହିଁ"
-
-#, fuzzy, c-format
-msgid "could not convert bandwidth peak value '%1$s'"
-msgstr "'%1$s' ନାମ ସହିତ ମେଳ ଖାଉଥିବା  ଡମେନ ଖୋଜି ପାଇଲା ନାହିଁ"
-
 msgid "could not create profile"
 msgstr "ରୂପରେଖା ସୃଷ୍ଟି କରିପାରିଲା ନାହିଁ"
 
@@ -23515,6 +23513,12 @@ msgstr ""
 #, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
 msgstr "dnsmasq ସଂରଚନା ଫାଇଲ '%1$s' କୁ ଲେଖିପାରିଲା ନାହିଁ"
+
+#, c-format
+msgid ""
+"count of memory devices requiring memory slots '%1$zu' exceeds slots count "
+"'%2$u'"
+msgstr ""
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr ""
@@ -28213,9 +28217,6 @@ msgstr ""
 msgid "invalid argument"
 msgstr "ଅବୈଧ ସ୍ବତନ୍ତ୍ରଚର"
 
-msgid "invalid argument supplied"
-msgstr "ଅବୈଧ ସ୍ବତନ୍ତ୍ରଚର ଦିଆଯାଇଛି"
-
 #, c-format
 msgid "invalid argument: %1$s"
 msgstr "ଅବୈଧ ସ୍ବତନ୍ତ୍ରଚର: %1$s"
@@ -29671,6 +29672,9 @@ msgstr ""
 msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr ""
 
+msgid "malformed/missing memaddr in virtio memory info"
+msgstr ""
+
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
 
@@ -29745,6 +29749,10 @@ msgstr ""
 
 msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
+msgstr ""
+
+msgid ""
+"maximum memory size must be specified when specifying number of memory slots"
 msgstr ""
 
 #, fuzzy
@@ -29835,6 +29843,9 @@ msgstr "ସ୍ମୃତିସ୍ଥାନ ଗୁଣ: [ଫାଇଲ=]ନାମ[,�
 msgid "memory device address is not supported for model '%1$s'"
 msgstr ""
 
+msgid "memory device address must be aligned to blocksize"
+msgstr ""
+
 msgid "memory device alias"
 msgstr ""
 
@@ -29845,10 +29856,6 @@ msgstr "PCI ଉପକରଣ %s କୁ ନ୍ୟସ୍ତ କରାଯାଇପ�
 #, c-format
 msgid ""
 "memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
-
-#, c-format
-msgid "memory device count '%1$u' exceeds slots count '%2$u'"
 msgstr ""
 
 #, c-format
@@ -34271,12 +34278,6 @@ msgstr ""
 msgid "rotation rate is only valid for disk device"
 msgstr ""
 
-msgid "rule node requires action attribute"
-msgstr "ନିୟମ ନୋଡ କାର୍ଯ୍ୟ ଗୁଣକୁ ଆବଶ୍ୟକ କରିଥାଏ"
-
-msgid "rule node requires direction attribute"
-msgstr "ନିୟମ ନୋଡ ଦିଗ ଗୁଣ ଆବଶ୍ୟକ କରିଥାଏ"
-
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
@@ -37523,12 +37524,6 @@ msgstr "ଅଜଣା redirdev ଅକ୍ଷର ଉପକରଣ ପ୍ରକାର
 msgid "unknown rng-random backend"
 msgstr ""
 
-msgid "unknown rule action attribute value"
-msgstr "ଅଜଣା ନିୟମ କାର୍ଯ୍ୟ ଗୁଣ ମୂଲ୍ୟ"
-
-msgid "unknown rule direction attribute value"
-msgstr "ଅଜଣା ନିୟମ ଦିଗ ଗୁମ ମୂଲ୍ୟ"
-
 #, fuzzy, c-format
 msgid "unknown secret type '%1$s'"
 msgstr "ଅଜଣା ଉପକରଣ ପ୍ରକାର '%1$s'"
@@ -38028,6 +38023,9 @@ msgstr "ଅସମର୍ଥିତ ବିଶେଷତା %s"
 #, fuzzy, c-format
 msgid "unsupported storage pool event ID %1$d"
 msgstr "ଅସମର୍ଥିତ ନେଟୱର୍କ ଘଟଣା ID %1$d"
+
+msgid "unsupported storage type for this code path"
+msgstr ""
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -39122,6 +39120,43 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "Only one child <inbound> element allowed"
+#~ msgstr "କେବଳ ଗୋଟିଏ ତଳ ସ୍ତରୀୟ <inbound> ଉପାଦାନ ଅନୁମୋଦିତ"
+
+#~ msgid "Only one child <outbound> element allowed"
+#~ msgstr "କେବଳ ଗୋଟିଏ ତଳ ସ୍ତରୀୟ <outbound> ଉପାଦାନ ଅନୁମୋଦିତ"
+
+#, fuzzy, c-format
+#~ msgid "could not convert bandwidth average value '%1$s'"
+#~ msgstr "nth (%u) ମୂଲ୍ୟ ପ୍ରାଚଳ '%s' ର  ପାଇଲା ନାହିଁ"
+
+#, fuzzy, c-format
+#~ msgid "could not convert bandwidth burst value '%1$s'"
+#~ msgstr "nth (%u) ମୂଲ୍ୟ ପ୍ରାଚଳ '%s' ର  ପାଇଲା ନାହିଁ"
+
+#, fuzzy, c-format
+#~ msgid "could not convert bandwidth floor value '%1$s'"
+#~ msgstr "'%1$s' ର ପ୍ରମୂଖ ପାଇଁ syspath ପାଇଲା ନାହିଁ"
+
+#, fuzzy, c-format
+#~ msgid "could not convert bandwidth peak value '%1$s'"
+#~ msgstr "'%1$s' ନାମ ସହିତ ମେଳ ଖାଉଥିବା  ଡମେନ ଖୋଜି ପାଇଲା ନାହିଁ"
+
+#~ msgid "invalid argument supplied"
+#~ msgstr "ଅବୈଧ ସ୍ବତନ୍ତ୍ରଚର ଦିଆଯାଇଛି"
+
+#~ msgid "rule node requires action attribute"
+#~ msgstr "ନିୟମ ନୋଡ କାର୍ଯ୍ୟ ଗୁଣକୁ ଆବଶ୍ୟକ କରିଥାଏ"
+
+#~ msgid "rule node requires direction attribute"
+#~ msgstr "ନିୟମ ନୋଡ ଦିଗ ଗୁଣ ଆବଶ୍ୟକ କରିଥାଏ"
+
+#~ msgid "unknown rule action attribute value"
+#~ msgstr "ଅଜଣା ନିୟମ କାର୍ଯ୍ୟ ଗୁଣ ମୂଲ୍ୟ"
+
+#~ msgid "unknown rule direction attribute value"
+#~ msgstr "ଅଜଣା ନିୟମ ଦିଗ ଗୁମ ମୂଲ୍ୟ"
 
 #, fuzzy, c-format
 #~ msgid "DBus daemon %1$s didn't show up"

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-05-26 06:46+0000\n"
+"POT-Creation-Date: 2023-06-27 11:10+0000\n"
 "PO-Revision-Date: 2015-02-26 07:12+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bosnian (http://www.transifex.com/projects/p/fedora/language/"
@@ -1030,14 +1030,20 @@ msgid ""
 "type instead"
 msgstr ""
 
+msgid "'discard_no_unref' is not compatible with read-only disk"
+msgstr ""
+
+msgid "'discard_no_unref' is not supported by this QEMU binary"
+msgstr ""
+
+msgid "'discard_no_unref' only works with qcow2 disk format"
+msgstr ""
+
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
-msgstr ""
-
-msgid "'floor' attribute allowed only in <inbound> element"
 msgstr ""
 
 msgid "'gluster' command line tool not found"
@@ -1420,6 +1426,9 @@ msgid ""
 msgstr ""
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
+msgstr ""
+
+msgid "<iotune> is not supported with bus='sd'"
 msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
@@ -3052,6 +3061,10 @@ msgstr ""
 
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
+msgstr ""
+
+#, c-format
+msgid "Cannot specify relabel if label is missing. model=%1$s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -5048,6 +5061,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "naredba '%s' ne podržava opciju --%s"
+
+msgid "Disk discard_no_unref is not supported by vz driver."
+msgstr ""
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -12214,12 +12230,6 @@ msgstr ""
 msgid "Only one boot device is supported"
 msgstr ""
 
-msgid "Only one child <inbound> element allowed"
-msgstr ""
-
-msgid "Only one child <outbound> element allowed"
-msgstr ""
-
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
@@ -14964,6 +14974,12 @@ msgstr ""
 
 #, c-format
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
+msgstr ""
+
+#, c-format
+msgid ""
+"Target memory device address '0x%1$llx' doesn't match source memory device "
+"address '0x%2$llx'"
 msgstr ""
 
 #, c-format
@@ -19312,9 +19328,6 @@ msgid ""
 "available, and it cannot be automatically added"
 msgstr ""
 
-msgid "a block I/O throttling is not supported for vhostuser disk"
-msgstr ""
-
 msgid "a device with the same address already exists "
 msgstr ""
 
@@ -19958,6 +19971,10 @@ msgid "block I/O throttle limit value must be no more than %1$llu"
 msgstr ""
 
 #, c-format
+msgid "block I/O throttling is not supported for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
@@ -20115,9 +20132,6 @@ msgid "bootloader is not supported by QEMU"
 msgstr ""
 
 msgid "both interface name and type must not be NULL"
-msgstr ""
-
-msgid "both maximum memory size and memory slot count must be specified"
 msgstr ""
 
 #, c-format
@@ -22423,22 +22437,6 @@ msgstr "nije moguće uspostaviti vezu s Xen Store"
 msgid "could not connect to Xen Store %1$s"
 msgstr "nije moguće uspostaviti vezu s Xen Store %1$s"
 
-#, fuzzy, c-format
-msgid "could not convert bandwidth average value '%1$s'"
-msgstr "nije moguće uspostaviti vezu s Xen Store %1$s"
-
-#, c-format
-msgid "could not convert bandwidth burst value '%1$s'"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "could not convert bandwidth floor value '%1$s'"
-msgstr "nije moguće uspostaviti vezu s Xen Store %1$s"
-
-#, fuzzy, c-format
-msgid "could not convert bandwidth peak value '%1$s'"
-msgstr "nije moguće uspostaviti vezu s Xen Store %1$s"
-
 #, fuzzy
 msgid "could not create profile"
 msgstr "nije moguće uspostaviti vezu s Xen Store"
@@ -22763,6 +22761,12 @@ msgstr ""
 #, fuzzy, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
 msgstr "zapisivanje konfiguracijske datoteke %1$s nije uspjelo"
+
+#, c-format
+msgid ""
+"count of memory devices requiring memory slots '%1$zu' exceeds slots count "
+"'%2$u'"
+msgstr ""
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr ""
@@ -27420,9 +27424,6 @@ msgstr ""
 msgid "invalid argument"
 msgstr ""
 
-msgid "invalid argument supplied"
-msgstr ""
-
 #, c-format
 msgid "invalid argument: %1$s"
 msgstr ""
@@ -28849,6 +28850,9 @@ msgstr ""
 msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr ""
 
+msgid "malformed/missing memaddr in virtio memory info"
+msgstr ""
+
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
 
@@ -28921,6 +28925,10 @@ msgstr ""
 
 msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
+msgstr ""
+
+msgid ""
+"maximum memory size must be specified when specifying number of memory slots"
 msgstr ""
 
 msgid "maximum memory size overflowed after alignment"
@@ -29009,6 +29017,9 @@ msgstr ""
 msgid "memory device address is not supported for model '%1$s'"
 msgstr ""
 
+msgid "memory device address must be aligned to blocksize"
+msgstr ""
+
 msgid "memory device alias"
 msgstr ""
 
@@ -29018,10 +29029,6 @@ msgstr ""
 #, c-format
 msgid ""
 "memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
-
-#, c-format
-msgid "memory device count '%1$u' exceeds slots count '%2$u'"
 msgstr ""
 
 #, c-format
@@ -33297,12 +33304,6 @@ msgstr ""
 msgid "rotation rate is only valid for disk device"
 msgstr ""
 
-msgid "rule node requires action attribute"
-msgstr ""
-
-msgid "rule node requires direction attribute"
-msgstr ""
-
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
@@ -36474,12 +36475,6 @@ msgstr ""
 msgid "unknown rng-random backend"
 msgstr ""
 
-msgid "unknown rule action attribute value"
-msgstr ""
-
-msgid "unknown rule direction attribute value"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "unknown secret type '%1$s'"
 msgstr "nepoznata vrsta OS %1$s"
@@ -36977,6 +36972,9 @@ msgstr ""
 
 #, c-format
 msgid "unsupported storage pool event ID %1$d"
+msgstr ""
+
+msgid "unsupported storage type for this code path"
 msgstr ""
 
 #, c-format
@@ -38035,6 +38033,18 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "--%1$s <niz>"
+
+#, fuzzy, c-format
+#~ msgid "could not convert bandwidth average value '%1$s'"
+#~ msgstr "nije moguće uspostaviti vezu s Xen Store %1$s"
+
+#, fuzzy, c-format
+#~ msgid "could not convert bandwidth floor value '%1$s'"
+#~ msgstr "nije moguće uspostaviti vezu s Xen Store %1$s"
+
+#, fuzzy, c-format
+#~ msgid "could not convert bandwidth peak value '%1$s'"
+#~ msgstr "nije moguće uspostaviti vezu s Xen Store %1$s"
 
 #, fuzzy
 #~ msgid "pause"

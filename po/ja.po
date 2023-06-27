@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-05-26 06:46+0000\n"
+"POT-Creation-Date: 2023-06-27 11:10+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -1291,15 +1291,21 @@ msgstr ""
 "QEMU では 'directory' ストレージタイプは直接サポートされません、代わりに "
 "'dir' ディスクタイプを使用してください"
 
+msgid "'discard_no_unref' is not compatible with read-only disk"
+msgstr ""
+
+msgid "'discard_no_unref' is not supported by this QEMU binary"
+msgstr ""
+
+msgid "'discard_no_unref' only works with qcow2 disk format"
+msgstr ""
+
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "guest-get-fsinfo の応答に 'disk' がないか、配列ではありませんでした"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr "'extended_l2' は互換レベル %1$s ではサポートされません"
-
-msgid "'floor' attribute allowed only in <inbound> element"
-msgstr "'floor' 属性は <inbound> 要素においてのみ許可されます"
 
 msgid "'gluster' command line tool not found"
 msgstr "'gluster' コマンドラインツールが見つかりません"
@@ -1711,6 +1717,9 @@ msgstr ""
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr "<hostdev> 属性 'display' は、model='vfio-pci' でのみサポートされます"
+
+msgid "<iotune> is not supported with bus='sd'"
+msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> は lun デバイスでのみ許可されます"
@@ -3434,6 +3443,10 @@ msgstr "初期化していない CURL ハンドルを共有できません"
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr "再ラベルが無効にされていると、ラベルを指定できません。model=%1$s"
+
+#, c-format
+msgid "Cannot specify relabel if label is missing. model=%1$s"
+msgstr ""
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -5483,6 +5496,9 @@ msgstr "ディスクが正常に切断されました\n"
 #, c-format
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "ディスクデバイス '%1$s' がスナップショットをサポートしません"
+
+msgid "Disk discard_no_unref is not supported by vz driver."
+msgstr ""
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -12877,12 +12893,6 @@ msgstr "--table, --name および --uuid のどれか 1 つのみを指定でき
 msgid "Only one boot device is supported"
 msgstr "1 つのブートデバイスのみがサポートされます"
 
-msgid "Only one child <inbound> element allowed"
-msgstr "1つの子 <inbound> 要素のみが許可されます"
-
-msgid "Only one child <outbound> element allowed"
-msgstr "1つの子 <outbound> 要素のみが許可されます"
-
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
@@ -15853,6 +15863,12 @@ msgstr "ターゲットの入力モデル %1$s がソース %2$s と一致しま
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr ""
 "ターゲットの最大メモリーサイズ '%1$llu' がソース '%2$llu' と一致しません"
+
+#, c-format
+msgid ""
+"Target memory device address '0x%1$llx' doesn't match source memory device "
+"address '0x%2$llx'"
+msgstr ""
 
 #, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -20349,10 +20365,6 @@ msgstr ""
 "PCI コントローラー model='%1$s' を接続するには PCI スロットが必要ですが、利用"
 "できるものがなく、自動的に追加することもできません"
 
-msgid "a block I/O throttling is not supported for vhostuser disk"
-msgstr ""
-"ブロック I/O スロットル調整は、vhostuser ディスクではサポートされません"
-
 msgid "a device with the same address already exists "
 msgstr "同じアドレスのデバイスがすでに存在します "
 
@@ -21030,6 +21042,10 @@ msgid "block I/O throttle limit value must be no more than %1$llu"
 msgstr "ブロック I/O スロットル制限値は、%1$llu 以下でなければなりません"
 
 #, c-format
+msgid "block I/O throttling is not supported for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 "ディスク '%1$s' スナップショットの削除中にブロックコミットに失敗しました: "
@@ -21202,9 +21218,6 @@ msgstr "QEMU では bootloader は サポートされません"
 
 msgid "both interface name and type must not be NULL"
 msgstr "インターフェイス名とタイプの両方を NULL にすることはできません"
-
-msgid "both maximum memory size and memory slot count must be specified"
-msgstr "最大メモリーサイズとメモリースロット数の両方を指定する必要があります"
 
 #, c-format
 msgid "bridge %1$s doesn't exist"
@@ -23555,22 +23568,6 @@ msgstr "Xen Store に接続できませんでした"
 msgid "could not connect to Xen Store %1$s"
 msgstr "Xen Store %1$s に接続できませんでした"
 
-#, c-format
-msgid "could not convert bandwidth average value '%1$s'"
-msgstr "帯域の平均値 '%1$s' を変換できませんでした"
-
-#, c-format
-msgid "could not convert bandwidth burst value '%1$s'"
-msgstr "帯域のバースト値 '%1$s' を変換できませんでした"
-
-#, c-format
-msgid "could not convert bandwidth floor value '%1$s'"
-msgstr "帯域の最小値 '%1$s' を変換できませんでした"
-
-#, c-format
-msgid "could not convert bandwidth peak value '%1$s'"
-msgstr "帯域のピーク値 '%1$s' を変換できませんでした"
-
 msgid "could not create profile"
 msgstr "プロファイルを作成できませんでした"
 
@@ -23914,6 +23911,12 @@ msgstr ""
 #, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
 msgstr "dnsmasq 設定ファイル '%1$s' に書き込みできませんでした"
+
+#, c-format
+msgid ""
+"count of memory devices requiring memory slots '%1$zu' exceeds slots count "
+"'%2$u'"
+msgstr ""
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr "cow 機能は、'fs' と 'dir' プールにのみ使用可能です"
@@ -28637,9 +28640,6 @@ msgstr "'%1$s' の無効な ap-domain 値 '%2$s'"
 msgid "invalid argument"
 msgstr "無効な引数"
 
-msgid "invalid argument supplied"
-msgstr "無効な引数が与えられました"
-
 #, c-format
 msgid "invalid argument: %1$s"
 msgstr "無効な引数: %1$s"
@@ -30082,6 +30082,9 @@ msgstr "dimm メモリー情報の不正な形式/欠落したhotplugged"
 msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr "sgx-epc メモリー情報の memaddr が不正な形式/存在しない"
 
+msgid "malformed/missing memaddr in virtio memory info"
+msgstr ""
+
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr "sgx-epc メモリー情報のサイズが不正な形式/存在しない"
 
@@ -30153,6 +30156,10 @@ msgstr "コピー中の起動時のデータの最大量"
 msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
 msgstr "最大メモリーサイズは、実際のメモリーサイズ以上である必要があります"
+
+msgid ""
+"maximum memory size must be specified when specifying number of memory slots"
+msgstr ""
 
 msgid "maximum memory size overflowed after alignment"
 msgstr "アラインメント後に最大メモリーサイズがオーバーフローしました"
@@ -30242,6 +30249,9 @@ msgstr "memory 属性: [file=]name[,snapshot=type]"
 msgid "memory device address is not supported for model '%1$s'"
 msgstr "モデル '%1$s' でメモリーデバイスアドレスはサポートされません"
 
+msgid "memory device address must be aligned to blocksize"
+msgstr ""
+
 msgid "memory device alias"
 msgstr "メモリーデバイスのエイリアス"
 
@@ -30254,10 +30264,6 @@ msgid ""
 msgstr ""
 "メモリーデバイスベース '0x%1$llx' は、すでに別のメモリーデバイスによって使用"
 "されています"
-
-#, c-format
-msgid "memory device count '%1$u' exceeds slots count '%2$u'"
-msgstr "メモリーデバイス数 '%1$u' は、スロット数 '%2$u' を超えています"
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -34671,12 +34677,6 @@ msgstr "回転速度は SCSI/IDE/SATA バスでのみ有効です"
 msgid "rotation rate is only valid for disk device"
 msgstr "回転速度はディスクデバイスでのみ有効です"
 
-msgid "rule node requires action attribute"
-msgstr "ルールノードは action 属性が必要です"
-
-msgid "rule node requires direction attribute"
-msgstr "ルールノードは direction 属性が必要です"
-
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
@@ -37998,12 +37998,6 @@ msgstr "不明な redirdev キャラクターデバイスタイプ '%1$s' です
 msgid "unknown rng-random backend"
 msgstr "不明な rng-random バックエンド"
 
-msgid "unknown rule action attribute value"
-msgstr "不明なルール action 属性値"
-
-msgid "unknown rule direction attribute value"
-msgstr "不明なルール direction 属性値"
-
 #, c-format
 msgid "unknown secret type '%1$s'"
 msgstr "不明な秘密のタイプ '%1$s'"
@@ -38511,6 +38505,9 @@ msgstr "サポートされない状態値"
 #, c-format
 msgid "unsupported storage pool event ID %1$d"
 msgstr "サポートされないストレージプールイベント ID %1$d"
+
+msgid "unsupported storage type for this code path"
+msgstr ""
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -39639,6 +39636,58 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "'floor' attribute allowed only in <inbound> element"
+#~ msgstr "'floor' 属性は <inbound> 要素においてのみ許可されます"
+
+#~ msgid "Only one child <inbound> element allowed"
+#~ msgstr "1つの子 <inbound> 要素のみが許可されます"
+
+#~ msgid "Only one child <outbound> element allowed"
+#~ msgstr "1つの子 <outbound> 要素のみが許可されます"
+
+#~ msgid "a block I/O throttling is not supported for vhostuser disk"
+#~ msgstr ""
+#~ "ブロック I/O スロットル調整は、vhostuser ディスクではサポートされません"
+
+#~ msgid "both maximum memory size and memory slot count must be specified"
+#~ msgstr ""
+#~ "最大メモリーサイズとメモリースロット数の両方を指定する必要があります"
+
+#, c-format
+#~ msgid "could not convert bandwidth average value '%1$s'"
+#~ msgstr "帯域の平均値 '%1$s' を変換できませんでした"
+
+#, c-format
+#~ msgid "could not convert bandwidth burst value '%1$s'"
+#~ msgstr "帯域のバースト値 '%1$s' を変換できませんでした"
+
+#, c-format
+#~ msgid "could not convert bandwidth floor value '%1$s'"
+#~ msgstr "帯域の最小値 '%1$s' を変換できませんでした"
+
+#, c-format
+#~ msgid "could not convert bandwidth peak value '%1$s'"
+#~ msgstr "帯域のピーク値 '%1$s' を変換できませんでした"
+
+#~ msgid "invalid argument supplied"
+#~ msgstr "無効な引数が与えられました"
+
+#, c-format
+#~ msgid "memory device count '%1$u' exceeds slots count '%2$u'"
+#~ msgstr "メモリーデバイス数 '%1$u' は、スロット数 '%2$u' を超えています"
+
+#~ msgid "rule node requires action attribute"
+#~ msgstr "ルールノードは action 属性が必要です"
+
+#~ msgid "rule node requires direction attribute"
+#~ msgstr "ルールノードは direction 属性が必要です"
+
+#~ msgid "unknown rule action attribute value"
+#~ msgstr "不明なルール action 属性値"
+
+#~ msgid "unknown rule direction attribute value"
+#~ msgstr "不明なルール direction 属性値"
 
 #, c-format
 #~ msgid "DBus daemon %1$s didn't show up"

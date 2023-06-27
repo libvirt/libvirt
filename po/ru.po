@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-05-26 06:46+0000\n"
+"POT-Creation-Date: 2023-06-27 11:10+0000\n"
 "PO-Revision-Date: 2023-03-08 19:06+0000\n"
 "Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1280,15 +1280,21 @@ msgstr ""
 "формат хранения «directory» не поддерживается QEMU напрямую, используйте тип "
 "диска «dir»"
 
+msgid "'discard_no_unref' is not compatible with read-only disk"
+msgstr ""
+
+msgid "'discard_no_unref' is not supported by this QEMU binary"
+msgstr ""
+
+msgid "'discard_no_unref' only works with qcow2 disk format"
+msgstr ""
+
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr ""
-
-msgid "'floor' attribute allowed only in <inbound> element"
-msgstr "атрибут «floor» может быть задан в только в строке <inbound>"
 
 msgid "'gluster' command line tool not found"
 msgstr "утилита командной строки «gluster» не найдена"
@@ -1694,6 +1700,9 @@ msgstr ""
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr "атрибут «display» <hostdev> поддерживается только для model='vfio-pci'"
+
+msgid "<iotune> is not supported with bus='sd'"
+msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> разрешено только для устройств lun"
@@ -3428,6 +3437,10 @@ msgstr ""
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr "Нельзя определить метку, если relabel='no' и model=%1$s"
+
+#, c-format
+msgid "Cannot specify relabel if label is missing. model=%1$s"
+msgstr ""
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -5478,6 +5491,9 @@ msgstr "Диск успешно отключён\n"
 #, c-format
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "Устройство «%1$s» не поддерживает создание снимков"
+
+msgid "Disk discard_no_unref is not supported by vz driver."
+msgstr ""
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -12876,12 +12892,6 @@ msgstr "Можно указать только один аргумент, --tabl
 msgid "Only one boot device is supported"
 msgstr "Поддерживается только одно загрузочное устройство"
 
-msgid "Only one child <inbound> element allowed"
-msgstr "разрешается только один вложенный элемент <inbound> "
-
-msgid "Only one child <outbound> element allowed"
-msgstr "Разрешается только один вложенный элемент <outbound> "
-
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
@@ -15853,6 +15863,12 @@ msgstr "Модель ввода назначения %1$s не соответс�
 #, c-format
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr "Максимальный объём памяти «%1$llu» не соответствует исходному «%2$llu»"
+
+#, c-format
+msgid ""
+"Target memory device address '0x%1$llx' doesn't match source memory device "
+"address '0x%2$llx'"
+msgstr ""
 
 #, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -20330,9 +20346,6 @@ msgstr ""
 "для подключения контроллера PCI модели «%1$s» требуется слот PCI, но "
 "доступные слоты отсутствуют, автоматическое добавление невозможно"
 
-msgid "a block I/O throttling is not supported for vhostuser disk"
-msgstr ""
-
 msgid "a device with the same address already exists "
 msgstr "устройство с этим адресом уже существует"
 
@@ -21030,6 +21043,10 @@ msgstr ""
 "%1$llu"
 
 #, c-format
+msgid "block I/O throttling is not supported for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
@@ -21199,11 +21216,6 @@ msgstr "QEMU не поддерживает загрузчик"
 
 msgid "both interface name and type must not be NULL"
 msgstr "как имя, так и тип интерфейса не могут содержать NULL"
-
-msgid "both maximum memory size and memory slot count must be specified"
-msgstr ""
-"необходимо указать как максимальный размер памяти, так и количество слотов "
-"памяти"
 
 #, c-format
 msgid "bridge %1$s doesn't exist"
@@ -23619,23 +23631,6 @@ msgstr "не удалось подключиться к Xen Store"
 msgid "could not connect to Xen Store %1$s"
 msgstr "не удалось подключиться к хранилищу Xen Store %1$s"
 
-#, c-format
-msgid "could not convert bandwidth average value '%1$s'"
-msgstr ""
-"не удалось преобразовать среднее значение  пропускной способности «%1$s»"
-
-#, c-format
-msgid "could not convert bandwidth burst value '%1$s'"
-msgstr "не удалось преобразовать значение «burst»: «%1$s»"
-
-#, c-format
-msgid "could not convert bandwidth floor value '%1$s'"
-msgstr "не удалось преобразовать нижний порог пропускной способности «%1$s»"
-
-#, c-format
-msgid "could not convert bandwidth peak value '%1$s'"
-msgstr "не удалось преобразовать верхний порог  пропускной способности «%1$s»"
-
 msgid "could not create profile"
 msgstr "не удалось создать профиль"
 
@@ -23970,6 +23965,12 @@ msgstr ""
 #, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
 msgstr "ошибка записи в файл конфигурации dnsmasq: «%1$s»"
+
+#, c-format
+msgid ""
+"count of memory devices requiring memory slots '%1$zu' exceeds slots count "
+"'%2$u'"
+msgstr ""
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr "возможность cow доступна только для пулов «fs» и «dir»"
@@ -28677,9 +28678,6 @@ msgstr ""
 msgid "invalid argument"
 msgstr "недопустимый аргумент"
 
-msgid "invalid argument supplied"
-msgstr "Недопустимый аргумент"
-
 #, c-format
 msgid "invalid argument: %1$s"
 msgstr "недопустимый аргумент: %1$s"
@@ -30137,6 +30135,9 @@ msgstr ""
 msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr ""
 
+msgid "malformed/missing memaddr in virtio memory info"
+msgstr ""
+
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
 
@@ -30211,6 +30212,10 @@ msgid ""
 msgstr ""
 "максимальный размер памяти должен быть равен или больше фактическому размеру "
 "памяти"
+
+msgid ""
+"maximum memory size must be specified when specifying number of memory slots"
+msgstr ""
 
 msgid "maximum memory size overflowed after alignment"
 msgstr "максимальный размер памяти переполнен после выравнивания"
@@ -30307,6 +30312,9 @@ msgstr "атрибуты памяти: [file=]имя[,snapshot=тип]"
 msgid "memory device address is not supported for model '%1$s'"
 msgstr ""
 
+msgid "memory device address must be aligned to blocksize"
+msgstr ""
+
 msgid "memory device alias"
 msgstr ""
 
@@ -30318,10 +30326,6 @@ msgid ""
 "memory device base '0x%1$llx' is already being used by another memory device"
 msgstr ""
 "база устройства памяти «0x%1$llx» уже используется другим устройством памяти"
-
-#, c-format
-msgid "memory device count '%1$u' exceeds slots count '%2$u'"
-msgstr "количество устройств памяти «%1$u» превышает количество слотов «%2$u»"
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -34733,12 +34737,6 @@ msgstr ""
 msgid "rotation rate is only valid for disk device"
 msgstr ""
 
-msgid "rule node requires action attribute"
-msgstr "правило должно содержать атрибут action"
-
-msgid "rule node requires direction attribute"
-msgstr "правило должно содержать атрибут direction"
-
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
@@ -38048,12 +38046,6 @@ msgstr "неизвестный тип устройства в <redirdev>: «%1$s
 msgid "unknown rng-random backend"
 msgstr "неизвестный модуль rng-random"
 
-msgid "unknown rule action attribute value"
-msgstr "неизвестный атрибут действия правила"
-
-msgid "unknown rule direction attribute value"
-msgstr "неизвестный атрибут направления правила"
-
 #, c-format
 msgid "unknown secret type '%1$s'"
 msgstr "неизвестный тип секрета «%1$s»"
@@ -38560,6 +38552,9 @@ msgstr "неподдерживаемое значение состояния"
 #, c-format
 msgid "unsupported storage pool event ID %1$d"
 msgstr "неподдерживаемый идентификатор события пула носителей %1$d"
+
+msgid "unsupported storage type for this code path"
+msgstr ""
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -39704,6 +39699,58 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <строка>}..."
+
+#~ msgid "'floor' attribute allowed only in <inbound> element"
+#~ msgstr "атрибут «floor» может быть задан в только в строке <inbound>"
+
+#~ msgid "Only one child <inbound> element allowed"
+#~ msgstr "разрешается только один вложенный элемент <inbound> "
+
+#~ msgid "Only one child <outbound> element allowed"
+#~ msgstr "Разрешается только один вложенный элемент <outbound> "
+
+#~ msgid "both maximum memory size and memory slot count must be specified"
+#~ msgstr ""
+#~ "необходимо указать как максимальный размер памяти, так и количество "
+#~ "слотов памяти"
+
+#, c-format
+#~ msgid "could not convert bandwidth average value '%1$s'"
+#~ msgstr ""
+#~ "не удалось преобразовать среднее значение  пропускной способности «%1$s»"
+
+#, c-format
+#~ msgid "could not convert bandwidth burst value '%1$s'"
+#~ msgstr "не удалось преобразовать значение «burst»: «%1$s»"
+
+#, c-format
+#~ msgid "could not convert bandwidth floor value '%1$s'"
+#~ msgstr "не удалось преобразовать нижний порог пропускной способности «%1$s»"
+
+#, c-format
+#~ msgid "could not convert bandwidth peak value '%1$s'"
+#~ msgstr ""
+#~ "не удалось преобразовать верхний порог  пропускной способности «%1$s»"
+
+#~ msgid "invalid argument supplied"
+#~ msgstr "Недопустимый аргумент"
+
+#, c-format
+#~ msgid "memory device count '%1$u' exceeds slots count '%2$u'"
+#~ msgstr ""
+#~ "количество устройств памяти «%1$u» превышает количество слотов «%2$u»"
+
+#~ msgid "rule node requires action attribute"
+#~ msgstr "правило должно содержать атрибут action"
+
+#~ msgid "rule node requires direction attribute"
+#~ msgstr "правило должно содержать атрибут direction"
+
+#~ msgid "unknown rule action attribute value"
+#~ msgstr "неизвестный атрибут действия правила"
+
+#~ msgid "unknown rule direction attribute value"
+#~ msgstr "неизвестный атрибут направления правила"
 
 #, c-format
 #~ msgid "DBus daemon %1$s didn't show up"

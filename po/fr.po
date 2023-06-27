@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-05-26 06:46+0000\n"
+"POT-Creation-Date: 2023-06-27 11:10+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Jérémie Tarot <silopolis@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1331,6 +1331,15 @@ msgstr ""
 "Le format de stockage 'directory' n'est pas directement pris en charge par "
 "QEMU, utilisez le type de disque 'dir' à la place"
 
+msgid "'discard_no_unref' is not compatible with read-only disk"
+msgstr ""
+
+msgid "'discard_no_unref' is not supported by this QEMU binary"
+msgstr ""
+
+msgid "'discard_no_unref' only works with qcow2 disk format"
+msgstr ""
+
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 "'disk' manque ou n'est pas un tableau dans la réponse de guest-get-fsinfo"
@@ -1338,9 +1347,6 @@ msgstr ""
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr "'extended_l2' n'est pas pris en charge par le niveau de compat %1$s"
-
-msgid "'floor' attribute allowed only in <inbound> element"
-msgstr "L'attribut \"floor\" n'est autorisé que dans l'élément <inbound>"
 
 msgid "'gluster' command line tool not found"
 msgstr "Outil de ligne de commande 'gluster' non trouvé"
@@ -1766,6 +1772,9 @@ msgstr ""
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr ""
 "<hostdev> L'attribut 'display' n'est pris en charge qu'avec model='vfio-pci'"
+
+msgid "<iotune> is not supported with bus='sd'"
+msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> autorisé uniquement pour les appareils lun"
@@ -3569,6 +3578,10 @@ msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr ""
 "Impossible de spécifier une étiquette si le réétiquetage est éteint "
 "model=%1$s"
+
+#, c-format
+msgid "Cannot specify relabel if label is missing. model=%1$s"
+msgstr ""
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -5700,6 +5713,9 @@ msgstr "Disque détaché avec succès\n"
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr ""
 "Le périphérique de disque '%1$s' ne prend pas en charge les instantanés"
+
+msgid "Disk discard_no_unref is not supported by vz driver."
+msgstr ""
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -13312,12 +13328,6 @@ msgstr "Pour --table, --name et --uuid, un seul argument peut être spécifié."
 msgid "Only one boot device is supported"
 msgstr "Un seul périphérique de démarrage est pris en charge"
 
-msgid "Only one child <inbound> element allowed"
-msgstr "Un seul élément enfant <inbound> autorisé"
-
-msgid "Only one child <outbound> element allowed"
-msgstr "Un seul élément enfant <outbound> autorisé"
-
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
@@ -16501,6 +16511,12 @@ msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr ""
 "La taille maximale de la mémoire cible '%1$llu' ne correspond pas à la "
 "source '%2$llu'"
+
+#, c-format
+msgid ""
+"Target memory device address '0x%1$llx' doesn't match source memory device "
+"address '0x%2$llx'"
+msgstr ""
 
 #, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -21122,11 +21138,6 @@ msgstr ""
 "model='%1$s', mais aucun n'est disponible, et il ne peut pas être ajouté "
 "automatiquement"
 
-msgid "a block I/O throttling is not supported for vhostuser disk"
-msgstr ""
-"l'étranglement des E/S par bloc n'est pas pris en charge pour le disque "
-"vhostuser"
-
 msgid "a device with the same address already exists "
 msgstr "un périphérique avec la même adresse existe déjà "
 
@@ -21848,6 +21859,10 @@ msgstr ""
 "%1$llu"
 
 #, c-format
+msgid "block I/O throttling is not supported for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 "échec de la validation du bloc lors de la suppression du disque '%1$s' "
@@ -22031,11 +22046,6 @@ msgstr "Le chargeur de démarrage n'est pas pris en charge par QEMU"
 
 msgid "both interface name and type must not be NULL"
 msgstr "Le nom et le type de l'interface ne doivent pas être NULL"
-
-msgid "both maximum memory size and memory slot count must be specified"
-msgstr ""
-"la taille maximale de la mémoire et le nombre d'emplacements mémoire doivent "
-"tous deux être spécifiés"
 
 #, c-format
 msgid "bridge %1$s doesn't exist"
@@ -24535,23 +24545,6 @@ msgstr "impossible de se connecter au magasin Xen"
 msgid "could not connect to Xen Store %1$s"
 msgstr "impossible de se connecter au magasin Xen %1$s"
 
-#, c-format
-msgid "could not convert bandwidth average value '%1$s'"
-msgstr "n'a pas pu convertir la valeur moyenne de la bande passante '%1$s'"
-
-#, c-format
-msgid "could not convert bandwidth burst value '%1$s'"
-msgstr ""
-"Impossible de convertir la valeur de la rafale de bande passante '%1$s'"
-
-#, c-format
-msgid "could not convert bandwidth floor value '%1$s'"
-msgstr "n'a pas pu convertir la valeur plancher de la bande passante '%1$s'"
-
-#, c-format
-msgid "could not convert bandwidth peak value '%1$s'"
-msgstr "n'a pas pu convertir la valeur de crête de la bande passante '%1$s'"
-
 msgid "could not create profile"
 msgstr "n'a pas pu créer de profil"
 
@@ -24901,6 +24894,12 @@ msgstr ""
 #, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
 msgstr "impossible d'écrire le fichier de configuration de dnsmasq '%1$s'"
+
+#, c-format
+msgid ""
+"count of memory devices requiring memory slots '%1$zu' exceeds slots count "
+"'%2$u'"
+msgstr ""
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr ""
@@ -29733,9 +29732,6 @@ msgstr "valeur de domaine d'ap non valide '%1$s' pour '%2$s'"
 msgid "invalid argument"
 msgstr "argument non valide"
 
-msgid "invalid argument supplied"
-msgstr "argument non valide fourni"
-
 #, c-format
 msgid "invalid argument: %1$s"
 msgstr "argument non valide : %1$s"
@@ -31223,6 +31219,9 @@ msgstr "hotplugged malformé/manquant dans l'info mémoire dimm"
 msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr "memaddr malformé/manquant dans l'info mémoire de sgx-epc"
 
+msgid "malformed/missing memaddr in virtio memory info"
+msgstr ""
+
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr "taille malformée/manquante dans l'info mémoire de sgx-epc"
 
@@ -31297,6 +31296,10 @@ msgid ""
 msgstr ""
 "La taille maximale de la mémoire doit être égale ou supérieure à la taille "
 "réelle de la mémoire"
+
+msgid ""
+"maximum memory size must be specified when specifying number of memory slots"
+msgstr ""
 
 msgid "maximum memory size overflowed after alignment"
 msgstr "dépassement de la taille maximale de la mémoire après l'alignement"
@@ -31391,6 +31394,9 @@ msgstr ""
 "L'adresse du périphérique de mémoire n'est pas prise en charge par le modèle "
 "'%1$s'"
 
+msgid "memory device address must be aligned to blocksize"
+msgstr ""
+
 msgid "memory device alias"
 msgstr "alias du périphérique de mémoire"
 
@@ -31403,12 +31409,6 @@ msgid ""
 msgstr ""
 "la base du périphérique de mémoire '0x%1$llx' est déjà utilisée par un autre "
 "périphérique de mémoire"
-
-#, c-format
-msgid "memory device count '%1$u' exceeds slots count '%2$u'"
-msgstr ""
-"le nombre de périphériques de mémoire '%1$u' dépasse le nombre de créneaux "
-"horaires '%2$u'"
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -36020,12 +36020,6 @@ msgstr "Le taux de rotation n'est valable que pour les bus SCSI/IDE/SATA"
 msgid "rotation rate is only valid for disk device"
 msgstr "Le taux de rotation n'est valable que pour le disque"
 
-msgid "rule node requires action attribute"
-msgstr "le nœud de règle nécessite un attribut d'action"
-
-msgid "rule node requires direction attribute"
-msgstr "le nœud de règle nécessite un attribut de direction"
-
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
@@ -39444,12 +39438,6 @@ msgstr "type de périphérique de caractères redirdev '%1$s' inconnu"
 msgid "unknown rng-random backend"
 msgstr "backend rng-random inconnu"
 
-msgid "unknown rule action attribute value"
-msgstr "valeur d'attribut d'action de règle inconnue"
-
-msgid "unknown rule direction attribute value"
-msgstr "valeur d'attribut de direction de règle inconnue"
-
 #, c-format
 msgid "unknown secret type '%1$s'"
 msgstr "type secret inconnu '%1$s'"
@@ -39962,6 +39950,9 @@ msgstr "valeur d'état non prise en charge"
 #, c-format
 msgid "unsupported storage pool event ID %1$d"
 msgstr "ID d'événement de pool de stockage non pris en charge %1$d"
+
+msgid "unsupported storage type for this code path"
+msgstr ""
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -41124,6 +41115,63 @@ msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "'floor' attribute allowed only in <inbound> element"
+#~ msgstr "L'attribut \"floor\" n'est autorisé que dans l'élément <inbound>"
+
+#~ msgid "Only one child <inbound> element allowed"
+#~ msgstr "Un seul élément enfant <inbound> autorisé"
+
+#~ msgid "Only one child <outbound> element allowed"
+#~ msgstr "Un seul élément enfant <outbound> autorisé"
+
+#~ msgid "a block I/O throttling is not supported for vhostuser disk"
+#~ msgstr ""
+#~ "l'étranglement des E/S par bloc n'est pas pris en charge pour le disque "
+#~ "vhostuser"
+
+#~ msgid "both maximum memory size and memory slot count must be specified"
+#~ msgstr ""
+#~ "la taille maximale de la mémoire et le nombre d'emplacements mémoire "
+#~ "doivent tous deux être spécifiés"
+
+#, c-format
+#~ msgid "could not convert bandwidth average value '%1$s'"
+#~ msgstr "n'a pas pu convertir la valeur moyenne de la bande passante '%1$s'"
+
+#, c-format
+#~ msgid "could not convert bandwidth burst value '%1$s'"
+#~ msgstr ""
+#~ "Impossible de convertir la valeur de la rafale de bande passante '%1$s'"
+
+#, c-format
+#~ msgid "could not convert bandwidth floor value '%1$s'"
+#~ msgstr "n'a pas pu convertir la valeur plancher de la bande passante '%1$s'"
+
+#, c-format
+#~ msgid "could not convert bandwidth peak value '%1$s'"
+#~ msgstr "n'a pas pu convertir la valeur de crête de la bande passante '%1$s'"
+
+#~ msgid "invalid argument supplied"
+#~ msgstr "argument non valide fourni"
+
+#, c-format
+#~ msgid "memory device count '%1$u' exceeds slots count '%2$u'"
+#~ msgstr ""
+#~ "le nombre de périphériques de mémoire '%1$u' dépasse le nombre de "
+#~ "créneaux horaires '%2$u'"
+
+#~ msgid "rule node requires action attribute"
+#~ msgstr "le nœud de règle nécessite un attribut d'action"
+
+#~ msgid "rule node requires direction attribute"
+#~ msgstr "le nœud de règle nécessite un attribut de direction"
+
+#~ msgid "unknown rule action attribute value"
+#~ msgstr "valeur d'attribut d'action de règle inconnue"
+
+#~ msgid "unknown rule direction attribute value"
+#~ msgstr "valeur d'attribut de direction de règle inconnue"
 
 #, c-format
 #~ msgid "DBus daemon %1$s didn't show up"
