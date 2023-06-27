@@ -1601,11 +1601,11 @@ qemuProcessHandleDumpCompleted(qemuMonitor *mon G_GNUC_UNUSED,
               vm, vm->def->name, stats, NULLSTR(error));
 
     jobPriv = vm->job->privateData;
-    privJobCurrent = vm->job->current->privateData;
     if (vm->job->asyncJob == VIR_ASYNC_JOB_NONE) {
         VIR_DEBUG("got DUMP_COMPLETED event without a dump_completed job");
         goto cleanup;
     }
+    privJobCurrent = vm->job->current->privateData;
     jobPriv->dumpCompleted = true;
     privJobCurrent->stats.dump = *stats;
     vm->job->error = g_strdup(error);
