@@ -3,7 +3,7 @@
   <domain>kvm</domain>
   <machine>pc-q35-8.1</machine>
   <arch>x86_64</arch>
-  <vcpu max='288'/>
+  <vcpu max='1024'/>
   <iothreads supported='yes'/>
   <os supported='yes'>
     <enum name='firmware'>
