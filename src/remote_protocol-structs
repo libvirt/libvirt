@@ -3330,6 +3330,13 @@ struct remote_domain_set_autostart_once_args {
         remote_nonnull_domain      dom;
         int                        autostart;
 };
+struct remote_domain_event_nic_mac_change_msg {
+        int                        callbackID;
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      alias;
+        remote_nonnull_string      oldMAC;
+        remote_nonnull_string      newMAC;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3783,4 +3790,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SET_AUTOSTART_ONCE = 450,
         REMOTE_PROC_DOMAIN_SET_THROTTLE_GROUP = 451,
         REMOTE_PROC_DOMAIN_DEL_THROTTLE_GROUP = 452,
+        REMOTE_PROC_DOMAIN_EVENT_NIC_MAC_CHANGE = 453,
 };

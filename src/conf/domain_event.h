@@ -277,6 +277,18 @@ virDomainEventMemoryDeviceSizeChangeNewFromDom(virDomainPtr dom,
                                                const char *alias,
                                                unsigned long long size);
 
+virObjectEvent *
+virDomainEventNICMACChangeNewFromObj(virDomainObj *obj,
+                                     const char *alias,
+                                     const char *oldMAC,
+                                     const char *newMAC);
+
+virObjectEvent *
+virDomainEventNICMACChangeNewFromDom(virDomainPtr dom,
+                                     const char *alias,
+                                     const char *oldMAC,
+                                     const char *newMAC);
+
 int
 virDomainEventStateRegister(virConnectPtr conn,
                             virObjectEventState *state,

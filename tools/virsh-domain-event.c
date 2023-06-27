@@ -783,6 +783,24 @@ virshEventMemoryDeviceSizeChangePrint(virConnectPtr conn G_GNUC_UNUSED,
 }
 
 
+static void
+virshEventNICMACChangePrint(virConnectPtr conn G_GNUC_UNUSED,
+                            virDomainPtr dom,
+                            const char *alias,
+                            const char *oldMAC,
+                            const char *newMAC,
+                            void *opaque)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAsprintf(&buf,
+                      _("event 'nic-mac-change' for domain '%1$s':\nalias: %2$s\noldMAC: %3$s\nnewMAC: %4$s\n"),
+                      virDomainGetName(dom), alias, oldMAC, newMAC);
+
+    virshEventPrint(opaque, &buf);
+}
+
+
 virshDomainEventCallback virshDomainEventCallbacks[] = {
     { "lifecycle",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventLifecyclePrint), },
@@ -836,6 +854,8 @@ virshDomainEventCallback virshDomainEventCallbacks[] = {
       VIR_DOMAIN_EVENT_CALLBACK(virshEventMemoryFailurePrint), },
     { "memory-device-size-change",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventMemoryDeviceSizeChangePrint), },
+    { "nic-mac-change",
+      VIR_DOMAIN_EVENT_CALLBACK(virshEventNICMACChangePrint), },
 };
 G_STATIC_ASSERT(VIR_DOMAIN_EVENT_ID_LAST == G_N_ELEMENTS(virshDomainEventCallbacks));
 

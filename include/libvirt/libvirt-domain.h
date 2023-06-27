@@ -6994,6 +6994,33 @@ typedef void (*virConnectDomainEventMemoryDeviceSizeChangeCallback)(virConnectPt
 
 
 /**
+ * virConnectDomainEventNICMACChangeCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @alias: network interface device alias
+ * @oldMAC: the old value of network interface MAC address
+ * @newMAC: the new value of network interface MAC address
+ * @opaque: application specified data
+ *
+ * The callback occurs when the guest changes MAC address on one of
+ * its virtual network interfaces, for QEMU domains this is emitted
+ * only for vNICs of model virtio. The event is not emitted for
+ * other types (e.g. PCI device passthrough).
+ *
+ * The callback signature to use when registering for an event of
+ * type VIR_DOMAIN_EVENT_ID_NIC_MAC_CHANGE with
+ * virConnectDomainEventRegisterAny().
+ *
+ * Since: 11.2.0
+ */
+typedef void (*virConnectDomainEventNICMACChangeCallback)(virConnectPtr conn,
+                                                          virDomainPtr dom,
+                                                          const char *alias,
+                                                          const char *oldMAC,
+                                                          const char *newMAC,
+                                                          void *opaque);
+
+/**
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one
@@ -7041,6 +7068,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD = 24, /* virConnectDomainEventBlockThresholdCallback (Since: 3.2.0) */
     VIR_DOMAIN_EVENT_ID_MEMORY_FAILURE = 25,  /* virConnectDomainEventMemoryFailureCallback (Since: 6.9.0) */
     VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE = 26, /* virConnectDomainEventMemoryDeviceSizeChangeCallback (Since: 7.9.0) */
+    VIR_DOMAIN_EVENT_ID_NIC_MAC_CHANGE = 27, /* virConnectDomainEventNICMACChangeCallback (Since: 11.2.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST

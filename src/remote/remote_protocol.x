@@ -4000,6 +4000,14 @@ struct remote_domain_set_autostart_once_args {
     int autostart;
 };
 
+struct remote_domain_event_nic_mac_change_msg {
+    int callbackID;
+    remote_nonnull_domain dom;
+    remote_nonnull_string alias;
+    remote_nonnull_string oldMAC;
+    remote_nonnull_string newMAC;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -7105,5 +7113,11 @@ enum remote_procedure {
      * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
      * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
      */
-    REMOTE_PROC_DOMAIN_DEL_THROTTLE_GROUP = 452
+    REMOTE_PROC_DOMAIN_DEL_THROTTLE_GROUP = 452,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_DOMAIN_EVENT_NIC_MAC_CHANGE = 453
 };

@@ -57,6 +57,7 @@ static virClass *virDomainEventMetadataChangeClass;
 static virClass *virDomainEventBlockThresholdClass;
 static virClass *virDomainEventMemoryFailureClass;
 static virClass *virDomainEventMemoryDeviceSizeChangeClass;
+static virClass *virDomainEventNICMACChangeClass;
 
 static void virDomainEventDispose(void *obj);
 static void virDomainEventLifecycleDispose(void *obj);
@@ -81,6 +82,7 @@ static void virDomainEventMetadataChangeDispose(void *obj);
 static void virDomainEventBlockThresholdDispose(void *obj);
 static void virDomainEventMemoryFailureDispose(void *obj);
 static void virDomainEventMemoryDeviceSizeChangeDispose(void *obj);
+static void virDomainEventNICMACChangeDispose(void *obj);
 
 static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
@@ -285,6 +287,15 @@ struct _virDomainEventMemoryDeviceSizeChange {
 };
 typedef struct _virDomainEventMemoryDeviceSizeChange virDomainEventMemoryDeviceSizeChange;
 
+struct _virDomainEventNICMACChange {
+    virDomainEvent parent;
+
+    char *alias;
+    char *oldMAC;
+    char *newMAC;
+};
+typedef struct _virDomainEventNICMACChange virDomainEventNICMACChange;
+
 static int
 virDomainEventsOnceInit(void)
 {
@@ -333,6 +344,8 @@ virDomainEventsOnceInit(void)
     if (!VIR_CLASS_NEW(virDomainEventMemoryFailure, virDomainEventClass))
         return -1;
     if (!VIR_CLASS_NEW(virDomainEventMemoryDeviceSizeChange, virDomainEventClass))
+        return -1;
+    if (!VIR_CLASS_NEW(virDomainEventNICMACChange, virDomainEventClass))
         return -1;
     return 0;
 }
@@ -557,6 +570,16 @@ virDomainEventMemoryDeviceSizeChangeDispose(void *obj)
     VIR_DEBUG("obj=%p", event);
 
     g_free(event->alias);
+}
+
+static void
+virDomainEventNICMACChangeDispose(void *obj)
+{
+    virDomainEventNICMACChange *event = obj;
+
+    g_free(event->alias);
+    g_free(event->oldMAC);
+    g_free(event->newMAC);
 }
 
 static void *
@@ -1733,6 +1756,62 @@ virDomainEventMemoryDeviceSizeChangeNewFromDom(virDomainPtr dom,
 }
 
 
+static virObjectEvent *
+virDomainEventNICMACChangeNew(int id,
+                              const char *name,
+                              unsigned char *uuid,
+                              const char *alias,
+                              const char *oldMAC,
+                              const char *newMAC)
+
+{
+    virDomainEventNICMACChange *ev;
+
+    if (virDomainEventsInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNew(virDomainEventNICMACChangeClass,
+                                 VIR_DOMAIN_EVENT_ID_NIC_MAC_CHANGE,
+                                 id, name, uuid)))
+        return NULL;
+
+    ev->alias = g_strdup(alias);
+    ev->oldMAC = g_strdup(oldMAC);
+    ev->newMAC = g_strdup(newMAC);
+
+    return (virObjectEvent *)ev;
+}
+
+
+virObjectEvent *
+virDomainEventNICMACChangeNewFromObj(virDomainObj *obj,
+                                     const char *alias,
+                                     const char *oldMAC,
+                                     const char *newMAC)
+{
+    return virDomainEventNICMACChangeNew(obj->def->id,
+                                         obj->def->name,
+                                         obj->def->uuid,
+                                         alias,
+                                         oldMAC,
+                                         newMAC);
+}
+
+virObjectEvent *
+virDomainEventNICMACChangeNewFromDom(virDomainPtr dom,
+                                     const char *alias,
+                                     const char *oldMAC,
+                                     const char *newMAC)
+{
+    return virDomainEventNICMACChangeNew(dom->id,
+                                         dom->name,
+                                         dom->uuid,
+                                         alias,
+                                         oldMAC,
+                                         newMAC);
+
+}
+
 static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                   virObjectEvent *event,
@@ -2038,6 +2117,20 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                                       memoryDeviceSizeChangeEvent->alias,
                                                                       memoryDeviceSizeChangeEvent->size,
                                                                       cbopaque);
+            goto cleanup;
+        }
+
+    case VIR_DOMAIN_EVENT_ID_NIC_MAC_CHANGE:
+        {
+            virDomainEventNICMACChange *nicMacChangeEvent;
+
+            nicMacChangeEvent = (virDomainEventNICMACChange *)event;
+            ((virConnectDomainEventNICMACChangeCallback)cb)(conn, dom,
+                                                            nicMacChangeEvent->alias,
+                                                            nicMacChangeEvent->oldMAC,
+                                                            nicMacChangeEvent->newMAC,
+                                                            cbopaque);
+
             goto cleanup;
         }
 

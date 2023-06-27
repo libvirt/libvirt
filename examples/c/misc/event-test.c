@@ -1102,6 +1102,19 @@ myNetworkEventMetadataChangeCallback(virConnectPtr conn G_GNUC_UNUSED,
 }
 
 
+static int
+myDomainEventNICMACChangeCallback(virConnectPtr conn G_GNUC_UNUSED,
+                                  virDomainPtr dom,
+                                  const char *alias,
+                                  const char *oldMAC,
+                                  const char *newMAC,
+                                  void *opaque G_GNUC_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) NIC MAC changed: alias: '%s' oldMAC: '%s' newMAC: '%s'\n",
+           __func__, virDomainGetName(dom), virDomainGetID(dom), alias, oldMAC, newMAC);
+    return 0;
+}
+
 
 static void
 myFreeFunc(void *opaque)
@@ -1160,6 +1173,7 @@ struct domainEventData domainEvents[] = {
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD, myDomainEventBlockThresholdCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_MEMORY_FAILURE, myDomainEventMemoryFailureCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE, myDomainEventMemoryDeviceSizeChangeCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_NIC_MAC_CHANGE, myDomainEventNICMACChangeCallback),
 };
 
 struct storagePoolEventData {
