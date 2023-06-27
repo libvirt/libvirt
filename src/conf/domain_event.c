@@ -284,7 +284,6 @@ struct _virDomainEventMemoryDeviceSizeChange {
     unsigned long long size;
 };
 typedef struct _virDomainEventMemoryDeviceSizeChange virDomainEventMemoryDeviceSizeChange;
-typedef virDomainEventMemoryDeviceSizeChange *virDomainEventMemoryDeviceSizeChangePtr;
 
 static int
 virDomainEventsOnceInit(void)
@@ -554,7 +553,7 @@ virDomainEventMemoryFailureDispose(void *obj)
 static void
 virDomainEventMemoryDeviceSizeChangeDispose(void *obj)
 {
-    virDomainEventMemoryDeviceSizeChangePtr event = obj;
+    virDomainEventMemoryDeviceSizeChange *event = obj;
     VIR_DEBUG("obj=%p", event);
 
     g_free(event->alias);
@@ -1692,7 +1691,7 @@ virDomainEventMemoryDeviceSizeChangeNew(int id,
                                         const char *alias,
                                         unsigned long long size)
 {
-    virDomainEventMemoryDeviceSizeChangePtr ev;
+    virDomainEventMemoryDeviceSizeChange *ev;
 
     if (virDomainEventsInitialize() < 0)
         return NULL;
@@ -2033,9 +2032,9 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
 
     case VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE:
         {
-            virDomainEventMemoryDeviceSizeChangePtr memoryDeviceSizeChangeEvent;
+            virDomainEventMemoryDeviceSizeChange *memoryDeviceSizeChangeEvent;
 
-            memoryDeviceSizeChangeEvent = (virDomainEventMemoryDeviceSizeChangePtr)event;
+            memoryDeviceSizeChangeEvent = (virDomainEventMemoryDeviceSizeChange *)event;
             ((virConnectDomainEventMemoryDeviceSizeChangeCallback)cb)(conn, dom,
                                                                       memoryDeviceSizeChangeEvent->alias,
                                                                       memoryDeviceSizeChangeEvent->size,
