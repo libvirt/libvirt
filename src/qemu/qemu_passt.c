@@ -204,9 +204,9 @@ qemuPasstStart(virDomainObj *vm,
         /* The logFile location is not restricted to a per-domain directory. It
          * can be anywhere. Pre-create it as passt may not have enough perms to
          * do so. */
-        if (qemuDomainOpenFile(cfg, vm->def, net->backend.logFile,
-                               O_CREAT | O_TRUNC | O_APPEND | O_RDWR,
-                               &needUnlink) < 0) {
+        if ((logfd = qemuDomainOpenFile(cfg, vm->def, net->backend.logFile,
+                                        O_CREAT | O_TRUNC | O_APPEND | O_RDWR,
+                                        &needUnlink)) < 0) {
             return -1;
         }
 
