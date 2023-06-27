@@ -34,10 +34,8 @@ install_data(
   install_dir: apparmor_dir / 'libvirt',
 )
 
-foreach name : apparmor_gen_profiles
-  install_data(
-    '@0@.local'.format(name),
-    install_dir: apparmor_dir / 'local',
-    rename: name,
-  )
-endforeach
+install_data(
+  'usr.lib.libvirt.virt-aa-helper.local',
+  install_dir: apparmor_dir / 'local',
+  rename: 'usr.lib.libvirt.virt-aa-helper',
+)
