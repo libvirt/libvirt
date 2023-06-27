@@ -2563,6 +2563,7 @@ typedef struct _qemuSnapshotDeleteExternalData {
     virStorageSource *prevDiskSrc; /* source of disk for which @diskSrc is
                                       backing disk */
     qemuBlockJobData *job;
+    bool merge;
 } qemuSnapshotDeleteExternalData;
 
 
@@ -2664,6 +2665,7 @@ qemuSnapshotDeleteExternalPrepareData(virDomainObj *vm,
 
         data = g_new0(qemuSnapshotDeleteExternalData, 1);
         data->snapDisk = snapDisk;
+        data->merge = merge;
 
         data->parentDomDisk = virDomainDiskByTarget(snapdef->parent.dom,
                                                     data->snapDisk->name);
@@ -2674,7 +2676,7 @@ qemuSnapshotDeleteExternalPrepareData(virDomainObj *vm,
             return -1;
         }
 
-        if (merge) {
+        if (data->merge) {
             data->domDisk = qemuDomainDiskByName(vm->def, snapDisk->name);
             if (!data->domDisk)
                 return -1;
@@ -3114,30 +3116,41 @@ qemuSnapshotDiscardExternal(virDomainObj *vm,
         virTristateBool autofinalize = VIR_TRISTATE_BOOL_NO;
         unsigned int commitFlags = VIR_DOMAIN_BLOCK_COMMIT_DELETE;
 
-        if (data->domDisk->src == data->diskSrc) {
-            commitFlags |= VIR_DOMAIN_BLOCK_COMMIT_ACTIVE;
-            autofinalize = VIR_TRISTATE_BOOL_YES;
+        if (data->merge) {
+            if (data->domDisk->src == data->diskSrc) {
+                commitFlags |= VIR_DOMAIN_BLOCK_COMMIT_ACTIVE;
+                autofinalize = VIR_TRISTATE_BOOL_YES;
+            }
+
+            if (qemuSnapshotSetInvalid(vm, data->parentSnap, data->snapDisk, true) < 0)
+                goto error;
+
+            data->job = qemuBlockCommit(vm,
+                                        data->domDisk,
+                                        data->parentDiskSrc,
+                                        data->diskSrc,
+                                        data->prevDiskSrc,
+                                        0,
+                                        VIR_ASYNC_JOB_SNAPSHOT,
+                                        autofinalize,
+                                        commitFlags);
+
+            if (!data->job)
+                goto error;
+        } else {
+            if (virStorageSourceInit(data->parentDomDisk->src) < 0 ||
+                virStorageSourceUnlink(data->parentDomDisk->src) < 0) {
+                VIR_WARN("Failed to remove snapshot image '%s'",
+                         data->snapDisk->name);
+            }
         }
-
-        if (qemuSnapshotSetInvalid(vm, data->parentSnap, data->snapDisk, true) < 0)
-            goto error;
-
-        data->job = qemuBlockCommit(vm,
-                                    data->domDisk,
-                                    data->parentDiskSrc,
-                                    data->diskSrc,
-                                    data->prevDiskSrc,
-                                    0,
-                                    VIR_ASYNC_JOB_SNAPSHOT,
-                                    autofinalize,
-                                    commitFlags);
-
-        if (!data->job)
-            goto error;
     }
 
     for (cur = externalData; cur; cur = g_slist_next(cur)) {
         qemuSnapshotDeleteExternalData *data = cur->data;
+
+        if (!data->merge)
+            continue;
 
         if (qemuSnapshotDeleteBlockJobRunning(vm, data->job) < 0)
             goto error;
@@ -3152,6 +3165,9 @@ qemuSnapshotDiscardExternal(virDomainObj *vm,
 
     for (cur = externalData; cur; cur = g_slist_next(cur)) {
         qemuSnapshotDeleteExternalData *data = cur->data;
+
+        if (!data->merge)
+            continue;
 
         if (data->job->state == QEMU_BLOCKJOB_STATE_READY) {
             if (qemuBlockPivot(vm, data->job, VIR_ASYNC_JOB_SNAPSHOT, NULL) < 0)
