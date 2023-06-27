@@ -11088,7 +11088,8 @@ syncNicRxFilterMulticast(char *ifname,
 int
 qemuDomainSyncRxFilter(virDomainObj *vm,
                        virDomainNetDef *def,
-                       virDomainAsyncJob asyncJob)
+                       virDomainAsyncJob asyncJob,
+                       virObjectEvent **event)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virNetDevRxFilter) guestFilter = NULL;
@@ -11145,6 +11146,19 @@ qemuDomainSyncRxFilter(virDomainObj *vm,
         oldMac = &def->mac;
 
     if (virMacAddrCmp(oldMac, &guestFilter->mac)) {
+        if (event) {
+            char oldMACStr[VIR_MAC_STRING_BUFLEN] = { 0 };
+            char newMACStr[VIR_MAC_STRING_BUFLEN] = { 0 };
+
+            virMacAddrFormat(oldMac, oldMACStr);
+            virMacAddrFormat(&guestFilter->mac, newMACStr);
+
+            *event = virDomainEventNICMACChangeNewFromObj(vm,
+                                                          def->info.alias,
+                                                          oldMACStr,
+                                                          newMACStr);
+        }
+
         /* Reflect changed MAC address in the domain XML. */
         if (virMacAddrCmp(&def->mac, &guestFilter->mac)) {
             if (!def->currentAddress) {
