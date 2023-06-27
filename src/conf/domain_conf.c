@@ -2853,6 +2853,7 @@ virDomainNetDefFree(virDomainNetDef *def)
     if (!def)
         return;
 
+    g_free(def->currentAddress);
     g_free(def->modelstr);
 
     switch (def->type) {
@@ -24948,6 +24949,11 @@ virDomainNetDefFormat(virBuffer *buf,
         virBufferAsprintf(&macAttrBuf, " type='%s'", virDomainNetMacTypeTypeToString(def->mac_type));
     if (def->mac_check != VIR_TRISTATE_BOOL_ABSENT)
         virBufferAsprintf(&macAttrBuf, " check='%s'", virTristateBoolTypeToString(def->mac_check));
+    if (def->currentAddress &&
+        !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
+        virBufferAsprintf(&macAttrBuf, " currentAddress='%s'",
+                          virMacAddrFormat(def->currentAddress, macstr));
+    }
     virXMLFormatElement(buf, "mac", &macAttrBuf, NULL);
 
     if (publicActual) {

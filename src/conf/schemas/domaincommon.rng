@@ -3844,6 +3844,11 @@
               <ref name="virYesNo"/>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="currentAddress">
+              <ref name="uniMacAddr"/>
+            </attribute>
+          </optional>
           <empty/>
         </element>
       </optional>
