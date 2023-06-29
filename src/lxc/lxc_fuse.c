@@ -163,7 +163,6 @@ lxcProcOpen(const char *path,
         return -EACCES;
 
     fi->direct_io = 1;
-    fi->nonseekable = 1;
     return 0;
 }
 
