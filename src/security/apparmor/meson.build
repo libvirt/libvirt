@@ -5,6 +5,11 @@ apparmor_gen_profiles = [
   'usr.sbin.virtxend',
 ]
 
+apparmor_gen_abstractions = [
+  'libvirt-qemu',
+  'libvirt-lxc',
+]
+
 apparmor_gen_profiles_conf = configuration_data({
   'sysconfdir': sysconfdir,
   'sbindir': sbindir,
@@ -56,10 +61,16 @@ foreach name : apparmor_gen_profiles
   )
 endforeach
 
-install_data(
-  [ 'libvirt-qemu', 'libvirt-lxc' ],
-  install_dir: apparmor_dir / 'abstractions',
-)
+foreach name : apparmor_gen_abstractions
+  configure_file(
+    input: '@0@.in'.format(name),
+    output: name,
+    command: apparmor_gen_cmd,
+    capture: true,
+    install: true,
+    install_dir: apparmor_dir / 'abstractions',
+  )
+endforeach
 
 install_data(
   [ 'TEMPLATE.qemu', 'TEMPLATE.lxc' ],
