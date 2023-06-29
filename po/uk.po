@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-06-27 11:10+0000\n"
-"PO-Revision-Date: 2023-05-27 15:20+0000\n"
+"PO-Revision-Date: 2023-06-29 04:20+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.17\n"
+"X-Generator: Weblate 4.18.1\n"
 
 msgid ""
 "\n"
@@ -1307,13 +1307,14 @@ msgstr ""
 "передбачено, скористайтеся замість нього типом диска «dir»"
 
 msgid "'discard_no_unref' is not compatible with read-only disk"
-msgstr ""
+msgstr "«discard_no_unref» є несумісним із призначеним лише для читання диском"
 
 msgid "'discard_no_unref' is not supported by this QEMU binary"
 msgstr ""
+"Підтримки «discard_no_unref» у цьому виконуваному файлі QEMU не передбачено"
 
 msgid "'discard_no_unref' only works with qcow2 disk format"
-msgstr ""
+msgstr "«discard_no_unref» працює лише із форматом дисків qcow2"
 
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "пропущено «disk» або відповідь guest-get-fsinfo не є масивом"
@@ -1743,7 +1744,7 @@ msgstr ""
 "підтримку атрибуту <hostdev> «display» передбачено лише з model='vfio-pci'"
 
 msgid "<iotune> is not supported with bus='sd'"
-msgstr ""
+msgstr "підтримки <iotune> з bus='sd' не передбачено"
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> можна використовувати лише для пристроїв lun"
@@ -3538,6 +3539,7 @@ msgstr "Неможливо вказати мітку, якщо зміну міт
 #, c-format
 msgid "Cannot specify relabel if label is missing. model=%1$s"
 msgstr ""
+"Не можна вказати повторне встановлення мітки, якщо мітки немає. model=%1$s"
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -5663,7 +5665,7 @@ msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "Дисковим пристроєм «%1$s» не підтримується створення знімків"
 
 msgid "Disk discard_no_unref is not supported by vz driver."
-msgstr ""
+msgstr "Підтримки discard_no_unref для диску не у драйвері vz."
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -16383,6 +16385,8 @@ msgid ""
 "Target memory device address '0x%1$llx' doesn't match source memory device "
 "address '0x%2$llx'"
 msgstr ""
+"Адреса пристрою у пам'яті призначення «0x%1$llx» не відповідає адресі "
+"пристрою у пам'яті джерела, «0x%2$llx»"
 
 #, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -21669,6 +21673,7 @@ msgstr ""
 #, c-format
 msgid "block I/O throttling is not supported for disk '%1$s'"
 msgstr ""
+"дроселювання блокового введення-виведення для диска «%1$s» не передбачено"
 
 #, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
@@ -24638,6 +24643,8 @@ msgid ""
 "count of memory devices requiring memory slots '%1$zu' exceeds slots count "
 "'%2$u'"
 msgstr ""
+"кількість пристроїв пам'яті, які потребують слотів пам'яті, «%1$zu», "
+"перевищує кількість слотів «%2$u»"
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr "можливістю cow можна скористатися лише для буферів «fs» і «dir»"
@@ -30975,6 +30982,8 @@ msgstr ""
 
 msgid "malformed/missing memaddr in virtio memory info"
 msgstr ""
+"помилкове форматування memaddr або цей запис пропущено у відомостях щодо "
+"пам'яті virtio"
 
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
@@ -31059,6 +31068,8 @@ msgstr ""
 msgid ""
 "maximum memory size must be specified when specifying number of memory slots"
 msgstr ""
+"при визначенні кількості слотів пам'яті має бути вказано максимальний розмір "
+"пам'яті"
 
 msgid "maximum memory size overflowed after alignment"
 msgstr "максимальний розмір пам'яті переповнив значення після вирівнювання"
@@ -31158,7 +31169,7 @@ msgstr ""
 "підтримки адресування пам'яті пристрою для моделі «%1$s» не передбачено"
 
 msgid "memory device address must be aligned to blocksize"
-msgstr ""
+msgstr "адресу пристрою пам'яті має бути вирівняно за розміром блоку"
 
 msgid "memory device alias"
 msgstr "альтернативна назва пристрою пам'яті"
@@ -39594,7 +39605,7 @@ msgid "unsupported storage pool event ID %1$d"
 msgstr "непідтримуваний ідентифікатор події сховища даних, %1$d"
 
 msgid "unsupported storage type for this code path"
-msgstr ""
+msgstr "непідтримуваний тип сховища даних для цього кодового шляху"
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
