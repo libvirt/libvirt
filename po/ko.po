@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-06-27 11:10+0000\n"
-"PO-Revision-Date: 2023-06-27 09:20+0000\n"
+"PO-Revision-Date: 2023-06-29 04:20+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -1251,13 +1251,13 @@ msgstr ""
 "유형을 사용합니다"
 
 msgid "'discard_no_unref' is not compatible with read-only disk"
-msgstr ""
+msgstr "'discard_no_unref'는 읽기-전용 디스크와 호환되지 않습니다"
 
 msgid "'discard_no_unref' is not supported by this QEMU binary"
-msgstr ""
+msgstr "'discard_no_unref'는 이 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "'discard_no_unref' only works with qcow2 disk format"
-msgstr ""
+msgstr "'discard_no_unref'는 qcow2 디스크 형식에서만 동작합니다"
 
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "'disk' 누락이거나 guest-get-fsinfo의 응답에서 배열이 아님"
@@ -1679,7 +1679,7 @@ msgstr ""
 "<hostdev>의 'display'(표시) 요소는 오직 'vfio-pci' 모델에서만 지원됩니다"
 
 msgid "<iotune> is not supported with bus='sd'"
-msgstr ""
+msgstr "<iotune>는 bus='sd'를 지원하지 않습니다"
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr ""
@@ -3392,7 +3392,7 @@ msgstr ""
 
 #, c-format
 msgid "Cannot specify relabel if label is missing. model=%1$s"
-msgstr ""
+msgstr "만약 이름표가 누락되었으면 이름표 재지정을 지정 할 수 없습니다. 모델=%1$s"
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -5409,7 +5409,7 @@ msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "디스크 장치 %1$s가 스냅샷을 지원하지 않습니다"
 
 msgid "Disk discard_no_unref is not supported by vz driver."
-msgstr ""
+msgstr "Disk discard_no_unref는 vz 드라이버에서 지원되지 않습니다."
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -15487,7 +15487,8 @@ msgstr "대상 최대 메모리 크기 '%1$llu'이(가) 소스 '%2$llu'와 일�
 msgid ""
 "Target memory device address '0x%1$llx' doesn't match source memory device "
 "address '0x%2$llx'"
-msgstr ""
+msgstr "대상 메모리 장치 주소 '0x%1$llx'는 원천 메모리 장치 주소 '0x%2$llx'와 "
+"일치하지 않습니다"
 
 #, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -20542,7 +20543,7 @@ msgstr "블록 I/O 스로틀 제한 값은 %1$llu 이하여야 합니다"
 
 #, c-format
 msgid "block I/O throttling is not supported for disk '%1$s'"
-msgstr ""
+msgstr "블록 I/O 조절은 디스크 '%1$s'를 위해 지원되지 않습니다"
 
 #, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
@@ -23373,7 +23374,7 @@ msgstr "dnsmasq 구성 파일 '%1$s'을(를) 쓸 수 없습니다"
 msgid ""
 "count of memory devices requiring memory slots '%1$zu' exceeds slots count "
 "'%2$u'"
-msgstr ""
+msgstr "메모리 슬롯 '%1$zu'가 필요한 메모리 장치 수는 슬롯 수 '%2$u'를 초과합니다"
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr "소 기능은 'fs' 및 'dir' 풀에만 사용할 수 있습니다"
@@ -29415,7 +29416,7 @@ msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr "sgx-epc 메모리 정보에서 잘못된/누락된 메모리주소"
 
 msgid "malformed/missing memaddr in virtio memory info"
-msgstr ""
+msgstr "virtio 메모리 정보에서 잘못된/누락된 메모리주소"
 
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr "sgx-epc 메모리 정보에서 잘못된/누락된 크기"
@@ -29491,7 +29492,7 @@ msgstr "최대 메모리 크기는 실제 메모리 크기보다 크거나 같�
 
 msgid ""
 "maximum memory size must be specified when specifying number of memory slots"
-msgstr ""
+msgstr "최대 메모리 크기는 메모리 슬롯의 수를 지정 할 때에 지정되어야 합니다"
 
 msgid "maximum memory size overflowed after alignment"
 msgstr "정렬 후 최대 메모리 크기가 오버플로됨"
@@ -29580,7 +29581,7 @@ msgid "memory device address is not supported for model '%1$s'"
 msgstr "메모리 장치 주소가 모델 '%1$s'를 위해 지원되지 않습니다"
 
 msgid "memory device address must be aligned to blocksize"
-msgstr ""
+msgstr "메모리 장치 주소는 블록크기로 맞게 정렬되어야 합니다"
 
 msgid "memory device alias"
 msgstr "메모리 장치 별칭"
@@ -37613,7 +37614,7 @@ msgid "unsupported storage pool event ID %1$d"
 msgstr "지원되지 않는 저장소 풀 이벤트 ID %1$d"
 
 msgid "unsupported storage type for this code path"
-msgstr ""
+msgstr "이 코드 경로를 위해 미지원되는 저장소 유형"
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
