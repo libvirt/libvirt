@@ -52,4 +52,8 @@ profile virtxend @sbindir@/virtxend flags=(attach_disconnected) {
   @libexecdir@/libvirt_iohelper ix,
   /etc/libvirt/hooks/** rmix,
   /etc/xen/scripts/** rmix,
+
+@BEGIN_APPARMOR_3@
+  include if exists <local/usr.sbin.virtxend>
+@END_APPARMOR_3@
 }
