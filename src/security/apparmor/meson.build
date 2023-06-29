@@ -14,9 +14,41 @@ apparmor_gen_profiles_conf = configuration_data({
 
 apparmor_dir = sysconfdir / 'apparmor.d'
 
+# Our profiles use some features that only work well on AppArmor 3.x,
+# specifically the 'include if exists' directive. In order to keep
+# supporting AppArmor 2.x, the bits that are version-specific are
+# enclosed in special markers and we decide which ones to include
+# based on the AppArmor version detected on the host.
+#
+# TODO: drop the additional complexity once we no longer target
+#       distros that ship AppArmor 2.x (Debian 11, Ubuntu 20.04)
+if conf.has('WITH_APPARMOR_3')
+  apparmor_gen_cmd = [
+    'sed',
+    '-e', '/[@]BEGIN_APPARMOR_3[@]/d',
+    '-e', '/[@]END_APPARMOR_3[@]/d',
+    '-e', '/[@]BEGIN_APPARMOR_2[@]/,/[@]END_APPARMOR_2[@]/d',
+    '@INPUT@'
+  ]
+else
+  apparmor_gen_cmd = [
+    'sed',
+    '-e', '/[@]BEGIN_APPARMOR_3[@]/,/[@]END_APPARMOR_3[@]/d',
+    '-e', '/[@]BEGIN_APPARMOR_2[@]/d',
+    '-e', '/[@]END_APPARMOR_2[@]/d',
+    '@INPUT@'
+  ]
+endif
+
 foreach name : apparmor_gen_profiles
-  configure_file(
+  tmp = configure_file(
     input: '@0@.in'.format(name),
+    output: '@0@.tmp'.format(name),
+    command: apparmor_gen_cmd,
+    capture: true,
+  )
+  configure_file(
+    input: tmp,
     output: name,
     configuration: apparmor_gen_profiles_conf,
     install: true,
