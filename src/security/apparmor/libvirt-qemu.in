@@ -271,3 +271,7 @@
   # required for QEMU accessing UEFI nvram variables
   owner /var/lib/libvirt/qemu/nvram/*_VARS.fd rwk,
   owner /var/lib/libvirt/qemu/nvram/*_VARS.ms.fd rwk,
+
+@BEGIN_APPARMOR_3@
+  include if exists <abstractions/libvirt-qemu.d>
+@END_APPARMOR_3@
