@@ -71,5 +71,10 @@ profile virt-aa-helper @libexecdir@/virt-aa-helper {
   /**.[iI][sS][oO] r,
   /**/disk{,.*} r,
 
+@BEGIN_APPARMOR_3@
+  include if exists <local/usr.lib.libvirt.virt-aa-helper>
+@END_APPARMOR_3@
+@BEGIN_APPARMOR_2@
   #include <local/usr.lib.libvirt.virt-aa-helper>
+@END_APPARMOR_2@
 }
