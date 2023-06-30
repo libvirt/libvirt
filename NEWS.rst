@@ -33,7 +33,46 @@ v9.5.0 (unreleased)
     compatible with all hosts even if their supported physical address sizes
     differ.
 
+  * conf: Properly handle slots for non-DIMM ``<memory>`` devices
+
+    Memory devices such as ``virtio-mem`` don't need a memory slot as they are
+    PCI devices. ``libvirt`` now properly accounts the memory slots for such
+    devices as well as specifying the ``slots`` attribute of the ``<maxMemory>``
+    element is no longer needed unless DIMM-like devices are to be used.
+
+  * ``passt`` log and port forwarding improvements
+
+    Libvirt now ensures that the ``passt`` helper process can access the
+    configured log file even when it's placed in a directory without permissions.
+
+    The ``<portForward>`` element of a passt-backed interface can now omit the
+    ``address`` attribute as it's enough to specify a ``dev``.
+
 * **Bug fixes**
+
+  * lxc: Allow seeking in ``/proc/meminfo`` to resove failure with new ``procps`` package
+
+    New version of the ``free`` command from ``procps`` package seeks into the
+    ``/proc/meminfo`` file, which was not supported by the instance of the file
+    exposed via LXC causing a failure.
+
+  * qemu: Fix rare race-condition when detaching a device
+
+    The device removal handler callback function didn't re-check the state of
+    the unplug operation after a timeout, which could rarely cause that the
+    device was removed from the VM but not the definition.
+
+  * qemu: Fix NUMA memory allocation logic
+
+    QEMU allocates memory via the emulator thread thus that has to be allowed
+    to access all configured NUMA nodes of the VM rather than just the one where
+    it's supposed to be pinned.
+
+
+  * qemu: Fix setup of ``hostdev`` backed ``<interface>``
+
+    The proper steps to initialize the host device were skipped for interfaces
+    due to a logic bug preventing start of VM which used them.
 
 
 v9.4.0 (2023-06-01)
