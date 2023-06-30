@@ -1765,12 +1765,20 @@ nodeStateCleanup(void)
 static int
 udevHandleOneDevice(struct udev_device *device)
 {
+    virNodeDevCapType dev_cap_type;
     const char *action = udev_device_get_action(device);
 
     VIR_DEBUG("udev action: '%s': %s", action, udev_device_get_syspath(device));
 
-    if (STREQ(action, "add") || STREQ(action, "change"))
-        return udevAddOneDevice(device);
+    if (STREQ(action, "add") || STREQ(action, "change")) {
+        int ret = udevAddOneDevice(device);
+        if (ret == 0 &&
+            udevGetDeviceType(device, &dev_cap_type) == 0 &&
+            dev_cap_type == VIR_NODE_DEV_CAP_MDEV)
+            if (nodeDeviceUpdateMediatedDevices() < 0)
+                VIR_WARN("mdevctl failed to update mediated devices");
+        return ret;
+    }
 
     if (STREQ(action, "remove"))
         return udevRemoveOneDevice(device);
