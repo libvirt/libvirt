@@ -160,4 +160,14 @@ testQemuGetRealCaps(const char *arch,
                     GHashTable *capsCache,
                     GHashTable *schemaCache,
                     GHashTable **schema);
+
+int
+testQemuInsertRealCaps(virFileCache *cache,
+                       const char *arch,
+                       const char *version,
+                       const char *variant,
+                       GHashTable *capsLatestFiles,
+                       GHashTable *capsCache,
+                       GHashTable *schemaCache,
+                       GHashTable **schema);
 #endif

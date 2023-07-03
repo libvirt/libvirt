@@ -976,6 +976,51 @@ testQemuGetRealCaps(const char *arch,
 }
 
 
+/**
+ * testQemuInsertRealCaps:
+ *
+ * @arch: architecture to fetch caps for
+ * @version: qemu version to fetch caps for ("latest" for fetching the latest version from @capsLatestFiles)
+ * @variant: capabilities variant to fetch caps for
+ * @capsLatestFiles: hash table containing latest version of capabilities for the  @arch+@variant tuple
+ * @capsCache: hash table filled with the cache of capabilities
+ * @schemaCache: hash table for caching QMP schemas (may be NULL, see below)
+ * @schema: Filled with the QMP schema (hash table) (may be NULL, see below)
+ *
+ * Fetches and inserts into the test capability cache the appropriate virQEMUCaps
+ * for the @arch+@version+@variant tuple. Note that the data inserted into
+ * the cache is borrowed from the cache thus must not be further modified.
+ *
+ * If @schemaCache and @schema are non-NULL, @schema is filled with with a
+ * pointer (borrowed from the cache) to the hash table representing the QEMU QMP
+ * schema used for validation of the monitor traffic.
+ */
+int
+testQemuInsertRealCaps(virFileCache *cache,
+                       const char *arch,
+                       const char *version,
+                       const char *variant,
+                       GHashTable *capsLatestFiles,
+                       GHashTable *capsCache,
+                       GHashTable *schemaCache,
+                       GHashTable **schema)
+{
+    virQEMUCaps *cachedcaps;
+
+    virFileCacheClear(cache);
+
+    if (!(cachedcaps = testQemuGetRealCapsInternal(arch, version, variant,
+                                                  capsLatestFiles, capsCache,
+                                                  schemaCache, schema)))
+        return -1;
+
+    if (qemuTestCapsCacheInsertData(cache, virQEMUCapsGetBinary(cachedcaps), cachedcaps) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int
 testQemuInfoInitArgs(struct testQemuInfo *info)
 {
