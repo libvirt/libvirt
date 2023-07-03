@@ -47,13 +47,7 @@ mymain(void)
 {
     g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
     g_autoptr(GHashTable) capscache = virHashNew(virObjectUnref);
-    g_autoptr(virQEMUCaps) qemuCaps_x86_64 = NULL;
-    g_autoptr(virQEMUCaps) qemuCaps_ppc64 = NULL;
     int ret = 0;
-
-    if (!(qemuCaps_x86_64 = testQemuGetRealCaps("x86_64", "latest", "", capslatest, capscache, NULL, NULL)) ||
-        !(qemuCaps_ppc64 =  testQemuGetRealCaps("ppc64", "latest", "", capslatest, capscache, NULL, NULL)))
-        return EXIT_FAILURE;
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
@@ -85,11 +79,11 @@ mymain(void)
 
     qemuTestSetHostArch(&driver, VIR_ARCH_X86_64);
 
-    virFileCacheClear(driver.qemuCapsCache);
-    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, qemuCaps_x86_64) < 0) {
+    if (testQemuInsertRealCaps(driver.qemuCapsCache, "x86_64", "latest", "",
+                               capslatest, capscache, NULL, NULL) < 0) {
         ret = -1;
         goto cleanup;
-    };
+    }
 
     DO_TEST("pc-kvm", 0);
     DO_TEST("pc-tcg", 0);
@@ -105,11 +99,12 @@ mymain(void)
     DO_TEST("pc-locked+hostdev", VIR_DOMAIN_MEMORY_PARAM_UNLIMITED);
 
     qemuTestSetHostArch(&driver, VIR_ARCH_PPC64);
-    virFileCacheClear(driver.qemuCapsCache);
-    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, qemuCaps_ppc64) < 0) {
+
+    if (testQemuInsertRealCaps(driver.qemuCapsCache, "ppc64", "latest", "",
+                               capslatest, capscache, NULL, NULL) < 0) {
         ret = -1;
         goto cleanup;
-    };
+    }
 
     DO_TEST("pseries-kvm", 20971520);
     DO_TEST("pseries-tcg", 0);
