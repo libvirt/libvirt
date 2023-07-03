@@ -931,13 +931,13 @@ testQemuGetRealCaps(const char *arch,
             return NULL;
         }
 
+        if (stripmachinealiases)
+            virQEMUCapsStripMachineAliases(cachedcaps);
+
         g_hash_table_insert(capsCache, g_strdup(capsfile), cachedcaps);
     }
 
     ret = virQEMUCapsNewCopy(cachedcaps);
-
-    if (stripmachinealiases)
-        virQEMUCapsStripMachineAliases(ret);
 
     /* strip 'xml' suffix so that we can format the file to '.replies' */
     capsfile[strlen(capsfile) - 3] = '\0';
