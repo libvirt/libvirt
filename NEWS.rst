@@ -78,7 +78,6 @@ v9.5.0 (2023-07-03)
     to access all configured NUMA nodes of the VM rather than just the one where
     it's supposed to be pinned.
 
-
   * qemu: Fix setup of ``hostdev`` backed ``<interface>``
 
     The proper steps to initialize the host device were skipped for interfaces
@@ -551,6 +550,7 @@ v8.10.0 (2022-12-01)
     Certain udev entries might be of a size that makes libudev emit EINVAL
     which caused a busy loop burning CPU. Fix it by ignoring the return code.
 
+
 v8.9.0 (2022-11-01)
 ===================
 
@@ -728,6 +728,7 @@ v8.6.0 (2022-08-01)
 
     The firmware autoselection feature now behaves more intuitively, reports
     better error messages on failure and comes with high-level documentation.
+
 
 v8.5.0 (2022-07-01)
 ===================
