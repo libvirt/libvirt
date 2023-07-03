@@ -8,6 +8,20 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
+v9.6.0 (unreleased)
+===================
+
+* **Security**
+
+* **Removed features**
+
+* **New features**
+
+* **Improvements**
+
+* **Bug fixes**
+
+
 v9.5.0 (2023-07-03)
 ===================
 
