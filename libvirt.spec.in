@@ -22,7 +22,7 @@
 %define arches_dmidecode        %{arches_x86}
 %define arches_xen              %{arches_x86} aarch64
 %if 0%{?fedora}
-    %define arches_xen              x86_64 aarch64
+    %define arches_xen          x86_64 aarch64
 %endif
 %define arches_vbox             %{arches_x86}
 %define arches_ceph             %{arches_64bit}
@@ -686,7 +686,7 @@ Requires: libvirt-libs = %{version}-%{release}
     %if 0%{?fedora}
 Requires: glusterfs-client >= 2.0.1
     %endif
-    %if (0%{?fedora} || 0%{?with_storage_gluster})
+    %if 0%{?fedora} || 0%{?with_storage_gluster}
 Requires: /usr/sbin/gluster
     %endif
 
