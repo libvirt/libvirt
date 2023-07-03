@@ -85,10 +85,24 @@ virStorageBackendZFSCheckPool(virStoragePoolObj *pool G_GNUC_UNUSED,
                               bool *isActive)
 {
     virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
-    g_autofree char *devpath = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    int exit_code = -1;
 
-    devpath = g_strdup_printf("/dev/zvol/%s", def->source.name);
-    *isActive = virFileIsDir(devpath);
+    /* Check for an existing dataset of type 'filesystem' by the name of our
+     * pool->source.name.  */
+    cmd = virCommandNewArgList(ZFS,
+                               "list", "-H",
+                               "-t", "filesystem",
+                               "-o", "name",
+                               def->source.name,
+                               NULL);
+
+
+    if (virCommandRun(cmd, &exit_code) < 0)
+        return -1;
+
+    /* zfs list exits with 0 if the dataset exists, 1 if it doesn't */
+    *isActive = exit_code == 0;
 
     return 0;
 }
