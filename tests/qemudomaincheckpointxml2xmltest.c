@@ -131,9 +131,15 @@ testCompareXMLToXMLHelper(const void *data)
 static int
 mymain(void)
 {
+    g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
+    g_autoptr(GHashTable) capscache = virHashNew(virObjectUnref);
     int ret = 0;
 
     if (qemuTestDriverInit(&driver) < 0)
+        return EXIT_FAILURE;
+
+    if (testQemuInsertRealCaps(driver.qemuCapsCache, "x86_64", "latest", "",
+                               capslatest, capscache, NULL, NULL) < 0)
         return EXIT_FAILURE;
 
     virDomainXMLOptionSetMomentPostParse(driver.xmlopt,
