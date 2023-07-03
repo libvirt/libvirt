@@ -876,37 +876,21 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
 
 
 /**
- * testQemuGetRealCaps:
- *
- * @arch: architecture to fetch caps for
- * @version: qemu version to fetch caps for ("latest" for fetching the latest version from @capsLatestFiles)
- * @variant: capabilities variant to fetch caps for
- * @capsLatestFiles: hash table containing latest version of capabilities for the  @arch+@variant tuple
- * @capsCache: hash table filled with the cache of capabilities
- * @schemaCache: hash table for caching QMP schemas (may be NULL, see below)
- * @schema: Filled with the QMP schema (hash table) (may be NULL, see below)
- *
- * Fetches and returns the appropriate virQEMUCaps for the @arch+@version+@variant
- * tuple. The returned pointer is a copy of the cached object and thus can
- * be freely modified. Caller is responsible for freeing it.
- *
- * If @schemaCache and @schema are non-NULL, @schema is filled with with a
- * pointer (borrowed from the cache) to the hash table representing the QEMU QMP
- * schema used for validation of the monitor traffic.
+ * See testQemuGetRealCaps, this helper returns the pointer to the virQEMUCaps
+ * object as stored in the cache hash table.
  */
-virQEMUCaps *
-testQemuGetRealCaps(const char *arch,
-                    const char *version,
-                    const char *variant,
-                    GHashTable *capsLatestFiles,
-                    GHashTable *capsCache,
-                    GHashTable *schemaCache,
-                    GHashTable **schema)
+static virQEMUCaps *
+testQemuGetRealCapsInternal(const char *arch,
+                            const char *version,
+                            const char *variant,
+                            GHashTable *capsLatestFiles,
+                            GHashTable *capsCache,
+                            GHashTable *schemaCache,
+                            GHashTable **schema)
 {
     g_autofree char *capsfile = NULL;
     bool stripmachinealiases = false;
     virQEMUCaps *cachedcaps = NULL;
-    virQEMUCaps *ret = NULL;
 
     if (STREQ(version, "latest")) {
         g_autofree char *archvariant = g_strdup_printf("%s%s", arch, variant);
@@ -937,8 +921,6 @@ testQemuGetRealCaps(const char *arch,
         g_hash_table_insert(capsCache, g_strdup(capsfile), cachedcaps);
     }
 
-    ret = virQEMUCapsNewCopy(cachedcaps);
-
     /* strip 'xml' suffix so that we can format the file to '.replies' */
     capsfile[strlen(capsfile) - 3] = '\0';
 
@@ -951,7 +933,46 @@ testQemuGetRealCaps(const char *arch,
         }
     }
 
-    return ret;
+    return cachedcaps;
+}
+
+
+/**
+ * testQemuGetRealCaps:
+ *
+ * @arch: architecture to fetch caps for
+ * @version: qemu version to fetch caps for ("latest" for fetching the latest version from @capsLatestFiles)
+ * @variant: capabilities variant to fetch caps for
+ * @capsLatestFiles: hash table containing latest version of capabilities for the  @arch+@variant tuple
+ * @capsCache: hash table filled with the cache of capabilities
+ * @schemaCache: hash table for caching QMP schemas (may be NULL, see below)
+ * @schema: Filled with the QMP schema (hash table) (may be NULL, see below)
+ *
+ * Fetches and returns the appropriate virQEMUCaps for the @arch+@version+@variant
+ * tuple. The returned pointer is a copy of the cached object and thus can
+ * be freely modified. Caller is responsible for freeing it.
+ *
+ * If @schemaCache and @schema are non-NULL, @schema is filled with with a
+ * pointer (borrowed from the cache) to the hash table representing the QEMU QMP
+ * schema used for validation of the monitor traffic.
+ */
+virQEMUCaps *
+testQemuGetRealCaps(const char *arch,
+                    const char *version,
+                    const char *variant,
+                    GHashTable *capsLatestFiles,
+                    GHashTable *capsCache,
+                    GHashTable *schemaCache,
+                    GHashTable **schema)
+{
+    virQEMUCaps *cachedcaps;
+
+    if (!(cachedcaps = testQemuGetRealCapsInternal(arch, version, variant,
+                                                  capsLatestFiles, capsCache,
+                                                  schemaCache, schema)))
+        return NULL;
+
+    return virQEMUCapsNewCopy(cachedcaps);
 }
 
 
