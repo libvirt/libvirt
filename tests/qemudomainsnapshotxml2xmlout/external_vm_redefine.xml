@@ -21,22 +21,25 @@
     <currentMemory unit='KiB'>219100</currentMemory>
     <vcpu placement='static' cpuset='1-4,8-20,525'>1</vcpu>
     <os>
-      <type arch='i686' machine='pc'>hvm</type>
+      <type arch='x86_64' machine='pc'>hvm</type>
       <boot dev='hd'/>
     </os>
+    <cpu mode='custom' match='exact' check='none'>
+      <model fallback='forbid'>qemu64</model>
+    </cpu>
     <clock offset='utc'/>
     <on_poweroff>destroy</on_poweroff>
     <on_reboot>restart</on_reboot>
     <on_crash>destroy</on_crash>
     <devices>
-      <emulator>/usr/bin/qemu-system-i386</emulator>
+      <emulator>/usr/bin/qemu-system-x86_64</emulator>
       <disk type='block' device='disk' snapshot='no'>
         <driver name='qemu' type='raw'/>
         <source dev='/dev/HostVG/QEMUGuest1'/>
         <target dev='hda' bus='ide'/>
         <address type='drive' controller='0' bus='0' target='0' unit='0'/>
       </disk>
-      <controller type='usb' index='0'>
+      <controller type='usb' index='0' model='piix3-uhci'>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
       </controller>
       <controller type='ide' index='0'>
