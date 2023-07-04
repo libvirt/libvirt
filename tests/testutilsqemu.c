@@ -428,7 +428,6 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     virSecurityManager *mgr = NULL;
     char statedir[] = STATEDIRTEMPLATE;
     char configdir[] = CONFIGDIRTEMPLATE;
-    g_autoptr(virQEMUCaps) emptyCaps = NULL;
 
     memset(driver, 0, sizeof(*driver));
 
@@ -497,11 +496,6 @@ int qemuTestDriverInit(virQEMUDriver *driver)
 
     driver->xmlopt = virQEMUDriverCreateXMLConf(driver, "none");
     if (!driver->xmlopt)
-        goto error;
-
-    /* Populate the capabilities cache with fake empty caps */
-    emptyCaps = virQEMUCapsNew();
-    if (qemuTestCapsCacheInsert(driver->qemuCapsCache, emptyCaps) < 0)
         goto error;
 
     if (!(mgr = virSecurityManagerNew("none", "qemu",
