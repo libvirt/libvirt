@@ -30,6 +30,9 @@ Quick Links
 
 `New contributors <contribute.html>`__
   Get involved in the libvirt community & student outreach programs
+`Submitting patches <hacking.html>`__
+  Already a regular open source contributor and have git set up? Have a quick
+  look at how to propose your changes to libvirt correctly
 `Security vulnerabilities <securityprocess.html>`__
   View security notices and report vulnerabilities to the libvirt security
   response team
