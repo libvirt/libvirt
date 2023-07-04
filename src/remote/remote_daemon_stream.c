@@ -318,8 +318,8 @@ daemonStreamFilter(virNetServerClient *client,
         msg->header.serial != stream->serial)
         goto cleanup;
 
-    VIR_DEBUG("Incoming client=%p, rx=%p, serial=%u, proc=%d, status=%d",
-              client, stream->rx, msg->header.proc,
+    VIR_DEBUG("Incoming client=%p, rx=%p, msg=%p, serial=%u, proc=%d, status=%d",
+              client, stream->rx, msg, msg->header.proc,
               msg->header.serial, msg->header.status);
 
     virNetMessageQueuePush(&stream->rx, msg);

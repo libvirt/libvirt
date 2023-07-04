@@ -103,6 +103,8 @@ void virNetMessageQueuePush(virNetMessage **queue, virNetMessage *msg)
 {
     virNetMessage *tmp = *queue;
 
+    VIR_DEBUG("queue=%p msg=%p", queue, msg);
+
     if (tmp) {
         while (tmp->next)
             tmp = tmp->next;
@@ -117,10 +119,13 @@ virNetMessage *virNetMessageQueueServe(virNetMessage **queue)
 {
     virNetMessage *tmp = *queue;
 
+    VIR_DEBUG("queue serve start queue=%p *queue=%p", queue, *queue);
+
     if (tmp) {
         *queue = g_steal_pointer(&tmp->next);
     }
 
+    VIR_DEBUG("queue serve end queue=%p *queue=%p", queue, *queue);
     return tmp;
 }
 
