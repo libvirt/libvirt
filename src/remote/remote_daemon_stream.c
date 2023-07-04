@@ -740,10 +740,11 @@ static int
 daemonStreamHandleWrite(virNetServerClient *client,
                         daemonClientStream *stream)
 {
+    virNetMessageStatus status = VIR_NET_OK;
     VIR_DEBUG("client=%p, stream=%p", client, stream);
 
     while (stream->rx && !stream->closed) {
-        virNetMessage *msg = stream->rx;
+        virNetMessage *msg = virNetMessageQueueServe(&stream->rx);
         int ret;
 
         if (msg->header.type == VIR_NET_STREAM_HOLE) {
@@ -752,7 +753,8 @@ daemonStreamHandleWrite(virNetServerClient *client,
              * data. */
             ret = daemonStreamHandleHole(client, stream, msg);
         } else if (msg->header.type == VIR_NET_STREAM) {
-            switch (msg->header.status) {
+            status = msg->header.status;
+            switch (status) {
             case VIR_NET_OK:
                 ret = daemonStreamHandleFinish(client, stream, msg);
                 break;
@@ -776,7 +778,6 @@ daemonStreamHandleWrite(virNetServerClient *client,
         if (ret > 0)
             break;  /* still processing data from msg */
 
-        virNetMessageQueueServe(&stream->rx);
         if (ret < 0) {
             virNetMessageFree(msg);
             virNetServerClientImmediateClose(client);
@@ -789,7 +790,7 @@ daemonStreamHandleWrite(virNetServerClient *client,
          * onto the wire, but this causes the client to reset
          * its active request count / throttling
          */
-        if (msg->header.status == VIR_NET_CONTINUE) {
+        if (status == VIR_NET_CONTINUE) {
             virNetMessageClear(msg);
             msg->header.type = VIR_NET_REPLY;
             if (virNetServerClientSendMessage(client, msg) < 0) {
