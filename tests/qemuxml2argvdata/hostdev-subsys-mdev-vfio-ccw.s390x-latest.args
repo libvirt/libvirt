@@ -27,7 +27,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -boot strict=on \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device vfio-ccw,id=hostdev0,sysfsdev=/sys/bus/mdev/devices/90c6c135-ad44-41d0-b1b7-bae47de48627,devno=fe.0.0000 \
--device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001 \
+-device '{"driver":"vfio-ccw","id":"hostdev0","sysfsdev":"/sys/bus/mdev/devices/90c6c135-ad44-41d0-b1b7-bae47de48627","devno":"fe.0.0000"}' \
+-device '{"driver":"virtio-balloon-ccw","id":"balloon0","devno":"fe.0.0001"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

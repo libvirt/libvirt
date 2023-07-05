@@ -28,15 +28,15 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw","file":"libvirt-2-storage"}' \
--device virtio-blk-ccw,devno=fe.0.0002,drive=libvirt-2-format,id=virtio-disk0,bootindex=1 \
+-device '{"driver":"virtio-blk-ccw","devno":"fe.0.0002","drive":"libvirt-2-format","id":"virtio-disk0","bootindex":1}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device virtio-blk-ccw,devno=fe.0.0003,drive=libvirt-1-format,id=virtio-disk1,bootindex=3 \
--netdev user,id=hostnet0 \
--device virtio-net-ccw,netdev=hostnet0,id=net0,mac=00:11:22:33:44:54,bootindex=2,devno=fe.0.0000 \
--netdev user,id=hostnet1 \
--device virtio-net-ccw,netdev=hostnet1,id=net1,mac=00:11:22:33:42:36,devno=fe.0.0004 \
+-device '{"driver":"virtio-blk-ccw","devno":"fe.0.0003","drive":"libvirt-1-format","id":"virtio-disk1","bootindex":3}' \
+-netdev '{"type":"user","id":"hostnet0"}' \
+-device '{"driver":"virtio-net-ccw","netdev":"hostnet0","id":"net0","mac":"00:11:22:33:44:54","bootindex":2,"devno":"fe.0.0000"}' \
+-netdev '{"type":"user","id":"hostnet1"}' \
+-device '{"driver":"virtio-net-ccw","netdev":"hostnet1","id":"net1","mac":"00:11:22:33:42:36","devno":"fe.0.0004"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001 \
+-device '{"driver":"virtio-balloon-ccw","id":"balloon0","devno":"fe.0.0001"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

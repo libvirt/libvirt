@@ -28,14 +28,14 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device virtio-scsi-ccw,iothread=iothread2,id=scsi0,devno=fe.0.0001 \
+-device '{"driver":"virtio-scsi-ccw","iothread":"iothread2","id":"scsi0","devno":"fe.0.0001"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw","file":"libvirt-2-storage"}' \
--device virtio-blk-ccw,iothread=iothread1,devno=fe.0.0000,drive=libvirt-2-format,id=virtio-disk0,bootindex=1 \
+-device '{"driver":"virtio-blk-ccw","iothread":"iothread1","devno":"fe.0.0000","drive":"libvirt-2-format","id":"virtio-disk0","bootindex":1}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device scsi-hd,bus=scsi0.0,channel=0,scsi-id=2,lun=0,device_id=drive-scsi0-0-2-0,drive=libvirt-1-format,id=scsi0-0-2-0 \
+-device '{"driver":"scsi-hd","bus":"scsi0.0","channel":0,"scsi-id":2,"lun":0,"device_id":"drive-scsi0-0-2-0","drive":"libvirt-1-format","id":"scsi0-0-2-0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device virtio-balloon-ccw,id=balloon0,devno=fe.0.000a \
+-device '{"driver":"virtio-balloon-ccw","id":"balloon0","devno":"fe.0.000a"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

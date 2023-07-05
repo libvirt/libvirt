@@ -28,14 +28,14 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device virtio-blk-ccw,devno=fe.0.0000,drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
+-device '{"driver":"virtio-blk-ccw","devno":"fe.0.0000","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \
 -fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/to/guest \
--device virtio-9p-ccw,id=fs0,fsdev=fsdev-fs0,mount_tag=/import/from/host,devno=fe.0.0001 \
+-device '{"driver":"virtio-9p-ccw","id":"fs0","fsdev":"fsdev-fs0","mount_tag":"/import/from/host","devno":"fe.0.0001"}' \
 -fsdev local,security_model=mapped,writeout=immediate,id=fsdev-fs1,path=/export/to/guest2 \
--device virtio-9p-ccw,id=fs1,fsdev=fsdev-fs1,mount_tag=/import/from/host2,devno=fe.0.0002 \
+-device '{"driver":"virtio-9p-ccw","id":"fs1","fsdev":"fsdev-fs1","mount_tag":"/import/from/host2","devno":"fe.0.0002"}' \
 -fsdev handle,writeout=immediate,id=fsdev-fs2,path=/export/to/guest3 \
--device virtio-9p-ccw,id=fs2,fsdev=fsdev-fs2,mount_tag=/import/from/host3,devno=fe.0.0003 \
+-device '{"driver":"virtio-9p-ccw","id":"fs2","fsdev":"fsdev-fs2","mount_tag":"/import/from/host3","devno":"fe.0.0003"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device virtio-balloon-ccw,id=balloon0,devno=fe.0.0004 \
+-device '{"driver":"virtio-balloon-ccw","id":"balloon0","devno":"fe.0.0004"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

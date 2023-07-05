@@ -26,13 +26,13 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device zpci,uid=2,fid=1,target=pci.1,id=zpci2 \
--device pci-bridge,chassis_nr=1,id=pci.1,bus=pci.0,addr=0x1 \
+-device '{"driver":"zpci","uid":2,"fid":1,"target":"pci.1","id":"zpci2"}' \
+-device '{"driver":"pci-bridge","chassis_nr":1,"id":"pci.1","bus":"pci.0","addr":"0x1"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device zpci,uid=65535,fid=4294967295,target=hostdev0,id=zpci65535 \
--device vfio-pci,host=ffff:00:00.0,id=hostdev0,bus=pci.1,addr=0x1f \
--device zpci,uid=1,fid=0,target=hostdev1,id=zpci1 \
--device vfio-pci,host=0000:00:00.0,id=hostdev1,bus=pci.0,addr=0x2 \
--device virtio-balloon-ccw,id=balloon0,devno=fe.0.0000 \
+-device '{"driver":"zpci","uid":65535,"fid":4294967295,"target":"hostdev0","id":"zpci65535"}' \
+-device '{"driver":"vfio-pci","host":"ffff:00:00.0","id":"hostdev0","bus":"pci.1","addr":"0x1f"}' \
+-device '{"driver":"zpci","uid":1,"fid":0,"target":"hostdev1","id":"zpci1"}' \
+-device '{"driver":"vfio-pci","host":"0000:00:00.0","id":"hostdev1","bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"virtio-balloon-ccw","id":"balloon0","devno":"fe.0.0000"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

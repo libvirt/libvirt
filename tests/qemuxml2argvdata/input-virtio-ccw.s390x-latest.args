@@ -28,11 +28,11 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device virtio-blk-ccw,devno=fe.0.0000,drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
--device virtio-keyboard-ccw,id=input0,devno=fe.0.0002 \
--device virtio-mouse-ccw,id=input1,devno=fe.0.0003 \
--device virtio-tablet-ccw,id=input2,devno=fe.0.0004 \
+-device '{"driver":"virtio-blk-ccw","devno":"fe.0.0000","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \
+-device '{"driver":"virtio-keyboard-ccw","id":"input0","devno":"fe.0.0002"}' \
+-device '{"driver":"virtio-mouse-ccw","id":"input1","devno":"fe.0.0003"}' \
+-device '{"driver":"virtio-tablet-ccw","id":"input2","devno":"fe.0.0004"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001 \
+-device '{"driver":"virtio-balloon-ccw","id":"balloon0","devno":"fe.0.0001"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

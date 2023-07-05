@@ -26,10 +26,10 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device virtio-serial-ccw,id=virtio-serial0,devno=fe.0.0000 \
+-device '{"driver":"virtio-serial-ccw","id":"virtio-serial0","devno":"fe.0.0000"}' \
 -chardev pty,id=charconsole0 \
--device virtconsole,devno=fe.0.0001,chardev=charconsole0,id=console0 \
+-device '{"driver":"virtconsole","devno":"fe.0.0001","chardev":"charconsole0","id":"console0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device virtio-balloon-ccw,id=balloon0,devno=fe.0.0002 \
+-device '{"driver":"virtio-balloon-ccw","id":"balloon0","devno":"fe.0.0002"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

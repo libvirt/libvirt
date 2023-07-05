@@ -26,9 +26,9 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--netdev user,id=hostnet0 \
--device virtio-net-ccw,netdev=hostnet0,id=net0,mac=00:11:22:33:44:54,bootindex=1,devno=fe.0.0000 \
+-netdev '{"type":"user","id":"hostnet0"}' \
+-device '{"driver":"virtio-net-ccw","netdev":"hostnet0","id":"net0","mac":"00:11:22:33:44:54","bootindex":1,"devno":"fe.0.0000"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001 \
+-device '{"driver":"virtio-balloon-ccw","id":"balloon0","devno":"fe.0.0001"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

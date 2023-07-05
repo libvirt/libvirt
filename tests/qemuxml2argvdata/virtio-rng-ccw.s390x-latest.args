@@ -26,15 +26,15 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device virtio-serial-ccw,id=virtio-serial0,devno=fe.0.0001 \
+-device '{"driver":"virtio-serial-ccw","id":"virtio-serial0","devno":"fe.0.0001"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device virtio-blk-ccw,devno=fe.0.0000,drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
+-device '{"driver":"virtio-blk-ccw","devno":"fe.0.0000","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \
 -chardev pty,id=charconsole0 \
--device virtconsole,chardev=charconsole0,id=console0 \
+-device '{"driver":"virtconsole","chardev":"charconsole0","id":"console0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device virtio-balloon-ccw,id=balloon0,devno=fe.0.000a \
+-device '{"driver":"virtio-balloon-ccw","id":"balloon0","devno":"fe.0.000a"}' \
 -object '{"qom-type":"rng-random","id":"objrng0","filename":"/dev/hwrng"}' \
--device virtio-rng-ccw,rng=objrng0,id=rng0,devno=fe.0.0002 \
+-device '{"driver":"virtio-rng-ccw","rng":"objrng0","id":"rng0","devno":"fe.0.0002"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
