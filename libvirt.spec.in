@@ -461,7 +461,8 @@ Requires: polkit >= 0.112
 Requires: dmidecode
 %endif
 # For service management
-Requires(post): /usr/bin/systemctl
+Requires(posttrans): /usr/bin/systemctl
+Requires(preun): /usr/bin/systemctl
 # libvirtd depends on 'messagebus' service
 Requires: dbus
 # For uid creation during pre
@@ -1625,103 +1626,78 @@ fi \
 
 %pre daemon
 %libvirt_sysconfig_pre libvirtd
-
-%post daemon
-%libvirt_daemon_systemd_post_inet libvirtd
-%libvirt_daemon_schedule_restart libvirtd
+%libvirt_systemd_inet_pre libvirtd
 
 %posttrans daemon
 %libvirt_sysconfig_posttrans libvirtd
-%libvirt_daemon_perform_restart libvirtd
+%libvirt_systemd_inet_posttrans libvirtd
 
 %preun daemon
-%libvirt_daemon_systemd_preun_inet libvirtd
+%libvirt_systemd_inet_preun libvirtd
 
 %pre daemon-common
 %libvirt_sysconfig_pre libvirt-guests
+%libvirt_systemd_oneshot_pre libvirt-guests
 # 'libvirt' group is just to allow password-less polkit access to libvirt
 # daemons. The uid number is irrelevant, so we use dynamic allocation.
 getent group libvirt >/dev/null || groupadd -r libvirt
 exit 0
 
-%post daemon-common
-%systemd_post libvirt-guests.service
-
 %posttrans daemon-common
 %libvirt_sysconfig_posttrans libvirt-guests
+%libvirt_systemd_oneshot_posttrans libvirt-guests
 
 %preun daemon-common
-%systemd_preun libvirt-guests.service
-
-%postun daemon-common
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-%systemd_postun libvirt-guests.service
+%libvirt_systemd_oneshot_preun libvirt-guests
 
 %pre daemon-lock
 %libvirt_sysconfig_pre virtlockd
-
-%post daemon-lock
-%libvirt_daemon_systemd_post_priv virtlockd
+%libvirt_systemd_privileged_pre virtlockd
 
 %posttrans daemon-lock
 %libvirt_sysconfig_posttrans virtlockd
+%libvirt_systemd_privileged_posttrans virtlockd
 
 %preun daemon-lock
-%libvirt_daemon_systemd_preun_priv virtlockd
-
-%postun daemon-lock
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-if [ $1 -ge 1 ] ; then
-    /bin/systemctl reload-or-try-restart virtlockd.service >/dev/null 2>&1 || :
-fi
+%libvirt_systemd_privileged_preun virtlockd
 
 %pre daemon-log
 %libvirt_sysconfig_pre virtlogd
-
-%post daemon-log
-%libvirt_daemon_systemd_post_priv virtlogd
+%libvirt_systemd_privileged_pre virtlogd
 
 %posttrans daemon-log
 %libvirt_sysconfig_posttrans virtlogd
+%libvirt_systemd_privileged_posttrans virtlogd
 
 %preun daemon-log
-%libvirt_daemon_systemd_preun_priv virtlogd
-
-%postun daemon-log
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-if [ $1 -ge 1 ] ; then
-    /bin/systemctl reload-or-try-restart virtlogd.service >/dev/null 2>&1 || :
-fi
+%libvirt_systemd_privileged_preun virtlogd
 
 %pre daemon-proxy
 %libvirt_sysconfig_pre virtproxyd
-
-%post daemon-proxy
-%libvirt_daemon_systemd_post_inet virtproxyd
+%libvirt_systemd_inet_pre virtproxyd
 
 %posttrans daemon-proxy
 %libvirt_sysconfig_posttrans virtproxyd
+%libvirt_systemd_inet_posttrans virtproxyd
 
 %preun daemon-proxy
-%libvirt_daemon_systemd_preun_inet virtproxyd
+%libvirt_systemd_inet_preun virtproxyd
 
 %pre daemon-driver-network
 %libvirt_sysconfig_pre virtnetworkd
+%libvirt_systemd_unix_pre virtnetworkd
 
 %post daemon-driver-network
 %if %{with_firewalld_zone}
     %firewalld_reload
 %endif
 
-%libvirt_daemon_systemd_post virtnetworkd
-%libvirt_daemon_schedule_restart virtnetworkd
-
 %posttrans daemon-driver-network
 %libvirt_sysconfig_posttrans virtnetworkd
-%libvirt_daemon_perform_restart virtnetworkd
+%libvirt_systemd_unix_posttrans virtnetworkd
 
 %preun daemon-driver-network
-%libvirt_daemon_systemd_preun virtnetworkd
+%libvirt_systemd_unix_preun virtnetworkd
 
 %postun daemon-driver-network
 %if %{with_firewalld_zone}
@@ -1730,77 +1706,63 @@ fi
 
 %pre daemon-driver-nwfilter
 %libvirt_sysconfig_pre virtnwfilterd
-
-%post daemon-driver-nwfilter
-%libvirt_daemon_systemd_post virtnwfilterd
-%libvirt_daemon_schedule_restart virtnwfilterd
+%libvirt_systemd_unix_pre virtnwfilterd
 
 %posttrans daemon-driver-nwfilter
 %libvirt_sysconfig_posttrans virtnwfilterd
-%libvirt_daemon_perform_restart virtnwfilterd
+%libvirt_systemd_unix_posttrans virtnwfilterd
 
 %preun daemon-driver-nwfilter
-%libvirt_daemon_systemd_preun virtnwfilterd
+%libvirt_systemd_unix_preun virtnwfilterd
 
 %pre daemon-driver-nodedev
 %libvirt_sysconfig_pre virtnodedevd
-
-%post daemon-driver-nodedev
-%libvirt_daemon_systemd_post virtnodedevd
-%libvirt_daemon_schedule_restart virtnodedevd
+%libvirt_systemd_unix_pre virtnodedevd
 
 %posttrans daemon-driver-nodedev
 %libvirt_sysconfig_posttrans virtnodedevd
-%libvirt_daemon_perform_restart virtnodedevd
+%libvirt_systemd_unix_posttrans virtnodedevd
 
 %preun daemon-driver-nodedev
-%libvirt_daemon_systemd_preun virtnodedevd
+%libvirt_systemd_unix_preun virtnodedevd
 
 %pre daemon-driver-interface
 %libvirt_sysconfig_pre virtinterfaced
-
-%post daemon-driver-interface
-%libvirt_daemon_systemd_post virtinterfaced
-%libvirt_daemon_schedule_restart virtinterfaced
+%libvirt_systemd_unix_pre virtinterfaced
 
 %posttrans daemon-driver-interface
 %libvirt_sysconfig_posttrans virtinterfaced
-%libvirt_daemon_perform_restart virtinterfaced
+%libvirt_systemd_unix_posttrans virtinterfaced
 
 %preun daemon-driver-interface
-%libvirt_daemon_systemd_preun virtinterfaced
+%libvirt_systemd_unix_preun virtinterfaced
 
 %pre daemon-driver-secret
 %libvirt_sysconfig_pre virtsecretd
-
-%post daemon-driver-secret
-%libvirt_daemon_systemd_post virtsecretd
-%libvirt_daemon_schedule_restart virtsecretd
+%libvirt_systemd_unix_pre virsecretd
 
 %posttrans daemon-driver-secret
 %libvirt_sysconfig_posttrans virtsecretd
-%libvirt_daemon_perform_restart virtsecretd
+%libvirt_systemd_unix_posttrans virsecretd
 
 %preun daemon-driver-secret
-%libvirt_daemon_systemd_preun virtsecretd
+%libvirt_systemd_unix_preun virsecretd
 
 %pre daemon-driver-storage-core
 %libvirt_sysconfig_pre virtstoraged
-
-%post daemon-driver-storage-core
-%libvirt_daemon_systemd_post virtstoraged
-%libvirt_daemon_schedule_restart virtstoraged
+%libvirt_systemd_unix_pre virtstoraged
 
 %posttrans daemon-driver-storage-core
 %libvirt_sysconfig_posttrans virtstoraged
-%libvirt_daemon_perform_restart virtstoraged
+%libvirt_systemd_unix_posttrans virtstoraged
 
 %preun daemon-driver-storage-core
-%libvirt_daemon_systemd_preun virtstoraged
+%libvirt_systemd_unix_preun virtstoraged
 
 %if %{with_qemu}
 %pre daemon-driver-qemu
 %libvirt_sysconfig_pre virtqemud
+%libvirt_systemd_unix_pre virtqemud
 # We want soft static allocation of well-known ids, as disk images
 # are commonly shared across NFS mounts by id rather than name; see
 # https://fedoraproject.org/wiki/Packaging:UsersAndGroups
@@ -1815,65 +1777,56 @@ if ! getent passwd qemu >/dev/null; then
 fi
 exit 0
 
-%post daemon-driver-qemu
-%libvirt_daemon_systemd_post virtqemud
-%libvirt_daemon_schedule_restart virtqemud
-
 %posttrans daemon-driver-qemu
 %libvirt_sysconfig_posttrans virtqemud
-%libvirt_daemon_perform_restart virtqemud
+%libvirt_systemd_unix_posttrans virtqemud
 
 %preun daemon-driver-qemu
-%libvirt_daemon_systemd_preun virtqemud
+%libvirt_systemd_unix_preun virtqemud
 %endif
 
 %if %{with_lxc}
 %pre daemon-driver-lxc
 %libvirt_sysconfig_pre virtlxcd
-
-%post daemon-driver-lxc
-%libvirt_daemon_systemd_post virtlxcd
-%libvirt_daemon_schedule_restart virtlxcd
+%libvirt_systemd_unix_pre virtlxcd
 
 %posttrans daemon-driver-lxc
 %libvirt_sysconfig_posttrans virtlxcd
-%libvirt_daemon_perform_restart virtlxcd
+%libvirt_systemd_unix_posttrans virtlxcd
 
 %preun daemon-driver-lxc
-%libvirt_daemon_systemd_preun virtlxcd
+%libvirt_systemd_unix_preun virtlxcd
 %endif
 
 %if %{with_vbox}
 %pre daemon-driver-vbox
 %libvirt_sysconfig_pre virtvboxd
-
-%post daemon-driver-vbox
-%libvirt_daemon_systemd_post virtvboxd
-%libvirt_daemon_schedule_restart virtvboxd
+%libvirt_systemd_unix_pre virtvboxd
 
 %posttrans daemon-driver-vbox
 %libvirt_sysconfig_posttrans virtvboxd
-%libvirt_daemon_perform_restart virtvboxd
+%libvirt_systemd_unix_posttrans virtvboxd
 
 %preun daemon-driver-vbox
-%libvirt_daemon_systemd_preun virtvboxd
+%libvirt_systemd_unix_preun virtvboxd
 %endif
 
 %if %{with_libxl}
 %pre daemon-driver-libxl
 %libvirt_sysconfig_pre virtxend
-
-%post daemon-driver-libxl
-%libvirt_daemon_systemd_post virtxend
-%libvirt_daemon_schedule_restart virtxend
+%libvirt_systemd_unix_pre virtxend
 
 %posttrans daemon-driver-libxl
 %libvirt_sysconfig_posttrans virtxend
-%libvirt_daemon_perform_restart virtxend
+%libvirt_systemd_unix_posttrans virtxend
 
 %preun daemon-driver-libxl
-%libvirt_daemon_systemd_preun virtxend
+%libvirt_systemd_unix_preun virtxend
 %endif
+
+%pre daemon-config-network
+%libvirt_systemd_config_pre libvirtd
+%libvirt_systemd_config_pre virtnetworkd
 
 %post daemon-config-network
 if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ; then
@@ -1911,15 +1864,15 @@ if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ;
     ln -s ../default.xml %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
     # libvirt saves this file with mode 0600
     chmod 0600 %{_sysconfdir}/libvirt/qemu/networks/default.xml
-
-    # Make sure libvirt picks up the new network defininiton
-    %libvirt_daemon_schedule_restart libvirtd
-    %libvirt_daemon_schedule_restart virtnetworkd
 fi
 
 %posttrans daemon-config-network
-%libvirt_daemon_perform_restart libvirtd
-%libvirt_daemon_perform_restart virtnetworkd
+%libvirt_systemd_config_posttrans libvirtd
+%libvirt_systemd_config_posttrans virtnetworkd
+
+%pre daemon-config-nwfilter
+%libvirt_systemd_config_pre libvirtd
+%libvirt_systemd_config_pre virtnwfilterd
 
 %post daemon-config-nwfilter
 for datadir_file in %{_datadir}/libvirt/nwfilter/*.xml; do
@@ -1929,13 +1882,10 @@ for datadir_file in %{_datadir}/libvirt/nwfilter/*.xml; do
     install -m 0600 "$datadir_file" "$sysconfdir_file"
   fi
 done
-# Make sure libvirt picks up the new nwfilter defininitons
-%libvirt_daemon_schedule_restart libvirtd
-%libvirt_daemon_schedule_restart virtnwfilterd
 
 %posttrans daemon-config-nwfilter
-%libvirt_daemon_perform_restart libvirtd
-%libvirt_daemon_perform_restart virtnwfilterd
+%libvirt_systemd_config_posttrans libvirtd
+%libvirt_systemd_config_posttrans virtnwfilterd
 
 %if %{with_lxc}
 %pre login-shell
