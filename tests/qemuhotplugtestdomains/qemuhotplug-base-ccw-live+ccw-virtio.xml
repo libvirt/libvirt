@@ -9,7 +9,6 @@
     <boot dev='hd'/>
   </os>
   <features>
-    <acpi/>
     <apic/>
     <pae/>
   </features>
