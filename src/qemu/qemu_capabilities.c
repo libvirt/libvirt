@@ -694,6 +694,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "rbd-encryption-layering", /* QEMU_CAPS_RBD_ENCRYPTION_LAYERING */
               "rbd-encryption-luks-any", /* QEMU_CAPS_RBD_ENCRYPTION_LUKS_ANY */
               "qcow2-discard-no-unref", /* QEMU_CAPS_QCOW2_DISCARD_NO_UNREF */
+
+              /* 450 */
+              "run-with.async-teardown", /* QEMU_CAPS_RUN_WITH_ASYNC_TEARDOWN */
     );
 
 
@@ -3369,6 +3372,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "spice", "gl", QEMU_CAPS_SPICE_GL },
     { "spice", "rendernode", QEMU_CAPS_SPICE_RENDERNODE },
     { "vnc", "power-control", QEMU_CAPS_VNC_POWER_CONTROL },
+    { "run-with", "async-teardown", QEMU_CAPS_RUN_WITH_ASYNC_TEARDOWN },
 };
 
 static int
