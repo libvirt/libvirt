@@ -1,0 +1,35 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
+/usr/bin/qemu-system-s390x \
+-name guest=QEMUGuest1,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
+-machine s390-ccw-virtio-6.0,usb=off,dump-guest-core=off,memory-backend=s390.ram \
+-accel tcg \
+-cpu qemu \
+-m size=262144k \
+-object '{"qom-type":"memory-backend-ram","id":"s390.ram","size":268435456}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 9aa4b45c-b9dd-45ef-91fe-862b27b4231f \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device virtio-serial-ccw,id=virtio-serial0,devno=fe.0.0000 \
+-chardev pty,id=charconsole0 \
+-device virtconsole,chardev=charconsole0,id=console0 \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001 \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

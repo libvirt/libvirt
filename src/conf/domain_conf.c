@@ -181,6 +181,7 @@ VIR_ENUM_IMPL(virDomainFeature,
               "sbbc",
               "ibs",
               "tcg",
+              "async-teardown",
 );
 
 VIR_ENUM_IMPL(virDomainCapabilitiesPolicy,
@@ -16689,6 +16690,20 @@ virDomainFeaturesDefParse(virDomainDef *def,
                 return -1;
             break;
 
+        case VIR_DOMAIN_FEATURE_ASYNC_TEARDOWN: {
+            virTristateBool enabled;
+
+            if (virXMLPropTristateBool(nodes[i], "enabled",
+                                       VIR_XML_PROP_NONE, &enabled) < 0)
+                return -1;
+
+            if (enabled == VIR_TRISTATE_BOOL_ABSENT)
+                enabled = VIR_TRISTATE_BOOL_YES;
+
+            def->features[val] = enabled;
+            break;
+        }
+
         case VIR_DOMAIN_FEATURE_LAST:
             break;
         }
@@ -20628,6 +20643,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
 
         case VIR_DOMAIN_FEATURE_MSRS:
         case VIR_DOMAIN_FEATURE_TCG:
+        case VIR_DOMAIN_FEATURE_ASYNC_TEARDOWN:
         case VIR_DOMAIN_FEATURE_LAST:
             break;
         }
@@ -27338,6 +27354,12 @@ virDomainDefFormatFeatures(virBuffer *buf,
 
         case VIR_DOMAIN_FEATURE_TCG:
             virDomainFeatureTCGFormat(&childBuf, def);
+            break;
+
+        case VIR_DOMAIN_FEATURE_ASYNC_TEARDOWN:
+            if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT)
+                virBufferAsprintf(&childBuf, "<async-teardown enabled='%s'/>\n",
+                                  virTristateBoolTypeToString(def->features[i]));
             break;
 
         case VIR_DOMAIN_FEATURE_LAST:

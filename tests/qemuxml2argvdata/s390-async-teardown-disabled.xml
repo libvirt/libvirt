@@ -1,0 +1,24 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>9aa4b45c-b9dd-45ef-91fe-862b27b4231f</uuid>
+  <memory>262144</memory>
+  <currentMemory>262144</currentMemory>
+  <os>
+    <type arch='s390x' machine='s390-ccw-virtio'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <features>
+    <async-teardown enabled='no'/>
+  </features>
+  <devices>
+    <emulator>/usr/bin/qemu-system-s390x</emulator>
+    <controller type='virtio-serial' index='0'>
+    </controller>
+    <console type='pty'>
+      <target type='virtio'/>
+    </console>
+  </devices>
+</domain>

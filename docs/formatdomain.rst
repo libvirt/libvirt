@@ -2000,6 +2000,7 @@ Hypervisors may allow certain CPU / machine features to be toggled on/off.
      <tcg>
        <tb-cache unit='MiB'>128</tb-cache>
      </tcg>
+     <async-teardown enabled='yes'/>
    </features>
    ...
 
@@ -2229,6 +2230,11 @@ are:
    =========== ============================================== =================================================== ==============
    tb-cache    The size of translation block cache size       an integer (a multiple of MiB)                      :since:`8.0.0`
    =========== ============================================== =================================================== ==============
+
+``async-teardown``
+   Depending on the ``enabled`` attribute (values ``yes``, ``no``) enable or
+   disable QEMU asynchronous teardown to improve memory reclaiming on a guest.
+   :since:`Since 9.6.0` (QEMU only)
 
 Time keeping
 ------------

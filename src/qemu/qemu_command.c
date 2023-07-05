@@ -10177,6 +10177,25 @@ qemuBuildCryptoCommandLine(virCommand *cmd,
 }
 
 
+static int
+qemuBuildAsyncTeardownCommandLine(virCommand *cmd,
+                                  const virDomainDef *def,
+                                  virQEMUCaps *qemuCaps)
+{
+    g_autofree char *async = NULL;
+    virTristateBool enabled = def->features[VIR_DOMAIN_FEATURE_ASYNC_TEARDOWN];
+
+    if (enabled != VIR_TRISTATE_BOOL_ABSENT &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_RUN_WITH_ASYNC_TEARDOWN)) {
+        async = g_strdup_printf("async-teardown=%s",
+                                virTristateSwitchTypeToString(enabled));
+        virCommandAddArgList(cmd, "-run-with", async, NULL);
+    }
+
+    return 0;
+}
+
+
 typedef enum {
     QEMU_COMMAND_DEPRECATION_BEHAVIOR_NONE = 0,
     QEMU_COMMAND_DEPRECATION_BEHAVIOR_OMIT,
@@ -10530,6 +10549,9 @@ qemuBuildCommandLine(virDomainObj *vm,
         return NULL;
 
     if (qemuBuildCryptoCommandLine(cmd, def, qemuCaps) < 0)
+        return NULL;
+
+    if (qemuBuildAsyncTeardownCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
     if (cfg->logTimestamp)

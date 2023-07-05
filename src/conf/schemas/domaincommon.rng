@@ -6660,6 +6660,15 @@
           <optional>
             <ref name="tcgfeatures"/>
           </optional>
+          <optional>
+            <element name="async-teardown">
+              <optional>
+                <attribute name="enabled">
+                  <ref name="virYesNo"/>
+                </attribute>
+              </optional>
+            </element>
+          </optional>
         </interleave>
       </element>
     </optional>
