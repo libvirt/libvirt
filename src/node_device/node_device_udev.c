@@ -2083,7 +2083,7 @@ udevPCITranslateInit(bool privileged G_GNUC_UNUSED)
 
 
 static void
-mdevctlHandlerThread(void *opaque G_GNUC_UNUSED)
+mdevctlUpdateThreadFunc(void *opaque G_GNUC_UNUSED)
 {
     udevEventData *priv = driver->privateData;
     VIR_LOCK_GUARD lock = virLockGuardLock(&priv->mdevctlLock);
@@ -2094,7 +2094,7 @@ mdevctlHandlerThread(void *opaque G_GNUC_UNUSED)
 
 
 static void
-scheduleMdevctlHandler(int timer G_GNUC_UNUSED, void *opaque)
+launchMdevctlUpdateThread(int timer G_GNUC_UNUSED, void *opaque)
 {
     udevEventData *priv = opaque;
     virThread thread;
@@ -2104,7 +2104,7 @@ scheduleMdevctlHandler(int timer G_GNUC_UNUSED, void *opaque)
         priv->mdevctlTimeout = -1;
     }
 
-    if (virThreadCreateFull(&thread, false, mdevctlHandlerThread,
+    if (virThreadCreateFull(&thread, false, mdevctlUpdateThreadFunc,
                             "mdevctl-thread", false, NULL) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to create mdevctl thread"));
@@ -2200,6 +2200,26 @@ mdevctlEnableMonitor(udevEventData *priv)
 }
 
 
+/* Schedules an mdevctl update for 100ms in the future, canceling any existing
+ * timeout that may have been set. In this way, multiple update requests in
+ * quick succession can be collapsed into a single update. if @force is true,
+ * an update thread will be spawned immediately. */
+static void
+scheduleMdevctlUpdate(udevEventData *data,
+                      bool force)
+{
+    if (!force) {
+        if (data->mdevctlTimeout > 0)
+            virEventRemoveTimeout(data->mdevctlTimeout);
+        data->mdevctlTimeout = virEventAddTimeout(100, launchMdevctlUpdateThread,
+                                                  data, NULL);
+        return;
+    }
+
+    launchMdevctlUpdateThread(-1, data);
+}
+
+
 static void
 mdevctlEventHandleCallback(GFileMonitor *monitor G_GNUC_UNUSED,
                            GFile *file,
@@ -2230,15 +2250,7 @@ mdevctlEventHandleCallback(GFileMonitor *monitor G_GNUC_UNUSED,
      * configuration change, try to coalesce these changes by waiting for the
      * CHANGES_DONE_HINT event. As a fallback,  add a timeout to trigger the
      * signal if that event never comes */
-    if (event_type != G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT) {
-        if (priv->mdevctlTimeout > 0)
-            virEventRemoveTimeout(priv->mdevctlTimeout);
-        priv->mdevctlTimeout = virEventAddTimeout(100, scheduleMdevctlHandler,
-                                                  priv, NULL);
-        return;
-    }
-
-    scheduleMdevctlHandler(-1, priv);
+    scheduleMdevctlUpdate(priv, (event_type == G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT));
 }
 
 
