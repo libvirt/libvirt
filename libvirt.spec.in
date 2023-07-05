@@ -1492,39 +1492,7 @@ fi \
 
 %posttrans daemon
 %libvirt_sysconfig_posttrans libvirtd
-if test %libvirt_daemon_needs_restart libvirtd
-then
-    # See if user has previously modified their install to
-    # tell libvirtd to use --listen
-    grep -E '^LIBVIRTD_ARGS=.*--listen' /etc/sysconfig/libvirtd 1>/dev/null 2>&1
-    if test $? = 0
-    then
-        # Then lets keep honouring --listen and *not* use
-        # systemd socket activation, because switching things
-        # might confuse mgmt tool like puppet/ansible that
-        # expect the old style libvirtd
-        /bin/systemctl mask \
-                libvirtd.socket \
-                libvirtd-ro.socket \
-                libvirtd-admin.socket \
-                libvirtd-tls.socket \
-                libvirtd-tcp.socket >/dev/null 2>&1 || :
-        /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
-    else
-        # Old libvirtd owns the sockets and will delete them on
-        # shutdown. Can't use a try-restart as libvirtd will simply
-        # own the sockets again when it comes back up. Thus we must
-        # do this particular ordering, so that we get libvirtd
-        # running with socket activation in use
-        /bin/systemctl stop libvirtd.service >/dev/null 2>&1 || :
-        /bin/systemctl try-restart \
-                libvirtd.socket \
-                libvirtd-ro.socket \
-                libvirtd-admin.socket >/dev/null 2>&1 || :
-        /bin/systemctl start libvirtd.service >/dev/null 2>&1 || :
-    fi
-fi
-%libvirt_daemon_finish_restart libvirtd
+%libvirt_daemon_perform_restart libvirtd
 
 %preun daemon
 %libvirt_daemon_systemd_preun_inet libvirtd
