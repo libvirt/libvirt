@@ -1471,17 +1471,157 @@ then \
 fi \
 %libvirt_daemon_finish_restart %1
 
+%define libvirt_rpmstatedir %{_localstatedir}/lib/rpm-state/libvirt
+
+# Mark units such that presets will later be applied to them. Meant
+# to be called during %pre. Units that already exist on the system
+# will not be marked, with the assumption that presets have already
+# been applied at some point in the past. This makes it safe to call
+# this macro for all units each time %pre runs.
+%define libvirt_systemd_schedule_preset() \
+    mkdir -p %{libvirt_rpmstatedir} || : \
+    for unit in %{?*}; do \
+        if ! test -e %{_unitdir}/$unit; then \
+            touch %{libvirt_rpmstatedir}/preset-$unit || : \
+        fi \
+    done \
+    %{nil}
+
+# Apply presets for units that have previously been marked. Meant to
+# be called during %posttrans. Note that foo.service must be passed
+# as the first argument, before all the various foo*.socket
+# associated with it, for things to work correctly. This is necessary
+# because Also=foo.socket is usually present in foo.service's
+# [Install] section, and we want that configuration to take
+# precedence over foo.socket's own presets.
+%define libvirt_systemd_perform_preset() \
+    %{?7:%{error:Too many arguments}} \
+    for unit in %{?2} %{?3} %{?4} %{?5} %{?6} %1; do \
+        if test -e %{libvirt_rpmstatedir}/preset-$unit; then \
+            /usr/bin/systemctl --no-reload preset $unit || : \
+        fi \
+        rm -f %{libvirt_rpmstatedir}/preset-$unit \
+    done \
+    rmdir %{libvirt_rpmstatedir} 2>/dev/null || : \
+    %{nil}
+
+# Mark a single unit for restart. Meant to be called during %pre.
+%define libvirt_systemd_schedule_restart() \
+    mkdir -p %{libvirt_rpmstatedir} || : \
+    touch %{libvirt_rpmstatedir}/restart-%1 || : \
+    %{nil}
+
+# Restart a unit that was previously marked. Meant to be called
+# during %posttrans. If systemd is not running, no action will be
+# performed.
+%define libvirt_systemd_perform_restart() \
+    if test -d /run/systemd/system && \
+       test -e %{libvirt_rpmstatedir}/restart-%1; then \
+        /usr/bin/systemctl try-restart %1 >/dev/null 2>&1 || : \
+    fi \
+    rm -f %{libvirt_rpmstatedir}/restart-%1 \
+    rmdir %{libvirt_rpmstatedir} 2>/dev/null || : \
+    %{nil}
+
+# Mark a single unit for reload. Meant to be called during %pre.
+%define libvirt_systemd_schedule_reload() \
+    mkdir -p %{libvirt_rpmstatedir} || : \
+    touch %{libvirt_rpmstatedir}/reload-%1 || : \
+    %{nil}
+
+# Reload a unit that was previously marked. Meant to be called during
+# %posttrans. If systemd is not running, no action will be performed.
+%define libvirt_systemd_perform_reload() \
+    if test -d /run/systemd/system && \
+       test -e %{libvirt_rpmstatedir}/reload-%1; then \
+        /usr/bin/systemctl try-reload-or-restart %1 >/dev/null 2>&1 || : \
+    fi \
+    rm -f %{libvirt_rpmstatedir}/reload-%1 \
+    rmdir %{libvirt_rpmstatedir} 2>/dev/null || : \
+    %{nil}
+
+# Disable a single unit, optionally stopping it if systemd is
+# running. Meant to be called during %preun.
+%define libvirt_systemd_disable() \
+    if test -d /run/systemd/system; then \
+        /usr/bin/systemctl --no-reload disable --now %{?*} || : \
+    else \
+        /usr/bin/systemctl --no-reload disable %{?*} || : \
+    fi \
+    %{nil}
+
+# %pre implementation for services that should be restarted on
+# upgrade. Note that foo.service must be passed as the first
+# argument, before all the various foo*.socket associated with it.
+%define libvirt_systemd_restart_pre() \
+    %libvirt_systemd_schedule_preset %{?*} \
+    %libvirt_systemd_schedule_restart %1 \
+    %{nil}
+
+# %pre implementation for services that should be reloaded on
+# upgrade. Note that foo.service must be passed as the first
+# argument, before all the various foo*.socket associated with it.
+%define libvirt_systemd_reload_pre() \
+    %libvirt_systemd_schedule_preset %{?*} \
+    %libvirt_systemd_schedule_reload %1 \
+    %{nil}
+
+# %pre implementation for services that should be neither restarted
+# nor reloaded on upgrade.
+%define libvirt_systemd_noaction_pre() \
+    %libvirt_systemd_schedule_preset %{?*} \
+    %{nil}
+
+# %posttrans implementation for all services. We can use a single
+# macro to cover all scenarios, because each operation will only be
+# performed if it had previously been scheduled. Note that
+# foo.service must be passed as the first argument, before all the
+# various foo*.socket associated with it.
+%define libvirt_systemd_posttrans() \
+    %libvirt_systemd_perform_preset %{?*} \
+    %libvirt_systemd_perform_reload %1 \
+    %libvirt_systemd_perform_restart %1 \
+    %{nil}
+
+# %preun implementation for all services.
+%define libvirt_systemd_preun() \
+    if [ $1 -lt 1 ]; then \
+        %libvirt_systemd_disable %{?*} \
+    fi \
+    %{nil}
+
 # For daemons with only UNIX sockets
 %define libvirt_daemon_systemd_post() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1.service
 %define libvirt_daemon_systemd_preun() %systemd_preun %1.service %1-ro.socket %1-admin.socket %1.socket
+
+%define libvirt_systemd_unix_pre() %libvirt_systemd_restart_pre %1.service %1.socket %1-ro.socket %1-admin.socket
+%define libvirt_systemd_unix_posttrans() %libvirt_systemd_posttrans %1.service %1.socket %1-ro.socket %1-admin.socket
+%define libvirt_systemd_unix_preun() %libvirt_systemd_preun %1.service %1.socket %1-ro.socket %1-admin.socket
 
 # For daemons with UNIX and INET sockets
 %define libvirt_daemon_systemd_post_inet() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.service
 %define libvirt_daemon_systemd_preun_inet() %systemd_preun %1.service %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.socket
 
+%define libvirt_systemd_inet_pre() %libvirt_systemd_restart_pre %1.service %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket
+%define libvirt_systemd_inet_posttrans() %libvirt_systemd_posttrans %1.service %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket
+%define libvirt_systemd_inet_preun() %libvirt_systemd_preun %1.service %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket
+
 # For daemons with only UNIX sockets and no unprivileged read-only access
 %define libvirt_daemon_systemd_post_priv() %systemd_post %1.socket %1-admin.socket %1.service
 %define libvirt_daemon_systemd_preun_priv() %systemd_preun %1.service %1-admin.socket %1.socket
+
+%define libvirt_systemd_privileged_pre() %libvirt_systemd_reload_pre %1.service %1.socket %1-admin.socket
+%define libvirt_systemd_privileged_posttrans() %libvirt_systemd_posttrans %1.service %1.socket %1-admin.socket
+%define libvirt_systemd_privileged_preun() %libvirt_systemd_preun %1.service %1.socket %1-admin.socket
+
+# For one-shot daemons that have no associated sockets and should never be restarted
+%define libvirt_systemd_oneshot_pre() %libvirt_systemd_noaction_pre %1.service
+%define libvirt_systemd_oneshot_posttrans() %libvirt_systemd_posttrans %1.service
+%define libvirt_systemd_oneshot_preun() %libvirt_systemd_preun %1.service
+
+# For packages that install configuration for other daemons
+%define libvirt_systemd_config_pre() %libvirt_systemd_schedule_restart %1.service
+%define libvirt_systemd_config_posttrans() %libvirt_systemd_perform_restart %1.service
 
 %pre daemon
 %libvirt_sysconfig_pre libvirtd
