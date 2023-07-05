@@ -1457,21 +1457,6 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 # raising the test timeout
 VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
 
-%define libvirt_daemon_schedule_restart() mkdir -p %{_localstatedir}/lib/rpm-state/libvirt || : \
-/bin/systemctl is-active %1.service 1>/dev/null 2>&1 && \
-  touch %{_localstatedir}/lib/rpm-state/libvirt/restart-%1 || :
-
-%define libvirt_daemon_finish_restart() rm -f %{_localstatedir}/lib/rpm-state/libvirt/restart-%1 \
-rmdir %{_localstatedir}/lib/rpm-state/libvirt 2>/dev/null || :
-
-%define libvirt_daemon_needs_restart() -f %{_localstatedir}/lib/rpm-state/libvirt/restart-%1
-
-%define libvirt_daemon_perform_restart() if test %libvirt_daemon_needs_restart %1 \
-then \
-  /bin/systemctl try-restart %1.service >/dev/null 2>&1 || : \
-fi \
-%libvirt_daemon_finish_restart %1
-
 %define libvirt_rpmstatedir %{_localstatedir}/lib/rpm-state/libvirt
 
 # Mark units such that presets will later be applied to them. Meant
@@ -1592,25 +1577,17 @@ fi \
     %{nil}
 
 # For daemons with only UNIX sockets
-%define libvirt_daemon_systemd_post() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1.service
-%define libvirt_daemon_systemd_preun() %systemd_preun %1.service %1-ro.socket %1-admin.socket %1.socket
 
 %define libvirt_systemd_unix_pre() %libvirt_systemd_restart_pre %1.service %1.socket %1-ro.socket %1-admin.socket
 %define libvirt_systemd_unix_posttrans() %libvirt_systemd_posttrans %1.service %1.socket %1-ro.socket %1-admin.socket
 %define libvirt_systemd_unix_preun() %libvirt_systemd_preun %1.service %1.socket %1-ro.socket %1-admin.socket
 
 # For daemons with UNIX and INET sockets
-%define libvirt_daemon_systemd_post_inet() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.service
-%define libvirt_daemon_systemd_preun_inet() %systemd_preun %1.service %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.socket
-
 %define libvirt_systemd_inet_pre() %libvirt_systemd_restart_pre %1.service %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket
 %define libvirt_systemd_inet_posttrans() %libvirt_systemd_posttrans %1.service %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket
 %define libvirt_systemd_inet_preun() %libvirt_systemd_preun %1.service %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket
 
 # For daemons with only UNIX sockets and no unprivileged read-only access
-%define libvirt_daemon_systemd_post_priv() %systemd_post %1.socket %1-admin.socket %1.service
-%define libvirt_daemon_systemd_preun_priv() %systemd_preun %1.service %1-admin.socket %1.socket
-
 %define libvirt_systemd_privileged_pre() %libvirt_systemd_reload_pre %1.service %1.socket %1-admin.socket
 %define libvirt_systemd_privileged_posttrans() %libvirt_systemd_posttrans %1.service %1.socket %1-admin.socket
 %define libvirt_systemd_privileged_preun() %libvirt_systemd_preun %1.service %1.socket %1-admin.socket
