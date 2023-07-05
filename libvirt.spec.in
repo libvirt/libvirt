@@ -1492,9 +1492,6 @@ fi \
 %endif
 %libvirt_daemon_schedule_restart libvirtd
 
-%preun daemon
-%libvirt_daemon_systemd_preun_inet libvirtd
-
 %posttrans daemon
 %libvirt_sysconfig_posttrans libvirtd
 if test %libvirt_daemon_needs_restart libvirtd
@@ -1531,6 +1528,9 @@ then
 fi
 %libvirt_daemon_finish_restart libvirtd
 
+%preun daemon
+%libvirt_daemon_systemd_preun_inet libvirtd
+
 %pre daemon-common
 %libvirt_sysconfig_pre libvirt-guests
 # 'libvirt' group is just to allow password-less polkit access to libvirt
@@ -1541,6 +1541,9 @@ exit 0
 %post daemon-common
 %systemd_post libvirt-guests.service
 
+%posttrans daemon-common
+%libvirt_sysconfig_posttrans libvirt-guests
+
 %preun daemon-common
 %systemd_preun libvirt-guests.service
 
@@ -1548,14 +1551,14 @@ exit 0
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 %systemd_postun libvirt-guests.service
 
-%posttrans daemon-common
-%libvirt_sysconfig_posttrans libvirt-guests
-
 %pre daemon-lock
 %libvirt_sysconfig_pre virtlockd
 
 %post daemon-lock
 %libvirt_daemon_systemd_post_priv virtlockd
+
+%posttrans daemon-lock
+%libvirt_sysconfig_posttrans virtlockd
 
 %preun daemon-lock
 %libvirt_daemon_systemd_preun_priv virtlockd
@@ -1566,14 +1569,14 @@ if [ $1 -ge 1 ] ; then
     /bin/systemctl reload-or-try-restart virtlockd.service >/dev/null 2>&1 || :
 fi
 
-%posttrans daemon-lock
-%libvirt_sysconfig_posttrans virtlockd
-
 %pre daemon-log
 %libvirt_sysconfig_pre virtlogd
 
 %post daemon-log
 %libvirt_daemon_systemd_post_priv virtlogd
+
+%posttrans daemon-log
+%libvirt_sysconfig_posttrans virtlogd
 
 %preun daemon-log
 %libvirt_daemon_systemd_preun_priv virtlogd
@@ -1584,9 +1587,6 @@ if [ $1 -ge 1 ] ; then
     /bin/systemctl reload-or-try-restart virtlogd.service >/dev/null 2>&1 || :
 fi
 
-%posttrans daemon-log
-%libvirt_sysconfig_posttrans virtlogd
-
 %pre daemon-proxy
 %libvirt_sysconfig_pre virtproxyd
 
@@ -1595,11 +1595,11 @@ fi
 %libvirt_daemon_systemd_post_inet virtproxyd
 %endif
 
-%preun daemon-proxy
-%libvirt_daemon_systemd_preun_inet virtproxyd
-
 %posttrans daemon-proxy
 %libvirt_sysconfig_posttrans virtproxyd
+
+%preun daemon-proxy
+%libvirt_daemon_systemd_preun_inet virtproxyd
 
 %pre daemon-driver-network
 %libvirt_sysconfig_pre virtnetworkd
@@ -1614,6 +1614,10 @@ fi
 %endif
 %libvirt_daemon_schedule_restart virtnetworkd
 
+%posttrans daemon-driver-network
+%libvirt_sysconfig_posttrans virtnetworkd
+%libvirt_daemon_perform_restart virtnetworkd
+
 %preun daemon-driver-network
 %libvirt_daemon_systemd_preun virtnetworkd
 
@@ -1621,10 +1625,6 @@ fi
 %if %{with_firewalld_zone}
     %firewalld_reload
 %endif
-
-%posttrans daemon-driver-network
-%libvirt_sysconfig_posttrans virtnetworkd
-%libvirt_daemon_perform_restart virtnetworkd
 
 %pre daemon-driver-nwfilter
 %libvirt_sysconfig_pre virtnwfilterd
@@ -1635,12 +1635,12 @@ fi
 %endif
 %libvirt_daemon_schedule_restart virtnwfilterd
 
-%preun daemon-driver-nwfilter
-%libvirt_daemon_systemd_preun virtnwfilterd
-
 %posttrans daemon-driver-nwfilter
 %libvirt_sysconfig_posttrans virtnwfilterd
 %libvirt_daemon_perform_restart virtnwfilterd
+
+%preun daemon-driver-nwfilter
+%libvirt_daemon_systemd_preun virtnwfilterd
 
 %pre daemon-driver-nodedev
 %libvirt_sysconfig_pre virtnodedevd
@@ -1651,12 +1651,12 @@ fi
 %endif
 %libvirt_daemon_schedule_restart virtnodedevd
 
-%preun daemon-driver-nodedev
-%libvirt_daemon_systemd_preun virtnodedevd
-
 %posttrans daemon-driver-nodedev
 %libvirt_sysconfig_posttrans virtnodedevd
 %libvirt_daemon_perform_restart virtnodedevd
+
+%preun daemon-driver-nodedev
+%libvirt_daemon_systemd_preun virtnodedevd
 
 %pre daemon-driver-interface
 %libvirt_sysconfig_pre virtinterfaced
@@ -1667,12 +1667,12 @@ fi
 %endif
 %libvirt_daemon_schedule_restart virtinterfaced
 
-%preun daemon-driver-interface
-%libvirt_daemon_systemd_preun virtinterfaced
-
 %posttrans daemon-driver-interface
 %libvirt_sysconfig_posttrans virtinterfaced
 %libvirt_daemon_perform_restart virtinterfaced
+
+%preun daemon-driver-interface
+%libvirt_daemon_systemd_preun virtinterfaced
 
 %pre daemon-driver-secret
 %libvirt_sysconfig_pre virtsecretd
@@ -1683,12 +1683,12 @@ fi
 %endif
 %libvirt_daemon_schedule_restart virtsecretd
 
-%preun daemon-driver-secret
-%libvirt_daemon_systemd_preun virtsecretd
-
 %posttrans daemon-driver-secret
 %libvirt_sysconfig_posttrans virtsecretd
 %libvirt_daemon_perform_restart virtsecretd
+
+%preun daemon-driver-secret
+%libvirt_daemon_systemd_preun virtsecretd
 
 %pre daemon-driver-storage-core
 %libvirt_sysconfig_pre virtstoraged
@@ -1699,12 +1699,12 @@ fi
 %endif
 %libvirt_daemon_schedule_restart virtstoraged
 
-%preun daemon-driver-storage-core
-%libvirt_daemon_systemd_preun virtstoraged
-
 %posttrans daemon-driver-storage-core
 %libvirt_sysconfig_posttrans virtstoraged
 %libvirt_daemon_perform_restart virtstoraged
+
+%preun daemon-driver-storage-core
+%libvirt_daemon_systemd_preun virtstoraged
 
 %if %{with_qemu}
 %pre daemon-driver-qemu
@@ -1729,12 +1729,12 @@ exit 0
     %endif
 %libvirt_daemon_schedule_restart virtqemud
 
-%preun daemon-driver-qemu
-%libvirt_daemon_systemd_preun virtqemud
-
 %posttrans daemon-driver-qemu
 %libvirt_sysconfig_posttrans virtqemud
 %libvirt_daemon_perform_restart virtqemud
+
+%preun daemon-driver-qemu
+%libvirt_daemon_systemd_preun virtqemud
 %endif
 
 %if %{with_lxc}
@@ -1747,48 +1747,48 @@ exit 0
     %endif
 %libvirt_daemon_schedule_restart virtlxcd
 
-%preun daemon-driver-lxc
-%libvirt_daemon_systemd_preun virtlxcd
-
 %posttrans daemon-driver-lxc
 %libvirt_sysconfig_posttrans virtlxcd
 %libvirt_daemon_perform_restart virtlxcd
+
+%preun daemon-driver-lxc
+%libvirt_daemon_systemd_preun virtlxcd
 %endif
 
 %if %{with_vbox}
+%pre daemon-driver-vbox
+%libvirt_sysconfig_pre virtvboxd
+
 %post daemon-driver-vbox
     %if %{with_modular_daemons}
 %libvirt_daemon_systemd_post virtvboxd
     %endif
 %libvirt_daemon_schedule_restart virtvboxd
 
-%pre daemon-driver-vbox
-%libvirt_sysconfig_pre virtvboxd
-
-%preun daemon-driver-vbox
-%libvirt_daemon_systemd_preun virtvboxd
-
 %posttrans daemon-driver-vbox
 %libvirt_sysconfig_posttrans virtvboxd
 %libvirt_daemon_perform_restart virtvboxd
+
+%preun daemon-driver-vbox
+%libvirt_daemon_systemd_preun virtvboxd
 %endif
 
 %if %{with_libxl}
+%pre daemon-driver-libxl
+%libvirt_sysconfig_pre virtxend
+
 %post daemon-driver-libxl
     %if %{with_modular_daemons}
 %libvirt_daemon_systemd_post virtxend
     %endif
 %libvirt_daemon_schedule_restart virtxend
 
-%pre daemon-driver-libxl
-%libvirt_sysconfig_pre virtxend
-
-%preun daemon-driver-libxl
-%libvirt_daemon_systemd_preun virtxend
-
 %posttrans daemon-driver-libxl
 %libvirt_sysconfig_posttrans virtxend
 %libvirt_daemon_perform_restart virtxend
+
+%preun daemon-driver-libxl
+%libvirt_daemon_systemd_preun virtxend
 %endif
 
 %post daemon-config-network
