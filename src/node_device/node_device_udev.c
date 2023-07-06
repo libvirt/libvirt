@@ -1451,6 +1451,9 @@ udevGetDeviceDetails(struct udev_device *device,
 }
 
 
+static void scheduleMdevctlUpdate(udevEventData *data, bool force);
+
+
 static int
 udevRemoveOneDeviceSysPath(const char *path)
 {
@@ -1483,8 +1486,7 @@ udevRemoveOneDeviceSysPath(const char *path)
     virNodeDeviceObjEndAPI(&obj);
 
     /* cannot check for mdev_types since they have already been removed */
-    if (nodeDeviceUpdateMediatedDevices() < 0)
-        VIR_WARN("mdevctl failed to update mediated devices");
+    scheduleMdevctlUpdate(driver->privateData, false);
 
     virObjectEventStateQueue(driver->nodeDeviceEventState, event);
     return 0;
@@ -1612,8 +1614,8 @@ udevAddOneDevice(struct udev_device *device)
     has_mdev_types = virNodeDeviceObjHasCap(obj, VIR_NODE_DEV_CAP_MDEV_TYPES);
     virNodeDeviceObjEndAPI(&obj);
 
-    if (has_mdev_types && nodeDeviceUpdateMediatedDevices() < 0)
-        VIR_WARN("mdevctl failed to update mediated devices");
+    if (has_mdev_types)
+        scheduleMdevctlUpdate(driver->privateData, false);
 
     ret = 0;
 
@@ -1775,8 +1777,7 @@ udevHandleOneDevice(struct udev_device *device)
         if (ret == 0 &&
             udevGetDeviceType(device, &dev_cap_type) == 0 &&
             dev_cap_type == VIR_NODE_DEV_CAP_MDEV)
-            if (nodeDeviceUpdateMediatedDevices() < 0)
-                VIR_WARN("mdevctl failed to update mediated devices");
+            scheduleMdevctlUpdate(driver->privateData, false);
         return ret;
     }
 
