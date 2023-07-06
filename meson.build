@@ -901,7 +901,8 @@ if not get_option('apparmor_profiles').disabled()
   endif
 endif
 
-attr_dep = dependency('libattr', required: get_option('attr'))
+# FIXME rewrite to use dependency() once we can use 2.4.48
+attr_dep = cc.find_library('attr', required: get_option('attr'))
 if attr_dep.found()
   conf.set('WITH_LIBATTR', 1)
 endif
