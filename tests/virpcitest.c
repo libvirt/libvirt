@@ -37,7 +37,7 @@ testVirPCIDeviceCheckDriver(virPCIDevice *dev, const char *expected)
     g_autofree char *path = NULL;
     g_autofree char *driver = NULL;
 
-    if (virPCIDeviceGetDriverPathAndName(dev, &path, &driver) < 0)
+    if (virPCIDeviceGetCurrentDriverPathAndName(dev, &path, &driver) < 0)
         return -1;
 
     if (STRNEQ_NULLABLE(driver, expected)) {

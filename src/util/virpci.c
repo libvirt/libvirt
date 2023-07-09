@@ -228,7 +228,7 @@ virPCIFile(const char *device, const char *file)
 }
 
 
-/* virPCIDeviceGetDriverPathAndName - put the path to the driver
+/* virPCIDeviceGetCurrentDriverPathAndName - put the path to the driver
  * directory of the driver in use for this device in @path and the
  * name of the driver in @name. Both could be NULL if it's not bound
  * to any driver.
@@ -236,7 +236,9 @@ virPCIFile(const char *device, const char *file)
  * Return 0 for success, -1 for error.
  */
 int
-virPCIDeviceGetDriverPathAndName(virPCIDevice *dev, char **path, char **name)
+virPCIDeviceGetCurrentDriverPathAndName(virPCIDevice *dev,
+                                        char **path,
+                                        char **name)
 {
     int ret = -1;
     g_autofree char *drvlink = NULL;
@@ -1032,7 +1034,7 @@ virPCIDeviceReset(virPCIDevice *dev,
      * reset it whenever appropriate, so doing it ourselves would just
      * be redundant.
      */
-    if (virPCIDeviceGetDriverPathAndName(dev, &drvPath, &drvName) < 0)
+    if (virPCIDeviceGetCurrentDriverPathAndName(dev, &drvPath, &drvName) < 0)
         goto cleanup;
 
     if (virPCIStubDriverTypeFromString(drvName) == VIR_PCI_STUB_DRIVER_VFIO) {
@@ -1137,7 +1139,7 @@ virPCIDeviceUnbind(virPCIDevice *dev)
     g_autofree char *drvpath = NULL;
     g_autofree char *driver = NULL;
 
-    if (virPCIDeviceGetDriverPathAndName(dev, &drvpath, &driver) < 0)
+    if (virPCIDeviceGetCurrentDriverPathAndName(dev, &drvpath, &driver) < 0)
         return -1;
 
     if (!driver)

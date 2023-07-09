@@ -765,9 +765,10 @@ virHostdevPreparePCIDevicesImpl(virHostdevManager *mgr,
              *       information about active / inactive device across
              *       daemon restarts has been implemented */
 
-            if (virPCIDeviceGetDriverPathAndName(pci,
-                                                 &driverPath, &driverName) < 0)
+            if (virPCIDeviceGetCurrentDriverPathAndName(pci, &driverPath,
+                                                        &driverName) < 0) {
                 goto reattachdevs;
+            }
 
             stub = virPCIStubDriverTypeFromString(driverName);
 
@@ -2294,7 +2295,7 @@ virHostdevPrepareOneNVMeDevice(virHostdevManager *hostdev_mgr,
         g_autofree char *drvName = NULL;
         int stub = VIR_PCI_STUB_DRIVER_NONE;
 
-        if (virPCIDeviceGetDriverPathAndName(pci, &drvPath, &drvName) < 0)
+        if (virPCIDeviceGetCurrentDriverPathAndName(pci, &drvPath, &drvName) < 0)
             goto cleanup;
 
         if (drvName)
