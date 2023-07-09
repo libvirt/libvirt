@@ -88,6 +88,7 @@ struct _virPCIDevice {
     bool          managed;
 
     virPCIStubDriver stubDriverType;
+    char            *stubDriverName; /* if blank, use default for type */
 
     /* used by reattach function */
     bool          unbind_from_stub;
@@ -1508,6 +1509,7 @@ virPCIDeviceCopy(virPCIDevice *dev)
     copy->path = g_strdup(dev->path);
     copy->used_by_drvname = g_strdup(dev->used_by_drvname);
     copy->used_by_domname = g_strdup(dev->used_by_domname);
+    copy->stubDriverName = g_strdup(dev->stubDriverName);
     return copy;
 }
 
@@ -1522,6 +1524,7 @@ virPCIDeviceFree(virPCIDevice *dev)
     g_free(dev->path);
     g_free(dev->used_by_drvname);
     g_free(dev->used_by_domname);
+    g_free(dev->stubDriverName);
     g_free(dev);
 }
 
@@ -1579,6 +1582,20 @@ virPCIStubDriver
 virPCIDeviceGetStubDriverType(virPCIDevice *dev)
 {
     return dev->stubDriverType;
+}
+
+void
+virPCIDeviceSetStubDriverName(virPCIDevice *dev,
+                                   const char *driverName)
+{
+    g_free(dev->stubDriverName);
+    dev->stubDriverName = g_strdup(driverName);
+}
+
+const char *
+virPCIDeviceGetStubDriverName(virPCIDevice *dev)
+{
+    return dev->stubDriverName;
 }
 
 bool
