@@ -107,7 +107,7 @@ testVirPCIDeviceDetach(const void *opaque G_GNUC_UNUSED)
         if (!(dev[i] = virPCIDeviceNew(&devAddr)))
             goto cleanup;
 
-        virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_VFIO);
+        virPCIDeviceSetStubDriverType(dev[i], VIR_PCI_STUB_DRIVER_VFIO);
 
         if (virPCIDeviceDetach(dev[i], activeDevs, inactiveDevs) < 0)
             goto cleanup;
@@ -149,7 +149,7 @@ testVirPCIDeviceReset(const void *opaque G_GNUC_UNUSED)
         if (!(dev[i] = virPCIDeviceNew(&devAddr)))
             goto cleanup;
 
-        virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_VFIO);
+        virPCIDeviceSetStubDriverType(dev[i], VIR_PCI_STUB_DRIVER_VFIO);
 
         if (virPCIDeviceReset(dev[i], activeDevs, inactiveDevs) < 0)
             goto cleanup;
@@ -190,7 +190,7 @@ testVirPCIDeviceReattach(const void *opaque G_GNUC_UNUSED)
         CHECK_LIST_COUNT(activeDevs, 0);
         CHECK_LIST_COUNT(inactiveDevs, i + 1);
 
-        virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_VFIO);
+        virPCIDeviceSetStubDriverType(dev[i], VIR_PCI_STUB_DRIVER_VFIO);
     }
 
     CHECK_LIST_COUNT(activeDevs, 0);
@@ -249,7 +249,7 @@ testVirPCIDeviceDetachSingle(const void *opaque)
     if (!dev)
         goto cleanup;
 
-    virPCIDeviceSetStubDriver(dev, VIR_PCI_STUB_DRIVER_VFIO);
+    virPCIDeviceSetStubDriverType(dev, VIR_PCI_STUB_DRIVER_VFIO);
 
     if (virPCIDeviceDetach(dev, NULL, NULL) < 0)
         goto cleanup;

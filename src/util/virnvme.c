@@ -292,7 +292,7 @@ virNVMeDeviceCreatePCIDevice(const virNVMeDevice *nvme)
         return NULL;
 
     /* NVMe devices must be bound to vfio */
-    virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_VFIO);
+    virPCIDeviceSetStubDriverType(pci, VIR_PCI_STUB_DRIVER_VFIO);
     virPCIDeviceSetManaged(pci, nvme->managed);
 
     return g_steal_pointer(&pci);

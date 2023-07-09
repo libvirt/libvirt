@@ -87,7 +87,7 @@ struct _virPCIDevice {
 
     bool          managed;
 
-    virPCIStubDriver stubDriver;
+    virPCIStubDriver stubDriverType;
 
     /* used by reattach function */
     bool          unbind_from_stub;
@@ -1233,12 +1233,12 @@ virPCIDeviceBindToStub(virPCIDevice *dev)
     g_autofree char *driverLink = NULL;
 
     /* Check the device is configured to use one of the known stub drivers */
-    if (dev->stubDriver == VIR_PCI_STUB_DRIVER_NONE) {
+    if (dev->stubDriverType == VIR_PCI_STUB_DRIVER_NONE) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("No stub driver configured for PCI device %1$s"),
                        dev->name);
         return -1;
-    } else if (!(stubDriverName = virPCIStubDriverTypeToString(dev->stubDriver))) {
+    } else if (!(stubDriverName = virPCIStubDriverTypeToString(dev->stubDriverType))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown stub driver configured for PCI device %1$s"),
                        dev->name);
@@ -1267,9 +1267,10 @@ virPCIDeviceBindToStub(virPCIDevice *dev)
 /* virPCIDeviceDetach:
  *
  * Detach this device from the host driver, attach it to the stub
- * driver (previously set with virPCIDeviceSetStubDriver(), and add *a
- * copy* of the object to the inactiveDevs list (if provided). This
- * function will *never* consume dev, so the caller should free it.
+ * driver (previously set with virPCIDeviceSetStubDriverType(), and
+ * add *a copy* of the object to the inactiveDevs list (if provided).
+ * This function will *never* consume dev, so the caller should free
+ * it.
  *
  * Returns 0 on success, -1 on failure (will fail if the device is
  * already in the activeDevs list, but will be a NOP if the device is
@@ -1287,7 +1288,7 @@ virPCIDeviceDetach(virPCIDevice *dev,
                    virPCIDeviceList *activeDevs,
                    virPCIDeviceList *inactiveDevs)
 {
-    if (virPCIProbeStubDriver(dev->stubDriver) < 0)
+    if (virPCIProbeStubDriver(dev->stubDriverType) < 0)
         return -1;
 
     if (activeDevs && virPCIDeviceListFind(activeDevs, &dev->address)) {
@@ -1569,15 +1570,15 @@ virPCIDeviceGetManaged(virPCIDevice *dev)
 }
 
 void
-virPCIDeviceSetStubDriver(virPCIDevice *dev, virPCIStubDriver driver)
+virPCIDeviceSetStubDriverType(virPCIDevice *dev, virPCIStubDriver driverType)
 {
-    dev->stubDriver = driver;
+    dev->stubDriverType = driverType;
 }
 
 virPCIStubDriver
-virPCIDeviceGetStubDriver(virPCIDevice *dev)
+virPCIDeviceGetStubDriverType(virPCIDevice *dev)
 {
-    return dev->stubDriver;
+    return dev->stubDriverType;
 }
 
 bool

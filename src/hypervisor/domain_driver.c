@@ -505,9 +505,9 @@ virDomainDriverNodeDeviceDetachFlags(virNodeDevicePtr dev,
         return -1;
 
     if (STREQ(driverName, "vfio"))
-        virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_VFIO);
+        virPCIDeviceSetStubDriverType(pci, VIR_PCI_STUB_DRIVER_VFIO);
     else if (STREQ(driverName, "xen"))
-        virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_XEN);
+        virPCIDeviceSetStubDriverType(pci, VIR_PCI_STUB_DRIVER_XEN);
 
     return virHostdevPCINodeDeviceDetach(hostdevMgr, pci);
 }

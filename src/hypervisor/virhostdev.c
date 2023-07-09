@@ -244,9 +244,9 @@ virHostdevGetPCIHostDevice(const virDomainHostdevDef *hostdev,
     virPCIDeviceSetManaged(actual, hostdev->managed);
 
     if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-        virPCIDeviceSetStubDriver(actual, VIR_PCI_STUB_DRIVER_VFIO);
+        virPCIDeviceSetStubDriverType(actual, VIR_PCI_STUB_DRIVER_VFIO);
     } else if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN) {
-        virPCIDeviceSetStubDriver(actual, VIR_PCI_STUB_DRIVER_XEN);
+        virPCIDeviceSetStubDriverType(actual, VIR_PCI_STUB_DRIVER_XEN);
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("pci backend driver '%1$s' is not supported"),
@@ -679,7 +679,7 @@ virHostdevPreparePCIDevicesImpl(virHostdevManager *mgr,
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevice *pci = virPCIDeviceListGet(pcidevs, i);
         bool strict_acs_check = !!(flags & VIR_HOSTDEV_STRICT_ACS_CHECK);
-        bool usesVFIO = (virPCIDeviceGetStubDriver(pci) == VIR_PCI_STUB_DRIVER_VFIO);
+        bool usesVFIO = (virPCIDeviceGetStubDriverType(pci) == VIR_PCI_STUB_DRIVER_VFIO);
         struct virHostdevIsPCINodeDeviceUsedData data = {mgr, drv_name, dom_name, false};
         int hdrType = -1;
 
@@ -776,7 +776,7 @@ virHostdevPreparePCIDevicesImpl(virHostdevManager *mgr,
 
                 /* The device is bound to a known stub driver: store this
                  * information and add a copy to the inactive list */
-                virPCIDeviceSetStubDriver(pci, stub);
+                virPCIDeviceSetStubDriverType(pci, stub);
 
                 VIR_DEBUG("Adding PCI device %s to inactive list",
                           virPCIDeviceGetName(pci));

@@ -142,7 +142,7 @@ myInit(void)
         if (!(dev[i] = virPCIDeviceNew(&subsys->u.pci.addr)))
             goto cleanup;
 
-        virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_VFIO);
+        virPCIDeviceSetStubDriverType(dev[i], VIR_PCI_STUB_DRIVER_VFIO);
     }
 
     for (i = 0; i < ndisks; i++) {
