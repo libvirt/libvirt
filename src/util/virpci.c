@@ -1154,28 +1154,19 @@ virPCIDeviceReset(virPCIDevice *dev,
 
 
 static int
-virPCIProbeStubDriver(virPCIStubDriver driver)
+virPCIProbeDriver(const char *driverName)
 {
-    const char *drvname = NULL;
     g_autofree char *drvpath = NULL;
     g_autofree char *errbuf = NULL;
 
-    if (driver == VIR_PCI_STUB_DRIVER_NONE ||
-        !(drvname = virPCIStubDriverTypeToString(driver))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s",
-                       _("Attempting to use unknown stub driver"));
-        return -1;
-    }
-
-    drvpath = virPCIDriverDir(drvname);
+    drvpath = virPCIDriverDir(driverName);
 
     /* driver previously loaded, return */
     if (virFileExists(drvpath))
         return 0;
 
-    if ((errbuf = virKModLoad(drvname))) {
-        VIR_WARN("failed to load driver %s: %s", drvname, errbuf);
+    if ((errbuf = virKModLoad(driverName))) {
+        VIR_WARN("failed to load driver %s: %s", driverName, errbuf);
         goto cleanup;
     }
 
@@ -1187,14 +1178,14 @@ virPCIProbeStubDriver(virPCIStubDriver driver)
     /* If we know failure was because of admin config, let's report that;
      * otherwise, report a more generic failure message
      */
-    if (virKModIsProhibited(drvname)) {
+    if (virKModIsProhibited(driverName)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to load PCI stub module %1$s: administratively prohibited"),
-                       drvname);
+                       _("Failed to load PCI driver module %1$s: administratively prohibited"),
+                       driverName);
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to load PCI stub module %1$s"),
-                       drvname);
+                       _("Failed to load PCI driver module %1$s"),
+                       driverName);
     }
 
     return -1;
@@ -1316,6 +1307,9 @@ virPCIDeviceBindToStub(virPCIDevice *dev)
         return -1;
     }
 
+    if (virPCIProbeDriver(stubDriverName) < 0)
+        return -1;
+
     stubDriverPath = virPCIDriverDir(stubDriverName);
     driverLink = virPCIFile(dev->name, "driver");
 
@@ -1359,9 +1353,6 @@ virPCIDeviceDetach(virPCIDevice *dev,
                    virPCIDeviceList *activeDevs,
                    virPCIDeviceList *inactiveDevs)
 {
-    if (virPCIProbeStubDriver(dev->stubDriverType) < 0)
-        return -1;
-
     if (activeDevs && virPCIDeviceListFind(activeDevs, &dev->address)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Not detaching active device %1$s"), dev->name);
