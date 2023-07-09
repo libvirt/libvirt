@@ -1290,17 +1290,20 @@ virPCIDeviceUnbindFromStub(virPCIDevice *dev)
 static int
 virPCIDeviceBindToStub(virPCIDevice *dev)
 {
-    const char *stubDriverName;
+    const char *stubDriverName = dev->stubDriverName;
     g_autofree char *stubDriverPath = NULL;
     g_autofree char *driverLink = NULL;
 
-    /* Check the device is configured to use one of the known stub drivers */
+
     if (dev->stubDriverType == VIR_PCI_STUB_DRIVER_NONE) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("No stub driver configured for PCI device %1$s"),
                        dev->name);
         return -1;
-    } else if (!(stubDriverName = virPCIStubDriverTypeToString(dev->stubDriverType))) {
+    }
+
+    if (!stubDriverName
+        && !(stubDriverName = virPCIStubDriverTypeToString(dev->stubDriverType))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown stub driver configured for PCI device %1$s"),
                        dev->name);
