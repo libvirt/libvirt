@@ -462,6 +462,7 @@ virDomainDriverNodeDeviceReAttach(virNodeDevicePtr dev,
 int
 virDomainDriverNodeDeviceDetachFlags(virNodeDevicePtr dev,
                                      virHostdevManager *hostdevMgr,
+                                     virPCIStubDriver driverType,
                                      const char *driverName)
 {
     g_autoptr(virPCIDevice) pci = NULL;
@@ -471,8 +472,10 @@ virDomainDriverNodeDeviceDetachFlags(virNodeDevicePtr dev,
     g_autoptr(virConnect) nodeconn = NULL;
     g_autoptr(virNodeDevice) nodedev = NULL;
 
-    if (!driverName)
+    if (driverType == VIR_PCI_STUB_DRIVER_NONE) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("driver type not set"));
         return -1;
+    }
 
     if (!(nodeconn = virGetConnectNodeDev()))
         return -1;
@@ -504,10 +507,8 @@ virDomainDriverNodeDeviceDetachFlags(virNodeDevicePtr dev,
     if (!pci)
         return -1;
 
-    if (STREQ(driverName, "vfio"))
-        virPCIDeviceSetStubDriverType(pci, VIR_PCI_STUB_DRIVER_VFIO);
-    else if (STREQ(driverName, "xen"))
-        virPCIDeviceSetStubDriverType(pci, VIR_PCI_STUB_DRIVER_XEN);
+    virPCIDeviceSetStubDriverType(pci, driverType);
+    virPCIDeviceSetStubDriverName(pci, driverName);
 
     return virHostdevPCINodeDeviceDetach(hostdevMgr, pci);
 }

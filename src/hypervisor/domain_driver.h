@@ -22,6 +22,7 @@
 
 #include "node_device_conf.h"
 #include "virhostdev.h"
+#include "virpci.h"
 
 char *
 virDomainDriverGenerateRootHash(const char *drivername,
@@ -58,6 +59,7 @@ int virDomainDriverNodeDeviceReAttach(virNodeDevicePtr dev,
 
 int virDomainDriverNodeDeviceDetachFlags(virNodeDevicePtr dev,
                                          virHostdevManager *hostdevMgr,
+                                         virPCIStubDriver driverType,
                                          const char *driverName);
 
 int virDomainDriverAddIOThreadCheck(virDomainDef *def,

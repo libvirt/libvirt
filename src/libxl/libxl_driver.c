@@ -5876,7 +5876,8 @@ libxlNodeDeviceDetachFlags(virNodeDevicePtr dev,
 
     /* virNodeDeviceDetachFlagsEnsureACL() is being called by
      * virDomainDriverNodeDeviceDetachFlags() */
-    return virDomainDriverNodeDeviceDetachFlags(dev, hostdev_mgr, driverName);
+    return virDomainDriverNodeDeviceDetachFlags(dev, hostdev_mgr,
+                                                VIR_PCI_STUB_DRIVER_XEN, NULL);
 }
 
 static int

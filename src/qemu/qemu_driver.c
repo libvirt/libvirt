@@ -70,7 +70,6 @@
 #include "domain_driver.h"
 #include "domain_postparse.h"
 #include "domain_validate.h"
-#include "virpci.h"
 #include "virpidfile.h"
 #include "virprocess.h"
 #include "libvirt_internal.h"
@@ -11407,23 +11406,27 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
 
     virCheckFlags(0, -1);
 
-    if (!driverName)
-        driverName = "vfio";
+    /* For historical reasons, if driverName is "vfio", that is the
+     * same as NULL, i.e. the default vfio driver for this device
+     */
+    if (STREQ_NULLABLE(driverName, "vfio"))
+        driverName = NULL;
 
-    /* Only the 'vfio' driver is supported and a special error message for
-     * the previously supported 'kvm' driver is provided below. */
-    if (STRNEQ(driverName, "vfio") && STRNEQ(driverName, "kvm")) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("unknown driver name '%1$s'"), driverName);
-        return -1;
-    }
-
-    if (STREQ(driverName, "kvm")) {
+    /* the "kvm" driver name was used a very long time ago to force
+     * "legacy KVM device assignment", which hasn't been supported in
+     * over 10 years.
+     */
+    if (STREQ_NULLABLE(driverName, "kvm")) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("KVM device assignment is no longer "
+                       _("'legacy KVM' device assignment is no longer "
                          "supported on this system"));
         return -1;
     }
+
+    /* for any other driver, we can't know whether or not it is a VFIO
+     * driver until the device has been bound to it, so we will defer
+     * further validation until then.
+     */
 
     if (!qemuHostdevHostSupportsPassthroughVFIO()) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
@@ -11434,7 +11437,9 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
 
     /* virNodeDeviceDetachFlagsEnsureACL() is being called by
      * virDomainDriverNodeDeviceDetachFlags() */
-    return virDomainDriverNodeDeviceDetachFlags(dev, hostdev_mgr, driverName);
+    return virDomainDriverNodeDeviceDetachFlags(dev, hostdev_mgr,
+                                                VIR_PCI_STUB_DRIVER_VFIO,
+                                                driverName);
 }
 
 static int
