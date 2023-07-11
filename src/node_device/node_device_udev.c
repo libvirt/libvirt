@@ -22,7 +22,9 @@
 #include <gio/gio.h>
 #include <libudev.h>
 #include <pciaccess.h>
-#include <scsi/scsi.h>
+#ifdef __linux__
+# include <scsi/scsi.h>
+#endif
 
 #include "node_device_conf.h"
 #include "node_device_event.h"
@@ -678,6 +680,8 @@ udevGetSCSIType(virNodeDeviceDef *def G_GNUC_UNUSED,
 
     *typestring = NULL;
 
+#ifdef __linux__
+    /* These values are Linux specific. */
     switch (type) {
     case TYPE_DISK:
         *typestring = g_strdup("disk");
@@ -714,6 +718,10 @@ udevGetSCSIType(virNodeDeviceDef *def G_GNUC_UNUSED,
         foundtype = 0;
         break;
     }
+#else
+    /* Implement me. */
+    foundtype = 0;
+#endif
 
     if (*typestring == NULL) {
         if (foundtype == 1) {
