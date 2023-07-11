@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: libvirt 8.4.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-06-27 11:10+0000\n"
-"PO-Revision-Date: 2023-07-11 17:33+0000\n"
-"Last-Translator: Mariam Low-Ghelaghutashvili <mariamlow@zusmail.xyz>\n"
+"PO-Revision-Date: 2023-07-12 18:20+0000\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ka/>\n"
 "Language: ka\n"
@@ -60,7 +60,7 @@ msgstr ""
 "\n"
 "  --ნაგულისხმევი გზები:\n"
 "\n"
-"----კონფიგურაციის ფაილი (თუ არ არის უარყოფილი -f-ით):\n"
+"----კონფიგურაციის ფაილი (თუ არ არის გადაფარული -f-ით):\n"
 "------$XDG_CONFIG_HOME/libvirt/virtlockd.conf\n"
 "\n"
 "----სოკეტები:\n"
@@ -199,14 +199,14 @@ msgid ""
 "\n"
 msgstr ""
 
-#, c-format, fuzzy
+#, c-format
 msgid ""
 "\n"
 "(Time: %1$.3f ms)\n"
 "\n"
 msgstr ""
 "\n"
-"(დრო:  %1$.3f მწ)\n"
+"(დრო: %1$.3f მწ)\n"
 "\n"
 
 #, c-format, fuzzy
@@ -217,13 +217,13 @@ msgstr ""
 "\n"
 "დომენი '%1$s' გადაიტვირთა %2$s-ში\n"
 
-#, c-format, fuzzy
+#, c-format
 msgid ""
 "\n"
 "Domain '%1$s' saved to %2$s\n"
 msgstr ""
 "\n"
-"დომენი '%1$s' შეინახა '%1$s'-ში\n"
+"დომენი '%1$s' შეინახა '%2$s'-ში\n"
 
 #, c-format, fuzzy
 msgid ""
@@ -399,9 +399,9 @@ msgstr "%1$s ვერ იქნება %2$s-ზე უფრო მაღა�
 msgid "%1$s cannot parse GID '%2$s'"
 msgstr "%1$s ვერ აანალიზებს GID '%2$s'-ს"
 
-#, c-format, fuzzy
+#, c-format
 msgid "%1$s cannot parse UID '%2$s'"
-msgstr "%1$s ვერ აანალიზებს  UID '%2$s'-ს"
+msgstr "%1$s ვერ აანალიზებს UID '%2$s'-ს"
 
 #, c-format, fuzzy
 msgid "%1$s does not support passing a passphrase using a file descriptor"
