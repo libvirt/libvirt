@@ -2,13 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the libvirt package.
 # Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2022, 2023.
+# Mariam Low-Ghelaghutashvili <mariamlow@zusmail.xyz>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 8.4.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-06-27 11:10+0000\n"
-"PO-Revision-Date: 2023-07-05 14:21+0000\n"
-"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
+"PO-Revision-Date: 2023-07-11 17:32+0000\n"
+"Last-Translator: Mariam Low-Ghelaghutashvili <mariamlow@zusmail.xyz>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ka/>\n"
 "Language: ka\n"
@@ -18,16 +19,23 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.18.2\n"
 
+#, fuzzy
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
+"\n"
+"  --(მიუთითეთ დახმარების <ბრძანება> ბრძანებაზე ინფორმაციისთვის)\n"
+"\n"
 
+#, fuzzy
 msgid ""
 "\n"
 "  (specify help <group> for details about the commands in the group)\n"
 msgstr ""
+"\n"
+"  (მიუთითეთ დახმარების <ჯგუფი> ჯგუფში ბრძანებებზე ინფორმაციისთვის)\n"
 
 msgid ""
 "\n"
@@ -105,10 +113,13 @@ msgstr ""
 "\n"
 "  პარამეტრები\n"
 
+#, fuzzy
 msgid ""
 "\n"
 "  SYNOPSIS\n"
 msgstr ""
+"\n"
+"  შინაარსი\n"
 
 #, c-format
 msgid ""
@@ -177,30 +188,39 @@ msgid ""
 "\n"
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "\n"
 "(Time: %1$.3f ms)\n"
 "\n"
 msgstr ""
+"\n"
+"(დრო:  %1$.3f მწ)\n"
+"\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "\n"
 "Domain '%1$s' dumped to %2$s\n"
 msgstr ""
+"\n"
+"დომენი '%1$s' გადაიტვირთა %2$s-ში\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "\n"
 "Domain '%1$s' saved to %2$s\n"
 msgstr ""
+"\n"
+"დომენი '%1$s' შეინახა '%1$s'-ში\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "\n"
 "Domain '%1$s' state saved by libvirt\n"
 msgstr ""
+"\n"
+"დომენი '%1$s'-ის მდგომარეობა შენახულია ლიბვირტის მიერ\n"
 
 #, c-format
 msgid ""
@@ -278,13 +298,13 @@ msgstr ""
 msgid "  NAME\n"
 msgstr "  სახელი\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid " %1$s (help keyword '%2$s')\n"
-msgstr ""
+msgstr " %1$s (დახმარების საკვანძო სიტყვა '%2$s')\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid " %1$s (help keyword '%2$s'):\n"
-msgstr ""
+msgstr " %1$s (დახმარების საკვანძო სიტყვა '%2$s')\n"
 
 msgid " Hypervisors:"
 msgstr " ჰაიპერვაიზორები:"
@@ -306,16 +326,20 @@ msgid ""
 " end=%4$llu\n"
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' "
 "differs from stored identity. Please verify the new host key '%3$s' to avoid "
 "possible man in the middle attack. The key is stored in '%4$s'."
 msgstr ""
+"!!! SSH მასპინძელის გასაღების ვერიფიკაცია ვერ მოხერხდა !!! მასპინძელ "
+"'%1$s:%2$d'-ის ვინაობა განსხვავდება შენახული ვინაობისგან. გთხოვთ, შეამოწმოთ "
+"ახალი მასპინძელის გასაღები '%3$s', რათა აერიდოთ შესაძლო შუაკაცის შეტევას. "
+"გასაღები შენახულია '%4$s'-ში."
 
-#, c-format
+#, c-format, fuzzy
 msgid "$%1$s value should be between 0 and %2$d"
-msgstr ""
+msgstr "$%1$s მნიშვნელობა უნდა იყოს 0-სა და %2$d-ს შორის"
 
 #, c-format
 msgid "%1$6s: Checking %2$-60s: "
@@ -329,117 +353,123 @@ msgstr "%1$s\n"
 msgid "%1$s %2$s"
 msgstr "%1$s%2$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s %2$s '%3$s' has an unsupported type '%4$s'"
-msgstr ""
+msgstr "%1$s %2$s '%3$s'-ს აქვს ტიპი, რომელსაც არ აქვს მხარდაჭერა '%4$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "%1$s %2$s '%3$s' has unsupported type '%4$s', expecting '%5$s' or '%6$s'"
 msgstr ""
+"%1$s %2$s '%3$s' აქვს ტიპი, რომელსაც არ აქვს მხარდაჭერა '%4$s', მოსალოდნელია "
+"'%5$s' ან '%6$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "%1$s (on destination side) does not support the --migration option needed "
 "for migration with shared storage"
 msgstr ""
+"%1$s (დანიშნულებია ადგილზე) არ უჭერს მხარს --migration ოფციას, რომელიც "
+"საჭიროა საერთო მეხსიერებასთან მიგრაციისთვის"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s (out of %2$d)"
-msgstr ""
+msgstr "%1$s (%2$d-დან)"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s can't be empty"
-msgstr ""
+msgstr "%1$s ვერ იქნება ცარიელი"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s cannot be set higher than %2$s"
-msgstr ""
+msgstr "%1$s ვერ იქნება %2$s-ზე უფრო მაღალი"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s cannot parse GID '%2$s'"
-msgstr ""
+msgstr "%1$s ვერ აანალიზებს GID '%2$s'-ს"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s cannot parse UID '%2$s'"
-msgstr ""
+msgstr "%1$s ვერ აანალიზებს  UID '%2$s'-ს"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s does not support passing a passphrase using a file descriptor"
-msgstr ""
+msgstr "%1$s არ უჭერს მხარს ფაილის დესკრიპტორის გამოყენებით შიფრის გატარებას"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s does not support passing passphrase via file descriptor"
-msgstr ""
+msgstr "%1$s არ უჭერს მხარს ფაილის დესკრიპტორის გამოყენებით შიფრის გატარებას"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s expects UID and GID parameters"
-msgstr ""
+msgstr "%1$s ელის UID და GID პარამეტრებს"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
-msgstr ""
+msgstr "%1$s წარუმატებელია ახალი რეჟიმით სამიზნე '%2$s'-თვის სტატუსით '%3$d'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
-msgstr ""
+msgstr "%1$s ოჯახი მითითებულია არა-IPv4 მისამართი '%2$s'-თვის ქსელ '%3$s'-ში"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "%1$s forwarding requested, but no IP address provided for network '%2$s'"
 msgstr ""
+"%1$s გადაგზავნა მოთხოვნილია, მაგრამ IP მისამართი არ არის მითითებული ქსელი "
+"'%2$s'-თვის"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s graphics are not supported with this QEMU"
-msgstr ""
+msgstr "%1$s გრაფიკებს მხარდაჭერა არ აქვს ამ QEMU-სთან"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s harddisk '%2$s' has unsupported cache mode '%3$s'"
-msgstr ""
+msgstr "%1$s მყარი დისკ '%2$s-ს აქვს მხარდაჭერის არმქონე ქეშის რეჟიმი '%3$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s has illegal value %2$s"
-msgstr ""
+msgstr "%1$s აქვს აკრძალული მნიშვნელობა %2$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s has unexpected '*' before last line"
-msgstr ""
+msgstr "%1$s-ს აქვს მოულოდნელი '*' უკანასკნელი ხაზის წინ"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s in %2$s must be NULL"
-msgstr ""
+msgstr "%1$s %2$s-ში უნდა იყოს არარსებული"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s in %2$s must be greater than zero"
-msgstr ""
+msgstr "%1$s %2$s-ში უნდა იყოს ნულზე მეტი"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s in %2$s must be zero"
-msgstr ""
+msgstr "%1$s %2$s-ში უნდა იყოს ნული"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s in %2$s must be zero or greater"
-msgstr ""
+msgstr "%1$s %2$s უნდა იყოს ნული ან მეტი"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s in %2$s must not be NULL"
-msgstr ""
+msgstr "%1$s %2$s-ში არ უნდა იყოს არარსებული"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s in %2$s must not be zero"
-msgstr ""
+msgstr "%1$s %2$s-ში არ უნდა იყოს ნული"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s is missing 'type' property"
-msgstr ""
+msgstr "%1$s-ს აკლია 'type' პარამეტრი"
 
 #, c-format
 msgid "%1$s is not an executable"
 msgstr "%1$s: გაშვებადი ფაილი არაა"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s is not supported by this QEMU binary"
-msgstr ""
+msgstr "%1$s არ არის მხარდაჭერილი ამ QEMU ბინარით"
 
 #, c-format
 msgid "%1$s length greater than maximum: %2$d > %3$d"
@@ -475,17 +505,17 @@ msgstr ""
 msgid "%1$s model of watchdog is virtual and cannot go on any bus."
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s module is not loaded, "
-msgstr ""
+msgstr "%1$s მოდული არ არის ჩატვირთული, "
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s namespace is not available"
-msgstr ""
+msgstr "%1$s სახელთა სივრცე არ არის ხელმისაწვდომი"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s not found in %2$s"
-msgstr ""
+msgstr "%1$s არ მოიპოვება %2$s-ში"
 
 #, c-format
 msgid "%1$s not implemented on Win32"
@@ -37242,35 +37272,41 @@ msgstr ""
 msgid "xen bus does not support %1$s input device"
 msgstr ""
 
+#, fuzzy
 msgid "xml data file to export from"
-msgstr ""
+msgstr "xml მონაცემების ფაილი, რომლიდანაც მოხდება (მოხდა) გატანა"
 
+#, fuzzy
 msgid "xml modification unsupported"
-msgstr ""
+msgstr "xml მოდიფიკაცია არ არის მხარდაჭერილი"
 
+#, fuzzy
 msgid "xpath expression to filter the XML document"
-msgstr ""
+msgstr "xpath ტერმინი XML დოკუმენტის ფილტრაციისთვის"
 
-#, c-format
+#, c-format, fuzzy
 msgid "xsd:dateTime value '%1$s' has unexpected format"
-msgstr ""
+msgstr "xsd:dateTime მნიშვნელობა '%1$s'-ს აქვს მოულოდნელი ფორმატი"
 
+#, fuzzy
 msgid "y - yes, start editor again"
-msgstr ""
+msgstr "y - დიახ, კვლავ გაიხსნას რედაქტორი"
 
 msgid "yes"
 msgstr "დიახ"
 
-#, c-format
+#, c-format, fuzzy
 msgid "zPCI %1$s %2$o is already reserved"
-msgstr ""
+msgstr "zPCI %1$s %2$o უკვე დარეზერვებულია"
 
+#, fuzzy
 msgid "zero-copy is only available for parallel migration"
-msgstr ""
+msgstr "zero-copy ხელმისაწვდომია მხოლოდ პარალელური მიგრაციისთვის"
 
-#, c-format
+#, c-format, fuzzy
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+"ზონა %1$s არის მოთხოვნილი ქსელი %2$s-თვის, მაგრამ firewalld არ არის აქტიური"
 
 #, c-format
 msgid "{[--%1$s] <string>}..."
