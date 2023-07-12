@@ -28,7 +28,8 @@
      VIR_MIGRATE_TUNNELLED | \
      VIR_MIGRATE_PERSIST_DEST | \
      VIR_MIGRATE_UNDEFINE_SOURCE | \
-     VIR_MIGRATE_PAUSED)
+     VIR_MIGRATE_PAUSED | \
+     VIR_MIGRATE_CHANGE_PROTECTION)
 
 /* All supported migration parameters and their types. */
 #define LIBXL_MIGRATION_PARAMETERS \
