@@ -3,7 +3,7 @@ Contributing
 ============
 
 These are the basics steps you need to follow to contribute to
-libvirt.
+libvirt software development.
 
 Repositories and external resources
 ===================================
@@ -75,3 +75,4 @@ you also take a look at the following documents:
 -  `Advanced test suite usage <advanced-tests.html>`__
 -  `Adoption of GLib APIs <glib-adoption.html>`__
 -  `Committer guidelines <committer-guidelines.html>`__
+-  `Contributing to libvirt <contribute.html>`__
