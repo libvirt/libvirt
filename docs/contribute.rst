@@ -25,19 +25,19 @@ to libvirt. If you have ideas for other contributions feel free to follow them.
    written in Python, Perl, Java, Ruby, Php, OCaml and Go. There are also higher
    level wrappers mapping libvirt into other object frameworks, such GLib, CIM
    and SNMP. For those interested in working on the core parts of libvirt, the
-   `contributor guidelines <hacking.html>`__ are mandatory reading
+   `contributor guidelines <hacking.html>`__ are mandatory reading.
 -  **Translation**. All the libvirt modules aim to support translations where
    appropriate. All translation is handling outside of the normal libvirt review
    process, using the `Fedora
    instance <https://translate.fedoraproject.org/projects/libvirt/libvirt>`__ of
    the Weblate tool. Thus people wishing to contribute to translation should
-   join the Fedora translation team
+   join the Fedora translation team.
 -  **Documentation**. There are docbook guides on various aspects of libvirt,
    particularly application development guides for the C library and Python, and
    a virsh command reference. There is thus scope for work by people who are
    familiar with using or developing against libvirt, to write further content
    for these guides. There is also a need for people to review existing content
-   for copy editing and identifying gaps in the docs
+   for copy editing and identifying gaps in the docs.
 -  **Website / wiki curation**. The bulk of the website is maintained in the
    primary GIT repository, while the wiki site uses mediawiki. In both cases
    there is a need for people to both write new content and curate existing
