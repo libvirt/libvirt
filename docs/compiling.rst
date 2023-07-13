@@ -116,14 +116,16 @@ checked in the top level ``meson.build`` file in the ``meson_version`` field.
 Compiling the sources
 ---------------------
 
-To build the configured project run (note that ``-C build`` is a path to the
-build directory):
+Compilation can be carried out by ``ninja``:
 
 ::
 
    $ ninja -C build
 
-The ``build`` directory now contains the built binaries.
+"``build``" is the path to a directory which must match a path previously given
+to ``meson setup``.
+
+Binaries and other resulting files can be found within the build directory.
 
 Additionally you can also run the test suite:
 
