@@ -32,6 +32,7 @@ docs_rst_files = [
   'ci',
   'ci-dashboard',
   'ci-runners',
+  'clangd',
   'coding-style',
   'committer-guidelines',
   'compiling',

@@ -28,6 +28,9 @@ The `"Git checkout" section <compiling.html#git-checkout>`__
 of the libvirt installation instructions give an overview of the
 compilation process.
 
+Optionally, `Clangd with libvirt <clangd.html>`__ can be used to
+navigate the code base etc. within most code editors (and IDEs).
+
 Preparing patches
 =================
 
