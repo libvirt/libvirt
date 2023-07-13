@@ -34,8 +34,10 @@ navigate the code base etc. within most code editors (and IDEs).
 Preparing patches
 =================
 
-Make sure your patches apply against libvirt git. Developers
-only follow git and don't care much about released versions.
+Make sure your patches apply against the libvirt git master
+branch. The backporting of changes to existing releases is
+typically carried out by downstream users at their discretion
+after code is merged into the upstream git.
 
 Run the automated tests on your code before submitting any
 changes. That is:
