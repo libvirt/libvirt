@@ -4807,6 +4807,51 @@ qemuDomainDefTsegPostParse(virDomainDef *def,
 }
 
 
+static int
+qemuDomainDefNumaAutoAdd(virDomainDef *def,
+                         unsigned int parseFlags)
+{
+    bool abiUpdate = !!(parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE);
+    unsigned long long initialMem;
+    size_t i;
+
+    if (!abiUpdate ||
+        !virDomainDefHasMemoryHotplug(def) ||
+        virDomainNumaGetNodeCount(def->numa) > 0) {
+        return 0;
+    }
+
+    initialMem = virDomainDefGetMemoryInitial(def);
+
+    if (!def->numa)
+        def->numa = virDomainNumaNew();
+
+    virDomainNumaSetNodeCount(def->numa, 1);
+    virDomainNumaSetNodeMemorySize(def->numa, 0, initialMem);
+
+    for (i = 0; i < def->nmems; i++) {
+        virDomainMemoryDef *mem = def->mems[i];
+
+        switch (mem->model) {
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+            if (mem->targetNode == -1)
+                mem->targetNode = 0;
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_NONE:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        case VIR_DOMAIN_MEMORY_MODEL_LAST:
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuDomainDefNumaCPUsRectify:
  * @numa: pointer to numa definition
@@ -4841,8 +4886,12 @@ qemuDomainDefNumaCPUsRectify(virDomainDef *def,
 
 static int
 qemuDomainDefNumaCPUsPostParse(virDomainDef *def,
-                               virQEMUCaps *qemuCaps)
+                               virQEMUCaps *qemuCaps,
+                               unsigned int parseFlags)
 {
+    if (qemuDomainDefNumaAutoAdd(def, parseFlags) < 0)
+        return -1;
+
     return qemuDomainDefNumaCPUsRectify(def, qemuCaps);
 }
 
@@ -4914,7 +4963,7 @@ qemuDomainDefPostParse(virDomainDef *def,
     if (qemuDomainDefTsegPostParse(def, qemuCaps) < 0)
         return -1;
 
-    if (qemuDomainDefNumaCPUsPostParse(def, qemuCaps) < 0)
+    if (qemuDomainDefNumaCPUsPostParse(def, qemuCaps, parseFlags) < 0)
         return -1;
 
     return 0;
