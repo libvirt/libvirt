@@ -19,6 +19,15 @@ If you want to contribute to translations of libvirt, join the appropriate
 language team in Weblate.  Translation updates to libvirt will be merged
 during the feature freeze window.
 
+Working with the code
+=====================
+
+In general you should base your work upon the git master branch.
+
+The `"Git checkout" section <compiling.html#git-checkout>`__
+of the libvirt installation instructions give an overview of the
+compilation process.
+
 Preparing patches
 =================
 
