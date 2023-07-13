@@ -772,6 +772,9 @@
   <feature name='fb-clear'>
     <msr index='0x10a' edx='0x00000000' eax='0x00020000'/>
   </feature>
+  <feature name='pbrsb-no'>
+    <msr index='0x10a' edx='0x00000000' eax='0x01000000'/>
+  </feature>
 
   <!-- IA32_CORE_CAPABILITIES features -->
   <feature name='split-lock-detect'>
