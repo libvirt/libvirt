@@ -8,6 +8,11 @@ tool. All libvirt-related repositories contain a config file
 that tells git-publish to use the correct mailing list and
 subject prefix.
 
+If you are a first-time contributor, you may wish to read some
+patch submission threads from the `mailing list archive
+<contact.html#mailing-lists>`__ of the mailing list from the
+``.gitpublish`` file.
+
 Alternatively, you may send patches using ``git send-email``.
 
 The usual workflow of libvirt developer is:
