@@ -68,7 +68,7 @@ of the build directory which will be created.
 
 ::
 
-   $ meson build [options]
+   $ meson setup build [options]
 
 To get the complete list of the options run the following command:
 
@@ -83,7 +83,7 @@ normal OS vendor prefixes, use
 
 ::
 
-   $ meson build -Dsystem=true
+   $ meson setup build -Dsystem=true
 
 Explicitly enabling required functionality
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -99,7 +99,7 @@ libvirt project with support for the **qemu** driver use the following options:
 
 ::
 
-   $ meson build -Dsystem=true -Ddriver_qemu=enabled
+   $ meson setup build -Dsystem=true -Ddriver_qemu=enabled
 
 Notes:
 ~~~~~~
