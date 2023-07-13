@@ -760,6 +760,9 @@
   <feature name='taa-no'>
     <msr index='0x10a' edx='0x00000000' eax='0x00000100'/>
   </feature>
+  <feature name='sbdr-ssdp-no'>
+    <msr index='0x10a' edx='0x00000000' eax='0x00002000'/>
+  </feature>
   <feature name='fb-clear'>
     <msr index='0x10a' edx='0x00000000' eax='0x00020000'/>
   </feature>
