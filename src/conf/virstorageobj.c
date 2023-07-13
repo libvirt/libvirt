@@ -454,10 +454,15 @@ virStoragePoolObjListSearchCb(const void *payload,
     virStoragePoolObj *obj = (virStoragePoolObj *) payload;
     struct _virStoragePoolObjListSearchData *data =
         (struct _virStoragePoolObjListSearchData *)opaque;
-    VIR_LOCK_GUARD lock = virObjectLockGuard(obj);
 
+    virObjectLock(obj);
+
+    /* If we find the matching pool object we must return while the object is
+     * locked as the caller wants to return a locked object. */
     if (data->searcher(obj, data->opaque))
         return 1;
+
+    virObjectUnlock(obj);
 
     return 0;
 }
