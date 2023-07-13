@@ -58,6 +58,14 @@ adding a new feature or changing the output of a program, and
 don't forget to update the `release notes <news.html>`__ if your
 changes are significant and user-visible.
 
+To test across a variety of build platforms prior to submitting
+your changes, you may create your own fork of the project on
+gitlab. This will give you access to (a subset of) libvirt's
+`continuous integration <ci.html>`__ test suite.
+
+Please note that you should still follow the instructions below,
+rather than following gitlab's prompts to open a "merge request".
+
 Submitting patches
 ==================
 
