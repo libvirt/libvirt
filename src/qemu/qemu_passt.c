@@ -169,7 +169,6 @@ qemuPasstStart(virDomainObj *vm,
     g_autofree char *passtSocketName = qemuPasstCreateSocketPath(vm, net);
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *pidfile = qemuPasstCreatePidFilename(vm, net);
-    char macaddr[VIR_MAC_STRING_BUFLEN];
     size_t i;
 
     cmd = virCommandNew(PASST);
@@ -179,7 +178,6 @@ qemuPasstStart(virDomainObj *vm,
     virCommandAddArgList(cmd,
                          "--one-off",
                          "--socket", passtSocketName,
-                         "--mac-addr", virMacAddrFormat(&net->mac, macaddr),
                          "--pid", pidfile,
                          NULL);
 
