@@ -448,6 +448,10 @@
     <cpuid eax_in='0x07' ecx_in='0x01' edx='0x00004000'/>
   </feature>
 
+  <feature name='mcdt-no'>
+    <cpuid eax_in='0x07' ecx_in='0x02' edx='0x00000020'/>
+  </feature>
+
   <!-- Processor Extended State Enumeration sub leaf 1 -->
   <feature name='xsaveopt'>
     <cpuid eax_in='0x0d' ecx_in='0x01' eax='0x00000001'/>
