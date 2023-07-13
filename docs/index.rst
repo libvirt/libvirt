@@ -54,6 +54,8 @@ Quick Links
   Read further community contributed content
 `Knowledge base <kbase/index.html>`__
   Learn more about libvirt through knowledge base
+`Documentation <docs.html>`__
+  Comprehensive documentation map
 
 Blog Planet
 -----------
