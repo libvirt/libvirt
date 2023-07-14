@@ -3308,18 +3308,6 @@ qemuMonitorCPUModelInfoCopy(const qemuMonitorCPUModelInfo *orig)
 }
 
 
-int
-qemuMonitorGetCommands(qemuMonitor *mon,
-                       char ***commands)
-{
-    VIR_DEBUG("commands=%p", commands);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONGetCommands(mon, commands);
-}
-
-
 GHashTable *
 qemuMonitorGetCommandLineOptions(qemuMonitor *mon)
 {

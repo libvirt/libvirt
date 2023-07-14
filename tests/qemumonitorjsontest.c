@@ -492,64 +492,6 @@ testQemuMonitorJSONGetCPUDefinitions(const void *opaque)
 
 
 static int
-testQemuMonitorJSONGetCommands(const void *opaque)
-{
-    const testGenericData *data = opaque;
-    virDomainXMLOption *xmlopt = data->xmlopt;
-    g_auto(GStrv) commands = NULL;
-    int ncommands = 0;
-    g_autoptr(qemuMonitorTest) test = NULL;
-
-    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
-        return -1;
-
-    if (qemuMonitorTestAddItem(test, "query-commands",
-                               "{ "
-                               "  \"return\": [ "
-                               "   { "
-                               "     \"name\": \"system_wakeup\" "
-                               "   }, "
-                               "   { "
-                               "     \"name\": \"cont\" "
-                               "   }, "
-                               "   { "
-                               "     \"name\": \"quit\" "
-                               "   } "
-                               "  ]"
-                               "}") < 0)
-        return -1;
-
-    if ((ncommands = qemuMonitorGetCommands(qemuMonitorTestGetMonitor(test),
-                                        &commands)) < 0)
-        return -1;
-
-    if (ncommands != 3) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "ncommands %d is not 3", ncommands);
-        return -1;
-    }
-
-#define CHECK(i, wantname) \
-    do { \
-        if (STRNEQ(commands[i], (wantname))) { \
-            virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           "name %s is not %s", \
-                           commands[i], (wantname)); \
-            return -1; \
-        } \
-    } while (0)
-
-    CHECK(0, "system_wakeup");
-    CHECK(1, "cont");
-    CHECK(2, "quit");
-
-#undef CHECK
-
-    return 0;
-}
-
-
-static int
 testQemuMonitorJSONGetTPMModels(const void *opaque)
 {
     const testGenericData *data = opaque;
@@ -2888,7 +2830,6 @@ mymain(void)
     DO_TEST(GetVersion);
     DO_TEST(GetMachines);
     DO_TEST(GetCPUDefinitions);
-    DO_TEST(GetCommands);
     DO_TEST(GetTPMModels);
     if (qemuMonitorJSONTestAttachChardev(driver.xmlopt, qapiData.schema) < 0)
         ret = -1;
