@@ -3022,11 +3022,14 @@ paravirtualized driver is specified via the ``disk`` element.
       are intended to be default, then the entire element may be omitted.
 
       When using an ``ssh`` protocol, this element is used to enable
-      authentication via ssh keys. In this configuration, the element has two
-      attributes. The ``username`` attribute specifies the name of the user on
-      the remote server and the ``keyfile`` attribute specifies the path to the
-      keyfile. Note that this only works for ssh keys that are not
-      password-protected.
+      authentication via ssh keys. In this configuration, the element has three
+      possible attributes. The ``username`` attribute is required and specifies
+      the name of the user on the remote server. ssh keys can be specified in
+      one of two ways. The first way is by adding them to an ssh-agent and
+      providing the path to the ssh-agent socket in the ``agentsock``
+      attribute. This method works for ssh keys with or without password
+      protection. Alternatively, for ssh keys without a password, the ssh key
+      can be specified directly by setting the ``keyfile`` attribute.
    ``reconnect``
       For disk type ``vhostuser`` configures reconnect timeout if the connection
       is lost. This is set with the two mandatory attributes ``enabled`` and

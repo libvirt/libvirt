@@ -2187,9 +2187,14 @@
         <attribute name="username">
           <ref name="genericName"/>
         </attribute>
-        <attribute name="keyfile">
-          <ref name="absFilePath"/>
-        </attribute>
+        <choice>
+          <attribute name="keyfile">
+            <ref name="absFilePath"/>
+          </attribute>
+          <attribute name="agentsock">
+            <ref name="absFilePath"/>
+          </attribute>
+        </choice>
       </interleave>
     </element>
   </define>
