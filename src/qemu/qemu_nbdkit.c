@@ -1057,6 +1057,9 @@ qemuNbdkitProcessBuildCommandSSH(qemuNbdkitProcess *proc,
             virCommandAddArgPair(cmd, "user", proc->source->ssh_user);
     }
 
+    if (proc->source->ssh_agent)
+        virCommandAddEnvPair(cmd, "SSH_AUTH_SOCK", proc->source->ssh_agent);
+
     if (proc->source->ssh_host_key_check_disabled)
         virCommandAddArgPair(cmd, "verify-remote-host", "false");
 
@@ -1179,6 +1182,10 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
         qemuSecurityDomainSetPathLabel(driver, vm, proc->source->ssh_keyfile, false) < 0)
         goto error;
 
+    if (proc->source->ssh_agent &&
+        qemuSecurityDomainSetPathLabel(driver, vm, proc->source->ssh_agent, false) < 0)
+        goto error;
+
     if (proc->source->ssh_known_hosts_file &&
         qemuSecurityDomainSetPathLabel(driver, vm, proc->source->ssh_known_hosts_file, false) < 0)
         goto error;
@@ -1266,6 +1273,9 @@ qemuNbdkitProcessStop(qemuNbdkitProcess *proc,
 
     if (proc->source->ssh_keyfile)
         qemuSecurityDomainRestorePathLabel(driver, vm, proc->source->ssh_keyfile);
+
+    if (proc->source->ssh_agent)
+        qemuSecurityDomainRestorePathLabel(driver, vm, proc->source->ssh_agent);
 
     if (proc->pid < 0)
         return 0;

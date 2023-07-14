@@ -899,6 +899,7 @@ virStorageSourceCopy(const virStorageSource *src,
     def->ssh_user = g_strdup(src->ssh_user);
     def->ssh_known_hosts_file = g_strdup(src->ssh_known_hosts_file);
     def->ssh_keyfile = g_strdup(src->ssh_keyfile);
+    def->ssh_agent = g_strdup(src->ssh_agent);
 
     def->nfs_user = g_strdup(src->nfs_user);
     def->nfs_group = g_strdup(src->nfs_group);
@@ -1179,6 +1180,7 @@ virStorageSourceClear(virStorageSource *def)
     VIR_FREE(def->ssh_user);
     VIR_FREE(def->ssh_known_hosts_file);
     VIR_FREE(def->ssh_keyfile);
+    VIR_FREE(def->ssh_agent);
 
     VIR_FREE(def->nfs_user);
     VIR_FREE(def->nfs_group);

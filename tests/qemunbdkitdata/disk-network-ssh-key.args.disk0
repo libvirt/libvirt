@@ -1,9 +1,9 @@
+SSH_AUTH_SOCK=/path/to/agent/socket \
 nbdkit \
 --unix /tmp/statedir-0/nbdkit-test-disk-0.socket \
 --foreground ssh \
 host=example.org \
 port=2222 \
-path=test.img \
-identity=/path/to/id_rsa \
+path=test1.img \
 user=myuser \
-known-hosts=/path/to/ssh_known_hosts
+known-hosts=/path/to/ssh_known_hosts1

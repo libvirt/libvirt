@@ -7228,8 +7228,17 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
             if (!(src->ssh_user = virXMLPropStringRequired(tmpnode, "username")))
                 return -1;
 
-            if (!(src->ssh_keyfile = virXMLPropStringRequired(tmpnode, "keyfile")))
+            /* optional path to an ssh key file */
+            src->ssh_keyfile = virXMLPropString(tmpnode, "keyfile");
+
+            /* optional ssh-agent socket location */
+            src->ssh_agent = virXMLPropString(tmpnode, "agentsock");
+            if (!src->ssh_keyfile && !src->ssh_agent) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("element '%1$s' requires either 'keyfile' or 'agentsock' attribute"),
+                               tmpnode->name);
                 return -1;
+            }
         }
     }
 
@@ -22222,11 +22231,12 @@ virDomainDiskSourceFormatNetwork(virBuffer *attrBuf,
     if (src->protocol == VIR_STORAGE_NET_PROTOCOL_SSH) {
         if (src->ssh_known_hosts_file)
             virBufferEscapeString(childBuf, "<knownHosts path='%s'/>\n", src->ssh_known_hosts_file);
-        if (src->ssh_keyfile) {
+        if (src->ssh_keyfile || src->ssh_agent) {
             virBufferAddLit(childBuf, "<identity");
 
             virBufferEscapeString(childBuf, " username='%s'", src->ssh_user);
             virBufferEscapeString(childBuf, " keyfile='%s'", src->ssh_keyfile);
+            virBufferEscapeString(childBuf, " agentsock='%s'", src->ssh_agent);
 
             virBufferAddLit(childBuf, "/>\n");
         }
