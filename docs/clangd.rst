@@ -40,6 +40,14 @@ Create a separate build directory with a ``clangd`` compatible
 
    CC=clang CXX=clang++ meson setup build-clang
 
+There are a small number of source files that are generated as part of the
+build process. In order to navigate this generated source code, you should also
+execute a build in this directory:
+
+::
+
+    ninja -C build-clang
+
 Point ``clangd`` (v12 or later) at the correct
 ``compile_commands.json`` by placing the following into a
 ``.clangd`` file in the root of the project:
@@ -49,3 +57,12 @@ Point ``clangd`` (v12 or later) at the correct
    ---
    CompileFlags:
      CompilationDatabase: "build-clang"
+
+
+Please note that if you are not using clang for your daily development, the
+``build-clang`` directory can get out of sync with the current state of the
+project over time. When you update your git checkout, new files may be added or
+configuration options changed and ``clangd`` may start to behave unpredictably.
+In this case, you will need to update your compilation database by doing a new
+build in the ``build-clang`` directory. This should allow clangd to work
+reliably again.
