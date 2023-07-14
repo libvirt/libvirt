@@ -14470,577 +14470,8 @@
 }
 
 {
-  "execute": "query-commands",
-  "id": "libvirt-5"
-}
-
-{
-  "return": [
-    {
-      "name": "object-add"
-    },
-    {
-      "name": "device_add"
-    },
-    {
-      "name": "query-qmp-schema"
-    },
-    {
-      "name": "query-pci"
-    },
-    {
-      "name": "query-acpi-ospm-status"
-    },
-    {
-      "name": "query-command-line-options"
-    },
-    {
-      "name": "query-fdsets"
-    },
-    {
-      "name": "remove-fd"
-    },
-    {
-      "name": "add-fd"
-    },
-    {
-      "name": "closefd"
-    },
-    {
-      "name": "getfd"
-    },
-    {
-      "name": "change"
-    },
-    {
-      "name": "human-monitor-command"
-    },
-    {
-      "name": "x-exit-preconfig"
-    },
-    {
-      "name": "cont"
-    },
-    {
-      "name": "stop"
-    },
-    {
-      "name": "query-iothreads"
-    },
-    {
-      "name": "query-name"
-    },
-    {
-      "name": "add_client"
-    },
-    {
-      "name": "replay-seek"
-    },
-    {
-      "name": "replay-delete-break"
-    },
-    {
-      "name": "replay-break"
-    },
-    {
-      "name": "query-replay"
-    },
-    {
-      "name": "query-memory-devices"
-    },
-    {
-      "name": "query-memory-size-summary"
-    },
-    {
-      "name": "query-balloon"
-    },
-    {
-      "name": "balloon"
-    },
-    {
-      "name": "set-numa-node"
-    },
-    {
-      "name": "query-hotpluggable-cpus"
-    },
-    {
-      "name": "query-memdev"
-    },
-    {
-      "name": "pmemsave"
-    },
-    {
-      "name": "memsave"
-    },
-    {
-      "name": "query-kvm"
-    },
-    {
-      "name": "inject-nmi"
-    },
-    {
-      "name": "system_wakeup"
-    },
-    {
-      "name": "system_powerdown"
-    },
-    {
-      "name": "system_reset"
-    },
-    {
-      "name": "query-vm-generation-id"
-    },
-    {
-      "name": "query-uuid"
-    },
-    {
-      "name": "query-target"
-    },
-    {
-      "name": "query-current-machine"
-    },
-    {
-      "name": "query-machines"
-    },
-    {
-      "name": "query-cpus-fast"
-    },
-    {
-      "name": "query-cpus"
-    },
-    {
-      "name": "device_del"
-    },
-    {
-      "name": "device-list-properties"
-    },
-    {
-      "name": "object-del"
-    },
-    {
-      "name": "qom-list-properties"
-    },
-    {
-      "name": "qom-list-types"
-    },
-    {
-      "name": "qom-set"
-    },
-    {
-      "name": "qom-get"
-    },
-    {
-      "name": "qom-list"
-    },
-    {
-      "name": "quit"
-    },
-    {
-      "name": "query-events"
-    },
-    {
-      "name": "query-commands"
-    },
-    {
-      "name": "query-version"
-    },
-    {
-      "name": "qmp_capabilities"
-    },
-    {
-      "name": "trace-event-set-state"
-    },
-    {
-      "name": "trace-event-get-state"
-    },
-    {
-      "name": "transaction"
-    },
-    {
-      "name": "query-dirty-rate"
-    },
-    {
-      "name": "calc-dirty-rate"
-    },
-    {
-      "name": "migrate-pause"
-    },
-    {
-      "name": "migrate-recover"
-    },
-    {
-      "name": "query-colo-status"
-    },
-    {
-      "name": "xen-colo-do-checkpoint"
-    },
-    {
-      "name": "query-xen-replication-status"
-    },
-    {
-      "name": "xen-set-replication"
-    },
-    {
-      "name": "xen-load-devices-state"
-    },
-    {
-      "name": "xen-set-global-dirty-log"
-    },
-    {
-      "name": "xen-save-devices-state"
-    },
-    {
-      "name": "migrate-incoming"
-    },
-    {
-      "name": "migrate"
-    },
-    {
-      "name": "query-migrate-cache-size"
-    },
-    {
-      "name": "migrate-set-cache-size"
-    },
-    {
-      "name": "migrate_set_speed"
-    },
-    {
-      "name": "migrate_set_downtime"
-    },
-    {
-      "name": "migrate-continue"
-    },
-    {
-      "name": "migrate_cancel"
-    },
-    {
-      "name": "x-colo-lost-heartbeat"
-    },
-    {
-      "name": "migrate-start-postcopy"
-    },
-    {
-      "name": "client_migrate_info"
-    },
-    {
-      "name": "query-migrate-parameters"
-    },
-    {
-      "name": "migrate-set-parameters"
-    },
-    {
-      "name": "query-migrate-capabilities"
-    },
-    {
-      "name": "migrate-set-capabilities"
-    },
-    {
-      "name": "query-migrate"
-    },
-    {
-      "name": "query-display-options"
-    },
-    {
-      "name": "input-send-event"
-    },
-    {
-      "name": "send-key"
-    },
-    {
-      "name": "query-mice"
-    },
-    {
-      "name": "change-vnc-password"
-    },
-    {
-      "name": "query-vnc-servers"
-    },
-    {
-      "name": "query-vnc"
-    },
-    {
-      "name": "query-spice"
-    },
-    {
-      "name": "screendump"
-    },
-    {
-      "name": "expire_password"
-    },
-    {
-      "name": "set_password"
-    },
-    {
-      "name": "query-tpm"
-    },
-    {
-      "name": "query-tpm-types"
-    },
-    {
-      "name": "query-tpm-models"
-    },
-    {
-      "name": "query-rocker-of-dpa-groups"
-    },
-    {
-      "name": "query-rocker-of-dpa-flows"
-    },
-    {
-      "name": "query-rocker-ports"
-    },
-    {
-      "name": "query-rocker"
-    },
-    {
-      "name": "announce-self"
-    },
-    {
-      "name": "query-rx-filter"
-    },
-    {
-      "name": "netdev_del"
-    },
-    {
-      "name": "netdev_add"
-    },
-    {
-      "name": "set_link"
-    },
-    {
-      "name": "query-dump-guest-memory-capability"
-    },
-    {
-      "name": "query-dump"
-    },
-    {
-      "name": "dump-guest-memory"
-    },
-    {
-      "name": "chardev-send-break"
-    },
-    {
-      "name": "chardev-remove"
-    },
-    {
-      "name": "chardev-change"
-    },
-    {
-      "name": "chardev-add"
-    },
-    {
-      "name": "ringbuf-read"
-    },
-    {
-      "name": "ringbuf-write"
-    },
-    {
-      "name": "query-chardev-backends"
-    },
-    {
-      "name": "query-chardev"
-    },
-    {
-      "name": "query-block-exports"
-    },
-    {
-      "name": "block-export-del"
-    },
-    {
-      "name": "block-export-add"
-    },
-    {
-      "name": "nbd-server-stop"
-    },
-    {
-      "name": "nbd-server-remove"
-    },
-    {
-      "name": "nbd-server-add"
-    },
-    {
-      "name": "nbd-server-start"
-    },
-    {
-      "name": "query-jobs"
-    },
-    {
-      "name": "job-finalize"
-    },
-    {
-      "name": "job-dismiss"
-    },
-    {
-      "name": "job-complete"
-    },
-    {
-      "name": "job-cancel"
-    },
-    {
-      "name": "job-resume"
-    },
-    {
-      "name": "job-pause"
-    },
-    {
-      "name": "blockdev-snapshot-delete-internal-sync"
-    },
-    {
-      "name": "blockdev-snapshot-internal-sync"
-    },
-    {
-      "name": "x-blockdev-set-iothread"
-    },
-    {
-      "name": "x-blockdev-change"
-    },
-    {
-      "name": "block-set-write-threshold"
-    },
-    {
-      "name": "x-blockdev-amend"
-    },
-    {
-      "name": "blockdev-create"
-    },
-    {
-      "name": "blockdev-del"
-    },
-    {
-      "name": "x-blockdev-reopen"
-    },
-    {
-      "name": "blockdev-add"
-    },
-    {
-      "name": "block-job-finalize"
-    },
-    {
-      "name": "block-job-dismiss"
-    },
-    {
-      "name": "block-job-complete"
-    },
-    {
-      "name": "block-job-resume"
-    },
-    {
-      "name": "block-job-pause"
-    },
-    {
-      "name": "block-job-cancel"
-    },
-    {
-      "name": "block-job-set-speed"
-    },
-    {
-      "name": "block-stream"
-    },
-    {
-      "name": "blockdev-mirror"
-    },
-    {
-      "name": "x-debug-block-dirty-bitmap-sha256"
-    },
-    {
-      "name": "block-dirty-bitmap-merge"
-    },
-    {
-      "name": "block-dirty-bitmap-disable"
-    },
-    {
-      "name": "block-dirty-bitmap-enable"
-    },
-    {
-      "name": "block-dirty-bitmap-clear"
-    },
-    {
-      "name": "block-dirty-bitmap-remove"
-    },
-    {
-      "name": "block-dirty-bitmap-add"
-    },
-    {
-      "name": "drive-mirror"
-    },
-    {
-      "name": "x-debug-query-block-graph"
-    },
-    {
-      "name": "query-named-block-nodes"
-    },
-    {
-      "name": "blockdev-backup"
-    },
-    {
-      "name": "drive-backup"
-    },
-    {
-      "name": "block-commit"
-    },
-    {
-      "name": "change-backing-file"
-    },
-    {
-      "name": "blockdev-snapshot"
-    },
-    {
-      "name": "blockdev-snapshot-sync"
-    },
-    {
-      "name": "block_resize"
-    },
-    {
-      "name": "block_passwd"
-    },
-    {
-      "name": "query-block-jobs"
-    },
-    {
-      "name": "query-blockstats"
-    },
-    {
-      "name": "query-block"
-    },
-    {
-      "name": "block-latency-histogram-set"
-    },
-    {
-      "name": "block_set_io_throttle"
-    },
-    {
-      "name": "blockdev-change-medium"
-    },
-    {
-      "name": "blockdev-insert-medium"
-    },
-    {
-      "name": "blockdev-remove-medium"
-    },
-    {
-      "name": "blockdev-close-tray"
-    },
-    {
-      "name": "blockdev-open-tray"
-    },
-    {
-      "name": "eject"
-    },
-    {
-      "name": "query-pr-managers"
-    },
-    {
-      "name": "watchdog-set-action"
-    },
-    {
-      "name": "query-status"
-    }
-  ],
-  "id": "libvirt-5"
-}
-
-{
   "execute": "query-kvm",
-  "id": "libvirt-6"
+  "id": "libvirt-5"
 }
 
 {
@@ -15048,12 +14479,12 @@
     "enabled": false,
     "present": false
   },
-  "id": "libvirt-6"
+  "id": "libvirt-5"
 }
 
 {
   "execute": "qom-list-types",
-  "id": "libvirt-7"
+  "id": "libvirt-6"
 }
 
 {
@@ -16367,7 +15798,7 @@
       "parent": "vhost-user-gpu-pci-base-type"
     }
   ],
-  "id": "libvirt-7"
+  "id": "libvirt-6"
 }
 
 {
@@ -16375,7 +15806,7 @@
   "arguments": {
     "typename": "virtio-blk-pci"
   },
-  "id": "libvirt-8"
+  "id": "libvirt-7"
 }
 
 {
@@ -16722,7 +16153,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-8"
+  "id": "libvirt-7"
 }
 
 {
@@ -16730,7 +16161,7 @@
   "arguments": {
     "typename": "virtio-net-pci"
   },
-  "id": "libvirt-9"
+  "id": "libvirt-8"
 }
 
 {
@@ -17126,7 +16557,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-9"
+  "id": "libvirt-8"
 }
 
 {
@@ -17134,7 +16565,7 @@
   "arguments": {
     "typename": "virtio-scsi-pci"
   },
-  "id": "libvirt-10"
+  "id": "libvirt-9"
 }
 
 {
@@ -17360,7 +16791,7 @@
       "type": "child<virtio-scsi-device>"
     }
   ],
-  "id": "libvirt-10"
+  "id": "libvirt-9"
 }
 
 {
@@ -17368,11 +16799,11 @@
   "arguments": {
     "typename": "virtio-net-ccw"
   },
-  "id": "libvirt-11"
+  "id": "libvirt-10"
 }
 
 {
-  "id": "libvirt-11",
+  "id": "libvirt-10",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-net-ccw' not found"
@@ -17384,11 +16815,11 @@
   "arguments": {
     "typename": "virtio-scsi-ccw"
   },
-  "id": "libvirt-12"
+  "id": "libvirt-11"
 }
 
 {
-  "id": "libvirt-12",
+  "id": "libvirt-11",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-scsi-ccw' not found"
@@ -17400,7 +16831,7 @@
   "arguments": {
     "typename": "vfio-pci"
   },
-  "id": "libvirt-13"
+  "id": "libvirt-12"
 }
 
 {
@@ -17582,7 +17013,7 @@
       "type": "int32"
     }
   ],
-  "id": "libvirt-13"
+  "id": "libvirt-12"
 }
 
 {
@@ -17590,7 +17021,7 @@
   "arguments": {
     "typename": "scsi-hd"
   },
-  "id": "libvirt-14"
+  "id": "libvirt-13"
 }
 
 {
@@ -17767,7 +17198,7 @@
       "type": "int32"
     }
   ],
-  "id": "libvirt-14"
+  "id": "libvirt-13"
 }
 
 {
@@ -17775,7 +17206,7 @@
   "arguments": {
     "typename": "ide-hd"
   },
-  "id": "libvirt-15"
+  "id": "libvirt-14"
 }
 
 {
@@ -17903,7 +17334,7 @@
       "type": "int32"
     }
   ],
-  "id": "libvirt-15"
+  "id": "libvirt-14"
 }
 
 {
@@ -17911,11 +17342,11 @@
   "arguments": {
     "typename": "PIIX4_PM"
   },
-  "id": "libvirt-16"
+  "id": "libvirt-15"
 }
 
 {
-  "id": "libvirt-16",
+  "id": "libvirt-15",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'PIIX4_PM' not found"
@@ -17927,7 +17358,7 @@
   "arguments": {
     "typename": "usb-redir"
   },
-  "id": "libvirt-17"
+  "id": "libvirt-16"
 }
 
 {
@@ -17985,7 +17416,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-17"
+  "id": "libvirt-16"
 }
 
 {
@@ -17993,7 +17424,7 @@
   "arguments": {
     "typename": "usb-storage"
   },
-  "id": "libvirt-18"
+  "id": "libvirt-17"
 }
 
 {
@@ -18092,7 +17523,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-18"
+  "id": "libvirt-17"
 }
 
 {
@@ -18100,11 +17531,11 @@
   "arguments": {
     "typename": "kvm-pit"
   },
-  "id": "libvirt-19"
+  "id": "libvirt-18"
 }
 
 {
-  "id": "libvirt-19",
+  "id": "libvirt-18",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'kvm-pit' not found"
@@ -18116,7 +17547,7 @@
   "arguments": {
     "typename": "VGA"
   },
-  "id": "libvirt-20"
+  "id": "libvirt-19"
 }
 
 {
@@ -18211,7 +17642,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-20"
+  "id": "libvirt-19"
 }
 
 {
@@ -18219,7 +17650,7 @@
   "arguments": {
     "typename": "vmware-svga"
   },
-  "id": "libvirt-21"
+  "id": "libvirt-20"
 }
 
 {
@@ -18272,7 +17703,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-21"
+  "id": "libvirt-20"
 }
 
 {
@@ -18280,7 +17711,7 @@
   "arguments": {
     "typename": "virtio-gpu-pci"
   },
-  "id": "libvirt-22"
+  "id": "libvirt-21"
 }
 
 {
@@ -18503,7 +17934,7 @@
       "type": "child<virtio-gpu-device>"
     }
   ],
-  "id": "libvirt-22"
+  "id": "libvirt-21"
 }
 
 {
@@ -18511,7 +17942,7 @@
   "arguments": {
     "typename": "virtio-gpu-device"
   },
-  "id": "libvirt-23"
+  "id": "libvirt-22"
 }
 
 {
@@ -18606,7 +18037,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-23"
+  "id": "libvirt-22"
 }
 
 {
@@ -18614,11 +18045,11 @@
   "arguments": {
     "typename": "ICH9-LPC"
   },
-  "id": "libvirt-24"
+  "id": "libvirt-23"
 }
 
 {
-  "id": "libvirt-24",
+  "id": "libvirt-23",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'ICH9-LPC' not found"
@@ -18630,7 +18061,7 @@
   "arguments": {
     "typename": "virtio-balloon-pci"
   },
-  "id": "libvirt-25"
+  "id": "libvirt-24"
 }
 
 {
@@ -18850,7 +18281,7 @@
       "type": "child<virtio-balloon-device>"
     }
   ],
-  "id": "libvirt-25"
+  "id": "libvirt-24"
 }
 
 {
@@ -18858,11 +18289,11 @@
   "arguments": {
     "typename": "virtio-balloon-ccw"
   },
-  "id": "libvirt-26"
+  "id": "libvirt-25"
 }
 
 {
-  "id": "libvirt-26",
+  "id": "libvirt-25",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-balloon-ccw' not found"
@@ -18874,7 +18305,7 @@
   "arguments": {
     "typename": "virtio-balloon-device"
   },
-  "id": "libvirt-27"
+  "id": "libvirt-26"
 }
 
 {
@@ -18972,7 +18403,7 @@
       "type": "guest statistics"
     }
   ],
-  "id": "libvirt-27"
+  "id": "libvirt-26"
 }
 
 {
@@ -18980,7 +18411,7 @@
   "arguments": {
     "typename": "pcie-root-port"
   },
-  "id": "libvirt-28"
+  "id": "libvirt-27"
 }
 
 {
@@ -19101,7 +18532,7 @@
       "type": "size"
     }
   ],
-  "id": "libvirt-28"
+  "id": "libvirt-27"
 }
 
 {
@@ -19109,7 +18540,7 @@
   "arguments": {
     "typename": "usb-host"
   },
-  "id": "libvirt-29"
+  "id": "libvirt-28"
 }
 
 {
@@ -19207,7 +18638,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-29"
+  "id": "libvirt-28"
 }
 
 {
@@ -19215,7 +18646,7 @@
   "arguments": {
     "typename": "vhost-user-fs-device"
   },
-  "id": "libvirt-30"
+  "id": "libvirt-29"
 }
 
 {
@@ -19291,7 +18722,7 @@
       "type": "uint16"
     }
   ],
-  "id": "libvirt-30"
+  "id": "libvirt-29"
 }
 
 {
@@ -19299,7 +18730,7 @@
   "arguments": {
     "typename": "virtio-iommu-pci"
   },
-  "id": "libvirt-31"
+  "id": "libvirt-30"
 }
 
 {
@@ -19310,7 +18741,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-30"
 }
 
 {
@@ -19318,7 +18749,7 @@
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-32"
+  "id": "libvirt-31"
 }
 
 {
@@ -19388,7 +18819,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-31"
 }
 
 {
@@ -19396,7 +18827,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-32"
 }
 
 {
@@ -19465,12 +18896,12 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-32"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-34"
+  "id": "libvirt-33"
 }
 
 {
@@ -19524,7 +18955,7 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-33"
 }
 
 {
@@ -19532,7 +18963,7 @@
   "arguments": {
     "typename": "virt-machine"
   },
-  "id": "libvirt-35"
+  "id": "libvirt-34"
 }
 
 {
@@ -19622,7 +19053,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-34"
 }
 
 {
@@ -19630,7 +19061,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-36"
+  "id": "libvirt-35"
 }
 
 {
@@ -19715,34 +19146,34 @@
       "type": "string"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-35"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-37"
+  "id": "libvirt-36"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-38"
+  "id": "libvirt-37"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-39"
+  "id": "libvirt-38"
 }
 
 {
@@ -21027,12 +20458,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-40"
+  "id": "libvirt-39"
 }
 
 {
@@ -21110,5 +20541,5 @@
       "capability": "validate-uuid"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-39"
 }

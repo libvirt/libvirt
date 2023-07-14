@@ -2602,19 +2602,6 @@ virQEMUCapsGetSGXCapabilities(virQEMUCaps *qemuCaps)
 
 
 static int
-virQEMUCapsProbeQMPCommands(virQEMUCaps *qemuCaps G_GNUC_UNUSED,
-                            qemuMonitor *mon)
-{
-    g_auto(GStrv) commands = NULL;
-
-    if (qemuMonitorGetCommands(mon, &commands) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-static int
 virQEMUCapsProbeQMPObjectTypes(virQEMUCaps *qemuCaps,
                                qemuMonitor *mon)
 {
@@ -5598,8 +5585,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCaps *qemuCaps,
     virQEMUCapsInitQMPVersionCaps(qemuCaps);
 
     if (virQEMUCapsProbeQMPSchemaCapabilities(qemuCaps, mon) < 0)
-        return -1;
-    if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
         return -1;
 
     /* Some capabilities may differ depending on KVM state */
