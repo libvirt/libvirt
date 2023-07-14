@@ -1646,9 +1646,16 @@ virHostCPUGetSignature(char **signature)
 }
 
 int
-virHostCPUGetPhysAddrSize(unsigned int *size)
+virHostCPUGetPhysAddrSize(const virArch hostArch,
+                          unsigned int *size)
 {
     g_autoptr(FILE) cpuinfo = NULL;
+
+    if (ARCH_IS_S390(hostArch)) {
+        /* Ensure size is set to 0 as physical address size is unknown */
+        *size = 0;
+        return 0;
+    }
 
     if (!(cpuinfo = fopen(CPUINFO_PATH, "r"))) {
         virReportSystemError(errno, _("Failed to open cpuinfo file '%1$s'"),
@@ -1669,7 +1676,8 @@ virHostCPUGetSignature(char **signature)
 }
 
 int
-virHostCPUGetPhysAddrSize(unsigned int *size G_GNUC_UNUSED)
+virHostCPUGetPhysAddrSize(const virArch hostArch G_GNUC_UNUSED,
+                          unsigned int *size G_GNUC_UNUSED)
 {
     errno = ENOSYS;
     return -1;

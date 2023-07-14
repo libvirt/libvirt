@@ -87,7 +87,8 @@ virHostCPUTscInfo *virHostCPUGetTscInfo(void);
 
 int virHostCPUGetSignature(char **signature);
 
-int virHostCPUGetPhysAddrSize(unsigned int *size);
+int virHostCPUGetPhysAddrSize(const virArch hostArch,
+                              unsigned int *size);
 
 int virHostCPUGetHaltPollTime(pid_t pid,
                               unsigned long long *haltPollSuccess,

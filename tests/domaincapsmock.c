@@ -37,9 +37,13 @@ virHostCPUGetMicrocodeVersion(virArch hostArch G_GNUC_UNUSED)
 }
 
 int
-virHostCPUGetPhysAddrSize(unsigned int *size)
+virHostCPUGetPhysAddrSize(const virArch hostArch,
+                          unsigned int *size)
 {
-    *size = 64;
+    if (ARCH_IS_S390(hostArch))
+        *size = 0;
+    else
+        *size = 64;
     return 0;
 }
 

@@ -3911,7 +3911,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
     }
 
     if (virQEMUCapsTypeIsAccelerated(type))
-        virHostCPUGetPhysAddrSize(&physAddrSize);
+        virHostCPUGetPhysAddrSize(hostArch, &physAddrSize);
 
     virQEMUCapsSetHostModel(qemuCaps, type, physAddrSize, cpu, migCPU, fullCPU);
 

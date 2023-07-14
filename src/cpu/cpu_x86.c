@@ -2795,7 +2795,7 @@ virCPUx86GetHost(virCPUDef *cpu,
         VIR_DEBUG("Host CPU does not support invariant TSC");
     }
 
-    if (virHostCPUGetPhysAddrSize(&addrsz) == 0) {
+    if (virHostCPUGetPhysAddrSize(cpuData->arch, &addrsz) == 0) {
         virCPUMaxPhysAddrDef *addr = g_new0(virCPUMaxPhysAddrDef, 1);
 
         addr->bits = addrsz;
