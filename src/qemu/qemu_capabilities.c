@@ -2602,18 +2602,13 @@ virQEMUCapsGetSGXCapabilities(virQEMUCaps *qemuCaps)
 
 
 static int
-virQEMUCapsProbeQMPCommands(virQEMUCaps *qemuCaps,
+virQEMUCapsProbeQMPCommands(virQEMUCaps *qemuCaps G_GNUC_UNUSED,
                             qemuMonitor *mon)
 {
     g_auto(GStrv) commands = NULL;
 
     if (qemuMonitorGetCommands(mon, &commands) < 0)
         return -1;
-
-    virQEMUCapsProcessStringFlags(qemuCaps,
-                                  G_N_ELEMENTS(virQEMUCapsCommands),
-                                  virQEMUCapsCommands,
-                                  commands);
 
     return 0;
 }
@@ -5520,7 +5515,6 @@ static int
 virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCaps *qemuCaps,
                                       qemuMonitor *mon)
 {
-    struct virQEMUCapsStringFlags *entry;
     virJSONValue *schemareply;
     g_autoptr(GHashTable) schema = NULL;
     size_t i;
@@ -5533,10 +5527,17 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCaps *qemuCaps,
     schemareply = NULL;
 
     for (i = 0; i < G_N_ELEMENTS(virQEMUCapsQMPSchemaQueries); i++) {
-        entry = virQEMUCapsQMPSchemaQueries + i;
+        struct virQEMUCapsStringFlags *entry = virQEMUCapsQMPSchemaQueries + i;
 
         if (virQEMUQAPISchemaPathExists(entry->value, schema))
             virQEMUCapsSet(qemuCaps, entry->flag);
+    }
+
+    for (i = 0; i < G_N_ELEMENTS(virQEMUCapsCommands); i++) {
+        struct virQEMUCapsStringFlags *cmd = virQEMUCapsCommands + i;
+
+        if (virQEMUQAPISchemaPathExists(cmd->value, schema))
+            virQEMUCapsSet(qemuCaps, cmd->flag);
     }
 
     return 0;
