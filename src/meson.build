@@ -923,6 +923,7 @@ if host_machine.system() == 'linux'
     python3_prog,
     args: [ check_symfile_prog.full_path(), libvirt_syms, libvirt_lib ],
     env: runutf8,
+    suite: 'script'
   )
 
   if conf.has('WITH_REMOTE')
@@ -931,6 +932,7 @@ if host_machine.system() == 'linux'
       python3_prog,
       args: [ check_symfile_prog.full_path(), libvirt_admin_syms, libvirt_admin_lib ],
       env: runutf8,
+      suite: 'script'
     )
   endif
 endif
@@ -944,6 +946,7 @@ test(
     files(sym_files, used_sym_files),
   ],
   env: runutf8,
+  suite: 'script'
 )
 
 test(
@@ -955,6 +958,7 @@ test(
     libvirt_admin_private_syms,
   ],
   env: runutf8,
+  suite: 'script'
 )
 
 test(
@@ -965,6 +969,7 @@ test(
     files('libvirt_public.syms'), libvirt_qemu_syms, libvirt_lxc_syms,
   ],
   env: runutf8,
+  suite: 'script'
 )
 
 test(
@@ -974,6 +979,7 @@ test(
     check_drivername_prog.full_path(), libvirt_admin_public_syms,
   ],
   env: runutf8,
+  suite: 'script'
 )
 
 test(
@@ -981,6 +987,7 @@ test(
   python3_prog,
   args: [ check_driverimpls_prog.full_path(), driver_source_files ],
   env: runutf8,
+  suite: 'script'
 )
 
 test(
@@ -988,6 +995,7 @@ test(
   python3_prog,
   args: [ check_aclrules_prog.full_path(), files('remote/remote_protocol.x'), stateful_driver_source_files ],
   env: runutf8,
+  suite: 'script'
 )
 
 if augparse_prog.found()
@@ -1000,6 +1008,7 @@ if augparse_prog.found()
         '-I', data['builddir'],
         data['file'].full_path(),
       ],
+      suite: 'script'
     )
   endforeach
 endif
@@ -1020,6 +1029,7 @@ if pdwtags_prog.found() and cc.get_id() != 'clang'
       ],
       env: runutf8,
       depends: [ lib ],
+      suite: 'script'
     )
   endforeach
 endif

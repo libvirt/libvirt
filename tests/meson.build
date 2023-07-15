@@ -595,7 +595,14 @@ foreach data : tests
     # default meson timeout
     timeout = 30
   endif
-  test(data['name'], test_bin, env: tests_env, timeout: timeout, depends: tests_deps)
+  test(
+    data['name'],
+    test_bin,
+    env: tests_env,
+    timeout: timeout,
+    depends: tests_deps,
+    suite: 'bin'
+  )
 endforeach
 
 
@@ -695,7 +702,7 @@ endif
 
 foreach name : test_scripts
   script = find_program(name)
-  test(name, script, env: tests_env)
+  test(name, script, env: tests_env, suite: 'script')
 endforeach
 
 testenv = runutf8

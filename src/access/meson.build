@@ -110,4 +110,5 @@ test(
   python3_prog,
   args: [ check_aclperms_prog.full_path(), access_perm_h, files('viraccessperm.c') ],
   env: runutf8,
+  suite: 'script'
 )

@@ -16,7 +16,7 @@ by running
 
 ::
 
-  $ meson test --setup valgrind
+  $ meson test --setup valgrind --suite bin
 
 `Valgrind <https://valgrind.org/>`__ is a test that checks for
 memory management issues, such as leaks or use of uninitialized

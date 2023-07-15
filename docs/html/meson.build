@@ -126,4 +126,5 @@ test(
     '--nonet', '--noout', docs_html_paths,
   ],
   depends: docs_html_dep,
+  suite: 'script'
 )
