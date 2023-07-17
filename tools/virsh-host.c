@@ -1448,20 +1448,25 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
              major, minor, rel);
 
     if (virConnectGetVersion(priv->conn, &hvVersion) < 0) {
-        vshError(ctl, "%s", _("failed to get the hypervisor version"));
-        return false;
-    }
-    if (hvVersion == 0) {
-        vshPrint(ctl,
-                 _("Cannot extract running %1$s hypervisor version\n"), hvType);
+        if (last_error->code == VIR_ERR_NO_SUPPORT) {
+            vshResetLibvirtError();
+        } else {
+            vshError(ctl, "%s", _("failed to get the hypervisor version"));
+            return false;
+        }
     } else {
-        major = hvVersion / 1000000;
-        hvVersion %= 1000000;
-        minor = hvVersion / 1000;
-        rel = hvVersion % 1000;
+        if (hvVersion == 0) {
+            vshPrint(ctl,
+                     _("Cannot extract running %1$s hypervisor version\n"), hvType);
+        } else {
+            major = hvVersion / 1000000;
+            hvVersion %= 1000000;
+            minor = hvVersion / 1000;
+            rel = hvVersion % 1000;
 
-        vshPrint(ctl, _("Running hypervisor: %1$s %2$d.%3$d.%4$d\n"),
-                 hvType, major, minor, rel);
+            vshPrint(ctl, _("Running hypervisor: %1$s %2$d.%3$d.%4$d\n"),
+                     hvType, major, minor, rel);
+        }
     }
 
     if (vshCommandOptBool(cmd, "daemon")) {
