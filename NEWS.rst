@@ -107,6 +107,10 @@ v9.4.0 (2023-06-01)
 
     QEMU supports parallel migration to be compressed using either zstd or zlib.
 
+  * cpu_map: Add SapphireRapids cpu model
+
+    This model is introduced since QEMU 8.0.
+
 * **Improvements**
 
   * Adapt to musl-1.2.4
