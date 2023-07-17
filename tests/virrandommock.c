@@ -47,14 +47,6 @@ uint64_t virRandomBits(int nbits)
     return ret;
 }
 
-int virRandomGenerateWWN(char **wwn,
-                         const char *virt_type G_GNUC_UNUSED)
-{
-    *wwn = g_strdup_printf("5100000%09llx",
-                           (unsigned long long)virRandomBits(36));
-    return 0;
-}
-
 #else /* WIN32 */
 /* Can't mock on WIN32 */
 #endif
