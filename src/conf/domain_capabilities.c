@@ -40,6 +40,7 @@ VIR_ENUM_IMPL(virDomainCapsFeature,
               "genid",
               "backingStoreInput",
               "backup",
+              "async-teardown",
               "s390-pv",
 );
 

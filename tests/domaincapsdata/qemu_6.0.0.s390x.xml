@@ -271,6 +271,7 @@
     <genid supported='no'/>
     <backingStoreInput supported='yes'/>
     <backup supported='no'/>
+    <async-teardown supported='no'/>
     <s390-pv supported='yes'/>
     <sev supported='no'/>
     <sgx supported='no'/>

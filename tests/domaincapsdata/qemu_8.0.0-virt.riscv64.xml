@@ -156,6 +156,7 @@
     <genid supported='no'/>
     <backingStoreInput supported='yes'/>
     <backup supported='yes'/>
+    <async-teardown supported='no'/>
     <sev supported='no'/>
     <sgx supported='no'/>
   </features>

@@ -647,6 +647,7 @@ capabilities. All features occur as children of the main ``features`` element.
        <genid supported='yes'/>
        <backingStoreInput supported='yes'/>
        <backup supported='yes'/>
+       <async-teardown supported='yes'/>
        <sev>
          <cbitpos>47</cbitpos>
          <reduced-phys-bits>1</reduced-phys-bits>
@@ -710,6 +711,11 @@ features. (``virDomainBackupBegin``, ``virDomainCheckpointCreateXML`` etc). The
 presence of the ``backup`` element even if ``supported='no'`` implies that the
 ``VIR_DOMAIN_UNDEFINE_CHECKPOINTS_METADATA`` flag for ``virDomainUndefine`` is
 supported.
+
+async-teardown
+^^^^^^^^^^^^^^
+
+Reports whether the asynchronous teardown feature can be enabled.
 
 s390-pv capability
 ^^^^^^^^^^^^^^^^^^
