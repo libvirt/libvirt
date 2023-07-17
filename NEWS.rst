@@ -27,6 +27,12 @@ v9.6.0 (unreleased)
     ``abstractions/foo`` can be overridden by creating ``local/foo`` and
     ``abstractions/foo.d`` respectively.
 
+  * qemu: Support ``removable`` attribute for scsi disk
+
+    Now the scsi disk device (``/disk@device='disk'`` and
+    ``/disk/target@bus='scsi'``) supports the ``removable`` attribute at
+    ``/disk/target@removable```.
+
 * **Bug fixes**
 
 
