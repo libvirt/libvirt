@@ -139,7 +139,13 @@ virRandomGenerateWWN(char **wwn,
         return -1;
     }
 
-    if (STREQ(virt_type, "QEMU")) {
+    /* In case of split daemon we don't really see the hypervisor
+     * driver that just re-routed the nodedev driver API. There
+     * might not be any hypervisor driver even. Yet, we have to
+     * pick OUI. Pick "QEMU". */
+
+    if (STREQ(virt_type, "QEMU") ||
+        STREQ(virt_type, "nodedev")) {
         oui = QUMRANET_OUI;
     } else if (STREQ(virt_type, "Xen") ||
                STREQ(virt_type, "xenlight")) {
