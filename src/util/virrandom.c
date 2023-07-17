@@ -124,6 +124,7 @@ virRandomBytes(unsigned char *buf,
 #define VMWARE_OUI "000569"
 #define MICROSOFT_OUI "0050f2"
 #define XEN_OUI "00163e"
+#define TEST_DRIVER_OUI "100000"
 
 
 int
@@ -148,6 +149,8 @@ virRandomGenerateWWN(char **wwn,
         oui = VMWARE_OUI;
     } else if (STREQ(virt_type, "HYPER-V")) {
         oui = MICROSOFT_OUI;
+    } else if (STREQ(virt_type, "TEST")) {
+        oui = TEST_DRIVER_OUI;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unsupported virt type"));

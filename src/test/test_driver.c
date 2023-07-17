@@ -7685,11 +7685,14 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     g_autofree char *wwnn = NULL;
     g_autofree char *wwpn = NULL;
     bool validate = flags & VIR_NODE_DEVICE_CREATE_XML_VALIDATE;
+    const char *virt_type;
 
     virCheckFlags(VIR_NODE_DEVICE_CREATE_XML_VALIDATE, NULL);
 
-    if (!(def = virNodeDeviceDefParse(xmlDesc, NULL, CREATE_DEVICE, NULL, NULL,
-                                      NULL, validate)))
+    virt_type = virConnectGetType(conn);
+
+    if (!(def = virNodeDeviceDefParse(xmlDesc, NULL, CREATE_DEVICE, virt_type,
+                                      NULL, NULL, validate)))
         goto cleanup;
 
     /* We run this simply for validation - it essentially validates that
