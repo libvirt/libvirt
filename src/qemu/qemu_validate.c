@@ -2598,6 +2598,7 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
 
 static int
 qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
+                                 const virDomainDef *def,
                                  virQEMUCaps *qemuCaps)
 {
     virDomainCapsDeviceVideo videoCaps = { 0 };
@@ -2714,11 +2715,18 @@ qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
     }
 
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
-        if (video->blob != VIR_TRISTATE_SWITCH_ABSENT &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_BLOB)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this QEMU does not support 'blob' for virtio-gpu devices"));
-            return -1;
+        if (video->blob != VIR_TRISTATE_SWITCH_ABSENT) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_BLOB)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("this QEMU does not support 'blob' for virtio-gpu devices"));
+                return -1;
+            }
+            if (video->blob == VIR_TRISTATE_SWITCH_ON
+                && def->mem.source != VIR_DOMAIN_MEMORY_SOURCE_MEMFD) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("'blob' support for virtio-gpu devices requires a memfd memory backend"));
+                return -1;
+            }
         }
     }
 
@@ -5209,7 +5217,7 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
                                                  qemuCaps);
 
     case VIR_DOMAIN_DEVICE_VIDEO:
-        return qemuValidateDomainDeviceDefVideo(dev->data.video, qemuCaps);
+        return qemuValidateDomainDeviceDefVideo(dev->data.video, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_DISK:
         return qemuValidateDomainDeviceDefDisk(dev->data.disk, def, qemuCaps);
