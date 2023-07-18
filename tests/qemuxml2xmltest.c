@@ -593,7 +593,7 @@ mymain(void)
     DO_TEST_NOCAPS("numad-static-vcpu-no-numatune");
 
     DO_TEST("disk-scsi-disk-vpd",
-            QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
+            QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST_NOCAPS("disk-source-pool");
     DO_TEST_NOCAPS("disk-source-pool-mode");
 
