@@ -2860,14 +2860,6 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
                            _("Only ide and scsi disk support wwn"));
             return -1;
         }
-
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_IDE_DRIVE_WWN)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Setting wwn for ide disk is not supported "
-                             "by this QEMU"));
-            return -1;
-        }
     }
 
     if (disk->vendor || disk->product) {
