@@ -213,8 +213,8 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "usb-redir.filter", /* QEMU_CAPS_USB_REDIR_FILTER */
 
               /* 105 */
-              "ide-drive.wwn", /* QEMU_CAPS_IDE_DRIVE_WWN */
-              "scsi-disk.wwn", /* QEMU_CAPS_SCSI_DISK_WWN */
+              "ide-drive.wwn", /* X_QEMU_CAPS_IDE_DRIVE_WWN */
+              "scsi-disk.wwn", /* X_QEMU_CAPS_SCSI_DISK_WWN */
               "seccomp-sandbox", /* QEMU_CAPS_SECCOMP_SANDBOX */
               "reboot-timeout", /* X_QEMU_CAPS_REBOOT_TIMEOUT */
               "dump-guest-core", /* X_QEMU_CAPS_DUMP_GUEST_CORE */
@@ -1452,12 +1452,10 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVfioPCI[] = {
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIDisk[] = {
     { "channel", QEMU_CAPS_SCSI_DISK_CHANNEL, NULL },
-    { "wwn", QEMU_CAPS_SCSI_DISK_WWN, NULL },
     { "rotation_rate", QEMU_CAPS_ROTATION_RATE, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIDEDrive[] = {
-    { "wwn", QEMU_CAPS_IDE_DRIVE_WWN, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsPiix4PM[] = {

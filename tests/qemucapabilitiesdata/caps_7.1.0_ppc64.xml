@@ -26,8 +26,6 @@
   <flag name='disable-s3'/>
   <flag name='disable-s4'/>
   <flag name='usb-redir.filter'/>
-  <flag name='ide-drive.wwn'/>
-  <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>
   <flag name='vnc'/>
   <flag name='VGA'/>

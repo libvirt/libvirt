@@ -191,8 +191,8 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_USB_REDIR_FILTER, /* usb-redir.filter */
 
     /* 105 */
-    QEMU_CAPS_IDE_DRIVE_WWN, /* Is ide-drive.wwn available? */
-    QEMU_CAPS_SCSI_DISK_WWN, /* Is scsi-disk.wwn available? */
+    X_QEMU_CAPS_IDE_DRIVE_WWN, /* Is ide-drive.wwn available? */
+    X_QEMU_CAPS_SCSI_DISK_WWN, /* Is scsi-disk.wwn available? */
     QEMU_CAPS_SECCOMP_SANDBOX, /* -sandbox */
     X_QEMU_CAPS_REBOOT_TIMEOUT, /* -boot reboot-timeout */
     X_QEMU_CAPS_DUMP_GUEST_CORE, /* dump-guest-core-parameter */

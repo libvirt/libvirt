@@ -9,7 +9,6 @@
   <flag name='scsi-disk.channel'/>
   <flag name='scsi-block'/>
   <flag name='usb-redir.filter'/>
-  <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>
   <flag name='vnc'/>
   <flag name='rng-random'/>

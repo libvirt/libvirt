@@ -19,8 +19,6 @@
   <flag name='nec-usb-xhci'/>
   <flag name='lsi'/>
   <flag name='virtio-scsi-pci'/>
-  <flag name='ide-drive.wwn'/>
-  <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>
   <flag name='vnc'/>
   <flag name='VGA'/>

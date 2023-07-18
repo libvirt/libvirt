@@ -22,8 +22,6 @@
   <flag name='virtio-scsi-pci'/>
   <flag name='disable-s3'/>
   <flag name='disable-s4'/>
-  <flag name='ide-drive.wwn'/>
-  <flag name='scsi-disk.wwn'/>
   <flag name='vnc'/>
   <flag name='VGA'/>
   <flag name='cirrus-vga'/>
