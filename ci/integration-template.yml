@@ -38,8 +38,7 @@
 
 .enable-libvirt-debugging: &enable-libvirt-debugging
   - source /etc/os-release  # in order to query the vendor-provided variables
-  - if test "$ID" = "centos" && test "$VERSION_ID" -lt 9 ||
-       test "$ID" = "fedora" && test "$VERSION_ID" -lt 35;
+  - if test "$ID" = "centos" && test "$VERSION_ID" -lt 9;
     then
       DAEMONS="libvirtd virtlockd virtlogd";
     else
