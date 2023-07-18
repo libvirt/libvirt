@@ -1339,11 +1339,12 @@ nodeDeviceDestroy(virNodeDevicePtr device)
 /* takes ownership of @def and potentially frees it. @def should not be used
  * after returning from this function */
 static int
-nodeDeviceUpdateMediatedDevice(virNodeDeviceDef *def)
+nodeDeviceUpdateMediatedDevice(virNodeDeviceDef *def,
+                               bool defined)
 {
     virNodeDeviceObj *obj;
     virObjectEvent *event;
-    bool defined = false;
+    bool was_defined = false;
     g_autoptr(virNodeDeviceDef) owned = def;
     g_autofree char *name = g_strdup(owned->name);
 
@@ -1359,13 +1360,13 @@ nodeDeviceUpdateMediatedDevice(virNodeDeviceDef *def)
         bool changed;
         virNodeDeviceDef *olddef = virNodeDeviceObjGetDef(obj);
 
-        defined = virNodeDeviceObjIsPersistent(obj);
+        was_defined = virNodeDeviceObjIsPersistent(obj);
         /* Active devices contain some additional information (e.g. sysfs
          * path) that is not provided by mdevctl, so re-use the existing
          * definition and copy over new mdev data */
         changed = nodeDeviceDefCopyFromMdevctl(olddef, owned);
 
-        if (defined && !changed) {
+        if (was_defined && !changed) {
             /* if this device was already defined and the definition
              * hasn't changed, there's nothing to do for this device */
             virNodeDeviceObjEndAPI(&obj);
@@ -1373,11 +1374,11 @@ nodeDeviceUpdateMediatedDevice(virNodeDeviceDef *def)
         }
     }
 
-    /* all devices returned by virMdevctlListDefined() are persistent */
-    virNodeDeviceObjSetPersistent(obj, true);
+    if (defined)
+        virNodeDeviceObjSetPersistent(obj, true);
     virNodeDeviceObjSetAutostart(obj, def->caps->data.mdev.autostart);
 
-    if (!defined)
+    if (!was_defined && defined)
         event = virNodeDeviceEventLifecycleNew(name,
                                                VIR_NODE_DEVICE_EVENT_DEFINED,
                                                0);
@@ -1447,7 +1448,7 @@ nodeDeviceDefineXML(virConnect *conn,
      * have already received the uuid from virMdevctlDefine(), we can simply
      * add the provisional device to the list and return it immediately and
      * avoid this long delay. */
-    if (nodeDeviceUpdateMediatedDevice(g_steal_pointer(&def)) < 0)
+    if (nodeDeviceUpdateMediatedDevice(g_steal_pointer(&def), true) < 0)
         return NULL;
 
     return virGetNodeDevice(conn, name);
@@ -1742,7 +1743,7 @@ nodeDeviceUpdateMediatedDevices(void)
                                       removeMissingPersistentMdev, &data);
 
     for (i = 0; i < data.ndefs; i++)
-        if (nodeDeviceUpdateMediatedDevice(defs[i]) < 0)
+        if (nodeDeviceUpdateMediatedDevice(defs[i], true) < 0)
             return -1;
 
     /* Update active/transient mdev devices */
@@ -1753,7 +1754,7 @@ nodeDeviceUpdateMediatedDevices(void)
     }
 
     for (i = 0; i < act_ndefs; i++)
-        if (nodeDeviceUpdateMediatedDevice(act_defs[i]) < 0)
+        if (nodeDeviceUpdateMediatedDevice(act_defs[i], false) < 0)
             return -1;
 
     return 0;
