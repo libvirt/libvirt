@@ -280,7 +280,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "i440fx-pci-hole64-size", /* X_QEMU_CAPS_I440FX_PCI_HOLE64_SIZE */
               "q35-pci-hole64-size", /* X_QEMU_CAPS_Q35_PCI_HOLE64_SIZE */
               "usb-storage", /* QEMU_CAPS_DEVICE_USB_STORAGE */
-              "usb-storage.removable", /* QEMU_CAPS_USB_STORAGE_REMOVABLE */
+              "usb-storage.removable", /* X_QEMU_CAPS_USB_STORAGE_REMOVABLE */
 
               /* 155 */
               "virtio-mmio", /* QEMU_CAPS_DEVICE_VIRTIO_MMIO */
@@ -1471,7 +1471,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBRedir[] = {
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBStorage[] = {
-    { "removable", QEMU_CAPS_USB_STORAGE_REMOVABLE, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsKVMPit[] = {

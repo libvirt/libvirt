@@ -39,7 +39,6 @@
   <flag name='vfio-pci'/>
   <flag name='dmi-to-pci-bridge'/>
   <flag name='usb-storage'/>
-  <flag name='usb-storage.removable'/>
   <flag name='ich9-intel-hda'/>
   <flag name='usb-kbd'/>
   <flag name='usb-audio'/>
