@@ -3006,14 +3006,6 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
             return -1;
         }
 
-        if (disk->removable != VIR_TRISTATE_SWITCH_ABSENT &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_REMOVABLE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("This QEMU doesn't support setting the "
-                             "removable flag of USB storage devices"));
-            return -1;
-        }
-
         break;
 
     case VIR_DOMAIN_DISK_BUS_XEN:

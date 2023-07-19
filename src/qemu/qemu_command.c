@@ -1842,12 +1842,10 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     case VIR_DOMAIN_DISK_BUS_USB:
         driver = "usb-storage";
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_REMOVABLE)) {
-            if (disk->removable == VIR_TRISTATE_SWITCH_ABSENT)
-                removable = VIR_TRISTATE_SWITCH_OFF;
-            else
-                removable = disk->removable;
-        }
+        if (disk->removable == VIR_TRISTATE_SWITCH_ABSENT)
+            removable = VIR_TRISTATE_SWITCH_OFF;
+        else
+            removable = disk->removable;
 
         break;
 
