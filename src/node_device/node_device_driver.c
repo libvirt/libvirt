@@ -1044,6 +1044,15 @@ virMdevctlSetAutostart(virNodeDeviceDef *def, bool autostart, char **errmsg)
 }
 
 
+/**
+ * nodeDeviceGetMdevctlListCommand:
+ * @defined: list mdevctl entries with persistent config
+ * @output: filled with the output of mdevctl once invoked
+ * @errmsg: always allocated, optionally filled with error from 'mdevctl'
+ *
+ * Prepares a virCommand structure to invoke 'mdevctl' caller is responsible to
+ * free the buffers which are filled by the virCommand infrastructure.
+ */
 virCommand*
 nodeDeviceGetMdevctlListCommand(bool defined,
                                 char **output,
@@ -1624,9 +1633,11 @@ virMdevctlListDefined(virNodeDeviceDef ***devs, char **errmsg)
 {
     int status;
     g_autofree char *output = NULL;
-    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlListCommand(true, &output, errmsg);
+    g_autofree char *errbuf = NULL;
+    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlListCommand(true, &output, &errbuf);
 
     if (virCommandRun(cmd, &status) < 0 || status != 0) {
+        *errmsg = g_steal_pointer(&errbuf);
         return -1;
     }
 
@@ -1642,9 +1653,11 @@ virMdevctlListActive(virNodeDeviceDef ***devs, char **errmsg)
 {
     int status;
     g_autofree char *output = NULL;
-    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlListCommand(false, &output, errmsg);
+    g_autofree char *errbuf = NULL;
+    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlListCommand(false, &output, &errbuf);
 
     if (virCommandRun(cmd, &status) < 0 || status != 0) {
+        *errmsg = g_steal_pointer(&errbuf);
         return -1;
     }
 
