@@ -3275,9 +3275,10 @@ paravirtualized driver is specified via the ``disk`` element.
       "virtio" ``bus`` and "pci" or "ccw" ``address`` types. :since:`Since 1.2.8
       (QEMU 2.1)`
    -  The optional ``queues`` attribute specifies the number of virt queues for
-      virtio-blk. ( :since:`Since 3.9.0` )
+      virtio-blk ( :since:`Since 3.9.0` ) or vhost-user-blk
+      ( :since `Since 7.1.0` )
    -  The optional ``queue_size`` attribute specifies the size of each virt
-      queue for virtio-blk. ( :since:`Since 7.8.0` )
+      queue for virtio-blk or vhost-user-blk. ( :since:`Since 7.8.0` )
    -  For virtio disks, `Virtio-related options`_ can also
       be set. ( :since:`Since 3.5.0` )
    -  The optional ``metadata_cache`` subelement controls aspects related to the
