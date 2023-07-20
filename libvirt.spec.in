@@ -313,6 +313,7 @@ BuildRequires: util-linux
 BuildRequires: libacl-devel
 # From QEMU RPMs, used by virstoragetest
 BuildRequires: /usr/bin/qemu-img
+BuildRequires: libnbd-devel
 %endif
 # For LVM drivers
 BuildRequires: lvm2
@@ -769,6 +770,9 @@ Requires: numad
 Recommends: passt
 Recommends: passt-selinux
     %endif
+Recommends: nbdkit
+Recommends: nbdkit-curl-plugin
+Recommends: nbdkit-ssh-plugin
 
 %description daemon-driver-qemu
 The qemu driver plugin for the libvirtd daemon, providing
@@ -1075,8 +1079,10 @@ exit 1
 
 %if %{with_qemu}
     %define arg_qemu -Ddriver_qemu=enabled
+    %define arg_libnbd -Dlibnbd=enabled
 %else
     %define arg_qemu -Ddriver_qemu=disabled
+    %define arg_libnbd -Dlibnbd=disabled
 %endif
 
 %if %{with_openvz}
@@ -1265,6 +1271,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            -Dyajl=enabled \
            %{?arg_sanlock} \
            -Dlibpcap=enabled \
+           %{?arg_libnbd} \
            -Dlibnl=enabled \
            -Daudit=enabled \
            -Ddtrace=enabled \
@@ -1328,6 +1335,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dglusterfs=disabled \
   -Dhost_validate=disabled \
   -Dlibiscsi=disabled \
+  -Dlibnbd=disabled \
   -Dlibnl=disabled \
   -Dlibpcap=disabled \
   -Dlibssh2=disabled \
