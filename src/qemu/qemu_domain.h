@@ -860,7 +860,7 @@ int qemuDomainSetMaxMemLock(virDomainObj *vm,
 int qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
                                        const virDomainMemoryDef *mem);
 
-bool qemuDomainSupportsNewVcpuHotplug(virDomainObj *vm);
+bool qemuDomainSupportsVcpuHotplug(virDomainObj *vm);
 bool qemuDomainHasVcpuPids(virDomainObj *vm);
 pid_t qemuDomainGetVcpuPid(virDomainObj *vm, unsigned int vcpuid);
 int qemuDomainValidateVcpuInfo(virDomainObj *vm);

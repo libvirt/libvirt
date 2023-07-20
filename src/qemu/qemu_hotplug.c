@@ -6399,7 +6399,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriver *driver,
     size_t i;
     bool vcpuTidMissing = false;
 
-    if (!qemuDomainSupportsNewVcpuHotplug(vm)) {
+    if (!qemuDomainSupportsVcpuHotplug(vm)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cpu hotplug is not supported"));
         return -1;
@@ -6842,7 +6842,7 @@ qemuDomainSetVcpuInternal(virQEMUDriver *driver,
     g_autoptr(virBitmap) livevcpus = NULL;
 
     if (def) {
-        if (!qemuDomainSupportsNewVcpuHotplug(vm)) {
+        if (!qemuDomainSupportsVcpuHotplug(vm)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("this qemu version does not support specific vCPU hotplug"));
             return -1;

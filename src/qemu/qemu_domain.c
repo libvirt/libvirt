@@ -9981,7 +9981,7 @@ qemuDomainValidateVcpuInfo(virDomainObj *vm)
 
 
 bool
-qemuDomainSupportsNewVcpuHotplug(virDomainObj *vm)
+qemuDomainSupportsVcpuHotplug(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
 
@@ -10018,7 +10018,7 @@ qemuDomainRefreshVcpuInfo(virDomainObj *vm,
     int rc;
     int ret = -1;
 
-    hotplug = qemuDomainSupportsNewVcpuHotplug(vm);
+    hotplug = qemuDomainSupportsVcpuHotplug(vm);
     VIR_DEBUG("Maxvcpus %zu hotplug %d", maxvcpus, hotplug);
 
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
