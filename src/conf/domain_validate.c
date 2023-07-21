@@ -788,6 +788,12 @@ virDomainDiskDefValidate(const virDomainDef *def,
             return -1;
         }
 
+        if (disk->queue_size) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("queue_size attribute in disk driver is only supported for virtio bus"));
+            return -1;
+        }
+
         if (disk->event_idx != VIR_TRISTATE_SWITCH_ABSENT) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("disk event_idx mode supported only for virtio bus"));
