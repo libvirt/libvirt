@@ -2271,6 +2271,7 @@ safezero;
 virBuildPathInternal;
 virDirClose;
 virDirCreate;
+virDirIsEmpty;
 virDirOpen;
 virDirOpenIfExists;
 virDirOpenQuiet;
