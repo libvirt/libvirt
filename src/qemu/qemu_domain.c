@@ -4812,7 +4812,7 @@ qemuDomainDefNumaAutoAdd(virDomainDef *def,
                          unsigned int parseFlags)
 {
     bool abiUpdate = !!(parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE);
-    unsigned long long initialMem;
+    unsigned long long nodeMem;
     size_t i;
 
     if (!abiUpdate ||
@@ -4821,16 +4821,23 @@ qemuDomainDefNumaAutoAdd(virDomainDef *def,
         return 0;
     }
 
-    initialMem = virDomainDefGetMemoryInitial(def);
+    nodeMem = virDomainDefGetMemoryTotal(def);
 
     if (!def->numa)
         def->numa = virDomainNumaNew();
 
     virDomainNumaSetNodeCount(def->numa, 1);
-    virDomainNumaSetNodeMemorySize(def->numa, 0, initialMem);
 
     for (i = 0; i < def->nmems; i++) {
         virDomainMemoryDef *mem = def->mems[i];
+
+        if (mem->size > nodeMem) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Total size of memory devices exceeds the total memory size"));
+            return -1;
+        }
+
+        nodeMem -= mem->size;
 
         switch (mem->model) {
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:
@@ -4847,6 +4854,8 @@ qemuDomainDefNumaAutoAdd(virDomainDef *def,
             break;
         }
     }
+
+    virDomainNumaSetNodeMemorySize(def->numa, 0, nodeMem);
 
     return 0;
 }
