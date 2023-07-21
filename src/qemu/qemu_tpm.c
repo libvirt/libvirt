@@ -186,7 +186,8 @@ qemuTPMEmulatorCreateStorage(virDomainTPMDef *tpm,
 
     *created = false;
 
-    if (!virFileExists(storagepath))
+    if (!virFileExists(storagepath) ||
+        virDirIsEmpty(storagepath, true) > 0)
         *created = true;
 
     if (virDirCreate(storagepath, 0700, swtpm_user, swtpm_group,
