@@ -761,7 +761,6 @@ qemuValidateDomainVCpuTopology(const virDomainDef *def, virQEMUCaps *qemuCaps)
                                                         def->os.machine);
     unsigned int topologycpus;
     unsigned int granularity;
-    unsigned int numacpus;
 
     if (virDomainDefGetVcpus(def) == 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -783,13 +782,6 @@ qemuValidateDomainVCpuTopology(const virDomainDef *def, virQEMUCaps *qemuCaps)
                            _("CPU topology doesn't match maximum vcpu count"));
             return -1;
         }
-    }
-
-    numacpus = virDomainNumaGetCPUCountTotal(def->numa);
-    if ((numacpus != 0) && (topologycpus != numacpus)) {
-        VIR_WARN("CPU topology doesn't match numa CPU count; "
-                 "partial NUMA mapping is obsoleted and will "
-                 "be removed in future");
     }
 
     /* vCPU hotplug granularity must be respected */
