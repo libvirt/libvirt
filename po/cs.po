@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-06-27 11:10+0000\n"
-"PO-Revision-Date: 2023-04-25 08:21+0000\n"
+"PO-Revision-Date: 2023-07-22 19:20+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/cs/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.15.2\n"
+"X-Generator: Weblate 4.18.2\n"
 
 msgid ""
 "\n"
@@ -554,7 +554,7 @@ msgstr "%1$s nemůže být prázdné"
 
 #, c-format
 msgid "%1$s cannot be set higher than %2$s"
-msgstr ""
+msgstr "%1$s nemůže být nastavené výše než %2$s"
 
 #, c-format
 msgid "%1$s cannot parse GID '%2$s'"
@@ -653,7 +653,7 @@ msgstr "model resetátoru (watchdog) %1$s může přijít pouze na PCI sběrnici
 
 #, c-format
 msgid "%1$s model of watchdog cannot be used with this machine type"
-msgstr ""
+msgstr "s tímto typem stroje není možné použít model resetátoru %1$s"
 
 #, c-format
 msgid "%1$s model of watchdog does not support configuring the address"
@@ -1278,13 +1278,13 @@ msgstr ""
 "toho použijte typ disku 'dir' (složka)"
 
 msgid "'discard_no_unref' is not compatible with read-only disk"
-msgstr ""
+msgstr "'discard_no_unref' není kompatibilní s diskem pouze pro čtení"
 
 msgid "'discard_no_unref' is not supported by this QEMU binary"
-msgstr ""
+msgstr "'discard_no_unref' není tímto sestavením QEMU podporováno"
 
 msgid "'discard_no_unref' only works with qcow2 disk format"
-msgstr ""
+msgstr "'discard_no_unref' funguje pouze v případě formátu disku qcow2"
 
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "„disk“ chybí nebo není pole v odpovědi z guest-get-fsinfo"
@@ -1420,6 +1420,8 @@ msgid ""
 "'restrictive' mode is required in memory element when mode is 'restrictive' "
 "in memnode element"
 msgstr ""
+"pokud se v prvku memory nachází režim 'restrictive', pak je také v prvku "
+"memnode zapotřebí režimu 'restrictive'"
 
 #, c-format
 msgid ""
@@ -1702,7 +1704,7 @@ msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr "atribut 'display' v <hostdev> je podporován pouze s model='vfio-pci'"
 
 msgid "<iotune> is not supported with bus='sd'"
-msgstr ""
+msgstr "<iotune> není podporováno s bus='sd'"
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> umožněno pouze pro lun zařízení"
@@ -1904,7 +1906,7 @@ msgstr ""
 "libxenlight"
 
 msgid "Agent authentication is not supported on this host"
-msgstr ""
+msgstr "Na tomto hostiteli není ověření agenta podporováno"
 
 msgid "Ain't nobody heard of that much cache level"
 msgstr "Takový stupeň mezipaměti vůbec neexistuje"
@@ -2009,6 +2011,8 @@ msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
 "mandatory"
 msgstr ""
+"Je třeba zadat alespoň jednu z voleb --min-workers, --max-workers, "
+"--priority-workers"
 
 msgid "At least one tty is required"
 msgstr "Je potřeba alespoň jednoho tty"
@@ -2688,6 +2692,8 @@ msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
 "not provided"
 msgstr ""
+"Není možné provést ověření zadáním z klávesnice: neposkytnuto zpětné volání "
+"ověření"
 
 #, c-format
 msgid "Can't read %1$s"
@@ -2981,6 +2987,8 @@ msgstr ""
 #, c-format
 msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
 msgstr ""
+"Nedaří se nalézt statistiky blkio cgroup (%1$s) pro blokové zařízení '%2$s' "
+"(%3$s)"
 
 #, c-format
 msgid "Cannot find boot device of requested type %1$s"
@@ -3241,11 +3249,11 @@ msgstr "Nedaří se zpracovat adaptér „%1$s“"
 
 #, c-format
 msgid "Cannot parse blkio cgroup (%1$s) entry '%2$s'"
-msgstr ""
+msgstr "Nedaří se zpracovat položku '%2$s' blkio cgroup (%1$s)"
 
 #, c-format
 msgid "Cannot parse blkio cgroup ('%1$s') entry '%2$s'"
-msgstr ""
+msgstr "Nedaří se zpracovat položku '%2$s' blkio cgroup ('%1$s')"
 
 #, c-format
 msgid "Cannot parse byte '%1$s' stat '%2$s'"
@@ -3447,7 +3455,7 @@ msgstr "Není možná zadat štítek pokud je přeštítkovávání vypnuto. mod
 
 #, c-format
 msgid "Cannot specify relabel if label is missing. model=%1$s"
-msgstr ""
+msgstr "Není možné zadat relabel pokud chybí label. model=%1$s"
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -3828,6 +3836,7 @@ msgstr "Mezipaměť komprese: %1$.3lf %2$s"
 #, c-format
 msgid "Compression method '%1$s' is only supported with parallel migration"
 msgstr ""
+"Metoda komprimace '%1$s' je podporovaná pouze v případě souběžného stěhování"
 
 #, c-format
 msgid "Compression method '%1$s' is specified twice"
@@ -3836,6 +3845,7 @@ msgstr "Metoda komprese „%1$s“ je zadána dvakrát"
 #, c-format
 msgid "Compression method '%1$s' isn't supported with parallel migration"
 msgstr ""
+"Metoda komprimace '%1$s' není v případě souběžného stěhování podporována"
 
 msgid "Compression overflows:"
 msgstr "Přetečení komprese:"
@@ -5513,7 +5523,7 @@ msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "Diskové zařízení „%1$s“ nepodporuje pořizování zachycených stavů"
 
 msgid "Disk discard_no_unref is not supported by vz driver."
-msgstr ""
+msgstr "Disk discard_no_unref není podporováno ovladačem vz."
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -9407,16 +9417,18 @@ msgstr ""
 "driver='qemu')"
 
 msgid "IORT table header ended early"
-msgstr ""
+msgstr "záhlaví tabulky IORT skončilo předčasně"
 
 msgid "IORT table node header ended early"
-msgstr ""
+msgstr "záhlaví uzlu tabulky IORT skončilo předčasně"
 
 #, c-format
 msgid ""
 "IORT table node type %1$s has invalid length: got %2$u, expected at least "
 "%3$zu"
 msgstr ""
+"typ uzlu %1$s tabulky nemá platnou délku: obdrženo %2$u, očekáváno "
+"přinejmenším %3$zu"
 
 msgid "IOThread ID"
 msgstr "Identifikátor IOThread"
@@ -9588,7 +9600,7 @@ msgid "Instantiation of rules failed on interface '%1$s'"
 msgstr "Instalace pravidel na rozhraní „%1$s“ se nezdařila"
 
 msgid "Integrity error in watchdog models"
-msgstr ""
+msgstr "Chyba neporučenosti v modelech resetátorů"
 
 msgid "Interface"
 msgstr "Rozhraní"
@@ -10377,7 +10389,7 @@ msgstr "Neplatné nastavení pro HPT změnu velikosti"
 
 #, c-format
 msgid "Invalid setting for pseries feature '%1$s'"
-msgstr ""
+msgstr "Neplatná nastavení pro pseries funkci '%1$s'"
 
 #, c-format
 msgid "Invalid source mode: %1$s"
@@ -12284,7 +12296,7 @@ msgid "No complete agent response found in %1$d bytes"
 msgstr "V %1$d bajtech nenalezena úplná odpověď klienta"
 
 msgid "No compression algorithm selected for parallel migration"
-msgstr ""
+msgstr "Nevybrán žádný algoritmus komprese pro souběžné stěhování"
 
 #, c-format
 msgid "No current block job for %1$s"
@@ -12895,6 +12907,7 @@ msgstr ""
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
+"V případě souběžného stěhování je možné zadat pouze jednu metodu komprimace"
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Je podporováno pouze jedno zařízení hostitele modelu vfio-ap"
@@ -13623,7 +13636,7 @@ msgstr "QEMU hlásí že stěhování stále ještě probíhá"
 
 #, c-format
 msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
-msgstr ""
+msgstr "QEMU neočekávaně zavřelo monitor (vm='%1$s')"
 
 #, c-format
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
@@ -15817,6 +15830,8 @@ msgid ""
 "Target memory device address '0x%1$llx' doesn't match source memory device "
 "address '0x%2$llx'"
 msgstr ""
+"Adresa cílového paměťového zařízení '0x%1$llx' neodpovídá té zdrojového "
+"zařízení '0x%2$llx'"
 
 #, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -15945,6 +15960,7 @@ msgstr "Model %1$s cílové zvukové karty se neshoduje se zdrojovým %2$s"
 msgid ""
 "Target sound card multichannel setting '%1$s' does not match source '%2$s'"
 msgstr ""
+"Nastavení více kanálů cílové zvukové karty '%1$s' neodpovídá zdroji '%2$s'"
 
 #, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
@@ -16092,6 +16108,8 @@ msgid ""
 "The <portForward> element can only be used with <interface type='user'> and "
 "its 'passt' backend"
 msgstr ""
+"Prvek <portForward> je možné použít pouze s <interface type='user'> a jeho "
+"podpůrnou vrstvou 'passt'"
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
@@ -16695,10 +16713,10 @@ msgid "Turn xbzrle compression on to tune it"
 msgstr "Aby bylo možné dolaďovat xbzrle kompresi, je třeba ji zapnout"
 
 msgid "Turn zlib compression on to tune it"
-msgstr ""
+msgstr "Aby bylo možné upravovat parametry zlib komprese, je třeba ji zapnout"
 
 msgid "Turn zstd compression on to tune it"
-msgstr ""
+msgstr "Aby bylo možné upravovat parametry zstd komprese, je třeba ji zapnout"
 
 msgid "Type"
 msgstr "Typ"
@@ -20707,6 +20725,7 @@ msgstr "pokus o sloučení virtuálních portů odlišných typů (%1$s a %2$s)"
 
 msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
 msgstr ""
+"atribut 'limit' je podporovaný pouze pro maxphysaddr režim 'passthrough'"
 
 #, c-format
 msgid "audio ID %1$u is used multiple times"
@@ -20980,6 +20999,8 @@ msgstr ""
 #, c-format
 msgid "block I/O throttling is not supported for disk '%1$s'"
 msgstr ""
+"přiškrcování blokového vstupu/výstupu je podporováno pouze v případě disku "
+"'%1$s'"
 
 #, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
@@ -22536,7 +22557,7 @@ msgstr "nedaří se číst seznam připojení (mount) „%1$s“"
 
 #, c-format
 msgid "cannot read node header '%1$s'"
-msgstr ""
+msgstr "nedaří se číst záhlaví „%1$s“ uzlu"
 
 #, c-format
 msgid "cannot receive data from volume %1$s"
@@ -23304,10 +23325,10 @@ msgid "compress level for multithread compression"
 msgstr "míra komprese pro vícevláknovou kompresi"
 
 msgid "compress level for zlib compression"
-msgstr ""
+msgstr "stupeň komprese pro zlib kompresi"
 
 msgid "compress level for zstd compression"
-msgstr ""
+msgstr "stupeň komprese pro zstd kompresi"
 
 msgid "compress repeated pages during live migration"
 msgstr "při migraci za chodu komprimovat opakující se stránky paměti"
@@ -23879,6 +23900,8 @@ msgid ""
 "count of memory devices requiring memory slots '%1$zu' exceeds slots count "
 "'%2$u'"
 msgstr ""
+"počet paměťových zařízení vyžadujících sloty '%1$zu' přesahuje počet slotů "
+"'%2$u'"
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr "funkci cow je možné použít jen pro fondy typu 'fs' a 'dir'"
@@ -24290,6 +24313,8 @@ msgstr "odebrání síťového zařízení z virt. stroje není podporováno"
 msgid ""
 "detaching of <console/> is unsupported. Try corresponding <serial/> instead"
 msgstr ""
+"odpojení <console/> není podporováno. Zkuste namísto toho odpovídající <"
+"serial/>"
 
 msgid "detaching serial console is not supported"
 msgstr "odpojení sériové konzole není podporováno"
@@ -24744,7 +24769,7 @@ msgstr "zobrazit průběh ukládání"
 
 #, c-format
 msgid "dnsmasq version >= %1$u.%2$u required but %3$llu.%4$llu found"
-msgstr ""
+msgstr "je zapotřebí dnsmasq verze >= %1$u.%2$u, ale nalezeno %3$llu.%4$llu"
 
 msgid "do not enable STP for this bridge"
 msgstr "nezapínat pro tento most STP protokol"
@@ -24855,7 +24880,7 @@ msgstr "informace o velikosti blokového zařízení domény"
 
 #, c-format
 msgid "domain can only have one watchdog with model '%1$s'"
-msgstr ""
+msgstr "v případě modelu '%1$s' může mít virt. doména pouze jeden resetátor"
 
 msgid "domain capabilities"
 msgstr "schopnosti domény"
@@ -25514,35 +25539,36 @@ msgstr ""
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none\n"
-msgstr ""
+msgstr "událost 'io-error' pro doménu '%1$s': %2$s (%3$s) žádné\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none due to %4$s\n"
-msgstr ""
+msgstr "událost 'io-error' pro doménu '%1$s': %2$s (%3$s) žádná kvůli %4$s\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause\n"
-msgstr ""
+msgstr "událost 'io-error' pro doménu '%1$s': %2$s (%3$s) pozastavit\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause due to %4$s\n"
 msgstr ""
+"událost 'io-error' pro doménu '%1$s': %2$s (%3$s) pozastavit kvůli %4$s\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report\n"
-msgstr ""
+msgstr "událost 'io-error' pro doménu '%1$s': %2$s (%3$s) hlášení\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report due to %4$s\n"
-msgstr ""
+msgstr "událost 'io-error' pro doménu '%1$s': %2$s (%3$s) hlášení kvůli %4$s\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown\n"
-msgstr ""
+msgstr "událost 'io-error' pro doménu '%1$s': %2$s (%3$s) neznámé\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown due to %4$s\n"
-msgstr ""
+msgstr "událost 'io-error' pro doménu '%1$s': %2$s (%3$s) neznámé kvůli %4$s\n"
 
 #, c-format
 msgid "event 'job-completed' for domain '%1$s':\n"
@@ -25602,15 +25628,15 @@ msgstr "událost 'rtc-change' pro doménu '%1$s': %2$lld\n"
 
 #, c-format
 msgid "event 'tray-change' for domain '%1$s' disk %2$s: closed\n"
-msgstr ""
+msgstr "událost 'tray-change' pro disk %2$s domény '%1$s': zavřeno\n"
 
 #, c-format
 msgid "event 'tray-change' for domain '%1$s' disk %2$s: opened\n"
-msgstr ""
+msgstr "událost 'tray-change' pro disk %2$s domény '%1$s': otevřeno\n"
 
 #, c-format
 msgid "event 'tray-change' for domain '%1$s' disk %2$s: unknown\n"
-msgstr ""
+msgstr "událost 'tray-change' pro disk %2$s domén '%1$s': neznámé\n"
 
 #, c-format
 msgid "event 'tunable' for domain '%1$s':\n"
@@ -25618,35 +25644,35 @@ msgstr "událost 'tunable' pro doménu '%1$s':\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': debug\n"
-msgstr ""
+msgstr "událost 'watchdog' pro doménu '%1$s': ladění\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': inject-nmi\n"
-msgstr ""
+msgstr "událost 'watchdog' pro doménu '%1$s': inject-nmi\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': none\n"
-msgstr ""
+msgstr "událost 'watchdog' pro doménu '%1$s': žádná\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': pause\n"
-msgstr ""
+msgstr "událost 'watchdog' pro doménu '%1$s': pozastavit\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': poweroff\n"
-msgstr ""
+msgstr "událost 'watchdog' pro doménu '%1$s': vypnout\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': reset\n"
-msgstr ""
+msgstr "událost 'watchdog' pro doménu '%1$s': restartovat\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': shutdown\n"
-msgstr ""
+msgstr "událost 'watchdog' pro doménu '%1$s': vypnout\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': unknown\n"
-msgstr ""
+msgstr "událost 'watchdog' pro doménu '%1$s': neznámé\n"
 
 msgid "event callback already tracked"
 msgstr "zpětné volání události už sledováno"
@@ -27940,7 +27966,7 @@ msgstr "připojení za chodu rozhraní typu %1$s zatím není implementováno"
 
 #, c-format
 msgid "hotplug of watchdog model '%1$s' is not supported"
-msgstr ""
+msgstr "odpojení/připojení resetátoru za chodu u modelu %1$s není podporováno"
 
 msgid "hpet timer is not supported by this architecture"
 msgstr "touto architekturou není vysoce přesný časovač (hpet) podporován"
@@ -30067,7 +30093,7 @@ msgstr ""
 "nesprávně formulovaná / chybějící memaddr v sgx-epc informacích o paměti"
 
 msgid "malformed/missing memaddr in virtio memory info"
-msgstr ""
+msgstr "nesprávně formulované / chybějící memaddr v informacích o virtio paměti"
 
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
@@ -30151,6 +30177,8 @@ msgstr ""
 msgid ""
 "maximum memory size must be specified when specifying number of memory slots"
 msgstr ""
+"je třeba, aby v případě, že je zadán počet slotů pro paměť, byla zadána také "
+"maximální velikost paměti"
 
 msgid "maximum memory size overflowed after alignment"
 msgstr "maximální velikost paměti po zarovnání přetekla"
@@ -30241,6 +30269,7 @@ msgstr "adresa paměťového zařízení není podporována pro model '%1$s'"
 
 msgid "memory device address must be aligned to blocksize"
 msgstr ""
+"je třeba, aby adresa paměťového zařízení byla zarovnaná na velikost bloku"
 
 msgid "memory device alias"
 msgstr "alternativní název paměťového zařízení"
@@ -33157,7 +33186,7 @@ msgstr "přetečení v převodu %1$ld MiB/s na bajty\n"
 
 #, c-format
 msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
-msgstr ""
+msgstr "přetečení v součtu statistik pro blkio cgroup (%1$s) kolonku '%2$s'"
 
 msgid "override the destination host name used for TLS verification"
 msgstr "přebít název cílového stroje použitý pro TLS ověřování"
@@ -34027,7 +34056,7 @@ msgid "query-machines reply data was missing 'name'"
 msgstr "odpověď na query-version (dotaz na verzi) postrádala 'name' (název)"
 
 msgid "query-machines reply has malformed 'acpi data"
-msgstr ""
+msgstr "odpověď na query-machines má nesprávně formulovaná data 'alias'"
 
 msgid "query-machines reply has malformed 'alias' data"
 msgstr "odpověď na query-machines má nesprávně formulovaná data 'alias'"
@@ -34047,6 +34076,7 @@ msgstr "odpověď na query-machines má chybně formátovaná data 'is-default'"
 
 msgid "query-machines reply has malformed 'numa-mem-supported' data"
 msgstr ""
+"odpověď query-machines nemá správně formulovaná data 'numa-mem-supported'"
 
 msgid "query-memory-devices reply data doesn't contain enum data"
 msgstr "V odpovědi na query-memory-devices nejsou obsažena vyčíslovací data"
@@ -38486,7 +38516,7 @@ msgid "unsupported storage pool event ID %1$d"
 msgstr "nepodporovaný identifikátor události fondu úložiště %1$d"
 
 msgid "unsupported storage type for this code path"
-msgstr ""
+msgstr "nepodporovaný typ úložiště pro tuto cestu kódem"
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
