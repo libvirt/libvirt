@@ -232,6 +232,11 @@ v9.2.0 (2023-04-01)
     corresponding JSON descriptor has the highest priority, or manually by
     using ``<loader format='qcow2'/>`` in the domain XML.
 
+  * qemu: Implement QEMU NBD reconnect delay attribute
+
+    Support the nbd reconnect-delay of QEMU. It will set the delay time for
+    reconnect after an unexpected disconnect or a serious error.
+
 * **Improvements**
 
   * qemu: Make firmware selection persistent
