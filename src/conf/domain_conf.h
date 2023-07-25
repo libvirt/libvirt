@@ -2634,18 +2634,33 @@ typedef enum {
 } virDomainMemoryModel;
 
 struct _virDomainMemoryDef {
+    virDomainMemoryModel model;
     virDomainMemoryAccess access;
     virTristateBool discard;
 
-    /* source */
-    virBitmap *sourceNodes;
-    unsigned long long pagesize; /* kibibytes */
-    char *nvdimmPath; /* valid for NVDIMM an VIRTIO_PMEM */
-    unsigned long long alignsize; /* kibibytes; valid only for NVDIMM */
-    bool nvdimmPmem; /* valid only for NVDIMM */
+    union {
+        struct {
+            unsigned long long pagesize; /* kibibytes */
+            virBitmap *sourceNodes;
+        } dimm;
+        struct {
+            char *nvdimmPath;
+            bool nvdimmPmem;
+            unsigned long long alignsize; /* kibibytes */
+        } nvdimm;
+        struct {
+            char *nvdimmPath;
+        } virtio_pmem;
+        struct {
+            unsigned long long pagesize; /* kibibytes */
+            virBitmap *sourceNodes;
+        } virtio_mem;
+        struct {
+            virBitmap *sourceNodes;
+        } sgx_epc;
+    } source;
 
     /* target */
-    virDomainMemoryModel model;
     int targetNode;
     unsigned long long size; /* kibibytes */
     unsigned long long labelsize; /* kibibytes; valid only for NVDIMM */

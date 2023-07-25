@@ -1857,8 +1857,9 @@ virSecurityDACRestoreMemoryLabel(virSecurityManager *mgr,
 {
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        return virSecurityDACRestoreFileLabel(mgr, mem->source.nvdimm.nvdimmPath);
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        return virSecurityDACRestoreFileLabel(mgr, mem->nvdimmPath);
+        return virSecurityDACRestoreFileLabel(mgr, mem->source.virtio_pmem.nvdimmPath);
 
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
         /* We set label on SGX /dev nodes iff running with namespaces, so we
@@ -2044,9 +2045,13 @@ virSecurityDACSetMemoryLabel(virSecurityManager *mgr,
 
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        return virSecurityDACSetOwnership(mgr, NULL,
+                                          mem->source.nvdimm.nvdimmPath,
+                                          user, group, true);
+
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
         return virSecurityDACSetOwnership(mgr, NULL,
-                                          mem->nvdimmPath,
+                                          mem->source.virtio_pmem.nvdimmPath,
                                           user, group, true);
 
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:

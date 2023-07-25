@@ -638,16 +638,15 @@ AppArmorSetMemoryLabel(virSecurityManager *mgr,
                        virDomainDef *def,
                        virDomainMemoryDef *mem)
 {
+    const char *path = NULL;
+
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        path = mem->source.nvdimm.nvdimmPath;
+        break;
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        if (!virFileExists(mem->nvdimmPath)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%1$s: \'%2$s\' does not exist"),
-                           __func__, mem->nvdimmPath);
-            return -1;
-        }
-        return reload_profile(mgr, def, mem->nvdimmPath, true);
+        path = mem->source.virtio_pmem.nvdimmPath;
+        break;
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
@@ -656,7 +655,16 @@ AppArmorSetMemoryLabel(virSecurityManager *mgr,
         break;
     }
 
-    return 0;
+    if (!path)
+        return 0;
+
+    if (!virFileExists(path)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%1$s: \'%2$s\' does not exist"),
+                       __func__, path);
+        return -1;
+    }
+    return reload_profile(mgr, def, path, true);
 }
 
 

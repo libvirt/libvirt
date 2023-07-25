@@ -3146,10 +3146,33 @@ qemuBuildMemoryGetPagesize(virQEMUDriverConfig *cfg,
                            bool *preallocRet)
 {
     const long system_page_size = virGetSystemPageSizeKB();
-    unsigned long long pagesize = mem->pagesize;
-    bool needHugepage = !!pagesize;
-    bool useHugepage = !!pagesize;
+    unsigned long long pagesize = 0;
+    const char *nvdimmPath = NULL;
+    bool needHugepage = false;
+    bool useHugepage = false;
     bool prealloc = false;
+
+    switch (mem->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        pagesize = mem->source.dimm.pagesize;
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        pagesize = mem->source.virtio_mem.pagesize;
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        nvdimmPath = mem->source.nvdimm.nvdimmPath;
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        nvdimmPath = mem->source.virtio_pmem.nvdimmPath;
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        break;
+    }
+
+    needHugepage = !!pagesize;
+    useHugepage = !!pagesize;
 
     if (pagesize == 0) {
         virDomainHugePage *master_hugepage = NULL;
@@ -3216,10 +3239,11 @@ qemuBuildMemoryGetPagesize(virQEMUDriverConfig *cfg,
     /* If the NVDIMM is a real device then there's nothing to prealloc.
      * If anything, we would be only wearing off the device.
      * Similarly, virtio-pmem-pci doesn't need prealloc either. */
-    if (mem->nvdimmPath) {
-        if (!mem->nvdimmPmem &&
-            mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM)
+    if (nvdimmPath) {
+        if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+            !mem->source.nvdimm.nvdimmPmem) {
             prealloc = true;
+        }
     } else if (useHugepage) {
         prealloc = true;
     }
@@ -3286,6 +3310,8 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
     unsigned long long pagesize = 0;
     bool needHugepage = false;
     bool useHugepage = false;
+    bool hasSourceNodes = false;
+    const char *nvdimmPath = NULL;
     int discard = mem->discard;
     bool disableCanonicalPath = false;
 
@@ -3324,12 +3350,36 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
 
     props = virJSONValueNewObject();
 
+    switch (mem->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        nodemask = mem->source.dimm.sourceNodes;
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        nodemask = mem->source.virtio_mem.sourceNodes;
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        nodemask = mem->source.sgx_epc.sourceNodes;
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        nvdimmPath = mem->source.nvdimm.nvdimmPath;
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        nvdimmPath = mem->source.virtio_pmem.nvdimmPath;
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        break;
+    }
+
+    hasSourceNodes = !!nodemask;
+
     if (mem->model == VIR_DOMAIN_MEMORY_MODEL_SGX_EPC) {
         backendType = "memory-backend-epc";
         if (!priv->memPrealloc)
             prealloc = true;
-    } else if (!mem->nvdimmPath &&
-        def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_MEMFD) {
+
+    } else if (!nvdimmPath &&
+               def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_MEMFD) {
         backendType = "memory-backend-memfd";
 
         if (useHugepage &&
@@ -3343,11 +3393,11 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
 
         if (systemMemory)
             disableCanonicalPath = true;
-    } else if (useHugepage || mem->nvdimmPath || memAccess ||
-        def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
+    } else if (useHugepage || nvdimmPath || memAccess ||
+               def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
 
-        if (mem->nvdimmPath) {
-            memPath = g_strdup(mem->nvdimmPath);
+        if (nvdimmPath) {
+            memPath = g_strdup(nvdimmPath);
         } else if (useHugepage) {
             if (qemuGetDomainHupageMemPath(priv->driver, def, pagesize, &memPath) < 0)
                 return -1;
@@ -3363,7 +3413,7 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
                                   NULL) < 0)
             return -1;
 
-        if (!mem->nvdimmPath &&
+        if (!nvdimmPath &&
             virJSONValueObjectAdd(&props,
                                   "T:discard-data", discard,
                                   NULL) < 0) {
@@ -3423,10 +3473,13 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
     if (virJSONValueObjectAdd(&props, "U:size", mem->size * 1024, NULL) < 0)
         return -1;
 
-    if (virJSONValueObjectAdd(&props, "P:align", mem->alignsize * 1024, NULL) < 0)
+    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+        virJSONValueObjectAdd(&props, "P:align",
+                              mem->source.nvdimm.alignsize * 1024, NULL) < 0)
         return -1;
 
-    if (mem->nvdimmPmem) {
+    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+        mem->source.nvdimm.nvdimmPmem) {
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE_PMEM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("nvdimm pmem property is not available "
@@ -3437,12 +3490,10 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
             return -1;
     }
 
-    if (mem->sourceNodes) {
-        nodemask = mem->sourceNodes;
-    } else {
-        if (virDomainNumatuneMaybeGetNodeset(def->numa, priv->autoNodeset,
-                                             &nodemask, mem->targetNode) < 0)
-            return -1;
+    if (!hasSourceNodes &&
+        virDomainNumatuneMaybeGetNodeset(def->numa, priv->autoNodeset,
+                                         &nodemask, mem->targetNode) < 0) {
+        return -1;
     }
 
     if (nodemask) {
@@ -3466,8 +3517,8 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
     }
 
     /* If none of the following is requested... */
-    if (!needHugepage && !mem->sourceNodes && !nodeSpecified &&
-        !mem->nvdimmPath &&
+    if (!needHugepage && !hasSourceNodes && !nodeSpecified &&
+        !nvdimmPath &&
         memAccess == VIR_DOMAIN_MEMORY_ACCESS_DEFAULT &&
         def->mem.source != VIR_DOMAIN_MEMORY_SOURCE_FILE &&
         def->mem.source != VIR_DOMAIN_MEMORY_SOURCE_MEMFD &&

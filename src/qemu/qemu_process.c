@@ -3927,11 +3927,15 @@ static bool
 qemuProcessDomainMemoryDefNeedHugepagesPath(const virDomainMemoryDef *mem,
                                             const long system_pagesize)
 {
+    unsigned long long pagesize = 0;
+
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        pagesize = mem->source.dimm.pagesize;
+        break;
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-        return mem->pagesize && mem->pagesize != system_pagesize;
-
+        pagesize = mem->source.virtio_mem.pagesize;
+        break;
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
@@ -3941,7 +3945,7 @@ qemuProcessDomainMemoryDefNeedHugepagesPath(const virDomainMemoryDef *mem,
         return false;
     }
 
-    return false;
+    return pagesize != 0 && pagesize != system_pagesize;
 }
 
 

@@ -1610,24 +1610,20 @@ virSecuritySELinuxSetMemoryLabel(virSecurityManager *mgr,
                                  virDomainMemoryDef *mem)
 {
     virSecurityLabelDef *seclabel;
+    const char *path = NULL;
+
+    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (!seclabel || !seclabel->relabel)
+        return 0;
 
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-        if (!seclabel || !seclabel->relabel)
-            return 0;
-
-        if (virSecuritySELinuxSetFilecon(mgr, mem->nvdimmPath,
-                                         seclabel->imagelabel, true) < 0)
-            return -1;
+        path = mem->source.nvdimm.nvdimmPath;
         break;
-
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        path = mem->source.virtio_pmem.nvdimmPath;
+        break;
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
-        seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-        if (!seclabel || !seclabel->relabel)
-            return 0;
-
         if (virSecuritySELinuxSetFilecon(mgr, DEV_SGX_VEPC,
                                          seclabel->imagelabel, true) < 0 ||
             virSecuritySELinuxSetFilecon(mgr, DEV_SGX_PROVISION,
@@ -1642,6 +1638,12 @@ virSecuritySELinuxSetMemoryLabel(virSecurityManager *mgr,
         break;
     }
 
+    if (!path)
+        return 0;
+
+    if (virSecuritySELinuxSetFilecon(mgr, path,
+                                     seclabel->imagelabel, true) < 0)
+        return -1;
     return 0;
 }
 
@@ -1653,36 +1655,36 @@ virSecuritySELinuxRestoreMemoryLabel(virSecurityManager *mgr,
 {
     int ret = -1;
     virSecurityLabelDef *seclabel;
+    const char *path = NULL;
+
+    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (!seclabel || !seclabel->relabel)
+        return 0;
 
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-        if (!seclabel || !seclabel->relabel)
-            return 0;
-
-        ret = virSecuritySELinuxRestoreFileLabel(mgr, mem->nvdimmPath, true);
+        path = mem->source.nvdimm.nvdimmPath;
         break;
-
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        path = mem->source.virtio_pmem.nvdimmPath;
+        break;
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
-        seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-        if (!seclabel || !seclabel->relabel)
-            return 0;
-
         ret = virSecuritySELinuxRestoreFileLabel(mgr, DEV_SGX_VEPC, true);
         if (virSecuritySELinuxRestoreFileLabel(mgr, DEV_SGX_PROVISION, true) < 0)
             ret = -1;
-        break;
+        return ret;
 
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
-        ret = 0;
         break;
     }
 
-    return ret;
+    if (!path)
+        return 0;
+
+    return virSecuritySELinuxRestoreFileLabel(mgr, path, true);
 }
 
 

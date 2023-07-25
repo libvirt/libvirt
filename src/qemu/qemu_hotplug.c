@@ -7010,18 +7010,18 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
         return false;
     }
 
-    if (!virBitmapEqual(oldDef->sourceNodes,
-                        newDef->sourceNodes)) {
+    if (!virBitmapEqual(oldDef->source.virtio_mem.sourceNodes,
+                        newDef->source.virtio_mem.sourceNodes)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("cannot modify memory source nodes"));
         return false;
     }
 
-    if (oldDef->pagesize != newDef->pagesize) {
+    if (oldDef->source.virtio_mem.pagesize != newDef->source.virtio_mem.pagesize) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("cannot modify memory pagesize from '%1$llu' to '%2$llu'"),
-                       oldDef->pagesize,
-                       newDef->pagesize);
+                       oldDef->source.virtio_mem.pagesize,
+                       newDef->source.virtio_mem.pagesize);
         return false;
     }
 

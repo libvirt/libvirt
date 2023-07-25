@@ -2260,7 +2260,7 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
 
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        if (!mem->nvdimmPath) {
+        if (!mem->source.nvdimm.nvdimmPath) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("path is required for model 'nvdimm'"));
             return -1;
@@ -2286,7 +2286,7 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        if (!mem->nvdimmPath) {
+        if (!mem->source.virtio_pmem.nvdimmPath) {
             virReportError(VIR_ERR_XML_DETAIL,
                            _("path is required for model '%1$s'"),
                            virDomainMemoryModelTypeToString(mem->model));

@@ -3490,8 +3490,27 @@ void virDomainMemoryDefFree(virDomainMemoryDef *def)
     if (!def)
         return;
 
-    g_free(def->nvdimmPath);
-    virBitmapFree(def->sourceNodes);
+    switch (def->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        virBitmapFree(def->source.dimm.sourceNodes);
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        g_free(def->source.nvdimm.nvdimmPath);
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        g_free(def->source.virtio_pmem.nvdimmPath);
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        virBitmapFree(def->source.virtio_mem.sourceNodes);
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        virBitmapFree(def->source.sgx_epc.sourceNodes);
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        break;
+    }
+
     g_free(def->uuid);
     virDomainDeviceInfoClear(&def->info);
     g_free(def);
@@ -13266,22 +13285,33 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *nodemask = NULL;
+    unsigned long long *pagesize;
+    virBitmap **sourceNodes = NULL;
 
     ctxt->node = node;
 
     switch (def->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+
+        if (def->model == VIR_DOMAIN_MEMORY_MODEL_DIMM) {
+            pagesize = &def->source.dimm.pagesize;
+            sourceNodes = &def->source.dimm.sourceNodes;
+        } else {
+            pagesize = &def->source.virtio_mem.pagesize;
+            sourceNodes = &def->source.virtio_mem.sourceNodes;
+        }
+
         if (virDomainParseMemory("./pagesize", "./pagesize/@unit", ctxt,
-                                 &def->pagesize, false, false) < 0)
+                                 pagesize, false, false) < 0)
             return -1;
 
         if ((nodemask = virXPathString("string(./nodemask)", ctxt))) {
-            if (virBitmapParse(nodemask, &def->sourceNodes,
+            if (virBitmapParse(nodemask, sourceNodes,
                                VIR_DOMAIN_CPUMASK_LEN) < 0)
                 return -1;
 
-            if (virBitmapIsAllClear(def->sourceNodes)) {
+            if (virBitmapIsAllClear(*sourceNodes)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Invalid value of 'nodemask': %1$s"), nodemask);
                 return -1;
@@ -13290,28 +13320,28 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        def->nvdimmPath = virXPathString("string(./path)", ctxt);
+        def->source.nvdimm.nvdimmPath = virXPathString("string(./path)", ctxt);
 
         if (virDomainParseMemory("./alignsize", "./alignsize/@unit", ctxt,
-                                 &def->alignsize, false, false) < 0)
+                                 &def->source.nvdimm.alignsize, false, false) < 0)
             return -1;
 
         if (virXPathBoolean("boolean(./pmem)", ctxt))
-            def->nvdimmPmem = true;
+            def->source.nvdimm.nvdimmPmem = true;
 
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        def->nvdimmPath = virXPathString("string(./path)", ctxt);
+        def->source.virtio_pmem.nvdimmPath = virXPathString("string(./path)", ctxt);
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
         if ((nodemask = virXPathString("string(./nodemask)", ctxt))) {
-            if (virBitmapParse(nodemask, &def->sourceNodes,
+            if (virBitmapParse(nodemask, &def->source.sgx_epc.sourceNodes,
                                VIR_DOMAIN_CPUMASK_LEN) < 0)
                 return -1;
 
-            if (virBitmapIsAllClear(def->sourceNodes)) {
+            if (virBitmapIsAllClear(def->source.sgx_epc.sourceNodes)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Invalid value of 'nodemask': %1$s"), nodemask);
                 return -1;
@@ -15259,27 +15289,36 @@ virDomainMemoryFindByDefInternal(virDomainDef *def,
 
         switch (mem->model) {
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:
-        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-            /* source stuff -> match with device */
-            if (tmp->pagesize != mem->pagesize)
+            if (tmp->source.dimm.pagesize != mem->source.dimm.pagesize)
                 continue;
 
-            if (!virBitmapEqual(tmp->sourceNodes, mem->sourceNodes))
+            if (!virBitmapEqual(tmp->source.dimm.sourceNodes,
+                                mem->source.dimm.sourceNodes))
+                continue;
+            break;
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+            if (tmp->source.virtio_mem.pagesize != mem->source.virtio_mem.pagesize)
+                continue;
+
+            if (!virBitmapEqual(tmp->source.virtio_mem.sourceNodes,
+                                mem->source.virtio_mem.sourceNodes))
                 continue;
             break;
 
         case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-            if (STRNEQ(tmp->nvdimmPath, mem->nvdimmPath))
+            if (STRNEQ(tmp->source.nvdimm.nvdimmPath, mem->source.nvdimm.nvdimmPath))
                 continue;
             break;
 
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-            if (STRNEQ(tmp->nvdimmPath, mem->nvdimmPath))
+            if (STRNEQ(tmp->source.virtio_pmem.nvdimmPath,
+                       mem->source.virtio_pmem.nvdimmPath))
                 continue;
             break;
 
         case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
-            if (!virBitmapEqual(tmp->sourceNodes, mem->sourceNodes))
+            if (!virBitmapEqual(tmp->source.sgx_epc.sourceNodes,
+                                mem->source.sgx_epc.sourceNodes))
                 continue;
             break;
 
@@ -21007,7 +21046,8 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDef *src,
         return false;
     }
 
-    if (src->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+    switch (src->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         if (src->labelsize != dst->labelsize) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Target NVDIMM label size '%1$llu' doesn't match source NVDIMM label size '%2$llu'"),
@@ -21015,14 +21055,15 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDef *src,
             return false;
         }
 
-        if (src->alignsize != dst->alignsize) {
+        if (src->source.nvdimm.alignsize != dst->source.nvdimm.alignsize) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Target NVDIMM alignment '%1$llu' doesn't match source NVDIMM alignment '%2$llu'"),
-                           src->alignsize, dst->alignsize);
+                           src->source.nvdimm.alignsize,
+                           dst->source.nvdimm.alignsize);
             return false;
         }
 
-        if (src->nvdimmPmem != dst->nvdimmPmem) {
+        if (src->source.nvdimm.nvdimmPmem != dst->source.nvdimm.nvdimmPmem) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Target NVDIMM pmem flag doesn't match "
                              "source NVDIMM pmem flag"));
@@ -21043,6 +21084,15 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDef *src,
                            _("Target NVDIMM UUID doesn't match source NVDIMM"));
             return false;
         }
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        break;
     }
 
     return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
@@ -25100,37 +25150,48 @@ virDomainMemorySourceDefFormat(virBuffer *buf,
 
     switch (def->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
-    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-        if (def->sourceNodes) {
-            if (!(bitmap = virBitmapFormat(def->sourceNodes)))
+        if (def->source.dimm.sourceNodes) {
+            if (!(bitmap = virBitmapFormat(def->source.dimm.sourceNodes)))
                 return -1;
 
             virBufferAsprintf(&childBuf, "<nodemask>%s</nodemask>\n", bitmap);
         }
 
-        if (def->pagesize)
+        if (def->source.dimm.pagesize)
             virBufferAsprintf(&childBuf, "<pagesize unit='KiB'>%llu</pagesize>\n",
-                              def->pagesize);
+                              def->source.dimm.pagesize);
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        if (def->source.virtio_mem.sourceNodes) {
+            if (!(bitmap = virBitmapFormat(def->source.virtio_mem.sourceNodes)))
+                return -1;
+
+            virBufferAsprintf(&childBuf, "<nodemask>%s</nodemask>\n", bitmap);
+        }
+
+        if (def->source.virtio_mem.pagesize)
+            virBufferAsprintf(&childBuf, "<pagesize unit='KiB'>%llu</pagesize>\n",
+                              def->source.virtio_mem.pagesize);
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        virBufferEscapeString(&childBuf, "<path>%s</path>\n", def->nvdimmPath);
+        virBufferEscapeString(&childBuf, "<path>%s</path>\n", def->source.nvdimm.nvdimmPath);
 
-        if (def->alignsize)
+        if (def->source.nvdimm.alignsize)
             virBufferAsprintf(&childBuf, "<alignsize unit='KiB'>%llu</alignsize>\n",
-                              def->alignsize);
+                              def->source.nvdimm.alignsize);
 
-        if (def->nvdimmPmem)
+        if (def->source.nvdimm.nvdimmPmem)
             virBufferAddLit(&childBuf, "<pmem/>\n");
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        virBufferEscapeString(&childBuf, "<path>%s</path>\n", def->nvdimmPath);
+        virBufferEscapeString(&childBuf, "<path>%s</path>\n", def->source.virtio_pmem.nvdimmPath);
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
-        if (def->sourceNodes) {
-            if (!(bitmap = virBitmapFormat(def->sourceNodes)))
+        if (def->source.sgx_epc.sourceNodes) {
+            if (!(bitmap = virBitmapFormat(def->source.sgx_epc.sourceNodes)))
                 return -1;
 
             virBufferAsprintf(&childBuf, "<nodemask>%s</nodemask>\n", bitmap);
