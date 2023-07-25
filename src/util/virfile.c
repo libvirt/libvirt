@@ -3382,6 +3382,8 @@ virFileRemoveLastComponent(char *path)
 # endif
 
 # define VIR_ACFS_MAGIC 0x61636673
+/* https://git.beegfs.io/pub/v7/-/blob/master/client_module/source/filesystem/FhgfsOpsSuper.h#L14 */
+# define VIR_BEEGFS_MAGIC 0x19830326 /* formerly fhgfs */
 
 # define PROC_MOUNTS "/proc/mounts"
 
@@ -3469,6 +3471,7 @@ static const struct virFileSharedFsData virFileSharedFs[] = {
     { .fstype = VIR_FILE_SHFS_CEPH, .magic = CEPH_SUPER_MAGIC },
     { .fstype = VIR_FILE_SHFS_GPFS, .magic = GPFS_SUPER_MAGIC },
     { .fstype = VIR_FILE_SHFS_ACFS, .magic = VIR_ACFS_MAGIC },
+    { .fstype = VIR_FILE_SHFS_BEEGFS, .magic = VIR_BEEGFS_MAGIC },
 };
 
 
@@ -3719,7 +3722,8 @@ int virFileIsSharedFS(const char *path)
                                  VIR_FILE_SHFS_GPFS|
                                  VIR_FILE_SHFS_QB |
                                  VIR_FILE_SHFS_ACFS |
-                                 VIR_FILE_SHFS_GLUSTERFS);
+                                 VIR_FILE_SHFS_GLUSTERFS |
+                                 VIR_FILE_SHFS_BEEGFS);
 }
 
 

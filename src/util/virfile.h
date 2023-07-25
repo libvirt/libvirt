@@ -226,6 +226,7 @@ enum {
     VIR_FILE_SHFS_QB = (1 << 8), /* Quobyte shared filesystem */
     VIR_FILE_SHFS_ACFS = (1 << 9), /* Oracle ASM Cluster File System */
     VIR_FILE_SHFS_GLUSTERFS = (1 << 10), /* gluster's FUSE-based client */
+    VIR_FILE_SHFS_BEEGFS = (1 << 11), /* BeeGFS/fhGFS */
 };
 
 int virFileIsSharedFSType(const char *path, unsigned int fstypes) ATTRIBUTE_NONNULL(1);
