@@ -3296,7 +3296,8 @@ paravirtualized driver is specified via the ``disk`` element.
       image. When enabled, a discard request from within the guest will mark the
       qcow2 cluster as zero, but will keep the reference/offset of that cluster.
       But it will still pass the discard further to the lower layer.
-      This will resolve fragmentation within the qcow2 image. :since:`Since 9.5.0`
+      This will resolve fragmentation within the qcow2 image. :since:`Since 9.5.0
+      (QEMU 8.1)`
 
       In the majority of cases the default configuration used by the hypervisor
       is sufficient so modifying this setting should not be necessary. For
