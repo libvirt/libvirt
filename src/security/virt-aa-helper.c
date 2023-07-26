@@ -1147,10 +1147,20 @@ get_files(vahControl * ctl)
     }
 
     for (i = 0; i < ctl->def->nmems; i++) {
-        if (ctl->def->mems[i] &&
-                ctl->def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
-            if (vah_add_file(&buf, ctl->def->mems[i]->nvdimmPath, "rw") != 0)
+        virDomainMemoryDef *mem = ctl->def->mems[i];
+
+        switch (mem->model) {
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+            if (vah_add_file(&buf, mem->nvdimmPath, "rw") != 0)
                 goto cleanup;
+            break;
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        case VIR_DOMAIN_MEMORY_MODEL_NONE:
+        case VIR_DOMAIN_MEMORY_MODEL_LAST:
+            break;
         }
     }
 
