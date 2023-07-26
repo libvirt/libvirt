@@ -775,8 +775,12 @@ daemonStreamHandleWrite(virNetServerClient *client,
             ret = -1;
         }
 
-        if (ret > 0)
-            break;  /* still processing data from msg */
+        if (ret > 0) {
+            /* still processing data from msg, put it back into queue */
+            msg->next = stream->rx;
+            stream->rx = msg;
+            break;
+        }
 
         if (ret < 0) {
             virNetMessageFree(msg);
