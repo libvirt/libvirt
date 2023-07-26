@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-06-27 11:10+0000\n"
+"POT-Creation-Date: 2023-07-26 08:28+0000\n"
 "PO-Revision-Date: 2023-07-22 19:20+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1261,6 +1261,9 @@ msgstr ""
 "prvek „arch“ (architektura) není možné použít uvnitř prvku „cpu“ (procesor) "
 "s atributem „match“ (shoda)"
 
+msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
+msgstr ""
+
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "„cache“ odkazuje na neexistující mezipaměť NUMA uzlu"
 
@@ -2011,8 +2014,8 @@ msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
 "mandatory"
 msgstr ""
-"Je třeba zadat alespoň jednu z voleb --min-workers, --max-workers, "
-"--priority-workers"
+"Je třeba zadat alespoň jednu z voleb --min-workers, --max-workers, --"
+"priority-workers"
 
 msgid "At least one tty is required"
 msgstr "Je potřeba alespoň jednoho tty"
@@ -2987,8 +2990,8 @@ msgstr ""
 #, c-format
 msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
 msgstr ""
-"Nedaří se nalézt statistiky blkio cgroup (%1$s) pro blokové zařízení '%2$s' "
-"(%3$s)"
+"Nedaří se nalézt statistiky blkio cgroup (%1$s) pro blokové zařízení "
+"'%2$s' (%3$s)"
 
 #, c-format
 msgid "Cannot find boot device of requested type %1$s"
@@ -14651,18 +14654,8 @@ msgstr "Nastavování zásady spouštění disku není ovladačem vz podporován
 msgid "Setting up vlans is not supported by vz driver."
 msgstr "Nastavení vlan není ovladačem vz podporováno."
 
-msgid "Setting vendor or product for scsi disk is not supported by this QEMU"
-msgstr ""
-"Nastavení výrobce nebo produktu pro scsi disk není tímto QEMU podporováno"
-
 msgid "Setting vendor or product is not supported for lun device"
 msgstr "Nastavení výrobce nebo produktu není pro lun zařízení podporováno"
-
-msgid "Setting wwn for ide disk is not supported by this QEMU"
-msgstr "Nastavení wwwn pro ide disk není tímto QEMU podporováno"
-
-msgid "Setting wwn for scsi disk is not supported by this QEMU"
-msgstr "Nastavení wwwn pro scsi disk není tímto QEMU podporováno"
 
 msgid "Setting wwn is not supported for lun device"
 msgstr "Nastavení wwn není pro lun zařízení podporováno"
@@ -16369,11 +16362,6 @@ msgstr "Toto QEMU nepodporuje OpenGL rendernode s typem grafiky egl-headless"
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "Toto QEMU nepodporuje scsi-block pro lun passthrough"
-
-msgid ""
-"This QEMU doesn't support setting the removable flag of USB storage devices"
-msgstr ""
-"Toto QEMU nepodporuje nastavení příznaku vyjímatelné pro USB úložná zařízení"
 
 msgid "This QEMU doesn't support spice OpenGL"
 msgstr "Toto QEmU nepodporuje spice OpenGL"
@@ -20637,6 +20625,9 @@ msgstr "v návratové hodnotě guest-get-vcpus chybí prvek pole"
 msgid "associate a FD with a domain"
 msgstr "přiřadit FD doméně"
 
+msgid "asynchronous teardown is not available with this QEMU binary"
+msgstr ""
+
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
 msgstr ""
@@ -24313,8 +24304,8 @@ msgstr "odebrání síťového zařízení z virt. stroje není podporováno"
 msgid ""
 "detaching of <console/> is unsupported. Try corresponding <serial/> instead"
 msgstr ""
-"odpojení <console/> není podporováno. Zkuste namísto toho odpovídající <"
-"serial/>"
+"odpojení <console/> není podporováno. Zkuste namísto toho odpovídající "
+"<serial/>"
 
 msgid "detaching serial console is not supported"
 msgstr "odpojení sériové konzole není podporováno"
@@ -30093,7 +30084,8 @@ msgstr ""
 "nesprávně formulovaná / chybějící memaddr v sgx-epc informacích o paměti"
 
 msgid "malformed/missing memaddr in virtio memory info"
-msgstr "nesprávně formulované / chybějící memaddr v informacích o virtio paměti"
+msgstr ""
+"nesprávně formulované / chybějící memaddr v informacích o virtio paměti"
 
 msgid "malformed/missing size in sgx-epc memory info"
 msgstr ""
@@ -33983,9 +33975,6 @@ msgstr ""
 msgid "query-block device entry was not in expected format"
 msgstr "položka dotazu blokového zařízení nebyla v očekávaném formátu"
 
-msgid "query-commands reply data was missing 'name'"
-msgstr "v datach odpovědi na query-commands chybělo 'name'"
-
 msgid "query-cpu-definitions reply data was missing 'name'"
 msgstr ""
 "odpověď na query-cpu-definitions (dotaz na definice procesoru) postrádala "
@@ -34154,10 +34143,12 @@ msgstr ""
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr "vlastnost queue-size není touto binárkou QEMU podporována"
 
-msgid "queues attribute in disk driver element is only supported by virtio-blk"
+msgid "queue_size attribute in disk driver is only supported for virtio bus"
 msgstr ""
-"atribut queues (fronty) v prvku ovladače disku je podporován pouze pro "
-"virtio-blk"
+
+msgid ""
+"queues attribute in disk driver element is only supported for virtio bus"
+msgstr ""
 
 msgid "quiesce guest's file systems"
 msgstr "utišit provoz na souborových systémech hosta"
@@ -34335,8 +34326,8 @@ msgstr ""
 "remote_open: transport v URL nerozpoznán (mělo by být tls|unix|ssh|ext|tcp|"
 "libssh2|libssh)"
 
-msgid "removable is only valid for usb disks"
-msgstr "vyjímatelné je platné pouze pro usb disky"
+msgid "removable is only valid for usb or scsi disks"
+msgstr ""
 
 msgid "remove TPM state"
 msgstr "odebrat stav TPM"
@@ -39638,6 +39629,36 @@ msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <řetězec>}…"
+
+#~ msgid ""
+#~ "Setting vendor or product for scsi disk is not supported by this QEMU"
+#~ msgstr ""
+#~ "Nastavení výrobce nebo produktu pro scsi disk není tímto QEMU podporováno"
+
+#~ msgid "Setting wwn for ide disk is not supported by this QEMU"
+#~ msgstr "Nastavení wwwn pro ide disk není tímto QEMU podporováno"
+
+#~ msgid "Setting wwn for scsi disk is not supported by this QEMU"
+#~ msgstr "Nastavení wwwn pro scsi disk není tímto QEMU podporováno"
+
+#~ msgid ""
+#~ "This QEMU doesn't support setting the removable flag of USB storage "
+#~ "devices"
+#~ msgstr ""
+#~ "Toto QEMU nepodporuje nastavení příznaku vyjímatelné pro USB úložná "
+#~ "zařízení"
+
+#~ msgid "query-commands reply data was missing 'name'"
+#~ msgstr "v datach odpovědi na query-commands chybělo 'name'"
+
+#~ msgid ""
+#~ "queues attribute in disk driver element is only supported by virtio-blk"
+#~ msgstr ""
+#~ "atribut queues (fronty) v prvku ovladače disku je podporován pouze pro "
+#~ "virtio-blk"
+
+#~ msgid "removable is only valid for usb disks"
+#~ msgstr "vyjímatelné je platné pouze pro usb disky"
 
 #~ msgid "'floor' attribute allowed only in <inbound> element"
 #~ msgstr ""

@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-06-27 11:10+0000\n"
+"POT-Creation-Date: 2023-07-26 08:28+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -1100,6 +1100,9 @@ msgstr ""
 
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
+msgstr ""
+
+msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
 msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
@@ -14485,18 +14488,8 @@ msgstr "വെണ്ടര്‍ അല്ലെങ്കില്‍ പ്ര�
 msgid "Setting up vlans is not supported by vz driver."
 msgstr "wwn സെറ്റ് ചെയ്യുന്നതു lun ഡിവൈസുകള്‍ക്ക് പിന്തുണയില്ല "
 
-msgid "Setting vendor or product for scsi disk is not supported by this QEMU"
-msgstr ""
-"ഈ scsi ഡിസ്കിനുള്ള കച്ചവടക്കാരന്‍ അല്ലെങ്കില്‍ പ്രൊഡക്ട് സജ്ജമാക്കുന്നതു് ഈ ക്യൂഇഎംയു പിന്തുണയ്ക്കുന്നില്ല"
-
 msgid "Setting vendor or product is not supported for lun device"
 msgstr "വെണ്ടര്‍ അല്ലെങ്കില്‍ പ്രൊഡക്ട്, lun ഡിവൈസിനു് പിന്തുണയ്ക്കുന്നില്ല"
-
-msgid "Setting wwn for ide disk is not supported by this QEMU"
-msgstr "ഒരു ഐഡിഇ ഡിസ്കിനു് wwn സജ്ജമാക്കുന്നതു് ഈ QEMU പിന്തുണയ്ക്കുന്നില്ല"
-
-msgid "Setting wwn for scsi disk is not supported by this QEMU"
-msgstr "സ്കസി ഡിസ്കിനു് wwn സജ്ജമാക്കുന്നതു് ഈ QEMU പിന്തുണയ്ക്കുന്നില്ല"
 
 msgid "Setting wwn is not supported for lun device"
 msgstr "wwn സെറ്റ് ചെയ്യുന്നതു lun ഡിവൈസുകള്‍ക്ക് പിന്തുണയില്ല "
@@ -16160,11 +16153,6 @@ msgstr "ഈ QEMU 7-ല്‍ കൂടുതലുള്ള ലക്ഷ്യ�
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "lun പാസ്ത്രൂവിനു് ഈ QEMU സ്കസി-ബ്ലോക്കിനെ പിന്തുണയ്ക്കുന്നില്ല"
-
-#, fuzzy
-msgid ""
-"This QEMU doesn't support setting the removable flag of USB storage devices"
-msgstr "ഈ QEMU 7-ല്‍ കൂടുതലുള്ള ലക്ഷ്യം പിന്തുണയ്ക്കുന്നില്ല"
 
 #, fuzzy
 msgid "This QEMU doesn't support spice OpenGL"
@@ -20482,6 +20470,9 @@ msgid "array element missing in guest-get-vcpus return value"
 msgstr "guest-get-vcpus തിരികെ ലഭ്യമാക്കുന്ന മൂല്ല്യത്തില്‍ അറേ എലമെന്റ് ലഭ്യമല്ല"
 
 msgid "associate a FD with a domain"
+msgstr ""
+
+msgid "asynchronous teardown is not available with this QEMU binary"
 msgstr ""
 
 msgid ""
@@ -33850,9 +33841,6 @@ msgstr "ഗസ്റ്റിലുള്ള സിപിയു അവസ്ഥ�
 msgid "query-block device entry was not in expected format"
 msgstr "blockstats ഡിവൈസ് എന്‍ട്രി പ്രതീക്ഷിച്ച ശൈലിയിലല്ല"
 
-msgid "query-commands reply data was missing 'name'"
-msgstr "query-commands മറുപടി ഡേറ്റയില്‍ 'name' ലഭ്യമല്ല"
-
 msgid "query-cpu-definitions reply data was missing 'name'"
 msgstr "query-cpu-definitions മറുപടി ഡേറ്റയില്‍ 'name' ലഭ്യമല്ല"
 
@@ -34014,7 +34002,11 @@ msgstr "ക്യൂഇഎംയു ബൈനറി കമ്പ്രസ്സ�
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
 
-msgid "queues attribute in disk driver element is only supported by virtio-blk"
+msgid "queue_size attribute in disk driver is only supported for virtio bus"
+msgstr ""
+
+msgid ""
+"queues attribute in disk driver element is only supported for virtio bus"
 msgstr ""
 
 msgid "quiesce guest's file systems"
@@ -34198,9 +34190,8 @@ msgid ""
 "libssh2|libssh)"
 msgstr ""
 
-#, fuzzy
-msgid "removable is only valid for usb disks"
-msgstr "ആട്ട്രിബ്യൂട്ട് മോഡ് ഗസ്റ്റ്‌ സി.പി.യു.-വിനു മാത്രമേ "
+msgid "removable is only valid for usb or scsi disks"
+msgstr ""
 
 msgid "remove TPM state"
 msgstr ""
@@ -39439,6 +39430,31 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid ""
+#~ "Setting vendor or product for scsi disk is not supported by this QEMU"
+#~ msgstr ""
+#~ "ഈ scsi ഡിസ്കിനുള്ള കച്ചവടക്കാരന്‍ അല്ലെങ്കില്‍ പ്രൊഡക്ട് സജ്ജമാക്കുന്നതു് ഈ ക്യൂഇഎംയു "
+#~ "പിന്തുണയ്ക്കുന്നില്ല"
+
+#~ msgid "Setting wwn for ide disk is not supported by this QEMU"
+#~ msgstr "ഒരു ഐഡിഇ ഡിസ്കിനു് wwn സജ്ജമാക്കുന്നതു് ഈ QEMU പിന്തുണയ്ക്കുന്നില്ല"
+
+#~ msgid "Setting wwn for scsi disk is not supported by this QEMU"
+#~ msgstr "സ്കസി ഡിസ്കിനു് wwn സജ്ജമാക്കുന്നതു് ഈ QEMU പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy
+#~ msgid ""
+#~ "This QEMU doesn't support setting the removable flag of USB storage "
+#~ "devices"
+#~ msgstr "ഈ QEMU 7-ല്‍ കൂടുതലുള്ള ലക്ഷ്യം പിന്തുണയ്ക്കുന്നില്ല"
+
+#~ msgid "query-commands reply data was missing 'name'"
+#~ msgstr "query-commands മറുപടി ഡേറ്റയില്‍ 'name' ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "removable is only valid for usb disks"
+#~ msgstr "ആട്ട്രിബ്യൂട്ട് മോഡ് ഗസ്റ്റ്‌ സി.പി.യു.-വിനു മാത്രമേ "
 
 #~ msgid "'floor' attribute allowed only in <inbound> element"
 #~ msgstr "'floor' വിശേഷത <inbound> എലമെന്റില്‍ മാത്രം അനുവദിയ്ക്കുന്നുള്ളൂ"

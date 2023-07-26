@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-06-27 11:10+0000\n"
+"POT-Creation-Date: 2023-07-26 08:28+0000\n"
 "PO-Revision-Date: 2015-02-23 06:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Gujarati (http://www.transifex.com/projects/p/libvirt/"
@@ -1094,6 +1094,9 @@ msgstr ""
 
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
+msgstr ""
+
+msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
 msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
@@ -14377,17 +14380,8 @@ msgstr "વેન્ડર અથવા પ્રોડક્ટનું સુ
 msgid "Setting up vlans is not supported by vz driver."
 msgstr "wwn ને સુયોજિત કરવાનું lun ઉપકરણ માટે આધારભૂત નથી"
 
-msgid "Setting vendor or product for scsi disk is not supported by this QEMU"
-msgstr "scsi ડિસ્ક માટે વેન્ડર અથવા પ્રોડક્ટનું સુયોજન આ QEMU દ્દારા આધારભૂત નથી"
-
 msgid "Setting vendor or product is not supported for lun device"
 msgstr "વેન્ડર અથવા પ્રોડક્ટનું સુયોજન lun ઉપકરણ માટે આધારભૂત નથી"
-
-msgid "Setting wwn for ide disk is not supported by this QEMU"
-msgstr "ide ડિસ્ક માટે wwn નું સુયોજન આ QEMU દ્દારા આધારભૂત નથી"
-
-msgid "Setting wwn for scsi disk is not supported by this QEMU"
-msgstr "scsi ડિસ્ક માટે wwn સુયોજન આ QEMU દ્દારા આધારભૂત નથી"
 
 msgid "Setting wwn is not supported for lun device"
 msgstr "wwn ને સુયોજિત કરવાનું lun ઉપકરણ માટે આધારભૂત નથી"
@@ -16022,11 +16016,6 @@ msgstr "આ QEMU એ 7 કરતા વધારે લક્ષ્યને આ
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "આ QEMU એ lun પાસથ્રુ માટે scsi-બ્લોકને આધાર આપતુ નથી"
-
-msgid ""
-"This QEMU doesn't support setting the removable flag of USB storage devices"
-msgstr ""
-"આ QEMU એ USB સંગ્રહ ઉપકરણોને દૂર કરી શકાય તેવા ફ્લેગને સુયોજિત કરવા આધાર આપતુ નથી"
 
 #, fuzzy
 msgid "This QEMU doesn't support spice OpenGL"
@@ -20319,6 +20308,9 @@ msgid "array element missing in guest-get-vcpus return value"
 msgstr "guest-get-vcpus પરત કિંમતમાં એરે ઘટક ગેરહાજર"
 
 msgid "associate a FD with a domain"
+msgstr ""
+
+msgid "asynchronous teardown is not available with this QEMU binary"
 msgstr ""
 
 msgid ""
@@ -33626,9 +33618,6 @@ msgstr "મહેમાનમાં cpu સ્થિતિને બદલો"
 msgid "query-block device entry was not in expected format"
 msgstr "blockstats ઉપકરણ નોંધણી એ ઇચ્છિત બંધારણમાં ન હતી"
 
-msgid "query-commands reply data was missing 'name'"
-msgstr "query-commands જવાબ ગુમ થયેલ 'નામ' હતુ"
-
 msgid "query-cpu-definitions reply data was missing 'name'"
 msgstr "query-cpu-definitions જવાબ માહિતી ગુમ થયેલ 'નામ' હતુ"
 
@@ -33790,7 +33779,11 @@ msgstr "સંકોચાયેલ પરિવહન QEMU બાઇનરી �
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
 
-msgid "queues attribute in disk driver element is only supported by virtio-blk"
+msgid "queue_size attribute in disk driver is only supported for virtio bus"
+msgstr ""
+
+msgid ""
+"queues attribute in disk driver element is only supported for virtio bus"
 msgstr ""
 
 msgid "quiesce guest's file systems"
@@ -33974,8 +33967,8 @@ msgid ""
 "libssh2|libssh)"
 msgstr ""
 
-msgid "removable is only valid for usb disks"
-msgstr "દૂર કરી શકાય તેવુ ફક્ત usb ડિસ્ક માટે યોગ્ય છે"
+msgid "removable is only valid for usb or scsi disks"
+msgstr ""
 
 msgid "remove TPM state"
 msgstr ""
@@ -39208,6 +39201,28 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid ""
+#~ "Setting vendor or product for scsi disk is not supported by this QEMU"
+#~ msgstr "scsi ડિસ્ક માટે વેન્ડર અથવા પ્રોડક્ટનું સુયોજન આ QEMU દ્દારા આધારભૂત નથી"
+
+#~ msgid "Setting wwn for ide disk is not supported by this QEMU"
+#~ msgstr "ide ડિસ્ક માટે wwn નું સુયોજન આ QEMU દ્દારા આધારભૂત નથી"
+
+#~ msgid "Setting wwn for scsi disk is not supported by this QEMU"
+#~ msgstr "scsi ડિસ્ક માટે wwn સુયોજન આ QEMU દ્દારા આધારભૂત નથી"
+
+#~ msgid ""
+#~ "This QEMU doesn't support setting the removable flag of USB storage "
+#~ "devices"
+#~ msgstr ""
+#~ "આ QEMU એ USB સંગ્રહ ઉપકરણોને દૂર કરી શકાય તેવા ફ્લેગને સુયોજિત કરવા આધાર આપતુ નથી"
+
+#~ msgid "query-commands reply data was missing 'name'"
+#~ msgstr "query-commands જવાબ ગુમ થયેલ 'નામ' હતુ"
+
+#~ msgid "removable is only valid for usb disks"
+#~ msgstr "દૂર કરી શકાય તેવુ ફક્ત usb ડિસ્ક માટે યોગ્ય છે"
 
 #~ msgid "'floor' attribute allowed only in <inbound> element"
 #~ msgstr "'ફ્લોર' ગુણધર્મ <inbound> ઘટકમાં પરવાનગી મળેલ છે"

@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-06-27 11:10+0000\n"
+"POT-Creation-Date: 2023-07-26 08:28+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -1274,6 +1274,9 @@ msgstr ""
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr "'arch' 要素は 'match' 属性を持つ 'cpu' 要素の内部では使用できません"
+
+msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
+msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'cache' は、存在しない NUMA ノードキャッシュを指します"
@@ -14654,19 +14657,8 @@ msgstr "vz ドライバーでは、ディスク起動ポリシーの設定はサ
 msgid "Setting up vlans is not supported by vz driver."
 msgstr "vz ドライバーでは、VLAN の設定はサポートされません。"
 
-msgid "Setting vendor or product for scsi disk is not supported by this QEMU"
-msgstr ""
-"SCSI ディスクに対するベンダーまたは製品名の設定がこの QEMU によりサポートされ"
-"ません"
-
 msgid "Setting vendor or product is not supported for lun device"
 msgstr "ベンダーまたは製品名の設定は LUN デバイスに対してサポートされません"
-
-msgid "Setting wwn for ide disk is not supported by this QEMU"
-msgstr "IDE ディスクに対する WWN の設定はこの QEMU によりサポートされません"
-
-msgid "Setting wwn for scsi disk is not supported by this QEMU"
-msgstr "SCSI ディスクに対する WWN の設定はこの QEMU によりサポートされません"
 
 msgid "Setting wwn is not supported for lun device"
 msgstr "WWN の設定は LUN デバイスに対してサポートされません"
@@ -16415,12 +16407,6 @@ msgstr ""
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "この QEMU は LUN パススルーに対する SCSI ブロックをサポートしません"
-
-msgid ""
-"This QEMU doesn't support setting the removable flag of USB storage devices"
-msgstr ""
-"この QEMU は、USB ストレージデバイスのリムーバブルフラグの設定をサポートしま"
-"せん"
 
 msgid "This QEMU doesn't support spice OpenGL"
 msgstr "この QEMU は spice OpenGL をサポートしていません"
@@ -20690,6 +20676,9 @@ msgstr "guest-get-vcpus の返り値に配列エレメントがありません"
 
 msgid "associate a FD with a domain"
 msgstr "FD をドメインに関連付けます"
+
+msgid "asynchronous teardown is not available with this QEMU binary"
+msgstr ""
 
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
@@ -33977,9 +33966,6 @@ msgstr "ゲストの vcpu の状態をクエリーまたは変更します (エ�
 msgid "query-block device entry was not in expected format"
 msgstr "query-block デバイスエントリーが予期された形式ではありませんでした"
 
-msgid "query-commands reply data was missing 'name'"
-msgstr "query-commands の応答データに 'name' がありませんでした"
-
 msgid "query-cpu-definitions reply data was missing 'name'"
 msgstr "query-cpu-definitions の応答データに 'name' がありませんでした"
 
@@ -34139,9 +34125,12 @@ msgstr ""
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr "この QEMU バイナリーでは、queue-size プロパティーはサポートされません"
 
-msgid "queues attribute in disk driver element is only supported by virtio-blk"
+msgid "queue_size attribute in disk driver is only supported for virtio bus"
 msgstr ""
-"ディスクドライバー要素の queues 属性は、virtio-blk でのみサポートされます"
+
+msgid ""
+"queues attribute in disk driver element is only supported for virtio bus"
+msgstr ""
 
 msgid "quiesce guest's file systems"
 msgstr "ゲストのファイルシステムの休止"
@@ -34315,8 +34304,8 @@ msgstr ""
 "remote_open: URL のトランスポートが認識されません (tls|unix|ssh|ext|tcp|"
 "libssh2|libssh である必要があります)"
 
-msgid "removable is only valid for usb disks"
-msgstr "USB ディスクのみがリムーバブルをサポートします"
+msgid "removable is only valid for usb or scsi disks"
+msgstr ""
 
 msgid "remove TPM state"
 msgstr "TPM 状態　を削除します"
@@ -39636,6 +39625,37 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid ""
+#~ "Setting vendor or product for scsi disk is not supported by this QEMU"
+#~ msgstr ""
+#~ "SCSI ディスクに対するベンダーまたは製品名の設定がこの QEMU によりサポート"
+#~ "されません"
+
+#~ msgid "Setting wwn for ide disk is not supported by this QEMU"
+#~ msgstr "IDE ディスクに対する WWN の設定はこの QEMU によりサポートされません"
+
+#~ msgid "Setting wwn for scsi disk is not supported by this QEMU"
+#~ msgstr ""
+#~ "SCSI ディスクに対する WWN の設定はこの QEMU によりサポートされません"
+
+#~ msgid ""
+#~ "This QEMU doesn't support setting the removable flag of USB storage "
+#~ "devices"
+#~ msgstr ""
+#~ "この QEMU は、USB ストレージデバイスのリムーバブルフラグの設定をサポートし"
+#~ "ません"
+
+#~ msgid "query-commands reply data was missing 'name'"
+#~ msgstr "query-commands の応答データに 'name' がありませんでした"
+
+#~ msgid ""
+#~ "queues attribute in disk driver element is only supported by virtio-blk"
+#~ msgstr ""
+#~ "ディスクドライバー要素の queues 属性は、virtio-blk でのみサポートされます"
+
+#~ msgid "removable is only valid for usb disks"
+#~ msgstr "USB ディスクのみがリムーバブルをサポートします"
 
 #~ msgid "'floor' attribute allowed only in <inbound> element"
 #~ msgstr "'floor' 属性は <inbound> 要素においてのみ許可されます"

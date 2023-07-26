@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-06-27 11:10+0000\n"
+"POT-Creation-Date: 2023-07-26 08:28+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1224,6 +1224,9 @@ msgstr "“AES-key-wrap”/“DEA-Key-wrap”在此体系结构上不可用"
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr "'arch' 元素不能在 'cpu' 元素与 'match' 属性一同使用"
+
+msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
+msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'cache' 指的是不存在的 NUMA 节点缓存"
@@ -13937,17 +13940,8 @@ msgstr "vz 驱动程序不支持设置磁盘启动策略。"
 msgid "Setting up vlans is not supported by vz driver."
 msgstr "vz 驱动程序不支持设置 vlans。"
 
-msgid "Setting vendor or product for scsi disk is not supported by this QEMU"
-msgstr "这个 QEMU 不支持为 scsi 磁盘设定 vendor 或者 product"
-
 msgid "Setting vendor or product is not supported for lun device"
 msgstr "lun 设备不支持设定 vendor 或者 product"
-
-msgid "Setting wwn for ide disk is not supported by this QEMU"
-msgstr "这个 QEMU 不支持为 ide 磁盘设定 wwn"
-
-msgid "Setting wwn for scsi disk is not supported by this QEMU"
-msgstr "这个 QEMU 不支持为 scsi 磁盘设定 wwn"
 
 msgid "Setting wwn is not supported for lun device"
 msgstr "lun 设备不支持设定 wwn"
@@ -15533,10 +15527,6 @@ msgstr "这个 QEMU 不支持具有 egl-headless 图形类型的 OpenGL renderno
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "这个 QEMU 不支持 lun passthrough 的 scsi-block"
-
-msgid ""
-"This QEMU doesn't support setting the removable flag of USB storage devices"
-msgstr "这个 QEMU 不支持设置 USB 存储设备的可移动标志"
 
 msgid "This QEMU doesn't support spice OpenGL"
 msgstr "此 QEMU 不支持 spice OpenGL"
@@ -19682,6 +19672,9 @@ msgstr "guest-get-vcpus 返回值中缺少阵列"
 
 msgid "associate a FD with a domain"
 msgstr "将 FD 与一个域关联"
+
+msgid "asynchronous teardown is not available with this QEMU binary"
+msgstr ""
 
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
@@ -32408,9 +32401,6 @@ msgstr "查询或修改客户机中 vcpu 的状态（通过代理）"
 msgid "query-block device entry was not in expected format"
 msgstr "query-block 设备条目不是期望的格式"
 
-msgid "query-commands reply data was missing 'name'"
-msgstr "query-commands 回复缺少 'name'"
-
 msgid "query-cpu-definitions reply data was missing 'name'"
 msgstr "query-cpu-definitions 回复缺少 'name'"
 
@@ -32562,8 +32552,12 @@ msgstr "QEMU 二进制文件不支持查询最大 post-copy 迁移速度"
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr "此 QEMU 二进制文件不支持 queue-size 属性"
 
-msgid "queues attribute in disk driver element is only supported by virtio-blk"
-msgstr "磁盘驱动程序元素中的 queues 属性仅被 virtio-blk 支持"
+msgid "queue_size attribute in disk driver is only supported for virtio bus"
+msgstr ""
+
+msgid ""
+"queues attribute in disk driver element is only supported for virtio bus"
+msgstr ""
 
 msgid "quiesce guest's file systems"
 msgstr "静默虚拟机的文件系统"
@@ -32735,8 +32729,8 @@ msgstr ""
 "remote_open：URL 中的传输未被识别（应该为 tls|unix|ssh|ext|tcp|libssh2|"
 "libssh）"
 
-msgid "removable is only valid for usb disks"
-msgstr "removable 只能用于 usb 磁盘"
+msgid "removable is only valid for usb or scsi disks"
+msgstr ""
 
 msgid "remove TPM state"
 msgstr "删除 TPM 状态"
@@ -37822,6 +37816,31 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid ""
+#~ "Setting vendor or product for scsi disk is not supported by this QEMU"
+#~ msgstr "这个 QEMU 不支持为 scsi 磁盘设定 vendor 或者 product"
+
+#~ msgid "Setting wwn for ide disk is not supported by this QEMU"
+#~ msgstr "这个 QEMU 不支持为 ide 磁盘设定 wwn"
+
+#~ msgid "Setting wwn for scsi disk is not supported by this QEMU"
+#~ msgstr "这个 QEMU 不支持为 scsi 磁盘设定 wwn"
+
+#~ msgid ""
+#~ "This QEMU doesn't support setting the removable flag of USB storage "
+#~ "devices"
+#~ msgstr "这个 QEMU 不支持设置 USB 存储设备的可移动标志"
+
+#~ msgid "query-commands reply data was missing 'name'"
+#~ msgstr "query-commands 回复缺少 'name'"
+
+#~ msgid ""
+#~ "queues attribute in disk driver element is only supported by virtio-blk"
+#~ msgstr "磁盘驱动程序元素中的 queues 属性仅被 virtio-blk 支持"
+
+#~ msgid "removable is only valid for usb disks"
+#~ msgstr "removable 只能用于 usb 磁盘"
 
 #~ msgid "'floor' attribute allowed only in <inbound> element"
 #~ msgstr "只在 <inbound> 元素中可使用 'floor' 属性"

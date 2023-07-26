@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-06-27 11:10+0000\n"
+"POT-Creation-Date: 2023-07-26 08:28+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Jérémie Tarot <silopolis@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1313,6 +1313,9 @@ msgid ""
 msgstr ""
 "L'élément 'arch' ne peut pas être utilisé dans l'élément 'cpu' avec "
 "l'attribut 'match'"
+
+msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
+msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "’cache’ fait référence à un cache de nœud NUMA inexistant"
@@ -15190,25 +15193,10 @@ msgstr ""
 msgid "Setting up vlans is not supported by vz driver."
 msgstr "La configuration des vlans n'est pas prise en charge par le pilote vz."
 
-msgid "Setting vendor or product for scsi disk is not supported by this QEMU"
-msgstr ""
-"Le réglage du vendeur ou du produit pour le disque scsi n'est pas pris en "
-"charge par ce QEMU"
-
 msgid "Setting vendor or product is not supported for lun device"
 msgstr ""
 "La définition du fournisseur ou du produit n'est pas prise en charge par "
 "l'appareil lunaire"
-
-msgid "Setting wwn for ide disk is not supported by this QEMU"
-msgstr ""
-"La configuration de wwn pour les disques ide n'est pas prise en charge par "
-"ce QEMU"
-
-msgid "Setting wwn for scsi disk is not supported by this QEMU"
-msgstr ""
-"La configuration de wwn pour les disques scsi n'est pas prise en charge par "
-"ce QEMU"
 
 msgid "Setting wwn is not supported for lun device"
 msgstr "Le paramètre wwn n'est pas pris en charge par l'appareil lun"
@@ -17076,12 +17064,6 @@ msgstr ""
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "Ce QEMU ne prend pas en charge le scsi-block pour le lun passthrough"
-
-msgid ""
-"This QEMU doesn't support setting the removable flag of USB storage devices"
-msgstr ""
-"Ce QEMU ne prend pas en charge le réglage de l’indicateur amovible des "
-"périphériques de stockage USB"
 
 msgid "This QEMU doesn't support spice OpenGL"
 msgstr "Ce QEMU ne prend pas en charge OpenGL spice"
@@ -21474,6 +21456,9 @@ msgstr ""
 
 msgid "associate a FD with a domain"
 msgstr "associer un FD à un domaine"
+
+msgid "asynchronous teardown is not available with this QEMU binary"
+msgstr ""
 
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
@@ -35261,10 +35246,6 @@ msgid "query-block device entry was not in expected format"
 msgstr ""
 "l'entrée du périphérique query-block n'était pas dans le format attendu"
 
-msgid "query-commands reply data was missing 'name'"
-msgstr ""
-"query-commands reply data was missing 'name' (données de réponse manquantes)"
-
 msgid "query-cpu-definitions reply data was missing 'name'"
 msgstr "Les données de réponse de query-cpu-definitions manquent 'name'"
 
@@ -35445,10 +35426,12 @@ msgstr ""
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr "La propriété queue-size n'est pas prise en charge par ce binaire QEMU"
 
-msgid "queues attribute in disk driver element is only supported by virtio-blk"
+msgid "queue_size attribute in disk driver is only supported for virtio bus"
 msgstr ""
-"L'attribut queues de l'élément pilote de disque n'est pris en charge que par "
-"virtio-blk"
+
+msgid ""
+"queues attribute in disk driver element is only supported for virtio bus"
+msgstr ""
 
 msgid "quiesce guest's file systems"
 msgstr "mettre au repos les systèmes de fichiers de l'invité"
@@ -35641,8 +35624,8 @@ msgstr ""
 "remote_open : transport dans l'URL non reconnu (devrait être tls|unix|ssh|"
 "ext|tcp|libssh2|libssh)"
 
-msgid "removable is only valid for usb disks"
-msgstr "l'amovibilité n'est valable que pour les disques usb"
+msgid "removable is only valid for usb or scsi disks"
+msgstr ""
 
 msgid "remove TPM state"
 msgstr "supprimer l'état de TPM"
@@ -41115,6 +41098,43 @@ msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid ""
+#~ "Setting vendor or product for scsi disk is not supported by this QEMU"
+#~ msgstr ""
+#~ "Le réglage du vendeur ou du produit pour le disque scsi n'est pas pris en "
+#~ "charge par ce QEMU"
+
+#~ msgid "Setting wwn for ide disk is not supported by this QEMU"
+#~ msgstr ""
+#~ "La configuration de wwn pour les disques ide n'est pas prise en charge "
+#~ "par ce QEMU"
+
+#~ msgid "Setting wwn for scsi disk is not supported by this QEMU"
+#~ msgstr ""
+#~ "La configuration de wwn pour les disques scsi n'est pas prise en charge "
+#~ "par ce QEMU"
+
+#~ msgid ""
+#~ "This QEMU doesn't support setting the removable flag of USB storage "
+#~ "devices"
+#~ msgstr ""
+#~ "Ce QEMU ne prend pas en charge le réglage de l’indicateur amovible des "
+#~ "périphériques de stockage USB"
+
+#~ msgid "query-commands reply data was missing 'name'"
+#~ msgstr ""
+#~ "query-commands reply data was missing 'name' (données de réponse "
+#~ "manquantes)"
+
+#~ msgid ""
+#~ "queues attribute in disk driver element is only supported by virtio-blk"
+#~ msgstr ""
+#~ "L'attribut queues de l'élément pilote de disque n'est pris en charge que "
+#~ "par virtio-blk"
+
+#~ msgid "removable is only valid for usb disks"
+#~ msgstr "l'amovibilité n'est valable que pour les disques usb"
 
 #~ msgid "'floor' attribute allowed only in <inbound> element"
 #~ msgstr "L'attribut \"floor\" n'est autorisé que dans l'élément <inbound>"

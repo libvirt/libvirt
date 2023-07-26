@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-06-27 11:10+0000\n"
+"POT-Creation-Date: 2023-07-26 08:28+0000\n"
 "PO-Revision-Date: 2021-06-28 06:04+0000\n"
 "Last-Translator: Nathan <nathan95@live.it>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1102,6 +1102,9 @@ msgid ""
 msgstr ""
 "L'elemento 'arch' non può essere usato dentro l'elemento 'cpu' con attributo "
 "'match'"
+
+msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
+msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr ""
@@ -14385,20 +14388,9 @@ msgstr ""
 msgid "Setting up vlans is not supported by vz driver."
 msgstr "il meccanismo SASL %s non è supportato dal server"
 
-msgid "Setting vendor or product for scsi disk is not supported by this QEMU"
-msgstr ""
-
 #, fuzzy
 msgid "Setting vendor or product is not supported for lun device"
 msgstr "Supporto rimovibile non supportato per il dispositivo %s"
-
-#, fuzzy
-msgid "Setting wwn for ide disk is not supported by this QEMU"
-msgstr "grafiche spice non supportate con questo QEMU"
-
-#, fuzzy
-msgid "Setting wwn for scsi disk is not supported by this QEMU"
-msgstr "grafiche spice non supportate con questo QEMU"
 
 #, fuzzy
 msgid "Setting wwn is not supported for lun device"
@@ -16058,10 +16050,6 @@ msgid ""
 msgstr ""
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
-msgstr ""
-
-msgid ""
-"This QEMU doesn't support setting the removable flag of USB storage devices"
 msgstr ""
 
 msgid "This QEMU doesn't support spice OpenGL"
@@ -20460,6 +20448,9 @@ msgid "array element missing in guest-get-vcpus return value"
 msgstr ""
 
 msgid "associate a FD with a domain"
+msgstr ""
+
+msgid "asynchronous teardown is not available with this QEMU binary"
 msgstr ""
 
 msgid ""
@@ -33935,9 +33926,6 @@ msgstr ""
 msgid "query-block device entry was not in expected format"
 msgstr ""
 
-msgid "query-commands reply data was missing 'name'"
-msgstr ""
-
 msgid "query-cpu-definitions reply data was missing 'name'"
 msgstr ""
 
@@ -34089,7 +34077,11 @@ msgstr ""
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
 
-msgid "queues attribute in disk driver element is only supported by virtio-blk"
+msgid "queue_size attribute in disk driver is only supported for virtio bus"
+msgstr ""
+
+msgid ""
+"queues attribute in disk driver element is only supported for virtio bus"
 msgstr ""
 
 msgid "quiesce guest's file systems"
@@ -34271,7 +34263,7 @@ msgid ""
 "libssh2|libssh)"
 msgstr ""
 
-msgid "removable is only valid for usb disks"
+msgid "removable is only valid for usb or scsi disks"
 msgstr ""
 
 msgid "remove TPM state"
@@ -39513,6 +39505,14 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "[--%1$s <string>]"
+
+#, fuzzy
+#~ msgid "Setting wwn for ide disk is not supported by this QEMU"
+#~ msgstr "grafiche spice non supportate con questo QEMU"
+
+#, fuzzy
+#~ msgid "Setting wwn for scsi disk is not supported by this QEMU"
+#~ msgstr "grafiche spice non supportate con questo QEMU"
 
 #~ msgid "'floor' attribute allowed only in <inbound> element"
 #~ msgstr "L'attributo 'floor' è permesso solo in elementi <inbound>"

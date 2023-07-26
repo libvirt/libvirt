@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-06-27 11:10+0000\n"
+"POT-Creation-Date: 2023-07-26 08:28+0000\n"
 "PO-Revision-Date: 2022-01-30 17:16+0000\n"
 "Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1142,6 +1142,9 @@ msgstr ""
 
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
+msgstr ""
+
+msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
 msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
@@ -14818,20 +14821,10 @@ msgstr ""
 msgid "Setting up vlans is not supported by vz driver."
 msgstr "Parámetro  wwn no tiene soporte para dispositivo lun"
 
-msgid "Setting vendor or product for scsi disk is not supported by this QEMU"
-msgstr ""
-"La configuración de proveedor o producto no está soportado por este QEMU"
-
 msgid "Setting vendor or product is not supported for lun device"
 msgstr ""
 "La configuración de proveedor o producto no tiene soporte para un "
 "dispositivo lun"
-
-msgid "Setting wwn for ide disk is not supported by this QEMU"
-msgstr "Este QEMU no soporta parámetro wwn para disco IDE"
-
-msgid "Setting wwn for scsi disk is not supported by this QEMU"
-msgstr "Este QEMU no soporta parámetro wwn para disco SCSI"
 
 msgid "Setting wwn is not supported for lun device"
 msgstr "Parámetro  wwn no tiene soporte para dispositivo lun"
@@ -16601,11 +16594,6 @@ msgstr "Este QEMU no soporta destino mayor que 7"
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "Este QEMU no  soporta  scsi-block para paso de lun"
-
-#, fuzzy
-msgid ""
-"This QEMU doesn't support setting the removable flag of USB storage devices"
-msgstr "Este QEMU no soporta destino mayor que 7"
 
 #, fuzzy
 msgid "This QEMU doesn't support spice OpenGL"
@@ -20960,6 +20948,9 @@ msgid "array element missing in guest-get-vcpus return value"
 msgstr "Falta el elemento array en valor de retorno de guest-get-vcpus"
 
 msgid "associate a FD with a domain"
+msgstr ""
+
+msgid "asynchronous teardown is not available with this QEMU binary"
 msgstr ""
 
 msgid ""
@@ -34555,9 +34546,6 @@ msgstr ""
 "la entrada del dispositivo de estadísticas de bloque no estaba con el "
 "formato esperado"
 
-msgid "query-commands reply data was missing 'name'"
-msgstr "A los datos de  respuesta query-commands les faltan 'name'"
-
 msgid "query-cpu-definitions reply data was missing 'name'"
 msgstr "A la respuesta de definiciones query-cpu le faltan datos de 'name'"
 
@@ -34721,7 +34709,11 @@ msgstr "Binario QEMU no admite migración comprimida"
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
 
-msgid "queues attribute in disk driver element is only supported by virtio-blk"
+msgid "queue_size attribute in disk driver is only supported for virtio bus"
+msgstr ""
+
+msgid ""
+"queues attribute in disk driver element is only supported for virtio bus"
 msgstr ""
 
 msgid "quiesce guest's file systems"
@@ -34908,9 +34900,8 @@ msgid ""
 "libssh2|libssh)"
 msgstr ""
 
-#, fuzzy
-msgid "removable is only valid for usb disks"
-msgstr "El modo de atributo solo es permitido para la CPU del huésped"
+msgid "removable is only valid for usb or scsi disks"
+msgstr ""
 
 msgid "remove TPM state"
 msgstr ""
@@ -40240,6 +40231,30 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid ""
+#~ "Setting vendor or product for scsi disk is not supported by this QEMU"
+#~ msgstr ""
+#~ "La configuración de proveedor o producto no está soportado por este QEMU"
+
+#~ msgid "Setting wwn for ide disk is not supported by this QEMU"
+#~ msgstr "Este QEMU no soporta parámetro wwn para disco IDE"
+
+#~ msgid "Setting wwn for scsi disk is not supported by this QEMU"
+#~ msgstr "Este QEMU no soporta parámetro wwn para disco SCSI"
+
+#, fuzzy
+#~ msgid ""
+#~ "This QEMU doesn't support setting the removable flag of USB storage "
+#~ "devices"
+#~ msgstr "Este QEMU no soporta destino mayor que 7"
+
+#~ msgid "query-commands reply data was missing 'name'"
+#~ msgstr "A los datos de  respuesta query-commands les faltan 'name'"
+
+#, fuzzy
+#~ msgid "removable is only valid for usb disks"
+#~ msgstr "El modo de atributo solo es permitido para la CPU del huésped"
 
 #~ msgid "'floor' attribute allowed only in <inbound> element"
 #~ msgstr "atributo 'floor' permitido únicamente en elemento <inbound>"

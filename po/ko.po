@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-06-27 11:10+0000\n"
+"POT-Creation-Date: 2023-07-26 08:28+0000\n"
 "PO-Revision-Date: 2023-06-29 04:20+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1233,6 +1233,9 @@ msgstr "'aes-key-wrap'/'dea-key-wrap'는 이와 같은 구조에서 사용 할 �
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr "'arch' 요소는 'match' 속성'에 'cpu' 요소안에서 사용 될 수 없습니다"
+
+msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
+msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'캐쉬'는 존재하지 않는 NUMA 노드 캐쉬를 나타냅니다"
@@ -3392,7 +3395,8 @@ msgstr ""
 
 #, c-format
 msgid "Cannot specify relabel if label is missing. model=%1$s"
-msgstr "만약 이름표가 누락되었으면 이름표 재지정을 지정 할 수 없습니다. 모델=%1$s"
+msgstr ""
+"만약 이름표가 누락되었으면 이름표 재지정을 지정 할 수 없습니다. 모델=%1$s"
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -14344,18 +14348,8 @@ msgstr "디스크 시작 정책 설정은 vz 드라이버에서 지원되지 않
 msgid "Setting up vlans is not supported by vz driver."
 msgstr "vlans 설정은 vz 드라이버에서 지원되지 않습니다."
 
-msgid "Setting vendor or product for scsi disk is not supported by this QEMU"
-msgstr ""
-"이 QEMU는 scsi 디스크에 대한 공급업체 또는 제품 설정을 지원하지 않습니다"
-
 msgid "Setting vendor or product is not supported for lun device"
 msgstr "lun 장치에 대해 공급업체 또는 제품 설정이 지원되지 않습니다"
-
-msgid "Setting wwn for ide disk is not supported by this QEMU"
-msgstr "ide 디스크에 대한 설정 wwn은 이 QEMU에서 지원되지 않습니다"
-
-msgid "Setting wwn for scsi disk is not supported by this QEMU"
-msgstr "이 QEMU는 scsi 디스크에 대한 wwn 설정을 지원하지 않습니다"
 
 msgid "Setting wwn is not supported for lun device"
 msgstr "lun 장치에는 wwn 설정이 지원되지 않습니다"
@@ -15487,8 +15481,9 @@ msgstr "대상 최대 메모리 크기 '%1$llu'이(가) 소스 '%2$llu'와 일�
 msgid ""
 "Target memory device address '0x%1$llx' doesn't match source memory device "
 "address '0x%2$llx'"
-msgstr "대상 메모리 장치 주소 '0x%1$llx'는 원천 메모리 장치 주소 '0x%2$llx'와 "
-"일치하지 않습니다"
+msgstr ""
+"대상 메모리 장치 주소 '0x%1$llx'는 원천 메모리 장치 주소 '0x%2$llx'와 일치하"
+"지 않습니다"
 
 #, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -16017,10 +16012,6 @@ msgstr ""
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "이 QEMU는 lun 통과를 위한 scsi-block을 지원하지 않습니다"
-
-msgid ""
-"This QEMU doesn't support setting the removable flag of USB storage devices"
-msgstr "이 QEMU는 USB 저장 장치의 이동식 플래그 설정을 지원하지 않습니다"
 
 msgid "This QEMU doesn't support spice OpenGL"
 msgstr "이 QEMU는 Spice OpenGL을 지원하지 않습니다"
@@ -20210,6 +20201,9 @@ msgstr "guest-get-vcpus 반환 값에 누락된 배열 요소"
 msgid "associate a FD with a domain"
 msgstr "FD를 도메인에 연결"
 
+msgid "asynchronous teardown is not available with this QEMU binary"
+msgstr ""
+
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
 msgstr "Gluster 볼륨에 대한 JSON 지원 정의에 최소 1개의 서버가 필요합니다"
@@ -23374,7 +23368,8 @@ msgstr "dnsmasq 구성 파일 '%1$s'을(를) 쓸 수 없습니다"
 msgid ""
 "count of memory devices requiring memory slots '%1$zu' exceeds slots count "
 "'%2$u'"
-msgstr "메모리 슬롯 '%1$zu'가 필요한 메모리 장치 수는 슬롯 수 '%2$u'를 초과합니다"
+msgstr ""
+"메모리 슬롯 '%1$zu'가 필요한 메모리 장치 수는 슬롯 수 '%2$u'를 초과합니다"
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr "소 기능은 'fs' 및 'dir' 풀에만 사용할 수 있습니다"
@@ -33176,9 +33171,6 @@ msgstr "에이전트를 통해 게스트의 vcpu 상태 쿼리 또는 수정"
 msgid "query-block device entry was not in expected format"
 msgstr "쿼리 블록 장치 항목이 예상 형식이 아닙니다"
 
-msgid "query-commands reply data was missing 'name'"
-msgstr "쿼리 명령 응답 데이터에 '이름'이 누락되었습니다"
-
 msgid "query-cpu-definitions reply data was missing 'name'"
 msgstr "쿼리 CPU 정의 응답 데이터에 '이름'이 누락되었습니다"
 
@@ -33333,8 +33325,12 @@ msgstr "최대 복사-후 이전 속도 쿼리는 QEMU 바이너리에서 지원
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr "이 대기열(queue)-크기 특성은 이 QEMU 바이너리에서 지원되지 않습니다"
 
-msgid "queues attribute in disk driver element is only supported by virtio-blk"
-msgstr "디스크 드라이버 요소의 queues 속성은 virtio-blk에서만 지원됩니다"
+msgid "queue_size attribute in disk driver is only supported for virtio bus"
+msgstr ""
+
+msgid ""
+"queues attribute in disk driver element is only supported for virtio bus"
+msgstr ""
 
 msgid "quiesce guest's file systems"
 msgstr "게스트의 파일 시스템 정지"
@@ -33506,8 +33502,8 @@ msgstr ""
 "remote_open: URL의 전송이 인식되지 않음(tls|unix|ssh|ext|tcp|libssh2|libssh여"
 "야 함)"
 
-msgid "removable is only valid for usb disks"
-msgstr "이동식 USB 디스크에만 유효합니다"
+msgid "removable is only valid for usb or scsi disks"
+msgstr ""
 
 msgid "remove TPM state"
 msgstr "TPM 상태를 제거합니다"
@@ -38708,6 +38704,32 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid ""
+#~ "Setting vendor or product for scsi disk is not supported by this QEMU"
+#~ msgstr ""
+#~ "이 QEMU는 scsi 디스크에 대한 공급업체 또는 제품 설정을 지원하지 않습니다"
+
+#~ msgid "Setting wwn for ide disk is not supported by this QEMU"
+#~ msgstr "ide 디스크에 대한 설정 wwn은 이 QEMU에서 지원되지 않습니다"
+
+#~ msgid "Setting wwn for scsi disk is not supported by this QEMU"
+#~ msgstr "이 QEMU는 scsi 디스크에 대한 wwn 설정을 지원하지 않습니다"
+
+#~ msgid ""
+#~ "This QEMU doesn't support setting the removable flag of USB storage "
+#~ "devices"
+#~ msgstr "이 QEMU는 USB 저장 장치의 이동식 플래그 설정을 지원하지 않습니다"
+
+#~ msgid "query-commands reply data was missing 'name'"
+#~ msgstr "쿼리 명령 응답 데이터에 '이름'이 누락되었습니다"
+
+#~ msgid ""
+#~ "queues attribute in disk driver element is only supported by virtio-blk"
+#~ msgstr "디스크 드라이버 요소의 queues 속성은 virtio-blk에서만 지원됩니다"
+
+#~ msgid "removable is only valid for usb disks"
+#~ msgstr "이동식 USB 디스크에만 유효합니다"
 
 #~ msgid "'floor' attribute allowed only in <inbound> element"
 #~ msgstr "'floor' 속성은 <inbound> 요소에만 허용됩니다"

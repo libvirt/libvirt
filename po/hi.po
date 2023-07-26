@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-06-27 11:10+0000\n"
+"POT-Creation-Date: 2023-07-26 08:28+0000\n"
 "PO-Revision-Date: 2015-02-23 12:39+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hindi (http://www.transifex.com/projects/p/fedora/language/"
@@ -1085,6 +1085,9 @@ msgstr ""
 
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
+msgstr ""
+
+msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
 msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
@@ -14422,20 +14425,8 @@ msgid "Setting up vlans is not supported by vz driver."
 msgstr "SASL यांत्रिकी %s सर्वर के द्वारा समर्थित नहीं है"
 
 #, fuzzy
-msgid "Setting vendor or product for scsi disk is not supported by this QEMU"
-msgstr "पुनर्निर्देशन बस %s QEMU द्वारा समर्थित नहीं है"
-
-#, fuzzy
 msgid "Setting vendor or product is not supported for lun device"
 msgstr "ऑपरेशन डिवाइस के लिए समर्थित नहीं है: %s"
-
-#, fuzzy
-msgid "Setting wwn for ide disk is not supported by this QEMU"
-msgstr "पुनर्निर्देशन बस %s QEMU द्वारा समर्थित नहीं है"
-
-#, fuzzy
-msgid "Setting wwn for scsi disk is not supported by this QEMU"
-msgstr "पुनर्निर्देशन बस %s QEMU द्वारा समर्थित नहीं है"
 
 #, fuzzy
 msgid "Setting wwn is not supported for lun device"
@@ -16059,10 +16050,6 @@ msgid ""
 msgstr ""
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
-msgstr ""
-
-msgid ""
-"This QEMU doesn't support setting the removable flag of USB storage devices"
 msgstr ""
 
 #, fuzzy
@@ -20456,6 +20443,9 @@ msgid "array element missing in guest-get-vcpus return value"
 msgstr ""
 
 msgid "associate a FD with a domain"
+msgstr ""
+
+msgid "asynchronous teardown is not available with this QEMU binary"
 msgstr ""
 
 msgid ""
@@ -33888,10 +33878,6 @@ msgid "query-block device entry was not in expected format"
 msgstr "ब्लॉकस्टैट युक्ति प्रविष्टि प्रत्याशित प्रारूप में नहीं था"
 
 #, fuzzy
-msgid "query-commands reply data was missing 'name'"
-msgstr "query-command-line-options उत्तर वापसी डेटा गायब था "
-
-#, fuzzy
 msgid "query-cpu-definitions reply data was missing 'name'"
 msgstr "query-version जवाब अनुपस्थित 'qemu' डाटा था"
 
@@ -34057,7 +34043,11 @@ msgstr ""
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
 
-msgid "queues attribute in disk driver element is only supported by virtio-blk"
+msgid "queue_size attribute in disk driver is only supported for virtio bus"
+msgstr ""
+
+msgid ""
+"queues attribute in disk driver element is only supported for virtio bus"
 msgstr ""
 
 msgid "quiesce guest's file systems"
@@ -34238,9 +34228,8 @@ msgid ""
 "libssh2|libssh)"
 msgstr ""
 
-#, fuzzy
-msgid "removable is only valid for usb disks"
-msgstr "केवल गेस्ट CPU के लिए विशेषता मोड की अनुमति दी गई है"
+msgid "removable is only valid for usb or scsi disks"
+msgstr ""
 
 msgid "remove TPM state"
 msgstr ""
@@ -39503,6 +39492,27 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, fuzzy
+#~ msgid ""
+#~ "Setting vendor or product for scsi disk is not supported by this QEMU"
+#~ msgstr "पुनर्निर्देशन बस %s QEMU द्वारा समर्थित नहीं है"
+
+#, fuzzy
+#~ msgid "Setting wwn for ide disk is not supported by this QEMU"
+#~ msgstr "पुनर्निर्देशन बस %s QEMU द्वारा समर्थित नहीं है"
+
+#, fuzzy
+#~ msgid "Setting wwn for scsi disk is not supported by this QEMU"
+#~ msgstr "पुनर्निर्देशन बस %s QEMU द्वारा समर्थित नहीं है"
+
+#, fuzzy
+#~ msgid "query-commands reply data was missing 'name'"
+#~ msgstr "query-command-line-options उत्तर वापसी डेटा गायब था "
+
+#, fuzzy
+#~ msgid "removable is only valid for usb disks"
+#~ msgstr "केवल गेस्ट CPU के लिए विशेषता मोड की अनुमति दी गई है"
 
 #~ msgid "'floor' attribute allowed only in <inbound> element"
 #~ msgstr "'फर्श' विशेषता केवल <inbound> तत्व में अनुमति दी गई"

@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-06-27 11:10+0000\n"
+"POT-Creation-Date: 2023-07-26 08:28+0000\n"
 "PO-Revision-Date: 2023-07-20 21:21+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1255,6 +1255,9 @@ msgid ""
 msgstr ""
 "ett ”arch”-element kan inte användas inuti ett ”cpu”-element med attributet "
 "”match”"
+
+msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
+msgstr ""
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "”cache” refererar till en NUMA-nodcaceh som inte finns"
@@ -14528,18 +14531,8 @@ msgstr "Att sätta diskstartsspolicy stödjs inte av vz-drivrutinen."
 msgid "Setting up vlans is not supported by vz driver."
 msgstr "Att sätta upp vlan stödjs inte av vz-drivrutinen."
 
-msgid "Setting vendor or product for scsi disk is not supported by this QEMU"
-msgstr ""
-"Att sätta leverantör eller produkt för en scsi-disk stödjs inte av denna QEMU"
-
 msgid "Setting vendor or product is not supported for lun device"
 msgstr "Att sätta leverantör eller produkt stödjs inte för lun-enheter"
-
-msgid "Setting wwn for ide disk is not supported by this QEMU"
-msgstr "Att sätta wwn för ide-diskar stödjs inte av denna QEMU"
-
-msgid "Setting wwn for scsi disk is not supported by this QEMU"
-msgstr "Att sätta wwn för scsi-diskar stödjs inte av denna QEMU"
 
 msgid "Setting wwn is not supported for lun device"
 msgstr "Att sätta wwn stödjs inte för lun-enheten"
@@ -16216,11 +16209,6 @@ msgstr ""
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "Denna QEMU stödjer inte scsi-block för lun-genomgång"
-
-msgid ""
-"This QEMU doesn't support setting the removable flag of USB storage devices"
-msgstr ""
-"Denna QEMU stödjer inte att sätta flaggan borttagbar på USB-lagringsenheter"
 
 msgid "This QEMU doesn't support spice OpenGL"
 msgstr "Denna QEMU stödjer inte spice-OpenGL"
@@ -20429,6 +20417,9 @@ msgid "array element missing in guest-get-vcpus return value"
 msgstr ""
 
 msgid "associate a FD with a domain"
+msgstr ""
+
+msgid "asynchronous teardown is not available with this QEMU binary"
 msgstr ""
 
 msgid ""
@@ -33586,9 +33577,6 @@ msgstr ""
 msgid "query-block device entry was not in expected format"
 msgstr ""
 
-msgid "query-commands reply data was missing 'name'"
-msgstr ""
-
 msgid "query-cpu-definitions reply data was missing 'name'"
 msgstr ""
 
@@ -33740,7 +33728,11 @@ msgstr ""
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
 
-msgid "queues attribute in disk driver element is only supported by virtio-blk"
+msgid "queue_size attribute in disk driver is only supported for virtio bus"
+msgstr ""
+
+msgid ""
+"queues attribute in disk driver element is only supported for virtio bus"
 msgstr ""
 
 msgid "quiesce guest's file systems"
@@ -33914,7 +33906,7 @@ msgid ""
 "libssh2|libssh)"
 msgstr ""
 
-msgid "removable is only valid for usb disks"
+msgid "removable is only valid for usb or scsi disks"
 msgstr ""
 
 msgid "remove TPM state"
@@ -39071,6 +39063,25 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "--%1$s <sträng>"
+
+#~ msgid ""
+#~ "Setting vendor or product for scsi disk is not supported by this QEMU"
+#~ msgstr ""
+#~ "Att sätta leverantör eller produkt för en scsi-disk stödjs inte av denna "
+#~ "QEMU"
+
+#~ msgid "Setting wwn for ide disk is not supported by this QEMU"
+#~ msgstr "Att sätta wwn för ide-diskar stödjs inte av denna QEMU"
+
+#~ msgid "Setting wwn for scsi disk is not supported by this QEMU"
+#~ msgstr "Att sätta wwn för scsi-diskar stödjs inte av denna QEMU"
+
+#~ msgid ""
+#~ "This QEMU doesn't support setting the removable flag of USB storage "
+#~ "devices"
+#~ msgstr ""
+#~ "Denna QEMU stödjer inte att sätta flaggan borttagbar på USB-"
+#~ "lagringsenheter"
 
 #~ msgid "'floor' attribute allowed only in <inbound> element"
 #~ msgstr "attributet ”floor” är endast tillåtet i elementet <inbound>"
