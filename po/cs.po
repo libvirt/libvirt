@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-07-26 08:28+0000\n"
-"PO-Revision-Date: 2023-07-22 19:20+0000\n"
+"PO-Revision-Date: 2023-07-27 16:21+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/cs/>\n"
@@ -1263,6 +1263,7 @@ msgstr ""
 
 msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
 msgstr ""
+"podpora 'blob' pro virtio-gpu zařízení vyžaduje podpůrnou vrtsvu paměti memfd"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "„cache“ odkazuje na neexistující mezipaměť NUMA uzlu"
@@ -20626,7 +20627,7 @@ msgid "associate a FD with a domain"
 msgstr "přiřadit FD doméně"
 
 msgid "asynchronous teardown is not available with this QEMU binary"
-msgstr ""
+msgstr "asynchronní rozebrání není v případě tohoto sestavení QEMU k dispozici"
 
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
@@ -34145,10 +34146,12 @@ msgstr "vlastnost queue-size není touto binárkou QEMU podporována"
 
 msgid "queue_size attribute in disk driver is only supported for virtio bus"
 msgstr ""
+"atribut queue_size v ovladači disku je podporována pouze pro sběrnici virtio"
 
 msgid ""
 "queues attribute in disk driver element is only supported for virtio bus"
 msgstr ""
+"atribut queues v prvku ovladače disku je podporován pouze pro sběrnici virtio"
 
 msgid "quiesce guest's file systems"
 msgstr "utišit provoz na souborových systémech hosta"
@@ -34327,7 +34330,7 @@ msgstr ""
 "libssh2|libssh)"
 
 msgid "removable is only valid for usb or scsi disks"
-msgstr ""
+msgstr "removable (odebratelné) je platné pouze pro usb nebo scsi disky"
 
 msgid "remove TPM state"
 msgstr "odebrat stav TPM"
