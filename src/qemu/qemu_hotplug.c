@@ -7025,28 +7025,6 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
         return false;
     }
 
-    if (STRNEQ_NULLABLE(oldDef->nvdimmPath, newDef->nvdimmPath)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory path from '%1$s' to '%2$s'"),
-                       NULLSTR(oldDef->nvdimmPath),
-                       NULLSTR(newDef->nvdimmPath));
-        return false;
-    }
-
-    if (oldDef->alignsize != newDef->alignsize) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory align size from '%1$llu' to '%2$llu'"),
-                       oldDef->alignsize, newDef->alignsize);
-        return false;
-    }
-
-    if (oldDef->nvdimmPmem != newDef->nvdimmPmem) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory pmem from '%1$d' to '%2$d'"),
-                       oldDef->nvdimmPmem, newDef->nvdimmPmem);
-        return false;
-    }
-
     if (oldDef->targetNode != newDef->targetNode) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("cannot modify memory targetNode from '%1$d' to '%2$d'"),
@@ -7061,12 +7039,6 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
         return false;
     }
 
-    if (oldDef->labelsize != newDef->labelsize) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot modify memory label size from '%1$llu' to '%2$llu'"),
-                       oldDef->labelsize, newDef->labelsize);
-        return false;
-    }
     if (oldDef->blocksize != newDef->blocksize) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("cannot modify memory block size from '%1$llu' to '%2$llu'"),
@@ -7076,19 +7048,6 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
 
     /* requestedsize can change */
 
-    if (oldDef->readonly != newDef->readonly) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("cannot modify memory pmem flag"));
-        return false;
-    }
-
-    if ((oldDef->uuid || newDef->uuid) &&
-        !(oldDef->uuid && newDef->uuid &&
-          memcmp(oldDef->uuid, newDef->uuid, VIR_UUID_BUFLEN) == 0)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("cannot modify memory UUID"));
-        return false;
-    }
 
     if (oldDef->address != newDef->address) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
