@@ -15253,7 +15253,8 @@ virDomainMemoryFindByDefInternal(virDomainDef *def,
             tmp->targetNode != mem->targetNode ||
             tmp->size != mem->size ||
             tmp->blocksize != mem->blocksize ||
-            tmp->requestedsize != mem->requestedsize)
+            tmp->requestedsize != mem->requestedsize ||
+            tmp->address != mem->address)
             continue;
 
         switch (mem->model) {
