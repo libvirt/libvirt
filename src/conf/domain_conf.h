@@ -2638,6 +2638,9 @@ struct _virDomainMemoryDef {
     virDomainMemoryAccess access;
     virTristateBool discard;
 
+    unsigned long long size; /* kibibytes */
+    int targetNode;
+
     union {
         struct {
             unsigned long long pagesize; /* kibibytes */
@@ -2660,21 +2663,29 @@ struct _virDomainMemoryDef {
         } sgx_epc;
     } source;
 
-    /* target */
-    int targetNode;
-    unsigned long long size; /* kibibytes */
-    unsigned long long labelsize; /* kibibytes; valid only for NVDIMM */
-    unsigned long long blocksize; /* kibibytes; valid only for VIRTIO_MEM */
-    unsigned long long requestedsize; /* kibibytes; valid only for VIRTIO_MEM */
-    unsigned long long currentsize; /* kibibytes, valid for VIRTIO_MEM and
-                                       active domain only, only to report never
-                                       parse */
-    unsigned long long address; /* address where memory is mapped, valid for
-                                   VIRTIO_PMEM and VIRTIO_MEM only. */
-    bool readonly; /* valid only for NVDIMM */
+    union {
+        struct {
+        } dimm;
+        struct {
+            unsigned long long labelsize; /* kibibytes */
+            bool readonly;
 
-    /* required for QEMU NVDIMM ppc64 support */
-    unsigned char *uuid; /* VIR_UUID_BUFLEN bytes long */
+            /* required for QEMU NVDIMM ppc64 support */
+            unsigned char *uuid; /* VIR_UUID_BUFLEN bytes long */
+        } nvdimm;
+        struct {
+            unsigned long long address; /* address where memory is mapped */
+        } virtio_pmem;
+        struct {
+            unsigned long long blocksize; /* kibibytes */
+            unsigned long long requestedsize; /* kibibytes */
+            unsigned long long currentsize; /* kibibytes, valid for an active
+                                               domain only and parsed */
+            unsigned long long address; /* address where memory is mapped */
+        } virtio_mem;
+        struct {
+        } sgx_epc;
+    } target;
 
     virDomainDeviceInfo info;
 };

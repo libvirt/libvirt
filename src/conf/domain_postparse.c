@@ -616,10 +616,10 @@ virDomainMemoryDefPostParse(virDomainMemoryDef *mem,
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         /* If no NVDIMM UUID was provided in XML, generate one. */
         if (ARCH_IS_PPC64(def->os.arch) &&
-            !mem->uuid) {
+            !mem->target.nvdimm.uuid) {
 
-            mem->uuid = g_new0(unsigned char, VIR_UUID_BUFLEN);
-            if (virUUIDGenerate(mem->uuid) < 0) {
+            mem->target.nvdimm.uuid = g_new0(unsigned char, VIR_UUID_BUFLEN);
+            if (virUUIDGenerate(mem->target.nvdimm.uuid) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Failed to generate UUID"));
                 return -1;

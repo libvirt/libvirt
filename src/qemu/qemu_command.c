@@ -3622,6 +3622,10 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
     g_autofree char *uuidstr = NULL;
     virTristateBool unarmed = VIR_TRISTATE_BOOL_ABSENT;
     g_autofree char *memdev = NULL;
+    unsigned long long labelsize = 0;
+    unsigned long long blocksize = 0;
+    unsigned long long requestedsize = 0;
+    unsigned long long address = 0;
     bool prealloc = false;
 
     if (!mem->info.alias) {
@@ -3638,10 +3642,20 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
         break;
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         device = "nvdimm";
+        if (mem->target.nvdimm.readonly)
+            unarmed = VIR_TRISTATE_BOOL_YES;
+
+        if (mem->target.nvdimm.uuid) {
+            uuidstr = g_new0(char, VIR_UUID_STRING_BUFLEN);
+            virUUIDFormat(mem->target.nvdimm.uuid, uuidstr);
+        }
+
+        labelsize = mem->target.nvdimm.labelsize;
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
         device = "virtio-pmem-pci";
+        address = mem->target.virtio_pmem.address;
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
@@ -3650,6 +3664,10 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
         if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI_PREALLOC) &&
             qemuBuildMemoryGetPagesize(cfg, def, mem, NULL, NULL, NULL, &prealloc) < 0)
             return NULL;
+
+        blocksize = mem->target.virtio_mem.blocksize;
+        requestedsize = mem->target.virtio_mem.requestedsize;
+        address = mem->target.virtio_mem.address;
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
@@ -3661,25 +3679,17 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
         break;
     }
 
-    if (mem->readonly)
-        unarmed = VIR_TRISTATE_BOOL_YES;
-
-    if (mem->uuid) {
-        uuidstr = g_new0(char, VIR_UUID_STRING_BUFLEN);
-        virUUIDFormat(mem->uuid, uuidstr);
-    }
-
     if (virJSONValueObjectAdd(&props,
                               "s:driver", device,
                               "k:node", mem->targetNode,
-                              "P:label-size", mem->labelsize * 1024,
-                              "P:block-size", mem->blocksize * 1024,
-                              "P:requested-size", mem->requestedsize * 1024,
+                              "P:label-size", labelsize * 1024,
+                              "P:block-size", blocksize * 1024,
+                              "P:requested-size", requestedsize * 1024,
                               "S:uuid", uuidstr,
                               "T:unarmed", unarmed,
                               "s:memdev", memdev,
                               "B:prealloc", prealloc,
-                              "P:memaddr", mem->address,
+                              "P:memaddr", address,
                               "s:id", mem->info.alias,
                               NULL) < 0)
         return NULL;

@@ -5026,7 +5026,7 @@ qemuValidateDomainDeviceDefMemory(virDomainMemoryDef *mem,
             return -1;
         }
 
-        if (mem->readonly &&
+        if (mem->target.nvdimm.readonly &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM_UNARMED)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("nvdimm readonly property is not available "

@@ -4010,14 +4010,14 @@ processMemoryDeviceSizeChange(virQEMUDriver *driver,
      * It really contains just the balloon size. But in domain
      * definition we want to report also sum of @currentsize. Do
      * a bit of math to fix the domain definition. */
-    balloon = vm->def->mem.cur_balloon - mem->currentsize;
-    mem->currentsize = VIR_DIV_UP(info->size, 1024);
-    balloon += mem->currentsize;
+    balloon = vm->def->mem.cur_balloon - mem->target.virtio_mem.currentsize;
+    mem->target.virtio_mem.currentsize = VIR_DIV_UP(info->size, 1024);
+    balloon += mem->target.virtio_mem.currentsize;
     vm->def->mem.cur_balloon = balloon;
 
     event = virDomainEventMemoryDeviceSizeChangeNewFromObj(vm,
                                                            info->devAlias,
-                                                           mem->currentsize);
+                                                           mem->target.virtio_mem.currentsize);
 
  endjob:
     virDomainObjEndJob(vm);

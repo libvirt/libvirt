@@ -6123,7 +6123,7 @@ qemuDomainNVDimmAlignSizePseries(virDomainMemoryDef *mem)
      * target_size = AlignDown(target_size - label_size) + label_size
      */
     unsigned long long ppc64AlignSize =  256 * 1024;
-    unsigned long long guestArea = mem->size - mem->labelsize;
+    unsigned long long guestArea = mem->size - mem->target.nvdimm.labelsize;
 
     /* Align down guestArea. We can't align down if guestArea is
      * smaller than the 256MiB alignment. */
@@ -6135,7 +6135,7 @@ qemuDomainNVDimmAlignSizePseries(virDomainMemoryDef *mem)
     }
 
     guestArea = (guestArea/ppc64AlignSize) * ppc64AlignSize;
-    mem->size = guestArea + mem->labelsize;
+    mem->size = guestArea + mem->target.nvdimm.labelsize;
 
     return 0;
 }
@@ -8643,11 +8643,12 @@ qemuDomainUpdateMemoryDeviceInfo(virDomainObj *vm,
 
         switch (mem->model) {
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+            mem->target.virtio_mem.currentsize = VIR_DIV_UP(dimm->size, 1024);
+            mem->target.virtio_mem.address = dimm->address;
+            break;
+
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-            if (mem->model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM) {
-                mem->currentsize = VIR_DIV_UP(dimm->size, 1024);
-            }
-            mem->address = dimm->address;
+            mem->target.virtio_pmem.address = dimm->address;
             break;
 
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:

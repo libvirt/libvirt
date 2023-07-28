@@ -1096,7 +1096,7 @@ qemuProcessHandleBalloonChange(qemuMonitor *mon G_GNUC_UNUSED,
     VIR_DEBUG("balloon size before fix is %lld", actual);
     for (i = 0; i < vm->def->nmems; i++) {
         if (vm->def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM)
-            actual += vm->def->mems[i]->currentsize;
+            actual += vm->def->mems[i]->target.virtio_mem.currentsize;
     }
 
     VIR_DEBUG("Updating balloon from %lld to %lld kb",
@@ -2286,7 +2286,7 @@ qemuProcessRefreshBalloonState(virDomainObj *vm,
     VIR_DEBUG("balloon size before fix is %lld", balloon);
     for (i = 0; i < vm->def->nmems; i++) {
         if (vm->def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM)
-            balloon += vm->def->mems[i]->currentsize;
+            balloon += vm->def->mems[i]->target.virtio_mem.currentsize;
     }
     VIR_DEBUG("Updating balloon from %lld to %lld kb",
               vm->def->mem.cur_balloon, balloon);

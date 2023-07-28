@@ -7039,20 +7039,22 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
         return false;
     }
 
-    if (oldDef->blocksize != newDef->blocksize) {
+    if (oldDef->target.virtio_mem.blocksize != newDef->target.virtio_mem.blocksize) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("cannot modify memory block size from '%1$llu' to '%2$llu'"),
-                       oldDef->blocksize, newDef->blocksize);
+                       oldDef->target.virtio_mem.blocksize,
+                       newDef->target.virtio_mem.blocksize);
         return false;
     }
 
     /* requestedsize can change */
 
 
-    if (oldDef->address != newDef->address) {
+    if (oldDef->target.virtio_mem.address != newDef->target.virtio_mem.address) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("cannot modify memory address from '0x%1$llx' to '0x%2$llx'"),
-                       oldDef->address, newDef->address);
+                       oldDef->target.virtio_mem.address,
+                       newDef->target.virtio_mem.address);
         return false;
     }
 
@@ -7087,10 +7089,10 @@ qemuDomainChangeMemoryLive(virQEMUDriver *driver G_GNUC_UNUSED,
         return -1;
 
     if (qemuDomainChangeMemoryRequestedSize(vm, newDef->info.alias,
-                                            newDef->requestedsize) < 0)
+                                            newDef->target.virtio_mem.requestedsize) < 0)
         return -1;
 
-    oldDef->requestedsize = newDef->requestedsize;
+    oldDef->target.virtio_mem.requestedsize = newDef->target.virtio_mem.requestedsize;
     return 0;
 }
 
