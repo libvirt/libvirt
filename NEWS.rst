@@ -33,7 +33,22 @@ v9.6.0 (unreleased)
     ``/disk/target@bus='scsi'``) supports the ``removable`` attribute at
     ``/disk/target@removable```.
 
+  * qemu: Add NUMA node automatically for memory hotplug
+
+    Users no longer need to specify guest NUMA node in the domain XML when
+    enabling memory hotplug, libvirt automatically adds one when it is missing.
+
 * **Bug fixes**
+
+  * qemu: Adapt to new way of specifying PC speaker
+
+    PC speaker is now usable again with newer QEMU since the change of how it
+    is specified on the command line.
+
+  * qemu_tpm: Try harder to create emulator state
+
+    Libvirt no longer considers empty directory valid SWTPM state and setup is
+    now run properly in such case.
 
 
 v9.5.0 (2023-07-03)
