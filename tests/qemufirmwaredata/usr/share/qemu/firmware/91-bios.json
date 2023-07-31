@@ -28,8 +28,5 @@
         "acpi-s4"
     ],
     "tags": [
-        "CONFIG_BOOTSPLASH=n",
-        "CONFIG_ROM_SIZE=256",
-        "CONFIG_USE_SMM=n"
     ]
 }
