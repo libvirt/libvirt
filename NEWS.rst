@@ -13,6 +13,13 @@ v9.6.0 (unreleased)
 
 * **Security**
 
+  * ``CVE-2023-3750``: Fix race condition in storage driver leading to a crash
+
+   In **libvirt-8.3** a bug was introduced which in rare cases could cause
+   ``libvirtd`` or ``virtstoraged`` to crash if multiple clients attempted to
+   look up a storage volume by key, path or target path, while other clients
+   attempted to access something from the same storage pool.
+
 * **Removed features**
 
 * **New features**
@@ -37,6 +44,11 @@ v9.6.0 (unreleased)
 
     Users no longer need to specify guest NUMA node in the domain XML when
     enabling memory hotplug, libvirt automatically adds one when it is missing.
+
+  * qemu: Consider ``BeeGFS`` as a shared filesystem
+
+    Allow migration with non-shared storage for VMs accessing storage via
+    ``BeeGFS``.
 
 * **Bug fixes**
 
