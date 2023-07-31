@@ -19,7 +19,6 @@
 sysconfdir="@sysconfdir@"
 localstatedir="@localstatedir@"
 initconfdir="@initconfdir@"
-libvirtd="@sbindir@"/libvirtd
 
 # Source function library.
 test ! -r "$sysconfdir"/rc.d/init.d/functions ||
