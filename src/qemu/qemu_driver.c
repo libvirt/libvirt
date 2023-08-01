@@ -3998,6 +3998,13 @@ processMemoryDeviceSizeChange(virQEMUDriver *driver,
         goto endjob;
     }
 
+    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM) {
+        VIR_DEBUG("Received MEMORY_DEVICE_SIZE_CHANGE event for unexpected memory model (%s), expected %s",
+                  virDomainMemoryModelTypeToString(mem->model),
+                  virDomainMemoryModelTypeToString(VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM));
+        goto endjob;
+    }
+
     /* If this looks weird it's because it is. The balloon size
      * as reported by QEMU does not include any of @currentsize.
      * It really contains just the balloon size. But in domain
