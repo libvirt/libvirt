@@ -8,7 +8,7 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v9.6.0 (unreleased)
+v9.6.0 (2023-08-01)
 ===================
 
 * **Security**
@@ -19,10 +19,6 @@ v9.6.0 (unreleased)
    ``libvirtd`` or ``virtstoraged`` to crash if multiple clients attempted to
    look up a storage volume by key, path or target path, while other clients
    attempted to access something from the same storage pool.
-
-* **Removed features**
-
-* **New features**
 
 * **Improvements**
 
