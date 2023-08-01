@@ -1359,11 +1359,13 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntry *map,
         return -1;
     }
 
-    for (i = 0; i < num; i++)
+    VIR_DEBUG("Set '%s' mappings to:", path);
+
+    for (i = 0; i < num; i++) {
+        VIR_DEBUG("%u %u %u", map[i].start, map[i].target, map[i].count);
         virBufferAsprintf(&map_value, "%u %u %u\n",
                           map[i].start, map[i].target, map[i].count);
-
-    VIR_DEBUG("Set '%s' to '%s'", path, virBufferCurrentContent(&map_value));
+    }
 
     if (virFileWriteStr(path, virBufferCurrentContent(&map_value), 0) < 0) {
         virReportSystemError(errno, _("unable write to %1$s"), path);
