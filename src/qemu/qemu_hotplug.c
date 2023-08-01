@@ -7090,6 +7090,13 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
         return false;
     }
 
+    if (oldDef->address != newDef->address) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot modify memory address from '0x%1$llx' to '0x%2$llx'"),
+                       oldDef->address, newDef->address);
+        return false;
+    }
+
     return true;
 }
 
