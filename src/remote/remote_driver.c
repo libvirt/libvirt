@@ -3728,8 +3728,6 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
     remote_auth_sasl_init_ret iret;
     remote_auth_sasl_start_args sargs = {0};
     remote_auth_sasl_start_ret sret;
-    remote_auth_sasl_step_args pargs = {0};
-    remote_auth_sasl_step_ret pret;
     const char *clientout;
     char *serverin = NULL;
     size_t clientoutlen, serverinlen;
@@ -3866,6 +3864,9 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
      * Even if the server has completed, the client must *always* do at least one step
      * in this loop to verify the server isn't lying about something. Mutual auth */
     for (;;) {
+        remote_auth_sasl_step_args pargs = { 0 };
+        remote_auth_sasl_step_ret pret = { 0 };
+
         if ((err = virNetSASLSessionClientStep(sasl,
                                                serverin,
                                                serverinlen,
@@ -3893,14 +3894,12 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
 
         /* Not done, prepare to talk with the server for another iteration */
         /* NB, distinction of NULL vs "" is *critical* in SASL */
-        memset(&pargs, 0, sizeof(pargs));
         pargs.nil = clientout ? 0 : 1;
         pargs.data.data_val = (char*)clientout;
         pargs.data.data_len = clientoutlen;
         VIR_DEBUG("Server step with %zu bytes %p",
                   clientoutlen, clientout);
 
-        memset(&pret, 0, sizeof(pret));
         if (call(conn, priv, 0, REMOTE_PROC_AUTH_SASL_STEP,
                  (xdrproc_t) xdr_remote_auth_sasl_step_args, (char *) &pargs,
                  (xdrproc_t) xdr_remote_auth_sasl_step_ret, (char *) &pret) != 0)

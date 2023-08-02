@@ -271,7 +271,6 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
     size_t keyLength;
     char *errmsg;
     g_auto(virBuffer) buff = VIR_BUFFER_INITIALIZER;
-    virConnectCredential askKey;
     struct libssh2_knownhost *knownHostEntry = NULL;
     size_t i;
     char *hostnameStr = NULL;
@@ -303,6 +302,8 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
     case LIBSSH2_KNOWNHOST_CHECK_NOTFOUND:
         /* key was not found, query to add it to database */
         if (sess->hostKeyVerify == VIR_NET_SSH_HOSTKEY_VERIFY_NORMAL) {
+            virConnectCredential askKey = { 0 };
+
             /* ask to add the key */
             if (!sess->cred || !sess->cred->cb) {
                 virReportError(VIR_ERR_SSH, "%s",
@@ -312,8 +313,6 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
             }
 
             /* prepare data for the callback */
-            memset(&askKey, 0, sizeof(virConnectCredential));
-
             for (i = 0; i < sess->cred->ncredtype; i++) {
                 if (sess->cred->credtype[i] == VIR_CRED_ECHOPROMPT)
                     break;

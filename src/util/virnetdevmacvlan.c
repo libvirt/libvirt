@@ -217,12 +217,11 @@ int
 virNetDevMacVLanTapSetup(int *tapfd, size_t tapfdSize, bool vnet_hdr)
 {
     unsigned int features;
-    struct ifreq ifreq;
     short new_flags = 0;
     size_t i;
 
     for (i = 0; i < tapfdSize; i++) {
-        memset(&ifreq, 0, sizeof(ifreq));
+        struct ifreq ifreq = { 0 };
 
         if (ioctl(tapfd[i], TUNGETIFF, &ifreq) < 0) {
             virReportSystemError(errno, "%s",

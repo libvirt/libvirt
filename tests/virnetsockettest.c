@@ -44,8 +44,6 @@ static int
 checkProtocols(bool *hasIPv4, bool *hasIPv6,
                int *freePort)
 {
-    struct sockaddr_in in4;
-    struct sockaddr_in6 in6;
     size_t i;
 
     *freePort = 0;
@@ -53,6 +51,8 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
         return -1;
 
     for (i = 0; i < 50; i++) {
+        struct sockaddr_in in4 = { 0 };
+        struct sockaddr_in6 in6 = { 0 };
         VIR_AUTOCLOSE s4 = -1;
         VIR_AUTOCLOSE s6 = -1;
 
@@ -70,9 +70,6 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
             if (setsockopt(s6, IPPROTO_IPV6, IPV6_V6ONLY, &only, sizeof(only)) < 0)
                 return -1;
         }
-
-        memset(&in4, 0, sizeof(in4));
-        memset(&in6, 0, sizeof(in6));
 
         in4.sin_family = AF_INET;
         in4.sin_port = htons(BASE_PORT + i);

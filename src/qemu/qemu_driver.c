@@ -17124,7 +17124,6 @@ qemuDomainGetStatsInterface(virQEMUDriver *driver G_GNUC_UNUSED,
                             unsigned int privflags G_GNUC_UNUSED)
 {
     size_t i;
-    struct _virDomainInterfaceStats tmp;
 
     if (!virDomainObjIsActive(dom))
         return 0;
@@ -17135,11 +17134,10 @@ qemuDomainGetStatsInterface(virQEMUDriver *driver G_GNUC_UNUSED,
     for (i = 0; i < dom->def->nnets; i++) {
         virDomainNetDef *net = dom->def->nets[i];
         virDomainNetType actualType;
+        struct _virDomainInterfaceStats tmp = { 0 };
 
         if (!net->ifname)
             continue;
-
-        memset(&tmp, 0, sizeof(tmp));
 
         actualType = virDomainNetGetActualType(net);
 

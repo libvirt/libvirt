@@ -172,7 +172,6 @@ int virNetDevTapCreate(char **ifname,
                        unsigned int flags)
 {
     size_t i = 0;
-    struct ifreq ifr;
     int rc;
     int ret = -1;
     int fd = -1;
@@ -204,16 +203,15 @@ int virNetDevTapCreate(char **ifname,
     if (!tunpath)
         tunpath = "/dev/net/tun";
 
-    memset(&ifr, 0, sizeof(ifr));
     for (i = 0; i < tapfdSize; i++) {
+        struct ifreq ifr = { 0 };
+
         if ((fd = open(tunpath, O_RDWR)) < 0) {
             virReportSystemError(errno,
                                  _("Unable to open %1$s, is tun module loaded?"),
                                  tunpath);
             goto cleanup;
         }
-
-        memset(&ifr, 0, sizeof(ifr));
 
         ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
         /* If tapfdSize is greater than one, request multiqueue */
