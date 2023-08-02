@@ -1124,6 +1124,7 @@ virLXCProcessReportStartupLogError(virDomainObj *vm,
 {
     size_t buflen = 1024;
     g_autofree char *errbuf = g_new0(char, buflen);
+    char *p;
     int rc;
 
     if ((rc = virLXCProcessReadLogOutput(vm, logfile, pos, errbuf, buflen)) < 0)
@@ -1131,6 +1132,11 @@ virLXCProcessReportStartupLogError(virDomainObj *vm,
 
     if (rc == 0)
         return 0;
+
+    /* strip last newline */
+    if ((p = strrchr(errbuf, '\n')) &&
+        p[1] == '\0')
+        *p = '\0';
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("guest failed to start: %1$s"), errbuf);
