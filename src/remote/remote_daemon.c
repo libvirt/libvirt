@@ -97,6 +97,7 @@ static int daemonErrorLogFilter(virErrorPtr err, int priority)
     case VIR_ERR_NO_STORAGE_VOL:
     case VIR_ERR_NO_NODE_DEVICE:
     case VIR_ERR_NO_INTERFACE:
+    case VIR_ERR_MULTIPLE_INTERFACES:
     case VIR_ERR_NO_NWFILTER:
     case VIR_ERR_NO_NWFILTER_BINDING:
     case VIR_ERR_NO_SECRET:
