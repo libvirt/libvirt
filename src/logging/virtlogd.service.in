@@ -18,7 +18,7 @@ OOMScoreAdjust=-900
 # Raise hard limits to match behaviour of systemd >= 240.
 # During startup, daemon will set soft limit to match hard limit
 # per systemd recommendations
-LimitNOFile=512000:1024
+LimitNOFILE=1024:524288
 
 [Install]
 Also=virtlogd.socket
