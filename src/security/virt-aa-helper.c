@@ -1433,7 +1433,8 @@ vahParseArgv(vahControl * ctl, int argc, char **argv)
 int
 main(int argc, char **argv)
 {
-    vahControl _ctl, *ctl = &_ctl;
+    vahControl _ctl = { 0 };
+    vahControl *ctl = &_ctl;
     int rc = -1;
     char *profile = NULL;
     char *include_file = NULL;
@@ -1465,8 +1466,6 @@ main(int argc, char **argv)
         progname = argv[0];
     else
         progname++;
-
-    memset(ctl, 0, sizeof(vahControl));
 
     if (vahParseArgv(ctl, argc, argv) != 0)
         vah_error(ctl, 1, _("could not parse arguments"));
