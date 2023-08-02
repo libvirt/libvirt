@@ -1011,6 +1011,7 @@ virLXCProcessReadLogOutputData(virDomainObj *vm,
     int retries = 10;
     int got = 0;
     char *filter_next = buf;
+    bool filtered;
 
     buf[0] = '\0';
 
@@ -1036,11 +1037,13 @@ virLXCProcessReadLogOutputData(virDomainObj *vm,
         buf[got] = '\0';
 
         /* Filter out debug messages from intermediate libvirt process */
+        filtered = false;
         while ((eol = strchr(filter_next, '\n'))) {
             *eol = '\0';
             if (virLXCProcessIgnorableLogLine(filter_next)) {
                 memmove(filter_next, eol + 1, got - (eol - buf));
                 got -= eol + 1 - filter_next;
+                filtered = true;
             } else {
                 filter_next = eol + 1;
                 *eol = '\n';
@@ -1053,6 +1056,9 @@ virLXCProcessReadLogOutputData(virDomainObj *vm,
                            buf);
             return -1;
         }
+
+        if (filtered)
+            continue;
 
         if (isdead)
             return got;
