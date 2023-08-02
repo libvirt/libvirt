@@ -831,12 +831,11 @@ static const vshClientHooks hooks = {
 int
 main(int argc, char **argv)
 {
-    vshControl _ctl, *ctl = &_ctl;
-    virshControl virshCtl;
+    vshControl _ctl = { 0 };
+    vshControl *ctl = &_ctl;
+    virshControl virshCtl = { 0 };
     bool ret = true;
 
-    memset(ctl, 0, sizeof(vshControl));
-    memset(&virshCtl, 0, sizeof(virshControl));
     ctl->name = "virsh";        /* hardcoded name of the binary */
     ctl->env_prefix = "VIRSH";
     ctl->log_fd = -1;           /* Initialize log file descriptor */

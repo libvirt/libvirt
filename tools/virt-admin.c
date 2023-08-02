@@ -1554,12 +1554,11 @@ static const vshClientHooks hooks = {
 int
 main(int argc, char **argv)
 {
-    vshControl _ctl, *ctl = &_ctl;
-    vshAdmControl virtAdminCtl;
+    vshControl _ctl = { 0 };
+    vshControl *ctl = &_ctl;
+    vshAdmControl virtAdminCtl = { 0 };
     bool ret = true;
 
-    memset(ctl, 0, sizeof(vshControl));
-    memset(&virtAdminCtl, 0, sizeof(vshAdmControl));
     ctl->name = "virt-admin";        /* hardcoded name of the binary */
     ctl->env_prefix = "VIRT_ADMIN";
     ctl->log_fd = -1;                /* Initialize log file descriptor */
