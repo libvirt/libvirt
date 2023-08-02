@@ -1575,17 +1575,17 @@ qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
     size_t i;
 
     if (!loader)
-        return 0;
+        return 1;
 
     if (loader->type != VIR_DOMAIN_LOADER_TYPE_PFLASH) {
         VIR_DEBUG("Ignoring legacy entries for '%s' loader",
                   virDomainLoaderTypeToString(loader->type));
-        return 0;
+        return 1;
     }
 
     if (loader->stateless == VIR_TRISTATE_BOOL_YES) {
         VIR_DEBUG("Ignoring legacy entries for stateless loader");
-        return 0;
+        return 1;
     }
 
     if (loader->format != VIR_STORAGE_FILE_RAW) {
