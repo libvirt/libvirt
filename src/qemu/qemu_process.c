@@ -2226,14 +2226,13 @@ qemuRefreshRTC(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     time_t now, then;
-    struct tm thenbits;
+    struct tm thenbits = { 0 };
     long localOffset;
     int rv;
 
     if (vm->def->clock.offset != VIR_DOMAIN_CLOCK_OFFSET_VARIABLE)
         return;
 
-    memset(&thenbits, 0, sizeof(thenbits));
     qemuDomainObjEnterMonitor(vm);
     now = time(NULL);
     rv = qemuMonitorGetRTCTime(priv->mon, &thenbits);

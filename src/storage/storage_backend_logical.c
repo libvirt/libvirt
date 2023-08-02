@@ -186,10 +186,8 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDef *vol,
      */
     for (i = 0; i < nextents; i++) {
         g_autofree char *offset_str = NULL;
-        virStorageVolSourceExtent extent;
+        virStorageVolSourceExtent extent = { 0 };
         size_t j = (i * 2) + 1;
-
-        memset(&extent, 0, sizeof(extent));
 
         offset_str = g_match_info_fetch(info, j + 1);
 
@@ -503,13 +501,12 @@ static char *
 virStorageBackendLogicalFindPoolSources(const char *srcSpec G_GNUC_UNUSED,
                                         unsigned int flags)
 {
-    virStoragePoolSourceList sourceList;
+    virStoragePoolSourceList sourceList = { 0 };
     size_t i;
     char *retval = NULL;
 
     virCheckFlags(0, NULL);
 
-    memset(&sourceList, 0, sizeof(sourceList));
     sourceList.type = VIR_STORAGE_POOL_LOGICAL;
 
     if (virStorageBackendLogicalGetPoolSources(&sourceList) < 0)
@@ -549,13 +546,12 @@ static bool
 virStorageBackendLogicalMatchPoolSource(virStoragePoolObj *pool)
 {
     virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
-    virStoragePoolSourceList sourceList;
+    virStoragePoolSourceList sourceList = { 0 };
     virStoragePoolSource *thisSource = NULL;
     size_t i, j;
     int matchcount = 0;
     bool ret = false;
 
-    memset(&sourceList, 0, sizeof(sourceList));
     sourceList.type = VIR_STORAGE_POOL_LOGICAL;
 
     if (virStorageBackendLogicalGetPoolSources(&sourceList) < 0)

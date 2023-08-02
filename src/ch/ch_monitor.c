@@ -468,7 +468,7 @@ virCHMonitorBuildVMJson(virDomainDef *vmdef,
 static int
 chMonitorCreateSocket(const char *socket_path)
 {
-    struct sockaddr_un addr;
+    struct sockaddr_un addr = { 0 };
     socklen_t addrlen = sizeof(addr);
     int fd;
 
@@ -478,7 +478,6 @@ chMonitorCreateSocket(const char *socket_path)
         goto error;
     }
 
-    memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
     if (virStrcpyStatic(addr.sun_path, socket_path) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

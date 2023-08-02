@@ -1073,9 +1073,7 @@ static int
 x86ParseMSR(xmlNodePtr node,
             virCPUx86DataItem *item)
 {
-    virCPUx86MSR msr;
-
-    memset(&msr, 0, sizeof(msr));
+    virCPUx86MSR msr = { 0 };
 
     if (virXMLPropUInt(node, "index", 0, VIR_XML_PROP_REQUIRED, &msr.index) < 0)
         return -1;

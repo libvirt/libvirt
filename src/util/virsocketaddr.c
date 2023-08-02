@@ -92,7 +92,7 @@ virSocketAddrParseInternal(struct addrinfo **res,
                            int ai_flags,
                            bool reportError)
 {
-    struct addrinfo hints;
+    struct addrinfo hints = { 0 };
     int err;
 
     if (val == NULL) {
@@ -101,7 +101,6 @@ virSocketAddrParseInternal(struct addrinfo **res,
         return -1;
     }
 
-    memset(&hints, 0, sizeof(hints));
     hints.ai_family = family;
     hints.ai_flags = ai_flags;
     if ((err = getaddrinfo(val, NULL, &hints, res)) != 0) {
@@ -240,11 +239,9 @@ virSocketAddrParseIPv6(virSocketAddr *addr, const char *val)
 int virSocketAddrResolveService(const char *service)
 {
     struct addrinfo *res, *tmp;
-    struct addrinfo hints;
+    struct addrinfo hints = { 0 };
     int err;
     int port = -1;
-
-    memset(&hints, 0, sizeof(hints));
 
     if ((err = getaddrinfo(NULL, service, &hints, &res)) != 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,

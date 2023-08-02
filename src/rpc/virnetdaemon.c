@@ -692,7 +692,7 @@ virNetDaemonAddSignalHandler(virNetDaemon *dmn,
                              void *opaque)
 {
     g_autofree virNetDaemonSignal *sigdata = NULL;
-    struct sigaction sig_action;
+    struct sigaction sig_action = { 0 };
     VIR_LOCK_GUARD lock = virObjectLockGuard(dmn);
 
     if (virNetDaemonSignalSetup(dmn) < 0)
@@ -706,7 +706,6 @@ virNetDaemonAddSignalHandler(virNetDaemon *dmn,
     sigdata->func = func;
     sigdata->opaque = opaque;
 
-    memset(&sig_action, 0, sizeof(sig_action));
     sig_action.sa_sigaction = virNetDaemonSignalHandler;
     sig_action.sa_flags = SA_SIGINFO;
     sigemptyset(&sig_action.sa_mask);

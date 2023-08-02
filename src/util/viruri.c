@@ -201,11 +201,9 @@ virURIParse(const char *uri)
 char *
 virURIFormat(virURI *uri)
 {
-    xmlURI xmluri;
+    xmlURI xmluri = { 0 };
     g_autofree char *tmpserver = NULL;
     char *ret;
-
-    memset(&xmluri, 0, sizeof(xmluri));
 
     xmluri.scheme = uri->scheme;
     xmluri.server = uri->server;

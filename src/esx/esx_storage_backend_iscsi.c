@@ -302,11 +302,9 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     esxPrivate *priv = pool->conn->privateData;
     esxVI_HostInternetScsiHba *hostInternetScsiHba = NULL;
     esxVI_HostInternetScsiHbaStaticTarget *target;
-    virStoragePoolDef def;
+    virStoragePoolDef def = { 0 };
 
     virCheckFlags(0, NULL);
-
-    memset(&def, 0, sizeof(def));
 
     if (esxVI_LookupHostInternetScsiHba(priv->primary, &hostInternetScsiHba))
         goto cleanup;
@@ -664,19 +662,16 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
 {
     char *xml = NULL;
     esxPrivate *priv = volume->conn->privateData;
-    virStoragePoolDef pool;
+    virStoragePoolDef pool = { 0 };
     esxVI_ScsiLun *scsiLunList = NULL;
     esxVI_ScsiLun *scsiLun;
     esxVI_HostScsiDisk *hostScsiDisk = NULL;
-    virStorageVolDef def;
+    virStorageVolDef def = { 0 };
     /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
     unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5];
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
 
     virCheckFlags(0, NULL);
-
-    memset(&pool, 0, sizeof(pool));
-    memset(&def, 0, sizeof(def));
 
     if (esxVI_LookupScsiLunList(priv->primary, &scsiLunList) < 0)
         goto cleanup;

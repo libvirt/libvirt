@@ -817,7 +817,7 @@ virNWFilterSnoopDHCPDecode(virNWFilterSnoopReq *req,
     struct iphdr *pip;
     struct udphdr *pup;
     virNWFilterSnoopDHCPHdr *pd;
-    virNWFilterSnoopIPLease ipl;
+    virNWFilterSnoopIPLease ipl = { 0 };
     uint8_t mtype;
     uint32_t leasetime;
     uint32_t nwint;
@@ -862,8 +862,6 @@ virNWFilterSnoopDHCPDecode(virNWFilterSnoopReq *req,
 
     if (virNWFilterSnoopDHCPGetOpt(pd, len, &mtype, &leasetime) < 0)
         return -2;
-
-    memset(&ipl, 0, sizeof(ipl));
 
     memcpy(&nwint, &pd->d_yiaddr, sizeof(nwint));
     virSocketAddrSetIPv4AddrNetOrder(&ipl.ipAddress, nwint);

@@ -2235,10 +2235,9 @@ static int
 virLXCControllerEventSendExit(virLXCController *ctrl,
                               int exitstatus)
 {
-    virLXCMonitorExitEventMsg msg;
+    virLXCMonitorExitEventMsg msg = { 0 };
 
     VIR_DEBUG("Exit status %d (client=%p)", exitstatus, ctrl->client);
-    memset(&msg, 0, sizeof(msg));
     switch (exitstatus) {
     case 0:
         msg.status = VIR_LXC_MONITOR_EXIT_STATUS_SHUTDOWN;
@@ -2272,10 +2271,9 @@ static int
 virLXCControllerEventSendInit(virLXCController *ctrl,
                               pid_t initpid)
 {
-    virLXCMonitorInitEventMsg msg;
+    virLXCMonitorInitEventMsg msg = { 0 };
 
     VIR_DEBUG("Init pid %lld", (long long)initpid);
-    memset(&msg, 0, sizeof(msg));
     msg.initpid = initpid;
 
     virLXCControllerEventSend(ctrl,

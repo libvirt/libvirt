@@ -442,14 +442,12 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     esxVI_DatastoreHostMount *hostMount = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_Boolean accessible = esxVI_Boolean_Undefined;
-    virStoragePoolDef def;
+    virStoragePoolDef def = { 0 };
     esxVI_DatastoreInfo *info = NULL;
     esxVI_NasDatastoreInfo *nasInfo = NULL;
     char *xml = NULL;
 
     virCheckFlags(0, NULL);
-
-    memset(&def, 0, sizeof(def));
 
     if (esxVI_String_AppendValueListToList(&propertyNameList,
                                            "summary.accessible\0"
@@ -833,7 +831,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
 {
     virStorageVolPtr volume = NULL;
     esxPrivate *priv = pool->conn->privateData;
-    virStoragePoolDef poolDef;
+    virStoragePoolDef poolDef = { 0 };
     char *tmp;
     g_autofree char *unescapedDatastorePath = NULL;
     g_autofree char *unescapedDirectoryName = NULL;
@@ -852,8 +850,6 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
     g_autoptr(virStorageVolDef) def = NULL;
 
     virCheckFlags(0, NULL);
-
-    memset(&poolDef, 0, sizeof(poolDef));
 
     if (esxLookupVMFSStoragePoolType(priv->primary, pool->name,
                                      &poolDef.type) < 0) {
@@ -1032,7 +1028,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
 {
     virStorageVolPtr volume = NULL;
     esxPrivate *priv = pool->conn->privateData;
-    virStoragePoolDef poolDef;
+    virStoragePoolDef poolDef = { 0 };
     g_autofree char *sourceDatastorePath = NULL;
     char *tmp;
     g_autofree char *unescapedDatastorePath = NULL;
@@ -1051,8 +1047,6 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     g_autoptr(virStorageVolDef) def = NULL;
 
     virCheckFlags(0, NULL);
-
-    memset(&poolDef, 0, sizeof(poolDef));
 
     if (esxLookupVMFSStoragePoolType(priv->primary, pool->name,
                                      &poolDef.type) < 0) {
@@ -1312,19 +1306,16 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
                         unsigned int flags)
 {
     esxPrivate *priv = volume->conn->privateData;
-    virStoragePoolDef pool;
+    virStoragePoolDef pool = { 0 };
     g_autofree char *datastorePath = NULL;
     esxVI_FileInfo *fileInfo = NULL;
     esxVI_VmDiskFileInfo *vmDiskFileInfo = NULL;
     esxVI_IsoImageFileInfo *isoImageFileInfo = NULL;
     esxVI_FloppyImageFileInfo *floppyImageFileInfo = NULL;
-    virStorageVolDef def;
+    virStorageVolDef def = { 0 };
     char *xml = NULL;
 
     virCheckFlags(0, NULL);
-
-    memset(&pool, 0, sizeof(pool));
-    memset(&def, 0, sizeof(def));
 
     if (esxLookupVMFSStoragePoolType(priv->primary, volume->pool,
                                      &pool.type) < 0) {

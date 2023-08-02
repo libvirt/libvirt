@@ -2748,10 +2748,8 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDef *def,
     size_t i;
     int ret = -1;
     virNetworkIPDef *ipdef = virNetworkIPDefByIndex(def, parentIndex);
-    virNetworkDHCPHostDef host;
+    virNetworkDHCPHostDef host = { 0 };
     bool partialOkay = (command == VIR_NETWORK_UPDATE_COMMAND_DELETE);
-
-    memset(&host, 0, sizeof(host));
 
     if (virNetworkDefUpdateCheckElementName(def, ctxt->node, "host") < 0)
         goto cleanup;
@@ -2881,9 +2879,7 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDef *def,
 {
     size_t i;
     virNetworkIPDef *ipdef = virNetworkIPDefByIndex(def, parentIndex);
-    virNetworkDHCPRangeDef range;
-
-    memset(&range, 0, sizeof(range));
+    virNetworkDHCPRangeDef range = { 0 };
 
     if (virNetworkDefUpdateCheckElementName(def, ctxt->node, "range") < 0)
         return -1;
@@ -2990,9 +2986,7 @@ virNetworkDefUpdateForwardInterface(virNetworkDef *def,
 {
     size_t i;
     int ret = -1;
-    virNetworkForwardIfDef iface;
-
-    memset(&iface, 0, sizeof(iface));
+    virNetworkForwardIfDef iface = { 0 };
 
     if (virNetworkDefUpdateCheckElementName(def, ctxt->node, "interface") < 0)
         goto cleanup;
@@ -3094,9 +3088,7 @@ virNetworkDefUpdatePortGroup(virNetworkDef *def,
     size_t i;
     int foundName = -1, foundDefault = -1;
     int ret = -1;
-    virPortGroupDef portgroup;
-
-    memset(&portgroup, 0, sizeof(portgroup));
+    virPortGroupDef portgroup = { 0 };
 
     if (virNetworkDefUpdateCheckElementName(def, ctxt->node, "portgroup") < 0)
         goto cleanup;
@@ -3184,12 +3176,10 @@ virNetworkDefUpdateDNSHost(virNetworkDef *def,
     size_t i, j, k;
     int foundIdx = -1, ret = -1;
     virNetworkDNSDef *dns = &def->dns;
-    virNetworkDNSHostDef host;
+    virNetworkDNSHostDef host = { 0 };
     bool isAdd = (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST ||
                   command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST);
     int foundCt = 0;
-
-    memset(&host, 0, sizeof(host));
 
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -3283,12 +3273,10 @@ virNetworkDefUpdateDNSSrv(virNetworkDef *def,
     size_t i;
     int foundIdx = -1, ret = -1;
     virNetworkDNSDef *dns = &def->dns;
-    virNetworkDNSSrvDef srv;
+    virNetworkDNSSrvDef srv = { 0 };
     bool isAdd = (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST ||
                   command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST);
     int foundCt = 0;
-
-    memset(&srv, 0, sizeof(srv));
 
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -3368,11 +3356,9 @@ virNetworkDefUpdateDNSTxt(virNetworkDef *def,
 {
     int foundIdx, ret = -1;
     virNetworkDNSDef *dns = &def->dns;
-    virNetworkDNSTxtDef txt;
+    virNetworkDNSTxtDef txt = { 0 };
     bool isAdd = (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST ||
                   command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST);
-
-    memset(&txt, 0, sizeof(txt));
 
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",

@@ -272,12 +272,10 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
 int
 esxUtil_ResolveHostname(const char *hostname, char **ipAddress)
 {
-    struct addrinfo hints;
+    struct addrinfo hints = { 0 };
     struct addrinfo *result = NULL;
     int errcode;
     g_autofree char *address = NULL;
-
-    memset(&hints, 0, sizeof(hints));
 
     hints.ai_flags = AI_ADDRCONFIG;
     hints.ai_family = AF_INET;

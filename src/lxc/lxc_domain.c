@@ -339,12 +339,10 @@ virLXCDomainSetRunlevel(virDomainObj *vm,
                         int runlevel)
 {
     virLXCDomainObjPrivate *priv = vm->privateData;
-    lxcDomainInitctlCallbackData data;
+    lxcDomainInitctlCallbackData data = { 0 };
     size_t nfifos = 0;
     size_t i;
     int ret = -1;
-
-    memset(&data, 0, sizeof(data));
 
     data.runlevel = runlevel;
 

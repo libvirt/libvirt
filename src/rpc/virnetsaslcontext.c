@@ -331,7 +331,7 @@ int virNetSASLSessionSecProps(virNetSASLSession *sasl,
                               int maxSSF,
                               bool allowAnonymous)
 {
-    sasl_security_properties_t secprops;
+    sasl_security_properties_t secprops = { 0 };
     int err;
     int ret = -1;
 
@@ -339,7 +339,6 @@ int virNetSASLSessionSecProps(virNetSASLSession *sasl,
               minSSF, maxSSF, allowAnonymous, sasl->maxbufsize);
 
     virObjectLock(sasl);
-    memset(&secprops, 0, sizeof(secprops));
 
     secprops.min_ssf = minSSF;
     secprops.max_ssf = maxSSF;

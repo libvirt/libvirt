@@ -876,14 +876,13 @@ int virFileLoopDeviceAssociate(const char *file,
 {
     int lofd = -1;
     int fsfd = -1;
-    struct loop_info64 lo;
+    struct loop_info64 lo = { 0 };
     g_autofree char *loname = NULL;
     int ret = -1;
 
     if ((lofd = virFileLoopDeviceOpen(&loname)) < 0)
         return -1;
 
-    memset(&lo, 0, sizeof(lo));
     lo.lo_flags = LO_FLAGS_AUTOCLEAR;
 
     /* Set backing file name for LOOP_GET_STATUS64 queries */

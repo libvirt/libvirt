@@ -203,7 +203,7 @@ virPerfEventEnable(virPerf *perf,
                    virPerfEventType type,
                    pid_t pid)
 {
-    struct perf_event_attr attr;
+    struct perf_event_attr attr = { 0 };
     struct virPerfEvent *event = &(perf->events[type]);
     struct virPerfEventAttr *event_attr = &attrs[type];
 
@@ -233,7 +233,6 @@ virPerfEventEnable(virPerf *perf,
         }
     }
 
-    memset(&attr, 0, sizeof(attr));
     attr.size = sizeof(attr);
     attr.inherit = 1;
     attr.disabled = 1;

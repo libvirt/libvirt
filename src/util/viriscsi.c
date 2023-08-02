@@ -394,7 +394,7 @@ virISCSIScanTargetsInternal(const char *portal,
         "^\\s*(\\S+)\\s+(\\S+)\\s*$"
     };
     int vars[] = { 2 };
-    struct virISCSITargetList list;
+    struct virISCSITargetList list = { 0 };
     size_t i;
     g_autoptr(virCommand) cmd = virCommandNewArgList(ISCSIADM,
                                                        "--mode", "discovery",
@@ -413,8 +413,6 @@ virISCSIScanTargetsInternal(const char *portal,
                              "--interface", ifacename,
                              NULL);
     }
-
-    memset(&list, 0, sizeof(list));
 
     if (virCommandRunRegex(cmd,
                            1,

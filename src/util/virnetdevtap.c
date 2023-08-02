@@ -270,7 +270,7 @@ int virNetDevTapCreate(char **ifname,
 int virNetDevTapDelete(const char *ifname,
                        const char *tunpath)
 {
-    struct ifreq try;
+    struct ifreq try = { 0 };
     int fd;
     int ret = -1;
 
@@ -284,7 +284,6 @@ int virNetDevTapDelete(const char *ifname,
         return -1;
     }
 
-    memset(&try, 0, sizeof(struct ifreq));
     try.ifr_flags = IFF_TAP|IFF_NO_PI;
 
     if (virStrcpyStatic(try.ifr_name, ifname) < 0) {

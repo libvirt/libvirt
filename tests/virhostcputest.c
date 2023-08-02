@@ -30,7 +30,7 @@ linuxTestCompareFiles(const char *cpuinfofile,
                       const char *outputfile)
 {
     g_autofree char *actualData = NULL;
-    virNodeInfo nodeinfo;
+    virNodeInfo nodeinfo = { 0 };
     g_autoptr(FILE) cpuinfo = NULL;
 
     cpuinfo = fopen(cpuinfofile, "r");
@@ -40,7 +40,6 @@ linuxTestCompareFiles(const char *cpuinfofile,
         return -1;
     }
 
-    memset(&nodeinfo, 0, sizeof(nodeinfo));
     if (virHostCPUGetInfoPopulateLinux(cpuinfo, arch,
                                        &nodeinfo.cpus, &nodeinfo.mhz,
                                        &nodeinfo.nodes, &nodeinfo.sockets,

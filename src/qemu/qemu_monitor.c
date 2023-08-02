@@ -227,7 +227,7 @@ qemuMonitorDispose(void *obj)
 static int
 qemuMonitorOpenUnix(const char *monitor)
 {
-    struct sockaddr_un addr;
+    struct sockaddr_un addr = { 0 };
     VIR_AUTOCLOSE monfd = -1;
     int ret = -1;
 
@@ -237,7 +237,6 @@ qemuMonitorOpenUnix(const char *monitor)
         return -1;
     }
 
-    memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
     if (virStrcpyStatic(addr.sun_path, monitor) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -309,13 +308,12 @@ qemuMonitorIOWriteWithFD(qemuMonitor *mon,
                          size_t len,
                          int fd)
 {
-    struct msghdr msg;
+    struct msghdr msg = { 0 };
     struct iovec iov[1];
     int ret;
     char control[CMSG_SPACE(sizeof(int))];
     struct cmsghdr *cmsg;
 
-    memset(&msg, 0, sizeof(msg));
     memset(control, 0, sizeof(control));
 
     iov[0].iov_base = (void *)data;

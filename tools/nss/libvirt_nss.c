@@ -484,13 +484,12 @@ aiforaf(const char *name, int af, struct addrinfo *pai, struct addrinfo **aip)
             struct sockaddr sa;
             struct sockaddr_in sin;
             struct sockaddr_in6 sin6;
-        } sa;
+        } sa = { 0 };
         socklen_t salen;
         void *address = *addrList;
         char host[NI_MAXHOST];
         char port[NI_MAXSERV];
 
-        memset(&sa, 0, sizeof(sa));
         if (resolved.h_addrtype == AF_INET) {
             sa.sin.sin_family = AF_INET;
             memcpy(&sa.sin.sin_addr.s_addr,

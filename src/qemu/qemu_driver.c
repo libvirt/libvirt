@@ -14933,8 +14933,8 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     qemuDomainObjPrivate *priv;
     virDomainDef *def = NULL;
     virDomainDef *persistentDef = NULL;
-    virDomainBlockIoTuneInfo info;
-    virDomainBlockIoTuneInfo conf_info;
+    virDomainBlockIoTuneInfo info = { 0 };
+    virDomainBlockIoTuneInfo conf_info = { 0 };
     int ret = -1;
     size_t i;
     virDomainDiskDef *conf_disk = NULL;
@@ -14994,9 +14994,6 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
                                VIR_TYPED_PARAM_ULLONG,
                                NULL) < 0)
         return -1;
-
-    memset(&info, 0, sizeof(info));
-    memset(&conf_info, 0, sizeof(conf_info));
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;

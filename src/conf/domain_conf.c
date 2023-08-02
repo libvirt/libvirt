@@ -28859,9 +28859,7 @@ int
 virDomainGraphicsListenAppendAddress(virDomainGraphicsDef *def,
                                      const char *address)
 {
-    virDomainGraphicsListenDef glisten;
-
-    memset(&glisten, 0, sizeof(glisten));
+    virDomainGraphicsListenDef glisten = { 0 };
 
     glisten.type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
 
@@ -28877,9 +28875,7 @@ int
 virDomainGraphicsListenAppendSocket(virDomainGraphicsDef *def,
                                     const char *socketPath)
 {
-    virDomainGraphicsListenDef glisten;
-
-    memset(&glisten, 0, sizeof(glisten));
+    virDomainGraphicsListenDef glisten = { 0 };
 
     glisten.type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET;
 

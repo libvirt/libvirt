@@ -396,7 +396,7 @@ vboxStorageVolCreateXML(virStoragePoolPtr pool,
     struct _vboxDriver *data = pool->conn->privateData;
     PRUnichar *hddFormatUtf16 = NULL;
     PRUnichar *hddNameUtf16 = NULL;
-    virStoragePoolDef poolDef;
+    virStoragePoolDef poolDef = { 0 };
     nsresult rc;
     vboxIID hddIID;
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -424,7 +424,6 @@ vboxStorageVolCreateXML(virStoragePoolPtr pool,
      * so just assign it for now, change the behaviour
      * when vbox supports pools.
      */
-    memset(&poolDef, 0, sizeof(poolDef));
     poolDef.type = VIR_STORAGE_POOL_DIR;
 
     if ((def = virStorageVolDefParse(&poolDef, xml, NULL, parseFlags)) == NULL)
@@ -720,8 +719,8 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
     char *hddFormatUtf8 = NULL;
     PRUint64 hddLogicalSize = 0;
     PRUint64 hddActualSize = 0;
-    virStoragePoolDef pool;
-    virStorageVolDef def;
+    virStoragePoolDef pool = { 0 };
+    virStorageVolDef def = { 0 };
     vboxIID hddIID;
     PRUint32 hddstate;
     nsresult rc;
@@ -731,9 +730,6 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
         return ret;
 
     virCheckFlags(0, NULL);
-
-    memset(&pool, 0, sizeof(pool));
-    memset(&def, 0, sizeof(def));
 
     if (virUUIDParse(vol->key, uuid) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,

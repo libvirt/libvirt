@@ -6182,7 +6182,7 @@ virshDomainJobStatsToDomainJobInfo(virTypedParameterPtr params,
 static bool
 cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainJobInfo info;
+    virDomainJobInfo info = { 0 };
     g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *unit;
@@ -6208,8 +6208,6 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "keep-completed"))
         flags |= VIR_DOMAIN_JOB_STATS_KEEP_COMPLETED;
-
-    memset(&info, 0, sizeof(info));
 
     rc = virDomainGetJobStats(dom, &info.type, &params, &nparams, flags);
     if (rc == 0) {

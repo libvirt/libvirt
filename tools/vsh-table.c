@@ -204,9 +204,7 @@ vshTableSafeEncode(const char *s, size_t *width)
     size_t sz = s ? strlen(s) : 0;
     char *buf;
     char *ret;
-    mbstate_t st;
-
-    memset(&st, 0, sizeof(st));
+    mbstate_t st = { 0 };
 
     buf = g_new0(char, (sz * HEX_ENCODE_LENGTH) + 1);
 

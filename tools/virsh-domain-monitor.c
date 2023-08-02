@@ -1210,7 +1210,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainInfo info;
     g_autoptr(virshDomain) dom = NULL;
-    virSecurityModel secmodel;
+    virSecurityModel secmodel = { 0 };
     int persistent = 0;
     bool ret = true;
     int autostart;
@@ -1288,7 +1288,6 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
                  has_managed_save ? _("yes") : _("no"));
 
     /* Security model and label information */
-    memset(&secmodel, 0, sizeof(secmodel));
     if (virNodeGetSecurityModel(priv->conn, &secmodel) == -1) {
         if (last_error->code != VIR_ERR_NO_SUPPORT) {
             return false;

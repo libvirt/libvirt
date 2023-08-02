@@ -261,7 +261,7 @@ void virNetClientStreamSetClosed(virNetClientStream *st,
 int virNetClientStreamSetError(virNetClientStream *st,
                                virNetMessage *msg)
 {
-    virNetMessageError err;
+    virNetMessageError err = { 0 };
     int ret = -1;
 
     virObjectLock(st);
@@ -270,7 +270,6 @@ int virNetClientStreamSetError(virNetClientStream *st,
         VIR_DEBUG("Overwriting existing stream error %s", NULLSTR(st->err.message));
 
     virResetError(&st->err);
-    memset(&err, 0, sizeof(err));
 
     if (virNetMessageDecodePayload(msg, (xdrproc_t)xdr_virNetMessageError, &err) < 0)
         goto cleanup;
@@ -444,13 +443,12 @@ virNetClientStreamHandleHole(virNetClient *client,
                              virNetClientStream *st)
 {
     virNetMessage *msg;
-    virNetStreamHole data;
+    virNetStreamHole data = { 0 };
     int ret = -1;
 
     VIR_DEBUG("client=%p st=%p", client, st);
 
     msg = st->rx;
-    memset(&data, 0, sizeof(data));
 
     /* We should not be called unless there's VIR_NET_STREAM_HOLE
      * message at the head of the list. But doesn't hurt to check */
@@ -634,7 +632,7 @@ virNetClientStreamSendHole(virNetClientStream *st,
                            unsigned int flags)
 {
     virNetMessage *msg = NULL;
-    virNetStreamHole data;
+    virNetStreamHole data = { 0 };
     int ret = -1;
 
     VIR_DEBUG("st=%p length=%llu", st, length);
@@ -645,7 +643,6 @@ virNetClientStreamSendHole(virNetClientStream *st,
         return -1;
     }
 
-    memset(&data, 0, sizeof(data));
     data.length = length;
     data.flags = flags;
 

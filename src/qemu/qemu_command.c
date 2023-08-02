@@ -4868,7 +4868,7 @@ qemuBuildSCSIHostdevDevProps(const virDomainDef *def,
 int
 qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev)
 {
-    struct sockaddr_un addr;
+    struct sockaddr_un addr = { 0 };
     socklen_t addrlen = sizeof(addr);
     int fd;
 
@@ -4878,7 +4878,6 @@ qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev)
         goto error;
     }
 
-    memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
     if (virStrcpyStatic(addr.sun_path, dev->data.nix.path) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

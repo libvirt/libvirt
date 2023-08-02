@@ -463,15 +463,13 @@ virNWFilterDoInstantiate(virNWFilterTechDriver *techdriver,
                          bool forceWithPendingReq)
 {
     int rc;
-    virNWFilterInst inst;
+    virNWFilterInst inst = { 0 };
     bool instantiate = true;
     g_autofree char *buf = NULL;
     virNWFilterVarValue *lv;
     const char *learning;
     bool reportIP = false;
     g_autoptr(GHashTable) missing_vars = virHashNew(virNWFilterVarValueHashFree);
-
-    memset(&inst, 0, sizeof(inst));
 
     rc = virNWFilterDetermineMissingVarsRec(filter,
                                             binding->filterparams,

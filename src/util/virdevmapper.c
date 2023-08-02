@@ -128,11 +128,9 @@ static int
 virDMOpen(void)
 {
     VIR_AUTOCLOSE controlFD = -1;
-    struct dm_ioctl dm;
+    struct dm_ioctl dm = { 0 };
     g_autofree char *tmp = NULL;
     int ret;
-
-    memset(&dm, 0, sizeof(dm));
 
     if ((controlFD = open(CONTROL_PATH, O_RDWR)) < 0) {
         /* We can't talk to devmapper. Produce a warning and let
@@ -223,11 +221,9 @@ virDevMapperGetTargetsImpl(int controlFD,
 {
     g_autofree char *sanitizedPath = NULL;
     g_autofree char *buf = NULL;
-    struct dm_ioctl dm;
+    struct dm_ioctl dm = { 0 };
     struct dm_target_deps *deps = NULL;
     size_t i;
-
-    memset(&dm, 0, sizeof(dm));
 
     if (ttl == 0) {
         errno = ELOOP;

@@ -812,9 +812,7 @@ virNetDevGetRcvAllMulti(const char *ifname,
 #if defined(WITH_IF_INDEXTONAME)
 char *virNetDevGetName(int ifindex)
 {
-    char name[IFNAMSIZ];
-
-    memset(&name, 0, sizeof(name));
+    char name[IFNAMSIZ] = { 0 };
 
     if (!if_indextoname(ifindex, name)) {
         virReportSystemError(errno,
@@ -847,7 +845,7 @@ char *virNetDevGetName(int ifindex)
 #if defined(SIOCGIFINDEX) && defined(WITH_STRUCT_IFREQ)
 int virNetDevGetIndex(const char *ifname, int *ifindex)
 {
-    struct ifreq ifreq;
+    struct ifreq ifreq = { 0 };
     VIR_AUTOCLOSE fd = socket(VIR_NETDEV_FAMILY, SOCK_DGRAM, 0);
 
     if (fd < 0) {
@@ -855,8 +853,6 @@ int virNetDevGetIndex(const char *ifname, int *ifindex)
                              _("Unable to open control socket"));
         return -1;
     }
-
-    memset(&ifreq, 0, sizeof(ifreq));
 
     if (virStrcpyStatic(ifreq.ifr_name, ifname) < 0) {
         virReportSystemError(ERANGE,

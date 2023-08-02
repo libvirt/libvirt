@@ -897,12 +897,12 @@ virLogOutputToJournald(virLogSource *source,
 {
     int buffd = -1;
     int journalfd = (intptr_t) data;
-    struct msghdr mh;
-    struct sockaddr_un sa;
+    struct msghdr mh = { 0 };
+    struct sockaddr_un sa = { 0 };
     union {
         struct cmsghdr cmsghdr;
         uint8_t buf[CMSG_SPACE(sizeof(int))];
-    } control;
+    } control = { 0 };
     struct cmsghdr *cmsg;
     /* We use /dev/shm instead of /tmp here, since we want this to
      * be a tmpfs, and one that is available from early boot on
@@ -950,12 +950,10 @@ virLogOutputToJournald(virLogSource *source,
         }
     }
 
-    memset(&sa, 0, sizeof(sa));
     sa.sun_family = AF_UNIX;
     if (virStrcpyStatic(sa.sun_path, "/run/systemd/journal/socket") < 0)
         return;
 
-    memset(&mh, 0, sizeof(mh));
     mh.msg_name = &sa;
     mh.msg_namelen = offsetof(struct sockaddr_un, sun_path) + strlen(sa.sun_path);
     mh.msg_iov = iov;
@@ -983,7 +981,6 @@ virLogOutputToJournald(virLogSource *source,
     mh.msg_iov = NULL;
     mh.msg_iovlen = 0;
 
-    memset(&control, 0, sizeof(control));
     mh.msg_control = &control;
     mh.msg_controllen = sizeof(control);
 

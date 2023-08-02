@@ -84,7 +84,7 @@ virNetDevCreateNetlinkAddressMessage(int messageType,
                                      virSocketAddr *peer)
 {
     struct nl_msg *nlmsg = NULL;
-    struct ifaddrmsg ifa;
+    struct ifaddrmsg ifa = { 0 };
     unsigned int ifindex;
     void *addrData = NULL;
     void *peerData = NULL;
@@ -109,8 +109,6 @@ virNetDevCreateNetlinkAddressMessage(int messageType,
 
     nlmsg = virNetlinkMsgNew(messageType,
                              NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL);
-
-    memset(&ifa, 0, sizeof(ifa));
 
     ifa.ifa_prefixlen = prefix;
     ifa.ifa_family = VIR_SOCKET_ADDR_FAMILY(addr);
@@ -277,7 +275,7 @@ virNetDevIPRouteAdd(const char *ifname,
 {
     unsigned int recvbuflen;
     unsigned int ifindex;
-    struct rtmsg rtmsg;
+    struct rtmsg rtmsg = { 0 };
     void *gatewayData = NULL;
     void *addrData = NULL;
     size_t addrDataLen;
@@ -322,8 +320,6 @@ virNetDevIPRouteAdd(const char *ifname,
 
     nlmsg = virNetlinkMsgNew(RTM_NEWROUTE,
                              NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL);
-
-    memset(&rtmsg, 0, sizeof(rtmsg));
 
     rtmsg.rtm_family = VIR_SOCKET_ADDR_FAMILY(gateway);
     rtmsg.rtm_table = RT_TABLE_MAIN;

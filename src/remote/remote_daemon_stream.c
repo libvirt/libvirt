@@ -226,12 +226,11 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         (events & (VIR_STREAM_EVENT_ERROR | VIR_STREAM_EVENT_HANGUP))) {
         int ret;
         virNetMessage *msg;
-        virNetMessageError rerr;
+        virNetMessageError rerr = { 0 };
         virErrorPtr origErr;
 
         virErrorPreserveLast(&origErr);
 
-        memset(&rerr, 0, sizeof(rerr));
         stream->closed = true;
         virStreamEventRemoveCallback(stream->st);
         virStreamAbort(stream->st);
@@ -565,12 +564,10 @@ daemonStreamHandleWriteData(virNetServerClient *client,
         /* Blocking, so indicate we have more todo later */
         return 1;
     } else if (ret < 0) {
-        virNetMessageError rerr;
+        virNetMessageError rerr = { 0 };
         virErrorPtr err;
 
         virErrorPreserveLast(&err);
-
-        memset(&rerr, 0, sizeof(rerr));
 
         VIR_INFO("Stream send failed");
         stream->closed = true;
@@ -613,8 +610,8 @@ daemonStreamHandleFinish(virNetServerClient *client,
     ret = virStreamFinish(stream->st);
 
     if (ret < 0) {
-        virNetMessageError rerr;
-        memset(&rerr, 0, sizeof(rerr));
+        virNetMessageError rerr = { 0 };
+
         return virNetServerProgramSendReplyError(stream->prog,
                                                  client,
                                                  msg,
@@ -663,8 +660,8 @@ daemonStreamHandleAbort(virNetServerClient *client,
     }
 
     if (raise_error) {
-        virNetMessageError rerr;
-        memset(&rerr, 0, sizeof(rerr));
+        virNetMessageError rerr = { 0 };
+
         return virNetServerProgramSendReplyError(stream->prog,
                                                  client,
                                                  msg,
@@ -709,9 +706,7 @@ daemonStreamHandleHole(virNetServerClient *client,
     ret = virStreamSendHole(stream->st, data.length, data.flags);
 
     if (ret < 0) {
-        virNetMessageError rerr;
-
-        memset(&rerr, 0, sizeof(rerr));
+        virNetMessageError rerr = { 0 };
 
         VIR_INFO("Stream send hole failed");
         stream->closed = true;
@@ -825,7 +820,7 @@ daemonStreamHandleRead(virNetServerClient *client,
                        daemonClientStream *stream)
 {
     virNetMessage *msg = NULL;
-    virNetMessageError rerr;
+    virNetMessageError rerr = { 0 };
     char *buffer;
     size_t bufferLen = VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX;
     int ret = -1;
@@ -847,8 +842,6 @@ daemonStreamHandleRead(virNetServerClient *client,
      * transmit, but doesn't hurt to check */
     if (!stream->tx)
         return 0;
-
-    memset(&rerr, 0, sizeof(rerr));
 
     buffer = g_new0(char, bufferLen);
 

@@ -124,13 +124,11 @@ int
 virInitctlSetRunLevel(const char *fifo,
                       virInitctlRunLevel level)
 {
-    struct virInitctlRequest req;
+    struct virInitctlRequest req = { 0 };
     int fd = -1;
     int ret = -1;
     const int open_flags = O_WRONLY|O_NONBLOCK|O_CLOEXEC|O_NOCTTY;
     size_t i = 0;
-
-    memset(&req, 0, sizeof(req));
 
     req.magic = VIR_INITCTL_MAGIC;
     req.sleeptime = 0;

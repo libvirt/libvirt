@@ -135,7 +135,7 @@ virAuthGetUsernamePath(const char *path,
                        const char *hostname)
 {
     unsigned int ncred;
-    virConnectCredential cred;
+    virConnectCredential cred = { 0 };
     g_autofree char *prompt = NULL;
     char *ret = NULL;
 
@@ -149,8 +149,6 @@ virAuthGetUsernamePath(const char *path,
                        _("Missing authentication credentials"));
         return NULL;
     }
-
-    memset(&cred, 0, sizeof(virConnectCredential));
 
     if (defaultUsername != NULL) {
         prompt = g_strdup_printf(_("Enter username for %1$s [%2$s]"), hostname,

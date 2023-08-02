@@ -3327,9 +3327,7 @@ lxcDomainAttachDeviceMknod(virLXCDriver *driver,
                            char *file)
 {
     virLXCDomainObjPrivate *priv = vm->privateData;
-    struct lxcDomainAttachDeviceMknodData data;
-
-    memset(&data, 0, sizeof(data));
+    struct lxcDomainAttachDeviceMknodData data = { 0 };
 
     data.driver = driver;
     data.mode = mode;

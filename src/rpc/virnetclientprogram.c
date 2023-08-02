@@ -116,10 +116,8 @@ static int
 virNetClientProgramDispatchError(virNetClientProgram *prog G_GNUC_UNUSED,
                                  virNetMessage *msg)
 {
-    virNetMessageError err;
+    virNetMessageError err = { 0 };
     int ret = -1;
-
-    memset(&err, 0, sizeof(err));
 
     if (virNetMessageDecodePayload(msg, (xdrproc_t)xdr_virNetMessageError, &err) < 0)
         goto cleanup;

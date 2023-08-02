@@ -874,9 +874,7 @@ qemuMonitorTestNew(virDomainXMLOption *xmlopt,
                    GHashTable *schema)
 {
     g_autoptr(qemuMonitorTest) test = NULL;
-    virDomainChrSourceDef src;
-
-    memset(&src, 0, sizeof(src));
+    virDomainChrSourceDef src = { 0 };
 
     if (!(test = qemuMonitorCommonTestNew(xmlopt, vm, &src)))
         goto error;
@@ -1185,9 +1183,7 @@ qemuMonitorTest *
 qemuMonitorTestNewAgent(virDomainXMLOption *xmlopt)
 {
     g_autoptr(qemuMonitorTest) test = NULL;
-    virDomainChrSourceDef src;
-
-    memset(&src, 0, sizeof(src));
+    virDomainChrSourceDef src = { 0 };
 
     if (!(test = qemuMonitorCommonTestNew(xmlopt, NULL, &src)))
         goto error;

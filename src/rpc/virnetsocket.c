@@ -143,11 +143,10 @@ virNetSocketCheckProtocolByLookup(const char *address,
                                   int family,
                                   bool *hasFamily)
 {
-    struct addrinfo hints;
+    struct addrinfo hints = { 0 };
     struct addrinfo *ai = NULL;
     int gaierr;
 
-    memset(&hints, 0, sizeof(hints));
     hints.ai_family = family;
     hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
     hints.ai_socktype = SOCK_STREAM;
@@ -313,7 +312,7 @@ int virNetSocketNewListenTCP(const char *nodename,
     virNetSocket **socks = NULL;
     size_t nsocks = 0;
     struct addrinfo *ai = NULL;
-    struct addrinfo hints;
+    struct addrinfo hints = { 0 };
     int fd = -1;
     size_t i;
     int socketErrno = 0;
@@ -326,7 +325,6 @@ int virNetSocketNewListenTCP(const char *nodename,
     *retsocks = NULL;
     *nretsocks = 0;
 
-    memset(&hints, 0, sizeof(hints));
     hints.ai_family = family;
     hints.ai_flags = AI_PASSIVE;
     hints.ai_socktype = SOCK_STREAM;
@@ -353,9 +351,7 @@ int virNetSocketNewListenTCP(const char *nodename,
 
     runp = ai;
     while (runp) {
-        virSocketAddr addr;
-
-        memset(&addr, 0, sizeof(addr));
+        virSocketAddr addr = { 0 };
 
         if ((fd = socket(runp->ai_family, runp->ai_socktype,
                          runp->ai_protocol)) < 0) {
@@ -477,13 +473,11 @@ int virNetSocketNewListenUNIX(const char *path,
                               gid_t grp,
                               virNetSocket **retsock)
 {
-    virSocketAddr addr;
+    virSocketAddr addr = { 0 };
     mode_t oldmask;
     int fd;
 
     *retsock = NULL;
-
-    memset(&addr, 0, sizeof(addr));
 
     addr.len = sizeof(addr.data.un);
 
@@ -553,10 +547,8 @@ int virNetSocketNewListenFD(int fd,
                             bool unlinkUNIX,
                             virNetSocket **retsock)
 {
-    virSocketAddr addr;
+    virSocketAddr addr = { 0 };
     *retsock = NULL;
-
-    memset(&addr, 0, sizeof(addr));
 
     addr.len = sizeof(addr.data);
     if (getsockname(fd, &addr.data.sa, &addr.len) < 0) {
@@ -577,20 +569,16 @@ int virNetSocketNewConnectTCP(const char *nodename,
                               virNetSocket **retsock)
 {
     struct addrinfo *ai = NULL;
-    struct addrinfo hints;
+    struct addrinfo hints = { 0 };
     int fd = -1;
-    virSocketAddr localAddr;
-    virSocketAddr remoteAddr;
+    virSocketAddr localAddr = { 0 };
+    virSocketAddr remoteAddr = { 0 };
     struct addrinfo *runp;
     int savedErrno = ENOENT;
     int e;
 
     *retsock = NULL;
 
-    memset(&localAddr, 0, sizeof(localAddr));
-    memset(&remoteAddr, 0, sizeof(remoteAddr));
-
-    memset(&hints, 0, sizeof(hints));
     hints.ai_family = family;
     hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG | AI_V4MAPPED;
     hints.ai_socktype = SOCK_STREAM;
@@ -666,16 +654,13 @@ int virNetSocketNewConnectUNIX(const char *path,
     VIR_AUTOCLOSE lockfd = -1;
     int fd = -1;
     int retries = 500;
-    virSocketAddr localAddr;
-    virSocketAddr remoteAddr;
+    virSocketAddr localAddr = { 0 };
+    virSocketAddr remoteAddr = { 0 };
     g_autofree char *rundir = NULL;
     int ret = -1;
     bool daemonLaunched = false;
 
     VIR_DEBUG("path=%s spawnDaemonPath=%s", path, NULLSTR(spawnDaemonPath));
-
-    memset(&localAddr, 0, sizeof(localAddr));
-    memset(&remoteAddr, 0, sizeof(remoteAddr));
 
     remoteAddr.len = sizeof(remoteAddr.data.un);
 
@@ -1168,8 +1153,8 @@ int virNetSocketNewConnectSockFD(int sockfd,
 
 virNetSocket *virNetSocketNewPostExecRestart(virJSONValue *object)
 {
-    virSocketAddr localAddr;
-    virSocketAddr remoteAddr;
+    virSocketAddr localAddr = { 0 };
+    virSocketAddr remoteAddr = { 0 };
     int fd, thepid, errfd;
     bool isClient;
     bool unlinkUNIX;
@@ -1200,9 +1185,6 @@ virNetSocket *virNetSocketNewPostExecRestart(virJSONValue *object)
 
     if (virJSONValueObjectGetBoolean(object, "unlinkUNIX", &unlinkUNIX) < 0)
         unlinkUNIX = !isClient;
-
-    memset(&localAddr, 0, sizeof(localAddr));
-    memset(&remoteAddr, 0, sizeof(remoteAddr));
 
     remoteAddr.len = sizeof(remoteAddr.data.stor);
     if (getsockname(fd, &remoteAddr.data.sa, &remoteAddr.len) < 0) {
@@ -2059,16 +2041,13 @@ int virNetSocketListen(virNetSocket *sock, int backlog)
 int virNetSocketAccept(virNetSocket *sock, virNetSocket **clientsock)
 {
     int fd = -1;
-    virSocketAddr localAddr;
-    virSocketAddr remoteAddr;
+    virSocketAddr localAddr = { 0 };
+    virSocketAddr remoteAddr = { 0 };
     int ret = -1;
 
     virObjectLock(sock);
 
     *clientsock = NULL;
-
-    memset(&localAddr, 0, sizeof(localAddr));
-    memset(&remoteAddr, 0, sizeof(remoteAddr));
 
     remoteAddr.len = sizeof(remoteAddr.data.stor);
     if ((fd = accept(sock->fd, &remoteAddr.data.sa, &remoteAddr.len)) < 0) {

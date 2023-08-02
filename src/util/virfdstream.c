@@ -1192,7 +1192,7 @@ int virFDStreamConnectUNIX(virStreamPtr st,
                            const char *path,
                            bool abstract)
 {
-    struct sockaddr_un sa;
+    struct sockaddr_un sa = { 0 };
     virTimeBackOffVar timeout;
     VIR_AUTOCLOSE fd = -1;
     int ret;
@@ -1203,7 +1203,6 @@ int virFDStreamConnectUNIX(virStreamPtr st,
         return -1;
     }
 
-    memset(&sa, 0, sizeof(sa));
     sa.sun_family = AF_UNIX;
     if (abstract) {
         if (virStrcpy(sa.sun_path+1, path, sizeof(sa.sun_path)-1) < 0)

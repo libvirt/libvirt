@@ -559,7 +559,7 @@ static int
 virNetSSHAuthenticatePrivkey(virNetSSHSession *sess,
                              virNetSSHAuthMethod *priv)
 {
-    virConnectCredential retr_passphrase;
+    virConnectCredential retr_passphrase = { 0 };
     size_t i;
     char *errmsg;
     int ret;
@@ -594,7 +594,6 @@ virNetSSHAuthenticatePrivkey(virNetSSHSession *sess,
         return -1;
     }
 
-    memset(&retr_passphrase, 0, sizeof(virConnectCredential));
     retr_passphrase.type = -1;
 
     for (i = 0; i < sess->cred->ncredtype; i++) {

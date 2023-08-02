@@ -1044,10 +1044,8 @@ virVMXVerifyDiskAddress(virDomainXMLOption *xmlopt,
                         virDomainDiskDef *disk,
                         virDomainDef *vmdef)
 {
-    virDomainDiskDef def;
+    virDomainDiskDef def = { 0 };
     virDomainDeviceDriveAddress *drive;
-
-    memset(&def, 0, sizeof(def));
 
     if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

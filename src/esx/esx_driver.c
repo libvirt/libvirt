@@ -2536,13 +2536,11 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     g_autofree char *url = NULL;
     g_autofree char *vmx = NULL;
     virVMXContext ctx;
-    esxVMX_Data data;
+    esxVMX_Data data = { 0 };
     g_autoptr(virDomainDef) def = NULL;
     char *xml = NULL;
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
-
-    memset(&data, 0, sizeof(data));
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return NULL;
@@ -2622,13 +2620,11 @@ esxConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
 {
     esxPrivate *priv = conn->privateData;
     virVMXContext ctx;
-    esxVMX_Data data;
+    esxVMX_Data data = { 0 };
     g_autoptr(virDomainDef) def = NULL;
     char *xml = NULL;
 
     virCheckFlags(0, NULL);
-
-    memset(&data, 0, sizeof(data));
 
     if (STRNEQ(nativeFormat, VMX_CONFIG_FORMAT_ARGV)) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -2665,13 +2661,11 @@ esxConnectDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
     esxPrivate *priv = conn->privateData;
     int virtualHW_version;
     virVMXContext ctx;
-    esxVMX_Data data;
+    esxVMX_Data data = { 0 };
     g_autoptr(virDomainDef) def = NULL;
     char *vmx = NULL;
 
     virCheckFlags(0, NULL);
-
-    memset(&data, 0, sizeof(data));
 
     if (STRNEQ(nativeFormat, VMX_CONFIG_FORMAT_ARGV)) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -2870,7 +2864,7 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     esxVI_ObjectContent *virtualMachine = NULL;
     int virtualHW_version;
     virVMXContext ctx;
-    esxVMX_Data data;
+    esxVMX_Data data = { 0 };
     g_autofree char *datastoreName = NULL;
     g_autofree char *directoryName = NULL;
     g_autofree char *escapedName = NULL;
@@ -2891,8 +2885,6 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
-
-    memset(&data, 0, sizeof(data));
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return NULL;
@@ -4058,13 +4050,11 @@ esxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     esxVI_VirtualMachineSnapshotTree *rootSnapshotList = NULL;
     esxVI_VirtualMachineSnapshotTree *snapshotTree = NULL;
     esxVI_VirtualMachineSnapshotTree *snapshotTreeParent = NULL;
-    virDomainSnapshotDef def;
+    virDomainSnapshotDef def = { 0 };
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
     char *xml = NULL;
 
     virCheckFlags(0, NULL);
-
-    memset(&def, 0, sizeof(def));
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return NULL;

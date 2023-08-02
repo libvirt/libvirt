@@ -111,13 +111,12 @@ virArpTableGet(void)
 
         if (tb[NDA_DST]) {
             g_autofree char *ipstr = NULL;
-            virSocketAddr virAddr;
+            virSocketAddr virAddr = { 0 };
 
             VIR_REALLOC_N(table->t, num + 1);
             table->n = num + 1;
 
             addr = RTA_DATA(tb[NDA_DST]);
-            memset(&virAddr, 0, sizeof(virAddr));
             virAddr.len = sizeof(virAddr.data.inet4);
             virAddr.data.inet4.sin_family = AF_INET;
             virAddr.data.inet4.sin_addr = *(struct in_addr *)addr;

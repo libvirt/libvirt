@@ -259,12 +259,10 @@ qemuMonitorJSONCommandWithFd(qemuMonitor *mon,
                              virJSONValue **reply)
 {
     int ret = -1;
-    qemuMonitorMessage msg;
+    qemuMonitorMessage msg = { 0 };
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
 
     *reply = NULL;
-
-    memset(&msg, 0, sizeof(msg));
 
     if (virJSONValueObjectHasKey(cmd, "execute")) {
         g_autofree char *id = qemuMonitorNextCommandID(mon);
@@ -2035,10 +2033,9 @@ qemuMonitorJSONSetMemoryStatsPeriod(qemuMonitor *mon,
                                     char *balloonpath,
                                     int period)
 {
-    qemuMonitorJSONObjectProperty prop;
+    qemuMonitorJSONObjectProperty prop = { 0 };
 
     /* Set to the value in memballoon (could enable or disable) */
-    memset(&prop, 0, sizeof(qemuMonitorJSONObjectProperty));
     prop.type = QEMU_MONITOR_OBJECT_PROPERTY_INT;
     prop.val.iv = period;
     if (qemuMonitorJSONSetObjectProperty(mon, balloonpath,

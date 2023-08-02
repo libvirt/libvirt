@@ -1539,13 +1539,12 @@ virProcessExitWithStatus(int status)
     if (WIFEXITED(status)) {
         value = WEXITSTATUS(status);
     } else if (WIFSIGNALED(status)) {
-        struct sigaction act;
+        struct sigaction act = { 0 };
         sigset_t sigs;
 
         if (sigemptyset(&sigs) == 0 &&
             sigaddset(&sigs, WTERMSIG(status)) == 0)
             sigprocmask(SIG_UNBLOCK, &sigs, NULL);
-        memset(&act, 0, sizeof(act));
         act.sa_handler = SIG_DFL;
         sigfillset(&act.sa_mask);
         sigaction(WTERMSIG(status), &act, NULL);

@@ -1796,7 +1796,7 @@ libxlDoDomainSave(libxlDriverPrivate *driver,
                   bool managed)
 {
     libxlDriverConfig *cfg = libxlDriverConfigGet(driver);
-    libxlSavefileHeader hdr;
+    libxlSavefileHeader hdr = { 0 };
     virObjectEvent *event = NULL;
     g_autofree char *xml = NULL;
     uint32_t xml_len;
@@ -1821,7 +1821,6 @@ libxlDoDomainSave(libxlDriverPrivate *driver,
         goto cleanup;
     xml_len = strlen(xml) + 1;
 
-    memset(&hdr, 0, sizeof(hdr));
     memcpy(hdr.magic, LIBXL_SAVE_MAGIC, sizeof(hdr.magic));
     hdr.version = LIBXL_SAVE_VERSION;
     hdr.xmlLen = xml_len;
@@ -5651,7 +5650,7 @@ libxlDomainBlockStats(virDomainPtr dom,
                       virDomainBlockStatsPtr stats)
 {
     virDomainObj *vm;
-    libxlBlockStats blkstats;
+    libxlBlockStats blkstats = { 0 };
     int ret = -1;
 
     if (!(vm = libxlDomObjFromDomain(dom)))
@@ -5666,7 +5665,6 @@ libxlDomainBlockStats(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    memset(&blkstats, 0, sizeof(libxlBlockStats));
     if ((ret = libxlDomainBlockStatsGather(vm, path, &blkstats)) < 0)
         goto endjob;
 
@@ -5695,7 +5693,7 @@ libxlDomainBlockStatsFlags(virDomainPtr dom,
                            unsigned int flags)
 {
     virDomainObj *vm;
-    libxlBlockStats blkstats;
+    libxlBlockStats blkstats = { 0 };
     int nstats;
     int ret = -1;
 
@@ -5722,7 +5720,6 @@ libxlDomainBlockStatsFlags(virDomainPtr dom,
         goto endjob;
     }
 
-    memset(&blkstats, 0, sizeof(libxlBlockStats));
     if ((ret = libxlDomainBlockStatsGather(vm, path, &blkstats)) < 0)
         goto endjob;
 

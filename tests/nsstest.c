@@ -39,13 +39,11 @@ testGetHostByName(const void *opaque)
 {
     const struct testNSSData *data = opaque;
     const bool existent = data->hostname && data->ipAddr && data->ipAddr[0];
-    struct hostent resolved;
+    struct hostent resolved = { 0 };
     char buf[BUF_SIZE] = { 0 };
     char **addrList;
     int rv, tmp_errno = 0, tmp_herrno = 0;
     size_t i = 0;
-
-    memset(&resolved, 0, sizeof(resolved));
 
     rv = NSS_NAME(gethostbyname2)(data->hostname,
                                   data->af,
@@ -116,11 +114,9 @@ testGetHostByName(const void *opaque)
     addrList = resolved.h_addr_list;
     i = 0;
     while (*addrList) {
-        virSocketAddr sa;
+        virSocketAddr sa = { 0 };
         g_autofree char *ipAddr = NULL;
         void *address = *addrList;
-
-        memset(&sa, 0, sizeof(sa));
 
         if (resolved.h_addrtype == AF_INET) {
             virSocketAddrSetIPv4AddrNetOrder(&sa, *((uint32_t *) address));

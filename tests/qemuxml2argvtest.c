@@ -546,7 +546,7 @@ testCompareXMLToArgv(const void *data)
     unsigned int parseFlags = info->parseFlags;
     int ret = -1;
     virDomainObj *vm = NULL;
-    virDomainChrSourceDef monitor_chr;
+    virDomainChrSourceDef monitor_chr = { 0 };
     g_autoptr(virConnect) conn = NULL;
     virError *err = NULL;
     g_autofree char *log = NULL;
@@ -557,8 +557,6 @@ testCompareXMLToArgv(const void *data)
     g_autofree char *archstr = NULL;
     virArch arch = VIR_ARCH_NONE;
     g_autoptr(virIdentity) sysident = virIdentityGetSystem();
-
-    memset(&monitor_chr, 0, sizeof(monitor_chr));
 
     if (testQemuInfoInitArgs((struct testQemuInfo *) info) < 0)
         goto cleanup;
