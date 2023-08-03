@@ -269,10 +269,9 @@ mymain(void)
 
 #define DO_TEST_PARSE_AND_FORMAT(addrstr, family, pass) \
     do { \
-        virSocketAddr addr; \
+        virSocketAddr addr = { 0 }; \
         struct testParseData data = { &addr, addrstr, family, pass }; \
         struct testFormatData data2 = { &addr, addrstr, pass }; \
-        memset(&addr, 0, sizeof(addr)); \
         if (virTestRun("Test parse " addrstr " family " #family, \
                        testParseHelper, &data) < 0) \
             ret = -1; \
@@ -283,10 +282,9 @@ mymain(void)
 
 #define DO_TEST_PARSE_AND_CHECK_FORMAT(addrstr, addrformated, family, pass) \
     do { \
-        virSocketAddr addr; \
+        virSocketAddr addr = { 0 }; \
         struct testParseData data = { &addr, addrstr, family, true}; \
         struct testFormatData data2 = { &addr, addrformated, pass }; \
-        memset(&addr, 0, sizeof(addr)); \
         if (virTestRun("Test parse " addrstr " family " #family, \
                        testParseHelper, &data) < 0) \
             ret = -1; \

@@ -545,12 +545,11 @@ static int virNetTLSContextSanityCheckCredentials(bool isServer,
                                                   const char *certFile)
 {
     gnutls_x509_crt_t cert = NULL;
-    gnutls_x509_crt_t cacerts[MAX_CERTS];
+    gnutls_x509_crt_t cacerts[MAX_CERTS] = { 0 };
     size_t ncacerts = 0;
     size_t i;
     int ret = -1;
 
-    memset(cacerts, 0, sizeof(cacerts));
     if ((access(certFile, R_OK) == 0) &&
         !(cert = virNetTLSContextLoadCertFromFile(certFile, isServer)))
         goto cleanup;

@@ -3229,7 +3229,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOption *xmlopt, virDomainDef 
     char *vmx = NULL;
     size_t i;
     int sched_cpu_affinity_length;
-    unsigned char zero[VIR_UUID_BUFLEN];
+    unsigned char zero[VIR_UUID_BUFLEN] = { 0 };
     g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     char *preliminaryDisplayName = NULL;
     char *displayName = NULL;
@@ -3246,8 +3246,6 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOption *xmlopt, virDomainDef 
                        _("virVMXContext has no formatFileName function set"));
         return NULL;
     }
-
-    memset(zero, 0, VIR_UUID_BUFLEN);
 
     if (def->virtType != VIR_DOMAIN_VIRT_VMWARE) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

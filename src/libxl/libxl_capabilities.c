@@ -328,10 +328,8 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCaps *caps)
     char *saveptr = NULL;
     size_t i;
 
-    struct guest_arch guest_archs[32];
+    struct guest_arch guest_archs[32] = { 0 };
     int nr_guest_archs = 0;
-
-    memset(guest_archs, 0, sizeof(guest_archs));
 
     if ((ver_info = libxl_get_version_info(ctx)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

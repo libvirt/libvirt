@@ -942,7 +942,8 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
                *inboundStr = NULL, *outboundStr = NULL, *alias = NULL;
     const char *sourceModeStr = NULL;
     int sourceMode = -1;
-    virNetDevBandwidthRate inbound, outbound;
+    virNetDevBandwidthRate inbound = { 0 };
+    virNetDevBandwidthRate outbound = { 0 };
     virDomainNetType typ;
     int ret;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -990,7 +991,6 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (inboundStr) {
-        memset(&inbound, 0, sizeof(inbound));
         if (virshParseRateStr(ctl, inboundStr, &inbound) < 0)
             return false;
         if (!inbound.average && !inbound.floor) {
@@ -999,7 +999,6 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         }
     }
     if (outboundStr) {
-        memset(&outbound, 0, sizeof(outbound));
         if (virshParseRateStr(ctl, outboundStr, &outbound) < 0)
             return false;
         if (outbound.average == 0) {
@@ -3286,7 +3285,8 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
     bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
-    virNetDevBandwidthRate inbound, outbound;
+    virNetDevBandwidthRate inbound = { 0 };
+    virNetDevBandwidthRate outbound = { 0 };
     size_t i;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
@@ -3306,9 +3306,6 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "inbound", &inboundStr) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "outbound", &outboundStr) < 0)
         goto cleanup;
-
-    memset(&inbound, 0, sizeof(inbound));
-    memset(&outbound, 0, sizeof(outbound));
 
     if (inboundStr) {
         if (virshParseRateStr(ctl, inboundStr, &inbound) < 0)

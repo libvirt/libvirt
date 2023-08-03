@@ -1591,14 +1591,13 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationStats(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
-    qemuMonitorMigrationStats stats, expectedStats;
+    qemuMonitorMigrationStats stats;
+    qemuMonitorMigrationStats expectedStats = { 0 };
     g_autofree char *error = NULL;
     g_autoptr(qemuMonitorTest) test = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
         return -1;
-
-    memset(&expectedStats, 0, sizeof(expectedStats));
 
     expectedStats.status = QEMU_MONITOR_MIGRATION_STATUS_ACTIVE;
     expectedStats.total_time = 47;

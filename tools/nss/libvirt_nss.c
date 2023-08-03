@@ -538,14 +538,13 @@ _nss_compat_getaddrinfo(void *retval,
                         void *mdata __attribute__((unused)),
                         va_list ap)
 {
-    struct addrinfo sentinel, *cur, *ai;
+    struct addrinfo sentinel = { 0 };
+    struct addrinfo *cur = &sentinel;
+    struct addrinfo *ai;
     const char *name;
 
     name  = va_arg(ap, char *);
     ai = va_arg(ap, struct addrinfo *);
-
-    memset(&sentinel, 0, sizeof(sentinel));
-    cur = &sentinel;
 
     if ((ai->ai_family == AF_UNSPEC) || (ai->ai_family == AF_INET6))
         aiforaf(name, AF_INET6, ai, &cur);

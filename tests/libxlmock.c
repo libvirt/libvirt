@@ -60,9 +60,7 @@ VIR_MOCK_IMPL_RET_ARGS(libxl_get_version_info,
                        const libxl_version_info*,
                        libxl_ctx *, ctx)
 {
-    static libxl_version_info info;
-
-    memset(&info, 0, sizeof(info));
+    static libxl_version_info info = { 0 };
 
     /* silence gcc warning about unused function */
     if (0)

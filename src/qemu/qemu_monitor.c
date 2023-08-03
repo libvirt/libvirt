@@ -311,10 +311,8 @@ qemuMonitorIOWriteWithFD(qemuMonitor *mon,
     struct msghdr msg = { 0 };
     struct iovec iov[1];
     int ret;
-    char control[CMSG_SPACE(sizeof(int))];
+    char control[CMSG_SPACE(sizeof(int))] = { 0 };
     struct cmsghdr *cmsg;
-
-    memset(control, 0, sizeof(control));
 
     iov[0].iov_base = (void *)data;
     iov[0].iov_len = len;

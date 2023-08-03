@@ -428,7 +428,8 @@ virGetHostnameImpl(bool quiet)
 {
     int r;
     char hostname[HOST_NAME_MAX+1], *result = NULL;
-    struct addrinfo hints, *info;
+    struct addrinfo hints = { 0 };
+    struct addrinfo *info;
 
     r = gethostname(hostname, sizeof(hostname));
     if (r == -1) {
@@ -453,7 +454,6 @@ virGetHostnameImpl(bool quiet)
      * canonicalize the hostname by running it through getaddrinfo
      */
 
-    memset(&hints, 0, sizeof(hints));
     hints.ai_flags = AI_CANONNAME|AI_CANONIDN;
     hints.ai_family = AF_UNSPEC;
     r = getaddrinfo(hostname, NULL, &hints, &info);
