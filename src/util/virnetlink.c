@@ -333,12 +333,9 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
             .nl_pid    = dst_pid,
             .nl_groups = 0,
     };
-    struct pollfd fds[1];
     g_autofree struct nlmsghdr *temp_resp = NULL;
     g_autoptr(virNetlinkHandle) nlhandle = NULL;
     int len = 0;
-
-    memset(fds, 0, sizeof(fds));
 
     if (!(nlhandle = virNetlinkSendRequest(nl_msg, src_pid, nladdr,
                                            protocol, groups)))
