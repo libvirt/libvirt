@@ -1110,12 +1110,12 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-network-iscsi");
 
     DO_TEST_CAPS_LATEST("firmware-auto-efi-format-loader-qcow2");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-format-loader-qcow2-nvram-path");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-format-nvram-qcow2");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-format-nvram-qcow2-path");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-format-nvram-qcow2-network-nbd");
     DO_TEST_CAPS_ARCH_LATEST("firmware-auto-efi-format-loader-raw", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("firmware-auto-efi-format-loader-raw-abi-update", "aarch64");
-    DO_TEST_CAPS_LATEST("firmware-auto-efi-format-mismatch");
 
     DO_TEST_NOCAPS("clock-utc");
     DO_TEST_NOCAPS("clock-localtime");

@@ -1,0 +1,41 @@
+<domain type='kvm'>
+  <name>guest</name>
+  <uuid>63840878-0deb-4095-97e6-fc444d9bc9fa</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os firmware='efi'>
+    <type arch='x86_64' machine='pc-q35-4.0'>hvm</type>
+    <firmware>
+      <feature enabled='yes' name='enrolled-keys'/>
+      <feature enabled='yes' name='secure-boot'/>
+    </firmware>
+    <loader readonly='yes' secure='yes' type='pflash' format='qcow2'>/usr/share/edk2/ovmf/OVMF_CODE_4M.secboot.qcow2</loader>
+    <nvram template='/usr/share/edk2/ovmf/OVMF_VARS_4M.secboot.qcow2' format='qcow2'>/path/to/guest_VARS.qcow2</nvram>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <smm state='on'/>
+  </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0' model='none'/>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <watchdog model='itco' action='reset'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

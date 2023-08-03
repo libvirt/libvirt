@@ -921,6 +921,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-network-iscsi");
 
     DO_TEST_CAPS_LATEST("firmware-auto-efi-format-loader-qcow2");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-format-loader-qcow2-nvram-path");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-format-nvram-qcow2");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-format-nvram-qcow2-path");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-format-nvram-qcow2-network-nbd");
