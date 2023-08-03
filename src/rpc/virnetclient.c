@@ -1857,8 +1857,8 @@ static void virNetClientIOUpdateCallback(virNetClient *client,
  * which come from the user).  It does however free any intermediate
  * results, eg. the error structure if there is one.
  *
- * NB(2). Make sure to memset (&ret, 0, sizeof(ret)) before calling,
- * else Bad Things will happen in the XDR code.
+ * NB(2). Make sure to initialize ret variable to { 0 } before calling,
+ * else Bad things will happen in the XDR code.
  *
  * NB(3) You must have the client lock before calling this
  *
