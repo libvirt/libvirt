@@ -360,8 +360,6 @@ virFirewallDApplyRule(virFirewallLayer layer,
     if (!sysbus)
         return -1;
 
-    memset(&error, 0, sizeof(error));
-
     if (!ipv) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown firewall layer %1$d"),
