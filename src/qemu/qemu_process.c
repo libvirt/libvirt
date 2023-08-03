@@ -5068,7 +5068,7 @@ qemuProcessGraphicsSetupListen(virQEMUDriver *driver,
                  * *_auto_unix_socket set we should use unix socket as
                  * default instead of tcp listen. */
                 if (useSocket) {
-                    memset(glisten, 0, sizeof(virDomainGraphicsListenDef));
+                    memset(glisten, 0, sizeof(*glisten));
                     glisten->socket = g_strdup_printf("%s/%s.sock", priv->libDir,
                                                       type);
                     glisten->fromConfig = true;

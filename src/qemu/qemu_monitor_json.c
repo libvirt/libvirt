@@ -7112,7 +7112,7 @@ qemuMonitorJSONSetIOThread(qemuMonitor *mon,
 
 #define VIR_IOTHREAD_SET_PROP_UL(propName, propVal) \
     if (iothreadInfo->set_##propVal) { \
-        memset(&prop, 0, sizeof(qemuMonitorJSONObjectProperty)); \
+        memset(&prop, 0, sizeof(prop)); \
         prop.type = QEMU_MONITOR_OBJECT_PROPERTY_ULONG; \
         prop.val.ul = iothreadInfo->propVal; \
         if (qemuMonitorJSONSetObjectProperty(mon, path, propName, &prop) < 0) \
@@ -7145,7 +7145,7 @@ qemuMonitorJSONSetIOThread(qemuMonitor *mon,
 
 #define VIR_IOTHREAD_SET_PROP_INT(propName, propVal) \
     if (iothreadInfo->set_##propVal) { \
-        memset(&prop, 0, sizeof(qemuMonitorJSONObjectProperty)); \
+        memset(&prop, 0, sizeof(prop)); \
         prop.type = QEMU_MONITOR_OBJECT_PROPERTY_INT; \
         prop.val.iv = iothreadInfo->propVal; \
         if (qemuMonitorJSONSetObjectProperty(mon, path, propName, &prop) < 0) \

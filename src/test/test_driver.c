@@ -4826,7 +4826,7 @@ static int testDomainGetDiskErrors(virDomainPtr dom,
 
     if (errors) {
         /* sanitize input */
-        memset(errors, 0, sizeof(virDomainDiskError) * nerrors);
+        memset(errors, 0, sizeof(*errors) * nerrors);
 
         for (i = 0; i < nerrors; i++) {
             errors[i].disk = g_strdup(vm->def->disks[i]->dst);
@@ -6878,7 +6878,7 @@ testStoragePoolGetInfo(virStoragePoolPtr pool,
         return -1;
     def = virStoragePoolObjGetDef(obj);
 
-    memset(info, 0, sizeof(virStoragePoolInfo));
+    memset(info, 0, sizeof(*info));
     if (virStoragePoolObjIsActive(obj))
         info->state = VIR_STORAGE_POOL_RUNNING;
     else

@@ -1279,7 +1279,7 @@ storagePoolGetInfo(virStoragePoolPtr pool,
     if (virStorageBackendForType(def->type) == NULL)
         goto cleanup;
 
-    memset(info, 0, sizeof(virStoragePoolInfo));
+    memset(info, 0, sizeof(*info));
     if (virStoragePoolObjIsActive(obj))
         info->state = VIR_STORAGE_POOL_RUNNING;
     else

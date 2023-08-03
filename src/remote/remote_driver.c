@@ -2138,7 +2138,7 @@ remoteDomainGetVcpus(virDomainPtr domain,
         goto cleanup;
     }
 
-    memset(info, 0, sizeof(virVcpuInfo) * maxinfo);
+    memset(info, 0, sizeof(*info) * maxinfo);
     memset(cpumaps, 0, maxinfo * maplen);
 
     for (i = 0; i < ret.info.info_len; ++i) {
