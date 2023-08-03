@@ -3833,7 +3833,6 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
         goto cleanup;
     }
     /* NB, distinction of NULL vs "" is *critical* in SASL */
-    memset(&sargs, 0, sizeof(sargs));
     sargs.nil = clientout ? 0 : 1;
     sargs.data.data_val = (char*)clientout;
     sargs.data.data_len = clientoutlen;
