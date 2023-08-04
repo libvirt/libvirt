@@ -26,6 +26,7 @@
 #include <sys/ioctl.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include <unistd.h>
 #include <mntent.h>
 #include <sys/reboot.h>
@@ -2132,9 +2133,10 @@ int lxcContainerStart(virDomainDef *def,
 {
     pid_t pid;
     int cflags;
-    int stacksize = getpagesize() * 4;
-    g_autofree char *stack = NULL;
+    int stacksize = getpagesize() * 16;
+    char *stack = NULL;
     char *stacktop;
+    int ret = -1;
     lxc_child_argv_t args = {
         .config = def,
         .securityDriver = securityDriver,
@@ -2150,7 +2152,14 @@ int lxcContainerStart(virDomainDef *def,
     };
 
     /* allocate a stack for the container */
-    stack = g_new0(char, stacksize);
+    stack = mmap(NULL, stacksize, PROT_READ | PROT_WRITE,
+                 MAP_PRIVATE | MAP_ANONYMOUS | MAP_GROWSDOWN | MAP_STACK,
+                 -1, 0);
+    if (stack == MAP_FAILED) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to allocate stack"));
+        return -1;
+    }
 
     stacktop = stack + stacksize;
 
@@ -2160,7 +2169,7 @@ int lxcContainerStart(virDomainDef *def,
         if (virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_USER) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Kernel doesn't support user namespace"));
-            return -1;
+            goto cleanup;
         }
         VIR_DEBUG("Enable user namespace");
         cflags |= CLONE_NEWUSER;
@@ -2175,7 +2184,7 @@ int lxcContainerStart(virDomainDef *def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Config asks for inherit net namespace "
                              "as well as private network interfaces"));
-            return -1;
+            goto cleanup;
         }
         VIR_DEBUG("Inheriting a net namespace");
     }
@@ -2199,10 +2208,15 @@ int lxcContainerStart(virDomainDef *def,
     if (pid < 0) {
         virReportSystemError(errno, "%s",
                              _("Failed to run clone container"));
-        return -1;
+        goto cleanup;
     }
 
-    return pid;
+    ret = pid;
+ cleanup:
+    if (munmap(stack, stacksize) < 0)
+        VIR_WARN("Unable to munmap() stack: %s", g_strerror(errno));
+
+    return ret;
 }
 
 int lxcContainerChown(virDomainDef *def, const char *path)
