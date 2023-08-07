@@ -508,7 +508,7 @@ virDomainNumatuneSet(virDomainNuma *numa,
         (placement < 0 || placement >= VIR_DOMAIN_NUMATUNE_PLACEMENT_LAST)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported numatune placement '%1$d'"),
-                       mode);
+                       placement);
         return -1;
     }
 
