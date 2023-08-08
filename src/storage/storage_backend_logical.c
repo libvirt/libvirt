@@ -624,13 +624,7 @@ static int
 virStorageBackendLogicalCheckPool(virStoragePoolObj *pool,
                                   bool *isActive)
 {
-    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
-
-    /* If we can find the target.path as well as ensure that the
-     * pool's def source
-     */
-    *isActive = virFileExists(def->target.path) &&
-                virStorageBackendLogicalMatchPoolSource(pool);
+    *isActive = virStorageBackendLogicalMatchPoolSource(pool);
     return 0;
 }
 
