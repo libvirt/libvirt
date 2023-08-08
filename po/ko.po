@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-07-26 08:28+0000\n"
-"PO-Revision-Date: 2023-07-30 05:21+0000\n"
+"PO-Revision-Date: 2023-08-08 05:41+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -20927,7 +20927,7 @@ msgstr "임시 네트워크를 정의 해제할 수 없습니다"
 
 #, c-format
 msgid "can't update '%1$s' section of network '%2$s'"
-msgstr "네트워크 '%1$s'의 '%2$s' 섹션을 업데이트할 수 없음"
+msgstr "네트워크 '%1$s'의 '%2$s' 부분을 최신화 할 수 없음"
 
 msgid "can't update unrecognized section of network"
 msgstr "인식 할 수 없는 네트워크 부분을 최신화 할 수 없습니다"
@@ -22345,7 +22345,7 @@ msgstr "파일 '%1$s'를 unlink할 수 없음"
 
 #, c-format
 msgid "cannot update AppArmor profile '%1$s'"
-msgstr "AppArmor프로파일 '%1$s'를 업데이트 할 수 없음"
+msgstr "AppArmor 프로파일 '%1$s'를 최신화 할 수 없음"
 
 #, c-format
 msgid "cannot update guest CPU for %1$s architecture"
@@ -23349,9 +23349,8 @@ msgstr "인증 방법 목록을 검색할 수 없음: %1$s"
 msgid ""
 "couldn't update dhcp host entry - no <ip> element found at index %1$d in "
 "network '%2$s'"
-msgstr ""
-"dhcp 호스트 항목을 업데이트할 수 없음 - <ip> 요소를 찾을 수 없음 (인덱스 "
-"%1$d, 네트워크 '%2$s'에서)"
+msgstr "dhcp 호스트 항목을 최신화 할 수 없음 - <ip> 요소를 찾을 수 없음 (인덱스 %1$"
+"d, 네트워크 '%2$s'에서)"
 
 #, c-format
 msgid ""
@@ -23453,8 +23452,7 @@ msgstr "매개변수로부터 볼륨을 생성합니다"
 msgid ""
 "creating a new group/updating existing with all tune parameters zero is not "
 "supported"
-msgstr ""
-"새 그룹 생성/모든 조정 매개변수가 0인 기존 업데이트는 지원되지 않습니다"
+msgstr "신규 그룹 생성/모든 조정 매개변수가 0인 기존 최신화는 지원되지 않습니다"
 
 msgid "creating checkpoint for incremental backup is not supported yet"
 msgstr "증분 백업에 대한 체크포인트 생성은 아직 지원되지 않습니다"
@@ -23627,7 +23625,7 @@ msgid "define or modify a secret from an XML file"
 msgstr "XML 파일의 비밀 정보를 정의하거나 변경"
 
 msgid "define or update a network filter from an XML file"
-msgstr "XML 파일에서 네트워크 필터 정의 또는 업데이트"
+msgstr "XML 파일에서 네트워크 필터 정의 또는 최신화"
 
 #, c-format
 msgid "definition for checkpoint %1$s must use uuid %2$s"
@@ -23864,7 +23862,7 @@ msgstr "장치 유형 '%1$s'가 부착 될 수 없습니다"
 
 #, c-format
 msgid "device type '%1$s' cannot be updated"
-msgstr "장치 유형 '%1$s'을(를) 업데이트할 수 없습니다"
+msgstr "장치 유형 '%1$s'를 최신화 할 수 없습니다"
 
 #, c-format
 msgid "device type '%1$s' cannot hot unplugged"
@@ -24336,8 +24334,7 @@ msgid "domain checkpoint XML"
 msgstr "도메인 체크포인트 XML"
 
 msgid "domain config update needs VIR_DOMAIN_AFFECT_CONFIG flag to be set"
-msgstr ""
-"도메인 구성 업데이트에는 VIR_DOMAIN_AFFECT_CONFIG 플래그를 설정해야 합니다"
+msgstr "도메인 구성 최신화에는 VIR_DOMAIN_AFFECT_CONFIG 플래그를 설정해야 합니다"
 
 #, c-format
 msgid "domain configuration does not support rng model '%1$s'"
@@ -26417,10 +26414,10 @@ msgstr "스냅샷 '%1$s/%2$s@%3$s'의 보호를 해제하지 못했습니다"
 
 #, c-format
 msgid "failed to update capacity data for block node '%1$s'"
-msgstr "블록 노드 '%1$s'의 용량 데이터를 업데이트하지 못했습니다"
+msgstr "블록 노드 '%1$s'의 용량 자료를 최신화하지 못했습니다"
 
 msgid "failed to update device in BPF cgroup map"
-msgstr "BPF cgroup 맵에서 장치를 업데이트하지 못했습니다"
+msgstr "BPF cgroup 맵에서 장치를 최신화하지 못했습니다"
 
 #, c-format
 msgid "failed to validate SSH host key: %1$s"
@@ -26614,10 +26611,10 @@ msgid "filename containing XML description of the copy destination"
 msgstr "복사 대상의 XML 설명을 포함하는 파일 이름"
 
 msgid "filename containing updated XML for the target"
-msgstr "대상에 대한 업데이트된 XML을 포함하는 파일 이름"
+msgstr "대상에 대한 최신화된 XML을 포함하는 파일 이름"
 
 msgid "filename containing updated persistent XML for the target"
-msgstr "대상에 대해 업데이트된 영구 XML을 포함하는 파일 이름"
+msgstr "대상에 대해 최신화된 영구 XML을 포함하는 파일 이름"
 
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "파일시스템 유형이 'template'나 'mount'가 아닙니다"
@@ -26811,7 +26808,7 @@ msgid "force convergence during live migration"
 msgstr "실시간 이전 중에 강제 수렴"
 
 msgid "force device update"
-msgstr "장치 업데이트 강제"
+msgstr "장치 최신화 강제"
 
 msgid "force disconnect a client from the given server"
 msgstr "주어진 서버에서 클라이언트를 강제로 연결 해제"
@@ -29141,7 +29138,7 @@ msgstr "라이브 스냅샷 생성은 전체 시스템 스냅샷 중에만 지�
 
 #, c-format
 msgid "live update of device '%1$s' is not supported"
-msgstr "장치 '%1$s'의 라이브 업데이트가 지원되지 않습니다"
+msgstr "장치 '%1$s'의 실시간 최신화가 지원되지 않습니다"
 
 #, c-format
 msgid "loadparm value '%1$s' must be between 1 and 8 characters"
@@ -31793,7 +31790,7 @@ msgid "no threads found"
 msgstr "쓰레드를 찾을 수 없습니다"
 
 msgid "no tls service found, unable to update tls files"
-msgstr "TLS 서비스를 찾을 수 없습니다. TLS 파일을 업데이트할 수 없습니다"
+msgstr "TLS 서비스를 찾을 수 없으며, TLS 파일을 최신화 할 수 없음"
 
 msgid "no transaction running, nothing to be committed."
 msgstr "실행 중인 트랜잭션이 없고 커밋할 항목이 없습니다."
@@ -31918,13 +31915,13 @@ msgid "nothing selected for snapshot"
 msgstr "스냅샷에 대해 선택된 항목이 없습니다"
 
 msgid "notify server to update TLS related files online."
-msgstr "TLS 관련 파일을 온라인으로 업데이트하도록 서버에 알립니다."
+msgstr "TLS 연관련 파일을 온라인으로 최신화하도록 서버에 알립니다."
 
 msgid ""
 "notify server to update the CA cert, CA CRL, server cert / key without "
 "restarts. See OPTIONS for currently supported attributes."
 msgstr ""
-"다시 시작하지 않고 CA 인증서, CA CRL, 서버 인증서/키를 업데이트하도록 서버에 "
+"다시 시작하지 않고 CA 인증서, CA CRL, 서버 인증서/키를 최신화하도록 서버에 "
 "알립니다. 현재 지원되는 속성은 OPTIONS를 참조하세요."
 
 #, c-format
@@ -32060,7 +32057,7 @@ msgid "offline migration must be specified with the persistent flag set"
 msgstr "오프라인 이전은 영구 플래그 묶음으로 지정되어야 합니다"
 
 msgid "ok"
-msgstr "ok"
+msgstr "좋음"
 
 msgid "old qcow/qcow2 encryption is not supported"
 msgstr "이전 qcow/qcow2 암호화는 지원되지 않습니다"
@@ -32714,10 +32711,10 @@ msgstr "지속적인 예약은 NVRAM을 지원하지 않습니다"
 
 #, c-format
 msgid "persistent update of device '%1$s' is not supported"
-msgstr "장치 '%1$s'의 영구 업데이트가 지원되지 않습니다"
+msgstr "장치 '%1$s'의 영구 최신화가 지원되지 않습니다"
 
 msgid "persistent update of device is not supported"
-msgstr "장치의 영구 업데이트는 지원되지 않습니다"
+msgstr "장치의 영구 최신화는 지원되지 않습니다"
 
 msgid "physical address within the guest domain's memory to set the secret"
 msgstr "비밀을 설정하는 게스트 도메인 메모리 내의 물리적 주소"
@@ -35070,7 +35067,7 @@ msgid "the domain does not have a current snapshot"
 msgstr "도메인에는 현재 스냅샷이 없습니다"
 
 msgid "the guest hasn't updated any stats yet"
-msgstr "게스트는 아직 통계를 업데이트하지 않았습니다"
+msgstr "게스트는 아직 통계를 최신화하지 않았습니다"
 
 msgid "the key code"
 msgstr "키 코드"
@@ -35202,7 +35199,7 @@ msgid "this QEMU version didn't provide SGX EPC NUMA info"
 msgstr "QEMU 버전은 SGX EPC NUMA 정보를 제공하지 않습니다"
 
 msgid "this disk doesn't support update"
-msgstr "이 디스크는 업데이트를 지원하지 않음"
+msgstr "이 디스크는 최신화를 지원하지 않습니다"
 
 msgid "this domain does not have a device to delete snapshots"
 msgstr "이 도메인에는 스냅샷을 삭제할 수 있는 장치가 없음"
@@ -35799,7 +35796,7 @@ msgid "type of the pool"
 msgstr "풀의 유형"
 
 msgid "type of update (add-first, add-last (add), delete, or modify)"
-msgstr "업데이트 유형(첫 번째 추가, 마지막 추가(추가), 삭제 또는 수정)"
+msgstr "최신화 유형(첫 번째 추가, 마지막 추가(추가), 삭제 또는 수정)"
 
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink가 NULL을 반환했습니다"
@@ -37275,7 +37272,7 @@ msgstr "인식할 수 없는 명령 이름 '%1$s'"
 
 #, c-format
 msgid "unrecognized network update command code %1$d"
-msgstr "인식할 수 없는 네트워크 업데이트 명령 코드 %1$d"
+msgstr "인식 할 수 없는 네트워크 최신화 명령 코드 %1$d"
 
 #, c-format
 msgid "unrecognized section name '%1$s'"
@@ -37645,10 +37642,10 @@ msgid "unterminated string"
 msgstr "종료되지 않은 문자열"
 
 msgid "update device from an XML file"
-msgstr "XML 파일에서 장치를 업데이트합니다"
+msgstr "XML 파일에서 장치를 최신화합니다"
 
 msgid "update guest CPU according to host CPU"
-msgstr "호스트 CPU에 따라 게스트 CPU를 업데이트합니다"
+msgstr "호스트 CPU에 따라 게스트 CPU를 최신화합니다"
 
 msgid "update memory device of a domain"
 msgstr "도메인의 메모리 장치를 최신화합니다"
@@ -37658,7 +37655,7 @@ msgstr "기존 네트워크 구성의 일부분을 최신화합니다"
 
 #, c-format
 msgid "updating device type '%1$s' is unsupported"
-msgstr "업데이트 장치 유형 '%1$s'는 지원되지 않습니다"
+msgstr "장치 유형 '%1$s'의 최신화는 지원되지 않습니다"
 
 msgid "upload file contents to a volume"
 msgstr "볼륨에 파일 컨텐츠를 업로드함"
@@ -38598,7 +38595,7 @@ msgid "which parent object to search through"
 msgstr "검색할 상위 개체"
 
 msgid "which section of network configuration to update"
-msgstr "업데이트할 네트워크 구성 섹션"
+msgstr "최신화 하려는 네트워크 구성 부분"
 
 msgid "wipe a vol"
 msgstr "볼륨을 깨끗이 밀기"
