@@ -11204,6 +11204,11 @@ doMigrate(void *opaque)
     if (opt) {
         g_autofree char **val = NULL;
 
+        if (!(flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC))) {
+            vshError(ctl, "'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'");
+            goto out;
+        }
+
         val = g_strsplit(opt, ",", 0);
 
         if (virTypedParamsAddStringList(&params,
