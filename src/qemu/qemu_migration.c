@@ -2644,6 +2644,12 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
                                                      migrate_disks,
                                                      nmigrate_disks))
             cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
+    } else {
+        if (nmigrate_disks > 0) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of 'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"));
+            return NULL;
+        }
     }
 
     if (virDomainDefHasMemoryHotplug(vm->def) ||
