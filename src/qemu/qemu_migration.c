@@ -2617,6 +2617,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
         if (flags & VIR_MIGRATE_TUNNELLED) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("migration of non-shared storage is not supported with tunnelled migration and this QEMU"));
+            return NULL;
         }
 
         if (nmigrate_disks) {
