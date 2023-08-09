@@ -11082,6 +11082,11 @@ static const vshCmdOptDef opts_migrate[] = {
     {.name = NULL}
 };
 
+struct doMigrateFlagMapping {
+    const char *optionname;
+    unsigned int migflag;
+};
+
 static void
 doMigrate(void *opaque)
 {
@@ -11099,6 +11104,32 @@ doMigrate(void *opaque)
     unsigned long long ullOpt = 0;
     int rv;
     virConnectPtr dconn = data->dconn;
+    size_t i;
+
+    static const struct doMigrateFlagMapping flagmap[] = {
+        { "live", VIR_MIGRATE_LIVE },
+        { "p2p", VIR_MIGRATE_PEER2PEER },
+        { "tunnelled", VIR_MIGRATE_TUNNELLED },
+        { "persistent", VIR_MIGRATE_PERSIST_DEST },
+        { "undefinesource", VIR_MIGRATE_UNDEFINE_SOURCE },
+        { "copy-storage-all", VIR_MIGRATE_NON_SHARED_DISK },
+        { "copy-storage-inc", VIR_MIGRATE_NON_SHARED_INC },
+        { "copy-storage-synchronous-writes", VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES },
+        { "change-protection", VIR_MIGRATE_CHANGE_PROTECTION },
+        { "unsafe", VIR_MIGRATE_UNSAFE },
+        { "compressed", VIR_MIGRATE_COMPRESSED },
+        { "auto-converge", VIR_MIGRATE_AUTO_CONVERGE },
+        { "rdma-pin-all", VIR_MIGRATE_RDMA_PIN_ALL },
+        { "offline", VIR_MIGRATE_OFFLINE },
+        { "abort-on-error", VIR_MIGRATE_ABORT_ON_ERROR },
+        { "postcopy", VIR_MIGRATE_POSTCOPY },
+        { "postcopy-resume", VIR_MIGRATE_POSTCOPY_RESUME },
+        { "zerocopy", VIR_MIGRATE_ZEROCOPY },
+        { "tls", VIR_MIGRATE_TLS },
+        { "parallel", VIR_MIGRATE_PARALLEL },
+        { "suspend", VIR_MIGRATE_PAUSED },
+    };
+
 #ifndef WIN32
     sigset_t sigmask, oldsigmask;
 
@@ -11107,6 +11138,17 @@ doMigrate(void *opaque)
     if (pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask) != 0)
         goto out_sig;
 #endif /* !WIN32 */
+
+    for (i = 0; i < G_N_ELEMENTS(flagmap); i++) {
+        if (vshCommandOptBool(cmd, flagmap[i].optionname))
+            flags |= flagmap[i].migflag;
+    }
+
+    if (flags & VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES &&
+        !(flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_DISK))) {
+        vshError(ctl, "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--copy-storage-inc'");
+        goto out;
+    }
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         goto out;
@@ -11324,72 +11366,6 @@ doMigrate(void *opaque)
         virTypedParamsAddString(&params, &nparams, &maxparams,
                                 VIR_MIGRATE_PARAM_TLS_DESTINATION, opt) < 0)
         goto save_error;
-
-    if (vshCommandOptBool(cmd, "live"))
-        flags |= VIR_MIGRATE_LIVE;
-    if (vshCommandOptBool(cmd, "p2p"))
-        flags |= VIR_MIGRATE_PEER2PEER;
-    if (vshCommandOptBool(cmd, "tunnelled"))
-        flags |= VIR_MIGRATE_TUNNELLED;
-
-    if (vshCommandOptBool(cmd, "persistent"))
-        flags |= VIR_MIGRATE_PERSIST_DEST;
-    if (vshCommandOptBool(cmd, "undefinesource"))
-        flags |= VIR_MIGRATE_UNDEFINE_SOURCE;
-
-    if (vshCommandOptBool(cmd, "suspend"))
-        flags |= VIR_MIGRATE_PAUSED;
-
-    if (vshCommandOptBool(cmd, "copy-storage-all"))
-        flags |= VIR_MIGRATE_NON_SHARED_DISK;
-
-    if (vshCommandOptBool(cmd, "copy-storage-inc"))
-        flags |= VIR_MIGRATE_NON_SHARED_INC;
-
-    if (vshCommandOptBool(cmd, "copy-storage-synchronous-writes")) {
-        if (!(flags & VIR_MIGRATE_NON_SHARED_DISK) &&
-            !(flags & VIR_MIGRATE_NON_SHARED_INC)) {
-            vshError(ctl, "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', 'copy-storage-inc'");
-            goto out;
-        }
-        flags |= VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES;
-    }
-
-    if (vshCommandOptBool(cmd, "change-protection"))
-        flags |= VIR_MIGRATE_CHANGE_PROTECTION;
-
-    if (vshCommandOptBool(cmd, "unsafe"))
-        flags |= VIR_MIGRATE_UNSAFE;
-
-    if (vshCommandOptBool(cmd, "compressed"))
-        flags |= VIR_MIGRATE_COMPRESSED;
-
-    if (vshCommandOptBool(cmd, "auto-converge"))
-        flags |= VIR_MIGRATE_AUTO_CONVERGE;
-
-    if (vshCommandOptBool(cmd, "rdma-pin-all"))
-        flags |= VIR_MIGRATE_RDMA_PIN_ALL;
-
-    if (vshCommandOptBool(cmd, "offline"))
-        flags |= VIR_MIGRATE_OFFLINE;
-
-    if (vshCommandOptBool(cmd, "abort-on-error"))
-        flags |= VIR_MIGRATE_ABORT_ON_ERROR;
-
-    if (vshCommandOptBool(cmd, "postcopy"))
-        flags |= VIR_MIGRATE_POSTCOPY;
-
-    if (vshCommandOptBool(cmd, "postcopy-resume"))
-        flags |= VIR_MIGRATE_POSTCOPY_RESUME;
-
-    if (vshCommandOptBool(cmd, "zerocopy"))
-        flags |= VIR_MIGRATE_ZEROCOPY;
-
-    if (vshCommandOptBool(cmd, "tls"))
-        flags |= VIR_MIGRATE_TLS;
-
-    if (vshCommandOptBool(cmd, "parallel"))
-        flags |= VIR_MIGRATE_PARALLEL;
 
     if (flags & VIR_MIGRATE_PEER2PEER || vshCommandOptBool(cmd, "direct")) {
         if (virDomainMigrateToURI3(dom, desturi, params, nparams, flags) == 0)
