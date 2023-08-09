@@ -183,24 +183,25 @@ qemuSnapshotDomainDefUpdateDisk(virDomainDef *domdef,
 
 /**
  * qemuSnapshotCreateQcow2Files:
- * @vm: domain object
+ * @driver: QEMU driver
+ * @def: domain definition
  * @snapdef: snapshot definition
  * @created: bitmap to store which disks were created
  *
  * Create new qcow2 images based on snapshot definition @snapdef and use
- * domain object @vm as source for backing images.
+ * domain definition @def as source for backing images.
  *
  * Returns 0 on success, -1 on error.
  */
 static int
-qemuSnapshotCreateQcow2Files(virDomainObj *vm,
+qemuSnapshotCreateQcow2Files(virQEMUDriver *driver,
+                             virDomainDef *def,
                              virDomainSnapshotDef *snapdef,
                              virBitmap *created)
 {
     size_t i;
     const char *qemuImgPath;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virQEMUDriver *driver = ((qemuDomainObjPrivate *) vm->privateData)->driver;
     virDomainSnapshotDiskDef *snapdisk = NULL;
     virDomainDiskDef *defdisk = NULL;
 
@@ -210,7 +211,7 @@ qemuSnapshotCreateQcow2Files(virDomainObj *vm,
     for (i = 0; i < snapdef->ndisks; i++) {
         g_autoptr(virCommand) cmd = NULL;
         snapdisk = &(snapdef->disks[i]);
-        defdisk = vm->def->disks[i];
+        defdisk = def->disks[i];
 
         if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
             continue;
@@ -278,7 +279,7 @@ qemuSnapshotCreateInactiveExternal(virQEMUDriver *driver,
     /* If reuse is true, then qemuSnapshotPrepare already
      * ensured that the new files exist, and it was up to the user to
      * create them correctly.  */
-    if (!reuse && qemuSnapshotCreateQcow2Files(vm, snapdef, created) < 0)
+    if (!reuse && qemuSnapshotCreateQcow2Files(driver, vm->def, snapdef, created) < 0)
         goto cleanup;
 
     /* update disk definitions */
