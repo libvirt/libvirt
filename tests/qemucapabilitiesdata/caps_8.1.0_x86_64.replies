@@ -17,11 +17,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 50,
+      "micro": 94,
       "minor": 0,
       "major": 8
     },
-    "package": "v8.0.0-2835-g361d539735"
+    "package": "v8.1.0-rc4"
   },
   "id": "libvirt-2"
 }
@@ -5554,6 +5554,16 @@
           "name": "socket-address",
           "default": null,
           "type": "[377]"
+        },
+        {
+          "name": "dirty-limit-throttle-time-per-round",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "dirty-limit-ring-full-time",
+          "default": null,
+          "type": "int"
         }
       ],
       "meta-type": "object"
@@ -5727,6 +5737,19 @@
           "name": "block-bitmap-mapping",
           "default": null,
           "type": "[421]"
+        },
+        {
+          "name": "x-vcpu-dirty-limit-period",
+          "default": null,
+          "type": "int",
+          "features": [
+            "unstable"
+          ]
+        },
+        {
+          "name": "vcpu-dirty-limit",
+          "default": null,
+          "type": "int"
         }
       ],
       "meta-type": "object"
@@ -5871,6 +5894,19 @@
           "name": "block-bitmap-mapping",
           "default": null,
           "type": "[421]"
+        },
+        {
+          "name": "x-vcpu-dirty-limit-period",
+          "default": null,
+          "type": "int",
+          "features": [
+            "unstable"
+          ]
+        },
+        {
+          "name": "vcpu-dirty-limit",
+          "default": null,
+          "type": "int"
         }
       ],
       "meta-type": "object"
@@ -13515,7 +13551,10 @@
         },
         {
           "name": "skipped",
-          "type": "int"
+          "type": "int",
+          "features": [
+            "deprecated"
+          ]
         },
         {
           "name": "normal",
@@ -13721,6 +13760,9 @@
         },
         {
           "name": "switchover-ack"
+        },
+        {
+          "name": "dirty-limit"
         }
       ],
       "meta-type": "enum",
@@ -13746,7 +13788,8 @@
         "background-snapshot",
         "zero-copy-send",
         "postcopy-preempt",
-        "switchover-ack"
+        "switchover-ack",
+        "dirty-limit"
       ]
     },
     {
@@ -36928,6 +36971,10 @@
     {
       "state": false,
       "capability": "switchover-ack"
+    },
+    {
+      "state": false,
+      "capability": "dirty-limit"
     }
   ],
   "id": "libvirt-45"
