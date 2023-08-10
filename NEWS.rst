@@ -21,6 +21,12 @@ v9.7.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: Various fixes to firmware selection
+
+    The changes made to firmware selection in libvirt 9.2.0 have unfortunately
+    introduced a number of regressions. All known issues in this area have now
+    been resolved.
+
 
 v9.6.0 (2023-08-01)
 ===================
