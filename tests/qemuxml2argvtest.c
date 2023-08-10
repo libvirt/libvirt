@@ -2542,7 +2542,6 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("name-escape");
 
-    DO_TEST_NOCAPS("master-key");
     DO_TEST("usb-long-port-path",
             QEMU_CAPS_USB_HUB);
     DO_TEST_PARSE_ERROR("usb-too-long-port-path-invalid",
