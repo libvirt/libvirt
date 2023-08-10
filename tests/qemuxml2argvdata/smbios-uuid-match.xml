@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='i686' machine='pc'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
     <smbios mode="sysinfo"/>
   </os>
   <sysinfo type="smbios">
@@ -18,6 +18,6 @@
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
   <devices>
-    <emulator>/usr/bin/qemu-system-i386</emulator>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
   </devices>
 </domain>

@@ -5,11 +5,11 @@
   <currentMemory unit='KiB'>219136</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='i686' machine='pc'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='hd'/>
   </os>
   <devices>
-    <emulator>/usr/bin/qemu-system-i386</emulator>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <controller type='usb' index='0' model='ich9-uhci2'>
       <master startport='2'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0'/>

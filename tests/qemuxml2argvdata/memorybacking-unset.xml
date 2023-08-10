@@ -10,7 +10,7 @@
   </memoryBacking>
   <vcpu placement='static'>2</vcpu>
   <os>
-    <type arch='i686' machine='pc'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='hd'/>
   </os>
   <clock offset='utc'/>
@@ -18,7 +18,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-    <emulator>/usr/bin/qemu-system-i386</emulator>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <memballoon model='virtio'/>
   </devices>
 </domain>

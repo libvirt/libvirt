@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>219100</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='i686' machine='pc'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='hd'/>
   </os>
   <clock offset='utc'/>
@@ -16,7 +16,7 @@
     <suspend-to-mem enabled='no'/>
   </pm>
   <devices>
-    <emulator>/usr/bin/qemu-system-i386</emulator>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='block' device='disk'>
       <driver name='qemu' type='raw'/>
       <source dev='/dev/HostVG/QEMUGuest1'/>

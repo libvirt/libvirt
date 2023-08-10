@@ -6,7 +6,7 @@ LOGNAME=test \
 XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-encryptdisk/.local/share \
 XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-encryptdisk/.cache \
 XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-encryptdisk/.config \
-/usr/bin/qemu-system-i386 \
+/usr/bin/qemu-system-x86_64 \
 -name guest=encryptdisk,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-encryptdisk/master-key.aes \
