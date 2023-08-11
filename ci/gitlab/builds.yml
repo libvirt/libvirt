@@ -146,6 +146,7 @@ x86_64-debian-11-prebuilt-env:
       optional: true
   allow_failure: false
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 x86_64-debian-11-local-env:
@@ -154,6 +155,7 @@ x86_64-debian-11-local-env:
   allow_failure: false
   variables:
     IMAGE: docker.io/library/debian:11-slim
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -164,6 +166,7 @@ x86_64-debian-11-clang-prebuilt-env:
       optional: true
   allow_failure: false
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 x86_64-debian-11-clang-local-env:
@@ -172,6 +175,7 @@ x86_64-debian-11-clang-local-env:
   allow_failure: false
   variables:
     IMAGE: docker.io/library/debian:11-slim
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -185,6 +189,24 @@ x86_64-debian-12-prebuilt-env:
     NAME: debian-12
 
 x86_64-debian-12-local-env:
+  extends: .native_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    IMAGE: docker.io/library/debian:12-slim
+    NAME: debian-12
+
+
+x86_64-debian-12-clang-prebuilt-env:
+  extends: .native_build_job_prebuilt_env
+  needs:
+    - job: x86_64-debian-12-container
+      optional: true
+  allow_failure: false
+  variables:
+    NAME: debian-12
+
+x86_64-debian-12-clang-local-env:
   extends: .native_build_job_local_env
   needs: []
   allow_failure: false
@@ -466,6 +488,7 @@ armv7l-debian-11-prebuilt-env:
   allow_failure: false
   variables:
     CROSS: armv7l
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 armv7l-debian-11-local-env:
@@ -475,6 +498,7 @@ armv7l-debian-11-local-env:
   variables:
     CROSS: armv7l
     IMAGE: docker.io/library/debian:11-slim
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -586,6 +610,180 @@ s390x-debian-11-local-env:
     IMAGE: docker.io/library/debian:11-slim
     JOB_OPTIONAL: 1
     NAME: debian-11
+
+
+aarch64-debian-12-prebuilt-env:
+  extends: .cross_build_job_prebuilt_env
+  needs:
+    - job: aarch64-debian-12-container
+      optional: true
+  allow_failure: false
+  variables:
+    CROSS: aarch64
+    JOB_OPTIONAL: 1
+    NAME: debian-12
+
+aarch64-debian-12-local-env:
+  extends: .cross_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    CROSS: aarch64
+    IMAGE: docker.io/library/debian:12-slim
+    JOB_OPTIONAL: 1
+    NAME: debian-12
+
+
+armv6l-debian-12-prebuilt-env:
+  extends: .cross_build_job_prebuilt_env
+  needs:
+    - job: armv6l-debian-12-container
+      optional: true
+  allow_failure: false
+  variables:
+    CROSS: armv6l
+    JOB_OPTIONAL: 1
+    NAME: debian-12
+
+armv6l-debian-12-local-env:
+  extends: .cross_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    CROSS: armv6l
+    IMAGE: docker.io/library/debian:12-slim
+    JOB_OPTIONAL: 1
+    NAME: debian-12
+
+
+armv7l-debian-12-prebuilt-env:
+  extends: .cross_build_job_prebuilt_env
+  needs:
+    - job: armv7l-debian-12-container
+      optional: true
+  allow_failure: false
+  variables:
+    CROSS: armv7l
+    NAME: debian-12
+
+armv7l-debian-12-local-env:
+  extends: .cross_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    CROSS: armv7l
+    IMAGE: docker.io/library/debian:12-slim
+    NAME: debian-12
+
+
+i686-debian-12-prebuilt-env:
+  extends: .cross_build_job_prebuilt_env
+  needs:
+    - job: i686-debian-12-container
+      optional: true
+  allow_failure: false
+  variables:
+    CROSS: i686
+    JOB_OPTIONAL: 1
+    NAME: debian-12
+
+i686-debian-12-local-env:
+  extends: .cross_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    CROSS: i686
+    IMAGE: docker.io/library/debian:12-slim
+    JOB_OPTIONAL: 1
+    NAME: debian-12
+
+
+mips64el-debian-12-prebuilt-env:
+  extends: .cross_build_job_prebuilt_env
+  needs:
+    - job: mips64el-debian-12-container
+      optional: true
+  allow_failure: false
+  variables:
+    CROSS: mips64el
+    JOB_OPTIONAL: 1
+    NAME: debian-12
+
+mips64el-debian-12-local-env:
+  extends: .cross_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    CROSS: mips64el
+    IMAGE: docker.io/library/debian:12-slim
+    JOB_OPTIONAL: 1
+    NAME: debian-12
+
+
+mipsel-debian-12-prebuilt-env:
+  extends: .cross_build_job_prebuilt_env
+  needs:
+    - job: mipsel-debian-12-container
+      optional: true
+  allow_failure: false
+  variables:
+    CROSS: mipsel
+    JOB_OPTIONAL: 1
+    NAME: debian-12
+
+mipsel-debian-12-local-env:
+  extends: .cross_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    CROSS: mipsel
+    IMAGE: docker.io/library/debian:12-slim
+    JOB_OPTIONAL: 1
+    NAME: debian-12
+
+
+ppc64le-debian-12-prebuilt-env:
+  extends: .cross_build_job_prebuilt_env
+  needs:
+    - job: ppc64le-debian-12-container
+      optional: true
+  allow_failure: false
+  variables:
+    CROSS: ppc64le
+    JOB_OPTIONAL: 1
+    NAME: debian-12
+
+ppc64le-debian-12-local-env:
+  extends: .cross_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    CROSS: ppc64le
+    IMAGE: docker.io/library/debian:12-slim
+    JOB_OPTIONAL: 1
+    NAME: debian-12
+
+
+s390x-debian-12-prebuilt-env:
+  extends: .cross_build_job_prebuilt_env
+  needs:
+    - job: s390x-debian-12-container
+      optional: true
+  allow_failure: false
+  variables:
+    CROSS: s390x
+    JOB_OPTIONAL: 1
+    NAME: debian-12
+
+s390x-debian-12-local-env:
+  extends: .cross_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    CROSS: s390x
+    IMAGE: docker.io/library/debian:12-slim
+    JOB_OPTIONAL: 1
+    NAME: debian-12
 
 
 aarch64-debian-sid-prebuilt-env:

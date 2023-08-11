@@ -46,6 +46,7 @@ x86_64-debian-11-container:
   extends: .container_job
   allow_failure: false
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -135,6 +136,7 @@ armv7l-debian-11-container:
   extends: .container_job
   allow_failure: false
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-11-cross-armv7l
 
 
@@ -176,6 +178,69 @@ s390x-debian-11-container:
   variables:
     JOB_OPTIONAL: 1
     NAME: debian-11-cross-s390x
+
+
+aarch64-debian-12-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    JOB_OPTIONAL: 1
+    NAME: debian-12-cross-aarch64
+
+
+armv6l-debian-12-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    JOB_OPTIONAL: 1
+    NAME: debian-12-cross-armv6l
+
+
+armv7l-debian-12-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-12-cross-armv7l
+
+
+i686-debian-12-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    JOB_OPTIONAL: 1
+    NAME: debian-12-cross-i686
+
+
+mips64el-debian-12-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    JOB_OPTIONAL: 1
+    NAME: debian-12-cross-mips64el
+
+
+mipsel-debian-12-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    JOB_OPTIONAL: 1
+    NAME: debian-12-cross-mipsel
+
+
+ppc64le-debian-12-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    JOB_OPTIONAL: 1
+    NAME: debian-12-cross-ppc64le
+
+
+s390x-debian-12-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    JOB_OPTIONAL: 1
+    NAME: debian-12-cross-s390x
 
 
 aarch64-debian-sid-container:
