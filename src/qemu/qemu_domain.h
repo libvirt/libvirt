@@ -738,7 +738,7 @@ bool qemuDomainDiskChangeSupported(virDomainDiskDef *disk,
                                    virDomainDiskDef *orig_disk);
 
 void qemuDomainGetImageIds(virQEMUDriverConfig *cfg,
-                           virDomainObj *vm,
+                           virDomainDef *def,
                            virStorageSource *src,
                            virStorageSource *parentSrc,
                            uid_t *uid,

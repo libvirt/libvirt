@@ -932,7 +932,7 @@ qemuBlockJobDeleteImages(virQEMUDriver *driver,
     for (; p != NULL; p = p->backingStore) {
         if (virStorageSourceGetActualType(p) == VIR_STORAGE_TYPE_FILE) {
 
-            qemuDomainGetImageIds(cfg, vm, p, disk->src, &uid, &gid);
+            qemuDomainGetImageIds(cfg, vm->def, p, disk->src, &uid, &gid);
 
             if (virFileRemove(p->path, uid, gid) < 0) {
                 VIR_WARN("Unable to remove snapshot image file '%s' (%s)",

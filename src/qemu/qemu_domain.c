@@ -7762,7 +7762,7 @@ qemuDomainCleanupRun(virQEMUDriver *driver,
 
 void
 qemuDomainGetImageIds(virQEMUDriverConfig *cfg,
-                      virDomainObj *vm,
+                      virDomainDef *def,
                       virStorageSource *src,
                       virStorageSource *parentSrc,
                       uid_t *uid, gid_t *gid)
@@ -7783,7 +7783,7 @@ qemuDomainGetImageIds(virQEMUDriverConfig *cfg,
             *gid = cfg->group;
     }
 
-    if (vm && (vmlabel = virDomainDefGetSecurityLabelDef(vm->def, "dac")) &&
+    if ((vmlabel = virDomainDefGetSecurityLabelDef(def, "dac")) &&
         vmlabel->label)
         virParseOwnershipIds(vmlabel->label, uid, gid);
 
@@ -7808,7 +7808,7 @@ qemuDomainStorageFileInit(virQEMUDriver *driver,
     uid_t uid;
     gid_t gid;
 
-    qemuDomainGetImageIds(cfg, vm, src, parent, &uid, &gid);
+    qemuDomainGetImageIds(cfg, vm->def, src, parent, &uid, &gid);
 
     if (virStorageSourceInitAs(src, uid, gid) < 0)
         return -1;
@@ -8001,7 +8001,7 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
         return 0;
     }
 
-    qemuDomainGetImageIds(cfg, vm, src, disksrc, &uid, &gid);
+    qemuDomainGetImageIds(cfg, vm->def, src, disksrc, &uid, &gid);
 
     if (virStorageSourceGetMetadata(src, uid, gid,
                                     QEMU_DOMAIN_STORAGE_SOURCE_CHAIN_MAX_DEPTH,

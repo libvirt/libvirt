@@ -586,7 +586,7 @@ qemuBackupJobTerminate(virDomainObj *vm,
             if (!cfg)
                 cfg = virQEMUDriverGetConfig(priv->driver);
 
-            qemuDomainGetImageIds(cfg, vm, backupdisk->store, NULL, &uid, &gid);
+            qemuDomainGetImageIds(cfg, vm->def, backupdisk->store, NULL, &uid, &gid);
 
             if (virFileRemove(backupdisk->store->path, uid, gid) < 0)
                 VIR_WARN("failed to remove scratch file '%s'",
