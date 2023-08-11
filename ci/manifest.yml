@@ -79,6 +79,8 @@ targets:
         containers: false
         builds: false
 
+  debian-12: x86_64
+
   debian-sid:
     jobs:
       - arch: x86_64

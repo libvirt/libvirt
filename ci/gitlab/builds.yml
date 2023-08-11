@@ -175,6 +175,24 @@ x86_64-debian-11-clang-local-env:
     NAME: debian-11
 
 
+x86_64-debian-12-prebuilt-env:
+  extends: .native_build_job_prebuilt_env
+  needs:
+    - job: x86_64-debian-12-container
+      optional: true
+  allow_failure: false
+  variables:
+    NAME: debian-12
+
+x86_64-debian-12-local-env:
+  extends: .native_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    IMAGE: docker.io/library/debian:12-slim
+    NAME: debian-12
+
+
 x86_64-debian-sid-prebuilt-env:
   extends: .native_build_job_prebuilt_env
   needs:
