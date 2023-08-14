@@ -1,0 +1,44 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=QEMUGuest,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off,acpi=on \
+-accel tcg \
+-cpu qemu64 \
+-m size=12582912k \
+-overcommit mem-lock=off \
+-smp 12,sockets=12,cores=1,threads=1 \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node0","size":2147483648}' \
+-numa node,nodeid=0,cpus=0-3,memdev=ram-node0 \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node1","size":2147483648}' \
+-numa node,nodeid=1,cpus=4-7,memdev=ram-node1 \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node2","size":2147483648}' \
+-numa node,nodeid=2,cpus=8-11,memdev=ram-node2 \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node3","size":2147483648}' \
+-numa node,nodeid=3,memdev=ram-node3 \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node4","size":2147483648}' \
+-numa node,nodeid=4,memdev=ram-node4 \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node5","size":2147483648}' \
+-numa node,nodeid=5,memdev=ram-node5 \
+-uuid c7a5fdb2-cdaf-9455-926a-d65c16db1809 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

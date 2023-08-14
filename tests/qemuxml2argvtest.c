@@ -1129,7 +1129,7 @@ mymain(void)
     DO_TEST_NOCAPS("cpu-host-kvmclock");
     DO_TEST("kvmclock", QEMU_CAPS_KVM);
     DO_TEST("clock-timer-hyperv-rtc", QEMU_CAPS_KVM);
-    DO_TEST_NOCAPS("clock-realtime");
+    DO_TEST_CAPS_LATEST("clock-realtime");
     DO_TEST_CAPS_LATEST("clock-absolute");
 
     DO_TEST_CAPS_LATEST("controller-usb-order");
@@ -1160,8 +1160,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hyperv-passthrough");
     DO_TEST_CAPS_LATEST("hyperv-stimer-direct");
 
-    DO_TEST_NOCAPS("kvm-features");
-    DO_TEST_NOCAPS("kvm-features-off");
+    DO_TEST_CAPS_LATEST("kvm-features");
+    DO_TEST_CAPS_LATEST("kvm-features-off");
 
     DO_TEST_NOCAPS("pmu-feature");
     DO_TEST_NOCAPS("pmu-feature-off");
@@ -1418,7 +1418,7 @@ mymain(void)
     DO_TEST_FAILURE_NOCAPS("net-vhostuser-fail");
     DO_TEST_NOCAPS("net-user");
     DO_TEST_CAPS_ARCH_LATEST_FULL("net-user", "x86_64", ARG_FLAGS, FLAG_SLIRP_HELPER);
-    DO_TEST_NOCAPS("net-user-addr");
+    DO_TEST_CAPS_LATEST("net-user-addr");
     DO_TEST_CAPS_LATEST("net-user-passt");
     DO_TEST_CAPS_VER("net-user-passt", "7.2.0");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("net-user-slirp-portforward");
@@ -1525,8 +1525,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_CAPS_LATEST("serial-tcp-tlsx509-chardev-verify");
     driver.config->chardevTLSx509verify = 0;
-    DO_TEST("serial-tcp-tlsx509-chardev-notls",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_CAPS_LATEST("serial-tcp-tlsx509-chardev-notls");
     driver.config->chardevTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     DO_TEST("serial-tcp-tlsx509-secret-chardev",
@@ -1704,7 +1702,7 @@ mymain(void)
     DO_TEST_NOCAPS("smbios");
     DO_TEST_PARSE_ERROR_NOCAPS("smbios-date");
     DO_TEST_PARSE_ERROR_NOCAPS("smbios-uuid-match");
-    DO_TEST_NOCAPS("smbios-type-fwcfg");
+    DO_TEST_CAPS_LATEST("smbios-type-fwcfg");
 
     DO_TEST_CAPS_LATEST("watchdog");
     DO_TEST_CAPS_LATEST("watchdog-device");
@@ -1910,7 +1908,7 @@ mymain(void)
     DO_TEST_NOCAPS("numatune-memnode-no-memory");
 
     DO_TEST_NOCAPS("numatune-distances");
-    DO_TEST_NOCAPS("numatune-no-vcpu");
+    DO_TEST_CAPS_LATEST("numatune-no-vcpu");
     DO_TEST_CAPS_LATEST("numatune-hmat");
     DO_TEST_CAPS_LATEST("numatune-hmat-none");
 

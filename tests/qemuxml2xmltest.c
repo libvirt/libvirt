@@ -241,7 +241,7 @@ mymain(void)
     DO_TEST_NOCAPS("kvmclock");
     DO_TEST_NOCAPS("clock-timer-hyperv-rtc");
     DO_TEST_CAPS_ARCH_LATEST("clock-timer-armvtimer", "aarch64");
-    DO_TEST_NOCAPS("clock-realtime");
+    DO_TEST_CAPS_LATEST("clock-realtime");
     DO_TEST_CAPS_LATEST("clock-absolute");
 
     DO_TEST_NOCAPS("cpu-eoi-disabled");
@@ -257,8 +257,8 @@ mymain(void)
     DO_TEST_NOCAPS("hyperv-passthrough");
     DO_TEST_NOCAPS("hyperv-stimer-direct");
 
-    DO_TEST_NOCAPS("kvm-features");
-    DO_TEST_NOCAPS("kvm-features-off");
+    DO_TEST_CAPS_LATEST("kvm-features");
+    DO_TEST_CAPS_LATEST("kvm-features-off");
 
     DO_TEST_NOCAPS("pmu-feature");
     DO_TEST_NOCAPS("pmu-feature-off");
@@ -429,7 +429,7 @@ mymain(void)
     DO_TEST_NOCAPS("misc-uuid");
     DO_TEST_NOCAPS("net-vhostuser");
     DO_TEST_NOCAPS("net-user");
-    DO_TEST_NOCAPS("net-user-addr");
+    DO_TEST_CAPS_LATEST("net-user-addr");
     DO_TEST_CAPS_LATEST("net-user-passt");
     DO_TEST_NOCAPS("net-virtio");
     DO_TEST_NOCAPS("net-virtio-device");
@@ -465,7 +465,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("net-virtio-rss");
 
     DO_TEST_NOCAPS("serial-tcp-tlsx509-chardev");
-    DO_TEST_NOCAPS("serial-tcp-tlsx509-chardev-notls");
+    DO_TEST_CAPS_LATEST("serial-tcp-tlsx509-chardev-notls");
 
     cfg->spiceTLS = true;
     DO_TEST("serial-spiceport",
@@ -857,7 +857,7 @@ mymain(void)
     DO_TEST_NOCAPS("numatune-memnode");
     DO_TEST_NOCAPS("numatune-memnode-no-memory");
     DO_TEST_NOCAPS("numatune-distances");
-    DO_TEST_NOCAPS("numatune-no-vcpu");
+    DO_TEST_CAPS_LATEST("numatune-no-vcpu");
     DO_TEST("numatune-hmat", QEMU_CAPS_NUMA_HMAT);
     DO_TEST_CAPS_LATEST("numatune-hmat-none");
     DO_TEST_CAPS_LATEST("numatune-memnode-restrictive-mode");
@@ -935,7 +935,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_IVSHMEM_PLAIN, QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL);
     DO_TEST_NOCAPS("smbios");
     DO_TEST_NOCAPS("smbios-multiple-type2");
-    DO_TEST_NOCAPS("smbios-type-fwcfg");
+    DO_TEST_CAPS_LATEST("smbios-type-fwcfg");
 
     DO_TEST_CAPS_ARCH_LATEST("aarch64-aavmf-virtio-mmio", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virtio-pci-default", "aarch64");
