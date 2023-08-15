@@ -1,0 +1,164 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source protocol='gluster' name='Volume2/Image'>
+        <host transport='unix' socket='/path/to/sock'/>
+      </source>
+      <backingStore type='file'>
+        <format type='qcow2'/>
+        <source file='/tmp/missing-backing-store.qcow'/>
+      </backingStore>
+      <target dev='vda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source protocol='nbd' name='bar'>
+        <host transport='unix' socket='/var/run/nbdsock'/>
+      </source>
+      <backingStore type='block'>
+        <format type='qcow2'/>
+        <source dev='/dev/HostVG/QEMUGuest1'/>
+        <backingStore type='file'>
+          <format type='vmdk'/>
+          <source file='/tmp/image2'/>
+          <backingStore type='file'>
+            <format type='qcow2'/>
+            <source file='/tmp/image3.qcow'>
+              <seclabel model='selinux' relabel='yes'>
+                <label>system_u:system_r:public_content_t:s0</label>
+              </seclabel>
+            </source>
+            <backingStore type='file'>
+              <format type='qcow2'/>
+              <source file='/tmp/image4.qcow'/>
+              <backingStore type='file'>
+                <format type='qcow2'/>
+                <source file='/tmp/image5.qcow'/>
+                <backingStore type='file'>
+                  <format type='raw'/>
+                  <source file='/tmp/Fedora-17-x86_64-Live-KDE.iso'/>
+                  <backingStore/>
+                </backingStore>
+              </backingStore>
+            </backingStore>
+          </backingStore>
+        </backingStore>
+      </backingStore>
+      <target dev='vdb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='gluster' name='Volume1/Image'>
+        <host name='example.org' port='6000'/>
+      </source>
+      <backingStore/>
+      <target dev='vdc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <auth username='myname'>
+        <secret type='ceph' usage='mycluster_myname'/>
+      </auth>
+      <source protocol='rbd' name='pool/image'>
+        <host name='mon1.example.org' port='6321'/>
+        <host name='mon2.example.org' port='6322'/>
+        <host name='mon3.example.org' port='6322'/>
+      </source>
+      <backingStore type='file'>
+        <format type='qcow2'/>
+        <source file='/tmp/image.qcow'/>
+        <backingStore/>
+      </backingStore>
+      <target dev='vdd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </disk>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source dev='/dev/HostVG/QEMUGuest11'/>
+      <target dev='vde' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/rhel7.1484071880'/>
+      <backingStore type='file'>
+        <format type='qcow2'/>
+        <source file='/var/lib/libvirt/images/rhel7.1484071877'/>
+        <backingStore type='file'>
+          <format type='qcow2'/>
+          <source file='/var/lib/libvirt/images/rhel7.1484071876'/>
+          <backingStore type='file'>
+            <format type='qcow2'/>
+            <source file='/var/lib/libvirt/images/rhel7.1484071872'/>
+            <backingStore type='file'>
+              <format type='qcow2'/>
+              <source file='/var/lib/libvirt/images/rhel7.1483615252'/>
+              <backingStore type='file'>
+                <format type='qcow2'/>
+                <source file='/var/lib/libvirt/images/rhel7.1483605924'/>
+                <backingStore type='file'>
+                  <format type='qcow2'/>
+                  <source file='/var/lib/libvirt/images/rhel7.1483605920'/>
+                  <backingStore type='file'>
+                    <format type='qcow2'/>
+                    <source file='/var/lib/libvirt/images/rhel7.1483546244'/>
+                    <backingStore type='file'>
+                      <format type='qcow2'/>
+                      <source file='/var/lib/libvirt/images/rhel7.1483545901'/>
+                      <backingStore type='file'>
+                        <format type='qcow2'/>
+                        <source file='/var/lib/libvirt/images/rhel7.1483545313'/>
+                        <backingStore type='file'>
+                          <format type='qcow2'/>
+                          <source file='/var/lib/libvirt/images/rhel7.1483536402'/>
+                          <backingStore type='file'>
+                            <format type='qcow2'/>
+                            <source file='/var/lib/libvirt/images/rhel7.qcow2'/>
+                            <backingStore/>
+                          </backingStore>
+                        </backingStore>
+                      </backingStore>
+                    </backingStore>
+                  </backingStore>
+                </backingStore>
+              </backingStore>
+            </backingStore>
+          </backingStore>
+        </backingStore>
+      </backingStore>
+      <target dev='vdf' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+    </disk>
+    <controller type='usb' index='0' model='piix3-uhci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>

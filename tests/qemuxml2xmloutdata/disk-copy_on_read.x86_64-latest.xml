@@ -1,6 +1,6 @@
 <domain type='qemu'>
   <name>test</name>
-  <uuid>15d091de-0181-456b-9554-e4382dc1f1ab</uuid>
+  <uuid>468404ad-d49c-40f2-9e14-02294f9c1be3</uuid>
   <memory unit='KiB'>1048576</memory>
   <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu placement='static'>1</vcpu>
@@ -20,7 +20,7 @@
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='file' device='disk'>
-      <driver name='qemu' type='qcow2' event_idx='on'/>
+      <driver name='qemu' type='qcow2' copy_on_read='on'/>
       <source file='/var/lib/libvirt/images/f14.img'/>
       <target dev='vda' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
@@ -42,36 +42,11 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
-    <interface type='network'>
-      <mac address='52:54:00:e5:48:58'/>
-      <source network='default'/>
-      <model type='virtio'/>
-      <mtu size='1500'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
-    </interface>
-    <interface type='network'>
-      <mac address='52:54:00:e5:48:59'/>
-      <source network='default'/>
-      <model type='virtio'/>
-      <tune>
-        <sndbuf>1600</sndbuf>
-      </tune>
-      <mtu size='9000'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
-    </interface>
-    <serial type='pty'>
-      <target type='isa-serial' port='0'>
-        <model name='isa-serial'/>
-      </target>
-    </serial>
-    <console type='pty'>
-      <target type='serial' port='0'/>
-    </console>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
     <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </memballoon>
   </devices>
 </domain>
