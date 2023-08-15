@@ -39,7 +39,7 @@
 # include <sched.h>
 #endif
 
-#if defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || WITH_BSD_CPU_AFFINITY
+#if defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || WITH_BSD_CPU_AFFINITY || defined(__APPLE__)
 # include <sys/param.h>
 #endif
 
@@ -59,6 +59,10 @@
 
 #ifdef __linux__
 # include <sys/prctl.h>
+#endif
+
+#if defined(__APPLE__)
+# include <sys/syslimits.h>
 #endif
 
 #include "virprocess.h"
@@ -1066,7 +1070,20 @@ virProcessActivateMaxFiles(void)
 
     VIR_DEBUG("Initial max files was %llu", (unsigned long long)maxfiles.rlim_cur);
 
+# if defined(__APPLE__)
+    /*
+     * rlim_max may be RLIM_INFINITY, and macOS 12.6.3 getrlimit(2) says
+     *
+     * COMPATIBILITY
+     *      setrlimit() now returns with errno set to EINVAL in places
+     *      that historically succeeded.  It no longer accepts
+     *      "rlim_cur = RLIM_INFINITY" for RLIM_NOFILE.
+     *      Use "rlim_cur = min(OPEN_MAX, rlim_max)".
+     */
+    maxfiles.rlim_cur = MIN(OPEN_MAX, maxfiles.rlim_max);
+# else
     maxfiles.rlim_cur = maxfiles.rlim_max;
+# endif
 
     if (setrlimit(RLIMIT_NOFILE, &maxfiles) < 0) {
         VIR_DEBUG("Unable to set process max files limit to %llu: %s",
