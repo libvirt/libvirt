@@ -1049,12 +1049,12 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("virtio-options");
 
-    DO_TEST("fd-memory-numa-topology", QEMU_CAPS_KVM);
-    DO_TEST("fd-memory-numa-topology2", QEMU_CAPS_KVM);
-    DO_TEST("fd-memory-numa-topology3", QEMU_CAPS_KVM);
+    DO_TEST_CAPS_LATEST("fd-memory-numa-topology");
+    DO_TEST_CAPS_LATEST("fd-memory-numa-topology2");
+    DO_TEST_CAPS_LATEST("fd-memory-numa-topology3");
     DO_TEST_CAPS_LATEST("fd-memory-numa-topology4");
 
-    DO_TEST("fd-memory-no-numa-topology", QEMU_CAPS_KVM);
+    DO_TEST_CAPS_LATEST("fd-memory-no-numa-topology");
 
     DO_TEST_CAPS_LATEST("memfd-memory-numa");
     DO_TEST_CAPS_LATEST("memfd-memory-default-hugepage");
