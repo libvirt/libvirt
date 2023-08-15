@@ -315,11 +315,11 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-rbd-encryption-luks-any");
     DO_TEST_NOCAPS("disk-network-source-auth");
     DO_TEST_NOCAPS("disk-network-sheepdog");
-    DO_TEST_NOCAPS("disk-network-vxhs");
+    DO_TEST_CAPS_VER("disk-network-vxhs", "5.0.0");
     DO_TEST_CAPS_LATEST("disk-network-nfs");
     DO_TEST_NOCAPS("disk-network-tlsx509-nbd");
     DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd-hostname");
-    DO_TEST_NOCAPS("disk-network-tlsx509-vxhs");
+    DO_TEST_CAPS_VER("disk-network-tlsx509-vxhs", "5.0.0");
     DO_TEST_CAPS_LATEST("disk-nvme");
     DO_TEST_CAPS_LATEST("disk-vhostuser");
     DO_TEST_CAPS_LATEST("disk-sata-device");

@@ -5,9 +5,12 @@
   <currentMemory unit='KiB'>219136</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='i686' machine='pc'>hvm</type>
+    <type arch='x86_64' machine='pc-i440fx-5.0'>hvm</type>
     <boot dev='hd'/>
   </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
@@ -23,7 +26,25 @@
       <serial>eb90327c-8302-4725-9e1b-4e85ed4dc251</serial>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </disk>
-    <controller type='usb' index='0'>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw' cache='none'/>
+      <source protocol='vxhs' name='eb90327c-8302-4725-9e1b-4e85ed4dc252'>
+        <host name='192.168.0.2' port='9999'/>
+      </source>
+      <target dev='vdb' bus='virtio'/>
+      <serial>eb90327c-8302-4725-9e1b-4e85ed4dc252</serial>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw' cache='none'/>
+      <source protocol='vxhs' name='eb90327c-8302-4725-9e1b-4e85ed4dc253' tls='no'>
+        <host name='192.168.0.3' port='9999'/>
+      </source>
+      <target dev='vdc' bus='virtio'/>
+      <serial>eb90327c-8302-4725-9e1b-4e85ed4dc252</serial>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </disk>
+    <controller type='usb' index='0' model='piix3-uhci'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
