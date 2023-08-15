@@ -378,12 +378,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-ppc64", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-riscv64", "riscv64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-s390x", "s390x");
-    DO_TEST("default-video-type-x86_64-caps-test-0",
-            QEMU_CAPS_DEVICE_VGA,
-            QEMU_CAPS_SPICE);
-    DO_TEST("default-video-type-x86_64-caps-test-1",
-            QEMU_CAPS_DEVICE_CIRRUS_VGA,
-            QEMU_CAPS_SPICE);
+    DO_TEST_CAPS_LATEST("default-video-type-x86_64");
 
     DO_TEST("graphics-sdl", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_SDL);
     DO_TEST("graphics-sdl-fullscreen", QEMU_CAPS_DEVICE_CIRRUS_VGA, QEMU_CAPS_SDL);

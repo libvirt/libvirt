@@ -2062,7 +2062,7 @@ mymain(void)
     DO_TEST("video-none-device",
             QEMU_CAPS_VNC);
     DO_TEST_PARSE_ERROR_NOCAPS("video-invalid-multiple-devices");
-    DO_TEST_PARSE_ERROR_NOCAPS("default-video-type-x86_64-caps-test-0");
+    DO_TEST_CAPS_LATEST("default-video-type-x86_64");
 
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-aarch64", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-ppc64", "ppc64");

@@ -1,0 +1,32 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-default-video-type-x \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-default-video-type-x/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-default-video-type-x/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-default-video-type-x/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=default-video-type-x86_64-test,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-default-video-type-x/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
+-accel kvm \
+-cpu qemu64 \
+-m size=1048576k \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":1073741824}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 6ba410c5-1e5c-4d57-bee7-2228e7ffa32f \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-audiodev '{"id":"audio1","driver":"spice"}' \
+-spice port=0,seamless-migration=on \
+-device '{"driver":"cirrus-vga","id":"video0","bus":"pci.0","addr":"0x2"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on
