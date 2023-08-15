@@ -1,0 +1,53 @@
+<domain type='qemu'>
+  <name>q35-test</name>
+  <uuid>11dbdcdd-4c3b-482b-8903-9bdb8c0a2774</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
+  <vcpu placement='static' cpuset='0-1'>2</vcpu>
+  <os>
+    <type arch='x86_64' machine='q35'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <controller type='pci' index='1' model='dmi-to-pci-bridge'>
+      <model name='i82801b11-bridge'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1e' function='0x0'/>
+    </controller>
+    <controller type='pci' index='2' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='2'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+    </controller>
+    <controller type='pci' index='3' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='3' port='0x8'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </controller>
+    <controller type='usb' index='0' model='none'/>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
+    </controller>
+    <interface type='user'>
+      <mac address='52:54:00:aa:bf:ef'/>
+      <model type='e1000e'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x01' function='0x0'/>
+    </interface>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <sound model='ich6'>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
+    </sound>
+    <audio id='1' type='none'/>
+    <watchdog model='itco' action='reset'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

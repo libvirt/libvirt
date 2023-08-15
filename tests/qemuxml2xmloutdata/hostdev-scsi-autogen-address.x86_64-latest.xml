@@ -1,0 +1,123 @@
+<domain type='qemu'>
+  <name>QEMUGuest2</name>
+  <uuid>c7a5fdbd-edaf-9466-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source dev='/dev/HostVG/QEMUGuest2'/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='scsi' index='0' model='virtio-scsi'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </controller>
+    <controller type='usb' index='0' model='piix3-uhci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='ide' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='scsi' index='1' model='virtio-scsi'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </controller>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source>
+        <adapter name='scsi_host0'/>
+        <address bus='0' target='0' unit='0'/>
+      </source>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source>
+        <adapter name='scsi_host1'/>
+        <address bus='0' target='0' unit='1'/>
+      </source>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source>
+        <adapter name='scsi_host2'/>
+        <address bus='0' target='0' unit='2'/>
+      </source>
+      <address type='drive' controller='0' bus='0' target='0' unit='2'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source>
+        <adapter name='scsi_host3'/>
+        <address bus='0' target='0' unit='3'/>
+      </source>
+      <address type='drive' controller='0' bus='0' target='0' unit='3'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source>
+        <adapter name='scsi_host4'/>
+        <address bus='0' target='0' unit='4'/>
+      </source>
+      <address type='drive' controller='0' bus='0' target='0' unit='4'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source>
+        <adapter name='scsi_host5'/>
+        <address bus='0' target='0' unit='5'/>
+      </source>
+      <address type='drive' controller='0' bus='0' target='0' unit='5'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source>
+        <adapter name='scsi_host6'/>
+        <address bus='0' target='0' unit='6'/>
+      </source>
+      <address type='drive' controller='0' bus='0' target='0' unit='6'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source>
+        <adapter name='scsi_host7'/>
+        <address bus='0' target='0' unit='7'/>
+      </source>
+      <address type='drive' controller='1' bus='0' target='0' unit='0'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source>
+        <adapter name='scsi_host8'/>
+        <address bus='0' target='0' unit='8'/>
+      </source>
+      <address type='drive' controller='1' bus='0' target='0' unit='1'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source>
+        <adapter name='scsi_host9'/>
+        <address bus='0' target='0' unit='9'/>
+      </source>
+      <address type='drive' controller='1' bus='0' target='0' unit='5'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source>
+        <adapter name='scsi_host10'/>
+        <address bus='0' target='0' unit='10'/>
+      </source>
+      <address type='drive' controller='1' bus='0' target='0' unit='2'/>
+    </hostdev>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>

@@ -1,0 +1,385 @@
+<domain type='qemu'>
+  <name>pcie-expander-bus-test</name>
+  <uuid>11dbdcdd-4c3b-482b-8903-9bdb8c0a2774</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
+  <vcpu placement='static'>16</vcpu>
+  <os>
+    <type arch='x86_64' machine='q35'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+    <topology sockets='2' dies='1' cores='4' threads='2'/>
+    <numa>
+      <cell id='0' cpus='0-7' memory='109550' unit='KiB'/>
+      <cell id='1' cpus='8-15' memory='109550' unit='KiB'/>
+    </numa>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='sda' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <controller type='pci' index='1' model='pcie-expander-bus'>
+      <model name='pxb-pcie'/>
+      <target busNr='254'>
+        <node>0</node>
+      </target>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </controller>
+    <controller type='pci' index='2' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='2' port='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+    </controller>
+    <controller type='pci' index='3' model='pcie-switch-upstream-port'>
+      <model name='x3130-upstream'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
+    </controller>
+    <controller type='pci' index='4' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='4' port='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
+    </controller>
+    <controller type='pci' index='5' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='5' port='0x1'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x01' function='0x0'/>
+    </controller>
+    <controller type='pci' index='6' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='6' port='0x2'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x02' function='0x0'/>
+    </controller>
+    <controller type='pci' index='7' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='7' port='0x3'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x03' function='0x0'/>
+    </controller>
+    <controller type='pci' index='8' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='8' port='0x4'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x04' function='0x0'/>
+    </controller>
+    <controller type='pci' index='9' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='9' port='0x5'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x05' function='0x0'/>
+    </controller>
+    <controller type='pci' index='10' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='10' port='0x6'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x06' function='0x0'/>
+    </controller>
+    <controller type='pci' index='11' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='11' port='0x7'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x07' function='0x0'/>
+    </controller>
+    <controller type='pci' index='12' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='12' port='0x8'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x08' function='0x0'/>
+    </controller>
+    <controller type='pci' index='13' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='13' port='0x9'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x09' function='0x0'/>
+    </controller>
+    <controller type='pci' index='14' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='14' port='0xa'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x0a' function='0x0'/>
+    </controller>
+    <controller type='pci' index='15' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='15' port='0xb'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x0b' function='0x0'/>
+    </controller>
+    <controller type='pci' index='16' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='16' port='0xc'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x0c' function='0x0'/>
+    </controller>
+    <controller type='pci' index='17' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='17' port='0xd'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x0d' function='0x0'/>
+    </controller>
+    <controller type='pci' index='18' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='18' port='0xe'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x0e' function='0x0'/>
+    </controller>
+    <controller type='pci' index='19' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='19' port='0xf'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x0f' function='0x0'/>
+    </controller>
+    <controller type='pci' index='20' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='20' port='0x10'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x10' function='0x0'/>
+    </controller>
+    <controller type='pci' index='21' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='21' port='0x11'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x11' function='0x0'/>
+    </controller>
+    <controller type='pci' index='22' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='22' port='0x12'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x12' function='0x0'/>
+    </controller>
+    <controller type='pci' index='23' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='23' port='0x13'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x13' function='0x0'/>
+    </controller>
+    <controller type='pci' index='24' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='24' port='0x14'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x14' function='0x0'/>
+    </controller>
+    <controller type='pci' index='25' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='25' port='0x15'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x15' function='0x0'/>
+    </controller>
+    <controller type='pci' index='26' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='26' port='0x16'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x16' function='0x0'/>
+    </controller>
+    <controller type='pci' index='27' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='27' port='0x17'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x17' function='0x0'/>
+    </controller>
+    <controller type='pci' index='28' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='28' port='0x18'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x18' function='0x0'/>
+    </controller>
+    <controller type='pci' index='29' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='29' port='0x19'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x19' function='0x0'/>
+    </controller>
+    <controller type='pci' index='30' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='30' port='0x1a'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x1a' function='0x0'/>
+    </controller>
+    <controller type='pci' index='31' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='31' port='0x1b'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x1b' function='0x0'/>
+    </controller>
+    <controller type='pci' index='32' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='32' port='0x1c'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x1c' function='0x0'/>
+    </controller>
+    <controller type='pci' index='33' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='33' port='0x1d'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x1d' function='0x0'/>
+    </controller>
+    <controller type='pci' index='34' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='34' port='0x1e'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x1e' function='0x0'/>
+    </controller>
+    <controller type='pci' index='35' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='35' port='0x1f'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x1f' function='0x0'/>
+    </controller>
+    <controller type='usb' index='0' model='qemu-xhci'>
+      <address type='pci' domain='0x0000' bus='0x24' slot='0x00' function='0x0'/>
+    </controller>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
+    </controller>
+    <controller type='pci' index='36' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='36' port='0x8'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </controller>
+    <interface type='user'>
+      <mac address='52:54:00:f1:95:51'/>
+      <model type='rtl8139'/>
+      <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:5c:c6:1a'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:39:97:ac'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:ee:b9:a8'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:a9:f7:17'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:df:2b:f3'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x09' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:78:94:b4'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x0a' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:6b:9b:06'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x0b' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:17:df:bc'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x0c' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:3b:d0:51'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x0d' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:8d:2d:17'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x0e' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:a7:66:af'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x0f' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:54:ab:d7'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x10' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:1f:99:90'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x11' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:c8:43:87'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x12' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:df:22:b2'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x13' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:d2:9a:47'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x14' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:86:05:e2'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x15' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:8c:1c:c2'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x16' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:48:58:92'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x17' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:99:e5:bf'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x18' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:b1:8c:25'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x19' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:60:e0:d0'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x1a' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:37:00:6a'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x1b' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:c7:c8:ad'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x1c' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:4e:a7:cf'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x1d' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:00:79:69'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x1e' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:47:00:6f'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x1f' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:2a:8c:8b'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x20' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:ec:d5:e3'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x21' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:7e:6e:c8'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x22' slot='0x00' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:7e:6d:c9'/>
+      <model type='e1000'/>
+      <address type='pci' domain='0x0000' bus='0x23' slot='0x00' function='0x0'/>
+    </interface>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <watchdog model='itco' action='reset'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

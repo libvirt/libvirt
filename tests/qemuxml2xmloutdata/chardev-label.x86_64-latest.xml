@@ -1,0 +1,62 @@
+<domain type='qemu'>
+  <name>machine</name>
+  <uuid>2187c512-ff97-47d7-b67c-c02d3bdc219d</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0' model='piix3-uhci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='ide' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <serial type='file'>
+      <source path='/tmp/serial.file'>
+        <seclabel model='dac' relabel='no'/>
+      </source>
+      <target type='isa-serial' port='0'>
+        <model name='isa-serial'/>
+      </target>
+    </serial>
+    <serial type='unix'>
+      <source mode='connect' path='/tmp/serial.sock'>
+        <seclabel model='dac' relabel='no'/>
+      </source>
+      <target type='isa-serial' port='1'>
+        <model name='isa-serial'/>
+      </target>
+    </serial>
+    <console type='file'>
+      <source path='/tmp/serial.file'>
+        <seclabel model='dac' relabel='no'/>
+      </source>
+      <target type='serial' port='0'/>
+    </console>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </memballoon>
+    <rng model='virtio'>
+      <backend model='egd' type='pipe'>
+        <source path='/dev/null'/>
+      </backend>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </rng>
+  </devices>
+</domain>

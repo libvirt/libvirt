@@ -43,18 +43,25 @@
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
     <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </memballoon>
-    <memory model='nvdimm' access='private'>
-      <source>
-        <path>/tmp/nvdimm</path>
-      </source>
+    <memory model='dimm'>
       <target>
         <size unit='KiB'>523264</size>
         <node>0</node>
-        <readonly/>
       </target>
       <address type='dimm' slot='0'/>
+    </memory>
+    <memory model='dimm'>
+      <source>
+        <nodemask>1-3</nodemask>
+        <pagesize unit='KiB'>2048</pagesize>
+      </source>
+      <target>
+        <size unit='KiB'>524287</size>
+        <node>0</node>
+      </target>
+      <address type='dimm' slot='1'/>
     </memory>
   </devices>
 </domain>

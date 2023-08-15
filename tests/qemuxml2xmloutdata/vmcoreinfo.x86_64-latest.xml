@@ -1,24 +1,18 @@
 <domain type='qemu'>
   <name>QEMUGuest1</name>
   <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
-  <maxMemory slots='16' unit='KiB'>1099511627776</maxMemory>
-  <memory unit='KiB'>1267710</memory>
-  <currentMemory unit='KiB'>1267710</currentMemory>
-  <vcpu placement='static' cpuset='0-1'>2</vcpu>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='hd'/>
   </os>
-  <idmap>
-    <uid start='0' target='1000' count='10'/>
-    <gid start='0' target='1000' count='10'/>
-  </idmap>
+  <features>
+    <vmcoreinfo state='on'/>
+  </features>
   <cpu mode='custom' match='exact' check='none'>
     <model fallback='forbid'>qemu64</model>
-    <topology sockets='2' dies='1' cores='1' threads='1'/>
-    <numa>
-      <cell id='0' cpus='0-1' memory='219136' unit='KiB'/>
-    </numa>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
@@ -43,18 +37,7 @@
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
     <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </memballoon>
-    <memory model='nvdimm' access='private'>
-      <source>
-        <path>/tmp/nvdimm</path>
-      </source>
-      <target>
-        <size unit='KiB'>523264</size>
-        <node>0</node>
-        <readonly/>
-      </target>
-      <address type='dimm' slot='0'/>
-    </memory>
   </devices>
 </domain>

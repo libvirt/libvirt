@@ -1,0 +1,681 @@
+<domain type='qemu'>
+  <name>lots-of-disks</name>
+  <uuid>04872dc1-e1de-434b-ab21-e3e80e416349</uuid>
+  <memory unit='KiB'>4000768</memory>
+  <currentMemory unit='KiB'>4000000</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'>
+    <timer name='kvmclock' present='no'/>
+  </clock>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/test.img'/>
+      <target dev='vda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-a-a.img'/>
+      <target dev='vdaa' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-a-b.img'/>
+      <target dev='vdab' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-a-c.img'/>
+      <target dev='vdac' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-a-d.img'/>
+      <target dev='vdad' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-b-a.img'/>
+      <target dev='vdba' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-b-b.img'/>
+      <target dev='vdbb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-b-c.img'/>
+      <target dev='vdbc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0c' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-b-d.img'/>
+      <target dev='vdbd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0d' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-c-a.img'/>
+      <target dev='vdca' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0e' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-c-b.img'/>
+      <target dev='vdcb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0f' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-c-c.img'/>
+      <target dev='vdcc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x10' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-c-d.img'/>
+      <target dev='vdcd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x11' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-d-a.img'/>
+      <target dev='vdda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x12' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-d-b.img'/>
+      <target dev='vddb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x13' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-d-c.img'/>
+      <target dev='vddc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x14' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-d-d.img'/>
+      <target dev='vddd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x15' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-e-a.img'/>
+      <target dev='vdea' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x16' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-e-b.img'/>
+      <target dev='vdeb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x17' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-e-c.img'/>
+      <target dev='vdec' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x18' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-e-d.img'/>
+      <target dev='vded' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x19' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-f-a.img'/>
+      <target dev='vdfa' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1a' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-f-b.img'/>
+      <target dev='vdfb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1b' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-f-c.img'/>
+      <target dev='vdfc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1c' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-f-d.img'/>
+      <target dev='vdfd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1d' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-g-a.img'/>
+      <target dev='vdga' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1e' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-g-b.img'/>
+      <target dev='vdgb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-g-c.img'/>
+      <target dev='vdgc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x01' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-g-d.img'/>
+      <target dev='vdgd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x02' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-h-a.img'/>
+      <target dev='vdha' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x03' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-h-b.img'/>
+      <target dev='vdhb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x04' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-h-c.img'/>
+      <target dev='vdhc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x05' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-h-d.img'/>
+      <target dev='vdhd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x06' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-i-a.img'/>
+      <target dev='vdia' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x07' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-i-b.img'/>
+      <target dev='vdib' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x08' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-i-c.img'/>
+      <target dev='vdic' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x09' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-i-d.img'/>
+      <target dev='vdid' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x0a' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-j-a.img'/>
+      <target dev='vdja' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x0b' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-j-b.img'/>
+      <target dev='vdjb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x0c' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-j-c.img'/>
+      <target dev='vdjc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x0d' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-j-d.img'/>
+      <target dev='vdjd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x0e' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-k-a.img'/>
+      <target dev='vdka' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x0f' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-k-b.img'/>
+      <target dev='vdkb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x10' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-k-c.img'/>
+      <target dev='vdkc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x11' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-k-d.img'/>
+      <target dev='vdkd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x12' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-l-a.img'/>
+      <target dev='vdla' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x13' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-l-b.img'/>
+      <target dev='vdlb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x14' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-l-c.img'/>
+      <target dev='vdlc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x15' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-l-d.img'/>
+      <target dev='vdld' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x16' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-m-a.img'/>
+      <target dev='vdma' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x17' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-m-b.img'/>
+      <target dev='vdmb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x18' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-m-c.img'/>
+      <target dev='vdmc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x19' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-m-d.img'/>
+      <target dev='vdmd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x1a' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-n-a.img'/>
+      <target dev='vdna' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x1b' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-n-b.img'/>
+      <target dev='vdnb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x1c' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-n-c.img'/>
+      <target dev='vdnc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x1d' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-n-d.img'/>
+      <target dev='vdnd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x1e' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-o-a.img'/>
+      <target dev='vdoa' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x1f' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-o-b.img'/>
+      <target dev='vdob' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x01' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-o-c.img'/>
+      <target dev='vdoc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x02' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-o-d.img'/>
+      <target dev='vdod' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x03' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-p-a.img'/>
+      <target dev='vdpa' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x04' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-p-b.img'/>
+      <target dev='vdpb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x05' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-p-c.img'/>
+      <target dev='vdpc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x06' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-p-d.img'/>
+      <target dev='vdpd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x07' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-q-a.img'/>
+      <target dev='vdqa' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x08' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-q-b.img'/>
+      <target dev='vdqb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x09' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-q-c.img'/>
+      <target dev='vdqc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x0a' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-q-d.img'/>
+      <target dev='vdqd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x0b' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-r-a.img'/>
+      <target dev='vdra' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x0c' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-r-b.img'/>
+      <target dev='vdrb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x0d' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-r-c.img'/>
+      <target dev='vdrc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x0e' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-r-d.img'/>
+      <target dev='vdrd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x0f' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-s-a.img'/>
+      <target dev='vdsa' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x10' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-s-b.img'/>
+      <target dev='vdsb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x11' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-s-c.img'/>
+      <target dev='vdsc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x12' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-s-d.img'/>
+      <target dev='vdsd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x13' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-t-a.img'/>
+      <target dev='vdta' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x14' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-t-b.img'/>
+      <target dev='vdtb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x15' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-t-c.img'/>
+      <target dev='vdtc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x16' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-t-d.img'/>
+      <target dev='vdtd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x17' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-u-a.img'/>
+      <target dev='vdua' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x18' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-u-b.img'/>
+      <target dev='vdub' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x19' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-u-c.img'/>
+      <target dev='vduc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x1a' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-u-d.img'/>
+      <target dev='vdud' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x1b' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-v-a.img'/>
+      <target dev='vdva' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x1c' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-v-b.img'/>
+      <target dev='vdvb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x1d' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-v-c.img'/>
+      <target dev='vdvc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x1e' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-v-d.img'/>
+      <target dev='vdvd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x1f' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-w-a.img'/>
+      <target dev='vdwa' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x01' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-w-b.img'/>
+      <target dev='vdwb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x02' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-w-c.img'/>
+      <target dev='vdwc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x03' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-w-d.img'/>
+      <target dev='vdwd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x04' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-x-a.img'/>
+      <target dev='vdxa' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x05' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-x-b.img'/>
+      <target dev='vdxb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x06' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-x-c.img'/>
+      <target dev='vdxc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x07' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-x-d.img'/>
+      <target dev='vdxd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x08' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-y-a.img'/>
+      <target dev='vdya' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x09' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-y-b.img'/>
+      <target dev='vdyb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x0a' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-y-c.img'/>
+      <target dev='vdyc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x0b' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-y-d.img'/>
+      <target dev='vdyd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x0c' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-z-a.img'/>
+      <target dev='vdza' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x0d' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-z-b.img'/>
+      <target dev='vdzb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x0e' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-z-c.img'/>
+      <target dev='vdzc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x0f' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/disk-z-d.img'/>
+      <target dev='vdzd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x10' function='0x0'/>
+    </disk>
+    <controller type='usb' index='0' model='piix3-uhci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='pci' index='1' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='1'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </controller>
+    <controller type='pci' index='2' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='2'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </controller>
+    <controller type='pci' index='3' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='3'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </controller>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

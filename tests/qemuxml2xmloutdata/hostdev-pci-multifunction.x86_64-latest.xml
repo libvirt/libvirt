@@ -1,0 +1,83 @@
+<domain type='kvm'>
+  <name>delete</name>
+  <uuid>583a8e8e-f0ce-4f53-89ab-092862148b25</uuid>
+  <memory unit='KiB'>262144</memory>
+  <currentMemory unit='KiB'>262144</currentMemory>
+  <vcpu placement='static'>4</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0' model='piix3-uhci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='ide' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0005' bus='0x90' slot='0x01' function='0x0'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0001' bus='0x01' slot='0x00' function='0x1'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0001' bus='0x01' slot='0x00' function='0x0'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0005' bus='0x90' slot='0x01' function='0x2'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0005' bus='0x90' slot='0x01' function='0x3'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0000' bus='0x06' slot='0x12' function='0x1'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0000' bus='0x06' slot='0x12' function='0x2'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+    </hostdev>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>

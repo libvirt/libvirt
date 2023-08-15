@@ -1,0 +1,103 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='iscsi' name='iqn.1992-01.com.example/0'>
+        <host name='example.org' port='6000'/>
+      </source>
+      <target dev='vda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='iscsi' name='iqn.1992-01.com.example/1'>
+        <host name='example.org' port='6000'/>
+      </source>
+      <target dev='vdb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <auth username='myname'>
+        <secret type='iscsi' usage='mycluster_myname'/>
+      </auth>
+      <source protocol='iscsi' name='iqn.1992-01.com.example:storage/1'>
+        <host name='example.org' port='6000'/>
+      </source>
+      <target dev='vdc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <auth username='myname'>
+        <secret type='iscsi' usage='mycluster_myname'/>
+      </auth>
+      <source protocol='iscsi' name='iqn.1992-01.com.example:storage/2'>
+        <host name='example.org' port='6000'/>
+      </source>
+      <target dev='vdd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </disk>
+    <disk type='network' device='lun'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='iscsi' name='iqn.1992-01.com.example/0'>
+        <host name='example.org' port='3260'/>
+      </source>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='network' device='lun'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='iscsi' name='iqn.1992-01.com.example:server/0'>
+        <host name='example.org' port='3260'/>
+        <initiator>
+          <iqn name='iqn.1992-01.com.example:client'/>
+        </initiator>
+      </source>
+      <target dev='sdb' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <disk type='network' device='lun'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='iscsi' name='iqn.1992-01.com.example:server/0'>
+        <host name='example.org' port='3260'/>
+        <initiator>
+          <iqn name='iqn.1992-01.com.example:client'/>
+        </initiator>
+        <auth username='myname'>
+          <secret type='iscsi' usage='mycluster_myname'/>
+        </auth>
+      </source>
+      <target dev='sdc' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='2'/>
+    </disk>
+    <controller type='usb' index='0' model='piix3-uhci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='scsi' index='0' model='virtio-scsi'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </controller>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

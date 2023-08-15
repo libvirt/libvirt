@@ -1,0 +1,90 @@
+<domain type='qemu'>
+  <name>fdr-br</name>
+  <uuid>3ec6cbe1-b5a2-4515-b800-31a61855df41</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
+  <vcpu placement='static' cpuset='0-1'>2</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/iso/f18kde.iso'/>
+      <target dev='hdc' bus='ide'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='1' target='0' unit='0'/>
+    </disk>
+    <controller type='usb' index='0' model='piix3-uhci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='ide' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <controller type='pci' index='8' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='8'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='pci' index='1' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='1'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </controller>
+    <controller type='pci' index='2' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='2'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </controller>
+    <controller type='pci' index='3' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='3'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </controller>
+    <controller type='pci' index='4' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='4'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+    </controller>
+    <controller type='pci' index='5' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='5'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+    </controller>
+    <controller type='pci' index='6' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='6'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+    </controller>
+    <controller type='pci' index='7' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='7'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
+    </controller>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <video>
+      <model type='cirrus' vram='16384' heads='1' primary='yes'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </video>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x04' slot='0x06' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>
