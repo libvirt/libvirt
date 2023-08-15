@@ -1440,7 +1440,7 @@ mymain(void)
     DO_TEST_NOCAPS("net-eth-unmanaged-tap");
     DO_TEST_NOCAPS("net-client");
     DO_TEST_NOCAPS("net-server");
-    DO_TEST_NOCAPS("net-many-models");
+    DO_TEST_CAPS_LATEST("net-many-models");
     DO_TEST_NOCAPS("net-mcast");
     DO_TEST_NOCAPS("net-udp");
     DO_TEST("net-hostdev", QEMU_CAPS_DEVICE_VFIO_PCI);

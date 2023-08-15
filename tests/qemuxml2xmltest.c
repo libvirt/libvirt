@@ -459,7 +459,7 @@ mymain(void)
     DO_TEST("net-bandwidth2", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_VNC);
     DO_TEST_NOCAPS("net-mtu");
     DO_TEST_NOCAPS("net-coalesce");
-    DO_TEST_NOCAPS("net-many-models");
+    DO_TEST_CAPS_LATEST("net-many-models");
     DO_TEST("net-vdpa", QEMU_CAPS_NETDEV_VHOST_VDPA);
     DO_TEST("net-vdpa-multiqueue", QEMU_CAPS_NETDEV_VHOST_VDPA);
     DO_TEST_CAPS_LATEST("net-virtio-rss");
