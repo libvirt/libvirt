@@ -14,7 +14,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-instance-00000092/.config \
 -accel kvm \
 -m size=44040192k \
 -overcommit mem-lock=off \
--smp 32,sockets=1,cores=24,threads=1 \
+-smp 32,sockets=1,cores=32,threads=1 \
 -object memory-backend-file,id=ram-node0,mem-path=/var/lib/libvirt/qemu/ram/-1-instance-00000092/ram-node0,share=on,prealloc=on,size=15032385536 \
 -numa node,nodeid=0,cpus=0-1,cpus=6-31,memdev=ram-node0 \
 -object memory-backend-file,id=ram-node1,mem-path=/var/lib/libvirt/qemu/ram/-1-instance-00000092/ram-node1,share=on,prealloc=on,size=15032385536 \
