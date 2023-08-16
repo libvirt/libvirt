@@ -8582,6 +8582,58 @@ virDomainNetGenerateMAC(virDomainXMLOption *xmlopt,
 }
 
 
+static int virDomainIdMapEntrySort(const void *a,
+                                   const void *b,
+                                   void *opaque G_GNUC_UNUSED)
+{
+    const virDomainIdMapEntry *entrya = a;
+    const virDomainIdMapEntry *entryb = b;
+
+    if (entrya->start > entryb->start)
+        return 1;
+    else if (entrya->start < entryb->start)
+        return -1;
+    else
+        return 0;
+}
+
+
+/* Parse the XML definition for user namespace id map.
+ *
+ * idmap has the form of
+ *
+ *   <uid start='0' target='1000' count='10'/>
+ *   <gid start='0' target='1000' count='10'/>
+ */
+static virDomainIdMapEntry *
+virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
+                          xmlNodePtr *node,
+                          size_t num)
+{
+    size_t i;
+    virDomainIdMapEntry *idmap = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    idmap = g_new0(virDomainIdMapEntry, num);
+
+    for (i = 0; i < num; i++) {
+        ctxt->node = node[i];
+        if (virXPathUInt("string(./@start)", ctxt, &idmap[i].start) < 0 ||
+            virXPathUInt("string(./@target)", ctxt, &idmap[i].target) < 0 ||
+            virXPathUInt("string(./@count)", ctxt, &idmap[i].count) < 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("invalid idmap start/target/count settings"));
+            VIR_FREE(idmap);
+            return NULL;
+        }
+    }
+
+    g_qsort_with_data(idmap, num, sizeof(idmap[0]), virDomainIdMapEntrySort, NULL);
+
+    return idmap;
+}
+
+
 static virDomainFSDef *
 virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
                        xmlNodePtr node,
@@ -15741,56 +15793,6 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
     return 0;
 }
 
-
-static int virDomainIdMapEntrySort(const void *a,
-                                   const void *b,
-                                   void *opaque G_GNUC_UNUSED)
-{
-    const virDomainIdMapEntry *entrya = a;
-    const virDomainIdMapEntry *entryb = b;
-
-    if (entrya->start > entryb->start)
-        return 1;
-    else if (entrya->start < entryb->start)
-        return -1;
-    else
-        return 0;
-}
-
-/* Parse the XML definition for user namespace id map.
- *
- * idmap has the form of
- *
- *   <uid start='0' target='1000' count='10'/>
- *   <gid start='0' target='1000' count='10'/>
- */
-static virDomainIdMapEntry *
-virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
-                          xmlNodePtr *node,
-                          size_t num)
-{
-    size_t i;
-    virDomainIdMapEntry *idmap = NULL;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt)
-
-    idmap = g_new0(virDomainIdMapEntry, num);
-
-    for (i = 0; i < num; i++) {
-        ctxt->node = node[i];
-        if (virXPathUInt("string(./@start)", ctxt, &idmap[i].start) < 0 ||
-            virXPathUInt("string(./@target)", ctxt, &idmap[i].target) < 0 ||
-            virXPathUInt("string(./@count)", ctxt, &idmap[i].count) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("invalid idmap start/target/count settings"));
-            VIR_FREE(idmap);
-            return NULL;
-        }
-    }
-
-    g_qsort_with_data(idmap, num, sizeof(idmap[0]), virDomainIdMapEntrySort, NULL);
-
-    return idmap;
-}
 
 /* Parse the XML definition for an IOThread ID
  *
