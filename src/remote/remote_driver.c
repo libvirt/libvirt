@@ -8153,6 +8153,8 @@ static virNetworkDriver network_driver = {
     .networkPortSetParameters = remoteNetworkPortSetParameters, /* 5.5.0 */
     .networkPortGetParameters = remoteNetworkPortGetParameters, /* 5.5.0 */
     .networkPortDelete = remoteNetworkPortDelete, /* 5.5.0 */
+    .networkSetMetadata = remoteNetworkSetMetadata, /* 9.7.0 */
+    .networkGetMetadata = remoteNetworkGetMetadata, /* 9.7.0 */
 };
 
 static virInterfaceDriver interface_driver = {

@@ -3323,6 +3323,26 @@ struct remote_network_event_lifecycle_msg {
     int detail;
 };
 
+struct remote_network_set_metadata_args {
+    remote_nonnull_network network;
+    int type;
+    remote_string metadata;
+    remote_string key;
+    remote_string uri;
+    unsigned int flags;
+};
+
+struct remote_network_get_metadata_args {
+    remote_nonnull_network network;
+    int type;
+    remote_string uri;
+    unsigned int flags;
+};
+
+struct remote_network_get_metadata_ret {
+    remote_nonnull_string metadata;
+};
+
 struct remote_connect_storage_pool_event_register_any_args {
     int eventID;
     remote_storage_pool pool;
@@ -6974,5 +6994,19 @@ enum remote_procedure {
      * @generate: none
      * @acl: domain:write
      */
-    REMOTE_PROC_DOMAIN_FD_ASSOCIATE = 443
+    REMOTE_PROC_DOMAIN_FD_ASSOCIATE = 443,
+
+    /**
+     * @generate: both
+     * @acl: network:write
+     * @acl: network:save:!VIR_NETWORK_UPDATE_AFFECT_CONFIG|VIR_NETWORK_UPDATE_AFFECT_LIVE
+     * @acl: network:save:VIR_NETWORK_UPDATE_AFFECT_CONFIG
+     */
+    REMOTE_PROC_NETWORK_SET_METADATA = 444,
+
+    /**
+     * @generate: both
+     * @acl: network:read
+     */
+    REMOTE_PROC_NETWORK_GET_METADATA = 445
 };
