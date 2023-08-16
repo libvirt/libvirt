@@ -399,6 +399,31 @@ virshDomainGetXMLFromDom(vshControl *ctl,
 
 
 int
+virshNetworkGetXMLFromNet(vshControl *ctl,
+                          virNetworkPtr net,
+                          unsigned int flags,
+                          xmlDocPtr *xml,
+                          xmlXPathContextPtr *ctxt)
+{
+    g_autofree char *desc = NULL;
+
+    if (!(desc = virNetworkGetXMLDesc(net, flags))) {
+        vshError(ctl, _("Failed to get network description xml"));
+        return -1;
+    }
+
+    *xml = virXMLParseStringCtxt(desc, _("(network_definition)"), ctxt);
+
+    if (!(*xml)) {
+        vshError(ctl, _("Failed to parse network description xml"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int
 virshDomainGetXML(vshControl *ctl,
                   const vshCmd *cmd,
                   unsigned int flags,

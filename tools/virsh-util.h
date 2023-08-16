@@ -144,6 +144,15 @@ virshDomainGetXMLFromDom(vshControl *ctl,
     ATTRIBUTE_NONNULL(5) G_GNUC_WARN_UNUSED_RESULT;
 
 int
+virshNetworkGetXMLFromNet(vshControl *ctl,
+                          virNetworkPtr net,
+                          unsigned int flags,
+                          xmlDocPtr *xml,
+                          xmlXPathContextPtr *ctxt)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
+    ATTRIBUTE_NONNULL(5) G_GNUC_WARN_UNUSED_RESULT;
+
+int
 virshDomainGetXML(vshControl *ctl,
                   const vshCmd *cmd,
                   unsigned int flags,

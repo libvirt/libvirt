@@ -5566,6 +5566,7 @@ to get a description of the XML network format used by libvirt.
 Optionally, the format of the input XML file can be validated against an
 internal RNG schema with *--validate*.
 
+
 net-define
 ----------
 
@@ -5579,6 +5580,38 @@ Define an inactive persistent virtual network or modify an existing persistent
 one from the XML *file*.
 Optionally, the format of the input XML file can be validated against an
 internal RNG schema with *--validate*.
+
+
+net-desc
+--------
+
+**Syntax:**
+
+::
+
+   net-desc network [[--live] [--config] |
+      [--current]] [--title] [--edit] [--new-desc
+      New description or title message]
+
+Show or modify description and title of a network. These values are user
+fields that allow storing arbitrary textual data to allow easy
+identification of networks. Title should be short, although it's not enforced.
+(See also ``net-metadata`` that works with XML based network metadata.)
+
+Flags *--live* or *--config* select whether this command works on live
+or persistent definitions of the network. If both *--live* and *--config*
+are specified, the *--config* option takes precedence on getting the current
+description and both live configuration and config are updated while setting
+the description. *--current* is exclusive and implied if none of these was
+specified.
+
+Flag *--edit* specifies that an editor with the contents of current
+description or title should be opened and the contents saved back afterwards.
+
+Flag *--title* selects operation on the title field instead of description.
+
+If neither of *--edit* and *--new-desc* are specified the note or description
+is displayed instead of being modified.
 
 
 net-destroy
@@ -5689,6 +5722,7 @@ net-list
       { [--table] | --name | --uuid }
       [--persistent] [<--transient>]
       [--autostart] [<--no-autostart>]
+      [--title]
 
 Returns the list of active networks, if *--all* is specified this will also
 include defined but inactive networks, if *--inactive* is specified only the
@@ -5703,10 +5737,53 @@ instead of names. Flag *--table* specifies that the legacy table-formatted
 output should be used. This is the default. All of these are mutually
 exclusive.
 
+If *--title* is specified, then the short network description (title) is
+printed in an extra column. This flag is usable only with the default
+*--table* output.
+
 NOTE: When talking to older servers, this command is forced to use a series of
 API calls with an inherent race, where a pool might not be listed or might appear
 more than once if it changed state between calls while the list was being
 collected.  Newer servers do not have this problem.
+
+
+net-metadata
+------------
+
+**Syntax:**
+
+::
+
+   net-metadata network [[--live] [--config] | [--current]]
+      [--edit] [uri] [key] [set] [--remove]
+
+Show or modify custom XML metadata of a network. The metadata is a user
+defined XML that allows storing arbitrary XML data in the network definition.
+Multiple separate custom metadata pieces can be stored in the network XML.
+The pieces are identified by a private XML namespace provided via the
+*uri* argument. (See also ``net-desc`` that works with textual metadata of
+a network, such as title and description.)
+
+Flags *--live* or *--config* select whether this command works on live
+or persistent definitions of the network. If both *--live* and *--config*
+are specified, the *--config* option takes precedence on getting the current
+description and both live configuration and config are updated while setting
+the description. *--current* is exclusive and implied if none of these was
+specified.
+
+Flag *--remove* specifies that the metadata element specified by the *uri*
+argument should be removed rather than updated.
+
+Flag *--edit* specifies that an editor with the metadata identified by the
+*uri* argument should be opened and the contents saved back afterwards.
+Otherwise the new contents can be provided via the *set* argument.
+
+When setting metadata via *--edit* or *set* the *key* argument must be
+specified and is used to prefix the custom elements to bind them
+to the private namespace.
+
+If neither of *--edit* and *set* are specified the XML metadata corresponding
+to the *uri* namespace is displayed instead of being modified.
 
 
 net-name
