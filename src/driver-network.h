@@ -161,6 +161,20 @@ typedef int
                              virNetworkPortPtr **ports,
                              unsigned int flags);
 
+typedef int
+(*virDrvNetworkSetMetadata)(virNetworkPtr network,
+                            int type,
+                            const char *metadata,
+                            const char *key,
+                            const char *uri,
+                            unsigned int flags);
+
+typedef char *
+(*virDrvNetworkGetMetadata)(virNetworkPtr network,
+                            int type,
+                            const char *uri,
+                            unsigned int flags);
+
 typedef struct _virNetworkDriver virNetworkDriver;
 
 /**
@@ -202,4 +216,6 @@ struct _virNetworkDriver {
     virDrvNetworkPortGetParameters networkPortGetParameters;
     virDrvNetworkPortDelete networkPortDelete;
     virDrvNetworkListAllPorts networkListAllPorts;
+    virDrvNetworkSetMetadata networkSetMetadata;
+    virDrvNetworkGetMetadata networkGetMetadata;
 };

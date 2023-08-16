@@ -1287,6 +1287,9 @@ static const virErrorMsgTuple virErrorMsgStrings[] = {
     [VIR_ERR_MULTIPLE_DOMAINS] = {
         N_("multiple matching domains found"),
         N_("multiple matching domains found: %1$s") },
+    [VIR_ERR_NO_NETWORK_METADATA] = {
+        N_("metadata not found"),
+        N_("metadata not found: %1$s") },
 };
 
 G_STATIC_ASSERT(G_N_ELEMENTS(virErrorMsgStrings) == VIR_ERR_NUMBER_LAST);

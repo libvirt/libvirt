@@ -547,4 +547,33 @@ virNetworkPortFree(virNetworkPortPtr port);
 int
 virNetworkPortRef(virNetworkPortPtr port);
 
+/**
+ * virNetworkMetadataType:
+ *
+ * Since: 9.7.0
+ */
+typedef enum {
+    VIR_NETWORK_METADATA_DESCRIPTION = 0, /* Operate on <description> (Since: 9.7.0) */
+    VIR_NETWORK_METADATA_TITLE       = 1, /* Operate on <title> (Since: 9.7.0) */
+    VIR_NETWORK_METADATA_ELEMENT     = 2, /* Operate on <metadata> (Since: 9.7.0) */
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_NETWORK_METADATA_LAST /* (Since: 9.7.0) */
+# endif
+} virNetworkMetadataType;
+
+int
+virNetworkSetMetadata(virNetworkPtr network,
+                      int type,
+                      const char *metadata,
+                      const char *key,
+                      const char *uri,
+                      unsigned int flags);
+
+char *
+virNetworkGetMetadata(virNetworkPtr network,
+                      int type,
+                      const char *uri,
+                      unsigned int flags);
+
 #endif /* LIBVIRT_NETWORK_H */

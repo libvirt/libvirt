@@ -1915,3 +1915,170 @@ virNetworkPortRef(virNetworkPortPtr port)
     virObjectRef(port);
     return 0;
 }
+
+
+/**
+ * virNetworkSetMetadata:
+ * @network: a network object
+ * @type: type of metadata, from virNetworkMetadataType
+ * @metadata: new metadata text
+ * @key: XML namespace key, or NULL
+ * @uri: XML namespace URI, or NULL
+ * @flags: bitwise-OR of virNetworkUpdateFlags
+ *
+ * Sets the appropriate network element given by @type to the
+ * value of @metadata.  A @type of VIR_NETWORK_METADATA_DESCRIPTION
+ * is free-form text; VIR_NETWORK_METADATA_TITLE is free-form, but no
+ * newlines are permitted, and should be short (although the length is
+ * not enforced). For these two options @key and @uri are irrelevant and
+ * must be set to NULL.
+ *
+ * For type VIR_NETWORK_METADATA_ELEMENT @metadata must be well-formed
+ * XML belonging to namespace defined by @uri with local name @key.
+ *
+ * Passing NULL for @metadata says to remove that element from the
+ * network XML (passing the empty string leaves the element present).
+ *
+ * The resulting metadata will be present in virNetworkGetXMLDesc(),
+ * as well as quick access through virNetworkGetMetadata().
+ *
+ * @flags controls whether the live network state, persistent configuration,
+ * or both will be modified.
+ *
+ * Returns 0 on success, -1 in case of failure.
+ *
+ * Since: 9.7.0
+ */
+int
+virNetworkSetMetadata(virNetworkPtr network,
+                      int type,
+                      const char *metadata,
+                      const char *key,
+                      const char *uri,
+                      unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("network=%p, type=%d, metadata='%s', key='%s', uri='%s', flags=0x%x",
+              network, type, NULLSTR(metadata), NULLSTR(key), NULLSTR(uri),
+              flags);
+
+    virResetLastError();
+
+    virCheckNetworkReturn(network, -1);
+    conn = network->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    switch (type) {
+    case VIR_NETWORK_METADATA_TITLE:
+        if (metadata && strchr(metadata, '\n')) {
+            virReportInvalidArg(metadata, "%s",
+                                _("metadata title can't contain "
+                                  "newlines"));
+            goto error;
+        }
+        G_GNUC_FALLTHROUGH;
+    case VIR_NETWORK_METADATA_DESCRIPTION:
+        virCheckNullArgGoto(uri, error);
+        virCheckNullArgGoto(key, error);
+        break;
+    case VIR_NETWORK_METADATA_ELEMENT:
+        virCheckNonNullArgGoto(uri, error);
+        if (metadata)
+            virCheckNonNullArgGoto(key, error);
+        break;
+    default:
+        /* For future expansion */
+        break;
+    }
+
+    if (conn->networkDriver->networkSetMetadata) {
+        int ret;
+        ret = conn->networkDriver->networkSetMetadata(network, type, metadata, key, uri,
+                                                      flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(network->conn);
+    return -1;
+}
+
+
+/**
+ * virNetworkGetMetadata:
+ * @network: a network object
+ * @type: type of metadata, from virNetworkMetadataType
+ * @uri: XML namespace identifier
+ * @flags: bitwise-OR of virNetworkUpdateFlags
+ *
+ * Retrieves the appropriate network element given by @type.
+ * If VIR_NETWORK_METADATA_ELEMENT is requested parameter @uri
+ * must be set to the name of the namespace the requested elements
+ * belong to, otherwise must be NULL.
+ *
+ * If an element of the network XML is not present, the resulting
+ * error will be VIR_ERR_NO_NETWORK_METADATA.  This method forms
+ * a shortcut for seeing information from virNetworkSetMetadata()
+ * without having to go through virNetworkGetXMLDesc().
+ *
+ * @flags controls whether the live network state or persistent
+ * configuration will be queried.
+ *
+ * Returns the metadata string on success (caller must free),
+ * or NULL in case of failure.
+ *
+ * Since: 9.7.0
+ */
+char *
+virNetworkGetMetadata(virNetworkPtr network,
+                      int type,
+                      const char *uri,
+                      unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("network=%p, type=%d, uri='%s', flags=0x%x",
+               network, type, NULLSTR(uri), flags);
+
+    virResetLastError();
+
+    virCheckNetworkReturn(network, NULL);
+
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_NETWORK_UPDATE_AFFECT_LIVE,
+                             VIR_NETWORK_UPDATE_AFFECT_CONFIG,
+                             error);
+
+    switch (type) {
+    case VIR_NETWORK_METADATA_TITLE:
+    case VIR_NETWORK_METADATA_DESCRIPTION:
+        virCheckNullArgGoto(uri, error);
+        break;
+    case VIR_NETWORK_METADATA_ELEMENT:
+        virCheckNonNullArgGoto(uri, error);
+        break;
+    default:
+        /* For future expansion */
+        break;
+    }
+
+    conn = network->conn;
+
+    if (conn->networkDriver->networkGetMetadata) {
+        char *ret;
+        if (!(ret = conn->networkDriver->networkGetMetadata(network, type, uri, flags)))
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(network->conn);
+    return NULL;
+}
