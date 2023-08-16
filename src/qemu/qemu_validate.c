@@ -5103,13 +5103,9 @@ qemuValidateDomainDeviceDefShmem(virDomainShmemDef *shmem,
 {
     switch (shmem->model) {
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("ivshmem device is not supported "
-                             "with this QEMU binary"));
-            return -1;
-        }
-        break;
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ivshmem device is no longer supported"));
+        return -1;
 
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_PLAIN:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM_PLAIN)) {

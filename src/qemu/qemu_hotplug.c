@@ -2817,19 +2817,7 @@ qemuDomainAttachShmemDevice(virDomainObj *vm,
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_SHMEM, { .shmem = shmem } };
 
-    switch (shmem->model) {
-    case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_PLAIN:
-    case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL:
-        break;
-
-    case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM:
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("live attach of shmem model '%1$s' is not supported"),
-                       virDomainShmemModelTypeToString(shmem->model));
-        G_GNUC_FALLTHROUGH;
-    case VIR_DOMAIN_SHMEM_MODEL_LAST:
-        return -1;
-    }
+    /* validation ensures that the legacy 'ivshmem' device is rejected */
 
     qemuAssignDeviceShmemAlias(vm->def, shmem, -1);
 

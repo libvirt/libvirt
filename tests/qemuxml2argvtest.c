@@ -2441,8 +2441,6 @@ mymain(void)
     DO_TEST_CAPS_ARCH_VER_FULL("fips-enabled", "x86_64", "5.1.0", ARG_FLAGS, FLAG_FIPS_HOST);
     DO_TEST_CAPS_ARCH_LATEST_FULL("fips-enabled", "x86_64", ARG_FLAGS, FLAG_FIPS_HOST);
 
-    DO_TEST("shmem", QEMU_CAPS_DEVICE_IVSHMEM);
-    DO_TEST_PARSE_ERROR_NOCAPS("shmem");
     DO_TEST_CAPS_LATEST("shmem-plain-doorbell");
     DO_TEST_CAPS_LATEST_FAILURE("shmem-invalid-size");
     DO_TEST_CAPS_LATEST_FAILURE("shmem-invalid-address");

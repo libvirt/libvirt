@@ -8873,44 +8873,6 @@ qemuBuildSmartcardCommandLine(virCommand *cmd,
 }
 
 
-static virJSONValue *
-qemuBuildShmemDevLegacyProps(virDomainDef *def,
-                             virDomainShmemDef *shmem)
-{
-    g_autoptr(virJSONValue) props = NULL;
-    g_autofree char *size = NULL;
-    const char *shm = NULL;
-    g_autofree char *chardev = NULL;
-
-    /* while this would result in a type error with newer qemus, the 'ivshmem'
-     * device was removed in qemu-4.0, so for the sake of not changing the
-     * commandline we do this hack */
-    size = g_strdup_printf("%llum", shmem->size >> 20);
-
-    if (shmem->server.enabled)
-        chardev = g_strdup_printf("char%s", shmem->info.alias);
-    else
-        shm = shmem->name;
-
-    if (virJSONValueObjectAdd(&props,
-                              "s:driver", "ivshmem",
-                              "s:id", shmem->info.alias,
-                              "s:size", size,
-                              "S:shm", shm,
-                              "S:chardev", chardev,
-                              "B:msi", shmem->msi.enabled,
-                              "p:vectors", shmem->msi.vectors,
-                              "T:ioeventfd", shmem->msi.ioeventfd,
-                              NULL) < 0)
-        return NULL;
-
-    if (qemuBuildDeviceAddressProps(props, def, &shmem->info) < 0)
-        return NULL;
-
-    return g_steal_pointer(&props);
-}
-
-
 virJSONValue *
 qemuBuildShmemDevProps(virDomainDef *def,
                        virDomainShmemDef *shmem)
@@ -9014,7 +8976,7 @@ qemuBuildShmemCommandLine(virCommand *cmd,
 
     switch (shmem->model) {
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM:
-        devProps = qemuBuildShmemDevLegacyProps(def, shmem);
+        /* unreachable, rejected by validation */
         break;
 
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_PLAIN:
