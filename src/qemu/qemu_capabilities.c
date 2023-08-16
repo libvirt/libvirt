@@ -312,7 +312,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 175 */
               "migrate-rdma", /* QEMU_CAPS_MIGRATE_RDMA */
-              "ivshmem", /* QEMU_CAPS_DEVICE_IVSHMEM */
+              "ivshmem", /* X_QEMU_CAPS_DEVICE_IVSHMEM */
               "drive-iotune-max", /* X_QEMU_CAPS_DRIVE_IOTUNE_MAX */
               "VGA.vgamem_mb", /* QEMU_CAPS_VGA_VGAMEM */
               "vmware-svga.vgamem_mb", /* QEMU_CAPS_VMWARE_SVGA_VGAMEM */
@@ -1270,7 +1270,6 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "pvpanic", QEMU_CAPS_DEVICE_PANIC },
     { "usb-kbd", QEMU_CAPS_DEVICE_USB_KBD },
     { "usb-audio", QEMU_CAPS_OBJECT_USB_AUDIO },
-    { "ivshmem", QEMU_CAPS_DEVICE_IVSHMEM },
     { "pc-dimm", QEMU_CAPS_DEVICE_PC_DIMM },
     { "pci-serial", QEMU_CAPS_DEVICE_PCI_SERIAL },
     { "gpex-pcihost", QEMU_CAPS_OBJECT_GPEX},
