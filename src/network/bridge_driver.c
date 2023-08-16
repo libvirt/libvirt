@@ -3210,18 +3210,10 @@ networkUpdate(virNetworkPtr net,
         }
     }
 
-    /* VIR_NETWORK_UPDATE_AFFECT_CURRENT means "change LIVE if network
-     * is active, else change CONFIG
-     */
+    if (virNetworkObjUpdateModificationImpact(obj, &flags) < 0)
+        goto cleanup;
+
     isActive = virNetworkObjIsActive(obj);
-    if ((flags & (VIR_NETWORK_UPDATE_AFFECT_LIVE |
-                  VIR_NETWORK_UPDATE_AFFECT_CONFIG)) ==
-        VIR_NETWORK_UPDATE_AFFECT_CURRENT) {
-        if (isActive)
-            flags |= VIR_NETWORK_UPDATE_AFFECT_LIVE;
-        else
-            flags |= VIR_NETWORK_UPDATE_AFFECT_CONFIG;
-    }
 
     if (isActive && (flags & VIR_NETWORK_UPDATE_AFFECT_LIVE)) {
         /* Take care of anything that must be done before updating the

@@ -725,7 +725,6 @@ virNetworkObjReplacePersistentDef(virNetworkObj *obj,
  */
 static int
 virNetworkObjConfigChangeSetup(virNetworkObj *obj,
-                               virNetworkXMLOption *xmlopt,
                                unsigned int flags)
 {
     bool isActive;
@@ -738,17 +737,10 @@ virNetworkObjConfigChangeSetup(virNetworkObj *obj,
         return -1;
     }
 
-    if (flags & VIR_NETWORK_UPDATE_AFFECT_CONFIG) {
-        if (!obj->persistent) {
+    if ((flags & VIR_NETWORK_UPDATE_AFFECT_CONFIG) &&
+         !obj->persistent) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot change persistent config of a "
-                             "transient network"));
-            return -1;
-        }
-        /* this should already have been done by the driver, but do it
-         * anyway just in case.
-         */
-        if (isActive && (virNetworkObjSetDefTransient(obj, false, xmlopt) < 0))
+                           _("cannot change persistent config of a transient network"));
             return -1;
     }
 
@@ -1187,7 +1179,7 @@ virNetworkObjUpdate(virNetworkObj *obj,
     g_autoptr(virNetworkDef) configdef = NULL;
 
     /* normalize config data, and check for common invalid requests. */
-    if (virNetworkObjConfigChangeSetup(obj, xmlopt, flags) < 0)
+    if (virNetworkObjConfigChangeSetup(obj, flags) < 0)
         return -1;
 
     if (flags & VIR_NETWORK_UPDATE_AFFECT_LIVE) {
@@ -1818,6 +1810,319 @@ virNetworkObjLoadAllPorts(virNetworkObj *net,
             return -1;
 
         portdef = NULL;
+    }
+
+    return 0;
+}
+
+
+/**
+ * virNetworkObjUpdateModificationImpact:
+ *
+ * @obj: network object
+ * @flags: flags to update the modification impact on
+ *
+ * Resolves virNetworkUpdateFlags in @flags so that they correctly
+ * apply to the actual state of @obj. @flags may be modified after call to this
+ * function.
+ *
+ * Returns 0 on success if @flags point to a valid combination for @obj or -1 on
+ * error.
+ */
+int
+virNetworkObjUpdateModificationImpact(virNetworkObj *obj,
+                                      unsigned int *flags)
+{
+    bool isActive = virNetworkObjIsActive(obj);
+
+    if ((*flags & (VIR_NETWORK_UPDATE_AFFECT_LIVE | VIR_NETWORK_UPDATE_AFFECT_CONFIG)) ==
+        VIR_NETWORK_UPDATE_AFFECT_CURRENT) {
+        if (isActive)
+            *flags |= VIR_NETWORK_UPDATE_AFFECT_LIVE;
+        else
+            *flags |= VIR_NETWORK_UPDATE_AFFECT_CONFIG;
+    }
+
+    if (virNetworkObjConfigChangeSetup(obj, *flags) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * virNetworkObjGetDefs:
+ *
+ * @net: network object
+ * @flags: for virNetworkUpdateFlags
+ * @liveDef: Set the pointer to the live definition of @net.
+ * @persDef: Set the pointer to the config definition of @net.
+ *
+ * Helper function to resolve @flags and retrieve correct network pointer
+ * objects. This function should be used only when the network driver
+ * creates net->newDef once the network has started.
+ *
+ * If @liveDef or @persDef are set it implies that @flags request modification
+ * thereof.
+ *
+ * Returns 0 on success and sets @liveDef and @persDef; -1 if @flags are
+ * inappropriate.
+ */
+static int
+virNetworkObjGetDefs(virNetworkObj *net,
+                    unsigned int flags,
+                    virNetworkDef **liveDef,
+                    virNetworkDef **persDef)
+{
+    if (liveDef)
+        *liveDef = NULL;
+
+    if (persDef)
+        *persDef = NULL;
+
+    if (virNetworkObjUpdateModificationImpact(net, &flags) < 0)
+        return -1;
+
+    if (virNetworkObjIsActive(net)) {
+        if (liveDef && (flags & VIR_NETWORK_UPDATE_AFFECT_LIVE))
+            *liveDef = net->def;
+
+        if (persDef && (flags & VIR_NETWORK_UPDATE_AFFECT_CONFIG))
+            *persDef = net->newDef;
+    } else {
+        if (persDef)
+            *persDef = net->def;
+    }
+
+    return 0;
+}
+
+
+/**
+ * virNetworkObjGetOneDefState:
+ *
+ * @net: Network object
+ * @flags: for virNetworkUpdateFlags
+ * @live: set to true if live config was returned (may be omitted)
+ *
+ * Helper function to resolve @flags and return the correct network pointer
+ * object. This function returns one of @net->def or @net->persistentDef
+ * according to @flags. @live is set to true if the live net config will be
+ * returned. This helper should be used only in APIs that guarantee
+ * that @flags contains exactly one of VIR_NETWORK_UPDATE_AFFECT_LIVE or
+ * VIR_NETWORK_UPDATE_AFFECT_CONFIG and not both.
+ *
+ * Returns the correct definition pointer or NULL on error.
+ */
+static virNetworkDef *
+virNetworkObjGetOneDefState(virNetworkObj *net,
+                           unsigned int flags,
+                           bool *live)
+{
+    if (flags & VIR_NETWORK_UPDATE_AFFECT_LIVE &&
+        flags & VIR_NETWORK_UPDATE_AFFECT_CONFIG) {
+        virReportInvalidArg(flags, "%s",
+                            _("Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and 'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"));
+        return NULL;
+    }
+
+    if (virNetworkObjUpdateModificationImpact(net, &flags) < 0)
+        return NULL;
+
+    if (live)
+        *live = flags & VIR_NETWORK_UPDATE_AFFECT_LIVE;
+
+    if (virNetworkObjIsActive(net) && flags & VIR_NETWORK_UPDATE_AFFECT_CONFIG)
+        return net->newDef;
+
+    return net->def;
+}
+
+
+/**
+ * virNetworkObjGetOneDef:
+ *
+ * @net: Network object
+ * @flags: for virNetworkUpdateFlags
+ *
+ * Helper function to resolve @flags and return the correct network pointer
+ * object. This function returns one of @net->def or @net->persistentDef
+ * according to @flags. This helper should be used only in APIs that guarantee
+ * that @flags contains exactly one of VIR_NETWORK_UPDATE_AFFECT_LIVE or
+ * VIR_NETWORK_UPDATE_AFFECT_CONFIG and not both.
+ *
+ * Returns the correct definition pointer or NULL on error.
+ */
+static virNetworkDef *
+virNetworkObjGetOneDef(virNetworkObj *net,
+                      unsigned int flags)
+{
+    return virNetworkObjGetOneDefState(net, flags, NULL);
+}
+
+
+char *
+virNetworkObjGetMetadata(virNetworkObj *net,
+                        int type,
+                        const char *uri,
+                        unsigned int flags)
+{
+    virNetworkDef *def;
+    char *ret = NULL;
+
+    virCheckFlags(VIR_NETWORK_UPDATE_AFFECT_LIVE |
+                  VIR_NETWORK_UPDATE_AFFECT_CONFIG, NULL);
+
+    if (type >= VIR_NETWORK_METADATA_LAST) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown metadata type '%1$d'"), type);
+        return NULL;
+    }
+
+    if (!(def = virNetworkObjGetOneDef(net, flags)))
+        return NULL;
+
+    switch ((virNetworkMetadataType) type) {
+    case VIR_NETWORK_METADATA_DESCRIPTION:
+        ret = g_strdup(def->description);
+        break;
+
+    case VIR_NETWORK_METADATA_TITLE:
+        ret = g_strdup(def->title);
+        break;
+
+    case VIR_NETWORK_METADATA_ELEMENT:
+        if (!def->metadata)
+            break;
+
+        if (virXMLExtractNamespaceXML(def->metadata, uri, &ret) < 0)
+            return NULL;
+        break;
+
+    case VIR_NETWORK_METADATA_LAST:
+        break;
+    }
+
+    if (!ret)
+        virReportError(VIR_ERR_NO_NETWORK_METADATA, "%s",
+                       _("Requested metadata element is not present"));
+
+    return ret;
+}
+
+
+static int
+virNetworkDefSetMetadata(virNetworkDef *def,
+                        int type,
+                        const char *metadata,
+                        const char *key,
+                        const char *uri)
+{
+    g_autoptr(xmlDoc) doc = NULL;
+    xmlNodePtr old;
+    g_autoptr(xmlNode) new = NULL;
+
+    if (type >= VIR_NETWORK_METADATA_LAST) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown metadata type '%1$d'"), type);
+        return -1;
+    }
+
+    switch ((virNetworkMetadataType) type) {
+    case VIR_NETWORK_METADATA_DESCRIPTION:
+        g_clear_pointer(&def->description, g_free);
+
+        if (STRNEQ_NULLABLE(metadata, ""))
+            def->description = g_strdup(metadata);
+        break;
+
+    case VIR_NETWORK_METADATA_TITLE:
+        g_clear_pointer(&def->title, g_free);
+
+        if (STRNEQ_NULLABLE(metadata, ""))
+            def->title = g_strdup(metadata);
+        break;
+
+    case VIR_NETWORK_METADATA_ELEMENT:
+        if (metadata) {
+
+            /* parse and modify the xml from the user */
+            if (!(doc = virXMLParseStringCtxt(metadata, _("(metadata_xml)"), NULL)))
+                return -1;
+
+            if (virXMLInjectNamespace(doc->children, uri, key) < 0)
+                return -1;
+
+            /* create the root node if needed */
+            if (!def->metadata)
+                def->metadata = virXMLNewNode(NULL, "metadata");
+
+            if (!(new = xmlCopyNode(doc->children, 1))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Failed to copy XML node"));
+                return -1;
+            }
+        }
+
+        /* remove possible other nodes sharing the namespace */
+        while ((old = virXMLFindChildNodeByNs(def->metadata, uri))) {
+            xmlUnlinkNode(old);
+            xmlFreeNode(old);
+        }
+
+        if (new) {
+            if (!(xmlAddChild(def->metadata, new))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to add metadata to XML document"));
+                return -1;
+            }
+            new = NULL;
+        }
+        break;
+
+    case VIR_NETWORK_METADATA_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+int
+virNetworkObjSetMetadata(virNetworkObj *net,
+                        int type,
+                        const char *metadata,
+                        const char *key,
+                        const char *uri,
+                        virNetworkXMLOption *xmlopt,
+                        const char *stateDir,
+                        const char *configDir,
+                        unsigned int flags)
+{
+    virNetworkDef *def;
+    virNetworkDef *persistentDef;
+
+    virCheckFlags(VIR_NETWORK_UPDATE_AFFECT_LIVE |
+                  VIR_NETWORK_UPDATE_AFFECT_CONFIG, -1);
+
+    if (virNetworkObjGetDefs(net, flags, &def, &persistentDef) < 0)
+        return -1;
+
+    if (def) {
+        if (virNetworkDefSetMetadata(def, type, metadata, key, uri) < 0)
+            return -1;
+
+        if (virNetworkObjSaveStatus(stateDir, net, xmlopt) < 0)
+            return -1;
+    }
+
+    if (persistentDef) {
+        if (virNetworkDefSetMetadata(persistentDef, type, metadata, key,
+                                    uri) < 0)
+            return -1;
+
+        if (virNetworkSaveConfig(configDir, persistentDef, xmlopt) < 0)
+            return -1;
     }
 
     return 0;

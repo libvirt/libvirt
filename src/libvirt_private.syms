@@ -1297,6 +1297,7 @@ virNetworkObjGetDef;
 virNetworkObjGetDnsmasqPid;
 virNetworkObjGetFloorSum;
 virNetworkObjGetMacMap;
+virNetworkObjGetMetadata;
 virNetworkObjGetNewDef;
 virNetworkObjGetPersistentDef;
 virNetworkObjGetPortStatusDir;
@@ -1327,11 +1328,13 @@ virNetworkObjSetDefTransient;
 virNetworkObjSetDnsmasqPid;
 virNetworkObjSetFloorSum;
 virNetworkObjSetMacMap;
+virNetworkObjSetMetadata;
 virNetworkObjTaint;
 virNetworkObjUnrefMacMap;
 virNetworkObjUnsetDefTransient;
 virNetworkObjUpdate;
 virNetworkObjUpdateAssignDef;
+virNetworkObjUpdateModificationImpact;
 
 
 # conf/virnetworkportdef.h

@@ -5658,7 +5658,7 @@ testNetworkUpdate(virNetworkPtr net,
 {
     testDriver *privconn = net->conn->privateData;
     virNetworkObj *obj = NULL;
-    int isActive, ret = -1;
+    int ret = -1;
 
     virCheckFlags(VIR_NETWORK_UPDATE_AFFECT_LIVE |
                   VIR_NETWORK_UPDATE_AFFECT_CONFIG,
@@ -5667,18 +5667,8 @@ testNetworkUpdate(virNetworkPtr net,
     if (!(obj = testNetworkObjFindByUUID(privconn, net->uuid)))
         goto cleanup;
 
-    /* VIR_NETWORK_UPDATE_AFFECT_CURRENT means "change LIVE if network
-     * is active, else change CONFIG
-    */
-    isActive = virNetworkObjIsActive(obj);
-    if ((flags & (VIR_NETWORK_UPDATE_AFFECT_LIVE
-                   | VIR_NETWORK_UPDATE_AFFECT_CONFIG)) ==
-        VIR_NETWORK_UPDATE_AFFECT_CURRENT) {
-        if (isActive)
-            flags |= VIR_NETWORK_UPDATE_AFFECT_LIVE;
-        else
-            flags |= VIR_NETWORK_UPDATE_AFFECT_CONFIG;
-    }
+    if (virNetworkObjUpdateModificationImpact(obj, &flags) < 0)
+        goto cleanup;
 
     /* update the network config in memory/on disk */
     if (virNetworkObjUpdate(obj, command, section,
