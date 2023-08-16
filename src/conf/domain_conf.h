@@ -765,6 +765,20 @@ struct _virDomainControllerDef {
     virDomainVirtioOptions *virtio;
 };
 
+struct _virDomainIdMapEntry {
+    unsigned int start;
+    unsigned int target;
+    unsigned int count;
+};
+
+struct _virDomainIdMapDef {
+    size_t nuidmap;
+    virDomainIdMapEntry *uidmap;
+
+    size_t ngidmap;
+    virDomainIdMapEntry *gidmap;
+};
+
 
 /* Types of disk backends */
 typedef enum {
@@ -2670,20 +2684,6 @@ struct _virDomainMemoryDef {
 virDomainMemoryDef *virDomainMemoryDefNew(virDomainMemoryModel model);
 void virDomainMemoryDefFree(virDomainMemoryDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainMemoryDef, virDomainMemoryDefFree);
-
-struct _virDomainIdMapEntry {
-    unsigned int start;
-    unsigned int target;
-    unsigned int count;
-};
-
-struct _virDomainIdMapDef {
-    size_t nuidmap;
-    virDomainIdMapEntry *uidmap;
-
-    size_t ngidmap;
-    virDomainIdMapEntry *gidmap;
-};
 
 
 typedef enum {
