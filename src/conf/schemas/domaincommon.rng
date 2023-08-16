@@ -8,21 +8,6 @@
   <include href="nwfilter_params.rng"/>
   <include href="privatedata.rng"/>
 
-  <!--
-    description and title element, may be placed anywhere under the root
-    -->
-  <define name="description">
-    <element name="description">
-      <text/>
-    </element>
-  </define>
-
-  <define name="title">
-    <element name="title">
-      <ref name="objectNameWithSlash"/>
-    </element>
-  </define>
-
   <define name="createMode">
     <data type="unsignedInt">
       <param name="pattern">0[0-7]{3}|[0-7]{1,3}</param>

@@ -281,6 +281,8 @@ virNetworkDefFree(virNetworkDef *def)
     virNetDevBandwidthFree(def->bandwidth);
     virNetDevVlanClear(&def->vlan);
 
+    g_free(def->title);
+    g_free(def->description);
     xmlFreeNode(def->metadata);
 
     if (def->namespaceData && def->ns.free)
@@ -1599,6 +1601,17 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
         def->uuid_specified = true;
     }
 
+    /* Extract short description of network (title) */
+    def->title = virXPathString("string(./title[1])", ctxt);
+    if (def->title && strchr(def->title, '\n')) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Network title can't contain newlines"));
+        return NULL;
+    }
+
+    /* Extract documentation if present */
+    def->description = virXPathString("string(./description[1])", ctxt);
+
     /* check if definitions with no IPv6 gateway addresses is to
      * allow guest-to-guest communications.
      */
@@ -2310,6 +2323,11 @@ virNetworkDefFormatBuf(virBuffer *buf,
     uuid = def->uuid;
     virUUIDFormat(uuid, uuidstr);
     virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
+
+    virBufferEscapeString(buf, "<title>%s</title>\n", def->title);
+
+    virBufferEscapeString(buf, "<description>%s</description>\n",
+                          def->description);
 
     if (virXMLFormatMetadata(buf, def->metadata) < 0)
         return -1;

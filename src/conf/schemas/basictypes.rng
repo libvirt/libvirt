@@ -610,6 +610,21 @@
     </choice>
   </define>
 
+  <!--
+    title and description element, may be placed anywhere under the root
+    -->
+  <define name="title">
+    <element name="title">
+      <ref name="objectNameWithSlash"/>
+    </element>
+  </define>
+
+  <define name="description">
+    <element name="description">
+      <text/>
+    </element>
+  </define>
+
   <define name="metadata">
     <element name="metadata">
       <zeroOrMore>

@@ -249,6 +249,8 @@ struct _virNetworkDef {
     unsigned char uuid[VIR_UUID_BUFLEN];
     bool uuid_specified;
     char *name;
+    char *title;
+    char *description;
     int   connections; /* # of guest interfaces connected to this network */
 
     char *bridge;       /* Name of bridge device */

@@ -30,6 +30,8 @@ The first elements provide basic metadata about the virtual network.
    <network ipv6='yes' trustGuestRxFilters='no'>
      <name>default</name>
      <uuid>3e3fce45-4f53-4fa7-bb32-11f34168b82b</uuid>
+     <title>A short description - title - of the network</title>
+     <description>Some human readable description</description>
      <metadata>
        <app1:foo xmlns:app1="http://app1.org/app1/">..</app1:foo>
        <app2:bar xmlns:app2="http://app1.org/app2/">..</app2:bar>
@@ -47,6 +49,7 @@ The first elements provide basic metadata about the virtual network.
    the virtual network. The format must be RFC 4122 compliant, eg
    ``3e3fce45-4f53-4fa7-bb32-11f34168b82b``. If omitted when defining/creating a
    new network, a random UUID is generated. :since:`Since 0.3.0`
+``metadata``
    The ``metadata`` node can be used by applications to store custom metadata in
    the form of XML nodes/trees. Applications must use custom namespaces on their
    XML nodes/trees, with only one top-level element per namespace (if the
@@ -65,6 +68,14 @@ The first elements provide basic metadata about the virtual network.
    documentation for more details. Note that an explicit setting of this
    attribute in a portgroup or the individual domain interface will override the
    setting in the network.
+``title``
+   The optional element ``title`` provides space for a short description of the
+   network. The title should not contain any newlines. :since:`Since 9.7.0` .
+``description``
+   The content of the ``description`` element provides a human readable
+   description of the network. This data is not used by libvirt in any
+   way, it can contain any information the user wants. :since:`Since 9.7.0`
+
 
 Connectivity
 ~~~~~~~~~~~~

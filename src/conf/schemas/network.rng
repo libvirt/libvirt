@@ -37,6 +37,16 @@
           <text/>
         </element>
 
+        <!-- <title> element -->
+        <optional>
+          <ref name="title"/>
+        </optional>
+
+        <!-- <description> element -->
+        <optional>
+          <ref name="description"/>
+        </optional>
+
         <!-- <metadata> element -->
         <optional>
           <ref name="metadata"/>
