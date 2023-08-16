@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-07-26 08:28+0000\n"
-"PO-Revision-Date: 2023-07-20 21:21+0000\n"
+"PO-Revision-Date: 2023-08-16 15:21+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -651,7 +651,7 @@ msgstr "%1$s-modell av vakthund kan bara gå via en PCI-buss"
 
 #, c-format
 msgid "%1$s model of watchdog cannot be used with this machine type"
-msgstr ""
+msgstr "%1$s-modell av vakthund kan inte användas med denna maskintyp"
 
 #, c-format
 msgid "%1$s model of watchdog does not support configuring the address"
@@ -1257,7 +1257,7 @@ msgstr ""
 "”match”"
 
 msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
-msgstr ""
+msgstr "stöd för ”blob” för virtio-gpu-enheter kräver en memfd-minnesbakände"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "”cache” refererar till en NUMA-nodcaceh som inte finns"
@@ -1276,13 +1276,13 @@ msgstr ""
 "”dir” istället"
 
 msgid "'discard_no_unref' is not compatible with read-only disk"
-msgstr ""
+msgstr "”discard_no_unref” är inte kompatibelt med en endast läsbar disk"
 
 msgid "'discard_no_unref' is not supported by this QEMU binary"
-msgstr ""
+msgstr "”discard_no_unref” stödjs inte av denna QEMU-binär"
 
 msgid "'discard_no_unref' only works with qcow2 disk format"
-msgstr ""
+msgstr "”discard_no_unref” fungerar bara med diskformatet qcow2"
 
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "”disk” saknas eller är inte en vektor i svaret på guest-get-fsinfo"
@@ -1415,6 +1415,8 @@ msgid ""
 "'restrictive' mode is required in memory element when mode is 'restrictive' "
 "in memnode element"
 msgstr ""
+"läget ”restrictive” krävs i minneselementet när läget är ”restrictive” i "
+"memnode-elementet"
 
 #, c-format
 msgid ""
@@ -1696,7 +1698,7 @@ msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr "attributet ”display” i <hostdev> stödjs endast med model='vfio-pci'"
 
 msgid "<iotune> is not supported with bus='sd'"
-msgstr ""
+msgstr "<iotune> stödjs inte med bus='sd'"
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> är endast tillåtna för lun-enheter"
@@ -1899,7 +1901,7 @@ msgstr ""
 "Efter minnesdumpen, misslyckades att återuppta domän ”%1$d” med libxenlight"
 
 msgid "Agent authentication is not supported on this host"
-msgstr ""
+msgstr "Agentautenticering stödjs inte på denna värd"
 
 msgid "Ain't nobody heard of that much cache level"
 msgstr "Det har väl ingen hört talas om så många cache-nivåer"
@@ -2007,6 +2009,8 @@ msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
 "mandatory"
 msgstr ""
+"Åtminstone en av flaggorna --min-workers, --max-workers, --priority-workers "
+"är obligatorisk"
 
 msgid "At least one tty is required"
 msgstr "Åtminstone en tty krävs"
@@ -2678,6 +2682,8 @@ msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
 "not provided"
 msgstr ""
+"Det går inte att utföra tangentbordsinteraktiv autentisering: inget "
+"autentiseringsåteranrop angivet"
 
 #, c-format
 msgid "Can't read %1$s"
@@ -2968,6 +2974,7 @@ msgstr "Kan inte hitta CPU-leverantören med leverantörs-id 0x%1$02llx"
 #, c-format
 msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
 msgstr ""
+"Kan inte hitta blkio-cgroup-statistik (%1$s) för blockenhet ”%2$s” (%3$s)"
 
 #, c-format
 msgid "Cannot find boot device of requested type %1$s"
@@ -3221,11 +3228,11 @@ msgstr "Kan inte tolka adaptern ”%1$s”"
 
 #, c-format
 msgid "Cannot parse blkio cgroup (%1$s) entry '%2$s'"
-msgstr ""
+msgstr "Kan inte tolka blkio-cgroup (%1$s) post ”%2$s”"
 
 #, c-format
 msgid "Cannot parse blkio cgroup ('%1$s') entry '%2$s'"
-msgstr ""
+msgstr "Kan inte tolka blkio-cgroup (”%1$s”) post ”%2$s”"
 
 #, c-format
 msgid "Cannot parse byte '%1$s' stat '%2$s'"
@@ -3422,7 +3429,7 @@ msgstr ""
 
 #, c-format
 msgid "Cannot specify relabel if label is missing. model=%1$s"
-msgstr ""
+msgstr "Kan inte ange ometikett om etiketten saknas, modell=%1$s"
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -3805,7 +3812,7 @@ msgstr "Komprimerings-cache: %1$.3lf %2$s"
 
 #, c-format
 msgid "Compression method '%1$s' is only supported with parallel migration"
-msgstr ""
+msgstr "Komprimeringsmetoden ”%1$s” stödjs bara med parallell migrering"
 
 #, c-format
 msgid "Compression method '%1$s' is specified twice"
@@ -3813,7 +3820,7 @@ msgstr "Komprimeringsmetod ”%1$s” är angiven två gånger"
 
 #, c-format
 msgid "Compression method '%1$s' isn't supported with parallel migration"
-msgstr ""
+msgstr "Komprimeringsmetoden ”%1$s” stödjs inte med parallell migrering"
 
 msgid "Compression overflows:"
 msgstr "Komprimeringspill:"
@@ -5489,7 +5496,7 @@ msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "Diskenheten ”%1$s” stöder inte att ta ögonblicksbilder"
 
 msgid "Disk discard_no_unref is not supported by vz driver."
-msgstr ""
+msgstr "Diskens discard_no_unref stöjds inte av drivrutinen vz."
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -9370,16 +9377,18 @@ msgstr ""
 "IOMMU omavbildning av avbrott kräver delad I/O APIC (ioapic driver=”qemu”)"
 
 msgid "IORT table header ended early"
-msgstr ""
+msgstr "IORT-tabellhuvudet slutade för tidigt"
 
 msgid "IORT table node header ended early"
-msgstr ""
+msgstr "IORT-tabellnodshuvudet slutade för tidigt"
 
 #, c-format
 msgid ""
 "IORT table node type %1$s has invalid length: got %2$u, expected at least "
 "%3$zu"
 msgstr ""
+"IORT-tabellnodstypen %1$s har en felaktig längd: fick %2$u, åtminstone %3$zu "
+"förväntades"
 
 msgid "IOThread ID"
 msgstr "IO-tråd ID"
@@ -9548,7 +9557,7 @@ msgid "Instantiation of rules failed on interface '%1$s'"
 msgstr "Instantiering av regler misslyckades för gränssnittet ”%1$s”"
 
 msgid "Integrity error in watchdog models"
-msgstr ""
+msgstr "Integritetsfel i vakthundsmodeller"
 
 msgid "Interface"
 msgstr "Gränssnitt"
@@ -10332,7 +10341,7 @@ msgstr "Felaktig inställning för HPT-storleksändring"
 
 #, c-format
 msgid "Invalid setting for pseries feature '%1$s'"
-msgstr ""
+msgstr "Felaktig inställning för pseries-funktionen ”%1$s”"
 
 #, c-format
 msgid "Invalid source mode: %1$s"
@@ -12213,7 +12222,7 @@ msgid "No complete agent response found in %1$d bytes"
 msgstr "Inget fullständigt agentsvar fanns i %1$d byte"
 
 msgid "No compression algorithm selected for parallel migration"
-msgstr ""
+msgstr "Ingen komprimeringsalgoritm vad för parallell migrering"
 
 #, c-format
 msgid "No current block job for %1$s"
@@ -12820,7 +12829,7 @@ msgstr "Endast en startenhet stödjs"
 
 msgid ""
 "Only one compression method could be specified with parallel compression"
-msgstr ""
+msgstr "Endast en komprimeringsmetod kunde anges med parallell komprimering"
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Endast en hostdev av modell vfio-ap stödjs"
@@ -13542,7 +13551,7 @@ msgstr "QEMU rapporterar att migreringen fortfarande pågår"
 
 #, c-format
 msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
-msgstr ""
+msgstr "QEMU stängde oväntat monitorn (vm='%1$s')"
 
 #, c-format
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
@@ -15686,6 +15695,8 @@ msgid ""
 "Target memory device address '0x%1$llx' doesn't match source memory device "
 "address '0x%2$llx'"
 msgstr ""
+"Målminneshenhetens adress ”0x%1$llx” stämmer inte med källminnesenhetens "
+"adress ”0x%2$llx”"
 
 #, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -15814,6 +15825,7 @@ msgstr "Målljudkortsmodellen %1$s stämmer inte med källan %2$s"
 msgid ""
 "Target sound card multichannel setting '%1$s' does not match source '%2$s'"
 msgstr ""
+"Målljudkortets flerkanalsinställning ”%1$s” stämmer inte med källan ”%2$s”"
 
 #, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
@@ -15940,6 +15952,8 @@ msgid ""
 "The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
 "'exclude' is specified"
 msgstr ""
+"Värdet ”range” i en ”portForward” kräver attributet ”start” om ”end”, ”to” "
+"eller ”exclude” anges"
 
 #, c-format
 msgid ""
@@ -15953,6 +15967,8 @@ msgid ""
 "The <portForward> element can only be used with <interface type='user'> and "
 "its 'passt' backend"
 msgstr ""
+"Elementet <portForward> kan bara användas med <interface type='user'> och "
+"dess bakände ”passt”"
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
@@ -16147,6 +16163,8 @@ msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
 msgstr ""
+"Det övergripande maximala antalet klienter får inte vara mindre än antalet "
+"klienter som väntarpå autentisering"
 
 msgid "The read only disk has no parent"
 msgstr "Den endast läsbara disken har ingen förälder"
@@ -16544,10 +16562,10 @@ msgid "Turn xbzrle compression on to tune it"
 msgstr "Slå på xbzrle-komprimering för att trimma den"
 
 msgid "Turn zlib compression on to tune it"
-msgstr ""
+msgstr "Slå på zlib-komprimering för att trimma den"
 
 msgid "Turn zstd compression on to tune it"
-msgstr ""
+msgstr "Slå på zstd-komprimering för att trimma den"
 
 msgid "Type"
 msgstr "Typ"
@@ -16919,7 +16937,7 @@ msgid "Unable to close %1$s"
 msgstr "Kan inte stänga %1$s"
 
 msgid "Unable to close HardDisk"
-msgstr ""
+msgstr "Kan inte stänga HardDisk"
 
 msgid "Unable to close disk children"
 msgstr "Kan inte stänga diskbarnen"
@@ -16932,10 +16950,10 @@ msgid "Unable to close the VPD file, fd: %1$d"
 msgstr "Kan inte stänga VPD-filen, fb: %1$d"
 
 msgid "Unable to close the new medium"
-msgstr ""
+msgstr "Kan inte stänga det nya mediumet"
 
 msgid "Unable to compile regex"
-msgstr ""
+msgstr "Kan inte kompilera reguljäruttryck"
 
 #, c-format
 msgid "Unable to compute hash of data: %1$s"
@@ -16970,7 +16988,7 @@ msgid "Unable to create %1$s"
 msgstr "Kan inte skapa %1$s"
 
 msgid "Unable to create HardDisk"
-msgstr ""
+msgstr "Kan inte skapa HardDisk"
 
 msgid "Unable to create JSON formatter"
 msgstr "Kan inte skapa en JSON-formaterare"
@@ -16986,11 +17004,11 @@ msgstr "Kan inte skapa en KVM vCPU för TSC-avkänning"
 
 #, c-format
 msgid "Unable to create RelaxNG parser for schema '%1$s'"
-msgstr ""
+msgstr "Kan inte skapa en RelaxNG-tolk för schemat ”%1$s”"
 
 #, c-format
 msgid "Unable to create RelaxNG validation context for schema '%1$s'"
-msgstr ""
+msgstr "Kan inte skapa en RelaxNG-valideringskontext för schemat ”%1$s”"
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "Kan inte skapa TAP-enheter på denna plattform"
@@ -17138,7 +17156,7 @@ msgid "Unable to delete lockspace resource %1$s"
 msgstr "Kan inte radera låsutrymmesresursen %1$s"
 
 msgid "Unable to delete medium"
-msgstr ""
+msgstr "Kan inte radera mediumet"
 
 #, c-format
 msgid "Unable to delete port %1$s from OVS"
@@ -17369,7 +17387,7 @@ msgstr "Kan inte hämta LVM-nyckeln för %1$s"
 
 #, c-format
 msgid "Unable to get NUMA node of cpu %1$zd"
-msgstr ""
+msgstr "Kan inte få NUMA-noden för cpu %1$zd"
 
 #, c-format
 msgid "Unable to get SCSI key for %1$s"
@@ -17546,7 +17564,7 @@ msgid "Unable to get medium location"
 msgstr "Kan inte hämta mediumplats"
 
 msgid "Unable to get medium uuid"
-msgstr ""
+msgstr "Kan inte hämta medium-uuid"
 
 msgid "Unable to get memory parameters"
 msgstr "Kan inte hämta minnesparametrar"
@@ -17803,10 +17821,10 @@ msgid "Unable to open /proc/mounts"
 msgstr "Kan inte öppna /proc/mounts"
 
 msgid "Unable to open HardDisk"
-msgstr ""
+msgstr "Kan inte öppna HardDisk"
 
 msgid "Unable to open Machine"
-msgstr ""
+msgstr "Kan inte öppna Machine"
 
 msgid "Unable to open UNIX socket"
 msgstr "Kan inte öppna UNIX-uttag"
@@ -17873,7 +17891,7 @@ msgstr "Kan inte tolka MAC ”%1$s”"
 
 #, c-format
 msgid "Unable to parse RelaxNG schema '%1$s': %2$s"
-msgstr ""
+msgstr "Kan inte tolka RelaxNG-schema ”%1$s”: %2$s"
 
 #, c-format
 msgid "Unable to parse URI %1$s"
@@ -18093,7 +18111,7 @@ msgid "Unable to read virtiofsd pidfile '%1$s'"
 msgstr "Kan inte läsa pid-filen för virtiofsd ”%1$s”"
 
 msgid "Unable to register Machine"
-msgstr ""
+msgstr "Kan inte registrera Machine"
 
 msgid "Unable to register async IO callback"
 msgstr "Kan inte registrera async-IO-återanrop"
@@ -18253,25 +18271,23 @@ msgid "Unable to save lockspace %1$s"
 msgstr "Kan inte spara låsrymden %1$s"
 
 msgid "Unable to save net device config on this platform"
-msgstr ""
+msgstr "Kan inte spara konfigurationen av nätenheter på denna plattform"
 
-#, fuzzy
 msgid "Unable to save new snapshot xml file"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Kan inte spara en ny ögonblicksbilds xml-fil"
 
 msgid "Unable to save socket state when SASL session is active"
-msgstr ""
+msgstr "Kan inte spara uttagstillståndet när en SASL-session är aktiv"
 
 msgid "Unable to save socket state when TLS session is active"
-msgstr ""
+msgstr "Kan inte spara uttagstillståndet när en TLS-session är aktiv"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to save state file %1$s"
-msgstr "det gick inte att skapa loggfilen %1$s"
+msgstr "Kan inte spara tillståndsfilen %1$s"
 
-#, fuzzy
 msgid "Unable to save the xml"
-msgstr "var data ska sparas"
+msgstr "Kan inte spara xml:en"
 
 #, c-format
 msgid "Unable to seek %1$s to %2$llu"
@@ -18281,113 +18297,109 @@ msgstr "Misslyckades att spara domän %1$s till %2$llu"
 msgid "Unable to seek log file %1$s to %2$llu"
 msgstr "det gick inte att skapa loggfilen %1$s till %2$llu"
 
-#, fuzzy
 msgid "Unable to seek to EOF"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte söka till filslut"
 
-#, fuzzy
 msgid "Unable to seek to data"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte söka till data"
 
 msgid "Unable to seek to end of domain logfile"
-msgstr ""
+msgstr "Kan inte söka till slutet på domänloggfilen"
 
 #, c-format
 msgid "Unable to seek to inode %1$llu offset %2$llu"
-msgstr ""
+msgstr "Kan inte söka till inod %1$llu avstånd %2$llu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to send %1$d signal to process %2$d"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte skicka signal %1$d till process %2$d"
 
 #, c-format
 msgid "Unable to send SIGTERM to init pid %1$llu"
-msgstr ""
+msgstr "Kan inte skicka SIGTERM till init-pid %1$llu"
 
 msgid "Unable to send a VF SETLINK request on this platform"
-msgstr ""
+msgstr "Kan inte skicka en VF SETLINK-begäran på denna plattform"
 
 msgid "Unable to send container continue message"
-msgstr ""
+msgstr "Kan inte skicka fortsättningsmeddelande till behållaren"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to send keyboard scan codes to domain %1$s"
-msgstr "Misslyckades att starta om domän %1$s"
+msgstr "Kan inte skicka tangentbordsskankoder till domänen %1$s"
 
 #, c-format
 msgid "Unable to send keyboard scancodes for domain %1$s"
-msgstr ""
+msgstr "Kan inte skicka tangentbordsskankoder för domänen %1$s"
 
-#, fuzzy
 msgid "Unable to serialize the machine description"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte serialisera maskinbeskrivningen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set ACLs on %1$s"
-msgstr "Misslyckades att starta domän %1$s"
+msgstr "Kan inte sätta ACL:er på %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set FD %1$d blocking"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte sätta FD %1$d blockerande"
 
 msgid "Unable to set IPV6_V6ONLY flag"
-msgstr ""
+msgstr "Kan inte sätta flaggan IPV6_V6ONLY"
 
 msgid "Unable to set SCHED_CORE"
-msgstr ""
+msgstr "Kan inte sätta SCHED_CORE"
 
 #, c-format
 msgid "Unable to set SELinux context MCS '%1$s'"
-msgstr ""
+msgstr "Kan inte sätta SELinux-kontext MCS ”%1$s”"
 
 #, c-format
 msgid "Unable to set SELinux context role '%1$s'"
-msgstr ""
+msgstr "Kan inte sätta SELinux-kontext-roll ”%1$s”"
 
 #, c-format
 msgid "Unable to set SELinux context user '%1$s'"
-msgstr ""
+msgstr "Kan inte sätta SELinux-kontext-användare ”%1$s”"
 
 #, c-format
 msgid "Unable to set SELinux label on %1$s"
-msgstr ""
+msgstr "Kan inte sätta SELinux-etikett på %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set STP delay on %1$s"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte sätta STP-fördröjning på %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set STP delay on %1$s on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Kan inte sätta STP-fördröjningen på %1$s på denna plattform"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set STP on %1$s on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Kan inte sätta STP på %1$s på denna plattform"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set XATTR %1$s on %2$s"
-msgstr "kan inte skapa körkatalogen %1$s: %2$s"
+msgstr "Kan inte sätta XATTR %1$s på %2$s"
 
 msgid "Unable to set a VF MAC on this platform"
-msgstr ""
+msgstr "Kan inte sätta en VF MAC på denna plattform"
 
 msgid "Unable to set a VF VLAN on this platform"
-msgstr ""
+msgstr "Kan inte sätta ett VF VLAN på denna plattform"
 
 msgid "Unable to set a VF config on this platform"
-msgstr ""
+msgstr "Kan inte sätta en VF-konfiguration på denna plattform"
 
-#, fuzzy
 msgid "Unable to set agent close-on-exec flag"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte sätta agentens stäng-vid-exec-flagga"
 
 #, c-format
 msgid "Unable to set autostart on '%1$s': %2$s"
-msgstr ""
+msgstr "Kan inte sätta autostart på ”%1$s”: %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set backing file %1$s"
-msgstr "det gick inte att skapa loggfilen %1$s"
+msgstr "Kan inte sätta den bakomliggande filen %1$s"
 
 msgid "Unable to set bandwidth for interface because device name is unknown"
 msgstr ""
