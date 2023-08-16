@@ -8,6 +8,9 @@
     <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='hd'/>
   </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
@@ -23,15 +26,13 @@
     <controller type='ide' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
     </controller>
-    <controller type='usb' index='0'>
+    <controller type='usb' index='0' model='piix3-uhci'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
-    <graphics type='sdl'>
-      <gl enable='yes'/>
-    </graphics>
+    <audio id='1' type='none'/>
     <video>
       <model type='virtio' heads='1' primary='yes'>
         <acceleration accel3d='yes'/>

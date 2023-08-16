@@ -1018,20 +1018,10 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("net-udp");
 
-    DO_TEST("video-virtio-gpu-device", QEMU_CAPS_DEVICE_VIRTIO_GPU);
-    DO_TEST("video-virtio-gpu-virgl",
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL);
-    DO_TEST("video-virtio-gpu-spice-gl",
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL,
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_SPICE_GL,
-            QEMU_CAPS_SPICE_RENDERNODE);
-    DO_TEST("video-virtio-gpu-sdl-gl",
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL,
-            QEMU_CAPS_SDL);
+    DO_TEST_CAPS_LATEST("video-virtio-gpu-device");
+    DO_TEST_CAPS_LATEST("video-virtio-gpu-virgl");
+    DO_TEST_CAPS_LATEST("video-virtio-gpu-spice-gl");
+    DO_TEST_CAPS_LATEST("video-virtio-gpu-sdl-gl");
 
     DO_TEST("virtio-input",
             QEMU_CAPS_VIRTIO_KEYBOARD,
@@ -1059,17 +1049,14 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("acpi-table");
 
-    DO_TEST("video-device-pciaddr-default",
-            QEMU_CAPS_KVM,
-            QEMU_CAPS_VNC,
-            QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("video-qxl-heads", QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("video-qxl-noheads", QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("video-qxl-resolution", QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("video-virtio-gpu-secondary", QEMU_CAPS_DEVICE_VIRTIO_GPU);
+    DO_TEST_CAPS_LATEST("video-device-pciaddr-default");
+    DO_TEST_CAPS_LATEST("video-qxl-heads");
+    DO_TEST_CAPS_LATEST("video-qxl-noheads");
+    DO_TEST_CAPS_LATEST("video-qxl-resolution");
+    DO_TEST_CAPS_LATEST("video-virtio-gpu-secondary");
     DO_TEST_CAPS_ARCH_LATEST("video-virtio-gpu-ccw", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("video-virtio-gpu-ccw-auto", "s390x");
-    DO_TEST("video-none-device", QEMU_CAPS_VNC);
+    DO_TEST_CAPS_LATEST("video-none-device");
     DO_TEST_CAPS_LATEST("video-virtio-vga-gpu-gl");
     DO_TEST_CAPS_LATEST("video-virtio-blob-on");
     DO_TEST_CAPS_LATEST("video-virtio-blob-off");
