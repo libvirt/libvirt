@@ -917,8 +917,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("tap-vhost");
     DO_TEST_CAPS_LATEST("tap-vhost-incorrect");
     DO_TEST("shmem", QEMU_CAPS_DEVICE_IVSHMEM);
-    DO_TEST("shmem-plain-doorbell",
-            QEMU_CAPS_DEVICE_IVSHMEM_PLAIN, QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL);
+    DO_TEST_CAPS_LATEST("shmem-plain-doorbell");
     DO_TEST_CAPS_LATEST("smbios");
     DO_TEST_CAPS_LATEST("smbios-multiple-type2");
     DO_TEST_CAPS_LATEST("smbios-type-fwcfg");

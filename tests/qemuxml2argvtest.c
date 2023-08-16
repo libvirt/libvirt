@@ -2442,17 +2442,12 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_FULL("fips-enabled", "x86_64", ARG_FLAGS, FLAG_FIPS_HOST);
 
     DO_TEST("shmem", QEMU_CAPS_DEVICE_IVSHMEM);
-    DO_TEST("shmem-plain-doorbell", QEMU_CAPS_DEVICE_IVSHMEM,
-            QEMU_CAPS_DEVICE_IVSHMEM_PLAIN,
-            QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL);
     DO_TEST_PARSE_ERROR_NOCAPS("shmem");
-    DO_TEST_FAILURE("shmem-invalid-size",
-                    QEMU_CAPS_DEVICE_IVSHMEM);
-    DO_TEST_FAILURE("shmem-invalid-address",
-                    QEMU_CAPS_DEVICE_IVSHMEM);
-    DO_TEST_FAILURE("shmem-small-size",
-                    QEMU_CAPS_DEVICE_IVSHMEM);
-    DO_TEST_PARSE_ERROR_NOCAPS("shmem-msi-only");
+    DO_TEST_CAPS_LATEST("shmem-plain-doorbell");
+    DO_TEST_CAPS_LATEST_FAILURE("shmem-invalid-size");
+    DO_TEST_CAPS_LATEST_FAILURE("shmem-invalid-address");
+    DO_TEST_CAPS_LATEST_FAILURE("shmem-small-size");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("shmem-msi-only");
     DO_TEST("cpu-host-passthrough-features", QEMU_CAPS_KVM);
 
     DO_TEST_FAILURE_NOCAPS("memory-align-fail");

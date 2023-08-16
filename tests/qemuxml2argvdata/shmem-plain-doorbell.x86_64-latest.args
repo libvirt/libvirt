@@ -1,0 +1,48 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=QEMUGuest1,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
+-accel tcg \
+-cpu qemu64 \
+-m size=219136k \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-object '{"qom-type":"memory-backend-file","id":"shmmem-shmem0","mem-path":"/dev/shm/shmem0","size":4194304,"share":true}' \
+-device '{"driver":"ivshmem-plain","id":"shmem0","memdev":"shmmem-shmem0","bus":"pci.0","addr":"0x2"}' \
+-object '{"qom-type":"memory-backend-file","id":"shmmem-shmem1","mem-path":"/dev/shm/shmem1","size":134217728,"share":true}' \
+-device '{"driver":"ivshmem-plain","id":"shmem1","memdev":"shmmem-shmem1","master":"off","bus":"pci.0","addr":"0x3"}' \
+-object '{"qom-type":"memory-backend-file","id":"shmmem-shmem2","mem-path":"/dev/shm/shmem2","size":268435456,"share":true}' \
+-device '{"driver":"ivshmem-plain","id":"shmem2","memdev":"shmmem-shmem2","master":"on","bus":"pci.0","addr":"0x4"}' \
+-device '{"driver":"ivshmem-doorbell","id":"shmem3","chardev":"charshmem3","ioeventfd":true,"bus":"pci.0","addr":"0x5"}' \
+-chardev socket,id=charshmem3,path=/var/lib/libvirt/shmem-shmem3-sock \
+-device '{"driver":"ivshmem-doorbell","id":"shmem4","chardev":"charshmem4","ioeventfd":true,"bus":"pci.0","addr":"0x6"}' \
+-chardev socket,id=charshmem4,path=/tmp/shmem4-sock \
+-device '{"driver":"ivshmem-doorbell","id":"shmem5","chardev":"charshmem5","ioeventfd":false,"bus":"pci.0","addr":"0x7"}' \
+-chardev socket,id=charshmem5,path=/tmp/shmem5-sock \
+-device '{"driver":"ivshmem-doorbell","id":"shmem6","chardev":"charshmem6","vectors":16,"ioeventfd":true,"bus":"pci.0","addr":"0x8"}' \
+-chardev socket,id=charshmem6,path=/tmp/shmem6-sock \
+-device '{"driver":"ivshmem-doorbell","id":"shmem7","chardev":"charshmem7","vectors":32,"ioeventfd":true,"bus":"pci.0","addr":"0x9"}' \
+-chardev socket,id=charshmem7,path=/tmp/shmem7-sock \
+-msg timestamp=on

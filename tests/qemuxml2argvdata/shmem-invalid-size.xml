@@ -18,6 +18,7 @@
     <controller type='pci' index='0' model='pci-root'/>
     <memballoon model='none'/>
     <shmem name='shmem0'>
+      <model type='ivshmem-plain'/>
       <size unit='K'>12345</size>
     </shmem>
   </devices>
