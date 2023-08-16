@@ -3120,6 +3120,9 @@
               </choice>
               <empty/>
             </element>
+            <optional>
+              <ref name="idmap"/>
+            </optional>
             <ref name="filesystemCommon"/>
           </interleave>
         </group>

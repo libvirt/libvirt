@@ -888,6 +888,7 @@ struct _virDomainFSDef {
     virTristateSwitch flock;
     virDomainFSSandboxMode sandbox;
     int thread_pool_size;
+    virDomainIdMapDef idmap;
     virDomainVirtioOptions *virtio;
     virObject *privateData;
 };

@@ -2588,6 +2588,8 @@ void virDomainFSDefFree(virDomainFSDef *def)
     virObjectUnref(def->privateData);
     g_free(def->binary);
     g_free(def->sock);
+    g_free(def->idmap.uidmap);
+    g_free(def->idmap.gidmap);
 
     g_free(def);
 }
@@ -8771,6 +8773,9 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
         xmlNodePtr binary_lock_node = virXPathNode("./binary/lock", ctxt);
         xmlNodePtr binary_cache_node = virXPathNode("./binary/cache", ctxt);
         xmlNodePtr binary_sandbox_node = virXPathNode("./binary/sandbox", ctxt);
+        ssize_t n;
+        g_autofree xmlNodePtr *uid_nodes = NULL;
+        g_autofree xmlNodePtr *gid_nodes = NULL;
 
         if (queue_size && virStrToLong_ull(queue_size, NULL, 10, &def->queue_size) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
@@ -8816,6 +8821,28 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
                            VIR_XML_PROP_NONZERO,
                            &def->sandbox) < 0)
             goto error;
+
+        if ((n = virXPathNodeSet("./idmap/uid", ctxt, &uid_nodes)) < 0)
+            return NULL;
+
+        if (n) {
+            def->idmap.uidmap = virDomainIdmapDefParseXML(ctxt, uid_nodes, n);
+            if (!def->idmap.uidmap)
+                return NULL;
+
+            def->idmap.nuidmap = n;
+        }
+
+        if ((n = virXPathNodeSet("./idmap/gid", ctxt, &gid_nodes)) < 0)
+            return NULL;
+
+        if (n) {
+            def->idmap.gidmap = virDomainIdmapDefParseXML(ctxt, gid_nodes, n);
+            if (!def->idmap.gidmap)
+                return NULL;
+
+            def->idmap.ngidmap = n;
+        }
     }
 
     if (source == NULL && def->type != VIR_DOMAIN_FS_TYPE_RAM
@@ -23232,6 +23259,29 @@ virDomainFSDefFormat(virBuffer *buf,
 
     virXMLFormatElement(buf, "driver", &driverAttrBuf, &driverBuf);
     virXMLFormatElement(buf, "binary", &binaryAttrBuf, &binaryBuf);
+
+    if (def->idmap.uidmap) {
+        size_t i;
+
+        virBufferAddLit(buf, "<idmap>\n");
+        virBufferAdjustIndent(buf, 2);
+        for (i = 0; i < def->idmap.nuidmap; i++) {
+            virBufferAsprintf(buf,
+                              "<uid start='%u' target='%u' count='%u'/>\n",
+                              def->idmap.uidmap[i].start,
+                              def->idmap.uidmap[i].target,
+                              def->idmap.uidmap[i].count);
+        }
+        for (i = 0; i < def->idmap.ngidmap; i++) {
+            virBufferAsprintf(buf,
+                              "<gid start='%u' target='%u' count='%u'/>\n",
+                              def->idmap.gidmap[i].start,
+                              def->idmap.gidmap[i].target,
+                              def->idmap.gidmap[i].count);
+        }
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</idmap>\n");
+    }
 
     switch (def->type) {
     case VIR_DOMAIN_FS_TYPE_MOUNT:

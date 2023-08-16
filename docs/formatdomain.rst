@@ -3548,6 +3548,10 @@ A directory on the host that can be accessed directly from the guest.
          </binary>
          <source dir='/path'/>
          <target dir='mount_tag'/>
+         <idmap>
+             <uid start='0' target='100000' count='65535'/>
+             <gid start='0' target='100000' count='65535'/>
+         </idmap>
      </filesystem>
      <filesystem type='mount'>
          <driver type='virtiofs' queue='1024'/>
@@ -3697,6 +3701,10 @@ A directory on the host that can be accessed directly from the guest.
    Where the ``source`` can be accessed in the guest. For most drivers this is
    an automatic mount point, but for QEMU/KVM this is merely an arbitrary string
    tag that is exported to the guest as a hint for where to mount.
+``idmap``
+   For ``virtiofs``, an ``idmap`` element can be specified to map IDs in the user
+   namespace. See the `Container boot`_ section for the syntax of the element.
+   :since:`Since 10.0.0`
 ``readonly``
    Enables exporting filesystem as a readonly mount for guest, by default
    read-write access is given (currently only works for QEMU/KVM driver; not
