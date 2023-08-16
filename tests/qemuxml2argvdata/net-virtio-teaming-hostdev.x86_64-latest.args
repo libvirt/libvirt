@@ -1,0 +1,42 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=QEMUGuest1,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
+-accel tcg \
+-cpu qemu64 \
+-m size=219136k \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-format","id":"ide0-0-0","bootindex":1}' \
+-netdev '{"type":"user","id":"hostua-backup0"}' \
+-device '{"driver":"virtio-net-pci","failover":true,"netdev":"hostua-backup0","id":"ua-backup0","mac":"00:11:22:33:44:55","bus":"pci.0","addr":"0x3"}' \
+-netdev '{"type":"user","id":"hostua-backup1"}' \
+-device '{"driver":"virtio-net-pci","failover":true,"netdev":"hostua-backup1","id":"ua-backup1","mac":"66:44:33:22:11:00","bus":"pci.0","addr":"0x4"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"vfio-pci","host":"0000:03:07.1","id":"hostdev0","failover_pair_id":"ua-backup0","bus":"pci.0","addr":"0x5"}' \
+-device '{"driver":"vfio-pci","host":"0000:03:07.2","id":"hostdev1","failover_pair_id":"ua-backup1","bus":"pci.0","addr":"0x6"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x7"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

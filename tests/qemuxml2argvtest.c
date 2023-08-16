@@ -1401,47 +1401,44 @@ mymain(void)
     DO_TEST_CAPS_VER("misc-no-reboot", "5.2.0");
     DO_TEST_CAPS_LATEST("misc-no-reboot");
     DO_TEST_NOCAPS("misc-uuid");
+
     DO_TEST_PARSE_ERROR_NOCAPS("vhost_queues-invalid");
-    DO_TEST_NOCAPS("net-vhostuser");
+
     DO_TEST_CAPS_LATEST("net-vhostuser");
-    DO_TEST_NOCAPS("net-vhostuser-multiq");
-    DO_TEST_FAILURE_NOCAPS("net-vhostuser-fail");
-    DO_TEST_NOCAPS("net-user");
+    DO_TEST_CAPS_LATEST("net-vhostuser");
+    DO_TEST_CAPS_LATEST("net-vhostuser-multiq");
+    DO_TEST_CAPS_LATEST_FAILURE("net-vhostuser-fail");
+    DO_TEST_CAPS_LATEST("net-user");
     DO_TEST_CAPS_ARCH_LATEST_FULL("net-user", "x86_64", ARG_FLAGS, FLAG_SLIRP_HELPER);
     DO_TEST_CAPS_LATEST("net-user-addr");
     DO_TEST_CAPS_LATEST("net-user-passt");
     DO_TEST_CAPS_VER("net-user-passt", "7.2.0");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("net-user-slirp-portforward");
-    DO_TEST_NOCAPS("net-virtio");
-    DO_TEST_NOCAPS("net-virtio-device");
-    DO_TEST_NOCAPS("net-virtio-disable-offloads");
-    DO_TEST_NOCAPS("net-virtio-netdev");
+    DO_TEST_CAPS_LATEST("net-virtio");
+    DO_TEST_CAPS_LATEST("net-virtio-device");
+    DO_TEST_CAPS_LATEST("net-virtio-disable-offloads");
+    DO_TEST_CAPS_LATEST("net-virtio-netdev");
     DO_TEST_CAPS_ARCH_LATEST("net-virtio-ccw", "s390x");
-    DO_TEST_NOCAPS("net-virtio-rxtxqueuesize");
-    DO_TEST_PARSE_ERROR_NOCAPS("net-virtio-rxqueuesize-invalid-size");
-    DO_TEST("net-virtio-teaming",
-            QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("net-virtio-teaming-hostdev",
-            QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST_NOCAPS("net-eth");
-    DO_TEST_NOCAPS("net-eth-ifname");
-    DO_TEST_NOCAPS("net-eth-names");
-    DO_TEST_NOCAPS("net-eth-hostip");
-    DO_TEST_NOCAPS("net-eth-unmanaged-tap");
-    DO_TEST_NOCAPS("net-client");
-    DO_TEST_NOCAPS("net-server");
+    DO_TEST_CAPS_LATEST("net-virtio-rxtxqueuesize");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("net-virtio-rxqueuesize-invalid-size");
+    DO_TEST_CAPS_LATEST("net-virtio-teaming");
+    DO_TEST_CAPS_LATEST("net-virtio-teaming-hostdev");
+    DO_TEST_CAPS_LATEST("net-eth");
+    DO_TEST_CAPS_LATEST("net-eth-ifname");
+    DO_TEST_CAPS_LATEST("net-eth-names");
+    DO_TEST_CAPS_LATEST("net-eth-hostip");
+    DO_TEST_CAPS_LATEST("net-eth-unmanaged-tap");
+    DO_TEST_CAPS_LATEST("net-client");
+    DO_TEST_CAPS_LATEST("net-server");
     DO_TEST_CAPS_LATEST("net-many-models");
-    DO_TEST_NOCAPS("net-mcast");
-    DO_TEST_NOCAPS("net-udp");
-    DO_TEST("net-hostdev", QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("net-hostdev-bootorder", QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("net-hostdev-multidomain", QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("net-hostdev-vfio",
-            QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("net-hostdev-vfio-multidomain",
-            QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST_FAILURE("net-hostdev-fail",
-                    QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST_CAPS_LATEST("net-mcast");
+    DO_TEST_CAPS_LATEST("net-udp");
+    DO_TEST_CAPS_LATEST("net-hostdev");
+    DO_TEST_CAPS_LATEST("net-hostdev-bootorder");
+    DO_TEST_CAPS_LATEST("net-hostdev-multidomain");
+    DO_TEST_CAPS_LATEST("net-hostdev-vfio");
+    DO_TEST_CAPS_LATEST("net-hostdev-vfio-multidomain");
+    DO_TEST_CAPS_LATEST_FAILURE("net-hostdev-fail");
     DO_TEST_CAPS_LATEST("net-vdpa");
     DO_TEST_CAPS_LATEST("net-vdpa-multiqueue");
     DO_TEST_CAPS_LATEST("net-virtio-rss");
