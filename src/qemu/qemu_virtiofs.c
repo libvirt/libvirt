@@ -131,6 +131,7 @@ qemuVirtioFSBuildCommandLine(virQEMUDriverConfig *cfg,
 {
     g_autoptr(virCommand) cmd = NULL;
     g_auto(virBuffer) opts = VIR_BUFFER_INITIALIZER;
+    size_t i = 4;
 
     cmd = virCommandNew(fs->binary);
 
@@ -168,6 +169,20 @@ qemuVirtioFSBuildCommandLine(virQEMUDriverConfig *cfg,
 
     if (cfg->virtiofsdDebug)
         virCommandAddArg(cmd, "-d");
+
+    for (i = 0; i < fs->idmap.nuidmap; i++) {
+        virCommandAddArgFormat(cmd, "--uid-map=:%u:%u:%u:",
+                               fs->idmap.uidmap[i].start,
+                               fs->idmap.uidmap[i].target,
+                               fs->idmap.uidmap[i].count);
+    }
+
+    for (i = 0; i < fs->idmap.ngidmap; i++) {
+        virCommandAddArgFormat(cmd, "--gid-map=:%u:%u:%u:",
+                               fs->idmap.gidmap[i].start,
+                               fs->idmap.gidmap[i].target,
+                               fs->idmap.gidmap[i].count);
+    }
 
     return g_steal_pointer(&cmd);
 }
