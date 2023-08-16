@@ -2008,60 +2008,33 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("mach-virt-console-virtio", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("mach-virt-serial-invalid-machine", "x86_64");
 
-    DO_TEST("video-device-pciaddr-default",
-            QEMU_CAPS_KVM,
-            QEMU_CAPS_VNC,
-            QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("video-vga-device", QEMU_CAPS_DEVICE_VGA);
-    DO_TEST("video-vga-device-vgamem", QEMU_CAPS_DEVICE_VGA,
-            QEMU_CAPS_VGA_VGAMEM);
-    DO_TEST("video-qxl-device",
-            QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("video-qxl-device-vgamem",
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_QXL_VGAMEM);
+    DO_TEST_CAPS_LATEST("video-device-pciaddr-default");
+    DO_TEST_CAPS_LATEST("video-vga-device");
+    DO_TEST_CAPS_LATEST("video-vga-device-vgamem");
+    DO_TEST_CAPS_LATEST("video-qxl-device");
+    DO_TEST_CAPS_LATEST("video-qxl-device-vgamem");
     DO_TEST_CAPS_LATEST("video-qxl-device-vram64");
-    DO_TEST("video-qxl-sec-device",
-            QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("video-qxl-sec-device-vgamem",
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_QXL_VGAMEM);
+    DO_TEST_CAPS_LATEST("video-qxl-sec-device");
+    DO_TEST_CAPS_LATEST("video-qxl-sec-device-vgamem");
     DO_TEST_CAPS_LATEST("video-qxl-sec-device-vram64");
-    DO_TEST("video-qxl-heads", QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("video-vga-qxl-heads", QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("video-qxl-noheads", QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("video-qxl-resolution",
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_QXL_VGAMEM);
-    DO_TEST("video-virtio-gpu-device",
-            QEMU_CAPS_DEVICE_VIRTIO_GPU);
-    DO_TEST("video-virtio-gpu-virgl",
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL);
-    DO_TEST("video-virtio-gpu-spice-gl",
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL,
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_SPICE_GL,
-            QEMU_CAPS_SPICE_RENDERNODE);
-    DO_TEST("video-virtio-gpu-sdl-gl",
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL,
-            QEMU_CAPS_SDL);
-    DO_TEST("video-virtio-gpu-secondary",
-            QEMU_CAPS_DEVICE_VIRTIO_GPU);
-    DO_TEST("video-virtio-vga",
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_DEVICE_VIRTIO_VGA);
+    DO_TEST_CAPS_LATEST("video-qxl-heads");
+    DO_TEST_CAPS_LATEST("video-vga-qxl-heads");
+    DO_TEST_CAPS_LATEST("video-qxl-noheads");
+    DO_TEST_CAPS_LATEST("video-qxl-resolution");
+    DO_TEST_CAPS_LATEST("video-virtio-gpu-device");
+    DO_TEST_CAPS_LATEST("video-virtio-gpu-virgl");
+    DO_TEST_CAPS_LATEST("video-virtio-gpu-spice-gl");
+    DO_TEST_CAPS_LATEST("video-virtio-gpu-sdl-gl");
+    DO_TEST_CAPS_LATEST("video-virtio-gpu-secondary");
+    DO_TEST_CAPS_LATEST("video-virtio-vga");
     DO_TEST_CAPS_LATEST("video-virtio-blob-on");
     DO_TEST_CAPS_LATEST("video-virtio-blob-off");
     DO_TEST_CAPS_LATEST("video-virtio-vga-gpu-gl");
     DO_TEST_CAPS_LATEST("video-bochs-display-device");
     DO_TEST_CAPS_LATEST("video-ramfb-display-device");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("video-ramfb-display-device-pci-address");
-    DO_TEST("video-none-device",
-            QEMU_CAPS_VNC);
-    DO_TEST_PARSE_ERROR_NOCAPS("video-invalid-multiple-devices");
+    DO_TEST_CAPS_LATEST("video-none-device");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("video-invalid-multiple-devices");
     DO_TEST_CAPS_LATEST("default-video-type-x86_64");
 
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-aarch64", "aarch64");
@@ -2069,9 +2042,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-riscv64", "riscv64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-s390x", "s390x");
 
-    DO_TEST_PARSE_ERROR("video-multiple-primaries",
-                        QEMU_CAPS_DEVICE_QXL,
-                        QEMU_CAPS_DEVICE_VGA);
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("video-multiple-primaries");
 
     DO_TEST("virtio-rng-default",
             QEMU_CAPS_DEVICE_VIRTIO_RNG,
