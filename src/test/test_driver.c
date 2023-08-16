@@ -633,6 +633,25 @@ static int testStoragePoolObjSetDefaults(virStoragePoolObj *obj);
 static int testNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 static virNetworkObj *testNetworkObjFindByName(testDriver *privconn, const char *name);
 
+static virNetworkObj *
+testNetworkObjFromNetwork(virNetworkPtr network)
+{
+    virNetworkObj *net;
+    testDriver *driver = network->conn->privateData;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    net = virNetworkObjFindByUUID(driver->networks, network->uuid);
+    if (!net) {
+        virUUIDFormat(network->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_NETWORK,
+                       _("no network with matching uuid '%1$s' (%2$s)"),
+                       uuidstr, network->name);
+    }
+
+    return net;
+}
+
+
 static virDomainObj *
 testDomObjFromDomain(virDomainPtr domain)
 {
@@ -9941,6 +9960,52 @@ testConnectGetAllDomainStats(virConnectPtr conn,
     return ret;
 }
 
+static char *
+testNetworkGetMetadata(virNetworkPtr net,
+                       int type,
+                       const char *uri,
+                       unsigned int flags)
+{
+    virNetworkObj *privnet;
+    char *ret;
+
+    virCheckFlags(VIR_NETWORK_UPDATE_AFFECT_LIVE |
+                  VIR_NETWORK_UPDATE_AFFECT_CONFIG, NULL);
+
+    if (!(privnet = testNetworkObjFromNetwork(net)))
+        return NULL;
+
+    ret = virNetworkObjGetMetadata(privnet, type, uri, flags);
+
+    virNetworkObjEndAPI(&privnet);
+    return ret;
+}
+
+static int
+testNetworkSetMetadata(virNetworkPtr net,
+                       int type,
+                       const char *metadata,
+                       const char *key,
+                       const char *uri,
+                       unsigned int flags)
+{
+    virNetworkObj *privnet;
+    int ret;
+
+    virCheckFlags(VIR_NETWORK_UPDATE_AFFECT_LIVE |
+                  VIR_NETWORK_UPDATE_AFFECT_CONFIG, -1);
+
+    if (!(privnet = testNetworkObjFromNetwork(net)))
+        return -1;
+
+    ret = virNetworkObjSetMetadata(privnet, type, metadata,
+                                   key, uri, NULL,
+                                   NULL, NULL, flags);
+
+    virNetworkObjEndAPI(&privnet);
+    return ret;
+}
+
 /*
  * Test driver
  */
@@ -10134,6 +10199,8 @@ static virNetworkDriver testNetworkDriver = {
     .networkSetAutostart = testNetworkSetAutostart, /* 0.3.2 */
     .networkIsActive = testNetworkIsActive, /* 0.7.3 */
     .networkIsPersistent = testNetworkIsPersistent, /* 0.7.3 */
+    .networkSetMetadata = testNetworkSetMetadata, /* 9.7.0 */
+    .networkGetMetadata = testNetworkGetMetadata, /* 9.7.0 */
 };
 
 static virInterfaceDriver testInterfaceDriver = {

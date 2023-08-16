@@ -258,6 +258,7 @@ tests += [
   { 'name': 'genericxml2xmltest' },
   { 'name': 'interfacexml2xmltest' },
   { 'name': 'metadatatest' },
+  { 'name': 'networkmetadatatest' },
   { 'name': 'networkxml2xmlupdatetest' },
   { 'name': 'nodedevxml2xmltest' },
   { 'name': 'nwfilterxml2xmltest' },

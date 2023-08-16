@@ -2564,6 +2564,9 @@ virNetworkSaveXML(const char *configDir,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     g_autofree char *configFile = NULL;
 
+    if (!configDir)
+        return 0;
+
     if ((configFile = virNetworkConfigFile(configDir, def->name)) == NULL)
         return -1;
 
