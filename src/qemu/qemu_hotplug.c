@@ -7010,8 +7010,8 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
         return false;
     }
 
-    if (!virBitmapEqual(oldDef->source.virtio_mem.sourceNodes,
-                        newDef->source.virtio_mem.sourceNodes)) {
+    if (!virBitmapEqual(oldDef->source.virtio_mem.nodes,
+                        newDef->source.virtio_mem.nodes)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("cannot modify memory source nodes"));
         return false;

@@ -1151,11 +1151,11 @@ get_files(vahControl * ctl)
 
         switch (mem->model) {
         case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-            if (vah_add_file(&buf, mem->source.nvdimm.nvdimmPath, "rw") != 0)
+            if (vah_add_file(&buf, mem->source.nvdimm.path, "rw") != 0)
                 goto cleanup;
             break;
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-            if (vah_add_file(&buf, mem->source.virtio_pmem.nvdimmPath, "rw") != 0)
+            if (vah_add_file(&buf, mem->source.virtio_pmem.path, "rw") != 0)
                 goto cleanup;
             break;
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:

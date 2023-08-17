@@ -3160,10 +3160,10 @@ qemuBuildMemoryGetPagesize(virQEMUDriverConfig *cfg,
         pagesize = mem->source.virtio_mem.pagesize;
         break;
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        nvdimmPath = mem->source.nvdimm.nvdimmPath;
+        nvdimmPath = mem->source.nvdimm.path;
         break;
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        nvdimmPath = mem->source.virtio_pmem.nvdimmPath;
+        nvdimmPath = mem->source.virtio_pmem.path;
         break;
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
@@ -3241,7 +3241,7 @@ qemuBuildMemoryGetPagesize(virQEMUDriverConfig *cfg,
      * Similarly, virtio-pmem-pci doesn't need prealloc either. */
     if (nvdimmPath) {
         if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-            !mem->source.nvdimm.nvdimmPmem) {
+            !mem->source.nvdimm.pmem) {
             prealloc = true;
         }
     } else if (useHugepage) {
@@ -3352,19 +3352,19 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
 
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
-        nodemask = mem->source.dimm.sourceNodes;
+        nodemask = mem->source.dimm.nodes;
         break;
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-        nodemask = mem->source.virtio_mem.sourceNodes;
+        nodemask = mem->source.virtio_mem.nodes;
         break;
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
-        nodemask = mem->source.sgx_epc.sourceNodes;
+        nodemask = mem->source.sgx_epc.nodes;
         break;
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        nvdimmPath = mem->source.nvdimm.nvdimmPath;
+        nvdimmPath = mem->source.nvdimm.path;
         break;
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        nvdimmPath = mem->source.virtio_pmem.nvdimmPath;
+        nvdimmPath = mem->source.virtio_pmem.path;
         break;
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
@@ -3479,7 +3479,7 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
         return -1;
 
     if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-        mem->source.nvdimm.nvdimmPmem) {
+        mem->source.nvdimm.pmem) {
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE_PMEM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("nvdimm pmem property is not available "

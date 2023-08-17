@@ -372,10 +372,10 @@ qemuDomainSetupMemory(virDomainMemoryDef *mem,
 {
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        *paths = g_slist_prepend(*paths, g_strdup(mem->source.nvdimm.nvdimmPath));
+        *paths = g_slist_prepend(*paths, g_strdup(mem->source.nvdimm.path));
         break;
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        *paths = g_slist_prepend(*paths, g_strdup(mem->source.virtio_pmem.nvdimmPath));
+        *paths = g_slist_prepend(*paths, g_strdup(mem->source.virtio_pmem.path));
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:

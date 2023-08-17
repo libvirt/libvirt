@@ -553,12 +553,12 @@ qemuSetupMemoryDevicesCgroup(virDomainObj *vm,
 
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        if (qemuCgroupAllowDevicePath(vm, mem->source.nvdimm.nvdimmPath,
+        if (qemuCgroupAllowDevicePath(vm, mem->source.nvdimm.path,
                                       VIR_CGROUP_DEVICE_RW, false) < 0)
             return -1;
         break;
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        if (qemuCgroupAllowDevicePath(vm, mem->source.virtio_pmem.nvdimmPath,
+        if (qemuCgroupAllowDevicePath(vm, mem->source.virtio_pmem.path,
                                       VIR_CGROUP_DEVICE_RW, false) < 0)
             return -1;
         break;
@@ -591,12 +591,12 @@ qemuTeardownMemoryDevicesCgroup(virDomainObj *vm,
 
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        if (qemuCgroupDenyDevicePath(vm, mem->source.nvdimm.nvdimmPath,
+        if (qemuCgroupDenyDevicePath(vm, mem->source.nvdimm.path,
                                      VIR_CGROUP_DEVICE_RWM, false) < 0)
             return -1;
         break;
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        if (qemuCgroupDenyDevicePath(vm, mem->source.virtio_pmem.nvdimmPath,
+        if (qemuCgroupDenyDevicePath(vm, mem->source.virtio_pmem.path,
                                      VIR_CGROUP_DEVICE_RWM, false) < 0)
             return -1;
         break;

@@ -642,10 +642,10 @@ AppArmorSetMemoryLabel(virSecurityManager *mgr,
 
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        path = mem->source.nvdimm.nvdimmPath;
+        path = mem->source.nvdimm.path;
         break;
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        path = mem->source.virtio_pmem.nvdimmPath;
+        path = mem->source.virtio_pmem.path;
         break;
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:

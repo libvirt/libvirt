@@ -2644,22 +2644,22 @@ struct _virDomainMemoryDef {
     union {
         struct {
             unsigned long long pagesize; /* kibibytes */
-            virBitmap *sourceNodes;
+            virBitmap *nodes; /* source NUMA nodes */
         } dimm;
         struct {
-            char *nvdimmPath;
-            bool nvdimmPmem;
+            char *path;
+            bool pmem;
             unsigned long long alignsize; /* kibibytes */
         } nvdimm;
         struct {
-            char *nvdimmPath;
+            char *path;
         } virtio_pmem;
         struct {
             unsigned long long pagesize; /* kibibytes */
-            virBitmap *sourceNodes;
+            virBitmap *nodes; /* source NUMA nodes */
         } virtio_mem;
         struct {
-            virBitmap *sourceNodes;
+            virBitmap *nodes; /* source NUMA nodes */
         } sgx_epc;
     } source;
 
