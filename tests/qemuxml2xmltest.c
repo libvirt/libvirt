@@ -426,28 +426,25 @@ mymain(void)
     DO_TEST_CAPS_LATEST("net-eth-unmanaged-tap");
     DO_TEST_CAPS_LATEST("net-virtio-network-portgroup");
     DO_TEST_CAPS_LATEST("net-virtio-rxtxqueuesize");
-    DO_TEST("net-virtio-teaming",
-            QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("net-virtio-teaming-network",
-            QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("net-virtio-teaming-hostdev",
-            QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST_CAPS_LATEST("net-virtio-teaming");
+    DO_TEST_CAPS_LATEST("net-virtio-teaming-network");
+    DO_TEST_CAPS_LATEST("net-virtio-teaming-hostdev");
     DO_TEST_CAPS_LATEST("net-isolated-port");
     DO_TEST_CAPS_LATEST("net-hostdev");
     DO_TEST_CAPS_LATEST("net-hostdev-bootorder");
-    DO_TEST("net-hostdev-vfio", QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST_CAPS_LATEST("net-hostdev-vfio");
     DO_TEST_CAPS_LATEST("net-midonet");
     DO_TEST_CAPS_LATEST("net-openvswitch");
     DO_TEST_CAPS_LATEST("sound-device");
     DO_TEST_CAPS_LATEST("watchdog");
     DO_TEST_CAPS_LATEST("watchdog-q35-multiple");
-    DO_TEST("net-bandwidth", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_VNC);
-    DO_TEST("net-bandwidth2", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_VNC);
+    DO_TEST_CAPS_LATEST("net-bandwidth");
+    DO_TEST_CAPS_LATEST("net-bandwidth2");
     DO_TEST_CAPS_LATEST("net-mtu");
     DO_TEST_CAPS_LATEST("net-coalesce");
     DO_TEST_CAPS_LATEST("net-many-models");
-    DO_TEST("net-vdpa", QEMU_CAPS_NETDEV_VHOST_VDPA);
-    DO_TEST("net-vdpa-multiqueue", QEMU_CAPS_NETDEV_VHOST_VDPA);
+    DO_TEST_CAPS_LATEST("net-vdpa");
+    DO_TEST_CAPS_LATEST("net-vdpa-multiqueue");
     DO_TEST_CAPS_LATEST("net-virtio-rss");
 
     DO_TEST_CAPS_LATEST("serial-tcp-tlsx509-chardev");
