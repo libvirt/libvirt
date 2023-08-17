@@ -81,8 +81,8 @@ void
 qemuBlockStorageSourceSetFormatNodename(virStorageSource *src,
                                         char *nodename)
 {
-    g_free(src->nodeformat);
-    src->nodeformat = nodename;
+    g_free(src->nodenameformat);
+    src->nodenameformat = nodename;
 }
 
 
@@ -96,7 +96,7 @@ qemuBlockStorageSourceSetFormatNodename(virStorageSource *src,
 const char *
 qemuBlockStorageSourceGetEffectiveNodename(virStorageSource *src)
 {
-    return src->nodeformat;
+    return src->nodenameformat;
 }
 
 
@@ -141,7 +141,7 @@ qemuBlockStorageSourceGetStorageNodename(virStorageSource *src)
 const char *
 qemuBlockStorageSourceGetFormatNodename(virStorageSource *src)
 {
-    return src->nodeformat;
+    return src->nodenameformat;
 }
 
 

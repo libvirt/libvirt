@@ -370,7 +370,7 @@ struct _virStorageSource {
     virStorageFileFormat backingStoreRawFormat;
 
     /* metadata that allows identifying given storage source */
-    char *nodeformat;  /* name of the format handler object */
+    char *nodenameformat;  /* name of the format handler object */
     char *nodenamestorage; /* name of the storage object */
 
     /* An optional setting to enable usage of TLS for the storage source */

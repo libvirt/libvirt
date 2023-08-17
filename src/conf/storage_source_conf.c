@@ -828,7 +828,7 @@ virStorageSourceCopy(const virStorageSource *src,
     def->backingStoreRawFormat = src->backingStoreRawFormat;
     def->snapshot = g_strdup(src->snapshot);
     def->configFile = g_strdup(src->configFile);
-    def->nodeformat = g_strdup(src->nodeformat);
+    def->nodenameformat = g_strdup(src->nodenameformat);
     def->nodenamestorage = g_strdup(src->nodenamestorage);
     def->compat = g_strdup(src->compat);
     def->tlsAlias = g_strdup(src->tlsAlias);
@@ -1169,7 +1169,7 @@ virStorageSourceClear(virStorageSource *def)
     virObjectUnref(def->privateData);
 
     VIR_FREE(def->nodenamestorage);
-    VIR_FREE(def->nodeformat);
+    VIR_FREE(def->nodenameformat);
 
     virStorageSourceBackingStoreClear(def);
 
