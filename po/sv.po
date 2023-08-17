@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-07-26 08:28+0000\n"
-"PO-Revision-Date: 2023-08-16 15:21+0000\n"
+"PO-Revision-Date: 2023-08-17 21:21+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -18403,158 +18403,143 @@ msgstr "Kan inte sätta den bakomliggande filen %1$s"
 
 msgid "Unable to set bandwidth for interface because device name is unknown"
 msgstr ""
+"Kan inte ställa in bandbredden för gränssnittet för att enhetsnamnet är okänt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set bridge %1$s %2$s via ioctl"
-msgstr "kan inte skapa körkatalogen %1$s: %2$s"
+msgstr "Kan inte sätta bryggan %1$s %2$s med ioctl"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set bridge %1$s port %2$s %3$s to %4$s"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Kan inte sätta bryggan %1$s port %2$s %3$s till %4$s"
 
-#, fuzzy
 msgid "Unable to set bridge port isolated on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Kan inte sätta bryggportens isolerad på denna plattform"
 
-#, fuzzy
 msgid "Unable to set bridge port learning on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Kan inte sätta bryggportens lärande på denna plattform"
 
-#, fuzzy
 msgid "Unable to set bridge port unicast_flood on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Kan inte sätta bryggportens unicast_flood på denna plattform"
 
 msgid "Unable to set bridge vlan_filtering on this platform"
-msgstr ""
+msgstr "Kan inte sätta bryggans vlan_filtering på denna plattform"
 
-#, fuzzy
 msgid "Unable to set cloexec flag"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte sätta flaggan cloexec"
 
-#, fuzzy
 msgid "Unable to set close-on-exec flag"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte sätta stäng-vid-exec-flagga"
 
 msgid "Unable to set console file descriptor non-blocking"
-msgstr ""
+msgstr "Kan inte sätta konsolens filbeskrivare ickeblockerande"
 
 #, c-format
 msgid "Unable to set copy-on-write state on '%1$s' to '%2$s'"
-msgstr ""
+msgstr "Kan inte sätta tillståndet kopiera-vid-skrivning på ”%1$s” till ”%2$s”"
 
-#, fuzzy
 msgid "Unable to set interface parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte sätta gränssnittsparametrar"
 
 msgid "Unable to set launch security state"
-msgstr ""
+msgstr "Kan inte sätta uppstartssäkerhetstillstånd"
 
-#, fuzzy
 msgid "Unable to set monitor close-on-exec flag"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte sätta övervakarens stäng-vid-exec-flagga"
 
 msgid "Unable to set net device config on this platform"
-msgstr ""
+msgstr "Kan inte sätta konfigurationen av nätenheter på denna plattform"
 
-#, fuzzy
 msgid "Unable to set network bandwidth on direct interfaces"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte sätta nätverksbandbredden på direkta gränssnitt"
 
-#, fuzzy
 msgid "Unable to set non-blocking mode"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "Kan inte sätta ickeblockerande läge"
 
-#, fuzzy
 msgid "Unable to set pipes to non-blocking"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte sätta rör till ickeblockerande"
 
-#, fuzzy
 msgid "Unable to set port profile on direct interfaces"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte sätta portprofilen på direkta gränssnitt"
 
 #, c-format
 msgid "Unable to set qos configuration on port %1$s"
-msgstr ""
+msgstr "Kan inte sätta qos-konfigurationen på port %1$s"
 
 #, c-format
 msgid "Unable to set queue configuration on port %1$s"
-msgstr ""
+msgstr "Kan inte sätta kökonfigurationen på port %1$s"
 
-#, fuzzy
 msgid "Unable to set socket reuse addr flag"
-msgstr "kan inte skapa uttagspar"
+msgstr "Kan inte sätta flaggan för uttagets adressåteranvändning"
 
 #, c-format
 msgid "Unable to set tap device %1$s to persistent"
-msgstr ""
+msgstr "Kan inte sätta tap-enheten %1$s till beständig"
 
-#, fuzzy
 msgid "Unable to set thread local identity"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Kan inte sätta trådlokal identitet"
 
-#, fuzzy
 msgid "Unable to set thread local variable"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte sätta en trådlokal variabel"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set vlan configuration on port %1$s"
-msgstr "kunde inte läsa konfigurationsfilen %1$s"
+msgstr "Kan inte sätta vlan-konfigurationen på port %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set x509 CA certificate: %1$s: %2$s"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte sätta x509 CA-certifikat: %1$s: %2$s"
 
 #, c-format
 msgid "Unable to set x509 certificate revocation list: %1$s: %2$s"
-msgstr ""
+msgstr "Kan inte sätta x509 certifikatåterkallandelista: %1$s: %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set x509 key and certificate: %1$s, %2$s: %3$s"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte sätta x509-nyckel och -certfikat: %1$s, %2$s: %3$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to split FD list '%1$s'"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "Kan inte dela FD-listan ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to start event thread: %1$s"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "Kan inte starta händelsetråd: %1$s"
 
 #, c-format
 msgid "Unable to start mediated device: %1$s"
-msgstr ""
+msgstr "Kan inte starta en medierad enhet: %1$s"
 
 #, c-format
 msgid "Unable to stat %1$p"
-msgstr ""
+msgstr "Kan inte ta status på %1$p"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to stat %1$s"
-msgstr "Misslyckades att starta domän %1$s"
+msgstr "Misslyckades med att ta status på %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to stat bind source %1$s"
-msgstr "Misslyckades med att starta gränssnittet %1$s"
+msgstr "Kan inte ta status på bindningskällan %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to stat bind target %1$s"
-msgstr "Misslyckades med att starta gränssnittet %1$s"
+msgstr "Kan inte ta status på bindningsmålet %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to stat: %1$s"
-msgstr "Misslyckades att starta domän %1$s"
+msgstr "Kan inte ta status: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to symlink directory %1$s to %2$s"
-msgstr "Misslyckades att spara domän %1$s till %2$s"
+msgstr "Kan inte symlänka katalogen %1$s till %2$s"
 
-#, fuzzy
 msgid "Unable to thaw all processes"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte töa alla processer"
 
-#, fuzzy
 msgid "Unable to thaw filesystems"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte töa filsystem"
 
 #, fuzzy, c-format
 msgid "Unable to truncate %1$s"
