@@ -11418,8 +11418,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
      */
     if (STREQ_NULLABLE(driverName, "kvm")) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("'legacy KVM' device assignment is no longer "
-                         "supported on this system"));
+                       _("'legacy KVM' device assignment is no longer supported on this system"));
         return -1;
     }
 
@@ -11430,8 +11429,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
 
     if (!qemuHostdevHostSupportsPassthroughVFIO()) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("VFIO device assignment is currently not "
-                         "supported on this system"));
+                       _("VFIO device assignment is currently not supported on this system"));
          return -1;
     }
 
