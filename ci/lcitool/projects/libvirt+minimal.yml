@@ -1,0 +1,23 @@
+---
+packages:
+  - ccache
+  - cpp
+  - gcc
+  - gettext
+  - glib2
+  - gnutls
+  - libc
+  - libnl3
+  - libnlroute3
+  - libtirpc
+  - libxml2
+  - make
+  - meson
+  - ninja
+  - perl
+  - pkg-config
+  - python3
+  - python3-docutils
+  - rpcgen
+  - xmllint
+  - xsltproc
