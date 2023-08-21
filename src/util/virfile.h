@@ -64,6 +64,7 @@ static inline void virForceCloseHelper(int *fd)
 int virCloseRange(unsigned int from, unsigned int to);
 int virCloseRangeInit(void);
 bool virCloseRangeIsSupported(void);
+int virCloseFrom(int fromfd);
 
 /* For use on normal paths; caller must check return value,
    and failure sets errno per close. */

@@ -2275,6 +2275,7 @@ saferead;
 safewrite;
 safezero;
 virBuildPathInternal;
+virCloseFrom;
 virCloseRange;
 virCloseRangeInit;
 virCloseRangeIsSupported;

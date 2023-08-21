@@ -266,6 +266,27 @@ virCloseRangeIsSupported(void)
 
 
 /**
+ * virCloseFrom:
+ *
+ * Closes all open file descriptors greater than or equal to @fromfd.
+ *
+ * Returns: 0 on success,
+ *         -1 on error (with errno set).
+ */
+int
+virCloseFrom(int fromfd)
+{
+#ifdef __FreeBSD__
+    /* FreeBSD has closefrom() since FreeBSD-8.0, i.e. since 2009. */
+    closefrom(fromfd);
+    return 0;
+#else /* !__FreeBSD__ */
+    return virCloseRange(fromfd, ~0U);
+#endif /* !__FreeBSD__ */
+}
+
+
+/**
  * virFileDirectFdFlag:
  *
  * Returns 0 if the kernel can avoid file system cache pollution
