@@ -3194,6 +3194,7 @@ typedef enum {
     VIR_DOMAIN_TAINT_CUSTOM_HYPERVISOR_FEATURE, /* custom hypervisor feature control */
     VIR_DOMAIN_TAINT_DEPRECATED_CONFIG,  /* Configuration that is marked deprecated */
     VIR_DOMAIN_TAINT_CUSTOM_DEVICE, /* hypervisor device config customized */
+    VIR_DOMAIN_TAINT_NBDKIT_RESTART,    /* nbdkit could not be restarted */
 
     VIR_DOMAIN_TAINT_LAST
 } virDomainTaintFlags;

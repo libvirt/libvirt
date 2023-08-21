@@ -87,6 +87,7 @@ VIR_ENUM_IMPL(virDomainTaint,
               "custom-hypervisor-feature",
               "deprecated-config",
               "custom-device",
+              "nbdkit-restart",
 );
 
 VIR_ENUM_IMPL(virDomainTaintMessage,
@@ -105,6 +106,7 @@ VIR_ENUM_IMPL(virDomainTaintMessage,
               N_("hypervisor feature autodetection override"),
               N_("use of deprecated configuration settings"),
               N_("custom device configuration"),
+              N_("nbdkit restart failed"),
 );
 
 VIR_ENUM_IMPL(virDomainVirt,
