@@ -231,6 +231,10 @@ virGlobalInit(void)
         goto error;
     }
 
+    /* Do this upfront rather than every time a child is spawned. */
+    if (virCloseRangeInit() < 0)
+        goto error;
+
     if (virLogSetFromEnv() < 0)
         goto error;
 
