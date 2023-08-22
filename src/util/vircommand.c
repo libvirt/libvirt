@@ -527,10 +527,10 @@ virCommandMassCloseGetFDsGeneric(virCommand *cmd G_GNUC_UNUSED,
 # endif /* !__linux__ */
 
 static int
-virCommandMassClose(virCommand *cmd,
-                    int childin,
-                    int childout,
-                    int childerr)
+virCommandMassCloseFrom(virCommand *cmd,
+                        int childin,
+                        int childout,
+                        int childerr)
 {
     g_autoptr(virBitmap) fds = NULL;
     int openmax = sysconf(_SC_OPEN_MAX);
@@ -594,6 +594,75 @@ virCommandMassClose(virCommand *cmd,
     }
 
     return 0;
+}
+
+
+static int
+virCommandMassCloseRange(virCommand *cmd,
+                         int childin,
+                         int childout,
+                         int childerr)
+{
+    g_autoptr(virBitmap) fds = virBitmapNew(0);
+    ssize_t first;
+    ssize_t last;
+    size_t i;
+
+    virBitmapSetBitExpand(fds, childin);
+    virBitmapSetBitExpand(fds, childout);
+    virBitmapSetBitExpand(fds, childerr);
+
+    for (i = 0; i < cmd->npassfd; i++) {
+        int fd = cmd->passfd[i].fd;
+
+        virBitmapSetBitExpand(fds, fd);
+
+        if (virSetInherit(fd, true) < 0) {
+            virReportSystemError(errno, _("failed to preserve fd %1$d"), fd);
+            return -1;
+        }
+    }
+
+    first = 2;
+    while ((last = virBitmapNextSetBit(fds, first)) >= 0) {
+        if (first + 1 == last) {
+            first = last;
+            continue;
+        }
+
+        /* Preserve @first and @last and close everything in between. */
+        if (virCloseRange(first + 1, last - 1) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to mass close FDs (first=%1$zd, last=%2$zd)"),
+                                 first + 1, last - 1);
+            return -1;
+        }
+
+        first = last;
+    }
+
+    if (virCloseRange(first + 1, ~0U) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to mass close FDs (first=%1$zd, last=%2$d"),
+                             first + 1, ~0U);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+
+static int
+virCommandMassClose(virCommand *cmd,
+                    int childin,
+                    int childout,
+                    int childerr)
+{
+    if (virCloseRangeIsSupported())
+        return virCommandMassCloseRange(cmd, childin, childout, childerr);
+
+    return virCommandMassCloseFrom(cmd, childin, childout, childerr);
 }
 
 

@@ -1247,6 +1247,8 @@ mymain(void)
     setpgid(0, 0);
     ignore_value(setsid());
 
+    virCloseRangeInit();
+
     /* Our test expects particular fd values; to get that, we must not
      * leak fds that we inherited from a lazy parent.  At the same
      * time, virInitialize may open some fds (perhaps via third-party
