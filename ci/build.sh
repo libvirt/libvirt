@@ -76,3 +76,12 @@ run_potfile() {
 
     run_build
 }
+
+run_rpmbuild() {
+    run_dist
+    run_cmd rpmbuild \
+                --clean \
+                --nodeps \
+                --define "_without_mingw 1" \
+                -ta build/meson-dist/libvirt-*.tar.xz
+}
