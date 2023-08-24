@@ -503,20 +503,17 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("ppc64-tpmproxy-single", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-tpmproxy-with-tpm", "ppc64");
 
-    DO_TEST_FULL("seclabel-dynamic-baselabel", "", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
-    DO_TEST_FULL("seclabel-dynamic-override", "", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
-    DO_TEST_FULL("seclabel-dynamic-labelskip", "", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
-    DO_TEST_FULL("seclabel-dynamic-relabel", "", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("seclabel-dynamic-baselabel", "x86_64", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("seclabel-dynamic-override", "x86_64", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("seclabel-dynamic-labelskip", "x86_64", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("seclabel-dynamic-relabel", "x86_64", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
     DO_TEST_CAPS_LATEST("seclabel-static");
     DO_TEST_CAPS_LATEST("seclabel-static-labelskip");
     DO_TEST_CAPS_LATEST("seclabel-none");
     DO_TEST_CAPS_LATEST("seclabel-dac-none");
     DO_TEST_CAPS_LATEST("seclabel-dynamic-none");
     DO_TEST_CAPS_LATEST("seclabel-device-multiple");
-    DO_TEST_FULL("seclabel-dynamic-none-relabel", "", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE,
-                 ARG_QEMU_CAPS, QEMU_CAPS_DEVICE_CIRRUS_VGA,
-                 QEMU_CAPS_SPICE, QEMU_CAPS_LAST,
-                 ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("seclabel-dynamic-none-relabel", "x86_64", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
     DO_TEST_CAPS_LATEST("numad-static-vcpu-no-numatune");
 
     DO_TEST_CAPS_LATEST("disk-scsi-disk-vpd");
