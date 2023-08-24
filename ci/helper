@@ -11,6 +11,9 @@ import subprocess
 import sys
 import textwrap
 
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
 import util
 
 
@@ -201,8 +204,56 @@ class Application:
         return repo.clone(dest, local=True)
 
     def _lcitool_run(self, args):
-        output = subprocess.check_output([self._args.lcitool] + args)
-        return output.decode("utf-8")
+        positional_args = ["container"]
+        opts = ["--user", self._args.login]
+        tmpdir = TemporaryDirectory(prefix="scratch",
+                                    dir=Path(self.repo.working_dir, "ci"))
+
+        repo_dest_path = Path(tmpdir.name, "libvirt.git").as_posix()
+        repo_clone = self._prepare_repo_copy(self.repo, repo_dest_path)
+        opts.extend(["--workload-dir", repo_clone.working_dir])
+
+        if self._args.job == "shell":
+            positional_args.append("shell")
+        else:
+            job2func = {
+                "test": "run_test",
+                "build": "run_build",
+                "codestyle": "run_codestyle",
+                "potfile": "run_potfile",
+                "rpmbuild": "run_rpmbuild",
+                "website": "run_website_build",
+            }
+
+            if self._args.engine != "auto":
+                positional_args.extend(["--engine", self._args.engine])
+
+            with open(Path(tmpdir.name, "script"), "w") as f:
+                script_path = f.name
+                contents = textwrap.dedent(f"""\
+                #!/bin/sh
+
+                cd datadir
+                . ci/jobs.sh
+
+                {job2func[self._args.job]}
+                """)
+
+                f.write(contents)
+
+            positional_args.append("run")
+            opts.extend(["--script", script_path])
+
+        opts.append(f"{self._args.image_prefix}{self._args.target}:{self._args.image_tag}")
+        proc = None
+        try:
+            proc = subprocess.run([self._args.lcitool] + positional_args + opts)
+        except KeyboardInterrupt:
+            sys.exit(1)
+        finally:
+            # this will take care of the generated script file above as well
+            tmpdir.cleanup()
+        return proc.returncode
 
     def _check_stale_images(self):
         namespace = self._args.namespace
