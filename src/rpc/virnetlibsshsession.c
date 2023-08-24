@@ -195,8 +195,7 @@ virLibsshServerKeyAsString(virNetLibsshSession *sess)
 
     if (ssh_get_server_publickey(sess->session, &key) != SSH_OK) {
         virReportError(VIR_ERR_LIBSSH, "%s",
-                       _("failed to get the key of the current "
-                         "session"));
+                       _("failed to get the key of the current session"));
         return NULL;
     }
 
@@ -261,8 +260,7 @@ virNetLibsshCheckHostKey(virNetLibsshSession *sess)
 
         /* host key verification failed */
         virReportError(VIR_ERR_AUTH_FAILED,
-                       _("!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' differs from stored identity. "
-                         "Please verify the new host key '%3$s' to avoid possible man in the middle attack. The key is stored in '%4$s'."),
+                       _("!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' differs from stored identity. Please verify the new host key '%3$s' to avoid possible man in the middle attack. The key is stored in '%4$s'."),
                        sess->hostname, sess->port,
                        keyhashstr, sess->knownHostsFile);
 
@@ -279,8 +277,7 @@ virNetLibsshCheckHostKey(virNetLibsshSession *sess)
             /* ask to add the key */
             if (!sess->cred || !sess->cred->cb) {
                 virReportError(VIR_ERR_LIBSSH, "%s",
-                               _("No user interaction callback provided: "
-                                 "Can't verify the session host key"));
+                               _("No user interaction callback provided: Can't verify the session host key"));
                 return -1;
             }
 
@@ -355,8 +352,7 @@ virNetLibsshAuthenticatePrivkeyCb(const char *prompt,
     /* request user's key password */
     if (!sess->cred || !sess->cred->cb) {
         virReportError(VIR_ERR_LIBSSH, "%s",
-                       _("No user interaction callback provided: "
-                         "Can't retrieve private key passphrase"));
+                       _("No user interaction callback provided: Can't retrieve private key passphrase"));
         return -1;
     }
 
@@ -505,8 +501,7 @@ virNetLibsshAuthenticatePassword(virNetLibsshSession *sess)
     /* password authentication with interactive password request */
     if (!sess->cred || !sess->cred->cb) {
         virReportError(VIR_ERR_LIBSSH, "%s",
-                       _("Can't perform authentication: "
-                         "Authentication callback not provided"));
+                       _("Can't perform authentication: Authentication callback not provided"));
         return SSH_AUTH_ERROR;
     }
 
@@ -567,9 +562,7 @@ virNetLibsshAuthenticateKeyboardInteractive(virNetLibsshSession *sess,
     /* request user's key password */
     if (!sess->cred || !sess->cred->cb) {
         virReportError(VIR_ERR_LIBSSH, "%s",
-                       _("No user interaction callback provided: "
-                         "Can't get input from keyboard interactive "
-                         "authentication"));
+                       _("No user interaction callback provided: Can't get input from keyboard interactive authentication"));
         return SSH_AUTH_ERROR;
     }
 
@@ -738,12 +731,10 @@ virNetLibsshAuthenticate(virNetLibsshSession *sess)
                        errmsg);
     } else if (no_method && !auth_failed) {
         virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                       _("None of the requested authentication methods "
-                         "are supported by the server"));
+                       _("None of the requested authentication methods are supported by the server"));
     } else {
         virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                       _("All provided authentication methods with credentials "
-                         "were rejected by the server"));
+                       _("All provided authentication methods with credentials were rejected by the server"));
     }
 
     return -1;
@@ -803,8 +794,7 @@ virNetLibsshValidateConfig(virNetLibsshSession *sess)
     }
     if (!has_auths) {
         virReportError(VIR_ERR_LIBSSH, "%s",
-                       _("No authentication methods and credentials "
-                         "provided"));
+                       _("No authentication methods and credentials provided"));
         return -1;
     }
 

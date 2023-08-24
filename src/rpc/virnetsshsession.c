@@ -307,8 +307,7 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
             /* ask to add the key */
             if (!sess->cred || !sess->cred->cb) {
                 virReportError(VIR_ERR_SSH, "%s",
-                               _("No user interaction callback provided: "
-                                 "Can't verify the session host key"));
+                               _("No user interaction callback provided: Can't verify the session host key"));
                 return -1;
             }
 
@@ -320,8 +319,7 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
 
             if (i == sess->cred->ncredtype) {
                 virReportError(VIR_ERR_SSH, "%s",
-                               _("no suitable callback for host key "
-                                 "verification"));
+                               _("no suitable callback for host key verification"));
                 return -1;
             }
 
@@ -348,8 +346,7 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
 
             if (sess->cred->cb(&askKey, 1, sess->cred->cbdata)) {
                 virReportError(VIR_ERR_SSH, "%s",
-                               _("failed to retrieve decision to accept "
-                                 "host key"));
+                               _("failed to retrieve decision to accept host key"));
                 tmp = (char*)askKey.prompt;
                 VIR_FREE(tmp);
                 VIR_FREE(keyhashstr);
@@ -455,8 +452,7 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
     case LIBSSH2_KNOWNHOST_CHECK_MISMATCH:
         /* host key verification failed */
         virReportError(VIR_ERR_AUTH_FAILED,
-                       _("!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' differs from stored identity. "
-                         "Please verify the new host key '%3$s' to avoid possible man in the middle attack. The key is stored in '%4$s'."),
+                       _("!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' differs from stored identity. Please verify the new host key '%3$s' to avoid possible man in the middle attack. The key is stored in '%4$s'."),
                        sess->hostname, sess->port,
                        knownHostEntry->key, sess->knownHostsFile);
         return -1;
@@ -532,12 +528,10 @@ virNetSSHAuthenticateAgent(virNetSSHSession *sess)
     if (ret == 1) {
         if (no_identity) {
             virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                           _("SSH Agent did not provide any "
-                             "authentication identity"));
+                           _("SSH Agent did not provide any authentication identity"));
         } else {
             virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                           _("All identities provided by the SSH Agent "
-                             "were rejected"));
+                           _("All identities provided by the SSH Agent were rejected"));
         }
         return 1;
     }
@@ -589,8 +583,7 @@ virNetSSHAuthenticatePrivkey(virNetSSHSession *sess,
     /* request user's key password */
     if (!sess->cred || !sess->cred->cb) {
         virReportError(VIR_ERR_SSH, "%s",
-                       _("No user interaction callback provided: "
-                         "Can't retrieve private key passphrase"));
+                       _("No user interaction callback provided: Can't retrieve private key passphrase"));
         return -1;
     }
 
@@ -615,8 +608,7 @@ virNetSSHAuthenticatePrivkey(virNetSSHSession *sess,
 
     if (sess->cred->cb(&retr_passphrase, 1, sess->cred->cbdata)) {
         virReportError(VIR_ERR_SSH, "%s",
-                       _("failed to retrieve private key passphrase: "
-                         "callback has failed"));
+                       _("failed to retrieve private key passphrase: callback has failed"));
         tmp = (char *)retr_passphrase.prompt;
         VIR_FREE(tmp);
         return -1;
@@ -671,8 +663,7 @@ virNetSSHAuthenticatePassword(virNetSSHSession *sess)
     /* password authentication with interactive password request */
     if (!sess->cred || !sess->cred->cb) {
         virReportError(VIR_ERR_SSH, "%s",
-                       _("Can't perform authentication: "
-                         "Authentication callback not provided"));
+                       _("Can't perform authentication: Authentication callback not provided"));
         goto cleanup;
     }
 
@@ -732,8 +723,7 @@ virNetSSHAuthenticateKeyboardInteractive(virNetSSHSession *sess,
 
     if (!sess->cred || !sess->cred->cb) {
         virReportError(VIR_ERR_SSH, "%s",
-                       _("Can't perform keyboard-interactive authentication: "
-                         "Authentication callback not provided"));
+                       _("Can't perform keyboard-interactive authentication: Authentication callback not provided"));
         return -1;
     }
 
@@ -748,8 +738,7 @@ virNetSSHAuthenticateKeyboardInteractive(virNetSSHSession *sess,
         switch (sess->authCbErr) {
         case VIR_NET_SSH_AUTHCB_NO_METHOD:
             virReportError(VIR_ERR_SSH, "%s",
-                           _("no suitable method to retrieve "
-                             "authentication credentials"));
+                           _("no suitable method to retrieve authentication credentials"));
             return -1;
         case VIR_NET_SSH_AUTHCB_OOM:
             /* OOM error already reported */
@@ -801,8 +790,7 @@ virNetSSHAuthenticate(virNetSSHSession *sess)
 
     if (!sess->nauths) {
         virReportError(VIR_ERR_SSH, "%s",
-                       _("No authentication methods and credentials "
-                         "provided"));
+                       _("No authentication methods and credentials provided"));
         return -1;
     }
 
@@ -866,12 +854,10 @@ virNetSSHAuthenticate(virNetSSHSession *sess)
         /* pass through the error */
     } else if (no_method && !auth_failed) {
         virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                       _("None of the requested authentication methods "
-                         "are supported by the server"));
+                       _("None of the requested authentication methods are supported by the server"));
     } else {
         virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                       _("All provided authentication methods with credentials "
-                         "were rejected by the server"));
+                       _("All provided authentication methods with credentials were rejected by the server"));
     }
 
     return -1;
@@ -914,8 +900,7 @@ virNetSSHValidateConfig(virNetSSHSession *sess)
 {
     if (sess->nauths == 0) {
         virReportError(VIR_ERR_SSH, "%s",
-                       _("No authentication methods and credentials "
-                         "provided"));
+                       _("No authentication methods and credentials provided"));
         return -1;
     }
 

@@ -1011,8 +1011,7 @@ int virNetClientSetTLSSession(virNetClient *client,
     }
     if (len != 1 || buf[0] != '\1') {
         virReportError(VIR_ERR_RPC, "%s",
-                       _("server verification (of our certificate or IP "
-                         "address) failed"));
+                       _("server verification (of our certificate or IP address) failed"));
         goto error;
     }
 
@@ -2069,15 +2068,13 @@ virNetClientCallNew(virNetMessage *msg,
         (msg->bufferLength != 0) &&
         (msg->header.status == VIR_NET_CONTINUE)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Attempt to send an asynchronous message with"
-                         " a synchronous reply"));
+                       _("Attempt to send an asynchronous message with a synchronous reply"));
         goto error;
     }
 
     if (expectReply && nonBlock) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Attempt to send a non-blocking message with"
-                         " a synchronous reply"));
+                       _("Attempt to send a non-blocking message with a synchronous reply"));
         goto error;
     }
 

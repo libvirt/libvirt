@@ -366,11 +366,7 @@ virNetTLSContextCheckCertDNACL(const char *dname,
 
     /* This is the most common error: make it informative. */
     virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
-                   _("Client's Distinguished Name is not on the list "
-                     "of allowed clients (tls_allowed_dn_list).  Use "
-                     "'virt-pki-query-dn clientcert.pem' to view the "
-                     "Distinguished Name field in the client certificate, "
-                     "or run this daemon with --verbose option."));
+                   _("Client's Distinguished Name is not on the list of allowed clients (tls_allowed_dn_list).  Use 'virt-pki-query-dn clientcert.pem' to view the Distinguished Name field in the client certificate, or run this daemon with --verbose option."));
     return 0;
 }
 

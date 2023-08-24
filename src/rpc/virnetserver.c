@@ -372,8 +372,7 @@ virNetServerNew(const char *name,
 
     if (max_clients < max_anonymous_clients) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("The overall maximum number of clients must not be less "
-                         "than the number of clients waiting for authentication"));
+                       _("The overall maximum number of clients must not be less than the number of clients waiting for authentication"));
         return NULL;
     }
 
@@ -458,8 +457,7 @@ virNetServerNewPostExecRestart(virJSONValue *object,
         }
         if (max_clients < max_anonymous_clients) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("The overall maximum number of clients must not be less "
-                             "than the number of clients waiting for authentication"));
+                           _("The overall maximum number of clients must not be less than the number of clients waiting for authentication"));
             return NULL;
         }
     } else {
@@ -1127,8 +1125,7 @@ virNetServerSetClientLimits(virNetServer *srv,
 
     if (max < max_unauth) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("The overall maximum number of clients must not be less "
-                         "than the number of clients waiting for authentication"));
+                       _("The overall maximum number of clients must not be less than the number of clients waiting for authentication"));
         return -1;
     }
 

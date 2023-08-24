@@ -531,8 +531,7 @@ virNetServerClient *virNetServerClientNewPostExecRestart(virNetServer *srv,
     } else {
         if (virJSONValueObjectGetNumberLong(object, "conn_time", &timestamp) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Malformed conn_time field in JSON "
-                             "state document"));
+                           _("Malformed conn_time field in JSON state document"));
             return NULL;
         }
     }
