@@ -159,9 +159,18 @@ class Parser:
 
 
 class Application:
+    @property
+    def repo(self):
+        if self._repo is None:
+            from git import Repo
+
+            self._repo = Repo(search_parent_directories=True)
+        return self._repo
+
     def __init__(self):
         self._basedir = pathlib.Path(__file__).resolve().parent
         self._args = Parser().parse()
+        self._repo = None
 
     def _make_run(self, target):
         args = [
