@@ -2710,8 +2710,7 @@ static int testDomainSetMemoryStatsPeriod(virDomainPtr dom,
 
     if (!virDomainDefHasMemballoon(def)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("No memory balloon device configured, "
-                         "can not set the collection period"));
+                       _("No memory balloon device configured, can not set the collection period"));
         goto cleanup;
     }
 
@@ -2746,22 +2745,19 @@ static int testDomainSetMemoryFlags(virDomainPtr domain,
     if (flags & VIR_DOMAIN_MEM_MAXIMUM) {
         if (live) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot resize the maximum memory on an "
-                             "active domain"));
+                           _("cannot resize the maximum memory on an active domain"));
             goto cleanup;
         }
 
         if (virDomainNumaGetNodeCount(def->numa) > 0) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("initial memory size of a domain with NUMA "
-                             "nodes cannot be modified with this API"));
+                           _("initial memory size of a domain with NUMA nodes cannot be modified with this API"));
             goto cleanup;
         }
 
         if (def->mem.max_memory && def->mem.max_memory < memory) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot set initial memory size greater than "
-                             "the maximum memory size"));
+                           _("cannot set initial memory size greater than the maximum memory size"));
             goto cleanup;
         }
 
@@ -3432,8 +3428,7 @@ testDomainSetMemoryParameters(virDomainPtr dom,
 
         if (mem_limit > swap_limit) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("memory hard_limit tunable value must be lower "
-                             "than or equal to swap_hard_limit"));
+                           _("memory hard_limit tunable value must be lower than or equal to swap_hard_limit"));
             goto cleanup;
         }
     }
@@ -3964,32 +3959,28 @@ testDomainSetBlockIoTune(virDomainPtr dom,
     if ((info.total_bytes_sec && info.read_bytes_sec) ||
         (info.total_bytes_sec && info.write_bytes_sec)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("total and read/write of bytes_sec "
-                         "cannot be set at the same time"));
+                       _("total and read/write of bytes_sec cannot be set at the same time"));
         goto cleanup;
     }
 
     if ((info.total_iops_sec && info.read_iops_sec) ||
         (info.total_iops_sec && info.write_iops_sec)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("total and read/write of iops_sec "
-                         "cannot be set at the same time"));
+                       _("total and read/write of iops_sec cannot be set at the same time"));
         goto cleanup;
     }
 
     if ((info.total_bytes_sec_max && info.read_bytes_sec_max) ||
         (info.total_bytes_sec_max && info.write_bytes_sec_max)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("total and read/write of bytes_sec_max "
-                         "cannot be set at the same time"));
+                       _("total and read/write of bytes_sec_max cannot be set at the same time"));
         goto cleanup;
     }
 
     if ((info.total_iops_sec_max && info.read_iops_sec_max) ||
         (info.total_iops_sec_max && info.write_iops_sec_max)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("total and read/write of iops_sec_max "
-                         "cannot be set at the same time"));
+                       _("total and read/write of iops_sec_max cannot be set at the same time"));
         goto cleanup;
     }
 
@@ -4597,8 +4588,7 @@ static int testDomainUndefineFlags(virDomainPtr domain,
     if (privdom->hasManagedSave &&
         !(flags & VIR_DOMAIN_UNDEFINE_MANAGED_SAVE)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Refusing to undefine while domain managed "
-                         "save image exists"));
+                       _("Refusing to undefine while domain managed save image exists"));
         goto cleanup;
     }
 
@@ -6062,8 +6052,7 @@ testInterfaceChangeCommit(virConnectPtr conn,
 
     if (!privconn->transaction_running) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("no transaction running, "
-                         "nothing to be committed."));
+                       _("no transaction running, nothing to be committed."));
         goto cleanup;
     }
 
@@ -6092,8 +6081,7 @@ testInterfaceChangeRollback(virConnectPtr conn,
 
     if (!privconn->transaction_running) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("no transaction running, "
-                         "nothing to rollback."));
+                       _("no transaction running, nothing to rollback."));
         goto cleanup;
     }
 
@@ -9024,8 +9012,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                   VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) == 0) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("transient domain needs to request run or pause "
-                         "to revert to inactive snapshot"));
+                       _("transient domain needs to request run or pause to revert to inactive snapshot"));
         goto cleanup;
     }
 
