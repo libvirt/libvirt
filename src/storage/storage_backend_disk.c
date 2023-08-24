@@ -659,8 +659,7 @@ virStorageBackendDiskPartFormat(virStoragePoolObj *pool,
                     *partFormat = g_strdup_printf("logical %s", partedFormat);
                 } else {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("no extended partition found and no "
-                                     "primary partition available"));
+                                   _("no extended partition found and no primary partition available"));
                     return -1;
                 }
                 break;

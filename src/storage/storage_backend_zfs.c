@@ -310,8 +310,7 @@ virStorageBackendZFSCreateVol(virStoragePoolObj *pool,
 
     if (vol->target.encryption != NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("storage pool does not support encrypted "
-                               "volumes"));
+                       "%s", _("storage pool does not support encrypted volumes"));
         return -1;
     }
 

@@ -1903,8 +1903,7 @@ storageVolCreateXML(virStoragePoolPtr pool,
 
     if (!voldef->target.capacity && !backend->buildVol) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       "%s", _("volume capacity required for this "
-                               "storage pool"));
+                       "%s", _("volume capacity required for this storage pool"));
         goto cleanup;
     }
 
@@ -1919,8 +1918,7 @@ storageVolCreateXML(virStoragePoolPtr pool,
 
     if (!backend->createVol) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       "%s", _("storage pool does not support volume "
-                               "creation"));
+                       "%s", _("storage pool does not support volume creation"));
         goto cleanup;
     }
 
@@ -2103,8 +2101,7 @@ storageVolCreateXMLFrom(virStoragePoolPtr pool,
 
     if (!backend->buildVolFrom) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       "%s", _("storage pool does not support"
-                               " volume creation from an existing volume"));
+                       "%s", _("storage pool does not support volume creation from an existing volume"));
         goto cleanup;
     }
 
@@ -2274,8 +2271,7 @@ virStorageBackendPloopRestoreDesc(char *path)
 
     if (virFileRemove(desc, 0, 0) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("refresh ploop failed:"
-                         " unable to delete DiskDescriptor.xml"));
+                       _("refresh ploop failed: unable to delete DiskDescriptor.xml"));
         return -1;
     }
 
@@ -2497,16 +2493,14 @@ storageVolResize(virStorageVolPtr vol,
 
     if (abs_capacity < voldef->target.allocation) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("can't shrink capacity below "
-                         "existing allocation"));
+                       _("can't shrink capacity below existing allocation"));
         goto cleanup;
     }
 
     if (abs_capacity < voldef->target.capacity &&
         !(flags & VIR_STORAGE_VOL_RESIZE_SHRINK)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Can't shrink capacity below current "
-                         "capacity unless shrink flag explicitly specified"));
+                       _("Can't shrink capacity below current capacity unless shrink flag explicitly specified"));
         goto cleanup;
     }
 
@@ -2521,8 +2515,7 @@ storageVolResize(virStorageVolPtr vol,
 
     if (!backend->resizeVol) {
         virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("storage pool does not support changing of "
-                         "volume capacity"));
+                       _("storage pool does not support changing of volume capacity"));
         goto cleanup;
     }
 

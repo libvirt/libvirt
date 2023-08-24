@@ -219,8 +219,7 @@ virStorageBackendFileSystemIsValid(virStoragePoolObj *pool)
                                _("missing source device"));
             else
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("expected exactly 1 device for the "
-                                 "storage pool"));
+                               _("expected exactly 1 device for the storage pool"));
             return -1;
         }
     }
