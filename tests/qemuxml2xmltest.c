@@ -19,13 +19,6 @@
 
 static virQEMUDriver driver;
 
-enum {
-    WHEN_INACTIVE = 1,
-    WHEN_ACTIVE = 2,
-    WHEN_BOTH = 3,
-};
-
-
 static int
 testXML2XMLCommon(const struct testQemuInfo *info)
 {
@@ -45,6 +38,9 @@ static int
 testXML2XMLActive(const void *opaque)
 {
     const struct testQemuInfo *info = opaque;
+
+    if (info->flags & FLAG_SKIP_CONFIG_ACTIVE)
+        return EXIT_AM_SKIP;
 
     if (testXML2XMLCommon(info) < 0 ||
         testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
@@ -150,27 +146,23 @@ mymain(void)
     virSetConnectSecret(conn);
     virSetConnectStorage(conn);
 
-#define DO_TEST_FULL(_name, suffix, when, ...) \
+#define DO_TEST_FULL(_name, suffix, ...) \
     do { \
         static struct testQemuInfo info = { \
             .name = _name, \
         }; \
         testQemuInfoSetArgs(&info, &testConf, __VA_ARGS__); \
  \
-        if (when & WHEN_INACTIVE) { \
-            testInfoSetPaths(&info, suffix, "inactive"); \
-            virTestRunLog(&ret, "QEMU XML-2-XML-inactive " _name, testXML2XMLInactive, &info); \
-        } \
+        testInfoSetPaths(&info, suffix, "inactive"); \
+        virTestRunLog(&ret, "QEMU XML-2-XML-inactive " _name, testXML2XMLInactive, &info); \
  \
-        if (when & WHEN_ACTIVE) { \
-            testInfoSetPaths(&info, suffix, "active"); \
-            virTestRunLog(&ret, "QEMU XML-2-XML-active " _name, testXML2XMLActive, &info); \
-        } \
+        testInfoSetPaths(&info, suffix, "active"); \
+        virTestRunLog(&ret, "QEMU XML-2-XML-active " _name, testXML2XMLActive, &info); \
         testQemuInfoClear(&info); \
     } while (0)
 
 #define DO_TEST_CAPS_INTERNAL(name, arch, ver, ...) \
-    DO_TEST_FULL(name, "." arch "-" ver, WHEN_BOTH, \
+    DO_TEST_FULL(name, "." arch "-" ver, \
                  ARG_CAPS_ARCH, arch, \
                  ARG_CAPS_VER, ver, \
                  __VA_ARGS__, \
@@ -511,17 +503,17 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("ppc64-tpmproxy-single", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-tpmproxy-with-tpm", "ppc64");
 
-    DO_TEST_FULL("seclabel-dynamic-baselabel", "", WHEN_INACTIVE, ARG_END);
-    DO_TEST_FULL("seclabel-dynamic-override", "", WHEN_INACTIVE, ARG_END);
-    DO_TEST_FULL("seclabel-dynamic-labelskip", "", WHEN_INACTIVE, ARG_END);
-    DO_TEST_FULL("seclabel-dynamic-relabel", "", WHEN_INACTIVE, ARG_END);
+    DO_TEST_FULL("seclabel-dynamic-baselabel", "", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
+    DO_TEST_FULL("seclabel-dynamic-override", "", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
+    DO_TEST_FULL("seclabel-dynamic-labelskip", "", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
+    DO_TEST_FULL("seclabel-dynamic-relabel", "", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
     DO_TEST_CAPS_LATEST("seclabel-static");
     DO_TEST_CAPS_LATEST("seclabel-static-labelskip");
     DO_TEST_CAPS_LATEST("seclabel-none");
     DO_TEST_CAPS_LATEST("seclabel-dac-none");
     DO_TEST_CAPS_LATEST("seclabel-dynamic-none");
     DO_TEST_CAPS_LATEST("seclabel-device-multiple");
-    DO_TEST_FULL("seclabel-dynamic-none-relabel", "", WHEN_INACTIVE,
+    DO_TEST_FULL("seclabel-dynamic-none-relabel", "", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE,
                  ARG_QEMU_CAPS, QEMU_CAPS_DEVICE_CIRRUS_VGA,
                  QEMU_CAPS_SPICE, QEMU_CAPS_LAST,
                  ARG_END);

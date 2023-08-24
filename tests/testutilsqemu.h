@@ -59,6 +59,7 @@ typedef enum {
     FLAG_REAL_CAPS          = 1 << 3,
     FLAG_SKIP_LEGACY_CPUS   = 1 << 4,
     FLAG_SLIRP_HELPER       = 1 << 5,
+    FLAG_SKIP_CONFIG_ACTIVE = 1 << 6, /* Skip 'active' config test in qemuxml2xmltest */
 } testQemuInfoFlags;
 
 struct testQemuConf {
