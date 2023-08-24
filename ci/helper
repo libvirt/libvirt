@@ -196,6 +196,10 @@ class Application:
         if pty.spawn(["make"] + args) != 0:
             sys.exit("error: 'make' failed")
 
+    @staticmethod
+    def _prepare_repo_copy(repo, dest):
+        return repo.clone(dest, local=True)
+
     def _lcitool_run(self, args):
         output = subprocess.check_output([self._args.lcitool] + args)
         return output.decode("utf-8")
