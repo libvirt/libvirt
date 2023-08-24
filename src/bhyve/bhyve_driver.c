@@ -694,8 +694,7 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
 
         if ((bhyveDriverGetBhyveCaps(privconn) & BHYVE_CAP_LPC_BOOTROM) == 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Installed bhyve binary does not support "
-                          "bootrom"));
+                           _("Installed bhyve binary does not support bootrom"));
             return NULL;
         }
     } else {

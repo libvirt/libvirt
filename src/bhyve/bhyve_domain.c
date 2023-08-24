@@ -174,8 +174,7 @@ bhyveDomainDeviceDefPostParse(virDomainDeviceDef *dev,
              cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) &&
             cont->idx != 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("pci-root and pcie-root controllers "
-                             "should have index 0"));
+                           _("pci-root and pcie-root controllers should have index 0"));
             return -1;
         }
     }
