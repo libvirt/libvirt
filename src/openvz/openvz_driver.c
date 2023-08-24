@@ -2033,8 +2033,7 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
 
         if (STRPREFIX(my_hostname, "localhost")) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("hostname on destination resolved to localhost,"
-                             " but migration requires an FQDN"));
+                           _("hostname on destination resolved to localhost, but migration requires an FQDN"));
             goto error;
         }
 
