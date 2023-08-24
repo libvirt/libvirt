@@ -57,3 +57,11 @@ run_test() {
     test -f $GIT_ROOT/build/build.ninja || run_meson_setup
     run_cmd meson test -C build $TEST_ARGS
 }
+
+run_codestyle() {
+    BUILD_ARGS="libvirt-pot-dep"
+    TEST_ARGS="--suite syntax-check --no-rebuild --print-errorlogs"
+
+    run_build
+    run_test
+}
