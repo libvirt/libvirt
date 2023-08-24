@@ -237,6 +237,8 @@ static const struct testSchemaEntry schemaDomain[] = {
     { .dir = "tests/xml2vmxdata" },
     { .dir = "tests/bhyveargv2xmldata" },
     { .dir = "tests/qemuagentdata" },
+    { .dir = "tests/chxml2xmlin" },
+    { .dir = "tests/chxml2xmlout" },
 };
 
 static const struct testSchemaEntry schemaDomainCaps[] = {
