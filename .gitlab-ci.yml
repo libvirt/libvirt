@@ -114,10 +114,8 @@ website_local_env:
 .codestyle_job:
   stage: sanity_checks
   script:
-    - *script_variables
-    - meson setup build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
-    - meson compile -C build libvirt-pot-dep
-    - meson test -C build --suite syntax-check --no-rebuild --print-errorlogs
+    - source ci/jobs.sh
+    - run_codestyle
 
 codestyle_prebuilt_env:
   extends:
