@@ -1441,9 +1441,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriver *techdriver,
     /* check that all tools are available for applying the filters (late) */
     if (!techdriver->canApplyBasicRules()) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("IP parameter must be provided since "
-                         "snooping the IP address does not work "
-                         "possibly due to missing tools"));
+                       _("IP parameter must be provided since snooping the IP address does not work possibly due to missing tools"));
         goto exit_snoopreqput;
     }
 
@@ -1454,8 +1452,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriver *techdriver,
                                        &req->binding->mac,
                                        dhcpsrvrs, false) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("applyDHCPOnlyRules "
-                         "failed - spoofing not protected!"));
+                       _("applyDHCPOnlyRules failed - spoofing not protected!"));
         goto exit_snoopreqput;
     }
 
@@ -1990,9 +1987,8 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriver *techdriver G_GNUC_UNUSED,
                         virNWFilterDriverState *driver G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("libvirt was not compiled with libpcap and \""
-                     NWFILTER_VARNAME_CTRL_IP_LEARNING
-                     "='dhcp'\" requires it."));
+                   _("libvirt was not compiled with libpcap and \"%1$s\" requires it"),
+                     NWFILTER_VARNAME_CTRL_IP_LEARNING "='dhcp'");
     return -1;
 }
 #endif /* WITH_LIBPCAP */

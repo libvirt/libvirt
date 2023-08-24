@@ -669,9 +669,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriver *techdriver,
 
     if (!techdriver->canApplyBasicRules()) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("IP parameter must be provided since "
-                         "snooping the IP address does not work "
-                         "possibly due to missing tools"));
+                       _("IP parameter must be provided since snooping the IP address does not work possibly due to missing tools"));
         return -1;
     }
 
@@ -717,9 +715,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriver *techdriver G_GNUC_UNUSED,
                           int howDetect G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("IP parameter must be given since libvirt "
-                     "was not compiled with IP address learning "
-                     "support"));
+                   _("IP parameter must be given since libvirt was not compiled with IP address learning support"));
     return -1;
 }
 #endif /* WITH_LIBPCAP */
