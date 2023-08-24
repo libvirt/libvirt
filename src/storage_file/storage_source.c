@@ -762,8 +762,7 @@ virStorageSourceGetRelativeBackingPath(virStorageSource *top,
 
     if (next != base) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to resolve relative backing name: "
-                         "base image is not in backing chain"));
+                       _("failed to resolve relative backing name: base image is not in backing chain"));
         return -1;
     }
 
