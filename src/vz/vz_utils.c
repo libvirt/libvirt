@@ -273,8 +273,7 @@ vzCheckDiskUnsupportedParams(virDomainDiskDef *disk)
         disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Only hard disks and cdroms are supported "
-                         "by vz driver."));
+                       _("Only hard disks and cdroms are supported by vz driver."));
         return -1;
     }
 
@@ -282,8 +281,7 @@ vzCheckDiskUnsupportedParams(virDomainDiskDef *disk)
         disk->blockio.physical_block_size ||
         disk->blockio.discard_granularity) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Setting disk block sizes is not "
-                         "supported by vz driver."));
+                       _("Setting disk block sizes is not supported by vz driver."));
         return -1;
     }
 
@@ -295,56 +293,48 @@ vzCheckDiskUnsupportedParams(virDomainDiskDef *disk)
         disk->blkdeviotune.write_iops_sec) {
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Setting disk io limits is not "
-                         "supported by vz driver yet."));
+                       _("Setting disk io limits is not supported by vz driver yet."));
         return -1;
     }
 
     if (disk->serial && disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) {
-        VIR_INFO("%s", _("Setting disk serial number is "
-                         "supported only for disk devices."));
+        VIR_INFO("%s", _("Setting disk serial number is supported only for disk devices."));
     }
 
     if (disk->wwn) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Setting disk wwn id is not "
-                         "supported by vz driver."));
+                       _("Setting disk wwn id is not supported by vz driver."));
         return -1;
     }
 
     if (disk->vendor) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Setting disk vendor is not "
-                         "supported by vz driver."));
+                       _("Setting disk vendor is not supported by vz driver."));
         return -1;
     }
 
     if (disk->product) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Setting disk product id is not "
-                         "supported by vz driver."));
+                       _("Setting disk product id is not supported by vz driver."));
         return -1;
     }
 
     if (disk->error_policy != VIR_DOMAIN_DISK_ERROR_POLICY_DEFAULT) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Setting disk error policy is not "
-                         "supported by vz driver."));
+                       _("Setting disk error policy is not supported by vz driver."));
         return -1;
     }
 
     if (disk->iomode != VIR_DOMAIN_DISK_IO_DEFAULT &&
         disk->iomode != VIR_DOMAIN_DISK_IO_NATIVE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Only native iomode is "
-                         "supported by vz driver."));
+                       _("Only native iomode is supported by vz driver."));
         return -1;
     }
 
     if (disk->copy_on_read) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Disk copy_on_read is not "
-                         "supported by vz driver."));
+                       _("Disk copy_on_read is not supported by vz driver."));
         return -1;
     }
 
@@ -356,29 +346,25 @@ vzCheckDiskUnsupportedParams(virDomainDiskDef *disk)
 
     if (disk->startupPolicy != VIR_DOMAIN_STARTUP_POLICY_DEFAULT) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Setting up disk startup policy is not "
-                         "supported by vz driver."));
+                       _("Setting up disk startup policy is not supported by vz driver."));
         return -1;
     }
 
     if (disk->transient) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Transient disks are not "
-                         "supported by vz driver."));
+                       _("Transient disks are not supported by vz driver."));
         return -1;
     }
 
     if (disk->discard) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Setting up disk discard parameter is not "
-                         "supported by vz driver."));
+                       _("Setting up disk discard parameter is not supported by vz driver."));
         return -1;
     }
 
     if (disk->iothread) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Setting up disk io thread # is not "
-                         "supported by vz driver."));
+                       _("Setting up disk io thread # is not supported by vz driver."));
         return -1;
     }
 
@@ -386,8 +372,7 @@ vzCheckDiskUnsupportedParams(virDomainDiskDef *disk)
         disk->src->type != VIR_STORAGE_TYPE_BLOCK) {
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Only disk and block storage types are "
-                         "supported by vz driver."));
+                       _("Only disk and block storage types are supported by vz driver."));
         return -1;
 
     }
@@ -504,52 +489,45 @@ int vzCheckUnsupportedGraphics(virDomainGraphicsDef *gr)
 {
     if (gr->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vz driver supports only "
-                         "VNC graphics."));
+                       _("vz driver supports only VNC graphics."));
         return -1;
     }
 
     if (gr->data.vnc.websocket != 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vz driver doesn't support "
-                         "websockets for VNC graphics."));
+                       _("vz driver doesn't support websockets for VNC graphics."));
         return -1;
     }
 
     if (gr->data.vnc.keymap != 0 &&
         STRNEQ(gr->data.vnc.keymap, "en-us")) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vz driver supports only "
-                         "\"en-us\" keymap for VNC graphics."));
+                       _("vz driver supports only \"en-us\" keymap for VNC graphics."));
         return -1;
     }
 
     if (gr->data.vnc.sharePolicy == VIR_DOMAIN_GRAPHICS_VNC_SHARE_ALLOW_EXCLUSIVE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vz driver doesn't support "
-                         "exclusive share policy for VNC graphics."));
+                       _("vz driver doesn't support exclusive share policy for VNC graphics."));
         return -1;
     }
 
     if (gr->data.vnc.auth.connected == VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_FAIL ||
         gr->data.vnc.auth.connected == VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_KEEP) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vz driver doesn't support "
-                         "given action in case of password change."));
+                       _("vz driver doesn't support given action in case of password change."));
         return -1;
     }
 
     if (gr->data.vnc.auth.expires) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vz driver doesn't support "
-                         "setting password expire time."));
+                       _("vz driver doesn't support setting password expire time."));
         return -1;
     }
 
     if (gr->nListens > 1) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("vz driver doesn't support more than "
-                         "one listening VNC server per domain"));
+                       _("vz driver doesn't support more than one listening VNC server per domain"));
         return -1;
     }
 

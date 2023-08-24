@@ -842,8 +842,7 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 
             if (!virDomainDefCheckABIStability(dom->def, def, driver->xmlopt)) {
                 virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                               _("Can't change domain configuration "
-                                 "in managed save state"));
+                               _("Can't change domain configuration in managed save state"));
                 goto cleanup;
             }
         } else {
@@ -1461,15 +1460,13 @@ static int vzCheckConfigUpdateFlags(virDomainObj *dom, unsigned int *flags)
 
     if (!(*flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain config update needs VIR_DOMAIN_AFFECT_CONFIG "
-                         "flag to be set"));
+                       _("domain config update needs VIR_DOMAIN_AFFECT_CONFIG flag to be set"));
         return -1;
     }
 
     if (virDomainObjIsActive(dom) && !(*flags & VIR_DOMAIN_AFFECT_LIVE)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Updates on a running domain need "
-                         "VIR_DOMAIN_AFFECT_LIVE flag"));
+                       _("Updates on a running domain need VIR_DOMAIN_AFFECT_LIVE flag"));
         return -1;
     }
 
@@ -2793,8 +2790,7 @@ vzEatCookie(const char *cookiein, int cookieinlen, unsigned int flags)
         if ((!(tmp = virXPathString("string(./session-uuid[1])", ctx))
             || (virUUIDParse(tmp, mig->session_uuid) < 0))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("missing or malformed session-uuid element "
-                             "in migration data"));
+                           _("missing or malformed session-uuid element in migration data"));
             goto error;
         }
     }
@@ -2921,8 +2917,7 @@ vzMigrationCreateURI(void)
 
     if (STRPREFIX(hostname, "localhost")) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("hostname on destination resolved to localhost,"
-                         " but migration requires an FQDN"));
+                       _("hostname on destination resolved to localhost, but migration requires an FQDN"));
         goto cleanup;
     }
 
