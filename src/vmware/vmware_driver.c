@@ -509,8 +509,7 @@ vmwareDomainSuspend(virDomainPtr dom)
 
     if (driver->type == VMWARE_DRIVER_PLAYER) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("vmplayer does not support libvirt suspend/resume"
-                         " (vmware pause/unpause) operation "));
+                       _("vmplayer does not support libvirt suspend/resume (vmware pause/unpause) operation "));
         return ret;
     }
 
@@ -549,8 +548,7 @@ vmwareDomainResume(virDomainPtr dom)
 
     if (driver->type == VMWARE_DRIVER_PLAYER) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("vmplayer does not support libvirt suspend/resume "
-                         "(vmware pause/unpause) operation "));
+                       _("vmplayer does not support libvirt suspend/resume (vmware pause/unpause) operation "));
         return ret;
     }
 

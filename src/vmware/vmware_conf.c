@@ -355,8 +355,7 @@ vmwareVmxPath(virDomainDef *vmdef, char **vmxPath)
      */
     if (vmdef->ndisks < 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Domain XML doesn't contain any disks, "
-                         "cannot deduce datastore and path for VMX file"));
+                       _("Domain XML doesn't contain any disks, cannot deduce datastore and path for VMX file"));
         return -1;
     }
 
@@ -370,16 +369,14 @@ vmwareVmxPath(virDomainDef *vmdef, char **vmxPath)
 
     if (disk == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Domain XML doesn't contain any file-based harddisks, "
-                         "cannot deduce datastore and path for VMX file"));
+                       _("Domain XML doesn't contain any file-based harddisks, cannot deduce datastore and path for VMX file"));
         return -1;
     }
 
     src = virDomainDiskGetSource(disk);
     if (!src) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("First file-based harddisk has no source, cannot "
-                         "deduce datastore and path for VMX file"));
+                       _("First file-based harddisk has no source, cannot deduce datastore and path for VMX file"));
         return -1;
     }
 
