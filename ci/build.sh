@@ -2,7 +2,17 @@
 
 cd "$CI_CONT_SRCDIR"
 
-export VIR_TEST_DEBUG=1
+export CCACHE_BASEDIR="$(pwd)"
+export CCACHE_DIR="$CCACHE_BASEDIR/ccache"
+export CCACHE_MAXSIZE="500M"
+export PATH="$CCACHE_WRAPPERSDIR:$PATH"
+
+# Enable these conditionally since their best use case is during
+# non-interactive workloads without having a Shell
+if ! [ -t 1 ]; then
+    export VIR_TEST_VERBOSE="1"
+    export VIR_TEST_DEBUG="1"
+fi
 
 # $MESON_OPTS is an env that can optionally be set in the container,
 # populated at build time from the Dockerfile. A typical use case would
