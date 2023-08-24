@@ -493,6 +493,11 @@
             <empty/>
           </element>
         </optional>
+        <optional>
+          <element name="externalSnapshot">
+            <empty/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

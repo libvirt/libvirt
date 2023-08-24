@@ -1121,6 +1121,7 @@ virQEMUCapsInitGuestFromBinary(virCaps *caps,
     virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_DEVICEBOOT);
     virCapabilitiesAddGuestFeatureWithToggle(guest, VIR_CAPS_GUEST_FEATURE_TYPE_DISKSNAPSHOT,
                                              true, false);
+    virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_EXTERNAL_SNAPSHOT);
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_TCG)) {
         virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
