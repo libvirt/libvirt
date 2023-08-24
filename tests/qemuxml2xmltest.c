@@ -146,27 +146,23 @@ mymain(void)
     virSetConnectSecret(conn);
     virSetConnectStorage(conn);
 
-#define DO_TEST_FULL(_name, suffix, ...) \
+#define DO_TEST_CAPS_INTERNAL(_name, arch, ver, ...) \
     do { \
         static struct testQemuInfo info = { \
             .name = _name, \
         }; \
-        testQemuInfoSetArgs(&info, &testConf, __VA_ARGS__); \
+        testQemuInfoSetArgs(&info, &testConf, \
+                            ARG_CAPS_ARCH, arch, \
+                            ARG_CAPS_VER, ver, \
+                            __VA_ARGS__, ARG_END); \
  \
-        testInfoSetPaths(&info, suffix, "inactive"); \
+        testInfoSetPaths(&info, "." arch "-" ver, "inactive"); \
         virTestRunLog(&ret, "QEMU XML-2-XML-inactive " _name, testXML2XMLInactive, &info); \
  \
-        testInfoSetPaths(&info, suffix, "active"); \
+        testInfoSetPaths(&info, "." arch "-" ver, "active"); \
         virTestRunLog(&ret, "QEMU XML-2-XML-active " _name, testXML2XMLActive, &info); \
         testQemuInfoClear(&info); \
     } while (0)
-
-#define DO_TEST_CAPS_INTERNAL(name, arch, ver, ...) \
-    DO_TEST_FULL(name, "." arch "-" ver, \
-                 ARG_CAPS_ARCH, arch, \
-                 ARG_CAPS_VER, ver, \
-                 __VA_ARGS__, \
-                 ARG_END)
 
 #define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
     DO_TEST_CAPS_INTERNAL(name, arch, "latest", __VA_ARGS__)
