@@ -56,10 +56,12 @@ include:
       - ccache/
     key: "$CI_JOB_NAME"
   script:
-    - *script_variables
-    - meson setup build --werror $MESON_OPTS || (cat build/meson-logs/meson-log.txt && exit 1)
-    - meson compile -C build
-    - if test "$CROSS" = "i686" ; then meson test -C build --no-suite syntax-check --print-errorlogs ; fi
+    - source ci/jobs.sh
+    - run_build
+    - if test "$CROSS" = "i686" ;
+      then
+        run_test;
+      fi
 
 .cross_build_job_prebuilt_env:
   extends:
