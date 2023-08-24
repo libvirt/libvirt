@@ -295,6 +295,10 @@ class Application:
     def _action_shell(self):
         self._make_run(f"ci-shell@{self._args.target}")
 
+    @required_deps("git")
+    def _action_run(self):
+        return self._lcitool_run(self._args.job)
+
     def _action_list_images(self):
         registry_uri = util.get_registry_uri(self._args.namespace,
                                              self._args.gitlab_uri)
