@@ -156,9 +156,8 @@ potfile:
   before_script:
     - *script_variables
   script:
-    - meson setup build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
-    - meson compile -C build libvirt-pot-dep
-    - meson compile -C build libvirt-pot
+    - source ci/jobs.sh
+    - run_potfile
   after_script:
     - test "$CI_JOB_STATUS" != "success" && exit 1;
     - cp po/libvirt.pot libvirt.pot
