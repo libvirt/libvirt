@@ -21,13 +21,7 @@ GIT_ROOT="$(git rev-parse --show-toplevel)"
 # be to pass options to trigger cross-compilation
 #
 # $MESON_ARGS correspond to meson's setup args, i.e. configure args. It's
-# populated either from a GitLab's job configuration or from command line as
-# `$ helper build --meson-args='-Dopt1 -Dopt2'` when run in a local
-# containerized environment
-#
-# The contents of $MESON_ARGS (defined locally) should take precedence over
-# those of $MESON_OPTS (defined when the container was built), so they're
-# passed to meson after them
+# populated from a GitLab's job configuration
 
 meson setup build --werror -Dsystem=true $MESON_OPTS $MESON_ARGS || \
 (cat build/meson-logs/meson-log.txt && exit 1)
