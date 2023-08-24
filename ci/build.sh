@@ -10,7 +10,7 @@ export VIR_TEST_DEBUG=1
 #
 # $MESON_ARGS correspond to meson's setup args, i.e. configure args. It's
 # populated either from a GitLab's job configuration or from command line as
-# `$ helper build --meson-configure-args=-Dopt1 -Dopt2` when run in a local
+# `$ helper build --meson-args='-Dopt1 -Dopt2'` when run in a local
 # containerized environment
 #
 # The contents of $MESON_ARGS (defined locally) should take precedence over
