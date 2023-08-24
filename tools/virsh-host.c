@@ -355,8 +355,7 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
                 nodes_cnt = virXPathNodeSet("/capabilities/host/topology/cells/cell/pages",
                                             ctxt, &nodes);
                 if (nodes_cnt <= 0) {
-                    vshError(ctl, "%s", _("could not get information about "
-                                          "supported page sizes"));
+                    vshError(ctl, "%s", _("could not get information about supported page sizes"));
                     goto cleanup;
                 }
             }
@@ -548,8 +547,7 @@ cmdAllocpages(vshControl *ctl, const vshCmd *cmd)
                                     ctxt, &nodes);
 
         if (nodes_cnt == -1) {
-            vshError(ctl, "%s", _("could not get information about "
-                                  "NUMA topology"));
+            vshError(ctl, "%s", _("could not get information about NUMA topology"));
             return false;
         }
 
@@ -1180,8 +1178,7 @@ vshExtractCPUDefXMLs(vshControl *ctl,
             while (nodes[i]->properties) {
                 if (xmlRemoveProp(nodes[i]->properties) < 0) {
                     vshError(ctl,
-                             _("Cannot extract CPU definition from domain "
-                               "capabilities XML"));
+                             _("Cannot extract CPU definition from domain capabilities XML"));
                     return NULL;
                 }
             }

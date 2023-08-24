@@ -166,8 +166,7 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
         virConnectSetKeepAlive(c, interval, count) != 0) {
         if (keepalive_forced) {
             vshError(ctl, "%s",
-                     _("Cannot setup keepalive on connection "
-                       "as requested, disconnecting"));
+                     _("Cannot setup keepalive on connection as requested, disconnecting"));
             g_clear_pointer(&c, virConnectClose);
             goto cleanup;
         }
@@ -209,8 +208,7 @@ virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
         if (ret < 0)
             vshError(ctl, "%s", _("Failed to disconnect from the hypervisor"));
         else if (ret > 0)
-            vshError(ctl, "%s", _("One or more references were leaked after "
-                                  "disconnect from the hypervisor"));
+            vshError(ctl, "%s", _("One or more references were leaked after disconnect from the hypervisor"));
     }
 
     priv->conn = virshConnect(ctl, name ? name : ctl->connname, readonly);
@@ -400,8 +398,7 @@ virshDeinit(vshControl *ctl)
         if (ret < 0)
             vshError(ctl, "%s", _("Failed to disconnect from the hypervisor"));
         else if (ret > 0)
-            vshError(ctl, "%s", _("One or more references were leaked after "
-                                  "disconnect from the hypervisor"));
+            vshError(ctl, "%s", _("One or more references were leaked after disconnect from the hypervisor"));
     }
     virResetLastError();
 

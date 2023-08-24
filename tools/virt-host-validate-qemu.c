@@ -34,8 +34,7 @@ int virHostValidateQEMU(void)
     bool hasHwVirt = false;
     bool hasVirtFlag = false;
     virArch arch = virArchFromHost();
-    const char *kvmhint = _("Check that CPU and firmware supports virtualization "
-                            "and kvm module is loaded");
+    const char *kvmhint = _("Check that CPU and firmware supports virtualization and kvm module is loaded");
 
     if (!(flags = virHostValidateGetCPUFlags()))
         return -1;
@@ -44,8 +43,7 @@ int virHostValidateQEMU(void)
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:
         hasVirtFlag = true;
-        kvmhint = _("Check that the 'kvm-intel' or 'kvm-amd' modules are "
-                    "loaded & the BIOS has enabled virtualization");
+        kvmhint = _("Check that the 'kvm-intel' or 'kvm-amd' modules are loaded & the BIOS has enabled virtualization");
         if (virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SVM) ||
             virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_VMX))
             hasHwVirt = true;
@@ -71,8 +69,7 @@ int virHostValidateQEMU(void)
             virHostMsgPass();
         } else {
             virHostMsgFail(VIR_HOST_VALIDATE_FAIL,
-                           _("Host not compatible with KVM; HW virtualization CPU features not found. "
-                             "Only emulated CPUs are available; performance will be significantly limited"));
+                           _("Host not compatible with KVM; HW virtualization CPU features not found. Only emulated CPUs are available; performance will be significantly limited"));
             ret = -1;
         }
     }
@@ -84,8 +81,7 @@ int virHostValidateQEMU(void)
             ret = -1;
         else if (virHostValidateDeviceAccessible("QEMU", "/dev/kvm",
                                                  VIR_HOST_VALIDATE_FAIL,
-                                                 _("Check /dev/kvm is world writable or you are in "
-                                                   "a group that is allowed to access it")) < 0)
+                                                 _("Check /dev/kvm is world writable or you are in a group that is allowed to access it")) < 0)
             ret = -1;
     }
 
@@ -101,8 +97,7 @@ int virHostValidateQEMU(void)
 
     if (virHostValidateDeviceExists("QEMU", "/dev/vhost-net",
                                     VIR_HOST_VALIDATE_WARN,
-                                    _("Load the 'vhost_net' module to improve performance "
-                                      "of virtio networking")) < 0)
+                                    _("Load the 'vhost_net' module to improve performance of virtio networking")) < 0)
         ret = -1;
 
     if (virHostValidateDeviceExists("QEMU", "/dev/net/tun",

@@ -297,8 +297,7 @@ virshNodeDeviceListCollect(vshControl *ctl,
         device = list->devices[i];
 
         if ((ncaps = virNodeDeviceNumOfCaps(device)) < 0) {
-            vshError(ctl, "%s", _("Failed to get capability numbers "
-                                  "of the device"));
+            vshError(ctl, "%s", _("Failed to get capability numbers of the device"));
             goto cleanup;
         }
 

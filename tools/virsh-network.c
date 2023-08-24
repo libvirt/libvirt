@@ -1093,8 +1093,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
     if (optTable + optName + optUUID > 1) {
         vshError(ctl, "%s",
-                 _("Only one argument from --table, --name and --uuid "
-                   "may be specified."));
+                 _("Only one argument from --table, --name and --uuid may be specified."));
         return false;
     }
 
@@ -2140,8 +2139,7 @@ cmdNetworkPortList(vshControl *ctl, const vshCmd *cmd)
 
     if (optTable + optUUID > 1) {
         vshError(ctl, "%s",
-                 _("Only one argument from --table and --uuid "
-                   "may be specified."));
+                 _("Only one argument from --table and --uuid may be specified."));
         return false;
     }
 

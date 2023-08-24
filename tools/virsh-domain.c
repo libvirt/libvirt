@@ -2143,14 +2143,12 @@ cmdBlockcommit(vshControl *ctl, const vshCmd *cmd)
 
     if (!blocking) {
         if (verbose) {
-            vshError(ctl, "%s", _("--verbose requires at least one of --timeout, "
-                                  "--wait, --pivot, or --keep-overlay"));
+            vshError(ctl, "%s", _("--verbose requires at least one of --timeout, --wait, --pivot, or --keep-overlay"));
             return false;
         }
 
         if (async) {
-            vshError(ctl, "%s", _("--async requires at least one of --timeout, "
-                                  "--wait, --pivot, or --keep-overlay"));
+            vshError(ctl, "%s", _("--async requires at least one of --timeout, --wait, --pivot, or --keep-overlay"));
             return false;
         }
     }
@@ -2214,8 +2212,7 @@ cmdBlockcommit(vshControl *ctl, const vshCmd *cmd)
                 goto cleanup;
             }
 
-            vshPrintExtra(ctl, "\n%s", _("Commit complete, overlay "
-                                         "image kept"));
+            vshPrintExtra(ctl, "\n%s", _("Commit complete, overlay image kept"));
         } else {
             vshPrintExtra(ctl, "\n%s", _("Now in synchronized phase"));
         }
@@ -2411,14 +2408,12 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
 
     if (!blocking) {
         if (verbose) {
-            vshError(ctl, "%s", _("--verbose requires at least one of --timeout, "
-                                  "--wait, --pivot, or --finish"));
+            vshError(ctl, "%s", _("--verbose requires at least one of --timeout, --wait, --pivot, or --finish"));
             return false;
         }
 
         if (async) {
-            vshError(ctl, "%s", _("--async requires at least one of --timeout, "
-                                  "--wait, --pivot, or --finish"));
+            vshError(ctl, "%s", _("--async requires at least one of --timeout, --wait, --pivot, or --finish"));
             return false;
         }
     }
@@ -3703,8 +3698,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
     if (!(vol_string || remove_all_storage) && wipe_storage) {
         vshError(ctl,
-                 _("'--wipe-storage' requires '--storage <string>' or "
-                   "'--remove-all-storage'"));
+                 _("'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"));
         return false;
     }
 
@@ -3789,8 +3783,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     if (vol_string || remove_all_storage) {
         if (running) {
             vshError(ctl,
-                     _("Storage volume deletion is supported only on "
-                       "stopped domains"));
+                     _("Storage volume deletion is supported only on stopped domains"));
             goto cleanup;
         }
 
@@ -3927,8 +3920,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     if (has_managed_save) {
         if (!managed_save) {
             vshError(ctl, "%s",
-                     _("Refusing to undefine while domain managed save "
-                       "image exists"));
+                     _("Refusing to undefine while domain managed save image exists"));
             goto cleanup;
         }
         if (virDomainManagedSaveRemove(dom, 0) < 0) {
@@ -5149,8 +5141,7 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
         g_autofree char *set_field = g_strdup(opt->data);
 
         if (!(set_val = strchr(set_field, '='))) {
-            vshError(ctl, "%s", _("Invalid syntax for --set, "
-                                  "expecting name=value"));
+            vshError(ctl, "%s", _("Invalid syntax for --set, expecting name=value"));
             goto cleanup;
         }
 
@@ -7400,8 +7391,7 @@ cmdGuestvcpus(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (cpulist && !(enable || disable)) {
-        vshError(ctl, _("One of options --enable or --disable is required by "
-                        "option --cpulist"));
+        vshError(ctl, _("One of options --enable or --disable is required by option --cpulist"));
         return false;
     }
 
@@ -12528,8 +12518,7 @@ virshDomainDetachInterface(char *doc,
                 if (virMacAddrCompare(tmp_mac, mac) == 0) {
                     if (matchNode) {
                         /* this is the 2nd match, so it's ambiguous */
-                        vshError(ctl, _("Domain has multiple interfaces matching MAC address %1$s. "
-                                        "You must use detach-device and specify the device pci address to remove it."),
+                        vshError(ctl, _("Domain has multiple interfaces matching MAC address %1$s. You must use detach-device and specify the device pci address to remove it."),
                                  mac);
                         return false;
                     }
@@ -13787,8 +13776,7 @@ cmdDomDirtyRateCalc(vshControl *ctl, const vshCmd *cmd)
     if (virDomainStartDirtyRateCalc(dom, seconds, flags) < 0)
         return false;
 
-    vshPrintExtra(ctl, _("Start to calculate domain's memory "
-                         "dirty rate successfully.\n"));
+    vshPrintExtra(ctl, _("Start to calculate domain's memory dirty rate successfully.\n"));
 
     return true;
 }

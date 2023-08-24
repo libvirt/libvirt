@@ -139,8 +139,7 @@ vshAdmDisconnect(vshControl *ctl)
     if (ret < 0)
         vshError(ctl, "%s", _("Failed to disconnect from the admin server"));
     else if (ret > 0)
-        vshError(ctl, "%s", _("One or more references were leaked after "
-                              "disconnect from the hypervisor"));
+        vshError(ctl, "%s", _("One or more references were leaked after disconnect from the hypervisor"));
     priv->conn = NULL;
     return ret;
 }
@@ -500,8 +499,7 @@ cmdSrvThreadpoolSet(vshControl *ctl, const vshCmd *cmd)
 
     if (!nparams) {
         vshError(ctl, "%s",
-                 _("At least one of options --min-workers, --max-workers, "
-                   "--priority-workers is mandatory"));
+                 _("At least one of options --min-workers, --max-workers, --priority-workers is mandatory"));
             goto cleanup;
     }
 
@@ -509,8 +507,7 @@ cmdSrvThreadpoolSet(vshControl *ctl, const vshCmd *cmd)
                               VIR_THREADPOOL_WORKERS_MAX, &max) &&
         virTypedParamsGetUInt(params, nparams,
                               VIR_THREADPOOL_WORKERS_MIN, &min) && min > max) {
-        vshError(ctl, "%s", _("--min-workers must be less than or equal to "
-                              "--max-workers"));
+        vshError(ctl, "%s", _("--min-workers must be less than or equal to --max-workers"));
         goto cleanup;
     }
 
@@ -820,8 +817,7 @@ cmdSrvClientsInfo(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (virAdmServerGetClientLimits(srv, &params, &nparams, 0) < 0) {
-        vshError(ctl, "%s", _("Unable to retrieve client limits "
-                              "from server's configuration"));
+        vshError(ctl, "%s", _("Unable to retrieve client limits from server's configuration"));
         goto cleanup;
     }
 
@@ -904,8 +900,7 @@ cmdSrvClientsSet(vshControl *ctl, const vshCmd *cmd)
 #undef PARSE_CMD_TYPED_PARAM
 
     if (!nparams) {
-        vshError(ctl, "%s", _("At least one of options --max-clients, "
-                              "--max-unauth-clients is mandatory"));
+        vshError(ctl, "%s", _("At least one of options --max-clients, --max-unauth-clients is mandatory"));
         goto cleanup;
     }
 
@@ -914,8 +909,7 @@ cmdSrvClientsSet(vshControl *ctl, const vshCmd *cmd)
         virTypedParamsGetUInt(params, nparams,
                               VIR_SERVER_CLIENTS_UNAUTH_MAX, &unauth_max) &&
         unauth_max > max) {
-        vshError(ctl, "%s", _("--max-unauth-clients must be less than or equal to "
-                              "--max-clients"));
+        vshError(ctl, "%s", _("--max-unauth-clients must be less than or equal to --max-clients"));
         goto cleanup;
     }
 
@@ -936,8 +930,7 @@ cmdSrvClientsSet(vshControl *ctl, const vshCmd *cmd)
     vshSaveLibvirtError();
 
  error:
-    vshError(ctl, "%s", _("Unable to change server's client-related "
-                          "configuration limits"));
+    vshError(ctl, "%s", _("Unable to change server's client-related configuration limits"));
     goto cleanup;
 }
 

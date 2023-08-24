@@ -895,8 +895,7 @@ virshStoragePoolListCollect(vshControl *ctl,
 
     /* There is no way to get the pool type */
     if (VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_POOL_TYPE)) {
-        vshError(ctl, "%s", _("Filtering using --type is not supported "
-                              "by this libvirt"));
+        vshError(ctl, "%s", _("Filtering using --type is not supported by this libvirt"));
         goto cleanup;
     }
 

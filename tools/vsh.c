@@ -2358,8 +2358,7 @@ vshAskReedit(vshControl *ctl, const char *msg, bool relax_avail)
 
             if (relax_avail) {
                 vshPrintRaw(ctl,
-                            _("i - turn off validation and try to redefine "
-                              "again"),
+                            _("i - turn off validation and try to redefine again"),
                             NULL);
             }
 
@@ -2385,8 +2384,7 @@ vshAskReedit(vshControl *ctl,
              const char *msg G_GNUC_UNUSED,
              bool relax_avail G_GNUC_UNUSED)
 {
-    vshDebug(ctl, VSH_ERR_WARNING, "%s", _("This function is not "
-                                           "supported on WIN32 platform"));
+    vshDebug(ctl, VSH_ERR_WARNING, "%s", _("This function is not supported on WIN32 platform"));
     return 0;
 }
 #endif /* WIN32 */
@@ -3022,8 +3020,7 @@ vshInit(vshControl *ctl, const vshCmdGrp *groups, const vshCmdDef *set)
     }
 
     if (!groups && !set) {
-        vshError(ctl, "%s", _("command groups and command set "
-                              "cannot both be NULL"));
+        vshError(ctl, "%s", _("command groups and command set cannot both be NULL"));
         return false;
     }
 
@@ -3041,8 +3038,7 @@ bool
 vshInitReload(vshControl *ctl)
 {
     if (!cmdGroups && !cmdSet) {
-        vshError(ctl, "%s", _("command groups and command are both NULL "
-                              "run vshInit before reloading"));
+        vshError(ctl, "%s", _("command groups and command are both NULL run vshInit before reloading"));
         return false;
     }
 

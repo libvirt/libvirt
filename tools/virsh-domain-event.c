@@ -418,8 +418,7 @@ virshEventGraphicsPrint(virConnectPtr conn G_GNUC_UNUSED,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    virBufferAsprintf(&buf, _("event 'graphics' for domain '%1$s': "
-                              "%2$s local[%3$s %4$s %5$s] remote[%6$s %7$s %8$s] %9$s\n"),
+    virBufferAsprintf(&buf, _("event 'graphics' for domain '%1$s': %2$s local[%3$s %4$s %5$s] remote[%6$s %7$s %8$s] %9$s\n"),
                       virDomainGetName(dom),
                       virshGraphicsPhaseToString(phase),
                       virshGraphicsAddressToString(local->family),
@@ -497,8 +496,7 @@ virshEventDiskChangePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'disk-change' for domain '%1$s' disk %2$s: "
-                              "%3$s -> %4$s: %5$s\n"),
+    virBufferAsprintf(&buf, _("event 'disk-change' for domain '%1$s' disk %2$s: %3$s -> %4$s: %5$s\n"),
                       virDomainGetName(dom),
                       alias,
                       NULLSTR(oldSrc),
@@ -633,8 +631,7 @@ virshEventAgentLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'agent-lifecycle' for domain '%1$s': state: "
-                              "'%2$s' reason: '%3$s'\n"),
+    virBufferAsprintf(&buf, _("event 'agent-lifecycle' for domain '%1$s': state: '%2$s' reason: '%3$s'\n"),
                       virDomainGetName(dom),
                       UNKNOWNSTR(virshEventAgentLifecycleStateTypeToString(state)),
                       UNKNOWNSTR(virshEventAgentLifecycleReasonTypeToString(reason)));
@@ -649,8 +646,7 @@ virshEventMigrationIterationPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'migration-iteration' for domain '%1$s': "
-                              "iteration: '%2$d'\n"),
+    virBufferAsprintf(&buf, _("event 'migration-iteration' for domain '%1$s': iteration: '%2$d'\n"),
                       virDomainGetName(dom),
                       iteration);
 
@@ -727,8 +723,7 @@ virshEventBlockThresholdPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'block-threshold' for domain '%1$s': "
-                              "dev: %2$s(%3$s) %4$llu %5$llu\n"),
+    virBufferAsprintf(&buf, _("event 'block-threshold' for domain '%1$s': dev: %2$s(%3$s) %4$llu %5$llu\n"),
                       virDomainGetName(dom),
                       dev, NULLSTR(path), threshold, excess);
     virshEventPrint(opaque, &buf);
