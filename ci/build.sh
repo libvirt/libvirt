@@ -42,3 +42,13 @@ run_build() {
     test -f $GIT_ROOT/build/build.ninja || run_meson_setup
     run_cmd meson compile -C build $BUILD_ARGS
 }
+
+run_dist() {
+    test -f $GIT_ROOT/build/build.ninja || run_meson_setup
+
+    # dist is unhappy in local container environment complaining about
+    # uncommitted changes in the repo which is often not the case - refreshing
+    # git's index solves the problem
+    git update-index --refresh
+    run_cmd meson dist -C build --no-tests
+}
