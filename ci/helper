@@ -40,7 +40,7 @@ class Parser:
         )
         containerparser.add_argument(
             "--image-tag",
-            default=":latest",
+            default="latest",
             help="use container images with non-default tags",
         )
 
