@@ -79,9 +79,8 @@ include:
 #    https://gitlab.com/libvirt/libvirt/-/jobs/artifacts/master/download?job=website
 .website_job:
   script:
-    - *script_variables
-    - meson setup build --werror -Dsystem=true || (cat build/meson-logs/meson-log.txt && exit 1)
-    - DESTDIR=$(pwd)/install meson compile -C build install-web
+    - source ci/jobs.sh
+    - run_website_build
   after_script:
     - test "$CI_JOB_STATUS" != "success" && exit 1;
     - mv install/usr/share/doc/libvirt/html/ website
