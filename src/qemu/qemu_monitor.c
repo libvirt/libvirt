@@ -976,8 +976,7 @@ qemuMonitorInitBalloonObjectPath(qemuMonitor *mon,
 
     /* If we get here, we found the path, but not the property */
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("Property 'guest-stats-polling-interval' "
-                     "not found on memory balloon driver."));
+                   _("Property 'guest-stats-polling-interval' not found on memory balloon driver."));
 
  cleanup:
     for (i = 0; i < nprops; i++)

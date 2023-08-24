@@ -490,8 +490,7 @@ qemuSnapshotPrepareDiskExternalActive(virDomainSnapshotDiskDef *snapdisk,
 
     if (domdisk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("external active snapshots are not supported on scsi "
-                         "passthrough devices"));
+                       _("external active snapshots are not supported on scsi passthrough devices"));
         return -1;
     }
 
@@ -766,16 +765,14 @@ qemuSnapshotPrepare(virDomainObj *vm,
     if ((def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL && !found_internal) ||
         (found_internal && forbid_internal)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("internal and full system snapshots require all "
-                         "disks to be selected for snapshot"));
+                       _("internal and full system snapshots require all disks to be selected for snapshot"));
         return -1;
     }
 
     /* disk snapshot requires at least one disk */
     if (def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT && !external) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("disk-only snapshots require at least "
-                         "one disk to be selected for snapshot"));
+                       _("disk-only snapshots require at least one disk to be selected for snapshot"));
         return -1;
     }
 
@@ -786,8 +783,7 @@ qemuSnapshotPrepare(virDomainObj *vm,
          (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL && external) ||
          (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL && found_internal)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("mixing internal and external targets for a snapshot "
-                         "is not yet supported"));
+                       _("mixing internal and external targets for a snapshot is not yet supported"));
         return -1;
     }
 
@@ -808,8 +804,7 @@ qemuSnapshotPrepare(virDomainObj *vm,
         found_internal &&
         virDomainDefHasOldStyleUEFI(vm->def)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("internal snapshots of a VM with pflash based "
-                         "firmware are not supported"));
+                       _("internal snapshots of a VM with pflash based firmware are not supported"));
         return -1;
     }
 
@@ -1534,8 +1529,7 @@ qemuSnapshotCreateXMLValidateDef(virDomainObj *vm,
         (!virDomainObjIsActive(vm) ||
          def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("live snapshot creation is supported only "
-                         "during full system snapshots"));
+                       _("live snapshot creation is supported only during full system snapshots"));
         return -1;
     }
 
@@ -1560,8 +1554,7 @@ qemuSnapshotCreateXMLValidateDef(virDomainObj *vm,
 
     case VIR_DOMAIN_SNAPSHOT_PMSUSPENDED:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("qemu doesn't support taking snapshots of "
-                         "PMSUSPENDED guests"));
+                       _("qemu doesn't support taking snapshots of PMSUSPENDED guests"));
         return -1;
 
         /* invalid states */
@@ -1621,8 +1614,7 @@ qemuSnapshotCreateAlignDisks(virDomainObj *vm,
         if (virDomainObjIsActive(vm) &&
             def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_NO) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("internal snapshot of a running VM "
-                             "must include the memory state"));
+                           _("internal snapshot of a running VM must include the memory state"));
             return -1;
         }
 
@@ -2551,8 +2543,7 @@ qemuSnapshotRevert(virDomainObj *vm,
 
     case VIR_DOMAIN_SNAPSHOT_PMSUSPENDED:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("qemu doesn't support reversion of snapshot taken in "
-                         "PMSUSPENDED state"));
+                       _("qemu doesn't support reversion of snapshot taken in PMSUSPENDED state"));
         goto endjob;
 
     case VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT:

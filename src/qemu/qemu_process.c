@@ -4237,8 +4237,7 @@ qemuProcessSPICEAllocatePorts(virQEMUDriver *driver,
     if (needTLSPort || graphics->data.spice.tlsPort == -1) {
         if (!cfg->spiceTLS) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Auto allocation of spice TLS port requested "
-                             "but spice TLS is disabled in qemu.conf"));
+                           _("Auto allocation of spice TLS port requested but spice TLS is disabled in qemu.conf"));
             return -1;
         }
 
@@ -5003,8 +5002,7 @@ qemuProcessGraphicsSetupNetworkAddress(virDomainGraphicsListenDef *glisten,
     rc = qemuProcessGetNetworkAddress(glisten->network, &glisten->address);
     if (rc <= -2) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("network-based listen isn't possible, "
-                         "network driver isn't present"));
+                       _("network-based listen isn't possible, network driver isn't present"));
         return -1;
     }
     if (rc < 0)
@@ -5355,8 +5353,7 @@ qemuProcessStartValidateGraphics(virDomainObj *vm)
         case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
             if (graphics->nListens > 1) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("QEMU does not support multiple listens for "
-                                 "one graphics device."));
+                               _("QEMU does not support multiple listens for one graphics device."));
                 return -1;
             }
             break;
@@ -5412,8 +5409,7 @@ qemuProcessStartValidateDisks(virDomainObj *vm,
             src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VXHS)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("VxHS protocol is not supported with this "
-                             "QEMU binary"));
+                           _("VxHS protocol is not supported with this QEMU binary"));
             return -1;
         }
 
@@ -5527,10 +5523,7 @@ qemuProcessStartValidate(virQEMUDriver *driver,
             VIR_DEBUG("Checking for KVM availability");
             if (!virFileExists("/dev/kvm")) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Domain requires KVM, but it is not available. "
-                                 "Check that virtualization is enabled in the "
-                                 "host BIOS, and host configuration is setup to "
-                                 "load the kvm modules."));
+                               _("Domain requires KVM, but it is not available. Check that virtualization is enabled in the host BIOS, and host configuration is setup to load the kvm modules."));
                 return -1;
             }
         }
@@ -9149,8 +9142,7 @@ qemuProcessReconnectHelper(virDomainObj *obj,
     if (virThreadCreateFull(&thread, false, qemuProcessReconnect,
                             name, false, data) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not create thread. QEMU initialization "
-                         "might be incomplete"));
+                       _("Could not create thread. QEMU initialization might be incomplete"));
         /* We can't spawn a thread and thus connect to monitor. Kill qemu.
          * It's safe to call qemuProcessStop without a job here since there
          * is no thread that could be doing anything else with the same domain

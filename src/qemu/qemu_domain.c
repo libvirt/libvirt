@@ -4591,8 +4591,7 @@ qemuDomainDefVcpusPostParse(virDomainDef *def)
             /* they can be ordered only at the beginning */
             if (prevvcpu->hotpluggable == VIR_TRISTATE_BOOL_YES) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("online non-hotpluggable vcpus need to be "
-                                 "ordered prior to hotplugable vcpus"));
+                               _("online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"));
                 return -1;
             }
 
@@ -4600,8 +4599,7 @@ qemuDomainDefVcpusPostParse(virDomainDef *def)
              * Also note that multiple vcpus may share order on some platforms */
             if (prevvcpu->order > vcpu->order) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("online non-hotpluggable vcpus must be ordered "
-                                 "in ascending order"));
+                               _("online non-hotpluggable vcpus must be ordered in ascending order"));
                 return -1;
             }
         }
@@ -4644,8 +4642,7 @@ qemuDomainDefSetDefaultCPU(virDomainDef *def,
 
     if (STREQ(model, "host") && def->virtType != VIR_DOMAIN_VIRT_KVM) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("QEMU reports invalid default CPU model \"host\" "
-                         "for non-kvm domain virt type"));
+                       _("QEMU reports invalid default CPU model \"host\" for non-kvm domain virt type"));
         return -1;
     }
 
@@ -5080,15 +5077,13 @@ qemuDomainValidateStorageSource(virStorageSource *src,
 
     if (src->format == VIR_STORAGE_FILE_DIR) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("'directory' storage format is not directly supported by QEMU, "
-                         "use 'dir' disk type instead"));
+                       _("'directory' storage format is not directly supported by QEMU, use 'dir' disk type instead"));
         return -1;
     }
 
     if (src->format == VIR_STORAGE_FILE_ISO) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("storage format 'iso' is not directly supported by QEMU, "
-                         "use 'raw' instead"));
+                       _("storage format 'iso' is not directly supported by QEMU, use 'raw' instead"));
         return -1;
     }
 
@@ -5096,8 +5091,7 @@ qemuDomainValidateStorageSource(virStorageSource *src,
         actualType != VIR_STORAGE_TYPE_VOLUME &&
         actualType != VIR_STORAGE_TYPE_DIR) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("storage format 'fat' is supported only with 'dir' "
-                         "storage type"));
+                       _("storage format 'fat' is supported only with 'dir' storage type"));
         return -1;
     }
 
@@ -5628,23 +5622,20 @@ qemuDomainControllerDefPostParse(virDomainControllerDef *cont,
              cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) &&
             cont->idx != 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("pci-root and pcie-root controllers "
-                             "should have index 0"));
+                           _("pci-root and pcie-root controllers should have index 0"));
             return -1;
         }
 
         if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS &&
             !qemuDomainIsI440FX(def)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("pci-expander-bus controllers are only supported "
-                             "on 440fx-based machinetypes"));
+                           _("pci-expander-bus controllers are only supported on 440fx-based machinetypes"));
             return -1;
         }
         if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS &&
             !(qemuDomainIsQ35(def) || qemuDomainIsARMVirt(def))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("pcie-expander-bus controllers are not supported "
-                             "with this machine type"));
+                           _("pcie-expander-bus controllers are not supported with this machine type"));
             return -1;
         }
 
@@ -6129,8 +6120,7 @@ qemuDomainNVDimmAlignSizePseries(virDomainMemoryDef *mem)
      * smaller than the 256MiB alignment. */
     if (guestArea < ppc64AlignSize) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("minimum target size for the NVDIMM "
-                         "must be 256MB plus the label size"));
+                       _("minimum target size for the NVDIMM must be 256MB plus the label size"));
         return -1;
     }
 
@@ -7868,8 +7858,7 @@ qemuDomainStorageSourceValidateDepth(virStorageSource *src,
                            diskdst);
         else
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("backing chains more than 200 layers deep are not "
-                             "supported"));
+                           _("backing chains more than 200 layers deep are not supported"));
 
         return -1;
     }
@@ -8787,8 +8776,7 @@ qemuDomainAgentAvailable(virDomainObj *vm,
     if (priv->agentError) {
         if (reportError) {
             virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
-                           _("QEMU guest agent is not "
-                             "available due to an error"));
+                           _("QEMU guest agent is not available due to an error"));
         }
         return false;
     }
@@ -9286,8 +9274,7 @@ qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
         if (mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM &&
             mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("only 'dimm' addresses are supported for the "
-                             "pc-dimm device"));
+                           _("only 'dimm' addresses are supported for the pc-dimm device"));
             return -1;
         }
 
@@ -9309,8 +9296,7 @@ qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
         if (mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
             mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("only 'pci' addresses are supported for the "
-                             "virtio-pmem device"));
+                           _("only 'pci' addresses are supported for the virtio-pmem device"));
             return -1;
         }
 
@@ -9343,8 +9329,7 @@ qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
         virDomainNumaGetNodeCount(def->numa) != 0) {
         if (mem->targetNode == -1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("target NUMA node needs to be specified for "
-                             "memory device"));
+                           _("target NUMA node needs to be specified for memory device"));
             return -1;
         }
     }
@@ -9402,8 +9387,7 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
     if (!virDomainDefHasMemoryHotplug(def)) {
         if (nmems) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("cannot use/hotplug a memory device when domain "
-                             "'maxMemory' is not defined"));
+                           _("cannot use/hotplug a memory device when domain 'maxMemory' is not defined"));
             return -1;
         }
 
@@ -9417,8 +9401,7 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
          * with memory hotplug. */
         if (virDomainNumaGetNodeCount(def->numa) == 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("At least one numa node has to be configured when "
-                             "enabling memory hotplug"));
+                           _("At least one numa node has to be configured when enabling memory hotplug"));
             return -1;
         }
     }

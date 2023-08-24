@@ -1633,8 +1633,7 @@ qemuDomainCollectPCIAddress(virDomainDef *def G_GNUC_UNUSED,
             if (addrs->nbuses > 0 &&
                 !(addrs->buses[0].flags & VIR_PCI_CONNECT_TYPE_PCI_DEVICE)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Bus 0 must be PCI for integrated PIIX3 "
-                                 "USB or IDE controllers"));
+                               _("Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"));
                 return -1;
             }
             return 0;
@@ -1809,8 +1808,7 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDef *def,
                 if (!virPCIDeviceAddressEqual(&cont->info.addr.pci,
                                               &primaryIDEAddr)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("Primary IDE controller must have PCI "
-                                     "address 0:0:1.1"));
+                                   _("Primary IDE controller must have PCI address 0:0:1.1"));
                     return -1;
                 }
             } else {
@@ -1825,8 +1823,7 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDef *def,
                 if (!virPCIDeviceAddressEqual(&cont->info.addr.pci,
                                               &piix3USBAddr)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("PIIX3 USB controller at index 0 must "
-                                     "have PCI address 0:0:1.2"));
+                                   _("PIIX3 USB controller at index 0 must have PCI address 0:0:1.2"));
                     return -1;
                 }
             } else {
@@ -1919,8 +1916,7 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDef *def,
                     if (!virPCIDeviceAddressEqual(&cont->info.addr.pci,
                                                   &primarySATAAddr)) {
                         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                       _("Primary SATA controller must have "
-                                         "PCI address 0:0:1f.2"));
+                                       _("Primary SATA controller must have PCI address 0:0:1f.2"));
                         return -1;
                     }
                 } else {
@@ -3053,8 +3049,7 @@ qemuDomainUSBAddressAddHubs(virDomainDef *def)
 
     if (data.count > 0 && !virDomainDefHasUSB(def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("USB is disabled for this domain, but USB devices "
-                         "are present in the domain XML"));
+                       _("USB is disabled for this domain, but USB devices are present in the domain XML"));
         return -1;
     }
 

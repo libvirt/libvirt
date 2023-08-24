@@ -3956,8 +3956,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
 
     if (!(hostCPU->name = virXMLPropString(hostCPUNode, "model"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("missing host CPU model name in QEMU "
-                         "capabilities cache"));
+                       _("missing host CPU model name in QEMU capabilities cache"));
         return -1;
     }
 
@@ -3982,16 +3981,14 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
 
             if (!(prop->name = virXMLPropString(ctxt->node, "name"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("missing 'name' attribute for a host CPU"
-                                 " model property in QEMU capabilities cache"));
+                               _("missing 'name' attribute for a host CPU model property in QEMU capabilities cache"));
                 return -1;
             }
 
             if (!(type = virXMLPropString(ctxt->node, "type")) ||
                 (val = qemuMonitorCPUPropertyTypeFromString(type)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("missing or invalid CPU model property type "
-                                 "in QEMU capabilities cache"));
+                               _("missing or invalid CPU model property type in QEMU capabilities cache"));
                 return -1;
             }
 
@@ -4108,8 +4105,7 @@ virQEMUCapsLoadCPUModels(virArch arch,
             for (j = 0; j < nblockers; j++) {
                 if (!(cpu->blockers[j] = virXMLPropString(blockerNodes[j], "name"))) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("missing blocker name in QEMU "
-                                     "capabilities cache"));
+                                   _("missing blocker name in QEMU capabilities cache"));
                     return -1;
                 }
 
@@ -4253,8 +4249,7 @@ virQEMUCapsParseSEVInfo(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
 
     if (virXPathBoolean("boolean(./sev)", ctxt) == 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing SEV platform data in QEMU "
-                         "capabilities cache"));
+                       _("missing SEV platform data in QEMU capabilities cache"));
         return -1;
     }
 
@@ -4262,30 +4257,26 @@ virQEMUCapsParseSEVInfo(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
 
     if (virXPathUInt("string(./sev/cbitpos)", ctxt, &sev->cbitpos) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing or malformed SEV cbitpos information "
-                         "in QEMU capabilities cache"));
+                       _("missing or malformed SEV cbitpos information in QEMU capabilities cache"));
         return -1;
     }
 
     if (virXPathUInt("string(./sev/reducedPhysBits)", ctxt,
                      &sev->reduced_phys_bits) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing or malformed SEV reducedPhysBits information "
-                         "in QEMU capabilities cache"));
+                       _("missing or malformed SEV reducedPhysBits information in QEMU capabilities cache"));
         return -1;
     }
 
     if (!(sev->pdh = virXPathString("string(./sev/pdh)", ctxt)))  {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing SEV pdh information "
-                         "in QEMU capabilities cache"));
+                       _("missing SEV pdh information in QEMU capabilities cache"));
         return -1;
     }
 
     if (!(sev->cert_chain = virXPathString("string(./sev/certChain)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing SEV certChain information "
-                         "in QEMU capabilities cache"));
+                       _("missing SEV certChain information in QEMU capabilities cache"));
         return -1;
     }
 
@@ -4506,28 +4497,24 @@ virQEMUCapsParseGIC(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
 
             if (!(version = virXMLPropString(nodes[i], "version"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("missing GIC version "
-                                 "in QEMU capabilities cache"));
+                               _("missing GIC version in QEMU capabilities cache"));
                 return -1;
             }
             if (virStrToLong_ui(version, NULL, 10, &uintValue) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("malformed GIC version "
-                                 "in QEMU capabilities cache"));
+                               _("malformed GIC version in QEMU capabilities cache"));
                 return -1;
             }
             cap->version = uintValue;
 
             if (!(kernel = virXMLPropString(nodes[i], "kernel"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("missing in-kernel GIC information "
-                                 "in QEMU capabilities cache"));
+                               _("missing in-kernel GIC information in QEMU capabilities cache"));
                 return -1;
             }
             if (!(boolValue = STREQ(kernel, "yes")) && STRNEQ(kernel, "no")) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("malformed in-kernel GIC information "
-                                 "in QEMU capabilities cache"));
+                               _("malformed in-kernel GIC information in QEMU capabilities cache"));
                 return -1;
             }
             if (boolValue)
@@ -4535,14 +4522,12 @@ virQEMUCapsParseGIC(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
 
             if (!(emulated = virXMLPropString(nodes[i], "emulated"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("missing emulated GIC information "
-                                 "in QEMU capabilities cache"));
+                               _("missing emulated GIC information in QEMU capabilities cache"));
                 return -1;
             }
             if (!(boolValue = STREQ(emulated, "yes")) && STRNEQ(emulated, "no")) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("malformed emulated GIC information "
-                                 "in QEMU capabilities cache"));
+                               _("malformed emulated GIC information in QEMU capabilities cache"));
                 return -1;
             }
             if (boolValue)

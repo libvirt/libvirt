@@ -2198,8 +2198,7 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
 
         if (def) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot resize the maximum memory on an "
-                             "active domain"));
+                           _("cannot resize the maximum memory on an active domain"));
             goto endjob;
         }
 
@@ -2208,16 +2207,14 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
              * is no way to change the individual node sizes with this API */
             if (virDomainNumaGetNodeCount(persistentDef->numa) > 0) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                               _("initial memory size of a domain with NUMA "
-                                 "nodes cannot be modified with this API"));
+                               _("initial memory size of a domain with NUMA nodes cannot be modified with this API"));
                 goto endjob;
             }
 
             if (persistentDef->mem.max_memory &&
                 persistentDef->mem.max_memory < newmem) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                               _("cannot set initial memory size greater than "
-                                 "the maximum memory size"));
+                               _("cannot set initial memory size greater than the maximum memory size"));
                 goto endjob;
             }
 
@@ -2274,8 +2271,7 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             /* Lack of balloon support is a fatal error */
             if (r == 0) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                               _("Unable to change memory of active domain without "
-                                 "the balloon device and guest OS balloon driver"));
+                               _("Unable to change memory of active domain without the balloon device and guest OS balloon driver"));
                 goto endjob;
             }
         }
@@ -2341,8 +2337,7 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
     if (def) {
         if (!virDomainDefHasMemballoon(def)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No memory balloon device configured, "
-                             "can not set the collection period"));
+                           _("No memory balloon device configured, can not set the collection period"));
             goto endjob;
         }
 
@@ -2362,8 +2357,7 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
     if (persistentDef) {
         if (!virDomainDefHasMemballoon(persistentDef)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No memory balloon device configured, "
-                             "can not set the collection period"));
+                           _("No memory balloon device configured, can not set the collection period"));
             goto endjob;
         }
         persistentDef->memballoon->period = period;
@@ -3141,8 +3135,7 @@ doCoreDump(virQEMUDriver *driver,
     } else {
         if (dumpformat != VIR_DOMAIN_CORE_DUMP_FORMAT_RAW) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("kdump-compressed format is only supported with "
-                             "memory-only dump"));
+                           _("kdump-compressed format is only supported with memory-only dump"));
             goto cleanup;
         }
 
@@ -4166,8 +4159,7 @@ qemuDomainSetVcpusMax(virQEMUDriver *driver,
 
     if (virDomainNumaGetCPUCountTotal(persistentDef->numa) > nvcpus) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Number of CPUs in <numa> exceeds the desired "
-                         "maximum vcpu count"));
+                       _("Number of CPUs in <numa> exceeds the desired maximum vcpu count"));
         return -1;
     }
 
@@ -4514,8 +4506,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
 
             if (virDomainCgroupSetupCpusetCpus(cgroup_emulator, pcpumap) < 0) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                               _("failed to set cpuset.cpus in cgroup"
-                                 " for emulator threads"));
+                               _("failed to set cpuset.cpus in cgroup for emulator threads"));
                 goto endjob;
             }
         }
@@ -4665,8 +4656,7 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 
         if (!virDomainObjIsActive(vm)) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("vCPU count provided by the guest agent can only be "
-                             "requested for live domains"));
+                           _("vCPU count provided by the guest agent can only be requested for live domains"));
             goto endjob;
         }
 
@@ -6539,14 +6529,12 @@ qemuDomainUndefineFlags(virDomainPtr dom,
         if (flags & VIR_DOMAIN_UNDEFINE_MANAGED_SAVE) {
             if (unlink(name) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Failed to remove domain managed "
-                                 "save image"));
+                               _("Failed to remove domain managed save image"));
                 goto endjob;
             }
         } else {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("Refusing to undefine while domain managed "
-                             "save image exists"));
+                           _("Refusing to undefine while domain managed save image exists"));
             goto endjob;
         }
     }
@@ -10635,8 +10623,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
          * VIR_MIGRATE_TUNNELLED set
          */
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Tunnelled migration requested but invalid "
-                         "RPC method called"));
+                       _("Tunnelled migration requested but invalid RPC method called"));
         return -1;
     }
 
@@ -10865,8 +10852,7 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
          * VIR_MIGRATE_TUNNELLED set
          */
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Tunnelled migration requested but invalid "
-                         "RPC method called"));
+                       _("Tunnelled migration requested but invalid RPC method called"));
         return -1;
     }
 
@@ -10952,24 +10938,21 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
         nmigrate_disks > 0) {
         if (uri_in && STRPREFIX(uri_in, "unix:") && !nbdURI) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("NBD URI must be supplied when "
-                             "migration URI uses UNIX transport method"));
+                           _("NBD URI must be supplied when migration URI uses UNIX transport method"));
             return -1;
         }
     }
 
     if (nbdURI && nbdPort) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Both port and URI requested for disk migration "
-                         "while being mutually exclusive"));
+                       _("Both port and URI requested for disk migration while being mutually exclusive"));
         return -1;
     }
 
     if (listenAddress) {
         if (uri_in && STRPREFIX(uri_in, "unix:")) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("Usage of listen-address is forbidden when "
-                             "migration URI uses UNIX transport method"));
+                           _("Usage of listen-address is forbidden when migration URI uses UNIX transport method"));
             return -1;
         }
     } else {
@@ -10981,8 +10964,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
          * VIR_MIGRATE_TUNNELLED set
          */
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Tunnelled migration requested but invalid "
-                         "RPC method called"));
+                       _("Tunnelled migration requested but invalid RPC method called"));
         return -1;
     }
 
@@ -11201,16 +11183,14 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
 
     if (nbdURI && nbdPort) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Both port and URI requested for disk migration "
-                         "while being mutually exclusive"));
+                       _("Both port and URI requested for disk migration while being mutually exclusive"));
         goto cleanup;
     }
 
     if (listenAddress) {
         if (uri && STRPREFIX(uri, "unix:")) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("Usage of listen-address is forbidden when "
-                             "migration URI uses UNIX transport method"));
+                           _("Usage of listen-address is forbidden when migration URI uses UNIX transport method"));
             return -1;
         }
     }
@@ -11226,8 +11206,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
         nmigrate_disks > 0) {
         if (uri && STRPREFIX(uri, "unix:") && !nbdURI) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("NBD URI must be supplied when "
-                             "migration URI uses UNIX transport method"));
+                           _("NBD URI must be supplied when migration URI uses UNIX transport method"));
             return -1;
         }
     }
@@ -11991,8 +11970,7 @@ qemuDomainGetJobStatsInternal(virDomainObj *vm,
 
     if (vm->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_IN) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-               _("migration statistics are available only on "
-                 "the source host"));
+               _("migration statistics are available only on the source host"));
         return -1;
     }
 
@@ -12192,14 +12170,12 @@ qemuDomainAbortJobFlags(virDomainPtr dom,
 
     case VIR_ASYNC_JOB_MIGRATION_IN:
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot abort incoming migration;"
-                         " use virDomainDestroy instead"));
+                       _("cannot abort incoming migration; use virDomainDestroy instead"));
         break;
 
     case VIR_ASYNC_JOB_START:
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot abort VM start;"
-                         " use virDomainDestroy instead"));
+                       _("cannot abort VM start; use virDomainDestroy instead"));
         break;
 
     case VIR_ASYNC_JOB_MIGRATION_OUT:
@@ -12337,8 +12313,7 @@ qemuDomainMigrateGetMaxDowntime(virDomainPtr dom,
 
     if (rc == 1) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Querying migration downtime is not supported by "
-                         "QEMU binary"));
+                       _("Querying migration downtime is not supported by QEMU binary"));
         goto endjob;
     }
 
@@ -12378,8 +12353,7 @@ qemuDomainMigrateGetCompressionCache(virDomainPtr dom,
 
     if (!qemuMigrationCapsGet(vm, QEMU_MIGRATION_CAP_XBZRLE)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("Compressed migration is not supported by "
-                         "QEMU binary"));
+                       _("Compressed migration is not supported by QEMU binary"));
         goto endjob;
     }
 
@@ -12427,8 +12401,7 @@ qemuDomainMigrateSetCompressionCache(virDomainPtr dom,
 
     if (!qemuMigrationCapsGet(vm, QEMU_MIGRATION_CAP_XBZRLE)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("Compressed migration is not supported by "
-                         "QEMU binary"));
+                       _("Compressed migration is not supported by QEMU binary"));
         goto endjob;
     }
 
@@ -12559,8 +12532,7 @@ qemuDomainMigrationGetPostcopyBandwidth(virDomainObj *vm,
 
     if (rc == 1) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("querying maximum post-copy migration speed is "
-                         "not supported by QEMU binary"));
+                       _("querying maximum post-copy migration speed is not supported by QEMU binary"));
         goto cleanup;
     }
 
@@ -12644,15 +12616,13 @@ qemuDomainMigrateStartPostCopy(virDomainPtr dom,
 
     if (vm->job->asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("post-copy can only be started while "
-                         "outgoing migration is in progress"));
+                       _("post-copy can only be started while outgoing migration is in progress"));
         goto endjob;
     }
 
     if (!(vm->job->apiFlags & VIR_MIGRATE_POSTCOPY)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("switching to post-copy requires migration to be "
-                         "started with VIR_MIGRATE_POSTCOPY flag"));
+                       _("switching to post-copy requires migration to be started with VIR_MIGRATE_POSTCOPY flag"));
         goto endjob;
     }
 
@@ -13584,8 +13554,7 @@ qemuDomainBlockPullCommon(virDomainObj *vm,
 
     if (flags & VIR_DOMAIN_BLOCK_REBASE_RELATIVE && !base) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("flag VIR_DOMAIN_BLOCK_REBASE_RELATIVE is valid only "
-                         "with non-null base"));
+                       _("flag VIR_DOMAIN_BLOCK_REBASE_RELATIVE is valid only with non-null base"));
         goto cleanup;
     }
 
@@ -13972,8 +13941,7 @@ qemuDomainBlockCopyValidateMirror(virStorageSource *mirror,
     if (virStorageSourceAccess(mirror, F_OK) < 0) {
         if (errno != ENOENT) {
             virReportSystemError(errno, "%s",
-                                 _("unable to verify existence of "
-                                   "block copy target"));
+                                 _("unable to verify existence of block copy target"));
             return -1;
         }
 
@@ -14211,8 +14179,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
     if (disk->src->shared && !disk->src->readonly &&
         !qemuBlockStorageSourceSupportsConcurrentAccess(mirror)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("can't pivot a shared disk to a storage volume not "
-                         "supporting sharing"));
+                       _("can't pivot a shared disk to a storage volume not supporting sharing"));
         goto endjob;
     }
 
@@ -14919,8 +14886,7 @@ qemuDomainCheckBlockIoTuneReset(virDomainDiskDef *disk,
     if (newiotune->group_name &&
         STRNEQ_NULLABLE(newiotune->group_name, disk->blkdeviotune.group_name)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("creating a new group/updating existing with all"
-                         " tune parameters zero is not supported"));
+                       _("creating a new group/updating existing with all tune parameters zero is not supported"));
         return -1;
     }
 
@@ -15099,32 +15065,28 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     if ((info.total_bytes_sec && info.read_bytes_sec) ||
         (info.total_bytes_sec && info.write_bytes_sec)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("total and read/write of bytes_sec "
-                         "cannot be set at the same time"));
+                       _("total and read/write of bytes_sec cannot be set at the same time"));
         goto endjob;
     }
 
     if ((info.total_iops_sec && info.read_iops_sec) ||
         (info.total_iops_sec && info.write_iops_sec)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("total and read/write of iops_sec "
-                         "cannot be set at the same time"));
+                       _("total and read/write of iops_sec cannot be set at the same time"));
         goto endjob;
     }
 
     if ((info.total_bytes_sec_max && info.read_bytes_sec_max) ||
         (info.total_bytes_sec_max && info.write_bytes_sec_max)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("total and read/write of bytes_sec_max "
-                         "cannot be set at the same time"));
+                       _("total and read/write of bytes_sec_max cannot be set at the same time"));
         goto endjob;
     }
 
     if ((info.total_iops_sec_max && info.read_iops_sec_max) ||
         (info.total_iops_sec_max && info.write_iops_sec_max)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("total and read/write of iops_sec_max "
-                         "cannot be set at the same time"));
+                       _("total and read/write of iops_sec_max cannot be set at the same time"));
         goto endjob;
     }
 
@@ -15916,8 +15878,7 @@ qemuDomainFSTrim(virDomainPtr dom,
 
     if (mountPoint) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("Specifying mount point "
-                         "is not supported for now"));
+                       _("Specifying mount point is not supported for now"));
         return -1;
     }
 
@@ -16322,8 +16283,7 @@ qemuDomainSetTime(virDomainPtr dom,
         !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_RTC_RESET_REINJECTION))
     {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("cannot set time: qemu doesn't support "
-                         "rtc-reset-reinjection command"));
+                       _("cannot set time: qemu doesn't support rtc-reset-reinjection command"));
         goto cleanup;
     }
 

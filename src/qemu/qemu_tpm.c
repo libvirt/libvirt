@@ -383,9 +383,7 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
     if (!privileged && tpmversion == VIR_DOMAIN_TPM_VERSION_1_2 &&
         !virTPMSwtpmSetupCapsGet(VIR_TPM_SWTPM_SETUP_FEATURE_TPM12_NOT_NEED_ROOT)) {
         return virFileWriteStr(logfile,
-                               _("Did not create EK and certificates since "
-                                 "this requires privileged mode for a "
-                                 "TPM 1.2\n"), 0600);
+                               _("Did not create EK and certificates since this requires privileged mode for a TPM 1.2\n"), 0600);
     }
 
     if (!privileged && qemuTPMCreateConfigFiles(swtpm_setup) < 0)

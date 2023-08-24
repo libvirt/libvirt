@@ -2912,8 +2912,7 @@ qemuBuildLegacyUSBControllerCommandLine(virCommand *cmd,
 
     if (nlegacy > 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Multiple legacy USB controllers are "
-                         "not supported"));
+                       _("Multiple legacy USB controllers are not supported"));
         return -1;
     }
 
@@ -3124,9 +3123,8 @@ qemuBuildMemoryGetDefaultPagesize(virQEMUDriverConfig *cfg,
     virHugeTLBFS *p;
 
     if (!cfg->nhugetlbfs) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("hugetlbfs filesystem is not mounted "
-                               "or disabled by administrator config"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("hugetlbfs filesystem is not mounted or disabled by administrator config"));
         return -1;
     }
 
@@ -3484,8 +3482,7 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
         mem->source.nvdimm.pmem) {
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE_PMEM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("nvdimm pmem property is not available "
-                             "with this QEMU binary"));
+                           _("nvdimm pmem property is not available with this QEMU binary"));
             return -1;
         }
         if (virJSONValueObjectAdd(&props, "b:pmem", true, NULL) < 0)
@@ -5749,8 +5746,7 @@ qemuBuildSmbiosCommandLine(virCommand *cmd,
 
         if (source->nbaseBoard > 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("qemu does not support more than "
-                             "one entry to Type 2 in SMBIOS table"));
+                           _("qemu does not support more than one entry to Type 2 in SMBIOS table"));
             return -1;
         }
 
@@ -6244,8 +6240,7 @@ qemuBuildGlobalControllerCommandLine(virCommand *cmd,
 
             default:
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("64-bit PCI hole setting is only for root"
-                                 " PCI controllers"));
+                               _("64-bit PCI hole setting is only for root PCI controllers"));
                 return -1;
             }
 
@@ -6784,8 +6779,7 @@ qemuAppendDomainFeaturesMachineParam(virBuffer *buf,
         case VIR_GIC_VERSION_HOST:
             if (!hasGICVersionOption) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("gic-version option is not available "
-                                 "with this QEMU binary"));
+                               _("gic-version option is not available with this QEMU binary"));
                 return -1;
             }
 
@@ -8254,9 +8248,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfig *cfg,
     case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
         if (!hasSecure) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("spice defaultMode secure requested in XML "
-                             "configuration, but TLS connection is not "
-                             "available"));
+                           _("spice defaultMode secure requested in XML configuration, but TLS connection is not available"));
             return -1;
         }
         virBufferAddLit(&opt, "tls-channel=default,");
@@ -8264,9 +8256,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfig *cfg,
     case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
         if (!hasInsecure) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("spice defaultMode insecure requested in XML "
-                             "configuration, but plaintext connection is not "
-                             "available"));
+                           _("spice defaultMode insecure requested in XML configuration, but plaintext connection is not available"));
             return -1;
         }
         virBufferAddLit(&opt, "plaintext-channel=default,");
@@ -8282,9 +8272,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfig *cfg,
         case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
             if (!hasSecure) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("spice secure channels set in XML "
-                                 "configuration, but TLS connection is not "
-                                 "available"));
+                               _("spice secure channels set in XML configuration, but TLS connection is not available"));
                 return -1;
             }
             virBufferAsprintf(&opt, "tls-channel=%s,",
@@ -8294,9 +8282,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfig *cfg,
         case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
             if (!hasInsecure) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("spice insecure channels set in XML "
-                                 "configuration, but plaintext connection "
-                                 "is not available"));
+                               _("spice insecure channels set in XML configuration, but plaintext connection is not available"));
                 return -1;
             }
             virBufferAsprintf(&opt, "plaintext-channel=%s,",
@@ -9032,8 +9018,7 @@ qemuBuildShmemCommandLine(virCommand *cmd,
 
     if (shmem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("only 'pci' addresses are supported for the "
-                         "shared memory device"));
+                       _("only 'pci' addresses are supported for the shared memory device"));
         return -1;
     }
 
@@ -10029,8 +10014,7 @@ qemuBuildCommandLineValidate(virQEMUDriver *driver,
 
     if (sdl > 1 || vnc > 1 || spice > 1 || egl_headless > 1 || dbus > 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("only 1 graphics device of each type "
-                         "(sdl, vnc, spice, headless, dbus) is supported"));
+                       _("only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is supported"));
         return -1;
     }
 

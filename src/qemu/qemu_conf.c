@@ -1548,9 +1548,8 @@ qemuGetDomainHupageMemPath(virQEMUDriver *driver,
     size_t i = 0;
 
     if (!cfg->nhugetlbfs) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("hugetlbfs filesystem is not mounted "
-                               "or disabled by administrator config"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("hugetlbfs filesystem is not mounted or disabled by administrator config"));
         return -1;
     }
 

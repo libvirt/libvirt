@@ -476,8 +476,7 @@ qemuMigrationDstPrecreateStorage(virDomainObj *vm,
 
         if (incremental) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("pre-creation of storage targets for incremental "
-                             "storage migration is not supported"));
+                           _("pre-creation of storage targets for incremental storage migration is not supported"));
             goto cleanup;
         }
 
@@ -1479,8 +1478,7 @@ qemuMigrationSrcIsAllowed(virDomainObj *vm,
 
                 if (block) {
                     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                                   _("domain has 'invtsc' CPU feature but "
-                                     "TSC frequency is not specified"));
+                                   _("domain has 'invtsc' CPU feature but TSC frequency is not specified"));
                     return false;
                 }
             }
@@ -1493,8 +1491,7 @@ qemuMigrationSrcIsAllowed(virDomainObj *vm,
             if (mem->model == VIR_DOMAIN_MEMORY_MODEL_DIMM &&
                 mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                               _("domain's dimm info lacks slot ID "
-                                 "or base address"));
+                               _("domain's dimm info lacks slot ID or base address"));
 
                 return false;
             }
@@ -1648,8 +1645,7 @@ qemuMigrationSrcIsSafe(virDomainDef *def,
         }
 
         virReportError(VIR_ERR_MIGRATE_UNSAFE, "%s",
-                       _("Migration may lead to data corruption if disks"
-                         " use cache other than none or directsync"));
+                       _("Migration may lead to data corruption if disks use cache other than none or directsync"));
         return false;
     }
 
@@ -2205,8 +2201,7 @@ qemuMigrationDstCheckProtocol(virQEMUCaps *qemuCaps,
     if (STRPREFIX(migrateFrom, "rdma")) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_RDMA)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("incoming RDMA migration is not supported "
-                             "with this QEMU binary"));
+                           _("incoming RDMA migration is not supported with this QEMU binary"));
             return -1;
         }
     } else if (!STRPREFIX(migrateFrom, "tcp") &&
@@ -2572,8 +2567,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
         (!(flags & VIR_MIGRATE_LIVE) ||
          flags & VIR_MIGRATE_PAUSED)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("post-copy migration is not supported with non-live "
-                         "or paused migration"));
+                       _("post-copy migration is not supported with non-live or paused migration"));
         return NULL;
     }
 
@@ -3733,8 +3727,7 @@ qemuMigrationDstPrepareDirect(virQEMUDriver *driver,
 
         if (STRPREFIX(hostname, "localhost")) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("hostname on destination resolved to localhost,"
-                             " but migration requires an FQDN"));
+                           _("hostname on destination resolved to localhost, but migration requires an FQDN"));
             goto cleanup;
         }
 
@@ -4600,8 +4593,7 @@ qemuMigrationSrcStart(virDomainObj *vm,
         if (spec->fwdType != MIGRATION_FWD_DIRECT) {
             if (!tunnelFd) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("tunnelFD argument is required for tunnelled "
-                                 "migration"));
+                               _("tunnelFD argument is required for tunnelled migration"));
                 VIR_FORCE_CLOSE(spec->dest.fd.local);
                 VIR_FORCE_CLOSE(spec->dest.fd.qemu);
                 return -1;
@@ -5149,14 +5141,12 @@ qemuMigrationSrcPerformNative(virQEMUDriver *driver,
     if (STREQ(uribits->scheme, "rdma")) {
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_RDMA)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("outgoing RDMA migration is not supported "
-                             "with this QEMU binary"));
+                           _("outgoing RDMA migration is not supported with this QEMU binary"));
             return -1;
         }
         if (!virMemoryLimitIsSet(vm->def->mem.hard_limit)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot start RDMA migration with no memory hard "
-                             "limit set"));
+                           _("cannot start RDMA migration with no memory hard limit set"));
             return -1;
         }
     }
@@ -5166,8 +5156,7 @@ qemuMigrationSrcPerformNative(virQEMUDriver *driver,
             !(flags & VIR_MIGRATE_POSTCOPY_RESUME) &&
             !qemuMigrationParamsTLSHostnameIsSet(migParams)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("Explicit destination hostname is required "
-                             "for TLS migration over UNIX socket"));
+                           _("Explicit destination hostname is required for TLS migration over UNIX socket"));
             return -1;
         }
 
@@ -5878,22 +5867,19 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriver *driver,
 
     if (flags & VIR_MIGRATE_TUNNELLED && uri) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("migration URI is not supported by tunnelled "
-                         "migration"));
+                       _("migration URI is not supported by tunnelled migration"));
         goto cleanup;
     }
 
     if (flags & VIR_MIGRATE_TUNNELLED && listenAddress) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("listen address is not supported by tunnelled "
-                         "migration"));
+                       _("listen address is not supported by tunnelled migration"));
         goto cleanup;
     }
 
     if (flags & VIR_MIGRATE_TUNNELLED && nbdPort) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("disk port address is not supported by tunnelled "
-                         "migration"));
+                       _("disk port address is not supported by tunnelled migration"));
         goto cleanup;
     }
 
@@ -5956,15 +5942,13 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriver *driver,
      * old-style APIs. */
     if (!useParams && (graphicsuri || listenAddress || nmigrate_disks)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("Migration APIs with extensible parameters are not "
-                         "supported but extended parameters were passed"));
+                       _("Migration APIs with extensible parameters are not supported but extended parameters were passed"));
         goto cleanup;
     }
 
     if (offline && !dstOffline) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("offline migration is not supported by "
-                         "the destination host"));
+                       _("offline migration is not supported by the destination host"));
         goto cleanup;
     }
 

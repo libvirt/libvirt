@@ -6363,8 +6363,7 @@ qemuDomainHotplugDelVcpu(virQEMUDriver *driver,
     if ((rc = qemuDomainWaitForDeviceRemoval(vm)) <= 0) {
         if (rc == 0)
             virReportError(VIR_ERR_OPERATION_TIMEOUT, "%s",
-                           _("vcpu unplug request timed out. Unplug result "
-                             "must be manually inspected in the domain"));
+                           _("vcpu unplug request timed out. Unplug result must be manually inspected in the domain"));
 
         goto cleanup;
     }
@@ -6502,8 +6501,7 @@ qemuDomainSelectHotplugVcpuEntities(virDomainDef *def,
 
             if (curvcpus > nvcpus) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("target vm vcpu granularity does not allow the "
-                                 "desired vcpu count"));
+                               _("target vm vcpu granularity does not allow the desired vcpu count"));
                 return NULL;
             }
 
@@ -6529,8 +6527,7 @@ qemuDomainSelectHotplugVcpuEntities(virDomainDef *def,
 
             if (curvcpus < nvcpus) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("target vm vcpu granularity does not allow the "
-                                 "desired vcpu count"));
+                               _("target vm vcpu granularity does not allow the desired vcpu count"));
                 return NULL;
             }
 
@@ -6540,8 +6537,7 @@ qemuDomainSelectHotplugVcpuEntities(virDomainDef *def,
 
     if (curvcpus != nvcpus) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("failed to find appropriate hotpluggable vcpus to "
-                         "reach the desired target vcpu count"));
+                       _("failed to find appropriate hotpluggable vcpus to reach the desired target vcpu count"));
         return NULL;
     }
 
@@ -6848,8 +6844,7 @@ qemuDomainSetVcpuInternal(virQEMUDriver *driver,
     if (def) {
         if (!qemuDomainSupportsNewVcpuHotplug(vm)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("this qemu version does not support specific "
-                             "vCPU hotplug"));
+                           _("this qemu version does not support specific vCPU hotplug"));
             return -1;
         }
 
@@ -6935,8 +6930,7 @@ qemuDomainChangeDiskLive(virDomainObj *vm,
         if (disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
             disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk source can be changed only in removable "
-                             "drives"));
+                           _("disk source can be changed only in removable drives"));
             return -1;
         }
 

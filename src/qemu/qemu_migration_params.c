@@ -1006,8 +1006,7 @@ qemuMigrationParamsApply(virDomainObj *vm,
         if (asyncJob == VIR_ASYNC_JOB_NONE) {
             if (!virBitmapIsAllClear(migParams->caps)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Migration capabilities can only be set by "
-                                 "a migration job"));
+                               _("Migration capabilities can only be set by a migration job"));
                 goto cleanup;
             }
         } else if (qemuMigrationParamsApplyCaps(vm, migParams->caps) < 0) {
@@ -1091,8 +1090,7 @@ qemuMigrationParamsEnableTLS(virQEMUDriver *driver,
 
     if (!jobPriv->migParams->params[QEMU_MIGRATION_PARAM_TLS_CREDS].set) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("TLS migration is not supported with this "
-                         "QEMU binary"));
+                       _("TLS migration is not supported with this QEMU binary"));
         return -1;
     }
 

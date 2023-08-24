@@ -160,8 +160,7 @@ qemuAgentOpenUnix(const char *socketpath)
 
     if (virSetCloseExec(agentfd) < 0) {
         virReportSystemError(errno, "%s",
-                             _("Unable to set agent "
-                               "close-on-exec flag"));
+                             _("Unable to set agent close-on-exec flag"));
         goto error;
     }
 
@@ -757,8 +756,7 @@ static int qemuAgentSend(qemuAgent *agent,
                 ret = -2;
             } else {
                 virReportSystemError(errno, "%s",
-                                     _("Unable to wait on agent socket "
-                                       "condition"));
+                                     _("Unable to wait on agent socket condition"));
             }
             agent->inSync = false;
             goto cleanup;
@@ -1344,8 +1342,7 @@ qemuAgentGetVCPUs(qemuAgent *agent,
 
         if (!entry) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("array element missing in guest-get-vcpus return "
-                             "value"));
+                           _("array element missing in guest-get-vcpus return value"));
             return -1;
         }
 
@@ -1862,8 +1859,7 @@ qemuAgentGetFSInfo(qemuAgent *agent,
 
         if (!(result = virJSONValueObjectGetString(entry, "mountpoint"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("'mountpoint' missing in reply of "
-                             "guest-get-fsinfo"));
+                           _("'mountpoint' missing in reply of guest-get-fsinfo"));
             goto cleanup;
         }
 
@@ -2207,8 +2203,7 @@ qemuAgentGetUsers(qemuAgent *agent,
 
         if (!entry) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("array element missing in guest-get-users return "
-                             "value"));
+                           _("array element missing in guest-get-users return value"));
             return -1;
         }
 
@@ -2522,8 +2517,7 @@ int qemuAgentGetDisks(qemuAgent *agent,
 
         if (!entry) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("array element missing in guest-get-disks return "
-                             "value"));
+                           _("array element missing in guest-get-disks return value"));
             goto error;
         }
 

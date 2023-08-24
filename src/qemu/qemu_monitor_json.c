@@ -2253,8 +2253,7 @@ qemuMonitorJSONBlockStatsCollectData(virJSONValue *dev,
 
     if ((stats = virJSONValueObjectGetObject(dev, "stats")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("blockstats stats entry was not "
-                         "in expected format"));
+                       _("blockstats stats entry was not in expected format"));
         return NULL;
     }
 
@@ -2425,8 +2424,7 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
 
         if (!dev || virJSONValueGetType(dev) != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("blockstats device entry was not "
-                             "in expected format"));
+                           _("blockstats device entry was not in expected format"));
             return -1;
         }
 
@@ -3025,8 +3023,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValue *reply,
                                                   &stats->disk_transferred);
             if (rc < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("disk migration was active, but "
-                                 "'transferred' data was missing"));
+                               _("disk migration was active, but 'transferred' data was missing"));
                 return -1;
             }
 
@@ -3034,8 +3031,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValue *reply,
                                                   &stats->disk_remaining);
             if (rc < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("disk migration was active, but 'remaining' "
-                                 "data was missing"));
+                               _("disk migration was active, but 'remaining' data was missing"));
                 return -1;
             }
 
@@ -3043,8 +3039,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValue *reply,
                                                   &stats->disk_total);
             if (rc < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("disk migration was active, but 'total' "
-                                 "data was missing"));
+                               _("disk migration was active, but 'total' data was missing"));
                 return -1;
             }
 
@@ -3062,8 +3057,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValue *reply,
                                                   &stats->xbzrle_cache_size);
             if (rc < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("XBZRLE is active, but 'cache-size' data "
-                                 "was missing"));
+                               _("XBZRLE is active, but 'cache-size' data was missing"));
                 return -1;
             }
 
@@ -3071,8 +3065,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValue *reply,
                                                   &stats->xbzrle_bytes);
             if (rc < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("XBZRLE is active, but 'bytes' data "
-                                 "was missing"));
+                               _("XBZRLE is active, but 'bytes' data was missing"));
                 return -1;
             }
 
@@ -3080,8 +3073,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValue *reply,
                                                   &stats->xbzrle_pages);
             if (rc < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("XBZRLE is active, but 'pages' data "
-                                 "was missing"));
+                               _("XBZRLE is active, but 'pages' data was missing"));
                 return -1;
             }
 
@@ -3089,8 +3081,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValue *reply,
                                                   &stats->xbzrle_cache_miss);
             if (rc < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("XBZRLE is active, but 'cache-miss' data "
-                                 "was missing"));
+                               _("XBZRLE is active, but 'cache-miss' data was missing"));
                 return -1;
             }
 
@@ -3098,8 +3089,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValue *reply,
                                                   &stats->xbzrle_overflow);
             if (rc < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("XBZRLE is active, but 'overflow' data "
-                                 "was missing"));
+                               _("XBZRLE is active, but 'overflow' data was missing"));
                 return -1;
             }
         }
@@ -3619,30 +3609,26 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValue *msg,
 
     if (!(tmp = virJSONValueObjectGetString(entry, "name"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid name "
-                         "in query-rx-filter response"));
+                       _("Missing or invalid name in query-rx-filter response"));
         return -1;
     }
     fil->name = g_strdup(tmp);
     if ((!(tmp = virJSONValueObjectGetString(entry, "main-mac"))) ||
         virMacAddrParse(tmp, &fil->mac) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid 'main-mac' "
-                         "in query-rx-filter response"));
+                       _("Missing or invalid 'main-mac' in query-rx-filter response"));
         return -1;
     }
     if (virJSONValueObjectGetBoolean(entry, "promiscuous",
                                      &fil->promiscuous) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid 'promiscuous' "
-                         "in query-rx-filter response"));
+                       _("Missing or invalid 'promiscuous' in query-rx-filter response"));
         return -1;
     }
     if (virJSONValueObjectGetBoolean(entry, "broadcast-allowed",
                                      &fil->broadcastAllowed) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid 'broadcast-allowed' "
-                         "in query-rx-filter response"));
+                       _("Missing or invalid 'broadcast-allowed' in query-rx-filter response"));
         return -1;
     }
 
@@ -3650,15 +3636,13 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValue *msg,
         ((fil->unicast.mode
           = virNetDevRxFilterModeTypeFromString(tmp)) < 0)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid 'unicast' "
-                         "in query-rx-filter response"));
+                       _("Missing or invalid 'unicast' in query-rx-filter response"));
         return -1;
     }
     if (virJSONValueObjectGetBoolean(entry, "unicast-overflow",
                                      &fil->unicast.overflow) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid 'unicast-overflow' "
-                         "in query-rx-filter response"));
+                       _("Missing or invalid 'unicast-overflow' in query-rx-filter response"));
         return -1;
     }
     if ((!(table = virJSONValueObjectGetArray(entry, "unicast-table")))) {
@@ -3689,15 +3673,13 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValue *msg,
         ((fil->multicast.mode
           = virNetDevRxFilterModeTypeFromString(tmp)) < 0)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid 'multicast' "
-                         "in query-rx-filter response"));
+                       _("Missing or invalid 'multicast' in query-rx-filter response"));
         return -1;
     }
     if (virJSONValueObjectGetBoolean(entry, "multicast-overflow",
                                      &fil->multicast.overflow) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid 'multicast-overflow' "
-                         "in query-rx-filter response"));
+                       _("Missing or invalid 'multicast-overflow' in query-rx-filter response"));
         return -1;
     }
     if ((!(table = virJSONValueObjectGetArray(entry, "multicast-table")))) {
@@ -3728,8 +3710,7 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValue *msg,
         ((fil->vlan.mode
           = virNetDevRxFilterModeTypeFromString(tmp)) < 0)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid 'vlan' "
-                         "in query-rx-filter response"));
+                       _("Missing or invalid 'vlan' in query-rx-filter response"));
         return -1;
     }
     if ((!(table = virJSONValueObjectGetArray(entry, "vlan-table")))) {
@@ -4528,8 +4509,7 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValue *io_throttle,
 
         if (!temp_dev || virJSONValueGetType(temp_dev) != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("block_io_throttle device entry "
-                             "was not in expected format"));
+                           _("block_io_throttle device entry was not in expected format"));
             return -1;
         }
 
@@ -4538,8 +4518,7 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValue *io_throttle,
 
         if (!current_drive && !current_qdev) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("block_io_throttle device entry "
-                             "was not in expected format"));
+                           _("block_io_throttle device entry was not in expected format"));
             return -1;
         }
 
@@ -4550,8 +4529,7 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValue *io_throttle,
         found = true;
         if (!(inserted = virJSONValueObjectGetObject(temp_dev, "inserted"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("block_io_throttle inserted entry "
-                             "was not in expected format"));
+                           _("block_io_throttle inserted entry was not in expected format"));
             return -1;
         }
         GET_THROTTLE_STATS("bps", total_bytes_sec);
@@ -4795,8 +4773,7 @@ int qemuMonitorJSONGetMachines(qemuMonitor *mon,
         if (virJSONValueObjectHasKey(child, "default-cpu-type")) {
             if (!(tmp = virJSONValueObjectGetString(child, "default-cpu-type"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("query-machines reply has malformed "
-                                 "'default-cpu-type' data"));
+                               _("query-machines reply has malformed 'default-cpu-type' data"));
                 goto cleanup;
             }
 
@@ -4806,8 +4783,7 @@ int qemuMonitorJSONGetMachines(qemuMonitor *mon,
         if (virJSONValueObjectHasKey(child, "numa-mem-supported")) {
             if (virJSONValueObjectGetBoolean(child, "numa-mem-supported", &info->numaMemSupported) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("query-machines reply has malformed "
-                                 "'numa-mem-supported' data"));
+                               _("query-machines reply has malformed 'numa-mem-supported' data"));
                 goto cleanup;
             }
         } else {
@@ -4817,8 +4793,7 @@ int qemuMonitorJSONGetMachines(qemuMonitor *mon,
         if (virJSONValueObjectHasKey(child, "default-ram-id")) {
             if (!(tmp = virJSONValueObjectGetString(child, "default-ram-id"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("query-machines reply has malformed "
-                                 "'default-ram-id' data"));
+                               _("query-machines reply has malformed 'default-ram-id' data"));
                 goto cleanup;
             }
 
@@ -5243,8 +5218,7 @@ qemuMonitorJSONGetCPUModelComparison(qemuMonitor *mon,
 
     if (!(data_result = virJSONValueObjectGetString(data, "result"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-cpu-model-comparison reply data was missing "
-                         "'result'"));
+                       _("query-cpu-model-comparison reply data was missing 'result'"));
         return -1;
     }
 
@@ -5983,30 +5957,26 @@ qemuMonitorJSONGetSEVCapabilities(qemuMonitor *mon,
 
     if (virJSONValueObjectGetNumberUint(caps, "cbitpos", &cbitpos) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-sev-capabilities reply was missing"
-                         " 'cbitpos' field"));
+                       _("query-sev-capabilities reply was missing 'cbitpos' field"));
         return -1;
     }
 
     if (virJSONValueObjectGetNumberUint(caps, "reduced-phys-bits",
                                         &reduced_phys_bits) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-sev-capabilities reply was missing"
-                         " 'reduced-phys-bits' field"));
+                       _("query-sev-capabilities reply was missing 'reduced-phys-bits' field"));
         return -1;
     }
 
     if (!(pdh = virJSONValueObjectGetString(caps, "pdh"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-sev-capabilities reply was missing"
-                         " 'pdh' field"));
+                       _("query-sev-capabilities reply was missing 'pdh' field"));
         return -1;
     }
 
     if (!(cert_chain = virJSONValueObjectGetString(caps, "cert-chain"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-sev-capabilities reply was missing"
-                         " 'cert-chain' field"));
+                       _("query-sev-capabilities reply was missing 'cert-chain' field"));
         return -1;
     }
 
@@ -7072,8 +7042,7 @@ qemuMonitorJSONGetIOThreads(qemuMonitor *mon,
         if (virJSONValueObjectGetNumberInt(child, "thread-id",
                                            &info->thread_id) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("query-iothreads reply has malformed "
-                             "'thread-id' data"));
+                           _("query-iothreads reply has malformed 'thread-id' data"));
             goto cleanup;
         }
 
@@ -7194,8 +7163,7 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
 
         if (!(modelStr = virJSONValueObjectGetString(elem, "type"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("query-memory-devices reply data doesn't contain "
-                             "enum type discriminator"));
+                           _("query-memory-devices reply data doesn't contain enum type discriminator"));
             return -1;
         }
 
@@ -7206,8 +7174,7 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
 
         if (!(dimminfo = virJSONValueObjectGetObject(elem, "data"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("query-memory-devices reply data doesn't "
-                             "contain enum data"));
+                           _("query-memory-devices reply data doesn't contain enum data"));
             return -1;
         }
 
@@ -7622,8 +7589,7 @@ qemuMonitorJSONProcessHotpluggableCpusReply(virJSONValue *vcpu,
     if (entry->node_id == -1 && entry->socket_id == -1 &&
         entry->core_id == -1 && entry->thread_id == -1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-hotpluggable-cpus entry doesn't report "
-                         "topology information"));
+                       _("query-hotpluggable-cpus entry doesn't report topology information"));
         return -1;
     }
 
