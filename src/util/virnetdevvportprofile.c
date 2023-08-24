@@ -530,8 +530,7 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
 
                 if (nla_type(tb_vf_ports) != IFLA_VF_PORT) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("error while iterating over "
-                                     "IFLA_VF_PORTS part"));
+                                   _("error while iterating over IFLA_VF_PORTS part"));
                     return -1;
                 }
 
@@ -584,8 +583,7 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
                     if (nla_parse_nested(tb_port, IFLA_PORT_MAX, tb_vf_ports,
                                          ifla_port_policy)) {
                         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                       _("error parsing IFLA_VF_PORT "
-                                         "during error reporting"));
+                                       _("error parsing IFLA_VF_PORT during error reporting"));
                         return -1;
                     }
                     if (tb_port[IFLA_PORT_INSTANCE_UUID]) {

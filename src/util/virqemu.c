@@ -207,8 +207,7 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
     case VIR_JSON_TYPE_ARRAY:
         if (nested) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("nested JSON array to commandline conversion is "
-                             "not supported"));
+                           _("nested JSON array to commandline conversion is not supported"));
             return -1;
         }
 

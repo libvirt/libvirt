@@ -225,8 +225,7 @@ virNetlinkCreateSocket(int protocol)
 
     if (virNetlinkSetBufferSize(nlhandle, 131702, 0) < 0) {
         virReportSystemError(errno, "%s",
-                             _("cannot set netlink socket buffer "
-                               "size to 128k"));
+                             _("cannot set netlink socket buffer size to 128k"));
         goto error;
     }
     nl_socket_enable_msg_peek(nlhandle);

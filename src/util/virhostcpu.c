@@ -892,8 +892,7 @@ virHostCPUStatsAssign(virNodeCPUStatsPtr param,
 {
     if (virStrcpyStatic(param->field, name) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("kernel cpu time field is too long"
-                               " for the destination"));
+                       "%s", _("kernel cpu time field is too long for the destination"));
         return -1;
     }
     param->value = value;

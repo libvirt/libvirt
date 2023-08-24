@@ -1094,8 +1094,7 @@ virFileNBDLoadDriver(void)
 {
     if (virKModIsProhibited(NBD_DRIVER)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to load nbd module: "
-                         "administratively prohibited"));
+                       _("Failed to load nbd module: administratively prohibited"));
         return false;
     } else {
         g_autofree char *errbuf = NULL;

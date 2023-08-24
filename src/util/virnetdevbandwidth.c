@@ -208,15 +208,13 @@ virNetDevBandwidthSet(const char *ifname,
 
     if (geteuid() != 0) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("Network bandwidth tuning is not available"
-                         " in session mode"));
+                       _("Network bandwidth tuning is not available in session mode"));
         return -1;
     }
 
     if (!ifname) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("Unable to set bandwidth for interface because "
-                         "device name is unknown"));
+                       _("Unable to set bandwidth for interface because device name is unknown"));
         return -1;
     }
 

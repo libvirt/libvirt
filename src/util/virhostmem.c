@@ -392,8 +392,7 @@ virHostMemSetParameters(virTypedParameterPtr params G_GNUC_UNUSED,
     virCheckFlags(0, -1);
 
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                   _("node set memory parameters not implemented"
-                     " on this platform"));
+                   _("node set memory parameters not implemented on this platform"));
     return -1;
 }
 #endif
@@ -586,8 +585,7 @@ virHostMemGetParameters(virTypedParameterPtr params G_GNUC_UNUSED,
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
 
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                   _("node get memory parameters not implemented"
-                     " on this platform"));
+                   _("node get memory parameters not implemented on this platform"));
     return -1;
 }
 #endif

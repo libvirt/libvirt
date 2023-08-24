@@ -2691,8 +2691,7 @@ virCommandRunAsync(virCommand *cmd, pid_t *pid)
                                 virCommandDoAsyncIOHelper,
                                 "cmd-async-io", false, cmd) < 0) {
             virReportSystemError(errno, "%s",
-                                 _("Unable to create thread "
-                                   "to process command's IO"));
+                                 _("Unable to create thread to process command's IO"));
             VIR_FREE(cmd->asyncioThread);
             virCommandAbort(cmd);
             ret = -1;

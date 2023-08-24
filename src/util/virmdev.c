@@ -167,8 +167,7 @@ virMediatedDeviceNew(const char *uuidstr G_GNUC_UNUSED,
                      virMediatedDeviceModelType model G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("mediated devices are not supported on non-linux "
-                     "platforms"));
+                   _("mediated devices are not supported on non-linux platforms"));
     return NULL;
 }
 

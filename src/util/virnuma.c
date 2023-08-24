@@ -69,8 +69,7 @@ virNumaGetAutoPlacementAdvice(unsigned short vcpus,
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("Failed to query numad for the "
-                         "advisory nodeset"));
+                       _("Failed to query numad for the advisory nodeset"));
         VIR_FREE(output);
     }
 
@@ -149,8 +148,7 @@ virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode,
 
         if (!has_preferred_many && nnodes != 1) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("NUMA memory tuning in 'preferred' mode "
-                                   "only supports single node"));
+                           "%s", _("NUMA memory tuning in 'preferred' mode only supports single node"));
             return -1;
         }
 

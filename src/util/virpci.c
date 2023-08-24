@@ -1454,8 +1454,7 @@ virPCIDeviceAddressIsValid(virPCIDeviceAddress *addr,
     if (virPCIDeviceAddressIsEmpty(addr)) {
         if (report)
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Invalid PCI address 0000:00:00, at least "
-                             "one of domain, bus, or slot must be > 0"));
+                           _("Invalid PCI address 0000:00:00, at least one of domain, bus, or slot must be > 0"));
         return false;
     }
     return true;

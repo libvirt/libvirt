@@ -1638,15 +1638,13 @@ virProcessSetScheduler(pid_t pid,
 
         if ((min = sched_get_priority_min(pol)) < 0) {
             virReportSystemError(errno, "%s",
-                                 _("Cannot get minimum scheduler "
-                                   "priority value"));
+                                 _("Cannot get minimum scheduler priority value"));
             return -1;
         }
 
         if ((max = sched_get_priority_max(pol)) < 0) {
             virReportSystemError(errno, "%s",
-                                 _("Cannot get maximum scheduler "
-                                   "priority value"));
+                                 _("Cannot get maximum scheduler priority value"));
             return -1;
         }
 
@@ -1681,8 +1679,7 @@ virProcessSetScheduler(pid_t pid G_GNUC_UNUSED,
         return 0;
 
     virReportSystemError(ENOSYS, "%s",
-                         _("Process CPU scheduling is not supported "
-                           "on this platform"));
+                         _("Process CPU scheduling is not supported on this platform"));
     return -1;
 }
 

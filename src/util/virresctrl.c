@@ -496,8 +496,7 @@ static int
 virResctrlLock(void)
 {
     virReportSystemError(ENOSYS, "%s",
-                         _("resctrl locking is not supported "
-                           "on this platform"));
+                         _("resctrl locking is not supported on this platform"));
     return -1;
 }
 
@@ -506,8 +505,7 @@ static int
 virResctrlUnlock(int fd G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
-                         _("resctrl locking is not supported "
-                           "on this platform"));
+                         _("resctrl locking is not supported on this platform"));
     return -1;
 }
 
@@ -1468,8 +1466,7 @@ virResctrlAllocParseMemoryBandwidthLine(virResctrlInfo *resctrl,
         !resctrl->membw_info->min_bandwidth ||
         !resctrl->membw_info->bandwidth_granularity) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or inconsistent resctrl info for "
-                         "memory bandwidth allocation"));
+                       _("Missing or inconsistent resctrl info for memory bandwidth allocation"));
         return -1;
     }
 

@@ -1938,8 +1938,7 @@ virJSONValueObjectDeflattenWorker(const char *key,
     } else {
         if (!virJSONValueIsObject(existobj)) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("mixing nested objects and values is forbidden in "
-                             "JSON deflattening"));
+                           _("mixing nested objects and values is forbidden in JSON deflattening"));
             return -1;
         }
     }
