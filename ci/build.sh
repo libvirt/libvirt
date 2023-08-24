@@ -37,3 +37,8 @@ run_meson_setup() {
     run_cmd meson setup build --error -Dsystem=true $MESON_OPTS $MESON_ARGS || \
     (cat "${GIT_ROOT}/build/meson-logs/meson-log.txt" && exit 1)
 }
+
+run_build() {
+    test -f $GIT_ROOT/build/build.ninja || run_meson_setup
+    run_cmd meson compile -C build $BUILD_ARGS
+}
