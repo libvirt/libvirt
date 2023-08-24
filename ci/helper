@@ -139,6 +139,21 @@ class Parser:
         )
         shellparser.set_defaults(func=Application._action_shell)
 
+        jobparser = subparsers.add_parser(
+            "run",
+            help="Run a GitLab CI job or 'shell' in a local environment",
+            parents=[containerparser],
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        )
+        jobparser.add_argument(
+            "--job",
+            choices=["build", "codestyle", "potfile", "rpmbuild",
+                     "shell", "test", "website"],
+            default="build",
+            help="Run a GitLab CI job or 'shell' in a local environment",
+        )
+        jobparser.set_defaults(func=Application._action_run)
+
         # list-images action
         listimagesparser = subparsers.add_parser(
             "list-images",
