@@ -1379,8 +1379,7 @@ chDomainPinEmulator(virDomainPtr dom,
 
             if (virDomainCgroupSetupCpusetCpus(cgroup_emulator, pcpumap) < 0) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                               _("failed to set cpuset.cpus in cgroup"
-                                 " for emulator threads"));
+                               _("failed to set cpuset.cpus in cgroup for emulator threads"));
                 goto endjob;
             }
         }

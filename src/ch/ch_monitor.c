@@ -637,8 +637,7 @@ virCHMonitorCurlPerform(CURL *handle)
 
     if (responseCode < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned a "
-                         "negative response code"));
+                       _("curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned a negative response code"));
         return -1;
     }
 
