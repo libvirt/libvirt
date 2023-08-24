@@ -43,6 +43,12 @@ class Parser:
             default="latest",
             help="use container images with non-default tags",
         )
+        containerparser.add_argument(
+            "--lcitool-path",
+            dest="lcitool",
+            default="lcitool",
+            help="path to lcitool (default: $PATH)",
+        )
 
         # Options that are common to all actions that call the
         # project's build system
