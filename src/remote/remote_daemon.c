@@ -219,8 +219,7 @@ daemonSetupNetworking(virNetServer *srv,
 #ifdef WITH_IP
 # ifdef LIBVIRTD
     if (act && ipsock) {
-        VIR_ERROR(_("--listen parameter not permitted with systemd activation "
-                    "sockets, see 'man libvirtd' for further guidance"));
+        VIR_ERROR(_("--listen parameter not permitted with systemd activation sockets, see 'man libvirtd' for further guidance"));
         return -1;
     }
 # else /* ! LIBVIRTD */

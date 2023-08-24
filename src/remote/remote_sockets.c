@@ -96,8 +96,7 @@ remoteSplitURIScheme(virURI *uri,
 
         if ((val = remoteDriverTransportTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("remote_open: transport in URL not recognised "
-                             "(should be tls|unix|ssh|ext|tcp|libssh2|libssh)"));
+                           _("remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|libssh2|libssh)"));
             return -1;
         }
 
