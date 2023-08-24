@@ -1899,8 +1899,7 @@ x86Compute(virCPUDef *host,
     result = x86ModelCompare(host_model, cpu_require);
     if (result == SUBSET || result == UNRELATED) {
         x86DataSubtract(&cpu_require->data, &host_model->data);
-        virX86CpuIncompatible(N_("Host CPU does not provide required "
-                                 "features"),
+        virX86CpuIncompatible(N_("Host CPU does not provide required features"),
                               &cpu_require->data);
         return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
@@ -1919,8 +1918,7 @@ x86Compute(virCPUDef *host,
     if (ret == VIR_CPU_COMPARE_SUPERSET
         && cpu->type == VIR_CPU_TYPE_GUEST
         && cpu->match == VIR_CPU_MATCH_STRICT) {
-        virX86CpuIncompatible(N_("Host CPU does not strictly match guest CPU: "
-                                 "Extra features"),
+        virX86CpuIncompatible(N_("Host CPU does not strictly match guest CPU: Extra features"),
                               &diff->data);
         return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
