@@ -553,6 +553,7 @@ mymain(void)
     DO_TEST_PARSE("integer", "1", NULL);
     DO_TEST_PARSE("boolean", "true", NULL);
     DO_TEST_PARSE("null", "null", NULL);
+    DO_TEST_PARSE("[]", "[]", NULL);
 
     DO_TEST_PARSE("escaping symbols", "[\"\\\"\\t\\n\\\\\"]", NULL);
     DO_TEST_PARSE("escaped strings", "[\"{\\\"blurb\\\":\\\"test\\\"}\"]", NULL);
