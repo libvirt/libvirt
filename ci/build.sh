@@ -52,3 +52,8 @@ run_dist() {
     git update-index --refresh
     run_cmd meson dist -C build --no-tests
 }
+
+run_test() {
+    test -f $GIT_ROOT/build/build.ninja || run_meson_setup
+    run_cmd meson test -C build $TEST_ARGS
+}
