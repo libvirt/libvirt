@@ -38,16 +38,14 @@ virDomainDefBootValidate(const virDomainDef *def)
 {
     if (def->os.bm_timeout_set && def->os.bm_timeout > 65535) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("invalid value for boot menu timeout, "
-                         "must be in range [0,65535]"));
+                       _("invalid value for boot menu timeout, must be in range [0,65535]"));
         return -1;
     }
 
     if (def->os.bios.rt_set &&
         (def->os.bios.rt_delay < -1 || def->os.bios.rt_delay > 65535)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("invalid value for rebootTimeout, "
-                         "must be in range [-1,65535]"));
+                       _("invalid value for rebootTimeout, must be in range [-1,65535]"));
         return -1;
     }
 
@@ -118,20 +116,17 @@ virDomainCheckVirtioOptionsAreAbsent(virDomainVirtioOptions *virtio)
 
     if (virtio->iommu != VIR_TRISTATE_SWITCH_ABSENT) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("iommu driver option is only supported "
-                         "for virtio devices"));
+                       _("iommu driver option is only supported for virtio devices"));
         return -1;
     }
     if (virtio->ats != VIR_TRISTATE_SWITCH_ABSENT) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("ats driver option is only supported "
-                         "for virtio devices"));
+                       _("ats driver option is only supported for virtio devices"));
         return -1;
     }
     if (virtio->packed != VIR_TRISTATE_SWITCH_ABSENT) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("packed driver option is only supported "
-                         "for virtio devices"));
+                       _("packed driver option is only supported for virtio devices"));
         return -1;
     }
 
@@ -163,8 +158,7 @@ virDomainVideoDefValidate(const virDomainVideoDef *video,
         if (def->videos[i]->type == VIR_DOMAIN_VIDEO_TYPE_NONE &&
             def->nvideos > 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("a 'none' video type must be the only video device "
-                             "defined for the domain"));
+                           _("a 'none' video type must be the only video device defined for the domain"));
             return -1;
         }
     }
@@ -303,8 +297,7 @@ virSecurityDeviceLabelDefValidate(virSecurityDeviceLabelDef **seclabels,
 
             if (!vmSeclabels[j]->relabel) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("label overrides require relabeling to be "
-                                 "enabled at the domain level"));
+                               _("label overrides require relabeling to be enabled at the domain level"));
                 return -1;
             }
         }
@@ -543,8 +536,7 @@ virDomainDiskDefValidateSourceChainOne(const virStorageSource *src)
             encryption->encinfo.cipher_name) {
 
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("supplying <cipher> for domain disk definition "
-                             "is unnecessary"));
+                           _("supplying <cipher> for domain disk definition is unnecessary"));
             return -1;
         }
     }
@@ -554,15 +546,13 @@ virDomainDiskDefValidateSourceChainOne(const virStorageSource *src)
         src->protocol != VIR_STORAGE_NET_PROTOCOL_RBD) {
         if (src->snapshot) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("<snapshot> element is currently supported "
-                             "only with 'rbd' disks"));
+                           _("<snapshot> element is currently supported only with 'rbd' disks"));
             return -1;
         }
 
         if (src->configFile) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("<config> element is currently supported "
-                             "only with 'rbd' disks"));
+                           _("<config> element is currently supported only with 'rbd' disks"));
             return -1;
         }
     }
@@ -998,8 +988,7 @@ virDomainChrSourceDefValidate(const virDomainChrSourceDef *src_def,
         if ((src_def->data.nmdm.master && !src_def->data.nmdm.slave) ||
             (!src_def->data.nmdm.master && src_def->data.nmdm.slave)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Should define both master and slave "
-                                 "path attributes for nmdm device"));
+                               _("Should define both master and slave path attributes for nmdm device"));
                 return -1;
         }
 
@@ -1082,8 +1071,7 @@ virDomainRedirdevDefValidate(const virDomainDef *def,
     if (redirdev->bus == VIR_DOMAIN_REDIRDEV_BUS_USB &&
         !virDomainDefHasUSB(def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("cannot add redirected USB device: "
-                         "USB is disabled for this domain"));
+                       _("cannot add redirected USB device: USB is disabled for this domain"));
         return -1;
     }
 
@@ -1641,8 +1629,7 @@ virDomainDefOSValidate(const virDomainDef *def,
     } else {
         if (def->os.firmwareFeatures) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("cannot use feature-based firmware autoselection "
-                             "when firmware autoselection is disabled"));
+                           _("cannot use feature-based firmware autoselection when firmware autoselection is disabled"));
             return -1;
         }
 
@@ -1742,8 +1729,7 @@ virDomainDefIOMMUValidate(const virDomainDef *def)
     if (def->iommu->intremap == VIR_TRISTATE_SWITCH_ON &&
         def->features[VIR_DOMAIN_FEATURE_IOAPIC] != VIR_DOMAIN_IOAPIC_QEMU) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("IOMMU interrupt remapping requires split I/O APIC "
-                         "(ioapic driver='qemu')"));
+                       _("IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"));
         return -1;
     }
 
@@ -2042,8 +2028,7 @@ virDomainNetDefValidate(const virDomainNetDef *net)
     if ((net->hostIP.nroutes || net->hostIP.nips) &&
         net->type != VIR_DOMAIN_NET_TYPE_ETHERNET) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Invalid attempt to set network interface host-side IP route and/or address info on interface of type '%1$s'. "
-                         "This is only supported on interfaces of type 'ethernet'"),
+                       _("Invalid attempt to set network interface host-side IP route and/or address info on interface of type '%1$s'. This is only supported on interfaces of type 'ethernet'"),
                        virDomainNetTypeToString(net->type));
         return -1;
     }
@@ -2169,8 +2154,7 @@ virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
                 hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED &&
                 hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("PCI host devices must use 'pci' or "
-                                 "'unassigned' address type"));
+                               _("PCI host devices must use 'pci' or 'unassigned' address type"));
                 return -1;
             }
             break;
@@ -2178,8 +2162,7 @@ virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
             if (hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
                 hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("SCSI host device must use 'drive' "
-                                 "address type"));
+                               _("SCSI host device must use 'drive' address type"));
                 return -1;
             }
             if (hostdev->source.subsys.u.scsi.sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED) {
@@ -2193,8 +2176,7 @@ virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
                 hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
                 hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("SCSI_host host device must use 'pci' "
-                                 "or 'ccw' address type"));
+                               _("SCSI_host host device must use 'pci' or 'ccw' address type"));
                 return -1;
             }
             break;

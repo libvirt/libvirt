@@ -47,8 +47,7 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
 
     if (nTags == 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing tag id - each <vlan> must have "
-                         "at least one <tag id='n'/> subelement"));
+                       _("missing tag id - each <vlan> must have at least one <tag id='n'/> subelement"));
         goto cleanup;
     }
 
@@ -106,8 +105,7 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
             }
             if (def->nativeMode != 0) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("invalid configuration in <vlan> - \"trunk='no'\" is "
-                                 "not allowed with a native vlan id"));
+                               _("invalid configuration in <vlan> - \"trunk='no'\" is not allowed with a native vlan id"));
                 goto cleanup;
             }
             /* allow (but discard) "trunk='no' if there is a single tag */

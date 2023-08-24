@@ -355,8 +355,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
         def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT &&
         def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_NO) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("memory state cannot be saved with offline or "
-                         "disk-only snapshot"));
+                       _("memory state cannot be saved with offline or disk-only snapshot"));
         return NULL;
     }
 

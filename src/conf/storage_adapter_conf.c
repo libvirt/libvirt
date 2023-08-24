@@ -100,8 +100,7 @@ virStorageAdapterParseXMLSCSIHost(xmlNodePtr node,
                          &scsi_host->unique_id) < 0) ||
             (scsi_host->unique_id < 0)) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Missing or invalid scsi adapter "
-                             "'unique_id' value"));
+                           _("Missing or invalid scsi adapter 'unique_id' value"));
             return -1;
         }
     }
@@ -140,15 +139,13 @@ virStorageAdapterParseXMLLegacy(xmlNodePtr node,
         VIR_FREE(wwpn);
         VIR_FREE(parent);
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Use of 'wwnn', 'wwpn', and 'parent' attributes "
-                         "requires use of the adapter 'type'"));
+                       _("Use of 'wwnn', 'wwpn', and 'parent' attributes requires use of the adapter 'type'"));
         return -1;
     }
 
     if (virXPathNode("./parentaddr", ctxt)) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Use of 'parentaddr' element requires use "
-                         "of the adapter 'type'"));
+                       _("Use of 'parentaddr' element requires use of the adapter 'type'"));
         return -1;
     }
 
@@ -198,8 +195,7 @@ virStorageAdapterValidateFCHost(virStorageAdapterFCHost *fchost)
 {
     if (!fchost->wwnn || !fchost->wwpn) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("'wwnn' and 'wwpn' must be specified for adapter "
-                         "type 'fchost'"));
+                       _("'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"));
         return -1;
     }
 
@@ -238,15 +234,13 @@ virStorageAdapterValidateSCSIHost(virStorageAdapterSCSIHost *scsi_host)
 {
     if (!scsi_host->name && !scsi_host->has_parent) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Either 'name' or 'parent' must be specified "
-                         "for the 'scsi_host' adapter"));
+                       _("Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"));
         return -1;
     }
 
     if (scsi_host->name && scsi_host->has_parent) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Both 'name' and 'parent' cannot be specified "
-                         "for the 'scsi_host' adapter"));
+                       _("Both 'name' and 'parent' cannot be specified for the 'scsi_host' adapter"));
         return -1;
     }
 

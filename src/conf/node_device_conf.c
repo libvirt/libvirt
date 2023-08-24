@@ -930,8 +930,7 @@ virNodeDevCapMdevTypesParseXML(xmlXPathContextPtr ctxt,
 
         if (!(type->id = virXPathString("string(./@id[1])", ctxt))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("missing 'id' attribute for mediated device's "
-                             "<type> element"));
+                           _("missing 'id' attribute for mediated device's <type> element"));
             goto cleanup;
         }
 

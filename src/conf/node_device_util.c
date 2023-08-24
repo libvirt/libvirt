@@ -103,8 +103,7 @@ virNodeDeviceCreateVport(virStorageAdapterFCHost *fchost)
     } else {
         if (!(parent_hoststr = virVHBAFindVportHost(NULL))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("'parent' for vHBA not specified, and "
-                             "cannot find one on this host"));
+                           _("'parent' for vHBA not specified, and cannot find one on this host"));
             return NULL;
         }
         skip_capable_check = true;

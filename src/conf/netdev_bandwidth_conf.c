@@ -105,8 +105,7 @@ virNetDevBandwidthParse(virNetDevBandwidth **bandwidth,
     if (rc == 1) {
         if (!class_id) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("classID attribute not supported on <bandwidth> "
-                             "in this usage context"));
+                           _("classID attribute not supported on <bandwidth> in this usage context"));
             return -1;
         }
 

@@ -394,8 +394,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
         if (virXPathBoolean("boolean(./arch)", ctxt)) {
             if (virXPathBoolean("boolean(./@match)", ctxt)) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("'arch' element cannot be used inside 'cpu'"
-                                 " element with 'match' attribute'"));
+                               _("'arch' element cannot be used inside 'cpu' element with 'match' attribute'"));
                 return -1;
             }
             def->type = VIR_CPU_TYPE_HOST;
@@ -436,8 +435,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
                def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
                def->mode != VIR_CPU_MODE_MAXIMUM) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Attribute migratable is only allowed for "
-                         "'host-passthrough' / 'maximum' CPU mode"));
+                       _("Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU mode"));
         return -1;
     }
 
@@ -593,8 +591,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     if (n > 0) {
         if (!def->model && def->mode == VIR_CPU_MODE_CUSTOM) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Non-empty feature list specified without "
-                             "CPU model"));
+                           _("Non-empty feature list specified without CPU model"));
             return -1;
         }
 

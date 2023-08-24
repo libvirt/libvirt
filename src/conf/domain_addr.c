@@ -905,8 +905,7 @@ virDomainPCIAddressEnsureAddr(virDomainPCIAddressSet *addrs,
          */
         if (dev->addr.pci.function != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Only PCI device addresses with function=0"
-                             " are supported"));
+                           _("Only PCI device addresses with function=0 are supported"));
             return -1;
         }
 

@@ -492,8 +492,7 @@ virDomainObjBeginJobInternal(virDomainObj *obj,
                            agentBlocker);
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("cannot acquire state change lock "
-                             "due to max_queued limit"));
+                           _("cannot acquire state change lock due to max_queued limit"));
         }
         ret = -2;
     } else {

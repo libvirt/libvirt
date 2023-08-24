@@ -432,8 +432,7 @@ virNetworkDHCPLeaseTimeDefParseXML(virNetworkDHCPLeaseTimeDef **lease,
         if ((unit == VIR_NETWORK_DHCP_LEASETIME_UNIT_SECONDS && expiry < 120) ||
             (unit == VIR_NETWORK_DHCP_LEASETIME_UNIT_MINUTES && expiry < 2)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("The minimum lease time should be greater "
-                             "than 2 minutes"));
+                           _("The minimum lease time should be greater than 2 minutes"));
             return -1;
         }
     }
@@ -922,8 +921,7 @@ virNetworkDNSDefParseXML(const char *networkName,
             def->forwarders[i].domain = virXMLPropString(fwdNodes[i], "domain");
             if (!(addr || def->forwarders[i].domain)) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Invalid forwarder element, must contain "
-                                 "at least one of addr or domain"));
+                               _("Invalid forwarder element, must contain at least one of addr or domain"));
                 return -1;
             }
             def->nfwds++;
@@ -2787,8 +2785,7 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDef *def,
         VIR_SOCKET_ADDR_FAMILY(&ipdef->address)
         != VIR_SOCKET_ADDR_FAMILY(&host.ip)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("the address family of a host entry IP must match "
-                         "the address family of the dhcp element's parent"));
+                       _("the address family of a host entry IP must match the address family of the dhcp element's parent"));
         goto cleanup;
     }
 
@@ -2913,8 +2910,7 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDef *def,
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
 
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("dhcp ranges cannot be modified, "
-                         "only added or deleted"));
+                       _("dhcp ranges cannot be modified, only added or deleted"));
         return -1;
     }
 
@@ -2924,8 +2920,7 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDef *def,
     if (VIR_SOCKET_ADDR_FAMILY(&ipdef->address)
         != VIR_SOCKET_ADDR_FAMILY(&range.addr.start)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("the address family of a dhcp range must match "
-                         "the address family of the dhcp element's parent"));
+                       _("the address family of a dhcp range must match the address family of the dhcp element's parent"));
         return -1;
     }
 
@@ -3014,8 +3009,7 @@ virNetworkDefUpdateForwardInterface(virNetworkDef *def,
 
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("forward interface entries cannot be modified, "
-                         "only added or deleted"));
+                       _("forward interface entries cannot be modified, only added or deleted"));
         goto cleanup;
     }
 
@@ -3204,8 +3198,7 @@ virNetworkDefUpdateDNSHost(virNetworkDef *def,
 
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("DNS HOST records cannot be modified, "
-                         "only added or deleted"));
+                       _("DNS HOST records cannot be modified, only added or deleted"));
         goto cleanup;
     }
 
@@ -3301,8 +3294,7 @@ virNetworkDefUpdateDNSSrv(virNetworkDef *def,
 
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("DNS SRV records cannot be modified, "
-                         "only added or deleted"));
+                       _("DNS SRV records cannot be modified, only added or deleted"));
         goto cleanup;
     }
 
@@ -3383,8 +3375,7 @@ virNetworkDefUpdateDNSTxt(virNetworkDef *def,
 
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("DNS TXT records cannot be modified, "
-                         "only added or deleted"));
+                       _("DNS TXT records cannot be modified, only added or deleted"));
         goto cleanup;
     }
 

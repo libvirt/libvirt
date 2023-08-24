@@ -147,15 +147,13 @@ virDomainNumatuneNodeParseXML(virDomainNuma *numa,
     if (numa->memory.specified &&
         numa->memory.placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Per-node binding is not compatible with "
-                         "automatic NUMA placement."));
+                       _("Per-node binding is not compatible with automatic NUMA placement."));
         return -1;
     }
 
     if (!numa->nmem_nodes) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Element 'memnode' is invalid without "
-                         "any guest NUMA cells"));
+                       _("Element 'memnode' is invalid without any guest NUMA cells"));
         return -1;
     }
 
@@ -171,8 +169,7 @@ virDomainNumatuneNodeParseXML(virDomainNuma *numa,
 
         if (cellid >= numa->nmem_nodes) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Argument 'cellid' in memnode element must "
-                             "correspond to existing guest's NUMA cell"));
+                           _("Argument 'cellid' in memnode element must correspond to existing guest's NUMA cell"));
             return -1;
         }
 
@@ -194,8 +191,7 @@ virDomainNumatuneNodeParseXML(virDomainNuma *numa,
         tmp = virXMLPropString(cur_node, "nodeset");
         if (!tmp) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Missing required nodeset attribute "
-                             "in memnode element"));
+                           _("Missing required nodeset attribute in memnode element"));
             return -1;
         }
         if (virBitmapParse(tmp, &mem_node->nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
@@ -447,8 +443,7 @@ virDomainNumatuneMaybeGetNodeset(virDomainNuma *numatune,
         numatune->memory.placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO &&
         !auto_nodeset) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Advice from numad is needed in case of "
-                         "automatic numa placement"));
+                       _("Advice from numad is needed in case of automatic numa placement"));
         return -1;
     }
 
@@ -533,8 +528,7 @@ virDomainNumatuneSet(virDomainNuma *numa,
     if (placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC &&
         !numa->memory.nodeset) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("nodeset for NUMA memory tuning must be set "
-                         "if 'placement' is 'static'"));
+                       _("nodeset for NUMA memory tuning must be set if 'placement' is 'static'"));
         return -1;
     }
 
@@ -878,9 +872,7 @@ virDomainNumaDefParseXML(virDomainNuma *def,
         /* cells are in order of parsing or explicitly numbered */
         if (cur_cell >= n) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Exactly one 'cell' element per guest "
-                             "NUMA cell allowed, non-contiguous ranges or "
-                             "ranges not starting from 0 are not allowed"));
+                           _("Exactly one 'cell' element per guest NUMA cell allowed, non-contiguous ranges or ranges not starting from 0 are not allowed"));
             return -1;
         }
 
@@ -1385,8 +1377,7 @@ virDomainNumaSetNodeDistance(virDomainNuma *numa,
     if (!distances ||
         cellid >= numa->mem_nodes[node].ndistances) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Arguments under memnode element do not "
-                         "correspond with existing guest's NUMA cell"));
+                       _("Arguments under memnode element do not correspond with existing guest's NUMA cell"));
         return -1;
     }
 

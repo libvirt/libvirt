@@ -362,10 +362,8 @@ virNWFilterVarCombIterAddVariable(virNWFilterVarCombIterEntry *cie,
         cie->curValue = minValue;
     } else {
         if (cie->maxValue != maxValue) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cardinality of list items must be "
-                             "the same for processing them in "
-                             "parallel"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cardinality of list items must be the same for processing them in parallel"));
             return -1;
         }
     }
