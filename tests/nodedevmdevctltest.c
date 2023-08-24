@@ -470,6 +470,7 @@ mymain(void)
 
     DO_TEST_LIST_DEFINED();
 
+    DO_TEST_PARSE_JSON("mdevctl-list-empty");
     DO_TEST_PARSE_JSON("mdevctl-list-empty-array");
     DO_TEST_PARSE_JSON("mdevctl-list-multiple");
 
