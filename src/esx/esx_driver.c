@@ -2916,8 +2916,7 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     if (virtualMachine) {
         /* FIXME */
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Domain already exists, editing existing domains is not "
-                         "supported yet"));
+                       _("Domain already exists, editing existing domains is not supported yet"));
         goto cleanup;
     }
 
@@ -2952,8 +2951,7 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
      */
     if (def->ndisks < 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Domain XML doesn't contain any disks, cannot deduce "
-                         "datastore and path for VMX file"));
+                       _("Domain XML doesn't contain any disks, cannot deduce datastore and path for VMX file"));
         goto cleanup;
     }
 
@@ -2967,16 +2965,14 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 
     if (!disk) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Domain XML doesn't contain any file-based harddisks, "
-                         "cannot deduce datastore and path for VMX file"));
+                       _("Domain XML doesn't contain any file-based harddisks, cannot deduce datastore and path for VMX file"));
         goto cleanup;
     }
 
     src = virDomainDiskGetSource(disk);
     if (!src) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("First file-based harddisk has no source, cannot deduce "
-                         "datastore and path for VMX file"));
+                       _("First file-based harddisk has no source, cannot deduce datastore and path for VMX file"));
         goto cleanup;
     }
 
@@ -3241,8 +3237,7 @@ esxDomainSetAutostart(virDomainPtr domain, int autostart)
                  powerInfo = powerInfo->_next) {
                 if (STRNEQ(powerInfo->key->value, virtualMachine->obj->value)) {
                     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                                   _("Cannot enable general autostart option "
-                                     "without affecting other domains"));
+                                   _("Cannot enable general autostart option without affecting other domains"));
                     goto cleanup;
                 }
             }
@@ -3685,8 +3680,7 @@ esxDomainMigratePerform(virDomainPtr domain,
 
     if (STRCASENEQ(priv->vCenter->ipAddress, parsedUri->server)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Migration source and destination have to refer to "
-                         "the same vCenter"));
+                       _("Migration source and destination have to refer to the same vCenter"));
         goto cleanup;
     }
 
@@ -3734,8 +3728,7 @@ esxDomainMigratePerform(virDomainPtr domain,
                            eventList->fullFormattedMessage);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Could not migrate domain, validation reported a "
-                             "problem"));
+                           _("Could not migrate domain, validation reported a problem"));
         }
 
         goto cleanup;

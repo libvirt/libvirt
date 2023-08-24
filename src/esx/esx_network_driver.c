@@ -311,8 +311,7 @@ esxNetworkDefineXMLFlags(virConnectPtr conn, const char *xml,
     if (hostVirtualSwitch) {
         /* FIXME */
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("HostVirtualSwitch already exists, editing existing "
-                         "ones is not supported yet"));
+                       _("HostVirtualSwitch already exists, editing existing ones is not supported yet"));
         goto cleanup;
     }
 

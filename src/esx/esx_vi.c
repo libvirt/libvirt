@@ -253,8 +253,7 @@ esxVI_CURL_Perform(esxVI_CURL *curl, const char *url)
 
     if (responseCode < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned a "
-                         "negative response code"));
+                       _("curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned a negative response code"));
         return -1;
     }
 
@@ -674,15 +673,13 @@ esxVI_MultiCURL_Remove(esxVI_MultiCURL *multi, esxVI_CURL *curl)
 {
     if (!curl->handle) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot remove uninitialized CURL handle from a "
-                         "multi handle"));
+                       _("Cannot remove uninitialized CURL handle from a multi handle"));
         return -1;
     }
 
     if (!curl->multi) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot remove CURL handle from a multi handle when it "
-                         "wasn't added before"));
+                       _("Cannot remove CURL handle from a multi handle when it wasn't added before"));
         return -1;
     }
 
@@ -1909,8 +1906,7 @@ esxVI_EnsureSession(esxVI_Context *ctx)
         }
     } else if (STRNEQ(ctx->session->key, currentSession->key)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Key of the current session differs from the key at "
-                         "last login"));
+                       _("Key of the current session differs from the key at last login"));
         goto cleanup;
     }
 
@@ -4220,13 +4216,10 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
 
                 if (taskInfo->cancelable == esxVI_Boolean_True) {
                     if (esxVI_CancelTask(ctx, task) < 0 && blocked) {
-                        VIR_ERROR(_("Cancelable task is blocked by an "
-                                     "unanswered question but cancellation "
-                                     "failed"));
+                        VIR_ERROR(_("Cancelable task is blocked by an unanswered question but cancellation failed"));
                     }
                 } else if (blocked) {
-                    VIR_ERROR(_("Non-cancelable task is blocked by an "
-                                 "unanswered question"));
+                    VIR_ERROR(_("Non-cancelable task is blocked by an unanswered question"));
                 }
 
                 /* FIXME: Enable error reporting here again */

@@ -119,8 +119,7 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURI *uri)
             if ((tmp = strchr((*parsedUri)->proxy_hostname, ':'))) {
                 if (tmp == (*parsedUri)->proxy_hostname) {
                     virReportError(VIR_ERR_INVALID_ARG, "%s",
-                                   _("Query parameter 'proxy' doesn't contain a "
-                                     "hostname"));
+                                   _("Query parameter 'proxy' doesn't contain a hostname"));
                     goto cleanup;
                 }
 

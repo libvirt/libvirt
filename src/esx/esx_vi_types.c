@@ -1444,8 +1444,7 @@ esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime)
 
     if (!(*dateTime)->value) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("XML node doesn't contain text, expecting an "
-                         "xsd:dateTime value"));
+                       _("XML node doesn't contain text, expecting an xsd:dateTime value"));
         goto failure;
     }
 
