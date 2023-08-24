@@ -1650,9 +1650,6 @@ virMdevctlList(bool defined,
         return -1;
     }
 
-    if (!output)
-        return -1;
-
     return nodeDeviceParseMdevctlJSON(output, devs);
 }
 
