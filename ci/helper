@@ -6,7 +6,6 @@
 import argparse
 import os
 import pathlib
-import pty
 import subprocess
 import sys
 import textwrap
@@ -147,30 +146,6 @@ class Application:
         self._basedir = pathlib.Path(__file__).resolve().parent
         self._args = Parser().parse()
         self._repo = None
-
-    def _make_run(self, target):
-        args = [
-            "-C",
-            self._basedir,
-            target,
-        ]
-
-        if self._args.action in ["build", "test", "shell"]:
-            args.extend([
-                f"CI_ENGINE={self._args.engine}",
-                f"CI_USER_LOGIN={self._args.login}",
-                f"CI_IMAGE_PREFIX={self._args.image_prefix}",
-                f"CI_IMAGE_TAG={self._args.image_tag}",
-            ])
-
-        if self._args.action in ["build", "test"]:
-            args.extend([
-                f"MESON_ARGS={self._args.meson_args}",
-                f"NINJA_ARGS={self._args.ninja_args}",
-            ])
-
-        if pty.spawn(["make"] + args) != 0:
-            sys.exit("error: 'make' failed")
 
     @staticmethod
     def _prepare_repo_copy(repo, dest):
