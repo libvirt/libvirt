@@ -233,8 +233,7 @@ virDomainCgroupSetMemoryLimitParameters(virCgroup *cgroup,
 
         if (mem_limit > swap_limit) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("memory hard_limit tunable value must be lower "
-                             "than or equal to swap_hard_limit"));
+                           _("memory hard_limit tunable value must be lower than or equal to swap_hard_limit"));
             return -1;
         }
     }

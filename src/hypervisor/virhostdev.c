@@ -423,8 +423,7 @@ virHostdevSaveNetConfig(virDomainHostdevDef *hostdev,
 
     if (virHostdevIsVirtualFunction(hostdev) != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Interface type hostdev is currently supported on"
-                         " SR-IOV Virtual Functions only"));
+                       _("Interface type hostdev is currently supported on SR-IOV Virtual Functions only"));
         return -1;
     }
 
@@ -511,8 +510,7 @@ virHostdevRestoreNetConfig(virDomainHostdevDef *hostdev,
 
     if (virHostdevIsVirtualFunction(hostdev) != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Interface type hostdev is currently supported on"
-                         " SR-IOV Virtual Functions only"));
+                       _("Interface type hostdev is currently supported on SR-IOV Virtual Functions only"));
         return -1;
     }
 
@@ -688,8 +686,7 @@ virHostdevPreparePCIDevicesImpl(virHostdevManager *mgr,
 
         if (hdrType != VIR_PCI_HEADER_ENDPOINT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Non-endpoint PCI devices cannot be assigned "
-                             "to guests"));
+                           _("Non-endpoint PCI devices cannot be assigned to guests"));
             goto cleanup;
         }
 
