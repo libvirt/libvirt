@@ -131,9 +131,9 @@ The ``<guest/>`` element will typically wrap up the following elements:
       :since:`Since 0.8.8`
    ``disksnapshot``
       If this element is present, the ``default`` attribute describes whether
-      external disk snapshots are supported. If absent, external snapshots may
-      still be supported, but it requires attempting the API and checking for an
-      error to find out for sure. :since:`Since 1.2.3`
+      creating external disk snapshots is supported. If absent, creating external
+      snapshots may still be supported, but it requires attempting the API and
+      checking for an error to find out for sure. :since:`Since 1.2.3`
 
 Examples
 ~~~~~~~~
