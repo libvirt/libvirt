@@ -452,8 +452,7 @@ static int virLXCProcessSetupNamespaceNet(int ns_type, const char *name)
     int fd;
     if (ns_type != VIR_LXC_DOMAIN_NAMESPACE_SHARENET) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("'netns' namespace source can only be "
-                         "used with sharenet"));
+                       _("'netns' namespace source can only be used with sharenet"));
         return -1;
     }
 

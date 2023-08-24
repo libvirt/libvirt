@@ -654,8 +654,7 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     if (flags & VIR_DOMAIN_MEM_MAXIMUM) {
         if (def) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("Cannot resize the max memory "
-                             "on an active domain"));
+                           _("Cannot resize the max memory on an active domain"));
             goto endjob;
         }
 

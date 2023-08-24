@@ -1126,8 +1126,7 @@ lxcParseConfigString(const char *config,
     if (virConfGetValue(properties, "lxc.mount.fstab") ||
         virConfGetValue(properties, "lxc.mount")) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("lxc.mount.fstab or lxc.mount found, use "
-                         "lxc.mount.entry lines instead"));
+                       _("lxc.mount.fstab or lxc.mount found, use lxc.mount.entry lines instead"));
         return NULL;
     }
 
