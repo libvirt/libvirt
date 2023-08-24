@@ -2904,8 +2904,7 @@ libxlDomainUndefineFlags(virDomainPtr dom,
             }
         } else {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("Refusing to undefine while domain managed "
-                             "save image exists"));
+                           _("Refusing to undefine while domain managed save image exists"));
             goto cleanup;
         }
     }
@@ -3212,8 +3211,7 @@ libxlDomainAttachHostUSBDevice(libxlDriverPrivate *driver,
 
         if (libxlDomainAttachControllerDevice(driver, vm, controller) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No available USB controller and port, and "
-                             "failed to attach a new one"));
+                           _("No available USB controller and port, and failed to attach a new one"));
             virDomainControllerDefFree(controller);
             goto cleanup;
         }

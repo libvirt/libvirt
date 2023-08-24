@@ -1284,8 +1284,7 @@ libxlMakeNic(virDomainDef *def,
     if (l_nic->script && !(actual_type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
                            actual_type == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("specifying a script is only supported with "
-                         "interface types bridge and ethernet"));
+                       _("specifying a script is only supported with interface types bridge and ethernet"));
         return -1;
     }
 
@@ -1310,8 +1309,7 @@ libxlMakeNic(virDomainDef *def,
             def->os.type == VIR_DOMAIN_OSTYPE_XENPVH) &&
             l_nic->model != VIR_DOMAIN_NET_MODEL_NETFRONT) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("only model 'netfront' is supported for "
-                             "Xen PV(H) domains"));
+                           _("only model 'netfront' is supported for Xen PV(H) domains"));
             return -1;
         }
         x_nic->model = g_strdup(virDomainNetGetModelString(l_nic));
@@ -1802,14 +1800,12 @@ libxlDriverConfigInit(libxlDriverConfig *cfg)
     }
 
     if (libxl_ctx_alloc(&cfg->ctx, LIBXL_VERSION, 0, (xentoollog_logger *)cfg->logger)) {
-        VIR_ERROR(_("cannot initialize libxenlight context, probably not "
-                    "running in a Xen Dom0, disabling driver"));
+        VIR_ERROR(_("cannot initialize libxenlight context, probably not running in a Xen Dom0, disabling driver"));
         return -1;
     }
 
     if ((cfg->verInfo = libxl_get_version_info(cfg->ctx)) == NULL) {
-        VIR_ERROR(_("cannot version information from libxenlight, "
-                    "disabling driver"));
+        VIR_ERROR(_("cannot version information from libxenlight, disabling driver"));
         return -1;
     }
     cfg->version = (cfg->verInfo->xen_version_major * 1000000) +
