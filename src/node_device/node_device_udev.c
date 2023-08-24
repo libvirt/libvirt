@@ -1889,8 +1889,7 @@ udevEventHandleThread(void *opaque G_GNUC_UNUSED)
             if (errno != EAGAIN && errno != EWOULDBLOCK && errno != EINVAL) {
             VIR_WARNINGS_RESET
                 virReportSystemError(errno, "%s",
-                                     _("failed to receive device from udev "
-                                       "monitor"));
+                                     _("failed to receive device from udev monitor"));
                 return;
             }
 
