@@ -14,6 +14,28 @@ import textwrap
 import util
 
 
+def required_deps(*deps):
+    module2pkg = {
+        "git": "GitPython"
+    }
+
+    def inner_decorator(func):
+        def wrapped(*args, **kwargs):
+            cmd = func.__name__[len('_action_'):]
+            for dep in deps:
+                try:
+                    import importlib
+                    importlib.import_module(dep)
+                except ImportError:
+                    pkg = module2pkg[dep]
+                    msg = f"'{pkg}' not found (required by the '{cmd}' command)"
+                    print(msg, file=sys.stderr)
+                    sys.exit(1)
+            func(*args, **kwargs)
+        return wrapped
+    return inner_decorator
+
+
 class Parser:
     def __init__(self):
         # Options that are common to all actions that use containers
