@@ -163,10 +163,6 @@ class Application:
         output = subprocess.check_output([self._args.lcitool] + args)
         return output.decode("utf-8")
 
-    def _lcitool_get_targets(self):
-        output = self._lcitool_run(["targets"])
-        return output.splitlines()
-
     def _check_stale_images(self):
         namespace = self._args.namespace
         gitlab_uri = self._args.gitlab_uri
