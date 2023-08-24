@@ -27,3 +27,8 @@ meson setup build --werror -Dsystem=true $MESON_OPTS $MESON_ARGS || \
 (cat build/meson-logs/meson-log.txt && exit 1)
 
 ninja -C build $NINJA_ARGS
+
+run_cmd() {
+    printf "\e[32m[RUN COMMAND]: '%s'\e[0m\n" "$*"
+    "$@"
+}
