@@ -3569,8 +3569,7 @@ virDomainMigrateUnmanagedProto2(virDomainPtr domain,
     if (!virTypedParamsCheck(params, nparams, compatParams,
                              G_N_ELEMENTS(compatParams))) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("Some parameters are not supported by migration "
-                         "protocol 2"));
+                       _("Some parameters are not supported by migration protocol 2"));
         return -1;
     }
 
@@ -3618,8 +3617,7 @@ virDomainMigrateUnmanagedProto3(virDomainPtr domain,
     if (!virTypedParamsCheck(params, nparams, compatParams,
                              G_N_ELEMENTS(compatParams))) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("Some parameters are not supported by migration "
-                         "protocol 3"));
+                       _("Some parameters are not supported by migration protocol 3"));
         return -1;
     }
 
@@ -3822,8 +3820,7 @@ virDomainMigrate(virDomainPtr domain,
         if (rc <= 0) {
             if (rc == 0)
                 virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                               _("offline migration is not supported by "
-                                 "the source host"));
+                               _("offline migration is not supported by the source host"));
             goto error;
         }
 
@@ -3832,8 +3829,7 @@ virDomainMigrate(virDomainPtr domain,
         if (rc <= 0) {
             if (rc == 0)
                 virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                               _("offline migration is not supported by "
-                                 "the destination host"));
+                               _("offline migration is not supported by the destination host"));
             goto error;
         }
     }
@@ -4021,8 +4017,7 @@ virDomainMigrate2(virDomainPtr domain,
         if (rc <= 0) {
             if (rc == 0)
                 virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                               _("offline migration is not supported by "
-                                 "the source host"));
+                               _("offline migration is not supported by the source host"));
             goto error;
         }
         rc = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
@@ -4030,8 +4025,7 @@ virDomainMigrate2(virDomainPtr domain,
         if (rc <= 0) {
             if (rc == 0)
                 virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                               _("offline migration is not supported by "
-                                 "the destination host"));
+                               _("offline migration is not supported by the destination host"));
             goto error;
         }
     }
@@ -4233,14 +4227,12 @@ virDomainMigrate3(virDomainPtr domain,
 
     if (flags & VIR_MIGRATE_PEER2PEER) {
         virReportInvalidArg(flags, "%s",
-                            _("use virDomainMigrateToURI3 for peer-to-peer "
-                              "migration"));
+                            _("use virDomainMigrateToURI3 for peer-to-peer migration"));
         goto error;
     }
     if (flags & VIR_MIGRATE_TUNNELLED) {
         virReportInvalidArg(flags, "%s",
-                            _("cannot perform tunnelled migration "
-                              "without using peer2peer flag"));
+                            _("cannot perform tunnelled migration without using peer2peer flag"));
         goto error;
     }
 
@@ -4250,8 +4242,7 @@ virDomainMigrate3(virDomainPtr domain,
         if (rc <= 0) {
             if (rc == 0)
                 virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                               _("offline migration is not supported by "
-                                 "the source host"));
+                               _("offline migration is not supported by the source host"));
             goto error;
         }
 
@@ -4260,8 +4251,7 @@ virDomainMigrate3(virDomainPtr domain,
         if (rc <= 0) {
             if (rc == 0)
                 virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                               _("offline migration is not supported by "
-                                 "the destination host"));
+                               _("offline migration is not supported by the destination host"));
             goto error;
         }
     }
@@ -4303,8 +4293,7 @@ virDomainMigrate3(virDomainPtr domain,
     if (!virTypedParamsCheck(params, nparams, compatParams,
                              G_N_ELEMENTS(compatParams))) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("Migration APIs with extensible parameters are not "
-                         "supported but extended parameters were passed"));
+                       _("Migration APIs with extensible parameters are not supported but extended parameters were passed"));
         goto error;
     }
 
@@ -4346,8 +4335,7 @@ virDomainMigrate3(virDomainPtr domain,
         VIR_DEBUG("Using migration protocol 2");
         if (dxml) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("Unable to change target guest XML during "
-                             "migration"));
+                           _("Unable to change target guest XML during migration"));
             goto error;
         }
         ddomain = virDomainMigrateVersion2(domain, dconn, flags,
@@ -4367,8 +4355,7 @@ virDomainMigrate3(virDomainPtr domain,
         VIR_DEBUG("Using migration protocol 1");
         if (dxml) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("Unable to change target guest XML during "
-                             "migration"));
+                           _("Unable to change target guest XML during migration"));
             goto error;
         }
         ddomain = virDomainMigrateVersion1(domain, dconn, flags,
@@ -4413,8 +4400,7 @@ int virDomainMigrateUnmanagedCheckCompat(virDomainPtr domain,
         if (rc <= 0) {
             if (rc == 0)
                 virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                               _("offline migration is not supported by "
-                                 "the source host"));
+                               _("offline migration is not supported by the source host"));
             return -1;
         }
     }
@@ -4426,8 +4412,7 @@ int virDomainMigrateUnmanagedCheckCompat(virDomainPtr domain,
         if (rc <= 0) {
             if (rc == 0)
                 virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                               _("p2p migration is not supported by "
-                                 "the source host"));
+                               _("p2p migration is not supported by the source host"));
             return -1;
         }
     } else {
@@ -4436,8 +4421,7 @@ int virDomainMigrateUnmanagedCheckCompat(virDomainPtr domain,
         if (rc <= 0) {
             if (rc == 0)
                 virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                               _("direct migration is not supported by "
-                                 "the source host"));
+                               _("direct migration is not supported by the source host"));
             return -1;
         }
     }
@@ -8585,8 +8569,7 @@ virDomainSetMetadata(virDomainPtr domain,
     case VIR_DOMAIN_METADATA_TITLE:
         if (metadata && strchr(metadata, '\n')) {
             virReportInvalidArg(metadata, "%s",
-                                _("metadata title can't contain "
-                                  "newlines"));
+                                _("metadata title can't contain newlines"));
             goto error;
         }
         G_GNUC_FALLTHROUGH;
@@ -12697,8 +12680,7 @@ virDomainListGetStats(virDomainPtr *doms,
 
         if (dom->conn != conn) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("domains in 'doms' array must belong to a "
-                             "single connection"));
+                           _("domains in 'doms' array must belong to a single connection"));
             goto cleanup;
         }
 

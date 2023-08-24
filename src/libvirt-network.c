@@ -1974,8 +1974,7 @@ virNetworkSetMetadata(virNetworkPtr network,
     case VIR_NETWORK_METADATA_TITLE:
         if (metadata && strchr(metadata, '\n')) {
             virReportInvalidArg(metadata, "%s",
-                                _("metadata title can't contain "
-                                  "newlines"));
+                                _("metadata title can't contain newlines"));
             goto error;
         }
         G_GNUC_FALLTHROUGH;
