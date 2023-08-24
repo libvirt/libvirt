@@ -1,7 +1,5 @@
 #!/bin/sh
 
-cd "$CI_CONT_SRCDIR"
-
 export CCACHE_BASEDIR="$(pwd)"
 export CCACHE_DIR="$CCACHE_BASEDIR/ccache"
 export CCACHE_MAXSIZE="500M"
