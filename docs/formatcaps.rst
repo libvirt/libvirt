@@ -134,6 +134,12 @@ The ``<guest/>`` element will typically wrap up the following elements:
       creating external disk snapshots is supported. If absent, creating external
       snapshots may still be supported, but it requires attempting the API and
       checking for an error to find out for sure. :since:`Since 1.2.3`
+   ``externalSnapshot``
+      If this element is present, the hypervisor supports deleting and
+      reverting external snapshots including memory state. Support for creation
+      of external snapshots is reported via the ``disksnapshot`` feature flag.
+      Management applications can now switch from internal snapshots to external
+      snapshots. :since:`Since 9.9.0`
 
 Examples
 ~~~~~~~~
@@ -318,6 +324,7 @@ capabilities enabled in the chip and BIOS you will see:
         <cpuselection/>
         <deviceboot/>
         <disksnapshot default='on' toggle='no'/>
+        <externalSnapshot/>
       </features>
     </guest>
 

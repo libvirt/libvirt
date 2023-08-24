@@ -21,6 +21,7 @@
       <cpuselection/>
       <deviceboot/>
       <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
     </features>
   </guest>
 

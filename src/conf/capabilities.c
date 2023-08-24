@@ -508,6 +508,7 @@ static const struct virCapsGuestFeatureInfo virCapsGuestFeatureInfos[VIR_CAPS_GU
     [VIR_CAPS_GUEST_FEATURE_TYPE_DEVICEBOOT] = { "deviceboot", false },
     [VIR_CAPS_GUEST_FEATURE_TYPE_DISKSNAPSHOT] = { "disksnapshot", true },
     [VIR_CAPS_GUEST_FEATURE_TYPE_HAP] = { "hap", true },
+    [VIR_CAPS_GUEST_FEATURE_TYPE_EXTERNAL_SNAPSHOT] = { "externalSnapshot", false },
 };
 
 
