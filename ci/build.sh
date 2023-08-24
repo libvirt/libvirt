@@ -65,3 +65,14 @@ run_codestyle() {
     run_build
     run_test
 }
+
+run_potfile() {
+    # since meson would run jobs for each of the following target in parallel,
+    # we'd have dependency issues such that one target might depend on a
+    # generated file which hasn't been generated yet by the other target, hence
+    # we limit potfile job to a single build job (luckily potfile build has
+    # negligible performance impact)
+    BUILD_ARGS="-j1 libvirt-pot-dep libvirt-pot"
+
+    run_build
+}
