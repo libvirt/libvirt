@@ -32,3 +32,8 @@ run_cmd() {
     printf "\e[32m[RUN COMMAND]: '%s'\e[0m\n" "$*"
     "$@"
 }
+
+run_meson_setup() {
+    run_cmd meson setup build --error -Dsystem=true $MESON_OPTS $MESON_ARGS || \
+    (cat "${GIT_ROOT}/build/meson-logs/meson-log.txt" && exit 1)
+}
