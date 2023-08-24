@@ -43,6 +43,7 @@
 #include "virutil.h"
 #include "vircommand.h"
 #include "virlog.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
@@ -1175,6 +1176,12 @@ nodeDeviceParseMdevctlJSON(const char *jsonstring,
     size_t i;
     size_t j;
     virJSONValue *obj;
+
+    if (virStringIsEmpty(jsonstring)) {
+        VIR_DEBUG("mdevctl has no defined mediated devices");
+        *devs = NULL;
+        return 0;
+    }
 
     json_devicelist = virJSONValueFromString(jsonstring);
 
