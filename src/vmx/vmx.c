@@ -938,8 +938,7 @@ virVMXSCSIDiskNameToControllerAndUnit(const char *name, int *controller, int *un
 
     if (! STRPREFIX(name, "sd")) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Expecting domain XML attribute 'dev' of entry "
-                         "'devices/disk/target' to start with 'sd'"));
+                       _("Expecting domain XML attribute 'dev' of entry 'devices/disk/target' to start with 'sd'"));
         return -1;
     }
 
@@ -977,8 +976,7 @@ virVMXIDEDiskNameToBusAndUnit(const char *name, int *bus, int *unit)
 
     if (! STRPREFIX(name, "hd")) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Expecting domain XML attribute 'dev' of entry "
-                         "'devices/disk/target' to start with 'hd'"));
+                       _("Expecting domain XML attribute 'dev' of entry 'devices/disk/target' to start with 'hd'"));
         return -1;
     }
 
@@ -1012,8 +1010,7 @@ virVMXFloppyDiskNameToUnit(const char *name, int *unit)
 
     if (! STRPREFIX(name, "fd")) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Expecting domain XML attribute 'dev' of entry "
-                         "'devices/disk/target' to start with 'fd'"));
+                       _("Expecting domain XML attribute 'dev' of entry 'devices/disk/target' to start with 'fd'"));
         return -1;
     }
 
@@ -1505,8 +1502,7 @@ virVMXParseConfig(virVMXContext *ctx,
     if (def->description != NULL) {
         if (virVMXUnescapeHexPipe(def->description) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("VMX entry 'annotation' contains invalid escape "
-                             "sequence"));
+                           _("VMX entry 'annotation' contains invalid escape sequence"));
             goto cleanup;
         }
     }
@@ -1583,8 +1579,7 @@ virVMXParseConfig(virVMXContext *ctx,
         cpu->sockets = numvcpus / coresPerSocket;
         if (cpu->sockets <= 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("VMX entry 'cpuid.coresPerSocket' smaller than "
-                             "'numvcpus'"));
+                           _("VMX entry 'cpuid.coresPerSocket' smaller than 'numvcpus'"));
             goto cleanup;
         }
         cpu->dies = 1;
@@ -3348,15 +3343,13 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOption *xmlopt, virDomainDef 
     /* def:maxvcpus -> vmx:numvcpus */
     if (virDomainDefHasVcpusOffline(def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("No support for domain XML entry 'vcpu' attribute "
-                         "'current'"));
+                       _("No support for domain XML entry 'vcpu' attribute 'current'"));
         goto cleanup;
     }
     maxvcpus = virDomainDefGetVcpusMax(def);
     if (maxvcpus == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Expecting domain XML entry 'vcpu' to be greater "
-                         "than 0"));
+                       _("Expecting domain XML entry 'vcpu' to be greater than 0"));
         goto cleanup;
     }
 
