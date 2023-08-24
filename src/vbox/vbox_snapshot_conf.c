@@ -736,8 +736,7 @@ virVBoxSnapshotConfAddSnapshotToXmlMachine(virVBoxSnapshotConfSnapshot *snapshot
     if (snapshotParentName == NULL) {
         if (machine->snapshot != NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unable to add this snapshot, there is already a snapshot "
-                             "linked to the machine"));
+                           _("Unable to add this snapshot, there is already a snapshot linked to the machine"));
             return -1;
         }
         machine->snapshot = snapshot;
@@ -840,8 +839,7 @@ virVBoxSnapshotConfRemoveSnapshot(virVBoxSnapshotConfMachine *machine,
     }
     if (snapshot->nchildren > 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("This snapshot has children, "
-                         "please delete these snapshots before"));
+                       _("This snapshot has children, please delete these snapshots before"));
         return -1;
     }
 
