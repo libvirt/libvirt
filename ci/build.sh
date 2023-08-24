@@ -85,3 +85,10 @@ run_rpmbuild() {
                 --define "_without_mingw 1" \
                 -ta build/meson-dist/libvirt-*.tar.xz
 }
+
+run_website_build() {
+    export DESTDIR="${GIT_ROOT}/install"
+    BUILD_ARGS="install-web"
+
+    run_build
+}
