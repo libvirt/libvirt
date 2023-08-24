@@ -19820,6 +19820,28 @@ virDomainVirtioOptionsCheckABIStability(virDomainVirtioOptions *src,
 
 
 static bool
+virDomainDiskBlockIoCheckABIStability(virDomainDiskDef *src,
+                                      virDomainDiskDef *dst)
+{
+    if (src->blockio.logical_block_size != dst->blockio.logical_block_size) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target disk logical_block_size %1$u does not match source %2$u"),
+                       dst->blockio.logical_block_size, src->blockio.logical_block_size);
+        return false;
+    }
+
+    if (src->blockio.physical_block_size != dst->blockio.physical_block_size) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target disk physical_block_size %1$u does not match source %2$u"),
+                       dst->blockio.physical_block_size, src->blockio.physical_block_size);
+        return false;
+    }
+    return true;
+}
+
+
+
+static bool
 virDomainDiskDefCheckABIStability(virDomainDiskDef *src,
                                   virDomainDiskDef *dst)
 {
@@ -19900,6 +19922,9 @@ virDomainDiskDefCheckABIStability(virDomainDiskDef *src,
         return false;
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
+        return false;
+
+    if (!virDomainDiskBlockIoCheckABIStability(src, dst))
         return false;
 
     return true;
