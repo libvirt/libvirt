@@ -884,15 +884,7 @@ int networkAddFirewallRules(virNetworkDef *def)
                 if (version >= 6000 &&
                     virFirewallDGetBackend() == VIR_FIREWALLD_BACKEND_NFTABLES) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("firewalld is set to use the nftables "
-                                     "backend, but the required firewalld "
-                                     "'libvirt' zone is missing. Either set "
-                                     "the firewalld backend to 'iptables', or "
-                                     "ensure that firewalld has a 'libvirt' "
-                                     "zone by upgrading firewalld to a "
-                                     "version supporting rule priorities "
-                                     "(0.7.0+) and/or rebuilding "
-                                     "libvirt with --with-firewalld-zone"));
+                                   _("firewalld is set to use the nftables backend, but the required firewalld 'libvirt' zone is missing. Either set the firewalld backend to 'iptables', or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --with-firewalld-zone"));
                     return -1;
                 }
             }

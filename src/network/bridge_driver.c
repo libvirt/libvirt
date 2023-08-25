@@ -1302,8 +1302,7 @@ networkDnsmasqConfContents(virNetworkObj *obj,
             if (ipdef->nranges || ipdef->nhosts) {
                 if (ipv4def) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("For IPv4, multiple DHCP definitions "
-                                     "cannot be specified."));
+                                   _("For IPv4, multiple DHCP definitions cannot be specified."));
                     return -1;
                 } else {
                     ipv4def = ipdef;
@@ -1316,8 +1315,7 @@ networkDnsmasqConfContents(virNetworkObj *obj,
             if (ipdef->nranges || ipdef->nhosts) {
                 if (ipv6def) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("For IPv6, multiple DHCP definitions "
-                                     "cannot be specified."));
+                                   _("For IPv6, multiple DHCP definitions cannot be specified."));
                     return -1;
                 } else {
                     ipv6def = ipdef;
@@ -2869,9 +2867,7 @@ networkValidate(virNetworkDriverState *driver,
             if (ipdef->nranges || ipdef->nhosts) {
                 if (ipv4def) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Multiple IPv4 dhcp sections found -- "
-                                 "dhcp is supported only for a "
-                                 "single IPv4 address on each network"));
+                               _("Multiple IPv4 dhcp sections found -- dhcp is supported only for a single IPv4 address on each network"));
                     return -1;
                 } else {
                     ipv4def = true;
@@ -2882,9 +2878,7 @@ networkValidate(virNetworkDriverState *driver,
             if (ipdef->nranges || ipdef->nhosts) {
                 if (ipv6def) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Multiple IPv6 dhcp sections found -- "
-                                 "dhcp is supported only for a "
-                                 "single IPv6 address on each network"));
+                               _("Multiple IPv6 dhcp sections found -- dhcp is supported only for a single IPv6 address on each network"));
                     return -1;
                 } else {
                     ipv6def = true;
