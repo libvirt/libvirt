@@ -17,6 +17,17 @@ v9.7.0 (unreleased)
 
 * **New features**
 
+  * qemu: basic support for use of "VFIO variant" drivers
+
+    A VFIO variant driver is a device-specific driver that can
+    be used in place of the generic vfio-pci driver, and provides
+    extra functionality to support things like live migration of
+    guests with vfio-assigned devices. It can currently be used by:
+
+    1) setting ``managed='no'`` in the XML configuration for the device
+    2) pre-binding the variant driver using the ``--driver`` option of
+       ``virsh nodedev-detach``.
+
 * **Improvements**
 
 * **Bug fixes**
