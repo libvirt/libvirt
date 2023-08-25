@@ -5388,14 +5388,23 @@ nodedev-detach
 
    nodedev-detach nodedev [--driver backend_driver]
 
-Detach *nodedev* from the host, so that it can safely be used by
-guests via <hostdev> passthrough.  This is reversed with
-``nodedev-reattach``, and is done automatically for managed devices.
+Detach *nodedev* from the host driver and bind it to a special driver
+that provides the API needed by the hypervisor for assigning the
+device to a virtual machine (using <hostdev> in the domain XML
+definition).  This is reversed with ``nodedev-reattach``, and is done
+automatically by the hypervisor driver for managed devices (those
+devices with "managed='yes'" in their XML definition).
 
-Different backend drivers expect the device to be bound to different
-dummy devices. For example, QEMU's "vfio" backend driver expects the
-device to be bound to vfio-pci. The *--driver* parameter can be used
-to specify the desired backend driver.
+Different hypervisors expect the device being assigned to be bound to
+different drivers. For example, QEMU's "vfio" backend requires the
+device to be bound to the driver "vfio-pci" or to a "VFIO variant"
+driver (this is a driver that supports the full API provided by
+vfio-pci, plus some other APIs to support things like live
+migration). The *--driver* parameter can be used to specify a
+particular driver (e.g. a device-specific VFIO variant driver) the
+device should be bound to. When *--driver* is omitted, the default
+driver for the hypervisor is used ("vfio-pci" for QEMU, "pciback" for
+Xen).
 
 
 nodedev-dumpxml
